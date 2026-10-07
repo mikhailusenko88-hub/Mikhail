@@ -1,0 +1,30 @@
+name: Zamer3D
+options:
+  bundleIdPrefix: ru.usenko
+  deploymentTarget:
+    iOS: "16.0"
+targets:
+  Zamer3D:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleDisplayName: "Замер 3D"
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        NSCameraUsageDescription: "Камера и LiDAR нужны для 3D-скана помещения."
+        UIRequiredDeviceCapabilities: [arkit]
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ru.usenko.zamer3d
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+        CODE_SIGN_STYLE: Automatic
