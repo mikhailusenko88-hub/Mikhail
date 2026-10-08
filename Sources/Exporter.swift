@@ -30,7 +30,8 @@ enum Exporter {
     /// Пишет папку скана и возвращает её ZIP (один файл — удобно отправить).
     static func write(meshAnchors: [ARMeshAnchor], planes: [ARPlaneAnchor],
                       measurements: [ScanMeasure], labels: [ScanLabel], calibration: Calibration,
-                      photos: (dir: URL, frames: [KeyframeRecorder.Frame])) throws -> URL {
+                      photos: (dir: URL, frames: [KeyframeRecorder.Frame]),
+                      worldMap: ARWorldMap?) throws -> URL {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd_HH-mm"
         let stamp = df.string(from: Date())
@@ -126,6 +127,10 @@ enum Exporter {
         enc.outputFormatting = [.prettyPrinted, .sortedKeys]
         let jsonURL = dir.appendingPathComponent("info.json")
         try enc.encode(info).write(to: jsonURL)
+        if let map = worldMap,
+           let data = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true) {
+            try data.write(to: dir.appendingPathComponent(FittingModel.mapFile))
+        }
         return try zip(dir)
     }
 
