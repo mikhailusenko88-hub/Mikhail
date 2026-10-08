@@ -9,6 +9,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Generate Xcode project
         run: brew install xcodegen && xcodegen generate
+      - name: Pack project for Xcode
+        run: zip -qr Zamer3D-Xcode.zip Zamer3D.xcodeproj Sources project.yml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Zamer3D-Xcode
+          path: Zamer3D-Xcode.zip
       - name: Build (unsigned)
         run: |
           xcodebuild -project Zamer3D.xcodeproj -scheme Zamer3D -configuration Release \
