@@ -94,6 +94,14 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         }
     }
 
+    /// На время примерки основной скан ставится на паузу (две AR-сессии сразу нельзя).
+    func pause() { arView.session.pause() }
+
+    func resume() {
+        guard let cfg = arView.session.configuration else { startScan(); return }
+        arView.session.run(cfg)   // без сброса: скан продолжается
+    }
+
     func resetScan() {
         clearMarkers()
         history.forEach { $0.anchors.forEach { arView.scene.removeAnchor($0) } }
@@ -335,10 +343,21 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         let cal = calibration
         let photoSet = photos.snapshot()
         status = "Сохраняю…"
+        // Карта комнаты: по ней телефон потом узнаёт помещение для примерки мебели.
+        arView.session.getCurrentWorldMap { map, _ in
+            self.writeExport(anchors: anchors, planes: planes, meas: meas, labs: labs,
+                             cal: cal, photoSet: photoSet, map: map)
+        }
+    }
+
+    private func writeExport(anchors: [ARMeshAnchor], planes: [ARPlaneAnchor], meas: [ScanMeasure],
+                             labs: [ScanLabel], cal: Calibration,
+                             photoSet: (dir: URL, frames: [KeyframeRecorder.Frame]), map: ARWorldMap?) {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let zip = try Exporter.write(meshAnchors: anchors, planes: planes, measurements: meas,
-                                             labels: labs, calibration: cal, photos: photoSet)
+                                             labels: labs, calibration: cal, photos: photoSet,
+                                             worldMap: map)
                 DispatchQueue.main.async {
                     self.status = "Сохранено: \(zip.lastPathComponent)"
                     self.shareItem = ShareItem(urls: [zip])
