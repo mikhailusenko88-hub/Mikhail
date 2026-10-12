@@ -33,6 +33,8 @@ h3{font-size:.78rem;margin:0;text-transform:uppercase;letter-spacing:.08em;color
 .chip b{font-family:var(--f-mono);font-weight:600;color:var(--brass)}
 .chip small{color:var(--muted);font-size:12px}
 .chip[aria-pressed="true"]{border-color:var(--brass);background:var(--brass-soft);box-shadow:inset 0 0 0 1px var(--brass)}
+.linkbox{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
+.linkbox input{width:18px;height:18px;accent-color:var(--brass)}
 .varbar{display:flex;flex-direction:column;gap:8px}
 button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
 .stage{position:relative;background:var(--stage);border-radius:14px;overflow:hidden;height:min(62vh,520px);min-height:340px;touch-action:none}
@@ -114,6 +116,7 @@ summary{cursor:pointer;font-weight:600}
   <div class="varbar">
     <h3 id="var-title">Варианты тумбы</h3>
     <div class="chips" id="chips" role="group" aria-labelledby="var-title"></div>
+    <label class="linkbox" for="link-room"><input type="checkbox" id="link-room" checked> Один материал для тумбы и шкафа над инсталляцией</label>
   </div>
 
   <div class="stage" id="stage">
@@ -222,9 +225,17 @@ function lookupColor(text){
   return null;
 }
 const STORE='mebel-choice-'+location.pathname;
-function saveChoice(){ try{ localStorage.setItem(STORE, JSON.stringify(slots.map(s=>({slot:s.slot,sel:s.sel,over:s.over||null,custom:s.custom||null})))); }catch(e){} }
+const LINK={master:true, guest:true};   // один материал на тумбу и шкаф в санузле
+function syncRoom(src){
+  if(!LINK[src.room]) return; const m=fmat(src,cur(src));
+  slots.filter(o=>o.room===src.room && o!==src).forEach(o=>{
+    if(m.startsWith('custom_') && src.custom){ setCustom(o, src.custom.hex, src.custom.name); o.custom.found=src.custom.found; o.custom.how=src.custom.how; }
+    else o.over = (m===cur(o).mat) ? null : m;
+  });
+}
+function saveChoice(){ try{ localStorage.setItem(STORE, JSON.stringify(slots.map(s=>({slot:s.slot,sel:s.sel,over:s.over||null,custom:s.custom||null})).concat([{link:LINK}]))); }catch(e){} }
 function loadChoice(){ try{ const d=JSON.parse(localStorage.getItem(STORE)||'null'); if(!Array.isArray(d)) return;
-  d.forEach(x=>{ const s=slots.find(y=>y.slot===x.slot); if(!s) return; if(x.sel>=0 && x.sel<s.variants.length) s.sel=x.sel;
+  d.forEach(x=>{ if(x.link){ ['master','guest'].forEach(r=>{ if(typeof x.link[r]==='boolean') LINK[r]=x.link[r]; }); return; } const s=slots.find(y=>y.slot===x.slot); if(!s) return; if(x.sel>=0 && x.sel<s.variants.length) s.sel=x.sel;
     if(x.custom && /^#[0-9a-f]{6}$/i.test(x.custom.hex)) { setCustom(s,x.custom.hex,String(x.custom.name||'').slice(0,60)); s.custom.found=x.custom.found?String(x.custom.found).slice(0,80):null; s.custom.how=x.custom.how||null; }
     s.over = (x.over && MATS[x.over]) ? x.over : null; }); }catch(e){} }
 
@@ -301,10 +312,12 @@ const INTERNAL = typeof internalCard === 'function';
 
 /* ---------- выбор варианта ---------- */
 const chipsEl=document.getElementById('chips');
+document.getElementById('link-room').addEventListener('change',e=>{ LINK[room]=e.target.checked; if(LINK[room]) syncRoom(roomSlots().find(x=>x.variants.length>1)); renderAll(false); });
 function renderChips(){
+  document.getElementById('link-room').checked = !!LINK[room];
   const s=roomSlots().find(x=>x.variants.length>1);
   chipsEl.innerHTML=s.variants.map((vr,i)=>`<button class="chip" id="chip-${s.slot}-${i}" aria-pressed="${i===s.sel}" data-i="${i}"><b>${code(s,vr)}</b><span>${vr.title}</span>${vr.tag?`<small>${vr.tag}</small>`:''}</button>`).join('');
-  chipsEl.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{ s.sel=+b.dataset.i; s.over=null; renderAll(false); }));
+  chipsEl.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{ s.sel=+b.dataset.i; s.over=null; syncRoom(s); renderAll(false); }));
 }
 
 /* ---------- карточки ---------- */
@@ -332,23 +345,23 @@ function renderCards(){
   });
   modsEl.querySelectorAll('input[type=color]').forEach(inp=>{
     const s=slots.find(x=>x.slot===inp.dataset.slot);
-    inp.addEventListener('input',()=>{ setCustom(s,inp.value); buildScene(); });
-    inp.addEventListener('change',()=>{ setCustom(s,inp.value); if(s.custom){ s.custom.found='выбран вручную '+inp.value.toUpperCase(); s.custom.how='hex'; } renderAll(false); });
-    inp.addEventListener('click',()=>{ if(!(s.over||'').startsWith('custom_')){ setCustom(s,inp.value); buildScene(); } });
+    inp.addEventListener('input',()=>{ setCustom(s,inp.value); syncRoom(s); buildScene(); });
+    inp.addEventListener('change',()=>{ setCustom(s,inp.value); if(s.custom){ s.custom.found='выбран вручную '+inp.value.toUpperCase(); s.custom.how='hex'; } syncRoom(s); renderAll(false); });
+    inp.addEventListener('click',()=>{ if(!(s.over||'').startsWith('custom_')){ setCustom(s,inp.value); syncRoom(s); buildScene(); } });
   });
   modsEl.querySelectorAll('input[id^="cn-"]').forEach(inp=>{
     const s=slots.find(x=>x.slot===inp.dataset.slot);
     const apply=(full)=>{ const txt=inp.value.slice(0,60); const f=lookupColor(txt);
-      if(!txt.trim()){ if(full){ s.custom=null; if((s.over||'').startsWith('custom_')) s.over=null; renderAll(false);} return; }
-      if(f && f.film){ s.custom={hex:f.hex,name:txt,found:f.label,how:'film'}; s.over=f.film; if(full) renderAll(false); else buildScene(); const el=document.getElementById('cf-'+s.slot); if(el) el.textContent='Подобрано: '+f.label; return; }
+      if(!txt.trim()){ if(full){ s.custom=null; if((s.over||'').startsWith('custom_')) s.over=null; syncRoom(s); renderAll(false);} return; }
+      if(f && f.film){ s.custom={hex:f.hex,name:txt,found:f.label,how:'film'}; s.over=f.film; syncRoom(s); if(full) renderAll(false); else buildScene(); const el=document.getElementById('cf-'+s.slot); if(el) el.textContent='Подобрано: '+f.label; return; }
       setCustom(s, f?f.hex:undefined, txt); s.custom.found=f?f.label:null; s.custom.how=f?f.how:null;
       const el=document.getElementById('cf-'+s.slot); if(el) el.textContent = f ? 'Подобрано: '+f.label+(f.how==='ral'||f.how==='hex'?'':' — оттенок примерный, на экране может отличаться') : 'Не нашёл такой цвет — выберите оттенок кнопкой «Свой цвет»';
-      if(full) renderAll(false); else buildScene(); };
+      syncRoom(s); if(full) renderAll(false); else buildScene(); };
     let tm; inp.addEventListener('input',()=>{ clearTimeout(tm); tm=setTimeout(()=>apply(false),350); });
     inp.addEventListener('change',()=>apply(true));
   });
-  modsEl.querySelectorAll('select[id^="fl-"]').forEach(sel=>sel.addEventListener('change',()=>{ const s=slots.find(x=>x.slot===sel.dataset.slot); s.over = sel.value || null; if(s.over===cur(s).mat) s.over=null; renderAll(false); }));
-  modsEl.querySelectorAll('button.sw').forEach(b=>b.addEventListener('click',()=>{ const s=slots.find(x=>x.slot===b.dataset.slot); s.over = b.dataset.c===cur(s).mat ? null : b.dataset.c; renderAll(false); }));
+  modsEl.querySelectorAll('select[id^="fl-"]').forEach(sel=>sel.addEventListener('change',()=>{ const s=slots.find(x=>x.slot===sel.dataset.slot); s.over = sel.value || null; if(s.over===cur(s).mat) s.over=null; syncRoom(s); renderAll(false); }));
+  modsEl.querySelectorAll('button.sw').forEach(b=>b.addEventListener('click',()=>{ const s=slots.find(x=>x.slot===b.dataset.slot); s.over = b.dataset.c===cur(s).mat ? null : b.dataset.c; syncRoom(s); renderAll(false); }));
   modsEl.querySelectorAll('input[data-slot]').forEach(inp=>inp.addEventListener('change',e=>{
     const s=slots.find(x=>x.slot===e.target.dataset.slot), v=parseFloat(e.target.value);
     if(isFinite(v)&&v>0){ s[e.target.dataset.k]=v; renderAll(false); }
