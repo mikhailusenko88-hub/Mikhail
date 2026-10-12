@@ -33,6 +33,9 @@ h3{font-size:.78rem;margin:0;text-transform:uppercase;letter-spacing:.08em;color
 .chip b{font-family:var(--f-mono);font-weight:600;color:var(--brass)}
 .chip small{color:var(--muted);font-size:12px}
 .chip[aria-pressed="true"]{border-color:var(--brass);background:var(--brass-soft);box-shadow:inset 0 0 0 1px var(--brass)}
+.seg{display:flex;flex-wrap:wrap;gap:4px;background:var(--bg);padding:4px;border-radius:10px;width:fit-content;max-width:100%}
+.segb{font:500 13px var(--f-body);border:0;background:transparent;color:var(--muted);padding:6px 10px;border-radius:7px;cursor:pointer}
+.segb[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .linkbox{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
 .linkbox input{width:18px;height:18px;accent-color:var(--brass)}
 .varbar{display:flex;flex-direction:column;gap:8px}
@@ -224,7 +227,14 @@ function setCustom(s, hx, name){
   const k='custom_'+s.slot; s.custom={hex:hx||(s.custom&&s.custom.hex)||'#b7c4c8', name: name!==undefined?name:((s.custom&&s.custom.name)||'')};
   const nm=s.custom.name.trim(); s.custom.found = s.custom.found || null;
   MATS[k]={name:'ЛДСП 18 мм, свой цвет: '+(nm||s.custom.hex), cname: nm ? nm+' (свой цвет)' : 'свой цвет '+s.custom.hex, color:parseInt(s.custom.hex.slice(1),16), g:'custom'};
-  s.over=k;
+  return k;
+}
+/* куда применять выбранный материал: фасады и корпус / только фасады / только корпус */
+function applyMat(s,k){
+  const t=s.target||'all', v=cur(s);
+  if(t==='all'){ s.over=(k===v.mat)?null:k; s.body=null; }
+  else if(t==='front'){ if(!s.body) s.body=fmat(s,v); s.over=(k===v.mat)?null:k; if(s.body===fmat(s,v)) s.body=null; }
+  else { s.body=k; if(s.body===fmat(s,v)) s.body=null; }
 }
 /* Распознавание цвета по названию: RAL, Egger, #hex, слова */
 const RAL_T = Object.fromEntries('1000:CCC58F|1001:D1BC8A|1002:D2B773|1003:F7BA0B|1004:E2B007|1005:C89F04|1006:E1A100|1007:E79C00|1011:AF8A54|1012:D9C022|1013:E9E5CE|1014:DFCEA1|1015:EADEBD|1016:EAF044|1017:F4B752|1018:F3E03B|1019:A4957D|1020:9A9464|1021:EEC900|1023:F0CA00|1024:B89C50|1026:F5FF00|1027:A38C15|1028:FFAB00|1032:DDB20F|1033:FAAB21|1034:EDAB56|1035:A29985|1036:927549|1037:EEA205|2000:DD7907|2001:BE4E20|2002:C63927|2003:FA842B|2004:E75B12|2005:FF2300|2007:FFA421|2008:F3752C|2009:E15501|2010:D4652F|2011:EC7C25|2012:DB6A50|2013:954527|3000:AB2524|3001:A02128|3002:A1232B|3003:8D1D2C|3004:701F29|3005:5E2028|3007:402225|3009:703731|3011:7E292C|3012:CB8D73|3013:9C322E|3014:D47479|3015:E1A6AD|3016:AC4034|3017:D3545F|3018:D14152|3020:C1121C|3022:D56D56|3024:F70000|3026:FF0000|3027:B42041|3028:E72512|3031:AC323B|3032:711521|3033:B24C43|4001:8A5A83|4002:933D50|4003:D15B8F|4004:691639|4005:83639D|4006:992572|4007:4A203B|4008:904684|4009:A38995|4010:C63678|4011:8773A1|4012:6B6880|5000:384C70|5001:1F4764|5002:2B2C7C|5003:2A3756|5004:1D1F2A|5005:154889|5007:41678D|5008:313C48|5009:2E5978|5010:13447C|5011:232C3F|5012:3481B8|5013:232D53|5014:6C7C98|5015:2874B2|5017:0E518D|5018:21888F|5019:1A5784|5020:0B4151|5021:07737A|5022:2F2A5A|5023:4D668E|5024:6A93B0|5025:296478|5026:102C54|6000:327662|6001:28713E|6002:276235|6003:4B573E|6004:0E4243|6005:0F4336|6006:40433B|6007:283424|6008:35382E|6009:26392F|6010:3E753B|6011:68825B|6012:31403D|6013:797C5A|6014:444337|6015:3D403A|6016:026A52|6017:468641|6018:48A43F|6019:B7D9B1|6020:354733|6021:86A47C|6022:3E3C32|6024:008754|6025:53753C|6026:005D52|6027:81C0BB|6028:2D5546|6029:007243|6032:0F8558|6033:478A84|6034:7FB0B2|6035:1B542C|6036:005D4C|6037:25E712|6038:00F700|7000:7E8B92|7001:8F999F|7002:817F68|7003:7A7B6D|7004:9EA0A1|7005:6B716F|7006:756F61|7008:746643|7009:5B6259|7010:575D57|7011:555D61|7012:596163|7013:555548|7015:51565C|7016:373F43|7021:2E3234|7022:4B4D46|7023:818479|7024:474A50|7026:374447|7030:939388|7031:5D6970|7032:B9B9A8|7033:818979|7034:939176|7035:CBD0CC|7036:9A9697|7037:7C7F7E|7038:B4B8B0|7039:6B695F|7040:9DA3A6|7042:8F9695|7043:4E5451|7044:BDBDB2|7045:91969A|7046:82898E|7047:CFD0CF|7048:888175|8000:887142|8001:9C6B30|8002:7B5141|8003:80542F|8004:8F4E35|8007:6F4A2F|8008:6F4F28|8011:5A3A29|8012:673831|8014:49392D|8015:633A34|8016:4C2F26|8017:44322D|8019:3F3A3A|8022:211F20|8023:A65E2F|8024:79553C|8025:755C49|8028:4E3B2B|8029:773C27|9001:EFEBDC|9002:DDDED4|9003:F4F8F4|9004:2E3032|9005:0A0A0D|9006:A5A8A6|9007:8F8F8C|9010:F7F9EF|9011:292C2F|9016:F7FBF5|9017:2A2D2F|9018:CFD3CD|9022:9C9C9C|9023:7E8182'.split('|').map(x=>x.split(':')));
@@ -248,17 +258,20 @@ function lookupColor(text){
 const STORE='mebel-choice-'+location.pathname;
 const LINK={master:true, guest:true};   // один материал на тумбу и шкаф в санузле
 function syncRoom(src){
-  if(!LINK[src.room]) return; const m=fmat(src,cur(src));
+  if(!LINK[src.room]) return; const f=fmat(src,cur(src)), b=src.body||null;
   slots.filter(o=>o.room===src.room && o!==src).forEach(o=>{
-    if(m.startsWith('custom_') && src.custom){ setCustom(o, src.custom.hex, src.custom.name); o.custom.found=src.custom.found; o.custom.how=src.custom.how; }
-    else o.over = (m===cur(o).mat) ? null : m;
+    const isC=k=>k && k.startsWith('custom_');
+    if((isC(f)||isC(b)) && src.custom){ setCustom(o, src.custom.hex, src.custom.name); o.custom.found=src.custom.found; o.custom.how=src.custom.how; }
+    const map=k=> isC(k) ? 'custom_'+o.slot : k;
+    o.over = (map(f)===cur(o).mat) ? null : map(f);
+    o.body = b ? map(b) : null;
   });
 }
-function saveChoice(){ try{ localStorage.setItem(STORE, JSON.stringify(slots.map(s=>({slot:s.slot,sel:s.sel,over:s.over||null,custom:s.custom||null})).concat([{link:LINK}]))); }catch(e){} }
+function saveChoice(){ try{ localStorage.setItem(STORE, JSON.stringify(slots.map(s=>({slot:s.slot,sel:s.sel,over:s.over||null,body:s.body||null,custom:s.custom||null})).concat([{link:LINK}]))); }catch(e){} }
 function loadChoice(){ try{ const d=JSON.parse(localStorage.getItem(STORE)||'null'); if(!Array.isArray(d)) return;
   d.forEach(x=>{ if(x.link){ ['master','guest'].forEach(r=>{ if(typeof x.link[r]==='boolean') LINK[r]=x.link[r]; }); return; } const s=slots.find(y=>y.slot===x.slot); if(!s) return; if(x.sel>=0 && x.sel<s.variants.length) s.sel=x.sel;
     if(x.custom && /^#[0-9a-f]{6}$/i.test(x.custom.hex)) { setCustom(s,x.custom.hex,String(x.custom.name||'').slice(0,60)); s.custom.found=x.custom.found?String(x.custom.found).slice(0,80):null; s.custom.how=x.custom.how||null; }
-    s.over = (x.over && MATS[x.over]) ? x.over : null; }); }catch(e){} }
+    s.over = (x.over && MATS[x.over]) ? x.over : null; s.body = (x.body && MATS[x.body]) ? x.body : null; }); }catch(e){} }
 
 const slots = [
   {slot:'М1', room:'master', type:'vanity', W:740, H:450, D:460, z0:380, sel:0, variants:[
@@ -286,6 +299,7 @@ const slots = [
 const r1 = v => Math.round(v*10)/10;
 const cur = s => s.variants[s.sel];
 const fmat = (s,vr) => (vr===cur(s) && s.over) || vr.mat;
+const bmat = (s,vr) => (vr===cur(s) && s.body) || fmat(s,vr);   // материал корпуса
 const code = (s,vr) => s.slot + ((vr||cur(s)).v ? '-'+(vr||cur(s)).v : '');
 function hgt(s){ return s.type==='tall' ? s.ceil - 10 - s.z0 : s.H; }
 function nShelves(H){ return Math.max(1, Math.round(H/380)-1); }
@@ -340,7 +354,7 @@ function renderChips(){
   document.getElementById('link-room').checked = !!LINK[room];
   const s=roomSlots().find(x=>x.variants.length>1);
   chipsEl.innerHTML=s.variants.map((vr,i)=>`<button class="chip" id="chip-${s.slot}-${i}" aria-pressed="${i===s.sel}" data-i="${i}"><b>${code(s,vr)}</b><span>${vr.title}</span>${vr.tag?`<small>${vr.tag}</small>`:''}</button>`).join('');
-  chipsEl.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{ s.sel=+b.dataset.i; s.over=null; syncRoom(s); renderAll(false); }));
+  chipsEl.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{ s.sel=+b.dataset.i; s.over=null; s.body=null; syncRoom(s); renderAll(false); }));
 }
 
 /* ---------- карточки ---------- */
@@ -354,13 +368,14 @@ function renderCards(){
       <div class="card-head"><span class="code">${code(s)}</span><h2>${name}${s.type==='tall'?'':' — '+(/^.[а-яё]/.test(vr.title)?vr.title[0].toLowerCase()+vr.title.slice(1):vr.title)}</h2></div>
       <dl class="spec">
         <dt>Размер Ш×В×Г</dt><dd>${s.W} × ${H} × ${s.D} мм</dd>
-        <dt>Цвет</dt><dd>${MATS[fmat(s,vr)].cname}${vr.sideMat?`, боковины — ${MATS[vr.sideMat].cname}`:''}</dd>
+        ${bmat(s,vr)===fmat(s,vr) ? `<dt>Материал</dt><dd>${MATS[fmat(s,vr)].cname}${vr.sideMat?`, боковины — ${MATS[vr.sideMat].cname}`:''}</dd>` : `<dt>Фасады</dt><dd>${MATS[fmat(s,vr)].cname}</dd><dt>Корпус</dt><dd>${MATS[bmat(s,vr)].cname}${vr.sideMat?`, боковины — ${MATS[vr.sideMat].cname}`:''}</dd>`}
         <dt>${s.type==='tall'?'Двери':'Фасады'}</dt><dd>${layout(s,vr).f.length===2&&layout(s,vr).f[0].k==='door'?'2 двери':layout(s,vr).f.length+' '+(layout(s,vr).f.length>1?'ящика':'ящик')}, открывание ${openName(vr.open)}</dd>
         <dt>Высота от пола</dt><dd>${s.type==='tall'?`низ ${s.z0} мм (на коробе), до потолка`:`низ ${s.z0} мм, верх ${s.z0+H} мм + столешница`}</dd>
       </dl>
-      <div class="colors" role="group" aria-label="Цвет ${code(s)}">${COLORS.map(k=>`<button class="sw" id="sw-${s.slot}-${k}" aria-pressed="${fmat(s,vr)===k}" data-slot="${s.slot}" data-c="${k}" title="${MATS[k].cname}"><i style="background:${MATS[k].g==='wood'?`repeating-linear-gradient(95deg,${hex(MATS[k].color)} 0 3px,${shade(MATS[k].color,0.82)} 3px 4px,${hex(MATS[k].color)} 4px 7px)`:hex(MATS[k].color)}"></i>${MATS[k].cname}</button>`).join('')}
+      <div class="seg" role="group" aria-label="Применить материал ${code(s)}">${[['all','Фасады и корпус'],['front','Только фасады'],['body','Только корпус']].map(([t,l])=>`<button class="segb" id="tg-${s.slot}-${t}" data-slot="${s.slot}" data-t="${t}" aria-pressed="${(s.target||'all')===t}">${l}</button>`).join('')}</div>
+      <div class="colors" role="group" aria-label="Цвет ${code(s)}">${COLORS.map(k=>`<button class="sw" id="sw-${s.slot}-${k}" aria-pressed="${((s.target==='body')?bmat(s,vr):fmat(s,vr))===k}" data-slot="${s.slot}" data-c="${k}" title="${MATS[k].cname}"><i style="background:${MATS[k].g==='wood'?`repeating-linear-gradient(95deg,${hex(MATS[k].color)} 0 3px,${shade(MATS[k].color,0.82)} 3px 4px,${hex(MATS[k].color)} 4px 7px)`:hex(MATS[k].color)}"></i>${MATS[k].cname}</button>`).join('')}
         <label class="sw own${(s.over||'').startsWith('custom_')?' on':''}" for="cc-${s.slot}"><input type="color" id="cc-${s.slot}" value="${s.custom?s.custom.hex:'#b7c4c8'}" data-slot="${s.slot}">Свой цвет</label></div>
-      <label class="ownname" for="fl-${s.slot}">Фасады МДФ в плёнке ПВХ<select id="fl-${s.slot}" data-slot="${s.slot}"><option value="">— не выбрано —</option>${[...new Set(FILMS.map(k=>MATS[k].grp))].map(g=>`<optgroup label="${g}">${FILMS.filter(k=>MATS[k].grp===g).map(k=>`<option value="${k}"${fmat(s,vr)===k?' selected':''}>${MATS[k].art} ${esc(MATS[k].name.match(/«(.+)»/)[1])}</option>`).join('')}</optgroup>`).join('')}</select>${MATS[fmat(s,vr)]&&MATS[fmat(s,vr)].g==='film'?`<span class="found">${MATS[fmat(s,vr)].pt? 'Цвет по каталогу: '+MATS[fmat(s,vr)].pt+' — на экране примерно, сверьте с образцом' : 'Оттенок примерный — сверьте с образцом'}</span>`:''}</label>
+      <label class="ownname" for="fl-${s.slot}">МДФ в плёнке ПВХ<select id="fl-${s.slot}" data-slot="${s.slot}"><option value="">— не выбрано —</option>${[...new Set(FILMS.map(k=>MATS[k].grp))].map(g=>`<optgroup label="${g}">${FILMS.filter(k=>MATS[k].grp===g).map(k=>`<option value="${k}"${((s.target==='body')?bmat(s,vr):fmat(s,vr))===k?' selected':''}>${MATS[k].art} ${esc(MATS[k].name.match(/«(.+)»/)[1])}</option>`).join('')}</optgroup>`).join('')}</select>${MATS[fmat(s,vr)]&&MATS[fmat(s,vr)].g==='film'?`<span class="found">${MATS[fmat(s,vr)].pt? 'Цвет по каталогу: '+MATS[fmat(s,vr)].pt+' — на экране примерно, сверьте с образцом' : 'Оттенок примерный — сверьте с образцом'}</span>`:''}</label>
       <label class="ownname" for="cn-${s.slot}">Свой цвет: впишите RAL, артикул Egger или название — цвет подставится сам<input type="text" id="cn-${s.slot}" data-slot="${s.slot}" maxlength="60" autocomplete="off" placeholder="например, RAL 7044, Egger U750, дуб сонома" value="${esc(s.custom?s.custom.name:'')}"><span class="found" id="cf-${s.slot}">${(s.over||'').startsWith('custom_')&&s.custom ? (s.custom.found ? 'Подобрано: '+esc(s.custom.found)+(s.custom.how==='ral'||s.custom.how==='hex'?'':' — оттенок примерный, на экране может отличаться') : 'Не нашёл такой цвет — выберите оттенок кнопкой «Свой цвет»') : ''}</span></label>
       <div class="elev">${elevation(s,vr)}</div>
       ${INTERNAL ? internalCard(s) : ''}`;
@@ -368,23 +383,24 @@ function renderCards(){
   });
   modsEl.querySelectorAll('input[type=color]').forEach(inp=>{
     const s=slots.find(x=>x.slot===inp.dataset.slot);
-    inp.addEventListener('input',()=>{ setCustom(s,inp.value); syncRoom(s); buildScene(); });
-    inp.addEventListener('change',()=>{ setCustom(s,inp.value); if(s.custom){ s.custom.found='выбран вручную '+inp.value.toUpperCase(); s.custom.how='hex'; } syncRoom(s); renderAll(false); });
-    inp.addEventListener('click',()=>{ if(!(s.over||'').startsWith('custom_')){ setCustom(s,inp.value); syncRoom(s); buildScene(); } });
+    inp.addEventListener('input',()=>{ applyMat(s,setCustom(s,inp.value)); syncRoom(s); buildScene(); });
+    inp.addEventListener('change',()=>{ applyMat(s,setCustom(s,inp.value)); if(s.custom){ s.custom.found='выбран вручную '+inp.value.toUpperCase(); s.custom.how='hex'; } syncRoom(s); renderAll(false); });
+    inp.addEventListener('click',()=>{ if(!(s.over||'').startsWith('custom_')){ applyMat(s,setCustom(s,inp.value)); syncRoom(s); buildScene(); } });
   });
   modsEl.querySelectorAll('input[id^="cn-"]').forEach(inp=>{
     const s=slots.find(x=>x.slot===inp.dataset.slot);
     const apply=(full)=>{ const txt=inp.value.slice(0,60); const f=lookupColor(txt);
-      if(!txt.trim()){ if(full){ s.custom=null; if((s.over||'').startsWith('custom_')) s.over=null; syncRoom(s); renderAll(false);} return; }
-      if(f && f.film){ s.custom={hex:f.hex,name:txt,found:f.label,how:'film'}; s.over=f.film; syncRoom(s); if(full) renderAll(false); else buildScene(); const el=document.getElementById('cf-'+s.slot); if(el) el.textContent='Подобрано: '+f.label; return; }
-      setCustom(s, f?f.hex:undefined, txt); s.custom.found=f?f.label:null; s.custom.how=f?f.how:null;
+      if(!txt.trim()){ if(full){ s.custom=null; if((s.over||'').startsWith('custom_')) s.over=null; if((s.body||'').startsWith('custom_')) s.body=null; syncRoom(s); renderAll(false);} return; }
+      if(f && f.film){ s.custom={hex:f.hex,name:txt,found:f.label,how:'film'}; applyMat(s,f.film); syncRoom(s); if(full) renderAll(false); else buildScene(); const el=document.getElementById('cf-'+s.slot); if(el) el.textContent='Подобрано: '+f.label; return; }
+      applyMat(s,setCustom(s, f?f.hex:undefined, txt)); s.custom.found=f?f.label:null; s.custom.how=f?f.how:null;
       const el=document.getElementById('cf-'+s.slot); if(el) el.textContent = f ? 'Подобрано: '+f.label+(f.how==='ral'||f.how==='hex'?'':' — оттенок примерный, на экране может отличаться') : 'Не нашёл такой цвет — выберите оттенок кнопкой «Свой цвет»';
       syncRoom(s); if(full) renderAll(false); else buildScene(); };
     let tm; inp.addEventListener('input',()=>{ clearTimeout(tm); tm=setTimeout(()=>apply(false),350); });
     inp.addEventListener('change',()=>apply(true));
   });
-  modsEl.querySelectorAll('select[id^="fl-"]').forEach(sel=>sel.addEventListener('change',()=>{ const s=slots.find(x=>x.slot===sel.dataset.slot); s.over = sel.value || null; if(s.over===cur(s).mat) s.over=null; syncRoom(s); renderAll(false); }));
-  modsEl.querySelectorAll('button.sw').forEach(b=>b.addEventListener('click',()=>{ const s=slots.find(x=>x.slot===b.dataset.slot); s.over = b.dataset.c===cur(s).mat ? null : b.dataset.c; syncRoom(s); renderAll(false); }));
+  modsEl.querySelectorAll('select[id^="fl-"]').forEach(sel=>sel.addEventListener('change',()=>{ const s=slots.find(x=>x.slot===sel.dataset.slot); if(sel.value) applyMat(s,sel.value); else if(s.target==='body') s.body=null; else s.over=null; syncRoom(s); renderAll(false); }));
+  modsEl.querySelectorAll('button.sw').forEach(b=>b.addEventListener('click',()=>{ const s=slots.find(x=>x.slot===b.dataset.slot); applyMat(s,b.dataset.c); syncRoom(s); renderAll(false); }));
+  modsEl.querySelectorAll('button.segb').forEach(b=>b.addEventListener('click',()=>{ const s=slots.find(x=>x.slot===b.dataset.slot); s.target=b.dataset.t; renderCards(); }));
   modsEl.querySelectorAll('input[data-slot]').forEach(inp=>inp.addEventListener('change',e=>{
     const s=slots.find(x=>x.slot===e.target.dataset.slot), v=parseFloat(e.target.value);
     if(isFinite(v)&&v>0){ s[e.target.dataset.k]=v; renderAll(false); }
@@ -463,15 +479,15 @@ function boxMesh(x0,y0,z0,x1,y1,z1,color,role,metal){
   mesh.userData.role=role; return mesh;
 }
 function buildModule(s,ox){
-  const vr=cur(s), g=new THREE.Group(), H=hgt(s), W=s.W, Dc=s.D-T, col={c:MATS[fmat(s,vr)].color,t:texKind(fmat(s,vr))}, sc={c:MATS[vr.sideMat||fmat(s,vr)].color,t:texKind(vr.sideMat||fmat(s,vr))}, y0=s.z0, L=layout(s,vr);
+  const vr=cur(s), g=new THREE.Group(), H=hgt(s), W=s.W, Dc=s.D-T, col={c:MATS[fmat(s,vr)].color,t:texKind(fmat(s,vr))}, bc={c:MATS[bmat(s,vr)].color,t:texKind(bmat(s,vr))}, sc={c:MATS[vr.sideMat||bmat(s,vr)].color,t:texKind(vr.sideMat||bmat(s,vr))}, y0=s.z0, L=layout(s,vr);
   const B=(a,b,c,d,e,f,cl,r,m)=>g.add(boxMesh(ox+a,y0+b,c,ox+d,y0+e,f,cl,r,m));
   B(0,0,0,T,H,Dc,sc,'corpus'); B(W-T,0,0,W,H,Dc,sc,'corpus');
   if(s.type==='tall'){
-    B(T,0,0,W-T,T,Dc,col,'corpus'); B(T,H-T,0,W-T,H,Dc,col,'corpus');
-    const ns=nShelves(H); for(let i=1;i<=ns;i++){const y=H*i/(ns+1); B(T+1,y-T/2,0,W-T-1,y+T/2,Dc-20,col,'corpus');}
+    B(T,0,0,W-T,T,Dc,bc,'corpus'); B(T,H-T,0,W-T,H,Dc,bc,'corpus');
+    const ns=nShelves(H); for(let i=1;i<=ns;i++){const y=H*i/(ns+1); B(T+1,y-T/2,0,W-T-1,y+T/2,Dc-20,bc,'corpus');}
     B(2,2,-3,W-2,H-2,0,MATS.hdf.color,'corpus');
   } else {
-    B(T,0,0,W-T,T,Dc,col,'corpus'); B(T,H-100,0,W-T,H,T,col,'corpus');
+    B(T,0,0,W-T,T,Dc,bc,'corpus'); B(T,H-100,0,W-T,H,T,bc,'corpus');
     const top=boxMesh(ox-5,y0+H,0,ox+W+5,y0+H+20,s.D+10,0xf2efe9,'room'); g.add(top);
     g.add(boxMesh(ox+W/2-200,y0+H+20,120,ox+W/2+200,y0+H+24,s.D-40,0xe6e2da,'room'));
   }
