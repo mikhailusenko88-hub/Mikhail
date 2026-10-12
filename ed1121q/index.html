@@ -69,6 +69,14 @@ tr.sel td{background:var(--brass-soft)}
 .sw{font:500 12.5px var(--f-body);display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:5px 9px 5px 5px;border-radius:999px;cursor:pointer}
 .sw i{width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.18);flex:none}
 .sw[aria-pressed="true"]{border-color:var(--brass);background:var(--brass-soft);box-shadow:inset 0 0 0 1px var(--brass)}
+.sw.own{position:relative}
+.sw.own input{width:22px;height:22px;padding:0;border:none;border-radius:50%;background:none;cursor:pointer}
+.sw.own input::-webkit-color-swatch-wrapper{padding:0}
+.sw.own input::-webkit-color-swatch{border:1px solid rgba(0,0,0,.18);border-radius:50%}
+.sw.own input::-moz-color-swatch{border:1px solid rgba(0,0,0,.18);border-radius:50%}
+.sw.on{border-color:var(--brass);background:var(--brass-soft);box-shadow:inset 0 0 0 1px var(--brass)}
+.ownname{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.ownname input{font:500 14px var(--f-body);padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
 .hw{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:3px}
 .notes{font-size:13px;color:var(--muted);margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
 .assume{background:var(--brass-soft);border-radius:12px;padding:12px 16px;font-size:13.5px}
@@ -88,7 +96,7 @@ summary{cursor:pointer;font-weight:600}
 <div class="wrap">
   <header>
     <h1>Мебель санузлов — квартира 2209</h1>
-    <p class="sub">Подвесные тумбы под раковину и шкафы над инсталляциями. Размеры в миллиметрах, модель можно вращать пальцем. Для тумб есть несколько вариантов, у каждого модуля можно выбрать цвет — всё переключается кнопками.</p>
+    <p class="sub">Подвесные тумбы под раковину и шкафы над инсталляциями. Размеры в миллиметрах, модель можно вращать пальцем. Для тумб есть несколько вариантов, у каждого модуля можно выбрать цвет из палитры или задать свой — всё переключается кнопками.</p>
   </header>
 
 
@@ -136,6 +144,19 @@ const MATS = {
 };
 const COLORS = Object.keys(MATS).filter(k=>MATS[k].g!=='inner');
 const hex = c => '#'+c.toString(16).padStart(6,'0');
+const esc = t => String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function setCustom(s, hx, name){
+  const k='custom_'+s.slot; s.custom={hex:hx||(s.custom&&s.custom.hex)||'#b7c4c8', name: name!==undefined?name:((s.custom&&s.custom.name)||'')};
+  const nm=s.custom.name.trim();
+  MATS[k]={name:'ЛДСП 18 мм, свой цвет: '+(nm||s.custom.hex), cname: nm ? nm+' (свой цвет)' : 'свой цвет '+s.custom.hex, color:parseInt(s.custom.hex.slice(1),16), g:'custom'};
+  s.over=k;
+}
+const STORE='mebel-choice-'+location.pathname;
+function saveChoice(){ try{ localStorage.setItem(STORE, JSON.stringify(slots.map(s=>({slot:s.slot,sel:s.sel,over:s.over||null,custom:s.custom||null})))); }catch(e){} }
+function loadChoice(){ try{ const d=JSON.parse(localStorage.getItem(STORE)||'null'); if(!Array.isArray(d)) return;
+  d.forEach(x=>{ const s=slots.find(y=>y.slot===x.slot); if(!s) return; if(x.sel>=0 && x.sel<s.variants.length) s.sel=x.sel;
+    if(x.custom && /^#[0-9a-f]{6}$/i.test(x.custom.hex)) { setCustom(s,x.custom.hex,String(x.custom.name||'').slice(0,60)); }
+    s.over = (x.over && MATS[x.over]) ? x.over : null; }); }catch(e){} }
 
 const slots = [
   {slot:'М1', room:'master', type:'vanity', W:740, H:450, D:460, z0:380, sel:0, variants:[
@@ -227,12 +248,21 @@ function renderCards(){
         <dt>${s.type==='tall'?'Двери':'Фасады'}</dt><dd>${layout(s,vr).f.length===2&&layout(s,vr).f[0].k==='door'?'2 двери':layout(s,vr).f.length+' '+(layout(s,vr).f.length>1?'ящика':'ящик')}, открывание ${openName(vr.open)}</dd>
         <dt>Высота от пола</dt><dd>${s.type==='tall'?`низ ${s.z0} мм (на коробе), до потолка`:`низ ${s.z0} мм, верх ${s.z0+H} мм + столешница`}</dd>
       </dl>
-      <div class="colors" role="group" aria-label="Цвет ${code(s)}">${COLORS.map(k=>`<button class="sw" id="sw-${s.slot}-${k}" aria-pressed="${fmat(s,vr)===k}" data-slot="${s.slot}" data-c="${k}" title="${MATS[k].cname}"><i style="background:${hex(MATS[k].color)}"></i>${MATS[k].cname}</button>`).join('')}</div>
+      <div class="colors" role="group" aria-label="Цвет ${code(s)}">${COLORS.map(k=>`<button class="sw" id="sw-${s.slot}-${k}" aria-pressed="${fmat(s,vr)===k}" data-slot="${s.slot}" data-c="${k}" title="${MATS[k].cname}"><i style="background:${hex(MATS[k].color)}"></i>${MATS[k].cname}</button>`).join('')}
+        <label class="sw own${(s.over||'').startsWith('custom_')?' on':''}" for="cc-${s.slot}"><input type="color" id="cc-${s.slot}" value="${s.custom?s.custom.hex:'#b7c4c8'}" data-slot="${s.slot}">Свой цвет</label></div>
+      ${(s.over||'').startsWith('custom_')?`<label class="ownname" for="cn-${s.slot}">Название или артикул цвета (необязательно)<input type="text" id="cn-${s.slot}" data-slot="${s.slot}" maxlength="60" placeholder="например, Egger U750 или RAL 7044" value="${esc(s.custom.name)}"></label>`:''}
       <div class="elev">${elevation(s,vr)}</div>
       ${INTERNAL ? internalCard(s) : ''}`;
     modsEl.appendChild(card);
   });
-  modsEl.querySelectorAll('.sw').forEach(b=>b.addEventListener('click',()=>{ const s=slots.find(x=>x.slot===b.dataset.slot); s.over = b.dataset.c===cur(s).mat ? null : b.dataset.c; renderAll(false); }));
+  modsEl.querySelectorAll('input[type=color]').forEach(inp=>{
+    const s=slots.find(x=>x.slot===inp.dataset.slot);
+    inp.addEventListener('input',()=>{ setCustom(s,inp.value); buildScene(); });
+    inp.addEventListener('change',()=>{ setCustom(s,inp.value); renderAll(false); });
+    inp.addEventListener('click',()=>{ if(!(s.over||'').startsWith('custom_')){ setCustom(s,inp.value); buildScene(); } });
+  });
+  modsEl.querySelectorAll('input[id^="cn-"]').forEach(inp=>inp.addEventListener('change',()=>{ const s=slots.find(x=>x.slot===inp.dataset.slot); setCustom(s,undefined,inp.value.slice(0,60)); renderAll(false); }));
+  modsEl.querySelectorAll('button.sw').forEach(b=>b.addEventListener('click',()=>{ const s=slots.find(x=>x.slot===b.dataset.slot); s.over = b.dataset.c===cur(s).mat ? null : b.dataset.c; renderAll(false); }));
   modsEl.querySelectorAll('input[data-slot]').forEach(inp=>inp.addEventListener('change',e=>{
     const s=slots.find(x=>x.slot===e.target.dataset.slot), v=parseFloat(e.target.value);
     if(isFinite(v)&&v>0){ s[e.target.dataset.k]=v; renderAll(false); }
@@ -336,10 +366,12 @@ document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
   renderAll(true);
 }));
 function renderAll(view){
+  saveChoice();
   renderChips(); renderCards(); buildScene(); if(view) resetView();
   if(INTERNAL) renderCalc();
 }
 if(!INTERNAL){ document.getElementById('t-xray').hidden=true; }
+loadChoice();
 resize(); renderAll(true);
 </script>
 
