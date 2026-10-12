@@ -65,6 +65,10 @@ td.n,th.n{text-align:right;font-family:var(--f-mono);white-space:nowrap}
 td.c{font-family:var(--f-mono);font-weight:500;color:var(--brass);white-space:nowrap}
 tr.tot td{font-weight:700;border-bottom:none;font-size:14px}
 tr.sel td{background:var(--brass-soft)}
+.colors{display:flex;flex-wrap:wrap;gap:6px}
+.sw{font:500 12.5px var(--f-body);display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:5px 9px 5px 5px;border-radius:999px;cursor:pointer}
+.sw i{width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.18);flex:none}
+.sw[aria-pressed="true"]{border-color:var(--brass);background:var(--brass-soft);box-shadow:inset 0 0 0 1px var(--brass)}
 .hw{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:3px}
 .notes{font-size:13px;color:var(--muted);margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
 .assume{background:var(--brass-soft);border-radius:12px;padding:12px 16px;font-size:13.5px}
@@ -84,7 +88,7 @@ summary{cursor:pointer;font-weight:600}
 <div class="wrap">
   <header>
     <h1>Мебель санузлов — квартира 2209</h1>
-    <p class="sub">Подвесные тумбы под раковину и шкафы над инсталляциями. Размеры в миллиметрах, модель можно вращать пальцем. Для тумб есть несколько вариантов — переключаются кнопками над моделью.</p>
+    <p class="sub">Подвесные тумбы под раковину и шкафы над инсталляциями. Размеры в миллиметрах, модель можно вращать пальцем. Для тумб есть несколько вариантов, у каждого модуля можно выбрать цвет — всё переключается кнопками.</p>
   </header>
 
 
@@ -118,13 +122,20 @@ summary{cursor:pointer;font-weight:600}
 const T = 18;
 
 const MATS = {
-  oak:     {name:'ЛДСП 18 мм, дуб (декор уточнить по образцу)', cname:'дуб', color:0xa77b52},
-  sage:    {name:'ЛДСП 18 мм Egger U638 ST9 «Зелёный шалфей»', cname:'зелёный шалфей', color:0x8b9a87},
-  white:   {name:'ЛДСП 18 мм Egger W1100 ST9 «Альпийский белый»', cname:'белый матовый', color:0xf2f1ec},
-  graphite:{name:'ЛДСП 18 мм Egger U961 ST2 «Графит чёрный»', cname:'графит', color:0x3a3c3d},
-  white16: {name:'ЛДСП 16 мм белая (ящики)', cname:'белый', color:0xeeeeea},
-  hdf:     {name:'ХДФ 3 мм белая', cname:'белый', color:0xe9e9e6}
+  white:   {name:'ЛДСП 18 мм Egger W1100 ST9 «Альпийский белый»', cname:'белый', color:0xf2f1ec, g:'white'},
+  cashmere:{name:'ЛДСП 18 мм Egger U702 ST9 «Кашемир серый»', cname:'кашемир', color:0xd6cfc4, g:'uni'},
+  stone:   {name:'ЛДСП 18 мм Egger U727 ST9 «Серый камень»', cname:'серый камень', color:0xa9a59e, g:'uni'},
+  sage:    {name:'ЛДСП 18 мм Egger U638 ST9 «Зелёный шалфей»', cname:'зелёный шалфей', color:0x8b9a87, g:'uni'},
+  graphite:{name:'ЛДСП 18 мм Egger U961 ST2 «Графит чёрный»', cname:'графит', color:0x3a3c3d, g:'uni'},
+  oak:     {name:'ЛДСП 18 мм «Дуб Кассела»', cname:'дуб Кассела', color:0xa77b52, g:'wood'},
+  oaklight:{name:'ЛДСП 18 мм Egger H3309 ST28 «Дуб Гладстоун песочный»', cname:'дуб светлый песочный', color:0xc9ab84, g:'wood'},
+  oaknat:  {name:'ЛДСП 18 мм Egger H1145 ST10 «Дуб Бардолино натуральный»', cname:'дуб натуральный', color:0xb08a5e, g:'wood'},
+  oakdark: {name:'ЛДСП 18 мм Egger H1180 ST37 «Дуб Галифакс табак»', cname:'дуб тёмный табак', color:0x7a5638, g:'wood'},
+  white16: {name:'ЛДСП 16 мм белая (ящики)', cname:'белый', color:0xeeeeea, g:'inner'},
+  hdf:     {name:'ХДФ 3 мм белая', cname:'белый', color:0xe9e9e6, g:'inner'}
 };
+const COLORS = Object.keys(MATS).filter(k=>MATS[k].g!=='inner');
+const hex = c => '#'+c.toString(16).padStart(6,'0');
 
 const slots = [
   {slot:'М1', room:'master', type:'vanity', W:740, H:450, D:460, z0:380, sel:0, variants:[
@@ -145,6 +156,7 @@ const slots = [
 
 const r1 = v => Math.round(v*10)/10;
 const cur = s => s.variants[s.sel];
+const fmat = (s,vr) => (vr===cur(s) && s.over) || vr.mat;
 const code = (s,vr) => s.slot + ((vr||cur(s)).v ? '-'+(vr||cur(s)).v : '');
 function hgt(s){ return s.type==='tall' ? s.ceil - 10 - s.z0 : s.H; }
 function nShelves(H){ return Math.max(1, Math.round(H/380)-1); }
@@ -197,7 +209,7 @@ const chipsEl=document.getElementById('chips');
 function renderChips(){
   const s=roomSlots().find(x=>x.variants.length>1);
   chipsEl.innerHTML=s.variants.map((vr,i)=>`<button class="chip" id="chip-${s.slot}-${i}" aria-pressed="${i===s.sel}" data-i="${i}"><b>${code(s,vr)}</b><span>${vr.title}</span>${vr.tag?`<small>${vr.tag}</small>`:''}</button>`).join('');
-  chipsEl.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{ s.sel=+b.dataset.i; renderAll(false); }));
+  chipsEl.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{ s.sel=+b.dataset.i; s.over=null; renderAll(false); }));
 }
 
 /* ---------- карточки ---------- */
@@ -211,14 +223,16 @@ function renderCards(){
       <div class="card-head"><span class="code">${code(s)}</span><h2>${name}${s.type==='tall'?'':' — '+vr.title.toLowerCase()}</h2></div>
       <dl class="spec">
         <dt>Размер Ш×В×Г</dt><dd>${s.W} × ${H} × ${s.D} мм</dd>
-        <dt>Цвет</dt><dd>${MATS[vr.mat].cname}${vr.sideMat?`, боковины — ${MATS[vr.sideMat].cname}`:''}</dd>
+        <dt>Цвет</dt><dd>${MATS[fmat(s,vr)].cname}${vr.sideMat?`, боковины — ${MATS[vr.sideMat].cname}`:''}</dd>
         <dt>${s.type==='tall'?'Двери':'Фасады'}</dt><dd>${layout(s,vr).f.length===2&&layout(s,vr).f[0].k==='door'?'2 двери':layout(s,vr).f.length+' '+(layout(s,vr).f.length>1?'ящика':'ящик')}, открывание ${openName(vr.open)}</dd>
         <dt>Высота от пола</dt><dd>${s.type==='tall'?`низ ${s.z0} мм (на коробе), до потолка`:`низ ${s.z0} мм, верх ${s.z0+H} мм + столешница`}</dd>
       </dl>
+      <div class="colors" role="group" aria-label="Цвет ${code(s)}">${COLORS.map(k=>`<button class="sw" id="sw-${s.slot}-${k}" aria-pressed="${fmat(s,vr)===k}" data-slot="${s.slot}" data-c="${k}" title="${MATS[k].cname}"><i style="background:${hex(MATS[k].color)}"></i>${MATS[k].cname}</button>`).join('')}</div>
       <div class="elev">${elevation(s,vr)}</div>
       ${INTERNAL ? internalCard(s) : ''}`;
     modsEl.appendChild(card);
   });
+  modsEl.querySelectorAll('.sw').forEach(b=>b.addEventListener('click',()=>{ const s=slots.find(x=>x.slot===b.dataset.slot); s.over = b.dataset.c===cur(s).mat ? null : b.dataset.c; renderAll(false); }));
   modsEl.querySelectorAll('input[data-slot]').forEach(inp=>inp.addEventListener('change',e=>{
     const s=slots.find(x=>x.slot===e.target.dataset.slot), v=parseFloat(e.target.value);
     if(isFinite(v)&&v>0){ s[e.target.dataset.k]=v; renderAll(false); }
@@ -241,14 +255,14 @@ const state={fronts:true,xray:false,room:true};
 
 function boxMesh(x0,y0,z0,x1,y1,z1,color,role,metal){
   const g=new THREE.BoxGeometry(Math.max(.001,(x1-x0)/1000),Math.max(.001,(y1-y0)/1000),Math.max(.001,(z1-z0)/1000));
-  const mat=new THREE.MeshStandardMaterial({color,roughness:metal?.32:.75,metalness:metal?.85:0,transparent:true,opacity:1});
+  const mat=new THREE.MeshStandardMaterial({color,roughness:metal?.35:.75,metalness:metal?.25:0,emissive:metal?0x5a4318:0x000000,transparent:true,opacity:1});
   const mesh=new THREE.Mesh(g,mat);
   mesh.position.set((x0+x1)/2000,(y0+y1)/2000,(z0+z1)/2000);
   if(!metal) mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0x2b302e,transparent:true,opacity:.35})));
   mesh.userData.role=role; return mesh;
 }
 function buildModule(s,ox){
-  const vr=cur(s), g=new THREE.Group(), H=hgt(s), W=s.W, Dc=s.D-T, col=MATS[vr.mat].color, sc=MATS[vr.sideMat||vr.mat].color, y0=s.z0, L=layout(s,vr);
+  const vr=cur(s), g=new THREE.Group(), H=hgt(s), W=s.W, Dc=s.D-T, col=MATS[fmat(s,vr)].color, sc=MATS[vr.sideMat||fmat(s,vr)].color, y0=s.z0, L=layout(s,vr);
   const B=(a,b,c,d,e,f,cl,r,m)=>g.add(boxMesh(ox+a,y0+b,c,ox+d,y0+e,f,cl,r,m));
   B(0,0,0,T,H,Dc,sc,'corpus'); B(W-T,0,0,W,H,Dc,sc,'corpus');
   if(s.type==='tall'){
@@ -262,7 +276,7 @@ function buildModule(s,ox){
     const top=boxMesh(ox-5,y0+H,0,ox+W+5,y0+H+20,s.D+10,0xf2efe9,'room'); g.add(top);
     g.add(boxMesh(ox+W/2-200,y0+H+20,120,ox+W/2+200,y0+H+24,s.D-40,0xe6e2da,'room'));
   }
-  L.gold.forEach(gd=>{ B(T,gd.y0,Dc-22,W-T,gd.y1,Dc,0xc9a45c,'gold',true); B(T,gd.y1-3,Dc-22,W-T,gd.y1,s.D-4,0xc9a45c,'gold',true); });
+  L.gold.forEach(gd=>{ B(T,gd.y0,Dc-22,W-T,gd.y1,Dc,0xd9b46a,'gold',true); B(T,gd.y1-3,Dc-22,W-T,gd.y1,s.D-4,0xd9b46a,'gold',true); });
   L.f.forEach(fr=>B(fr.x0,fr.y0,Dc,fr.x1,fr.y1,s.D,col,'front'));
   labelDefs.push({p:[ox+W/2,y0+H+(s.type==='tall'?-60:120),s.D+20],t:code(s),s:`${W}×${H}×${s.D}`});
   return g;
