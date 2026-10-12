@@ -81,6 +81,7 @@ tr.sel td{background:var(--brass-soft)}
 .sw.on{border-color:var(--brass);background:var(--brass-soft);box-shadow:inset 0 0 0 1px var(--brass)}
 .ownname{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
 .ownname .found{font-size:12.5px;color:var(--brass);min-height:1em}
+.ownname select{font:500 14px var(--f-body);padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
 .ownname input{font:500 14px var(--f-body);padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
 .hw{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:3px}
 .notes{font-size:13px;color:var(--muted);margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
@@ -146,10 +147,53 @@ const MATS = {
   oaklight:{name:'ЛДСП 18 мм Egger H3309 ST28 «Дуб Гладстоун песочный»', cname:'дуб светлый песочный', color:0xc9ab84, g:'wood'},
   oaknat:  {name:'ЛДСП 18 мм Egger H1145 ST10 «Дуб Бардолино натуральный»', cname:'дуб натуральный', color:0xb08a5e, g:'wood'},
   oakdark: {name:'ЛДСП 18 мм Egger H1181 ST37 «Дуб Галифакс табак»', cname:'дуб тёмный табак', color:0x7a5638, g:'wood'},
+  film_SF01: {name:'МДФ в плёнке ПВХ SF-01 «Милк»', cname:'плёнка SF-01 Милк', color:0xf1f0ea, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-01', t:null},
+  film_SF03: {name:'МДФ в плёнке ПВХ SF-03 «Тирамиссу»', cname:'плёнка SF-03 Тирамиссу', color:0xcdb9a1, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-03', t:null},
+  film_SF04: {name:'МДФ в плёнке ПВХ SF-04 «Мокко»', cname:'плёнка SF-04 Мокко', color:0x8a7262, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-04', t:null},
+  film_SF011: {name:'МДФ в плёнке ПВХ SF-011 «Нарцисс»', cname:'плёнка SF-011 Нарцисс', color:0xebd9a6, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-011', t:null},
+  film_SF012: {name:'МДФ в плёнке ПВХ SF-012 «Орхидея»', cname:'плёнка SF-012 Орхидея', color:0xc8a9c3, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-012', t:null},
+  film_SF016: {name:'МДФ в плёнке ПВХ SF-016 «Манго»', cname:'плёнка SF-016 Манго', color:0xe5a65a, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-016', t:null},
+  film_SF017: {name:'МДФ в плёнке ПВХ SF-017 «Мята»', cname:'плёнка SF-017 Мята', color:0xbfd8c8, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-017', t:null},
+  film_SF018: {name:'МДФ в плёнке ПВХ SF-018 «Фиалка»', cname:'плёнка SF-018 Фиалка', color:0x8c7fa6, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-018', t:null},
+  film_SF019: {name:'МДФ в плёнке ПВХ SF-019 «Графит»', cname:'плёнка SF-019 Графит', color:0x5f6062, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-019', t:null},
+  film_SF022: {name:'МДФ в плёнке ПВХ SF-022 «Сантьяго»', cname:'плёнка SF-022 Сантьяго', color:0xb9b3a8, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-022', t:null},
+  film_SF023: {name:'МДФ в плёнке ПВХ SF-023 «Палома»', cname:'плёнка SF-023 Палома', color:0xcdc6bd, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-023', t:null},
+  film_SF024: {name:'МДФ в плёнке ПВХ SF-024 «Фисташка»', cname:'плёнка SF-024 Фисташка', color:0xb4c2a0, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-024', t:null},
+  film_SF025: {name:'МДФ в плёнке ПВХ SF-025 «Айрон»', cname:'плёнка SF-025 Айрон', color:0x7a7c7d, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-025', t:null},
+  film_SF026: {name:'МДФ в плёнке ПВХ SF-026 «Роза»', cname:'плёнка SF-026 Роза', color:0xd9a9a6, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-026', t:null},
+  film_SF027: {name:'МДФ в плёнке ПВХ SF-027 «Лотос»', cname:'плёнка SF-027 Лотос', color:0xe3c8c0, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-027', t:null},
+  film_SF028: {name:'МДФ в плёнке ПВХ SF-028 «Аконит»', cname:'плёнка SF-028 Аконит', color:0x6c6f8f, g:'film', grp:'Soft touch, матовые однотонные', art:'SF-028', t:null},
+  film_DM10117: {name:'МДФ в плёнке ПВХ DM101-17 «Белый шагрень»', cname:'плёнка DM101-17 Белый шагрень', color:0xf2f1ec, g:'film', grp:'Матовые', art:'DM101-17', t:null},
+  film_JD5M4001: {name:'МДФ в плёнке ПВХ JD5M4001 «Белая»', cname:'плёнка JD5M4001 Белая', color:0xf4f4f2, g:'film', grp:'Матовые', art:'JD5M4001', t:null},
+  film_BS2582G03: {name:'МДФ в плёнке ПВХ BS2582G-03 «Ваниль»', cname:'плёнка BS2582G-03 Ваниль', color:0xefe3c4, g:'film', grp:'Матовые', art:'BS2582G-03', t:null},
+  film_JS901328: {name:'МДФ в плёнке ПВХ JS9013-28 «Чёрная матовая»', cname:'плёнка JS9013-28 Чёрная матовая', color:0x1e1e1e, g:'film', grp:'Матовые', art:'JS9013-28', t:null},
+  film_AL01: {name:'МДФ в плёнке ПВХ AL-01 «Агератум»', cname:'плёнка AL-01 Агератум', color:0xf1f0ec, g:'film', grp:'Alda', art:'AL-01', t:null},
+  film_SE006: {name:'МДФ в плёнке ПВХ SE-006 «Харро»', cname:'плёнка SE-006 Харро', color:0x9e9c98, g:'film', grp:'Stone', art:'SE-006', t:'concrete'},
+  film_E1201H8P: {name:'МДФ в плёнке ПВХ E1201-H8P «Акация светлая»', cname:'плёнка E1201-H8P Акация светлая', color:0xc9a97e, g:'film', grp:'Дерево, матовые', art:'E1201-H8P', t:'wood'},
+  film_E1202H8P: {name:'МДФ в плёнке ПВХ E1202-H8P «Акация тёмная»', cname:'плёнка E1202-H8P Акация тёмная', color:0x8a5c3a, g:'film', grp:'Дерево, матовые', art:'E1202-H8P', t:'wood'},
+  film_A3101H9P: {name:'МДФ в плёнке ПВХ A3101-H9P «Лиственница алтайская светлая»', cname:'плёнка A3101-H9P Лиственница алтайская светлая', color:0xd8c3a0, g:'film', grp:'Дерево, матовые', art:'A3101-H9P', t:'wood'},
+  film_A2901H9P: {name:'МДФ в плёнке ПВХ A2901-H9P «Лиственница алтайская тёмная»', cname:'плёнка A2901-H9P Лиственница алтайская тёмная', color:0x8e6a4a, g:'film', grp:'Дерево, матовые', art:'A2901-H9P', t:'wood'},
+  film_1155BD: {name:'МДФ в плёнке ПВХ 1155BD «Белое дерево»', cname:'плёнка 1155BD Белое дерево', color:0xe6e0d4, g:'film', grp:'Дерево, матовые', art:'1155BD', t:'wood'},
+  film_PP101: {name:'МДФ в плёнке ПВХ PP101 «Ванильное дерево»', cname:'плёнка PP101 Ванильное дерево', color:0xe8d9b8, g:'film', grp:'Дерево, матовые', art:'PP101', t:'wood'},
+  film_MBP20502: {name:'МДФ в плёнке ПВХ MBP2050-2 «Бук натуральный»', cname:'плёнка MBP2050-2 Бук натуральный', color:0xc99e6e, g:'film', grp:'Дерево, матовые', art:'MBP2050-2', t:'wood'},
+  film_DC021010: {name:'МДФ в плёнке ПВХ DC0210-10 «Штрокс светлый»', cname:'плёнка DC0210-10 Штрокс светлый', color:0xcdb08a, g:'film', grp:'Дерево, матовые', art:'DC0210-10', t:'wood'},
+  film_3445: {name:'МДФ в плёнке ПВХ 3445 «Ореховый дубослив светлый»', cname:'плёнка 3445 Ореховый дубослив светлый', color:0xb88f6a, g:'film', grp:'Дерево, матовые', art:'3445', t:'wood'},
+  film_2445: {name:'МДФ в плёнке ПВХ 2445 «Ореховый дубослив»', cname:'плёнка 2445 Ореховый дубослив', color:0x8a5e44, g:'film', grp:'Дерево, матовые', art:'2445', t:'wood'},
+  film_5029: {name:'МДФ в плёнке ПВХ 5029 «Дуб тёмный»', cname:'плёнка 5029 Дуб тёмный', color:0x5e4330, g:'film', grp:'Дерево, матовые', art:'5029', t:'wood'},
+  film_201412: {name:'МДФ в плёнке ПВХ 20141-2 «Ольха»', cname:'плёнка 20141-2 Ольха', color:0xc08a5a, g:'film', grp:'Дерево, матовые', art:'20141-2', t:'wood'},
+  film_52602: {name:'МДФ в плёнке ПВХ 52602 «Ясень шимо светлый»', cname:'плёнка 52602 Ясень шимо светлый', color:0xd9c7a8, g:'film', grp:'Дерево, матовые', art:'52602', t:'wood'},
+  film_52601: {name:'МДФ в плёнке ПВХ 52601 «Ясень шимо тёмный»', cname:'плёнка 52601 Ясень шимо тёмный', color:0x6b5546, g:'film', grp:'Дерево, матовые', art:'52601', t:'wood'},
+  film_1998: {name:'МДФ в плёнке ПВХ 1998 «Венге»', cname:'плёнка 1998 Венге', color:0x3e2c22, g:'film', grp:'Дерево, матовые', art:'1998', t:'wood'},
+  film_201931: {name:'МДФ в плёнке ПВХ 201-931 «Венге тёмный седой, структурный»', cname:'плёнка 201-931 Венге тёмный седой, структурный', color:0x4a3e36, g:'film', grp:'Дерево, матовые', art:'201-931', t:'wood'},
+  film_609931: {name:'МДФ в плёнке ПВХ 609-931 «Венге красный, структурный»', cname:'плёнка 609-931 Венге красный, структурный', color:0x5a3326, g:'film', grp:'Дерево, матовые', art:'609-931', t:'wood'},
+  film_DW8026T: {name:'МДФ в плёнке ПВХ DW802-6T «Лазурь металлик»', cname:'плёнка DW802-6T Лазурь металлик', color:0x4b7fa8, g:'film', grp:'Металлики', art:'DW802-6T', t:null},
+  ldsp_tone:{name:'ЛДСП 18 мм в тон плёнки (корпус)', cname:'в тон', color:0xdddddd, g:'inner'},
   white16: {name:'ЛДСП 16 мм белая (ящики)', cname:'белый', color:0xeeeeea, g:'inner'},
   hdf:     {name:'ХДФ 3 мм белая', cname:'белый', color:0xe9e9e6, g:'inner'}
 };
-const COLORS = Object.keys(MATS).filter(k=>MATS[k].g!=='inner');
+const COLORS = Object.keys(MATS).filter(k=>MATS[k].g!=='inner' && MATS[k].g!=='film');
+const FILMS = Object.keys(MATS).filter(k=>MATS[k].g==='film');
+const normArt = a => String(a).toUpperCase().replace(/[^0-9A-Z]/g,'').replace(/^SF0+(\d)/,'SF$1');
 const hex = c => '#'+c.toString(16).padStart(6,'0');
 const esc = t => String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function setCustom(s, hx, name){
@@ -164,6 +208,10 @@ const EGGER_T = Object.fromEntries('W1000:Премиально-белый:F4F3EE
 const WORDS_T = 'дуб кассела:A77B52|дуб сонома:C9A77B|беленый дуб:D9CBB5|белёный дуб:D9CBB5|светлый дуб:D3B98F|темный дуб:6E4E35|тёмный дуб:6E4E35|дуб:B08A5E|венге:3E2C22|орех:7A5638|ясень:D3C2A3|сосна:D8B98A|бук:C99E6E|вишня:8E4B32|тик:8C5E3A|гикори:B58F67|акация:C9AE88|слоновая кость:EDE4CF|айвори:EDE4CF|молочный:EEE8DA|кремовый:EFE6D2|ваниль:F1E6C8|белый:F2F1EC|кашемир:CDC5B9|капучино:B79E85|мокко:6E5446|кофе:5C4636|шоколад:4A3328|бежевый:D8C8AE|песочный:D9CBB2|таупе:8E8378|тауп:8E8378|светло-серый:C9C9C6|тёмно-серый:5B5C5C|темно-серый:5B5C5C|серый:9C9C99|антрацит:3F4244|графит:3A3C3D|черный:1F1F1F|чёрный:1F1F1F|бетон:A7A39C|мрамор:E7E4DF|камень:9C978F|индиго:283245|синий:3E5A7A|голубой:9DB6C8|бирюзовый:5F9EA0|мятный:A9C3B3|шалфей:8B9A87|оливковый:7A7B54|хаки:8B8463|изумрудный:2F5145|зеленый:4F6B55|зелёный:4F6B55|горчичный:C49A3A|желтый:E2C35A|жёлтый:E2C35A|оранжевый:D9772B|терракота:B0624A|бордо:6B2A2F|бордовый:6B2A2F|красный:A3302B|пудровый:D8BDB3|розовый:D3A7A0|лаванда:B3A8C4|сиреневый:A99BB8|фиолетовый:6B4E7A|шампань:D8C59A|золото:C9A45C|золотой:C9A45C|латунь:B08D57|медь:B87333|серебро:B4B4B2|алюминий:B4B4B2|white:F2F1EC|black:1F1F1F|grey:9C9C99|gray:9C9C99|oak:B08A5E|walnut:7A5638|beige:D8C8AE|green:4F6B55|blue:3E5A7A'.split('|').map(x=>x.split(':'));
 function lookupColor(text){
   const t=String(text||'').trim(); if(!t) return null;
+  { const nt=normArt(t); let hit=null; for(const k of FILMS){ const na=normArt(MATS[k].art); if(na.length>=4 && nt.includes(na) && (!hit || na.length>normArt(MATS[hit].art).length)) hit=k; }
+    if(!hit && nt.length>=5) for(const k of FILMS){ if(normArt(MATS[k].art).startsWith(nt)) { hit=k; break; } }
+    if(!hit){ const low0=t.toLowerCase().replace(/ё/g,'е'); if(/пленк|плёнк|мдф|пвх/.test(low0)) for(const k of FILMS){ const nm=MATS[k].name.toLowerCase().replace(/ё/g,'е').match(/«(.+)»/)[1]; if(low0.includes(nm)) { hit=k; break; } } }
+    if(hit) return {hex:hex(MATS[hit].color), how:'film', film:hit, label:MATS[hit].name}; }
   const low=t.toLowerCase().replace(/ё/g,'е');
   let m=t.match(/#?\b([0-9a-f]{6})\b/i); if(m && /#|^[0-9a-f]{6}$/i.test(t)) return {hex:'#'+m[1].toLowerCase(), how:'hex', label:'#'+m[1].toUpperCase()};
   m=low.match(/(?:ral|рал)\s*(?:classic\s*)?(\d{4})/); if(m && RAL_T[m[1]]) return {hex:'#'+RAL_T[m[1]].toLowerCase(), how:'ral', label:'RAL '+m[1]};
@@ -185,6 +233,8 @@ const slots = [
     {v:'А', title:'Дуб, 1 ящик', tag:'как на визуализации', mat:'oak', front:'drawer1', open:'tipon'},
     {v:'Б', title:'Белая, 2 ящика', tag:'верхний ящик неглубокий', mat:'white', front:'drawer2', open:'tipon'},
     {v:'В', title:'Графит, 1 ящик, боковины дуб', tag:'контрастный', mat:'graphite', sideMat:'oak', front:'drawer1', open:'tipon'},
+    {v:'Г', title:'МДФ в плёнке: акация светлая, 1 ящик', tag:'плёнка E1201-H8P', mat:'film_E1201H8P', front:'drawer1', open:'tipon'},
+    {v:'Д', title:'МДФ в плёнке: Милк, 2 ящика', tag:'плёнка SF-01, soft touch', mat:'film_SF01', front:'drawer2', open:'tipon'},
   ]},
   {slot:'М2', room:'master', type:'tall', W:700, D:250, z0:1150, ceil:2600, sel:0, variants:[
     {v:'', title:'Шкаф над инсталляцией, 2 двери', mat:'oak', front:'doors', open:'tipon'}]},
@@ -192,6 +242,8 @@ const slots = [
     {v:'А', title:'Шалфей, 2 двери, золотой профиль', tag:'как на визуализации', mat:'sage', front:'doors', open:'gola'},
     {v:'Б', title:'Шалфей, 2 ящика, золотой профиль', tag:'удобнее доставать', mat:'sage', front:'drawer2', open:'gola'},
     {v:'В', title:'Белая, 2 ящика, золотой профиль', tag:'светлый вариант', mat:'white', front:'drawer2', open:'gola'},
+    {v:'Г', title:'МДФ в плёнке: Фисташка, 2 двери, золотой профиль', tag:'плёнка SF-024, soft touch', mat:'film_SF024', front:'doors', open:'gola'},
+    {v:'Д', title:'МДФ в плёнке: Палома, 2 ящика, золотой профиль', tag:'плёнка SF-023, soft touch', mat:'film_SF023', front:'drawer2', open:'gola'},
   ]},
   {slot:'Г2', room:'guest', type:'tall', W:600, D:250, z0:1150, ceil:2600, sel:0, variants:[
     {v:'', title:'Шкаф над инсталляцией, 2 двери', mat:'sage', front:'doors', open:'tipon'}]},
@@ -263,7 +315,7 @@ function renderCards(){
     const vr=cur(s), H=hgt(s), card=document.createElement('article'); card.className='card';
     const name = s.type==='tall' ? 'Шкаф над инсталляцией' : 'Тумба под раковину';
     card.innerHTML=`
-      <div class="card-head"><span class="code">${code(s)}</span><h2>${name}${s.type==='tall'?'':' — '+vr.title.toLowerCase()}</h2></div>
+      <div class="card-head"><span class="code">${code(s)}</span><h2>${name}${s.type==='tall'?'':' — '+(/^.[а-яё]/.test(vr.title)?vr.title[0].toLowerCase()+vr.title.slice(1):vr.title)}</h2></div>
       <dl class="spec">
         <dt>Размер Ш×В×Г</dt><dd>${s.W} × ${H} × ${s.D} мм</dd>
         <dt>Цвет</dt><dd>${MATS[fmat(s,vr)].cname}${vr.sideMat?`, боковины — ${MATS[vr.sideMat].cname}`:''}</dd>
@@ -272,6 +324,7 @@ function renderCards(){
       </dl>
       <div class="colors" role="group" aria-label="Цвет ${code(s)}">${COLORS.map(k=>`<button class="sw" id="sw-${s.slot}-${k}" aria-pressed="${fmat(s,vr)===k}" data-slot="${s.slot}" data-c="${k}" title="${MATS[k].cname}"><i style="background:${MATS[k].g==='wood'?`repeating-linear-gradient(95deg,${hex(MATS[k].color)} 0 3px,${shade(MATS[k].color,0.82)} 3px 4px,${hex(MATS[k].color)} 4px 7px)`:hex(MATS[k].color)}"></i>${MATS[k].cname}</button>`).join('')}
         <label class="sw own${(s.over||'').startsWith('custom_')?' on':''}" for="cc-${s.slot}"><input type="color" id="cc-${s.slot}" value="${s.custom?s.custom.hex:'#b7c4c8'}" data-slot="${s.slot}">Свой цвет</label></div>
+      <label class="ownname" for="fl-${s.slot}">Фасады МДФ в плёнке ПВХ<select id="fl-${s.slot}" data-slot="${s.slot}"><option value="">— не выбрано —</option>${[...new Set(FILMS.map(k=>MATS[k].grp))].map(g=>`<optgroup label="${g}">${FILMS.filter(k=>MATS[k].grp===g).map(k=>`<option value="${k}"${fmat(s,vr)===k?' selected':''}>${MATS[k].art} ${esc(MATS[k].name.match(/«(.+)»/)[1])}</option>`).join('')}</optgroup>`).join('')}</select></label>
       <label class="ownname" for="cn-${s.slot}">Свой цвет: впишите RAL, артикул Egger или название — цвет подставится сам<input type="text" id="cn-${s.slot}" data-slot="${s.slot}" maxlength="60" autocomplete="off" placeholder="например, RAL 7044, Egger U750, дуб сонома" value="${esc(s.custom?s.custom.name:'')}"><span class="found" id="cf-${s.slot}">${(s.over||'').startsWith('custom_')&&s.custom ? (s.custom.found ? 'Подобрано: '+esc(s.custom.found)+(s.custom.how==='ral'||s.custom.how==='hex'?'':' — оттенок примерный, на экране может отличаться') : 'Не нашёл такой цвет — выберите оттенок кнопкой «Свой цвет»') : ''}</span></label>
       <div class="elev">${elevation(s,vr)}</div>
       ${INTERNAL ? internalCard(s) : ''}`;
@@ -287,12 +340,14 @@ function renderCards(){
     const s=slots.find(x=>x.slot===inp.dataset.slot);
     const apply=(full)=>{ const txt=inp.value.slice(0,60); const f=lookupColor(txt);
       if(!txt.trim()){ if(full){ s.custom=null; if((s.over||'').startsWith('custom_')) s.over=null; renderAll(false);} return; }
+      if(f && f.film){ s.custom={hex:f.hex,name:txt,found:f.label,how:'film'}; s.over=f.film; if(full) renderAll(false); else buildScene(); const el=document.getElementById('cf-'+s.slot); if(el) el.textContent='Подобрано: '+f.label; return; }
       setCustom(s, f?f.hex:undefined, txt); s.custom.found=f?f.label:null; s.custom.how=f?f.how:null;
       const el=document.getElementById('cf-'+s.slot); if(el) el.textContent = f ? 'Подобрано: '+f.label+(f.how==='ral'||f.how==='hex'?'':' — оттенок примерный, на экране может отличаться') : 'Не нашёл такой цвет — выберите оттенок кнопкой «Свой цвет»';
       if(full) renderAll(false); else buildScene(); };
     let tm; inp.addEventListener('input',()=>{ clearTimeout(tm); tm=setTimeout(()=>apply(false),350); });
     inp.addEventListener('change',()=>apply(true));
   });
+  modsEl.querySelectorAll('select[id^="fl-"]').forEach(sel=>sel.addEventListener('change',()=>{ const s=slots.find(x=>x.slot===sel.dataset.slot); s.over = sel.value || null; if(s.over===cur(s).mat) s.over=null; renderAll(false); }));
   modsEl.querySelectorAll('button.sw').forEach(b=>b.addEventListener('click',()=>{ const s=slots.find(x=>x.slot===b.dataset.slot); s.over = b.dataset.c===cur(s).mat ? null : b.dataset.c; renderAll(false); }));
   modsEl.querySelectorAll('input[data-slot]').forEach(inp=>inp.addEventListener('change',e=>{
     const s=slots.find(x=>x.slot===e.target.dataset.slot), v=parseFloat(e.target.value);
@@ -316,7 +371,7 @@ const state={fronts:true,xray:false,room:true,open:false};
 
 /* Фактуры: волокна дерева, бетон, мрамор — рисуются кодом, без картинок */
 function texKind(k){
-  const m=MATS[k]; if(!m) return null; if(m.g==='wood') return 'wood';
+  const m=MATS[k]; if(!m) return null; if(m.g==='wood') return 'wood'; if(m.g==='film') return m.t||null;
   if(m.g!=='custom') return null;
   const t=m.name.toLowerCase().replace(/ё/g,'е');
   if(/мрамор|marble|f812/.test(t)) return 'marble';
