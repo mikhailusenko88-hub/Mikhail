@@ -36,6 +36,10 @@ h3{font-size:.78rem;margin:0;text-transform:uppercase;letter-spacing:.08em;color
 .varbar{display:flex;flex-direction:column;gap:8px}
 button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
 .stage{position:relative;background:var(--stage);border-radius:14px;overflow:hidden;height:min(62vh,520px);min-height:340px;touch-action:none}
+.stage.fs{position:fixed;inset:0;z-index:100;height:100%;min-height:0;max-height:none;border-radius:0;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.stage:fullscreen{height:100%;border-radius:0}
+.stage.fs .toolbar{bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+body.noscroll{overflow:hidden}
 .stage canvas{display:block;width:100%;height:100%}
 .labels{position:absolute;inset:0;pointer-events:none}
 .lbl{position:absolute;transform:translate(-50%,-100%);background:var(--brass);color:#fff;font:600 13px var(--f-mono);padding:3px 8px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.18)}
@@ -120,6 +124,7 @@ summary{cursor:pointer;font-weight:600}
       <button class="tgl" id="t-xray" aria-pressed="false">Прозрачно</button>
       <button class="tgl" id="t-room" aria-pressed="true">Сантехника</button>
       <button class="tgl" id="t-reset" aria-pressed="false">Вид спереди</button>
+      <button class="tgl" id="t-fs" aria-pressed="false">⛶ Во весь экран</button>
     </div>
   </div>
 
@@ -265,7 +270,7 @@ function renderCards(){
         <dt>${s.type==='tall'?'Двери':'Фасады'}</dt><dd>${layout(s,vr).f.length===2&&layout(s,vr).f[0].k==='door'?'2 двери':layout(s,vr).f.length+' '+(layout(s,vr).f.length>1?'ящика':'ящик')}, открывание ${openName(vr.open)}</dd>
         <dt>Высота от пола</dt><dd>${s.type==='tall'?`низ ${s.z0} мм (на коробе), до потолка`:`низ ${s.z0} мм, верх ${s.z0+H} мм + столешница`}</dd>
       </dl>
-      <div class="colors" role="group" aria-label="Цвет ${code(s)}">${COLORS.map(k=>`<button class="sw" id="sw-${s.slot}-${k}" aria-pressed="${fmat(s,vr)===k}" data-slot="${s.slot}" data-c="${k}" title="${MATS[k].cname}"><i style="background:${hex(MATS[k].color)}"></i>${MATS[k].cname}</button>`).join('')}
+      <div class="colors" role="group" aria-label="Цвет ${code(s)}">${COLORS.map(k=>`<button class="sw" id="sw-${s.slot}-${k}" aria-pressed="${fmat(s,vr)===k}" data-slot="${s.slot}" data-c="${k}" title="${MATS[k].cname}"><i style="background:${MATS[k].g==='wood'?`repeating-linear-gradient(95deg,${hex(MATS[k].color)} 0 3px,${shade(MATS[k].color,0.82)} 3px 4px,${hex(MATS[k].color)} 4px 7px)`:hex(MATS[k].color)}"></i>${MATS[k].cname}</button>`).join('')}
         <label class="sw own${(s.over||'').startsWith('custom_')?' on':''}" for="cc-${s.slot}"><input type="color" id="cc-${s.slot}" value="${s.custom?s.custom.hex:'#b7c4c8'}" data-slot="${s.slot}">Свой цвет</label></div>
       <label class="ownname" for="cn-${s.slot}">Свой цвет: впишите RAL, артикул Egger или название — цвет подставится сам<input type="text" id="cn-${s.slot}" data-slot="${s.slot}" maxlength="60" autocomplete="off" placeholder="например, RAL 7044, Egger U750, дуб сонома" value="${esc(s.custom?s.custom.name:'')}"><span class="found" id="cf-${s.slot}">${(s.over||'').startsWith('custom_')&&s.custom ? (s.custom.found ? 'Подобрано: '+esc(s.custom.found)+(s.custom.how==='ral'||s.custom.how==='hex'?'':' — оттенок примерный, на экране может отличаться') : 'Не нашёл такой цвет — выберите оттенок кнопкой «Свой цвет»') : ''}</span></label>
       <div class="elev">${elevation(s,vr)}</div>
@@ -309,16 +314,65 @@ const sun=new THREE.DirectionalLight(0xffffff,0.55); sun.position.set(1.5,3,3); 
 let group=null, labelDefs=[], movers=[];
 const state={fronts:true,xray:false,room:true,open:false};
 
+/* Фактуры: волокна дерева, бетон, мрамор — рисуются кодом, без картинок */
+function texKind(k){
+  const m=MATS[k]; if(!m) return null; if(m.g==='wood') return 'wood';
+  if(m.g!=='custom') return null;
+  const t=m.name.toLowerCase().replace(/ё/g,'е');
+  if(/мрамор|marble|f812/.test(t)) return 'marble';
+  if(/бетон|concrete|f18[67]|камень|stone/.test(t)) return 'concrete';
+  if(/дуб|орех|венге|ясень|сосна|бук|вишн|тик|гикори|акаци|oak|walnut|wood|\bh\d{4}/.test(t)) return 'wood';
+  return null;
+}
+const TEXC={};
+function shade(c,f){ const r=(c>>16)&255,g=(c>>8)&255,b=c&255, k=v=>Math.max(0,Math.min(255,Math.round(v*f))); return `rgb(${k(r)},${k(g)},${k(b)})`; }
+function makeTex(kind,color){
+  const key=kind+color; if(TEXC[key]) return TEXC[key];
+  const cv=document.createElement('canvas'); cv.width=512; cv.height=1024; const x=cv.getContext('2d');
+  let seed=color%9973+7; const rnd=()=>{ seed=(seed*16807)%2147483647; return seed/2147483647; };
+  x.fillStyle=shade(color,1); x.fillRect(0,0,512,1024);
+  if(kind==='wood'){
+    for(let i=0;i<34;i++){ const w=6+rnd()*26; x.fillStyle=shade(color,0.86+rnd()*0.26); x.fillRect(rnd()*512,0,w,1024); }
+    for(let i=0;i<260;i++){ const x0=rnd()*512, amp=2+rnd()*7, ph=rnd()*6, fr=0.004+rnd()*0.01;
+      x.strokeStyle=shade(color, rnd()<0.75 ? 0.68+rnd()*0.16 : 1.1+rnd()*0.1); x.globalAlpha=0.35+rnd()*0.45; x.lineWidth=0.6+rnd()*1.8;
+      x.beginPath(); for(let y=0;y<=1024;y+=16){ const xx=x0+Math.sin(y*fr+ph)*amp; y?x.lineTo(xx,y):x.moveTo(xx,y);} x.stroke(); }
+    x.globalAlpha=1;
+    for(let i=0;i<3;i++){ const cx=rnd()*512, cy=rnd()*1024; for(let r=4;r<40;r+=4){ x.strokeStyle=shade(color,0.7); x.globalAlpha=0.25; x.lineWidth=1; x.beginPath(); x.ellipse(cx,cy,r*0.5,r*0.6,0,0,6.3); x.stroke(); } }
+    x.globalAlpha=1;
+  } else if(kind==='concrete'){
+    for(let i=0;i<60;i++){ x.fillStyle=shade(color,0.94+rnd()*0.12); x.globalAlpha=0.12; x.beginPath(); x.arc(rnd()*512,rnd()*1024,20+rnd()*90,0,6.3); x.fill(); }
+    x.globalAlpha=1; for(let i=0;i<9000;i++){ x.fillStyle=shade(color,0.8+rnd()*0.35); x.fillRect(rnd()*512,rnd()*1024,1.2,1.2); }
+  } else if(kind==='marble'){
+    for(let i=0;i<14;i++){ x.strokeStyle=shade(color, 0.55+rnd()*0.25); x.globalAlpha=0.35+rnd()*0.4; x.lineWidth=0.6+rnd()*2.4;
+      x.beginPath(); let px=rnd()*512, py=0; x.moveTo(px,py); while(py<1024){ px+= (rnd()-0.5)*60; py+= 20+rnd()*50; x.lineTo(px,py);} x.stroke(); }
+    x.globalAlpha=1;
+  }
+  const t=new THREE.CanvasTexture(cv); t.wrapS=t.wrapT=THREE.RepeatWrapping;
+  return TEXC[key]=t;
+}
+/* развёртка в метрах, чтобы рисунок был одного масштаба на всех деталях; волокна вдоль длинной стороны */
+function worldUV(geo,w,h,d,ox,oy,oz){
+  const p=geo.attributes.position, n=geo.attributes.normal, uv=geo.attributes.uv, S=0.5, L=0.25;
+  for(let i=0;i<p.count;i++){
+    const X=p.getX(i)+ox, Y=p.getY(i)+oy, Z=p.getZ(i)+oz, nx=Math.abs(n.getX(i)), ny=Math.abs(n.getY(i));
+    let a,b,la,lb; if(nx>0.5){a=Z;b=Y;la=d;lb=h;} else if(ny>0.5){a=Z;b=X;la=d;lb=w;} else {a=X;b=Y;la=w;lb=h;}
+    if(la>lb){ const t=a; a=b; b=t; }
+    uv.setXY(i,a/S,b/3);
+  }
+  uv.needsUpdate=true;
+}
 function boxMesh(x0,y0,z0,x1,y1,z1,color,role,metal){
+  let tk=null; if(typeof color==='object'){ tk=color.t; color=color.c; }
   const g=new THREE.BoxGeometry(Math.max(.001,(x1-x0)/1000),Math.max(.001,(y1-y0)/1000),Math.max(.001,(z1-z0)/1000));
-  const mat=new THREE.MeshStandardMaterial({color,roughness:metal?.3:.75,metalness:metal?.45:0,emissive:metal?0x3a2a0c:0x000000,transparent:true,opacity:1});
+  const mat=new THREE.MeshStandardMaterial({color: tk?0xffffff:color, map: tk?makeTex(tk,color):null, roughness:metal?.3:(tk==='marble'?.35:.75),metalness:metal?.45:0,emissive:metal?0x3a2a0c:0x000000,transparent:true,opacity:1});
+  if(tk) worldUV(g,(x1-x0)/1000,(y1-y0)/1000,(z1-z0)/1000,(x0+x1)/2000,(y0+y1)/2000,(z0+z1)/2000);
   const mesh=new THREE.Mesh(g,mat);
   mesh.position.set((x0+x1)/2000,(y0+y1)/2000,(z0+z1)/2000);
   if(!metal) mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0x2b302e,transparent:true,opacity:.35})));
   mesh.userData.role=role; return mesh;
 }
 function buildModule(s,ox){
-  const vr=cur(s), g=new THREE.Group(), H=hgt(s), W=s.W, Dc=s.D-T, col=MATS[fmat(s,vr)].color, sc=MATS[vr.sideMat||fmat(s,vr)].color, y0=s.z0, L=layout(s,vr);
+  const vr=cur(s), g=new THREE.Group(), H=hgt(s), W=s.W, Dc=s.D-T, col={c:MATS[fmat(s,vr)].color,t:texKind(fmat(s,vr))}, sc={c:MATS[vr.sideMat||fmat(s,vr)].color,t:texKind(vr.sideMat||fmat(s,vr))}, y0=s.z0, L=layout(s,vr);
   const B=(a,b,c,d,e,f,cl,r,m)=>g.add(boxMesh(ox+a,y0+b,c,ox+d,y0+e,f,cl,r,m));
   B(0,0,0,T,H,Dc,sc,'corpus'); B(W-T,0,0,W,H,Dc,sc,'corpus');
   if(s.type==='tall'){
@@ -413,6 +467,18 @@ function setToggle(id,key){const b=document.getElementById(id); b.addEventListen
 (function(){ const b=document.getElementById('t-open'); b.addEventListener('click',()=>{ state.open=!state.open; b.setAttribute('aria-pressed',state.open); b.textContent=state.open?'Закрыть':'Открыть'; if(state.open && !state.fronts){ state.fronts=true; document.getElementById('t-fronts').setAttribute('aria-pressed','true'); applyState(); } }); })();
 setToggle('t-fronts','fronts'); setToggle('t-xray','xray'); setToggle('t-room','room');
 document.getElementById('t-reset').addEventListener('click',resetView);
+(function(){
+  const b=document.getElementById('t-fs');
+  const setUI=on=>{ stage.classList.toggle('fs',on); document.body.classList.toggle('noscroll',on); b.setAttribute('aria-pressed',on); b.textContent= on ? '✕ Свернуть' : '⛶ Во весь экран'; setTimeout(()=>{ resize(); resetView(); },60); };
+  b.addEventListener('click',()=>{
+    const on=!stage.classList.contains('fs');
+    if(on){ setUI(true); try{ const p=stage.requestFullscreen ? stage.requestFullscreen() : (stage.webkitRequestFullscreen&&stage.webkitRequestFullscreen()); if(p&&p.catch) p.catch(()=>{}); }catch(e){} }
+    else { try{ if(document.fullscreenElement) document.exitFullscreen(); else if(document.webkitFullscreenElement) document.webkitExitFullscreen(); }catch(e){} setUI(false); }
+  });
+  const onChange=()=>{ if(!(document.fullscreenElement||document.webkitFullscreenElement) && stage.classList.contains('fs')) setUI(false); };
+  document.addEventListener('fullscreenchange',onChange); document.addEventListener('webkitfullscreenchange',onChange);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && stage.classList.contains('fs')) setUI(false); });
+})();
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
   room=b.dataset.room; document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-pressed',x===b));
   renderAll(true);
