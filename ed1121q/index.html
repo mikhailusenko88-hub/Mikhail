@@ -76,6 +76,7 @@ tr.sel td{background:var(--brass-soft)}
 .sw.own input::-moz-color-swatch{border:1px solid rgba(0,0,0,.18);border-radius:50%}
 .sw.on{border-color:var(--brass);background:var(--brass-soft);box-shadow:inset 0 0 0 1px var(--brass)}
 .ownname{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.ownname .found{font-size:12.5px;color:var(--brass);min-height:1em}
 .ownname input{font:500 14px var(--f-body);padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
 .hw{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:3px}
 .notes{font-size:13px;color:var(--muted);margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
@@ -138,7 +139,7 @@ const MATS = {
   oak:     {name:'ЛДСП 18 мм «Дуб Кассела»', cname:'дуб Кассела', color:0xa77b52, g:'wood'},
   oaklight:{name:'ЛДСП 18 мм Egger H3309 ST28 «Дуб Гладстоун песочный»', cname:'дуб светлый песочный', color:0xc9ab84, g:'wood'},
   oaknat:  {name:'ЛДСП 18 мм Egger H1145 ST10 «Дуб Бардолино натуральный»', cname:'дуб натуральный', color:0xb08a5e, g:'wood'},
-  oakdark: {name:'ЛДСП 18 мм Egger H1180 ST37 «Дуб Галифакс табак»', cname:'дуб тёмный табак', color:0x7a5638, g:'wood'},
+  oakdark: {name:'ЛДСП 18 мм Egger H1181 ST37 «Дуб Галифакс табак»', cname:'дуб тёмный табак', color:0x7a5638, g:'wood'},
   white16: {name:'ЛДСП 16 мм белая (ящики)', cname:'белый', color:0xeeeeea, g:'inner'},
   hdf:     {name:'ХДФ 3 мм белая', cname:'белый', color:0xe9e9e6, g:'inner'}
 };
@@ -147,15 +148,30 @@ const hex = c => '#'+c.toString(16).padStart(6,'0');
 const esc = t => String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function setCustom(s, hx, name){
   const k='custom_'+s.slot; s.custom={hex:hx||(s.custom&&s.custom.hex)||'#b7c4c8', name: name!==undefined?name:((s.custom&&s.custom.name)||'')};
-  const nm=s.custom.name.trim();
+  const nm=s.custom.name.trim(); s.custom.found = s.custom.found || null;
   MATS[k]={name:'ЛДСП 18 мм, свой цвет: '+(nm||s.custom.hex), cname: nm ? nm+' (свой цвет)' : 'свой цвет '+s.custom.hex, color:parseInt(s.custom.hex.slice(1),16), g:'custom'};
   s.over=k;
+}
+/* Распознавание цвета по названию: RAL, Egger, #hex, слова */
+const RAL_T = Object.fromEntries('1000:CCC58F|1001:D1BC8A|1002:D2B773|1003:F7BA0B|1004:E2B007|1005:C89F04|1006:E1A100|1007:E79C00|1011:AF8A54|1012:D9C022|1013:E9E5CE|1014:DFCEA1|1015:EADEBD|1016:EAF044|1017:F4B752|1018:F3E03B|1019:A4957D|1020:9A9464|1021:EEC900|1023:F0CA00|1024:B89C50|1026:F5FF00|1027:A38C15|1028:FFAB00|1032:DDB20F|1033:FAAB21|1034:EDAB56|1035:A29985|1036:927549|1037:EEA205|2000:DD7907|2001:BE4E20|2002:C63927|2003:FA842B|2004:E75B12|2005:FF2300|2007:FFA421|2008:F3752C|2009:E15501|2010:D4652F|2011:EC7C25|2012:DB6A50|2013:954527|3000:AB2524|3001:A02128|3002:A1232B|3003:8D1D2C|3004:701F29|3005:5E2028|3007:402225|3009:703731|3011:7E292C|3012:CB8D73|3013:9C322E|3014:D47479|3015:E1A6AD|3016:AC4034|3017:D3545F|3018:D14152|3020:C1121C|3022:D56D56|3024:F70000|3026:FF0000|3027:B42041|3028:E72512|3031:AC323B|3032:711521|3033:B24C43|4001:8A5A83|4002:933D50|4003:D15B8F|4004:691639|4005:83639D|4006:992572|4007:4A203B|4008:904684|4009:A38995|4010:C63678|4011:8773A1|4012:6B6880|5000:384C70|5001:1F4764|5002:2B2C7C|5003:2A3756|5004:1D1F2A|5005:154889|5007:41678D|5008:313C48|5009:2E5978|5010:13447C|5011:232C3F|5012:3481B8|5013:232D53|5014:6C7C98|5015:2874B2|5017:0E518D|5018:21888F|5019:1A5784|5020:0B4151|5021:07737A|5022:2F2A5A|5023:4D668E|5024:6A93B0|5025:296478|5026:102C54|6000:327662|6001:28713E|6002:276235|6003:4B573E|6004:0E4243|6005:0F4336|6006:40433B|6007:283424|6008:35382E|6009:26392F|6010:3E753B|6011:68825B|6012:31403D|6013:797C5A|6014:444337|6015:3D403A|6016:026A52|6017:468641|6018:48A43F|6019:B7D9B1|6020:354733|6021:86A47C|6022:3E3C32|6024:008754|6025:53753C|6026:005D52|6027:81C0BB|6028:2D5546|6029:007243|6032:0F8558|6033:478A84|6034:7FB0B2|6035:1B542C|6036:005D4C|6037:25E712|6038:00F700|7000:7E8B92|7001:8F999F|7002:817F68|7003:7A7B6D|7004:9EA0A1|7005:6B716F|7006:756F61|7008:746643|7009:5B6259|7010:575D57|7011:555D61|7012:596163|7013:555548|7015:51565C|7016:373F43|7021:2E3234|7022:4B4D46|7023:818479|7024:474A50|7026:374447|7030:939388|7031:5D6970|7032:B9B9A8|7033:818979|7034:939176|7035:CBD0CC|7036:9A9697|7037:7C7F7E|7038:B4B8B0|7039:6B695F|7040:9DA3A6|7042:8F9695|7043:4E5451|7044:BDBDB2|7045:91969A|7046:82898E|7047:CFD0CF|7048:888175|8000:887142|8001:9C6B30|8002:7B5141|8003:80542F|8004:8F4E35|8007:6F4A2F|8008:6F4F28|8011:5A3A29|8012:673831|8014:49392D|8015:633A34|8016:4C2F26|8017:44322D|8019:3F3A3A|8022:211F20|8023:A65E2F|8024:79553C|8025:755C49|8028:4E3B2B|8029:773C27|9001:EFEBDC|9002:DDDED4|9003:F4F8F4|9004:2E3032|9005:0A0A0D|9006:A5A8A6|9007:8F8F8C|9010:F7F9EF|9011:292C2F|9016:F7FBF5|9017:2A2D2F|9018:CFD3CD|9022:9C9C9C|9023:7E8182'.split('|').map(x=>x.split(':')));
+const EGGER_T = Object.fromEntries('W1000:Премиально-белый:F4F3EE|W1100:Альпийский белый:F2F2EC|W908:Белый базовый:EFEFEA|W980:Платиново-белый:ECEBE6|W1200:Белый фарфор:F0EEE6|U104:Алебастр:EAE5D8|U113:Бежевый хлопок:E3D9C6|U156:Песочный бежевый:D9CBB2|U200:Бежевый:D7C7A9|U702:Кашемир серый:CDC5B9|U705:Ангора серый:BEB8AE|U708:Светло-серый:C9CACA|U727:Серый камень:9C978F|U732:Серый пыльный:8E8C86|U741:Лава серый:5E5953|U750:Таупе серый:A59B8E|U763:Перламутровый серый:B9B8B4|U788:Арктический серый:8F9396|U899:Космос серый:3B3B3B|U960:Оникс серый:4A4C4D|U961:Графит чёрный:3A3C3D|U963:Диамант серый:6A6B6C|U999:Чёрный:1E1E1F|U507:Синий дым:6E8597|U540:Синий деним:4B6A86|U560:Глубокий синий:2D3E55|U599:Индиго:283245|U606:Зелёный лес:3F5446|U636:Зелёный фьорд:7C8A7E|U638:Зелёный шалфей:8B9A87|U645:Зелёный агава:A3AE9A|U655:Зелёный изумруд:2F5145|U311:Бургундский красный:6B2A2F|U323:Красный чили:A3302B|U325:Антик розовый:C79A92|U830:Нуга:B39A80|U818:Тёмно-коричневый:4B3B32|H1145:Дуб Бардолино натуральный:B08A5E|H1146:Дуб Бардолино серый:9C8B79|H1176:Дуб Галифакс белый:D9CBB5|H1180:Дуб Галифакс натуральный:A57B4F|H1181:Дуб Галифакс табак:7A5638|H1318:Дуб дикий натуральный:A97C52|H1344:Дуб Шерман коньяк:8A5E3C|H3303:Дуб Гамильтон натуральный:B88F62|H3309:Дуб Гладстоун песочный:C9AB84|H3325:Дуб Гладстоун табак:7B5E43|H3326:Дуб Гладстоун серо-бежевый:A39280|H3331:Дуб Небраска натуральный:A88563|H1250:Ясень Навара:D8C6A8|H1277:Акация Лейкленд светлая:C9AE88|H3730:Гикори натуральный:B58F67|H3734:Орех Дижон натуральный:8A6446|H3700:Орех Пацифик натуральный:6E4C35|F186:Бетон Чикаго светло-серый:A7A39C|F187:Бетон Чикаго тёмно-серый:6A6762|F812:Мрамор Леванто белый:E7E4DF|F121:Металл антрацит:4A4B4C|F509:Алюминий:B4B4B2'.split('|').map(x=>{const [c,n,h]=x.split(':'); return [c,{n,h}];}));
+const WORDS_T = 'дуб кассела:A77B52|дуб сонома:C9A77B|беленый дуб:D9CBB5|белёный дуб:D9CBB5|светлый дуб:D3B98F|темный дуб:6E4E35|тёмный дуб:6E4E35|дуб:B08A5E|венге:3E2C22|орех:7A5638|ясень:D3C2A3|сосна:D8B98A|бук:C99E6E|вишня:8E4B32|тик:8C5E3A|гикори:B58F67|акация:C9AE88|слоновая кость:EDE4CF|айвори:EDE4CF|молочный:EEE8DA|кремовый:EFE6D2|ваниль:F1E6C8|белый:F2F1EC|кашемир:CDC5B9|капучино:B79E85|мокко:6E5446|кофе:5C4636|шоколад:4A3328|бежевый:D8C8AE|песочный:D9CBB2|таупе:8E8378|тауп:8E8378|светло-серый:C9C9C6|тёмно-серый:5B5C5C|темно-серый:5B5C5C|серый:9C9C99|антрацит:3F4244|графит:3A3C3D|черный:1F1F1F|чёрный:1F1F1F|бетон:A7A39C|мрамор:E7E4DF|камень:9C978F|индиго:283245|синий:3E5A7A|голубой:9DB6C8|бирюзовый:5F9EA0|мятный:A9C3B3|шалфей:8B9A87|оливковый:7A7B54|хаки:8B8463|изумрудный:2F5145|зеленый:4F6B55|зелёный:4F6B55|горчичный:C49A3A|желтый:E2C35A|жёлтый:E2C35A|оранжевый:D9772B|терракота:B0624A|бордо:6B2A2F|бордовый:6B2A2F|красный:A3302B|пудровый:D8BDB3|розовый:D3A7A0|лаванда:B3A8C4|сиреневый:A99BB8|фиолетовый:6B4E7A|шампань:D8C59A|золото:C9A45C|золотой:C9A45C|латунь:B08D57|медь:B87333|серебро:B4B4B2|алюминий:B4B4B2|white:F2F1EC|black:1F1F1F|grey:9C9C99|gray:9C9C99|oak:B08A5E|walnut:7A5638|beige:D8C8AE|green:4F6B55|blue:3E5A7A'.split('|').map(x=>x.split(':'));
+function lookupColor(text){
+  const t=String(text||'').trim(); if(!t) return null;
+  const low=t.toLowerCase().replace(/ё/g,'е');
+  let m=t.match(/#?\b([0-9a-f]{6})\b/i); if(m && /#|^[0-9a-f]{6}$/i.test(t)) return {hex:'#'+m[1].toLowerCase(), how:'hex', label:'#'+m[1].toUpperCase()};
+  m=low.match(/(?:ral|рал)\s*(?:classic\s*)?(\d{4})/); if(m && RAL_T[m[1]]) return {hex:'#'+RAL_T[m[1]].toLowerCase(), how:'ral', label:'RAL '+m[1]};
+  m=t.toUpperCase().replace(/\s+/g,'').match(/([WUHF])(\d{3,4})(?!\d)/); if(m){ const c=m[1]+m[2]; if(EGGER_T[c]) return {hex:'#'+EGGER_T[c].h.toLowerCase(), how:'egger', label:'Egger '+c+' «'+EGGER_T[c].n+'»'}; }
+  if(!/egger|эггер|эгер/.test(low)) { m=low.match(/\b(\d{4})\b/); if(m && RAL_T[m[1]] && /ral|рал|^\d{4}$/.test(low)) return {hex:'#'+RAL_T[m[1]].toLowerCase(), how:'ral', label:'RAL '+m[1]}; }
+  let best=null; for(const [w,h] of WORDS_T){ const ww=w.replace(/ё/g,'е'); if(low.includes(ww) && (!best || ww.length>best[0].length)) best=[ww,h]; }
+  if(best) return {hex:'#'+best[1].toLowerCase(), how:'word', label:'по названию «'+best[0]+'»'};
+  return null;
 }
 const STORE='mebel-choice-'+location.pathname;
 function saveChoice(){ try{ localStorage.setItem(STORE, JSON.stringify(slots.map(s=>({slot:s.slot,sel:s.sel,over:s.over||null,custom:s.custom||null})))); }catch(e){} }
 function loadChoice(){ try{ const d=JSON.parse(localStorage.getItem(STORE)||'null'); if(!Array.isArray(d)) return;
   d.forEach(x=>{ const s=slots.find(y=>y.slot===x.slot); if(!s) return; if(x.sel>=0 && x.sel<s.variants.length) s.sel=x.sel;
-    if(x.custom && /^#[0-9a-f]{6}$/i.test(x.custom.hex)) { setCustom(s,x.custom.hex,String(x.custom.name||'').slice(0,60)); }
+    if(x.custom && /^#[0-9a-f]{6}$/i.test(x.custom.hex)) { setCustom(s,x.custom.hex,String(x.custom.name||'').slice(0,60)); s.custom.found=x.custom.found?String(x.custom.found).slice(0,80):null; s.custom.how=x.custom.how||null; }
     s.over = (x.over && MATS[x.over]) ? x.over : null; }); }catch(e){} }
 
 const slots = [
@@ -250,7 +266,7 @@ function renderCards(){
       </dl>
       <div class="colors" role="group" aria-label="Цвет ${code(s)}">${COLORS.map(k=>`<button class="sw" id="sw-${s.slot}-${k}" aria-pressed="${fmat(s,vr)===k}" data-slot="${s.slot}" data-c="${k}" title="${MATS[k].cname}"><i style="background:${hex(MATS[k].color)}"></i>${MATS[k].cname}</button>`).join('')}
         <label class="sw own${(s.over||'').startsWith('custom_')?' on':''}" for="cc-${s.slot}"><input type="color" id="cc-${s.slot}" value="${s.custom?s.custom.hex:'#b7c4c8'}" data-slot="${s.slot}">Свой цвет</label></div>
-      ${(s.over||'').startsWith('custom_')?`<label class="ownname" for="cn-${s.slot}">Название или артикул цвета (необязательно)<input type="text" id="cn-${s.slot}" data-slot="${s.slot}" maxlength="60" placeholder="например, Egger U750 или RAL 7044" value="${esc(s.custom.name)}"></label>`:''}
+      <label class="ownname" for="cn-${s.slot}">Свой цвет: впишите RAL, артикул Egger или название — цвет подставится сам<input type="text" id="cn-${s.slot}" data-slot="${s.slot}" maxlength="60" autocomplete="off" placeholder="например, RAL 7044, Egger U750, дуб сонома" value="${esc(s.custom?s.custom.name:'')}"><span class="found" id="cf-${s.slot}">${(s.over||'').startsWith('custom_')&&s.custom ? (s.custom.found ? 'Подобрано: '+esc(s.custom.found)+(s.custom.how==='ral'||s.custom.how==='hex'?'':' — оттенок примерный, на экране может отличаться') : 'Не нашёл такой цвет — выберите оттенок кнопкой «Свой цвет»') : ''}</span></label>
       <div class="elev">${elevation(s,vr)}</div>
       ${INTERNAL ? internalCard(s) : ''}`;
     modsEl.appendChild(card);
@@ -258,10 +274,19 @@ function renderCards(){
   modsEl.querySelectorAll('input[type=color]').forEach(inp=>{
     const s=slots.find(x=>x.slot===inp.dataset.slot);
     inp.addEventListener('input',()=>{ setCustom(s,inp.value); buildScene(); });
-    inp.addEventListener('change',()=>{ setCustom(s,inp.value); renderAll(false); });
+    inp.addEventListener('change',()=>{ setCustom(s,inp.value); if(s.custom){ s.custom.found='выбран вручную '+inp.value.toUpperCase(); s.custom.how='hex'; } renderAll(false); });
     inp.addEventListener('click',()=>{ if(!(s.over||'').startsWith('custom_')){ setCustom(s,inp.value); buildScene(); } });
   });
-  modsEl.querySelectorAll('input[id^="cn-"]').forEach(inp=>inp.addEventListener('change',()=>{ const s=slots.find(x=>x.slot===inp.dataset.slot); setCustom(s,undefined,inp.value.slice(0,60)); renderAll(false); }));
+  modsEl.querySelectorAll('input[id^="cn-"]').forEach(inp=>{
+    const s=slots.find(x=>x.slot===inp.dataset.slot);
+    const apply=(full)=>{ const txt=inp.value.slice(0,60); const f=lookupColor(txt);
+      if(!txt.trim()){ if(full){ s.custom=null; if((s.over||'').startsWith('custom_')) s.over=null; renderAll(false);} return; }
+      setCustom(s, f?f.hex:undefined, txt); s.custom.found=f?f.label:null; s.custom.how=f?f.how:null;
+      const el=document.getElementById('cf-'+s.slot); if(el) el.textContent = f ? 'Подобрано: '+f.label+(f.how==='ral'||f.how==='hex'?'':' — оттенок примерный, на экране может отличаться') : 'Не нашёл такой цвет — выберите оттенок кнопкой «Свой цвет»';
+      if(full) renderAll(false); else buildScene(); };
+    let tm; inp.addEventListener('input',()=>{ clearTimeout(tm); tm=setTimeout(()=>apply(false),350); });
+    inp.addEventListener('change',()=>apply(true));
+  });
   modsEl.querySelectorAll('button.sw').forEach(b=>b.addEventListener('click',()=>{ const s=slots.find(x=>x.slot===b.dataset.slot); s.over = b.dataset.c===cur(s).mat ? null : b.dataset.c; renderAll(false); }));
   modsEl.querySelectorAll('input[data-slot]').forEach(inp=>inp.addEventListener('change',e=>{
     const s=slots.find(x=>x.slot===e.target.dataset.slot), v=parseFloat(e.target.value);
