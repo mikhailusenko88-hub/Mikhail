@@ -115,6 +115,7 @@ summary{cursor:pointer;font-weight:600}
     <div class="labels" id="labels"></div>
     <div class="hint">вращать — пальцем, масштаб — щипком</div>
     <div class="toolbar">
+      <button class="tgl" id="t-open" aria-pressed="false">Открыть</button>
       <button class="tgl" id="t-fronts" aria-pressed="true">Фасады</button>
       <button class="tgl" id="t-xray" aria-pressed="false">Прозрачно</button>
       <button class="tgl" id="t-room" aria-pressed="true">Сантехника</button>
@@ -305,12 +306,12 @@ const controls=new THREE.OrbitControls(camera,renderer.domElement);
 controls.enableDamping=true; controls.maxPolarAngle=Math.PI*0.52;
 scene.add(new THREE.HemisphereLight(0xffffff,0x8a8f8c,0.85));
 const sun=new THREE.DirectionalLight(0xffffff,0.55); sun.position.set(1.5,3,3); scene.add(sun);
-let group=null, labelDefs=[];
-const state={fronts:true,xray:false,room:true};
+let group=null, labelDefs=[], movers=[];
+const state={fronts:true,xray:false,room:true,open:false};
 
 function boxMesh(x0,y0,z0,x1,y1,z1,color,role,metal){
   const g=new THREE.BoxGeometry(Math.max(.001,(x1-x0)/1000),Math.max(.001,(y1-y0)/1000),Math.max(.001,(z1-z0)/1000));
-  const mat=new THREE.MeshStandardMaterial({color,roughness:metal?.35:.75,metalness:metal?.25:0,emissive:metal?0x5a4318:0x000000,transparent:true,opacity:1});
+  const mat=new THREE.MeshStandardMaterial({color,roughness:metal?.3:.75,metalness:metal?.45:0,emissive:metal?0x3a2a0c:0x000000,transparent:true,opacity:1});
   const mesh=new THREE.Mesh(g,mat);
   mesh.position.set((x0+x1)/2000,(y0+y1)/2000,(z0+z1)/2000);
   if(!metal) mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0x2b302e,transparent:true,opacity:.35})));
@@ -326,29 +327,49 @@ function buildModule(s,ox){
     B(2,2,-3,W-2,H-2,0,MATS.hdf.color,'corpus');
   } else {
     B(T,0,0,W-T,T,Dc,col,'corpus'); B(T,H-100,0,W-T,H,T,col,'corpus');
-    L.f.filter(f=>f.k==='drawer').forEach(d=>{ const wh=MATS.white16.color, xa=T+5, xb=W-T-5, yb=d.y0+25, bh=d.box, zb=60;
-      B(xa,yb,zb,xa+16,yb+bh,Dc-2,wh,'corpus'); B(xb-16,yb,zb,xb,yb+bh,Dc-2,wh,'corpus'); B(xa+16,yb,zb,xb-16,yb+16,Dc-2,wh,'corpus'); });
     const top=boxMesh(ox-5,y0+H,0,ox+W+5,y0+H+20,s.D+10,0xf2efe9,'room'); g.add(top);
     g.add(boxMesh(ox+W/2-200,y0+H+20,120,ox+W/2+200,y0+H+24,s.D-40,0xe6e2da,'room'));
   }
-  L.gold.forEach(gd=>{ B(T,gd.y0,Dc-22,W-T,gd.y1,Dc,0xd9b46a,'gold',true); B(T,gd.y1-3,Dc-22,W-T,gd.y1,s.D-4,0xd9b46a,'gold',true); });
-  L.f.forEach(fr=>B(fr.x0,fr.y0,Dc,fr.x1,fr.y1,s.D,col,'front'));
-  labelDefs.push({p:[ox+W/2,y0+H+(s.type==='tall'?-60:120),s.D+20],t:code(s),s:`${W}×${H}×${s.D}`});
+  L.gold.forEach(gd=>{ B(T,gd.y0,Dc-22,W-T,gd.y1,Dc,0xc29a4e,'gold',true); B(T,gd.y1-3,Dc-22,W-T,gd.y1,s.D-4,0xc29a4e,'gold',true); });
+  // фасады и ящики — подвижные: ящик выезжает вместе с фасадом, двери открываются на петлях
+  const NL=Math.max(270,Math.min(500,Math.floor((Dc-25)/50)*50));
+  L.f.forEach(fr=>{
+    const M=(a,b,c,d,e,f,cl,r)=>boxMesh(ox+a,y0+b,c,ox+d,y0+e,f,cl,r);
+    if(fr.k==='drawer'){
+      const grp=new THREE.Group(), wh=MATS.white16.color, xa=T+5, xb=W-T-5, yb=fr.y0+20, bh=Math.min(fr.box, fr.y1-fr.y0-30), z1=Dc-2, z0=z1-NL;
+      grp.add(M(fr.x0,fr.y0,Dc,fr.x1,fr.y1,s.D,col,'front'));                 // фасад
+      grp.add(M(xa,yb,z0,xa+16,yb+bh,z1,wh,'box'));  grp.add(M(xb-16,yb,z0,xb,yb+bh,z1,wh,'box')); // боковины ящика
+      grp.add(M(xa+16,yb,z0,xb-16,yb+bh-20,z0+16,wh,'box'));                   // задняя стенка
+      grp.add(M(xa+16,yb,z1-16,xb-16,yb+bh-20,z1,wh,'box'));                   // передняя стенка ящика
+      grp.add(M(xa+16,yb,z0+16,xb-16,yb+16,z1-16,wh,'box'));                   // дно
+      grp.userData={mv:'slide', dist:NL*0.9/1000, t:state.open?1:0};
+      if(state.open) grp.position.z=grp.userData.dist;
+      g.add(grp); movers.push(grp);
+    } else {
+      const left = fr.x0 < W/2, hx=(ox+(left?fr.x0:fr.x1))/1000, hz=Dc/1000;
+      const piv=new THREE.Group(); piv.position.set(hx,0,hz);
+      const m=M(fr.x0,fr.y0,Dc,fr.x1,fr.y1,s.D,col,'front'); m.position.x-=hx; m.position.z-=hz; piv.add(m);
+      piv.userData={mv:'door', ang:(left?-1:1)*1.75, t:state.open?1:0};
+      if(state.open) piv.rotation.y=piv.userData.ang;
+      g.add(piv); movers.push(piv);
+    }
+  });
+  labelDefs.push({p:[ox+W/2,y0+H+(s.type==='tall'?-60:260),s.D+20],t:code(s),s:`${W}×${H}×${s.D}`});
   return g;
 }
 function buildScene(){
   if(group){scene.remove(group); group.traverse(o=>{o.geometry&&o.geometry.dispose(); o.material&&o.material.dispose();});}
-  group=new THREE.Group(); labelDefs=[];
+  group=new THREE.Group(); labelDefs=[]; movers=[];
   const rs=roomSlots(), van=rs.find(s=>s.type!=='tall'), tall=rs.find(s=>s.type==='tall');
   const vx=-(van.W+350), wallL=vx-300, wallR=tall.W+500, ceil=tall.ceil;
   group.add(boxMesh(wallL,0,-40,wallR,ceil,-3,0xd9d6d0,'wall'));
   group.add(boxMesh(wallL,-20,-40,wallR,0,1300,0xbfbab2,'wall'));
   group.add(boxMesh(0,0,-3,tall.W,tall.z0,tall.D,0xcfccc6,'room'));
   group.add(boxMesh(tall.W/2-180,360,tall.D,tall.W/2+180,420,tall.D+540,0xf6f6f4,'room'));
-  group.add(boxMesh(tall.W/2-120,980,tall.D,tall.W/2+120,1080,tall.D+8,0xc9a45c,'room',true));
+  group.add(boxMesh(tall.W/2-120,980,tall.D,tall.W/2+120,1080,tall.D+8,0xc29a4e,'room',true));
   group.add(boxMesh(vx+van.W/2-280,van.z0+van.H+250,-3,vx+van.W/2+280,van.z0+van.H+1250,6,0xc9d3d4,'room'));
   labelDefs.push({p:[tall.W/2,700,tall.D+30],t:'короб инсталляции',note:true});
-  labelDefs.push({p:[vx+van.W/2,van.z0+van.H+40,van.D/2],t:'столешница с раковиной',note:true});
+  labelDefs.push({p:[vx+van.W/2,van.z0+van.H+60,van.D/2],t:'столешница с раковиной',note:true});
   group.add(buildModule(van,vx)); group.add(buildModule(tall,0));
   scene.add(group); applyState(); makeLabels();
 }
@@ -356,7 +377,7 @@ function applyState(){
   group.traverse(o=>{
     if(!o.isMesh) return; const r=o.userData.role;
     o.visible = r==='front'? state.fronts : r==='room'? state.room : true;
-    const op = state.xray && (r==='corpus'||r==='front') ? (r==='front'?0.25:0.45) : 1;
+    const op = state.xray && (r==='corpus'||r==='front'||r==='box') ? (r==='front'?0.25:0.45) : 1;
     o.material.opacity=op; o.material.depthWrite=op===1;
   });
   labelDefs.forEach(l=>{ if(l.el && l.note) l.el.hidden=!state.room; });
@@ -377,13 +398,19 @@ function resetView(){
   const cx=((-(van.W+350))+tall.W)/2000, span=(van.W+350+tall.W)/1000+0.6;
   const aspect=stage.clientWidth/Math.max(1,stage.clientHeight);
   const dist=Math.max(span/aspect,2.7)/(2*Math.tan(20*Math.PI/180))*1.05;
-  controls.target.set(cx,1.3,0.2); camera.position.set(cx+0.6,1.55,dist+0.2); controls.update();
+  controls.target.set(cx,1.3,0.2); camera.position.set(cx+0.6,1.85,dist+0.2); controls.update();
 }
 function resize(){const w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();}
 window.addEventListener('resize',resize);
-(function loop(){requestAnimationFrame(loop); controls.update(); renderer.render(scene,camera); placeLabels();})();
+function animateMovers(){
+  const tgt=state.open?1:0;
+  movers.forEach(m=>{ const u=m.userData; if(Math.abs(u.t-tgt)<0.002){u.t=tgt;} else u.t+= (tgt-u.t)*0.12;
+    const e=u.t; if(u.mv==='slide') m.position.z=e*u.dist; else m.rotation.y=e*u.ang; });
+}
+(function loop(){requestAnimationFrame(loop); animateMovers(); controls.update(); renderer.render(scene,camera); placeLabels();})();
 
 function setToggle(id,key){const b=document.getElementById(id); b.addEventListener('click',()=>{state[key]=!state[key]; b.setAttribute('aria-pressed',state[key]); applyState();});}
+(function(){ const b=document.getElementById('t-open'); b.addEventListener('click',()=>{ state.open=!state.open; b.setAttribute('aria-pressed',state.open); b.textContent=state.open?'Закрыть':'Открыть'; if(state.open && !state.fronts){ state.fronts=true; document.getElementById('t-fronts').setAttribute('aria-pressed','true'); applyState(); } }); })();
 setToggle('t-fronts','fronts'); setToggle('t-xray','xray'); setToggle('t-room','room');
 document.getElementById('t-reset').addEventListener('click',resetView);
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
