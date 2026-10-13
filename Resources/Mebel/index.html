@@ -61,7 +61,7 @@
 </div>
 <div id="msg"></div>
 <div id="hw" class="hide"></div>
-<div id="bottom">
+<div id="bottom" class="bar">
   <div class="row" id="list"></div>
   <div class="row" id="edit">
     <span id="sel">—</span>
@@ -108,6 +108,7 @@
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from './OrbitControls.js';
+import { RoomEnvironment } from './RoomEnvironment.js';
 
 // ===== Общие функции рисования: эти же функции уходят в клиентскую страницу (toString) =====
 function labelSprite(T, text) {
@@ -120,15 +121,66 @@ function labelSprite(T, text) {
   s.scale.set(0.3, 0.11, 1); s.renderOrder = 10;
   return s;
 }
+/// Материал плиты: декор «дерево» (Egger H…, Дуб, Орех…) — текстура с волокном вдоль длинной стороны детали,
+/// однотонный (U…, W…) — матовый с лёгким зерном ЛДСП. Размеры детали в метрах (sx, sy, sz — по осям коробки).
+function panelMat(T, hex, name, sx, sy, sz, on) {
+  const C = panelMat.c || (panelMat.c = { tex:{}, mat:{} });
+  hex = hex || '#e8e2d6';
+  const wood = /Дуб|Орех|Ясень|Бук|Сосна|Вишн|Венге|Клён|Клен|Тик|Кассела|Ривер|H\d{4}/i.test(name || '');
+  const dims = [sx, sy, sz], thin = dims.indexOf(Math.min(sx, sy, sz));
+  const ua = thin === 0 ? 2 : 0, va = thin === 1 ? 2 : 1, uL = dims[ua], vL = dims[va], gv = vL > uL;
+  const key = [hex, wood ? (gv ? 'v' : 'u') : 'p', on ? 1 : 0, Math.round(uL * 200), Math.round(vL * 200)].join('|');
+  if (C.mat[key]) return C.mat[key];
+  const rgb = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) || 200);
+  const col = (k, a) => `rgba(${rgb.map(v => Math.max(0, Math.min(255, Math.round(v * k)))).join(',')},${a})`;
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const tk = hex + (wood ? 'w' : 'p');
+  if (!C.tex[tk]) {
+    const c = document.createElement('canvas'), W = wood ? 1024 : 128, H = wood ? 256 : 128;
+    c.width = W; c.height = H; const g = c.getContext('2d');
+    g.fillStyle = col(1, 1); g.fillRect(0, 0, W, H);
+    if (wood) {
+      for (let i = 0; i < 14; i++) {        // широкие полосы годовых слоёв
+        const y = rnd() * H, w = 6 + rnd() * 22; g.fillStyle = col(rnd() > 0.5 ? 0.9 : 1.07, 0.18); g.fillRect(0, y - w / 2, W, w);
+        if (y < w) g.fillRect(0, y + H - w / 2, W, w); if (y > H - w) g.fillRect(0, y - H - w / 2, W, w);
+      }
+      for (let i = 0; i < 110; i++) {       // тонкие волокна, бесшовно по длине
+        const y0 = rnd() * H, k = 1 + Math.floor(rnd() * 3), ph = rnd() * 6.28, amp = 1 + rnd() * 5, dark = rnd() > 0.35;
+        g.strokeStyle = col(dark ? 0.78 + rnd() * 0.12 : 1.08 + rnd() * 0.08, 0.16 + rnd() * 0.32); g.lineWidth = 0.5 + rnd() * 2;
+        for (const dy of [0, H, -H]) { g.beginPath();
+          for (let x = 0; x <= W; x += 16) { const y = y0 + dy + Math.sin(x / W * 6.283 * k + ph) * amp; x ? g.lineTo(x, y) : g.moveTo(x, y); }
+          g.stroke(); }
+      }
+      for (let i = 0; i < 1800; i++) {      // поры
+        g.fillStyle = col(0.72, 0.22); g.fillRect(rnd() * W, rnd() * H, 2 + rnd() * 7, 0.8);
+      }
+    } else {
+      for (let i = 0; i < 2500; i++) { g.fillStyle = col(rnd() > 0.5 ? 0.96 : 1.04, 0.5); g.fillRect(rnd() * W, rnd() * H, 1, 1); }
+    }
+    let cv = c;
+    if (wood) {                             // вариант с волокном по вертикали текстуры
+      const v = document.createElement('canvas'); v.width = H; v.height = W; const gv2 = v.getContext('2d');
+      gv2.translate(H, 0); gv2.rotate(Math.PI / 2); gv2.drawImage(c, 0, 0); C.tex[tk + 'v'] = v;
+    }
+    C.tex[tk] = cv;
+  }
+  const map = new T.CanvasTexture(C.tex[wood && gv ? tk + 'v' : tk]);
+  map.wrapS = map.wrapT = T.RepeatWrapping;
+  if (T.SRGBColorSpace) map.colorSpace = T.SRGBColorSpace;
+  if (wood) map.repeat.set(gv ? uL / 0.5 : uL / 1.0, gv ? vL / 1.0 : vL / 0.5); else map.repeat.set(uL / 0.25, vL / 0.25);
+  map.anisotropy = 4;
+  return (C.mat[key] = new T.MeshStandardMaterial({ map, color:0xffffff, roughness: wood ? 0.68 : 0.82, metalness:0,
+    emissive: on ? 0x332000 : 0x000000 }));
+}
 /// Выдвижные элементы внутри модуля (локально: x — ширина, y — высота, z — глубина, фасад на +D/2).
 /// Ящик, корзина и брючница — группа, которая едет вперёд на it.travel мм.
-function buildItem(T, it, W, H, D, t, color) {
+function buildItem(T, it, W, H, D, t, color, name) {
   const g = new T.Group(), mm = v => v / 1000;
   const box = (w, h, d, x, y, z, mat) => { const b = new T.Mesh(new T.BoxGeometry(w, h, d), mat); b.position.set(x, y, z); g.add(b); return b; };
   const y0 = -H / 2 + mm(it.y), front = D / 2, iw = W - 2 * t;
   if (it.kind === 'drawer') {
     const fm = new T.MeshStandardMaterial({ color }), bm = new T.MeshStandardMaterial({ color:'#e9e3d8' });
-    box(iw - 0.003, mm(it.h), t, 0, y0 + mm(it.h) / 2, front - t / 2, fm);
+    box(iw - 0.003, mm(it.h), t, 0, y0 + mm(it.h) / 2, front - t / 2, panelMat(T, color, name, iw - 0.003, mm(it.h), t));
     const bw = it.boxW ? mm(it.boxW) : iw - 0.026, bd = Math.min(mm(it.depth || 450), D - t - 0.02), bh = mm(it.boxH || it.h - 30), by = y0 + mm(it.boxY ?? 10), z1 = front - t, z0 = z1 - bd, s = 0.016;
     box(bw - 2 * s, s, bd - s, 0, by + mm(it.bottomY || 0) + s / 2, (z0 + z1) / 2 + s / 2, bm);   // дно между боками, перед задней стенкой
     box(s, bh, bd, -bw / 2 + s / 2, by + bh / 2, (z0 + z1) / 2, bm); box(s, bh, bd, bw / 2 - s / 2, by + bh / 2, (z0 + z1) / 2, bm);
@@ -188,13 +240,15 @@ function buildModule(T, m, on) {
   root.add(body);
   if (carcass) {   // открытый шкаф: видимый корпус из плит, внутри полки и выдвижное
     const t = (o.thick || 16) / 1000, cm = new T.MeshStandardMaterial({ color:m.color || '#e8e2d6', emissive: on ? 0x332000 : 0x000000 });
-    const pl = (w, h, d, x, y, z, mat) => { const b = new T.Mesh(new T.BoxGeometry(w, h, d), mat || cm); b.position.set(x, y, z); b.userData.code = m.code; root.add(b); };
+    const em = new T.LineBasicMaterial({ color:0x5a4a38, transparent:true, opacity:0.35 });
+    const pl = (w, h, d, x, y, z, mat) => { const b = new T.Mesh(new T.BoxGeometry(w, h, d), mat || panelMat(T, m.color, m.colorName, w, h, d, on)); b.position.set(x, y, z); b.userData.code = m.code;
+      b.add(new T.LineSegments(new T.EdgesGeometry(b.geometry), em)); root.add(b); };
     const bt = (o.backTh ?? 3) / 1000, cd = D - bt, cz = bt / 2;          // задняя стенка накладная: корпус глубиной D − bt, стенка за ним
     pl(t, H, cd, -W / 2 + t / 2, 0, cz); pl(t, H, cd, W / 2 - t / 2, 0, cz);
     pl(W - 2 * t, t, cd, 0, H / 2 - t / 2, cz); pl(W - 2 * t, t, cd, 0, -H / 2 + t / 2, cz);
-    if (bt > 0) pl(W - 0.002, H - 0.002, bt, 0, 0, -D / 2 + bt / 2, new T.MeshStandardMaterial({ color:'#e4d6bf' }));
+    if (bt > 0) pl(W - 0.002, H - 0.002, bt, 0, 0, -D / 2 + bt / 2, new T.MeshStandardMaterial({ color:'#e4d6bf', roughness:0.9 }));
     (o.items || []).forEach((it, i) => {
-      const g = buildItem(T, it, W, H, D, t, o.shelfColor || m.color || '#e8e2d6');
+      const g = buildItem(T, it, W, H, D, t, o.shelfColor || m.color || '#e8e2d6', o.shelfName || m.colorName);
       const key = m.code + ':' + i, st = (typeof SLIDE !== 'undefined') && SLIDE[key];
       g.userData.slide = { key, dist:(it.travel || 400) / 1000 };
       if (st) { const e = st.v < 0.5 ? 2 * st.v * st.v : 1 - Math.pow(-2 * st.v + 2, 2) / 2; g.position.z = e * g.userData.slide.dist; }
@@ -235,10 +289,10 @@ function buildModule(T, m, on) {
   if (o.front === 'open' || o.front === 'glass') {
     const n = Math.max(0, o.shelves | 0), t = (o.thick || 16) / 1000;
     const at = Array.isArray(o.shelvesAt) && o.shelvesAt.length ? o.shelvesAt : null;
-    const sm = new T.MeshStandardMaterial({ color:o.shelfColor || m.color || '#e8e2d6' });
     for (let i = 1; i <= (at ? at.length : n); i++) {
       const gf = (o.shelfGap?.[0] ?? 10) / 1000, gb = (o.shelfGap?.[1] ?? 10) / 1000;
-      const s = new T.Mesh(new T.BoxGeometry(W - 2 * t, t, D - gf - gb), sm); s.position.z = (gb - gf) / 2;
+      const s = new T.Mesh(new T.BoxGeometry(W - 2 * t, t, D - gf - gb), panelMat(T, o.shelfColor || m.color, o.shelfName || m.colorName, W - 2 * t, t, D - gf - gb)); s.position.z = (gb - gf) / 2;
+      s.add(new T.LineSegments(new T.EdgesGeometry(s.geometry), new T.LineBasicMaterial({ color:0x5a4a38, transparent:true, opacity:0.3 })));
       s.position.y = at ? -H / 2 + at[i - 1] / 1000 + t / 2 : -H / 2 + H * i / (n + 1); s.userData.code = m.code; root.add(s);
     }
   }
@@ -283,6 +337,7 @@ const snapshot = () => { undoStack.push(JSON.stringify(state.modules)); if (undo
 const view = document.getElementById('view');
 const renderer = new THREE.WebGLRenderer({ antialias:true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.NeutralToneMapping ?? THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.95;
 view.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1c1d20);
@@ -290,8 +345,11 @@ const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 100);
 camera.position.set(3, 3, 4);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.1));
-const sun = new THREE.DirectionalLight(0xffffff, 1.2); sun.position.set(3, 6, 4); scene.add(sun);
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;   // мягкий свет и отражения на металле
+scene.environmentIntensity = 0.35;
+scene.add(new THREE.HemisphereLight(0xfff6ea, 0x4a4540, 0.35));
+const sun = new THREE.DirectionalLight(0xfff3e4, 1.1); sun.position.set(2, 5, 4); scene.add(sun);
+const fill = new THREE.DirectionalLight(0xe8eeff, 0.3); fill.position.set(-3, 2, 3); scene.add(fill);
 const grid = new THREE.GridHelper(10, 20, 0x555555, 0x333333); scene.add(grid);
 let roomGroup = new THREE.Group(); scene.add(roomGroup);
 const modGroup = new THREE.Group(); scene.add(modGroup);
@@ -304,7 +362,9 @@ let msgT;
 const msg = (t, ms = 2500) => { const m = document.getElementById('msg'); m.textContent = t; m.style.opacity = t ? 1 : 0;
   clearTimeout(msgT); if (t) msgT = setTimeout(() => m.style.opacity = 0, ms); };
 
+let camFrom = null;
 function drawRoom() {
+  camFrom = null;
   scene.remove(roomGroup);
   roomGroup = buildRoom(THREE, state.walls);
   for (const s of state.walls) {
@@ -316,8 +376,24 @@ function drawRoom() {
   if (ws.length) {
     state.floorY = Math.round(Math.min(...ws.map(s => s.transform[13] * 1000 - s.heightMm / 2)));
     grid.position.y = state.floorY / 1000;
+    const fb = new THREE.Box3(); ws.forEach(s => { const t = s.transform, hw = s.widthMm / 2000;   // пол комнаты: по концам стен
+      for (const k of [-1, 1]) fb.expandByPoint(new THREE.Vector3(t[12] + t[0] * hw * k, 0, t[14] + t[2] * hw * k)); });
+    const fs = fb.getSize(new THREE.Vector3()), fc = fb.getCenter(new THREE.Vector3());
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(Math.max(fs.x, 0.5) + 0.2, Math.max(fs.z, 0.5) + 0.2),
+      new THREE.MeshStandardMaterial({ color:0xcfc8bd, roughness:0.95 }));
+    floor.rotation.x = -Math.PI / 2; floor.position.set(fc.x, state.floorY / 1000 - 0.001, fc.z); roomGroup.add(floor);
+    grid.visible = false;
+    // камера со стороны, где нет стены (вход), чуть сбоку и сверху
+    const near = (k, v) => ws.some(s => Math.abs(s.transform[k] - v) < 0.2 && Math.abs(s.transform[k === 12 ? 2 : 0]) > 0.5);
+    const dirs = [[0, 1, fb.max.z], [0, -1, fb.min.z], [1, 0, fb.max.x], [-1, 0, fb.min.x]];
+    const free = dirs.find(([dx, dz, v]) => !near(dx ? 12 : 14, v)) || dirs[0];
+    // отступ, чтобы вся ширина комнаты влезла в кадр (на телефоне кадр узкий)
+    const span = (free[0] ? fs.z : fs.x) / 2 + 0.35, vf = camera.fov * Math.PI / 360, hf = Math.atan(Math.tan(vf) * Math.max(camera.aspect, 0.3));
+    const dist = Math.max(2.0, span / Math.tan(hf) * 0.8) + (free[0] ? fs.x : fs.z) / 2, side = span * 0.55;   // чуть сбоку — видно нутро боковых рядов
+    camFrom = { x:fc.x + free[0] * dist + free[1] * side, y:state.floorY / 1000 + 2.5, z:fc.z + free[1] * dist - free[0] * side };
     const c = new THREE.Box3().setFromObject(roomGroup).getCenter(new THREE.Vector3());
-    controls.target.copy(c); camera.position.set(c.x + 3, c.y + 3, c.z + 3);
+    controls.target.set(c.x, state.floorY / 1000 + 1.1, c.z);
+    if (camFrom) camera.position.set(camFrom.x, camFrom.y, camFrom.z); else camera.position.set(c.x + 3, c.y + 3, c.z + 3);
   }
 }
 
@@ -635,7 +711,7 @@ function clientHTML(number) {
   const mods = state.modules.map(m => ({ code:m.code, name:m.name, type:m.type, w:m.w, h:m.h, d:m.d, x:m.x, y:m.y, z:m.z, rotY:m.rotY || 0,
     color:m.color, colorName:m.colorName || '', opts:{ doors:m.opts?.doors, drawers:m.opts?.drawers, shelves:m.opts?.shelves,
       front:m.opts?.front, hinge:m.opts?.hinge, handle:m.opts?.handle, thick:m.opts?.thick,
-      shelvesAt:m.opts?.shelvesAt, shelfColor:m.opts?.shelfColor, shelfGap:m.opts?.shelfGap, backTh:m.opts?.backTh,
+      shelvesAt:m.opts?.shelvesAt, shelfColor:m.opts?.shelfColor, shelfName:m.opts?.shelfName, shelfGap:m.opts?.shelfGap, backTh:m.opts?.backTh,
       items:(m.opts?.items || []).map(i => ({ kind:i.kind, y:i.y, h:i.h, boxH:i.boxH, boxY:i.boxY, boxW:i.boxW, bottomY:i.bottomY, depth:i.depth, travel:i.travel })) } }));
   const walls = state.walls.map(s => ({ kind:s.kind, transform:s.transform, widthMm:s.widthMm, heightMm:s.heightMm }));
   const title = `Проект ${number} — ${state.name}`;
@@ -654,6 +730,7 @@ h1{font-size:17px;margin:4px 0 8px}.m{border:1px solid #e3e0da;border-radius:12p
 const MODS=${JSON.stringify(mods)};const WALLS=${JSON.stringify(walls)};const PAL=${JSON.stringify(PALETTE)};
 ${labelSprite.toString()}
 const SLIDE={};
+${panelMat.toString()}
 ${buildItem.toString()}
 ${stepSlides.toString()}
 ${buildModule.toString()}
@@ -661,7 +738,7 @@ ${buildRoom.toString()}
 const T=THREE,v=document.getElementById('v'),r=new T.WebGLRenderer({antialias:true});r.setPixelRatio(Math.min(devicePixelRatio,2));v.appendChild(r.domElement);
 const sc=new T.Scene();sc.background=new T.Color(0xf3f1ed);const cam=new T.PerspectiveCamera(50,1,0.05,100);
 const ctl=new T.OrbitControls(cam,r.domElement);ctl.enableDamping=true;
-sc.add(new T.HemisphereLight(0xffffff,0x888888,1.0));const L=new T.DirectionalLight(0xffffff,0.9);L.position.set(3,6,4);sc.add(L);
+sc.add(new T.HemisphereLight(0xfffaf2,0x9a9288,1.05));const L=new T.DirectionalLight(0xffffff,0.8);L.position.set(3,6,4);sc.add(L);const L2=new T.DirectionalLight(0xffffff,0.35);L2.position.set(-3,2,5);sc.add(L2);
 sc.add(buildRoom(T,WALLS));const G=new T.Group();sc.add(G);let sel=null;
 const key=c=>'p_${esc(number)}_'+c;
 function load(m){try{const s=JSON.parse(localStorage.getItem(key(m.code))||'null');if(s){m.color=s.color;m.colorName=s.name;}}catch(e){}}

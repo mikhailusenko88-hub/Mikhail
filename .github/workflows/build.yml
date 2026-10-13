@@ -13,6 +13,7 @@ jobs:
           tar xzf three-0.169.0.tgz
           cp package/build/three.module.min.js Resources/Mebel/
           cp package/examples/jsm/controls/OrbitControls.js Resources/Mebel/
+          cp package/examples/jsm/environments/RoomEnvironment.js Resources/Mebel/
       - name: Generate Xcode project
         run: brew install xcodegen && xcodegen generate
       - name: Pack project for Xcode

@@ -278,7 +278,7 @@ export function toProject(body, title = 'Мебель') {
       x:Math.round(c[0]), y:Math.round(c[1]), z:Math.round(c[2]), rotY,
       color:colorOf(side.mat), colorName:short(side.mat),
       opts:{ doors:0, drawers:nd, shelves:shelves.length, shelvesAt:shelves, front:'open', plinth:Math.round(y0), thick,
-        shelfColor:shelf ? colorOf(shelf.mat) : undefined, shelfGap, backTh, items } });
+        shelfColor:shelf ? colorOf(shelf.mat) : undefined, shelfName:shelf ? short(shelf.mat) : undefined, shelfGap, backTh, items } });
   }
   out.sort((a, b) => a.code.localeCompare(b.code, 'ru'));
 
