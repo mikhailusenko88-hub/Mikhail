@@ -16,13 +16,28 @@ targets:
       path: Sources/Info.plist
       properties:
         CFBundleDisplayName: "Замер 3D"
-        CFBundleShortVersionString: "1.2"
-        CFBundleVersion: "3"
+        CFBundleShortVersionString: "1.3"
+        CFBundleVersion: "4"
         NSCameraUsageDescription: "Камера и LiDAR нужны для 3D-скана помещения."
         UIRequiredDeviceCapabilities: [arkit]
         UIFileSharingEnabled: true
         LSSupportsOpeningDocumentsInPlace: true
         UILaunchScreen: {}
+        UTImportedTypeDeclarations:
+          - UTTypeIdentifier: ru.usenko.zamer3d.bazis
+            UTTypeDescription: "Базис-Мебельщик"
+            UTTypeConformsTo: [public.data]
+            UTTypeTagSpecification:
+              public.filename-extension: [b3d, fr3d, B3D, FR3D]
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: "Базис-Мебельщик"
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Owner
+            LSItemContentTypes: [ru.usenko.zamer3d.bazis]
+          - CFBundleTypeName: "ZIP"
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [public.zip-archive]
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false

@@ -12,6 +12,9 @@ struct MebelView: View {
     @State private var kind = "Кухня"
     @State private var key = ""
     @State private var keyStatus = GitHubKey.value == nil ? "Ключ не введён" : "Ключ сохранён ✓"
+    @State private var pickBazis = false
+    @State private var bazis: BazisFile?
+    @State private var bazisError: String?
     static let kinds = ["Кухня", "Шкаф", "Гардеробная", "Тумба", "Консоль", "Прачечная", "Другое"]
 
     var body: some View {
@@ -38,6 +41,11 @@ struct MebelView: View {
                         }
                         Text(keyStatus).foregroundColor(.secondary)
                     }
+                    Section(header: Text("Файлы Базис-Мебельщика"),
+                            footer: Text("Открывает .b3d и .fr3d, в том числе внутри .zip. Можно и из Telegram / «Файлов»: «Поделиться» → «Замер 3D».")) {
+                        Button("Открыть .b3d / .fr3d") { pickBazis = true }
+                        if let e = bazisError { Text(e).foregroundColor(.red) }
+                    }
                     Section("Скан комнаты") {
                         if scans.isEmpty {
                             Text("Пока нет сохранённых сканов. Сначала сделай замер и нажми «Сохранить».")
@@ -52,6 +60,13 @@ struct MebelView: View {
                 .toolbar { Button("Закрыть") { dismiss() } }
             }
             .onAppear(perform: refresh)
+            .fileImporter(isPresented: $pickBazis, allowedContentTypes: BazisFile.types) { r in
+                if case .success(let url) = r {
+                    bazis = BazisFile.load(url)
+                    bazisError = bazis == nil ? "Не удалось прочитать файл" : nil
+                }
+            }
+            .fullScreenCover(item: $bazis) { BazisScreen(file: $0) }
         }
     }
 

@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Базис</title>
+<style>
+  :root { --bg:#1c1d20; --panel:rgba(30,31,35,.95); --line:#3a3c42; --text:#f2f2f2; --dim:#9a9ca3; --acc:#ff9f0a; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--text); font:14px -apple-system,system-ui,sans-serif; overflow:hidden; }
+  #view { position:fixed; left:0; right:0; top:0; bottom:38%; touch-action:none; }
+  #top { position:fixed; top:env(safe-area-inset-top); left:0; right:0; display:flex; gap:6px; padding:8px 10px; align-items:center; overflow-x:auto; }
+  button { background:#2c2e33; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:8px 12px; font:inherit; font-weight:600; white-space:nowrap; }
+  button.on { background:var(--acc); color:#000; }
+  #title { font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; background:var(--panel); padding:6px 10px; border-radius:10px; }
+  #side { position:fixed; left:0; right:0; bottom:0; height:38%; overflow:auto; background:var(--panel); border-top:1px solid var(--line);
+    padding:6px 0 calc(16px + env(safe-area-inset-bottom)); }
+  .r { display:grid; grid-template-columns:1fr auto; gap:2px 8px; padding:7px 12px; border-bottom:1px solid #2a2c31; }
+  .r.on { background:#3a2c10; }
+  .n { font-weight:600; } .s { color:var(--dim); font-size:12px; } .d { text-align:right; font-variant-numeric:tabular-nums; }
+  #sum { padding:6px 12px; color:var(--dim); font-size:12px; }
+  #msg { position:fixed; top:40%; left:50%; transform:translate(-50%,-50%); background:var(--panel); padding:10px 16px; border-radius:12px; text-align:center; max-width:85%; }
+</style>
+</head>
+<body>
+<div id="view"></div>
+<div id="top">
+  <button id="close">✕</button>
+  <span id="title">Базис</span>
+  <button id="lab" class="on">Подписи</button>
+  <button id="fur" class="on">Фурнитура</button>
+  <button id="exp">Разнести</button>
+</div>
+<div id="msg">Открываю файл…</div>
+<div id="side"><div id="sum"></div><div id="list"></div></div>
+
+<script type="importmap">{ "imports": { "three": "./three.module.min.js" } }</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from './OrbitControls.js';
+const $ = id => document.getElementById(id);
+const native = window.webkit?.messageHandlers?.bazis || null;
+const msg = t => { $('msg').textContent = t; $('msg').style.display = t ? 'block' : 'none'; };
+$('close').onclick = () => native && native.postMessage({ type:'close' });
+
+// ===== Контейнер BZ85: таблица ключей + записи (0 объект, 1/2 bool, 3 u8, 4 i32, 5 f64, 6 UTF-16, 7 blob) =====
+const cp1251 = new TextDecoder('windows-1251'), u16 = new TextDecoder('utf-16le');
+function parseBlock(bytes, start = 0, end = bytes.length) {
+  const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let p = start;
+  const u32 = () => { const v = dv.getUint32(p, true); p += 4; return v; };
+  const nk = u32(), keys = [];
+  for (let i = 0; i < nk; i++) { const l = u32(); keys.push(cp1251.decode(bytes.subarray(p, p + l))); p += l; }
+  const entry = () => {
+    const k = keys[u32()], c = u32(), t = bytes[p++];
+    let v = null;
+    if (t === 0) { v = []; for (let i = 0; i < c; i++) v.push(entry()); }
+    else if (t === 3) v = bytes[p++];
+    else if (t === 4) { v = dv.getInt32(p, true); p += 4; }
+    else if (t === 5) { v = dv.getFloat64(p, true); p += 8; }
+    else if (t === 6) { const n = u32(); v = u16.decode(bytes.subarray(p, p + 2 * n)); p += 2 * n; }
+    else if (t === 7) { const n = u32(); v = bytes.subarray(p, p + n); p += n; }
+    else if (t !== 1 && t !== 2) throw new Error('Неизвестный тип записи ' + t + ' в позиции ' + (p - 1));
+    if (t === 1) v = true; if (t === 2) v = false;
+    return { k, t, v };
+  };
+  const out = [];
+  while (p < end) out.push(entry());
+  return out;
+}
+const kid = (n, name) => n && n.t === 0 ? n.v.find(e => e.k === name) : undefined;
+const val = (n, name, d) => { const e = kid(n, name); return e ? e.v : d; };
+function find(list, name) {  // поиск в глубину
+  for (const e of list) { if (e.k === name) return e; if (e.t === 0) { const r = find(e.v, name); if (r) return r; } }
+}
+async function inflate(bytes, fmt) {
+  const ds = new DecompressionStream(fmt);
+  const buf = await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer();
+  return new Uint8Array(buf);
+}
+function indexOf(b, pat, from) {
+  outer: for (let i = from; i <= b.length - pat.length; i++) { for (let j = 0; j < pat.length; j++) if (b[i + j] !== pat[j]) continue outer; return i; }
+  return -1;
+}
+async function loadBZ(b) {
+  if (!(b[0] === 0x42 && b[1] === 0x5A && b[2] === 0x38 && b[3] === 0x35)) throw new Error('Это не файл Базиса (нет BZ85)');
+  const i = indexOf(b, [1, 0, 0, 0xFF, 1], 9);
+  if (i < 0) throw new Error('Не найден блок с мебелью');
+  let header = [];
+  try { header = parseBlock(b, 9, i); } catch (e) { /* заголовок не обязателен */ }
+  const body = await inflate(b.subarray(i + 5), 'deflate');
+  return { header, body:parseBlock(body) };
+}
+// ZIP с iPhone: берём первый .b3d / .fr3d
+async function fromZip(b) {
+  const dv = new DataView(b.buffer, b.byteOffset, b.byteLength);
+  let p = 0;
+  while (p + 30 < b.length && dv.getUint32(p, true) === 0x04034b50) {
+    const flags = dv.getUint16(p + 6, true), method = dv.getUint16(p + 8, true);
+    let csize = dv.getUint32(p + 18, true);
+    const nlen = dv.getUint16(p + 26, true), xlen = dv.getUint16(p + 28, true);
+    const name = new TextDecoder().decode(b.subarray(p + 30, p + 30 + nlen));
+    const data0 = p + 30 + nlen + xlen;
+    if (flags & 8 && csize === 0) {   // размер в конце — ищем по центральному каталогу
+      const cd = indexOf(b, [0x50, 0x4b, 0x01, 0x02], data0);
+      for (let q = cd; q > 0 && q < b.length - 46 && dv.getUint32(q, true) === 0x02014b50;) {
+        const n2 = dv.getUint16(q + 28, true), off = dv.getUint32(q + 42, true);
+        if (off === p) { csize = dv.getUint32(q + 20, true); break; }
+        q += 46 + n2 + dv.getUint16(q + 30, true) + dv.getUint16(q + 32, true);
+      }
+    }
+    const data = b.subarray(data0, data0 + csize);
+    if (/\.(b3d|fr3d)$/i.test(name) && !name.startsWith('__MACOSX')) {
+      return { name:name.split('/').pop(), bytes: method === 8 ? await inflate(data, 'deflate-raw') : data };
+    }
+    p = data0 + csize + (flags & 8 ? (dv.getUint32(data0 + csize, true) === 0x08074b50 ? 16 : 12) : 0);
+  }
+  throw new Error('В архиве нет файла .b3d или .fr3d');
+}
+
+// ===== Геометрия =====
+function contourLoops(blob) {
+  const dv = new DataView(blob.buffer, blob.byteOffset, blob.byteLength);
+  let p = 0; const n = dv.getUint32(p, true); p += 4;
+  const f = () => { const v = dv.getFloat64(p, true); p += 8; return v; };
+  const segs = [];
+  for (let i = 0; i < n && p < blob.length; i++) {
+    const t = blob[p++];
+    if (t === 0x10) { const x1 = f(), y1 = f(), x2 = f(), y2 = f(); segs.push([[x1, y1], [x2, y2]]); }
+    else if (t === 0x12) {
+      const cx = f(), cy = f(), sx = f(), sy = f(), ex = f(), ey = f(), ccw = blob[p++] === 1;
+      const r = Math.hypot(sx - cx, sy - cy);
+      let a0 = Math.atan2(sy - cy, sx - cx), a1 = Math.atan2(ey - cy, ex - cx);
+      if (ccw) { while (a1 <= a0 + 1e-9) a1 += 2 * Math.PI; } else { while (a1 >= a0 - 1e-9) a1 -= 2 * Math.PI; }
+      const steps = Math.max(4, Math.ceil(Math.abs(a1 - a0) / (Math.PI / 24)));
+      const pts = []; for (let k = 0; k <= steps; k++) { const a = a0 + (a1 - a0) * k / steps; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
+      segs.push(pts);
+    } else break;
+  }
+  // сцепляем куски по концам
+  const close = (a, b) => Math.abs(a[0] - b[0]) < 0.05 && Math.abs(a[1] - b[1]) < 0.05;
+  const loops = [], left = segs.slice();
+  while (left.length) {
+    let loop = left.shift().slice();
+    for (let guard = 0; guard < 10000 && left.length; guard++) {
+      const end = loop[loop.length - 1];
+      if (close(end, loop[0]) && loop.length > 2) break;
+      const i = left.findIndex(s => close(s[0], end) || close(s[s.length - 1], end));
+      if (i < 0) break;
+      let s = left.splice(i, 1)[0]; if (!close(s[0], end)) s = s.slice().reverse();
+      loop.push(...s.slice(1));
+    }
+    if (loop.length > 3 && close(loop[loop.length - 1], loop[0])) loop.pop();
+    loops.push(loop);
+  }
+  return loops;
+}
+const area = l => l.reduce((s, p, i) => { const q = l[(i + 1) % l.length]; return s + p[0] * q[1] - q[0] * p[1]; }, 0) / 2;
+function panelGeometry(blob, thick) {
+  const loops = contourLoops(blob).filter(l => l.length > 2).sort((a, b) => Math.abs(area(b)) - Math.abs(area(a)));
+  if (!loops.length) return null;
+  const shape = new THREE.Shape(loops[0].map(p => new THREE.Vector2(p[0], p[1])));
+  for (const h of loops.slice(1)) shape.holes.push(new THREE.Path(h.map(p => new THREE.Vector2(p[0], p[1]))));
+  return new THREE.ExtrudeGeometry(shape, { depth:thick, bevelEnabled:false, curveSegments:1 });
+}
+function transMatrix(node) {
+  const t = kid(node, 'Trans'), m = new THREE.Matrix4();
+  if (!t) return m;
+  const q = new THREE.Quaternion(val(t, 'Rx', 0), val(t, 'Ry', 0), val(t, 'Rz', 0), val(t, 'Rw', 1));
+  if (q.lengthSq() < 1e-9) q.set(0, 0, 0, 1); else q.normalize();
+  return m.compose(new THREE.Vector3(val(t, 'X', 0), val(t, 'Y', 0), val(t, 'Z', 0)), q, new THREE.Vector3(1, 1, 1));
+}
+function triMeshes(blob) {
+  const dv = new DataView(blob.buffer, blob.byteOffset, blob.byteLength);
+  let p = 0; const n = dv.getUint32(p, true); p += 4; const out = [];
+  for (let i = 0; i < n && p < blob.length; i++) {
+    const ml = dv.getUint32(p, true); p += 4 + ml * 2;
+    const mm = []; for (let k = 0; k < 16; k++) { mm.push(dv.getFloat64(p, true)); p += 8; }
+    p += 1;
+    const nt = dv.getUint32(p, true); p += 4;
+    const pos = new Float32Array(nt * 9);
+    for (let t = 0; t < nt; t++) { for (let k = 0; k < 9; k++) pos[t * 9 + k] = dv.getFloat32(p + k * 4, true); p += 112; }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.computeVertexNormals();
+    out.push({ g, m:new THREE.Matrix4().fromArray(mm) });
+  }
+  return out;
+}
+
+// ===== Сцена =====
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+$('view').appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x1c1d20);
+const camera = new THREE.PerspectiveCamera(45, 1, 1, 100000);
+const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x555555, 1.1));
+const sun = new THREE.DirectionalLight(0xffffff, 1.1); sun.position.set(2000, 4000, 3000); scene.add(sun);
+const root = new THREE.Group(); scene.add(root);
+const furn = new THREE.Group(); root.add(furn);
+function resize() { const v = $('view'); renderer.setSize(v.clientWidth, v.clientHeight); camera.aspect = v.clientWidth / v.clientHeight; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+(function loop() { requestAnimationFrame(loop); controls.update(); renderer.render(scene, camera); })();
+
+const MAT_COLORS = [0xe8e2d6, 0xcfb38c, 0xb58a5c, 0xd8cfc2, 0x9c9890, 0xf4f3ef, 0xa07a52, 0x9aa58f, 0xc9c2b4];
+const matColor = {}; let mi = 0;
+const colorFor = m => matColor[m] ?? (matColor[m] = MAT_COLORS[mi++ % MAT_COLORS.length]);
+
+function labelSprite(text) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 80;
+  const g = c.getContext('2d'); g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(0, 0, 256, 80);
+  g.fillStyle = '#fff'; g.font = 'bold 44px -apple-system,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText(text.slice(0, 9), 128, 42);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(c), depthTest:false }));
+  s.scale.set(120, 38, 1); s.renderOrder = 10; return s;
+}
+
+const parts = [];
+let furnLib = null, center = new THREE.Vector3();
+function walk(list, parentM) {
+  for (const o of list) {
+    if (o.k !== 'Obj' || o.t !== 0) continue;
+    const type = val(o, 'Type', 0), m = parentM.clone().multiply(transMatrix(o));
+    if (type === 1005) { const sub = kid(o, 'Objs'); if (sub) walk(sub.v, m); continue; }
+    if (type === 4002 || type === 2004) {
+      const blob = val(o, 'Contour'); if (!blob) continue;
+      const thick = type === 2004 ? val(o, 'Thickness', val(o, 'Thick', 16)) : val(o, 'Thick', 16);
+      const g = panelGeometry(blob, thick); if (!g) continue;
+      const mat = val(o, 'Mat', '') || '';
+      const mesh = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color:colorFor(mat), roughness:0.8 }));
+      mesh.applyMatrix4(m);
+      mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(g, 20), new THREE.LineBasicMaterial({ color:0x333333 })));
+      root.add(mesh);
+      g.computeBoundingBox();
+      const s = g.boundingBox.getSize(new THREE.Vector3());
+      const dims = [Math.round(s.x), Math.round(s.y)].sort((a, b) => b - a);
+      const part = { mesh, name:val(o, 'Name', '') || 'Деталь', pos:val(o, 'ArtPos', '') || '', mat, thick, dims,
+        butts:(kid(o, 'Butts')?.v || []).length };
+      mesh.userData.part = part; parts.push(part);
+    } else if (type === 3001 && furnLib) {
+      const f = kid(furnLib, 'F' + val(o, 'FastID', -1)), tri = f && find([f], 'TriData');
+      if (!tri) continue;
+      for (const t of triMeshes(tri.v)) {
+        const mesh = new THREE.Mesh(t.g, new THREE.MeshStandardMaterial({ color:0x9aa0a8, metalness:0.4, roughness:0.5 }));
+        mesh.applyMatrix4(m.clone().multiply(t.m)); furn.add(mesh);
+      }
+    }
+  }
+}
+
+let labels = [];
+function addLabels() {
+  labels.forEach(l => l.parent.remove(l)); labels = [];
+  parts.forEach((p, i) => {
+    const b = new THREE.Box3().setFromObject(p.mesh), c = b.getCenter(new THREE.Vector3());
+    const l = labelSprite(p.pos || String(i + 1)); l.position.copy(c); root.add(l); labels.push(l);
+    l.visible = $('lab').classList.contains('on');
+  });
+}
+function list() {
+  const L = $('list'); L.innerHTML = '';
+  parts.forEach((p, i) => {
+    const d = document.createElement('div'); d.className = 'r'; p.row = d;
+    d.innerHTML = `<div><div class="n">${p.pos ? p.pos + ' · ' : ''}${p.name}</div><div class="s">${p.mat || '—'}${p.butts ? ' · кромка ' + p.butts : ''}</div></div>
+      <div class="d">${p.dims[0]}×${p.dims[1]}<div class="s">${Math.round(p.thick)} мм</div></div>`;
+    d.onclick = () => pick(p); L.appendChild(d);
+  });
+  const mats = {}; parts.forEach(p => mats[p.mat] = (mats[p.mat] || 0) + 1);
+  $('sum').textContent = `Деталей: ${parts.length} · материалы: ` + Object.entries(mats).map(([m, n]) => `${m || '—'} (${n})`).join(', ');
+}
+let picked = null;
+function pick(p) {
+  if (picked) { picked.mesh.material.emissive.setHex(0); picked.row.classList.remove('on'); }
+  picked = picked === p ? null : p;
+  if (picked) { picked.mesh.material.emissive.setHex(0x664400); picked.row.classList.add('on'); picked.row.scrollIntoView({ block:'nearest' }); }
+}
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let down;
+renderer.domElement.addEventListener('pointerdown', e => down = [e.clientX, e.clientY]);
+renderer.domElement.addEventListener('pointerup', e => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 8) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  ptr.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+  ray.setFromCamera(ptr, camera);
+  const h = ray.intersectObjects(parts.map(p => p.mesh), false)[0];
+  if (h) pick(h.object.userData.part);
+});
+$('lab').onclick = () => { $('lab').classList.toggle('on'); labels.forEach(l => l.visible = $('lab').classList.contains('on')); };
+$('fur').onclick = () => { $('fur').classList.toggle('on'); furn.visible = $('fur').classList.contains('on'); };
+let exploded = false;
+$('exp').onclick = () => {
+  exploded = !exploded; $('exp').classList.toggle('on', exploded);
+  for (const p of parts) {
+    if (!p.home) p.home = p.mesh.position.clone();
+    const c = new THREE.Box3().setFromObject(p.mesh).getCenter(new THREE.Vector3());
+    p.mesh.position.copy(exploded ? p.home.clone().add(c.sub(center).multiplyScalar(0.35)) : p.home);
+  }
+  addLabels();
+};
+
+window.Bazis = {
+  async open(name, b64) {
+    try {
+      msg('Открываю ' + name + '…');
+      let bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+      if (bytes[0] === 0x50 && bytes[1] === 0x4B) { const z = await fromZip(bytes); name = z.name; bytes = z.bytes; }
+      const { header, body } = await loadBZ(bytes);
+      const art = find(header, 'Article');
+      $('title').textContent = (art && val(art, 'Name')) || name.replace(/\.(b3d|fr3d)$/i, '');
+      furnLib = find(body, 'FurnList') || null;
+      const model = find(body, 'Model');
+      if (!model) throw new Error('В файле нет модели');
+      walk(model.v, new THREE.Matrix4());
+      if (!parts.length) throw new Error('Деталей не найдено');
+      const box = new THREE.Box3().setFromObject(root); box.getCenter(center);
+      const size = box.getSize(new THREE.Vector3());
+      controls.target.copy(center);
+      camera.position.set(center.x + size.x * 0.9, center.y + size.y * 0.5, center.z + Math.max(size.x, size.y) * 1.6);
+      camera.near = 5; camera.far = Math.max(size.x, size.y, size.z) * 20; camera.updateProjectionMatrix();
+      addLabels(); list();
+      $('sum').textContent = `Габарит ${Math.round(size.x)} × ${Math.round(size.y)} × ${Math.round(size.z)} мм · ` + $('sum').textContent;
+      msg('');
+    } catch (e) { msg('Не удалось открыть: ' + e.message); }
+  },
+};
+if (native) native.postMessage({ type:'ready' }); else msg('Нет связи с приложением');
+</script>
+</body>
+</html>
