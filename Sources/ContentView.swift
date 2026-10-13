@@ -44,10 +44,38 @@ struct ContentView: View {
                             .background(.ultraThinMaterial, in: Circle())
                     }
                     .accessibilityLabel("Примерка мебели")
+                    if model.phase != .preview {
+                        Button { model.confirmReset = true } label: {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.system(size: 17, weight: .semibold))
+                                .frame(width: 38, height: 38)
+                                .background(.ultraThinMaterial, in: Circle())
+                        }
+                        .accessibilityLabel("Заново")
+                    }
                 }
                 .padding(.horizontal, 12)
 
                 LevelView(roll: model.rollDeg, pitch: model.pitchDeg)
+
+                if model.phase != .preview {
+                    VStack(spacing: 4) {
+                        CoverageBar(percent: model.coverage)
+                        if let w = model.wallsText {
+                            Text(w)
+                                .font(.system(size: 13, weight: .semibold))
+                                .padding(.horizontal, 10).padding(.vertical, 4)
+                                .background(.ultraThinMaterial, in: Capsule())
+                        }
+                        if let h = model.roomHint {
+                            Text(h)
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 12).padding(.vertical, 5)
+                                .background(Color.orange.opacity(0.9), in: Capsule())
+                        }
+                    }
+                }
 
                 Spacer()
 
@@ -108,22 +136,43 @@ struct ContentView: View {
                     .padding(.horizontal, 12)
                 }
 
-                Text("Замеров: \(model.measurements.count) · меток: \(model.labels.count)")
-                    .font(.system(size: 12))
-                    .padding(.horizontal, 10).padding(.vertical, 4)
-                    .background(.ultraThinMaterial, in: Capsule())
+                if model.phase == .preview {
+                    VStack(spacing: 10) {
+                        if RoomWalls.isSupported {
+                            Toggle("Авто-стены, окна, двери (RoomPlan)", isOn: $model.useRoomPlan)
+                                .font(.system(size: 14, weight: .medium))
+                                .padding(.horizontal, 14).padding(.vertical, 8)
+                                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+                        }
+                        Button { model.startScanning() } label: {
+                            Label("Начать замер", systemImage: "record.circle")
+                                .font(.system(size: 20, weight: .bold))
+                                .frame(maxWidth: .infinity, minHeight: 64)
+                                .foregroundColor(.white)
+                                .background(Color.green.opacity(0.92), in: RoundedRectangle(cornerRadius: 16))
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 10)
+                } else {
+                    Text("Замеров: \(model.measurements.count) · меток: \(model.labels.count) · фото: \(model.photoCount)")
+                        .font(.system(size: 12))
+                        .padding(.horizontal, 10).padding(.vertical, 4)
+                        .background(.ultraThinMaterial, in: Capsule())
 
-                HStack(spacing: 8) {
-                    BigButton(title: model.measuring ? "Готово" : "Измерить",
-                              color: model.measuring ? .orange : .gray) { model.toggleMeasure() }
-                    BigButton(title: "Отменить", color: .gray) { model.undo() }
-                        .disabled(!model.canUndo)
-                        .opacity(model.canUndo ? 1 : 0.5)
-                    BigButton(title: "Сохранить", color: .blue) { model.export() }
-                    BigButton(title: "Заново", color: .gray) { model.confirmReset = true }
+                    HStack(spacing: 8) {
+                        BigButton(title: model.phase == .paused ? "Продолжить" : "Пауза",
+                                  color: model.phase == .paused ? .green : .gray) { model.togglePause() }
+                        BigButton(title: model.measuring ? "Готово" : "Измерить",
+                                  color: model.measuring ? .orange : .gray) { model.toggleMeasure() }
+                        BigButton(title: "Отменить", color: .gray) { model.undo() }
+                            .disabled(!model.canUndo)
+                            .opacity(model.canUndo ? 1 : 0.5)
+                        BigButton(title: "Сохранить", color: .blue) { model.export() }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 10)
                 }
-                .padding(.horizontal, 12)
-                .padding(.bottom, 10)
             }
         }
         .fullScreenCover(isPresented: $showFitting, onDismiss: { model.resume() }) {
@@ -156,6 +205,25 @@ struct ContentView: View {
             set: { if !$0 { model.errorText = nil } })) {
             Button("Понятно", role: .cancel) {}
         }
+    }
+}
+
+/// Покрытие скана: сколько поверхности снято хорошо (зелёное).
+struct CoverageBar: View {
+    let percent: Int
+    var body: some View {
+        let c: Color = percent >= 85 ? .green : (percent >= 60 ? .yellow : .red)
+        HStack(spacing: 8) {
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.white.opacity(0.25)).frame(width: 120, height: 8)
+                Capsule().fill(c).frame(width: CGFloat(max(0, min(100, percent))) * 1.2, height: 8)
+            }
+            Text("Покрытие \(percent)%")
+                .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                .foregroundColor(c)
+        }
+        .padding(.horizontal, 12).padding(.vertical, 6)
+        .background(.ultraThinMaterial, in: Capsule())
     }
 }
 
@@ -207,7 +275,7 @@ struct ARViewContainer: UIViewRepresentable {
         let view = model.arView
         let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.tapped(_:)))
         view.addGestureRecognizer(tap)
-        model.startScan()
+        model.startPreview()
         return view
     }
 

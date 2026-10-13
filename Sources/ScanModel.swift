@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import ARKit
 import RealityKit
+import RoomPlan
 
 enum MeasureKind: String, Codable { case distance, angle }
 
@@ -35,8 +36,17 @@ struct ScanMeasure: Codable {
     }
 }
 
+/// preview — камера включена, ничего не пишется; scanning — идёт скан; paused — скан на паузе.
+enum ScanPhase { case preview, scanning, paused }
+
 final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
     let arView = ARView(frame: .zero, cameraMode: .ar, automaticallyConfigureSession: false)
+
+    @Published var phase: ScanPhase = .preview
+    @Published var useRoomPlan = RoomWalls.isSupported
+    @Published var coverage = 0               // % хорошо снятой поверхности
+    @Published var wallsText: String?         // сводка RoomPlan
+    @Published var roomHint: String?          // подсказка RoomPlan
 
     @Published var status = "Запуск…"
     @Published var measuring = false
@@ -57,12 +67,14 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
     @Published var pitchDeg: Double = 0
 
     private var picks: [SIMD3<Float>] = []
-    private var lastLevelUpdate: TimeInterval = 0
     private var markerAnchors: [AnchorEntity] = []      // текущий незаконченный замер
     private var history: [(kind: String, anchors: [AnchorEntity])] = []   // для «Отменить»
     let photos = KeyframeRecorder()
-    private var statusTimer: Timer?
     private var tracking = "—"
+    private var pollTimer: Timer?
+    private var scanStarted: TimeInterval = 0
+    private(set) lazy var meshes = MeshCoverage(view: arView)
+    private var walls: RoomWalls?
 
     override init() {
         super.init()
@@ -72,12 +84,12 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
 
     // MARK: скан
 
-    func startScan() {
-        guard ARWorldTrackingConfiguration.supportsSceneReconstruction(.meshWithClassification) else {
-            status = "Нет LiDAR на этом устройстве"
-            errorText = "Для 3D-скана нужен iPhone/iPad Pro с LiDAR."
-            return
-        }
+    private var hasLiDAR: Bool {
+        ARWorldTrackingConfiguration.supportsSceneReconstruction(.meshWithClassification)
+    }
+
+    /// Полная конфигурация скана: LiDAR-сетка с типами поверхностей + глубина.
+    private func scanConfig() -> ARWorldTrackingConfiguration {
         let cfg = ARWorldTrackingConfiguration()
         cfg.sceneReconstruction = .meshWithClassification
         cfg.planeDetection = [.horizontal, .vertical]
@@ -85,21 +97,73 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
             cfg.frameSemantics.insert(.sceneDepth)
         }
-        arView.debugOptions = [.showSceneUnderstanding]
-        arView.session.run(cfg, options: [.resetTracking, .removeExistingAnchors])
+        return cfg
+    }
 
-        statusTimer?.invalidate()
-        statusTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.refreshStatus()
+    /// Шаг 1: просто камера. Скан не идёт, пока не нажата «Начать замер».
+    func startPreview() {
+        guard hasLiDAR else {
+            status = "Нет LiDAR на этом устройстве"
+            errorText = "Для 3D-скана нужен iPhone/iPad Pro с LiDAR."
+            return
+        }
+        phase = .preview
+        let cfg = ARWorldTrackingConfiguration()
+        cfg.planeDetection = [.horizontal, .vertical]
+        arView.debugOptions = []
+        arView.session.run(cfg, options: [.resetTracking, .removeExistingAnchors])
+        startPolling()
+        status = "Камера включена — нажми «Начать замер»"
+    }
+
+    /// Шаг 2: пошёл скан — сетка, фото, стены RoomPlan.
+    func startScanning() {
+        guard hasLiDAR else { return }
+        meshes.reset()
+        walls?.clear(); walls = nil
+        wallsText = nil; roomHint = nil; coverage = 0
+        photos.reset(); photoCount = 0
+        scanStarted = CACurrentMediaTime()
+        if useRoomPlan && RoomWalls.isSupported {
+            let w = RoomWalls(view: arView)
+            w.onUpdate = { [weak self] t in self?.wallsText = t }
+            w.onInstruction = { [weak self] t in self?.roomHint = t }
+            walls = w
+            w.start(on: arView.session)   // RoomPlan сам запускает сеанс с LiDAR-сеткой
+        } else {
+            arView.session.run(scanConfig(), options: [.resetTracking, .removeExistingAnchors])
+        }
+        phase = .scanning
+        startPolling()
+    }
+
+    func togglePause() {
+        switch phase {
+        case .scanning: phase = .paused
+        case .paused: phase = .scanning
+        case .preview: startScanning()
+        }
+    }
+
+    private func startPolling() {
+        guard pollTimer == nil else { return }
+        // Опрос кадра 10 раз в секунду — работает, даже если RoomPlan забрал делегат сеанса.
+        pollTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            self?.poll()
         }
     }
 
     /// На время примерки основной скан ставится на паузу (две AR-сессии сразу нельзя).
-    func pause() { arView.session.pause() }
+    func pause() {
+        walls?.stop(pauseARSession: false)
+        arView.session.pause()
+    }
 
     func resume() {
-        guard let cfg = arView.session.configuration else { startScan(); return }
-        arView.session.run(cfg)   // без сброса: скан продолжается
+        if phase == .preview { startPreview(); return }
+        // RoomPlan после примерки не перезапускаем: найденные стены остаются, LiDAR-скан продолжается
+        arView.session.run(scanConfig())
+        arView.session.delegate = self
     }
 
     func resetScan() {
@@ -112,21 +176,45 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         measurements.removeAll()
         distanceText = nil
         picks.removeAll()
-        startScan()
+        measuring = false
+        walls?.clear(); walls = nil
+        wallsText = nil; roomHint = nil
+        meshes.reset()
+        coverage = 0
+        startPreview()
     }
 
-    private func meshAnchors() -> [ARMeshAnchor] {
-        arView.session.currentFrame?.anchors.compactMap { $0 as? ARMeshAnchor } ?? []
+    private func poll() {
+        guard let frame = arView.session.currentFrame else { return }
+        let (r, p) = Self.tilt(frame.camera.transform)
+        rollDeg = r; pitchDeg = p
+        tracking = Self.trackingText(frame.camera.trackingState)
+        switch phase {
+        case .preview:
+            status = "Камера · \(tracking) — нажми «Начать замер»"
+        case .paused:
+            status = "Пауза · покрытие \(coverage)%"
+        case .scanning:
+            if photos.consider(frame) { photoCount = photos.count }
+            let mesh = frame.anchors.compactMap { $0 as? ARMeshAnchor }
+            meshes.ingest(mesh, now: frame.timestamp)
+            coverage = meshes.coveragePercent
+            status = "Скан · покрытие \(coverage)% · \(tracking)"
+            // Если RoomPlan не отдаёт LiDAR-сетку — переходим на обычный скан без авто-стен
+            if walls != nil, meshes.isEmpty, CACurrentMediaTime() - scanStarted > 8 {
+                walls?.stop(pauseARSession: false)
+                walls?.clear(); walls = nil
+                wallsText = nil; roomHint = nil
+                arView.session.run(scanConfig())
+                arView.session.delegate = self
+                errorText = "Авто-стены RoomPlan не дали сетку на этом телефоне — скан продолжен в обычном режиме."
+            }
+        }
     }
 
-    private func refreshStatus() {
-        let faces = meshAnchors().reduce(0) { $0 + $1.geometry.faces.count }
-        status = "Сетка: \(faces.formatted()) треуг. · \(tracking)"
-    }
-
-    func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
+    private static func trackingText(_ s: ARCamera.TrackingState) -> String {
         let t: String
-        switch camera.trackingState {
+        switch s {
         case .normal: t = "отслеживание ок"
         case .notAvailable: t = "нет отслеживания"
         case .limited(let r):
@@ -137,24 +225,16 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
             @unknown default: t = "ограничено"
             }
         }
-        DispatchQueue.main.async { self.tracking = t }
+        return t
     }
+
+    func sessionShouldAttemptRelocalization(_ session: ARSession) -> Bool { true }
 
     func session(_ session: ARSession, didFailWithError error: Error) {
         DispatchQueue.main.async { self.errorText = "Ошибка AR: \(error.localizedDescription)" }
     }
 
     // MARK: уровень телефона
-
-    func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        if photos.consider(frame) {
-            DispatchQueue.main.async { self.photoCount = self.photos.count }
-        }
-        guard frame.timestamp - lastLevelUpdate > 0.1 else { return }
-        lastLevelUpdate = frame.timestamp
-        let (r, p) = Self.tilt(frame.camera.transform)
-        DispatchQueue.main.async { self.rollDeg = r; self.pitchDeg = p }
-    }
 
     /// Наклон телефона в портретной ориентации: влево/вправо и вверх/вниз, градусы.
     static func tilt(_ t: simd_float4x4) -> (roll: Double, pitch: Double) {
@@ -332,11 +412,16 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
     // MARK: сохранение
 
     func export() {
-        let anchors = meshAnchors()
+        if phase == .preview {
+            errorText = "Скан ещё не начат. Нажми «Начать замер» и поводи телефоном по комнате."
+            return
+        }
+        let anchors = meshes.anchors
         guard !anchors.isEmpty else {
             errorText = "Сетка ещё пустая. Поводи телефоном по комнате."
             return
         }
+        let room = walls?.room
         let planes = arView.session.currentFrame?.anchors.compactMap { $0 as? ARPlaneAnchor } ?? []
         let meas = measurements
         let labs = labels
@@ -346,18 +431,19 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         // Карта комнаты: по ней телефон потом узнаёт помещение для примерки мебели.
         arView.session.getCurrentWorldMap { map, _ in
             self.writeExport(anchors: anchors, planes: planes, meas: meas, labs: labs,
-                             cal: cal, photoSet: photoSet, map: map)
+                             cal: cal, photoSet: photoSet, map: map, room: room)
         }
     }
 
     private func writeExport(anchors: [ARMeshAnchor], planes: [ARPlaneAnchor], meas: [ScanMeasure],
                              labs: [ScanLabel], cal: Calibration,
-                             photoSet: (dir: URL, frames: [KeyframeRecorder.Frame]), map: ARWorldMap?) {
+                             photoSet: (dir: URL, frames: [KeyframeRecorder.Frame]), map: ARWorldMap?,
+                             room: CapturedRoom?) {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let zip = try Exporter.write(meshAnchors: anchors, planes: planes, measurements: meas,
                                              labels: labs, calibration: cal, photos: photoSet,
-                                             worldMap: map)
+                                             worldMap: map, room: room)
                 DispatchQueue.main.async {
                     self.status = "Сохранено: \(zip.lastPathComponent)"
                     self.shareItem = ShareItem(urls: [zip])

@@ -2,7 +2,7 @@ name: Zamer3D
 options:
   bundleIdPrefix: ru.usenko
   deploymentTarget:
-    iOS: "16.0"
+    iOS: "17.0"
 targets:
   Zamer3D:
     type: application
@@ -12,8 +12,8 @@ targets:
       path: Sources/Info.plist
       properties:
         CFBundleDisplayName: "Замер 3D"
-        CFBundleShortVersionString: "1.0"
-        CFBundleVersion: "1"
+        CFBundleShortVersionString: "1.1"
+        CFBundleVersion: "2"
         NSCameraUsageDescription: "Камера и LiDAR нужны для 3D-скана помещения."
         UIRequiredDeviceCapabilities: [arkit]
         UIFileSharingEnabled: true

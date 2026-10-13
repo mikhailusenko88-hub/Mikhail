@@ -1,5 +1,6 @@
 import Foundation
 import ARKit
+import RoomPlan
 
 /// Пишет LiDAR-сетку в OBJ (группы по типу поверхности) и сводку в JSON.
 enum Exporter {
@@ -13,7 +14,7 @@ enum Exporter {
     }
     struct Info: Codable {
         var app = "Zamer3D"
-        var version = 3
+        var version = 4
         var created: String
         var units = "m"
         var upAxis = "Y"
@@ -25,13 +26,14 @@ enum Exporter {
         var calibration: Calibration   // сетка в OBJ — сырая; поправку применяет обработка
         var device: String
         var photos: [KeyframeRecorder.Frame]
+        var roomPlan: [RoomSurface]?   // стены С1…, окна О1…, двери Д1…, проёмы П1… от RoomPlan
     }
 
     /// Пишет папку скана и возвращает её ZIP (один файл — удобно отправить).
     static func write(meshAnchors: [ARMeshAnchor], planes: [ARPlaneAnchor],
                       measurements: [ScanMeasure], labels: [ScanLabel], calibration: Calibration,
                       photos: (dir: URL, frames: [KeyframeRecorder.Frame]),
-                      worldMap: ARWorldMap?) throws -> URL {
+                      worldMap: ARWorldMap?, room: CapturedRoom?) throws -> URL {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd_HH-mm"
         let stamp = df.string(from: Date())
@@ -122,7 +124,9 @@ enum Exporter {
         }
         let info = Info(created: iso, vertices: vCount, triangles: tCount,
                         measurements: measurements, planes: planeInfos, labels: labels,
-                        calibration: calibration, device: deviceModel(), photos: saved)
+                        calibration: calibration, device: deviceModel(), photos: saved,
+                        roomPlan: room.map { RoomWalls.surfaces($0) })
+        if let room = room { RoomWalls.write(room, to: dir) }
         let enc = JSONEncoder()
         enc.outputFormatting = [.prettyPrinted, .sortedKeys]
         let jsonURL = dir.appendingPathComponent("info.json")
