@@ -256,7 +256,7 @@ export function toProject(body, title = 'Мебель') {
       const fb = isFinite(v.facade.min[0]) ? v.facade : v.b, bb = isFinite(v.box.min[0]) ? v.box : v.b;
       const depth = Math.round(alongX ? bb.max[0] - bb.min[0] : bb.max[2] - bb.min[2]);
       const it = { kind:v.kind, y:Math.round(fb.min[1] - y0), h:Math.round(fb.max[1] - fb.min[1]),
-        boxH:Math.round(bb.max[1] - bb.min[1]), depth, name:v.name };
+        boxH:Math.round(bb.max[1] - bb.min[1]), boxY:Math.round(bb.min[1] - fb.min[1]), depth, name:v.name };
       if (v.kind === 'drawer') it.travel = v.fs ? 440 : 400; else it.travel = 420;
       if (v.kind !== 'drawer') { it.y = Math.round(v.b.min[1] - y0); it.h = Math.round(v.b.max[1] - v.b.min[1]); }
       items.push(it);
