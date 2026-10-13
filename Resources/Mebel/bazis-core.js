@@ -188,7 +188,7 @@ export function toProject(body, title = 'Мебель') {
       let mv = mover;
       if (type === 1005 && /^(Ящик|Корзина|Брючница)/.test(name)) {
         const kind = name.startsWith('Ящик') ? 'drawer' : name.startsWith('Корзина') ? 'basket' : 'trousers';
-        mv = { kind, name, fs:/FS|скрыт/i.test(name), b:box(), facade:box(), box:box(), id:movers.length };
+        mv = { kind, name, fs:/FS|скрыт/i.test(name), b:box(), facade:box(), box:box(), bottom:Infinity, id:movers.length };
         movers.push(mv);
       }
       if (type === 4002 || type === 2004) {
@@ -203,7 +203,8 @@ export function toProject(body, title = 'Мебель') {
         const p = { name, code:m ? m[1] : '', part:m ? m[2] : name, mat, th, b, prof:type === 2004, mv };
         panels.push(p);
         if (mv) { grow(mv.b, b.min); grow(mv.b, b.max);
-          const t = /Фасад/i.test(name) ? mv.facade : mv.box; grow(t, b.min); grow(t, b.max); }
+          const isF = /Фасад/i.test(name), t = isF ? mv.facade : mv.box; grow(t, b.min); grow(t, b.max);
+          if (!isF && b.max[1] - b.min[1] <= th + 0.5) mv.bottom = Math.min(mv.bottom, b.min[1]); }   // горизонтальная деталь короба — дно
       } else if (type === 10000 && mv) {
         const td = val(o, 'TriData');
         if (td) for (const t of triMeshes(td)) for (let i = 0; i < t.pos.length; i += 3)
@@ -249,6 +250,12 @@ export function toProject(body, title = 'Мебель') {
     const thick = Math.round(side.th || 16);
     const shelves = m.panels.filter(p => /Полк/i.test(p.part)).map(p => Math.round(p.b.min[1] - y0)).sort((a, b) => a - b);
     const shelf = m.panels.find(p => /Полк/i.test(p.part));
+    // по глубине: фасадная грань модуля и задняя; зазоры полки спереди/сзади; толщина задней стенки
+    const ax = alongX ? 0 : 2, fwd = alongX ? n[0] : n[1];
+    const frontC = fwd > 0 ? m.b.max[ax] : m.b.min[ax], backC = fwd > 0 ? m.b.min[ax] : m.b.max[ax];
+    const shelfGap = shelf ? [Math.round(Math.abs(frontC - (fwd > 0 ? shelf.b.max[ax] : shelf.b.min[ax]))),
+                              Math.round(Math.abs((fwd > 0 ? shelf.b.min[ax] : shelf.b.max[ax]) - backC))] : undefined;
+    const backTh = back ? Math.round(back.th || 3) : 0;
     // выдвижные элементы этого модуля
     const items = [];
     for (const v of movers) {
@@ -256,7 +263,9 @@ export function toProject(body, title = 'Мебель') {
       const fb = isFinite(v.facade.min[0]) ? v.facade : v.b, bb = isFinite(v.box.min[0]) ? v.box : v.b;
       const depth = Math.round(alongX ? bb.max[0] - bb.min[0] : bb.max[2] - bb.min[2]);
       const it = { kind:v.kind, y:Math.round(fb.min[1] - y0), h:Math.round(fb.max[1] - fb.min[1]),
-        boxH:Math.round(bb.max[1] - bb.min[1]), boxY:Math.round(bb.min[1] - fb.min[1]), depth, name:v.name };
+        boxH:Math.round(bb.max[1] - bb.min[1]), boxY:Math.round(bb.min[1] - fb.min[1]),
+        boxW:Math.round(alongX ? bb.max[2] - bb.min[2] : bb.max[0] - bb.min[0]),
+        bottomY:isFinite(v.bottom) ? Math.round(v.bottom - bb.min[1]) : 0, depth, name:v.name };
       if (v.kind === 'drawer') it.travel = v.fs ? 440 : 400; else it.travel = 420;
       if (v.kind !== 'drawer') { it.y = Math.round(v.b.min[1] - y0); it.h = Math.round(v.b.max[1] - v.b.min[1]); }
       items.push(it);
@@ -269,7 +278,7 @@ export function toProject(body, title = 'Мебель') {
       x:Math.round(c[0]), y:Math.round(c[1]), z:Math.round(c[2]), rotY,
       color:colorOf(side.mat), colorName:short(side.mat),
       opts:{ doors:0, drawers:nd, shelves:shelves.length, shelvesAt:shelves, front:'open', plinth:Math.round(y0), thick,
-        shelfColor:shelf ? colorOf(shelf.mat) : undefined, items } });
+        shelfColor:shelf ? colorOf(shelf.mat) : undefined, shelfGap, backTh, items } });
   }
   out.sort((a, b) => a.code.localeCompare(b.code, 'ru'));
 

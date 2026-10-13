@@ -129,8 +129,8 @@ function buildItem(T, it, W, H, D, t, color) {
   if (it.kind === 'drawer') {
     const fm = new T.MeshStandardMaterial({ color }), bm = new T.MeshStandardMaterial({ color:'#e9e3d8' });
     box(iw - 0.003, mm(it.h), t, 0, y0 + mm(it.h) / 2, front - t / 2, fm);
-    const bw = iw - 0.026, bd = Math.min(mm(it.depth || 450), D - t - 0.02), bh = mm(it.boxH || it.h - 30), by = y0 + mm(it.boxY ?? 10), z1 = front - t, z0 = z1 - bd, s = 0.016;
-    box(bw, s, bd, 0, by + s / 2, (z0 + z1) / 2, bm);
+    const bw = it.boxW ? mm(it.boxW) : iw - 0.026, bd = Math.min(mm(it.depth || 450), D - t - 0.02), bh = mm(it.boxH || it.h - 30), by = y0 + mm(it.boxY ?? 10), z1 = front - t, z0 = z1 - bd, s = 0.016;
+    box(bw - 2 * s, s, bd - s, 0, by + mm(it.bottomY || 0) + s / 2, (z0 + z1) / 2 + s / 2, bm);   // дно между боками, перед задней стенкой
     box(s, bh, bd, -bw / 2 + s / 2, by + bh / 2, (z0 + z1) / 2, bm); box(s, bh, bd, bw / 2 - s / 2, by + bh / 2, (z0 + z1) / 2, bm);
     box(bw, bh, s, 0, by + bh / 2, z0 + s / 2, bm);
   } else {
@@ -189,9 +189,10 @@ function buildModule(T, m, on) {
   if (carcass) {   // открытый шкаф: видимый корпус из плит, внутри полки и выдвижное
     const t = (o.thick || 16) / 1000, cm = new T.MeshStandardMaterial({ color:m.color || '#e8e2d6', emissive: on ? 0x332000 : 0x000000 });
     const pl = (w, h, d, x, y, z, mat) => { const b = new T.Mesh(new T.BoxGeometry(w, h, d), mat || cm); b.position.set(x, y, z); b.userData.code = m.code; root.add(b); };
-    pl(t, H, D, -W / 2 + t / 2, 0, 0); pl(t, H, D, W / 2 - t / 2, 0, 0);
-    pl(W - 2 * t, t, D, 0, H / 2 - t / 2, 0); pl(W - 2 * t, t, D, 0, -H / 2 + t / 2, 0);
-    pl(W - 2 * t, H - 2 * t, 0.003, 0, 0, -D / 2 + 0.0015, new T.MeshStandardMaterial({ color:'#e4d6bf' }));
+    const bt = (o.backTh ?? 3) / 1000, cd = D - bt, cz = bt / 2;          // задняя стенка накладная: корпус глубиной D − bt, стенка за ним
+    pl(t, H, cd, -W / 2 + t / 2, 0, cz); pl(t, H, cd, W / 2 - t / 2, 0, cz);
+    pl(W - 2 * t, t, cd, 0, H / 2 - t / 2, cz); pl(W - 2 * t, t, cd, 0, -H / 2 + t / 2, cz);
+    if (bt > 0) pl(W - 0.002, H - 0.002, bt, 0, 0, -D / 2 + bt / 2, new T.MeshStandardMaterial({ color:'#e4d6bf' }));
     (o.items || []).forEach((it, i) => {
       const g = buildItem(T, it, W, H, D, t, o.shelfColor || m.color || '#e8e2d6');
       const key = m.code + ':' + i, st = (typeof SLIDE !== 'undefined') && SLIDE[key];
@@ -236,7 +237,8 @@ function buildModule(T, m, on) {
     const at = Array.isArray(o.shelvesAt) && o.shelvesAt.length ? o.shelvesAt : null;
     const sm = new T.MeshStandardMaterial({ color:o.shelfColor || m.color || '#e8e2d6' });
     for (let i = 1; i <= (at ? at.length : n); i++) {
-      const s = new T.Mesh(new T.BoxGeometry(W - 2 * t, t, D - 0.02), sm);
+      const gf = (o.shelfGap?.[0] ?? 10) / 1000, gb = (o.shelfGap?.[1] ?? 10) / 1000;
+      const s = new T.Mesh(new T.BoxGeometry(W - 2 * t, t, D - gf - gb), sm); s.position.z = (gb - gf) / 2;
       s.position.y = at ? -H / 2 + at[i - 1] / 1000 + t / 2 : -H / 2 + H * i / (n + 1); s.userData.code = m.code; root.add(s);
     }
   }
@@ -633,8 +635,8 @@ function clientHTML(number) {
   const mods = state.modules.map(m => ({ code:m.code, name:m.name, type:m.type, w:m.w, h:m.h, d:m.d, x:m.x, y:m.y, z:m.z, rotY:m.rotY || 0,
     color:m.color, colorName:m.colorName || '', opts:{ doors:m.opts?.doors, drawers:m.opts?.drawers, shelves:m.opts?.shelves,
       front:m.opts?.front, hinge:m.opts?.hinge, handle:m.opts?.handle, thick:m.opts?.thick,
-      shelvesAt:m.opts?.shelvesAt, shelfColor:m.opts?.shelfColor,
-      items:(m.opts?.items || []).map(i => ({ kind:i.kind, y:i.y, h:i.h, boxH:i.boxH, boxY:i.boxY, depth:i.depth, travel:i.travel })) } }));
+      shelvesAt:m.opts?.shelvesAt, shelfColor:m.opts?.shelfColor, shelfGap:m.opts?.shelfGap, backTh:m.opts?.backTh,
+      items:(m.opts?.items || []).map(i => ({ kind:i.kind, y:i.y, h:i.h, boxH:i.boxH, boxY:i.boxY, boxW:i.boxW, bottomY:i.bottomY, depth:i.depth, travel:i.travel })) } }));
   const walls = state.walls.map(s => ({ kind:s.kind, transform:s.transform, widthMm:s.widthMm, heightMm:s.heightMm }));
   const title = `Проект ${number} — ${state.name}`;
   return `<!doctype html><html lang="ru"><head><meta charset="utf-8">
