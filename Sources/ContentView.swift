@@ -5,6 +5,7 @@ import RealityKit
 struct ContentView: View {
     @StateObject private var model = ScanModel()
     @State private var showFitting = false
+    @State private var showMebel = false
 
     var body: some View {
         ZStack {
@@ -44,6 +45,13 @@ struct ContentView: View {
                             .background(.ultraThinMaterial, in: Circle())
                     }
                     .accessibilityLabel("Примерка мебели")
+                    Button { model.pause(); showMebel = true } label: {
+                        Image(systemName: "square.stack.3d.up")
+                            .font(.system(size: 17, weight: .semibold))
+                            .frame(width: 38, height: 38)
+                            .background(.ultraThinMaterial, in: Circle())
+                    }
+                    .accessibilityLabel("Мебель")
                     if model.phase != .preview {
                         Button { model.confirmReset = true } label: {
                             Image(systemName: "arrow.counterclockwise")
@@ -177,6 +185,9 @@ struct ContentView: View {
         }
         .fullScreenCover(isPresented: $showFitting, onDismiss: { model.resume() }) {
             FittingView()
+        }
+        .fullScreenCover(isPresented: $showMebel, onDismiss: { model.resume() }) {
+            MebelView()
         }
         .sheet(item: $model.shareItem) { item in
             ShareSheet(items: item.urls)

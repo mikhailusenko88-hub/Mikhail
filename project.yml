@@ -7,13 +7,17 @@ targets:
   Zamer3D:
     type: application
     platform: iOS
-    sources: [Sources]
+    sources:
+      - Sources
+      - path: Resources/Mebel
+        type: folder
+        buildPhase: resources
     info:
       path: Sources/Info.plist
       properties:
         CFBundleDisplayName: "Замер 3D"
-        CFBundleShortVersionString: "1.1"
-        CFBundleVersion: "2"
+        CFBundleShortVersionString: "1.2"
+        CFBundleVersion: "3"
         NSCameraUsageDescription: "Камера и LiDAR нужны для 3D-скана помещения."
         UIRequiredDeviceCapabilities: [arkit]
         UIFileSharingEnabled: true

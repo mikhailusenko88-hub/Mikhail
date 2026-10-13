@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Мебель</title>
+<style>
+  :root { --bg:#1c1d20; --panel:rgba(30,31,35,.94); --line:#3a3c42; --text:#f2f2f2; --dim:#9a9ca3; --acc:#ff9f0a; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--text);
+    font:15px -apple-system,system-ui,sans-serif; overflow:hidden; -webkit-user-select:none; user-select:none; }
+  #view { position:fixed; inset:0; }
+  .bar { position:fixed; left:0; right:0; display:flex; gap:6px; padding:8px 10px; overflow-x:auto; }
+  #top { top:env(safe-area-inset-top); }
+  #bottom { bottom:0; padding-bottom:calc(8px + env(safe-area-inset-bottom)); flex-direction:column; background:var(--panel); border-top:1px solid var(--line); }
+  button { background:#2c2e33; color:var(--text); border:1px solid var(--line); border-radius:10px;
+    padding:9px 12px; font:inherit; font-weight:600; white-space:nowrap; }
+  button.acc { background:var(--acc); color:#000; border-color:var(--acc); }
+  .row { display:flex; gap:6px; overflow-x:auto; align-items:center; }
+  .chip.on { background:var(--acc); color:#000; }
+  label { display:flex; flex-direction:column; font-size:11px; color:var(--dim); gap:2px; }
+  input { width:64px; background:#111; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:7px; font:inherit; }
+  input[type=color] { width:44px; height:34px; padding:2px; }
+  #sel { font-weight:700; min-width:40px; }
+  #msg { position:fixed; top:calc(56px + env(safe-area-inset-top)); left:50%; transform:translateX(-50%);
+    background:var(--panel); padding:6px 12px; border-radius:20px; font-size:13px; pointer-events:none; }
+</style>
+</head>
+<body>
+<div id="view"></div>
+<div id="top" class="bar">
+  <button id="close">✕</button>
+  <button data-add="base">+ Тумба</button>
+  <button data-add="wall">+ Верхний</button>
+  <button data-add="tall">+ Пенал</button>
+  <button data-add="wardrobe">+ Шкаф</button>
+  <button id="save" class="acc">Сохранить</button>
+</div>
+<div id="msg"></div>
+<div id="bottom">
+  <div class="row" id="list"></div>
+  <div class="row" id="edit">
+    <span id="sel">—</span>
+    <label>Ш, мм<input id="w" type="number" inputmode="numeric"></label>
+    <label>В, мм<input id="h" type="number" inputmode="numeric"></label>
+    <label>Г, мм<input id="d" type="number" inputmode="numeric"></label>
+    <label>X, мм<input id="x" type="number" inputmode="numeric"></label>
+    <label>Z, мм<input id="z" type="number" inputmode="numeric"></label>
+    <label>От пола<input id="y0" type="number" inputmode="numeric"></label>
+    <label>Поворот°<input id="r" type="number" inputmode="numeric"></label>
+    <label>Цвет<input id="c" type="color"></label>
+    <label>Свой цвет<input id="cn" type="text" placeholder="Egger…" style="width:96px"></label>
+    <button id="dup">Копия</button>
+    <button id="del">Удалить</button>
+  </div>
+</div>
+
+<script type="importmap">{ "imports": { "three": "./three.module.min.js" } }</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from './OrbitControls.js';
+
+// Модули в миллиметрах, в системе координат скана (Y вверх) — тот же формат, что kitchen.json для примерки.
+const PRESETS = {
+  base:     { name:'Тумба',   w:600, h:820,  d:560, y0:100,  letter:'Н' },
+  wall:     { name:'Верхний', w:600, h:720,  d:320, y0:1450, letter:'В' },
+  tall:     { name:'Пенал',   w:600, h:2100, d:560, y0:100,  letter:'П' },
+  wardrobe: { name:'Шкаф',    w:1000,h:2400, d:600, y0:0,    letter:'Ш' },
+};
+const state = { name:'Мебель', modules:[], walls:[], sel:null };
+
+const view = document.getElementById('view');
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+view.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1c1d20);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 100);
+camera.position.set(3, 3, 4);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.1));
+const sun = new THREE.DirectionalLight(0xffffff, 1.2); sun.position.set(3, 6, 4); scene.add(sun);
+const grid = new THREE.GridHelper(10, 20, 0x555555, 0x333333); scene.add(grid);
+const roomGroup = new THREE.Group(); scene.add(roomGroup);
+const modGroup = new THREE.Group(); scene.add(modGroup);
+
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+(function loop() { requestAnimationFrame(loop); controls.update(); renderer.render(scene, camera); })();
+
+const msg = t => { const m = document.getElementById('msg'); m.textContent = t; m.style.opacity = t ? 1 : 0; };
+
+function labelSprite(text) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 96;
+  const g = c.getContext('2d');
+  g.fillStyle = 'rgba(0,0,0,.65)'; g.fillRect(0, 0, 256, 96);
+  g.fillStyle = '#fff'; g.font = 'bold 54px -apple-system,sans-serif';
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, 128, 50);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(c), depthTest:false }));
+  s.scale.set(0.3, 0.11, 1); s.renderOrder = 10;
+  return s;
+}
+
+// ---------- комната из скана (стены RoomPlan) ----------
+function drawRoom() {
+  roomGroup.clear();
+  if (!state.walls.length) { grid.visible = true; return; }
+  let minY = Infinity;
+  for (const s of state.walls) {
+    const m = new THREE.Matrix4().fromArray(s.transform);
+    const w = s.widthMm / 1000, h = s.heightMm / 1000;
+    const isWall = s.kind === 'wall';
+    const mat = new THREE.MeshStandardMaterial({ color: isWall ? 0xd9d6cf : (s.kind === 'window' ? 0x7fd3ff : 0xffd34d),
+      transparent:true, opacity: isWall ? 0.55 : 0.8, side:THREE.DoubleSide });
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, isWall ? 0.02 : 0.04), mat);
+    mesh.applyMatrix4(m); roomGroup.add(mesh);
+    const lab = labelSprite(s.code); lab.applyMatrix4(m); lab.position.y += h / 2 + 0.08; roomGroup.add(lab);
+    const pos = new THREE.Vector3().setFromMatrixPosition(m);
+    if (isWall) minY = Math.min(minY, pos.y - h / 2);
+  }
+  grid.position.y = isFinite(minY) ? minY : 0;
+  state.floorY = isFinite(minY) ? Math.round(minY * 1000) : 0;
+  const box = new THREE.Box3().setFromObject(roomGroup), c = box.getCenter(new THREE.Vector3());
+  controls.target.copy(c); camera.position.set(c.x + 3, c.y + 3, c.z + 3);
+}
+
+// ---------- модули ----------
+function nextCode(letter) {
+  let n = 1; while (state.modules.some(m => m.code === letter + n)) n++;
+  return letter + n;
+}
+function add(type) {
+  const p = PRESETS[type], t = controls.target;
+  const fy = state.floorY || 0;
+  const m = { code:nextCode(p.letter), name:p.name, w:p.w, h:p.h, d:p.d,
+    x:Math.round(t.x * 1000), z:Math.round(t.z * 1000), y:fy + p.y0 + p.h / 2, rotY:0,
+    color:'#e8e2d6', colorName:'' };
+  state.modules.push(m); select(m.code); drawModules();
+}
+function drawModules() {
+  modGroup.clear();
+  for (const m of state.modules) {
+    const on = m.code === state.sel;
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(m.w / 1000, m.h / 1000, m.d / 1000),
+      new THREE.MeshStandardMaterial({ color:m.color, emissive: on ? 0x553300 : 0x000000 }));
+    mesh.position.set(m.x / 1000, m.y / 1000, m.z / 1000);
+    mesh.rotation.y = (m.rotY || 0) * Math.PI / 180;
+    mesh.userData.code = m.code;
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),
+      new THREE.LineBasicMaterial({ color: on ? 0xff9f0a : 0x222222 }));
+    mesh.add(edges);
+    const lab = labelSprite(m.code); lab.position.y = m.h / 2000 + 0.08; mesh.add(lab);
+    modGroup.add(mesh);
+  }
+  const list = document.getElementById('list'); list.innerHTML = '';
+  for (const m of state.modules) {
+    const b = document.createElement('button');
+    b.className = 'chip' + (m.code === state.sel ? ' on' : '');
+    b.textContent = `${m.code} ${m.w}×${m.h}×${m.d}`;
+    b.onclick = () => select(m.code);
+    list.appendChild(b);
+  }
+}
+const cur = () => state.modules.find(m => m.code === state.sel);
+const F = ['w','h','d','x','z','y0','r','c','cn'];
+function select(code) {
+  state.sel = code; const m = cur();
+  document.getElementById('sel').textContent = m ? m.code : '—';
+  if (m) {
+    const v = { w:m.w, h:m.h, d:m.d, x:m.x, z:m.z, y0:Math.round(m.y - m.h / 2 - (state.floorY || 0)),
+      r:m.rotY || 0, c:m.color, cn:m.colorName || '' };
+    for (const k of F) document.getElementById(k).value = v[k];
+  }
+  drawModules();
+}
+for (const k of F) document.getElementById(k).addEventListener('change', () => {
+  const m = cur(); if (!m) return;
+  const num = id => Number(document.getElementById(id).value) || 0;
+  const y0 = num('y0');
+  m.w = num('w'); m.h = num('h'); m.d = num('d'); m.x = num('x'); m.z = num('z'); m.rotY = num('r');
+  m.y = (state.floorY || 0) + y0 + m.h / 2;
+  m.color = document.getElementById('c').value; m.colorName = document.getElementById('cn').value.trim();
+  drawModules();
+});
+document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => add(b.dataset.add));
+document.getElementById('del').onclick = () => {
+  state.modules = state.modules.filter(m => m.code !== state.sel); state.sel = null; select(null);
+};
+document.getElementById('dup').onclick = () => {
+  const m = cur(); if (!m) return;
+  const c = { ...m, code:nextCode(m.code.replace(/\d+$/, '')), x:m.x + m.w };
+  state.modules.push(c); select(c.code);
+};
+
+// касание модуля — выбрать
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let down = null;
+renderer.domElement.addEventListener('pointerdown', e => down = [e.clientX, e.clientY]);
+renderer.domElement.addEventListener('pointerup', e => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 8) return;
+  ptr.set(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1);
+  ray.setFromCamera(ptr, camera);
+  const hit = ray.intersectObjects(modGroup.children, false)[0];
+  if (hit) select(hit.object.userData.code);
+});
+
+// ---------- связь с приложением ----------
+const native = (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.mebel) || null;
+document.getElementById('save').onclick = () => {
+  const out = { name:state.name, modules:state.modules.map(m => ({ code:m.code, name:m.name,
+    x:m.x, y:m.y, z:m.z, w:m.w, h:m.h, d:m.d, rotY:m.rotY || 0, color:m.color, colorName:m.colorName || undefined })) };
+  if (native) native.postMessage({ type:'save', project:out }); else console.log(JSON.stringify(out));
+};
+document.getElementById('close').onclick = () => native && native.postMessage({ type:'close' });
+
+// Приложение вызывает: Mebel.load({ name, walls:[…RoomSurface], modules:[…] })
+window.Mebel = {
+  load(data) {
+    state.name = data.name || 'Мебель';
+    state.walls = data.walls || [];
+    drawRoom();
+    state.modules = (data.modules || []).map(m => ({ color:'#e8e2d6', colorName:'', ...m }));
+    select(state.modules[0] ? state.modules[0].code : null);
+    msg(state.walls.length ? `${state.name}: стен ${state.walls.filter(s => s.kind === 'wall').length}`
+                           : `${state.name}: в скане нет стен RoomPlan — ставь по сетке`);
+    setTimeout(() => msg(''), 3000);
+  },
+  saved(t) { msg(t); setTimeout(() => msg(''), 2500); },
+};
+if (native) native.postMessage({ type:'ready' }); else { drawRoom(); msg('Нет связи с приложением'); }
+</script>
+</body>
+</html>
