@@ -10,6 +10,8 @@ struct MebelView: View {
     @State private var scans: [String] = []
     @State private var scan: String?
     @State private var kind = "Кухня"
+    @State private var key = ""
+    @State private var keyStatus = GitHubKey.value == nil ? "Ключ не введён" : "Ключ сохранён ✓"
     static let kinds = ["Кухня", "Шкаф", "Гардеробная", "Тумба", "Консоль", "Прачечная", "Другое"]
 
     var body: some View {
@@ -23,6 +25,18 @@ struct MebelView: View {
                         Picker("Тип", selection: $kind) {
                             ForEach(Self.kinds, id: \.self) { Text($0) }
                         }
+                    }
+                    Section(header: Text("Ссылки клиентам"),
+                            footer: Text("Один раз: GitHub → Settings → Developer settings → Fine-grained tokens → доступ только к репозиторию Mikhail, Contents: Read and write. Ключ хранится в Связке ключей телефона.")) {
+                        SecureField("Ключ GitHub (github_pat_…)", text: $key)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                        Button("Сохранить и проверить ключ") {
+                            GitHubKey.set(key); key = ""
+                            keyStatus = "Проверяю…"
+                            Task { keyStatus = await ClientLink.check() }
+                        }
+                        Text(keyStatus).foregroundColor(.secondary)
                     }
                     Section("Скан комнаты") {
                         if scans.isEmpty {
@@ -88,7 +102,8 @@ struct MebelWeb: UIViewRepresentable {
             guard let body = message.body as? [String: Any], let type = body["type"] as? String else { return }
             switch type {
             case "ready": sendLoad()
-            case "save": save(body["project"])
+            case "save": save(body["project"], quiet: body["quiet"] as? Bool ?? false)
+            case "publish": publish(body)
             case "close": parent.onClose()
             default: break
             }
@@ -105,13 +120,58 @@ struct MebelWeb: UIViewRepresentable {
                      : dir.appendingPathComponent(FittingModel.kitchenFile)
             if let data = try? Data(contentsOf: file),
                let proj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let mods = proj["modules"] { payload["modules"] = mods }
+               let mods = proj["modules"] {
+                payload["modules"] = mods
+                if let link = proj["link"] { payload["link"] = link }
+            }
             guard let json = try? JSONSerialization.data(withJSONObject: payload),
                   let s = String(data: json, encoding: .utf8) else { return }
             web?.evaluateJavaScript("Mebel.load(\(s))")
         }
 
-        private func save(_ project: Any?) {
+        private func js(_ s: String) -> String {
+            (try? JSONEncoder().encode(s)).flatMap { String(data: $0, encoding: .utf8) } ?? "\"\""
+        }
+
+        private func say(_ t: String) { web?.evaluateJavaScript("Mebel.saved(\(js(t)))") }
+
+        /// «Ссылка клиенту»: номер 100/N и код → страница от редактора → GitHub (ветка mebel) → ссылка.
+        private func publish(_ body: [String: Any]) {
+            guard let web = web else { return }
+            let proj = body["project"] as? [String: Any]
+            let what = (body["what"] as? String) ?? parent.name
+            var existing: ClientLink.Link?
+            if let d = proj?["link"] as? [String: Any], let c = d["code"] as? String, let n = d["number"] as? String {
+                existing = ClientLink.Link(code: c, number: n)
+            }
+            Task { @MainActor in
+                do {
+                    let (link, isNew) = try await ClientLink.prepare(existing: existing)
+                    guard let html = try await web.evaluateJavaScript("Mebel.clientHTML(\(js(link.number)))") as? String else {
+                        say("Страница не собралась"); return
+                    }
+                    let url = try await ClientLink.publish(html: html, link: link, isNew: isNew, what: what)
+                    if let d = try? JSONEncoder().encode(link), let lj = String(data: d, encoding: .utf8) {
+                        _ = try? await web.evaluateJavaScript("Mebel.published(\(lj))")
+                    }
+                    UIPasteboard.general.string = url.absoluteString
+                    say("Проект \(link.number): ссылка скопирована, откроется через минуту")
+                    share(url, from: web)
+                } catch {
+                    say(error.localizedDescription)
+                }
+            }
+        }
+
+        private func share(_ url: URL, from v: UIView) {
+            guard var top = v.window?.rootViewController else { return }
+            while let p = top.presentedViewController { top = p }
+            let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+            vc.popoverPresentationController?.sourceView = v
+            top.present(vc, animated: true)
+        }
+
+        private func save(_ project: Any?, quiet: Bool = false) {
             guard let project = project,
                   let data = try? JSONSerialization.data(withJSONObject: project, options: [.prettyPrinted, .sortedKeys]),
                   (try? JSONDecoder().decode(Kitchen.self, from: data)) != nil else {
@@ -121,7 +181,7 @@ struct MebelWeb: UIViewRepresentable {
             do {
                 try data.write(to: dir.appendingPathComponent("\(parent.name).json"))
                 try data.write(to: dir.appendingPathComponent(FittingModel.kitchenFile))   // для примерки
-                web?.evaluateJavaScript("Mebel.saved('Сохранено: \(parent.name).json')")
+                if !quiet { say("Сохранено: \(parent.name).json") }
             } catch {
                 web?.evaluateJavaScript("Mebel.saved('Ошибка сохранения')")
             }
