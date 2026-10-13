@@ -188,7 +188,7 @@ export function toProject(body, title = 'Мебель') {
       let mv = mover;
       if (type === 1005 && /^(Ящик|Корзина|Брючница)/.test(name)) {
         const kind = name.startsWith('Ящик') ? 'drawer' : name.startsWith('Корзина') ? 'basket' : 'trousers';
-        mv = { kind, name, fs:/FS|скрыт/i.test(name), b:box(), facade:box(), box:box(), bottom:Infinity, id:movers.length };
+        mv = { kind, name, fs:/FS|скрыт/i.test(name), b:box(), facade:box(), box:box(), bottom:Infinity, boxMat:'', faceMat:'', id:movers.length };
         movers.push(mv);
       }
       if (type === 4002 || type === 2004) {
@@ -204,6 +204,7 @@ export function toProject(body, title = 'Мебель') {
         panels.push(p);
         if (mv) { grow(mv.b, b.min); grow(mv.b, b.max);
           const isF = /Фасад/i.test(name), t = isF ? mv.facade : mv.box; grow(t, b.min); grow(t, b.max);
+          if (type === 4002) { if (isF) mv.faceMat ||= mat; else mv.boxMat ||= mat; }
           if (!isF && b.max[1] - b.min[1] <= th + 0.5) mv.bottom = Math.min(mv.bottom, b.min[1]); }   // горизонтальная деталь короба — дно
       } else if (type === 10000 && mv) {
         const td = val(o, 'TriData');
@@ -265,7 +266,9 @@ export function toProject(body, title = 'Мебель') {
       const it = { kind:v.kind, y:Math.round(fb.min[1] - y0), h:Math.round(fb.max[1] - fb.min[1]),
         boxH:Math.round(bb.max[1] - bb.min[1]), boxY:Math.round(bb.min[1] - fb.min[1]),
         boxW:Math.round(alongX ? bb.max[2] - bb.min[2] : bb.max[0] - bb.min[0]),
-        bottomY:isFinite(v.bottom) ? Math.round(v.bottom - bb.min[1]) : 0, depth, name:v.name };
+        bottomY:isFinite(v.bottom) ? Math.round(v.bottom - bb.min[1]) : 0, depth, name:v.name,
+        faceColor:v.faceMat ? colorOf(v.faceMat) : undefined, faceName:v.faceMat ? short(v.faceMat) : undefined,
+        boxColor:v.boxMat ? colorOf(v.boxMat) : undefined, boxName:v.boxMat ? short(v.boxMat) : undefined };
       if (v.kind === 'drawer') it.travel = v.fs ? 440 : 400; else it.travel = 420;
       if (v.kind !== 'drawer') { it.y = Math.round(v.b.min[1] - y0); it.h = Math.round(v.b.max[1] - v.b.min[1]); }
       items.push(it);
