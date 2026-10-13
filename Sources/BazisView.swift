@@ -27,6 +27,7 @@ struct BazisFile: Identifiable {
 struct BazisView: UIViewRepresentable {
     let file: BazisFile
     let onClose: () -> Void
+    var onMebel: (([String: Any]) -> Void)? = nil
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
@@ -57,6 +58,7 @@ struct BazisView: UIViewRepresentable {
         func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
             guard let body = message.body as? [String: Any], let type = body["type"] as? String else { return }
             if type == "close" { parent.onClose(); return }
+            if type == "toMebel", let p = body["project"] as? [String: Any] { parent.onMebel?(p); return }
             guard type == "ready",
                   let nameJSON = try? JSONEncoder().encode(parent.file.name),
                   let name = String(data: nameJSON, encoding: .utf8) else { return }
@@ -68,8 +70,45 @@ struct BazisView: UIViewRepresentable {
 struct BazisScreen: View {
     let file: BazisFile
     @Environment(\.dismiss) private var dismiss
+    @State private var target: MebelTarget?
     var body: some View {
-        BazisView(file: file) { dismiss() }
+        BazisView(file: file, onClose: { dismiss() }, onMebel: { target = MebelTarget.make(from: $0) })
             .ignoresSafeArea()
+            .fullScreenCover(item: $target) { t in
+                MebelWeb(scan: t.folder, name: t.kind) { target = nil }
+                    .ignoresSafeArea()
+            }
+    }
+}
+
+/// Проект из Базиса для конструктора: своя папка «Базис · <название>» в документах,
+/// стены из файла → info.json (как у скана RoomPlan), модули → <Тип>.json и kitchen.json.
+struct MebelTarget: Identifiable {
+    let id = UUID()
+    let folder: String
+    let kind: String
+
+    static func kindFor(_ title: String) -> String {
+        let t = title.lowercased()
+        for k in MebelView.kinds where t.contains(k.lowercased()) { return k }
+        return "Другое"
+    }
+
+    static func make(from project: [String: Any]) -> MebelTarget? {
+        let title = (project["name"] as? String) ?? "Мебель"
+        let safe = title.replacingOccurrences(of: "/", with: "-").replacingOccurrences(of: ":", with: " ")
+        let folder = "Базис · \(safe)"
+        let k = Self.kindFor(title)
+        let dir = FittingModel.docs.appendingPathComponent(folder)
+        do {
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            let info: [String: Any] = ["roomPlan": project["walls"] ?? []]
+            try JSONSerialization.data(withJSONObject: info, options: [.prettyPrinted]).write(to: dir.appendingPathComponent("info.json"))
+            let proj: [String: Any] = ["name": k, "modules": project["modules"] ?? []]
+            let data = try JSONSerialization.data(withJSONObject: proj, options: [.prettyPrinted, .sortedKeys])
+            try data.write(to: dir.appendingPathComponent("\(k).json"))
+            try data.write(to: dir.appendingPathComponent(FittingModel.kitchenFile))
+        } catch { return nil }
+        return MebelTarget(folder: folder, kind: k)
     }
 }

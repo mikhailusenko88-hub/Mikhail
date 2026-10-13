@@ -53,6 +53,9 @@
   </select>
   <button id="multi">Выбор нескольких</button>
   <button id="move">✋ Двигать</button>
+  <button id="slideAll">Выдвинуть</button>
+  <button id="bzBtn">Базис…</button>
+  <input id="bzFile" type="file" class="hide">
   <button id="save" class="acc">Сохранить</button>
   <button id="publish" class="blue">Ссылка клиенту</button>
 </div>
@@ -117,17 +120,87 @@ function labelSprite(T, text) {
   s.scale.set(0.3, 0.11, 1); s.renderOrder = 10;
   return s;
 }
+/// Выдвижные элементы внутри модуля (локально: x — ширина, y — высота, z — глубина, фасад на +D/2).
+/// Ящик, корзина и брючница — группа, которая едет вперёд на it.travel мм.
+function buildItem(T, it, W, H, D, t, color) {
+  const g = new T.Group(), mm = v => v / 1000;
+  const box = (w, h, d, x, y, z, mat) => { const b = new T.Mesh(new T.BoxGeometry(w, h, d), mat); b.position.set(x, y, z); g.add(b); return b; };
+  const y0 = -H / 2 + mm(it.y), front = D / 2, iw = W - 2 * t;
+  if (it.kind === 'drawer') {
+    const fm = new T.MeshStandardMaterial({ color }), bm = new T.MeshStandardMaterial({ color:'#e9e3d8' });
+    box(iw - 0.003, mm(it.h), t, 0, y0 + mm(it.h) / 2, front - t / 2, fm);
+    const bw = iw - 0.026, bd = Math.min(mm(it.depth || 450), D - t - 0.02), bh = mm(it.boxH || it.h - 30), by = y0 + 0.01, z1 = front - t, z0 = z1 - bd, s = 0.016;
+    box(bw, s, bd, 0, by + s / 2, (z0 + z1) / 2, bm);
+    box(s, bh, bd, -bw / 2 + s / 2, by + bh / 2, (z0 + z1) / 2, bm); box(s, bh, bd, bw / 2 - s / 2, by + bh / 2, (z0 + z1) / 2, bm);
+    box(bw, bh, s, 0, by + bh / 2, z0 + s / 2, bm);
+  } else {
+    // OPTIMA (PULSE), графит: рамка из прямоугольной трубы на направляющих
+    const gr = new T.MeshStandardMaterial({ color:0x3d3f42, metalness:0.35, roughness:0.55 }), zn = new T.MeshStandardMaterial({ color:0xb8bcc1, metalness:0.8, roughness:0.3 });
+    const top = y0 + mm(it.h), bd = Math.min(mm(it.depth || 465), D - 0.03), z1 = front - 0.008, z0 = z1 - bd, zc = (z0 + z1) / 2, fx = iw / 2 - 0.012;
+    box(0.024, 0.03, bd, -fx, top - 0.015, zc, gr); box(0.024, 0.03, bd, fx, top - 0.015, zc, gr);
+    box(0.012, 0.014, bd - 0.05, -fx, top - 0.037, zc, zn); box(0.012, 0.014, bd - 0.05, fx, top - 0.037, zc, zn);
+    box(2 * fx - 0.024, 0.026, 0.026, 0, top - 0.013, z1 - 0.013, gr); box(2 * fx - 0.024, 0.026, 0.026, 0, top - 0.013, z0 + 0.013, gr);
+    const wm = new T.MeshStandardMaterial({ color:0x2f3134, metalness:0.4, roughness:0.5 });
+    const rod = (x0, y0_, zA, x1, y1, zB, r) => {           // пруток между двумя точками (оси совпадают с осями модуля)
+      const dx = x1 - x0, dy = y1 - y0_, dz = zB - zA, L = Math.hypot(dx, dy, dz);
+      const b = new T.Mesh(new T.BoxGeometry(Math.abs(dx) > 1e-6 ? L : r, Math.abs(dy) > 1e-6 ? L : r, Math.abs(dz) > 1e-6 ? L : r), wm);
+      b.position.set((x0 + x1) / 2, (y0_ + y1) / 2, (zA + zB) / 2); g.add(b);
+    };
+    if (it.kind === 'basket') {
+      const bw = Math.min(0.542, iw - 0.12), x0 = -bw / 2, x1 = bw / 2, za = z0 + 0.03, zb = z1 - 0.03, yb = y0 + 0.002, yt = top - 0.018, c = 0.04;
+      const nx = Math.max(2, Math.round(bw / c)), nz = Math.max(2, Math.round((zb - za) / c));
+      for (let i = 0; i <= nx; i++) { const x = x0 + bw * i / nx; rod(x, yb, za, x, yb, zb, 0.003); rod(x, yb, za, x, yt, za, 0.003); rod(x, yb, zb, x, yt, zb, 0.003); }
+      for (let i = 0; i <= nz; i++) { const z = za + (zb - za) * i / nz; rod(x0, yb, z, x1, yb, z, 0.003); rod(x0, yb, z, x0, yt, z, 0.003); rod(x1, yb, z, x1, yt, z, 0.003); }
+      for (let k = 1; k <= 3; k++) { const y = yb + (yt - yb) * k / 3; rod(x0, y, za, x1, y, za, 0.003); rod(x0, y, zb, x1, y, zb, 0.003); rod(x0, y, za, x0, y, zb, 0.003); rod(x1, y, za, x1, y, zb, 0.003); }
+      rod(x0, yt, (za + zb) / 2, -fx, yt, (za + zb) / 2, 0.005); rod(x1, yt, (za + zb) / 2, fx, yt, (za + zb) / 2, 0.005);
+    } else {
+      const yl = top - 0.058, yr = top - 0.052, n = 12, span = 2 * fx - 0.11;
+      for (const x of [-fx + 0.006, fx - 0.006]) { rod(x, top - 0.03, z0 + 0.06, x, yl, z0 + 0.06, 0.004); rod(x, top - 0.03, z1 - 0.05, x, yl, z1 - 0.05, 0.004); rod(x, yl, z0 + 0.06, x, yl, z1 - 0.05, 0.004); }
+      rod(-fx, yl, z0 + 0.06, fx, yl, z0 + 0.06, 0.004); rod(-fx, yl, (z0 + z1) / 2, fx, yl, (z0 + z1) / 2, 0.004);
+      const cap = new T.MeshStandardMaterial({ color:0x1f2022, roughness:0.9 });
+      for (let i = 0; i < n; i++) { const x = -span / 2 + span * i / (n - 1); rod(x, yr, z0 + 0.05, x, yr, z1 + 0.03, 0.011);
+        const c = new T.Mesh(new T.BoxGeometry(0.014, 0.014, 0.016), cap); c.position.set(x, yr, z1 + 0.038); g.add(c); }
+    }
+  }
+  return g;
+}
+/// Плавное выдвижение: SLIDE[ключ] = { v:текущее 0..1, t:цель }.
+function stepSlides(root) {
+  root.traverse(o => {
+    const s = o.userData.slide; if (!s) return;
+    const st = SLIDE[s.key]; if (!st || st.v === st.t) return;
+    st.v += Math.sign(st.t - st.v) * Math.min(Math.abs(st.t - st.v), 0.05);
+    const e = st.v < 0.5 ? 2 * st.v * st.v : 1 - Math.pow(-2 * st.v + 2, 2) / 2;
+    o.position.z = e * s.dist;
+  });
+}
 function buildModule(T, m, on) {
   const o = m.opts || {};
   const W = m.w / 1000, H = m.h / 1000, D = m.d / 1000;
   const root = new T.Group();
   root.position.set(m.x / 1000, m.y / 1000, m.z / 1000);
   root.rotation.y = (m.rotY || 0) * Math.PI / 180;
+  const open = o.front === 'open', carcass = open && m.type === 'wardrobe';
   const body = new T.Mesh(new T.BoxGeometry(W, H, D),
     new T.MeshStandardMaterial({ color:m.color || '#e8e2d6', emissive: on ? 0x553300 : 0x000000,
-      transparent: o.front === 'open' || o.front === 'glass', opacity: o.front === 'open' ? 0.35 : (o.front === 'glass' ? 0.6 : 1) }));
-  body.userData.code = m.code;
+      transparent: open || o.front === 'glass', opacity: carcass ? 0 : (open ? 0.35 : (o.front === 'glass' ? 0.6 : 1)), depthWrite: !carcass }));
+  body.userData.code = m.code; body.userData.shell = carcass;
   root.add(body);
+  if (carcass) {   // открытый шкаф: видимый корпус из плит, внутри полки и выдвижное
+    const t = (o.thick || 16) / 1000, cm = new T.MeshStandardMaterial({ color:m.color || '#e8e2d6', emissive: on ? 0x332000 : 0x000000 });
+    const pl = (w, h, d, x, y, z, mat) => { const b = new T.Mesh(new T.BoxGeometry(w, h, d), mat || cm); b.position.set(x, y, z); b.userData.code = m.code; root.add(b); };
+    pl(t, H, D, -W / 2 + t / 2, 0, 0); pl(t, H, D, W / 2 - t / 2, 0, 0);
+    pl(W - 2 * t, t, D, 0, H / 2 - t / 2, 0); pl(W - 2 * t, t, D, 0, -H / 2 + t / 2, 0);
+    pl(W - 2 * t, H - 2 * t, 0.003, 0, 0, -D / 2 + 0.0015, new T.MeshStandardMaterial({ color:'#e4d6bf' }));
+    (o.items || []).forEach((it, i) => {
+      const g = buildItem(T, it, W, H, D, t, o.shelfColor || m.color || '#e8e2d6');
+      const key = m.code + ':' + i, st = (typeof SLIDE !== 'undefined') && SLIDE[key];
+      g.userData.slide = { key, dist:(it.travel || 400) / 1000 };
+      if (st) { const e = st.v < 0.5 ? 2 * st.v * st.v : 1 - Math.pow(-2 * st.v + 2, 2) / 2; g.position.z = e * g.userData.slide.dist; }
+      g.traverse(x => { if (x.isMesh) { x.userData.code = m.code; x.userData.slideKey = key; } });
+      root.add(g);
+    });
+  }
   root.add(new T.LineSegments(new T.EdgesGeometry(body.geometry),
     new T.LineBasicMaterial({ color: on ? 0xff9f0a : 0x222222 })));
   const line = new T.LineBasicMaterial({ color:0x333333 });
@@ -160,9 +233,11 @@ function buildModule(T, m, on) {
   }
   if (o.front === 'open' || o.front === 'glass') {
     const n = Math.max(0, o.shelves | 0), t = (o.thick || 16) / 1000;
-    for (let i = 1; i <= n; i++) {
-      const s = new T.Mesh(new T.BoxGeometry(W - 2 * t, t, D - 0.02), new T.MeshStandardMaterial({ color:m.color || '#e8e2d6' }));
-      s.position.y = -H / 2 + H * i / (n + 1); root.add(s);
+    const at = Array.isArray(o.shelvesAt) && o.shelvesAt.length ? o.shelvesAt : null;
+    const sm = new T.MeshStandardMaterial({ color:o.shelfColor || m.color || '#e8e2d6' });
+    for (let i = 1; i <= (at ? at.length : n); i++) {
+      const s = new T.Mesh(new T.BoxGeometry(W - 2 * t, t, D - 0.02), sm);
+      s.position.y = at ? -H / 2 + at[i - 1] / 1000 + t / 2 : -H / 2 + H * i / (n + 1); s.userData.code = m.code; root.add(s);
     }
   }
   const lab = labelSprite(T, m.code); lab.position.y = H / 2 + 0.08; root.add(lab);
@@ -199,6 +274,7 @@ const DEF_OPTS = { doors:2, drawers:0, shelves:2, front:'blind', hinge:'L', hand
   mount:'rebro', gapTop:3, gapSide:2 };
 
 const state = { name:'Мебель', modules:[], walls:[], sel:[], floorY:0, multi:false, move:false, link:null };
+const SLIDE = {};   // выдвижение ящиков / корзин: ключ «код:номер» → { v, t }
 const undoStack = [];
 const snapshot = () => { undoStack.push(JSON.stringify(state.modules)); if (undoStack.length > 60) undoStack.shift(); };
 
@@ -220,7 +296,7 @@ const modGroup = new THREE.Group(); scene.add(modGroup);
 
 function resize() { renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize); resize();
-(function loop() { requestAnimationFrame(loop); controls.update(); renderer.render(scene, camera); })();
+(function loop() { requestAnimationFrame(loop); stepSlides(modGroup); controls.update(); renderer.render(scene, camera); })();
 
 let msgT;
 const msg = (t, ms = 2500) => { const m = document.getElementById('msg'); m.textContent = t; m.style.opacity = t ? 1 : 0;
@@ -328,6 +404,7 @@ for (const k of O) document.getElementById('o_' + k).addEventListener('change', 
   for (const m of mods) {
     const old = (m.opts || {}).plinth;
     m.opts = { ...DEF_OPTS, ...(m.opts || {}), [k]: v };
+    if (k === 'shelves') delete m.opts.shelvesAt;   // число полок поменяли руками — расставляем равномерно
     if (k === 'plinth' && ['base','drawers','sink','tall'].includes(m.type)) m.y += v - (old ?? DEF_OPTS.plinth);
   }
   select(state.sel);
@@ -521,7 +598,9 @@ $('fill').onclick = () => {
 // касание — выбрать; в режиме «Двигать» — тащить по полу
 const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let down = null, drag = null;
 const setPtr = e => { ptr.set(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1); ray.setFromCamera(ptr, camera); };
-const hitCode = () => { const h = ray.intersectObjects(modGroup.children, true).find(i => i.object.userData.code); return h && h.object.userData.code; };
+const hitCode = () => { const h = ray.intersectObjects(modGroup.children, true).find(i => i.object.userData.code && !i.object.userData.shell); return h && h.object.userData.code; };
+const hitSlide = () => { const h = ray.intersectObjects(modGroup.children, true).find(i => i.object.userData.code && !i.object.userData.shell && i.object.isMesh); return h && h.object.userData.slideKey; };
+function toggleSlide(key, to) { const s = SLIDE[key] || (SLIDE[key] = { v:0, t:0 }); s.t = to ?? (s.t ? 0 : 1); }
 renderer.domElement.addEventListener('pointerdown', e => {
   down = [e.clientX, e.clientY];
   if (!state.move) return;
@@ -541,7 +620,8 @@ renderer.domElement.addEventListener('pointermove', e => {
 renderer.domElement.addEventListener('pointerup', e => {
   if (drag) { drag = null; controls.enabled = true; select(state.sel); return; }
   if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 8) return;
-  setPtr(e); const code = hitCode();
+  setPtr(e); const code = hitCode(), sk = hitSlide();
+  if (sk) toggleSlide(sk);
   if (code) pick(code); else if (!state.multi) select([]);
 });
 
@@ -552,7 +632,9 @@ function clientHTML(number) {
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' })[c]);
   const mods = state.modules.map(m => ({ code:m.code, name:m.name, type:m.type, w:m.w, h:m.h, d:m.d, x:m.x, y:m.y, z:m.z, rotY:m.rotY || 0,
     color:m.color, colorName:m.colorName || '', opts:{ doors:m.opts?.doors, drawers:m.opts?.drawers, shelves:m.opts?.shelves,
-      front:m.opts?.front, hinge:m.opts?.hinge, handle:m.opts?.handle, thick:m.opts?.thick } }));
+      front:m.opts?.front, hinge:m.opts?.hinge, handle:m.opts?.handle, thick:m.opts?.thick,
+      shelvesAt:m.opts?.shelvesAt, shelfColor:m.opts?.shelfColor,
+      items:(m.opts?.items || []).map(i => ({ kind:i.kind, y:i.y, h:i.h, boxH:i.boxH, depth:i.depth, travel:i.travel })) } }));
   const walls = state.walls.map(s => ({ kind:s.kind, transform:s.transform, widthMm:s.widthMm, heightMm:s.heightMm }));
   const title = `Проект ${number} — ${state.name}`;
   return `<!doctype html><html lang="ru"><head><meta charset="utf-8">
@@ -569,6 +651,9 @@ h1{font-size:17px;margin:4px 0 8px}.m{border:1px solid #e3e0da;border-radius:12p
 <script>
 const MODS=${JSON.stringify(mods)};const WALLS=${JSON.stringify(walls)};const PAL=${JSON.stringify(PALETTE)};
 ${labelSprite.toString()}
+const SLIDE={};
+${buildItem.toString()}
+${stepSlides.toString()}
 ${buildModule.toString()}
 ${buildRoom.toString()}
 const T=THREE,v=document.getElementById('v'),r=new T.WebGLRenderer({antialias:true});r.setPixelRatio(Math.min(devicePixelRatio,2));v.appendChild(r.domElement);
@@ -592,8 +677,48 @@ d.onclick=()=>{sel=m.code;draw();};el.appendChild(d);});}
 const box=new T.Box3();MODS.forEach(m=>box.expandByPoint(new T.Vector3(m.x/1000,m.y/1000,m.z/1000)));WALLS.forEach(w=>box.expandByPoint(new T.Vector3(w.transform[12],w.transform[13],w.transform[14])));
 const c=box.isEmpty()?new T.Vector3():box.getCenter(new T.Vector3());ctl.target.copy(c);cam.position.set(c.x+2.5,c.y+2,c.z+3);
 function rs(){const w=v.clientWidth,h=v.clientHeight;r.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();}addEventListener('resize',rs);rs();
-(function f(){requestAnimationFrame(f);ctl.update();r.render(sc,cam);})();draw();
+(function f(){requestAnimationFrame(f);stepSlides(G);ctl.update();r.render(sc,cam);})();draw();
+const KEYS=[];MODS.forEach(m=>(m.opts.items||[]).forEach((_,i)=>KEYS.push(m.code+':'+i)));
+if(KEYS.length){const b=document.createElement('button');b.textContent='Выдвинуть ящики';b.style.cssText='position:fixed;top:10px;right:10px;padding:8px 12px;border-radius:10px;border:1px solid #ccc;background:#fff;font:inherit;font-weight:600';
+b.onclick=()=>{const o=!KEYS.every(k=>SLIDE[k]&&SLIDE[k].t===1);KEYS.forEach(k=>{(SLIDE[k]=SLIDE[k]||{v:0,t:0}).t=o?1:0;});b.textContent=o?'Задвинуть':'Выдвинуть ящики';};document.body.appendChild(b);}
 <\/script></body></html>`;
+}
+
+// ===== Выдвинуть всё / импорт из Базиса =====
+$('slideAll').onclick = () => {
+  const keys = []; state.modules.forEach(m => (m.opts?.items || []).forEach((_, i) => keys.push(m.code + ':' + i)));
+  if (!keys.length) { msg('Выдвигать нечего'); return; }
+  const open = !keys.every(k => SLIDE[k]?.t === 1);
+  keys.forEach(k => toggleSlide(k, open ? 1 : 0)); $('slideAll').classList.toggle('on', open);
+};
+$('bzBtn').onclick = () => $('bzFile').click();
+$('bzFile').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    msg('Открываю ' + f.name + '…', 8000);
+    const core = await import('./bazis-core.js');
+    const { title, body } = await core.openBytes(new Uint8Array(await f.arrayBuffer()), f.name);
+    importProject(core.toProject(body, title));
+  } catch (err) { msg('Не удалось: ' + err.message, 5000); }
+};
+/// Модули из Базиса. Если в скане есть стены — ставим группой в центр вида (дальше «Двигать» / «Поворот»),
+/// если стен нет — берём стены «для просмотра» из файла вместе с их координатами.
+function importProject(p) {
+  snapshot();
+  const scanWalls = state.walls.some(s => s.kind === 'wall');
+  if (!scanWalls && p.walls.length) { state.walls = p.walls; drawRoom(); }
+  let mods = p.modules.map(m => ({ ...m, opts:{ ...DEF_OPTS, ...m.opts } }));
+  const taken = new Set(state.modules.map(m => m.code));
+  mods.forEach(m => { if (taken.has(m.code)) { let n = 1; while (taken.has(m.code + '.' + n)) n++; m.code = m.code + '.' + n; } taken.add(m.code); });
+  const g = mods.length > 1 ? nextGroup() : undefined; mods.forEach(m => m.group = g);
+  if (scanWalls) {
+    const c = centroid(mods), t = controls.target;
+    mods.forEach(m => { m.x = Math.round(m.x - c.x + t.x * 1000); m.z = Math.round(m.z - c.z + t.z * 1000); m.y += state.floorY; });
+  }
+  state.modules.push(...mods);
+  if (!scanWalls && !p.walls.length) { const c = centroid(mods); controls.target.set(c.x / 1000, 1.2, c.z / 1000); camera.position.set(c.x / 1000 + 3, 3, c.z / 1000 + 3); }
+  select(mods.map(m => m.code));
+  msg(`${p.name}: модулей ${mods.length}` + (scanWalls ? ' — поставь группой к стенам' : ''), 4000);
 }
 
 // ===== Связь с приложением =====
@@ -620,6 +745,7 @@ window.Mebel = {
                            : `${state.name}: в скане нет стен RoomPlan — ставь по сетке`, 3000);
   },
   clientHTML,
+  importProject,
   published(link) { state.link = link; native && native.postMessage({ type:'save', project:project(), quiet:true }); },
   saved(t) { msg(t); },
 };

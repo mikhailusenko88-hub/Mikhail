@@ -29,6 +29,7 @@
   <button id="lab" class="on">Подписи</button>
   <button id="fur" class="on">Фурнитура</button>
   <button id="exp">Разнести</button>
+  <button id="toMebel">В конструктор</button>
 </div>
 <div id="msg">Открываю файл…</div>
 <div id="side"><div id="sum"></div><div id="list"></div></div>
@@ -42,119 +43,14 @@ const native = window.webkit?.messageHandlers?.bazis || null;
 const msg = t => { $('msg').textContent = t; $('msg').style.display = t ? 'block' : 'none'; };
 $('close').onclick = () => native && native.postMessage({ type:'close' });
 
-// ===== Контейнер BZ85: таблица ключей + записи (0 объект, 1/2 bool, 3 u8, 4 i32, 5 f64, 6 UTF-16, 7 blob) =====
-const cp1251 = new TextDecoder('windows-1251'), u16 = new TextDecoder('utf-16le');
-function parseBlock(bytes, start = 0, end = bytes.length) {
-  const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-  let p = start;
-  const u32 = () => { const v = dv.getUint32(p, true); p += 4; return v; };
-  const nk = u32(), keys = [];
-  for (let i = 0; i < nk; i++) { const l = u32(); keys.push(cp1251.decode(bytes.subarray(p, p + l))); p += l; }
-  const entry = () => {
-    const k = keys[u32()], c = u32(), t = bytes[p++];
-    let v = null;
-    if (t === 0) { v = []; for (let i = 0; i < c; i++) v.push(entry()); }
-    else if (t === 3) v = bytes[p++];
-    else if (t === 4) { v = dv.getInt32(p, true); p += 4; }
-    else if (t === 5) { v = dv.getFloat64(p, true); p += 8; }
-    else if (t === 6) { const n = u32(); v = u16.decode(bytes.subarray(p, p + 2 * n)); p += 2 * n; }
-    else if (t === 7) { const n = u32(); v = bytes.subarray(p, p + n); p += n; }
-    else if (t !== 1 && t !== 2) throw new Error('Неизвестный тип записи ' + t + ' в позиции ' + (p - 1));
-    if (t === 1) v = true; if (t === 2) v = false;
-    return { k, t, v };
-  };
-  const out = [];
-  while (p < end) out.push(entry());
-  return out;
-}
-const kid = (n, name) => n && n.t === 0 ? n.v.find(e => e.k === name) : undefined;
-const val = (n, name, d) => { const e = kid(n, name); return e ? e.v : d; };
-function find(list, name) {  // поиск в глубину
-  for (const e of list) { if (e.k === name) return e; if (e.t === 0) { const r = find(e.v, name); if (r) return r; } }
-}
-async function inflate(bytes, fmt) {
-  const ds = new DecompressionStream(fmt);
-  const buf = await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer();
-  return new Uint8Array(buf);
-}
-function indexOf(b, pat, from) {
-  outer: for (let i = from; i <= b.length - pat.length; i++) { for (let j = 0; j < pat.length; j++) if (b[i + j] !== pat[j]) continue outer; return i; }
-  return -1;
-}
-async function loadBZ(b) {
-  if (!(b[0] === 0x42 && b[1] === 0x5A && b[2] === 0x38 && b[3] === 0x35)) throw new Error('Это не файл Базиса (нет BZ85)');
-  const i = indexOf(b, [1, 0, 0, 0xFF, 1], 9);
-  if (i < 0) throw new Error('Не найден блок с мебелью');
-  let header = [];
-  try { header = parseBlock(b, 9, i); } catch (e) { /* заголовок не обязателен */ }
-  const body = await inflate(b.subarray(i + 5), 'deflate');
-  return { header, body:parseBlock(body) };
-}
-// ZIP с iPhone: берём первый .b3d / .fr3d
-async function fromZip(b) {
-  const dv = new DataView(b.buffer, b.byteOffset, b.byteLength);
-  let p = 0;
-  while (p + 30 < b.length && dv.getUint32(p, true) === 0x04034b50) {
-    const flags = dv.getUint16(p + 6, true), method = dv.getUint16(p + 8, true);
-    let csize = dv.getUint32(p + 18, true);
-    const nlen = dv.getUint16(p + 26, true), xlen = dv.getUint16(p + 28, true);
-    const name = new TextDecoder().decode(b.subarray(p + 30, p + 30 + nlen));
-    const data0 = p + 30 + nlen + xlen;
-    if (flags & 8 && csize === 0) {   // размер в конце — ищем по центральному каталогу
-      const cd = indexOf(b, [0x50, 0x4b, 0x01, 0x02], data0);
-      for (let q = cd; q > 0 && q < b.length - 46 && dv.getUint32(q, true) === 0x02014b50;) {
-        const n2 = dv.getUint16(q + 28, true), off = dv.getUint32(q + 42, true);
-        if (off === p) { csize = dv.getUint32(q + 20, true); break; }
-        q += 46 + n2 + dv.getUint16(q + 30, true) + dv.getUint16(q + 32, true);
-      }
-    }
-    const data = b.subarray(data0, data0 + csize);
-    if (/\.(b3d|fr3d)$/i.test(name) && !name.startsWith('__MACOSX')) {
-      return { name:name.split('/').pop(), bytes: method === 8 ? await inflate(data, 'deflate-raw') : data };
-    }
-    p = data0 + csize + (flags & 8 ? (dv.getUint32(data0 + csize, true) === 0x08074b50 ? 16 : 12) : 0);
-  }
-  throw new Error('В архиве нет файла .b3d или .fr3d');
+// ===== Разбор файла: общий модуль (типы 0–9, круги в контурах, zip с iPhone) =====
+import { kid, val, find, openBytes, contourLoops, loopArea as area, toProject } from './bazis-core.js';
+import { triMeshes as rawTri } from './bazis-core.js';
+function triMeshes(blob) {
+  return rawTri(blob).map(t => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(t.pos, 3)); g.computeVertexNormals();
+    return { g, m:new THREE.Matrix4().fromArray(t.m) }; });
 }
 
-// ===== Геометрия =====
-function contourLoops(blob) {
-  const dv = new DataView(blob.buffer, blob.byteOffset, blob.byteLength);
-  let p = 0; const n = dv.getUint32(p, true); p += 4;
-  const f = () => { const v = dv.getFloat64(p, true); p += 8; return v; };
-  const segs = [];
-  for (let i = 0; i < n && p < blob.length; i++) {
-    const t = blob[p++];
-    if (t === 0x10) { const x1 = f(), y1 = f(), x2 = f(), y2 = f(); segs.push([[x1, y1], [x2, y2]]); }
-    else if (t === 0x12) {
-      const cx = f(), cy = f(), sx = f(), sy = f(), ex = f(), ey = f(), ccw = blob[p++] === 1;
-      const r = Math.hypot(sx - cx, sy - cy);
-      let a0 = Math.atan2(sy - cy, sx - cx), a1 = Math.atan2(ey - cy, ex - cx);
-      if (ccw) { while (a1 <= a0 + 1e-9) a1 += 2 * Math.PI; } else { while (a1 >= a0 - 1e-9) a1 -= 2 * Math.PI; }
-      const steps = Math.max(4, Math.ceil(Math.abs(a1 - a0) / (Math.PI / 24)));
-      const pts = []; for (let k = 0; k <= steps; k++) { const a = a0 + (a1 - a0) * k / steps; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
-      segs.push(pts);
-    } else break;
-  }
-  // сцепляем куски по концам
-  const close = (a, b) => Math.abs(a[0] - b[0]) < 0.05 && Math.abs(a[1] - b[1]) < 0.05;
-  const loops = [], left = segs.slice();
-  while (left.length) {
-    let loop = left.shift().slice();
-    for (let guard = 0; guard < 10000 && left.length; guard++) {
-      const end = loop[loop.length - 1];
-      if (close(end, loop[0]) && loop.length > 2) break;
-      const i = left.findIndex(s => close(s[0], end) || close(s[s.length - 1], end));
-      if (i < 0) break;
-      let s = left.splice(i, 1)[0]; if (!close(s[0], end)) s = s.slice().reverse();
-      loop.push(...s.slice(1));
-    }
-    if (loop.length > 3 && close(loop[loop.length - 1], loop[0])) loop.pop();
-    loops.push(loop);
-  }
-  return loops;
-}
-const area = l => l.reduce((s, p, i) => { const q = l[(i + 1) % l.length]; return s + p[0] * q[1] - q[0] * p[1]; }, 0) / 2;
 function panelGeometry(blob, thick) {
   const loops = contourLoops(blob).filter(l => l.length > 2).sort((a, b) => Math.abs(area(b)) - Math.abs(area(a)));
   if (!loops.length) return null;
@@ -169,22 +65,6 @@ function transMatrix(node) {
   if (q.lengthSq() < 1e-9) q.set(0, 0, 0, 1); else q.normalize();
   return m.compose(new THREE.Vector3(val(t, 'X', 0), val(t, 'Y', 0), val(t, 'Z', 0)), q, new THREE.Vector3(1, 1, 1));
 }
-function triMeshes(blob) {
-  const dv = new DataView(blob.buffer, blob.byteOffset, blob.byteLength);
-  let p = 0; const n = dv.getUint32(p, true); p += 4; const out = [];
-  for (let i = 0; i < n && p < blob.length; i++) {
-    const ml = dv.getUint32(p, true); p += 4 + ml * 2;
-    const mm = []; for (let k = 0; k < 16; k++) { mm.push(dv.getFloat64(p, true)); p += 8; }
-    p += 1;
-    const nt = dv.getUint32(p, true); p += 4;
-    const pos = new Float32Array(nt * 9);
-    for (let t = 0; t < nt; t++) { for (let k = 0; k < 9; k++) pos[t * 9 + k] = dv.getFloat32(p + k * 4, true); p += 112; }
-    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.computeVertexNormals();
-    out.push({ g, m:new THREE.Matrix4().fromArray(mm) });
-  }
-  return out;
-}
-
 // ===== Сцена =====
 const renderer = new THREE.WebGLRenderer({ antialias:true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -235,6 +115,14 @@ function walk(list, parentM) {
       const part = { mesh, name:val(o, 'Name', '') || 'Деталь', pos:val(o, 'ArtPos', '') || '', mat, thick, dims,
         butts:(kid(o, 'Butts')?.v || []).length };
       mesh.userData.part = part; parts.push(part);
+    } else if (type === 10000) {
+      const tri = val(o, 'TriData');
+      if (tri) for (const t of triMeshes(tri)) {
+        const mesh = new THREE.Mesh(t.g, new THREE.MeshStandardMaterial({ color:0x6f7276, metalness:0.4, roughness:0.5, side:THREE.DoubleSide }));
+        mesh.applyMatrix4(m.clone().multiply(t.m)); furn.add(mesh);
+      }
+    } else if (type === 4001) {
+      const sub = kid(o, 'Objs'); if (sub) walk(sub.v, m);
     } else if (type === 3001 && furnLib) {
       const f = kid(furnLib, 'F' + val(o, 'FastID', -1)), tri = f && find([f], 'TriData');
       if (!tri) continue;
@@ -295,15 +183,20 @@ $('exp').onclick = () => {
   addLabels();
 };
 
+let opened = null;
+$('toMebel').onclick = () => {
+  if (!opened) return;
+  try {
+    const project = toProject(opened.body, opened.title);
+    if (native) native.postMessage({ type:'toMebel', project }); else msg('Нет связи с приложением');
+  } catch (e) { msg('В конструктор не получилось: ' + e.message); setTimeout(() => msg(''), 4000); }
+};
 window.Bazis = {
   async open(name, b64) {
     try {
       msg('Открываю ' + name + '…');
-      let bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-      if (bytes[0] === 0x50 && bytes[1] === 0x4B) { const z = await fromZip(bytes); name = z.name; bytes = z.bytes; }
-      const { header, body } = await loadBZ(bytes);
-      const art = find(header, 'Article');
-      $('title').textContent = (art && val(art, 'Name')) || name.replace(/\.(b3d|fr3d)$/i, '');
+      const { title, body } = await openBytes(Uint8Array.from(atob(b64), c => c.charCodeAt(0)), name);
+      $('title').textContent = title; opened = { title, body };
       furnLib = find(body, 'FurnList') || null;
       const model = find(body, 'Model');
       if (!model) throw new Error('В файле нет модели');
