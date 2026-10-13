@@ -27,6 +27,9 @@
   #msg { position:fixed; top:calc(56px + env(safe-area-inset-top)); left:50%; transform:translateX(-50%);
     background:var(--panel); padding:6px 12px; border-radius:20px; font-size:13px; pointer-events:none; transition:opacity .3s; max-width:90%; text-align:center; }
   .hide { display:none !important; }
+  #hw { position:fixed; left:10px; right:10px; top:calc(60px + env(safe-area-inset-top)); bottom:45%; overflow:auto;
+    background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:12px; font-size:14px; z-index:5; }
+  #hw h3 { margin:10px 0 4px; font-size:15px; } #hw li { margin:2px 0; }
   .sep { width:1px; align-self:stretch; background:var(--line); flex-shrink:0; }
 </style>
 </head>
@@ -46,6 +49,7 @@
     <option value="shelf">Открытая полка (О)</option>
     <option value="panel">Панель / боковина (Б)</option>
     <option value="countertop">Столешница (Ст)</option>
+    <option value="filler">Фальш-панель (Ф)</option>
   </select>
   <button id="multi">Выбор нескольких</button>
   <button id="move">✋ Двигать</button>
@@ -53,6 +57,7 @@
   <button id="publish" class="blue">Ссылка клиенту</button>
 </div>
 <div id="msg"></div>
+<div id="hw" class="hide"></div>
 <div id="bottom">
   <div class="row" id="list"></div>
   <div class="row" id="edit">
@@ -72,6 +77,8 @@
     <button id="group">Объединить</button>
     <button id="ungroup">Разъединить</button>
     <button id="top2">Столешница сверху</button>
+    <button id="fill">Фальш-панели</button>
+    <button id="hwBtn">Крепёж</button>
     <button id="dup">Копия</button>
     <button id="mirror">Зеркально</button>
     <button id="del">Удалить</button>
@@ -87,6 +94,10 @@
     <label>Цоколь, мм<input id="o_plinth" type="number"></label>
     <label>Плита, мм<input id="o_thick" type="number"></label>
     <label>Шаг, мм<input id="o_step" type="number"></label>
+    <span class="sep"></span>
+    <label>Крепление<select id="o_mount"><option value="rebro">ребро ЛДСП + уголки</option><option value="ugolok">мебельные уголки</option><option value="brusok">брусок 20×40</option></select></label>
+    <label>До потолка, мм<input id="o_gapTop" type="number"></label>
+    <label>До стены, мм<input id="o_gapSide" type="number"></label>
   </div>
 </div>
 
@@ -125,7 +136,7 @@ function buildModule(T, m, on) {
     const g = new T.BufferGeometry().setFromPoints([new T.Vector3(x1, y1, fz), new T.Vector3(x2, y2, fz)]);
     root.add(new T.Line(g, line));
   };
-  if (m.type !== 'countertop' && m.type !== 'panel' && o.front !== 'open') {
+  if (m.type !== 'countertop' && m.type !== 'panel' && m.type !== 'filler' && o.front !== 'open') {
     const dr = Math.max(0, o.drawers | 0), dn = Math.max(0, o.doors | 0);
     const top = H / 2, bot = -H / 2;
     const split = dr && dn ? top - H * 0.3 : bot;
@@ -182,8 +193,10 @@ const PRESETS = {
   shelf:     { name:'Открытая полка', letter:'О', w:600, h:300, d:250, y0:1450, opts:{ front:'open', doors:0, shelves:0 } },
   panel:     { name:'Панель',         letter:'Б', w:16, h:720, d:560, y0:100, opts:{ doors:0 } },
   countertop:{ name:'Столешница',     letter:'Ст', w:1200, h:38, d:600, y0:820, opts:{ doors:0 } },
+  filler:    { name:'Фальш-панель',   letter:'Ф', w:100, h:720, d:16, y0:100, opts:{ doors:0, side:'left', mount:'rebro' } },
 };
-const DEF_OPTS = { doors:2, drawers:0, shelves:2, front:'blind', hinge:'L', handle:'bar', plinth:100, thick:16, step:10 };
+const DEF_OPTS = { doors:2, drawers:0, shelves:2, front:'blind', hinge:'L', handle:'bar', plinth:100, thick:16, step:10,
+  mount:'rebro', gapTop:3, gapSide:2 };
 
 const state = { name:'Мебель', modules:[], walls:[], sel:[], floorY:0, multi:false, move:false, link:null };
 const undoStack = [];
@@ -246,7 +259,11 @@ function add(type) {
 }
 function draw() {
   modGroup.clear();
-  for (const m of state.modules) modGroup.add(buildModule(THREE, m, state.sel.includes(m.code)));
+  for (const m of state.modules) {
+    const g = buildModule(THREE, m, state.sel.includes(m.code));
+    if (m.type === 'filler') addHardware3D(g, m);
+    modGroup.add(g);
+  }
   const list = document.getElementById('list'); list.innerHTML = '';
   for (const m of state.modules) {
     const b = document.createElement('button');
@@ -266,7 +283,7 @@ function pick(code) {
   } else select(codes);
 }
 const F = ['w','h','d','x','z','y0','r','c','cn'];
-const O = ['doors','drawers','shelves','front','hinge','handle','plinth','thick','step'];
+const O = ['doors','drawers','shelves','front','hinge','handle','plinth','thick','step','mount','gapTop','gapSide'];
 function select(codes) {
   state.sel = codes; const m = first(), n = state.sel.length;
   document.getElementById('sel').textContent = !m ? '—' : (n > 1 ? `${n} шт.` : m.code);
@@ -393,6 +410,112 @@ $('snap').onclick = () => {
   const gap = Math.min(...mods.map(m => (m.x - best.ox) * best.nx + (m.z - best.oz) * best.nz - m.d / 2));
   for (const m of mods) { m.x = Math.round(m.x - gap * best.nx); m.z = Math.round(m.z - gap * best.nz); }
   msg(`Прижато к стене ${best.code}`); select(state.sel);
+};
+
+// ===== Фальш-панели и крепёж =====
+const MOUNTS = { rebro:'ребро ЛДСП + уголки', ugolok:'мебельные уголки', brusok:'брусок 20×40' };
+/// Крепёж для фальш-панели: шаг крепления ~400 мм, минимум 2 точки.
+function hardware(m) {
+  const o = { ...DEF_OPTS, ...(m.opts || {}) };
+  const L = o.side === 'top' ? m.w : m.h, n = Math.max(2, Math.ceil(L / 400) + 1);
+  const where = o.side === 'top' ? 'к крыше корпуса' : 'к боковине корпуса';
+  if (o.mount === 'ugolok') return [
+    [`Уголок мебельный 30×30 (${where})`, n, 'шт'], ['Саморез 4×16', n * 4, 'шт']];
+  if (o.mount === 'brusok') return [
+    [`Брусок 20×40, длина ${L} мм (${where})`, 1, 'шт'], ['Саморез 4×40 (брусок → корпус)', n, 'шт'],
+    ['Саморез 4×30 (брусок → фальш-панель, сзади)', n, 'шт']];
+  return [
+    [`Ребро жёсткости ЛДСП ${L}×100×${o.thick} мм`, 1, 'шт'], [`Саморез 4×30 (корпус → ребро, изнутри корпуса)`, n, 'шт'],
+    ['Уголок мебельный 30×30 (ребро ↔ фальш-панель)', n, 'шт'], ['Саморез 4×16 к уголкам', n * 4, 'шт']];
+}
+/// Крепёж в 3D (только в редакторе): ребро/брусок за панелью и уголки по шагу.
+function addHardware3D(g, m) {
+  const o = { ...DEF_OPTS, ...(m.opts || {}) }, W = m.w / 1000, H = m.h / 1000, D = m.d / 1000;
+  const top = o.side === 'top', L = top ? W : H, n = Math.max(2, Math.ceil(L * 1000 / 400) + 1);
+  const grey = new THREE.MeshStandardMaterial({ color:0x8a8f96, metalness:0.3, roughness:0.6 });
+  const wood = new THREE.MeshStandardMaterial({ color:0xc9a36b });
+  const back = -D / 2;
+  if (o.mount === 'rebro' || o.mount === 'brusok') {
+    const w2 = o.mount === 'rebro' ? 0.1 : 0.04, t2 = o.mount === 'rebro' ? (o.thick || 16) / 1000 : 0.02;
+    const r = new THREE.Mesh(top ? new THREE.BoxGeometry(W, t2, w2) : new THREE.BoxGeometry(t2, H, w2), o.mount === 'rebro' ? new THREE.MeshStandardMaterial({ color:m.color }) : wood);
+    if (top) r.position.set(0, -H / 2 + t2 / 2, back - w2 / 2); else r.position.set(o.side === 'right' ? -W / 2 + t2 / 2 : W / 2 - t2 / 2, 0, back - w2 / 2);
+    g.add(r);
+  }
+  if (o.mount !== 'brusok') for (let i = 0; i < n; i++) {
+    const t = n === 1 ? 0 : -L / 2 + 0.05 + (L - 0.1) * i / (n - 1);
+    const u = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.03, 0.03), grey);
+    if (top) u.position.set(t, -H / 2 + 0.035, back - 0.02); else u.position.set(0, t, back - 0.02);
+    g.add(u);
+  }
+}
+$('hwBtn').onclick = () => {
+  const box = $('hw');
+  if (!box.classList.contains('hide')) { box.classList.add('hide'); return; }
+  const fil = state.modules.filter(m => m.type === 'filler');
+  if (!fil.length) { msg('Фальш-панелей нет — выбери модули и нажми «Фальш-панели»'); return; }
+  const total = {};
+  let html = '<b>Крепёж фальш-панелей</b> <button onclick="document.getElementById(\'hw\').classList.add(\'hide\')">✕</button>';
+  for (const m of fil) {
+    const o = { ...DEF_OPTS, ...(m.opts || {}) };
+    html += `<h3>${m.code} — ${o.side === 'top' ? 'верх' : (o.side === 'left' ? 'слева' : 'справа')}, ${m.w}×${m.h} мм · ${MOUNTS[o.mount]}</h3><ul>`;
+    for (const [n, q, u] of hardware(m)) { html += `<li>${n} — ${q} ${u}</li>`; total[n] = (total[n] || 0) + q; }
+    html += '</ul>';
+  }
+  html += '<h3>Итого</h3><ul>' + Object.entries(total).map(([n, q]) => `<li>${n} — ${q} шт</li>`).join('') + '</ul>';
+  box.innerHTML = html; box.classList.remove('hide');
+};
+
+/// Фальш-панели к выбранным модулям: сверху до потолка и по бокам до стен (по стенам RoomPlan).
+$('fill').onclick = () => {
+  const mods = selected().filter(m => m.type !== 'filler' && m.type !== 'countertop');
+  if (!mods.length) { msg('Выбери модули (шкаф, пеналы, верхние)'); return; }
+  const walls = state.walls.filter(s => s.kind === 'wall');
+  if (!walls.length) { msg('Нужны стены из скана RoomPlan'); return; }
+  const o0 = { ...DEF_OPTS, ...(mods[0].opts || {}) }, th = o0.thick || 16;
+  const r = mods[0].rotY || 0, a = r * Math.PI / 180, ux = Math.cos(a), uz = -Math.sin(a), nx = Math.sin(a), nz = Math.cos(a);
+  let lo = Infinity, hi = -Infinity, front = -Infinity, topY = -Infinity, botY = Infinity;
+  for (const m of mods) {
+    const u = m.x * ux + m.z * uz, n = m.x * nx + m.z * nz;
+    lo = Math.min(lo, u - m.w / 2); hi = Math.max(hi, u + m.w / 2); front = Math.max(front, n + m.d / 2);
+    topY = Math.max(topY, m.y + m.h / 2); botY = Math.min(botY, m.y - m.h / 2);
+  }
+  const ceil = state.floorY + Math.max(...walls.map(s => s.heightMm));
+  const at = (u, n) => ({ x:Math.round(u * ux + n * nx), z:Math.round(u * uz + n * nz) });
+  const made = [], notes = [];
+  snapshot();
+  const mk = (side, w, h, u, y) => {
+    const p = at(u, front - th / 2);
+    const f = { code:nextCode('Ф'), name:'Фальш-панель', type:'filler', w:Math.round(w), h:Math.round(h), d:th,
+      x:p.x, z:p.z, y:Math.round(y), rotY:r, color:mods[0].color, colorName:mods[0].colorName || '',
+      opts:{ ...DEF_OPTS, doors:0, side, mount:o0.mount, thick:th }, group:mods[0].group };
+    state.modules.push(f); made.push(f.code);
+  };
+  // верх: до потолка с зазором
+  const gapTop = ceil - topY - (o0.gapTop ?? 3);
+  if (gapTop >= 10) mk('top', hi - lo, gapTop, (lo + hi) / 2, topY + gapTop / 2);
+  else notes.push(gapTop < 0 ? 'выше потолка!' : 'до потолка <10 мм');
+  const fullTop = gapTop >= 10 ? topY + gapTop : topY;
+  // бока: стены, перпендикулярные ряду модулей
+  for (const [dir, end, side] of [[-1, lo, 'left'], [1, hi, 'right']]) {
+    const pu = end, pn = front - th / 2, px = pu * ux + pn * nx, pz = pu * uz + pn * nz;
+    let best = null;
+    for (const w of walls) {
+      let wnx = w.transform[8], wnz = w.transform[10]; const l = Math.hypot(wnx, wnz) || 1; wnx /= l; wnz /= l;
+      if (Math.abs(wnx * ux + wnz * uz) < 0.9) continue;            // стена не поперёк ряда
+      const ox = w.transform[12] * 1000, oz = w.transform[14] * 1000;
+      const ax = w.transform[0], az = w.transform[2], al = Math.hypot(ax, az) || 1;
+      if (Math.abs(((px - ox) * ax + (pz - oz) * az) / al) > w.widthMm / 2 + 50) continue;   // мимо стены
+      const t = ((ox - px) * ux + (oz - pz) * uz) * dir;
+      if (t > -5 && (!best || t < best.t)) best = { t, code:w.code };
+    }
+    if (!best) continue;
+    const gap = best.t - (o0.gapSide ?? 2);
+    if (gap < 10) continue;
+    if (gap > 300) { notes.push(`${side === 'left' ? 'слева' : 'справа'} до ${best.code} ${Math.round(best.t)} мм — много для фальш-панели`); continue; }
+    mk(side, gap, fullTop - botY, end + dir * gap / 2, (fullTop + botY) / 2);
+  }
+  select(made.length ? made : state.sel);
+  msg((made.length ? `Добавлено: ${made.join(', ')}` : 'Фальш-панели не нужны') + (notes.length ? ' · ' + notes.join('; ') : ''), 4500);
 };
 
 // касание — выбрать; в режиме «Двигать» — тащить по полу
