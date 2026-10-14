@@ -29,12 +29,12 @@
 <div id="view"></div>
 <div id="top">
   <button id="close">✕</button>
+  <button id="openFile" style="display:none">📂 Открыть файл</button>
   <span id="title">Базис</span>
   <button id="lab" class="on">Подписи</button>
   <button id="fur" class="on">Фурнитура</button>
   <button id="edge">Кромка</button>
   <button id="exp">Разнести</button>
-  <button id="openFile" style="display:none">Открыть файл…</button>
   <input id="file" type="file" accept=".b3d,.fr3d,.zip" style="display:none">
   <button id="toMebel">В конструктор</button>
 </div>
@@ -295,7 +295,12 @@ else {
     let bin = ''; for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
     Bazis.open(f.name, btoa(bin));
   };
-  msg('Нажмите «Открыть файл…» — .b3d, .fr3d или .zip');
+  $('title').style.display = 'none';
+  msg('');
+  const m = $('msg');
+  m.innerHTML = '<button id="bigOpen" style="background:#ff9f0a;color:#000;font-size:18px;padding:14px 22px">📂 Открыть файл Базиса</button><div style="margin-top:8px;color:#9a9ca3">.b3d, .fr3d или .zip</div>';
+  m.style.display = 'block';
+  $('bigOpen').onclick = () => $('file').click();
 }
 </script>
 </body>
