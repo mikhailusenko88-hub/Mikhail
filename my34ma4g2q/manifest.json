@@ -1,0 +1,1 @@
+{"name": "Конструктор мебели", "short_name": "Конструктор", "start_url": "./", "display": "standalone", "background_color": "#1c1d20", "theme_color": "#1c1d20", "icons": [{"src": "icon.png", "sizes": "512x512", "type": "image/png"}]}
