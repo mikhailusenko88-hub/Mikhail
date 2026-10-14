@@ -34,6 +34,7 @@
   <button id="lab" class="on">Подписи</button>
   <button id="fur" class="on">Фурнитура</button>
   <button id="edge">Кромка</button>
+  <button id="glass">Прозрачно</button>
   <button id="exp">Разнести</button>
   <input id="file" type="file" accept=".b3d,.fr3d,.zip" style="display:none">
   <button id="toMebel">В конструктор</button>
@@ -231,16 +232,26 @@ $('edge').onclick = () => {
   edgeMode = !edgeMode; $('edge').classList.toggle('on', edgeMode);
   for (const p of parts) {
     if (p.strips) p.strips.visible = edgeMode;
-    p.mesh.material.color.setHex(edgeMode ? 0xdedede : p.color);
-    p.mesh.material.transparent = false;
   }
-  furn.visible = !edgeMode && $('fur').classList.contains('on');
+  applyLook();
   labels.forEach(l => l.visible = !edgeMode && $('lab').classList.contains('on'));
   const L = $('legend');
   L.style.display = edgeMode ? 'flex' : 'none';
   L.innerHTML = Object.entries(edgeKinds).map(([k, v]) => `<span><i style="background:#${v.color.toString(16).padStart(6, '0')}"></i>${k} · ${v.n} шт · ${(v.len / 1000).toFixed(1)} м</span>`).join('')
     + '<span><i style="background:#dedede"></i>без кромки</span>';
 };
+let glass = false;
+function applyLook() {
+  for (const p of parts) {
+    const m = p.mesh.material;
+    m.color.setHex(edgeMode ? 0xdedede : p.color);
+    m.transparent = glass; m.opacity = glass ? 0.28 : 1; m.depthWrite = !glass;
+    m.needsUpdate = true;
+    p.mesh.renderOrder = glass ? 1 : 0;
+    if (p.strips) p.strips.traverse(o => { o.renderOrder = 2; });
+  }
+}
+$('glass').onclick = () => { glass = !glass; $('glass').classList.toggle('on', glass); applyLook(); };
 let exploded = false;
 $('exp').onclick = () => {
   exploded = !exploded; $('exp').classList.toggle('on', exploded);
