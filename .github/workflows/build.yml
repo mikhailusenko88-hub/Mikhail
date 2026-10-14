@@ -2,6 +2,8 @@ name: Build IPA
 on:
   push:
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: macos-15
@@ -22,6 +24,14 @@ jobs:
         with:
           name: Zamer3D-Xcode
           path: Zamer3D-Xcode.zip
+      - name: Save Xcode project to branch builds
+        run: |
+          mkdir -p /tmp/out && cp Zamer3D-Xcode.zip /tmp/out/
+          git config user.name "build-bot"; git config user.email "build-bot@users.noreply.github.com"
+          git checkout --orphan builds-tmp
+          git rm -rq --cached . && git clean -fdq -e Zamer3D-Xcode.zip || true
+          cp /tmp/out/Zamer3D-Xcode.zip . && git add Zamer3D-Xcode.zip
+          git commit -qm "Zamer3D-Xcode из ${GITHUB_SHA::7}" && git push -qf origin HEAD:builds
       - name: Build (unsigned)
         run: |
           xcodebuild -project Zamer3D.xcodeproj -scheme Zamer3D -configuration Release \
