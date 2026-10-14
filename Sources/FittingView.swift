@@ -48,8 +48,14 @@ final class FittingModel: NSObject, ObservableObject, ARSessionDelegate {
     @Published var offsetMm = SIMD3<Float>(0, 0, 0) // ручная подвижка всей кухни
     @Published var turnDeg: Float = 0
     @Published var errorText: String?
+    /// Свободная примерка: без карты комнаты, кухня «летает» за прицелом, потом ставится и двигается пальцем.
+    @Published var free = false
+    @Published var locked = false
+    @Published var title = ""
 
     private var root: AnchorEntity?
+    private var center = SIMD3<Float>(0, 0, 0)       // центр низа кухни в её координатах (метры)
+    private var rootWorld = matrix_identity_float4x4  // где стоит кухня в свободном режиме
     private var boxes: [String: ModelEntity] = [:]
     private var timer: Timer?
     private var busy = false
@@ -76,17 +82,36 @@ final class FittingModel: NSObject, ObservableObject, ARSessionDelegate {
             .appendingPathComponent(Self.kitchenFile).path)
     }
 
-    /// Положить kitchen.json (от Claude) в папку скана.
+    /// Все папки, где есть кухня (сканы и проекты без скана) — для свободной примерки.
+    var kitchenFolders: [String] {
+        let fm = FileManager.default
+        return ((try? fm.contentsOfDirectory(atPath: Self.docs.path)) ?? []).filter { hasKitchen($0) }.sorted(by: >)
+    }
+
+    static func readKitchen(_ url: URL) throws -> Kitchen {
+        let ok = url.startAccessingSecurityScopedResource()
+        defer { if ok { url.stopAccessingSecurityScopedResource() } }
+        var data: Data?
+        var err: NSError?
+        NSFileCoordinator().coordinate(readingItemAt: url, options: [], error: &err) { u in data = try? Data(contentsOf: u) }
+        guard let d = data ?? (try? Data(contentsOf: url)) else { throw err ?? CocoaError(.fileReadNoPermission) }
+        let k = try JSONDecoder().decode(Kitchen.self, from: d)
+        guard !k.modules.isEmpty else { throw CocoaError(.fileReadCorruptFile) }
+        return k
+    }
+
+    /// Положить kitchen.json (от Claude или из конструктора) в папку скана.
     func importKitchen(from url: URL, into s: String) {
         let ok = url.startAccessingSecurityScopedResource()
         defer { if ok { url.stopAccessingSecurityScopedResource() } }
         do {
-            let data = try Data(contentsOf: url)
-            _ = try JSONDecoder().decode(Kitchen.self, from: data)
+            let k = try Self.readKitchen(url)
+            let data = try JSONEncoder().encode(k)
             try data.write(to: Self.docs.appendingPathComponent(s).appendingPathComponent(Self.kitchenFile))
             objectWillChange.send()
+            status = "Кухня загружена: модулей \(k.modules.count)"
         } catch {
-            errorText = "Файл кухни не читается: \(error.localizedDescription)"
+            errorText = "Файл кухни не читается (нужен .json с модулями из конструктора): \(error.localizedDescription)"
         }
     }
 
@@ -100,6 +125,8 @@ final class FittingModel: NSObject, ObservableObject, ARSessionDelegate {
             kitchen = try JSONDecoder().decode(Kitchen.self,
                                                from: Data(contentsOf: dir.appendingPathComponent(Self.kitchenFile)))
             scan = s
+            free = false
+            title = s
             placed = false
             hits = [:]
             let cfg = ARWorldTrackingConfiguration()
@@ -119,7 +146,78 @@ final class FittingModel: NSObject, ObservableObject, ARSessionDelegate {
         timer?.invalidate()
         arView.session.pause()
         root.map { arView.scene.removeAnchor($0) }
-        root = nil; boxes = [:]; placed = false; scan = nil
+        root = nil; boxes = [:]; placed = false; scan = nil; free = false; locked = false
+        offsetMm = .zero; turnDeg = 0; hits = [:]
+    }
+
+    // MARK: свободная примерка (без карты комнаты)
+
+    func startFree(_ k: Kitchen, name: String) {
+        guard ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) else { errorText = "Нужен iPhone с LiDAR"; return }
+        kitchen = k
+        title = name
+        // центр низа кухни: модули ставим относительно него
+        let lo = k.modules.map { SIMD3<Float>($0.x - $0.w / 2, $0.y - $0.h / 2, $0.z - $0.d / 2) }
+        let hi = k.modules.map { SIMD3<Float>($0.x + $0.w / 2, $0.y + $0.h / 2, $0.z + $0.d / 2) }
+        let mn = lo.reduce(SIMD3<Float>(repeating: .greatestFiniteMagnitude)) { simd_min($0, $1) }
+        let mx = hi.reduce(SIMD3<Float>(repeating: -.greatestFiniteMagnitude)) { simd_max($0, $1) }
+        center = SIMD3<Float>((mn.x + mx.x) / 2, mn.y, (mn.z + mx.z) / 2) / 1000
+        free = true; locked = false; placed = false; hits = [:]; offsetMm = .zero; turnDeg = 0
+        scan = "free"
+        let cfg = ARWorldTrackingConfiguration()
+        cfg.sceneReconstruction = .mesh
+        cfg.planeDetection = [.horizontal, .vertical]
+        cfg.environmentTexturing = .none
+        arView.session.run(cfg, options: [.resetTracking, .removeExistingAnchors])
+        place()
+        status = "Наведи прицел на пол — кухня летит за ним. Нажми «Поставить»"
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.08, repeats: true) { [weak self] _ in self?.tick() }
+    }
+
+    private var tickN = 0
+    private func tick() {
+        tickN += 1
+        if free && !locked { follow() }
+        if tickN % 6 == 0 { check() }
+    }
+
+    /// Кухня за прицелом: точка пола в центре экрана.
+    private func follow() {
+        let c = CGPoint(x: arView.bounds.midX, y: arView.bounds.midY)
+        guard let hit = arView.raycast(from: c, allowing: .estimatedPlane, alignment: .horizontal).first else { return }
+        let p = hit.worldTransform.columns.3
+        rootWorld = Self.yaw(turnDeg, at: SIMD3<Float>(p.x, p.y, p.z))
+        applyOffset()
+    }
+
+    static func yaw(_ deg: Float, at p: SIMD3<Float>) -> simd_float4x4 {
+        var m = simd_float4x4(simd_quatf(angle: deg * .pi / 180, axis: [0, 1, 0]))
+        m.columns.3 = SIMD4<Float>(p, 1)
+        return m
+    }
+
+    func lock(_ on: Bool) {
+        locked = on
+        status = on ? "Стоит. Тяни пальцем — двигать по полу, два пальца — повернуть" : "Наведи прицел на пол и нажми «Поставить»"
+    }
+
+    /// Перетаскивание пальцем по полу (свободный режим, кухня поставлена).
+    func drag(to pt: CGPoint) {
+        guard free, locked else { return }
+        let y = rootWorld.columns.3.y
+        guard let r = arView.ray(through: pt), abs(r.direction.y) > 1e-4 else { return }
+        let t = (y - r.origin.y) / r.direction.y
+        guard t > 0 else { return }
+        let p = r.origin + r.direction * t
+        rootWorld = Self.yaw(turnDeg, at: SIMD3<Float>(p.x, y, p.z))
+        applyOffset()
+    }
+
+    func rotate(by deg: Float) {
+        turnDeg += deg
+        if free { let p = rootWorld.columns.3; rootWorld = Self.yaw(turnDeg, at: SIMD3<Float>(p.x, p.y, p.z)) }
+        applyOffset()
     }
 
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
@@ -144,7 +242,7 @@ final class FittingModel: NSObject, ObservableObject, ARSessionDelegate {
         for m in k.modules {
             let box = ModelEntity(mesh: .generateBox(size: m.half * 2),
                                   materials: [Self.material(.systemGreen)])
-            box.transform = Transform(matrix: m.transform)
+            box.transform = Transform(matrix: local(m))
             // Подпись кода модуля сверху
             let text = ModelEntity(mesh: .generateText(m.code, extrusionDepth: 0.002,
                                                        font: .systemFont(ofSize: 0.06),
@@ -161,7 +259,24 @@ final class FittingModel: NSObject, ObservableObject, ARSessionDelegate {
         root = anchor
         placed = true
         applyOffset()
-        status = "Кухня на месте. Зелёный — свободно, красный — что-то мешает"
+        if !free { status = "Кухня на месте. Зелёный — свободно, красный — что-то мешает" }
+    }
+
+    /// Модуль в координатах кухни: по скану — как есть, в свободном режиме — от центра низа кухни.
+    private func local(_ m: KitchenModule) -> simd_float4x4 {
+        var t = m.transform
+        if free { t.columns.3 -= SIMD4<Float>(center, 0) }
+        return t
+    }
+
+    /// Где стоит вся кухня в мире.
+    private var placement: simd_float4x4 {
+        if free {
+            var o = rootWorld
+            o.columns.3 += SIMD4<Float>(simd_make_float3(rootWorld * SIMD4<Float>(offsetMm / 1000, 0)), 0)
+            return o
+        }
+        return offsetMatrix
     }
 
     static func material(_ c: UIColor) -> SimpleMaterial {
@@ -177,11 +292,11 @@ final class FittingModel: NSObject, ObservableObject, ARSessionDelegate {
     }
 
     func nudge(_ d: SIMD3<Float>) { offsetMm += d; applyOffset() }
-    func turn(_ deg: Float) { turnDeg += deg; applyOffset() }
-    func resetOffset() { offsetMm = .zero; turnDeg = 0; applyOffset() }
+    func turn(_ deg: Float) { rotate(by: deg) }
+    func resetOffset() { offsetMm = .zero; rotate(by: -turnDeg) }
 
     private func applyOffset() {
-        root?.transform = Transform(matrix: offsetMatrix)
+        root?.transform = Transform(matrix: placement)
     }
 
     // MARK: проверка: заходит ли стена / труба / выступ внутрь модуля
@@ -191,7 +306,8 @@ final class FittingModel: NSObject, ObservableObject, ARSessionDelegate {
               let frame = arView.session.currentFrame else { return }
         let meshes = frame.anchors.compactMap { $0 as? ARMeshAnchor }
         let tol = toleranceMm / 1000
-        let off = offsetMatrix
+        let off = placement
+        let locals = Dictionary(uniqueKeysWithValues: k.modules.map { ($0.code, local($0)) })
         busy = true
         work.async {
             // Все точки живой LiDAR-сетки в мировых координатах
@@ -209,7 +325,7 @@ final class FittingModel: NSObject, ObservableObject, ARSessionDelegate {
             }
             var result: [String: Int] = [:]
             for m in k.modules {
-                let inv = (off * m.transform).inverse
+                let inv = (off * (locals[m.code] ?? m.transform)).inverse
                 let lim = m.half - SIMD3<Float>(repeating: tol)
                 guard lim.x > 0, lim.y > 0, lim.z > 0 else { result[m.code] = 0; continue }
                 var n = 0
@@ -242,7 +358,11 @@ final class FittingModel: NSObject, ObservableObject, ARSessionDelegate {
 struct FittingView: View {
     @StateObject private var model = FittingModel()
     @Environment(\.dismiss) private var dismiss
-    @State private var importFor: String?
+    /// Куда грузим файл: в папку скана или сразу в свободную примерку. Хранится отдельно от показа окна —
+    /// иначе SwiftUI сбрасывает его до того, как файл выбран, и ничего не происходит.
+    private enum Target { case scan(String), free }
+    @State private var target: Target?
+    @State private var showPicker = false
 
     var body: some View {
         ZStack {
@@ -250,13 +370,24 @@ struct FittingView: View {
                 chooser
             } else {
                 FittingARContainer(model: model).ignoresSafeArea()
+                if model.free && !model.locked {
+                    Image(systemName: "plus.circle").font(.system(size: 34, weight: .light)).foregroundColor(.white)
+                        .allowsHitTesting(false)
+                }
                 overlay
             }
         }
-        .fileImporter(isPresented: Binding(get: { importFor != nil }, set: { if !$0 { importFor = nil } }),
-                      allowedContentTypes: [.json]) { res in
-            if case .success(let url) = res, let s = importFor { model.importKitchen(from: url, into: s) }
-            importFor = nil
+        .fileImporter(isPresented: $showPicker, allowedContentTypes: [.json, .data]) { res in
+            let t = target
+            target = nil
+            guard case .success(let url) = res else { return }
+            switch t {
+            case .scan(let s)?: model.importKitchen(from: url, into: s)
+            case .free?:
+                do { model.startFree(try FittingModel.readKitchen(url), name: url.deletingPathExtension().lastPathComponent) }
+                catch { model.errorText = "Файл не читается (нужен .json кухни из конструктора): \(error.localizedDescription)" }
+            case nil: break
+            }
         }
         .alert(model.errorText ?? "", isPresented: Binding(
             get: { model.errorText != nil }, set: { if !$0 { model.errorText = nil } })) {
@@ -264,9 +395,29 @@ struct FittingView: View {
         }
     }
 
+    private func openKitchen(_ folder: String) {
+        let url = FittingModel.docs.appendingPathComponent(folder).appendingPathComponent(FittingModel.kitchenFile)
+        do { model.startFree(try FittingModel.readKitchen(url), name: folder.replacingOccurrences(of: "_", with: " ")) }
+        catch { model.errorText = "Кухня не читается: \(error.localizedDescription)" }
+    }
+
     private var chooser: some View {
         NavigationStack {
             List {
+                Section {
+                    Button { target = .free; showPicker = true } label: {
+                        Label("Открыть файл кухни (.json)…", systemImage: "doc")
+                    }
+                    ForEach(model.kitchenFolders, id: \.self) { s in
+                        Button { openKitchen(s) } label: {
+                            Label(s.replacingOccurrences(of: "_", with: " "), systemImage: "cube.transparent")
+                        }
+                    }
+                } header: {
+                    Text("Свободно — поставить где угодно")
+                } footer: {
+                    Text("Кухня летает за прицелом по полу. «Поставить» — и двигай пальцем, поворачивай двумя. Зелёная — встаёт, красная — упирается в стену, трубу или выступ.")
+                }
                 Section {
                     if model.scans.isEmpty {
                         Text("Нет сканов с картой комнаты. Отсканируй комнату и нажми «Сохранить».")
@@ -281,7 +432,7 @@ struct FittingView: View {
                                     .foregroundColor(model.hasKitchen(s) ? .green : .secondary)
                             }
                             Spacer()
-                            Button(model.hasKitchen(s) ? "Заменить" : "Загрузить кухню") { importFor = s }
+                            Button(model.hasKitchen(s) ? "Заменить" : "Загрузить") { target = .scan(s); showPicker = true }
                                 .buttonStyle(.bordered)
                             if model.hasKitchen(s) {
                                 Button("Примерить") { model.start(s) }
@@ -289,8 +440,10 @@ struct FittingView: View {
                             }
                         }
                     }
+                } header: {
+                    Text("Точно по скану")
                 } footer: {
-                    Text("Кухню (kitchen.json) готовит Claude по этому скану. Сохрани файл в «Файлы» и загрузи сюда. Потом в той же комнате нажми «Примерить» и наведи телефон на стену, которую сканировал.")
+                    Text("Кухня встаёт ровно туда, где её поставили в конструкторе по этому скану. Нажми «Примерить» в той же комнате и наведи телефон на стену, которую сканировал.")
                 }
             }
             .navigationTitle("Примерка мебели")
@@ -306,6 +459,7 @@ struct FittingView: View {
             HStack {
                 Text(model.status)
                     .font(.system(size: 13, weight: .medium))
+                    .lineLimit(2)
                     .padding(.horizontal, 12).padding(.vertical, 8)
                     .background(.ultraThinMaterial, in: Capsule())
                 Spacer()
@@ -318,15 +472,27 @@ struct FittingView: View {
             Spacer()
 
             if model.placed {
-                // Итог по модулям
                 let bad = model.conflicts
-                Text(bad.isEmpty ? "Всё свободно ✓"
+                Text(bad.isEmpty ? "Встаёт — ничего не мешает ✓"
                      : "Мешает: " + bad.map { "\($0.code) (\(model.hits[$0.code] ?? 0))" }.joined(separator: ", "))
                     .font(.system(size: 15, weight: .bold))
                     .foregroundColor(.white)
                     .padding(.horizontal, 14).padding(.vertical, 8)
                     .background((bad.isEmpty ? Color.green : Color.red).opacity(0.9),
                                 in: RoundedRectangle(cornerRadius: 12))
+
+                if model.free {
+                    HStack(spacing: 8) {
+                        Button(model.locked ? "Переставить" : "Поставить") { model.lock(!model.locked) }
+                            .font(.system(size: 17, weight: .bold))
+                            .frame(maxWidth: .infinity, minHeight: 48)
+                            .foregroundColor(.white)
+                            .background((model.locked ? Color.gray : Color.green).opacity(0.92), in: RoundedRectangle(cornerRadius: 14))
+                        small("↺ 90°") { model.turn(90) }
+                        small("↻ 90°") { model.turn(-90) }
+                    }
+                    .padding(.horizontal, 12)
+                }
 
                 VStack(spacing: 6) {
                     Text(String(format: "Сдвиг X %+.0f  Y %+.0f  Z %+.0f мм · поворот %+.1f°",
@@ -369,6 +535,28 @@ struct FittingView: View {
 
 struct FittingARContainer: UIViewRepresentable {
     @ObservedObject var model: FittingModel
-    func makeUIView(context: Context) -> ARView { model.arView }
+    func makeCoordinator() -> Coordinator { Coordinator(model) }
+    func makeUIView(context: Context) -> ARView {
+        let v = model.arView
+        if v.gestureRecognizers?.contains(where: { $0.name == "fit" }) != true {
+            let pan = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.pan(_:)))
+            pan.maximumNumberOfTouches = 1; pan.name = "fit"
+            let rot = UIRotationGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.rot(_:)))
+            rot.name = "fit"
+            v.addGestureRecognizer(pan); v.addGestureRecognizer(rot)
+        }
+        return v
+    }
     func updateUIView(_ uiView: ARView, context: Context) {}
+
+    final class Coordinator: NSObject {
+        let model: FittingModel
+        init(_ m: FittingModel) { model = m }
+        @objc func pan(_ g: UIPanGestureRecognizer) { model.drag(to: g.location(in: g.view)) }
+        @objc func rot(_ g: UIRotationGestureRecognizer) {
+            guard model.free, model.locked else { return }
+            model.rotate(by: -Float(g.rotation) * 180 / .pi)
+            g.rotation = 0
+        }
+    }
 }

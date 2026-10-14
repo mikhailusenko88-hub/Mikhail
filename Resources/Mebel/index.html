@@ -30,6 +30,11 @@
   #hw { position:fixed; left:10px; right:10px; top:calc(60px + env(safe-area-inset-top)); bottom:45%; overflow:auto;
     background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:12px; font-size:14px; z-index:5; }
   #hw h3 { margin:10px 0 4px; font-size:15px; } #hw li { margin:2px 0; }
+  #wed { position:fixed; left:10px; right:10px; top:calc(60px + env(safe-area-inset-top)); max-height:42%; overflow:auto;
+    background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:10px 12px; font-size:14px; z-index:5; }
+  #wed .wr { display:flex; gap:6px; align-items:flex-end; flex-wrap:wrap; margin:6px 0; }
+  #wed .wl { display:grid; grid-template-columns:auto 1fr 1fr auto; gap:6px; align-items:end; }
+  #wed input { width:76px; }
   .sep { width:1px; align-self:stretch; background:var(--line); flex-shrink:0; }
 </style>
 </head>
@@ -53,6 +58,8 @@
   </select>
   <button id="multi">Выбор нескольких</button>
   <button id="move">✋ Двигать</button>
+  <button id="magnet" class="on">🧲 Магнит</button>
+  <button id="wallsBtn">Стены</button>
   <button id="slideAll">Выдвинуть</button>
   <button id="bzBtn">Базис…</button>
   <input id="bzFile" type="file" class="hide">
@@ -61,6 +68,7 @@
 </div>
 <div id="msg"></div>
 <div id="hw" class="hide"></div>
+<div id="wed" class="hide"></div>
 <div id="bottom" class="bar">
   <div class="row" id="list"></div>
   <div class="row" id="edit">
@@ -330,7 +338,7 @@ const PRESETS = {
 const DEF_OPTS = { doors:2, drawers:0, shelves:2, front:'blind', hinge:'L', handle:'bar', plinth:100, thick:16, step:10,
   mount:'rebro', gapTop:3, gapSide:2 };
 
-const state = { name:'Мебель', modules:[], walls:[], sel:[], floorY:0, multi:false, move:false, link:null };
+const state = { name:'Мебель', modules:[], walls:[], sel:[], floorY:0, multi:false, move:false, magnet:true, link:null, plan:null };
 const SLIDE = {};   // выдвижение ящиков / корзин: ключ «код:номер» → { v, t }
 const undoStack = [];
 const snapshot = () => { undoStack.push(JSON.stringify(state.modules)); if (undoStack.length > 60) undoStack.shift(); };
@@ -364,13 +372,13 @@ const msg = (t, ms = 2500) => { const m = document.getElementById('msg'); m.text
   clearTimeout(msgT); if (t) msgT = setTimeout(() => m.style.opacity = 0, ms); };
 
 let camFrom = null;
-function drawRoom() {
+function drawRoom(keepCam) {
   camFrom = null;
   scene.remove(roomGroup);
   roomGroup = buildRoom(THREE, state.walls);
   for (const s of state.walls) {
     const mx = new THREE.Matrix4().fromArray(s.transform);
-    const lab = labelSprite(THREE, s.code); lab.applyMatrix4(mx); lab.position.y += s.heightMm / 2000 + 0.08; roomGroup.add(lab);
+    const lab = labelSprite(THREE, s.manual ? `${s.code} ${s.widthMm}` : s.code); lab.applyMatrix4(mx); lab.position.y += s.heightMm / 2000 + 0.08; roomGroup.add(lab);
   }
   scene.add(roomGroup);
   const ws = state.walls.filter(s => s.kind === 'wall');
@@ -393,6 +401,7 @@ function drawRoom() {
     const dist = Math.max(2.0, span / Math.tan(hf) * 0.8) + (free[0] ? fs.x : fs.z) / 2, side = span * 0.55;   // чуть сбоку — видно нутро боковых рядов
     camFrom = { x:fc.x + free[0] * dist + free[1] * side, y:state.floorY / 1000 + 2.5, z:fc.z + free[1] * dist - free[0] * side };
     const c = new THREE.Box3().setFromObject(roomGroup).getCenter(new THREE.Vector3());
+    if (keepCam) return;
     controls.target.set(c.x, state.floorY / 1000 + 1.1, c.z);
     if (camFrom) camera.position.set(camFrom.x, camFrom.y, camFrom.z); else camera.position.set(c.x + 3, c.y + 3, c.z + 3);
   }
@@ -549,7 +558,7 @@ $('top2').onclick = () => {
 $('snap').onclick = () => {
   const mods = selected(), walls = state.walls.filter(s => s.kind === 'wall');
   if (!mods.length) return;
-  if (!walls.length) { msg('В скане нет стен RoomPlan'); return; }
+  if (!walls.length) { msg('Стен нет — задай их кнопкой «Стены»'); return; }
   snapshot();
   const c = centroid(mods);
   const room = walls.reduce((s, w) => ({ x:s.x + w.transform[12] * 1000 / walls.length, z:s.z + w.transform[14] * 1000 / walls.length }), { x:0, z:0 });
@@ -557,7 +566,8 @@ $('snap').onclick = () => {
   for (const w of walls) {
     const ox = w.transform[12] * 1000, oz = w.transform[14] * 1000;
     let nx = w.transform[8], nz = w.transform[10]; const l = Math.hypot(nx, nz) || 1; nx /= l; nz /= l;
-    if ((room.x - ox) * nx + (room.z - oz) * nz < 0) { nx = -nx; nz = -nz; }
+    if (w.inner) { nx = w.inner[0]; nz = w.inner[1]; }
+    else if ((room.x - ox) * nx + (room.z - oz) * nz < 0) { nx = -nx; nz = -nz; }
     const dist = Math.abs((c.x - ox) * nx + (c.z - oz) * nz);
     if (!best || dist < best.dist) best = { ox, oz, nx, nz, dist, code:w.code };
   }
@@ -626,7 +636,7 @@ $('fill').onclick = () => {
   const mods = selected().filter(m => m.type !== 'filler' && m.type !== 'countertop');
   if (!mods.length) { msg('Выбери модули (шкаф, пеналы, верхние)'); return; }
   const walls = state.walls.filter(s => s.kind === 'wall');
-  if (!walls.length) { msg('Нужны стены из скана RoomPlan'); return; }
+  if (!walls.length) { msg('Нужны стены: из скана или кнопкой «Стены»'); return; }
   const o0 = { ...DEF_OPTS, ...(mods[0].opts || {}) }, th = o0.thick || 16;
   const r = mods[0].rotY || 0, a = r * Math.PI / 180, ux = Math.cos(a), uz = -Math.sin(a), nx = Math.sin(a), nz = Math.cos(a);
   let lo = Infinity, hi = -Infinity, front = -Infinity, topY = -Infinity, botY = Infinity;
@@ -682,21 +692,25 @@ const hitSlide = () => { const h = ray.intersectObjects(modGroup.children, true)
 function toggleSlide(key, to) { const s = SLIDE[key] || (SLIDE[key] = { v:0, t:0 }); s.t = to ?? (s.t ? 0 : 1); }
 renderer.domElement.addEventListener('pointerdown', e => {
   down = [e.clientX, e.clientY];
+  if (WED.open) { setPtr(e); if (WED.grab()) return; }
   if (!state.move) return;
   setPtr(e); const code = hitCode();
   if (code && state.sel.includes(code)) {
     const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -state.floorY / 1000), p = new THREE.Vector3();
-    if (ray.ray.intersectPlane(plane, p)) { snapshot(); drag = { plane, start:p.clone(), orig:selected().map(m => [m.x, m.z]) }; controls.enabled = false; }
+    if (ray.ray.intersectPlane(plane, p)) { snapshot(); drag = { plane, start:p.clone(), orig:selected().map(m => [m.x, m.z]), rot:selected().map(m => m.rotY || 0) }; controls.enabled = false; }
   }
 });
 renderer.domElement.addEventListener('pointermove', e => {
+  if (WED.dragging) { setPtr(e); WED.move(); return; }
   if (!drag) return; setPtr(e); const p = new THREE.Vector3();
   if (!ray.ray.intersectPlane(drag.plane, p)) return;
   const dx = snapV((p.x - drag.start.x) * 1000), dz = snapV((p.z - drag.start.z) * 1000);
-  selected().forEach((m, i) => { m.x = drag.orig[i][0] + dx; m.z = drag.orig[i][1] + dz; });
+  selected().forEach((m, i) => { m.x = drag.orig[i][0] + dx; m.z = drag.orig[i][1] + dz; m.rotY = drag.rot[i]; });
+  if (state.magnet) magnet(selected(), drag.rot[0]);
   draw();
 });
 renderer.domElement.addEventListener('pointerup', e => {
+  if (WED.dragging) { WED.drop(); return; }
   if (drag) { drag = null; controls.enabled = true; select(state.sel); return; }
   if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 8) return;
   setPtr(e); const code = hitCode(), sk = hitSlide();
@@ -802,9 +816,209 @@ function importProject(p) {
   msg(`${p.name}: модулей ${mods.length}` + (scanWalls ? ' — поставь группой к стенам' : ''), 4000);
 }
 
+
+// ===== Стены вручную (без 3D-замера): прямая, Г, П, комната, зигзаг; длины, повороты, перетаскивание углов =====
+/// План: точки углов по полу (мм) вдоль внутренней поверхности стен. Комната — слева по ходу (внутренняя нормаль (−uz, ux)).
+function planWalls(plan) {
+  const P = plan.pts, n = P.length, out = [], H = plan.h || 2600, segs = plan.closed ? n : n - 1;
+  for (let i = 0; i < segs; i++) {
+    const a = P[i], b = P[(i + 1) % n], dx = b[0] - a[0], dz = b[1] - a[1], L = Math.hypot(dx, dz);
+    if (L < 1) continue;
+    const ux = dx / L, uz = dz / L, nx = -uz, nz = ux, t = 0.01;   // стена 20 мм: внутренняя грань — по линии замера
+    const cx = (a[0] + b[0]) / 2000 - nx * t, cz = (a[1] + b[1]) / 2000 - nz * t;
+    out.push({ kind:'wall', code:'С' + (i + 1), manual:true, widthMm:Math.round(L), heightMm:H, inner:[nx, nz],
+      transform:[ux, 0, uz, 0, 0, 1, 0, 0, nx, 0, nz, 0, cx, H / 2000, cz, 1] });
+  }
+  return out;
+}
+const PLAN_PRESETS = {
+  line:  { name:'Прямая',     pts:[[0, 0], [3000, 0]] },
+  L:     { name:'Г-образная', pts:[[0, 2000], [0, 0], [3000, 0]] },
+  U:     { name:'П-образная', pts:[[0, 2000], [0, 0], [3000, 0], [3000, 2000]] },
+  room:  { name:'Комната',    pts:[[0, 3000], [0, 0], [3500, 0], [3500, 3000]], closed:true },
+};
+/// Длины и повороты ↔ точки. Поворот: + внутрь (обычный угол комнаты), − наружу (выступ, ниша, зигзаг).
+function planSegs(plan) {
+  const P = plan.pts, n = P.length, k = plan.closed ? n : n - 1, segs = [];
+  for (let i = 0; i < k; i++) {
+    const a = P[i], b = P[(i + 1) % n], c = P[(i + 2) % n];
+    const L = Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]));
+    let turn = null;
+    if (i < n - 2 || plan.closed) {
+      const a1 = Math.atan2(b[1] - a[1], b[0] - a[0]), a2 = Math.atan2(c[1] - b[1], c[0] - b[0]);
+      let d = (a2 - a1) * 180 / Math.PI; while (d > 180) d -= 360; while (d <= -180) d += 360;
+      turn = Math.round(d * 10) / 10;             // + к комнате (обычный угол), − от комнаты (выступ)
+    }
+    segs.push({ L, turn });
+  }
+  return segs;
+}
+function planFromSegs(plan, segs) {
+  const P0 = plan.pts[0], a0 = Math.atan2(plan.pts[1][1] - P0[1], plan.pts[1][0] - P0[0]);
+  const pts = [[P0[0], P0[1]]]; let ang = a0;
+  const last = plan.closed ? segs.length - 1 : segs.length;   // замкнутая: последняя стена — до первой точки
+  for (let i = 0; i < last; i++) {
+    const p = pts[pts.length - 1];
+    pts.push([Math.round(p[0] + Math.cos(ang) * segs[i].L), Math.round(p[1] + Math.sin(ang) * segs[i].L)]);
+    if (segs[i].turn != null) ang += segs[i].turn * Math.PI / 180;
+  }
+  plan.pts = pts;
+}
+const WED = {
+  open:false, dragging:null, handles:new THREE.Group(),
+  apply(keepCam = true) {
+    state.walls = planWalls(state.plan); drawRoom(keepCam); this.drawHandles(); select(state.sel);
+  },
+  drawHandles() {
+    scene.remove(this.handles); this.handles = new THREE.Group();
+    if (this.open && state.plan) state.plan.pts.forEach((p, i) => {
+      const s = new THREE.Mesh(new THREE.SphereGeometry(0.07, 20, 14), new THREE.MeshBasicMaterial({ color:0xff9f0a, depthTest:false }));
+      s.position.set(p[0] / 1000, state.floorY / 1000 + 0.02, p[1] / 1000); s.renderOrder = 20; s.userData.i = i; this.handles.add(s);
+    });
+    scene.add(this.handles);
+  },
+  grab() {
+    const h = ray.intersectObjects(this.handles.children, false)[0]; if (!h) return false;
+    this.dragging = { i:h.object.userData.i, plane:new THREE.Plane(new THREE.Vector3(0, 1, 0), -state.floorY / 1000), undo:JSON.stringify(state.plan) };
+    controls.enabled = false; return true;
+  },
+  move() {
+    const p = new THREE.Vector3(); if (!ray.ray.intersectPlane(this.dragging.plane, p)) return;
+    const P = state.plan.pts, i = this.dragging.i;
+    let x = Math.round(p.x * 100) * 10, z = Math.round(p.z * 100) * 10;      // шаг 10 мм
+    for (const j of [i - 1, i + 1]) {                                          // прямой угол: прилипает к оси соседа
+      const q = P[(j + P.length) % P.length]; if (!q || (!state.plan.closed && (j < 0 || j >= P.length))) continue;
+      if (Math.abs(x - q[0]) < 120) x = q[0]; if (Math.abs(z - q[1]) < 120) z = q[1];
+    }
+    P[i] = [x, z]; this.apply(); this.fill(true);
+  },
+  drop() { this.dragging = null; controls.enabled = true; this.fill(); },
+  start(key) {
+    const pr = PLAN_PRESETS[key];
+    state.plan = { pts:pr.pts.map(p => [...p]), h:(state.plan && state.plan.h) || 2600, closed:!!pr.closed };
+    this.apply(false); this.fill(); msg(pr.name + ': тяни оранжевые точки или впиши длины');
+  },
+  fill(quiet) {
+    const box = $('wed');
+    if (!this.open) { box.classList.add('hide'); return; }
+    box.classList.remove('hide');
+    const scan = state.walls.some(s => s.kind === 'wall' && !s.manual);
+    if (quiet && state.plan) {   // при перетаскивании только обновить числа
+      planSegs(state.plan).forEach((g, i) => { const a = $('wL' + i), b = $('wT' + i); if (a && document.activeElement !== a) a.value = g.L; if (b && g.turn != null && document.activeElement !== b) b.value = g.turn; });
+      return;
+    }
+    let h = `<div class="wr"><b style="flex:1">Стены вручную</b><button id="wClose">Готово</button></div>`;
+    if (scan) h += `<div style="color:var(--dim);font-size:13px">Сейчас стены из 3D-замера. Свои стены их заменят в этом проекте.</div>`;
+    h += `<div class="wr">${Object.entries(PLAN_PRESETS).map(([k, v]) => `<button data-pre="${k}">${v.name}</button>`).join('')}</div>`;
+    if (state.plan) {
+      const segs = planSegs(state.plan);
+      h += `<div class="wr"><label>Высота стен, мм<input id="wH" type="number" value="${state.plan.h}"></label>
+        <button id="wAdd">＋ Стена</button><button id="wDel">− Последняя</button>
+        <button id="wClosed">${state.plan.closed ? 'Разомкнуть' : 'Замкнуть'}</button><button id="wFlip">Комната с другой стороны</button></div>
+        <div class="wl"><span></span><span style="font-size:11px;color:var(--dim)">Длина, мм</span><span style="font-size:11px;color:var(--dim)">Поворот к след., °</span><span></span>`;
+      segs.forEach((g, i) => {
+        h += `<b>С${i + 1}</b><input id="wL${i}" type="number" inputmode="numeric" value="${g.L}">` +
+          (g.turn == null ? '<span></span><span></span>' :
+          `<input id="wT${i}" type="number" inputmode="decimal" value="${g.turn}"><span><button data-t="${i}" data-v="90">+90</button> <button data-t="${i}" data-v="-90">−90</button></span>`);
+      });
+      h += `</div><div style="color:var(--dim);font-size:12px;margin-top:6px">+90 — обычный угол комнаты, −90 — выступ или ниша (зигзаг). Оранжевые точки на полу можно тянуть пальцем — длины пересчитаются, углы прилипают к прямым.</div>`;
+    } else h += `<div style="color:var(--dim);font-size:13px">Выбери форму — потом поправь длины и повороты по замерам клиента.</div>`;
+    box.innerHTML = h;
+    box.querySelectorAll('[data-pre]').forEach(b => b.onclick = () => this.start(b.dataset.pre));
+    $('wClose').onclick = () => { this.open = false; $('wallsBtn').classList.remove('on'); this.drawHandles(); this.fill(); };
+    if (!state.plan) return;
+    const segsNow = () => planSegs(state.plan);
+    const set = (i, key, v) => { const sg = segsNow(); sg[i][key] = v; planFromSegs(state.plan, sg); this.apply(); this.fill(); };
+    segsNow().forEach((g, i) => {
+      $('wL' + i).onchange = e => set(i, 'L', Math.max(50, Number(e.target.value) || g.L));
+      if ($('wT' + i)) $('wT' + i).onchange = e => set(i, 'turn', Number(e.target.value) || 0);
+    });
+    box.querySelectorAll('[data-t]').forEach(b => b.onclick = () => set(+b.dataset.t, 'turn', +b.dataset.v));
+    $('wH').onchange = e => { state.plan.h = Math.max(1000, Number(e.target.value) || 2600); this.apply(); };
+    $('wAdd').onclick = () => {
+      const sg = segsNow(); if (state.plan.closed) { msg('Сначала «Разомкнуть»'); return; }
+      sg[sg.length - 1].turn = 90; sg.push({ L:1000, turn:null }); planFromSegs(state.plan, sg); this.apply(); this.fill();
+    };
+    $('wDel').onclick = () => { if (state.plan.pts.length > 2) { state.plan.pts.pop(); if (state.plan.pts.length < 3) state.plan.closed = false; this.apply(); this.fill(); } };
+    $('wClosed').onclick = () => { if (state.plan.pts.length < 3) return; state.plan.closed = !state.plan.closed; this.apply(); this.fill(); };
+    $('wFlip').onclick = () => { state.plan.pts.reverse(); this.apply(); this.fill(); msg('Комната — с другой стороны стен'); };
+  },
+};
+$('wallsBtn').onclick = () => {
+  document.getElementById('pane')?.classList.add('hide');
+  WED.open = !WED.open; $('wallsBtn').classList.toggle('on', WED.open);
+  if (WED.open && !state.plan && !state.walls.some(s => s.kind === 'wall')) WED.start('L');
+  WED.drawHandles(); WED.fill();
+};
+$('magnet').onclick = () => { state.magnet = !state.magnet; $('magnet').classList.toggle('on', state.magnet);
+  msg(state.magnet ? 'Магнит: модуль сам разворачивается к стене и прилипает к соседям и углам' : 'Магнит выключен'); };
+
+// ===== Магнит: при перетаскивании — развернуть фасадом в комнату, прижать к стене, пристыковать к соседям и углам =====
+function wallFrames() {
+  const walls = state.walls.filter(s => s.kind === 'wall'); if (!walls.length) return [];
+  const room = walls.reduce((s, w) => ({ x:s.x + w.transform[12] * 1000 / walls.length, z:s.z + w.transform[14] * 1000 / walls.length }), { x:0, z:0 });
+  return walls.map(w => {
+    const ox = w.transform[12] * 1000, oz = w.transform[14] * 1000, ux = w.transform[0], uz = w.transform[2];
+    let nx = w.transform[8], nz = w.transform[10]; const l = Math.hypot(nx, nz) || 1; nx /= l; nz /= l;
+    if (w.inner) { nx = w.inner[0]; nz = w.inner[1]; } else if ((room.x - ox) * nx + (room.z - oz) * nz < 0) { nx = -nx; nz = -nz; }
+    const face = 10;   // внутренняя грань стены — в 10 мм от центра коробки стены
+    return { code:w.code, ox:ox + nx * face, oz:oz + nz * face, ux, uz, nx, nz, half:w.widthMm / 2 };
+  });
+}
+/// Габарит модуля в осях (u — вдоль ряда, n — от стены в комнату).
+function extentIn(m, ux, uz, nx, nz) {
+  const a = (m.rotY || 0) * Math.PI / 180, mx = Math.cos(a), mz = -Math.sin(a);   // ось ширины модуля
+  const cu = Math.abs(mx * ux + mz * uz), cn = Math.abs(mx * nx + mz * nz);
+  const hu = (m.w * cu + m.d * cn) / 2, hn = (m.w * cn + m.d * cu) / 2;
+  const u = m.x * ux + m.z * uz, n = m.x * nx + m.z * nz;
+  return { u0:u - hu, u1:u + hu, n0:n - hn, n1:n + hn };
+}
+function magnet(mods, rot0) {
+  const F = wallFrames(); if (!F.length || !mods.length) return;
+  const c = centroid(mods), dmax = Math.max(...mods.map(m => m.d));
+  let best = null;
+  for (const f of F) {
+    const dist = (c.x - f.ox) * f.nx + (c.z - f.oz) * f.nz, along = (c.x - f.ox) * f.ux + (c.z - f.oz) * f.uz;
+    if (dist < -100 || dist > dmax / 2 + 400 || Math.abs(along) > f.half + 300) continue;
+    if (!best || dist < best.dist) best = { ...f, dist };
+  }
+  if (!best) return;
+  const f = best, target = Math.atan2(f.nx, f.nz) * 180 / Math.PI;
+  let dr = target - (mods[0].rotY || 0); while (dr > 180) dr -= 360; while (dr <= -180) dr += 360;
+  if (Math.abs(dr) > 0.5) rotateAround(mods, dr, c.x, c.z);
+  // задом к стене
+  const gap = Math.min(...mods.map(m => (m.x - f.ox) * f.nx + (m.z - f.oz) * f.nz - m.d / 2));
+  for (const m of mods) { m.x = Math.round(m.x - gap * f.nx); m.z = Math.round(m.z - gap * f.nz); }
+  // торцы: к перпендикулярным стенам и к соседним модулям (в т.ч. к фасадам модулей на соседней стене — угол)
+  const ex = mods.map(m => extentIn(m, f.ux, f.uz, f.nx, f.nz));
+  const lo = Math.min(...ex.map(e => e.u0)), hi = Math.max(...ex.map(e => e.u1));
+  const n0 = Math.min(...ex.map(e => e.n0)), n1 = Math.max(...ex.map(e => e.n1));
+  const yLo = Math.min(...mods.map(m => m.y - m.h / 2)), yHi = Math.max(...mods.map(m => m.y + m.h / 2));
+  const stops = [];
+  for (const g of F) {
+    if (Math.abs(g.nx * f.ux + g.nz * f.uz) < 0.9) continue;          // стена не поперёк ряда
+    const s = g.ox * f.ux + g.oz * f.uz, sideOk = Math.abs((g.ox - f.ox) * f.nx + (g.oz - f.oz) * f.nz) < 3000;
+    if (sideOk) stops.push({ s, dir:Math.sign(g.nx * f.ux + g.nz * f.uz) });   // dir +1: стена слева (упор для lo)
+  }
+  const sel = new Set(mods.map(m => m.code));
+  for (const o of state.modules) {
+    if (sel.has(o.code) || o.type === 'countertop') continue;
+    if (o.y + o.h / 2 < yLo + 10 || o.y - o.h / 2 > yHi - 10) continue;   // по высоте не пересекаются (верхние/нижние)
+    const e = extentIn(o, f.ux, f.uz, f.nx, f.nz);
+    if (e.n1 < n0 + 30 || e.n0 > n1 - 30) continue;                      // не в нашей полосе от стены
+    stops.push({ s:e.u1, dir:1 }, { s:e.u0, dir:-1 });
+  }
+  let shift = 0, bestD = 120;   // прилипание в пределах 120 мм
+  for (const st of stops) {
+    const d = st.dir > 0 ? st.s - lo : st.s - hi;
+    if (Math.abs(d) < bestD) { bestD = Math.abs(d); shift = d; }
+  }
+  if (shift) for (const m of mods) { m.x = Math.round(m.x + shift * f.ux); m.z = Math.round(m.z + shift * f.uz); }
+}
+
 // ===== Связь с приложением =====
 const native = window.webkit?.messageHandlers?.mebel || null;
-const project = () => ({ name:state.name, link:state.link || undefined,
+const project = () => ({ name:state.name, link:state.link || undefined, plan:state.plan || undefined,
   modules:state.modules.map(m => ({ ...m, rotY:m.rotY || 0 })) });
 $('save').onclick = () => native ? native.postMessage({ type:'save', project:project() }) : console.log(JSON.stringify(project()));
 $('publish').onclick = () => {
@@ -819,11 +1033,13 @@ window.Mebel = {
     state.name = data.name || 'Мебель';
     state.walls = data.walls || [];
     state.link = data.link || null;
+    state.plan = data.plan || null;
+    if (state.plan && !state.walls.some(s => s.kind === 'wall' && !s.manual)) state.walls = planWalls(state.plan);
     drawRoom();
     state.modules = (data.modules || []).map(m => ({ color:'#e8e2d6', colorName:'', type:'base', ...m, opts:{ ...DEF_OPTS, ...(m.opts || {}) } }));
     select(state.modules[0] ? [state.modules[0].code] : []);
     msg(state.walls.length ? `${state.name}: стен ${state.walls.filter(s => s.kind === 'wall').length}`
-                           : `${state.name}: в скане нет стен RoomPlan — ставь по сетке`, 3000);
+                           : `${state.name}: стен нет — задай кнопкой «Стены» или ставь по сетке`, 3500);
   },
   clientHTML,
   importProject,

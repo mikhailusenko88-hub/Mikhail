@@ -144,6 +144,7 @@ struct MebelWeb: UIViewRepresentable {
                let mods = proj["modules"] {
                 payload["modules"] = mods
                 if let link = proj["link"] { payload["link"] = link }
+                if let plan = proj["plan"] { payload["plan"] = plan }   // стены, заданные вручную
             }
             guard let json = try? JSONSerialization.data(withJSONObject: payload),
                   let s = String(data: json, encoding: .utf8) else { return }
