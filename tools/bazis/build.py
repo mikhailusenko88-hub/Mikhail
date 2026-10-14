@@ -3,7 +3,7 @@ HERE=os.path.dirname(os.path.abspath(__file__))
 s=open(os.path.join(HERE,'template.html')).read(); i=s.index('id="data">')+10; j=s.index('</script>',i)
 old=json.loads(s[i:j]); import sys
 d=json.load(open(sys.argv[1] if len(sys.argv)>1 else 'k2/full.json'))
-d['panels']+= [p for p in old['panels'] if p.get('wall')]
+if os.environ.get('WALLS')=='1': d['panels']+= [p for p in old['panels'] if p.get('wall')]   # стены гардеробной 2370x1970 из шаблона
 tot={}
 for p in d['panels']:
     for pts,sg in p.get('ed',[]):
