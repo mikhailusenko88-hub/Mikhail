@@ -126,7 +126,10 @@ enum Exporter {
                         measurements: measurements, planes: planeInfos, labels: labels,
                         calibration: calibration, device: deviceModel(), photos: saved,
                         roomPlan: room.map { RoomWalls.surfaces($0) })
-        if let room = room { RoomWalls.write(room, to: dir) }
+        if let room = room {
+            RoomWalls.write(room, to: dir)
+            RoomCheck.make(room: room, meshAnchors: meshAnchors, labels: labels).write(to: dir)   // углы, стены, пол, метки
+        }
         let enc = JSONEncoder()
         enc.outputFormatting = [.prettyPrinted, .sortedKeys]
         let jsonURL = dir.appendingPathComponent("info.json")

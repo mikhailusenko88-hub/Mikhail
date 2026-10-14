@@ -193,6 +193,22 @@ struct ContentView: View {
             ShareSheet(items: item.urls)
         }
         .background(
+            Color.clear.sheet(isPresented: Binding(
+                get: { model.checkText != nil && model.shareItem == nil },
+                set: { if !$0 { model.checkText = nil } })) {
+                NavigationView {
+                    ScrollView {
+                        Text(model.checkText ?? "")
+                            .font(.system(size: 15, design: .monospaced))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                    }
+                    .navigationTitle("Проверка помещения")
+                    .toolbar { Button("Готово") { model.checkText = nil } }
+                }
+            }
+        )
+        .background(
             Color.clear.sheet(isPresented: $model.showCalibration) {
                 CalibrationView(model: model)
             }

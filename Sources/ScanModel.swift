@@ -65,6 +65,7 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
     @Published var photoCount = 0
     @Published var rollDeg: Double = 0
     @Published var pitchDeg: Double = 0
+    @Published var checkText: String?         // проверка углов/стен/пола после сохранения
 
     private var picks: [SIMD3<Float>] = []
     private var markerAnchors: [AnchorEntity] = []      // текущий незаконченный замер
@@ -444,8 +445,10 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
                 let zip = try Exporter.write(meshAnchors: anchors, planes: planes, measurements: meas,
                                              labels: labs, calibration: cal, photos: photoSet,
                                              worldMap: map, room: room)
+                let check = room.map { RoomCheck.make(room: $0, meshAnchors: anchors, labels: labs).summary }
                 DispatchQueue.main.async {
                     self.status = "Сохранено: \(zip.lastPathComponent)"
+                    self.checkText = check
                     self.shareItem = ShareItem(urls: [zip])
                 }
             } catch {
