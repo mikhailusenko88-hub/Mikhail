@@ -127,6 +127,7 @@ function panelMat(T, hex, name, sx, sy, sz, on) {
   const C = panelMat.c || (panelMat.c = { tex:{}, mat:{} });
   hex = hex || '#e8e2d6';
   const wood = /Дуб|Орех|Ясень|Бук|Сосна|Вишн|Венге|Клён|Клен|Тик|Кассела|Ривер|H\d{4}/i.test(name || '');
+  const whitePore = /Уайт-Ривер|Whiteriver|H1312/i.test(name || '');   // винтажный дуб с белой порой
   const dims = [sx, sy, sz], thin = dims.indexOf(Math.min(sx, sy, sz));
   const ua = thin === 0 ? 2 : 0, va = thin === 1 ? 2 : 1, uL = dims[ua], vL = dims[va], gv = vL > uL;
   const key = [hex, wood ? (gv ? 'v' : 'u') : 'p', on ? 1 : 0, Math.round(uL * 200), Math.round(vL * 200)].join('|');
@@ -134,7 +135,7 @@ function panelMat(T, hex, name, sx, sy, sz, on) {
   const rgb = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) || 200);
   const col = (k, a) => `rgba(${rgb.map(v => Math.max(0, Math.min(255, Math.round(v * k)))).join(',')},${a})`;
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  const tk = hex + (wood ? 'w' : 'p');
+  const tk = hex + (wood ? (whitePore ? 'W' : 'w') : 'p');
   if (!C.tex[tk]) {
     const c = document.createElement('canvas'), W = wood ? 1024 : 128, H = wood ? 256 : 128;
     c.width = W; c.height = H; const g = c.getContext('2d');
@@ -146,13 +147,13 @@ function panelMat(T, hex, name, sx, sy, sz, on) {
       }
       for (let i = 0; i < 110; i++) {       // тонкие волокна, бесшовно по длине
         const y0 = rnd() * H, k = 1 + Math.floor(rnd() * 3), ph = rnd() * 6.28, amp = 1 + rnd() * 5, dark = rnd() > 0.35;
-        g.strokeStyle = col(dark ? 0.78 + rnd() * 0.12 : 1.08 + rnd() * 0.08, 0.16 + rnd() * 0.32); g.lineWidth = 0.5 + rnd() * 2;
+        g.strokeStyle = col(dark ? (whitePore ? 0.86 : 0.78) + rnd() * 0.1 : 1.08 + rnd() * 0.08, (whitePore ? 0.1 : 0.16) + rnd() * 0.28); g.lineWidth = 0.5 + rnd() * 2;
         for (const dy of [0, H, -H]) { g.beginPath();
           for (let x = 0; x <= W; x += 16) { const y = y0 + dy + Math.sin(x / W * 6.283 * k + ph) * amp; x ? g.lineTo(x, y) : g.moveTo(x, y); }
           g.stroke(); }
       }
       for (let i = 0; i < 1800; i++) {      // поры
-        g.fillStyle = col(0.72, 0.22); g.fillRect(rnd() * W, rnd() * H, 2 + rnd() * 7, 0.8);
+        g.fillStyle = whitePore ? 'rgba(250,247,240,0.55)' : col(0.72, 0.22); g.fillRect(rnd() * W, rnd() * H, 2 + rnd() * 7, whitePore ? 1.2 : 0.8);
       }
     } else {
       for (let i = 0; i < 2500; i++) { g.fillStyle = col(rnd() > 0.5 ? 0.96 : 1.04, 0.5); g.fillRect(rnd() * W, rnd() * H, 1, 1); }
