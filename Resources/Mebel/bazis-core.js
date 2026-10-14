@@ -18,6 +18,7 @@ export function parseBlock(bytes, start = 0, end = bytes.length) {
     if (t === 0) { v = []; for (let i = 0; i < c; i++) v.push(entry()); }
     else if (t === 1) v = true;
     else if (t === 2) v = false;
+    else if (t === 8) v = null;          // пустое значение (ObjectNotes и т.п.), без данных
     else if (t === 3) v = bytes[p++];
     else if (t === 4) { v = dv.getInt32(p, true); p += 4; }
     else if (t === 5 || t === 9) { v = dv.getFloat64(p, true); p += 8; }
