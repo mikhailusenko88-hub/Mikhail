@@ -18,7 +18,7 @@ export function parseBlock(bytes, start = 0, end = bytes.length) {
     if (t === 0) { v = []; for (let i = 0; i < c; i++) v.push(entry()); }
     else if (t === 1) v = true;
     else if (t === 2) v = false;
-    else if (t === 8) v = null;
+    else if (t === 8) v = null;          // пустое значение (ObjectNotes и т.п.), без данных
     else if (t === 3) v = bytes[p++];
     else if (t === 4) { v = dv.getInt32(p, true); p += 4; }
     else if (t === 5 || t === 9) { v = dv.getFloat64(p, true); p += 8; }
@@ -36,9 +36,30 @@ export const val = (n, name, d) => { const e = kid(n, name); return e ? e.v : d;
 export function find(list, name) {
   for (const e of list) { if (e.k === name) return e; if (e.t === 0) { const r = find(e.v, name); if (r) return r; } }
 }
+async function inflateRaw(bytes, fmt) {
+  const reader = new Blob([bytes]).stream().pipeThrough(new DecompressionStream(fmt)).getReader();
+  const chunks = []; let n = 0, err = null;
+  try { for (;;) { const { done, value } = await reader.read(); if (done) break; chunks.push(value); n += value.length; } }
+  catch (e) { err = e; }
+  const out = new Uint8Array(n); let o = 0; for (const c of chunks) { out.set(c, o); o += c.length; }
+  return { out, err };
+}
+/// Распаковка. Новые версии Базиса дописывают в конец файла 64 байта (подпись) — браузер
+/// на таком «хвосте» обрывает распаковку, поэтому при ошибке пробуем без хвоста.
 async function inflate(bytes, fmt) {
-  const ds = new DecompressionStream(fmt);
-  return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer());
+  let r = await inflateRaw(bytes, fmt);
+  if (!r.err) return r.out;
+  if (fmt === 'deflate') {
+    for (const cut of [64, 32, 16, 128, 8, 4]) {
+      if (bytes.length <= cut + 2) continue;
+      const t = await inflateRaw(bytes.subarray(0, bytes.length - cut), fmt);
+      if (!t.err) return t.out;
+    }
+    const raw = await inflateRaw(bytes.subarray(2), 'deflate-raw');
+    if (!raw.err || raw.out.length > r.out.length) return raw.out;
+  }
+  if (r.out.length) return r.out;
+  throw r.err;
 }
 function indexOf(b, pat, from) {
   outer: for (let i = from; i <= b.length - pat.length; i++) { for (let j = 0; j < pat.length; j++) if (b[i + j] !== pat[j]) continue outer; return i; }
@@ -128,6 +149,31 @@ export function contourLoops(blob) {
     loops.push(loop);
   }
   return loops.concat(circles);
+}
+/// Элементы контура по порядку (индекс = Elem у кромки Butt): каждый — ломаная точек.
+export function contourElems(blob) {
+  const dv = new DataView(blob.buffer, blob.byteOffset, blob.byteLength);
+  let p = 0; const n = dv.getUint32(p, true); p += 4;
+  const f = () => { const v = dv.getFloat64(p, true); p += 8; return v; };
+  const out = [];
+  for (let i = 0; i < n && p < blob.length; i++) {
+    const t = blob[p++];
+    if (t === 0x10) { const x1 = f(), y1 = f(), x2 = f(), y2 = f(); out.push([[x1, y1], [x2, y2]]); }
+    else if (t === 0x12) {
+      const cx = f(), cy = f(), sx = f(), sy = f(), ex = f(), ey = f(), ccw = blob[p++] === 1;
+      const r = Math.hypot(sx - cx, sy - cy);
+      let a0 = Math.atan2(sy - cy, sx - cx), a1 = Math.atan2(ey - cy, ex - cx);
+      if (ccw) { while (a1 <= a0 + 1e-9) a1 += 2 * Math.PI; } else { while (a1 >= a0 - 1e-9) a1 -= 2 * Math.PI; }
+      const steps = Math.max(4, Math.ceil(Math.abs(a1 - a0) / (Math.PI / 24)));
+      const pts = []; for (let k = 0; k <= steps; k++) { const a = a0 + (a1 - a0) * k / steps; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
+      out.push(pts);
+    } else if (t === 0x11 || t === 0x14) {
+      const cx = f(), cy = f(), r = f(), pts = [];
+      for (let k = 0; k <= 32; k++) { const a = 2 * Math.PI * k / 32; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
+      out.push(pts);
+    } else break;
+  }
+  return out;
 }
 export const loopArea = l => l.reduce((s, p, i) => { const q = l[(i + 1) % l.length]; return s + p[0] * q[1] - q[0] * p[1]; }, 0) / 2;
 

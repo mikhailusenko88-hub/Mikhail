@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Базис</title>
+<style>
+  :root { --bg:#1c1d20; --panel:rgba(30,31,35,.95); --line:#3a3c42; --text:#f2f2f2; --dim:#9a9ca3; --acc:#ff9f0a; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--text); font:14px -apple-system,system-ui,sans-serif; overflow:hidden; }
+  #view { position:fixed; left:0; right:0; top:0; bottom:38%; touch-action:none; }
+  #top { position:fixed; top:env(safe-area-inset-top); left:0; right:0; display:flex; gap:6px; padding:8px 10px; align-items:center; overflow-x:auto; }
+  button { background:#2c2e33; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:8px 12px; font:inherit; font-weight:600; white-space:nowrap; }
+  button.on { background:var(--acc); color:#000; }
+  #title { font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; background:var(--panel); padding:6px 10px; border-radius:10px; }
+  #side { position:fixed; left:0; right:0; bottom:0; height:38%; overflow:auto; background:var(--panel); border-top:1px solid var(--line);
+    padding:6px 0 calc(16px + env(safe-area-inset-bottom)); }
+  .r { display:grid; grid-template-columns:1fr auto; gap:2px 8px; padding:7px 12px; border-bottom:1px solid #2a2c31; }
+  .r.on { background:#3a2c10; }
+  .n { font-weight:600; } .s { color:var(--dim); font-size:12px; } .d { text-align:right; font-variant-numeric:tabular-nums; }
+  #sum { padding:6px 12px; color:var(--dim); font-size:12px; }
+  #legend { position:fixed; z-index:5; left:10px; bottom:calc(38% + 12px); display:none; flex-wrap:wrap; gap:6px; max-width:calc(100% - 20px); }
+  #legend span { background:var(--panel); border-radius:8px; padding:4px 8px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px; }
+  #legend i { width:14px; height:6px; border-radius:2px; display:inline-block; }
+  .eg { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:3px; vertical-align:-1px; }
+  #msg { position:fixed; top:40%; left:50%; transform:translate(-50%,-50%); background:var(--panel); padding:10px 16px; border-radius:12px; text-align:center; max-width:85%; }
+</style>
+</head>
+<body>
+<div id="view"></div>
+<div id="top">
+  <button id="close">✕</button>
+  <span id="title">Базис</span>
+  <button id="lab" class="on">Подписи</button>
+  <button id="fur" class="on">Фурнитура</button>
+  <button id="edge">Кромка</button>
+  <button id="exp">Разнести</button>
+  <button id="openFile" style="display:none">Открыть файл…</button>
+  <input id="file" type="file" accept=".b3d,.fr3d,.zip" style="display:none">
+  <button id="toMebel">В конструктор</button>
+</div>
+<div id="msg">Открываю файл…</div>
+<div id="legend"></div>
+<div id="side"><div id="sum"></div><div id="list"></div></div>
+
+<script type="importmap">{ "imports": { "three": "./three.module.min.js" } }</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from './OrbitControls.js';
+const $ = id => document.getElementById(id);
+const native = window.webkit?.messageHandlers?.bazis || null;
+const msg = t => { $('msg').textContent = t; $('msg').style.display = t ? 'block' : 'none'; };
+$('close').onclick = () => native ? native.postMessage({ type:'close' }) : history.back();
+
+// ===== Разбор файла: общий модуль (типы 0–9, круги в контурах, zip с iPhone) =====
+import { kid, val, find, openBytes, contourLoops, contourElems, loopArea as area, toProject } from './bazis-core.js';
+import { triMeshes as rawTri } from './bazis-core.js';
+function triMeshes(blob) {
+  return rawTri(blob).map(t => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(t.pos, 3)); g.computeVertexNormals();
+    return { g, m:new THREE.Matrix4().fromArray(t.m) }; });
+}
+
+function panelGeometry(blob, thick) {
+  const loops = contourLoops(blob).filter(l => l.length > 2).sort((a, b) => Math.abs(area(b)) - Math.abs(area(a)));
+  if (!loops.length) return null;
+  const shape = new THREE.Shape(loops[0].map(p => new THREE.Vector2(p[0], p[1])));
+  for (const h of loops.slice(1)) shape.holes.push(new THREE.Path(h.map(p => new THREE.Vector2(p[0], p[1]))));
+  return new THREE.ExtrudeGeometry(shape, { depth:thick, bevelEnabled:false, curveSegments:1 });
+}
+function transMatrix(node) {
+  const t = kid(node, 'Trans'), m = new THREE.Matrix4();
+  if (!t) return m;
+  const q = new THREE.Quaternion(val(t, 'Rx', 0), val(t, 'Ry', 0), val(t, 'Rz', 0), val(t, 'Rw', 1));
+  if (q.lengthSq() < 1e-9) q.set(0, 0, 0, 1); else q.normalize();
+  return m.compose(new THREE.Vector3(val(t, 'X', 0), val(t, 'Y', 0), val(t, 'Z', 0)), q, new THREE.Vector3(1, 1, 1));
+}
+// ===== Сцена =====
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+$('view').appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x1c1d20);
+const camera = new THREE.PerspectiveCamera(45, 1, 1, 100000);
+const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x555555, 1.1));
+const sun = new THREE.DirectionalLight(0xffffff, 1.1); sun.position.set(2000, 4000, 3000); scene.add(sun);
+const root = new THREE.Group(); scene.add(root);
+const furn = new THREE.Group(); root.add(furn);
+function resize() { const v = $('view'); renderer.setSize(v.clientWidth, v.clientHeight); camera.aspect = v.clientWidth / v.clientHeight; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+(function loop() { requestAnimationFrame(loop); controls.update(); renderer.render(scene, camera); })();
+
+const MAT_COLORS = [0xe8e2d6, 0xcfb38c, 0xb58a5c, 0xd8cfc2, 0x9c9890, 0xf4f3ef, 0xa07a52, 0x9aa58f, 0xc9c2b4];
+const matColor = {}; let mi = 0;
+const colorFor = m => matColor[m] ?? (matColor[m] = MAT_COLORS[mi++ % MAT_COLORS.length]);
+
+function labelSprite(text) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 80;
+  const g = c.getContext('2d'); g.fillStyle = 'rgba(0,0,0,.7)'; g.fillRect(0, 0, 256, 80);
+  g.fillStyle = '#fff'; g.font = 'bold 44px -apple-system,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText(text.slice(0, 9), 128, 42);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(c), depthTest:false }));
+  s.scale.set(120, 38, 1); s.renderOrder = 10; return s;
+}
+
+// ===== Кромка: полоска на каждом закромлённом торце, цвет — по виду кромки =====
+const EDGE_COLORS = [0xff3b30, 0x0a84ff, 0x30d158, 0xffd60a, 0xbf5af2, 0xff9f0a, 0x64d2ff];
+const edgeKinds = {};   // "1х19" → { color, n, len }
+const edgeColor = k => (edgeKinds[k] ??= { color:EDGE_COLORS[Object.keys(edgeKinds).length % EDGE_COLORS.length], n:0, len:0 }).color;
+function edgeStrips(blob, thick, butts) {
+  if (!butts.length) return null;
+  const els = contourElems(blob);
+  const all = els.flat(); if (!all.length) return null;
+  const cx = all.reduce((s, p) => s + p[0], 0) / all.length, cy = all.reduce((s, p) => s + p[1], 0) / all.length;
+  const grp = new THREE.Group(); grp.visible = false;
+  const off = 1.2;   // мм наружу — чтобы полоска не тонула в торце
+  for (const b of butts) {
+    const pts = els[b.elem]; if (!pts) continue;
+    const kind = b.sign || (b.thick + 'мм'), info = edgeKinds[kind] ?? (edgeColor(kind), edgeKinds[kind]);
+    const pos = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [x1, y1] = pts[i], [x2, y2] = pts[i + 1];
+      let nx = y2 - y1, ny = -(x2 - x1); const l = Math.hypot(nx, ny); if (l < 1e-6) continue;
+      nx /= l; ny /= l;
+      const mx = (x1 + x2) / 2 - cx, my = (y1 + y2) / 2 - cy; if (nx * mx + ny * my < 0) { nx = -nx; ny = -ny; }
+      const a = [x1 + nx * off, y1 + ny * off], c = [x2 + nx * off, y2 + ny * off], z0 = -0.6, z1 = thick + 0.6;
+      pos.push(a[0], a[1], z0, c[0], c[1], z0, c[0], c[1], z1, a[0], a[1], z0, c[0], c[1], z1, a[0], a[1], z1);
+      info.len += l;
+    }
+    info.n++;
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    grp.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color:info.color, side:THREE.DoubleSide })));
+  }
+  return grp;
+}
+function readButts(o) {
+  return (kid(o, 'Butts')?.v || []).filter(b => b.k === 'Butt' && b.t === 0)
+    .map(b => ({ elem:val(b, 'Elem', -1), sign:val(b, 'Sign', ''), thick:val(b, 'Thick', 0), mat:val(b, 'Mat', '') }));
+}
+
+const parts = [];
+let furnLib = null, center = new THREE.Vector3();
+function walk(list, parentM) {
+  for (const o of list) {
+    if (o.k !== 'Obj' || o.t !== 0) continue;
+    const type = val(o, 'Type', 0), m = parentM.clone().multiply(transMatrix(o));
+    if (type === 1005) { const sub = kid(o, 'Objs'); if (sub) walk(sub.v, m); continue; }
+    if (type === 4002 || type === 2004) {
+      const blob = val(o, 'Contour'); if (!blob) continue;
+      const thick = type === 2004 ? val(o, 'Thickness', val(o, 'Thick', 16)) : val(o, 'Thick', 16);
+      const g = panelGeometry(blob, thick); if (!g) continue;
+      const mat = val(o, 'Mat', '') || '';
+      const mesh = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color:colorFor(mat), roughness:0.8 }));
+      mesh.applyMatrix4(m);
+      mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(g, 20), new THREE.LineBasicMaterial({ color:0x333333 })));
+      root.add(mesh);
+      const butts = type === 4002 ? readButts(o) : [];
+      const strips = edgeStrips(blob, thick, butts);
+      if (strips) mesh.add(strips);
+      const nEl = contourElems(blob).length;
+      g.computeBoundingBox();
+      const s = g.boundingBox.getSize(new THREE.Vector3());
+      const dims = [Math.round(s.x), Math.round(s.y)].sort((a, b) => b - a);
+      const part = { mesh, name:val(o, 'Name', '') || 'Деталь', pos:val(o, 'ArtPos', '') || '', mat, thick, dims,
+        butts:butts.length, buttList:butts, nEl, strips, color:colorFor(mat) };
+      mesh.userData.part = part; parts.push(part);
+    } else if (type === 10000) {
+      const tri = val(o, 'TriData');
+      if (tri) for (const t of triMeshes(tri)) {
+        const mesh = new THREE.Mesh(t.g, new THREE.MeshStandardMaterial({ color:0x6f7276, metalness:0.4, roughness:0.5, side:THREE.DoubleSide }));
+        mesh.applyMatrix4(m.clone().multiply(t.m)); furn.add(mesh);
+      }
+    } else if (type === 4001) {
+      const sub = kid(o, 'Objs'); if (sub) walk(sub.v, m);
+    } else if (type === 3001 && furnLib) {
+      const f = kid(furnLib, 'F' + val(o, 'FastID', -1)), tri = f && find([f], 'TriData');
+      if (!tri) continue;
+      for (const t of triMeshes(tri.v)) {
+        const mesh = new THREE.Mesh(t.g, new THREE.MeshStandardMaterial({ color:0x9aa0a8, metalness:0.4, roughness:0.5 }));
+        mesh.applyMatrix4(m.clone().multiply(t.m)); furn.add(mesh);
+      }
+    }
+  }
+}
+
+let labels = [];
+function addLabels() {
+  labels.forEach(l => l.parent.remove(l)); labels = [];
+  parts.forEach((p, i) => {
+    const b = new THREE.Box3().setFromObject(p.mesh), c = b.getCenter(new THREE.Vector3());
+    const l = labelSprite(p.pos || String(i + 1)); l.position.copy(c); root.add(l); labels.push(l);
+    l.visible = $('lab').classList.contains('on');
+  });
+}
+function edgeText(p) {
+  if (p.thick < 8 && !p.butts) return '';
+  if (!p.butts) return 'без кромки';
+  const by = {}; p.buttList.forEach(b => { const k = b.sign || (b.thick + 'мм'); by[k] = (by[k] || 0) + 1; });
+  const round = p.butts >= p.nEl ? ' · по кругу' : ` из ${p.nEl}`;
+  return 'кромка ' + Object.entries(by).map(([k, n]) => `<i class="eg" style="background:#${edgeKinds[k].color.toString(16).padStart(6, '0')}"></i>${k} ×${n}`).join(', ') + round;
+}
+function list() {
+  const L = $('list'); L.innerHTML = '';
+  parts.forEach((p, i) => {
+    const d = document.createElement('div'); d.className = 'r'; p.row = d;
+    d.innerHTML = `<div><div class="n">${p.pos ? p.pos + ' · ' : ''}${p.name}</div><div class="s">${p.mat || '—'}</div><div class="s">${edgeText(p)}</div></div>
+      <div class="d">${p.dims[0]}×${p.dims[1]}<div class="s">${Math.round(p.thick)} мм</div></div>`;
+    d.onclick = () => pick(p); L.appendChild(d);
+  });
+  const mats = {}; parts.forEach(p => mats[p.mat] = (mats[p.mat] || 0) + 1);
+  $('sum').textContent = `Деталей: ${parts.length} · материалы: ` + Object.entries(mats).map(([m, n]) => `${m || '—'} (${n})`).join(', ');
+}
+let picked = null;
+function pick(p) {
+  if (picked) { picked.mesh.material.emissive.setHex(0); picked.row.classList.remove('on'); }
+  picked = picked === p ? null : p;
+  if (picked) { picked.mesh.material.emissive.setHex(0x664400); picked.row.classList.add('on'); picked.row.scrollIntoView({ block:'nearest' }); }
+}
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let down;
+renderer.domElement.addEventListener('pointerdown', e => down = [e.clientX, e.clientY]);
+renderer.domElement.addEventListener('pointerup', e => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 8) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  ptr.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+  ray.setFromCamera(ptr, camera);
+  const h = ray.intersectObjects(parts.map(p => p.mesh), false)[0];
+  if (h) pick(h.object.userData.part);
+});
+$('lab').onclick = () => { $('lab').classList.toggle('on'); labels.forEach(l => l.visible = $('lab').classList.contains('on')); };
+$('fur').onclick = () => { $('fur').classList.toggle('on'); furn.visible = $('fur').classList.contains('on'); };
+let edgeMode = false;
+$('edge').onclick = () => {
+  edgeMode = !edgeMode; $('edge').classList.toggle('on', edgeMode);
+  for (const p of parts) {
+    if (p.strips) p.strips.visible = edgeMode;
+    p.mesh.material.color.setHex(edgeMode ? 0xdedede : p.color);
+    p.mesh.material.transparent = false;
+  }
+  furn.visible = !edgeMode && $('fur').classList.contains('on');
+  labels.forEach(l => l.visible = !edgeMode && $('lab').classList.contains('on'));
+  const L = $('legend');
+  L.style.display = edgeMode ? 'flex' : 'none';
+  L.innerHTML = Object.entries(edgeKinds).map(([k, v]) => `<span><i style="background:#${v.color.toString(16).padStart(6, '0')}"></i>${k} · ${v.n} шт · ${(v.len / 1000).toFixed(1)} м</span>`).join('')
+    + '<span><i style="background:#dedede"></i>без кромки</span>';
+};
+let exploded = false;
+$('exp').onclick = () => {
+  exploded = !exploded; $('exp').classList.toggle('on', exploded);
+  for (const p of parts) {
+    if (!p.home) p.home = p.mesh.position.clone();
+    const c = new THREE.Box3().setFromObject(p.mesh).getCenter(new THREE.Vector3());
+    p.mesh.position.copy(exploded ? p.home.clone().add(c.sub(center).multiplyScalar(0.35)) : p.home);
+  }
+  addLabels();
+};
+
+let opened = null;
+$('toMebel').onclick = () => {
+  if (!opened) return;
+  try {
+    const project = toProject(opened.body, opened.title);
+    if (native) native.postMessage({ type:'toMebel', project }); else msg('Нет связи с приложением');
+  } catch (e) { msg('В конструктор не получилось: ' + e.message); setTimeout(() => msg(''), 4000); }
+};
+window.Bazis = {
+  async open(name, b64) {
+    try {
+      msg('Открываю ' + name + '…');
+      const { title, body } = await openBytes(Uint8Array.from(atob(b64), c => c.charCodeAt(0)), name);
+      $('title').textContent = title; opened = { title, body };
+      furnLib = find(body, 'FurnList') || null;
+      const model = find(body, 'Model');
+      if (!model) throw new Error('В файле нет модели');
+      walk(model.v, new THREE.Matrix4());
+      if (!parts.length) throw new Error('Деталей не найдено');
+      const box = new THREE.Box3().setFromObject(root); box.getCenter(center);
+      const size = box.getSize(new THREE.Vector3());
+      controls.target.copy(center);
+      camera.position.set(center.x + size.x * 0.9, center.y + size.y * 0.5, center.z + Math.max(size.x, size.y) * 1.6);
+      camera.near = 5; camera.far = Math.max(size.x, size.y, size.z) * 20; camera.updateProjectionMatrix();
+      addLabels(); list();
+      $('sum').textContent = `Габарит ${Math.round(size.x)} × ${Math.round(size.y)} × ${Math.round(size.z)} мм · ` + $('sum').textContent;
+      msg('');
+    } catch (e) { msg('Не удалось открыть: ' + e.message); }
+  },
+};
+if (native) native.postMessage({ type:'ready' });
+else {
+  $('toMebel').style.display = 'none'; $('openFile').style.display = '';
+  $('openFile').onclick = () => $('file').click();
+  $('file').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    root.children.filter(c => c !== furn).forEach(c => root.remove(c)); furn.clear();
+    parts.length = 0; for (const k in edgeKinds) delete edgeKinds[k];
+    if (edgeMode) $('edge').click();
+    const buf = new Uint8Array(await f.arrayBuffer());
+    let bin = ''; for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+    Bazis.open(f.name, btoa(bin));
+  };
+  msg('Нажмите «Открыть файл…» — .b3d, .fr3d или .zip');
+}
+</script>
+</body>
+</html>
