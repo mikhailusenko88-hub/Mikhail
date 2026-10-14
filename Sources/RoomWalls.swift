@@ -27,6 +27,7 @@ final class RoomWalls: NSObject, RoomCaptureSessionDelegate {
 
     var onUpdate: ((String) -> Void)?        // сводка: «Стен 4 · окон 1 · дверей 1»
     var onInstruction: ((String?) -> Void)?  // подсказка RoomPlan по-русски
+    var onFail: ((String) -> Void)?          // RoomPlan остановился с ошибкой
 
     init(view: ARView) { self.view = view }
 
@@ -71,6 +72,15 @@ final class RoomWalls: NSObject, RoomCaptureSessionDelegate {
         @unknown default: t = nil
         }
         DispatchQueue.main.async { self.onInstruction?(t) }
+    }
+
+    func captureSession(_ session: RoomCaptureSession, didEndWith data: CapturedRoomData, error: Error?) {
+        guard let e = error else { return }
+        DispatchQueue.main.async {
+            guard self.running else { return }
+            self.running = false
+            self.onFail?(e.localizedDescription)
+        }
     }
 
     private func take(_ room: CapturedRoom) {

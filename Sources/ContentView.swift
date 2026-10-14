@@ -4,8 +4,15 @@ import RealityKit
 
 struct ContentView: View {
     @StateObject private var model = ScanModel()
+    @Environment(\.dismiss) private var dismiss
     @State private var showFitting = false
     @State private var showMebel = false
+    @State private var confirmExit = false
+
+    private func leave() {
+        model.shutdown()
+        dismiss()
+    }
 
     var body: some View {
         ZStack {
@@ -21,6 +28,13 @@ struct ContentView: View {
             VStack(spacing: 8) {
                 // Верх: статус, фото, калибровка
                 HStack(spacing: 8) {
+                    Button { if model.unsaved { confirmExit = true } else { leave() } } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 17, weight: .semibold))
+                            .frame(width: 38, height: 38)
+                            .background(.ultraThinMaterial, in: Circle())
+                    }
+                    .accessibilityLabel("Меню")
                     Text(model.status)
                         .font(.system(size: 13, weight: .medium))
                         .lineLimit(1)
@@ -68,7 +82,16 @@ struct ContentView: View {
 
                 if model.phase != .preview {
                     VStack(spacing: 4) {
-                        CoverageBar(percent: model.coverage)
+                        if model.wallsStep {
+                            Text("Шаг 1 из 2: медленно обведи камерой все стены, окна и двери. Потом «Стены готовы».")
+                                .font(.system(size: 13, weight: .semibold))
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 12).padding(.vertical, 6)
+                                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                                .padding(.horizontal, 12)
+                        } else {
+                            CoverageBar(percent: model.coverage)
+                        }
                         if let w = model.wallsText {
                             Text(w)
                                 .font(.system(size: 13, weight: .semibold))
@@ -163,6 +186,16 @@ struct ContentView: View {
                     .padding(.horizontal, 12)
                     .padding(.bottom, 10)
                 } else {
+                    if model.wallsStep {
+                        Button { model.finishWalls() } label: {
+                            Label("Стены готовы → шаг 2: сетка", systemImage: "checkmark.circle.fill")
+                                .font(.system(size: 17, weight: .bold))
+                                .frame(maxWidth: .infinity, minHeight: 52)
+                                .foregroundColor(.white)
+                                .background(Color.green.opacity(0.92), in: RoundedRectangle(cornerRadius: 14))
+                        }
+                        .padding(.horizontal, 12)
+                    }
                     Text("Замеров: \(model.measurements.count) · меток: \(model.labels.count) · фото: \(model.photoCount)")
                         .font(.system(size: 12))
                         .padding(.horizontal, 10).padding(.vertical, 4)
@@ -220,6 +253,12 @@ struct ContentView: View {
             Button("Отмена", role: .cancel) { model.referenceText = "" }
         } message: {
             Text("Измерь то же самое лазером, рулеткой или угломером. По эталонам приложение подстраивает датчик отдельно для вертикали, горизонтали, наискосок и углов.")
+        }
+        .alert("Выйти в меню?", isPresented: $confirmExit) {
+            Button("Выйти без сохранения", role: .destructive) { leave() }
+            Button("Остаться", role: .cancel) {}
+        } message: {
+            Text("Скан не сохранён — сетка, фото, замеры и метки пропадут.")
         }
         .alert("Начать скан заново?", isPresented: $model.confirmReset) {
             Button("Заново", role: .destructive) { model.resetScan() }
@@ -330,4 +369,66 @@ struct ShareSheet: UIViewControllerRepresentable {
         UIActivityViewController(activityItems: items, applicationActivities: nil)
     }
     func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
+}
+
+
+/// Главный экран: разделы «Замер», «Мебель», «Примерка».
+struct HomeView: View {
+    @State private var showScan = false
+    @State private var showMebel = false
+    @State private var showFitting = false
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 14) {
+                    HomeCard(title: "Замер помещения",
+                             text: "LiDAR-скан: стены, окна, двери, углы, неровности, метки коммуникаций",
+                             icon: "camera.viewfinder", color: .green) { showScan = true }
+                    HomeCard(title: "Мебель",
+                             text: "Конструктор, файлы Базиса (.b3d / .fr3d), ссылки клиентам",
+                             icon: "square.stack.3d.up.fill", color: .blue) { showMebel = true }
+                    HomeCard(title: "Примерка",
+                             text: "Поставить спроектированную мебель в комнату через камеру",
+                             icon: "cube.transparent", color: .orange) { showFitting = true }
+                }
+                .padding(16)
+            }
+            .navigationTitle("Замер 3D")
+        }
+        .navigationViewStyle(.stack)
+        .fullScreenCover(isPresented: $showScan) { ContentView() }
+        .fullScreenCover(isPresented: $showMebel) { MebelView() }
+        .fullScreenCover(isPresented: $showFitting) { FittingView() }
+    }
+}
+
+struct HomeCard: View {
+    let title: String
+    let text: String
+    let icon: String
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: icon)
+                    .font(.system(size: 30, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(width: 64, height: 64)
+                    .background(color, in: RoundedRectangle(cornerRadius: 16))
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title).font(.system(size: 20, weight: .bold)).foregroundColor(.primary)
+                    Text(text).font(.system(size: 14)).foregroundColor(.secondary)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").foregroundColor(.secondary)
+            }
+            .padding(14)
+            .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 20))
+        }
+        .buttonStyle(.plain)
+    }
 }

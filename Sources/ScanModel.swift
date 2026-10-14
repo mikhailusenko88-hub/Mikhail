@@ -66,6 +66,10 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
     @Published var rollDeg: Double = 0
     @Published var pitchDeg: Double = 0
     @Published var checkText: String?         // проверка углов/стен/пола после сохранения
+    /// Шаг 1 скана: RoomPlan ищет стены/окна/двери. Сетку LiDAR RoomPlan не отдаёт,
+    /// поэтому после «Стены готовы» включается шаг 2 — своя LiDAR-сетка в тех же координатах.
+    @Published var wallsStep = false
+    @Published var unsaved = false            // скан начат и ещё не сохранён
 
     private var picks: [SIMD3<Float>] = []
     private var markerAnchors: [AnchorEntity] = []      // текущий незаконченный замер
@@ -129,13 +133,41 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
             let w = RoomWalls(view: arView)
             w.onUpdate = { [weak self] t in self?.wallsText = t }
             w.onInstruction = { [weak self] t in self?.roomHint = t }
+            w.onFail = { [weak self] _ in
+                // RoomPlan остановился сам — не мешаем, просто переходим к сетке
+                self?.finishWalls()
+                self?.roomHint = "Стены дальше по сетке LiDAR"
+            }
             walls = w
-            w.start(on: arView.session)   // RoomPlan сам запускает сеанс с LiDAR-сеткой
+            w.start(on: arView.session)   // RoomPlan сам настраивает сеанс
+            wallsStep = true
         } else {
             arView.session.run(scanConfig(), options: [.resetTracking, .removeExistingAnchors])
+            wallsStep = false
         }
         phase = .scanning
+        unsaved = true
         startPolling()
+    }
+
+    /// «Стены готовы»: RoomPlan останавливается (найденные стены остаются на экране и в сохранении),
+    /// включается LiDAR-сетка — без сброса координат, чтобы сетка легла ровно на стены.
+    func finishWalls() {
+        guard wallsStep else { return }
+        wallsStep = false
+        walls?.stop(pauseARSession: false)
+        roomHint = nil
+        arView.session.run(scanConfig())
+        arView.session.delegate = self
+        if phase == .paused { phase = .scanning }
+    }
+
+    /// Выход в меню: всё остановить.
+    func shutdown() {
+        pollTimer?.invalidate(); pollTimer = nil
+        walls?.clear(); walls = nil
+        wallsStep = false
+        arView.session.pause()
     }
 
     func togglePause() {
@@ -163,6 +195,8 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
     func resume() {
         if phase == .preview { startPreview(); return }
         // RoomPlan после примерки не перезапускаем: найденные стены остаются, LiDAR-скан продолжается
+        wallsStep = false
+        roomHint = nil
         arView.session.run(scanConfig())
         arView.session.delegate = self
     }
@@ -180,6 +214,8 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         measuring = false
         walls?.clear(); walls = nil
         wallsText = nil; roomHint = nil
+        wallsStep = false
+        unsaved = false
         meshes.reset()
         coverage = 0
         startPreview()
@@ -197,19 +233,14 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
             status = "Пауза · покрытие \(coverage)%"
         case .scanning:
             if photos.consider(frame) { photoCount = photos.count }
+            if wallsStep {
+                status = "Шаг 1 · стены · \(tracking)"
+                return
+            }
             let mesh = frame.anchors.compactMap { $0 as? ARMeshAnchor }
             meshes.ingest(mesh, now: frame.timestamp)
             coverage = meshes.coveragePercent
-            status = "Скан · покрытие \(coverage)% · \(tracking)"
-            // Если RoomPlan не отдаёт LiDAR-сетку — переходим на обычный скан без авто-стен
-            if walls != nil, meshes.isEmpty, CACurrentMediaTime() - scanStarted > 8 {
-                walls?.stop(pauseARSession: false)
-                walls?.clear(); walls = nil
-                wallsText = nil; roomHint = nil
-                arView.session.run(scanConfig())
-                arView.session.delegate = self
-                errorText = "Авто-стены RoomPlan не дали сетку на этом телефоне — скан продолжен в обычном режиме."
-            }
+            status = "Шаг 2 · сетка \(coverage)% · \(tracking)"
         }
     }
 
@@ -417,12 +448,19 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
             errorText = "Скан ещё не начат. Нажми «Начать замер» и поводи телефоном по комнате."
             return
         }
+        let room = walls?.room
+        if wallsStep {
+            guard room != nil else {
+                errorText = "Стены ещё не найдены. Медленно обведи камерой все стены комнаты."
+                return
+            }
+            finishWalls()
+        }
         let anchors = meshes.anchors
-        guard !anchors.isEmpty else {
+        guard !anchors.isEmpty || room != nil else {
             errorText = "Сетка ещё пустая. Поводи телефоном по комнате."
             return
         }
-        let room = walls?.room
         let planes = arView.session.currentFrame?.anchors.compactMap { $0 as? ARPlaneAnchor } ?? []
         let meas = measurements
         let labs = labels
@@ -448,6 +486,7 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
                 let check = room.map { RoomCheck.make(room: $0, meshAnchors: anchors, labels: labs).summary }
                 DispatchQueue.main.async {
                     self.status = "Сохранено: \(zip.lastPathComponent)"
+                    self.unsaved = false
                     self.checkText = check
                     self.shareItem = ShareItem(urls: [zip])
                 }

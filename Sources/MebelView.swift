@@ -46,10 +46,16 @@ struct MebelView: View {
                         Button("Открыть .b3d / .fr3d") { pickBazis = true }
                         if let e = bazisError { Text(e).foregroundColor(.red) }
                     }
-                    Section("Скан комнаты") {
-                        if scans.isEmpty {
-                            Text("Пока нет сохранённых сканов. Сначала сделай замер и нажми «Сохранить».")
-                                .foregroundColor(.secondary)
+                    Section(header: Text("Проекты и сканы"),
+                            footer: Text("Новый проект — пустая комната, без скана. Скан — стены из замера.")) {
+                        Button {
+                            let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd_HH-mm"
+                            let name = "Проект_\(df.string(from: Date()))"
+                            try? FileManager.default.createDirectory(at: FittingModel.docs.appendingPathComponent(name),
+                                                                     withIntermediateDirectories: true)
+                            scan = name
+                        } label: {
+                            Label("Новый проект без скана", systemImage: "plus.circle.fill")
                         }
                         ForEach(scans, id: \.self) { s in
                             Button(s) { scan = s }

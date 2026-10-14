@@ -6,7 +6,7 @@ struct Zamer3DApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeView()
                 // .b3d / .fr3d / .zip из Telegram, «Файлов», почты → «Поделиться» → «Замер 3D»
                 .onOpenURL { url in bazis = BazisFile.load(url) }
                 .fullScreenCover(item: $bazis) { BazisScreen(file: $0) }
