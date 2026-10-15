@@ -344,7 +344,7 @@ const PRESETS = {
 const DEF_OPTS = { doors:2, drawers:0, shelves:2, front:'blind', hinge:'L', handle:'bar', plinth:100, thick:16, step:10,
   mount:'rebro', gapTop:3, gapSide:2 };
 
-const state = { name:'Мебель', modules:[], walls:[], sel:[], floorY:0, multi:false, move:false, magnet:true, link:null, plan:null };
+const state = { name:'Мебель', modules:[], walls:[], sel:[], floorY:0, multi:false, move:false, magnet:true, link:null, plan:null, obstacles:[], hits:{} };
 const SLIDE = {};   // выдвижение ящиков / корзин: ключ «код:номер» → { v, t }
 const undoStack = [];
 const snapshot = () => { undoStack.push(JSON.stringify(state.modules)); if (undoStack.length > 60) undoStack.shift(); };
@@ -385,6 +385,16 @@ function drawRoom(keepCam) {
   for (const s of state.walls) {
     const mx = new THREE.Matrix4().fromArray(s.transform);
     const lab = labelSprite(THREE, s.manual ? `${s.code} ${s.widthMm}` : s.code); lab.applyMatrix4(mx); lab.position.y += s.heightMm / 2000 + 0.08; roomGroup.add(lab);
+  }
+  for (const o of state.obstacles) {
+    const col = { bump:0xff7a1a, step:0xa64ee0, object:0x6aa0d8, mark:0xff2d78 }[o.kind] || 0x999999;
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(o.w / 1000, o.h / 1000, o.d / 1000),
+      new THREE.MeshStandardMaterial({ color:col, transparent:true, opacity:o.kind === 'mark' ? 0.95 : 0.38, depthWrite:false }));
+    mesh.position.set(o.x / 1000, o.y / 1000, o.z / 1000); mesh.rotation.y = (o.rotY || 0) * Math.PI / 180;
+    mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry), new THREE.LineBasicMaterial({ color:col })));
+    roomGroup.add(mesh);
+    const txt = o.kind === 'bump' ? `${o.code} ${o.d}` : o.kind === 'step' ? `${o.code} ↑${o.h}` : o.kind === 'mark' ? `${o.name} ${o.fromFloorMm}` : o.code;
+    const lab = labelSprite(THREE, txt); lab.position.set(o.x / 1000, o.y / 1000 + o.h / 2000 + 0.06, o.z / 1000); lab.scale.multiplyScalar(0.7); roomGroup.add(lab);
   }
   scene.add(roomGroup);
   const ws = state.walls.filter(s => s.kind === 'wall');
@@ -427,13 +437,36 @@ function add(type) {
     color:'#e8e2d6', colorName:'', opts:{ ...DEF_OPTS, ...p.opts } };
   state.modules.push(m); select([m.code]);
 }
+/// Пересечение модуля с препятствием (в плане — повёрнутые прямоугольники, по высоте — отрезки), допуск 5 мм.
+function overlaps(a, b) {
+  if (a.y + a.h / 2 <= b.y - b.h / 2 + 5 || a.y - a.h / 2 >= b.y + b.h / 2 - 5) return false;
+  const rect = m => { const r = (m.rotY || 0) * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
+    return { x:m.x, z:m.z, ax:[[c, -s], [s, c]], h:[m.w / 2 - 2.5, m.d / 2 - 2.5] }; };
+  const A = rect(a), B = rect(b), d = [B.x - A.x, B.z - A.z];
+  for (const R of [A, B]) for (const ax of R.ax) {
+    const pr = Q => Math.abs(Q.ax[0][0] * ax[0] + Q.ax[0][1] * ax[1]) * Q.h[0] + Math.abs(Q.ax[1][0] * ax[0] + Q.ax[1][1] * ax[1]) * Q.h[1];
+    if (Math.abs(d[0] * ax[0] + d[1] * ax[1]) > pr(A) + pr(B)) return false;
+  }
+  return true;
+}
 function draw() {
   modGroup.clear();
+  state.hits = {};
   for (const m of state.modules) {
     const g = buildModule(THREE, m, state.sel.includes(m.code));
     if (m.type === 'filler') addHardware3D(g, m);
+    const hit = state.obstacles.filter(o => o.kind !== 'mark' || true).filter(o => overlaps(m, o));
+    if (hit.length) {
+      state.hits[m.code] = hit.map(o => o.code);
+      const box = new THREE.Mesh(new THREE.BoxGeometry(m.w / 1000 + 0.01, m.h / 1000 + 0.01, m.d / 1000 + 0.01),
+        new THREE.MeshBasicMaterial({ color:0xff2020, transparent:true, opacity:0.25, depthWrite:false }));
+      box.add(new THREE.LineSegments(new THREE.EdgesGeometry(box.geometry), new THREE.LineBasicMaterial({ color:0xff2020 })));
+      g.add(box);
+    }
     modGroup.add(g);
   }
+  const hk = Object.keys(state.hits);
+  if (hk.length) msg('Упирается: ' + hk.map(c => `${c} → ${state.hits[c].join(', ')}`).join('; '), 3500);
   const list = document.getElementById('list'); list.innerHTML = '';
   for (const m of state.modules) {
     const b = document.createElement('button');
@@ -1007,6 +1040,22 @@ function magnet(mods, rot0) {
     if (sideOk) stops.push({ s, dir:Math.sign(g.nx * f.ux + g.nz * f.uz) });   // dir +1: стена слева (упор для lo)
   }
   const sel = new Set(mods.map(m => m.code));
+  // выступы и предметы у этой стены: модуль не встанет вплотную — отодвигаем вперёд на их глубину
+  let push = 0;
+  for (const o of state.obstacles) {
+    if (o.y + o.h / 2 < yLo + 5 || o.y - o.h / 2 > yHi - 5) continue;
+    const e = extentIn(o, f.ux, f.uz, f.nx, f.nz);
+    if (Math.min(e.u1, hi) - Math.max(e.u0, lo) < 20) continue;         // не за модулем
+    if (e.n0 > n0 + 60) continue;                                        // стоит в комнате, а не у стены
+    push = Math.max(push, e.n1 - n0);
+  }
+  if (push > 0) for (const m of mods) { m.x = Math.round(m.x + push * f.nx); m.z = Math.round(m.z + push * f.nz); }
+  for (const o of state.obstacles) {
+    if (o.y + o.h / 2 < yLo + 10 || o.y - o.h / 2 > yHi - 10) continue;
+    const e = extentIn(o, f.ux, f.uz, f.nx, f.nz);
+    if (e.n1 < n0 + push + 30 || e.n0 > n1 + push - 30) continue;
+    stops.push({ s:e.u1, dir:1 }, { s:e.u0, dir:-1 });
+  }
   for (const o of state.modules) {
     if (sel.has(o.code) || o.type === 'countertop') continue;
     if (o.y + o.h / 2 < yLo + 10 || o.y - o.h / 2 > yHi - 10) continue;   // по высоте не пересекаются (верхние/нижние)
@@ -1040,6 +1089,7 @@ window.Mebel = {
     state.walls = data.walls || [];
     state.link = data.link || null;
     state.plan = data.plan || null;
+    state.obstacles = data.obstacles || [];
     if (state.plan && !state.walls.some(s => s.kind === 'wall' && !s.manual)) state.walls = planWalls(state.plan);
     drawRoom();
     state.modules = (data.modules || []).map(m => ({ color:'#e8e2d6', colorName:'', type:'base', ...m, opts:{ ...DEF_OPTS, ...(m.opts || {}) } }));
@@ -1074,7 +1124,7 @@ const fileSave = { save: async ({ filename, data }) => {
 } };
 const web = { db:fakeDb, dl:fileSave, id:null, saved:'' };
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-const projData = () => ({ name:state.name, walls:state.walls.filter(w => !w.manual), plan:state.plan || undefined, link:state.link || undefined,
+const projData = () => ({ name:state.name, walls:state.walls.filter(w => !w.manual), plan:state.plan || undefined, obstacles:state.obstacles.length ? state.obstacles : undefined, link:state.link || undefined,
   modules:state.modules.map(m => ({ ...m, rotY:m.rotY || 0 })) });
 async function saveProject(silent) {
   const data = JSON.stringify(projData());
@@ -1137,7 +1187,7 @@ function fillPanel() {
     $('pFile').onchange = async e => {
       const f = e.target.files[0]; e.target.value = ''; if (!f) return;
       try {
-        if (/\.json$/i.test(f.name)) { const p = JSON.parse(await f.text()); openProject({ name:p.name || f.name.replace(/\.json$/i, ''), walls:p.walls || [], plan:p.plan, modules:p.modules || [], link:p.link }, null); }
+        if (/\.json$/i.test(f.name)) { const p = JSON.parse(await f.text()); openProject({ name:p.name || f.name.replace(/\.json$/i, ''), walls:p.walls || [], plan:p.plan, obstacles:p.obstacles, modules:p.modules || [], link:p.link }, null); }
         else { const core = await import('./bazis-core.js'); const { title, body } = await core.openBytes(new Uint8Array(await f.arrayBuffer()), f.name);
                const p = core.toProject(body, title); openProject({ name:p.name, walls:[], modules:[] }, null); importProject(p); }
         saveProject(true);
