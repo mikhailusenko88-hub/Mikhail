@@ -483,7 +483,11 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
                 let zip = try Exporter.write(meshAnchors: anchors, planes: planes, measurements: meas,
                                              labels: labs, calibration: cal, photos: photoSet,
                                              worldMap: map, room: room)
-                let check = room.map { RoomCheck.make(room: $0, meshAnchors: anchors, labels: labs).summary }
+                let check = room.map { r -> String in
+                    let base = RoomCheck.make(room: r, meshAnchors: anchors, labels: labs).summary
+                    let obs = RoomObstacles.summary(RoomObstacles.make(room: r, meshAnchors: anchors, labels: labs))
+                    return obs.isEmpty ? base : obs + "\n" + base
+                }
                 DispatchQueue.main.async {
                     self.status = "Сохранено: \(zip.lastPathComponent)"
                     self.unsaved = false

@@ -129,6 +129,7 @@ enum Exporter {
         if let room = room {
             RoomWalls.write(room, to: dir)
             RoomCheck.make(room: room, meshAnchors: meshAnchors, labels: labels).write(to: dir)   // углы, стены, пол, метки
+            RoomObstacles.write(RoomObstacles.make(room: room, meshAnchors: meshAnchors, labels: labels), to: dir)   // выступы, ступеньки, предметы
         }
         let enc = JSONEncoder()
         enc.outputFormatting = [.prettyPrinted, .sortedKeys]

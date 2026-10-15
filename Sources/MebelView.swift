@@ -136,6 +136,8 @@ struct MebelWeb: UIViewRepresentable {
             if let data = try? Data(contentsOf: dir.appendingPathComponent("info.json")),
                let info = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                let walls = info["roomPlan"] { payload["walls"] = walls }
+            if let data = try? Data(contentsOf: dir.appendingPathComponent("obstacles.json")),
+               let obs = try? JSONSerialization.jsonObject(with: data) { payload["obstacles"] = obs }   // выступы, ступеньки, предметы, метки
             let named = dir.appendingPathComponent("\(parent.name).json")
             let file = FileManager.default.fileExists(atPath: named.path) ? named
                      : dir.appendingPathComponent(FittingModel.kitchenFile)

@@ -16,8 +16,8 @@ targets:
       path: Sources/Info.plist
       properties:
         CFBundleDisplayName: "Замер 3D"
-        CFBundleShortVersionString: "1.8"
-        CFBundleVersion: "9"
+        CFBundleShortVersionString: "1.9"
+        CFBundleVersion: "10"
         NSCameraUsageDescription: "Камера и LiDAR нужны для 3D-скана помещения."
         UIRequiredDeviceCapabilities: [arkit]
         UIFileSharingEnabled: true
