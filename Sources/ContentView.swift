@@ -1,4 +1,6 @@
 import SwiftUI
+import QuickLook
+import ModelIO
 import ARKit
 import RealityKit
 
@@ -377,6 +379,7 @@ struct HomeView: View {
     @State private var showScan = false
     @State private var showMebel = false
     @State private var showFitting = false
+    @State private var showObject = false
 
     var body: some View {
         NavigationView {
@@ -391,6 +394,9 @@ struct HomeView: View {
                     HomeCard(title: "Примерка",
                              text: "Поставить спроектированную мебель в комнату через камеру",
                              icon: "cube.transparent", color: .orange) { showFitting = true }
+                    HomeCard(title: "Скан предмета",
+                             text: "Обойти предмет на столе со всех сторон — точная 3D-модель с размерами",
+                             icon: "cube.fill", color: .purple) { showObject = true }
                 }
                 .padding(16)
             }
@@ -400,6 +406,7 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showScan) { ContentView() }
         .fullScreenCover(isPresented: $showMebel) { MebelView() }
         .fullScreenCover(isPresented: $showFitting) { FittingView() }
+        .fullScreenCover(isPresented: $showObject) { ObjectScanScreen() }
     }
 }
 
@@ -430,5 +437,222 @@ struct HomeCard: View {
             .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 20))
         }
         .buttonStyle(.plain)
+    }
+}
+
+
+// MARK: - Скан предмета (Apple Object Capture): обойти со всех сторон → модель USDZ + OBJ с размерами
+
+@MainActor
+final class ObjectScanModel: ObservableObject {
+    enum Step: Equatable { case capture, building(Double), done, failed(String) }
+    @Published var session: ObjectCaptureSession?
+    @Published var state: ObjectCaptureSession.CaptureState = .initializing
+    @Published var step: Step = .capture
+    @Published var passDone = false
+    @Published var shots = 0
+    @Published var sizeText = ""
+    @Published var modelURL: URL?
+    @Published var shareURLs: [URL] = []
+    private var dir: URL?
+    private var tasks: [Task<Void, Never>] = []
+
+    static var supported: Bool { ObjectCaptureSession.isSupported }
+
+    func start() {
+        let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd_HH-mm"
+        let d = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("Предмет_\(df.string(from: Date()))", isDirectory: true)
+        let images = d.appendingPathComponent("Images", isDirectory: true)
+        let snaps = d.appendingPathComponent("Snapshots", isDirectory: true)
+        try? FileManager.default.createDirectory(at: images, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: snaps, withIntermediateDirectories: true)
+        dir = d
+        var cfg = ObjectCaptureSession.Configuration()
+        cfg.checkpointDirectory = snaps
+        cfg.isOverCaptureEnabled = false
+        let s = ObjectCaptureSession()
+        s.start(imagesDirectory: images, configuration: cfg)
+        session = s
+        step = .capture; passDone = false; shots = 0; modelURL = nil; sizeText = ""
+        tasks.forEach { $0.cancel() }
+        tasks = [
+            Task { [weak self] in
+                for await st in s.stateUpdates {
+                    guard let self else { return }
+                    self.state = st
+                    if case .completed = st { self.build() }
+                    if case .failed(let e) = st { self.step = .failed(e.localizedDescription) }
+                }
+            },
+            Task { [weak self] in
+                while !Task.isCancelled {
+                    try? await Task.sleep(nanoseconds: 300_000_000)
+                    guard let self, let s = self.session else { return }
+                    self.passDone = s.userCompletedScanPass
+                    self.shots = s.numberOfShotsTaken
+                }
+            },
+        ]
+    }
+
+    func detect() { _ = session?.startDetecting() }
+    func capture() { session?.startCapturing() }
+    func nextPass() { session?.beginNewScanPass() }
+    func finish() { session?.finish() }
+    func cancel() { session?.cancel(); tasks.forEach { $0.cancel() }; session = nil }
+
+    /// Сборка модели на телефоне (2–5 минут). Результат: model.usdz, model.obj, размеры.
+    private func build() {
+        guard let d = dir else { return }
+        step = .building(0)
+        session = nil
+        let out = d.appendingPathComponent("model.usdz")
+        Task {
+            do {
+                var cfg = PhotogrammetrySession.Configuration()
+                cfg.checkpointDirectory = d.appendingPathComponent("Snapshots")
+                let ps = try PhotogrammetrySession(input: d.appendingPathComponent("Images"), configuration: cfg)
+                try ps.process(requests: [.modelFile(url: out)])
+                for try await o in ps.outputs {
+                    switch o {
+                    case .requestProgress(_, let f): self.step = .building(f)
+                    case .requestError(_, let e): self.step = .failed(e.localizedDescription)
+                    case .processingComplete: self.finishModel(out, dir: d)
+                    default: break
+                    }
+                }
+            } catch {
+                self.step = .failed(error.localizedDescription)
+            }
+        }
+    }
+
+    private func finishModel(_ usdz: URL, dir d: URL) {
+        guard FileManager.default.fileExists(atPath: usdz.path) else { step = .failed("Модель не собралась"); return }
+        var urls = [usdz]
+        let asset = MDLAsset(url: usdz)
+        let obj = d.appendingPathComponent("model.obj")
+        if (try? asset.export(to: obj)) != nil { urls.append(obj) }
+        let b = asset.boundingBox
+        let sz = (b.maxBounds - b.minBounds) * 1000
+        if sz.x > 0, sz.y > 0, sz.z > 0 {
+            sizeText = String(format: "Габарит: %.0f × %.0f × %.0f мм (Ш × В × Г)", sz.x, sz.y, sz.z)
+            let info = ["widthMm": sz.x, "heightMm": sz.y, "depthMm": sz.z]
+            if let j = try? JSONSerialization.data(withJSONObject: info, options: .prettyPrinted) {
+                let f = d.appendingPathComponent("size.json"); try? j.write(to: f); urls.append(f)
+            }
+        }
+        modelURL = usdz
+        shareURLs = urls
+        step = .done
+    }
+}
+
+struct ObjectScanScreen: View {
+    @StateObject private var m = ObjectScanModel()
+    @Environment(\.dismiss) private var dismiss
+    @State private var share = false
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            if !ObjectScanModel.supported {
+                Text("На этом устройстве скан предметов недоступен (нужен iPhone с LiDAR и iOS 17).")
+                    .foregroundColor(.white).padding()
+            } else {
+                content
+            }
+            VStack {
+                HStack {
+                    Button { m.cancel(); dismiss() } label: {
+                        Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold))
+                            .frame(width: 38, height: 38).background(.ultraThinMaterial, in: Circle())
+                    }
+                    Spacer()
+                }.padding(.horizontal, 12)
+                Spacer()
+            }
+        }
+        .onAppear { if ObjectScanModel.supported && m.session == nil && m.step == .capture { m.start() } }
+        .sheet(isPresented: $share) { ShareSheet(items: m.shareURLs) }
+    }
+
+    @ViewBuilder private var content: some View {
+        switch m.step {
+        case .capture:
+            if let s = m.session {
+                ObjectCaptureView(session: s).ignoresSafeArea()
+                VStack(spacing: 10) {
+                    Spacer()
+                    Text(hint).font(.system(size: 15, weight: .semibold)).foregroundColor(.white)
+                        .multilineTextAlignment(.center).padding(10)
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    controls
+                }
+                .padding(.horizontal, 16).padding(.bottom, 24)
+            }
+        case .building(let f):
+            VStack(spacing: 14) {
+                ProgressView(value: f).tint(.purple).frame(width: 240)
+                Text("Собираю 3D-модель… \(Int(f * 100))%").foregroundColor(.white)
+                Text("Это 2–5 минут. Телефон не закрывайте.").font(.footnote).foregroundColor(.gray)
+            }
+        case .done:
+            VStack(spacing: 10) {
+                if let u = m.modelURL { QuickLookView(url: u).ignoresSafeArea(edges: .horizontal) }
+                Text(m.sizeText).font(.system(size: 15, weight: .bold)).foregroundColor(.white)
+                HStack(spacing: 8) {
+                    BigButton(title: "Отправить", color: .blue) { share = true }
+                    BigButton(title: "Новый предмет", color: .purple) { m.start() }
+                }.padding(.horizontal, 16).padding(.bottom, 20)
+            }.padding(.top, 56)
+        case .failed(let e):
+            VStack(spacing: 12) {
+                Text("Не получилось: \(e)").foregroundColor(.white).multilineTextAlignment(.center)
+                BigButton(title: "Заново", color: .purple) { m.start() }.frame(width: 200)
+            }.padding()
+        }
+    }
+
+    private var hint: String {
+        switch m.state {
+        case .ready: return "Наведи на предмет на столе и нажми «Найти предмет»"
+        case .detecting: return "Подгони рамку по предмету и нажми «Начать съёмку»"
+        case .capturing:
+            return m.passDone ? "Круг пройден (\(m.shots) снимков). Переверни предмет или сними сверху/снизу — «Ещё круг», или «Готово»"
+                              : "Медленно обойди предмет по кругу, держи его в кадре · снимков \(m.shots)"
+        case .finishing: return "Заканчиваю съёмку…"
+        default: return "Готовлю камеру…"
+        }
+    }
+
+    @ViewBuilder private var controls: some View {
+        switch m.state {
+        case .ready: BigButton(title: "Найти предмет", color: .purple) { m.detect() }
+        case .detecting: BigButton(title: "Начать съёмку", color: .green) { m.capture() }
+        case .capturing:
+            HStack(spacing: 8) {
+                if m.passDone { BigButton(title: "Ещё круг", color: .gray) { m.nextPass() } }
+                BigButton(title: "Готово", color: .blue) { m.finish() }
+            }
+        default: EmptyView()
+        }
+    }
+}
+
+/// Просмотр USDZ: вращать, приближать, AR («поставить на стол»).
+struct QuickLookView: UIViewControllerRepresentable {
+    let url: URL
+    func makeUIViewController(context: Context) -> QLPreviewController {
+        let c = QLPreviewController(); c.dataSource = context.coordinator; return c
+    }
+    func updateUIViewController(_ c: QLPreviewController, context: Context) {}
+    func makeCoordinator() -> Coordinator { Coordinator(url) }
+    final class Coordinator: NSObject, QLPreviewControllerDataSource {
+        let url: URL
+        init(_ u: URL) { url = u }
+        func numberOfPreviewItems(in controller: QLPreviewController) -> Int { 1 }
+        func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem { url as NSURL }
     }
 }
