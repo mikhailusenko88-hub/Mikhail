@@ -109,6 +109,10 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         if ARWorldTrackingConfiguration.supportsFrameSemantics(.smoothedSceneDepth) {
             cfg.frameSemantics.insert(.smoothedSceneDepth)
         }
+        // формат камеры, в котором ARKit умеет делать чёткие 12 Мп кадры прямо во время скана
+        if let f = ARWorldTrackingConfiguration.recommendedVideoFormatForHighResolutionFrameCapturing {
+            cfg.videoFormat = f
+        }
         return cfg
     }
 
@@ -254,6 +258,7 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
             meshes.ingest(mesh, now: frame.timestamp)
             detail.add(frame)
             detailCount = detail.count
+            photos.considerHiRes(frame, session: arView.session)
             coverage = meshes.coveragePercent
             status = "Шаг 2 · детали · сетка \(coverage)% · \(tracking) · ● видео \(videoSeconds) с"
         }

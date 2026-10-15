@@ -39,6 +39,7 @@ final class KeyframeRecorder {
         dir = FileManager.default.temporaryDirectory.appendingPathComponent("frames-\(UUID().uuidString)")
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         frames.removeAll(); count = 0; lastPos = nil; lastFwd = nil
+        hiCount = 0; hiPos = nil; hiFwd = nil; hiTime = 0
     }
 
     /// Возвращает true, если кадр взят.
@@ -57,7 +58,49 @@ final class KeyframeRecorder {
 
         let idx = count
         count += 1
-        let name = String(format: "frame_%04d.jpg", idx)
+        save(frame, name: String(format: "frame_%04d.jpg", idx), quality: 0.75)
+        return true
+    }
+
+    // MARK: чёткие фото 12 Мп (ARKit снимает их с той же точки, что и скан)
+    let maxHiRes = 80
+    private(set) var hiCount = 0
+    private var hiPos: SIMD3<Float>?
+    private var hiFwd: SIMD3<Float>?
+    private var hiTime: TimeInterval = 0
+    private var hiBusy = false
+
+    /// Раз в 0,4 м или 25° просит у ARKit полноразмерный кадр (провода, саморезы, швы видно лучше).
+    func considerHiRes(_ frame: ARFrame, session: ARSession) {
+        guard hiCount < maxHiRes, !hiBusy, frame.timestamp - hiTime > 1.0 else { return }
+        if case .normal = frame.camera.trackingState {} else { return }
+        let t = frame.camera.transform
+        let pos = SIMD3<Float>(t.columns.3.x, t.columns.3.y, t.columns.3.z)
+        let fwd = -SIMD3<Float>(t.columns.2.x, t.columns.2.y, t.columns.2.z)
+        if let lp = hiPos, let lf = hiFwd {
+            let moved = simd_distance(lp, pos)
+            let turned = acos(max(-1, min(1, simd_dot(lf, fwd)))) * 180 / .pi
+            guard moved > 0.4 || turned > 25 else { return }
+        }
+        hiBusy = true
+        hiTime = frame.timestamp
+        session.captureHighResolutionFrame { [weak self] hf, _ in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.hiBusy = false
+                guard let hf = hf else { return }
+                let ht = hf.camera.transform
+                self.hiPos = SIMD3<Float>(ht.columns.3.x, ht.columns.3.y, ht.columns.3.z)
+                self.hiFwd = -SIMD3<Float>(ht.columns.2.x, ht.columns.2.y, ht.columns.2.z)
+                let n = self.hiCount
+                self.hiCount += 1
+                self.save(hf, name: String(format: "hires_%03d.jpg", n), quality: 0.7)
+            }
+        }
+    }
+
+    private func save(_ frame: ARFrame, name: String, quality: CGFloat) {
+        let t = frame.camera.transform
         let img = CIImage(cvPixelBuffer: frame.capturedImage)
         let w = CVPixelBufferGetWidth(frame.capturedImage)
         let h = CVPixelBufferGetHeight(frame.capturedImage)
@@ -70,12 +113,11 @@ final class KeyframeRecorder {
         queue.async { [ctx, lock] in
             if let cs = CGColorSpace(name: CGColorSpace.sRGB),
                let data = ctx.jpegRepresentation(of: img, colorSpace: cs,
-                                                 options: [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 0.75]) {
+                                                 options: [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: quality]) {
                 try? data.write(to: url)
             }
             lock.lock(); self.frames.append(rec); lock.unlock()
         }
-        return true
     }
 
     /// Папка с фото и список кадров (дожидается записи последних).
@@ -89,7 +131,7 @@ final class KeyframeRecorder {
 
 /// Видео скана: каждый кадр камеры (≈15 в секунду) пишется в video.mov (HEVC),
 /// к каждому кадру — где стоял телефон и параметры камеры (frames.jsonl),
-/// к каждому 5-му — карта глубины LiDAR (depth/*.bin: Float16 256×192 + уверенность).
+/// к каждому 3-му — карта глубины LiDAR (depth/*.bin: Float16 256×192 + уверенность).
 /// По этому потом строится модель комнаты с фото-текстурой, стекло, профили, провода.
 final class VideoRecorder {
     private(set) var dir: URL
@@ -101,6 +143,7 @@ final class VideoRecorder {
     private var lastT: TimeInterval = -1
     private var index = 0
     private var depthIndex = 0
+    private var size = (0, 0)
     private let queue = DispatchQueue(label: "video-rec", qos: .userInitiated)
     private(set) var seconds: Double = 0
     private(set) var running = false
@@ -174,8 +217,10 @@ final class VideoRecorder {
         let w = CVPixelBufferGetWidth(src), h = CVPixelBufferGetHeight(src)
         if writer == nil {
             guard open(width: w, height: h) else { running = false; return }
+            size = (w, h)
             t0 = frame.timestamp
         }
+        guard size == (w, h) else { return }          // формат камеры сменился — кадр не того размера
         guard let ad = adaptor, let inp = input, inp.isReadyForMoreMediaData,
               let pool = ad.pixelBufferPool else { return }
         // копия кадра в свой буфер — ARKit не ждёт, пока кодируется видео
@@ -190,7 +235,7 @@ final class VideoRecorder {
         seconds = rel
         var depthName: String? = nil
         var depthData: Data? = nil
-        if i % 5 == 0, let sd = frame.smoothedSceneDepth ?? frame.sceneDepth {
+        if i % 3 == 0, let sd = frame.sceneDepth ?? frame.smoothedSceneDepth {   // «сырая» глубина: края чётче, шум усредню сам по кадрам
             depthName = String(format: "depth/%05d.bin", depthIndex)
             depthIndex += 1
             depthData = Self.pack(sd)
@@ -201,7 +246,7 @@ final class VideoRecorder {
             "intrinsics": [k.columns.0, k.columns.1, k.columns.2].flatMap { [$0.x, $0.y, $0.z] },
             "w": w, "h": h
         ]
-        if let d = depthName, let sd = frame.smoothedSceneDepth ?? frame.sceneDepth {
+        if let d = depthName, let sd = frame.sceneDepth ?? frame.smoothedSceneDepth {
             rec["depth"] = d
             rec["dw"] = CVPixelBufferGetWidth(sd.depthMap)
             rec["dh"] = CVPixelBufferGetHeight(sd.depthMap)
