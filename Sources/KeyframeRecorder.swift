@@ -144,6 +144,7 @@ final class VideoRecorder {
     private var index = 0
     private var depthIndex = 0
     private var size = (0, 0)
+    private var appendFailLogged = false
     private let queue = DispatchQueue(label: "video-rec", qos: .userInitiated)
     private(set) var seconds: Double = 0
     private(set) var running = false
@@ -160,6 +161,7 @@ final class VideoRecorder {
             try? FileManager.default.removeItem(at: dir)
             dir = FileManager.default.temporaryDirectory.appendingPathComponent("video-\(UUID().uuidString)")
             t0 = -1; lastT = -1; index = 0; depthIndex = 0; seconds = 0; running = false
+            size = (0, 0); appendFailLogged = false
         }
     }
 
@@ -193,9 +195,9 @@ final class VideoRecorder {
                 kCVPixelBufferWidthKey as String: width,
                 kCVPixelBufferHeightKey as String: height
             ])
-            guard w.canAdd(inp) else { return false }
+            guard w.canAdd(inp) else { note("canAdd=false"); return false }
             w.add(inp)
-            guard w.startWriting() else { return false }
+            guard w.startWriting() else { note("startWriting: \(w.error?.localizedDescription ?? "?")"); return false }
             w.startSession(atSourceTime: .zero)
             let jurl = dir.appendingPathComponent("frames.jsonl")
             FileManager.default.createFile(atPath: jurl.path, contents: nil)
@@ -203,8 +205,18 @@ final class VideoRecorder {
             writer = w; input = inp; adaptor = ad
             return true
         } catch {
+            note("open: \(error.localizedDescription)")
             return false
         }
+    }
+
+    /// Запись причины сбоя рядом с видео — чтобы по скану было видно, что пошло не так.
+    private func note(_ s: String) {
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let u = dir.appendingPathComponent("video_log.txt")
+        let line = (s + "\n").data(using: .utf8)!
+        if let h = try? FileHandle(forWritingTo: u) { h.seekToEndOfFile(); h.write(line); try? h.close() }
+        else { try? line.write(to: u) }
     }
 
     /// Добавить кадр (вызывать с главного потока, ~15 раз в секунду).
@@ -216,7 +228,7 @@ final class VideoRecorder {
         let src = frame.capturedImage
         let w = CVPixelBufferGetWidth(src), h = CVPixelBufferGetHeight(src)
         if writer == nil {
-            guard open(width: w, height: h) else { running = false; return }
+            guard open(width: w, height: h) else { running = false; note("видео не открылось \(w)x\(h)"); return }
             size = (w, h)
             t0 = frame.timestamp
         }
@@ -256,7 +268,10 @@ final class VideoRecorder {
         queue.async { [weak self] in
             guard let self = self, let ad = self.adaptor else { return }
             let pts = CMTime(seconds: rel, preferredTimescale: 600)
-            if ad.assetWriterInput.isReadyForMoreMediaData { ad.append(out, withPresentationTime: pts) }
+            if ad.assetWriterInput.isReadyForMoreMediaData, !ad.append(out, withPresentationTime: pts), !self.appendFailLogged {
+                self.appendFailLogged = true
+                self.note("append: \(self.writer?.error?.localizedDescription ?? "?") кадр \(i)")
+            }
             self.jsonl?.write(line + Data([0x0A]))
             if let n = depthName, let d = depthData { try? d.write(to: dirURL.appendingPathComponent(n)) }
         }
@@ -266,12 +281,17 @@ final class VideoRecorder {
     func finish(_ completion: @escaping (URL?) -> Void) {
         running = false
         queue.async {
-            guard let w = self.writer, let inp = self.input else { completion(nil); return }
-            inp.markAsFinished()
-            try? self.jsonl?.close(); self.jsonl = nil
             let d = self.dir
+            let exists = FileManager.default.fileExists(atPath: d.path)
+            guard let w = self.writer, let inp = self.input else {
+                self.note("finish: запись не начиналась (кадров \(self.index))")
+                completion(exists ? d : nil); return
+            }
+            if w.status == .writing { inp.markAsFinished() }
+            try? self.jsonl?.close(); self.jsonl = nil
             w.finishWriting {
-                completion(w.status == .completed ? d : nil)
+                if w.status != .completed { self.note("finish: status \(w.status.rawValue) \(w.error?.localizedDescription ?? "")") }
+                completion(d)
             }
             self.writer = nil; self.input = nil; self.adaptor = nil
         }
