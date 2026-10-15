@@ -77,6 +77,8 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
     private var markerAnchors: [AnchorEntity] = []      // текущий незаконченный замер
     private var history: [(kind: String, anchors: [AnchorEntity])] = []   // для «Отменить»
     let photos = KeyframeRecorder()
+    let video = VideoRecorder()
+    @Published var videoSeconds = 0
     private var tracking = "—"
     private var pollTimer: Timer?
     private var scanStarted: TimeInterval = 0
@@ -134,6 +136,7 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         walls?.clear(); walls = nil
         wallsText = nil; roomHint = nil; coverage = 0
         photos.reset(); photoCount = 0
+        video.start(); videoSeconds = 0
         scanStarted = CACurrentMediaTime()
         if useRoomPlan && RoomWalls.isSupported {
             let w = RoomWalls(view: arView)
@@ -187,7 +190,7 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
     private func startPolling() {
         guard pollTimer == nil else { return }
         // Опрос кадра 10 раз в секунду — работает, даже если RoomPlan забрал делегат сеанса.
-        pollTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+        pollTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 15, repeats: true) { [weak self] _ in
             self?.poll()
         }
     }
@@ -214,6 +217,7 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         labels.removeAll()
         photos.reset()
         photoCount = 0
+        video.reset(); videoSeconds = 0
         measurements.removeAll()
         distanceText = nil
         picks.removeAll()
@@ -240,8 +244,10 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
             status = "Пауза · покрытие \(coverage)%"
         case .scanning:
             if photos.consider(frame) { photoCount = photos.count }
+            video.add(frame)
+            videoSeconds = Int(video.seconds)
             if wallsStep {
-                status = "Шаг 1 · стены · \(tracking)"
+                status = "Шаг 1 · стены · \(tracking) · ● видео \(videoSeconds) с"
                 return
             }
             let mesh = frame.anchors.compactMap { $0 as? ARMeshAnchor }
@@ -249,7 +255,7 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
             detail.add(frame)
             detailCount = detail.count
             coverage = meshes.coveragePercent
-            status = "Шаг 2 · детали · сетка \(coverage)% · \(tracking)"
+            status = "Шаг 2 · детали · сетка \(coverage)% · \(tracking) · ● видео \(videoSeconds) с"
         }
     }
 
@@ -479,20 +485,24 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         status = "Сохраняю…"
         // Карта комнаты: по ней телефон потом узнаёт помещение для примерки мебели.
         arView.session.getCurrentWorldMap { map, _ in
-            self.writeExport(anchors: anchors, planes: planes, meas: meas, labs: labs,
-                             cal: cal, photoSet: photoSet, map: map, room: room, detail: det)
+            self.video.finish { vdir in
+                DispatchQueue.main.async {
+                    self.writeExport(anchors: anchors, planes: planes, meas: meas, labs: labs,
+                                     cal: cal, photoSet: photoSet, map: map, room: room, detail: det, video: vdir)
+                }
+            }
         }
     }
 
     private func writeExport(anchors: [ARMeshAnchor], planes: [ARPlaneAnchor], meas: [ScanMeasure],
                              labs: [ScanLabel], cal: Calibration,
                              photoSet: (dir: URL, frames: [KeyframeRecorder.Frame]), map: ARWorldMap?,
-                             room: CapturedRoom?, detail: [SIMD3<Float>] = []) {
+                             room: CapturedRoom?, detail: [SIMD3<Float>] = [], video: URL? = nil) {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let zip = try Exporter.write(meshAnchors: anchors, planes: planes, measurements: meas,
                                              labels: labs, calibration: cal, photos: photoSet,
-                                             worldMap: map, room: room, detail: detail)
+                                             worldMap: map, room: room, detail: detail, video: video)
                 let check = room.map { r -> String in
                     let base = RoomCheck.make(room: r, meshAnchors: anchors, labels: labs).summary
                     let obs = RoomObstacles.summary(RoomObstacles.make(room: r, meshAnchors: anchors, labels: labs, detail: detail))

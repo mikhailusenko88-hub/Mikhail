@@ -33,7 +33,7 @@ enum Exporter {
     static func write(meshAnchors: [ARMeshAnchor], planes: [ARPlaneAnchor],
                       measurements: [ScanMeasure], labels: [ScanLabel], calibration: Calibration,
                       photos: (dir: URL, frames: [KeyframeRecorder.Frame]),
-                      worldMap: ARWorldMap?, room: CapturedRoom?, detail: [SIMD3<Float>] = []) throws -> URL {
+                      worldMap: ARWorldMap?, room: CapturedRoom?, detail: [SIMD3<Float>] = [], video: URL? = nil) throws -> URL {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd_HH-mm"
         let stamp = df.string(from: Date())
@@ -144,6 +144,10 @@ enum Exporter {
             ply.reserveCapacity(detail.count * 28)
             for p in detail { ply += "\(r(p.x)) \(r(p.y)) \(r(p.z))\n" }
             try? ply.write(to: dir.appendingPathComponent("detail.ply"), atomically: true, encoding: .utf8)
+        }
+        if let v = video {   // видео скана: video.mov + положение камеры на каждый кадр + глубина
+            let vd = dir.appendingPathComponent("video", isDirectory: true)
+            try? FileManager.default.copyItem(at: v, to: vd)
         }
         return try zip(dir)
     }
