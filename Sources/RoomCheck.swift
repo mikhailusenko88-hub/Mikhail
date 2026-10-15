@@ -284,20 +284,42 @@ enum RoomObstacles {
             let base = all.sorted()[all.count / 5]
             var H = F
             for i in 0..<nz { for j in 0..<nx { H[i][j] = cell[i][j].count >= 2 && F[i][j] - base > 0.015 ? F[i][j] - base : 0 } }
-            var k = 1
+            // куски одного подиума (поддон душа, ступенька) склеиваем: зазор ≤ 10 см, высота ±4 см
+            var rs: [(x0: Float, z0: Float, x1: Float, z1: Float, h: Float, a: Float)] = []
             for cells in regions(H, tol: 0.03, minCells: 6) {
                 let hs = median(cells.map { H[$0.0][$0.1] }); guard hs <= 0.25 else { continue }
                 let zs = cells.map { $0.0 }, xs = cells.map { $0.1 }
-                let cx = x0 + Float(xs.min()! + xs.max()! + 1) * G / 2, cz = z0 + Float(zs.min()! + zs.max()! + 1) * G / 2
+                let ax0 = x0 + Float(xs.min()!) * G, ax1 = x0 + Float(xs.max()! + 1) * G
+                let az0 = z0 + Float(zs.min()!) * G, az1 = z0 + Float(zs.max()! + 1) * G
+                let cx = (ax0 + ax1) / 2, cz = (az0 + az1) / 2
                 let inside = walls.allSatisfy { _, s in
                     let inv = s.transform.inverse, sg: Float = (inv * SIMD4<Float>(cent, 1)).z >= 0 ? 1 : -1
                     return (inv * SIMD4<Float>(cx, floorY, cz, 1)).z * sg > -0.05
                 }
                 guard inside else { continue }
+                rs.append((ax0, az0, ax1, az1, hs, Float(cells.count) * G * G))
+            }
+            var merged = true
+            while merged {
+                merged = false
+                outer: for i in 0..<rs.count {
+                    for j in (i + 1)..<rs.count {
+                        let a = rs[i], b = rs[j]
+                        let gx = max(a.x0, b.x0) - min(a.x1, b.x1), gz = max(a.z0, b.z0) - min(a.z1, b.z1)
+                        if gx <= 0.1, gz <= 0.1, abs(a.h - b.h) <= 0.04 {
+                            let A = a.a + b.a
+                            rs[i] = (min(a.x0, b.x0), min(a.z0, b.z0), max(a.x1, b.x1), max(a.z1, b.z1), (a.h * a.a + b.h * b.a) / A, A)
+                            rs.remove(at: j); merged = true; break outer
+                        }
+                    }
+                }
+            }
+            var k = 1
+            for r in rs where (r.x1 - r.x0) * (r.z1 - r.z0) >= 0.03 {     // мельче ~17×17 см — шум (ножки, коврик)
                 out.append(Obstacle(kind: "step", code: "Ст\(k)", name: "ступенька / подиум", wall: nil,
-                                    x: Int(cx * 1000), y: Int((base + hs / 2) * 1000), z: Int(cz * 1000),
-                                    w: Int(Float(xs.max()! - xs.min()! + 1) * G * 1000), h: Int(hs * 1000),
-                                    d: Int(Float(zs.max()! - zs.min()! + 1) * G * 1000), rotY: 0, fromFloorMm: 0))
+                                    x: Int((r.x0 + r.x1) / 2 * 1000), y: Int((base + r.h / 2) * 1000), z: Int((r.z0 + r.z1) / 2 * 1000),
+                                    w: Int((r.x1 - r.x0) * 1000), h: Int(r.h * 1000),
+                                    d: Int((r.z1 - r.z0) * 1000), rotY: 0, fromFloorMm: 0))
                 k += 1
             }
         }

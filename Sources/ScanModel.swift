@@ -547,7 +547,7 @@ final class DetailCloud {
                 let c = cBase.advanced(by: v * cRow + u).assumingMemoryBound(to: UInt8.self).pointee
                 guard c >= 2 else { continue }                       // только высокая уверенность
                 let d = dBase.advanced(by: v * dRow + u * 4).assumingMemoryBound(to: Float32.self).pointee
-                guard d > 0.15, d < 1.2 else { continue }            // вблизи точность выше
+                guard d > 0.15, d < 2.0 else { continue }            // до 2 м — чтобы верх шкафов тоже попадал
                 let p = T * SIMD4<Float>((Float(u) - cx) * d / fx, -(Float(v) - cy) * d / fy, -d, 1)
                 pts.append(SIMD3(p.x, p.y, p.z))
             }
