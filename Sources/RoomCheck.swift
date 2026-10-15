@@ -180,7 +180,7 @@ struct Obstacle: Codable {
 }
 
 enum RoomObstacles {
-    static func make(room: CapturedRoom, meshAnchors: [ARMeshAnchor], labels: [ScanLabel]) -> [Obstacle] {
+    static func make(room: CapturedRoom, meshAnchors: [ARMeshAnchor], labels: [ScanLabel], detail: [SIMD3<Float>] = []) -> [Obstacle] {
         // точки сетки (центры треугольников): «прочее» и «пол» отдельно, потолок и двери не берём
         var pts: [SIMD3<Float>] = [], floorPts: [SIMD3<Float>] = []
         for a in meshAnchors {
@@ -216,7 +216,10 @@ enum RoomObstacles {
         guard !walls.isEmpty else { return [] }
         let floorY = walls.map { $0.1.transform.columns.3.y - $0.1.dimensions.y / 2 }.min() ?? 0
         let cent = walls.reduce(SIMD3<Float>(0, 0, 0)) { $0 + SIMD3($1.1.transform.columns.3.x, $1.1.transform.columns.3.y, $1.1.transform.columns.3.z) } / Float(walls.count)
-        let G: Float = 0.05
+        // с «Деталями» (облако точек вблизи, 1 см) — клетка 2 см, без них — 5 см по сетке LiDAR
+        let fine = detail.count > 5000
+        let G: Float = fine ? 0.02 : 0.05
+        let wallPts = fine ? pts + detail : pts
         var out: [Obstacle] = []
         var n = 1
 
@@ -244,7 +247,7 @@ enum RoomObstacles {
             let sgn: Float = (inv * SIMD4<Float>(cent, 1)).z >= 0 ? 1 : -1
             let nu = Int(w / G) + 1, ny = Int(h / G) + 1
             var cell = Array(repeating: Array(repeating: [Float](), count: nu), count: ny)
-            for p in pts {
+            for p in wallPts {
                 let l = inv * SIMD4<Float>(p, 1), z = l.z * sgn
                 guard abs(l.x) < w / 2 - 0.05, z > -0.03, z < 0.6, l.y > -h / 2 + 0.06, l.y < h / 2 - 0.06 else { continue }
                 cell[Int((l.y + h / 2) / G)][Int((l.x + w / 2) / G)].append(z)
@@ -254,7 +257,7 @@ enum RoomObstacles {
                 let v = cell[i][j].sorted(), near = v[min(1, v.count - 1)]
                 P[i][j] = near < 0.02 ? 0 : (near > 0.03 ? near : 0)
             } }
-            for cells in regions(P, tol: 0.04, minCells: 4) {
+            for cells in regions(P, tol: fine ? 0.025 : 0.04, minCells: fine ? 20 : 4) {
                 let ys = cells.map { $0.0 }, us = cells.map { $0.1 }
                 let u0 = Float(us.min()!) * G, u1 = Float(us.max()! + 1) * G, y0 = Float(ys.min()!) * G, y1 = Float(ys.max()! + 1) * G
                 guard (u1 - u0) * (y1 - y0) >= 0.02 else { continue }

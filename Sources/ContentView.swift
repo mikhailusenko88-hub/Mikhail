@@ -85,7 +85,7 @@ struct ContentView: View {
                 if model.phase != .preview {
                     VStack(spacing: 4) {
                         if model.wallsStep {
-                            Text("Шаг 1 из 2: медленно обведи камерой все стены, окна и двери. Потом «Стены готовы».")
+                            Text("Шаг 1 из 2 — коробка: медленно обведи камерой все стены, окна и двери. Потом «Стены готовы».")
                                 .font(.system(size: 13, weight: .semibold))
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 12).padding(.vertical, 6)
@@ -93,6 +93,11 @@ struct ContentView: View {
                                 .padding(.horizontal, 12)
                         } else {
                             CoverageBar(percent: model.coverage)
+                            Text("Детали: \(model.detailCount / 1000) тыс. точек · подноси телефон на 30–80 см к выступам, нишам, трапу")
+                                .font(.system(size: 12, weight: .semibold))
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 10).padding(.vertical, 4)
+                                .background(.ultraThinMaterial, in: Capsule())
                         }
                         if let w = model.wallsText {
                             Text(w)
@@ -190,7 +195,7 @@ struct ContentView: View {
                 } else {
                     if model.wallsStep {
                         Button { model.finishWalls() } label: {
-                            Label("Стены готовы → шаг 2: сетка", systemImage: "checkmark.circle.fill")
+                            Label("Коробка готова → шаг 2: детали", systemImage: "checkmark.circle.fill")
                                 .font(.system(size: 17, weight: .bold))
                                 .frame(maxWidth: .infinity, minHeight: 52)
                                 .foregroundColor(.white)

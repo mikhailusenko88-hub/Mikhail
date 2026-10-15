@@ -70,6 +70,8 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
     /// поэтому после «Стены готовы» включается шаг 2 — своя LiDAR-сетка в тех же координатах.
     @Published var wallsStep = false
     @Published var unsaved = false            // скан начат и ещё не сохранён
+    @Published var detailCount = 0            // «Детали»: точек облака вблизи (1 см)
+    let detail = DetailCloud()
 
     private var picks: [SIMD3<Float>] = []
     private var markerAnchors: [AnchorEntity] = []      // текущий незаконченный замер
@@ -102,6 +104,9 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
             cfg.frameSemantics.insert(.sceneDepth)
         }
+        if ARWorldTrackingConfiguration.supportsFrameSemantics(.smoothedSceneDepth) {
+            cfg.frameSemantics.insert(.smoothedSceneDepth)
+        }
         return cfg
     }
 
@@ -125,6 +130,7 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
     func startScanning() {
         guard hasLiDAR else { return }
         meshes.reset()
+        detail.reset(); detailCount = 0
         walls?.clear(); walls = nil
         wallsText = nil; roomHint = nil; coverage = 0
         photos.reset(); photoCount = 0
@@ -216,6 +222,7 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         wallsText = nil; roomHint = nil
         wallsStep = false
         unsaved = false
+        detail.reset(); detailCount = 0
         meshes.reset()
         coverage = 0
         startPreview()
@@ -239,8 +246,10 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
             }
             let mesh = frame.anchors.compactMap { $0 as? ARMeshAnchor }
             meshes.ingest(mesh, now: frame.timestamp)
+            detail.add(frame)
+            detailCount = detail.count
             coverage = meshes.coveragePercent
-            status = "Шаг 2 · сетка \(coverage)% · \(tracking)"
+            status = "Шаг 2 · детали · сетка \(coverage)% · \(tracking)"
         }
     }
 
@@ -466,26 +475,27 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
         let labs = labels
         let cal = calibration
         let photoSet = photos.snapshot()
+        let det = detail.points()
         status = "Сохраняю…"
         // Карта комнаты: по ней телефон потом узнаёт помещение для примерки мебели.
         arView.session.getCurrentWorldMap { map, _ in
             self.writeExport(anchors: anchors, planes: planes, meas: meas, labs: labs,
-                             cal: cal, photoSet: photoSet, map: map, room: room)
+                             cal: cal, photoSet: photoSet, map: map, room: room, detail: det)
         }
     }
 
     private func writeExport(anchors: [ARMeshAnchor], planes: [ARPlaneAnchor], meas: [ScanMeasure],
                              labs: [ScanLabel], cal: Calibration,
                              photoSet: (dir: URL, frames: [KeyframeRecorder.Frame]), map: ARWorldMap?,
-                             room: CapturedRoom?) {
+                             room: CapturedRoom?, detail: [SIMD3<Float>] = []) {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let zip = try Exporter.write(meshAnchors: anchors, planes: planes, measurements: meas,
                                              labels: labs, calibration: cal, photos: photoSet,
-                                             worldMap: map, room: room)
+                                             worldMap: map, room: room, detail: detail)
                 let check = room.map { r -> String in
                     let base = RoomCheck.make(room: r, meshAnchors: anchors, labels: labs).summary
-                    let obs = RoomObstacles.summary(RoomObstacles.make(room: r, meshAnchors: anchors, labels: labs))
+                    let obs = RoomObstacles.summary(RoomObstacles.make(room: r, meshAnchors: anchors, labels: labs, detail: detail))
                     return obs.isEmpty ? base : obs + "\n" + base
                 }
                 DispatchQueue.main.async {
@@ -498,5 +508,66 @@ final class ScanModel: NSObject, ObservableObject, ARSessionDelegate {
                 DispatchQueue.main.async { self.errorText = "Не удалось сохранить: \(error.localizedDescription)" }
             }
         }
+    }
+}
+
+
+/// «Детали»: облако точек LiDAR вблизи (до 1,2 м, только уверенные), сведённое в кубики 1 см с усреднением.
+/// Даёт выступы, ниши, ступеньки точнее обычной сетки (у неё шаг несколько сантиметров).
+final class DetailCloud {
+    private let q = DispatchQueue(label: "detail-cloud", qos: .utility)
+    private var vox: [Int64: SIMD4<Float>] = [:]
+    private var busy = false
+    private var frameN = 0
+    private(set) var count = 0
+    let cell: Float = 0.01
+    let maxVoxels = 2_500_000
+
+    func reset() { q.async { self.vox.removeAll(keepingCapacity: true); self.count = 0 } }
+
+    func add(_ frame: ARFrame) {
+        frameN += 1
+        guard frameN % 3 == 0, !busy, count < maxVoxels,
+              let sd = frame.smoothedSceneDepth ?? frame.sceneDepth, let conf = sd.confidenceMap else { return }
+        busy = true
+        let depth = sd.depthMap
+        CVPixelBufferLockBaseAddress(depth, .readOnly); CVPixelBufferLockBaseAddress(conf, .readOnly)
+        defer { CVPixelBufferUnlockBaseAddress(depth, .readOnly); CVPixelBufferUnlockBaseAddress(conf, .readOnly) }
+        guard let dBase = CVPixelBufferGetBaseAddress(depth), let cBase = CVPixelBufferGetBaseAddress(conf) else { busy = false; return }
+        let w = CVPixelBufferGetWidth(depth), h = CVPixelBufferGetHeight(depth)
+        let dRow = CVPixelBufferGetBytesPerRow(depth), cRow = CVPixelBufferGetBytesPerRow(conf)
+        let K = frame.camera.intrinsics, res = frame.camera.imageResolution
+        let sx = Float(w) / Float(res.width), sy = Float(h) / Float(res.height)
+        let fx = K[0][0] * sx, fy = K[1][1] * sy, cx = K[2][0] * sx, cy = K[2][1] * sy
+        let T = frame.camera.transform
+        var pts: [SIMD3<Float>] = []
+        pts.reserveCapacity(w * h / 3)
+        for v in 0..<h {
+            for u in 0..<w {
+                let c = cBase.advanced(by: v * cRow + u).assumingMemoryBound(to: UInt8.self).pointee
+                guard c >= 2 else { continue }                       // только высокая уверенность
+                let d = dBase.advanced(by: v * dRow + u * 4).assumingMemoryBound(to: Float32.self).pointee
+                guard d > 0.15, d < 1.2 else { continue }            // вблизи точность выше
+                let p = T * SIMD4<Float>((Float(u) - cx) * d / fx, -(Float(v) - cy) * d / fy, -d, 1)
+                pts.append(SIMD3(p.x, p.y, p.z))
+            }
+        }
+        let cellSize = cell
+        q.async {
+            for p in pts {
+                let ix = Int64((p.x / cellSize).rounded(.down)) & 0x1FFFFF
+                let iy = Int64((p.y / cellSize).rounded(.down)) & 0x1FFFFF
+                let iz = Int64((p.z / cellSize).rounded(.down)) & 0x1FFFFF
+                let k = ix | (iy << 21) | (iz << 42)
+                self.vox[k, default: .zero] += SIMD4<Float>(p, 1)
+            }
+            let n = self.vox.count
+            DispatchQueue.main.async { self.count = n; self.busy = false }
+        }
+    }
+
+    /// Средняя точка каждого кубика (метры), только где ≥ 2 замеров — меньше шума.
+    func points() -> [SIMD3<Float>] {
+        q.sync { vox.values.compactMap { $0.w >= 2 ? SIMD3($0.x, $0.y, $0.z) / $0.w : nil } }
     }
 }

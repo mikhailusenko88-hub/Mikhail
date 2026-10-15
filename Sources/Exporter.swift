@@ -33,7 +33,7 @@ enum Exporter {
     static func write(meshAnchors: [ARMeshAnchor], planes: [ARPlaneAnchor],
                       measurements: [ScanMeasure], labels: [ScanLabel], calibration: Calibration,
                       photos: (dir: URL, frames: [KeyframeRecorder.Frame]),
-                      worldMap: ARWorldMap?, room: CapturedRoom?) throws -> URL {
+                      worldMap: ARWorldMap?, room: CapturedRoom?, detail: [SIMD3<Float>] = []) throws -> URL {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd_HH-mm"
         let stamp = df.string(from: Date())
@@ -129,7 +129,7 @@ enum Exporter {
         if let room = room {
             RoomWalls.write(room, to: dir)
             RoomCheck.make(room: room, meshAnchors: meshAnchors, labels: labels).write(to: dir)   // углы, стены, пол, метки
-            RoomObstacles.write(RoomObstacles.make(room: room, meshAnchors: meshAnchors, labels: labels), to: dir)   // выступы, ступеньки, предметы
+            RoomObstacles.write(RoomObstacles.make(room: room, meshAnchors: meshAnchors, labels: labels, detail: detail), to: dir)   // выступы, ступеньки, предметы
         }
         let enc = JSONEncoder()
         enc.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -138,6 +138,12 @@ enum Exporter {
         if let map = worldMap,
            let data = try? NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true) {
             try data.write(to: dir.appendingPathComponent(FittingModel.mapFile))
+        }
+        if !detail.isEmpty {   // облако «Деталей»: точки 1 см, усреднённые, метры
+            var ply = "ply\nformat ascii 1.0\nelement vertex \(detail.count)\nproperty float x\nproperty float y\nproperty float z\nend_header\n"
+            ply.reserveCapacity(detail.count * 28)
+            for p in detail { ply += "\(r(p.x)) \(r(p.y)) \(r(p.z))\n" }
+            try? ply.write(to: dir.appendingPathComponent("detail.ply"), atomically: true, encoding: .utf8)
         }
         return try zip(dir)
     }
