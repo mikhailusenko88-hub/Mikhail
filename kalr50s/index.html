@@ -223,10 +223,22 @@ function hw(k,q){ HW[k]=(HW[k]||0)+q; }
 // spec: 6 символов на грани [+x,-x,+y,-y,+z,-z]: F — плёнка модуля, W — белый
 function box(parent,mod,name,x0,y0,z0,sx,sy,sz,spec,film,opt){
   opt=opt||{};
-  const fac=name.indexOf('Фасад')===0, vis=spec.indexOf('F')>=0;
-  if(st.mat==='A' && !fac) spec=spec.replace(/F/g,'W'); // всё ЛДСП: корпус белый
+  // грани: F — лицевая видимая, O — внутри открытой секции (в цвет, если полки «в цвет»), E — узкая видимая полоса, W — белая
+  const fac=name.indexOf('Фасад')===0, openOn=st.open==='film';
+  const vis=/[FE]/.test(spec) || (spec.indexOf('O')>=0 && openOn);
+  const dd=[sx,sy,sz].slice().sort((a,b)=>b-a);
+  const info={fac:fac,vis:vis,side:name.indexOf('Бок')===0,top:name.indexOf('Столешница')===0,T:Math.round(dd[2])};
+  const cls=opt.skip?'wh':classify(info,st.mat);
+  let fc=spec.split('').map(ch=>ch==='O'?(openOn?'o':'W'):ch);
+  if(cls==='wh'||cls==='hdf') fc=fc.map(()=>'W');
+  else if(cls==='col') fc=fc.map(()=>'F');            // ЛДСП в тон — цвет с двух сторон
+  else {                                              // МДФ: плёнка с одной стороны, изнанка белая
+    const ax=[sx,sy,sz].indexOf(Math.min(sx,sy,sz)), i0=ax*2, i1=ax*2+1, pr={F:3,o:2,E:1,W:0};
+    if(pr[fc[i0]]>0 && pr[fc[i1]]>0){ if(pr[fc[i1]]>pr[fc[i0]]) fc[i0]='W'; else fc[i1]='W'; }
+    fc=fc.map(ch=>ch==='W'?'W':'F');
+  }
   const g=new THREE.BoxGeometry(sx*S,sy*S,sz*S);
-  const mats=spec.split('').map(ch=>ch==='F'?matFor(film):matFor(WHITE));
+  const mats=fc.map(ch=>ch==='F'?matFor(film):matFor(WHITE));
   const m=new THREE.Mesh(g,mats);
   m.position.set((x0+sx/2)*S,(y0+sy/2)*S,(z0+sz/2)*S);
   m.castShadow=true; m.receiveShadow=true;
@@ -235,7 +247,7 @@ function box(parent,mod,name,x0,y0,z0,sx,sy,sz,spec,film,opt){
   if(!opt.skip){
     const d=[sx,sy,sz].sort((a,b)=>b-a);
     const mat=opt.mat||(spec.indexOf('F')>=0?'МДФ плёнка':(d[2]<=4?'ХДФ белый':'ЛДСП белая 16'));
-    PARTS.push({mod:mod,name:name,L:Math.round(d[0]),W:Math.round(d[1]),T:Math.round(d[2]),mat:mat,fac:fac,vis:vis,side:name.indexOf('Бок')===0,top:name.indexOf('Столешница')===0});
+    PARTS.push({mod:mod,name:name,L:Math.round(d[0]),W:Math.round(d[1]),T:Math.round(d[2]),mat:mat,fac:fac,vis:vis,side:info.side,top:info.top});
   }
   return m;
 }
@@ -310,9 +322,9 @@ function build(){
   const L=new THREE.Group(); L.rotation.y=Math.PI/2; L.position.set(0,0,1.7); furn.add(L);
   /* Ш1 — шкаф 1100, высота 2350 с цоколем */
   { const f=colOf('Ш1').hex, x0=0, W=1100, H=2350, mod='Ш1';
-    const rT= openF?18:16;
+    const rT=16;
     box(L,mod,'Бок левый (видимый)',x0,0,0,18,H,CD,'WFFWFW',f);
-    box(L,mod,openF?'Бок правый (виден в О1)':'Бок правый',x0+W-rT,0,0,rT,H,CD,(openF?'F':'W')+'WWW'+(openF?'F':'W')+'W',f);
+    box(L,mod,'Бок правый',x0+W-rT,0,0,rT,H,CD,'WWWWWW',f);
     const xi=x0+18, wi=W-18-rT;
     box(L,mod,'Дно',xi,100,0,wi,16,CD,'WWWWWW',f);
     box(L,mod,'Крыша',xi,H-16,0,wi,16,CD,'WWWWWW',f);
@@ -328,9 +340,9 @@ function build(){
   }
   /* А1 — антресоль */
   { const f=colOf('А1').hex, x0=0, W=1100, y=2350, H=550, mod='А1';
-    const rT= openF?18:16;
+    const rT=16;
     box(L,mod,'Бок левый (видимый)',x0,y,0,18,H,CD,'WFFWFW',f);
-    box(L,mod,openF?'Бок правый (виден в О1)':'Бок правый',x0+W-rT,y,0,rT,H,CD,(openF?'F':'W')+'WWW'+(openF?'F':'W')+'W',f);
+    box(L,mod,'Бок правый',x0+W-rT,y,0,rT,H,CD,'WWWWWW',f);
     const xi=x0+18, wi=W-18-rT;
     box(L,mod,'Дно',xi,y,0,wi,16,CD,'WWWWWW',f);
     box(L,mod,'Крыша',xi,y+H-16,0,wi,16,CD,'WWWWWW',f);
@@ -340,8 +352,8 @@ function build(){
     hw('push',2);
   }
   /* О1 — открытый стеллаж в углу (боком к окну) */
-  { const f=colOf('О1').hex, x0=1100, W=600, H=2900, D=600, mod='О1', O=openF?'F':'W', lT=openF?18:16;
-    box(L,mod,'Бок левый',x0,0,0,lT,H,D,O+'FWW'+O+'W',f); // сторона к Ш1 выступает на 18 мм у фасада — в цвет
+  { const f=colOf('О1').hex, x0=1100, W=600, H=2900, D=600, mod='О1', O='O', lT=18;
+    box(L,mod,'Бок левый',x0,0,0,lT,H,D,O+'EWW'+O+'W',f); // сторона к Ш1 выступает на 18 мм у фасада — в цвет
     box(L,mod,'Бок у стены с окном',x0+W-18,0,0,18,H,D,'W'+O+'FWFW',f);
     const xi=x0+lT, wi=W-lT-18;
     box(L,mod,'Задняя стенка',xi,100,0,wi,H-100,16,O.repeat(6),f);
@@ -367,7 +379,7 @@ function build(){
     }
   }
   /* П1 — стеллаж с ящиками */
-  { const f=colOf('П1').hex, x0=2505, W=600, H=2900, D=600, mod='П1', O=openF?'F':'W';
+  { const f=colOf('П1').hex, x0=2505, W=600, H=2900, D=600, mod='П1', O='O';
     box(furn,mod,'Бок левый (видимый)',x0,0,0,18,H,D,O+'FFWFW',f);
     box(furn,mod,'Бок правый (видимый)',x0+W-18,0,0,18,H,D,'F'+O+'FWFW',f);
     const xi=x0+18, wi=W-36;
@@ -391,9 +403,9 @@ function build(){
 /* ---------- варианты материала и цена ---------- */
 const VARS=[
   {v:'A',t:'Всё из ЛДСП',d:'Корпус белая ЛДСП, фасады ЛДСП в выбранном цвете. Без фрезеровки.'},
-  {v:'B',t:'Фасады МДФ',d:'Фасады МДФ в плёнке с аркой. Корпус ЛДСП, видимые части в тон.'},
-  {v:'C',t:'Фасады и боковины МДФ',d:'Плюс видимые боковины из МДФ в плёнке.'},
-  {v:'D',t:'Всё видимое из МДФ',d:'Фасады, боковины, столешница, цоколи и открытые полки — МДФ в плёнке. Внутри белая ЛДСП.'}
+  {v:'B',t:'Фасады МДФ',d:'Фасады МДФ в плёнке с аркой. Корпус ЛДСП, видимые части — ЛДСП в тон (цвет с двух сторон).'},
+  {v:'C',t:'Фасады и боковины МДФ',d:'Плюс видимые боковины из МДФ в плёнке: снаружи в цвет, изнутри белые.'},
+  {v:'D',t:'Всё видимое из МДФ',d:'Фасады, боковины, столешница, цоколи и открытые полки — МДФ в плёнке. Плёнка с одной стороны, изнанка белая.'}
 ];
 let RATES=/*R*/{"k":1,"mdf":15000,"hdf":700,"ldsp":8000,"ldspC":13000,"edge":1600,"cut":12000,"sheet":5.796,"yield":85,"work":94000,"hw":{"hinge":1300,"runner":3000,"hHalf":1200,"hBar":900,"push":700,"rod":1000,"sup":20,"leg":120,"fix":4000}}/*R*/;
 // класс материала: mdf — МДФ по м², col — ЛДСП в цвет листами, wh — белая ЛДСП листами, hdf — ХДФ по м²
