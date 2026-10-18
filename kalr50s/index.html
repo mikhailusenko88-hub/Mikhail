@@ -28,6 +28,8 @@ section{display:flex;flex-direction:column;gap:12px;min-width:0}
 .stagebox canvas{display:block;width:100%;height:100%}
 .labels{position:absolute;inset:0;pointer-events:none}
 .lbl{position:absolute;transform:translate(-50%,-50%);font:600 13px var(--f-mono);background:var(--ink);color:var(--bg);padding:2px 8px;border-radius:6px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.dim{position:absolute;transform:translate(-50%,-50%);font:600 11.5px var(--f-mono);background:var(--surface);color:var(--ink);border:1px solid var(--brass);padding:1px 5px;border-radius:5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.lbl small{font-weight:500;opacity:.8;margin-left:6px}
 .lbl.small{font-size:11px;padding:1px 6px;opacity:.85}
 .tools{position:absolute;left:10px;right:10px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .tb{font:600 13px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.12)}
@@ -70,7 +72,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f
 <div class="wrap">
   <header>
     <h1>Проект 100/2 — шкаф, стеллажи и стол у окна</h1>
-    <p class="sub">МДФ в плёнке ПВХ. Двери шкафа с фрезеровкой «арка» и рейкой внизу. Модель можно крутить пальцем, коды на модулях — чтобы удобно обсуждать правки.</p>
+    <p class="sub">МДФ в плёнке ПВХ. Двери шкафа с фрезеровкой «арка». Модель можно крутить пальцем. Кнопка «Размеры» показывает размеры прямо на модели, коды на модулях — чтобы удобно обсуждать правки.</p>
   </header>
 
   <div class="stagebox" id="stage">
@@ -81,12 +83,19 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f
       <button class="tb" id="bLeft" aria-pressed="false">На шкаф</button>
       <button class="tb" id="bOpen" aria-pressed="false">Открыть двери и ящики</button>
       <button class="tb" id="bCodes" aria-pressed="true">Коды</button>
+      <button class="tb" id="bDims" aria-pressed="false">Размеры</button>
     </div>
   </div>
 
   <section>
     <h2>Цвет</h2>
     <div class="card" id="colors"></div>
+  </section>
+
+  <section>
+    <h2>Фасады на стеллажах</h2>
+    <div class="card" id="facBox"></div>
+    <p class="note">Нажмите на секцию, чтобы закрыть её фасадом или снова сделать открытой. Высокие фасады — с той же аркой, что на шкафу.</p>
   </section>
 
   <section>
@@ -130,9 +139,13 @@ const MODS=[
   {code:'С1',name:'Стол у окна, 3 ящика',w:1905,h:780,d:600},
   {code:'П1',name:'Стеллаж: полки, 3 ящика, ниша',w:600,h:2900,d:600}
 ];
-let st={colors:{},open:'film'};
+let st={colors:{},open:'film',fac:{}};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&s.colors) st=Object.assign(st,s);}catch(e){}
 MODS.forEach(m=>{ if(!st.colors[m.code]) st.colors[m.code]={id:'cash'}; });
+const SECT={'О1':[['top','Верх'],['mid','Полки'],['bot','Ниша под столом']],'П1':[['top','Верх'],['mid','Полки'],['bot','Ниша внизу']]};
+if(!st.fac||typeof st.fac!=='object') st.fac={};
+Object.keys(SECT).forEach(c=>{ if(!st.fac[c]) st.fac[c]={}; });
+function hasF(c,k){ return !!(st.fac[c]&&st.fac[c][k]); }
 function save(){ try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){} }
 function colOf(code){ const c=st.colors[code]; if(c.id==='own') return {hex:c.hex||'#cccccc',n:(c.name&&c.name.trim())||'Свой цвет'}; const f=FILMS.find(x=>x.id===c.id)||FILMS[0]; return {hex:f.c,n:f.n}; }
 
@@ -220,19 +233,12 @@ function door(g,mod,x0,y0,w,h,z0,film,side,o){
   const lx= side==='L'? 0 : -w;
   box(piv,mod,o.name||'Фасад распашной',lx,y0,0,w,h,18,'FFFFFW',film);
   const grove=darker(film,0.78);
-  if(o.arch){
-    const band=o.band||230, ins=72, topGap=o.topGap||90;
-    const ay=y0+band+60, ah=h-band-60-topGap, cx=lx+w/2, aw=w-2*ins;
+  if(o.arch){ // арка по центру фасада, без рейки внизу
+    const ins=o.ins||72, gap=o.gap||110, cx=lx+w/2, aw=w-2*ins;
+    const ay=y0+gap, ah=h-2*gap;
     const outer=stadium(new THREE.Shape(),cx,ay,aw,ah);
     outer.holes.push(stadium(new THREE.Path(),cx,ay+7,aw-14,ah-14));
     flat(piv,outer,grove,18.4);
-    // рейка внизу
-    for(let x=lx+14;x<lx+w-10;x+=22){
-      const s=new THREE.Shape(); s.moveTo(x,y0+4); s.lineTo(x+4,y0+4); s.lineTo(x+4,y0+band); s.lineTo(x,y0+band); s.lineTo(x,y0+4);
-      flat(piv,s,grove,18.4);
-    }
-    const ln=new THREE.Shape(); ln.moveTo(lx+4,y0+band); ln.lineTo(lx+w-4,y0+band); ln.lineTo(lx+w-4,y0+band+4); ln.lineTo(lx+4,y0+band+4); ln.lineTo(lx+4,y0+band);
-    flat(piv,ln,grove,18.4);
   }
   if(o.halfHandle){ // полукруг у свободной кромки, две двери вместе дают круг
     const r=46;
@@ -264,7 +270,11 @@ function drawer(g,mod,x0,y0,w,h,z0,film,inner,pull){
   grp.userData={type:'drawer',open:pull*S};
   movers.push(grp);
 }
-function sideSpec(o){ return o; }
+function secDoor(g,mod,xi,wi,yA,yB,film,side){
+  const h=yB-yA-4;
+  door(g,mod,xi+2,yA+2,wi-4,h,582,film,side,{name:'Фасад секции (вкладной)',arch:h>900,ins:68,gap:h>1400?110:90});
+  hw('push',1);
+}
 
 function build(){
   if(furn){ furn.traverse(o=>{ if(o.geometry) o.geometry.dispose(); }); scene.remove(furn); }
@@ -317,6 +327,9 @@ function build(){
       box(L,mod,a[1],xi,a[0],16,wi,16,D-16,O.repeat(6),f); if(a[1]==='Полка') hw('sup',4); });
     box(L,mod,'Цоколь',xi,0,D-66,wi,100,16,'WWWWFW',f);
     hw('leg',4);
+    if(hasF(mod,'bot')) secDoor(L,mod,xi,wi,116,764,f,'R');
+    if(hasF(mod,'mid')) secDoor(L,mod,xi,wi,780,2334,f,'R');
+    if(hasF(mod,'top')) secDoor(L,mod,xi,wi,2350,2884,f,'R');
   }
   /* С1 — стол у окна */
   { const f=colOf('С1').hex, x0=600, W=1905, mod='С1';
@@ -344,6 +357,9 @@ function build(){
       drawer(furn,mod,xi+2,y,wi-4,196,CD,f,{x0:xi+13,x1:xi+wi-13,y0:y+22,h:140,z0:40,d:500},400);
     }
     hw('leg',4);
+    if(hasF(mod,'bot')) secDoor(furn,mod,xi,wi,116,434,f,'R');
+    if(hasF(mod,'mid')) secDoor(furn,mod,xi,wi,1066,2334,f,'R');
+    if(hasF(mod,'top')) secDoor(furn,mod,xi,wi,2350,2884,f,'R');
   }
   hw('fix',1);
   movers.forEach(m=>applyMover(m,true));
@@ -364,14 +380,48 @@ const LBL=[
 ];
 const lblBox=document.getElementById('labels');
 LBL.forEach(l=>{ const d=document.createElement('div'); d.className='lbl'; d.textContent=l.t; lblBox.appendChild(d); l.el=d; l.v=new THREE.Vector3(l.p[0]*S,l.p[1]*S,l.p[2]*S); });
-let showCodes=true;
+let showCodes=true, showDims=false;
+const dimMat=new THREE.LineBasicMaterial({color:lin('#9a7238'),depthTest:false,transparent:true});
+const dimG=new THREE.Group(); dimG.visible=false; dimG.renderOrder=10; scene.add(dimG);
+const DIMS=[]; // a,b — концы в мм, e — вынос в мм
+function dim(a,b,txt,e){
+  const A=new THREE.Vector3(a[0],a[1],a[2]).multiplyScalar(S), B=new THREE.Vector3(b[0],b[1],b[2]).multiplyScalar(S);
+  const E=new THREE.Vector3(e[0],e[1],e[2]).multiplyScalar(S);
+  const A2=A.clone().add(E), B2=B.clone().add(E), dir=B2.clone().sub(A2).normalize().multiplyScalar(0.03);
+  const pts=[A,A2, B,B2, A2,B2, A2.clone().sub(dir),A2.clone().add(dir), B2.clone().sub(dir),B2.clone().add(dir)];
+  const g=new THREE.BufferGeometry().setFromPoints(pts);
+  const l=new THREE.LineSegments(g,dimMat); l.renderOrder=10; dimG.add(l);
+  const el=document.createElement('div'); el.className='dim'; el.textContent=txt; el.hidden=true; lblBox.appendChild(el);
+  DIMS.push({el:el,v:A2.clone().add(B2).multiplyScalar(0.5)});
+}
+// вдоль левой стены (фронт на x=600)
+dim([600,0,1700],[600,0,600],'Ш1 1100',[180,0,0]);
+dim([600,0,600],[600,0,0],'О1 600',[180,0,0]);
+dim([600,0,1700],[600,0,0],'1700',[620,0,0]);
+// вдоль окна
+dim([600,0,600],[2505,0,600],'С1 1905',[0,0,180]);
+dim([2505,0,600],[3105,0,600],'П1 600',[0,0,180]);
+dim([0,0,600],[3105,0,600],'3105',[0,0,620]);
+// высоты
+dim([600,0,1700],[600,2350,1700],'2350',[0,0,140]);
+dim([600,2350,1700],[600,2900,1700],'550',[0,0,140]);
+dim([600,0,1700],[600,2900,1700],'2900',[0,0,320]);
+dim([1550,0,600],[1550,780,600],'стол 780',[0,0,120]);
+dim([1300,642,600],[1300,742,600],'100',[0,0,120]);
+dim([3105,100,600],[3105,450,600],'350',[140,0,0]);
+dim([3105,450,600],[3105,1050,600],'3×200',[140,0,0]);
+dim([3105,0,0],[3105,0,600],'глуб. 600',[140,0,0]);
+dim([2505,2900,0],[3105,2900,0],'600',[0,60,0]);
 function placeLabels(){
   const w=stage.clientWidth,h=stage.clientHeight;
   LBL.forEach(l=>{ const v=l.v.clone().project(camera);
     const vis=showCodes && v.z<1;
     l.el.hidden=!vis; if(!vis) return;
     l.el.style.left=((v.x+1)/2*w)+'px'; l.el.style.top=((1-v.y)/2*h)+'px'; });
+  DIMS.forEach(d=>{ const v=d.v.clone().project(camera); const vis=showDims && v.z<1 && Math.abs(v.x)<1.05 && Math.abs(v.y)<1.05;
+    d.el.hidden=!vis; if(!vis) return; d.el.style.left=((v.x+1)/2*w)+'px'; d.el.style.top=((1-v.y)/2*h)+'px'; });
 }
+function setCodeText(){ LBL.forEach(l=>{ const m=MODS.find(x=>x.code===l.t); l.el.innerHTML=l.t+(showDims&&m?'<small>'+m.w+'×'+m.h+'×'+m.d+'</small>':''); }); }
 
 /* ---------- камера ---------- */
 const TGT=new THREE.Vector3(1.5,1.3,0.75);
@@ -427,10 +477,23 @@ function renderColors(){
 function renderTable(){
   let h='<thead><tr><th>Код</th><th>Модуль</th><th class="n">Ш×В×Г, мм</th><th>Цвет</th></tr></thead><tbody>';
   MODS.forEach(m=>{ const c=colOf(m.code);
-    h+='<tr><td class="code">'+m.code+'</td><td>'+m.name+'</td><td class="n">'+m.w+'×'+m.h+'×'+m.d+'</td><td><span class="dot" style="background:'+c.hex+'"></span>'+c.n.replace(/</g,'&lt;')+'</td></tr>'; });
+    h+='<tr><td class="code">'+m.code+'</td><td>'+m.name+facText(m.code)+'</td><td class="n">'+m.w+'×'+m.h+'×'+m.d+'</td><td><span class="dot" style="background:'+c.hex+'"></span>'+c.n.replace(/</g,'&lt;')+'</td></tr>'; });
   document.getElementById('modTable').innerHTML=h+'</tbody>';
 }
-function changed(){ save(); build(); renderColors(); renderTable(); calc(); }
+function renderFac(){
+  const box=document.getElementById('facBox'); box.innerHTML='';
+  Object.keys(SECT).forEach(c=>{
+    const row=document.createElement('div'); row.className='mrow';
+    row.innerHTML='<span class="code">'+c+'</span><span class="mname">'+MODS.find(m=>m.code===c).name+'</span>';
+    const g=document.createElement('div'); g.className='seg'; g.style.gridColumn='1/-1';
+    SECT[c].forEach(sk=>{ const b=document.createElement('button'); b.type='button';
+      b.textContent=(hasF(c,sk[0])?'С фасадом: ':'Открыто: ')+sk[1]; b.setAttribute('aria-pressed',String(hasF(c,sk[0])));
+      b.onclick=()=>{ st.fac[c][sk[0]]=!hasF(c,sk[0]); changed(); }; g.appendChild(b); });
+    row.appendChild(g); box.appendChild(row);
+  });
+}
+function facText(c){ if(!SECT[c]) return ''; const on=SECT[c].filter(sk=>hasF(c,sk[0])).map(sk=>sk[1].toLowerCase()); return on.length?' · фасады: '+on.join(', '):''; }
+function changed(){ save(); build(); renderColors(); renderFac(); renderTable(); calc(); }
 function calc(){ if(typeof window.__calc==='function') window.__calc(); }
 
 document.querySelectorAll('#openSeg button').forEach(b=>{ b.setAttribute('aria-pressed',String(b.dataset.v===st.open));
@@ -440,10 +503,11 @@ const bL=document.getElementById('bLeft');
 function vbtn(b,dir,t,h){ b.onclick=()=>{ [bV,bF,bL].forEach(x=>x.setAttribute('aria-pressed',String(x===b))); fit(dir,t,h); }; }
 vbtn(bV,viewDir); vbtn(bF,new THREE.Vector3(0,0.02,1).normalize(),new THREE.Vector3(1.55,1.3,0.3)); vbtn(bL,new THREE.Vector3(1,0.06,0.3).normalize(),new THREE.Vector3(0.3,1.35,0.95),1.05);
 document.getElementById('bOpen').onclick=function(){ isOpen=!isOpen; this.setAttribute('aria-pressed',String(isOpen)); this.textContent=isOpen?'Закрыть':'Открыть двери и ящики'; movers.forEach(m=>applyMover(m,false)); };
+document.getElementById('bDims').onclick=function(){ showDims=!showDims; this.setAttribute('aria-pressed',String(showDims)); dimG.visible=showDims; setCodeText(); };
 document.getElementById('bCodes').onclick=function(){ showCodes=!showCodes; this.setAttribute('aria-pressed',String(showCodes)); };
 
-window.__p1002={get parts(){return PARTS;}, get hw(){return HW;}, mods:MODS, colOf:colOf};
-build(); renderColors(); renderTable();
+window.__p1002={get parts(){return PARTS;}, get hw(){return HW;}, get openF(){return st.open==='film';}, mods:MODS, colOf:colOf};
+build(); renderColors(); renderFac(); renderTable();
 resize(); fit(viewDir); setBg();
 try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',setBg); }catch(e){}
 new MutationObserver(setBg).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
