@@ -27,7 +27,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .presets{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 @media(max-width:820px){.presets{grid-template-columns:repeat(2,1fr)}}
 .preset{text-align:left;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:10px;padding:12px;display:grid;grid-template-columns:64px 1fr;gap:4px 12px;align-items:start}
-.preset svg{grid-row:1/4;width:64px;height:auto}
+.preset .pr{font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
+.preset svg{grid-row:1/5;width:64px;height:auto}
 .preset[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .preset .k{font-weight:700;font-size:12px;color:var(--accent)}
 .preset .t{font-weight:600;font-size:14px;line-height:1.3}
@@ -41,6 +42,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 input[type=text]{font:inherit;font-size:14px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;flex:1;min-width:0}
 .note{color:var(--muted);font-size:12.5px;margin:0}
 .code{display:inline-block;font-weight:700;font-size:11px;background:var(--accent-soft);color:var(--accent);border-radius:4px;padding:1px 6px;margin-right:4px}
+.price{font-size:26px;font-weight:700;color:var(--accent);margin:0;font-variant-numeric:tabular-nums}
 .big{font-size:16px;font-weight:600}
 .sk-b{fill:var(--skfill);stroke:var(--sk);stroke-width:1.5}.sk-l{stroke:var(--sk);stroke-width:1.5;fill:none}
 .sk-r{stroke:var(--accent);stroke-width:2.2;stroke-linecap:round}.sk-d{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1}.sk-e{fill:var(--accent);opacity:.75}
@@ -62,6 +64,9 @@ input[type=text]{font:inherit;font-size:14px;background:var(--bg);color:var(--fg
     <div class="panel">
       <h2>Размеры</h2>
       <p class="big" id="dims"></p>
+      <div class="lab">Стоимость выбранного варианта</div>
+      <p class="price" id="price"></p>
+      <p class="note">Под ключ: материалы, изготовление, фурнитура Blum, доставка и сборка.</p>
       <div class="lab">Высота</div>
       <div class="tog" id="heights"></div>
       <h2 style="margin-top:8px">Цвет</h2>
@@ -72,7 +77,7 @@ input[type=text]{font:inherit;font-size:14px;background:var(--bg);color:var(--fg
       <p class="note" id="fillNote"></p>
     </div>
   </div>
-  <section><h2>Наполнение</h2><div class="presets" id="fills"></div></section>
+  <section><h2>Наполнение</h2><p class="note" style="margin:-6px 0 10px">Цены указаны для выбранной высоты.</p><div class="presets" id="fills"></div></section>
 </div>
 <script src="/mebel/_lib/three.min.js"></script>
 <script>
@@ -148,17 +153,20 @@ const DECORS=[
   ["H1145","Дуб натуральный","#b48c5e"],["H1180","Дуб тёмный табак","#6e4c34"]];
 const S={H:2400,W:1500,D:580,mezz:1,col:"#cfc8bd",dec:0,fill:6,own:"",ownCol:"#b9b2a6"};
 try{const v=JSON.parse(localStorage.getItem("p1003")||"null");if(v)Object.assign(S,v)}catch(e){}
+const PR={"2000":[128100,126900,126900,132300,129100,131200,132500,136000,131300],"2200":[132500,131200,131200,136600,133500,135400,135600,162800,134300],"2400":[132600,131300,131300,159300,133600,135600,137000,163000,135700]};
+const rub=v=>v.toLocaleString("ru-RU")+" ₽";
 function save(){try{localStorage.setItem("p1003",JSON.stringify({col:S.col,dec:S.dec,fill:S.fill,H:S.H,own:S.own,ownCol:S.ownCol}))}catch(e){}}
 function renderFills(){$("fills").innerHTML="";FILLS.forEach((f,i)=>{const b=document.createElement("button");b.className="preset";b.setAttribute("aria-pressed",S.fill===i);
-  b.innerHTML=`${sketch(i)}<span class="k">${f.k}</span><span class="t">${f.t}</span><span class="d">${f.d}</span>`;b.onclick=()=>{S.fill=i;save();update()};$("fills").appendChild(b)})}
+  b.innerHTML=`${sketch(i)}<span class="k">${f.k}</span><span class="t">${f.t}</span><span class="d">${f.d}</span><span class="pr">${rub(PR[S.H][i])}</span>`;b.onclick=()=>{S.fill=i;save();update()};$("fills").appendChild(b)})}
 function renderH(){$("heights").innerHTML="";[2000,2200,2400].forEach(h=>{const b=document.createElement("button");b.className="chip";b.textContent=h+" мм";b.setAttribute("aria-pressed",S.H===h);b.onclick=()=>{S.H=h;save();update()};$("heights").appendChild(b)})}
 function renderSw(){$("swatches").innerHTML="";DECORS.forEach((d,i)=>{const b=document.createElement("button");b.style.background=d[2];b.title=(d[0]?d[0]+" ":"")+d[1];b.setAttribute("aria-label",b.title);b.setAttribute("aria-pressed",S.dec===i);b.onclick=()=>{S.dec=i;S.col=d[2];save();renderSw();build()};$("swatches").appendChild(b)});
-  $("colName").textContent=S.dec>=0?((DECORS[S.dec][0]?DECORS[S.dec][0]+" ":"")+DECORS[S.dec][1]+". Цвет на экране примерный, точный — по образцу."):("Свой цвет"+(S.own?": "+S.own:"")+".");}
+  $("colName").textContent=S.dec>=0?((DECORS[S.dec][0]?DECORS[S.dec][0]+" ":"")+DECORS[S.dec][1]+". Цвет на экране примерный, точный — по образцу."):("Свой цвет"+(S.own?": "+S.own:"")+". Цена может измениться — уточним по наличию.");}
 $("fcol").addEventListener("input",e=>{S.col=S.ownCol=e.target.value;S.dec=-1;save();renderSw();build()});
 $("ownName").addEventListener("input",e=>{S.own=e.target.value;S.dec=-1;S.col=S.ownCol;save();renderSw();build()});
 function update(){const r=geo(S,S.fill);
   $("dims").textContent=`Ширина ${S.W} · высота ${S.H} · глубина ${S.D} мм`;
   $("fillNote").innerHTML=`<b>${FILLS[S.fill].k} ${FILLS[S.fill].t}.</b> ${FILLS[S.fill].d}.`;
+  $("price").textContent=rub(PR[S.H][S.fill]);
   renderFills();renderH();build();}
 /* ---------- 3D ---------- */
 const cv=$("scene");
