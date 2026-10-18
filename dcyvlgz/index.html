@@ -188,7 +188,7 @@ function build(){
     if(film){const G=grooveMat(m); /* фреза на видимом боку: вертикаль по центру + горизонталь на уровне стыка дверей */
       box(3,H-40,6,x0-1,H/2,d/2,G,gB,false);box(3,6,d-40,x0-1,S.m1split,d/2,G,gB,false);}
     if(showDoors){const fw=w/2-3;[[0,S.m1split-3],[S.m1split,H-S.m1split-3]].forEach(([y0,h])=>{
-      door(x0+1.5,y0+1.5,fw,h,18,d,1,F,gB);door(x0+w/2+1.5,y0+1.5,fw,h,18,d,1,F,gB)})}
+      door(-1.5,y0+1.5,fw,h,18,d,-1,F,gB);door(x0+w/2-1.5,y0+1.5,fw,h,18,d,-1,F,gB)})}
     label(m,x0+w/2,H+200,d+60,gB);
   }
   /* М4 тумба у стены Б рядом с пеналом */
