@@ -251,7 +251,7 @@ function box(parent,mod,name,x0,y0,z0,sx,sy,sz,spec,film,opt){
   if(!opt.skip){
     const d=[sx,sy,sz].sort((a,b)=>b-a);
     const mat=opt.mat||(spec.indexOf('F')>=0?'МДФ плёнка':(d[2]<=4?'ХДФ белый':'ЛДСП белая 16'));
-    PARTS.push({mod:mod,name:name,L:Math.round(d[0]),W:Math.round(d[1]),T:Math.round(d[2]),mat:mat,fac:fac,vis:vis,side:info.side,top:info.top,dbox:info.dbox});
+    PARTS.push({mod:mod,name:name,L:Math.round(d[0]),W:Math.round(d[1]),T:Math.round(d[2]),mat:mat,fac:fac,vis:vis,side:info.side,top:info.top,dbox:info.dbox,mill:!!opt.mill});
   }
   return m;
 }
@@ -270,7 +270,7 @@ function door(g,mod,x0,y0,w,h,z0,film,side,o){
   const hx= side==='L'? x0 : x0+w;
   piv.position.set(hx*S,0,z0*S); g.add(piv);
   const lx= side==='L'? 0 : -w;
-  box(piv,mod,o.name||'Фасад распашной',lx,y0,0,w,h,18,'FFFFFW',film);
+  box(piv,mod,o.name||'Фасад распашной',lx,y0,0,w,h,18,'FFFFFW',film,{mill:!!o.arch});
   const grove=darker(film,0.78);
   if(o.arch && st.mat!=='A' && st.mat!=='E'){ // арка по центру фасада (на ЛДСП фрезеровки нет)
     const ins=o.ins||72, gap=o.gap||110, cx=lx+w/2, aw=w-2*ins;
@@ -414,7 +414,7 @@ const VARS=[
   {v:'C',t:'Фасады и боковины МДФ',d:'Плюс видимые боковины из МДФ в плёнке: снаружи в цвет, изнутри белые. Столешница ЛДСП в тон.'},
   {v:'D',t:'Всё видимое из МДФ',d:'Фасады, боковины, столешница 36, цоколи и открытые полки — МДФ в плёнке. Плёнка с одной стороны, изнанка белая.'}
 ];
-let RATES=/*R*/{"k":1,"mdf":15000,"hdf":700,"ldsp":8000,"ldspC":13000,"ldsp25":12400,"edgeT":300,"glue":2000,"topMode":"auto","edge":1600,"cut":12000,"sheet":5.796,"yield":85,"work":54000,"hw":{"hinge":1300,"runner":3000,"hHalf":1200,"hBar":900,"push":700,"rod":1000,"sup":20,"leg":120,"fix":4000}}/*R*/;
+let RATES=/*R*/{"k":1,"mdf":15000,"mdfS":12000,"hdf":700,"ldsp":8000,"ldspC":13000,"ldsp25":12400,"edgeT":300,"glue":2000,"topMode":"auto","edge":1600,"cut":12000,"sheet":5.796,"yield":85,"work":54000,"hw":{"hinge":1300,"runner":3000,"hHalf":1200,"hBar":900,"push":700,"rod":1000,"sup":20,"leg":120,"fix":4000}}/*R*/;
 // класс материала: mdf — МДФ по м², col — ЛДСП в цвет листами, wh — белая ЛДСП листами, hdf — ХДФ по м²
 let TOPU='25'; // способ столешницы из ЛДСП, который сейчас выбран расчётом
 function classify(p,v,tm){
@@ -432,13 +432,13 @@ function costFor(v,r,tm){
   if(!tm){ const m=r.topMode||'auto';
     if(m!=='auto') return costFor(v,r,m);
     const a1=costFor(v,r,'25'), a2=costFor(v,r,'2x16'); return a2.cost<a1.cost?a2:a1; }
-  const per=r.sheet*r.yield/100, a={mdf:0,col:0,wh:0,hdf:0,t25:0};
+  const per=r.sheet*r.yield/100, a={mdf:0,mdfM:0,col:0,wh:0,hdf:0,t25:0};
   let topLen=0;
-  PARTS.forEach(p=>{ const c=classify(p,v,tm); a[c]+=p.L*p.W/1e6*layers(p,c); if(p.top && c==='col') topLen+=p.L/1000; });
+  PARTS.forEach(p=>{ const c=classify(p,v,tm); a[c]+=p.L*p.W/1e6*layers(p,c); if(c==='mdf'&&p.mill) a.mdfM+=p.L*p.W/1e6*layers(p,c); if(p.top && c==='col') topLen+=p.L/1000; });
   const shC=Math.ceil(a.col/per-1e-9), shW=Math.ceil(a.wh/per-1e-9), shT=Math.ceil(a.t25/per-1e-9);
   const fr=x=>Math.ceil(x/per*2-1e-9)/2; // доля листа в работу, шагом в пол-листа
   const fC=fr(a.col), fW=fr(a.wh), fT=fr(a.t25), glue=topLen>0?(r.glue||0):0, edgeTc=topLen*(r.edgeT||0);
-  const mat=a.mdf*r.mdf + shC*r.ldspC + shW*r.ldsp + shT*r.ldsp25 + (fC+fW+fT)*(r.cut+r.edge) + a.hdf*r.hdf + edgeTc + glue;
+  const mat=a.mdfM*r.mdf + (a.mdf-a.mdfM)*(r.mdfS!=null?r.mdfS:r.mdf) + shC*r.ldspC + shW*r.ldsp + shT*r.ldsp25 + (fC+fW+fT)*(r.cut+r.edge) + a.hdf*r.hdf + edgeTc + glue;
   let hw=0; Object.keys(HW).forEach(k=>hw+=HW[k]*((r.hw&&r.hw[k])||0));
   const cost=mat+hw+r.work;
   return {a:a,shC:shC,shW:shW,shT:shT,fC:fC,fW:fW,fT:fT,tm:tm,topLen:topLen,edgeTc:edgeTc,glue:glue,mat:mat,hw:hw,work:r.work,cost:cost,total:cost*r.k};
