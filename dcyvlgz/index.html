@@ -56,7 +56,7 @@ html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset
 <div class="wrap">
   <header>
     <h1>Проект 100/4 — мебель санузла</h1>
-    <p class="sub"><span class="code">М1</span>пенал · <span class="code">М2</span>шкаф над инсталляцией с нишей · <span class="code">М3</span>панель инсталляции · <span class="code">М4</span>подвесная тумба</p>
+    <p class="sub"><span class="code">М1</span>пенал в углу · <span class="code">М2</span>шкаф над инсталляцией с нишей · <span class="code">М3</span>панель инсталляции · <span class="code">М4</span>подвесная тумба</p>
   </header>
 
   <div class="grid">
@@ -75,6 +75,8 @@ html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset
       <div class="kv" id="dims"></div>
       <h2>Материал</h2>
       <div class="mats" id="mats"></div>
+      <div class="lab">Ящики тумбы М4 — U-вырез под сифон</div>
+      <div class="tog" id="ucutSel"></div>
       <h2>Цвет</h2>
       <div class="lab">Модуль</div>
       <div class="tog" id="modSel"></div>
@@ -84,7 +86,7 @@ html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset
       <p class="note" id="colName"></p>
       <div class="lab">Стоимость под ключ</div>
       <p class="price" id="cp"></p>
-      <p class="note">Материалы, изготовление, фурнитура Blum, подсветка ниши, доставка и установка. Размеры уточняются на замере.</p>
+      <p class="note">Материалы, изготовление, фурнитура Blum и Hettich, подсветка ниши, доставка и установка. Размеры уточняются на замере.</p>
       
     </div>
   </div>
@@ -95,19 +97,19 @@ html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset
 <script src="/mebel/_lib/three.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);
-const CPR={"film": "271 700 ₽", "enamel": "435 600 ₽", "ldsp": "186 200 ₽"};
+const CPR={"film": {"top": "314 600 ₽", "both": "318 600 ₽"}, "enamel": {"top": "499 500 ₽", "both": "503 500 ₽"}, "ldsp": {"top": "227 500 ₽", "both": "231 500 ₽"}};
 /* ---------- модули и размеры ---------- */
-const S={H:2600, m1w:600,m1d:350,m1split:1150, m2w:900,m2d:250,niche:1100,nicheH:230, m4w:800,m4d:460,m4h:420,m4y:480,
-  mat:"film", col:{М1:"#3d4555",М2:"#3d4555",М3:"#3d4555",М4:"#ecebe7"}, dec:{М1:0,М2:0,М3:0,М4:4}, sel:"М1", own:"", ownCol:"#3d4555"};
-const MATS={film:["МДФ в плёнке ПВХ","Матовая плёнка, изнутри белые"],enamel:["МДФ в эмали","Глубокий мат, как на фото"],ldsp:["ЛДСП Egger","Самый бюджетный"]};
+const S={H:2600, m1w:650,m1d:450,m1split:1150, m2w:900,m2d:250,niche:1100,nicheH:230, m4w:800,m4d:460,m4h:420,m4y:480,
+  mat:"film", ucut:"top", col:{М1:"#3d4555",М2:"#3d4555",М3:"#3d4555",М4:"#ecebe7"}, dec:{М1:0,М2:0,М3:0,М4:4}, sel:"М1", own:"", ownCol:"#3d4555"};
+const MATS={film:["МДФ в плёнке ПВХ","Матовая плёнка, фреза на боку пенала"],enamel:["МДФ в эмали","Глубокий мат, как на фото, с фрезой"],ldsp:["ЛДСП Egger","Самый бюджетный, без фрезы"]};
 const DECORS=[
   ["","Синий графит (как на фото)","#3d4555"],["U961","Графит","#3d3f41"],["U960","Ониксовый серый","#4a4c4e"],["U727","Серый камень","#8f8a83"],
   ["","Белый матовый","#ecebe7"],["U702","Кашемир серый","#cfc8bd"],["U638","Зелёный шалфей","#9aa58f"],["U507","Синий дымчатый","#6d8091"],
   ["","Дуб Кассела","#c9a57c",1],["H3309","Дуб Гладстоун песочный","#c8a882",1],["H1145","Дуб Бардолино натуральный","#b48c5e",1],["H1181","Дуб Галифакс табак","#7a5538",1]];
 const MODS=["М1","М2","М3","М4"];
 const MNAME={М1:"Пенал",М2:"Шкаф над инсталляцией",М3:"Панель инсталляции",М4:"Тумба подвесная"};
-try{const v=JSON.parse(localStorage.getItem("p1004")||"null");if(v){S.col=v.col||S.col;S.dec=v.dec||S.dec;S.own=v.own||"";S.ownCol=v.ownCol||S.ownCol;if(v.mat)S.mat=v.mat}}catch(e){}
-function save(){try{localStorage.setItem("p1004",JSON.stringify({col:S.col,dec:S.dec,own:S.own,ownCol:S.ownCol,mat:S.mat}))}catch(e){}}
+try{const v=JSON.parse(localStorage.getItem("p1004")||"null");if(v){S.col=v.col||S.col;S.dec=v.dec||S.dec;S.own=v.own||"";S.ownCol=v.ownCol||S.ownCol;if(v.mat)S.mat=v.mat;if(v.ucut)S.ucut=v.ucut}}catch(e){}
+function save(){try{localStorage.setItem("p1004",JSON.stringify({col:S.col,dec:S.dec,own:S.own,ownCol:S.ownCol,mat:S.mat,ucut:S.ucut}))}catch(e){}}
 
 /* Геометрия в мм. Стена по X, пол y=0, стена z=0, мебель в +z. Слева направо: М4, М1, зона инсталляции М2/М3 */
 function layout(){
@@ -126,7 +128,8 @@ function woodCanvas(hex){if(_wt[hex])return _wt[hex];const c=document.createElem
     for(let y=0;y<=512;y+=8){const xx=x+Math.sin(y/f+ph)*a;y?g.lineTo(xx,y):g.moveTo(xx,y)}g.stroke()}
   return _wt[hex]=c;}
 function renderMats(){$("mats").innerHTML="";Object.entries(MATS).forEach(([k,[t,d]])=>{const b=document.createElement("button");b.className="mat";b.dataset.k=k;b.setAttribute("aria-pressed",S.mat===k);
-  b.innerHTML=`<span class="t">${t}</span><span class="d">${d}</span><span class="p">${(typeof CPR!=="undefined"&&CPR[k])?CPR[k]:""}</span>`;b.onclick=()=>{S.mat=k;save();update()};$("mats").appendChild(b)})}
+  b.innerHTML=`<span class="t">${t}</span><span class="d">${d}</span><span class="p">${(typeof CPR!=="undefined"&&CPR[k])?CPR[k][S.ucut]:""}</span>`;b.onclick=()=>{S.mat=k;save();update()};$("mats").appendChild(b)})}
+function renderU(){$("ucutSel").innerHTML="";[["top","У верхнего"],["both","У обоих"]].forEach(([k,l])=>{const b=document.createElement("button");b.className="chip";b.textContent=l;b.setAttribute("aria-pressed",S.ucut===k);b.onclick=()=>{S.ucut=k;save();update()};$("ucutSel").appendChild(b)})}
 function renderMods(){$("modSel").innerHTML="";[...MODS,"Все"].forEach(m=>{const b=document.createElement("button");b.className="chip";b.textContent=m;b.title=MNAME[m]||"Все модули";b.setAttribute("aria-pressed",S.sel===m);b.onclick=()=>{S.sel=m;renderMods();renderSw()};$("modSel").appendChild(b)})}
 function targets(){return S.sel==="Все"?MODS:[S.sel]}
 function renderSw(){const box=$("swatches");box.innerHTML="";const cur=S.dec[targets()[0]];
@@ -140,7 +143,7 @@ $("fcol").addEventListener("input",e=>{S.ownCol=e.target.value;targets().forEach
 $("ownName").addEventListener("input",e=>{S.own=e.target.value;targets().forEach(m=>{S.dec[m]=-1;S.col[m]=S.ownCol});save();renderSw();build()});
 function update(){
   $("dims").innerHTML=`<span><span class="code">М1</span></span><b>${S.m1w} × ${S.H} × ${S.m1d}</b><span><span class="code">М2</span></span><b>${S.m2w} × ${S.H-S.niche} × ${S.m2d}</b><span><span class="code">М3</span></span><b>${S.m2w} × ${S.niche}</b><span><span class="code">М4</span></span><b>${S.m4w} × ${S.m4h} × ${S.m4d}</b><span class="note" style="grid-column:1/-1">Ш × В × Г. Ниша с подсветкой: высота ${S.nicheH}, низ на ${S.niche} от пола.</span>`;
-  renderMats();$("cp").textContent=CPR[S.mat];
+  renderMats();renderU();$("cp").textContent=CPR[S.mat][S.ucut];
   build();
 }
 
@@ -154,42 +157,58 @@ scene.add(new THREE.HemisphereLight(0xffffff,0x8a8f96,.85));
 const dl=new THREE.DirectionalLight(0xffffff,.55);dl.position.set(1200,3200,3000);scene.add(dl);
 let group=new THREE.Group();scene.add(group);
 let showDoors=true,glass=false,openT=0,openTarget=0,anim=null,doorPiv=[],drawerG=[];
-let rot={y:-0.35,x:0.12},dist=5600;
+let rot={y:0.78,x:0.14},dist=5200;
 function mat(c,o){return new THREE.MeshLambertMaterial({color:c,transparent:o<1,opacity:o,depthWrite:o>=1})}
 function box(w,h,d,x,y,z,m,par,edges){const g=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);g.position.set(x,y,z);
   if(edges!==false)g.add(new THREE.LineSegments(new THREE.EdgesGeometry(g.geometry),new THREE.LineBasicMaterial({color:0x5d646c,transparent:true,opacity:.5})));(par||group).add(g);return g}
-function sub(x,y,z){const g=new THREE.Group();g.position.set(x,y,z);group.add(g);return g}
-function label(txt,x,y,z){const c=document.createElement("canvas");c.width=256;c.height=128;const g=c.getContext("2d");
+function sub(x,y,z,par){const g=new THREE.Group();g.position.set(x,y,z);(par||group).add(g);return g}
+function label(txt,x,y,z,par){const c=document.createElement("canvas");c.width=256;c.height=128;const g=c.getContext("2d");
   g.fillStyle="#3b5573";g.beginPath();g.roundRect?g.roundRect(28,8,200,112,56):g.rect(28,8,200,112);g.fill();g.fillStyle="#fff";g.font="700 60px -apple-system, Arial, sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText(txt,128,68);
-  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));s.position.set(x,y,z);s.scale.set(300,150,1);s.renderOrder=9;group.add(s)}
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));s.position.set(x,y,z);s.scale.set(300,150,1);s.renderOrder=9;(par||group).add(s)}
 function mm(m,o){const w=isWood(m);const M=mat(w?0xffffff:new THREE.Color(S.col[m]),o);if(w)M.map=new THREE.CanvasTexture(woodCanvas(S.col[m]));return M}
-function door(px,y,w,h,d,z,sgn,M,par){const pv=sub(px,0,z);pv.userData.sgn=sgn;doorPiv.push(pv);box(w,h,d,sgn*w/2,y+h/2,d/2,M,pv);return pv}
+function grooveMat(m){const c=new THREE.Color(isWood(m)?"#5a3e28":S.col[m]);c.multiplyScalar(.45);return mat(c,1)}
+/* дверь: петли по левому краю (sgn=1) или правому (sgn=-1) в координатах родителя */
+function door(px,y,w,h,d,z,sgn,M,par){const pv=sub(px,0,z,par);pv.userData.sgn=sgn;doorPiv.push(pv);box(w,h,d,sgn*w/2,y+h/2,d/2,M,pv);return pv}
+/* Угол: стена А (инсталляция) — плоскость z=0, стена Б (тумба, пенал) — плоскость x=0.
+   Всё у стены Б строится в группе gB: локальная x идёт вдоль стены (отрицательная), локальная z — глубина от стены. */
 function build(){
   scene.remove(group);group=new THREE.Group();scene.add(group);doorPiv=[];drawerG=[];
-  const t=16,H=S.H,L=layout(),op=glass?.3:1,inner=mat(0xf4f4f1,op);
-  const ox=-L.room/2;
-  /* комната */
-  box(L.room+400,H,20,0,H/2,-10,mat(0xf0eeea,1),null,false);
-  box(L.room+400,20,1800,0,-10,900,mat(0xdcd8d1,1),null,false);
-  /* М4 тумба */
-  { const m="М4",M=mm(m,op),F=mm(m,glass?.25:1),x=ox+L.x4,w=S.m4w,d=S.m4d,h=S.m4h,y=S.m4y,inn=S.mat==="ldsp"?mat(0xf4f4f1,op):M;
-    box(t,h,d,x+t/2,y+h/2,d/2,M);box(t,h,d,x+w-t/2,y+h/2,d/2,M);box(w-2*t,t,d,x+w/2,y+t/2,d/2,inn);
-    box(w,32,d+10,x+w/2,y+h+16,(d+10)/2,M);
-    const sink=new THREE.Mesh(new THREE.CylinderGeometry(200,180,130,40),mat(0xfbfbfa,1));sink.scale.set(1.25,1,.85);sink.position.set(x+w/2,y+h+32+65,d/2);group.add(sink);
-    for(let k=0;k<2;k++){const g=sub(0,0,0);drawerG.push(g);const fh=h/2-3,fy=y+k*h/2;
-      box(w-3,fh,18,x+w/2,fy+fh/2+1.5,d+9,F,g);box(w-2*t-30,fh-40,d-40,x+w/2,fy+fh/2,d/2-5,mat(0xe9e9e4,op),g);}
-    label(m,x+w/2,y+h+330,d+60);
+  const t=16,H=S.H,op=glass?.3:1,inner=mat(0xf4f4f1,op),W1=S.m1w,D1=S.m1d;
+  const zB=W1+S.m4w+700, xA=D1+S.m2w+500;
+  box(xA,H,20,xA/2,H/2,-10,mat(0xf0eeea,1),null,false);
+  box(20,H,zB,-10,H/2,zB/2,mat(0xebe8e3,1),null,false);
+  box(xA,20,zB,xA/2,-10,zB/2,mat(0xdcd8d1,1),null,false);
+  const gB=new THREE.Group();gB.rotation.y=Math.PI/2;group.add(gB);
+  const film=S.mat!=="ldsp";
+  /* М1 пенал: в углу, фасады смотрят от стены Б, видимый бок — к тумбе */
+  { const m="М1",M=mm(m,op),F=mm(m,glass?.25:1),w=W1,d=D1,x0=-w,inn=S.mat==="enamel"?M:inner;
+    box(t,H,d,x0+t/2,H/2,d/2,M,gB);box(t,H,d,-t/2,H/2,d/2,M,gB);
+    box(w-2*t,t,d,x0+w/2,t/2,d/2,inn,gB);box(w-2*t,t,d,x0+w/2,H-t/2,d/2,inn,gB);box(w-2*t,t,d-20,x0+w/2,S.m1split,d/2-10,inn,gB);
+    const n=Math.max(3,Math.round((H-2*t)/380)-1);for(let k=1;k<=n;k++){const yy=t+(H-2*t)*k/(n+1);if(Math.abs(yy-S.m1split)>120)box(w-2*t-2,t,d-30,x0+w/2,yy,d/2-15,inn,gB)}
+    if(film){const G=grooveMat(m); /* фреза на видимом боку: вертикаль по центру + горизонталь на уровне стыка дверей */
+      box(3,H-40,6,x0-1,H/2,d/2,G,gB,false);box(3,6,d-40,x0-1,S.m1split,d/2,G,gB,false);}
+    if(showDoors){const fw=w/2-3;[[0,S.m1split-3],[S.m1split,H-S.m1split-3]].forEach(([y0,h])=>{
+      door(x0+1.5,y0+1.5,fw,h,18,d,1,F,gB);door(x0+w/2+1.5,y0+1.5,fw,h,18,d,1,F,gB)})}
+    label(m,x0+w/2,H+200,d+60,gB);
   }
-  /* М1 пенал */
-  { const m="М1",M=mm(m,op),F=mm(m,glass?.25:1),x=ox+L.x1,w=S.m1w,d=S.m1d,inn=S.mat==="film"||S.mat==="ldsp"?inner:M;
-    box(t,H,d,x+t/2,H/2,d/2,M);box(t,H,d,x+w-t/2,H/2,d/2,M);box(w-2*t,t,d,x+w/2,t/2,d/2,inn);box(w-2*t,t,d,x+w/2,H-t/2,d/2,inn);
-    box(w-2*t,t,d-20,x+w/2,S.m1split,d/2-10,inn);
-    const n=Math.max(3,Math.round((H-2*t)/380)-1);for(let k=1;k<=n;k++){const yy=t+(H-2*t)*k/(n+1);if(Math.abs(yy-S.m1split)>120)box(w-2*t-2,t,d-30,x+w/2,yy,d/2-15,inn)}
-    if(showDoors){const fw=w/2-3;[[0,S.m1split-3],[S.m1split,H-S.m1split-3]].forEach(([y0,h])=>{door(x+1.5,y0+1.5,fw,h,18,d,1,F);door(x+w-1.5,y0+1.5,fw,h,18,d,-1,F)})}
-    label(m,x+w/2,H+200,d+60);
+  /* М4 тумба у стены Б рядом с пеналом */
+  { const m="М4",M=mm(m,op),F=mm(m,glass?.25:1),w=S.m4w,d=S.m4d,h=S.m4h,y=S.m4y,x0=-W1-w,cx=x0+w/2,inn=S.mat==="enamel"?M:inner;
+    box(t,h,d,x0+t/2,y+h/2,d/2,M,gB);box(t,h,d,x0+w-t/2,y+h/2,d/2,M,gB);box(w-2*t,t,d,cx,y+t/2,d/2,inn,gB);
+    box(w,32,d+10,cx,y+h+16,(d+10)/2,M,gB);
+    const sink=new THREE.Mesh(new THREE.CylinderGeometry(200,180,130,40),mat(0xfbfbfa,1));sink.scale.set(1.25,1,.85);sink.position.set(cx,y+h+32+65,d/2);gB.add(sink);
+    const pipe=mat(0xb9bcbf,1),sx=cx,sz=d/2;
+    box(40,h*0.55,40,sx,y+h-h*0.275,sz,pipe,gB,false);box(40,40,sz,sx,y+h*0.45,sz/2,pipe,gB,false);
+    for(let k=0;k<2;k++){const g=sub(0,0,0,gB);drawerG.push(g);const fh=h/2-3,fy=y+k*h/2,top=k===1,cut=top||S.ucut==="both";
+      box(w-3,fh,18,cx,fy+fh/2+1.5,d+9,F,g);
+      const bw=w-2*t-30,bd=d-50,bh=fh-50,bz=d/2-5,bm=mat(0xe9e9e4,op);
+      if(cut){const cw=220,cd=bd*0.6; /* U-вырез под сифон */
+        box((bw-cw)/2,bh,bd,cx-bw/2+(bw-cw)/4,fy+fh/2,bz,bm,g);box((bw-cw)/2,bh,bd,cx+bw/2-(bw-cw)/4,fy+fh/2,bz,bm,g);
+        box(cw,bh,bd-cd,cx,fy+fh/2,bz+cd/2,bm,g);}
+      else box(bw,bh,bd,cx,fy+fh/2,bz,bm,g);}
+    label(m,cx,y+h+330,d+60,gB);
   }
-  /* М2 + М3 зона инсталляции */
-  { const x=ox+L.x2,w=S.m2w,d=S.m2d,y2=S.niche+S.nicheH;
+  /* М2 + М3 у стены А, сразу за пеналом */
+  { const x=D1,w=S.m2w,d=S.m2d,y2=S.niche+S.nicheH;
     const M2=mm("М2",op),F2=mm("М2",glass?.25:1),M3=mm("М3",glass?.25:1),inn=S.mat==="enamel"?M2:inner;
     box(t,H-S.niche,d,x+t/2,S.niche+(H-S.niche)/2,d/2,M2);box(t,H-S.niche,d,x+w-t/2,S.niche+(H-S.niche)/2,d/2,M2);
     box(w-2*t,t,d,x+w/2,S.niche+t/2,d/2,M2);box(w-2*t,t,d,x+w/2,y2+t/2,d/2,M2);box(w-2*t,t,d,x+w/2,H-t/2,d/2,inn);
@@ -197,7 +216,6 @@ function build(){
     const led=new THREE.Mesh(new THREE.BoxGeometry(w-60,8,10),new THREE.MeshBasicMaterial({color:0xfff3d6}));led.position.set(x+w/2,y2-6,d-25);group.add(led);
     const glow=new THREE.Mesh(new THREE.PlaneGeometry(w-2*t,S.nicheH-t),new THREE.MeshBasicMaterial({color:0xfff1d0,transparent:true,opacity:.18}));glow.position.set(x+w/2,S.niche+S.nicheH/2,3);group.add(glow);
     if(showDoors){const fw=w/2-3,h=H-y2-3;door(x+1.5,y2+1.5,fw,h,18,d,1,F2);door(x+w-1.5,y2+1.5,fw,h,18,d,-1,F2)}
-    /* М3 панель: стоит перед коробом инсталляции */
     box(w,S.niche,18,x+w/2,S.niche/2,d-9,M3);
     box(240,150,6,x+w/2,S.niche*0.82,d+3,mat(0xf7f7f5,1));
     const bowl=new THREE.Mesh(new THREE.SphereGeometry(200,32,20),mat(0xfbfbfa,1));bowl.scale.set(.9,.75,1.35);bowl.position.set(x+w/2,400,d+270);group.add(bowl);
@@ -210,11 +228,11 @@ function pose(){const e=openT<.5?2*openT*openT:1-Math.pow(-2*openT+2,2)/2;const 
 function step(ts){if(anim===null)anim=ts;const dt=Math.min(50,ts-anim);anim=ts;const sp=dt/900;
   openT=openTarget>openT?Math.min(openTarget,openT+sp):Math.max(openTarget,openT-sp);pose();draw();if(openT!==openTarget)requestAnimationFrame(step);else anim=null}
 function resize(){const w=cv.clientWidth,h=cv.clientHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();draw()}
-function draw(){const c=new THREE.Vector3(0,S.H/2-100,400);
+function draw(){const c=new THREE.Vector3(S.m1d+250,S.H/2-150,S.m1w*0.6+250);
   cam.position.set(c.x+dist*Math.sin(rot.y)*Math.cos(rot.x),c.y+dist*Math.sin(rot.x),c.z+dist*Math.cos(rot.y)*Math.cos(rot.x));cam.lookAt(c);renderer.render(scene,cam)}
 let drag=null,pinch=null;
 cv.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId)});
-cv.addEventListener("pointermove",e=>{if(!drag||pinch)return;rot.y=Math.max(-1.3,Math.min(1.3,rot.y-(e.clientX-drag.x)*.008));rot.x=Math.max(-.1,Math.min(1.2,rot.x+(e.clientY-drag.y)*.006));drag={x:e.clientX,y:e.clientY};draw()});
+cv.addEventListener("pointermove",e=>{if(!drag||pinch)return;rot.y=Math.max(-0.1,Math.min(1.65,rot.y-(e.clientX-drag.x)*.008));rot.x=Math.max(-.1,Math.min(1.2,rot.x+(e.clientY-drag.y)*.006));drag={x:e.clientX,y:e.clientY};draw()});
 cv.addEventListener("pointerup",()=>drag=null);
 cv.addEventListener("wheel",e=>{e.preventDefault();dist=Math.max(2500,Math.min(10000,dist*(1+e.deltaY*.001)));draw()},{passive:false});
 cv.addEventListener("touchmove",e=>{if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);if(pinch){dist=Math.max(2500,Math.min(10000,dist*pinch/d));draw()}pinch=d}},{passive:true});
@@ -224,7 +242,7 @@ $("tOpen").onclick=e=>{openTarget=openTarget?0:1;e.target.textContent=openTarget
   if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){openT=openTarget;pose();draw()}else if(anim===null)requestAnimationFrame(step)};
 $("tDoors").onclick=e=>{showDoors=!showDoors;e.target.setAttribute("aria-pressed",showDoors);build()};
 $("tGlass").onclick=e=>{glass=!glass;e.target.setAttribute("aria-pressed",glass);build()};
-$("tReset").onclick=()=>{rot={y:-0.35,x:0.12};dist=5600;draw()};
+$("tReset").onclick=()=>{rot={y:0.78,x:0.14};dist=5200;draw()};
 window.addEventListener("resize",resize);
 $("fcol").value=S.ownCol;$("ownName").value=S.own;
 renderMods();renderSw();update();resize();
