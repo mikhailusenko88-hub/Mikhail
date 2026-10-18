@@ -65,6 +65,15 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f
 .tot b{font:700 1.35rem var(--f-mono)}
 .tot span{font-size:12px;color:var(--muted)}
 .flag{color:var(--warn)}
+.vars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
+.var{font:inherit;text-align:left;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-width:0}
+.var[aria-pressed="true"]{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass);background:var(--brass-soft)}
+.var b{font-size:14.5px}
+.var span{font-size:12.5px;color:var(--muted);line-height:1.35}
+.var strong{font:700 1.2rem var(--f-mono);font-variant-numeric:tabular-nums;color:var(--brass);margin-top:auto}
+.var:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.big{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.big strong{font:700 1.7rem var(--f-mono);font-variant-numeric:tabular-nums}
 .internal{border-top:2px dashed var(--brass);padding-top:18px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -72,7 +81,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f
 <div class="wrap">
   <header>
     <h1>Проект 100/2 — шкаф, стеллажи и стол у окна</h1>
-    <p class="sub">МДФ в плёнке ПВХ. Двери шкафа с фрезеровкой «арка». Модель можно крутить пальцем. Кнопка «Размеры» показывает размеры прямо на модели, коды на модулях — чтобы удобно обсуждать правки.</p>
+    <p class="sub">Двери шкафа с фрезеровкой «арка». Ниже можно выбрать материал — цена пересчитается сразу. Модель можно крутить пальцем. Кнопка «Размеры» показывает размеры прямо на модели, коды на модулях — чтобы удобно обсуждать правки.</p>
   </header>
 
   <div class="stagebox" id="stage">
@@ -87,6 +96,13 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f
       <button class="tb" id="bDims" aria-pressed="false">Размеры</button>
     </div>
   </div>
+
+  <section>
+    <h2>Материал и цена</h2>
+    <div class="vars" id="varBox"></div>
+    <div class="card big"><span class="mname">Итого за выбранный вариант:</span><strong id="priceNow">—</strong><span class="mname" id="priceWhat"></span></div>
+    <p class="note">Цена с фурнитурой, сборкой и доставкой. Цена пересчитывается сразу при смене варианта и фасадов на стеллажах. Окончательная цена — после замера.</p>
+  </section>
 
   <section>
     <h2>Фасады на стеллажах</h2>
@@ -141,12 +157,13 @@ const MODS=[
   {code:'С1',name:'Стол у окна, 3 ящика',w:1905,h:780,d:600},
   {code:'П1',name:'Стеллаж: полки, 3 ящика, ниша',w:600,h:2900,d:600}
 ];
-let st={colors:{},open:'film',fac:{}};
+let st={colors:{},open:'film',fac:{},mat:'B'};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&s.colors) st=Object.assign(st,s);}catch(e){}
 MODS.forEach(m=>{ if(!st.colors[m.code]) st.colors[m.code]={id:'cash'}; });
 const SECT={'О1':[['top','Верх'],['mid','Полки'],['bot','Ниша под столом']],'П1':[['top','Верх'],['mid','Полки'],['bot','Ниша внизу']]};
 if(!st.fac||typeof st.fac!=='object') st.fac={};
 Object.keys(SECT).forEach(c=>{ if(!st.fac[c]) st.fac[c]={}; });
+if(['A','B','C','D'].indexOf(st.mat)<0) st.mat='B';
 function hasF(c,k){ return !!(st.fac[c]&&st.fac[c][k]); }
 function save(){ try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){} }
 function colOf(code){ const c=st.colors[code]; if(c.id==='own') return {hex:c.hex||'#cccccc',n:(c.name&&c.name.trim())||'Свой цвет'}; const f=FILMS.find(x=>x.id===c.id)||FILMS[0]; return {hex:f.c,n:f.n}; }
@@ -204,6 +221,8 @@ function hw(k,q){ HW[k]=(HW[k]||0)+q; }
 // spec: 6 символов на грани [+x,-x,+y,-y,+z,-z]: F — плёнка модуля, W — белый
 function box(parent,mod,name,x0,y0,z0,sx,sy,sz,spec,film,opt){
   opt=opt||{};
+  const fac=name.indexOf('Фасад')===0, vis=spec.indexOf('F')>=0;
+  if(st.mat==='A' && !fac) spec=spec.replace(/F/g,'W'); // всё ЛДСП: корпус белый
   const g=new THREE.BoxGeometry(sx*S,sy*S,sz*S);
   const mats=spec.split('').map(ch=>ch==='F'?matFor(film):matFor(WHITE));
   const m=new THREE.Mesh(g,mats);
@@ -214,7 +233,7 @@ function box(parent,mod,name,x0,y0,z0,sx,sy,sz,spec,film,opt){
   if(!opt.skip){
     const d=[sx,sy,sz].sort((a,b)=>b-a);
     const mat=opt.mat||(spec.indexOf('F')>=0?'МДФ плёнка':(d[2]<=4?'ХДФ белый':'ЛДСП белая 16'));
-    PARTS.push({mod:mod,name:name,L:Math.round(d[0]),W:Math.round(d[1]),T:Math.round(d[2]),mat:mat});
+    PARTS.push({mod:mod,name:name,L:Math.round(d[0]),W:Math.round(d[1]),T:Math.round(d[2]),mat:mat,fac:fac,vis:vis,side:name.indexOf('Бок')===0,top:name.indexOf('Столешница')===0});
   }
   return m;
 }
@@ -235,7 +254,7 @@ function door(g,mod,x0,y0,w,h,z0,film,side,o){
   const lx= side==='L'? 0 : -w;
   box(piv,mod,o.name||'Фасад распашной',lx,y0,0,w,h,18,'FFFFFW',film);
   const grove=darker(film,0.78);
-  if(o.arch){ // арка по центру фасада, без рейки внизу
+  if(o.arch && st.mat!=='A'){ // арка по центру фасада (на ЛДСП фрезеровки нет)
     const ins=o.ins||72, gap=o.gap||110, cx=lx+w/2, aw=w-2*ins;
     const ay=y0+gap, ah=h-2*gap;
     const outer=stadium(new THREE.Shape(),cx,ay,aw,ah);
@@ -367,6 +386,48 @@ function build(){
   movers.forEach(m=>applyMover(m,true));
 }
 
+/* ---------- варианты материала и цена ---------- */
+const VARS=[
+  {v:'A',t:'Всё из ЛДСП',d:'Корпус белая ЛДСП, фасады ЛДСП в выбранном цвете. Без фрезеровки.'},
+  {v:'B',t:'Фасады МДФ',d:'Фасады МДФ в плёнке с аркой. Корпус ЛДСП, видимые части в тон.'},
+  {v:'C',t:'Фасады и боковины МДФ',d:'Плюс видимые боковины из МДФ в плёнке.'},
+  {v:'D',t:'Всё видимое из МДФ',d:'Фасады, боковины, столешница, цоколи и открытые полки — МДФ в плёнке. Внутри белая ЛДСП.'}
+];
+let RATES=/*R*/{"k":1,"mdf":15000,"hdf":700,"ldsp":8000,"ldspC":13000,"edge":1600,"cut":12000,"sheet":5.796,"yield":85,"work":94000,"hw":{"hinge":1300,"runner":3000,"hHalf":1200,"hBar":900,"push":700,"rod":1000,"sup":20,"leg":120,"fix":4000}}/*R*/;
+// класс материала: mdf — МДФ по м², col — ЛДСП в цвет листами, wh — белая ЛДСП листами, hdf — ХДФ по м²
+function classify(p,v){
+  if(p.T<=4) return 'hdf';
+  if(p.fac) return v==='A'?'col':'mdf';
+  if(!p.vis) return 'wh';
+  if(v==='A') return 'wh';
+  if(p.side) return (v==='C'||v==='D')?'mdf':'col';
+  return v==='D'?'mdf':'col';
+}
+function layers(p,c){ return (p.top && c!=='mdf')?2:1; }
+function costFor(v,r){
+  const per=r.sheet*r.yield/100, a={mdf:0,col:0,wh:0,hdf:0};
+  PARTS.forEach(p=>{ const c=classify(p,v); a[c]+=p.L*p.W/1e6*layers(p,c); });
+  const shC=Math.ceil(a.col/per-1e-9), shW=Math.ceil(a.wh/per-1e-9);
+  const mat=a.mdf*r.mdf + shC*(r.ldspC+r.cut+r.edge) + shW*(r.ldsp+r.cut+r.edge) + a.hdf*r.hdf;
+  let hw=0; Object.keys(HW).forEach(k=>hw+=HW[k]*((r.hw&&r.hw[k])||0));
+  const cost=mat+hw+r.work;
+  return {a:a,shC:shC,shW:shW,mat:mat,hw:hw,work:r.work,cost:cost,total:cost*r.k};
+}
+const RUB=n=>(Math.round(n/100)*100).toLocaleString('ru-RU')+'\u00a0\u20bd';
+function renderPrice(){
+  const box=document.getElementById('varBox'); if(!box) return;
+  box.innerHTML='';
+  VARS.forEach(x=>{ const c=costFor(x.v,RATES);
+    const b=document.createElement('button'); b.type='button'; b.className='var'; b.setAttribute('aria-pressed',String(st.mat===x.v));
+    b.innerHTML='<b>'+x.t+'</b><span>'+x.d+'</span><strong>'+RUB(c.total)+'</strong>';
+    b.onclick=()=>{ st.mat=x.v; changed(); }; box.appendChild(b); });
+  const cur=VARS.find(x=>x.v===st.mat);
+  document.getElementById('priceNow').textContent=RUB(costFor(st.mat,RATES).total);
+  document.getElementById('priceWhat').textContent=cur.t+(anyFacSafe()?', с фасадами на стеллажах':'');
+}
+function anyFacSafe(){ return typeof anyFac==='function' && anyFac(); }
+window.__setRates=function(r){ RATES=r; renderPrice(); };
+
 /* ---------- двери/ящики ---------- */
 let isOpen=false;
 function applyMover(m,instant){
@@ -469,7 +530,7 @@ function renderColors(){
     own.innerHTML='<label for="'+idb+'c">Свой цвет</label><input type="color" id="'+idb+'c" value="'+((c&&c.hex)||'#a8b8a0')+'"><input type="text" id="'+idb+'t" placeholder="название или артикул" value="'+((c&&c.name)||'').replace(/"/g,'&quot;')+'">';
     const ic=own.querySelector('input[type=color]'), it=own.querySelector('input[type=text]');
     const apply=()=>{ (m.code==='*'?MODS.map(x=>x.code):[m.code]).forEach(cc=>st.colors[cc]={id:'own',hex:ic.value,name:it.value}); };
-    ic.addEventListener('input',()=>{ apply(); save(); build(); renderTable(); calc(); own.classList.add('on'); sws.querySelectorAll('.sw').forEach(b=>b.setAttribute('aria-pressed','false')); });
+    ic.addEventListener('input',()=>{ apply(); save(); build(); renderTable(); calc(); renderPrice(); own.classList.add('on'); sws.querySelectorAll('.sw').forEach(b=>b.setAttribute('aria-pressed','false')); });
     ic.addEventListener('change',()=>{ apply(); changed(); });
     it.addEventListener('change',()=>{ apply(); changed(); });
     sws.appendChild(own);
@@ -495,7 +556,7 @@ function renderFac(){
   });
 }
 function facText(c){ if(!SECT[c]) return ''; const on=SECT[c].filter(sk=>hasF(c,sk[0])).map(sk=>sk[1].toLowerCase()); return on.length?' · фасады: '+on.join(', '):''; }
-function changed(){ save(); build(); renderColors(); renderFac(); renderTable(); calc(); if(typeof syncFacBtn==='function') syncFacBtn(); }
+function changed(){ save(); build(); renderColors(); renderFac(); renderTable(); calc(); if(typeof syncFacBtn==='function') syncFacBtn(); renderPrice(); }
 function calc(){ if(typeof window.__calc==='function') window.__calc(); }
 
 document.querySelectorAll('#openSeg button').forEach(b=>{ b.setAttribute('aria-pressed',String(b.dataset.v===st.open));
@@ -512,13 +573,13 @@ bFac.onclick=()=>{ const on=!anyFac(); Object.keys(SECT).forEach(c=>SECT[c].forE
 document.getElementById('bDims').onclick=function(){ showDims=!showDims; this.setAttribute('aria-pressed',String(showDims)); dimG.visible=showDims; setCodeText(); };
 document.getElementById('bCodes').onclick=function(){ showCodes=!showCodes; this.setAttribute('aria-pressed',String(showCodes)); };
 
-window.__p1002={get parts(){return PARTS;}, get hw(){return HW;}, get openF(){return st.open==='film';}, mods:MODS, colOf:colOf};
+window.__p1002={get parts(){return PARTS;}, get hw(){return HW;}, get openF(){return st.open==='film';}, get mat(){return st.mat;}, mods:MODS, colOf:colOf, VARS:VARS, classify:classify, layers:layers, costFor:costFor};
 build(); renderColors(); renderFac(); renderTable();
 resize(); fit(viewDir); setBg();
 try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',setBg); }catch(e){}
 new MutationObserver(setBg).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 if(window.ResizeObserver) new ResizeObserver(()=>{ resize(); }).observe(stage); else window.addEventListener('resize',resize);
-syncFacBtn();
+syncFacBtn(); renderPrice();
 loop();
 })();
 </script>
