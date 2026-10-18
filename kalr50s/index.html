@@ -430,7 +430,7 @@ function costFor(v,r,tm){
   let topLen=0;
   PARTS.forEach(p=>{ const c=classify(p,v,tm); a[c]+=p.L*p.W/1e6*layers(p,c); if(p.top && c==='col') topLen+=p.L/1000; });
   const shC=Math.ceil(a.col/per-1e-9), shW=Math.ceil(a.wh/per-1e-9), shT=Math.ceil(a.t25/per-1e-9);
-  const fr=x=>Math.ceil(x/per*2-1e-9)/2; // в распил — по доле листа, шагом в пол-листа
+  const fr=x=>Math.ceil(x/per*2-1e-9)/2; // доля листа в работу, шагом в пол-листа
   const fC=fr(a.col), fW=fr(a.wh), fT=fr(a.t25), glue=topLen>0?(r.glue||0):0, edgeTc=topLen*(r.edgeT||0);
   const mat=a.mdf*r.mdf + shC*r.ldspC + shW*r.ldsp + shT*r.ldsp25 + (fC+fW+fT)*(r.cut+r.edge) + a.hdf*r.hdf + edgeTc + glue;
   let hw=0; Object.keys(HW).forEach(k=>hw+=HW[k]*((r.hw&&r.hw[k])||0));
