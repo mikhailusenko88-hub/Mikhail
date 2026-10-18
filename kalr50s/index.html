@@ -368,8 +368,9 @@ function build(){
   }
   /* С1 — стол у окна */
   { const f=colOf('С1').hex, x0=600, W=1905, mod='С1';
-    const tT= st.mat==='D'?36:25, tY=780-tT, zh=tY-642; // МДФ 36 (2×18) или ЛДСП 25
-    box(furn,mod,st.mat==='D'?'Столешница МДФ 36 (2×18)':'Столешница ЛДСП 25',x0,tY,0,W,tT,600,'FFFWFF',f);
+    const glued= st.mat!=='D' && TOPU==='2x16';
+    const tT= st.mat==='D'?36:(glued?32:25), tY=780-tT, zh=tY-642; // МДФ 2×18, ЛДСП 25 или склейка ЛДСП 2×16
+    box(furn,mod,st.mat==='D'?'Столешница МДФ 36 (2×18)':(glued?'Столешница ЛДСП 2×16 (склейка, толстая кромка)':'Столешница ЛДСП 25'),x0,tY,0,W,tT,600,'FFFWFF',f);
     box(furn,mod,'Дно короба ящиков',x0,626,0,W,16,CD,'WWWWWW',f);
     box(furn,mod,'Задняя царга',x0,642,0,W,zh,16,'WWWWWW',f);
     [635,1270].forEach(dx=> box(furn,mod,'Перегородка ящиков',x0+dx-8,642,16,16,zh,CD-16,'WWWWWW',f));
@@ -403,31 +404,38 @@ function build(){
 
 /* ---------- варианты материала и цена ---------- */
 const VARS=[
-  {v:'A',t:'Всё из ЛДСП',d:'Корпус белая ЛДСП, фасады ЛДСП в выбранном цвете, столешница ЛДСП 25. Без фрезеровки.'},
-  {v:'B',t:'Фасады МДФ',d:'Фасады МДФ в плёнке с аркой. Корпус ЛДСП, видимые части — ЛДСП в тон, столешница ЛДСП 25.'},
-  {v:'C',t:'Фасады и боковины МДФ',d:'Плюс видимые боковины из МДФ в плёнке: снаружи в цвет, изнутри белые. Столешница ЛДСП 25.'},
+  {v:'A',t:'Всё из ЛДСП',d:'Корпус белая ЛДСП, фасады ЛДСП в выбранном цвете, столешница ЛДСП в цвет. Без фрезеровки.'},
+  {v:'B',t:'Фасады МДФ',d:'Фасады МДФ в плёнке с аркой. Корпус ЛДСП, видимые части и столешница — ЛДСП в тон.'},
+  {v:'C',t:'Фасады и боковины МДФ',d:'Плюс видимые боковины из МДФ в плёнке: снаружи в цвет, изнутри белые. Столешница ЛДСП в тон.'},
   {v:'D',t:'Всё видимое из МДФ',d:'Фасады, боковины, столешница 36, цоколи и открытые полки — МДФ в плёнке. Плёнка с одной стороны, изнанка белая.'}
 ];
-let RATES=/*R*/{"k":1,"mdf":15000,"hdf":700,"ldsp":8000,"ldspC":13000,"ldsp25":12400,"edge":1600,"cut":12000,"sheet":5.796,"yield":85,"work":94000,"hw":{"hinge":1300,"runner":3000,"hHalf":1200,"hBar":900,"push":700,"rod":1000,"sup":20,"leg":120,"fix":4000}}/*R*/;
+let RATES=/*R*/{"k":1,"mdf":15000,"hdf":700,"ldsp":8000,"ldspC":13000,"ldsp25":12400,"edgeT":300,"glue":2000,"topMode":"auto","edge":1600,"cut":12000,"sheet":5.796,"yield":85,"work":94000,"hw":{"hinge":1300,"runner":3000,"hHalf":1200,"hBar":900,"push":700,"rod":1000,"sup":20,"leg":120,"fix":4000}}/*R*/;
 // класс материала: mdf — МДФ по м², col — ЛДСП в цвет листами, wh — белая ЛДСП листами, hdf — ХДФ по м²
-function classify(p,v){
+let TOPU='25'; // способ столешницы из ЛДСП, который сейчас выбран расчётом
+function classify(p,v,tm){
   if(p.T<=4) return 'hdf';
-  if(p.top) return v==='D'?'mdf':'t25';      // столешница: ЛДСП 25 в цвет или МДФ 2×18
+  if(p.top) return v==='D'?'mdf':((tm||TOPU)==='2x16'?'col':'t25'); // столешница: МДФ 2×18, склейка ЛДСП 2×16 или ЛДСП 25
   if(p.fac) return v==='A'?'col':'mdf';
   if(!p.vis) return 'wh';
   if(v==='A') return 'wh';
   if(p.side) return (v==='C'||v==='D')?'mdf':'col';
   return v==='D'?'mdf':'col';
 }
-function layers(p,c){ return (p.top && c==='mdf')?2:1; } // МДФ-столешница 36 = 2×18
-function costFor(v,r){
+function layers(p,c){ return (p.top && (c==='mdf'||c==='col'))?2:1; } // столешница в два слоя: МДФ 2×18 или ЛДСП 2×16
+function costFor(v,r,tm){
+  if(!tm){ const m=r.topMode||'auto';
+    if(m!=='auto') return costFor(v,r,m);
+    const a1=costFor(v,r,'25'), a2=costFor(v,r,'2x16'); return a2.cost<a1.cost?a2:a1; }
   const per=r.sheet*r.yield/100, a={mdf:0,col:0,wh:0,hdf:0,t25:0};
-  PARTS.forEach(p=>{ const c=classify(p,v); a[c]+=p.L*p.W/1e6*layers(p,c); });
+  let topLen=0;
+  PARTS.forEach(p=>{ const c=classify(p,v,tm); a[c]+=p.L*p.W/1e6*layers(p,c); if(p.top && c==='col') topLen+=p.L/1000; });
   const shC=Math.ceil(a.col/per-1e-9), shW=Math.ceil(a.wh/per-1e-9), shT=Math.ceil(a.t25/per-1e-9);
-  const mat=a.mdf*r.mdf + shC*(r.ldspC+r.cut+r.edge) + shW*(r.ldsp+r.cut+r.edge) + shT*(r.ldsp25+r.cut+r.edge) + a.hdf*r.hdf;
+  const fr=x=>Math.ceil(x/per*2-1e-9)/2; // в распил — по доле листа, шагом в пол-листа
+  const fC=fr(a.col), fW=fr(a.wh), fT=fr(a.t25), glue=topLen>0?(r.glue||0):0, edgeTc=topLen*(r.edgeT||0);
+  const mat=a.mdf*r.mdf + shC*r.ldspC + shW*r.ldsp + shT*r.ldsp25 + (fC+fW+fT)*(r.cut+r.edge) + a.hdf*r.hdf + edgeTc + glue;
   let hw=0; Object.keys(HW).forEach(k=>hw+=HW[k]*((r.hw&&r.hw[k])||0));
   const cost=mat+hw+r.work;
-  return {a:a,shC:shC,shW:shW,shT:shT,mat:mat,hw:hw,work:r.work,cost:cost,total:cost*r.k};
+  return {a:a,shC:shC,shW:shW,shT:shT,fC:fC,fW:fW,fT:fT,tm:tm,topLen:topLen,edgeTc:edgeTc,glue:glue,mat:mat,hw:hw,work:r.work,cost:cost,total:cost*r.k};
 }
 const RUB=n=>(Math.round(n/100)*100).toLocaleString('ru-RU')+'\u00a0\u20bd';
 function renderPrice(){
@@ -437,6 +445,8 @@ function renderPrice(){
     const b=document.createElement('button'); b.type='button'; b.className='var'; b.setAttribute('aria-pressed',String(st.mat===x.v));
     b.innerHTML='<b>'+x.t+'</b><span>'+x.d+'</span><strong>'+RUB(c.total)+'</strong>';
     b.onclick=()=>{ st.mat=x.v; changed(); }; box.appendChild(b); });
+  const cn=costFor(st.mat,RATES);
+  if(st.mat!=='D' && cn.tm!==TOPU){ TOPU=cn.tm; build(); }
   const cur=VARS.find(x=>x.v===st.mat);
   document.getElementById('priceNow').textContent=RUB(costFor(st.mat,RATES).total);
   const tot=RUB(costFor(st.mat,RATES).total), what=cur.t+(anyFacSafe()?', с фасадами на стеллажах':'')+(st.open==='white'?', полки белые':'');
@@ -591,7 +601,7 @@ bFac.onclick=()=>{ const on=!anyFac(); Object.keys(SECT).forEach(c=>SECT[c].forE
 document.getElementById('bDims').onclick=function(){ showDims=!showDims; this.setAttribute('aria-pressed',String(showDims)); dimG.visible=showDims; setCodeText(); };
 document.getElementById('bCodes').onclick=function(){ showCodes=!showCodes; this.setAttribute('aria-pressed',String(showCodes)); };
 
-window.__p1002={get parts(){return PARTS;}, get hw(){return HW;}, get openF(){return st.open==='film';}, get mat(){return st.mat;}, mods:MODS, colOf:colOf, VARS:VARS, classify:classify, layers:layers, costFor:costFor};
+window.__p1002={get parts(){return PARTS;}, get hw(){return HW;}, get openF(){return st.open==='film';}, get mat(){return st.mat;}, get topU(){return TOPU;}, mods:MODS, colOf:colOf, VARS:VARS, classify:classify, layers:layers, costFor:costFor};
 build(); renderColors(); renderFac(); renderTable();
 resize(); fit(viewDir); setBg();
 try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',setBg); }catch(e){}
