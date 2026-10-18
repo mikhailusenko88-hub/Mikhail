@@ -341,7 +341,7 @@ function build(){
   }
   /* О1 — открытый стеллаж в углу (боком к окну) */
   { const f=colOf('О1').hex, x0=1100, W=600, H=2900, D=600, mod='О1', O=openF?'F':'W', lT=openF?18:16;
-    box(L,mod,'Бок левый',x0,0,0,lT,H,D,O+'WWW'+O+'W',f);
+    box(L,mod,'Бок левый',x0,0,0,lT,H,D,O+'FWW'+O+'W',f); // сторона к Ш1 выступает на 18 мм у фасада — в цвет
     box(L,mod,'Бок у стены с окном',x0+W-18,0,0,18,H,D,'W'+O+'FWFW',f);
     const xi=x0+lT, wi=W-lT-18;
     box(L,mod,'Задняя стенка',xi,100,0,wi,H-100,16,O.repeat(6),f);
