@@ -72,6 +72,12 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f
 .var span{font-size:12.5px;color:var(--muted);line-height:1.35}
 .var strong{font:700 1.2rem var(--f-mono);font-variant-numeric:tabular-nums;color:var(--brass);margin-top:auto}
 .var:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.opts{display:flex;flex-direction:column;gap:14px}
+.opt{display:flex;flex-direction:column;gap:8px}
+#facBox .mrow{padding:8px 0}
+.pbadge{position:absolute;left:10px;top:10px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:6px 10px;display:flex;flex-direction:column;gap:0;box-shadow:0 1px 4px rgba(0,0,0,.12);pointer-events:none;max-width:calc(100% - 20px)}
+.pbadge b{font:700 1.05rem var(--f-mono);font-variant-numeric:tabular-nums;color:var(--brass)}
+.pbadge span{font-size:11.5px;color:var(--muted)}
 .big{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
 .big strong{font:700 1.7rem var(--f-mono);font-variant-numeric:tabular-nums}
 .internal{border-top:2px dashed var(--brass);padding-top:18px}
@@ -86,6 +92,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f
 
   <div class="stagebox" id="stage">
     <div class="labels" id="labels"></div>
+    <div class="pbadge" aria-live="polite"><b id="pbPrice">—</b><span id="pbWhat"></span></div>
     <div class="tools">
       <button class="tb" id="bView3d" aria-pressed="true">3D</button>
       <button class="tb" id="bFront" aria-pressed="false">На окно</button>
@@ -100,15 +107,18 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f
   <section>
     <h2>Материал и цена</h2>
     <div class="vars" id="varBox"></div>
+    <div class="card opts">
+      <div class="opt"><h3>Открытые полки О1 и П1 внутри</h3>
+        <div class="seg" id="openSeg">
+          <button data-v="film" aria-pressed="true">В цвет фасадов</button>
+          <button data-v="white" aria-pressed="false">Белые</button>
+        </div></div>
+      <div class="opt"><h3>Фасады на стеллажах</h3><div id="facBox"></div></div>
+    </div>
     <div class="card big"><span class="mname">Итого за выбранный вариант:</span><strong id="priceNow">—</strong><span class="mname" id="priceWhat"></span></div>
-    <p class="note">Цена с фурнитурой, сборкой и доставкой. Цена пересчитывается сразу при смене варианта и фасадов на стеллажах. Окончательная цена — после замера.</p>
+    <p class="note">Цена с фурнитурой, сборкой и доставкой. Цена пересчитывается сразу — при смене материала, цвета полок и фасадов на стеллажах. Окончательная цена — после замера.</p>
   </section>
 
-  <section>
-    <h2>Фасады на стеллажах</h2>
-    <div class="card" id="facBox"></div>
-    <p class="note">Кнопка «Фасады на стеллажи» на модели закрывает всё сразу. Здесь можно выбрать каждую секцию отдельно: нажмите, чтобы закрыть её фасадом или снова сделать открытой. Высокие фасады — с той же аркой, что на шкафу.</p>
-  </section>
 
   <section>
     <h2>Цвет</h2>
@@ -116,14 +126,6 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f
   </section>
 
 
-  <section>
-    <h2>Открытые стеллажи внутри</h2>
-    <div class="seg" id="openSeg">
-      <button data-v="film" aria-pressed="true">В цвет фасадов</button>
-      <button data-v="white" aria-pressed="false">Белые</button>
-    </div>
-    <p class="note">Полки и задние стенки открытых секций О1 и П1. Двери и ящики изнутри всегда белые.</p>
-  </section>
 
   <section>
     <h2>Модули и размеры</h2>
@@ -317,7 +319,7 @@ function build(){
     box(L,mod,'Полка нижняя (обувь)',xi,466,0,wi,16,CD-20,'WWWWWW',f);
     box(L,mod,'Полка верхняя',xi,1984,0,wi,16,CD-20,'WWWWWW',f);
     box(L,mod,'Задняя стенка',x0,100,-3,W,H-100,3,'WWWWWW',f);
-    box(L,mod,'Цоколь',xi,0,CD-66,wi,100,16,'WWWWFW',f);
+    box(L,mod,'Цоколь',xi,0,CD-16,wi,100,16,'WWWWFW',f); // заподлицо с боковинами
     const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.0125,0.0125,wi*S,20),metalMat);
     rod.rotation.z=Math.PI/2; rod.position.set((xi+wi/2)*S,1930*S,(CD/2)*S); L.add(rod);
     hw('rod',1); hw('sup',8); hw('leg',4);
@@ -403,7 +405,7 @@ function classify(p,v){
   if(p.side) return (v==='C'||v==='D')?'mdf':'col';
   return v==='D'?'mdf':'col';
 }
-function layers(p,c){ return (p.top && c!=='mdf')?2:1; }
+function layers(p,c){ return p.top?2:1; } // столешница 36 = 2×18
 function costFor(v,r){
   const per=r.sheet*r.yield/100, a={mdf:0,col:0,wh:0,hdf:0};
   PARTS.forEach(p=>{ const c=classify(p,v); a[c]+=p.L*p.W/1e6*layers(p,c); });
@@ -423,7 +425,9 @@ function renderPrice(){
     b.onclick=()=>{ st.mat=x.v; changed(); }; box.appendChild(b); });
   const cur=VARS.find(x=>x.v===st.mat);
   document.getElementById('priceNow').textContent=RUB(costFor(st.mat,RATES).total);
-  document.getElementById('priceWhat').textContent=cur.t+(anyFacSafe()?', с фасадами на стеллажах':'');
+  const tot=RUB(costFor(st.mat,RATES).total), what=cur.t+(anyFacSafe()?', с фасадами на стеллажах':'')+(st.open==='white'?', полки белые':'');
+  document.getElementById('priceWhat').textContent=what;
+  document.getElementById('pbPrice').textContent=tot; document.getElementById('pbWhat').textContent=what;
 }
 function anyFacSafe(){ return typeof anyFac==='function' && anyFac(); }
 window.__setRates=function(r){ RATES=r; renderPrice(); };
