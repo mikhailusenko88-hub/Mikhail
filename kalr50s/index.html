@@ -231,7 +231,7 @@ function box(parent,mod,name,x0,y0,z0,sx,sy,sz,spec,film,opt){
   const cls=opt.skip?'wh':classify(info,st.mat);
   let fc=spec.split('').map(ch=>ch==='O'?(openOn?'o':'W'):ch);
   if(cls==='wh'||cls==='hdf') fc=fc.map(()=>'W');
-  else if(cls==='col') fc=fc.map(()=>'F');            // ЛДСП в тон — цвет с двух сторон
+  else if(cls==='col'||cls==='t25') fc=fc.map(()=>'F');            // ЛДСП в тон — цвет с двух сторон
   else {                                              // МДФ: плёнка с одной стороны, изнанка белая
     const ax=[sx,sy,sz].indexOf(Math.min(sx,sy,sz)), i0=ax*2, i1=ax*2+1, pr={F:3,o:2,E:1,W:0};
     if(pr[fc[i0]]>0 && pr[fc[i1]]>0){ if(pr[fc[i1]]>pr[fc[i0]]) fc[i0]='W'; else fc[i1]='W'; }
@@ -368,10 +368,11 @@ function build(){
   }
   /* С1 — стол у окна */
   { const f=colOf('С1').hex, x0=600, W=1905, mod='С1';
-    box(furn,mod,'Столешница 36 (2×18)',x0,744,0,W,36,600,'FFFWFF',f);
+    const tT= st.mat==='D'?36:25, tY=780-tT, zh=tY-642; // МДФ 36 (2×18) или ЛДСП 25
+    box(furn,mod,st.mat==='D'?'Столешница МДФ 36 (2×18)':'Столешница ЛДСП 25',x0,tY,0,W,tT,600,'FFFWFF',f);
     box(furn,mod,'Дно короба ящиков',x0,626,0,W,16,CD,'WWWWWW',f);
-    box(furn,mod,'Задняя царга',x0,642,0,W,102,16,'WWWWWW',f);
-    [635,1270].forEach(dx=> box(furn,mod,'Перегородка ящиков',x0+dx-8,642,16,16,102,CD-16,'WWWWWW',f));
+    box(furn,mod,'Задняя царга',x0,642,0,W,zh,16,'WWWWWW',f);
+    [635,1270].forEach(dx=> box(furn,mod,'Перегородка ящиков',x0+dx-8,642,16,16,zh,CD-16,'WWWWWW',f));
     for(let i=0;i<3;i++){
       const fx=x0+i*635+1;
       const ix0= x0+i*635 + (i===0?0:8) + 13, ix1= x0+(i+1)*635 - (i===2?0:8) - 13;
@@ -402,30 +403,31 @@ function build(){
 
 /* ---------- варианты материала и цена ---------- */
 const VARS=[
-  {v:'A',t:'Всё из ЛДСП',d:'Корпус белая ЛДСП, фасады ЛДСП в выбранном цвете. Без фрезеровки.'},
-  {v:'B',t:'Фасады МДФ',d:'Фасады МДФ в плёнке с аркой. Корпус ЛДСП, видимые части — ЛДСП в тон (цвет с двух сторон).'},
-  {v:'C',t:'Фасады и боковины МДФ',d:'Плюс видимые боковины из МДФ в плёнке: снаружи в цвет, изнутри белые.'},
-  {v:'D',t:'Всё видимое из МДФ',d:'Фасады, боковины, столешница, цоколи и открытые полки — МДФ в плёнке. Плёнка с одной стороны, изнанка белая.'}
+  {v:'A',t:'Всё из ЛДСП',d:'Корпус белая ЛДСП, фасады ЛДСП в выбранном цвете, столешница ЛДСП 25. Без фрезеровки.'},
+  {v:'B',t:'Фасады МДФ',d:'Фасады МДФ в плёнке с аркой. Корпус ЛДСП, видимые части — ЛДСП в тон, столешница ЛДСП 25.'},
+  {v:'C',t:'Фасады и боковины МДФ',d:'Плюс видимые боковины из МДФ в плёнке: снаружи в цвет, изнутри белые. Столешница ЛДСП 25.'},
+  {v:'D',t:'Всё видимое из МДФ',d:'Фасады, боковины, столешница 36, цоколи и открытые полки — МДФ в плёнке. Плёнка с одной стороны, изнанка белая.'}
 ];
-let RATES=/*R*/{"k":1,"mdf":15000,"hdf":700,"ldsp":8000,"ldspC":13000,"edge":1600,"cut":12000,"sheet":5.796,"yield":85,"work":94000,"hw":{"hinge":1300,"runner":3000,"hHalf":1200,"hBar":900,"push":700,"rod":1000,"sup":20,"leg":120,"fix":4000}}/*R*/;
+let RATES=/*R*/{"k":1,"mdf":15000,"hdf":700,"ldsp":8000,"ldspC":13000,"ldsp25":12400,"edge":1600,"cut":12000,"sheet":5.796,"yield":85,"work":94000,"hw":{"hinge":1300,"runner":3000,"hHalf":1200,"hBar":900,"push":700,"rod":1000,"sup":20,"leg":120,"fix":4000}}/*R*/;
 // класс материала: mdf — МДФ по м², col — ЛДСП в цвет листами, wh — белая ЛДСП листами, hdf — ХДФ по м²
 function classify(p,v){
   if(p.T<=4) return 'hdf';
+  if(p.top) return v==='D'?'mdf':'t25';      // столешница: ЛДСП 25 в цвет или МДФ 2×18
   if(p.fac) return v==='A'?'col':'mdf';
   if(!p.vis) return 'wh';
   if(v==='A') return 'wh';
   if(p.side) return (v==='C'||v==='D')?'mdf':'col';
   return v==='D'?'mdf':'col';
 }
-function layers(p,c){ return p.top?2:1; } // столешница 36 = 2×18
+function layers(p,c){ return (p.top && c==='mdf')?2:1; } // МДФ-столешница 36 = 2×18
 function costFor(v,r){
-  const per=r.sheet*r.yield/100, a={mdf:0,col:0,wh:0,hdf:0};
+  const per=r.sheet*r.yield/100, a={mdf:0,col:0,wh:0,hdf:0,t25:0};
   PARTS.forEach(p=>{ const c=classify(p,v); a[c]+=p.L*p.W/1e6*layers(p,c); });
-  const shC=Math.ceil(a.col/per-1e-9), shW=Math.ceil(a.wh/per-1e-9);
-  const mat=a.mdf*r.mdf + shC*(r.ldspC+r.cut+r.edge) + shW*(r.ldsp+r.cut+r.edge) + a.hdf*r.hdf;
+  const shC=Math.ceil(a.col/per-1e-9), shW=Math.ceil(a.wh/per-1e-9), shT=Math.ceil(a.t25/per-1e-9);
+  const mat=a.mdf*r.mdf + shC*(r.ldspC+r.cut+r.edge) + shW*(r.ldsp+r.cut+r.edge) + shT*(r.ldsp25+r.cut+r.edge) + a.hdf*r.hdf;
   let hw=0; Object.keys(HW).forEach(k=>hw+=HW[k]*((r.hw&&r.hw[k])||0));
   const cost=mat+hw+r.work;
-  return {a:a,shC:shC,shW:shW,mat:mat,hw:hw,work:r.work,cost:cost,total:cost*r.k};
+  return {a:a,shC:shC,shW:shW,shT:shT,mat:mat,hw:hw,work:r.work,cost:cost,total:cost*r.k};
 }
 const RUB=n=>(Math.round(n/100)*100).toLocaleString('ru-RU')+'\u00a0\u20bd';
 function renderPrice(){
