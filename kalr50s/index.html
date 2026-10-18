@@ -81,6 +81,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f
       <button class="tb" id="bView3d" aria-pressed="true">3D</button>
       <button class="tb" id="bFront" aria-pressed="false">На окно</button>
       <button class="tb" id="bLeft" aria-pressed="false">На шкаф</button>
+      <button class="tb" id="bFac" aria-pressed="false">Фасады на стеллажи</button>
       <button class="tb" id="bOpen" aria-pressed="false">Открыть двери и ящики</button>
       <button class="tb" id="bCodes" aria-pressed="true">Коды</button>
       <button class="tb" id="bDims" aria-pressed="false">Размеры</button>
@@ -88,15 +89,16 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f
   </div>
 
   <section>
+    <h2>Фасады на стеллажах</h2>
+    <div class="card" id="facBox"></div>
+    <p class="note">Кнопка «Фасады на стеллажи» на модели закрывает всё сразу. Здесь можно выбрать каждую секцию отдельно: нажмите, чтобы закрыть её фасадом или снова сделать открытой. Высокие фасады — с той же аркой, что на шкафу.</p>
+  </section>
+
+  <section>
     <h2>Цвет</h2>
     <div class="card" id="colors"></div>
   </section>
 
-  <section>
-    <h2>Фасады на стеллажах</h2>
-    <div class="card" id="facBox"></div>
-    <p class="note">Нажмите на секцию, чтобы закрыть её фасадом или снова сделать открытой. Высокие фасады — с той же аркой, что на шкафу.</p>
-  </section>
 
   <section>
     <h2>Открытые стеллажи внутри</h2>
@@ -493,7 +495,7 @@ function renderFac(){
   });
 }
 function facText(c){ if(!SECT[c]) return ''; const on=SECT[c].filter(sk=>hasF(c,sk[0])).map(sk=>sk[1].toLowerCase()); return on.length?' · фасады: '+on.join(', '):''; }
-function changed(){ save(); build(); renderColors(); renderFac(); renderTable(); calc(); }
+function changed(){ save(); build(); renderColors(); renderFac(); renderTable(); calc(); if(typeof syncFacBtn==='function') syncFacBtn(); }
 function calc(){ if(typeof window.__calc==='function') window.__calc(); }
 
 document.querySelectorAll('#openSeg button').forEach(b=>{ b.setAttribute('aria-pressed',String(b.dataset.v===st.open));
@@ -503,6 +505,10 @@ const bL=document.getElementById('bLeft');
 function vbtn(b,dir,t,h){ b.onclick=()=>{ [bV,bF,bL].forEach(x=>x.setAttribute('aria-pressed',String(x===b))); fit(dir,t,h); }; }
 vbtn(bV,viewDir); vbtn(bF,new THREE.Vector3(0,0.02,1).normalize(),new THREE.Vector3(1.55,1.3,0.3)); vbtn(bL,new THREE.Vector3(1,0.06,0.3).normalize(),new THREE.Vector3(0.3,1.35,0.95),1.05);
 document.getElementById('bOpen').onclick=function(){ isOpen=!isOpen; this.setAttribute('aria-pressed',String(isOpen)); this.textContent=isOpen?'Закрыть':'Открыть двери и ящики'; movers.forEach(m=>applyMover(m,false)); };
+const bFac=document.getElementById('bFac');
+function anyFac(){ return Object.keys(SECT).some(c=>SECT[c].some(sk=>hasF(c,sk[0]))); }
+function syncFacBtn(){ const on=anyFac(); bFac.setAttribute('aria-pressed',String(on)); bFac.textContent=on?'Снять фасады со стеллажей':'Фасады на стеллажи'; }
+bFac.onclick=()=>{ const on=!anyFac(); Object.keys(SECT).forEach(c=>SECT[c].forEach(sk=>st.fac[c][sk[0]]=on)); changed(); };
 document.getElementById('bDims').onclick=function(){ showDims=!showDims; this.setAttribute('aria-pressed',String(showDims)); dimG.visible=showDims; setCodeText(); };
 document.getElementById('bCodes').onclick=function(){ showCodes=!showCodes; this.setAttribute('aria-pressed',String(showCodes)); };
 
@@ -512,6 +518,7 @@ resize(); fit(viewDir); setBg();
 try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',setBg); }catch(e){}
 new MutationObserver(setBg).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 if(window.ResizeObserver) new ResizeObserver(()=>{ resize(); }).observe(stage); else window.addEventListener('resize',resize);
+syncFacBtn();
 loop();
 })();
 </script>
