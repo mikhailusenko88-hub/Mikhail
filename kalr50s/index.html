@@ -165,7 +165,7 @@ MODS.forEach(m=>{ if(!st.colors[m.code]) st.colors[m.code]={id:'cash'}; });
 const SECT={'О1':[['top','Верх'],['mid','Полки'],['bot','Ниша под столом']],'П1':[['top','Верх'],['mid','Полки'],['bot','Ниша внизу']]};
 if(!st.fac||typeof st.fac!=='object') st.fac={};
 Object.keys(SECT).forEach(c=>{ if(!st.fac[c]) st.fac[c]={}; });
-if(['A','B','C','D'].indexOf(st.mat)<0) st.mat='B';
+if(['A','E','B','C','D'].indexOf(st.mat)<0) st.mat='B';
 function hasF(c,k){ return !!(st.fac[c]&&st.fac[c][k]); }
 function save(){ try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){} }
 function colOf(code){ const c=st.colors[code]; if(c.id==='own') return {hex:c.hex||'#cccccc',n:(c.name&&c.name.trim())||'Свой цвет'}; const f=FILMS.find(x=>x.id===c.id)||FILMS[0]; return {hex:f.c,n:f.n}; }
@@ -227,7 +227,7 @@ function box(parent,mod,name,x0,y0,z0,sx,sy,sz,spec,film,opt){
   const fac=name.indexOf('Фасад')===0, openOn=st.open==='film';
   const vis=/[FE]/.test(spec) || (spec.indexOf('O')>=0 && openOn);
   const dd=[sx,sy,sz].slice().sort((a,b)=>b-a);
-  const info={fac:fac,vis:vis,side:name.indexOf('Бок')===0,top:name.indexOf('Столешница')===0,T:Math.round(dd[2])};
+  const info={fac:fac,vis:vis,side:name.indexOf('Бок')===0,top:name.indexOf('Столешница')===0,dbox:name.indexOf('Ящик')===0,T:Math.round(dd[2])};
   const cls=opt.skip?'wh':classify(info,st.mat);
   let fc=spec.split('').map(ch=>ch==='O'?(openOn?'o':'W'):ch);
   if(cls==='wh'||cls==='hdf') fc=fc.map(()=>'W');
@@ -247,7 +247,7 @@ function box(parent,mod,name,x0,y0,z0,sx,sy,sz,spec,film,opt){
   if(!opt.skip){
     const d=[sx,sy,sz].sort((a,b)=>b-a);
     const mat=opt.mat||(spec.indexOf('F')>=0?'МДФ плёнка':(d[2]<=4?'ХДФ белый':'ЛДСП белая 16'));
-    PARTS.push({mod:mod,name:name,L:Math.round(d[0]),W:Math.round(d[1]),T:Math.round(d[2]),mat:mat,fac:fac,vis:vis,side:info.side,top:info.top});
+    PARTS.push({mod:mod,name:name,L:Math.round(d[0]),W:Math.round(d[1]),T:Math.round(d[2]),mat:mat,fac:fac,vis:vis,side:info.side,top:info.top,dbox:info.dbox});
   }
   return m;
 }
@@ -268,7 +268,7 @@ function door(g,mod,x0,y0,w,h,z0,film,side,o){
   const lx= side==='L'? 0 : -w;
   box(piv,mod,o.name||'Фасад распашной',lx,y0,0,w,h,18,'FFFFFW',film);
   const grove=darker(film,0.78);
-  if(o.arch && st.mat!=='A'){ // арка по центру фасада (на ЛДСП фрезеровки нет)
+  if(o.arch && st.mat!=='A' && st.mat!=='E'){ // арка по центру фасада (на ЛДСП фрезеровки нет)
     const ins=o.ins||72, gap=o.gap||110, cx=lx+w/2, aw=w-2*ins;
     const ay=y0+gap, ah=h-2*gap;
     const outer=stadium(new THREE.Shape(),cx,ay,aw,ah);
@@ -405,6 +405,7 @@ function build(){
 /* ---------- варианты материала и цена ---------- */
 const VARS=[
   {v:'A',t:'Всё из ЛДСП',d:'Корпус белая ЛДСП, фасады ЛДСП в выбранном цвете, столешница ЛДСП в цвет. Без фрезеровки.'},
+  {v:'E',t:'Всё из ЛДСП в цвет',d:'Корпус и фасады — ЛДСП в выбранном цвете, внутри тоже. Без фрезеровки.'},
   {v:'B',t:'Фасады МДФ',d:'Фасады МДФ в плёнке с аркой. Корпус ЛДСП, видимые части и столешница — ЛДСП в тон.'},
   {v:'C',t:'Фасады и боковины МДФ',d:'Плюс видимые боковины из МДФ в плёнке: снаружи в цвет, изнутри белые. Столешница ЛДСП в тон.'},
   {v:'D',t:'Всё видимое из МДФ',d:'Фасады, боковины, столешница 36, цоколи и открытые полки — МДФ в плёнке. Плёнка с одной стороны, изнанка белая.'}
@@ -415,7 +416,8 @@ let TOPU='25'; // способ столешницы из ЛДСП, которы�
 function classify(p,v,tm){
   if(p.T<=4) return 'hdf';
   if(p.top) return v==='D'?'mdf':((tm||TOPU)==='2x16'?'col':'t25'); // столешница: МДФ 2×18, склейка ЛДСП 2×16 или ЛДСП 25
-  if(p.fac) return v==='A'?'col':'mdf';
+  if(p.fac) return (v==='A'||v==='E')?'col':'mdf';
+  if(v==='E') return p.dbox?'wh':'col';   // всё ЛДСП в цвет: корпус целиком в цвет, ящики внутри белые
   if(!p.vis) return 'wh';
   if(v==='A') return 'wh';
   if(p.side) return (v==='C'||v==='D')?'mdf':'col';
