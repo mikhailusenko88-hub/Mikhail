@@ -148,9 +148,25 @@ function sketch(fill){
 
 
 const DECORS=[
-  ["U702","Кашемир серый","#cfc8bd"],["U727","Серый камень","#8f8a83"],["U638","Зелёный шалфей","#9aa58f"],
-  ["U961","Графит","#3d3f41"],["","Дуб Кассела","#c7a078"],["H3309","Дуб светлый песочный","#c3a37c"],
-  ["H1145","Дуб натуральный","#b48c5e"],["H1180","Дуб тёмный табак","#6e4c34"]];
+  ["U702","Кашемир серый","#cfc8bd"],["U156","Бежевый песочный","#d8c8a8"],["U727","Серый камень","#8f8a83"],
+  ["U638","Зелёный шалфей","#9aa58f"],["U507","Синий дымчатый","#6d8091"],["U961","Графит","#3d3f41"],
+  ["","Дуб Кассела","#c9a57c",1],["H3309","Дуб Гладстоун песочный","#c8a882",1],["H1145","Дуб Бардолино натуральный","#b48c5e",1],
+  ["H1180","Дуб Галифакс натуральный","#a77d52",1],["H1181","Дуб Галифакс табак","#7a5538",1],["H1176","Дуб Галифакс белый","#ddd2c2",1],
+  ["H3303","Дуб Гамильтон натуральный","#b79062",1],["H3325","Дуб Гладстоун табак","#8a6544",1],["H3734","Орех Дижон натуральный","#8b6447",1]];
+const isWood=()=>S.dec>=0&&!!DECORS[S.dec][3];
+const _wt={};
+function woodCanvas(hex){if(_wt[hex])return _wt[hex];const c=document.createElement("canvas");c.width=128;c.height=512;const g=c.getContext("2d");
+  g.fillStyle=hex;g.fillRect(0,0,128,512);let sd=parseInt(hex.slice(1),16)%9973+7;const rnd=()=>(sd=sd*16807%2147483647)/2147483647;
+  for(let i=0;i<80;i++){const x=rnd()*140-6,a=2+rnd()*6,f=60+rnd()*140,ph=rnd()*6;const dark=rnd()<.65;
+    g.strokeStyle=dark?`rgba(55,32,14,${.05+rnd()*.15})`:`rgba(255,244,226,${.05+rnd()*.1})`;g.lineWidth=.6+rnd()*2.2;g.beginPath();
+    for(let y=0;y<=512;y+=8){const xx=x+Math.sin(y/f+ph)*a;y?g.lineTo(xx,y):g.moveTo(xx,y)}g.stroke()}
+  return _wt[hex]=c;}
+function woodTex(hex){const t=new THREE.CanvasTexture(woodCanvas(hex));return t}
+function swBtn(d,i,onpick){const b=document.createElement("button");b.title=(d[0]?d[0]+" ":"")+d[1];b.setAttribute("aria-label",b.title);b.setAttribute("aria-pressed",S.dec===i);
+  if(d[3])b.style.backgroundImage=`url(${woodCanvas(d[2]).toDataURL()})`,b.style.backgroundSize="cover";else b.style.background=d[2];
+  b.onclick=()=>{S.dec=i;S.col=d[2];onpick()};return b}
+function swGroup(title,wood,onpick){const l=document.createElement("div");l.className="lab";l.style.gridColumn="1/-1";l.textContent=title;$("swatches").appendChild(l);
+  DECORS.forEach((d,i)=>{if(!!d[3]===wood)$("swatches").appendChild(swBtn(d,i,onpick))})}
 const S={H:2400,W:1500,D:580,mezz:1,col:"#cfc8bd",dec:0,fill:6,own:"",ownCol:"#b9b2a6"};
 try{const v=JSON.parse(localStorage.getItem("p1003")||"null");if(v)Object.assign(S,v)}catch(e){}
 const PR={"2000":[128100,126900,126900,132300,129100,131200,132500,136000,131300],"2200":[132500,131200,131200,136600,133500,135400,135600,162800,134300],"2400":[132600,131300,131300,159300,133600,135600,137000,163000,135700]};
@@ -159,7 +175,7 @@ function save(){try{localStorage.setItem("p1003",JSON.stringify({col:S.col,dec:S
 function renderFills(){$("fills").innerHTML="";FILLS.forEach((f,i)=>{const b=document.createElement("button");b.className="preset";b.setAttribute("aria-pressed",S.fill===i);
   b.innerHTML=`${sketch(i)}<span class="k">${f.k}</span><span class="t">${f.t}</span><span class="d">${f.d}</span><span class="pr">${rub(PR[S.H][i])}</span>`;b.onclick=()=>{S.fill=i;save();update()};$("fills").appendChild(b)})}
 function renderH(){$("heights").innerHTML="";[2000,2200,2400].forEach(h=>{const b=document.createElement("button");b.className="chip";b.textContent=h+" мм";b.setAttribute("aria-pressed",S.H===h);b.onclick=()=>{S.H=h;save();update()};$("heights").appendChild(b)})}
-function renderSw(){$("swatches").innerHTML="";DECORS.forEach((d,i)=>{const b=document.createElement("button");b.style.background=d[2];b.title=(d[0]?d[0]+" ":"")+d[1];b.setAttribute("aria-label",b.title);b.setAttribute("aria-pressed",S.dec===i);b.onclick=()=>{S.dec=i;S.col=d[2];save();renderSw();build()};$("swatches").appendChild(b)});
+function renderSw(){$("swatches").innerHTML="";const pk=()=>{save();renderSw();build()};swGroup("Однотонные",false,pk);swGroup("Древесные",true,pk);
   $("colName").textContent=S.dec>=0?((DECORS[S.dec][0]?DECORS[S.dec][0]+" ":"")+DECORS[S.dec][1]+". Цвет на экране примерный, точный — по образцу."):("Свой цвет"+(S.own?": "+S.own:"")+". Цена может измениться — уточним по наличию.");}
 $("fcol").addEventListener("input",e=>{S.col=S.ownCol=e.target.value;S.dec=-1;save();renderSw();build()});
 $("ownName").addEventListener("input",e=>{S.own=e.target.value;S.dec=-1;S.col=S.ownCol;save();renderSw();build()});
@@ -191,7 +207,8 @@ function build(){
   scene.remove(group);group=new THREE.Group();scene.add(group);doorPiv=[];drawerG=[];
   const r=geo(S,S.fill),t=16,pl=100,{H,W,D}=S;
   const op=glass?.35:1;
-  const white=mat(new THREE.Color(S.col),op), front=mat(new THREE.Color(S.col),glass?.25:1);
+  const dm=o=>{const m=mat(isWood()?0xffffff:new THREE.Color(S.col),o);if(isWood())m.map=woodTex(S.col);return m};
+  const white=dm(op), front=dm(glass?.25:1);
   const sideM=white;
   box(t,H,D,-W/2+t/2,H/2,0,sideM);box(t,H,D,W/2-t/2,H/2,0,sideM);
   box(W-2*t,t,D,0,pl+t/2,0,white);box(W-2*t,t,D,0,H-t/2,0,white);
