@@ -97,7 +97,7 @@ html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset
 <script src="/mebel/_lib/three.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);
-const CPR={"film":{"top":"330 900 ₽","both":"334 900 ₽"},"enamel":{"top":"533 100 ₽","both":"537 100 ₽"},"ldsp":{"top":"227 600 ₽","both":"231 600 ₽"}};
+const CPR={"film":{"top":"354 600 ₽","both":"358 600 ₽"},"enamel":{"top":"582 000 ₽","both":"586 000 ₽"},"ldsp":{"top":"228 000 ₽","both":"232 000 ₽"}};
 /* ---------- модули и размеры ---------- */
 const S={H:2700, m1w:750,m1d:450,m1split:1230, m2w:900,m2d:250,niche:1100,nicheH:230, m4w:800,m4d:460,m4h:520,m4y:350,
   mat:"film", ucut:"top", col:{М1:"#3d4555",М2:"#3d4555",М3:"#3d4555",М4:"#ecebe7"}, dec:{М1:0,М2:0,М3:0,М4:4}, sel:"М1", own:"", ownCol:"#3d4555"};
@@ -142,7 +142,7 @@ function renderSw(){const box=$("swatches");box.innerHTML="";const cur=S.dec[tar
 $("fcol").addEventListener("input",e=>{S.ownCol=e.target.value;targets().forEach(m=>{S.dec[m]=-1;S.col[m]=S.ownCol});save();renderSw();build()});
 $("ownName").addEventListener("input",e=>{S.own=e.target.value;targets().forEach(m=>{S.dec[m]=-1;S.col[m]=S.ownCol});save();renderSw();build()});
 function update(){
-  $("dims").innerHTML=`<span><span class="code">М1</span></span><b>${S.m1w} × ${S.H} × ${S.m1d}</b><span><span class="code">М2</span></span><b>${S.m2w} × ${S.H-S.niche} × ${S.m2d}</b><span><span class="code">М3</span></span><b>${S.m2w} × ${S.niche}</b><span><span class="code">М4</span></span><b>${S.m4w} × ${S.m4h} × ${S.m4d}</b><span class="note" style="grid-column:1/-1">Ш × В × Г. Ниша с подсветкой: высота ${S.nicheH}, низ на ${S.niche} от пола.</span>`;
+  $("dims").innerHTML=`<span><span class="code">М1</span></span><b>${S.m1w+S.m2d} × ${S.H} × ${S.m1d}</b><span><span class="code">М2</span></span><b>${S.m2w} × ${S.H-S.niche} × ${S.m2d}</b><span><span class="code">М3</span></span><b>${S.m2w} × ${S.niche}</b><span><span class="code">М4</span></span><b>${S.m4w} × ${S.m4h} × ${S.m4d}</b><span class="note" style="grid-column:1/-1">Ш × В × Г. Ниша с подсветкой: высота ${S.nicheH}, низ на ${S.niche} от пола.</span>`;
   renderMats();renderU();$("cp").textContent=CPR[S.mat][S.ucut];
   build();
 }
@@ -173,7 +173,7 @@ function door(px,y,w,h,d,z,sgn,M,par){const pv=sub(px,0,z,par);pv.userData.sgn=s
    Всё у стены Б строится в группе gB: локальная x идёт вдоль стены (отрицательная), локальная z — глубина от стены. */
 function build(){
   scene.remove(group);group=new THREE.Group();scene.add(group);doorPiv=[];drawerG=[];
-  const t=16,H=S.H,op=glass?.3:1,inner=mat(0xf4f4f1,op),W1=S.m1w,D1=S.m1d;
+  const t=16,H=S.H,op=glass?.3:1,inner=mat(0xf4f4f1,op),BL=S.m2d,W1=S.m1w+BL,D1=S.m1d; /* BL — глухая часть пенала в углу, за глубиной М2 */
   const zB=W1+S.m4w+700, xA=D1+S.m2w+500;
   box(xA,H,20,xA/2,H/2,-10,mat(0xf0eeea,1),null,false);
   box(20,H,zB,-10,H/2,zB/2,mat(0xebe8e3,1),null,false);
@@ -187,8 +187,9 @@ function build(){
     const n=Math.max(3,Math.round((H-2*t)/380)-1);for(let k=1;k<=n;k++){const yy=t+(H-2*t)*k/(n+1);if(Math.abs(yy-S.m1split)>120)box(w-2*t-2,t,d-30,x0+w/2,yy,d/2-15,inn,gB)}
     if(film){const G=grooveMat(m); /* фреза на видимом боку: вертикаль по центру + горизонталь на уровне стыка дверей */
       box(3,H-40,6,x0-1,H/2,d/2,G,gB,false);box(3,6,d-40,x0-1,S.m1split,d/2,G,gB,false);}
-    if(showDoors){const fw=w/2-3;[[0,S.m1split-3],[S.m1split,H-S.m1split-3]].forEach(([y0,h])=>{
-      door(-1.5,y0+1.5,fw,h,18,d,-1,F,gB);door(x0+w/2-1.5,y0+1.5,fw,h,18,d,-1,F,gB)})}
+    box(BL-3,H-3,18,-BL/2-1.5,H/2,d+9,F,gB); /* фальш-панель у угла, в плоскости дверей */
+    if(showDoors){const fw=S.m1w/2-3;[[0,S.m1split-3],[S.m1split,H-S.m1split-3]].forEach(([y0,h])=>{
+      door(-BL-1.5,y0+1.5,fw,h,18,d,-1,F,gB);door(-BL-S.m1w/2-1.5,y0+1.5,fw,h,18,d,-1,F,gB)})}
     label(m,x0+w/2,H+200,d+60,gB);
   }
   /* М4 тумба у стены Б рядом с пеналом */
