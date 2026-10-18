@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ru"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Проект 100/4</title>
+<style>
+
+:root{--bg:#f2f3f4;--panel:#fff;--fg:#1e2328;--muted:#646d76;--line:#d8dce0;--accent:#3b5573;--accent-soft:#dfe7f0;--scene:#e7e9ec;
+ --f:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181c;--panel:#1c2126;--fg:#e6eaee;--muted:#9aa4ae;--line:#2d343b;--accent:#8fb0d3;--accent-soft:#25313d;--scene:#21262b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14181c;--panel:#1c2126;--fg:#e6eaee;--muted:#9aa4ae;--line:#2d343b;--accent:#8fb0d3;--accent-soft:#25313d;--scene:#21262b;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--f);margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:grid;gap:20px}
+h1{font-size:clamp(22px,4vw,30px);margin:0;letter-spacing:-.01em;text-wrap:balance}
+h2{font-size:17px;margin:0}
+.sub{color:var(--muted);margin:4px 0 0}
+.grid{display:grid;grid-template-columns:1.35fr 1fr;gap:20px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0;display:grid;gap:12px;align-content:start}
+#scene{width:100%;aspect-ratio:4/3.6;max-width:100%;background:var(--scene);border-radius:8px;display:block;touch-action:none}
+.tog{display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer}
+.chip{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:6px 12px;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lab{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:8px}
+.sw button{aspect-ratio:1;border-radius:8px;border:1px solid var(--line);padding:0}
+.sw button[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.kv b{font-variant-numeric:tabular-nums;font-weight:600}
+input[type=text]{font:inherit;font-size:14px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;flex:1;min-width:0}
+input[type=number]{font:inherit;font-size:14px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:5px 8px;width:96px;text-align:right;font-variant-numeric:tabular-nums}
+.note{color:var(--muted);font-size:12.5px;margin:0}
+.code{display:inline-block;font-weight:700;font-size:11px;background:var(--accent-soft);color:var(--accent);border-radius:4px;padding:1px 6px;margin-right:4px}
+.price{font-size:26px;font-weight:700;color:var(--accent);margin:0;font-variant-numeric:tabular-nums}
+.mats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:420px){.mats{grid-template-columns:1fr}}
+.mat{text-align:left;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:10px;padding:10px;display:grid;gap:2px}
+.mat[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.mat .t{font-weight:600;font-size:14px}.mat .d{color:var(--muted);font-size:12px;line-height:1.35}.mat .p{font-weight:700;font-variant-numeric:tabular-nums}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-weight:500;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.scroll{overflow-x:auto}
+.prow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;font-size:13.5px}
+.sum{display:flex;gap:24px;flex-wrap:wrap;align-items:baseline}
+.sum div{display:grid}.sum span{font-size:12px;color:var(--muted)}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+</style></head><body>
+
+<div class="wrap">
+  <header>
+    <h1>Проект 100/4 — мебель санузла</h1>
+    <p class="sub"><span class="code">М1</span>пенал · <span class="code">М2</span>шкаф над инсталляцией с нишей · <span class="code">М3</span>панель инсталляции · <span class="code">М4</span>подвесная тумба</p>
+  </header>
+
+  <div class="grid">
+    <div class="panel">
+      <canvas id="scene"></canvas>
+      <div class="tog">
+        <button class="chip" id="tOpen" aria-pressed="false">Открыть</button>
+        <button class="chip" id="tDoors" aria-pressed="true">Фасады</button>
+        <button class="chip" id="tGlass" aria-pressed="false">Полупрозрачно</button>
+        <button class="chip" id="tReset" aria-pressed="false">Сбросить вид</button>
+      </div>
+      <p class="note">Крутите пальцем, двумя пальцами — приблизить.</p>
+    </div>
+    <div class="panel">
+      <h2>Размеры, мм</h2>
+      <div class="kv" id="dims"></div>
+      <h2>Материал</h2>
+      <div class="mats" id="mats"></div>
+      <h2>Цвет</h2>
+      <div class="lab">Модуль</div>
+      <div class="tog" id="modSel"></div>
+      <div class="sw" id="swatches"></div>
+      <div class="lab">Свой цвет</div>
+      <div class="row"><input type="color" id="fcol" value="#3d4555" style="width:56px;height:36px;padding:2px" aria-label="Свой цвет"><input type="text" id="ownName" placeholder="Название или артикул, напр. Egger U960"></div>
+      <p class="note" id="colName"></p>
+      <div class="lab">Стоимость под ключ</div>
+      <p class="price" id="cp"></p>
+      <p class="note">Материалы, изготовление, фурнитура Blum, подсветка ниши, доставка и установка. Размеры уточняются на замере.</p>
+      
+    </div>
+  </div>
+
+  
+</div>
+
+<script src="/mebel/_lib/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const CPR={"film": "271 700 ₽", "enamel": "435 600 ₽", "ldsp": "186 200 ₽"};
+/* ---------- модули и размеры ---------- */
+const S={H:2600, m1w:600,m1d:350,m1split:1150, m2w:900,m2d:250,niche:1100,nicheH:230, m4w:800,m4d:460,m4h:420,m4y:480,
+  mat:"film", col:{М1:"#3d4555",М2:"#3d4555",М3:"#3d4555",М4:"#ecebe7"}, dec:{М1:0,М2:0,М3:0,М4:4}, sel:"М1", own:"", ownCol:"#3d4555"};
+const MATS={film:["МДФ в плёнке ПВХ","Матовая плёнка, изнутри белые"],enamel:["МДФ в эмали","Глубокий мат, как на фото"],ldsp:["ЛДСП Egger","Самый бюджетный"]};
+const DECORS=[
+  ["","Синий графит (как на фото)","#3d4555"],["U961","Графит","#3d3f41"],["U960","Ониксовый серый","#4a4c4e"],["U727","Серый камень","#8f8a83"],
+  ["","Белый матовый","#ecebe7"],["U702","Кашемир серый","#cfc8bd"],["U638","Зелёный шалфей","#9aa58f"],["U507","Синий дымчатый","#6d8091"],
+  ["","Дуб Кассела","#c9a57c",1],["H3309","Дуб Гладстоун песочный","#c8a882",1],["H1145","Дуб Бардолино натуральный","#b48c5e",1],["H1181","Дуб Галифакс табак","#7a5538",1]];
+const MODS=["М1","М2","М3","М4"];
+const MNAME={М1:"Пенал",М2:"Шкаф над инсталляцией",М3:"Панель инсталляции",М4:"Тумба подвесная"};
+try{const v=JSON.parse(localStorage.getItem("p1004")||"null");if(v){S.col=v.col||S.col;S.dec=v.dec||S.dec;S.own=v.own||"";S.ownCol=v.ownCol||S.ownCol;if(v.mat)S.mat=v.mat}}catch(e){}
+function save(){try{localStorage.setItem("p1004",JSON.stringify({col:S.col,dec:S.dec,own:S.own,ownCol:S.ownCol,mat:S.mat}))}catch(e){}}
+
+/* Геометрия в мм. Стена по X, пол y=0, стена z=0, мебель в +z. Слева направо: М4, М1, зона инсталляции М2/М3 */
+function layout(){
+  const x4=0, x1=S.m4w, x2=S.m4w+S.m1w;
+  return {x4,x1,x2,room:S.m4w+S.m1w+S.m2w};
+}
+
+
+/* ---------- интерфейс ---------- */
+const isWood=m=>S.dec[m]>=0&&!!DECORS[S.dec[m]][3];
+const _wt={};
+function woodCanvas(hex){if(_wt[hex])return _wt[hex];const c=document.createElement("canvas");c.width=128;c.height=512;const g=c.getContext("2d");
+  g.fillStyle=hex;g.fillRect(0,0,128,512);let sd=parseInt(hex.slice(1),16)%9973+7;const rnd=()=>(sd=sd*16807%2147483647)/2147483647;
+  for(let i=0;i<80;i++){const x=rnd()*140-6,a=2+rnd()*6,f=60+rnd()*140,ph=rnd()*6,dark=rnd()<.65;
+    g.strokeStyle=dark?`rgba(55,32,14,${.05+rnd()*.15})`:`rgba(255,244,226,${.05+rnd()*.1})`;g.lineWidth=.6+rnd()*2.2;g.beginPath();
+    for(let y=0;y<=512;y+=8){const xx=x+Math.sin(y/f+ph)*a;y?g.lineTo(xx,y):g.moveTo(xx,y)}g.stroke()}
+  return _wt[hex]=c;}
+function renderMats(){$("mats").innerHTML="";Object.entries(MATS).forEach(([k,[t,d]])=>{const b=document.createElement("button");b.className="mat";b.dataset.k=k;b.setAttribute("aria-pressed",S.mat===k);
+  b.innerHTML=`<span class="t">${t}</span><span class="d">${d}</span><span class="p">${(typeof CPR!=="undefined"&&CPR[k])?CPR[k]:""}</span>`;b.onclick=()=>{S.mat=k;save();update()};$("mats").appendChild(b)})}
+function renderMods(){$("modSel").innerHTML="";[...MODS,"Все"].forEach(m=>{const b=document.createElement("button");b.className="chip";b.textContent=m;b.title=MNAME[m]||"Все модули";b.setAttribute("aria-pressed",S.sel===m);b.onclick=()=>{S.sel=m;renderMods();renderSw()};$("modSel").appendChild(b)})}
+function targets(){return S.sel==="Все"?MODS:[S.sel]}
+function renderSw(){const box=$("swatches");box.innerHTML="";const cur=S.dec[targets()[0]];
+  [["Однотонные",0],["Древесные",1]].forEach(([title,w])=>{const l=document.createElement("div");l.className="lab";l.style.gridColumn="1/-1";l.textContent=title;box.appendChild(l);
+    DECORS.forEach((d,i)=>{if(!!d[3]!==!!w)return;const b=document.createElement("button");b.title=(d[0]?d[0]+" ":"")+d[1];b.setAttribute("aria-label",b.title);b.setAttribute("aria-pressed",cur===i);
+      if(d[3]){b.style.backgroundImage=`url(${woodCanvas(d[2]).toDataURL()})`;b.style.backgroundSize="cover"}else b.style.background=d[2];
+      b.onclick=()=>{targets().forEach(m=>{S.dec[m]=i;S.col[m]=d[2]});save();renderSw();build()};box.appendChild(b)})});
+  const m=targets()[0], di=S.dec[m];
+  $("colName").textContent=(S.sel==="Все"?"Все модули: ":m+" "+MNAME[m]+": ")+(di>=0?((DECORS[di][0]?DECORS[di][0]+" ":"")+DECORS[di][1]+". Цвет на экране примерный, точный — по образцу."):("свой цвет"+(S.own?" — "+S.own:"")+". Цена может измениться."));}
+$("fcol").addEventListener("input",e=>{S.ownCol=e.target.value;targets().forEach(m=>{S.dec[m]=-1;S.col[m]=S.ownCol});save();renderSw();build()});
+$("ownName").addEventListener("input",e=>{S.own=e.target.value;targets().forEach(m=>{S.dec[m]=-1;S.col[m]=S.ownCol});save();renderSw();build()});
+function update(){
+  $("dims").innerHTML=`<span><span class="code">М1</span></span><b>${S.m1w} × ${S.H} × ${S.m1d}</b><span><span class="code">М2</span></span><b>${S.m2w} × ${S.H-S.niche} × ${S.m2d}</b><span><span class="code">М3</span></span><b>${S.m2w} × ${S.niche}</b><span><span class="code">М4</span></span><b>${S.m4w} × ${S.m4h} × ${S.m4d}</b><span class="note" style="grid-column:1/-1">Ш × В × Г. Ниша с подсветкой: высота ${S.nicheH}, низ на ${S.niche} от пола.</span>`;
+  renderMats();$("cp").textContent=CPR[S.mat];
+  build();
+}
+
+/* ---------- 3D ---------- */
+const cv=$("scene");
+const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(38,1,10,30000);
+scene.add(new THREE.HemisphereLight(0xffffff,0x8a8f96,.85));
+const dl=new THREE.DirectionalLight(0xffffff,.55);dl.position.set(1200,3200,3000);scene.add(dl);
+let group=new THREE.Group();scene.add(group);
+let showDoors=true,glass=false,openT=0,openTarget=0,anim=null,doorPiv=[],drawerG=[];
+let rot={y:-0.35,x:0.12},dist=5600;
+function mat(c,o){return new THREE.MeshLambertMaterial({color:c,transparent:o<1,opacity:o,depthWrite:o>=1})}
+function box(w,h,d,x,y,z,m,par,edges){const g=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);g.position.set(x,y,z);
+  if(edges!==false)g.add(new THREE.LineSegments(new THREE.EdgesGeometry(g.geometry),new THREE.LineBasicMaterial({color:0x5d646c,transparent:true,opacity:.5})));(par||group).add(g);return g}
+function sub(x,y,z){const g=new THREE.Group();g.position.set(x,y,z);group.add(g);return g}
+function label(txt,x,y,z){const c=document.createElement("canvas");c.width=256;c.height=128;const g=c.getContext("2d");
+  g.fillStyle="#3b5573";g.beginPath();g.roundRect?g.roundRect(28,8,200,112,56):g.rect(28,8,200,112);g.fill();g.fillStyle="#fff";g.font="700 60px -apple-system, Arial, sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText(txt,128,68);
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));s.position.set(x,y,z);s.scale.set(300,150,1);s.renderOrder=9;group.add(s)}
+function mm(m,o){const w=isWood(m);const M=mat(w?0xffffff:new THREE.Color(S.col[m]),o);if(w)M.map=new THREE.CanvasTexture(woodCanvas(S.col[m]));return M}
+function door(px,y,w,h,d,z,sgn,M,par){const pv=sub(px,0,z);pv.userData.sgn=sgn;doorPiv.push(pv);box(w,h,d,sgn*w/2,y+h/2,d/2,M,pv);return pv}
+function build(){
+  scene.remove(group);group=new THREE.Group();scene.add(group);doorPiv=[];drawerG=[];
+  const t=16,H=S.H,L=layout(),op=glass?.3:1,inner=mat(0xf4f4f1,op);
+  const ox=-L.room/2;
+  /* комната */
+  box(L.room+400,H,20,0,H/2,-10,mat(0xf0eeea,1),null,false);
+  box(L.room+400,20,1800,0,-10,900,mat(0xdcd8d1,1),null,false);
+  /* М4 тумба */
+  { const m="М4",M=mm(m,op),F=mm(m,glass?.25:1),x=ox+L.x4,w=S.m4w,d=S.m4d,h=S.m4h,y=S.m4y,inn=S.mat==="ldsp"?mat(0xf4f4f1,op):M;
+    box(t,h,d,x+t/2,y+h/2,d/2,M);box(t,h,d,x+w-t/2,y+h/2,d/2,M);box(w-2*t,t,d,x+w/2,y+t/2,d/2,inn);
+    box(w,32,d+10,x+w/2,y+h+16,(d+10)/2,M);
+    const sink=new THREE.Mesh(new THREE.CylinderGeometry(200,180,130,40),mat(0xfbfbfa,1));sink.scale.set(1.25,1,.85);sink.position.set(x+w/2,y+h+32+65,d/2);group.add(sink);
+    for(let k=0;k<2;k++){const g=sub(0,0,0);drawerG.push(g);const fh=h/2-3,fy=y+k*h/2;
+      box(w-3,fh,18,x+w/2,fy+fh/2+1.5,d+9,F,g);box(w-2*t-30,fh-40,d-40,x+w/2,fy+fh/2,d/2-5,mat(0xe9e9e4,op),g);}
+    label(m,x+w/2,y+h+330,d+60);
+  }
+  /* М1 пенал */
+  { const m="М1",M=mm(m,op),F=mm(m,glass?.25:1),x=ox+L.x1,w=S.m1w,d=S.m1d,inn=S.mat==="film"||S.mat==="ldsp"?inner:M;
+    box(t,H,d,x+t/2,H/2,d/2,M);box(t,H,d,x+w-t/2,H/2,d/2,M);box(w-2*t,t,d,x+w/2,t/2,d/2,inn);box(w-2*t,t,d,x+w/2,H-t/2,d/2,inn);
+    box(w-2*t,t,d-20,x+w/2,S.m1split,d/2-10,inn);
+    const n=Math.max(3,Math.round((H-2*t)/380)-1);for(let k=1;k<=n;k++){const yy=t+(H-2*t)*k/(n+1);if(Math.abs(yy-S.m1split)>120)box(w-2*t-2,t,d-30,x+w/2,yy,d/2-15,inn)}
+    if(showDoors){const fw=w/2-3;[[0,S.m1split-3],[S.m1split,H-S.m1split-3]].forEach(([y0,h])=>{door(x+1.5,y0+1.5,fw,h,18,d,1,F);door(x+w-1.5,y0+1.5,fw,h,18,d,-1,F)})}
+    label(m,x+w/2,H+200,d+60);
+  }
+  /* М2 + М3 зона инсталляции */
+  { const x=ox+L.x2,w=S.m2w,d=S.m2d,y2=S.niche+S.nicheH;
+    const M2=mm("М2",op),F2=mm("М2",glass?.25:1),M3=mm("М3",glass?.25:1),inn=S.mat==="enamel"?M2:inner;
+    box(t,H-S.niche,d,x+t/2,S.niche+(H-S.niche)/2,d/2,M2);box(t,H-S.niche,d,x+w-t/2,S.niche+(H-S.niche)/2,d/2,M2);
+    box(w-2*t,t,d,x+w/2,S.niche+t/2,d/2,M2);box(w-2*t,t,d,x+w/2,y2+t/2,d/2,M2);box(w-2*t,t,d,x+w/2,H-t/2,d/2,inn);
+    box(w-2*t,t,d-30,x+w/2,y2+(H-y2)/2,d/2-15,inn);
+    const led=new THREE.Mesh(new THREE.BoxGeometry(w-60,8,10),new THREE.MeshBasicMaterial({color:0xfff3d6}));led.position.set(x+w/2,y2-6,d-25);group.add(led);
+    const glow=new THREE.Mesh(new THREE.PlaneGeometry(w-2*t,S.nicheH-t),new THREE.MeshBasicMaterial({color:0xfff1d0,transparent:true,opacity:.18}));glow.position.set(x+w/2,S.niche+S.nicheH/2,3);group.add(glow);
+    if(showDoors){const fw=w/2-3,h=H-y2-3;door(x+1.5,y2+1.5,fw,h,18,d,1,F2);door(x+w-1.5,y2+1.5,fw,h,18,d,-1,F2)}
+    /* М3 панель: стоит перед коробом инсталляции */
+    box(w,S.niche,18,x+w/2,S.niche/2,d-9,M3);
+    box(240,150,6,x+w/2,S.niche*0.82,d+3,mat(0xf7f7f5,1));
+    const bowl=new THREE.Mesh(new THREE.SphereGeometry(200,32,20),mat(0xfbfbfa,1));bowl.scale.set(.9,.75,1.35);bowl.position.set(x+w/2,400,d+270);group.add(bowl);
+    label("М2",x+w/2,H+200,d+60);label("М3",x+w/2,S.niche*0.45,d+80);
+  }
+  pose();draw();
+}
+function pose(){const e=openT<.5?2*openT*openT:1-Math.pow(-2*openT+2,2)/2;const dE=Math.min(1,e*1.4),wE=Math.max(0,(e-.35)/.65);
+  doorPiv.forEach(p=>p.rotation.y=-p.userData.sgn*dE*1.75);drawerG.forEach(g=>g.position.z=wE*300)}
+function step(ts){if(anim===null)anim=ts;const dt=Math.min(50,ts-anim);anim=ts;const sp=dt/900;
+  openT=openTarget>openT?Math.min(openTarget,openT+sp):Math.max(openTarget,openT-sp);pose();draw();if(openT!==openTarget)requestAnimationFrame(step);else anim=null}
+function resize(){const w=cv.clientWidth,h=cv.clientHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();draw()}
+function draw(){const c=new THREE.Vector3(0,S.H/2-100,400);
+  cam.position.set(c.x+dist*Math.sin(rot.y)*Math.cos(rot.x),c.y+dist*Math.sin(rot.x),c.z+dist*Math.cos(rot.y)*Math.cos(rot.x));cam.lookAt(c);renderer.render(scene,cam)}
+let drag=null,pinch=null;
+cv.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId)});
+cv.addEventListener("pointermove",e=>{if(!drag||pinch)return;rot.y=Math.max(-1.3,Math.min(1.3,rot.y-(e.clientX-drag.x)*.008));rot.x=Math.max(-.1,Math.min(1.2,rot.x+(e.clientY-drag.y)*.006));drag={x:e.clientX,y:e.clientY};draw()});
+cv.addEventListener("pointerup",()=>drag=null);
+cv.addEventListener("wheel",e=>{e.preventDefault();dist=Math.max(2500,Math.min(10000,dist*(1+e.deltaY*.001)));draw()},{passive:false});
+cv.addEventListener("touchmove",e=>{if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);if(pinch){dist=Math.max(2500,Math.min(10000,dist*pinch/d));draw()}pinch=d}},{passive:true});
+cv.addEventListener("touchend",()=>pinch=null);
+$("tOpen").onclick=e=>{openTarget=openTarget?0:1;e.target.textContent=openTarget?"Закрыть":"Открыть";e.target.setAttribute("aria-pressed",!!openTarget);
+  if(!showDoors){showDoors=true;$("tDoors").setAttribute("aria-pressed",true);build()}
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){openT=openTarget;pose();draw()}else if(anim===null)requestAnimationFrame(step)};
+$("tDoors").onclick=e=>{showDoors=!showDoors;e.target.setAttribute("aria-pressed",showDoors);build()};
+$("tGlass").onclick=e=>{glass=!glass;e.target.setAttribute("aria-pressed",glass);build()};
+$("tReset").onclick=()=>{rot={y:-0.35,x:0.12};dist=5600;draw()};
+window.addEventListener("resize",resize);
+$("fcol").value=S.ownCol;$("ownName").value=S.own;
+renderMods();renderSw();update();resize();
+</script>
+
+</body></html>
