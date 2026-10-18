@@ -1,0 +1,445 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style><title>Проект 100/2</title></head><body>
+<meta name="robots" content="noindex, nofollow">
+
+<style>
+/* Мастерская: светлая сцена-подиум для 3D, латунный акцент, моно-цифры для размеров */
+:root{
+  --bg:#eceeed; --surface:#ffffff; --ink:#1f2523; --muted:#5f6764; --line:#d3d8d6;
+  --brass:#9a7238; --brass-soft:#f1e8da; --stage:#dfe3e1; --warn:#a4512b;
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#151918; --surface:#1e2321; --ink:#e7ebe9; --muted:#9aa39f; --line:#323a37;
+  --brass:#d4a866; --brass-soft:#2c261c; --stage:#232927; --warn:#e08a5f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#151918; --surface:#1e2321; --ink:#e7ebe9; --muted:#9aa39f; --line:#323a37;
+  --brass:#d4a866; --brass-soft:#2c261c; --stage:#232927; --warn:#e08a5f; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:22px}
+h1{font-size:1.55rem;font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:1.15rem;margin:0;font-weight:600;text-wrap:balance}
+h3{font-size:.78rem;margin:0;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.sub{color:var(--muted);margin:6px 0 0;max-width:62ch}
+section{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.stagebox{position:relative;border-radius:16px;overflow:hidden;background:var(--stage);height:clamp(380px,64vh,660px);touch-action:none}
+.stagebox canvas{display:block;width:100%;height:100%}
+.labels{position:absolute;inset:0;pointer-events:none}
+.lbl{position:absolute;transform:translate(-50%,-50%);font:600 13px var(--f-mono);background:var(--ink);color:var(--bg);padding:2px 8px;border-radius:6px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.lbl.small{font-size:11px;padding:1px 6px;opacity:.85}
+.tools{position:absolute;left:10px;right:10px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.tb{font:600 13px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.tb[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tb:focus-visible,.sw:focus-visible,.seg button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.mrow{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.mrow:first-child{border-top:0;padding-top:0}
+.code{font:700 14px var(--f-mono);color:var(--brass);min-width:34px}
+.mname{font-size:13px;color:var(--muted)}
+.sws{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sw{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);cursor:pointer;padding:0;position:relative}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--brass)}
+.own{display:flex;gap:6px;align-items:center;flex-wrap:wrap;border:1px dashed var(--line);border-radius:10px;padding:4px 8px}
+.own input[type=color]{width:34px;height:30px;border:0;padding:0;background:none;cursor:pointer}
+.own input[type=text]{font:13px var(--f-body);border:1px solid var(--line);border-radius:7px;padding:5px 8px;background:var(--bg);color:var(--ink);width:170px;max-width:100%}
+.own label{font-size:12px;color:var(--muted)}
+.own.on{border-style:solid;border-color:var(--brass)}
+.cur{font-size:12px;color:var(--ink);grid-column:2}
+.seg{display:flex;flex-wrap:wrap;gap:4px;background:var(--bg);padding:4px;border-radius:10px;width:fit-content;max-width:100%}
+.seg button{font:500 13px var(--f-body);border:0;background:transparent;color:var(--muted);padding:7px 11px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f-mono);white-space:nowrap}
+.dot{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--line);vertical-align:-1px;margin-right:6px}
+.note{font-size:13px;color:var(--muted);max-width:70ch;margin:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px}
+.inp{font:13px var(--f-mono);width:90px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--bg);color:var(--ink);text-align:right}
+.tot{display:flex;flex-wrap:wrap;gap:18px;align-items:baseline}
+.tot div{display:flex;flex-direction:column}
+.tot b{font:700 1.35rem var(--f-mono)}
+.tot span{font-size:12px;color:var(--muted)}
+.flag{color:var(--warn)}
+.internal{border-top:2px dashed var(--brass);padding-top:18px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Проект 100/2 — шкаф, стеллажи и стол у окна</h1>
+    <p class="sub">МДФ в плёнке ПВХ. Двери шкафа с фрезеровкой «арка» и рейкой внизу. Модель можно крутить пальцем, коды на модулях — чтобы удобно обсуждать правки.</p>
+  </header>
+
+  <div class="stagebox" id="stage">
+    <div class="labels" id="labels"></div>
+    <div class="tools">
+      <button class="tb" id="bView3d" aria-pressed="true">3D</button>
+      <button class="tb" id="bFront" aria-pressed="false">Спереди</button>
+      <button class="tb" id="bOpen" aria-pressed="false">Открыть двери и ящики</button>
+      <button class="tb" id="bCodes" aria-pressed="true">Коды</button>
+    </div>
+  </div>
+
+  <section>
+    <h2>Цвет</h2>
+    <div class="card" id="colors"></div>
+  </section>
+
+  <section>
+    <h2>Открытые стеллажи внутри</h2>
+    <div class="seg" id="openSeg">
+      <button data-v="film" aria-pressed="true">В цвет фасадов</button>
+      <button data-v="white" aria-pressed="false">Белые</button>
+    </div>
+    <p class="note">Полки и задние стенки открытых секций О1 и П1. Двери и ящики изнутри всегда белые.</p>
+  </section>
+
+  <section>
+    <h2>Модули и размеры</h2>
+    <div class="card tw"><table id="modTable"></table></div>
+    <p class="note">Общая длина 4055 мм, высота 2900 мм, глубина 600 мм. Размеры уточняются на замере.</p>
+  </section>
+
+
+</div>
+
+<script src="/mebel/_lib/three.min.js"></script>
+<script src="/mebel/_lib/OrbitControls.js"></script>
+<script>
+(function(){
+const S=0.001;
+const KEY='p1002_state';
+const FILMS=[
+  {id:'cash',n:'Кашемир',c:'#d9d1c5'},
+  {id:'white',n:'Белый матовый',c:'#f1f0ea'},
+  {id:'latte',n:'Латте',c:'#c7b49e'},
+  {id:'silk',n:'Серый шёлк',c:'#b5b7b2'},
+  {id:'sage',n:'Шалфей',c:'#98a392'},
+  {id:'graph',n:'Графит',c:'#4a4d4f'},
+  {id:'oak',n:'Дуб светлый',c:'#cfae85'},
+  {id:'walnut',n:'Орех',c:'#6b4a36'}
+];
+const MODS=[
+  {code:'Ш1',name:'Шкаф распашной, 2 двери, штанга',w:1100,h:2350,d:600},
+  {code:'А1',name:'Антресоль над Ш1, 2 двери',w:1100,h:550,d:600},
+  {code:'О1',name:'Стеллаж открытый',w:450,h:2900,d:600},
+  {code:'С1',name:'Стол у окна, 3 ящика',w:1905,h:780,d:600},
+  {code:'П1',name:'Стеллаж: полки, 3 ящика, ниша',w:600,h:2900,d:600}
+];
+let st={colors:{},open:'film'};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&s.colors) st=Object.assign(st,s);}catch(e){}
+MODS.forEach(m=>{ if(!st.colors[m.code]) st.colors[m.code]={id:'cash'}; });
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){} }
+function colOf(code){ const c=st.colors[code]; if(c.id==='own') return {hex:c.hex||'#cccccc',n:(c.name&&c.name.trim())||'Свой цвет'}; const f=FILMS.find(x=>x.id===c.id)||FILMS[0]; return {hex:f.c,n:f.n}; }
+
+/* ---------- сцена ---------- */
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+stage.insertBefore(renderer.domElement,stage.firstChild);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(40,1,0.05,100);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true; controls.dampingFactor=0.09;
+controls.maxPolarAngle=Math.PI*0.52; controls.minDistance=1; controls.maxDistance=14;
+scene.add(new THREE.HemisphereLight(0xffffff,0xcfc8bd,0.72));
+const sun=new THREE.DirectionalLight(0xffffff,0.72); sun.position.set(-1.5,4.2,5);
+sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-1,right:6,top:4,bottom:-1,near:0.5,far:15}); sun.shadow.bias=-0.0005;
+sun.target.position.set(2,1,0.3); scene.add(sun); scene.add(sun.target);
+const fill=new THREE.DirectionalLight(0xffffff,0.25); fill.position.set(5,2,4); scene.add(fill);
+
+function lin(hex){ return new THREE.Color(hex).convertSRGBToLinear(); }
+const mcache={};
+function matFor(hex,rough){ const k=hex+'|'+(rough||0.72); if(!mcache[k]) mcache[k]=new THREE.MeshStandardMaterial({color:lin(hex),roughness:rough||0.72,metalness:0}); return mcache[k]; }
+const WHITE='#f3f3ef';
+function darker(hex,f){ const c=new THREE.Color(hex); c.multiplyScalar(f); return '#'+c.getHexString(); }
+const edgeMat=new THREE.LineBasicMaterial({color:0x000000,transparent:true,opacity:0.13});
+const metalMat=new THREE.MeshStandardMaterial({color:lin('#c9c6bf'),metalness:0.35,roughness:0.35,emissive:lin('#2a2a2a')});
+
+// пол и стена
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(10,7),new THREE.MeshStandardMaterial({color:lin('#e2dbd0'),roughness:0.9}));
+floor.rotation.x=-Math.PI/2; floor.position.set(2,0,2); floor.receiveShadow=true; scene.add(floor);
+const wall=new THREE.Mesh(new THREE.PlaneGeometry(10,3.2),new THREE.MeshStandardMaterial({color:lin('#ecebe6'),roughness:0.95}));
+wall.position.set(2,1.6,-0.012); wall.receiveShadow=true; scene.add(wall);
+// окно за столом
+(function(){
+  const g=new THREE.Group(); const fr=matFor('#fafafa',0.5);
+  const glass=new THREE.Mesh(new THREE.PlaneGeometry(1.6,1.5),new THREE.MeshStandardMaterial({color:lin('#bfd3dc'),roughness:0.15,metalness:0.1}));
+  glass.position.set(2.5025,1.6,-0.008); g.add(glass);
+  [[1.70,1.6,0.06,1.56],[3.305,1.6,0.06,1.56],[2.5025,0.84,1.66,0.06],[2.5025,2.36,1.66,0.06],[2.5025,1.6,0.05,1.5]].forEach(a=>{
+    const m=new THREE.Mesh(new THREE.BoxGeometry(a[2],a[3],0.03),fr); m.position.set(a[0],a[1],0.0); g.add(m);});
+  scene.add(g);
+})();
+
+/* ---------- построение ---------- */
+let furn=null, PARTS=[], HW={}, movers=[];
+function hw(k,q){ HW[k]=(HW[k]||0)+q; }
+// spec: 6 символов на грани [+x,-x,+y,-y,+z,-z]: F — плёнка модуля, W — белый
+function box(parent,mod,name,x0,y0,z0,sx,sy,sz,spec,film,opt){
+  opt=opt||{};
+  const g=new THREE.BoxGeometry(sx*S,sy*S,sz*S);
+  const mats=spec.split('').map(ch=>ch==='F'?matFor(film):matFor(WHITE));
+  const m=new THREE.Mesh(g,mats);
+  m.position.set((x0+sx/2)*S,(y0+sy/2)*S,(z0+sz/2)*S);
+  m.castShadow=true; m.receiveShadow=true;
+  m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),edgeMat));
+  parent.add(m);
+  if(!opt.skip){
+    const d=[sx,sy,sz].sort((a,b)=>b-a);
+    const mat=opt.mat||(spec.indexOf('F')>=0?'МДФ плёнка':(d[2]<=4?'ХДФ белый':'ЛДСП белая 16'));
+    PARTS.push({mod:mod,name:name,L:Math.round(d[0]),W:Math.round(d[1]),T:Math.round(d[2]),mat:mat});
+  }
+  return m;
+}
+function flat(parent,shape,hex,z){
+  const g=new THREE.ShapeGeometry(shape,24); g.scale(S,S,S);
+  const m=new THREE.Mesh(g,matFor(hex,0.85)); m.position.z=z*S; parent.add(m); return m;
+}
+function stadium(p,cx,y0,w,h){
+  const r=w/2; p.moveTo(cx-r,y0+r); p.lineTo(cx-r,y0+h-r); p.absarc(cx,y0+h-r,r,Math.PI,0,true);
+  p.lineTo(cx+r,y0+r); p.absarc(cx,y0+r,r,0,Math.PI,true); return p;
+}
+// дверь с аркой и рейкой; side: 'L' петли слева, 'R' справа
+function door(g,mod,x0,y0,w,h,z0,film,side,o){
+  o=o||{};
+  const piv=new THREE.Group();
+  const hx= side==='L'? x0 : x0+w;
+  piv.position.set(hx*S,0,z0*S); g.add(piv);
+  const lx= side==='L'? 0 : -w;
+  box(piv,mod,o.name||'Фасад распашной',lx,y0,0,w,h,18,'FFFFFW',film);
+  const grove=darker(film,0.78);
+  if(o.arch){
+    const band=o.band||230, ins=72, topGap=o.topGap||90;
+    const ay=y0+band+60, ah=h-band-60-topGap, cx=lx+w/2, aw=w-2*ins;
+    const outer=stadium(new THREE.Shape(),cx,ay,aw,ah);
+    outer.holes.push(stadium(new THREE.Path(),cx,ay+7,aw-14,ah-14));
+    flat(piv,outer,grove,18.4);
+    // рейка внизу
+    for(let x=lx+14;x<lx+w-10;x+=22){
+      const s=new THREE.Shape(); s.moveTo(x,y0+4); s.lineTo(x+4,y0+4); s.lineTo(x+4,y0+band); s.lineTo(x,y0+band); s.lineTo(x,y0+4);
+      flat(piv,s,grove,18.4);
+    }
+    const ln=new THREE.Shape(); ln.moveTo(lx+4,y0+band); ln.lineTo(lx+w-4,y0+band); ln.lineTo(lx+w-4,y0+band+4); ln.lineTo(lx+4,y0+band+4); ln.lineTo(lx+4,y0+band);
+    flat(piv,ln,grove,18.4);
+  }
+  if(o.halfHandle){ // полукруг у свободной кромки, две двери вместе дают круг
+    const r=46;
+    const geo= side==='L'
+      ? new THREE.CylinderGeometry(r,r,16,32,1,false,Math.PI,Math.PI)
+      : new THREE.CylinderGeometry(r,r,16,32,1,false,0,Math.PI);
+    geo.rotateX(Math.PI/2); geo.scale(S,S,S);
+    const hm=new THREE.Mesh(geo,matFor(film)); hm.castShadow=true;
+    hm.position.set((side==='L'? lx+w-1 : lx+1)*S,(o.handleY)*S,(18+8)*S); piv.add(hm);
+    hw('hHalf',1);
+  }
+  piv.userData={type:'door',open: side==='L'? -1.75 : 1.75};
+  movers.push(piv);
+  hw('hinge', h>1600?4:(h>900?3:2));
+  return piv;
+}
+function drawer(g,mod,x0,y0,w,h,z0,film,inner,pull){
+  const grp=new THREE.Group(); g.add(grp);
+  box(grp,mod,'Фасад ящика',x0,y0,z0,w,h,18,'FFFFFW',film);
+  const bar=new THREE.Mesh(new THREE.BoxGeometry(0.14,0.012,0.022),metalMat);
+  bar.position.set((x0+w/2)*S,(y0+h/2)*S,(z0+18+11)*S); bar.castShadow=true; grp.add(bar);
+  hw('hBar',1); hw('runner',1);
+  const bx0=inner.x0, bw=inner.x1-inner.x0, by=inner.y0, bh=inner.h, bz=inner.z0, bd=inner.d;
+  box(grp,mod,'Ящик: бок',bx0,by,bz,16,bh,bd,'WWWWWW',film);
+  box(grp,mod,'Ящик: бок',bx0+bw-16,by,bz,16,bh,bd,'WWWWWW',film);
+  box(grp,mod,'Ящик: перед/зад',bx0+16,by,bz+bd-16,bw-32,bh,16,'WWWWWW',film);
+  box(grp,mod,'Ящик: перед/зад',bx0+16,by,bz,bw-32,bh,16,'WWWWWW',film);
+  box(grp,mod,'Ящик: дно',bx0,by-3,bz,bw,3,bd,'WWWWWW',film);
+  grp.userData={type:'drawer',open:pull*S};
+  movers.push(grp);
+}
+function sideSpec(o){ return o; }
+
+function build(){
+  if(furn){ furn.traverse(o=>{ if(o.geometry) o.geometry.dispose(); }); scene.remove(furn); }
+  furn=new THREE.Group(); scene.add(furn);
+  PARTS=[]; HW={}; movers=[];
+  const openF= st.open==='film';
+  const CD=582;
+
+  /* Ш1 — шкаф 1100, высота 2350 с цоколем */
+  { const f=colOf('Ш1').hex, x0=0, W=1100, H=2350, mod='Ш1';
+    const rT= openF?18:16;
+    box(furn,mod,'Бок левый (видимый)',x0,0,0,18,H,CD,'WFFWFW',f);
+    box(furn,mod,openF?'Бок правый (виден в О1)':'Бок правый',x0+W-rT,0,0,rT,H,CD,(openF?'F':'W')+'WWW'+(openF?'F':'W')+'W',f);
+    const xi=x0+18, wi=W-18-rT;
+    box(furn,mod,'Дно',xi,100,0,wi,16,CD,'WWWWWW',f);
+    box(furn,mod,'Крыша',xi,H-16,0,wi,16,CD,'WWWWWW',f);
+    box(furn,mod,'Полка нижняя (обувь)',xi,466,0,wi,16,CD-20,'WWWWWW',f);
+    box(furn,mod,'Полка верхняя',xi,1984,0,wi,16,CD-20,'WWWWWW',f);
+    box(furn,mod,'Задняя стенка',x0,100,-3,W,H-100,3,'WWWWWW',f);
+    box(furn,mod,'Цоколь',xi,0,CD-66,wi,100,16,'WWWWFW',f);
+    const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.0125,0.0125,wi*S,20),metalMat);
+    rod.rotation.z=Math.PI/2; rod.position.set((xi+wi/2)*S,1930*S,(CD/2)*S); furn.add(rod);
+    hw('rod',1); hw('sup',8); hw('leg',4);
+    door(furn,mod,x0+1,102,W/2-2,2246,CD,f,'L',{arch:true,halfHandle:true,handleY:1150});
+    door(furn,mod,x0+W/2+1,102,W/2-2,2246,CD,f,'R',{arch:true,halfHandle:true,handleY:1150});
+  }
+  /* А1 — антресоль */
+  { const f=colOf('А1').hex, x0=0, W=1100, y=2350, H=550, mod='А1';
+    const rT= openF?18:16;
+    box(furn,mod,'Бок левый (видимый)',x0,y,0,18,H,CD,'WFFWFW',f);
+    box(furn,mod,openF?'Бок правый (виден в О1)':'Бок правый',x0+W-rT,y,0,rT,H,CD,(openF?'F':'W')+'WWW'+(openF?'F':'W')+'W',f);
+    const xi=x0+18, wi=W-18-rT;
+    box(furn,mod,'Дно',xi,y,0,wi,16,CD,'WWWWWW',f);
+    box(furn,mod,'Крыша',xi,y+H-16,0,wi,16,CD,'WWWWWW',f);
+    box(furn,mod,'Задняя стенка',x0,y,-3,W,H,3,'WWWWWW',f);
+    door(furn,mod,x0+1,y+2,W/2-2,H-4,CD,f,'L',{name:'Фасад антресоли'});
+    door(furn,mod,x0+W/2+1,y+2,W/2-2,H-4,CD,f,'R',{name:'Фасад антресоли'});
+    hw('push',2);
+  }
+  /* О1 — открытый стеллаж */
+  { const f=colOf('О1').hex, x0=1100, W=450, H=2900, D=600, mod='О1', O=openF?'F':'W', lT=openF?18:16;
+    box(furn,mod,'Бок левый',x0,0,0,lT,H,D,O+'WWW'+O+'W',f);
+    box(furn,mod,'Бок правый (видимый)',x0+W-18,0,0,18,H,D,'F'+O+'FWFW',f);
+    const xi=x0+lT, wi=W-lT-18;
+    box(furn,mod,'Задняя стенка',xi,100,0,wi,H-100,16,O.repeat(6),f);
+    [[100,'Дно'],[450,'Полка'],[900,'Полка'],[1350,'Полка'],[1800,'Полка'],[2334,'Полка (уровень антресоли)'],[2884,'Крыша']].forEach(a=>{
+      box(furn,mod,a[1],xi,a[0],16,wi,16,D-16,O.repeat(6),f); if(a[1]==='Полка') hw('sup',4); });
+    box(furn,mod,'Цоколь',xi,0,D-66,wi,100,16,'WWWWFW',f);
+    hw('leg',4);
+  }
+  /* С1 — стол у окна */
+  { const f=colOf('С1').hex, x0=1550, W=1905, mod='С1';
+    box(furn,mod,'Столешница 36 (2×18)',x0,744,0,W,36,600,'FFFWFF',f);
+    box(furn,mod,'Дно короба ящиков',x0,626,0,W,16,CD,'WWWWWW',f);
+    box(furn,mod,'Задняя царга',x0,642,0,W,102,16,'WWWWWW',f);
+    [635,1270].forEach(dx=> box(furn,mod,'Перегородка ящиков',x0+dx-8,642,16,16,102,CD-16,'WWWWWW',f));
+    for(let i=0;i<3;i++){
+      const fx=x0+i*635+1;
+      const ix0= x0+i*635 + (i===0?0:8) + 13, ix1= x0+(i+1)*635 - (i===2?0:8) - 13;
+      drawer(furn,mod,fx,642,633,100,CD,f,{x0:ix0,x1:ix1,y0:654,h:70,z0:40,d:500},330);
+    }
+  }
+  /* П1 — стеллаж с ящиками */
+  { const f=colOf('П1').hex, x0=3455, W=600, H=2900, D=600, mod='П1', O=openF?'F':'W';
+    box(furn,mod,'Бок левый (видимый)',x0,0,0,18,H,D,O+'FFWFW',f);
+    box(furn,mod,'Бок правый (видимый)',x0+W-18,0,0,18,H,D,'F'+O+'FWFW',f);
+    const xi=x0+18, wi=W-36;
+    box(furn,mod,'Задняя стенка',xi,100,0,wi,H-100,16,O.repeat(6),f);
+    [[100,'Дно'],[434,'Полка над нишей'],[1050,'Полка над ящиками'],[1480,'Полка'],[1910,'Полка'],[2334,'Полка (уровень антресоли)'],[2884,'Крыша']].forEach(a=>{
+      box(furn,mod,a[1],xi,a[0],16,wi,16,D-16,O.repeat(6),f); if(a[1]==='Полка') hw('sup',4); });
+    box(furn,mod,'Цоколь',xi,0,D-66,wi,100,16,'WWWWFW',f);
+    for(let k=0;k<3;k++){
+      const y=452+k*200;
+      drawer(furn,mod,xi+2,y,wi-4,196,CD,f,{x0:xi+13,x1:xi+wi-13,y0:y+22,h:140,z0:40,d:500},400);
+    }
+    hw('leg',4);
+  }
+  hw('fix',1);
+  movers.forEach(m=>applyMover(m,true));
+}
+
+/* ---------- двери/ящики ---------- */
+let isOpen=false;
+function applyMover(m,instant){
+  const t=isOpen?m.userData.open:0;
+  if(instant){ if(m.userData.type==='door') m.rotation.y=t; else m.position.z=t; }
+  m.userData.t=t;
+}
+
+/* ---------- подписи ---------- */
+const LBL=[
+  {t:'Ш1',p:[550,1300,640]},{t:'А1',p:[550,2625,640]},{t:'О1',p:[1325,1580,620]},
+  {t:'С1',p:[2502,860,620]},{t:'П1',p:[3755,1700,620]}
+];
+const lblBox=document.getElementById('labels');
+LBL.forEach(l=>{ const d=document.createElement('div'); d.className='lbl'; d.textContent=l.t; lblBox.appendChild(d); l.el=d; l.v=new THREE.Vector3(l.p[0]*S,l.p[1]*S,l.p[2]*S); });
+let showCodes=true;
+function placeLabels(){
+  const w=stage.clientWidth,h=stage.clientHeight;
+  LBL.forEach(l=>{ const v=l.v.clone().project(camera);
+    const vis=showCodes && v.z<1;
+    l.el.hidden=!vis; if(!vis) return;
+    l.el.style.left=((v.x+1)/2*w)+'px'; l.el.style.top=((1-v.y)/2*h)+'px'; });
+}
+
+/* ---------- камера ---------- */
+const TGT=new THREE.Vector3(2.0275,1.3,0.3);
+let viewDir=new THREE.Vector3(-0.34,0.14,1).normalize();
+function fit(dir){
+  const a=camera.aspect, vh=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
+  const need=Math.max(1.75/vh, 2.3/(vh*a))*1.2;
+  controls.target.copy(TGT); camera.position.copy(TGT).addScaledVector(dir,need); controls.update();
+}
+function resize(){
+  const w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false);
+  camera.aspect=w/h; camera.updateProjectionMatrix();
+}
+function setBg(){ const v=getComputedStyle(document.documentElement).getPropertyValue('--stage').trim()||'#dfe3e1'; scene.background=lin(v); }
+
+function loop(){
+  requestAnimationFrame(loop);
+  movers.forEach(m=>{ const t=m.userData.t||0;
+    if(m.userData.type==='door'){ m.rotation.y+= (t-m.rotation.y)*0.14; } else { m.position.z+=(t-m.position.z)*0.14; } });
+  controls.update(); renderer.render(scene,camera); placeLabels();
+}
+
+/* ---------- интерфейс ---------- */
+function pressed(group,btn){ group.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===btn))); }
+const colorsEl=document.getElementById('colors');
+function renderColors(){
+  colorsEl.innerHTML='';
+  const rows=[{code:'*',name:'Все модули сразу'}].concat(MODS);
+  rows.forEach(m=>{
+    const row=document.createElement('div'); row.className='mrow';
+    const cur= m.code==='*'?null:colOf(m.code);
+    row.innerHTML='<span class="code">'+(m.code==='*'?'Все':m.code)+'</span><span class="mname">'+m.name+(cur?' · <b style="color:var(--ink)">'+cur.n+'</b>':'')+'</span>';
+    const sws=document.createElement('div'); sws.className='sws';
+    FILMS.forEach(f=>{
+      const b=document.createElement('button'); b.className='sw'; b.style.background=f.c; b.title=f.n; b.setAttribute('aria-label',f.n);
+      b.setAttribute('aria-pressed', String(m.code!=='*' && st.colors[m.code].id===f.id));
+      b.onclick=()=>{ (m.code==='*'?MODS.map(x=>x.code):[m.code]).forEach(c=>st.colors[c]={id:f.id}); changed(); };
+      sws.appendChild(b);
+    });
+    const c= m.code==='*'?null:st.colors[m.code];
+    const own=document.createElement('div'); own.className='own'+(c&&c.id==='own'?' on':'');
+    const idb='own_'+(m.code==='*'?'all':MODS.indexOf(m));
+    own.innerHTML='<label for="'+idb+'c">Свой цвет</label><input type="color" id="'+idb+'c" value="'+((c&&c.hex)||'#a8b8a0')+'"><input type="text" id="'+idb+'t" placeholder="название или артикул" value="'+((c&&c.name)||'').replace(/"/g,'&quot;')+'">';
+    const ic=own.querySelector('input[type=color]'), it=own.querySelector('input[type=text]');
+    const apply=()=>{ (m.code==='*'?MODS.map(x=>x.code):[m.code]).forEach(cc=>st.colors[cc]={id:'own',hex:ic.value,name:it.value}); };
+    ic.addEventListener('input',()=>{ apply(); save(); build(); renderTable(); calc(); own.classList.add('on'); sws.querySelectorAll('.sw').forEach(b=>b.setAttribute('aria-pressed','false')); });
+    ic.addEventListener('change',()=>{ apply(); changed(); });
+    it.addEventListener('change',()=>{ apply(); changed(); });
+    sws.appendChild(own);
+    row.appendChild(sws); colorsEl.appendChild(row);
+  });
+}
+function renderTable(){
+  let h='<thead><tr><th>Код</th><th>Модуль</th><th class="n">Ш×В×Г, мм</th><th>Цвет</th></tr></thead><tbody>';
+  MODS.forEach(m=>{ const c=colOf(m.code);
+    h+='<tr><td class="code">'+m.code+'</td><td>'+m.name+'</td><td class="n">'+m.w+'×'+m.h+'×'+m.d+'</td><td><span class="dot" style="background:'+c.hex+'"></span>'+c.n.replace(/</g,'&lt;')+'</td></tr>'; });
+  document.getElementById('modTable').innerHTML=h+'</tbody>';
+}
+function changed(){ save(); build(); renderColors(); renderTable(); calc(); }
+function calc(){ if(typeof window.__calc==='function') window.__calc(); }
+
+document.querySelectorAll('#openSeg button').forEach(b=>{ b.setAttribute('aria-pressed',String(b.dataset.v===st.open));
+  b.onclick=()=>{ st.open=b.dataset.v; pressed(document.getElementById('openSeg'),b); changed(); }; });
+const bV=document.getElementById('bView3d'), bF=document.getElementById('bFront');
+bV.onclick=()=>{ bV.setAttribute('aria-pressed','true'); bF.setAttribute('aria-pressed','false'); fit(viewDir); };
+bF.onclick=()=>{ bF.setAttribute('aria-pressed','true'); bV.setAttribute('aria-pressed','false'); fit(new THREE.Vector3(0,0.02,1).normalize()); };
+document.getElementById('bOpen').onclick=function(){ isOpen=!isOpen; this.setAttribute('aria-pressed',String(isOpen)); this.textContent=isOpen?'Закрыть':'Открыть двери и ящики'; movers.forEach(m=>applyMover(m,false)); };
+document.getElementById('bCodes').onclick=function(){ showCodes=!showCodes; this.setAttribute('aria-pressed',String(showCodes)); };
+
+window.__p1002={get parts(){return PARTS;}, get hw(){return HW;}, mods:MODS, colOf:colOf};
+build(); renderColors(); renderTable();
+resize(); fit(viewDir); setBg();
+try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',setBg); }catch(e){}
+new MutationObserver(setBg).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+if(window.ResizeObserver) new ResizeObserver(()=>{ resize(); }).observe(stage); else window.addEventListener('resize',resize);
+loop();
+})();
+</script>
+
+</body></html>
