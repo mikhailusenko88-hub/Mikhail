@@ -169,7 +169,7 @@ function swGroup(title,wood,onpick){const l=document.createElement("div");l.clas
   DECORS.forEach((d,i)=>{if(!!d[3]===wood)$("swatches").appendChild(swBtn(d,i,onpick))})}
 const S={H:2400,W:1500,D:580,mezz:1,col:"#cfc8bd",dec:0,fill:6,own:"",ownCol:"#b9b2a6"};
 try{const v=JSON.parse(localStorage.getItem("p1003")||"null");if(v)Object.assign(S,v)}catch(e){}
-const PR={"2000":[128100,126900,126900,132300,129100,131200,132500,136000,131300],"2200":[132500,131200,131200,136600,133500,135400,135600,162800,134300],"2400":[132600,131300,131300,159300,133600,135600,137000,163000,135700]};
+const PR={"2000":[108500,107300,107300,118100,109500,117000,118600,128100,117400],"2200":[112000,110700,110700,121500,113000,120300,121100,154000,119800],"2400":[112100,110800,110800,144200,113100,120500,122200,154200,120900]};
 const rub=v=>v.toLocaleString("ru-RU")+" ₽";
 function save(){try{localStorage.setItem("p1003",JSON.stringify({col:S.col,dec:S.dec,fill:S.fill,H:S.H,own:S.own,ownCol:S.ownCol}))}catch(e){}}
 function renderFills(){$("fills").innerHTML="";FILLS.forEach((f,i)=>{const b=document.createElement("button");b.className="preset";b.setAttribute("aria-pressed",S.fill===i);
