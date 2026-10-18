@@ -101,6 +101,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f
       <button class="tb" id="bOpen" aria-pressed="false">Открыть двери и ящики</button>
       <button class="tb" id="bCodes" aria-pressed="true">Коды</button>
       <button class="tb" id="bDims" aria-pressed="false">Размеры</button>
+      <button class="tb" id="bXray" aria-pressed="false">Прозрачно</button>
     </div>
   </div>
 
@@ -191,7 +192,10 @@ const fill=new THREE.DirectionalLight(0xffffff,0.25); fill.position.set(5,2,4); 
 
 function lin(hex){ return new THREE.Color(hex).convertSRGBToLinear(); }
 const mcache={};
-function matFor(hex,rough){ const k=hex+'|'+(rough||0.72); if(!mcache[k]) mcache[k]=new THREE.MeshStandardMaterial({color:lin(hex),roughness:rough||0.72,metalness:0}); return mcache[k]; }
+let XRAY=false;
+function xr(m){ m.transparent=XRAY; m.opacity=XRAY?0.28:1; m.depthWrite=!XRAY; m.needsUpdate=true; return m; }
+function matFor(hex,rough){ const k=hex+'|'+(rough||0.72); if(!mcache[k]) mcache[k]=xr(new THREE.MeshStandardMaterial({color:lin(hex),roughness:rough||0.72,metalness:0})); return mcache[k]; }
+function setXray(on){ XRAY=on; Object.values(mcache).forEach(xr); edgeMat.opacity=on?0.55:0.13; edgeMat.needsUpdate=true; if(furn) furn.traverse(o=>{ if(o.isMesh) o.castShadow=!on; }); }
 const WHITE='#f3f3ef';
 function darker(hex,f){ const c=new THREE.Color(hex); c.multiplyScalar(f); return '#'+c.getHexString(); }
 const edgeMat=new THREE.LineBasicMaterial({color:0x000000,transparent:true,opacity:0.13});
@@ -205,7 +209,7 @@ wall.position.set(3,1.6,-0.012); wall.receiveShadow=true; scene.add(wall);
 const lwall=new THREE.Mesh(new THREE.PlaneGeometry(4.5,3.2),wall.material); lwall.rotation.y=Math.PI/2; lwall.position.set(-0.012,1.6,2.25); lwall.receiveShadow=true; scene.add(lwall);
 // окно в пол за столом: две створки (левая — балконная дверь), фрамуга сверху
 (function(){
-  const g=new THREE.Group(); const fr=matFor('#fafafa',0.5);
+  const g=new THREE.Group(); const fr=new THREE.MeshStandardMaterial({color:lin('#fafafa'),roughness:0.5});
   const gl=new THREE.MeshStandardMaterial({color:lin('#bfd3dc'),roughness:0.15,metalness:0.1});
   const X0=0.70,X1=2.40,Y0=0.03,Y1=2.75,YT=2.20,cx=(X0+X1)/2;
   [[X0,YT,Y0,cx],[cx,YT,Y0,X1],[X0,Y1,YT,X1]].forEach(r=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(r[3]-r[0],r[1]-r[2]),gl); m.position.set((r[0]+r[3])/2,(r[1]+r[2])/2,-0.008); g.add(m); });
@@ -241,7 +245,7 @@ function box(parent,mod,name,x0,y0,z0,sx,sy,sz,spec,film,opt){
   const mats=fc.map(ch=>ch==='F'?matFor(film):matFor(WHITE));
   const m=new THREE.Mesh(g,mats);
   m.position.set((x0+sx/2)*S,(y0+sy/2)*S,(z0+sz/2)*S);
-  m.castShadow=true; m.receiveShadow=true;
+  m.castShadow=!XRAY; m.receiveShadow=true;
   m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),edgeMat));
   parent.add(m);
   if(!opt.skip){
@@ -281,7 +285,7 @@ function door(g,mod,x0,y0,w,h,z0,film,side,o){
       ? new THREE.CylinderGeometry(r,r,16,32,1,false,Math.PI,Math.PI)
       : new THREE.CylinderGeometry(r,r,16,32,1,false,0,Math.PI);
     geo.rotateX(Math.PI/2); geo.scale(S,S,S);
-    const hm=new THREE.Mesh(geo,matFor(film)); hm.castShadow=true;
+    const hm=new THREE.Mesh(geo,matFor(film)); hm.castShadow=!XRAY;
     hm.position.set((side==='L'? lx+w-1 : lx+1)*S,(o.handleY)*S,(18+8)*S); piv.add(hm);
     hw('hHalf',1);
   }
@@ -294,7 +298,7 @@ function drawer(g,mod,x0,y0,w,h,z0,film,inner,pull){
   const grp=new THREE.Group(); g.add(grp);
   box(grp,mod,'Фасад ящика',x0,y0,z0,w,h,18,'FFFFFW',film);
   const bar=new THREE.Mesh(new THREE.BoxGeometry(0.14,0.012,0.022),metalMat);
-  bar.position.set((x0+w/2)*S,(y0+h/2)*S,(z0+18+11)*S); bar.castShadow=true; grp.add(bar);
+  bar.position.set((x0+w/2)*S,(y0+h/2)*S,(z0+18+11)*S); bar.castShadow=!XRAY; grp.add(bar);
   hw('hBar',1); hw('runner',1);
   const bx0=inner.x0, bw=inner.x1-inner.x0, by=inner.y0, bh=inner.h, bz=inner.z0, bd=inner.d;
   box(grp,mod,'Ящик: бок',bx0,by,bz,16,bh,bd,'WWWWWW',film);
@@ -600,6 +604,7 @@ const bFac=document.getElementById('bFac');
 function anyFac(){ return Object.keys(SECT).some(c=>SECT[c].some(sk=>hasF(c,sk[0]))); }
 function syncFacBtn(){ const on=anyFac(); bFac.setAttribute('aria-pressed',String(on)); bFac.textContent=on?'Снять фасады со стеллажей':'Фасады на стеллажи'; }
 bFac.onclick=()=>{ const on=!anyFac(); Object.keys(SECT).forEach(c=>SECT[c].forEach(sk=>st.fac[c][sk[0]]=on)); changed(); };
+document.getElementById('bXray').onclick=function(){ const on=!XRAY; this.setAttribute('aria-pressed',String(on)); setXray(on); };
 document.getElementById('bDims').onclick=function(){ showDims=!showDims; this.setAttribute('aria-pressed',String(showDims)); dimG.visible=showDims; setCodeText(); };
 document.getElementById('bCodes').onclick=function(){ showCodes=!showCodes; this.setAttribute('aria-pressed',String(showCodes)); };
 
