@@ -37,7 +37,7 @@ input[type=number]{font:inherit;font-size:14px;background:var(--bg);color:var(--
 .note{color:var(--muted);font-size:12.5px;margin:0}
 .code{display:inline-block;font-weight:700;font-size:11px;background:var(--accent-soft);color:var(--accent);border-radius:4px;padding:1px 6px;margin-right:4px}
 .price{font-size:26px;font-weight:700;color:var(--accent);margin:0;font-variant-numeric:tabular-nums}
-.mats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 @media(max-width:420px){.mats{grid-template-columns:1fr}}
 .mat{text-align:left;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:10px;padding:10px;display:grid;gap:2px}
 .mat[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
@@ -97,11 +97,11 @@ html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset
 <script src="/mebel/_lib/three.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);
-const CPR={"film":{"top":"373 500 ₽","both":"377 500 ₽"},"enamel":{"top":"601 000 ₽","both":"605 000 ₽"},"ldsp":{"top":"230 400 ₽","both":"234 400 ₽"}};
+const CPR={"film":{"top":"373 500 ₽","both":"377 500 ₽"},"enamel":{"top":"601 000 ₽","both":"605 000 ₽"},"ps":{"top":"270 900 ₽","both":"274 900 ₽"},"ldsp":{"top":"230 400 ₽","both":"234 400 ₽"}};
 /* ---------- модули и размеры ---------- */
 const S={H:2700, m1w:750,m1d:450,m1split:1230, m2w:900,m2d:250,niche:1100,nicheH:230, m4w:800,m4d:460,m4h:520,m4y:350,
   mat:"film", ucut:"top", col:{М1:"#3d4555",М2:"#3d4555",М3:"#3d4555",М4:"#cfc8bd"}, dec:{М1:0,М2:0,М3:0,М4:5}, sel:"М1", own:"", ownCol:"#3d4555"};
-const MATS={film:["МДФ в плёнке ПВХ","Матовая плёнка, фреза на всех фасадах"],enamel:["МДФ в эмали","Глубокий мат, как на фото, фреза на фасадах"],ldsp:["ЛДСП Egger","Самый бюджетный, без фрезы"]};
+const MATS={film:["МДФ в плёнке ПВХ","Матовая плёнка, фреза на всех фасадах"],enamel:["МДФ в эмали","Глубокий мат, как на фото, фреза на фасадах"],ps:["Egger PerfectSense","МДФ, покрыт с двух сторон, без фрезы"],ldsp:["ЛДСП Egger","Самый бюджетный, без фрезы"]};
 const DECORS=[
   ["","Синий графит (как на фото)","#3d4555"],["U961","Графит","#3d3f41"],["U960","Ониксовый серый","#4a4c4e"],["U727","Серый камень","#8f8a83"],
   ["","Белый матовый","#ecebe7"],["U702","Кашемир серый","#cfc8bd"],["U638","Зелёный шалфей","#9aa58f"],["U507","Синий дымчатый","#6d8091"],
@@ -169,7 +169,8 @@ function mm(m,o){const w=isWood(m);const M=mat(w?0xffffff:new THREE.Color(S.col[
 function grooveMat(m){const c=new THREE.Color(isWood(m)?"#5a3e28":S.col[m]);c.multiplyScalar(.45);return mat(c,1)}
 /* дверь: петли по левому краю (sgn=1) или правому (sgn=-1) в координатах родителя */
 const MILL=45; /* фреза: вертикальные пазы на фасадах в 45 мм от боковых кромок */
-function mill(m,par,cx,w,y,h,zf){if(S.mat==="ldsp"||!m)return;const G=grooveMat(m);[-1,1].forEach(k=>box(4,h,2,cx+k*(w/2-MILL),y+h/2,zf+1,G,par,false))}
+const noMill=()=>S.mat==="ldsp"||S.mat==="ps";
+function mill(m,par,cx,w,y,h,zf){if(noMill()||!m)return;const G=grooveMat(m);[-1,1].forEach(k=>box(4,h,2,cx+k*(w/2-MILL),y+h/2,zf+1,G,par,false))}
 function door(px,y,w,h,d,z,sgn,M,par,m){const pv=sub(px,0,z,par);pv.userData.sgn=sgn;doorPiv.push(pv);box(w,h,d,sgn*w/2,y+h/2,d/2,M,pv);mill(m,pv,sgn*w/2,w,y,h,d);return pv}
 /* Угол: стена А (инсталляция) — плоскость z=0, стена Б (тумба, пенал) — плоскость x=0.
    Всё у стены Б строится в группе gB: локальная x идёт вдоль стены (отрицательная), локальная z — глубина от стены. */
@@ -181,7 +182,7 @@ function build(){
   box(20,H,zB,-10,H/2,zB/2,mat(0xebe8e3,1),null,false);
   box(xA,20,zB,xA/2,-10,zB/2,mat(0xdcd8d1,1),null,false);
   const gB=new THREE.Group();gB.rotation.y=Math.PI/2;group.add(gB);
-  const film=S.mat!=="ldsp";
+  const film=!noMill();
   /* М1 пенал: в углу, фасады смотрят от стены Б, видимый бок — к тумбе */
   { const m="М1",M=mm(m,op),F=mm(m,glass?.25:1),w=W1,d=D1,x0=-w,inn=S.mat==="enamel"?M:inner;
     box(t,H,d,x0+t/2,H/2,d/2,M,gB);box(t,H,d,-t/2,H/2,d/2,M,gB);
@@ -220,7 +221,7 @@ function build(){
     const glow=new THREE.Mesh(new THREE.PlaneGeometry(w-2*t,S.nicheH-t),new THREE.MeshBasicMaterial({color:0xfff1d0,transparent:true,opacity:.18}));glow.position.set(x+w/2,S.niche+S.nicheH/2,3);group.add(glow);
     if(showDoors){const fw=w/2-3,h=H-y2-3;door(x+1.5,y2+1.5,fw,h,18,d,1,F2,undefined,"М2");door(x+w-1.5,y2+1.5,fw,h,18,d,-1,F2,undefined,"М2")}
     box(w,S.niche,18,x+w/2,S.niche/2,d-9,M3);
-    if(S.mat!=="ldsp"){const G=grooveMat("М3"),fw=w/2-3; /* фреза панели продолжает линии фрезы дверей М2 */
+    if(!noMill()){const G=grooveMat("М3"),fw=w/2-3; /* фреза панели продолжает линии фрезы дверей М2 */
       [x+1.5+MILL,x+1.5+fw-MILL,x+w-1.5-fw+MILL,x+w-1.5-MILL].forEach(gx=>box(4,S.niche,2,gx,S.niche/2,d+1,G,null,false));}
     box(240,150,6,x+w/2,S.niche*0.82,d+3,mat(0xf7f7f5,1));
     const bowl=new THREE.Mesh(new THREE.SphereGeometry(200,32,20),mat(0xfbfbfa,1));bowl.scale.set(.9,.75,1.35);bowl.position.set(x+w/2,400,d+270);group.add(bowl);
