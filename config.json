@@ -1,0 +1,59 @@
+{
+  "topic": "Қазақстан мен әлем туралы қызық деректер (казахский канал с русскими субтитрами)",
+  "subtopics": [
+    "космос",
+    "животные",
+    "человеческое тело",
+    "история",
+    "физика в быту",
+    "океан",
+    "техника и изобретения",
+    "география",
+    "растения",
+    "еда и химия"
+  ],
+  "formats": [
+    "Білесің бе?",
+    "Аңыз ба, шындық па?",
+    "Қазақша сөз",
+    "Топ-3",
+    "Мақал-мәтел",
+    "Қай қала?"
+  ],
+  "channel_handle": "@bilesin_be_kz",
+  "voices": [
+    "kk-KZ-DauletNeural",
+    "kk-KZ-AigulNeural"
+  ],
+  "voice_rate": "+0%",
+  "post_to_vk": false,
+  "vk_group_id": 242430263,
+  "vk_wallpost": true,
+  "post_to_youtube": true,
+  "youtube_privacy": "public",
+  "youtube_category_id": "27",
+  "default_tags": [
+    "білесіңбе",
+    "қазақша",
+    "казахстан",
+    "интересныефакты"
+  ],
+  "use_ai": false,
+  "ai_model": "claude-sonnet-5-5",
+  "use_stock_video": false,
+  "music_volume": 0.08,
+  "keep_days": 7,
+  "web_page": false,
+  "web_root": "/var/www/html",
+  "web_base_url": "http://89.207.252.121:8080",
+  "channel_name": "Білесің бе",
+  "yt_extra_tags": [
+    "білесің бе",
+    "қазақша",
+    "қызық деректер",
+    "казахстан",
+    "интересные факты"
+  ],
+  "lang": "kk",
+  "bank_file": "topics_kz.json"
+}
