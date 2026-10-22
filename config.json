@@ -55,5 +55,27 @@
     "интересные факты"
   ],
   "lang": "kk",
-  "bank_file": "topics_kz.json"
+  "bank_file": "topics_kz.json",
+  "music_by_format": {
+    "Білесің бе?": [
+      "03_Kupiya_zagadka.mp3",
+      "01_Dala_spokoyno.mp3"
+    ],
+    "Аңыз ба, шындық па?": [
+      "03_Kupiya_zagadka.mp3"
+    ],
+    "Қазақша сөз": [
+      "04_Toy_pozitiv.mp3"
+    ],
+    "Топ-3": [
+      "02_Tulpar_energichno.mp3"
+    ],
+    "Мақал-мәтел": [
+      "01_Dala_spokoyno.mp3"
+    ],
+    "Қай қала?": [
+      "02_Tulpar_energichno.mp3",
+      "04_Toy_pozitiv.mp3"
+    ]
+  }
 }

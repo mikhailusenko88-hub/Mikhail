@@ -344,7 +344,10 @@ def build(script, cfg, out_path, work_dir, tts=speak, log=print):
     music_files = sorted((BASE / "music").glob("*.mp3")) if (BASE / "music").exists() else []
     cmd = ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", seg_list, "-i", voice_f]
     if music_files:
-        m = rnd.choice(music_files)
+        # музыка по смыслу рубрики (config.json → music_by_format), иначе любая
+        want = (cfg.get("music_by_format") or {}).get(script.get("format") or "", [])
+        fit = [f for f in music_files if f.name in want]
+        m = rnd.choice(fit or music_files)
         cmd += ["-stream_loop", "-1", "-i", m, "-filter_complex",
                 f"[2:a]volume={cfg.get('music_volume', 0.08)},"
                 f"afade=t=out:st={max(total_dur - 1.5, 0):.2f}:d=1.5[m];"
