@@ -59,23 +59,32 @@
   "music_by_format": {
     "Білесің бе?": [
       "03_Kupiya_zagadka.mp3",
-      "01_Dala_spokoyno.mp3"
+      "01_Dala_spokoyno.mp3",
+      "lofi_01_Vecherniy_chay.mp3",
+      "skazka_02_LoFi.mp3"
     ],
     "Аңыз ба, шындық па?": [
-      "03_Kupiya_zagadka.mp3"
+      "03_Kupiya_zagadka.mp3",
+      "bit_01_Staryy_dvor.mp3",
+      "skazka_05_Rep_bit.mp3"
     ],
     "Қазақша сөз": [
-      "04_Toy_pozitiv.mp3"
+      "04_Toy_pozitiv.mp3",
+      "lofi_01_Vecherniy_chay.mp3"
     ],
     "Топ-3": [
-      "02_Tulpar_energichno.mp3"
+      "02_Tulpar_energichno.mp3",
+      "bit_02_Motor.mp3",
+      "skazka_05_Rep_bit.mp3"
     ],
     "Мақал-мәтел": [
-      "01_Dala_spokoyno.mp3"
+      "01_Dala_spokoyno.mp3",
+      "lofi_02_Dozhd.mp3"
     ],
     "Қай қала?": [
       "02_Tulpar_energichno.mp3",
-      "04_Toy_pozitiv.mp3"
+      "04_Toy_pozitiv.mp3",
+      "bit_02_Motor.mp3"
     ]
   }
 }
