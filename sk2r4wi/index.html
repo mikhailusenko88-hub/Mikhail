@@ -47,6 +47,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
       <div><span>Цоколь А, серый</span><b>100</b></div>
       <div><span>Б ниша робота, внутри</span><b>390 × 920</b></div>
       <div><span>Б дверь вкладная, снизу проезд 130</span><b>386 × 788</b></div>
+      <div><span>Мойка Gerhans K35050, врезная</span><b>500 × 500, чаша 220</b></div>
       <div><span>С столешница</span><b>1081 × 600 × 38</b></div>
       <div><span>Верх столешницы от пола</span><b>958</b></div>
       <div><span>К фартук, плитка 600×1200</span><b>958 – 1558</b></div>
@@ -172,10 +173,16 @@ robo.position.set((AW+ROB/2)*S,0.06,0.5); scene.add(robo);
 box(x2,CT,CTD,0,UNDER,0,ctMat);
 label('С',120,TOPY+60,CTD+30,true,codes);
 // мойка и смеситель
-box(500,6,420,(AW-500)/2,TOPY,90,blackMat);
+// Мойка Gerhans K35050: 500×500, глубина чаши 220, врезная, нерж. сталь, отверстие под смеситель сзади
+const steel=new THREE.MeshPhongMaterial({color:0xc9cdd1,shininess:90,specular:0x888888});
+const SKX=(AW-500)/2, SKZ=50;
+box(500,3,500,SKX,TOPY,SKZ,steel);
+box(440,4,380,SKX+30,TOPY+1,SKZ+90,new THREE.MeshPhongMaterial({color:0x8e9499,shininess:60}));
+box(440,220,380,SKX+30,TOPY-220,SKZ+90,steel); // чаша под столешницей
+label('мойка 500×500, чаша 220',AW/2,TOPY+120,SKZ+500,false,dims);
 const tap=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.3,12),blackMat);
-tap.position.set(AW/2*S,(TOPY+150)*S,0.05); scene.add(tap);
-box(24,24,180,AW/2-12,TOPY+280,40,blackMat);
+tap.position.set(AW/2*S,(TOPY+150)*S,(SKZ+45)*S); scene.add(tap);
+box(24,24,200,AW/2-12,TOPY+280,SKZ+45,blackMat);
 
 // К — фартук из керамогранита (1 ряд 600)
 box(x2,TILE,10,0,TOPY,0,tileMat);
