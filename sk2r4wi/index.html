@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Проект 100/5</title>
+<style>
+/* Layout: 3D на весь экран, панель свёрнута внизу и не закрывает модель */
+:root{
+  --bg:#eceef0; --panel:#ffffffee; --fg:#1d2328; --muted:#5f6b75; --accent:#2f6f8f; --line:#d3d8dc;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; --f-num: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1a1e22;--panel:#23292eee;--fg:#e6eaed;--muted:#9aa6af;--accent:#6fb3d4;--line:#38424a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1a1e22;--panel:#23292eee;--fg:#e6eaed;--muted:#9aa6af;--accent:#6fb3d4;--line:#38424a;color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);overflow:hidden}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.ttl{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:max(12px,env(safe-area-inset-left,0px));font-size:14px;font-weight:600;margin:0;pointer-events:none;color:var(--muted)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);backdrop-filter:blur(6px);
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));
+  padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;max-height:60%;overflow:auto}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.dims{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:2px 18px;font-size:12.5px;margin:0}
+.dims div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding:2px 0}
+.dims span{color:var(--muted)} .dims b{font-weight:500;font-family:var(--f-num);font-variant-numeric:tabular-nums;white-space:nowrap}
+button{font:500 12px var(--f-ui);padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
+button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sw{display:flex;gap:5px;align-items:center;font-size:12.5px;flex-wrap:wrap}
+.sw .dot{width:24px;height:24px;padding:0;border-radius:50%}
+.sw .dot[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:2px}
+.sw input[type=color]{width:32px;height:24px;border:1px solid var(--line);border-radius:6px;padding:0;background:transparent}
+.sw input[type=text]{font:12px var(--f-ui);padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--fg);width:150px}
+.muted{color:var(--muted)}
+</style>
+
+</head>
+<body>
+<canvas id="c"></canvas>
+<h1 class="ttl">Проект 100/5 — прачечная</h1>
+<div class="bar">
+  <div id="sheet" hidden>
+    <div class="dims">
+      <div><span>Ниша: ширина × глубина × потолок</span><b>1781 × 606 × 2904</b></div>
+      <div><span>А тумба под раковину, 2 двери</span><b>675 × 920 × 580</b></div>
+      <div><span>Б ниша робота, внутри</span><b>390 × 920</b></div>
+      <div><span>Б дверь, снизу проезд 130</span><b>406 × 788</b></div>
+      <div><span>С столешница</span><b>1081 × 600 × 38</b></div>
+      <div><span>Верх столешницы от пола</span><b>958</b></div>
+      <div><span>К фартук, плитка 600×1200</span><b>958 – 1558</b></div>
+      <div><span>П1 полка, гл. 250</span><b>низ 1310</b></div>
+      <div><span>П2 полка на плитке, гл. 250</span><b>низ 1558</b></div>
+      <div><span>В1 / В2 / В3, гл. 400</span><b>675 / 406 / 700</b></div>
+      <div><span>Верхние: низ / высота / верх</span><b>1750 / 650 / 2400</b></div>
+      <div><span>СД выдвижная сушилка под В3</span><b>≈ 560, вылет ≈ 500</b></div>
+      <div><span>М2 стиралка + М1 сушилка</span><b>595, h ≈ 1700</b></div>
+      <div><span>Ф фальш-панель справа</span><b>105 × 1750</b></div>
+      <div><span>Рс розетка → М1 (от пола / от лев.)</span><b>1114 / 891</b></div>
+      <div><span>Р2 розетка → робот (верх / от пр.)</span><b>760 / 440</b></div>
+    </div>
+  </div>
+  <div class="sw" id="sw"><span class="muted">Фасады:</span></div>
+  <div class="row">
+    <button id="bS" aria-pressed="false">Таблица размеров</button>
+    <button id="bF2" aria-pressed="true">Фасады</button>
+    <button id="bM" aria-pressed="true">Машины</button>
+    <button id="bD" aria-pressed="true">Размеры</button>
+    <button id="bR" aria-pressed="false">Сушилку выдвинуть</button>
+    <button id="bF">Спереди</button>
+    <button id="b3">3D</button>
+  </div>
+</div>
+
+<script src="/mebel/_lib/three.min.js"></script>
+<script src="/mebel/_lib/OrbitControls.js"></script>
+<script>
+// Все размеры в мм. x — от левой стены, y — от пола, z — от задней стены к нам
+const W=1781, D=606, H=2904, MW=595, MD=595, MH=850, GAP=105, SOCK_H=1114, SOCK_X=891;
+const UNDER=920, CT=38, TOPY=UNDER+CT, TILE=600, SH_T=25, SH_D=250, SH1=1310, SH2=TOPY+TILE;
+const UP_Y=1750, UP_H=650, UP_D=400, PL=100, BD=580, CTD=600;
+const x2=W-GAP-MW;               // начало колонны (1081)
+const ROB=390, BS=16, AW=x2-ROB-BS; // А = 675
+const S=0.001;
+
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40,1,0.01,50);
+const ctr=new THREE.OrbitControls(cam,canvas); ctr.enableDamping=true;
+scene.add(new THREE.HemisphereLight(0xffffff,0x8a8f94,0.8));
+const dl=new THREE.DirectionalLight(0xffffff,0.5); dl.position.set(1.5,3,3); scene.add(dl);
+
+const M=c=>new THREE.MeshLambertMaterial({color:c});
+const wallMat=M(0xd6d8d9), floorMat=M(0xbdb9b2), bodyMat=M(0xa7aaab), whiteMat=M(0xffffff),
+      ctMat=M(0x9a9c9b), shelfMat=M(0xa3a5a4), tileMat=M(0xf1eee8), blackMat=M(0x1e1e1e),
+      frontMat=M(0x5d6b80), ledMat=new THREE.MeshBasicMaterial({color:0xffd9a0});
+const ceilMat=new THREE.MeshLambertMaterial({color:0xf2f2f2,transparent:true,opacity:0.3});
+
+function box(w,h,d,x,y,z,mat,grp){const m=new THREE.Mesh(new THREE.BoxGeometry(w*S,h*S,d*S),mat);
+  m.position.set((x+w/2)*S,(y+h/2)*S,(z+d/2)*S);(grp||scene).add(m);return m}
+function label(text,x,y,z,big,grp){
+  const cv=document.createElement('canvas'),ctx=cv.getContext('2d'),fs=big?64:44;
+  ctx.font=`500 ${fs}px IBM Plex Mono, monospace`; const w=ctx.measureText(text).width+28;
+  cv.width=w; cv.height=fs+24; ctx.font=`500 ${fs}px IBM Plex Mono, monospace`;
+  ctx.fillStyle=big?'#2f6f8f':'rgba(255,255,255,0.92)'; ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.fillStyle=big?'#ffffff':'#1d2328'; ctx.textBaseline='middle'; ctx.fillText(text,14,cv.height/2+2);
+  const t=new THREE.CanvasTexture(cv); t.minFilter=THREE.LinearFilter;
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false}));
+  const k=big?0.00105:0.0009; sp.scale.set(cv.width*k*0.5,cv.height*k*0.5,1);
+  sp.position.set(x*S,y*S,z*S); sp.renderOrder=10; (grp||scene).add(sp); return sp;
+}
+
+// Комната
+const T=20;
+box(W+2*T,H,T,-T,0,-T,wallMat); box(T,H,D,-T,0,0,wallMat); box(T,H,D,W,0,0,wallMat);
+box(W+2*T,T,D+T,-T,-T,-T,floorMat); box(W+2*T,T,D+T,-T,H,-T,ceilMat);
+
+const fronts=new THREE.Group(), machines=new THREE.Group(), dims=new THREE.Group(), codes=new THREE.Group();
+scene.add(fronts,machines,dims,codes);
+
+// Дверь с ручкой-скобой
+function door(x,y,w,h,z,handleTop){
+  box(w,h,18,x,y,z,frontMat,fronts);
+  const hy=handleTop? y+h-60 : y+40;
+  box(Math.min(220,w-80),12,22,x+(w-Math.min(220,w-80))/2,hy,z+18,blackMat,fronts);
+}
+
+// А — тумба под раковину
+box(16,UNDER-PL,BD,0,PL,0,bodyMat); box(16,UNDER-PL,BD,AW-16,PL,0,bodyMat);
+box(AW-32,16,BD,16,PL,0,whiteMat); box(AW-32,UNDER-PL,4,16,PL,0,whiteMat);
+box(AW,PL,16,0,0,BD-60,blackMat); // цоколь, утоплен на 50
+door(2,PL+2,AW/2-3,UNDER-PL-4,BD,true); door(AW/2+1,PL+2,AW/2-3,UNDER-PL-4,BD,true);
+label('А',AW/2,UNDER-250,CTD+40,true,codes);
+
+// Б — ниша робота: бок у стиралки, задняя царга под столешницей
+box(BS,UNDER,CTD,x2-BS,0,0,bodyMat);
+box(ROB,100,16,AW,UNDER-100,0,bodyMat);
+door(AW+1,130,ROB+BS-2,UNDER-130-2,CTD,true); // дверь Б, снизу 130 под робота
+label('Б',AW+ROB/2,UNDER-250,CTD+40,true,codes);
+label('проезд 130',AW+ROB/2,180,CTD+40,false,dims);
+// станция робота
+box(330,450,420,AW+30,0,60,M(0xf4f4f4)); box(330,40,450,AW+30,0,60+0,M(0xe8e8e8));
+const robo=new THREE.Mesh(new THREE.CylinderGeometry(0.175,0.175,0.09,40),M(0xfafafa));
+robo.position.set((AW+ROB/2)*S,0.06,0.5); scene.add(robo);
+
+// С — столешница
+box(x2,CT,CTD,0,UNDER,0,ctMat);
+label('С',120,TOPY+60,CTD+30,true,codes);
+// мойка и смеситель
+box(500,6,420,(AW-500)/2,TOPY,90,blackMat);
+const tap=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.3,12),blackMat);
+tap.position.set(AW/2*S,(TOPY+150)*S,0.05); scene.add(tap);
+box(24,24,180,AW/2-12,TOPY+280,40,blackMat);
+
+// К — фартук из керамогранита (1 ряд 600)
+box(x2,TILE,10,0,TOPY,0,tileMat);
+label('К',x2-80,TOPY+300,40,true,codes);
+// П1, П2 — полки с подсветкой
+function shelf(y,code){box(x2,SH_T,SH_D-10,0,y,10,shelfMat);box(x2-40,4,10,20,y-4,SH_D-50,ledMat);label(code,x2-90,y+60,SH_D+20,true,codes)}
+shelf(SH1,'П1'); box(x2,SH_T,10,0,SH2,0,shelfMat); shelf(SH2,'П2');
+
+// Розетки
+box(160,86,12,SOCK_X-80,SOCK_H-43,10,M(0x2a2a2a)); label('Рс → М1',SOCK_X,SOCK_H-110,60,false,codes);
+const P2_H=680, P2_X=W-440-43;
+box(86,160,12,P2_X-43,P2_H-80,0,M(0x2a2a2a)); label('Р2 → робот',P2_X,P2_H+150,20,false,codes);
+const pts=[[AW+ROB-60,30,200],[x2-45,40,60],[x2-45,40,18],[P2_X-60,40,18],[P2_X-30,P2_H-30,18]].map(p=>new THREE.Vector3(p[0]*S,p[1]*S,p[2]*S));
+scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),40,0.005,6),M(0xd2691e)));
+
+// Колонна: М2 внизу, М1 сверху
+function machine(y,code){
+  box(MW,MH,MD,x2,y,D-MD-5,whiteMat,machines);
+  const dr=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.2,0.02,40),M(0x8d98a0));
+  dr.rotation.x=Math.PI/2; dr.position.set((x2+MW/2)*S,(y+450)*S,(D-5)*S+0.01); machines.add(dr);
+  label(code,x2+MW/2,y+MH-110,D+30,true,machines);
+}
+machine(0,'М2'); machine(MH,'М1');
+
+// Ф — фальш-панель справа
+box(GAP,UP_Y,16,W-GAP,0,CTD-16,bodyMat); label('Ф',W-GAP/2,UP_Y-200,CTD+30,true,codes);
+
+// В1–В3 — верхние модули
+function upper(x,w,n,code){
+  box(16,UP_H,UP_D-18,x,UP_Y,0,bodyMat); box(16,UP_H,UP_D-18,x+w-16,UP_Y,0,bodyMat);
+  box(w-32,16,UP_D-18,x+16,UP_Y,0,bodyMat); box(w-32,16,UP_D-18,x+16,UP_Y+UP_H-16,0,bodyMat);
+  box(w-32,16,UP_D-40,x+16,UP_Y+UP_H/2,0,whiteMat);
+  const dw=(w-4*(n+1)+4)/n;
+  for(let i=0;i<n;i++) door(x+2+i*(dw+3),UP_Y+2,dw-1,UP_H-4,UP_D-18,false);
+  label(code,x+w/2,UP_Y+UP_H/2,UP_D+40,true,codes);
+}
+upper(0,AW,2,'В1'); upper(AW,ROB+BS,1,'В2'); upper(x2,W-x2,2,'В3');
+
+// СД — выдвижная сушилка для белья под дном В3, над сушильной машиной
+const RW=560, RH=40, RX=x2+(MW-RW)/2, RY=UP_Y-RH-2, RD=380, ROUT=500;
+box(RW,RH,RD,RX,RY,10,M(0xc9cccf)); // корпус сушилки
+const rack=new THREE.Group(); scene.add(rack);
+box(RW-10,RH-6,14,RX+5,RY+3,RD-4,M(0xc9cccf),rack); // лицевая планка
+for(let i=0;i<7;i++){const r=new THREE.Mesh(new THREE.CylinderGeometry(0.004,0.004,ROUT*S,8),M(0x9aa0a6));
+  r.rotation.x=Math.PI/2; r.position.set((RX+40+i*(RW-80)/6)*S,(RY+RH/2)*S,(RD-ROUT/2)*S); rack.add(r);}
+rack.children.forEach(c=>c.visible=c===rack.children[0]);
+label('СД',RX+RW/2,RY-60,RD+40,true,codes);
+let rackOut=false;
+function setRack(o){rackOut=o;rack.position.z=o?ROUT*S:0;rack.children.forEach((c,i)=>c.visible=i===0||o);
+  const b=document.getElementById('bR');b.setAttribute('aria-pressed',o);b.textContent=o?'Сушилку задвинуть':'Сушилку выдвинуть'}
+
+// Размеры
+function dimLine(a,b,text,lx,ly,lz){
+  const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...a.map(v=>v*S)),new THREE.Vector3(...b.map(v=>v*S))]);
+  const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:0x2f6f8f,depthTest:false})); l.renderOrder=9; dims.add(l);
+  label(text,lx,ly,lz,false,dims);
+}
+function loadDims(){
+  const fz=D+60, vx=-60;
+  dimLine([0,30,fz],[AW,30,fz],'675',AW/2,60,fz);
+  dimLine([AW,30,fz],[x2-BS,30,fz],'390',AW+ROB/2,60,fz);
+  dimLine([x2,30,fz],[W-GAP,30,fz],'595',x2+MW/2,60,fz);
+  dimLine([W-GAP,30,fz],[W,30,fz],'105',W-GAP/2,60,fz);
+  dimLine([vx,0,fz],[vx,UNDER,fz],'920',vx,UNDER/2,fz);
+  dimLine([vx,UNDER,fz],[vx,TOPY,fz],'38',vx-60,TOPY-10,fz);
+  dimLine([vx,TOPY,SH_D],[vx,SH2,SH_D],'фартук 600',vx,TOPY+180,SH_D);
+  dimLine([vx,0,UP_D+20],[vx,UP_Y,UP_D+20],'1750',vx,UP_Y-120,UP_D+20);
+  dimLine([vx,UP_Y,UP_D+20],[vx,UP_Y+UP_H,UP_D+20],'650',vx,UP_Y+UP_H/2,UP_D+20);
+  dimLine([vx-60,0,UP_D+20],[vx-60,UP_Y+UP_H,UP_D+20],'2400',vx-60,UP_Y+UP_H+60,UP_D+20);
+  dimLine([0,UP_Y+UP_H+40,UP_D],[AW,UP_Y+UP_H+40,UP_D],'675',AW/2,UP_Y+UP_H+90,UP_D);
+  dimLine([AW,UP_Y+UP_H+40,UP_D],[x2,UP_Y+UP_H+40,UP_D],'406',AW+203,UP_Y+UP_H+90,UP_D);
+  dimLine([x2,UP_Y+UP_H+40,UP_D],[W,UP_Y+UP_H+40,UP_D],'700',x2+350,UP_Y+UP_H+90,UP_D);
+  dimLine([W+30,UP_Y,0],[W+30,UP_Y,UP_D],'гл. 400',W+60,UP_Y+60,UP_D/2);
+  dimLine([20,SH2+SH_T,0],[20,SH2+SH_T,SH_D],'250',90,SH2+90,SH_D/2);
+  label('1310',x2-260,SH1-50,SH_D,false,dims);
+}
+document.fonts.ready.then(loadDims);
+
+function viewFront(){cam.position.set(W/2*S,1.3,5.0);ctr.target.set(W/2*S,1.2,D/2*S);ctr.update()}
+function view3D(){cam.position.set(3.0,2.3,3.6);ctr.target.set(W/2*S,1.3,D/2*S);ctr.update()}
+view3D();
+
+function toggle(id,grp,also){const b=document.getElementById(id);b.onclick=()=>{grp.visible=!grp.visible;b.setAttribute('aria-pressed',grp.visible)}}
+toggle('bF2',fronts); toggle('bM',machines); toggle('bD',dims);
+document.getElementById('bR').onclick=()=>setRack(!rackOut);
+document.getElementById('bF').onclick=viewFront; document.getElementById('b3').onclick=view3D;
+// Цвета фасадов
+const COLORS=[['Серо-синий (как в дизайне)','#5d6b80'],['Белый W1100','#f2f1ec'],['Кашемир U702','#b5ab9c'],['Серый камень U727','#8f8c86'],
+ ['Зелёный шалфей U638','#7d8a78'],['Графит U961','#3e4245'],['Дуб Кассела','#a77c55'],['Дуб песочный H3309','#c9a77d'],
+ ['Дуб натуральный H1145','#b08a5e'],['Дуб табак H1180','#6b4a33']];
+const sw=document.getElementById('sw');
+function setColor(c,name){frontMat.color.set(c);sw.querySelectorAll('.dot').forEach(d=>d.setAttribute('aria-pressed',d.dataset.c===c));
+  try{localStorage.setItem('prachka-color',JSON.stringify({c,name}))}catch(e){}}
+COLORS.forEach(([n,c])=>{const b=document.createElement('button');b.className='dot';b.dataset.c=c;b.style.background=c;b.title=n;b.setAttribute('aria-label',n);
+  b.onclick=()=>{setColor(c,n);own.value=c;ownName.value=''};sw.appendChild(b)});
+const lab=document.createElement('label');lab.className='sw';lab.innerHTML='Свой цвет <input type="color" id="own" value="#5d6b80"> <input type="text" id="ownName" placeholder="название или артикул">';
+sw.appendChild(lab);const own=document.getElementById('own'),ownName=document.getElementById('ownName');
+own.oninput=()=>setColor(own.value,ownName.value); ownName.oninput=()=>setColor(own.value,ownName.value);
+let saved=null;try{saved=JSON.parse(localStorage.getItem('prachka-color'))}catch(e){}
+if(saved&&saved.c){setColor(saved.c,saved.name);own.value=saved.c;if(saved.name&&!COLORS.some(x=>x[0]===saved.name))ownName.value=saved.name}else setColor('#5d6b80');
+document.getElementById('bS').onclick=e=>{const sh=document.getElementById('sheet');sh.hidden=!sh.hidden;e.target.setAttribute('aria-pressed',!sh.hidden)};
+
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+addEventListener('resize',resize); resize();
+(function loop(){ctr.update();renderer.render(scene,cam);requestAnimationFrame(loop)})();
+</script>
+
+</body>
+</html>
