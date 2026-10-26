@@ -57,7 +57,6 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
       <div><span>Зазор сушилка М1 — верхние</span><b>≈ 100</b></div>
       <div><span>СД выдвижная сушилка под В3</span><b>≈ 560, вылет ≈ 500</b></div>
       <div><span>М2 стиралка + М1 сушилка</span><b>595, h ≈ 1700</b></div>
-      <div><span>Ф фальш-панель справа</span><b>105 × 1800</b></div>
       <div><span>Рс розетка → М1 (от пола / от лев.)</span><b>1114 / 891</b></div>
       <div><span>Р2 розетка → робот (верх / от пр.)</span><b>760 / 440</b></div>
     </div>
@@ -195,8 +194,7 @@ function machine(y,code){
 }
 machine(0,'М2'); machine(MH,'М1');
 
-// Ф — фальш-панель справа
-box(GAP,UP_Y,16,W-GAP,0,CTD-16,bodyMat); label('Ф',W-GAP/2,UP_Y-200,CTD+30,true,codes);
+
 
 // В1–В3 — верхние модули, вкладные двери, полка внутри
 function upper(x,w,n,code,hinge){
@@ -250,7 +248,6 @@ function loadDims(){
   label('1310',x2-260,SH1-50,SH_D,false,dims);
   label(`П1, П2: ${x2}×${SH_D}×${SH_T}`,x2/2,SH1+60,SH_D+20,false,dims);
   label(`С: ${x2}×${CTD}×${CT}`,x2/2,TOPY+40,CTD+40,false,dims);
-  label(`Ф: ${GAP}×${UP_Y}`,W-GAP/2,UP_Y-330,CTD+40,false,dims);
 }
 document.fonts.ready.then(loadDims);
 
