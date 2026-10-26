@@ -87,7 +87,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 <script>
 // Все размеры в мм. x — от левой стены, y — от пола, z — от задней стены к нам
 const W=1781, D=606, H=2904, MW=595, MD=595, MH=850, GAP=105, SOCK_H=1114, SOCK_X=891;
-const UNDER=920, CT=38, TOPY=UNDER+CT, TILE=600, SH_T=25, SH_D=250, SH1=1400, SH2=TOPY+TILE;
+const UNDER=920, CT=38, TOPY=UNDER+CT, TILE=600, SH_T=18, SH_D=250, SH1=1400, SH2=TOPY+TILE;
 const UP_Y=1800, UP_H=800, R3D=580, UP_D=400, PL=100, BD=580, CTD=600;
 const x2=W-GAP-MW;               // начало колонны (1081)
 const ROB=390, BS=16, AW=x2-ROB-BS; // А = 675
@@ -193,8 +193,8 @@ label('смеситель с лейкой',AW/2,TOPY+470,SKZ+200,false,dims);
 box(x2,TILE,10,0,TOPY,0,tileMat);
 label('К',x2-80,TOPY+300,40,true,codes);
 // П1, П2 — полки с подсветкой
-function shelf(y,code){box(x2,SH_T,SH_D-10,0,y,10,shelfMat);box(x2-40,4,10,20,y-4,SH_D-50,ledMat);label(code,x2-90,y+60,SH_D+20,true,codes)}
-shelf(SH1,'П1'); box(x2,SH_T,10,0,SH2,0,shelfMat); shelf(SH2,'П2');
+function shelf(y,code){box(x2,SH_T,SH_D-10,0,y,10,frontMat);box(x2-40,4,10,20,y-4,SH_D-50,ledMat);label(code,x2-90,y+60,SH_D+20,true,codes)}
+shelf(SH1,'П1'); box(x2,SH_T,10,0,SH2,0,frontMat); shelf(SH2,'П2');
 
 // Розетки
 box(160,86,12,SOCK_X-80,SOCK_H-43,10,M(0x2a2a2a)); label('Рс → М1',SOCK_X,SOCK_H-110,60,false,codes);
