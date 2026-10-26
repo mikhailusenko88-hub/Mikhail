@@ -56,6 +56,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
       <div><span>Верхние: низ / высота / верх</span><b>1800 / 600 / 2400</b></div>
       <div><span>Зазор сушилка М1 — верхние</span><b>≈ 100</b></div>
       <div><span>СД сушилка COBBE S, в низу В3</span><b>668 × 55 × 560</b></div>
+      <div><span>СД вар. 1 без фасада: бока вниз / до М1</span><b>60 / ≈ 40</b></div>
+      <div><span>СД вар. 2 фасад / до М1</span><b>664 × 76 / ≈ 20</b></div>
       <div><span>В3 над колонной, глубже</span><b>700 × 600 × 580</b></div>
       <div><span>М2 стиралка + М1 сушилка</span><b>595, h ≈ 1700</b></div>
       <div><span>Рс розетка → М1 (от пола / от лев.)</span><b>1114 / 891</b></div>
@@ -69,6 +71,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
     <button id="bM" aria-pressed="true">Машины</button>
     <button id="bD" aria-pressed="true">Размеры</button>
     <button id="bO" aria-pressed="false">Открыть двери</button>
+    <button id="bV">Сушилка: с фасадом</button>
     <button id="bR" aria-pressed="false">Сушилку выдвинуть</button>
     <button id="bF">Спереди</button>
     <button id="b3">3D</button>
@@ -209,21 +212,31 @@ function upper(x,w,n,code,hinge,dep=UP_D){
 }
 upper(0,AW,2,'В1'); upper(AW,ROB+BS,1,'В2','R'); upper(x2,W-x2,2,'В3',null,R3D);
 
-// СД — выдвижная сушилка для белья под дном В3, над сушильной машиной
-const RW=W-x2-32, RH=55, SP=0, RX=x2+16+SP, RY=UP_Y-RH-3, RD=560, ROUT=500;
-// бока В3 опущены на 60 вниз, сушилка крепится прямо к ним, без накладок
-box(16,60,R3D,x2,UP_Y-60,0,bodyMat); box(16,60,R3D,W-16,UP_Y-60,0,bodyMat);
-box(RW,RH,RD,RX,RY,10,M(0x55595d)); // сушилка COBBE S, серая
+// СД — выдвижная сушилка COBBE под дном В3. Вариант 1: без фасада (бока вниз на 60). Вариант 2: с фасадом (бока вниз на 80)
+const RW=W-x2-32, RH=55, RX=x2+16, RY=UP_Y-RH-3, RD=560, ROUT=500, SV1=60, SV2=80;
+let rackVar=2, rackOut=false;
+const sides1=new THREE.Group(), sides2=new THREE.Group(); scene.add(sides1,sides2);
+box(16,SV1,R3D,x2,UP_Y-SV1,0,bodyMat,sides1); box(16,SV1,R3D,W-16,UP_Y-SV1,0,bodyMat,sides1);
+box(16,SV2,R3D,x2,UP_Y-SV2,0,bodyMat,sides2); box(16,SV2,R3D,W-16,UP_Y-SV2,0,bodyMat,sides2);
+box(RW,RH,RD,RX,RY,10,M(0x55595d)); // корпус сушилки, серый
 const rack=new THREE.Group(); scene.add(rack);
-box(RW-10,RH-6,14,RX+5,RY+3,RD-4,M(0x55595d),rack); // лицевая планка
+const plank=box(RW-10,RH-6,14,RX+5,RY+3,RD-4,M(0x55595d),rack); // лицевая планка
+const rods=new THREE.Group(); rack.add(rods);
 for(let i=0;i<7;i++){const r=new THREE.Mesh(new THREE.CylinderGeometry(0.004,0.004,ROUT*S,8),M(0x6c7176));
-  r.rotation.x=Math.PI/2; r.position.set((RX+40+i*(RW-80)/6)*S,(RY+RH/2)*S,(RD-ROUT/2)*S); rack.add(r);}
-rack.children.forEach(c=>c.visible=c===rack.children[0]);
-label('СД',RX+RW/2,RY-60,RD+40,true,codes);
-label(`СД ${RW}×${RH}×${RD}, зазор до М1 ≈ ${UP_Y-60-2*MH}`,RX+RW/2,RY-170,RD+40,false,dims);
-let rackOut=false;
-function setRack(o){rackOut=o;rack.position.z=o?ROUT*S:0;rack.children.forEach((c,i)=>c.visible=i===0||o);
-  const b=document.getElementById('bR');b.setAttribute('aria-pressed',o);b.textContent=o?'Сушилку задвинуть':'Сушилку выдвинуть'}
+  r.rotation.x=Math.PI/2; r.position.set((RX+40+i*(RW-80)/6)*S,(RY+RH/2)*S,(RD-ROUT/2)*S); rods.add(r);}
+const rFront=new THREE.Group(); rack.add(rFront); // маленький фасад, вкладной между боками
+box(RW-4,SV2-4,18,RX+2,UP_Y-SV2+2,R3D-18,frontMat,rFront);
+box(220,12,22,RX+RW/2-110,UP_Y-SV2+30,R3D,blackMat,rFront);
+label('СД',RX+RW/2,UP_Y-SV2-70,R3D+40,true,codes);
+const l1=label(`СД без фасада: ${RW}×${RH}×${RD}, до М1 ≈ ${UP_Y-SV1-2*MH}`,RX+RW/2,UP_Y-SV2-180,R3D+40,false,dims);
+const l2=label(`СД фасад ${RW-4}×${SV2-4}, до М1 ≈ ${UP_Y-SV2-2*MH}`,RX+RW/2,UP_Y-SV2-180,R3D+40,false,dims);
+function applyRack(){
+  rack.position.z=rackOut?ROUT*S:0; rods.visible=rackOut;
+  const v2=rackVar===2; sides1.visible=!v2; sides2.visible=v2; rFront.visible=v2; plank.visible=!v2; l1.visible=!v2; l2.visible=v2;
+  const b=document.getElementById('bR'); b.setAttribute('aria-pressed',rackOut); b.textContent=rackOut?'Сушилку задвинуть':'Сушилку выдвинуть';
+  document.getElementById('bV').textContent=v2?'Сушилка: с фасадом':'Сушилка: без фасада';
+}
+function setRack(o){rackOut=o;applyRack()}
 
 // Размеры
 function dimLine(a,b,text,lx,ly,lz){
@@ -262,6 +275,8 @@ view3D();
 function toggle(id,grp,also){const b=document.getElementById(id);b.onclick=()=>{grp.visible=!grp.visible;b.setAttribute('aria-pressed',grp.visible)}}
 toggle('bF2',fronts); toggle('bM',machines); toggle('bD',dims);
 document.getElementById('bR').onclick=()=>setRack(!rackOut);
+document.getElementById('bV').onclick=()=>{rackVar=rackVar===2?1:2;applyRack()};
+applyRack();
 let doorsOpen=false;
 document.getElementById('bO').onclick=e=>{doorsOpen=!doorsOpen;e.target.setAttribute('aria-pressed',doorsOpen);e.target.textContent=doorsOpen?'Закрыть двери':'Открыть двери';
   if(doorsOpen&&!fronts.visible){fronts.visible=true;document.getElementById('bF2').setAttribute('aria-pressed',true)}};
