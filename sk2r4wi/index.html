@@ -55,7 +55,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
       <div><span>В1 / В2 / В3, гл. 400, полка внутри</span><b>675 / 406 / 700</b></div>
       <div><span>Верхние: низ / высота / верх</span><b>1800 / 600 / 2400</b></div>
       <div><span>Зазор сушилка М1 — верхние</span><b>≈ 100</b></div>
-      <div><span>СД сушилка COBBE S, в низу В3</span><b>580 × 55 × 560</b></div>
+      <div><span>СД сушилка COBBE S, в низу В3</span><b>668 × 55 × 560</b></div>
       <div><span>В3 над колонной, глубже</span><b>700 × 600 × 580</b></div>
       <div><span>М2 стиралка + М1 сушилка</span><b>595, h ≈ 1700</b></div>
       <div><span>Рс розетка → М1 (от пола / от лев.)</span><b>1114 / 891</b></div>
@@ -210,10 +210,9 @@ function upper(x,w,n,code,hinge,dep=UP_D){
 upper(0,AW,2,'В1'); upper(AW,ROB+BS,1,'В2','R'); upper(x2,W-x2,2,'В3',null,R3D);
 
 // СД — выдвижная сушилка для белья под дном В3, над сушильной машиной
-const RW=580, RH=55, SP=(W-x2-32-RW)/2, RX=x2+16+SP, RY=UP_Y-RH-3, RD=560, ROUT=500;
-// бока В3 опущены на 60 вниз, внутри накладки, чтобы ширина под сушилку была 580
+const RW=W-x2-32, RH=55, SP=0, RX=x2+16+SP, RY=UP_Y-RH-3, RD=560, ROUT=500;
+// бока В3 опущены на 60 вниз, сушилка крепится прямо к ним, без накладок
 box(16,60,R3D,x2,UP_Y-60,0,bodyMat); box(16,60,R3D,W-16,UP_Y-60,0,bodyMat);
-box(SP,60,R3D,x2+16,UP_Y-60,0,bodyMat); box(SP,60,R3D,W-16-SP,UP_Y-60,0,bodyMat);
 box(RW,RH,RD,RX,RY,10,M(0x55595d)); // сушилка COBBE S, серая
 const rack=new THREE.Group(); scene.add(rack);
 box(RW-10,RH-6,14,RX+5,RY+3,RD-4,M(0x55595d),rack); // лицевая планка
