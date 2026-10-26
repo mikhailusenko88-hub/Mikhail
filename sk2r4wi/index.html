@@ -55,7 +55,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
       <div><span>В1 / В2 / В3, гл. 400, полка внутри</span><b>675 / 406 / 700</b></div>
       <div><span>Верхние: низ / высота / верх</span><b>1800 / 600 / 2400</b></div>
       <div><span>Зазор сушилка М1 — верхние</span><b>≈ 100</b></div>
-      <div><span>СД выдвижная сушилка под В3</span><b>≈ 560, вылет ≈ 500</b></div>
+      <div><span>СД сушилка COBBE S, в низу В3</span><b>580 × 55 × 560</b></div>
+      <div><span>В3 над колонной, глубже</span><b>700 × 600 × 580</b></div>
       <div><span>М2 стиралка + М1 сушилка</span><b>595, h ≈ 1700</b></div>
       <div><span>Рс розетка → М1 (от пола / от лев.)</span><b>1114 / 891</b></div>
       <div><span>Р2 розетка → робот (верх / от пр.)</span><b>760 / 440</b></div>
@@ -80,7 +81,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 // Все размеры в мм. x — от левой стены, y — от пола, z — от задней стены к нам
 const W=1781, D=606, H=2904, MW=595, MD=595, MH=850, GAP=105, SOCK_H=1114, SOCK_X=891;
 const UNDER=920, CT=38, TOPY=UNDER+CT, TILE=600, SH_T=25, SH_D=250, SH1=1310, SH2=TOPY+TILE;
-const UP_Y=1800, UP_H=600, UP_D=400, PL=100, BD=580, CTD=600;
+const UP_Y=1800, UP_H=600, R3D=580, UP_D=400, PL=100, BD=580, CTD=600;
 const x2=W-GAP-MW;               // начало колонны (1081)
 const ROB=390, BS=16, AW=x2-ROB-BS; // А = 675
 const S=0.001;
@@ -197,26 +198,30 @@ machine(0,'М2'); machine(MH,'М1');
 
 
 // В1–В3 — верхние модули, вкладные двери, полка внутри
-function upper(x,w,n,code,hinge){
-  box(16,UP_H,UP_D,x,UP_Y,0,bodyMat); box(16,UP_H,UP_D,x+w-16,UP_Y,0,bodyMat);
-  box(w-32,16,UP_D,x+16,UP_Y,0,bodyMat); box(w-32,16,UP_D,x+16,UP_Y+UP_H-16,0,bodyMat);
+function upper(x,w,n,code,hinge,dep=UP_D){
+  box(16,UP_H,dep,x,UP_Y,0,bodyMat); box(16,UP_H,dep,x+w-16,UP_Y,0,bodyMat);
+  box(w-32,16,dep,x+16,UP_Y,0,bodyMat); box(w-32,16,dep,x+16,UP_Y+UP_H-16,0,bodyMat);
   box(w-32,UP_H-32,4,x+16,UP_Y+16,0,bodyMat);
-  box(w-32,16,UP_D-40,x+16,UP_Y+UP_H/2-8,0,bodyMat); // полка
-  inset(x+16,x+w-16,UP_Y+16,UP_Y+UP_H-16,UP_D,n,false,hinge);
-  label(code,x+w/2,UP_Y+UP_H/2+110,UP_D+40,true,codes);
-  label(`${w}×${UP_H}×${UP_D}`,x+w/2,UP_Y+UP_H/2-90,UP_D+40,false,dims);
+  box(w-32,16,dep-40,x+16,UP_Y+UP_H/2-8,0,bodyMat); // полка
+  inset(x+16,x+w-16,UP_Y+16,UP_Y+UP_H-16,dep,n,false,hinge);
+  label(code,x+w/2,UP_Y+UP_H/2+110,dep+40,true,codes);
+  label(`${w}×${UP_H}×${dep}`,x+w/2,UP_Y+UP_H/2-90,dep+40,false,dims);
 }
-upper(0,AW,2,'В1'); upper(AW,ROB+BS,1,'В2','R'); upper(x2,W-x2,2,'В3');
+upper(0,AW,2,'В1'); upper(AW,ROB+BS,1,'В2','R'); upper(x2,W-x2,2,'В3',null,R3D);
 
 // СД — выдвижная сушилка для белья под дном В3, над сушильной машиной
-const RW=560, RH=40, RX=x2+(MW-RW)/2, RY=UP_Y-RH-2, RD=380, ROUT=500;
-box(RW,RH,RD,RX,RY,10,M(0xc9cccf)); // корпус сушилки
+const RW=580, RH=55, SP=(W-x2-32-RW)/2, RX=x2+16+SP, RY=UP_Y-RH-3, RD=560, ROUT=500;
+// бока В3 опущены на 60 вниз, внутри накладки, чтобы ширина под сушилку была 580
+box(16,60,R3D,x2,UP_Y-60,0,bodyMat); box(16,60,R3D,W-16,UP_Y-60,0,bodyMat);
+box(SP,60,R3D,x2+16,UP_Y-60,0,bodyMat); box(SP,60,R3D,W-16-SP,UP_Y-60,0,bodyMat);
+box(RW,RH,RD,RX,RY,10,M(0x55595d)); // сушилка COBBE S, серая
 const rack=new THREE.Group(); scene.add(rack);
-box(RW-10,RH-6,14,RX+5,RY+3,RD-4,M(0xc9cccf),rack); // лицевая планка
-for(let i=0;i<7;i++){const r=new THREE.Mesh(new THREE.CylinderGeometry(0.004,0.004,ROUT*S,8),M(0x9aa0a6));
+box(RW-10,RH-6,14,RX+5,RY+3,RD-4,M(0x55595d),rack); // лицевая планка
+for(let i=0;i<7;i++){const r=new THREE.Mesh(new THREE.CylinderGeometry(0.004,0.004,ROUT*S,8),M(0x6c7176));
   r.rotation.x=Math.PI/2; r.position.set((RX+40+i*(RW-80)/6)*S,(RY+RH/2)*S,(RD-ROUT/2)*S); rack.add(r);}
 rack.children.forEach(c=>c.visible=c===rack.children[0]);
 label('СД',RX+RW/2,RY-60,RD+40,true,codes);
+label(`СД ${RW}×${RH}×${RD}, зазор до М1 ≈ ${UP_Y-60-2*MH}`,RX+RW/2,RY-170,RD+40,false,dims);
 let rackOut=false;
 function setRack(o){rackOut=o;rack.position.z=o?ROUT*S:0;rack.children.forEach((c,i)=>c.visible=i===0||o);
   const b=document.getElementById('bR');b.setAttribute('aria-pressed',o);b.textContent=o?'Сушилку задвинуть':'Сушилку выдвинуть'}
