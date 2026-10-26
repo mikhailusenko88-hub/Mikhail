@@ -33,6 +33,10 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .sw input[type=color]{width:32px;height:24px;border:1px solid var(--line);border-radius:6px;padding:0;background:transparent}
 .sw input[type=text]{font:12px var(--f-ui);padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--fg);width:150px}
 .muted{color:var(--muted)}
+.calc{width:100%;border-collapse:collapse;font-size:12.5px}.calc th{text-align:left;color:var(--muted);font-weight:500;border-bottom:1px solid var(--line);padding:3px 4px}
+.calc td{border-bottom:1px dotted var(--line);padding:3px 4px;font-variant-numeric:tabular-nums}.calc td:last-child{text-align:right;white-space:nowrap;font-family:var(--f-num)}
+.calc input,.calcTot input{width:70px;font:12px var(--f-num);padding:3px 5px;border:1px solid var(--line);border-radius:5px;background:transparent;color:var(--fg)}
+.calcTot{gap:16px;font-size:13px;margin-top:6px}#calc{overflow-x:auto}
 </style>
 
 </head>
@@ -53,20 +57,22 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
       <div><span>П1 полка, гл. 250</span><b>низ 1310</b></div>
       <div><span>П2 полка на плитке, гл. 250</span><b>низ 1558</b></div>
       <div><span>В1 / В2 / В3, гл. 400, полка внутри</span><b>675 / 406 / 700</b></div>
-      <div><span>Верхние: низ / высота / верх</span><b>1800 / 600 / 2400</b></div>
+      <div><span>Верхние: низ / высота / верх</span><b>1800 / 800 / 2600</b></div>
       <div><span>Зазор сушилка М1 — верхние</span><b>≈ 100</b></div>
       <div><span>СД сушилка COBBE S, в низу В3</span><b>668 × 55 × 560</b></div>
       <div><span>СД вар. 1 без фасада: бока вниз / до М1</span><b>60 / ≈ 40</b></div>
       <div><span>СД вар. 2 фасад / до М1</span><b>664 × 76 / ≈ 20</b></div>
-      <div><span>В3 над колонной, глубже</span><b>700 × 600 × 580</b></div>
+      <div><span>В3 над колонной, глубже</span><b>700 × 800 × 580</b></div>
       <div><span>М2 стиралка + М1 сушилка</span><b>595, h ≈ 1700</b></div>
       <div><span>Рс розетка → М1 (от пола / от лев.)</span><b>1114 / 891</b></div>
       <div><span>Р2 розетка → робот (верх / от пр.)</span><b>760 / 440</b></div>
     </div>
   </div>
+  
   <div class="sw" id="sw"><span class="muted">Фасады:</span></div>
   <div class="row">
     <button id="bS" aria-pressed="false">Таблица размеров</button>
+    
     <button id="bF2" aria-pressed="true">Фасады</button>
     <button id="bM" aria-pressed="true">Машины</button>
     <button id="bD" aria-pressed="true">Размеры</button>
@@ -84,7 +90,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 // Все размеры в мм. x — от левой стены, y — от пола, z — от задней стены к нам
 const W=1781, D=606, H=2904, MW=595, MD=595, MH=850, GAP=105, SOCK_H=1114, SOCK_X=891;
 const UNDER=920, CT=38, TOPY=UNDER+CT, TILE=600, SH_T=25, SH_D=250, SH1=1310, SH2=TOPY+TILE;
-const UP_Y=1800, UP_H=600, R3D=580, UP_D=400, PL=100, BD=580, CTD=600;
+const UP_Y=1800, UP_H=800, R3D=580, UP_D=400, PL=100, BD=580, CTD=600;
 const x2=W-GAP-MW;               // начало колонны (1081)
 const ROB=390, BS=16, AW=x2-ROB-BS; // А = 675
 const S=0.001;
@@ -296,6 +302,8 @@ own.oninput=()=>setColor(own.value,ownName.value); ownName.oninput=()=>setColor(
 let saved=null;try{saved=JSON.parse(localStorage.getItem('prachka-color'))}catch(e){}
 if(saved&&saved.c){setColor(saved.c,saved.name);own.value=saved.c;if(saved.name&&!COLORS.some(x=>x[0]===saved.name))ownName.value=saved.name}else setColor('#5d6b80');
 document.getElementById('bS').onclick=e=>{const sh=document.getElementById('sheet');sh.hidden=!sh.hidden;e.target.setAttribute('aria-pressed',!sh.hidden)};
+
+
 
 function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
 addEventListener('resize',resize); resize();
