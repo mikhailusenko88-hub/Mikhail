@@ -43,19 +43,21 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
   <div id="sheet" hidden>
     <div class="dims">
       <div><span>Ниша: ширина × глубина × потолок</span><b>1781 × 606 × 2904</b></div>
-      <div><span>А тумба под раковину, 2 двери</span><b>675 × 920 × 580</b></div>
+      <div><span>А тумба под раковину, 2 двери, полка</span><b>675 × 820 × 580</b></div>
+      <div><span>Цоколь А, серый</span><b>100</b></div>
       <div><span>Б ниша робота, внутри</span><b>390 × 920</b></div>
-      <div><span>Б дверь, снизу проезд 130</span><b>406 × 788</b></div>
+      <div><span>Б дверь вкладная, снизу проезд 130</span><b>386 × 788</b></div>
       <div><span>С столешница</span><b>1081 × 600 × 38</b></div>
       <div><span>Верх столешницы от пола</span><b>958</b></div>
       <div><span>К фартук, плитка 600×1200</span><b>958 – 1558</b></div>
       <div><span>П1 полка, гл. 250</span><b>низ 1310</b></div>
       <div><span>П2 полка на плитке, гл. 250</span><b>низ 1558</b></div>
-      <div><span>В1 / В2 / В3, гл. 400</span><b>675 / 406 / 700</b></div>
-      <div><span>Верхние: низ / высота / верх</span><b>1750 / 650 / 2400</b></div>
+      <div><span>В1 / В2 / В3, гл. 400, полка внутри</span><b>675 / 406 / 700</b></div>
+      <div><span>Верхние: низ / высота / верх</span><b>1800 / 600 / 2400</b></div>
+      <div><span>Зазор сушилка М1 — верхние</span><b>≈ 100</b></div>
       <div><span>СД выдвижная сушилка под В3</span><b>≈ 560, вылет ≈ 500</b></div>
       <div><span>М2 стиралка + М1 сушилка</span><b>595, h ≈ 1700</b></div>
-      <div><span>Ф фальш-панель справа</span><b>105 × 1750</b></div>
+      <div><span>Ф фальш-панель справа</span><b>105 × 1800</b></div>
       <div><span>Рс розетка → М1 (от пола / от лев.)</span><b>1114 / 891</b></div>
       <div><span>Р2 розетка → робот (верх / от пр.)</span><b>760 / 440</b></div>
     </div>
@@ -66,6 +68,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
     <button id="bF2" aria-pressed="true">Фасады</button>
     <button id="bM" aria-pressed="true">Машины</button>
     <button id="bD" aria-pressed="true">Размеры</button>
+    <button id="bO" aria-pressed="false">Открыть двери</button>
     <button id="bR" aria-pressed="false">Сушилку выдвинуть</button>
     <button id="bF">Спереди</button>
     <button id="b3">3D</button>
@@ -78,7 +81,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 // Все размеры в мм. x — от левой стены, y — от пола, z — от задней стены к нам
 const W=1781, D=606, H=2904, MW=595, MD=595, MH=850, GAP=105, SOCK_H=1114, SOCK_X=891;
 const UNDER=920, CT=38, TOPY=UNDER+CT, TILE=600, SH_T=25, SH_D=250, SH1=1310, SH2=TOPY+TILE;
-const UP_Y=1750, UP_H=650, UP_D=400, PL=100, BD=580, CTD=600;
+const UP_Y=1800, UP_H=600, UP_D=400, PL=100, BD=580, CTD=600;
 const x2=W-GAP-MW;               // начало колонны (1081)
 const ROB=390, BS=16, AW=x2-ROB-BS; // А = 675
 const S=0.001;
@@ -120,25 +123,40 @@ box(W+2*T,T,D+T,-T,-T,-T,floorMat); box(W+2*T,T,D+T,-T,H,-T,ceilMat);
 const fronts=new THREE.Group(), machines=new THREE.Group(), dims=new THREE.Group(), codes=new THREE.Group();
 scene.add(fronts,machines,dims,codes);
 
-// Дверь с ручкой-скобой
-function door(x,y,w,h,z,handleTop){
-  box(w,h,18,x,y,z,frontMat,fronts);
-  const hy=handleTop? y+h-60 : y+40;
-  box(Math.min(220,w-80),12,22,x+(w-Math.min(220,w-80))/2,hy,z+18,blackMat,fronts);
+// Вкладные фасады: дверь внутри проёма корпуса, торцы корпуса видны. Петли: 'L' или 'R'
+const doors=[];
+function door(x,y,w,h,zf,handleTop,hinge){
+  const g=new THREE.Group(); g.position.set((hinge==='L'?x:x+w)*S,0,zf*S); fronts.add(g);
+  const dx=hinge==='L'?0:-w;
+  box(w,h,18,dx,y,-18,frontMat,g);
+  const hw=Math.min(220,w-80);
+  box(hw,12,22,dx+(w-hw)/2,handleTop?y+h-60:y+40,0,blackMat,g);
+  doors.push({g,dir:hinge==='L'?-1:1});
+}
+// проём x0..x1, y0..y1, n дверей, зазоры 2 мм по контуру и 3 мм между
+function inset(x0,x1,y0,y1,zf,n,handleTop,hinge1){
+  const ow=x1-x0-4-(n-1)*3, dw=ow/n;
+  for(let i=0;i<n;i++){const hinge=n===2?(i===0?'L':'R'):hinge1;
+    door(x0+2+i*(dw+3),y0+2,dw,y1-y0-4,zf,handleTop,hinge);}
 }
 
-// А — тумба под раковину
+// А — тумба под раковину (корпус серый, торцы видны)
 box(16,UNDER-PL,BD,0,PL,0,bodyMat); box(16,UNDER-PL,BD,AW-16,PL,0,bodyMat);
-box(AW-32,16,BD,16,PL,0,whiteMat); box(AW-32,UNDER-PL,4,16,PL,0,whiteMat);
-box(AW,PL,16,0,0,BD-60,blackMat); // цоколь, утоплен на 50
-door(2,PL+2,AW/2-3,UNDER-PL-4,BD,true); door(AW/2+1,PL+2,AW/2-3,UNDER-PL-4,BD,true);
+box(AW-32,16,BD,16,PL,0,bodyMat); box(AW-32,UNDER-PL,4,16,PL,0,bodyMat);
+box(AW-32,16,BD-220,16,PL+16+300,200,bodyMat); // полка (сзади вырез под сифон)
+box(AW,PL,16,0,0,BD-60,bodyMat); // цоколь серый, утоплен на 60
+inset(16,AW-16,PL+16,UNDER,BD,2,true);
 label('А',AW/2,UNDER-250,CTD+40,true,codes);
+label(`${AW}×${UNDER-PL}×${BD} + цоколь ${PL}`,AW/2,PL+180,CTD+40,false,dims);
+label('полка А',AW/2,PL+16+360,BD-120,false,dims);
 
-// Б — ниша робота: бок у стиралки, задняя царга под столешницей
-box(BS,UNDER,CTD,x2-BS,0,0,bodyMat);
+// Б — ниша робота: бок у стиралки, задняя царга, вкладная дверь, снизу проезд 130
+box(BS,UNDER,BD,x2-BS,0,0,bodyMat);
 box(ROB,100,16,AW,UNDER-100,0,bodyMat);
-door(AW+1,130,ROB+BS-2,UNDER-130-2,CTD,true); // дверь Б, снизу 130 под робота
+inset(AW,x2-BS,128,UNDER,BD,1,true,'R');
 label('Б',AW+ROB/2,UNDER-250,CTD+40,true,codes);
+label(`ниша ${ROB}×${UNDER}, дверь ${ROB-4}×${UNDER-132}`,AW+ROB/2,420,CTD+60,false,dims);
+label('проезд 130',AW+ROB/2,180,CTD+40,false,dims);
 label('проезд 130',AW+ROB/2,180,CTD+40,false,dims);
 // станция робота
 box(330,450,420,AW+30,0,60,M(0xf4f4f4)); box(330,40,450,AW+30,0,60+0,M(0xe8e8e8));
@@ -180,16 +198,17 @@ machine(0,'М2'); machine(MH,'М1');
 // Ф — фальш-панель справа
 box(GAP,UP_Y,16,W-GAP,0,CTD-16,bodyMat); label('Ф',W-GAP/2,UP_Y-200,CTD+30,true,codes);
 
-// В1–В3 — верхние модули
-function upper(x,w,n,code){
-  box(16,UP_H,UP_D-18,x,UP_Y,0,bodyMat); box(16,UP_H,UP_D-18,x+w-16,UP_Y,0,bodyMat);
-  box(w-32,16,UP_D-18,x+16,UP_Y,0,bodyMat); box(w-32,16,UP_D-18,x+16,UP_Y+UP_H-16,0,bodyMat);
-  box(w-32,16,UP_D-40,x+16,UP_Y+UP_H/2,0,whiteMat);
-  const dw=(w-4*(n+1)+4)/n;
-  for(let i=0;i<n;i++) door(x+2+i*(dw+3),UP_Y+2,dw-1,UP_H-4,UP_D-18,false);
-  label(code,x+w/2,UP_Y+UP_H/2,UP_D+40,true,codes);
+// В1–В3 — верхние модули, вкладные двери, полка внутри
+function upper(x,w,n,code,hinge){
+  box(16,UP_H,UP_D,x,UP_Y,0,bodyMat); box(16,UP_H,UP_D,x+w-16,UP_Y,0,bodyMat);
+  box(w-32,16,UP_D,x+16,UP_Y,0,bodyMat); box(w-32,16,UP_D,x+16,UP_Y+UP_H-16,0,bodyMat);
+  box(w-32,UP_H-32,4,x+16,UP_Y+16,0,bodyMat);
+  box(w-32,16,UP_D-40,x+16,UP_Y+UP_H/2-8,0,bodyMat); // полка
+  inset(x+16,x+w-16,UP_Y+16,UP_Y+UP_H-16,UP_D,n,false,hinge);
+  label(code,x+w/2,UP_Y+UP_H/2+110,UP_D+40,true,codes);
+  label(`${w}×${UP_H}×${UP_D}`,x+w/2,UP_Y+UP_H/2-90,UP_D+40,false,dims);
 }
-upper(0,AW,2,'В1'); upper(AW,ROB+BS,1,'В2'); upper(x2,W-x2,2,'В3');
+upper(0,AW,2,'В1'); upper(AW,ROB+BS,1,'В2','R'); upper(x2,W-x2,2,'В3');
 
 // СД — выдвижная сушилка для белья под дном В3, над сушильной машиной
 const RW=560, RH=40, RX=x2+(MW-RW)/2, RY=UP_Y-RH-2, RD=380, ROUT=500;
@@ -219,8 +238,9 @@ function loadDims(){
   dimLine([vx,0,fz],[vx,UNDER,fz],'920',vx,UNDER/2,fz);
   dimLine([vx,UNDER,fz],[vx,TOPY,fz],'38',vx-60,TOPY-10,fz);
   dimLine([vx,TOPY,SH_D],[vx,SH2,SH_D],'фартук 600',vx,TOPY+180,SH_D);
-  dimLine([vx,0,UP_D+20],[vx,UP_Y,UP_D+20],'1750',vx,UP_Y-120,UP_D+20);
-  dimLine([vx,UP_Y,UP_D+20],[vx,UP_Y+UP_H,UP_D+20],'650',vx,UP_Y+UP_H/2,UP_D+20);
+  dimLine([vx,0,UP_D+20],[vx,UP_Y,UP_D+20],`${UP_Y}`,vx,UP_Y-120,UP_D+20);
+  dimLine([vx,UP_Y,UP_D+20],[vx,UP_Y+UP_H,UP_D+20],`${UP_H}`,vx,UP_Y+UP_H/2,UP_D+20);
+  dimLine([x2+MW+30,2*MH,fz],[x2+MW+30,UP_Y,fz],`зазор ${UP_Y-2*MH}`,x2+MW-60,2*MH+50,fz);
   dimLine([vx-60,0,UP_D+20],[vx-60,UP_Y+UP_H,UP_D+20],'2400',vx-60,UP_Y+UP_H+60,UP_D+20);
   dimLine([0,UP_Y+UP_H+40,UP_D],[AW,UP_Y+UP_H+40,UP_D],'675',AW/2,UP_Y+UP_H+90,UP_D);
   dimLine([AW,UP_Y+UP_H+40,UP_D],[x2,UP_Y+UP_H+40,UP_D],'406',AW+203,UP_Y+UP_H+90,UP_D);
@@ -228,6 +248,9 @@ function loadDims(){
   dimLine([W+30,UP_Y,0],[W+30,UP_Y,UP_D],'гл. 400',W+60,UP_Y+60,UP_D/2);
   dimLine([20,SH2+SH_T,0],[20,SH2+SH_T,SH_D],'250',90,SH2+90,SH_D/2);
   label('1310',x2-260,SH1-50,SH_D,false,dims);
+  label(`П1, П2: ${x2}×${SH_D}×${SH_T}`,x2/2,SH1+60,SH_D+20,false,dims);
+  label(`С: ${x2}×${CTD}×${CT}`,x2/2,TOPY+40,CTD+40,false,dims);
+  label(`Ф: ${GAP}×${UP_Y}`,W-GAP/2,UP_Y-330,CTD+40,false,dims);
 }
 document.fonts.ready.then(loadDims);
 
@@ -238,6 +261,9 @@ view3D();
 function toggle(id,grp,also){const b=document.getElementById(id);b.onclick=()=>{grp.visible=!grp.visible;b.setAttribute('aria-pressed',grp.visible)}}
 toggle('bF2',fronts); toggle('bM',machines); toggle('bD',dims);
 document.getElementById('bR').onclick=()=>setRack(!rackOut);
+let doorsOpen=false;
+document.getElementById('bO').onclick=e=>{doorsOpen=!doorsOpen;e.target.setAttribute('aria-pressed',doorsOpen);e.target.textContent=doorsOpen?'Закрыть двери':'Открыть двери';
+  if(doorsOpen&&!fronts.visible){fronts.visible=true;document.getElementById('bF2').setAttribute('aria-pressed',true)}};
 document.getElementById('bF').onclick=viewFront; document.getElementById('b3').onclick=view3D;
 // Цвета фасадов
 const COLORS=[['Серо-синий (как в дизайне)','#5d6b80'],['Белый W1100','#f2f1ec'],['Кашемир U702','#b5ab9c'],['Серый камень U727','#8f8c86'],
@@ -257,7 +283,7 @@ document.getElementById('bS').onclick=e=>{const sh=document.getElementById('shee
 
 function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
 addEventListener('resize',resize); resize();
-(function loop(){ctr.update();renderer.render(scene,cam);requestAnimationFrame(loop)})();
+(function loop(){const a=doorsOpen?1.75:0;doors.forEach(d=>{d.g.rotation.y+=(a*d.dir-d.g.rotation.y)*0.12});ctr.update();renderer.render(scene,cam);requestAnimationFrame(loop)})();
 </script>
 
 </body>
