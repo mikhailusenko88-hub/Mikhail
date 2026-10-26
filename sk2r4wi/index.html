@@ -103,7 +103,7 @@ scene.add(new THREE.HemisphereLight(0xffffff,0x8a8f94,0.8));
 const dl=new THREE.DirectionalLight(0xffffff,0.5); dl.position.set(1.5,3,3); scene.add(dl);
 
 const M=c=>new THREE.MeshLambertMaterial({color:c});
-const wallMat=M(0xd6d8d9), floorMat=M(0xbdb9b2), bodyMat=M(0xa7aaab), whiteMat=M(0xffffff),
+const wallMat=M(0xd6d8d9), floorMat=M(0xbdb9b2), bodyMat=M(0x9d9e99), whiteMat=M(0xffffff),
       ctMat=M(0x9a9c9b), shelfMat=M(0xa3a5a4), tileMat=M(0xf1eee8), blackMat=M(0x1e1e1e),
       frontMat=M(0x5d6b80), ledMat=new THREE.MeshBasicMaterial({color:0xffd9a0});
 const ceilMat=new THREE.MeshLambertMaterial({color:0xf2f2f2,transparent:true,opacity:0.3});
