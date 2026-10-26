@@ -43,7 +43,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
   <div id="sheet" hidden>
     <div class="dims">
       <div><span>Ниша: ширина × глубина × потолок</span><b>1781 × 606 × 2904</b></div>
-      <div><span>А тумба под раковину, 2 двери, полка</span><b>675 × 820 × 580</b></div>
+      <div><span>А тумба под раковину, 2 двери, без полки</span><b>675 × 820 × 580</b></div>
       <div><span>Цоколь А, серый</span><b>100</b></div>
       <div><span>Б ниша робота, внутри</span><b>390 × 920</b></div>
       <div><span>Б дверь вкладная, снизу проезд 130</span><b>386 × 788</b></div>
@@ -150,12 +150,10 @@ function inset(x0,x1,y0,y1,zf,n,handleTop,hinge1){
 // А — тумба под раковину (корпус серый, торцы видны)
 box(16,UNDER-PL,BD,0,PL,0,bodyMat); box(16,UNDER-PL,BD,AW-16,PL,0,bodyMat);
 box(AW-32,16,BD,16,PL,0,bodyMat); box(AW-32,UNDER-PL,4,16,PL,0,bodyMat);
-box(AW-32,16,BD-220,16,PL+16+300,200,bodyMat); // полка (сзади вырез под сифон)
 box(AW,PL,16,0,0,BD-60,bodyMat); // цоколь серый, утоплен на 60
 inset(16,AW-16,PL+16,UNDER,BD,2,true);
 label('А',AW/2,UNDER-250,CTD+40,true,codes);
 label(`${AW}×${UNDER-PL}×${BD} + цоколь ${PL}`,AW/2,PL+180,CTD+40,false,dims);
-label('полка А',AW/2,PL+16+360,BD-120,false,dims);
 
 // Б — ниша робота: бок у стиралки, задняя царга, вкладная дверь, снизу проезд 130
 box(BS,UNDER,BD,x2-BS,0,0,bodyMat);
