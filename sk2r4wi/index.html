@@ -48,10 +48,11 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
       <div><span>Б ниша робота, внутри</span><b>390 × 920</b></div>
       <div><span>Б дверь вкладная, снизу проезд 130</span><b>386 × 788</b></div>
       <div><span>Мойка Gerhans K35050, врезная</span><b>500 × 500, чаша 220</b></div>
+      <div><span>Смеситель: высокий поворотный, выдвижная лейка</span><b>чёрный</b></div>
       <div><span>С столешница</span><b>1081 × 600 × 38</b></div>
       <div><span>Верх столешницы от пола</span><b>958</b></div>
       <div><span>К фартук, плитка 600×1200</span><b>958 – 1558</b></div>
-      <div><span>П1 полка, гл. 250</span><b>низ 1310</b></div>
+      <div><span>П1 полка, гл. 250</span><b>низ 1400</b></div>
       <div><span>П2 полка на плитке, гл. 250</span><b>низ 1558</b></div>
       <div><span>В1 / В2 / В3, гл. 400, полка внутри</span><b>675 / 406 / 700</b></div>
       <div><span>Верхние: низ / высота / верх</span><b>1800 / 800 / 2600</b></div>
@@ -86,7 +87,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 <script>
 // Все размеры в мм. x — от левой стены, y — от пола, z — от задней стены к нам
 const W=1781, D=606, H=2904, MW=595, MD=595, MH=850, GAP=105, SOCK_H=1114, SOCK_X=891;
-const UNDER=920, CT=38, TOPY=UNDER+CT, TILE=600, SH_T=25, SH_D=250, SH1=1310, SH2=TOPY+TILE;
+const UNDER=920, CT=38, TOPY=UNDER+CT, TILE=600, SH_T=25, SH_D=250, SH1=1400, SH2=TOPY+TILE;
 const UP_Y=1800, UP_H=800, R3D=580, UP_D=400, PL=100, BD=580, CTD=600;
 const x2=W-GAP-MW;               // начало колонны (1081)
 const ROB=390, BS=16, AW=x2-ROB-BS; // А = 675
@@ -180,9 +181,15 @@ box(500,3,500,SKX,TOPY,SKZ,steel);
 box(440,4,380,SKX+30,TOPY+1,SKZ+90,new THREE.MeshPhongMaterial({color:0x8e9499,shininess:60}));
 box(440,220,380,SKX+30,TOPY-220,SKZ+90,steel); // чаша под столешницей
 label('мойка 500×500, чаша 220',AW/2,TOPY+120,SKZ+500,false,dims);
-const tap=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.3,12),blackMat);
-tap.position.set(AW/2*S,(TOPY+150)*S,(SKZ+45)*S); scene.add(tap);
-box(24,24,200,AW/2-12,TOPY+280,SKZ+45,blackMat);
+// Смеситель Gerhans K14026B: высокий излив, поворотный, с выдвижной лейкой (чёрный)
+const tx=AW/2*S, tz=(SKZ+45)*S, ty=TOPY*S;
+const cyl=(r,h,x,y,z)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,20),blackMat);m.position.set(x,y,z);scene.add(m);return m};
+cyl(0.026,0.04,tx,ty+0.02,tz); cyl(0.017,0.31,tx,ty+0.17,tz);
+const lev=cyl(0.006,0.09,tx+0.05,ty+0.2,tz); lev.rotation.z=Math.PI/2.4;
+const arc=new THREE.CatmullRomCurve3([[0,0.32,0],[0,0.39,0.05],[0,0.40,0.13],[0,0.36,0.2],[0,0.31,0.215]].map(p=>new THREE.Vector3(tx+p[0],ty+p[1],tz+p[2])));
+scene.add(new THREE.Mesh(new THREE.TubeGeometry(arc,30,0.014,12),blackMat));
+cyl(0.021,0.08,tx,ty+0.27,tz+0.215); // выдвижная лейка
+label('смеситель с лейкой',AW/2,TOPY+470,SKZ+200,false,dims);
 
 // К — фартук из керамогранита (1 ряд 600)
 box(x2,TILE,10,0,TOPY,0,tileMat);
@@ -271,7 +278,7 @@ function loadDims(){
   dimLine([x2,UP_Y+UP_H+40,UP_D],[W,UP_Y+UP_H+40,UP_D],'700',x2+350,UP_Y+UP_H+90,UP_D);
   dimLine([W+30,UP_Y,0],[W+30,UP_Y,UP_D],'гл. 400',W+60,UP_Y+60,UP_D/2);
   dimLine([20,SH2+SH_T,0],[20,SH2+SH_T,SH_D],'250',90,SH2+90,SH_D/2);
-  label('1310',x2-260,SH1-50,SH_D,false,dims);
+  label('1400',x2-260,SH1-50,SH_D,false,dims);
   label(`П1, П2: ${x2}×${SH_D}×${SH_T}`,x2/2,SH1+60,SH_D+20,false,dims);
   label(`С: ${x2}×${CTD}×${CT}`,x2/2,TOPY+40,CTD+40,false,dims);
 }
