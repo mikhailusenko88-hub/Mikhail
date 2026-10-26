@@ -296,7 +296,7 @@ document.getElementById('bO').onclick=e=>{doorsOpen=!doorsOpen;e.target.setAttri
   if(doorsOpen&&!fronts.visible){fronts.visible=true;document.getElementById('bF2').setAttribute('aria-pressed',true)}};
 document.getElementById('bF').onclick=viewFront; document.getElementById('b3').onclick=view3D;
 // Цвета фасадов
-const COLORS=[['Серо-синий (как в дизайне)','#5d6b80'],['Белый W1100','#f2f1ec'],['Кашемир U702','#b5ab9c'],['Серый камень U727','#8f8c86'],
+const COLORS=[['Серо-синий корунд R017 MS','#5f6e80'],['Белый W1100','#f2f1ec'],['Кашемир U702','#b5ab9c'],['Серый камень U727','#8f8c86'],
  ['Зелёный шалфей U638','#7d8a78'],['Графит U961','#3e4245'],['Дуб Кассела','#a77c55'],['Дуб песочный H3309','#c9a77d'],
  ['Дуб натуральный H1145','#b08a5e'],['Дуб табак H1180','#6b4a33']];
 const sw=document.getElementById('sw');
@@ -308,7 +308,7 @@ const lab=document.createElement('label');lab.className='sw';lab.innerHTML='Св
 sw.appendChild(lab);const own=document.getElementById('own'),ownName=document.getElementById('ownName');
 own.oninput=()=>setColor(own.value,ownName.value); ownName.oninput=()=>setColor(own.value,ownName.value);
 let saved=null;try{saved=JSON.parse(localStorage.getItem('prachka-color'))}catch(e){}
-if(saved&&saved.c){setColor(saved.c,saved.name);own.value=saved.c;if(saved.name&&!COLORS.some(x=>x[0]===saved.name))ownName.value=saved.name}else setColor('#5d6b80');
+if(saved&&saved.c){setColor(saved.c,saved.name);own.value=saved.c;if(saved.name&&!COLORS.some(x=>x[0]===saved.name))ownName.value=saved.name}else setColor('#5f6e80');
 document.getElementById('bS').onclick=e=>{const sh=document.getElementById('sheet');sh.hidden=!sh.hidden;e.target.setAttribute('aria-pressed',!sh.hidden)};
 
 
