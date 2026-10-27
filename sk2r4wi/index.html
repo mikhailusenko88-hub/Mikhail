@@ -149,7 +149,7 @@ function inset(x0,x1,y0,y1,zf,n,handleTop,hinge1){
 
 // А — тумба под раковину (корпус серый, торцы видны)
 box(16,UNDER-PL,BD,0,PL,0,bodyMat); box(16,UNDER-PL,BD,AW-16,PL,0,bodyMat);
-box(AW-32,16,BD,16,PL,0,bodyMat); box(AW-32,UNDER-PL,4,16,PL,0,bodyMat);
+box(AW-32,16,BD,16,PL,0,bodyMat); // без задней стенки: сзади выводы воды и канализации
 box(AW,PL,16,0,0,BD-60,bodyMat); // цоколь серый, утоплен на 60
 inset(16,AW-16,PL+16,UNDER,BD,2,true);
 label('А',AW/2,UNDER-250,CTD+40,true,codes);
@@ -179,6 +179,11 @@ box(500,3,500,SKX,TOPY,SKZ,steel);
 box(440,4,380,SKX+30,TOPY+1,SKZ+90,new THREE.MeshPhongMaterial({color:0x8e9499,shininess:60}));
 box(440,220,380,SKX+30,TOPY-220,SKZ+90,steel); // чаша под столешницей
 label('мойка 500×500, чаша 220',AW/2,TOPY+120,SKZ+500,false,dims);
+// Выводы на стене под мойкой: горячая 280, холодная 350 от левой стены, высота 565; канализация 400 / 450, Ø50
+function pipe(x,y,r,len,col){const m=new THREE.Mesh(new THREE.CylinderGeometry(r*S,r*S,len*S,20),M(col));m.rotation.x=Math.PI/2;m.position.set(x*S,y*S,len/2*S);scene.add(m)}
+pipe(280,565,12,60,0xd23b3b); pipe(350,565,12,60,0x2f55c8); pipe(400,450,30,70,0x9ea2a6);
+label('гор. 280 / хол. 350, h 565',315,640,90,false,dims);
+label('канализация 400, h 450',400,380,100,false,dims);
 // Смеситель Gerhans K14026B: высокий излив, поворотный, с выдвижной лейкой (чёрный)
 const tx=AW/2*S, tz=(SKZ+45)*S, ty=TOPY*S;
 const cyl=(r,h,x,y,z)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,20),blackMat);m.position.set(x,y,z);scene.add(m);return m};
