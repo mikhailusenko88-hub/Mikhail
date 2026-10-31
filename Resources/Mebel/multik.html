@@ -82,6 +82,15 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
   Незнакомое слово или имя приложение спросит один раз и запомнит.<br>
   Длинный сценарий сам поделится на серии по ~5 минут.</div></div>
 </div></div>
+<div id="vpanel" style="position:fixed;inset:0;z-index:25;background:rgba(0,0,0,.6);display:none;align-items:flex-end">
+ <div style="background:var(--card);width:100%;border-radius:20px 20px 0 0;padding:16px 14px calc(20px + env(safe-area-inset-bottom));max-height:85vh;overflow-y:auto">
+  <div class="row"><b id="vpTitle" style="flex:1;font-size:18px">Голос</b><button class="btn" onclick="VP.close()">Готово</button></div>
+  <div class="mut" style="margin:6px 0 10px">Нажми ▶, чтобы послушать, и выбери стиль. Внешность персонажа не меняется, голос сохранится для всех серий.</div>
+  <div id="vpList"></div>
+  <div class="kv" style="margin-top:12px"><span>Высота</span><span><input type="range" id="vpK" min="80" max="160" step="2"></span>
+   <span>Голос iPhone</span><span><select id="vpVoice"></select></span></div>
+  <div class="btns"><button class="btn" onclick="VP.play()">▶ Послушать</button><button class="btn acc" onclick="VP.save()">Сохранить</button></div>
+ </div></div>
 <div id="editor"><div class="pv"><div class="row" style="padding:8px 12px"><button class="back" onclick="Ed.close()">‹</button><b id="edTitle" style="flex:1">Новый персонаж</b><button class="btn" onclick="Ed.undo()">↺</button><button class="btn" onclick="Ed.voice()">🔊</button></div><canvas id="edc" width="720" height="600"></canvas></div>
 <div style="padding:10px 14px 120px">
  <div class="card"><b>Опиши или скажи</b><div class="mut" style="margin:4px 0 8px">Например: «рыжий полосатый кот с синим шарфом, голос мальчика, зовут Мурзик». Потом поправляй: «добавь шляпу», «глаза голубые», «убери шарф», «голос пониже».</div>
@@ -190,7 +199,7 @@ const App = {
   },
   r_chars(m) {
     const C = Object.values(Lib.data.characters);
-    m.insertAdjacentHTML('beforeend', `<div class="mut" style="margin:6px 2px">Персонаж замораживается при первом появлении: внешность и голос входят в его код. Поменять нельзя: новый вид — это новый персонаж с новым кодом.</div>`);
+    m.insertAdjacentHTML('beforeend', `<div class="mut" style="margin:6px 2px">Внешность персонажа замораживается в коде и не меняется: новый вид — новый персонаж. Звучание голоса можно подстроить кнопкой «🎙 Голос» — оно сохранится для всех серий.</div>`);
     m.insertAdjacentHTML('beforeend', `<div class="btns" style="margin:0 0 6px"><button class="btn acc" onclick="Ed.open()">＋ Создать персонажа</button>${C.length ? '<button class="btn" onclick="App.copyChars()">📋 Всех — для чата</button>' : ''}</div>`);
     if (!C.length) { m.insertAdjacentHTML('beforeend', `<div class="card mut">Персонажей пока нет. Создай своего или они появятся с первым сценарием.</div>`); return; }
     const g = document.createElement('div'); g.className = 'grid'; m.appendChild(g);
@@ -200,10 +209,11 @@ const App = {
       MK.portrait(cv, c.spec, 1.2);
       const v = c.spec.voice || {};
       d.insertAdjacentHTML('beforeend', `<div class="i"><b>${esc(c.spec.name)}</b><div><span class="code">${esc(c.code)}</span> <span class="lock">🔒</span></div>
-        <div class="mut">${esc(MK.KIND_NAMES[c.spec.kind] || c.spec.kind)} · голос: ${esc(c.voiceName || v.base || '')} ${v.pitch ? '· тон ' + v.pitch : ''}</div>
-        ${c.spec.about ? `<div class="mut">${esc(c.spec.about)}</div>` : ''}<div class="btns"><button class="btn">🔊 Голос</button><button class="btn" data-a="like">＋ Похожий</button></div></div>`);
+        <div class="mut">${esc(MK.KIND_NAMES[c.spec.kind] || c.spec.kind)} · голос: ${esc(MK.fxFor(Lib.data, c.spec.id).name)}</div>
+        ${c.spec.about ? `<div class="mut">${esc(c.spec.about)}</div>` : ''}<div class="btns"><button class="btn" data-a="hear">🔊</button><button class="btn" data-a="voice">🎙 Голос</button><button class="btn" data-a="like">＋ Похожий</button></div></div>`);
+      d.querySelector('[data-a=voice]').onclick = () => VP.open(c.spec.id);
+      d.querySelector('[data-a=hear]').onclick = () => previewVoice(`Привет! Я ${c.spec.name}.`, c.spec.voice, MK.fxFor(Lib.data, c.spec.id), c.voiceId);
       d.querySelector('[data-a=like]').onclick = () => Ed.open(c.spec);
-      d.querySelector('button').onclick = () => Native.call('speak', { text: `Привет! Я ${c.spec.name}.`, voice: Object.assign({}, v, c.voiceId ? { id: c.voiceId } : {}) });
       g.appendChild(d);
     }
   },
@@ -223,6 +233,7 @@ const App = {
       <select id="sres"><option value="1080">1920×1080 (YouTube, лучше)</option><option value="720">1280×720 (в 2 раза быстрее)</option></select>
       <select id="sfps"><option value="25">25 кадров/с</option><option value="30">30 кадров/с</option></select></div></div>
       <div class="card"><b>Голоса iPhone</b><div class="mut" style="margin:4px 0 8px">Чтобы голоса звучали лучше, скачай улучшенные русские голоса: Настройки → Универсальный доступ → Устный контент → Голоса → Русский → Milena и Yuri «улучшенный». Делать это лучше до создания персонажей: голос записывается в код персонажа.</div><div id="vlist" class="mut">…</div></div>
+      <div class="card"><b>Рассказчик</b><div class="mut" style="margin:4px 0 8px">Голос: ${esc(MK.fxFor(Lib.data, 'Р').name)}</div><div class="btns"><button class="btn" onclick="VP.open('Р')">🎙 Настроить голос рассказчика</button></div></div>
       <div class="card"><b>Чему я научился</b><div id="lexList" class="mut" style="margin-top:6px"></div></div>
       <div class="card"><b>Персонажи и локации</b><div class="mut">Персонажей: ${Object.keys(Lib.data.characters).length}, локаций: ${Object.keys(Lib.data.locations).length}. Библиотека хранится в «Файлы → Замер 3D → multik».</div></div>`);
     const sr = document.getElementById('sres'), sf = document.getElementById('sfps'); sr.value = s.res; sf.value = s.fps;
@@ -282,7 +293,7 @@ async function prepare(e, onStep, isCancelled) {
     onStep && onStep('Озвучка реплик', i++ / Math.max(1, lines.length), `${i} из ${lines.length}: ${ln.text.slice(0, 40)}`);
     if (audio[ln.key]) continue;
     const r = await Native.call('tts', { text: ln.text, voice: ln.voice, key: ln.key });
-    if (r && r.wav) { try { const buf = await ac.decodeAudioData(unb64(r.wav).buffer); bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
+    if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, ln.fx || MK.VOICE_FX.natural); bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
   }
   const tl = MK.compile(ep, lib, audio);
   onStep && onStep('Музыка и звуки', 1, 'Свожу звуковую дорожку…');
@@ -382,7 +393,7 @@ const Ed = {
     const l = document.getElementById('edLog');
     l.insertAdjacentHTML('afterbegin', `<div><b>${esc(text)}</b><br>${done.length ? '✓ ' + esc(done.join(', ')) : (text.startsWith('↺') ? '' : '<span class="u">Ничего не понял — скажи по-другому (вид, цвет, что добавить или убрать)</span>')}${unknown.length ? `<br><span class="u">Не понял слова: ${esc(unknown.join(', '))}</span>` : ''}</div>`);
   },
-  voice() { const s = this.spec(); const sec = 2.2; this.talkUntil = performance.now() / 1000 + sec; Native.call('speak', { text: `Привет! Я ${s.name}.`, voice: s.voice }); },
+  voice() { const s = this.spec(); this.talkUntil = performance.now() / 1000 + 2.5; previewVoice(`Привет! Я ${s.name}.`, s.voice, Object.assign({ id: MK.defaultFx(s) }, MK.VOICE_FX[MK.defaultFx(s)])).then(d => { if (d) this.talkUntil = performance.now() / 1000 + d; }); },
   refresh() {
     const s = this.spec(); const code = MK.charCode(Object.assign({}, s, { id: MKMaker.nextId(Lib.data) }));
     document.getElementById('edCode').innerHTML = `Будет: <b>${esc(s.name)}</b> — ${esc(MKMaker.describe(s))}<br>Код: <span class="code">${esc(code)}</span>`;
@@ -438,6 +449,51 @@ const Ed = {
     Lib.data.characters[id] = { spec, code, created: new Date().toISOString(), voiceId: rv && rv.id, voiceName: rv && rv.name, source: 'app' };
     await Lib.save(); alert(`Готово! ${spec.name} — ${code} 🔒`); this.close();
   },
+};
+// ---------- прослушка голоса с обработкой ----------
+let pvCtx = null, pvSrc = null;
+async function previewVoice(text, voice, fx, voiceId) {
+  audioPlayback();
+  if (!pvCtx || pvCtx.state === 'closed') pvCtx = new (window.AudioContext || window.webkitAudioContext)();
+  try { pvCtx.resume(); } catch (e) {}
+  if (pvSrc) { try { pvSrc.stop(); } catch (e) {} }
+  const v = MK.synthVoice(voice, fx, voiceId);
+  const r = await Native.call('tts', { text, voice: v, key: 'pv-' + MK.hash32(MK.canon(v) + text).toString(36) });
+  if (!r || !r.wav) { Native.call('speak', { text, voice: Object.assign({}, voice, voiceId ? { id: voiceId } : {}) }); return 0; }
+  const raw = await pvCtx.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, fx);
+  pvSrc = pvCtx.createBufferSource(); pvSrc.buffer = buf; pvSrc.connect(pvCtx.destination); pvSrc.start(); return buf.duration;
+}
+// ---------- настройка голоса персонажа ----------
+const VP = {
+  who: null, cur: null,
+  async open(who) {
+    this.who = who; const c = Lib.data.characters[who]; const own = who === 'Р' ? (Lib.data.narratorFx || {}) : ((c && c.fx) || {});
+    const fx = MK.fxFor(Lib.data, who); this.cur = { preset: fx.id, k: fx.k, voiceId: own.voiceId || '' };
+    document.getElementById('vpTitle').textContent = 'Голос: ' + (who === 'Р' ? 'Рассказчик' : c.spec.name);
+    this.list(); document.getElementById('vpanel').style.display = 'flex';
+    const sel = document.getElementById('vpVoice'); const vs = (await Native.call('voices')) || [];
+    sel.innerHTML = '<option value="">как при создании</option>' + vs.map(v => `<option value="${esc(v.id)}">${esc(v.name)} (${esc(v.quality)})</option>`).join('');
+    sel.value = this.cur.voiceId; sel.onchange = () => { this.cur.voiceId = sel.value; this.play(); };
+  },
+  list() {
+    const L = document.getElementById('vpList');
+    L.innerHTML = Object.entries(MK.VOICE_FX).map(([id, p]) => `<div class="row" style="padding:6px 0;border-bottom:1px solid #2a2f3d"><button class="btn" data-p="${id}" data-a="play" style="padding:8px 12px">▶</button><span style="flex:1">${esc(p.name)}</span><button class="btn ${this.cur.preset === id ? 'ok' : ''}" data-p="${id}" data-a="pick">${this.cur.preset === id ? '✓ выбран' : 'выбрать'}</button></div>`).join('');
+    L.querySelectorAll('button').forEach(b => b.onclick = () => { const id = b.dataset.p; if (b.dataset.a === 'pick') { this.cur.preset = id; this.cur.k = MK.VOICE_FX[id].k; this.list(); } this.play(id); });
+    const k = document.getElementById('vpK'); k.value = Math.round(this.cur.k * 100); k.onchange = () => { this.cur.k = +k.value / 100; this.play(); };
+  },
+  play(id) {
+    const who = this.who, c = Lib.data.characters[who];
+    const p = Object.assign({ id: id || this.cur.preset }, MK.VOICE_FX[id || this.cur.preset]); if (!id || id === this.cur.preset) p.k = this.cur.k;
+    const voice = who === 'Р' ? ((Lib.data.narrator || {}).voice || { base: 'male', pitch: 1, rate: .47 }) : c.spec.voice;
+    const name = who === 'Р' ? 'Жили-были кот и мышонок.' : `Привет! Я ${c.spec.name}. Как дела?`;
+    previewVoice(name, voice, p, this.cur.voiceId || (c && c.voiceId));
+  },
+  async save() {
+    const fx = { preset: this.cur.preset, k: this.cur.k }; if (this.cur.voiceId) fx.voiceId = this.cur.voiceId;
+    if (this.who === 'Р') Lib.data.narratorFx = fx; else Lib.data.characters[this.who].fx = fx;
+    await Lib.save(); this.close(); App.render();
+  },
+  close() { document.getElementById('vpanel').style.display = 'none'; },
 };
 // ---------- «Мой сценарий» ----------
 const Wr = {

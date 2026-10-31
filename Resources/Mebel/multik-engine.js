@@ -560,14 +560,65 @@ MK.ACTIONS = Object.keys(DUR).concat(['walk', 'run', 'enter', 'exit', 'say']);
 
 function estSpeech(text) { return .35 + text.length * .062; }
 
+// ---------- голоса персонажей (мультяшная обработка) ----------
+// k — во сколько раз ускоряем запись (выше k — выше и «мультяшнее» голос, тембр меняется, а не только высота)
+MK.VOICE_FX = {
+  natural: { name: 'Обычный', k: 1, tone: 'none', rev: 0 },
+  soft:    { name: 'Мягкий', k: 1.12, tone: 'soft', rev: .14 },
+  cartoon: { name: 'Мультяшный', k: 1.22, tone: 'warm', rev: .1 },
+  fluffy:  { name: 'Пушистый малыш', k: 1.32, tone: 'soft', rev: .1 },
+  squeaky: { name: 'Писклявый (мышонок)', k: 1.48, tone: 'bright', rev: .06 },
+  deep:    { name: 'Глубокий (медведь)', k: .86, tone: 'warm', rev: .12 },
+  fairy:   { name: 'Сказочный (рассказчик)', k: 1.04, tone: 'soft', rev: .3 },
+  sly:     { name: 'Хитрый (лис)', k: 1.15, tone: 'warm', rev: .12 },
+};
+MK.defaultFx = spec => !spec ? 'fairy' : spec.kind === 'human' ? (spec.age === 'kid' ? 'soft' : 'natural') : ({ mouse: 'squeaky', bear: 'deep', rabbit: 'fluffy', fox: 'sly' }[spec.kind] || 'cartoon');
+MK.fxFor = function (lib, who) {
+  const c = lib.characters && lib.characters[who];
+  const id = who === 'Р' ? ((lib.narratorFx && lib.narratorFx.preset) || 'fairy') : ((c && c.fx && c.fx.preset) || MK.defaultFx(c && c.spec));
+  const p = Object.assign({ id }, MK.VOICE_FX[id] || MK.VOICE_FX.natural);
+  const own = who === 'Р' ? lib.narratorFx : c && c.fx;
+  if (own && own.k) p.k = own.k; if (own && own.voiceId) p.voiceId = own.voiceId;
+  return p;
+};
+/** Голос для синтеза с учётом эффекта: говорим медленнее и ниже, потом ускоряем — получается мультяшный тембр с нормальной скоростью. */
+MK.synthVoice = function (voice, fx, voiceId) {
+  const v = Object.assign({}, voice || {}); const k = fx.k || 1;
+  v.rate = Math.round(clamp((v.rate || .5) / Math.pow(k, .9), .3, .62) * 1000) / 1000;
+  v.pitch = Math.round(clamp((v.pitch || 1) / Math.pow(k, .75), .5, 2) * 1000) / 1000;
+  const id = fx.voiceId || voiceId; if (id) v.id = id; return v;
+};
+/** Обработка записи: ускорение (тембр), мягкость/тепло, лёгкое эхо. → AudioBuffer */
+MK.voiceFx = async function (buf, fx) {
+  const k = fx.k || 1, sr = buf.sampleRate, tail = fx.rev ? .5 : .05;
+  const ac = new OfflineAudioContext(1, Math.ceil((buf.duration / k + tail) * sr), sr);
+  const src = ac.createBufferSource(); src.buffer = buf; src.playbackRate.value = k;
+  let node = src;
+  const add = n => { node.connect(n); node = n; };
+  const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = k < 1 ? 60 : 110; add(hp);
+  if (fx.tone === 'soft') { const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 4200; lp.Q.value = .5; add(lp); const ls = ac.createBiquadFilter(); ls.type = 'lowshelf'; ls.frequency.value = 300; ls.gain.value = 3; add(ls); const pk = ac.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 3000; pk.gain.value = -3; add(pk); }
+  if (fx.tone === 'warm') { const ls = ac.createBiquadFilter(); ls.type = 'lowshelf'; ls.frequency.value = 250; ls.gain.value = 4; add(ls); const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 6000; add(lp); const pk = ac.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 2500; pk.gain.value = -2; add(pk); }
+  if (fx.tone === 'bright') { const hs = ac.createBiquadFilter(); hs.type = 'highshelf'; hs.frequency.value = 3500; hs.gain.value = 2; add(hs); const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 7000; add(lp); }
+  const comp = ac.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 3; comp.attack.value = .005; comp.release.value = .15; add(comp);
+  node.connect(ac.destination);
+  if (fx.rev) { const cv = ac.createConvolver(); cv.buffer = roomIR(ac, .55); const g = ac.createGain(); g.gain.value = fx.rev; node.connect(cv); cv.connect(g); g.connect(ac.destination); }
+  src.start(0);
+  const out = await ac.startRendering();
+  // обрезаем тишину в конце
+  const d = out.getChannelData(0); let end = d.length - 1; while (end > 0 && Math.abs(d[end]) < .002) end--;
+  const len = Math.min(d.length, end + Math.round(sr * .08)); const res = new AudioBuffer({ length: Math.max(1, len), numberOfChannels: 1, sampleRate: sr }); res.copyToChannel(d.subarray(0, len), 0); return res;
+};
+function roomIR(ac, sec) { const n = Math.floor(ac.sampleRate * sec), b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0), r = rng(42); for (let i = 0; i < n; i++) d[i] = (r() * 2 - 1) * Math.pow(1 - i / n, 3) * .6; return b; }
+MK.roomIR = roomIR;
+
 /** Список всех реплик эпизода (для озвучки до сборки). */
 MK.collectLines = function (ep, lib) {
   const out = [];
   for (const sc of ep.scenes || []) for (const st of sc.steps || []) if (st.say) {
     const who = st.who || 'Р'; const ch = who === 'Р' ? { voice: (ep.narrator && ep.narrator.voice) || lib.narrator || { base: 'male', pitch: 1, rate: .47 } } : (lib.characters[who] && lib.characters[who].spec);
     if (!ch) continue;
-    const v = Object.assign({}, ch.voice || {}, lib.characters[who] && lib.characters[who].voiceId ? { id: lib.characters[who].voiceId } : {});
-    out.push({ key: hash32(canon(v) + '|' + st.say).toString(36), who, text: st.say, voice: v });
+    const fx = MK.fxFor(lib, who); const v = MK.synthVoice(ch.voice, fx, lib.characters[who] && lib.characters[who].voiceId);
+    out.push({ key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + st.say).toString(36), who, text: st.say, voice: v, fx });
   }
   return out;
 };
@@ -801,11 +852,11 @@ MK.locPreview = function (canvas, spec, T) {
 // ---------- звук ----------
 const NOTE = n => 440 * Math.pow(2, (n - 69) / 12);
 const MOODS = {
-  happy: { bpm: 112, prog: [[60, 64, 67], [67, 71, 74], [69, 72, 76], [65, 69, 72]], drums: true, lead: 'square' },
+  happy: { bpm: 104, prog: [[60, 64, 67], [67, 71, 74], [69, 72, 76], [65, 69, 72]], drums: true, lead: 'triangle' },
   calm: { bpm: 78, prog: [[65, 69, 72], [60, 64, 67], [62, 65, 69], [58, 62, 65]], drums: false, lead: 'triangle' },
-  tense: { bpm: 124, prog: [[57, 60, 64], [62, 65, 69], [64, 68, 71], [57, 60, 64]], drums: true, lead: 'sawtooth' },
+  tense: { bpm: 112, prog: [[57, 60, 64], [62, 65, 69], [64, 68, 71], [57, 60, 64]], drums: true, lead: 'triangle' },
   sad: { bpm: 68, prog: [[57, 60, 64], [53, 57, 60], [60, 64, 67], [55, 59, 62]], drums: false, lead: 'triangle' },
-  adventure: { bpm: 128, prog: [[62, 66, 69], [57, 61, 64], [59, 62, 66], [55, 59, 62]], drums: true, lead: 'square' },
+  adventure: { bpm: 116, prog: [[62, 66, 69], [57, 61, 64], [59, 62, 66], [55, 59, 62]], drums: true, lead: 'triangle' },
   magic: { bpm: 90, prog: [[60, 64, 67, 71], [57, 60, 64, 67], [65, 69, 72, 76], [67, 71, 74, 77]], drums: false, lead: 'sine' },
   night: { bpm: 64, prog: [[60, 63, 67], [56, 60, 63], [58, 62, 65], [55, 58, 62]], drums: false, lead: 'sine' },
 };
@@ -814,18 +865,19 @@ MK.MOODS = Object.keys(MOODS).concat(['none']);
 function scheduleMusic(ac, out, m, seed) {
   const md = MOODS[m.mood]; if (!md) return; const beat = 60 / md.bpm, r = rng(seed);
   const g = ac.createGain(); g.connect(out); g.gain.setValueAtTime(0, m.t0); g.gain.linearRampToValueAtTime(1, m.t0 + .6); g.gain.setValueAtTime(1, Math.max(m.t0 + .6, m.t1 - .6)); g.gain.linearRampToValueAtTime(0, m.t1);
-  const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2400; lp.connect(g);
+  const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1700; lp.connect(g);
+  const rv = ac.createConvolver(); rv.buffer = roomIR(ac, 1.6); const rg = ac.createGain(); rg.gain.value = .22; lp.connect(rv); rv.connect(rg); rg.connect(g);
   const melody = []; for (let i = 0; i < 16; i++) melody.push(r() < .25 ? null : (r() * 4) | 0);
   for (let bt = m.t0, n = 0; bt < m.t1 - .05; bt += beat, n++) {
     const bar = Math.floor(n / 4), ch = md.prog[bar % md.prog.length];
     if (n % 4 === 0) for (const nn of ch) { const o = ac.createOscillator(), og = ac.createGain(); o.type = 'triangle'; o.frequency.value = NOTE(nn - 12); o.detune.value = (r() - .5) * 8; og.gain.setValueAtTime(0, bt); og.gain.linearRampToValueAtTime(.05, bt + .25); og.gain.setValueAtTime(.05, bt + beat * 3.4); og.gain.linearRampToValueAtTime(0, bt + beat * 4); o.connect(og); og.connect(lp); o.start(bt); o.stop(Math.min(m.t1, bt + beat * 4 + .05)); }
-    { const o = ac.createOscillator(), og = ac.createGain(); o.type = 'sine'; o.frequency.value = NOTE(ch[0] - 24 + (n % 2 ? 7 : 0)); og.gain.setValueAtTime(.16, bt); og.gain.exponentialRampToValueAtTime(.001, bt + beat * .9); o.connect(og); og.connect(lp); o.start(bt); o.stop(bt + beat); }
-    for (let h = 0; h < 2; h++) { const mi = melody[(n * 2 + h) % 16]; if (mi == null) continue; const tt = bt + h * beat / 2, f = NOTE(ch[mi % ch.length] + (mi === 3 ? 12 : 0) + 12); const o = ac.createOscillator(), og = ac.createGain(); o.type = md.lead; o.frequency.value = f; const v = md.lead === 'square' || md.lead === 'sawtooth' ? .025 : .055; og.gain.setValueAtTime(v, tt); og.gain.exponentialRampToValueAtTime(.0008, tt + beat * .45); o.connect(og); og.connect(lp); o.start(tt); o.stop(tt + beat * .5); }
-    if (md.drums) { if (n % 2 === 0) kick(ac, lp, bt); if (n % 4 === 2) snare(ac, lp, bt, .08); hat(ac, lp, bt + beat / 2, .03); }
+    { const o = ac.createOscillator(), og = ac.createGain(); o.type = 'sine'; o.frequency.value = NOTE(ch[0] - 24 + (n % 2 ? 7 : 0)); og.gain.setValueAtTime(.0001, bt); og.gain.linearRampToValueAtTime(.12, bt + .02); og.gain.exponentialRampToValueAtTime(.001, bt + beat * .9); o.connect(og); og.connect(lp); o.start(bt); o.stop(bt + beat); }
+    for (let h = 0; h < 2; h++) { const mi = melody[(n * 2 + h) % 16]; if (mi == null) continue; const tt = bt + h * beat / 2, f = NOTE(ch[mi % ch.length] + (mi === 3 ? 12 : 0) + 12); const o = ac.createOscillator(), og = ac.createGain(); o.type = md.lead; o.frequency.value = f; const v = .045; og.gain.setValueAtTime(.0001, tt); og.gain.linearRampToValueAtTime(v, tt + .015); og.gain.exponentialRampToValueAtTime(.0008, tt + beat * .6); o.connect(og); og.connect(lp); o.start(tt); o.stop(tt + beat * .5); }
+    if (md.drums) { if (n % 4 === 0) kick(ac, lp, bt, .2); if (n % 4 === 2) snare(ac, lp, bt, .035); if (n % 2 === 1) hat(ac, lp, bt + beat / 2, .012); }
   }
 }
 let noiseBuf = null; function noise(ac) { if (noiseBuf && noiseBuf.sampleRate === ac.sampleRate) return noiseBuf; const b = ac.createBuffer(1, ac.sampleRate, ac.sampleRate), d = b.getChannelData(0), r = rng(99); for (let i = 0; i < d.length; i++) d[i] = r() * 2 - 1; noiseBuf = b; return b; }
-function kick(ac, out, t) { const o = ac.createOscillator(), g = ac.createGain(); o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(45, t + .12); g.gain.setValueAtTime(.35, t); g.gain.exponentialRampToValueAtTime(.001, t + .25); o.connect(g); g.connect(out); o.start(t); o.stop(t + .26); }
+function kick(ac, out, t, v) { const o = ac.createOscillator(), g = ac.createGain(); o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(45, t + .12); g.gain.setValueAtTime(v || .25, t); g.gain.exponentialRampToValueAtTime(.001, t + .25); o.connect(g); g.connect(out); o.start(t); o.stop(t + .26); }
 function noiseHit(ac, out, t, dur, vol, type, freq, q) { const s = ac.createBufferSource(); s.buffer = noise(ac); const f = ac.createBiquadFilter(); f.type = type; f.frequency.value = freq; if (q) f.Q.value = q; const g = ac.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); s.connect(f); f.connect(g); g.connect(out); s.start(t, Math.random() * 0 + (t * 7919 % .5)); s.stop(t + dur + .02); return { f, g }; }
 function snare(ac, out, t, v) { noiseHit(ac, out, t, .16, v, 'bandpass', 1800, .7); }
 function hat(ac, out, t, v) { noiseHit(ac, out, t, .05, v, 'highpass', 7000); }
@@ -855,11 +907,11 @@ MK.mixAudio = async function (tl, buffers) {
   const sr = 44100, len = Math.ceil((tl.dur + .5) * sr);
   const ac = new OfflineAudioContext(1, len, sr);
   const master = ac.createDynamicsCompressor(); master.threshold.value = -12; master.ratio.value = 3; master.connect(ac.destination);
-  const musicBus = ac.createGain(); musicBus.gain.value = (tl.ep.musicVolume != null ? tl.ep.musicVolume : .5); musicBus.connect(master);
+  const musicBus = ac.createGain(); musicBus.gain.value = (tl.ep.musicVolume != null ? tl.ep.musicVolume : .42); musicBus.connect(master);
   const duck = ac.createGain(); duck.connect(musicBus); duck.gain.setValueAtTime(1, 0);
-  for (const s of tl.speech) { duck.gain.setValueAtTime(1, Math.max(0, s.t - .15)); duck.gain.linearRampToValueAtTime(.35, s.t); duck.gain.setValueAtTime(.35, s.t + s.dur); duck.gain.linearRampToValueAtTime(1, s.t + s.dur + .3); }
+  for (const s of tl.speech) { duck.gain.setValueAtTime(1, Math.max(0, s.t - .15)); duck.gain.linearRampToValueAtTime(.28, s.t); duck.gain.setValueAtTime(.28, s.t + s.dur); duck.gain.linearRampToValueAtTime(1, s.t + s.dur + .3); }
   tl.music.forEach((m, i) => { if (m.mood !== 'none') scheduleMusic(ac, duck, m, hash32((tl.ep.series || '') + (tl.ep.episode || 0) + i + m.mood)); });
-  const fx = ac.createGain(); fx.gain.value = .55; fx.connect(master);
+  const fx = ac.createGain(); fx.gain.value = .4; const fxlp = ac.createBiquadFilter(); fxlp.type = 'lowpass'; fxlp.frequency.value = 5000; fx.connect(fxlp); fxlp.connect(master);
   for (const s of tl.sfx) { const f = SFX[s.n]; if (!f) continue; for (let i = 0; i < (s.rep || 1); i++) f(ac, fx, s.t + i * .22); }
   const vo = ac.createGain(); vo.gain.value = 1.0; vo.connect(master);
   for (const s of tl.speech) { const b = buffers && buffers[s.key]; if (!b) continue; const src = ac.createBufferSource(); src.buffer = b; src.connect(vo); src.start(s.t); }
