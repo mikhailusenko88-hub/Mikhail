@@ -45,7 +45,7 @@ input[type=range]{width:100%}
 #editor .pv canvas{width:100%;display:block;max-height:42vh;object-fit:contain}
 .cmd{display:flex;gap:8px;align-items:flex-end}
 .cmd textarea{min-height:52px;flex:1;font:16px -apple-system,sans-serif}
-.mic{width:54px;height:54px;border-radius:27px;border:0;font-size:24px;background:var(--card2)}
+.mic{width:54px;height:54px;border-radius:27px;border:0;font-size:24px;background:var(--card2);color:var(--tx);font-weight:700}
 .mic.on{background:var(--bad);animation:pulse 1s infinite}
 @keyframes pulse{50%{transform:scale(1.08)}}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -63,6 +63,22 @@ select{background:var(--card2);color:var(--tx);border:0;border-radius:10px;paddi
 <div id="player"><canvas id="pc" width="1920" height="1080"></canvas>
   <div class="ctl"><button class="btn" onclick="Player.stop()">✕ Закрыть</button><button class="btn acc" id="pp" onclick="Player.toggle()">❚❚</button><input type="range" id="seek" min="0" max="1000" value="0" style="max-width:420px" oninput="Player.seek(this.value/1000)"><span class="mut" id="ptime">0:00</span></div></div>
 <div id="prog"><h2 id="ptitle">Сборка серии</h2><div class="bar"><div id="pbar"></div></div><div id="ptext" class="mut"></div><p class="mut">Не сворачивай приложение, пока идёт сборка. Телефон лучше поставить на зарядку.</p><button class="btn bad" onclick="Build.cancel()">Остановить</button></div>
+<div id="writer" style="position:fixed;inset:0;background:var(--bg);z-index:16;display:none;flex-direction:column;overflow-y:auto;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)">
+<div class="row" style="padding:8px 12px;position:sticky;top:0;background:var(--bg);z-index:2"><button class="back" onclick="Wr.close()">‹</button><b style="flex:1">Мой сценарий</b><button class="btn" onclick="Wr.example()">Пример</button></div>
+<div style="padding:4px 14px 120px">
+ <div class="card"><div class="kv"><span>Сериал</span><span><input type="text" id="wrSeries" list="wrSeriesList" placeholder="Кот Барсик"><datalist id="wrSeriesList"></datalist></span></div></div>
+ <div class="card" style="padding:10px"><textarea id="wrText" style="min-height:46vh;font:15px -apple-system,sans-serif;line-height:1.45" placeholder="СЦЕНА: двор, утро&#10;Барсик: Привет!&#10;Пик входит справа.&#10;Пик (радостно): Бежим в лес!"></textarea>
+  <div class="btns"><button class="mic" id="wrMic" onclick="Wr.mic()" style="width:auto;padding:0 16px;height:46px;border-radius:12px;font-size:16px">🎤 Надиктовать</button><button class="btn" onclick="Wr.check()">Проверить</button><button class="btn acc" onclick="Wr.make()">🎬 Создать серии</button></div>
+  <div id="wrOut" style="margin-top:10px"></div></div>
+ <div class="card"><b>Как писать</b><div class="mut" style="margin-top:6px;line-height:1.5">
+  <b>СЕРИАЛ:</b> название · <b>СЕРИЯ:</b> 2. Название (можно несколько серий подряд)<br>
+  <b>ПЕРСОНАЖ:</b> Колючка — серый медвежонок с зелёным шарфом, голос мальчика (новый герой, создаётся навсегда)<br>
+  <b>СЦЕНА:</b> лес, ночь, дождь — места: лес, луг, двор, комната, кухня, улица, пляж, зима, космос, детская площадка<br>
+  <b>Имя: реплика</b> · <b>Имя (радостно): реплика</b> · <b>Рассказчик: …</b><br>
+  Действия: «Пик входит справа», «Барсик идёт к Пику», «Барсик и Пик танцуют», «Барсик берёт мяч», «Пик отдаёт яблоко Барсику», прыгает, машет, бежит, садится, засыпает, падает, смеётся, плачет, пугается, думает «где же клад?», уходит<br>
+  <b>МУЗЫКА:</b> весёлая / грустная / тревожная / приключения / волшебная / ночная · <b>ЗВУК:</b> бум, дзынь, мяу, гав, стук · <b>ПАУЗА</b> 2 · <b>КАМЕРА:</b> крупно Барсик / общий план / оба<br>
+  Длинный сценарий сам поделится на серии по ~5 минут.</div></div>
+</div></div>
 <div id="editor"><div class="pv"><div class="row" style="padding:8px 12px"><button class="back" onclick="Ed.close()">‹</button><b id="edTitle" style="flex:1">Новый персонаж</b><button class="btn" onclick="Ed.undo()">↺</button><button class="btn" onclick="Ed.voice()">🔊</button></div><canvas id="edc" width="720" height="600"></canvas></div>
 <div style="padding:10px 14px 120px">
  <div class="card"><b>Опиши или скажи</b><div class="mut" style="margin:4px 0 8px">Например: «рыжий полосатый кот с синим шарфом, голос мальчика, зовут Мурзик». Потом поправляй: «добавь шляпу», «глаза голубые», «убери шарф», «голос пониже».</div>
@@ -76,6 +92,7 @@ select{background:var(--card2);color:var(--tx);border:0;border-radius:10px;paddi
 </div></div>
 <script src="multik-engine.js"></script>
 <script src="multik-maker.js"></script>
+<script src="multik-script.js"></script>
 <script>
 'use strict';
 // ---------- мост к iPhone ----------
@@ -139,8 +156,8 @@ const App = {
   render() { const m = document.getElementById('main'); m.innerHTML = ''; this['r_' + this.tab](m); window.scrollTo(0, 0); },
   r_series(m) {
     const P = Lib.data.projects;
-    m.insertAdjacentHTML('beforeend', `<div class="card"><b>Новые сценарии</b><div class="mut" style="margin-top:4px">Сценарии пишутся в чате. Загрузи их одной кнопкой или вставь текст. Персонажи из сценария запоминаются навсегда, со своим кодом.</div>
-      <div class="btns"><button class="btn acc" onclick="App.syncScripts()">⟳ Загрузить новые серии</button><button class="btn" onclick="App.paste()">📋 Вставить</button><button class="btn" onclick="App.pickFile()">📁 Файл</button></div><div id="imsg"></div></div>`);
+    m.insertAdjacentHTML('beforeend', `<div class="card"><b>Новые сценарии</b><div class="mut" style="margin-top:4px">Пиши свой сценарий прямо здесь (текстом или голосом) или загрузи серии, написанные в чате. Персонажи из сценария запоминаются навсегда, со своим кодом.</div>
+      <div class="btns"><button class="btn acc" onclick="Wr.open()">✍️ Мой сценарий</button><button class="btn acc" onclick="App.syncScripts()">⟳ Загрузить новые серии</button><button class="btn" onclick="App.paste()">📋 Вставить</button><button class="btn" onclick="App.pickFile()">📁 Файл</button></div><div id="imsg"></div></div>`);
     if (!P.length) { m.insertAdjacentHTML('beforeend', `<div class="card mut">Пока нет ни одного сериала.</div>`); return; }
     for (const p of P) {
       const built = p.episodes.filter(e => e.status === 'built').length;
@@ -392,7 +409,7 @@ const Ed = {
     if (!this.listening) { const r = await Native.call('listenStart'); if (r === false) { alert('Нет доступа к микрофону или распознаванию речи. Разреши в Настройках → Замер 3D.'); return; } this.listening = true; b.classList.add('on'); b.textContent = '■'; }
     else { this.listening = false; b.classList.remove('on'); b.textContent = '🎤'; const t = await Native.call('listenStop'); if (t) { document.getElementById('edText').value = t; this.applyText(); } }
   },
-  onSpeech(text) { document.getElementById('edText').value = text; },
+  onSpeech(text) { if (Wr.listening) return Wr.onSpeech(text); document.getElementById('edText').value = text; },
   async create() {
     const id = MKMaker.nextId(Lib.data), spec = MKMaker.finalize(this.draft, id), code = MK.charCode(spec);
     const same = Object.values(Lib.data.characters).find(c => c.code.split('-')[1] === code.split('-')[1]);
@@ -403,5 +420,62 @@ const Ed = {
     await Lib.save(); alert(`Готово! ${spec.name} — ${code} 🔒`); this.close();
   },
 };
+// ---------- «Мой сценарий» ----------
+const Wr = {
+  listening: false, base: '', last: null,
+  open() {
+    const d = Lib.data; document.getElementById('wrText').value = d.draftText || '';
+    document.getElementById('wrSeries').value = d.draftSeries || (d.projects[0] && d.projects[0].series) || '';
+    document.getElementById('wrSeriesList').innerHTML = d.projects.map(p => `<option value="${esc(p.series)}">`).join('');
+    document.getElementById('wrOut').innerHTML = ''; document.getElementById('writer').style.display = 'flex';
+  },
+  saveDraft() { Lib.data.draftText = document.getElementById('wrText').value; Lib.data.draftSeries = document.getElementById('wrSeries').value; Lib.save(); },
+  close() { if (this.listening) this.mic(); this.saveDraft(); document.getElementById('writer').style.display = 'none'; App.render(); },
+  example() { const t = document.getElementById('wrText'); if (t.value.trim() && !confirm('Заменить текст примером?')) return; t.value = MKScript.EXAMPLE; },
+  parse() {
+    const text = document.getElementById('wrText').value, series = document.getElementById('wrSeries').value.trim() || 'Мой мультик';
+    const p = Lib.data.projects.find(p => p.series === series); const next = p && p.episodes.length ? Math.max(...p.episodes.map(e => e.episode)) + 1 : 1;
+    const r = MKScript.parse(/^\s*(сериал|мультик)\s*:/im.test(text) ? text : 'СЕРИАЛ: ' + series + '\n' + text, Lib.data, { series, nextEpisode: next });
+    const parts = []; for (const e of r.episodes) parts.push(...MKScript.split(e, Lib.data, 300));
+    // номера по порядку без пересечений внутри одного разбора
+    let n = parts.length ? parts[0].episode : next; parts.forEach(e => { e.episode = n++; e.youtube.title = `${e.series} — Серия ${e.episode}. ${e.title}`; });
+    return Object.assign(r, { parts });
+  },
+  check() {
+    this.saveDraft(); const r = this.parse(); this.last = r; const o = document.getElementById('wrOut');
+    if (!r.parts.length && !r.errors.length) { o.innerHTML = '<div class="warn">Пусто. Начни со строки «СЦЕНА: двор, день» или нажми «Пример».</div>'; return r; }
+    const tmp = { characters: Object.assign({}, Lib.data.characters), locations: Object.assign({}, Lib.data.locations) };
+    r.newChars.forEach(c => tmp.characters[c.id] = { spec: c }); r.newLocs.forEach(l => tmp.locations[l.id] = { spec: l });
+    const rows = r.parts.map(e => { let d = 0; try { d = MK.compile(e, tmp, {}).dur; } catch (er) {} return `<div>Серия ${e.episode}. ${esc(e.title)} — ${e.scenes.length} сцен, ≈${fmt(d)}</div>`; }).join('');
+    o.innerHTML = (r.errors.length ? `<div class="err">${r.errors.map(esc).join('\n')}</div>` : '') + rows
+      + (r.newChars.length ? `<div style="color:var(--ok)">Новые персонажи: ${r.newChars.map(c => esc(c.name) + ' (' + esc(MKMaker.describe(c)) + ')').join(', ')}</div>` : '')
+      + (r.warnings.length ? `<div class="warn">${r.warnings.map(esc).join('<br>')}</div>` : '') + (r.errors.length ? '' : '<div class="mut">Длительность примерная — точная будет после озвучки.</div>');
+    return r;
+  },
+  async make() {
+    const r = this.check(); if (r.errors.length || !r.parts.length) return;
+    const series = r.parts[0].series, p = Lib.data.projects.find(p => p.series === series);
+    const clash = r.parts.filter(e => p && p.episodes.some(x => x.episode === e.episode));
+    if (clash.length && !confirm(`Серии ${clash.map(e => e.episode).join(', ')} уже есть — заменить?`)) return;
+    if (r.newChars.length && !confirm(`Будут созданы и заморожены новые персонажи: ${r.newChars.map(c => c.name).join(', ')}. Дальше?`)) return;
+    let ok = 0; const errs = [];
+    for (const e of r.parts) { const res = await Lib.importText(JSON.stringify(e)); if (res.errors && res.errors.length) errs.push(...res.errors); else ok++; }
+    if (errs.length) { document.getElementById('wrOut').insertAdjacentHTML('afterbegin', `<div class="err">${errs.map(esc).join('\n')}</div>`); return; }
+    Lib.data.draftText = ''; await Lib.save(); document.getElementById('wrText').value = '';
+    alert(`Готово: серий — ${ok}. Они в разделе «Сериалы», можно смотреть и собирать видео.`); this.close();
+  },
+  async mic() {
+    const b = document.getElementById('wrMic'), t = document.getElementById('wrText');
+    if (!this.listening) { this.base = t.value.replace(/\s*$/, ''); const r = await Native.call('listenStart'); if (r === false) { alert('Нет доступа к микрофону или распознаванию речи. Разреши в Настройках → Замер 3D.'); return; } this.listening = true; b.classList.add('on'); b.textContent = '■ Стоп'; }
+    else { this.listening = false; b.classList.remove('on'); b.textContent = '🎤 Надиктовать'; const s = await Native.call('listenStop'); if (s) this.onSpeech(s, true); this.saveDraft(); }
+  },
+  onSpeech(text) { const t = document.getElementById('wrText'); t.value = (this.base ? this.base + '\n' : '') + dictToScript(text); },
+};
+/** Диктовка: «сцена двор день точка Барсик двоеточие привет» → строки сценария */
+function dictToScript(s) {
+  return s.replace(/\s*(новая строка|с новой строки|абзац)\s*/gi, '\n').replace(/\s*двоеточие\s*/gi, ': ').replace(/\s*(точка)\s*/gi, '.\n')
+    .replace(/\s*(запятая)\s*/gi, ', ').replace(/\s*открыть скобку\s*/gi, ' (').replace(/\s*закрыть скобку\s*/gi, ') ')
+    .replace(/(^|\n|\.\s*)(сцена|серия|персонаж|музыка|звук|камера|сериал)\s+/gi, (m, a, w) => a + w.toUpperCase() + ': ');
+}
 App.init();
 </script></body></html>
