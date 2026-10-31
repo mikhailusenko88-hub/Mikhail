@@ -80,6 +80,7 @@ function spotTex(base, spot, seed) { return canvasTex(256, 128, (g) => { g.fillS
 const rigCache = {};
 function buildRig(spec) { inRig = true; try { const r = buildRig0(spec); if (MK3D.hq) addFur(r); return r; } finally { inRig = false; } }
 // ---------- шерсть (слои-«оболочки»: на каждом слое остаются только кончики шерстинок) ----------
+const FEATHER_KINDS = new Set(['owl', 'bird', 'duck', 'chick']);
 const FUR_KINDS = new Set(['cat', 'dog', 'bear', 'rabbit', 'mouse', 'fox', 'hedgehog', 'owl', 'bird', 'duck', 'chick', 'lion', 'squirrel', 'wolf', 'cow', 'pig', 'sheep']);
 let furNoise = null;
 function furTex() { // отдельные волоски: круглые сечения с яркой серединой → чем выше слой, тем тоньше волосок
@@ -110,12 +111,12 @@ function addFur(rig) {
   rig.root.traverse(o => { if (!o.isMesh || !o.userData.noFur) return; o.geometry.computeBoundingSphere(); const ws = new THREE.Vector3(); o.getWorldScale(ws); const w = o.geometry.boundingSphere.center.clone().applyMatrix4(o.matrixWorld); keep.push([w, o.geometry.boundingSphere.radius * Math.max(ws.x, ws.y, ws.z) * .9]); });
   const O = rig.spec.outfit || {}; const clothed = !!(O.shirt || O.overalls || O.dress || O.pajamas || O.suit);
   const under = (o, g) => { let p = o.parent; while (p) { if (p === g) return true; p = p.parent; } return false; };
-  for (const o of list) { if (clothed && (under(o, rig.body) || rig.legs.some(g => under(o, g)) || (O.shirt || O.suit || O.pajamas || O.dress) && rig.arms.some(g => under(o, g)))) continue; { let fk = 1, pp = o; while (pp) { if (pp.userData.furK != null) { fk = Math.min(fk, pp.userData.furK); } pp = pp.parent; } addStrands(rig, o, L, keep, fk); } }
+  for (const o of list) { if (clothed && (under(o, rig.body) || rig.legs.some(g => under(o, g)) || (O.shirt || O.suit || O.pajamas || O.dress) && rig.arms.some(g => under(o, g)))) continue; { let fk = 1, pp = o; while (pp) { if (pp.userData.furK != null) { fk = Math.min(fk, pp.userData.furK); } pp = pp.parent; } const reg = under(o, rig.tail) ? 'tail' : rig.legs.some(g => under(o, g)) ? 'leg' : rig.arms.some(g => under(o, g)) ? 'arm' : under(o, rig.body) ? 'body' : 'head'; if (FEATHER_KINDS.has(rig.kind)) addFeathers(rig, o, keep, reg); else addStrands(rig, o, L, keep, fk, reg); } }
   rig.fur = []; rig.root.traverse(o => { if (o.userData.strands) rig.fur.push(o); });
 }
 // ---------- волоски-нити: каждый волосок — отдельная линия; блик вдоль волоска (Kajiya-Kay), качание от движения ----------
 const FUR_VS = `
-attribute vec3 aRoot; attribute vec3 aNorm; attribute vec2 aUv; attribute vec4 aRnd; attribute float aT;
+attribute vec3 aRoot; attribute vec3 aNorm; attribute vec2 aUv; attribute vec4 aRnd; attribute float aT; attribute vec3 aTilt;
 uniform float uLen; uniform vec3 uLag; uniform float uGrav; uniform float uTime;
 varying vec3 vT; varying vec3 vW; varying float vt; varying vec2 vUv; varying float vVar;
 void main(){
@@ -123,13 +124,15 @@ void main(){
   float sc = length(mat3(modelMatrix) * vec3(0.0,1.0,0.0)) / max(length(aNorm),1e-4);
   vec3 tan1 = normalize(cross(nW, abs(nW.y) < .95 ? vec3(0.,1.,0.) : vec3(1.,0.,0.))); vec3 tan2 = cross(nW, tan1);
   vec3 down = vec3(0.,-1.,0.) - nW * dot(vec3(0.,-1.,0.), nW); float dl = length(down); vec3 comb = dl > .05 ? down / dl : vec3(0.);
-  vec3 dir = normalize(nW * .75 + comb * .5 + (tan1 * aRnd.y + tan2 * aRnd.z) * .12);
+  vec3 tiltW = mat3(modelMatrix) * aTilt;
+  vec3 dir = normalize(nW * .75 + comb * .45 + tiltW);
   float len = uLen * aRnd.x * sc;
   float t = aT;
   vec3 root = (modelMatrix * vec4(aRoot, 1.0)).xyz;
   float sway = sin(uTime * 2.3 + aRnd.w * 40.0) * .06;
   vec3 bend = (vec3(0.0, -uGrav, 0.0) + uLag + tan1 * sway) * len;
-  vec3 p = root + dir * len * t + bend * t * t;
+  vec3 wave = tan2 * sin(t * 6.0 + aRnd.w * 20.0) * len * .08 * t;
+  vec3 p = root + dir * len * t + bend * t * t + wave;
   vec3 tg = normalize(dir * len + bend * 2.0 * t);
   vT = tg; vW = p; vt = t; vUv = aUv; vVar = aRnd.w;
   gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
@@ -139,7 +142,7 @@ uniform vec3 uColor; uniform sampler2D uMap; uniform float uHasMap; uniform vec3
 varying vec3 vT; varying vec3 vW; varying float vt; varying vec2 vUv; varying float vVar;
 void main(){
   vec3 base = uHasMap > .5 ? texture2D(uMap, vUv).rgb : uColor;
-  base *= .88 + vVar * .24;
+  base *= .9 + vVar * .2; base = mix(base * .86, base * 1.06, smoothstep(0., 1., vt));
   vec3 T = normalize(vT); vec3 V = normalize(cameraPosition - vW); vec3 L = normalize(uSunDir);
   float TL = dot(T, L), TV = dot(T, V);
   float diff = sqrt(max(0., 1. - TL * TL));
@@ -169,10 +172,51 @@ function furFrame(rig, T) { // свет и качание шерсти на ка
   else if (Math.abs(dt) >= .25) { st.lag.set(0, 0, 0); st.vel.set(0, 0, 0); }
   st.t = T; st.p.copy(hp);
   const sd = sun.position.clone().sub(sun.target.position).normalize(), rd = rim ? rim.position.clone().sub(rim.target.position).normalize() : new THREE.Vector3(0, 0, -1);
-  for (const ls of rig.fur) { const u = ls.material.uniforms; u.uTime.value = T; u.uLag.value.copy(st.lag); u.uSunDir.value.copy(sd); u.uSunCol.value.copy(sun.color).multiplyScalar(sun.intensity * .3);
+  for (const ls of rig.fur) { if (!ls.material.uniforms) continue; const u = ls.material.uniforms; u.uTime.value = T; u.uLag.value.copy(st.lag); u.uSunDir.value.copy(sd); u.uSunCol.value.copy(sun.color).multiplyScalar(sun.intensity * .3);
     u.uSky.value.copy(hemi.color).multiplyScalar(hemi.intensity * 1.6 + .35); u.uGround.value.copy(hemi.groundColor).multiplyScalar(hemi.intensity * 1.6 + .35); u.uRimDir.value.copy(rd); if (rim) u.uRimCol.value.copy(rim.color).multiplyScalar(rim.intensity); }
 }
-function addStrands(rig, o, L, keep, furK) { furK = furK || 1;
+let featherTexC = null;
+function featherTex() { if (featherTexC) return featherTexC; featherTexC = canvasTex(64, 128, (g) => { g.clearRect(0, 0, 64, 128); g.fillStyle = '#fff'; g.beginPath(); g.moveTo(32, 2); g.bezierCurveTo(62, 30, 62, 95, 32, 126); g.bezierCurveTo(2, 95, 2, 30, 32, 2); g.fill();
+    g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineWidth = 2.5; g.beginPath(); g.moveTo(32, 10); g.lineTo(32, 122); g.stroke(); g.lineWidth = 1; for (let y = 24; y < 118; y += 9) { g.beginPath(); g.moveTo(32, y); g.lineTo(12, y + 14); g.moveTo(32, y); g.lineTo(52, y + 14); g.stroke(); } }); return featherTexC; }
+function addFeathers(rig, o, keep, reg) { // перья: плоские «чешуйки» рядами, кончиком вниз, у края чуть приподняты
+  const g = o.geometry, pos = g.attributes.position, nor = g.attributes.normal, uv = g.attributes.uv; if (!pos || !nor) return;
+  const idx = g.index ? g.index.array : null, triN = idx ? idx.length / 3 : pos.count / 3; const wsc = new THREE.Vector3(); o.getWorldScale(wsc); const ws = (wsc.x + wsc.y + wsc.z) / 3;
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), areas = new Float32Array(triN); let tot = 0;
+  for (let i = 0; i < triN; i++) { const i0 = idx ? idx[i * 3] : i * 3, i1 = idx ? idx[i * 3 + 1] : i * 3 + 1, i2 = idx ? idx[i * 3 + 2] : i * 3 + 2; a.fromBufferAttribute(pos, i0).multiply(wsc); b.fromBufferAttribute(pos, i1).multiply(wsc); c.fromBufferAttribute(pos, i2).multiply(wsc); tot += b.sub(a).cross(c.sub(a)).length() / 2; areas[i] = tot; }
+  g.computeBoundingSphere(); const R0 = g.boundingSphere.radius * ws; if (R0 < .06) return;
+  const fw = Math.min(.06, Math.max(.025, R0 * .17)) * ({ arm: 1.5, tail: 1.6, leg: .6, body: 1, head: .75 })[reg || 'body'], fh = fw * 1.7;
+  const count = Math.min(9000, Math.round(tot / (fw * fh * .13))); if (count < 20) return;
+  const r = rng(global.MK.hash32('f' + rig.spec.name + o.uuid.slice(0, 4)) || 5);
+  const headW = new THREE.Vector3(); rig.head.getWorldPosition(headW); const fwd = new THREE.Vector3(0, 0, 1).applyQuaternion(rig.head.getWorldQuaternion(new THREE.Quaternion())).normalize(); let inHead = false; { let pp = o; while (pp) { if (pp === rig.head) inHead = true; pp = pp.parent; } }
+  const inv = new THREE.Matrix4().copy(o.matrixWorld).invert(), nm = new THREE.Matrix3().getNormalMatrix(o.matrixWorld);
+  const P = new THREE.Vector3(), N = new THREE.Vector3(), Wp = new THREE.Vector3(), Wn = new THREE.Vector3(), pa = new THREE.Vector3(), pb = new THREE.Vector3(), pc = new THREE.Vector3(), na = new THREE.Vector3(), nb = new THREE.Vector3(), nc = new THREE.Vector3();
+  const V = [], Nn = [], UV = [], UV2 = [], I = []; let vi = 0;
+  for (let s2 = 0; s2 < count; s2++) {
+    const x = r() * tot; let lo = 0, hi = triN - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (areas[m] < x) lo = m + 1; else hi = m; }
+    const i0 = idx ? idx[lo * 3] : lo * 3, i1 = idx ? idx[lo * 3 + 1] : lo * 3 + 1, i2 = idx ? idx[lo * 3 + 2] : lo * 3 + 2; let u1 = r(), u2 = r(); if (u1 + u2 > 1) { u1 = 1 - u1; u2 = 1 - u2; } const w0 = 1 - u1 - u2;
+    pa.fromBufferAttribute(pos, i0); pb.fromBufferAttribute(pos, i1); pc.fromBufferAttribute(pos, i2); P.set(0, 0, 0).addScaledVector(pa, w0).addScaledVector(pb, u1).addScaledVector(pc, u2);
+    na.fromBufferAttribute(nor, i0); nb.fromBufferAttribute(nor, i1); nc.fromBufferAttribute(nor, i2); N.set(0, 0, 0).addScaledVector(na, w0).addScaledVector(nb, u1).addScaledVector(nc, u2).normalize();
+    Wp.copy(P).applyMatrix4(o.matrixWorld); Wn.copy(N).applyMatrix3(nm).normalize(); let skip = false; for (const [kp, kr] of keep) if (Wp.distanceTo(kp) / kr < 1.05) { skip = true; break; } if (skip) continue;
+    let sz = 1; if (inHead) { const d = Wp.clone().sub(headW); const f = d.dot(fwd) / Math.max(1e-3, d.length()); if (f > .35) { if (r() < .5) continue; sz = .55; } }
+    let U = 0, Vv = 0; if (uv) { U = uv.getX(i0) * w0 + uv.getX(i1) * u1 + uv.getX(i2) * u2; Vv = uv.getY(i0) * w0 + uv.getY(i1) * u1 + uv.getY(i2) * u2; }
+    // ось пера: вниз по поверхности; на крыльях — назад
+    let down = new THREE.Vector3(0, -1, 0); if (reg === 'arm') down.set(0, -.6, -.8); down.addScaledVector(Wn, -down.dot(Wn)); if (down.lengthSq() < .01) down.set(1, 0, 0).addScaledVector(Wn, -Wn.x); down.normalize();
+    const side = new THREE.Vector3().crossVectors(Wn, down).normalize(); const ang = (r() - .5) * .5; const dn = down.clone().multiplyScalar(Math.cos(ang)).addScaledVector(side, Math.sin(ang)); const sd = new THREE.Vector3().crossVectors(Wn, dn).normalize();
+    const w = fw * sz * (.85 + r() * .3), h = fh * sz * (.85 + r() * .3), lift = .18 + r() * .2;
+    const base = Wp.clone().addScaledVector(Wn, .004).addScaledVector(dn, -h * .15); // корень чуть выше
+    const corners = [[-.5, 0, 0], [.5, 0, 0], [.5, 1, lift], [-.5, 1, lift]].map(([sx, ty, lz]) => base.clone().addScaledVector(sd, sx * w).addScaledVector(dn, ty * h).addScaledVector(Wn, lz * h * .45).applyMatrix4(inv));
+    const fn = Wn.clone().addScaledVector(dn, -lift * .6).normalize(); const fnl = fn.clone().applyMatrix3(new THREE.Matrix3().getNormalMatrix(inv)).normalize();
+    for (let k = 0; k < 4; k++) { V.push(corners[k].x, corners[k].y, corners[k].z); Nn.push(fnl.x, fnl.y, fnl.z); UV.push(k === 0 || k === 3 ? 0 : 1, k < 2 ? 1 : 0); UV2.push(U, Vv); }
+    I.push(vi, vi + 1, vi + 2, vi, vi + 2, vi + 3); vi += 4;
+  }
+  if (!vi) return;
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(V, 3)); geo.setAttribute('normal', new THREE.Float32BufferAttribute(Nn, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute(UV, 2)); geo.setAttribute('uv1', new THREE.Float32BufferAttribute(UV2, 2)); geo.setIndex(I); geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 10);
+  const src = o.material; const m = new THREE.MeshPhysicalMaterial({ color: src.color.clone().multiplyScalar(1.04), roughness: .6, sheen: .12, sheenRoughness: .4, sheenColor: new THREE.Color(1, 1, 1), alphaMap: featherTex(), alphaTest: .5, side: THREE.DoubleSide, envMapIntensity: .6 });
+  if (src.map) { m.map = src.map.clone(); m.map.channel = 1; m.map.needsUpdate = true; m.color.set(0xffffff); } // полоски/пятна с текстуры тела — по второй развёртке
+  const fm = new THREE.Mesh(geo, m); fm.castShadow = true; fm.receiveShadow = true; fm.frustumCulled = false; fm.userData.strands = true; o.add(fm);
+  o.material = o.material.clone(); o.material.color.multiplyScalar(.93); o.material.sheen = 0;
+}
+function addStrands(rig, o, L, keep, furK, reg) { furK = (furK || 1) * ({ tail: 1.45, leg: .7, arm: .8, body: 1.05, head: 1 })[reg || 'body'];
   const headW = new THREE.Vector3(); rig.head.getWorldPosition(headW); const hr = rig.P.head; let inHead = false; { let pp = o; while (pp) { if (pp === rig.head) inHead = true; pp = pp.parent; } }
   const fwd = new THREE.Vector3(0, 0, 1).applyQuaternion(rig.head.getWorldQuaternion(new THREE.Quaternion())).normalize();
   const g = o.geometry, pos = g.attributes.position, nor = g.attributes.normal, uv = g.attributes.uv; if (!pos || !nor) return;
@@ -181,9 +225,9 @@ function addStrands(rig, o, L, keep, furK) { furK = furK || 1;
   const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), areas = new Float32Array(triN); let tot = 0;
   for (let i = 0; i < triN; i++) { const i0 = idx ? idx[i * 3] : i * 3, i1 = idx ? idx[i * 3 + 1] : i * 3 + 1, i2 = idx ? idx[i * 3 + 2] : i * 3 + 2;
     a.fromBufferAttribute(pos, i0).multiply(wsc); b.fromBufferAttribute(pos, i1).multiply(wsc); c.fromBufferAttribute(pos, i2).multiply(wsc); const ar = b.sub(a).cross(c.sub(a)).length() / 2; tot += ar; areas[i] = tot; }
-  const DENS = 52000; let count = Math.min(80000, Math.round(tot * DENS)); if (count < 50) return;
+  const DENS = 64000; let count = Math.min(100000, Math.round(tot * DENS)); if (count < 50) return;
   const SEG = 4, r = rng(global.MK.hash32(rig.spec.name + o.uuid.slice(0, 4)) || 7);
-  const aRoot = new Float32Array(count * SEG * 2 * 3), aNorm = new Float32Array(count * SEG * 2 * 3), aUv = new Float32Array(count * SEG * 2 * 2), aRnd = new Float32Array(count * SEG * 2 * 4), aT = new Float32Array(count * SEG * 2);
+  const aTilt = new Float32Array(count * SEG * 2 * 3); const aRoot = new Float32Array(count * SEG * 2 * 3), aNorm = new Float32Array(count * SEG * 2 * 3), aUv = new Float32Array(count * SEG * 2 * 2), aRnd = new Float32Array(count * SEG * 2 * 4), aT = new Float32Array(count * SEG * 2);
   const pa = new THREE.Vector3(), pb = new THREE.Vector3(), pc = new THREE.Vector3(), na = new THREE.Vector3(), nb = new THREE.Vector3(), nc = new THREE.Vector3(), P = new THREE.Vector3(), N = new THREE.Vector3(), Wp = new THREE.Vector3();
   let v = 0, made = 0;
   for (let s = 0; s < count; s++) {
@@ -197,16 +241,24 @@ function addStrands(rig, o, L, keep, furK) { furK = furK || 1;
     let faceK = 1; if (inHead) { const d = Wp.clone().sub(headW); const f = d.dot(fwd) / Math.max(1e-3, d.length()); // f=1 — самый перед мордочки
       faceK = f > .15 ? .3 + .7 * (1 - Math.min(1, (f - .15) / .55)) : 1; faceK = Math.max(.28, faceK); if (d.y < -hr * .15 && f > .3) faceK = Math.min(faceK, .32); }
     if (faceK < .4 && r() < .35) continue; // на мордочке шерсть ещё и реже
-    const lenK = (.9 + r() * .15) * (near < 1.8 ? .45 + .55 * (near - 1) / .8 : 1) * faceK * furK, ty = (r() - .5), tz = (r() - .5), vr = r();
+    let regK = 1; if (reg === 'body') { const d = Wp.clone().sub(headW); const f = d.dot(fwd); if (f > .05) regK *= 1 + Math.min(.35, f * 1.8); if (N.y > .5) regK *= 1.25; /* грудка и воротник — пышнее */ }
+    if (reg === 'tail') { const tipK = .8 + Math.max(0, -P.z) * 2; regK *= Math.min(1.5, tipK); }
+    const lenK = (.9 + r() * .15) * (near < 1.8 ? .45 + .55 * (near - 1) / .8 : 1) * faceK * furK * regK, ty = (r() - .5), tz = (r() - .5), vr = r();
+    // пряди: волоски в одной ячейке тянутся к общему центру
+    const CELL = .035 / ws, cx = Math.floor(P.x / CELL), cy = Math.floor(P.y / CELL), cz = Math.floor(P.z / CELL);
+    const h = global.MK.hash32(cx + ',' + cy + ',' + cz + o.uuid.slice(0, 2)) / 4294967296, h2 = global.MK.hash32(cz + ';' + cy + ';' + cx) / 4294967296;
+    const ctr = new THREE.Vector3((cx + .5) * CELL, (cy + .5) * CELL, (cz + .5) * CELL); const pull = ctr.sub(P); pull.addScaledVector(N, -pull.dot(N)); if (pull.lengthSq() > 1e-9) pull.normalize();
+    const tan1 = new THREE.Vector3().crossVectors(N, Math.abs(N.y) < .95 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0)).normalize(), tan2 = new THREE.Vector3().crossVectors(N, tan1);
+    const tilt = pull.multiplyScalar(.07 * (.5 + h)).addScaledVector(tan1, (h - .5) * .14 + ty * .08).addScaledVector(tan2, (h2 - .5) * .14 + tz * .08);
     P.addScaledVector(N, .002 / ws);
     for (let k = 0; k < SEG; k++) for (const tt of [k / SEG, (k + 1) / SEG]) {
-      aRoot.set([P.x, P.y, P.z], v * 3); aNorm.set([N.x, N.y, N.z], v * 3); aUv.set([U, Vv], v * 2); aRnd.set([lenK, ty, tz, vr], v * 4); aT[v] = tt; v++; }
+      aRoot.set([P.x, P.y, P.z], v * 3); aNorm.set([N.x, N.y, N.z], v * 3); aTilt.set([tilt.x, tilt.y, tilt.z], v * 3); aUv.set([U, Vv], v * 2); aRnd.set([lenK, ty, tz, vr], v * 4); aT[v] = tt; v++; }
     made++;
   }
   if (!made) return;
   const geo = new THREE.BufferGeometry(); const n = v;
   geo.setAttribute('position', new THREE.BufferAttribute(aRoot.slice(0, n * 3), 3)); geo.setAttribute('aRoot', new THREE.BufferAttribute(aRoot.slice(0, n * 3), 3)); geo.setAttribute('aNorm', new THREE.BufferAttribute(aNorm.slice(0, n * 3), 3));
-  geo.setAttribute('aUv', new THREE.BufferAttribute(aUv.slice(0, n * 2), 2)); geo.setAttribute('aRnd', new THREE.BufferAttribute(aRnd.slice(0, n * 4), 4)); geo.setAttribute('aT', new THREE.BufferAttribute(aT.slice(0, n), 1));
+  geo.setAttribute('aUv', new THREE.BufferAttribute(aUv.slice(0, n * 2), 2)); geo.setAttribute('aRnd', new THREE.BufferAttribute(aRnd.slice(0, n * 4), 4)); geo.setAttribute('aT', new THREE.BufferAttribute(aT.slice(0, n), 1)); geo.setAttribute('aTilt', new THREE.BufferAttribute(aTilt.slice(0, n * 3), 3));
   geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 10);
   const m = strandMat(o.material); m.uniforms.uLen.value = L / ws; const ls = new THREE.LineSegments(geo, m); ls.frustumCulled = false; ls.userData.strands = true; ls.castShadow = false; o.add(ls);
   // базовая поверхность чуть темнее — это «подшёрсток» у корней
