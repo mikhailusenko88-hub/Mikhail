@@ -5,11 +5,11 @@
 <style>
 :root{--bg:#101218;--card:#1b1f2a;--card2:#252a38;--tx:#f2f3f7;--mut:#9aa0b2;--acc:#ff8a3d;--ok:#4cc38a;--bad:#ff5d6c;--blue:#4c9aff}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px -apple-system,system-ui,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-header{position:sticky;top:0;z-index:5;background:rgba(16,18,24,.92);backdrop-filter:blur(10px);display:flex;align-items:center;gap:10px;padding:10px 14px}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px -apple-system,system-ui,sans-serif;padding:0 0 env(safe-area-inset-bottom)}
+header{position:sticky;top:0;z-index:5;background:rgba(16,18,24,.92);backdrop-filter:blur(10px);display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px}
 header h1{font-size:20px;margin:0;flex:1}
 .back{font-size:28px;line-height:1;background:none;border:0;color:var(--acc);padding:4px 10px 4px 0}
-.tabs{display:flex;gap:6px;padding:0 14px 10px;position:sticky;top:52px;background:rgba(16,18,24,.92);z-index:4}
+.tabs{display:flex;gap:6px;padding:0 14px 10px;position:sticky;top:calc(52px + env(safe-area-inset-top));background:rgba(16,18,24,.92);z-index:4}
 .tabs button{flex:1;border:0;border-radius:12px;padding:10px 4px;background:var(--card);color:var(--mut);font-weight:600;font-size:14px}
 .tabs button.on{background:var(--acc);color:#fff}
 main{padding:4px 14px 120px}
@@ -40,7 +40,8 @@ textarea{width:100%;min-height:120px;background:var(--card2);color:var(--tx);bor
 .err{color:var(--bad);font-size:14px;white-space:pre-wrap}
 .warn{color:#ffd27a;font-size:13px}
 input[type=range]{width:100%}
-#editor{position:fixed;inset:0;background:var(--bg);z-index:15;display:none;flex-direction:column;overflow-y:auto;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#editor{position:fixed;inset:0;background:var(--bg);z-index:15;display:none;flex-direction:column;overflow-y:auto;padding:0 0 env(safe-area-inset-bottom)}
+#editor .pv{padding-top:env(safe-area-inset-top)}
 #editor .pv{position:sticky;top:0;z-index:2;background:#0c0e13}
 #editor .pv canvas{width:100%;display:block;max-height:42vh;object-fit:contain}
 .cmd{display:flex;gap:8px;align-items:flex-end}
@@ -63,8 +64,8 @@ select{background:var(--card2);color:var(--tx);border:0;border-radius:10px;paddi
 <div id="player"><canvas id="pc" width="1920" height="1080"></canvas>
   <div class="ctl"><button class="btn" onclick="Player.stop()">✕ Закрыть</button><button class="btn acc" id="pp" onclick="Player.toggle()">❚❚</button><input type="range" id="seek" min="0" max="1000" value="0" style="max-width:420px" oninput="Player.seek(this.value/1000)"><span class="mut" id="ptime">0:00</span></div></div>
 <div id="prog"><h2 id="ptitle">Сборка серии</h2><div class="bar"><div id="pbar"></div></div><div id="ptext" class="mut"></div><p class="mut">Не сворачивай приложение, пока идёт сборка. Телефон лучше поставить на зарядку.</p><button class="btn bad" onclick="Build.cancel()">Остановить</button></div>
-<div id="writer" style="position:fixed;inset:0;background:var(--bg);z-index:16;display:none;flex-direction:column;overflow-y:auto;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)">
-<div class="row" style="padding:8px 12px;position:sticky;top:0;background:var(--bg);z-index:2"><button class="back" onclick="Wr.close()">‹</button><b style="flex:1">Мой сценарий</b><button class="btn" onclick="Wr.example()">Пример</button></div>
+<div id="writer" style="position:fixed;inset:0;background:var(--bg);z-index:16;display:none;flex-direction:column;overflow-y:auto;padding:0 0 env(safe-area-inset-bottom)">
+<div class="row" style="padding:calc(8px + env(safe-area-inset-top)) 12px 8px;position:sticky;top:0;background:var(--bg);z-index:2"><button class="back" onclick="Wr.close()">‹</button><b style="flex:1">Мой сценарий</b><button class="btn" onclick="Wr.example()">Пример</button></div>
 <div style="padding:4px 14px 120px">
  <div class="card"><div class="kv"><span>Сериал</span><span><input type="text" id="wrSeries" list="wrSeriesList" placeholder="Кот Барсик"><datalist id="wrSeriesList"></datalist></span></div></div>
  <div class="card" style="padding:10px"><textarea id="wrText" style="min-height:46vh;font:15px -apple-system,sans-serif;line-height:1.45" placeholder="СЦЕНА: двор, утро&#10;Барсик: Привет!&#10;Пик входит справа.&#10;Пик (радостно): Бежим в лес!"></textarea>
@@ -407,7 +408,7 @@ const Ed = {
   async mic() {
     const b = document.getElementById('edMic');
     if (!this.listening) { const r = await Native.call('listenStart'); if (r === false) { alert('Нет доступа к микрофону или распознаванию речи. Разреши в Настройках → Замер 3D.'); return; } this.listening = true; b.classList.add('on'); b.textContent = '■'; }
-    else { this.listening = false; b.classList.remove('on'); b.textContent = '🎤'; const t = await Native.call('listenStop'); if (t) { document.getElementById('edText').value = t; this.applyText(); } }
+    else { this.listening = false; b.classList.remove('on'); b.textContent = '🎤'; const t = await Native.call('listenStop'); if (t && !t.startsWith('⚠️')) { document.getElementById('edText').value = t; this.applyText(); } else alert(t || 'Ничего не распознал. Проверь разрешения на микрофон и распознавание речи или диктуй микрофоном на клавиатуре.'); }
   },
   onSpeech(text) { if (Wr.listening) return Wr.onSpeech(text); document.getElementById('edText').value = text; },
   async create() {
@@ -467,7 +468,7 @@ const Wr = {
   async mic() {
     const b = document.getElementById('wrMic'), t = document.getElementById('wrText');
     if (!this.listening) { this.base = t.value.replace(/\s*$/, ''); const r = await Native.call('listenStart'); if (r === false) { alert('Нет доступа к микрофону или распознаванию речи. Разреши в Настройках → Замер 3D.'); return; } this.listening = true; b.classList.add('on'); b.textContent = '■ Стоп'; }
-    else { this.listening = false; b.classList.remove('on'); b.textContent = '🎤 Надиктовать'; const s = await Native.call('listenStop'); if (s) this.onSpeech(s, true); this.saveDraft(); }
+    else { this.listening = false; b.classList.remove('on'); b.textContent = '🎤 Надиктовать'; const s = await Native.call('listenStop'); if (s) this.onSpeech(s, true); else alert('Ничего не распознал. Проверь: Настройки → Замер 3D → Микрофон и Распознавание речи включены. Можно диктовать микрофоном на клавиатуре.'); this.saveDraft(); }
   },
   onSpeech(text) { const t = document.getElementById('wrText'); t.value = (this.base ? this.base + '\n' : '') + dictToScript(text); },
 };
