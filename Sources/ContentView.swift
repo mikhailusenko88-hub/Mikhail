@@ -385,6 +385,7 @@ struct HomeView: View {
     @State private var showMebel = false
     @State private var showFitting = false
     @State private var showObject = false
+    @State private var showMultik = false
 
     var body: some View {
         NavigationView {
@@ -402,6 +403,9 @@ struct HomeView: View {
                     HomeCard(title: "Скан предмета",
                              text: "Обойти предмет на столе со всех сторон — точная 3D-модель с размерами",
                              icon: "cube.fill", color: .purple) { showObject = true }
+                    HomeCard(title: "Мультики",
+                             text: "Сериалы по сценариям: персонажи с постоянным кодом, озвучка, сборка видео для YouTube",
+                             icon: "film.stack", color: .pink) { showMultik = true }
                 }
                 .padding(16)
             }
@@ -412,6 +416,7 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showMebel) { MebelView() }
         .fullScreenCover(isPresented: $showFitting) { FittingView() }
         .fullScreenCover(isPresented: $showObject) { ObjectScanScreen() }
+        .fullScreenCover(isPresented: $showMultik) { MultikScreen() }
     }
 }
 

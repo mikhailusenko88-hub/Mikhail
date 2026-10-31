@@ -1,0 +1,66 @@
+{
+  "format": "multik/1",
+  "series": "Кот Барсик",
+  "episode": 1,
+  "title": "Пропавший мяч",
+  "length": 300,
+  "subtitles": false,
+  "music": "happy",
+  "narrator": { "voice": { "base": "male", "pitch": 0.95, "rate": 0.47 } },
+  "characters": [
+    { "id": "К1", "name": "Кот Барсик", "kind": "cat", "age": "kid", "height": 1,
+      "colors": { "body": "#f2a65a", "belly": "#fff3e0", "stripe": "#c9692a", "eyes": "#62b85a", "nose": "#ee8a9e", "inner": "#f7b7c3" },
+      "pattern": ["stripes", "muzzle", "tailtip"], "acc": [{ "type": "scarf", "color": "#3d8fe0" }],
+      "voice": { "base": "female", "pitch": 1.35, "rate": 0.52 },
+      "about": "Рыжий полосатый котёнок, любопытный и добрый, синий шарф" },
+    { "id": "К2", "name": "Мышонок Пик", "kind": "mouse", "age": "kid", "height": 0.78,
+      "colors": { "body": "#a9a9b8", "belly": "#ecebf2", "inner": "#f6b2c0", "eyes": "#2a2230" },
+      "pattern": [], "acc": [{ "type": "bow", "color": "#e8344e" }],
+      "voice": { "base": "female", "pitch": 1.7, "rate": 0.56 },
+      "about": "Маленький серый мышонок, лучший друг Барсика, красный бантик" }
+  ],
+  "locations": [
+    { "id": "Л1", "name": "Двор у дома Барсика", "type": "yard", "time": "day", "seed": 1 },
+    { "id": "Л2", "name": "Лес за забором", "type": "forest", "time": "day", "seed": 2 }
+  ],
+  "scenes": [
+    { "id": "С1", "location": "Л1", "cast": [{ "who": "К1", "x": 0.42, "face": "camera" }, { "who": "К2", "x": 1.2, "hidden": true }],
+      "props": [{ "id": "П1", "type": "ball", "x": 0.6 }],
+      "steps": [
+        { "who": "Р", "say": "Это двор, где живёт кот Барсик. А это его любимый мяч." },
+        { "camera": "medium", "on": "К1" },
+        { "who": "К1", "do": "wave", "emotion": "happy", "say": "Привет! Я Барсик!" },
+        { "who": "К1", "do": "walk", "to": 0.56 },
+        { "who": "К1", "do": "take", "prop": "П1" },
+        { "camera": "wide" },
+        { "who": "К1", "do": "jump" },
+        { "who": "К1", "do": "drop" },
+        { "who": "К1", "face": "camera", "do": "think", "text": "Где Пик?", "emotion": "neutral" },
+        { "who": "К2", "do": "enter", "from": "right", "to": 0.78, "emotion": "happy" },
+        { "who": "К2", "say": "Барсик! Бежим скорее в лес, я там что-то нашёл!", "to": "К1", "do": "jump", "with": false },
+        { "who": "К1", "emotion": "surprised", "say": "Что нашёл?", "to": "К2" },
+        { "camera": "two", "on": ["К1", "К2"] },
+        { "who": "К2", "say": "Увидишь! Это сюрприз!", "do": "dance" },
+        { "who": "К1", "emotion": "happy", "do": "nod" },
+        { "who": "К2", "do": "exit", "side": "right" },
+        { "who": "К1", "do": "run", "to": 1.2, "with": true, "after": 0.4 }
+      ] },
+    { "id": "С2", "location": "Л2", "music": "adventure", "cast": [{ "who": "К1", "x": -0.2 }, { "who": "К2", "x": -0.2 }],
+      "props": [{ "id": "П2", "type": "gift", "x": 0.7 }],
+      "steps": [
+        { "who": "К2", "do": "enter", "from": "left", "to": 0.45 },
+        { "who": "К1", "do": "enter", "from": "left", "to": 0.3, "with": true, "after": 0.5 },
+        { "who": "К2", "do": "point", "say": "Смотри, вон там, под деревом!", "face": "right" },
+        { "camera": "pan", "on": 0.7, "zoom": 1.5 },
+        { "wait": 1.2 },
+        { "camera": "wide" },
+        { "who": "К1", "emotion": "surprised", "do": "surprise", "say": "Ого! Подарок!" },
+        { "who": "К1", "do": "walk", "to": 0.64 },
+        { "who": "К1", "do": "take", "prop": "П2" },
+        { "camera": "close", "on": "К1" },
+        { "who": "К1", "emotion": "love", "say": "Интересно, что внутри?", "face": "camera" },
+        { "who": "Р", "say": "А что же было в подарке, мы узнаем в следующей серии." }
+      ] }
+  ],
+  "youtube": { "title": "Кот Барсик — Серия 1. Пропавший мяч", "description": "Барсик и мышонок Пик находят в лесу загадочный подарок. Мультик для детей.", "tags": ["мультик", "кот Барсик", "мультфильм для детей"] }
+}

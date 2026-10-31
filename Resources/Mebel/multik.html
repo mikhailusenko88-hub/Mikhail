@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Мультики</title>
+<style>
+:root{--bg:#101218;--card:#1b1f2a;--card2:#252a38;--tx:#f2f3f7;--mut:#9aa0b2;--acc:#ff8a3d;--ok:#4cc38a;--bad:#ff5d6c;--blue:#4c9aff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px -apple-system,system-ui,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{position:sticky;top:0;z-index:5;background:rgba(16,18,24,.92);backdrop-filter:blur(10px);display:flex;align-items:center;gap:10px;padding:10px 14px}
+header h1{font-size:20px;margin:0;flex:1}
+.back{font-size:28px;line-height:1;background:none;border:0;color:var(--acc);padding:4px 10px 4px 0}
+.tabs{display:flex;gap:6px;padding:0 14px 10px;position:sticky;top:52px;background:rgba(16,18,24,.92);z-index:4}
+.tabs button{flex:1;border:0;border-radius:12px;padding:10px 4px;background:var(--card);color:var(--mut);font-weight:600;font-size:14px}
+.tabs button.on{background:var(--acc);color:#fff}
+main{padding:4px 14px 120px}
+.card{background:var(--card);border-radius:18px;padding:14px;margin:10px 0}
+.row{display:flex;align-items:center;gap:10px}
+.mut{color:var(--mut);font-size:13px}
+.btn{border:0;border-radius:12px;padding:11px 14px;font-weight:700;font-size:15px;background:var(--card2);color:var(--tx)}
+.btn.acc{background:var(--acc);color:#fff}.btn.ok{background:var(--ok);color:#fff}.btn.blue{background:var(--blue);color:#fff}.btn.bad{background:var(--bad);color:#fff}
+.btn:disabled{opacity:.4}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ch{background:var(--card);border-radius:16px;overflow:hidden}
+.ch canvas{width:100%;display:block}
+.ch .i{padding:8px 10px}
+.code{font:600 13px ui-monospace,Menlo,monospace;color:#ffd27a;background:#2b2618;border-radius:6px;padding:2px 6px;display:inline-block}
+.lock{color:var(--ok);font-size:12px}
+.ep{border-top:1px solid #2a2f3d;padding:12px 0}
+.ep:first-of-type{border-top:0}
+.tag{font-size:12px;border-radius:8px;padding:2px 8px;background:var(--card2);color:var(--mut)}
+.tag.ok{background:#173a2a;color:var(--ok)}
+#player{position:fixed;inset:0;background:#000;z-index:20;display:none;flex-direction:column;justify-content:center}
+#player canvas{width:100%;display:block}
+#player .ctl{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom));display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;padding:0 10px}
+#prog{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:30;display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center}
+.bar{width:100%;max-width:420px;height:12px;background:#2a2f3d;border-radius:8px;overflow:hidden;margin:16px 0}
+.bar div{height:100%;width:0;background:linear-gradient(90deg,var(--acc),#ffd23f)}
+textarea{width:100%;min-height:120px;background:var(--card2);color:var(--tx);border:0;border-radius:12px;padding:10px;font:13px ui-monospace,monospace}
+.err{color:var(--bad);font-size:14px;white-space:pre-wrap}
+.warn{color:#ffd27a;font-size:13px}
+input[type=range]{width:100%}
+select{background:var(--card2);color:var(--tx);border:0;border-radius:10px;padding:8px}
+</style></head><body>
+<header><button class="back" onclick="App.close()">‹</button><h1>Мультики</h1></header>
+<div class="tabs"><button data-t="series" class="on">Сериалы</button><button data-t="chars">Персонажи</button><button data-t="locs">Локации</button><button data-t="set">Ещё</button></div>
+<main id="main"></main>
+<div id="player"><canvas id="pc" width="1920" height="1080"></canvas>
+  <div class="ctl"><button class="btn" onclick="Player.stop()">✕ Закрыть</button><button class="btn acc" id="pp" onclick="Player.toggle()">❚❚</button><input type="range" id="seek" min="0" max="1000" value="0" style="max-width:420px" oninput="Player.seek(this.value/1000)"><span class="mut" id="ptime">0:00</span></div></div>
+<div id="prog"><h2 id="ptitle">Сборка серии</h2><div class="bar"><div id="pbar"></div></div><div id="ptext" class="mut"></div><p class="mut">Не сворачивай приложение, пока идёт сборка. Телефон лучше поставить на зарядку.</p><button class="btn bad" onclick="Build.cancel()">Остановить</button></div>
+<script src="multik-engine.js"></script>
+<script>
+'use strict';
+// ---------- мост к iPhone ----------
+const HAS_NATIVE = !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.multik);
+const Native = {
+  call(cmd, args) {
+    if (HAS_NATIVE) return window.webkit.messageHandlers.multik.postMessage(Object.assign({ cmd }, args || {}));
+    return Mock[cmd] ? Promise.resolve(Mock[cmd](args || {})) : Promise.resolve(null);
+  }
+};
+const Mock = { // работа в обычном браузере (проверка без телефона)
+  load() { try { return localStorage.getItem('multik-lib'); } catch (e) { return null; } },
+  save(a) { try { localStorage.setItem('multik-lib', a.json); } catch (e) {} return true; },
+  tts() { return null; }, resolveVoice() { return { id: 'mock', name: 'браузер' }; }, voices() { return []; },
+  paste() { return prompt('Вставь сценарий (JSON):') || ''; },
+  async fetch(a) { const r = await fetch(a.url); return r.ok ? await r.text() : null; },
+  copy(a) { navigator.clipboard && navigator.clipboard.writeText(a.text); return true; }, speak() { return true; },
+};
+const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 32768) s += String.fromCharCode.apply(null, u8.subarray(i, i + 32768)); return btoa(s); };
+const unb64 = s => { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmt = s => { s = Math.round(s || 0); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const SCRIPTS_URL = 'https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/multik/';
+const SCRIPTS_API = 'https://api.github.com/repos/mikhailusenko88-hub/Mikhail/contents/';
+
+// ---------- библиотека ----------
+const Lib = {
+  data: null,
+  async load() {
+    const s = await Native.call('load'); let d = null; try { d = s ? JSON.parse(s) : null; } catch (e) {}
+    this.data = Object.assign({ version: 1, characters: {}, locations: {}, projects: [], settings: { res: 1080, fps: 25 } }, d || {});
+  },
+  async save() { const clean = JSON.stringify(this.data, (k, v) => k === '_n' ? undefined : v); await Native.call('save', { json: clean }); },
+  project(series) { let p = this.data.projects.find(p => p.series === series); if (!p) { p = { series, episodes: [] }; this.data.projects.push(p); } return p; },
+  /** Принять сценарий: проверить коды, заморозить новых персонажей/локации, добавить серию. */
+  async importText(text, quiet) {
+    let ep; try { ep = JSON.parse(text.trim().replace(/^```(json)?|```$/g, '')); } catch (e) { return { errors: ['Это не сценарий (ошибка JSON): ' + e.message] }; }
+    if (!ep.series || !ep.scenes) return { errors: ['В сценарии нет «series» или «scenes»'] };
+    const v = MK.validate(ep, this.data);
+    if (v.errors.length) return v;
+    for (const c of v.newChars) { const spec = Object.assign({}, c); delete spec._code; const rv = await Native.call('resolveVoice', { voice: spec.voice || {} }); this.data.characters[c.id] = { spec, code: c._code, created: new Date().toISOString(), voiceId: rv && rv.id, voiceName: rv && rv.name, series: ep.series }; }
+    for (const l of v.newLocs) { const spec = Object.assign({}, l); delete spec._code; this.data.locations[l.id] = { spec, code: l._code, created: new Date().toISOString(), series: ep.series }; }
+    const p = this.project(ep.series); const old = p.episodes.findIndex(e => e.episode === ep.episode);
+    const rec = { episode: ep.episode, title: ep.title, script: ep, status: 'new', added: new Date().toISOString(), hash: MK.hash32(MK.canon(ep)) };
+    if (old >= 0) { if (p.episodes[old].hash === rec.hash) { v.same = true; return v; } if (p.episodes[old].video) { rec.oldVideo = p.episodes[old].video; } p.episodes[old] = rec; v.replaced = true; } else p.episodes.push(rec);
+    p.episodes.sort((a, b) => a.episode - b.episode);
+    await this.save(); return v;
+  },
+};
+
+// ---------- экраны ----------
+const App = {
+  tab: 'series', openSeries: null,
+  async init() {
+    await Lib.load();
+    document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { this.tab = b.dataset.t; this.openSeries = null; document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b)); this.render(); });
+    this.render();
+  },
+  close() { Native.call('close'); },
+  render() { const m = document.getElementById('main'); m.innerHTML = ''; this['r_' + this.tab](m); window.scrollTo(0, 0); },
+  r_series(m) {
+    const P = Lib.data.projects;
+    m.insertAdjacentHTML('beforeend', `<div class="card"><b>Новые сценарии</b><div class="mut" style="margin-top:4px">Сценарии пишутся в чате. Загрузи их одной кнопкой или вставь текст. Персонажи из сценария запоминаются навсегда, со своим кодом.</div>
+      <div class="btns"><button class="btn acc" onclick="App.syncScripts()">⟳ Загрузить новые серии</button><button class="btn" onclick="App.paste()">📋 Вставить</button><button class="btn" onclick="App.pickFile()">📁 Файл</button></div><div id="imsg"></div></div>`);
+    if (!P.length) { m.insertAdjacentHTML('beforeend', `<div class="card mut">Пока нет ни одного сериала.</div>`); return; }
+    for (const p of P) {
+      const built = p.episodes.filter(e => e.status === 'built').length;
+      const total = p.episodes.reduce((s, e) => s + (e.dur || e.script.length || 0), 0);
+      const card = document.createElement('div'); card.className = 'card';
+      card.innerHTML = `<div class="row"><div style="flex:1"><b style="font-size:18px">${esc(p.series)}</b><div class="mut">Серий: ${p.episodes.length} · собрано: ${built} · ≈${fmt(total)}</div></div></div>`;
+      for (const e of p.episodes) {
+        const d = document.createElement('div'); d.className = 'ep';
+        const st = e.status === 'built' ? `<span class="tag ok">собрана ${e.dur ? fmt(e.dur) : ''}</span>` : `<span class="tag">не собрана</span>`;
+        d.innerHTML = `<div class="row"><div style="flex:1"><b>Серия ${e.episode}. ${esc(e.title || '')}</b><div class="mut">${(e.script.scenes || []).length} сцен · ${st}</div></div></div>
+          <div class="btns"><button class="btn" data-a="play">▶ Просмотр</button><button class="btn ${e.status === 'built' ? '' : 'acc'}" data-a="build">🎬 ${e.status === 'built' ? 'Пересобрать' : 'Собрать видео'}</button>
+          ${e.video ? '<button class="btn ok" data-a="share">⤴ Отправить / YouTube</button>' : ''}<button class="btn" data-a="yt">📝 Текст для YouTube</button></div>`;
+        d.querySelectorAll('button').forEach(b => b.onclick = () => App.epAction(p, e, b.dataset.a));
+        card.appendChild(d);
+      }
+      m.appendChild(card);
+    }
+  },
+  r_chars(m) {
+    const C = Object.values(Lib.data.characters);
+    m.insertAdjacentHTML('beforeend', `<div class="mut" style="margin:6px 2px">Персонаж замораживается при первом появлении: внешность и голос входят в его код. Поменять нельзя: новый вид — это новый персонаж с новым кодом.</div>`);
+    if (!C.length) { m.insertAdjacentHTML('beforeend', `<div class="card mut">Персонажей пока нет — они появятся с первым сценарием.</div>`); return; }
+    const g = document.createElement('div'); g.className = 'grid'; m.appendChild(g);
+    for (const c of C) {
+      const d = document.createElement('div'); d.className = 'ch';
+      const cv = document.createElement('canvas'); cv.width = 360; cv.height = 400; d.appendChild(cv);
+      MK.portrait(cv, c.spec, 1.2);
+      const v = c.spec.voice || {};
+      d.insertAdjacentHTML('beforeend', `<div class="i"><b>${esc(c.spec.name)}</b><div><span class="code">${esc(c.code)}</span> <span class="lock">🔒</span></div>
+        <div class="mut">${esc(MK.KIND_NAMES[c.spec.kind] || c.spec.kind)} · голос: ${esc(c.voiceName || v.base || '')} ${v.pitch ? '· тон ' + v.pitch : ''}</div>
+        ${c.spec.about ? `<div class="mut">${esc(c.spec.about)}</div>` : ''}<div class="btns"><button class="btn">🔊 Голос</button></div></div>`);
+      d.querySelector('button').onclick = () => Native.call('speak', { text: `Привет! Я ${c.spec.name}.`, voice: Object.assign({}, v, c.voiceId ? { id: c.voiceId } : {}) });
+      g.appendChild(d);
+    }
+  },
+  r_locs(m) {
+    const L = Object.values(Lib.data.locations);
+    if (!L.length) { m.insertAdjacentHTML('beforeend', `<div class="card mut">Локаций пока нет.</div>`); return; }
+    for (const l of L) {
+      const d = document.createElement('div'); d.className = 'ch'; d.style.marginBottom = '10px';
+      const cv = document.createElement('canvas'); cv.width = 640; cv.height = 360; d.appendChild(cv); MK.locPreview(cv, l.spec, 2);
+      d.insertAdjacentHTML('beforeend', `<div class="i"><b>${esc(l.spec.name || '')}</b> <span class="code">${esc(l.code)}</span> <span class="lock">🔒</span><div class="mut">${esc(MK.LOC_NAMES[l.spec.type] || l.spec.type)} · ${esc(l.spec.time || 'day')}</div></div>`);
+      m.appendChild(d);
+    }
+  },
+  r_set(m) {
+    const s = Lib.data.settings;
+    m.insertAdjacentHTML('beforeend', `<div class="card"><b>Качество видео</b><div class="btns">
+      <select id="sres"><option value="1080">1920×1080 (YouTube, лучше)</option><option value="720">1280×720 (в 2 раза быстрее)</option></select>
+      <select id="sfps"><option value="25">25 кадров/с</option><option value="30">30 кадров/с</option></select></div></div>
+      <div class="card"><b>Голоса iPhone</b><div class="mut" style="margin:4px 0 8px">Чтобы голоса звучали лучше, скачай улучшенные русские голоса: Настройки → Универсальный доступ → Устный контент → Голоса → Русский → Milena и Yuri «улучшенный». Делать это лучше до создания персонажей: голос записывается в код персонажа.</div><div id="vlist" class="mut">…</div></div>
+      <div class="card"><b>Персонажи и локации</b><div class="mut">Персонажей: ${Object.keys(Lib.data.characters).length}, локаций: ${Object.keys(Lib.data.locations).length}. Библиотека хранится в «Файлы → Замер 3D → multik».</div></div>`);
+    const sr = document.getElementById('sres'), sf = document.getElementById('sfps'); sr.value = s.res; sf.value = s.fps;
+    sr.onchange = () => { s.res = +sr.value; Lib.save(); }; sf.onchange = () => { s.fps = +sf.value; Lib.save(); };
+    Native.call('voices').then(v => { document.getElementById('vlist').innerHTML = (v && v.length) ? v.map(x => `${esc(x.name)} — ${esc(x.quality)}`).join('<br>') : 'Список голосов доступен на iPhone'; });
+  },
+  msg(html) { const e = document.getElementById('imsg'); if (e) e.innerHTML = html; },
+  async importAndReport(text) {
+    const r = await Lib.importText(text);
+    if (r.errors && r.errors.length) { this.msg(`<div class="err">${r.errors.map(esc).join('\n')}</div>`); return false; }
+    this.render();
+    const nc = (r.newChars || []).map(c => `${esc(c.name)} <span class="code">${esc(c._code)}</span>`).join(', ');
+    this.msg(`<div style="color:var(--ok);margin-top:8px">${r.same ? 'Эта серия уже загружена.' : r.replaced ? 'Серия обновлена.' : 'Серия добавлена.'}${nc ? '<br>Новые персонажи (заморожены): ' + nc : ''}</div>${(r.warnings || []).length ? '<div class="warn">' + r.warnings.map(esc).join('<br>') + '</div>' : ''}`);
+    return true;
+  },
+  async paste() { const t = await Native.call('paste'); if (t) this.importAndReport(t); },
+  async pickFile() { const t = await Native.call('pickFile'); if (t) this.importAndReport(t); },
+  async syncScripts() {
+    this.msg('<div class="mut" style="margin-top:8px">Проверяю…</div>');
+    const get = async (path) => { let t = await Native.call('fetch', { url: SCRIPTS_URL + path + '?t=' + Date.now() }); if (!t) { const j = await Native.call('fetch', { url: SCRIPTS_API + path + '?ref=multik', api: true }); if (j) try { t = decodeURIComponent(escape(atob(JSON.parse(j).content.replace(/\n/g, '')))); } catch (e) { t = null; } } return t; };
+    const idx = await get('index.json'); let list; try { list = JSON.parse(idx).episodes; } catch (e) { this.msg('<div class="err">Не удалось загрузить список серий. Проверь интернет.</div>'); return; }
+    let added = 0, errs = [], newC = [];
+    for (const it of list) {
+      const p = Lib.data.projects.find(p => p.series === it.series), have = p && p.episodes.find(e => e.episode === it.episode);
+      if (have && have.hash === it.hash) continue;
+      const t = await get(it.file); if (!t) { errs.push('Не скачалась: ' + it.file); continue; }
+      const r = await Lib.importText(t); if (r.errors && r.errors.length) errs.push(it.file + ': ' + r.errors.join('; ')); else if (!r.same) { added++; newC.push(...(r.newChars || [])); }
+    }
+    this.render();
+    this.msg(`<div style="color:var(--ok);margin-top:8px">${added ? 'Загружено серий: ' + added : 'Новых серий нет.'}${newC.length ? '<br>Новые персонажи: ' + newC.map(c => esc(c.name) + ' <span class="code">' + esc(c._code) + '</span>').join(', ') : ''}</div>${errs.length ? '<div class="err">' + errs.map(esc).join('\n') + '</div>' : ''}`);
+  },
+  async epAction(p, e, a) {
+    if (a === 'play') return Player.open(e);
+    if (a === 'build') return Build.run(p, e);
+    if (a === 'share') return Native.call('share', { path: e.video });
+    if (a === 'yt') { const y = e.script.youtube || {}; const text = `${y.title || (p.series + ' — Серия ' + e.episode + '. ' + (e.title || ''))}\n\n${y.description || ''}\n\n${(y.tags || []).map(t => '#' + t.replace(/\s+/g, '')).join(' ')}`; await Native.call('copy', { text }); alert('Название, описание и теги скопированы:\n\n' + text); }
+  },
+};
+
+// ---------- озвучка + подготовка ----------
+async function prepare(e, onStep, isCancelled) {
+  const lib = Lib.data, ep = e.script; const lines = MK.collectLines(ep, lib);
+  const ac = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
+  const audio = {}, bufs = {}; let i = 0;
+  for (const ln of lines) {
+    if (isCancelled && isCancelled()) throw new Error('cancel');
+    onStep && onStep('Озвучка реплик', i++ / Math.max(1, lines.length), `${i} из ${lines.length}: ${ln.text.slice(0, 40)}`);
+    if (audio[ln.key]) continue;
+    const r = await Native.call('tts', { text: ln.text, voice: ln.voice, key: ln.key });
+    if (r && r.wav) { try { const buf = await ac.decodeAudioData(unb64(r.wav).buffer); bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
+  }
+  const tl = MK.compile(ep, lib, audio);
+  onStep && onStep('Музыка и звуки', 1, 'Свожу звуковую дорожку…');
+  const mix = await MK.mixAudio(tl, bufs);
+  return { tl, mix };
+}
+
+// ---------- просмотр ----------
+const Player = {
+  tl: null, ac: null, src: null, t0: 0, off: 0, playing: false, raf: 0,
+  async open(e) {
+    // AudioContext создаём сразу по нажатию — иначе iPhone не даст играть звук
+    if (this.ac) { try { this.ac.close(); } catch (er) {} }
+    this.ac = new (window.AudioContext || window.webkitAudioContext)(); try { this.ac.resume(); } catch (er) {}
+    Prog.show('Готовлю просмотр'); let r;
+    try { r = await prepare(e, (a, p, t) => Prog.set(a, p, t)); } catch (err) { Prog.hide(); alert('Ошибка: ' + err.message); return; }
+    Prog.hide(); this.tl = r.tl; this.mix = r.mix; document.getElementById('player').style.display = 'flex';
+    this.off = 0; this.play();
+  },
+  play() { this.src = this.ac.createBufferSource(); this.src.buffer = this.mix; this.src.connect(this.ac.destination); this.src.start(0, this.off); this.t0 = this.ac.currentTime - this.off; this.playing = true; document.getElementById('pp').textContent = '❚❚'; this.loop(); },
+  pause() { if (this.src) { try { this.src.stop(); } catch (e) {} } this.off = this.now(); this.playing = false; document.getElementById('pp').textContent = '▶'; },
+  toggle() { this.playing ? this.pause() : this.play(); },
+  now() { return this.playing ? this.ac.currentTime - this.t0 : this.off; },
+  seek(f) { const was = this.playing; if (was) this.pause(); this.off = f * this.tl.dur; if (was) this.play(); else this.draw(); },
+  draw() { const t = Math.min(this.now(), this.tl.dur - .01); MK.render(document.getElementById('pc').getContext('2d'), this.tl, t); document.getElementById('seek').value = Math.round(t / this.tl.dur * 1000); document.getElementById('ptime').textContent = fmt(t) + ' / ' + fmt(this.tl.dur); },
+  loop() { cancelAnimationFrame(this.raf); const f = () => { this.draw(); if (this.playing && this.now() < this.tl.dur) this.raf = requestAnimationFrame(f); else if (this.playing) this.pause(); }; f(); },
+  stop() { this.pause(); cancelAnimationFrame(this.raf); if (this.ac) { this.ac.close(); this.ac = null; } document.getElementById('player').style.display = 'none'; },
+};
+const Prog = {
+  show(t) { document.getElementById('ptitle').textContent = t; this.set('', 0, ''); document.getElementById('prog').style.display = 'flex'; },
+  set(a, p, t) { document.getElementById('pbar').style.width = Math.round(p * 100) + '%'; document.getElementById('ptext').textContent = (a ? a + ' — ' : '') + (t || ''); },
+  hide() { document.getElementById('prog').style.display = 'none'; },
+};
+
+// ---------- сборка видео ----------
+const Build = {
+  busy: false, stop: false,
+  cancel() { this.stop = true; },
+  async run(p, e) {
+    if (this.busy) return; this.busy = true; this.stop = false;
+    const s = Lib.data.settings, w = s.res === 720 ? 1280 : 1920, h = s.res === 720 ? 720 : 1080, fps = s.fps || 25;
+    Prog.show(`Серия ${e.episode}. ${e.title || ''}`);
+    try {
+      const { tl, mix } = await prepare(e, (a, pr, t) => Prog.set(a, pr * .1, t), () => this.stop);
+      const name = `${p.series} - ${String(e.episode).padStart(2, '0')}. ${e.title || ''}`.replace(/[\/\\:?*"<>|]/g, '').trim();
+      // звук сначала: телефон пишет его вместе с кадрами
+      const wav = MK.wav(mix), CH = 1 << 20;
+      for (let i = 0; i < wav.length; i += CH) { await Native.call('audioChunk', { first: i === 0, d: b64(wav.subarray(i, i + CH)) }); }
+      const ok = await Native.call('videoBegin', { w, h, fps, name });
+      if (ok === false) throw new Error('Не удалось начать запись видео');
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d');
+      const N = Math.ceil(tl.dur * fps), t0 = performance.now();
+      for (let i = 0; i < N; i++) {
+        if (this.stop) { await Native.call('videoCancel'); throw new Error('cancel'); }
+        ctx.setTransform(w / 1920, 0, 0, h / 1080, 0, 0); MK.render(ctx, tl, i / fps);
+        const d = cv.toDataURL('image/jpeg', .9); await Native.call('videoFrame', { i, d: d.slice(d.indexOf(',') + 1) });
+        if (i % 10 === 0) { const el = (performance.now() - t0) / 1000, eta = el / (i + 1) * (N - i - 1); Prog.set('Кадры', .1 + .88 * i / N, `${i} из ${N} · осталось ≈ ${fmt(eta)}`); }
+      }
+      Prog.set('Сохраняю', .99, 'Записываю файл…');
+      const r = await Native.call('videoEnd');
+      if (!r || !r.path) throw new Error((r && r.error) || 'Файл не записался');
+      e.status = 'built'; e.video = r.path; e.dur = tl.dur; e.built = new Date().toISOString(); await Lib.save();
+      Prog.hide(); App.render();
+      if (confirm(`Готово! Серия ${e.episode} собрана (${fmt(tl.dur)}).\nОтправить сейчас (YouTube / сохранить в Фото)?`)) Native.call('share', { path: r.path });
+    } catch (err) { Prog.hide(); if (err.message !== 'cancel') alert('Ошибка сборки: ' + err.message); }
+    this.busy = false;
+  },
+};
+App.init();
+</script></body></html>
