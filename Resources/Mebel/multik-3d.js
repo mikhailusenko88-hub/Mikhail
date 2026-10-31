@@ -96,7 +96,7 @@ function furMat(src, k, N, dens) { const key = src.uuid + ':' + k + ':' + dens; 
   const m = new THREE.MeshPhysicalMaterial({ color: src.color.clone().multiplyScalar(.55 + .6 * Math.pow(f, .8)), map: src.map || null, roughness: .8, sheen: .8 * f, sheenRoughness: .35, sheenColor: src.sheenColor, alphaMap: nz, alphaTest: .02 + f * .92, envMapIntensity: .75 });
   return (furMatCache[key] = m); }
 function addFur(rig) {
-  const n = rig.n; if (rig.human || !FUR_KINDS.has(rig.kind)) return;
+  const n = rig.n; if (rig.human) { addHairStrands(rig); return; } if (!FUR_KINDS.has(rig.kind)) return;
   const fc = new Set([n.c.body, n.c.belly, n.c.stripe, n.c.mane].filter(Boolean).map(c => new THREE.Color(c).getHexString()));
   const eyeG = new Set(rig.eyes.map(e => e.g)); const list = [];
   rig.pose.traverse(o => { if (!o.isMesh || o.userData.shell || o.userData.noFur || !o.material || !o.material.isMeshPhysicalMaterial || o.material.clearcoat > 0) return; let p = o.parent; while (p) { if (eyeG.has(p)) return; p = p.parent; }
@@ -118,7 +118,7 @@ function addFur(rig) {
 // ---------- волоски-нити: каждый волосок — отдельная линия; блик вдоль волоска (Kajiya-Kay), качание от движения ----------
 const FUR_VS = `
 attribute vec3 aRoot; attribute vec3 aNorm; attribute vec2 aUv; attribute vec4 aRnd; attribute float aT; attribute vec3 aTilt;
-uniform float uLen; uniform vec3 uLag; uniform float uGrav; uniform float uTime;
+uniform float uLen; uniform vec3 uLag; uniform float uGrav; uniform float uTime; uniform float uNk; uniform float uCk;
 varying vec3 vT; varying vec3 vW; varying float vt; varying vec2 vUv; varying float vVar;
 void main(){
   vec3 nW = normalize(mat3(modelMatrix) * aNorm);
@@ -126,7 +126,7 @@ void main(){
   vec3 tan1 = normalize(cross(nW, abs(nW.y) < .95 ? vec3(0.,1.,0.) : vec3(1.,0.,0.))); vec3 tan2 = cross(nW, tan1);
   vec3 down = vec3(0.,-1.,0.) - nW * dot(vec3(0.,-1.,0.), nW); float dl = length(down); vec3 comb = dl > .05 ? down / dl : vec3(0.);
   vec3 tiltW = mat3(modelMatrix) * aTilt;
-  vec3 dir = normalize(nW * .75 + comb * .45 + tiltW);
+  vec3 dir = normalize(nW * uNk + comb * uCk + tiltW);
   float len = uLen * aRnd.x * sc;
   float t = aT;
   vec3 root = (modelMatrix * vec4(aRoot, 1.0)).xyz;
@@ -161,7 +161,7 @@ void main(){
 const furMats = [];
 function strandMat(src) {
   const m = new THREE.ShaderMaterial({ vertexShader: FUR_VS, fragmentShader: FUR_FS, toneMapped: true,
-    uniforms: { uLen: { value: .05 }, uLag: { value: new THREE.Vector3() }, uGrav: { value: .2 }, uTime: { value: 0 }, uColor: { value: src.color.clone() }, uMap: { value: src.map || null }, uHasMap: { value: src.map ? 1 : 0 },
+    uniforms: { uNk: { value: .75 }, uCk: { value: .45 }, uLen: { value: .05 }, uLag: { value: new THREE.Vector3() }, uGrav: { value: .2 }, uTime: { value: 0 }, uColor: { value: src.color.clone() }, uMap: { value: src.map || null }, uHasMap: { value: src.map ? 1 : 0 },
       uSunDir: { value: new THREE.Vector3(0, 1, 0) }, uSunCol: { value: new THREE.Color(1, 1, 1) }, uSky: { value: new THREE.Color(1, 1, 1) }, uGround: { value: new THREE.Color(.5, .5, .5) }, uRimDir: { value: new THREE.Vector3(0, 0, -1) }, uRimCol: { value: new THREE.Color(1, 1, 1) } } });
   furMats.push(m); return m;
 }
@@ -248,7 +248,14 @@ function addBirdFeathers(rig, list, keep, under) {
   }
   rig.arms.forEach(g => buildWing(rig, g)); buildTailFan(rig); buildTufts(rig);
 }
-function addStrands(rig, o, L, keep, furK, reg) { furK = (furK || 1) * ({ tail: 1.45, leg: .7, arm: .8, body: 1.05, head: 1 })[reg || 'body'];
+function addHairStrands(rig) {
+  const keep = []; for (const e of rig.eyes) { const w = new THREE.Vector3(); e.g.getWorldPosition(w); keep.push([w, e.eR * 1.6]); }
+  rig.root.updateMatrixWorld(true); const st = (rig.n.hair || {}).style || 'short', male = rig.n.spec.gender !== 'f';
+  rig.head.traverse(o => { if (!o.isMesh || !o.userData.hair) return; o.geometry.computeBoundingSphere(); const long = st === 'long' || st === 'bob' || st === 'ponytail' || st === 'pigtails';
+    addStrands(rig, o, st === 'curly' ? .02 : long ? .045 : male ? .022 : .03, keep, 1, 'hair'); });
+  rig.fur = []; rig.root.traverse(o => { if (o.userData.strands) rig.fur.push(o); });
+}
+function addStrands(rig, o, L, keep, furK, reg) { furK = (furK || 1) * ({ tail: 1.45, leg: .7, arm: .8, body: 1.05, head: 1, hair: 1 })[reg || 'body'];
   const headW = new THREE.Vector3(); rig.head.getWorldPosition(headW); const hr = rig.P.head; let inHead = false; { let pp = o; while (pp) { if (pp === rig.head) inHead = true; pp = pp.parent; } }
   const fwd = new THREE.Vector3(0, 0, 1).applyQuaternion(rig.head.getWorldQuaternion(new THREE.Quaternion())).normalize();
   const g = o.geometry, pos = g.attributes.position, nor = g.attributes.normal, uv = g.attributes.uv; if (!pos || !nor) return;
@@ -270,7 +277,7 @@ function addStrands(rig, o, L, keep, furK, reg) { furK = (furK || 1) * ({ tail: 
     na.fromBufferAttribute(nor, i0); nb.fromBufferAttribute(nor, i1); nc.fromBufferAttribute(nor, i2); N.set(0, 0, 0).addScaledVector(na, w0).addScaledVector(nb, u1).addScaledVector(nc, u2).normalize();
     Wp.copy(P).applyMatrix4(o.matrixWorld); let skip = false, near = 9; for (const [kp, kr] of keep) { const d = Wp.distanceTo(kp) / kr; if (d < 1) { skip = true; break; } near = Math.min(near, d); } if (skip) continue;
     let U = 0, Vv = 0; if (uv) { U = uv.getX(i0) * w0 + uv.getX(i1) * u1 + uv.getX(i2) * u2; Vv = uv.getY(i0) * w0 + uv.getY(i1) * u1 + uv.getY(i2) * u2; }
-    let faceK = 1; if (inHead) { const d = Wp.clone().sub(headW); const f = d.dot(fwd) / Math.max(1e-3, d.length()); // f=1 — самый перед мордочки
+    let faceK = 1; if (inHead && reg !== 'hair') { const d = Wp.clone().sub(headW); const f = d.dot(fwd) / Math.max(1e-3, d.length()); // f=1 — самый перед мордочки
       faceK = f > .15 ? .3 + .7 * (1 - Math.min(1, (f - .15) / .55)) : 1; faceK = Math.max(.28, faceK); if (d.y < -hr * .15 && f > .3) faceK = Math.min(faceK, .32); }
     if (faceK < .4 && r() < .35) continue; // на мордочке шерсть ещё и реже
     let regK = 1; if (reg === 'body') { const d = Wp.clone().sub(headW); const f = d.dot(fwd); if (f > .05) regK *= 1 + Math.min(.35, f * 1.8); if (N.y > .5) regK *= 1.25; /* грудка и воротник — пышнее */ }
@@ -292,9 +299,9 @@ function addStrands(rig, o, L, keep, furK, reg) { furK = (furK || 1) * ({ tail: 
   geo.setAttribute('position', new THREE.BufferAttribute(aRoot.slice(0, n * 3), 3)); geo.setAttribute('aRoot', new THREE.BufferAttribute(aRoot.slice(0, n * 3), 3)); geo.setAttribute('aNorm', new THREE.BufferAttribute(aNorm.slice(0, n * 3), 3));
   geo.setAttribute('aUv', new THREE.BufferAttribute(aUv.slice(0, n * 2), 2)); geo.setAttribute('aRnd', new THREE.BufferAttribute(aRnd.slice(0, n * 4), 4)); geo.setAttribute('aT', new THREE.BufferAttribute(aT.slice(0, n), 1)); geo.setAttribute('aTilt', new THREE.BufferAttribute(aTilt.slice(0, n * 3), 3));
   geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 10);
-  const m = strandMat(o.material); m.uniforms.uLen.value = L / ws; const ls = new THREE.LineSegments(geo, m); ls.frustumCulled = false; ls.userData.strands = true; ls.castShadow = false; o.add(ls);
+  const m = strandMat(o.material); m.uniforms.uLen.value = L / ws; if (reg === 'hair') { m.uniforms.uNk.value = .22; m.uniforms.uCk.value = 1.0; m.uniforms.uGrav.value = .5; } const ls = new THREE.LineSegments(geo, m); ls.frustumCulled = false; ls.userData.strands = true; ls.castShadow = false; o.add(ls);
   // базовая поверхность чуть темнее — это «подшёрсток» у корней
-  o.material = o.material.clone(); o.material.color.multiplyScalar(rig.kind === 'chick' ? 1 : .9); o.material.sheen = 0; if (rig.kind === 'chick') m.uniforms.uColor.value.multiplyScalar(.93);
+  o.material = o.material.clone(); o.material.color.multiplyScalar(rig.kind === 'chick' || reg === 'hair' ? 1 : .9); o.material.sheen = 0; if (rig.kind === 'chick') m.uniforms.uColor.value.multiplyScalar(.93);
 }
 // телосложение: худенький / обычный / пухленький / высокий / крепкий / кругленький
 const BUILD_K = { // ширина, глубина, высота тела, длина и толщина ног и рук, голова
@@ -483,8 +490,8 @@ function buildHair2(head, hr, n, rig) {
   const H = (geo, par, ol) => { const x = mesh(geo, m, ol == null ? .03 : ol, par || head); x.userData.hair = true; return x; };
   if (st === 'bald') { if (n.old) for (const s of [-1, 1]) { const p = H(G.sph(hr * .32, 16, 12)); p.position.set(s * hr * .82, hr * .05, -hr * .25); p.scale.set(.6, 1, 1.2); } return; }
   // «шапочка» волос: спереди линия роста выше, сзади ниже
-  const cap = H(new THREE.SphereGeometry(hr * 1.045, 48, 24, 0, Math.PI * 2, 0, Math.PI * (st === 'short' && male ? .5 : .56))); cap.rotation.x = -.42; cap.position.set(0, hr * .02, -hr * .04);
-  if (!kid) cap.scale.set(.92, 1.1, .97);
+  const capG = new THREE.Group(); head.add(capG); if (!kid) capG.scale.set(.9 * 1.02, 1.1 * 1.02, .95 * 1.02); else capG.scale.set(1.01, 1.0, 1.0);
+  const cap = H(new THREE.SphereGeometry(hr * 1.05, 48, 24, 0, Math.PI * 2, 0, Math.PI * (st === 'short' && male ? .52 : .58)), capG); cap.rotation.x = -.42; cap.position.set(0, hr * .02, -hr * .04);
   // чёлка — несколько прядей
   const nl = st === 'short' && male ? 5 : 6; for (let i = 0; i < nl; i++) { const t = i / (nl - 1) - .5, a = t * 1.9;
     const lk = H(lathe([[0, 0], [hr * .09, hr * .05], [hr * .1, hr * .2], [hr * .05, hr * .34], [0, hr * .4]], 10), head, .02); lk.position.set(Math.sin(a) * hr * .92, hr * .58 - Math.abs(t) * hr * .1, Math.cos(a) * hr * .78);
@@ -502,8 +509,9 @@ function buildHair2(head, hr, n, rig) {
   if (st === 'bun') { const b = H(G.sph(hr * .36, 24, 16)); b.position.set(0, hr * (n.old ? .85 : 1.0), -hr * .45); const band = mesh(G.tor(hr * .27, hr * .04, 8, 20), toon(n.old ? '#8a6a8a' : '#ff4d6d'), 0, head); band.position.set(0, hr * (n.old ? .78 : .9), -hr * .38); band.rotation.x = -1.1; }
   if (st === 'curly') for (let i = 0; i < 22; i++) { const a = i / 22 * Math.PI * 2, el = .2 + (i % 3) * .35; const p = H(G.sph(hr * .26, 14, 10)); p.position.set(Math.cos(a) * Math.cos(el) * hr, hr * .35 + Math.sin(el) * hr * .7, Math.sin(a) * Math.cos(el) * hr * .9 - hr * .08); }
   for (const a0 of n.acc) { const a = typeof a0 === 'string' ? { type: a0 } : a0;
-    if (a.type === 'beard') { const bd = H(new THREE.SphereGeometry(hr * .95, 32, 16, -Math.PI * .1, Math.PI * 1.2, Math.PI * .45, Math.PI * .4)); bd.rotation.y = Math.PI * .5 - Math.PI * .1 + Math.PI * .1; bd.position.set(0, -hr * .12, hr * .08); bd.scale.set(1, 1.15, .95); bd.material = bd.material.clone(); bd.material.side = THREE.DoubleSide;
-      const ch = H(G.sph(hr * .36, 20, 14)); ch.position.set(0, -hr * .7, hr * .55); ch.scale.set(1.2, .9, .8); }
+    if (a.type === 'beard') { const bd = H(new THREE.SphereGeometry(hr * 1.0, 40, 16, Math.PI / 2 - Math.PI * .5, Math.PI, Math.PI * .63, Math.PI * .3)); bd.position.set(0, -hr * .02, hr * .04); bd.scale.set(kid ? 1 : .94, 1.15, 1.02); bd.material = bd.material.clone(); bd.material.side = THREE.DoubleSide;
+      for (const s of [-1, 1]) { const sb = H(G.cap(hr * .13, hr * .42, 4, 10)); sb.position.set(s * hr * .74, -hr * .28, hr * .2); sb.rotation.set(.15, 0, -s * .25); }
+      const ch = H(G.sph(hr * .3, 20, 14)); ch.position.set(0, -hr * .78, hr * .48); ch.scale.set(1.25, .85, .8); }
     if (a.type === 'beard' || a.type === 'mustache') for (const s of [-1, 1]) { const ms = H(G.cap(hr * .07, hr * .22, 4, 8)); ms.position.set(s * hr * .14, -hr * .3, hr * .9); ms.rotation.z = s * (Math.PI / 2 - .35); } }
 }
 function buildHair(head, hr, n) {
