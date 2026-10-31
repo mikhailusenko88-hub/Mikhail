@@ -493,11 +493,11 @@ function buildRig0(spec) {
   const eyeY = human ? hr * .08 : frog ? hr * .75 : hr * .18, eyeX = human ? hr * .36 : frog ? hr * .45 : hr * .38, eyeZ = hr * (human ? .88 : frog ? .45 : .8), eR = hr * (human ? .2 : frog ? .3 : owlE ? .3 : .25);
   for (const s of [-1, 1]) {
     const g = new THREE.Group(); g.position.set(s * eyeX, eyeY, eyeZ); head.add(g);
-    const w = mesh(G.sph(eR, 24, 18), toon('#ffffff'), .08, g); w.scale.set(1, 1.2, .6);
-    const ir = new THREE.Mesh(G.sph(eR * .68, 20, 14), toon(c.eyes)); ir.position.z = eR * .42; ir.scale.set(1, 1.15, .5); g.add(ir);
+    const w = mesh(frontUV(G.sph(eR, 32, 24)), toon(null, scleraT()), .08, g); w.scale.set(1, 1.2, .6);
+    const ir = new THREE.Mesh(frontUV(G.sph(eR * .68, 32, 24)), toon(null, irisT(c.eyes))); ir.position.z = eR * .42; ir.scale.set(1, 1.15, .5); g.add(ir);
     const pu = new THREE.Mesh(G.sph(eR * .38, 16, 12), basic('#16100c')); pu.position.z = eR * .65; pu.scale.set(1, 1.15, .5); g.add(pu);
     const hl = new THREE.Mesh(G.sph(eR * .16, 10, 8), basic('#ffffff')); hl.position.set(-eR * .2, eR * .3, eR * .82); g.add(hl);
-    if (MK3D.hq) { w.material = glossy('#fbfbf8', .25); ir.material = glossy(c.eyes, .2); pu.material = basic('#120c08'); const h2 = new THREE.Mesh(G.sph(eR * .07, 8, 6), basic('#ffffff')); h2.position.set(eR * .18, -eR * .12, eR * .84); g.add(h2);
+    if (MK3D.hq) { w.material = eyeGloss(scleraT(), .25); ir.material = eyeGloss(irisT(c.eyes), .2); pu.material = basic('#120c08'); const h2 = new THREE.Mesh(G.sph(eR * .07, 8, 6), basic('#ffffff')); h2.position.set(eR * .18, -eR * .12, eR * .84); g.add(h2);
       const cor = new THREE.Mesh(G.sph(eR * .72, 20, 14), new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: .12, roughness: 0, clearcoat: 1, transmission: 0 })); cor.position.z = eR * .46; cor.scale.set(1, 1.15, .55); g.add(cor); }
     const heart = makeHeart(eR * .7); heart.position.z = eR * .5; heart.visible = false; g.add(heart);
     const lid = new THREE.Mesh(new THREE.SphereGeometry(eR * 1.08, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), toon(bodyC)); lid.scale.set(1, 1.2, .62); g.add(lid);
@@ -534,6 +534,22 @@ function buildRig0(spec) {
   if (MK3D.hq) rig.blob = contactShadow(R0, human ? .45 : .6);
   return rig;
 }
+// ---------- живые глаза: радужка с волокнами, тёмный ободок, светлое кольцо у зрачка, тень от века; белок с мягкой тенью по краю ----------
+function frontUV(geo) { const p = geo.attributes.position, uv = geo.attributes.uv; geo.computeBoundingSphere(); const r = geo.boundingSphere.radius; for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / (2 * r) + .5, p.getY(i) / (2 * r) + .5); uv.needsUpdate = true; return geo; }
+function irisT(c) { return ctex('iris' + c, 256, 256, (g) => { const C = new THREE.Color(c), hsl = {}; C.getHSL(hsl); const at = (l, s) => '#' + new THREE.Color().setHSL(hsl.h, Math.min(1, hsl.s * (s || 1)), Math.max(0, Math.min(1, l))).getHexString();
+  const cx = 128, cy = 128, R = 92; g.fillStyle = at(hsl.l * .35); g.fillRect(0, 0, 256, 256);
+  const gr = g.createRadialGradient(cx, cy, 6, cx, cy, R); gr.addColorStop(0, at(hsl.l * 1.25 + .12, .9)); gr.addColorStop(.38, at(hsl.l * 1.12 + .05)); gr.addColorStop(.7, at(hsl.l * .95, 1.1)); gr.addColorStop(.92, at(hsl.l * .6, 1.15)); gr.addColorStop(1, at(hsl.l * .28)); g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, R, 0, 7); g.fill();
+  const r = rng(global.MK.hash32(c)); g.lineCap = 'round';
+  for (let i = 0; i < 220; i++) { const a = i / 220 * Math.PI * 2 + (r() - .5) * .03, r0 = R * (.22 + r() * .12), r1 = R * (.62 + r() * .33), bend = (r() - .5) * .25; g.strokeStyle = r() < .5 ? 'rgba(255,255,255,' + (.06 + r() * .1) + ')' : 'rgba(0,0,0,' + (.06 + r() * .12) + ')'; g.lineWidth = .8 + r() * 1.6;
+    g.beginPath(); g.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); g.quadraticCurveTo(cx + Math.cos(a + bend) * (r0 + r1) / 2, cy + Math.sin(a + bend) * (r0 + r1) / 2, cx + Math.cos(a) * r1, cy + Math.sin(a) * r1); g.stroke(); }
+  for (let i = 0; i < 26; i++) { const a = r() * Math.PI * 2, rr = R * (.45 + r() * .38); g.fillStyle = 'rgba(0,0,0,' + (.08 + r() * .1) + ')'; g.beginPath(); g.ellipse(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, 2 + r() * 4, 1 + r() * 2, a, 0, 7); g.fill(); }
+  const ring = g.createRadialGradient(cx, cy, R * .3, cx, cy, R * .48); ring.addColorStop(0, at(hsl.l * 1.3 + .15, .8) + 'cc'); ring.addColorStop(1, at(hsl.l * 1.3 + .15, .8) + '00'); g.fillStyle = ring; g.beginPath(); g.arc(cx, cy, R * .48, 0, 7); g.fill(); // светлое кольцо у зрачка
+  g.lineWidth = 7; g.strokeStyle = at(hsl.l * .22) + 'dd'; g.beginPath(); g.arc(cx, cy, R - 3, 0, 7); g.stroke(); // тёмный ободок
+  const sh = g.createLinearGradient(0, 0, 0, 190); sh.addColorStop(0, 'rgba(0,0,0,.45)'); sh.addColorStop(.45, 'rgba(0,0,0,.12)'); sh.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = sh; g.fillRect(0, 0, 256, 256); // тень от века сверху
+}); }
+function scleraT() { return ctex('sclera', 128, 128, (g) => { const gr = g.createRadialGradient(64, 64, 10, 64, 64, 64); gr.addColorStop(0, '#ffffff'); gr.addColorStop(.6, '#fbfaf8'); gr.addColorStop(.85, '#e9e6ec'); gr.addColorStop(1, '#cfcbd6'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  const sh = g.createLinearGradient(0, 0, 0, 80); sh.addColorStop(0, 'rgba(90,80,100,.2)'); sh.addColorStop(1, 'rgba(90,80,100,0)'); g.fillStyle = sh; g.fillRect(0, 0, 128, 128); }); }
+function eyeGloss(map, rough) { const k = 'eg' + map.uuid + rough; if (matCache[k]) return matCache[k]; return (matCache[k] = new THREE.MeshPhysicalMaterial({ color: 0xffffff, map, roughness: rough, clearcoat: 1, clearcoatRoughness: .04 })); }
 function makeHeart(r) { const sh = new THREE.Shape(); sh.moveTo(0, -r * .9); sh.bezierCurveTo(-r * 1.4, -r * .1, -r * .6, r * 1.1, 0, r * .4); sh.bezierCurveTo(r * .6, r * 1.1, r * 1.4, -r * .1, 0, -r * .9); const g = new THREE.ExtrudeGeometry(sh, { depth: r * .2, bevelEnabled: false }); return new THREE.Mesh(g, basic('#e8344e')); }
 
 // ---------- люди ----------
@@ -1550,7 +1566,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   cam.position.lerpVectors(prev.pos, cur.pos, k); const look = new THREE.Vector3().lerpVectors(prev.look, cur.look, k);
   for (const c of seg.cam) if (c.shake && t >= c.t && t < c.t + c.shake) { const a = (1 - (t - c.t) / c.shake) * .08; cam.position.x += Math.sin(t * 61) * a; cam.position.y += Math.cos(t * 53) * a; }
   cam.fov = 38; cam.updateProjectionMatrix(); cam.lookAt(look);
-  { const mode = cams[ci].mode || 'wide', ap0 = { close: 1, medium: .55, two: .35, group: .22, pan: .2 }[mode] || .12, apP = ci > 0 && !cams[ci].cut ? ({ close: 1, medium: .55, two: .35, group: .22, pan: .2 }[cams[ci - 1].mode] || .12) : ap0; MK3D._ap = lerp(apP, ap0, k); MK3D._focus = cam.position.distanceTo(look);
+  { const mode = cams[ci].mode || 'wide', AP = { close: .5, medium: .32, two: .22, group: .14, pan: .12 }, ap0 = AP[mode] || .08, apP = ci > 0 && !cams[ci].cut ? (AP[cams[ci - 1].mode] || .08) : ap0; MK3D._ap = lerp(apP, ap0, k); MK3D._focus = cam.position.distanceTo(look) * .95; // резкость — на лице героя, фон мягко размыт
     MK3D._grade = ['room', 'kitchen'].includes(L.type) ? 'indoor' : L.type === 'space' ? 'space' : (L.time || 'day'); }
   sun.target.position.copy(look); sun.position.add(look); MK3D._T = t; if (rim) { rim.target.position.copy(look); rim.position.set(look.x - 3, 4, look.z - 6); }
   render(ctx);
