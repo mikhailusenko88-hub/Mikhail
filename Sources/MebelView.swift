@@ -702,7 +702,7 @@ final class MultikListener {
             try s.setActive(true, options: .notifyOthersOnDeactivation)
             let req = SFSpeechAudioBufferRecognitionRequest()
             req.shouldReportPartialResults = true
-            if r.supportsOnDeviceRecognition { req.requiresOnDeviceRecognition = true }
+            req.requiresOnDeviceRecognition = false   // для русского офлайн-режим может молчать — разрешаем сервер Apple
             request = req
             let input = engine.inputNode
             let fmt = input.outputFormat(forBus: 0)
@@ -711,10 +711,14 @@ final class MultikListener {
             engine.prepare()
             active = true
             try engine.start()
-            task = r.recognitionTask(with: req) { [weak self] res, _ in
-                guard let self, let res else { return }
-                let t = res.bestTranscription.formattedString
-                DispatchQueue.main.async { self.text = t; onText(t) }
+            task = r.recognitionTask(with: req) { [weak self] res, err in
+                guard let self else { return }
+                if let res {
+                    let t = res.bestTranscription.formattedString
+                    DispatchQueue.main.async { self.text = t; onText(t) }
+                } else if let err, self.text.isEmpty {
+                    DispatchQueue.main.async { onText("⚠️ Не распознал речь: \(err.localizedDescription)") }
+                }
             }
             return true
         } catch {
