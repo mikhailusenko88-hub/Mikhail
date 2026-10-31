@@ -989,9 +989,10 @@ function propMesh(p) {
       const hd = A(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-.08, .2, 0), new THREE.Vector3(-.06, .29, 0), new THREE.Vector3(.06, .29, 0), new THREE.Vector3(.08, .2, 0)]), 20, .009, 8), P('#5a3a2a', 'gloss'), g, .03); break; }
     case 'door': { const wd = P(null, 'wood', grainTex(cl || '#a8673a')), fr = P(null, 'wood', grainTex('#7a4e30')); const ds = new THREE.Shape(); ds.moveTo(-.26, 0); ds.lineTo(.26, 0); ds.lineTo(.26, .82); ds.absarc(0, .82, .26, 0, Math.PI, false); ds.lineTo(-.26, 0);
       const fs = new THREE.Shape(); fs.moveTo(-.33, 0); fs.lineTo(.33, 0); fs.lineTo(.33, .82); fs.absarc(0, .82, .33, 0, Math.PI, false); fs.lineTo(-.33, 0); fs.holes.push(ds);
-      A(ext(fs, .1, .01), fr, g, .02); const d = A(ext(ds, .05, .008), wd, g, .02); d.position.z = .0;
-      for (const [x, y, w, h] of [[-.12, .15, .16, .3], [.12, .15, .16, .3], [-.12, .55, .16, .3], [.12, .55, .16, .3]]) { const pn = A(ext(rrect(w, h, .02), .01, .006), wd, g, 0); pn.position.set(x, y + h / 2, .03); }
-      const kn = A(G.sph(.025, 14, 10), P('#d8a93a', 'metal'), g, 0); kn.position.set(.19, .5, .05); for (const y of [.15, .85]) { const hg = A(G.box(.08, .03, .01), P('#3a3a3a', 'metal'), g, 0); hg.position.set(-.22, y, .03); }
+      A(ext(fs, .1, .01), fr, g, .02); const leaf = new THREE.Group(); leaf.position.x = -.26; g.add(leaf); const lg = new THREE.Group(); lg.position.x = .26; leaf.add(lg); const d = A(ext(ds, .05, .008), wd, lg, .02); d.position.z = .0;
+      for (const [x, y, w, h] of [[-.12, .15, .16, .3], [.12, .15, .16, .3], [-.12, .55, .16, .3], [.12, .55, .16, .3]]) { const pn = A(ext(rrect(w, h, .02), .01, .006), wd, lg, 0); pn.position.set(x, y + h / 2, .03); }
+      const kn = A(G.sph(.025, 14, 10), P('#d8a93a', 'metal'), lg, 0); kn.position.set(.19, .5, .05); for (const y of [.15, .85]) { const hg = A(G.box(.08, .03, .01), P('#3a3a3a', 'metal'), lg, 0); hg.position.set(-.22, y, .03); }
+      const light = new THREE.Mesh(new THREE.ShapeGeometry(ds, 24), new THREE.MeshBasicMaterial({ color: '#fff1b8', toneMapped: false, transparent: true, opacity: 0 })); light.position.z = .012; g.add(light); g.userData.leaf = leaf; g.userData.doorLight = light;
       const st = A(G.box(.8, .04, .18), P(null, 'wood', stoneT()), g, 0); st.position.y = .02; g.userData.glowY = .6; g.userData.glowS = 1.6; g.userData.glowC = '#ffe08a'; break; }
     case 'moon': { const mo = A(G.sph(.5, 40, 28), MK3D.hq ? new THREE.MeshBasicMaterial({ map: craterT(), toneMapped: false }) : basic(cl || '#fff3c4'), g, 0); mo.position.y = 4.2; mo.castShadow = false; g.userData.glowY = 4.2; g.userData.glowS = 2.6; g.userData.glowC = '#fff3c4'; g.userData.alwaysGlow = true; break; }
     case 'ghost': { const pts = [[.34, 0], [.32, .12], [.29, .3], [.275, .45]]; for (let i = 1; i <= 16; i++) { const a = i / 16 * Math.PI / 2; pts.push([Math.cos(a) * .275, .45 + Math.sin(a) * .3]); } pts.push([0, .75]);
@@ -1043,7 +1044,16 @@ function tree(g, x, z, s, kind, cl, snow) { if (MK3D.hq) return treeHQ(g, x, z, 
   if (kind === 'fir') { for (let i = 0; i < 3; i++) { const c = mesh(G.cone(1.1 - i * .25, 1.2, 10), toon(cl || '#3d7a5a'), .03, t); c.position.y = 1.4 + i * .65; if (snow) { const sn = new THREE.Mesh(G.cone(.7 - i * .18, .5, 10), toon('#ffffff')); sn.position.y = 1.85 + i * .65; t.add(sn); } } return; }
   for (const [a, b, c, r] of [[0, 2.1, 0, .9], [-.5, 1.8, .2, .65], [.5, 1.85, -.1, .7], [.1, 2.6, 0, .6]]) { const l = mesh(new THREE.IcosahedronGeometry(r, 2), toon(cl || '#4e9a4a'), .03, t); l.position.set(a, b, c); } }
 function bush(g, x, z, s, cl) { if (MK3D.hq) return bushHQ(g, x, z, s, cl); const b = mesh(new THREE.IcosahedronGeometry(.5 * s, 2), toon(cl || '#3c8f37'), .03, g); b.position.set(x, .3 * s, z); b.scale.y = .75; }
-function flowers(g, r, n, x0, x1, z0, z1, skip) { if (MK3D.hq) return flowersHQ(g, r, n, x0, x1, z0, z1, skip); const cols = ['#ff6fa8', '#ffd23f', '#ffffff', '#a974ff', '#ff8a3d']; for (let i = 0; i < n; i++) { const f = new THREE.Mesh(G.sph(.05, 8, 6), toon(cols[i % 5])); f.position.set(lerp(x0, x1, r()), .05, lerp(z0, z1, r())); g.add(f); } }
+function flowers(g, r, n, x0, x1, z0, z1, skip) { if (MK3D.hq) return flowersHQ(g, r, n, x0, x1, z0, z1, skip);
+  // обычный режим: цветы кустиками (стебель, головка, серединка) вместо разноцветных бусин, плюс пучки травы
+  const cols = ['#ff6fa8', '#ffd23f', '#ffffff', '#a974ff', '#ff8a3d']; const stemG = G.cyl(.007, .009, .13, 5), headG = G.sph(.05, 10, 6), midG = G.sph(.02, 8, 6), stemM = toon('#3f8f3a'), midM = toon('#ffd23f'), heads = cols.map(c => toon(c));
+  let made = 0, guard = 0; const want = Math.round(n * .55);
+  while (made < want && guard++ < want * 6) { const cx = lerp(x0, x1, r()), cz = lerp(z0, z1, r()); if (skip && skip(cx, cz)) continue; const k = 2 + ((r() * 4) | 0), ci = (r() * cols.length) | 0;
+    for (let j = 0; j < k && made < want; j++) { const x = cx + (r() - .5) * .5, z = cz + (r() - .5) * .32; if (skip && skip(x, z)) continue; const f = new THREE.Group(); f.position.set(x, 0, z);
+      const st = new THREE.Mesh(stemG, stemM); st.position.y = .065; f.add(st); const h = new THREE.Mesh(headG, heads[ci]); h.position.y = .14; h.scale.set(1, .38, 1); f.add(h); const m = new THREE.Mesh(midG, midM); m.position.y = .158; f.add(m); f.scale.setScalar(.8 + r() * .5); g.add(f); made++; } }
+  const N = 900, tuft = new THREE.InstancedMesh(new THREE.ConeGeometry(.03, .16, 4), toon('#55a845'), N); const M = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), p = new THREE.Vector3(); let ti = 0;
+  for (let i = 0; i < N; i++) { const x = lerp(x0 - 5, x1 + 5, r()), z = lerp(z0 - 5, z1 + 1, r()); if (skip && skip(x, z)) continue; e.set((r() - .5) * .5, r() * 3, (r() - .5) * .5); q.setFromEuler(e); const k = .6 + r() * .8; sc.set(k, k * (.7 + r() * .6), k); p.set(x, .055 * k, z); M.compose(p, q, sc); tuft.setMatrixAt(ti++, M); }
+  tuft.count = ti; tuft.instanceMatrix.needsUpdate = true; tuft.castShadow = false; g.add(tuft); }
 function house(g, x, z, wall, roof) { const h = new THREE.Group(); h.position.set(x, 0, z); g.add(h); mesh(G.box(4, 2.6, 3), toon(wall), .01, h).position.y = 1.3; const rf = mesh(G.cone(3.2, 1.8, 4), toon(roof), .01, h); rf.position.y = 3.5; rf.rotation.y = Math.PI / 4; rf.scale.set(1, 1, .8);
   mesh(G.box(.8, 1.5, .1), toon('#8a5a3a'), .03, h).position.set(0, .75, 1.52); for (const xx of [-1.2, 1.2]) mesh(G.box(.8, .7, .08), toon('#9fd6ff'), .04, h).position.set(xx, 1.7, 1.52); mesh(G.box(.4, 1, .4), toon('#a04a3a'), .03, h).position.set(1, 3.8, 0);
   if (MK3D.hq) { h.children[0].material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: sidingTex(wall), roughness: .85 }); h.children[1].material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: shingleTex(roof), roughness: .8 }); }
@@ -1329,10 +1339,14 @@ function camFor(c, S, seg, lib) {
   const h = id => { const lc = lib.characters[id]; return lc ? (lc.spec.height || 1) * (lc.spec.kind === 'human' && (lc.spec.age === 'adult' || lc.spec.age === 'old') ? 1.62 : lc.spec.kind === 'human' ? 1.02 : 1) : 1; };
   const px = id => S[id] ? X(S[id].x) : 0, pz = id => S[id] ? -(S[id].z || 0) * 1.5 : 0;
   const ids = Object.keys(seg.C);
-  if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close';
-    return { pos: new THREE.Vector3(x + (close ? .15 : .4), (close ? .95 : 1.1) * hh + .1, z + (close ? 2.3 : 3.8) * Math.max(.8, hh) / (c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1)), look: new THREE.Vector3(x, (close ? .92 : .75) * hh, z) }; }
-  if (c.mode === 'two') { const pair = Array.isArray(c.on) ? c.on : ids.slice(0, 2); const a = px(pair[0]), b = px(pair[1] || pair[0]), mid = (a + b) / 2, d = Math.abs(a - b), hh = Math.max(h(pair[0]), h(pair[1] || pair[0]));
-    return { pos: new THREE.Vector3(mid, 1.15 * hh + .15, Math.max(3.3, d * 1.05 + 2.3)), look: new THREE.Vector3(mid, .72 * hh, 0) }; }
+  if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close', side = S[id] && S[id].face < 0 ? -1 : 1;
+    return { pos: new THREE.Vector3(x + side * (close ? .22 : .38), (close ? .84 : .92) * hh + .08, z + (close ? 2.4 : 2.9) * Math.max(.8, hh) / (c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1)), look: new THREE.Vector3(x + side * (close ? .05 : .1), (close ? .7 : .6) * hh, z) }; }
+  if (c.mode === 'group') { const list = (c.ids || ids).filter(id => S[id] && S[id].vis !== false); let lo = 1e9, hi = -1e9, hh = .9;
+    for (const id of list) { const x = px(id), w = .5 * h(id); lo = Math.min(lo, x - w); hi = Math.max(hi, x + w); hh = Math.max(hh, h(id)); } for (const q of c.px || []) { lo = Math.min(lo, X(q) - .45); hi = Math.max(hi, X(q) + .45); }
+    if (lo <= hi) { const mid = (lo + hi) / 2, d = clamp((hi - lo + 1.1) / 2 / .612, 3.3, 8.4); return { pos: new THREE.Vector3(mid, .6 * hh + d * .13, d), look: new THREE.Vector3(mid, .52 * hh + d * .035, 0) }; } }
+  if (c.mode === 'two') { const pair = Array.isArray(c.on) ? c.on : ids.slice(0, 2); const a = px(pair[0]), b = px(pair[1] || pair[0]), hh = Math.max(h(pair[0]), h(pair[1] || pair[0])), wa = .5 * h(pair[0]), wb = .5 * h(pair[1] || pair[0]);
+    const lo = Math.min(a - wa, b - wb), hi = Math.max(a + wa, b + wb), mid = (lo + hi) / 2, d = clamp((hi - lo + .9) / 2 / .612, 2.9, 7);
+    return { pos: new THREE.Vector3(mid, .6 * hh + d * .12, d), look: new THREE.Vector3(mid, .55 * hh + d * .03, 0) }; }
   if (c.mode === 'pan') { const x = X(c.on != null ? +c.on : .5); return { pos: new THREE.Vector3(x, 1.5, 6 / (c.zoom || 1.3) * 1.3), look: new THREE.Vector3(x, .8, 0) }; }
   return { pos: new THREE.Vector3(0, 1.75, 8.4), look: new THREE.Vector3(0, .85, 0) };
 }
@@ -1413,25 +1427,27 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
     let sc = 1; if (!p._vis) { if (p._fx === 'vanish' && fa < .45) sc = 1 - ease(fa / .45); else { m.visible = false; poof(p, fa); continue; } } else if (p._fx === 'appear' && fa < .6) sc = ease(fa / .6) * (1 + Math.sin(Math.min(1, fa / .6) * Math.PI) * .25);
     m.visible = sc > .01; const big = p.big || 1;
     if (p._holder && S[p._holder] && S[p._holder].vis) { const lc = tl.lib.characters[p._holder]; const rig = rigFor(lc); const v = new THREE.Vector3(); rig.hand.getWorldPosition(v); m.position.set(v.x, v.y - .12 * rig.scale, v.z); m.scale.setScalar(.7 * rig.scale * sc); }
+    else if (p._tb && L.type === 'kitchen') { m.position.set(clamp(X(p._x), 3.35, 4.45), .83, -.95); m.scale.setScalar(1.15 * sc); m.rotation.z = 0; }
     else { const zz = p.decor && big > 1.5 ? -1.9 : p.decor ? -.5 : .35; m.position.set(X(p._x), (p._air || 0) * 1.2 + (m.userData.float ? Math.sin(T * 2 + p._x * 9) * .08 : 0), zz); m.scale.setScalar(big * (p.decor && big < 1.5 ? 1.6 : 1) * sc); m.rotation.z = -(p._air || 0) * 3; }
+    if (m.userData.leaf) { const ok = p._open || 0; m.userData.leaf.rotation.y = -ok * 1.75; m.userData.doorLight.material.opacity = Math.min(1, ok * 1.6); if (ok > .05 && m.visible) sprite(haloTex('#ffe6a0'), m.position.x, m.position.y + .55 * m.scale.x, m.position.z + .1, 1.6 * m.scale.x * (.6 + ok * .4), .7 * ok); }
     if (m.userData.flames) m.userData.flames.forEach((f, i) => { const s0 = f.userData.s0 || (f.userData.s0 = f.scale.clone()); const k = 1 + Math.sin(T * 13 + i * 2.1) * .08 + Math.sin(T * 7.3 + i) * .06; f.scale.set(s0.x * (2 - k), s0.y * k, s0.z * (2 - k)); });
     const gl = m.userData.alwaysGlow ? 1 : (p._glow || 0); if (m.userData.faceMat) m.userData.faceMat.color.set(gl > 0 ? 0xffc23a : 0x3a1a08);
-    if (gl > 0 && m.visible) { const gy = m.userData.glowY != null ? m.userData.glowY : .2, gs = (m.userData.glowS || .7) * m.scale.x, pulse = 1 + Math.sin(T * 3 + p._x * 7) * .06;
-      sprite(haloTex(m.userData.glowC || '#ffe27a'), m.position.x, m.position.y + gy * m.scale.x, m.position.z + .05, gs * pulse * (.5 + gl * .5), .75 * gl);
+    if (gl > 0 && m.visible) { const gy = m.userData.glowY != null ? m.userData.glowY : .2, gs = Math.max(p._holder ? .6 : .5, (m.userData.glowS || .7) * m.scale.x), pulse = 1 + Math.sin(T * 3 + p._x * 7) * .08;
+      sprite(haloTex(m.userData.glowC || '#ffe27a'), m.position.x, m.position.y + gy * m.scale.x, m.position.z + .12, gs * pulse * (.5 + gl * .5), (p._holder ? .95 : .8) * gl);
       if (!m.userData.alwaysGlow) for (let i = 0; i < 3; i++) { const q = (T * .5 + i / 3) % 1; sprite(glyphTex('✦', '#fff4b0'), m.position.x + Math.sin(i * 2.3 + T) * gs * .45, m.position.y + gy * m.scale.x + (q - .3) * gs * .7, m.position.z + .2, .12 * Math.max(1, m.scale.x * .5), Math.sin(q * Math.PI) * gl); } }
     if (p._fx === 'appear' && fa < 1.1) for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2, r = .2 + fa * 1.1 * Math.max(1, big * .6); sprite(glyphTex('★', '#ffd23f', '#ffffff'), m.position.x + Math.cos(a) * r, m.position.y + .3 * big + Math.sin(a) * r, m.position.z + .3, .16, 1 - fa / 1.1); }
     if (p._fx === 'vanish' && fa < 1.1) poof(p, fa, m);
   }
-  function poof(p, fa, m) { if (fa > 1.1 || p._fx !== 'vanish') return; const x = m ? m.position.x : X(p._x), y = m ? m.position.y + .25 * (p.big || 1) : .3, z = m ? m.position.z + .3 : .4;
+  function poof(p, fa, m) { if (fa > 1.1 || p._fx !== 'vanish') return; const onT = !m && p.tb0 && L.type === 'kitchen'; const x = m ? m.position.x : onT ? clamp(X(p._x), 3.35, 4.45) : X(p._x), y = m ? m.position.y + .25 * (p.big || 1) : onT ? 1.05 : .3, z = m ? m.position.z + .3 : onT ? -.7 : .4;
     for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, r = .15 + fa * .7 * Math.max(1, (p.big || 1) * .6); sprite(haloTex('#ffffff'), x + Math.cos(a) * r, y + Math.sin(a) * r * .7, z, (.35 + fa * .4) * Math.max(1, (p.big || 1) * .5), (1 - fa / 1.1) * .9); } }
   showTheme(seg, T);
   // камера
   let ci = 0; const cams = seg.cam.filter(c => !c.shake); for (let i = 0; i < cams.length; i++) if (cams[i].t <= t) ci = i;
-  const cur = camFor(cams[ci], S, seg, tl.lib), prev = ci > 0 ? camFor(cams[ci - 1], S, seg, tl.lib) : cur, k = ease((t - cams[ci].t) / .9);
+  const cur = camFor(cams[ci], S, seg, tl.lib), prev = ci > 0 ? camFor(cams[ci - 1], S, seg, tl.lib) : cur, k = cams[ci].cut ? 1 : ease((t - cams[ci].t) / .9);
   cam.position.lerpVectors(prev.pos, cur.pos, k); const look = new THREE.Vector3().lerpVectors(prev.look, cur.look, k);
   for (const c of seg.cam) if (c.shake && t >= c.t && t < c.t + c.shake) { const a = (1 - (t - c.t) / c.shake) * .08; cam.position.x += Math.sin(t * 61) * a; cam.position.y += Math.cos(t * 53) * a; }
   cam.fov = 38; cam.updateProjectionMatrix(); cam.lookAt(look);
-  { const mode = cams[ci].mode || 'wide', ap0 = { close: 1, medium: .55, two: .35, pan: .2 }[mode] || .12, apP = ci > 0 ? ({ close: 1, medium: .55, two: .35, pan: .2 }[cams[ci - 1].mode] || .12) : ap0; MK3D._ap = lerp(apP, ap0, k); MK3D._focus = cam.position.distanceTo(look);
+  { const mode = cams[ci].mode || 'wide', ap0 = { close: 1, medium: .55, two: .35, group: .22, pan: .2 }[mode] || .12, apP = ci > 0 && !cams[ci].cut ? ({ close: 1, medium: .55, two: .35, group: .22, pan: .2 }[cams[ci - 1].mode] || .12) : ap0; MK3D._ap = lerp(apP, ap0, k); MK3D._focus = cam.position.distanceTo(look);
     MK3D._grade = ['room', 'kitchen'].includes(L.type) ? 'indoor' : L.type === 'space' ? 'space' : (L.time || 'day'); }
   sun.target.position.copy(look); sun.position.add(look); MK3D._T = t; if (rim) { rim.target.position.copy(look); rim.position.set(look.x - 3, 4, look.z - 6); }
   render(ctx);

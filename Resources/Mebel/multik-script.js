@@ -16,7 +16,7 @@ const SFX = [[/(бум|удар|бах|грох)/, 'thud'], [/(дзынь|дин
 const PROPS = [[/^тыкв/, 'pumpkin'], [/^(гриб|грибок)/, 'mushroom'], [/^зонт/, 'umbrella'], [/^(конфет|карамел)/, 'candy'], [/^морожен/, 'icecream'], [/^леденец|^леденц/, 'lollipop'],
   [/^банан/, 'banana'], [/^груш/, 'pear'], [/^арбуз/, 'watermelon'], [/^(мед$|мёд|меда|мёда|медом|мёдом|бочонок|бочонк)/, 'honey'], [/^(ведр|ведёр|ведер)/, 'bucket'], [/^(лопат|совок|совоч)/, 'shovel'],
   [/^(машинк|машин)/, 'car'], [/^(мишк|медвежон)(?=.*игруш)|^игрушк/, 'teddy'], [/^барабан/, 'drum'], [/^гитар/, 'guitar'], [/^палочк/, 'wand'], [/^(фонар|фонарик)/, 'lantern'],
-  [/^карт[аеуы]$|^картой$/, 'map'], [/^(письм|конверт)/, 'letter'], [/^(корзин|лукошк)/, 'basket'], [/^(сундук|клад)/, 'chest'], [/^(монет|монетк)/, 'coin'], [/^(яйц|яичк)/, 'egg'],
+  [/^карт[аеуы]$|^картой$/, 'map'], [/^(письм|конверт)/, 'letter'], [/^(корзин|лукошк)/, 'basket'], [/^(сундук|клад$|клада$|кладом$|кладе$|клады$|кладов$)/, 'chest'], [/^(монет|монетк)/, 'coin'], [/^(яйц|яичк)/, 'egg'],
   [/^(пирог|пирож)/, 'pie'], [/^(печень)/, 'cookie'], [/^(молок|бутылк)/, 'milk'], [/^(часы|часики|будильник)/, 'clock'], [/^(свеч)/, 'candle'], [/^(лист|листик|листок)/, 'leaf'],
   [/^(камень|камешек|камн|камуш)/, 'rock'], [/^(палк|ветк|прут)/, 'stick'], [/^(телефон|смартфон)/, 'phone'], [/^(змей|змея)/, 'kite'], [/^(сумк|сумоч|портфел)/, 'bag'],
   [/^мяч/, 'ball'], [/^яблок/, 'apple'], [/^рыб/, 'fish'], [/^(коробк|ящик)/, 'box'], [/^подар/, 'gift'], [/^цвет(ок|оч|к)/, 'flower'], [/^книг/, 'book'], [/^зв[её]зд/, 'star'],
@@ -26,7 +26,9 @@ const DECOR = [[/^двер/, 'door'], [/^(лун[аыеу]$|луной|меся�
   [/^(гирлянд|огоньк|фонарики$)/, 'garland'], [/^(украшени)/, 'decor'], [/^(лиц[аоу]?$|рожиц|рож[иа]$)/, 'faces'], [/^(дерев|ёлк|елк|ел[иь]$|елочк)/, 'tree'], [/^(портал)/, 'door'],
   [/^(сугроб|снегови)/, 'snowman'], [/^(костер|костёр|костр)/, 'fire'], [/^(шатер|шатёр|палатк)/, 'tent'], [/^(замок|замк)$/, 'castle'], [/^(радуг)/, 'rainbow']];
 const BIG_DEFAULT = new Set(['door', 'moon', 'ghost', 'tree', 'snowman', 'tent', 'castle', 'rainbow', 'fire']);
-const SEE = /(смотри|гляди|глянь|глядите|(^|[^а-я])вот(?![а-я])|видишь|видите|вижу|(^|[^а-я])там(?![а-я])|(^|[^а-я])тут(?![а-я])|здесь|появил|появля|возник|исчез|пропал|растаял|засвет|светит|светя|свечен|сверка|горит|сия|лежит|стоит|висит|везде|кругом|огромн|громадн|гигантск|какая|какой|какие|ещ[её] одн|(^|[^а-я])наш|у меня|у нас|держ)/;
+const SEE = /(смотри|гляди|глянь|глядите|(^|[^а-я])вот(?![а-я])|видишь|видите|вижу|(^|[^а-я])там(?![а-я])|(^|[^а-я])тут(?![а-я])|здесь|появил|появля|возник|исчез|пропал|растаял|засвет|светит|светя|свечен|сверка|горит|сия|лежит|лежат|стоит|висит|везде|кругом|огромн|громадн|гигантск|^\s*как(ая|ой|ие|ое)(?![а-я])|ещ[её] одн|(^|[^а-я])наш(а|е|и|у|его|ей|ем|ему|им|ими|их)?(?![а-я])|у меня|у нас|держ|оставил|оставлен|принес|принёс|двига|кати|покати|шевел|открыва|открыл|распахн|отвори|(^|[^а-я])сам[аио]?(?![а-я]))/;
+// Вещи, о которых говорят, но их нет рядом: «Где наш торт?», «Верни торт!», «Мы не нашли торт», «Хочу попробовать торт»
+const ABSENT = /(^|[^а-я])(где|куда|откуда|верн[иу]|отдай|найт|найд|нашл|ищ|иска|потеря|забра|украл|укра|похит|съел|съест|съеш|доел|попроб|хотел|хочу|хоч|мечта|любим|вспомина|без|нет|не было|пропаж)/;
 const THEMES = [[/(хэллоуин|хеллоуин|halloween)/, 'halloween'], [/(новый год|новог|нового года|новым годом|дед мороз|снегурочк)/, 'newyear'], [/(день рождени|дня рождени|днем рождени|именин)/, 'birthday']];
 const EMO = [[/(радост|весел|счастлив|улыба|довольн)/, 'happy'], [/(смеет|хохоч|смешн|смех|хихик)/, 'laugh'], [/(груст|печал|расстро)/, 'sad'], [/(плач|рыда|сл[её]з)/, 'cry'],
   [/(злит|сердит|зло(?![а-я])|злой|злая|гневн|обиж)/, 'angry'], [/(удивл|изумл|(^|[^а-я])ого(?![а-я]))/, 'surprised'], [/(испуг|страшн|бои|боя|дрож)/, 'scared'], [/(сонн|зева|устал)/, 'sleepy'],
@@ -113,7 +115,9 @@ S.parse = function (text, lib, opts) {
     chars[id] = { name, spec }; newChars[id] = spec; idx = nameIndexL();
     if (r.unknown.length) warnings.push(`${name}: не понял слова «${r.unknown.join(', ')}» — остальное учёл.`);
   }
-  const placeX = (side) => { const used = Object.values(sc._x); for (const x of (side === 'right' ? [.72, .62, .84, .52] : side === 'left' ? [.28, .38, .16, .48] : []).concat([.35, .62, .2, .78, .5, .1, .9])) if (!used.some(u => Math.abs(u - x) < .1)) return x; return .5; };
+  const placeX = (side) => { const used = Object.values(sc._x); const lo = used.length ? Math.min(...used) : null, hi = used.length ? Math.max(...used) : null;
+    const near = side === 'right' ? (hi != null ? [hi + .15, hi + .28] : [.6, .7]) : side === 'left' ? (lo != null ? [lo - .15, lo - .28] : [.4, .3]) : (hi != null ? [hi + .15, lo - .15] : [.45]);
+    for (const x of near.concat(side === 'right' ? [.72, .84, .52] : side === 'left' ? [.28, .16, .48] : []).concat([.35, .62, .2, .78, .5, .1, .9])) if (x >= .1 && x <= .9 && !used.some(u => Math.abs(u - x) < .12)) return x; return .5; };
   const castOf = (id, hidden, side) => { if (id === 'Р') return; if (!sc._cast[id]) { const x = placeX(side); sc._cast[id] = { who: id, x, hidden: !!hidden }; sc._x[id] = x; sc.cast.push(sc._cast[id]); } };
   function newScene(desc) {
     if (!ep) newEp(1, '');
@@ -123,6 +127,7 @@ S.parse = function (text, lib, opts) {
     sc = { id: 'С' + (ep.scenes.length + 1), location: lid, cast: [], props: [], steps: [], _cast: {}, _x: {}, _type: type };
     { const th = themeWord(d); if (th) theme = th; } if (theme && type !== 'space') sc.theme = theme;
     const mu = pick(MUSIC, d); if (mu) sc.music = mu;
+    { const prev = ep.scenes.slice().reverse().find(s => s._type === type); if (prev) for (const p of prev.props) if (!p._gone && !p._held && !p.holder && !p.decor && !p.hidden && p._used) sc.props.push({ id: 'П' + (sc.props.length + 1), type: p.type, x: p.x, color: p.color, _used: true, _carried: true }); }
     ep.scenes.push(sc); lastSpeaker = null; sceneSpeakers = [];
   }
   // ---- мир сцены: всё, что упомянуто в репликах, становится видно в кадре ----
@@ -131,6 +136,9 @@ S.parse = function (text, lib, opts) {
   const userObj = Object.entries(lex.objects || {});
   function objOf(w) { const u = userObj.find(([k]) => w === k || (k.length > 4 && w.startsWith(k.slice(0, -1)))); if (u) return u[1]; return pick(DECOR, w) || pick(PROPS, w); }
   function freeSpot(big) { const used = sc.props.filter(p => !p._gone).map(p => p.x); for (const x of big ? [.5, .3, .7, .18, .82] : [.42, .6, .3, .72, .5]) if (!used.some(u => Math.abs(u - x) < .12)) return x; return .2 + Math.random() * .6; }
+  function vanishNow(pr) { // исчезает на последнем звуке «вжух/волшебство/хлоп», если он был только что, иначе — сейчас
+    let at = -1; for (let k = sc.steps.length - 1; k >= Math.max(0, sc.steps.length - 4); k--) if (sc.steps[k].sfx && /^(whoosh|magic|pop|sparkle)$/.test(sc.steps[k].sfx)) { at = k; break; }
+    const st = { prop: pr.id, state: 'vanish', with: true }; if (at >= 0) sc.steps.splice(at + 1, 0, st); else sc.steps.push(st); pr._gone = true; }
   function stage(text, who) { // реплика → вещи в кадре
     const d0 = low(text); const sents = d0.match(/[^.!?…]+[.!?…]*/g) || [d0]; const lineCue = SEE.test(d0); let firstId = null;
     sc._ln = (sc._ln || 0) + 1;
@@ -138,10 +146,14 @@ S.parse = function (text, lib, opts) {
       const words = d.split(/[^а-яa-z]+/).filter(Boolean); const cue = SEE.test(d) || (lineCue && !/\?\s*$/.test(d));
       const isQ = /\?\s*$/.test(d) && !SEE.test(d), maybe = /(может|вдруг|наверн|если|(^|[^а-я])бы(?![а-я])|хоч)/.test(d);
       const glowNow = /(засвет|зажгл|загорел|засия|вспыхн)/.test(d), glowAdj = /(свет|сия|горит|сверка|блест)/.test(d);
+      const absent = ABSENT.test(d), opening = /(открыва|открыл|распахн|отвори|отворя)/.test(d), closing = /(закрыва|закрыл|захлопн)/.test(d), moving = /(двига|кати|покати|шевел|сам[аио]? (по)?(ехал|полз|прыг)|прыгает сам|убега)/.test(d);
       let found = false;
       words.forEach((w, wi) => {
         let type = objOf(w);
         if (!type) { if (cue && wi > 0 && /^(огромн|больш|волшебн|страшн|светящ|чудесн|странн|необычн)/.test(words[wi - 1]) && w.length > 3 && !/^(одн|свет|цвет|друг|сам|так|очен|как|кто|что)/.test(w) && !GENERIC.has(w) && !idx.some(([n]) => w.startsWith(n.slice(0, 4)))) unknownObj.set(w, text.trim()); return; }
+        const vanish0 = /(исчез|пропал|растаял|улетел|нет больше)/.test(d);
+        // «Где наш торт?» — если торт тут лежал, он пропадает (на звук «вжух», если он был только что)
+        if (absent && !vanish0) { if (/(^|[^а-я])где(?![а-я])/.test(d)) { const ex = sc.props.find(x => x.type === type && !x._gone && !x._held && !x.holder && !x.hidden); if (ex) vanishNow(ex); } return; }
         if (isQ || maybe || !cue) return; if (wi > 0 && words[wi - 1] === 'не') return;
         if (type === 'decor' || type === 'faces') { if (type === 'faces') { theme = theme || 'halloween'; type = 'jack'; } else { if (!theme) theme = null; return; } }
         found = true;
@@ -149,20 +161,22 @@ S.parse = function (text, lib, opts) {
         const near = words.slice(Math.max(0, wi - 3), wi).join(' ');
         const big = /(огромн|громадн|гигантск|больш)/.test(near) || BIG_DEFAULT.has(type), small = /(маленьк|крошечн|малюс)/.test(near);
         let color = null; for (const ww of words.slice(Math.max(0, wi - 2), wi)) { const c = global.MKMaker && global.MKMaker.colorOf(ww); if (c) color = c.hex; }
-        const glow = (glowAdj && !glowNow) || type === 'garland';
+        const glow = (glowAdj && !glowNow) || type === 'garland', glowStatic = type === 'garland';
         const vanish = /(исчез|пропал|растаял|улетел|нет больше)/.test(d);
         const morph = !!(sc._vanishLn && sc._ln - sc._vanishLn <= 2 && !vanish); const appear = /(появил|возник|вырос|(^|[^а-я])вдруг)/.test(d) || (type === 'door' && /волшебн/.test(d)) || morph;
         const fresh = /(ещ[её] одн|друг[аоу]я|нов[аоы][яйе])/.test(d);
-        const mine = /(наш|мой|моя|мо[её]|у меня|у нас)/.test(near) && who && who !== 'Р' && !big;
+        const mine = /((^|[^а-я])наш(а|е|и|у)?|(^|[^а-я])мо[йяеё]|у меня|у нас)(?![а-я])/.test(near) && who && who !== 'Р' && !big;
         let pr = fresh ? null : sc.props.find(x => x.type === type && !x._gone) || (vanish ? sc.props.find(x => x.type === type) : null);
         if (!pr && type === 'jack') pr = sc.props.find(x => x.type === 'pumpkin' && !x._gone);
         if (!pr) { pr = { id: 'П' + (sc.props.length + 1), type, x: freeSpot(big), decor: true }; if (big && !small) pr.big = type === 'moon' ? 1 : 2.4; if (small) pr.big = .7; if (color) pr.color = color;
-          if (appear && !vanish) pr.hidden = true; if (glow && !vanish && !pr.hidden) pr.glow = true; if (mine) { pr.holder = who; castOf(who); delete pr.decor; } if (morph && sc._vanishHeld && !big) { pr.holder = sc._vanishHeld; delete pr.decor; } sc.props.push(pr);
+          if (appear && !vanish) pr.hidden = true; if (glowStatic && !pr.hidden) pr.glow = true; if (mine) { pr.holder = who; castOf(who); delete pr.decor; } if (morph && sc._vanishHeld && !big) { pr.holder = sc._vanishHeld; delete pr.decor; } sc.props.push(pr);
           shown.push({ pr, type, scene: sc.id, how: [pr.big > 1 ? 'большая' : '', glow || glowNow ? 'светится' : '', pr.hidden ? 'появляется' : '', vanish ? 'исчезает' : '', mine ? 'у героя в руках' : ''].filter(Boolean).join(', ') }); }
         if (pr.type === 'pumpkin' && type === 'jack') pr.type = 'jack';
         if (pr.hidden && !pr._shown) { sc.steps.push({ prop: pr.id, state: 'appear', with: true }); pr._shown = true; if (glow || glowNow) { sc.steps.push({ prop: pr.id, state: 'glow', with: true }); pr._glow = true; } }
         else if (vanish && !pr._gone) { sc.steps.push({ prop: pr.id, state: 'vanish', with: true }); pr._gone = true; sc._vanishLn = sc._ln; sc._vanishHeld = pr._held || pr.holder || null; }
         else if ((glowNow || glowAdj) && !pr.glow && !pr._glow) { sc.steps.push({ prop: pr.id, state: 'glow', with: true }); pr._glow = true; }
+        if (!vanish && type === 'door' && (opening || closing) && !!pr._open !== opening) { sc.steps.push({ prop: pr.id, state: opening ? 'open' : 'close', with: true }); pr._open = opening; }
+        if (!vanish && moving && !pr.big && !pr._held && !pr.holder) sc.steps.push({ prop: pr.id, state: 'move', with: true });
         if (!vanish) { firstId = firstId || pr.id; sc._lastObj = pr.id; }
       });
       // «У неё светятся глаза!», «Она светится!» — про последнюю вещь
@@ -278,8 +292,8 @@ S.parse = function (text, lib, opts) {
     else sc.steps.push({ camera: 'wide' }); sc._cam = 'manual'; }
   function autoCam(who) { // простая режиссура, если камера не задана вручную
     if (sc._cam === 'manual') return; const n = sc.steps.filter(s => s.say && s.who !== 'Р').length;
-    if (lastSpeaker === who && sc._cam !== 'medium:' + who) { sc.steps.push({ camera: 'medium', on: who }); sc._cam = 'medium:' + who; }
-    else if (lastSpeaker && lastSpeaker !== who && lastSpeaker !== 'Р' && n >= 1 && !String(sc._cam || '').startsWith('two')) { sc.steps.push({ camera: 'two', on: [lastSpeaker, who] }); sc._cam = 'two'; }
+    if (lastSpeaker === who && sc._cam !== 'medium:' + who) { sc.steps.push({ camera: 'medium', on: who, auto: true }); sc._cam = 'medium:' + who; }
+    else if (lastSpeaker && lastSpeaker !== who && lastSpeaker !== 'Р' && n >= 1 && !String(sc._cam || '').startsWith('two')) { sc.steps.push({ camera: 'two', on: [lastSpeaker, who], auto: true }); sc._cam = 'two'; }
   }
   function nameFromLine(who, text) { // «Не бойтесь, я Ушастик!» — у созданного автоматически героя появляется имя
     if (!newChars[who] || !Object.values(autoMade).includes(who)) return; const m = String(text).match(/(?:^|[^А-Яа-яЁё])[Яя]\s*[—–-]?\s*([А-ЯЁ][а-яё]{2,})/); if (!m) return;
@@ -328,6 +342,7 @@ S.parse = function (text, lib, opts) {
           if (verb === 'kick') { const pr = ensureProp(p, id); step.prop = pr.id; } else if (p && !sc.props.some(x => x._held === id)) { const pr = ensureProp(p, id); sc.steps.push({ who: id, do: 'take', prop: pr.id }); pr._held = id; }
           if (tgt) { castOf(tgt); step.to = tgt; } }
         else if (verb === 'crawl' || verb === 'sneak') { step.do = verb; if (tgt) { castOf(tgt); step.to = tgt; } else if (/(вправо|направо)/.test(d)) step.to = Math.min(.85, (sc._x[id] || .5) + .3); else if (/(влево|налево)/.test(d)) step.to = Math.max(.15, (sc._x[id] || .5) - .3); else step.to = (sc._x[id] || .5) > .5 ? .35 : .65; if (typeof step.to === 'number') sc._x[id] = step.to; }
+        else if (verb === 'drop') { step.do = 'drop'; const p = propIn(d); const pr = sc.props.find(x => x._held === id && !x._gone && (!p || x.type === p)); if (pr) { pr._held = null; step.prop = pr.id; } }
         else if (verb === 'take') { const p = propIn(d) || 'ball'; if (sc.props.some(x => x.type === p && x._held === id && !x._gone)) { continue; } const pr = ensureProp(p, id); step.do = 'take'; step.prop = pr.id; pr._held = id; }
         else if (verb === 'give') { step.do = 'give'; if (tgt) { castOf(tgt); step.to = tgt; const p = propIn(d); let pr = sc.props.find(x => x._held === id && !x._gone && (!p || x.type === p)); if (!pr && p) { pr = ensureProp(p, id); sc.steps.push({ who: id, do: 'take', prop: pr.id }); pr._held = id; } if (pr) pr._held = tgt; } else delete step.do; }
         else if (verb) step.do = verb;
@@ -335,7 +350,7 @@ S.parse = function (text, lib, opts) {
       if (!step.do && !step.emotion) { if (emo == null && !verb) return false; }
       if (!step.do) delete step.do;
       sc.steps.push(step);
-      if (step.do === 'jump' || step.do === 'enter' || step.do === 'dance' || step.do === 'fall') { if (sc._cam && sc._cam !== 'manual' && sc._cam !== 'wide') { sc.steps.push({ camera: 'wide', with: true }); sc._cam = 'wide'; } }
+      if (step.do === 'jump' || step.do === 'enter' || step.do === 'dance' || step.do === 'fall') { if (sc._cam && sc._cam !== 'manual' && sc._cam !== 'wide') { sc.steps.push({ camera: 'wide', with: true, auto: true }); sc._cam = 'wide'; } }
     }
     return true;
   }

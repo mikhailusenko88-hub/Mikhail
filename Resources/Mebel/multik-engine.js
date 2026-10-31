@@ -782,6 +782,63 @@ MK.validate = function (ep, lib) {
   return { errors, warnings, newChars, newLocs };
 };
 
+// Еда на кухне лежит на столе (x стола на сцене)
+const FOOD = new Set(['cake', 'pie', 'cup', 'milk', 'cookie', 'apple', 'pear', 'banana', 'cheese', 'candy', 'honey', 'icecream', 'lollipop', 'watermelon', 'carrot', 'fish', 'egg', 'basket']);
+const TABLE_X = { kitchen: .855 };
+const BIGACT = new Set(['fall', 'jump', 'dance', 'spin', 'somersault', 'roll', 'run', 'crawl', 'sneak', 'stomp', 'hug', 'give', 'kick', 'throw', 'take', 'drop']);
+/** Режиссёр: по репликам и действиям выбирает планы — общий при входе, группа, «восьмёрка» двоих, средний и крупный на говорящего.
+ *  Говорящий всегда в кадре, планы сменяются склейкой, а не плаванием камеры. Ручные «КАМЕРА:» держатся до конца следующей реплики. */
+function directScene(beats, C, inits, manual) {
+  const ids = Object.keys(C).filter(id => inits[id]); const evs = {}; for (const id of ids) evs[id] = C[id].ev.slice().sort((a, b) => a.t - b.t);
+  const S = (id, t) => evalChar(inits[id], evs[id], t, {}, 0);
+  const vis = t => ids.filter(id => S(id, t).vis), xOf = (id, t) => S(id, t).x;
+  const locks = manual.map(m => { const nb = beats.find(b => b.k === 'say' && b.t >= m.t - .1); return [m.t - .05, nb ? nb.t1 + .3 : m.t + 3]; });
+  const locked = t => locks.some(([a, b]) => t >= a && t < b);
+  const B = beats.slice().sort((a, b) => a.t - b.t), says = B.filter(b => b.k === 'say' && b.who !== 'Р' && C[b.who] && inits[b.who]);
+  const out = []; let cur = { mode: 'wide', t: 0 }, prevSay = null, prevT = -9, lastGroup = -99, firstSay = true, n = 0;
+  const has = (sh, id) => sh.mode === 'wide' || (sh.mode === 'group' && sh.ids.includes(id)) || sh.on === id || (Array.isArray(sh.on) && sh.on.includes(id));
+  const key = sh => sh.mode + ':' + JSON.stringify(sh.on || sh.ids || null);
+  const cut = (t, sh) => { if (key(sh) === key(cur)) return; sh.t = Math.max(0, t - .12); sh.cut = true; sh.auto = true;
+    while (out.length && sh.t - out[out.length - 1].t < 1.2) out.pop(); out.push(sh); cur = sh; };
+  const group = (t, extra, px) => { const v = vis(t); for (const e of extra || []) if (e && !v.includes(e)) v.push(e); const g = { mode: 'group', ids: v.sort() }; if (px) g.px = px; return g; };
+  // кадр на двоих: если между ними никто не стоит и они недалеко
+  const pair = (a, c, t) => { const xa = xOf(a, t), xc = xOf(c, t), lo = Math.min(xa, xc), hi = Math.max(xa, xc);
+    const between = vis(t).some(id => id !== a && id !== c && xOf(id, t) > lo + .02 && xOf(id, t) < hi - .02);
+    return !between && hi - lo < .5 ? { mode: 'two', on: [a, c].sort((p, q) => xOf(p, t) - xOf(q, t)) } : group(t); };
+  for (const b of B) {
+    if (locked(b.t)) continue;
+    const v = vis(b.t + .2), age = b.t - cur.t;
+    if (b.k === 'move') { if (b.d === 'enter' && firstSay) continue; // пока входят — общий план места
+      const g = group(b.t1, [b.who]); if (cur.mode === 'group' && g.ids.every(id => cur.ids.includes(id))) continue; cut(b.t, g); continue; }
+    if (b.k === 'act') { if (firstSay || (has(cur, b.who) && cur.mode !== 'close' && !(BIGACT.has(b.d) && cur.mode === 'medium'))) continue; cut(b.t, BIGACT.has(b.d) ? group(b.t1, [b.who, b.to && C[b.to] ? b.to : null]) : { mode: 'medium', on: b.who }); continue; }
+    if (b.k === 'look' || b.k === 'prop') { if (firstSay && !v.length) continue; cut(b.t, group(b.t, [b.who], [b.px])); continue; }
+    if (b.k !== 'say' || b.who === 'Р' || !C[b.who] || !inits[b.who]) continue;
+    const who = b.who; if (!v.includes(who)) continue;
+    // кто ответит: следующая реплика другого героя вскоре после этой
+    const i = says.indexOf(b), nx = says.slice(i + 1).find(x => x.t < b.t1 + 4.5 && x.who !== who && v.includes(x.who));
+    const recentPrev = prevSay && prevSay !== who && b.t - prevT < 6 && v.includes(prevSay) ? prevSay : null;
+    const partner = nx ? nx.who : recentPrev;
+    const strong = /^(scared|surprised|angry|cry|sad|love|shy)$/.test(b.emo || ''), text = b.text || '';
+    let sh;
+    if (firstSay) sh = v.length > 1 ? group(b.t) : { mode: 'medium', on: who };
+    else if (v.length >= 3 && /(друзья|ребята|смотрите|давайте|вперёд|вперед|(^|[^а-я])(мы|нам|нас|все|всех)(?![а-я]))/i.test(text) && b.t - lastGroup > 10) sh = group(b.t);
+    else if (partner) sh = pair(who, partner, b.t);
+    else sh = { mode: 'medium', on: who };
+    // выразительный крупный план: сильная эмоция, герой уже в кадре, на него не сразу отвечают
+    if (!firstSay && strong && text.length < 50 && n % 2 === 0 && has(cur, who) && age > 2.5 && (!nx || nx.t - b.t1 > 1.2)) sh = { mode: 'close', on: who };
+    firstSay = false; n++;
+    const need = partner ? [who, partner] : [who];
+    // план держим, пока в нём есть и говорящий, и тот, кто ответит; меняем не чаще, чем раз в 2.5 с
+    const fits = cur.mode !== 'wide' && need.every(id => has(cur, id));
+    if (fits && sh.mode !== 'close' && age < 5) { prevSay = who; prevT = b.t; continue; }
+    // тот же план слишком долго — меняем ракурс: средний на говорящего или пара
+    if (key(cur) === key(sh) && age >= 5) sh = sh.mode === 'medium' ? (partner ? pair(who, partner, b.t) : group(b.t)) : { mode: 'medium', on: who };
+    if (!has(cur, who) || cur.mode === 'wide' || age >= 2.5) { cut(b.t, sh); if (sh.mode === 'group') lastGroup = b.t; }
+    prevSay = who; prevT = b.t;
+  }
+  return out;
+}
+
 /** Собирает эпизод: audio — {key:{dur, env:Float32Array(50/с)}} */
 MK.compile = function (ep, lib, audio) {
   audio = audio || {};
@@ -805,18 +862,23 @@ MK.compile = function (ep, lib, audio) {
       // места нет совсем — встаём туда, где теснее всего меньше (наибольший запас до соседей)
       let best = x, bestS = -9; for (let xx = .07; xx <= .93; xx += .01) { let sl = 9; for (const o in C) { if (o === id || !C[o].vis) continue; const oz = C[o].z || 0, ww = (wOf(id) + wOf(o)) / 2, need = oz === z ? Math.max(gap, ww + .025) : (z > oz ? Math.max(gap * .5, ww * .85) : 0); if (need) sl = Math.min(sl, Math.abs(C[o].x - xx) - need); } if (sl > bestS) { bestS = sl; best = xx; } }
       return best; };
+    // встать рядом с вещью (с той стороны, где свободно); если уже рядом — не идти
+    const reachX = (id, px) => { const me = C[id].x; if (Math.abs(me - px) < .09) return null; for (const sd of me < px ? [-1, 1] : [1, -1]) { const x = px + sd * .065; if (x < .04 || x > .96) continue; if (!Object.keys(C).some(o => o !== id && C[o].vis && Math.abs(C[o].x - x) < (wOf(id) + wOf(o)) / 2 + .01)) return x; } return null; };
+    const besideX = (id, to) => { const tx = C[to].x, me = C[id].x, sides = me < tx ? [-1, 1] : [1, -1]; for (const sd of sides) { const x = tx + sd * Math.max(.1, (wOf(id) + wOf(to)) / 2 + .01); if (x < .05 || x > .95) continue; if (!Object.keys(C).some(o => o !== id && o !== to && C[o].vis && Math.abs(C[o].x - x) < (wOf(id) + wOf(o)) / 2 + .02)) return x; } return tx + sides[0] * .1; };
     { const vis = Object.keys(C).filter(id => C[id].vis).sort((a, b) => C[a].x - C[b].x); for (let i = 1; i < vis.length; i++) { const a = C[vis[i - 1]], b = C[vis[i]]; if (a.z === b.z && b.x - a.x < GAP) b.x = a.x + GAP; }
       const over = vis.length ? C[vis[vis.length - 1]].x - .93 : 0; if (over > 0) vis.forEach(id => C[id].x = Math.max(.07, C[id].x - over));
       if (vis.length > 6) vis.forEach((id, i) => { if (i % 2) C[id].z = .6; }); }
     for (const cs of sc.cast || []) if (C[cs.who]) cs._x = C[cs.who].x, cs._z = C[cs.who].z;
     const props = (sc.props || []).map(p => ({ id: p.id, type: p.type, color: p.color, x: p.x != null ? p.x : .5, x0: p.x != null ? p.x : .5, holder: p.holder && C[p.holder] ? p.holder : null, h0: p.holder && C[p.holder] ? p.holder : null, decor: !!p.decor, big: p.big || 1, vis0: !p.hidden, glow0: !!p.glow, vis: !p.hidden, ev: [] }));
+    const TB = TABLE_X[lspec.type]; if (TB != null) { let k = 0; for (const p of props) if (!p.holder && FOOD.has(p.type) && !(p.big > 1)) { p.x = p.x0 = TB + (k++ % 3) * .025; p.tb0 = p.tb = true; } }
+    const beats = [];
     const free = p => !p.holder && !p.decor && p.vis;
     const cam = [{ t: 0, mode: sc.camera || 'wide', on: sc.cameraOn || null }];
-    let cur = .6, prevStart = .6; const st0 = t;
+    let cur = .6, prevStart = .6, prevEnter = false; const st0 = t;
     for (const step of sc.steps || []) {
-      const start = step.with ? prevStart : cur + (step.after || 0); let dur = 0;
+      const start = step.with ? prevStart : step.do === 'enter' && prevEnter && !step.after ? prevStart + .5 : cur + (step.after || 0); let dur = 0; prevEnter = step.do === 'enter';
       const who = step.who, ch = who && C[who];
-      if (step.camera) { cam.push({ t: start, mode: step.camera, on: step.on || null, zoom: step.zoom }); }
+      if (step.camera) { cam.push({ t: start, mode: step.camera, on: step.on || null, zoom: step.zoom, auto: !!step.auto, cut: true }); }
       if (step.shake) cam.push({ t: start, shake: step.shake === true ? .6 : step.shake });
       if (step.wait) dur = Math.max(dur, +step.wait);
       if (step.sfx) sfx.push({ t: st0 + start, n: step.sfx });
@@ -826,8 +888,13 @@ MK.compile = function (ep, lib, audio) {
           if (step.state === 'vanish') { p.ev.push({ t: start, vis: false, fx: 'vanish', holder: null }); p.vis = false; p.holder = null; }
           if (step.state === 'glow') p.ev.push({ t: start + (step.with ? .4 : 0), glow: true });
           if (step.state === 'unglow') p.ev.push({ t: start, glow: false });
+          if (step.state === 'open' || step.state === 'close') { p.ev.push({ t: start + .3, open: step.state === 'open' }); if (step.state === 'open') sfx.push({ t: st0 + start + .3, n: 'magic' }); }
+          if (step.state === 'move' && !p.holder) { let near = null, nd = 9; for (const id in C) if (C[id].vis && Math.abs(C[id].x - p.x) < nd) { nd = Math.abs(C[id].x - p.x); near = C[id].x; } const dir = near == null ? 1 : p.x >= near ? 1 : -1;
+            const x1 = clamp(p.x + dir * .09, .05, .95), x2 = clamp(x1 + dir * .07, .05, .95); p.ev.push({ t: start + .1, fly: { x0: p.x, x1, t1: start + .6, h: .28 }, x: x1, tb: false }); p.ev.push({ t: start + .7, fly: { x0: x1, x1: x2, t1: start + 1.1, h: .14 }, x: x2 }); p.x = x2;
+            sfx.push({ t: st0 + start + .55, n: 'boing', v: .45 }); sfx.push({ t: st0 + start + 1.05, n: 'boing', v: .3 }); }
+          beats.push({ t: start, t1: start + 1.4, k: 'prop', px: p.holder && C[p.holder] ? C[p.holder].x : p.x, big: p.big });
           if (!step.with) dur = Math.max(dur, .6); if (step.state === 'vanish' || step.state === 'appear') sfx.push({ t: st0 + start, n: step.state === 'vanish' ? 'pop' : 'sparkle' }); } }
-      if (step.look) { const p = props.find(p => p.id === step.look); if (p) for (const id in C) { if (!C[id].vis) continue; C[id].ev.push({ t: start + .2, k: 'face', v: p.x >= C[id].x ? 1 : -1 }); }
+      if (step.look) { const p = props.find(p => p.id === step.look); if (p) { beats.push({ t: start, t1: start + 1.6, k: 'look', who: step.who && C[step.who] ? step.who : null, px: p.holder && C[p.holder] ? C[p.holder].x : p.x }); for (const id in C) { if (!C[id].vis) continue; C[id].ev.push({ t: start + .2, k: 'face', v: p.x >= C[id].x ? 1 : -1 }); } }
         if (step.who && C[step.who]) C[step.who].ev.push({ t: start + .1, k: 'act', n: 'point', t1: start + 1.3 }); }
       if (ch) {
         if (step.emotion) ch.ev.push({ t: start, k: 'emo', v: step.emotion });
@@ -835,7 +902,7 @@ MK.compile = function (ep, lib, audio) {
         const d = step.do;
         if (MOVES[d] != null) {
           let x0 = ch.x, x1 = step.to != null ? (typeof step.to === 'string' ? (C[step.to] ? C[step.to].x + (C[step.to].x > ch.x ? -.12 : .12) : ch.x) : +step.to) : ch.x;
-          if (d === 'enter') { const from = step.from || (x1 > .5 ? 'right' : 'left'); x0 = from === 'right' ? 1 + OFF : -OFF; ch.ev.push({ t: start, k: 'vis', v: true }); ch.vis = true; if (step.to == null) x1 = from === 'right' ? .75 : .25; }
+          if (d === 'enter') { const from = step.from || (x1 > .5 ? 'right' : 'left'); x0 = from === 'right' ? 1 + OFF : -OFF; ch.ev.push({ t: start, k: 'vis', v: true }); ch.vis = true; if (step.to == null) { const xs = Object.keys(C).filter(o => o !== who && C[o].vis).map(o => C[o].x); x1 = from === 'right' ? (xs.length ? Math.min(.88, Math.max(...xs) + .15) : .6) : (xs.length ? Math.max(.12, Math.min(...xs) - .15) : .4); } }
           if (d === 'exit') { const side = step.side || (ch.x > .5 ? 'right' : 'left'); x1 = side === 'right' ? 1 + OFF : -OFF; }
           else x1 = spaceX(who, x1, x0);
           const run = d === 'run' || step.run; const sp = (run ? MOVES.run : MOVES[d] || .2) * (lib.characters[who].spec.speed || 1);
@@ -845,27 +912,31 @@ MK.compile = function (ep, lib, audio) {
             for (let tt = start + .05, k = 0; tt < start + dur - .05; tt += gap, k++) sfx.push({ t: st0 + tt, n: indoor ? 'tap' : lspec.type === 'winter' ? 'crunch' : 'step', v: vol * (k % 2 ? .85 : 1) }); }
           ch.ev.push({ t: start, k: 'face', v: x1 >= x0 ? 1 : -1 });
           if (d === 'exit') { ch.ev.push({ t: start + dur, k: 'vis', v: false }); ch.vis = false; }
-          ch.x = x1;
+          ch.x = x1; beats.push({ t: start, t1: start + dur, k: 'move', who, d });
           if (step.face) ch.ev.push({ t: start + dur, k: 'face', v: faceVal(step.face, ch, C) });
         } else if (d && DUR[d] != null) {
           let s0 = start;
           // подойти, если для действия нужно быть рядом (обнять, отдать, пнуть мяч)
-          const tgtX = (d === 'hug' || d === 'give') && step.to && C[step.to] ? C[step.to].x + (C[step.to].x > ch.x ? -.1 : .1)
+          const heldF = props.find(p => p.holder === who && p.vis);
+          const tgtX = (d === 'hug' || d === 'give') && step.to && C[step.to] ? besideX(who, step.to)
+            : d === 'take' ? (() => { const p = props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; return p && !p.holder ? reachX(who, p.x) : null; })()
+            : d === 'drop' && TB != null && heldF && FOOD.has(heldF.type) ? reachX(who, TB)
             : d === 'kick' ? (() => { const p = props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; return p ? p.x - (p.x > ch.x ? .07 : -.07) : null; })() : null;
-          if (tgtX != null && Math.abs(tgtX - ch.x) > .04) { const wd = Math.abs(tgtX - ch.x) / .22; ch.ev.push({ t: s0, k: 'move', x0: ch.x, x1: tgtX, t1: s0 + wd }); ch.ev.push({ t: s0, k: 'face', v: tgtX >= ch.x ? 1 : -1 }); ch.x = tgtX; s0 += wd; }
+          if (tgtX != null && Math.abs(tgtX - ch.x) > .04) { const wd = Math.abs(tgtX - ch.x) / .22; { const indoor = /^(room|kitchen)$/.test(lspec.type || ''); for (let tt = s0 + .05, k = 0; tt < s0 + wd - .05; tt += .3, k++) sfx.push({ t: st0 + tt, n: indoor ? 'tap' : lspec.type === 'winter' ? 'crunch' : 'step', v: .5 * (k % 2 ? .85 : 1) }); } ch.ev.push({ t: s0, k: 'move', x0: ch.x, x1: tgtX, t1: s0 + wd }); ch.ev.push({ t: s0, k: 'face', v: tgtX >= ch.x ? 1 : -1 }); ch.x = tgtX; s0 += wd; }
           dur = (s0 - start) + (step.dur || DUR[d]);
           if (['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d)) ch.ev.push({ t: s0, k: 'persist', v: d === 'fall' ? 'fallen' : d === 'hide' ? 'crouch' : d });
           if (d === 'stand' || d === 'wake') { ch.ev.push({ t: start, k: 'act', n: 'stand', t1: start + dur }); ch.ev.push({ t: start + dur, k: 'persist', v: 'none' }); }
           else if (d === 'turn' || d === 'look') ch.ev.push({ t: start, k: 'face', v: faceVal(step.to || step.face || 'camera', ch, C) });
           else if (!['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d) || d === 'fall') ch.ev.push({ t: s0, k: 'act', n: d, t1: start + dur, text: step.text, to: step.to });
           if (d === 'hug' && step.to && C[step.to]) { C[step.to].ev.push({ t: s0, k: 'act', n: 'hug', t1: start + dur }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); }
+          beats.push({ t: s0, t1: start + dur, k: 'act', who, d, to: step.to });
           if (AUTO_SFX[d] && step.sfx !== false) sfx.push({ t: st0 + s0 + (d === 'fall' ? .3 : d === 'clap' ? 0 : d === 'kick' ? .45 : d === 'throw' ? .45 : .05), n: AUTO_SFX[d], rep: d === 'clap' ? 4 : d === 'stomp' ? 3 : d === 'eat' ? 3 : 1, gap: d === 'stomp' ? .35 : d === 'eat' ? .5 : .22 });
           if (d === 'kick' || d === 'throw') { const p = d === 'throw' ? props.find(p => p.holder === who) : (props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]);
             if (p) { const fromX = d === 'throw' ? ch.x : p.x; const to = step.to && C[step.to] ? C[step.to].x : clamp(ch.x + (ch.face >= 0 ? 1 : -1) * (d === 'kick' ? .45 : .35), .05, .95);
               const tf = s0 + .45, fd = .5 + Math.abs(to - fromX) * .8; p.ev.push({ t: tf, holder: null, fly: { x0: fromX, x1: to, t1: tf + fd, h: d === 'kick' ? .9 : 1.2 }, x: to }); p.holder = null; p.x = to;
               if (step.to && C[step.to]) { p.ev.push({ t: tf + fd, holder: step.to }); p.holder = step.to; } } }
-          if (d === 'take') { const p = props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; if (p) { for (const q of props) if (q !== p && q.holder === who && q.vis) { q.ev.push({ t: start + .3, holder: null, x: ch.x - .05 * (ch.face || 1) }); q.holder = null; q.x = ch.x - .05 * (ch.face || 1); } p.ev.push({ t: start + .3, holder: who }); p.holder = who; if (!p.vis) { p.ev.push({ t: start + .3, vis: true }); p.vis = true; } } }
-          if (d === 'drop') { const p = props.find(p => p.holder === who); if (p) { p.ev.push({ t: start + .3, holder: null, x: ch.x + .03 * (ch.face || 1) }); p.holder = null; } }
+          if (d === 'take') { const p = props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; if (p) { for (const q of props) if (q !== p && q.holder === who && q.vis) { q.ev.push({ t: s0 + .3, holder: null, x: ch.x - .05 * (ch.face || 1) }); q.holder = null; q.x = ch.x - .05 * (ch.face || 1); } p.ev.push({ t: s0 + .3, holder: who, tb: false }); p.holder = who; if (!p.vis) { p.ev.push({ t: s0 + .3, vis: true }); p.vis = true; } } }
+          if (d === 'drop') { const p = props.find(p => p.holder === who); if (p) { const onT = TB != null && FOOD.has(p.type); const xx = onT ? TB : ch.x + .03 * (ch.face || 1); p.ev.push({ t: s0 + .3, holder: null, x: xx, tb: onT }); p.holder = null; p.x = xx; } }
           if (d === 'give' && step.to && C[step.to]) { const p = props.find(p => p.holder === who); if (p) { p.ev.push({ t: s0 + .5, holder: step.to, from: who }); p.holder = step.to; } ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); }
         }
         if (step.to && step.say && C[step.to]) ch.ev.push({ t: start, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 });
@@ -875,6 +946,7 @@ MK.compile = function (ep, lib, audio) {
         const ln = lineFor(ep, lib, who || 'Р', vtext, step, stepVocalKind(step) ? tl_vi++ : 0); const a = ln && audio[ln.key]; const sd = a ? a.dur : estSpeech(vtext);
         const vt = step.say ? start : start + (dur > 1.5 ? .15 : .05);
         speech.push({ t: st0 + vt, dur: sd, key: ln && ln.key, who: who || 'Р', text: vtext, vocal: !step.say });
+        beats.push({ t: vt, t1: vt + sd, k: 'say', who: who || 'Р', emo: step.emotion, to: step.to, text: vtext, vocal: !step.say });
         if (ch) ch.ev.push({ t: vt, k: 'say', t1: vt + sd, key: ln && ln.key, text: vtext });
         dur = Math.max(dur, (vt - start) + sd + (step.say ? (step.pause != null ? step.pause : .3) : .1));
       }
@@ -883,6 +955,9 @@ MK.compile = function (ep, lib, audio) {
     }
     props.forEach(p => p.ev.sort((a, b) => a.t - b.t));
     const sdur = Math.max(1.5, cur + (sc.tail != null ? sc.tail : .8));
+    if (ep.autoCam !== false) { const inits = {}; for (const cs of sc.cast || []) if (C[cs.who]) inits[cs.who] = { x0: cs._x != null ? cs._x : cs.x != null ? cs.x : .5, face0: cs.face === 'left' ? -1 : cs.face === 'camera' ? 0 : 1, vis0: !cs.hidden };
+      const manual = cam.slice(1).filter(c => !c.auto && !c.shake); const auto = directScene(beats, C, inits, manual);
+      const keep = cam.slice(1).filter(c => !c.auto); cam.length = 1; cam.push(...auto, ...keep); cam.sort((a, b) => a.t - b.t); }
     segs.push({ kind: 'scene', t0: t, t1: t + sdur, sc, loc: buildLocation(lspec), lspec, lkey: canon(lspec), C, props, cam, idx: si, theme: sc.theme || ep.theme || null });
     music.push({ t0: t, t1: t + sdur, mood: sc.music || ep.music || 'happy' });
     t += sdur;
@@ -893,9 +968,9 @@ MK.compile = function (ep, lib, audio) {
   return { ep, lib, segs, dur: t, sfx, speech, music: mus, audio };
 };
 /** Где предмет в момент t: {holder, x, air} */
-MK.propAt = function (p, t) { let holder = p.h0 || null, x = p.x0 != null ? p.x0 : p.x, air = 0, vis = p.vis0 !== false, glow = !!p.glow0, fx = null, fxT = 0, glowT = -9; if (p.x0 == null) p.x0 = p.x;
-  for (const e of p.ev) { if (e.t > t) break; if ('holder' in e) holder = e.holder || null; if (e.vis != null) vis = e.vis; if (e.fx) { fx = e.fx; fxT = e.t; } if (e.glow != null) { glow = e.glow; glowT = e.t; } if (e.fly) { const k = clamp((t - e.t) / (e.fly.t1 - e.t), 0, 1); if (k < 1) { x = lerp(e.fly.x0, e.fly.x1, k); air = Math.sin(k * Math.PI) * e.fly.h; holder = null; } else x = e.fly.x1; } else if (e.x != null) x = e.x; }
-  return { holder, x, air, vis, glow, glowK: glow ? Math.min(1, (t - glowT) / .6) : 0, fx, fxAge: fx ? t - fxT : 99 }; };
+MK.propAt = function (p, t) { let holder = p.h0 || null, x = p.x0 != null ? p.x0 : p.x, air = 0, vis = p.vis0 !== false, glow = !!p.glow0, fx = null, fxT = 0, glowT = -9, tb = !!p.tb0, open = false, openT = -9; if (p.x0 == null) p.x0 = p.x;
+  for (const e of p.ev) { if (e.t > t) break; if ('holder' in e) holder = e.holder || null; if (e.tb != null) tb = e.tb; if (e.open != null) { open = e.open; openT = e.t; } if (e.vis != null) vis = e.vis; if (e.fx) { fx = e.fx; fxT = e.t; } if (e.glow != null) { glow = e.glow; glowT = e.t; } if (e.fly) { const k = clamp((t - e.t) / (e.fly.t1 - e.t), 0, 1); if (k < 1) { x = lerp(e.fly.x0, e.fly.x1, k); air = Math.sin(k * Math.PI) * e.fly.h; holder = null; } else x = e.fly.x1; } else if (e.x != null) x = e.x; }
+  const ok = clamp((t - openT) / 1.3, 0, 1); return { holder, x, air, vis, glow, glowK: glow ? Math.min(1, (t - glowT) / .6) : 0, fx, fxAge: fx ? t - fxT : 99, tb: tb && !holder && !air, openK: open ? ease(ok) : openT > 0 ? 1 - ease(ok) : 0 }; };
 function faceVal(v, ch, C) { if (v === 'left') return -1; if (v === 'right') return 1; if (v === 'camera' || v === 'front') return 0; if (C[v]) return C[v].x >= ch.x ? 1 : -1; return ch.face; }
 
 // состояние персонажа в момент t (время сцены)
@@ -927,6 +1002,7 @@ function camTarget(c, seg, t, S) {
   if (c.mode === 'close' || c.mode === 'medium') { const p = pos(c.on || Object.keys(seg.C)[0]); if (p) { z = c.zoom || (c.mode === 'close' ? 2.3 : 1.55); cx = p.x; cy = c.mode === 'close' ? GROUND - p.h * UNIT * .75 : GROUND - p.h * UNIT * .55; } }
   else if (c.mode === 'two') { const ids = Array.isArray(c.on) ? c.on : Object.keys(seg.C).slice(0, 2); const a = pos(ids[0]), b = pos(ids[1]); if (a && b) { cx = (a.x + b.x) / 2; z = c.zoom || clamp(W * .62 / (Math.abs(a.x - b.x) + 300), 1, 1.9); cy = GROUND - Math.max(a.h, b.h) * UNIT * .6; } }
   else if (c.mode === 'pan') { cx = (c.on != null ? +c.on : .5) * W; z = c.zoom || 1.3; cy = GROUND - UNIT * .5; }
+  else if (c.mode === 'group') { const ps = (c.ids || Object.keys(seg.C)).map(pos).filter(Boolean); const xs = ps.map(p => p.x).concat((c.px || []).map(x => x * W)); if (xs.length) { const lo = Math.min(...xs), hi = Math.max(...xs); cx = (lo + hi) / 2; z = clamp(W * .7 / (hi - lo + 420), 1, 1.8); cy = GROUND - UNIT * .5; } }
   const hw = W / (2 * z), hh = H / (2 * z); cx = clamp(cx, hw, W - hw); cy = clamp(cy, hh, H - hh);
   return { cx, cy, z };
 }
@@ -989,7 +1065,7 @@ function drawScene(ctx, tl, seg, t, T) {
   }
   // камера
   let ci = 0; const cams = seg.cam.filter(c => !c.shake); for (let i = 0; i < cams.length; i++) if (cams[i].t <= t) ci = i;
-  const cur = camTarget(cams[ci], seg, t, S), prevC = ci > 0 ? camTarget(cams[ci - 1], seg, t, S) : cur, k = ease((t - cams[ci].t) / .9);
+  const cur = camTarget(cams[ci], seg, t, S), prevC = ci > 0 ? camTarget(cams[ci - 1], seg, t, S) : cur, k = cams[ci].cut ? 1 : ease((t - cams[ci].t) / .9);
   const cam = { cx: lerp(prevC.cx, cur.cx, k), cy: lerp(prevC.cy, cur.cy, k), z: lerp(prevC.z, cur.z, k) };
   for (const c of seg.cam) if (c.shake && t >= c.t && t < c.t + c.shake) { const a = (1 - (t - c.t) / c.shake) * 14; cam.cx += Math.sin(t * 61) * a; cam.cy += Math.cos(t * 53) * a; }
   const apply = p => { const zz = 1 + (cam.z - 1) * Math.min(p, 1.3); ctx.setTransform(B); ctx.translate(W / 2, H / 2); ctx.scale(zz, zz); ctx.translate(-(W / 2 + (cam.cx - W / 2) * p), -(H / 2 + (cam.cy - H / 2) * p)); };
@@ -1028,7 +1104,7 @@ MK._sceneState = function (tl, seg, t, T) {
     if (!cd._sorted) { cd.ev.sort((a, b) => a.t - b.t); cd._sorted = true; }
     S[id] = evalChar(init, cd.ev, t, tl.audio, T); S[id].z = cd.z || 0;
   }
-  for (const p of seg.props) { const ps = MK.propAt(p, t); p._holder = ps.holder; p._x = ps.x; p._air = ps.air; p._vis = ps.vis; p._glow = ps.glowK; p._fx = ps.fx; p._fxAge = ps.fxAge; }
+  for (const p of seg.props) { const ps = MK.propAt(p, t); p._holder = ps.holder; p._x = ps.x; p._air = ps.air; p._vis = ps.vis; p._glow = ps.glowK; p._fx = ps.fx; p._fxAge = ps.fxAge; p._tb = ps.tb; p._open = ps.openK; }
   return S;
 };
 

@@ -419,7 +419,10 @@ const SFX2 = Object.assign({}, MK._SFX, {
   step: (ac, o, t) => { MK._noiseHit(ac, o, t, .07, .22, 'lowpass', 800); MK._tone(ac, o, t, 110, 70, .05, .1); },
   tap: (ac, o, t) => { MK._noiseHit(ac, o, t, .04, .2, 'bandpass', 2200, 1.5); MK._tone(ac, o, t, 420, 260, .03, .12, 'triangle'); },
   crunch: (ac, o, t) => { for (let i = 0; i < 4; i++) MK._noiseHit(ac, o, t + i * .012, .05, .12, 'bandpass', 1800 + i * 600, 1); },
-  laugh: (ac, o, t) => { for (const [seed, pitch, dt] of [[3, 1.1, 0], [7, .95, .12], [12, 1.05, .2]]) { const b = MK.synthVocal({ synth: 'laugh', voice: { base: seed === 7 ? 'male' : 'female', pitch }, fx: {}, age: seed === 7 ? 'adult' : 'kid', seed }, ac.sampleRate); play(ac, o, b, t + dt, .45); } },
+  // «ЗВУК: смех» — кто-то хихикает за кадром: один хитрый смешок с эхом (не толпа)
+  laugh: (ac, o, t) => { const seed = [3, 6, 9][Math.floor(t * 7) % 3]; const b = MK.synthVocal({ synth: 'laugh', voice: { base: 'female', pitch: 1.2 }, fx: {}, age: 'kid', seed, variant: Math.floor(t) % 4 }, ac.sampleRate);
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2400; lp.connect(o); play(ac, o, b, t, .55); play(ac, lp, b, t + .26, .2); play(ac, lp, b, t + .54, .08); },
+  crowdlaugh: (ac, o, t) => { for (const [seed, pitch, dt] of [[3, 1.1, 0], [7, .95, .12], [12, 1.05, .2]]) { const b = MK.synthVocal({ synth: 'laugh', voice: { base: seed === 7 ? 'male' : 'female', pitch }, fx: {}, age: seed === 7 ? 'adult' : 'kid', seed }, ac.sampleRate); play(ac, o, b, t + dt, .45); } },
   meow: (ac, o, t) => {
     const segs = [{ d: .12, f0: [520, 680], fA: VWL.i, fB: VWL.e, v: [[0, 0], [.4, .8], [1, 1]], n: [[0, .05], [1, .02]] }, { d: .32, f0: [700, 480], fA: VWL.e, fB: VWL.u, v: [[0, 1], [.7, .7], [1, 0]], n: [[0, .02], [1, .02]] }];
     play(ac, o, toBuf(ac, fsynth(segs, ac.sampleRate, 5, 1.3, .08)), t, .7); },
