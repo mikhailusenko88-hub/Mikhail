@@ -112,7 +112,7 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 <script src="multik-3d.js"></script>
 <script type="module">
 import * as THREE from './three.module.min.js';
-try { MK3D.init(THREE); } catch (e) { console.log('3D не запустился', e); }
+try { MK3D.init(THREE); if (window.Lib && Lib.data && Lib.data.settings && Lib.data.settings.quality) MK3D.setQuality(Lib.data.settings.quality); } catch (e) { console.log('3D не запустился', e); }
 window.dispatchEvent(new Event('mk3d'));
 </script>
 <script>
@@ -241,12 +241,13 @@ const App = {
     const s = Lib.data.settings;
     m.insertAdjacentHTML('beforeend', `<div class="card"><b>Качество видео</b><div class="btns">
       <select id="sres"><option value="1080">1920×1080 (YouTube, лучше)</option><option value="720">1280×720 (в 2 раза быстрее)</option></select>
-      <select id="sfps"><option value="25">25 кадров/с</option><option value="30">30 кадров/с</option></select></div></div>
+      <select id="sfps"><option value="25">25 кадров/с</option><option value="30">30 кадров/с</option></select>
+      <select id="squal"><option value="std">Качество: обычное</option><option value="hq">Качество: как в кино (шерсть, мягкий свет; дольше)</option></select></div></div>
       <div class="card"><b>Голоса iPhone</b><div class="mut" style="margin:4px 0 8px">Чтобы голоса звучали лучше, скачай улучшенные русские голоса: Настройки → Универсальный доступ → Устный контент → Голоса → Русский → Milena и Yuri «улучшенный». Делать это лучше до создания персонажей: голос записывается в код персонажа.</div><div id="vlist" class="mut">…</div></div>
       <div class="card"><b>Рассказчик</b><div class="mut" style="margin:4px 0 8px">Голос: ${esc(MK.fxFor(Lib.data, 'Р').name)}</div><div class="btns"><button class="btn" onclick="VP.open('Р')">🎙 Настроить голос рассказчика</button></div></div>
       <div class="card"><b>Чему я научился</b><div id="lexList" class="mut" style="margin-top:6px"></div></div>
       <div class="card"><b>Персонажи и локации</b><div class="mut">Персонажей: ${Object.keys(Lib.data.characters).length}, локаций: ${Object.keys(Lib.data.locations).length}. Библиотека хранится в «Файлы → Замер 3D → multik».</div></div>`);
-    const sr = document.getElementById('sres'), sf = document.getElementById('sfps'); sr.value = s.res; sf.value = s.fps;
+    const sr = document.getElementById('sres'), sf = document.getElementById('sfps'), sq = document.getElementById('squal'); sr.value = s.res; sf.value = s.fps; sq.value = s.quality || 'std'; sq.onchange = () => { s.quality = sq.value; Lib.save(); if (window.MK3D) MK3D.setQuality(s.quality); };
     sr.onchange = () => { s.res = +sr.value; Lib.save(); }; sf.onchange = () => { s.fps = +sf.value; Lib.save(); };
     const lex = Lib.data.lexicon || {}, rows = [];
     for (const [k, v] of Object.entries(lex.names || {})) rows.push(['names', k, `«${esc(k)}» = ${esc(v === 'Р' ? 'Рассказчик' : (Lib.data.characters[v] ? Lib.data.characters[v].spec.name : v))}`]);
