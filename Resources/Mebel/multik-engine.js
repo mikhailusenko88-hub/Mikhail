@@ -791,7 +791,8 @@ MK.compile = function (ep, lib, audio) {
       const over = vis.length ? C[vis[vis.length - 1]].x - .93 : 0; if (over > 0) vis.forEach(id => C[id].x = Math.max(.07, C[id].x - over));
       if (vis.length > 6) vis.forEach((id, i) => { if (i % 2) C[id].z = .6; }); }
     for (const cs of sc.cast || []) if (C[cs.who]) cs._x = C[cs.who].x, cs._z = C[cs.who].z;
-    const props = (sc.props || []).map(p => ({ id: p.id, type: p.type, color: p.color, x: p.x != null ? p.x : .5, x0: p.x != null ? p.x : .5, holder: null, ev: [] }));
+    const props = (sc.props || []).map(p => ({ id: p.id, type: p.type, color: p.color, x: p.x != null ? p.x : .5, x0: p.x != null ? p.x : .5, holder: p.holder && C[p.holder] ? p.holder : null, h0: p.holder && C[p.holder] ? p.holder : null, decor: !!p.decor, big: p.big || 1, vis0: !p.hidden, glow0: !!p.glow, vis: !p.hidden, ev: [] }));
+    const free = p => !p.holder && !p.decor && p.vis;
     const cam = [{ t: 0, mode: sc.camera || 'wide', on: sc.cameraOn || null }];
     let cur = .6, prevStart = .6; const st0 = t;
     for (const step of sc.steps || []) {
@@ -802,6 +803,14 @@ MK.compile = function (ep, lib, audio) {
       if (step.wait) dur = Math.max(dur, +step.wait);
       if (step.sfx) sfx.push({ t: st0 + start, n: step.sfx });
       if (step.music) music.push({ t0: st0 + start, mood: step.music });
+      if (step.prop && step.state) { const p = props.find(p => p.id === step.prop); if (p) {
+          if (step.state === 'appear') { p.ev.push({ t: start, vis: true, fx: 'appear' }); p.vis = true; }
+          if (step.state === 'vanish') { p.ev.push({ t: start, vis: false, fx: 'vanish', holder: null }); p.vis = false; p.holder = null; }
+          if (step.state === 'glow') p.ev.push({ t: start + (step.with ? .4 : 0), glow: true });
+          if (step.state === 'unglow') p.ev.push({ t: start, glow: false });
+          if (!step.with) dur = Math.max(dur, .6); if (step.state === 'vanish' || step.state === 'appear') sfx.push({ t: st0 + start, n: step.state === 'vanish' ? 'pop' : 'sparkle' }); } }
+      if (step.look) { const p = props.find(p => p.id === step.look); if (p) for (const id in C) { if (!C[id].vis) continue; C[id].ev.push({ t: start + .2, k: 'face', v: p.x >= C[id].x ? 1 : -1 }); }
+        if (step.who && C[step.who]) C[step.who].ev.push({ t: start + .1, k: 'act', n: 'point', t1: start + 1.3 }); }
       if (ch) {
         if (step.emotion) ch.ev.push({ t: start, k: 'emo', v: step.emotion });
         if (step.face) ch.ev.push({ t: start, k: 'face', v: faceVal(step.face, ch, C) });
@@ -822,7 +831,7 @@ MK.compile = function (ep, lib, audio) {
           let s0 = start;
           // подойти, если для действия нужно быть рядом (обнять, отдать, пнуть мяч)
           const tgtX = (d === 'hug' || d === 'give') && step.to && C[step.to] ? C[step.to].x + (C[step.to].x > ch.x ? -.1 : .1)
-            : d === 'kick' ? (() => { const p = props.find(p => p.id === step.prop) || props.filter(p => !p.holder).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; return p ? p.x - (p.x > ch.x ? .07 : -.07) : null; })() : null;
+            : d === 'kick' ? (() => { const p = props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; return p ? p.x - (p.x > ch.x ? .07 : -.07) : null; })() : null;
           if (tgtX != null && Math.abs(tgtX - ch.x) > .04) { const wd = Math.abs(tgtX - ch.x) / .22; ch.ev.push({ t: s0, k: 'move', x0: ch.x, x1: tgtX, t1: s0 + wd }); ch.ev.push({ t: s0, k: 'face', v: tgtX >= ch.x ? 1 : -1 }); ch.x = tgtX; s0 += wd; }
           dur = (s0 - start) + (step.dur || DUR[d]);
           if (['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d)) ch.ev.push({ t: s0, k: 'persist', v: d === 'fall' ? 'fallen' : d === 'hide' ? 'crouch' : d });
@@ -831,11 +840,11 @@ MK.compile = function (ep, lib, audio) {
           else if (!['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d) || d === 'fall') ch.ev.push({ t: s0, k: 'act', n: d, t1: start + dur, text: step.text, to: step.to });
           if (d === 'hug' && step.to && C[step.to]) { C[step.to].ev.push({ t: s0, k: 'act', n: 'hug', t1: start + dur }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); }
           if (AUTO_SFX[d] && step.sfx !== false) sfx.push({ t: st0 + s0 + (d === 'fall' ? .3 : d === 'clap' ? 0 : d === 'kick' ? .45 : d === 'throw' ? .45 : .05), n: AUTO_SFX[d], rep: d === 'clap' ? 4 : d === 'stomp' ? 3 : d === 'eat' ? 3 : 1, gap: d === 'stomp' ? .35 : d === 'eat' ? .5 : .22 });
-          if (d === 'kick' || d === 'throw') { const p = d === 'throw' ? props.find(p => p.holder === who) : (props.find(p => p.id === step.prop) || props.filter(p => !p.holder).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]);
+          if (d === 'kick' || d === 'throw') { const p = d === 'throw' ? props.find(p => p.holder === who) : (props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]);
             if (p) { const fromX = d === 'throw' ? ch.x : p.x; const to = step.to && C[step.to] ? C[step.to].x : clamp(ch.x + (ch.face >= 0 ? 1 : -1) * (d === 'kick' ? .45 : .35), .05, .95);
               const tf = s0 + .45, fd = .5 + Math.abs(to - fromX) * .8; p.ev.push({ t: tf, holder: null, fly: { x0: fromX, x1: to, t1: tf + fd, h: d === 'kick' ? .9 : 1.2 }, x: to }); p.holder = null; p.x = to;
               if (step.to && C[step.to]) { p.ev.push({ t: tf + fd, holder: step.to }); p.holder = step.to; } } }
-          if (d === 'take') { const p = props.find(p => p.id === step.prop) || props.find(p => !p.holder); if (p) { p.ev.push({ t: start + .3, holder: who }); p.holder = who; } }
+          if (d === 'take') { const p = props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; if (p) { for (const q of props) if (q !== p && q.holder === who && q.vis) { q.ev.push({ t: start + .3, holder: null, x: ch.x - .05 * (ch.face || 1) }); q.holder = null; q.x = ch.x - .05 * (ch.face || 1); } p.ev.push({ t: start + .3, holder: who }); p.holder = who; if (!p.vis) { p.ev.push({ t: start + .3, vis: true }); p.vis = true; } } }
           if (d === 'drop') { const p = props.find(p => p.holder === who); if (p) { p.ev.push({ t: start + .3, holder: null, x: ch.x + .03 * (ch.face || 1) }); p.holder = null; } }
           if (d === 'give' && step.to && C[step.to]) { const p = props.find(p => p.holder === who); if (p) { p.ev.push({ t: s0 + .5, holder: step.to, from: who }); p.holder = step.to; } ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); }
         }
@@ -852,8 +861,9 @@ MK.compile = function (ep, lib, audio) {
       if (!step.say && !step.do && !step.wait && step.emotion && !step.with) dur = Math.max(dur, .4);
       prevStart = start; cur = Math.max(cur, start + dur);
     }
+    props.forEach(p => p.ev.sort((a, b) => a.t - b.t));
     const sdur = Math.max(1.5, cur + (sc.tail != null ? sc.tail : .8));
-    segs.push({ kind: 'scene', t0: t, t1: t + sdur, sc, loc: buildLocation(lspec), lspec, lkey: canon(lspec), C, props, cam, idx: si });
+    segs.push({ kind: 'scene', t0: t, t1: t + sdur, sc, loc: buildLocation(lspec), lspec, lkey: canon(lspec), C, props, cam, idx: si, theme: sc.theme || ep.theme || null });
     music.push({ t0: t, t1: t + sdur, mood: sc.music || ep.music || 'happy' });
     t += sdur;
   }
@@ -863,9 +873,9 @@ MK.compile = function (ep, lib, audio) {
   return { ep, lib, segs, dur: t, sfx, speech, music: mus, audio };
 };
 /** Где предмет в момент t: {holder, x, air} */
-MK.propAt = function (p, t) { let holder = null, x = p.x0 != null ? p.x0 : p.x, air = 0; if (p.x0 == null) p.x0 = p.x;
-  for (const e of p.ev) { if (e.t > t) break; holder = e.holder || null; if (e.fly) { const k = clamp((t - e.t) / (e.fly.t1 - e.t), 0, 1); if (k < 1) { x = lerp(e.fly.x0, e.fly.x1, k); air = Math.sin(k * Math.PI) * e.fly.h; holder = null; } else x = e.fly.x1; } else if (e.x != null) x = e.x; }
-  return { holder, x, air }; };
+MK.propAt = function (p, t) { let holder = p.h0 || null, x = p.x0 != null ? p.x0 : p.x, air = 0, vis = p.vis0 !== false, glow = !!p.glow0, fx = null, fxT = 0, glowT = -9; if (p.x0 == null) p.x0 = p.x;
+  for (const e of p.ev) { if (e.t > t) break; if ('holder' in e) holder = e.holder || null; if (e.vis != null) vis = e.vis; if (e.fx) { fx = e.fx; fxT = e.t; } if (e.glow != null) { glow = e.glow; glowT = e.t; } if (e.fly) { const k = clamp((t - e.t) / (e.fly.t1 - e.t), 0, 1); if (k < 1) { x = lerp(e.fly.x0, e.fly.x1, k); air = Math.sin(k * Math.PI) * e.fly.h; holder = null; } else x = e.fly.x1; } else if (e.x != null) x = e.x; }
+  return { holder, x, air, vis, glow, glowK: glow ? Math.min(1, (t - glowT) / .6) : 0, fx, fxAge: fx ? t - fxT : 99 }; };
 function faceVal(v, ch, C) { if (v === 'left') return -1; if (v === 'right') return 1; if (v === 'camera' || v === 'front') return 0; if (C[v]) return C[v].x >= ch.x ? 1 : -1; return ch.face; }
 
 // состояние персонажа в момент t (время сцены)
@@ -971,12 +981,12 @@ function drawScene(ctx, tl, seg, t, T) {
   });
   apply(1);
   // предметы на земле
-  for (const p of seg.props) { const ps = MK.propAt(p, t); p._holder = ps.holder; if (!ps.holder) drawProp(ctx, p, ps.x * W, GROUND + 6 - ps.air * UNIT * .6, UNIT * .55, T); }
+  for (const p of seg.props) { const ps = MK.propAt(p, t); p._holder = ps.holder; p._vis = ps.vis; if (!ps.holder && ps.vis) drawProp(ctx, p, ps.x * W, GROUND + 6 - ps.air * UNIT * .6, UNIT * .55, T); }
   // персонажи по глубине
   const order = Object.keys(S).filter(id => S[id].vis && tl.lib.characters[id]).sort((a, b) => (seg.C[b].z - seg.C[a].z) || 0);
   for (const id of order) {
     const st = S[id], cd = seg.C[id]; const ch = tl.lib.characters[id]._n;
-    const held = seg.props.find(p => p._holder === id) || null;
+    const held = seg.props.find(p => p._holder === id && p._vis !== false) || null;
     drawChar(ctx, ch, Object.assign(st, { x: st.x * W, y: GROUND - cd.z * 70, s: 1 - cd.z * .18, prop: held || (cd.prop && !seg.props.length ? cd.prop : null), thinkText: st.thinkText }), T);
   }
   L.layers.forEach((ly, i) => { if (ly.p <= 1) return; apply(ly.p); ctx.drawImage(layerCanvas(seg.lkey, i, ly), X0, 0); });
@@ -998,7 +1008,7 @@ MK._sceneState = function (tl, seg, t, T) {
     if (!cd._sorted) { cd.ev.sort((a, b) => a.t - b.t); cd._sorted = true; }
     S[id] = evalChar(init, cd.ev, t, tl.audio, T); S[id].z = cd.z || 0;
   }
-  for (const p of seg.props) { const ps = MK.propAt(p, t); p._holder = ps.holder; p._x = ps.x; p._air = ps.air; }
+  for (const p of seg.props) { const ps = MK.propAt(p, t); p._holder = ps.holder; p._x = ps.x; p._air = ps.air; p._vis = ps.vis; p._glow = ps.glowK; p._fx = ps.fx; p._fxAge = ps.fxAge; }
   return S;
 };
 

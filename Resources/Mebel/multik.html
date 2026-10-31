@@ -79,6 +79,7 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
   Действия: «Пик входит справа», «Барсик идёт к Пику», «Барсик и Пик танцуют», «Барсик берёт мяч», «Пик отдаёт яблоко Барсику», «Барсик пинает мяч к Пику», «Пух обнимает Барсика», «Барсик катается по земле от смеха», прыгает, машет, бежит, ползёт, крадётся, кувыркается, садится, ложится, засыпает, падает, встаёт, смеётся, плачет, пугается, чихает, зевает, потягивается, чешет голову, ест, поёт, кричит, топает, приседает, прячется, бросает, думает «где же клад?», уходит. Смех, «Ой!», «Апчхи!», «Ого!» герой произносит сам своим голосом.<br>
   Герои: кот, собака, заяц, медведь, лиса, мышь, свинья, ёжик, лягушка, сова, птичка, утка, цыплёнок, лев, слон, белка, волк, корова, дракон, робот, мальчик, девочка, мама, папа…<br>
   Предметы: мяч, яблоко, рыба, коробка, подарок, цветок, книга, звезда, торт, кость, морковка, сыр, шарик, ключ, чашка, тыква, гриб, зонтик, конфета, мороженое, леденец, банан, груша, арбуз, мёд, ведро, лопатка, машинка, мишка, барабан, гитара, волшебная палочка, фонарик, карта, письмо, корзинка, сундук, монетка, яйцо, пирог, печенье, молоко, часы, свеча, листик, камень, палка, телефон, воздушный змей, сумка<br>
+  Вещи из реплик: «Смотрите! Огромная тыква!» — тыква появится в кадре; «светится/засветился» — засветится; «исчез» — исчезнет с дымком; «появилась дверь» — появится с искрами; «наш ключ» — у героя в руках. Хэллоуин, Новый год, день рождения — двор сам украсится. Если слово незнакомое — спрошу в «Научи меня».<br>
   Одежда в описании героя: комбинезон, кофта, футболка, штаны, шорты, юбка, платье, костюм, пижама, фартук, плащ, жилет, галстук, бабочка, рюкзак, кепка/шапка/шляпа, шарф, очки, бантик, корона<br>
   <b>МУЗЫКА:</b> весёлая / грустная / тревожная / приключения / волшебная / ночная · <b>ЗВУК:</b> бум, дзынь, мяу, гав, стук · <b>ПАУЗА</b> 2 · <b>КАМЕРА:</b> крупно Барсик / общий план / оба<br>
   Можно вставлять и обычный рассказ: диалоги через тире («— Привет! — сказал Барсик.»), смена места («Друзья пошли в лес»). Всё, что не стало действием, прочитает рассказчик.<br>
@@ -250,6 +251,7 @@ const App = {
     const lex = Lib.data.lexicon || {}, rows = [];
     for (const [k, v] of Object.entries(lex.names || {})) rows.push(['names', k, `«${esc(k)}» = ${esc(v === 'Р' ? 'Рассказчик' : (Lib.data.characters[v] ? Lib.data.characters[v].spec.name : v))}`]);
     for (const [k, v] of Object.entries(lex.verbs || {})) rows.push(['verbs', k, `«${esc(k)}» = ${esc(MKScript.ACTIONS[v] || v)}`]);
+    for (const [k, v] of Object.entries(lex.objects || {})) rows.push(['objects', k, `«${esc(k)}» = ${esc(MKScript.OBJECTS[v] || v)}`]);
     const ll = document.getElementById('lexList'); ll.innerHTML = rows.length ? rows.map(([t, k, h], i) => `<div class="row" style="padding:4px 0"><span style="flex:1">${h}</span><button class="btn" data-i="${i}" style="padding:4px 10px">✕</button></div>`).join('') : 'Пока ничему — словарь пополняется, когда в «Моём сценарии» отвечаешь на «Научи меня».';
     ll.querySelectorAll('button').forEach(b => b.onclick = () => { const [t, k] = rows[+b.dataset.i]; delete lex[t][k]; Lib.save(); App.render(); });
     Native.call('voices').then(v => { document.getElementById('vlist').innerHTML = (v && v.length) ? v.map(x => `${esc(x.name)} — ${esc(x.quality)}`).join('<br>') : 'Список голосов доступен на iPhone'; });
@@ -522,26 +524,29 @@ const Wr = {
   async paste() { const t = await Native.call('paste'); if (!t) { alert('В буфере нет текста. Скопируй сценарий и нажми ещё раз.'); return; } const el = document.getElementById('wrText'); if (el.value.includes(t.trim())) { this.check(); return; } el.value = el.value.trim() && confirm('Добавить к уже написанному? (Отмена — заменить)') ? el.value.replace(/\s*$/, '') + '\n' + t : t; this.saveDraft(); this.check(); },
   clear() { if (confirm('Очистить текст?')) { document.getElementById('wrText').value = ''; document.getElementById('wrOut').innerHTML = ''; document.getElementById('wrTeach').innerHTML = ''; this.saveDraft(); } },
   teach(r) {
-    const box = document.getElementById('wrTeach'); const names = r.unknownNames || [], words = r.unknownWords || [];
-    if (!names.length && !words.length) { box.innerHTML = ''; return; }
+    const box = document.getElementById('wrTeach'); const names = r.unknownNames || [], words = r.unknownWords || [], objs = r.unknownObjects || [];
+    if (!names.length && !words.length && !objs.length) { box.innerHTML = ''; return; }
+    const otypes = Object.entries(MKScript.OBJECTS).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
     const chars = Object.entries(Lib.data.characters).map(([id, c]) => `<option value="${id}">${esc(c.spec.name)} (${esc(c.code)})</option>`).join('');
     const acts = Object.entries(MKScript.ACTIONS).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
     box.innerHTML = `<div class="card" style="background:var(--card2);margin-top:10px"><b>Научи меня</b><div class="mut" style="margin:4px 0 8px">Запомню навсегда, в следующий раз пойму сам.</div><div class="kv">`
       + names.map(n => `<span>«${esc(n)}» — это</span><span><select data-name="${esc(n)}"><option value="">— выбери —</option>${chars}<option value="Р">Рассказчик</option></select></span>`).join('')
       + words.map(w => `<span>«${esc(w.word)}»<br><span class="mut" style="font-size:12px">${esc(w.sentence.slice(0, 40))}</span></span><span><select data-word="${esc(w.word)}"><option value="">— это значит —</option>${acts}</select></span>`).join('')
+      + objs.map(w => `<span>«${esc(w.word)}» — как показать?<br><span class="mut" style="font-size:12px">${esc(w.sentence.slice(0, 40))}</span></span><span><select data-obj="${esc(w.word)}"><option value="">— похоже на —</option>${otypes}<option value="none">это не предмет</option></select></span>`).join('')
       + `</div><div class="btns"><button class="btn acc" onclick="Wr.learn()">Запомнить и проверить снова</button></div></div>`;
   },
   async learn() {
     const lex = Lib.data.lexicon = Lib.data.lexicon || { names: {}, verbs: {} }; lex.names = lex.names || {}; lex.verbs = lex.verbs || {}; let n = 0;
     document.querySelectorAll('#wrTeach select[data-name]').forEach(sel => { if (sel.value) { lex.names[sel.dataset.name] = sel.value; n++; } });
     document.querySelectorAll('#wrTeach select[data-word]').forEach(sel => { if (sel.value && sel.value !== 'none') { lex.verbs[sel.dataset.word] = sel.value; n++; } else if (sel.value === 'none') { (lex.ignore = lex.ignore || {})[sel.dataset.word] = 1; n++; } });
+    document.querySelectorAll('#wrTeach select[data-obj]').forEach(sel => { if (!sel.value) return; if (sel.value === 'none') (lex.ignoreObj = lex.ignoreObj || {})[sel.dataset.obj] = 1; else (lex.objects = lex.objects || {})[sel.dataset.obj] = sel.value; n++; });
     await Lib.save(); if (!n) { alert('Ничего не выбрано.'); return; } this.check();
   },
   parse() {
     const text = document.getElementById('wrText').value, series = document.getElementById('wrSeries').value.trim() || 'Мой мультик';
     const p = Lib.data.projects.find(p => p.series === series); const next = p && p.episodes.length ? Math.max(...p.episodes.map(e => e.episode)) + 1 : 1;
     const r = MKScript.parse(/^\s*(сериал|мультик)\s*:/im.test(text) ? text : 'СЕРИАЛ: ' + series + '\n' + text, Lib.data, { series, nextEpisode: next, lexicon: Lib.data.lexicon || {} });
-    const ign = (Lib.data.lexicon || {}).ignore || {}; r.unknownWords = (r.unknownWords || []).filter(w => !ign[w.word]);
+    const ign = (Lib.data.lexicon || {}).ignore || {}; r.unknownWords = (r.unknownWords || []).filter(w => !ign[w.word]); const igo = (Lib.data.lexicon || {}).ignoreObj || {}; r.unknownObjects = (r.unknownObjects || []).filter(w => !igo[w.word]);
     const parts = []; for (const e of r.episodes) parts.push(...MKScript.split(e, Lib.data, 300));
     // номера по порядку без пересечений внутри одного разбора
     let n = parts.length ? parts[0].episode : next; parts.forEach(e => { e.episode = n++; e.youtube.title = `${e.series} — Серия ${e.episode}${e.title ? '. ' + e.title : ''}`; });
@@ -556,6 +561,8 @@ const Wr = {
     const rows = r.parts.map(e => { let d = 0; try { d = MK.compile(e, tmp, {}).dur; } catch (er) {} return `<div>Серия ${e.episode}${e.title ? '. ' + esc(e.title) : ''} — ${e.scenes.length} сцен, ≈${fmt(d)}</div>`; }).join('');
     o.innerHTML = (r.errors.length ? `<div class="err">${r.errors.map(esc).join('\n')}</div>` : '') + rows
       + (r.newChars.length ? `<div style="color:var(--ok)">Новые персонажи: ${r.newChars.map(c => esc(c.name) + ' (' + esc(MKMaker.describe(c)) + ')').join(', ')}</div>` : '')
+      + (r.shown && r.shown.length ? `<div style="margin-top:6px">🎃 Покажу в кадре по репликам: ${r.shown.map(x => esc(MKScript.OBJECTS[x.type] || x.type) + (x.how ? ' <span class="mut">(' + esc(x.how) + ')</span>' : '')).join(', ')}</div>` : '')
+      + (r.parts.some(e => e.scenes.some(x => x.theme)) ? `<div class="mut">Праздник: ${[...new Set(r.parts.flatMap(e => e.scenes.map(x => x.theme).filter(Boolean)))].map(t => ({ halloween: 'Хэллоуин — тыквы-фонари, летучие мыши, гирлянда', newyear: 'Новый год — ёлка, подарки, снеговик', birthday: 'День рождения — шарики, гирлянда' })[t]).join('; ')}</div>` : '')
       + (r.narrated ? `<div class="mut">Рассказчик прочитает фраз: ${r.narrated}</div>` : '') + (r.warnings.length ? `<div class="warn">${r.warnings.map(esc).join('<br>')}</div>` : '') + (r.errors.length ? '' : '<div class="mut">Длительность примерная — точная будет после озвучки.</div>');
     return r;
   },

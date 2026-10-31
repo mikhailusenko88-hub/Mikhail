@@ -209,5 +209,6 @@ Maker.describe = function (s) {
   return `${kn}${s.pattern && s.pattern.length ? ', ' + s.pattern.map(p => ({ stripes: 'полоски', spots: 'пятна', socks: 'белые лапки', mask: 'маска', tailtip: 'белый кончик хвоста', muzzle: 'белая мордочка', patch: 'пятно у глаза' }[p] || p)).join(', ') : ''}${a.length ? ', ' + a.join(', ') : ''}`;
 };
 Maker.ACC_NAMES = ACC_NAMES; Maker.VOICE_PRESETS = VOICE_PRESETS;
+Maker.colorOf = colorOf;
 global.MKMaker = Maker;
 })(typeof window !== 'undefined' ? window : globalThis);

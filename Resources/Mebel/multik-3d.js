@@ -342,6 +342,21 @@ function glyphTex(txt, color, stroke) { const k = txt + color; if (texCache[k]) 
 function bubbleTex(txt) { const k = 'b:' + txt; if (texCache[k]) return texCache[k]; const t = canvasTex(512, 256, (g) => { g.fillStyle = '#fff'; g.strokeStyle = '#2b1d16'; g.lineWidth = 10; g.beginPath(); g.ellipse(256, 110, 240, 95, 0, 0, 7); g.fill(); g.stroke(); g.beginPath(); g.ellipse(120, 215, 24, 18, 0, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#2b1d16'; g.font = '800 64px -apple-system, "DejaVu Sans", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt.slice(0, 14), 256, 112); }); texCache[k] = t; return t; }
 const spritePool = []; let spriteUsed = 0;
 function sprite(tex, x, y, z, s, op) { let sp = spritePool[spriteUsed]; if (!sp) { sp = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthWrite: false })); spritePool.push(sp); scene.add(sp); } spriteUsed++; sp.material.map = tex; sp.material.opacity = op == null ? 1 : op; sp.material.needsUpdate = true; sp.position.set(x, y, z); sp.scale.set(s * (tex.image.width / tex.image.height), s, 1); sp.visible = true; return sp; }
+function haloTex(c) { const k = 'halo' + c; if (texCache[k]) return texCache[k]; const t = canvasTex(128, 128, (g) => { const gr = g.createRadialGradient(64, 64, 4, 64, 64, 62); gr.addColorStop(0, c); gr.addColorStop(.35, c + 'aa'); gr.addColorStop(1, c + '00'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); }); texCache[k] = t; return t; }
+const themeCache = {}; let curTheme = null;
+function showTheme(seg, T) {
+  if (curTheme) curTheme.visible = false; const th = seg.theme; if (!th) return; const L = seg.lspec || {}; const indoor = L.type === 'room' || L.type === 'kitchen';
+  const key = th + ':' + (indoor ? 'in' : 'out'); let g = themeCache[key];
+  if (!g) { g = new THREE.Group(); const add = (type, x, z, sc, extra) => { const o = Object.assign({ id: 'th' + key + x + z, type }, extra || {}); const pm = propMesh(o); delete propCache[o.id + o.type + (o.color || '')]; pm.position.set(x, 0, z); pm.scale.setScalar(sc || 1); pm.visible = true; g.add(pm); return pm; };
+    if (th === 'halloween') { [[-4.2, -2.6, 1.3], [-2.4, -3.2, 1], [2.6, -3, 1.2], [4.4, -2.4, 1.4], [-5.2, -.6, 1.1], [5.3, -.4, 1]].forEach(([x, z, k]) => { const j = add('jack', x, z, k); j.userData.glowing = true; });
+      g.userData.bats = [0, 1, 2].map(i => { const b = add('bat', -3 + i * 3, -4, 1.4); return b; }); add('garland', 0, -3.6, 1.5, { }); g.userData.halloween = true; }
+    else if (th === 'newyear') { add('tree', -3.6, -2.8, 2.2, { color: '#2f8f4e' }); add('garland', 0, -3.6, 1.5); add('gift', -2.6, -2.2, 1.6); add('gift', -4.4, -1.9, 1.3, { color: '#3d8fe0' }); add('snowman', 4, -2.8, 1.3); }
+    else if (th === 'birthday') { [-4, -2.6, 2.8, 4.2].forEach((x, i) => add('balloon', x, -2.4, 1.8, { color: ['#ff4d6d', '#3d8fe0', '#ffd23f', '#5fbf4a'][i] })); add('garland', 0, -3.6, 1.5); }
+    themeCache[key] = g; scene.add(g); }
+  g.visible = true; curTheme = g;
+  if (g.userData.bats) g.userData.bats.forEach((b, i) => { b.position.x = ((T * .6 + i * 3.3) % 12) - 6; b.position.y = Math.sin(T * 2 + i) * .3 + .6; });
+  if (g.userData.halloween) g.children.forEach(c => { if (c.userData.faceMat) { c.userData.faceMat.color.set(0xffc23a); sprite(haloTex('#ffb347'), c.position.x, c.position.y + .15 * c.scale.x, c.position.z + .05, .8 * c.scale.x * (1 + Math.sin(T * 4 + c.position.x) * .05), .7); } });
+}
 function fxFor(rig, st, T) {
   const hp = new THREE.Vector3(); rig.head.getWorldPosition(hp); const s = rig.scale, an = (st.act || {}).n, at = (st.act || {}).t || 0, emo = st.emo;
   if (st.persist === 'sleep') for (let i = 0; i < 3; i++) { const p = (T * .45 + i / 3) % 1; sprite(glyphTex('Z', '#ffffff', '#2b3a6a'), hp.x + .3 + p * .3, hp.y + .3 + p * .7, hp.z, .25 * s, Math.sin(p * Math.PI)); }
@@ -413,6 +428,24 @@ function propMesh(p) {
     case 'phone': { m(G.box(.08, .15, .015), cl || '#2a2a2a').position.y = .08; break; }
     case 'kite': { const k2 = m(G.cone(.2, .3, 4), cl || '#ff6fa8'); k2.scale.z = .1; k2.position.y = .9; m(G.cyl(.003, .003, .7, 4), '#555555', 0).position.y = .4; break; }
     case 'bag': { m(G.box(.25, .2, .1), cl || '#c0283c').position.y = .1; m(G.tor(.07, .01, Math.PI), '#5a3a2a', 0).position.y = .2; break; }
+    case 'door': { const fr = m(G.box(.62, 1.12, .1), '#7a4e30'); fr.position.y = .56; const dr = m(G.box(.5, 1.02, .06), cl || '#a8673a'); dr.position.set(0, .53, .05); for (const y of [.3, .78]) m(G.box(.4, .02, .01), '#7a4e30', 0).position.set(0, y, .085); const kn = m(G.sph(.035, 10, 8), '#ffd23f', 0); kn.position.set(.17, .5, .1);
+      const arc = m(G.tor(.31, .04, Math.PI), '#7a4e30'); arc.position.y = 1.12; g.userData.glowY = .6; g.userData.glowS = 1.6; g.userData.glowC = '#ffe08a'; break; }
+    case 'jack': { for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; const sg = m(G.sph(.16, 16, 12), cl || '#ff8a1f', .04); sg.scale.set(.55, .85, 1); sg.position.set(Math.cos(a) * .1, .14, Math.sin(a) * .1); sg.rotation.y = -a; } const st = m(G.cyl(.025, .035, .1, 8), '#6b8a3a', .08); st.position.y = .3; st.rotation.z = .2;
+      const fm = new THREE.MeshBasicMaterial({ color: 0x3a1a08 }); g.userData.faceMat = fm; const shp = (pts) => { const sh = new THREE.Shape(); pts.forEach((q, i) => i ? sh.lineTo(q[0], q[1]) : sh.moveTo(q[0], q[1])); return new THREE.ShapeGeometry(sh); };
+      for (const sx of [-1, 1]) { const e = new THREE.Mesh(shp([[-.035, 0], [.035, 0], [0, .05]]), fm); e.position.set(sx * .06, .17, .175); g.add(e); }
+      const mo = new THREE.Mesh(shp([[-.09, .02], [-.05, -.01], [-.03, .015], [0, -.02], [.03, .015], [.05, -.01], [.09, .02], [.06, -.04], [-.06, -.04]]), fm); mo.position.set(0, .1, .178); g.add(mo); g.userData.glowY = .15; g.userData.glowS = .7; g.userData.glowC = '#ffb347'; break; }
+    case 'moon': { const mo = mesh(G.sph(.5, 24, 16), basic(cl || '#fff3c4'), 0, g); mo.position.y = 4.2; mo.castShadow = false; g.userData.glowY = 4.2; g.userData.glowS = 2.6; g.userData.glowC = '#fff3c4'; g.userData.alwaysGlow = true; break; }
+    case 'ghost': { const b = m(G.sph(.25, 20, 14), '#ffffff', .05); b.position.y = .75; const sk = m(G.cone(.27, .5, 16, true), '#ffffff', .05); sk.position.y = .5; for (const sx of [-1, 1]) m(G.sph(.04, 10, 8), '#2b1d16', 0).position.set(sx * .08, .8, .22); g.userData.float = true; break; }
+    case 'bat': { const b = m(G.sph(.07, 12, 10), '#3a2a4a', .06); b.position.y = 1.6; for (const sx of [-1, 1]) { const w = m(G.cone(.09, .2, 3), '#3a2a4a', .04); w.rotation.z = sx * Math.PI / 2; w.position.set(sx * .14, 1.6, 0); } g.userData.float = true; break; }
+    case 'garland': { const pts = []; for (let i = 0; i <= 12; i++) { const k = i / 12; pts.push(new THREE.Vector3((k - .5) * 3, 1.9 - Math.sin(k * Math.PI) * .35, 0)); } const cv = new THREE.CatmullRomCurve3(pts); mesh(new THREE.TubeGeometry(cv, 30, .01, 4), basic('#2b2b2b'), 0, g);
+      for (let i = 1; i < 12; i++) { const q = cv.getPoint(i / 12); const b = mesh(G.sph(.05, 10, 8), basic(['#ffd23f', '#ff4d6d', '#3d8fe0', '#5fbf4a', '#ff8a1f'][i % 5]), 0, g); b.position.copy(q).y -= .05; }
+      for (const sx of [-1.55, 1.55]) m(G.cyl(.03, .03, 2, 8), '#7a4e30').position.set(sx, 1, 0); break; }
+    case 'tree': { const tr = m(G.cyl(.08, .12, .6, 10), '#7a4e30'); tr.position.y = .3; for (let i = 0; i < 3; i++) { const c2 = m(G.cone(.5 - i * .12, .6, 14), cl || '#2f8f4e'); c2.position.y = .7 + i * .35; } break; }
+    case 'snowman': { for (const [r2, y] of [[.3, .3], [.22, .75], [.16, 1.08]]) m(G.sph(r2, 18, 14), '#ffffff').position.y = y; const n2 = m(G.cone(.03, .14, 8), '#ff8a1f', 0); n2.rotation.x = Math.PI / 2; n2.position.set(0, 1.08, .2); for (const sx of [-1, 1]) m(G.sph(.025, 8, 6), '#2b1d16', 0).position.set(sx * .06, 1.13, .14); break; }
+    case 'fire': { for (let i = 0; i < 5; i++) { const lg = m(G.cyl(.04, .04, .5, 8), '#7a4e30'); lg.rotation.set(Math.PI / 2, 0, i * Math.PI / 5); lg.position.y = .05; } const f1 = mesh(G.cone(.2, .5, 10), basic('#ff8a1f'), 0, g); f1.position.y = .3; const f2 = mesh(G.cone(.11, .32, 10), basic('#ffd23f'), 0, g); f2.position.y = .25; g.userData.glowY = .4; g.userData.glowS = 1.4; g.userData.glowC = '#ffb347'; g.userData.alwaysGlow = true; break; }
+    case 'tent': { const t2 = m(G.cone(.7, 1, 4), cl || '#e8344e'); t2.position.y = .5; t2.rotation.y = Math.PI / 4; break; }
+    case 'castle': { m(G.box(1.2, .8, .5), cl || '#c8c0d8').position.y = .4; for (const sx of [-.6, .6]) { m(G.cyl(.18, .18, 1.2, 12), cl || '#c8c0d8').position.set(sx, .6, 0); const r2 = m(G.cone(.24, .4, 12), '#e8344e'); r2.position.set(sx, 1.4, 0); } break; }
+    case 'rainbow': { ['#e8344e', '#ff8a1f', '#ffd23f', '#5fbf4a', '#3d8fe0', '#8d5cf6'].forEach((c2, i) => { const a = mesh(G.tor(2.2 - i * .09, .05, Math.PI), basic(c2), 0, g); a.position.y = 0; a.castShadow = false; }); break; }
     default: m(G.sph(.12), cl || '#cccccc').position.y = .12;
   }
   g.traverse(o => { if (o.isMesh) o.castShadow = true; }); propCache[key] = g; return g;
@@ -504,13 +537,14 @@ function animateLoc(g, T) {
   const w = g.userData.weather; if (w) { const a = w.pm.geometry.attributes.position.array; w.seeds.forEach((s, i) => { const sp = w.rain ? 9 : 1.1; let y = 12 - ((s[1] + T * sp * s[3]) % 12); a[i * 3] = s[0] + (w.rain ? 0 : Math.sin(T + i) * .3); a[i * 3 + 1] = y; a[i * 3 + 2] = s[2]; }); w.pm.geometry.attributes.position.needsUpdate = true; }
   if (g.userData.sea) g.userData.sea.position.y = .02 + Math.sin(T * 1.5) * .02;
 }
-function lightFor(type, time) {
+function lightFor(type, time) { // свет всегда почти белый: герой выглядит одинаково днём, вечером и ночью; настроение даёт небо
   const night = time === 'night', eve = time === 'evening', indoor = type === 'room' || type === 'kitchen';
-  if (type === 'space') { hemi.color.set(0x8090c0); hemi.groundColor.set(0x303040); hemi.intensity = .9; sun.color.set(0xffffff); sun.intensity = 2.2; sun.position.set(6, 9, 5); return; }
-  if (indoor) { hemi.color.set(night ? 0x8a8ab0 : 0xfff2dc); hemi.groundColor.set(0x8a6a50); hemi.intensity = night ? .7 : 1.2; sun.color.set(night ? 0xffd8a0 : 0xfff1d6); sun.intensity = night ? 1.2 : 1.8; sun.position.set(2, 7, 6); return; }
-  if (night) { hemi.color.set(0x4a5aa0); hemi.groundColor.set(0x1a2a30); hemi.intensity = .6; sun.color.set(0xa0b8ff); sun.intensity = .9; sun.position.set(-5, 8, 4); return; }
-  if (eve) { hemi.color.set(0xffd0b0); hemi.groundColor.set(0x6a5a40); hemi.intensity = .9; sun.color.set(0xffb070); sun.intensity = 1.9; sun.position.set(-7, 4, 5); return; }
-  hemi.color.set(0xdff2ff); hemi.groundColor.set(0x6a9a50); hemi.intensity = 1.1; sun.color.set(0xfff1d6); sun.intensity = 2.2; sun.position.set(4, 8, 6);
+  hemi.groundColor.set(0x8a8a80);
+  if (type === 'space') { hemi.color.set(0xf0f2ff); hemi.intensity = 1.15; sun.color.set(0xffffff); sun.intensity = 2.2; sun.position.set(6, 9, 5); return; }
+  if (indoor) { hemi.color.set(0xfffcf6); hemi.intensity = 1.2; sun.color.set(0xffffff); sun.intensity = night ? 1.7 : 1.9; sun.position.set(2, 7, 6); return; }
+  if (night) { hemi.color.set(0xe6ebff); hemi.intensity = 1.05; sun.color.set(0xf0f3ff); sun.intensity = 1.8; sun.position.set(-5, 8, 5); return; }
+  if (eve) { hemi.color.set(0xfffaf4); hemi.intensity = 1.1; sun.color.set(0xfff6ec); sun.intensity = 2.0; sun.position.set(-6, 6, 6); return; }
+  hemi.color.set(0xf4f8ff); hemi.intensity = 1.15; sun.color.set(0xffffff); sun.intensity = 2.2; sun.position.set(4, 8, 6);
 }
 
 // ---------- камера ----------
@@ -529,7 +563,7 @@ function camFor(c, S, seg, lib) {
 // ---------- кадр ----------
 let curLoc = null;
 function showLoc(key, spec) { let g = locCache[key]; if (!g) { g = buildLoc(spec); locCache[key] = g; scene.add(g); } if (curLoc && curLoc !== g) curLoc.visible = false; g.visible = true; curLoc = g; return g; }
-function hideAllRigs() { for (const k in rigCache) rigCache[k].root.visible = false; for (const k in propCache) propCache[k].visible = false; for (let i = 0; i < spriteUsed; i++) spritePool[i].visible = false; spriteUsed = 0; }
+function hideAllRigs() { if (curTheme) curTheme.visible = false; for (const k in rigCache) rigCache[k].root.visible = false; for (const k in propCache) propCache[k].visible = false; for (let i = 0; i < spriteUsed; i++) spritePool[i].visible = false; spriteUsed = 0; }
 function ensureIn(obj) { if (obj.parent !== scene) scene.add(obj); }
 function render(ctx) {
   const w = ctx.canvas.width, h = ctx.canvas.height;
@@ -549,13 +583,25 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
     const rig = rigFor(lc); ensureIn(rig.root); rig.root.visible = true;
     rig.root.position.set(X(st.x), 0, -(st.z || 0) * 1.5);
     rig.yaw.rotation.y = st.face * (st.walk && st.walk.on ? 1.35 : .72);
-    const held = seg.props.find(p => p._holder === id); st.prop = held || null;
+    const held = seg.props.find(p => p._holder === id && p._vis !== false); st.prop = held || null;
     applyPose(rig, st, T); fxFor(rig, st, T); rig._held = held;
   }
   scene.updateMatrixWorld(true);
-  for (const p of seg.props) { const m = propMesh(p); ensureIn(m); m.visible = true;
-    if (p._holder && S[p._holder] && S[p._holder].vis) { const lc = tl.lib.characters[p._holder]; const rig = rigFor(lc); const v = new THREE.Vector3(); rig.hand.getWorldPosition(v); m.position.set(v.x, v.y - .12 * rig.scale, v.z); m.scale.setScalar(.7 * rig.scale); }
-    else { m.position.set(X(p._x), (p._air || 0) * 1.2, .35); m.scale.setScalar(1); m.rotation.z = -(p._air || 0) * 3; } }
+  for (const p of seg.props) { const m = propMesh(p); ensureIn(m); const fa = p._fxAge;
+    let sc = 1; if (!p._vis) { if (p._fx === 'vanish' && fa < .45) sc = 1 - ease(fa / .45); else { m.visible = false; poof(p, fa); continue; } } else if (p._fx === 'appear' && fa < .6) sc = ease(fa / .6) * (1 + Math.sin(Math.min(1, fa / .6) * Math.PI) * .25);
+    m.visible = sc > .01; const big = p.big || 1;
+    if (p._holder && S[p._holder] && S[p._holder].vis) { const lc = tl.lib.characters[p._holder]; const rig = rigFor(lc); const v = new THREE.Vector3(); rig.hand.getWorldPosition(v); m.position.set(v.x, v.y - .12 * rig.scale, v.z); m.scale.setScalar(.7 * rig.scale * sc); }
+    else { const zz = p.decor && big > 1.5 ? -1.9 : p.decor ? -.5 : .35; m.position.set(X(p._x), (p._air || 0) * 1.2 + (m.userData.float ? Math.sin(T * 2 + p._x * 9) * .08 : 0), zz); m.scale.setScalar(big * (p.decor && big < 1.5 ? 1.6 : 1) * sc); m.rotation.z = -(p._air || 0) * 3; }
+    const gl = m.userData.alwaysGlow ? 1 : (p._glow || 0); if (m.userData.faceMat) m.userData.faceMat.color.set(gl > 0 ? 0xffc23a : 0x3a1a08);
+    if (gl > 0 && m.visible) { const gy = m.userData.glowY != null ? m.userData.glowY : .2, gs = (m.userData.glowS || .7) * m.scale.x, pulse = 1 + Math.sin(T * 3 + p._x * 7) * .06;
+      sprite(haloTex(m.userData.glowC || '#ffe27a'), m.position.x, m.position.y + gy * m.scale.x, m.position.z + .05, gs * pulse * (.5 + gl * .5), .75 * gl);
+      if (!m.userData.alwaysGlow) for (let i = 0; i < 3; i++) { const q = (T * .5 + i / 3) % 1; sprite(glyphTex('✦', '#fff4b0'), m.position.x + Math.sin(i * 2.3 + T) * gs * .45, m.position.y + gy * m.scale.x + (q - .3) * gs * .7, m.position.z + .2, .12 * Math.max(1, m.scale.x * .5), Math.sin(q * Math.PI) * gl); } }
+    if (p._fx === 'appear' && fa < 1.1) for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2, r = .2 + fa * 1.1 * Math.max(1, big * .6); sprite(glyphTex('★', '#ffd23f', '#ffffff'), m.position.x + Math.cos(a) * r, m.position.y + .3 * big + Math.sin(a) * r, m.position.z + .3, .16, 1 - fa / 1.1); }
+    if (p._fx === 'vanish' && fa < 1.1) poof(p, fa, m);
+  }
+  function poof(p, fa, m) { if (fa > 1.1 || p._fx !== 'vanish') return; const x = m ? m.position.x : X(p._x), y = m ? m.position.y + .25 * (p.big || 1) : .3, z = m ? m.position.z + .3 : .4;
+    for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, r = .15 + fa * .7 * Math.max(1, (p.big || 1) * .6); sprite(haloTex('#ffffff'), x + Math.cos(a) * r, y + Math.sin(a) * r * .7, z, (.35 + fa * .4) * Math.max(1, (p.big || 1) * .5), (1 - fa / 1.1) * .9); } }
+  showTheme(seg, T);
   // камера
   let ci = 0; const cams = seg.cam.filter(c => !c.shake); for (let i = 0; i < cams.length; i++) if (cams[i].t <= t) ci = i;
   const cur = camFor(cams[ci], S, seg, tl.lib), prev = ci > 0 ? camFor(cams[ci - 1], S, seg, tl.lib) : cur, k = ease((t - cams[ci].t) / .9);
