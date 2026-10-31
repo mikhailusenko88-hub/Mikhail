@@ -525,6 +525,12 @@ function applyPose(rig, st, T) {
     if (wk.style === 'sneak') { pitch = .35; low = .1; bob *= .4; arm[0].x = arm[1].x = -.7; arm[0].z = arm[1].z = .6; } }
   const lsel = st.face < 0 ? 0 : 1; // «передняя» рука — правая (у развёрнутого героя тоже)
   const R_ = arm[1], L_ = arm[0];
+  // жизнь в покое: дыхание, перенос веса, руки при разговоре
+  const talk0 = clamp(st.talk || 0, 0, 1), dyn = rig._dyn || (rig._dyn = { t: T, y: 0, vy: 0, ear: 0, earV: 0, tl: 0, tlV: 0, yaw: 0, look: 0, lookT: 0, gest: 0 });
+  if (!wk.on && !an) { sideTilt = Math.sin(T * .45 + sd * 9) * .025; head.y = Math.sin(T * .37 + sd * 4) * .12; }
+  if (talk0 > .02 && !an && !wk.on) { const gp = Math.sin(T * 1.9 + sd * 3); R_.z = .45 + Math.max(0, gp) * .55 * (.4 + talk0); R_.x = -.35 - Math.max(0, gp) * .5; head.x += Math.sin(T * 7.5) * .05 * talk0; head.z += Math.sin(T * 2.3) * .05; }
+  if (wk.on) { sideTilt = Math.sin(wk.ph) * (wk.run ? .07 : .05); head.z -= sideTilt * .6; }
+  const base = { L: { x: L_.x, z: L_.z }, R: { x: R_.x, z: R_.z }, leg: leg.slice(), head: Object.assign({}, head), lift, pitch, sideTilt, hipYaw };
   switch (an) {
     case 'jump': { lift = Math.sin(ap * Math.PI) * .75; const s = ap < .14 ? Math.sin(ap / .14 * Math.PI) : ap > .86 ? Math.sin((ap - .86) / .14 * Math.PI) : 0; sq = 1 - s * .15; L_.z = R_.z = .35 + Math.sin(ap * Math.PI) * 2.2; leg[0] = leg[1] = -Math.sin(ap * Math.PI) * .5; break; }
     case 'wave': R_.z = 2.6 + Math.sin(at * 11) * .35; R_.x = -.2; head.z = .12; break;
@@ -553,6 +559,9 @@ function applyPose(rig, st, T) {
     case 'somersault': lift = Math.sin(ap * Math.PI) * .55; rollA = -ap * Math.PI * 2; L_.z = R_.z = 1.2; leg[0] = leg[1] = -1.0; break;
     case 'roll': lie = ease(Math.min(ap, 1 - ap) * 8); rollA = Math.sin(at * 6) * 1.0; L_.x = R_.x = -.8; break;
   }
+  if (an && !['jump', 'somersault', 'roll', 'spin', 'kick'].includes(an)) { const dur = ap > .02 ? at / ap : 9, bf = Math.min(ease(at / .22), ease((dur - at) / .25));
+    if (bf < 1) { const L2 = (a, b) => lerp(a, b, bf); L_.x = L2(base.L.x, L_.x); L_.z = L2(base.L.z, L_.z); R_.x = L2(base.R.x, R_.x); R_.z = L2(base.R.z, R_.z); leg[0] = L2(base.leg[0], leg[0]); leg[1] = L2(base.leg[1], leg[1]);
+      head.x = L2(base.head.x, head.x); head.y = L2(base.head.y, head.y); head.z = L2(base.head.z, head.z); pitch = L2(base.pitch, pitch); hipYaw = L2(base.hipYaw, hipYaw); sideTilt = L2(base.sideTilt, sideTilt); } }
   if (st.prop && !['wave', 'throw', 'point', 'give', 'eat', 'hug'].includes(an)) { R_.x = -.95; R_.z = .2; }
   if (emo === 'scared') { L_.x = R_.x = -2.2; L_.z = R_.z = -.3; }
   // устойчивые позы
@@ -576,7 +585,16 @@ function applyPose(rig, st, T) {
   if (rollA) { const cy = lie ? .22 : hgt * .5; rig.rollG.position.set(0, cy, 0); rig.rollG.rotation.x = rollA; rig.pose.position.y += -cy + (lie ? .22 * 0 : 0); }
   else { rig.rollG.position.set(0, 0, 0); rig.rollG.rotation.x = 0; }
   if (lie) rig.pose.position.y += .16 * lie;
-  if (rig.tail) rig.tail.rotation.y = Math.sin(T * (rig.kind === 'dog' && (emo === 'happy' || emo === 'laugh') ? 14 : 2.4) + sd * 4) * .3;
+  { const dt = T - dyn.t; const y = rig.pose.position.y + rig.root.position.y, yaw = rig.yaw.rotation.y;
+    if (dt > 0 && dt < .25) { const vy = (y - dyn.y) / dt, ay = (vy - dyn.vy) / dt, wy = (yaw - dyn.yaw) / dt;
+      const spring = (x, v, target, k, d) => { const a = (target - x) * k - v * d; v += a * dt; x += v * dt; return [x, v]; };
+      [dyn.ear, dyn.earV] = spring(dyn.ear, dyn.earV, clamp(-ay * .012, -.6, .6), 120, 9);
+      [dyn.tl, dyn.tlV] = spring(dyn.tl, dyn.tlV, clamp(-wy * .25 - vy * .4, -.8, .8), 60, 6);
+      dyn.vy = vy; } else { dyn.ear = dyn.earV = dyn.tl = dyn.tlV = 0; dyn.vy = 0; }
+    dyn.t = T; dyn.y = y; dyn.yaw = yaw; }
+  if (rig.ears) rig.ears.forEach((e, i) => { const s0 = e.userData.r0 || (e.userData.r0 = e.rotation.clone()); const tw = Math.max(0, Math.sin(T * .9 + sd * 20 + i * 1.7) - .97) * 8; e.rotation.x = s0.x + dyn.ear * .8 - tw * .15; e.rotation.z = s0.z + (i ? -1 : 1) * (dyn.ear * .4 + tw * .2); });
+  if (rig.body) { const br = 1 + Math.sin(T * 1.7 + sd * 5) * .012 * (an ? .5 : 1); rig.body.scale.set(1 + (br - 1) * .5, br, 1 + (br - 1) * .8); }
+  if (rig.tail) { rig.tail.rotation.y = Math.sin(T * (rig.kind === 'dog' && (emo === 'happy' || emo === 'laugh') ? 14 : 2.4) + sd * 4) * .3 + dyn.tl; rig.tail.rotation.x = (rig.tail.userData.rx0 != null ? rig.tail.userData.rx0 : (rig.tail.userData.rx0 = rig.tail.rotation.x)) + dyn.ear * .5; }
   if (rig.antenna) rig.antenna.material = basic(Math.sin(T * 4) > 0 ? '#ff4d6d' : '#ffd23f');
   if (rig.leds) rig.leds.forEach((l, i) => l.visible = Math.sin(T * 5 + i * 2) > -.3);
   if (rig.wings) rig.wings.forEach((w, i) => w.rotation.z = (i ? 1 : -1) * (.5 + Math.sin(T * (an === 'jump' || wk.on ? 14 : 2)) * .2));
@@ -584,7 +602,7 @@ function applyPose(rig, st, T) {
   if (rig.cape) rig.cape.rotation.x = -(wk.on ? .35 : .08) - Math.sin(T * 2) * .03;
   // лицо
   const talk = clamp(st.talk || 0, 0, 1);
-  const bp = 3.1 + (rig.n.seed % 17) / 10, bt = (T + (rig.n.seed % 7)) % bp; let blink = bt < .14 ? Math.sin(bt / .14 * Math.PI) : 0;
+  const bp = 3.1 + (rig.n.seed % 17) / 10, bt = (T + (rig.n.seed % 7)) % bp, dbl = Math.floor((T + (rig.n.seed % 7)) / bp) % 3 === 1; let blink = bt < .14 ? Math.sin(bt / .14 * Math.PI) : dbl && bt > .22 && bt < .36 ? Math.sin((bt - .22) / .14 * Math.PI) : 0;
   let closed = pers === 'sleep' || emo === 'laugh' || an === 'laugh' || an === 'yawn' || (an === 'sneeze' && ap > .3 && ap < .62) || (an === 'roll' && emo === 'laugh');
   let lidOpen = -0.75, browY = 0, browRot = 0, eyeS = 1, pupS = 1;
   if (emo === 'sleepy') lidOpen = .15; if (emo === 'surprised') { eyeS = 1.15; pupS = .7; browY = .5; } if (emo === 'scared') { eyeS = 1.1; pupS = .55; browRot = .35; }
@@ -593,7 +611,8 @@ function applyPose(rig, st, T) {
     const cl = closed ? 1 : blink; e.g.scale.set(eyeS, eyeS * (1 - cl * .92), eyeS);
     e.lid.rotation.x = lerp(lidOpen, 1.3, cl > .85 ? 1 : 0); e.lid.rotation.z = (emo === 'angry' ? -.35 : emo === 'sad' || emo === 'cry' ? .35 : 0) * -e.s;
     e.ir.visible = e.pu.visible = emo !== 'love'; e.heart.visible = emo === 'love'; e.pu.scale.set(pupS, pupS * 1.15, .5);
-    const gx = Math.abs(st.face) > .1 ? .25 : 0; e.ir.position.x = e.pu.position.x = gx * e.eR * .5;
+    const sacc = Math.floor(T / (1.7 + sd) + sd * 9), sx = ((global.MK.hash32('s' + sacc + rig.n.seed) % 100) / 100 - .5) * .35, sy = ((global.MK.hash32('y' + sacc + rig.n.seed) % 100) / 100 - .5) * .2;
+    const gx = (Math.abs(st.face) > .1 ? .25 : 0) + (an || talk > .1 ? 0 : sx); e.ir.position.x = e.pu.position.x = gx * e.eR * .5; e.ir.position.y = e.pu.position.y = (an ? 0 : sy) * e.eR * .4;
     e.brow.position.y = e.eR * (1.55 + browY); e.brow.rotation.z = Math.PI / 2 + browRot * e.s;
   });
   let open = talk;
