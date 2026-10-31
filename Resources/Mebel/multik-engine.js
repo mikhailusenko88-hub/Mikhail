@@ -703,13 +703,14 @@ MK.voiceFx = async function (buf, fx) {
   const len = Math.min(d.length, end + Math.round(sr * .08)); const res = new AudioBuffer({ length: Math.max(1, len), numberOfChannels: 1, sampleRate: sr }); res.copyToChannel(d.subarray(0, len), 0); return res;
 };
 function roomIR(ac, sec) { const n = Math.floor(ac.sampleRate * sec), b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0), r = rng(42); for (let i = 0; i < n; i++) d[i] = (r() * 2 - 1) * Math.pow(1 - i / n, 3) * .6; return b; }
-MK.roomIR = roomIR;
+MK.roomIR = roomIR; MK._rng = rng; MK._noise = (ac) => noise(ac); MK._tone = tone; MK._noiseHit = noiseHit; MK._kick = kick; MK._snare = snare; MK._hat = hat;
 
 /** Убирает из реплики всё, что iPhone прочитал бы вслух как мусор («backslash», «звёздочка», латинские обрывки). */
 MK.cleanSpeech = function (text) {
   const removed = [];
   let t = String(text || '');
   t = t.replace(/\\[ntr]/g, m => (removed.push(m), ' '));
+  t = t.replace(/\+([аеёиоуыэюяАЕЁИОУЫЭЮЯ])/g, '$1\u0301'); // «з+амок» — ударение
   t = t.replace(/[\\\/*_#`~|<>{}\[\]^=+@$%&]/g, m => (removed.push(m), ' '));
   t = t.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, m => (removed.push(m), ''));
   t = t.replace(/(^|[^A-Za-zА-Яа-яЁё])([A-Za-z][A-Za-z']*)(?=$|[^A-Za-zА-Яа-яЁё])/g, (m, a, w) => { if (/^(OK|ok|Ok)$/.test(w)) return a + 'окей'; removed.push(w); return a + ' '; });
@@ -726,11 +727,22 @@ function stepVoiceText(step) {
   return '';
 }
 MK.stepVoiceText = stepVoiceText;
-function lineFor(ep, lib, who, text) {
+// возгласы, которые не читает робот-диктор, а издаёт сам голос героя (синтез смеха, плача, зевка, чиха, пения)
+const VOCAL_SYNTH = { laugh: 'laugh', cry: 'cry', yawn: 'yawn', sneeze: 'sneeze', sing: 'sing' };
+function stepVocalKind(step) { if (step.say || step.vocal || step.voice === false || !step.who || step.who === 'Р') return null;
+  if (step.do && VOCAL_SYNTH[step.do]) return VOCAL_SYNTH[step.do]; if (step.emotion === 'laugh' && (step.do === 'roll' || step.do === 'dance' || step.do === 'jump')) return 'laugh'; return null; }
+MK.stepVocalKind = stepVocalKind;
+const PROSODY = { happy: [1.06, 1.04], laugh: [1.08, 1.06], sad: [.94, .9], cry: [.96, .88], angry: [.97, 1.06], surprised: [1.1, 1], scared: [1.07, 1.1], sleepy: [.93, .82], love: [1.03, .92], shy: [1.02, .9] };
+function lineFor(ep, lib, who, text, step) {
   const ch = who === 'Р' ? { voice: (ep.narrator && ep.narrator.voice) || lib.narrator || { base: 'male', pitch: 1, rate: .47 } } : (lib.characters[who] && lib.characters[who].spec);
   if (!ch || !text) return null;
   const fx = MK.fxFor(lib, who); const v = MK.synthVoice(ch.voice, fx, lib.characters[who] && lib.characters[who].voiceId);
-  return { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + text).toString(36), who, text, voice: v, fx };
+  const synth = step ? stepVocalKind(step) : null;
+  const pr = step && step.say && PROSODY[step.emotion]; if (pr) { v.pitch = Math.round(clamp(v.pitch * pr[0], .5, 2) * 1000) / 1000; v.rate = Math.round(clamp(v.rate * pr[1], .3, .62) * 1000) / 1000; }
+  const lex = lib.lexicon || {}, mode = (lib.settings && lib.settings.stressMode) || 'ipa';
+  let say = text; if (!synth && MK.prepSpeech) { const ps = MK.prepSpeech(text, lex, mode); say = ps.text; if (ps.ipa.length) v.ipa = ps.ipa; }
+  const age = ch.age || (who === 'Р' ? 'adult' : 'kid');
+  return { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + (synth ? '|' + synth + age : '')).toString(36), who, text: say, voice: v, fx, synth, age, seed: hash32(String(who) + (ch.name || '')) };
 }
 
 /** Список всех реплик эпизода (для озвучки до сборки). */
@@ -738,7 +750,7 @@ MK.collectLines = function (ep, lib) {
   const out = [];
   for (const sc of ep.scenes || []) for (const st of sc.steps || []) {
     const text = stepVoiceText(st); if (!text) continue;
-    const ln = lineFor(ep, lib, st.who || 'Р', text); if (ln) out.push(ln);
+    const ln = lineFor(ep, lib, st.who || 'Р', text, st); if (ln) out.push(ln);
   }
   return out;
 };
@@ -827,6 +839,8 @@ MK.compile = function (ep, lib, audio) {
           const run = d === 'run' || step.run; const sp = (run ? MOVES.run : MOVES[d] || .2) * (lib.characters[who].spec.speed || 1);
           dur = Math.max(.3, Math.abs(x1 - x0) / sp);
           ch.ev.push({ t: start, k: 'move', x0, x1, t1: start + dur, run, style: d === 'crawl' || d === 'sneak' ? d : null });
+          { const indoor = /^(room|kitchen)$/.test(lspec.type || ''), gap = run ? .2 : d === 'crawl' || d === 'sneak' ? .42 : .3, vol = d === 'sneak' ? .25 : d === 'crawl' ? .3 : run ? .75 : .55;
+            for (let tt = start + .05, k = 0; tt < start + dur - .05; tt += gap, k++) sfx.push({ t: st0 + tt, n: indoor ? 'tap' : lspec.type === 'winter' ? 'crunch' : 'step', v: vol * (k % 2 ? .85 : 1) }); }
           ch.ev.push({ t: start, k: 'face', v: x1 >= x0 ? 1 : -1 });
           if (d === 'exit') { ch.ev.push({ t: start + dur, k: 'vis', v: false }); ch.vis = false; }
           ch.x = x1;
@@ -856,7 +870,7 @@ MK.compile = function (ep, lib, audio) {
       }
       const vtext = stepVoiceText(step);
       if (vtext) {
-        const ln = lineFor(ep, lib, who || 'Р', vtext); const a = ln && audio[ln.key]; const sd = a ? a.dur : estSpeech(vtext);
+        const ln = lineFor(ep, lib, who || 'Р', vtext, step); const a = ln && audio[ln.key]; const sd = a ? a.dur : estSpeech(vtext);
         const vt = step.say ? start : start + (dur > 1.5 ? .15 : .05);
         speech.push({ t: st0 + vt, dur: sd, key: ln && ln.key, who: who || 'Р', text: vtext, vocal: !step.say });
         if (ch) ch.ev.push({ t: vt, k: 'say', t1: vt + sd, key: ln && ln.key, text: vtext });
@@ -932,7 +946,7 @@ MK.render = function (ctx, tl, T) {
   if (tl.ep.subtitles) { const sp = tl.speech.find(s => T >= s.t && T < s.t + s.dur); if (sp) drawSubtitle(ctx, sp, tl.lib); }
   ctx.restore();
 };
-function drawSubtitle(ctx, sp, lib) {
+function drawSubtitle(ctx, sp, lib) { sp = Object.assign({}, sp, { text: String(sp.text || '').replace(/\u0301/g, '') });
   ctx.font = '700 46px -apple-system, "SF Pro Rounded", "DejaVu Sans", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
   const words = sp.text.split(' '), lines = []; let ln = ''; for (const w of words) { if (ctx.measureText(ln + ' ' + w).width > W * .7 && ln) { lines.push(ln); ln = w; } else ln = ln ? ln + ' ' + w : w; } lines.push(ln);
   lines.forEach((l, i) => { const y = H - 60 - (lines.length - 1 - i) * 58; ctx.lineWidth = 10; ctx.strokeStyle = 'rgba(0,0,0,.75)'; ctx.strokeText(l, W / 2, y); ctx.fillStyle = '#fff'; ctx.fillText(l, W / 2, y); });
@@ -1083,7 +1097,7 @@ const SFX = {
   chomp: (ac, o, t) => { noiseHit(ac, o, t, .06, .25, 'bandpass', 900, 1.2); tone(ac, o, t, 260, 160, .06, .12, 'triangle'); },
   rustle: (ac, o, t) => { for (let i = 0; i < 6; i++) noiseHit(ac, o, t + i * .4, .25, .12, 'bandpass', 2500, .8); },
 };
-MK.SFX = Object.keys(SFX);
+MK.SFX = Object.keys(SFX); MK._SFX = SFX; MK._MOODS = MOODS;
 
 /** Сводит всю дорожку: речь (AudioBuffer по ключу) + музыка + эффекты. → AudioBuffer (моно 44.1 кГц) */
 MK.mixAudio = async function (tl, buffers) {

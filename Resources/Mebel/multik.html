@@ -81,7 +81,7 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
   Предметы: мяч, яблоко, рыба, коробка, подарок, цветок, книга, звезда, торт, кость, морковка, сыр, шарик, ключ, чашка, тыква, гриб, зонтик, конфета, мороженое, леденец, банан, груша, арбуз, мёд, ведро, лопатка, машинка, мишка, барабан, гитара, волшебная палочка, фонарик, карта, письмо, корзинка, сундук, монетка, яйцо, пирог, печенье, молоко, часы, свеча, листик, камень, палка, телефон, воздушный змей, сумка<br>
   Вещи из реплик: «Смотрите! Огромная тыква!» — тыква появится в кадре; «светится/засветился» — засветится; «исчез» — исчезнет с дымком; «появилась дверь» — появится с искрами; «наш ключ» — у героя в руках. Хэллоуин, Новый год, день рождения — двор сам украсится. Если слово незнакомое — спрошу в «Научи меня».<br>
   Одежда в описании героя: комбинезон, кофта, футболка, штаны, шорты, юбка, платье, костюм, пижама, фартук, плащ, жилет, галстук, бабочка, рюкзак, кепка/шапка/шляпа, шарф, очки, бантик, корона<br>
-  <b>МУЗЫКА:</b> весёлая / грустная / тревожная / приключения / волшебная / ночная · <b>ЗВУК:</b> бум, дзынь, мяу, гав, стук · <b>ПАУЗА</b> 2 · <b>КАМЕРА:</b> крупно Барсик / общий план / оба<br>
+  <b>МУЗЫКА:</b> весёлая / спокойная / грустная / тревожная / приключения / волшебная / ночная / смешная / таинственная (для страшилок) · <b>ЗВУК:</b> бум, дзынь, мяу, гав, стук, смех ·  <b>Ударение:</b> з+амок или замОк · <b>ПАУЗА</b> 2 · <b>КАМЕРА:</b> крупно Барсик / общий план / оба<br>
   Можно вставлять и обычный рассказ: диалоги через тире («— Привет! — сказал Барсик.»), смена места («Друзья пошли в лес»). Всё, что не стало действием, прочитает рассказчик.<br>
   Незнакомое слово или имя приложение спросит один раз и запомнит.<br>
   Длинный сценарий сам поделится на серии по ~5 минут.</div></div>
@@ -107,6 +107,7 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
   <div class="mut" style="margin-top:6px">После создания внешность и голос не меняются никогда — код персонажа постоянный. Новый вид = новый персонаж.</div></div>
 </div></div>
 <script src="multik-engine.js"></script>
+<script src="multik-audio.js"></script>
 <script src="multik-maker.js"></script>
 <script src="multik-script.js"></script>
 <script src="multik-3d.js"></script>
@@ -245,8 +246,15 @@ const App = {
       <select id="squal"><option value="std">Качество: обычное</option><option value="hq">Качество: как в кино (шерсть, мягкий свет; дольше)</option></select></div></div>
       <div class="card"><b>Голоса iPhone</b><div class="mut" style="margin:4px 0 8px">Чтобы голоса звучали лучше, скачай улучшенные русские голоса: Настройки → Универсальный доступ → Устный контент → Голоса → Русский → Milena и Yuri «улучшенный». Делать это лучше до создания персонажей: голос записывается в код персонажа.</div><div id="vlist" class="mut">…</div></div>
       <div class="card"><b>Рассказчик</b><div class="mut" style="margin:4px 0 8px">Голос: ${esc(MK.fxFor(Lib.data, 'Р').name)}</div><div class="btns"><button class="btn" onclick="VP.open('Р')">🎙 Настроить голос рассказчика</button></div></div>
+      <div class="card"><b>Ударения</b><div class="mut" style="margin:4px 0 8px">В сценарии ставьте <b>+</b> перед ударной буквой: «з+амок», «Б+арсик» — или большую букву: «замОк». Один раз отметили — слово запомнится навсегда. Здесь можно проверить, как iPhone прочитает.</div>
+        <div class="row"><input id="stWord" placeholder="например: з+амок" style="flex:1"></div>
+        <div class="btns" style="margin-top:6px"><button class="btn" onclick="Stress.hear('ipa')">▶ Способ 1</button><button class="btn" onclick="Stress.hear('acute')">▶ Способ 2</button><button class="btn" onclick="Stress.hear('respell')">▶ Способ 3</button></div>
+        <div class="row" style="margin-top:6px"><span class="mut" style="flex:1">Каким способом ставить ударения:</span><select id="stMode"><option value="ipa">Способ 1 (произношение)</option><option value="acute">Способ 2 (знак ударения)</option><option value="respell">Способ 3 (пишу как слышится)</option></select></div>
+        <div class="btns" style="margin-top:6px"><button class="btn ok" onclick="Stress.save()">Запомнить слово</button></div>
+        <div id="stList" class="mut" style="margin-top:6px"></div></div>
       <div class="card"><b>Чему я научился</b><div id="lexList" class="mut" style="margin-top:6px"></div></div>
       <div class="card"><b>Персонажи и локации</b><div class="mut">Персонажей: ${Object.keys(Lib.data.characters).length}, локаций: ${Object.keys(Lib.data.locations).length}. Библиотека хранится в «Файлы → Замер 3D → multik».</div></div>`);
+    Stress.render();
     const sr = document.getElementById('sres'), sf = document.getElementById('sfps'), sq = document.getElementById('squal'); sr.value = s.res; sf.value = s.fps; sq.value = s.quality || 'std'; sq.onchange = () => { s.quality = sq.value; Lib.save(); if (window.MK3D) MK3D.setQuality(s.quality); };
     sr.onchange = () => { s.res = +sr.value; Lib.save(); }; sf.onchange = () => { s.fps = +sf.value; Lib.save(); };
     const lex = Lib.data.lexicon || {}, rows = [];
@@ -304,6 +312,7 @@ async function prepare(e, onStep, isCancelled) {
     if (isCancelled && isCancelled()) throw new Error('cancel');
     onStep && onStep('Озвучка реплик', i++ / Math.max(1, lines.length), `${i} из ${lines.length}: ${ln.text.slice(0, 40)}`);
     if (audio[ln.key]) continue;
+    if (ln.synth && MK.synthVocal) { try { const buf = await MK.voiceFx(MK.synthVocal(ln), ln.fx || MK.VOICE_FX.natural); bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('vocal', err); } continue; }
     const r = await Native.call('tts', { text: ln.text, voice: ln.voice, key: ln.key });
     if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, ln.fx || MK.VOICE_FX.natural); bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
   }
@@ -473,11 +482,23 @@ async function previewVoice(text, voice, fx, voiceId) {
   try { pvCtx.resume(); } catch (e) {}
   if (pvSrc) { try { pvSrc.stop(); } catch (e) {} }
   const v = MK.synthVoice(voice, fx, voiceId);
+  if (MK.prepSpeech) { const ps = MK.prepSpeech(text, (Lib.data && Lib.data.lexicon) || {}, arguments[4] || (Lib.data && Lib.data.settings && Lib.data.settings.stressMode) || 'ipa'); text = ps.text; if (ps.ipa.length) v.ipa = ps.ipa; }
   const r = await Native.call('tts', { text, voice: v, key: 'pv-' + MK.hash32(MK.canon(v) + text).toString(36) });
   if (!r || !r.wav) { Native.call('speak', { text, voice: Object.assign({}, voice, voiceId ? { id: voiceId } : {}) }); return 0; }
   const raw = await pvCtx.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, fx);
   pvSrc = pvCtx.createBufferSource(); pvSrc.buffer = buf; pvSrc.connect(pvCtx.destination); pvSrc.start(); return buf.duration;
 }
+// ---------- ударения ----------
+const Stress = {
+  render() { const st = Lib.data.settings = Lib.data.settings || {}; const m = document.getElementById('stMode'); if (!m) return; m.value = st.stressMode || 'ipa'; m.onchange = () => { st.stressMode = m.value; Lib.save(); };
+    const lex = Lib.data.lexicon = Lib.data.lexicon || {}; const d = lex.stress || {}, keys = Object.keys(d).sort(); const L = document.getElementById('stList');
+    L.innerHTML = keys.length ? keys.map(k => `<div class="row" style="padding:3px 0"><span style="flex:1">${esc(d[k].replace(/\+([а-яё])/g, (m0, c) => c.toUpperCase()))}</span><button class="btn" data-h="${esc(k)}" style="padding:4px 10px">▶</button><button class="btn" data-k="${esc(k)}" style="padding:4px 10px">✕</button></div>`).join('') : 'Пока слов нет.';
+    L.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { delete d[b.dataset.k]; Lib.save(); this.render(); });
+    L.querySelectorAll('[data-h]').forEach(b => b.onclick = () => previewVoice(b.dataset.h, { base: 'female', pitch: 1.1, rate: .5 }, MK.VOICE_FX.natural, null)); },
+  word() { return (document.getElementById('stWord').value || '').trim(); },
+  hear(mode) { const w = this.word(); if (!w) { alert('Напишите слово с + перед ударной буквой, например: з+амок'); return; } previewVoice(w, { base: 'female', pitch: 1.1, rate: .5 }, MK.VOICE_FX.natural, null, mode); },
+  save() { const w = this.word(); const lex = Lib.data.lexicon = Lib.data.lexicon || {}; const n = MK.learnStress(w.replace(/([а-яё])([АЕЁИОУЫЭЮЯ])/g, (m0, a, b) => a + '+' + b.toLowerCase()), lex); if (!n.length) { alert('Поставьте + перед ударной буквой, например: з+амок'); return; } Lib.save(); document.getElementById('stWord').value = ''; this.render(); },
+};
 // ---------- настройка голоса персонажа ----------
 const VP = {
   who: null, cur: null,
@@ -569,6 +590,7 @@ const Wr = {
   },
   async make() { try { await this._make(); } catch (e) { document.getElementById('wrOut').insertAdjacentHTML('afterbegin', `<div class="err">Ошибка: ${esc(e.message)}</div>`); } },
   async _make() {
+    { const lex = Lib.data.lexicon = Lib.data.lexicon || {}; const t = document.getElementById('wrText').value; if (MK.learnStress) { const n = MK.learnStress(t, lex); if (n.length) Lib.save(); } }
     const r = this.check(); if (r.errors.length || !r.parts.length) { if (!r.errors.length) document.getElementById('wrOut').insertAdjacentHTML('afterbegin', '<div class="warn">Нечего создавать — проверь текст.</div>'); return; }
     const series = r.parts[0].series, p = Lib.data.projects.find(p => p.series === series);
     const clash = r.parts.filter(e => p && p.episodes.some(x => x.episode === e.episode));

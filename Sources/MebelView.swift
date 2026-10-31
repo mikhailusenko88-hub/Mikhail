@@ -515,7 +515,20 @@ final class MultikTTS: NSObject {
     }
 
     static func utterance(_ text: String, _ v: [String: Any]) -> AVSpeechUtterance {
-        let u = AVSpeechUtterance(string: text)
+        // ударения: для слов с известным ударением передаём произношение (IPA) — iPhone читает именно так
+        let u: AVSpeechUtterance
+        if let spans = v["ipa"] as? [[Any]], !spans.isEmpty {
+            let a = NSMutableAttributedString(string: text)
+            let len = (text as NSString).length
+            for s in spans where s.count == 3 {
+                guard let st = (s[0] as? NSNumber)?.intValue, let ln = (s[1] as? NSNumber)?.intValue, let ipa = s[2] as? String,
+                      st >= 0, ln > 0, st + ln <= len else { continue }
+                a.addAttribute(NSAttributedString.Key(rawValue: AVSpeechSynthesisIPANotationAttribute), value: ipa, range: NSRange(location: st, length: ln))
+            }
+            u = AVSpeechUtterance(attributedString: a)
+        } else {
+            u = AVSpeechUtterance(string: text)
+        }
         u.voice = pickVoice(v)
         let pitch = (v["pitch"] as? NSNumber)?.floatValue ?? 1
         let rate = (v["rate"] as? NSNumber)?.floatValue ?? AVSpeechUtteranceDefaultSpeechRate
