@@ -94,6 +94,8 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
   <div class="kv" style="margin-top:12px"><span>Высота</span><span><input type="range" id="vpK" min="80" max="160" step="2"></span>
    <span>Голос iPhone</span><span><select id="vpVoice"></select></span></div>
   <div class="btns"><button class="btn" onclick="VP.play()">▶ Послушать</button><button class="btn acc" onclick="VP.save()">Сохранить</button></div>
+  <div class="card" id="vpLaugh" style="margin-top:12px;background:var(--card2)"><b>Смех героя</b><div class="mut" style="margin:4px 0 8px">Герой смеётся своим голосом. А можно записать настоящий смех — свой или ребёнка (до 8 секунд): герой будет смеяться им, своим тембром.</div>
+   <div class="btns"><button class="btn" onclick="VP.laugh()">▶ Как смеётся</button><button class="btn" id="vpRec" onclick="VP.rec()">🎙 Записать смех</button><button class="btn" id="vpRecDel" onclick="VP.recDel()">✕ Убрать запись</button></div><div id="vpRecMsg" class="mut" style="margin-top:6px"></div></div>
  </div></div>
 <div id="editor"><div class="pv"><div class="row" style="padding:8px 12px"><button class="back" onclick="Ed.close()">‹</button><b id="edTitle" style="flex:1">Новый персонаж</b><button class="btn" onclick="Ed.undo()">↺</button><button class="btn" onclick="Ed.voice()">🔊</button></div><canvas id="edc" width="720" height="600"></canvas></div>
 <div style="padding:10px 14px 120px">
@@ -312,7 +314,7 @@ async function prepare(e, onStep, isCancelled) {
     if (isCancelled && isCancelled()) throw new Error('cancel');
     onStep && onStep('Озвучка реплик', i++ / Math.max(1, lines.length), `${i} из ${lines.length}: ${ln.text.slice(0, 40)}`);
     if (audio[ln.key]) continue;
-    if (ln.synth && MK.synthVocal) { try { const buf = await MK.voiceFx(MK.synthVocal(ln), ln.fx || MK.VOICE_FX.natural); bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('vocal', err); } continue; }
+    if (ln.synth && MK.makeVocal) { try { const buf = await MK.makeVocal(ln, lib, (c, b) => Native.call(c, b), async w => ac.decodeAudioData(unb64(w).buffer)); bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('vocal', err); } continue; }
     const r = await Native.call('tts', { text: ln.text, voice: ln.voice, key: ln.key });
     if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, ln.fx || MK.VOICE_FX.natural); bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
   }
@@ -506,7 +508,7 @@ const VP = {
     this.who = who; const c = Lib.data.characters[who]; const own = who === 'Р' ? (Lib.data.narratorFx || {}) : ((c && c.fx) || {});
     const fx = MK.fxFor(Lib.data, who); this.cur = { preset: fx.id, k: fx.k, voiceId: own.voiceId || '' };
     document.getElementById('vpTitle').textContent = 'Голос: ' + (who === 'Р' ? 'Рассказчик' : c.spec.name);
-    this.list(); document.getElementById('vpanel').style.display = 'flex';
+    this.list(); document.getElementById('vpanel').style.display = 'flex'; this.recUI();
     const sel = document.getElementById('vpVoice'); const vs = (await Native.call('voices')) || [];
     sel.innerHTML = '<option value="">как при создании</option>' + vs.map(v => `<option value="${esc(v.id)}">${esc(v.name)} (${esc(v.quality)})</option>`).join('');
     sel.value = this.cur.voiceId; sel.onchange = () => { this.cur.voiceId = sel.value; this.play(); };
@@ -529,7 +531,20 @@ const VP = {
     if (this.who === 'Р') Lib.data.narratorFx = fx; else Lib.data.characters[this.who].fx = fx;
     await Lib.save(); this.close(); App.render();
   },
-  close() { document.getElementById('vpanel').style.display = 'none'; },
+  close() { if (this.recording) this.rec(); document.getElementById('vpanel').style.display = 'none'; },
+  recUI() { const box = document.getElementById('vpLaugh'); box.style.display = this.who === 'Р' ? 'none' : 'block'; const c = Lib.data.characters[this.who] || {};
+    document.getElementById('vpRecDel').style.display = c.laugh ? '' : 'none'; document.getElementById('vpRecMsg').textContent = c.laugh ? 'Смеётся записанным смехом.' : 'Смеётся своим голосом (запись не сделана).'; document.getElementById('vpRec').textContent = this.recording ? '⏹ Стоп' : '🎙 Записать смех'; },
+  async rec() { const who = this.who, key = 'rec-laugh-' + MK.hash32(String(who)).toString(36);
+    if (this.recording) { clearTimeout(this.recT); this.recording = false; await Native.call('recStop', {}); Lib.data.characters[who].laugh = key; await Lib.save(); this.recUI(); this.laugh(); return; }
+    audioPlayback(); const ok = await Native.call('recStart', { key }); if (!ok) { alert('Нет доступа к микрофону. Откройте Настройки → Замер 3D → Микрофон и включите.'); return; }
+    this.recording = true; this.recUI(); document.getElementById('vpRecMsg').textContent = 'Идёт запись… Смейтесь! Потом нажмите «Стоп».'; this.recT = setTimeout(() => { if (this.recording) this.rec(); }, 8200); },
+  async recDel() { delete Lib.data.characters[this.who].laugh; await Lib.save(); this.recUI(); },
+  async laugh() { audioPlayback(); if (!pvCtx || pvCtx.state === 'closed') pvCtx = new (window.AudioContext || window.webkitAudioContext)(); try { pvCtx.resume(); } catch (e) {}
+    const who = this.who, lib = Object.assign({}, Lib.data, { characters: Object.assign({}, Lib.data.characters) }); const c = lib.characters[who];
+    lib.characters[who] = Object.assign({}, c, { fx: { preset: this.cur.preset, k: this.cur.k, voiceId: this.cur.voiceId || undefined } });
+    const lns = MK.collectLines({ scenes: [{ steps: [{ who, do: 'laugh' }] }] }, lib); if (!lns.length) return; const ln = lns[0]; ln.variant = (this._lv = ((this._lv || 0) + 1) % 3);
+    const buf = await MK.makeVocal(ln, lib, (cmd, b) => Native.call(cmd, b), async w => pvCtx.decodeAudioData(unb64(w).buffer));
+    if (pvSrc) { try { pvSrc.stop(); } catch (e) {} } pvSrc = pvCtx.createBufferSource(); pvSrc.buffer = buf; pvSrc.connect(pvCtx.destination); pvSrc.start(); },
 };
 // ---------- «Мой сценарий» ----------
 const Wr = {

@@ -175,6 +175,53 @@ MK.synthVocal = function (ln, sr) {
   const b = new AudioBuffer({ length: data.length, numberOfChannels: 1, sampleRate: sr }); b.copyToChannel(data, 0); return b;
 };
 
+
+// ---- смех из голоса самого героя: iPhone произносит один слог («Ха!», «Хи!», «Хо!») его голосом,
+//      а из этого слога собирается настоящий смех: быстрые выдохи, высота падает, дыхание, вдох в конце ----
+function laughStyle(ln) { const male = ((ln.voice || {}).base || 'female') === 'male', kid = ln.age === 'kid', s = (ln.seed || 7) % 3; if (s === 0 && (kid || !male)) return 'giggle'; if (s === 2 || (male && !kid)) return 'chuckle'; return 'laugh'; }
+MK.laughSyllable = ln => ({ giggle: 'Хи!', chuckle: 'Хо!', laugh: 'Ха!' })[laughStyle(ln)];
+function trimBuf(raw, rel) { const d = raw.getChannelData(0); let pk = 0; for (let i = 0; i < d.length; i++) pk = Math.max(pk, Math.abs(d[i])); const th = pk * (rel || .03); let a = 0; while (a < d.length && Math.abs(d[a]) < th) a++; let b = d.length - 1; while (b > a && Math.abs(d[b]) < th) b--;
+  a = Math.max(0, a - Math.round(raw.sampleRate * .01)); b = Math.min(d.length - 1, b + Math.round(raw.sampleRate * .03)); const o = new AudioBuffer({ length: Math.max(1, b - a + 1), numberOfChannels: 1, sampleRate: raw.sampleRate }); o.copyToChannel(d.subarray(a, b + 1), 0); return o; }
+MK.buildLaughFrom = async function (raw, ln) {
+  const sr = 44100, syl = trimBuf(raw, .04), st = laughStyle(ln), r = rng((ln.seed || 7) * 7 + (ln.variant || 0) * 131 + 1), kid = ln.age === 'kid';
+  const giggle = st === 'giggle', chuck = st === 'chuckle';
+  const plan = []; let t = .03; const nSyl = (giggle ? 6 : chuck ? 4 : 5) + ((r() * 3) | 0), sd = giggle ? .095 : chuck ? .17 : .13;
+  const bout = (n, amp0, rate0, gapK) => { for (let k = 0; k < n; k++) { const prog = k / Math.max(1, n - 1);
+    const rate = rate0 * (k < 2 ? 1 + k * .03 : 1.06 - prog * .2) * (1 + (r() - .5) * .07), amp = amp0 * (k < 2 ? .8 + k * .2 : 1 - prog * .5) * (.85 + r() * .3), d = sd * (1 + prog * .3) * (.85 + r() * .3);
+    plan.push({ t, rate, amp, d, off: k ? .015 + r() * .02 : 0 }); t += d + (giggle ? .03 : .05) * gapK * (.7 + r() * .6); } };
+  bout(nSyl, 1, giggle ? 1.18 : chuck ? 1.0 : 1.12, 1);
+  const tIn = t + .02; t += .45; let tail = false; if (r() < .55) { t += .05; bout(2 + ((r() * 2) | 0), .55, giggle ? 1.08 : .98, 1.2); tail = true; }
+  const ac = new OfflineAudioContext(1, Math.ceil((t + .4) * sr), sr);
+  const out = ac.createGain(); out.connect(ac.destination); const rv = ac.createConvolver(); rv.buffer = MK.roomIR(ac, .45); const rg = ac.createGain(); rg.gain.value = .12; out.connect(rv); rv.connect(rg); rg.connect(ac.destination);
+  const nz = MK._noise(ac);
+  for (const p of plan) { const s = ac.createBufferSource(); s.buffer = syl; s.playbackRate.value = p.rate; const g = ac.createGain(); s.connect(g); g.connect(out);
+    g.gain.setValueAtTime(0, p.t); g.gain.linearRampToValueAtTime(p.amp, p.t + .008); g.gain.setValueAtTime(p.amp, p.t + p.d * .45); g.gain.exponentialRampToValueAtTime(.001, p.t + p.d); s.start(p.t, p.off); s.stop(p.t + p.d + .02);
+    // выдох поверх слога и чуть после — смех «на воздухе»
+    const b = ac.createBufferSource(); b.buffer = nz; b.loop = true; const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = giggle ? 2600 : 1700; bp.Q.value = .9; const bg = ac.createGain(); b.connect(bp); bp.connect(bg); bg.connect(out);
+    bg.gain.setValueAtTime(0, p.t); bg.gain.linearRampToValueAtTime(p.amp * .09, p.t + .01); bg.gain.linearRampToValueAtTime(p.amp * .05, p.t + p.d * .6); bg.gain.linearRampToValueAtTime(0, p.t + p.d + .05); b.start(p.t, (p.t * 13) % .9); b.stop(p.t + p.d + .07); }
+  { // вдох
+    const b = ac.createBufferSource(); b.buffer = nz; b.loop = true; const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.setValueAtTime(1500, tIn); bp.frequency.linearRampToValueAtTime(2800, tIn + .35); bp.Q.value = 1.3; const bg = ac.createGain(); b.connect(bp); bp.connect(bg); bg.connect(out);
+    bg.gain.setValueAtTime(0, tIn); bg.gain.linearRampToValueAtTime(.16, tIn + .12); bg.gain.linearRampToValueAtTime(.12, tIn + .28); bg.gain.linearRampToValueAtTime(0, tIn + .38); b.start(tIn, .3); b.stop(tIn + .4);
+    if (kid || giggle) { const o = ac.createOscillator(), og = ac.createGain(), l = ac.createOscillator(), lg = ac.createGain(); o.frequency.setValueAtTime(950, tIn + .05); o.frequency.linearRampToValueAtTime(1250, tIn + .32); l.frequency.value = 9; lg.gain.value = 25; l.connect(lg); lg.connect(o.frequency);
+      og.gain.setValueAtTime(0, tIn + .05); og.gain.linearRampToValueAtTime(.025, tIn + .15); og.gain.linearRampToValueAtTime(0, tIn + .34); o.connect(og); og.connect(out); o.start(tIn + .05); o.stop(tIn + .36); l.start(tIn + .05); l.stop(tIn + .36); } }
+  const res = await ac.startRendering(); return trimBuf(res, .005);
+};
+/** Записанный смех: обрезаем тишину, каждый раз чуть другая скорость — не звучит одной и той же записью. */
+MK.prepRecorded = async function (raw, variant) {
+  const b = trimBuf(raw, .03), rate = [1, 1.04, .97][(variant || 0) % 3], sr = 44100, ac = new OfflineAudioContext(1, Math.ceil(b.duration / rate * sr) + 100, sr);
+  const s = ac.createBufferSource(); s.buffer = b; s.playbackRate.value = rate; s.connect(ac.destination); s.start(0); return ac.startRendering(); };
+/** Любой возглас героя → готовый звук (запись → голос героя → синтез). nat — вызов к iPhone, decode — раскодировать wav. */
+MK.makeVocal = async function (ln, lib, nat, decode) {
+  let buf = null;
+  if (ln.synth === 'laugh') {
+    const rk = ((lib.characters || {})[ln.who] || {}).laugh;
+    if (rk) { try { const r = await nat('recLoad', { key: rk }); if (r && r.wav) buf = await MK.prepRecorded(await decode(r.wav), ln.variant); } catch (e) { console.log('rec', e); } }
+    if (!buf) { try { const r = await nat('tts', { text: MK.laughSyllable(ln), voice: ln.voice, key: 'syl-' + MK.hash32(MK.canon(ln.voice) + MK.laughSyllable(ln)).toString(36) }); if (r && r.wav) buf = await MK.buildLaughFrom(await decode(r.wav), ln); } catch (e) { console.log('syl', e); } }
+  }
+  if (!buf) buf = MK.synthVocal(ln);
+  return MK.voiceFx(buf, ln.fx || MK.VOICE_FX.natural);
+};
+
 // =====================================================================================
 // 3. МУЗЫКА: инструменты
 // =====================================================================================

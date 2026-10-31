@@ -293,6 +293,7 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
     private let tts = MultikTTS()
     private let speaker = AVSpeechSynthesizer()
     private let listener = MultikListener()
+    private let recorder = MultikRecorder()
     private var writer: MultikWriter?
     private let queue = DispatchQueue(label: "multik.writer", qos: .userInitiated)
     private var pickReply: ((Any?, String?) -> Void)?
@@ -354,6 +355,17 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
                     else { replyHandler(NSNull(), nil) }
                 }
             }
+        case "recStart":
+            let key = (body["key"] as? String ?? "rec").replacingOccurrences(of: "/", with: "_")
+            recorder.start(url: root.appendingPathComponent("voice/\(key).wav")) { ok in replyHandler(ok, nil) }
+        case "recStop":
+            recorder.stop()
+            replyHandler(true, nil)
+        case "recLoad":
+            let key = (body["key"] as? String ?? "rec").replacingOccurrences(of: "/", with: "_")
+            if let d = try? Data(contentsOf: root.appendingPathComponent("voice/\(key).wav")), d.count > 2000 {
+                replyHandler(["wav": d.base64EncodedString()], nil)
+            } else { replyHandler(NSNull(), nil) }
         case "speak":
             speaker.stopSpeaking(at: .immediate)
             speaker.speak(MultikTTS.utterance(body["text"] as? String ?? "", body["voice"] as? [String: Any] ?? [:]))
@@ -490,6 +502,34 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
 }
 
 /// Озвучка реплик голосами iPhone в файл (.caf).
+/// Запись своего смеха (или любого возгласа) для героя — через микрофон iPhone.
+final class MultikRecorder: NSObject {
+    private var rec: AVAudioRecorder?
+
+    func start(url: URL, done: @escaping (Bool) -> Void) {
+        AVAudioApplication.requestRecordPermission { granted in
+            DispatchQueue.main.async {
+                guard granted else { done(false); return }
+                let s = AVAudioSession.sharedInstance()
+                try? s.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
+                try? s.setActive(true)
+                try? FileManager.default.removeItem(at: url)
+                let settings: [String: Any] = [AVFormatIDKey: Int(kAudioFormatLinearPCM), AVSampleRateKey: 44100.0,
+                                               AVNumberOfChannelsKey: 1, AVLinearPCMBitDepthKey: 16,
+                                               AVLinearPCMIsFloatKey: false, AVLinearPCMIsBigEndianKey: false]
+                self.rec = try? AVAudioRecorder(url: url, settings: settings)
+                done(self.rec?.record(forDuration: 8) ?? false)
+            }
+        }
+    }
+
+    func stop() {
+        rec?.stop()
+        rec = nil
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+    }
+}
+
 final class MultikTTS: NSObject {
     private let synth = AVSpeechSynthesizer()
     private var busy = false
