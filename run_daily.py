@@ -120,7 +120,7 @@ def main():
             try:
                 import yt_upload
                 tags = script.get("tags", []) + cfg.get("default_tags", [])
-                yt_title = script["title"] + (" | " + script["title_ru"] if script.get("title_ru") else "")
+                yt_title = script["title"] + (" | " + script["title_ru"] if script.get("title_ru") and cfg.get("yt_title_ru", True) else "")
                 yt_link = yt_upload.upload(out, yt_title, desc, tags, cfg)
                 log(f"YouTube: {yt_link}")
                 state["history"][-1]["links"].append("YouTube: " + yt_link)

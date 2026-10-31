@@ -15,9 +15,7 @@
   "formats": [
     "Білесің бе?",
     "Аңыз ба, шындық па?",
-    "Қазақша сөз",
     "Топ-3",
-    "Мақал-мәтел",
     "Қай қала?"
   ],
   "channel_handle": "@bilesin_be_kz",
@@ -86,5 +84,6 @@
       "04_Toy_pozitiv.mp3",
       "bit_02_Motor.mp3"
     ]
-  }
+  },
+  "yt_title_ru": false
 }

@@ -411,6 +411,8 @@ def bank_script(used_titles, n_done=0, cfg=None):
     bank = json.loads((BASE / (cfg or {}).get("bank_file", "topics.json")).read_text(encoding="utf-8"))
     fresh = [s for s in bank if s["title"] not in used_titles] or bank
     formats = (cfg or {}).get("formats") or []
+    if formats:  # только рубрики из config.json (остальные отключены)
+        fresh = [s for s in fresh if s.get("format") in formats] or fresh
     if formats:
         want = formats[n_done % len(formats)]
         for s in fresh:
