@@ -460,7 +460,7 @@ function buildHumanTorso(rig, body, P, n, O, c) {
   const pc = O.overalls || O.pants;
   if (pc && !O.skirt) { const pp = [[0, -L * .62], [R0 * hp * 1.01, -L * .6], [R0 * hp * 1.03, -L * .48], [R0 * wa * 1.03, -L * .2], [0, -L * .2]]; const pt = mesh(lathe(pp, 32), clothM(pc, O), .04, body); pt.scale.z = .8;
     if (!O.overalls) { const bl = mesh(G.tor(R0 * wa * 1.03, R0 * .05, 8, 32), toon('#3a2a20'), 0, body); bl.rotation.x = Math.PI / 2; bl.position.y = -L * .22; bl.scale.y = .8; const bk = mesh(G.box(R0 * .2, R0 * .14, R0 * .05), toon('#d8b03a'), 0, body); bk.position.set(0, -L * .22, R0 * wa * .82); } }
-  if (O.skirt) { const sl = kid ? L * .62 : L * .95, flare = kid ? 1.75 : 1.5, N = 40, prof2 = [[R0 * wa * 1.02, -L * .12], [R0 * hp * 1.08, -L * .4], [R0 * hp * flare, -L * .12 - sl]];
+  if (O.skirt) { const sl = kid ? L * .62 : L * .95, flare = kid ? 1.75 : 1.5, N = 40, prof2 = [[R0 * hp * flare, -L * .12 - sl], [R0 * hp * 1.08, -L * .4], [R0 * wa * 1.02, -L * .12]];
     const geo = lathe(prof2, N * 2); const pa = geo.attributes.position; for (let i = 0; i < pa.count; i++) { const y = pa.getY(i); if (y < -L * .12 - sl * .9) { const a = Math.atan2(pa.getZ(i), pa.getX(i)); const k = 1 + Math.sin(a * 9) * .05; pa.setX(i, pa.getX(i) * k); pa.setZ(i, pa.getZ(i) * k); pa.setY(i, y + Math.cos(a * 9) * .01); } } geo.computeVertexNormals();
     const sk = mesh(geo, clothM(O.skirt, O, O.skirt === shirt), .035, body); sk.material = sk.material.clone(); sk.material.side = THREE.DoubleSide; sk.scale.z = .85; }
 }

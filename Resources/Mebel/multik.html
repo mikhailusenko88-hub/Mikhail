@@ -190,7 +190,7 @@ const App = {
   render() { const m = document.getElementById('main'); m.innerHTML = ''; this['r_' + this.tab](m); window.scrollTo(0, 0); },
   r_series(m) {
     const P = Lib.data.projects;
-    m.insertAdjacentHTML('beforeend', `<div class="card"><b>Новые сценарии</b><div class="mut" style="margin-top:4px">Пиши свой сценарий прямо здесь (текстом или голосом) или загрузи серии, написанные в чате. Персонажи из сценария запоминаются навсегда, со своим кодом.</div>
+    m.insertAdjacentHTML('beforeend', `<div class="card"><b>Новые сценарии</b><div class="mut" style="margin-top:4px">Пиши сценарий прямо здесь — как пьесу или обычным рассказом или загрузи серии, написанные в чате. Персонажи из сценария запоминаются навсегда, со своим кодом.</div>
       <div class="btns"><button class="btn acc" onclick="Wr.open()">✍️ Мой сценарий</button><button class="btn acc" onclick="App.syncScripts()">⟳ Загрузить новые серии</button><button class="btn" onclick="App.paste()">📋 Вставить</button><button class="btn" onclick="App.pickFile()">📁 Файл</button></div><div id="imsg"></div></div>`);
     if (!P.length) { m.insertAdjacentHTML('beforeend', `<div class="card mut">Пока нет ни одного сериала.</div>`); return; }
     for (const p of P) {
