@@ -5,9 +5,9 @@
 const Maker = {};
 
 const COLORS = [
-  [/^рыж/, '#f2a65a', 'рыжий'], [/^бел(ый|ая|ое|ые|ого|ой|ую|ым|ыми|ых|оснеж|еньк)/, '#f6f3ef', 'белый'], [/^ч[её]рн/, '#3b3b46', 'чёрный'],
-  [/^сер(ый|ая|ое|ые|ого|ой|ую|ым|ыми|ых|еньк)/, '#a9a9b8', 'серый'], [/^серебрист/, '#c8ccd6', 'серебристый'], [/^коричнев/, '#8f5d3b', 'коричневый'],
-  [/^бур(ый|ая|ого|ой|ую|ым|ые)$/, '#7a4e30', 'бурый'], [/^шоколад/, '#6b3f26', 'шоколадный'], [/^син(ий|яя|ее|ие|его|ей|юю|им|ими|их|еньк)$/, '#3d8fe0', 'синий'],
+  [/^рыж/, '#f2a65a', 'рыжий'], [/^бел(ый|ая|ое|ые|ого|ой|ую|ым|ыми|ых|ом|ем|оснеж|еньк)/, '#f6f3ef', 'белый'], [/^ч[её]рн/, '#3b3b46', 'чёрный'],
+  [/^сер(ый|ая|ое|ые|ого|ой|ую|ым|ыми|ых|ом|еньк)/, '#a9a9b8', 'серый'], [/^серебрист/, '#c8ccd6', 'серебристый'], [/^коричнев/, '#8f5d3b', 'коричневый'],
+  [/^бур(ый|ая|ого|ой|ую|ым|ые|ом)$/, '#7a4e30', 'бурый'], [/^шоколад/, '#6b3f26', 'шоколадный'], [/^син(ий|яя|ее|ие|его|ей|юю|им|ими|их|ем|еньк\S*)$/, '#3d8fe0', 'синий'],
   [/^голуб/, '#7fc8ff', 'голубой'], [/^зел[её]н/, '#5fbf4a', 'зелёный'], [/^красн/, '#e8344e', 'красный'], [/^розов/, '#ff8fb1', 'розовый'],
   [/^ж[её]лт/, '#ffd23f', 'жёлтый'], [/^(фиолетов|сиренев|лилов)/, '#8d5cf6', 'фиолетовый'], [/^оранжев/, '#ff8a3d', 'оранжевый'],
   [/^золот/, '#e8b830', 'золотой'], [/^(бежев|песочн)/, '#e8cfa0', 'бежевый'], [/^кремов/, '#fff3e0', 'кремовый'], [/^бирюзов/, '#3cc8c0', 'бирюзовый'],
@@ -28,6 +28,8 @@ const PARTS = [ // stem → часть
   [/^(шерст|мех|шубк|окрас|тело|туловищ)/, 'body'], [/^(кож|лицо)/, 'skin'], [/^(волос|причес|прич[её]ск|чёлк|челк|косичк|хвостик|кудр|кудряшк|пучок)/, 'hair'],
   [/^(рубаш|футболк|кофт|свитер|майк|куртк|толстовк|пиджак|жилет|кофточк)/, 'shirt'], [/^плать/, 'dress'], [/^(штан|брюк|джинс|шорт)/, 'pants'],
   [/^юбк/, 'skirt'], [/^(ботин|туфл|кроссов|сапог|обув|кед|тапк|тапоч)/, 'shoes'],
+  [/^(комбинез|комбез)/, 'overalls'], [/^фартук/, 'apron'], [/^(плащ|накидк|мантию|мантия)/, 'cape'], [/^рюкзак/, 'backpack'], [/^галстук/, 'tie'],
+  [/^бабочк/, 'bowtie'], [/^(жилет|жилетк)/, 'vest'], [/^пижам/, 'pajamas'], [/^костюм/, 'suit'],
   [/^(полоск|полосы|полосам|полосами|полосок|полоса|полосу|полосой)$/, 'stripe'], [/^(пятн|пятнышк)/, 'spot'],
   [/^шарф/, 'acc:scarf'], [/^(бант|бантик)/, 'acc:bow'], [/^(шляп|кепк|шапк|панам|шапочк|кепоч)/, 'acc:hat'], [/^корон/, 'acc:crown'],
   [/^(очк|очечк|очёчк)/, 'acc:glasses'], [/^(цвет(ок|оч|ка|ком)|цветочек)/, 'acc:flower'], [/^(ошейн|колокольч)/, 'acc:collar'],
@@ -48,7 +50,10 @@ function colorOf(t) { for (const [re, hex, name] of COLORS) if (re.test(t) && he
 function kindOf(t) { for (const [re, k, name] of KINDS) if (re.test(t)) return { k, name }; return null; }
 function personOf(t) { for (const [re, g, age] of PEOPLE) if (re.test(t)) return { g, age, old: OLD.test(t) }; return null; }
 function partOf(t) { for (const [re, p] of PARTS) if (re.test(t)) return p; return null; }
-const PART_NAMES = { eyes: 'глаза', nose: 'нос', inner: 'уши внутри', belly: 'живот', body: 'шерсть', skin: 'кожа', hair: 'волосы', shirt: 'кофта', dress: 'платье', pants: 'штаны', skirt: 'юбка', shoes: 'обувь', stripe: 'полоски', spot: 'пятна', tail: 'хвост', socks: 'белые лапки', mask: 'маска' };
+const CLOTHES = { shirt: 1, dress: 1, pants: 1, skirt: 1, shoes: 1, overalls: 1, apron: 1, cape: 1, backpack: 1, tie: 1, bowtie: 1, vest: 1, pajamas: 1, suit: 1 };
+const CLOTH_DEF = { shirt: '#3d8fe0', dress: '#ff6fa8', pants: '#33415c', skirt: '#7a5cd6', shoes: '#2d2d2d', overalls: '#3d6fd0', apron: '#ffffff', cape: '#c0283c', backpack: '#e8a23a', tie: '#c0283c', bowtie: '#c0283c', vest: '#6b4a32', pajamas: '#9ad0ff', suit: '#2f3b52' };
+const PART_NAMES0 = null;
+const PART_NAMES = { shirt: 'кофта', dress: 'платье', pants: 'штаны', skirt: 'юбка', shoes: 'обувь', overalls: 'комбинезон', apron: 'фартук', cape: 'плащ', backpack: 'рюкзак', tie: 'галстук', bowtie: 'бабочка', vest: 'жилет', pajamas: 'пижама', suit: 'костюм', eyes: 'глаза', nose: 'нос', inner: 'уши внутри', belly: 'живот', body: 'шерсть', skin: 'кожа', hair: 'волосы', shirt: 'кофта', dress: 'платье', pants: 'штаны', skirt: 'юбка', shoes: 'обувь', stripe: 'полоски', spot: 'пятна', tail: 'хвост', socks: 'белые лапки', mask: 'маска' };
 const ACC_NAMES = { scarf: 'шарф', bow: 'бантик', hat: 'шапка', crown: 'корона', glasses: 'очки', flower: 'цветок', collar: 'ошейник с колокольчиком' };
 const ACC_DEF = { scarf: '#3d8fe0', bow: '#e8344e', hat: '#e8344e', crown: '#ffd23f', glasses: '#2b1d16', flower: '#ff7ab8', collar: '#e8344e' };
 
@@ -129,12 +134,15 @@ Maker.apply = function (draft, text) {
         else { if (!s.pattern.includes(pat)) s.pattern.push(pat); if (col) { s.colors.stripe = col; s._stripeSet = true; } done.push(PART_NAMES[p] + (best ? ' (' + best.name + ')' : '')); } continue; }
       if (p === 'socks' || p === 'mask') { if (removing) s.pattern = s.pattern.filter(x => x !== p); else if (!s.pattern.includes(p)) s.pattern.push(p); done.push((removing ? 'убрал ' : '') + PART_NAMES[p]); continue; }
       if (p === 'tail') { if (col && /^(бел|кремов)/.test(best.name)) { if (!s.pattern.includes('tailtip')) s.pattern.push('tailtip'); done.push('белый кончик хвоста'); } continue; }
+      if (CLOTHES[p] && (s.kind === 'human' || !['shoes', 'skirt'].includes(p) || col)) {
+        s.outfit = s.outfit || {}; const c2 = col || CLOTH_DEF[p];
+        if (removing) { if (p === 'dress') { delete s.outfit.shirt; delete s.outfit.skirt; } else if (p === 'suit') { delete s.outfit.shirt; delete s.outfit.pants; delete s.outfit.tie; } else delete s.outfit[p]; done.push('снял: ' + PART_NAMES[p]); continue; }
+        if (p === 'dress') { s.outfit.shirt = c2; s.outfit.skirt = c2; delete s.outfit.pants; }
+        else if (p === 'suit') { s.outfit.shirt = c2; s.outfit.pants = c2; if (!s.outfit.tie && !s.outfit.bowtie) s.outfit.tie = '#c0283c'; }
+        else if (p === 'pajamas') { s.outfit.shirt = c2; s.outfit.pants = c2; s.outfit.pajamas = '#ffffff'; }
+        else { s.outfit[p] = c2; if (p === 'pants') delete s.outfit.skirt; if (p === 'overalls') delete s.outfit.skirt; }
+        done.push(PART_NAMES[p] + (best ? ': ' + best.name : '')); continue; }
       if (!col) { if (p === 'hair') hairStyle(T, s, done); continue; }
-      if (s.kind === 'human' && ['shirt', 'dress', 'pants', 'skirt', 'shoes'].includes(p)) {
-        s.outfit = s.outfit || {};
-        if (p === 'dress') { s.outfit.shirt = col; s.outfit.skirt = col; } else s.outfit[p] = col;
-        if (p === 'pants') delete s.outfit.skirt; if (p === 'skirt' && s.outfit.pants) {}
-        done.push(PART_NAMES[p] + ': ' + best.name); continue; }
       if (p === 'hair') { s.colors.hair = col; s.hair = s.hair || { style: 'short' }; s.hair.color = col; hairStyle(T, s, done); done.push('волосы: ' + best.name); continue; }
       if (p === 'skin') { s.colors.skin = col; done.push('кожа: ' + best.name); continue; }
       if (p === 'body') { setBody(s, col); done.push('шерсть: ' + best.name); continue; }
@@ -184,6 +192,7 @@ function defaultName(s) {
 Maker.finalize = function (s, id) {
   const out = { id, name: s.name || defaultName(s), kind: s.kind, age: s.age || 'kid', height: s.height || 1, colors: Object.assign({}, s.colors), pattern: (s.pattern || []).slice(), acc: (s.acc || []).map(a => typeof a === 'string' ? { type: a } : Object.assign({}, a)), voice: { base: s.voice.base || 'female', pitch: s.voice.pitch || 1, rate: s.voice.rate || .5 } };
   if (s.kind === 'human') { out.hair = Object.assign({}, s.hair || { style: 'short' }); out.outfit = Object.assign({}, s.outfit || {}); if (out.colors.skin == null) delete out.colors.skin; }
+  else if (s.outfit && Object.keys(s.outfit).length) out.outfit = Object.assign({}, s.outfit);
   if (s.about) out.about = s.about;
   return out;
 };
@@ -191,7 +200,7 @@ Maker.nextId = function (lib) { let n = 100; // свои персонажи из
   for (const id of Object.keys(lib.characters || {})) { const m = id.match(/^К(\d+)$/); if (m) n = Math.max(n, +m[1]); } return 'К' + (n + 1); };
 Maker.describe = function (s) {
   const kn = { cat: 'кот', dog: 'пёс', bear: 'медведь', rabbit: 'заяц', mouse: 'мышь', fox: 'лиса', pig: 'поросёнок', human: 'человек' }[s.kind];
-  const a = (s.acc || []).map(x => ACC_NAMES[x.type || x]).filter(Boolean);
+  const a = (s.acc || []).map(x => ACC_NAMES[x.type || x]).filter(Boolean).concat(Object.keys(s.outfit || {}).filter(k => ['overalls', 'apron', 'cape', 'backpack', 'tie', 'bowtie', 'vest', 'pajamas'].includes(k)).map(k => PART_NAMES[k]));
   return `${kn}${s.pattern && s.pattern.length ? ', ' + s.pattern.map(p => ({ stripes: 'полоски', spots: 'пятна', socks: 'белые лапки', mask: 'маска', tailtip: 'белый кончик хвоста', muzzle: 'белая мордочка', patch: 'пятно у глаза' }[p] || p)).join(', ') : ''}${a.length ? ', ' + a.join(', ') : ''}`;
 };
 Maker.ACC_NAMES = ACC_NAMES; Maker.VOICE_PRESETS = VOICE_PRESETS;

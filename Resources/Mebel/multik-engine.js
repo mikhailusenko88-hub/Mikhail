@@ -56,7 +56,7 @@ function normChar(spec) {
     pattern: spec.pattern || [], acc: spec.acc || [], hair: spec.hair || { style: 'short' }, outfit: spec.outfit || {},
     size: (spec.height || 1), seed: hash32(spec.id + (spec.kind || '')), ol: c.outline || '#2b1d16' };
 }
-MK.normChar = normChar;
+MK.normChar = normChar; MK._cardCast = (tl) => (tl.ep.cardCast || Object.keys(tl.lib.characters).filter(id => (tl.ep.scenes || []).some(s => (s.cast || []).some(c => c.who === id)))).slice(0, 5);
 MK.drawCharPublic = (ctx, spec, st, T) => drawChar(ctx, normChar(spec), st, T);
 
 const LW = .013;
@@ -101,26 +101,44 @@ function drawChar(ctx, ch, st, T) {
   if (an === 'scared' || emo === 'scared') jit = Math.sin(T * 63) * .006;
   if (an === 'spin') sx = Math.cos(ap * Math.PI * 2);
   if (an === 'bow') rot = 0;
-  let fall = 0;
-  if (st.persist === 'fallen') fall = ease((st.pt || 0) / .35);
-  if (an === 'stand' && st.prev === 'fallen') fall = 1 - ease(ap);
+  if (an === 'stomp') { bob = -Math.abs(Math.sin(at * 9)) * .05; }
+  if (an === 'shout') jit = Math.sin(T * 50) * .005;
+  if (an === 'sneeze' && ap > .45 && ap < .6) rot = .25;
+  if (wk.on && wk.style === 'sneak') { bob *= .4; rot = .15; }
+  if (an === 'somersault') { lift = Math.sin(ap * Math.PI) * .35; }
+  let fall = 0, roll = 0;
+  if (st.persist === 'fallen' || st.persist === 'lie') fall = ease((st.pt || 0) / .35);
+  if (an === 'stand' && (st.prev === 'fallen' || st.prev === 'lie')) fall = 1 - ease(ap);
+  if (an === 'roll') { fall = ease(Math.min(ap, 1 - ap) * 8); roll = Math.sin(at * 7) * .5; }
+  const crawl = wk.on && wk.style === 'crawl' ? 1 : 0;
   ctx.translate(jit, -lift);
   if (fall) ctx.rotate(-fall * 1.45 * 1);
+  if (roll) { ctx.translate(0, -.15); ctx.rotate(roll); ctx.translate(0, .15); }
+  if (crawl) { ctx.translate(0, -.02); ctx.rotate((face < 0 ? -1 : 1) * 1.1); ctx.translate(0, .12); }
+  if (an === 'somersault') { ctx.translate(0, -.45); ctx.rotate((face < 0 ? -1 : 1) * ap * Math.PI * 2); ctx.translate(0, .45); }
   ctx.rotate(rot * (face === 0 ? 0 : 1) * .5);
   ctx.scale(flip * sx, sy);
-  const sit = st.persist === 'sit' || st.persist === 'sleep' ? ease((st.pt || 0) / .4) : (an === 'stand' && (st.prev === 'sit' || st.prev === 'sleep') ? 1 - ease(ap) : 0);
+  const crouch = st.persist === 'crouch' ? ease((st.pt || 0) / .3) : (an === 'stand' && st.prev === 'crouch' ? 1 - ease(ap) : 0);
+  const sit = Math.max(crouch * .7, st.persist === 'sit' || st.persist === 'sleep' ? ease((st.pt || 0) / .4) : (an === 'stand' && (st.prev === 'sit' || st.prev === 'sleep') ? 1 - ease(ap) : 0));
   const down = sit * (-P.hipY * .62);
   ctx.translate(0, bob + down);
 
+  // ----- плащ / рюкзак (за телом) -----
+  { const O0 = ch.outfit || {}, top = ch.human ? P.top : P.shY - .02, bot = ch.human ? P.bot + .12 : P.hipY + .14;
+    if (O0.cape) { const sw = Math.sin(T * 2 + ch.seed) * .02 + (wk.on ? .05 : 0); ctx.beginPath(); ctx.moveTo(-.12, top); ctx.lineTo(.12, top); ctx.lineTo(.2 + sw, bot); ctx.lineTo(-.22 - sw, bot); ctx.closePath(); fillStroke(ctx, O0.cape, ol); }
+    if (O0.backpack) { ctx.beginPath(); ctx.rect(-.2, top + .03, .1, .16); fillStroke(ctx, O0.backpack, ol); } }
   // ----- хвост -----
   drawTail(ctx, ch, T, st, emo);
   // ----- ноги -----
-  const legC = ch.human ? (ch.outfit.pants || c.pants) : c.body, footC = ch.human ? (ch.outfit.shoes || c.shoes) : (ch.pattern.includes('socks') ? c.belly : shade(c.body, -.05));
+  const O = ch.outfit || {};
+  const legC = ch.human ? (O.overalls || O.pants || c.pants) : (O.overalls || O.pants || c.body), footC = ch.human ? (ch.outfit.shoes || c.shoes) : (ch.pattern.includes('socks') ? c.belly : shade(c.body, -.05));
   for (let i = 0; i < 2; i++) {
     const side = i ? 1 : -1;
     let lx = side * (ch.human ? .062 : .068), fy = -P.hipY - down, fx = side * (ch.human ? .07 : .078), l = 0;
     if (wk.on) { const ph = wk.ph + i * Math.PI; l = Math.max(0, Math.sin(ph)) * (wk.run ? .1 : .065); fx += Math.cos(ph) * .02 * side; }
     if (an === 'dance') l = Math.max(0, Math.sin(at * 7 + i * Math.PI)) * .06;
+    if (an === 'stomp') l = Math.max(0, Math.sin(at * 9 + i * Math.PI)) * .08;
+    if (an === 'kick' && side === 1) { const k = Math.sin(clamp((ap - .2) / .5, 0, 1) * Math.PI); l = k * .12; fx += k * .14; }
     if (sit) { fy = -P.hipY * (1 - sit * .62) * 1 - down + sit * .0; fx = side * (.09 + sit * .03); }
     const hy = P.hipY;
     capsule(ctx, lx, hy, fx, hy + (fy - l) - .03, P.legW, legC, ol);
@@ -141,8 +159,13 @@ function drawChar(ctx, ch, st, T) {
       for (let k = 0; k < 3; k++) { const y = P.bodyCY - .1 + k * .07; ctx.beginPath(); ctx.moveTo(-P.rx - .01, y); ctx.quadraticCurveTo(-P.rx + .07, y + .02, -P.rx + .09, y + .045); ctx.stroke(); ctx.beginPath(); ctx.moveTo(P.rx + .01, y); ctx.quadraticCurveTo(P.rx - .07, y + .02, P.rx - .09, y + .045); ctx.stroke(); } }
     if (ch.pattern.includes('spots')) { const r = rng(ch.seed); ctx.fillStyle = c.stripe; for (let k = 0; k < 6; k++) { ell(ctx, (r() - .5) * P.rx * 2, P.bodyCY + (r() - .5) * P.ry * 1.6, .03 + r() * .025, .025 + r() * .02); ctx.fill(); } }
     if (!ch.pattern.includes('nobelly')) { ell(ctx, fs * .3, P.bodyCY + .03, P.rx * .62, P.ry * .7); ctx.fillStyle = c.belly; ctx.fill(); }
+    const O1 = ch.outfit || {};
+    if (O1.shirt) { ctx.fillStyle = O1.shirt; ctx.fillRect(-.4, P.bodyCY - P.ry - .05, .8, P.ry * 1.05); if (O1.stripe) { ctx.fillStyle = O1.stripe; for (let k = 0; k < 3; k++) ctx.fillRect(-.4, P.bodyCY - P.ry + .03 + k * .06, .8, .022); } }
+    if (O1.pants) { ctx.fillStyle = O1.pants; ctx.fillRect(-.4, P.bodyCY + P.ry * .25, .8, .4); }
     ctx.restore();
+    if (O1.shirt || O1.pants) { ctx.beginPath(); ctx.ellipse(0, P.bodyCY, P.rx, P.ry, 0, 0, Math.PI * 2); ctx.lineWidth = LW; ctx.strokeStyle = ol; ctx.stroke(); }
   }
+  drawOutfitFront(ctx, ch, P, ol, fs);
   // ----- руки -----
   const handC = ch.human ? c.skin : (ch.pattern.includes('socks') ? c.belly : c.body);
   const armC = ch.human ? (ch.outfit.shirt || c.shirt) : c.body;
@@ -165,6 +188,16 @@ function drawChar(ctx, ch, st, T) {
     if (st.prop && front && !bent && an !== 'wave' && an !== 'point') { a = 1.0; }
     if (an === 'give' && front) a = lerp(1.0, 1.55, Math.sin(clamp(ap, 0, 1) * Math.PI));
     if (st.persist === 'sleep') a = .2;
+    if (an === 'hug') a = 1.25 + Math.sin(clamp(ap, 0, 1) * Math.PI) * .25;
+    if ((an === 'yawn' || an === 'stretch') ) a = 2.75 + Math.sin(at * 2) * .1;
+    if (an === 'scratch' && front) bent = [fs + .1 + Math.sin(at * 14) * .02, P.headCY - P.headR * .55];
+    if (an === 'eat' && front) bent = [fs + .04, P.headCY + P.headR * (.55 + Math.max(0, Math.sin(at * 6)) * .35)];
+    if (an === 'throw' && front) a = ap < .4 ? 2.9 : lerp(2.9, 1.3, ease((ap - .4) / .2));
+    if (an === 'shout') a = 1.1;
+    if (an === 'sing' && front) a = 1.3 + Math.sin(at * 3) * .2;
+    if (crawl) a = 1.7 + Math.sin(wk.ph + (i ? 0 : Math.PI)) * .4;
+    if (crouch) bent = [side * .12, P.headCY - P.headR * .3];
+    if (roll) a = .9;
     if (bent) { hx = bent[0]; hy = bent[1]; } else { hx = sxp + Math.sin(a) * reach * side; hy = syp + Math.cos(a) * reach; }
     const end = limb(ctx, sxp, syp, hx, hy, P.L1, P.L2, -side, P.armW, armC, ol, ch.human ? null : null);
     if (ch.human) { ell(ctx, end[0], end[1], .034, .034); fillStroke(ctx, handC, ol); }
@@ -180,6 +213,9 @@ function drawChar(ctx, ch, st, T) {
   if (an === 'bow') hdy = Math.sin(clamp(ap, 0, 1) * Math.PI) * .07;
   if (st.persist === 'sleep') hrot = .25 * sit;
   if (an === 'dance') hrot = Math.sin(at * 3.5) * .1;
+  if (an === 'sneeze') { hdy = ap > .45 && ap < .62 ? .05 : ap < .45 ? -.02 * ap : 0; }
+  if (an === 'yawn') hrot = -.12;
+  if (an === 'sing') hrot = Math.sin(at * 3) * .08;
   ctx.translate(hdx, P.headCY + hdy); ctx.rotate(hrot);
   drawHead(ctx, ch, st, T, fs, emo, an, at);
   ctx.restore();
@@ -188,6 +224,22 @@ function drawChar(ctx, ch, st, T) {
   ctx.restore();
   // эффекты поверх (без зеркала)
   drawFx(ctx, ch, st, T, S, emo, an, at, P, lift, down, fall, flip, fs);
+}
+
+function drawOutfitFront(ctx, ch, P, ol, fs) {
+  const O = ch.outfit || {}; if (!Object.keys(O).length) return;
+  const top = ch.human ? P.top : P.bodyCY - P.ry * .55, bot = ch.human ? P.bot : P.bodyCY + P.ry * .95, w = ch.human ? P.tw : P.rx * .9;
+  if (O.overalls) { const by = top + (bot - top) * .25;
+    ctx.save(); if (!ch.human) { ctx.beginPath(); ctx.ellipse(0, P.bodyCY, P.rx + .005, P.ry + .005, 0, 0, Math.PI * 2); ctx.clip(); }
+    ctx.beginPath(); ctx.rect(-w * .55 + fs, by, w * 1.1, (bot - by) * .55); ctx.rect(-w * 1.2, by + (bot - by) * .5, w * 2.4, (bot - by) * .7); fillStroke(ctx, O.overalls, ol); ctx.restore();
+    ctx.strokeStyle = O.overalls; ctx.lineWidth = .028; ctx.lineCap = 'round'; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sd * w * .45 + fs, by + .01); ctx.lineTo(sd * w * .75, top - .01); ctx.stroke(); }
+    ctx.fillStyle = '#ffd23f'; for (const sd of [-1, 1]) { ell(ctx, sd * w * .38 + fs, by + .02, .014, .014); ctx.fill(); }
+    ctx.fillStyle = shade(O.overalls, -.15); ctx.fillRect(-w * .2 + fs, by + .04, w * .4, .04); }
+  if (O.apron) { ctx.beginPath(); ctx.moveTo(-w * .5 + fs, top + .02); ctx.lineTo(w * .5 + fs, top + .02); ctx.lineTo(w * .75 + fs, bot + .06); ctx.lineTo(-w * .75 + fs, bot + .06); ctx.closePath(); fillStroke(ctx, O.apron, ol); ctx.fillStyle = shade(O.apron, -.1); ctx.fillRect(-w * .3 + fs, (top + bot) / 2, w * .6, .06); }
+  if (O.vest) { for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sd * w * .15 + fs, top); ctx.lineTo(sd * w * .95, top + .02); ctx.lineTo(sd * w * 1.0, bot - .02); ctx.lineTo(sd * w * .1 + fs, bot - .04); ctx.closePath(); fillStroke(ctx, O.vest, ol); } }
+  if (O.tie) { ctx.beginPath(); ctx.moveTo(fs - .02, top + .01); ctx.lineTo(fs + .02, top + .01); ctx.lineTo(fs + .03, top + .17); ctx.lineTo(fs, top + .2); ctx.lineTo(fs - .03, top + .17); ctx.closePath(); fillStroke(ctx, O.tie, ol); }
+  if (O.bowtie) { for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(fs, top + .02); ctx.lineTo(fs + sd * .06, top - .015); ctx.lineTo(fs + sd * .06, top + .055); ctx.closePath(); fillStroke(ctx, O.bowtie, ol); } }
+  if (O.pajamas) { ctx.save(); ctx.globalAlpha = .9; ctx.fillStyle = '#ffffff'; for (let k = 0; k < 5; k++) { ell(ctx, (k - 2) * w * .35 + fs, (top + bot) / 2 + (k % 2) * .05, .015, .015); ctx.fill(); } ctx.restore(); }
 }
 
 function drawTail(ctx, ch, T, st, emo) {
@@ -304,6 +356,7 @@ function drawFace(ctx, ch, st, T, R, fs, emo, an, at) {
   if (emo === 'sleepy') lid = .55;
   if (st.persist === 'sleep') closedArc = true;
   if (emo === 'laugh' || an === 'laugh') closedArc = true;
+  if (an === 'yawn' || (an === 'sneeze' && st.act.p > .3 && st.act.p < .62) || an === 'sing') closedArc = an === 'sing' ? (Math.sin(at * 1.5) > .3) : true;
   if (emo === 'surprised') { eyeS = 1.15; pup = .7; blink = 0; }
   if (emo === 'scared') { eyeS = 1.1; pup = .55; }
   if (emo === 'shy') look = .35;
@@ -352,7 +405,11 @@ function drawFace(ctx, ch, st, T, R, fs, emo, an, at) {
   const sad = emo === 'sad' || emo === 'cry' || emo === 'scared';
   ctx.strokeStyle = ol; ctx.lineWidth = .014; ctx.lineCap = 'round';
   let open = talk;
-  if (emo === 'laugh' || an === 'laugh') open = Math.max(open, .55 + Math.sin(at * 16) * .25);
+  if (emo === 'laugh' || an === 'laugh' || (an === 'roll' && emo === 'laugh')) open = Math.max(open, .55 + Math.sin(at * 16) * .25);
+  if (an === 'yawn') open = Math.max(open, Math.sin(clamp(at / 1.6, 0, 1) * Math.PI) * 1.1);
+  if (an === 'shout') open = Math.max(open, .95);
+  if (an === 'eat') open = Math.max(open, Math.max(0, Math.sin(at * 12)) * .4);
+  if (an === 'sing') open = Math.max(open, .4 + Math.sin(at * 9) * .3);
   if (emo === 'surprised') open = Math.max(open, .45);
   if (open > .06) {
     const w = R * (emo === 'surprised' ? .14 : .22 + (smile ? .06 : 0)), h = R * (.06 + open * .26);
@@ -381,6 +438,9 @@ function drawFx(ctx, ch, st, T, S, emo, an, at, P, lift, down, fall, flip, fs) {
   if (emo === 'scared' || an === 'scared') { ctx.fillStyle = 'rgba(120,190,255,.9)'; drawDrop(ctx, hx + flip * R * 1.05, hy - R * .5, R * .14); }
   if (an === 'surprise' || (emo === 'surprised' && (st.et || 9) < 1.2)) { const k = clamp((st.et || 0) / .2, 0, 1); ctx.fillStyle = '#ffd23f'; ctx.strokeStyle = '#2b1d16'; ctx.lineWidth = R * .08; ctx.font = `900 ${Math.round(R * .9 * k)}px sans-serif`; ctx.strokeText('!', hx + flip * R * .9, hy - R * 1.1); ctx.fillText('!', hx + flip * R * .9, hy - R * 1.1); }
   if (emo === 'angry') { ctx.strokeStyle = '#e8344e'; ctx.lineWidth = R * .08; ctx.lineCap = 'round'; const ax = hx - flip * R * .8, ay = hy - R * .9, s = R * .14 * (1 + Math.sin(T * 9) * .15); for (const [a, b] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { ctx.beginPath(); ctx.moveTo(ax + a * s * .4, ay + b * s * 1.2); ctx.quadraticCurveTo(ax + a * s * .4, ay + b * s * .4, ax + a * s * 1.2, ay + b * s * .4); ctx.stroke(); } }
+  if (an === 'sing') for (let i = 0; i < 3; i++) { const p = (T * .6 + i / 3) % 1; ctx.globalAlpha = Math.sin(p * Math.PI); ctx.fillStyle = ['#ff6fa8', '#3d8fe0', '#ffd23f'][i]; ctx.font = `900 ${Math.round(R * .6)}px sans-serif`; ctx.fillText(i % 2 ? '♫' : '♪', hx + flip * R * (.9 + p * .6), hy - R * (.4 + p * 1.4)); }
+  if (an === 'sneeze' && st.act.p > .5 && st.act.p < .8) { ctx.globalAlpha = 1 - (st.act.p - .5) / .3; ctx.fillStyle = 'rgba(200,230,255,.9)'; for (let i = 0; i < 6; i++) { ell(ctx, hx + flip * R * (1 + i * .12), hy + R * (.2 + (i % 3 - 1) * .15), R * .05, R * .05); ctx.fill(); } }
+  ctx.globalAlpha = 1;
   if (an === 'think') { const bx = hx + flip * R * 1.5, by = hy - R * 1.5, k = ease(at / .3);
     ctx.globalAlpha = k; ctx.fillStyle = '#fff'; ctx.strokeStyle = '#2b1d16'; ctx.lineWidth = R * .05;
     for (const [dx, dy, r] of [[.55, .9, .1], [.3, .55, .15]]) { ell(ctx, hx + flip * R * (1 + dx * .2), hy - R * dy, R * r, R * r); ctx.fill(); ctx.stroke(); }
@@ -553,10 +613,15 @@ function drawWeather(ctx, L, T) {
 }
 
 // ---------- сборка таймлайна ----------
-const DUR = { jump: .9, wave: 1.6, dance: 3, spin: .8, nod: .9, shake: 1, clap: 1.6, point: 1.4, think: 2.2, laugh: 1.8, scared: 1.4, fall: 1.0, sit: .6, stand: .6, sleep: .8, wake: .8, take: .6, give: 1.1, drop: .5, turn: .25, look: .25, bow: 1.0, cry: 2, surprise: .8 };
-const AUTO_SFX = { jump: 'boing', fall: 'thud', spin: 'whoosh', take: 'pop', give: 'pop', clap: 'clap', surprise: 'ding' };
+const DUR = { jump: .9, wave: 1.6, dance: 3, spin: .8, nod: .9, shake: 1, clap: 1.6, point: 1.4, think: 2.2, laugh: 1.8, scared: 1.4, fall: 1.0, sit: .6, stand: .6, sleep: .8, wake: .8, take: .6, give: 1.1, drop: .5, turn: .25, look: .25, bow: 1.0, cry: 2, surprise: .8,
+  roll: 2.8, somersault: 1.1, lie: .6, hug: 1.8, scratch: 1.6, yawn: 2.0, stretch: 1.8, sneeze: 1.3, eat: 2.2, stomp: 1.3, crouch: .5, hide: .5, sing: 2.6, kick: 1.0, throw: 1.1, shout: 1.4 };
+const MOVES = { walk: .2, run: .42, enter: .2, exit: .2, crawl: .1, sneak: .11 };
+/** Возгласы голосом персонажа при действиях */
+const VOCAL = { laugh: 'Ха-ха-ха-ха!', scared: 'Ой-ой!', surprise: 'Ого!', fall: 'Ай!', sneeze: 'Апчхи!', cry: 'Уа-а-а!', yawn: 'А-а-а-ах.', sing: 'Ля-ля-ля-ля!', somersault: 'Хоп!', stomp: 'Хм!' };
+MK.VOCAL = VOCAL;
+const AUTO_SFX = { jump: 'boing', fall: 'thud', spin: 'whoosh', take: 'pop', give: 'pop', clap: 'clap', surprise: 'ding', somersault: 'whoosh', stomp: 'thud', kick: 'kick', throw: 'whoosh', roll: 'rustle', eat: 'chomp', crouch: 'step', hide: 'step' };
 const OFF = .14;
-MK.ACTIONS = Object.keys(DUR).concat(['walk', 'run', 'enter', 'exit', 'say']);
+MK.ACTIONS = Object.keys(DUR).concat(Object.keys(MOVES), ['say']);
 
 function estSpeech(text) { return .35 + text.length * .062; }
 
@@ -611,14 +676,40 @@ MK.voiceFx = async function (buf, fx) {
 function roomIR(ac, sec) { const n = Math.floor(ac.sampleRate * sec), b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0), r = rng(42); for (let i = 0; i < n; i++) d[i] = (r() * 2 - 1) * Math.pow(1 - i / n, 3) * .6; return b; }
 MK.roomIR = roomIR;
 
+/** Убирает из реплики всё, что iPhone прочитал бы вслух как мусор («backslash», «звёздочка», латинские обрывки). */
+MK.cleanSpeech = function (text) {
+  const removed = [];
+  let t = String(text || '');
+  t = t.replace(/\\[ntr]/g, m => (removed.push(m), ' '));
+  t = t.replace(/[\\\/*_#`~|<>{}\[\]^=+@$%&]/g, m => (removed.push(m), ' '));
+  t = t.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, m => (removed.push(m), ''));
+  t = t.replace(/(^|[^A-Za-zА-Яа-яЁё])([A-Za-z][A-Za-z']*)(?=$|[^A-Za-zА-Яа-яЁё])/g, (m, a, w) => { if (/^(OK|ok|Ok)$/.test(w)) return a + 'окей'; removed.push(w); return a + ' '; });
+  t = t.replace(/\(\s*\)/g, ' ').replace(/\s+([,.!?…])/g, '$1').replace(/([,.!?…]){3,}/g, '$1').replace(/\s{2,}/g, ' ').trim();
+  return { text: t, removed };
+};
+/** Что озвучивается в этом шаге: реплика или возглас при действии (смех, «Ой!», «Апчхи!»). */
+function stepVoiceText(step) {
+  if (step.say) return MK.cleanSpeech(step.say).text;
+  if (step.voice === false || !step.who || step.who === 'Р') return '';
+  if (step.vocal) return MK.cleanSpeech(step.vocal).text;
+  if (step.do && VOCAL[step.do]) return VOCAL[step.do];
+  if (step.emotion === 'laugh' && (step.do === 'roll' || step.do === 'dance' || step.do === 'jump')) return VOCAL.laugh;
+  return '';
+}
+MK.stepVoiceText = stepVoiceText;
+function lineFor(ep, lib, who, text) {
+  const ch = who === 'Р' ? { voice: (ep.narrator && ep.narrator.voice) || lib.narrator || { base: 'male', pitch: 1, rate: .47 } } : (lib.characters[who] && lib.characters[who].spec);
+  if (!ch || !text) return null;
+  const fx = MK.fxFor(lib, who); const v = MK.synthVoice(ch.voice, fx, lib.characters[who] && lib.characters[who].voiceId);
+  return { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + text).toString(36), who, text, voice: v, fx };
+}
+
 /** Список всех реплик эпизода (для озвучки до сборки). */
 MK.collectLines = function (ep, lib) {
   const out = [];
-  for (const sc of ep.scenes || []) for (const st of sc.steps || []) if (st.say) {
-    const who = st.who || 'Р'; const ch = who === 'Р' ? { voice: (ep.narrator && ep.narrator.voice) || lib.narrator || { base: 'male', pitch: 1, rate: .47 } } : (lib.characters[who] && lib.characters[who].spec);
-    if (!ch) continue;
-    const fx = MK.fxFor(lib, who); const v = MK.synthVoice(ch.voice, fx, lib.characters[who] && lib.characters[who].voiceId);
-    out.push({ key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + st.say).toString(36), who, text: st.say, voice: v, fx });
+  for (const sc of ep.scenes || []) for (const st of sc.steps || []) {
+    const text = stepVoiceText(st); if (!text) continue;
+    const ln = lineFor(ep, lib, st.who || 'Р', text); if (ln) out.push(ln);
   }
   return out;
 };
@@ -654,13 +745,19 @@ MK.compile = function (ep, lib, audio) {
   const segs = []; let t = 0; const sfx = [], speech = [], music = [];
   const TITLE = ep.titleCard === false ? 0 : 4.5, END = ep.endCard === false ? 0 : 4;
   if (TITLE) { segs.push({ kind: 'title', t0: 0, t1: TITLE }); music.push({ t0: 0, t1: TITLE, mood: 'happy' }); sfx.push({ t: .3, n: 'sparkle' }); t = TITLE; }
-  const lines = MK.collectLines(ep, lib); let li = 0;
-  for (const [si, sc] of (ep.scenes || []).entries()) {
+    for (const [si, sc] of (ep.scenes || []).entries()) {
     const lid = typeof sc.location === 'string' ? sc.location : sc.location.id;
     const lspec = Object.assign({}, (lib.locations[lid] || {}).spec || {}, typeof sc.location === 'object' ? sc.location : {}, sc.time ? { time: sc.time } : {}, sc.weather ? { weather: sc.weather } : {});
     const C = {}; // состояние персонажей при сборке
     for (const cs of sc.cast || []) { const lc = lib.characters[cs.who]; if (!lc) continue; C[cs.who] = { x: cs.x != null ? cs.x : .5, z: cs.z || 0, face: cs.face === 'left' ? -1 : cs.face === 'camera' ? 0 : 1, vis: cs.hidden ? false : true, ev: [], prop: cs.prop ? { type: cs.prop } : null }; }
-    const props = (sc.props || []).map(p => ({ id: p.id, type: p.type, color: p.color, x: p.x != null ? p.x : .5, holder: null, ev: [] }));
+    // герои не должны стоять друг в друге: разводим по ширине
+    const GAP = .13, near = (a, b) => Math.abs(a - b) < GAP;
+    const spaceX = (id, x, fromX, gap) => { gap = gap || GAP; for (let it = 0; it < 6; it++) { let moved = false; for (const o in C) { if (o === id || !C[o].vis || C[o].z !== (C[id] ? C[id].z : 0)) continue; if (Math.abs(C[o].x - x) < gap) { const side = (fromX != null ? fromX : x) < C[o].x ? -1 : 1; x = C[o].x + side * gap; moved = true; } } if (!moved) break; } return clamp(x, .07, .93); };
+    { const vis = Object.keys(C).filter(id => C[id].vis).sort((a, b) => C[a].x - C[b].x); for (let i = 1; i < vis.length; i++) { const a = C[vis[i - 1]], b = C[vis[i]]; if (a.z === b.z && b.x - a.x < GAP) b.x = a.x + GAP; }
+      const over = vis.length ? C[vis[vis.length - 1]].x - .93 : 0; if (over > 0) vis.forEach(id => C[id].x = Math.max(.07, C[id].x - over));
+      if (vis.length > 6) vis.forEach((id, i) => { if (i % 2) C[id].z = .6; }); }
+    for (const cs of sc.cast || []) if (C[cs.who]) cs._x = C[cs.who].x, cs._z = C[cs.who].z;
+    const props = (sc.props || []).map(p => ({ id: p.id, type: p.type, color: p.color, x: p.x != null ? p.x : .5, x0: p.x != null ? p.x : .5, holder: null, ev: [] }));
     const cam = [{ t: 0, mode: sc.camera || 'wide', on: sc.cameraOn || null }];
     let cur = .6, prevStart = .6; const st0 = t;
     for (const step of sc.steps || []) {
@@ -675,41 +772,54 @@ MK.compile = function (ep, lib, audio) {
         if (step.emotion) ch.ev.push({ t: start, k: 'emo', v: step.emotion });
         if (step.face) ch.ev.push({ t: start, k: 'face', v: faceVal(step.face, ch, C) });
         const d = step.do;
-        if (d === 'walk' || d === 'run' || d === 'enter' || d === 'exit') {
+        if (MOVES[d] != null) {
           let x0 = ch.x, x1 = step.to != null ? (typeof step.to === 'string' ? (C[step.to] ? C[step.to].x + (C[step.to].x > ch.x ? -.12 : .12) : ch.x) : +step.to) : ch.x;
-          if (d === 'enter') { const from = step.from || (x1 > .5 ? 'right' : 'left'); x0 = from === 'right' ? 1 + OFF : -OFF; ch.ev.push({ t: start, k: 'vis', v: true }); if (step.to == null) x1 = from === 'right' ? .75 : .25; }
+          if (d === 'enter') { const from = step.from || (x1 > .5 ? 'right' : 'left'); x0 = from === 'right' ? 1 + OFF : -OFF; ch.ev.push({ t: start, k: 'vis', v: true }); ch.vis = true; if (step.to == null) x1 = from === 'right' ? .75 : .25; }
           if (d === 'exit') { const side = step.side || (ch.x > .5 ? 'right' : 'left'); x1 = side === 'right' ? 1 + OFF : -OFF; }
-          const run = d === 'run' || step.run; const sp = (run ? .42 : .2) * (lib.characters[who].spec.speed || 1);
+          else x1 = spaceX(who, x1, x0);
+          const run = d === 'run' || step.run; const sp = (run ? MOVES.run : MOVES[d] || .2) * (lib.characters[who].spec.speed || 1);
           dur = Math.max(.3, Math.abs(x1 - x0) / sp);
-          ch.ev.push({ t: start, k: 'move', x0, x1, t1: start + dur, run });
+          ch.ev.push({ t: start, k: 'move', x0, x1, t1: start + dur, run, style: d === 'crawl' || d === 'sneak' ? d : null });
           ch.ev.push({ t: start, k: 'face', v: x1 >= x0 ? 1 : -1 });
-          if (d === 'exit') ch.ev.push({ t: start + dur, k: 'vis', v: false });
+          if (d === 'exit') { ch.ev.push({ t: start + dur, k: 'vis', v: false }); ch.vis = false; }
           ch.x = x1;
           if (step.face) ch.ev.push({ t: start + dur, k: 'face', v: faceVal(step.face, ch, C) });
         } else if (d && DUR[d] != null) {
-          dur = step.dur || DUR[d];
-          if (['sit', 'sleep', 'fall'].includes(d)) ch.ev.push({ t: start, k: 'persist', v: d === 'fall' ? 'fallen' : d });
+          let s0 = start;
+          // подойти, если для действия нужно быть рядом (обнять, отдать, пнуть мяч)
+          const tgtX = (d === 'hug' || d === 'give') && step.to && C[step.to] ? C[step.to].x + (C[step.to].x > ch.x ? -.1 : .1)
+            : d === 'kick' ? (() => { const p = props.find(p => p.id === step.prop) || props.filter(p => !p.holder).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; return p ? p.x - (p.x > ch.x ? .07 : -.07) : null; })() : null;
+          if (tgtX != null && Math.abs(tgtX - ch.x) > .04) { const wd = Math.abs(tgtX - ch.x) / .22; ch.ev.push({ t: s0, k: 'move', x0: ch.x, x1: tgtX, t1: s0 + wd }); ch.ev.push({ t: s0, k: 'face', v: tgtX >= ch.x ? 1 : -1 }); ch.x = tgtX; s0 += wd; }
+          dur = (s0 - start) + (step.dur || DUR[d]);
+          if (['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d)) ch.ev.push({ t: s0, k: 'persist', v: d === 'fall' ? 'fallen' : d === 'hide' ? 'crouch' : d });
           if (d === 'stand' || d === 'wake') { ch.ev.push({ t: start, k: 'act', n: 'stand', t1: start + dur }); ch.ev.push({ t: start + dur, k: 'persist', v: 'none' }); }
           else if (d === 'turn' || d === 'look') ch.ev.push({ t: start, k: 'face', v: faceVal(step.to || step.face || 'camera', ch, C) });
-          else ch.ev.push({ t: start, k: 'act', n: d, t1: start + dur, text: step.text });
-          if (AUTO_SFX[d] && step.sfx !== false) sfx.push({ t: st0 + start + (d === 'fall' ? .3 : d === 'clap' ? 0 : .05), n: AUTO_SFX[d], rep: d === 'clap' ? 4 : 1 });
+          else if (!['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d) || d === 'fall') ch.ev.push({ t: s0, k: 'act', n: d, t1: start + dur, text: step.text, to: step.to });
+          if (d === 'hug' && step.to && C[step.to]) { C[step.to].ev.push({ t: s0, k: 'act', n: 'hug', t1: start + dur }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); }
+          if (AUTO_SFX[d] && step.sfx !== false) sfx.push({ t: st0 + s0 + (d === 'fall' ? .3 : d === 'clap' ? 0 : d === 'kick' ? .45 : d === 'throw' ? .45 : .05), n: AUTO_SFX[d], rep: d === 'clap' ? 4 : d === 'stomp' ? 3 : d === 'eat' ? 3 : 1, gap: d === 'stomp' ? .35 : d === 'eat' ? .5 : .22 });
+          if (d === 'kick' || d === 'throw') { const p = d === 'throw' ? props.find(p => p.holder === who) : (props.find(p => p.id === step.prop) || props.filter(p => !p.holder).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]);
+            if (p) { const fromX = d === 'throw' ? ch.x : p.x; const to = step.to && C[step.to] ? C[step.to].x : clamp(ch.x + (ch.face >= 0 ? 1 : -1) * (d === 'kick' ? .45 : .35), .05, .95);
+              const tf = s0 + .45, fd = .5 + Math.abs(to - fromX) * .8; p.ev.push({ t: tf, holder: null, fly: { x0: fromX, x1: to, t1: tf + fd, h: d === 'kick' ? .9 : 1.2 }, x: to }); p.holder = null; p.x = to;
+              if (step.to && C[step.to]) { p.ev.push({ t: tf + fd, holder: step.to }); p.holder = step.to; } } }
           if (d === 'take') { const p = props.find(p => p.id === step.prop) || props.find(p => !p.holder); if (p) { p.ev.push({ t: start + .3, holder: who }); p.holder = who; } }
           if (d === 'drop') { const p = props.find(p => p.holder === who); if (p) { p.ev.push({ t: start + .3, holder: null, x: ch.x + .03 * (ch.face || 1) }); p.holder = null; } }
-          if (d === 'give' && step.to && C[step.to]) { const p = props.find(p => p.holder === who); if (p) { p.ev.push({ t: start + .5, holder: step.to, from: who }); p.holder = step.to; } ch.ev.push({ t: start, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); C[step.to].ev.push({ t: start, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); }
+          if (d === 'give' && step.to && C[step.to]) { const p = props.find(p => p.holder === who); if (p) { p.ev.push({ t: s0 + .5, holder: step.to, from: who }); p.holder = step.to; } ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); }
         }
         if (step.to && step.say && C[step.to]) ch.ev.push({ t: start, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 });
       }
-      if (step.say) {
-        const ln = lines[li++]; const a = ln && audio[ln.key]; const sd = a ? a.dur : estSpeech(step.say);
-        speech.push({ t: st0 + start, dur: sd, key: ln && ln.key, who: who || 'Р', text: step.say });
-        if (ch) ch.ev.push({ t: start, k: 'say', t1: start + sd, key: ln && ln.key, text: step.say });
-        dur = Math.max(dur, sd + (step.pause != null ? step.pause : .3));
+      const vtext = stepVoiceText(step);
+      if (vtext) {
+        const ln = lineFor(ep, lib, who || 'Р', vtext); const a = ln && audio[ln.key]; const sd = a ? a.dur : estSpeech(vtext);
+        const vt = step.say ? start : start + (dur > 1.5 ? .15 : .05);
+        speech.push({ t: st0 + vt, dur: sd, key: ln && ln.key, who: who || 'Р', text: vtext, vocal: !step.say });
+        if (ch) ch.ev.push({ t: vt, k: 'say', t1: vt + sd, key: ln && ln.key, text: vtext });
+        dur = Math.max(dur, (vt - start) + sd + (step.say ? (step.pause != null ? step.pause : .3) : .1));
       }
       if (!step.say && !step.do && !step.wait && step.emotion && !step.with) dur = Math.max(dur, .4);
       prevStart = start; cur = Math.max(cur, start + dur);
     }
     const sdur = Math.max(1.5, cur + (sc.tail != null ? sc.tail : .8));
-    segs.push({ kind: 'scene', t0: t, t1: t + sdur, sc, loc: buildLocation(lspec), lkey: canon(lspec), C, props, cam, idx: si });
+    segs.push({ kind: 'scene', t0: t, t1: t + sdur, sc, loc: buildLocation(lspec), lspec, lkey: canon(lspec), C, props, cam, idx: si });
     music.push({ t0: t, t1: t + sdur, mood: sc.music || ep.music || 'happy' });
     t += sdur;
   }
@@ -718,6 +828,10 @@ MK.compile = function (ep, lib, audio) {
   const mus = []; for (const m of music) { if (m.t1 == null) { const s = segs.find(s => s.t0 <= m.t0 && s.t1 > m.t0); m.t1 = s ? s.t1 : t; } const last = mus[mus.length - 1]; if (last && last.mood === m.mood && Math.abs(last.t1 - m.t0) < .01) last.t1 = m.t1; else mus.push(Object.assign({}, m)); }
   return { ep, lib, segs, dur: t, sfx, speech, music: mus, audio };
 };
+/** Где предмет в момент t: {holder, x, air} */
+MK.propAt = function (p, t) { let holder = null, x = p.x0 != null ? p.x0 : p.x, air = 0; if (p.x0 == null) p.x0 = p.x;
+  for (const e of p.ev) { if (e.t > t) break; holder = e.holder || null; if (e.fly) { const k = clamp((t - e.t) / (e.fly.t1 - e.t), 0, 1); if (k < 1) { x = lerp(e.fly.x0, e.fly.x1, k); air = Math.sin(k * Math.PI) * e.fly.h; holder = null; } else x = e.fly.x1; } else if (e.x != null) x = e.x; }
+  return { holder, x, air }; };
 function faceVal(v, ch, C) { if (v === 'left') return -1; if (v === 'right') return 1; if (v === 'camera' || v === 'front') return 0; if (C[v]) return C[v].x >= ch.x ? 1 : -1; return ch.face; }
 
 // состояние персонажа в момент t (время сцены)
@@ -730,12 +844,12 @@ function evalChar(init, ev, t, audio, T) {
   for (const e of ev) {
     if (e.t > t) break;
     switch (e.k) {
-      case 'move': { const p = clamp((t - e.t) / (e.t1 - e.t), 0, 1); x = lerp(e.x0, e.x1, p); if (p < 1) { walk = { on: true, run: e.run, ph: (t - e.t) * (e.run ? 15 : 9.5) }; } else walk = { on: false }; break; }
+      case 'move': { const p = clamp((t - e.t) / (e.t1 - e.t), 0, 1); x = lerp(e.x0, e.x1, p); if (p < 1) { walk = { on: true, run: e.run, style: e.style, ph: (t - e.t) * (e.run ? 15 : e.style ? 6 : 9.5) }; } else walk = { on: false }; break; }
       case 'face': if (e.v !== face) { faceFrom = face; face = e.v; faceT = e.t; } break;
       case 'emo': emo = e.v; emoT = e.t; break;
       case 'vis': vis = e.v; break;
       case 'persist': prev = persist; persist = e.v; pT = e.t; break;
-      case 'act': if (t < e.t1) act = { n: e.n, p: (t - e.t) / (e.t1 - e.t), t: t - e.t }, thinkText = e.text; break;
+      case 'act': if (t < e.t1) act = { n: e.n, p: (t - e.t) / (e.t1 - e.t), t: t - e.t, to: e.to }, thinkText = e.text; break;
       case 'say': if (t < e.t1) { const a = audio[e.key]; if (a && a.env) { const i = Math.floor((t - e.t) * 50); talk = clamp((a.env[i] || 0) * 3.2, 0, 1); } else { const k = t - e.t; talk = (Math.sin(k * 21) * .5 + .5) * (Math.sin(k * 5.3) * .3 + .7) * (k > e.t1 - e.t - .15 ? 0 : 1); } } break;
     }
   }
@@ -759,7 +873,9 @@ MK.render = function (ctx, tl, T) {
   if (!seg) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); return; }
   const t = T - seg.t0;
   ctx.save();
-  if (seg.kind === 'title' || seg.kind === 'end') drawCard(ctx, tl, seg, t, T);
+  const use3d = tl.style === '3d' && global.MK3D && global.MK3D.ready;
+  if (use3d) { global.MK3D.draw(ctx, tl, seg, t, T); if (seg.kind === 'title' || seg.kind === 'end') drawCard(ctx, tl, seg, t, T, true); }
+  else if (seg.kind === 'title' || seg.kind === 'end') drawCard(ctx, tl, seg, t, T);
   else drawScene(ctx, tl, seg, t, T);
   // переходы
   const fin = clamp(t / .4, 0, 1), fout = clamp((seg.t1 - T) / .4, 0, 1), a = 1 - Math.min(fin, fout);
@@ -773,10 +889,12 @@ function drawSubtitle(ctx, sp, lib) {
   const words = sp.text.split(' '), lines = []; let ln = ''; for (const w of words) { if (ctx.measureText(ln + ' ' + w).width > W * .7 && ln) { lines.push(ln); ln = w; } else ln = ln ? ln + ' ' + w : w; } lines.push(ln);
   lines.forEach((l, i) => { const y = H - 60 - (lines.length - 1 - i) * 58; ctx.lineWidth = 10; ctx.strokeStyle = 'rgba(0,0,0,.75)'; ctx.strokeText(l, W / 2, y); ctx.fillStyle = '#fff'; ctx.fillText(l, W / 2, y); });
 }
-function drawCard(ctx, tl, seg, t, T) {
+function drawCard(ctx, tl, seg, t, T, textOnly) {
   const ep = tl.ep, title = seg.kind === 'title';
+  if (!textOnly) {
   const g = ctx.createRadialGradient(W / 2, H * .45, 50, W / 2, H / 2, W * .7); g.addColorStop(0, title ? '#ffd56b' : '#9ad0ff'); g.addColorStop(1, title ? '#ff7a59' : '#5a6fd8'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   ctx.save(); ctx.translate(W / 2, H / 2); ctx.rotate(T * .1); ctx.fillStyle = 'rgba(255,255,255,.1)'; for (let i = 0; i < 16; i++) { ctx.rotate(Math.PI / 8); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, -120); ctx.lineTo(W, 120); ctx.fill(); } ctx.restore();
+  }
   const r = rng(11); for (let i = 0; i < 40; i++) { const x = r() * W, y = ((r() * H + T * (60 + r() * 80)) % H); ctx.fillStyle = ['#fff', '#ffd23f', '#ff6fa8', '#7fe0ff'][i % 4]; ctx.save(); ctx.translate(x, y); ctx.rotate(T * 2 + i); ctx.fillRect(-8, -4, 16, 8); ctx.restore(); }
   const k = ease(t / .6), bounce = 1 + Math.sin(clamp(t / .6, 0, 1) * Math.PI) * .08;
   ctx.save(); ctx.translate(W / 2, H * (title ? .27 : .35)); ctx.scale(k * bounce, k * bounce); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -786,6 +904,7 @@ function drawCard(ctx, tl, seg, t, T) {
   if (title && ep.title) { ctx.font = '800 62px -apple-system, "SF Pro Rounded", "DejaVu Sans", sans-serif'; const sub = (ep.episode ? `Серия ${ep.episode}. ` : '') + ep.title; ctx.lineWidth = 14; ctx.strokeText(sub, 0, 125); ctx.fillStyle = '#ffe36b'; ctx.fillText(sub, 0, 125); }
   if (!title && ep.endSub) { ctx.font = '800 56px -apple-system, "DejaVu Sans", sans-serif'; ctx.lineWidth = 12; ctx.strokeText(ep.endSub, 0, 120); ctx.fillStyle = '#ffe36b'; ctx.fillText(ep.endSub, 0, 120); }
   ctx.restore();
+  if (textOnly) return;
   // персонажи серии машут
   const ids = (ep.cardCast || Object.keys(tl.lib.characters).filter(id => (ep.scenes || []).some(s => (s.cast || []).some(c => c.who === id)))).slice(0, 5);
   ids.forEach((id, i) => { const lc = tl.lib.characters[id]; if (!lc) return; const ch = lc._n || (lc._n = normChar(lc.spec)); const x = W / 2 + (i - (ids.length - 1) / 2) * 330, appear = ease((t - .4 - i * .15) / .5);
@@ -799,7 +918,7 @@ function drawScene(ctx, tl, seg, t, T) {
   for (const id in seg.C) { const cd = seg.C[id]; if (!cd._init) { cd._init = { x0: cd.ev.length ? null : cd.x, face0: null, vis0: null }; } }
   for (const id in seg.C) {
     const cd = seg.C[id], cs = (seg.sc.cast || []).find(c => c.who === id) || {};
-    const init = { x0: cs.x != null ? cs.x : .5, face0: cs.face === 'left' ? -1 : cs.face === 'camera' ? 0 : 1, vis0: !cs.hidden };
+    const init = { x0: cs._x != null ? cs._x : cs.x != null ? cs.x : .5, face0: cs.face === 'left' ? -1 : cs.face === 'camera' ? 0 : 1, vis0: !cs.hidden };
     if (!cd._sorted) { cd.ev.sort((a, b) => a.t - b.t); cd._sorted = true; }
     S[id] = evalChar(init, cd.ev, t, tl.audio, T);
     const lc = tl.lib.characters[id]; if (lc) { lc._n = lc._n || normChar(lc.spec); seg._h[id] = lc._n.size * (lc._n.adult ? 1.15 : 1); }
@@ -818,7 +937,7 @@ function drawScene(ctx, tl, seg, t, T) {
   });
   apply(1);
   // предметы на земле
-  for (const p of seg.props) { let holder = null, x = p.x; for (const e of p.ev) if (e.t <= t) { holder = e.holder; if (e.x != null) x = e.x; } p._holder = holder; if (!holder) drawProp(ctx, p, x * W, GROUND + 6, UNIT * .55, T); }
+  for (const p of seg.props) { const ps = MK.propAt(p, t); p._holder = ps.holder; if (!ps.holder) drawProp(ctx, p, ps.x * W, GROUND + 6 - ps.air * UNIT * .6, UNIT * .55, T); }
   // персонажи по глубине
   const order = Object.keys(S).filter(id => S[id].vis && tl.lib.characters[id]).sort((a, b) => (seg.C[b].z - seg.C[a].z) || 0);
   for (const id of order) {
@@ -835,6 +954,19 @@ function drawScene(ctx, tl, seg, t, T) {
   // лёгкая виньетка
   const vg = ctx.createRadialGradient(W / 2, H / 2, H * .45, W / 2, H / 2, H * 1.05); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.22)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
 }
+
+/** Состояния героев в момент t (для 3D) */
+MK._sceneState = function (tl, seg, t, T) {
+  const S = {};
+  for (const id in seg.C) {
+    const cd = seg.C[id], cs = (seg.sc.cast || []).find(c => c.who === id) || {};
+    const init = { x0: cs._x != null ? cs._x : cs.x != null ? cs.x : .5, face0: cs.face === 'left' ? -1 : cs.face === 'camera' ? 0 : 1, vis0: !cs.hidden };
+    if (!cd._sorted) { cd.ev.sort((a, b) => a.t - b.t); cd._sorted = true; }
+    S[id] = evalChar(init, cd.ev, t, tl.audio, T); S[id].z = cd.z || 0;
+  }
+  for (const p of seg.props) { const ps = MK.propAt(p, t); p._holder = ps.holder; p._x = ps.x; p._air = ps.air; }
+  return S;
+};
 
 /** Портрет персонажа для карточки (canvas w×h) */
 MK.portrait = function (canvas, spec, T, act) {
@@ -899,6 +1031,9 @@ const SFX = {
   meow: (ac, o, t) => { const x = tone(ac, o, t, 500, 700, .5, .18, 'sawtooth'); x.frequency.setValueAtTime(500, t); x.frequency.linearRampToValueAtTime(820, t + .2); x.frequency.linearRampToValueAtTime(420, t + .5); },
   bark: (ac, o, t) => { for (let i = 0; i < 2; i++) { tone(ac, o, t + i * .25, 400, 180, .15, .3, 'sawtooth'); } },
   laugh: (ac, o, t) => { for (let i = 0; i < 5; i++) tone(ac, o, t + i * .13, 520 - i * 20, 380 - i * 20, .1, .14, 'triangle'); },
+  kick: (ac, o, t) => { tone(ac, o, t, 180, 70, .12, .45); noiseHit(ac, o, t, .06, .25, 'lowpass', 1200); },
+  chomp: (ac, o, t) => { noiseHit(ac, o, t, .06, .25, 'bandpass', 900, 1.2); tone(ac, o, t, 260, 160, .06, .12, 'triangle'); },
+  rustle: (ac, o, t) => { for (let i = 0; i < 6; i++) noiseHit(ac, o, t + i * .4, .25, .12, 'bandpass', 2500, .8); },
 };
 MK.SFX = Object.keys(SFX);
 
@@ -912,7 +1047,7 @@ MK.mixAudio = async function (tl, buffers) {
   for (const s of tl.speech) { duck.gain.setValueAtTime(1, Math.max(0, s.t - .15)); duck.gain.linearRampToValueAtTime(.28, s.t); duck.gain.setValueAtTime(.28, s.t + s.dur); duck.gain.linearRampToValueAtTime(1, s.t + s.dur + .3); }
   tl.music.forEach((m, i) => { if (m.mood !== 'none') scheduleMusic(ac, duck, m, hash32((tl.ep.series || '') + (tl.ep.episode || 0) + i + m.mood)); });
   const fx = ac.createGain(); fx.gain.value = .4; const fxlp = ac.createBiquadFilter(); fxlp.type = 'lowpass'; fxlp.frequency.value = 5000; fx.connect(fxlp); fxlp.connect(master);
-  for (const s of tl.sfx) { const f = SFX[s.n]; if (!f) continue; for (let i = 0; i < (s.rep || 1); i++) f(ac, fx, s.t + i * .22); }
+  for (const s of tl.sfx) { const f = SFX[s.n]; if (!f) continue; for (let i = 0; i < (s.rep || 1); i++) f(ac, fx, s.t + i * (s.gap || .22)); }
   const vo = ac.createGain(); vo.gain.value = 1.0; vo.connect(master);
   for (const s of tl.speech) { const b = buffers && buffers[s.key]; if (!b) continue; const src = ac.createBufferSource(); src.buffer = b; src.connect(vo); src.start(s.t); }
   const out = await ac.startRendering(); const d = out.getChannelData(0); let pk = 0; for (let i = 0; i < d.length; i++) { const a = Math.abs(d[i]); if (a > pk) pk = a; }

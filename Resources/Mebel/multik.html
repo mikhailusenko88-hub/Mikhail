@@ -76,7 +76,8 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
   <b>ПЕРСОНАЖ:</b> Колючка — серый медвежонок с зелёным шарфом, голос мальчика (новый герой, создаётся навсегда)<br>
   <b>СЦЕНА:</b> лес, ночь, дождь — места: лес, луг, двор, комната, кухня, улица, пляж, зима, космос, детская площадка<br>
   <b>Имя: реплика</b> · <b>Имя (радостно): реплика</b> · <b>Рассказчик: …</b><br>
-  Действия: «Пик входит справа», «Барсик идёт к Пику», «Барсик и Пик танцуют», «Барсик берёт мяч», «Пик отдаёт яблоко Барсику», прыгает, машет, бежит, садится, засыпает, падает, смеётся, плачет, пугается, думает «где же клад?», уходит<br>
+  Действия: «Пик входит справа», «Барсик идёт к Пику», «Барсик и Пик танцуют», «Барсик берёт мяч», «Пик отдаёт яблоко Барсику», «Барсик пинает мяч к Пику», «Пух обнимает Барсика», «Барсик катается по земле от смеха», прыгает, машет, бежит, ползёт, крадётся, кувыркается, садится, ложится, засыпает, падает, встаёт, смеётся, плачет, пугается, чихает, зевает, потягивается, чешет голову, ест, поёт, кричит, топает, приседает, прячется, бросает, думает «где же клад?», уходит. Смех, «Ой!», «Апчхи!», «Ого!» герой произносит сам своим голосом.<br>
+  Одежда в описании героя: комбинезон, кофта, футболка, штаны, шорты, юбка, платье, костюм, пижама, фартук, плащ, жилет, галстук, бабочка, рюкзак, кепка/шапка/шляпа, шарф, очки, бантик, корона<br>
   <b>МУЗЫКА:</b> весёлая / грустная / тревожная / приключения / волшебная / ночная · <b>ЗВУК:</b> бум, дзынь, мяу, гав, стук · <b>ПАУЗА</b> 2 · <b>КАМЕРА:</b> крупно Барсик / общий план / оба<br>
   Можно вставлять и обычный рассказ: диалоги через тире («— Привет! — сказал Барсик.»), смена места («Друзья пошли в лес»). Всё, что не стало действием, прочитает рассказчик.<br>
   Незнакомое слово или имя приложение спросит один раз и запомнит.<br>
@@ -105,6 +106,12 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 <script src="multik-engine.js"></script>
 <script src="multik-maker.js"></script>
 <script src="multik-script.js"></script>
+<script src="multik-3d.js"></script>
+<script type="module">
+import * as THREE from './three.module.min.js';
+try { MK3D.init(THREE); } catch (e) { console.log('3D не запустился', e); }
+window.dispatchEvent(new Event('mk3d'));
+</script>
 <script>
 // любые ошибки показываем на экране, чтобы было видно, что сломалось
 window.addEventListener('error', e => showErr((e.message || 'ошибка') + (e.filename ? ' @' + e.filename.split('/').pop() + ':' + e.lineno : '')));
@@ -206,7 +213,7 @@ const App = {
     for (const c of C) {
       const d = document.createElement('div'); d.className = 'ch';
       const cv = document.createElement('canvas'); cv.width = 360; cv.height = 400; d.appendChild(cv);
-      MK.portrait(cv, c.spec, 1.2);
+      if (!(window.MK3D && MK3D.ready && MK3D.portrait(cv, c.spec, 1.2))) MK.portrait(cv, c.spec, 1.2);
       const v = c.spec.voice || {};
       d.insertAdjacentHTML('beforeend', `<div class="i"><b>${esc(c.spec.name)}</b><div><span class="code">${esc(c.code)}</span> <span class="lock">🔒</span></div>
         <div class="mut">${esc(MK.KIND_NAMES[c.spec.kind] || c.spec.kind)} · голос: ${esc(MK.fxFor(Lib.data, c.spec.id).name)}</div>
@@ -222,7 +229,7 @@ const App = {
     if (!L.length) { m.insertAdjacentHTML('beforeend', `<div class="card mut">Локаций пока нет.</div>`); return; }
     for (const l of L) {
       const d = document.createElement('div'); d.className = 'ch'; d.style.marginBottom = '10px';
-      const cv = document.createElement('canvas'); cv.width = 640; cv.height = 360; d.appendChild(cv); MK.locPreview(cv, l.spec, 2);
+      const cv = document.createElement('canvas'); cv.width = 640; cv.height = 360; d.appendChild(cv); if (!(window.MK3D && MK3D.ready && MK3D.locPreview(cv, l.spec, 2))) MK.locPreview(cv, l.spec, 2);
       d.insertAdjacentHTML('beforeend', `<div class="i"><b>${esc(l.spec.name || '')}</b> <span class="code">${esc(l.code)}</span> <span class="lock">🔒</span><div class="mut">${esc(MK.LOC_NAMES[l.spec.type] || l.spec.type)} · ${esc(l.spec.time || 'day')}</div></div>`);
       m.appendChild(d);
     }
@@ -295,7 +302,7 @@ async function prepare(e, onStep, isCancelled) {
     const r = await Native.call('tts', { text: ln.text, voice: ln.voice, key: ln.key });
     if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, ln.fx || MK.VOICE_FX.natural); bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
   }
-  const tl = MK.compile(ep, lib, audio);
+  const tl = MK.compile(ep, lib, audio); tl.style = (window.MK3D && MK3D.ready) ? '3d' : '2d';
   onStep && onStep('Музыка и звуки', 1, 'Свожу звуковую дорожку…');
   const mix = await MK.mixAudio(tl, bufs);
   return { tl, mix };
@@ -366,7 +373,7 @@ const Build = {
 // ---------- конструктор персонажа ----------
 const Ed = {
   draft: null, hist: [], raf: 0, talkUntil: 0, act: null, listening: false,
-  CHIPS: ['добавь шарф', 'добавь бантик', 'добавь шляпу', 'добавь очки', 'сделай полосатым', 'белый живот', 'глаза голубые', 'голос выше', 'голос ниже', 'побыстрее говорит', 'сделай меньше', 'сделай больше', 'убери всё лишнее'],
+  CHIPS: ['надень комбинезон', 'надень плащ', 'надень фартук', 'добавь рюкзак', 'добавь галстук', 'добавь шарф', 'добавь бантик', 'добавь шляпу', 'добавь очки', 'сделай полосатым', 'белый живот', 'глаза голубые', 'голос выше', 'голос ниже', 'побыстрее говорит', 'сделай меньше', 'сделай больше', 'убери всё лишнее'],
   open(from) {
     this.hist = []; this.draft = from ? JSON.parse(JSON.stringify(from)) : null; if (this.draft) { delete this.draft.id; this.draft.name = (this.draft.name || '') + ' 2'; }
     document.getElementById('edTitle').textContent = from ? 'Похожий на ' + from.name : 'Новый персонаж';
@@ -428,9 +435,12 @@ const Ed = {
     cancelAnimationFrame(this.raf); const cv = document.getElementById('edc');
     const f = () => { const T = performance.now() / 1000, s = this.spec();
       const a = this.act && T - this.act.t0 < 1.2 ? { n: this.act.n, p: (T - this.act.t0) / (this.act.n === 'jump' ? .9 : 1.2), t: T - this.act.t0 } : { n: 'idle', p: 0, t: T };
-      const ctx = cv.getContext('2d'), w = cv.width, h = cv.height; const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#cdeeff'); g.addColorStop(1, '#a8e08a'); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-      const k = h / (400 * 1.45 * Math.max(1, s.height || 1)); ctx.save(); ctx.scale(k, k);
-      MK.drawCharPublic(ctx, s, { x: w / 2 / k, y: (h - 30) / k, s: 1, face: Math.sin(T * .4) * .7, emo: 'happy', act: a, walk: {}, talk: T < this.talkUntil ? (Math.sin(T * 21) * .5 + .5) : 0, persist: 'none' }, T); ctx.restore();
+      const ctx = cv.getContext('2d'), w = cv.width, h = cv.height;
+      const stt = { x: 0, face: 0, emo: 'happy', act: a, walk: {}, talk: T < this.talkUntil ? (Math.sin(T * 21) * .5 + .5) : 0, persist: 'none' };
+      if (!(window.MK3D && MK3D.ready && (this._f = (this._f || 0) + 1) && (this._f % 2 || true) && MK3D.portrait(cv, s, T, { state: stt }))) {
+        const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#cdeeff'); g.addColorStop(1, '#a8e08a'); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+        const k = h / (400 * 1.45 * Math.max(1, s.height || 1)); ctx.save(); ctx.scale(k, k);
+        MK.drawCharPublic(ctx, s, Object.assign(stt, { x: w / 2 / k, y: (h - 30) / k, s: 1, face: Math.sin(T * .4) * .7 }), T); ctx.restore(); }
       if (document.getElementById('editor').style.display !== 'none') this.raf = requestAnimationFrame(f); };
     f();
   },
@@ -573,5 +583,6 @@ function dictToScript(s) {
     .replace(/\s*(запятая)\s*/gi, ', ').replace(/\s*открыть скобку\s*/gi, ' (').replace(/\s*закрыть скобку\s*/gi, ') ')
     .replace(/(^|\n|\.\s*)(сцена|серия|персонаж|музыка|звук|камера|сериал)\s+/gi, (m, a, w) => a + w.toUpperCase() + ': ');
 }
+window.addEventListener('mk3d', () => { if (Lib.data && document.getElementById('main')) App.render(); });
 App.init();
 </script></body></html>

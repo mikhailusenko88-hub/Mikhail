@@ -15,17 +15,23 @@ const SFX = [[/(бум|удар|бах|грох)/, 'thud'], [/(дзынь|дин
   [/(мяу)/, 'meow'], [/(гав)/, 'bark'], [/(смех|хаха)/, 'laugh'], [/(всплеск|плюх)/, 'splash'], [/(хлоп)/, 'clap'], [/(вжух|свист|ух)/, 'whoosh'], [/(барабан)/, 'drum'], [/(прыг|боинг)/, 'boing'], [/(шаг)/, 'step'], [/(хлопок|чпок|поп)/, 'pop']];
 const PROPS = [[/^мяч/, 'ball'], [/^яблок/, 'apple'], [/^рыб/, 'fish'], [/^(коробк|ящик)/, 'box'], [/^подар/, 'gift'], [/^цвет(ок|оч|к)/, 'flower'], [/^книг/, 'book'], [/^зв[её]зд/, 'star'],
   [/^торт/, 'cake'], [/^кост/, 'bone'], [/^морков/, 'carrot'], [/^сыр/, 'cheese'], [/^(шарик|шар$|шара|шаром)/, 'balloon'], [/^ключ/, 'key'], [/^(чашк|кружк)/, 'cup']];
-const EMO = [[/(радост|весел|счастлив|улыба|довольн)/, 'happy'], [/(смеет|хохоч|смешн|смех)/, 'laugh'], [/(груст|печал|расстро)/, 'sad'], [/(плач|рыда|сл[её]з)/, 'cry'],
+const EMO = [[/(радост|весел|счастлив|улыба|довольн)/, 'happy'], [/(смеет|хохоч|смешн|смех|хихик)/, 'laugh'], [/(груст|печал|расстро)/, 'sad'], [/(плач|рыда|сл[её]з)/, 'cry'],
   [/(злит|сердит|зло(?![а-я])|злой|злая|гневн|обиж)/, 'angry'], [/(удивл|изумл|(^|[^а-я])ого(?![а-я]))/, 'surprised'], [/(испуг|страшн|бои|боя|дрож)/, 'scared'], [/(сонн|зева|устал)/, 'sleepy'],
   [/(влюбл|нежно|с любов)/, 'love'], [/(смущ|стесн)/, 'shy'], [/(спокойн|обычн)/, 'neutral']];
 const VERBS = [ // stem → действие (порядок важен)
+  [/^(катает|катают|валяет|валяют|покатил)/, 'roll'], [/^(кувырк|сальто)/, 'somersault'], [/^(ползет|ползёт|ползут|ползает|полз|ползк)/, 'crawl'],
+  [/^(крадет|крадёт|крадут|подкрад|крадучись)/, 'sneak'], [/^(лежит|лежат|ложит|леж|улегл|улёгся|разлегл)/, 'lie'], [/^(обнима|обнял|обнимет)/, 'hug'],
+  [/^(чешет|почесал|чешут|почёсыва|почесыва)/, 'scratch'], [/^(зева|зевнул)/, 'yawn'], [/^(потягива|потянул)/, 'stretch'], [/^(чиха|чихнул)/, 'sneeze'],
+  [/^(ест$|едят|кушает|кушают|жует|жуёт|грызет|грызёт|лопает|уплета|съел|ел$|поедает)/, 'eat'], [/^(топает|топают|топнул|топочет)/, 'stomp'],
+  [/^(присед|присел|пригнул|пригиба)/, 'crouch'], [/^(прячет|прячут|спрятал|спрята|прятал)/, 'hide'], [/^(поет|поёт|поют|напева|запел|спел)/, 'sing'],
+  [/^(пинает|пнул|пинают|бьет|бьёт|ударил)/, 'kick'], [/^(бросает|бросил|кидает|кинул|бросают|швыря)/, 'throw'], [/^(кричит|крикнул|закричал|орет|орёт|вопит)/, 'shout'],
   [/^(вход|приход|появля|прибега|заход|прилета|выбега)/, 'enter'], [/^(уход|убега|выход|исчеза|улета|уходят|убегают)/, 'exit'],
-  [/^(бежит|бегут|бега|мчит|несет|несут)/, 'run'], [/^(ид[её]т|идут|подход|шага|направля|подбега|топа|ползет)/, 'walk'],
+  [/^(бежит|бегут|бега|мчит|несет|несут)/, 'run'], [/^(ид[её]т|идут|подход|шага|направля|подбега)/, 'walk'],
   [/^(прыга|подпрыг|скач)/, 'jump'], [/^(маш[еу]т|помаха)/, 'wave'], [/^(танцу|пляш)/, 'dance'], [/^(кружит|крутит|вертит)/, 'spin'], [/^(кива)/, 'nod'],
   [/^(кача|мота)/, 'shake'], [/^(хлопа|аплодир)/, 'clap'], [/^(показыва|указыва)/, 'point'], [/^(дума|размышля|мечта|задума)/, 'think'],
   [/^(смеет|смеют|хохоч|хихика)/, 'laugh'], [/^(пуга|испуга|дрож|боит)/, 'scared'], [/^(плач|рыда)/, 'cry'], [/^(кланя|поклон)/, 'bow'], [/^(удивля)/, 'surprise'],
-  [/^(пада|упал|спотыка|поскальз)/, 'fall'], [/^(сад|присажива|сел$|сели$)/, 'sit'], [/^(засыпа|спит|спят|усну|ложит)/, 'sleep'], [/^(вста|поднима|просыпа|проснул)/, 'stand'],
-  [/^(поворач|оборач|смотр|гляд|взгляну)/, 'turn'], [/^(бер[её]т|берут|поднима|хвата|наход|наш[её]л)/, 'take'], [/^(отда|дарит|передает|протягива|угоща)/, 'give'], [/^(брос|клад|полож|ставит|роня)/, 'drop'],
+  [/^(пада|упал|спотыка|поскальз)/, 'fall'], [/^(сад|присажива|сел$|сели$)/, 'sit'], [/^(засыпа|спит|спят|усну|ложит)/, 'sleep'], [/^(вста|просыпа|проснул|поднялс|поднима[её]тся)/, 'stand'],
+  [/^(поворач|оборач|смотр|гляд|взгляну)/, 'turn'], [/^(бер[её]т|берут|поднима|хвата|наход|наш[её]л)/, 'take'], [/^(отда|дарит|передает|протягива|угоща)/, 'give'], [/^(клад|полож|ставит|роня|опуска)/, 'drop'],
 ];
 const NARR = /^(рассказчик|автор|голос за кадром|за кадром|диктор)/;
 const GENERIC = new Set('кот кошка котик котенок пес собака щенок мышонок мышка мышь медведь медвежонок заяц зайчик зайка лиса лисенок поросенок свинка мальчик девочка бабушка дедушка мама папа тетя дядя'.split(' '));
@@ -109,8 +115,12 @@ S.parse = function (text, lib, opts) {
       if (!who) { if (/^[А-ЯЁA-Z]/.test(m[1].trim()) && m[1].trim().split(/\s+/).length <= 3) { unknownNames.add(m[1].trim()); errors.push(`Строка ${lineNo}: кто такой «${m[1].trim()}»? Выбери ниже, кто это, или добавь строку «ПЕРСОНАЖ: ${m[1].trim()} — описание».`); continue; }
         m = null; } else {
       castOf(who);
-      const step = { who, say: m[3].replace(/^["«]|["»]$/g, '').trim() };
+      const cl = global.MK ? global.MK.cleanSpeech(m[3].replace(/^["«]|["»]$/g, '').trim()) : { text: m[3], removed: [] };
+      if (cl.removed.length) warnings.push(`Строка ${lineNo}: убрал из озвучки лишнее: ${cl.removed.join(' ')}`);
+      if (!cl.text) continue;
+      const step = { who, say: cl.text };
       if (m[2]) { const e = pick(EMO, low(m[2])); if (e) step.emotion = e; const v = verbOf(low(m[2])); if (v && who !== 'Р') step.do = v; }
+      { const rest = low(m[1]).replace(/^\S+\s*/, ''); const v2 = rest && who !== 'Р' ? verbOf(rest) : null; if (v2 && !step.do) step.do = v2; const e2 = rest ? pick(EMO, rest) : null; if (e2 && !step.emotion) step.emotion = e2; }
       if (who !== 'Р') { const other = lastSpeaker && lastSpeaker !== who && lastSpeaker !== 'Р' ? lastSpeaker : sceneSpeakers.filter(x => x !== who && x !== 'Р').slice(-1)[0]; if (other) step.to = other;
         autoCam(who); }
       sc.steps.push(step); lastSpeaker = who; if (!sceneSpeakers.includes(who)) sceneSpeakers.push(who);
@@ -192,7 +202,12 @@ S.parse = function (text, lib, opts) {
           if (typeof step.to === 'number') sc._x[id] = step.to; else if (sc._x[step.to] != null) sc._x[id] = sc._x[step.to] + (sc._x[step.to] > sc._x[id] ? -.12 : .12); }
         else if (verb === 'think') { step.do = 'think'; const q = sent.match(/[«"]([^»"]+)[»"]/); step.text = q ? q[1] : (d.match(/(о|об|про)\s+(\S+)/) ? '?' : '?'); }
         else if (verb === 'turn') { step.do = 'turn'; step.to = tgt || (/(на нас|в камеру|к зрител)/.test(d) ? 'camera' : /(влево|налево)/.test(d) ? 'left' : /(вправо|направо)/.test(d) ? 'right' : 'camera'); if (tgt) castOf(tgt); }
-        else if (verb === 'take') { const p = propIn(d) || 'ball'; const pr = ensureProp(p, id); step.do = 'take'; step.prop = pr.id; }
+        else if (verb === 'hug') { step.do = 'hug'; if (tgt) { castOf(tgt); step.to = tgt; } }
+        else if (verb === 'kick' || verb === 'throw') { step.do = verb; const p = propIn(d) || (verb === 'kick' ? 'ball' : null);
+          if (verb === 'kick') { const pr = ensureProp(p, id); step.prop = pr.id; } else if (p && !sc.props.some(x => x._held === id)) { const pr = ensureProp(p, id); sc.steps.push({ who: id, do: 'take', prop: pr.id }); pr._held = id; }
+          if (tgt) { castOf(tgt); step.to = tgt; } }
+        else if (verb === 'crawl' || verb === 'sneak') { step.do = verb; if (tgt) { castOf(tgt); step.to = tgt; } else if (/(вправо|направо)/.test(d)) step.to = Math.min(.85, (sc._x[id] || .5) + .3); else if (/(влево|налево)/.test(d)) step.to = Math.max(.15, (sc._x[id] || .5) - .3); else step.to = (sc._x[id] || .5) > .5 ? .35 : .65; if (typeof step.to === 'number') sc._x[id] = step.to; }
+        else if (verb === 'take') { const p = propIn(d) || 'ball'; const pr = ensureProp(p, id); step.do = 'take'; step.prop = pr.id; pr._held = id; }
         else if (verb === 'give') { step.do = 'give'; if (tgt) { castOf(tgt); step.to = tgt; const p = propIn(d); if (p && !sc.props.some(x => x._holder === id)) { const pr = ensureProp(p, id); sc.steps.push({ who: id, do: 'take', prop: pr.id }); } } else delete step.do; }
         else if (verb) step.do = verb;
       }
@@ -210,7 +225,7 @@ S.parse = function (text, lib, opts) {
   const out = [];
   for (const e of eps) {
     if (!e.scenes.length) continue;
-    for (const s of e.scenes) { delete s._cast; delete s._x; delete s._type; delete s._cam; s.props.forEach(p => { delete p._used; delete p._holder; }); if (!s.props.length) delete s.props; }
+    for (const s of e.scenes) { delete s._cast; delete s._x; delete s._type; delete s._cam; s.props.forEach(p => { delete p._used; delete p._holder; delete p._held; }); if (!s.props.length) delete s.props; }
     const usedC = new Set(), usedL = new Set(); e.scenes.forEach(s => { usedL.add(s.location); s.cast.forEach(c => usedC.add(c.who)); s.steps.forEach(st => st.who && usedC.add(st.who)); });
     e.characters = [...usedC].filter(id => newChars[id]).map(id => newChars[id]);
     e.locations = [...usedL].filter(id => newLocs[id]).map(id => newLocs[id]);
@@ -265,7 +280,7 @@ S.EXAMPLE = `СЕРИАЛ: Кот Барсик
 (Колючка идёт вправо)
 Рассказчик: Что же найдут друзья под большим дубом?`;
 
-S.ACTIONS = { enter: 'входит', exit: 'уходит', walk: 'идёт', run: 'бежит', jump: 'прыгает', wave: 'машет', dance: 'танцует', spin: 'кружится', nod: 'кивает', shake: 'качает головой',
+S.ACTIONS = { roll: 'катается по земле', somersault: 'кувыркается', crawl: 'ползёт', sneak: 'крадётся', lie: 'ложится', hug: 'обнимает', scratch: 'чешет голову', yawn: 'зевает', stretch: 'потягивается', sneeze: 'чихает', eat: 'ест', stomp: 'топает', crouch: 'приседает', hide: 'прячется', sing: 'поёт', kick: 'пинает', throw: 'бросает', shout: 'кричит', enter: 'входит', exit: 'уходит', walk: 'идёт', run: 'бежит', jump: 'прыгает', wave: 'машет', dance: 'танцует', spin: 'кружится', nod: 'кивает', shake: 'качает головой',
   clap: 'хлопает', point: 'показывает', think: 'думает', laugh: 'смеётся', scared: 'пугается', cry: 'плачет', bow: 'кланяется', surprise: 'удивляется', fall: 'падает', sit: 'садится',
   sleep: 'засыпает', stand: 'встаёт', turn: 'поворачивается', take: 'берёт', give: 'отдаёт', drop: 'кладёт', none: '— ничего, пусть читает рассказчик' };
 global.MKScript = S;
