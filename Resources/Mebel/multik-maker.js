@@ -70,6 +70,11 @@ const VOICE_PRESETS = {
 };
 
 /** Новый пустой черновик. */
+// телосложение по умолчанию: у каждого вида своё, а внутри вида — разное у разных героев (по имени, всегда одинаково)
+const BUILDS = { cat: ['slim', 'slim', 'normal'], mouse: ['slim', 'slim', 'normal'], fox: ['slim'], rabbit: ['slim', 'slim', 'normal'], wolf: ['tall', 'slim'], squirrel: ['slim'], dog: ['normal', 'slim', 'chubby', 'stocky'],
+  bear: ['chubby', 'stocky'], pig: ['chubby'], cow: ['chubby'], elephant: ['chubby'], lion: ['stocky', 'normal'], hedgehog: ['round'], owl: ['round'], chick: ['round'], duck: ['chubby', 'round'], bird: ['normal', 'round'], frog: ['normal', 'chubby'], dragon: ['stocky', 'normal'], robot: ['normal'], human: ['normal', 'normal', 'slim', 'chubby'] };
+Maker.defaultBuild = function (s) { const L = BUILDS[s.kind] || ['normal']; let h = 0; const k = String(s.name || s.id || ''); for (let i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) >>> 0; return L[h % L.length]; };
+Maker.BUILD_NAMES = { slim: 'худенький', normal: 'обычный', chubby: 'пухленький', tall: 'высокий', stocky: 'крепкий', round: 'кругленький' };
 Maker.blank = function () { return { kind: 'cat', age: 'kid', height: 1, colors: {}, pattern: [], acc: [], voice: Object.assign({}, VOICE_PRESETS.boy), name: '' }; };
 
 /** Применить фразу к черновику. Возвращает {spec, done:[что сделал], unknown:[непонятные слова]} */
@@ -168,7 +173,15 @@ Maker.apply = function (draft, text) {
     T.forEach((t, i) => {
       const nextPart = T[i + 1] && partOf(T[i + 1]);
       if (/^(маленьк|крошечн|мелк|малюсеньк)/.test(t) && !nextPart) { s.height = .82; done.push('маленький'); consumed.add(i); }
-      if (/^(больш|огромн|высок|толст|крупн|здоров)/.test(t) && !nextPart && !isVoice) { s.height = 1.2; done.push('большой'); consumed.add(i); }
+      if (/^(больш|огромн|крупн)/.test(t) && !nextPart && !isVoice) { s.height = 1.2; done.push('большой'); consumed.add(i); }
+      // телосложение
+      if (/^(худ|стройн|тощ|тонень|худень|изящн|грациозн)/.test(t) && !nextPart && !isVoice) { s.build = 'slim'; done.push('худенький'); consumed.add(i); }
+      if (/^(толст|пухл|полн|пухленьк|упитан|круглень|толстеньк|пузат)/.test(t) && !nextPart && !isVoice) { s.build = 'chubby'; done.push('пухленький'); consumed.add(i); }
+      if (/^(высок|длинноног|долговяз)/.test(t) && !nextPart && !isVoice) { s.build = 'tall'; s.height = Math.max(s.height || 1, 1.1); done.push('высокий'); consumed.add(i); }
+      if (/^(крепк|сильн|мускулист|коренаст|здоров|широкоплеч|могуч)/.test(t) && !nextPart && !isVoice) { s.build = 'stocky'; done.push('крепкий'); consumed.add(i); }
+      if (/^(обычн|средн)/.test(t) && T[i + 1] && /^(телосложен|фигур)/.test(T[i + 1])) { s.build = 'normal'; done.push('обычное телосложение'); consumed.add(i); consumed.add(i + 1); }
+      if (/^(худее|похудей|постройнее|потоньше)$/.test(t)) { const L = ['slim', 'normal', 'chubby']; const cur = L.indexOf(s.build || Maker.defaultBuild(s)); s.build = L[Math.max(0, (cur < 0 ? 1 : cur) - 1)]; done.push('худее'); consumed.add(i); }
+      if (/^(толще|потолще|полнее|пополнее|покруглее)$/.test(t)) { const L = ['slim', 'normal', 'chubby']; const cur = L.indexOf(s.build || Maker.defaultBuild(s)); s.build = L[Math.min(2, (cur < 0 ? 1 : cur) + 1)]; done.push('толще'); consumed.add(i); }
       if (/^(меньше|поменьше|ниже)$/.test(t) && !nextPart) { s.height = Math.max(.65, Math.round(((s.height || 1) - .1) * 100) / 100); done.push('меньше'); consumed.add(i); }
       if (/^(больше|побольше|выше)$/.test(t) && !nextPart) { s.height = Math.min(1.4, Math.round(((s.height || 1) + .1) * 100) / 100); done.push('больше'); consumed.add(i); }
       if (OLD.test(t)) consumed.add(i);
@@ -198,13 +211,14 @@ Maker.finalize = function (s, id) {
   const out = { id, name: s.name || defaultName(s), kind: s.kind, age: s.age || 'kid', height: s.height || 1, colors: Object.assign({}, s.colors), pattern: (s.pattern || []).slice(), acc: (s.acc || []).map(a => typeof a === 'string' ? { type: a } : Object.assign({}, a)), voice: { base: s.voice.base || 'female', pitch: s.voice.pitch || 1, rate: s.voice.rate || .5 } };
   if (s.kind === 'human') { out.hair = Object.assign({}, s.hair || { style: 'short' }); out.outfit = Object.assign({}, s.outfit || {}); if (out.colors.skin == null) delete out.colors.skin; }
   else if (s.outfit && Object.keys(s.outfit).length) out.outfit = Object.assign({}, s.outfit);
+  if (s.build) out.build = s.build;
   if (s.about) out.about = s.about;
   return out;
 };
 Maker.nextId = function (lib) { let n = 100; // свои персонажи из приложения: К101, К102… (К1–К99 — из сценариев чата)
   for (const id of Object.keys(lib.characters || {})) { const m = id.match(/^К(\d+)$/); if (m) n = Math.max(n, +m[1]); } return 'К' + (n + 1); };
 Maker.describe = function (s) {
-  const kn = (global.MK && global.MK.KIND_NAMES[s.kind]) || s.kind;
+  const kn = ((global.MK && global.MK.KIND_NAMES[s.kind]) || s.kind) + ', ' + Maker.BUILD_NAMES[s.build || Maker.defaultBuild(s)];
   const a = (s.acc || []).map(x => ACC_NAMES[x.type || x]).filter(Boolean).concat(Object.keys(s.outfit || {}).filter(k => ['overalls', 'apron', 'cape', 'backpack', 'tie', 'bowtie', 'vest', 'pajamas'].includes(k)).map(k => PART_NAMES[k]));
   return `${kn}${s.pattern && s.pattern.length ? ', ' + s.pattern.map(p => ({ stripes: 'полоски', spots: 'пятна', socks: 'белые лапки', mask: 'маска', tailtip: 'белый кончик хвоста', muzzle: 'белая мордочка', patch: 'пятно у глаза' }[p] || p)).join(', ') : ''}${a.length ? ', ' + a.join(', ') : ''}`;
 };

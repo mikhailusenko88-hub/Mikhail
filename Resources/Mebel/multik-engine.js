@@ -781,12 +781,16 @@ MK.compile = function (ep, lib, audio) {
     for (const cs of sc.cast || []) { const lc = lib.characters[cs.who]; if (!lc) continue; C[cs.who] = { x: cs.x != null ? cs.x : .5, z: cs.z || 0, face: cs.face === 'left' ? -1 : cs.face === 'camera' ? 0 : 1, vis: cs.hidden ? false : true, ev: [], prop: cs.prop ? { type: cs.prop } : null }; }
     // герои не должны стоять друг в друге: разводим по ширине
     const GAP = .13, near = (a, b) => Math.abs(a - b) < GAP;
+    const BW = { slim: .085, normal: .1, chubby: .125, stocky: .115, tall: .09, round: .11 }; // ширина героя по телосложению (доля ширины сцены)
+    const wOf = wid => { const sp = (lib.characters[wid] || {}).spec || {}; const b = sp.build || (global.MKMaker ? global.MKMaker.defaultBuild(sp) : 'normal'); return (sp.kind === 'human' ? .09 : BW[b] || .1) * (sp.height || 1); };
     const spaceX = (id, x, fromX, gap) => { gap = gap || GAP; x = clamp(x, .07, .93); const z = C[id] ? C[id].z : 0;
-      const free = (xx, zz) => { for (const o in C) { if (o === id || !C[o].vis) continue; const oz = C[o].z || 0, need = oz === zz ? gap : (zz > oz ? gap * .5 : 0); if (need && Math.abs(C[o].x - xx) < need - 1e-6) return false; } return true; };
+      const free = (xx, zz) => { for (const o in C) { if (o === id || !C[o].vis) continue; const oz = C[o].z || 0, ww = (wOf(id) + wOf(o)) / 2, need = oz === zz ? Math.max(gap, ww + .025) : (zz > oz ? Math.max(gap * .5, ww * .85) : 0); if (need && Math.abs(C[o].x - xx) < need - 1e-6) return false; } return true; };
       if (free(x, z)) return x; const pref = fromX != null && fromX > x ? 1 : -1;
       for (let k = 1; k < 40; k++) for (const sd of [-pref, pref]) { const xx = x + sd * k * .02; if (xx < .07 || xx > .93) continue; if (free(xx, z)) return xx; }
       if (C[id] && !z) { C[id].z = .6; return spaceX(id, x, fromX, gap); }
-      return x; };
+      // места нет совсем — встаём туда, где теснее всего меньше (наибольший запас до соседей)
+      let best = x, bestS = -9; for (let xx = .07; xx <= .93; xx += .01) { let sl = 9; for (const o in C) { if (o === id || !C[o].vis) continue; const oz = C[o].z || 0, ww = (wOf(id) + wOf(o)) / 2, need = oz === z ? Math.max(gap, ww + .025) : (z > oz ? Math.max(gap * .5, ww * .85) : 0); if (need) sl = Math.min(sl, Math.abs(C[o].x - xx) - need); } if (sl > bestS) { bestS = sl; best = xx; } }
+      return best; };
     { const vis = Object.keys(C).filter(id => C[id].vis).sort((a, b) => C[a].x - C[b].x); for (let i = 1; i < vis.length; i++) { const a = C[vis[i - 1]], b = C[vis[i]]; if (a.z === b.z && b.x - a.x < GAP) b.x = a.x + GAP; }
       const over = vis.length ? C[vis[vis.length - 1]].x - .93 : 0; if (over > 0) vis.forEach(id => C[id].x = Math.max(.07, C[id].x - over));
       if (vis.length > 6) vis.forEach((id, i) => { if (i % 2) C[id].z = .6; }); }

@@ -296,6 +296,23 @@ function addStrands(rig, o, L, keep, furK, reg) { furK = (furK || 1) * ({ tail: 
   // базовая поверхность чуть темнее — это «подшёрсток» у корней
   o.material = o.material.clone(); o.material.color.multiplyScalar(rig.kind === 'chick' ? 1 : .9); o.material.sheen = 0; if (rig.kind === 'chick') m.uniforms.uColor.value.multiplyScalar(.93);
 }
+// телосложение: худенький / обычный / пухленький / высокий / крепкий / кругленький
+const BUILD_K = { // ширина, глубина, высота тела, длина и толщина ног и рук, голова
+  slim:   { bx: .7, bz: .74, by: 1.1, legL: 1.6, legR: .78, armL: 1.3, armR: .78, head: .96 },
+  normal: { bx: .86, bz: .88, by: 1.04, legL: 1.25, legR: .92, armL: 1.12, armR: .92, head: 1 },
+  chubby: { bx: 1.06, bz: 1.08, by: .98, legL: .95, legR: 1.08, armL: .98, armR: 1.06, head: 1 },
+  tall:   { bx: .74, bz: .78, by: 1.22, legL: 1.95, legR: .84, armL: 1.5, armR: .84, head: .92 },
+  stocky: { bx: .98, bz: .94, by: 1.06, legL: 1.1, legR: 1.18, armL: 1.15, armR: 1.22, head: .95 },
+  round:  { bx: 1, bz: 1, by: 1, legL: 1, legR: 1, armL: 1, armR: 1, head: 1 } };
+function applyBuild(P, b, human, kind) {
+  if (human) { const h = { slim: [.8, .85], chubby: [1.28, 1.12], stocky: [1.12, 1.15], tall: [.88, .9] }[b]; if (h) { P.torsoR *= h[0]; P.armR *= h[1]; P.legR *= h[1]; P.legX *= Math.max(.85, h[0] * .95); P.shX *= Math.max(.9, h[0] * .92); } return; }
+  const K = BUILD_K[b] || BUILD_K.normal, o = Object.assign({}, P);
+  P.bx = o.bx * K.bx; P.bz = o.bz * K.bz; P.by = o.by * K.by; P.legL = o.legL * K.legL; P.legR = o.legR * K.legR; P.armL = o.armL * K.armL; P.armR = o.armR * K.armR; P.head = o.head * K.head;
+  const dLeg = (P.legL - o.legL) + (P.legR - o.legR) * 1.45;
+  P.hip = o.hip + dLeg; P.bodyY = o.bodyY + dLeg + (P.by - o.by); P.shY = P.bodyY + (o.shY - o.bodyY) * (P.by / o.by);
+  P.headY = P.bodyY + (o.headY - o.bodyY) + (P.by - o.by) * .9 + (P.head - o.head);
+  P.shX = o.shX * K.bx + (P.armR - o.armR); P.legX = Math.max(P.legR * 1.15, o.legX * K.bx);
+}
 function buildRig0(spec) {
   const n = global.MK.normChar(spec), c = n.c, k = n.kind, human = n.human, adult = n.adult, O = spec.outfit || {};
   const R0 = new THREE.Group(); // корень: позиция
@@ -307,6 +324,7 @@ function buildRig0(spec) {
                            : { hip: .38, legL: .3, bodyY: .62, head: .26, headY: 1.02, shY: .8, shX: .21, armL: .3, legX: .09, legR: .07, armR: .055, torsoR: .17, torsoL: .22 })
                    : (adult ? { hip: .26, legL: .17, bodyY: .54, head: .31, headY: 1.08, shY: .74, shX: .3, armL: .2, legX: .14, legR: .085, armR: .068, bx: .34, by: .42, bz: .3 }
                             : { hip: .24, legL: .13, bodyY: .45, head: .34, headY: .98, shY: .64, shX: .27, armL: .16, legX: .13, legR: .075, armR: .06, bx: .32, by: .36, bz: .29 });
+  applyBuild(P, (spec.build || (global.MKMaker ? global.MKMaker.defaultBuild(spec) : 'normal')), human, k); rig.build = spec.build;
   rig.P = P; const bodyC = human ? c.skin : c.body, pawC = human ? c.skin : (n.pattern.includes('socks') ? c.belly : c.body);
   const furMap = !human && n.pattern.includes('stripes') ? stripeTex(c.body, c.stripe, 7, 30, 92) : !human && n.pattern.includes('spots') ? spotTex(c.body, c.stripe, n.seed) : null;
   const headMap = !human && n.pattern.includes('stripes') ? stripeTex(c.body, c.stripe, 10, 4, 46) : null;
@@ -483,8 +501,9 @@ function buildTail(pose, n, rig, P) {
 }
 function buildAcc(a, head, body, hr, rig, human) {
   const t = a.type, cl = a.color || ({ scarf: '#3d8fe0', bow: '#e8344e', hat: '#e8344e', crown: '#ffd23f', glasses: '#2b1d16', flower: '#ff7ab8', collar: '#e8344e' })[t];
-  if (t === 'scarf') { const s = mesh(G.tor(human ? .19 : .22, .055, 0), toon(cl), .06, rig.pose); s.rotation.x = Math.PI / 2; s.position.y = rig.P.headY - hr * .95; const e = mesh(G.cap(.05, .18), toon(cl), .08, rig.pose); e.position.set(-.1, rig.P.headY - hr * 1.3, .2); e.rotation.z = .3; }
-  if (t === 'collar') { const s = mesh(G.tor(.2, .025, 0), toon(cl), .06, rig.pose); s.rotation.x = Math.PI / 2; s.position.y = rig.P.headY - hr * .95; const b = mesh(G.sph(.04, 12, 10), toon('#ffd23f'), .08, rig.pose); b.position.set(0, rig.P.headY - hr * 1.05, .2); }
+  const nr = human ? rig.P.torsoR * 1.08 : Math.max(.13, rig.P.bx * .68), nk = nr / .22; // шея — по телосложению
+  if (t === 'scarf') { const s = mesh(G.tor(nr, .055 * Math.max(.75, nk), 0), toon(cl), .06, rig.pose); s.rotation.x = Math.PI / 2; s.position.y = rig.P.headY - hr * .95; const e = mesh(G.cap(.05 * Math.max(.8, nk), .18), toon(cl), .08, rig.pose); e.position.set(-nr * .45, rig.P.headY - hr * 1.3, nr * .9); e.rotation.z = .3; }
+  if (t === 'collar') { const s = mesh(G.tor(nr * .92, .025, 0), toon(cl), .06, rig.pose); s.rotation.x = Math.PI / 2; s.position.y = rig.P.headY - hr * .95; const b = mesh(G.sph(.04, 12, 10), toon('#ffd23f'), .08, rig.pose); b.position.set(0, rig.P.headY - hr * 1.05, nr * .92); }
   if (t === 'hat') { const cap = mesh(new THREE.SphereGeometry(hr * 1.08, 32, 16, 0, Math.PI * 2, 0, Math.PI * .42), toon(cl), .03, head); cap.position.y = hr * .08; cap.rotation.x = -.1;
     const br = mesh(G.cyl(hr * .55, hr * .55, .025, 24), toon(new THREE.Color(cl).multiplyScalar(.8).getStyle()), .05, head); br.position.set(0, hr * .62, hr * .72); br.scale.z = 1.1; br.rotation.x = .25; }
   if (t === 'crown') { const g = new THREE.Group(); g.position.y = hr * .85; head.add(g); mesh(G.cyl(hr * .45, hr * .45, hr * .2, 20, true), toon('#ffd23f'), .05, g).material.side = THREE.DoubleSide; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; const c = mesh(G.cone(hr * .08, hr * .22, 8), toon('#ffd23f'), .08, g); c.position.set(Math.cos(a) * hr * .45, hr * .18, Math.sin(a) * hr * .45); } }
@@ -757,8 +776,8 @@ function grassField(g, r, green, skip, opts) { // трава: ~150–200 тыс.
   band(-1.5, 5.6, 1500); band(-4, -1.5, 850); band(-7, -4, 420);
   const mat = wind(new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide, roughness: .85, metalness: 0, envMapIntensity: .5 }), .28, 'blade');
   const im = new THREE.InstancedMesh(bladeGeo(), mat, items.length); im.castShadow = false; im.receiveShadow = true; im.frustumCulled = false;
-  items.forEach(([x, z], i) => { const nearRow = (Math.abs(z) < .55 || Math.abs(z + .9) < .4) && Math.abs(x) < 6; const h = (nearRow ? .045 + r() * .045 : .07 + r() * .07) * (r() < .04 ? 1.8 : 1);
-    _q.setFromEuler(new THREE.Euler((r() - .5) * .35, r() * Math.PI * 2, (r() - .5) * .35)); _v.set(x, 0, z); _s.set(.012 + r() * .01, h, h); _m4.compose(_v, _q, _s); im.setMatrixAt(i, _m4);
+  items.forEach(([x, z], i) => { const nearRow = (Math.abs(z) < .55 || Math.abs(z + .9) < .4) && Math.abs(x) < 6; const h = (nearRow ? .028 + r() * .028 : .042 + r() * .042) * (r() < .04 ? 1.6 : 1);
+    _q.setFromEuler(new THREE.Euler((r() - .5) * .35, r() * Math.PI * 2, (r() - .5) * .35)); _v.set(x, 0, z); _s.set(.009 + r() * .007, h, h); _m4.compose(_v, _q, _s); im.setMatrixAt(i, _m4);
     const k = r(); _c.copy(k < .5 ? dark : base).lerp(light, r() * .6); if (r() < .05) _c.lerp(new THREE.Color('#c8c070'), .35); im.setColorAt(i, _c); });
   im.instanceMatrix.needsUpdate = true; if (im.instanceColor) im.instanceColor.needsUpdate = true; g.add(im); return im; }
 function leafCloud(par, pts, cols, size, narrow) { // много листьев одной «пачкой»; pts: [pos, dir]
@@ -769,10 +788,10 @@ function leafCloud(par, pts, cols, size, narrow) { // много листьев 
   im.instanceMatrix.needsUpdate = true; if (im.instanceColor) im.instanceColor.needsUpdate = true; par.add(im); return im; }
 function crown(t, cx, cy, cz, R, cols, r) { // крона-шар: тёмная серединка + листья по поверхности, кончиком наружу и чуть вниз
   const inner = new THREE.Mesh(G.sph(R * .9, 20, 14), matte(new THREE.Color(cols[0]).multiplyScalar(.55).getStyle())); inner.position.set(cx, cy, cz); inner.castShadow = true; inner.receiveShadow = true; t.add(inner);
-  const n = Math.round(4 * Math.PI * R * R * 260), pts = [];
+  const n = Math.round(4 * Math.PI * R * R * 560), pts = [];
   for (let i = 0; i < n; i++) { const u = r() * 2 - 1, a = r() * Math.PI * 2, s2 = Math.sqrt(1 - u * u); const d = new THREE.Vector3(s2 * Math.cos(a), u, s2 * Math.sin(a)); const p = new THREE.Vector3(cx, cy, cz).addScaledVector(d, R * (.86 + r() * .16));
     const dir = d.clone().add(new THREE.Vector3((r() - .5) * .6, -.35, (r() - .5) * .6)).normalize(); pts.push([p, dir]); }
-  leafCloud(t, pts, cols, .2, false); }
+  leafCloud(t, pts, cols, .13, false); }
 function treeHQ(g, x, z, s, kind, cl, snow) {
   const t = new THREE.Group(); t.position.set(x, 0, z); t.scale.setScalar(s); g.add(t); const r = rng(global.MK.hash32(x.toFixed(2) + ',' + z.toFixed(2)));
   const bark = new THREE.MeshStandardMaterial({ color: 0xffffff, map: barkTex(), roughness: .95, metalness: 0 });
@@ -781,9 +800,9 @@ function treeHQ(g, x, z, s, kind, cl, snow) {
     const br = new THREE.Mesh(new THREE.TubeGeometry(cv, 8, .05 - i * .008, 8), bark); br.castShadow = true; t.add(br); }
   if (kind === 'fir') { const cols = snow ? ['#2f6a4c', '#3a7a58'] : [cl || '#2f6a4c', '#3d7a5a', '#2a5e44'];
     for (let i = 0; i < 4; i++) { const R = 1.15 - i * .24, H = 1.15, y = 1.25 + i * .58; const ic = new THREE.Mesh(G.cone(R * .85, H * .95, 14), matte(new THREE.Color(cols[0]).multiplyScalar(.6).getStyle())); ic.position.y = y; ic.castShadow = true; t.add(ic);
-      const n = Math.round(Math.PI * R * Math.hypot(R, H) * 420), pts = [];
+      const n = Math.round(Math.PI * R * Math.hypot(R, H) * 850), pts = [];
       for (let k = 0; k < n; k++) { const tt = Math.sqrt(r()), a = r() * Math.PI * 2, rad = R * tt; const p = new THREE.Vector3(Math.cos(a) * rad, y + H / 2 - tt * H, Math.sin(a) * rad); const dir = new THREE.Vector3(Math.cos(a), -.55 + (r() - .5) * .3, Math.sin(a)).normalize(); pts.push([p, dir]); }
-      leafCloud(t, pts, cols, .26, true);
+      leafCloud(t, pts, cols, .18, true);
       if (snow) { const sn = new THREE.Mesh(G.cone(R * .75, .45, 14), matte('#ffffff')); sn.position.y = y + H * .32; t.add(sn); } }
     return t; }
   const cols = cl ? [cl] : ['#4e9a4a', '#5aa850', '#3f8a3e', '#6ab45a'];
@@ -820,6 +839,11 @@ function dirtTex(c, rx, ry) { const k = 'dt' + c + rx + ry; if (envC[k]) return 
   for (let i = 0; i < 1400; i++) { const x = r() * 512, y = r() * 512, rr = 3 + r() * 16; g.fillStyle = '#' + b.clone().offsetHSL(0, -.05, (r() - .5) * .14).getHexString(); g.globalAlpha = .4; g.beginPath(); g.ellipse(x, y, rr, rr * .6, r() * 3, 0, 7); g.fill(); }
   g.globalAlpha = 1; for (let i = 0; i < 260; i++) { const x = r() * 512, y = r() * 512, rr = 1.5 + r() * 3.5; g.fillStyle = '#' + b.clone().offsetHSL(0, -.15, -.12 + r() * .25).getHexString(); g.beginPath(); g.ellipse(x, y, rr, rr * .75, r() * 3, 0, 7); g.fill(); g.fillStyle = 'rgba(0,0,0,.18)'; g.beginPath(); g.ellipse(x + 1, y + 1.2, rr, rr * .5, 0, 0, Math.PI); g.fill(); } });
   t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx, ry); return (envC[k] = t); }
+function cumulus(cg, r, eve) { // пушистое облако: плоское снизу, «кочки» сверху, светится изнутри — без серых пятен
+  const m = new THREE.MeshStandardMaterial({ color: eve ? '#ffe2dc' : '#ffffff', roughness: 1, metalness: 0, emissive: eve ? '#f0b0a8' : '#d4e2f2', emissiveIntensity: .55, envMapIntensity: .4 });
+  const w = 2.6 + r() * 1.6; for (let k = 0; k < 26; k++) { const t = r(), x = (t - .5) * w * 2, top = Math.cos((t - .5) * Math.PI); const rr = (.45 + r() * .55) * (.6 + top * .7); const y = rr * .55 + r() * top * .9;
+    const b = new THREE.Mesh(G.sph(rr, 18, 14), m); b.position.set(x, y, (r() - .5) * 1.2); b.scale.y = .85; b.castShadow = false; b.receiveShadow = false; cg.add(b); }
+  cg.scale.setScalar(.8 + r() * .35); }
 function sidingTex(c) { const k = 'sd' + c; if (envC[k]) return envC[k]; const t = canvasTex(256, 256, (g) => { g.fillStyle = c; g.fillRect(0, 0, 256, 256); for (let y = 0; y < 256; y += 21) { g.fillStyle = 'rgba(0,0,0,.10)'; g.fillRect(0, y, 256, 3); g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(0, y + 3, 256, 2); } }); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2); return (envC[k] = t); }
 function shingleTex(c) { const k = 'sh' + c; if (envC[k]) return envC[k]; const cv = document.createElement('canvas'); cv.width = cv.height = 512; const g = cv.getContext('2d'); g.fillStyle = c; g.fillRect(0, 0, 512, 512); g.globalCompositeOperation = 'multiply'; const tile = scaleTile('col'); for (let j = 0; j < 8; j++) for (let i = 0; i < 8; i++) g.drawImage(tile, i * 64, j * 64, 64.5, 64.5); g.globalCompositeOperation = 'multiply'; g.drawImage(tile, 0, 0, 0, 0);
   const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 3); return (envC[k] = t); }
@@ -835,7 +859,7 @@ function buildLoc(spec) {
     const gp = plane(120, 120, snow ? '#f2f6fc' : green); if (MK3D.hq && !snow) gp.material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: groundTex(new THREE.Color(green).multiplyScalar(.8).getStyle()), roughness: .95 }); g.add(gp);
     const soft = (d, x, z) => d < -.1 ? false : d > .14 ? true : (global.MK.hash32(x.toFixed(3) + z.toFixed(3)) % 100) / 100 < (d + .1) / .24; // d — насколько глубоко внутри тропинки
     const skipG = (x, z) => (type === 'yard' && (soft(Math.min(.7 - Math.abs(x + 3.6), z + 6.2, 3.8 - z), x, z) || (x > -5.7 && x < -1.5 && z < -5.4))) || (type === 'forest' && soft(Math.min(z - .2, 1.6 - z), x, z)) || (type === 'playground' && Math.abs(x) < 1.3 && z > -5.3 && z < -2.7);
-    for (let i = 0; i < 6; i++) { const h = new THREE.Mesh(G.sph(8 + r() * 6, 24, 12), toon(snow ? '#e8f0fa' : night ? '#24453a' : '#98d07a')); h.position.set(-40 + i * 16, -4, -35 - r() * 10); h.scale.y = .5; g.add(h); }
+    for (let i = 0; i < 6; i++) { const hc = snow ? '#e8f0fa' : night ? '#24453a' : '#98d07a'; const h = new THREE.Mesh(G.sph(8 + r() * 6, 40, 20), MK3D.hq && !snow ? new THREE.MeshStandardMaterial({ color: 0xffffff, map: (() => { const t = groundTex(hc).clone(); t.needsUpdate = true; t.repeat.set(10, 5); return t; })(), roughness: .95 }) : toon(hc)); h.position.set(-40 + i * 16, -4, -35 - r() * 10); h.scale.y = .5; g.add(h); }
     if (type === 'yard') { house(g, -3.6, -7, '#f6d7a7', '#d9534f'); fence(g, -4.2, '#e8c48a', -3.6); const pth = plane(1.4, 10, '#d8c3a0'); if (MK3D.hq) pth.material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: dirtTex('#d8c3a0', 1, 7), roughness: .95 }); pth.position.set(-3.6, .01, -1.2); g.add(pth); tree(g, 3.6, -6, 1.3); tree(g, 6, -9, 1.1); tree(g, -8.5, -8, 1.2); tree(g, 8.5, -5.5, .9); }
     if (type === 'forest' || type === 'winter') { for (let i = 0; i < 26; i++) { const x = (r() - .5) * 30, z = -3 - r() * 16; if (Math.abs(x) < 1.5 && z > -5) continue; tree(g, x, z, .9 + r() * .6, snow || r() < .4 ? 'fir' : 'round', snow ? '#2f6a4c' : null, snow); }
       if (!snow) { const pth = plane(40, 1.4, '#d9b77a'); if (MK3D.hq) pth.material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: dirtTex('#d9b77a', 28, 1), roughness: .95 }); pth.position.set(0, .01, .9); g.add(pth); for (let i = 0; i < 8; i++) { const mx = (r() - .5) * 14, mz = -1.5 - r() * 2; mesh(G.cyl(.04, .05, .14, 8), toon('#f2eadf'), .1, g).position.set(mx, .07, mz); const cp = mesh(new THREE.SphereGeometry(.12, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), toon('#e8344e'), .08, g); cp.position.set(mx, .13, mz); } } }
@@ -885,7 +909,7 @@ function buildLoc(spec) {
   }
   if (night && type !== 'space' && type !== 'room' && type !== 'kitchen') { const pts = new Float32Array(600 * 3); for (let i = 0; i < 600; i++) { const th = r() * Math.PI, ph = .15 + r() * Math.PI * .4; pts[i * 3] = Math.cos(th) * 80; pts[i * 3 + 1] = Math.sin(ph) * 60 + 8; pts[i * 3 + 2] = -Math.abs(Math.sin(th) * 80) - 10; } const sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(pts, 3)); g.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xffffff, size: .3 }))); const moon = new THREE.Mesh(G.sph(3, 24, 16), basic('#fff6c8')); moon.position.set(25, 30, -70); g.add(moon); }
   // облака
-  if (!['space', 'room', 'kitchen'].includes(type) && !night) { g.userData.clouds = []; for (let i = 0; i < 6; i++) { const cg = new THREE.Group(); for (let k = 0; k < 5; k++) { const c = new THREE.Mesh(G.sph(.9 + r() * .7, 16, 12), toon(time === 'evening' ? '#ffd6d6' : '#ffffff')); c.position.set(k * 1.1 - 2.2, (r() - .5) * .6, 0); cg.add(c); } cg.position.set(-30 + i * 12, 9 + r() * 4, -30 - r() * 8); g.add(cg); g.userData.clouds.push(cg); } }
+  if (!['space', 'room', 'kitchen'].includes(type) && !night) { g.userData.clouds = []; for (let i = 0; i < 6; i++) { const cg = new THREE.Group(); if (MK3D.hq) cumulus(cg, r, time === 'evening'); else for (let k = 0; k < 5; k++) { const c = new THREE.Mesh(G.sph(.9 + r() * .7, 16, 12), toon(time === 'evening' ? '#ffd6d6' : '#ffffff')); c.position.set(k * 1.1 - 2.2, (r() - .5) * .6, 0); cg.add(c); } cg.position.set(-30 + i * 12, 9 + r() * 4, -30 - r() * 8); g.add(cg); g.userData.clouds.push(cg); } }
   // погода
   const weather = spec.weather || (type === 'winter' ? 'snow' : 'none');
   if (weather === 'rain' || weather === 'snow') { const N = weather === 'rain' ? 900 : 700, pts = new Float32Array(N * 3), seeds = []; for (let i = 0; i < N; i++) seeds.push([(r() - .5) * 26, r() * 12, -8 + r() * 14, .6 + r() * .4]); const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.BufferAttribute(pts, 3));
