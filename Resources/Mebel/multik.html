@@ -56,7 +56,7 @@ input[type=range]{width:100%}
 .kv{display:grid;grid-template-columns:110px 1fr;gap:8px 10px;align-items:center;font-size:14px}
 input[type=color]{width:100%;height:36px;border:0;background:none}
 input[type=text]{width:100%;background:var(--card2);color:var(--tx);border:0;border-radius:10px;padding:9px;font-size:15px}
-select{background:var(--card2);color:var(--tx);border:0;border-radius:10px;padding:8px}
+select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-radius:10px;padding:8px}
 </style></head><body>
 <header><button class="back" onclick="App.close()">‹</button><h1>Мультики</h1></header>
 <div class="tabs"><button data-t="series" class="on">Сериалы</button><button data-t="chars">Персонажи</button><button data-t="locs">Локации</button><button data-t="set">Ещё</button></div>
@@ -69,8 +69,8 @@ select{background:var(--card2);color:var(--tx);border:0;border-radius:10px;paddi
 <div style="padding:4px 14px 120px">
  <div class="card"><div class="kv"><span>Сериал</span><span><input type="text" id="wrSeries" list="wrSeriesList" placeholder="Кот Барсик"><datalist id="wrSeriesList"></datalist></span></div></div>
  <div class="card" style="padding:10px"><textarea id="wrText" style="min-height:46vh;font:15px -apple-system,sans-serif;line-height:1.45" placeholder="СЦЕНА: двор, утро&#10;Барсик: Привет!&#10;Пик входит справа.&#10;Пик (радостно): Бежим в лес!"></textarea>
-  <div class="btns"><button class="mic" id="wrMic" onclick="Wr.mic()" style="width:auto;padding:0 16px;height:46px;border-radius:12px;font-size:16px">🎤 Надиктовать</button><button class="btn" onclick="Wr.check()">Проверить</button><button class="btn acc" onclick="Wr.make()">🎬 Создать серии</button></div>
-  <div id="wrOut" style="margin-top:10px"></div></div>
+  <div class="btns"><button class="btn" onclick="Wr.paste()">📋 Вставить</button><button class="btn" onclick="Wr.clear()">Очистить</button><button class="btn" onclick="Wr.check()">Проверить</button><button class="btn acc" onclick="Wr.make()">🎬 Создать серии</button></div>
+  <div id="wrOut" style="margin-top:10px"></div><div id="wrTeach"></div></div>
  <div class="card"><b>Как писать</b><div class="mut" style="margin-top:6px;line-height:1.5">
   <b>СЕРИАЛ:</b> название · <b>СЕРИЯ:</b> 2. Название (можно несколько серий подряд)<br>
   <b>ПЕРСОНАЖ:</b> Колючка — серый медвежонок с зелёным шарфом, голос мальчика (новый герой, создаётся навсегда)<br>
@@ -78,6 +78,8 @@ select{background:var(--card2);color:var(--tx);border:0;border-radius:10px;paddi
   <b>Имя: реплика</b> · <b>Имя (радостно): реплика</b> · <b>Рассказчик: …</b><br>
   Действия: «Пик входит справа», «Барсик идёт к Пику», «Барсик и Пик танцуют», «Барсик берёт мяч», «Пик отдаёт яблоко Барсику», прыгает, машет, бежит, садится, засыпает, падает, смеётся, плачет, пугается, думает «где же клад?», уходит<br>
   <b>МУЗЫКА:</b> весёлая / грустная / тревожная / приключения / волшебная / ночная · <b>ЗВУК:</b> бум, дзынь, мяу, гав, стук · <b>ПАУЗА</b> 2 · <b>КАМЕРА:</b> крупно Барсик / общий план / оба<br>
+  Можно вставлять и обычный рассказ: диалоги через тире («— Привет! — сказал Барсик.»), смена места («Друзья пошли в лес»). Всё, что не стало действием, прочитает рассказчик.<br>
+  Незнакомое слово или имя приложение спросит один раз и запомнит.<br>
   Длинный сценарий сам поделится на серии по ~5 минут.</div></div>
 </div></div>
 <div id="editor"><div class="pv"><div class="row" style="padding:8px 12px"><button class="back" onclick="Ed.close()">‹</button><b id="edTitle" style="flex:1">Новый персонаж</b><button class="btn" onclick="Ed.undo()">↺</button><button class="btn" onclick="Ed.voice()">🔊</button></div><canvas id="edc" width="720" height="600"></canvas></div>
@@ -168,7 +170,7 @@ const App = {
       for (const e of p.episodes) {
         const d = document.createElement('div'); d.className = 'ep';
         const st = e.status === 'built' ? `<span class="tag ok">собрана ${e.dur ? fmt(e.dur) : ''}</span>` : `<span class="tag">не собрана</span>`;
-        d.innerHTML = `<div class="row"><div style="flex:1"><b>Серия ${e.episode}. ${esc(e.title || '')}</b><div class="mut">${(e.script.scenes || []).length} сцен · ${st}</div></div></div>
+        d.innerHTML = `<div class="row"><div style="flex:1"><b>Серия ${e.episode}${e.title ? '. ' + esc(e.title) : ''}</b><div class="mut">${(e.script.scenes || []).length} сцен · ${st}</div></div></div>
           <div class="btns"><button class="btn" data-a="play">▶ Просмотр</button><button class="btn ${e.status === 'built' ? '' : 'acc'}" data-a="build">🎬 ${e.status === 'built' ? 'Пересобрать' : 'Собрать видео'}</button>
           ${e.video ? '<button class="btn ok" data-a="share">⤴ Отправить / YouTube</button>' : ''}<button class="btn" data-a="yt">📝 Текст для YouTube</button></div>`;
         d.querySelectorAll('button').forEach(b => b.onclick = () => App.epAction(p, e, b.dataset.a));
@@ -212,9 +214,15 @@ const App = {
       <select id="sres"><option value="1080">1920×1080 (YouTube, лучше)</option><option value="720">1280×720 (в 2 раза быстрее)</option></select>
       <select id="sfps"><option value="25">25 кадров/с</option><option value="30">30 кадров/с</option></select></div></div>
       <div class="card"><b>Голоса iPhone</b><div class="mut" style="margin:4px 0 8px">Чтобы голоса звучали лучше, скачай улучшенные русские голоса: Настройки → Универсальный доступ → Устный контент → Голоса → Русский → Milena и Yuri «улучшенный». Делать это лучше до создания персонажей: голос записывается в код персонажа.</div><div id="vlist" class="mut">…</div></div>
+      <div class="card"><b>Чему я научился</b><div id="lexList" class="mut" style="margin-top:6px"></div></div>
       <div class="card"><b>Персонажи и локации</b><div class="mut">Персонажей: ${Object.keys(Lib.data.characters).length}, локаций: ${Object.keys(Lib.data.locations).length}. Библиотека хранится в «Файлы → Замер 3D → multik».</div></div>`);
     const sr = document.getElementById('sres'), sf = document.getElementById('sfps'); sr.value = s.res; sf.value = s.fps;
     sr.onchange = () => { s.res = +sr.value; Lib.save(); }; sf.onchange = () => { s.fps = +sf.value; Lib.save(); };
+    const lex = Lib.data.lexicon || {}, rows = [];
+    for (const [k, v] of Object.entries(lex.names || {})) rows.push(['names', k, `«${esc(k)}» = ${esc(v === 'Р' ? 'Рассказчик' : (Lib.data.characters[v] ? Lib.data.characters[v].spec.name : v))}`]);
+    for (const [k, v] of Object.entries(lex.verbs || {})) rows.push(['verbs', k, `«${esc(k)}» = ${esc(MKScript.ACTIONS[v] || v)}`]);
+    const ll = document.getElementById('lexList'); ll.innerHTML = rows.length ? rows.map(([t, k, h], i) => `<div class="row" style="padding:4px 0"><span style="flex:1">${h}</span><button class="btn" data-i="${i}" style="padding:4px 10px">✕</button></div>`).join('') : 'Пока ничему — словарь пополняется, когда в «Моём сценарии» отвечаешь на «Научи меня».';
+    ll.querySelectorAll('button').forEach(b => b.onclick = () => { const [t, k] = rows[+b.dataset.i]; delete lex[t][k]; Lib.save(); App.render(); });
     Native.call('voices').then(v => { document.getElementById('vlist').innerHTML = (v && v.length) ? v.map(x => `${esc(x.name)} — ${esc(x.quality)}`).join('<br>') : 'Список голосов доступен на iPhone'; });
   },
   async copyChars() {
@@ -433,24 +441,43 @@ const Wr = {
   saveDraft() { Lib.data.draftText = document.getElementById('wrText').value; Lib.data.draftSeries = document.getElementById('wrSeries').value; Lib.save(); },
   close() { if (this.listening) this.mic(); this.saveDraft(); document.getElementById('writer').style.display = 'none'; App.render(); },
   example() { const t = document.getElementById('wrText'); if (t.value.trim() && !confirm('Заменить текст примером?')) return; t.value = MKScript.EXAMPLE; },
+  async paste() { const t = await Native.call('paste'); if (!t) { alert('В буфере нет текста. Скопируй сценарий и нажми ещё раз.'); return; } const el = document.getElementById('wrText'); el.value = el.value.trim() ? el.value.replace(/\s*$/, '') + '\n' + t : t; this.saveDraft(); this.check(); },
+  clear() { if (confirm('Очистить текст?')) { document.getElementById('wrText').value = ''; document.getElementById('wrOut').innerHTML = ''; document.getElementById('wrTeach').innerHTML = ''; this.saveDraft(); } },
+  teach(r) {
+    const box = document.getElementById('wrTeach'); const names = r.unknownNames || [], words = r.unknownWords || [];
+    if (!names.length && !words.length) { box.innerHTML = ''; return; }
+    const chars = Object.entries(Lib.data.characters).map(([id, c]) => `<option value="${id}">${esc(c.spec.name)} (${esc(c.code)})</option>`).join('');
+    const acts = Object.entries(MKScript.ACTIONS).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
+    box.innerHTML = `<div class="card" style="background:var(--card2);margin-top:10px"><b>Научи меня</b><div class="mut" style="margin:4px 0 8px">Запомню навсегда, в следующий раз пойму сам.</div><div class="kv">`
+      + names.map(n => `<span>«${esc(n)}» — это</span><span><select data-name="${esc(n)}"><option value="">— выбери —</option>${chars}<option value="Р">Рассказчик</option></select></span>`).join('')
+      + words.map(w => `<span>«${esc(w.word)}»<br><span class="mut" style="font-size:12px">${esc(w.sentence.slice(0, 40))}</span></span><span><select data-word="${esc(w.word)}"><option value="">— это значит —</option>${acts}</select></span>`).join('')
+      + `</div><div class="btns"><button class="btn acc" onclick="Wr.learn()">Запомнить и проверить снова</button></div></div>`;
+  },
+  async learn() {
+    const lex = Lib.data.lexicon = Lib.data.lexicon || { names: {}, verbs: {} }; lex.names = lex.names || {}; lex.verbs = lex.verbs || {}; let n = 0;
+    document.querySelectorAll('#wrTeach select[data-name]').forEach(sel => { if (sel.value) { lex.names[sel.dataset.name] = sel.value; n++; } });
+    document.querySelectorAll('#wrTeach select[data-word]').forEach(sel => { if (sel.value && sel.value !== 'none') { lex.verbs[sel.dataset.word] = sel.value; n++; } else if (sel.value === 'none') { (lex.ignore = lex.ignore || {})[sel.dataset.word] = 1; n++; } });
+    await Lib.save(); if (!n) { alert('Ничего не выбрано.'); return; } this.check();
+  },
   parse() {
     const text = document.getElementById('wrText').value, series = document.getElementById('wrSeries').value.trim() || 'Мой мультик';
     const p = Lib.data.projects.find(p => p.series === series); const next = p && p.episodes.length ? Math.max(...p.episodes.map(e => e.episode)) + 1 : 1;
-    const r = MKScript.parse(/^\s*(сериал|мультик)\s*:/im.test(text) ? text : 'СЕРИАЛ: ' + series + '\n' + text, Lib.data, { series, nextEpisode: next });
+    const r = MKScript.parse(/^\s*(сериал|мультик)\s*:/im.test(text) ? text : 'СЕРИАЛ: ' + series + '\n' + text, Lib.data, { series, nextEpisode: next, lexicon: Lib.data.lexicon || {} });
+    const ign = (Lib.data.lexicon || {}).ignore || {}; r.unknownWords = (r.unknownWords || []).filter(w => !ign[w.word]);
     const parts = []; for (const e of r.episodes) parts.push(...MKScript.split(e, Lib.data, 300));
     // номера по порядку без пересечений внутри одного разбора
-    let n = parts.length ? parts[0].episode : next; parts.forEach(e => { e.episode = n++; e.youtube.title = `${e.series} — Серия ${e.episode}. ${e.title}`; });
+    let n = parts.length ? parts[0].episode : next; parts.forEach(e => { e.episode = n++; e.youtube.title = `${e.series} — Серия ${e.episode}${e.title ? '. ' + e.title : ''}`; });
     return Object.assign(r, { parts });
   },
   check() {
-    this.saveDraft(); const r = this.parse(); this.last = r; const o = document.getElementById('wrOut');
+    this.saveDraft(); const r = this.parse(); this.last = r; const o = document.getElementById('wrOut'); this.teach(r);
     if (!r.parts.length && !r.errors.length) { o.innerHTML = '<div class="warn">Пусто. Начни со строки «СЦЕНА: двор, день» или нажми «Пример».</div>'; return r; }
     const tmp = { characters: Object.assign({}, Lib.data.characters), locations: Object.assign({}, Lib.data.locations) };
     r.newChars.forEach(c => tmp.characters[c.id] = { spec: c }); r.newLocs.forEach(l => tmp.locations[l.id] = { spec: l });
-    const rows = r.parts.map(e => { let d = 0; try { d = MK.compile(e, tmp, {}).dur; } catch (er) {} return `<div>Серия ${e.episode}. ${esc(e.title)} — ${e.scenes.length} сцен, ≈${fmt(d)}</div>`; }).join('');
+    const rows = r.parts.map(e => { let d = 0; try { d = MK.compile(e, tmp, {}).dur; } catch (er) {} return `<div>Серия ${e.episode}${e.title ? '. ' + esc(e.title) : ''} — ${e.scenes.length} сцен, ≈${fmt(d)}</div>`; }).join('');
     o.innerHTML = (r.errors.length ? `<div class="err">${r.errors.map(esc).join('\n')}</div>` : '') + rows
       + (r.newChars.length ? `<div style="color:var(--ok)">Новые персонажи: ${r.newChars.map(c => esc(c.name) + ' (' + esc(MKMaker.describe(c)) + ')').join(', ')}</div>` : '')
-      + (r.warnings.length ? `<div class="warn">${r.warnings.map(esc).join('<br>')}</div>` : '') + (r.errors.length ? '' : '<div class="mut">Длительность примерная — точная будет после озвучки.</div>');
+      + (r.narrated ? `<div class="mut">Рассказчик прочитает фраз: ${r.narrated}</div>` : '') + (r.warnings.length ? `<div class="warn">${r.warnings.map(esc).join('<br>')}</div>` : '') + (r.errors.length ? '' : '<div class="mut">Длительность примерная — точная будет после озвучки.</div>');
     return r;
   },
   async make() {

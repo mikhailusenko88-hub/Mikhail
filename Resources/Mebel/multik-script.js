@@ -7,7 +7,7 @@ const low = s => String(s || '').toLowerCase().replace(/ё/g, 'е');
 const has = (t, re) => re.test(t);
 
 const PLACES = [[/(космос|планет|ракет|луна)/, 'space'], [/(пляж|мор[еяю]|берег|океан)/, 'beach'], [/(зим|снег|сугроб)/, 'winter'], [/(кухн)/, 'kitchen'],
-  [/(площадк|качел|горк)/, 'playground'], [/(улиц|город|магазин|парк)/, 'street'], [/(комнат|спальн|дома\b|в доме|гостин|квартир|детск)/, 'room'],
+  [/(площадк|качел|горк)/, 'playground'], [/(улиц|город|магазин|парк)/, 'street'], [/(комнат|спальн|дома(?![а-я])|в доме|гостин|квартир|детск)/, 'room'],
   [/(двор|у дома|возле дома|крыльц|сад)/, 'yard'], [/(луг|пол[ея]|поляна|полянк)/, 'meadow'], [/(лес|роща|чащ)/, 'forest']];
 const TIMES = [[/(ночь|ночью|ночн|темно)/, 'night'], [/(вечер|закат)/, 'evening'], [/(утро|утром|день|дн[её]м)/, 'day']];
 const MUSIC = [[/(груст|печал)/, 'sad'], [/(тревож|страшн|напряж|погон)/, 'tense'], [/(приключ|бодр)/, 'adventure'], [/(волшеб|сказоч|чудес)/, 'magic'], [/(ночн|колыбел|тих)/, 'night'], [/(спокойн|нежн|мягк)/, 'calm'], [/(весел|радост)/, 'happy'], [/(без музыки|нет|тишин)/, 'none']];
@@ -16,7 +16,7 @@ const SFX = [[/(бум|удар|бах|грох)/, 'thud'], [/(дзынь|дин
 const PROPS = [[/^мяч/, 'ball'], [/^яблок/, 'apple'], [/^рыб/, 'fish'], [/^(коробк|ящик)/, 'box'], [/^подар/, 'gift'], [/^цвет(ок|оч|к)/, 'flower'], [/^книг/, 'book'], [/^зв[её]зд/, 'star'],
   [/^торт/, 'cake'], [/^кост/, 'bone'], [/^морков/, 'carrot'], [/^сыр/, 'cheese'], [/^(шарик|шар$|шара|шаром)/, 'balloon'], [/^ключ/, 'key'], [/^(чашк|кружк)/, 'cup']];
 const EMO = [[/(радост|весел|счастлив|улыба|довольн)/, 'happy'], [/(смеет|хохоч|смешн|смех)/, 'laugh'], [/(груст|печал|расстро)/, 'sad'], [/(плач|рыда|сл[её]з)/, 'cry'],
-  [/(злит|сердит|зло\b|злой|злая|гневн|обиж)/, 'angry'], [/(удивл|изумл|ого)/, 'surprised'], [/(испуг|страшн|бои|боя|дрож)/, 'scared'], [/(сонн|зева|устал)/, 'sleepy'],
+  [/(злит|сердит|зло(?![а-я])|злой|злая|гневн|обиж)/, 'angry'], [/(удивл|изумл|(^|[^а-я])ого(?![а-я]))/, 'surprised'], [/(испуг|страшн|бои|боя|дрож)/, 'scared'], [/(сонн|зева|устал)/, 'sleepy'],
   [/(влюбл|нежно|с любов)/, 'love'], [/(смущ|стесн)/, 'shy'], [/(спокойн|обычн)/, 'neutral']];
 const VERBS = [ // stem → действие (порядок важен)
   [/^(вход|приход|появля|прибега|заход|прилета|выбега)/, 'enter'], [/^(уход|убега|выход|исчеза|улета|уходят|убегают)/, 'exit'],
@@ -54,7 +54,11 @@ S.parse = function (text, lib, opts) {
   let nextC = 100, nextL = 100;
   for (const id of Object.keys(chars)) { const m = id.match(/^К(\d+)$/); if (m) nextC = Math.max(nextC, +m[1]); }
   for (const id of Object.keys(locs)) { const m = id.match(/^Л(\d+)$/); if (m) nextL = Math.max(nextL, +m[1]); }
-  let idx = nameIndex(chars);
+  const lex = opts.lexicon || {};
+  const userVerbs = Object.entries(lex.verbs || {}); // [слово, действие]
+  const nameIndexL = () => { const i = nameIndex(chars); for (const [a, id] of Object.entries(lex.names || {})) if (chars[id] || id === 'Р') i.push([low(a), id]); return i.sort((a, b) => b[0].length - a[0].length); };
+  let idx = nameIndexL();
+  const unknownNames = new Set(), unknownWords = new Map();
   let series = opts.series || 'Мой мультик', music = 'happy';
   const eps = []; let ep = null, sc = null, lastSpeaker = null, sceneSpeakers = [];
   const newEp = (num, title) => { ep = { format: 'multik/1', series, episode: num, title: title || '', music, scenes: [], characters: [], locations: [] }; eps.push(ep); sc = null; };
@@ -69,7 +73,7 @@ S.parse = function (text, lib, opts) {
     if (!global.MKMaker) { errors.push('Нет модуля создания персонажей'); continue; }
     const r = global.MKMaker.apply(null, desc + ', зовут ' + name); r.spec.name = name;
     const id = 'К' + (++nextC); const spec = global.MKMaker.finalize(r.spec, id); spec.about = desc;
-    chars[id] = { name, spec }; newChars[id] = spec; idx = nameIndex(chars);
+    chars[id] = { name, spec }; newChars[id] = spec; idx = nameIndexL();
     if (r.unknown.length) warnings.push(`${name}: не понял слова «${r.unknown.join(', ')}» — остальное учёл.`);
   }
   const placeX = (side) => { const used = Object.values(sc._x); for (const x of (side === 'right' ? [.72, .62, .84, .52] : side === 'left' ? [.28, .38, .16, .48] : []).concat([.35, .62, .2, .78, .5, .1, .9])) if (!used.some(u => Math.abs(u - x) < .1)) return x; return .5; };
@@ -83,7 +87,7 @@ S.parse = function (text, lib, opts) {
     const mu = pick(MUSIC, d); if (mu) sc.music = mu;
     ep.scenes.push(sc); lastSpeaker = null; sceneSpeakers = [];
   }
-  let lineNo = 0;
+  let lineNo = 0, narrated = 0;
   for (const raw0 of lines) {
     lineNo++;
     let raw = raw0.trim(); if (!raw || /^(персонаж|герой|новый персонаж)\s*[:\-—]/i.test(raw) || /^\/\//.test(raw)) continue;
@@ -102,23 +106,55 @@ S.parse = function (text, lib, opts) {
     m = raw.match(/^([^:()]{1,40}?)\s*(?:\(([^)]*)\))?\s*:\s*(.+)$/);
     if (m) {
       const who = NARR.test(low(m[1].trim())) ? 'Р' : (findNameAt(m[1], idx) || {}).id;
-      if (!who) { errors.push(`Строка ${lineNo}: кто такой «${m[1].trim()}»? Добавь строку «ПЕРСОНАЖ: ${m[1].trim()} — описание» или создай его в «Персонажах».`); continue; }
+      if (!who) { if (/^[А-ЯЁA-Z]/.test(m[1].trim()) && m[1].trim().split(/\s+/).length <= 3) { unknownNames.add(m[1].trim()); errors.push(`Строка ${lineNo}: кто такой «${m[1].trim()}»? Выбери ниже, кто это, или добавь строку «ПЕРСОНАЖ: ${m[1].trim()} — описание».`); continue; }
+        m = null; } else {
       castOf(who);
       const step = { who, say: m[3].replace(/^["«]|["»]$/g, '').trim() };
       if (m[2]) { const e = pick(EMO, low(m[2])); if (e) step.emotion = e; const v = verbOf(low(m[2])); if (v && who !== 'Р') step.do = v; }
       if (who !== 'Р') { const other = lastSpeaker && lastSpeaker !== who && lastSpeaker !== 'Р' ? lastSpeaker : sceneSpeakers.filter(x => x !== who && x !== 'Р').slice(-1)[0]; if (other) step.to = other;
         autoCam(who); }
       sc.steps.push(step); lastSpeaker = who; if (!sceneSpeakers.includes(who)) sceneSpeakers.push(who);
-      continue;
+      continue; }
     }
+    // диалог через тире: «— Привет! — сказал Барсик.»
+    if (/^[—–-]\s*\S/.test(raw)) { if (dashLine(raw)) continue; }
     // действие: «(Барсик прыгает)», «Пик входит справа.», «Барсик и Пик танцуют»
+    const bracket = /^\(.*\)$/.test(raw);
     const t = raw.replace(/^\(|\)$/g, '').trim();
-    const sentences = t.split(/[.;!]+\s*/).filter(Boolean);
-    let any = false;
-    for (const sent of sentences) { if (action(sent)) any = true; }
-    if (!any) warnings.push(`Строка ${lineNo}: не понял «${raw.slice(0, 50)}» — пропускаю. Реплики пиши «Имя: текст», действия «Имя прыгает».`);
+    const sentences = t.match(/[^.!?…]+[.!?…]*/g) || [t];
+    for (const sent0 of sentences) { const sent = sent0.trim(); if (!sent) continue;
+      placeShift(sent);
+      const core = sent.replace(/[.!?…]+$/, '');
+      const pieces = core.split(/\s+и\s+(?=[а-яё]+(?:ет|ит|ут|ют|ат|ят|ется|ится|ал|ял|ил|ел|ла|ли)(?![а-яё]))/i).filter(x => x && !/^(ет|ит|ут|ют|ат|ят|ется|ится|ал|ял|ил|ел|ла|ли)$/.test(x));
+      let did = false; let subjName = null;
+      pieces.forEach((pc, k) => { let q = pc; if (k > 0 && subjName && !namesIn(low(q), idx).length) q = subjName + ' ' + q; const ok = action(q); if (ok) { did = true; if (k === 0) { const ids = namesIn(low(pc), idx); if (ids[0]) subjName = chars[ids[0]] ? chars[ids[0]].name : null; } } });
+      const past = /[а-яё]+(?:ал|ял|ил|ел|ул|ыл|ла|ли|лся|лась|лись)(?![а-яё])/i.test(core) && core.split(/\s+/).length >= 3;
+      if (did && past && !bracket) { sc.steps.push({ who: 'Р', say: sent, with: true }); }
+      if (!did && !bracket) { sc.steps.push({ who: 'Р', say: sent }); narrated++; }
+      else if (!did) warnings.push(`Строка ${lineNo}: не понял «${sent.slice(0, 50)}» — пропускаю.`);
+    }
   }
-  function verbOf(t) { for (const w of t.split(/[^а-яa-z]+/)) { const v = pick(VERBS, w); if (v) return v; } return null; }
+  function placeShift(sent) { // «Друзья пришли в лес» → новая сцена
+    const d = low(sent); const type = pick(PLACES, d); if (!type || type === sc._type) return;
+    if (!/(^|\s)(в|во|на|к|у)\s/.test(d)) return;
+    if (!/(пришл|приш[её]л|пош[её]л|пошли|побежал|отправил|оказал|вернул|прибежал|прилетел|полетел|поехал|приехал|^в |^на |^утром|^вечером|^ночью)/.test(d) && sc.steps.length) return;
+    const time = pick(TIMES, d); const keepCast = Object.keys(sc._cast);
+    newScene((type === 'forest' ? 'лес' : type) + (time ? ' ' + (time === 'night' ? 'ночь' : time === 'evening' ? 'вечер' : 'день') : ''));
+    sc.location = sc.location; keepCast.forEach(id => { if (id !== 'Р') { castOf(id); } });
+  }
+  function dashLine(raw) { // — Реплика, — сказал Имя. — Продолжение.
+    const parts = raw.replace(/^[—–-]\s*/, '').split(/\s+[—–]\s+/);
+    let speech = [parts[0]], who = null, emo = null;
+    for (let i = 1; i < parts.length; i++) { const d = low(parts[i]); const ids = namesIn(d, idx);
+      if (!who && ids.length && /(сказал|ответил|спросил|крикнул|закричал|прошептал|воскликнул|произн[её]с|добавил|засмеял|пискнул|буркнул|улыбнул|вздохнул|обрадовал|удивил|сказала|ответила|спросила|крикнула)/.test(d)) { who = ids[0]; emo = pick(EMO, d); } else speech.push(parts[i]); }
+    if (!who) { const cand = sceneSpeakers.filter(x => x !== 'Р'); who = cand.length >= 2 ? cand.find(x => x !== lastSpeaker) : (cand[0] || null); }
+    if (!who) return false;
+    castOf(who); const text = speech.join(' ').replace(/[,]$/, '').replace(/,\s*$/, '.').trim();
+    const step = { who, say: text }; if (emo) step.emotion = emo;
+    const other = sceneSpeakers.filter(x => x !== who && x !== 'Р').slice(-1)[0]; if (other) step.to = other;
+    autoCam(who); sc.steps.push(step); lastSpeaker = who; if (!sceneSpeakers.includes(who)) sceneSpeakers.push(who); return true;
+  }
+  function verbOf(t) { if (/выход\S*\s+(во|в|на)\s/.test(t) && !/(из|прочь)/.test(t)) return 'enter'; for (const w of t.split(/[^а-яa-z]+/)) { const u = userVerbs.find(([k]) => w === k || (k.length > 4 && w.startsWith(k.slice(0, -1)))); if (u) return u[1]; const v = pick(VERBS, w); if (v) return v; } return null; }
   function camera(t) { const d = low(t); const who = namesIn(d, idx);
     if (/(крупн|лицо)/.test(d) && who[0]) sc.steps.push({ camera: 'close', on: who[0] });
     else if (/(средн)/.test(d) && who[0]) sc.steps.push({ camera: 'medium', on: who[0] });
@@ -136,11 +172,13 @@ S.parse = function (text, lib, opts) {
     who = who.map(id => [id, d.search(low(chars[id].name).split(' ').slice(-1)[0].slice(0, 4))]).sort((a, b) => a[1] - b[1]).map(x => x[0]);
     if (!who.length) { if (/(крупн|общий план)/.test(d)) { camera(d); return true; } const s = pick(SFX, d); if (s && /(звук|слышно|раздает)/.test(d)) { sc.steps.push({ sfx: s }); return true; } return false; }
     const verb = verbOf(d); const emo = pick(EMO, d);
+    if (!verb && !emo) { const words = d.split(/[^а-яa-z]+/).filter(w => w.length > 3 && !idx.some(([n]) => w.startsWith(n.slice(0, 4))) && !/^(тоже|потом|сразу|снова|очень|когда|вдруг|затем|тогда|после|перед|около|возле|вместе)$/.test(w));
+      if (words[0]) unknownWords.set(words[0], sent.trim()); return false; }
     // подлежащее — первые имена до глагола; остальные — цели
     const vpos = (() => { for (const w of d.split(/[^а-яa-z]+/)) if (pick(VERBS, w)) return d.indexOf(w); return 999; })();
     const subj = who.filter(id => { const p = d.indexOf(low(chars[id].name).split(' ').slice(-1)[0].slice(0, 4)); return p < vpos; });
-    const targets = who.filter(id => !subj.includes(id));
     const S = subj.length ? subj : [who[0]];
+    const targets = who.filter(id => !S.includes(id));
     let first = true;
     for (const id of S) {
       const step = { who: id }; if (!first) step.with = true; first = false;
@@ -177,11 +215,10 @@ S.parse = function (text, lib, opts) {
     e.characters = [...usedC].filter(id => newChars[id]).map(id => newChars[id]);
     e.locations = [...usedL].filter(id => newLocs[id]).map(id => newLocs[id]);
     e.series = e.series || series;
-    if (!e.title) e.title = 'Серия ' + e.episode;
-    e.youtube = { title: `${e.series} — Серия ${e.episode}. ${e.title}`, description: `${e.series}. Серия ${e.episode}: ${e.title}. Мультфильм для детей.`, tags: ['мультик', 'мультфильм', e.series] };
+    e.youtube = { title: `${e.series} — Серия ${e.episode}${e.title ? '. ' + e.title : ''}`, description: `${e.series}. Серия ${e.episode}${e.title ? ': ' + e.title : ''}. Мультфильм для детей.`, tags: ['мультик', 'мультфильм', e.series] };
     out.push(e);
   }
-  return { episodes: out, errors, warnings, newChars: Object.values(newChars), newLocs: Object.values(newLocs) };
+  return { episodes: out, errors, warnings, newChars: Object.values(newChars), newLocs: Object.values(newLocs), unknownNames: [...unknownNames], unknownWords: [...unknownWords].map(([w, s]) => ({ word: w, sentence: s })), narrated };
 };
 
 /** Длинную серию делит на части ≈ target секунд по границам сцен. */
@@ -196,12 +233,12 @@ S.split = function (ep, lib, target) {
   const parts = []; let cur = [], sum = 0;
   ep.scenes.forEach((s, i) => { if (cur.length && sum + durs[i] > target) { parts.push(cur); cur = []; sum = 0; } cur.push(s); sum += durs[i]; });
   if (cur.length) parts.push(cur);
-  return parts.map((sc, k) => { const e = JSON.parse(JSON.stringify(ep)); e.episode = ep.episode + k; e.title = ep.title.replace(/^Серия \d+$/, '') ? (parts.length > 1 ? `${ep.title} (часть ${k + 1})` : ep.title) : 'Серия ' + e.episode;
+  return parts.map((sc, k) => { const e = JSON.parse(JSON.stringify(ep)); e.episode = ep.episode + k; e.title = ep.title ? (parts.length > 1 ? `${ep.title} (часть ${k + 1})` : ep.title) : '';
     e.scenes = sc.map((s, j) => Object.assign(s, { id: 'С' + (j + 1) }));
     const usedC = new Set(), usedL = new Set(); e.scenes.forEach(s => { usedL.add(s.location); s.cast.forEach(c => usedC.add(c.who)); });
     e.characters = (ep.characters || []).filter(c => usedC.has(c.id)); e.locations = (ep.locations || []).filter(l => usedL.has(l.id));
     if (k < parts.length - 1) e.endText = 'Продолжение следует…';
-    e.youtube = { title: `${e.series} — Серия ${e.episode}. ${e.title}`, description: ep.youtube.description, tags: ep.youtube.tags };
+    e.youtube = { title: `${e.series} — Серия ${e.episode}${e.title ? '. ' + e.title : ''}`, description: ep.youtube.description, tags: ep.youtube.tags };
     return e; });
 };
 
@@ -228,5 +265,8 @@ S.EXAMPLE = `СЕРИАЛ: Кот Барсик
 (Колючка идёт вправо)
 Рассказчик: Что же найдут друзья под большим дубом?`;
 
+S.ACTIONS = { enter: 'входит', exit: 'уходит', walk: 'идёт', run: 'бежит', jump: 'прыгает', wave: 'машет', dance: 'танцует', spin: 'кружится', nod: 'кивает', shake: 'качает головой',
+  clap: 'хлопает', point: 'показывает', think: 'думает', laugh: 'смеётся', scared: 'пугается', cry: 'плачет', bow: 'кланяется', surprise: 'удивляется', fall: 'падает', sit: 'садится',
+  sleep: 'засыпает', stand: 'встаёт', turn: 'поворачивается', take: 'берёт', give: 'отдаёт', drop: 'кладёт', none: '— ничего, пусть читает рассказчик' };
 global.MKScript = S;
 })(typeof window !== 'undefined' ? window : globalThis);
