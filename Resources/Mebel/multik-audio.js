@@ -97,53 +97,71 @@ MK.learnStress = function (text, lex) { const found = []; String(text || '').rep
 // =====================================================================================
 const VWL = { a: [800, 1200, 2600], o: [520, 880, 2500], u: [330, 780, 2400], i: [310, 2300, 3000], e: [500, 1850, 2600], y: [380, 1500, 2400], l: [360, 1100, 2600], h: [900, 1500, 2700] };
 function bezierEnv(pts, t) { for (let i = 1; i < pts.length; i++) if (t <= pts[i][0]) { const a = pts[i - 1], b = pts[i], k = (t - a[0]) / Math.max(1e-6, b[0] - a[0]); return a[1] + (b[1] - a[1]) * (k * k * (3 - 2 * k)); } return pts[pts.length - 1][1]; }
-/** segs: [{d, f0:[a,b], vib, v:[[t,amp]..], n:[[t,amp]..], fA:[F1,F2,F3], fB, br}] → Float32Array */
+/** Формантный голос: дыхание с «пульсирующим» шумом, мягкий наклон спектра, дрожание высоты и громкости — чтобы не звучало как зуммер.
+    segs: [{d, f0:[a,b], vib:[Гц, глубина], v:[[t,amp]..] голос, n:[[t,amp]..] выдох, fA/fB форманты, bw, fry}] → Float32Array */
 function fsynth(segs, sr, seed, fscale, breath) {
   const r = rng(seed || 7), total = segs.reduce((s, g) => s + g.d, 0), N = Math.ceil(total * sr) + 1, out = new Float32Array(N);
-  let ph = 0, prevFlow = 0, i0 = 0; const st = [[0, 0], [0, 0], [0, 0], [0, 0]]; let nz1 = 0;
-  const BW = [90, 120, 170, 250], GN = [1, .55, .28, .12];
-  for (const g of segs) { const n = Math.round(g.d * sr); let co = null;
+  let ph = 0, i0 = 0, cyc = { a: 1, j: 1 }, tilt = 0, prevD = 0, flowPrev = 0; const st = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]; let nz1 = 0, nz2 = 0;
+  const BW = [110, 140, 200, 280, 350], GN = [1, .6, .32, .16, .08];
+  for (const g of segs) { const n = Math.round(g.d * sr); let co = null; const oq = g.oq || .72, ta = Math.exp(-2 * Math.PI * (g.tilt || 1800) / sr);
     for (let i = 0; i < n; i++) { const t = i / n, tt = (i0 + i) / sr;
-      if (i % 32 === 0) { const F = (g.fA || VWL.a).map((f, k) => lerp(f, (g.fB || g.fA || VWL.a)[k], t) * (fscale || 1)); F.push(3500 * (fscale || 1)); co = F.map((f, k) => { const rr = Math.exp(-Math.PI * BW[k] * (g.bw || 1) / sr); return [1 - rr, 2 * rr * Math.cos(2 * Math.PI * Math.min(f, sr * .45) / sr), -rr * rr]; }); }
-      const vib = g.vib ? Math.sin(tt * 2 * Math.PI * g.vib[0]) * g.vib[1] : 0, jit = (r() - .5) * .012;
-      const f0 = Math.max(40, lerp(g.f0[0], g.f0[1], g.curve ? Math.pow(t, g.curve) : t) * (1 + vib + jit));
-      ph += f0 / sr; if (ph >= 1) ph -= 1; const p = ph; const flow = p < .55 ? .5 * (1 - Math.cos(Math.PI * p / .55)) : p < .75 ? Math.cos(Math.PI * (p - .55) / .4) : 0;
-      const dflow = (flow - prevFlow) * sr / f0 * .08; prevFlow = flow;
-      nz1 = nz1 * .3 + (r() * 2 - 1) * .7;
+      if (i % 32 === 0) { const A = g.fA || VWL.a, B = g.fB || A; const F = A.map((f, k) => lerp(f, B[k], t * t * (3 - 2 * t)) * (fscale || 1)); F.push(3600 * (fscale || 1), 4600 * (fscale || 1));
+        co = F.map((f, k) => { const rr = Math.exp(-Math.PI * BW[k] * (g.bw || 1) * (fscale || 1) / sr); return [1 - rr, 2 * rr * Math.cos(2 * Math.PI * Math.min(f, sr * .45) / sr), -rr * rr]; }); }
+      const vib = g.vib ? Math.sin(tt * 2 * Math.PI * g.vib[0]) * g.vib[1] : 0;
+      let f0 = Math.max(35, lerp(g.f0[0], g.f0[1], g.curve ? Math.pow(t, g.curve) : t) * (1 + vib) * cyc.j);
+      ph += f0 / sr; if (ph >= 1) { ph -= 1; cyc = { a: 1 + (r() - .5) * (g.fry ? .9 : .28), j: 1 + (r() - .5) * (g.fry ? .35 : .045) }; }
+      const p = ph; const flow = p < oq * .8 ? .5 * (1 - Math.cos(Math.PI * p / (oq * .8))) : p < oq ? Math.cos(.5 * Math.PI * (p - oq * .8) / (oq * .2)) : 0;
+      const d = (flow - flowPrev) * sr / f0 * .1; flowPrev = flow; tilt = tilt * ta + d * (1 - ta); // мягче вверху спектра
+      const src = (tilt * 1.6 + flow * .18) * cyc.a;
+      nz1 = nz1 * .25 + (r() * 2 - 1) * .75; nz2 = nz2 * .6 + (r() * 2 - 1) * .4;
       const va = g.v ? bezierEnv(g.v, t) : 0, na = g.n ? bezierEnv(g.n, t) : 0;
-      const exc = dflow * va + nz1 * (na + va * (breath || .12)) * .35;
-      let y = 0; for (let k = 0; k < 4; k++) { const c = co[k], s2 = st[k]; const yy = c[0] * exc + c[1] * s2[0] + c[2] * s2[1]; s2[1] = s2[0]; s2[0] = yy; y += yy * GN[k]; }
+      const pulsed = nz1 * (.25 + flow * .75); // шум дыхания пульсирует вместе с голосом
+      const exc = src * va + pulsed * va * (breath || .25) * 1.4 + nz1 * na * .9 + nz2 * na * .3;
+      let y = 0; for (let k = 0; k < 5; k++) { const c = co[k], s2 = st[k]; const yy = c[0] * exc + c[1] * s2[0] + c[2] * s2[1]; s2[1] = s2[0]; s2[0] = yy; y += yy * GN[k]; }
       out[i0 + i] = y; }
     i0 += n; }
+  // мягкая комната, чтобы голос «стоял» в пространстве
+  const dl = [Math.round(sr * .019), Math.round(sr * .031), Math.round(sr * .047)]; for (let i = N - 1; i >= 0; i--) { let a = 0; for (let k = 0; k < 3; k++) if (i - dl[k] >= 0) a += out[i - dl[k]] * (.07 - k * .015); out[i] += a; }
   let pk = 0; for (let i = 0; i < N; i++) pk = Math.max(pk, Math.abs(out[i])); if (pk > 0) for (let i = 0; i < N; i++) out[i] *= .8 / pk;
   return out;
 }
-function vocalSegs(kind, f0, seed) {
-  const r = rng(seed), S = [], sil = d => S.push({ d, f0: [f0, f0], v: [[0, 0], [1, 0]], n: [[0, 0], [1, 0]] });
-  const style = (seed % 3); // характер смеха у героя всегда один и тот же
+function vocalSegs(kind, f0, seed, variant) {
+  const r = rng(seed * 7 + (variant || 0) * 131 + 1), S = [];
+  const gap = (d, br) => S.push({ d, f0: [f0, f0], fA: VWL.h, v: [[0, 0], [1, 0]], n: [[0, br || 0], [1, br || 0]] });
+  const style = seed % 3; // характер у героя всегда один и тот же: 0 хихиканье, 1 смех, 2 басистый смешок
   if (kind === 'laugh') {
-    const vw = f0 > 260 && style === 0 ? 'i' : f0 < 150 || style === 2 && f0 < 200 ? 'o' : 'a', n = 5 + (seed % 3), syl = vw === 'i' ? .12 : vw === 'o' ? .2 : .16;
-    S.push({ d: .05, f0: [f0, f0], v: [[0, 0], [1, 0]], n: [[0, 0], [1, .25]], fA: VWL.h });
-    for (let k = 0; k < n; k++) { const fk = f0 * (1.32 - k * .05) * (1 + (r() - .5) * .06), d = syl * (1 + k * .04) * (1 + (r() - .5) * .15), a = 1 - k * .07;
-      S.push({ d, f0: [fk * 1.06, fk * .9], fA: VWL.h, fB: VWL[vw], v: [[0, 0], [.22, 0], [.38, a], [.7, a * .75], [1, 0]], n: [[0, .05], [.06, .75 * a], [.3, .18], [.75, .08], [1, 0]] });
-      sil(.025 + r() * .02); }
-    S.push({ d: .32, f0: [f0 * 1.3, f0 * 1.45], fA: VWL.i, fB: VWL.e, v: [[0, 0], [.5, .12], [1, 0]], n: [[0, 0], [.4, .35], [.8, .3], [1, 0]], bw: 1.6 }); // вдох в конце
+    const giggle = style === 0 && f0 > 230, chuck = style === 2 || f0 < 160;
+    const vw = giggle ? (r() < .5 ? 'i' : 'e') : chuck ? (r() < .6 ? 'o' : 'a') : 'a';
+    const nSyl = (giggle ? 6 : chuck ? 4 : 5) + ((r() * 3) | 0), base = f0 * (giggle ? 1.45 : chuck ? 1.05 : 1.3), sd = giggle ? .085 : chuck ? .16 : .12;
+    gap(.04, .15);
+    for (let k = 0; k < nSyl; k++) { const last = k === nSyl - 1, prog = k / Math.max(1, nSyl - 1);
+      const fk = base * (k < 2 ? 1 + k * .04 : 1.08 - prog * .22) * (1 + (r() - .5) * .08), a = (k < 2 ? .85 + k * .15 : 1 - prog * .45) * (.85 + r() * .3), d = sd * (1 + prog * .35) * (.85 + r() * .3);
+      const hd = d * (giggle ? .45 : .35); // «х» в начале слога — выдох через тот же рот
+      S.push({ d: hd, f0: [fk, fk], fA: VWL[vw], bw: 1.4, v: [[0, 0], [.7, 0], [1, a * .3]], n: [[0, .05], [.25, a * .9], [1, a * .55]] });
+      S.push({ d, f0: [fk * 1.04, fk * .86], fA: VWL[vw], fB: VWL[vw === 'i' ? 'e' : vw], oq: .78, tilt: chuck ? 1400 : 2000, fry: last && !giggle, v: [[0, a * .3], [.12, a], [.55, a * .7], [1, 0]], n: [[0, a * .45], [.4, a * .18], [1, a * .1]] });
+      gap((giggle ? .025 : .04) * (.7 + r() * .6), .06 * a); }
+    // вдох после смеха: шумный, у детей с тонким «писком»
+    const inh = giggle || f0 > 230;
+    S.push({ d: .38 + r() * .12, f0: [f0 * 2.1, f0 * 2.4], fA: [420, 2200, 3100], fB: [380, 2500, 3200], bw: 2.2, v: inh ? [[0, 0], [.35, .12], [.7, .08], [1, 0]] : [[0, 0], [1, 0]], n: [[0, .05], [.3, .55], [.8, .45], [1, 0]] });
+    if (r() < .6) { gap(.08, .03); const n2 = 2 + ((r() * 2) | 0); for (let k = 0; k < n2; k++) { const fk = base * (.92 - k * .06), a = .55 - k * .12, d = sd * 1.1;
+      S.push({ d: d * .35, f0: [fk, fk], fA: VWL[vw], bw: 1.4, v: [[0, 0], [1, a * .3]], n: [[0, .05], [.3, a * .8], [1, a * .5]] });
+      S.push({ d, f0: [fk * 1.03, fk * .85], fA: VWL[vw], oq: .78, tilt: 1800, v: [[0, a * .3], [.12, a], [1, 0]], n: [[0, a * .4], [1, .05]] }); gap(.05, .04); } }
   } else if (kind === 'cry') {
-    S.push({ d: .16, f0: [f0 * 1.3, f0 * 1.45], fA: VWL.u, fB: VWL.u, v: [[0, 0], [.4, .8], [1, .9]], n: [[0, .1], [1, .05]] });
-    S.push({ d: 1.1, f0: [f0 * 1.55, f0 * 1.2], vib: [5.5, .035], fA: VWL.u, fB: VWL.a, v: [[0, .9], [.15, 1], [.5, .8], [.8, .6], [1, 0]], n: [[0, .08], [1, .1]] });
-    for (let k = 0; k < 3; k++) { sil(.07); S.push({ d: .12, f0: [f0 * 1.6, f0 * 1.7], fA: VWL.i, fB: VWL.e, v: [[0, 0], [.4, .35], [1, 0]], n: [[0, .4], [.3, .2], [1, 0]] }); }
+    S.push({ d: .14, f0: [f0 * 1.3, f0 * 1.45], fA: VWL.u, v: [[0, 0], [.4, .8], [1, .9]], n: [[0, .2], [1, .1]] });
+    S.push({ d: 1.1, f0: [f0 * 1.6, f0 * 1.15], vib: [5.5, .04], fA: VWL.u, fB: VWL.a, oq: .7, v: [[0, .9], [.15, 1], [.5, .8], [.8, .55], [1, 0]], n: [[0, .15], [1, .2]], fry: false });
+    for (let k = 0; k < 3; k++) { gap(.06, .02); S.push({ d: .11, f0: [f0 * 1.7, f0 * 1.8], fA: [400, 2200, 3000], bw: 2, v: [[0, 0], [.4, .3], [1, 0]], n: [[0, .5], [.3, .3], [1, 0]] }); }
   } else if (kind === 'yawn') {
-    S.push({ d: 1.5, f0: [f0 * 1.35, f0 * .7], curve: .8, fA: [450, 1100, 2500], fB: [620, 900, 2400], v: [[0, 0], [.2, .7], [.55, 1], [.85, .5], [1, 0]], n: [[0, .2], [.5, .25], [1, .1]] });
-    S.push({ d: .3, f0: [f0 * .7, f0 * .65], fA: VWL.h, v: [[0, 0], [1, 0]], n: [[0, .35], [1, 0]] });
+    S.push({ d: 1.5, f0: [f0 * 1.35, f0 * .7], curve: .8, fA: [450, 1100, 2500], fB: [650, 950, 2400], oq: .8, tilt: 1300, v: [[0, 0], [.2, .7], [.55, 1], [.85, .5], [1, 0]], n: [[0, .3], [.5, .35], [1, .15]] });
+    S.push({ d: .35, f0: [f0 * .7, f0 * .6], fA: [600, 1000, 2400], v: [[0, 0], [1, 0]], n: [[0, .45], [1, 0]] });
   } else if (kind === 'sneeze') {
-    S.push({ d: .5, f0: [f0 * 1.1, f0 * 1.5], fA: VWL.a, fB: VWL.i, v: [[0, 0], [.3, .35], [.8, .5], [1, .2]], n: [[0, .3], [1, .25]] });
-    S.push({ d: .25, f0: [f0 * 1.5, f0 * 1.5], v: [[0, 0], [1, 0]], n: [[0, 0], [1, 0]] });
-    S.push({ d: .04, f0: [f0, f0], fA: [1500, 2500, 3500], v: [[0, 0], [1, 0]], n: [[0, 1], [1, .6]], bw: 3 });
-    S.push({ d: .1, f0: [f0, f0], fA: [2600, 3400, 4200], v: [[0, 0], [1, 0]], n: [[0, .9], [1, .7]], bw: 2 });
-    S.push({ d: .22, f0: [f0 * 1.7, f0 * 1.2], fA: VWL.h, fB: VWL.i, v: [[0, 0], [.35, .7], [1, 0]], n: [[0, .6], [.5, .2], [1, 0]] });
+    S.push({ d: .5, f0: [f0 * 1.1, f0 * 1.55], fA: VWL.a, fB: VWL.i, oq: .8, v: [[0, 0], [.3, .35], [.8, .5], [1, .2]], n: [[0, .4], [1, .35]] });
+    gap(.22, 0);
+    S.push({ d: .04, f0: [f0, f0], fA: [1500, 2500, 3500], bw: 3, v: [[0, 0], [1, 0]], n: [[0, 1], [1, .7]] });
+    S.push({ d: .1, f0: [f0, f0], fA: [2600, 3400, 4200], bw: 2, v: [[0, 0], [1, 0]], n: [[0, .9], [1, .7]] });
+    S.push({ d: .22, f0: [f0 * 1.7, f0 * 1.2], fA: VWL.i, oq: .75, v: [[0, 0], [.35, .7], [1, 0]], n: [[0, .7], [.5, .25], [1, 0]] });
   } else if (kind === 'sing') {
     const mel = [[0, .3], [2, .3], [4, .3], [2, .3], [7, .5]].map(([d, t]) => [f0 * 1.15 * Math.pow(2, [0, 2, 4, 5, 7, 9, 11, 12][d] / 12), t]);
-    for (const [f, d] of mel) { S.push({ d: .05, f0: [f, f], fA: VWL.l, v: [[0, .1], [1, .5]], n: [[0, 0], [1, 0]] }); S.push({ d: d - .05, f0: [f, f], vib: [5.5, .02], fA: VWL.l, fB: VWL.a, v: [[0, .5], [.15, 1], [.8, .9], [1, 0]], n: [[0, .03], [1, .02]] }); sil(.03); }
+    for (const [f, d] of mel) { S.push({ d: .05, f0: [f, f], fA: VWL.l, v: [[0, .1], [1, .5]], n: [[0, 0], [1, 0]] }); S.push({ d: d - .05, f0: [f, f], vib: [5.5, .02], fA: VWL.l, fB: VWL.a, oq: .65, v: [[0, .5], [.15, 1], [.8, .9], [1, 0]], n: [[0, .03], [1, .02]] }); gap(.03, .01); }
   }
   return S;
 }
@@ -153,7 +171,7 @@ MK.synthVocal = function (ln, sr) {
   const male = (v.base || 'female') === 'male', kid = ln.age === 'kid';
   let f0 = (male ? 120 : 205) * (kid ? 1.4 : 1) * (v.pitch || 1); f0 /= Math.pow(k, .75);
   const fs = (kid ? 1.17 : 1) * (male ? 1 : 1.1) / Math.pow(k, .4);
-  const data = fsynth(vocalSegs(ln.synth, f0, ln.seed || 7), sr, ln.seed || 7, fs, ln.synth === 'laugh' ? .2 : .12);
+  const data = fsynth(vocalSegs(ln.synth, f0, ln.seed || 7, ln.variant || 0), sr, (ln.seed || 7) + (ln.variant || 0), fs, ln.synth === 'laugh' ? .35 : .2);
   const b = new AudioBuffer({ length: data.length, numberOfChannels: 1, sampleRate: sr }); b.copyToChannel(data, 0); return b;
 };
 
@@ -354,7 +372,7 @@ const SFX2 = Object.assign({}, MK._SFX, {
   step: (ac, o, t) => { MK._noiseHit(ac, o, t, .07, .22, 'lowpass', 800); MK._tone(ac, o, t, 110, 70, .05, .1); },
   tap: (ac, o, t) => { MK._noiseHit(ac, o, t, .04, .2, 'bandpass', 2200, 1.5); MK._tone(ac, o, t, 420, 260, .03, .12, 'triangle'); },
   crunch: (ac, o, t) => { for (let i = 0; i < 4; i++) MK._noiseHit(ac, o, t + i * .012, .05, .12, 'bandpass', 1800 + i * 600, 1); },
-  laugh: (ac, o, t) => { for (const [seed, pitch, dt] of [[4, 1.25, 0], [9, .95, .08], [14, 1.5, .15]]) { const b = MK.synthVocal({ synth: 'laugh', voice: { base: pitch > 1.2 ? 'female' : 'male', pitch }, fx: {}, age: pitch > 1.4 ? 'kid' : 'adult', seed }, ac.sampleRate); play(ac, o, b, t + dt, .5); } },
+  laugh: (ac, o, t) => { for (const [seed, pitch, dt] of [[3, 1.1, 0], [7, .95, .12], [12, 1.05, .2]]) { const b = MK.synthVocal({ synth: 'laugh', voice: { base: seed === 7 ? 'male' : 'female', pitch }, fx: {}, age: seed === 7 ? 'adult' : 'kid', seed }, ac.sampleRate); play(ac, o, b, t + dt, .45); } },
   meow: (ac, o, t) => {
     const segs = [{ d: .12, f0: [520, 680], fA: VWL.i, fB: VWL.e, v: [[0, 0], [.4, .8], [1, 1]], n: [[0, .05], [1, .02]] }, { d: .32, f0: [700, 480], fA: VWL.e, fB: VWL.u, v: [[0, 1], [.7, .7], [1, 0]], n: [[0, .02], [1, .02]] }];
     play(ac, o, toBuf(ac, fsynth(segs, ac.sampleRate, 5, 1.3, .08)), t, .7); },

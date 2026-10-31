@@ -733,7 +733,7 @@ function stepVocalKind(step) { if (step.say || step.vocal || step.voice === fals
   if (step.do && VOCAL_SYNTH[step.do]) return VOCAL_SYNTH[step.do]; if (step.emotion === 'laugh' && (step.do === 'roll' || step.do === 'dance' || step.do === 'jump')) return 'laugh'; return null; }
 MK.stepVocalKind = stepVocalKind;
 const PROSODY = { happy: [1.06, 1.04], laugh: [1.08, 1.06], sad: [.94, .9], cry: [.96, .88], angry: [.97, 1.06], surprised: [1.1, 1], scared: [1.07, 1.1], sleepy: [.93, .82], love: [1.03, .92], shy: [1.02, .9] };
-function lineFor(ep, lib, who, text, step) {
+function lineFor(ep, lib, who, text, step, vi) {
   const ch = who === 'Р' ? { voice: (ep.narrator && ep.narrator.voice) || lib.narrator || { base: 'male', pitch: 1, rate: .47 } } : (lib.characters[who] && lib.characters[who].spec);
   if (!ch || !text) return null;
   const fx = MK.fxFor(lib, who); const v = MK.synthVoice(ch.voice, fx, lib.characters[who] && lib.characters[who].voiceId);
@@ -742,15 +742,17 @@ function lineFor(ep, lib, who, text, step) {
   const lex = lib.lexicon || {}, mode = (lib.settings && lib.settings.stressMode) || 'ipa';
   let say = text; if (!synth && MK.prepSpeech) { const ps = MK.prepSpeech(text, lex, mode); say = ps.text; if (ps.ipa.length) v.ipa = ps.ipa; }
   const age = ch.age || (who === 'Р' ? 'adult' : 'kid');
-  return { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + (synth ? '|' + synth + age : '')).toString(36), who, text: say, voice: v, fx, synth, age, seed: hash32(String(who) + (ch.name || '')) };
+  const variant = synth ? (vi || 0) % 3 : 0;
+  return { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + (synth ? '|' + synth + age + variant : '')).toString(36), who, text: say, voice: v, fx, synth, age, variant, seed: hash32(String(who) + (ch.name || '')) };
 }
 
 /** Список всех реплик эпизода (для озвучки до сборки). */
 MK.collectLines = function (ep, lib) {
   const out = [];
+  let vi = 0;
   for (const sc of ep.scenes || []) for (const st of sc.steps || []) {
     const text = stepVoiceText(st); if (!text) continue;
-    const ln = lineFor(ep, lib, st.who || 'Р', text, st); if (ln) out.push(ln);
+    const ln = lineFor(ep, lib, st.who || 'Р', text, st, stepVocalKind(st) ? vi++ : 0); if (ln) out.push(ln);
   }
   return out;
 };
@@ -783,7 +785,7 @@ MK.validate = function (ep, lib) {
 /** Собирает эпизод: audio — {key:{dur, env:Float32Array(50/с)}} */
 MK.compile = function (ep, lib, audio) {
   audio = audio || {};
-  const segs = []; let t = 0; const sfx = [], speech = [], music = [];
+  const segs = []; let t = 0, tl_vi = 0; const sfx = [], speech = [], music = [];
   const TITLE = ep.titleCard === false ? 0 : 4.5, END = ep.endCard === false ? 0 : 4;
   if (TITLE) { segs.push({ kind: 'title', t0: 0, t1: TITLE }); music.push({ t0: 0, t1: TITLE, mood: 'happy' }); sfx.push({ t: .3, n: 'sparkle' }); t = TITLE; }
     for (const [si, sc] of (ep.scenes || []).entries()) {
@@ -870,7 +872,7 @@ MK.compile = function (ep, lib, audio) {
       }
       const vtext = stepVoiceText(step);
       if (vtext) {
-        const ln = lineFor(ep, lib, who || 'Р', vtext, step); const a = ln && audio[ln.key]; const sd = a ? a.dur : estSpeech(vtext);
+        const ln = lineFor(ep, lib, who || 'Р', vtext, step, stepVocalKind(step) ? tl_vi++ : 0); const a = ln && audio[ln.key]; const sd = a ? a.dur : estSpeech(vtext);
         const vt = step.say ? start : start + (dur > 1.5 ? .15 : .05);
         speech.push({ t: st0 + vt, dur: sd, key: ln && ln.key, who: who || 'Р', text: vtext, vocal: !step.say });
         if (ch) ch.ev.push({ t: vt, k: 'say', t1: vt + sd, key: ln && ln.key, text: vtext });

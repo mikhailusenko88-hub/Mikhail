@@ -320,8 +320,8 @@ function buildRig0(spec) {
   const rollG = new THREE.Group(); yaw.add(rollG);
   const pose = new THREE.Group(); rollG.add(pose);
   const rig = { root: R0, yaw, rollG, pose, kind: k, human, eyes: [], lids: [], brows: [], arms: [], legs: [], spec, n };
-  const P = human ? (adult ? { hip: .6, legL: .5, bodyY: .92, head: .2, headY: 1.33, shY: 1.12, shX: .24, armL: .44, legX: .1, legR: .075, armR: .06, torsoR: .2, torsoL: .38 }
-                           : { hip: .38, legL: .3, bodyY: .62, head: .26, headY: 1.02, shY: .8, shX: .21, armL: .3, legX: .09, legR: .07, armR: .055, torsoR: .17, torsoL: .22 })
+  const P = human ? (adult ? { hip: .8, legL: .62, bodyY: 1.08, head: .175, headY: 1.6, shY: 1.34, shX: .215, armL: .5, legX: .09, legR: .068, armR: .052, torsoR: .18, torsoL: .5 }
+                           : { hip: .42, legL: .3, bodyY: .62, head: .235, headY: 1.0, shY: .8, shX: .165, armL: .27, legX: .072, legR: .057, armR: .044, torsoR: .145, torsoL: .3 })
                    : (adult ? { hip: .26, legL: .17, bodyY: .54, head: .31, headY: 1.08, shY: .74, shX: .3, armL: .2, legX: .14, legR: .085, armR: .068, bx: .34, by: .42, bz: .3 }
                             : { hip: .24, legL: .13, bodyY: .45, head: .34, headY: .98, shY: .64, shX: .27, armL: .16, legX: .13, legR: .075, armR: .06, bx: .32, by: .36, bz: .29 });
   applyBuild(P, (spec.build || (global.MKMaker ? global.MKMaker.defaultBuild(spec) : 'normal')), human, k); rig.build = spec.build;
@@ -330,7 +330,8 @@ function buildRig0(spec) {
   const headMap = !human && n.pattern.includes('stripes') ? stripeTex(c.body, c.stripe, 10, 4, 46) : null;
   const legC = O.overalls || O.pants || (human ? c.pants : null);
   // ноги
-  for (const s of [-1, 1]) {
+  if (human) buildHumanLegs(rig, pose, P, n, O, c);
+  else for (const s of [-1, 1]) {
     const g = new THREE.Group(); g.position.set(s * P.legX, P.hip, 0); pose.add(g);
     const leg = mesh(G.cap(P.legR, P.legL), toon(legC || (human ? c.pants : c.body)), .06, g); leg.position.y = -P.legL / 2 - P.legR * .3;
     const foot = mesh(G.sph(P.legR * 1.35, 20, 14), toon(human ? (O.shoes || c.shoes) : (O.shoes || pawC)), .06, g); foot.position.set(0, -P.legL - P.legR * .6, P.legR * .5); foot.scale.set(1, .75, 1.3);
@@ -338,12 +339,8 @@ function buildRig0(spec) {
   }
   // тело
   const body = new THREE.Group(); body.position.y = P.bodyY; pose.add(body); rig.body = body;
-  if (human) {
-    const shirt = O.shirt || c.shirt; const torso = mesh(G.cap(P.torsoR, P.torsoL), toon(O.overalls && !O.shirt ? shirt : shirt), .05, body);
-    if (O.stripe) { torso.material = toon(null, stripeTex(shirt, O.stripe, 1, 0, 0)); }
-    if (O.skirt) { const sk = mesh(G.cyl(P.torsoR * 1.05, P.torsoR * 1.9, P.torsoL * .55, 28, true), toon(O.skirt), .03, body); sk.position.y = -P.torsoL * .55; sk.material.side = THREE.DoubleSide; }
-    if (O.pants || O.overalls) { const pt = mesh(G.sph(1, 28, 16, 0), toon(O.overalls || O.pants), 0, body); pt.scale.set(P.torsoR * 1.04, P.torsoL * .45, P.torsoR * 1.04); pt.position.y = -P.torsoL * .38; }
-  } else {
+  if (human) buildHumanTorso(rig, body, P, n, O, c);
+  else {
     const b = mesh(G.sph(1, 40, 30), furMap ? toon(null, furMap) : toon(c.body), .04, body); b.scale.set(P.bx, P.by, P.bz);
     if (!n.pattern.includes('nobelly')) { const be = mesh(G.sph(1, 28, 20), toon(c.belly), 0, body); be.scale.set(P.bx * .62, P.by * .7, P.bz * .45); be.position.set(0, -.03, P.bz * .62); }
     const shell = (th0, th1, color, sc) => { const g = new THREE.SphereGeometry(1, 36, 20, 0, Math.PI * 2, th0, th1 - th0); const m = mesh(g, toon(color), .02, body); m.scale.set(P.bx * sc, P.by * sc, P.bz * sc); m.material = toon(color); return m; };
@@ -364,7 +361,8 @@ function buildRig0(spec) {
   if (O.backpack) { const bp = mesh(G.box(wB * 1.0, .32, .16), toon(O.backpack), .05, body); bp.position.set(0, .05, -(human ? P.torsoR : P.bz) - .06); }
   if (O.pajamas) for (let i = 0; i < 8; i++) { const d = new THREE.Mesh(G.sph(.018, 8, 6), toon('#ffffff')); const a = i * .8; d.position.set(Math.sin(a) * wB, (i % 4) * .08 - .12, Math.cos(a) * wB * .98); body.add(d); }
   // руки
-  for (const s of [-1, 1]) {
+  if (human) buildHumanArms(rig, pose, P, n, O, c);
+  else for (const s of [-1, 1]) {
     const g = new THREE.Group(); g.position.set(s * P.shX, P.shY, 0); pose.add(g);
     const sleeveC = human ? (O.shirt || c.shirt) : (O.shirt || c.body);
     const arm = mesh(G.cap(P.armR, P.armL), toon(sleeveC), .06, g); arm.position.y = -P.armL / 2 - P.armR * .3;
@@ -375,11 +373,8 @@ function buildRig0(spec) {
   // голова
   const head = new THREE.Group(); head.position.y = P.headY; pose.add(head); rig.head = head;
   const hr = P.head;
-  if (human) { mesh(G.sph(hr, 36, 28), toon(c.skin), .035, head);
-    for (const s of [-1, 1]) { const e = mesh(G.sph(hr * .18, 12, 10), toon(c.skin), .1, head); e.position.set(s * hr * .97, -.02, 0); }
-    const ns = mesh(G.sph(hr * .1, 12, 10), toon(new THREE.Color(c.skin).multiplyScalar(.9).getStyle()), 0, head); ns.position.set(0, -hr * .12, hr * .98);
-    buildHair(head, hr, n);
-  } else {
+  if (human) buildHumanHead(rig, head, hr, n, c);
+  else {
     const sk = mesh(G.sph(hr, 40, 30), headMap ? toon(null, headMap) : toon(c.body), .035, head); sk.scale.set(1.08, .94, 1);
     buildAnimalFace(head, hr, n, rig);
   }
@@ -398,6 +393,7 @@ function buildRig0(spec) {
     const lid = new THREE.Mesh(new THREE.SphereGeometry(eR * 1.08, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), toon(bodyC)); lid.scale.set(1, 1.2, .62); g.add(lid);
     const brow = new THREE.Mesh(G.cap(eR * .13, eR * .9), basic(human ? new THREE.Color(n.hair.color || c.hair).multiplyScalar(.7).getStyle() : new THREE.Color(c.body).multiplyScalar(.55).getStyle()));
     brow.rotation.z = Math.PI / 2; brow.position.set(0, eR * 1.55, eR * .2); g.add(brow);
+    if (human && (spec.gender === 'f' || /(pigtails|long|ponytail|bun|bob)/.test((n.hair || {}).style || ''))) for (let q = 0; q < 3; q++) { const ls = new THREE.Mesh(G.cap(eR * .05, eR * .3, 2, 6), basic('#2a1a14')); ls.position.set((q - 1) * eR * .45 + s * eR * .15, eR * 1.12 - Math.abs(q - 1) * eR * .08, eR * .35); ls.rotation.z = (q - 1) * -.5 + s * .5; lid.add(ls); }
     rig.eyes.push({ g, ir, pu, heart, lid, brow, s, eR });
   }
   // щёки
@@ -429,6 +425,87 @@ function buildRig0(spec) {
   return rig;
 }
 function makeHeart(r) { const sh = new THREE.Shape(); sh.moveTo(0, -r * .9); sh.bezierCurveTo(-r * 1.4, -r * .1, -r * .6, r * 1.1, 0, r * .4); sh.bezierCurveTo(r * .6, r * 1.1, r * 1.4, -r * .1, 0, -r * .9); const g = new THREE.ExtrudeGeometry(sh, { depth: r * .2, bevelEnabled: false }); return new THREE.Mesh(g, basic('#e8344e')); }
+
+// ---------- люди ----------
+function cottonT(c) { return ctex('cot' + c, 128, 128, (g) => { g.fillStyle = c; g.fillRect(0, 0, 128, 128); const r = rng(31); for (let i = 0; i < 1600; i++) { g.fillStyle = r() < .5 ? 'rgba(0,0,0,.05)' : 'rgba(255,255,255,.06)'; g.fillRect(r() * 128, r() * 128, 1 + r() * 2, 1); } }, [4, 4]); }
+function plaidT(c) { return ctex('plaid' + c, 256, 256, (g) => { g.fillStyle = c; g.fillRect(0, 0, 256, 256); const d = shadeC(c, .55), l = lightC(c, .5); g.globalAlpha = .55; g.fillStyle = d; for (let i = 0; i < 256; i += 64) { g.fillRect(i, 0, 22, 256); g.fillRect(0, i, 256, 22); } g.globalAlpha = .5; g.fillStyle = l; for (let i = 40; i < 256; i += 64) { g.fillRect(i, 0, 5, 256); g.fillRect(0, i, 256, 5); } g.globalAlpha = 1; }, [3, 2]); }
+function dotsCloth(c) { return ctex('dc' + c, 128, 128, (g) => { g.fillStyle = c; g.fillRect(0, 0, 128, 128); g.fillStyle = '#ffffff'; for (let y = 8; y < 128; y += 32) for (let x = 8 + (y / 32 % 2) * 16; x < 128; x += 32) { g.beginPath(); g.arc(x, y, 5, 0, 7); g.fill(); } }, [4, 3]); }
+function clothM(c, O, top) { if (top && O.plaid) return toon(null, plaidT(c)); if (top && O.dots) return toon(null, dotsCloth(c)); if (top && O.stripe) return toon(null, stripeTex(c, O.stripe, 1, 0, 0)); return MK3D.hq ? toon(null, cottonT(c)) : toon(c); }
+function shoe(par, P, c, kid) { const g = new THREE.Group(); par.add(g); const L = P.legR * (kid ? 2.5 : 2.7), W = P.legR * 1.45, H = P.legR * 1.05;
+  const up = mesh(G.sph(1, 24, 16), toon(c), .05, g); up.scale.set(W, H, L); up.position.set(0, H * .55, L * .25);
+  const so = mesh(G.sph(1, 24, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), toon('#f4f1ea'), .04, g); so.scale.set(W * 1.06, H * .45, L * 1.04); so.position.set(0, H * .5, L * .25);
+  if (kid) { const t2 = mesh(G.sph(1, 16, 10), toon('#f4f1ea'), 0, g); t2.scale.set(W * .7, H * .5, L * .45); t2.position.set(0, H * .75, L * .78); } return g; }
+function buildHumanLegs(rig, pose, P, n, O, c) {
+  const kid = !n.adult, skirt = !!O.skirt && !O.pants, shorts = !!O.shorts, pc = O.overalls || O.pants || (skirt ? null : c.pants);
+  for (const s of [-1, 1]) { const g = new THREE.Group(); g.position.set(s * P.legX, P.hip, 0); pose.add(g); const L = P.legL;
+    if (pc && !shorts) { const lg = mesh(G.cap(P.legR * 1.05, L * .92), clothM(pc, O), .05, g); lg.position.y = -L / 2; const cf = mesh(G.cyl(P.legR * 1.18, P.legR * 1.12, L * .1, 16), clothM(pc, O), .04, g); cf.position.y = -L * .92; }
+    else { const lg = mesh(G.cap(P.legR * .85, L * .9), toon(c.skin), .05, g); lg.position.y = -L / 2; if (pc) { const sh = mesh(G.cap(P.legR * 1.18, L * .38), clothM(pc, O), .05, g); sh.position.y = -L * .2; }
+      const sk = mesh(G.cyl(P.legR * .95, P.legR * .92, L * .14, 16), toon(kid ? '#ffffff' : (skirt ? '#d8b8a8' : '#ffffff')), .04, g); sk.position.y = -L * .9; }
+    const sh = shoe(g, P, O.shoes || c.shoes, kid); sh.position.y = -L - P.legR * .6; rig.legs.push(g); } }
+function buildHumanTorso(rig, body, P, n, O, c) {
+  const R0 = P.torsoR, L = P.torsoL, kid = !n.adult, male = n.spec.gender !== 'f', shirt = O.shirt || c.shirt;
+  const ch = male && !kid ? 1.12 : 1, wa = kid ? .96 : male ? .9 : .78, hp = kid ? .98 : male ? .95 : 1.08;
+  const prof = [[R0 * hp * .98, -L * .52], [R0 * hp, -L * .4], [R0 * wa, -L * .1], [R0 * ch, L * .22], [R0 * ch * .95, L * .38], [R0 * .7, L * .5], [R0 * .36, L * .56], [R0 * .3, L * .6]];
+  const tor = mesh(lathe(prof, 32), clothM(shirt, O, true), .045, body); tor.scale.z = .78;
+  const neck = mesh(G.cyl(R0 * .32, R0 * .36, L * .24, 16), toon(c.skin), .04, body); neck.position.y = L * .62;
+  const col = mesh(G.tor(R0 * .38, R0 * .07, 10, 28), toon(shadeC(shirt, .88)), .03, body); col.rotation.x = Math.PI / 2; col.position.y = L * .56; col.scale.z = .85;
+  if (!kid && male && !O.overalls && !O.suit) for (let i = 0; i < 3; i++) { const b = mesh(G.sph(R0 * .045, 10, 8), toon(shadeC(shirt, .7)), 0, body); b.position.set(0, L * (.3 - i * .2), R0 * ch * .8); b.scale.z = .5; }
+  const pc = O.overalls || O.pants;
+  if (pc && !O.skirt) { const pp = [[0, -L * .62], [R0 * hp * 1.01, -L * .6], [R0 * hp * 1.03, -L * .48], [R0 * wa * 1.03, -L * .2], [0, -L * .2]]; const pt = mesh(lathe(pp, 32), clothM(pc, O), .04, body); pt.scale.z = .8;
+    if (!O.overalls) { const bl = mesh(G.tor(R0 * wa * 1.03, R0 * .05, 8, 32), toon('#3a2a20'), 0, body); bl.rotation.x = Math.PI / 2; bl.position.y = -L * .22; bl.scale.y = .8; const bk = mesh(G.box(R0 * .2, R0 * .14, R0 * .05), toon('#d8b03a'), 0, body); bk.position.set(0, -L * .22, R0 * wa * .82); } }
+  if (O.skirt) { const sl = kid ? L * .62 : L * .95, flare = kid ? 1.75 : 1.5, N = 40, prof2 = [[R0 * wa * 1.02, -L * .12], [R0 * hp * 1.08, -L * .4], [R0 * hp * flare, -L * .12 - sl]];
+    const geo = lathe(prof2, N * 2); const pa = geo.attributes.position; for (let i = 0; i < pa.count; i++) { const y = pa.getY(i); if (y < -L * .12 - sl * .9) { const a = Math.atan2(pa.getZ(i), pa.getX(i)); const k = 1 + Math.sin(a * 9) * .05; pa.setX(i, pa.getX(i) * k); pa.setZ(i, pa.getZ(i) * k); pa.setY(i, y + Math.cos(a * 9) * .01); } } geo.computeVertexNormals();
+    const sk = mesh(geo, clothM(O.skirt, O, O.skirt === shirt), .035, body); sk.material = sk.material.clone(); sk.material.side = THREE.DoubleSide; sk.scale.z = .85; }
+}
+function buildHumanArms(rig, pose, P, n, O, c) {
+  const kid = !n.adult, shirt = O.shirt || c.shirt, shortSl = kid && !O.suit && !O.pajamas;
+  for (const s of [-1, 1]) { const g = new THREE.Group(); g.position.set(s * P.shX, P.shY, 0); pose.add(g); const L = P.armL;
+    const sl = mesh(G.cap(P.armR * 1.25, shortSl ? L * .3 : L * .82), clothM(shirt, O, true), .05, g); sl.position.y = shortSl ? -L * .2 : -L * .45;
+    if (shortSl) { const fa = mesh(G.cap(P.armR * .9, L * .72), toon(c.skin), .05, g); fa.position.y = -L * .58; }
+    else { const cf = mesh(G.cyl(P.armR * 1.28, P.armR * 1.3, L * .08, 14), toon(shadeC(shirt, .88)), .04, g); cf.position.y = -L * .9; }
+    const hand = new THREE.Group(); hand.position.y = -L - P.armR * .6; g.add(hand);
+    const palm = mesh(G.sph(P.armR * 1.25, 18, 14), toon(c.skin), .05, hand); palm.scale.set(.85, 1.15, .65);
+    const th = mesh(G.cap(P.armR * .38, P.armR * .7), toon(c.skin), .05, hand); th.position.set(-s * P.armR * .7, P.armR * .25, P.armR * .45); th.rotation.set(-.5, 0, s * .8);
+    const anchor = new THREE.Object3D(); anchor.position.set(0, -L - P.armR * 1.6, .06); g.add(anchor);
+    g.userData.side = s; rig.arms.push(g); if (s > 0) rig.hand = anchor; } }
+function hairM(cl) { return MK3D.hq ? toon(null, ctex('hairT' + cl, 64, 256, (g) => { g.fillStyle = cl; g.fillRect(0, 0, 64, 256); const r = rng(5); for (let i = 0; i < 90; i++) { g.strokeStyle = r() < .5 ? shadeC(cl, .78) : lightC(cl, .18); g.globalAlpha = .5; g.lineWidth = 1 + r() * 2; const x = r() * 64; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + (r() - .5) * 8, 256); g.stroke(); } g.globalAlpha = 1; }, [6, 1])) : toon(cl); }
+function buildHumanHead(rig, head, hr, n, c) {
+  const kid = !n.adult, male = n.spec.gender !== 'f';
+  const sk = mesh(G.sph(hr, 40, 32), toon(c.skin), .035, head); sk.scale.set(kid ? 1 : .9, kid ? .98 : 1.1, kid ? .97 : .95);
+  if (!kid) { const jw = mesh(G.sph(hr * .78, 28, 20), toon(c.skin), 0, head); jw.position.set(0, -hr * .38, hr * .12); jw.scale.set(male ? 1 : .9, .8, .9); }
+  for (const s of [-1, 1]) { const e = new THREE.Group(); e.position.set(s * hr * (kid ? .97 : .88), -hr * .05, -hr * .02); e.rotation.y = s * .3; head.add(e);
+    const o = mesh(G.sph(hr * .17, 16, 12), toon(c.skin), .06, e); o.scale.set(.45, 1, .75); const i = mesh(G.sph(hr * .1, 12, 8), toon(shadeC(c.skin, .85)), 0, e); i.position.x = s * hr * .03; i.scale.set(.3, .8, .6); }
+  const ns = mesh(lathe([[0, 0], [hr * .085, hr * .02], [hr * .1, hr * .08], [hr * .06, hr * .16], [0, hr * .2]], 16), toon(shadeC(c.skin, .96)), .04, head); ns.rotation.x = Math.PI / 2 + .25; ns.position.set(0, -hr * .14, hr * (kid ? .9 : .86)); ns.scale.set(kid ? .9 : 1, kid ? .8 : 1.15, 1);
+  buildHair2(head, hr, n, rig);
+}
+function buildHair2(head, hr, n, rig) {
+  const h = n.hair || {}, st = h.style || 'short', cl = h.color || (n.old ? '#d9d9de' : n.c.hair), m = hairM(cl), kid = !n.adult, male = n.spec.gender !== 'f';
+  const H = (geo, par, ol) => { const x = mesh(geo, m, ol == null ? .03 : ol, par || head); x.userData.hair = true; return x; };
+  if (st === 'bald') { if (n.old) for (const s of [-1, 1]) { const p = H(G.sph(hr * .32, 16, 12)); p.position.set(s * hr * .82, hr * .05, -hr * .25); p.scale.set(.6, 1, 1.2); } return; }
+  // «шапочка» волос: спереди линия роста выше, сзади ниже
+  const cap = H(new THREE.SphereGeometry(hr * 1.045, 48, 24, 0, Math.PI * 2, 0, Math.PI * (st === 'short' && male ? .5 : .56))); cap.rotation.x = -.42; cap.position.set(0, hr * .02, -hr * .04);
+  if (!kid) cap.scale.set(.92, 1.1, .97);
+  // чёлка — несколько прядей
+  const nl = st === 'short' && male ? 5 : 6; for (let i = 0; i < nl; i++) { const t = i / (nl - 1) - .5, a = t * 1.9;
+    const lk = H(lathe([[0, 0], [hr * .09, hr * .05], [hr * .1, hr * .2], [hr * .05, hr * .34], [0, hr * .4]], 10), head, .02); lk.position.set(Math.sin(a) * hr * .92, hr * .58 - Math.abs(t) * hr * .1, Math.cos(a) * hr * .78);
+    lk.rotation.set(Math.PI - .5 + Math.abs(t) * .2, a, -t * 1.2 + (male ? .35 : -.15)); lk.scale.set(1, male ? .75 : .9, .45); }
+  if (st === 'short' && male) for (let i = 0; i < 5; i++) { const a = (i - 2) * .5; const tf = H(G.cone(hr * .12, hr * .32, 10), head, .02); tf.position.set(Math.sin(a) * hr * .45, hr * 1.0, Math.cos(a) * hr * .2 - hr * .1); tf.rotation.set(-.6, 0, -a * .7); }
+  const curtain = (len, back) => { const g = new THREE.CylinderGeometry(hr * 1.02, hr * 1.18, len, 40, 6, true, back ? Math.PI * .55 : -Math.PI * .45, back ? Math.PI * .9 : Math.PI * 1.9); const x = H(g, head, .02); x.material = x.material.clone(); x.material.side = THREE.DoubleSide; x.position.set(0, -len / 2 + hr * .15, -hr * .06); return x; };
+  if (st === 'long' || st === 'bob') { const len = st === 'bob' ? hr * 1.05 : hr * (kid ? 1.9 : 2.3); curtain(len, true);
+    for (const s of [-1, 1]) { const sl = H(G.cap(hr * .16, len * .7), head, .02); sl.position.set(s * hr * .95, -len * .3 + hr * .1, hr * .25); sl.scale.set(.7, 1, .9); sl.rotation.z = s * .08; }
+    const end = H(G.sph(hr * 1.12, 32, 12, 0, Math.PI * 2, Math.PI * .5, Math.PI * .5), head, .02); end.position.set(0, -len + hr * .2, -hr * .1); end.scale.set(1, .3, .78); }
+  if (st === 'pigtails') for (const s of [-1, 1]) { const b = new THREE.Group(); b.position.set(s * hr * 1.0, hr * .1, -hr * .25); b.rotation.z = s * .5; head.add(b);
+    const band = mesh(G.tor(hr * .1, hr * .04, 8, 16), toon('#ff4d6d'), .03, b); band.rotation.y = Math.PI / 2;
+    for (let i = 0; i < 4; i++) { const p = H(G.sph(hr * (.2 - i * .03), 16, 12), b); p.position.set(s * hr * .05, -hr * (.14 + i * .2), 0); p.scale.set(.85, 1.15, .85); } }
+  if (st === 'ponytail') { const cv = new THREE.CatmullRomCurve3([new THREE.Vector3(0, hr * .55, -hr * .85), new THREE.Vector3(0, hr * .3, -hr * 1.3), new THREE.Vector3(0, -hr * .3, -hr * 1.35), new THREE.Vector3(0, -hr * .9, -hr * 1.15)]);
+    H(taperTube(cv, 24, t => hr * (.2 - t * .14 + Math.sin(t * Math.PI) * .07), 12), head, .02); const band = mesh(G.tor(hr * .14, hr * .045, 8, 16), toon('#ff4d6d'), .03, head); band.position.set(0, hr * .5, -hr * .92); band.rotation.x = .7; }
+  if (st === 'bun') { const b = H(G.sph(hr * .36, 24, 16)); b.position.set(0, hr * (n.old ? .85 : 1.0), -hr * .45); const band = mesh(G.tor(hr * .27, hr * .04, 8, 20), toon(n.old ? '#8a6a8a' : '#ff4d6d'), 0, head); band.position.set(0, hr * (n.old ? .78 : .9), -hr * .38); band.rotation.x = -1.1; }
+  if (st === 'curly') for (let i = 0; i < 22; i++) { const a = i / 22 * Math.PI * 2, el = .2 + (i % 3) * .35; const p = H(G.sph(hr * .26, 14, 10)); p.position.set(Math.cos(a) * Math.cos(el) * hr, hr * .35 + Math.sin(el) * hr * .7, Math.sin(a) * Math.cos(el) * hr * .9 - hr * .08); }
+  for (const a0 of n.acc) { const a = typeof a0 === 'string' ? { type: a0 } : a0;
+    if (a.type === 'beard') { const bd = H(new THREE.SphereGeometry(hr * .95, 32, 16, -Math.PI * .1, Math.PI * 1.2, Math.PI * .45, Math.PI * .4)); bd.rotation.y = Math.PI * .5 - Math.PI * .1 + Math.PI * .1; bd.position.set(0, -hr * .12, hr * .08); bd.scale.set(1, 1.15, .95); bd.material = bd.material.clone(); bd.material.side = THREE.DoubleSide;
+      const ch = H(G.sph(hr * .36, 20, 14)); ch.position.set(0, -hr * .7, hr * .55); ch.scale.set(1.2, .9, .8); }
+    if (a.type === 'beard' || a.type === 'mustache') for (const s of [-1, 1]) { const ms = H(G.cap(hr * .07, hr * .22, 4, 8)); ms.position.set(s * hr * .14, -hr * .3, hr * .9); ms.rotation.z = s * (Math.PI / 2 - .35); } }
+}
 function buildHair(head, hr, n) {
   const h = n.hair || {}, cl = h.color || (n.old ? '#d9d9d9' : n.c.hair), m = toon(cl), st = h.style || 'short';
   if (st === 'bald') { if (n.old) for (const s of [-1, 1]) { const p = mesh(G.sph(hr * .3, 14, 10), m, .05, head); p.position.set(s * hr * .85, hr * .1, -hr * .1); } return; }
@@ -1163,7 +1240,7 @@ function lightBase(type, time) { // свет всегда почти белый:
 
 // ---------- камера ----------
 function camFor(c, S, seg, lib) {
-  const h = id => { const lc = lib.characters[id]; return lc ? (lc.spec.height || 1) * (lc.spec.kind === 'human' && (lc.spec.age === 'adult' || lc.spec.age === 'old') ? 1.4 : 1) : 1; };
+  const h = id => { const lc = lib.characters[id]; return lc ? (lc.spec.height || 1) * (lc.spec.kind === 'human' && (lc.spec.age === 'adult' || lc.spec.age === 'old') ? 1.62 : lc.spec.kind === 'human' ? 1.02 : 1) : 1; };
   const px = id => S[id] ? X(S[id].x) : 0, pz = id => S[id] ? -(S[id].z || 0) * 1.5 : 0;
   const ids = Object.keys(seg.C);
   if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close';

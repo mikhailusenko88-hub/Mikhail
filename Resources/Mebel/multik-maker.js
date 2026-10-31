@@ -11,7 +11,8 @@ const COLORS = [
   [/^голуб/, '#7fc8ff', 'голубой'], [/^зел[её]н/, '#5fbf4a', 'зелёный'], [/^красн/, '#e8344e', 'красный'], [/^розов/, '#ff8fb1', 'розовый'],
   [/^ж[её]лт/, '#ffd23f', 'жёлтый'], [/^(фиолетов|сиренев|лилов)/, '#8d5cf6', 'фиолетовый'], [/^оранжев/, '#ff8a3d', 'оранжевый'],
   [/^золот/, '#e8b830', 'золотой'], [/^(бежев|песочн)/, '#e8cfa0', 'бежевый'], [/^кремов/, '#fff3e0', 'кремовый'], [/^бирюзов/, '#3cc8c0', 'бирюзовый'],
-  [/^мятн/, '#9be7c4', 'мятный'], [/^бордов/, '#8a1f3a', 'бордовый'], [/^пятнист/, null, ''],
+  [/^мятн/, '#9be7c4', 'мятный'], [/^бордов/, '#8a1f3a', 'бордовый'], [/^каштанов/, '#7a4a2a', 'каштановый'], [/^рус(ый|ая|ые|ыми|ой|ую)$/, '#b8925a', 'русый'],
+  [/^(блонд|светловолос|светл(ые|ыми)$)/, '#f0d58a', 'светлый'], [/^(сед(ой|ая|ые|ыми|ую)$|седовлас)/, '#d8d8dc', 'седой'], [/^т[её]мн(ые|ыми)$/, '#3b2a20', 'тёмный'], [/^пятнист/, null, ''],
 ];
 const KINDS = [
   [/^(кот|кош|кис|котен|котик|котёнок|котя|котей)/, 'cat', 'кот'], [/^(пес|пёс|пса|псу|собак|собач|щен|песик|пёсик)/, 'dog', 'пёс'],
@@ -29,8 +30,9 @@ const PEOPLE = [ // stem, пол, возраст
 const OLD = /^(бабушк|бабул|старушк|дедушк|дед$|деда|старик|стар(ый|ая|ого|ой|енький|енькая))/;
 const PARTS = [ // stem → часть
   [/^глаз/, 'eyes'], [/^(нос|носик)$/, 'nose'], [/^(носа|носом|носиком)$/, 'nose'], [/^уш/, 'inner'], [/^(пуз|живот|брюш|грудк|животик)/, 'belly'],
-  [/^(шерст|мех|шубк|окрас|тело|туловищ)/, 'body'], [/^(кож|лицо)/, 'skin'], [/^(волос|причес|прич[её]ск|чёлк|челк|косичк|хвостик|кудр|кудряшк|пучок)/, 'hair'],
-  [/^(рубаш|футболк|кофт|свитер|майк|куртк|толстовк|пиджак|жилет|кофточк)/, 'shirt'], [/^плать/, 'dress'], [/^(штан|брюк|джинс|шорт)/, 'pants'],
+  [/^(шерст|мех|шубк|окрас|тело|туловищ)/, 'body'], [/^(кож|лицо)/, 'skin'], [/^(волос|причес|прич[её]ск|чёлк|челк|косичк|косы|косам|кудр|кудряшк|пучок|пучк|каре$)/, 'hair'],
+  [/^(бород|бородк)/, 'acc:beard'], [/^(ус|усы|усами|усик|усики|усиками)$/, 'acc:mustache'], [/^шорт/, 'shorts'],
+  [/^(рубаш|футболк|кофт|свитер|майк|куртк|толстовк|пиджак|жилет|кофточк)/, 'shirt'], [/^плать/, 'dress'], [/^(штан|брюк|джинс)/, 'pants'],
   [/^юбк/, 'skirt'], [/^(ботин|туфл|кроссов|сапог|обув|кед|тапк|тапоч)/, 'shoes'],
   [/^(комбинез|комбез)/, 'overalls'], [/^фартук/, 'apron'], [/^(плащ|накидк|мантию|мантия)/, 'cape'], [/^рюкзак/, 'backpack'], [/^галстук/, 'tie'],
   [/^бабочк/, 'bowtie'], [/^(жилет|жилетк)/, 'vest'], [/^пижам/, 'pajamas'], [/^костюм/, 'suit'],
@@ -54,13 +56,13 @@ function colorOf(t) { for (const [re, hex, name] of COLORS) if (re.test(t) && he
 function kindOf(t) { for (const [re, k, name] of KINDS) if (re.test(t)) return { k, name }; return null; }
 function personOf(t) { for (const [re, g, age] of PEOPLE) if (re.test(t)) return { g, age, old: OLD.test(t) }; return null; }
 function partOf(t) { for (const [re, p] of PARTS) if (re.test(t)) return p; return null; }
-const CLOTHES = { shirt: 1, dress: 1, pants: 1, skirt: 1, shoes: 1, overalls: 1, apron: 1, cape: 1, backpack: 1, tie: 1, bowtie: 1, vest: 1, pajamas: 1, suit: 1 };
+const CLOTHES = { shorts: 1, shirt: 1, dress: 1, pants: 1, skirt: 1, shoes: 1, overalls: 1, apron: 1, cape: 1, backpack: 1, tie: 1, bowtie: 1, vest: 1, pajamas: 1, suit: 1 };
 const _K = null;
-const CLOTH_DEF = { shirt: '#3d8fe0', dress: '#ff6fa8', pants: '#33415c', skirt: '#7a5cd6', shoes: '#2d2d2d', overalls: '#3d6fd0', apron: '#ffffff', cape: '#c0283c', backpack: '#e8a23a', tie: '#c0283c', bowtie: '#c0283c', vest: '#6b4a32', pajamas: '#9ad0ff', suit: '#2f3b52' };
+const CLOTH_DEF = { shorts: '#33415c', shirt: '#3d8fe0', dress: '#ff6fa8', pants: '#33415c', skirt: '#7a5cd6', shoes: '#2d2d2d', overalls: '#3d6fd0', apron: '#ffffff', cape: '#c0283c', backpack: '#e8a23a', tie: '#c0283c', bowtie: '#c0283c', vest: '#6b4a32', pajamas: '#9ad0ff', suit: '#2f3b52' };
 const PART_NAMES0 = null;
-const PART_NAMES = { shirt: 'кофта', dress: 'платье', pants: 'штаны', skirt: 'юбка', shoes: 'обувь', overalls: 'комбинезон', apron: 'фартук', cape: 'плащ', backpack: 'рюкзак', tie: 'галстук', bowtie: 'бабочка', vest: 'жилет', pajamas: 'пижама', suit: 'костюм', eyes: 'глаза', nose: 'нос', inner: 'уши внутри', belly: 'живот', body: 'шерсть', skin: 'кожа', hair: 'волосы', shirt: 'кофта', dress: 'платье', pants: 'штаны', skirt: 'юбка', shoes: 'обувь', stripe: 'полоски', spot: 'пятна', tail: 'хвост', socks: 'белые лапки', mask: 'маска' };
-const ACC_NAMES = { scarf: 'шарф', bow: 'бантик', hat: 'шапка', crown: 'корона', glasses: 'очки', flower: 'цветок', collar: 'ошейник с колокольчиком' };
-const ACC_DEF = { scarf: '#3d8fe0', bow: '#e8344e', hat: '#e8344e', crown: '#ffd23f', glasses: '#2b1d16', flower: '#ff7ab8', collar: '#e8344e' };
+const PART_NAMES = { shorts: 'шорты', shirt: 'кофта', dress: 'платье', pants: 'штаны', skirt: 'юбка', shoes: 'обувь', overalls: 'комбинезон', apron: 'фартук', cape: 'плащ', backpack: 'рюкзак', tie: 'галстук', bowtie: 'бабочка', vest: 'жилет', pajamas: 'пижама', suit: 'костюм', eyes: 'глаза', nose: 'нос', inner: 'уши внутри', belly: 'живот', body: 'шерсть', skin: 'кожа', hair: 'волосы', shirt: 'кофта', dress: 'платье', pants: 'штаны', skirt: 'юбка', shoes: 'обувь', stripe: 'полоски', spot: 'пятна', tail: 'хвост', socks: 'белые лапки', mask: 'маска' };
+const ACC_NAMES = { beard: 'борода', mustache: 'усы', scarf: 'шарф', bow: 'бантик', hat: 'шапка', crown: 'корона', glasses: 'очки', flower: 'цветок', collar: 'ошейник с колокольчиком' };
+const ACC_DEF = { beard: null, mustache: null, scarf: '#3d8fe0', bow: '#e8344e', hat: '#e8344e', crown: '#ffd23f', glasses: '#2b1d16', flower: '#ff7ab8', collar: '#e8344e' };
 
 const VOICE_PRESETS = {
   boy: { base: 'female', pitch: 1.38, rate: .52, n: 'мальчик' }, girl: { base: 'female', pitch: 1.62, rate: .54, n: 'девочка' },
@@ -128,10 +130,12 @@ Maker.apply = function (draft, text) {
     const colorAt = []; T.forEach((t, i) => { const c = colorOf(t); if (c) { let hex = c.hex; const prev = T[i - 1]; if (prev === 'светло' || prev === 'светлый') hex = mix(hex, .35); if (prev === 'темно' || prev === 'темный') hex = mix(hex, -.35); colorAt.push({ i, hex, name: c.name }); } });
     const free = new Set(colorAt.map(c => c.i));
     const parts = []; T.forEach((t, i) => { const p = partOf(t); if (p) parts.push({ i, p }); });
+    const bound = new Map(); // прилагательное стоит перед своим словом: цвет → ближайшая часть ПОСЛЕ него
+    for (const c of colorAt) for (let j = c.i + 1; j <= c.i + 3 && j < T.length; j++) { const pp = parts.find(x => x.i === j); if (pp) { if (!bound.has(j)) { bound.set(j, c); free.delete(c.i); } break; } if (!STOP.has(T[j]) && !colorOf(T[j]) && !/^(длинн|коротк|кудряв|прям|волнист|пушист|маленьк|больш|клетчат|полосат)/.test(T[j])) break; }
     for (const { i, p } of parts) {
       consumed.add(i);
       // ближайший свободный цвет в окне ±3 (сначала перед словом)
-      let best = null; for (const c of colorAt) { if (!free.has(c.i)) continue; const d = c.i < i ? i - c.i : (c.i - i) + .5; if (d <= 3.5 && (!best || d < best.d)) best = Object.assign({ d }, c); }
+      let best = bound.has(i) ? Object.assign({ d: 0 }, bound.get(i)) : null; if (!best) for (const c of colorAt) { if (!free.has(c.i)) continue; const d = c.i < i ? i - c.i : (c.i - i) + .5; if (d <= 3.5 && (!best || d < best.d)) best = Object.assign({ d }, c); }
       const col = best && best.hex; if (best) { free.delete(best.i); consumed.add(best.i); }
       const cname = best ? best.name + ' ' : '';
       if (p.startsWith('acc:')) { const type = p.slice(4); const ix = s.acc.findIndex(a => (a.type || a) === type);
@@ -143,6 +147,7 @@ Maker.apply = function (draft, text) {
         if (removing) { s.pattern = s.pattern.filter(x => x !== pat); done.push('убрал ' + PART_NAMES[p]); }
         else { if (!s.pattern.includes(pat)) s.pattern.push(pat); if (col) { s.colors.stripe = col; s._stripeSet = true; } done.push(PART_NAMES[p] + (best ? ' (' + best.name + ')' : '')); } continue; }
       if (p === 'socks' || p === 'mask') { if (removing) s.pattern = s.pattern.filter(x => x !== p); else if (!s.pattern.includes(p)) s.pattern.push(p); done.push((removing ? 'убрал ' : '') + PART_NAMES[p]); continue; }
+      if (p === 'tail' && s.kind === 'human') { s.hair = s.hair || { style: 'long' }; s.hair.style = 'ponytail'; if (col) { s.hair.color = col; s.colors.hair = col; } done.push('причёска: хвостик'); continue; }
       if (p === 'tail') { if (col && /^(бел|кремов)/.test(best.name)) { if (!s.pattern.includes('tailtip')) s.pattern.push('tailtip'); done.push('белый кончик хвоста'); } continue; }
       if (CLOTHES[p] && (s.kind === 'human' || !['shoes', 'skirt'].includes(p) || col)) {
         s.outfit = s.outfit || {}; const c2 = col || CLOTH_DEF[p];
@@ -150,7 +155,9 @@ Maker.apply = function (draft, text) {
         if (p === 'dress') { s.outfit.shirt = c2; s.outfit.skirt = c2; delete s.outfit.pants; }
         else if (p === 'suit') { s.outfit.shirt = c2; s.outfit.pants = c2; if (!s.outfit.tie && !s.outfit.bowtie) s.outfit.tie = '#c0283c'; }
         else if (p === 'pajamas') { s.outfit.shirt = c2; s.outfit.pants = c2; s.outfit.pajamas = '#ffffff'; }
-        else { s.outfit[p] = c2; if (p === 'pants') delete s.outfit.skirt; if (p === 'overalls') delete s.outfit.skirt; }
+        else if (p === 'shorts') { s.outfit.pants = c2; s.outfit.shorts = true; delete s.outfit.skirt; }
+        else { s.outfit[p] = c2; if (p === 'pants') { delete s.outfit.skirt; delete s.outfit.shorts; } if (p === 'overalls') delete s.outfit.skirt; }
+        if (T.some(t => /^клетчат|^клетк/.test(t)) && (p === 'shirt' || p === 'dress' || p === 'skirt')) s.outfit.plaid = true; if (T.some(t => /^горош/.test(t)) && (p === 'shirt' || p === 'dress')) s.outfit.dots = true;
         done.push(PART_NAMES[p] + (best ? ': ' + best.name : '')); continue; }
       if (!col) { if (p === 'hair') hairStyle(T, s, done); continue; }
       if (p === 'hair') { s.colors.hair = col; s.hair = s.hair || { style: 'short' }; s.hair.color = col; hairStyle(T, s, done); done.push('волосы: ' + best.name); continue; }
@@ -161,6 +168,7 @@ Maker.apply = function (draft, text) {
     // узоры словами-прилагательными
     T.forEach((t, i) => {
       if (/^полосат/.test(t)) { consumed.add(i); if (removing) s.pattern = s.pattern.filter(x => x !== 'stripes'); else if (!s.pattern.includes('stripes')) { s.pattern.push('stripes'); done.push('полосатый'); } }
+      if (/^(клетчат|клетк|горош|длинн|коротк|кудряв|прям|волнист)/.test(t)) consumed.add(i);
       if (/^пятнист/.test(t)) { consumed.add(i); if (!s.pattern.includes('spots')) { s.pattern.push('spots'); done.push('пятнистый'); } }
     });
     // свободные цвета → шерсть (животное) или кофта (человек)
@@ -198,8 +206,8 @@ function dedupe(a) { return [...new Set(a)]; }
 function setBody(s, col) { if (s.kind === 'human') { s.colors.skin = col; return; } s.colors.body = col; if (!s._stripeSet) s.colors.stripe = mix(col, -.3); if (!s._bellySet) s.colors.belly = mix(col, .78); if (s.kind === 'dog' || s.kind === 'bear') s.colors.inner = mix(col, -.22); }
 function hairStyle(T, s, done) {
   s.hair = s.hair || { style: 'short' }; const has = re => T.some(t => re.test(t));
-  const st = has(/^кудряв/) ? 'curly' : has(/^лыс/) ? 'bald' : has(/^(косичк|хвостик)/) ? 'pigtails' : has(/^пучок/) ? 'bun' : has(/^(длинн|длинноволос)/) ? 'long' : has(/^коротк/) ? 'short' : null;
-  if (st && s.hair.style !== st) { s.hair.style = st; done.push('причёска: ' + { curly: 'кудрявые', bald: 'лысый', pigtails: 'хвостики', bun: 'пучок', long: 'длинные', short: 'короткие' }[st]); }
+  const st = has(/^кудряв/) ? 'curly' : has(/^лыс/) ? 'bald' : has(/^(косичк|косы|косой|косам)/) ? 'pigtails' : has(/^(хвост|хвостик)/) ? 'ponytail' : has(/^пучок|^пучк/) ? 'bun' : has(/^(каре)$/) ? 'bob' : has(/^(длинн|длинноволос)/) ? 'long' : has(/^коротк/) ? 'short' : null;
+  if (st && s.hair.style !== st) { s.hair.style = st; done.push('причёска: ' + { curly: 'кудрявые', bald: 'лысый', pigtails: 'косички', ponytail: 'хвостик', bun: 'пучок', bob: 'каре', long: 'длинные', short: 'короткие' }[st]); }
 }
 function defaultName(s) {
   if (s.kind === 'human') { const g = s.gender === 'f'; return s.age === 'old' ? (g ? 'Бабушка' : 'Дедушка') : s.age === 'kid' ? (g ? 'Девочка' : 'Мальчик') : (g ? 'Мама' : 'Папа'); }
