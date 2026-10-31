@@ -72,7 +72,8 @@ Maker.apply = function (draft, text) {
   const nm = raw.match(/(?:зовут|по имени|имя|назови(?:те)?(?:\s+(?:его|её|ее|персонажа))?|кличка)\s+([A-Za-zА-ЯЁа-яё\-]+(?:\s+[А-ЯЁ][а-яё\-]+)?)/);
   if (nm) { s.name = nm[1].charAt(0).toUpperCase() + nm[1].slice(1); done.push('имя: ' + s.name); }
   const nameToks = new Set(nm ? toks(nm[1]) : []);
-  const clauses = norm(raw).split(/[.,;!?\n]+|\s+(?:и|а|но|плюс)\s+/).map(toks).filter(c => c.length);
+  const body = nm ? raw.replace(nm[0], ' ') : raw;
+  const clauses = norm(body).split(/[.,;!?\n]+|\s+(?:и|а|но|плюс)\s+/).map(toks).filter(c => c.length);
   let personSeen = null, lastVoice = false;
   for (const T of clauses) {
     const removing = T.some(t => REMOVE.test(t));
@@ -125,7 +126,7 @@ Maker.apply = function (draft, text) {
         continue; }
       if (p === 'stripe' || p === 'spot') { const pat = p === 'stripe' ? 'stripes' : 'spots';
         if (removing) { s.pattern = s.pattern.filter(x => x !== pat); done.push('убрал ' + PART_NAMES[p]); }
-        else { if (!s.pattern.includes(pat)) s.pattern.push(pat); if (col) s.colors.stripe = col; done.push(PART_NAMES[p] + (best ? ' (' + best.name + ')' : '')); } continue; }
+        else { if (!s.pattern.includes(pat)) s.pattern.push(pat); if (col) { s.colors.stripe = col; s._stripeSet = true; } done.push(PART_NAMES[p] + (best ? ' (' + best.name + ')' : '')); } continue; }
       if (p === 'socks' || p === 'mask') { if (removing) s.pattern = s.pattern.filter(x => x !== p); else if (!s.pattern.includes(p)) s.pattern.push(p); done.push((removing ? 'убрал ' : '') + PART_NAMES[p]); continue; }
       if (p === 'tail') { if (col && /^(бел|кремов)/.test(best.name)) { if (!s.pattern.includes('tailtip')) s.pattern.push('tailtip'); done.push('белый кончик хвоста'); } continue; }
       if (!col) { if (p === 'hair') hairStyle(T, s, done); continue; }
@@ -137,7 +138,7 @@ Maker.apply = function (draft, text) {
       if (p === 'hair') { s.colors.hair = col; s.hair = s.hair || { style: 'short' }; s.hair.color = col; hairStyle(T, s, done); done.push('волосы: ' + best.name); continue; }
       if (p === 'skin') { s.colors.skin = col; done.push('кожа: ' + best.name); continue; }
       if (p === 'body') { setBody(s, col); done.push('шерсть: ' + best.name); continue; }
-      s.colors[p] = col; done.push(PART_NAMES[p] + ': ' + best.name);
+      s.colors[p] = col; if (p === 'belly') s._bellySet = true; done.push(PART_NAMES[p] + ': ' + best.name);
     }
     // узоры словами-прилагательными
     T.forEach((t, i) => {
