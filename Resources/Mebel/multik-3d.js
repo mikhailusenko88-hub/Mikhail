@@ -33,7 +33,7 @@ function setupHQ() { // мягкий «киношный» свет без кон
   OL.visible = false;
   R.toneMapping = THREE.NeutralToneMapping; R.toneMappingExposure = 1.0;
   R.shadowMap.type = THREE.VSMShadowMap; sun.shadow.radius = 9; sun.shadow.blurSamples = 16; sun.shadow.bias = -.0004; sun.shadow.mapSize.set(2048, 2048);
-  const env = canvasTex(256, 128, (g) => { const gr = g.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, '#dfeaff'); gr.addColorStop(.48, '#ffffff'); gr.addColorStop(.52, '#d8d2c4'); gr.addColorStop(1, '#8a8478'); g.fillStyle = gr; g.fillRect(0, 0, 256, 128);
+  const env = canvasTex(512, 256, (g) => { g.scale(2, 2); const gr = g.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, '#dfeaff'); gr.addColorStop(.48, '#ffffff'); gr.addColorStop(.52, '#d8d2c4'); gr.addColorStop(1, '#8a8478'); g.fillStyle = gr; g.fillRect(0, 0, 256, 128);
     const sp = g.createRadialGradient(70, 30, 2, 70, 30, 30); sp.addColorStop(0, 'rgba(255,255,255,1)'); sp.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = sp; g.fillRect(0, 0, 256, 128); });
   env.mapping = THREE.EquirectangularReflectionMapping; const pm = new THREE.PMREMGenerator(R); scene.environment = pm.fromEquirectangular(env).texture; scene.userData.env = scene.environment; scene.environmentIntensity = .45; pm.dispose();
   rim = new THREE.DirectionalLight(0xffffff, 1.4); rim.position.set(-3, 4, -6); scene.add(rim); scene.add(rim.target);
@@ -94,6 +94,14 @@ float patW(vec4 P){
   if (uMode < 2.5) { float t = lon / 6.28318 * uN + .5 + wob, f = fract(t), aa = min(fwidth(t) * .7, .05); return smoothstep(.12, .34, lat) * smoothstep(0., .04 + aa, f) * (1. - smoothstep(.26 - aa, .33 + aa, f)); }
   float h = sin(q.x * 9.1 + q.y * 3.7) * sin(q.y * 8.3 - q.z * 5.1) * sin(q.z * 7.7 + q.x * 2.9); return smoothstep(.18, .3, h); }
 `;
+const SSS_FRAG = `#include <lights_fragment_end>
+  #if NUM_DIR_LIGHTS > 0
+  { vec3 nS = normal; float thk = exp(-vThick * 26.0);
+    for (int i = 0; i < NUM_DIR_LIGHTS; i++) { vec3 Ld = directionalLights[i].direction, Lc = directionalLights[i].color; float nl = dot(nS, Ld);
+      float wrap = max(0., (nl + .45) / 1.45) - max(0., nl); // свет «затекает» за границу тени — мягкая тёплая кромка
+      float tr = pow(max(0., dot(geometryViewDir, -normalize(Ld + nS * .3))), 3.0) * thk; // свет насквозь (уши на просвет)
+      reflectedLight.directDiffuse += Lc * diffuseColor.rgb * uSss * (wrap * .32 + tr * 1.6); } }
+  #endif`;
 const SCULPT_FRAG = `#include <color_fragment>
   { float aw = max(fwidth(vMix) * .75, 1e-6), tm = smoothstep(-aw, aw, vMix); // граница цвета — на каждом пикселе
     diffuseColor.rgb = mix(diffuseColor.rgb, vColB, tm);
@@ -101,10 +109,10 @@ const SCULPT_FRAG = `#include <color_fragment>
 function sculptMat(pat) { const k = (MK3D.hq ? 'hq' : 'std') + (pat ? ':' + pat.mode + ':' + pat.n + ':' + pat.ratio.join(',') : ''); sculptM = sculptM || {}; if (sculptM[k]) return sculptM[k];
   const m = MK3D.hq ? new THREE.MeshPhysicalMaterial({ color: 0xffffff, vertexColors: true, roughness: .62, metalness: 0, sheen: .55, sheenRoughness: .35, sheenColor: new THREE.Color(1, .95, .9), envMapIntensity: .8 })
     : new THREE.MeshToonMaterial({ color: 0xffffff, vertexColors: true, gradientMap: grad });
-  const u = { uMode: { value: pat ? pat.mode : 0 }, uN: { value: pat ? pat.n : 0 }, uRatio: { value: new THREE.Vector3(...(pat ? pat.ratio : [1, 1, 1])) } }; m.userData.pat = pat || null;
+  const u = { uSss: { value: new THREE.Vector3(1, .42, .3) }, uMode: { value: pat ? pat.mode : 0 }, uN: { value: pat ? pat.n : 0 }, uRatio: { value: new THREE.Vector3(...(pat ? pat.ratio : [1, 1, 1])) } }; m.userData.pat = pat || null;
   m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, u);
-    sh.vertexShader = 'attribute vec4 aPat; attribute vec3 aColB; attribute float aMix; varying vec4 vPat; varying vec3 vColB; varying float vMix;\n' + sh.vertexShader.replace('#include <color_vertex>', '#include <color_vertex>\n  vPat = aPat; vColB = aColB; vMix = aMix;');
-    sh.fragmentShader = PAT_GLSL + sh.fragmentShader.replace('#include <color_fragment>', SCULPT_FRAG); };
+    sh.vertexShader = 'attribute vec4 aPat; attribute vec3 aColB; attribute float aMix; attribute float aThick; varying vec4 vPat; varying vec3 vColB; varying float vMix; varying float vThick;\n' + sh.vertexShader.replace('#include <color_vertex>', '#include <color_vertex>\n  vPat = aPat; vColB = aColB; vMix = aMix; vThick = aThick;');
+    sh.fragmentShader = 'varying float vThick; uniform vec3 uSss;\n' + PAT_GLSL + sh.fragmentShader.replace('#include <color_fragment>', SCULPT_FRAG).replace('#include <lights_fragment_end>', MK3D.hq ? SSS_FRAG : '#include <lights_fragment_end>'); };
   m.customProgramCacheKey = () => 'sculpt' + (MK3D.hq ? 'hq' : '');
   return (sculptM[k] = m); }
 function sculptRig(rig) {
@@ -148,22 +156,23 @@ function sculptRig(rig) {
     for (const m of grp.children.slice()) { if (!m.isMesh) continue; const ps = primsOf(m, region); if (!ps) continue; for (const p of ps) { if (p.op === 'add') p.k = prims.some(q => q.op === 'add') ? Math.min(p.kk != null ? p.kk : k, (p.minR || k) * .9) : 0; prims.push(p); } fused.push(m); }
     if (prims.some(q => q.op === 'add')) parts.push({ grp, region, prims, fused }); };
   take(rig.head, 'head', hr * .09); take(rig.body, 'body', Math.min(P.bx || .3, P.bz || .3) * (dressed ? .05 : .1));
-  rig.legs.forEach(g => take(g, 'leg', P.legR * .55)); rig.arms.forEach(g => take(g, 'arm', P.armR * .55)); take(rig.tail, 'tail', .03);
+  rig.legs.forEach(g => take(g, 'leg', P.legR * .55)); rig.arms.forEach(g => take(g, 'arm', P.armR * .55)); take(rig.tail, 'tail', .03); (rig.ears || []).forEach(e => take(e, 'ear', hr * .04));
   const head = parts.find(p => p.region === 'head');
   if (!parts.length) return;
   if (MK3D.debug) console.log('скульптор ' + rig.spec.name + ': ' + parts.map(p => p.region + '[' + p.prims.map(q => q.type + (q.pat ? '/' + q.pat.mode : '') + (q.op !== 'add' ? '/' + q.op : '')).join(',') + ']').join(' '));
   const groups = parts.map(p => p.prims.filter(q => q.op !== 'paint'));
   for (const p of parts) {
-    const res = p.region === 'head' ? 46 : p.region === 'body' ? 40 : p.region === 'tail' ? 34 : 24;
+    const res = p.region === 'head' ? 46 : p.region === 'body' ? 40 : p.region === 'tail' ? 34 : p.region === 'ear' ? 28 : 24;
     const m = SC.mesh(p.prims, { res }); if (!m.idx.length) continue;
     { const ao = SC.occlusion(groups, m.pos, m.nor, hr * .9), fl = MK3D.hq ? .46 : .62; SC.bake(m.col, ao, fl); SC.bake(m.colB, ao, fl); }
+    const thick = SC.thickness(p.prims, m.pos, m.nor, hr * .8, m.cell * .5); // до перевода в координаты части
     const toPart = new THREE.Matrix4().multiplyMatrices(poseInv, p.grp.matrixWorld).invert();
     const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(m.pos, 3)); geo.setAttribute('normal', new THREE.BufferAttribute(m.nor, 3)); geo.setAttribute('color', new THREE.BufferAttribute(m.col, 3)); geo.setIndex(new THREE.BufferAttribute(m.idx, 1)); geo.applyMatrix4(toPart);
-    geo.setAttribute('aColB', new THREE.BufferAttribute(m.colB, 3)); geo.setAttribute('aMix', new THREE.BufferAttribute(m.mixS, 1)); geo.setAttribute('aPat', new THREE.BufferAttribute(m.pat, 4));
+    geo.setAttribute('aThick', new THREE.BufferAttribute(thick, 1)); geo.setAttribute('aColB', new THREE.BufferAttribute(m.colB, 3)); geo.setAttribute('aMix', new THREE.BufferAttribute(m.mixS, 1)); geo.setAttribute('aPat', new THREE.BufferAttribute(m.pat, 4));
     const pp = p.prims.find(q => q.pat); let patInfo = null; if (pp) { const b = pp.col, st = pp.pat.col; patInfo = { mode: SC.MODES[pp.pat.mode] || 0, n: pp.pat.n || 7, ratio: [0, 1, 2].map(i => +(Math.min(1.2, st[i] / Math.max(.02, b[i]))).toFixed(3)) }; }
     for (const f of p.fused) p.grp.remove(f);
     const sm = new THREE.Mesh(geo, sculptMat(patInfo)); sm.castShadow = true; sm.receiveShadow = true; sm.userData.sculpt = true; p.grp.add(sm); p.mesh = sm; p.toPart = toPart;
-    if (!MK3D.hq) { const og = geo.clone(), pa = og.attributes.position, na = og.attributes.normal, w = p.region === 'head' || p.region === 'body' ? .011 : .008; for (let i = 0; i < pa.count; i++) pa.setXYZ(i, pa.getX(i) + na.getX(i) * w, pa.getY(i) + na.getY(i) * w, pa.getZ(i) + na.getZ(i) * w); for (const a of ['color', 'aPat', 'aColB', 'aMix']) if (og.attributes[a]) og.deleteAttribute(a);
+    if (!MK3D.hq) { const og = geo.clone(), pa = og.attributes.position, na = og.attributes.normal, w = p.region === 'head' || p.region === 'body' ? .011 : .008; for (let i = 0; i < pa.count; i++) pa.setXYZ(i, pa.getX(i) + na.getX(i) * w, pa.getY(i) + na.getY(i) * w, pa.getZ(i) + na.getZ(i) * w); for (const a of ['color', 'aPat', 'aColB', 'aMix', 'aThick']) if (og.attributes[a]) og.deleteAttribute(a);
       const ol = new THREE.Mesh(og, OL); ol.castShadow = false; sm.add(ol); }
   }
   // носик, рот, усы, румянец — на поверхность новой мордочки (чтобы не утонули в щёчках)
@@ -243,15 +252,21 @@ varying vec3 vT; varying vec3 vW; varying float vt; varying vec2 vUv; varying fl
 void main(){
   vec3 base = uHasCol > .5 ? vCol : uHasMap > .5 ? texture2D(uMap, vUv).rgb : uColor;
   base *= .9 + vVar * .2; base = mix(base * .86, base * 1.06, smoothstep(0., 1., vt));
-  vec3 T = normalize(vT); vec3 V = normalize(cameraPosition - vW); vec3 L = normalize(uSunDir);
-  float TL = dot(T, L), TV = dot(T, V);
-  float diff = sqrt(max(0., 1. - TL * TL));
-  vec3 H = normalize(L + V); float TH = dot(T, H); float spec = pow(sqrt(max(0., 1. - TH * TH)), 80.0);
-  float spec2 = pow(sqrt(max(0., 1. - TH * TH)), 18.0);
-  float ao = mix(.8, 1.0, smoothstep(0., .9, vt));
-  float rimT = dot(T, normalize(uRimDir)); float rim = sqrt(max(0., 1. - rimT * rimT));
+  vec3 T = normalize(vT); vec3 V = normalize(cameraPosition - vW); vec3 L = normalize(uSunDir), Lr = normalize(uRimDir);
+  // волосок по модели Маршнера: R — белый блик (к корню), TRT — цветной блик (к кончику), TT — свет насквозь (контровой)
+  float sTL = clamp(dot(T, L), -1., 1.), sTV = clamp(dot(T, V), -1., 1.), sTR = clamp(dot(T, Lr), -1., 1.);
+  float diff = sqrt(max(0., 1. - sTL * sTL));
+  float thH = .5 * (asin(sTL) + asin(sTV)), thR = .5 * (asin(sTR) + asin(sTV));
+  float Rl = exp(-pow((thH + .07) / .1, 2.)), TRT = exp(-pow((thH - .14) / .2, 2.));
+  vec3 Vp = V - T * sTV; float vl = length(Vp); Vp = vl > 1e-4 ? Vp / vl : vec3(0.);
+  vec3 Lp = L - T * sTL; float ll = length(Lp); Lp = ll > 1e-4 ? Lp / ll : vec3(0.);
+  vec3 Rp = Lr - T * sTR; float rl = length(Rp); Rp = rl > 1e-4 ? Rp / rl : vec3(0.);
+  float TT = smoothstep(-.3, -.95, dot(Lp, Vp)) * exp(-pow(thH / .25, 2.)), TTr = smoothstep(-.2, -.95, dot(Rp, Vp)) * exp(-pow(thR / .3, 2.));
+  float ao = mix(.78, 1.0, smoothstep(0., .9, vt));
   vec3 amb = mix(uGround, uSky, .5 + .5 * T.y) * .45; amb = mix(vec3(dot(amb, vec3(.333))), amb, .25);
-  vec3 c = base * (amb + uSunCol * diff * .85) * ao + uSunCol * (spec * .16 + spec2 * base * .18) * ao + uRimCol * rim * .12 * vt;
+  vec3 c = base * (amb + uSunCol * diff * .85) * ao
+         + uSunCol * (Rl * .2 + TRT * base * .45) * ao
+         + uSunCol * base * TT * .9 * vt + uRimCol * base * TTr * .55 * vt;
   c = max(mix(vec3(dot(c, vec3(.299, .587, .114))), c, 1.15), 0.);
   gl_FragColor = vec4(c, 1.0);
   #include <tonemapping_fragment>
@@ -498,7 +513,7 @@ function buildRig0(spec) {
     const pu = new THREE.Mesh(G.sph(eR * .38, 16, 12), basic('#16100c')); pu.position.z = eR * .65; pu.scale.set(1, 1.15, .5); g.add(pu);
     const hl = new THREE.Mesh(G.sph(eR * .16, 10, 8), basic('#ffffff')); hl.position.set(-eR * .2, eR * .3, eR * .82); g.add(hl);
     if (MK3D.hq) { w.material = eyeGloss(scleraT(), .25); ir.material = eyeGloss(irisT(c.eyes), .2); pu.material = basic('#120c08'); const h2 = new THREE.Mesh(G.sph(eR * .07, 8, 6), basic('#ffffff')); h2.position.set(eR * .18, -eR * .12, eR * .84); g.add(h2);
-      const cor = new THREE.Mesh(G.sph(eR * .72, 20, 14), new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: .12, roughness: 0, clearcoat: 1, transmission: 0 })); cor.position.z = eR * .46; cor.scale.set(1, 1.15, .55); g.add(cor); }
+      const cor = new THREE.Mesh(G.sph(eR * .72, 20, 14), new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: .12, roughness: .12, clearcoat: 1, clearcoatRoughness: .1, transmission: 0 })); cor.position.z = eR * .46; cor.scale.set(1, 1.15, .55); g.add(cor); }
     const heart = makeHeart(eR * .7); heart.position.z = eR * .5; heart.visible = false; g.add(heart);
     const lid = new THREE.Mesh(new THREE.SphereGeometry(eR * 1.08, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), toon(bodyC)); lid.scale.set(1, 1.2, .62); g.add(lid);
     const brow = new THREE.Mesh(G.cap(eR * .13, eR * .9), basic(human ? new THREE.Color(n.hair.color || c.hair).multiplyScalar(.7).getStyle() : new THREE.Color(c.body).multiplyScalar(.55).getStyle()));
@@ -549,7 +564,7 @@ function irisT(c) { return ctex('iris' + c, 256, 256, (g) => { const C = new THR
 }); }
 function scleraT() { return ctex('sclera', 128, 128, (g) => { const gr = g.createRadialGradient(64, 64, 10, 64, 64, 64); gr.addColorStop(0, '#ffffff'); gr.addColorStop(.6, '#fbfaf8'); gr.addColorStop(.85, '#e9e6ec'); gr.addColorStop(1, '#cfcbd6'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
   const sh = g.createLinearGradient(0, 0, 0, 80); sh.addColorStop(0, 'rgba(90,80,100,.2)'); sh.addColorStop(1, 'rgba(90,80,100,0)'); g.fillStyle = sh; g.fillRect(0, 0, 128, 128); }); }
-function eyeGloss(map, rough) { const k = 'eg' + map.uuid + rough; if (matCache[k]) return matCache[k]; return (matCache[k] = new THREE.MeshPhysicalMaterial({ color: 0xffffff, map, roughness: rough, clearcoat: 1, clearcoatRoughness: .04 })); }
+function eyeGloss(map, rough) { const k = 'eg' + map.uuid + rough; if (matCache[k]) return matCache[k]; return (matCache[k] = new THREE.MeshPhysicalMaterial({ color: 0xffffff, map, roughness: rough, clearcoat: 1, clearcoatRoughness: .07 })); }
 function makeHeart(r) { const sh = new THREE.Shape(); sh.moveTo(0, -r * .9); sh.bezierCurveTo(-r * 1.4, -r * .1, -r * .6, r * 1.1, 0, r * .4); sh.bezierCurveTo(r * .6, r * 1.1, r * 1.4, -r * .1, 0, -r * .9); const g = new THREE.ExtrudeGeometry(sh, { depth: r * .2, bevelEnabled: false }); return new THREE.Mesh(g, basic('#e8344e')); }
 
 // ---------- люди ----------
@@ -1487,13 +1502,19 @@ function ppInit(w, h) {
   P.copy = ppMat('uniform sampler2D t; varying vec2 vUv; void main(){ gl_FragColor = texture2D(t, vUv); }', { t: { value: null } });
   P.bright = ppMat('uniform sampler2D t; uniform float thr; varying vec2 vUv; void main(){ vec3 c = texture2D(t, vUv).rgb; float l = max(c.r, max(c.g, c.b)); float k = clamp((l - thr) / (l + 1e-4), 0.0, 1.0); gl_FragColor = vec4(c * k * k, 1.0); }', { t: { value: null }, thr: { value: .92 } });
   P.blur = ppMat('uniform sampler2D t; uniform vec2 d; varying vec2 vUv; void main(){ vec3 c = texture2D(t, vUv).rgb * .2270; c += (texture2D(t, vUv + d * 1.3846).rgb + texture2D(t, vUv - d * 1.3846).rgb) * .3162; c += (texture2D(t, vUv + d * 3.2308).rgb + texture2D(t, vUv - d * 3.2308).rgb) * .0703; gl_FragColor = vec4(c, 1.0); }', { t: { value: null }, d: { value: new THREE.Vector2() } });
+  P.r1 = rt(w / 4, h / 4); P.r2 = rt(w / 4, h / 4);
+  P.rays = ppMat(`uniform sampler2D tMain, tDepth; uniform vec2 src; varying vec2 vUv;
+    void main(){ vec2 uv = vUv, d = (vUv - src) / 56.0; float decay = 1.0; vec3 acc = vec3(0.0);
+      for (int i = 0; i < 56; i++) { uv -= d; vec2 u = clamp(uv, 0.001, .999); float sky = step(.99995, texture2D(tDepth, u).x); vec3 c = texture2D(tMain, u).rgb; float l = max(c.r, max(c.g, c.b)); acc += c * sky * smoothstep(.45, 1.0, l) * decay; decay *= .955; }
+      gl_FragColor = vec4(acc / 22.0, 1.0); }`, { tMain: { value: null }, tDepth: { value: null }, src: { value: new THREE.Vector2(.7, 1.25) } });
   P.comp = ppMat(`#include <packing>
-    uniform sampler2D tMain, tHalf, tQuart, tB1, tB2, tDepth; uniform float near, far, focus, ap, bloom, sat, con, vig; uniform vec3 tintH, tintS; varying vec2 vUv;
+    uniform sampler2D tMain, tHalf, tQuart, tB1, tB2, tDepth, tRays; uniform float near, far, focus, ap, bloom, sat, con, vig, rays; uniform vec3 tintH, tintS, rayCol; varying vec2 vUv;
     void main(){
       vec3 c = texture2D(tMain, vUv).rgb;
       if (ap > 0.0) { float z = -perspectiveDepthToViewZ(texture2D(tDepth, vUv).x, near, far); float coc = clamp(ap * abs(1.0 - focus / max(z, .01)) * 2.4, 0.0, 1.0);
         vec3 hb = texture2D(tHalf, vUv).rgb, qb = texture2D(tQuart, vUv).rgb; c = coc < .5 ? mix(c, hb, coc * 2.0) : mix(hb, qb, (coc - .5) * 2.0); }
       c += texture2D(tB1, vUv).rgb * bloom * .7 + texture2D(tB2, vUv).rgb * bloom;
+      if (rays > 0.0) { vec3 r = texture2D(tRays, vUv).rgb; c += r * rayCol * rays * .8; } // лучи света сквозь кроны
       float l = dot(c, vec3(.2126, .7152, .0722)); c = mix(vec3(l), c, sat);
       c *= mix(tintS, tintH, smoothstep(.05, .7, l));
       c = (c - .18) * con + .18; c = max(c, 0.0);
@@ -1501,21 +1522,23 @@ function ppInit(w, h) {
       gl_FragColor = vec4(c, 1.0);
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
-    }`, { tMain: { value: null }, tHalf: { value: null }, tQuart: { value: null }, tB1: { value: null }, tB2: { value: null }, tDepth: { value: null }, near: { value: .1 }, far: { value: 200 }, focus: { value: 5 }, ap: { value: 0 }, bloom: { value: .5 }, sat: { value: 1.06 }, con: { value: 1.05 }, vig: { value: .22 }, tintH: { value: new THREE.Vector3(1, 1, 1) }, tintS: { value: new THREE.Vector3(1, 1, 1) } }, true);
+    }`, { tMain: { value: null }, tHalf: { value: null }, tQuart: { value: null }, tB1: { value: null }, tB2: { value: null }, tDepth: { value: null }, tRays: { value: null }, rays: { value: 0 }, rayCol: { value: new THREE.Vector3(1, .95, .82) }, near: { value: .1 }, far: { value: 200 }, focus: { value: 5 }, ap: { value: 0 }, bloom: { value: .5 }, sat: { value: 1.06 }, con: { value: 1.05 }, vig: { value: .22 }, tintH: { value: new THREE.Vector3(1, 1, 1) }, tintS: { value: new THREE.Vector3(1, 1, 1) } }, true);
   return P; }
 function ppPass(mat, uni, target) { const P = PP; P.quad.material = mat; for (const k in uni) mat.uniforms[k].value = uni[k]; R.setRenderTarget(target); R.render(P.scene, P.cam); }
 const GRADE = { day: [[1.03, 1.01, .97], [.97, .99, 1.04], 1.08, 1.05], evening: [[1.08, .99, .9], [.94, .9, 1.06], 1.08, 1.06], night: [[.96, .99, 1.06], [.84, .9, 1.12], .92, 1.08], indoor: [[1.05, 1.0, .94], [.97, .97, 1.0], 1.05, 1.04], space: [[1, 1, 1.02], [.9, .92, 1.1], 1.05, 1.1] };
 function renderHQ(w, h) {
-  if (!PP || PP.w !== w || PP.h !== h) { if (PP) for (const k of ['main', 'h1', 'h2', 'q1', 'q2', 'b1', 'b2', 'e1', 'e2']) PP[k].dispose(); PP = ppInit(w, h); }
+  if (!PP || PP.w !== w || PP.h !== h) { if (PP) for (const k of ['main', 'h1', 'h2', 'q1', 'q2', 'b1', 'b2', 'e1', 'e2', 'r1', 'r2']) PP[k].dispose(); PP = ppInit(w, h); }
   const P = PP; R.setRenderTarget(P.main); R.clear(); R.render(scene, cam);
   const ap = MK3D._ap || 0;
   ppPass(P.copy, { t: P.main.texture }, P.h1);
   if (ap > 0) { ppPass(P.blur, { t: P.h1.texture, d: new THREE.Vector2(1.6 / P.h1.width, 0) }, P.h2); ppPass(P.blur, { t: P.h2.texture, d: new THREE.Vector2(0, 1.6 / P.h1.height) }, P.h1);
     ppPass(P.copy, { t: P.h1.texture }, P.q1); ppPass(P.blur, { t: P.q1.texture, d: new THREE.Vector2(2.2 / P.q1.width, 0) }, P.q2); ppPass(P.blur, { t: P.q2.texture, d: new THREE.Vector2(0, 2.2 / P.q1.height) }, P.q1); }
-  ppPass(P.bright, { t: P.main.texture, thr: .9 }, P.b1); ppPass(P.blur, { t: P.b1.texture, d: new THREE.Vector2(1.5 / P.b1.width, 0) }, P.b2); ppPass(P.blur, { t: P.b2.texture, d: new THREE.Vector2(0, 1.5 / P.b1.height) }, P.b1);
+  ppPass(P.bright, { t: P.main.texture, thr: .9 }, P.h2); ppPass(P.copy, { t: P.h2.texture }, P.b1); // яркое — сначала в половинном размере, потом мягко вниз (без «квадратиков»)
+  for (const r of [1.5, 3]) { ppPass(P.blur, { t: P.b1.texture, d: new THREE.Vector2(r / P.b1.width, 0) }, P.b2); ppPass(P.blur, { t: P.b2.texture, d: new THREE.Vector2(0, r / P.b1.height) }, P.b1); }
   ppPass(P.copy, { t: P.b1.texture }, P.e1); ppPass(P.blur, { t: P.e1.texture, d: new THREE.Vector2(2 / P.e1.width, 0) }, P.e2); ppPass(P.blur, { t: P.e2.texture, d: new THREE.Vector2(0, 2 / P.e1.height) }, P.e1);
+  const rs = MK3D._rays || 0; if (rs > 0) { ppPass(P.rays, { tMain: P.main.texture, tDepth: P.main.depthTexture, src: MK3D._raySrc || new THREE.Vector2(.7, 1.25) }, P.r1); ppPass(P.blur, { t: P.r1.texture, d: new THREE.Vector2(1.2 / P.r1.width, 0) }, P.r2); ppPass(P.blur, { t: P.r2.texture, d: new THREE.Vector2(0, 1.2 / P.r1.height) }, P.r1); }
   const gr = GRADE[MK3D._grade || 'day'] || GRADE.day;
-  ppPass(P.comp, { tMain: P.main.texture, tHalf: P.h1.texture, tQuart: P.q1.texture, tB1: P.b1.texture, tB2: P.e1.texture, tDepth: P.main.depthTexture, near: cam.near, far: cam.far, focus: MK3D._focus || 5, ap, bloom: .55, sat: gr[2], con: gr[3], vig: MK3D._vig != null ? MK3D._vig : .22, tintH: new THREE.Vector3(...gr[0]), tintS: new THREE.Vector3(...gr[1]) }, null);
+  ppPass(P.comp, { tRays: P.r1.texture, rays: rs, rayCol: MK3D._rayCol || new THREE.Vector3(1, .95, .82), tMain: P.main.texture, tHalf: P.h1.texture, tQuart: P.q1.texture, tB1: P.b1.texture, tB2: P.e1.texture, tDepth: P.main.depthTexture, near: cam.near, far: cam.far, focus: MK3D._focus || 5, ap, bloom: .55, sat: gr[2], con: gr[3], vig: MK3D._vig != null ? MK3D._vig : .22, tintH: new THREE.Vector3(...gr[0]), tintS: new THREE.Vector3(...gr[1]) }, null);
 }
 function render(ctx) {
   const w = ctx.canvas.width, h = ctx.canvas.height;
@@ -1523,7 +1546,7 @@ function render(ctx) {
   if (GL.width !== w * ss || GL.height !== h * ss) { GL.width = w * ss; GL.height = h * ss; R.setSize(w * ss, h * ss, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
   if (MK3D.hq) { scene.updateMatrixWorld(true); for (const k in rigCache) { const rg = rigCache[k]; if (rg.root.visible && rg.fur) furFrame(rg, MK3D._T || 0); } renderHQ(w * ss, h * ss); }
   else R.render(scene, cam);
-  MK3D._ap = 0; MK3D._vig = null;
+  MK3D._ap = 0; MK3D._vig = null; MK3D._rays = 0;
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(GL, 0, 0, w, h); ctx.restore();
 }
 MK3D.draw = function (ctx, tl, seg, t, T) {
@@ -1567,7 +1590,8 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   for (const c of seg.cam) if (c.shake && t >= c.t && t < c.t + c.shake) { const a = (1 - (t - c.t) / c.shake) * .08; cam.position.x += Math.sin(t * 61) * a; cam.position.y += Math.cos(t * 53) * a; }
   cam.fov = 38; cam.updateProjectionMatrix(); cam.lookAt(look);
   { const mode = cams[ci].mode || 'wide', AP = { close: .5, medium: .32, two: .22, group: .14, pan: .12 }, ap0 = AP[mode] || .08, apP = ci > 0 && !cams[ci].cut ? (AP[cams[ci - 1].mode] || .08) : ap0; MK3D._ap = lerp(apP, ap0, k); MK3D._focus = cam.position.distanceTo(look) * .95; // резкость — на лице героя, фон мягко размыт
-    MK3D._grade = ['room', 'kitchen'].includes(L.type) ? 'indoor' : L.type === 'space' ? 'space' : (L.time || 'day'); }
+    MK3D._grade = ['room', 'kitchen'].includes(L.type) ? 'indoor' : L.type === 'space' ? 'space' : (L.time || 'day');
+    { const tm = L.time || 'day', ty = L.type || 'yard'; MK3D._rays = tm === 'night' || ['space', 'room', 'kitchen'].includes(ty) || L.weather === 'rain' ? 0 : (ty === 'forest' ? .7 : .3) * (tm === 'evening' ? 1.25 : 1); MK3D._rayCol = tm === 'evening' ? new THREE.Vector3(1, .78, .55) : new THREE.Vector3(1, .95, .82); MK3D._raySrc = new THREE.Vector2(.5 + Math.sin((L.seed || 3) * 1.7) * .25, 1.28); } }
   sun.target.position.copy(look); sun.position.add(look); MK3D._T = t; if (rim) { rim.target.position.copy(look); rim.position.set(look.x - 3, 4, look.z - 6); }
   render(ctx);
 };

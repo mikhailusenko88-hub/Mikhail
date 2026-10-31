@@ -160,6 +160,14 @@
       ao[v] = clamp(1 - K * occ / scale, 0, 1); }
     return ao;
   };
+  // толщина в каждой точке (насквозь внутрь): тонкие места (уши, кончик носа) будут просвечивать на свету
+  S.thickness = function (prims, pos, nor, maxT, minStep) {
+    const n = pos.length / 3, th = new Float32Array(n);
+    for (let v = 0; v < n; v++) { const x = pos[v * 3], y = pos[v * 3 + 1], z = pos[v * 3 + 2], nx = nor[v * 3], ny = nor[v * 3 + 1], nz = nor[v * 3 + 2];
+      let t = minStep * 2; for (let i = 0; i < 40 && t < maxT; i++) { const d = field(prims, x - nx * t, y - ny * t, z - nz * t, null); if (d > 0) break; t += Math.max(-d * .8, minStep); }
+      th[v] = Math.min(t, maxT); }
+    return th;
+  };
   // запечь тень в цвет: в складках темнее и чуть насыщеннее (как свет, прошедший сквозь шерсть)
   S.bake = function (col, ao, floor) {
     const f = floor == null ? .42 : floor;
