@@ -1,0 +1,17 @@
+<html><head><meta charset="utf-8"></head><body style="margin:0;background:#000"><canvas id=c width=1280 height=720></canvas>
+<!-- Тестовый кадр мультика вне iPhone. three.module.min.js положить в Resources/Mebel (npm pack three@0.169.0, как в CI). #hq = режим «как в кино». -->
+<script src="../../../Resources/Mebel/multik-engine.js"></script>
+<script src="../../../Resources/Mebel/multik-audio.js"></script>
+<script src="../../../Resources/Mebel/multik-maker.js"></script>
+<script src="../../../Resources/Mebel/multik-script.js"></script>
+<script src="../../../Resources/Mebel/multik-3d.js"></script>
+<script type="module">
+import * as THREE from '../../../Resources/Mebel/three.module.min.js';
+if(location.hash=="#hq")MK3D.hq=true;window.ok3d=MK3D.init(THREE);
+window.setup=function(ep){const lib={characters:{},locations:{}};
+ const v=MK.validate(ep,lib); for(const c of v.newChars) lib.characters[c.id]={spec:c,code:c._code}; for(const l of v.newLocs) lib.locations[l.id]={spec:l,code:l._code};
+ window.TL=MK.compile(ep,lib,{});TL.style='3d'; return {dur:TL.dur, errors:v.errors};}
+window.setupText=function(txt){const r=MKScript.parse(txt,{characters:{},locations:{}});const ep=(r.episodes||[])[0];if(!ep)return {err:'нет серий',r};return Object.assign(setup(ep),{errors2:r.errors,unknownNames:r.unknownNames,unknownWords:r.unknownWords,unknownObjects:r.unknownObjects,episodes:r.episodes.length});}
+window.frame=function(t){const c=document.getElementById('c'),ctx=c.getContext('2d');ctx.setTransform(c.width/1920,0,0,c.height/1080,0,0);MK.render(ctx,TL,t);}
+window.ready=true;
+</script></body></html>
