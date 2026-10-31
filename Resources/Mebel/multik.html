@@ -97,6 +97,12 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 <script src="multik-maker.js"></script>
 <script src="multik-script.js"></script>
 <script>
+// любые ошибки показываем на экране, чтобы было видно, что сломалось
+window.addEventListener('error', e => showErr((e.message || 'ошибка') + (e.filename ? ' @' + e.filename.split('/').pop() + ':' + e.lineno : '')));
+window.addEventListener('unhandledrejection', e => showErr('Ошибка: ' + ((e.reason && (e.reason.message || e.reason)) || '?')));
+function showErr(t) { let b = document.getElementById('errbar'); if (!b) { b = document.createElement('div'); b.id = 'errbar'; b.style.cssText = 'position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:99;background:#ff5d6c;color:#fff;padding:10px 12px;border-radius:12px;font:13px -apple-system,sans-serif;white-space:pre-wrap'; b.onclick = () => b.remove(); document.body.appendChild(b); } b.textContent = '⚠️ ' + t + '\n(нажми, чтобы закрыть; сделай скриншот для Claude)'; }
+</script>
+<script>
 'use strict';
 // ---------- мост к iPhone ----------
 const HAS_NATIVE = !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.multik);
@@ -441,7 +447,7 @@ const Wr = {
   saveDraft() { Lib.data.draftText = document.getElementById('wrText').value; Lib.data.draftSeries = document.getElementById('wrSeries').value; Lib.save(); },
   close() { if (this.listening) this.mic(); this.saveDraft(); document.getElementById('writer').style.display = 'none'; App.render(); },
   example() { const t = document.getElementById('wrText'); if (t.value.trim() && !confirm('Заменить текст примером?')) return; t.value = MKScript.EXAMPLE; },
-  async paste() { const t = await Native.call('paste'); if (!t) { alert('В буфере нет текста. Скопируй сценарий и нажми ещё раз.'); return; } const el = document.getElementById('wrText'); el.value = el.value.trim() ? el.value.replace(/\s*$/, '') + '\n' + t : t; this.saveDraft(); this.check(); },
+  async paste() { const t = await Native.call('paste'); if (!t) { alert('В буфере нет текста. Скопируй сценарий и нажми ещё раз.'); return; } const el = document.getElementById('wrText'); if (el.value.includes(t.trim())) { this.check(); return; } el.value = el.value.trim() && confirm('Добавить к уже написанному? (Отмена — заменить)') ? el.value.replace(/\s*$/, '') + '\n' + t : t; this.saveDraft(); this.check(); },
   clear() { if (confirm('Очистить текст?')) { document.getElementById('wrText').value = ''; document.getElementById('wrOut').innerHTML = ''; document.getElementById('wrTeach').innerHTML = ''; this.saveDraft(); } },
   teach(r) {
     const box = document.getElementById('wrTeach'); const names = r.unknownNames || [], words = r.unknownWords || [];
@@ -469,7 +475,8 @@ const Wr = {
     let n = parts.length ? parts[0].episode : next; parts.forEach(e => { e.episode = n++; e.youtube.title = `${e.series} — Серия ${e.episode}${e.title ? '. ' + e.title : ''}`; });
     return Object.assign(r, { parts });
   },
-  check() {
+  check() { try { return this._check(); } catch (e) { document.getElementById('wrOut').innerHTML = `<div class="err">Ошибка разбора: ${esc(e.message)}\n${esc((e.stack || '').split('\n').slice(0, 3).join('\n'))}</div>`; return { errors: [e.message], parts: [] }; } },
+  _check() {
     this.saveDraft(); const r = this.parse(); this.last = r; const o = document.getElementById('wrOut'); this.teach(r);
     if (!r.parts.length && !r.errors.length) { o.innerHTML = '<div class="warn">Пусто. Начни со строки «СЦЕНА: двор, день» или нажми «Пример».</div>'; return r; }
     const tmp = { characters: Object.assign({}, Lib.data.characters), locations: Object.assign({}, Lib.data.locations) };
@@ -480,8 +487,9 @@ const Wr = {
       + (r.narrated ? `<div class="mut">Рассказчик прочитает фраз: ${r.narrated}</div>` : '') + (r.warnings.length ? `<div class="warn">${r.warnings.map(esc).join('<br>')}</div>` : '') + (r.errors.length ? '' : '<div class="mut">Длительность примерная — точная будет после озвучки.</div>');
     return r;
   },
-  async make() {
-    const r = this.check(); if (r.errors.length || !r.parts.length) return;
+  async make() { try { await this._make(); } catch (e) { document.getElementById('wrOut').insertAdjacentHTML('afterbegin', `<div class="err">Ошибка: ${esc(e.message)}</div>`); } },
+  async _make() {
+    const r = this.check(); if (r.errors.length || !r.parts.length) { if (!r.errors.length) document.getElementById('wrOut').insertAdjacentHTML('afterbegin', '<div class="warn">Нечего создавать — проверь текст.</div>'); return; }
     const series = r.parts[0].series, p = Lib.data.projects.find(p => p.series === series);
     const clash = r.parts.filter(e => p && p.episodes.some(x => x.episode === e.episode));
     if (clash.length && !confirm(`Серии ${clash.map(e => e.episode).join(', ')} уже есть — заменить?`)) return;

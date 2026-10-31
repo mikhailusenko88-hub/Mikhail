@@ -270,6 +270,7 @@ struct MultikWeb: UIViewRepresentable {
         let web = WKWebView(frame: .zero, configuration: cfg)
         web.isOpaque = false
         web.backgroundColor = .black
+        web.uiDelegate = context.coordinator   // alert / confirm со страницы
         context.coordinator.web = web
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
         try? AVAudioSession.sharedInstance().setActive(true)
@@ -286,7 +287,7 @@ struct MultikWeb: UIViewRepresentable {
 }
 
 /// Мост страница ↔ iPhone. Каждый вызов из JS возвращает Promise (ответ через replyHandler).
-final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentPickerDelegate {
+final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentPickerDelegate, WKUIDelegate {
     let onClose: () -> Void
     weak var web: WKWebView?
     private let tts = MultikTTS()
@@ -439,6 +440,34 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
         default:
             replyHandler(NSNull(), nil)
         }
+    }
+
+    // окна alert / confirm / prompt со страницы (без этого WKWebView их молча пропускает)
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
+                 initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+        let a = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        a.addAction(UIAlertAction(title: "OK", style: .default) { _ in completionHandler() })
+        guard let top = Self.top() else { completionHandler(); return }
+        top.present(a, animated: true)
+    }
+
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String,
+                 initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
+        let a = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        a.addAction(UIAlertAction(title: "Отмена", style: .cancel) { _ in completionHandler(false) })
+        a.addAction(UIAlertAction(title: "Да", style: .default) { _ in completionHandler(true) })
+        guard let top = Self.top() else { completionHandler(false); return }
+        top.present(a, animated: true)
+    }
+
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?,
+                 initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
+        let a = UIAlertController(title: nil, message: prompt, preferredStyle: .alert)
+        a.addTextField { $0.text = defaultText }
+        a.addAction(UIAlertAction(title: "Отмена", style: .cancel) { _ in completionHandler(nil) })
+        a.addAction(UIAlertAction(title: "OK", style: .default) { _ in completionHandler(a.textFields?.first?.text) })
+        guard let top = Self.top() else { completionHandler(nil); return }
+        top.present(a, animated: true)
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
