@@ -17,8 +17,10 @@ targets:
       properties:
         CFBundleDisplayName: "Замер 3D"
         CFBundleShortVersionString: "2.0"
-        CFBundleVersion: "11"
+        CFBundleVersion: "16"
         NSCameraUsageDescription: "Камера и LiDAR нужны для 3D-скана помещения."
+        NSMicrophoneUsageDescription: "Микрофон нужен, чтобы описывать персонажей мультиков голосом."
+        NSSpeechRecognitionUsageDescription: "Распознавание речи превращает голосовое описание персонажа в текст."
         UIRequiredDeviceCapabilities: [arkit]
         UIFileSharingEnabled: true
         LSSupportsOpeningDocumentsInPlace: true

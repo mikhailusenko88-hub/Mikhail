@@ -2,6 +2,7 @@ import SwiftUI
 import WebKit
 import UniformTypeIdentifiers
 import AVFoundation
+import Speech
 
 /// Раздел «Мебель»: 3D-конструктор на three.js внутри приложения.
 /// Стены берутся из скана (RoomPlan), модули сохраняются в папку скана:
@@ -290,6 +291,7 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
     weak var web: WKWebView?
     private let tts = MultikTTS()
     private let speaker = AVSpeechSynthesizer()
+    private let listener = MultikListener()
     private var writer: MultikWriter?
     private let queue = DispatchQueue(label: "multik.writer", qos: .userInitiated)
     private var pickReply: ((Any?, String?) -> Void)?
@@ -305,6 +307,7 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
     }
 
     func cleanup() {
+        _ = listener.stop()
         if let w = writer { queue.async { w.cancel() } }
         writer = nil
         UIApplication.shared.isIdleTimerDisabled = false
@@ -354,6 +357,13 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
             speaker.stopSpeaking(at: .immediate)
             speaker.speak(MultikTTS.utterance(body["text"] as? String ?? "", body["voice"] as? [String: Any] ?? [:]))
             replyHandler(true, nil)
+        case "listenStart":
+            listener.start(onText: { [weak self] t in
+                guard let d = try? JSONEncoder().encode(t), let js = String(data: d, encoding: .utf8) else { return }
+                self?.web?.evaluateJavaScript("Ed.onSpeech(\(js))")
+            }) { ok in replyHandler(ok, nil) }
+        case "listenStop":
+            replyHandler(listener.stop(), nil)
         case "paste":
             replyHandler(UIPasteboard.general.string ?? "", nil)
         case "copy":
@@ -659,5 +669,70 @@ final class MultikWriter {
         reader?.cancelReading()
         writer?.cancelWriting()
         try? FileManager.default.removeItem(at: tmp)
+    }
+}
+
+
+/// Голосовой ввод описаний персонажа (распознавание русской речи на iPhone).
+final class MultikListener {
+    private let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "ru-RU"))
+    private let engine = AVAudioEngine()
+    private var request: SFSpeechAudioBufferRecognitionRequest?
+    private var task: SFSpeechRecognitionTask?
+    private var text = ""
+    private var active = false
+
+    func start(onText: @escaping (String) -> Void, done: @escaping (Bool) -> Void) {
+        SFSpeechRecognizer.requestAuthorization { st in
+            AVAudioApplication.requestRecordPermission { mic in
+                DispatchQueue.main.async {
+                    guard st == .authorized, mic, let r = self.recognizer, r.isAvailable else { done(false); return }
+                    done(self.begin(r, onText: onText))
+                }
+            }
+        }
+    }
+
+    private func begin(_ r: SFSpeechRecognizer, onText: @escaping (String) -> Void) -> Bool {
+        _ = stop()
+        text = ""
+        do {
+            let s = AVAudioSession.sharedInstance()
+            try s.setCategory(.playAndRecord, mode: .measurement, options: [.defaultToSpeaker, .duckOthers])
+            try s.setActive(true, options: .notifyOthersOnDeactivation)
+            let req = SFSpeechAudioBufferRecognitionRequest()
+            req.shouldReportPartialResults = true
+            if r.supportsOnDeviceRecognition { req.requiresOnDeviceRecognition = true }
+            request = req
+            let input = engine.inputNode
+            let fmt = input.outputFormat(forBus: 0)
+            input.removeTap(onBus: 0)
+            input.installTap(onBus: 0, bufferSize: 1024, format: fmt) { buf, _ in req.append(buf) }
+            engine.prepare()
+            active = true
+            try engine.start()
+            task = r.recognitionTask(with: req) { [weak self] res, _ in
+                guard let self, let res else { return }
+                let t = res.bestTranscription.formattedString
+                DispatchQueue.main.async { self.text = t; onText(t) }
+            }
+            return true
+        } catch {
+            _ = stop()
+            return false
+        }
+    }
+
+    func stop() -> String {
+        guard active else { return text }
+        active = false
+        if engine.isRunning { engine.stop() }
+        engine.inputNode.removeTap(onBus: 0)
+        request?.endAudio()
+        task?.finish()
+        request = nil; task = nil
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+        try? AVAudioSession.sharedInstance().setActive(true)
+        return text
     }
 }

@@ -57,6 +57,7 @@ function normChar(spec) {
     size: (spec.height || 1), seed: hash32(spec.id + (spec.kind || '')), ol: c.outline || '#2b1d16' };
 }
 MK.normChar = normChar;
+MK.drawCharPublic = (ctx, spec, st, T) => drawChar(ctx, normChar(spec), st, T);
 
 const LW = .013;
 function ell(ctx, x, y, rx, ry, rot) { ctx.beginPath(); ctx.ellipse(x, y, Math.abs(rx), Math.abs(ry), rot || 0, 0, Math.PI * 2); }

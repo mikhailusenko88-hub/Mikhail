@@ -40,6 +40,21 @@ textarea{width:100%;min-height:120px;background:var(--card2);color:var(--tx);bor
 .err{color:var(--bad);font-size:14px;white-space:pre-wrap}
 .warn{color:#ffd27a;font-size:13px}
 input[type=range]{width:100%}
+#editor{position:fixed;inset:0;background:var(--bg);z-index:15;display:none;flex-direction:column;overflow-y:auto;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#editor .pv{position:sticky;top:0;z-index:2;background:#0c0e13}
+#editor .pv canvas{width:100%;display:block;max-height:42vh;object-fit:contain}
+.cmd{display:flex;gap:8px;align-items:flex-end}
+.cmd textarea{min-height:52px;flex:1;font:16px -apple-system,sans-serif}
+.mic{width:54px;height:54px;border-radius:27px;border:0;font-size:24px;background:var(--card2)}
+.mic.on{background:var(--bad);animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{border:0;border-radius:16px;padding:7px 11px;background:var(--card2);color:var(--tx);font-size:13px}
+.log div{font-size:13px;padding:3px 0;border-bottom:1px solid #222733}
+.log .u{color:var(--acc)}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:8px 10px;align-items:center;font-size:14px}
+input[type=color]{width:100%;height:36px;border:0;background:none}
+input[type=text]{width:100%;background:var(--card2);color:var(--tx);border:0;border-radius:10px;padding:9px;font-size:15px}
 select{background:var(--card2);color:var(--tx);border:0;border-radius:10px;padding:8px}
 </style></head><body>
 <header><button class="back" onclick="App.close()">‹</button><h1>Мультики</h1></header>
@@ -48,7 +63,19 @@ select{background:var(--card2);color:var(--tx);border:0;border-radius:10px;paddi
 <div id="player"><canvas id="pc" width="1920" height="1080"></canvas>
   <div class="ctl"><button class="btn" onclick="Player.stop()">✕ Закрыть</button><button class="btn acc" id="pp" onclick="Player.toggle()">❚❚</button><input type="range" id="seek" min="0" max="1000" value="0" style="max-width:420px" oninput="Player.seek(this.value/1000)"><span class="mut" id="ptime">0:00</span></div></div>
 <div id="prog"><h2 id="ptitle">Сборка серии</h2><div class="bar"><div id="pbar"></div></div><div id="ptext" class="mut"></div><p class="mut">Не сворачивай приложение, пока идёт сборка. Телефон лучше поставить на зарядку.</p><button class="btn bad" onclick="Build.cancel()">Остановить</button></div>
+<div id="editor"><div class="pv"><div class="row" style="padding:8px 12px"><button class="back" onclick="Ed.close()">‹</button><b id="edTitle" style="flex:1">Новый персонаж</b><button class="btn" onclick="Ed.undo()">↺</button><button class="btn" onclick="Ed.voice()">🔊</button></div><canvas id="edc" width="720" height="600"></canvas></div>
+<div style="padding:10px 14px 120px">
+ <div class="card"><b>Опиши или скажи</b><div class="mut" style="margin:4px 0 8px">Например: «рыжий полосатый кот с синим шарфом, голос мальчика, зовут Мурзик». Потом поправляй: «добавь шляпу», «глаза голубые», «убери шарф», «голос пониже».</div>
+  <div class="cmd"><textarea id="edText" placeholder="Что сделать?"></textarea><button class="mic" id="edMic" onclick="Ed.mic()">🎤</button></div>
+  <div class="btns"><button class="btn acc" onclick="Ed.applyText()">Применить</button></div>
+  <div class="chips" id="edChips"></div>
+  <div class="log" id="edLog" style="margin-top:10px"></div></div>
+ <div class="card"><b>Вручную</b><div class="kv" style="margin-top:10px" id="edManual"></div></div>
+ <div class="card"><div id="edCode" class="mut"></div><div class="btns"><button class="btn ok" onclick="Ed.create()">✓ Создать и заморозить</button></div>
+  <div class="mut" style="margin-top:6px">После создания внешность и голос не меняются никогда — код персонажа постоянный. Новый вид = новый персонаж.</div></div>
+</div></div>
 <script src="multik-engine.js"></script>
+<script src="multik-maker.js"></script>
 <script>
 'use strict';
 // ---------- мост к iPhone ----------
@@ -65,6 +92,7 @@ const Mock = { // работа в обычном браузере (провер�
   tts() { return null; }, resolveVoice() { return { id: 'mock', name: 'браузер' }; }, voices() { return []; },
   paste() { return prompt('Вставь сценарий (JSON):') || ''; },
   async fetch(a) { const r = await fetch(a.url); return r.ok ? await r.text() : null; },
+  listenStart() { return true; }, listenStop() { return prompt('Скажи (в браузере — напиши):') || ''; },
   copy(a) { navigator.clipboard && navigator.clipboard.writeText(a.text); return true; }, speak() { return true; },
 };
 const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 32768) s += String.fromCharCode.apply(null, u8.subarray(i, i + 32768)); return btoa(s); };
@@ -134,7 +162,8 @@ const App = {
   r_chars(m) {
     const C = Object.values(Lib.data.characters);
     m.insertAdjacentHTML('beforeend', `<div class="mut" style="margin:6px 2px">Персонаж замораживается при первом появлении: внешность и голос входят в его код. Поменять нельзя: новый вид — это новый персонаж с новым кодом.</div>`);
-    if (!C.length) { m.insertAdjacentHTML('beforeend', `<div class="card mut">Персонажей пока нет — они появятся с первым сценарием.</div>`); return; }
+    m.insertAdjacentHTML('beforeend', `<div class="btns" style="margin:0 0 6px"><button class="btn acc" onclick="Ed.open()">＋ Создать персонажа</button>${C.length ? '<button class="btn" onclick="App.copyChars()">📋 Всех — для чата</button>' : ''}</div>`);
+    if (!C.length) { m.insertAdjacentHTML('beforeend', `<div class="card mut">Персонажей пока нет. Создай своего или они появятся с первым сценарием.</div>`); return; }
     const g = document.createElement('div'); g.className = 'grid'; m.appendChild(g);
     for (const c of C) {
       const d = document.createElement('div'); d.className = 'ch';
@@ -143,7 +172,8 @@ const App = {
       const v = c.spec.voice || {};
       d.insertAdjacentHTML('beforeend', `<div class="i"><b>${esc(c.spec.name)}</b><div><span class="code">${esc(c.code)}</span> <span class="lock">🔒</span></div>
         <div class="mut">${esc(MK.KIND_NAMES[c.spec.kind] || c.spec.kind)} · голос: ${esc(c.voiceName || v.base || '')} ${v.pitch ? '· тон ' + v.pitch : ''}</div>
-        ${c.spec.about ? `<div class="mut">${esc(c.spec.about)}</div>` : ''}<div class="btns"><button class="btn">🔊 Голос</button></div></div>`);
+        ${c.spec.about ? `<div class="mut">${esc(c.spec.about)}</div>` : ''}<div class="btns"><button class="btn">🔊 Голос</button><button class="btn" data-a="like">＋ Похожий</button></div></div>`);
+      d.querySelector('[data-a=like]').onclick = () => Ed.open(c.spec);
       d.querySelector('button').onclick = () => Native.call('speak', { text: `Привет! Я ${c.spec.name}.`, voice: Object.assign({}, v, c.voiceId ? { id: c.voiceId } : {}) });
       g.appendChild(d);
     }
@@ -168,6 +198,11 @@ const App = {
     const sr = document.getElementById('sres'), sf = document.getElementById('sfps'); sr.value = s.res; sf.value = s.fps;
     sr.onchange = () => { s.res = +sr.value; Lib.save(); }; sf.onchange = () => { s.fps = +sf.value; Lib.save(); };
     Native.call('voices').then(v => { document.getElementById('vlist').innerHTML = (v && v.length) ? v.map(x => `${esc(x.name)} — ${esc(x.quality)}`).join('<br>') : 'Список голосов доступен на iPhone'; });
+  },
+  async copyChars() {
+    const list = Object.values(Lib.data.characters).map(c => Object.assign({}, c.spec, { code: c.code }));
+    await Native.call('copy', { text: 'Мои персонажи для мультиков:\n' + JSON.stringify(list, null, 1) });
+    alert('Скопировано. Вставь это в чат с Claude — он будет писать сценарии с этими персонажами.');
   },
   msg(html) { const e = document.getElementById('imsg'); if (e) e.innerHTML = html; },
   async importAndReport(text) {
@@ -279,6 +314,93 @@ const Build = {
       if (confirm(`Готово! Серия ${e.episode} собрана (${fmt(tl.dur)}).\nОтправить сейчас (YouTube / сохранить в Фото)?`)) Native.call('share', { path: r.path });
     } catch (err) { Prog.hide(); if (err.message !== 'cancel') alert('Ошибка сборки: ' + err.message); }
     this.busy = false;
+  },
+};
+// ---------- конструктор персонажа ----------
+const Ed = {
+  draft: null, hist: [], raf: 0, talkUntil: 0, act: null, listening: false,
+  CHIPS: ['добавь шарф', 'добавь бантик', 'добавь шляпу', 'добавь очки', 'сделай полосатым', 'белый живот', 'глаза голубые', 'голос выше', 'голос ниже', 'побыстрее говорит', 'сделай меньше', 'сделай больше', 'убери всё лишнее'],
+  open(from) {
+    this.hist = []; this.draft = from ? JSON.parse(JSON.stringify(from)) : null; if (this.draft) { delete this.draft.id; this.draft.name = (this.draft.name || '') + ' 2'; }
+    document.getElementById('edTitle').textContent = from ? 'Похожий на ' + from.name : 'Новый персонаж';
+    document.getElementById('edLog').innerHTML = ''; document.getElementById('edText').value = '';
+    document.getElementById('editor').style.display = 'flex';
+    document.getElementById('edChips').innerHTML = this.CHIPS.map(c => `<button class="chip">${esc(c)}</button>`).join('');
+    document.querySelectorAll('#edChips .chip').forEach(b => b.onclick = () => this.run(b.textContent));
+    if (!this.draft) this.draft = MKMaker.apply(null, 'рыжий кот').spec;
+    this.refresh(); this.loop();
+  },
+  close() { cancelAnimationFrame(this.raf); if (this.listening) this.mic(); document.getElementById('editor').style.display = 'none'; App.render(); },
+  spec() { return MKMaker.finalize(this.draft, 'К?'); },
+  run(text) {
+    if (!text.trim()) return;
+    if (/^убери вс[её] лишнее/i.test(text)) { this.hist.push(this.draft); this.draft = Object.assign(JSON.parse(JSON.stringify(this.draft)), { acc: [], pattern: [] }); this.log(text, ['убрал аксессуары и узоры'], []); this.refresh(); return; }
+    const r = MKMaker.apply(this.draft, text); this.hist.push(this.draft); this.draft = r.spec;
+    this.log(text, r.done, r.unknown); this.refresh();
+    this.act = { n: r.done.some(d => d.startsWith('голос')) ? 'wave' : 'jump', t0: performance.now() / 1000 };
+    if (r.done.some(d => d.startsWith('голос'))) this.voice();
+  },
+  applyText() { const el = document.getElementById('edText'); this.run(el.value); el.value = ''; },
+  undo() { if (this.hist.length) { this.draft = this.hist.pop(); this.refresh(); this.log('↺ отменено', [], []); } },
+  log(text, done, unknown) {
+    const l = document.getElementById('edLog');
+    l.insertAdjacentHTML('afterbegin', `<div><b>${esc(text)}</b><br>${done.length ? '✓ ' + esc(done.join(', ')) : (text.startsWith('↺') ? '' : '<span class="u">Ничего не понял — скажи по-другому (вид, цвет, что добавить или убрать)</span>')}${unknown.length ? `<br><span class="u">Не понял слова: ${esc(unknown.join(', '))}</span>` : ''}</div>`);
+  },
+  voice() { const s = this.spec(); const sec = 2.2; this.talkUntil = performance.now() / 1000 + sec; Native.call('speak', { text: `Привет! Я ${s.name}.`, voice: s.voice }); },
+  refresh() {
+    const s = this.spec(); const code = MK.charCode(Object.assign({}, s, { id: MKMaker.nextId(Lib.data) }));
+    document.getElementById('edCode').innerHTML = `Будет: <b>${esc(s.name)}</b> — ${esc(MKMaker.describe(s))}<br>Код: <span class="code">${esc(code)}</span>`;
+    const m = document.getElementById('edManual'), d = this.draft, human = d.kind === 'human';
+    const col = (k, def) => (human ? (k === 'skin' ? d.colors.skin : k === 'hair' ? (d.hair && d.hair.color) : (d.outfit || {})[k]) : d.colors[k]) || def;
+    const K = MK.KINDS, KN = MK.KIND_NAMES;
+    const rows = [['Имя', `<input type="text" id="mName" value="${esc(d.name || '')}">`],
+      ['Вид', `<select id="mKind">${K.map(k => `<option value="${k}" ${k === d.kind ? 'selected' : ''}>${KN[k]}</option>`).join('')}</select>`],
+      ['Возраст', `<select id="mAge">${[['kid', 'ребёнок'], ['adult', 'взрослый'], ['old', 'пожилой']].map(([v, n]) => `<option value="${v}" ${v === (d.age || 'kid') ? 'selected' : ''}>${n}</option>`).join('')}</select>`]];
+    if (human) rows.push(['Кожа', `<input type="color" data-c="skin" value="${col('skin', '#f6c9a6')}">`], ['Волосы', `<input type="color" data-c="hair" value="${col('hair', '#5a3a22')}">`], ['Кофта', `<input type="color" data-c="shirt" value="${col('shirt', '#3d8fe0')}">`], ['Штаны/юбка', `<input type="color" data-c="${(d.outfit || {}).skirt ? 'skirt' : 'pants'}" value="${col((d.outfit || {}).skirt ? 'skirt' : 'pants', '#33415c')}">`]);
+    else rows.push(['Окрас', `<input type="color" data-c="body" value="${col('body', '#f2a65a')}">`], ['Живот', `<input type="color" data-c="belly" value="${col('belly', '#fff3e0')}">`], ['Полоски/пятна', `<input type="color" data-c="stripe" value="${col('stripe', '#c9692a')}">`]);
+    rows.push(['Глаза', `<input type="color" data-c="eyes" value="${col('eyes', '#62b85a')}">`],
+      ['Голос', `<select id="mVoice"><option value="">— как сейчас —</option>${Object.entries(MKMaker.VOICE_PRESETS).map(([k, v]) => `<option value="${k}">${v.n}</option>`).join('')}</select>`],
+      ['Тон ' + (d.voice.pitch || 1), `<input type="range" id="mPitch" min="50" max="200" value="${Math.round((d.voice.pitch || 1) * 100)}">`],
+      ['Скорость ' + (d.voice.rate || .5), `<input type="range" id="mRate" min="38" max="62" value="${Math.round((d.voice.rate || .5) * 100)}">`],
+      ['Размер ' + (d.height || 1), `<input type="range" id="mH" min="65" max="140" value="${Math.round((d.height || 1) * 100)}">`]);
+    m.innerHTML = rows.map(([a, b]) => `<span>${a}</span><span>${b}</span>`).join('');
+    const ch = f => { this.hist.push(JSON.parse(JSON.stringify(this.draft))); f(this.draft); this.refresh(); };
+    document.getElementById('mName').onchange = e => ch(x => x.name = e.target.value.trim());
+    document.getElementById('mKind').onchange = e => { const v = e.target.value; if (v === 'human') this.run(this.draft.age === 'old' ? 'дедушка' : this.draft.age === 'adult' ? 'папа' : 'мальчик'); else ch(x => x.kind = v); };
+    document.getElementById('mAge').onchange = e => ch(x => x.age = e.target.value);
+    m.querySelectorAll('input[type=color]').forEach(inp => inp.onchange = () => ch(x => { const k = inp.dataset.c, v = inp.value;
+      if (x.kind === 'human' && ['shirt', 'pants', 'skirt'].includes(k)) { x.outfit = x.outfit || {}; x.outfit[k] = v; }
+      else if (k === 'hair') { x.hair = x.hair || { style: 'short' }; x.hair.color = v; x.colors.hair = v; }
+      else { x.colors[k] = v; if (k === 'stripe') x._stripeSet = true; if (k === 'belly') x._bellySet = true; } }));
+    document.getElementById('mVoice').onchange = e => { if (e.target.value) { ch(x => { x.voice = Object.assign({}, MKMaker.VOICE_PRESETS[e.target.value]); delete x.voice.n; x._voiceSet = true; }); this.voice(); } };
+    document.getElementById('mPitch').onchange = e => { ch(x => x.voice.pitch = +e.target.value / 100); this.voice(); };
+    document.getElementById('mRate').onchange = e => { ch(x => x.voice.rate = +e.target.value / 100); this.voice(); };
+    document.getElementById('mH').onchange = e => ch(x => x.height = +e.target.value / 100);
+  },
+  loop() {
+    cancelAnimationFrame(this.raf); const cv = document.getElementById('edc');
+    const f = () => { const T = performance.now() / 1000, s = this.spec();
+      const a = this.act && T - this.act.t0 < 1.2 ? { n: this.act.n, p: (T - this.act.t0) / (this.act.n === 'jump' ? .9 : 1.2), t: T - this.act.t0 } : { n: 'idle', p: 0, t: T };
+      const ctx = cv.getContext('2d'), w = cv.width, h = cv.height; const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#cdeeff'); g.addColorStop(1, '#a8e08a'); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      const k = h / (400 * 1.45 * Math.max(1, s.height || 1)); ctx.save(); ctx.scale(k, k);
+      MK.drawCharPublic(ctx, s, { x: w / 2 / k, y: (h - 30) / k, s: 1, face: Math.sin(T * .4) * .7, emo: 'happy', act: a, walk: {}, talk: T < this.talkUntil ? (Math.sin(T * 21) * .5 + .5) : 0, persist: 'none' }, T); ctx.restore();
+      if (document.getElementById('editor').style.display !== 'none') this.raf = requestAnimationFrame(f); };
+    f();
+  },
+  async mic() {
+    const b = document.getElementById('edMic');
+    if (!this.listening) { const r = await Native.call('listenStart'); if (r === false) { alert('Нет доступа к микрофону или распознаванию речи. Разреши в Настройках → Замер 3D.'); return; } this.listening = true; b.classList.add('on'); b.textContent = '■'; }
+    else { this.listening = false; b.classList.remove('on'); b.textContent = '🎤'; const t = await Native.call('listenStop'); if (t) { document.getElementById('edText').value = t; this.applyText(); } }
+  },
+  onSpeech(text) { document.getElementById('edText').value = text; },
+  async create() {
+    const id = MKMaker.nextId(Lib.data), spec = MKMaker.finalize(this.draft, id), code = MK.charCode(spec);
+    const same = Object.values(Lib.data.characters).find(c => c.code.split('-')[1] === code.split('-')[1]);
+    if (same && !confirm(`Точно такой же уже есть: ${same.spec.name} (${same.code}). Всё равно создать?`)) return;
+    if (!confirm(`Создать «${spec.name}» с кодом ${code}?\nПосле этого внешность и голос поменять будет нельзя.`)) return;
+    const rv = await Native.call('resolveVoice', { voice: spec.voice });
+    Lib.data.characters[id] = { spec, code, created: new Date().toISOString(), voiceId: rv && rv.id, voiceName: rv && rv.name, source: 'app' };
+    await Lib.save(); alert(`Готово! ${spec.name} — ${code} 🔒`); this.close();
   },
 };
 App.init();
