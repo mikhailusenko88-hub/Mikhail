@@ -105,6 +105,9 @@ function showErr(t) { let b = document.getElementById('errbar'); if (!b) { b = d
 <script>
 'use strict';
 // ---------- мост к iPhone ----------
+// звук страницы должен играть и при беззвучном режиме iPhone
+function audioPlayback() { try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {} }
+audioPlayback();
 const HAS_NATIVE = !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.multik);
 const Native = {
   call(cmd, args) {
@@ -292,6 +295,7 @@ const Player = {
   tl: null, ac: null, src: null, t0: 0, off: 0, playing: false, raf: 0,
   async open(e) {
     // AudioContext создаём сразу по нажатию — иначе iPhone не даст играть звук
+    audioPlayback();
     if (this.ac) { try { this.ac.close(); } catch (er) {} }
     this.ac = new (window.AudioContext || window.webkitAudioContext)(); try { this.ac.resume(); } catch (er) {}
     Prog.show('Готовлю просмотр'); let r;
@@ -299,7 +303,7 @@ const Player = {
     Prog.hide(); this.tl = r.tl; this.mix = r.mix; document.getElementById('player').style.display = 'flex';
     this.off = 0; this.play();
   },
-  play() { this.src = this.ac.createBufferSource(); this.src.buffer = this.mix; this.src.connect(this.ac.destination); this.src.start(0, this.off); this.t0 = this.ac.currentTime - this.off; this.playing = true; document.getElementById('pp').textContent = '❚❚'; this.loop(); },
+  play() { audioPlayback(); if (this.ac.state !== 'running') { try { this.ac.resume(); } catch (e) {} } this.src = this.ac.createBufferSource(); this.src.buffer = this.mix; this.src.connect(this.ac.destination); this.src.start(0, this.off); this.t0 = this.ac.currentTime - this.off; this.playing = true; document.getElementById('pp').textContent = '❚❚'; this.loop(); },
   pause() { if (this.src) { try { this.src.stop(); } catch (e) {} } this.off = this.now(); this.playing = false; document.getElementById('pp').textContent = '▶'; },
   toggle() { this.playing ? this.pause() : this.play(); },
   now() { return this.playing ? this.ac.currentTime - this.t0 : this.off; },
