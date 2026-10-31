@@ -30,8 +30,21 @@ const KIND = {
   fox:    { body: '#ea7a33', belly: '#fff6ea', inner: '#3a2418', eyes: '#7a4a1a', nose: '#2a1a12', stripe: '#3a2418' },
   pig:    { body: '#f7b9c4', belly: '#ffd6dd', inner: '#e58c9c', eyes: '#2a1a12', nose: '#ef97a8', stripe: '#e58c9c' },
   human:  { skin: '#f6c9a6', hair: '#5a3a22', shirt: '#3d8fe0', pants: '#33415c', shoes: '#2d2d2d', eyes: '#5a3a22' },
+  hedgehog: { body: '#8a6a4a', belly: '#e8d4b8', inner: '#c9a27a', eyes: '#2a1a12', nose: '#2a1a12', stripe: '#5a3f2a' },
+  frog:   { body: '#6cc04a', belly: '#d8f0a8', inner: '#4a9a30', eyes: '#2a1a12', nose: '#2f6a20', stripe: '#4a9a30' },
+  owl:    { body: '#8a6a4a', belly: '#f0e0c0', inner: '#6a4a2a', eyes: '#f0b020', nose: '#f0a020', stripe: '#6a4a2a' },
+  bird:   { body: '#4a9ae8', belly: '#f0f6ff', inner: '#2a6ab8', eyes: '#2a1a12', nose: '#ffa020', stripe: '#2a6ab8' },
+  duck:   { body: '#ffffff', belly: '#ffffff', inner: '#e8e8e8', eyes: '#2a1a12', nose: '#ff9a20', stripe: '#dddddd' },
+  chick:  { body: '#ffd84a', belly: '#fff0a0', inner: '#f0c020', eyes: '#2a1a12', nose: '#ff9a20', stripe: '#f0c020' },
+  lion:   { body: '#e8b04a', belly: '#fff0c8', inner: '#c88a30', eyes: '#7a4a1a', nose: '#5a3020', stripe: '#a85a20' },
+  elephant: { body: '#a8a8b8', belly: '#c8c8d4', inner: '#e8b0c0', eyes: '#2a2230', nose: '#a8a8b8', stripe: '#8a8a9a' },
+  squirrel: { body: '#d8682a', belly: '#fff0dc', inner: '#a84a1a', eyes: '#2a1a12', nose: '#3a2418', stripe: '#a84a1a' },
+  wolf:   { body: '#8a8a98', belly: '#e8e8ee', inner: '#5a5a68', eyes: '#e0b020', nose: '#2a2a2a', stripe: '#5a5a68' },
+  cow:    { body: '#ffffff', belly: '#ffffff', inner: '#f0b0c0', eyes: '#2a1a12', nose: '#f6b6c4', stripe: '#2a2a2a' },
+  dragon: { body: '#5ab84a', belly: '#f0e08a', inner: '#3a8a2a', eyes: '#f0c020', nose: '#3a8a2a', stripe: '#e8a020' },
+  robot:  { body: '#b8c4d0', belly: '#8a9aaa', inner: '#e8344e', eyes: '#40d0ff', nose: '#8a9aaa', stripe: '#6a7a8a' },
 };
-const NAME_KIND = { cat: 'кот', dog: 'пёс', bear: 'медведь', rabbit: 'заяц', mouse: 'мышь', fox: 'лиса', pig: 'поросёнок', human: 'человек' };
+const NAME_KIND = { cat: 'кот', dog: 'пёс', bear: 'медведь', rabbit: 'заяц', mouse: 'мышь', fox: 'лиса', pig: 'поросёнок', hedgehog: 'ёжик', frog: 'лягушка', owl: 'сова', bird: 'птичка', duck: 'утка', chick: 'цыплёнок', lion: 'лев', elephant: 'слон', squirrel: 'белка', wolf: 'волк', cow: 'корова', dragon: 'дракон', robot: 'робот', human: 'человек' };
 MK.KINDS = Object.keys(KIND);
 MK.KIND_NAMES = NAME_KIND;
 
@@ -451,7 +464,7 @@ function drawFx(ctx, ch, st, T, S, emo, an, at, P, lift, down, fall, flip, fs) {
 function drawStar(ctx, x, y, r, col) { ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } ctx.closePath(); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = '#2b1d16'; ctx.lineWidth = r * .15; ctx.stroke(); }
 
 // ---------- предметы ----------
-const PROPS = ['ball', 'apple', 'fish', 'box', 'gift', 'flower', 'book', 'star', 'cake', 'bone', 'carrot', 'cheese', 'balloon', 'key', 'cup'];
+const PROPS = ['ball', 'apple', 'fish', 'box', 'gift', 'flower', 'book', 'star', 'cake', 'bone', 'carrot', 'cheese', 'balloon', 'key', 'cup', 'pumpkin', 'mushroom', 'umbrella', 'candy', 'icecream', 'lollipop', 'banana', 'pear', 'watermelon', 'honey', 'bucket', 'shovel', 'car', 'teddy', 'drum', 'guitar', 'wand', 'lantern', 'map', 'letter', 'basket', 'chest', 'coin', 'egg', 'pie', 'cookie', 'milk', 'clock', 'candle', 'leaf', 'rock', 'stick', 'phone', 'kite', 'bag'];
 MK.PROPS = PROPS;
 function drawProp(ctx, p, x, y, s, T, inHand) {
   const t = p.type || p, col = p.color, ol = '#2b1d16';
@@ -636,8 +649,20 @@ MK.VOICE_FX = {
   deep:    { name: 'Глубокий (медведь)', k: .86, tone: 'warm', rev: .12 },
   fairy:   { name: 'Сказочный (рассказчик)', k: 1.04, tone: 'soft', rev: .3 },
   sly:     { name: 'Хитрый (лис)', k: 1.15, tone: 'warm', rev: .12 },
+  princess:{ name: 'Принцесса', k: 1.2, tone: 'soft', rev: .22 },
+  baby:    { name: 'Малыш', k: 1.6, tone: 'soft', rev: .05 },
+  chipmunk:{ name: 'Бурундук', k: 1.72, tone: 'bright', rev: .04 },
+  wizard:  { name: 'Волшебник', k: .92, tone: 'warm', rev: .28, vib: .018, vibHz: 5.5 },
+  giant:   { name: 'Великан', k: .76, tone: 'warm', rev: .35 },
+  monster: { name: 'Монстр', k: .7, tone: 'warm', rev: .15, dist: .4 },
+  dragon:  { name: 'Дракон', k: .8, tone: 'warm', rev: .22, dist: .25 },
+  pirate:  { name: 'Пират (хриплый)', k: .9, tone: 'warm', rev: .08, dist: .15 },
+  robot:   { name: 'Робот', k: 1.0, tone: 'bright', rev: .05, ring: 55, dist: .15 },
+  alien:   { name: 'Инопланетянин', k: 1.28, tone: 'bright', rev: .12, ring: 95, vib: .03, vibHz: 8 },
+  ghost:   { name: 'Привидение', k: 1.0, tone: 'soft', rev: .6, vib: .02, vibHz: 5, trem: .45, tremHz: 6 },
+  echo:    { name: 'Эхо (пещера)', k: 1.0, tone: 'none', rev: .75 },
 };
-MK.defaultFx = spec => !spec ? 'fairy' : spec.kind === 'human' ? (spec.age === 'kid' ? 'soft' : 'natural') : ({ mouse: 'squeaky', bear: 'deep', rabbit: 'fluffy', fox: 'sly' }[spec.kind] || 'cartoon');
+MK.defaultFx = spec => !spec ? 'fairy' : spec.kind === 'human' ? (spec.age === 'kid' ? 'soft' : 'natural') : ({ mouse: 'squeaky', bear: 'deep', rabbit: 'fluffy', fox: 'sly', chick: 'chipmunk', owl: 'wizard', dragon: 'dragon', robot: 'robot', elephant: 'giant', lion: 'deep', wolf: 'pirate', squirrel: 'chipmunk', frog: 'cartoon' }[spec.kind] || 'cartoon');
 MK.fxFor = function (lib, who) {
   const c = lib.characters && lib.characters[who];
   const id = who === 'Р' ? ((lib.narratorFx && lib.narratorFx.preset) || 'fairy') : ((c && c.fx && c.fx.preset) || MK.defaultFx(c && c.spec));
@@ -658,12 +683,16 @@ MK.voiceFx = async function (buf, fx) {
   const k = fx.k || 1, sr = buf.sampleRate, tail = fx.rev ? .5 : .05;
   const ac = new OfflineAudioContext(1, Math.ceil((buf.duration / k + tail) * sr), sr);
   const src = ac.createBufferSource(); src.buffer = buf; src.playbackRate.value = k;
+  if (fx.vib) { const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = fx.vibHz || 5; lg.gain.value = k * fx.vib; lfo.connect(lg); lg.connect(src.playbackRate); lfo.start(0); }
   let node = src;
   const add = n => { node.connect(n); node = n; };
   const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = k < 1 ? 60 : 110; add(hp);
   if (fx.tone === 'soft') { const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 4200; lp.Q.value = .5; add(lp); const ls = ac.createBiquadFilter(); ls.type = 'lowshelf'; ls.frequency.value = 300; ls.gain.value = 3; add(ls); const pk = ac.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 3000; pk.gain.value = -3; add(pk); }
   if (fx.tone === 'warm') { const ls = ac.createBiquadFilter(); ls.type = 'lowshelf'; ls.frequency.value = 250; ls.gain.value = 4; add(ls); const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 6000; add(lp); const pk = ac.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 2500; pk.gain.value = -2; add(pk); }
   if (fx.tone === 'bright') { const hs = ac.createBiquadFilter(); hs.type = 'highshelf'; hs.frequency.value = 3500; hs.gain.value = 2; add(hs); const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 7000; add(lp); }
+  if (fx.dist) { const ws = ac.createWaveShaper(), n = 1024, cv = new Float32Array(n), a = 1 + fx.dist * 18; for (let i = 0; i < n; i++) { const x = i / (n - 1) * 2 - 1; cv[i] = Math.tanh(x * a) / Math.tanh(a); } ws.curve = cv; add(ws); const lp2 = ac.createBiquadFilter(); lp2.type = 'lowpass'; lp2.frequency.value = 5000; add(lp2); }
+  if (fx.ring) { const rg = ac.createGain(); rg.gain.value = 0; const osc = ac.createOscillator(); osc.frequency.value = fx.ring; osc.connect(rg.gain); osc.start(0); const dry = ac.createGain(); dry.gain.value = .45; const mix = ac.createGain(); node.connect(rg); node.connect(dry); rg.connect(mix); dry.connect(mix); node = mix; }
+  if (fx.trem) { const tg = ac.createGain(); tg.gain.value = 1 - fx.trem / 2; const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = fx.tremHz || 6; lg.gain.value = fx.trem / 2; lfo.connect(lg); lg.connect(tg.gain); lfo.start(0); add(tg); }
   const comp = ac.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 3; comp.attack.value = .005; comp.release.value = .15; add(comp);
   node.connect(ac.destination);
   if (fx.rev) { const cv = ac.createConvolver(); cv.buffer = roomIR(ac, .55); const g = ac.createGain(); g.gain.value = fx.rev; node.connect(cv); cv.connect(g); g.connect(ac.destination); }
@@ -752,7 +781,12 @@ MK.compile = function (ep, lib, audio) {
     for (const cs of sc.cast || []) { const lc = lib.characters[cs.who]; if (!lc) continue; C[cs.who] = { x: cs.x != null ? cs.x : .5, z: cs.z || 0, face: cs.face === 'left' ? -1 : cs.face === 'camera' ? 0 : 1, vis: cs.hidden ? false : true, ev: [], prop: cs.prop ? { type: cs.prop } : null }; }
     // герои не должны стоять друг в друге: разводим по ширине
     const GAP = .13, near = (a, b) => Math.abs(a - b) < GAP;
-    const spaceX = (id, x, fromX, gap) => { gap = gap || GAP; for (let it = 0; it < 6; it++) { let moved = false; for (const o in C) { if (o === id || !C[o].vis || C[o].z !== (C[id] ? C[id].z : 0)) continue; if (Math.abs(C[o].x - x) < gap) { const side = (fromX != null ? fromX : x) < C[o].x ? -1 : 1; x = C[o].x + side * gap; moved = true; } } if (!moved) break; } return clamp(x, .07, .93); };
+    const spaceX = (id, x, fromX, gap) => { gap = gap || GAP; x = clamp(x, .07, .93); const z = C[id] ? C[id].z : 0;
+      const free = (xx, zz) => { for (const o in C) { if (o === id || !C[o].vis) continue; const oz = C[o].z || 0, need = oz === zz ? gap : (zz > oz ? gap * .5 : 0); if (need && Math.abs(C[o].x - xx) < need - 1e-6) return false; } return true; };
+      if (free(x, z)) return x; const pref = fromX != null && fromX > x ? 1 : -1;
+      for (let k = 1; k < 40; k++) for (const sd of [-pref, pref]) { const xx = x + sd * k * .02; if (xx < .07 || xx > .93) continue; if (free(xx, z)) return xx; }
+      if (C[id] && !z) { C[id].z = .6; return spaceX(id, x, fromX, gap); }
+      return x; };
     { const vis = Object.keys(C).filter(id => C[id].vis).sort((a, b) => C[a].x - C[b].x); for (let i = 1; i < vis.length; i++) { const a = C[vis[i - 1]], b = C[vis[i]]; if (a.z === b.z && b.x - a.x < GAP) b.x = a.x + GAP; }
       const over = vis.length ? C[vis[vis.length - 1]].x - .93 : 0; if (over > 0) vis.forEach(id => C[id].x = Math.max(.07, C[id].x - over));
       if (vis.length > 6) vis.forEach((id, i) => { if (i % 2) C[id].z = .6; }); }

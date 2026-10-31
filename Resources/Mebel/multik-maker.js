@@ -17,6 +17,10 @@ const KINDS = [
   [/^(кот|кош|кис|котен|котик|котёнок|котя|котей)/, 'cat', 'кот'], [/^(пес|пёс|пса|псу|собак|собач|щен|песик|пёсик)/, 'dog', 'пёс'],
   [/^(медвед|мишк|медвеж|мишут)/, 'bear', 'медведь'], [/^(заяц|зайч|зайк|зайц|кролик|крольч)/, 'rabbit', 'заяц'], [/^(мыш|мышон|мышк)/, 'mouse', 'мышь'],
   [/^(лис|лисен|лисичк|лисёнок)/, 'fox', 'лиса'], [/^(свин|порос|хрюш|свинк)/, 'pig', 'поросёнок'],
+  [/^(еж|ёж|ежик|ёжик|ежих|ежон|ежат)/, 'hedgehog', 'ёжик'], [/^(лягуш|жаб|лягух|квакш)/, 'frog', 'лягушка'], [/^(сов|совен|совён|филин)/, 'owl', 'сова'],
+  [/^(птиц|птичк|птенч|воробе|воробь|ворон|попуга|синиц|снегир)/, 'bird', 'птичка'], [/^(утк|утен|утён|утяч|селез)/, 'duck', 'утка'], [/^(цыпл|курочк|курица|петуш|петух)/, 'chick', 'цыплёнок'],
+  [/^(лев$|льв|львен|львён|львиц)/, 'lion', 'лев'], [/^(слон|слоник|слонен|слонён)/, 'elephant', 'слон'], [/^(белк|бельчон|бельчат|бельчих)/, 'squirrel', 'белка'],
+  [/^(волк|волч|волчон|волчонок)/, 'wolf', 'волк'], [/^(коров|теленок|телёнок|бычок|бык$)/, 'cow', 'корова'], [/^(дракон|драконч|дракош)/, 'dragon', 'дракон'], [/^(робот)/, 'robot', 'робот'],
 ];
 const PEOPLE = [ // stem, пол, возраст
   [/^(мальчик|мальчиш|пацан|сын)/, 'm', 'kid'], [/^(девоч|девчон|доч)/, 'f', 'kid'], [/^(ребен|ребён|малыш)/, 'm', 'kid'],
@@ -51,6 +55,7 @@ function kindOf(t) { for (const [re, k, name] of KINDS) if (re.test(t)) return {
 function personOf(t) { for (const [re, g, age] of PEOPLE) if (re.test(t)) return { g, age, old: OLD.test(t) }; return null; }
 function partOf(t) { for (const [re, p] of PARTS) if (re.test(t)) return p; return null; }
 const CLOTHES = { shirt: 1, dress: 1, pants: 1, skirt: 1, shoes: 1, overalls: 1, apron: 1, cape: 1, backpack: 1, tie: 1, bowtie: 1, vest: 1, pajamas: 1, suit: 1 };
+const _K = null;
 const CLOTH_DEF = { shirt: '#3d8fe0', dress: '#ff6fa8', pants: '#33415c', skirt: '#7a5cd6', shoes: '#2d2d2d', overalls: '#3d6fd0', apron: '#ffffff', cape: '#c0283c', backpack: '#e8a23a', tie: '#c0283c', bowtie: '#c0283c', vest: '#6b4a32', pajamas: '#9ad0ff', suit: '#2f3b52' };
 const PART_NAMES0 = null;
 const PART_NAMES = { shirt: 'кофта', dress: 'платье', pants: 'штаны', skirt: 'юбка', shoes: 'обувь', overalls: 'комбинезон', apron: 'фартук', cape: 'плащ', backpack: 'рюкзак', tie: 'галстук', bowtie: 'бабочка', vest: 'жилет', pajamas: 'пижама', suit: 'костюм', eyes: 'глаза', nose: 'нос', inner: 'уши внутри', belly: 'живот', body: 'шерсть', skin: 'кожа', hair: 'волосы', shirt: 'кофта', dress: 'платье', pants: 'штаны', skirt: 'юбка', shoes: 'обувь', stripe: 'полоски', spot: 'пятна', tail: 'хвост', socks: 'белые лапки', mask: 'маска' };
@@ -88,7 +93,7 @@ Maker.apply = function (draft, text) {
     // вид
     for (let i = 0; i < T.length; i++) {
       if (isVoice) break;
-      const k = kindOf(T[i]); if (k) { if (s.kind !== k.k) { s.kind = k.k; done.push('вид: ' + k.name); } consumed.add(i); if (/(котен|щен|зайч|мышон|лисен|медвеж|порос|котик|крольч)/.test(T[i])) s.age = 'kid'; continue; }
+      const k = kindOf(T[i]); if (k) { if (s.kind !== k.k) { s.kind = k.k; done.push('вид: ' + k.name); } consumed.add(i); if (/(котен|щен|зайч|мышон|лисен|медвеж|порос|котик|крольч|ежон|ежик|ёжик|совен|совён|утен|утён|цыпл|львен|львён|слонен|слонён|бельчон|волчон|теленок|телёнок|дракош|дракончик)/.test(T[i])) s.age = 'kid'; continue; }
       const p = personOf(T[i]); if (p) { personSeen = p; if (s.kind !== 'human') { s.kind = 'human'; done.push('вид: человек'); } const age = p.old ? 'old' : p.age; if (s.age !== age) { s.age = age; } s.gender = p.g;
         if (!s.hair) s.hair = { style: p.g === 'f' ? (age === 'kid' ? 'pigtails' : age === 'old' ? 'bun' : 'long') : (age === 'old' ? 'bald' : 'short') };
         if (!s.outfit) s.outfit = p.g === 'f' ? { shirt: age === 'old' ? '#b05a8a' : '#ff6fa8', skirt: age === 'kid' ? '#7a5cd6' : '#5a3a6a' } : { shirt: '#3d8fe0', pants: '#33415c' };
@@ -185,7 +190,7 @@ function hairStyle(T, s, done) {
 }
 function defaultName(s) {
   if (s.kind === 'human') { const g = s.gender === 'f'; return s.age === 'old' ? (g ? 'Бабушка' : 'Дедушка') : s.age === 'kid' ? (g ? 'Девочка' : 'Мальчик') : (g ? 'Мама' : 'Папа'); }
-  return { cat: 'Котик', dog: 'Пёсик', bear: 'Мишка', rabbit: 'Зайка', mouse: 'Мышонок', fox: 'Лисёнок', pig: 'Поросёнок' }[s.kind] || 'Персонаж';
+  return { cat: 'Котик', dog: 'Пёсик', bear: 'Мишка', rabbit: 'Зайка', mouse: 'Мышонок', fox: 'Лисёнок', pig: 'Поросёнок', hedgehog: 'Ёжик', frog: 'Лягушонок', owl: 'Совёнок', bird: 'Птичка', duck: 'Утёнок', chick: 'Цыплёнок', lion: 'Львёнок', elephant: 'Слонёнок', squirrel: 'Бельчонок', wolf: 'Волчонок', cow: 'Бурёнка', dragon: 'Дракоша', robot: 'Робот' }[s.kind] || 'Персонаж';
 }
 
 /** Чистое описание для движка/кода (служебные поля убраны). */
@@ -199,7 +204,7 @@ Maker.finalize = function (s, id) {
 Maker.nextId = function (lib) { let n = 100; // свои персонажи из приложения: К101, К102… (К1–К99 — из сценариев чата)
   for (const id of Object.keys(lib.characters || {})) { const m = id.match(/^К(\d+)$/); if (m) n = Math.max(n, +m[1]); } return 'К' + (n + 1); };
 Maker.describe = function (s) {
-  const kn = { cat: 'кот', dog: 'пёс', bear: 'медведь', rabbit: 'заяц', mouse: 'мышь', fox: 'лиса', pig: 'поросёнок', human: 'человек' }[s.kind];
+  const kn = (global.MK && global.MK.KIND_NAMES[s.kind]) || s.kind;
   const a = (s.acc || []).map(x => ACC_NAMES[x.type || x]).filter(Boolean).concat(Object.keys(s.outfit || {}).filter(k => ['overalls', 'apron', 'cape', 'backpack', 'tie', 'bowtie', 'vest', 'pajamas'].includes(k)).map(k => PART_NAMES[k]));
   return `${kn}${s.pattern && s.pattern.length ? ', ' + s.pattern.map(p => ({ stripes: 'полоски', spots: 'пятна', socks: 'белые лапки', mask: 'маска', tailtip: 'белый кончик хвоста', muzzle: 'белая мордочка', patch: 'пятно у глаза' }[p] || p)).join(', ') : ''}${a.length ? ', ' + a.join(', ') : ''}`;
 };
