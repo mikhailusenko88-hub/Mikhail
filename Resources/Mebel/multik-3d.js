@@ -723,17 +723,17 @@ function buildRig0(spec) {
   const eyeY = human ? hr * .08 : frog ? hr * .75 : hr * .18, eyeX = human ? hr * .36 : frog ? hr * .45 : hr * .38, eyeZ = hr * (human ? .88 : frog ? .45 : .8), eR = hr * (human ? .2 : frog ? .3 : owlE ? .3 : .25);
   for (const s of [-1, 1]) {
     const g = new THREE.Group(); g.position.set(s * eyeX, eyeY, eyeZ); head.add(g);
-    const catE = k === 'cat', iK = catE ? 1.4 : 1; // у кота радужка почти на весь глаз, белка чуть-чуть
+    const catE = k === 'cat', iK = catE ? 1.12 : 1; // у кота радужка крупнее, но белок белый и виден
     const w = mesh(frontUV(G.sph(eR, 32, 24)), toon(null, scleraT()), .08, g); w.scale.set(1, 1.2, .6);
-    const ir = new THREE.Mesh(frontUV(G.sph(eR * .68 * iK, 32, 24)), toon(null, irisT(c.eyes))); ir.position.z = eR * (catE ? .2 : .42); ir.scale.set(1, 1.15, .5); g.add(ir);
-    const pu = new THREE.Mesh(G.sph(eR * (catE ? .44 : .38), 16, 12), basic('#16100c')); pu.position.z = eR * (catE ? .55 : .65); pu.scale.set(1, 1.15, .5); g.add(pu);
+    const ir = new THREE.Mesh(frontUV(G.sph(eR * .68 * iK, 32, 24)), toon(null, irisT(c.eyes))); ir.position.z = eR * (catE ? .36 : .42); ir.scale.set(1, 1.15, .5); g.add(ir);
+    const pu = new THREE.Mesh(G.sph(eR * (catE ? .4 : .38), 16, 12), basic('#16100c')); pu.position.z = eR * (catE ? .62 : .65); pu.scale.set(1, 1.15, .5); g.add(pu);
     const hl = new THREE.Mesh(G.sph(eR * .16, 10, 8), basic('#ffffff')); hl.position.set(-eR * .2, eR * .3, eR * .82); g.add(hl);
     if (MK3D.hq) { w.material = eyeGloss(scleraT(), .25); ir.material = eyeGloss(irisT(c.eyes), .2); pu.material = basic('#120c08'); const h2 = new THREE.Mesh(G.sph(eR * .07, 8, 6), basic('#ffffff')); h2.position.set(eR * .18, -eR * .12, eR * .84); g.add(h2);
-      const cor = new THREE.Mesh(G.sph(eR * .72 * iK, 20, 14), new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: .12, roughness: .12, clearcoat: 1, clearcoatRoughness: .1, transmission: 0 })); cor.position.z = eR * (catE ? .26 : .46); cor.scale.set(1, 1.15, .55); g.add(cor); }
+      const cor = new THREE.Mesh(G.sph(eR * .72 * iK, 20, 14), new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: .12, roughness: .12, clearcoat: 1, clearcoatRoughness: .1, transmission: 0 })); cor.position.z = eR * (catE ? .4 : .46); cor.scale.set(1, 1.15, .55); g.add(cor); }
     const heart = makeHeart(eR * .7); heart.position.z = eR * .5; heart.visible = false; g.add(heart);
     const lid = new THREE.Mesh(new THREE.SphereGeometry(eR * 1.08, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), toon(bodyC)); lid.scale.set(1, 1.2, .62); g.add(lid);
     if (catE) { lid.scale.set(1.04, 1.2, 1.0); /* веко накрывает и выпуклую радужку */ lid.material = new THREE.MeshStandardMaterial({ color: new THREE.Color(bodyC).multiplyScalar(.9), roughness: .9 });
-      if (MK3D.hq) { const ec = new THREE.Color(c.eyes), hsl = {}; ec.getHSL(hsl); w.material = new THREE.MeshPhysicalMaterial({ color: new THREE.Color().setHSL(hsl.h, Math.min(1, hsl.s * 1.1), hsl.l * .32), roughness: .25, clearcoat: 1, clearcoatRoughness: .07 }); } const lnC = new THREE.Color(c.stripe || c.body).multiplyScalar(.35).getStyle(); // тёмная «подводка» по краю века и снизу глаза
+      if (MK3D.hq) w.material = new THREE.MeshPhysicalMaterial({ color: 0xffffff, emissive: 0x3a3836, roughness: .25, clearcoat: 1, clearcoatRoughness: .07 }); /* белок белый, не серый */ const lnC = new THREE.Color(c.stripe || c.body).multiplyScalar(.35).getStyle(); // тёмная «подводка» по краю века и снизу глаза
       const ln = new THREE.Mesh(new THREE.TorusGeometry(eR * 1.08, eR * .055, 8, 40, Math.PI), basic(lnC)); ln.rotation.x = Math.PI / 2; lid.add(ln);
       const lo = new THREE.Mesh(new THREE.TorusGeometry(eR * .99, eR * .045, 8, 40, Math.PI * .8), basic(lnC)); lo.rotation.z = Math.PI * 1.1; lo.scale.set(1.02, 1.22, 1); lo.position.z = -eR * .02; g.add(lo); g.userData.liner = lo; }
     const brow = new THREE.Mesh(G.cap(eR * .13, eR * .9), basic(human ? new THREE.Color(n.hair.color || c.hair).multiplyScalar(.7).getStyle() : new THREE.Color(c.body).multiplyScalar(.55).getStyle()));
