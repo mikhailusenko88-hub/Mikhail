@@ -51,8 +51,10 @@ def main():
                     a = m.apply_tts(text=text, speaker=spk, sample_rate=48000)
                 save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
             elif eng == "silero_cis":
-                # свободная (MIT) модель без авторасстановки ударений — ставим их сами через ruaccent
+                # свободная (MIT) модель без авторасстановки ударений — недостающие ставим через ruaccent
+                # голос можно уточнить: silero_cis:ru_albina@slow,low  (темп: x-slow/slow/medium/fast, тон: x-low/low/high)
                 import voice_check as vc
+                spk, _, opts = spk.partition("@")
                 ws = vc.tokenize(text)
                 vc.accentize(text, ws)
                 out = []
@@ -69,8 +71,16 @@ def main():
                         out.append(t2 + w["punct"])
                     else:
                         out.append(w["w"] + w["punct"])
+                marked = " ".join(out)
+                open(f"in/{name}.marked", "w", encoding="utf-8").write(marked + "\n")
                 m = silero_model("v5_cis_base")
-                a = m.apply_tts(text=" ".join(out), speaker=spk, sample_rate=48000)
+                if opts:
+                    rate = next((o for o in opts.split(",") if o in ("x-slow", "slow", "medium", "fast", "x-fast")), "medium")
+                    pitch = next((o for o in opts.split(",") if o in ("x-low", "low", "medium", "high", "x-high")), "medium")
+                    ssml = f'<speak><prosody rate="{rate}" pitch="{pitch}">{marked}</prosody></speak>'
+                    a = m.apply_tts(ssml_text=ssml, speaker=spk, sample_rate=48000)
+                else:
+                    a = m.apply_tts(text=marked, speaker=spk, sample_rate=48000)
                 save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
             elif eng == "silero_random":
                 # новый, случайно придуманный голос (Silero v4); сохраняется в voices/, чтобы потом звучать так же
