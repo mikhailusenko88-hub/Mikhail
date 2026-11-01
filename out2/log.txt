@@ -1,0 +1,120 @@
+edge ru: ['ru-RU-DmitryNeural', 'ru-RU-SvetlanaNeural']
+edge multilingual: ['de-DE-FlorianMultilingualNeural', 'de-DE-SeraphinaMultilingualNeural', 'en-AU-WilliamMultilingualNeural', 'en-US-AndrewMultilingualNeural', 'en-US-AvaMultilingualNeural', 'en-US-BrianMultilingualNeural', 'en-US-EmmaMultilingualNeural', 'fr-FR-RemyMultilingualNeural', 'fr-FR-VivienneMultilingualNeural', 'it-IT-GiuseppeMultilingualNeural', 'ko-KR-HyunsuMultilingualNeural', 'pt-BR-ThalitaMultilingualNeural']
+edge fail de-DE-SeraphinaMultilingualNeural NoAudioReceived('No audio was received. Please verify that your parameters are correct.')
+edge fail fr-FR-VivienneMultilingualNeural NoAudioReceived('No audio was received. Please verify that your parameters are correct.')
+edge fail pt-BR-ThalitaMultilingualNeural NoAudioReceived('No audio was received. Please verify that your parameters are correct.')
+silero model: ru/v5_turkic/latest https://models.silero.ai/models/tts/ru/v5_turkic.pt
+silero model: ru/v5_caucasian/latest https://models.silero.ai/models/tts/ru/v5_caucasian.pt
+silero model: ru/v5_cis_base/latest https://models.silero.ai/models/tts/ru/v5_cis_base.pt
+silero model: ru/v5_cis_base_nostress_jit/latest https://models.silero.ai/models/tts/ru/v5_cis_base_nostress.jit
+silero model: ru/v5_cis_base_nostress/latest https://models.silero.ai/models/tts/ru/v5_cis_base_nostress.pt
+silero model: ru/v5_cis_ext/latest https://models.silero.ai/models/tts/ru/v5_cis_ext.pt
+silero model: ru/v5_6_ru/latest https://models.silero.ai/models/tts/ru/v5_6_ru.pt
+silero model: ru/v5_5_ru/latest https://models.silero.ai/models/tts/ru/v5_5_ru.pt
+silero model: ru/v5_4_ru/latest https://models.silero.ai/models/tts/ru/v5_4_ru.pt
+silero model: ru/v5_3_ru/latest https://models.silero.ai/models/tts/ru/v5_3_ru.pt
+silero model: ru/v5_2_ru/latest https://models.silero.ai/models/tts/ru/v5_2_ru.pt
+silero model: ru/v5_1_ru/latest https://models.silero.ai/models/tts/ru/v5_1_ru.pt
+silero model: ru/v5_ru/latest https://models.silero.ai/models/tts/ru/v5_ru.pt
+use silero55 https://models.silero.ai/models/tts/ru/v5_5_ru.pt
+silero55 speakers: ['aidar', 'baya', 'kseniya', 'eugene', 'xenia']
+use sileroCIS https://models.silero.ai/models/tts/ru/v5_cis_base.pt
+sileroCIS speakers: ['bak_aigul', 'ru_aigul', 'tat_albina', 'ru_albina', 'erz_alexandr', 'ru_alexandr', 'bak_alfia', 'ru_alfia', 'bak_alfia2', 'ru_alfia2', 'bel_anatoliy', 'udm_bogdan', 'ru_bogdan', 'bel_dmitriy', 'ru_dmitriy', 'chv_ekaterina', 'ru_ekaterina', 'kat_vika', 'ru_vika', 'aze_gamat', 'ru_gamat', 'ukr_igor', 'ru_igor', 'kjh_karina', 'ru_karina', 'xal_kejilgan', 'ru_kejilgan', 'xal_kermen', 'ru_kermen', 'bel_larisa', 'tat_marat', 'ru_marat', 'bak_miyau', 'ru_miyau', 'kir_nurgul', 'ru_nurgul', 'mdf_oksana', 'ru_oksana', 'tgk_onaoy', 'ru_onaoy', 'bak_ramilia', 'ru_ramilia', 'ukr_roman', 'ru_roman', 'tgk_safarhuja', 'ru_safarhuja', 'uzb_saida', 'ru_saida', 'kjh_sibday', 'ru_sibday', 'hye_zara', 'ru_zara', 'kaz_zhadyra', 'ru_zhadyra', 'kaz_zhazira', 'ru_zhazira', 'sah_zinaida', 'ru_zinaida', 'ru_eduard', 'kbd_eduard']
+utmos FAIL Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/tts_demo2.py", line 109, in <module>
+    x = torch.from_numpy(load16(f"{O}/{f}")).unsqueeze(0)
+                         ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Mikhail/Mikhail/tts_demo2.py", line 102, in load16
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-ac", "1", "-ar", "16000", "-f", "f32le", "-"],
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-v', 'error', '-i', 'out2/edge__de-DE-SeraphinaMultilingualNeural.mp3', '-ac', '1', '-ar', '16000', '-f', 'f32le', '-']' returned non-zero exit status 183.
+
+whisper FAIL Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/whisper/audio.py", line 58, in load_audio
+    out = run(cmd, capture_output=True, check=True).stdout
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ffmpeg', '-nostdin', '-threads', '0', '-i', 'out2/edge__de-DE-SeraphinaMultilingualNeural.mp3', '-f', 's16le', '-ac', '1', '-acodec', 'pcm_s16le', '-ar', '16000', '-']' returned non-zero exit status 183.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/tts_demo2.py", line 123, in <module>
+    r = wm.transcribe(f"{O}/{f}", language="ru", fp16=False)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/whisper/transcribe.py", line 139, in transcribe
+    mel = log_mel_spectrogram(audio, model.dims.n_mels, padding=N_SAMPLES)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/whisper/audio.py", line 140, in log_mel_spectrogram
+    audio = load_audio(audio)
+            ^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/whisper/audio.py", line 60, in load_audio
+    raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
+RuntimeError: Failed to load audio: ffmpeg version 8.0.1-3ubuntu2 Copyright (c) 2000-2025 the FFmpeg developers
+  built with gcc 15 (Ubuntu 15.2.0-13ubuntu3)
+  configuration: --prefix=/usr --extra-version=3ubuntu2 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-pocketsphinx --disable-libcaca --disable-libmfx --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libglslang --enable-libgme --enable-libgsm --enable-libharfbuzz --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg --enable-openal --enable-opencl --enable-opengl --disable-sndio --enable-libvpl --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-ladspa --enable-libbluray --enable-libdvdnav --enable-libdvdread --enable-libjack --enable-libjxl --enable-libpulse --enable-librabbitmq --enable-librist --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libx264 --enable-libzmq --enable-libzvbi --enable-lv2 --enable-sdl2 --enable-libplacebo --enable-librav1e --enable-librsvg --enable-shared
+  libavutil      60.  8.100 / 60.  8.100
+  libavcodec     62. 11.100 / 62. 11.100
+  libavformat    62.  3.100 / 62.  3.100
+  libavdevice    62.  1.100 / 62.  1.100
+  libavfilter    11.  4.100 / 11.  4.100
+  libswscale      9.  1.100 /  9.  1.100
+  libswresample   6.  1.100 /  6.  1.100
+[mp3 @ 0x58c0f3be2f00] Format mp3 detected only with low score of 1, misdetection possible!
+[mp3 @ 0x58c0f3be2f00] Failed to find two consecutive MPEG audio frames.
+[in#0 @ 0x58c0f3be2c40] Error opening input: Invalid data found when processing input
+Error opening input file out2/edge__de-DE-SeraphinaMultilingualNeural.mp3.
+Error opening input files: Invalid data found when processing input
+
+
+ 4.066  0.923  edge__de-DE-FlorianMultilingualNeural.mp3  | В одной чайной ложке нейтральной звезды, около миллиарда тонн. И всё это правда.
+     -      -  edge__de-DE-SeraphinaMultilingualNeural.mp3  | 
+     -      -  edge__en-AU-WilliamMultilingualNeural.mp3  | 
+     -      -  edge__en-US-AndrewMultilingualNeural.mp3  | 
+     -      -  edge__en-US-AvaMultilingualNeural.mp3  | 
+     -      -  edge__en-US-BrianMultilingualNeural.mp3  | 
+     -      -  edge__en-US-EmmaMultilingualNeural.mp3  | 
+     -      -  edge__fr-FR-RemyMultilingualNeural.mp3  | 
+     -      -  edge__fr-FR-VivienneMultilingualNeural.mp3  | 
+     -      -  edge__it-IT-GiuseppeMultilingualNeural.mp3  | 
+     -      -  edge__ko-KR-HyunsuMultilingualNeural.mp3  | 
+     -      -  edge__pt-BR-ThalitaMultilingualNeural.mp3  | 
+     -      -  edge__ru-RU-DmitryNeural.mp3  | 
+     -      -  edge__ru-RU-SvetlanaNeural.mp3  | 
+     -      -  silero55__aidar.mp3  | 
+     -      -  silero55__baya.mp3  | 
+     -      -  silero55__eugene.mp3  | 
+     -      -  silero55__kseniya.mp3  | 
+     -      -  silero55__xenia.mp3  | 
+     -      -  sileroCIS__ru_aigul.mp3  | 
+     -      -  sileroCIS__ru_albina.mp3  | 
+     -      -  sileroCIS__ru_alexandr.mp3  | 
+     -      -  sileroCIS__ru_alfia.mp3  | 
+     -      -  sileroCIS__ru_alfia2.mp3  | 
+     -      -  sileroCIS__ru_bogdan.mp3  | 
+     -      -  sileroCIS__ru_dmitriy.mp3  | 
+     -      -  sileroCIS__ru_eduard.mp3  | 
+     -      -  sileroCIS__ru_ekaterina.mp3  | 
+     -      -  sileroCIS__ru_gamat.mp3  | 
+     -      -  sileroCIS__ru_igor.mp3  | 
+     -      -  sileroCIS__ru_karina.mp3  | 
+     -      -  sileroCIS__ru_kejilgan.mp3  | 
+     -      -  sileroCIS__ru_kermen.mp3  | 
+     -      -  sileroCIS__ru_marat.mp3  | 
+     -      -  sileroCIS__ru_miyau.mp3  | 
+     -      -  sileroCIS__ru_nurgul.mp3  | 
+     -      -  sileroCIS__ru_oksana.mp3  | 
+     -      -  sileroCIS__ru_onaoy.mp3  | 
+     -      -  sileroCIS__ru_ramilia.mp3  | 
+     -      -  sileroCIS__ru_roman.mp3  | 
+     -      -  sileroCIS__ru_safarhuja.mp3  | 
+     -      -  sileroCIS__ru_saida.mp3  | 
+     -      -  sileroCIS__ru_sibday.mp3  | 
+     -      -  sileroCIS__ru_vika.mp3  | 
+     -      -  sileroCIS__ru_zara.mp3  | 
+     -      -  sileroCIS__ru_zhadyra.mp3  | 
+     -      -  sileroCIS__ru_zhazira.mp3  | 
+     -      -  sileroCIS__ru_zinaida.mp3  | 
