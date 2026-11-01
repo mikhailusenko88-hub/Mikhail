@@ -597,13 +597,17 @@ function addStrands(rig, o, L, keep, furK, reg) { if (reg === 'tail' && (rig.kin
       faceK = f > .15 ? .3 + .7 * (1 - Math.min(1, (f - .15) / .55)) : 1; faceK = Math.max(.28, faceK); if (d.y < -hr * .15 && f > .3) faceK = Math.min(faceK, .32); }
     if (faceK < .4 && r() < .2) continue; // на мордочке шерсть ещё и реже
     // сама мордочка (нос, подушечки с усами, рот, подбородок) — гладкая, без волосков: иначе они выглядят как седая щетина
-    let lie = 1; if (mz) { const lp = rig.head.worldToLocal(Wp.clone()).divideScalar(hr); const q = Math.hypot((lp.x - mz.c[0]) / mz.r[0], (lp.y - mz.c[1]) / mz.r[1], (lp.z - mz.c[2]) / mz.r[2]);
+    const lp = groomed && inHead ? rig.head.worldToLocal(Wp.clone()).divideScalar(hr) : null;
+    let lie = 1; if (mz) { const q = Math.hypot((lp.x - mz.c[0]) / mz.r[0], (lp.y - mz.c[1]) / mz.r[1], (lp.z - mz.c[2]) / mz.r[2]);
       if (q < 1) continue; if (q < 1.5) { const e = (q - 1) / .5; faceK = Math.min(faceK, .25 + .5 * e); lie = 2.6 - 1.2 * e; } }
     if (groomed && faceK < 1) lie = Math.max(lie, 1 + (1 - faceK) * 1.6); // на лице шерстка короткая и прижатая
+    let ruff = 1; if (lp && rig.kind === 'cat') { const sd = Math.abs(lp.x); // кот: пушистые «бакенбарды» по бокам щёк и кисточки на кончиках ушей
+      if (sd > .5 && lp.y < .15 && lp.y > -.62 && lp.z < .8) { ruff = 1 + Math.min(.85, (sd - .5) * 2.6) * Math.min(1, (lp.y + .62) * 3); lie = Math.min(lie, .75); }
+      if (lp.y > 1.12) { ruff = 1 + Math.min(2.2, (lp.y - 1.12) * 9); lie = .6; } }
     let regK = 1; if (reg === 'body') { const d = Wp.clone().sub(headW); const f = d.dot(fwd); if (f > .05) regK *= 1 + Math.min(.35, f * 1.8); if (N.y > .5) regK *= 1.25; /* грудка и воротник — пышнее */ }
     if (reg === 'tail') { const tipK = .8 + Math.max(0, -P.z) * 2; regK *= Math.min(1.5, tipK); }
     const guard = groomed && faceK > .95 && r() < .12 ? 1 : 0; // ость: редкие волоски чуть длиннее и со светлым кончиком, под ними — густой подшёрсток
-    const lenK = (.9 + r() * .15) * (near < 1.8 ? .45 + .55 * (near - 1) / .8 : 1) * faceK * furK * regK * (guard ? 1.32 : 1), ty = (r() - .5), tz = (r() - .5), vr = r();
+    const lenK = (.9 + r() * .15) * (near < 1.8 ? .45 + .55 * (near - 1) / .8 : 1) * faceK * furK * regK * ruff * (guard ? 1.32 : 1), ty = (r() - .5), tz = (r() - .5), vr = r();
     let gx = 0, gy = 0, gz = 0; if (src) { Gd.copy(Wp).sub(src); const gl0 = Gd.length(); if (gl0 > 1e-6) Gd.divideScalar(gl0); Gd.addScaledVector(DN, dnK); Nw.copy(N).transformDirection(o.matrixWorld); Gd.addScaledVector(Nw, -Gd.dot(Nw));
       if (Gd.lengthSq() > 1e-6) { Gd.applyMatrix3(Minv).normalize(); gx = Gd.x; gy = Gd.y; gz = Gd.z; } }
     if (guard) lie *= .8;
@@ -709,6 +713,9 @@ function buildRig0(spec) {
   if (human) buildHumanHead(rig, head, hr, n, c);
   else {
     const sk = mesh(G.sph(hr, 40, 30), headMap ? toon(null, headMap) : toon(c.body), .035, head); sk.scale.set(1.08, .94, 1);
+    if (k === 'cat') { sk.scale.set(1.04, .9, .97); /* кошачья голова: широкие скулы и щёки внизу, лоб площе — силуэт «скруглённый треугольник», а не шар */
+      for (const s of [-1, 1]) { const ck = mesh(G.sph(1, 28, 20), toon(c.body), .035, head); ck.scale.set(hr * .5, hr * .42, hr * .5); ck.position.set(s * hr * .6, -hr * .24, hr * .26); }
+      const fh = mesh(G.sph(1, 28, 20), headMap ? toon(null, headMap) : toon(c.body), .035, head); /* лоб — с полосками */ fh.scale.set(hr * .78, hr * .5, hr * .6); fh.position.set(0, hr * .3, hr * .32); }
     buildAnimalFace(head, hr, n, rig);
   }
   // глаза
@@ -716,14 +723,19 @@ function buildRig0(spec) {
   const eyeY = human ? hr * .08 : frog ? hr * .75 : hr * .18, eyeX = human ? hr * .36 : frog ? hr * .45 : hr * .38, eyeZ = hr * (human ? .88 : frog ? .45 : .8), eR = hr * (human ? .2 : frog ? .3 : owlE ? .3 : .25);
   for (const s of [-1, 1]) {
     const g = new THREE.Group(); g.position.set(s * eyeX, eyeY, eyeZ); head.add(g);
+    const catE = k === 'cat', iK = catE ? 1.4 : 1; // у кота радужка почти на весь глаз, белка чуть-чуть
     const w = mesh(frontUV(G.sph(eR, 32, 24)), toon(null, scleraT()), .08, g); w.scale.set(1, 1.2, .6);
-    const ir = new THREE.Mesh(frontUV(G.sph(eR * .68, 32, 24)), toon(null, irisT(c.eyes))); ir.position.z = eR * .42; ir.scale.set(1, 1.15, .5); g.add(ir);
-    const pu = new THREE.Mesh(G.sph(eR * .38, 16, 12), basic('#16100c')); pu.position.z = eR * .65; pu.scale.set(1, 1.15, .5); g.add(pu);
+    const ir = new THREE.Mesh(frontUV(G.sph(eR * .68 * iK, 32, 24)), toon(null, irisT(c.eyes))); ir.position.z = eR * (catE ? .2 : .42); ir.scale.set(1, 1.15, .5); g.add(ir);
+    const pu = new THREE.Mesh(G.sph(eR * (catE ? .44 : .38), 16, 12), basic('#16100c')); pu.position.z = eR * (catE ? .55 : .65); pu.scale.set(1, 1.15, .5); g.add(pu);
     const hl = new THREE.Mesh(G.sph(eR * .16, 10, 8), basic('#ffffff')); hl.position.set(-eR * .2, eR * .3, eR * .82); g.add(hl);
     if (MK3D.hq) { w.material = eyeGloss(scleraT(), .25); ir.material = eyeGloss(irisT(c.eyes), .2); pu.material = basic('#120c08'); const h2 = new THREE.Mesh(G.sph(eR * .07, 8, 6), basic('#ffffff')); h2.position.set(eR * .18, -eR * .12, eR * .84); g.add(h2);
-      const cor = new THREE.Mesh(G.sph(eR * .72, 20, 14), new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: .12, roughness: .12, clearcoat: 1, clearcoatRoughness: .1, transmission: 0 })); cor.position.z = eR * .46; cor.scale.set(1, 1.15, .55); g.add(cor); }
+      const cor = new THREE.Mesh(G.sph(eR * .72 * iK, 20, 14), new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: .12, roughness: .12, clearcoat: 1, clearcoatRoughness: .1, transmission: 0 })); cor.position.z = eR * (catE ? .26 : .46); cor.scale.set(1, 1.15, .55); g.add(cor); }
     const heart = makeHeart(eR * .7); heart.position.z = eR * .5; heart.visible = false; g.add(heart);
     const lid = new THREE.Mesh(new THREE.SphereGeometry(eR * 1.08, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), toon(bodyC)); lid.scale.set(1, 1.2, .62); g.add(lid);
+    if (catE) { lid.scale.set(1.04, 1.2, 1.0); /* веко накрывает и выпуклую радужку */ lid.material = new THREE.MeshStandardMaterial({ color: new THREE.Color(bodyC).multiplyScalar(.9), roughness: .9 });
+      if (MK3D.hq) { const ec = new THREE.Color(c.eyes), hsl = {}; ec.getHSL(hsl); w.material = new THREE.MeshPhysicalMaterial({ color: new THREE.Color().setHSL(hsl.h, Math.min(1, hsl.s * 1.1), hsl.l * .32), roughness: .25, clearcoat: 1, clearcoatRoughness: .07 }); } const lnC = new THREE.Color(c.stripe || c.body).multiplyScalar(.35).getStyle(); // тёмная «подводка» по краю века и снизу глаза
+      const ln = new THREE.Mesh(new THREE.TorusGeometry(eR * 1.08, eR * .055, 8, 40, Math.PI), basic(lnC)); ln.rotation.x = Math.PI / 2; lid.add(ln);
+      const lo = new THREE.Mesh(new THREE.TorusGeometry(eR * .99, eR * .045, 8, 40, Math.PI * .8), basic(lnC)); lo.rotation.z = Math.PI * 1.1; lo.scale.set(1.02, 1.22, 1); lo.position.z = -eR * .02; g.add(lo); g.userData.liner = lo; }
     const brow = new THREE.Mesh(G.cap(eR * .13, eR * .9), basic(human ? new THREE.Color(n.hair.color || c.hair).multiplyScalar(.7).getStyle() : new THREE.Color(c.body).multiplyScalar(.55).getStyle()));
     brow.rotation.z = Math.PI / 2; brow.position.set(0, eR * 1.55, eR * .2); g.add(brow);
     if (human && (spec.gender === 'f' || /(pigtails|long|ponytail|bun|bob)/.test((n.hair || {}).style || ''))) for (let q = 0; q < 3; q++) { const ls = new THREE.Mesh(G.cap(eR * .05, eR * .3, 2, 6), basic('#2a1a14')); ls.position.set((q - 1) * eR * .45 + s * eR * .15, eR * 1.12 - Math.abs(q - 1) * eR * .08, eR * .35); ls.rotation.z = (q - 1) * -.5 + s * .5; lid.add(ls); }
@@ -1047,7 +1059,7 @@ function applyPose(rig, st, T) {
   const bp = 3.1 + (rig.n.seed % 17) / 10, bt = (T + (rig.n.seed % 7)) % bp, dbl = Math.floor((T + (rig.n.seed % 7)) / bp) % 3 === 1; let blink = bt < .14 ? Math.sin(bt / .14 * Math.PI) : dbl && bt > .22 && bt < .36 ? Math.sin((bt - .22) / .14 * Math.PI) : 0;
   const speaking = talk > .02 && !!st.vz, laughing = (emo === 'laugh' && !speaking) || an === 'laugh' || (an === 'roll' && emo === 'laugh');
   let closed = pers === 'sleep' || laughing || an === 'yawn' || (an === 'sneeze' && ap > .3 && ap < .62) || (an === 'roll' && emo === 'laugh');
-  let lidOpen = -0.75, browY = 0, browRot = 0, eyeS = 1, pupS = 1;
+  let lidOpen = rig.kind === 'cat' ? -0.8 : -0.75, browY = 0, browRot = 0, eyeS = 1, pupS = 1;
   if (emo === 'sleepy') lidOpen = .15; if (emo === 'surprised') { eyeS = 1.15; pupS = .7; browY = .5; } if (emo === 'scared') { eyeS = 1.1; pupS = .55; browRot = .35; }
   if (emo === 'angry') { lidOpen = -.25; browRot = -.45; } if (emo === 'sad' || emo === 'cry') { lidOpen = -.3; browRot = .4; }
   rig.eyes.forEach(e => {
