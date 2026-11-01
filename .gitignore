@@ -1,3 +1,4 @@
-out/geo.npz
+out/*.npz
 out/prev_*.png
+out/frames/
 __pycache__/
