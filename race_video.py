@@ -389,9 +389,9 @@ def draw_course(c, theme):
     HC = int(c.end_y + Y0 + 200)
     yy = np.arange(HC)[:, None]
     m = (0.5 + 0.5 * np.sin(yy / 1100.0)).astype(np.float32)
-    col = np.array(top, np.float32)[None] * (1 - m) + np.array(bot, np.float32)[None] * m
-    arr = np.repeat(col[:, None, :], W, axis=1)
-    img = Image.fromarray(arr.astype(np.uint8))
+    col = (np.array(top, np.float32)[None] * (1 - m) + np.array(bot, np.float32)[None] * m).astype(np.uint8)
+    img = Image.fromarray(np.ascontiguousarray(np.repeat(col[:, None, :], W, axis=1)))
+    del col, m
     glow = Image.new("RGBA", (W, HC), (0, 0, 0, 0))
     gd = ImageDraw.Draw(glow)
     lay = Image.new("RGBA", (W, HC), (0, 0, 0, 0))
@@ -426,7 +426,9 @@ def draw_course(c, theme):
     glow = glow.filter(ImageFilter.GaussianBlur(9))
     img = img.convert("RGBA")
     img.alpha_composite(glow)
+    del glow, gd
     img.alpha_composite(lay)
+    del lay, d
     return img.convert("RGB")
 
 
@@ -623,7 +625,8 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     tmp_video = str(out_path) + ".video.mp4"
     proc = subprocess.Popen(
         ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
-         "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-preset", "veryfast", "-b:v", "6000k",
+         "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-preset", "veryfast", "-threads", "2",
+         "-x264-params", "rc-lookahead=8:sync-lookahead=0", "-b:v", "6000k",
          "-maxrate", "8000k", "-bufsize", "12000k", "-pix_fmt", "yuv420p", tmp_video], stdin=subprocess.PIPE)
 
     def emit(img):
@@ -675,8 +678,8 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
         order = order_at(pos, racing, finish, nfin)
         key = (tuple(order), nfin)
         if key not in panel_cache:
-            if len(panel_cache) > 400:
-                panel_cache.clear()
+            if len(panel_cache) >= 6:     # каждая таблица ~1 МБ — держим только последние
+                panel_cache.pop(next(iter(panel_cache)))
             panel_cache[key] = panel_img(order, nfin, acc)
         pn = panel_cache[key]
         img.paste(pn, (OX + CW + 14, 270), pn)
