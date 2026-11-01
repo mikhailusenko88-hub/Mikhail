@@ -1,0 +1,29 @@
+name: yt-check
+# Проверка YouTube-каналов: запускается, когда меняется request.txt в ветке yt-status.
+# Результат кладётся в папку status/ этой же ветки.
+on:
+  push:
+    branches: [yt-status]
+    paths: ['request.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: yt-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Проверить каналы
+        run: python3 yt_check.py
+      - name: Сохранить результат
+        run: |
+          git config user.name "yt-check"
+          git config user.email "yt-check@users.noreply.github.com"
+          git add status
+          git commit -m "status $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin yt-status || true
+          git push origin HEAD:yt-status
