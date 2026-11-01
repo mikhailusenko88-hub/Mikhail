@@ -1,1 +1,3 @@
-api_test.py
+render.py
+shot=close
+samples=64
