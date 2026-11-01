@@ -2,7 +2,9 @@
 import asyncio, difflib, json, os, re, subprocess, traceback, urllib.request, wave
 import numpy as np, torch, yaml
 
+import shutil
 O = "out2"
+shutil.rmtree(O, ignore_errors=True)
 os.makedirs(O, exist_ok=True)
 log = open(f"{O}/log.txt", "w", encoding="utf-8")
 def say(*a):
@@ -33,6 +35,8 @@ async def edge_all():
             await asyncio.wait_for(edge_tts.Communicate(FIX, v).save(f"{O}/edge__{v}.mp3"), 40)
         except Exception as e:
             say("edge fail", v, repr(e))
+        if os.path.exists(f"{O}/edge__{v}.mp3") and os.path.getsize(f"{O}/edge__{v}.mp3") < 2000:
+            os.remove(f"{O}/edge__{v}.mp3")
 try:
     asyncio.run(edge_all())
 except Exception:
@@ -82,7 +86,8 @@ def silero(url, tag, text, only=None):
             say(tag, s, "fail", repr(e))
 
 torch.set_num_threads(2)
-for sub, bad, tag, only in [("v5_5_ru", (), "silero55", None),
+for sub, bad, tag, only in [("v5_6_ru", (), "silero56", None),
+                            ("v5_cis_ext", ("nostress",), "sileroEXT", lambda s: s.startswith("ru_")),
                             ("v5_cis_base", ("nostress",), "sileroCIS", lambda s: s.startswith("ru_"))]:
     try:
         u = pick(sub, bad)
@@ -106,9 +111,12 @@ def load16(path):
 try:
     mos = torch.hub.load("tarepan/SpeechMOS:v1.2.0", "utmos22_strong", trust_repo=True)
     for f in files:
-        x = torch.from_numpy(load16(f"{O}/{f}")).unsqueeze(0)
-        with torch.no_grad():
-            res[f]["utmos"] = round(float(mos(x, 16000)), 3)
+        try:
+            x = torch.from_numpy(load16(f"{O}/{f}")).unsqueeze(0)
+            with torch.no_grad():
+                res[f]["utmos"] = round(float(mos(x, 16000)), 3)
+        except Exception as e:
+            say("utmos", f, repr(e))
 except Exception:
     say("utmos FAIL", traceback.format_exc())
 
@@ -120,10 +128,13 @@ try:
     import whisper
     wm = whisper.load_model("small")
     for f in files:
-        r = wm.transcribe(f"{O}/{f}", language="ru", fp16=False)
-        t = r["text"].strip()
-        res[f]["text"] = t
-        res[f]["match"] = round(difflib.SequenceMatcher(None, norm(t), norm(REF)).ratio(), 3)
+        try:
+            r = wm.transcribe(f"{O}/{f}", language="ru", fp16=False)
+            t = r["text"].strip()
+            res[f]["text"] = t
+            res[f]["match"] = round(difflib.SequenceMatcher(None, norm(t), norm(REF)).ratio(), 3)
+        except Exception as e:
+            say("whisper", f, repr(e))
 except Exception:
     say("whisper FAIL", traceback.format_exc())
 
