@@ -1,4 +1,4 @@
 render.py
-shot=close
-samples=72
+shot=full
+samples=64
 w=1280
