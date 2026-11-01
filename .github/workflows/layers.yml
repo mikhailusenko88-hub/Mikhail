@@ -1,0 +1,41 @@
+name: barsik-layers
+on:
+  push:
+    branches: [blender-test]
+    paths: [layers.txt]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  layer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        var: [bg, base, a, o, blink]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Blender 4.2 LTS
+        run: |
+          wget -q https://download.blender.org/release/Blender4.2/blender-4.2.0-linux-x64.tar.xz
+          tar xf blender-4.2.0-linux-x64.tar.xz
+          sudo apt-get update -qq >/dev/null; sudo apt-get install -y -qq libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libgl1 libsm6 libegl1 >/dev/null || true
+      - name: Geometry
+        run: |
+          pip install -q numpy scikit-image scipy
+          mkdir -p out
+          if [ "${{ matrix.var }}" != "bg" ]; then python build_geo.py --var=${{ matrix.var }}; fi
+      - name: Render
+        run: |
+          set -o pipefail
+          MODE=layer; [ "${{ matrix.var }}" = "bg" ] && MODE=bg
+          ./blender-4.2.0-linux-x64/blender -b --python-exit-code 1 -P render.py -- mode=$MODE var=${{ matrix.var }} shot=medium $(cat layers.txt | tr '\n' ' ') 2>&1 | tee out/log_${{ matrix.var }}.txt | grep -v "^Fra:\|Sample \|Rendered " | tail -60
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name render-bot
+          git config user.email render-bot@users.noreply.github.com
+          git add out/layer_*.png out/log_*.txt || true
+          git commit -m "layer ${{ matrix.var }}" || echo nothing
+          for i in 1 2 3 4 5 6; do git pull -q --rebase && git push && break; sleep $((RANDOM % 12 + 4)); done

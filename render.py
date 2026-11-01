@@ -8,12 +8,13 @@ T0 = time.time()
 def log(*a): print('[%5.1fs]' % (time.time() - T0), *a, flush=True)
 args = dict(a.split('=') for a in (sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []) if '=' in a)
 SHOT = args.get('shot', 'close'); SPP = int(args.get('samples', 96)); W = int(args.get('w', 1280)); Hh = int(args.get('h', 720))
-OUT = args.get('out', 'out/barsik_%s.png' % SHOT)
+MODE = args.get('mode', 'full'); VAR = args.get('var', 'base')
+OUT = args.get('out', 'out/layer_%s.png' % (VAR if MODE == 'layer' else 'bg') if MODE in ('layer', 'bg') else 'out/barsik_%s.png' % SHOT)
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 sc = bpy.context.scene
-G = np.load(os.path.join(os.path.dirname(bpy.data.filepath) or '.', 'out/geo.npz'))
-log('npz', list(G.keys()))
+G = np.load('out/geo_%s.npz' % VAR) if MODE != 'bg' else None
+if G is not None: log('npz', list(G.keys()))
 
 # ---------- материалы ----------
 def mat(name):
@@ -81,7 +82,9 @@ def build_skin():
     for c in E:
         q = v - c; d = np.linalg.norm(q, axis=-1)
         liner |= (d < RE + 0.011) & (q[:, 1] < 0.01)   # тёмная кожа вокруг глаза — как подводка у настоящих кошек
+    if VAR == 'blink': liner[:] = False   # у закрытых глаз — только линия век (отдельной кривой)
     rgb[liner] = (0.09, 0.04, 0.02)
+    rgb[reg == 10] = (0.16, 0.03, 0.03); rgb[reg == 11] = (0.72, 0.28, 0.32)
     sss = np.where(ear_in, 0.9, np.where(reg == 4, 0.5, 0.18)).astype(np.float32)
     rgba = np.concatenate([rgb, np.ones((len(v), 1))], -1).astype(np.float32)
     ca = me.color_attributes.new('skin_col', 'FLOAT_COLOR', 'POINT'); ca.data.foreach_set('color', rgba.ravel())
@@ -138,7 +141,7 @@ def build_eyes():
     RE = float(G['re'][0]); cm = cornea_material()
     for i, c in enumerate(G['eyes']):
         s = 1 if c[0] > 0 else -1
-        tgt = Vector((0.36, -1.6, 0.84)) if SHOT == 'close' else Vector((0.5, -2.8, 0.75))
+        tgt = Vector((0.36, -1.6, 0.84)) if SHOT == 'close' else Vector((0.45, -2.3, 0.8)) if SHOT == 'medium' else Vector((0.5, -2.8, 0.75))
         fwd = (tgt - Vector(c)).normalized()
         rot = Vector((0, -1, 0)).rotation_difference(fwd)
         me = bpy.data.meshes.new('eye'); ob = bpy.data.objects.new('Eye%d' % i, me); sc.collection.objects.link(ob)
@@ -223,7 +226,7 @@ def build_world():
     # трава вокруг
     n = 90000; R = np.sqrt(rng.random(n)) * 3.2; A = rng.random(n) * 6.283
     root = np.stack([np.cos(A) * R, np.sin(A) * R * 1.6 + 0.6, np.zeros(n)], -1)
-    ok = ~((np.abs(root[:, 0]) < 0.25) & (np.abs(root[:, 1] - 0.0) < 0.25)); root = root[ok]; n = len(root)
+    ok = ~((np.abs(root[:, 0]) < 0.12) & (np.abs(root[:, 1] + 0.03) < 0.1)); root = root[ok]; n = len(root)
     hgt = rng.uniform(0.04, 0.11, n); lean = rng.normal(0, 0.35, (n, 2))
     k = 4; t = np.linspace(0, 1, k)
     pts = root[:, None, :] + np.stack([lean[:, 0][:, None] * t * t * hgt[:, None], lean[:, 1][:, None] * t * t * hgt[:, None], hgt[:, None] * t], -1)
@@ -251,8 +254,12 @@ def build_lights_camera():
     fill = bpy.data.objects.new('Fill', bpy.data.lights.new('Fill', 'AREA')); sc.collection.objects.link(fill)
     fill.data.energy = 45; fill.data.size = 2.0; fill.data.color = (0.75, 0.9, 1.0); fill.location = (1.6, -1.0, 0.6); look_at(fill, (0, 0, 0.6))
     cam = bpy.data.objects.new('Cam', bpy.data.cameras.new('Cam')); sc.collection.objects.link(cam); sc.camera = cam
-    E = G['eyes']
-    if SHOT == 'close':
+    E = G['eyes'] if G is not None else np.array([[-0.081, -0.142, 0.768], [0.081, -0.142, 0.768]])
+    if SHOT == 'medium':
+        cam.location = (0.62, -2.4, 0.82); target = (0.0, -0.03, 0.6); cam.data.lens = 55
+        eyeL = bpy.data.objects.new('EyeLight', bpy.data.lights.new('EyeLight', 'AREA')); sc.collection.objects.link(eyeL)
+        eyeL.data.energy = 8; eyeL.data.size = 0.3; eyeL.location = (0.25, -2.0, 1.05); look_at(eyeL, (0, -0.14, 0.77))
+    elif SHOT == 'close':
         cam.location = (0.62, -1.95, 0.9); target = (0.0, -0.04, 0.74); cam.data.lens = 55
         eyeL = bpy.data.objects.new('EyeLight', bpy.data.lights.new('EyeLight', 'AREA')); sc.collection.objects.link(eyeL)
         eyeL.data.energy = 6; eyeL.data.size = 0.25; eyeL.location = (0.2, -1.4, 1.05); look_at(eyeL, (0, -0.14, 0.77)); eyeL.data.color = (1, 0.97, 0.93)
@@ -274,15 +281,23 @@ def compositor():
     tr.links.new(mix.outputs[0], glare.inputs['Image']); tr.links.new(glare.outputs['Image'], comp.inputs['Image'])
 
 # ---------- сборка ----------
-build_skin(); build_fur(); build_eyes()
-build_mesh('Nose', G['nose_v'], G['nose_f'], nose_material())
-build_mesh('Scarf', G['scarf_v'], G['scarf_f'], scarf_material())
-mm = flat_material('mouth', (0.12, 0.04, 0.03), 0.5)
-for i, l in enumerate(G['mouth']): build_curve('Mouth%d' % i, l, 0.0017, 0.0015, mm)
-wm = flat_material('whisker', (0.92, 0.9, 0.86), 0.35)
-for i, l in enumerate(G['whisk']): build_curve('Whisk%d' % i, l, 0.0011, 0.00025, wm)
+if MODE != 'bg':
+    build_skin(); build_fur()
+    if VAR != 'blink': build_eyes()
+    build_mesh('Nose', G['nose_v'], G['nose_f'], nose_material())
+    build_mesh('Scarf', G['scarf_v'], G['scarf_f'], scarf_material())
+    mm = flat_material('mouth', (0.12, 0.04, 0.03), 0.5)
+    for i, l in enumerate(G['mouth']): build_curve('Mouth%d' % i, l, 0.0017, 0.0015, mm)
+    for i, l in enumerate(G['creases']): build_curve('Crease%d' % i, l, 0.0012, 0.0024, flat_material('crease', (0.07, 0.035, 0.02), 0.5))
+    wm = flat_material('whisker', (0.92, 0.9, 0.86), 0.35)
+    for i, l in enumerate(G['whisk']): build_curve('Whisk%d' % i, l, 0.0011, 0.00025, wm)
 sc.view_layers[0].use_pass_mist = True
-build_world(); build_lights_camera(); compositor()
+if MODE == 'layer':   # только герой на прозрачном фоне + его тень на «ловце теней»
+    w = bpy.data.worlds.new('W'); sc.world = w; w.use_nodes = True; bg = w.node_tree.nodes['Background']; bg.inputs[0].default_value = (0.42, 0.62, 0.6, 1); bg.inputs[1].default_value = 0.9
+    bpy.ops.mesh.primitive_plane_add(size=6, location=(0, 0, 0)); bpy.context.active_object.is_shadow_catcher = True
+    build_lights_camera(); sc.render.film_transparent = True
+else:
+    build_world(); build_lights_camera(); compositor()
 
 r = sc.render; r.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = SPP; sc.cycles.adaptive_threshold = 0.02
 sc.cycles.use_denoising = True
@@ -290,7 +305,8 @@ try: sc.cycles.denoiser = 'OPENIMAGEDENOISE'
 except Exception: pass
 sc.cycles.max_bounces = 8; sc.cycles.diffuse_bounces = 3; sc.cycles.glossy_bounces = 3; sc.cycles.transmission_bounces = 6; sc.cycles.transparent_max_bounces = 8
 sc.cycles_curves.shape = 'THICK'; sc.cycles_curves.subdivisions = 2
-r.resolution_x = W; r.resolution_y = Hh; r.resolution_percentage = 100; r.use_compositing = True
+r.resolution_x = W; r.resolution_y = Hh; r.resolution_percentage = 100; r.use_compositing = MODE != 'layer'
+r.image_settings.color_mode = 'RGBA' if MODE == 'layer' else 'RGB'
 sc.view_layers[0].use_pass_mist = True
 sc.view_settings.view_transform = 'AgX'
 try: sc.view_settings.look = 'AgX - Punchy'

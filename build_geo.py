@@ -50,6 +50,7 @@ TAIL_R = [0.044, 0.04, 0.037, 0.035, 0.034, 0.035]
 NECK = V(0, -0.005, 0.575)
 LID_K = 0.1                                 # наклон века: у переносицы выше
 LID_N = nrm(V(0, -0.3, 1.0))
+VAR = next((a.split('=')[1] for a in sys.argv if a.startswith('--var=')), 'base')   # base | a | o | blink
 LID_OFF = RE * 0.82
 def lid_n(E): return nrm(V(np.sign(E[0]) * LID_K, -0.3, 1.0))
 
@@ -88,6 +89,7 @@ def parts(p):
         cut = q @ lid_n(E) - LID_OFF
         l = smax(sh, -cut, 0.003)
         l = smax(l, q[:, 1] - 0.01, 0.01)       # только передняя половина
+        if VAR == 'blink': l = sd_sph(p, E, RE + 0.0045)
         lid = l if lid is None else np.minimum(lid, l)
     d['lid'] = lid
     d['ear'] = np.minimum(ear_sd(p, 0), ear_sd(p, 1))
@@ -116,11 +118,17 @@ def parts(p):
     return d
 
 REGIONS = ['torso', 'head', 'muzzle', 'lid', 'ear', 'arm', 'leg', 'tail']
+MOUTH = {'a': (V(0, -0.197, 0.65), V(0.034, 0.03, 0.026)), 'o': (V(0, -0.197, 0.652), V(0.017, 0.03, 0.019))}.get(VAR)
+TONGUE = (V(0, -0.19, 0.641), V(0.019, 0.022, 0.009))
+def mouth_cav(p): return sd_ell(p, *MOUTH) if MOUTH is not None else np.full(len(p), 9.0, F)
 def field(p, want_parts=False):
     d = parts(p)
     h = smin(d['head'], d['muzzle'], 0.035)
-    for E in EYES: h = smax(h, -(np.linalg.norm(p - E, axis=-1) - (RE + 0.003)), 0.012)   # глазницы
+    if VAR != 'blink':
+        for E in EYES: h = smax(h, -(np.linalg.norm(p - E, axis=-1) - (RE + 0.003)), 0.012)   # глазницы
     h = smin(h, d['lid'], 0.006)
+    if MOUTH is not None:
+        h = smax(h, -mouth_cav(p), 0.006); h = np.minimum(h, sd_ell(p, *TONGUE))
     h = smin(h, d['ear'], 0.05)
     inner = np.minimum(ear_sd(p, 0, True), ear_sd(p, 1, True))
     h = smax(h, -inner, 0.008)                                                               # выемка в ухе
@@ -204,6 +212,8 @@ def region_of(p):
     reg = np.argmin(D, -1)
     # 0 torso,1 head,2 muzzle,3 lid,4 ear,5 arm,6 leg,7 tail ; 8 — внутренняя часть уха (розовая)
     reg = np.where(np.abs(inner) < 0.0065, 8, reg)
+    if MOUTH is not None:
+        reg = np.where(np.abs(mouth_cav(p)) < 0.004, 10, reg); reg = np.where(sd_ell(p, *TONGUE) < 0.002, 11, reg)
     return reg.astype(np.int32)
 
 # ---------- шерсть ----------
@@ -212,7 +222,7 @@ def make_fur(v, f, nor, reg, total=760000, P=5, seed=3):
     a, b, c = v[f[:, 0]], v[f[:, 1]], v[f[:, 2]]
     area = np.linalg.norm(np.cross(b - a, c - a), axis=-1) * 0.5
     freg = reg[f[:, 0]]
-    dens = np.array([1.0, 1.15, 0.0, 1.6, 0.85, 1.0, 1.0, 1.1, 0.2], F)[freg]   # на мордочке и внутри уха — нет
+    dens = np.array([1.0, 1.15, 0.0, 1.6, 0.85, 1.0, 1.0, 1.1, 0.2, 0, 0, 0], F)[freg]   # на мордочке и внутри уха — нет
     w = area * dens; w /= w.sum()
     tri = rng.choice(len(f), size=total, p=w)
     u1, u2 = rng.random(total, dtype=F), rng.random(total, dtype=F); sw = u1 + u2 > 1; u1[sw] = 1 - u1[sw]; u2[sw] = 1 - u2[sw]; w0 = 1 - u1 - u2
@@ -223,8 +233,9 @@ def make_fur(v, f, nor, reg, total=760000, P=5, seed=3):
     # точнее определить область для самой точки (мордочка рядом с головой)
     rg = region_of(R)
     # убрать с мордочки, из глаз и с внутренней части уха
-    keep = (rg != 2)
-    for E in EYES: keep &= np.linalg.norm(R - E, axis=-1) > RE + 0.0045
+    keep = (rg != 2) & (rg != 10) & (rg != 11)
+    if VAR != 'blink':
+        for E in EYES: keep &= np.linalg.norm(R - E, axis=-1) > RE + 0.0045
     keep &= scarf_fn(R) > 0.004   # под шарфом шерсти нет
     R, N, rg = R[keep], N[keep], rg[keep]
     n = len(R)
@@ -297,9 +308,19 @@ def make_fur(v, f, nor, reg, total=760000, P=5, seed=3):
 def hit(o, dirn, tmax=0.4):
     o = np.atleast_2d(o).astype(F); dirn = nrm(np.atleast_2d(dirn).astype(F)); t = np.zeros(len(o), F)
     for _ in range(80):
-        d = field(o + dirn * t[:, None]); t += np.maximum(d, 0.0004) * 0.9
+        d = field(o + dirn * t[:, None]); t = np.minimum(t + np.maximum(d, 0.0004) * 0.9, tmax)
         if np.all(np.abs(d) < 0.0005): break
     return o + dirn * t[:, None]
+
+def creases():   # линия сомкнутых век (дуга чуть вниз)
+    out = []
+    for E in EYES:
+        s = np.sign(E[0]); xs = np.linspace(-0.85, 0.85, 12) * RE
+        zs = E[2] - 0.12 * RE - 0.22 * RE * (1 - (xs / (0.85 * RE)) ** 2)
+        dirn = np.tile(nrm(V(-0.16 * s, 1.0, 0.0)), (12, 1))
+        o = (np.stack([E[0] + xs, np.full(12, E[1]), zs], -1) - dirn * 0.15).astype(F)
+        out.append(hit(o, dirn, 0.3) - dirn * 0.0015)
+    return out
 
 def mouth_lines():
     # «ω»: от носа вниз короткая черта, потом две дуги в стороны
@@ -311,7 +332,7 @@ def mouth_lines():
         xs = s * (0.0185 - 0.0185 * np.cos(ang)); zs = 0.671 - 0.011 * np.sin(ang)
         arc = np.stack([xs, np.full(12, -0.4, F), zs], -1).astype(F)
         lines.append(hit(arc, np.tile(V(0, 1, 0), (12, 1))))
-    return lines
+    return lines[:1] if MOUTH is not None else lines
 
 def whiskers():
     out = []
@@ -411,8 +432,8 @@ if __name__ == '__main__':
     nv, nf = small_mesh(nose_fn, (-0.05, -0.25, 0.67), (0.05, -0.18, 0.74))
     sv, sf = small_mesh(scarf_fn, (-0.15, -0.17, 0.36), (0.16, 0.12, 0.66), h=0.0022)
     ml = mouth_lines(); wh = whiskers()
-    np.savez_compressed('out/geo.npz', skin_v=v, skin_f=f, skin_n=nor, skin_reg=reg.astype(np.int8), skin_mel=mel, skin_red=red, skin_cream=cream,
+    np.savez_compressed('out/geo_%s.npz' % VAR, skin_v=v, skin_f=f, skin_n=nor, skin_reg=reg.astype(np.int8), skin_mel=mel, skin_red=red, skin_cream=cream,
                         nose_v=nv, nose_f=nf, scarf_v=sv, scarf_f=sf,
                         mouth=np.array([np.pad(m, ((0, 12 - len(m)), (0, 0)), mode='edge') for m in ml]), whisk=np.array(wh),
-                        eyes=np.array(EYES), re=np.array([RE]), lid_n=LID_N, lid_off=np.array([LID_OFF]), skin_col=mel_rgb(mel).astype(F), **fur)
+                        creases=np.array(creases() if VAR == 'blink' else np.zeros((0, 12, 3), F)), eyes=np.array(EYES), re=np.array([RE]), lid_n=LID_N, lid_ns=np.array([lid_n(E) for E in EYES]), var=np.array([VAR]), lid_off=np.array([LID_OFF]), skin_col=mel_rgb(mel).astype(F), **fur)
     print('done', time.time() - t0)
