@@ -544,6 +544,10 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
             busy = body["on"] as? Bool ?? false
             UIApplication.shared.isIdleTimerDisabled = busy
             replyHandler(true, nil)
+        case "crashInfo":   // страница перезапускалась посреди сборки? (один раз, потом стираем)
+            let u = root.appendingPathComponent("tmp/crash.json")
+            if let d = try? Data(contentsOf: u), let j = try? JSONSerialization.jsonObject(with: d) { try? FileManager.default.removeItem(at: u); replyHandler(j, nil) }
+            else { replyHandler(NSNull(), nil) }
         case "parked":   // страница спрятана (раздел закрыт, сборка идёт)
             replyHandler(parked, nil)
         case "buildDone":   // очередь серий закончилась: если раздел закрыт — выключаем спрятанную страницу
@@ -562,6 +566,10 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
     // iPhone выгрузил страницу из памяти: готовые куски видео сохраняем; раздел открыт — перезагружаем
     // (страница сама предложит продолжить сборку), закрыт — выключаем, продолжится при следующем открытии
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        // запомнить, где и как оборвалось: страница после перезапуска продолжит сама, а при повторах — сообщит
+        let info: [String: Any] = ["frame": Int(writer?.frames ?? -1), "bg": UIApplication.shared.applicationState != .active,
+                                   "building": isBuilding, "at": Date().timeIntervalSince1970]
+        if let d = try? JSONSerialization.data(withJSONObject: info) { try? d.write(to: Self.root.appendingPathComponent("tmp/crash.json")) }
         if let w = writer { writer = nil; queue.async { w.pause() } }
         busy = false
         UIApplication.shared.isIdleTimerDisabled = false

@@ -286,7 +286,7 @@ const App = {
     for (const [k, v] of Object.entries(lex.objects || {})) rows.push(['objects', k, `«${esc(k)}» = ${esc(MKScript.OBJECTS[v] || v)}`]);
     const ll = document.getElementById('lexList'); ll.innerHTML = rows.length ? rows.map(([t, k, h], i) => `<div class="row" style="padding:4px 0"><span style="flex:1">${h}</span><button class="btn" data-i="${i}" style="padding:4px 10px">✕</button></div>`).join('') : 'Пока ничему — словарь пополняется, когда в «Моём сценарии» отвечаешь на «Научи меня».';
     ll.querySelectorAll('button').forEach(b => b.onclick = () => { const [t, k] = rows[+b.dataset.i]; delete lex[t][k]; Lib.save(); App.render(); });
-    Native.call('voices').then(v => { document.getElementById('vlist').innerHTML = (v && v.length) ? v.map(x => `${esc(x.name)} — ${esc(x.quality)}`).join('<br>') : 'Список голосов доступен на iPhone'; });
+    Native.call('voices').then(v => { const vl = document.getElementById('vlist'); if (!vl) return; vl.innerHTML = (v && v.length) ? v.map(x => `${esc(x.name)} — ${esc(x.quality)}`).join('<br>') : 'Список голосов доступен на iPhone'; });
   },
   async copyChars() {
     const list = Object.values(Lib.data.characters).map(c => Object.assign({}, c.spec, { code: c.code }));
@@ -371,7 +371,7 @@ const Player = {
   seek(f) { const was = this.playing; if (was) this.pause(); this.off = f * this.tl.dur; if (was) this.play(); else this.draw(); },
   draw() { const t = Math.min(this.now(), this.tl.dur - .01), c = document.getElementById('pc').getContext('2d'); c.setTransform(c.canvas.width / 1920, 0, 0, c.canvas.height / 1080, 0, 0); MK.render(c, this.tl, t); document.getElementById('seek').value = Math.round(t / this.tl.dur * 1000); document.getElementById('ptime').textContent = fmt(t) + ' / ' + fmt(this.tl.dur); },
   loop() { cancelAnimationFrame(this.raf); let last = -1; const f = () => { const fi = Math.floor(this.now() * 25); if (fi !== last) { last = fi; this.draw(); } if (this.playing && this.now() < this.tl.dur) this.raf = requestAnimationFrame(f); else if (this.playing) { this.draw(); this.pause(); } }; f(); }, // просмотр: 25 кадров/с, 1280×720 — экран телефона больше не нужен, а нагрев в 5–10 раз меньше
-  stop() { this.pause(); cancelAnimationFrame(this.raf); if (this.ac) { this.ac.close(); this.ac = null; } document.getElementById('player').style.display = 'none'; },
+  stop() { this.pause(); cancelAnimationFrame(this.raf); if (this.ac) { this.ac.close(); this.ac = null; } this.mix = null; this.tl = null; this.src = null; document.getElementById('player').style.display = 'none'; }, // звук серии — из памяти
 };
 const Prog = {
   show(t) { document.getElementById('ptitle').textContent = t; this.set('', 0, ''); document.getElementById('prog').style.display = 'flex'; },
@@ -445,18 +445,22 @@ const Build = {
       bad = 0; if (typeof r === 'number') heat = r; };
     const drain = async () => { while (inflight.length) await take(); };
     try {
-      const { tl, mix } = await prepare(e, (a, pr, t) => this.set(title, pr * .08, a + (t ? ' · ' + t : '')), () => this.stop);
+      let { tl, mix } = await prepare(e, (a, pr, t) => this.set(title, pr * .08, a + (t ? ' · ' + t : '')), () => this.stop);
       const name = `${p.series} - ${String(e.episode).padStart(2, '0')}. ${e.title || ''}`.replace(/[\/\\:?*"<>|]/g, '').trim();
       // звук — отдельным файлом: телефон приклеит его к видео в самом конце
-      const wav = MK.wav(mix), CH = 1 << 20;
+      let wav = MK.wav(mix); const CH = 1 << 20; mix = null;
       for (let i = 0; i < wav.length; i += CH) { if (this.stop) throw new Error('cancel'); await Native.call('audioChunk', { first: i === 0, d: b64(wav.subarray(i, i + CH)) }); }
+      // звук ушёл в телефон — отпускаем его из памяти страницы, чтобы на тяжёлых сценах её хватало кадрам
+      wav = null; if (MK.freeAudio) MK.freeAudio(); await sleep(250);
+      const safe = !!(s.buildCrash && s.buildCrash.safe && s.buildCrash.ep === e.episode); if (window.MK3D && MK3D.lowMem) MK3D.lowMem(safe);
       const rb = await Native.call('videoBegin', { w, h, fps, name, resume });
       if (!rb || rb.ok === false) throw new Error('Не удалось начать запись видео');
       began = true;
       const N = Math.ceil(tl.dur * fps); let i = Math.max(0, Math.min(N, (rb && rb.frames) | 0)), i0 = i;
       if (i > 0) this.set(title, .08 + .9 * i / N, `Продолжаю с кадра ${i} из ${N}`);
       const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d');
-      const t0 = performance.now(); let paused = 0, same = 0, lastRw = -1;
+      const t0 = performance.now(); let paused = 0, same = 0, lastRw = -1, curSeg = -1;
+      const segAt = t => { let k = 0; for (let j = 0; j < tl.segs.length; j++) if (tl.segs[j].t0 <= t) k = j; return k; };
       for (;;) {
         while (i < N) {
           if (this.stop) { await drain(); throw new Error('cancel'); }
@@ -465,6 +469,7 @@ const Build = {
             if (MK3D.lost()) { // не вернули — перезапускаю страницу, сборка продолжится с этого кадра сама
               await Native.call('videoCancel', { keep: true }); began = false; s.autoResume = 1; await Lib.save(); location.reload(); await sleep(60000); throw new Error('нет видеокарты'); }
           }
+          { const si = segAt(i / fps); if (si !== curSeg) { curSeg = si; if (MK3D.keepLocs) MK3D.keepLocs(new Set(tl.segs.slice(si).map(sg => sg.lkey).filter(Boolean))); } } // места, что дальше не нужны, — из памяти
           ctx.setTransform(w / 1920, 0, 0, h / 1080, 0, 0); MK.render(ctx, tl, i / fps);
           const d = cv.toDataURL('image/jpeg', .9); inflight.push(Native.call('videoFrame', { i, d: d.slice(d.indexOf(',') + 1) })); i++;
           if (inflight.length >= 2) await take();
@@ -486,13 +491,13 @@ const Build = {
       this.set(title, .99, 'Склеиваю видео и звук…');
       const r = await Native.call('videoEnd');
       if (!r || !r.path) throw new Error((r && r.error) || 'Файл не записался');
-      delete s.buildJob;
+      delete s.buildJob; delete s.buildCrash; if (window.MK3D && MK3D.lowMem) MK3D.lowMem(false);
       const f = this.find({ series: p.series, episode: e.episode }), ee = f ? f.e : e; // серию могли обновить, пока собиралась
       ee.status = 'built'; ee.video = r.path; ee.dur = tl.dur; ee.built = new Date().toISOString(); await Lib.save();
       return { e: ee, path: r.path, dur: tl.dur };
     } catch (err) {
       const settle = async () => { while (inflight.length) { try { await inflight.shift(); } catch (e2) {} } };
-      if (err.message === 'cancel') { await settle(); await Native.call('videoCancel'); delete s.buildJob; await Lib.save(); return 'cancel'; }
+      if (err.message === 'cancel') { await settle(); await Native.call('videoCancel'); delete s.buildJob; delete s.buildCrash; await Lib.save(); return 'cancel'; }
       await settle(); if (began) await Native.call('videoCancel', { keep: true });
       throw err;
     }
@@ -504,14 +509,26 @@ const Build = {
   toast(t, path) { const el = document.getElementById('toast'); clearTimeout(this._tt); if (!t) { el.style.display = 'none'; return; }
     document.getElementById('tsT').textContent = t; const b = document.getElementById('tsB'); b.style.display = path ? '' : 'none'; b.onclick = () => { el.style.display = 'none'; Native.call('share', { path }); };
     el.style.display = 'flex'; this._tt = setTimeout(() => el.style.display = 'none', path ? 20000 : 4000); },
-  async resumeCheck() { // приложение закрыли посреди сборки — предлагаем продолжить
+  async resumeCheck() { // страницу перезапустили посреди сборки (iPhone выгрузил её из памяти) или закрыли приложение
     const q = this.jobs(); if (this.busy || !q.length) return;
     const f = this.find(q[0]); if (!f) { q.length = 0; await Lib.save(); return; }
-    const k = q.length - 1, done = Lib.data.settings.buildJob && Lib.data.settings.buildJob.episode === f.e.episode;
-    if (Lib.data.settings.autoResume) { delete Lib.data.settings.autoResume; await Lib.save(); return this.loop(); } // сами перезапустились — продолжаем без вопросов
+    const st = Lib.data.settings, ci = await Native.call('crashInfo'), fps = st.fps || 25, k = q.length - 1;
+    const where = fr => fr >= 0 ? ` (на ${fmt(fr / fps)})` : '';
+    if (st.autoResume) { delete st.autoResume; await Lib.save(); return this.loop(); } // сами перезапустились — продолжаем без вопросов
+    if (ci && ci.building) {
+      if (ci.bg) { this.toast(`Продолжаю сборку серии ${f.e.episode} с того же места`); return this.loop(); } // выгрузили, пока приложение было свёрнуто — это нормально
+      // оборвалось при открытом приложении: считаем повторы на одном месте
+      const c = st.buildCrash && st.buildCrash.ep === f.e.episode && Math.abs((st.buildCrash.frame || 0) - ci.frame) < fps * 8 ? st.buildCrash : { ep: f.e.episode, n: 0 };
+      c.n++; c.frame = ci.frame; if (c.n >= 2) c.safe = true; st.buildCrash = c; await Lib.save();
+      if (c.n === 1) { this.toast(`Сборка оборвалась${where(ci.frame)} — продолжаю с того же места`); return this.loop(); }
+      if (c.n === 2) { this.toast('Телефону не хватило памяти на этой сцене — продолжаю в облегчённом режиме'); return this.loop(); }
+      if (!confirm(`Серия ${f.e.episode} снова оборвалась${where(ci.frame)}, даже в облегчённом режиме. Сделай скриншот этого окна для Claude.\n\nПопробовать ещё раз?`)) return this.dropQueue();
+      return this.loop(); }
+    const done = st.buildJob && st.buildJob.episode === f.e.episode;
     if (confirm(`Сборка не закончилась: серия ${f.e.episode}${f.e.title ? ' «' + f.e.title + '»' : ''}${k ? ` и ещё ${k} в очереди` : ''}.\nПродолжить${done ? ' с того же места' : ''}?`)) this.loop();
-    else { q.length = 0; delete Lib.data.settings.buildJob; await Lib.save(); Native.call('videoCancel'); this.refresh(); }
+    else this.dropQueue();
   },
+  async dropQueue() { const st = Lib.data.settings; this.jobs().length = 0; delete st.buildJob; delete st.buildCrash; await Lib.save(); Native.call('videoCancel'); this.refresh(); },
 };
 // ---------- конструктор персонажа ----------
 const Ed = {

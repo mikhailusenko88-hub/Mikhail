@@ -1887,7 +1887,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
 function drawCard3D(ctx, tl, seg, t, T) { MK3D._T = t + 1000;
   const title = seg.kind === 'title';
   if (curLoc) curLoc.visible = false;
-  scene.background = canvasTex(4, 256, (g) => { const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, title ? '#ff9a5c' : '#5a6fd8'); gr.addColorStop(1, title ? '#ffd56b' : '#9ad0ff'); g.fillStyle = gr; g.fillRect(0, 0, 4, 256); }); scene.fog = null;
+  { const ck = title ? 'cardT' : 'cardE'; scene.background = texCache[ck] || (texCache[ck] = canvasTex(4, 256, (g) => { const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, title ? '#ff9a5c' : '#5a6fd8'); gr.addColorStop(1, title ? '#ffd56b' : '#9ad0ff'); g.fillStyle = gr; g.fillRect(0, 0, 4, 256); })); } // один раз, а не новый холст на каждый кадр; scene.fog = null;
   lightFor('meadow', 'day');
   let st0 = locCache['__stage']; if (!st0) { st0 = new THREE.Group(); const p = new THREE.Mesh(G.cyl(3.4, 3.6, .3, 48), toon('#fff4e0')); p.position.y = -.15; p.receiveShadow = true; st0.add(p); scene.add(st0); locCache['__stage'] = st0; } st0.visible = true; curLoc = st0;
   const ids = global.MK._cardCast(tl);
@@ -1908,10 +1908,17 @@ MK3D.portrait = function (canvas, spec, T, opts) {
   cam.fov = 30; cam.aspect = canvas.width / canvas.height; cam.position.set(0, hh * .6, hh * 3.4); cam.updateProjectionMatrix(); cam.lookAt(0, hh * .5, 0); sun.position.set(3, 6, 6); sun.target.position.set(0, 0, 0);
   const ctx = canvas.getContext('2d'); render(ctx); rig.root.visible = false; return true;
 };
+/** Сборка серии: выгрузить места, которые дальше в серии не встретятся (память телефона не копится от сцены к сцене). */
+MK3D.keepLocs = function (keys) { for (const k in locCache) { if (k === '__stage' || keys.has(k) || locCache[k] === curLoc) continue; const g = locCache[k]; scene.remove(g);
+  g.traverse(o => { if (o.geometry && o.geometry.dispose) o.geometry.dispose(); }); delete locCache[k]; } };
+/** Облегчённый режим (если телефону не хватило памяти на сцене): без сглаживания ×4 — меньше видеопамяти. */
+MK3D.lowMem = function (on) { on = !!on; if (!!MK3D._noMsaa === on) return; MK3D._noMsaa = on; MK3D._ssOverride = on ? 1 : 0; MSAA = null;
+  if (PP) { for (const k of ['main', 'h1', 'h2', 'q1', 'q2', 'b1', 'b2', 'e1', 'e2', 'r1', 'r2']) PP[k].dispose(); PP = null; } };
 MK3D.locPreview = function (canvas, spec, T) {
   if (!MK3D.ready) return false; hideAllRigs(); const key = global.MK.canon(spec); const g = showLoc(key, spec); animateLoc(g, T || 2);
-  scene.background = skyTex(spec.time || 'day', spec.type); scene.fog = null; lightFor(spec.type, spec.time || 'day');
-  cam.fov = 38; cam.position.set(0, 2.1, 10.5); cam.updateProjectionMatrix(); cam.lookAt(0, .95, 0); sun.target.position.set(0, 0, 0);
+  const cineF = MK3D.hq && spec.type === 'forest' && spec.time !== 'night'; // лес «как в кино» — с тем же туманом, что в серии (иначе сверху видны тёмные полосы крон на голом небе)
+  scene.background = cineF ? mistTex(spec.time || 'day') : skyTex(spec.time || 'day', spec.type); scene.fog = cineF ? new THREE.Fog(new THREE.Color(spec.time === 'evening' ? '#cdb79c' : '#a9cbbd'), 4.5, 30) : null; lightFor(spec.type, spec.time || 'day');
+  cam.fov = 38; cam.position.set(0, cineF ? 1.5 : 2.1, cineF ? 9.5 : 10.5); cam.updateProjectionMatrix(); cam.lookAt(0, .95, 0); sun.target.position.set(0, 0, 0);
   render(canvas.getContext('2d')); return true;
 };
 MK3D.propSheet = function (canvas, types, cols) { // лист предметов для проверки: каждый в своей клетке

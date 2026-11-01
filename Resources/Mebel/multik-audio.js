@@ -548,5 +548,9 @@ MK.mixAudio = async function (tl, buffers) {
   if (pk > 0) { const g = .89 / pk; for (let i = 0; i < d.length; i++) d[i] *= g; }
   return out;
 };
+/** После сведения: отпустить расшифрованные ноты и сам файл инструментов (≈60–80 МБ) — память нужна кадрам. */
+MK.freeAudio = function () { for (const k in SBUF) delete SBUF[k]; for (const k in NOTES) delete NOTES[k];
+  if (global.MK_INST) { try { delete global.MK_INST; } catch (e) { global.MK_INST = undefined; } }
+  if (global.document) global.document.querySelectorAll('script[src$="multik-inst.js"]').forEach(sc => sc.remove()); };
 MK._audioTest = { scheduleMusic2, scheduleAmbience, STY, fsynth, vocalSegs, seriesKey, prepMusic, SBUF, playS };
 })(typeof window !== 'undefined' ? window : globalThis);
