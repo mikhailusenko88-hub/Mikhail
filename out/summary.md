@@ -13,6 +13,12 @@
 | f_alexandr | silero_cis:ru_alexandr | 3.17 | 0.867 | 0 (+1) | 3/4 |
 | f_ekaterina | silero_cis:ru_ekaterina | 2.94 | 0.933 | 2 (+0) | 4/4 |
 | f_zinaida | silero_cis:ru_zinaida | 2.81 | 0.967 | 0 (+0) | 4/4 |
+| g_albina_slow | silero_cis:ru_albina@slow | 2.99 | 0.935 | 1 (+0) | 4/4 |
+| g_albina_slow_soft | silero_cis:ru_albina@slow,soft | 2.77 | 0.935 | 0 (+0) | 4/4 |
+| g_albina_soft | silero_cis:ru_albina@soft | 3.14 | 0.935 | 0 (+0) | 4/4 |
+| g_kseniya | silero:kseniya | 3.46 | 0.968 | 0 (+0) | 4/4 |
+| g_oldmarks_check | silero_cis:ru_albina@slow | 3.19 | 0.935 | 2 (+1) | 4/4 |
+| g_zinaida_slow_soft | silero_cis:ru_zinaida@slow,soft | 2.96 | 0.951 | 0 (+0) | 4/4 |
 | ks_bad | silero:kseniya | 3.24 | 0.615 | 6 (+1) | 2/2 |
 | ks_homo_bad | silero:kseniya | 3.85 | 1.0 | 2 (+0) | 2/2 |
 | ks_long | silero:kseniya | 3.56 | 1.0 | 0 (+0) | 2/2 |
