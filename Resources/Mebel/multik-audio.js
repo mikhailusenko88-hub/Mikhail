@@ -211,12 +211,48 @@ MK.buildLaughFrom = async function (raw, ln) {
 MK.prepRecorded = async function (raw, variant) {
   const b = trimBuf(raw, .03), rate = [1, 1.04, .97][(variant || 0) % 3], sr = 44100, ac = new OfflineAudioContext(1, Math.ceil(b.duration / rate * sr) + 100, sr);
   const s = ac.createBufferSource(); s.buffer = b; s.playbackRate.value = rate; s.connect(ac.destination); s.start(0); return ac.startRendering(); };
-/** Любой возглас героя → готовый звук (запись → голос героя → синтез). nat — вызов к iPhone, decode — раскодировать wav. */
+// ---- настоящий записанный смех (multik-laugh.js: "Oculus Audio Pack 01" by Oculus VR, LLC, CC BY 4.0) ----
+// У каждого героя свой «смеющийся»: мальчики — из мужских записей, девочки — из женских, высота — под голос героя
+// (как у его речи), дальше тот же голосовой эффект, что и у реплик (мышонок пищит, медведь басит).
+const SCRIPT_BASE = (global.document && global.document.currentScript && global.document.currentScript.src || '').replace(/[^\/]*$/, '');
+const loading = {};
+function loadScript(file, globalName) {
+  if (global[globalName] || !global.document) return Promise.resolve(!!global[globalName]);
+  return loading[file] || (loading[file] = new Promise(res => { const sc = global.document.createElement('script'); sc.src = SCRIPT_BASE + file; sc.onload = sc.onerror = () => res(!!global[globalName]); global.document.head.appendChild(sc); }));
+}
+const LAUGH_BUF = {};
+async function laughTake(set, i) { const k = set + i; if (LAUGH_BUF[k]) return LAUGH_BUF[k];
+  const b64s = global.MK_LAUGH[set][i % global.MK_LAUGH[set].length], bin = atob(b64s), u = new Uint8Array(bin.length); for (let j = 0; j < bin.length; j++) u[j] = bin.charCodeAt(j);
+  const ac = new (global.OfflineAudioContext || global.webkitOfflineAudioContext)(1, 44100, 44100); return (LAUGH_BUF[k] = await ac.decodeAudioData(u.buffer)); }
+MK.recLaugh = async function (ln) {
+  if (!(await loadScript('multik-laugh.js', 'MK_LAUGH'))) return null;
+  const v = ln.voice || {}, male = (v.base || 'female') === 'male', s = ln.seed || 7, vr = ln.variant || 0, fxId = (ln.fx && ln.fx.id) || '';
+  const set = ['monster', 'dragon', 'pirate'].includes(fxId) ? 'evil' : male ? (s % 2 ? 'm1' : 'm2') : (s % 2 ? 'f1' : 'f2');
+  let semi = 12 * Math.log2(v.pitch || 1) * .9; if (ln.age === 'kid' && semi < 2) semi = 2; if (ln.age === 'old') semi -= 1.5; semi = clamp(semi, -4, 8);
+  const rate0 = Math.pow(2, semi / 12);
+  let raw = await laughTake(set, (s >> 2) + vr);
+  if (!ln.short && raw.duration / rate0 < 1.6 && global.MK_LAUGH[set].length > 1) { // полный смех: два «захода», второй тише — как настоящий заливистый смех
+    const r2 = await laughTake(set, (s >> 2) + vr + 1), sr0 = raw.sampleRate, n1 = raw.length, ov = Math.round(sr0 * .04), n = n1 + r2.length - ov, d = new Float32Array(n);
+    d.set(raw.getChannelData(0), 0); const d2 = r2.getChannelData(0); for (let i = 0; i < r2.length; i++) d[n1 - ov + i] += d2[i] * .72 * Math.min(1, i / ov);
+    raw = new AudioBuffer({ length: n, numberOfChannels: 1, sampleRate: sr0 }); raw.copyToChannel(d, 0); }
+  const rate = rate0 * [1, 1.03, .97][vr % 3], sr = 44100, full = raw.duration / rate;
+  let len = full;
+  if (ln.short) { // смешок перед репликой: первые 2–4 «ха», режем в тихом месте между ними
+    const d = raw.getChannelData(0), w = Math.round(raw.sampleRate * .02); let best = -1, be = 1e9;
+    for (let i = Math.round(d.length * .35); i + w < d.length * .7; i += w) { let e = 0; for (let j = i; j < i + w; j++) e += d[j] * d[j]; if (e < be) { be = e; best = i; } }
+    if (best > 0) len = (best + w / 2) / raw.sampleRate / rate; }
+  const ac = new OfflineAudioContext(1, Math.ceil((len + .05) * sr), sr), src = ac.createBufferSource(), g = ac.createGain();
+  src.buffer = raw; src.playbackRate.value = rate; src.connect(g); g.connect(ac.destination);
+  g.gain.setValueAtTime(1, 0); if (len < full) { g.gain.setValueAtTime(1, Math.max(0, len - .05)); g.gain.linearRampToValueAtTime(0, len); }
+  src.start(0); return ac.startRendering();
+};
+/** Любой возглас героя → готовый звук (своя запись героя → записанный смех → голос героя → синтез). nat — вызов к iPhone, decode — раскодировать wav. */
 MK.makeVocal = async function (ln, lib, nat, decode) {
   let buf = null;
   if (ln.synth === 'laugh') {
     const rk = ((lib.characters || {})[ln.who] || {}).laugh;
     if (rk) { try { const r = await nat('recLoad', { key: rk }); if (r && r.wav) buf = await MK.prepRecorded(await decode(r.wav), ln.variant); } catch (e) { console.log('rec', e); } }
+    if (!buf) { try { buf = await MK.recLaugh(ln); } catch (e) { console.log('laugh', e); } }
     if (!buf) { try { const r = await nat('tts', { text: MK.laughSyllable(ln), voice: ln.voice, key: 'syl-' + MK.hash32(MK.canon(ln.voice) + MK.laughSyllable(ln)).toString(36) }); if (r && r.wav) buf = await MK.buildLaughFrom(await decode(r.wav), ln); } catch (e) { console.log('syl', e); } }
   }
   if (!buf) buf = MK.synthVocal(ln);
@@ -304,19 +340,64 @@ function synthVoice(ac, out, kind, midi, t, len, vol, glideFrom) {
 }
 
 // =====================================================================================
-// 4. МУЗЫКА: стили и сочинение
+// 4. МУЗЫКА: живой оркестр (сэмплы инструментов) и сочинение
 // =====================================================================================
+// Инструменты — записи настоящих инструментов (multik-inst.js: FluidR3 GM, Frank Wen, CC BY 3.0): пианино, струнные
+// (смычком и щипком), флейта, кларнет, гобой, фагот, валторна, арфа, челеста, колокольчики, ксилофон, маримба,
+// музыкальная шкатулка, гитара, контрабас, литавры, хор. Файл грузится только при сведении и расшифровываются
+// лишь те ноты, что звучат в серии. Если файла нет — звучат прежние синтезированные инструменты.
+const INST_BASE = (global.document && global.document.currentScript && global.document.currentScript.src || '').replace(/[^\/]*$/, '');
+const SBUF = {}; let COLLECT = null; const NOTES = {};
+function instNotes(name) { const I = global.MK_INST && global.MK_INST[name]; if (!I) return null; return NOTES[name] || (NOTES[name] = Object.keys(I.n).map(Number).sort((a, b) => a - b)); }
+function nearest(ns, m) { let b = ns[0]; for (const n of ns) if (Math.abs(n - m) < Math.abs(b - m)) b = n; return b; }
+async function loadInstFile() {
+  if (global.MK_INST || !global.document) return !!global.MK_INST;
+  await new Promise(res => { const sc = global.document.createElement('script'); sc.src = INST_BASE + 'multik-inst.js'; sc.onload = sc.onerror = res; global.document.head.appendChild(sc); });
+  return !!global.MK_INST;
+}
+function onset(b) { const d = b.getChannelData(0); let pk = 0; for (let i = 0; i < d.length; i++) { const a = Math.abs(d[i]); if (a > pk) pk = a; } const th = pk * .004; for (let i = 0; i < d.length; i++) if (Math.abs(d[i]) > th) return Math.max(0, i - 30) / b.sampleRate; return 0; }
+async function decodeKeys(ac, keys) {
+  const I = global.MK_INST; if (!I) return;
+  for (const k in SBUF) if (!keys.has(k)) delete SBUF[k]; // в памяти — только ноты этой серии
+  await Promise.all([...keys].filter(k => !SBUF[k]).map(k => { const [nm, n] = k.split(':'), b64s = I[nm] && I[nm].n[n]; if (!b64s) return null;
+    const bin = atob(b64s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    return ac.decodeAudioData(u.buffer).then(b => { SBUF[k] = { b, off: onset(b) }; }).catch(() => {}); }));
+}
+const FALL = { piano: 'piano', pizz: 'pizz', guitar: 'uke', harp: 'harp', bass: 'bass', glock: 'glock', celesta: 'celesta', mbox: 'mbox', marimba: 'marimba', xylo: 'marimba' };
+const FALLV = { strings: 'strings', choir: 'pad', flute: 'flute', clarinet: 'flute', oboe: 'flute', bassoon: 'bassoon', horn: 'brass' };
+/** Нота живого инструмента. o: att (атака), rel (затухание), sus (длинная нота — продлеваем сэмпл). */
+function playS(ac, out, name, midi, t, vol, len, o) {
+  if (t < 0 || vol <= 0) return; o = o || {};
+  const ns = instNotes(name);
+  if (!ns) { // нет файла инструментов — прежние синтезированные звуки
+    if (FALL[name]) return playNote(ac, out, FALL[name], midi, t, vol * .9, len);
+    if (FALLV[name]) return synthVoice(ac, out, FALLV[name], midi, t, Math.max(.12, len || .4), vol * (FALLV[name] === 'strings' || FALLV[name] === 'pad' ? .3 : .6));
+    if (name === 'timp') return play(ac, out, drum(ac, 'timp'), t, vol); if (name === 'wood') return play(ac, out, drum(ac, 'wood'), t, vol); return; }
+  const n0 = nearest(ns, midi), key = name + ':' + n0;
+  if (COLLECT) { COLLECT.add(key); if (len && o.sus && len > 2.4) playS(ac, out, name, midi, t + 2.2, vol, len - 2.2, o); return; }
+  const sb = SBUF[key]; if (!sb) return;
+  const rate = Math.pow(2, (midi - n0) / 12), skip = o.skip || 0, avail = (sb.b.duration - sb.off - skip) / rate;
+  const att = o.att != null ? o.att : .004, rel = o.rel != null ? o.rel : .3, gI = (global.MK_INST[name].g || 1) * vol;
+  let L = len ? Math.min(len, avail - rel) : avail; if (L <= .02) return;
+  const src = ac.createBufferSource(), g = ac.createGain(); src.buffer = sb.b; src.playbackRate.value = rate;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gI, t + att);
+  src.connect(g); g.connect(out); src.start(t, sb.off + skip);
+  if (len) { g.gain.setValueAtTime(gI, t + Math.max(att + .001, L)); g.gain.linearRampToValueAtTime(0, t + L + rel); src.stop(t + L + rel + .05); }
+  if (len && o.sus && len > L + .05) playS(ac, out, name, midi, t + L - .35, vol, len - L + .35, Object.assign({}, o, { att: .35, skip: .45 })); // длинная нота: плавно продлеваем
+}
 const MAJ = [0, 2, 4, 5, 7, 9, 11], MIN = [0, 2, 3, 5, 7, 8, 10];
+// Оркестровка по настроению: acc — аккомпанемент, lead — инструменты мелодии (по очереди в частях), pad — тянущиеся
+// аккорды, bass — бас, perc — ударные (тихие, только где уместно), dbl — подголосок к мелодии октавой выше.
 const STY = {
-  happy:     { bpm: 112, minor: false, prog: [[0, 4, 5, 3], [0, 3, 4, 0], [5, 3, 0, 4]], acc: 'strum', lead: ['glock', 'marimba'], drums: 'pop', mel: [[2, 1, 1, 2, 2], [1, 1, 1, 1, 2, 2], [3, 1, 2, 2], [2, 2, 2, 1, 1]] },
-  calm:      { bpm: 80, minor: false, prog: [[0, 5, 3, 4], [0, 3, 5, 4]], acc: 'arp', lead: ['flute', 'piano'], pad: 'pad', mel: [[4, 4], [2, 2, 4], [3, 1, 4], [6, 2]] },
-  adventure: { bpm: 122, minor: true, prog: [[0, 5, 2, 6], [0, 3, 6, 4]], acc: 'ostinato', lead: ['brass', 'glock'], pad: 'brasspad', drums: 'march', mel: [[3, 1, 2, 2], [1, 1, 2, 4], [2, 1, 1, 2, 2], [6, 2]] },
-  tense:     { bpm: 100, minor: true, prog: [[0, 0, 5, 4], [0, 1, 0, 4]], acc: 'tense', lead: [], pad: 'strings', drums: 'pulse', mel: [] },
-  sad:       { bpm: 70, minor: true, prog: [[0, 5, 2, 6], [0, 3, 6, 4]], acc: 'slowarp', lead: ['piano'], pad: 'strings', mel: [[4, 4], [6, 2], [8], [2, 2, 4]] },
-  magic:     { bpm: 88, minor: false, sev: true, prog: [[0, 2, 3, 4], [0, 5, 1, 4]], acc: 'sparkle', lead: ['mbox', 'celesta'], pad: 'pad', mel: [[2, 2, 4], [3, 1, 4], [2, 2, 2, 2], [8]] },
-  night:     { bpm: 66, minor: false, sev: true, prog: [[0, 5, 1, 4], [0, 3, 0, 4]], acc: 'lullaby', lead: ['mbox'], pad: 'pad', mel: [[4, 4], [2, 2, 4], [8]] },
-  funny:     { bpm: 128, minor: false, prog: [[0, 4, 0, 4], [3, 0, 4, 0]], acc: 'oompah', lead: ['bassoon', 'marimba'], drums: 'funny', mel: [[1, 1, 1, 1, 2, 2], [1, 1, 2, 1, 1, 2], [2, 2, 2, 2], [1, 1, 1, 1, 4]] },
-  spooky:    { bpm: 84, minor: true, prog: [[0, 3, 0, 4], [0, 5, 3, 4]], acc: 'walk', lead: ['theremin'], pad: 'pad', mel: [[4, 4], [6, 2], [3, 3, 2]] },
+  happy:     { bpm: 108, minor: false, prog: [[0, 4, 5, 3], [0, 3, 4, 0], [5, 3, 0, 4]], acc: 'strum', lead: ['xylo', 'flute', 'clarinet'], dbl: 'glock', bass: 'pizzbass', perc: 'light', mel: [[2, 1, 1, 2, 2], [1, 1, 1, 1, 2, 2], [3, 1, 2, 2], [2, 2, 2, 1, 1]] },
+  calm:      { bpm: 76, minor: false, prog: [[0, 5, 3, 4], [0, 3, 5, 4]], acc: 'arp', lead: ['flute', 'clarinet'], pad: 'strings', mel: [[4, 4], [2, 2, 4], [3, 1, 4], [6, 2]] },
+  adventure: { bpm: 116, minor: true, prog: [[0, 5, 2, 6], [0, 3, 6, 4]], acc: 'ostinato', lead: ['horn', 'flute'], pad: 'strings', bass: 'long', perc: 'march', mel: [[3, 1, 2, 2], [1, 1, 2, 4], [2, 1, 1, 2, 2], [6, 2]] },
+  tense:     { bpm: 96, minor: true, prog: [[0, 0, 5, 4], [0, 1, 0, 4]], acc: 'tense', lead: [], pad: 'strings', perc: 'pulse', mel: [] },
+  sad:       { bpm: 68, minor: true, prog: [[0, 5, 2, 6], [0, 3, 6, 4]], acc: 'slowarp', lead: ['oboe', 'piano'], pad: 'strings', mel: [[4, 4], [6, 2], [8], [2, 2, 4]] },
+  magic:     { bpm: 84, minor: false, sev: true, prog: [[0, 2, 3, 4], [0, 5, 1, 4]], acc: 'sparkle', lead: ['celesta', 'flute'], pad: 'choir', mel: [[2, 2, 4], [3, 1, 4], [2, 2, 2, 2], [8]] },
+  night:     { bpm: 64, minor: false, sev: true, prog: [[0, 5, 1, 4], [0, 3, 0, 4]], acc: 'lullaby', lead: ['mbox', 'flute'], pad: 'strings', mel: [[4, 4], [2, 2, 4], [8]] },
+  funny:     { bpm: 124, minor: false, prog: [[0, 4, 0, 4], [3, 0, 4, 0]], acc: 'oompah', lead: ['clarinet', 'xylo'], perc: 'funny', mel: [[1, 1, 1, 1, 2, 2], [1, 1, 2, 1, 1, 2], [2, 2, 2, 2], [1, 1, 1, 1, 4]] },
+  spooky:    { bpm: 80, minor: true, prog: [[0, 3, 0, 4], [0, 5, 3, 4]], acc: 'walk', lead: ['clarinet', 'celesta'], pad: 'strings', mel: [[4, 4], [6, 2], [3, 3, 2]] },
 };
 MK.MOODS = Object.keys(STY).concat(['none']);
 function seriesKey(series) { const h = MK.hash32('key' + (series || '')); return 57 + [0, 2, 3, 5, 7, -2][h % 6]; } // своя тональность у каждого сериала
@@ -327,9 +408,9 @@ function scheduleMusic2(ac, out, m, seed, ctx) {
   const deg = (dg, chordDeg) => { const o = Math.floor(dg / 7), i = ((dg % 7) + 7) % 7; let n = key + scale[i] + 12 * o; if (S.minor && chordDeg === 4 && i === 6) n += 1; return n; };
   const chordOf = cd => [cd, cd + 2, cd + 4].concat(S.sev ? [cd + 6] : []);
   const g = ac.createGain(); g.connect(out); const fadeIn = m.fadeIn != null ? m.fadeIn : .6;
-  g.gain.setValueAtTime(0, m.t0); g.gain.linearRampToValueAtTime(1, m.t0 + fadeIn); g.gain.setValueAtTime(1, Math.max(m.t0 + fadeIn, m.t1 - .8)); g.gain.linearRampToValueAtTime(0, m.t1);
-  const rv = ac.createConvolver(); rv.buffer = MK.roomIR(ac, 2.2); const rg = ac.createGain(); rg.gain.value = .28; rv.connect(rg); rg.connect(g);
-  const dry = ac.createGain(); dry.connect(g); dry.connect(rv); const leadBus = ac.createGain(); leadBus.gain.value = 1; leadBus.connect(g); const lrv = ac.createGain(); lrv.gain.value = .5; leadBus.connect(lrv); lrv.connect(rv);
+  g.gain.setValueAtTime(0, m.t0); g.gain.linearRampToValueAtTime(1, m.t0 + fadeIn); g.gain.setValueAtTime(1, Math.max(m.t0 + fadeIn, m.t1 - 1.2)); g.gain.linearRampToValueAtTime(0, m.t1);
+  const rv = ac.createConvolver(); rv.buffer = MK.roomIR(ac, 2.4); const rg = ac.createGain(); rg.gain.value = .32; rv.connect(rg); rg.connect(g);
+  const dry = ac.createGain(); dry.connect(g); dry.connect(rv); const leadBus = ac.createGain(); leadBus.gain.value = 1; leadBus.connect(g); const lrv = ac.createGain(); lrv.gain.value = .55; leadBus.connect(lrv); lrv.connect(rv);
   const nb = Math.ceil((m.t1 - m.t0) / bar) + 1, progs = S.prog;
   // мелодия: фраза из 8 тактов — мотив, повтор мотива, новый мотив, каденция
   const phrase = (rr, prog) => { const rh = () => S.mel[(rr() * S.mel.length) | 0]; const A = [rh(), rh()], B = [rh(), rh()]; const rhy = [A[0], A[1], A[0], A[1], B[0], B[1], rh(), rr() < .5 ? [4, 4] : [2, 2, 4]];
@@ -348,45 +429,56 @@ function scheduleMusic2(ac, out, m, seed, ctx) {
     return bars; };
   const themeR = rng(ctx.themeSeed || seed); const phA = S.mel.length ? phrase(themeR, progs[0]) : null, phB = S.mel.length ? phrase(rng(seed + 11), progs[(1 % progs.length)]) : null;
   const form = [phA, phA, phB, phA];
-  const ac8 = (t, n) => t + n * e8, swing = 0;
+  const ac8 = (t, n) => t + n * e8, hum = () => (r() - .5) * .012; // чуть «живой» неровности, как у музыкантов
   for (let b = 0; b < nb; b++) {
     const t = m.t0 + b * bar; if (t > m.t1) break; const sec = Math.floor(b / 8), ph = form[sec % form.length], pb = b % 8;
     const prog = sec % form.length === 2 ? progs[1 % progs.length] : progs[0]; const cd = prog[pb % prog.length], chord = chordOf(cd).map(x => deg(x, cd));
     const root = deg(cd, cd), five = deg(cd + 4, cd), low = n => { while (n > 52) n -= 12; while (n < 40) n += 12; return n; }, mid = n => { while (n > 71) n -= 12; while (n < 57) n += 12; return n; };
     const voic = chord.map(mid).sort((a, c) => a - c);
-    const quiet = ctx.speaking(t + bar * .5); // под репликой аккомпанемент мягче
-    const A = quiet ? .75 : 1;
+    const quiet = ctx.speaking(t + bar * .5), A = quiet ? .7 : 1; // под репликой аккомпанемент тише
+    const P = (nm, n, at, v, len, o) => playS(ac, dry, nm, n, at + hum(), v * A, len, o);
     // аккомпанемент
     switch (S.acc) {
-      case 'strum': [1, 0, 1, 1, 0, 1, 1, 1].forEach((on, i) => { if (!on) return; const down = i % 2 === 0, ns = down ? voic : voic.slice(1).reverse(); ns.forEach((n, j) => playNote(ac, dry, 'uke', n, ac8(t, i) + j * .014, (down ? .07 : .045) * A)); });
-        playNote(ac, dry, 'bass', low(root), t, .32, beat * 1.8); playNote(ac, dry, 'bass', low(five), t + 2 * beat, .26, beat * 1.8); break;
-      case 'arp': { const pat = [low(root) + 12, voic[0], voic[1], voic[2], voic[0] + 12, voic[2], voic[1], voic[0]]; pat.forEach((n, i) => playNote(ac, dry, 'piano', n, ac8(t, i), (i === 0 ? .2 : .13) * A));
-        playNote(ac, dry, 'piano', low(root), t, .22); break; }
-      case 'ostinato': { const pat = [0, 0, 2, 0, 0, 2, 1, 2]; pat.forEach((ix, i) => playNote(ac, dry, 'pizz', low(chord[ix]) + 12, ac8(t, i), (i % 2 ? .16 : .22) * A)); playNote(ac, dry, 'bass', low(root), t, .3, beat * 1.5); playNote(ac, dry, 'bass', low(root), t + beat * 2.5, .24, beat); break; }
-      case 'tense': { for (let i = 0; i < 8; i++) playNote(ac, dry, 'pizz', low(root) + (i === 6 ? 1 : 0), ac8(t, i), (i % 4 === 0 ? .3 : .17)); if (b % 2 === 1 && r() < .7) playNote(ac, leadBus, 'celesta', mid(chord[(r() * 3) | 0]) + 24, t + beat * (1 + ((r() * 2) | 0)), .1); break; }
-      case 'slowarp': { [low(root), voic[0], voic[2], voic[1]].forEach((n, i) => playNote(ac, dry, 'piano', n, t + i * beat, (i ? .12 : .17) * A)); break; }
-      case 'sparkle': { const up = chord.map(n => mid(n) + 12).sort((a, c) => a - c), seq = up.concat(up.map(n => n + 12)).concat(up.slice().reverse().map(n => n + 12)).concat(up.slice().reverse()); for (let i = 0; i < 16; i++) playNote(ac, dry, 'celesta', seq[i % seq.length], t + i * e8 / 2, .055 * A); if (b % 4 === 0) play(ac, dry, drum(ac, 'chime'), t, .08); playNote(ac, dry, 'harp', low(root) + 12, t, .14); break; }
-      case 'lullaby': { playNote(ac, dry, 'piano', low(root), t, .14); playNote(ac, dry, 'piano', low(five) + 12, t + 2 * beat, .09); [voic[0], voic[1], voic[2], voic[1]].forEach((n, i) => playNote(ac, dry, 'harp', n + 12, t + i * beat, .06 * A)); break; }
-      case 'oompah': { synthVoice(ac, dry, 'bassoon', low(root), t, beat * .45, .16); synthVoice(ac, dry, 'bassoon', low(five), t + 2 * beat, beat * .45, .14); for (const bq of [1, 3]) voic.forEach((n, j) => playNote(ac, dry, 'pizz', n, t + bq * beat + j * .005, .1 * A)); break; }
-      case 'walk': { const ln = [0, 2, 3, 4].map(x => low(deg(cd + x, cd))); ln.forEach((n, i) => playNote(ac, dry, 'pizz', n, t + i * beat, .26)); if (b % 2 === 0) playNote(ac, leadBus, 'celesta', mid(root) + 24 + 1, t + beat * 3.5, .05); break; }
+      case 'strum': [1, 0, 1, 1, 0, 1, 1, 1].forEach((on, i) => { if (!on) return; const down = i % 2 === 0, ns = down ? voic : voic.slice(1).reverse(); ns.forEach((n, j) => playS(ac, dry, 'guitar', n, ac8(t, i) + j * .016, (down ? .2 : .13) * A, e8 * 1.6, { rel: .12 })); }); break;
+      case 'arp': { const pat = [low(root) + 12, voic[0], voic[1], voic[2], voic[0] + 12, voic[2], voic[1], voic[0]]; pat.forEach((n, i) => P('piano', n, ac8(t, i), i === 0 ? .32 : .2)); P('piano', low(root), t, .3); break; }
+      case 'ostinato': { const pat = [0, 0, 2, 0, 0, 2, 1, 2]; pat.forEach((ix, i) => P('pizz', low(chord[ix]) + 12, ac8(t, i), i % 2 ? .3 : .42)); break; }
+      case 'tense': { for (let i = 0; i < 8; i++) P('pizz', low(root) + (i === 6 ? 1 : 0), ac8(t, i), i % 4 === 0 ? .55 : .3); if (b % 2 === 1 && r() < .7) playS(ac, leadBus, 'celesta', mid(chord[(r() * 3) | 0]) + 12, t + beat * (1 + ((r() * 2) | 0)), .22); break; }
+      case 'slowarp': { [low(root), voic[0], voic[2], voic[1]].forEach((n, i) => P('piano', n, t + i * beat, i ? .2 : .28)); break; }
+      case 'sparkle': { const up = chord.map(n => mid(n)).sort((a, c) => a - c), seq = up.concat(up.map(n => n + 12)); for (let i = 0; i < 8; i++) P('harp', seq[i % seq.length], t + i * e8, .2); if (b % 4 === 0) play(ac, dry, drum(ac, 'chime'), t, .06 * A); P('harp', low(root), t, .26); break; }
+      case 'lullaby': { P('harp', low(root), t, .26); P('harp', low(five) + 12, t + 2 * beat, .16); [voic[0], voic[1], voic[2], voic[1]].forEach((n, i) => P('harp', n + 12, t + i * beat, .13)); break; }
+      case 'oompah': { P('bassoon', low(root), t, .42, beat * .4, { rel: .08 }); P('bassoon', low(five), t + 2 * beat, .38, beat * .4, { rel: .08 }); for (const bq of [1, 3]) voic.forEach((n, j) => P('pizz', n, t + bq * beat + j * .006, .2)); break; }
+      case 'walk': { const ln = [0, 2, 3, 4].map(x => low(deg(cd + x, cd))); ln.forEach((n, i) => P('pizz', n, t + i * beat, .5)); if (b % 2 === 0) playS(ac, leadBus, 'celesta', mid(root) + 13, t + beat * 3.5, .14); break; }
     }
-    if (S.pad && (b % 2 === 0)) for (const n of voic) synthVoice(ac, dry, S.pad, n - (S.pad === 'pad' ? 0 : 12), t, bar * 2 - .2, S.pad === 'brasspad' ? .025 : .03);
-    // ударные
+    // бас
+    if (S.bass === 'pizzbass') { P('bass', low(root) - 12, t, .5, beat * 1.6, { rel: .15 }); P('bass', low(five) - 12, t + 2 * beat, .42, beat * 1.6, { rel: .15 }); }
+    if (S.bass === 'long') { P('bass', low(root) - 12, t, .5, beat * 1.5, { rel: .2 }); P('bass', low(root) - 12, t + beat * 2.5, .38, beat, { rel: .2 }); }
+    // тянущиеся аккорды (струнные или хор): мягко, чтобы не спорили с голосами
+    if (S.pad && b % 2 === 0) for (const n of voic) playS(ac, dry, S.pad, n - (S.pad === 'strings' && S.minor ? 12 : 0), t, (S.pad === 'choir' ? .09 : .1) * (quiet ? .8 : 1), bar * 2 - .1, { att: .45, rel: .7, sus: true });
+    // ударные — тихо и только в бодрых настроениях
     const D = (nm, at, v) => play(ac, dry, drum(ac, nm), at, v * A);
-    if (S.drums === 'pop') { D('kick', t, .32); D('kick', t + 2 * beat, .28); D('clap', t + beat, .14); D('clap', t + 3 * beat, .14); for (let i = 0; i < 8; i++) D('shaker', ac8(t, i), i % 2 ? .07 : .04); if (pb === 7) D('tamb', t + 3.5 * beat, .1); }
-    if (S.drums === 'march') { D('kick', t, .32); D('kick', t + 1.5 * beat, .22); D('kick', t + 2 * beat, .28); D('snare', t + beat, .16); D('snare', t + 3 * beat, .16); for (let i = 0; i < 8; i++) D('tamb', ac8(t, i), .035); if (b % 4 === 0) D('timp', t, .3); if (pb === 7) for (let i = 0; i < 4; i++) D('snare', t + 3 * beat + i * e8 / 2, .08 + i * .03); }
-    if (S.drums === 'pulse') { D('timp', t, .28); D('timp', t + 2 * beat, .16); for (let i = 0; i < 8; i++) D('tick', ac8(t, i), .05); }
-    if (S.drums === 'funny') { D('kick', t, .22); D('kick', t + 2 * beat, .2); for (let i = 1; i < 8; i += 2) D('wood', ac8(t, i), .1); }
-    if (pb === 0 && b > 0 && b % 8 === 0 && S.drums) play(ac, dry, drum(ac, 'chime'), t, .05);
+    if (S.perc === 'light') { D('shaker', ac8(t, 1), .04); D('shaker', ac8(t, 3), .04); D('shaker', ac8(t, 5), .04); D('shaker', ac8(t, 7), .04); D('kick', t, .14); D('clap', t + beat, .06); D('clap', t + 3 * beat, .06); if (pb === 7) D('tamb', t + 3.5 * beat, .07); }
+    if (S.perc === 'march') { D('snare', t + beat, .07); D('snare', t + 3 * beat, .07); if (b % 2 === 0) playS(ac, dry, 'timp', low(root), t, .4 * A, bar, { rel: .5 }); if (pb === 7) for (let i = 0; i < 4; i++) D('snare', t + 3 * beat + i * e8 / 2, .04 + i * .015); }
+    if (S.perc === 'pulse') { playS(ac, dry, 'timp', low(root), t, .45 * A, beat * 2, { rel: .4 }); playS(ac, dry, 'timp', low(root), t + 2 * beat, .28 * A, beat * 2, { rel: .4 }); }
+    if (S.perc === 'funny') for (let i = 1; i < 8; i += 2) playS(ac, dry, 'wood', 76, ac8(t, i), .16 * A);
+    if (pb === 0 && b > 0 && b % 8 === 0 && S.perc) play(ac, dry, drum(ac, 'chime'), t, .04);
     // мелодия — только там, где никто не говорит
-    if (S.lead.length && ph) { const lead = S.lead[(sec + (ctx.leadShift || 0)) % S.lead.length]; let prev = null;
-      for (const nt of ph[pb]) { if (nt.rest) continue; const at = ac8(t, nt.pos), len = nt.len * e8; if (at >= m.t1 - .3) continue; if (ctx.speaking(at) || ctx.speaking(at + Math.min(len, .4))) { prev = null; continue; }
-        const midi = deg(nt.d, cd) + 12 * (lead === 'bassoon' ? -1 : lead === 'theremin' ? 0 : 0);
-        if (['flute', 'brass', 'bassoon', 'theremin', 'whistle'].includes(lead)) synthVoice(ac, leadBus, lead, midi, at, Math.max(.12, len * (lead === 'bassoon' ? .5 : .92)), lead === 'brass' ? .07 : lead === 'bassoon' ? .11 : .09, lead === 'theremin' ? prev : null);
-        else playNote(ac, leadBus, lead, midi + (lead === 'glock' || lead === 'mbox' || lead === 'celesta' ? 12 : 0), at, lead === 'piano' ? .2 : lead === 'marimba' ? .2 : .13);
-        prev = midi; } }
+    if (S.lead.length && ph) { const lead = S.lead[(sec + (ctx.leadShift || 0)) % S.lead.length];
+      const reg = { horn: -12, bassoon: -12, clarinet: 0, oboe: 0, flute: 12, xylo: 12, glock: 24, celesta: 12, mbox: 12, piano: 0 }[lead] || 0;
+      const sus = ['flute', 'clarinet', 'oboe', 'horn', 'bassoon'].includes(lead), vol = { horn: .34, flute: .3, clarinet: .3, oboe: .28, xylo: .3, celesta: .3, mbox: .32, piano: .34 }[lead] || .3;
+      for (const nt of ph[pb]) { if (nt.rest) continue; const at = ac8(t, nt.pos), len = nt.len * e8; if (at >= m.t1 - .3) continue; if (ctx.speaking(at) || ctx.speaking(at + Math.min(len, .4))) continue;
+        const midi = deg(nt.d, cd) + reg;
+        playS(ac, leadBus, lead, midi, at + hum(), vol, sus ? Math.max(.14, len * .94) : null, sus ? { att: .03, rel: .18, sus: true } : null);
+        if (S.dbl && nt.len >= 2) playS(ac, leadBus, S.dbl, midi + 12, at, .1); } }
   }
 }
+/** Сведение музыки в два прохода: сначала узнаём, какие ноты звучат, расшифровываем только их, потом играем. */
+async function prepMusic(ac, run) {
+  if (!(await loadInstFile())) return;
+  COLLECT = new Set(); try { const dummy = new OfflineAudioContext(1, 4410, 44100); run(dummy, dummy.createGain()); } catch (e) { console.log('music collect', e); } const keys = COLLECT; COLLECT = null;
+  await decodeKeys(ac, keys);
+}
+// Для описания на YouTube (лицензии записей требуют указать авторов — кнопка «Текст для YouTube» добавляет это сама)
+MK.soundCredits = 'Звук: инструменты FluidR3 GM (Frank Wen), CC BY 3.0; смех — "Oculus Audio Pack 01" by Oculus VR, LLC, CC BY 4.0.';
 
 // =====================================================================================
 // 5. ЗВУКИ МЕСТА И УЛУЧШЕННЫЕ ЭФФЕКТЫ
@@ -418,7 +510,7 @@ function scheduleAmbience(ac, out, seg, seed) {
 }
 const SFX2 = Object.assign({}, MK._SFX, {
   step: (ac, o, t) => { MK._noiseHit(ac, o, t, .07, .22, 'lowpass', 800); MK._tone(ac, o, t, 110, 70, .05, .1); },
-  tap: (ac, o, t) => { MK._noiseHit(ac, o, t, .04, .2, 'bandpass', 2200, 1.5); MK._tone(ac, o, t, 420, 260, .03, .12, 'triangle'); },
+  tap: (ac, o, t) => { MK._noiseHit(ac, o, t, .05, .13, 'bandpass', 1300, 1.2); MK._tone(ac, o, t, 300, 190, .04, .08, 'sine'); }, // шаг по полу — мягкий «топ», не щелчок
   crunch: (ac, o, t) => { for (let i = 0; i < 4; i++) MK._noiseHit(ac, o, t + i * .012, .05, .12, 'bandpass', 1800 + i * 600, 1); },
   // «ЗВУК: смех» — кто-то хихикает за кадром: один хитрый смешок с эхом (не толпа)
   laugh: (ac, o, t) => { const seed = [3, 6, 9][Math.floor(t * 7) % 3]; const b = MK.synthVocal({ synth: 'laugh', voice: { base: 'female', pitch: 1.2 }, fx: {}, age: 'kid', seed, variant: Math.floor(t) % 4 }, ac.sampleRate);
@@ -446,8 +538,9 @@ MK.mixAudio = async function (tl, buffers) {
   for (const s of tl.speech) { for (const g of [duck.gain, amb.gain]) { const lo = g === duck.gain ? .38 : .6; g.setValueAtTime(g === duck.gain ? 1 : 1, Math.max(0, s.t - .2)); g.linearRampToValueAtTime(lo, s.t); g.setValueAtTime(lo, s.t + s.dur); g.linearRampToValueAtTime(1, s.t + s.dur + .4); } }
   const key = seriesKey(tl.ep.series), themeSeed = MK.hash32('theme' + (tl.ep.series || ''));
   const endSeg = tl.segs.find(sg => sg.kind === 'end');
-  tl.music.forEach((m, i) => { if (m.mood === 'none') return; const isTheme = (i === 0 && m.t0 < .1) || (endSeg && m.t0 >= endSeg.t0 - .1);
-    scheduleMusic2(ac, duck, m, MK.hash32((tl.ep.series || '') + (tl.ep.episode || 0) + i + m.mood), { key, speaking, themeSeed: isTheme ? themeSeed : null, leadShift: i }); });
+  const music = (ac2, out2) => tl.music.forEach((m, i) => { if (m.mood === 'none') return; const isTheme = (i === 0 && m.t0 < .1) || (endSeg && m.t0 >= endSeg.t0 - .1);
+    scheduleMusic2(ac2, out2, m, MK.hash32((tl.ep.series || '') + (tl.ep.episode || 0) + i + m.mood), { key, speaking, themeSeed: isTheme ? themeSeed : null, leadShift: i }); });
+  await prepMusic(ac, music); music(ac, duck);
   for (const sg of tl.segs) if (sg.kind === 'scene') scheduleAmbience(ac, amb, sg, MK.hash32('amb' + sg.t0));
   const fx = ac.createGain(); fx.gain.value = .45; const fxlp = ac.createBiquadFilter(); fxlp.type = 'lowpass'; fxlp.frequency.value = 7000; fx.connect(fxlp); fxlp.connect(master);
   for (const s of tl.sfx) { const f = SFX2[s.n]; if (!f) continue; let o = fx; if (s.v != null) { o = ac.createGain(); o.gain.value = s.v; o.connect(fx); } for (let i = 0; i < (s.rep || 1); i++) f(ac, o, s.t + i * (s.gap || .22)); }
@@ -457,5 +550,5 @@ MK.mixAudio = async function (tl, buffers) {
   if (pk > 0) { const g = .89 / pk; for (let i = 0; i < d.length; i++) d[i] *= g; }
   return out;
 };
-MK._audioTest = { scheduleMusic2, scheduleAmbience, STY, fsynth, vocalSegs, seriesKey };
+MK._audioTest = { scheduleMusic2, scheduleAmbience, STY, fsynth, vocalSegs, seriesKey, prepMusic, SBUF, playS };
 })(typeof window !== 'undefined' ? window : globalThis);

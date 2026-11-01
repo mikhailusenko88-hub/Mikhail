@@ -323,7 +323,7 @@ const App = {
     if (a === 'build') return Build.run(p, e);
     if (a === 'unqueue') return Build.unqueue(p, e);
     if (a === 'share') return Native.call('share', { path: e.video });
-    if (a === 'yt') { const y = e.script.youtube || {}; const text = `${y.title || (p.series + ' — Серия ' + e.episode + '. ' + (e.title || ''))}\n\n${y.description || ''}\n\n${(y.tags || []).map(t => '#' + t.replace(/\s+/g, '')).join(' ')}`; await Native.call('copy', { text }); alert('Название, описание и теги скопированы:\n\n' + text); }
+    if (a === 'yt') { const y = e.script.youtube || {}; const text = `${y.title || (p.series + ' — Серия ' + e.episode + '. ' + (e.title || ''))}\n\n${y.description || ''}\n\n${(y.tags || []).map(t => '#' + t.replace(/\s+/g, '')).join(' ')}${MK.soundCredits ? '\n\n' + MK.soundCredits : ''}`; await Native.call('copy', { text }); alert('Название, описание и теги скопированы:\n\n' + text); }
   },
 };
 
@@ -356,7 +356,11 @@ const Player = {
     if (this.ac) { try { this.ac.close(); } catch (er) {} }
     this.ac = new (window.AudioContext || window.webkitAudioContext)(); try { this.ac.resume(); } catch (er) {}
     Prog.show('Готовлю просмотр'); let r;
-    try { r = await prepare(e, (a, p, t) => Prog.set(a, p, t)); } catch (err) { Prog.hide(); alert('Ошибка: ' + err.message); return; }
+    try { r = await prepare(e, (a, p, t) => Prog.set(a, p * .8, t)); } catch (err) { Prog.hide(); alert('Ошибка: ' + err.message); return; }
+    // заранее строим все места, героев и предметы серии: иначе на новой сцене картинка замирала на секунды, а голос шёл дальше
+    if (r.tl.style === '3d') { const c = document.getElementById('pc').getContext('2d'), sg = r.tl.segs;
+      for (let i = 0; i < sg.length; i++) { Prog.set('Готовлю сцены', .8 + .2 * i / sg.length, `${i + 1} из ${sg.length}`); await new Promise(res => setTimeout(res, 0));
+        try { c.setTransform(c.canvas.width / 1920, 0, 0, c.canvas.height / 1080, 0, 0); MK.render(c, r.tl, sg[i].t0 + Math.min(.5, (sg[i].t1 - sg[i].t0) / 2)); } catch (er) { console.log('warm', er); } } }
     Prog.hide(); this.tl = r.tl; this.mix = r.mix; document.getElementById('player').style.display = 'flex';
     this.off = 0; this.play();
   },

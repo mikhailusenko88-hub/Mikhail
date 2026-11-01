@@ -82,6 +82,37 @@ function spotTex(base, spot, seed) { return canvasTex(256, 128, (g) => { g.fillS
 
 // ---------- персонаж ----------
 const rigCache = {};
+MK3D.rigs = () => rigCache; // для проверок
+// Опорные точки тела: у каждой детали — крайние точки по 98 направлениям. По ним в любой позе (сидит, лежит, упал,
+// кувыркается) находим самую нижнюю точку героя и ставим его на землю — сквозь пол и песок больше не проваливается.
+const SUP_DIRS = (() => { const a = [], n = 98; for (let i = 0; i < n; i++) { const y = 1 - (i + .5) / n * 2, r = Math.sqrt(1 - y * y), th = i * 2.399963; a.push([Math.cos(th) * r, y, Math.sin(th) * r]); } return a; })();
+function groundPts(rig) {
+  const list = [], skip = new Set(); if (rig.blob) skip.add(rig.blob);
+  rig.root.traverse(o => { if (o.userData.strands || o.userData.groove || o.userData.carve || o.userData.noGround) o.traverse(c => skip.add(c)); });
+  if (rig.tail) rig.tail.traverse(c => skip.add(c)); // хвост может лечь на пол — героя из-за него не поднимаем
+  rig.root.traverse(o => {
+    if (!o.isMesh || o.isInstancedMesh || skip.has(o) || o.material === OL || !o.geometry || !o.geometry.attributes.position) return;
+    for (let v = o; v; v = v.parent) if (!v.visible) return;
+    const pa = o.geometry.attributes.position, n = pa.count, st = Math.max(1, Math.floor(n / 6000)), idx = new Set();
+    for (const d of SUP_DIRS) { let best = 0, bv = -Infinity; for (let i = 0; i < n; i += st) { const q = pa.getX(i) * d[0] + pa.getY(i) * d[1] + pa.getZ(i) * d[2]; if (q > bv) { bv = q; best = i; } } idx.add(best); }
+    const pts = new Float32Array(idx.size * 3); let k = 0; for (const i of idx) { pts[k++] = pa.getX(i); pts[k++] = pa.getY(i); pts[k++] = pa.getZ(i); }
+    list.push({ o, pts }); });
+  return list;
+}
+/** Самая нижняя точка героя относительно его «земли» (в размерах героя). */
+function lowPoint(rig) {
+  const gp = rig._gp || (rig._gp = groundPts(rig)); let mn = Infinity;
+  rig.root.updateMatrixWorld(true);
+  for (const g of gp) { if (!g.o.visible) continue; const e = g.o.matrixWorld.elements, p = g.pts;
+    for (let i = 0; i < p.length; i += 3) { const y = e[1] * p[i] + e[5] * p[i + 1] + e[9] * p[i + 2] + e[13]; if (y < mn) mn = y; } }
+  return mn === Infinity ? 0 : (mn - rig.root.position.y) / (rig.scale || 1);
+}
+/** w = 0 — стоит/идёт: только не даём уйти под землю; w = 1 — сидит/лежит: ровно касается земли. */
+function groundFix(rig, w) {
+  rig.yaw.position.y = 0; const rel = lowPoint(rig);
+  const lift = Math.max(0, -.015 - rel), touch = -.006 - rel;
+  rig.yaw.position.y = lerp(lift, touch, clamp(w, 0, 1)); rig._low = rel;
+}
 function buildRig(spec) { inRig = true; try { const r = buildRig0(spec); try { sculptRig(r); } catch (e) { console.log('скульптор:', e && e.message); } if (MK3D.hq) addFur(r); return r; } finally { inRig = false; } }
 // ---------- «Скульптор»: голова, тело, лапы и хвост — одна плавная поверхность вместо набора шаров ----------
 // Берём те же формы, из которых собран герой (поэтому он остаётся узнаваемым), и сливаем их в «глину»:
@@ -973,6 +1004,7 @@ function applyPose(rig, st, T) {
   if (rollA) { const cy = lie ? .22 : hgt * .5; rig.rollG.position.set(0, cy, 0); rig.rollG.rotation.x = rollA; rig.pose.position.y += -cy + (lie ? .22 * 0 : 0); }
   else { rig.rollG.position.set(0, 0, 0); rig.rollG.rotation.x = 0; }
   if (lie) rig.pose.position.y += .16 * lie;
+  groundFix(rig, Math.max(fallen, sit, crouch, an === 'roll' ? lie : 0));
   { const dt = T - dyn.t; const y = rig.pose.position.y + rig.root.position.y, yaw = rig.yaw.rotation.y;
     if (dt > 0 && dt < .25) { const vy = (y - dyn.y) / dt, ay = (vy - dyn.vy) / dt, wy = (yaw - dyn.yaw) / dt;
       const spring = (x, v, target, k, d) => { const a = (target - x) * k - v * d; v += a * dt; x += v * dt; return [x, v]; };
