@@ -38,6 +38,7 @@
   }
   const L = [0, 0, 0];
   function dist(pr, x, y, z) {
+    if (pr.type === 'fn') return pr.f(x, y, z); // своя функция расстояния (кепка по форме головы и т. п.)
     local(pr, x, y, z, L); const lx = L[0], ly = L[1], lz = L[2];
     if (pr.type === 'ell') return sdEll(lx, ly, lz, pr.r[0], pr.r[1], pr.r[2]);
     if (pr.type === 'rbox') { const qx = Math.abs(lx) - pr.b[0] + pr.rr, qy = Math.abs(ly) - pr.b[1] + pr.rr, qz = Math.abs(lz) - pr.b[2] + pr.rr; // скруглённый брусок (мебель)
