@@ -16,6 +16,9 @@ MK3D.init = function (T) {
   GL = document.createElement('canvas'); GL.width = 1920; GL.height = 1080;
   try { R = new THREE.WebGLRenderer({ canvas: GL, antialias: true, preserveDrawingBuffer: true }); } catch (e) { console.log('WebGL нет', e); return false; }
   R.setPixelRatio(1); R.setSize(1920, 1080, false);
+  // iPhone может отобрать видеокарту у свёрнутого приложения: пока её нет, кадры не рисуем (сборка ждёт)
+  GL.addEventListener('webglcontextlost', () => { MK3D._lost = true; }, false);
+  GL.addEventListener('webglcontextrestored', () => { MK3D._lost = false; R.shadowMap.needsUpdate = true; }, false);
   R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap; R.outputColorSpace = THREE.SRGBColorSpace;
   scene = new THREE.Scene();
   cam = new THREE.PerspectiveCamera(38, 16 / 9, .1, 200);
@@ -39,6 +42,7 @@ function setupHQ() { // мягкий «киношный» свет без кон
   rim = new THREE.DirectionalLight(0xffffff, 1.4); rim.position.set(-3, 4, -6); scene.add(rim); scene.add(rim.target);
 }
 let hqReady = false;
+MK3D.lost = function () { try { return !!MK3D._lost || !!(R && R.getContext().isContextLost()); } catch (e) { return true; } };
 MK3D.setQuality = function (q) { const hq = q === 'hq'; if (hq === MK3D.hq) return; MK3D.hq = hq; if (!MK3D.ready) return;
   if (hq && !hqReady) { setupHQ(); hqReady = true; }
   OL.visible = !hq; R.toneMapping = hq ? THREE.NeutralToneMapping : THREE.NoToneMapping; R.shadowMap.type = hq ? THREE.VSMShadowMap : THREE.PCFSoftShadowMap; scene.environment = hq ? scene.userData.env || null : null; if (rim) rim.visible = hq;

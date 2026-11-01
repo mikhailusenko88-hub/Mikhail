@@ -259,36 +259,90 @@ struct MultikScreen: View {
 struct MultikWeb: UIViewRepresentable {
     let onClose: () -> Void
 
-    func makeCoordinator() -> MultikBridge { MultikBridge(onClose: onClose) }
-
-    func makeUIView(context: Context) -> WKWebView {
-        let cfg = WKWebViewConfiguration()
-        cfg.setURLSchemeHandler(BundleScheme(), forURLScheme: "mebel")
-        cfg.userContentController.addScriptMessageHandler(context.coordinator, contentWorld: .page, name: "multik")
-        cfg.allowsInlineMediaPlayback = true
-        cfg.mediaTypesRequiringUserActionForPlayback = []
-        let web = WKWebView(frame: .zero, configuration: cfg)
-        web.isOpaque = false
-        web.backgroundColor = .black
-        web.uiDelegate = context.coordinator   // alert / confirm со страницы
-        context.coordinator.web = web
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-        try? AVAudioSession.sharedInstance().setActive(true)
-        web.load(URLRequest(url: URL(string: "mebel://app/multik.html")!))
-        return web
+    func makeUIView(context: Context) -> UIView {
+        let box = UIView()
+        box.backgroundColor = .black
+        let web = MultikHost.shared.webView(onClose: onClose)
+        web.removeFromSuperview()
+        web.alpha = 1
+        web.isUserInteractionEnabled = true
+        web.translatesAutoresizingMaskIntoConstraints = false
+        box.addSubview(web)
+        NSLayoutConstraint.activate([
+            web.leadingAnchor.constraint(equalTo: box.leadingAnchor), web.trailingAnchor.constraint(equalTo: box.trailingAnchor),
+            web.topAnchor.constraint(equalTo: box.topAnchor), web.bottomAnchor.constraint(equalTo: box.bottomAnchor),
+        ])
+        MultikHost.shared.bridge?.parked = false
+        web.evaluateJavaScript("window.MK_PARKED = false", completionHandler: nil)
+        return box
     }
 
-    func updateUIView(_ uiView: WKWebView, context: Context) {}
+    func updateUIView(_ uiView: UIView, context: Context) {}
 
-    static func dismantleUIView(_ uiView: WKWebView, coordinator: MultikBridge) {
-        uiView.configuration.userContentController.removeScriptMessageHandler(forName: "multik", contentWorld: .page)
-        coordinator.cleanup()
+    static func dismantleUIView(_ uiView: UIView, coordinator: ()) {
+        MultikHost.shared.closed()
+    }
+}
+
+/// Одна страница «Мультиков» на всё приложение. Если закрыть раздел во время сборки серии, страница не выключается:
+/// она остаётся крошечной и почти прозрачной в углу окна, и серия собирается дальше, пока вы в других разделах.
+final class MultikHost {
+    static let shared = MultikHost()
+    private(set) var web: WKWebView?
+    private(set) var bridge: MultikBridge?
+
+    func webView(onClose: @escaping () -> Void) -> WKWebView {
+        if let w = web, let b = bridge { b.onClose = onClose; return w }
+        let b = MultikBridge(onClose: onClose)
+        let cfg = WKWebViewConfiguration()
+        cfg.setURLSchemeHandler(BundleScheme(), forURLScheme: "mebel")
+        cfg.userContentController.addScriptMessageHandler(b, contentWorld: .page, name: "multik")
+        cfg.allowsInlineMediaPlayback = true
+        cfg.mediaTypesRequiringUserActionForPlayback = []
+        let w = WKWebView(frame: .zero, configuration: cfg)
+        w.isOpaque = false
+        w.backgroundColor = .black
+        w.uiDelegate = b   // alert / confirm со страницы
+        w.navigationDelegate = b
+        b.web = w
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+        try? AVAudioSession.sharedInstance().setActive(true)
+        w.load(URLRequest(url: URL(string: "mebel://app/multik.html")!))
+        web = w; bridge = b
+        return w
+    }
+
+    /// Раздел «Мультики» закрыт: идёт сборка — страницу держим живой, иначе выключаем.
+    func closed() {
+        guard let w = web, let b = bridge else { return }
+        if b.isBuilding {
+            let win = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.flatMap { $0.windows }.first { $0.isKeyWindow }
+            if let win = win {
+                w.removeFromSuperview()
+                w.translatesAutoresizingMaskIntoConstraints = true
+                w.frame = win.bounds
+                w.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                w.alpha = 0.02   // совсем невидимую (0) iPhone мог бы усыпить
+                w.isUserInteractionEnabled = false
+                win.insertSubview(w, at: 0)   // под всеми экранами приложения — её не видно и она не мешает нажатиям
+                b.parked = true
+                w.evaluateJavaScript("window.MK_PARKED = true", completionHandler: nil)
+                return
+            }
+        }
+        w.configuration.userContentController.removeScriptMessageHandler(forName: "multik", contentWorld: .page)
+        b.cleanup()
+        w.removeFromSuperview()
+        web = nil; bridge = nil
     }
 }
 
 /// Мост страница ↔ iPhone. Каждый вызов из JS возвращает Promise (ответ через replyHandler).
-final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentPickerDelegate, WKUIDelegate {
-    let onClose: () -> Void
+final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentPickerDelegate, WKUIDelegate, WKNavigationDelegate {
+    var onClose: () -> Void
+    var parked = false
+    var busy = false   // страница собирает серии (очередь), в том числе озвучку перед кадрами
+    var isBuilding: Bool { busy || writer != nil }
     weak var web: WKWebView?
     private let tts = MultikTTS()
     private let speaker = AVSpeechSynthesizer()
@@ -298,7 +352,27 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
     private let queue = DispatchQueue(label: "multik.writer", qos: .userInitiated)
     private var pickReply: ((Any?, String?) -> Void)?
 
-    init(onClose: @escaping () -> Void) { self.onClose = onClose }
+    init(onClose: @escaping () -> Void) {
+        self.onClose = onClose
+        super.init()
+        // приложение уходит с экрана (свернули, заблокировали, звонок): дописываем текущий кусок видео,
+        // иначе iPhone оборвёт кодирование. Вернётесь — сборка продолжится с того же кадра.
+        NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main) { [weak self] _ in
+            self?.pauseWriter()
+        }
+    }
+
+    private func pauseWriter() {
+        guard let w = writer else { return }
+        var bg = UIBackgroundTaskIdentifier.invalid
+        bg = UIApplication.shared.beginBackgroundTask(withName: "multik-pause") {
+            if bg != .invalid { UIApplication.shared.endBackgroundTask(bg); bg = .invalid }
+        }
+        queue.async {
+            w.pause()
+            DispatchQueue.main.async { if bg != .invalid { UIApplication.shared.endBackgroundTask(bg); bg = .invalid } }
+        }
+    }
 
     static var root: URL {
         let u = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("multik")
@@ -420,19 +494,30 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
             let name = (body["name"] as? String ?? "Серия").replacingOccurrences(of: "/", with: "-")
             let out = root.appendingPathComponent("video/\(name).mp4")
             let audio = root.appendingPathComponent("tmp/audio.wav")
+            let resume = body["resume"] as? Bool ?? false
             UIApplication.shared.isIdleTimerDisabled = true
+            if let old = writer { writer = nil; queue.async { old.pause() } }
             queue.async {
-                let wr = MultikWriter(out: out, tmp: root.appendingPathComponent("tmp/render.mp4"), w: w, h: h, fps: Int32(fps), audio: audio)
-                let ok = wr.start()
-                DispatchQueue.main.async { self.writer = ok ? wr : nil; replyHandler(ok, ok ? nil : wr.error) }
+                let wr = MultikWriter(out: out, dir: root.appendingPathComponent("tmp/build"), w: w, h: h, fps: Int32(fps), audio: audio)
+                let ok = wr.start(resume: resume)
+                let done = Int(wr.frames)
+                DispatchQueue.main.async {
+                    self.writer = ok ? wr : nil
+                    if ok { replyHandler(["ok": true, "frames": done], nil) } else { replyHandler(false, wr.error) }
+                }
             }
         case "videoFrame":
             guard let wr = writer, let s = body["d"] as? String else { replyHandler(false, "нет записи"); return }
+            let index = Int64((body["i"] as? NSNumber)?.intValue ?? -1)
             queue.async {
-                let ok = Data(base64Encoded: s).map { wr.append(jpeg: $0) } ?? false
-                // ответ: 0 — кадр не записался; 1…4 — записался, а число — нагрев телефона (1 норма … 4 критично)
-                let heat = ProcessInfo.processInfo.thermalState.rawValue + 1
-                DispatchQueue.main.async { replyHandler(ok ? heat : 0, nil) }
+                // ответ: 1…4 — кадр записан, число — нагрев телефона (1 норма … 4 критично); 0 — не записан;
+                // −(N+1) — «продолжайте с кадра N» (после паузы кусок мог оборваться)
+                var reply = 0
+                if let d = Data(base64Encoded: s) {
+                    let r = wr.append(jpeg: d, index: index)
+                    if r == -1 { reply = ProcessInfo.processInfo.thermalState.rawValue + 1 } else if r >= 0 { reply = -Int(r) - 1 }
+                }
+                DispatchQueue.main.async { replyHandler(reply, nil) }
             }
         case "thermal":
             replyHandler(ProcessInfo.processInfo.thermalState.rawValue, nil)
@@ -442,20 +527,45 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
             queue.async {
                 let path = wr.finish()
                 DispatchQueue.main.async {
-                    UIApplication.shared.isIdleTimerDisabled = false
                     if let p = path { replyHandler(["path": "video/" + p.lastPathComponent], nil) }
                     else { replyHandler(["error": wr.error ?? "ошибка записи"], nil) }
                 }
             }
         case "videoCancel":
-            cleanup(); replyHandler(true, nil)
+            if body["keep"] as? Bool == true, let w = writer {   // ошибка: готовые куски оставляем, чтобы продолжить потом
+                writer = nil
+                queue.async { w.pause() }
+            } else if writer != nil { cleanup() } else {
+                let dir = root.appendingPathComponent("tmp/build")
+                queue.async { try? FileManager.default.removeItem(at: dir) }
+            }
+            replyHandler(true, nil)
+        case "keepAwake":   // очередь серий: экран не гаснет и между сериями, страница не выключается при закрытии раздела
+            busy = body["on"] as? Bool ?? false
+            UIApplication.shared.isIdleTimerDisabled = busy
+            replyHandler(true, nil)
+        case "parked":   // страница спрятана (раздел закрыт, сборка идёт)
+            replyHandler(parked, nil)
+        case "buildDone":   // очередь серий закончилась: если раздел закрыт — выключаем спрятанную страницу
+            replyHandler(true, nil)
+            if parked { DispatchQueue.main.async { MultikHost.shared.closed() } }
         case "close":
-            cleanup(); replyHandler(true, nil)
+            if !isBuilding { cleanup() }   // во время сборки страница остаётся работать
+            replyHandler(true, nil)
             speaker.stopSpeaking(at: .immediate)
             onClose()
         default:
             replyHandler(NSNull(), nil)
         }
+    }
+
+    // iPhone выгрузил страницу из памяти: готовые куски видео сохраняем; раздел открыт — перезагружаем
+    // (страница сама предложит продолжить сборку), закрыт — выключаем, продолжится при следующем открытии
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        if let w = writer { writer = nil; queue.async { w.pause() } }
+        busy = false
+        UIApplication.shared.isIdleTimerDisabled = false
+        if parked { MultikHost.shared.closed() } else { webView.reload() }
     }
 
     // окна alert / confirm / prompt со страницы (без этого WKWebView их молча пропускает)
@@ -634,27 +744,134 @@ final class MultikTTS: NSObject {
 }
 
 /// Пишет кадры (JPEG) + готовую звуковую дорожку (WAV) в mp4 (H.264 + AAC), звук вплетается по ходу.
+/// Запись серии кусками. Если iPhone прервёт кодирование (приложение свернули, заблокировали, звонок),
+/// готовые куски остаются на диске, а страница продолжает с того же кадра — даже после перезапуска приложения.
+/// В конце куски и звук склеиваются в один mp4 без перекодирования видео.
 final class MultikWriter {
-    let out: URL, tmp: URL, w: Int, h: Int, fps: Int32, audio: URL
+    let out: URL, dir: URL, w: Int, h: Int, fps: Int32, audio: URL
     var error: String?
-    private var writer: AVAssetWriter?
-    private var vIn: AVAssetWriterInput?
-    private var aIn: AVAssetWriterInput?
-    private var adaptor: AVAssetWriterInputPixelBufferAdaptor?
-    private var reader: AVAssetReader?
-    private var aOut: AVAssetReaderTrackOutput?
-    private var pending: CMSampleBuffer?
-    private var audioDone = true
-    private var frames: Int64 = 0
+    private var seg: MultikSegment?
+    private var done: [Int64] = []        // кадров в каждом готовом куске
+    private(set) var frames: Int64 = 0    // всего кадров (готовые куски + текущий)
 
-    init(out: URL, tmp: URL, w: Int, h: Int, fps: Int32, audio: URL) {
-        self.out = out; self.tmp = tmp; self.w = w; self.h = h; self.fps = fps; self.audio = audio
+    init(out: URL, dir: URL, w: Int, h: Int, fps: Int32, audio: URL) {
+        self.out = out; self.dir = dir; self.w = w; self.h = h; self.fps = fps; self.audio = audio
     }
 
-    func start() -> Bool {
+    private var listURL: URL { dir.appendingPathComponent("segs.json") }
+    private func segURL(_ k: Int) -> URL { dir.appendingPathComponent(String(format: "seg_%03d.mp4", k)) }
+    private var doneFrames: Int64 { done.reduce(0, +) }
+
+    func start(resume: Bool) -> Bool {
+        let fm = FileManager.default
+        if !resume { try? fm.removeItem(at: dir) }
+        try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        done = []
+        if resume, let d = try? Data(contentsOf: listURL), let a = try? JSONDecoder().decode([Int64].self, from: d) { done = a }
+        // оборванные и лишние куски — удалить
+        if let files = try? fm.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil) {
+            for f in files where f.lastPathComponent.hasPrefix("seg_") {
+                let k = Int(f.deletingPathExtension().lastPathComponent.dropFirst(4)) ?? -1
+                if k < 0 || k >= done.count { try? fm.removeItem(at: f) }
+            }
+        }
+        frames = doneFrames
+        return true
+    }
+
+    private func save() { if let d = try? JSONEncoder().encode(done) { try? d.write(to: listURL) } }
+
+    /// Кадр номер i. Ответ: −1 — записан; −2 — ошибка; N ≥ 0 — «продолжайте с кадра N».
+    func append(jpeg: Data, index i: Int64) -> Int64 {
+        if i != frames { return frames }
+        if seg == nil {
+            let s = MultikSegment(url: segURL(done.count), w: w, h: h, fps: fps)
+            guard s.start() else { error = s.error; return -2 }
+            seg = s
+        }
+        guard let s = seg else { return -2 }
+        if s.append(jpeg: jpeg) {
+            frames += 1
+            if s.count >= Int64(fps) * 30 { pause() }   // куски по 30 с: при сбое теряется не больше
+            return -1
+        }
+        // кусок оборвался — выбрасываем его, страница перерисует эти кадры
+        s.cancel(); seg = nil; frames = doneFrames
+        return frames
+    }
+
+    /// Дописать текущий кусок (приложение уходит с экрана или конец сборки).
+    func pause() {
+        guard let s = seg else { return }
+        seg = nil
+        if s.count == 0 { s.cancel(); return }
+        if s.finish() { done.append(s.count); save() } else { s.cancel() }
+        frames = doneFrames
+    }
+
+    func finish() -> URL? {
+        pause()
+        guard !done.isEmpty else { error = error ?? "нет кадров"; return nil }
+        let total = CMTime(value: doneFrames, timescale: fps)
+        // звук: wav → AAC (m4a), чтобы склеить всё без перекодирования
+        let m4a = dir.appendingPathComponent("audio.m4a")
+        try? FileManager.default.removeItem(at: m4a)
+        var haveAudio = false
+        if FileManager.default.fileExists(atPath: audio.path), let ex = AVAssetExportSession(asset: AVURLAsset(url: audio), presetName: AVAssetExportPresetAppleM4A) {
+            ex.outputURL = m4a; ex.outputFileType = .m4a
+            let sem = DispatchSemaphore(value: 0)
+            ex.exportAsynchronously { sem.signal() }
+            sem.wait()
+            haveAudio = ex.status == .completed
+        }
+        let comp = AVMutableComposition()
+        guard let vt = comp.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else { error = "не удалось склеить видео"; return nil }
+        var cur = CMTime.zero
+        for k in 0..<done.count {
+            let a = AVURLAsset(url: segURL(k))
+            guard let v = a.tracks(withMediaType: .video).first else { continue }
+            let dur = CMTimeMinimum(CMTime(value: done[k], timescale: fps), v.timeRange.duration)
+            do { try vt.insertTimeRange(CMTimeRange(start: v.timeRange.start, duration: dur), of: v, at: cur) } catch { self.error = error.localizedDescription; return nil }
+            cur = CMTimeAdd(cur, dur)
+        }
+        if haveAudio, let s = AVURLAsset(url: m4a).tracks(withMediaType: .audio).first, let at = comp.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) {
+            try? at.insertTimeRange(CMTimeRange(start: s.timeRange.start, duration: CMTimeMinimum(total, s.timeRange.duration)), of: s, at: .zero)
+        }
+        guard let ex = AVAssetExportSession(asset: comp, presetName: AVAssetExportPresetPassthrough) else { error = "не удалось склеить видео"; return nil }
+        let tmp = dir.appendingPathComponent("final.mp4")
         try? FileManager.default.removeItem(at: tmp)
+        ex.outputURL = tmp; ex.outputFileType = .mp4
+        let sem = DispatchSemaphore(value: 0)
+        ex.exportAsynchronously { sem.signal() }
+        sem.wait()
+        guard ex.status == .completed else { error = ex.error?.localizedDescription ?? "склейка не удалась"; return nil }
+        try? FileManager.default.removeItem(at: out)
+        do { try FileManager.default.moveItem(at: tmp, to: out) } catch { self.error = error.localizedDescription; return nil }
+        try? FileManager.default.removeItem(at: dir)
+        return out
+    }
+
+    func cancel() {
+        seg?.cancel(); seg = nil
+        try? FileManager.default.removeItem(at: dir)
+    }
+}
+
+/// Один кусок видео (без звука): кадры JPEG → H.264.
+final class MultikSegment {
+    let url: URL, w: Int, h: Int, fps: Int32
+    var error: String?
+    private(set) var count: Int64 = 0
+    private var writer: AVAssetWriter?
+    private var vIn: AVAssetWriterInput?
+    private var adaptor: AVAssetWriterInputPixelBufferAdaptor?
+
+    init(url: URL, w: Int, h: Int, fps: Int32) { self.url = url; self.w = w; self.h = h; self.fps = fps }
+
+    func start() -> Bool {
+        try? FileManager.default.removeItem(at: url)
         do {
-            let wr = try AVAssetWriter(outputURL: tmp, fileType: .mp4)
+            let wr = try AVAssetWriter(outputURL: url, fileType: .mp4)
             let vs: [String: Any] = [
                 AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: w, AVVideoHeightKey: h,
                 AVVideoCompressionPropertiesKey: [
@@ -670,19 +887,6 @@ final class MultikWriter {
                 kCVPixelBufferWidthKey as String: w, kCVPixelBufferHeightKey as String: h,
             ])
             wr.add(v)
-            // звук
-            let asset = AVURLAsset(url: audio)
-            if FileManager.default.fileExists(atPath: audio.path), let track = asset.tracks(withMediaType: .audio).first {
-                let rd = try AVAssetReader(asset: asset)
-                let o = AVAssetReaderTrackOutput(track: track, outputSettings: [AVFormatIDKey: kAudioFormatLinearPCM])
-                rd.add(o)
-                let a = AVAssetWriterInput(mediaType: .audio, outputSettings: [
-                    AVFormatIDKey: kAudioFormatMPEG4AAC, AVSampleRateKey: 44100, AVNumberOfChannelsKey: 1, AVEncoderBitRateKey: 160_000,
-                ])
-                a.expectsMediaDataInRealTime = false
-                wr.add(a)
-                if rd.startReading() { reader = rd; aOut = o; aIn = a; audioDone = false }
-            }
             guard wr.startWriting() else { error = wr.error?.localizedDescription ?? "не стартовала запись"; return false }
             wr.startSession(atSourceTime: .zero)
             writer = wr; vIn = v; adaptor = ad
@@ -693,24 +897,11 @@ final class MultikWriter {
         }
     }
 
-    private func pumpAudio(until t: Double) {
-        guard !audioDone, let a = aIn, let o = aOut else { return }
-        while a.isReadyForMoreMediaData {
-            let sb = pending ?? o.copyNextSampleBuffer()
-            pending = nil
-            guard let s = sb else { audioDone = true; a.markAsFinished(); return }
-            if CMSampleBufferGetPresentationTimeStamp(s).seconds > t { pending = s; return }
-            if !a.append(s) { audioDone = true; return }
-        }
-    }
-
     func append(jpeg: Data) -> Bool {
         guard let v = vIn, let ad = adaptor, writer?.status == .writing else { return false }
-        let t = Double(frames) / Double(fps)
-        pumpAudio(until: t + 1)
         var waited = 0
-        while !v.isReadyForMoreMediaData && waited < 4000 { pumpAudio(until: t + 2); usleep(1000); waited += 1 }
-        guard let img = UIImage(data: jpeg)?.cgImage, let pool = ad.pixelBufferPool else { return false }
+        while !v.isReadyForMoreMediaData && waited < 4000 { usleep(1000); waited += 1 }
+        guard v.isReadyForMoreMediaData, let img = UIImage(data: jpeg)?.cgImage, let pool = ad.pixelBufferPool else { return false }
         var pbo: CVPixelBuffer?
         CVPixelBufferPoolCreatePixelBuffer(nil, pool, &pbo)
         guard let pb = pbo else { return false }
@@ -721,40 +912,24 @@ final class MultikWriter {
             ctx.draw(img, in: CGRect(x: 0, y: 0, width: w, height: h))
         }
         CVPixelBufferUnlockBaseAddress(pb, [])
-        let ok = ad.append(pb, withPresentationTime: CMTime(value: frames, timescale: fps))
-        frames += 1
-        if !ok { error = writer?.error?.localizedDescription }
+        let ok = ad.append(pb, withPresentationTime: CMTime(value: count, timescale: fps))
+        if ok { count += 1 } else { error = writer?.error?.localizedDescription }
         return ok
     }
 
-    func finish() -> URL? {
-        guard let wr = writer else { return nil }
-        let end = Double(frames) / Double(fps)
+    func finish() -> Bool {
+        guard let wr = writer, wr.status == .writing else { return false }
         vIn?.markAsFinished()
-        var n = 0
-        while !audioDone && n < 20000 {
-            pumpAudio(until: end)
-            if let s = pending, CMSampleBufferGetPresentationTimeStamp(s).seconds > end {
-                pending = nil; audioDone = true; aIn?.markAsFinished(); break
-            }
-            if !audioDone { usleep(1000) }
-            n += 1
-        }
-        if !audioDone { audioDone = true; aIn?.markAsFinished() }
-        reader?.cancelReading()
         let sem = DispatchSemaphore(value: 0)
         wr.finishWriting { sem.signal() }
         sem.wait()
-        guard wr.status == .completed else { error = wr.error?.localizedDescription ?? "запись не завершилась"; return nil }
-        try? FileManager.default.removeItem(at: out)
-        do { try FileManager.default.moveItem(at: tmp, to: out) } catch { self.error = error.localizedDescription; return nil }
-        return out
+        writer = nil
+        return wr.status == .completed
     }
 
     func cancel() {
-        reader?.cancelReading()
-        writer?.cancelWriting()
-        try? FileManager.default.removeItem(at: tmp)
+        writer?.cancelWriting(); writer = nil
+        try? FileManager.default.removeItem(at: url)
     }
 }
 

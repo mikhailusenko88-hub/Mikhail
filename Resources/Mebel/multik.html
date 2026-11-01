@@ -34,6 +34,16 @@ main{padding:4px 14px 120px}
 #player canvas{width:100%;display:block}
 #player .ctl{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom));display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;padding:0 10px}
 #prog{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:30;display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center}
+#bbar{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:40;background:rgba(29,34,48,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid #2f3647;border-radius:16px;padding:9px 10px 9px 13px;display:none;align-items:center;gap:8px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+#bbar .t{flex:1;min-width:0}
+#bbar b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bbar .mut{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bbar .bar{margin:6px 0 3px;height:6px;max-width:none}
+#bbar button{border:0;border-radius:12px;background:var(--card2);color:var(--tx);font-size:17px;width:40px;height:40px;flex:none}
+#night{position:fixed;inset:0;background:#000;z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;color:#4a4a4a;font-size:14px;text-align:center;padding:30px}
+#toast{position:fixed;left:14px;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:41;background:#173a2a;color:#d8ffe9;border-radius:14px;padding:11px 13px;font-size:14px;display:none;align-items:center;gap:10px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+#toast span{flex:1}
+#ngT{white-space:pre-line}
 .bar{width:100%;max-width:420px;height:12px;background:#2a2f3d;border-radius:8px;overflow:hidden;margin:16px 0}
 .bar div{height:100%;width:0;background:linear-gradient(90deg,var(--acc),#ffd23f)}
 textarea{width:100%;min-height:120px;background:var(--card2);color:var(--tx);border:0;border-radius:12px;padding:10px;font:13px ui-monospace,monospace}
@@ -63,7 +73,10 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 <main id="main"></main>
 <div id="player"><canvas id="pc" width="1280" height="720"></canvas>
   <div class="ctl"><button class="btn" onclick="Player.stop()">✕ Закрыть</button><button class="btn acc" id="pp" onclick="Player.toggle()">❚❚</button><input type="range" id="seek" min="0" max="1000" value="0" style="max-width:420px" oninput="Player.seek(this.value/1000)"><span class="mut" id="ptime">0:00</span></div></div>
-<div id="prog"><h2 id="ptitle">Сборка серии</h2><div class="bar"><div id="pbar"></div></div><div id="ptext" class="mut"></div><p class="mut">Не сворачивай приложение, пока идёт сборка. Телефон лучше поставить на зарядку.</p><button class="btn bad" onclick="Build.cancel()">Остановить</button></div>
+<div id="prog"><h2 id="ptitle">Готовлю</h2><div class="bar"><div id="pbar"></div></div><div id="ptext" class="mut"></div></div>
+<div id="bbar"><div class="t"><b id="bbT">Сборка</b><div class="bar"><div id="bbP"></div></div><div class="mut" id="bbS"></div></div><button onclick="Build.night(true)" aria-label="Затемнить экран">🌙</button><button onclick="Build.askCancel()" aria-label="Остановить">✕</button></div>
+<div id="night" onclick="Build.night(false)"><div id="ngT"></div><div style="margin-top:10px">Экран затемнён, сборка идёт. Коснись, чтобы вернуть.</div></div>
+<div id="toast"><span id="tsT"></span><button class="btn ok" id="tsB" style="display:none;padding:8px 12px">⤴ Отправить</button><button class="btn" style="padding:8px 11px" onclick="Build.toast()">✕</button></div>
 <div id="writer" style="position:fixed;inset:0;background:var(--bg);z-index:16;display:none;flex-direction:column;overflow-y:auto;padding:0 0 env(safe-area-inset-bottom)">
 <div class="row" style="padding:calc(8px + env(safe-area-inset-top)) 12px 8px;position:sticky;top:0;background:var(--bg);z-index:2"><button class="back" onclick="Wr.close()">‹</button><b style="flex:1">Мой сценарий</b><button class="btn" onclick="Wr.example()">Пример</button></div>
 <div style="padding:4px 14px 120px">
@@ -185,11 +198,15 @@ const App = {
   tab: 'series', openSeries: null,
   async init() {
     await Lib.load();
+    setTimeout(() => Build.resumeCheck(), 400);
     document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { this.tab = b.dataset.t; this.openSeries = null; document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b)); this.render(); });
     this.render();
   },
-  close() { Native.call('close'); },
-  render() { const m = document.getElementById('main'); m.innerHTML = ''; this['r_' + this.tab](m); window.scrollTo(0, 0); },
+  close() {
+    if (Build.busy && !Lib.data.settings.bgHint) { Lib.data.settings.bgHint = 1; Lib.save(); alert('Серия собирается дальше — пользуйся другими разделами.\n\nЕсли свернуть приложение или заблокировать телефон, сборка встанет на паузу (iPhone не даёт рисовать видео в фоне) и продолжится с того же кадра, когда вернёшься. Лучше поставить телефон на зарядку.'); }
+    Native.call('close');
+  },
+  render(keep) { const y = window.scrollY, m = document.getElementById('main'); m.innerHTML = ''; this['r_' + this.tab](m); window.scrollTo(0, keep ? y : 0); },
   r_series(m) {
     const P = Lib.data.projects;
     m.insertAdjacentHTML('beforeend', `<div class="card"><b>Новые сценарии</b><div class="mut" style="margin-top:4px">Пиши сценарий прямо здесь — как пьесу или обычным рассказом или загрузи серии, написанные в чате. Персонажи из сценария запоминаются навсегда, со своим кодом.</div>
@@ -202,9 +219,11 @@ const App = {
       card.innerHTML = `<div class="row"><div style="flex:1"><b style="font-size:18px">${esc(p.series)}</b><div class="mut">Серий: ${p.episodes.length} · собрано: ${built} · ≈${fmt(total)}</div></div></div>`;
       for (const e of p.episodes) {
         const d = document.createElement('div'); d.className = 'ep';
-        const st = e.status === 'built' ? `<span class="tag ok">собрана ${e.dur ? fmt(e.dur) : ''}</span>` : `<span class="tag">не собрана</span>`;
+        const bs = Build.state(p, e);
+        const st = bs === 'run' ? `<span class="tag" style="color:var(--acc)">собирается…</span>` : bs === 'wait' ? `<span class="tag">в очереди</span>` : bs === 'held' ? `<span class="tag" style="color:var(--acc)">сборка прервана</span>` : e.status === 'built' ? `<span class="tag ok">собрана ${e.dur ? fmt(e.dur) : ''}</span>` : `<span class="tag">не собрана</span>`;
+        const bb = bs === 'run' ? `<button class="btn" disabled>⏳ Собирается</button>` : bs === 'wait' ? `<button class="btn" data-a="unqueue">⏳ В очереди ✕</button>` : bs === 'held' ? `<button class="btn acc" data-a="build">🎬 Продолжить сборку</button>` : `<button class="btn ${e.status === 'built' ? '' : 'acc'}" data-a="build">🎬 ${e.status === 'built' ? 'Пересобрать' : 'Собрать видео'}</button>`;
         d.innerHTML = `<div class="row"><div style="flex:1"><b>Серия ${e.episode}${e.title ? '. ' + esc(e.title) : ''}</b><div class="mut">${(e.script.scenes || []).length} сцен · ${st}</div></div></div>
-          <div class="btns"><button class="btn" data-a="play">▶ Просмотр</button><button class="btn ${e.status === 'built' ? '' : 'acc'}" data-a="build">🎬 ${e.status === 'built' ? 'Пересобрать' : 'Собрать видео'}</button>
+          <div class="btns"><button class="btn" data-a="play">▶ Просмотр</button>${bb}
           ${e.video ? '<button class="btn ok" data-a="share">⤴ Отправить / YouTube</button>' : ''}<button class="btn" data-a="yt">📝 Текст для YouTube</button></div>`;
         d.querySelectorAll('button').forEach(b => b.onclick = () => App.epAction(p, e, b.dataset.a));
         card.appendChild(d);
@@ -221,7 +240,7 @@ const App = {
     for (const c of C) {
       const d = document.createElement('div'); d.className = 'ch';
       const cv = document.createElement('canvas'); cv.width = 360; cv.height = 400; d.appendChild(cv);
-      if (!(window.MK3D && MK3D.ready && MK3D.portrait(cv, c.spec, 1.2))) MK.portrait(cv, c.spec, 1.2);
+      if (!(window.MK3D && MK3D.ready && !Build.busy && MK3D.portrait(cv, c.spec, 1.2))) MK.portrait(cv, c.spec, 1.2);
       const v = c.spec.voice || {};
       d.insertAdjacentHTML('beforeend', `<div class="i"><b>${esc(c.spec.name)}</b><div><span class="code">${esc(c.code)}</span> <span class="lock">🔒</span></div>
         <div class="mut">${esc(MK.KIND_NAMES[c.spec.kind] || c.spec.kind)} · голос: ${esc(MK.fxFor(Lib.data, c.spec.id).name)}</div>
@@ -237,7 +256,7 @@ const App = {
     if (!L.length) { m.insertAdjacentHTML('beforeend', `<div class="card mut">Локаций пока нет.</div>`); return; }
     for (const l of L) {
       const d = document.createElement('div'); d.className = 'ch'; d.style.marginBottom = '10px';
-      const cv = document.createElement('canvas'); cv.width = 640; cv.height = 360; d.appendChild(cv); if (!(window.MK3D && MK3D.ready && MK3D.locPreview(cv, l.spec, 2))) MK.locPreview(cv, l.spec, 2);
+      const cv = document.createElement('canvas'); cv.width = 640; cv.height = 360; d.appendChild(cv); if (!(window.MK3D && MK3D.ready && !Build.busy && MK3D.locPreview(cv, l.spec, 2))) MK.locPreview(cv, l.spec, 2);
       d.insertAdjacentHTML('beforeend', `<div class="i"><b>${esc(l.spec.name || '')}</b> <span class="code">${esc(l.code)}</span> <span class="lock">🔒</span><div class="mut">${esc(MK.LOC_NAMES[l.spec.type] || l.spec.type)} · ${esc(l.spec.time || 'day')}</div></div>`);
       m.appendChild(d);
     }
@@ -259,7 +278,7 @@ const App = {
       <div class="card"><b>Чему я научился</b><div id="lexList" class="mut" style="margin-top:6px"></div></div>
       <div class="card"><b>Персонажи и локации</b><div class="mut">Персонажей: ${Object.keys(Lib.data.characters).length}, локаций: ${Object.keys(Lib.data.locations).length}. Библиотека хранится в «Файлы → Замер 3D → multik».</div></div>`);
     Stress.render();
-    const sr = document.getElementById('sres'), sf = document.getElementById('sfps'), sq = document.getElementById('squal'); sr.value = s.res; sf.value = s.fps; sq.value = s.quality || 'hq'; sq.onchange = () => { s.quality = sq.value; Lib.save(); if (window.MK3D) MK3D.setQuality(s.quality); };
+    const sr = document.getElementById('sres'), sf = document.getElementById('sfps'), sq = document.getElementById('squal'); sr.value = s.res; sf.value = s.fps; sq.value = s.quality || 'hq'; sq.onchange = () => { if (Build.busy) { alert('Качество можно поменять, когда сборка закончится.'); sq.value = s.quality || 'hq'; return; } s.quality = sq.value; Lib.save(); if (window.MK3D) MK3D.setQuality(s.quality); };
     sr.onchange = () => { s.res = +sr.value; Lib.save(); }; sf.onchange = () => { s.fps = +sf.value; Lib.save(); };
     const lex = Lib.data.lexicon || {}, rows = [];
     for (const [k, v] of Object.entries(lex.names || {})) rows.push(['names', k, `«${esc(k)}» = ${esc(v === 'Р' ? 'Рассказчик' : (Lib.data.characters[v] ? Lib.data.characters[v].spec.name : v))}`]);
@@ -302,6 +321,7 @@ const App = {
   async epAction(p, e, a) {
     if (a === 'play') return Player.open(e);
     if (a === 'build') return Build.run(p, e);
+    if (a === 'unqueue') return Build.unqueue(p, e);
     if (a === 'share') return Native.call('share', { path: e.video });
     if (a === 'yt') { const y = e.script.youtube || {}; const text = `${y.title || (p.series + ' — Серия ' + e.episode + '. ' + (e.title || ''))}\n\n${y.description || ''}\n\n${(y.tags || []).map(t => '#' + t.replace(/\s+/g, '')).join(' ')}`; await Native.call('copy', { text }); alert('Название, описание и теги скопированы:\n\n' + text); }
   },
@@ -330,6 +350,7 @@ async function prepare(e, onStep, isCancelled) {
 const Player = {
   tl: null, ac: null, src: null, t0: 0, off: 0, playing: false, raf: 0,
   async open(e) {
+    if (Build.busy) { alert('Сейчас собирается серия — просмотр откроется после сборки (или останови её кнопкой ✕ внизу).'); return; }
     // AudioContext создаём сразу по нажатию — иначе iPhone не даст играть звук
     audioPlayback();
     if (this.ac) { try { this.ac.close(); } catch (er) {} }
@@ -355,49 +376,137 @@ const Prog = {
 };
 
 // ---------- сборка видео ----------
+// Сборка идёт «в фоне»: внизу маленькая полоска, а приложением можно пользоваться — смотреть другие разделы,
+// писать сценарии, ставить в очередь следующие серии. Закрыл «Мультики» — страница работает дальше незаметно.
+// Свернул приложение или заблокировал телефон — iPhone не даёт рисовать видео в фоне: сборка встаёт на паузу
+// и продолжается с того же кадра, когда вернёшься (готовые куски видео лежат на телефоне — даже после закрытия приложения).
 const Build = {
-  busy: false, stop: false,
-  cancel() { this.stop = true; },
-  async run(p, e) {
-    if (this.busy) return; this.busy = true; this.stop = false;
-    const s = Lib.data.settings, w = s.res === 720 ? 1280 : 1920, h = s.res === 720 ? 720 : 1080, fps = s.fps || 25;
-    Prog.show(`Серия ${e.episode}. ${e.title || ''}`);
+  busy: false, stop: false, txt: '',
+  jobs() { const s = Lib.data.settings; return s.buildQueue || (s.buildQueue = []); },
+  find(j) { const p = Lib.data.projects.find(p => p.series === j.series), e = p && p.episodes.find(e => e.episode === j.episode); return e ? { p, e } : null; },
+  state(p, e) { const q = this.jobs(), k = q.findIndex(j => j.series === p.series && j.episode === e.episode); return k < 0 ? '' : !this.busy ? 'held' : k === 0 ? 'run' : 'wait'; },
+  unqueue(p, e) { const q = this.jobs(), k = q.findIndex(j => j.series === p.series && j.episode === e.episode); if (k > 0 || (k === 0 && !this.busy)) { q.splice(k, 1); if (!q.length) delete Lib.data.settings.buildJob; Lib.save(); } this.refresh(); },
+  refresh() { if (App.tab === 'series') App.render(true); },
+  async run(p, e) { // кнопка «Собрать видео»: серия встаёт в очередь, полоска внизу — и можно заниматься другим
+    const q = this.jobs();
+    if (!q.some(j => j.series === p.series && j.episode === e.episode)) { q.push({ series: p.series, episode: e.episode }); await Lib.save(); if (this.busy) this.toast(`Серия ${e.episode} — в очереди, соберу следом`); }
+    if (!this.busy) return this.loop();
+    this.refresh();
+  },
+  async loop() {
+    if (this.busy) return; this.busy = true; this.stop = false; Native.call('keepAwake', { on: true });
+    this.toast('Собираю в фоне — пользуйся приложением, полоска внизу покажет ход сборки.');
+    let last = null, n = 0;
     try {
-      const { tl, mix } = await prepare(e, (a, pr, t) => Prog.set(a, pr * .1, t), () => this.stop);
-      const name = `${p.series} - ${String(e.episode).padStart(2, '0')}. ${e.title || ''}`.replace(/[\/\\:?*"<>|]/g, '').trim();
-      // звук сначала: телефон пишет его вместе с кадрами
-      const wav = MK.wav(mix), CH = 1 << 20;
-      for (let i = 0; i < wav.length; i += CH) { await Native.call('audioChunk', { first: i === 0, d: b64(wav.subarray(i, i + CH)) }); }
-      const ok = await Native.call('videoBegin', { w, h, fps, name });
-      if (ok === false) throw new Error('Не удалось начать запись видео');
-      const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d');
-      const N = Math.ceil(tl.dur * fps), t0 = performance.now(), sleep = ms => new Promise(r => setTimeout(r, ms));
-      // кадры идут «конвейером»: пока телефон кодирует один кадр в видео, следующий уже рисуется (2 в пути).
-      // Телефон сообщает нагрев: тёплый — чуть сбавляем темп, горячий — паузы, критично — ждём, пока остынет.
-      const inflight = []; let heat = 1, paused = 0, bad = 0;
-      const take = async () => { const r = await inflight.shift(); if (r === 0 || r === false) { if (++bad > 8) throw new Error('кадры не записываются'); } else bad = 0; if (typeof r === 'number' && r > 0) heat = r; };
-      for (let i = 0; i < N; i++) {
-        if (this.stop) { while (inflight.length) { try { await inflight.shift(); } catch (e) {} } await Native.call('videoCancel'); throw new Error('cancel'); }
-        ctx.setTransform(w / 1920, 0, 0, h / 1080, 0, 0); MK.render(ctx, tl, i / fps);
-        const d = cv.toDataURL('image/jpeg', .9); inflight.push(Native.call('videoFrame', { i, d: d.slice(d.indexOf(',') + 1) }));
-        if (inflight.length >= 2) await take();
-        if (heat >= 4) { // критично: ждём (до 3 минут), пока телефон остынет
-          while (inflight.length) await take();
-          const tp = performance.now(); Prog.set('Кадры', .1 + .88 * i / N, `${i} из ${N} · телефон горячий — даю остыть…`);
-          for (let k = 0; k < 60 && !this.stop; k++) { await sleep(3000); const st = await Native.call('thermal'); if (typeof st === 'number' && st <= 1) break; }
-          paused += performance.now() - tp; heat = 2;
-        } else if (heat === 3) await sleep(120); else if (heat === 2) await sleep(8);
-        if (i % 10 === 0) { const el = (performance.now() - t0 - paused) / 1000, eta = el / (i + 1) * (N - i - 1); Prog.set('Кадры', .1 + .88 * i / N, `${i} из ${N} · осталось ≈ ${fmt(eta)}${heat >= 3 ? ' · телефон тёплый, бережём его' : ''}`); }
+      for (;;) {
+        const q = this.jobs(); if (!q.length || this.stop) break;
+        const f = this.find(q[0]); if (!f) { q.shift(); await Lib.save(); continue; }
+        this.refresh();
+        const r = await this.one(f.p, f.e);
+        if (r === 'cancel') { q.length = 0; await Lib.save(); break; }
+        q.shift(); await Lib.save(); last = r; n++;
+        if (q.length) this.toast(`✓ Серия ${r.e.episode} собрана. Дальше — серия ${q[0].episode}`, r.path);
       }
-      while (inflight.length) await take();
-      Prog.set('Сохраняю', .99, 'Записываю файл…');
+    } catch (err) {
+      this.bar(false);
+      alert(`Ошибка сборки: ${err.message}\n\nГотовые кадры сохранены. Нажми «Собрать видео» у этой серии ещё раз — продолжу с того же места.`);
+    }
+    this.busy = false; this.bar(false); this.night(false); Native.call('keepAwake', { on: false });
+    if (App.tab !== 'set') App.render(true); // картинки героев снова объёмные
+    if (last && !this.jobs().length) {
+      const msg = n > 1 ? `Готово! Собрано серий: ${n}.` : `Готово! Серия ${last.e.episode} собрана (${fmt(last.dur)}).`;
+      if (window.MK_PARKED || await Native.call('parked') === true) { // «Мультики» закрыты — спрашиваем поверх того экрана, где ты сейчас
+        if (confirm(msg + '\nОтправить сейчас (YouTube / сохранить в Фото)?')) await Native.call('share', { path: last.path });
+      } else this.toast(msg, last.path);
+    }
+    Native.call('buildDone');
+  },
+  async wait3d() { for (let k = 0; k < 300 && !(window.MK3D && MK3D.ready); k++) await new Promise(r => setTimeout(r, 100)); },
+  async one(p, e) {
+    const s = Lib.data.settings, w = s.res === 720 ? 1280 : 1920, h = s.res === 720 ? 720 : 1080, fps = s.fps || 25;
+    const title = `Серия ${e.episode}${e.title ? '. ' + e.title : ''}`, more = () => { const k = this.jobs().length - 1; return k > 0 ? ` · ещё ${k} в очереди` : ''; };
+    this.bar(true); this.set(title, 0, 'Готовлю…');
+    await this.wait3d();
+    // та же серия с теми же настройками уже собиралась и прервалась — продолжаем с готовых кадров
+    const id = { series: p.series, episode: e.episode, hash: e.hash || MK.hash32(MK.canon(e.script)), w, h, fps, q: s.quality || 'hq', style: (window.MK3D && MK3D.ready) ? '3d' : '2d' };
+    const old = s.buildJob, resume = !!old && Object.keys(id).every(k => old[k] === id[k]);
+    s.buildJob = id; await Lib.save();
+    const sleep = ms => new Promise(r => setTimeout(r, ms)), inflight = [];
+    // кадры идут «конвейером» (2 в пути): пока телефон кодирует один кадр, следующий уже рисуется.
+    // Ответ телефона: 1…4 — записан + нагрев; отрицательный — «продолжай с кадра N» (после паузы); 0 — не записан.
+    let began = false, heat = 1, bad = 0, rewind = -1;
+    const take = async () => { const r = await inflight.shift();
+      if (typeof r === 'number' && r < 0) { const k = -r - 1; if (rewind < 0 || k < rewind) rewind = k; return; }
+      if (!r) { bad++; if (bad > 20) throw new Error('кадры не записываются'); await sleep(500); return; }
+      bad = 0; if (typeof r === 'number') heat = r; };
+    const drain = async () => { while (inflight.length) await take(); };
+    try {
+      const { tl, mix } = await prepare(e, (a, pr, t) => this.set(title, pr * .08, a + (t ? ' · ' + t : '')), () => this.stop);
+      const name = `${p.series} - ${String(e.episode).padStart(2, '0')}. ${e.title || ''}`.replace(/[\/\\:?*"<>|]/g, '').trim();
+      // звук — отдельным файлом: телефон приклеит его к видео в самом конце
+      const wav = MK.wav(mix), CH = 1 << 20;
+      for (let i = 0; i < wav.length; i += CH) { if (this.stop) throw new Error('cancel'); await Native.call('audioChunk', { first: i === 0, d: b64(wav.subarray(i, i + CH)) }); }
+      const rb = await Native.call('videoBegin', { w, h, fps, name, resume });
+      if (!rb || rb.ok === false) throw new Error('Не удалось начать запись видео');
+      began = true;
+      const N = Math.ceil(tl.dur * fps); let i = Math.max(0, Math.min(N, (rb && rb.frames) | 0)), i0 = i;
+      if (i > 0) this.set(title, .08 + .9 * i / N, `Продолжаю с кадра ${i} из ${N}`);
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d');
+      const t0 = performance.now(); let paused = 0, same = 0, lastRw = -1;
+      for (;;) {
+        while (i < N) {
+          if (this.stop) { await drain(); throw new Error('cancel'); }
+          if (tl.style === '3d' && MK3D.lost()) { // видеокарту отобрали (приложение сворачивали) — ждём, пока вернут
+            await drain(); this.set(title, .08 + .9 * i / N, 'Жду видеокарту…'); let k = 0; while (MK3D.lost() && k++ < 100) await sleep(200);
+            if (MK3D.lost()) { // не вернули — перезапускаю страницу, сборка продолжится с этого кадра сама
+              await Native.call('videoCancel', { keep: true }); began = false; s.autoResume = 1; await Lib.save(); location.reload(); await sleep(60000); throw new Error('нет видеокарты'); }
+          }
+          ctx.setTransform(w / 1920, 0, 0, h / 1080, 0, 0); MK.render(ctx, tl, i / fps);
+          const d = cv.toDataURL('image/jpeg', .9); inflight.push(Native.call('videoFrame', { i, d: d.slice(d.indexOf(',') + 1) })); i++;
+          if (inflight.length >= 2) await take();
+          if (rewind >= 0) { await drain(); // телефон просит вернуться (кусок видео оборвался при сворачивании) — перерисую эти кадры
+            same = rewind === lastRw ? same + 1 : 0; lastRw = rewind; if (same > 40) throw new Error('запись видео не идёт');
+            if (same > 2) await sleep(1000);
+            i = rewind; rewind = -1; i0 = Math.min(i0, i); continue; }
+          if (heat >= 4) { // критично: ждём (до 3 минут), пока телефон остынет
+            await drain(); const tp = performance.now(); this.set(title, .08 + .9 * i / N, `${i} из ${N} · телефон горячий — даю остыть…`);
+            for (let k = 0; k < 60 && !this.stop; k++) { await sleep(3000); const st = await Native.call('thermal'); if (typeof st === 'number' && st <= 1) break; }
+            paused += performance.now() - tp; heat = 2;
+          } else if (heat === 3) await sleep(120); else if (heat === 2) await sleep(8);
+          if (i % 10 === 0) { const el = (performance.now() - t0 - paused) / 1000, eta = el / Math.max(1, i - i0) * (N - i); this.set(title, .08 + .9 * i / N, `${Math.round(100 * i / N)}% · осталось ≈ ${fmt(eta)}${heat >= 3 ? ' · телефон тёплый, бережём его' : ''}${more()}`); }
+        }
+        await drain();
+        if (rewind >= 0) { i = rewind; rewind = -1; continue; }
+        break;
+      }
+      this.set(title, .99, 'Склеиваю видео и звук…');
       const r = await Native.call('videoEnd');
       if (!r || !r.path) throw new Error((r && r.error) || 'Файл не записался');
-      e.status = 'built'; e.video = r.path; e.dur = tl.dur; e.built = new Date().toISOString(); await Lib.save();
-      Prog.hide(); App.render();
-      if (confirm(`Готово! Серия ${e.episode} собрана (${fmt(tl.dur)}).\nОтправить сейчас (YouTube / сохранить в Фото)?`)) Native.call('share', { path: r.path });
-    } catch (err) { Prog.hide(); if (err.message !== 'cancel') alert('Ошибка сборки: ' + err.message); }
-    this.busy = false;
+      delete s.buildJob;
+      const f = this.find({ series: p.series, episode: e.episode }), ee = f ? f.e : e; // серию могли обновить, пока собиралась
+      ee.status = 'built'; ee.video = r.path; ee.dur = tl.dur; ee.built = new Date().toISOString(); await Lib.save();
+      return { e: ee, path: r.path, dur: tl.dur };
+    } catch (err) {
+      const settle = async () => { while (inflight.length) { try { await inflight.shift(); } catch (e2) {} } };
+      if (err.message === 'cancel') { await settle(); await Native.call('videoCancel'); delete s.buildJob; await Lib.save(); return 'cancel'; }
+      await settle(); if (began) await Native.call('videoCancel', { keep: true });
+      throw err;
+    }
+  },
+  set(t, p, sub) { this.txt = `${t} · ${Math.round(p * 100)}%`; document.getElementById('bbT').textContent = t; document.getElementById('bbP').style.width = Math.round(p * 100) + '%'; document.getElementById('bbS').textContent = sub || ''; document.getElementById('ngT').textContent = `${t}\n${sub || ''}`; },
+  bar(on) { document.getElementById('bbar').style.display = on ? 'flex' : 'none'; },
+  night(on) { document.getElementById('night').style.display = on ? 'flex' : 'none'; },
+  async askCancel() { const k = this.jobs().length; if (confirm(k > 1 ? `Остановить сборку? Очередь (${k} серий) тоже очистится.` : 'Остановить сборку этой серии?')) this.stop = true; },
+  toast(t, path) { const el = document.getElementById('toast'); clearTimeout(this._tt); if (!t) { el.style.display = 'none'; return; }
+    document.getElementById('tsT').textContent = t; const b = document.getElementById('tsB'); b.style.display = path ? '' : 'none'; b.onclick = () => { el.style.display = 'none'; Native.call('share', { path }); };
+    el.style.display = 'flex'; this._tt = setTimeout(() => el.style.display = 'none', path ? 20000 : 4000); },
+  async resumeCheck() { // приложение закрыли посреди сборки — предлагаем продолжить
+    const q = this.jobs(); if (this.busy || !q.length) return;
+    const f = this.find(q[0]); if (!f) { q.length = 0; await Lib.save(); return; }
+    const k = q.length - 1, done = Lib.data.settings.buildJob && Lib.data.settings.buildJob.episode === f.e.episode;
+    if (Lib.data.settings.autoResume) { delete Lib.data.settings.autoResume; await Lib.save(); return this.loop(); } // сами перезапустились — продолжаем без вопросов
+    if (confirm(`Сборка не закончилась: серия ${f.e.episode}${f.e.title ? ' «' + f.e.title + '»' : ''}${k ? ` и ещё ${k} в очереди` : ''}.\nПродолжить${done ? ' с того же места' : ''}?`)) this.loop();
+    else { q.length = 0; delete Lib.data.settings.buildJob; await Lib.save(); Native.call('videoCancel'); this.refresh(); }
   },
 };
 // ---------- конструктор персонажа ----------
@@ -468,7 +577,7 @@ const Ed = {
       const a = this.act && T - this.act.t0 < 1.2 ? { n: this.act.n, p: (T - this.act.t0) / (this.act.n === 'jump' ? .9 : 1.2), t: T - this.act.t0 } : { n: 'idle', p: 0, t: T };
       const ctx = cv.getContext('2d'), w = cv.width, h = cv.height;
       const stt = { x: 0, face: 0, emo: 'happy', act: a, walk: {}, talk: T < this.talkUntil ? (Math.sin(T * 21) * .5 + .5) : 0, persist: 'none' };
-      if (!(window.MK3D && MK3D.ready && (this._f = (this._f || 0) + 1) && (this._f % 2 || true) && MK3D.portrait(cv, s, T, { state: stt }))) {
+      if (!(window.MK3D && MK3D.ready && !Build.busy && MK3D.portrait(cv, s, T, { state: stt }))) {
         const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#cdeeff'); g.addColorStop(1, '#a8e08a'); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
         const k = h / (400 * 1.45 * Math.max(1, s.height || 1)); ctx.save(); ctx.scale(k, k);
         MK.drawCharPublic(ctx, s, Object.assign(stt, { x: w / 2 / k, y: (h - 30) / k, s: 1, face: Math.sin(T * .4) * .7 }), T); ctx.restore(); }
