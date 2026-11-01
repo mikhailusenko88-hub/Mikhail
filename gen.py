@@ -72,6 +72,30 @@ def main():
                 m = silero_model("v5_cis_base")
                 a = m.apply_tts(text=" ".join(out), speaker=spk, sample_rate=48000)
                 save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
+            elif eng == "silero_random":
+                # новый, случайно придуманный голос (Silero v4); сохраняется в voices/, чтобы потом звучать так же
+                import torch
+                m = silero_model("v4_ru")
+                os.makedirs("voices", exist_ok=True)
+                vp = f"voices/random_{spk}.pt"
+                if os.path.exists(vp):
+                    a = m.apply_tts(text=text, voice_path=vp, sample_rate=48000, put_accent=True, put_yo=True)
+                else:
+                    torch.manual_seed(int(spk))
+                    a = m.apply_tts(text=text, speaker="random", sample_rate=48000, put_accent=True, put_yo=True)
+                    m.save_random_voice(vp)
+                save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
+            elif eng == "morph":
+                # morph:<голос Silero>:<сдвиг формант>:<средняя высота, Гц> — новый тембр из готового голоса (Praat «Change gender»)
+                import parselmouth
+                from parselmouth.praat import call
+                src, fs, pm = spk.split(":")
+                m = silero_model()
+                a = m.apply_tts(text=text, speaker=src, sample_rate=48000, put_accent=True, put_yo=True)
+                x = (a.numpy() if hasattr(a, "numpy") else np.asarray(a)).astype(np.float64)
+                snd = parselmouth.Sound(x, 48000)
+                out = call(snd, "Change gender", 75, 600, float(fs), float(pm), 1.0, 1.0)
+                save_wav(out.values[0], f"in/{name}.wav")
             elif eng == "edge":
                 import edge_tts
                 asyncio.run(edge_tts.Communicate(plus_to_acute(text), spk).save(f"in/{name}.mp3"))
