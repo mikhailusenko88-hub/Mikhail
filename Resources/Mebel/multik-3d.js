@@ -96,7 +96,7 @@ float patW(vec4 P){
 `;
 const SSS_FRAG = `#include <lights_fragment_end>
   #if NUM_DIR_LIGHTS > 0
-  { vec3 nS = normal; float thk = exp(-vThick * 26.0);
+  { vec3 nS = normal; float thk = exp(-clamp(vThick, 0.0, 1.0) * 26.0);
     for (int i = 0; i < NUM_DIR_LIGHTS; i++) { vec3 Ld = directionalLights[i].direction, Lc = directionalLights[i].color; float nl = dot(nS, Ld);
       float wrap = max(0., (nl + .45) / 1.45) - max(0., nl); // свет «затекает» за границу тени — мягкая тёплая кромка
       float tr = pow(max(0., dot(geometryViewDir, -normalize(Ld + nS * .3))), 3.0) * thk; // свет насквозь (уши на просвет)
@@ -416,13 +416,13 @@ void main(){
          + uSunCol * (Rl * .2 + TRT * base * .45) * ao
          + uSunCol * base * TT * .9 * vt + uRimCol * base * TTr * .55 * vt;
   c = max(mix(vec3(dot(c, vec3(.299, .587, .114))), c, 1.15), 0.);
-  gl_FragColor = vec4(c, 1.0);
+  gl_FragColor = vec4(c, mix(.7, .36, vt)); // со сглаживанием ×4 волосок «тоньше пикселя»: прозрачность → доля покрытия
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
 }`;
 const furMats = [];
 function strandMat(src) {
-  const m = new THREE.ShaderMaterial({ vertexShader: FUR_VS, fragmentShader: FUR_FS, toneMapped: true,
+  const m = new THREE.ShaderMaterial({ vertexShader: FUR_VS, fragmentShader: FUR_FS, toneMapped: true, alphaToCoverage: !MK3D._noA2C,
     uniforms: { uNk: { value: .75 }, uCk: { value: .45 }, uLen: { value: .05 }, uLag: { value: new THREE.Vector3() }, uGrav: { value: .2 }, uTime: { value: 0 }, uColor: { value: src.color.clone() }, uMap: { value: src.map || null }, uHasMap: { value: src.map ? 1 : 0 }, uHasCol: { value: 0 },
       uSunDir: { value: new THREE.Vector3(0, 1, 0) }, uSunCol: { value: new THREE.Color(1, 1, 1) }, uSky: { value: new THREE.Color(1, 1, 1) }, uGround: { value: new THREE.Color(.5, .5, .5) }, uRimDir: { value: new THREE.Vector3(0, 0, -1) }, uRimCol: { value: new THREE.Color(1, 1, 1) } } });
   furMats.push(m); return m;
@@ -1736,11 +1736,11 @@ let PP = null;
 const PP_VS = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
 function ppMat(fs, uniforms, final) { return new THREE.ShaderMaterial({ vertexShader: PP_VS, fragmentShader: fs, uniforms, depthTest: false, depthWrite: false, toneMapped: !!final }); }
 function ppInit(w, h) {
-  const rt = (ww, hh, depth) => { const r = new THREE.WebGLRenderTarget(Math.max(1, ww | 0), Math.max(1, hh | 0), { type: THREE.HalfFloatType, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: !!depth }); if (depth) r.depthTexture = new THREE.DepthTexture(Math.max(1, ww | 0), Math.max(1, hh | 0)); return r; };
+  const rt = (ww, hh, depth) => { const r = new THREE.WebGLRenderTarget(Math.max(1, ww | 0), Math.max(1, hh | 0), { type: THREE.HalfFloatType, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: !!depth, samples: depth ? msaaN() : 0 }); if (depth) r.depthTexture = new THREE.DepthTexture(Math.max(1, ww | 0), Math.max(1, hh | 0)); return r; };
   const P = { w, h, main: rt(w, h, true), h1: rt(w / 2, h / 2), h2: rt(w / 2, h / 2), q1: rt(w / 4, h / 4), q2: rt(w / 4, h / 4), b1: rt(w / 4, h / 4), b2: rt(w / 4, h / 4), e1: rt(w / 8, h / 8), e2: rt(w / 8, h / 8) };
   P.scene = new THREE.Scene(); P.cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1); P.quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2)); P.quad.frustumCulled = false; P.scene.add(P.quad);
-  P.copy = ppMat('uniform sampler2D t; varying vec2 vUv; void main(){ gl_FragColor = texture2D(t, vUv); }', { t: { value: null } });
-  P.bright = ppMat('uniform sampler2D t; uniform float thr; varying vec2 vUv; void main(){ vec3 c = texture2D(t, vUv).rgb; float l = max(c.r, max(c.g, c.b)); float k = clamp((l - thr) / (l + 1e-4), 0.0, 1.0); gl_FragColor = vec4(c * k * k, 1.0); }', { t: { value: null }, thr: { value: .92 } });
+  P.copy = ppMat('uniform sampler2D t; varying vec2 vUv; void main(){ vec4 c = texture2D(t, vUv); gl_FragColor = (any(isnan(c)) || any(isinf(c))) ? vec4(0.0, 0.0, 0.0, 1.0) : min(c, vec4(48.0)); }', { t: { value: null } });
+  P.bright = ppMat('uniform sampler2D t; uniform float thr; varying vec2 vUv; void main(){ vec3 c = texture2D(t, vUv).rgb; c = (any(isnan(c)) || any(isinf(c))) ? vec3(0.0) : min(c, vec3(24.0)); float l = max(c.r, max(c.g, c.b)); float k = clamp((l - thr) / (l + 1e-4), 0.0, 1.0); gl_FragColor = vec4(c * k * k, 1.0); }', { t: { value: null }, thr: { value: .92 } });
   P.blur = ppMat('uniform sampler2D t; uniform vec2 d; varying vec2 vUv; void main(){ vec3 c = texture2D(t, vUv).rgb * .2270; c += (texture2D(t, vUv + d * 1.3846).rgb + texture2D(t, vUv - d * 1.3846).rgb) * .3162; c += (texture2D(t, vUv + d * 3.2308).rgb + texture2D(t, vUv - d * 3.2308).rgb) * .0703; gl_FragColor = vec4(c, 1.0); }', { t: { value: null }, d: { value: new THREE.Vector2() } });
   P.r1 = rt(w / 4, h / 4); P.r2 = rt(w / 4, h / 4);
   P.rays = ppMat(`uniform sampler2D tMain, tDepth; uniform vec2 src; varying vec2 vUv;
@@ -1750,7 +1750,7 @@ function ppInit(w, h) {
   P.comp = ppMat(`#include <packing>
     uniform sampler2D tMain, tHalf, tQuart, tB1, tB2, tDepth, tRays; uniform float near, far, focus, ap, bloom, sat, con, vig, rays; uniform vec3 tintH, tintS, rayCol; varying vec2 vUv;
     void main(){
-      vec3 c = texture2D(tMain, vUv).rgb;
+      vec3 c = texture2D(tMain, vUv).rgb; c = (any(isnan(c)) || any(isinf(c))) ? vec3(0.0) : min(c, vec3(48.0));
       if (ap > 0.0) { float z = -perspectiveDepthToViewZ(texture2D(tDepth, vUv).x, near, far); float coc = clamp(ap * abs(1.0 - focus / max(z, .01)) * 2.4, 0.0, 1.0);
         vec3 hb = texture2D(tHalf, vUv).rgb, qb = texture2D(tQuart, vUv).rgb; c = coc < .5 ? mix(c, hb, coc * 2.0) : mix(hb, qb, (coc - .5) * 2.0); }
       c += texture2D(tB1, vUv).rgb * bloom * .7 + texture2D(tB2, vUv).rgb * bloom;
@@ -1766,25 +1766,37 @@ function ppInit(w, h) {
   return P; }
 function ppPass(mat, uni, target) { const P = PP; P.quad.material = mat; for (const k in uni) mat.uniforms[k].value = uni[k]; R.setRenderTarget(target); R.render(P.scene, P.cam); }
 const GRADE = { forest: [[1.07, 1.01, .9], [.86, .99, 1.05], 1.1, 1.09], day: [[1.03, 1.01, .97], [.97, .99, 1.04], 1.08, 1.05], evening: [[1.08, .99, .9], [.94, .9, 1.06], 1.08, 1.06], night: [[.96, .99, 1.06], [.84, .9, 1.12], .92, 1.08], indoor: [[1.05, 1.0, .94], [.97, .97, 1.0], 1.05, 1.04], space: [[1, 1, 1.02], [.9, .92, 1.1], 1.05, 1.1] };
+// Сглаживание: раньше кадр считался в 4 раза крупнее (3840×2160) — телефон грелся. Теперь кадр 1920×1080 с аппаратным сглаживанием ×4 (MSAA):
+// края и волоски такие же гладкие, а работы видеокарте в 3–4 раза меньше. Если телефон не умеет — запасной путь: кадр в 1.5 раза крупнее.
+let MSAA = null;
+function msaaN() { if (MSAA !== null) return MSAA; MSAA = 0; if (MK3D._noMsaa) return 0; try { const caps = R.capabilities, n = caps.isWebGL2 ? Math.min(4, caps.maxSamples || 0) : 0; if (n < 2) return MSAA;
+    const a = new THREE.WebGLRenderTarget(32, 32, { type: THREE.HalfFloatType, depthBuffer: true, samples: n }); a.depthTexture = new THREE.DepthTexture(32, 32);
+    const b = new THREE.WebGLRenderTarget(4, 4), ts = new THREE.Scene(), tc = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), q = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ color: 0xff0000 })); ts.add(q);
+    R.setRenderTarget(a); R.render(ts, tc); q.material = new THREE.MeshBasicMaterial({ map: a.texture }); R.setRenderTarget(b); R.render(ts, tc); const px = new Uint8Array(4 * 4 * 4); R.readRenderTargetPixels(b, 0, 0, 4, 4, px); R.setRenderTarget(null);
+    if (px[0] > 150 && px[1] < 80) MSAA = n; a.dispose(); b.dispose(); } catch (e) { MSAA = 0; } return MSAA; }
+MK3D.ss = () => MK3D._ssOverride || (msaaN() ? 1 : 1.5);
 function renderHQ(w, h) {
   if (!PP || PP.w !== w || PP.h !== h) { if (PP) for (const k of ['main', 'h1', 'h2', 'q1', 'q2', 'b1', 'b2', 'e1', 'e2', 'r1', 'r2']) PP[k].dispose(); PP = ppInit(w, h); }
-  const P = PP; R.setRenderTarget(P.main); R.clear(); R.render(scene, cam);
+  const P = PP, f = Math.max(.5, w / 3840); R.setRenderTarget(P.main); R.clear(); R.render(scene, cam); // f: размытия задуманы для кадра 3840 — тот же размер на экране
   const ap = MK3D._ap || 0;
   ppPass(P.copy, { t: P.main.texture }, P.h1);
-  if (ap > 0) { ppPass(P.blur, { t: P.h1.texture, d: new THREE.Vector2(1.6 / P.h1.width, 0) }, P.h2); ppPass(P.blur, { t: P.h2.texture, d: new THREE.Vector2(0, 1.6 / P.h1.height) }, P.h1);
-    ppPass(P.copy, { t: P.h1.texture }, P.q1); ppPass(P.blur, { t: P.q1.texture, d: new THREE.Vector2(2.2 / P.q1.width, 0) }, P.q2); ppPass(P.blur, { t: P.q2.texture, d: new THREE.Vector2(0, 2.2 / P.q1.height) }, P.q1); }
+  if (ap > 0) { ppPass(P.blur, { t: P.h1.texture, d: new THREE.Vector2(1.6 * f / P.h1.width, 0) }, P.h2); ppPass(P.blur, { t: P.h2.texture, d: new THREE.Vector2(0, 1.6 * f / P.h1.height) }, P.h1);
+    ppPass(P.copy, { t: P.h1.texture }, P.q1); ppPass(P.blur, { t: P.q1.texture, d: new THREE.Vector2(2.2 * f / P.q1.width, 0) }, P.q2); ppPass(P.blur, { t: P.q2.texture, d: new THREE.Vector2(0, 2.2 * f / P.q1.height) }, P.q1); }
   ppPass(P.bright, { t: P.main.texture, thr: .9 }, P.h2); ppPass(P.copy, { t: P.h2.texture }, P.b1); // яркое — сначала в половинном размере, потом мягко вниз (без «квадратиков»)
-  for (const r of [1.5, 3]) { ppPass(P.blur, { t: P.b1.texture, d: new THREE.Vector2(r / P.b1.width, 0) }, P.b2); ppPass(P.blur, { t: P.b2.texture, d: new THREE.Vector2(0, r / P.b1.height) }, P.b1); }
-  ppPass(P.copy, { t: P.b1.texture }, P.e1); ppPass(P.blur, { t: P.e1.texture, d: new THREE.Vector2(2 / P.e1.width, 0) }, P.e2); ppPass(P.blur, { t: P.e2.texture, d: new THREE.Vector2(0, 2 / P.e1.height) }, P.e1);
-  const rs = MK3D._rays || 0; if (rs > 0) { ppPass(P.rays, { tMain: P.main.texture, tDepth: P.main.depthTexture, src: MK3D._raySrc || new THREE.Vector2(.7, 1.25) }, P.r1); ppPass(P.blur, { t: P.r1.texture, d: new THREE.Vector2(1.2 / P.r1.width, 0) }, P.r2); ppPass(P.blur, { t: P.r2.texture, d: new THREE.Vector2(0, 1.2 / P.r1.height) }, P.r1); }
+  for (const r of [1.5, 3]) { ppPass(P.blur, { t: P.b1.texture, d: new THREE.Vector2(r * f / P.b1.width, 0) }, P.b2); ppPass(P.blur, { t: P.b2.texture, d: new THREE.Vector2(0, r * f / P.b1.height) }, P.b1); }
+  ppPass(P.copy, { t: P.b1.texture }, P.e1); ppPass(P.blur, { t: P.e1.texture, d: new THREE.Vector2(2 * f / P.e1.width, 0) }, P.e2); ppPass(P.blur, { t: P.e2.texture, d: new THREE.Vector2(0, 2 * f / P.e1.height) }, P.e1);
+  const rs = MK3D._rays || 0; if (rs > 0) { ppPass(P.rays, { tMain: P.main.texture, tDepth: P.main.depthTexture, src: MK3D._raySrc || new THREE.Vector2(.7, 1.25) }, P.r1); ppPass(P.blur, { t: P.r1.texture, d: new THREE.Vector2(1.2 * f / P.r1.width, 0) }, P.r2); ppPass(P.blur, { t: P.r2.texture, d: new THREE.Vector2(0, 1.2 * f / P.r1.height) }, P.r1); }
   const gr = GRADE[MK3D._grade || 'day'] || GRADE.day;
   ppPass(P.comp, { tRays: P.r1.texture, rays: rs, rayCol: MK3D._rayCol || new THREE.Vector3(1, .95, .82), tMain: P.main.texture, tHalf: P.h1.texture, tQuart: P.q1.texture, tB1: P.b1.texture, tB2: P.e1.texture, tDepth: P.main.depthTexture, near: cam.near, far: cam.far, focus: MK3D._focus || 5, ap, bloom: .55, sat: gr[2], con: gr[3], vig: MK3D._vig != null ? MK3D._vig : .22, tintH: new THREE.Vector3(...gr[0]), tintS: new THREE.Vector3(...gr[1]) }, null);
 }
+let shN = 0, shT = -9, shLoc = null, shP = null;
 function render(ctx) {
   const w = ctx.canvas.width, h = ctx.canvas.height;
-  const ss = MK3D.hq ? 2 : 1; // «как в кино»: считаем кадр вдвое крупнее и уменьшаем — тонкие волоски получаются гладкими
-  if (GL.width !== w * ss || GL.height !== h * ss) { GL.width = w * ss; GL.height = h * ss; R.setSize(w * ss, h * ss, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
-  if (MK3D.hq) { scene.updateMatrixWorld(true); for (const k in rigCache) { const rg = rigCache[k]; if (rg.root.visible && rg.fur) furFrame(rg, MK3D._T || 0); } renderHQ(w * ss, h * ss); }
+  const ss = MK3D.hq ? MK3D.ss() : 1, W = Math.round(w * ss), H = Math.round(h * ss);
+  { // тени пересчитываем через кадр (герои за 1/25 с почти не сдвигаются), а при смене места или скачке времени — сразу
+    const T = MK3D._T || 0; shN++; if (!shP) shP = new THREE.Vector3(1e9, 0, 0); R.shadowMap.autoUpdate = false; if (shN % 2 === 1 || curLoc !== shLoc || Math.abs(T - shT) > .09 || sun.target.position.distanceTo(shP) > .25) { R.shadowMap.needsUpdate = true; shT = T; shLoc = curLoc; shP.copy(sun.target.position); } }
+  if (GL.width !== W || GL.height !== H) { GL.width = W; GL.height = H; R.setSize(W, H, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+  if (MK3D.hq) { scene.updateMatrixWorld(true); for (const k in rigCache) { const rg = rigCache[k]; if (rg.root.visible && rg.fur) furFrame(rg, MK3D._T || 0); } renderHQ(W, H); }
   else R.render(scene, cam);
   MK3D._ap = 0; MK3D._vig = null; MK3D._rays = 0;
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(GL, 0, 0, w, h); ctx.restore();

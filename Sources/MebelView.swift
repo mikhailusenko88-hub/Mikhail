@@ -430,8 +430,12 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
             guard let wr = writer, let s = body["d"] as? String else { replyHandler(false, "нет записи"); return }
             queue.async {
                 let ok = Data(base64Encoded: s).map { wr.append(jpeg: $0) } ?? false
-                DispatchQueue.main.async { replyHandler(ok, nil) }
+                // ответ: 0 — кадр не записался; 1…4 — записался, а число — нагрев телефона (1 норма … 4 критично)
+                let heat = ProcessInfo.processInfo.thermalState.rawValue + 1
+                DispatchQueue.main.async { replyHandler(ok ? heat : 0, nil) }
             }
+        case "thermal":
+            replyHandler(ProcessInfo.processInfo.thermalState.rawValue, nil)
         case "videoEnd":
             guard let wr = writer else { replyHandler(["error": "нет записи"], nil); return }
             writer = nil
