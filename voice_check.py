@@ -187,7 +187,7 @@ def align(audio, words):
         nxt = spans[j + 1].start if j + 1 < len(spans) else min(T, sp.start + 10)
         L = words[wi]["vows"][vk] if words[wi]["map_ok"] and vk < len(words[wi]["vows"]) else ""
         vowels.append({"w": wi, "k": vk, "t0": sp.start / fps, "t1": sp.end / fps, "c": (sp.start + sp.end) / 2 / fps,
-                       "Dn": min(0.4, (nxt - sp.start) / fps), "pt": pt, "L": L, "ph": next(iter(pt))})
+                       "Dn": min(0.15, (nxt - sp.start) / fps), "pt": pt, "L": L, "ph": next(iter(pt))})
     return vowels
 
 # ---------------- просодия ----------------
@@ -434,7 +434,8 @@ def analyze(name, apath, tpath):
     rep["intonation"] = intonation(words, vowels, P) if vowels else []
     rep["pauses"] = pauses(words) if vowels else []
     if vowels:
-        sp = sum(max(0, w["t1"] - w["t0"]) for w in words if "t0" in w)
+        tw = [w for w in words if "t0" in w]
+        sp = tw[-1]["t1"] - tw[0]["t0"] - sum(max(0, b["t0"] - a["t1"]) for a, b in zip(tw, tw[1:]) if b["t0"] - a["t1"] > 0.15)
         rep["rate"] = round(len(vowels) / sp, 1) if sp > 0 else None
     rep["words"] = [{k: w.get(k) for k in ("w", "exp", "det", "margin", "auto", "map_ok", "ph", "S", "t0", "t1")} for w in words]
     rep["vowels"] = [{k: (round(v[k], 3) if isinstance(v[k], float) else v[k]) for k in v} for v in vowels]
