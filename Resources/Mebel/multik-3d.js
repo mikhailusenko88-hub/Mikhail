@@ -263,6 +263,7 @@ function sculptRig(rig) {
   const frame = (mw) => { M.multiplyMatrices(poseInv, mw); M.decompose(tp, tq, ts); RM.makeRotationFromQuaternion(tq); const e = RM.elements; return { t: [tp.x, tp.y, tp.z], inv: [e[0], e[1], e[2], e[4], e[5], e[6], e[8], e[9], e[10]], s: [ts.x, ts.y, ts.z] }; };
   function primsOf(m, region) {
     const g = m.geometry, pa = g.parameters || {}, mat = m.material;
+    if (m.userData.groove && g.type === 'SphereGeometry') { const f = frame(m.matrixWorld), r = [pa.radius * f.s[0], pa.radius * f.s[1], pa.radius * f.s[2]], rm = Math.min(...r); return [{ type: 'ell', t: f.t, inv: f.inv, r, col: [1, 1, 1], op: 'sub', k: rm * .7, bc: f.t, br: Math.max(...r), minR: rm }]; } // пальчики: бороздки между ними
     if (!mat || Array.isArray(mat) || mat.isMeshBasicMaterial || mat.transparent || mat.side === THREE.DoubleSide || m.userData.noFur || m.userData.shell || m.visible === false) return null;
     const f = frame(m.matrixWorld), sMax = Math.max(f.s[0], f.s[1], f.s[2]), mapped = !!mat.map, col0 = mapped ? lin(c.body) : lin(mat.color);
     const pat = mapped ? (stripes ? { mode: region === 'head' ? 'head' : region === 'tail' ? 'tail' : 'body', col: lin(c.stripe), n: region === 'head' ? 10 : 7, u0: 0, u1: 1 } : spots ? { mode: 'spots', col: lin(c.stripe) } : null) : null;
@@ -608,6 +609,7 @@ function buildRig0(spec) {
     const g = new THREE.Group(); g.position.set(s * P.legX, P.hip, 0); pose.add(g);
     const leg = mesh(G.cap(P.legR, P.legL), toon(legC || (human ? c.pants : c.body)), .06, g); leg.position.y = -P.legL / 2 - P.legR * .3;
     const foot = mesh(G.sph(P.legR * 1.35, 20, 14), toon(human ? (O.shoes || c.shoes) : (O.shoes || pawC)), .06, g); foot.position.set(0, -P.legL - P.legR * .6, P.legR * .5); foot.scale.set(1, .75, 1.3);
+    if (!human && !O.shoes && global.MKSculpt && FUR_KINDS.has(k) && !FEATHER_KINDS.has(k)) { const R = P.legR * 1.35; for (const sx of [-1, 1]) { const gr = new THREE.Mesh(G.sph(1, 8, 6), toon(pawC)); gr.visible = false; gr.userData.groove = true; gr.position.set(sx * R * .3, foot.position.y + R * .12, foot.position.z + R * 1.2); gr.scale.set(R * .05, R * .32, R * .26); g.add(gr); } }
     rig.legs.push(g);
   }
   // тело
@@ -640,6 +642,7 @@ function buildRig0(spec) {
     const sleeveC = human ? (O.shirt || c.shirt) : (O.shirt || c.body);
     const arm = mesh(G.cap(P.armR, P.armL), toon(sleeveC), .06, g); arm.position.y = -P.armL / 2 - P.armR * .3;
     const hand = mesh(G.sph(P.armR * 1.25, 18, 12), toon(pawC), .06, g); hand.position.y = -P.armL - P.armR * .8;
+    if (!human && global.MKSculpt && FUR_KINDS.has(k) && !FEATHER_KINDS.has(k)) { const r = P.armR * 1.25; for (const sx of [-1, 1]) { const gr = new THREE.Mesh(G.sph(1, 8, 6), toon(pawC)); gr.visible = false; gr.userData.groove = true; gr.position.set(sx * r * .3, hand.position.y - r * .78, r * .5); gr.scale.set(r * .05, r * .3, r * .32); g.add(gr); } }
     const anchor = new THREE.Object3D(); anchor.position.set(0, -P.armL - P.armR * 1.6, .06); g.add(anchor);
     g.userData.side = s; rig.arms.push(g); if (s > 0) rig.hand = anchor;
   }
