@@ -231,23 +231,37 @@ if os.path.exists(TUNE):
     for _k, _v in _t.get("QFULL", {}).items():
         QFULL[_k] = set(_v)
 
-def qual(v):
-    L = v.get("L", "")
-    if L not in QFULL or not v.get("pt"):
-        return 0.0
-    q = sum(p for t, p in v["pt"].items() if t and t[0] in QFULL[L] and t not in QFULL.get("_bad_" + L, set()))
-    x = 2 * (q - 0.5)
-    return QW[L] * (x if x > 0 else W["neg"] * x)
+# Звуки распознавателя: «полная» гласная (под ударением) и редуцированная — для каждой буквы
+QSETS = {"о": ({"o", "oː", "ɔ", "ɔː"}, {"a", "ʌ", "ɐ", "ə", "e", "i", "ɪ"}),
+         "а": ({"aː", "ɑ", "ɑː", "aɪ"}, {"ʌ", "ɐ", "ə", "e", "i", "ɪ", "o"}),
+         "е": ({"e", "eː", "ɛ", "ɛː"}, {"i", "iː", "ɪ", "ə"}),
+         "э": ({"e", "eː", "ɛ", "ɛː"}, {"i", "iː", "ɪ", "ə"}),
+         "я": ({"e", "eː", "ɛ", "a", "aː", "æ"}, {"i", "ɪ", "ʌ", "ə"})}
+FW = {"I": 0.5, "F": 0.2, "D": 0.8, "Dn": 0.8, "dF": 0.3, "len": 2.0,
+      "full_о": 3.0, "red_о": -2.0, "full_а": 2.0, "red_а": -1.5, "full_е": 2.5, "red_е": -1.5,
+      "full_э": 2.5, "red_э": -1.5, "full_я": 2.0, "red_я": -1.5}
+if os.path.exists(TUNE):
+    FW.update(json.load(open(TUNE, encoding="utf-8")).get("FW", {}))
 
-def stress_scores(vs):
-    S = np.zeros(len(vs))
+def vfeats(vs):
+    rows = [{} for _ in vs]
     for f, u in UNIT.items():
         x = np.array([v.get(f, np.nan) for v in vs], float)
-        if np.all(np.isnan(x)):
-            continue
-        x = np.where(np.isnan(x), np.nanmean(x), x)
-        S += W[f] * (x - x.mean()) / u
-    return S + np.array([qual(v) for v in vs])
+        x = np.zeros_like(x) if np.all(np.isnan(x)) else np.where(np.isnan(x), np.nanmean(x), x)
+        for r, xi in zip(rows, (x - x.mean()) / u):
+            r[f] = float(xi)
+    for r, v in zip(rows, vs):
+        pt = v.get("pt") or {}
+        r["len"] = sum(p for t, p in pt.items() if "ː" in t)
+        L = v.get("L", "")
+        if L in QSETS:
+            full, red = QSETS[L]
+            r["full_" + L] = sum(p for t, p in pt.items() if t in full)
+            r["red_" + L] = sum(p for t, p in pt.items() if t in red)
+    return rows
+
+def stress_scores(vs):
+    return np.array([sum(FW.get(k, 0.0) * x for k, x in r.items()) for r in vfeats(vs)])
 
 def extract(audio, words, P=None):
     P = P or prosody(audio)
@@ -370,8 +384,10 @@ def plot(name, audio, words, vowels, P, path):
             continue
         x = (w["t0"] + w["t1"]) / 2
         e, d = w.get("exp"), w.get("det")
-        col = "gray" if e is None or d is None or len(w["vows"]) < 2 else ("green" if e == d else "red")
-        lab = mark(w["w"], e) if col != "red" else f"{mark(w['w'], e)}\n≠{mark(w['w'], d)}"
+        mg = w.get("margin", 9)
+        col = ("gray" if e is None or d is None or len(w["vows"]) < 2 else "green" if e == d
+               else "red" if mg >= 1.0 else "darkorange" if mg >= 0.5 else "gray")
+        lab = f"{mark(w['w'], e)}\n≠{mark(w['w'], d)}" if col in ("red", "darkorange") else mark(w["w"], e)
         ax.text(x, 4700, lab, ha="center", va="top", fontsize=11, color=col, fontweight="bold",
                 bbox=dict(facecolor="white", alpha=0.75, edgecolor="none", pad=1))
         ax.axvspan(w["t0"], w["t1"], ymin=0, ymax=0.03, color=col, alpha=0.8)
@@ -435,7 +451,7 @@ def analyze(name, apath, tpath):
         L.append(f"Распознано: {rep['heard']}")
         L.append("Слова: все совпали" if not rep["diff"] else "Расхождения в словах: " + "; ".join(f"«{x}» → «{y}»" for x, y in rep["diff"]))
     L += ["", "## Ударения", f"(где нужно: {acc_src})", "", "| слово | нужно | у голоса | |", "|---|---|---|---|"]
-    bad = 0
+    bad = maybe = 0
     for w in words:
         if len(w["vows"]) < 2:
             continue
@@ -443,12 +459,15 @@ def analyze(name, apath, tpath):
         if e is None or d is None:
             flag = "?" if d is None else "нет эталона"
         elif e == d:
-            flag = "✓" if w.get("margin", 9) >= 0.6 else "✓ (неуверенно)"
+            flag = "✓"
+        elif w.get("margin", 9) >= 1.0:
+            bad += 1; flag = "✗ ОШИБКА"
+        elif w.get("margin", 9) >= 0.5:
+            maybe += 1; flag = "✗? возможно — послушать"
         else:
-            bad += 1
-            flag = "✗ ОШИБКА" if w.get("margin", 9) >= 0.6 else "✗? (неуверенно)"
+            flag = "? не разобрать"
         L.append(f"| {w['w']} | {mark(w['w'], e)} | {mark(w['w'], d) if d is not None else '—'} | {flag} |")
-    rep["stress_errors"] = bad
+    rep["stress_errors"] = bad; rep["stress_maybe"] = maybe
     L += ["", "## Интонация"]
     for s in rep["intonation"]:
         L.append(f"- {'✓' if s['ok'] else '✗'} «{s['text']}» — {s['note']}")
@@ -459,7 +478,7 @@ def analyze(name, apath, tpath):
     L += [f"- {p}" for p in rep["pauses"]] or ["- паузы на своих местах"]
     if rep.get("rate"):
         L.append(f"- Темп {rep['rate']} слога/с ({'быстро' if rep['rate'] > 6.5 else 'медленно' if rep['rate'] < 4 else 'нормально'})")
-    L += ["", f"![график]({name}.png)", "", "_Синяя линия — высота голоса. Над словами: заглавная буква — где ударение должно быть; красным — где голос его поставил не туда._"]
+    L += ["", f"![график]({name}.png)", "", "_Синяя линия — высота голоса. Над словами заглавная буква — где ударение должно быть; красным — голос поставил не туда (уверенно), оранжевым — возможно._"]
     open(f"{OUT}/{name}.md", "w", encoding="utf-8").write("\n".join(L) + "\n")
     json.dump(rep, open(f"{OUT}/{name}.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1, default=float)
     return rep
@@ -489,14 +508,14 @@ def main():
             log("готово", name)
         except Exception:
             log("FAIL", name, traceback.format_exc())
-    rows = ["| файл | голос | UTMOS | слова | ошибки ударений | интонация |", "|---|---|---|---|---|---|"]
+    rows = ["| файл | голос | UTMOS | слова | ошибки ударений (+возможные) | интонация |", "|---|---|---|---|---|---|"]
     for jp in sorted(glob.glob(f"{OUT}/*.json")):
         try:
             r = json.load(open(jp, encoding="utf-8"))
         except Exception:
             continue
         it = r.get("intonation", [])
-        rows.append(f"| {r['name']} | {r.get('voice', '')} | {r.get('utmos', '—')} | {r.get('match', '—')} | {r.get('stress_errors', '—')} | {sum(1 for s in it if s['ok'])}/{len(it)} |")
+        rows.append(f"| {r['name']} | {r.get('voice', '')} | {r.get('utmos', '—')} | {r.get('match', '—')} | {r.get('stress_errors', '—')} (+{r.get('stress_maybe', 0)}) | {sum(1 for s in it if s['ok'])}/{len(it)} |")
     open(f"{OUT}/summary.md", "w", encoding="utf-8").write("\n".join(rows) + "\n")
 
 if __name__ == "__main__":
