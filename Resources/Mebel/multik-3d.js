@@ -408,7 +408,7 @@ function addFur(rig) {
 }
 // ---------- волоски-нити: каждый волосок — отдельная линия; блик вдоль волоска (Kajiya-Kay), качание от движения ----------
 const FUR_VS = `
-attribute vec3 aRoot; attribute vec3 aNorm; attribute vec2 aUv; attribute vec4 aRnd; attribute float aT; attribute vec3 aTilt; attribute vec3 aCol; varying vec3 vCol;
+attribute vec3 aRoot; attribute vec3 aNorm; attribute vec2 aUv; attribute vec4 aRnd; attribute float aT; attribute vec3 aTilt; attribute vec3 aCol; attribute vec4 aGroom; varying vec3 vCol; varying vec3 vN; varying float vGuard;
 uniform float uLen; uniform vec3 uLag; uniform float uGrav; uniform float uTime; uniform float uNk; uniform float uCk;
 varying vec3 vT; varying vec3 vW; varying float vt; varying vec2 vUv; varying float vVar;
 void main(){
@@ -417,7 +417,10 @@ void main(){
   vec3 tan1 = normalize(cross(nW, abs(nW.y) < .95 ? vec3(0.,1.,0.) : vec3(1.,0.,0.))); vec3 tan2 = cross(nW, tan1);
   vec3 down = vec3(0.,-1.,0.) - nW * dot(vec3(0.,-1.,0.), nW); float dl = length(down); vec3 comb = dl > .05 ? down / dl : vec3(0.);
   vec3 tiltW = mat3(modelMatrix) * aTilt;
-  vec3 dir = normalize(nW * uNk + comb * uCk + tiltW);
+  // направление роста: своё у каждого волоска (от носа назад, от шеи к хвосту, по лапам вниз); если не задано — вниз, как раньше
+  vec3 gW = mat3(modelMatrix) * aGroom.xyz; gW -= nW * dot(gW, nW); float gL = length(gW);
+  vec3 flow = gL > .02 ? gW / gL : comb; float lie = gL > .02 ? aGroom.w : 1.0;
+  vec3 dir = normalize(nW * uNk + flow * uCk * lie + tiltW);
   float len = uLen * aRnd.x * sc;
   float t = aT;
   vec3 root = (modelMatrix * vec4(aRoot, 1.0)).xyz;
@@ -426,15 +429,15 @@ void main(){
   vec3 wave = tan2 * sin(t * 6.0 + aRnd.w * 20.0) * len * .08 * t;
   vec3 p = root + dir * len * t + bend * t * t + wave;
   vec3 tg = normalize(dir * len + bend * 2.0 * t);
-  vT = tg; vW = p; vt = t; vUv = aUv; vVar = aRnd.w; vCol = aCol;
+  vT = tg; vW = p; vt = t; vUv = aUv; vVar = aRnd.w; vCol = aCol; vN = nW; vGuard = aRnd.y;
   gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
 }`;
 const FUR_FS = `
 uniform vec3 uColor; uniform sampler2D uMap; uniform float uHasMap; uniform float uHasCol; varying vec3 vCol; uniform vec3 uSunDir; uniform vec3 uSunCol; uniform vec3 uSky; uniform vec3 uGround; uniform vec3 uRimDir; uniform vec3 uRimCol;
-varying vec3 vT; varying vec3 vW; varying float vt; varying vec2 vUv; varying float vVar;
+varying vec3 vT; varying vec3 vW; varying float vt; varying vec2 vUv; varying float vVar; varying vec3 vN; varying float vGuard;
 void main(){
   vec3 base = uHasCol > .5 ? vCol : uHasMap > .5 ? texture2D(uMap, vUv).rgb : uColor;
-  base *= .9 + vVar * .2; base = mix(base * .86, base * 1.06, smoothstep(0., 1., vt));
+  base *= .9 + vVar * .2; base = mix(base * .86, base * (1.06 + vGuard * .14), smoothstep(0., 1., vt)); // у ости кончик светлее
   vec3 T = normalize(vT); vec3 V = normalize(cameraPosition - vW); vec3 L = normalize(uSunDir), Lr = normalize(uRimDir);
   // волосок по модели Маршнера: R — белый блик (к корню), TRT — цветной блик (к кончику), TT — свет насквозь (контровой)
   float sTL = clamp(dot(T, L), -1., 1.), sTV = clamp(dot(T, V), -1., 1.), sTR = clamp(dot(T, Lr), -1., 1.);
@@ -445,11 +448,13 @@ void main(){
   vec3 Lp = L - T * sTL; float ll = length(Lp); Lp = ll > 1e-4 ? Lp / ll : vec3(0.);
   vec3 Rp = Lr - T * sTR; float rl = length(Rp); Rp = rl > 1e-4 ? Rp / rl : vec3(0.);
   float TT = smoothstep(-.3, -.95, dot(Lp, Vp)) * exp(-pow(thH / .25, 2.)), TTr = smoothstep(-.2, -.95, dot(Rp, Vp)) * exp(-pow(thR / .3, 2.));
-  float ao = mix(.78, 1.0, smoothstep(0., .9, vt));
-  vec3 amb = mix(uGround, uSky, .5 + .5 * T.y) * .45; amb = mix(vec3(dot(amb, vec3(.333))), amb, .25);
-  vec3 c = base * (amb + uSunCol * diff * .85) * ao
-         + uSunCol * (Rl * .2 + TRT * base * .45) * ao
-         + uSunCol * base * TT * .9 * vt + uRimCol * base * TTr * .55 * vt;
+  // тень от самого тела: шерсть на стороне, отвёрнутой от солнца, темнее; у корней — глубже в шубке, темнее
+  vec3 Nn = normalize(vN); float lit = mix(.42, 1., smoothstep(-.3, .45, dot(Nn, L))); float sil = smoothstep(.4, .95, 1. - abs(dot(Nn, V)));
+  float ao = mix(.7, 1.0, smoothstep(0., .85, vt));
+  vec3 amb = mix(uGround, uSky, .5 + .5 * mix(Nn.y, T.y, .3)) * .45; amb = mix(vec3(dot(amb, vec3(.333))), amb, .25);
+  vec3 c = base * (amb + uSunCol * diff * .85 * lit) * ao
+         + uSunCol * (Rl * .2 + TRT * base * .45) * ao * lit
+         + uSunCol * base * TT * .9 * vt * max(lit - .3, sil) + uRimCol * base * TTr * .55 * vt * sil;
   c = max(mix(vec3(dot(c, vec3(.299, .587, .114))), c, 1.15), 0.);
   gl_FragColor = vec4(c, mix(.7, .36, vt)); // со сглаживанием ×4 волосок «тоньше пикселя»: прозрачность → доля покрытия
   #include <tonemapping_fragment>
@@ -552,9 +557,18 @@ function addHairStrands(rig) {
     addStrands(rig, o, st === 'curly' ? .02 : long ? .045 : male ? .022 : .03, keep, 1, 'hair'); });
   rig.fur = []; rig.root.traverse(o => { if (o.userData.strands) rig.fur.push(o); });
 }
-function addStrands(rig, o, L, keep, furK, reg) { furK = (furK || 1) * ({ tail: 1.45, leg: .7, arm: .8, body: 1.05, head: 1, hair: 1 })[reg || 'body'];
+function addStrands(rig, o, L, keep, furK, reg) { if (reg === 'tail' && (rig.kind === 'mouse' || rig.kind === 'pig')) return; /* хвостик у мышки и поросёнка голый */ furK = (furK || 1) * ({ tail: 1.45, leg: .7, arm: .8, body: 1.05, head: 1, hair: 1 })[reg || 'body'];
   const headW = new THREE.Vector3(); rig.head.getWorldPosition(headW); const hr = rig.P.head; let inHead = false; { let pp = o; while (pp) { if (pp === rig.head) inHead = true; pp = pp.parent; } }
   const fwd = new THREE.Vector3(0, 0, 1).applyQuaternion(rig.head.getWorldQuaternion(new THREE.Quaternion())).normalize();
+  // откуда «растёт» шерсть: голова — от носа назад, тело — от шеи к хвосту и вниз, лапы — от плеча/бедра к пальчикам, хвост — к кончику
+  const groomed = reg !== 'hair' && !FEATHER_KINDS.has(rig.kind); let src = null, dnK = .3;
+  if (groomed) { const isIn = gg => { let pp = o; while (pp) { if (pp === gg) return true; pp = pp.parent; } return false; }; const hsW = rig.head.getWorldScale(new THREE.Vector3()).y;
+    if (reg === 'head') src = rig.noseM ? rig.noseM.getWorldPosition(new THREE.Vector3()) : rig.head.localToWorld(new THREE.Vector3(0, -.15 * hr, 1.15 * hr));
+    else if (reg === 'body') { src = headW.clone(); src.y -= hr * hsW * .8; dnK = .35; }
+    else if (reg === 'tail' && rig.tail) { src = rig.tail.getWorldPosition(new THREE.Vector3()); dnK = .05; }
+    else { const lg = (reg === 'leg' ? rig.legs : rig.arms).find(isIn); if (lg) { src = lg.getWorldPosition(new THREE.Vector3()); dnK = .15; } } }
+  const mz = groomed && inHead ? (rig.muzzle || (rig.noseM ? { c: [0, rig.noseM.position.y / hr - .12, rig.noseM.position.z / hr - .24], r: [.33, .26, .38] } : null)) : null;
+  const Minv = new THREE.Matrix3().setFromMatrix4(o.matrixWorld).invert(), Gd = new THREE.Vector3(), Nw = new THREE.Vector3(), DN = new THREE.Vector3(0, -1, 0);
   const g = o.geometry, pos = g.attributes.position, nor = g.attributes.normal, uv = g.attributes.uv, vc = g.attributes.color; if (!pos || !nor) return;
   const idx = g.index ? g.index.array : null, triN = idx ? idx.length / 3 : pos.count / 3;
   const sx = o.scale.x, sy = o.scale.y, sz = o.scale.z; const wsc = new THREE.Vector3(); o.getWorldScale(wsc); const ws = (wsc.x + wsc.y + wsc.z) / 3;
@@ -563,7 +577,7 @@ function addStrands(rig, o, L, keep, furK, reg) { furK = (furK || 1) * ({ tail: 
     a.fromBufferAttribute(pos, i0).multiply(wsc); b.fromBufferAttribute(pos, i1).multiply(wsc); c.fromBufferAttribute(pos, i2).multiply(wsc); const ar = b.sub(a).cross(c.sub(a)).length() / 2; tot += ar; areas[i] = tot; }
   const DENS = rig.kind === 'chick' ? 95000 : 64000; let count = Math.min(100000, Math.round(tot * DENS)); if (count < 50) return;
   const SEG = 4, r = rng(global.MK.hash32(rig.spec.name + o.uuid.slice(0, 4)) || 7);
-  const aTilt = new Float32Array(count * SEG * 2 * 3), aCol = new Float32Array(count * SEG * 2 * 3); const aRoot = new Float32Array(count * SEG * 2 * 3), aNorm = new Float32Array(count * SEG * 2 * 3), aUv = new Float32Array(count * SEG * 2 * 2), aRnd = new Float32Array(count * SEG * 2 * 4), aT = new Float32Array(count * SEG * 2);
+  const aGroom = new Float32Array(count * SEG * 2 * 4), aTilt = new Float32Array(count * SEG * 2 * 3), aCol = new Float32Array(count * SEG * 2 * 3); const aRoot = new Float32Array(count * SEG * 2 * 3), aNorm = new Float32Array(count * SEG * 2 * 3), aUv = new Float32Array(count * SEG * 2 * 2), aRnd = new Float32Array(count * SEG * 2 * 4), aT = new Float32Array(count * SEG * 2);
   const pa = new THREE.Vector3(), pb = new THREE.Vector3(), pc = new THREE.Vector3(), na = new THREE.Vector3(), nb = new THREE.Vector3(), nc = new THREE.Vector3(), P = new THREE.Vector3(), N = new THREE.Vector3(), Wp = new THREE.Vector3();
   let v = 0, made = 0;
   for (let s = 0; s < count; s++) {
@@ -581,10 +595,18 @@ function addStrands(rig, o, L, keep, furK, reg) { furK = (furK || 1) * ({ tail: 
     let U = 0, Vv = 0; if (uv) { U = uv.getX(i0) * w0 + uv.getX(i1) * u1 + uv.getX(i2) * u2; Vv = uv.getY(i0) * w0 + uv.getY(i1) * u1 + uv.getY(i2) * u2; }
     let faceK = 1; if (inHead && reg !== 'hair') { const d = Wp.clone().sub(headW); const f = d.dot(fwd) / Math.max(1e-3, d.length()); // f=1 — самый перед мордочки
       faceK = f > .15 ? .3 + .7 * (1 - Math.min(1, (f - .15) / .55)) : 1; faceK = Math.max(.28, faceK); if (d.y < -hr * .15 && f > .3) faceK = Math.min(faceK, .32); }
-    if (faceK < .4 && r() < .35) continue; // на мордочке шерсть ещё и реже
+    if (faceK < .4 && r() < .2) continue; // на мордочке шерсть ещё и реже
+    // сама мордочка (нос, подушечки с усами, рот, подбородок) — гладкая, без волосков: иначе они выглядят как седая щетина
+    let lie = 1; if (mz) { const lp = rig.head.worldToLocal(Wp.clone()).divideScalar(hr); const q = Math.hypot((lp.x - mz.c[0]) / mz.r[0], (lp.y - mz.c[1]) / mz.r[1], (lp.z - mz.c[2]) / mz.r[2]);
+      if (q < 1) continue; if (q < 1.5) { const e = (q - 1) / .5; faceK = Math.min(faceK, .25 + .5 * e); lie = 2.6 - 1.2 * e; } }
+    if (groomed && faceK < 1) lie = Math.max(lie, 1 + (1 - faceK) * 1.6); // на лице шерстка короткая и прижатая
     let regK = 1; if (reg === 'body') { const d = Wp.clone().sub(headW); const f = d.dot(fwd); if (f > .05) regK *= 1 + Math.min(.35, f * 1.8); if (N.y > .5) regK *= 1.25; /* грудка и воротник — пышнее */ }
     if (reg === 'tail') { const tipK = .8 + Math.max(0, -P.z) * 2; regK *= Math.min(1.5, tipK); }
-    const lenK = (.9 + r() * .15) * (near < 1.8 ? .45 + .55 * (near - 1) / .8 : 1) * faceK * furK * regK, ty = (r() - .5), tz = (r() - .5), vr = r();
+    const guard = groomed && faceK > .95 && r() < .12 ? 1 : 0; // ость: редкие волоски чуть длиннее и со светлым кончиком, под ними — густой подшёрсток
+    const lenK = (.9 + r() * .15) * (near < 1.8 ? .45 + .55 * (near - 1) / .8 : 1) * faceK * furK * regK * (guard ? 1.32 : 1), ty = (r() - .5), tz = (r() - .5), vr = r();
+    let gx = 0, gy = 0, gz = 0; if (src) { Gd.copy(Wp).sub(src); const gl0 = Gd.length(); if (gl0 > 1e-6) Gd.divideScalar(gl0); Gd.addScaledVector(DN, dnK); Nw.copy(N).transformDirection(o.matrixWorld); Gd.addScaledVector(Nw, -Gd.dot(Nw));
+      if (Gd.lengthSq() > 1e-6) { Gd.applyMatrix3(Minv).normalize(); gx = Gd.x; gy = Gd.y; gz = Gd.z; } }
+    if (guard) lie *= .8;
     // пряди: волоски в одной ячейке тянутся к общему центру
     const CELL = .035 / ws, cx = Math.floor(P.x / CELL), cy = Math.floor(P.y / CELL), cz = Math.floor(P.z / CELL);
     const h = global.MK.hash32(cx + ',' + cy + ',' + cz + o.uuid.slice(0, 2)) / 4294967296, h2 = global.MK.hash32(cz + ';' + cy + ';' + cx) / 4294967296;
@@ -593,15 +615,15 @@ function addStrands(rig, o, L, keep, furK, reg) { furK = (furK || 1) * ({ tail: 
     const tilt = pull.multiplyScalar(.07 * (.5 + h)).addScaledVector(tan1, (h - .5) * .14 + ty * .08).addScaledVector(tan2, (h2 - .5) * .14 + tz * .08);
     P.addScaledVector(N, .002 / ws);
     for (let k = 0; k < SEG; k++) for (const tt of [k / SEG, (k + 1) / SEG]) {
-      aRoot.set([P.x, P.y, P.z], v * 3); aNorm.set([N.x, N.y, N.z], v * 3); aCol[v * 3] = cr; aCol[v * 3 + 1] = cg; aCol[v * 3 + 2] = cb; aTilt.set([tilt.x, tilt.y, tilt.z], v * 3); aUv.set([U, Vv], v * 2); aRnd.set([lenK, ty, tz, vr], v * 4); aT[v] = tt; v++; }
+      aRoot.set([P.x, P.y, P.z], v * 3); aNorm.set([N.x, N.y, N.z], v * 3); aCol[v * 3] = cr; aCol[v * 3 + 1] = cg; aCol[v * 3 + 2] = cb; aTilt.set([tilt.x, tilt.y, tilt.z], v * 3); aUv.set([U, Vv], v * 2); aRnd.set([lenK, guard, tz, vr], v * 4); aGroom.set([gx, gy, gz, lie], v * 4); aT[v] = tt; v++; }
     made++;
   }
   if (!made) return;
   const geo = new THREE.BufferGeometry(); const n = v;
   geo.setAttribute('position', new THREE.BufferAttribute(aRoot.slice(0, n * 3), 3)); geo.setAttribute('aRoot', new THREE.BufferAttribute(aRoot.slice(0, n * 3), 3)); geo.setAttribute('aNorm', new THREE.BufferAttribute(aNorm.slice(0, n * 3), 3));
-  geo.setAttribute('aUv', new THREE.BufferAttribute(aUv.slice(0, n * 2), 2)); geo.setAttribute('aRnd', new THREE.BufferAttribute(aRnd.slice(0, n * 4), 4)); geo.setAttribute('aT', new THREE.BufferAttribute(aT.slice(0, n), 1)); geo.setAttribute('aTilt', new THREE.BufferAttribute(aTilt.slice(0, n * 3), 3)); geo.setAttribute('aCol', new THREE.BufferAttribute(aCol.slice(0, n * 3), 3));
+  geo.setAttribute('aUv', new THREE.BufferAttribute(aUv.slice(0, n * 2), 2)); geo.setAttribute('aRnd', new THREE.BufferAttribute(aRnd.slice(0, n * 4), 4)); geo.setAttribute('aT', new THREE.BufferAttribute(aT.slice(0, n), 1)); geo.setAttribute('aTilt', new THREE.BufferAttribute(aTilt.slice(0, n * 3), 3)); geo.setAttribute('aCol', new THREE.BufferAttribute(aCol.slice(0, n * 3), 3)); geo.setAttribute('aGroom', new THREE.BufferAttribute(aGroom.slice(0, n * 4), 4));
   geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 10);
-  const m = strandMat(o.material); m.uniforms.uHasCol.value = vc ? 1 : 0; m.uniforms.uLen.value = L / ws; if (reg === 'hair') { m.uniforms.uNk.value = .22; m.uniforms.uCk.value = 1.0; m.uniforms.uGrav.value = .5; } const ls = new THREE.LineSegments(geo, m); ls.frustumCulled = false; ls.userData.strands = true; ls.castShadow = false; o.add(ls);
+  const m = strandMat(o.material); m.uniforms.uHasCol.value = vc ? 1 : 0; m.uniforms.uLen.value = L / ws; if (reg === 'hair') { m.uniforms.uNk.value = .22; m.uniforms.uCk.value = 1.0; m.uniforms.uGrav.value = .5; } else if (groomed) { m.uniforms.uNk.value = .5; m.uniforms.uCk.value = .8; m.uniforms.uGrav.value = .1; } /* шёрстка лежит по телу, а не торчит */ const ls = new THREE.LineSegments(geo, m); ls.frustumCulled = false; ls.userData.strands = true; ls.castShadow = false; o.add(ls);
   // базовая поверхность чуть темнее — это «подшёрсток» у корней
   { const src0 = o.material; o.material = src0.clone(); if (src0.onBeforeCompile) { o.material.onBeforeCompile = src0.onBeforeCompile; o.material.customProgramCacheKey = src0.customProgramCacheKey; } } o.material.color.multiplyScalar(rig.kind === 'chick' || reg === 'hair' ? 1 : .9); o.material.sheen = 0; if (rig.kind === 'chick') m.uniforms.uColor.value.multiplyScalar(.93);
 }
@@ -877,7 +899,7 @@ function buildAnimalFace(head, hr, n, rig) {
   const sn = SN[k];
   if (sn) { const mc = sn.mz[6] === 'belly' ? c.belly : c.body;
     if (sn.br) ell(c.body, ...sn.br); ell(mc, ...sn.mz.slice(0, 6)); for (const s of [-1, 1]) ell(c.belly, s * sn.pd[0], ...sn.pd.slice(1)); ell(c.belly, ...sn.ch);
-    nose(c.nose, hr * sn.no[2], hr * sn.no[0], hr * sn.no[1]); rig.mouthAt = sn.mo; rig.mouthKind = sn.mk; rig.noseY = sn.no[0] - sn.no[2] * .8; if (k === 'cat' || k === 'mouse' || k === 'rabbit') rig.padAt = [sn.pd[0] + sn.pd[3] * .3, sn.pd[1] + .02]; }
+    nose(c.nose, hr * sn.no[2], hr * sn.no[0], hr * sn.no[1]); rig.mouthAt = sn.mo; rig.mouthKind = sn.mk; rig.noseY = sn.no[0] - sn.no[2] * .8; rig.muzzle = { c: [0, (sn.mz[1] + sn.ch[1]) / 2, sn.mz[2] + .04], r: [sn.mz[3] + .05, (sn.mz[1] - sn.ch[1]) / 2 + sn.ch[4] + .07, sn.mz[5] + .06] }; if (k === 'cat' || k === 'mouse' || k === 'rabbit') rig.padAt = [sn.pd[0] + sn.pd[3] * .3, sn.pd[1] + .02]; }
   if (k === 'fox') { const sn = mesh(G.cone(hr * .38, hr * .55, 24), toon(c.belly), .04, head); sn.rotation.x = Math.PI / 2; sn.position.set(0, -hr * .25, hr * 1.0); nose(c.nose, hr * .1, -hr * .25, hr * 1.27); }
   if (k === 'pig') { const sn = mesh(G.cyl(hr * .3, hr * .32, hr * .25, 24), toon(c.nose), .05, head); sn.rotation.x = Math.PI / 2; sn.position.set(0, -hr * .22, hr * 1.02); for (const s of [-1, 1]) { const ns = new THREE.Mesh(G.sph(hr * .07, 10, 8), basic('#7a3040')); ns.position.set(s * hr * .11, -hr * .22, hr * 1.15); ns.scale.z = .4; head.add(ns); } }
   if (k === 'hedgehog') { const sn = mesh(G.cone(hr * .3, hr * .55, 20), toon(c.belly), .04, head); sn.rotation.x = Math.PI / 2; sn.position.set(0, -hr * .25, hr * .95); nose(c.nose, hr * .1, -hr * .25, hr * 1.22); }
