@@ -71,7 +71,7 @@ def build_skin():
     me.polygons.foreach_set('use_smooth', np.ones(len(f), bool))
     try: me.normals_split_custom_set_from_vertices(n.tolist())
     except Exception as e: log('normals', e)
-    rgb = G['skin_col'] * 0.78
+    rgb = G['skin_col'] * 0.9
     # мордочка без шерсти: кремовая бархатная; внутри уха — розовое; подводка века — тёмная
     muzzle = reg == 2
     rgb[muzzle] = (0.9, 0.76, 0.6)
@@ -293,7 +293,7 @@ sc.cycles_curves.shape = 'THICK'; sc.cycles_curves.subdivisions = 2
 r.resolution_x = W; r.resolution_y = Hh; r.resolution_percentage = 100; r.use_compositing = True
 sc.view_layers[0].use_pass_mist = True
 sc.view_settings.view_transform = 'AgX'
-try: sc.view_settings.look = 'AgX - Medium High Contrast'
+try: sc.view_settings.look = 'AgX - Punchy'
 except Exception as e: log('look', e)
 r.threads_mode = 'AUTO'; r.filepath = os.path.abspath(OUT); r.image_settings.file_format = 'PNG'
 log('render start', SHOT, SPP, W, Hh)

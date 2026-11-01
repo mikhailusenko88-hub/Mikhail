@@ -194,7 +194,7 @@ def colors(p, reg, nor):
     return mel, red, stripe, cream
 
 def mel_rgb(mel):
-    xs = np.array([0.03, 0.05, 0.2, 0.47, 0.8]); cs = np.array([[0.95, 0.93, 0.9], [0.93, 0.78, 0.58], [0.88, 0.4, 0.1], [0.46, 0.15, 0.035], [0.15, 0.05, 0.02]])
+    xs = np.array([0.03, 0.05, 0.2, 0.47, 0.8]); cs = np.array([[0.9, 0.85, 0.8], [0.86, 0.6, 0.36], [0.64, 0.19, 0.022], [0.3, 0.065, 0.012], [0.1, 0.03, 0.01]])
     return np.stack([np.interp(mel, xs, cs[:, i]) for i in range(3)], -1)
 
 def region_of(p):
