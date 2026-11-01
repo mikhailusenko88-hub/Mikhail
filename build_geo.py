@@ -48,8 +48,10 @@ FOOT = [V(s * 0.092, -0.08, 0.036) for s in (-1, 1)]
 TAIL = [V(0, 0.13, 0.19), V(0.05, 0.25, 0.2), V(0.13, 0.31, 0.3), V(0.17, 0.31, 0.45), V(0.15, 0.27, 0.58), V(0.1, 0.25, 0.64)]
 TAIL_R = [0.044, 0.04, 0.037, 0.035, 0.034, 0.035]
 NECK = V(0, -0.005, 0.575)
-LID_N = nrm(V(0, -0.3, 1.0))              # плоскость края верхнего века
-LID_OFF = RE * 0.7
+LID_K = 0.1                                 # наклон века: у переносицы выше
+LID_N = nrm(V(0, -0.3, 1.0))
+LID_OFF = RE * 0.82
+def lid_n(E): return nrm(V(np.sign(E[0]) * LID_K, -0.3, 1.0))
 
 def ear_sd(p, i, inner=False):
     b, t = EAR_B[i], EAR_T[i]
@@ -83,7 +85,7 @@ def parts(p):
     for E in EYES:
         q = p - E; dd = np.linalg.norm(q, axis=-1)
         sh = np.abs(dd - (RE + 0.0052)) - 0.0034
-        cut = q @ LID_N - LID_OFF
+        cut = q @ lid_n(E) - LID_OFF
         l = smax(sh, -cut, 0.003)
         l = smax(l, q[:, 1] - 0.01, 0.01)       # только передняя половина
         lid = l if lid is None else np.minimum(lid, l)
@@ -191,6 +193,10 @@ def colors(p, reg, nor):
     mel = np.where(reg == 8, 0.03, mel); red = np.where(reg == 8, 0.3, red)
     return mel, red, stripe, cream
 
+def mel_rgb(mel):
+    xs = np.array([0.03, 0.05, 0.2, 0.47, 0.8]); cs = np.array([[0.95, 0.93, 0.9], [0.93, 0.78, 0.58], [0.88, 0.4, 0.1], [0.46, 0.15, 0.035], [0.15, 0.05, 0.02]])
+    return np.stack([np.interp(mel, xs, cs[:, i]) for i in range(3)], -1)
+
 def region_of(p):
     f, d, inner = field(p, True)
     names = ['torso', 'head', 'muzzle', 'lid', 'ear', 'arm', 'leg', 'tail']
@@ -201,7 +207,7 @@ def region_of(p):
     return reg.astype(np.int32)
 
 # ---------- шерсть ----------
-def make_fur(v, f, nor, reg, total=520000, P=5, seed=3):
+def make_fur(v, f, nor, reg, total=760000, P=5, seed=3):
     rng = np.random.default_rng(seed)
     a, b, c = v[f[:, 0]], v[f[:, 1]], v[f[:, 2]]
     area = np.linalg.norm(np.cross(b - a, c - a), axis=-1) * 0.5
@@ -264,6 +270,8 @@ def make_fur(v, f, nor, reg, total=520000, P=5, seed=3):
     L = np.where(tailtip, L * 1.25, L)
     L *= (0.82 + 0.36 * rng.random(n, dtype=F))
     guard = rng.random(n) < 0.12; L = np.where(guard & ~(rg == 3), L * 1.35, L)
+    jit = nrm(rng.normal(size=(n, 3)).astype(F)); jit -= N * np.einsum('ij,ij->i', jit, N)[:, None]
+    flow = nrm(flow + jit * 0.28)
     d0 = nrm(N * np.cos(lean)[:, None] + flow * np.sin(lean)[:, None])
     # пряди: кончики соседних волосков тянутся к общему центру
     CELL = 0.012
@@ -271,7 +279,7 @@ def make_fur(v, f, nor, reg, total=520000, P=5, seed=3):
     _, inv = np.unique(kid, return_inverse=True)
     cnt = np.bincount(inv); ctr = np.stack([np.bincount(inv, R[:, i]) for i in range(3)], -1) / cnt[:, None]
     pull = ctr[inv] - R; pull -= N * np.einsum('ij,ij->i', pull, N)[:, None]
-    clump = np.where(rg == 3, 0.0, 0.45).astype(F)
+    clump = np.where(rg == 3, 0.0, 0.3).astype(F)
     t = np.linspace(0, 1, P, dtype=F)
     pts = np.empty((n, P, 3), F)
     curl = nrm(np.cross(N, flow)) * ((rng.random(n, dtype=F) - 0.5) * 0.25)[:, None]
@@ -281,8 +289,9 @@ def make_fur(v, f, nor, reg, total=520000, P=5, seed=3):
     pts[:, 0] -= N * 0.0015  # корень чуть в коже
     mel, red, stripe, cream = colors(R, rg, N)
     mel = mel * (0.94 + 0.12 * rng.random(n, dtype=F)); mel = np.where(guard, mel * 0.92, mel)
-    rad = np.where(rg == 3, 0.0007, 0.0011).astype(F)
-    return dict(fur_pts=pts, fur_rad=rad, fur_mel=mel.astype(F), fur_red=red.astype(F), fur_reg=rg.astype(np.int8))
+    rad = np.where(rg == 3, 0.0006, 0.00085).astype(F)
+    col = mel_rgb(mel)
+    return dict(fur_pts=pts, fur_rad=rad, fur_mel=mel.astype(F), fur_red=red.astype(F), fur_col=col.astype(F), fur_reg=rg.astype(np.int8))
 
 # ---------- поверхность по лучу (для рта и усов) ----------
 def hit(o, dirn, tmax=0.4):
@@ -405,5 +414,5 @@ if __name__ == '__main__':
     np.savez_compressed('out/geo.npz', skin_v=v, skin_f=f, skin_n=nor, skin_reg=reg.astype(np.int8), skin_mel=mel, skin_red=red, skin_cream=cream,
                         nose_v=nv, nose_f=nf, scarf_v=sv, scarf_f=sf,
                         mouth=np.array([np.pad(m, ((0, 12 - len(m)), (0, 0)), mode='edge') for m in ml]), whisk=np.array(wh),
-                        eyes=np.array(EYES), re=np.array([RE]), lid_n=LID_N, lid_off=np.array([LID_OFF]), **fur)
+                        eyes=np.array(EYES), re=np.array([RE]), lid_n=LID_N, lid_off=np.array([LID_OFF]), skin_col=mel_rgb(mel).astype(F), **fur)
     print('done', time.time() - t0)

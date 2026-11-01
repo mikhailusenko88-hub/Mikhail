@@ -53,14 +53,13 @@ def fur_material():
     h = nt.nodes.new('ShaderNodeBsdfHairPrincipled')
     try: h.model = 'CHIANG'
     except Exception: pass
-    h.parametrization = 'MELANIN'
-    info = nt.nodes.new('ShaderNodeHairInfo')
-    mel = attr(nt, 'mel'); red = attr(nt, 'red')
-    # кончики чуть светлее: меланин * (1 - 0.22 * t)
-    k = math_node(nt, 'MULTIPLY', info.outputs['Intercept'], None, vb=-0.22)
-    k = math_node(nt, 'ADD', k, None, vb=1.0)
-    ml = math_node(nt, 'MULTIPLY', mel.outputs['Fac'], k)
-    nt.links.new(ml, h.inputs['Melanin']); nt.links.new(red.outputs['Fac'], h.inputs['Melanin Redness'])
+    h.parametrization = 'COLOR'
+    info = nt.nodes.new('ShaderNodeHairInfo'); col = attr(nt, 'col')
+    # у корня темнее, к кончику светлее
+    mx = nt.nodes.new('ShaderNodeMixRGB'); mx.blend_type = 'MULTIPLY'; mx.inputs['Color2'].default_value = (0.62, 0.55, 0.5, 1)
+    inv = math_node(nt, 'SUBTRACT', None, info.outputs['Intercept'], va=1.0); k = math_node(nt, 'POWER', inv, None, vb=2.0)
+    nt.links.new(k, mx.inputs['Fac']); nt.links.new(col.outputs['Color'], mx.inputs['Color1'])
+    nt.links.new(mx.outputs['Color'], h.inputs['Color'])
     for k_, v in [('Roughness', 0.32), ('Radial Roughness', 0.32), ('Coat', 0.12), ('Random Color', 0.06), ('Random Roughness', 0.12), ('IOR', 1.55)]:
         if k_ in h.inputs: h.inputs[k_].default_value = v
     nt.links.new(h.outputs[0], out.inputs[0]); return m
@@ -72,15 +71,15 @@ def build_skin():
     me.polygons.foreach_set('use_smooth', np.ones(len(f), bool))
     try: me.normals_split_custom_set_from_vertices(n.tolist())
     except Exception as e: log('normals', e)
-    rgb = mel_to_rgb(G['skin_mel'], G['skin_cream']) * 0.82
+    rgb = G['skin_col'] * 0.78
     # мордочка без шерсти: кремовая бархатная; внутри уха — розовое; подводка века — тёмная
     muzzle = reg == 2
-    rgb[muzzle] = mel_to_rgb(np.full(muzzle.sum(), 0.1), None) * 0.98
+    rgb[muzzle] = (0.9, 0.76, 0.6)
     ear_in = reg == 8; rgb[ear_in] = (0.62, 0.3, 0.32)
     E = G['eyes']; RE = float(G['re'][0]); LN = G['lid_n']; LO = float(G['lid_off'][0])
     liner = np.zeros(len(v), bool)
     for c in E:
-        q = v - c; d = np.linalg.norm(q, axis=-1); cut = q @ LN - LO
+        q = v - c; d = np.linalg.norm(q, axis=-1)
         liner |= (d < RE + 0.011) & (q[:, 1] < 0.01)   # тёмная кожа вокруг глаза — как подводка у настоящих кошек
     rgb[liner] = (0.09, 0.04, 0.02)
     sss = np.where(ear_in, 0.9, np.where(reg == 4, 0.5, 0.18)).astype(np.float32)
@@ -99,8 +98,8 @@ def build_fur():
     t = np.tile(np.linspace(0, 1, k, dtype=np.float32), n)
     rad = np.repeat(G['fur_rad'], k) * (1.0 - 0.85 * t ** 1.3)
     cu.attributes['radius'].data.foreach_set('value', rad.astype(np.float32))
-    for nm, arr in [('mel', G['fur_mel']), ('red', G['fur_red'])]:
-        a = cu.attributes.new(nm, 'FLOAT', 'CURVE'); a.data.foreach_set('value', arr.astype(np.float32))
+    c4 = np.concatenate([G['fur_col'], np.ones((n, 1))], -1).astype(np.float32)
+    a = cu.attributes.new('col', 'FLOAT_COLOR', 'CURVE'); a.data.foreach_set('color', c4.ravel())
     cu.materials.append(fur_material())
     ob = bpy.data.objects.new('BarsikFur', cu); sc.collection.objects.link(ob); log('fur', n); return ob
 
@@ -235,7 +234,7 @@ def build_world():
     # небо/фон: бирюзовая дымка
     w = bpy.data.worlds.new('W'); sc.world = w; w.use_nodes = True; bg = w.node_tree.nodes['Background']
     bg.inputs[0].default_value = (0.42, 0.62, 0.6, 1); bg.inputs[1].default_value = 0.9
-    w.mist_settings.start = 1.6; w.mist_settings.depth = 9.0; w.mist_settings.falloff = 'QUADRATIC'
+    w.mist_settings.start = 3.0; w.mist_settings.depth = 10.0; w.mist_settings.falloff = 'QUADRATIC'
     log('world')
 
 def look_at(ob, target):
@@ -243,10 +242,12 @@ def look_at(ob, target):
 
 def build_lights_camera():
     sun = bpy.data.objects.new('Sun', bpy.data.lights.new('Sun', 'SUN')); sc.collection.objects.link(sun)
-    sun.data.energy = 4.2; sun.data.angle = math.radians(3.5); sun.data.color = (1.0, 0.86, 0.68)
-    sun.rotation_mode = 'QUATERNION'; sun.rotation_quaternion = Vector((0, 0, -1)).rotation_difference(Vector((0.5, -0.62, -0.6)).normalized())
+    sun.data.energy = 3.6; sun.data.angle = math.radians(4); sun.data.color = (1.0, 0.85, 0.66)
+    sun.rotation_mode = 'QUATERNION'; sun.rotation_quaternion = Vector((0, 0, -1)).rotation_difference(Vector((0.55, 0.5, -0.67)).normalized())
+    rim = bpy.data.objects.new('Rim', bpy.data.lights.new('Rim', 'AREA')); sc.collection.objects.link(rim)
+    rim.data.energy = 260; rim.data.size = 0.8; rim.data.color = (1.0, 0.9, 0.75); rim.location = (-0.7, 1.1, 1.35); look_at(rim, (0, 0, 0.72))
     key = bpy.data.objects.new('Key', bpy.data.lights.new('Key', 'AREA')); sc.collection.objects.link(key)
-    key.data.energy = 140; key.data.size = 1.4; key.data.color = (1.0, 0.95, 0.88); key.location = (-1.3, -1.5, 1.55); look_at(key, (0, -0.05, 0.7))
+    key.data.energy = 70; key.data.size = 1.6; key.data.color = (1.0, 0.95, 0.88); key.location = (-1.3, -1.5, 1.55); look_at(key, (0, -0.05, 0.7))
     fill = bpy.data.objects.new('Fill', bpy.data.lights.new('Fill', 'AREA')); sc.collection.objects.link(fill)
     fill.data.energy = 45; fill.data.size = 2.0; fill.data.color = (0.75, 0.9, 1.0); fill.location = (1.6, -1.0, 0.6); look_at(fill, (0, 0, 0.6))
     cam = bpy.data.objects.new('Cam', bpy.data.cameras.new('Cam')); sc.collection.objects.link(cam); sc.camera = cam
