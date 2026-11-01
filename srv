@@ -1,0 +1,36 @@
+#!/bin/bash
+# srv — проверки сервера для «Команд» на iPhone (кнопки «Сервер»).
+#   srv status — сервер, память, диск, VPN
+#   srv bot    — последние заезды бота «Білесің бе?»
+#   srv speed  — скорость интернета самого сервера
+#   srv update — обновить srv из GitHub
+BOT=/root/kz-bot
+case "${1:-status}" in
+  status)
+    echo "Сервер работает: $(uptime -p | sed 's/^up //')"
+    echo "Нагрузка: $(cut -d' ' -f1 /proc/loadavg)"
+    free -m | awk '/^Mem/{printf "Память: занято %d из %d МБ\n",$3,$2} /^Swap/{printf "Запасная память: занято %d из %d МБ\n",$3,$2}'
+    df -h / | awk 'NR==2{print "Диск: занято "$3" из "$2}'
+    echo "VPN:"
+    docker ps --format '  {{.Names}} — {{.Status}}' 2>/dev/null | sed 's/Up /работает /'
+    echo "TCP: $(sysctl -n net.ipv4.tcp_congestion_control)"
+    ;;
+  bot)
+    if [ -f "$BOT/bot.log" ]; then
+      grep -E "Заезд №|YouTube:|ошибка|Сбой|Killed" "$BOT/bot.log" | tail -8 | cut -c1-160
+    else
+      echo "Не нашёл $BOT/bot.log"
+    fi
+    ;;
+  speed)
+    curl -s -o /dev/null -w "%{speed_download}" --max-time 15 "https://speed.cloudflare.com/__down?bytes=50000000" \
+      | awk '{printf "Скорость сервера: %.0f Мбит/с\n", $1*8/1000000}'
+    ;;
+  update)
+    curl -fsSL https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/kz-bot/srv -o /usr/local/bin/srv.new \
+      && chmod +x /usr/local/bin/srv.new && mv /usr/local/bin/srv.new /usr/local/bin/srv && echo "srv обновлён"
+    ;;
+  *)
+    echo "Есть: srv status | srv bot | srv speed | srv update"
+    ;;
+esac
