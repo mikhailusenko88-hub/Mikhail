@@ -76,13 +76,13 @@ def build_skin():
     # мордочка без шерсти: кремовая бархатная; внутри уха — розовое; подводка века — тёмная
     muzzle = reg == 2
     rgb[muzzle] = mel_to_rgb(np.full(muzzle.sum(), 0.1), None) * 0.98
-    ear_in = reg == 8; rgb[ear_in] = (0.85, 0.42, 0.45)
+    ear_in = reg == 8; rgb[ear_in] = (0.62, 0.3, 0.32)
     E = G['eyes']; RE = float(G['re'][0]); LN = G['lid_n']; LO = float(G['lid_off'][0])
     liner = np.zeros(len(v), bool)
     for c in E:
         q = v - c; d = np.linalg.norm(q, axis=-1); cut = q @ LN - LO
-        liner |= (d < RE + 0.014) & (np.abs(cut) < 0.0042) & (q[:, 1] < 0.005)
-    rgb[liner] = (0.07, 0.035, 0.02)
+        liner |= (d < RE + 0.011) & (q[:, 1] < 0.01)   # тёмная кожа вокруг глаза — как подводка у настоящих кошек
+    rgb[liner] = (0.09, 0.04, 0.02)
     sss = np.where(ear_in, 0.9, np.where(reg == 4, 0.5, 0.18)).astype(np.float32)
     rgba = np.concatenate([rgb, np.ones((len(v), 1))], -1).astype(np.float32)
     ca = me.color_attributes.new('skin_col', 'FLOAT_COLOR', 'POINT'); ca.data.foreach_set('color', rgba.ravel())
@@ -140,7 +140,7 @@ def build_eyes():
     for i, c in enumerate(G['eyes']):
         s = 1 if c[0] > 0 else -1
         tgt = Vector((0.36, -1.6, 0.84)) if SHOT == 'close' else Vector((0.5, -2.8, 0.75))
-        fwd = ((tgt - Vector(c)).normalized() + Vector((s * 0.08, 0, 0))).normalized()
+        fwd = (tgt - Vector(c)).normalized()
         rot = Vector((0, -1, 0)).rotation_difference(fwd)
         me = bpy.data.meshes.new('eye'); ob = bpy.data.objects.new('Eye%d' % i, me); sc.collection.objects.link(ob)
         import bmesh; bm = bmesh.new(); bmesh.ops.create_uvsphere(bm, u_segments=64, v_segments=48, radius=1.0); bm.to_mesh(me); bm.free()
@@ -168,7 +168,7 @@ def scarf_material():
     tc = nt.nodes.new('ShaderNodeTexCoord'); wv = nt.nodes.new('ShaderNodeTexWave'); wv.inputs['Scale'].default_value = 140; wv.wave_type = 'BANDS'; wv.bands_direction = 'Z'
     nt.links.new(tc.outputs['Object'], wv.inputs['Vector'])
     bump = nt.nodes.new('ShaderNodeBump'); bump.inputs['Strength'].default_value = 0.45; bump.inputs['Distance'].default_value = 0.002; nt.links.new(wv.outputs['Fac'], bump.inputs['Height'])
-    b = principled(nt, **{'Base Color': (0.03, 0.17, 0.62, 1), 'Roughness': 0.85, 'Sheen Weight': 0.8, 'Sheen Roughness': 0.4})
+    b = principled(nt, **{'Base Color': (0.015, 0.09, 0.45, 1), 'Roughness': 0.85, 'Sheen Weight': 0.7, 'Sheen Roughness': 0.4})
     nt.links.new(bump.outputs[0], b.inputs['Normal']); nt.links.new(b.outputs[0], out.inputs[0]); return m
 def flat_material(name, rgb, rough=0.5, trans=0.0):
     m, nt, out = mat(name); b = principled(nt, **{'Base Color': (*rgb, 1), 'Roughness': rough, 'Transmission Weight': trans})
@@ -252,7 +252,7 @@ def build_lights_camera():
     cam = bpy.data.objects.new('Cam', bpy.data.cameras.new('Cam')); sc.collection.objects.link(cam); sc.camera = cam
     E = G['eyes']
     if SHOT == 'close':
-        cam.location = (0.52, -1.62, 0.86); target = (0.0, -0.05, 0.72); cam.data.lens = 62
+        cam.location = (0.62, -1.95, 0.9); target = (0.0, -0.04, 0.74); cam.data.lens = 55
         eyeL = bpy.data.objects.new('EyeLight', bpy.data.lights.new('EyeLight', 'AREA')); sc.collection.objects.link(eyeL)
         eyeL.data.energy = 6; eyeL.data.size = 0.25; eyeL.location = (0.2, -1.4, 1.05); look_at(eyeL, (0, -0.14, 0.77)); eyeL.data.color = (1, 0.97, 0.93)
     else:

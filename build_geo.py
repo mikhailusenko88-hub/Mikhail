@@ -159,7 +159,7 @@ def wob(p, s=1.0):
 
 def colors(p, reg, nor):
     """Меланин и краснота для каждой точки (как у Principled Hair в Blender) + маска «кремовых» мест."""
-    N = len(p); mel = np.full(N, 0.36, F); red = np.full(N, 0.96, F)
+    N = len(p); mel = np.full(N, 0.2, F); red = np.full(N, 1.0, F)
     x, y, z = p[:, 0], p[:, 1], p[:, 2]
     stripe = np.zeros(N, F)
     w = wob(p, 1.0) * 0.6
@@ -185,10 +185,10 @@ def colors(p, reg, nor):
     cream = np.maximum(cream, np.clip((0.36 - z) * 40, 0, 1) * (reg == 5))      # кисти лап
     cream = np.maximum(cream, np.clip((0.07 - z) * 40, 0, 1) * (reg == 6))      # стопы
     stripe *= (1 - cream)
-    mel = mel + stripe * 0.3; red = red - stripe * 0.06
-    mel = mel * (1 - cream) + 0.1 * cream; red = red * (1 - cream) + 0.55 * cream
+    mel = mel + stripe * 0.27; red = red - stripe * 0.04
+    mel = mel * (1 - cream) + 0.05 * cream; red = red * (1 - cream) + 0.5 * cream
     # внутри уха — светлые волоски
-    mel = np.where(reg == 9, 0.08, mel)
+    mel = np.where(reg == 8, 0.03, mel); red = np.where(reg == 8, 0.3, red)
     return mel, red, stripe, cream
 
 def region_of(p):
@@ -206,7 +206,7 @@ def make_fur(v, f, nor, reg, total=520000, P=5, seed=3):
     a, b, c = v[f[:, 0]], v[f[:, 1]], v[f[:, 2]]
     area = np.linalg.norm(np.cross(b - a, c - a), axis=-1) * 0.5
     freg = reg[f[:, 0]]
-    dens = np.array([1.0, 1.15, 0.0, 0.9, 0.85, 1.0, 1.0, 1.1, 0.0], F)[freg]   # на мордочке и внутри уха — нет
+    dens = np.array([1.0, 1.15, 0.0, 1.6, 0.85, 1.0, 1.0, 1.1, 0.2], F)[freg]   # на мордочке и внутри уха — нет
     w = area * dens; w /= w.sum()
     tri = rng.choice(len(f), size=total, p=w)
     u1, u2 = rng.random(total, dtype=F), rng.random(total, dtype=F); sw = u1 + u2 > 1; u1[sw] = 1 - u1[sw]; u2[sw] = 1 - u2[sw]; w0 = 1 - u1 - u2
@@ -217,8 +217,9 @@ def make_fur(v, f, nor, reg, total=520000, P=5, seed=3):
     # точнее определить область для самой точки (мордочка рядом с головой)
     rg = region_of(R)
     # убрать с мордочки, из глаз и с внутренней части уха
-    keep = (rg != 2) & (rg != 8)
-    for E in EYES: keep &= np.linalg.norm(R - E, axis=-1) > RE + 0.009
+    keep = (rg != 2)
+    for E in EYES: keep &= np.linalg.norm(R - E, axis=-1) > RE + 0.0045
+    keep &= scarf_fn(R) > 0.004   # под шарфом шерсти нет
     R, N, rg = R[keep], N[keep], rg[keep]
     n = len(R)
     # откуда растёт шерсть
@@ -232,12 +233,21 @@ def make_fur(v, f, nor, reg, total=520000, P=5, seed=3):
         src[(rg == 5) & side] = SHOULD[i]; src[(rg == 6) & side] = HIP[i] + V(0, 0, 0.06)
     src[rg == 7] = TAIL[0] - V(0, 0.05, 0)
     flow = R - src; flow = nrm(flow)
+    for i, s in enumerate((-1, 1)):
+        side = (R[:, 0] * s) > 0
+        flow[(rg == 5) & side] = nrm(WRIST[i] - SHOULD[i]) + 0 * flow[(rg == 5) & side]
+        flow[(rg == 6) & side] = nrm(FOOT[i] - HIP[i] + V(0, -0.03, 0)) + 0 * flow[(rg == 6) & side]
+    tl = np.nonzero(rg == 7)[0]
+    if len(tl):
+        segs = np.array([TAIL[j + 1] - TAIL[j] for j in range(len(TAIL) - 1)]); mids = np.array([(TAIL[j + 1] + TAIL[j]) / 2 for j in range(len(TAIL) - 1)])
+        near = np.argmin(np.linalg.norm(R[tl, None, :] - mids[None], axis=-1), -1); flow[tl] = nrm(segs[near])
+    flow[rg == 8] = nrm(V(0, 0, 1) + 0 * flow[rg == 8])
     down = V(0, 0, -1)
     flow = flow + down * np.where(rg == 0, 0.35, np.where(rg == 7, 0.0, 0.2))[:, None]
     flow = flow - N * np.einsum('ij,ij->i', flow, N)[:, None]; flow = nrm(flow)
     # длина и наклон по местам
-    L = np.select([rg == 0, rg == 1, rg == 3, rg == 4, rg == 5, rg == 6, rg == 7], [0.03, 0.022, 0.009, 0.012, 0.022, 0.024, 0.04], 0.02).astype(F)
-    lean = np.select([rg == 1, rg == 3, rg == 4], [1.15, 1.3, 1.1], 1.12).astype(F)   # радианы от нормали
+    L = np.select([rg == 0, rg == 1, rg == 3, rg == 4, rg == 5, rg == 6, rg == 7, rg == 8], [0.021, 0.0155, 0.0075, 0.009, 0.016, 0.017, 0.03, 0.026], 0.015).astype(F)
+    lean = np.select([rg == 1, rg == 3, rg == 4, rg == 8], [1.2, 1.35, 1.15, 0.5], 1.18).astype(F)   # радианы от нормали
     x, y, z = R[:, 0], R[:, 1], R[:, 2]
     # лицо спереди: короче и плотнее прижато
     hd = rg == 1
@@ -245,11 +255,11 @@ def make_fur(v, f, nor, reg, total=520000, P=5, seed=3):
     L = np.where(hd, L * (1 - 0.6 * front), L); lean = np.where(hd, lean + 0.2 * front, lean)
     # бакенбарды по бокам щёк, жабо на грудке, кисточки на ушах
     ruff = hd & (np.abs(x) > 0.15) & (z < 0.75) & (z > 0.6)
-    L = np.where(ruff, L * (1 + np.clip((np.abs(x) - 0.15) * 22, 0, 1.3)), L); lean = np.where(ruff, lean - 0.25, lean)
+    L = np.where(ruff, L * (1 + np.clip((np.abs(x) - 0.15) * 18, 0, 0.9)), L); lean = np.where(ruff, lean - 0.25, lean)
     chest = (rg == 0) & (y < -0.06) & (z > 0.43)
-    L = np.where(chest, L * 1.45, L)
+    L = np.where(chest, L * 1.3, L)
     tip_ear = (rg == 4) & (z > 1.0)
-    L = np.where(tip_ear, L * (1 + (z - 1.0) * 60), L); lean = np.where(tip_ear, 0.5, lean)
+    L = np.where(tip_ear, L * (1 + (z - 1.0) * 45), L); lean = np.where(tip_ear, 0.5, lean)
     tailtip = (rg == 7) & (z > 0.52)
     L = np.where(tailtip, L * 1.25, L)
     L *= (0.82 + 0.36 * rng.random(n, dtype=F))
@@ -257,11 +267,11 @@ def make_fur(v, f, nor, reg, total=520000, P=5, seed=3):
     d0 = nrm(N * np.cos(lean)[:, None] + flow * np.sin(lean)[:, None])
     # пряди: кончики соседних волосков тянутся к общему центру
     CELL = 0.012
-    key = np.floor(R / CELL).astype(np.int64); kid = (key[:, 0] * 73856093) ^ (key[:, 1] * 19349663) ^ (key[:, 2] * 83492791)
+    key = np.floor((R + V(0.0057, 0.0031, 0.0043)) / CELL).astype(np.int64); kid = (key[:, 0] * 73856093) ^ (key[:, 1] * 19349663) ^ (key[:, 2] * 83492791)
     _, inv = np.unique(kid, return_inverse=True)
     cnt = np.bincount(inv); ctr = np.stack([np.bincount(inv, R[:, i]) for i in range(3)], -1) / cnt[:, None]
     pull = ctr[inv] - R; pull -= N * np.einsum('ij,ij->i', pull, N)[:, None]
-    clump = np.where(rg == 3, 0.0, 0.55).astype(F)
+    clump = np.where(rg == 3, 0.0, 0.45).astype(F)
     t = np.linspace(0, 1, P, dtype=F)
     pts = np.empty((n, P, 3), F)
     curl = nrm(np.cross(N, flow)) * ((rng.random(n, dtype=F) - 0.5) * 0.25)[:, None]
@@ -325,8 +335,8 @@ def nose_fn(p):
     return d
 
 def scarf_fn(p):
-    d = sd_torus(p, NECK + V(0, -0.003, 0.0), 0.088, 0.03, rotx=0.17)
-    k = V(0.055, -0.098, 0.548)
+    d = sd_torus(p, NECK + V(0, -0.006, 0.004), 0.097, 0.037, rotx=0.17)
+    k = V(0.062, -0.112, 0.55)
     d = smin(d, sd_ell(p, k, V(0.036, 0.03, 0.034)), 0.02)
     for e, w in [(V(0.085, -0.115, 0.4), 0.0), (V(0.035, -0.128, 0.42), 0.0)]:
         q = p.copy(); c = (k + e) / 2
