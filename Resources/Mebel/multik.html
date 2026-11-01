@@ -323,7 +323,7 @@ const App = {
     if (a === 'build') return Build.run(p, e);
     if (a === 'unqueue') return Build.unqueue(p, e);
     if (a === 'share') return Native.call('share', { path: e.video });
-    if (a === 'yt') { const y = e.script.youtube || {}; const text = `${y.title || (p.series + ' — Серия ' + e.episode + '. ' + (e.title || ''))}\n\n${y.description || ''}\n\n${(y.tags || []).map(t => '#' + t.replace(/\s+/g, '')).join(' ')}${MK.soundCredits ? '\n\n' + MK.soundCredits : ''}`; await Native.call('copy', { text }); alert('Название, описание и теги скопированы:\n\n' + text); }
+    if (a === 'yt') { const y = e.script.youtube || {}; const text = `${y.title || (p.series + ' — Серия ' + e.episode + '. ' + (e.title || ''))}\n\n${y.description || ''}\n\n${(y.tags || []).map(t => '#' + t.replace(/\s+/g, '')).join(' ')}`; await Native.call('copy', { text }); alert('Название, описание и теги скопированы:\n\n' + text); }
   },
 };
 

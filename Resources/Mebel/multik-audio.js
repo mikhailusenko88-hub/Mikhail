@@ -177,82 +177,79 @@ MK.synthVocal = function (ln, sr) {
 };
 
 
-// ---- смех из голоса самого героя: iPhone произносит один слог («Ха!», «Хи!», «Хо!») его голосом,
-//      а из этого слога собирается настоящий смех: быстрые выдохи, высота падает, дыхание, вдох в конце ----
+// ---- смех из голоса самого героя ----
+// iPhone произносит его голосом один гласный («А!», «И!», «О!»). Из этого гласного по периодам голоса (PSOLA)
+// собирается настоящий смех: серия «ха-ха-ха» — у каждого слога своя высота, падающая к концу, мягкое придыхание «х»
+// того же тембра, живой ритм и громкость, к концу тише и ниже. Без шумовых слоёв и резких склеек — не трещит.
 function laughStyle(ln) { const male = ((ln.voice || {}).base || 'female') === 'male', kid = ln.age === 'kid', s = (ln.seed || 7) % 3; if (s === 0 && (kid || !male)) return 'giggle'; if (s === 2 || (male && !kid)) return 'chuckle'; return 'laugh'; }
-MK.laughSyllable = ln => ({ giggle: 'Хи!', chuckle: 'Хо!', laugh: 'Ха!' })[laughStyle(ln)];
+MK.laughSyllable = ln => ({ giggle: 'И!', chuckle: 'О!', laugh: 'А!' })[laughStyle(ln)];
 function trimBuf(raw, rel) { const d = raw.getChannelData(0); let pk = 0; for (let i = 0; i < d.length; i++) pk = Math.max(pk, Math.abs(d[i])); const th = pk * (rel || .03); let a = 0; while (a < d.length && Math.abs(d[a]) < th) a++; let b = d.length - 1; while (b > a && Math.abs(d[b]) < th) b--;
   a = Math.max(0, a - Math.round(raw.sampleRate * .01)); b = Math.min(d.length - 1, b + Math.round(raw.sampleRate * .03)); const o = new AudioBuffer({ length: Math.max(1, b - a + 1), numberOfChannels: 1, sampleRate: raw.sampleRate }); o.copyToChannel(d.subarray(a, b + 1), 0); return o; }
+/** Периоды голоса в гласном: зёрна по два периода с плавным окном (для сборки слогов любой высоты). */
+function vowelGrains(raw) {
+  const sr = raw.sampleRate, d = raw.getChannelData(0), n = d.length, w = Math.round(sr * .01), env = [];
+  for (let i = 0; i + w <= n; i += w) { let e = 0; for (let j = i; j < i + w; j++) e += d[j] * d[j]; env.push(Math.sqrt(e / w)); }
+  if (env.length < 6) return null; const mx = Math.max(...env); let a = env.findIndex(e => e > mx * .3), b = env.length - 1; while (b > a && env[b] < mx * .3) b--;
+  const s0 = (a + Math.round((b - a) * .15)) * w, s1 = (b + 1 - Math.round((b - a) * .2)) * w; if (s1 - s0 < sr * .03) return null;
+  const corr = (c0, lag, L) => { let c = 0, e1 = 0, e2 = 0; for (let i = c0; i < c0 + L; i++) { c += d[i] * d[i + lag]; e1 += d[i] * d[i]; e2 += d[i + lag] * d[i + lag]; } return c / Math.sqrt(e1 * e2 + 1e-12); };
+  const lagMin = Math.round(sr / 900), lagMax = Math.round(sr / 70), L = Math.round(sr * .03), c0 = Math.max(0, Math.min(n - L - lagMax - 1, ((s0 + s1) >> 1) - (L >> 1)));
+  let best = -1, T = lagMin; for (let lag = lagMin; lag <= lagMax; lag++) { const r = corr(c0, lag, L); if (r > best) { best = r; T = lag; } }
+  for (let k = 0; k < 3 && T / 2 >= lagMin && corr(c0, Math.round(T / 2), L) > best * .88; k++) T = Math.round(T / 2); // не принять двойной период за один
+  if (best < .45) return null;
+  // метки периодов: первая — на пике, следующие — по наибольшему сходству с предыдущим периодом (ровный шаг, без дрожи)
+  const marks = []; let m = Math.max(s0, T), pk = 0; for (let i = m; i < m + T && i < n; i++) if (Math.abs(d[i]) > pk) { pk = Math.abs(d[i]); m = i; }
+  while (m + 2 * T < Math.min(s1 + T, n)) { if (m - T >= 0) marks.push(m); let bL = T, bc = -2;
+    for (let Lg = Math.round(T * .85); Lg <= Math.round(T * 1.15); Lg++) { const c = m + Lg; if (c + T >= n) break; let acc = 0, e2 = 0; for (let i = -T; i < T; i++) { acc += d[m + i] * d[c + i]; e2 += d[c + i] * d[c + i]; } const rr = acc / Math.sqrt(e2 + 1e-12); if (rr > bc) { bc = rr; bL = Lg; } }
+    m += bL; }
+  if (marks.length < 3) return null;
+  // самая ровная середина гласного (по ней и собираем слоги)
+  const keep = Math.max(3, Math.round(marks.length * .5)), st0 = Math.max(0, ((marks.length - keep) >> 1)); marks.splice(0, st0); marks.length = Math.min(marks.length, keep);
+  const grains = marks.map(mk => { const g = new Float32Array(2 * T + 1); for (let i = -T; i <= T; i++) g[i + T] = d[mk + i] * (.5 + .5 * Math.cos(Math.PI * i / T)); return g; });
+  let er = 0, cnt = 0; for (const g of grains) for (let i = 0; i < g.length; i++) { er += g[i] * g[i]; cnt++; }
+  return { sr, T, f0: sr / T, grains, rms: Math.sqrt(er / cnt) };
+}
+/** Придыхание того же тембра: шум, пропущенный через один период голоса героя. */
+function breathOf(G, len, seed) { const r = rng(seed), g = G.grains[G.grains.length >> 1], out = new Float32Array(len), nz = new Float32Array(len + g.length);
+  for (let i = 0; i < nz.length; i++) nz[i] = r() * 2 - 1;
+  let e = 0; for (let i = 0; i < len; i++) { let acc = 0; for (let j = 0; j < g.length; j += 2) acc += nz[i + j] * g[j]; out[i] = acc; e += acc * acc; }
+  const k = G.rms / Math.sqrt(e / len + 1e-12); for (let i = 0; i < len; i++) out[i] *= k; return out; }
 MK.buildLaughFrom = async function (raw, ln) {
-  const sr = 44100, syl = trimBuf(raw, .04), st = laughStyle(ln), r = rng((ln.seed || 7) * 7 + (ln.variant || 0) * 131 + 1), kid = ln.age === 'kid';
-  const giggle = st === 'giggle', chuck = st === 'chuckle';
-  const plan = []; let t = .03; const short = !!ln.short, nSyl = short ? 3 + ((r() * 2) | 0) : (giggle ? 6 : chuck ? 4 : 5) + ((r() * 3) | 0), sd = giggle ? .095 : chuck ? .17 : .13;
-  const bout = (n, amp0, rate0, gapK) => { for (let k = 0; k < n; k++) { const prog = k / Math.max(1, n - 1);
-    const rate = rate0 * (k < 2 ? 1 + k * .03 : 1.06 - prog * .2) * (1 + (r() - .5) * .07), amp = amp0 * (k < 2 ? .8 + k * .2 : 1 - prog * .5) * (.85 + r() * .3), d = sd * (1 + prog * .3) * (.85 + r() * .3);
-    plan.push({ t, rate, amp, d, off: k ? .015 + r() * .02 : 0 }); t += d + (giggle ? .03 : .05) * gapK * (.7 + r() * .6); } };
-  bout(nSyl, 1, giggle ? 1.18 : chuck ? 1.0 : 1.12, 1);
-  const tIn = t + .02; t += short ? .3 : .45; let tail = false; if (!short && r() < .55) { t += .05; bout(2 + ((r() * 2) | 0), .55, giggle ? 1.08 : .98, 1.2); tail = true; }
-  const ac = new OfflineAudioContext(1, Math.ceil((t + .4) * sr), sr);
-  const out = ac.createGain(); out.connect(ac.destination); const rv = ac.createConvolver(); rv.buffer = MK.roomIR(ac, .45); const rg = ac.createGain(); rg.gain.value = .12; out.connect(rv); rv.connect(rg); rg.connect(ac.destination);
-  const nz = MK._noise(ac);
-  for (const p of plan) { const s = ac.createBufferSource(); s.buffer = syl; s.playbackRate.value = p.rate; const g = ac.createGain(); s.connect(g); g.connect(out);
-    g.gain.setValueAtTime(0, p.t); g.gain.linearRampToValueAtTime(p.amp, p.t + .008); g.gain.setValueAtTime(p.amp, p.t + p.d * .45); g.gain.exponentialRampToValueAtTime(.001, p.t + p.d); s.start(p.t, p.off); s.stop(p.t + p.d + .02);
-    // выдох поверх слога и чуть после — смех «на воздухе»
-    const b = ac.createBufferSource(); b.buffer = nz; b.loop = true; const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = giggle ? 2600 : 1700; bp.Q.value = .9; const bg = ac.createGain(); b.connect(bp); bp.connect(bg); bg.connect(out);
-    bg.gain.setValueAtTime(0, p.t); bg.gain.linearRampToValueAtTime(p.amp * .09, p.t + .01); bg.gain.linearRampToValueAtTime(p.amp * .05, p.t + p.d * .6); bg.gain.linearRampToValueAtTime(0, p.t + p.d + .05); b.start(p.t, (p.t * 13) % .9); b.stop(p.t + p.d + .07); }
-  { // вдох
-    const b = ac.createBufferSource(); b.buffer = nz; b.loop = true; const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.setValueAtTime(1500, tIn); bp.frequency.linearRampToValueAtTime(2800, tIn + .35); bp.Q.value = 1.3; const bg = ac.createGain(); b.connect(bp); bp.connect(bg); bg.connect(out);
-    bg.gain.setValueAtTime(0, tIn); bg.gain.linearRampToValueAtTime(short ? .08 : .16, tIn + .12); bg.gain.linearRampToValueAtTime(.12, tIn + .28); bg.gain.linearRampToValueAtTime(0, tIn + .38); b.start(tIn, .3); b.stop(tIn + .4);
-    if (kid || giggle) { const o = ac.createOscillator(), og = ac.createGain(), l = ac.createOscillator(), lg = ac.createGain(); o.frequency.setValueAtTime(950, tIn + .05); o.frequency.linearRampToValueAtTime(1250, tIn + .32); l.frequency.value = 9; lg.gain.value = 25; l.connect(lg); lg.connect(o.frequency);
-      og.gain.setValueAtTime(0, tIn + .05); og.gain.linearRampToValueAtTime(.025, tIn + .15); og.gain.linearRampToValueAtTime(0, tIn + .34); o.connect(og); og.connect(out); o.start(tIn + .05); o.stop(tIn + .36); l.start(tIn + .05); l.stop(tIn + .36); } }
-  const res = await ac.startRendering(); return trimBuf(res, .005);
+  const G = vowelGrains(raw); if (!G) return null;
+  const sr = G.sr, st = laughStyle(ln), r = rng((ln.seed || 7) * 7 + (ln.variant || 0) * 131 + 1), short = !!ln.short;
+  const P = { giggle: { n: [6, 8], v: .075, gap: .062, h: .028, hi: 1.5, lo: 1.24, fall: .88 }, laugh: { n: [5, 7], v: .115, gap: .08, h: .042, hi: 1.32, lo: 1.06, fall: .85 }, chuckle: { n: [4, 5], v: .135, gap: .1, h: .048, hi: 1.08, lo: .92, fall: .9 } }[st];
+  const calls = []; let t = .02;
+  const bout = (n, amp0, k0) => { for (let k = 0; k < n; k++) { const pr = n > 1 ? k / (n - 1) : 0;
+      const f = G.f0 * lerp(P.hi, P.lo, pr) * k0 * (1 + (r() - .5) * .06), dur = P.v * (k === 0 ? 1.25 : 1) * (1 + pr * .25) * (.88 + r() * .24), amp = amp0 * (k === 0 ? .9 : 1 - pr * .45) * (.9 + r() * .2);
+      calls.push({ t, f, dur, amp, h: P.h * (k === 0 ? 1.4 : 1) }); t += P.h * .6 + dur + P.gap * (.8 + r() * .45); } };
+  bout(short ? 3 + ((r() * 2) | 0) : P.n[0] + ((r() * (P.n[1] - P.n[0] + 1)) | 0), 1, 1);
+  let tail = false; if (!short && r() < .55) { t += .12 + r() * .1; bout(2 + ((r() * 2) | 0), .55, .93); tail = true; }
+  const tIn = t, inhale = !short && r() < .6, total = t + (inhale ? .32 : 0) + .1;
+  const out = new Float32Array(Math.ceil(total * sr)), ng = G.grains.length;
+  for (let ci = 0; ci < calls.length; ci++) { const c = calls[ci], h0 = Math.round(c.t * sr), hL = Math.round(c.h * sr), v0 = h0 + Math.round(hL * .6), vL = Math.round(c.dur * sr);
+    // «х»: придыхание тембром героя, плавно перетекает в гласный
+    const br = breathOf(G, hL + vL, (ln.seed || 7) * 31 + ci);
+    for (let i = 0; i < hL + vL && h0 + i < out.length; i++) { const x = i / hL; const e = i < hL ? Math.sin(Math.min(1, x) * Math.PI / 2) * .42 : .42 * Math.exp(-(i - hL) / (sr * .022)) + .018 * Math.max(0, 1 - (i - hL) / vL); out[h0 + i] += br[i] * e * c.amp; }
+    // гласный: зёрна голоса с новой высотой (вниз по слогу), туда-обратно по записи, чтобы не жужжало
+    let pos = 0, gi = (ci * 3) % ng, dir = 1;
+    while (pos < vL) { const p = pos / vL, f = c.f * Math.pow(P.fall, p) * (1 + (r() - .5) * .004), env = Math.min(1, pos / (sr * .012)) * (p > .7 ? Math.pow(1 - (p - .7) / .3, 1.6) : 1) * c.amp, g = G.grains[gi], o = Math.round(v0 + pos) - G.T;
+      for (let i = 0; i < g.length; i++) { const k = o + i; if (k >= 0 && k < out.length) out[k] += g[i] * env; }
+      pos += sr / f; gi += dir; if (gi >= ng - 1 || gi <= 0) dir = -dir; gi = clamp(gi, 0, ng - 1); } }
+  if (inhale) { const iL = Math.round(.28 * sr), br = breathOf(G, iL, (ln.seed || 7) + 999), i0 = Math.round(tIn * sr); // тихий вдох в конце
+    for (let i = 0; i < iL && i0 + i < out.length; i++) { const x = i / iL; out[i0 + i] += br[i] * .14 * Math.sin(Math.PI * Math.min(1, x * 1.15)) * (.4 + .6 * x); } }
+  // плавный край, нормировка
+  let pk = 0; for (let i = 0; i < out.length; i++) pk = Math.max(pk, Math.abs(out[i])); if (pk > 0) for (let i = 0; i < out.length; i++) out[i] *= .9 / pk;
+  const b = new AudioBuffer({ length: out.length, numberOfChannels: 1, sampleRate: sr }); b.copyToChannel(out, 0); return trimBuf(b, .004);
 };
 /** Записанный смех: обрезаем тишину, каждый раз чуть другая скорость — не звучит одной и той же записью. */
 MK.prepRecorded = async function (raw, variant) {
   const b = trimBuf(raw, .03), rate = [1, 1.04, .97][(variant || 0) % 3], sr = 44100, ac = new OfflineAudioContext(1, Math.ceil(b.duration / rate * sr) + 100, sr);
   const s = ac.createBufferSource(); s.buffer = b; s.playbackRate.value = rate; s.connect(ac.destination); s.start(0); return ac.startRendering(); };
-// ---- настоящий записанный смех (multik-laugh.js: "Oculus Audio Pack 01" by Oculus VR, LLC, CC BY 4.0) ----
-// У каждого героя свой «смеющийся»: мальчики — из мужских записей, девочки — из женских, высота — под голос героя
-// (как у его речи), дальше тот же голосовой эффект, что и у реплик (мышонок пищит, медведь басит).
-const SCRIPT_BASE = (global.document && global.document.currentScript && global.document.currentScript.src || '').replace(/[^\/]*$/, '');
-const loading = {};
-function loadScript(file, globalName) {
-  if (global[globalName] || !global.document) return Promise.resolve(!!global[globalName]);
-  return loading[file] || (loading[file] = new Promise(res => { const sc = global.document.createElement('script'); sc.src = SCRIPT_BASE + file; sc.onload = sc.onerror = () => res(!!global[globalName]); global.document.head.appendChild(sc); }));
-}
-const LAUGH_BUF = {};
-async function laughTake(set, i) { const k = set + i; if (LAUGH_BUF[k]) return LAUGH_BUF[k];
-  const b64s = global.MK_LAUGH[set][i % global.MK_LAUGH[set].length], bin = atob(b64s), u = new Uint8Array(bin.length); for (let j = 0; j < bin.length; j++) u[j] = bin.charCodeAt(j);
-  const ac = new (global.OfflineAudioContext || global.webkitOfflineAudioContext)(1, 44100, 44100); return (LAUGH_BUF[k] = await ac.decodeAudioData(u.buffer)); }
-MK.recLaugh = async function (ln) {
-  if (!(await loadScript('multik-laugh.js', 'MK_LAUGH'))) return null;
-  const v = ln.voice || {}, male = (v.base || 'female') === 'male', s = ln.seed || 7, vr = ln.variant || 0, fxId = (ln.fx && ln.fx.id) || '';
-  const set = ['monster', 'dragon', 'pirate'].includes(fxId) ? 'evil' : male ? (s % 2 ? 'm1' : 'm2') : (s % 2 ? 'f1' : 'f2');
-  let semi = 12 * Math.log2(v.pitch || 1) * .9; if (ln.age === 'kid' && semi < 2) semi = 2; if (ln.age === 'old') semi -= 1.5; semi = clamp(semi, -4, 8);
-  const rate0 = Math.pow(2, semi / 12);
-  let raw = await laughTake(set, (s >> 2) + vr);
-  if (!ln.short && raw.duration / rate0 < 1.6 && global.MK_LAUGH[set].length > 1) { // полный смех: два «захода», второй тише — как настоящий заливистый смех
-    const r2 = await laughTake(set, (s >> 2) + vr + 1), sr0 = raw.sampleRate, n1 = raw.length, ov = Math.round(sr0 * .04), n = n1 + r2.length - ov, d = new Float32Array(n);
-    d.set(raw.getChannelData(0), 0); const d2 = r2.getChannelData(0); for (let i = 0; i < r2.length; i++) d[n1 - ov + i] += d2[i] * .72 * Math.min(1, i / ov);
-    raw = new AudioBuffer({ length: n, numberOfChannels: 1, sampleRate: sr0 }); raw.copyToChannel(d, 0); }
-  const rate = rate0 * [1, 1.03, .97][vr % 3], sr = 44100, full = raw.duration / rate;
-  let len = full;
-  if (ln.short) { // смешок перед репликой: первые 2–4 «ха», режем в тихом месте между ними
-    const d = raw.getChannelData(0), w = Math.round(raw.sampleRate * .02); let best = -1, be = 1e9;
-    for (let i = Math.round(d.length * .35); i + w < d.length * .7; i += w) { let e = 0; for (let j = i; j < i + w; j++) e += d[j] * d[j]; if (e < be) { be = e; best = i; } }
-    if (best > 0) len = (best + w / 2) / raw.sampleRate / rate; }
-  const ac = new OfflineAudioContext(1, Math.ceil((len + .05) * sr), sr), src = ac.createBufferSource(), g = ac.createGain();
-  src.buffer = raw; src.playbackRate.value = rate; src.connect(g); g.connect(ac.destination);
-  g.gain.setValueAtTime(1, 0); if (len < full) { g.gain.setValueAtTime(1, Math.max(0, len - .05)); g.gain.linearRampToValueAtTime(0, len); }
-  src.start(0); return ac.startRendering();
-};
-/** Любой возглас героя → готовый звук (своя запись героя → записанный смех → голос героя → синтез). nat — вызов к iPhone, decode — раскодировать wav. */
+/** Любой возглас героя → готовый звук (своя запись героя → смех из голоса героя → синтез). nat — вызов к iPhone, decode — раскодировать wav. */
 MK.makeVocal = async function (ln, lib, nat, decode) {
   let buf = null;
   if (ln.synth === 'laugh') {
     const rk = ((lib.characters || {})[ln.who] || {}).laugh;
     if (rk) { try { const r = await nat('recLoad', { key: rk }); if (r && r.wav) buf = await MK.prepRecorded(await decode(r.wav), ln.variant); } catch (e) { console.log('rec', e); } }
-    if (!buf) { try { buf = await MK.recLaugh(ln); } catch (e) { console.log('laugh', e); } }
     if (!buf) { try { const r = await nat('tts', { text: MK.laughSyllable(ln), voice: ln.voice, key: 'syl-' + MK.hash32(MK.canon(ln.voice) + MK.laughSyllable(ln)).toString(36) }); if (r && r.wav) buf = await MK.buildLaughFrom(await decode(r.wav), ln); } catch (e) { console.log('syl', e); } }
   }
   if (!buf) buf = MK.synthVocal(ln);
@@ -342,14 +339,15 @@ function synthVoice(ac, out, kind, midi, t, len, vol, glideFrom) {
 // =====================================================================================
 // 4. МУЗЫКА: живой оркестр (сэмплы инструментов) и сочинение
 // =====================================================================================
-// Инструменты — записи настоящих инструментов (multik-inst.js: FluidR3 GM, Frank Wen, CC BY 3.0): пианино, струнные
-// (смычком и щипком), флейта, кларнет, гобой, фагот, валторна, арфа, челеста, колокольчики, ксилофон, маримба,
-// музыкальная шкатулка, гитара, контрабас, литавры, хор. Файл грузится только при сведении и расшифровываются
-// лишь те ноты, что звучат в серии. Если файла нет — звучат прежние синтезированные инструменты.
+// Инструменты — записи настоящих инструментов (multik-inst.js), всё общественное достояние (CC0) — подписывать в
+// роликах ничего не нужно: камерный оркестр VSCO 2 CE (струнные смычком и щипком, флейта, кларнет, гобой, фагот,
+// валторна, арфа, колокольчики, ксилофон, маримба, литавры, контрабас) и Meta Piano / Nylon Guitar. Файл грузится
+// только при сведении, расшифровываются лишь те ноты, что звучат в серии.
 const INST_BASE = (global.document && global.document.currentScript && global.document.currentScript.src || '').replace(/[^\/]*$/, '');
 const SBUF = {}; let COLLECT = null; const NOTES = {};
-function instNotes(name) { const I = global.MK_INST && global.MK_INST[name]; if (!I) return null; return NOTES[name] || (NOTES[name] = Object.keys(I.n).map(Number).sort((a, b) => a - b)); }
-function nearest(ns, m) { let b = ns[0]; for (const n of ns) if (Math.abs(n - m) < Math.abs(b - m)) b = n; return b; }
+const ALIAS = { celesta: ['glock', .8], mbox: ['harp', 1], choir: ['strings', 1] }; // чего нет в оркестре — ближайшая замена
+function instNotes(name) { const I = global.MK_INST && global.MK_INST[name]; if (!I) return null; return NOTES[name] || (NOTES[name] = Object.keys(I.n).map(k => ({ m: +k, k })).sort((a, b) => a.m - b.m)); } // ключ записи — её высота («60.0», «62.1»)
+function nearest(ns, m) { let b = ns[0]; for (const n of ns) if (Math.abs(n.m - m) < Math.abs(b.m - m)) b = n; return b; }
 async function loadInstFile() {
   if (global.MK_INST || !global.document) return !!global.MK_INST;
   await new Promise(res => { const sc = global.document.createElement('script'); sc.src = INST_BASE + 'multik-inst.js'; sc.onload = sc.onerror = res; global.document.head.appendChild(sc); });
@@ -368,12 +366,13 @@ const FALLV = { strings: 'strings', choir: 'pad', flute: 'flute', clarinet: 'flu
 /** Нота живого инструмента. o: att (атака), rel (затухание), sus (длинная нота — продлеваем сэмпл). */
 function playS(ac, out, name, midi, t, vol, len, o) {
   if (t < 0 || vol <= 0) return; o = o || {};
+  if (global.MK_INST && !global.MK_INST[name] && ALIAS[name] && global.MK_INST[ALIAS[name][0]]) { vol *= ALIAS[name][1]; name = ALIAS[name][0]; }
   const ns = instNotes(name);
   if (!ns) { // нет файла инструментов — прежние синтезированные звуки
     if (FALL[name]) return playNote(ac, out, FALL[name], midi, t, vol * .9, len);
     if (FALLV[name]) return synthVoice(ac, out, FALLV[name], midi, t, Math.max(.12, len || .4), vol * (FALLV[name] === 'strings' || FALLV[name] === 'pad' ? .3 : .6));
     if (name === 'timp') return play(ac, out, drum(ac, 'timp'), t, vol); if (name === 'wood') return play(ac, out, drum(ac, 'wood'), t, vol); return; }
-  const n0 = nearest(ns, midi), key = name + ':' + n0;
+  const nb = nearest(ns, midi), n0 = nb.m, key = name + ':' + nb.k;
   if (COLLECT) { COLLECT.add(key); if (len && o.sus && len > 2.4) playS(ac, out, name, midi, t + 2.2, vol, len - 2.2, o); return; }
   const sb = SBUF[key]; if (!sb) return;
   const rate = Math.pow(2, (midi - n0) / 12), skip = o.skip || 0, avail = (sb.b.duration - sb.off - skip) / rate;
@@ -383,21 +382,21 @@ function playS(ac, out, name, midi, t, vol, len, o) {
   g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gI, t + att);
   src.connect(g); g.connect(out); src.start(t, sb.off + skip);
   if (len) { g.gain.setValueAtTime(gI, t + Math.max(att + .001, L)); g.gain.linearRampToValueAtTime(0, t + L + rel); src.stop(t + L + rel + .05); }
-  if (len && o.sus && len > L + .05) playS(ac, out, name, midi, t + L - .35, vol, len - L + .35, Object.assign({}, o, { att: .35, skip: .45 })); // длинная нота: плавно продлеваем
+  if (len && o.sus && L > .7 && len > L + .05) playS(ac, out, name, midi, t + L - .35, vol, len - L + .35, Object.assign({}, o, { att: .35, skip: .45 })); // длинная нота: плавно продлеваем (только у тянущихся записей)
 }
 const MAJ = [0, 2, 4, 5, 7, 9, 11], MIN = [0, 2, 3, 5, 7, 8, 10];
 // Оркестровка по настроению: acc — аккомпанемент, lead — инструменты мелодии (по очереди в частях), pad — тянущиеся
 // аккорды, bass — бас, perc — ударные (тихие, только где уместно), dbl — подголосок к мелодии октавой выше.
 const STY = {
-  happy:     { bpm: 108, minor: false, prog: [[0, 4, 5, 3], [0, 3, 4, 0], [5, 3, 0, 4]], acc: 'strum', lead: ['xylo', 'flute', 'clarinet'], dbl: 'glock', bass: 'pizzbass', perc: 'light', mel: [[2, 1, 1, 2, 2], [1, 1, 1, 1, 2, 2], [3, 1, 2, 2], [2, 2, 2, 1, 1]] },
-  calm:      { bpm: 76, minor: false, prog: [[0, 5, 3, 4], [0, 3, 5, 4]], acc: 'arp', lead: ['flute', 'clarinet'], pad: 'strings', mel: [[4, 4], [2, 2, 4], [3, 1, 4], [6, 2]] },
-  adventure: { bpm: 116, minor: true, prog: [[0, 5, 2, 6], [0, 3, 6, 4]], acc: 'ostinato', lead: ['horn', 'flute'], pad: 'strings', bass: 'long', perc: 'march', mel: [[3, 1, 2, 2], [1, 1, 2, 4], [2, 1, 1, 2, 2], [6, 2]] },
-  tense:     { bpm: 96, minor: true, prog: [[0, 0, 5, 4], [0, 1, 0, 4]], acc: 'tense', lead: [], pad: 'strings', perc: 'pulse', mel: [] },
-  sad:       { bpm: 68, minor: true, prog: [[0, 5, 2, 6], [0, 3, 6, 4]], acc: 'slowarp', lead: ['oboe', 'piano'], pad: 'strings', mel: [[4, 4], [6, 2], [8], [2, 2, 4]] },
-  magic:     { bpm: 84, minor: false, sev: true, prog: [[0, 2, 3, 4], [0, 5, 1, 4]], acc: 'sparkle', lead: ['celesta', 'flute'], pad: 'choir', mel: [[2, 2, 4], [3, 1, 4], [2, 2, 2, 2], [8]] },
-  night:     { bpm: 64, minor: false, sev: true, prog: [[0, 5, 1, 4], [0, 3, 0, 4]], acc: 'lullaby', lead: ['mbox', 'flute'], pad: 'strings', mel: [[4, 4], [2, 2, 4], [8]] },
-  funny:     { bpm: 124, minor: false, prog: [[0, 4, 0, 4], [3, 0, 4, 0]], acc: 'oompah', lead: ['clarinet', 'xylo'], perc: 'funny', mel: [[1, 1, 1, 1, 2, 2], [1, 1, 2, 1, 1, 2], [2, 2, 2, 2], [1, 1, 1, 1, 4]] },
-  spooky:    { bpm: 80, minor: true, prog: [[0, 3, 0, 4], [0, 5, 3, 4]], acc: 'walk', lead: ['clarinet', 'celesta'], pad: 'strings', mel: [[4, 4], [6, 2], [3, 3, 2]] },
+  happy:     { lvl: 1.3, bpm: 108, minor: false, prog: [[0, 4, 5, 3], [0, 3, 4, 0], [5, 3, 0, 4]], acc: 'strum', lead: ['xylo', 'flute', 'clarinet'], dbl: 'glock', bass: 'pizzbass', perc: 'light', mel: [[2, 1, 1, 2, 2], [1, 1, 1, 1, 2, 2], [3, 1, 2, 2], [2, 2, 2, 1, 1]] },
+  calm:      { lvl: 0.8, bpm: 76, minor: false, prog: [[0, 5, 3, 4], [0, 3, 5, 4]], acc: 'arp', lead: ['flute', 'clarinet'], pad: 'strings', mel: [[4, 4], [2, 2, 4], [3, 1, 4], [6, 2]] },
+  adventure: { lvl: 0.85, bpm: 116, minor: true, prog: [[0, 5, 2, 6], [0, 3, 6, 4]], acc: 'ostinato', lead: ['strings', 'flute'], pad: 'horn', bass: 'long', perc: 'march', mel: [[3, 1, 2, 2], [1, 1, 2, 4], [2, 1, 1, 2, 2], [6, 2]] },
+  tense:     { lvl: 0.8, bpm: 96, minor: true, prog: [[0, 0, 5, 4], [0, 1, 0, 4]], acc: 'tense', lead: [], pad: 'strings', perc: 'pulse', mel: [] },
+  sad:       { lvl: 0.95, bpm: 68, minor: true, prog: [[0, 5, 2, 6], [0, 3, 6, 4]], acc: 'slowarp', lead: ['oboe', 'piano'], pad: 'strings', mel: [[4, 4], [6, 2], [8], [2, 2, 4]] },
+  magic:     { lvl: 1.0, bpm: 84, minor: false, sev: true, prog: [[0, 2, 3, 4], [0, 5, 1, 4]], acc: 'sparkle', lead: ['celesta', 'flute'], pad: 'choir', mel: [[2, 2, 4], [3, 1, 4], [2, 2, 2, 2], [8]] },
+  night:     { lvl: 1.1, bpm: 64, minor: false, sev: true, prog: [[0, 5, 1, 4], [0, 3, 0, 4]], acc: 'lullaby', lead: ['mbox', 'flute'], pad: 'strings', mel: [[4, 4], [2, 2, 4], [8]] },
+  funny:     { lvl: 1.1, bpm: 124, minor: false, prog: [[0, 4, 0, 4], [3, 0, 4, 0]], acc: 'oompah', lead: ['clarinet', 'xylo'], perc: 'funny', mel: [[1, 1, 1, 1, 2, 2], [1, 1, 2, 1, 1, 2], [2, 2, 2, 2], [1, 1, 1, 1, 4]] },
+  spooky:    { lvl: 0.68, bpm: 80, minor: true, prog: [[0, 3, 0, 4], [0, 5, 3, 4]], acc: 'walk', lead: ['clarinet', 'celesta'], pad: 'strings', mel: [[4, 4], [6, 2], [3, 3, 2]] },
 };
 MK.MOODS = Object.keys(STY).concat(['none']);
 function seriesKey(series) { const h = MK.hash32('key' + (series || '')); return 57 + [0, 2, 3, 5, 7, -2][h % 6]; } // своя тональность у каждого сериала
@@ -408,7 +407,8 @@ function scheduleMusic2(ac, out, m, seed, ctx) {
   const deg = (dg, chordDeg) => { const o = Math.floor(dg / 7), i = ((dg % 7) + 7) % 7; let n = key + scale[i] + 12 * o; if (S.minor && chordDeg === 4 && i === 6) n += 1; return n; };
   const chordOf = cd => [cd, cd + 2, cd + 4].concat(S.sev ? [cd + 6] : []);
   const g = ac.createGain(); g.connect(out); const fadeIn = m.fadeIn != null ? m.fadeIn : .6;
-  g.gain.setValueAtTime(0, m.t0); g.gain.linearRampToValueAtTime(1, m.t0 + fadeIn); g.gain.setValueAtTime(1, Math.max(m.t0 + fadeIn, m.t1 - 1.2)); g.gain.linearRampToValueAtTime(0, m.t1);
+  const lv = S.lvl || 1; // настроения звучат одинаково громко
+  g.gain.setValueAtTime(0, m.t0); g.gain.linearRampToValueAtTime(lv, m.t0 + fadeIn); g.gain.setValueAtTime(lv, Math.max(m.t0 + fadeIn, m.t1 - 1.2)); g.gain.linearRampToValueAtTime(0, m.t1);
   const rv = ac.createConvolver(); rv.buffer = MK.roomIR(ac, 2.4); const rg = ac.createGain(); rg.gain.value = .32; rv.connect(rg); rg.connect(g);
   const dry = ac.createGain(); dry.connect(g); dry.connect(rv); const leadBus = ac.createGain(); leadBus.gain.value = 1; leadBus.connect(g); const lrv = ac.createGain(); lrv.gain.value = .55; leadBus.connect(lrv); lrv.connect(rv);
   const nb = Math.ceil((m.t1 - m.t0) / bar) + 1, progs = S.prog;
@@ -446,14 +446,14 @@ function scheduleMusic2(ac, out, m, seed, ctx) {
       case 'slowarp': { [low(root), voic[0], voic[2], voic[1]].forEach((n, i) => P('piano', n, t + i * beat, i ? .2 : .28)); break; }
       case 'sparkle': { const up = chord.map(n => mid(n)).sort((a, c) => a - c), seq = up.concat(up.map(n => n + 12)); for (let i = 0; i < 8; i++) P('harp', seq[i % seq.length], t + i * e8, .2); if (b % 4 === 0) play(ac, dry, drum(ac, 'chime'), t, .06 * A); P('harp', low(root), t, .26); break; }
       case 'lullaby': { P('harp', low(root), t, .26); P('harp', low(five) + 12, t + 2 * beat, .16); [voic[0], voic[1], voic[2], voic[1]].forEach((n, i) => P('harp', n + 12, t + i * beat, .13)); break; }
-      case 'oompah': { P('bassoon', low(root), t, .42, beat * .4, { rel: .08 }); P('bassoon', low(five), t + 2 * beat, .38, beat * .4, { rel: .08 }); for (const bq of [1, 3]) voic.forEach((n, j) => P('pizz', n, t + bq * beat + j * .006, .2)); break; }
+      case 'oompah': { const bn = n => n < 46 ? n + 12 : n; P('bassoon', bn(low(root)), t, .42, beat * .4, { rel: .08 }); P('bassoon', bn(low(five)), t + 2 * beat, .38, beat * .4, { rel: .08 }); for (const bq of [1, 3]) voic.forEach((n, j) => P('pizz', n, t + bq * beat + j * .006, .2)); break; }
       case 'walk': { const ln = [0, 2, 3, 4].map(x => low(deg(cd + x, cd))); ln.forEach((n, i) => P('pizz', n, t + i * beat, .5)); if (b % 2 === 0) playS(ac, leadBus, 'celesta', mid(root) + 13, t + beat * 3.5, .14); break; }
     }
     // бас
     if (S.bass === 'pizzbass') { P('bass', low(root) - 12, t, .5, beat * 1.6, { rel: .15 }); P('bass', low(five) - 12, t + 2 * beat, .42, beat * 1.6, { rel: .15 }); }
     if (S.bass === 'long') { P('bass', low(root) - 12, t, .5, beat * 1.5, { rel: .2 }); P('bass', low(root) - 12, t + beat * 2.5, .38, beat, { rel: .2 }); }
     // тянущиеся аккорды (струнные или хор): мягко, чтобы не спорили с голосами
-    if (S.pad && b % 2 === 0) for (const n of voic) playS(ac, dry, S.pad, n - (S.pad === 'strings' && S.minor ? 12 : 0), t, (S.pad === 'choir' ? .09 : .1) * (quiet ? .8 : 1), bar * 2 - .1, { att: .45, rel: .7, sus: true });
+    if (S.pad && b % 2 === 0) for (const n of voic) playS(ac, dry, S.pad, n - (S.pad === 'horn' || (S.pad === 'strings' && S.minor) ? 12 : 0), t, (S.pad === 'choir' ? .09 : S.pad === 'horn' ? .085 : .1) * (quiet ? .8 : 1), bar * 2 - .1, { att: .45, rel: .7, sus: true });
     // ударные — тихо и только в бодрых настроениях
     const D = (nm, at, v) => play(ac, dry, drum(ac, nm), at, v * A);
     if (S.perc === 'light') { D('shaker', ac8(t, 1), .04); D('shaker', ac8(t, 3), .04); D('shaker', ac8(t, 5), .04); D('shaker', ac8(t, 7), .04); D('kick', t, .14); D('clap', t + beat, .06); D('clap', t + 3 * beat, .06); if (pb === 7) D('tamb', t + 3.5 * beat, .07); }
@@ -464,7 +464,7 @@ function scheduleMusic2(ac, out, m, seed, ctx) {
     // мелодия — только там, где никто не говорит
     if (S.lead.length && ph) { const lead = S.lead[(sec + (ctx.leadShift || 0)) % S.lead.length];
       const reg = { horn: -12, bassoon: -12, clarinet: 0, oboe: 0, flute: 12, xylo: 12, glock: 24, celesta: 12, mbox: 12, piano: 0 }[lead] || 0;
-      const sus = ['flute', 'clarinet', 'oboe', 'horn', 'bassoon'].includes(lead), vol = { horn: .34, flute: .3, clarinet: .3, oboe: .28, xylo: .3, celesta: .3, mbox: .32, piano: .34 }[lead] || .3;
+      const sus = ['flute', 'clarinet', 'oboe', 'horn', 'bassoon', 'strings'].includes(lead), vol = { strings: .3, horn: .34, flute: .3, clarinet: .3, oboe: .28, xylo: .3, celesta: .3, mbox: .32, piano: .34 }[lead] || .3;
       for (const nt of ph[pb]) { if (nt.rest) continue; const at = ac8(t, nt.pos), len = nt.len * e8; if (at >= m.t1 - .3) continue; if (ctx.speaking(at) || ctx.speaking(at + Math.min(len, .4))) continue;
         const midi = deg(nt.d, cd) + reg;
         playS(ac, leadBus, lead, midi, at + hum(), vol, sus ? Math.max(.14, len * .94) : null, sus ? { att: .03, rel: .18, sus: true } : null);
@@ -477,8 +477,6 @@ async function prepMusic(ac, run) {
   COLLECT = new Set(); try { const dummy = new OfflineAudioContext(1, 4410, 44100); run(dummy, dummy.createGain()); } catch (e) { console.log('music collect', e); } const keys = COLLECT; COLLECT = null;
   await decodeKeys(ac, keys);
 }
-// Для описания на YouTube (лицензии записей требуют указать авторов — кнопка «Текст для YouTube» добавляет это сама)
-MK.soundCredits = 'Звук: инструменты FluidR3 GM (Frank Wen), CC BY 3.0; смех — "Oculus Audio Pack 01" by Oculus VR, LLC, CC BY 4.0.';
 
 // =====================================================================================
 // 5. ЗВУКИ МЕСТА И УЛУЧШЕННЫЕ ЭФФЕКТЫ
