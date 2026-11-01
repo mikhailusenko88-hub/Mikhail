@@ -69,6 +69,10 @@ def tg_send_video(path, caption):
 
 def main():
     load_env()
+    _cfg = json.loads((BASE / "config.json").read_text(encoding="utf-8"))
+    if _cfg.get("mode") == "race":  # «Қай қала жеңеді?» — гонка городов (race_bot.py)
+        import race_bot
+        return race_bot.run(BASE, _cfg, log, notify, "--test" in sys.argv, "--no-youtube" in sys.argv)
     test = "--test" in sys.argv
     import make_video as mv
     cfg = json.loads((BASE / "config.json").read_text(encoding="utf-8"))
