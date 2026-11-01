@@ -9,6 +9,17 @@
 | ks_q | silero:kseniya | 3.79 | 1.0 | 0 (+0) | 0/1 |
 | ks_st | silero:kseniya | 3.78 | 1.0 | 0 (+0) | 1/1 |
 | ks_wh | silero:kseniya | 3.31 | 1.0 | 0 (+0) | 1/1 |
+| m_barhat | morph:kseniya:0.92:200 | 2.98 | 0.967 | 0 (+0) | 4/4 |
+| m_molozhe | morph:kseniya:1.06:245 | 3.09 | 0.967 | 0 (+0) | 4/4 |
+| m_teplee | morph:kseniya:0.96:215 | 3.14 | 0.967 | 0 (+0) | 4/4 |
+| r11 | silero_random:11 | 1.43 | 0.915 | 0 (+0) | 4/4 |
+| r23 | silero_random:23 | 1.52 | 0.967 | 2 (+2) | 4/4 |
+| r37 | silero_random:37 | 1.46 | 0.915 | 4 (+1) | 4/4 |
+| r42 | silero_random:42 | 1.62 | 1.0 | 1 (+0) | 4/4 |
+| r58 | silero_random:58 | 1.41 | 0.603 | 6 (+0) | 4/4 |
+| r71 | silero_random:71 | 1.41 | 0.967 | 1 (+0) | 3/4 |
+| r89 | silero_random:89 | 1.28 | 0.387 | 3 (+2) | 2/4 |
+| r97 | silero_random:97 | 1.28 | 0.9 | 3 (+1) | 3/4 |
 | v1_kseniya | silero:kseniya | 3.67 | 0.967 | 0 (+0) | 4/4 |
 | v2_xenia | silero:xenia | 3.55 | 0.967 | 0 (+2) | 4/4 |
 | v3_baya | silero:baya | 3.23 | 0.967 | 0 (+0) | 4/4 |
