@@ -40,6 +40,8 @@
   function dist(pr, x, y, z) {
     local(pr, x, y, z, L); const lx = L[0], ly = L[1], lz = L[2];
     if (pr.type === 'ell') return sdEll(lx, ly, lz, pr.r[0], pr.r[1], pr.r[2]);
+    if (pr.type === 'rbox') { const qx = Math.abs(lx) - pr.b[0] + pr.rr, qy = Math.abs(ly) - pr.b[1] + pr.rr, qz = Math.abs(lz) - pr.b[2] + pr.rr; // скруглённый брусок (мебель)
+      return Math.sqrt(Math.max(qx, 0) ** 2 + Math.max(qy, 0) ** 2 + Math.max(qz, 0) ** 2) + Math.min(Math.max(qx, qy, qz), 0) - pr.rr; }
     const s = pr.s, sm = Math.min(s[0], s[1], s[2]), X = lx / s[0], Y = ly / s[1], Z = lz / s[2];
     let d;
     if (pr.type === 'cap') d = sdRoundCone(X, Y + pr.h / 2, Z, Math.max(pr.h, 1e-4), pr.r1, pr.r1);

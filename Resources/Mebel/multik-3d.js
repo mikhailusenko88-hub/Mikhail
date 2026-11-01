@@ -115,6 +115,33 @@ function sculptMat(pat) { const k = (MK3D.hq ? 'hq' : 'std') + (pat ? ':' + pat.
     sh.fragmentShader = 'varying float vThick; uniform vec3 uSss;\n' + PAT_GLSL + sh.fragmentShader.replace('#include <color_fragment>', SCULPT_FRAG).replace('#include <lights_fragment_end>', MK3D.hq ? SSS_FRAG : '#include <lights_fragment_end>'); };
   m.customProgramCacheKey = () => 'sculpt' + (MK3D.hq ? 'hq' : '');
   return (sculptM[k] = m); }
+// ---------- мебель из «глины»: мягкие скруглённые формы, складки между подушками, тени в стыках ----------
+const I3 = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+function rotY3(a) { const c = Math.cos(a), s = Math.sin(a); return [c, 0, -s, 0, 1, 0, s, 0, c]; }
+function rotX3(a) { const c = Math.cos(a), s = Math.sin(a); return [1, 0, 0, 0, c, s, 0, -s, c]; }
+const lin3 = c => { const q = new THREE.Color(c); return [q.r, q.g, q.b]; };
+function rb(x, y, z, bx, by, bz, rr, col, k, inv) { return { type: 'rbox', t: [x, y, z], inv: inv || I3, b: [bx, by, bz], rr, col: lin3(col), op: 'add', k: k || 0, bc: [x, y, z], br: Math.hypot(bx, by, bz), minR: Math.min(bx, by, bz) }; }
+function cy(x, y, z, r1, r2, h, rr, col, k) { return { type: 'cyl', t: [x, y, z], inv: I3, s: [1, 1, 1], r1, r2, h, rr, col: lin3(col), op: 'add', k: k || 0, bc: [x, y, z], br: Math.max(r1, r2, h / 2) + rr, minR: Math.min(r1, r2, h / 2) }; }
+function sculptStatic(prims, res, aoS) { const SC = global.MKSculpt; prims.forEach((p, i) => { if (i === 0) p.k = 0; }); const m = SC.mesh(prims, { res }); if (!m.idx.length) return null;
+  const ao = SC.occlusion([prims], m.pos, m.nor, aoS, 2.2); SC.bake(m.col, ao, .45); SC.bake(m.colB, ao, .45);
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(m.pos, 3)); geo.setAttribute('normal', new THREE.BufferAttribute(m.nor, 3)); geo.setAttribute('color', new THREE.BufferAttribute(m.col, 3));
+  geo.setAttribute('aColB', new THREE.BufferAttribute(m.colB, 3)); geo.setAttribute('aMix', new THREE.BufferAttribute(m.mixS, 1)); geo.setAttribute('aPat', new THREE.BufferAttribute(m.pat, 4)); geo.setAttribute('aThick', new THREE.BufferAttribute(new Float32Array(m.mixS.length).fill(1), 1)); geo.setIndex(new THREE.BufferAttribute(m.idx, 1));
+  const ms = new THREE.Mesh(geo, sculptMat(null)); ms.castShadow = true; ms.receiveShadow = true; ms.userData.keep = true; return ms; }
+function furnitureHQ(g, kit) {
+  if (!global.MKSculpt) return; const tagged = {}; g.traverse(o => { if (o.userData.tag) tagged[o.userData.tag] = o; });
+  const hide = o => o && o.traverse(q => { if (q.isMesh) q.visible = false; });
+  if (tagged.sofa) { const S = tagged.sofa, f = '#5f9e8f', cu = '#6fae9f'; hide(S);
+    const pr = [rb(0, .26, 0, 1.5, .2, .5, .09, f), rb(-1.36, .47, 0, .16, .33, .52, .13, f, .05), rb(1.36, .47, 0, .16, .33, .52, .13, f, .05), rb(0, .76, -.38, 1.24, .34, .13, .12, f, .05),
+      rb(-.6, .52, .07, .6, .11, .42, .1, cu, .012), rb(.6, .52, .07, .6, .11, .42, .1, cu, .012), rb(-.6, .82, -.2, .57, .25, .11, .13, cu, .012, rotX3(-.15)), rb(.6, .82, -.2, .57, .25, .11, .13, cu, .012, rotX3(-.15))];
+    const m = sculptStatic(pr, 72, .5); if (m) { m.position.copy(S.position); g.add(m); }
+    for (const [x, z] of [[-1.35, .4], [1.35, .4], [-1.35, -.42], [1.35, -.42]]) { const l = new THREE.Mesh(G.cyl(.04, .03, .1, 12), stdM('#4a3020', null, .5)); l.position.set(S.position.x + x, .05, S.position.z + z); g.add(l); } }
+  if (tagged.table) { const T = tagged.table, w = '#a8703f'; hide(T);
+    const m = sculptStatic([cy(0, .785, 0, .9, .9, .07, .028, w), cy(0, .42, 0, .075, .055, .7, .02, w, .05), cy(0, .03, 0, .34, .3, .06, .025, w, .06)], 64, .5); if (m) { m.position.copy(T.position); g.add(m); } }
+  if (tagged.counter) { const C = tagged.counter, f = '#7fc4a4', top = '#e6d8bd'; hide(C);
+    const pr = [rb(0, .47, 0, 2.5, .47, .45, .03, f)]; for (let i = 0; i < 5; i++) pr.push(Object.assign(rb(-2 + i, .5, .45, .44, .4, .025, .02, f), { op: 'sub', k: .012 })); // дверцы — канавки между ними
+    pr.push(rb(0, .99, .02, 2.56, .04, .5, .03, top, .01)); pr.push(rb(0, 2.6, -.2, 2.5, .4, .25, .03, f, 0)); for (let i = 0; i < 5; i++) pr.push(Object.assign(rb(-2 + i, 2.6, .05, .44, .34, .02, .02, f), { op: 'sub', k: .01 }));
+    const m = sculptStatic(pr, 110, .6); if (m) { m.position.copy(C.position); g.add(m); } }
+}
 function sculptRig(rig) {
   const SC = global.MKSculpt; if (!SC || rig.human || rig.kind === 'robot' || (MK3D.hq && FEATHER_KINDS.has(rig.kind))) return;
   const n = rig.n, P = rig.P, hr = P.head, c = n.c, O = rig.spec.outfit || {};
@@ -1312,13 +1339,13 @@ function buildLoc(spec) {
   const rep = (t, n) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(n, n); return t; };
   if (['forest', 'meadow', 'yard', 'playground', 'winter'].includes(type)) {
     const snow = type === 'winter';
-    const gp = plane(120, 120, snow ? '#f2f6fc' : green); if (MK3D.hq && !snow) gp.material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: groundTex(new THREE.Color(green).multiplyScalar(.8).getStyle()), roughness: .95 }); g.add(gp);
+    const gp = plane(120, 120, snow ? '#f2f6fc' : green); if (MK3D.hq && !snow) gp.material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: groundTex(type === 'forest' && !night ? '#4d5c2f' : new THREE.Color(green).multiplyScalar(.8).getStyle()), roughness: .95 }); g.add(gp);
     const soft = (d, x, z) => d < -.1 ? false : d > .14 ? true : (global.MK.hash32(x.toFixed(3) + z.toFixed(3)) % 100) / 100 < (d + .1) / .24; // d — насколько глубоко внутри тропинки
     const skipG = (x, z) => (type === 'yard' && (soft(Math.min(.7 - Math.abs(x + 3.6), z + 6.2, 3.8 - z), x, z) || (x > -5.7 && x < -1.5 && z < -5.4))) || (type === 'forest' && soft(Math.min(z - .2, 1.6 - z), x, z)) || (type === 'playground' && Math.abs(x) < 1.3 && z > -5.3 && z < -2.7);
     for (let i = 0; i < 6; i++) { const hc = snow ? '#e8f0fa' : night ? '#24453a' : '#98d07a'; const h = new THREE.Mesh(G.sph(8 + r() * 6, 40, 20), MK3D.hq && !snow ? new THREE.MeshStandardMaterial({ color: 0xffffff, map: (() => { const t = groundTex(hc).clone(); t.needsUpdate = true; t.repeat.set(10, 5); return t; })(), roughness: .95 }) : toon(hc)); h.position.set(-40 + i * 16, -4, -35 - r() * 10); h.scale.y = .5; g.add(h); }
     if (type === 'yard') { house(g, -3.6, -7, '#f6d7a7', '#d9534f'); fence(g, -4.2, '#e8c48a', -3.6); const pth = plane(1.4, 10, '#d8c3a0'); if (MK3D.hq) pth.material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: dirtTex('#d8c3a0', 1, 7), roughness: .95 }); pth.position.set(-3.6, .01, -1.2); g.add(pth); tree(g, 3.6, -6, 1.3); tree(g, 6, -9, 1.1); tree(g, -8.5, -8, 1.2); tree(g, 8.5, -5.5, .9); }
-    if (type === 'forest' || type === 'winter') { for (let i = 0; i < 26; i++) { const x = (r() - .5) * 30, z = -3 - r() * 16; if (Math.abs(x) < 1.5 && z > -5) continue; tree(g, x, z, .9 + r() * .6, snow || r() < .4 ? 'fir' : 'round', snow ? '#2f6a4c' : null, snow); }
-      if (!snow) { const pth = plane(40, 1.4, '#d9b77a'); if (MK3D.hq) pth.material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: dirtTex('#d9b77a', 28, 1), roughness: .95 }); pth.position.set(0, .01, .9); g.add(pth); for (let i = 0; i < 8; i++) { const mx = (r() - .5) * 14, mz = -1.5 - r() * 2; mesh(G.cyl(.04, .05, .14, 8), toon('#f2eadf'), .1, g).position.set(mx, .07, mz); const cp = mesh(new THREE.SphereGeometry(.12, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), toon('#e8344e'), .08, g); cp.position.set(mx, .13, mz); } } }
+    if (type === 'forest' || type === 'winter') { const cine = MK3D.hq && type === 'forest' && !night; for (let i = 0; i < 26; i++) { const x = (r() - .5) * 30, z = -3 - r() * 16; if (Math.abs(x) < 1.5 && z > -5) continue; if (cine && (z > -12 || r() < .5)) continue; tree(g, x, z, (.9 + r() * .6) * (cine ? 1.6 : 1), snow || r() < .4 || cine ? 'fir' : 'round', snow ? '#2f6a4c' : null, snow); }
+      if (!snow) { const pth = plane(40, 1.4, '#d9b77a'); if (MK3D.hq) pth.material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: dirtTex(night ? '#d9b77a' : '#8f7a52', 28, 1), roughness: .95 }); pth.position.set(0, .01, .9); g.add(pth); for (let i = 0; i < 8; i++) { const mx = (r() - .5) * 14, mz = -1.5 - r() * 2; mesh(G.cyl(.04, .05, .14, 8), toon('#f2eadf'), .1, g).position.set(mx, .07, mz); const cp = mesh(new THREE.SphereGeometry(.12, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), toon('#e8344e'), .08, g); cp.position.set(mx, .13, mz); } } }
     if (type === 'meadow') { for (let i = 0; i < 6; i++) tree(g, (r() - .5) * 34, -10 - r() * 10, 1 + r() * .4); fence(g, -6, '#e8c48a'); }
     if (type === 'playground') { const sw = new THREE.Group(); sw.position.set(-3.5, 0, -2.5); g.add(sw); for (const s of [-1, 1]) { const p = mesh(G.cyl(.06, .06, 2.4, 8), toon('#e8344e'), .05, sw); p.position.set(s * 1.2, 1.2, 0); } mesh(G.cyl(.06, .06, 2.5, 8), toon('#e8344e'), .05, sw).position.y = 2.4; sw.children[2].rotation.z = Math.PI / 2;
       for (const s of [-.5, .5]) { mesh(G.box(.5, .06, .3), toon('#ffd23f'), .05, sw).position.set(s, .6, 0); }
@@ -1326,7 +1353,7 @@ function buildLoc(spec) {
       const sb = mesh(G.box(2.4, .2, 2.4), toon('#f1d38a'), .03, g); if (MK3D.hq) sb.material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: dirtTex('#f1d38a', 1, 1), roughness: .95 }); sb.position.set(0, .1, -4); tree(g, 7, -7, 1.2); tree(g, -7.5, -7, 1.1); }
     if (snow) { const sm = new THREE.Group(); sm.position.set(3.8, 0, -2); g.add(sm); [[.6, .55], [.42, 1.4], [.3, 2.0]].forEach(([rr, y]) => mesh(G.sph(rr, 24, 18), toon('#ffffff'), .03, sm).position.y = y); const nose = mesh(G.cone(.06, .3, 10), toon('#ff8a1f'), .06, sm); nose.rotation.x = Math.PI / 2; nose.position.set(0, 2.0, .35); }
     if (!snow) flowers(g, r, type === 'meadow' ? 180 : 70, -9, 9, -3.5, 3, skipG);
-    if (MK3D.hq && !snow) { grassField(g, r, green, skipG); rocksHQ(g, r, 10); }
+    if (MK3D.hq && !snow) { const cine = type === 'forest' && !night; grassField(g, r, cine ? (time === 'evening' ? '#5f7a34' : '#4f7d33') : green, skipG); if (!cine) rocksHQ(g, r, 10); }
     for (const [x, z] of [[-6.5, 2.5], [6.5, 2.8], [-8, -1], [8, -1.5]]) bush(g, x, z, 1 + r() * .4, snow ? '#e8f0fa' : night ? '#173a27' : '#3c8f37');
   } else if (type === 'room' || type === 'kitchen') {
     const kit = type === 'kitchen';
@@ -1339,8 +1366,8 @@ function buildLoc(spec) {
     for (const [w, h, x, y] of [[2.4, .14, 0, .95], [2.4, .14, 0, -.95], [.14, 2, -1.15, 0], [.14, 2, 1.15, 0], [.08, 1.8, 0, 0], [2.2, .08, 0, 0]]) mesh(G.box(w, h, .08), toon('#ffffff'), .04, win).position.set(x, y, .05);
     for (const s of [-1, 1]) mesh(G.box(.5, 2.4, .08), toon(kit ? '#9ad0c2' : '#e86a5f'), .03, win).position.set(s * 1.45, -.05, .1);
     if (kit) { const cnt = new THREE.Group(); cnt.position.set(-4, 0, -3.1); g.add(cnt); mesh(G.box(5, .95, .9), toon('#7fc4a4'), .02, cnt).position.y = .475; mesh(G.box(5.1, .08, 1), toon('#d9c7a8'), .02, cnt).position.y = .99; mesh(G.box(5, .8, .5), toon('#7fc4a4'), .02, cnt).position.set(0, 2.6, -.2);
-      const fr = mesh(G.box(1.1, 2.4, .9), toon('#fafafa'), .02, g); fr.position.set(5.3, 1.2, -3); const tb = new THREE.Group(); tb.position.set(4, 0, -1.4); g.add(tb); mesh(G.cyl(.9, .9, .08, 28), toon('#c88a55'), .03, tb).position.y = .78; mesh(G.cyl(.08, .12, .78, 10), toon('#8a5a3a'), .05, tb).position.y = .39; }
-    else { const sofa = new THREE.Group(); sofa.position.set(5, 0, -2.8); g.add(sofa); mesh(G.box(3, .5, 1), toon('#5f9e8f'), .03, sofa).position.y = .35; mesh(G.box(3, .8, .3), toon('#5f9e8f'), .03, sofa).position.set(0, .8, -.4); for (const s of [-1, 1]) mesh(G.box(.3, .6, 1), toon('#5f9e8f'), .03, sofa).position.set(s * 1.5, .5, 0);
+      const fr = mesh(G.box(1.1, 2.4, .9), toon('#fafafa'), .02, g); fr.position.set(5.3, 1.2, -3); const tb = new THREE.Group(); tb.position.set(4, 0, -1.4); g.add(tb); tb.userData.tag = 'table'; cnt.userData.tag = 'counter'; mesh(G.cyl(.9, .9, .08, 28), toon('#c88a55'), .03, tb).position.y = .78; mesh(G.cyl(.08, .12, .78, 10), toon('#8a5a3a'), .05, tb).position.y = .39; }
+    else { const sofa = new THREE.Group(); sofa.position.set(5, 0, -2.8); g.add(sofa); sofa.userData.tag = 'sofa'; mesh(G.box(3, .5, 1), toon('#5f9e8f'), .03, sofa).position.y = .35; mesh(G.box(3, .8, .3), toon('#5f9e8f'), .03, sofa).position.set(0, .8, -.4); for (const s of [-1, 1]) mesh(G.box(.3, .6, 1), toon('#5f9e8f'), .03, sofa).position.set(s * 1.5, .5, 0);
       const rug = new THREE.Mesh(G.cyl(2.2, 2.2, .02, 40), toon('#4e7fc9')); rug.position.set(0, .01, .2); rug.receiveShadow = true; g.add(rug);
       const sh = new THREE.Group(); sh.position.set(-4, 2.2, -3.45); g.add(sh); mesh(G.box(2, .08, .3), toon('#8a5a3a'), .03, sh); for (let i = 0; i < 7; i++) mesh(G.box(.2, .45 + (i % 3) * .08, .25), toon(['#e8344e', '#3d8fe0', '#ffd23f', '#5fbf4a'][i % 4]), .04, sh).position.set(-.8 + i * .26, .27, 0);
       const pl = new THREE.Group(); pl.position.set(-6.3, 0, -2.6); g.add(pl); mesh(G.cyl(.3, .22, .5, 12), toon('#c96'), .04, pl).position.y = .25; for (let i = 0; i < 6; i++) { const l = mesh(G.sph(.25, 10, 8), toon('#4fa63f'), .04, pl); l.position.set(Math.cos(i) * .25, .75 + (i % 2) * .2, Math.sin(i) * .25); l.scale.set(.6, 1.3, .4); } }
@@ -1392,8 +1419,69 @@ function parquetT(c) { return ctex('pq' + c, 512, 512, (g) => { const r = rng(12
 function rugT(a, b) { return ctex('rug' + a + b, 256, 256, (g) => { g.fillStyle = a; g.fillRect(0, 0, 256, 256); g.strokeStyle = b; for (let k = 0; k < 6; k++) { g.lineWidth = 8 - k; g.beginPath(); g.arc(128, 128, 120 - k * 20, 0, 7); g.stroke(); } g.fillStyle = lightC(a, .4); for (let k = 0; k < 12; k++) { const t = k / 12 * Math.PI * 2; g.beginPath(); g.arc(128 + Math.cos(t) * 70, 128 + Math.sin(t) * 70, 8, 0, 7); g.fill(); } }); }
 function stdM(c, map, rough) { return new THREE.MeshStandardMaterial({ color: map ? 0xffffff : c, map: map || null, roughness: rough == null ? .85 : rough }); }
 function placeProp(g, type, x, y, z, sc, ry, extra) { const o = Object.assign({ id: 'deco' + type + x + z, type }, extra || {}); const m = propMesh(o); delete propCache[o.id + o.type + (o.color || '')]; m.position.set(x, y, z); m.scale.setScalar(sc || 1); m.rotation.y = ry || 0; m.visible = true; g.add(m); return m; }
+// ================= лес «как в кино»: высокие стволы в дымке, полог листвы с пятнами солнца, мшистые камни, бревно, папоротники =================
+const MOSS_GLSL = `varying vec3 vMW; varying vec3 vMN; uniform float uMossTop, uMossBase, uBaseH; uniform vec3 uMossCol;
+float mh3(vec3 p){ return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
+float mnoise(vec3 p){ vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(mh3(i), mh3(i + vec3(1,0,0)), f.x), mix(mh3(i + vec3(0,1,0)), mh3(i + vec3(1,1,0)), f.x), f.y), mix(mix(mh3(i + vec3(0,0,1)), mh3(i + vec3(1,0,1)), f.x), mix(mh3(i + vec3(0,1,1)), mh3(i + vec3(1,1,1)), f.x), f.y), f.z); }
+`;
+function mossy(mat, top, base, baseH) { // мох сверху и у основания (по мировой нормали и высоте), пятнами
+  const u = { uMossTop: { value: top }, uMossBase: { value: base }, uBaseH: { value: baseH || 1.2 }, uMossCol: { value: new THREE.Color('#5f8f3a') } };
+  mat.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, u);
+    sh.vertexShader = 'varying vec3 vMW; varying vec3 vMN;\n' + sh.vertexShader.replace('#include <project_vertex>', `#include <project_vertex>
+  { vec4 mw = vec4(transformed, 1.0); vec3 mn = objectNormal;
+    #ifdef USE_INSTANCING
+      mw = instanceMatrix * mw; mn = mat3(instanceMatrix) * mn;
+    #endif
+    vMW = (modelMatrix * mw).xyz; vMN = normalize(mat3(modelMatrix) * mn); }`);
+    sh.fragmentShader = MOSS_GLSL + sh.fragmentShader.replace('#include <map_fragment>', `#include <map_fragment>
+  { float n = mnoise(vMW * 3.1) * .65 + mnoise(vMW * 9.3) * .35;
+    float m = smoothstep(.25, .8, vMN.y + (n - .5) * .7) * uMossTop + smoothstep(uBaseH, 0.0, vMW.y) * uMossBase * (.5 + n);
+    diffuseColor.rgb = mix(diffuseColor.rgb, uMossCol * (.7 + .6 * n), clamp(m, 0.0, 1.0)); }`); };
+  mat.customProgramCacheKey = () => 'mossy'; return mat; }
+function canopyTex() { if (envC.canopy) return envC.canopy; const r = rng(77); const t = canvasTex(512, 512, (g) => { g.fillStyle = '#ffffff'; g.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 95; i++) { const x = r() * 512, y = r() * 512, R = 8 + r() * 34; const gr = g.createRadialGradient(x, y, 0, x, y, R); gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(.7, 'rgba(0,0,0,.9)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.beginPath(); g.ellipse(x, y, R, R * (.6 + r() * .6), r() * 3, 0, 7); g.fill(); } });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 3); t.colorSpace = THREE.NoColorSpace; return (envC.canopy = t); }
+function mistTex(time) { const k = 'mist' + time; if (texCache[k]) return texCache[k]; const s = time === 'evening' ? ['#f3dcc0', '#cdb79c'] : ['#dcebe3', '#a9cbbd'];
+  const t = canvasTex(4, 256, (g) => { const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, s[0]); gr.addColorStop(1, s[1]); g.fillStyle = gr; g.fillRect(0, 0, 4, 256); }); texCache[k] = t; return t; }
+function noise3(x, y, z) { const h = (a, b, c) => { const v = Math.sin(a * 127.1 + b * 311.7 + c * 74.7) * 43758.5453; return v - Math.floor(v); }; const ix = Math.floor(x), iy = Math.floor(y), iz = Math.floor(z), fx = x - ix, fy = y - iy, fz = z - iz, sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy), sz = fz * fz * (3 - 2 * fz);
+  const L = (a, b, t) => a + (b - a) * t; return L(L(L(h(ix, iy, iz), h(ix + 1, iy, iz), sx), L(h(ix, iy + 1, iz), h(ix + 1, iy + 1, iz), sx), sy), L(L(h(ix, iy, iz + 1), h(ix + 1, iy, iz + 1), sx), L(h(ix, iy + 1, iz + 1), h(ix + 1, iy + 1, iz + 1), sx), sy), sz); }
+function frondGeo() { if (envC.frond) return envC.frond; const P = [], C = [], I = []; const N = 16, base = new THREE.Color('#2f5e22'), tip = new THREE.Color('#79b047');
+  const spine = t => new THREE.Vector3(0, Math.sin(t * Math.PI * .62) * .5, t * .95);
+  for (let i = 0; i < N; i++) { const t0 = i / N, t1 = (i + 1) / N, a = spine(t0), b = spine(t1), len = .2 * (1 - t0 * .78) * (i < 2 ? .5 : 1);
+    for (const sd of [-1, 1]) { const o = P.length / 3, tipP = a.clone().lerp(b, .5).add(new THREE.Vector3(sd * len, -len * .25, len * .15));
+      P.push(a.x, a.y, a.z, b.x, b.y, b.z, tipP.x, tipP.y, tipP.z); for (const tt of [t0, t1, (t0 + t1) / 2]) { const c = base.clone().lerp(tip, tt); C.push(c.r, c.g, c.b); } I.push(o, o + 1, o + 2); } }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(C, 3)); g.setIndex(I); g.computeVertexNormals(); return (envC.frond = g); }
+function forestHQ(g, spec, r) {
+  const eve = (spec.time || 'day') === 'evening';
+  // стволы: высокие, уходят за кадр, корни расширяются у земли, мох у основания
+  const barkM = mossy(new THREE.MeshStandardMaterial({ color: 0xffffff, map: barkTex(), roughness: .95, metalness: 0 }), .45, .85, 1.5);
+  const trunk = (x, z, R, H) => { const geo = new THREE.CylinderGeometry(R * .72, R, H, 20, 14); geo.translate(0, H / 2, 0); const p = geo.attributes.position, uv = geo.attributes.uv;
+    for (let i = 0; i < p.count; i++) { const y = p.getY(i), a = Math.atan2(p.getZ(i), p.getX(i)), k = 1 + .6 * Math.exp(-y / (R * 1.2)) * (.6 + .4 * Math.sin(a * 5)) + .03 * Math.sin(a * 9 + y * 1.7); p.setX(i, p.getX(i) * k); p.setZ(i, p.getZ(i) * k); uv.setXY(i, uv.getX(i) * Math.max(1, Math.round(R * 6)), uv.getY(i) * H / 2.2); }
+    geo.computeVertexNormals(); const m = new THREE.Mesh(geo, barkM); m.position.set(x, 0, z); m.rotation.y = r() * 6; m.castShadow = true; m.receiveShadow = true; g.add(m); return m; };
+  for (let i = 0; i < 48; i++) { const z = -3 - Math.pow(r(), .85) * 32, x = (r() - .5) * (14 + (-z) * 1.5); if (Math.abs(x) < 2.4 && z > -10) continue; trunk(x, z, .2 + r() * .32 + (-z) * .005, 15 + r() * 8); }
+  trunk(-4.4, -2.6, .5, 20); trunk(4.6, -3.2, .44, 20); trunk(-7.2, .6, .62, 20); trunk(7.8, 1.2, .58, 20); // по краям кадра — как кулисы
+  // мшистые валуны
+  const rockM = mossy(new THREE.MeshStandardMaterial({ color: '#86837a', roughness: .92 }), 1.0, .3, .5);
+  const boulder = (x, z, sx, sy, sz, seed) => { const geo = new THREE.SphereGeometry(1, 72, 48), p = geo.attributes.position, v = new THREE.Vector3();
+    for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); const n = noise3(v.x * 1.6 + seed, v.y * 1.6, v.z * 1.6) * .32 + noise3(v.x * 4 + seed, v.y * 4, v.z * 4) * .1; v.multiplyScalar(.82 + n); if (v.y < -.25) v.y = -.25 + (v.y + .25) * .3; p.setXYZ(i, v.x, v.y, v.z); }
+    geo.computeVertexNormals(); const m = new THREE.Mesh(geo, rockM); m.scale.set(sx, sy, sz); m.position.set(x, sy * .22, z); m.rotation.y = seed; m.castShadow = true; m.receiveShadow = true; g.add(m); };
+  boulder(3.6, -4.2, 1.4, 1.25, 1.1, 1.3); boulder(-5.2, -6.8, 1.0, .75, .9, 4.1); boulder(6.5, -10, 1.3, 1, 1.2, 2.2); boulder(-2.6, -11, .7, .5, .7, 5.5);
+  // поваленное бревно во мху
+  { const geo = new THREE.CylinderGeometry(.34, .4, 5.2, 18, 8); const m = new THREE.Mesh(geo, mossy(new THREE.MeshStandardMaterial({ color: 0xffffff, map: barkTex(), roughness: .95 }), .9, 0, .1)); m.rotation.set(0, .35, Math.PI / 2); m.position.set(-3.8, .32, -4.6); m.castShadow = true; m.receiveShadow = true; g.add(m); }
+  // папоротники кустами: у стволов и камней, не там, где стоят герои
+  { const spots = []; for (let i = 0; i < 46; i++) { const z = -1.6 - r() * 12, x = (r() - .5) * 18; if (Math.abs(x) < 2.6 && z > -4) continue; if (z > .2 && z < 1.6) continue; spots.push([x, z]); } spots.push([2.6, -3.2], [4.8, -4.6], [-4.6, -3.4], [-2.8, -5.4], [5.5, -2.4]);
+    const fm = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide, roughness: .7, emissive: new THREE.Color('#1c3a10'), emissiveIntensity: .25 });
+    const per = 9, im = new THREE.InstancedMesh(frondGeo(), wind(fm, .18, 'blade'), spots.length * per); im.castShadow = true; im.receiveShadow = true; let k = 0;
+    for (const [x, z] of spots) { const sc = .7 + r() * .7; for (let j = 0; j < per; j++) { _q.setFromEuler(new THREE.Euler(-.15 + r() * .25, j / per * Math.PI * 2 + r() * .4, 0, 'YXZ')); _v.set(x, 0, z); _s.setScalar(sc * (.8 + r() * .4)); _m4.compose(_v, _q, _s); im.setMatrixAt(k++, _m4); } }
+    im.instanceMatrix.needsUpdate = true; g.add(im); }
+  // полог листвы над кадром: его не видно, но он отбрасывает на землю и героев пятна солнца
+  { const ceil = new THREE.Mesh(new THREE.PlaneGeometry(90, 70), new THREE.MeshStandardMaterial({ color: eve ? '#3a4a24' : '#2c4a26', alphaMap: canopyTex(), alphaTest: .5, side: THREE.DoubleSide, roughness: 1 })); ceil.rotation.x = -Math.PI / 2; ceil.position.set(0, 7.6, -22); ceil.userData.keep = true; g.add(ceil); }
+  { const can = new THREE.Mesh(new THREE.PlaneGeometry(46, 46), new THREE.MeshBasicMaterial({ alphaMap: canopyTex(), alphaTest: .5, colorWrite: false, depthWrite: false, side: THREE.DoubleSide })); can.rotation.x = -Math.PI / 2; can.position.set(0, 6.4, -4); can.castShadow = true; can.receiveShadow = false; can.userData.keep = true; g.add(can); }
+}
 function decorateHQ(g, spec, r) {
   const type = spec.type || 'meadow', time = spec.time || 'day', night = time === 'night';
+  if (type === 'forest' && !night) forestHQ(g, spec, r);
   const swapMat = (fn) => g.traverse(o => { if (o.isMesh && o.material && !o.userData.keep) { const nm = fn(o); if (nm) o.material = nm; } });
   if (type === 'street') {
     const PAL = ['#e86a5f', '#f2c94c', '#7fc4a4', '#8d7ad9', '#f29e4c', '#5fa8e8']; let bi = 0;
@@ -1430,13 +1518,13 @@ function decorateHQ(g, spec, r) {
     const kit = type === 'kitchen';
     swapMat(o => { const geo = o.geometry.parameters || {}; if (o.geometry.type === 'PlaneGeometry' && geo.width === 30 && geo.height === 20) return stdM(null, parquetT(kit ? '#d8c4a0' : '#b8784a'), .7);
       if (o.geometry.type === 'PlaneGeometry' && geo.height === 6) return stdM(null, kit ? tilesT('#f3efe6', 8) : wallpaperT((spec.opts && spec.opts.wall) || '#f2dcb8'), .9); return null; });
-    if (!kit) { const lamp = new THREE.Group(); lamp.position.set(6.8, 0, -2.6); g.add(lamp); const pole = new THREE.Mesh(G.cyl(.025, .025, 1.7, 10), stdM('#3a3a3a', null, .3)); pole.position.y = .85; lamp.add(pole); const base = new THREE.Mesh(G.cyl(.22, .25, .05, 20), stdM('#3a3a3a', null, .3)); lamp.add(base);
+    if (!kit) { furnitureHQ(g, false); const lamp = new THREE.Group(); lamp.position.set(6.8, 0, -2.6); g.add(lamp); const pole = new THREE.Mesh(G.cyl(.025, .025, 1.7, 10), stdM('#3a3a3a', null, .3)); pole.position.y = .85; lamp.add(pole); const base = new THREE.Mesh(G.cyl(.22, .25, .05, 20), stdM('#3a3a3a', null, .3)); lamp.add(base);
         const shade = new THREE.Mesh(new THREE.CylinderGeometry(.18, .32, .36, 24, 1, true), new THREE.MeshStandardMaterial({ color: '#fff0d0', emissive: '#ffd890', emissiveIntensity: night || time === 'evening' ? 1.2 : .25, side: THREE.DoubleSide })); shade.position.y = 1.8; lamp.add(shade);
         if (night || time === 'evening') { const pl = new THREE.PointLight(0xffd8a0, 4, 7, 1.5); pl.position.y = 1.7; lamp.add(pl); }
       for (const [x, y, c] of [[-1.8, 2.6, '#ff8a3d'], [-.6, 2.3, '#3d8fe0'], [4.6, 2.7, '#5fbf4a']]) { const fr = new THREE.Mesh(new THREE.BoxGeometry(.7, .55, .05), stdM('#8a5a3a', null, .5)); fr.position.set(x, y, -3.55); g.add(fr); const pic = new THREE.Mesh(new THREE.PlaneGeometry(.58, .43), stdM(null, ctex('pic' + c, 128, 96, (q) => { q.fillStyle = '#cfeaff'; q.fillRect(0, 0, 128, 96); q.fillStyle = '#7cc06a'; q.beginPath(); q.ellipse(64, 96, 90, 34, 0, 0, 7); q.fill(); q.fillStyle = c; q.beginPath(); q.arc(96, 26, 13, 0, 7); q.fill(); q.fillStyle = '#3f8a3e'; q.beginPath(); q.arc(36, 56, 16, 0, 7); q.fill(); }))); pic.position.set(x, y, -3.52); g.add(pic); }
       placeProp(g, 'teddy', 5.6, .55, -2.6, 1.3, -.3); placeProp(g, 'car', -2.5, 0, 1.6, 1.4, .8, { color: '#e8344e' }); placeProp(g, 'ball', 2.2, 0, 1.9, 1.1, 0); placeProp(g, 'book', -3.6, 0, 2.2, 1.4, .5, { color: '#ffd23f' });
       g.traverse(o => { if (o.isMesh && o.geometry.type === 'CylinderGeometry' && (o.geometry.parameters.radiusTop === 2.2)) o.material = stdM(null, rugT('#4e7fc9', '#ffd23f'), .95); }); }
-    else { for (const [x, z] of [[2.8, -1.4], [5.2, -1.4]]) { const ch = new THREE.Group(); ch.position.set(x, 0, z + .9); g.add(ch); const seat = new THREE.Mesh(new THREE.BoxGeometry(.5, .06, .5), stdM(null, grainTex('#c88a55'))); seat.position.y = .48; ch.add(seat); const bk = new THREE.Mesh(new THREE.BoxGeometry(.5, .5, .06), stdM(null, grainTex('#c88a55'))); bk.position.set(0, .75, .22); ch.add(bk); for (const [lx, lz] of [[-.2, -.2], [.2, -.2], [-.2, .2], [.2, .2]]) { const lg = new THREE.Mesh(G.cyl(.025, .025, .48, 8), stdM('#8a5a3a')); lg.position.set(lx, .24, lz); ch.add(lg); } ch.traverse(o => { if (o.isMesh) o.castShadow = true; }); }
+    else { furnitureHQ(g, true); for (const [x, z] of [[2.8, -1.4], [5.2, -1.4]]) { if (global.MKSculpt) { const w = '#c88a55', pr = [rb(0, .48, 0, .25, .035, .25, .02, w), rb(0, .78, .22, .25, .27, .03, .025, w, .02)]; for (const [lx, lz] of [[-.2, -.2], [.2, -.2], [-.2, .2], [.2, .2]]) pr.push(cy(lx, .23, lz, .022, .028, .46, .01, w, .02)); const m = sculptStatic(pr, 56, .3); if (m) { m.position.set(x, 0, z + .9); g.add(m); } continue; } const ch = new THREE.Group(); ch.position.set(x, 0, z + .9); g.add(ch); const seat = new THREE.Mesh(new THREE.BoxGeometry(.5, .06, .5), stdM(null, grainTex('#c88a55'))); seat.position.y = .48; ch.add(seat); const bk = new THREE.Mesh(new THREE.BoxGeometry(.5, .5, .06), stdM(null, grainTex('#c88a55'))); bk.position.set(0, .75, .22); ch.add(bk); for (const [lx, lz] of [[-.2, -.2], [.2, -.2], [-.2, .2], [.2, .2]]) { const lg = new THREE.Mesh(G.cyl(.025, .025, .48, 8), stdM('#8a5a3a')); lg.position.set(lx, .24, lz); ch.add(lg); } ch.traverse(o => { if (o.isMesh) o.castShadow = true; }); }
       const cloth = new THREE.Mesh(G.cyl(.95, .98, .06, 32), stdM(null, plaidT('#e8344e'), .9)); cloth.position.set(4, .8, -1.4); g.add(cloth); placeProp(g, 'basket', 4, .83, -1.4, 1.1, 0); placeProp(g, 'cup', 4.5, .83, -1.1, 1, .5); placeProp(g, 'pie', 3.4, .83, -1.2, .8, 0);
       for (let k = 0; k < 5; k++) { const hd = new THREE.Mesh(G.box(.2, .03, .03), stdM('#c8c8c8', null, .2)); hd.material.metalness = .8; hd.position.set(-5.8 + k * 1, .75, -2.63); g.add(hd); }
       const stove = new THREE.Group(); stove.position.set(-1.2, .99, -3.1); g.add(stove); for (const [x, z] of [[-.25, -.15], [.25, -.15], [-.25, .2], [.25, .2]]) { const bn = new THREE.Mesh(G.cyl(.14, .14, .02, 20), stdM('#2a2a2a', null, .4)); bn.position.set(x, .02, z); stove.add(bn); }
@@ -1460,6 +1548,8 @@ function animateLoc(g, T) { windU.value = T;
 function lightFor(type, time) { lightBase(type, time); if (MK3D.hq) { hemi.intensity *= .35; sun.intensity *= 1.25; if (rim) { rim.intensity = time === 'night' || type === 'space' ? 1.8 : 1.3; rim.color.set(time === 'night' || type === 'space' ? 0xc8d4ff : 0xfff4e6); } } }
 function lightBase(type, time) { // свет всегда почти белый: герой выглядит одинаково днём, вечером и ночью; настроение даёт небо
   const night = time === 'night', eve = time === 'evening', indoor = type === 'room' || type === 'kitchen';
+  { const big = MK3D.hq && type === 'forest' && !night, sc = sun.shadow.camera; Object.assign(sc, big ? { left: -15, right: 15, top: 13, bottom: -11 } : { left: -9, right: 9, top: 7, bottom: -5 }); sc.updateProjectionMatrix(); }
+  if (MK3D.hq && type === 'forest' && !night) { hemi.color.set(eve ? 0xffe8d0 : 0xd6f0ff); hemi.groundColor.set(0x56703a); hemi.intensity = 1.25; sun.color.set(eve ? 0xffd9a8 : 0xfff0d4); sun.intensity = eve ? 2.7 : 2.9; sun.position.set(6, 9.5, 1.5); return; }
   hemi.groundColor.set(0x8a8a80);
   if (type === 'space') { hemi.color.set(0xf0f2ff); hemi.intensity = 1.15; sun.color.set(0xffffff); sun.intensity = 2.2; sun.position.set(6, 9, 5); return; }
   if (indoor) { hemi.color.set(0xfffcf6); hemi.intensity = 1.2; sun.color.set(0xffffff); sun.intensity = night ? 1.7 : 1.9; sun.position.set(2, 7, 6); return; }
@@ -1525,7 +1615,7 @@ function ppInit(w, h) {
     }`, { tMain: { value: null }, tHalf: { value: null }, tQuart: { value: null }, tB1: { value: null }, tB2: { value: null }, tDepth: { value: null }, tRays: { value: null }, rays: { value: 0 }, rayCol: { value: new THREE.Vector3(1, .95, .82) }, near: { value: .1 }, far: { value: 200 }, focus: { value: 5 }, ap: { value: 0 }, bloom: { value: .5 }, sat: { value: 1.06 }, con: { value: 1.05 }, vig: { value: .22 }, tintH: { value: new THREE.Vector3(1, 1, 1) }, tintS: { value: new THREE.Vector3(1, 1, 1) } }, true);
   return P; }
 function ppPass(mat, uni, target) { const P = PP; P.quad.material = mat; for (const k in uni) mat.uniforms[k].value = uni[k]; R.setRenderTarget(target); R.render(P.scene, P.cam); }
-const GRADE = { day: [[1.03, 1.01, .97], [.97, .99, 1.04], 1.08, 1.05], evening: [[1.08, .99, .9], [.94, .9, 1.06], 1.08, 1.06], night: [[.96, .99, 1.06], [.84, .9, 1.12], .92, 1.08], indoor: [[1.05, 1.0, .94], [.97, .97, 1.0], 1.05, 1.04], space: [[1, 1, 1.02], [.9, .92, 1.1], 1.05, 1.1] };
+const GRADE = { forest: [[1.07, 1.01, .9], [.86, .99, 1.05], 1.1, 1.09], day: [[1.03, 1.01, .97], [.97, .99, 1.04], 1.08, 1.05], evening: [[1.08, .99, .9], [.94, .9, 1.06], 1.08, 1.06], night: [[.96, .99, 1.06], [.84, .9, 1.12], .92, 1.08], indoor: [[1.05, 1.0, .94], [.97, .97, 1.0], 1.05, 1.04], space: [[1, 1, 1.02], [.9, .92, 1.1], 1.05, 1.1] };
 function renderHQ(w, h) {
   if (!PP || PP.w !== w || PP.h !== h) { if (PP) for (const k of ['main', 'h1', 'h2', 'q1', 'q2', 'b1', 'b2', 'e1', 'e2', 'r1', 'r2']) PP[k].dispose(); PP = ppInit(w, h); }
   const P = PP; R.setRenderTarget(P.main); R.clear(); R.render(scene, cam);
@@ -1553,7 +1643,8 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   hideAllRigs();
   if (seg.kind === 'title' || seg.kind === 'end') return drawCard3D(ctx, tl, seg, t, T);
   const L = seg.lspec || {}; const g = showLoc(seg.lkey, L); animateLoc(g, T);
-  scene.background = skyTex(L.time || 'day', L.type); scene.fog = ['room', 'kitchen', 'space'].includes(L.type) ? null : new THREE.Fog(new THREE.Color(SKY[L.time || 'day'][1]), 18, 70);
+  const cineF = MK3D.hq && L.type === 'forest' && L.time !== 'night';
+  scene.background = cineF ? mistTex(L.time || 'day') : skyTex(L.time || 'day', L.type); scene.fog = ['room', 'kitchen', 'space'].includes(L.type) ? null : cineF ? new THREE.Fog(new THREE.Color(L.time === 'evening' ? '#cdb79c' : '#a9cbbd'), 4.5, 30) : new THREE.Fog(new THREE.Color(SKY[L.time || 'day'][1]), 18, 70);
   lightFor(L.type, L.time || 'day');
   const S = global.MK._sceneState(tl, seg, t, T);
   for (const id in S) {
@@ -1590,7 +1681,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   for (const c of seg.cam) if (c.shake && t >= c.t && t < c.t + c.shake) { const a = (1 - (t - c.t) / c.shake) * .08; cam.position.x += Math.sin(t * 61) * a; cam.position.y += Math.cos(t * 53) * a; }
   cam.fov = 38; cam.updateProjectionMatrix(); cam.lookAt(look);
   { const mode = cams[ci].mode || 'wide', AP = { close: .5, medium: .32, two: .22, group: .14, pan: .12 }, ap0 = AP[mode] || .08, apP = ci > 0 && !cams[ci].cut ? (AP[cams[ci - 1].mode] || .08) : ap0; MK3D._ap = lerp(apP, ap0, k); MK3D._focus = cam.position.distanceTo(look) * .95; // резкость — на лице героя, фон мягко размыт
-    MK3D._grade = ['room', 'kitchen'].includes(L.type) ? 'indoor' : L.type === 'space' ? 'space' : (L.time || 'day');
+    MK3D._grade = ['room', 'kitchen'].includes(L.type) ? 'indoor' : L.type === 'space' ? 'space' : cineF && L.time !== 'evening' ? 'forest' : (L.time || 'day');
     { const tm = L.time || 'day', ty = L.type || 'yard'; MK3D._rays = tm === 'night' || ['space', 'room', 'kitchen'].includes(ty) || L.weather === 'rain' ? 0 : (ty === 'forest' ? .7 : .3) * (tm === 'evening' ? 1.25 : 1); MK3D._rayCol = tm === 'evening' ? new THREE.Vector3(1, .78, .55) : new THREE.Vector3(1, .95, .82); MK3D._raySrc = new THREE.Vector2(.5 + Math.sin((L.seed || 3) * 1.7) * .25, 1.28); } }
   sun.target.position.copy(look); sun.position.add(look); MK3D._T = t; if (rim) { rim.target.position.copy(look); rim.position.set(look.x - 3, 4, look.z - 6); }
   render(ctx);
