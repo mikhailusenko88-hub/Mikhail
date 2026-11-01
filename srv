@@ -1,10 +1,38 @@
 #!/bin/bash
 # srv — проверки сервера для «Команд» на iPhone (кнопки «Сервер»).
-#   srv status — сервер, память, диск, VPN
-#   srv bot    — последние заезды бота «Білесің бе?»
-#   srv speed  — скорость интернета самого сервера
-#   srv update — обновить srv из GitHub
+#   srv status   — сервер, память, диск, VPN
+#   srv bot      — последние заезды бота «Білесің бе?»
+#   srv speed    — скорость интернета самого сервера
+#   srv история  — последние команды, присланные с телефона (и из Терминала Мака)
+#   srv update   — обновить srv из GitHub (и включить запись истории)
 BOT=/root/kz-bot
+LOG=/root/.cmd_history
+MARK="# >>> srv: история команд"
+
+hook_on() {
+  # Пишем каждую команду, пришедшую по SSH (телефон, Мак), в $LOG — с датой по Москве.
+  # Строки ставятся в самый верх /root/.bashrc: bash читает его и для команд по SSH.
+  local rc=/root/.bashrc
+  touch "$rc"
+  grep -qF "$MARK" "$rc" && return 0
+  local tmp
+  tmp=$(mktemp) || return 1
+  cat > "$tmp" <<'HOOK'
+# >>> srv: история команд
+if [ -n "${SSH_CONNECTION:-}" ] && [ -n "${BASH_EXECUTION_STRING:-}" ]; then
+  case "$BASH_EXECUTION_STRING" in
+    *"srv история"*|*"srv history"*) ;;
+    *) printf '%s  %s\n' "$(TZ=Europe/Moscow date '+%d.%m %H:%M')" \
+         "$(printf '%s' "$BASH_EXECUTION_STRING" | tr '\n' ' ' | cut -c1-300)" >> /root/.cmd_history 2>/dev/null ;;
+  esac
+fi
+# <<< srv
+HOOK
+  cat "$rc" >> "$tmp" && cat "$tmp" > "$rc"
+  rm -f "$tmp"
+  printf '%s  %s\n' "$(TZ=Europe/Moscow date '+%d.%m %H:%M')" "(запись истории включена)" >> "$LOG"
+}
+
 case "${1:-status}" in
   status)
     echo "Сервер работает: $(uptime -p | sed 's/^up //')"
@@ -26,11 +54,33 @@ case "${1:-status}" in
     curl -s -o /dev/null -w "%{speed_download}" --max-time 15 "https://speed.cloudflare.com/__down?bytes=50000000" \
       | awk '{printf "Скорость сервера: %.0f Мбит/с\n", $1*8/1000000}'
     ;;
+  история|istoriya|history|hist)
+    N=${2:-15}
+    grep -qF "$MARK" /root/.bashrc 2>/dev/null || { hook_on; echo "Запись истории включил только что."; }
+    if [ -f "$LOG" ]; then
+      # не даём файлу расти бесконечно
+      [ "$(wc -l < "$LOG")" -gt 1000 ] && tail -n 500 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
+      echo "С телефона (время московское), последние $N:"
+      tail -n "$N" "$LOG" | cut -c1-200
+      [ "$(wc -l < "$LOG")" -le 1 ] && echo "(пока пусто — запустите любую команду и проверьте снова)"
+    else
+      echo "С телефона: пока пусто"
+    fi
+    if [ -s /root/.bash_history ]; then
+      echo
+      echo "Из Терминала на Маке, последние 8:"
+      grep -v '^#' /root/.bash_history | tail -n 8 | cut -c1-200
+    fi
+    ;;
   update)
     curl -fsSL https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/kz-bot/srv -o /usr/local/bin/srv.new \
-      && chmod +x /usr/local/bin/srv.new && mv /usr/local/bin/srv.new /usr/local/bin/srv && echo "srv обновлён"
+      && chmod +x /usr/local/bin/srv.new && mv /usr/local/bin/srv.new /usr/local/bin/srv && echo "srv обновлён" \
+      && /usr/local/bin/srv _hook
+    ;;
+  _hook)
+    hook_on && echo "Запись истории команд включена — смотреть: srv история"
     ;;
   *)
-    echo "Есть: srv status | srv bot | srv speed | srv update"
+    echo "Есть: srv status | srv bot | srv speed | srv история | srv update"
     ;;
 esac
