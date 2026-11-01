@@ -21,8 +21,9 @@ W, H, FPS = 1080, 1920, 30
 HZ = 240
 STEP = HZ // FPS
 DT = 1.0 / HZ
-CW = 740          # ширина трассы
-OX = 24           # отступ трассы слева на экране
+CW = 600          # ширина трассы (всё важное — в безопасной зоне Shorts)
+OX = 110          # отступ трассы слева: телефоны срезают края ролика
+PX, PY = 722, 380  # таблица мест
 R = 19.0          # радиус шарика
 TH = 6.0          # полутолщина стенок
 G = 1750.0
@@ -102,19 +103,20 @@ class Course:
         self.segs = []    # x1, y1, x2, y2, упругость
         self.pegs = []    # x, y, r, упругость, вид (0 — штырёк, 1 — отбойник)
         self.spins = []   # cx, cy, длина, лопастей, скорость, фаза
-        self.start = [(70 + c * 67 + (33 if r_ else 0), 60 + r_ * 52) for r_ in range(2) for c in range(10)]
-        self.segs.append([0, 150, CW, 150, 0.2])   # ворота (индекс 0)
-        y = 230.0
-        y = self.zigzag(y, rnd.randint(4, 5), rnd.random() < 0.5)
+        self.start = [(60 + c * 76 + (38 if r_ % 2 else 0), 50 + r_ * 48) for r_ in range(3) for c in range(7)][:N]
+        self.gate_y = 190
+        self.segs.append([0, self.gate_y, CW, self.gate_y, 0.2])   # ворота (индекс 0)
+        y = 260.0
+        y = self.zigzag(y, rnd.randint(5, 6), rnd.random() < 0.5)
         mids = [lambda y: self.pegs_sec(y, rnd.randint(8, 10)), lambda y: self.spinners(y, 2),
                 lambda y: self.funnel(y), lambda y: self.bumpers(y, rnd.randint(5, 7))]
         rnd.shuffle(mids)
         for f in mids[:2]:
             y = f(y)
-        y = self.zigzag(y, rnd.randint(3, 4), rnd.random() < 0.5)
+        y = self.zigzag(y, rnd.randint(4, 5), rnd.random() < 0.5)
         for f in mids[2:]:
             y = f(y)
-        y = self.zigzag(y, rnd.randint(2, 3), rnd.random() < 0.5)
+        y = self.zigzag(y, rnd.randint(3, 4), rnd.random() < 0.5)
         y = self.pegs_sec(y, rnd.randint(6, 8))
         self.finish_y = y + 220
         fy = self.finish_y
@@ -153,8 +155,8 @@ class Course:
         rnd = self.rnd
         side = rnd.choice([-1, 1])
         for _ in range(k):
-            L = rnd.uniform(100, 130)
-            cx = CW / 2 + side * rnd.uniform(70, 140)
+            L = rnd.uniform(90, 112)
+            cx = CW / 2 + side * rnd.uniform(55, 90)
             cy = y + 140 + L
             if side < 0:
                 self.segs.append([CW, cy - L - 120, cx + L + 45, cy - L, 0.3])
@@ -432,7 +434,21 @@ def draw_course(c, theme):
     return img.convert("RGB")
 
 
-def ball_sprite(col):
+def num_ball(col, num, r):
+    s = int(2 * r + 4)
+    im = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    c = s / 2
+    d.ellipse([c - r, c - r, c + r, c + r], fill=col + (255,), outline=(255, 255, 255, 230), width=2)
+    f = font(max(10, int(r * 1.05)))
+    t = str(num)
+    w = d.textlength(t, font=f)
+    d.text((c - w / 2, c - r * 0.62), t, font=f, fill=(255, 255, 255), stroke_width=max(2, int(r / 6)),
+           stroke_fill=(0, 0, 0))
+    return im
+
+
+def ball_sprite(col, num=None):
     s = int(2 * R + 4)
     im = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
@@ -446,11 +462,16 @@ def ball_sprite(col):
                   fill=tuple(min(255, int(v * f + 20 * k / 8)) for v in col) + (255,))
     d.ellipse([c - 8, c - 12, c - 1, c - 5], fill=(255, 255, 255, 200))
     d.ellipse([c - R, c - R, c + R, c + R], outline=(255, 255, 255, 120), width=2)
+    if num is not None:
+        f = font(19)
+        t = str(num)
+        w = d.textlength(t, font=f)
+        d.text((c - w / 2, c - 11), t, font=f, fill=(255, 255, 255), stroke_width=3, stroke_fill=(0, 0, 0))
     return im
 
 
 def label_sprite(name):
-    f = font(24)
+    f = font(22)
     tmp = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
     w = int(tmp.textlength(name, font=f)) + 10
     im = Image.new("RGBA", (w, 34), (0, 0, 0, 0))
@@ -463,31 +484,38 @@ def paste(img, sp, x, y):
 
 
 def header_band(race_no, acc):
-    im = Image.new("RGBA", (W, 260), (0, 0, 0, 0))
-    a = np.zeros((260, W, 4), np.uint8)
-    a[..., 3] = (np.linspace(215, 0, 260)[:, None]).astype(np.uint8)
+    a = np.zeros((380, W, 4), np.uint8)
+    a[..., 3] = (np.linspace(215, 0, 380)[:, None]).astype(np.uint8)
     im = Image.fromarray(a, "RGBA")
     d = ImageDraw.Draw(im)
-    text_c(d, W / 2, 46, "ҚАЙ ҚАЛА ЖЕҢЕДІ?", 76, (255, 255, 255), 7)
-    text_c(d, W / 2, 142, f"Какой город победит?  ·  Жарыс №{race_no}", 36, acc, 5)
+    text_c(d, W / 2, 232, "ҚАЙ ҚАЛА ЖЕҢЕДІ?", 62, (255, 255, 255), 6)
+    text_c(d, W / 2, 304, f"Какой город победит?  ·  Жарыс №{race_no}", 30, acc, 4)
     return im
 
 
-def panel_img(order, nfin, acc):
-    rowh = 41
-    im = Image.new("RGBA", (290, 26 + rowh * N), (0, 0, 0, 0))
+MINI = None
+
+
+def panel_img(order, nfin, acc, timer):
+    global MINI
+    if MINI is None:
+        MINI = [num_ball(COLORS[i], i + 1, 12) for i in range(N)]
+    rowh, top = 28, 50
+    pw = 250
+    im = Image.new("RGBA", (pw, top + rowh * N + 10), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
-    d.rounded_rectangle([0, 0, 289, 25 + rowh * N], radius=18, fill=(0, 0, 0, 150))
+    d.rounded_rectangle([0, 0, pw - 1, top + rowh * N + 9], radius=16, fill=(0, 0, 0, 155))
+    text_c(d, pw / 2, 8, timer, 30, (255, 255, 255), 4)
     medal = [(255, 205, 40), (215, 220, 230), (225, 150, 80)]
     for k, i in enumerate(order):
-        y = 14 + k * rowh
+        y = top + k * rowh
         fin = k < nfin
         if fin:
-            d.rounded_rectangle([6, y - 3, 283, y + rowh - 7], radius=10, fill=(255, 255, 255, 34))
+            d.rounded_rectangle([4, y - 1, pw - 5, y + rowh - 3], radius=8, fill=(255, 255, 255, 34))
         nc = medal[k] if (k < 3 and fin) else (200, 200, 210)
-        d.text((10, y), f"{k + 1}", font=font(24), fill=nc)
-        d.ellipse([46, y + 6, 64, y + 24], fill=COLORS[i], outline=(255, 255, 255), width=2)
-        d.text((72, y + 2), CITIES[i][0], font=font(24), fill=(255, 255, 255) if not fin else acc)
+        d.text((8, y + 2), f"{k + 1}", font=font(19), fill=nc)
+        im.paste(MINI[i], (36, y), MINI[i])
+        d.text((66, y + 1), CITIES[i][0], font=font(21), fill=(255, 255, 255) if not fin else acc)
     return im
 
 
@@ -613,11 +641,11 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     log("Рисую трассу…")
     course_img = draw_course(c, theme)
     HC = course_img.size[1]
-    balls = [ball_sprite(col) for col in COLORS]
+    balls = [ball_sprite(col, i + 1) for i, col in enumerate(COLORS)]
     labels = [label_sprite(cc[0]) for cc in CITIES]
     head = header_band(race_no, acc)
     hand = Image.new("RGBA", (420, 50), (0, 0, 0, 0))
-    ImageDraw.Draw(hand).text((0, 0), handle, font=font(30), fill=(255, 255, 255, 170))
+    ImageDraw.Draw(hand).text((0, 0), handle, font=font(26), fill=(255, 255, 255, 170))
 
     race_n = len(frames)
     race_end = race_n / FPS
@@ -634,15 +662,15 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
 
     log(f"Рисую кадры: заезд {race_end:.0f} с + финал {FINALE_T:.0f} с…")
     rng = np.random.default_rng(seed)
-    cam = -330.0
+    cam = -380.0
     panel_cache = {}
     conf, win_shown_t = [], None
     winner_t = finish[0][1] if finish else None
     last = None
     for fi, (pos, racing, nfin, t) in enumerate(frames):
         lead_y = pos[racing, 1].max() if racing.any() else c.finish_y
-        target = min(lead_y, c.finish_y + 120) - H * 0.56
-        target = max(target, -330.0)
+        target = min(lead_y, c.finish_y + 120) - H * 0.46
+        target = max(target, -380.0)
         cam += (target - cam) * (0.10 if t > GATE_T else 0.0)
         cam = min(cam, c.end_y - H + 200)
         top = int(cam + Y0)
@@ -651,7 +679,7 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
         d = ImageDraw.Draw(img, "RGBA")
         oy = Y0 - top
         if t < GATE_T:
-            d.line([(OX, 150 + oy), (OX + CW, 150 + oy)], fill=acc + (255,), width=12)
+            d.line([(OX, c.gate_y + oy), (OX + CW, c.gate_y + oy)], fill=acc + (255,), width=12)
         for cx, cy, L, arms, om, ph in c.spins:
             sy = cy + oy
             if -200 < sy < H + 200:
@@ -676,15 +704,15 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
                 paste(img, lb, lx, sy - R - 36)
         img.paste(head, (0, 0), head)
         order = order_at(pos, racing, finish, nfin)
-        key = (tuple(order), nfin)
+        tt = max(0.0, t - GATE_T)
+        timer = f"{int(tt // 60)}:{tt % 60:04.1f}"
+        key = (tuple(order), nfin, timer)
         if key not in panel_cache:
             if len(panel_cache) >= 6:     # каждая таблица ~1 МБ — держим только последние
                 panel_cache.pop(next(iter(panel_cache)))
-            panel_cache[key] = panel_img(order, nfin, acc)
+            panel_cache[key] = panel_img(order, nfin, acc, timer)
         pn = panel_cache[key]
-        img.paste(pn, (OX + CW + 14, 270), pn)
-        tt = max(0.0, t - GATE_T)
-        text_c(d, OX + CW + 14 + 145, 270 + pn.size[1] + 18, f"{int(tt // 60)}:{tt % 60:04.1f}", 40, (255, 255, 255), 5)
+        img.paste(pn, (PX, PY), pn)
         if t < GATE_T:
             n = 3 - int(t / 0.4)
             text_c(d, OX + CW / 2, 640, str(n), 230, acc, 12)
@@ -695,9 +723,9 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
                 win_shown_t = t
                 conf = confetti(rng, OX + CW / 2, c.finish_y + oy)
             k = min(1.0, (t - win_shown_t) / 0.25)
-            d.rounded_rectangle([OX + 40, 330, OX + CW - 40, 610], radius=30, fill=(0, 0, 0, int(170 * k)))
-            text_c(d, OX + CW / 2, 352, "ЖЕҢІМПАЗ!", int(46 + 22 * k), acc, 6)
-            text_c(d, OX + CW / 2, 440, CITIES[winner][0], fit_size(CITIES[winner][0], int(60 + 40 * k), CW - 110),
+            d.rounded_rectangle([OX + 20, 420, OX + CW - 20, 680], radius=30, fill=(0, 0, 0, int(170 * k)))
+            text_c(d, OX + CW / 2, 440, "ЖЕҢІМПАЗ!", int(42 + 18 * k), acc, 6)
+            text_c(d, OX + CW / 2, 520, CITIES[winner][0], fit_size(CITIES[winner][0], int(56 + 34 * k), CW - 90),
                    COLORS[winner], 8)
             for p_ in conf:
                 age = t - win_shown_t
@@ -706,7 +734,7 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
                 if 0 < py < H and age < 3:
                     s_ = p_[4]
                     d.rectangle([px - s_, py - s_ / 2, px + s_, py + s_ / 2], fill=p_[5])
-        paste(img, hand, 30, H - 70)
+        paste(img, hand, OX + 6, 1338)
         emit(img)
         last = img
         if fi % 150 == 0:
@@ -714,46 +742,49 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
 
     # финал: карта, победитель, таблица
     base = Image.blend(last.filter(ImageFilter.GaussianBlur(10)), Image.new("RGB", (W, H), (0, 0, 0)), 0.62)
-    mp, pts = kz_map(960, winner, acc)
-    mx, my = 60, 560
+    mp, pts = kz_map(760, winner, acc)
+    mx, my = 160, 470
     blocks = []
     b1 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d1 = ImageDraw.Draw(b1)
-    text_c(d1, W / 2, 230, "ЖЕҢІМПАЗ", 64, acc, 6)
-    text_c(d1, W / 2, 315, CITIES[winner][0].upper(), fit_size(CITIES[winner][0].upper(), 104, W - 80),
+    text_c(d1, W / 2, 236, "ЖЕҢІМПАЗ", 50, acc, 5)
+    text_c(d1, W / 2, 294, CITIES[winner][0].upper(), fit_size(CITIES[winner][0].upper(), 92, W - 280),
            COLORS[winner], 9)
     if CITIES[winner][1] != CITIES[winner][0]:
-        text_c(d1, W / 2, 440, f"({CITIES[winner][1]})", 38, (230, 230, 240), 5)
+        text_c(d1, W / 2, 400, f"({CITIES[winner][1]})", 32, (230, 230, 240), 4)
     blocks.append((0.3, b1))
     b2 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d2 = ImageDraw.Draw(b2)
-    y = my + mp.size[1] + 40
+    y = my + mp.size[1] + 22
+    MB = [num_ball(COLORS[j], j + 1, 15) for j in range(N)]
     medal = [(255, 205, 40), (215, 220, 230), (225, 150, 80)]
     if race_no >= 2:
-        text_c(d2, W / 2, y, "ТУРНИР КЕСТЕСІ · Турнирная таблица", 36, acc, 5)
+        text_c(d2, W / 2 - 30, y, "ТУРНИР КЕСТЕСІ · Турнирная таблица", 30, acc, 4)
         for k, (name, pt) in enumerate(table[:5]):
-            yy = y + 62 + k * 56
+            yy = y + 48 + k * 46
             i = [j for j in range(N) if CITIES[j][0] == name][0]
-            d2.rounded_rectangle([150, yy - 6, W - 150, yy + 46], radius=14, fill=(255, 255, 255, 26))
-            d2.text((175, yy), f"{k + 1}", font=font(36), fill=medal[k] if k < 3 else (220, 220, 230))
-            d2.ellipse([228, yy + 6, 258, yy + 36], fill=COLORS[i], outline=(255, 255, 255), width=2)
-            d2.text((276, yy), name, font=font(36), fill=(255, 255, 255))
+            d2.rounded_rectangle([190, yy - 5, 830, yy + 38], radius=12, fill=(255, 255, 255, 26))
+            d2.text((205, yy), f"{k + 1}", font=font(30), fill=medal[k] if k < 3 else (220, 220, 230))
+            b2.paste(MB[i], (245, yy - 1), MB[i])
+            d2.text((292, yy), name, font=font(30), fill=(255, 255, 255))
             s_ = f"{pt} ұпай"
-            d2.text((W - 175 - d2.textlength(s_, font=font(36)), yy), s_, font=font(36), fill=acc)
+            d2.text((815 - d2.textlength(s_, font=font(30)), yy), s_, font=font(30), fill=acc)
     else:
-        text_c(d2, W / 2, y, "ҮЗДІК ҮШТІК · Тройка лидеров", 36, acc, 5)
+        text_c(d2, W / 2 - 30, y, "ҮЗДІК ҮШТІК · Тройка лидеров", 30, acc, 4)
         for k in range(3):
             i = ranking[k]
-            yy = y + 66 + k * 64
-            d2.rounded_rectangle([200, yy - 6, W - 200, yy + 52], radius=14, fill=(255, 255, 255, 26))
-            d2.text((228, yy), f"{k + 1}", font=font(40), fill=medal[k])
-            d2.ellipse([285, yy + 6, 321, yy + 42], fill=COLORS[i], outline=(255, 255, 255), width=2)
-            d2.text((340, yy), CITIES[i][0], font=font(40), fill=(255, 255, 255))
+            yy = y + 52 + k * 58
+            d2.rounded_rectangle([220, yy - 6, 800, yy + 46], radius=14, fill=(255, 255, 255, 26))
+            d2.text((242, yy), f"{k + 1}", font=font(36), fill=medal[k])
+            b2.paste(MB[i], (290, yy + 2), MB[i])
+            d2.text((340, yy), CITIES[i][0], font=font(36), fill=(255, 255, 255))
     blocks.append((1.2, b2))
     b3 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d3 = ImageDraw.Draw(b3)
-    text_c(d3, W / 2, 1640, "Сен қай қалаға жанкүйерсің?", 50, (255, 255, 255), 6)
-    text_c(d3, W / 2, 1712, "За какой город болеешь? Пиши в комментариях ↓", 32, acc, 5)
+    s1 = "Сен қай қалаға жанкүйерсің?"
+    s2 = "За какой город болеешь? Пиши в комментариях"
+    text_c(d3, W / 2 - 20, 1222, s1, fit_size(s1, 42, 620), (255, 255, 255), 5)
+    text_c(d3, W / 2 - 20, 1282, s2, fit_size(s2, 28, 620), acc, 4)
     blocks.append((2.2, b3))
     wx, wy = pts[winner]
     nfin_frames = int(FINALE_T * FPS)
@@ -787,7 +818,7 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
                     img.paste(b2_, (0, 0), b2_)
                 else:
                     img.paste(b, (0, 0), b)
-        paste(img, hand, 30, H - 70)
+        paste(img, hand, OX + 6, 1338)
         emit(img)
     proc.stdin.close()
     proc.wait()
