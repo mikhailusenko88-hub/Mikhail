@@ -451,6 +451,10 @@ def analyze(name, apath, tpath):
     if "heard" in rep:
         L.append(f"Распознано: {rep['heard']}")
         L.append("Слова: все совпали" if not rep["diff"] else "Расхождения в словах: " + "; ".join(f"«{x}» → «{y}»" for x, y in rep["diff"]))
+    mc = f"{IN}/{name}.marks_check"
+    if os.path.exists(mc) and open(mc, encoding="utf-8").read().strip() not in ("", "ok"):
+        rep["marks_bad"] = open(mc, encoding="utf-8").read().strip().splitlines()
+        L += ["", "## ⚠ Ручные метки ударений расходятся со словарём", *[f"- {x}" for x in rep["marks_bad"]]]
     L += ["", "## Ударения", f"(где нужно: {acc_src})", "", "| слово | нужно | у голоса | |", "|---|---|---|---|"]
     bad = maybe = 0
     for w in words:

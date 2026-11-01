@@ -28,6 +28,24 @@ def save_wav(x, path, sr=48000):
 def plus_to_acute(t):
     return re.sub(r"\+([" + VOW + "])", lambda m: m.group(1) + "́", t)
 
+def check_marks(name, text):
+    """Сверяет ручные «+» со словарём ruaccent — чтобы ошибка разметки не ушла в озвучку незамеченной."""
+    if "+" not in text:
+        return
+    import voice_check as vc
+    mine = vc.tokenize(text)
+    plain = text.replace("+", "")
+    ref = vc.tokenize(plain)
+    vc.accentize(plain, ref)
+    bad = []
+    if len(mine) == len(ref):
+        for a, b in zip(mine, ref):
+            if len(a["vows"]) >= 2 and "+" in a["raw"] and b["exp"] is not None and a["exp"] != b["exp"]:
+                bad.append(f"{vc.mark(a['w'], a['exp'])} — по словарю {vc.mark(b['w'], b['exp'])}")
+    open(f"in/{name}.marks_check", "w", encoding="utf-8").write(("\n".join(bad) or "ok") + "\n")
+    print("метки", name, bad or "ok")
+
+
 def main():
     for line in open("gen.txt", encoding="utf-8"):
         line = line.strip()
@@ -41,6 +59,10 @@ def main():
         h = hashlib.md5(line.encode()).hexdigest()
         if os.path.exists(f"in/{name}.gen") and open(f"in/{name}.gen").read().strip() == h:
             print("уже есть:", name); continue
+        try:
+            check_marks(name, text)
+        except Exception as e:
+            print("проверка меток не удалась", repr(e))
         eng, _, spk = voice.partition(":")
         try:
             if eng == "silero":
