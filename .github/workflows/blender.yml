@@ -1,0 +1,37 @@
+name: barsik-blender
+on:
+  push:
+    branches: [blender-test]
+    paths: [run.txt]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Blender 4.2 LTS
+        run: |
+          wget -q https://download.blender.org/release/Blender4.2/blender-4.2.0-linux-x64.tar.xz
+          tar xf blender-4.2.0-linux-x64.tar.xz
+          sudo apt-get update -qq >/dev/null; sudo apt-get install -y -qq libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libgl1 libsm6 libegl1 >/dev/null || true
+      - name: Geometry
+        run: |
+          pip install -q numpy scikit-image scipy
+          mkdir -p out
+          if [ -f build_geo.py ]; then python build_geo.py; fi
+      - name: Render
+        run: |
+          set -o pipefail
+          ./blender-4.2.0-linux-x64/blender -b --python-exit-code 1 -P $(head -1 run.txt) -- $(tail -n +2 run.txt | tr '\n' ' ') 2>&1 | tee out/log.txt | grep -v "^Fra:\|Sample \|Rendered " | tail -120
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name render-bot
+          git config user.email render-bot@users.noreply.github.com
+          git pull -q --rebase || true
+          git add out
+          git commit -m "render result" || echo nothing
+          git push
