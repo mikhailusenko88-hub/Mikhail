@@ -514,6 +514,8 @@ def main():
             r = json.load(open(jp, encoding="utf-8"))
         except Exception:
             continue
+        if not isinstance(r, dict) or "name" not in r:
+            continue
         it = r.get("intonation", [])
         rows.append(f"| {r['name']} | {r.get('voice', '')} | {r.get('utmos', '—')} | {r.get('match', '—')} | {r.get('stress_errors', '—')} (+{r.get('stress_maybe', 0)}) | {sum(1 for s in it if s['ok'])}/{len(it)} |")
     open(f"{OUT}/summary.md", "w", encoding="utf-8").write("\n".join(rows) + "\n")
