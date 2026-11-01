@@ -76,12 +76,21 @@ def main():
                 m = silero_model("v5_cis_base")
                 if opts:
                     rate = next((o for o in opts.split(",") if o in ("x-slow", "slow", "medium", "fast", "x-fast")), "medium")
+                # «soft» — только обработка звука, на синтез не влияет
                     pitch = next((o for o in opts.split(",") if o in ("x-low", "low", "medium", "high", "x-high")), "medium")
                     ssml = f'<speak><prosody rate="{rate}" pitch="{pitch}">{marked}</prosody></speak>'
                     a = m.apply_tts(ssml_text=ssml, speaker=spk, sample_rate=48000)
                 else:
                     a = m.apply_tts(text=marked, speaker=spk, sample_rate=48000)
                 save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
+                if "soft" in opts.split(","):
+                    # мягкий тон: теплее, без резкости и шипящих, ровная громкость (без сдвига высоты)
+                    af = ("highpass=f=70,bass=g=2.5:f=160:w=0.7,equalizer=f=3200:t=q:w=1.0:g=-2.5,deesser=i=0.35,"
+                          "acompressor=threshold=-22dB:ratio=2.2:attack=12:release=220:makeup=1.5,"
+                          "aecho=0.85:0.6:28|47:0.08|0.05,loudnorm=I=-16:TP=-1.5:LRA=9")
+                    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", f"in/{name}.wav", "-af", af, "-ar", "48000",
+                                    "-ac", "1", f"in/{name}.tmp.wav"], check=True)
+                    os.replace(f"in/{name}.tmp.wav", f"in/{name}.wav")
             elif eng == "silero_random":
                 # новый, случайно придуманный голос (Silero v4); сохраняется в voices/, чтобы потом звучать так же
                 import torch
