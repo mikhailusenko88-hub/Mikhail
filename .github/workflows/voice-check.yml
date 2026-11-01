@@ -2,7 +2,7 @@ name: voice-check
 on:
   push:
     branches: [voice-check]
-    paths: ['in/**', 'gen.txt', 'request.txt', 'voice_check.py', 'gen.py', '.github/workflows/voice-check.yml']
+    paths: ['in/**', 'gen.txt', 'request.txt', 'voice_check.py', 'gen.py', 'calib.py', 'tune.json', '.github/workflows/voice-check.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -35,6 +35,8 @@ jobs:
       - name: Generate audio from gen.txt
         if: hashFiles('gen.txt') != ''
         run: python gen.py
+      - name: Calibrate (request.txt contains "calib")
+        run: if grep -qi calib request.txt; then python calib.py; fi
       - name: Analyze
         run: python voice_check.py
       - name: Commit result

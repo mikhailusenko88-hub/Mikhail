@@ -140,7 +140,6 @@ def align(audio, words):
     blank = tok.pad_token_id
     special = {blank, tok.unk_token_id, getattr(tok, "bos_token_id", None), getattr(tok, "eos_token_id", None)}
     vowel_ids = [i for t, i in vocab.items() if t and t[0] in IPAV and i not in special]
-    qids = {L: [i for i in vowel_ids if inv[i][0] in S] for L, S in QFULL.items()}
     with torch.no_grad():
         x = proc(audio, sampling_rate=SR, return_tensors="pt").input_values
         lp = torch.log_softmax(model(x).logits[0], -1)  # (T, V)
@@ -174,19 +173,21 @@ def align(audio, words):
     spans = AF.merge_tokens(ali[0], sc[0].exp())
     probs = lp.exp()
     vowels = []
-    for sp, (wi, vk) in zip(spans, meta):
+    spans = list(spans)
+    for j, (sp, (wi, vk)) in enumerate(zip(spans, meta)):
         words[wi].setdefault("t0", sp.start / fps)
         words[wi]["t1"] = sp.end / fps
         if vk is None:
             continue
         f0, f1 = max(0, sp.start - 1), min(T, max(sp.end, sp.start + 1) + 1)
-        pv = probs[f0:f1]
-        PV = float(pv[:, vowel_ids].sum(1).mean())
+        pv = probs[f0:f1, vowel_ids].mean(0)
+        PV = float(pv.sum()) + 1e-6
+        order = pv.argsort(descending=True)[:8]
+        pt = {inv[vowel_ids[int(o)]]: round(float(pv[o]) / PV, 4) for o in order}
+        nxt = spans[j + 1].start if j + 1 < len(spans) else min(T, sp.start + 10)
         L = words[wi]["vows"][vk] if words[wi]["map_ok"] and vk < len(words[wi]["vows"]) else ""
-        q = float(pv[:, qids[L]].sum(1).mean()) / (PV + 1e-6) if L in qids else None
-        top = int(pv[:, vowel_ids].mean(0).argmax())
-        vowels.append({"w": wi, "k": vk, "t0": sp.start / fps, "t1": sp.end / fps,
-                       "c": (sp.start + sp.end) / 2 / fps, "q": q, "L": L, "ph": inv[vowel_ids[top]]})
+        vowels.append({"w": wi, "k": vk, "t0": sp.start / fps, "t1": sp.end / fps, "c": (sp.start + sp.end) / 2 / fps,
+                       "Dn": min(0.4, (nxt - sp.start) / fps), "pt": pt, "L": L, "ph": next(iter(pt))})
     return vowels
 
 # ---------------- просодия ----------------
@@ -215,35 +216,61 @@ def feats(v, prev_c, next_c, P):
     while r < len(seg) - 1 and seg[r + 1] >= peak - 3: r += 1
     fm = (pt >= a) & (pt <= b) & (f0 > 0)
     F = float(np.median([st(x) for x in f0[fm]])) if fm.sum() else np.nan
-    return dict(I=float(peak), F=F, D=(r - l + 1) * 0.01)
+    dm = (pt >= v["c"] - 0.07) & (pt <= v["c"] + 0.07) & (f0 > 0)
+    sts = [st(x) for x in f0[dm]]
+    dF = float(max(sts) - min(sts)) if len(sts) > 2 else 0.0
+    return dict(I=float(peak), F=F, D=(r - l + 1) * 0.01, dF=dF)
 
-def z(x):
-    x = np.array(x, float)
-    if np.all(np.isnan(x)):
-        return np.zeros_like(x)
-    x = np.where(np.isnan(x), np.nanmean(x), x)
-    s = x.std()
-    return (x - x.mean()) / s if s > 1e-6 else np.zeros_like(x)
+UNIT = dict(I=3.0, F=2.0, D=0.04, Dn=0.05, dF=2.0)
+W = dict(I=0.5, F=0.2, D=0.8, Dn=0.8, dF=0.3, neg=0.5)
+QW = {"о": 1.6, "е": 1.4, "э": 1.4, "я": 1.2, "а": 0.7}
+TUNE = "tune.json"
+if os.path.exists(TUNE):
+    _t = json.load(open(TUNE, encoding="utf-8"))
+    W.update(_t.get("W", {})); QW.update(_t.get("QW", {}))
+    for _k, _v in _t.get("QFULL", {}).items():
+        QFULL[_k] = set(_v)
 
-W = dict(I=1.0, F=0.8, D=0.8)
+def qual(v):
+    L = v.get("L", "")
+    if L not in QFULL or not v.get("pt"):
+        return 0.0
+    q = sum(p for t, p in v["pt"].items() if t and t[0] in QFULL[L] and t not in QFULL.get("_bad_" + L, set()))
+    x = 2 * (q - 0.5)
+    return QW[L] * (x if x > 0 else W["neg"] * x)
 
-def stress(words, vowels, P):
+def stress_scores(vs):
+    S = np.zeros(len(vs))
+    for f, u in UNIT.items():
+        x = np.array([v.get(f, np.nan) for v in vs], float)
+        if np.all(np.isnan(x)):
+            continue
+        x = np.where(np.isnan(x), np.nanmean(x), x)
+        S += W[f] * (x - x.mean()) / u
+    return S + np.array([qual(v) for v in vs])
+
+def extract(audio, words, P=None):
+    P = P or prosody(audio)
+    vowels = align(audio, words)
     for i, v in enumerate(vowels):
         pc = vowels[i - 1]["c"] if i > 0 else None
         nc = vowels[i + 1]["c"] if i + 1 < len(vowels) else None
         v.update(feats(v, pc, nc, P))
     for wi, w in enumerate(words):
-        vs = [v for v in vowels if v["w"] == wi]
-        w["vf"] = vs
+        w["vf"] = [v for v in vowels if v["w"] == wi]
+    return vowels, P
+
+def stress(words):
+    for w in words:
+        vs = w.get("vf", [])
         if len(vs) < 2 or not w.get("map_ok"):
             w["det"] = 0 if len(vs) == 1 else None
             continue
-        qterm = np.array([QW[v["L"]] * 2 * (v["q"] - 0.5) if v.get("q") is not None else 0.0 for v in vs])
-        S = W["I"] * z([v["I"] for v in vs]) + W["F"] * z([v["F"] for v in vs]) + W["D"] * z([v["D"] for v in vs]) + qterm
+        S = stress_scores(vs)
         order = np.argsort(-S)
         w["det"] = int(vs[order[0]]["k"])
         w["margin"] = float(S[order[0]] - S[order[1]])
-        w["S"] = [round(float(s), 2) for s in S]
+        w["S"] = [round(float(x), 2) for x in S]
 
 # ---------------- интонация, паузы, темп ----------------
 def intonation(words, vowels, P):
@@ -289,10 +316,13 @@ def intonation(words, vowels, P):
         elif typ == "?":
             rise = (ff - med) if ff is not None else -99
             over = (ff - max(before)) if (ff is not None and before) else rise
-            d["focus"] = fw["w"]; d["rise"] = round(rise, 1)
-            d["ok"] = rise >= 2.0 and over >= 0.5
-            d["note"] = (f"вопросительный подъём на слове «{fw['w']}» (+{rise:.1f} пт)" if d["ok"]
-                         else f"нет вопросительного подъёма на «{fw['w']}» (самое высокое место — «{peak_w['w']}») — звучит как утверждение")
+            cont_all = [x for x, _ in strs if len(x["vows"]) > 1]
+            alt = bool(cont_all) and peak_w is not cont_all[0] and (peak_f - med) >= 3.0
+            d["ok"] = (rise >= 2.0 and over >= 0.5) or alt
+            fx = fw if (rise >= 2.0 and over >= 0.5) else peak_w
+            d["focus"] = fx["w"]; d["rise"] = round(rise, 1)
+            d["note"] = (f"вопросительный подъём на слове «{fx['w']}»" if d["ok"]
+                         else f"нет вопросительного подъёма (самое высокое место — «{peak_w['w']}», в начале) — звучит как утверждение")
         else:
             d["ok"] = d["peak"] >= 2.0
             d["note"] = f"выделено слово «{peak_w['w']}» (+{d['peak']} пт)" if d["ok"] else "восклицание звучит ровно, без эмоции"
@@ -376,8 +406,8 @@ def analyze(name, apath, tpath):
     P = prosody(audio)
     vowels = []
     try:
-        vowels = align(audio, words)
-        stress(words, vowels, P)
+        vowels, P = extract(audio, words, P)
+        stress(words)
     except Exception:
         log("align FAIL", traceback.format_exc()); rep["align_error"] = True
     fv = P[2][P[2] > 0]
