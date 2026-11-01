@@ -1,0 +1,18 @@
+name: geo-kz
+on:
+  push:
+    branches: [yt-status]
+    paths: ['tools/geo_kz.py']
+permissions:
+  contents: write
+jobs:
+  geo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/geo_kz.py
+      - run: |
+          git config user.name "yt-check"; git config user.email "yt-check@users.noreply.github.com"
+          git add status; git commit -m "kz outline" || exit 0
+          git pull --rebase origin yt-status || true; git push origin HEAD:yt-status
