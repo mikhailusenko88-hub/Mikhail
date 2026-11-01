@@ -51,28 +51,28 @@ def main():
                     a = m.apply_tts(text=text, speaker=spk, sample_rate=48000)
                 save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
             elif eng == "silero_cis":
-            # свободная (MIT) модель без авторасстановки ударений — ставим их сами через ruaccent
-            import voice_check as vc
-            ws = vc.tokenize(text)
-            vc.accentize(text, ws)
-            out = []
-            for w in ws:
-                e = w["exp"]
-                if len(w["vows"]) >= 2 and e is not None:
-                    k = -1; t2 = ""
-                    for c in w["w"]:
-                        if c in vc.VOW:
-                            k += 1
-                            if k == e:
-                                t2 += "+"
-                        t2 += c
-                    out.append(t2 + w["punct"])
-                else:
-                    out.append(w["w"] + w["punct"])
-            m = silero_model("v5_cis_base")
-            a = m.apply_tts(text=" ".join(out), speaker=spk, sample_rate=48000)
-            save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
-        elif eng == "edge":
+                # свободная (MIT) модель без авторасстановки ударений — ставим их сами через ruaccent
+                import voice_check as vc
+                ws = vc.tokenize(text)
+                vc.accentize(text, ws)
+                out = []
+                for w in ws:
+                    e = w["exp"]
+                    if len(w["vows"]) >= 2 and e is not None:
+                        k = -1; t2 = ""
+                        for c in w["w"]:
+                            if c in vc.VOW:
+                                k += 1
+                                if k == e:
+                                    t2 += "+"
+                            t2 += c
+                        out.append(t2 + w["punct"])
+                    else:
+                        out.append(w["w"] + w["punct"])
+                m = silero_model("v5_cis_base")
+                a = m.apply_tts(text=" ".join(out), speaker=spk, sample_rate=48000)
+                save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
+            elif eng == "edge":
                 import edge_tts
                 asyncio.run(edge_tts.Communicate(plus_to_acute(text), spk).save(f"in/{name}.mp3"))
                 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", f"in/{name}.mp3", f"in/{name}.wav"], check=True)
