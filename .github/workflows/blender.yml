@@ -2,7 +2,7 @@ name: barsik-blender
 on:
   push:
     branches: [blender-test]
-    paths: [run.txt]
+    paths: [run.txt, "*.py"]
   workflow_dispatch:
 permissions:
   contents: write
