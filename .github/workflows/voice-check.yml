@@ -1,0 +1,47 @@
+name: voice-check
+on:
+  push:
+    branches: [voice-check]
+    paths: ['in/**', 'gen.txt', 'request.txt', 'voice_check.py', 'gen.py', '.github/workflows/voice-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: voice-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: voice-check-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib edge-tts
+      - name: Generate audio from gen.txt
+        if: hashFiles('gen.txt') != ''
+        run: python gen.py
+      - name: Analyze
+        run: python voice_check.py
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name voice-check
+          git config user.email voice-check@users.noreply.github.com
+          git add -A in out
+          git commit -m "voice-check result" || echo nothing
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
