@@ -1,0 +1,41 @@
+name: barsik-anim
+on:
+  push:
+    branches: [blender-test]
+    paths: [anim.txt]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  chunk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        chunk: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Blender 4.2 LTS + ffmpeg
+        run: |
+          wget -q https://download.blender.org/release/Blender4.2/blender-4.2.0-linux-x64.tar.xz
+          tar xf blender-4.2.0-linux-x64.tar.xz
+          sudo apt-get update -qq >/dev/null; sudo apt-get install -y -qq ffmpeg libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libgl1 libsm6 libegl1 >/dev/null || true
+      - name: Geometry
+        run: |
+          pip install -q numpy scikit-image scipy
+          mkdir -p out && python anim_geo.py
+      - name: Render chunk
+        run: |
+          set -o pipefail
+          ./blender-4.2.0-linux-x64/blender -b --python-exit-code 1 -P anim.py -- chunk=${{ matrix.chunk }} of=20 $(cat anim.txt | tr '\n' ' ') 2>&1 | tee out/alog_${{ matrix.chunk }}.txt | grep -v "^Fra:\|Sample \|Rendered " | tail -40
+      - name: Commit chunk
+        if: always()
+        run: |
+          git config user.name render-bot
+          git config user.email render-bot@users.noreply.github.com
+          mkdir -p out/anim; cp out/alog_${{ matrix.chunk }}.txt out/anim/ || true
+          git add out/anim || true
+          git commit -m "anim chunk ${{ matrix.chunk }}" || echo nothing
+          for i in 1 2 3 4 5 6 7 8 9 10; do git pull -q --rebase && git push && break; sleep $((RANDOM % 15 + 5)); done
