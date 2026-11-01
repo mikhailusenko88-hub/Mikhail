@@ -2,6 +2,12 @@
 |---|---|---|---|---|---|
 | dm_q | edge:ru-RU-DmitryNeural | 3.79 | 1.0 | 0 (+0) | 1/1 |
 | dm_raw | edge:ru-RU-DmitryNeural | 3.71 | 0.846 | 2 (+0) | 2/2 |
+| f_albina | silero_cis:ru_albina | 3.45 | 0.9 | 1 (+2) | 4/4 |
+| f_albina_slow | silero_cis:ru_albina@slow | 3.04 | 0.949 | 1 (+0) | 4/4 |
+| f_albina_slow_low | silero_cis:ru_albina@slow,low | 3.03 | 0.933 | 1 (+0) | 4/4 |
+| f_alexandr | silero_cis:ru_alexandr | 3.17 | 0.867 | 0 (+1) | 3/4 |
+| f_ekaterina | silero_cis:ru_ekaterina | 2.94 | 0.933 | 2 (+0) | 4/4 |
+| f_zinaida | silero_cis:ru_zinaida | 2.81 | 0.967 | 0 (+0) | 4/4 |
 | ks_bad | silero:kseniya | 3.24 | 0.615 | 6 (+1) | 2/2 |
 | ks_homo_bad | silero:kseniya | 3.85 | 1.0 | 2 (+0) | 2/2 |
 | ks_long | silero:kseniya | 3.56 | 1.0 | 0 (+0) | 2/2 |
