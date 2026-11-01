@@ -1,0 +1,34 @@
+name: tts-demo
+on:
+  push:
+    branches: [tts-test]
+    paths: [request.txt, tts_demo.py, .github/workflows/tts.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  tts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: |
+          pip install -q edge-tts numpy
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+      - name: Silero model
+        continue-on-error: true
+        run: curl -sfL -o v4_ru.pt https://models.silero.ai/models/tts/ru/v4_ru.pt
+      - name: Synthesize
+        run: python tts_demo.py
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name tts-bot
+          git config user.email tts-bot@users.noreply.github.com
+          git add out
+          git commit -m "tts demo result" || echo nothing
+          git push
