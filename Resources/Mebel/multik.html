@@ -224,7 +224,7 @@ const App = {
         const bb = bs === 'run' ? `<button class="btn" disabled>⏳ Собирается</button>` : bs === 'wait' ? `<button class="btn" data-a="unqueue">⏳ В очереди ✕</button>` : bs === 'held' ? `<button class="btn acc" data-a="build">🎬 Продолжить сборку</button>` : `<button class="btn ${e.status === 'built' ? '' : 'acc'}" data-a="build">🎬 ${e.status === 'built' ? 'Пересобрать' : 'Собрать видео'}</button>`;
         d.innerHTML = `<div class="row"><div style="flex:1"><b>Серия ${e.episode}${e.title ? '. ' + esc(e.title) : ''}</b><div class="mut">${(e.script.scenes || []).length} сцен · ${st}</div></div></div>
           <div class="btns"><button class="btn" data-a="play">▶ Просмотр</button>${bb}
-          ${e.video ? '<button class="btn ok" data-a="share">⤴ Отправить / YouTube</button>' : ''}<button class="btn" data-a="yt">📝 Текст для YouTube</button></div>`;
+          ${e.video ? '<button class="btn ok" data-a="share">⤴ Отправить / YouTube</button><button class="btn" data-a="dub">🔊 Обновить звук</button>' : ''}<button class="btn" data-a="yt">📝 Текст для YouTube</button></div>`;
         d.querySelectorAll('button').forEach(b => b.onclick = () => App.epAction(p, e, b.dataset.a));
         card.appendChild(d);
       }
@@ -322,6 +322,7 @@ const App = {
     if (a === 'play') return Player.open(e);
     if (a === 'build') return Build.run(p, e);
     if (a === 'unqueue') return Build.unqueue(p, e);
+    if (a === 'dub') return Build.dub(p, e);
     if (a === 'share') return Native.call('share', { path: e.video });
     if (a === 'yt') { const y = e.script.youtube || {}; const text = `${y.title || (p.series + ' — Серия ' + e.episode + '. ' + (e.title || ''))}\n\n${y.description || ''}\n\n${(y.tags || []).map(t => '#' + t.replace(/\s+/g, '')).join(' ')}`; await Native.call('copy', { text }); alert('Название, описание и теги скопированы:\n\n' + text); }
   },
@@ -379,6 +380,8 @@ const Prog = {
   hide() { document.getElementById('prog').style.display = 'none'; },
 };
 
+// звук не пустой? (по выборке — быстро)
+function audible(buf) { if (!buf) return false; const d = buf.getChannelData(0); let pk = 0; for (let i = 0; i < d.length; i += 97) { const a = Math.abs(d[i]); if (a > pk) pk = a; } return pk > .002; }
 // ---------- сборка видео ----------
 // Сборка идёт «в фоне»: внизу маленькая полоска, а приложением можно пользоваться — смотреть другие разделы,
 // писать сценарии, ставить в очередь следующие серии. Закрыл «Мультики» — страница работает дальше незаметно.
@@ -391,6 +394,23 @@ const Build = {
   state(p, e) { const q = this.jobs(), k = q.findIndex(j => j.series === p.series && j.episode === e.episode); return k < 0 ? '' : !this.busy ? 'held' : k === 0 ? 'run' : 'wait'; },
   unqueue(p, e) { const q = this.jobs(), k = q.findIndex(j => j.series === p.series && j.episode === e.episode); if (k > 0 || (k === 0 && !this.busy)) { q.splice(k, 1); if (!q.length) delete Lib.data.settings.buildJob; Lib.save(); } this.refresh(); },
   refresh() { if (App.tab === 'series') App.render(true); },
+  async dub(p, e) { // готовая серия: новый звук (голоса, смех, музыка) за минуту, картинка остаётся как есть
+    if (this.busy) { alert('Сейчас собирается серия — обновить звук можно после сборки.'); return; }
+    this.busy = true; Prog.show(`Серия ${e.episode}: обновляю звук`);
+    try {
+      let { mix } = await prepare(e, (a, pr, t) => Prog.set(a, pr * .85, t));
+      if (!audible(mix)) throw new Error('звук получился пустым');
+      let wav = MK.wav(mix); mix = null; const CH = 1 << 20;
+      for (let i = 0; i < wav.length; i += CH) { Prog.set('Передаю звук', .85 + .1 * i / wav.length, ''); await Native.call('audioChunk', { first: i === 0, d: b64(wav.subarray(i, i + CH)) }); }
+      wav = null; if (MK.freeAudio) MK.freeAudio();
+      Prog.set('Накладываю звук на видео', .97, '');
+      const r = await Native.call('remuxAudio', { path: e.video });
+      Prog.hide();
+      if (!r || r.error) throw new Error((r && r.error) || 'не получилось');
+      this.toast(`✓ Звук серии ${e.episode} обновлён`, e.video);
+    } catch (err) { Prog.hide(); alert('Звук не обновился: ' + err.message); }
+    this.busy = false;
+  },
   async run(p, e) { // кнопка «Собрать видео»: серия встаёт в очередь, полоска внизу — и можно заниматься другим
     const q = this.jobs();
     if (!q.some(j => j.series === p.series && j.episode === e.episode)) { q.push({ series: p.series, episode: e.episode }); await Lib.save(); if (this.busy) this.toast(`Серия ${e.episode} — в очереди, соберу следом`); }
@@ -448,6 +468,7 @@ const Build = {
       let { tl, mix } = await prepare(e, (a, pr, t) => this.set(title, pr * .08, a + (t ? ' · ' + t : '')), () => this.stop);
       const name = `${p.series} - ${String(e.episode).padStart(2, '0')}. ${e.title || ''}`.replace(/[\/\\:?*"<>|]/g, '').trim();
       // звук — отдельным файлом: телефон приклеит его к видео в самом конце
+      if (!audible(mix)) throw new Error('звук серии получился пустым — попробуй ещё раз'); // не собирать немой ролик
       let wav = MK.wav(mix); const CH = 1 << 20; mix = null;
       for (let i = 0; i < wav.length; i += CH) { if (this.stop) throw new Error('cancel'); await Native.call('audioChunk', { first: i === 0, d: b64(wav.subarray(i, i + CH)) }); }
       // звук ушёл в телефон — отпускаем его из памяти страницы, чтобы на тяжёлых сценах её хватало кадрам
@@ -494,6 +515,7 @@ const Build = {
       delete s.buildJob; delete s.buildCrash; if (window.MK3D && MK3D.lowMem) MK3D.lowMem(false);
       const f = this.find({ series: p.series, episode: e.episode }), ee = f ? f.e : e; // серию могли обновить, пока собиралась
       ee.status = 'built'; ee.video = r.path; ee.dur = tl.dur; ee.built = new Date().toISOString(); await Lib.save();
+      if (r.warn) alert(`Серия ${ee.episode} собрана, но звук не приклеился (${r.warn}).\nНажми у серии «🔊 Обновить звук» — картинку пересобирать не нужно.`);
       return { e: ee, path: r.path, dur: tl.dur };
     } catch (err) {
       const settle = async () => { while (inflight.length) { try { await inflight.shift(); } catch (e2) {} } };

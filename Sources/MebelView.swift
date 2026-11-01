@@ -519,6 +519,15 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
                 }
                 DispatchQueue.main.async { replyHandler(reply, nil) }
             }
+        case "remuxAudio":   // готовая серия: заменить звук (картинка копируется как есть, за секунды)
+            let rel = body["path"] as? String ?? ""
+            let src = root.appendingPathComponent(rel), audio = root.appendingPathComponent("tmp/audio.wav"), tmp = root.appendingPathComponent("tmp/remux.mp4")
+            queue.async {
+                var err: String? = FileManager.default.fileExists(atPath: src.path) ? nil : "нет файла серии"
+                if err == nil { err = MultikWriter.mux(parts: [src], total: AVURLAsset(url: src).duration, audio: audio, out: tmp) }
+                if err == nil { try? FileManager.default.removeItem(at: src); do { try FileManager.default.moveItem(at: tmp, to: src) } catch { err = error.localizedDescription } }
+                DispatchQueue.main.async { if let e = err { replyHandler(["error": e], nil) } else { replyHandler(["path": rel], nil) } }
+            }
         case "thermal":
             replyHandler(ProcessInfo.processInfo.thermalState.rawValue, nil)
         case "videoEnd":
@@ -527,7 +536,7 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
             queue.async {
                 let path = wr.finish()
                 DispatchQueue.main.async {
-                    if let p = path { replyHandler(["path": "video/" + p.lastPathComponent], nil) }
+                    if let p = path { var r: [String: Any] = ["path": "video/" + p.lastPathComponent]; if let w = wr.warn { r["warn"] = w }; replyHandler(r, nil) }
                     else { replyHandler(["error": wr.error ?? "ошибка записи"], nil) }
                 }
             }
@@ -817,46 +826,102 @@ final class MultikWriter {
         frames = doneFrames
     }
 
+    /// Готовое видео: куски подряд (без перекодирования) + звук из wav (AAC). Звук не записался — видео всё равно
+    /// отдаём, но с предупреждением (warn), чтобы не потерять сборку; звук потом можно наложить заново.
+    var warn: String?
     func finish() -> URL? {
         pause()
         guard !done.isEmpty else { error = error ?? "нет кадров"; return nil }
-        let total = CMTime(value: doneFrames, timescale: fps)
-        // звук: wav → AAC (m4a), чтобы склеить всё без перекодирования
-        let m4a = dir.appendingPathComponent("audio.m4a")
-        try? FileManager.default.removeItem(at: m4a)
-        var haveAudio = false
-        if FileManager.default.fileExists(atPath: audio.path), let ex = AVAssetExportSession(asset: AVURLAsset(url: audio), presetName: AVAssetExportPresetAppleM4A) {
-            ex.outputURL = m4a; ex.outputFileType = .m4a
-            let sem = DispatchSemaphore(value: 0)
-            ex.exportAsynchronously { sem.signal() }
-            sem.wait()
-            haveAudio = ex.status == .completed
-        }
-        let comp = AVMutableComposition()
-        guard let vt = comp.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else { error = "не удалось склеить видео"; return nil }
-        var cur = CMTime.zero
-        for k in 0..<done.count {
-            let a = AVURLAsset(url: segURL(k))
-            guard let v = a.tracks(withMediaType: .video).first else { continue }
-            let dur = CMTimeMinimum(CMTime(value: done[k], timescale: fps), v.timeRange.duration)
-            do { try vt.insertTimeRange(CMTimeRange(start: v.timeRange.start, duration: dur), of: v, at: cur) } catch { self.error = error.localizedDescription; return nil }
-            cur = CMTimeAdd(cur, dur)
-        }
-        if haveAudio, let s = AVURLAsset(url: m4a).tracks(withMediaType: .audio).first, let at = comp.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) {
-            try? at.insertTimeRange(CMTimeRange(start: s.timeRange.start, duration: CMTimeMinimum(total, s.timeRange.duration)), of: s, at: .zero)
-        }
-        guard let ex = AVAssetExportSession(asset: comp, presetName: AVAssetExportPresetPassthrough) else { error = "не удалось склеить видео"; return nil }
+        let parts = (0..<done.count).map { segURL($0) }, total = CMTime(value: doneFrames, timescale: fps)
         let tmp = dir.appendingPathComponent("final.mp4")
-        try? FileManager.default.removeItem(at: tmp)
-        ex.outputURL = tmp; ex.outputFileType = .mp4
-        let sem = DispatchSemaphore(value: 0)
-        ex.exportAsynchronously { sem.signal() }
-        sem.wait()
-        guard ex.status == .completed else { error = ex.error?.localizedDescription ?? "склейка не удалась"; return nil }
+        if let e = MultikWriter.mux(parts: parts, total: total, audio: audio, out: tmp) {
+            // со звуком не вышло — пробуем без него
+            guard MultikWriter.mux(parts: parts, total: total, audio: nil, out: tmp) == nil else { error = e; return nil }
+            warn = e
+        }
         try? FileManager.default.removeItem(at: out)
         do { try FileManager.default.moveItem(at: tmp, to: out) } catch { self.error = error.localizedDescription; return nil }
         try? FileManager.default.removeItem(at: dir)
         return out
+    }
+
+    /// Склейка mp4: видеокадры копируются как есть (куски один за другим), звук кодируется из wav в AAC 160 кбит/с.
+    /// Возвращает текст ошибки или nil.
+    static func mux(parts: [URL], total: CMTime, audio: URL?, out: URL) -> String? {
+        let fm = FileManager.default
+        try? fm.removeItem(at: out)
+        guard let first = parts.first, let fv = AVURLAsset(url: first).tracks(withMediaType: .video).first,
+              let fd = fv.formatDescriptions.first else { return "нет видео" }
+        let wr: AVAssetWriter
+        do { wr = try AVAssetWriter(outputURL: out, fileType: .mp4) } catch { return error.localizedDescription }
+        let vIn = AVAssetWriterInput(mediaType: .video, outputSettings: nil, sourceFormatHint: (fd as! CMFormatDescription))
+        vIn.expectsMediaDataInRealTime = false
+        wr.add(vIn)
+        var aIn: AVAssetWriterInput?, aOut: AVAssetReaderTrackOutput?, aRd: AVAssetReader?
+        if let au = audio {
+            guard fm.fileExists(atPath: au.path) else { return "нет файла звука" }
+            let asset = AVURLAsset(url: au)
+            guard let track = asset.tracks(withMediaType: .audio).first, let rd = try? AVAssetReader(asset: asset) else { return "файл звука не читается" }
+            let o = AVAssetReaderTrackOutput(track: track, outputSettings: [AVFormatIDKey: kAudioFormatLinearPCM])
+            rd.add(o)
+            let a = AVAssetWriterInput(mediaType: .audio, outputSettings: [
+                AVFormatIDKey: kAudioFormatMPEG4AAC, AVSampleRateKey: 44100, AVNumberOfChannelsKey: 1, AVEncoderBitRateKey: 160_000,
+            ])
+            a.expectsMediaDataInRealTime = false
+            wr.add(a)
+            guard rd.startReading() else { return rd.error?.localizedDescription ?? "звук не читается" }
+            aIn = a; aOut = o; aRd = rd
+        }
+        guard wr.startWriting() else { return wr.error?.localizedDescription ?? "запись не началась" }
+        wr.startSession(atSourceTime: .zero)
+        var k = 0, offset = CMTime.zero, vRd: AVAssetReader?, vOut: AVAssetReaderTrackOutput?, vDone = false, aDone = aIn == nil, idle = 0
+        while !(vDone && aDone) {
+            var moved = false
+            // видео: следующий кусок, кадры со сдвигом времени
+            while !vDone && vIn.isReadyForMoreMediaData {
+                if vOut == nil {
+                    if k >= parts.count { vDone = true; vIn.markAsFinished(); break }
+                    let asset = AVURLAsset(url: parts[k])
+                    guard let t = asset.tracks(withMediaType: .video).first, let rd = try? AVAssetReader(asset: asset) else { k += 1; continue }
+                    let o = AVAssetReaderTrackOutput(track: t, outputSettings: nil); o.alwaysCopiesSampleData = false; rd.add(o)
+                    guard rd.startReading() else { k += 1; continue }
+                    vRd = rd; vOut = o
+                    if k > 0 { offset = CMTimeAdd(offset, CMTimeMinimum(AVURLAsset(url: parts[k - 1]).duration, total)) }
+                    k += 1
+                }
+                guard let sb = vOut?.copyNextSampleBuffer() else { vRd?.cancelReading(); vRd = nil; vOut = nil; continue }
+                guard let rs = retimed(sb, by: offset) else { continue }
+                if !vIn.append(rs) { return wr.error?.localizedDescription ?? "видео не склеилось" }
+                moved = true
+            }
+            // звук: до конца видео
+            while !aDone, let a = aIn, a.isReadyForMoreMediaData {
+                guard let sb = aOut?.copyNextSampleBuffer() else { aDone = true; a.markAsFinished(); break }
+                if CMTimeCompare(CMSampleBufferGetPresentationTimeStamp(sb), total) >= 0 { aDone = true; a.markAsFinished(); aRd?.cancelReading(); break }
+                if !a.append(sb) { return wr.error?.localizedDescription ?? "звук не записался" }
+                moved = true
+            }
+            if moved { idle = 0 } else { usleep(2000); idle += 1; if idle > 15000 { wr.cancelWriting(); return "склейка зависла" } }
+        }
+        let sem = DispatchSemaphore(value: 0)
+        wr.finishWriting { sem.signal() }
+        sem.wait()
+        return wr.status == .completed ? nil : (wr.error?.localizedDescription ?? "склейка не удалась")
+    }
+
+    private static func retimed(_ sb: CMSampleBuffer, by off: CMTime) -> CMSampleBuffer? {
+        if off == .zero { return sb }
+        var n: CMItemCount = 0
+        CMSampleBufferGetSampleTimingInfoArray(sb, entryCount: 0, arrayToFill: nil, entriesNeededOut: &n)
+        var info = [CMSampleTimingInfo](repeating: CMSampleTimingInfo(), count: max(1, n))
+        CMSampleBufferGetSampleTimingInfoArray(sb, entryCount: n, arrayToFill: &info, entriesNeededOut: &n)
+        for i in 0..<n {
+            info[i].presentationTimeStamp = CMTimeAdd(info[i].presentationTimeStamp, off)
+            if info[i].decodeTimeStamp.isValid { info[i].decodeTimeStamp = CMTimeAdd(info[i].decodeTimeStamp, off) }
+        }
+        var outSB: CMSampleBuffer?
+        CMSampleBufferCreateCopyWithNewTiming(allocator: nil, sampleBuffer: sb, sampleTimingEntryCount: n, sampleTimingArray: &info, sampleBufferOut: &outSB)
+        return outSB
     }
 
     func cancel() {
