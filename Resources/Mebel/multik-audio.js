@@ -125,14 +125,14 @@ function fsynth(segs, sr, seed, fscale, breath) {
   let pk = 0; for (let i = 0; i < N; i++) pk = Math.max(pk, Math.abs(out[i])); if (pk > 0) for (let i = 0; i < N; i++) out[i] *= .8 / pk;
   return out;
 }
-function vocalSegs(kind, f0, seed, variant) {
+function vocalSegs(kind, f0, seed, variant, short) {
   const r = rng(seed * 7 + (variant || 0) * 131 + 1), S = [];
   const gap = (d, br) => S.push({ d, f0: [f0, f0], fA: VWL.h, v: [[0, 0], [1, 0]], n: [[0, br || 0], [1, br || 0]] });
   const style = seed % 3; // характер у героя всегда один и тот же: 0 хихиканье, 1 смех, 2 басистый смешок
   if (kind === 'laugh') {
     const giggle = style === 0 && f0 > 230, chuck = style === 2 || f0 < 160;
     const vw = giggle ? (r() < .5 ? 'i' : 'e') : chuck ? (r() < .6 ? 'o' : 'a') : 'a';
-    const nSyl = (giggle ? 6 : chuck ? 4 : 5) + ((r() * 3) | 0), base = f0 * (giggle ? 1.45 : chuck ? 1.05 : 1.3), sd = giggle ? .085 : chuck ? .16 : .12;
+    const nSyl = short ? 3 + ((r() * 2) | 0) : (giggle ? 6 : chuck ? 4 : 5) + ((r() * 3) | 0), base = f0 * (giggle ? 1.45 : chuck ? 1.05 : 1.3), sd = giggle ? .085 : chuck ? .16 : .12;
     gap(.04, .15);
     for (let k = 0; k < nSyl; k++) { const last = k === nSyl - 1, prog = k / Math.max(1, nSyl - 1);
       const fk = base * (k < 2 ? 1 + k * .04 : 1.08 - prog * .22) * (1 + (r() - .5) * .08), a = (k < 2 ? .85 + k * .15 : 1 - prog * .45) * (.85 + r() * .3), d = sd * (1 + prog * .35) * (.85 + r() * .3);
@@ -141,6 +141,7 @@ function vocalSegs(kind, f0, seed, variant) {
       S.push({ d, f0: [fk * 1.04, fk * .86], fA: VWL[vw], fB: VWL[vw === 'i' ? 'e' : vw], oq: .78, tilt: chuck ? 1400 : 2000, fry: last && !giggle, v: [[0, a * .3], [.12, a], [.55, a * .7], [1, 0]], n: [[0, a * .45], [.4, a * .18], [1, a * .1]] });
       gap((giggle ? .025 : .04) * (.7 + r() * .6), .06 * a); }
     // вдох после смеха: шумный, у детей с тонким «писком»
+    if (short) { gap(.06, .03); return S; }
     const inh = giggle || f0 > 230;
     S.push({ d: .38 + r() * .12, f0: [f0 * 2.1, f0 * 2.4], fA: [420, 2200, 3100], fB: [380, 2500, 3200], bw: 2.2, v: inh ? [[0, 0], [.35, .12], [.7, .08], [1, 0]] : [[0, 0], [1, 0]], n: [[0, .05], [.3, .55], [.8, .45], [1, 0]] });
     if (r() < .6) { gap(.08, .03); const n2 = 2 + ((r() * 2) | 0); for (let k = 0; k < n2; k++) { const fk = base * (.92 - k * .06), a = .55 - k * .12, d = sd * 1.1;
@@ -171,7 +172,7 @@ MK.synthVocal = function (ln, sr) {
   const male = (v.base || 'female') === 'male', kid = ln.age === 'kid';
   let f0 = (male ? 120 : 205) * (kid ? 1.4 : 1) * (v.pitch || 1); f0 /= Math.pow(k, .75);
   const fs = (kid ? 1.17 : 1) * (male ? 1 : 1.1) / Math.pow(k, .4);
-  const data = fsynth(vocalSegs(ln.synth, f0, ln.seed || 7, ln.variant || 0), sr, (ln.seed || 7) + (ln.variant || 0), fs, ln.synth === 'laugh' ? .35 : .2);
+  const data = fsynth(vocalSegs(ln.synth, f0, ln.seed || 7, ln.variant || 0, ln.short), sr, (ln.seed || 7) + (ln.variant || 0), fs, ln.synth === 'laugh' ? .35 : .2);
   const b = new AudioBuffer({ length: data.length, numberOfChannels: 1, sampleRate: sr }); b.copyToChannel(data, 0); return b;
 };
 
@@ -185,12 +186,12 @@ function trimBuf(raw, rel) { const d = raw.getChannelData(0); let pk = 0; for (l
 MK.buildLaughFrom = async function (raw, ln) {
   const sr = 44100, syl = trimBuf(raw, .04), st = laughStyle(ln), r = rng((ln.seed || 7) * 7 + (ln.variant || 0) * 131 + 1), kid = ln.age === 'kid';
   const giggle = st === 'giggle', chuck = st === 'chuckle';
-  const plan = []; let t = .03; const nSyl = (giggle ? 6 : chuck ? 4 : 5) + ((r() * 3) | 0), sd = giggle ? .095 : chuck ? .17 : .13;
+  const plan = []; let t = .03; const short = !!ln.short, nSyl = short ? 3 + ((r() * 2) | 0) : (giggle ? 6 : chuck ? 4 : 5) + ((r() * 3) | 0), sd = giggle ? .095 : chuck ? .17 : .13;
   const bout = (n, amp0, rate0, gapK) => { for (let k = 0; k < n; k++) { const prog = k / Math.max(1, n - 1);
     const rate = rate0 * (k < 2 ? 1 + k * .03 : 1.06 - prog * .2) * (1 + (r() - .5) * .07), amp = amp0 * (k < 2 ? .8 + k * .2 : 1 - prog * .5) * (.85 + r() * .3), d = sd * (1 + prog * .3) * (.85 + r() * .3);
     plan.push({ t, rate, amp, d, off: k ? .015 + r() * .02 : 0 }); t += d + (giggle ? .03 : .05) * gapK * (.7 + r() * .6); } };
   bout(nSyl, 1, giggle ? 1.18 : chuck ? 1.0 : 1.12, 1);
-  const tIn = t + .02; t += .45; let tail = false; if (r() < .55) { t += .05; bout(2 + ((r() * 2) | 0), .55, giggle ? 1.08 : .98, 1.2); tail = true; }
+  const tIn = t + .02; t += short ? .3 : .45; let tail = false; if (!short && r() < .55) { t += .05; bout(2 + ((r() * 2) | 0), .55, giggle ? 1.08 : .98, 1.2); tail = true; }
   const ac = new OfflineAudioContext(1, Math.ceil((t + .4) * sr), sr);
   const out = ac.createGain(); out.connect(ac.destination); const rv = ac.createConvolver(); rv.buffer = MK.roomIR(ac, .45); const rg = ac.createGain(); rg.gain.value = .12; out.connect(rv); rv.connect(rg); rg.connect(ac.destination);
   const nz = MK._noise(ac);
@@ -201,7 +202,7 @@ MK.buildLaughFrom = async function (raw, ln) {
     bg.gain.setValueAtTime(0, p.t); bg.gain.linearRampToValueAtTime(p.amp * .09, p.t + .01); bg.gain.linearRampToValueAtTime(p.amp * .05, p.t + p.d * .6); bg.gain.linearRampToValueAtTime(0, p.t + p.d + .05); b.start(p.t, (p.t * 13) % .9); b.stop(p.t + p.d + .07); }
   { // вдох
     const b = ac.createBufferSource(); b.buffer = nz; b.loop = true; const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.setValueAtTime(1500, tIn); bp.frequency.linearRampToValueAtTime(2800, tIn + .35); bp.Q.value = 1.3; const bg = ac.createGain(); b.connect(bp); bp.connect(bg); bg.connect(out);
-    bg.gain.setValueAtTime(0, tIn); bg.gain.linearRampToValueAtTime(.16, tIn + .12); bg.gain.linearRampToValueAtTime(.12, tIn + .28); bg.gain.linearRampToValueAtTime(0, tIn + .38); b.start(tIn, .3); b.stop(tIn + .4);
+    bg.gain.setValueAtTime(0, tIn); bg.gain.linearRampToValueAtTime(short ? .08 : .16, tIn + .12); bg.gain.linearRampToValueAtTime(.12, tIn + .28); bg.gain.linearRampToValueAtTime(0, tIn + .38); b.start(tIn, .3); b.stop(tIn + .4);
     if (kid || giggle) { const o = ac.createOscillator(), og = ac.createGain(), l = ac.createOscillator(), lg = ac.createGain(); o.frequency.setValueAtTime(950, tIn + .05); o.frequency.linearRampToValueAtTime(1250, tIn + .32); l.frequency.value = 9; lg.gain.value = 25; l.connect(lg); lg.connect(o.frequency);
       og.gain.setValueAtTime(0, tIn + .05); og.gain.linearRampToValueAtTime(.025, tIn + .15); og.gain.linearRampToValueAtTime(0, tIn + .34); o.connect(og); og.connect(out); o.start(tIn + .05); o.stop(tIn + .36); l.start(tIn + .05); l.stop(tIn + .36); } }
   const res = await ac.startRendering(); return trimBuf(res, .005);

@@ -142,6 +142,69 @@ function furnitureHQ(g, kit) {
     pr.push(rb(0, .99, .02, 2.56, .04, .5, .03, top, .01)); pr.push(rb(0, 2.6, -.2, 2.5, .4, .25, .03, f, 0)); for (let i = 0; i < 5; i++) pr.push(Object.assign(rb(-2 + i, 2.6, .05, .44, .34, .02, .02, f), { op: 'sub', k: .01 }));
     const m = sculptStatic(pr, 110, .6); if (m) { m.position.copy(C.position); g.add(m); } }
 }
+// ---------- рот: живой рисунок прямо на коже мордочки (повторяет её изгибы). Форма — от звуков речи и настроения ----------
+const MOUTH_GLSL = `uniform float uOpen, uWide, uSmile, uRound, uKind, uClose; varying vec2 vM;
+float mSeg(vec2 p, vec2 a, vec2 b) { vec2 pa = p - a, ba = b - a; float h = clamp(dot(pa, ba) / dot(ba, ba), 0., 1.); return length(pa - ba * h); }
+vec4 mouthCol(vec2 p) {
+  float aa = max(fwidth(p.x), fwidth(p.y)) * 1.1 + 1e-4, lw = max(.085, aa * 1.6);
+  float o = clamp(uOpen, 0., 1.) * (1. - .9 * uClose), s = uSmile, rn = uRound, w = uWide, dog = step(.5, uKind), ok = smoothstep(.03, .14, o);
+  // закрытый: «:3» у котика и мышки, мягкая «улыбка-якорь» у пса
+  float Lc = mix(.95, 1.25, dog) * (1. + .25 * w - .3 * rn), tx = clamp(abs(p.x) / Lc, 0., 1.), lift = s * mix(.4, .55, dog);
+  float droop = mix(.34, .26, dog) * (1. - .5 * max(s, 0.)), yl = -droop * sin(3.14159 * tx) + lift * tx * tx;
+  float sl = droop * 3.14159 / Lc * cos(3.14159 * tx) - 2. * lift * tx / Lc, dC = abs(p.y - yl) / sqrt(1. + sl * sl);
+  if (abs(p.x) > Lc) dC = length(vec2(abs(p.x) - Lc, p.y - lift));
+  // открытый: «D» в улыбке, кружок на «о/у», щель на «и»
+  float Lo = mix(.95, 1.25, dog) * (.72 + .55 * w) * (1. - .42 * rn) + .25 * o, xo = p.x / Lo, q = clamp(1. - xo * xo, 0., 1.), yc = s * .42 * xo * xo;
+  float top = yc + o * (.22 + .25 * rn) * pow(q, .5), bot = yc - o * (1.75 + .5 * rn) * pow(q, .55 + .35 * rn);
+  float dO = max((abs(xo) - 1.) * Lo, max(p.y - top, bot - p.y)), inside = (1. - smoothstep(-aa, aa, dO)) * ok;
+  float yb0 = -o * (1.75 + .5 * rn); vec2 tq = (p - vec2(0., yb0 + o * .55)) / vec2(Lo * .62, max(.05, o * .7));
+  float tongue = 1. - smoothstep(.92, 1.08, length(tq)), teeth = step(.3, o) * (1. - smoothstep(.48, .58, abs(xo))) * smoothstep(top - .2 * o - aa, top - .2 * o + aa, p.y);
+  float depth = clamp((p.y - bot) / max(.05, top - bot), 0., 1.);
+  vec3 inC = mix(vec3(.32, .05, .07), vec3(.09, .012, .025), depth); inC = mix(inC, vec3(.86, .36, .43), tongue * .95); inC = mix(inC, vec3(1., .97, .92), teeth);
+  float lineA = max((1. - smoothstep(lw * .55 - aa, lw * .55 + aa, abs(dO))) * ok, (1. - smoothstep(lw * .5 - aa, lw * .5 + aa, dC)) * (1. - ok));
+  lineA = max(lineA, 1. - smoothstep(lw * .45 - aa, lw * .45 + aa, mSeg(p, vec2(0., 1.02), vec2(0., mix(0., top, ok))))); // желобок от носика
+  return vec4(mix(inC, vec3(.2, .09, .06), lineA), max(inside, lineA)); }`;
+function mouthMat(kind) { const U = { uOpen: { value: 0 }, uWide: { value: .5 }, uSmile: { value: .3 }, uRound: { value: 0 }, uKind: { value: kind || 0 }, uClose: { value: 0 } };
+  const o = { color: 0xffffff, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 };
+  const m = MK3D.hq ? new THREE.MeshStandardMaterial(Object.assign(o, { roughness: .45 })) : new THREE.MeshToonMaterial(Object.assign(o, { gradientMap: grad }));
+  m.onBeforeCompile = sh => { Object.assign(sh.uniforms, U); sh.vertexShader = 'attribute vec2 aM; varying vec2 vM;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vM = aM;');
+    sh.fragmentShader = MOUTH_GLSL + '\n' + sh.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\n { vec4 mc = mouthCol(vM); diffuseColor = vec4(mc.rgb, mc.a * opacity); if (diffuseColor.a < .004) discard; }'); };
+  m.customProgramCacheKey = () => 'mouth' + (MK3D.hq ? 'hq' : ''); m.userData.U = U; return m; }
+function skinPatch(rig, part, SC, poseInv, at, HH, ext, mat, NU, NV) { // сетка, лежащая точно на коже (проекция на поле расстояний головы)
+  const hr = rig.P.head, pr = part.prims, f = (x, y, z) => SC.field(pr, x, y, z), e = hr * .004, [X0, X1, Y0, Y1] = ext;
+  const grd = p => new THREE.Vector3(f(p.x + e, p.y, p.z) - f(p.x - e, p.y, p.z), f(p.x, p.y + e, p.z) - f(p.x, p.y - e, p.z), f(p.x, p.y, p.z + e) - f(p.x, p.y, p.z - e)).normalize();
+  const proj = p => { for (let i = 0; i < 8; i++) { const d = f(p.x, p.y, p.z); if (Math.abs(d) < hr * 2e-4) break; p.addScaledVector(grd(p), -d); } return p; };
+  const HM = new THREE.Matrix4().multiplyMatrices(poseInv, rig.head.matrixWorld), c = new THREE.Vector3(at[0] * hr, at[1] * hr, at[2] * hr).applyMatrix4(HM); proj(c);
+  const n = grd(c), up0 = new THREE.Vector3(0, 1, 0).transformDirection(HM), rt = new THREE.Vector3().crossVectors(up0, n).normalize(), up = new THREE.Vector3().crossVectors(n, rt).normalize();
+  const pos = new Float32Array(NU * NV * 3), nor = new Float32Array(NU * NV * 3), am = new Float32Array(NU * NV * 2), idx = [];
+  for (let j = 0; j < NV; j++) for (let i = 0; i < NU; i++) { const x = X0 + (X1 - X0) * i / (NU - 1), y = Y0 + (Y1 - Y0) * j / (NV - 1), k = j * NU + i;
+    const p = c.clone().addScaledVector(rt, x * HH).addScaledVector(up, y * HH); proj(p); const nn = grd(p); p.addScaledVector(nn, hr * .006);
+    pos.set([p.x, p.y, p.z], k * 3); nor.set([nn.x, nn.y, nn.z], k * 3); am.set([x, y], k * 2); if (i < NU - 1 && j < NV - 1) idx.push(k, k + 1, k + NU, k + 1, k + NU + 1, k + NU); }
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); geo.setAttribute('aM', new THREE.BufferAttribute(am, 2)); geo.setIndex(idx); geo.applyMatrix4(part.toPart);
+  const m = new THREE.Mesh(geo, mat); m.renderOrder = 2; m.userData.noFur = true; part.grp.add(m); return m; }
+function mouthPatch(rig, part, SC, poseInv) { const HH = Math.max(.09, rig.noseY - rig.mouthAt[0]) * rig.P.head;
+  rig.mouthPatch = skinPatch(rig, part, SC, poseInv, [0, rig.mouthAt[0], rig.mouthAt[1]], HH, [-2.1, 2.1, -2.8, 1.18], mouthMat(rig.mouthKind), 26, 24);
+  for (const q of [rig.smile, rig.frown, rig.open]) if (q) q.visible = false; }
+// брови — мазок шерсти на коже над глазом: поднимаются (удивление), сводятся к носу (сердится), домиком (грусть)
+const BROW_GLSL = `uniform float uLift, uTilt, uSide; uniform vec3 uBrowC; varying vec2 vM;
+vec4 browCol(vec2 p) { float aa = max(fwidth(p.x), fwidth(p.y)) + 1e-4, x = p.x * uSide, y = p.y - uLift;
+  float yc = .26 * (1. - x * x) + uTilt * x, t = clamp((x + 1.) * .5, 0., 1.), th = max(mix(.2, .075, t), aa * .8);
+  float a = (1. - smoothstep(-aa, aa, abs(y - yc) - th)) * (1. - smoothstep(1. - aa * 2., 1. + aa, abs(x))); return vec4(uBrowC, a * .95); }`;
+function browMat(col, side) { const U = { uLift: { value: 0 }, uTilt: { value: 0 }, uSide: { value: side }, uBrowC: { value: new THREE.Color(col) } };
+  const o = { color: 0xffffff, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 };
+  const m = MK3D.hq ? new THREE.MeshStandardMaterial(Object.assign(o, { roughness: .9 })) : new THREE.MeshToonMaterial(Object.assign(o, { gradientMap: grad }));
+  m.onBeforeCompile = sh => { Object.assign(sh.uniforms, U); sh.vertexShader = 'attribute vec2 aM; varying vec2 vM;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vM = aM;');
+    sh.fragmentShader = BROW_GLSL + '\n' + sh.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\n { vec4 bc = browCol(vM); diffuseColor = vec4(bc.rgb, bc.a * opacity); if (diffuseColor.a < .004) discard; }'); };
+  m.customProgramCacheKey = () => 'brow' + (MK3D.hq ? 'hq' : ''); m.userData.U = U; return m; }
+// румянец — мягкое пятно прямо на щеке (не торчит из-за мордочки сбоку)
+function blushMat() { const U = { uAmt: { value: .4 } }; const m = new THREE.MeshBasicMaterial({ color: 0xff8fa0, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+  m.onBeforeCompile = sh => { Object.assign(sh.uniforms, U); sh.vertexShader = 'attribute vec2 aM; varying vec2 vM;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vM = aM;');
+    sh.fragmentShader = 'uniform float uAmt; varying vec2 vM;\n' + sh.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\n diffuseColor.a *= (1. - smoothstep(.15, 1., length(vM * vec2(1., 1.5)))) * uAmt; if (diffuseColor.a < .004) discard;'); };
+  m.customProgramCacheKey = () => 'blush'; m.userData.U = U; return m; }
+function browPatches(rig, part, SC, poseInv) {
+  const hr0 = rig.P.head; rig.blushP = []; for (const ch of rig.cheeks || []) { const p = ch.position; const m = skinPatch(rig, part, SC, poseInv, [p.x / hr0, p.y / hr0, p.z / hr0 + .25], hr0 * .15, [-1.2, 1.2, -.9, .9], blushMat(), 10, 8); m.renderOrder = 1; rig.blushP.push(m); ch.visible = false; } const hr = rig.P.head, bc = new THREE.Color(rig.n.c.body).multiplyScalar(.48).getStyle();
+  for (const e of rig.eyes) { const ex = e.g.position.x / hr, ey = e.g.position.y / hr, er = e.eR / hr, HB = e.eR * .82;
+    e.browP = skinPatch(rig, part, SC, poseInv, [ex * .97, ey + er * 1.42, 1.05], HB, [-1.4, 1.4, -.8, 1.5], browMat(bc, e.s > 0 ? 1 : -1), 18, 12); e.brow.visible = false; } }
 function sculptRig(rig) {
   const SC = global.MKSculpt; if (!SC || rig.human || rig.kind === 'robot' || (MK3D.hq && FEATHER_KINDS.has(rig.kind))) return;
   const n = rig.n, P = rig.P, hr = P.head, c = n.c, O = rig.spec.outfit || {};
@@ -211,6 +274,8 @@ function sculptRig(rig) {
       const margin = ch === rig.mouth ? hr * .025 : hr * .012; let moved = false;
       for (let it = 0; it < 8; it++) { const d = SC.field(head.prims, w.x, w.y, w.z); if (d >= margin) break; w.addScaledVector(dir, margin - d + hr * .005); moved = true; }
       if (moved) ch.position.copy(w.applyMatrix4(head.toPart)); }
+    if (rig.mouthAt) try { mouthPatch(rig, head, SC, poseInv); } catch (e) { console.log('рот', e.message); }
+    if (rig.mouthAt) try { browPatches(rig, head, SC, poseInv); } catch (e) { console.log('брови', e.message); }
   }
   rig.sculpted = true;
 }
@@ -417,6 +482,7 @@ function addStrands(rig, o, L, keep, furK, reg) { furK = (furK || 1) * ({ tail: 
     pa.fromBufferAttribute(pos, i0); pb.fromBufferAttribute(pos, i1); pc.fromBufferAttribute(pos, i2); P.set(0, 0, 0).addScaledVector(pa, w0).addScaledVector(pb, u1).addScaledVector(pc, u2);
     na.fromBufferAttribute(nor, i0); nb.fromBufferAttribute(nor, i1); nc.fromBufferAttribute(nor, i2); N.set(0, 0, 0).addScaledVector(na, w0).addScaledVector(nb, u1).addScaledVector(nc, u2).normalize();
     Wp.copy(P).applyMatrix4(o.matrixWorld); let skip = false, near = 9; for (const [kp, kr] of keep) { const d = Wp.distanceTo(kp) / kr; if (d < 1) { skip = true; break; } near = Math.min(near, d); } if (skip) continue;
+    if (rig.hats) { let hid = false; for (const h of rig.hats) { const lp = h.worldToLocal(Wp.clone()); if (lp.y > h.userData.hatCut) { hid = true; break; } } if (hid) continue; } // под шапкой шерсть не растёт
     let cr = 0, cg = 0, cb = 0; if (vc) { cr = vc.getX(i0) * w0 + vc.getX(i1) * u1 + vc.getX(i2) * u2; cg = vc.getY(i0) * w0 + vc.getY(i1) * u1 + vc.getY(i2) * u2; cb = vc.getZ(i0) * w0 + vc.getZ(i1) * u1 + vc.getZ(i2) * u2;
       const cB = g.attributes.aColB, mx = g.attributes.aMix; let tm = 0; if (cB && mx) { const sv = mx.getX(i0) * w0 + mx.getX(i1) * u1 + mx.getX(i2) * u2; tm = sv > 0 ? 1 : 0; if (tm) { cr = cB.getX(i0) * w0 + cB.getX(i1) * u1 + cB.getX(i2) * u2; cg = cB.getY(i0) * w0 + cB.getY(i1) * u1 + cB.getY(i2) * u2; cb = cB.getZ(i0) * w0 + cB.getZ(i1) * u1 + cB.getZ(i2) * u2; } }
       const pa = g.attributes.aPat, pt = o.material.userData.pat; if (pa && pt && global.MKSculpt) { const qx = pa.getX(i0) * w0 + pa.getX(i1) * u1 + pa.getX(i2) * u2, qy = pa.getY(i0) * w0 + pa.getY(i1) * u1 + pa.getY(i2) * u2, qz = pa.getZ(i0) * w0 + pa.getZ(i1) * u1 + pa.getZ(i2) * u2, qw = Math.max(pa.getW(i0), pa.getW(i1), pa.getW(i2));
@@ -551,7 +617,7 @@ function buildRig0(spec) {
   // щёки
   for (const s of [-1, 1]) { const ch = new THREE.Mesh(G.sph(hr * .13, 14, 10), new THREE.MeshBasicMaterial({ color: 0xff8fa0, transparent: true, opacity: .45 })); ch.position.set(s * hr * .62, -hr * .18, hr * .75); ch.scale.set(1, .6, .3); head.add(ch); rig.cheeks = (rig.cheeks || []).concat(ch); }
   // рот
-  const mY = human ? -hr * .42 : -hr * .42, mZ = hr * (human ? .9 : .9);
+  const mY = !human && rig.mouthAt ? hr * rig.mouthAt[0] : -hr * .42, mZ = !human && rig.mouthAt ? hr * rig.mouthAt[1] : hr * .9;
   const mouth = new THREE.Group(); mouth.position.set(0, mY, mZ); head.add(mouth); rig.mouth = mouth;
   rig.smile = new THREE.Mesh(G.tor(hr * .16, hr * .025, Math.PI), basic('#3a1d14')); rig.smile.rotation.z = Math.PI; mouth.add(rig.smile);
   rig.frown = new THREE.Mesh(G.tor(hr * .12, hr * .025, Math.PI), basic('#3a1d14')); rig.frown.position.y = -hr * .1; mouth.add(rig.frown);
@@ -572,7 +638,7 @@ function buildRig0(spec) {
   // хвост
   buildTail(pose, n, rig, P);
   // шкала
-  const sc = n.size * (adult && human ? 1 : 1); R0.scale.setScalar(sc); rig.scale = sc;
+  const sc = n.size * (adult && human ? 1 : 1); R0.scale.setScalar(sc); rig.scale = sc; R0.updateMatrixWorld(true); rig.headH = new THREE.Vector3().setFromMatrixPosition(head.matrixWorld).y - R0.position.y; rig.headR = hr * sc;
   if (MK3D.hq) rig.blob = contactShadow(R0, human ? .45 : .6);
   return rig;
 }
@@ -708,9 +774,18 @@ function buildAnimalFace(head, hr, n, rig) {
   rig.ears = ears;
   // морда
   const nose = (cc, r, y, z) => { const m = mesh(G.sph(r, 16, 12), toon(cc), .1, head); m.position.set(0, y, z); m.scale.set(1.3, .9, .8); return m; };
-  if (k === 'cat' || k === 'rabbit' || k === 'mouse') { for (const s of [-1, 1]) { const m = mesh(G.sph(hr * .32, 24, 16), toon(c.belly), 0, head); m.position.set(s * hr * .23, -hr * .3, hr * .85); m.scale.set(1, .8, .7); } nose(c.nose, hr * .1, -hr * .12, hr * 1.0); }
+  const ell = (cc, x, y, z, rx, ry, rz) => { const m = mesh(G.sph(1, 28, 20), toon(cc), 0, head); m.position.set(x * hr, y * hr, z * hr); m.scale.set(rx * hr, ry * hr, rz * hr); return m; };
+  const SN = { // [переносица, морда, подушечки, подбородок, нос(y,z,r), рот(y,z), рот: 0 «:3» / 1 улыбка]
+    cat:    { br: [0, -.03, .78, .15, .22, .3], mz: [0, -.27, .84, .36, .25, .38, 'body'], pd: [.155, -.31, 1.03, .19, .16, .16], ch: [0, -.47, .9, .16, .1, .13], no: [-.14, 1.2, .085], mo: [-.355, 1.15], mk: 0 },
+    rabbit: { br: [0, -.03, .76, .16, .22, .27], mz: [0, -.26, .8, .34, .24, .33, 'body'], pd: [.16, -.3, .96, .21, .18, .17], ch: [0, -.46, .86, .15, .1, .12], no: [-.13, 1.12, .07], mo: [-.34, 1.08], mk: 0 },
+    mouse:  { br: null, mz: [0, -.15, .88, .3, .25, .5, 'body'], pd: [.1, -.24, 1.18, .13, .11, .13], ch: [0, -.36, 1.06, .1, .07, .1], no: [-.13, 1.39, .075], mo: [-.305, 1.2], mk: 0 },
+    dog:    { br: [0, -.02, .8, .17, .21, .31], mz: [0, -.27, .92, .33, .26, .45, 'belly'], pd: [.14, -.34, 1.12, .19, .15, .17], ch: [0, -.48, 1.0, .15, .09, .14], no: [-.12, 1.35, .13], mo: [-.42, 1.24], mk: 1 },
+    bear:   { br: [0, -.02, .78, .17, .2, .28], mz: [0, -.28, .86, .36, .27, .38, 'belly'], pd: [.13, -.34, 1.03, .18, .14, .15], ch: [0, -.48, .93, .15, .09, .13], no: [-.15, 1.2, .13], mo: [-.41, 1.12], mk: 1 } };
+  const sn = SN[k];
+  if (sn) { const mc = sn.mz[6] === 'belly' ? c.belly : c.body;
+    if (sn.br) ell(c.body, ...sn.br); ell(mc, ...sn.mz.slice(0, 6)); for (const s of [-1, 1]) ell(c.belly, s * sn.pd[0], ...sn.pd.slice(1)); ell(c.belly, ...sn.ch);
+    nose(c.nose, hr * sn.no[2], hr * sn.no[0], hr * sn.no[1]); rig.mouthAt = sn.mo; rig.mouthKind = sn.mk; rig.noseY = sn.no[0] - sn.no[2] * .8; }
   if (k === 'fox') { const sn = mesh(G.cone(hr * .38, hr * .55, 24), toon(c.belly), .04, head); sn.rotation.x = Math.PI / 2; sn.position.set(0, -hr * .25, hr * 1.0); nose(c.nose, hr * .1, -hr * .25, hr * 1.27); }
-  if (k === 'dog' || k === 'bear') { const sn = mesh(G.sph(hr * .42, 24, 16), toon(c.belly), .04, head); sn.position.set(0, -hr * .3, hr * .8); sn.scale.set(1, .72, .8); nose(c.nose, hr * .14, -hr * .17, hr * 1.12); }
   if (k === 'pig') { const sn = mesh(G.cyl(hr * .3, hr * .32, hr * .25, 24), toon(c.nose), .05, head); sn.rotation.x = Math.PI / 2; sn.position.set(0, -hr * .22, hr * 1.02); for (const s of [-1, 1]) { const ns = new THREE.Mesh(G.sph(hr * .07, 10, 8), basic('#7a3040')); ns.position.set(s * hr * .11, -hr * .22, hr * 1.15); ns.scale.z = .4; head.add(ns); } }
   if (k === 'hedgehog') { const sn = mesh(G.cone(hr * .3, hr * .55, 20), toon(c.belly), .04, head); sn.rotation.x = Math.PI / 2; sn.position.set(0, -hr * .25, hr * .95); nose(c.nose, hr * .1, -hr * .25, hr * 1.22); }
   if (k === 'wolf') { const sn = mesh(G.cone(hr * .36, hr * .55, 24), toon(c.belly), .04, head); sn.rotation.x = Math.PI / 2; sn.position.set(0, -hr * .28, hr * 1.0); nose(c.nose, hr * .11, -hr * .27, hr * 1.27); }
@@ -722,7 +797,9 @@ function buildAnimalFace(head, hr, n, rig) {
   if (k === 'elephant') { const pts = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -hr * .25, hr * .25), new THREE.Vector3(0, -hr * .65, hr * .35), new THREE.Vector3(0, -hr * .85, hr * .55)]; const tr = mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 20, hr * .14, 12), toon(c.body), .04, head); tr.position.set(0, -hr * .15, hr * .78); rig.trunk = tr; }
   if (k === 'dragon') { const sn = mesh(G.sph(hr * .45, 24, 16), toon(c.body), .04, head); sn.position.set(0, -hr * .28, hr * .72); sn.scale.set(1, .7, .9); for (const s of [-1, 1]) { const ns = new THREE.Mesh(G.sph(hr * .06, 10, 8), basic('#1f4a18')); ns.position.set(s * hr * .14, -hr * .2, hr * 1.1); head.add(ns); } }
   if (k === 'robot') { const vis = mesh(G.box(hr * 1.4, hr * .55, .05), toon('#2a3442'), 0, head); vis.position.set(0, hr * .12, hr * .93); }
-  if (k === 'cat' || k === 'mouse' || k === 'rabbit') for (const s of [-1, 1]) for (let i = 0; i < 3; i++) { const w = new THREE.Mesh(G.cyl(.004, .004, hr * .75, 4), basic('#553a2a')); w.rotation.z = Math.PI / 2 + s * (i - 1) * .15; w.position.set(s * hr * .6, -hr * .25 - i * hr * .1, hr * .88); head.add(w); }
+  if (k === 'cat' || k === 'mouse' || k === 'rabbit') { const ms = k === 'mouse', ix = ms ? .1 : .2, iy = ms ? -.22 : -.27, iz = ms ? 1.24 : 1.08, wl = ms ? .7 : .75; // усы растут из подушечек и уходят назад вдоль щёк
+    for (const s of [-1, 1]) for (let i = 0; i < 3; i++) { const w = new THREE.Mesh(G.cyl(.0018, .0034, hr * wl, 4), basic('#4a3426')); const a = .32, tilt = s * (i - 1) * .13; w.rotation.set(0, s * a, Math.PI / 2 + tilt);
+      w.position.set(s * hr * (ix + wl / 2 * Math.cos(a)), hr * (iy - i * .065) + Math.sin(tilt) * hr * wl * .5 * s, hr * (iz - wl / 2 * Math.sin(a))); head.add(w); } }
   if (n.pattern.includes('mask')) for (const s of [-1, 1]) { const m = new THREE.Mesh(G.sph(hr * .32, 16, 12), toon(c.stripe)); m.position.set(s * hr * .38, hr * .15, hr * .68); m.scale.set(1.2, .8, .4); head.add(m); }
   if (n.pattern.includes('patch')) { const m = new THREE.Mesh(G.sph(hr * .34, 16, 12), toon(c.stripe)); m.position.set(hr * .4, hr * .15, hr * .66); m.scale.set(1.1, 1, .4); head.add(m); }
 }
@@ -750,8 +827,10 @@ function buildAcc(a, head, body, hr, rig, human) {
   const nr = human ? rig.P.torsoR * 1.08 : Math.max(.13, rig.P.bx * .68), nk = nr / .22; // шея — по телосложению
   if (t === 'scarf') { const s = mesh(G.tor(nr, .055 * Math.max(.75, nk), 0), toon(cl), .06, rig.pose); s.rotation.x = Math.PI / 2; s.position.y = rig.P.headY - hr * .95; const e = mesh(G.cap(.05 * Math.max(.8, nk), .18), toon(cl), .08, rig.pose); e.position.set(-nr * .45, rig.P.headY - hr * 1.3, nr * .9); e.rotation.z = .3; }
   if (t === 'collar') { const s = mesh(G.tor(nr * .92, .025, 0), toon(cl), .06, rig.pose); s.rotation.x = Math.PI / 2; s.position.y = rig.P.headY - hr * .95; const b = mesh(G.sph(.04, 12, 10), toon('#ffd23f'), .08, rig.pose); b.position.set(0, rig.P.headY - hr * 1.05, nr * .92); }
-  if (t === 'hat') { const cap = mesh(new THREE.SphereGeometry(hr * 1.08, 32, 16, 0, Math.PI * 2, 0, Math.PI * .42), toon(cl), .03, head); cap.position.y = hr * .08; cap.rotation.x = -.1;
-    const br = mesh(G.cyl(hr * .55, hr * .55, .025, 24), toon(new THREE.Color(cl).multiplyScalar(.8).getStyle()), .05, head); br.position.set(0, hr * .62, hr * .72); br.scale.z = 1.1; br.rotation.x = .25; }
+  if (t === 'hat') { const cap = mesh(new THREE.SphereGeometry(hr * 1.08, 40, 20, 0, Math.PI * 2, 0, Math.PI * .42), toon(cl), .03, head); cap.position.y = hr * .16; cap.rotation.x = -.32; cap.scale.set(1.1, 1.02, 1.06); cap.userData.hatCut = hr * 1.08 * Math.cos(Math.PI * .42) - hr * .06; rig.hats = (rig.hats || []).concat(cap);
+    const vz = new THREE.Group(); vz.position.set(0, hr * .72, hr * .52); vz.rotation.x = .1; head.add(vz); // козырёк — вперёд над глазами
+    const br = mesh(new THREE.CylinderGeometry(hr * .72, hr * .72, hr * .04, 32, 1, false, -Math.PI / 2, Math.PI), toon(new THREE.Color(cl).multiplyScalar(.9).getStyle()), .04, vz); br.scale.set(.95, 1, 1.05);
+    const bt = new THREE.Mesh(new THREE.TorusGeometry(hr * .03, hr * .03, 6, 10), toon(cl)); bt.position.set(0, hr * 1.1, -hr * .2); cap.add(bt); }
   if (t === 'crown') { const g = new THREE.Group(); g.position.y = hr * .85; head.add(g); mesh(G.cyl(hr * .45, hr * .45, hr * .2, 20, true), toon('#ffd23f'), .05, g).material.side = THREE.DoubleSide; for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; const c = mesh(G.cone(hr * .08, hr * .22, 8), toon('#ffd23f'), .08, g); c.position.set(Math.cos(a) * hr * .45, hr * .18, Math.sin(a) * hr * .45); } }
   if (t === 'glasses') { for (const s of [-1, 1]) { const r = mesh(G.tor(hr * .22, hr * .025, 0), basic(cl), 0, head); r.position.set(s * hr * .36, hr * .12, hr * .98); } const b = new THREE.Mesh(G.cyl(hr * .02, hr * .02, hr * .25, 6), basic(cl)); b.rotation.z = Math.PI / 2; b.position.set(0, hr * .14, hr * 1.0); head.add(b); }
   if (t === 'bow') { const g = new THREE.Group(); g.position.set(hr * .55, hr * .78, hr * .2); g.rotation.z = -.3; head.add(g); for (const s of [-1, 1]) { const c = mesh(G.cone(hr * .16, hr * .3, 4), toon(cl), .06, g); c.rotation.z = s * Math.PI / 2; c.position.x = s * hr * .14; } mesh(G.sph(hr * .07, 12, 10), toon(cl), .08, g); }
@@ -849,7 +928,8 @@ function applyPose(rig, st, T) {
   // лицо
   const talk = clamp(st.talk || 0, 0, 1);
   const bp = 3.1 + (rig.n.seed % 17) / 10, bt = (T + (rig.n.seed % 7)) % bp, dbl = Math.floor((T + (rig.n.seed % 7)) / bp) % 3 === 1; let blink = bt < .14 ? Math.sin(bt / .14 * Math.PI) : dbl && bt > .22 && bt < .36 ? Math.sin((bt - .22) / .14 * Math.PI) : 0;
-  let closed = pers === 'sleep' || emo === 'laugh' || an === 'laugh' || an === 'yawn' || (an === 'sneeze' && ap > .3 && ap < .62) || (an === 'roll' && emo === 'laugh');
+  const speaking = talk > .02 && !!st.vz, laughing = (emo === 'laugh' && !speaking) || an === 'laugh' || (an === 'roll' && emo === 'laugh');
+  let closed = pers === 'sleep' || laughing || an === 'yawn' || (an === 'sneeze' && ap > .3 && ap < .62) || (an === 'roll' && emo === 'laugh');
   let lidOpen = -0.75, browY = 0, browRot = 0, eyeS = 1, pupS = 1;
   if (emo === 'sleepy') lidOpen = .15; if (emo === 'surprised') { eyeS = 1.15; pupS = .7; browY = .5; } if (emo === 'scared') { eyeS = 1.1; pupS = .55; browRot = .35; }
   if (emo === 'angry') { lidOpen = -.25; browRot = -.45; } if (emo === 'sad' || emo === 'cry') { lidOpen = -.3; browRot = .4; }
@@ -859,10 +939,10 @@ function applyPose(rig, st, T) {
     e.ir.visible = e.pu.visible = emo !== 'love'; e.heart.visible = emo === 'love'; e.pu.scale.set(pupS, pupS * 1.15, .5);
     const sacc = Math.floor(T / (1.7 + sd) + sd * 9), sx = ((global.MK.hash32('s' + sacc + rig.n.seed) % 100) / 100 - .5) * .35, sy = ((global.MK.hash32('y' + sacc + rig.n.seed) % 100) / 100 - .5) * .2;
     const gx = (Math.abs(st.face) > .1 ? .25 : 0) + (an || talk > .1 ? 0 : sx); e.ir.position.x = e.pu.position.x = gx * e.eR * .5; e.ir.position.y = e.pu.position.y = (an ? 0 : sy) * e.eR * .4;
-    e.brow.position.y = e.eR * (1.55 + browY); e.brow.rotation.z = Math.PI / 2 + browRot * e.s;
+    e.brow.position.y = e.eR * (1.55 + browY); e.brow.rotation.z = Math.PI / 2 + browRot * e.s; if (e.browP) { const U = e.browP.material.userData.U; U.uLift.value = browY * 1.1 + (an === 'think' ? .25 : 0); U.uTilt.value = -browRot * 1.1; }
   });
   let open = talk;
-  if (emo === 'laugh' || an === 'laugh' || (an === 'roll' && emo === 'laugh')) open = Math.max(open, .55 + Math.sin(at * 16) * .25);
+  if (laughing) open = Math.max(open, .55 + Math.sin((an === 'laugh' ? at : T) * 16) * .25);
   if (an === 'yawn') open = Math.max(open, Math.sin(clamp(at / 1.6, 0, 1) * Math.PI) * 1.1);
   if (an === 'shout') open = Math.max(open, .95); if (an === 'eat') open = Math.max(open, Math.max(0, Math.sin(at * 12)) * .4); if (an === 'sing') open = Math.max(open, .4 + Math.sin(at * 9) * .3);
   if (emo === 'surprised') open = Math.max(open, .4);
@@ -870,7 +950,13 @@ function applyPose(rig, st, T) {
   rig.open.visible = open > .06; rig.open.scale.set(1 + (smile ? .2 : 0), .25 + open * 1.1, 1);
   rig.smile.visible = !rig.open.visible && !sad; rig.smile.scale.setScalar((smile ? 1.15 : .75) * (rig.wideMouth ? 2.2 : 1));
   rig.frown.visible = !rig.open.visible && sad;
-  rig.cheeks.forEach(c => c.material.opacity = emo === 'shy' || emo === 'love' ? .8 : .4);
+  rig.cheeks.forEach(c => c.material.opacity = emo === 'shy' || emo === 'love' ? .8 : .4); if (rig.blushP) rig.blushP.forEach(b => b.material.userData.U.uAmt.value = emo === 'shy' || emo === 'love' ? .85 : smile ? .55 : .42);
+  if (rig.mouthPatch) { const U = rig.mouthPatch.material.userData.U, vz = st.vz; let o = open, w = .5, r = .12, sm = .3, cz = 0;
+    if (speaking && !laughing) { o = Math.max(an === 'shout' ? .95 : 0, talk * (.5 + .7 * vz.o)); w = vz.w; r = vz.r; cz = vz.c * clamp(1 - talk, 0, 1); }
+    if (smile) sm = .9; if (sad) sm = -.7; if (emo === 'angry') { sm = -.4; w = Math.max(w, .7); } if (emo === 'surprised') { r = Math.max(r, .85); w = Math.min(w, .35); }
+    if (laughing) { sm = 1; w = .9; r = 0; } if (an === 'yawn') { r = .75; w = .4; } if (an === 'sing') r = Math.max(r, .6); if (an === 'eat') { r = .3; sm = .5; }
+    U.uOpen.value = clamp(o, 0, 1); U.uWide.value = w; U.uRound.value = r; U.uSmile.value = sm; U.uClose.value = cz;
+    rig.smile.visible = rig.frown.visible = rig.open.visible = false; }
 }
 
 // ---------- значки эффектов (спрайты) ----------
@@ -1564,7 +1650,10 @@ function camFor(c, S, seg, lib) {
   const px = id => S[id] ? X(S[id].x) : 0, pz = id => S[id] ? -(S[id].z || 0) * 1.5 : 0;
   const ids = Object.keys(seg.C);
   if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close', side = S[id] && S[id].face < 0 ? -1 : 1;
-    return { pos: new THREE.Vector3(x + side * (close ? .22 : .38), (close ? .84 : .92) * hh + .08, z + (close ? 2.4 : 2.9) * Math.max(.8, hh) / (c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1)), look: new THREE.Vector3(x + side * (close ? .05 : .1), (close ? .7 : .6) * hh, z) }; }
+    const lc = lib.characters[id], rg = lc && rigFor(lc); if (rg && rg.headH) { const hy = rg.headH, hr = rg.headR, zk = c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1; // кадр по голове героя: крупно — лицо и плечи, средний — во весь рост
+      return close ? { pos: new THREE.Vector3(x + side * hr * .9, hy - hr * .05, z + hr * 6.4 / zk), look: new THREE.Vector3(x + side * hr * .2, hy - hr * .32, z) }
+        : { pos: new THREE.Vector3(x + side * hr * 1.6, hy * .78, z + Math.max(hr * 11.5, hy * 1.9) / zk), look: new THREE.Vector3(x + side * hr * .4, hy * .6, z) }; }
+    return { pos: new THREE.Vector3(x + side * (close ? .13 : .3), (close ? .78 : .8) * hh + (close ? .02 : .06), z + (close ? 1.15 : 2.15) * Math.max(.8, hh) / (c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1)), look: new THREE.Vector3(x + side * (close ? .03 : .08), (close ? .7 : .56) * hh, z) }; }
   if (c.mode === 'group') { const list = (c.ids || ids).filter(id => S[id] && S[id].vis !== false); let lo = 1e9, hi = -1e9, hh = .9;
     for (const id of list) { const x = px(id), w = .5 * h(id); lo = Math.min(lo, x - w); hi = Math.max(hi, x + w); hh = Math.max(hh, h(id)); } for (const q of c.px || []) { lo = Math.min(lo, X(q) - .45); hi = Math.max(hi, X(q) + .45); }
     if (lo <= hi) { const mid = (lo + hi) / 2, d = clamp((hi - lo + 1.1) / 2 / .612, 3.3, 8.4); return { pos: new THREE.Vector3(mid, .6 * hh + d * .13, d), look: new THREE.Vector3(mid, .52 * hh + d * .035, 0) }; } }
@@ -1680,7 +1769,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   cam.position.lerpVectors(prev.pos, cur.pos, k); const look = new THREE.Vector3().lerpVectors(prev.look, cur.look, k);
   for (const c of seg.cam) if (c.shake && t >= c.t && t < c.t + c.shake) { const a = (1 - (t - c.t) / c.shake) * .08; cam.position.x += Math.sin(t * 61) * a; cam.position.y += Math.cos(t * 53) * a; }
   cam.fov = 38; cam.updateProjectionMatrix(); cam.lookAt(look);
-  { const mode = cams[ci].mode || 'wide', AP = { close: .5, medium: .32, two: .22, group: .14, pan: .12 }, ap0 = AP[mode] || .08, apP = ci > 0 && !cams[ci].cut ? (AP[cams[ci - 1].mode] || .08) : ap0; MK3D._ap = lerp(apP, ap0, k); MK3D._focus = cam.position.distanceTo(look) * .95; // резкость — на лице героя, фон мягко размыт
+  { const mode = cams[ci].mode || 'wide', AP = { close: .38, medium: .3, two: .22, group: .14, pan: .12 }, ap0 = AP[mode] || .08, apP = ci > 0 && !cams[ci].cut ? (AP[cams[ci - 1].mode] || .08) : ap0; MK3D._ap = lerp(apP, ap0, k); MK3D._focus = cam.position.distanceTo(look) * .95; // резкость — на лице героя, фон мягко размыт
     MK3D._grade = ['room', 'kitchen'].includes(L.type) ? 'indoor' : L.type === 'space' ? 'space' : cineF && L.time !== 'evening' ? 'forest' : (L.time || 'day');
     { const tm = L.time || 'day', ty = L.type || 'yard'; MK3D._rays = tm === 'night' || ['space', 'room', 'kitchen'].includes(ty) || L.weather === 'rain' ? 0 : (ty === 'forest' ? .7 : .3) * (tm === 'evening' ? 1.25 : 1); MK3D._rayCol = tm === 'evening' ? new THREE.Vector3(1, .78, .55) : new THREE.Vector3(1, .95, .82); MK3D._raySrc = new THREE.Vector2(.5 + Math.sin((L.seed || 3) * 1.7) * .25, 1.28); } }
   sun.target.position.copy(look); sun.position.add(look); MK3D._T = t; if (rim) { rim.target.position.copy(look); rim.position.set(look.x - 3, 4, look.z - 6); }

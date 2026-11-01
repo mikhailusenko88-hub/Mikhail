@@ -700,7 +700,11 @@ MK.voiceFx = async function (buf, fx) {
   const out = await ac.startRendering();
   // обрезаем тишину в конце
   const d = out.getChannelData(0); let end = d.length - 1; while (end > 0 && Math.abs(d[end]) < .002) end--;
-  const len = Math.min(d.length, end + Math.round(sr * .08)); const res = new AudioBuffer({ length: Math.max(1, len), numberOfChannels: 1, sampleRate: sr }); res.copyToChannel(d.subarray(0, len), 0); return res;
+  const len = Math.min(d.length, end + Math.round(sr * .08));
+  { // ровная громкость у всех героев: громкость по звучащим местам (не по паузам), без перегруза
+    const w = Math.round(sr * .02); let se = 0, n = 0, pk = 0; for (let i = 0; i + w <= len; i += w) { let e = 0; for (let j = i; j < i + w; j++) e += d[j] * d[j]; e = Math.sqrt(e / w); if (e > .01) { se += e * e; n++; } }
+    for (let i = 0; i < len; i++) pk = Math.max(pk, Math.abs(d[i])); if (n > 3 && pk > 0) { const g = Math.min(.12 / Math.sqrt(se / n), .95 / pk, 4); for (let i = 0; i < len; i++) d[i] *= g; } }
+  const res = new AudioBuffer({ length: Math.max(1, len), numberOfChannels: 1, sampleRate: sr }); res.copyToChannel(d.subarray(0, len), 0); return res;
 };
 function roomIR(ac, sec) { const n = Math.floor(ac.sampleRate * sec), b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0), r = rng(42); for (let i = 0; i < n; i++) d[i] = (r() * 2 - 1) * Math.pow(1 - i / n, 3) * .6; return b; }
 MK.roomIR = roomIR; MK._rng = rng; MK._noise = (ac) => noise(ac); MK._tone = tone; MK._noiseHit = noiseHit; MK._kick = kick; MK._snare = snare; MK._hat = hat;
@@ -717,9 +721,17 @@ MK.cleanSpeech = function (text) {
   t = t.replace(/\(\s*\)/g, ' ').replace(/\s+([,.!?…])/g, '$1').replace(/([,.!?…]){3,}/g, '$1').replace(/\s{2,}/g, ' ').trim();
   return { text: t, removed };
 };
+// «Ха-ха!», «Хи-хи», «Ахаха» в начале/конце реплики iPhone читал бы словами — вырезаем и заменяем настоящим смехом
+const LAUGH_W = '(?:а?(?:[хx][аиеоэ]-?){2,}[хx]?)(?![а-яё])';
+const LAUGH_HEAD = new RegExp('^\\s*(?:' + LAUGH_W + '[!.,…\\s-]*)+', 'i'), LAUGH_TAIL = new RegExp('[\\s,.!…-]*(?:' + LAUGH_W + '[!.,…\\s-]*)+$', 'i');
+function laughParts(step) { if (!step.say || !step.who || step.who === 'Р') return { pre: false, post: false, text: step.say };
+  let t = String(step.say), pre = step.emotion === 'laugh', post = false;
+  if (LAUGH_HEAD.test(t)) { t = t.replace(LAUGH_HEAD, ''); pre = true; } if (LAUGH_TAIL.test(t) && t.replace(LAUGH_TAIL, '').trim()) { t = t.replace(LAUGH_TAIL, '').replace(/[,\s-]+$/, ''); if (!/[.!?…]$/.test(t)) t += '!'; post = !pre; }
+  t = t.replace(/^[\s,.!…-]+/, '').trim(); if (t) t = t[0].toUpperCase() + t.slice(1); return { pre, post, text: t }; }
+MK.laughParts = laughParts;
 /** Что озвучивается в этом шаге: реплика или возглас при действии (смех, «Ой!», «Апчхи!»). */
 function stepVoiceText(step) {
-  if (step.say) return MK.cleanSpeech(step.say).text;
+  if (step.say) return MK.cleanSpeech(laughParts(step).text).text;
   if (step.voice === false || !step.who || step.who === 'Р') return '';
   if (step.vocal) return MK.cleanSpeech(step.vocal).text;
   if (step.do && VOCAL[step.do]) return VOCAL[step.do];
@@ -732,7 +744,13 @@ const VOCAL_SYNTH = { laugh: 'laugh', cry: 'cry', yawn: 'yawn', sneeze: 'sneeze'
 function stepVocalKind(step) { if (step.say || step.vocal || step.voice === false || !step.who || step.who === 'Р') return null;
   if (step.do && VOCAL_SYNTH[step.do]) return VOCAL_SYNTH[step.do]; if (step.emotion === 'laugh' && (step.do === 'roll' || step.do === 'dance' || step.do === 'jump')) return 'laugh'; return null; }
 MK.stepVocalKind = stepVocalKind;
-const PROSODY = { happy: [1.06, 1.04], laugh: [1.08, 1.06], sad: [.94, .9], cry: [.96, .88], angry: [.97, 1.06], surprised: [1.1, 1], scared: [1.07, 1.1], sleepy: [.93, .82], love: [1.03, .92], shy: [1.02, .9] };
+const PROSODY = { happy: [1.08, 1.05], laugh: [1.1, 1.06], sad: [.91, .88], cry: [.95, .86], angry: [.95, 1.08], surprised: [1.14, 1], scared: [1.1, 1.12], sleepy: [.9, .8], love: [1.04, .92], shy: [1.03, .88] };
+// смех героя перед/после реплики и «ЗВУК: смех» — настоящий смех голосом (не синтезатор)
+const MYSTERY = { base: 'female', pitch: 1.28, rate: .5 };
+function laughLine(ep, lib, who, vi, short) { if (who === '?') { const fx = Object.assign({ id: 'fairy' }, MK.VOICE_FX.fairy), v = MK.synthVoice(MYSTERY, fx); const variant = vi % 3;
+    return { key: hash32(canon(v) + '|fairy|laugh-mystery' + variant).toString(36), who: '?', text: 'Хи-хи-хи!', voice: v, fx, synth: 'laugh', age: 'kid', variant, seed: 3 }; }
+  return lineFor(ep, lib, who, VOCAL.laugh, { who, do: 'laugh', short }, vi); }
+MK.laughLine = laughLine;
 function lineFor(ep, lib, who, text, step, vi) {
   const ch = who === 'Р' ? { voice: (ep.narrator && ep.narrator.voice) || lib.narrator || { base: 'male', pitch: 1, rate: .47 } } : (lib.characters[who] && lib.characters[who].spec);
   if (!ch || !text) return null;
@@ -743,7 +761,8 @@ function lineFor(ep, lib, who, text, step, vi) {
   let say = text; if (!synth && MK.prepSpeech) { const ps = MK.prepSpeech(text, lex, mode); say = ps.text; if (ps.ipa.length) v.ipa = ps.ipa; }
   const age = ch.age || (who === 'Р' ? 'adult' : 'kid');
   const variant = synth ? (vi || 0) % 3 : 0;
-  return { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + (synth ? '|' + synth + age + variant : '')).toString(36), who, text: say, voice: v, fx, synth, age, variant, seed: hash32(String(who) + (ch.name || '')) };
+  const short = !!(synth && step && step.short);
+  return { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + (synth ? '|' + synth + age + variant + (short ? 's' : '') : '')).toString(36), who, text: say, voice: v, fx, synth, age, variant, short, seed: hash32(String(who) + (ch.name || '')) };
 }
 
 /** Список всех реплик эпизода (для озвучки до сборки). */
@@ -751,8 +770,10 @@ MK.collectLines = function (ep, lib) {
   const out = [];
   let vi = 0;
   for (const sc of ep.scenes || []) for (const st of sc.steps || []) {
-    const text = stepVoiceText(st); if (!text) continue;
-    const ln = lineFor(ep, lib, st.who || 'Р', text, st, stepVocalKind(st) ? vi++ : 0); if (ln) out.push(ln);
+    if (st.sfx === 'laugh') out.push(laughLine(ep, lib, '?', vi++));
+    const lp = laughParts(st), hasT = !!stepVoiceText(st); if (lp.pre) { const l = laughLine(ep, lib, st.who, vi++, hasT); if (l) out.push(l); }
+    const text = stepVoiceText(st); if (text) { const ln = lineFor(ep, lib, st.who || 'Р', text, st, stepVocalKind(st) ? vi++ : 0); if (ln) out.push(ln); }
+    if (lp.post) { const l = laughLine(ep, lib, st.who, vi++, true); if (l) out.push(l); }
   }
   return out;
 };
@@ -881,7 +902,8 @@ MK.compile = function (ep, lib, audio) {
       if (step.camera) { cam.push({ t: start, mode: step.camera, on: step.on || null, zoom: step.zoom, auto: !!step.auto, cut: true }); }
       if (step.shake) cam.push({ t: start, shake: step.shake === true ? .6 : step.shake });
       if (step.wait) dur = Math.max(dur, +step.wait);
-      if (step.sfx) sfx.push({ t: st0 + start, n: step.sfx });
+      if (step.sfx === 'laugh') { const ll = laughLine(ep, lib, '?', tl_vi++), a = audio[ll.key]; if (a) { speech.push({ t: st0 + start, dur: a.dur, key: ll.key, who: '?', text: ll.text, vocal: true }); if (!step.with) dur = Math.max(dur, a.dur * .85); } else sfx.push({ t: st0 + start, n: 'laugh' }); }
+      else if (step.sfx) sfx.push({ t: st0 + start, n: step.sfx });
       if (step.music) music.push({ t0: st0 + start, mood: step.music });
       if (step.prop && step.state) { const p = props.find(p => p.id === step.prop); if (p) {
           if (step.state === 'appear') { p.ev.push({ t: start, vis: true, fx: 'appear' }); p.vis = true; }
@@ -941,14 +963,18 @@ MK.compile = function (ep, lib, audio) {
         }
         if (step.to && step.say && C[step.to]) ch.ev.push({ t: start, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 });
       }
-      const vtext = stepVoiceText(step);
+      const vtext = stepVoiceText(step), lp = laughParts(step); let pre = 0;
+      const laughAt = (t0, short) => { const ll = laughLine(ep, lib, who, tl_vi++, short); if (!ll) return 0; const a = audio[ll.key], ld = a ? a.dur : 1.1;
+        speech.push({ t: st0 + t0, dur: ld, key: ll.key, who, text: ll.text, vocal: true }); if (ch) { ch.ev.push({ t: t0, k: 'say', t1: t0 + ld, key: ll.key, text: ll.text, vocal: true }); ch.ev.push({ t: t0, k: 'act', n: 'laugh', t1: t0 + ld + .15 }); } return ld; };
+      if (lp.pre) { pre = laughAt(start, !!vtext) + .12; dur = Math.max(dur, pre); }
       if (vtext) {
         const ln = lineFor(ep, lib, who || 'Р', vtext, step, stepVocalKind(step) ? tl_vi++ : 0); const a = ln && audio[ln.key]; const sd = a ? a.dur : estSpeech(vtext);
-        const vt = step.say ? start : start + (dur > 1.5 ? .15 : .05);
+        const vt = step.say ? start + pre : start + (dur > 1.5 ? .15 : .05);
         speech.push({ t: st0 + vt, dur: sd, key: ln && ln.key, who: who || 'Р', text: vtext, vocal: !step.say });
         beats.push({ t: vt, t1: vt + sd, k: 'say', who: who || 'Р', emo: step.emotion, to: step.to, text: vtext, vocal: !step.say });
-        if (ch) ch.ev.push({ t: vt, k: 'say', t1: vt + sd, key: ln && ln.key, text: vtext });
+        if (ch) ch.ev.push({ t: vt, k: 'say', t1: vt + sd, key: ln && ln.key, text: vtext, vocal: !step.say });
         dur = Math.max(dur, (vt - start) + sd + (step.say ? (step.pause != null ? step.pause : .3) : .1));
+        if (lp.post) { const ld = laughAt(vt + sd + .08, true); dur = Math.max(dur, (vt - start) + sd + .08 + ld + .25); }
       }
       if (!step.say && !step.do && !step.wait && step.emotion && !step.with) dur = Math.max(dur, .4);
       prevStart = start; cur = Math.max(cur, start + dur);
@@ -978,8 +1004,22 @@ function charState(cdef, t) {
   const s = { x: cdef.x0 !== undefined ? cdef.x0 : 0, face: 1, emo: 'neutral', vis: true, persist: 'none', pt: 0, act: null, walk: { on: false }, talk: 0, et: 9 };
   return s;
 }
+// ---------- форма рта по звукам реплики: «а» — широко, «о/у» — трубочкой, «и/е» — в улыбку, «м/б/п» — губы смыкаются ----------
+const VIS_V = { 'а': [.8, .1, 1], 'я': [.8, .1, 1], 'о': [.35, .9, .85], 'ё': [.35, .9, .85], 'у': [.12, 1, .55], 'ю': [.12, 1, .55], 'ы': [.6, 0, .6], 'и': [1, 0, .5], 'е': [.85, 0, .7], 'э': [.85, 0, .75] };
+const VIS_C = { 'м': 1, 'б': 1, 'п': 1, 'в': .55, 'ф': .55 };
+const visCache = new Map();
+function visSeq(text) { let q = visCache.get(text); if (q) return q; q = []; let tot = 0;
+  for (const ch of String(text).toLowerCase()) { let u = null;
+    if (VIS_V[ch]) u = { v: VIS_V[ch], w: 1.4 }; else if (/[а-яё]/.test(ch)) u = { c: VIS_C[ch] || 0, w: .75 }; else if (/[,.!?…;:—]/.test(ch)) u = { pause: 1, w: 2.2 }; else if (/\s/.test(ch)) u = { w: .3 };
+    if (u) { u.a = tot; tot += u.w; q.push(u); } }
+  q.tot = tot; if (visCache.size > 400) visCache.clear(); visCache.set(text, q); return q; }
+MK.viseme = function (text, k, d) { const q = visSeq(text); if (!q.length || !q.tot) return null; const pos = clamp((k - .04) / Math.max(.2, d - .14), 0, 1) * q.tot;
+  let i = 0; while (i < q.length - 1 && q[i].a + q[i].w <= pos) i++;
+  let pv = null, nv = null, pd = 9, nd = 9; for (let j = i; j >= 0 && !pv; j--) if (q[j].v) { pv = q[j]; pd = pos - (q[j].a + q[j].w * .5); } for (let j = i; j < q.length && !nv; j++) if (q[j].v) { nv = q[j]; nd = (q[j].a + q[j].w * .5) - pos; }
+  const A = pv || nv, B = nv || pv; if (!A) return { w: .5, r: .2, o: .6, c: 0 }; const f = A === B ? 0 : clamp(pd / Math.max(.01, pd + nd), 0, 1), sm = f * f * (3 - 2 * f);
+  const u = q[i]; return { w: lerp(A.v[0], B.v[0], sm), r: lerp(A.v[1], B.v[1], sm), o: lerp(A.v[2], B.v[2], sm), c: u.c || 0 }; };
 function evalChar(init, ev, t, audio, T) {
-  let x = init.x0, face = init.face0, faceFrom = init.face0, faceT = -9, emo = 'neutral', emoT = -9, vis = init.vis0, persist = 'none', prev = 'none', pT = 0, act = null, walk = { on: false }, talk = 0, thinkText = null;
+  let x = init.x0, face = init.face0, faceFrom = init.face0, faceT = -9, emo = 'neutral', emoT = -9, vis = init.vis0, persist = 'none', prev = 'none', pT = 0, act = null, walk = { on: false }, talk = 0, thinkText = null, vz = null;
   for (const e of ev) {
     if (e.t > t) break;
     switch (e.k) {
@@ -989,11 +1029,11 @@ function evalChar(init, ev, t, audio, T) {
       case 'vis': vis = e.v; break;
       case 'persist': prev = persist; persist = e.v; pT = e.t; break;
       case 'act': if (t < e.t1) act = { n: e.n, p: (t - e.t) / (e.t1 - e.t), t: t - e.t, to: e.to }, thinkText = e.text; break;
-      case 'say': if (t < e.t1) { const a = audio[e.key]; if (a && a.env) { const i = Math.floor((t - e.t) * 50); talk = clamp((a.env[i] || 0) * 3.2, 0, 1); } else { const k = t - e.t; talk = (Math.sin(k * 21) * .5 + .5) * (Math.sin(k * 5.3) * .3 + .7) * (k > e.t1 - e.t - .15 ? 0 : 1); } } break;
+      case 'say': if (t < e.t1) { const a = audio[e.key]; if (a && a.env) { const i = Math.floor((t - e.t) * 50); talk = clamp((a.env[i] || 0) * 3.2, 0, 1); } else { const k = t - e.t; talk = (Math.sin(k * 21) * .5 + .5) * (Math.sin(k * 5.3) * .3 + .7) * (k > e.t1 - e.t - .15 ? 0 : 1); } vz = e.vocal ? null : MK.viseme(e.text || '', t - e.t, e.t1 - e.t); } break;
     }
   }
   const fk = ease((t - faceT) / .22); const fv = lerp(faceFrom, face, fk);
-  return { x, face: fv, emo, et: t - emoT, vis, persist, prev, pt: t - pT, act, walk, talk, thinkText };
+  return { x, face: fv, emo, et: t - emoT, vis, persist, prev, pt: t - pT, act, walk, talk, thinkText, vz };
 }
 
 function camTarget(c, seg, t, S) {
