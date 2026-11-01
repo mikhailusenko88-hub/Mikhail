@@ -49,7 +49,13 @@ fi
 echo "== Копии файлов (*.bak-$STAMP)"
 cp -p config.json "config.json.bak-$STAMP"
 cp -p run_daily.py "run_daily.py.bak-$STAMP"
-restore() { echo "!! Ошибка — возвращаю как было"; cp -p "config.json.bak-$STAMP" config.json; cp -p "run_daily.py.bak-$STAMP" run_daily.py; exit 1; }
+for f in race_video.py race_bot.py; do [ -f "$f" ] && cp -p "$f" "$f.bak-$STAMP"; done
+restore() {
+  echo "!! Ошибка — возвращаю как было"
+  cp -p "config.json.bak-$STAMP" config.json; cp -p "run_daily.py.bak-$STAMP" run_daily.py
+  for f in race_video.py race_bot.py; do [ -f "$f.bak-$STAMP" ] && cp -p "$f.bak-$STAMP" "$f"; done
+  exit 1
+}
 
 echo "== Скачиваю новый формат"
 mkdir -p fonts
@@ -91,5 +97,5 @@ if "$PY" run_daily.py --test; then
   echo "== Всё готово. Новые ролики пойдут по старому расписанию (12:00 и 18:00 по Астане)."
   ls -t out/*race*.mp4 2>/dev/null | head -1 | sed 's/^/   пробный ролик: /'
 else
-  echo "!! Пробный ролик не собрался — возвращаю старый режим"; restore
+  echo "!! Пробный ролик не собрался — возвращаю прежнюю версию"; restore
 fi

@@ -23,7 +23,7 @@ STEP = HZ // FPS
 DT = 1.0 / HZ
 CW = 600          # ширина трассы (всё важное — в безопасной зоне Shorts)
 OX = 110          # отступ трассы слева: телефоны срезают края ролика
-PX, PY = 722, 380  # таблица мест
+PX, PY = 722, 392  # таблица мест
 R = 19.0          # радиус шарика
 TH = 6.0          # полутолщина стенок
 G = 1750.0
@@ -376,8 +376,37 @@ def pick_race(seed, tries=8, log=print):
 def fit_size(s, size, max_w):
     tmp = ImageDraw.Draw(Image.new("RGB", (1, 1)))
     while size > 20 and tmp.textlength(s, font=font(size)) > max_w:
-        size -= 4
+        size -= 2
     return size
+
+
+def pair_size(lines, size, max_w):
+    """Один размер для казахской и русской строки — чтобы обе были одинаково заметны."""
+    return min(fit_size(s, size, max_w) for s in lines)
+
+
+_KZ2RU = str.maketrans("әғқңөұүһі", "агкноуухи")
+
+
+def ru_differs(i):
+    """Русское название пишем отдельно, только если оно правда другое
+    (Өскемен — Усть-Каменогорск, Орал — Уральск), а не те же буквы (Жезқазған — Жезказган)."""
+    import difflib
+    kk, ru = CITIES[i][0].lower().translate(_KZ2RU), CITIES[i][1].lower()
+    return difflib.SequenceMatcher(None, kk, ru).ratio() < 0.85
+
+
+def city_lines(i, upper=False):
+    """Название города: казахское и русское (если отличается)."""
+    kk, ru = CITIES[i][0], CITIES[i][1]
+    if upper:
+        kk, ru = kk.upper(), ru.upper()
+    return [kk, ru] if ru_differs(i) else [kk]
+
+
+def city_pair(i):
+    kk, ru = CITIES[i][0], CITIES[i][1]
+    return f"{kk} · {ru}" if ru_differs(i) else kk
 
 
 def text_c(d, cx, y, s, size, fill, stroke=6, sfill=(0, 0, 0)):
@@ -424,7 +453,7 @@ def draw_course(c, theme):
         for row in range(2):
             col = (255, 255, 255, 255) if (k + row) % 2 == 0 else (10, 10, 10, 255)
             d.rectangle([x, fy - sq + row * sq, min(x + sq, OX + CW) - 1, fy + row * sq - 1], fill=col)
-    text_c(d, OX + CW / 2, fy - 80, "МӘРЕ", 44, acc + (255,), 5)
+    text_c(d, OX + CW / 2, fy - 80, "МӘРЕ · ФИНИШ", 44, acc + (255,), 5)
     glow = glow.filter(ImageFilter.GaussianBlur(9))
     img = img.convert("RGBA")
     img.alpha_composite(glow)
@@ -488,13 +517,17 @@ def header_band(race_no, acc):
     a[..., 3] = (np.linspace(215, 0, 380)[:, None]).astype(np.uint8)
     im = Image.fromarray(a, "RGBA")
     d = ImageDraw.Draw(im)
-    text_c(d, W / 2, 228, "ҚАЙ ҚАЛА ЖЕҢЕДІ?", 60, (255, 255, 255), 6)
+    # казахский и русский — одним шрифтом, одним размером и цветом
+    t1, t2 = "ҚАЙ ҚАЛА ЖЕҢЕДІ?", "КАКОЙ ГОРОД ПОБЕДИТ?"
+    sz = pair_size([t1, t2], 48, 800)
+    text_c(d, W / 2, 206, t1, sz, (255, 255, 255), 6)
+    text_c(d, W / 2, 206 + sz + 8, t2, sz, (255, 255, 255), 6)
     lab = f"ЖАРЫС №{race_no}  ·  ЗАЕЗД №{race_no}"
-    f = font(32)
+    f = font(30)
     lw = d.textlength(lab, font=f)
-    d.rounded_rectangle([W / 2 - lw / 2 - 22, 296, W / 2 + lw / 2 + 22, 342], radius=23, fill=acc + (255,))
-    d.text((W / 2 - lw / 2, 300), lab, font=f, fill=(20, 20, 26))
-    text_c(d, W / 2, 350, "Какой город победит?", 26, (255, 255, 255), 4)
+    py = 206 + 2 * sz + 30
+    d.rounded_rectangle([W / 2 - lw / 2 - 22, py, W / 2 + lw / 2 + 22, py + 44], radius=22, fill=acc + (255,))
+    d.text((W / 2 - lw / 2, py + 4), lab, font=f, fill=(20, 20, 26))
     return im
 
 
@@ -724,6 +757,7 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
             n = 3 - int(t / 0.4)
             text_c(d, OX + CW / 2, 640, str(n), 230, acc, 12)
             text_c(d, OX + CW / 2, 900, f"ЖАРЫС №{race_no}", 56, (255, 255, 255), 7)
+            text_c(d, OX + CW / 2, 968, f"ЗАЕЗД №{race_no}", 56, (255, 255, 255), 7)
         elif t < GATE_T + 0.7:
             text_c(d, OX + CW / 2, 680, "СТАРТ!", 120, (255, 255, 255), 10)
         if winner_t is not None and t >= winner_t:
@@ -731,10 +765,16 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
                 win_shown_t = t
                 conf = confetti(rng, OX + CW / 2, c.finish_y + oy)
             k = min(1.0, (t - win_shown_t) / 0.25)
-            d.rounded_rectangle([OX + 20, 420, OX + CW - 20, 680], radius=30, fill=(0, 0, 0, int(170 * k)))
-            text_c(d, OX + CW / 2, 440, "ЖЕҢІМПАЗ!", int(42 + 18 * k), acc, 6)
-            text_c(d, OX + CW / 2, 520, CITIES[winner][0], fit_size(CITIES[winner][0], int(56 + 34 * k), CW - 90),
-                   COLORS[winner], 8)
+            wl = city_lines(winner)
+            ts = pair_size(["ЖЕҢІМПАЗ!", "ПОБЕДИТЕЛЬ!"], int(32 + 8 * k), CW - 90)
+            cs = pair_size(wl, int((50 + 30 * k) if len(wl) == 1 else (40 + 18 * k)), CW - 90)
+            cy0 = 432 + 2 * ts + 26
+            bottom = cy0 + len(wl) * (cs + 8) + 18
+            d.rounded_rectangle([OX + 20, 412, OX + CW - 20, bottom], radius=30, fill=(0, 0, 0, int(170 * k)))
+            text_c(d, OX + CW / 2, 430, "ЖЕҢІМПАЗ!", ts, acc, 6)
+            text_c(d, OX + CW / 2, 430 + ts + 6, "ПОБЕДИТЕЛЬ!", ts, acc, 6)
+            for j, s_ in enumerate(wl):
+                text_c(d, OX + CW / 2, cy0 + j * (cs + 8), s_, cs, COLORS[winner], 8)
             for p_ in conf:
                 age = t - win_shown_t
                 px = p_[0] + p_[2] * age
@@ -750,56 +790,76 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
 
     # финал: карта, победитель, таблица
     base = Image.blend(last.filter(ImageFilter.GaussianBlur(10)), Image.new("RGB", (W, H), (0, 0, 0)), 0.62)
-    mp, pts = kz_map(760, winner, acc)
-    mx, my = 160, 470
+    # всё на финале — на двух языках одинаковым размером: казахская строка, под ней русская
+    mp, pts = kz_map(660, winner, acc)
+    mx, my = (W - 660) // 2, 476
     blocks = []
     b1 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d1 = ImageDraw.Draw(b1)
-    s0 = f"ЖАРЫС №{race_no} ЖЕҢІМПАЗЫ"
-    text_c(d1, W / 2, 236, s0, fit_size(s0, 50, 760), acc, 5)
-    text_c(d1, W / 2, 294, CITIES[winner][0].upper(), fit_size(CITIES[winner][0].upper(), 92, W - 280),
-           COLORS[winner], 9)
-    if CITIES[winner][1] != CITIES[winner][0]:
-        text_c(d1, W / 2, 400, f"({CITIES[winner][1]})", 32, (230, 230, 240), 4)
+    h1, h2 = f"ЖАРЫС №{race_no} ЖЕҢІМПАЗЫ", f"ПОБЕДИТЕЛЬ ЗАЕЗДА №{race_no}"
+    hs = pair_size([h1, h2], 40, 760)
+    text_c(d1, W / 2, 196, h1, hs, acc, 5)
+    text_c(d1, W / 2, 196 + hs + 6, h2, hs, acc, 5)
+    wl = city_lines(winner, upper=True)
+    cs = pair_size(wl, 84 if len(wl) == 1 else 60, W - 260)
+    cy0 = 196 + 2 * hs + 22
+    if len(wl) == 1:
+        cy0 += 6
+    for j, s_ in enumerate(wl):
+        text_c(d1, W / 2, cy0 + j * (cs + 6), s_, cs, COLORS[winner], 8)
     blocks.append((0.3, b1))
     b2 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d2 = ImageDraw.Draw(b2)
-    y = my + mp.size[1] + 22
+    y = my + mp.size[1] + 14
     MB = [num_ball(COLORS[j], j + 1, 15) for j in range(N)]
     medal = [(255, 205, 40), (215, 220, 230), (225, 150, 80)]
+    L, Rr = 150, 890   # края строк таблицы (справа — кнопки Shorts)
     if race_no >= 2:
         zz = "заезда" if race_no % 10 == 1 and race_no % 100 != 11 else "заездов"
-        text_c(d2, W / 2 - 30, y, f"ТУРНИР КЕСТЕСІ · {race_no} жарыстан кейін", 30, acc, 4)
-        text_c(d2, W / 2 - 30, y + 38, f"Турнирная таблица после {race_no} {zz}", 24, (230, 230, 240), 3)
-        for k, (name, pt) in enumerate(table[:5]):
-            yy = y + 76 + k * 44
+        g1, g2 = f"ТУРНИР КЕСТЕСІ · {race_no} жарыстан кейін", f"ТУРНИРНАЯ ТАБЛИЦА · после {race_no} {zz}"
+        gs = pair_size([g1, g2], 28, Rr - L)
+        text_c(d2, (L + Rr) / 2, y, g1, gs, acc, 4)
+        text_c(d2, (L + Rr) / 2, y + gs + 6, g2, gs, acc, 4)
+        rows = []
+        for name, pt in table[:5]:
             i = [j for j in range(N) if CITIES[j][0] == name][0]
-            d2.rounded_rectangle([190, yy - 5, 830, yy + 38], radius=12, fill=(255, 255, 255, 26))
-            d2.text((205, yy), f"{k + 1}", font=font(30), fill=medal[k] if k < 3 else (220, 220, 230))
-            b2.paste(MB[i], (245, yy - 1), MB[i])
-            d2.text((292, yy), name, font=font(30), fill=(255, 255, 255))
-            s_ = f"{pt} ұпай"
-            d2.text((815 - d2.textlength(s_, font=font(30)), yy), s_, font=font(30), fill=acc)
+            rows.append((i, name, pt))
+        # очки — числом (единицы понятны из заголовка), так влезает и русское название
+        ns = pair_size([city_pair(i) for i, _, _ in rows], 28, Rr - L - 250)
+        for k, (i, name, pt) in enumerate(rows):
+            yy = y + 2 * gs + 24 + k * 44
+            d2.rounded_rectangle([L, yy - 5, Rr, yy + 38], radius=12, fill=(255, 255, 255, 26))
+            d2.text((L + 14, yy), f"{k + 1}", font=font(30), fill=medal[k] if k < 3 else (220, 220, 230))
+            b2.paste(MB[i], (L + 52, yy - 1), MB[i])
+            d2.text((L + 96, yy + (30 - ns) * 0.6), city_pair(i), font=font(ns), fill=(255, 255, 255))
+            s_ = f"{pt}"
+            px_ = Rr - 16 - d2.textlength(s_, font=font(30))
+            d2.text((px_, yy), s_, font=font(30), fill=acc)
             if gained.get(name):
                 g = f"+{gained[name]}"
-                d2.text((815 - d2.textlength(s_, font=font(30)) - 18 - d2.textlength(g, font=font(24)), yy + 5), g,
-                        font=font(24), fill=(120, 255, 140))
+                d2.text((px_ - 14 - d2.textlength(g, font=font(24)), yy + 5), g, font=font(24), fill=(120, 255, 140))
     else:
-        text_c(d2, W / 2 - 30, y, "ҮЗДІК ҮШТІК · Тройка лидеров заезда №1", 30, acc, 4)
+        g1, g2 = "ҮЗДІК ҮШТІК · 1-жарыс", "ТРОЙКА ЛИДЕРОВ · заезд №1"
+        gs = pair_size([g1, g2], 28, Rr - L)
+        text_c(d2, (L + Rr) / 2, y, g1, gs, acc, 4)
+        text_c(d2, (L + Rr) / 2, y + gs + 6, g2, gs, acc, 4)
+        ns = pair_size([city_pair(i) for i in ranking[:3]], 34, Rr - L - 150)
         for k in range(3):
             i = ranking[k]
-            yy = y + 52 + k * 58
-            d2.rounded_rectangle([220, yy - 6, 800, yy + 46], radius=14, fill=(255, 255, 255, 26))
-            d2.text((242, yy), f"{k + 1}", font=font(36), fill=medal[k])
-            b2.paste(MB[i], (290, yy + 2), MB[i])
-            d2.text((340, yy), CITIES[i][0], font=font(36), fill=(255, 255, 255))
+            yy = y + 2 * gs + 26 + k * 56
+            d2.rounded_rectangle([L, yy - 6, Rr, yy + 44], radius=14, fill=(255, 255, 255, 26))
+            d2.text((L + 18, yy), f"{k + 1}", font=font(34), fill=medal[k])
+            b2.paste(MB[i], (L + 62, yy + 1), MB[i])
+            d2.text((L + 108, yy + (34 - ns) * 0.6), city_pair(i), font=font(ns), fill=(255, 255, 255))
     blocks.append((1.2, b2))
     b3 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d3 = ImageDraw.Draw(b3)
-    s1 = "Сен қай қалаға жанкүйерсің?"
-    s2 = "За какой город болеешь? Пиши в комментариях"
-    text_c(d3, W / 2 - 20, 1228, s1, fit_size(s1, 42, 620), (255, 255, 255), 5)
-    text_c(d3, W / 2 - 20, 1286, s2, fit_size(s2, 28, 620), acc, 4)
+    s1, s2 = "Сен қай қалаға жанкүйерсің?", "А ты за какой город болеешь?"
+    s3 = "Пікірге жаз · Пиши в комментариях"
+    qs = pair_size([s1, s2], 36, 640)
+    text_c(d3, W / 2 - 20, 1196, s1, qs, (255, 255, 255), 5)
+    text_c(d3, W / 2 - 20, 1196 + qs + 6, s2, qs, (255, 255, 255), 5)
+    text_c(d3, W / 2 - 20, 1196 + 2 * qs + 16, s3, fit_size(s3, 26, 640), acc, 4)
     blocks.append((2.2, b3))
     wx, wy = pts[winner]
     nfin_frames = int(FINALE_T * FPS)
@@ -867,7 +927,8 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
         Path(f).unlink(missing_ok=True)
 
     win = CITIES[winner]
-    title = f"Қай қала жеңеді? 🏁 Жарыс №{race_no} | Какой город победит?"
+    # оба языка в самом начале названия — в ленте Shorts видно только начало
+    title = f"Қай қала жеңеді? Какой город победит? 🏁 №{race_no}"
     desc = ("Жиырма қала — бір мәре! Сен қай қалаға жанкүйерсің? Пікірге жаз 👇\n"
             "20 городов Казахстана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\n"
             "Күн сайын — жаңа жарыс. Каждый день новая гонка и турнирная таблица.\n\n"
