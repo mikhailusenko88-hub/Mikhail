@@ -488,15 +488,20 @@ def header_band(race_no, acc):
     a[..., 3] = (np.linspace(215, 0, 380)[:, None]).astype(np.uint8)
     im = Image.fromarray(a, "RGBA")
     d = ImageDraw.Draw(im)
-    text_c(d, W / 2, 232, "ҚАЙ ҚАЛА ЖЕҢЕДІ?", 62, (255, 255, 255), 6)
-    text_c(d, W / 2, 304, f"Какой город победит?  ·  Жарыс №{race_no}", 30, acc, 4)
+    text_c(d, W / 2, 228, "ҚАЙ ҚАЛА ЖЕҢЕДІ?", 60, (255, 255, 255), 6)
+    lab = f"ЖАРЫС №{race_no}  ·  ЗАЕЗД №{race_no}"
+    f = font(32)
+    lw = d.textlength(lab, font=f)
+    d.rounded_rectangle([W / 2 - lw / 2 - 22, 296, W / 2 + lw / 2 + 22, 342], radius=23, fill=acc + (255,))
+    d.text((W / 2 - lw / 2, 300), lab, font=f, fill=(20, 20, 26))
+    text_c(d, W / 2, 350, "Какой город победит?", 26, (255, 255, 255), 4)
     return im
 
 
 MINI = None
 
 
-def panel_img(order, nfin, acc, timer):
+def panel_img(order, nfin, acc, timer, race_no=0):
     global MINI
     if MINI is None:
         MINI = [num_ball(COLORS[i], i + 1, 12) for i in range(N)]
@@ -505,7 +510,7 @@ def panel_img(order, nfin, acc, timer):
     im = Image.new("RGBA", (pw, top + rowh * N + 10), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
     d.rounded_rectangle([0, 0, pw - 1, top + rowh * N + 9], radius=16, fill=(0, 0, 0, 155))
-    text_c(d, pw / 2, 8, timer, 30, (255, 255, 255), 4)
+    text_c(d, pw / 2, 10, f"№{race_no}  ·  {timer}" if race_no else timer, 28, (255, 255, 255), 4)
     medal = [(255, 205, 40), (215, 220, 230), (225, 150, 80)]
     for k, i in enumerate(order):
         y = top + k * rowh
@@ -634,8 +639,10 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     finish = sim.finish
     ranking = sim.ranking()
     winner = ranking[0]
+    gained = {}
     for place, i in enumerate(ranking[:len(POINTS)]):
         points[CITIES[i][0]] = points.get(CITIES[i][0], 0) + POINTS[place]
+        gained[CITIES[i][0]] = POINTS[place]
     table = sorted(points.items(), key=lambda kv: -kv[1])
 
     log("Рисую трассу…")
@@ -710,12 +717,13 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
         if key not in panel_cache:
             if len(panel_cache) >= 6:     # каждая таблица ~1 МБ — держим только последние
                 panel_cache.pop(next(iter(panel_cache)))
-            panel_cache[key] = panel_img(order, nfin, acc, timer)
+            panel_cache[key] = panel_img(order, nfin, acc, timer, race_no)
         pn = panel_cache[key]
         img.paste(pn, (PX, PY), pn)
         if t < GATE_T:
             n = 3 - int(t / 0.4)
             text_c(d, OX + CW / 2, 640, str(n), 230, acc, 12)
+            text_c(d, OX + CW / 2, 900, f"ЖАРЫС №{race_no}", 56, (255, 255, 255), 7)
         elif t < GATE_T + 0.7:
             text_c(d, OX + CW / 2, 680, "СТАРТ!", 120, (255, 255, 255), 10)
         if winner_t is not None and t >= winner_t:
@@ -747,7 +755,8 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     blocks = []
     b1 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d1 = ImageDraw.Draw(b1)
-    text_c(d1, W / 2, 236, "ЖЕҢІМПАЗ", 50, acc, 5)
+    s0 = f"ЖАРЫС №{race_no} ЖЕҢІМПАЗЫ"
+    text_c(d1, W / 2, 236, s0, fit_size(s0, 50, 760), acc, 5)
     text_c(d1, W / 2, 294, CITIES[winner][0].upper(), fit_size(CITIES[winner][0].upper(), 92, W - 280),
            COLORS[winner], 9)
     if CITIES[winner][1] != CITIES[winner][0]:
@@ -759,9 +768,11 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     MB = [num_ball(COLORS[j], j + 1, 15) for j in range(N)]
     medal = [(255, 205, 40), (215, 220, 230), (225, 150, 80)]
     if race_no >= 2:
-        text_c(d2, W / 2 - 30, y, "ТУРНИР КЕСТЕСІ · Турнирная таблица", 30, acc, 4)
+        zz = "заезда" if race_no % 10 == 1 and race_no % 100 != 11 else "заездов"
+        text_c(d2, W / 2 - 30, y, f"ТУРНИР КЕСТЕСІ · {race_no} жарыстан кейін", 30, acc, 4)
+        text_c(d2, W / 2 - 30, y + 38, f"Турнирная таблица после {race_no} {zz}", 24, (230, 230, 240), 3)
         for k, (name, pt) in enumerate(table[:5]):
-            yy = y + 48 + k * 46
+            yy = y + 76 + k * 44
             i = [j for j in range(N) if CITIES[j][0] == name][0]
             d2.rounded_rectangle([190, yy - 5, 830, yy + 38], radius=12, fill=(255, 255, 255, 26))
             d2.text((205, yy), f"{k + 1}", font=font(30), fill=medal[k] if k < 3 else (220, 220, 230))
@@ -769,8 +780,12 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
             d2.text((292, yy), name, font=font(30), fill=(255, 255, 255))
             s_ = f"{pt} ұпай"
             d2.text((815 - d2.textlength(s_, font=font(30)), yy), s_, font=font(30), fill=acc)
+            if gained.get(name):
+                g = f"+{gained[name]}"
+                d2.text((815 - d2.textlength(s_, font=font(30)) - 18 - d2.textlength(g, font=font(24)), yy + 5), g,
+                        font=font(24), fill=(120, 255, 140))
     else:
-        text_c(d2, W / 2 - 30, y, "ҮЗДІК ҮШТІК · Тройка лидеров", 30, acc, 4)
+        text_c(d2, W / 2 - 30, y, "ҮЗДІК ҮШТІК · Тройка лидеров заезда №1", 30, acc, 4)
         for k in range(3):
             i = ranking[k]
             yy = y + 52 + k * 58
@@ -783,8 +798,8 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     d3 = ImageDraw.Draw(b3)
     s1 = "Сен қай қалаға жанкүйерсің?"
     s2 = "За какой город болеешь? Пиши в комментариях"
-    text_c(d3, W / 2 - 20, 1222, s1, fit_size(s1, 42, 620), (255, 255, 255), 5)
-    text_c(d3, W / 2 - 20, 1282, s2, fit_size(s2, 28, 620), acc, 4)
+    text_c(d3, W / 2 - 20, 1228, s1, fit_size(s1, 42, 620), (255, 255, 255), 5)
+    text_c(d3, W / 2 - 20, 1286, s2, fit_size(s2, 28, 620), acc, 4)
     blocks.append((2.2, b3))
     wx, wy = pts[winner]
     nfin_frames = int(FINALE_T * FPS)
