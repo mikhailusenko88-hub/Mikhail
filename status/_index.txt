@@ -1,18 +1,8 @@
-2026-11-02 17:58 UTC
-www.s-u-d.ru_kontakty.txt  https://www.s-u-d.ru/kontakty/  (3382 симв.)
-www.s-u-d.ru_politika-obrabotki-personalnyh-dannyh.txt  https://www.s-u-d.ru/politika-obrabotki-personalnyh-dannyh/  (17012 симв.)  [по ссылке с https://www.s-u-d.ru/kontakty/]
-www.s-u-d.ru.txt  https://www.s-u-d.ru/?post_type=page&p=13233  (17012 симв.)  [по ссылке с https://www.s-u-d.ru/kontakty/]
-xn----7sblgugsefdlsjenf7l.xn--p1ai.txt  https://xn----7sblgugsefdlsjenf7l.xn--p1ai/  (3681 симв.)
-ask-aurora.ru.txt  https://ask-aurora.ru/  (2474 симв.)
-ask-aurora.ru_privacy_policy.txt  https://ask-aurora.ru/privacy_policy  (2071 симв.)  [по ссылке с https://ask-aurora.ru/]
-listorg_poravsud.txt  https://www.list-org.com/search?type=inn&val=9702033620  (813 симв.)
-listorg_silkin2.txt  https://www.list-org.com/search?type=all&val=%D0%A1%D0%B8%D0%BB%D0%BA%D0%B8%D0%BD  (12269 симв.)
-ya_silkin_msk.txt  https://yandex.com/maps/org/silkin_partners/157640197533/?ll=37.657305%2C55.739084&mode=search&sll=37.657305%2C55.739084&text=%D0%A1%D0%B8%D0%BB%D0%BA%D0%B8%D0%BD%20%D0%B8%20%D0%BF%D0%B0%D1%80%D1%82%D0%BD%D1%91%D1%80%D1%8B&z=16  (2461 симв.)
+2026-11-02 18:00 UTC
+www.list-org.com_search.txt  https://www.list-org.com/search?type=inn&val=9702033620  (813 симв.)
+www.list-org.com_company_12978244.txt  https://www.list-org.com/company/12978244  (30 симв.)  [по ссылке с https://www.list-org.com/search?type=inn&val=9702033620]
+companies.rbc.ru_search.txt  https://companies.rbc.ru/search/?query=130803139393  (311 симв.)
+companies.rbc.ru_search.txt  https://companies.rbc.ru/search/?query=9702033620  (311 симв.)
 
 --- ЖУРНАЛ ---
-open https://www.list-org.com/search?type=inn&val=9702033620: ok
-snap listorg_poravsud: 813 симв.
-open https://www.list-org.com/search?type=all&val=%D0%A1%D0%B8%D0%BB%D0%BA%D0%B8%D0%BD: ok
-snap listorg_silkin2: 12269 симв.
-open https://yandex.com/maps/213/moscow/search/%D0%A1%D0%B8%D0%BB%D0%BA%D0%B8%D0%BD%20%D0%B8%20%D0%BF%D0%B0%D1%80%D1%82%D0%BD%D1%91%D1%80%D1%8B/: ok
-snap ya_silkin_msk: 2461 симв.
+
