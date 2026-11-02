@@ -1,0 +1,31 @@
+name: domain-check
+# Проверка, свободны ли домены: запускается, когда меняется request.txt в ветке domain-check.
+# Результат — status/result.md в этой же ветке. Ничего не регистрирует.
+on:
+  push:
+    branches: [domain-check]
+    paths: ['request.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: domain-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Установить whois
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq whois >/dev/null
+      - name: Проверить домены
+        run: python3 domain_check.py
+      - name: Сохранить результат
+        run: |
+          git config user.name "domain-check"
+          git config user.email "domain-check@users.noreply.github.com"
+          git add status
+          git commit -m "result $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check
