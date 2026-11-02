@@ -1,0 +1,42 @@
+[0;93m2026-11-02 19:43:15.373277432 [W:onnxruntime:Default, device_discovery.cc:95 GetPciBusId] Skipping pci_bus_id for PCI path at "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/5620e0c7-8062-4dce-aeb7-520c7ef76171" because filename "5620e0c7-8062-4dce-aeb7-520c7ef76171" did not match expected pattern of [0-9a-f]+:[0-9a-f]+:[0-9a-f]+[.][0-9a-f]+[m
+Downloading: "https://github.com/snakers4/silero-stress/zipball/master" to /home/runner/.cache/torch/hub/master.zip
+sd embeddings.position_ids (1, 2048) torch.int64
+sd embeddings.token_type_ids (1, 2048) torch.int64
+sd embeddings.word_embeddings.weight (83830, 312) torch.float32
+sd embeddings.position_embeddings.weight (2048, 312) torch.float32
+sd embeddings.token_type_embeddings.weight (2, 312) torch.float32
+sd embeddings.LayerNorm.weight (312,) torch.float32
+sd embeddings.LayerNorm.bias (312,) torch.float32
+sd encoder.layer.0.attention.self.query.weight (312, 312) torch.float32
+sd encoder.layer.0.attention.self.query.bias (312,) torch.float32
+sd encoder.layer.0.attention.self.key.weight (312, 312) torch.float32
+sd encoder.layer.0.attention.self.key.bias (312,) torch.float32
+sd encoder.layer.0.attention.self.value.weight (312, 312) torch.float32
+n keys 57 scale tensor(0.0191) zp tensor(-9.6779)
+config V H L I heads eps 83830 312 3 600 12 1e-12 pos torch.Size([2048, 312]) tt torch.Size([2, 312])
+load _IncompatibleKeys(missing_keys=[], unexpected_keys=['embeddings.position_ids', 'embeddings.token_type_ids'])
+tok call list [2, 282, 17190, 548, 58968, 33766, 83828, 15006, 83829, 27685, 8035, 18, 3] encode [2, 282, 17190, 548, 58968, 33766, 83828, 15006, 83829, 27685, 8035, 18, 3] same True
+hidden diff jit vs hf 0.0
+hidden diff inputs_embeds 0.0
+homo.onnx 11.9 MB
+onnx diff 2.4437904357910156e-06
+q range -128.0 127.0
+emb dequant err 0.0 dtype int8 MB 26.2
+head [('lin', (256, 624)), ('ReLU', ''), ('Dropout', ''), ('lin', (1, 256))]
+homo.json MB 7.14
+Вдал+и н+а холм+е сто+ял ст+арый з+амок корол+я.
+Б+арсик пов+есил н+а дв+ерь больш+ой зам+ок +и закр+ыл ег+о ключ+ом.
+С+олнышко с+ело з+а гориз+онт.
+М+ы при+ехали в больш+ое сел+о +у рек+и.
++Ужин гот+ов, сад+итесь з+а ст+ол!
+П+ик б+ыл гот+ов к+о всем+у.
+Мук+а дл+я пирог+а леж+ала н+а стол+е.
++Это был+а насто+ящая м+ука — жд+ать т+ак д+олго.
+Вс+е пошл+и гул+ять, +а вс+ё остальн+ое подожд+ёт.
+Р+он сто+ял +у дор+оги +и жд+ал друз+ей.
+Друзь+я в+ышли н+а б+ерег +и ув+идели б+елый п+арус.
+В лес+у п+ахнет гриб+ами +и хв+оей.
+К+от Б+арсик пл+ачет: гд+е н+аш т+орт?
+П+ик откр+ыл дв+ерцу +и в+ыглянул нар+ужу.
+Н+ад +озером круж+или б+елые пт+ицы.
+done
