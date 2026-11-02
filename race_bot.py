@@ -8,9 +8,11 @@
 Проба без выкладки:  run_daily.py --test --league mushel
 Если тема почему-то не собралась — вместо неё выходит гонка городов (слот не пропадает).
 
-Сезон — неделя (пн–вс по Астане): очки копятся в таблице недели. В воскресенье последний заезд
-каждой таблицы (города — в 18:00, тема — в 15:00) — ФИНАЛ лучших недели (топ-8, у мүшел топ-6),
-без очков: победитель — чемпион недели. С понедельника таблица начинается заново.
+Сезоны:
+  города — неделя (пн–вс по Астане): в воскресенье в 18:00 ФИНАЛ топ-8 недели, с понедельника заново;
+  темы (мүшел, регионы, имена) — месяц: последний заезд темы в месяце — ФИНАЛ месяца
+  (топ-8, у мүшел топ-6; у имён — итог месяца «мальчики vs девочки»), с 1-го числа заново.
+Финал без очков, победитель — чемпион (★ у шарика, история чемпионов хранится всегда).
 Вручную финал: run_daily.py --league cities --final
 
 Включается в config.json: "mode": "race". Вернуть старые ролики-факты: "mode": "facts".
@@ -49,29 +51,60 @@ def pick_league(cfg, state, argv):
     return kind, False, last
 
 
-def week_id(d=None):
+def season_id(league, d=None):
+    import race_leagues as RL
     d = d or dt.datetime.now(ASTANA)
+    if RL.LEAGUES[league].get("season") == "month":
+        return f"{d.year}-{d.month:02d}"
     y, w, _ = d.isocalendar()
     return f"{y}-W{w:02d}"
 
 
-def new_week(ls, league, log):
-    """С понедельника — новая неделя: таблица начинается заново (старая уходит в архив)."""
-    wk = week_id()
-    if ls.get("week") == wk:
+def new_season(ls, league, log):
+    """Новая неделя (города) / новый месяц (темы): таблица начинается заново, старая — в архив."""
+    sid = season_id(league)
+    if ls.get("season") == sid:
         return
-    if ls.get("week") is None:
-        # первый запуск после обновления: уже набранные очки считаем очками этой недели
-        ls["week_races"] = ls.get("no", 0)
-        ls["week"] = wk
+    if ls.get("season") is None:
+        # первый запуск после обновления: уже набранные очки считаем очками этого сезона
+        ls["season_races"] = ls.get("no", 0)
+        ls["season"] = sid
         return
-    arch = ls.setdefault("weeks", [])
+    arch = ls.setdefault("seasons", [])
     top = sorted(ls.get("points", {}).items(), key=lambda kv: -kv[1])[:8]
-    arch.append({"week": ls["week"], "top": top, "teams": ls.get("teams"), "champion": ls.get("champion")})
-    ls["weeks"] = arch[-60:]
-    ls["points"], ls["teams"], ls["champion"], ls["week_races"] = {}, {}, None, 0
-    ls["week"] = wk
-    log(f"Новая неделя ({wk}): таблица «{league}» начата заново")
+    arch.append({"season": ls["season"], "top": top, "teams": ls.get("teams"), "champion": ls.get("champion")})
+    ls["seasons"] = arch[-60:]
+    ls["points"], ls["teams"], ls["champion"], ls["season_races"] = {}, {}, None, 0
+    ls["season"] = sid
+    log(f"Новый сезон ({sid}): таблица «{league}» начата заново")
+
+
+def days_to_final(cfg, league, ls):
+    """Сколько дней до финала этого сезона (для надписи «До финала N дней»)."""
+    import race_leagues as RL
+    if ls.get("final_season") == season_id(league):
+        return None                                   # финал уже был — ждём новый сезон
+    now = dt.datetime.now(ASTANA)
+    if RL.LEAGUES[league].get("season") == "month":
+        n = len(cfg.get("theme_leagues") or DEFAULT_THEMES)
+        nxt = (now.replace(day=28) + dt.timedelta(days=4)).replace(day=1)
+        left = (nxt.date() - now.date()).days - 1    # дней после сегодняшнего до конца месяца
+        return n * (left // n)
+    return 6 - now.weekday()
+
+
+def want_final(cfg, league, is_theme, last_slot, argv):
+    """Финал: города — воскресенье, последний заезд дня; тема — её последний заезд в этом месяце."""
+    import race_leagues as RL
+    if "--final" in argv:
+        return True
+    now = dt.datetime.now(ASTANA)
+    if RL.LEAGUES[league].get("season") == "month":
+        if not is_theme:
+            return False
+        n = len(cfg.get("theme_leagues") or DEFAULT_THEMES)
+        return (now + dt.timedelta(days=n)).month != now.month     # в этом месяце эта тема больше не выйдет
+    return now.weekday() == 6 and last_slot
 
 
 def league_state(state, key):
@@ -158,17 +191,21 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
     import race_video as rv
     import race_leagues as RL
     ls = league_state(state, league)
-    new_week(ls, league, log)
+    new_season(ls, league, log)
+    sid = season_id(league)
     no = ls.get("no", 0) + 1
     ent = None
     if league == "names":
         if not test:
             collect_name_requests(BASE, ls, cfg, log)
         ent = RL.entries("names", ls, random.Random())
-    # воскресенье, последний заезд дня для этой таблицы — финал недели
     final = False
-    want_final = "--final" in sys.argv or (dt.datetime.now(ASTANA).weekday() == 6 and last_slot)
-    if want_final and RL.LEAGUES[league].get("weekly") and ls.get("final_week") != week_id():
+    if want_final(cfg, league, is_theme, last_slot, sys.argv) and ls.get("final_season") != sid:
+        if RL.LEAGUES[league].get("teams"):
+            final = True
+            log(f"ФИНАЛ МЕСЯЦА ({league}): итог «мальчики vs девочки»")
+    if not final and want_final(cfg, league, is_theme, last_slot, sys.argv) and ls.get("final_season") != sid \
+            and not RL.LEAGUES[league].get("teams"):
         allx = RL.entries(league)
         top_n = 8 if len(allx) >= 16 else 6
         best = [k for k, _ in sorted(ls.get("points", {}).items(), key=lambda kv: -kv[1])][:top_n]
@@ -177,17 +214,18 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
         if len(best) >= 4:
             ent = [by_key[k] for k in best]
             final = True
-            log(f"ФИНАЛ НЕДЕЛИ ({league}): {', '.join(best)}")
+            log(f"ФИНАЛ ({league}, {sid}): {', '.join(best)}")
     out_dir = BASE / "out"
     out_dir.mkdir(exist_ok=True)
     out = out_dir / f"{dt.datetime.now():%Y-%m-%d_%H%M%S}_{league}{no}.mp4"
     info = rv.build_race(out, race_no=no, points=ls.get("points", {}), log=log, music_dir=BASE / "music",
                          handle=cfg.get("channel_handle", "@bilesin_be_kz"), league=league, entries=ent,
                          team_total=ls.get("teams"), final=final,
-                         week_races=None if final else ls.get("week_races", 0) + 1,
-                         champions=ls.get("champions", []))
+                         season_races=None if final else ls.get("season_races", 0) + 1,
+                         champions=ls.get("champions", []), season_id=sid,
+                         final_in=None if final else days_to_final(cfg, league, ls))
     out.with_suffix(".txt").write_text(info["title"] + "\n\n" + info["description"], encoding="utf-8")
-    log(f"Заезд №{no} ({RL.LEAGUES[league]['name']}{', ФИНАЛ НЕДЕЛИ' if final else ''}): победил {info['winner']}, "
+    log(f"Заезд №{no} ({RL.LEAGUES[league]['name']}{', ФИНАЛ' if final else ''}): победил {info['winner']}, "
         f"топ-3: {', '.join(info['ranking'][:3])}, ролик {info['duration']:.0f} с")
     if test:
         log(f"Тестовый режим: ничего не выкладываю, таблицу не меняю. Ролик: {out}")
@@ -215,14 +253,21 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
             for n in names_now:
                 used[n] = used.get(n, 0) + 1
             ls["requests"] = [r for r in ls.get("requests", []) if r[0] not in names_now]
+            if final:
+                tb, tg = info["team_total"].get("boys", 0), info["team_total"].get("girls", 0)
+                if tb != tg:
+                    ls["champion"] = "boys" if tb > tg else "girls"
+                    ls.setdefault("champions", []).append({"season": sid, "champion": ls["champion"],
+                                                           "score": [tb, tg], "link": link})
+                ls["final_season"] = sid
         elif final:
             ls["champion"] = info["winner"]
-            ls["final_week"] = week_id()
-            ls.setdefault("champions", []).append({"week": week_id(), "champion": info["winner"], "link": link})
+            ls["final_season"] = sid
+            ls.setdefault("champions", []).append({"season": sid, "champion": info["winner"], "link": link})
         else:
             ls["points"] = info["points"]
         if not final:
-            ls["week_races"] = ls.get("week_races", 0) + 1
+            ls["season_races"] = ls.get("season_races", 0) + 1
         ls.setdefault("results", []).append({"no": no, "date": f"{dt.datetime.now(ASTANA).date()}",
                                              "winner": info["winner"], "top3": info["ranking"][:3],
                                              "link": link, "final": final})

@@ -105,7 +105,7 @@ def set_league(league, entries=None):
 
 TEAM_COL = {"boys": (70, 170, 255), "girls": (255, 95, 170)}
 GOLD = (255, 205, 40)
-TITLES = {}       # сколько раз участник становился чемпионом недели
+TITLES = {}       # сколько раз участник становился чемпионом недели / месяца
 
 
 def stars(key):
@@ -831,7 +831,7 @@ def header_band(race_no, acc, final=False):
     sz = pair_size([t1, t2], 48, 800)
     text_c(d, W / 2, 206, t1, sz, (255, 255, 255), 6)
     text_c(d, W / 2, 206 + sz + 8, t2, sz, (255, 255, 255), 6)
-    lab = "АПТА ФИНАЛЫ  ·  ФИНАЛ НЕДЕЛИ" if final else f"ЖАРЫС №{race_no}  ·  ЗАЕЗД №{race_no}"
+    lab = RL.stxt(LKEY)["final_label"] if final else f"ЖАРЫС №{race_no}  ·  ЗАЕЗД №{race_no}"
     f = font(30)
     lw = d.textlength(lab, font=f)
     py = 206 + 2 * sz + 30
@@ -1015,31 +1015,40 @@ def mid_mushel(winner, acc):
     return im
 
 
-def mid_teams(race_team, total_team, races, acc):
+def mid_teams(race_team, total_team, races, acc, final=False):
     im = Image.new("RGBA", (W, MID_H), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
     b, g = race_team.get("boys", 0), race_team.get("girls", 0)
     t1, t2 = "ҰЛДАР vs ҚЫЗДАР", "МАЛЬЧИКИ vs ДЕВОЧКИ"
-    sz = pair_size([t1, t2], 44, 800)
+    sz = pair_size([t1, t2], 40 if final else 44, 800)
     text_c(d, W / 2, 6, t1, sz, (255, 255, 255), 5)
     text_c(d, W / 2, 12 + sz, t2, sz, (255, 255, 255), 5)
-    y = 30 + 2 * sz
-    fb = font(96)
+    y = (22 if final else 30) + 2 * sz
+    fb = font(78 if final else 96)
     sb, sg = str(b), str(g)
     d.text((W / 2 - 40 - d.textlength(sb, font=fb), y), sb, font=fb, fill=TEAM_COL["boys"], stroke_width=6,
            stroke_fill=(0, 0, 0))
     text_c(d, W / 2, y + 4, ":", 90, (255, 255, 255), 6)
     d.text((W / 2 + 40, y), sg, font=fb, fill=TEAM_COL["girls"], stroke_width=6, stroke_fill=(0, 0, 0))
-    y += 120
+    y += 100 if final else 120
     L, Rr = 170, W - 170
     tot = max(1, b + g)
     xm = L + (Rr - L) * b / tot
     d.rounded_rectangle([L, y, Rr, y + 34], radius=17, fill=TEAM_COL["girls"] + (255,))
     d.rounded_rectangle([L, y, max(L + 34, xm), y + 34], radius=17, fill=TEAM_COL["boys"] + (255,))
-    y += 52
+    y += 48 if final else 52
     tb, tg = total_team.get("boys", 0), total_team.get("girls", 0)
-    if (tb, tg) != (b, g):
-        s = f"Апта есебі · Счёт недели:  {tb} : {tg}"
+    if final:
+        win = "boys" if tb > tg else "girls"
+        s = f"{RL.stxt(LKEY)['team_sum']}:  {tb} : {tg}"
+        text_c(d, W / 2, y, s, fit_size(s, 28, 800), (255, 255, 255), 4)
+        w0 = "АЙ ЖЕҢІМПАЗЫ · ПОБЕДИТЕЛЬ МЕСЯЦА" if tb != tg else "ТЕҢ · НИЧЬЯ"
+        text_c(d, W / 2, y + 36, w0, fit_size(w0, 28, 800), acc, 4)
+        if tb != tg:
+            w1 = f"{RL.TEAMS[win][0]} · {RL.TEAMS[win][1]} ★"
+            text_c(d, W / 2, y + 72, w1, fit_size(w1, 46, 800), TEAM_COL[win], 6)
+    elif (tb, tg) != (b, g):
+        s = f"{RL.stxt(LKEY)['team_sum']}:  {tb} : {tg}"
         text_c(d, W / 2, y, s, fit_size(s, 32, 800), acc, 4)
     return im
 
@@ -1048,7 +1057,7 @@ def mid_teams(race_team, total_team, races, acc):
 
 def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir=None,
                handle="@bilesin_be_kz", tries=10, league="cities", entries=None, team_total=None,
-               final=False, week_races=None, champions=None):
+               final=False, season_races=None, champions=None, season_id="", final_in=None):
     t_start = time.time()
     set_league(league, entries)
     champions = list(champions or [])
@@ -1070,7 +1079,7 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     winner = ranking[0]
     gained = {}
     race_team = {"boys": 0, "girls": 0}
-    for place, i in enumerate(ranking[:len(POINTS)] if not final else []):
+    for place, i in enumerate(ranking[:len(POINTS)] if (not final or LG.get("teams")) else []):
         key = ENT[i]["key"]
         points[key] = points.get(key, 0) + POINTS[place]
         gained[key] = POINTS[place]
@@ -1089,13 +1098,18 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     balls = [ball_sprite(col, ENT[i]["num"]) for i, col in enumerate(COLORS)]
     labels = [label_sprite(i) for i in range(N)]
     head = header_band(race_no, acc, final)
+    TX = RL.stxt(league)
     pill = early_pill(acc, ("ФИНАЛ! Кім чемпион болады?", "ФИНАЛ! Кто станет чемпионом?") if final else None)
-    pill2 = early_pill(acc, ("Жексенбіде — апта финалы!", "В воскресенье — финал недели!")) \
-        if (LG.get("weekly") and not final) else None
+    CD = None if final else RL.countdown(final_in)
+    pill2 = early_pill(acc, (CD[0] + "!", CD[1] + "!") if CD and CD[0][-1] != "!" else (CD or TX["pill2"])) \
+        if not final else None
     pill3 = None
-    if LG.get("weekly") and not final and champions and champions[-1]["champion"] in allents:
+    if not final and champions and champions[-1]["champion"] in allents:
         ce = allents[champions[-1]["champion"]]
-        pill3 = early_pill(acc, (f"Өткен апта чемпионы — {ce['kk']} ★", f"Чемпион прошлой недели — {ce['ru']} ★"))
+        pill3 = early_pill(acc, (TX["prev"][0].format(kk=ce["kk"]), TX["prev"][1].format(ru=ce["ru"])))
+    elif not final and champions and LG.get("teams") and champions[-1]["champion"] in RL.TEAMS:
+        tm = RL.TEAMS[champions[-1]["champion"]]
+        pill3 = early_pill(acc, (f"Өткен ай жеңімпазы — {tm[0]} ★", f"Победитель прошлого месяца — {tm[1]} ★"))
     hand = Image.new("RGBA", (420, 50), (0, 0, 0, 0))
     ImageDraw.Draw(hand).text((0, 0), handle, font=font(26), fill=(255, 255, 255, 170))
 
@@ -1200,7 +1214,8 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
             text_c(d, OX + CW / 2, 640, str(n), 230, acc, 12)
             if final:
                 text_c(d, OX + CW / 2, 900, "ФИНАЛ", 64, acc, 7)
-                text_c(d, OX + CW / 2, 976, f"ТОП-{N}", 56, (255, 255, 255), 7)
+                s_ = "ҰЛДАР vs ҚЫЗДАР" if LG.get("teams") else f"ТОП-{N}"
+                text_c(d, OX + CW / 2, 976, s_, fit_size(s_, 56, CW - 40), (255, 255, 255), 7)
             else:
                 text_c(d, OX + CW / 2, 900, f"ЖАРЫС №{race_no}", 56, (255, 255, 255), 7)
                 text_c(d, OX + CW / 2, 968, f"ЗАЕЗД №{race_no}", 56, (255, 255, 255), 7)
@@ -1245,10 +1260,10 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
         mx, my = (W - 660) // 2, MID_Y
         pin_lb = plate_sprite(ENT[winner]["code"], 0.62) if LG.get("plate") else labels[winner]
     else:
-        mid = mid_teams(race_team, team_total, race_no, acc) if LG.get("teams") else mid_mushel(winner, acc)
+        mid = mid_teams(race_team, team_total, race_no, acc, final) if LG.get("teams") else mid_mushel(winner, acc)
     b1 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d1 = ImageDraw.Draw(b1)
-    h1, h2 = ("АПТА ЧЕМПИОНЫ", "ЧЕМПИОН НЕДЕЛИ") if final else \
+    h1, h2 = TX["champ"] if (final and not LG.get("teams")) else \
         (f"ЖАРЫС №{race_no} ЖЕҢІМПАЗЫ", f"ПОБЕДИТЕЛЬ ЗАЕЗДА №{race_no}")
     hs = pair_size([h1, h2], 40, 760)
     text_c(d1, W / 2, 196, h1, hs, acc, 5)
@@ -1273,8 +1288,8 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     MB = [num_ball(COLORS[j], ENT[j]["num"], 15) for j in range(N)]
     medal = [(255, 205, 40), (215, 220, 230), (225, 150, 80)]
     L, Rr = 150, 890   # края строк таблицы (справа — кнопки Shorts)
-    wk = week_races if week_races is not None else race_no
-    if final:
+    wk = season_races if season_races is not None else race_no
+    if final and not LG.get("teams"):
         g1, g2 = "ФИНАЛ НӘТИЖЕСІ", "ИТОГИ ФИНАЛА"
         rows = [(i, None) for i in ranking[:3]]
     elif LG.get("teams"):
@@ -1282,8 +1297,10 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
         rows = [(i, None) for i in ranking[:5]]
     elif wk >= 2:
         zz = "заезда" if wk % 10 == 1 and wk % 100 != 11 else "заездов"
-        if week_races is not None:
-            g1, g2 = f"АПТА КЕСТЕСІ · {wk} жарыстан кейін", f"ТАБЛИЦА НЕДЕЛИ · после {wk} {zz}"
+        if season_races is not None and CD:
+            g1, g2 = f"{TX['table'][0]} · {CD[0]}", f"{TX['table'][1]} · {CD[1]}"
+        elif season_races is not None:
+            g1, g2 = f"{TX['table'][0]} · {wk} жарыстан кейін", f"{TX['table'][1]} · после {wk} {zz}"
         else:
             g1, g2 = f"ТУРНИР КЕСТЕСІ · {wk} жарыстан кейін", f"ТУРНИРНАЯ ТАБЛИЦА · после {wk} {zz}"
         rows = [(idx[k_], pt) for k_, pt in table if k_ in idx][:5]
@@ -1309,12 +1326,12 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
         if pt is not None and g_:
             g = f"+{g_}"
             d2.text((px_ - 14 - d2.textlength(g, font=font(24)), yy + 5), g, font=font(24), fill=(120, 255, 140))
-    if final:
-        # зал славы: чемпионы недель по порядку (сохраняются навсегда)
-        hall = champions + [{"champion": ENT[winner]["key"]}]
+    if final and not LG.get("teams"):
+        # зал славы: чемпионы недель / месяцев по порядку (сохраняются навсегда)
+        hall = champions + [{"champion": ENT[winner]["key"], "season": season_id}]
         TITLES[ENT[winner]["key"]] = TITLES.get(ENT[winner]["key"], 0) + 1
         yh = y + 2 * gs + 24 + len(rows) * 44 + 6
-        hh1 = "ЧЕМПИОНДАР · ЧЕМПИОНЫ НЕДЕЛЬ"
+        hh1 = TX["hall"]
         text_c(d2, (L + Rr) / 2, yh, hh1, fit_size(hh1, 26, Rr - L), acc, 4)
         first = max(0, len(hall) - 3)
         for j, ch in enumerate(hall[first:]):
@@ -1323,7 +1340,7 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
             e = allents.get(ch["champion"], {"kk": ch["champion"], "ru": ch["champion"], "key": ch["champion"]})
             d2.rounded_rectangle([L, yy - 4, Rr, yy + 30], radius=10,
                                  fill=(255, 205, 40, 46) if j == len(hall[first:]) - 1 else (255, 255, 255, 20))
-            d2.text((L + 14, yy), f"{wn}-апта · Неделя {wn}", font=font(23), fill=(220, 220, 230))
+            d2.text((L + 14, yy), RL.season_label(league, ch, wn), font=font(23), fill=(220, 220, 230))
             nm = e["kk"] if not differs(e["kk"], e["ru"]) else f"{e['kk']} · {e['ru']}"
             fnm = font(fit_size(nm, 24, 330))
             nw = d2.textlength(nm, font=fnm) + 5 + d2.textlength(stars(e["key"]), font=fnm)
@@ -1331,7 +1348,7 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     blocks.append((1.2, b2))
     b3 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d3 = ImageDraw.Draw(b3)
-    s1, s2 = ("Дүйсенбіде — жаңа апта!", "С понедельника — новая неделя!") if final else LG["cta"]
+    s1, s2 = TX["next"] if final else LG["cta"]
     s3 = "Пікірге жаз · Пиши в комментариях"
     qs = pair_size([s1, s2], 36 if not final else 32, 640)
     cy_ = 1196 if not final else 1236
@@ -1410,10 +1427,12 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     # оба языка в самом начале названия — в ленте Shorts видно только начало
     title = RL.make_title(league, race_no, ENT, final)
     desc = RL.make_desc(league, ENT, final)
+    if CD:
+        desc = f"⏳ {CD[0]} · {CD[1]}\n\n" + desc
     if champions and allents and not final:
         ce = allents.get(champions[-1]["champion"])
         if ce:
-            desc = (f"🏆 Өткен апта чемпионы: {ce['kk']} · Чемпион прошлой недели: {ce['ru']}\n\n") + desc
+            desc = TX["prev_desc"].format(kk=ce["kk"], ru=ce["ru"]) + "\n\n" + desc
     tags = LG["tags"]
     log(f"Готово за {time.time() - t_start:.0f} с: победил {ENT[winner]['kk']}, ролик {total:.0f} с")
     return {"title": title, "description": desc, "tags": tags, "winner": ENT[winner]["key"],
