@@ -1,24 +1,12 @@
-2026-11-02 14:47 UTC
-av_rej_zamena.txt  https://support.avito.ru/articles/2238  (2310 симв.)
-av_rej_cena.txt  https://support.avito.ru/articles/2232  (2966 симв.)
-av_rej_vid.txt  https://support.avito.ru/articles/2922  (2128 симв.)
-av_rej_kategoria.txt  https://support.avito.ru/articles/2923  (2581 симв.)
-av_rej_neskolko.txt  https://support.avito.ru/articles/2918  (4286 симв.)
-av_search_podzakaz.txt  https://support.avito.ru/search?query=%D0%BF%D0%BE%D0%B4%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7  (34093 симв.)
-av_search_podzakaz_q.txt  https://support.avito.ru/search?q=%D0%BF%D0%BE%D0%B4%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7  (587 симв.)
+2026-11-02 14:50 UTC
+av_photo_A902.txt  http://89.126.192.214:8080/mebel/0f7s1eez/img/A902.jpg  (114 симв.)
+av_photo_2-3.txt  http://89.126.192.214:8080/mebel/0f7s1eez/img/2-3.jpg  (114 симв.)
+av_photo_missing.txt  http://89.126.192.214:8080/mebel/0f7s1eez/img/NO_SUCH_FILE.jpg  (114 симв.)
 
 --- ЖУРНАЛ ---
-open https://support.avito.ru/articles/2238: ok
-snap av_rej_zamena: 2310 симв.
-open https://support.avito.ru/articles/2232: ok
-snap av_rej_cena: 2966 симв.
-open https://support.avito.ru/articles/2922: ok
-snap av_rej_vid: 2128 симв.
-open https://support.avito.ru/articles/2923: ok
-snap av_rej_kategoria: 2581 симв.
-open https://support.avito.ru/articles/2918: ok
-snap av_rej_neskolko: 4286 симв.
-open https://support.avito.ru/search?query=%D0%BF%D0%BE%D0%B4%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7: ok
-snap av_search_podzakaz: 34093 симв.
-open https://support.avito.ru/search?q=%D0%BF%D0%BE%D0%B4%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7: ok
-snap av_search_podzakaz_q: 587 симв.
+open http://89.126.192.214:8080/mebel/0f7s1eez/img/A902.jpg: ok
+snap av_photo_A902: 114 симв.
+open http://89.126.192.214:8080/mebel/0f7s1eez/img/2-3.jpg: ok
+snap av_photo_2-3: 114 симв.
+open http://89.126.192.214:8080/mebel/0f7s1eez/img/NO_SUCH_FILE.jpg: ok
+snap av_photo_missing: 114 симв.
