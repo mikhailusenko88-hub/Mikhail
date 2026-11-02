@@ -31,15 +31,26 @@ def leaf(sm):
     else: raise ValueError("leaf " + n)
     c.load_state_dict({k: v for k, v in sm.state_dict().items()}); return c.eval()
 
+class MHA(nn.Module):  # внимание «вручную» (то же, что nn.MultiheadAttention), чтобы переводилось в ONNX
+    def __init__(s, sm):
+        super().__init__(); s.h = int(sm.num_heads); s.d = int(sm.embed_dim)
+        s.register_buffer("w", sm.in_proj_weight.detach().clone()); s.register_buffer("b", sm.in_proj_bias.detach().clone())
+        s.out = nn.Linear(s.d, s.d); s.out.load_state_dict({"weight": sm.out_proj.weight.detach().clone(), "bias": sm.out_proj.bias.detach().clone()})
+    def forward(s, x):
+        B, T = x.size(0), x.size(1); hd = s.d // s.h
+        q, k, v = F.linear(x, s.w, s.b).chunk(3, dim=-1)
+        q = q.reshape(B, T, s.h, hd).transpose(1, 2); k = k.reshape(B, T, s.h, hd).transpose(1, 2); v = v.reshape(B, T, s.h, hd).transpose(1, 2)
+        a = torch.softmax(torch.matmul(q, k.transpose(-1, -2)) / (hd ** 0.5), dim=-1)
+        return s.out(torch.matmul(a, v).transpose(1, 2).reshape(B, T, s.d))
 class PE(nn.Module):
     def __init__(s, sm): super().__init__(); s.register_buffer("scale", sm.scale.detach().clone()); s.register_buffer("pe", sm.pe.detach().clone())
     def forward(s, x): return x + s.scale * s.pe[:x.size(0)]
 class FFT(nn.Module):
     def __init__(s, sm):
-        super().__init__(); s.attn = leaf(sm.self_attn); s.norm1 = leaf(sm.norm1); s.norm2 = leaf(sm.norm2); s.conv1 = leaf(sm.conv1); s.conv2 = leaf(sm.conv2)
+        super().__init__(); s.attn = MHA(sm.self_attn); P('mha batch_first', bool(sm.self_attn.batch_first)) if not hasattr(FFT, '_p') else None; FFT._p = 1; s.norm1 = leaf(sm.norm1); s.norm2 = leaf(sm.norm2); s.conv1 = leaf(sm.conv1); s.conv2 = leaf(sm.conv2)
         s.lin = bool(sm.use_linear); s.pp = bool(sm.pitch_pred)
     def forward(s, src):
-        src = s.norm1(src + s.attn(src, src, src, need_weights=True)[0])
+        src = s.norm1(src + s.attn(src))
         s3 = src if s.lin else src.transpose(1, 2)
         y = s.conv2(F.relu(s.conv1(s3)))
         if s.pp:
