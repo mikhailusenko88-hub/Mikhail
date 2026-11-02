@@ -1,26 +1,33 @@
-2026-11-02 14:38 UTC
-av_support_s62.txt  https://support.avito.ru/sections/1722  (2058 симв.)
-av_support_a2271.txt  https://support.avito.ru/articles/4538  (2616 симв.)
-av_support_main.txt  https://support.avito.ru/  (3918 симв.)
-av_cdx_userdocs.txt  https://web.archive.org/cdx/search/cdx?url=www.avito.ru/web/1/autoload/user-docs/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000  (26 симв.)
-av_cdx_docs.txt  https://web.archive.org/cdx/search/cdx?url=www.avito.ru/autoload/documentation/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000  (1649 симв.)
-av_cdx_format.txt  https://web.archive.org/cdx/search/cdx?url=autoload.avito.ru/format/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000  (5221 симв.)
-av_cdx_support.txt  https://web.archive.org/cdx/search/cdx?url=support.avito.ru/articles/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=5000  (218 симв.)
+2026-11-02 14:44 UTC
+support.avito.ru_partitions_103.txt  https://support.avito.ru/partitions/103  (1074 симв.)
+support.avito.ru_sections_1804.txt  https://support.avito.ru/sections/1804  (5598 симв.)  [по ссылке с https://support.avito.ru/partitions/103]
+support.avito.ru_sections_1819.txt  https://support.avito.ru/sections/1819  (17468 симв.)  [по ссылке с https://support.avito.ru/partitions/103]
+support.avito.ru_sections_1820.txt  https://support.avito.ru/sections/1820  (5703 симв.)  [по ссылке с https://support.avito.ru/partitions/103]
+support.avito.ru_sections_1730.txt  https://support.avito.ru/sections/1730  (47915 симв.)
+support.avito.ru_sections_1730.txt  https://support.avito.ru/sections/1730?articleId=9214  (47915 симв.)  [по ссылке с https://support.avito.ru/sections/1730]
+support.avito.ru_sections_1730.txt  https://support.avito.ru/sections/1730?articleId=9215  (47915 симв.)  [по ссылке с https://support.avito.ru/sections/1730]
+support.avito.ru_sections_1730.txt  https://support.avito.ru/sections/1730?articleId=9216  (47915 симв.)  [по ссылке с https://support.avito.ru/sections/1730]
+support.avito.ru_sections_1730.txt  https://support.avito.ru/sections/1730?articleId=9217  (47915 симв.)  [по ссылке с https://support.avito.ru/sections/1730]
+support.avito.ru_sections_1730.txt  https://support.avito.ru/sections/1730?articleId=9218  (47915 симв.)  [по ссылке с https://support.avito.ru/sections/1730]
+support.avito.ru_sections_140.txt  https://support.avito.ru/sections/140?articleId=2180  (7306 симв.)  [по ссылке с https://support.avito.ru/sections/1730]
+support.avito.ru_partitions_364.txt  https://support.avito.ru/partitions/364  (1733 симв.)
+support.avito.ru_articles_2919.txt  https://support.avito.ru/articles/2919  (3491 симв.)  [по ссылке с https://support.avito.ru/partitions/364]
+support.avito.ru_articles_2920.txt  https://support.avito.ru/articles/2920  (1743 симв.)  [по ссылке с https://support.avito.ru/partitions/364]
+support.avito.ru_sections_1771.txt  https://support.avito.ru/sections/1771  (15695 симв.)
+support.avito.ru_sections_1771.txt  https://support.avito.ru/sections/1771?articleId=9482  (15695 симв.)  [по ссылке с https://support.avito.ru/sections/1771]
+support.avito.ru_sections_1771.txt  https://support.avito.ru/sections/1771?articleId=9483  (15695 симв.)  [по ссылке с https://support.avito.ru/sections/1771]
+support.avito.ru_sections_1771.txt  https://support.avito.ru/sections/1771?articleId=9484  (15695 симв.)  [по ссылке с https://support.avito.ru/sections/1771]
+support.avito.ru_sections_1771.txt  https://support.avito.ru/sections/1771?articleId=9485  (15695 симв.)  [по ссылке с https://support.avito.ru/sections/1771]
+support.avito.ru_sections_1771.txt  https://support.avito.ru/sections/1771?articleId=9486  (15695 симв.)  [по ссылке с https://support.avito.ru/sections/1771]
+support.avito.ru_sections_1771.txt  https://support.avito.ru/sections/1771?articleId=9487  (15695 симв.)  [по ссылке с https://support.avito.ru/sections/1771]
+support.avito.ru_sections_1771.txt  https://support.avito.ru/sections/1771?articleId=9488  (15695 симв.)  [по ссылке с https://support.avito.ru/sections/1771]
+support.avito.ru_sections_1771.txt  https://support.avito.ru/sections/1771?articleId=9489  (15695 симв.)  [по ссылке с https://support.avito.ru/sections/1771]
+support.avito.ru_sections_1771.txt  https://support.avito.ru/sections/1771?articleId=9490  (15695 симв.)  [по ссылке с https://support.avito.ru/sections/1771]
+support.avito.ru_sections_1771.txt  https://support.avito.ru/sections/1771?articleId=9491  (15695 симв.)  [по ссылке с https://support.avito.ru/sections/1771]
+support.avito.ru_articles_3528.txt  https://support.avito.ru/articles/3528?eventData%5BcontextId%5D=125  (15695 симв.)  [по ссылке с https://support.avito.ru/sections/1771]
+support.avito.ru_articles_1759.txt  https://support.avito.ru/articles/1759?eventData%5BcontextId%5D=125  (9204 симв.)  [по ссылке с https://support.avito.ru/sections/1771]
+av_arch_dlya_doma_2022.txt  https://web.archive.org/web/20220522161447/https://autoload.avito.ru/format/dlya_doma_i_dachi/  (64700 симв.)
 
 --- ЖУРНАЛ ---
-open https://support.avito.ru/sections/62: ok
-snap av_support_s62: 2058 симв.
-open https://support.avito.ru/articles/2271: ok
-snap av_support_a2271: 2616 симв.
-open https://support.avito.ru/: ok
-snap av_support_main: 3918 симв.
-open «https://web.archive.org/cdx/search/cdx?url=www.avito.ru/web/1/autoload/user-docs/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000»: ОШИБКА Page.goto: Timeout 60000ms exceeded.
-Call log:
-  - navigating to "https://web.archive.org/cdx/search/cdx?url=www.avito.ru/web/1/autoload/user-docs/*&fl=original,timestamp&collapse=urlkey&filter=status
-snap av_cdx_userdocs: 26 симв.
-open https://web.archive.org/cdx/search/cdx?url=www.avito.ru/autoload/documentation/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000: ok
-snap av_cdx_docs: 1649 симв.
-open https://web.archive.org/cdx/search/cdx?url=autoload.avito.ru/format/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000: ok
-snap av_cdx_format: 5221 симв.
-open https://web.archive.org/cdx/search/cdx?url=support.avito.ru/articles/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=5000: ok
-snap av_cdx_support: 218 симв.
+open https://web.archive.org/web/2022/https://autoload.avito.ru/format/dlya_doma_i_dachi/: ok
+snap av_arch_dlya_doma_2022: 64700 симв.
