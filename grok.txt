@@ -1,0 +1,8 @@
+# Проба Grok Imagine: оживить Барсика из Blender. Меняешь этот файл → бот запускается сам.
+# ~ $0.25 за секунду в 1080p (два кадра по 8 с ≈ $4)
+model=grok-imagine-video-1.5
+resolution=1080p
+duration=8
+# имя | картинка (первый кадр) | что происходит
+close | out/grok/in_close.jpg | Animate this exact character and keep his design unchanged in every frame: ginger tabby kitten with darker orange stripes, big green eyes with white sclera, pink nose, white muzzle and chest, blue neckerchief. He looks around curiously, ears twitch, slow blink, then he smiles warmly and tilts his head. Soft misty forest behind him, gentle morning light, high-end 3D animated feature film look, fine individual fur hairs, slow camera push-in. No text, no subtitles, no extra characters.
+full | out/grok/in_full.jpg | Animate this exact character and keep his design unchanged in every frame: ginger tabby kitten with darker orange stripes, big green eyes with white sclera, pink nose, white muzzle and chest, blue neckerchief. He waves his paw to the camera, then happily walks forward through the short green grass, tail swaying. Misty forest with tall trunks, soft sun rays through the fog, high-end 3D animated feature film look, fine individual fur hairs, camera slowly tracks back. No text, no subtitles, no extra characters.
