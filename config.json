@@ -1,0 +1,59 @@
+{
+  "_readme": "Настройки фида Авито Автозагрузки для «Пространства». Поля, начинающиеся с _, — пояснения, скрипт их не читает.",
+
+  "catalog_html": "/home/claude/mikhail/0f7s1eez/index.html",
+  "texts_json": "/home/claude/cards/avito_texts.json",
+  "output_xml": "/home/claude/avito/avito.xml",
+
+  "photo_base": "http://89.126.192.214:8080/mebel/0f7s1eez/img/",
+  "_extra_photos": "Доп. фото к объявлениям: ключ — артикул или вид товара (panel/color/mold/plinth/cornice/corner), значение — список имён файлов из img/. Пример: {\"panel\": [\"hero.jpg\"]}. Сейчас пусто: img/tex и img/dot — мелкие текстуры 64×512 и 56×56, для Авито не годятся.",
+  "extra_photos": {},
+
+  "_address": "ТОЛЬКО город (или позже — адрес склада). Домашний адрес / адрес регистрации ИП сюда не писать.",
+  "address": "Санкт-Петербург",
+
+  "_contacts": "Пока заглушки в квадратных скобках — такие поля скрипт НЕ пишет в XML (Авито тогда берёт контакты из профиля) и выводит предупреждение. Телефон — один российский номер, например +7 921 000-00-00.",
+  "contact_phone": "[телефон]",
+  "manager_name": "[имя менеджера]",
+  "_contact_method": "По телефону и в сообщениях | По телефону | В сообщениях",
+  "contact_method": "По телефону и в сообщениях",
+
+  "_ad_type": "Товар приобретен на продажу (перепродажа) | Товар от производителя",
+  "ad_type": "Товар приобретен на продажу",
+  "condition": "Новое",
+
+  "category": "Ремонт и строительство",
+  "goods_type": "Стройматериалы",
+  "_category_map": "Куда кладём каждый вид товара. Ключ — поле c из каталога. Значения — точные строки Авито. Если плинтусы нужно перенести в декор, поставьте plinth так же, как mold.",
+  "category_map": {
+    "panel":   {"GoodsSubType": "Отделка", "FinishingMaterialsType": "Стеновые панели, рейки и элементы декора", "WallPanelsSlatsDecorativeElementsSubType": "Стеновые панели"},
+    "color":   {"GoodsSubType": "Отделка", "FinishingMaterialsType": "Стеновые панели, рейки и элементы декора", "WallPanelsSlatsDecorativeElementsSubType": "Стеновые панели"},
+    "mold":    {"GoodsSubType": "Отделка", "FinishingMaterialsType": "Стеновые панели, рейки и элементы декора", "WallPanelsSlatsDecorativeElementsSubType": "Молдинги и лепнина"},
+    "cornice": {"GoodsSubType": "Отделка", "FinishingMaterialsType": "Стеновые панели, рейки и элементы декора", "WallPanelsSlatsDecorativeElementsSubType": "Молдинги и лепнина"},
+    "corner":  {"GoodsSubType": "Отделка", "FinishingMaterialsType": "Стеновые панели, рейки и элементы декора", "WallPanelsSlatsDecorativeElementsSubType": "Молдинги и лепнина"},
+    "plinth":  {"GoodsSubType": "Отделка", "FinishingMaterialsType": "Напольные покрытия", "FlooringMaterialsSubType": "Подложки, плинтусы, пороги"}
+  },
+
+  "_stock": "in_stock — артикулы, которые лежат на складе в СПб (как в каталоге: \"A902\", \"GS 1\", \"A002/2\"). Все остальные идут как «под заказ». Первая партия ещё не приехала — список пуст.",
+  "in_stock": [],
+  "lead_time": "3–4 недели",
+  "stock_line": "В наличии на складе в Санкт-Петербурге.",
+  "order_line": "Под заказ, срок поставки — {lead_time}.",
+  "_availability_line_position": "start — строка наличия первой строкой описания, end — последней",
+  "availability_line_position": "start",
+  "_availability_tag": "Писать ли тег <Availability> (В наличии / Под заказ). По спецификации Авито он используется только в «Мебель и интерьер» (кровати/диваны, кухонные гарнитуры), в «Стройматериалах» его нет — поэтому выключено, наличие пишется строкой в описании. Включать, только если Авито добавит поле в шаблон категории.",
+  "availability_tag": false,
+
+  "_prices": "Цена за 1 шт. Сейчас = цене сайта (поле r каталога), множитель 1.0. Как перейти на новые цены: (1) поднять всё разом — поменять price_multiplier, например 1.15, цена округлится вверх до price_round_to ₽; (2) задать точные цены отдельным позициям — вписать в prices: {\"A902\": 890, \"GS 1\": 520}; prices важнее множителя.",
+  "price_multiplier": 1.0,
+  "price_round_to": 10,
+  "prices": {},
+
+  "_multi_item": "MultiItem: пусто — Авито само решает, объединять ли похожие объявления (например, цвета 2-3…5-15) в мультиобъявление; \"Нет\" — запретить объединение; \"Да\" — разрешить явно.",
+  "multi_item": "",
+
+  "_description_html": "true — описание в CDATA с тегами <p>, <br>, <ul>, <li> (их Авито разрешает); false — простой текст",
+  "description_html": true,
+  "title_max": 50,
+  "description_max": 7500
+}
