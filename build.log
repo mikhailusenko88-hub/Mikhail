@@ -1,0 +1,13 @@
+mha batch_first True
+HG shorten 3 pool AvgPool1d(kernel_size=(3,), stride=(3,), padding=(0,)) dim 128 n pre/short/post [1, 2, 1]
+export front 3.3 MB
+export enc 14.2 MB
+export dec 11.6 MB
+export voc 58.3 MB
+tts[0] corr 1.00000 len 114000 ref 114000
+tts[1] corr 0.99999 len 136800 ref 136800
+tts[2] corr 1.00000 len 229200 ref 229200
+emb (126523, 16) 87.9422378540039
+stress.json 2.75 MB; emb 4.05 MB
+stress numpy vs torch: mismatches 1 of 3000
+done
