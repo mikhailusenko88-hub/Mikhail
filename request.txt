@@ -1,7 +1,8 @@
-# Авито — прогон 6: доступны ли фото для фида на сервере
-open: http://89.126.192.214:8080/mebel/0f7s1eez/img/A902.jpg
-snap: av_photo_A902
-open: http://89.126.192.214:8080/mebel/0f7s1eez/img/2-3.jpg
-snap: av_photo_2-3
-open: http://89.126.192.214:8080/mebel/0f7s1eez/img/NO_SUCH_FILE.jpg
-snap: av_photo_missing
+# Проверка сервера в Казахстане: какие папки отдаёт
+http://89.126.192.214:8080/mebel/t6htram0/
+http://89.126.192.214:8080/mebel/h9zuc3dh/
+http://89.126.192.214:8080/mebel/0f7s1eez/
+http://89.126.192.214:8080/mebel/0f7s1eez/avito.xml
+http://89.126.192.214:8080/mebel/0f7s1eez/img/A907.jpg
+http://89.126.192.214:8080/mebel/ibr3nai/
+http://89.126.192.214:8080/mebel/_lib/three.min.js
