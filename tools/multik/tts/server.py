@@ -130,9 +130,12 @@ def make(text, speaker="ru_albina", soft=True, rate="medium", pitch="medium"):
     with lock:
         raw = synth(mark(text), speaker, rate, pitch)
     af = (SOFT + "," if soft else "") + "aresample=%d" % SR_OUT
-    p = subprocess.run(["ffmpeg", "-v", "error", "-f", "wav", "-i", "pipe:0", "-af", af, "-ac", "1", "-ar", str(SR_OUT), "-f", "wav", "pipe:1"],
-                       input=raw, stdout=subprocess.PIPE, check=True)
-    out = p.stdout
+    try:
+        p = subprocess.run(["ffmpeg", "-v", "error", "-f", "wav", "-i", "pipe:0", "-af", af, "-ac", "1", "-ar", str(SR_OUT), "-f", "wav", "pipe:1"],
+                           input=raw, stdout=subprocess.PIPE, check=True)
+        out = p.stdout
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        out = raw  # нет ffmpeg — отдаём голос без обработки
     tmp = f + ".tmp"
     open(tmp, "wb").write(out); os.replace(tmp, f)
     prune()

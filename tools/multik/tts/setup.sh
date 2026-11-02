@@ -9,8 +9,14 @@ B=${TTS_SRC:-https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel
 PORT=8095
 echo "== 1/6 пакеты"
 export DEBIAN_FRONTEND=noninteractive
-apt-get update -qq
-apt-get install -y -qq python3-venv python3-pip ffmpeg curl >/dev/null
+apt-get update -qq || echo "часть источников Ubuntu не отвечает — продолжаю с теми, что работают"
+apt-get install -y -qq python3-venv python3-pip curl xz-utils >/dev/null || for p in python3-venv python3-pip curl xz-utils; do apt-get install -y -qq $p >/dev/null || echo "пакет $p не поставился"; done
+apt-get install -y -qq ffmpeg >/dev/null || echo "ffmpeg из Ubuntu не поставился — возьму готовую сборку"
+if ! command -v ffmpeg >/dev/null; then
+  curl -fsSL -o /tmp/ffmpeg.tar.xz https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz \
+    && mkdir -p /tmp/ffm && tar -xJf /tmp/ffmpeg.tar.xz -C /tmp/ffm --strip-components=1 && cp /tmp/ffm/ffmpeg /usr/local/bin/ && chmod +x /usr/local/bin/ffmpeg \
+    || echo "ffmpeg не нашёлся — голос будет без мягкой обработки"
+fi
 
 echo "== 2/6 память"
 mem=$(free -m | awk '/Mem:/{print $2}'); sw=$(free -m | awk '/Swap:/{print $2}')
@@ -24,7 +30,10 @@ fi
 echo "== 3/6 python (несколько минут)"
 id multiktts >/dev/null 2>&1 || useradd --system --home-dir $D --shell /usr/sbin/nologin multiktts
 mkdir -p $D/cache $D/hf
-[ -x $D/venv/bin/python ] || python3 -m venv $D/venv
+if [ ! -x $D/venv/bin/pip ]; then
+  rm -rf $D/venv
+  python3 -m venv $D/venv 2>/dev/null || { python3 -m venv --without-pip $D/venv && curl -fsSL https://bootstrap.pypa.io/get-pip.py | $D/venv/bin/python - -q; }
+fi
 $D/venv/bin/pip install -q --upgrade pip
 $D/venv/bin/pip install -q torch --index-url https://download.pytorch.org/whl/cpu
 $D/venv/bin/pip install -q numpy ruaccent
