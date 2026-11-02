@@ -1,0 +1,12 @@
+# Saby: отчётность, ЭДО, тарифы
+follow: tarif|price|цен|тариф|stoim
+https://saby.ru/tariffs
+https://saby.ru/ereport/new
+https://saby.ru/ereport
+follow: tarif|price|цен|тариф
+https://saby.ru/edo/docs
+https://saby.ru/accounting/ip
+# Контур для сравнения
+https://kontur.ru/extern/price
+https://kontur.ru/extern/price-optimal-plus/78
+https://kontur.ru/diadoc/price
