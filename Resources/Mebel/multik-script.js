@@ -366,7 +366,7 @@ S.parse = function (text, lib, opts) {
           if (typeof step.to === 'number') sc._x[id] = step.to; else if (sc._x[step.to] != null) sc._x[id] = sc._x[step.to] + (sc._x[step.to] > sc._x[id] ? -.12 : .12); }
         else if (verb === 'think') { step.do = 'think'; const q = sent.match(/[«"]([^»"]+)[»"]/); step.text = q ? q[1] : (d.match(/(о|об|про)\s+(\S+)/) ? '?' : '?'); }
         else if ((verb === 'turn' || verb === 'read') && /(бинокл|телескоп|подзорн|лупу|лупой|лупа|в трубу)/.test(d)) { grab(id, propIn(d) || 'binoculars'); step.do = 'peer'; }
-        else if (['read', 'dig', 'paint', 'write', 'play', 'drink'].includes(verb)) { const need = { read: null, dig: 'shovel', paint: 'paints', write: 'pencil', play: null, drink: null }[verb]; const p = propIn(d) || need;
+        else if (['read', 'dig', 'paint', 'write', 'play', 'drink'].includes(verb)) { const need = { read: null, dig: 'shovel', paint: 'paints', write: 'pencil', play: null, drink: 'cup' }[verb]; let p = propIn(d) || need; if (verb === 'drink' && !/^(milk|cup|jar)$/.test(p)) p = 'cup'; // пьёт чай/сок — из чашки
           if (verb === 'play' && !(p && /^(guitar|drum|flute|bell)$/.test(p))) { if (!step.emotion) step.emotion = 'happy'; }
           else { if (p) grab(id, p); step.do = verb; } }
         else if (['push', 'pull', 'sniff', 'knock'].includes(verb)) { const p = propIn(d); if (p) { if (verb === 'pull' && /^(rope|kite|sled|balloon)$/.test(p)) grab(id, p); else { const pr = ensureProp(p, id); pr._used = true; } } step.do = verb; }
