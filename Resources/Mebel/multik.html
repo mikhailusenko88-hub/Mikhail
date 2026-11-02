@@ -373,7 +373,7 @@ const SrvVoice = {
     const ln = MK.lineFor ? MK.lineFor({}, lib, 'Р', text, { say: text }, 0) : null; if (!ln || !ln.srv) return 0;
     const box = show && document.getElementById(show); if (box) box.textContent = window.MKVoice && !MKVoice.ready ? 'Загружаю голос (первый раз несколько секунд)…' : 'Озвучиваю…';
     this.down = 0; this.localFail = false; const r = await this.get(ln, 60);
-    if (box) box.innerHTML = window.MKStress && MKStress.ready ? 'Читает так: ' + esc(MKStress.accent(ln.srv.text, lib.lexicon)).replace(/\+([а-яёА-ЯЁ])/g, (m0, c) => '<b style="color:#ffd23f">' + c.toUpperCase() + '</b>') : '';
+    if (box) box.innerHTML = window.MKStress && MKStress.ready ? 'Читает так: ' + esc((window.MKVoice && MKVoice.lastText) || MKStress.accent(ln.srv.text, lib.lexicon)).replace(/\+([а-яёА-ЯЁ])/g, (m0, c) => '<b style="color:#ffd23f">' + c.toUpperCase() + '</b>') : '';
     if (!r) { alert('Нейроголос не запустился. ' + (window.MKVoice && MKVoice.error ? 'Причина: ' + MKVoice.error : 'Файлы голоса не найдены в приложении.')); return 0; }
     if (!pvCtx || pvCtx.state === 'closed') pvCtx = new (window.AudioContext || window.webkitAudioContext)(); try { pvCtx.resume(); } catch (e) {} if (pvSrc) { try { pvSrc.stop(); } catch (e) {} }
     const raw = r.buf || await pvCtx.decodeAudioData(unb64(r.wav).buffer), buf = await MK.voiceFx(raw, MK.VOICE_FX.natural);

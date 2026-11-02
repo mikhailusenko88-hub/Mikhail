@@ -35,10 +35,11 @@
         cur.forEach((t, i) => { const x = t.toLowerCase().replace(/[^А-Яа-яёЁ]/g, ''); tokens.push(t); inputs.push(x); mask.push(x.length > 0 && cm[i]); }); }
       return { tokens, inputs, mask }; },
     /** Текст → текст с «+» перед ударной гласной в каждом слове (свои «+» и «ё» не трогает). lex.stress — словарь пользователя. */
+    userMarks(sentence, lex) { const user = (lex && lex.stress) || {};
+      return sentence.replace(/[А-Яа-яЁё+]+/g, w => { if (w.includes('+')) return w; const u = user[w.toLowerCase().replace(/ё/g, 'е')] || user[w.toLowerCase()]; if (!u) return w;
+        let out = '', j = 0; for (const c of u) { if (c === '+') { out += '+'; continue; } const o = w[j++] || c; out += isLower(o) ? c : c.toUpperCase(); } return out; }); },
     accent(sentence, lex) { if (!this.ready) return sentence;
-      const user = (lex && lex.stress) || {};
-      sentence = sentence.replace(/[А-Яа-яЁё]+/g, w => { const u = user[w.toLowerCase().replace(/ё/g, 'е')] || user[w.toLowerCase()]; if (!u || w.includes('+')) return w;
-        let out = '', j = 0; for (const c of u) { if (c === '+') { out += '+'; continue; } const o = w[j++] || c; out += isLower(o) ? c : c.toUpperCase(); } return out; });
+      if (lex) sentence = this.userMarks(sentence, lex);
       const { tokens, inputs, mask } = this.tokenize(sentence), res = [];
       for (let k = 0; k < tokens.length; k++) { let raw = tokens[k]; const clean = inputs[k], low = raw.toLowerCase();
         if (!mask[k]) { res.push(raw); continue; }
@@ -65,6 +66,61 @@
     /** Слова-омографы в тексте (з+амок/зам+ок): что поставил голос и какие есть варианты — для настройки ударений. */
     homographs(text) { const out = []; for (const w of (text.toLowerCase().match(/[а-яё]+/g) || [])) if (this.HOMO[w] && !out.some(o => o.w === w)) out.push({ w, v: this.HOMO[w] }); return out; },
   };
+
+  // ---------- омографы (з+амок / зам+ок): фразы + маленький BERT из silero-stress, как HomoSolver ----------
+  const MKHomo = {
+    ready: false, _p: null,
+    load(ort) { if (this._p) return this._p;
+      return (this._p = (async () => {
+        const d = await (await fetch(BASE + 'homo.json')).json(), q = await (await fetch(BASE + 'homo_emb.q8')).arrayBuffer();
+        this.q = d.dtype === 'int8' ? new Int8Array(q) : new Uint8Array(q); this.d = d; this.H = d.H;
+        this.vocab = new Map(); d.vocab.split('\n').forEach((t, i) => this.vocab.set(t, i)); this.never = new Set(d.never_split);
+        this.re = {}; for (const [w, pat] of Object.entries(d.phrases)) { try { this.re[w] = new RegExp(pat.replace(/\(\?P</g, '(?<'), 'i'); } catch (e) {} }
+        this.head = d.head.map(l => l.t === 'lin' ? { t: 'lin', w: Float32Array.from(l.w.flat()), b: Float32Array.from(l.b), o: l.w.length, i: l.w[0].length } : l);
+        this.sess = await ort.InferenceSession.create(BASE + 'homo.onnx', { executionProviders: ['wasm'], graphOptimizationLevel: 'all' });
+        this.ready = true; })().catch(e => { this._p = null; throw e; })); },
+    async unload() { if (this.sess) { try { await this.sess.release(); } catch (e) {} } this.sess = null; this.ready = false; this._p = null; },
+    // BERT-токенизатор (BasicTokenizer + WordPiece, без перевода в нижний регистр)
+    basic(text) { let t = ''; for (const c of text) { const cp = c.codePointAt(0); if (cp === 0 || cp === 0xfffd || (/\p{C}/u.test(c) && !'\t\n\r'.includes(c))) continue; t += (/[ \t\n\r]/.test(c) || /\p{Zs}/u.test(c)) ? ' ' : c; }
+      const out = []; for (const tok of t.trim().split(/\s+/).filter(Boolean)) { if (this.never.has(tok)) { out.push(tok); continue; }
+        let cur = null; for (const c of tok) { const cp = c.codePointAt(0), pun = (cp >= 33 && cp <= 47) || (cp >= 58 && cp <= 64) || (cp >= 91 && cp <= 96) || (cp >= 123 && cp <= 126) || /\p{P}/u.test(c);
+          if (pun) { out.push(c); cur = null; } else { if (cur === null) { out.push(''); cur = out.length - 1; } out[cur] += c; } } }
+      return out; },
+    wordpiece(tokens) { const out = []; for (const tok of tokens) { const ch = [...tok]; if (ch.length > 100) { out.push('[UNK]'); continue; } let st = 0, bad = false; const sub = [];
+        while (st < ch.length) { let en = ch.length, cs = null; while (st < en) { let s = ch.slice(st, en).join(''); if (st > 0) s = '##' + s; if (this.vocab.has(s)) { cs = s; break; } en--; } if (cs === null) { bad = true; break; } sub.push(cs); st = en; }
+        if (bad) out.push('[UNK]'); else out.push(...sub); } return out; },
+    encode(text) { const I = this.d.ids; return [I.cls, ...this.wordpiece(this.basic(text)).map(t => this.vocab.has(t) ? this.vocab.get(t) : I.unk), I.sep]; },
+    clean(text, isStart) { if (!text) return '';
+      text = text.replace(/[^a-zA-Zа-яА-ЯёЁ0-9\s.!?,\-]/g, '').replace(/\s+/g, ' ').replace(/-{2,}/g, ' - ').replace(/([.!?])\1+/g, '$1').replace(/,{2,}/g, ',').replace(/\s+([.,!?])/g, '$1')
+        .replace(/([.!?])\1+/g, '$1').replace(/,{2,}/g, ',').replace(/([.,!?])(?=\S)/g, '$1 ').replace(/\s+/g, ' ').trim();
+      if (isStart) { text = text.replace(/^[ .,!?-]+/, ''); if (text) text = text[0].toUpperCase() + text.slice(1).toLowerCase(); }
+      else { if (text) text = text[0] + text.slice(1).toLowerCase(); if (text && !'.!?'.includes(text[text.length - 1])) text += '.'; }
+      return text; },
+    decap(name) { for (let i = 0; i < name.length; i++) if (name[i] !== name[i].toLowerCase()) return name.slice(0, i) + '+' + name.slice(i).toLowerCase(); return name; },
+    async predict(mark, wl) {
+      const re = this.re[wl]; if (re) { const m = re.exec(mark); if (m && m.groups) for (const [k, v] of Object.entries(m.groups)) if (v != null) return this.decap(k); }
+      const vars = this.d.homodict[wl]; if (!vars) return null;
+      const ids = this.encode(mark), I = this.d.ids, a = ids.indexOf(I.hs), b = ids.indexOf(I.he); if (a < 0 || b < 0) return null;
+      const H = this.H, L = ids.length, E = new Float32Array(L * H), sc = this.d.scale, zp = this.d.zp;
+      for (let i = 0; i < L; i++) { const r = ids[i] * H; for (let j = 0; j < H; j++) E[i * H + j] = (this.q[r + j] - zp) * sc; }
+      const hid = (await this.sess.run({ emb: new global.ort.Tensor('float32', E, [1, L, H]) })).hidden.data;
+      let x = new Float32Array(2 * H); for (let j = 0; j < H; j++) x[j] = hid[a * H + j];
+      const n = Math.max(1, b - a - 1); for (let i = a + 1; i < b; i++) for (let j = 0; j < H; j++) x[H + j] += hid[i * H + j] / n;
+      for (const l of this.head) { if (l.t === 'lin') { const y = new Float32Array(l.o); for (let o = 0; o < l.o; o++) { let s = l.b[o]; const r = o * l.i; for (let i = 0; i < l.i; i++) s += l.w[r + i] * x[i]; y[o] = s; } x = y; }
+        else if (l.t === 'ReLU') x = x.map(v => Math.max(0, v)); else if (l.t === 'Tanh') x = x.map(Math.tanh); else if (l.t === 'GELU' || l.t === 'GELUActivation') x = x.map(v => .5 * v * (1 + erf(v / Math.SQRT2))); }
+      return [...vars].sort()[x[0] > 0 ? 1 : 0]; },
+    async solve(sentence) { if (!this.ready) return sentence; const hits = [];
+      for (const m of sentence.matchAll(/(?=.*[а-яё])[а-яё+]+/gi)) { const w = m[0], wl = w.toLowerCase(); if (!(this.d.homodict[wl] || this.re[wl])) continue;
+        const st = this.clean(sentence.slice(0, m.index), true).slice(-(this.d.window >> 1)), en = this.clean(sentence.slice(m.index + w.length), false).slice(0, this.d.window >> 1);
+        const p = await this.predict((st + ' [HOMO] ' + wl + ' [/HOMO] ' + en).trim(), wl); if (p) hits.push({ s: m.index, e: m.index + w.length, w, p }); }
+      let out = sentence, off = 0;
+      for (const h of hits) { const nv = [...h.p].filter(c => VOW.includes(c.toLowerCase())).length, si = h.p.indexOf('+'); let wp = h.p.replace('+', '');
+        wp = [...h.w].map((c1, i) => wp[i] == null ? '' : (isLower(c1) ? wp[i].toLowerCase() : wp[i].toUpperCase())).join('');
+        wp = wp.slice(0, si) + '+' + wp.slice(si); // stress_single_vowel = True: «+» ставится всегда
+        out = out.slice(0, h.s + off) + wp + out.slice(h.e + off); off += wp.length - (h.e - h.s); }
+      return out; },
+  };
+  function erf(x) { const t = 1 / (1 + .3275911 * Math.abs(x)), y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - .284496736) * t + .254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; }
 
   // ---------- обратное БПФ любой длины из множителей 2,3,4,5 (n_fft = 2400) ----------
   function makeIFFT(N) {
@@ -103,9 +159,9 @@
         this.ifft = makeIFFT(M.istft.n_fft);
         const opt = { executionProviders: ['wasm'], graphOptimizationLevel: 'all' }, S = {};
         for (const k of ['front', 'enc', 'dec', 'voc']) S[k] = await ort.InferenceSession.create(BASE + k + '.onnx', opt);
-        this.S = S; await MKStress.load(); this.ready = true; this.loadMs = Date.now() - t0; return true;
+        this.S = S; await MKStress.load(); try { await MKHomo.load(ort); } catch (e) { console.log('омографы не загрузились', e && e.message); } this.ready = true; this.loadMs = Date.now() - t0; return true;
       } catch (e) { this.error = e && e.message || String(e); this._p = null; throw e; } })()); },
-    async unload() { if (this.S) for (const s of Object.values(this.S)) { try { await s.release(); } catch (e) {} } this.S = null; this.ready = false; this._p = null; },
+    async unload() { if (this.S) for (const s of Object.values(this.S)) { try { await s.release(); } catch (e) {} } await MKHomo.unload(); this.S = null; this.ready = false; this._p = null; },
     /** Текст (уже с «+») → номера символов, как у Silero (prepare_text_input + preprocess_tacotron). */
     ids(text) { const M = this.meta;
       let t = String(text).trim().replace(/\n/g, '. ').toLowerCase().replace(/—/g, '–').replace(/‑/g, '-');
@@ -140,7 +196,8 @@
     /** Текст → голос. o: {speaker:'ru_albina', rate:1, pitch:1, lex, accent:true}. Возвращает Float32Array 48 кГц. */
     async speak(text, o) { o = o || {}; await this.load();
       let t = String(text || '').replace(/[«»"“”]/g, '').replace(/\s+/g, ' ').trim(); if (!t) return new Float32Array(0);
-      if (o.accent !== false) t = MKStress.accent(t, o.lex);
+      if (o.accent !== false) { t = MKStress.userMarks(t, o.lex); if (MKHomo.ready) { try { t = await MKHomo.solve(t); } catch (e) { console.log('омографы', e && e.message); } } t = MKStress.accent(t, null); }
+      this.lastText = t;
       const parts = [], cur = []; for (const s of t.split(/(?<=[.!?…])\s+/)) { if (cur.join(' ').length + s.length > 700 && cur.length) { parts.push(cur.join(' ')); cur.length = 0; } cur.push(s); } if (cur.length) parts.push(cur.join(' '));
       const bufs = []; for (const p of parts) { bufs.push(await this.chunk(p, o)); bufs.push(new Float32Array(Math.round(48000 * .22))); } bufs.pop();
       const n = bufs.reduce((a, b) => a + b.length, 0), y = new Float32Array(n); let k = 0; for (const b of bufs) { y.set(b, k); k += b.length; } return y; },
@@ -157,5 +214,5 @@
     const mix = ac.createGain(); node.connect(mix);
     for (const [ms, g] of [[28, .08], [47, .05]]) { const dl = ac.createDelay(.2); dl.delayTime.value = ms / 1000; const gg = ac.createGain(); gg.gain.value = g; node.connect(dl); dl.connect(gg); gg.connect(mix); }
     mix.connect(ac.destination); src.start(0); return ac.startRendering(); };
-  global.MKVoice = MKVoice; global.MKStress = MKStress;
+  global.MKVoice = MKVoice; global.MKStress = MKStress; global.MKHomo = MKHomo;
 })(typeof window !== 'undefined' ? window : globalThis);
