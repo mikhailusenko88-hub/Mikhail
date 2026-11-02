@@ -73,7 +73,7 @@ const VOICE_PRESETS = {
 
 /** Новый пустой черновик. */
 // телосложение по умолчанию: у каждого вида своё, а внутри вида — разное у разных героев (по имени, всегда одинаково)
-const BUILDS = { cat: ['slim', 'slim', 'normal'], mouse: ['slim', 'slim', 'normal'], fox: ['slim'], rabbit: ['slim', 'slim', 'normal'], wolf: ['tall', 'slim'], squirrel: ['slim'], dog: ['normal', 'slim', 'chubby', 'stocky'],
+const BUILDS = { cat: ['slim', 'slim', 'normal'], mouse: ['slim', 'slim', 'normal'], fox: ['slim'], rabbit: ['slim', 'slim', 'normal'], wolf: ['tall', 'slim'], squirrel: ['slim'], dog: ['normal', 'slim', 'chubby', 'normal'],
   bear: ['chubby', 'stocky'], pig: ['chubby'], cow: ['chubby'], elephant: ['chubby'], lion: ['stocky', 'normal'], hedgehog: ['round'], owl: ['round'], chick: ['round'], duck: ['chubby', 'round'], bird: ['normal', 'round'], frog: ['normal', 'chubby'], dragon: ['stocky', 'normal'], robot: ['normal'], human: ['normal', 'normal', 'slim', 'chubby'] };
 Maker.defaultBuild = function (s) { const L = BUILDS[s.kind] || ['normal']; let h = 0; const k = String(s.name || s.id || ''); for (let i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) >>> 0; return L[h % L.length]; };
 Maker.BUILD_NAMES = { slim: 'худенький', normal: 'обычный', chubby: 'пухленький', tall: 'высокий', stocky: 'крепкий', round: 'кругленький' };
