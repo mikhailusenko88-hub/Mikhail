@@ -49,16 +49,16 @@ class FFT(nn.Module):
         s6 = s7 if s.lin else s7.transpose(1, 2)
         return s.norm2(s6)
 class FT(nn.Module):
-    def __init__(s, sm): super().__init__(); s.pe = PE(sm.pos_encoder); s.layers = nn.ModuleList([FFT(l) for l in sm.layers]); s.norm = leaf(sm.norm)
+    def __init__(s, sm): super().__init__(); s.pe = PE(sm.pos_encoder); s.layers = nn.ModuleList([FFT(l) for _, l in sm.layers.named_children()]); s.norm = leaf(sm.norm)
     def forward(s, x):
         x = s.pe(x.transpose(0, 1)).transpose(0, 1)
         for l in s.layers: x = l(x)
         return s.norm(x)
 class HG(nn.Module):
     def __init__(s, sm):
-        super().__init__(); s.pe = PE(sm.pos_encoder); s.pre = FFT(sm.pre_vanilla_layers[0]); s.sh1 = FFT(sm.shorten_layers[1]); s.post = FFT(sm.post_vanilla_layers[0]); s.norm = leaf(sm.norm)
+        super().__init__(); s.pe = PE(sm.pos_encoder); s.pre = FFT(getattr(sm.pre_vanilla_layers, '0')); s.sh1 = FFT(getattr(sm.shorten_layers, '1')); s.post = FFT(getattr(sm.post_vanilla_layers, '0')); s.norm = leaf(sm.norm)
         s.sf = int(sm.shorten_factor); s.pool = leaf(sm.downsample.avg_pool); s.proj = leaf(sm.upsample.proj); s.dim = int(sm.upsample.dim)
-        P("HG shorten", s.sf, "pool", s.pool, "dim", s.dim, "n pre/short/post", len(sm.pre_vanilla_layers), len(sm.shorten_layers), len(sm.post_vanilla_layers))
+        P("HG shorten", s.sf, "pool", s.pool, "dim", s.dim, "n pre/short/post", [len(list(x.named_children())) for x in (sm.pre_vanilla_layers, sm.shorten_layers, sm.post_vanilla_layers)])
     def forward(s, x):
         L = x.size(1)
         x = s.pe(x.transpose(0, 1)).transpose(0, 1)
