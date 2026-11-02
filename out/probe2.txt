@@ -7,167 +7,118 @@ logdur torch.Size([1, 37]) pitch torch.Size([1, 1, 37])
 enc torch.Size([1, 37, 128])
 mel torch.Size([1, 192, 219])
 mag torch.Size([1, 1201, 219])
-export front FAIL ls.py", line 904, in _trace_and_get_graph_from_model
-    trace_graph, torch_out, inputs_states = torch.jit._get_trace_graph(
-                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_trace.py", line 1500, in _get_trace_graph
-    outs = ONNXTracedModule(
-           ^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_trace.py", line 139, in forward
-    graph, out = torch._C._create_graph_by_tracing(
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_trace.py", line 130, in wrapper
-    outs.append(self.inner(*trace_inputs))
-                ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1726, in _slow_forward
-    result = self.forward(*input, **kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/Mikhail/Mikhail/probe2.py", line 31, in forward
-    return s.dp(seq, spk, mask, 1.0, None), s.pp(seq, spk, mask, 1.0)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1715, in _slow_forward
-    return self.forward(*input, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: Tried to trace <__torch__.jit_forward_model.JitDurPredictor object at 0x5a00e3843950> but it is not part of the active trace. Modules that are called during a trace must be registered as submodules of the thing being traced.
+export front FAIL tedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 502, in export
+    _export(
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1564, in _export
+    graph, params_dict, torch_out = _model_to_graph(
+                                    ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1117, in _model_to_graph
+    graph = _optimize_graph(
+            ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 639, in _optimize_graph
+    graph = _C._jit_pass_onnx(graph, operator_export_type)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1836, in _run_symbolic_function
+    return symbolic_fn(graph_context, *inputs, **attrs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/symbolic_opset9.py", line 6480, in prim_if
+    env = torch._C._jit_pass_onnx_block(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1836, in _run_symbolic_function
+    return symbolic_fn(graph_context, *inputs, **attrs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/symbolic_opset9.py", line 6508, in prim_if
+    torch._C._jit_pass_onnx_block(
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1836, in _run_symbolic_function
+    return symbolic_fn(graph_context, *inputs, **attrs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/symbolic_opset9.py", line 6480, in prim_if
+    env = torch._C._jit_pass_onnx_block(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1836, in _run_symbolic_function
+    return symbolic_fn(graph_context, *inputs, **attrs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/symbolic_opset9.py", line 6480, in prim_if
+    env = torch._C._jit_pass_onnx_block(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1848, in _run_symbolic_function
+    raise errors.UnsupportedOperatorError(
+torch.onnx.errors.UnsupportedOperatorError: Exporting the operator 'aten::format' to ONNX opset version 17 is not supported. Please feel free to request support or submit a pull request on PyTorch GitHub: https://github.com/pytorch/pytorch/issues.
 
-export enc FAIL /Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 904, in _trace_and_get_graph_from_model
-    trace_graph, torch_out, inputs_states = torch.jit._get_trace_graph(
-                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_trace.py", line 1500, in _get_trace_graph
-    outs = ONNXTracedModule(
-           ^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_trace.py", line 139, in forward
-    graph, out = torch._C._create_graph_by_tracing(
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_trace.py", line 130, in wrapper
-    outs.append(self.inner(*trace_inputs))
-                ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1726, in _slow_forward
-    result = self.forward(*input, **kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/Mikhail/Mikhail/probe2.py", line 36, in forward
-    x = t.embedding(seq)
-        ^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1715, in _slow_forward
-    return self.forward(*input, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: Tried to trace <__torch__.torch.nn.modules.sparse.Embedding object at 0x5a00e3b2d4b0> but it is not part of the active trace. Modules that are called during a trace must be registered as submodules of the thing being traced.
+export enc FAIL tedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 502, in export
+    _export(
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1564, in _export
+    graph, params_dict, torch_out = _model_to_graph(
+                                    ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1117, in _model_to_graph
+    graph = _optimize_graph(
+            ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 639, in _optimize_graph
+    graph = _C._jit_pass_onnx(graph, operator_export_type)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1836, in _run_symbolic_function
+    return symbolic_fn(graph_context, *inputs, **attrs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/symbolic_opset9.py", line 6480, in prim_if
+    env = torch._C._jit_pass_onnx_block(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1836, in _run_symbolic_function
+    return symbolic_fn(graph_context, *inputs, **attrs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/symbolic_opset9.py", line 6508, in prim_if
+    torch._C._jit_pass_onnx_block(
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1836, in _run_symbolic_function
+    return symbolic_fn(graph_context, *inputs, **attrs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/symbolic_opset9.py", line 6480, in prim_if
+    env = torch._C._jit_pass_onnx_block(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1836, in _run_symbolic_function
+    return symbolic_fn(graph_context, *inputs, **attrs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/symbolic_opset9.py", line 6480, in prim_if
+    env = torch._C._jit_pass_onnx_block(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1848, in _run_symbolic_function
+    raise errors.UnsupportedOperatorError(
+torch.onnx.errors.UnsupportedOperatorError: Exporting the operator 'aten::format' to ONNX opset version 17 is not supported. Please feel free to request support or submit a pull request on PyTorch GitHub: https://github.com/pytorch/pytorch/issues.
 
-export dec FAIL ne 904, in _trace_and_get_graph_from_model
-    trace_graph, torch_out, inputs_states = torch.jit._get_trace_graph(
-                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_trace.py", line 1500, in _get_trace_graph
-    outs = ONNXTracedModule(
-           ^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_trace.py", line 139, in forward
-    graph, out = torch._C._create_graph_by_tracing(
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_trace.py", line 130, in wrapper
-    outs.append(self.inner(*trace_inputs))
-                ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1726, in _slow_forward
-    result = self.forward(*input, **kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/Mikhail/Mikhail/probe2.py", line 45, in forward
-    return s.t.lin(s.t.decoder(x, None, None)).transpose(1, 2)
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1715, in _slow_forward
-    return self.forward(*input, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: Tried to trace <__torch__.tacotron2.fastpitch_layers.HourGlassTransformer object at 0x5a00e3786640> but it is not part of the active trace. Modules that are called during a trace must be registered as submodules of the thing being traced.
+export dec FAIL tedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 502, in export
+    _export(
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1564, in _export
+    graph, params_dict, torch_out = _model_to_graph(
+                                    ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1117, in _model_to_graph
+    graph = _optimize_graph(
+            ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 639, in _optimize_graph
+    graph = _C._jit_pass_onnx(graph, operator_export_type)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1836, in _run_symbolic_function
+    return symbolic_fn(graph_context, *inputs, **attrs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/symbolic_opset9.py", line 6480, in prim_if
+    env = torch._C._jit_pass_onnx_block(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1836, in _run_symbolic_function
+    return symbolic_fn(graph_context, *inputs, **attrs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/symbolic_opset9.py", line 6508, in prim_if
+    torch._C._jit_pass_onnx_block(
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1836, in _run_symbolic_function
+    return symbolic_fn(graph_context, *inputs, **attrs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/symbolic_opset9.py", line 6480, in prim_if
+    env = torch._C._jit_pass_onnx_block(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1836, in _run_symbolic_function
+    return symbolic_fn(graph_context, *inputs, **attrs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/symbolic_opset9.py", line 6480, in prim_if
+    env = torch._C._jit_pass_onnx_block(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1848, in _run_symbolic_function
+    raise errors.UnsupportedOperatorError(
+torch.onnx.errors.UnsupportedOperatorError: Exporting the operator 'aten::format' to ONNX opset version 17 is not supported. Please feel free to request support or submit a pull request on PyTorch GitHub: https://github.com/pytorch/pytorch/issues.
 
-export voc FAIL h/onnx/utils.py", line 904, in _trace_and_get_graph_from_model
-    trace_graph, torch_out, inputs_states = torch.jit._get_trace_graph(
-                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_trace.py", line 1500, in _get_trace_graph
-    outs = ONNXTracedModule(
-           ^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_trace.py", line 139, in forward
-    graph, out = torch._C._create_graph_by_tracing(
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_trace.py", line 130, in wrapper
-    outs.append(self.inner(*trace_inputs))
-                ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1726, in _slow_forward
-    result = self.forward(*input, **kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/Mikhail/Mikhail/probe2.py", line 49, in forward
-    x = s.v.head.out(s.v.backbone(mel)).transpose(1, 2)
-                     ^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1715, in _slow_forward
-    return self.forward(*input, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: Tried to trace <__torch__.vocoder.hifigan.jit_vocoder.JitV4Backbone object at 0x5a00e3f7c680> but it is not part of the active trace. Modules that are called during a trace must be registered as submodules of the thing being traced.
-
+export voc ok 0.5 s 58.3 MB
