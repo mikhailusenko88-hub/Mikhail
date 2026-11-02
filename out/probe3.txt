@@ -1,67 +1,14 @@
+mha batch_first True
 HG shorten 3 pool AvgPool1d(kernel_size=(3,), stride=(3,), padding=(0,)) dim 128 n pre/short/post [1, 2, 1]
-dur diff 9.5367431640625e-07 pitch diff 4.172325134277344e-07
+dur diff 4.76837158203125e-07 pitch diff 4.76837158203125e-07
 frames 219 mel diff 0.0 mel scale 4.753600120544434
 frames 220 mel diff 0.0 mel scale 4.787621974945068
 frames 221 mel diff 0.0 mel scale 4.820920467376709
 frames 222 mel diff 0.0 mel scale 4.742346286773682
-export front FAIL Traceback (most recent call last):
-  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 114, in exp
-    torch.onnx.export(mod, args, path, input_names=ins, output_names=outs, dynamic_axes=dyn, opset_version=17, do_constant_folding=True)
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/__init__.py", line 375, in export
-    export(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 502, in export
-    _export(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1564, in _export
-    graph, params_dict, torch_out = _model_to_graph(
-                                    ^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1117, in _model_to_graph
-    graph = _optimize_graph(
-            ^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 639, in _optimize_graph
-    graph = _C._jit_pass_onnx(graph, operator_export_type)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1848, in _run_symbolic_function
-    raise errors.UnsupportedOperatorError(
-torch.onnx.errors.UnsupportedOperatorError: Exporting the operator 'aten::_native_multi_head_attention' to ONNX opset version 17 is not supported. Please feel free to request support or submit a pull request on PyTorch GitHub: https://github.com/pytorch/pytorch/issues.
-
-export enc FAIL Traceback (most recent call last):
-  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 114, in exp
-    torch.onnx.export(mod, args, path, input_names=ins, output_names=outs, dynamic_axes=dyn, opset_version=17, do_constant_folding=True)
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/__init__.py", line 375, in export
-    export(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 502, in export
-    _export(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1564, in _export
-    graph, params_dict, torch_out = _model_to_graph(
-                                    ^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1117, in _model_to_graph
-    graph = _optimize_graph(
-            ^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 639, in _optimize_graph
-    graph = _C._jit_pass_onnx(graph, operator_export_type)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1848, in _run_symbolic_function
-    raise errors.UnsupportedOperatorError(
-torch.onnx.errors.UnsupportedOperatorError: Exporting the operator 'aten::_native_multi_head_attention' to ONNX opset version 17 is not supported. Please feel free to request support or submit a pull request on PyTorch GitHub: https://github.com/pytorch/pytorch/issues.
-
-export dec FAIL Traceback (most recent call last):
-  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 114, in exp
-    torch.onnx.export(mod, args, path, input_names=ins, output_names=outs, dynamic_axes=dyn, opset_version=17, do_constant_folding=True)
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/__init__.py", line 375, in export
-    export(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 502, in export
-    _export(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1564, in _export
-    graph, params_dict, torch_out = _model_to_graph(
-                                    ^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1117, in _model_to_graph
-    graph = _optimize_graph(
-            ^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 639, in _optimize_graph
-    graph = _C._jit_pass_onnx(graph, operator_export_type)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1848, in _run_symbolic_function
-    raise errors.UnsupportedOperatorError(
-torch.onnx.errors.UnsupportedOperatorError: Exporting the operator 'aten::_native_multi_head_attention' to ONNX opset version 17 is not supported. Please feel free to request support or submit a pull request on PyTorch GitHub: https://github.com/pytorch/pytorch/issues.
-
-export voc ok 0.5 s 58.3 MB
+export front ok 0.4 s 3.3 MB
+export enc ok 0.2 s 14.2 MB
+export dec ok 0.1 s 11.6 MB
+export voc ok 0.4 s 58.3 MB
+[0] ref 114000 onnx 114000 corr 1.00000 maxdiff 0.00708 audio 2.38s times {'front': 0.002, 'enc': 0.003, 'dec': 0.012, 'voc': 0.198, 'istft': 0.025}
+[1] ref 139200 onnx 139200 corr 0.99999 maxdiff 0.01430 audio 2.90s times {'front': 0.002, 'enc': 0.006, 'dec': 0.014, 'voc': 0.193, 'istft': 0.019}
+[2] ref 231000 onnx 231000 corr 1.00000 maxdiff 0.00196 audio 4.81s times {'front': 0.002, 'enc': 0.007, 'dec': 0.024, 'voc': 0.196, 'istft': 0.031}
