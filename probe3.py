@@ -162,3 +162,4 @@ if all(S.values()):
         for nm, x in (("ref", ref), ("onnx", y)):
             with wave.open(f"out/{nm}{i}.wav", "wb") as w:
                 w.setnchannels(1); w.setsampwidth(2); w.setframerate(48000); w.writeframes((np.clip(x, -1, 1) * 32767).astype(np.int16).tobytes())
+# Mon Nov  2 22:23:40 MSK 2026

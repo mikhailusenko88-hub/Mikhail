@@ -16,7 +16,7 @@ jobs:
       - name: Install
         run: pip install -q torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu && pip install -q "numpy<2" onnx onnxruntime
       - name: Probe
-        run: python probe3.py 2>&1 | tail -80
+        run: python probe3.py > out/run3.log 2>&1 || true
         continue-on-error: true
       - name: Commit result
         if: always()
