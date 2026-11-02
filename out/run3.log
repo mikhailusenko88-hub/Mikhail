@@ -1,0 +1,20 @@
+[0;93m2026-11-02 19:24:21.239338628 [W:onnxruntime:Default, device_discovery.cc:95 GetPciBusId] Skipping pci_bus_id for PCI path at "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/5620e0c7-8062-4dce-aeb7-520c7ef76171" because filename "5620e0c7-8062-4dce-aeb7-520c7ef76171" did not match expected pattern of [0-9a-f]+:[0-9a-f]+:[0-9a-f]+[.][0-9a-f]+[m
+Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 95, in <module>
+    fr, en, de = Front().eval(), Enc().eval(), Dec().eval()
+                 ^^^^^^^
+  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 75, in __init__
+    def __init__(s): super().__init__(); s.dp = Pred(jm.dur_predictor.dur_pred); s.pp = Pred(jm.pitch_predictor.pitch_pred)
+                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 72, in __init__
+    def __init__(s, sm): super().__init__(); s.emb = leaf(sm.embedding); s.spe = leaf(sm.speaker_embedding); s.tr = FT(sm.transformer); s.lin = leaf(sm.lin)
+                                                                                                                    ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 52, in __init__
+    def __init__(s, sm): super().__init__(); s.pe = PE(sm.pos_encoder); s.layers = nn.ModuleList([FFT(l) for l in sm.layers]); s.norm = leaf(sm.norm)
+                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_script.py", line 874, in __iter__
+    return self.forward_magic_method("__iter__")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_script.py", line 870, in forward_magic_method
+    raise NotImplementedError
+NotImplementedError
