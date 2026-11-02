@@ -269,7 +269,9 @@ const App = {
       <select id="sfps"><option value="25">25 кадров/с</option><option value="30">30 кадров/с</option></select>
       <select id="squal"><option value="hq">Качество: как в кино (шерсть, мягкий свет)</option><option value="std">Качество: быстрое (без шерсти)</option></select></div></div>
       <div class="card"><b>Голоса iPhone</b><div class="mut" style="margin:4px 0 8px">Чтобы голоса звучали лучше, скачай улучшенные русские голоса: Настройки → Универсальный доступ → Устный контент → Голоса → Русский → Milena и Yuri «улучшенный». Делать это лучше до создания персонажей: голос записывается в код персонажа.</div><div id="vlist" class="mut">…</div></div>
-      <div class="card"><b>Рассказчик</b><div class="mut" style="margin:4px 0 8px">Голос: ${esc(MK.fxFor(Lib.data, 'Р').name)}</div><div class="btns"><button class="btn" onclick="VP.open('Р')">🎙 Настроить голос рассказчика</button></div></div>
+      <div class="card"><b>Рассказчик</b><div class="row" style="margin:6px 0"><span class="mut" style="flex:1">Голос:</span><select id="narV">${Object.entries(MK.NARRATOR_VOICES).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join('')}</select></div>
+        <div class="mut" style="margin:4px 0 8px">${MK.narratorVoice(Lib.data).server ? 'Нейроголос берётся с твоего сервера, нужен интернет во время сборки. Нет связи — рассказчик читает голосом iPhone (' + esc(MK.fxFor(Lib.data, 'Р').name) + ').' : 'Голос iPhone: ' + esc(MK.fxFor(Lib.data, 'Р').name)}</div>
+        <div class="btns"><button class="btn" onclick="SrvVoice.preview('Жили-были в маленьком домике кот Барсик, мышонок Пик и пёс Рон. Однажды утром друзья отправились в лес.')">▶ Послушать</button><button class="btn" onclick="VP.open('Р')">🎙 Голос iPhone для рассказчика</button></div></div>
       <div class="card"><b>Ударения</b><div class="mut" style="margin:4px 0 8px">В сценарии ставьте <b>+</b> перед ударной буквой: «з+амок», «Б+арсик» — или большую букву: «замОк». Один раз отметили — слово запомнится навсегда. Здесь можно проверить, как iPhone прочитает.</div>
         <div class="row"><input id="stWord" placeholder="например: з+амок" style="flex:1"></div>
         <div class="btns" style="margin-top:6px"><button class="btn" onclick="Stress.hear('ipa')">▶ Способ 1</button><button class="btn" onclick="Stress.hear('acute')">▶ Способ 2</button><button class="btn" onclick="Stress.hear('respell')">▶ Способ 3</button></div>
@@ -279,6 +281,7 @@ const App = {
       <div class="card"><b>Чему я научился</b><div id="lexList" class="mut" style="margin-top:6px"></div></div>
       <div class="card"><b>Персонажи и локации</b><div class="mut">Персонажей: ${Object.keys(Lib.data.characters).length}, локаций: ${Object.keys(Lib.data.locations).length}. Библиотека хранится в «Файлы → Замер 3D → multik».</div></div>`);
     Stress.render();
+    { const nv = document.getElementById('narV'), st = Lib.data.settings = Lib.data.settings || {}; nv.value = st.narratorVoice || 'albina'; nv.onchange = async () => { st.narratorVoice = nv.value; SrvVoice.down = 0; await Lib.save(); App.render(); }; }
     const sr = document.getElementById('sres'), sf = document.getElementById('sfps'), sq = document.getElementById('squal'); sr.value = s.res; sf.value = s.fps; sq.value = s.quality || 'hq'; sq.onchange = () => { if (Build.busy) { alert('Качество можно поменять, когда сборка закончится.'); sq.value = s.quality || 'hq'; return; } s.quality = sq.value; Lib.save(); if (window.MK3D) MK3D.setQuality(s.quality); };
     sr.onchange = () => { s.res = +sr.value; Lib.save(); }; sf.onchange = () => { s.fps = +sf.value; Lib.save(); };
     const lex = Lib.data.lexicon || {}, rows = [];
@@ -338,6 +341,22 @@ const App = {
   },
 };
 
+// ---------- голос рассказчика со своего сервера (нейроголос «Альбина») ----------
+const SrvVoice = {
+  down: 0, warned: false,
+  async get(ln, timeout) { // → {wav} или null (нет интернета / сервер не отвечает — тогда минуту не спрашиваем, берём голос iPhone)
+    if (Date.now() - this.down < 60000) return null;
+    let r = null; try { r = await Native.call('ttsServer', { url: MK.TTS_URL, key: ln.key, timeout: timeout || 45, payload: { text: ln.srv.text, speaker: ln.srv.speaker, soft: ln.srv.soft, rate: ln.srv.rate } }); } catch (e) { r = null; }
+    if (r && r.wav) { this.down = 0; return r; }
+    this.down = Date.now(); if (!this.warned) { this.warned = true; try { Build.toast('Голос Альбины недоступен (нет связи с сервером) — рассказчик читает голосом iPhone'); } catch (e) {} }
+    return null; },
+  async preview(text) { audioPlayback(); const lib = Lib.data, nv = MK.narratorVoice(lib);
+    if (!nv.server) { const fx = MK.fxFor(lib, 'Р'); return previewVoice(text, (lib.narrator || {}).voice || { base: 'male', pitch: 1, rate: .47 }, fx, (lib.narratorFx || {}).voiceId); }
+    const ln = MK.lineFor ? MK.lineFor({}, lib, 'Р', text, { say: text }, 0) : null; if (!ln || !ln.srv) return 0;
+    this.down = 0; const r = await this.get(ln, 60); if (!r) { alert('Сервер с голосом Альбины не ответил. Проверь интернет. Если сервер ещё не настроен — нужна одна команда на сервере (её даст Claude).'); return 0; }
+    if (!pvCtx || pvCtx.state === 'closed') pvCtx = new (window.AudioContext || window.webkitAudioContext)(); try { pvCtx.resume(); } catch (e) {} if (pvSrc) { try { pvSrc.stop(); } catch (e) {} }
+    const buf = await MK.voiceFx(await pvCtx.decodeAudioData(unb64(r.wav).buffer), MK.VOICE_FX.natural); pvSrc = pvCtx.createBufferSource(); pvSrc.buffer = buf; pvSrc.connect(pvCtx.destination); pvSrc.start(); return buf.duration; },
+};
 // ---------- озвучка + подготовка ----------
 async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уже в телефоне — нужны только длительности реплик
   const lib = Lib.data, ep = e.script; const lines = MK.collectLines(ep, lib);
@@ -348,8 +367,10 @@ async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уж�
     onStep && onStep('Озвучка реплик', i++ / Math.max(1, lines.length), `${i} из ${lines.length}: ${ln.text.slice(0, 40)}`);
     if (audio[ln.key]) continue;
     if (ln.synth && MK.makeVocal) { try { const buf = await MK.makeVocal(ln, lib, (c, b) => Native.call(c, b), async w => ac.decodeAudioData(unb64(w).buffer)); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('vocal', err); } continue; }
-    const r = await Native.call('tts', { text: ln.text, voice: ln.voice, key: ln.key });
-    if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, ln.fx || MK.VOICE_FX.natural); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
+    let r = null, fx = ln.fx || MK.VOICE_FX.natural;
+    if (ln.srv) { r = await SrvVoice.get(ln); if (!r) fx = ln.fb.fx; } // рассказчик — Альбина с сервера; нет связи — голос iPhone
+    if (!r) r = await Native.call('tts', { text: ln.text, voice: ln.voice, key: ln.key });
+    if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
   }
   const tl = MK.compile(ep, lib, audio); tl.style = (window.MK3D && MK3D.ready) ? '3d' : '2d';
   if (noMix) return { tl, mix: null };

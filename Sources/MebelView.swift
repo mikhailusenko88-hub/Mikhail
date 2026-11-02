@@ -461,6 +461,27 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
             let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.json, .plainText, .text, .data])
             picker.delegate = self
             Self.top()?.present(picker, animated: true)
+        case "ttsServer":   // голос рассказчика со своего сервера (нейроголос «Альбина»); нет связи — пустой ответ, страница возьмёт голос iPhone
+            let key = (body["key"] as? String ?? UUID().uuidString).replacingOccurrences(of: "/", with: "_")
+            let file = root.appendingPathComponent("voice/\(key).wav")
+            if let d = try? Data(contentsOf: file), d.count > 2000 {
+                replyHandler(["wav": d.base64EncodedString(), "cached": true], nil); return
+            }
+            guard let s = body["url"] as? String, let url = URL(string: s) else { replyHandler(NSNull(), nil); return }
+            var req = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: (body["timeout"] as? Double) ?? 45)
+            req.httpMethod = "POST"
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.httpBody = try? JSONSerialization.data(withJSONObject: body["payload"] as? [String: Any] ?? [:])
+            URLSession.shared.dataTask(with: req) { data, resp, _ in
+                let ok = ((resp as? HTTPURLResponse)?.statusCode ?? 0) == 200
+                DispatchQueue.main.async {
+                    if ok, let d = data, d.count > 2000 {
+                        try? FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+                        try? d.write(to: file)
+                        replyHandler(["wav": d.base64EncodedString()], nil)
+                    } else { replyHandler(NSNull(), nil) }
+                }
+            }.resume()
         case "fetch":
             guard let s = body["url"] as? String, let url = URL(string: s) else { replyHandler(NSNull(), nil); return }
             var req = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 20)

@@ -666,6 +666,10 @@ MK.VOICE_FX = {
   echo:    { name: 'Эхо (пещера)', k: 1.0, tone: 'none', rev: .75 },
 };
 MK.defaultFx = spec => !spec ? 'fairy' : spec.kind === 'human' ? (spec.age === 'kid' ? 'soft' : 'natural') : ({ mouse: 'squeaky', bear: 'deep', rabbit: 'fluffy', fox: 'sly', chick: 'chipmunk', owl: 'wizard', dragon: 'dragon', robot: 'robot', elephant: 'giant', lion: 'deep', wolf: 'pirate', squirrel: 'chipmunk', frog: 'cartoon' }[spec.kind] || 'cartoon');
+/** Голос рассказчика: «Альбина» с сервера (по умолчанию) или голос iPhone. */
+MK.NARRATOR_VOICES = { albina: { name: 'Альбина (нейроголос с сервера)', server: true, speaker: 'ru_albina', soft: true, rate: 'medium' }, iphone: { name: 'Голос iPhone', server: false } };
+MK.TTS_URL = 'http://89.126.192.214:8095/tts';
+MK.narratorVoice = lib => MK.NARRATOR_VOICES[(lib && lib.settings && lib.settings.narratorVoice) || 'albina'] || MK.NARRATOR_VOICES.iphone;
 MK.fxFor = function (lib, who) {
   const c = lib.characters && lib.characters[who];
   const id = who === 'Р' ? ((lib.narratorFx && lib.narratorFx.preset) || 'fairy') : ((c && c.fx && c.fx.preset) || MK.defaultFx(c && c.spec));
@@ -753,7 +757,7 @@ const MYSTERY = { base: 'female', pitch: 1.28, rate: .5 };
 function laughLine(ep, lib, who, vi, short) { if (who === '?') { const fx = Object.assign({ id: 'fairy' }, MK.VOICE_FX.fairy), v = MK.synthVoice(MYSTERY, fx); const variant = vi % 3;
     return { key: hash32(canon(v) + '|fairy|laugh-mystery' + variant).toString(36), who: '?', text: 'Хи-хи-хи!', voice: v, fx, synth: 'laugh', age: 'kid', variant, seed: 3 }; }
   return lineFor(ep, lib, who, VOCAL.laugh, { who, do: 'laugh', short }, vi); }
-MK.laughLine = laughLine;
+MK.laughLine = laughLine; MK.lineFor = (...a) => lineFor(...a);
 function lineFor(ep, lib, who, text, step, vi) {
   const ch = who === 'Р' ? { voice: (ep.narrator && ep.narrator.voice) || lib.narrator || { base: 'male', pitch: 1, rate: .47 } } : (lib.characters[who] && lib.characters[who].spec);
   if (!ch || !text) return null;
@@ -765,7 +769,13 @@ function lineFor(ep, lib, who, text, step, vi) {
   const age = ch.age || (who === 'Р' ? 'adult' : 'kid');
   const variant = synth ? (vi || 0) % 3 : 0;
   const short = !!(synth && step && step.short);
-  return { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + (synth ? '|' + synth + age + variant + (short ? 's' : '') : '')).toString(36), who, text: say, voice: v, fx, synth, age, variant, short, seed: hash32(String(who) + (ch.name || '')) };
+  const seed = hash32(String(who) + (ch.name || ''));
+  const nv = who === 'Р' && !synth ? MK.narratorVoice(lib) : null;
+  if (nv && nv.server && MK.prepSpeech) { // рассказчик — нейроголос со своего сервера (Альбина); нет связи — голос iPhone (fb)
+    const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
+    return { key: hash32('srv|' + nv.speaker + '|' + (nv.soft ? 's' : '') + nv.rate + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
+      srv: { text: marked, speaker: nv.speaker, soft: nv.soft, rate: nv.rate }, fb: { fx } }; }
+  return { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + (synth ? '|' + synth + age + variant + (short ? 's' : '') : '')).toString(36), who, text: say, voice: v, fx, synth, age, variant, short, seed };
 }
 
 /** Список всех реплик эпизода (для озвучки до сборки). */

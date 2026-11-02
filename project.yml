@@ -21,6 +21,8 @@ targets:
         NSCameraUsageDescription: "Камера и LiDAR нужны для 3D-скана помещения."
         NSMicrophoneUsageDescription: "Микрофон нужен, чтобы описывать персонажей мультиков голосом."
         NSSpeechRecognitionUsageDescription: "Распознавание речи превращает голосовое описание персонажа в текст."
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
         UIRequiredDeviceCapabilities: [arkit]
         UIFileSharingEnabled: true
         LSSupportsOpeningDocumentsInPlace: true
