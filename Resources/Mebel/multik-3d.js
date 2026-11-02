@@ -113,7 +113,15 @@ function groundFix(rig, w) {
   const lift = Math.max(0, -.015 - rel), touch = -.006 - rel;
   rig.yaw.position.y = lerp(lift, touch, clamp(w, 0, 1)); rig._low = rel;
 }
-function buildRig(spec) { inRig = true; try { const r = buildRig0(spec); try { sculptRig(r); } catch (e) { console.log('скульптор:', e && e.message); } if (MK3D.hq) { addFur(r); r.root.traverse(o => { if (o.isMesh) o.receiveShadow = false; }); /* «как в кино»: тени от листвы и от самого себя на героя не ложатся — шерсть их тоже не видит, иначе голая кожа на мордочке темнеет пятнами */ } return r; } finally { inRig = false; } }
+/** Половина ширины героя сбоку (голова с ушами и кепкой, тело; без лап, усов и шерсти) — чтобы при объятиях стоять вплотную, но не друг в друге. */
+function sideHalfW(rig) {
+  rig.root.updateMatrixWorld(true); const inv = new THREE.Matrix4().copy(rig.root.matrixWorld).invert(), M = new THREE.Matrix4(), v = new THREE.Vector3(); let w = 0;
+  for (const g of [rig.head, rig.body]) if (g) g.traverse(o => { if (!o.isMesh || !o.visible || o.userData.strands || o.userData.whisker || (o.parent && o.parent.userData.whisker) || o.material === OL) return;
+    const geo = o.geometry; if (!geo || !geo.attributes.position || !geo.attributes.position.array) return; if (!geo.boundingBox) geo.computeBoundingBox(); const bb = geo.boundingBox; M.multiplyMatrices(inv, o.matrixWorld);
+    for (const x of [bb.min.x, bb.max.x]) for (const y of [bb.min.y, bb.max.y]) for (const z of [bb.min.z, bb.max.z]) { v.set(x, y, z).applyMatrix4(M); w = Math.max(w, Math.abs(v.x)); } });
+  return w * (rig.scale || 1) + (MK3D.hq ? .025 : .008); // + шерсть
+}
+function buildRig(spec) { inRig = true; try { const r = buildRig0(spec); try { sculptRig(r); } catch (e) { console.log('скульптор:', e && e.message); } try { r.halfW = sideHalfW(r); } catch (e) { r.halfW = (r.headR || .35) * 1.1; } if (MK3D.hq) { addFur(r); r.root.traverse(o => { if (o.isMesh) o.receiveShadow = false; }); /* «как в кино»: тени от листвы и от самого себя на героя не ложатся — шерсть их тоже не видит, иначе голая кожа на мордочке темнеет пятнами */ } return r; } finally { inRig = false; } }
 // ---------- «Скульптор»: голова, тело, лапы и хвост — одна плавная поверхность вместо набора шаров ----------
 // Берём те же формы, из которых собран герой (поэтому он остаётся узнаваемым), и сливаем их в «глину»:
 // щёки перетекают в мордочку, пузико в тело, лапка в ладошку; цвет на стыках мягкий; полоски — по форме;
@@ -1052,7 +1060,13 @@ function applyPose(rig, st, T) {
     case 'nod': head.x = Math.max(0, Math.sin(at * 9)) * .35; break;
     case 'shake': head.y = Math.sin(at * 13) * .4; break;
     case 'bow': pitch = Math.sin(clamp(ap, 0, 1) * Math.PI) * .7; break;
-    case 'hug': { const k = Math.sin(clamp(ap, 0, 1) * Math.PI); L_.x = R_.x = -1.35; L_.z = R_.z = .55 - k * .7; pitch = .12; break; }
+    case 'hug': { const H = st._hug;
+      if (H) { const k = H.k, sq = .5 + .5 * Math.sin(at * 5), inr = H.dir > 0 ? R_ : L_, out = H.dir > 0 ? L_ : R_; // сбоку, щека к щеке: ближняя лапа — другу на плечи (у второго — пониже, на спину), дальняя — к нему спереди
+        inr.z = lerp(inr.z, (H.lead ? 1.12 : .72) + sq * .06, k); inr.x = lerp(inr.x, H.lead ? -.15 : .1, k);
+        out.z = lerp(out.z, -.55, k); out.x = lerp(out.x, -1.1, k);
+        head.z += -H.dir * .1 * k; sideTilt += -H.dir * .07 * k; bob += sq * .008 * k; }
+      else { const k = Math.sin(clamp(ap, 0, 1) * Math.PI); L_.x = R_.x = -1.35; L_.z = R_.z = .55 - k * .7; pitch = .12; }
+      break; }
     case 'scratch': R_.z = 2.5; R_.x = -.6 + Math.sin(at * 14) * .12; head.z = .2; break;
     case 'yawn': case 'stretch': L_.z = R_.z = 2.8 + Math.sin(at * 2) * .08; head.x = -.3; lift = .02; break;
     case 'sneeze': head.x = ap < .45 ? -.3 * ap / .45 : ap < .62 ? .45 : 0; pitch = ap > .45 && ap < .62 ? .2 : 0; break;
@@ -1127,7 +1141,7 @@ function applyPose(rig, st, T) {
   const talk = clamp(st.talk || 0, 0, 1);
   const bp = 3.1 + (rig.n.seed % 17) / 10, bt = (T + (rig.n.seed % 7)) % bp, dbl = Math.floor((T + (rig.n.seed % 7)) / bp) % 3 === 1; let blink = bt < .14 ? Math.sin(bt / .14 * Math.PI) : dbl && bt > .22 && bt < .36 ? Math.sin((bt - .22) / .14 * Math.PI) : 0;
   const speaking = talk > .02 && !!st.vz, laughing = (emo === 'laugh' && !speaking) || an === 'laugh' || (an === 'roll' && emo === 'laugh');
-  let closed = pers === 'sleep' || laughing || an === 'yawn' || (an === 'sneeze' && ap > .3 && ap < .62) || (an === 'roll' && emo === 'laugh');
+  let closed = pers === 'sleep' || laughing || (an === 'hug' && st._hug && st._hug.k > .6) || an === 'yawn' || (an === 'sneeze' && ap > .3 && ap < .62) || (an === 'roll' && emo === 'laugh');
   let lidOpen = rig.kind === 'cat' || rig.kind === 'dog' ? -0.8 : -0.75, browY = 0, browRot = 0, eyeS = 1, pupS = 1;
   if (emo === 'sleepy') lidOpen = .15; if (emo === 'surprised') { eyeS = 1.15; pupS = .7; browY = .5; } if (emo === 'scared') { eyeS = 1.1; pupS = .55; browRot = .35; }
   if (emo === 'angry') { lidOpen = -.25; browRot = -.45; } if (emo === 'sad' || emo === 'cry') { lidOpen = -.3; browRot = .4; }
@@ -2084,11 +2098,19 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   scene.background = cineF ? mistTex(L.time || 'day') : skyTex(L.time || 'day', L.type); scene.fog = ['room', 'kitchen', 'space'].includes(L.type) ? null : cineF ? new THREE.Fog(new THREE.Color(L.time === 'evening' ? '#cdb79c' : '#a9cbbd'), 4.5, 30) : new THREE.Fog(new THREE.Color(SKY[L.time || 'day'][1]), 18, 70);
   lightFor(L.type, L.time || 'day');
   const S = global.MK._sceneState(tl, seg, t, T);
+  // обнимаются: подходят вплотную по настоящей ширине (щека к щеке, но не друг в друге), лицом к зрителю и чуть друг к другу
+  const hugF = {};
+  for (const id in S) { const A = S[id], a = A.act; if (!A.vis || !a || a.n !== 'hug' || !a.to || hugF[id]) continue; const B = S[a.to]; if (!B || !B.vis) continue;
+    const la = tl.lib.characters[id], lb = tl.lib.characters[a.to]; if (!la || !lb) continue;
+    const ra = rigFor(la), rb = rigFor(lb), at = a.t || 0, dur = a.p > .02 ? at / a.p : 2, k = Math.min(ease(clamp(at / .45, 0, 1)), ease(clamp((dur - at) / .45, 0, 1)));
+    const xa = X(A.x), xb = X(B.x), sg = xb >= xa ? 1 : -1, D = (ra.halfW || .4) + (rb.halfW || .4), mid = (xa + xb) / 2, lead = !(B.act && B.act.n === 'hug' && B.act.to === id && B.act.t > at);
+    hugF[id] = { x: lerp(xa, mid - sg * D / 2, k), dir: sg, k, lead }; hugF[a.to] = { x: lerp(xb, mid + sg * D / 2, k), dir: -sg, k, lead: !lead };
+    const z = ((A.z || 0) + (B.z || 0)) / 2; A.z = lerp(A.z || 0, z, k); B.z = lerp(B.z || 0, z, k); }
   for (const id in S) {
     const st = S[id], lc = tl.lib.characters[id]; if (!lc || !st.vis) continue;
-    const rig = rigFor(lc); ensureIn(rig.root); rig.root.visible = true;
-    rig.root.position.set(X(st.x), 0, -(st.z || 0) * 1.5);
-    rig.yaw.rotation.y = st.face * (st.walk && st.walk.on ? 1.35 : .72);
+    const rig = rigFor(lc); ensureIn(rig.root); rig.root.visible = true; const hf = hugF[id]; st._hug = hf || null;
+    rig.root.position.set(hf ? hf.x : X(st.x), 0, -(st.z || 0) * 1.5);
+    rig.yaw.rotation.y = hf ? lerp(st.face * .72, hf.dir * .3, hf.k) : st.face * (st.walk && st.walk.on ? 1.35 : .72);
     const held = seg.props.find(p => p._holder === id && p._vis !== false); st.prop = held || null;
     applyPose(rig, st, T); fxFor(rig, st, T); rig._held = held; rig._needFur = true;
   }

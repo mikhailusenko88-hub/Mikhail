@@ -905,6 +905,7 @@ MK.compile = function (ep, lib, audio) {
       return best; };
     // встать рядом с вещью (с той стороны, где свободно); если уже рядом — не идти
     const reachX = (id, px) => { const me = C[id].x; if (Math.abs(me - px) < .09) return null; for (const sd of me < px ? [-1, 1] : [1, -1]) { const x = px + sd * .065; if (x < .04 || x > .96) continue; if (!Object.keys(C).some(o => o !== id && C[o].vis && Math.abs(C[o].x - x) < (wOf(id) + wOf(o)) / 2 + .01)) return x; } return null; };
+    for (const id in C) C[id].w = wOf(id); // ширина героя — чтобы на ходу обходить стоящих, а не проходить сквозь
     const besideX = (id, to) => { const tx = C[to].x, me = C[id].x, sides = me < tx ? [-1, 1] : [1, -1]; for (const sd of sides) { const x = tx + sd * Math.max(.1, (wOf(id) + wOf(to)) / 2 + .01); if (x < .05 || x > .95) continue; if (!Object.keys(C).some(o => o !== id && o !== to && C[o].vis && Math.abs(C[o].x - x) < (wOf(id) + wOf(o)) / 2 + .02)) return x; } return tx + sides[0] * .1; };
     { const vis = Object.keys(C).filter(id => C[id].vis).sort((a, b) => C[a].x - C[b].x); for (let i = 1; i < vis.length; i++) { const a = C[vis[i - 1]], b = C[vis[i]]; if (a.z === b.z && b.x - a.x < GAP) b.x = a.x + GAP; }
       const over = vis.length ? C[vis[vis.length - 1]].x - .93 : 0; if (over > 0) vis.forEach(id => C[id].x = Math.max(.07, C[id].x - over));
@@ -970,7 +971,7 @@ MK.compile = function (ep, lib, audio) {
           if (d === 'stand' || d === 'wake') { ch.ev.push({ t: start, k: 'act', n: 'stand', t1: start + dur }); ch.ev.push({ t: start + dur, k: 'persist', v: 'none' }); }
           else if (d === 'turn' || d === 'look') ch.ev.push({ t: start, k: 'face', v: faceVal(step.to || step.face || 'camera', ch, C) });
           else if (!['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d) || d === 'fall') ch.ev.push({ t: s0, k: 'act', n: d, t1: start + dur, text: step.text, to: step.to });
-          if (d === 'hug' && step.to && C[step.to]) { C[step.to].ev.push({ t: s0, k: 'act', n: 'hug', t1: start + dur }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); }
+          if (d === 'hug' && step.to && C[step.to]) { C[step.to].ev.push({ t: s0, k: 'act', n: 'hug', t1: start + dur, to: who }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); }
           beats.push({ t: s0, t1: start + dur, k: 'act', who, d, to: step.to, near: NEAR_ACT.has(d) || (d === 'take' && KEY_PROP.has((props.find(p => p.id === step.prop) || {}).type)) });
           if (AUTO_SFX[d] && step.sfx !== false) sfx.push({ t: st0 + s0 + (d === 'fall' ? .3 : d === 'clap' ? 0 : d === 'kick' ? .45 : d === 'throw' ? .45 : .05), n: AUTO_SFX[d], rep: d === 'clap' ? 4 : d === 'stomp' ? 3 : d === 'eat' ? 3 : 1, gap: d === 'stomp' ? .35 : d === 'eat' ? .5 : .22 });
           if (d === 'kick' || d === 'throw') { const p = d === 'throw' ? props.find(p => p.holder === who) : (props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]);
@@ -1043,7 +1044,7 @@ function evalChar(init, ev, t, audio, T) {
   for (const e of ev) {
     if (e.t > t) break;
     switch (e.k) {
-      case 'move': { const p = clamp((t - e.t) / (e.t1 - e.t), 0, 1); x = lerp(e.x0, e.x1, p); if (p < 1) { walk = { on: true, run: e.run, style: e.style, ph: (t - e.t) * (e.run ? 15 : e.style ? 6 : 9.5) }; } else walk = { on: false }; break; }
+      case 'move': { const p = clamp((t - e.t) / (e.t1 - e.t), 0, 1); x = lerp(e.x0, e.x1, p); if (p < 1) { walk = { on: true, run: e.run, style: e.style, ph: (t - e.t) * (e.run ? 15 : e.style ? 6 : 9.5), x0: e.x0, x1: e.x1 }; } else walk = { on: false }; break; }
       case 'face': if (e.v !== face) { faceFrom = face; face = e.v; faceT = e.t; } break;
       case 'emo': emo = e.v; emoT = e.t; break;
       case 'vis': vis = e.v; break;
@@ -1156,6 +1157,23 @@ function drawScene(ctx, tl, seg, t, T) {
 }
 
 /** Состояния героев в момент t (для 3D) */
+// Не проходить сквозь друг друга: кто идёт мимо стоящего на пути — плавно обходит его сзади (если тот сам стоит дальше — спереди).
+// Двое идут навстречу — один обходит сзади, другой спереди. Сдвиг плавный: начинается за 2 ширины, к началу и концу пути — к нулю.
+function avoidWalkers(S, seg) {
+  const ids = Object.keys(S).filter(id => S[id].vis), sm = (a, b, x) => { const k = clamp((x - a) / (b - a), 0, 1); return k * k * (3 - 2 * k); };
+  const hugs = (A, b) => A.act && A.act.n === 'hug' && A.act.to === b;
+  const dz = {};
+  for (const a of ids) { const A = S[a], w = A.walk; if (!w || !w.on || w.x0 == null) continue;
+    let best = 0;
+    for (const b of ids) { if (b === a || hugs(A, b) || hugs(S[b], a)) continue; const B = S[b];
+      if ((B.x - w.x0) * (B.x - w.x1) >= 0 || Math.abs((A.z || 0) - (B.z || 0)) > .3) continue; // не на пути или уже на другой глубине
+      const need = (((seg.C[a] || {}).w || .1) + ((seg.C[b] || {}).w || .1)) / 2 + .005, dx = Math.abs(A.x - B.x);
+      let k = sm(need * 2.2, need * .9, dx) * sm(0, .04, Math.abs(A.x - w.x0)) * sm(0, need * 1.3, Math.abs(A.x - w.x1)); /* к концу пути — плавно вперёд */ if (k <= 0) continue;
+      const bw = B.walk && B.walk.on, dir = (B.z || 0) > .2 ? -1 : bw ? (a < b ? 1 : -1) : 1;
+      const amt = .55 * k * dir; if (Math.abs(amt) > Math.abs(best)) best = amt; }
+    if (best) dz[a] = best; }
+  for (const a in dz) S[a].z = (S[a].z || 0) + dz[a];
+}
 MK._sceneState = function (tl, seg, t, T) {
   const S = {};
   for (const id in seg.C) {
@@ -1164,6 +1182,7 @@ MK._sceneState = function (tl, seg, t, T) {
     if (!cd._sorted) { cd.ev.sort((a, b) => a.t - b.t); cd._sorted = true; }
     S[id] = evalChar(init, cd.ev, t, tl.audio, T); S[id].z = cd.z || 0;
   }
+  avoidWalkers(S, seg);
   for (const p of seg.props) { const ps = MK.propAt(p, t); p._holder = ps.holder; p._x = ps.x; p._air = ps.air; p._vis = ps.vis; p._glow = ps.glowK; p._fx = ps.fx; p._fxAge = ps.fxAge; p._tb = ps.tb; p._open = ps.openK; }
   return S;
 };
