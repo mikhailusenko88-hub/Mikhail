@@ -1,11 +1,8 @@
-# Авито Автозагрузка — формат для стройматериалов (прогон 1)
-follow: (stroi|remont|строй|ремонт|для дома|dlya_doma)
-https://autoload.avito.ru/format/
-follow: (stroi|remont|строй|ремонт|отдел|для дома|templates)
-https://www.avito.ru/autoload/documentation
-https://autoload.avito.ru/format/stroitelnye_materialy/
-https://autoload.avito.ru/format/remont_i_stroitelstvo/
-https://developers.avito.ru/api-catalog/autoload/documentation
-https://html.duckduckgo.com/html/?q=site%3Aautoload.avito.ru+%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BC%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D1%8B
-https://html.duckduckgo.com/html/?q=site%3Asupport.avito.ru+%D1%82%D0%BE%D0%B2%D0%B0%D1%80%D1%8B+%D0%BF%D0%BE%D0%B4+%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7
-https://html.duckduckgo.com/html/?q=site%3Aautoload.avito.ru+%D0%BF%D0%BE%D0%B4+%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7+Availability
+# Авито Автозагрузка — прогон 2: архивные копии документации и поиск по справке
+https://web.archive.org/cdx/search/cdx?url=www.avito.ru/autoload/documentation/templates/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000
+https://web.archive.org/cdx/search/cdx?url=www.avito.ru/web/1/autoload/user-docs/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000
+https://web.archive.org/cdx/search/cdx?url=autoload.avito.ru/format/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000
+https://www.bing.com/search?q=site%3Asupport.avito.ru+%D1%82%D0%BE%D0%B2%D0%B0%D1%80%D1%8B+%D0%BF%D0%BE%D0%B4+%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7&setlang=ru
+https://www.bing.com/search?q=site%3Asupport.avito.ru+%D0%B0%D0%B2%D1%82%D0%BE%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D0%B0+%D1%84%D0%BE%D1%82%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D0%B8+%D1%82%D1%80%D0%B5%D0%B1%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F&setlang=ru
+https://www.bing.com/search?q=avito+autoload+documentation+templates+%D0%A1%D1%82%D1%80%D0%BE%D0%B9%D0%BC%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D1%8B+WallPanelsSlatsDecorativeElementsSubType&setlang=ru
+https://www.avito.ru/web/1/autoload/user-docs/tree
