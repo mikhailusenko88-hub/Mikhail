@@ -217,7 +217,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
       <label class="f">Кто вы<select id="lWho"><option>Делаю ремонт у себя</option><option>Дизайнер</option><option>Ремонтная бригада</option><option>Компания, объект</option></select></label>
       <label class="f">Комментарий<textarea id="lMsg" rows="3" placeholder="Адрес, сроки, нужна ли доставка"></textarea></label>
       <label class="chk"><input type="checkbox" id="lCalc" checked> Приложить расчёт стены</label>
-      <label class="chk" style="align-items:flex-start"><input type="checkbox" id="lAgree" required style="margin-top:3px"> <span>Я даю <a href="#consent" style="color:var(--ink)">согласие на обработку персональных данных</a> и ознакомлен с <a href="#privacy" style="color:var(--ink)">Политикой обработки персональных данных</a></span></label>
+      <label class="chk" style="align-items:flex-start"><input type="checkbox" id="lAgree" required style="margin-top:3px"> <span>Я даю <a href="consent.html" style="color:var(--ink)">согласие на обработку персональных данных</a> и ознакомлен с <a href="privacy.html" style="color:var(--ink)">Политикой обработки персональных данных</a></span></label>
       <div class="err" id="lErr" hidden></div>
       <button class="btn" type="submit" id="lSend">Отправить заявку</button>
       <div id="lDone" hidden></div>
@@ -237,6 +237,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 <footer><div class="wrap">
   <span><b>ПРО</b>странство · Санкт-Петербург</span>
   <span id="legal"></span>
+  <nav aria-label="Документы" style="flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px 18px"><a href="oferta.html" style="color:inherit">Оферта</a><a href="privacy.html" style="color:inherit">Политика конфиденциальности</a><a href="consent.html" style="color:inherit">Согласие на обработку данных</a></nav>
 </div></footer>
 <script src="/mebel/_lib/three.min.js"></script>
 <script src="/mebel/_lib/OrbitControls.js"></script>
