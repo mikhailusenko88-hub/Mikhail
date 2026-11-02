@@ -7,7 +7,7 @@ permissions:
 jobs:
   t:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -15,11 +15,16 @@ jobs:
           python-version: '3.11'
       - name: Install
         run: pip install -q torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu && pip install -q "numpy<2" onnx onnxruntime
-      - name: Probe
-        run: python probe4.py > out/run4.log 2>&1 || true
-        continue-on-error: true
-      - name: Commit result
+      - name: Build voice
+        run: python build_voice.py > build_run.log 2>&1 || (tail -40 build_run.log; exit 1)
+      - name: onnxruntime-web
+        run: |
+          mkdir -p vb/ort && cd /tmp && V=$(npm view onnxruntime-web version) && npm pack -q onnxruntime-web@$V && tar xzf onnxruntime-web-$V.tgz
+          ls -la package/dist > $GITHUB_WORKSPACE/vb/ort/listing.txt
+          cp package/dist/ort.wasm.min.js package/dist/ort-wasm-simd-threaded.wasm package/dist/ort-wasm-simd-threaded.mjs $GITHUB_WORKSPACE/vb/ort/ || true
+          cp package/LICENSE $GITHUB_WORKSPACE/vb/ort/ 2>/dev/null || true; echo $V > $GITHUB_WORKSPACE/vb/ort/version.txt
+      - name: Publish to branch multik-voice
         if: always()
         run: |
-          git config user.name tts-test; git config user.email tts-test@users.noreply.github.com
-          rm -rf out/onnx; git add -A out; git commit -m "tts-test result" || echo nothing; git push
+          cp build_run.log vb/ 2>/dev/null || true
+          cd vb && git init -q -b multik-voice && git add -A && git -c user.name=voice-build -c user.email=voice-build@users.noreply.github.com commit -qm "Альбина для телефона: модели ONNX, ударения, onnxruntime-web, эталоны" && git push -f -q https://x-access-token:${{ github.token }}@github.com/${{ github.repository }} multik-voice
