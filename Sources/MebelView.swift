@@ -334,8 +334,77 @@ final class MultikHost {
         }
         w.configuration.userContentController.removeScriptMessageHandler(forName: "multik", contentWorld: .page)
         b.cleanup()
+        MultikVoiceHost.shared.close()
         w.removeFromSuperview()
         web = nil; bridge = nil
+    }
+}
+
+/// Нейроголос рассказчика в отдельной скрытой странице voice.html. У каждой WKWebView свой процесс iPhone:
+/// модели и onnxruntime (~0.5 ГБ) не считаются в памяти «Мультиков», а после озвучки страницу закрываем —
+/// процесс завершается, и память возвращается сразу (в той же странице она оставалась занятой до уборки мусора).
+final class MultikVoiceHost: NSObject, WKNavigationDelegate {
+    static let shared = MultikVoiceHost()
+    private var web: WKWebView?
+    private var ready = false
+    private var waiters: [(Bool) -> Void] = []
+
+    private func open(_ done: @escaping (Bool) -> Void) {
+        if web != nil && ready { done(true); return }
+        waiters.append(done)
+        if web != nil { return }
+        let cfg = WKWebViewConfiguration()
+        cfg.setURLSchemeHandler(BundleScheme(), forURLScheme: "mebel")
+        let w = WKWebView(frame: CGRect(x: 0, y: 0, width: 4, height: 4), configuration: cfg)
+        w.navigationDelegate = self
+        w.alpha = 0.02                      // совсем невидимую (0) iPhone мог бы усыпить
+        w.isUserInteractionEnabled = false
+        let win = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.flatMap { $0.windows }.first { $0.isKeyWindow }
+        win?.insertSubview(w, at: 0)        // под всеми экранами — не видна и не мешает нажатиям
+        web = w
+        w.load(URLRequest(url: URL(string: "mebel://app/voice.html")!))
+    }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        guard webView === web else { return }
+        ready = true
+        let ws = waiters; waiters = []; ws.forEach { $0(true) }
+    }
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { failed(webView) }
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { failed(webView) }
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) { failed(webView) }
+    private func failed(_ webView: WKWebView) {
+        guard webView === web else { return }
+        let ws = waiters; waiters = []
+        close()
+        ws.forEach { $0(false) }
+    }
+
+    /// body: {text, opts} → {pcm: base64 16 бит 48 кГц, n, last: текст с ударениями} или {error}
+    func speak(_ body: [String: Any], reply: @escaping (Any?, String?) -> Void) {
+        open { ok in
+            guard ok, let w = self.web else { reply(["error": "страница голоса не загрузилась"], nil); return }
+            let js = """
+            const y = await MKVoice.speak(text, opts);
+            const n = y.length, b = new Uint8Array(n * 2);
+            for (let i = 0; i < n; i++) { let v = Math.max(-1, Math.min(1, y[i])); v = Math.round(v < 0 ? v * 32768 : v * 32767); b[2 * i] = v & 255; b[2 * i + 1] = (v >> 8) & 255; }
+            let s = ''; for (let i = 0; i < b.length; i += 32768) s += String.fromCharCode.apply(null, b.subarray(i, i + 32768));
+            return { pcm: btoa(s), n: n, last: MKVoice.lastText || '' };
+            """
+            let args: [String: Any] = ["text": body["text"] as? String ?? "", "opts": body["opts"] as? [String: Any] ?? [:]]
+            w.callAsyncJavaScript(js, arguments: args, in: nil, in: .page) { r in
+                switch r {
+                case .success(let v): reply(v, nil)
+                case .failure(let e): reply(["error": e.localizedDescription], nil)
+                }
+            }
+        }
+    }
+
+    func close() {
+        ready = false
+        if let w = web { w.stopLoading(); w.navigationDelegate = nil; w.removeFromSuperview() }
+        web = nil
     }
 }
 
@@ -582,6 +651,11 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
         case "keepAwake":   // очередь серий: экран не гаснет и между сериями, страница не выключается при закрытии раздела
             busy = body["on"] as? Bool ?? false
             UIApplication.shared.isIdleTimerDisabled = busy
+            replyHandler(true, nil)
+        case "voiceSpeak":   // нейроголос рассказчика — в отдельной скрытой странице (свой процесс iPhone)
+            MultikVoiceHost.shared.speak(body, reply: replyHandler)
+        case "voiceUnload":  // озвучка закончена — закрываем страницу голоса, iPhone сразу забирает её память
+            MultikVoiceHost.shared.close()
             replyHandler(true, nil)
         case "stage":   // этап работы страницы (для сообщения после обрыва)
             stage = body["text"] as? String ?? ""

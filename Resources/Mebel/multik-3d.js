@@ -18,7 +18,7 @@ MK3D.init = function (T) {
   R.setPixelRatio(1); R.setSize(1920, 1080, false);
   // iPhone может отобрать видеокарту у свёрнутого приложения: пока её нет, кадры не рисуем (сборка ждёт)
   GL.addEventListener('webglcontextlost', () => { MK3D._lost = true; }, false);
-  GL.addEventListener('webglcontextrestored', () => { MK3D._lost = false; R.shadowMap.needsUpdate = true; }, false);
+  GL.addEventListener('webglcontextrestored', () => { MK3D._lost = false; R.shadowMap.needsUpdate = true; for (const k in rigCache) { scene.remove(rigCache[k].root); delete rigCache[k]; } }, false); // шерсть героев хранится только в видеокарте — после потери видеокарты героев строим заново
   R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap; R.outputColorSpace = THREE.SRGBColorSpace;
   scene = new THREE.Scene();
   cam = new THREE.PerspectiveCamera(38, 16 / 9, .1, 200);
@@ -430,6 +430,7 @@ function addFur(rig) {
   for (const o of list) { if (clothed && (under(o, rig.body) || rig.legs.some(g => under(o, g)) || (O.shirt || O.suit || O.pajamas || O.dress) && rig.arms.some(g => under(o, g)))) continue; { let fk = 1, pp = o; while (pp) { if (pp.userData.furK != null) { fk = Math.min(fk, pp.userData.furK); } pp = pp.parent; } const reg = under(o, rig.tail) ? 'tail' : rig.legs.some(g => under(o, g)) ? 'leg' : rig.arms.some(g => under(o, g)) ? 'arm' : under(o, rig.body) ? 'body' : 'head'; addStrands(rig, o, L, keep, fk, reg); } }
   rig.fur = []; rig.root.traverse(o => { if (o.userData.strands) rig.fur.push(o); });
 }
+const FREE_ARR = function () { this.array = null; };
 // ---------- волоски-нити: каждый волосок — отдельная линия; блик вдоль волоска (Kajiya-Kay), качание от движения ----------
 const FUR_VS = `
 attribute vec3 aRoot; attribute vec3 aNorm; attribute vec2 aUv; attribute vec4 aRnd; attribute float aT; attribute vec3 aTilt; attribute vec3 aCol; attribute vec4 aGroom; varying vec3 vCol; varying vec3 vN; varying float vGuard;
@@ -652,6 +653,7 @@ function addStrands(rig, o, L, keep, furK, reg) { if (reg === 'tail' && (rig.kin
   geo.setAttribute('position', new THREE.BufferAttribute(aRoot.slice(0, n * 3), 3)); geo.setAttribute('aRoot', new THREE.BufferAttribute(aRoot.slice(0, n * 3), 3)); geo.setAttribute('aNorm', new THREE.BufferAttribute(aNorm.slice(0, n * 3), 3));
   geo.setAttribute('aUv', new THREE.BufferAttribute(aUv.slice(0, n * 2), 2)); geo.setAttribute('aRnd', new THREE.BufferAttribute(aRnd.slice(0, n * 4), 4)); geo.setAttribute('aT', new THREE.BufferAttribute(aT.slice(0, n), 1)); geo.setAttribute('aTilt', new THREE.BufferAttribute(aTilt.slice(0, n * 3), 3)); geo.setAttribute('aCol', new THREE.BufferAttribute(aCol.slice(0, n * 3), 3)); geo.setAttribute('aGroom', new THREE.BufferAttribute(aGroom.slice(0, n * 4), 4));
   geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 10);
+  for (const k in geo.attributes) geo.attributes[k].onUpload(FREE_ARR); // копия шерсти в памяти страницы после отправки в видеокарту не нужна: у героя ~1.5 млн точек ≈ 150 МБ
   const m = strandMat(o.material); m.uniforms.uHasCol.value = vc ? 1 : 0; m.uniforms.uLen.value = L / ws; if (reg === 'hair') { m.uniforms.uNk.value = .22; m.uniforms.uCk.value = 1.0; m.uniforms.uGrav.value = .5; } else if (groomed) { m.uniforms.uNk.value = .5; m.uniforms.uCk.value = .8; m.uniforms.uGrav.value = .1; } /* шёрстка лежит по телу, а не торчит */ const ls = new THREE.LineSegments(geo, m); ls.frustumCulled = false; ls.userData.strands = true; ls.castShadow = false; o.add(ls);
   // базовая поверхность чуть темнее — это «подшёрсток» у корней
   { const src0 = o.material; o.material = src0.clone(); if (src0.onBeforeCompile) { o.material.onBeforeCompile = src0.onBeforeCompile; o.material.customProgramCacheKey = src0.customProgramCacheKey; } } o.material.color.multiplyScalar(rig.kind === 'chick' || reg === 'hair' ? 1 : .9); o.material.sheen = 0; if (rig.kind === 'chick') m.uniforms.uColor.value.multiplyScalar(.93);

@@ -72,7 +72,7 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 <div class="tabs"><button data-t="series" class="on">Сериалы</button><button data-t="chars">Персонажи</button><button data-t="locs">Локации</button><button data-t="set">Ещё</button></div>
 <main id="main"></main>
 <div id="player"><canvas id="pc" width="1280" height="720"></canvas>
-  <div class="ctl"><button class="btn" onclick="Player.stop()">✕ Закрыть</button><button class="btn acc" id="pp" onclick="Player.toggle()">❚❚</button><input type="range" id="seek" min="0" max="1000" value="0" style="max-width:420px" oninput="Player.seek(this.value/1000)"><span class="mut" id="ptime">0:00</span></div></div>
+  <div class="ctl"><button class="btn" onclick="Player.stop()">✕ Закрыть</button><button class="btn acc" id="pp" onclick="Player.toggle()">❚❚</button><button class="btn acc" id="pkick" style="display:none" onclick="Player.kick()">🔊 Включить звук</button><input type="range" id="seek" min="0" max="1000" value="0" style="max-width:420px" oninput="Player.seek(this.value/1000)"><span class="mut" id="ptime">0:00</span></div></div>
 <div id="prog"><h2 id="ptitle">Готовлю</h2><div class="bar"><div id="pbar"></div></div><div id="ptext" class="mut"></div></div>
 <div id="bbar"><div class="t"><b id="bbT">Сборка</b><div class="bar"><div id="bbP"></div></div><div class="mut" id="bbS"></div></div><button onclick="Build.night(true)" aria-label="Затемнить экран">🌙</button><button onclick="Build.askCancel()" aria-label="Остановить">✕</button></div>
 <div id="night" onclick="Build.night(false)"><div id="ngT"></div><div style="margin-top:10px">Экран затемнён, сборка идёт. Коснись, чтобы вернуть.</div></div>
@@ -126,10 +126,14 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 <script src="multik-audio.js"></script>
 <script src="multik-voice.js"></script>
 <script>
-// Нейроголос работает в отдельной невидимой рамке (voice.html). После озвучки рамку убираем — и iPhone забирает обратно всю её память
-// (~0.5 ГБ: модели и память onnxruntime; onnxruntime сам память не отдаёт — без рамки она оставалась занятой, и на 3D-сцены не хватало).
+// Нейроголос (~0.5 ГБ: модели и память onnxruntime, которую onnxruntime сам не отдаёт) работает НЕ в этой странице:
+// 1) в телефоне — в отдельной скрытой странице voice.html со своим процессом iPhone (voiceSpeak / voiceUnload): после озвучки
+//    её закрывают, процесс завершается, и память возвращается сразу; на «Мультики» она вообще не давит;
+// 2) если так не вышло (или в браузере) — в невидимой рамке voice.html; её память возвращается при уборке мусора, не сразу.
 (function () { const L = window.MKVoice; if (!L) return;
-  let f = null, p = null, idle = 0;
+  let f = null, p = null, idle = 0, natReady = false, natFails = 0;
+  const NAT = () => !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.multik) || !!window.MK_VOICE_PROC;
+  const pcm16 = b64 => { const bin = atob(b64), n = bin.length >> 1, y = new Float32Array(n); for (let i = 0; i < n; i++) { let v = bin.charCodeAt(2 * i) | (bin.charCodeAt(2 * i + 1) << 8); if (v >= 32768) v -= 65536; y[i] = v / 32768; } return y; };
   const win = () => f && f.contentWindow && f.contentWindow.MKVoice ? f.contentWindow : null;
   const open = () => { const w = win(); if (w) return Promise.resolve(w); if (p) return p;
     return (p = new Promise((res, rej) => { const fr = document.createElement('iframe'); fr.setAttribute('aria-hidden', 'true'); fr.tabIndex = -1;
@@ -137,11 +141,16 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
       const bad = () => { p = null; fr.remove(); rej(new Error('голос не загрузился (voice.html)')); };
       fr.onload = () => { if (fr.contentWindow && fr.contentWindow.MKVoice) { p = null; f = fr; res(fr.contentWindow); } else bad(); }; fr.onerror = bad;
       fr.src = 'voice.html'; document.body.appendChild(fr); })); };
-  const close = async () => { clearTimeout(idle); const fr = f; f = null; if (!fr) return; try { await fr.contentWindow.MKVoice.unload(); } catch (e) {} try { fr.src = 'about:blank'; } catch (e) {} fr.remove(); await new Promise(r => setTimeout(r, 200)); };
+  const close = async () => { clearTimeout(idle); if (natReady || NAT()) { natReady = false; try { await Native.call('voiceUnload'); } catch (e) {} } const fr = f; f = null; if (!fr) return; try { await fr.contentWindow.MKVoice.unload(); } catch (e) {} try { fr.src = 'about:blank'; } catch (e) {} fr.remove(); await new Promise(r => setTimeout(r, 200)); };
   window.MKVoice = { error: null, lastText: '', loadMs: 0,
-    get ready() { const w = win(); return !!(w && w.MKVoice.ready); },
+    get ready() { const w = win(); return natReady || !!(w && w.MKVoice.ready); },
     available: () => L.available(), soften: (y, sr) => L.soften(y, sr),
-    async speak(text, o) { clearTimeout(idle); const w = await open(), M = w.MKVoice;
+    async speak(text, o) { clearTimeout(idle);
+      while (NAT() && natFails < 2) { // отдельный процесс iPhone; не ответил дважды подряд — рамка в этой странице
+        let r = null; try { r = await Native.call('voiceSpeak', { text: String(text || ''), opts: JSON.parse(JSON.stringify(o || {})) }); } catch (e) { r = { error: e && e.message || String(e) }; }
+        if (r && typeof r.pcm === 'string') { natReady = true; natFails = 0; this.lastText = r.last || ''; idle = setTimeout(close, 90000); return pcm16(r.pcm); }
+        natFails++; this.error = (r && r.error) || 'страница голоса не ответила'; }
+      const w = await open(), M = w.MKVoice;
       try { const y = await M.speak(String(text || ''), JSON.parse(JSON.stringify(o || {}))); this.lastText = M.lastText || ''; this.loadMs = M.loadMs || 0; const c = new Float32Array(y.length); c.set(y); return c; }
       catch (e) { this.error = M.error || (e && e.message) || String(e); throw new Error(this.error); }
       finally { idle = setTimeout(close, 90000); } }, // минуту-полторы не нужен — выгружаем сами
@@ -450,14 +459,18 @@ const Player = {
     if (Lib.data.settings && Lib.data.settings.previewCrash) { delete Lib.data.settings.previewCrash; Lib.save(); }
     this.off = 0; this.play();
   },
-  play() { audioPlayback(); if (this.ac.state !== 'running') { try { this.ac.resume(); } catch (e) {} } this.src = this.ac.createBufferSource(); this.src.buffer = this.mix; this.src.connect(this.ac.destination); this.src.start(0, this.off); this.t0 = this.ac.currentTime - this.off; this.playing = true; document.getElementById('pp').textContent = '❚❚'; this.loop(); },
+  play() { audioPlayback(); if (this.ac.state !== 'running') { try { this.ac.resume(); } catch (e) {} } this.src = this.ac.createBufferSource(); this.src.buffer = this.mix; this.src.connect(this.ac.destination); this.src.start(0, this.off); this.t0 = this.ac.currentTime - this.off; this.playing = true; document.getElementById('pp').textContent = '❚❚'; this.loop();
+    const ac = this.ac, c0 = ac.currentTime; clearTimeout(this._chk); this._chk = setTimeout(() => { if (this.playing && this.ac === ac && ac.currentTime - c0 < .05) document.getElementById('pkick').style.display = ''; }, 1200); }, // звук не пошёл (iPhone придержал звук) — кнопка запустить заново
+  kick() { // нажатие пальцем — новый звук с того же места (iPhone разрешает звук только по нажатию)
+    document.getElementById('pkick').style.display = 'none'; const off = this.now(); if (this.src) { try { this.src.stop(); } catch (e) {} } try { this.ac.close(); } catch (e) {}
+    audioPlayback(); this.ac = new (window.AudioContext || window.webkitAudioContext)(); try { this.ac.resume(); } catch (e) {} this.off = off; this.play(); },
   pause() { if (this.src) { try { this.src.stop(); } catch (e) {} } this.off = this.now(); this.playing = false; document.getElementById('pp').textContent = '▶'; },
   toggle() { this.playing ? this.pause() : this.play(); },
   now() { return this.playing ? this.ac.currentTime - this.t0 : this.off; },
   seek(f) { const was = this.playing; if (was) this.pause(); this.off = f * this.tl.dur; if (was) this.play(); else this.draw(); },
   draw() { const t = Math.min(this.now(), this.tl.dur - .01), c = document.getElementById('pc').getContext('2d'); c.setTransform(c.canvas.width / 1920, 0, 0, c.canvas.height / 1080, 0, 0); MK.render(c, this.tl, t); document.getElementById('seek').value = Math.round(t / this.tl.dur * 1000); document.getElementById('ptime').textContent = fmt(t) + ' / ' + fmt(this.tl.dur); },
   loop() { cancelAnimationFrame(this.raf); let last = -1; const f = () => { const fi = Math.floor(this.now() * 25); if (fi !== last) { last = fi; this.draw(); } if (this.playing && this.now() < this.tl.dur) this.raf = requestAnimationFrame(f); else if (this.playing) { this.draw(); this.pause(); } }; f(); }, // просмотр: 25 кадров/с, 1280×720 — экран телефона больше не нужен, а нагрев в 5–10 раз меньше
-  stop() { Stage.set(''); this.pause(); cancelAnimationFrame(this.raf); if (this.ac) { this.ac.close(); this.ac = null; } this.mix = null; this.tl = null; this.src = null; document.getElementById('player').style.display = 'none'; }, // звук серии — из памяти
+  stop() { Stage.set(''); clearTimeout(this._chk); document.getElementById('pkick').style.display = 'none'; this.pause(); cancelAnimationFrame(this.raf); if (this.ac) { this.ac.close(); this.ac = null; } this.mix = null; this.tl = null; this.src = null; document.getElementById('player').style.display = 'none'; }, // звук серии — из памяти
 };
 const Prog = {
   show(t) { document.getElementById('ptitle').textContent = t; this.set('', 0, ''); document.getElementById('prog').style.display = 'flex'; },
