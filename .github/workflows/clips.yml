@@ -1,0 +1,57 @@
+name: barsik-clips
+on:
+  push:
+    branches: [blender-test]
+    paths: [clips.txt]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  voice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Voice
+        run: |
+          sudo apt-get update -qq >/dev/null; sudo apt-get install -y -qq ffmpeg >/dev/null
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q numpy
+          python voice.py
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name render-bot; git config user.email render-bot@users.noreply.github.com
+          git add out/voice || true; git commit -m "voice" || echo nothing
+          for i in 1 2 3 4 5 6 7 8 9 10; do git pull -q --rebase --autostash && git push && break; sleep $((RANDOM % 15 + 5)); done
+  clip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      max-parallel: 19
+      matrix:
+        job: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Blender 4.2 LTS
+        run: |
+          sleep $(( ${{ matrix.job }} * 4 ))
+          wget -q --tries=8 --waitretry=10 https://download.blender.org/release/Blender4.2/blender-4.2.0-linux-x64.tar.xz
+          tar xf blender-4.2.0-linux-x64.tar.xz
+          sudo apt-get update -qq >/dev/null; sudo apt-get install -y -qq libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libgl1 libsm6 libegl1 >/dev/null || true
+      - name: Geometry
+        run: |
+          pip install -q numpy scikit-image scipy
+          mkdir -p out && python anim_geo.py
+      - name: Render clips
+        run: |
+          set -o pipefail
+          ./blender-4.2.0-linux-x64/blender -b --python-exit-code 1 -P clips.py -- job=${{ matrix.job }} of=19 $(cat clips.txt | tr '\n' ' ') 2>&1 | tee out/clog_${{ matrix.job }}.txt | grep -v "^Fra:\|Sample \|Rendered " | tail -30
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name render-bot; git config user.email render-bot@users.noreply.github.com
+          cp out/clog_${{ matrix.job }}.txt out/clips/ || true
+          git add out/clips || true; git commit -m "clips ${{ matrix.job }}" || echo nothing
+          for i in 1 2 3 4 5 6 7 8 9 10; do git pull -q --rebase --autostash && git push && break; sleep $((RANDOM % 15 + 5)); done
