@@ -425,9 +425,10 @@ S.split = function (ep, lib, target) {
   const tl = global.MK.compile(Object.assign({}, ep, { titleCard: false, endCard: false }), tmpLib, {});
   const durs = tl.segs.filter(s => s.kind === 'scene').map(s => s.t1 - s.t0);
   const total = durs.reduce((a, b) => a + b, 0);
-  if (total <= target * 1.25) return [ep];
+  if (total <= target * 1.08) return [ep]; // чуть длиннее лимита — не режем
+  const n = Math.ceil(total / target), aim = total / n; // делим на равные части, а не «полная + огрызок»
   const parts = []; let cur = [], sum = 0;
-  ep.scenes.forEach((s, i) => { if (cur.length && sum + durs[i] > target) { parts.push(cur); cur = []; sum = 0; } cur.push(s); sum += durs[i]; });
+  ep.scenes.forEach((s, i) => { if (cur.length && parts.length < n - 1 && sum + durs[i] / 2 > aim) { parts.push(cur); cur = []; sum = 0; } cur.push(s); sum += durs[i]; });
   if (cur.length) parts.push(cur);
   return parts.map((sc, k) => { const e = JSON.parse(JSON.stringify(ep)); e.episode = ep.episode + k; e.title = ep.title ? (parts.length > 1 ? `${ep.title} (часть ${k + 1})` : ep.title) : '';
     e.scenes = sc.map((s, j) => Object.assign(s, { id: 'С' + (j + 1) }));

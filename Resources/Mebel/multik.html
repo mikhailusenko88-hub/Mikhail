@@ -80,7 +80,8 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 <div id="writer" style="position:fixed;inset:0;background:var(--bg);z-index:16;display:none;flex-direction:column;overflow-y:auto;padding:0 0 env(safe-area-inset-bottom)">
 <div class="row" style="padding:calc(8px + env(safe-area-inset-top)) 12px 8px;position:sticky;top:0;background:var(--bg);z-index:2"><button class="back" onclick="Wr.close()">‹</button><b style="flex:1">Мой сценарий</b><button class="btn" onclick="Wr.example()">Пример</button></div>
 <div style="padding:4px 14px 120px">
- <div class="card"><div class="kv"><span>Сериал</span><span><input type="text" id="wrSeries" list="wrSeriesList" placeholder="Кот Барсик"><datalist id="wrSeriesList"></datalist></span></div></div>
+ <div class="card"><div class="kv"><span>Сериал</span><span><input type="text" id="wrSeries" list="wrSeriesList" placeholder="Кот Барсик"><datalist id="wrSeriesList"></datalist></span>
+   <span>Длина серии</span><span><select id="wrLen" onchange="Wr.saveDraft();if(document.getElementById('wrText').value.trim())Wr.check()"><option value="300">до 5 минут</option><option value="360">до 6 минут</option><option value="420">до 7 минут</option><option value="480">до 8 минут</option><option value="600">до 10 минут</option><option value="0">не делить на части</option></select></span></div></div>
  <div class="card" style="padding:10px"><textarea id="wrText" style="min-height:46vh;font:15px -apple-system,sans-serif;line-height:1.45" placeholder="СЦЕНА: двор, утро&#10;Барсик: Привет!&#10;Пик входит справа.&#10;Пик (радостно): Бежим в лес!"></textarea>
   <div class="btns"><button class="btn" onclick="Wr.paste()">📋 Вставить</button><button class="btn" onclick="Wr.clear()">Очистить</button><button class="btn" onclick="Wr.check()">Проверить</button><button class="btn acc" onclick="Wr.make()">🎬 Создать серии</button></div>
   <div id="wrOut" style="margin-top:10px"></div><div id="wrTeach"></div></div>
@@ -224,7 +225,7 @@ const App = {
         const bb = bs === 'run' ? `<button class="btn" disabled>⏳ Собирается</button>` : bs === 'wait' ? `<button class="btn" data-a="unqueue">⏳ В очереди ✕</button>` : bs === 'held' ? `<button class="btn acc" data-a="build">🎬 Продолжить сборку</button>` : `<button class="btn ${e.status === 'built' ? '' : 'acc'}" data-a="build">🎬 ${e.status === 'built' ? 'Пересобрать' : 'Собрать видео'}</button>`;
         d.innerHTML = `<div class="row"><div style="flex:1"><b>Серия ${e.episode}${e.title ? '. ' + esc(e.title) : ''}</b><div class="mut">${(e.script.scenes || []).length} сцен · ${st}</div></div></div>
           <div class="btns"><button class="btn" data-a="play">▶ Просмотр</button>${bb}
-          ${e.video ? '<button class="btn ok" data-a="share">⤴ Отправить / YouTube</button><button class="btn" data-a="dub">🔊 Обновить звук</button>' : ''}<button class="btn" data-a="yt">📝 Текст для YouTube</button></div>`;
+          ${e.video ? '<button class="btn ok" data-a="share">⤴ Отправить / YouTube</button><button class="btn" data-a="dub">🔊 Обновить звук</button>' : ''}<button class="btn" data-a="yt">📝 Текст для YouTube</button><button class="btn" data-a="del">🗑 Удалить</button></div>`;
         d.querySelectorAll('button').forEach(b => b.onclick = () => App.epAction(p, e, b.dataset.a));
         card.appendChild(d);
       }
@@ -324,6 +325,15 @@ const App = {
     if (a === 'unqueue') return Build.unqueue(p, e);
     if (a === 'dub') return Build.dub(p, e);
     if (a === 'share') return Native.call('share', { path: e.video });
+    if (a === 'del') { // удалить серию (и её видео)
+      if (Build.state(p, e) === 'run') { alert('Эта серия сейчас собирается. Дождись конца сборки, потом удаляй.'); return; }
+      if (!confirm(`Удалить «Серия ${e.episode}${e.title ? '. ' + e.title : ''}»?${e.video ? '\nГотовое видео тоже удалится.' : ''}`)) return;
+      const q = Build.jobs(), k = q.findIndex(j => j.series === p.series && j.episode === e.episode);
+      if (k === 0 && !Build.busy) await Native.call('videoCancel', {}); // недособранные куски этой серии
+      if (k >= 0) Build.unqueue(p, e);
+      if (e.video) { try { await Native.call('removeFile', { path: e.video }); } catch (er) {} }
+      p.episodes = p.episodes.filter(x => x !== e); if (!p.episodes.length) Lib.data.projects = Lib.data.projects.filter(x => x !== p);
+      await Lib.save(); App.render(true); return; }
     if (a === 'yt') { const y = e.script.youtube || {}; const text = `${y.title || (p.series + ' — Серия ' + e.episode + '. ' + (e.title || ''))}\n\n${y.description || ''}\n\n${(y.tags || []).map(t => '#' + t.replace(/\s+/g, '')).join(' ')}`; await Native.call('copy', { text }); alert('Название, описание и теги скопированы:\n\n' + text); }
   },
 };
@@ -717,12 +727,13 @@ const VP = {
 const Wr = {
   listening: false, base: '', last: null,
   open() {
-    const d = Lib.data; document.getElementById('wrText').value = d.draftText || '';
+    const d = Lib.data; d.draftText = ''; document.getElementById('wrText').value = ''; document.getElementById('wrTeach').innerHTML = ''; // каждый раз — чистый лист
+    document.getElementById('wrLen').value = String(d.epLen != null ? d.epLen : 600);
     document.getElementById('wrSeries').value = d.draftSeries || (d.projects[0] && d.projects[0].series) || '';
     document.getElementById('wrSeriesList').innerHTML = d.projects.map(p => `<option value="${esc(p.series)}">`).join('');
     document.getElementById('wrOut').innerHTML = ''; document.getElementById('writer').style.display = 'flex';
   },
-  saveDraft() { Lib.data.draftText = document.getElementById('wrText').value; Lib.data.draftSeries = document.getElementById('wrSeries').value; Lib.save(); },
+  saveDraft() { Lib.data.draftText = document.getElementById('wrText').value; Lib.data.draftSeries = document.getElementById('wrSeries').value; Lib.data.epLen = +document.getElementById('wrLen').value; Lib.save(); },
   close() { if (this.listening) this.mic(); this.saveDraft(); document.getElementById('writer').style.display = 'none'; App.render(); },
   example() { const t = document.getElementById('wrText'); if (t.value.trim() && !confirm('Заменить текст примером?')) return; t.value = MKScript.EXAMPLE; },
   async paste() { const t = await Native.call('paste'); if (!t) { alert('В буфере нет текста. Скопируй сценарий и нажми ещё раз.'); return; } const el = document.getElementById('wrText'); if (el.value.includes(t.trim())) { this.check(); return; } el.value = el.value.trim() && confirm('Добавить к уже написанному? (Отмена — заменить)') ? el.value.replace(/\s*$/, '') + '\n' + t : t; this.saveDraft(); this.check(); },
@@ -751,7 +762,7 @@ const Wr = {
     const p = Lib.data.projects.find(p => p.series === series); const next = p && p.episodes.length ? Math.max(...p.episodes.map(e => e.episode)) + 1 : 1;
     const r = MKScript.parse(/^\s*(сериал|мультик)\s*:/im.test(text) ? text : 'СЕРИАЛ: ' + series + '\n' + text, Lib.data, { series, nextEpisode: next, lexicon: Lib.data.lexicon || {} });
     const ign = (Lib.data.lexicon || {}).ignore || {}; r.unknownWords = (r.unknownWords || []).filter(w => !ign[w.word]); const igo = (Lib.data.lexicon || {}).ignoreObj || {}; r.unknownObjects = (r.unknownObjects || []).filter(w => !igo[w.word]);
-    const parts = []; for (const e of r.episodes) parts.push(...MKScript.split(e, Lib.data, 300));
+    const parts = []; const lim = +document.getElementById('wrLen').value; for (const e of r.episodes) parts.push(...(lim ? MKScript.split(e, Lib.data, lim) : [e]));
     // номера по порядку без пересечений внутри одного разбора
     let n = parts.length ? parts[0].episode : next; parts.forEach(e => { e.episode = n++; e.youtube.title = `${e.series} — Серия ${e.episode}${e.title ? '. ' + e.title : ''}`; });
     return Object.assign(r, { parts });

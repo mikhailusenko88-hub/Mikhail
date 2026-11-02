@@ -549,6 +549,12 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
                 queue.async { try? FileManager.default.removeItem(at: dir) }
             }
             replyHandler(true, nil)
+        case "removeFile":   // удалённая серия: стереть её видео (только внутри папки мультиков)
+            if let p = body["path"] as? String {
+                let url = p.hasPrefix("/") ? URL(fileURLWithPath: p) : root.appendingPathComponent(p)
+                if url.standardizedFileURL.path.hasPrefix(root.standardizedFileURL.path) { try? FileManager.default.removeItem(at: url) }
+            }
+            replyHandler(true, nil)
         case "keepAwake":   // очередь серий: экран не гаснет и между сериями, страница не выключается при закрытии раздела
             busy = body["on"] as? Bool ?? false
             UIApplication.shared.isIdleTimerDisabled = busy
