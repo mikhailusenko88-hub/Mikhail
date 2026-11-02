@@ -1,11 +1,26 @@
-2026-11-02 14:33 UTC
-web.archive.org_cdx_search_cdx.txt  https://web.archive.org/cdx/search/cdx?url=www.avito.ru/autoload/documentation/templates/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000  (218 симв.)
-web.archive.org_cdx_search_cdx.txt  https://web.archive.org/cdx/search/cdx?url=www.avito.ru/web/1/autoload/user-docs/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000  (1849 симв.)
-web.archive.org_cdx_search_cdx.txt  https://web.archive.org/cdx/search/cdx?url=autoload.avito.ru/format/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000  (218 симв.)
-www.bing.com_search.txt  https://www.bing.com/search?q=site%3Asupport.avito.ru+%D1%82%D0%BE%D0%B2%D0%B0%D1%80%D1%8B+%D0%BF%D0%BE%D0%B4+%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7&setlang=ru  (452 симв.)
-www.bing.com_search.txt  https://www.bing.com/search?q=site%3Asupport.avito.ru+%D0%B0%D0%B2%D1%82%D0%BE%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D0%B0+%D1%84%D0%BE%D1%82%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D0%B8+%D1%82%D1%80%D0%B5%D0%B1%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F&setlang=ru  (2536 симв.)
-www.bing.com_search.txt  https://www.bing.com/search?q=avito+autoload+documentation+templates+%D0%A1%D1%82%D1%80%D0%BE%D0%B9%D0%BC%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D1%8B+WallPanelsSlatsDecorativeElementsSubType&setlang=ru  (1855 симв.)
-www.avito.ru_web_1_autoload_user-docs_tree.txt  https://www.avito.ru/web/1/autoload/user-docs/tree  (130 симв.)
+2026-11-02 14:38 UTC
+av_support_s62.txt  https://support.avito.ru/sections/1722  (2058 симв.)
+av_support_a2271.txt  https://support.avito.ru/articles/4538  (2616 симв.)
+av_support_main.txt  https://support.avito.ru/  (3918 симв.)
+av_cdx_userdocs.txt  https://web.archive.org/cdx/search/cdx?url=www.avito.ru/web/1/autoload/user-docs/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000  (26 симв.)
+av_cdx_docs.txt  https://web.archive.org/cdx/search/cdx?url=www.avito.ru/autoload/documentation/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000  (1649 симв.)
+av_cdx_format.txt  https://web.archive.org/cdx/search/cdx?url=autoload.avito.ru/format/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000  (5221 симв.)
+av_cdx_support.txt  https://web.archive.org/cdx/search/cdx?url=support.avito.ru/articles/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=5000  (218 симв.)
 
 --- ЖУРНАЛ ---
-
+open https://support.avito.ru/sections/62: ok
+snap av_support_s62: 2058 симв.
+open https://support.avito.ru/articles/2271: ok
+snap av_support_a2271: 2616 симв.
+open https://support.avito.ru/: ok
+snap av_support_main: 3918 симв.
+open «https://web.archive.org/cdx/search/cdx?url=www.avito.ru/web/1/autoload/user-docs/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000»: ОШИБКА Page.goto: Timeout 60000ms exceeded.
+Call log:
+  - navigating to "https://web.archive.org/cdx/search/cdx?url=www.avito.ru/web/1/autoload/user-docs/*&fl=original,timestamp&collapse=urlkey&filter=status
+snap av_cdx_userdocs: 26 симв.
+open https://web.archive.org/cdx/search/cdx?url=www.avito.ru/autoload/documentation/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000: ok
+snap av_cdx_docs: 1649 симв.
+open https://web.archive.org/cdx/search/cdx?url=autoload.avito.ru/format/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000: ok
+snap av_cdx_format: 5221 симв.
+open https://web.archive.org/cdx/search/cdx?url=support.avito.ru/articles/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=5000: ok
+snap av_cdx_support: 218 симв.

@@ -1,0 +1,23 @@
+URL: https://web.archive.org/cdx/search/cdx?url=www.avito.ru/autoload/documentation/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000
+
+https://www.avito.ru/autoload/documentation 20221207190308
+https://www.avito.ru/autoload/documentation/gtm.js 20241031022937
+https://www.avito.ru/autoload/documentation/templates 20220906050234
+https://www.avito.ru/autoload/documentation/templates/%0A%0A%D0%90%D0%92%D0%98%D0%A2%D0%9E 20240202050517
+https://www.avito.ru/autoload/documentation/templates/103796 20250331203438
+https://www.avito.ru/autoload/documentation/templates/108300 20241008045118
+https://www.avito.ru/autoload/documentation/templates/1205174?ysclid=lgz9o64j9e462704190 20230808152029
+https://www.avito.ru/autoload/documentation/templates/147898 20260424143353
+https://www.avito.ru/autoload/documentation/templates/147898?utm_source=telegram&utm_medium=social&utm_campaign=smm_tg_b2b_serv_always-on&utm_content=promo_serv654&idfa= 20260425154322
+https://www.avito.ru/autoload/documentation/templates/66868?fileFormat=excel 20250902171104
+https://www.avito.ru/autoload/documentation/templates/66885 20250121094812
+https://www.avito.ru/autoload/documentation/templates/66885?fileFormat=excel 20250121093127
+https://www.avito.ru/autoload/documentation/templates/67052 20250123085640
+https://www.avito.ru/autoload/documentation/templates/67052?fileFormat=excel 20250122042214
+https://www.avito.ru/autoload/documentation/templates/67086 20250909213622
+https://www.avito.ru/autoload/documentation/templates/71506 20231006105245
+https://www.avito.ru/autoload/documentation/templates?_ga=2.233917981.204903514.1648447045-1493282423.1648447045 20240305203311
+https://www.avito.ru/autoload/documentation/templates?_ga=2.99231710.1547087947.1657524429-1716300482.1647267645 20231020112054
+
+
+--- ССЫЛКИ ---

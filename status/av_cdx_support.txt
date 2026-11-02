@@ -1,0 +1,15 @@
+URL: https://web.archive.org/cdx/search/cdx?url=support.avito.ru/articles/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=5000
+
+   
+Temporarily Offline
+
+Internet Archive services are temporarily offline.
+
+Please check our official accounts, including Twitter/X, Bluesky or Mastodon for the latest information.
+
+We apologize for the inconvenience.
+
+--- ССЫЛКИ ---
+https://twitter.com/internetarchive/ | Twitter/X
+https://bsky.app/profile/did:plc:73dpznbu4wqwtcyurwbiulov | Bluesky
+https://mastodon.archive.org/deck/@internetarchive | Mastodon
