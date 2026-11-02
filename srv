@@ -5,6 +5,7 @@
 #   srv race mushel — выложить гонку прямо сейчас (cities | regions | mushel | names)
 #   srv name Айгерім — добавить имя в следующий заезд с именами
 #   srv comment — оставить первый комментарий под последним роликом
+#   srv yt-login — войти в YouTube заново (с правом на комментарии)
 #   srv speed  — скорость интернета самого сервера
 #   srv update — обновить srv из GitHub
 BOT=/root/kz-bot
@@ -20,7 +21,7 @@ case "${1:-status}" in
     ;;
   bot)
     if [ -f "$BOT/bot.log" ]; then
-      grep -E "Заезд №|YouTube:|комментарий|ошибка|Сбой|Killed|не собралась" "$BOT/bot.log" | tail -10 | cut -c1-200
+      grep -E "Заезд №|YouTube|комментарий|ошибка|Сбой|Killed|не собралась" "$BOT/bot.log" | tail -10 | cut -c1-200
     else
       echo "Не нашёл $BOT/bot.log"
     fi
@@ -37,6 +38,10 @@ case "${1:-status}" in
     PY=python3; [ -x "$BOT/.venv/bin/python" ] && PY="$BOT/.venv/bin/python"
     cd "$BOT" && "$PY" race_bot.py comment
     ;;
+  yt-login)
+    PY=python3; [ -x "$BOT/.venv/bin/python" ] && PY="$BOT/.venv/bin/python"
+    cd "$BOT" && "$PY" yt_upload.py --login-start
+    ;;
   name)
     shift
     [ -n "${1:-}" ] || { echo "Напиши имя: srv name Айгерім"; exit 1; }
@@ -51,6 +56,6 @@ case "${1:-status}" in
       && chmod +x /usr/local/bin/srv.new && mv /usr/local/bin/srv.new /usr/local/bin/srv && echo "srv обновлён"
     ;;
   *)
-    echo "Есть: srv status | srv bot | srv race <тема> | srv name <имя> | srv comment | srv speed | srv update"
+    echo "Есть: srv status | srv bot | srv race <тема> | srv name <имя> | srv comment | srv yt-login | srv speed | srv update"
     ;;
 esac

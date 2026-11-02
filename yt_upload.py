@@ -15,6 +15,9 @@ import requests
 BASE = Path(__file__).resolve().parent
 TOKEN = BASE / "yt_token.json"           # сюда сохраняется доступ (никому не отправлять)
 SCOPE = "https://www.googleapis.com/auth/youtube"
+# с правом на комментарии (первый комментарий под роликом, чтение имён из комментариев)
+SCOPES_FULL = ["https://www.googleapis.com/auth/youtube", "https://www.googleapis.com/auth/youtube.force-ssl"]
+LOGIN = BASE / "yt_login.json"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 
 
@@ -83,7 +86,74 @@ def _creds():
     from google.oauth2.credentials import Credentials
     d = json.loads(TOKEN.read_text())
     return Credentials(None, refresh_token=d["refresh_token"], token_uri=TOKEN_URL,
-                       client_id=d["client_id"], client_secret=d["client_secret"], scopes=[SCOPE])
+                       client_id=d["client_id"], client_secret=d["client_secret"],
+                       scopes=d.get("scopes") or [SCOPE])
+
+
+# ---------- вход заново с правом на комментарии — без ожидания в окне (для «Команд» на iPhone) ----------
+
+def login_start():
+    """Показывает код для google.com/device и сразу выходит; подтверждение ждёт фоновый процесс."""
+    import subprocess
+    if TOKEN.exists():
+        d = json.loads(TOKEN.read_text())
+        cid, secret = d["client_id"], d["client_secret"]
+    else:
+        found = _client_from_file()
+        if not found:
+            sys.exit("Нет ключа клиента — запусти --setup")
+        cid, secret = found
+    r = requests.post("https://oauth2.googleapis.com/device/code",
+                      data={"client_id": cid, "scope": " ".join(SCOPES_FULL)}, timeout=30).json()
+    if "device_code" not in r:
+        sys.exit(f"Google не выдал код: {r}")
+    LOGIN.write_text(json.dumps({"client_id": cid, "client_secret": secret, "device_code": r["device_code"],
+                                 "interval": r.get("interval", 5),
+                                 "deadline": time.time() + r.get("expires_in", 1800)}))
+    LOGIN.chmod(0o600)
+    with open(BASE / "bot.log", "a") as lf:
+        subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "--login-wait"], cwd=str(BASE),
+                         stdout=lf, stderr=lf, start_new_session=True)
+    print(f"1) Открой на телефоне:  {r['verification_url']}")
+    print(f"2) Введи код:  {r['user_code']}")
+    print("3) Выбери аккаунт и канал «Білесің бе?», нажми «Разрешить»")
+    print("   (если «приложение не проверено» — «Дополнительно» → «Перейти…»)")
+    print("4) Потом:  srv comment")
+    print("Код действует 30 минут.")
+
+
+def login_wait():
+    d = json.loads(LOGIN.read_text())
+    interval = d["interval"]
+    while time.time() < d["deadline"]:
+        time.sleep(interval)
+        t = requests.post(TOKEN_URL, data={
+            "client_id": d["client_id"], "client_secret": d["client_secret"], "device_code": d["device_code"],
+            "grant_type": "urn:ietf:params:oauth:grant-type:device_code"}, timeout=30).json()
+        err = t.get("error")
+        if err == "authorization_pending":
+            continue
+        if err == "slow_down":
+            interval += 5
+            continue
+        if err or "refresh_token" not in t:
+            print(f"YouTube вход: ошибка {t}", flush=True)
+            LOGIN.unlink(missing_ok=True)
+            return
+        if TOKEN.exists():
+            TOKEN.rename(TOKEN.with_name(f"yt_token.json.bak-{time.strftime('%Y%m%d-%H%M%S')}"))
+        TOKEN.write_text(json.dumps({"client_id": d["client_id"], "client_secret": d["client_secret"],
+                                     "refresh_token": t["refresh_token"], "scopes": SCOPES_FULL}))
+        TOKEN.chmod(0o600)
+        LOGIN.unlink(missing_ok=True)
+        print(f"{time.strftime('%Y-%m-%d %H:%M:%S')}  YouTube вход: готово, есть право на комментарии", flush=True)
+        try:
+            check()
+        except SystemExit as e:
+            print(e, flush=True)
+        return
+    print("YouTube вход: время на ввод кода вышло — запусти srv yt-login ещё раз", flush=True)
+    LOGIN.unlink(missing_ok=True)
 
 
 def _yt():
@@ -133,5 +203,9 @@ if __name__ == "__main__":
         setup()
     elif "--check" in sys.argv:
         check()
+    elif "--login-start" in sys.argv:
+        login_start()
+    elif "--login-wait" in sys.argv:
+        login_wait()
     else:
         print(__doc__)

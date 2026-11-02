@@ -26,7 +26,7 @@ echo "== Бот: $D"
 cd "$D" || exit 1
 PY=python3; [ -x "$D/.venv/bin/python" ] && PY="$D/.venv/bin/python"
 
-FILES="race_video.py race_bot.py race_leagues.py"
+FILES="race_video.py race_bot.py race_leagues.py yt_upload.py"
 cp -p config.json "config.json.bak-$STAMP"
 for f in $FILES; do [ -f "$f" ] && cp -p "$f" "$f.bak-$STAMP"; done
 crontab -l > "crontab.bak-$STAMP" 2>/dev/null || true
