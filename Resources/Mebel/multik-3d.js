@@ -113,12 +113,12 @@ function groundFix(rig, w) {
   const lift = Math.max(0, -.015 - rel), touch = -.006 - rel;
   rig.yaw.position.y = lerp(lift, touch, clamp(w, 0, 1)); rig._low = rel;
 }
-function buildRig(spec) { inRig = true; try { const r = buildRig0(spec); try { sculptRig(r); } catch (e) { console.log('скульптор:', e && e.message); } if (MK3D.hq) addFur(r); return r; } finally { inRig = false; } }
+function buildRig(spec) { inRig = true; try { const r = buildRig0(spec); try { sculptRig(r); } catch (e) { console.log('скульптор:', e && e.message); } if (MK3D.hq) { addFur(r); r.root.traverse(o => { if (o.isMesh) o.receiveShadow = false; }); /* «как в кино»: тени от листвы и от самого себя на героя не ложатся — шерсть их тоже не видит, иначе голая кожа на мордочке темнеет пятнами */ } return r; } finally { inRig = false; } }
 // ---------- «Скульптор»: голова, тело, лапы и хвост — одна плавная поверхность вместо набора шаров ----------
 // Берём те же формы, из которых собран герой (поэтому он остаётся узнаваемым), и сливаем их в «глину»:
 // щёки перетекают в мордочку, пузико в тело, лапка в ладошку; цвет на стыках мягкий; полоски — по форме;
 // мягкие тени в складках считаются один раз и запекаются в цвет. Всё — один раз на героя, потом из кэша.
-let sculptM = null;
+let sculptM = null; const SKIN_AMB = { value: null }; // «пол» рассеянного света для кожи — не темнее шерсти рядом (иначе в лесу и ночью мордочки становились тёмными масками)
 // рисунок (полоски, пятна) — прямо в шейдере по форме: чёткий край при любом приближении
 const PAT_GLSL = `uniform float uMode; uniform float uN; uniform vec3 uRatio; varying vec4 vPat; varying vec3 vColB; varying float vMix;
 float patW(vec4 P){
@@ -130,6 +130,7 @@ float patW(vec4 P){
   float h = sin(q.x * 9.1 + q.y * 3.7) * sin(q.y * 8.3 - q.z * 5.1) * sin(q.z * 7.7 + q.x * 2.9); return smoothstep(.18, .3, h); }
 `;
 const SSS_FRAG = `#include <lights_fragment_end>
+  reflectedLight.indirectDiffuse = max(reflectedLight.indirectDiffuse, diffuseColor.rgb * uAmbF);
   #if NUM_DIR_LIGHTS > 0
   { vec3 nS = normal; float thk = exp(-clamp(vThick, 0.0, 1.0) * 26.0);
     for (int i = 0; i < NUM_DIR_LIGHTS; i++) { vec3 Ld = directionalLights[i].direction, Lc = directionalLights[i].color; float nl = dot(nS, Ld);
@@ -141,13 +142,13 @@ const SCULPT_FRAG = `#include <color_fragment>
   { float aw = max(fwidth(vMix) * .75, 1e-6), tm = smoothstep(-aw, aw, vMix); // граница цвета — на каждом пикселе
     diffuseColor.rgb = mix(diffuseColor.rgb, vColB, tm);
     float pw = vPat.w > 1.5 ? 1. - tm : 1.; diffuseColor.rgb *= mix(vec3(1.0), uRatio, patW(vPat) * pw); }`;
-function sculptMat(pat, cloth, cool) { const k = (MK3D.hq ? 'hq' : 'std') + (pat ? ':' + pat.mode + ':' + pat.n + ':' + pat.ratio.join(',') : '') + (cloth ? ':cloth' : '') + (cool ? ':cool' : ''); sculptM = sculptM || {}; if (sculptM[k]) return sculptM[k]; // cloth: ткань (кепка) — без тёплого «просвета кожи»
+function sculptMat(pat, cloth, cool) { if (!SKIN_AMB.value) SKIN_AMB.value = new THREE.Color(0, 0, 0); const k = (MK3D.hq ? 'hq' : 'std') + (pat ? ':' + pat.mode + ':' + pat.n + ':' + pat.ratio.join(',') : '') + (cloth ? ':cloth' : '') + (cool ? ':cool' : ''); sculptM = sculptM || {}; if (sculptM[k]) return sculptM[k]; // cloth: ткань (кепка) — без тёплого «просвета кожи»
   const m = MK3D.hq ? new THREE.MeshPhysicalMaterial({ color: 0xffffff, vertexColors: true, roughness: .62, metalness: 0, sheen: .55, sheenRoughness: .35, sheenColor: new THREE.Color(1, .95, .9), envMapIntensity: .8 })
     : new THREE.MeshToonMaterial({ color: 0xffffff, vertexColors: true, gradientMap: grad });
-  const u = { uSss: { value: cloth ? new THREE.Vector3(.22, .22, .24) : cool ? new THREE.Vector3(.5, .34, .3) : new THREE.Vector3(1, .42, .3) }, uMode: { value: pat ? pat.mode : 0 }, uN: { value: pat ? pat.n : 0 }, uRatio: { value: new THREE.Vector3(...(pat ? pat.ratio : [1, 1, 1])) } }; m.userData.pat = pat || null;
+  const u = { uSss: { value: cloth ? new THREE.Vector3(.22, .22, .24) : cool ? new THREE.Vector3(.5, .34, .3) : new THREE.Vector3(1, .42, .3) }, uAmbF: SKIN_AMB, uMode: { value: pat ? pat.mode : 0 }, uN: { value: pat ? pat.n : 0 }, uRatio: { value: new THREE.Vector3(...(pat ? pat.ratio : [1, 1, 1])) } }; m.userData.pat = pat || null;
   m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, u);
     sh.vertexShader = 'attribute vec4 aPat; attribute vec3 aColB; attribute float aMix; attribute float aThick; varying vec4 vPat; varying vec3 vColB; varying float vMix; varying float vThick;\n' + sh.vertexShader.replace('#include <color_vertex>', '#include <color_vertex>\n  vPat = aPat; vColB = aColB; vMix = aMix; vThick = aThick;');
-    sh.fragmentShader = 'varying float vThick; uniform vec3 uSss;\n' + PAT_GLSL + sh.fragmentShader.replace('#include <color_fragment>', SCULPT_FRAG).replace('#include <lights_fragment_end>', MK3D.hq ? SSS_FRAG : '#include <lights_fragment_end>'); };
+    sh.fragmentShader = 'varying float vThick; uniform vec3 uSss; uniform vec3 uAmbF;\n' + PAT_GLSL + sh.fragmentShader.replace('#include <color_fragment>', SCULPT_FRAG).replace('#include <lights_fragment_end>', MK3D.hq ? SSS_FRAG : '#include <lights_fragment_end>'); };
   m.customProgramCacheKey = () => 'sculpt' + (MK3D.hq ? 'hq' : '');
   return (sculptM[k] = m); }
 // ---------- мебель из «глины»: мягкие скруглённые формы, складки между подушками, тени в стыках ----------
@@ -491,6 +492,7 @@ function strandMat(src) {
   furMats.push(m); return m;
 }
 function furFrame(rig, T) { // свет и качание шерсти на кадр
+  if (SKIN_AMB.value) { const k = (hemi.intensity * 1.6 + .35) * .45 * .85, a = SKIN_AMB.value; a.copy(hemi.color).add(hemi.groundColor).multiplyScalar(.5 * k); const g = (a.r + a.g + a.b) / 3; a.setRGB(g + (a.r - g) * .25, g + (a.g - g) * .25, g + (a.b - g) * .25); } // кожа освещена не хуже шерсти
   if (!rig.fur || !rig.fur.length) return; const hp = new THREE.Vector3(); rig.head.getWorldPosition(hp);
   const st = rig._fs || (rig._fs = { t: T, p: hp.clone(), lag: new THREE.Vector3(), vel: new THREE.Vector3() }); const dt = T - st.t;
   if (dt > 0 && dt < .25) { const v = hp.clone().sub(st.p).divideScalar(dt); const target = v.multiplyScalar(-.18); target.clampLength(0, .9);
