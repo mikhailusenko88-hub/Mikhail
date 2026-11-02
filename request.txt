@@ -1,11 +1,15 @@
-# Авито — прогон 4: справка по Автозагрузке, правила для товаров (под заказ), адреса
-follow: (фото|изображ|формат|файл|xml|требован|ошибк|шаблон|категор|наличи|заказ|поля|загруз)
-https://support.avito.ru/partitions/103
-follow: (заказ|наличи|правил|запрещ|требован|описани|фото|товар)
-https://support.avito.ru/sections/1730
-follow: (заказ|наличи|правил|требован|описани|фото)
-https://support.avito.ru/partitions/364
-follow: (адрес|склад|город)
-https://support.avito.ru/sections/1771
-open: https://web.archive.org/web/2022/https://autoload.avito.ru/format/dlya_doma_i_dachi/
-snap: av_arch_dlya_doma_2022
+# Авито — прогон 5: причины отклонения (цена, замена товара, вид объявления, категория), поиск «под заказ»
+open: https://support.avito.ru/articles/2238
+snap: av_rej_zamena
+open: https://support.avito.ru/articles/2232
+snap: av_rej_cena
+open: https://support.avito.ru/articles/2922
+snap: av_rej_vid
+open: https://support.avito.ru/articles/2923
+snap: av_rej_kategoria
+open: https://support.avito.ru/articles/2918
+snap: av_rej_neskolko
+open: https://support.avito.ru/search?query=%D0%BF%D0%BE%D0%B4%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7
+snap: av_search_podzakaz
+open: https://support.avito.ru/search?q=%D0%BF%D0%BE%D0%B4%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7
+snap: av_search_podzakaz_q
