@@ -1,0 +1,13 @@
+2026-11-02 13:21 UTC
+saby.ru_tariffs.txt  https://saby.ru/tariffs  (3012 симв.)
+saby.ru_tariffs_info.txt  https://saby.ru/tariffs/info  (2581 симв.)  [по ссылке с https://saby.ru/tariffs]
+saby.ru_ereport_new.txt  https://saby.ru/ereport/new  (7571 симв.)
+saby.ru_ereport.txt  https://saby.ru/ereport  (7571 симв.)
+saby.ru_edo_docs.txt  https://saby.ru/edo/docs  (8397 симв.)
+saby.ru_tms_industries_small.txt  https://saby.ru/tms/industries/small?utm_source=saby_landings&utm_medium=foc&utm_campaign=saby_landings_tms&utm_content=tms_special_tariff  (3811 симв.)  [по ссылке с https://saby.ru/edo/docs]
+saby.ru_edo.txt  https://saby.ru/edo#tariffs  (12072 симв.)  [по ссылке с https://saby.ru/edo/docs]
+saby.ru_edo_tariffs.txt  https://saby.ru/edo/tariffs  (5030 симв.)  [по ссылке с https://saby.ru/edo/docs]
+saby.ru_accounting_ip.txt  https://saby.ru/accounting/ip  (11886 симв.)
+kontur.ru_extern_price.txt  https://kontur.ru/extern/price  (74368 симв.)
+kontur.ru_extern_price-optimal-plus_78.txt  https://kontur.ru/extern/price-optimal-plus/78  (1267 симв.)
+kontur.ru_diadoc_price.txt  https://kontur.ru/diadoc/price  (2605 симв.)
