@@ -16,19 +16,10 @@ jobs:
       - name: Install
         run: pip install -q torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu && pip install -q "numpy<2" onnx onnxruntime
       - name: Probe
-        run: python probe3.py > out/run3.log 2>&1 || true
+        run: python probe4.py > out/run4.log 2>&1 || true
         continue-on-error: true
       - name: Commit result
         if: always()
         run: |
           git config user.name tts-test; git config user.email tts-test@users.noreply.github.com
           rm -rf out/onnx; git add -A out; git commit -m "tts-test result" || echo nothing; git push
-  setup:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Broken apt source like on the server, then install
-        run: |
-          echo "deb http://archive.ubuntu.com/ubuntu noble-nonexistent main" | sudo tee /etc/apt/sources.list.d/broken.list
-          curl -fsSL https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/setup.sh -o s.sh
-          sudo bash s.sh 2>&1 | tail -25
