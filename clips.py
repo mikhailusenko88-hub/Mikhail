@@ -10,7 +10,7 @@ FPS, DUR = 25, 10.0; NF = int(FPS * DUR)
 sys.argv = ['blender', '--', 'mode=bg']
 exec(open('render.py', encoding='utf-8').read().split('# ---------- сборка ----------')[0])
 A = np.load('out/anim.npz'); RE = float(A['re'][0]); EY = A['eyes']; PIV = A['piv']
-CAM0 = Vector((0.62, -2.4, 0.82)); CAM1 = Vector((0.5, -2.05, 0.8))
+CAM0 = Vector((0.66, -2.7, 0.86)); CAM1 = CAM0; TGT0 = Vector((0, -0.03, 0.62))
 
 def empty(name, loc, parent=None):
     e = bpy.data.objects.new(name, None); sc.collection.objects.link(e); e.location = Vector(loc)
@@ -92,7 +92,7 @@ area_light('Key', 70, 1.6, (1.0, 0.95, 0.88), (-1.3, -1.5, 1.55), (0, -0.05, 0.7
 area_light('Fill', 45, 2.0, (0.75, 0.9, 1.0), (1.6, -1.0, 0.6), (0, 0, 0.6))
 area_light('EyeLight', 8, 0.3, (1, 0.97, 0.93), (0.25, -2.0, 1.05), (0, -0.14, 0.77))
 cam = bpy.data.objects.new('Cam', bpy.data.cameras.new('Cam')); sc.collection.objects.link(cam); sc.camera = cam
-cam.data.lens = 55; cam.data.sensor_width = 36; cam.location = CAM0; look_at(cam, Vector((0, -0.03, 0.6)))
+cam.data.lens = 55; cam.data.sensor_width = 36; cam.location = CAM0; look_at(cam, TGT0)
 cam.data.dof.use_dof = True; cam.data.dof.aperture_fstop = 3.2; cam.data.dof.focus_distance = (CAM0 - Vector((0.0, -0.15, 0.7))).length
 
 # ---------- движения: каждый клип 2,4 с, начинается и кончается в одной и той же позе (стыкуются без швов) ----------

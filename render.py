@@ -255,7 +255,9 @@ def build_lights_camera():
     fill.data.energy = 45; fill.data.size = 2.0; fill.data.color = (0.75, 0.9, 1.0); fill.location = (1.6, -1.0, 0.6); look_at(fill, (0, 0, 0.6))
     cam = bpy.data.objects.new('Cam', bpy.data.cameras.new('Cam')); sc.collection.objects.link(cam); sc.camera = cam
     E = G['eyes'] if G is not None else np.array([[-0.081, -0.142, 0.768], [0.081, -0.142, 0.768]])
-    if SHOT == 'medium':
+    if SHOT == 'lib':
+        cam.location = (0.66, -2.7, 0.86); target = (0.0, -0.03, 0.62); cam.data.lens = 55
+    elif SHOT == 'medium':
         cam.location = (0.62, -2.4, 0.82); target = (0.0, -0.03, 0.6); cam.data.lens = 55
         eyeL = bpy.data.objects.new('EyeLight', bpy.data.lights.new('EyeLight', 'AREA')); sc.collection.objects.link(eyeL)
         eyeL.data.energy = 8; eyeL.data.size = 0.3; eyeL.location = (0.25, -2.0, 1.05); look_at(eyeL, (0, -0.14, 0.77))
