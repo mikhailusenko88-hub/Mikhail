@@ -1,0 +1,2 @@
+НЕТ КЛЮЧА: в репозитории нет секрета XAI_API_KEY.
+console.x.ai → API Keys → Create; затем GitHub → Settings → Secrets and variables → Actions → New repository secret, имя XAI_API_KEY.
