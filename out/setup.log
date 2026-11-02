@@ -1,0 +1,21 @@
+== 1/6 пакеты
+
+Running kernel seems to be up-to-date.
+
+Restarting services...
+
+Service restarts being deferred:
+ systemctl restart hosted-compute-agent.service
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+== 2/6 память
+память 15983 МБ, подкачка 3071 МБ
+== 3/6 python (несколько минут)
+== 4/6 голос
+== 5/6 служба
+== 6/6 проверка (первый запуск до 5 минут: скачиваются словари ударений)
+ГОТОВО: голос рассказчика работает на порту 8095

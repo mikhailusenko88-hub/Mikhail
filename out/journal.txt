@@ -1,0 +1,17 @@
+Nov 02 18:50:58 runnervmnwato systemd[1]: Started multik-tts.service - Multik narrator voice (Silero ru_albina).
+Nov 02 18:50:58 runnervmnwato python[3422]: слушаю порт 8095
+Nov 02 18:50:59 runnervmnwato python[3422]: <torch_package_0>.multi_acc_v3_package.py:180: SyntaxWarning: "\^" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\^"? A raw string is also an option.
+Nov 02 18:50:59 runnervmnwato python[3422]:   text = re.sub(r'[^{}]'.format(self.symbols[3:] + '\^'), '', text)
+Nov 02 18:50:59 runnervmnwato python[3422]: 2026-11-02 18:50:59.915911692 [W:onnxruntime:Default, device_discovery.cc:95 GetPciBusId] Skipping pci_bus_id for PCI path at "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/5620e0c7-8062-4dce-aeb7-520c7ef76171" because filename "5620e0c7-8062-4dce-aeb7-520c7ef76171" did not match expected pattern of [0-9a-f]+:[0-9a-f]+:[0-9a-f]+[.][0-9a-f]+
+Nov 02 18:51:00 runnervmnwato python[3422]: /opt/multik-tts/venv/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+Nov 02 18:51:00 runnervmnwato python[3422]:   warnings.warn(
+Nov 02 18:51:00 runnervmnwato python[3422]: Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Nov 02 18:51:26 runnervmnwato python[3422]: голос готов
+Nov 02 18:51:29 runnervmnwato python[3422]: озвучено за 0.2 с: Жили-были кот и мышонок.
+Nov 02 18:51:29 runnervmnwato python[3422]: озвучено за 0.3 с: Жили-были в маленьком домике кот Барсик, мышонок Пик и пёс Р
+Nov 02 18:51:29 runnervmnwato python[3422]: озвучено за 0.1 с: Утром друзья отправились в лес за грибами.
+Nov 02 18:51:29 runnervmnwato python[3422]: озвучено за 0.2 с: Вдруг из-за ёлки послышался странный шорох.
+Nov 02 18:51:30 runnervmnwato python[3422]: озвучено за 0.3 с: Барсик осторожно заглянул за дерево и замер.
+Nov 02 18:51:30 runnervmnwato python[3422]: озвучено за 0.3 с: На холме друзья нашли старый з+амок. Все очень удивились!
+Nov 02 18:51:30 runnervmnwato python[3422]: озвучено за 0.3 с: Так закончился этот удивительный день. Продолжение следует…
+Nov 02 18:51:30 runnervmnwato python[3422]: озвучено за 0.0 с: Утром друзья отправились в лес за грибами.
