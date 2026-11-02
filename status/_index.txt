@@ -1,12 +1,11 @@
-2026-11-02 14:27 UTC
-autoload.avito.ru_format.txt  https://autoload.avito.ru/format/  (520 симв.)
-www.avito.ru_autoload_documentation.txt  https://www.avito.ru/autoload/documentation  (520 симв.)
-autoload.avito.ru_format_stroitelnye_materialy.txt  https://autoload.avito.ru/format/stroitelnye_materialy/  (520 симв.)
-autoload.avito.ru_format_remont_i_stroitelstvo.txt  https://autoload.avito.ru/format/remont_i_stroitelstvo/  (520 симв.)
-developers.avito.ru_api-catalog_autoload_documentation.txt  https://developers.avito.ru/api-catalog/autoload/documentation  (761 симв.)
-html.duckduckgo.com_html.txt  https://html.duckduckgo.com/html/?q=site%3Aautoload.avito.ru+%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BC%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D1%8B  (147 симв.)
-html.duckduckgo.com_html.txt  https://html.duckduckgo.com/html/?q=site%3Asupport.avito.ru+%D1%82%D0%BE%D0%B2%D0%B0%D1%80%D1%8B+%D0%BF%D0%BE%D0%B4+%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7  (147 симв.)
-html.duckduckgo.com_html.txt  https://html.duckduckgo.com/html/?q=site%3Aautoload.avito.ru+%D0%BF%D0%BE%D0%B4+%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7+Availability  (147 симв.)
+2026-11-02 14:33 UTC
+web.archive.org_cdx_search_cdx.txt  https://web.archive.org/cdx/search/cdx?url=www.avito.ru/autoload/documentation/templates/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000  (218 симв.)
+web.archive.org_cdx_search_cdx.txt  https://web.archive.org/cdx/search/cdx?url=www.avito.ru/web/1/autoload/user-docs/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000  (1849 симв.)
+web.archive.org_cdx_search_cdx.txt  https://web.archive.org/cdx/search/cdx?url=autoload.avito.ru/format/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000  (218 симв.)
+www.bing.com_search.txt  https://www.bing.com/search?q=site%3Asupport.avito.ru+%D1%82%D0%BE%D0%B2%D0%B0%D1%80%D1%8B+%D0%BF%D0%BE%D0%B4+%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7&setlang=ru  (452 симв.)
+www.bing.com_search.txt  https://www.bing.com/search?q=site%3Asupport.avito.ru+%D0%B0%D0%B2%D1%82%D0%BE%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D0%B0+%D1%84%D0%BE%D1%82%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D0%B8+%D1%82%D1%80%D0%B5%D0%B1%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F&setlang=ru  (2536 симв.)
+www.bing.com_search.txt  https://www.bing.com/search?q=avito+autoload+documentation+templates+%D0%A1%D1%82%D1%80%D0%BE%D0%B9%D0%BC%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%D1%8B+WallPanelsSlatsDecorativeElementsSubType&setlang=ru  (1855 симв.)
+www.avito.ru_web_1_autoload_user-docs_tree.txt  https://www.avito.ru/web/1/autoload/user-docs/tree  (130 симв.)
 
 --- ЖУРНАЛ ---
 
