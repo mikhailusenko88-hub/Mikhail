@@ -1,13 +1,67 @@
-2026-11-02 13:21 UTC
-saby.ru_tariffs.txt  https://saby.ru/tariffs  (3012 симв.)
-saby.ru_tariffs_info.txt  https://saby.ru/tariffs/info  (2581 симв.)  [по ссылке с https://saby.ru/tariffs]
-saby.ru_ereport_new.txt  https://saby.ru/ereport/new  (7571 симв.)
-saby.ru_ereport.txt  https://saby.ru/ereport  (7571 симв.)
-saby.ru_edo_docs.txt  https://saby.ru/edo/docs  (8397 симв.)
-saby.ru_tms_industries_small.txt  https://saby.ru/tms/industries/small?utm_source=saby_landings&utm_medium=foc&utm_campaign=saby_landings_tms&utm_content=tms_special_tariff  (3811 симв.)  [по ссылке с https://saby.ru/edo/docs]
-saby.ru_edo.txt  https://saby.ru/edo#tariffs  (12072 симв.)  [по ссылке с https://saby.ru/edo/docs]
-saby.ru_edo_tariffs.txt  https://saby.ru/edo/tariffs  (5030 симв.)  [по ссылке с https://saby.ru/edo/docs]
-saby.ru_accounting_ip.txt  https://saby.ru/accounting/ip  (11886 симв.)
-kontur.ru_extern_price.txt  https://kontur.ru/extern/price  (74368 симв.)
-kontur.ru_extern_price-optimal-plus_78.txt  https://kontur.ru/extern/price-optimal-plus/78  (1267 симв.)
-kontur.ru_diadoc_price.txt  https://kontur.ru/diadoc/price  (2605 симв.)
+2026-11-02 13:29 UTC
+s2_region_popup.txt  https://saby.ru/ereport  (10398 симв.)
+s2_region_typed.txt  https://saby.ru/ereport  (8583 симв.)
+s2_ereport_spb.txt  https://saby.ru/ereport  (8565 симв.)
+s2_ereport_spb_ip.txt  https://saby.ru/ereport  (8565 симв.)
+s2_ereport_spb_ul.txt  https://saby.ru/ereport  (8581 симв.)
+s2_spot.txt  https://saby.ru/ereport/spot  (4269 симв.)
+s2_edo_tariffs_after_region.txt  https://saby.ru/edo/tariffs  (5059 симв.)
+s2_accounting_ip_1y.txt  https://saby.ru/accounting/ip  (13293 симв.)
+s2_accounting_ip_q.txt  https://saby.ru/accounting/ip  (13291 симв.)
+s2_tariffs_report.txt  https://saby.ru/tariffs?tab=ereport  (3839 симв.)
+s2_tariffs_edo.txt  https://saby.ru/tariffs?tab=edo  (4181 симв.)
+s2_info_main.txt  https://saby.ru/tariffs/info  (2599 симв.)
+s2_info_nulevka.txt  https://saby.ru/tariffs/info#%D0%9D%D1%83%D0%BB%D0%B5%D0%B2%D0%B0%D1%8F_%D0%BE%D1%82%D1%87%D0%B5%D1%82%D0%BD%D0%BE%D1%81%D1%82%D1%8C  (59832 симв.)
+s2_info_start.txt  https://saby.ru/tariffs/info#%D0%92%D1%8B%D0%B3%D0%BE%D0%B4%D0%BD%D1%8B%D0%B9_%D1%81%D1%82%D0%B0%D1%80%D1%82  (59832 симв.)
+s2_info_compare.txt  https://saby.ru/tariffs/info#%D0%A1%D1%80%D0%B0%D0%B2%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5_%D0%9E%D1%82%D1%87%D0%B5%D1%82%D0%BD%D0%BE%D1%81%D1%82%D1%8C  (59832 симв.)
+s2_info_nds.txt  https://saby.ru/tariffs/info#%D0%A1%D0%B2%D0%B5%D1%80%D0%BA%D0%B0_%D1%81%D0%BE%D1%82%D1%80%D1%83%D0%B4%D0%BD%D0%B8%D0%BA%D0%BE%D0%B2  (59832 симв.)
+s2_info_limits.txt  https://saby.ru/tariffs/info#q3_3  (59832 симв.)
+s2_info_edo.txt  https://saby.ru/tariffs/info#%D0%9E%D0%B1%D0%BC%D0%B5%D0%BD_%D1%81_%D0%BA%D0%BE%D0%BD%D1%82%D1%80%D0%B0%D0%B3%D0%B5%D0%BD%D1%82%D0%B0%D0%BC%D0%B8  (59832 симв.)
+s2_info_foreign.txt  https://saby.ru/tariffs/info#%D0%9E%D0%B1%D0%BC%D0%B5%D0%BD_%D1%81_%D0%B8%D0%BD%D0%BE%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%BD%D1%8B%D0%BC%D0%B8_%D0%BF%D0%B0%D1%80%D1%82%D0%BD%D0%B5%D1%80%D0%B0%D0%BC%D0%B8  (59832 симв.)
+s2_info_media.txt  https://saby.ru/tariffs/info#%D0%AD%D0%9F_%D0%B2%D0%B8%D0%B4%D1%8B  (59832 симв.)
+
+--- ЖУРНАЛ ---
+open https://saby.ru/ereport/new: ok
+click «г. Москва»: ok (exact=True, 1/2)
+snap s2_region_popup: 10398 симв.
+type «Санкт-Петербург»: ok
+snap s2_region_typed: 8583 симв.
+click «г. Санкт-Петербург»: НЕ НАЙДЕНО
+click «Санкт-Петербург»: ok (exact=True, 1/1)
+snap s2_ereport_spb: 8565 симв.
+click «ИП»: ok (exact=True, 1/1)
+snap s2_ereport_spb_ip: 8565 симв.
+click «ЮЛ»: ok (exact=True, 1/1)
+snap s2_ereport_spb_ul: 8581 симв.
+open https://saby.ru/ereport/spot: ok
+snap s2_spot: 4269 симв.
+open https://saby.ru/edo/tariffs: ok
+snap s2_edo_tariffs_after_region: 5059 симв.
+open https://saby.ru/accounting/ip: ok
+click «1 год»: ok (exact=True, 1/1)
+snap s2_accounting_ip_1y: 13293 симв.
+click «квартал»: ok (exact=True, 1/1)
+snap s2_accounting_ip_q: 13291 симв.
+open https://saby.ru/tariffs: ok
+click «Отчетность и бухгалтерия»: ok (exact=True, 1/2)
+snap s2_tariffs_report: 3839 симв.
+click «Документооборот и EDI»: ok (exact=True, 1/2)
+snap s2_tariffs_edo: 4181 симв.
+open https://saby.ru/tariffs/info: ok
+snap s2_info_main: 2599 симв.
+click «Тариф «Нулевка или ИП без сотрудников»»: ok (exact=True, 1/1)
+snap s2_info_nulevka: 59832 симв.
+click «Тариф «Выгодный старт»»: ok (exact=True, 1/1)
+snap s2_info_start: 59832 симв.
+click «Сравнение тарифов отчетности»: ok (exact=True, 1/1)
+snap s2_info_compare: 59832 симв.
+click «Тарификация сотрудников, НДС, ЕНС»: ok (exact=True, 1/1)
+snap s2_info_nds: 59832 симв.
+click «Ограничения в сдаче отчётов»: ok (exact=True, 1/1)
+snap s2_info_limits: 59832 симв.
+click «Обмен с контрагентами»: ok (exact=True, 1/1)
+snap s2_info_edo: 59832 симв.
+click «Обмен с иностранными партнерами»: ok (exact=True, 1/1)
+snap s2_info_foreign: 59832 симв.
+click «Типы носителей»: ok (exact=True, 1/1)
+snap s2_info_media: 59832 симв.
