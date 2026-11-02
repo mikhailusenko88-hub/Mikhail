@@ -1,6 +1,31 @@
-# Проверка после починки синхронизации
-http://89.126.192.214:8080/mebel/0f7s1eez/
-http://89.126.192.214:8080/mebel/0f7s1eez/avito.xml
-http://89.126.192.214:8080/mebel/0f7s1eez/img/A907.jpg
-http://89.126.192.214:8080/mebel/t6htram0/
-http://89.126.192.214:8080/mebel/h9zuc3dh/
+# web-check 2026-11-02 20:52 МСК: выкуп требований к застройщику, отзывы
+follow: kontakt|контакт|otzyv|отзыв|o-nas|about
+https://rsokolova.com/uslugi/vykup-neustojki-po-ddu/
+follow: kontakt|контакт|rekvizit|реквизит|otzyv|отзыв
+https://xn----7sblgugsefdlsjenf7l.xn--p1ai/
+https://ask-aurora.ru/vykup-neustoyki-za-narushenie-srokov-sdachi-kvartiry-po-ddu
+https://regpractic.ru/neustoyka-ddu/vykup.html
+https://www.s-u-d.ru/prices/
+https://www.neustoykaddu.ru/vyikup-neustoyki-po-ddu/
+open: https://html.duckduckgo.com/html/?q=%D0%A1%D0%B8%D0%BB%D0%BA%D0%B8%D0%BD+%D0%B8+%D0%BF%D0%B0%D1%80%D1%82%D0%BD%D0%B5%D1%80%D1%8B+%D0%BE%D1%82%D0%B7%D1%8B%D0%B2%D1%8B
+snap: ddg_silkin
+open: https://html.duckduckgo.com/html/?q=rsokolova.com+%D0%BE%D1%82%D0%B7%D1%8B%D0%B2%D1%8B
+snap: ddg_sokolova
+open: https://html.duckduckgo.com/html/?q=%D0%90%D0%B2%D1%80%D0%BE%D1%80%D0%B0+%D1%8E%D1%80%D0%B8%D0%B4%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5+%D0%BE%D0%B1%D1%8A%D0%B5%D0%B4%D0%B8%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5+ask-aurora+%D0%BE%D1%82%D0%B7%D1%8B%D0%B2%D1%8B
+snap: ddg_aurora
+open: https://html.duckduckgo.com/html/?q=%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D1%82%D1%8C-%D0%BD%D0%B5%D1%83%D1%81%D1%82%D0%BE%D0%B9%D0%BA%D1%83.%D1%80%D1%84+%D0%BE%D1%82%D0%B7%D1%8B%D0%B2%D1%8B
+snap: ddg_feniks
+open: https://html.duckduckgo.com/html/?q=%D0%9F%D0%BE%D1%80%D0%B0%D0%B2%D1%81%D1%83%D0%B4+%D0%BE%D1%82%D0%B7%D1%8B%D0%B2%D1%8B
+snap: ddg_poravsud
+open: https://html.duckduckgo.com/html/?q=regpractic+%D0%BE%D1%82%D0%B7%D1%8B%D0%B2%D1%8B
+snap: ddg_regpractic
+open: https://2gis.ru/spb/search/%D0%A1%D0%B8%D0%BB%D0%BA%D0%B8%D0%BD%20%D0%B8%20%D0%BF%D0%B0%D1%80%D1%82%D0%BD%D1%91%D1%80%D1%8B
+snap: 2gis_silkin
+open: https://2gis.ru/spb/search/%D0%90%D0%B2%D1%80%D0%BE%D1%80%D0%B0%20%D1%8E%D1%80%D0%B8%D0%B4%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5%20%D0%BE%D0%B1%D1%8A%D0%B5%D0%B4%D0%B8%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5
+snap: 2gis_aurora
+open: https://yandex.ru/maps/2/saint-petersburg/search/%D0%A1%D0%BE%D0%BA%D0%BE%D0%BB%D0%BE%D0%B2%D0%B0%20%D1%8E%D1%80%D0%B8%D1%81%D1%82%20%D0%B4%D0%BE%D0%BB%D1%8C%D1%89%D0%B8%D0%BA%D0%B8/
+snap: ya_sokolova
+open: https://checko.ru/search?query=%D0%A1%D0%B8%D0%BB%D0%BA%D0%B8%D0%BD+%D0%B8+%D0%BF%D0%B0%D1%80%D1%82%D0%BD%D0%B5%D1%80%D1%8B
+snap: checko_silkin
+open: https://checko.ru/search?query=9702033620
+snap: checko_poravsud
