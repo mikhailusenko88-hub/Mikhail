@@ -464,7 +464,9 @@ function drawFx(ctx, ch, st, T, S, emo, an, at, P, lift, down, fall, flip, fs) {
 function drawStar(ctx, x, y, r, col) { ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } ctx.closePath(); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = '#2b1d16'; ctx.lineWidth = r * .15; ctx.stroke(); }
 
 // ---------- предметы ----------
-const PROPS = ['ball', 'apple', 'fish', 'box', 'gift', 'flower', 'book', 'star', 'cake', 'bone', 'carrot', 'cheese', 'balloon', 'key', 'cup', 'pumpkin', 'mushroom', 'umbrella', 'candy', 'icecream', 'lollipop', 'banana', 'pear', 'watermelon', 'honey', 'bucket', 'shovel', 'car', 'teddy', 'drum', 'guitar', 'wand', 'lantern', 'map', 'letter', 'basket', 'chest', 'coin', 'egg', 'pie', 'cookie', 'milk', 'clock', 'candle', 'leaf', 'rock', 'stick', 'phone', 'kite', 'bag'];
+const PROPS = ['ball', 'apple', 'fish', 'box', 'gift', 'flower', 'book', 'star', 'cake', 'bone', 'carrot', 'cheese', 'balloon', 'key', 'cup', 'pumpkin', 'mushroom', 'umbrella', 'candy', 'icecream', 'lollipop', 'banana', 'pear', 'watermelon', 'honey', 'bucket', 'shovel', 'car', 'teddy', 'drum', 'guitar', 'wand', 'lantern', 'map', 'letter', 'basket', 'chest', 'coin', 'egg', 'pie', 'cookie', 'milk', 'clock', 'candle', 'leaf', 'rock', 'stick', 'phone', 'kite', 'bag',
+  'binoculars', 'magnifier', 'compass', 'backpack', 'hat', 'glasses', 'ladder', 'rope', 'rod', 'boat', 'bike', 'scooter', 'telescope', 'rocket', 'crown', 'flag', 'paints', 'pencil', 'pot', 'plate', 'spoon', 'teapot', 'sandwich', 'pizza',
+  'strawberry', 'grapes', 'cherry', 'acorn', 'pinecone', 'snowball', 'sled', 'bell', 'mirror', 'jar', 'feather', 'plane', 'pillow', 'butterfly', 'net', 'flute'];
 MK.PROPS = PROPS;
 function drawProp(ctx, p, x, y, s, T, inHand) {
   const t = p.type || p, col = p.color, ol = '#2b1d16';
@@ -627,10 +629,11 @@ function drawWeather(ctx, L, T) {
 
 // ---------- сборка таймлайна ----------
 const DUR = { jump: .9, wave: 1.6, dance: 3, spin: .8, nod: .9, shake: 1, clap: 1.6, point: 1.4, think: 2.2, laugh: 1.8, scared: 1.4, fall: 1.0, sit: .6, stand: .6, sleep: .8, wake: .8, take: .6, give: 1.1, drop: .5, turn: .25, look: .25, bow: 1.0, cry: 2, surprise: .8,
-  roll: 2.8, somersault: 1.1, lie: .6, hug: 1.8, scratch: 1.6, yawn: 2.0, stretch: 1.8, sneeze: 1.3, eat: 2.2, stomp: 1.3, crouch: .5, hide: .5, sing: 2.6, kick: 1.0, throw: 1.1, shout: 1.4 };
+  roll: 2.8, somersault: 1.1, lie: .6, hug: 1.8, scratch: 1.6, yawn: 2.0, stretch: 1.8, sneeze: 1.3, eat: 2.2, stomp: 1.3, crouch: .5, hide: .5, sing: 2.6, kick: 1.0, throw: 1.1, shout: 1.4,
+  read: 2.4, peer: 2.2, dig: 2.6, knock: 1.4, push: 1.8, pull: 1.8, drink: 1.8, paint: 2.4, write: 2.4, play: 2.8, sniff: 1.6, listen: 2.0, cheer: 1.8, lookaround: 2.4, shrug: 1.2 };
 const MOVES = { walk: .2, run: .42, enter: .2, exit: .2, crawl: .1, sneak: .11 };
 /** Возгласы голосом персонажа при действиях */
-const VOCAL = { laugh: 'Ха-ха-ха-ха!', scared: 'Ой-ой!', surprise: 'Ого!', fall: 'Ай!', sneeze: 'Апчхи!', cry: 'Уа-а-а!', yawn: 'А-а-а-ах.', sing: 'Ля-ля-ля-ля!', somersault: 'Хоп!', stomp: 'Хм!' };
+const VOCAL = { cheer: 'Ура-а!', knock: 'Тук-тук!', sniff: 'Хм-м…', shrug: 'Хм.', laugh: 'Ха-ха-ха-ха!', scared: 'Ой-ой!', surprise: 'Ого!', fall: 'Ай!', sneeze: 'Апчхи!', cry: 'Уа-а-а!', yawn: 'А-а-а-ах.', sing: 'Ля-ля-ля-ля!', somersault: 'Хоп!', stomp: 'Хм!' };
 MK.VOCAL = VOCAL;
 const AUTO_SFX = { jump: 'boing', fall: 'thud', spin: 'whoosh', take: 'pop', give: 'pop', clap: 'clap', surprise: 'ding', somersault: 'whoosh', stomp: 'thud', kick: 'kick', throw: 'whoosh', roll: 'rustle', eat: 'chomp', crouch: 'step', hide: 'step' };
 const OFF = .14;
@@ -804,8 +807,9 @@ MK.validate = function (ep, lib) {
 };
 
 // Еда на кухне лежит на столе (x стола на сцене)
-const FOOD = new Set(['cake', 'pie', 'cup', 'milk', 'cookie', 'apple', 'pear', 'banana', 'cheese', 'candy', 'honey', 'icecream', 'lollipop', 'watermelon', 'carrot', 'fish', 'egg', 'basket']);
+const FOOD = new Set(['cake', 'pie', 'cup', 'milk', 'cookie', 'apple', 'pear', 'banana', 'cheese', 'candy', 'honey', 'icecream', 'lollipop', 'watermelon', 'carrot', 'fish', 'egg', 'basket', 'sandwich', 'pizza', 'strawberry', 'grapes', 'cherry', 'jar', 'teapot', 'plate', 'pot']);
 const TABLE_X = { kitchen: .855 };
+const NEAR_ACT = new Set(['read', 'peer', 'write', 'paint', 'play', 'drink', 'sniff']), KEY_PROP = new Set(['map', 'letter', 'compass', 'key', 'book', 'magnifier', 'crown', 'gift', 'mirror', 'jar', 'feather', 'flower', 'acorn', 'butterfly']);
 const BIGACT = new Set(['fall', 'jump', 'dance', 'spin', 'somersault', 'roll', 'run', 'crawl', 'sneak', 'stomp', 'hug', 'give', 'kick', 'throw', 'take', 'drop']);
 /** Режиссёр: по репликам и действиям выбирает планы — общий при входе, группа, «восьмёрка» двоих, средний и крупный на говорящего.
  *  Говорящий всегда в кадре, планы сменяются склейкой, а не плаванием камеры. Ручные «КАМЕРА:» держатся до конца следующей реплики. */
@@ -831,6 +835,7 @@ function directScene(beats, C, inits, manual) {
     const v = vis(b.t + .2), age = b.t - cur.t;
     if (b.k === 'move') { if (b.d === 'enter' && firstSay) continue; // пока входят — общий план места
       const g = group(b.t1, [b.who]); if (cur.mode === 'group' && g.ids.every(id => cur.ids.includes(id))) continue; cut(b.t, g); continue; }
+    if (b.k === 'act' && b.near && v.includes(b.who) && !((cur.mode === 'medium' || cur.mode === 'close') && cur.on === b.who)) { cut(b.t, { mode: 'medium', on: b.who }); continue; } // дело руками или важная вещь — подходим ближе
     if (b.k === 'act') { if (firstSay || (has(cur, b.who) && cur.mode !== 'close' && !(BIGACT.has(b.d) && cur.mode === 'medium'))) continue; cut(b.t, BIGACT.has(b.d) ? group(b.t1, [b.who, b.to && C[b.to] ? b.to : null]) : { mode: 'medium', on: b.who }); continue; }
     if (b.k === 'look' || b.k === 'prop') { if (firstSay && !v.length) continue; cut(b.t, group(b.t, [b.who], [b.px])); continue; }
     if (b.k !== 'say' || b.who === 'Р' || !C[b.who] || !inits[b.who]) continue;
@@ -951,7 +956,7 @@ MK.compile = function (ep, lib, audio) {
           else if (d === 'turn' || d === 'look') ch.ev.push({ t: start, k: 'face', v: faceVal(step.to || step.face || 'camera', ch, C) });
           else if (!['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d) || d === 'fall') ch.ev.push({ t: s0, k: 'act', n: d, t1: start + dur, text: step.text, to: step.to });
           if (d === 'hug' && step.to && C[step.to]) { C[step.to].ev.push({ t: s0, k: 'act', n: 'hug', t1: start + dur }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); }
-          beats.push({ t: s0, t1: start + dur, k: 'act', who, d, to: step.to });
+          beats.push({ t: s0, t1: start + dur, k: 'act', who, d, to: step.to, near: NEAR_ACT.has(d) || (d === 'take' && KEY_PROP.has((props.find(p => p.id === step.prop) || {}).type)) });
           if (AUTO_SFX[d] && step.sfx !== false) sfx.push({ t: st0 + s0 + (d === 'fall' ? .3 : d === 'clap' ? 0 : d === 'kick' ? .45 : d === 'throw' ? .45 : .05), n: AUTO_SFX[d], rep: d === 'clap' ? 4 : d === 'stomp' ? 3 : d === 'eat' ? 3 : 1, gap: d === 'stomp' ? .35 : d === 'eat' ? .5 : .22 });
           if (d === 'kick' || d === 'throw') { const p = d === 'throw' ? props.find(p => p.holder === who) : (props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]);
             if (p) { const fromX = d === 'throw' ? ch.x : p.x; const to = step.to && C[step.to] ? C[step.to].x : clamp(ch.x + (ch.face >= 0 ? 1 : -1) * (d === 'kick' ? .45 : .35), .05, .95);
