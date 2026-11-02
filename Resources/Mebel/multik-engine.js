@@ -1058,7 +1058,7 @@ MK.render = function (ctx, tl, T) {
   if (!seg) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); return; }
   const t = T - seg.t0;
   ctx.save();
-  const use3d = tl.style === '3d' && global.MK3D && global.MK3D.ready;
+  const card = seg.kind === 'title' || seg.kind === 'end', use3d = tl.style === '3d' && global.MK3D && global.MK3D.ready && !(card && global.MK3D._noMsaa); // облегчённый режим: заставки рисуем плоскими (5 пушистых героев сразу — самый тяжёлый кадр)
   if (use3d) { global.MK3D.draw(ctx, tl, seg, t, T); if (seg.kind === 'title' || seg.kind === 'end') drawCard(ctx, tl, seg, t, T, true); }
   else if (seg.kind === 'title' || seg.kind === 'end') drawCard(ctx, tl, seg, t, T);
   else drawScene(ctx, tl, seg, t, T);

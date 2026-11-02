@@ -339,7 +339,7 @@ const App = {
 };
 
 // ---------- озвучка + подготовка ----------
-async function prepare(e, onStep, isCancelled) {
+async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уже в телефоне — нужны только длительности реплик
   const lib = Lib.data, ep = e.script; const lines = MK.collectLines(ep, lib);
   const ac = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
   const audio = {}, bufs = {}; let i = 0;
@@ -347,11 +347,12 @@ async function prepare(e, onStep, isCancelled) {
     if (isCancelled && isCancelled()) throw new Error('cancel');
     onStep && onStep('Озвучка реплик', i++ / Math.max(1, lines.length), `${i} из ${lines.length}: ${ln.text.slice(0, 40)}`);
     if (audio[ln.key]) continue;
-    if (ln.synth && MK.makeVocal) { try { const buf = await MK.makeVocal(ln, lib, (c, b) => Native.call(c, b), async w => ac.decodeAudioData(unb64(w).buffer)); bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('vocal', err); } continue; }
+    if (ln.synth && MK.makeVocal) { try { const buf = await MK.makeVocal(ln, lib, (c, b) => Native.call(c, b), async w => ac.decodeAudioData(unb64(w).buffer)); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('vocal', err); } continue; }
     const r = await Native.call('tts', { text: ln.text, voice: ln.voice, key: ln.key });
-    if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, ln.fx || MK.VOICE_FX.natural); bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
+    if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, ln.fx || MK.VOICE_FX.natural); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
   }
   const tl = MK.compile(ep, lib, audio); tl.style = (window.MK3D && MK3D.ready) ? '3d' : '2d';
+  if (noMix) return { tl, mix: null };
   onStep && onStep('Музыка и звуки', 1, 'Свожу звуковую дорожку…');
   const mix = await MK.mixAudio(tl, bufs);
   return { tl, mix };
@@ -406,7 +407,7 @@ const Build = {
   refresh() { if (App.tab === 'series') App.render(true); },
   async dub(p, e) { // готовая серия: новый звук (голоса, смех, музыка) за минуту, картинка остаётся как есть
     if (this.busy) { alert('Сейчас собирается серия — обновить звук можно после сборки.'); return; }
-    this.busy = true; Prog.show(`Серия ${e.episode}: обновляю звук`);
+    this.busy = true; Prog.show(`Серия ${e.episode}: обновляю звук`); if (Lib.data.settings.buildJob) delete Lib.data.settings.buildJob.audio; // файл звука в телефоне сейчас перезапишется
     try {
       let { mix } = await prepare(e, (a, pr, t) => Prog.set(a, pr * .85, t));
       if (!audible(mix)) throw new Error('звук получился пустым');
@@ -464,7 +465,8 @@ const Build = {
     // та же серия с теми же настройками уже собиралась и прервалась — продолжаем с готовых кадров
     const id = { series: p.series, episode: e.episode, hash: e.hash || MK.hash32(MK.canon(e.script)), w, h, fps, q: s.quality || 'hq', style: (window.MK3D && MK3D.ready) ? '3d' : '2d' };
     const old = s.buildJob, resume = !!old && Object.keys(id).every(k => old[k] === id[k]);
-    s.buildJob = id; await Lib.save();
+    const audioOk = resume && old.audio === 1; // звук этой серии уже лежит в телефоне (страницу перезапускали)
+    s.buildJob = Object.assign(id, audioOk ? { audio: 1 } : {}); await Lib.save();
     const sleep = ms => new Promise(r => setTimeout(r, ms)), inflight = [];
     // кадры идут «конвейером» (2 в пути): пока телефон кодирует один кадр, следующий уже рисуется.
     // Ответ телефона: 1…4 — записан + нагрев; отрицательный — «продолжай с кадра N» (после паузы); 0 — не записан.
@@ -475,14 +477,20 @@ const Build = {
       bad = 0; if (typeof r === 'number') heat = r; };
     const drain = async () => { while (inflight.length) await take(); };
     try {
-      let { tl, mix } = await prepare(e, (a, pr, t) => this.set(title, pr * .08, a + (t ? ' · ' + t : '')), () => this.stop);
+      let { tl, mix } = await prepare(e, (a, pr, t) => this.set(title, pr * .08, a + (t ? ' · ' + t : '')), () => this.stop, audioOk);
       const name = `${p.series} - ${String(e.episode).padStart(2, '0')}. ${e.title || ''}`.replace(/[\/\\:?*"<>|]/g, '').trim();
-      // звук — отдельным файлом: телефон приклеит его к видео в самом конце
-      if (!audible(mix)) throw new Error('звук серии получился пустым — попробуй ещё раз'); // не собирать немой ролик
-      let wav = MK.wav(mix); const CH = 1 << 20; mix = null;
-      for (let i = 0; i < wav.length; i += CH) { if (this.stop) throw new Error('cancel'); await Native.call('audioChunk', { first: i === 0, d: b64(wav.subarray(i, i + CH)) }); }
-      // звук ушёл в телефон — отпускаем его из памяти страницы, чтобы на тяжёлых сценах её хватало кадрам
-      wav = null; if (MK.freeAudio) MK.freeAudio(); await sleep(250);
+      if (!audioOk) {
+        // звук — отдельным файлом: телефон приклеит его к видео в самом конце
+        if (!audible(mix)) throw new Error('звук серии получился пустым — попробуй ещё раз'); // не собирать немой ролик
+        let wav = MK.wav(mix); const CH = 1 << 20; mix = null;
+        for (let i = 0; i < wav.length; i += CH) { if (this.stop) throw new Error('cancel'); await Native.call('audioChunk', { first: i === 0, d: b64(wav.subarray(i, i + CH)) }); }
+        // звук ушёл в телефон — отпускаем его из памяти страницы, чтобы на тяжёлых сценах её хватало кадрам
+        wav = null; if (MK.freeAudio) MK.freeAudio();
+        if (tl.dur > 300) { // длинная серия: звук занимал сотни МБ — рисуем кадры на свежей странице, иначе iPhone закрывает её на первом кадре
+          s.buildJob.audio = 1; s.autoResume = 1; await Lib.save(); this.set(title, .08, 'Звук готов — освобождаю память…');
+          location.reload(); await sleep(60000); throw new Error('страница не перезапустилась'); }
+        await sleep(1200);
+      } else await sleep(300);
       const safe = !!(s.buildCrash && s.buildCrash.safe && s.buildCrash.ep === e.episode); if (window.MK3D && MK3D.lowMem) MK3D.lowMem(safe);
       const rb = await Native.call('videoBegin', { w, h, fps, name, resume });
       if (!rb || rb.ok === false) throw new Error('Не удалось начать запись видео');
