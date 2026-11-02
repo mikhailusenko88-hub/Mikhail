@@ -1,0 +1,30 @@
+name: tts-test
+on:
+  push:
+    branches: [multik-tts-test]
+permissions:
+  contents: write
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install like on the server
+        run: sudo TTS_SRC=https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/multik-tts-test bash setup.sh 2>&1 | tee out/setup.log
+      - name: Voice the lines
+        run: |
+          i=0; while IFS= read -r t; do i=$((i+1)); s=$(date +%s.%N)
+            python3 -c 'import json,sys; print(json.dumps({"text": sys.argv[1], "speaker": "ru_albina", "soft": True}))' "$t" > /tmp/q.json
+            curl -fsS -X POST -H 'Content-Type: application/json' --data @/tmp/q.json -o out/l$i.wav localhost:8095/tts || echo "fail $i"
+            echo "$i $(echo "$(date +%s.%N) - $s" | bc) s $(stat -c %s out/l$i.wav 2>/dev/null) bytes: $t" | tee -a out/times.txt
+          done < lines.txt
+          curl -fsS -o out/again.wav "localhost:8095/tts?text=$(python3 -c 'import urllib.parse;print(urllib.parse.quote("Утром друзья отправились в лес за грибами."))')"; echo cached $(stat -c %s out/again.wav) >> out/times.txt
+          curl -fsS localhost:8095/health >> out/times.txt
+          sudo journalctl -u multik-tts -n 60 --no-pager > out/journal.txt || true
+          free -m >> out/times.txt; sudo du -sh /opt/multik-tts >> out/times.txt
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name tts-test; git config user.email tts-test@users.noreply.github.com
+          git add -A out; git commit -m "tts-test result" || echo nothing; git push
