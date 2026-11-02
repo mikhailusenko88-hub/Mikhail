@@ -177,14 +177,41 @@ def collect_name_requests(BASE, ls, cfg, log):
         log(f"Имена из комментариев/файла: {', '.join(added)}")
 
 
-def post_first_comment(link, text, log):
-    try:
-        import yt_upload
-        yt_upload._yt().commentThreads().insert(part="snippet", body={"snippet": {
-            "videoId": _vid(link), "topLevelComment": {"snippet": {"textOriginal": text}}}}).execute()
-        log("Первый комментарий: оставил")
-    except Exception as e:
-        log(f"Первый комментарий: не получилось ({e})")
+def post_first_comment(link, text, log, tries=4, pause=60):
+    """Комментарий от канала под роликом. Сразу после загрузки YouTube может ещё не пускать —
+    тогда пробуем снова через минуту (до 4 раз)."""
+    import yt_upload
+    err = None
+    for k in range(tries):
+        if k:
+            time.sleep(pause)
+        try:
+            yt_upload._yt().commentThreads().insert(part="snippet", body={"snippet": {
+                "videoId": _vid(link), "topLevelComment": {"snippet": {"textOriginal": text}}}}).execute()
+            log("Первый комментарий: оставил" + (f" (с {k + 1}-й попытки)" if k else ""))
+            return True
+        except Exception as e:
+            err = e
+            msg = str(e)
+            if "insufficient" in msg.lower():      # нет прав — повтор не поможет
+                break
+    log(f"Первый комментарий: ошибка — {str(err)[:300]}")
+    return False
+
+
+def comment_last(BASE, log=print):
+    """srv comment — оставить первый комментарий под последним выложенным роликом."""
+    import race_leagues as RL
+    state = json.loads((BASE / "state.json").read_text(encoding="utf-8"))
+    for h in reversed(state.get("history", [])):
+        link = next((l for l in h.get("links", []) if "youtu" in l), None)
+        if not link:
+            continue
+        lg = next((k for k, v in RL.LEAGUES.items() if h.get("title", "").startswith(v["q"])), "cities")
+        log(f"Ролик: {h.get('title', '')[:60]} → {link}")
+        return 0 if post_first_comment(link, RL.LEAGUES[lg]["first_comment"], log, tries=2, pause=20) else 1
+    log("Не нашёл выложенных роликов")
+    return 1
 
 
 def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, no_youtube, last_slot=False):
@@ -241,9 +268,6 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
         except Exception as e:
             log(f"YouTube: ошибка {e}")
             notify(f"Заезд №{no} собран, но не выложен: {e}")
-    if link and cfg.get("first_comment", True):
-        post_first_comment(link, RL.LEAGUES[league]["first_comment"], log)
-
     if link or not want_yt:   # заезд засчитываем, только если ролик вышел (или выкладка выключена)
         ls["no"] = no
         if league == "names":
@@ -279,6 +303,8 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
                                                 "links": [link] if link else ["вручную"]})
         state["history"] = state["history"][-200:]
         state_f.write_text(json.dumps(state, ensure_ascii=False, indent=1), encoding="utf-8")
+    if link and cfg.get("first_comment", True):
+        post_first_comment(link, RL.LEAGUES[league]["first_comment"], log)
     return 0 if (link or not want_yt) else 1
 
 
@@ -313,3 +339,10 @@ def run(BASE, cfg, log, notify, test=False, no_youtube=False):
         if time.time() - f.stat().st_mtime > keep * 86400:
             f.unlink()
     return rc
+
+
+if __name__ == "__main__":
+    from pathlib import Path
+    if "comment" in sys.argv:
+        sys.exit(comment_last(Path(__file__).resolve().parent))
+    print(__doc__)
