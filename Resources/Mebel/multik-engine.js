@@ -673,7 +673,7 @@ MK.NEURAL_SPEAKERS = { ru_albina: 'Альбина', ru_zinaida: 'Зинаида'
 MK.TTS_URL = 'http://89.126.192.214:8095/tts';
 /** Настройки рассказчика: голос, темп, тон, мягкость. */
 MK.narratorCfg = lib => { const st = (lib && lib.settings) || {}, n = st.narrator || {}; const voice = n.voice || st.narratorVoice || 'albina';
-  return { voice, speaker: MK.NEURAL_SPEAKERS[n.speaker] ? n.speaker : 'ru_albina', rate: +n.rate || 1, pitch: +n.pitch || 1, soft: n.soft !== false }; };
+  return { voice, speaker: MK.NEURAL_SPEAKERS[n.speaker] ? n.speaker : 'ru_albina', rate: Math.min(2, Math.max(.5, +n.rate || 1)), pitch: Math.min(1.5, Math.max(.6, +n.pitch || 1)), soft: n.soft !== false }; /* темп и тон — в разумных пределах */ };
 MK.narratorVoice = lib => { const c = MK.narratorCfg(lib), v = MK.NARRATOR_VOICES[c.voice] || MK.NARRATOR_VOICES.iphone; return Object.assign({}, v, c.voice === 'albina' ? { speaker: c.speaker, soft: c.soft, rate: c.rate, pitch: c.pitch } : {}); };
 MK.fxFor = function (lib, who) {
   const c = lib.characters && lib.characters[who];

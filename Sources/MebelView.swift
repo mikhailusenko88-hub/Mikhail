@@ -294,6 +294,7 @@ final class MultikHost {
 
     func webView(onClose: @escaping () -> Void) -> WKWebView {
         if let w = web, let b = bridge { b.onClose = onClose; return w }
+        UIApplication.shared.applicationSupportsShakeToEdit = false   // без окна «Undo вставку», если телефон тряхнуло
         let b = MultikBridge(onClose: onClose)
         let cfg = WKWebViewConfiguration()
         cfg.setURLSchemeHandler(BundleScheme(), forURLScheme: "mebel")
@@ -343,6 +344,7 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
     var onClose: () -> Void
     var parked = false
     var busy = false   // страница собирает серии (очередь), в том числе озвучку перед кадрами
+    var stage = ""     // что страница сейчас делает («Просмотр серии 10: готовлю сцены…») — пишем в crash.json, если она оборвётся
     var isBuilding: Bool { busy || writer != nil }
     weak var web: WKWebView?
     private let tts = MultikTTS()
@@ -581,6 +583,9 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
             busy = body["on"] as? Bool ?? false
             UIApplication.shared.isIdleTimerDisabled = busy
             replyHandler(true, nil)
+        case "stage":   // этап работы страницы (для сообщения после обрыва)
+            stage = body["text"] as? String ?? ""
+            replyHandler(true, nil)
         case "crashInfo":   // страница перезапускалась посреди сборки? (один раз, потом стираем)
             let u = root.appendingPathComponent("tmp/crash.json")
             if let d = try? Data(contentsOf: u), let j = try? JSONSerialization.jsonObject(with: d) { try? FileManager.default.removeItem(at: u); replyHandler(j, nil) }
@@ -605,7 +610,8 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         // запомнить, где и как оборвалось: страница после перезапуска продолжит сама, а при повторах — сообщит
         let info: [String: Any] = ["frame": Int(writer?.frames ?? -1), "bg": UIApplication.shared.applicationState != .active,
-                                   "building": isBuilding, "at": Date().timeIntervalSince1970]
+                                   "building": isBuilding, "stage": stage, "at": Date().timeIntervalSince1970]
+        stage = ""
         if let d = try? JSONSerialization.data(withJSONObject: info) { try? d.write(to: Self.root.appendingPathComponent("tmp/crash.json")) }
         if let w = writer { writer = nil; queue.async { w.pause() } }
         busy = false

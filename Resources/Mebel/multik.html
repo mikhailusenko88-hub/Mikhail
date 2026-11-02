@@ -125,6 +125,29 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 <script src="multik-engine.js"></script>
 <script src="multik-audio.js"></script>
 <script src="multik-voice.js"></script>
+<script>
+// Нейроголос работает в отдельной невидимой рамке (voice.html). После озвучки рамку убираем — и iPhone забирает обратно всю её память
+// (~0.5 ГБ: модели и память onnxruntime; onnxruntime сам память не отдаёт — без рамки она оставалась занятой, и на 3D-сцены не хватало).
+(function () { const L = window.MKVoice; if (!L) return;
+  let f = null, p = null, idle = 0;
+  const win = () => f && f.contentWindow && f.contentWindow.MKVoice ? f.contentWindow : null;
+  const open = () => { const w = win(); if (w) return Promise.resolve(w); if (p) return p;
+    return (p = new Promise((res, rej) => { const fr = document.createElement('iframe'); fr.setAttribute('aria-hidden', 'true'); fr.tabIndex = -1;
+      fr.style.cssText = 'position:fixed;left:-10px;top:-10px;width:1px;height:1px;border:0;opacity:0;pointer-events:none';
+      const bad = () => { p = null; fr.remove(); rej(new Error('голос не загрузился (voice.html)')); };
+      fr.onload = () => { if (fr.contentWindow && fr.contentWindow.MKVoice) { p = null; f = fr; res(fr.contentWindow); } else bad(); }; fr.onerror = bad;
+      fr.src = 'voice.html'; document.body.appendChild(fr); })); };
+  const close = async () => { clearTimeout(idle); const fr = f; f = null; if (!fr) return; try { await fr.contentWindow.MKVoice.unload(); } catch (e) {} try { fr.src = 'about:blank'; } catch (e) {} fr.remove(); await new Promise(r => setTimeout(r, 200)); };
+  window.MKVoice = { error: null, lastText: '', loadMs: 0,
+    get ready() { const w = win(); return !!(w && w.MKVoice.ready); },
+    available: () => L.available(), soften: (y, sr) => L.soften(y, sr),
+    async speak(text, o) { clearTimeout(idle); const w = await open(), M = w.MKVoice;
+      try { const y = await M.speak(String(text || ''), JSON.parse(JSON.stringify(o || {}))); this.lastText = M.lastText || ''; this.loadMs = M.loadMs || 0; const c = new Float32Array(y.length); c.set(y); return c; }
+      catch (e) { this.error = M.error || (e && e.message) || String(e); throw new Error(this.error); }
+      finally { idle = setTimeout(close, 90000); } }, // минуту-полторы не нужен — выгружаем сами
+    unload: close };
+})();
+</script>
 <script src="multik-maker.js"></script>
 <script src="multik-script.js"></script>
 <script src="multik-sculpt.js"></script>
@@ -155,6 +178,7 @@ const Native = {
   }
 };
 const Mock = { // работа в обычном браузере (проверка без телефона)
+  stage(a) { Mock._stage = a.text; return true; },
   load() { try { return localStorage.getItem('multik-lib'); } catch (e) { return null; } },
   save(a) { try { localStorage.setItem('multik-lib', a.json); } catch (e) {} return true; },
   tts() { return null; }, resolveVoice() { return { id: 'mock', name: 'браузер' }; }, voices() { return []; },
@@ -372,8 +396,8 @@ const SrvVoice = {
     if (!nv.server) { const fx = MK.fxFor(lib, 'Р'); return previewVoice(text, (lib.narrator || {}).voice || { base: 'male', pitch: 1, rate: .47 }, fx, (lib.narratorFx || {}).voiceId); }
     const ln = MK.lineFor ? MK.lineFor({}, lib, 'Р', text, { say: text }, 0) : null; if (!ln || !ln.srv) return 0;
     const box = show && document.getElementById(show); if (box) box.textContent = window.MKVoice && !MKVoice.ready ? 'Загружаю голос (первый раз несколько секунд)…' : 'Озвучиваю…';
-    this.down = 0; this.localFail = false; const r = await this.get(ln, 60);
-    if (box) box.innerHTML = window.MKStress && MKStress.ready ? 'Читает так: ' + esc((window.MKVoice && MKVoice.lastText) || MKStress.accent(ln.srv.text, lib.lexicon)).replace(/\+([а-яёА-ЯЁ])/g, (m0, c) => '<b style="color:#ffd23f">' + c.toUpperCase() + '</b>') : '';
+    this.down = 0; this.localFail = false; if (window.MKVoice) MKVoice.lastText = ''; const r = await this.get(ln, 60);
+    if (box) box.innerHTML = window.MKVoice && MKVoice.lastText ? 'Читает так: ' + esc(MKVoice.lastText).replace(/\+([а-яёА-ЯЁ])/g, (m0, c) => '<b style="color:#ffd23f">' + c.toUpperCase() + '</b>') : '';
     if (!r) { alert('Нейроголос не запустился. ' + (window.MKVoice && MKVoice.error ? 'Причина: ' + MKVoice.error : 'Файлы голоса не найдены в приложении.')); return 0; }
     if (!pvCtx || pvCtx.state === 'closed') pvCtx = new (window.AudioContext || window.webkitAudioContext)(); try { pvCtx.resume(); } catch (e) {} if (pvSrc) { try { pvSrc.stop(); } catch (e) {} }
     const raw = r.buf || await pvCtx.decodeAudioData(unb64(r.wav).buffer), buf = await MK.voiceFx(raw, MK.VOICE_FX.natural);
@@ -395,7 +419,7 @@ async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уж�
     if (!r) r = await Native.call('tts', { text: ln.text, voice: ln.voice, key: ln.key });
     if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
   }
-  if (window.MKVoice && MKVoice.ready) { try { await MKVoice.unload(); } catch (err) {} } // память — под картинку
+  if (window.MKVoice) { try { await MKVoice.unload(); } catch (err) {} } // память — под картинку (рамка с голосом убрана целиком)
   const tl = MK.compile(ep, lib, audio); tl.style = (window.MK3D && MK3D.ready) ? '3d' : '2d';
   if (noMix) return { tl, mix: null };
   onStep && onStep('Музыка и звуки', 1, 'Свожу звуковую дорожку…');
@@ -403,6 +427,8 @@ async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уж�
   return { tl, mix };
 }
 
+// ---------- что сейчас делается: если iPhone выгрузит страницу из памяти, после перезапуска покажем, на чём оборвалось ----------
+const Stage = { set(t) { try { Native.call('stage', { text: t || '' }); } catch (e) {} } };
 // ---------- просмотр ----------
 const Player = {
   tl: null, ac: null, src: null, t0: 0, off: 0, playing: false, raf: 0,
@@ -412,13 +438,16 @@ const Player = {
     audioPlayback();
     if (this.ac) { try { this.ac.close(); } catch (er) {} }
     this.ac = new (window.AudioContext || window.webkitAudioContext)(); try { this.ac.resume(); } catch (er) {}
-    Prog.show('Готовлю просмотр'); let r;
-    try { r = await prepare(e, (a, p, t) => Prog.set(a, p * .8, t)); } catch (err) { Prog.hide(); alert('Ошибка: ' + err.message); return; }
+    Prog.show('Готовлю просмотр'); let r; const nm = `Просмотр серии ${e.episode}`, lite = !!(Lib.data.settings && Lib.data.settings.previewCrash);
+    if (window.MK3D && MK3D.lowMem) MK3D.lowMem(lite); // прошлый просмотр оборвался — облегчённый режим
+    Stage.set(nm + ': озвучка');
+    try { r = await prepare(e, (a, p, t) => Prog.set(a, p * .8, t)); } catch (err) { Stage.set(''); Prog.hide(); alert('Ошибка: ' + err.message); return; }
     // заранее строим все места, героев и предметы серии: иначе на новой сцене картинка замирала на секунды, а голос шёл дальше
     if (r.tl.style === '3d') { const c = document.getElementById('pc').getContext('2d'), sg = r.tl.segs;
-      for (let i = 0; i < sg.length; i++) { Prog.set('Готовлю сцены', .8 + .2 * i / sg.length, `${i + 1} из ${sg.length}`); await new Promise(res => setTimeout(res, 0));
+      for (let i = 0; i < sg.length; i++) { Prog.set('Готовлю сцены', .8 + .2 * i / sg.length, `${i + 1} из ${sg.length}`); Stage.set(`${nm}: готовлю сцены, ${i + 1} из ${sg.length}`); await new Promise(res => setTimeout(res, 0));
         try { c.setTransform(c.canvas.width / 1920, 0, 0, c.canvas.height / 1080, 0, 0); MK.render(c, r.tl, sg[i].t0 + Math.min(.5, (sg[i].t1 - sg[i].t0) / 2)); } catch (er) { console.log('warm', er); } } }
-    Prog.hide(); this.tl = r.tl; this.mix = r.mix; document.getElementById('player').style.display = 'flex';
+    Prog.hide(); this.tl = r.tl; this.mix = r.mix; document.getElementById('player').style.display = 'flex'; Stage.set(nm + ': показ');
+    if (Lib.data.settings && Lib.data.settings.previewCrash) { delete Lib.data.settings.previewCrash; Lib.save(); }
     this.off = 0; this.play();
   },
   play() { audioPlayback(); if (this.ac.state !== 'running') { try { this.ac.resume(); } catch (e) {} } this.src = this.ac.createBufferSource(); this.src.buffer = this.mix; this.src.connect(this.ac.destination); this.src.start(0, this.off); this.t0 = this.ac.currentTime - this.off; this.playing = true; document.getElementById('pp').textContent = '❚❚'; this.loop(); },
@@ -428,7 +457,7 @@ const Player = {
   seek(f) { const was = this.playing; if (was) this.pause(); this.off = f * this.tl.dur; if (was) this.play(); else this.draw(); },
   draw() { const t = Math.min(this.now(), this.tl.dur - .01), c = document.getElementById('pc').getContext('2d'); c.setTransform(c.canvas.width / 1920, 0, 0, c.canvas.height / 1080, 0, 0); MK.render(c, this.tl, t); document.getElementById('seek').value = Math.round(t / this.tl.dur * 1000); document.getElementById('ptime').textContent = fmt(t) + ' / ' + fmt(this.tl.dur); },
   loop() { cancelAnimationFrame(this.raf); let last = -1; const f = () => { const fi = Math.floor(this.now() * 25); if (fi !== last) { last = fi; this.draw(); } if (this.playing && this.now() < this.tl.dur) this.raf = requestAnimationFrame(f); else if (this.playing) { this.draw(); this.pause(); } }; f(); }, // просмотр: 25 кадров/с, 1280×720 — экран телефона больше не нужен, а нагрев в 5–10 раз меньше
-  stop() { this.pause(); cancelAnimationFrame(this.raf); if (this.ac) { this.ac.close(); this.ac = null; } this.mix = null; this.tl = null; this.src = null; document.getElementById('player').style.display = 'none'; }, // звук серии — из памяти
+  stop() { Stage.set(''); this.pause(); cancelAnimationFrame(this.raf); if (this.ac) { this.ac.close(); this.ac = null; } this.mix = null; this.tl = null; this.src = null; document.getElementById('player').style.display = 'none'; }, // звук серии — из памяти
 };
 const Prog = {
   show(t) { document.getElementById('ptitle').textContent = t; this.set('', 0, ''); document.getElementById('prog').style.display = 'flex'; },
@@ -595,9 +624,13 @@ const Build = {
     document.getElementById('tsT').textContent = t; const b = document.getElementById('tsB'); b.style.display = path ? '' : 'none'; b.onclick = () => { el.style.display = 'none'; Native.call('share', { path }); };
     el.style.display = 'flex'; this._tt = setTimeout(() => el.style.display = 'none', path ? 20000 : 4000); },
   async resumeCheck() { // страницу перезапустили посреди сборки (iPhone выгрузил её из памяти) или закрыли приложение
-    const q = this.jobs(); if (this.busy || !q.length) return;
+    const q = this.jobs(); if (this.busy) return;
+    const ci = await Native.call('crashInfo');
+    if (ci && !ci.building && ci.stage) { const st0 = Lib.data.settings = Lib.data.settings || {}; st0.previewCrash = (st0.previewCrash || 0) + 1; await Lib.save();
+      if (!ci.bg) alert(`${ci.stage} — оборвалось: телефону не хватило памяти, страница перезапустилась.\n\nСледующий просмотр пойдёт в облегчённом режиме.${st0.previewCrash > 1 ? ' Если снова оборвётся — сделай скриншот этого окна для Claude.' : ''}`); }
+    if (!q.length) return;
     const f = this.find(q[0]); if (!f) { q.length = 0; await Lib.save(); return; }
-    const st = Lib.data.settings, ci = await Native.call('crashInfo'), fps = st.fps || 25, k = q.length - 1;
+    const st = Lib.data.settings, fps = st.fps || 25, k = q.length - 1;
     const where = fr => fr >= 0 ? ` (на ${fmt(fr / fps)})` : '';
     if (st.autoResume) { delete st.autoResume; await Lib.save(); return this.loop(); } // сами перезапустились — продолжаем без вопросов
     if (ci && ci.building) {
