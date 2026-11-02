@@ -1,8 +1,9 @@
 # Telegram-бот магазина «Пространство». Ставится install-bot.sh в /etc/systemd/system/.
+# Бот в MAX — отдельная служба prostranstvo-max (сбой одного мессенджера не трогает другой).
 # Настройки и токен — в /etc/prostranstvo/bot.env (chmod 600, читает только systemd).
 # Журнал:  journalctl -u prostranstvo-bot -n 50
 [Unit]
-Description=Telegram-бот магазина «Пространство»
+Description=Бот магазина «Пространство» — Telegram
 After=network-online.target
 Wants=network-online.target
 # не сдаваться при долгих сбоях сети: перезапускать всегда
@@ -15,7 +16,7 @@ Group=prostranstvo
 EnvironmentFile=/etc/prostranstvo/bot.env
 Environment=PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
 WorkingDirectory=/opt/prostranstvo-bot/app
-ExecStart=/opt/prostranstvo-bot/venv/bin/python /opt/prostranstvo-bot/app/bot.py
+ExecStart=/opt/prostranstvo-bot/venv/bin/python /opt/prostranstvo-bot/app/bot.py --channel tg
 Restart=always
 RestartSec=5
 TimeoutStopSec=20

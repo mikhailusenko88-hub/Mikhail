@@ -1,0 +1,49 @@
+# Бот магазина «Пространство» в MAX. Ставится install-bot.sh в /etc/systemd/system/.
+# Telegram — отдельная служба prostranstvo-bot (сбой одного мессенджера не трогает другой).
+# Настройки и токен — в /etc/prostranstvo/bot.env (chmod 600, читает только systemd).
+# Журнал:  journalctl -u prostranstvo-max -n 50
+[Unit]
+Description=Бот магазина «Пространство» — MAX
+After=network-online.target
+Wants=network-online.target
+# не сдаваться при долгих сбоях сети: перезапускать всегда
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=prostranstvo
+Group=prostranstvo
+EnvironmentFile=/etc/prostranstvo/bot.env
+Environment=PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+WorkingDirectory=/opt/prostranstvo-bot/app
+ExecStart=/opt/prostranstvo-bot/venv/bin/python /opt/prostranstvo-bot/app/bot.py --channel max
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+# база заявок — только для пользователя бота
+UMask=0077
+
+# Защита: бот может писать только в /var/lib/prostranstvo (база и кеш каталога)
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/prostranstvo
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+MemoryMax=400M
+
+[Install]
+WantedBy=multi-user.target

@@ -1,7 +1,10 @@
 """Все тексты бота «Пространство» — в одном месте, чтобы их было легко править.
 
-Разметка — HTML (Telegram). Всё, что пришло от людей (имена, комментарии, ответы),
-обязательно пропускать через esc().
+Разметка — HTML (её понимают и Telegram, и MAX: <b>, <i>, <a>, <code>).
+Всё, что пришло от людей (имена, комментарии, ответы), обязательно пропускать через esc().
+
+pii=False — текст для чата сотрудника в Telegram, пока TELEGRAM_COLLECT_CONTACTS=0:
+имена, телефоны, адреса и тексты клиентов в нём не показываются (смотреть — в MAX).
 """
 
 from __future__ import annotations
@@ -12,8 +15,10 @@ from decimal import Decimal
 from calc import MAX_LINEAR_M, MAX_WALL_HEIGHT_M, MAX_WALL_WIDTH_M, AreaResult, InputError, LinearResult
 from catalog import Product, group_title
 
-NBSP = "\u00a0"
+NBSP = " "
 SHOP = "«Пространство»"
+CHANNEL_NAMES = {"tg": "Telegram", "max": "MAX"}
+HIDDEN = "скрыто — смотрите в MAX"
 
 
 def esc(text: object) -> str:
@@ -22,6 +27,10 @@ def esc(text: object) -> str:
 
 def attr(text: object) -> str:
     return html.escape(str(text or ""), quote=True)
+
+
+def ch_name(channel: str) -> str:
+    return CHANNEL_NAMES.get(channel, channel)
 
 
 def rub(amount: int) -> str:
@@ -63,7 +72,6 @@ MENU_BUTTONS = (BTN_CALC, BTN_CATALOG, BTN_LEAD, BTN_MANAGER)
 BTN_CANCEL = "Отмена"
 BTN_SKIP = "Пропустить"
 BTN_SEND_PHONE = "Отправить номер"
-BTN_WRITE_TG = "Напишите мне в Telegram"
 BTN_AGREE = "Согласен"
 BTN_SEND_CALC = "Отправить расчёт менеджеру"
 BTN_CALC_AGAIN = "Посчитать другой"
@@ -74,16 +82,25 @@ BTN_CALC_GROUP = "Рассчитать"
 BTN_OTHER_GROUPS = "Другие группы"
 BTN_SITE = "Открыть сайт"
 BTN_DELETE_YES = "Да, удалить"
+BTN_LEAD_SITE = "Заявка на сайте"
+BTN_OPEN_MAX = "Открыть бота в MAX"
+BTN_CONTINUE_MAX = "Продолжить в MAX"
+
+
+def btn_write_here(channel: str) -> str:
+    return f"Напишите мне в {ch_name(channel)}"
+
 
 # =========================================================================== общее
-def welcome(site_url: str) -> str:
+def welcome(site_url: str, collect: bool = True) -> str:
+    lead = "менеджер свяжется с вами" if collect else "на сайте или в нашем боте в MAX"
     text = (
         f"Здравствуйте! Это магазин {SHOP} — декор для стен ARTDEC в Санкт-Петербурге: "
         "реечные панели под покраску, панели под дерево и бетон, молдинги, плинтусы, карнизы и уголки.\n\n"
         "Здесь можно:\n"
         f"• <b>{BTN_CALC}</b> — сколько панелей или погонажа нужно и сколько это стоит;\n"
         f"• <b>{BTN_CATALOG}</b> — все артикулы с ценами за штуку и за коробку;\n"
-        f"• <b>{BTN_LEAD}</b> — менеджер свяжется с вами;\n"
+        f"• <b>{BTN_LEAD}</b> — {lead};\n"
         f"• <b>{BTN_MANAGER}</b> — или просто напишите вопрос в этот чат.\n\n"
         "Продаём поштучно и коробками."
     )
@@ -94,7 +111,7 @@ def welcome(site_url: str) -> str:
 
 def help_client(site_url: str) -> str:
     text = (
-        "Выберите нужное в меню внизу:\n"
+        "Выберите нужное кнопками:\n"
         f"• {BTN_CALC} — расчёт количества и стоимости;\n"
         f"• {BTN_CATALOG};\n"
         f"• {BTN_LEAD};\n"
@@ -107,9 +124,8 @@ def help_client(site_url: str) -> str:
     return text
 
 
-MENU_HINT = "Выберите действие в меню внизу или напишите вопрос — его получит менеджер."
+MENU_HINT = "Выберите действие кнопками или напишите вопрос — его получит менеджер."
 CANCELLED = "Отменено. Чем ещё помочь?"
-NOT_PRIVATE = "Напишите мне, пожалуйста, в личные сообщения."
 CATALOG_UNAVAILABLE = (
     "Каталог сейчас обновляется, попробуйте через пару минут. "
     "Или напишите вопрос сюда — менеджер ответит."
@@ -287,24 +303,29 @@ def lead_ask_name(with_calc: bool) -> str:
 
 
 LEAD_BAD_NAME = "Напишите, пожалуйста, имя текстом (до 60 символов)."
-LEAD_ASK_CONTACT = (
-    "Как с вами связаться? Нажмите «Отправить номер», напишите телефон "
-    f"или нажмите «{BTN_WRITE_TG}»."
-)
-LEAD_BAD_CONTACT = (
-    "Не похоже на телефон. Напишите номер, например +7 999 123-45-67, "
-    f"нажмите «Отправить номер» или «{BTN_WRITE_TG}»."
-)
+
+
+def lead_ask_contact(channel: str) -> str:
+    return ("Как с вами связаться? Нажмите «Отправить номер», напишите телефон "
+            f"или нажмите «{btn_write_here(channel)}».")
+
+
+def lead_bad_contact(channel: str) -> str:
+    return ("Не похоже на телефон. Напишите номер, например +7 999 123-45-67, "
+            f"нажмите «Отправить номер» или «{btn_write_here(channel)}».")
+
+
 LEAD_ASK_COMMENT = (
     "Комментарий: район или адрес объекта, сроки, что нужно (артикулы, количество, "
     f"нужна ли доставка). Можно нажать «{BTN_SKIP}»."
 )
 LEAD_BAD_COMMENT = f"Напишите комментарий текстом или нажмите «{BTN_SKIP}»."
-CONTACT_TG_NO_USERNAME = "Telegram (ответ через этот чат)"
 
 
-def contact_tg(username: str | None) -> str:
-    return f"Telegram @{username}" if username else CONTACT_TG_NO_USERNAME
+def contact_here(channel: str, username: str | None) -> str:
+    if username:
+        return f"{ch_name(channel)} @{username}"
+    return f"{ch_name(channel)} (ответ через этот чат)"
 
 
 def lead_review(name: str, contact: str, comment: str, calc: str) -> str:
@@ -330,7 +351,7 @@ def consent_text(site_url: str, operator_name: str) -> str:
     who = f"оператору {esc(operator_name)} (магазин {SHOP})" if operator_name else f"магазину {SHOP}"
     return (
         f"Нажимая «{BTN_AGREE}», я даю согласие {who} на обработку моих персональных данных: "
-        "имени, телефона или ника в Telegram, комментария и расчёта — чтобы ответить на заявку, "
+        "имени, телефона или ника в мессенджере, комментария и расчёта — чтобы ответить на заявку, "
         "рассчитать количество и стоимость и связаться со мной. Данные хранятся на сервере в России "
         "и не передаются третьим лицам, кроме случаев, предусмотренных законом. Согласие действует "
         "1 год или до отзыва; отозвать его можно командой /delete_me (152-ФЗ, ст. 9)."
@@ -344,11 +365,33 @@ def lead_thanks(lead_id: int) -> str:
 LEAD_CANCELLED = "Заявка не отправлена, данные не сохранены."
 LEAD_EXPIRED = "Заявка устарела — начните заново кнопкой «Оставить заявку»."
 
+
+def lead_elsewhere(has_site: bool, has_max: bool, with_calc: bool = False) -> str:
+    """Telegram без сбора контактов: куда идти за заявкой."""
+    where = []
+    if has_site:
+        where.append("на сайте")
+    if has_max:
+        where.append("в нашем боте в MAX")
+    start = "Чтобы менеджер связался с вами по этому расчёту, " if with_calc else "Чтобы менеджер связался с вами, "
+    if where:
+        text = start + "оставьте заявку " + " или ".join(where) + "."
+        if has_max and with_calc:
+            text += " По кнопке «Продолжить в MAX» расчёт откроется там сразу."
+    else:
+        text = "Напишите вопрос прямо сюда — менеджер ответит в этом чате."
+    return text + "\nЗдесь можно считать стену, смотреть цены и задавать вопросы."
+
+
 # =========================================================================== менеджер
-MANAGER_PROMPT = (
-    "Напишите ваш вопрос прямо сюда — менеджер ответит в этом чате в рабочее время. "
-    "Можно прислать фото стены или проекта."
-)
+def manager_prompt(collect: bool = True) -> str:
+    text = ("Напишите ваш вопрос прямо сюда — менеджер ответит в этом чате в рабочее время. "
+            "Можно прислать фото стены или проекта.")
+    if not collect:
+        text += f"\nТелефон для связи лучше оставить через «{BTN_LEAD}» — на сайте или в MAX."
+    return text
+
+
 MESSAGE_RECEIVED = "Спасибо, сообщение передано менеджеру. Ответ придёт сюда в рабочее время."
 
 
@@ -410,36 +453,56 @@ BTN_INVITE_SHIPPING = "Пригласить на отгрузку"
 BTN_NOTIFY_ALL = "Все сообщения клиентов"
 BTN_NOTIFY_ORDERS = "Только заявки и отгрузки"
 BTN_REMOVE_YES = "Да, убрать"
+STAFF_MENU_BUTTONS = (BTN_T_LEADS, BTN_T_ORDERS, BTN_T_TEAM, BTN_T_STATS, BTN_T_NOTIFY, BTN_T_HELP)
+# Подписи кнопок шагов: нажатые позже, вне шага, не пересылаются менеджеру как вопрос
+STEP_BUTTONS = frozenset({BTN_SKIP, BTN_AS_IN_LEAD, BTN_PICKUP, BTN_TODAY, BTN_TOMORROW,
+                          btn_write_here("tg"), btn_write_here("max"), *STAFF_MENU_BUTTONS})
 
-REPLY_HOW = ("Чтобы ответить клиенту, смахните его сообщение влево (или нажмите на него → «Ответить») "
-             "и напишите ответ — бот отправит его клиенту от имени магазина. Можно фото и файлы.")
+
+def btn_link(channel: str) -> str:
+    return f"Подключить {ch_name(channel)}"
 
 
-def help_manager() -> str:
+def btn_deliver(channel: str) -> str:
+    return f"Присылать в {ch_name(channel)}"
+
+
+def reply_how(channel: str) -> str:
+    if channel == "max":
+        return ("Чтобы ответить клиенту, нажмите на его сообщение, выберите «Ответить» и напишите "
+                "ответ — бот отправит его клиенту от имени магазина.")
+    return ("Чтобы ответить клиенту, смахните его сообщение влево (или нажмите на него → «Ответить») "
+            "и напишите ответ — бот отправит его клиенту от имени магазина. Можно фото и файлы.")
+
+
+def help_manager(channel: str) -> str:
     return (
         "<b>Вы — менеджер магазина.</b>\n"
         "Сюда приходят сообщения клиентов и заявки.\n\n"
-        + REPLY_HOW + "\n\n"
+        + reply_how(channel) + "\n\n"
         f"<b>{BTN_T_LEADS}</b> — последние заявки. Под заявкой: «{BTN_TO_SHIPPING}» и «{BTN_HISTORY}».\n"
         f"<b>{BTN_T_ORDERS}</b> — что сейчас на отгрузке.\n"
         f"<b>{BTN_T_TEAM}</b> — кто помогает с ботом, пригласить или убрать человека.\n"
-        f"<b>{BTN_T_NOTIFY}</b> — получать все сообщения клиентов или только заявки и отгрузки.\n"
+        f"<b>{BTN_T_NOTIFY}</b> — что получать и куда: в MAX или в Telegram; подключить второй мессенджер.\n"
         f"<b>{BTN_T_STATS}</b> — сколько заявок и сообщений за сегодня и неделю.\n\n"
         "То же командами: /leads, /orders, /team, /notify, /stats, /history номер_заявки, "
-        "/reply номер_заявки текст, /invite shipping, /reload (обновить цены с сайта)."
+        "/reply номер_заявки текст, /invite shipping, /reload (обновить цены с сайта). "
+        "Меню — команда /start."
     )
 
 
-def help_shipping() -> str:
+def help_shipping(channel: str) -> str:
     return (
         "<b>Вы — отгрузка.</b>\n"
         "Сюда приходят новые заявки и карточки «На отгрузку». Под карточкой: "
         f"«{BTN_SHIP_ACCEPT}» — взяли в работу, «{BTN_SHIP_DONE}» — товар отдан.\n\n"
-        + REPLY_HOW + "\n\n"
+        + reply_how(channel) + "\n\n"
         f"<b>{BTN_T_ORDERS}</b> — что сейчас нужно отгрузить.\n"
         f"<b>{BTN_T_LEADS}</b> — последние заявки, под каждой — «{BTN_HISTORY}» с клиентом.\n"
-        f"<b>{BTN_T_NOTIFY}</b> — получать только заявки и отгрузки (так сейчас) или все сообщения клиентов.\n\n"
-        "То же командами: /orders, /leads, /history номер_заявки, /notify all или /notify orders."
+        f"<b>{BTN_T_NOTIFY}</b> — только заявки и отгрузки (так сейчас) или все сообщения клиентов; "
+        "куда присылать; подключить второй мессенджер.\n\n"
+        "То же командами: /orders, /leads, /history номер_заявки, /notify all или /notify orders. "
+        "Меню — команда /start."
     )
 
 
@@ -453,46 +516,57 @@ JOIN_USAGE = "Отправьте: /join КОД — код даёт менедж�
 JOIN_LAST_MANAGER = "Вы единственный менеджер — код приглашения нужен другому человеку. Перешлите его."
 
 
-def joined(role: str) -> str:
+def joined(role: str, channel: str, linked: bool = False) -> str:
+    if linked:
+        return (f"Готово: {ch_name(channel)} подключён. Куда присылать заявки и сообщения — "
+                f"выберите в «{BTN_T_NOTIFY}».")
     if role == "manager":
         return ("Готово, вы менеджер магазина. Сюда будут приходить сообщения клиентов и заявки.\n\n"
-                + REPLY_HOW + f"\n\nКнопки внизу: «{BTN_T_LEADS}», «{BTN_T_ORDERS}», «{BTN_T_TEAM}». "
+                + reply_how(channel) + f"\n\nКнопки: «{BTN_T_LEADS}», «{BTN_T_ORDERS}», «{BTN_T_TEAM}». "
                 f"Подсказка — «{BTN_T_HELP}».")
     return ("Готово, вы в команде магазина — роль «отгрузка». Сюда будут приходить новые заявки и "
-            f"карточки «На отгрузку».\n\nКнопки внизу: «{BTN_T_ORDERS}», «{BTN_T_LEADS}». "
+            f"карточки «На отгрузку».\n\nКнопки: «{BTN_T_ORDERS}», «{BTN_T_LEADS}». "
             f"Подсказка — «{BTN_T_HELP}».")
 
 
-def member_joined(name: str, role: str) -> str:
-    return f"{esc(name) or 'Новый сотрудник'} теперь в команде: {role_name(role)}."
+def member_joined(name: str, role: str, channel: str, linked: bool = False) -> str:
+    who = esc(name) or "Сотрудник"
+    if linked:
+        return f"{who} подключил(а) ещё и {ch_name(channel)}."
+    return f"{who} теперь в команде: {role_name(role)} ({ch_name(channel)})."
 
 
-def invite_text(role: str, code: str, bot_username: str) -> str:
-    bot = f"@{esc(bot_username)}" if bot_username else "бота магазина"
+def invite_text(role: str, code: str, bot_links: dict[str, str]) -> str:
+    where = " или ".join(f"{ch_name(ch)}: {esc(link)}" for ch, link in bot_links.items() if link) or "бота магазина"
     return (
         f"Код для входа в команду (роль «{role_name(role)}»): <b>{esc(code)}</b>\n"
         "Действует 24 часа и только один раз.\n\n"
-        f"Перешлите человеку: пусть откроет {bot} в Telegram и отправит сообщение\n"
+        f"Перешлите человеку: пусть откроет бота ({where}) и отправит сообщение\n"
         f"<code>/join {esc(code)}</code>"
     )
+
+
+def link_text(channel: str, code: str, bot_link: str) -> str:
+    where = f" ({esc(bot_link)})" if bot_link else ""
+    return (f"Код, чтобы подключить {ch_name(channel)}: <b>{esc(code)}</b> (24 часа, один раз).\n"
+            f"Откройте бота в {ch_name(channel)}{where} и отправьте <code>/join {esc(code)}</code>")
 
 
 INVITE_USAGE = ("Кого пригласить? Нажмите кнопку ниже или отправьте /invite manager (менеджер) "
                 "или /invite shipping (отгрузка).")
 
 
-def team_list(members: list, me: int) -> str:
-    """members: [bot.TeamMember]"""
+def team_list(persons: list, me: int) -> str:
+    """persons: [core.Person]"""
     lines = ["<b>Команда магазина</b>"]
-    for m in members:
-        who = esc(m.name) or "без имени"
-        if m.username:
-            who += f" (@{esc(m.username)})"
-        if m.tg_id == me:
+    for p in persons:
+        who = esc(p.name) or "без имени"
+        if p.person_id == me:
             who += " — это вы"
-        extra = " · задан в настройках сервера" if m.static else ""
-        lines.append(f"• {who}: <b>{role_name(m.role)}</b>; получает {NOTIFY_NAMES.get(m.notify, m.notify)}"
-                     f"{extra} · id <code>{m.tg_id}</code>")
+        accounts = ", ".join(ch_name(s.channel) + (f" @{esc(s.username)}" if s.username else "") for s in p.seats)
+        extra = " · задан в настройках сервера" if p.static else ""
+        lines.append(f"• №{p.person_id} {who}: <b>{role_name(p.role)}</b>; {accounts}; получает "
+                     f"{NOTIFY_NAMES.get(p.notify, p.notify)}{extra}")
     lines.append("\nПригласить человека — кнопкой ниже: он получит одноразовый код.")
     return "\n".join(lines)
 
@@ -501,7 +575,7 @@ def remove_confirm(name: str) -> str:
     return f"Убрать {esc(name) or 'этого человека'} из команды? Он перестанет получать заявки и сообщения."
 
 
-REMOVE_USAGE = "Отправьте: /remove id — id есть в списке «Команда»."
+REMOVE_USAGE = "Отправьте: /remove номер — номер есть в списке «Команда» (№…)."
 REMOVE_NOT_FOUND = "Такого человека в команде нет."
 REMOVE_STATIC = "Этот человек задан в настройках сервера (ADMIN_IDS в bot.env) — убрать можно только там."
 REMOVE_LAST_MANAGER = "Нельзя убрать последнего менеджера — сначала пригласите другого."
@@ -514,59 +588,100 @@ def removed(name: str) -> str:
 REMOVED_YOU = "Вас убрали из команды магазина. Теперь бот работает для вас как для клиента."
 
 
-def notify_current(mode: str) -> str:
-    return f"Сейчас вы получаете: <b>{NOTIFY_NAMES.get(mode, mode)}</b>. Что получать?"
+def notify_current(mode: str, deliver: str, channels: list[str]) -> str:
+    text = f"Сейчас вы получаете: <b>{NOTIFY_NAMES.get(mode, mode)}</b>."
+    if len(channels) > 1:
+        text += f"\nПодключены: {', '.join(ch_name(c) for c in channels)}; присылаю в <b>{ch_name(deliver)}</b>."
+    return text + "\nЧто получать?"
 
 
 def notify_set(mode: str) -> str:
     return f"Готово. Теперь вы получаете: {NOTIFY_NAMES.get(mode, mode)}."
 
 
+def deliver_set(channel: str) -> str:
+    return f"Готово. Заявки и сообщения буду присылать в {ch_name(channel)}."
+
+
 NOTIFY_USAGE = "Отправьте /notify all (все сообщения клиентов) или /notify orders (только заявки и отгрузки)."
 ONLY_MANAGER = "Это может сделать только менеджер."
 
 # --- ответы клиентам
-NOT_REPLY_TARGET = ("Не понял, кому ответить. Смахните влево сообщение клиента, его заявку или "
-                    "«Переписку» и напишите ответ.")
-TEAM_FREE_TEXT = ("Это сообщение никуда не отправлено. Чтобы ответить клиенту, смахните влево "
-                  f"его сообщение и напишите ответ. Подсказка — «{BTN_T_HELP}».")
+NOT_REPLY_TARGET = ("Не понял, кому ответить. Ответьте на сообщение клиента, его заявку или "
+                    "«Переписку» и напишите текст.")
+TEAM_FREE_TEXT = ("Это сообщение никуда не отправлено. Чтобы ответить клиенту, ответьте на его "
+                  f"сообщение (нажмите на него → «Ответить»). Подсказка — «{BTN_T_HELP}».")
 SENT_TO_CLIENT = "Отправлено клиенту."
 SEND_FAILED = "Не удалось отправить: клиент заблокировал бота или удалил чат."
-REPLY_USAGE = "Отправьте: /reply номер_заявки текст — например: /reply #12 Здравствуйте!"
-NO_SUCH_LEAD = "Заявки с таким номером нет."
+
+
+def sending_to(channel: str) -> str:
+    return f"Отправляю клиенту в {ch_name(channel)}…"
+
+
+def media_other_channel(channel: str) -> str:
+    return (f"Клиент пишет из {ch_name(channel)} — фото и файлы туда отсюда не переслать. "
+            f"Напишите текстом или отправьте файл из {ch_name(channel)}.")
+
+
+REPLY_USAGE = "Отправьте: /reply номер_заявки текст — например: /reply 12 Здравствуйте! (клиент: /reply К5 …)"
+NO_SUCH_LEAD = "Заявки или клиента с таким номером нет."
 LEADS_EMPTY = "Заявок пока нет."
 LEAD_USAGE = "Отправьте: /lead номер — например /lead 12"
-HISTORY_USAGE = "Отправьте: /history номер_заявки — например /history #12"
+HISTORY_USAGE = "Отправьте: /history номер_заявки — например /history 12 (или номер клиента: /history К5)"
 HISTORY_EMPTY = "Переписки с этим клиентом нет."
-REPLY_HINT = "Смахните это сообщение влево и напишите ответ — он уйдёт клиенту."
+REPLY_HINT = "Ответьте на это сообщение — ответ уйдёт клиенту."
 
 
-def who_line(name: str, username: str | None) -> str:
+def client_tag(client_id: int, channel: str) -> str:
+    return f"клиент К{client_id}, {ch_name(channel)}"
+
+
+def who_line(name: str, username: str | None, client_id: int, channel: str, pii: bool = True) -> str:
+    if not pii:
+        tag = client_tag(client_id, channel)
+        return tag[:1].upper() + tag[1:]
     text = esc(name) or "Без имени"
     if username:
         text += f" · @{esc(username)}"
-    return text
+    return f"{text} ({client_tag(client_id, channel)})"
 
 
-def client_message_header(name: str, username: str | None, kind: str) -> str:
+def client_message_header(name: str, username: str | None, kind: str, client_id: int, channel: str,
+                          pii: bool = True) -> str:
     what = "Сообщение от клиента" if kind == "text" else f"Сообщение от клиента ({esc(kind)})"
-    return f"<b>{what}</b>\n{who_line(name, username)}"
+    return f"<b>{what}</b>\n{who_line(name, username, client_id, channel, pii)}"
 
 
-def client_message_text(name: str, username: str | None, text: str) -> str:
-    return client_message_header(name, username, "text") + "\n\n" + esc(text)
+def client_message_text(name: str, username: str | None, text: str, client_id: int, channel: str,
+                        pii: bool = True) -> str:
+    body = esc(text) if pii else f"<i>текст {HIDDEN}</i>"
+    return client_message_header(name, username, "text", client_id, channel, pii) + "\n\n" + body
 
 
-def lead_card(lead, title: str = "Новая заявка") -> str:  # lead: db.Lead
-    lines = [
-        f"<b>{title} №{lead.id}</b> · {esc(lead.created_dt.strftime('%d.%m.%Y %H:%M'))}",
-        f"Имя: {esc(lead.name)}",
-        f"Контакт: {esc(lead.contact)}",
-    ]
-    if lead.username:
-        lines.append(f"Telegram: @{esc(lead.username)}")
-    if lead.comment:
-        lines.append(f"Комментарий: {esc(lead.comment)}")
+def tg_message_notice(client_id: int, kind: str) -> str:
+    """Сообщение клиента из Telegram, пока контакты там не собираем: без имени, телефона и текста."""
+    what = "сообщение" if kind == "text" else f"сообщение ({esc(kind)})"
+    return (f"<b>Новое {what} в Telegram</b> — клиент К{client_id}.\n"
+            f"Откройте переписку: /history К{client_id} (или кнопкой ниже).")
+
+
+def media_unavailable(kind: str, channel: str) -> str:
+    return f"<i>{esc(kind)} — посмотреть можно в {ch_name(channel)}</i>"
+
+
+def lead_card(lead, title: str = "Новая заявка", pii: bool = True) -> str:  # lead: db.Lead
+    lines = [f"<b>{title} №{lead.id}</b> · {esc(lead.created_dt.strftime('%d.%m.%Y %H:%M'))}",
+             f"Откуда: {ch_name(lead.channel)}, клиент К{lead.client_id}"]
+    if pii:
+        lines.append(f"Имя: {esc(lead.name)}")
+        lines.append(f"Контакт: {esc(lead.contact)}")
+        if lead.username:
+            lines.append(f"{ch_name(lead.channel)}: @{esc(lead.username)}")
+        if lead.comment:
+            lines.append(f"Комментарий: {esc(lead.comment)}")
+    else:
+        lines.append(f"Имя, контакт и комментарий: {HIDDEN}")
     if lead.calc:
         lines.append(f"Расчёт: {esc(lead.calc)}")
     lines.append(f"Статус: {status_name(lead.status)}")
@@ -575,39 +690,44 @@ def lead_card(lead, title: str = "Новая заявка") -> str:  # lead: db.
     return "\n".join(lines)
 
 
-def leads_list(leads: list) -> str:
+def leads_list(leads: list, pii: bool = True) -> str:
     out = ["<b>Последние заявки</b> — нажмите номер, чтобы открыть"]
     for lead in leads:
-        comment = lead.comment if len(lead.comment) <= 100 else lead.comment[:97] + "…"
         calc = lead.calc.split(" (")[0] if lead.calc else ""
-        line = (f"\n<b>№{lead.id}</b> · {esc(lead.created_dt.strftime('%d.%m %H:%M'))} · "
-                f"{esc(lead.name)} · {esc(lead.contact)} · <i>{status_name(lead.status)}</i>")
+        who = f"{esc(lead.name)} · {esc(lead.contact)}" if pii else f"клиент К{lead.client_id}"
+        line = (f"\n<b>№{lead.id}</b> · {esc(lead.created_dt.strftime('%d.%m %H:%M'))} · {ch_name(lead.channel)} · "
+                f"{who} · <i>{status_name(lead.status)}</i>")
         if calc:
             line += f"\n    расчёт: {esc(calc)}"
-        if comment:
+        if pii and lead.comment:
+            comment = lead.comment if len(lead.comment) <= 100 else lead.comment[:97] + "…"
             line += f"\n    {esc(comment)}"
         out.append(line)
     return "\n".join(out)
 
 
-def history(name: str, username: str, leads: list, items: list) -> list[str]:
+def history(name: str, username: str, client_id: int, channel: str, leads: list, items: list,
+            pii: bool = True) -> list[str]:
     from db import fmt_ts  # noqa: PLC0415 - чтобы texts не тянул базу при импорте
 
-    head = f"<b>Переписка: {who_line(name, username)}</b>"
+    head = f"<b>Переписка: {who_line(name, username, client_id, channel, pii)}</b>"
     if leads:
         head += "\nЗаявки: " + ", ".join(f"№{lead.id} ({status_name(lead.status)})" for lead in leads)
     lines = []
     for it in items:
         who = "Клиент" if it.direction == "in" else f"Магазин ({esc(it.admin_name)})" if it.admin_name else "Магазин"
-        body = esc(it.text) if it.text else ""
-        if it.kind != "text":
-            body = f"[{esc(it.kind)}] {body}".strip()
+        if not pii and it.direction == "in":
+            body = f"<i>{HIDDEN}</i>"
+        else:
+            body = esc(it.text) if it.text else ""
+            if it.kind != "text":
+                body = f"[{esc(it.kind)}] {body}".strip()
         lines.append(f"<i>{fmt_ts(it.created_ts)}</i> <b>{who}:</b> {body}")
     if not lines:
         lines.append(HISTORY_EMPTY)
     parts, chunk = [], head + "\n"
     for line in lines:
-        if len(chunk) + len(line) > 3700:
+        if len(chunk) + len(line) > 3500:
             parts.append(chunk)
             chunk = ""
         chunk += "\n" + line
@@ -641,6 +761,10 @@ SHIP_BAD_TEXT = "Напишите, пожалуйста, текстом."
 SHIP_BAD_PHONE = "Не похоже на телефон. Напишите номер, например +7 999 123-45-67."
 SHIP_LEAD_MISSING = "Заявка не найдена (возможно, клиент удалил свои данные)."
 SHIP_EXPIRED = "Это оформление отгрузки устарело — нажмите «Передать на отгрузку» под заявкой ещё раз."
+SHIP_ONLY_IN_MAX = ("Отгрузку с адресом и телефоном оформляйте в боте MAX: в Telegram адреса и телефоны "
+                    "клиентов не передаём.")
+SHIP_CHECK = "Проверьте отгрузку и нажмите кнопку под ней."
+BUTTON_STALE = "Эта кнопка больше не действует."
 
 
 def ship_review(lead_id: int, items: str, address: str, when: str, phone: str, replaces: str) -> str:
@@ -651,16 +775,16 @@ def ship_review(lead_id: int, items: str, address: str, when: str, phone: str, r
     return text
 
 
-def shipment_card(ship) -> str:  # ship: db.Shipment
+def shipment_card(ship, pii: bool = True) -> str:  # ship: db.Shipment
     from db import fmt_ts  # noqa: PLC0415
 
     lines = [
         f"<b>На отгрузку №{ship.lead_id}</b>",
         f"Что: {esc(ship.items)}",
-        f"Куда: {esc(ship.address)}",
+        f"Куда: {esc(ship.address) if pii else HIDDEN}",
         f"Когда: {esc(ship.when_text)}",
-        f"Телефон получателя: {esc(ship.phone)}",
-        f"Клиент: {who_line(ship.client_name, ship.client_username)}",
+        f"Телефон получателя: {esc(ship.phone) if pii else HIDDEN}",
+        f"Клиент: {who_line(ship.client_name, ship.client_username, ship.client_id, ship.client_channel, pii)}",
         f"Передал(а): {esc(ship.created_name)} · {fmt_ts(ship.created_ts)}",
     ]
     if ship.cancelled_ts:
@@ -677,7 +801,7 @@ def shipment_card(ship) -> str:  # ship: db.Shipment
 
 def ship_created(lead_id: int, receivers: list[str]) -> str:
     if receivers:
-        return f"Заявка №{lead_id} передана на отгрузку. Карточку получили: {esc(', '.join(receivers))}."
+        return f"Заявка №{lead_id} передана на отгрузку. Карточка отправлена: {esc(', '.join(receivers))}."
     return (f"Заявка №{lead_id} сохранена со статусом «подтверждена», но в команде пока нет никого "
             f"на отгрузке. Пригласите: «{BTN_T_TEAM}» → «{BTN_INVITE_SHIPPING}».")
 
@@ -709,7 +833,8 @@ def orders_head(count: int) -> str:
 
 
 # --- статистика и каталог
-def stats(s, catalog_count: int, catalog_source: str, catalog_time: str, catalog_error: str) -> str:
+def stats(s, catalog_count: int, catalog_source: str, catalog_time: str, catalog_error: str,
+          queues: dict[str, int] | None = None) -> str:
     text = (
         "<b>Статистика</b>\n"
         f"Заявки: сегодня {s.leads_today}, за 7 дней {s.leads_week}, всего {s.leads_total}\n"
@@ -718,6 +843,9 @@ def stats(s, catalog_count: int, catalog_source: str, catalog_time: str, catalog
         f"Отгрузки: открытых {s.shipments_open}, отгружено за 7 дней {s.shipped_week}\n"
         f"Каталог: {catalog_count} позиций (откуда: {esc(catalog_source)}, {esc(catalog_time)})"
     )
+    waiting = {ch: n for ch, n in (queues or {}).items() if n}
+    if waiting:
+        text += "\nЖдут отправки: " + ", ".join(f"{ch_name(ch)} — {n}" for ch, n in waiting.items())
     if catalog_error:
         text += f"\nПоследний раз цены обновить не удалось: {esc(catalog_error[:300])}"
     return text
@@ -729,11 +857,10 @@ def reload_result(count: int, source: str, error: str) -> str:
     return f"Каталог и цены обновлены: {count} позиций (откуда: {esc(source)})."
 
 
-def client_deleted(name: str, leads: int, kept: int, messages: int) -> str:
-    who = esc(name) or "Клиент"
-    text = f"{who} попросил(а) удалить свои данные: удалено заявок {leads}, сообщений {messages}."
+def client_deleted(name: str, client_id: int, channel: str, leads: int, kept: int, messages: int,
+                   pii: bool = True) -> str:
+    who = f"{esc(name) or 'Клиент'} ({client_tag(client_id, channel)})" if pii else client_tag(client_id, channel)
+    text = f"{who[:1].upper() + who[1:]} попросил(а) удалить свои данные: удалено заявок {leads}, сообщений {messages}."
     if kept:
         text += f" Заказы на отгрузке и отгруженные ({kept}) остались — их храним по закону."
     return text + " Удалите этого клиента и из своих заметок, если он там есть."
-SHIP_CHECK = "Проверьте отгрузку и нажмите кнопку под ней."
-BUTTON_STALE = "Эта кнопка больше не действует."
