@@ -1,19 +1,11 @@
-# Авито Автозагрузка — прогон 3: справка Авито и архив (уникальные имена снимков)
-open: https://support.avito.ru/sections/62
-snap: av_support_s62
-open: https://support.avito.ru/articles/2271
-snap: av_support_a2271
-open: https://support.avito.ru/
-snap: av_support_main
-wait: 3000
-open: https://web.archive.org/cdx/search/cdx?url=www.avito.ru/web/1/autoload/user-docs/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000
-snap: av_cdx_userdocs
-wait: 8000
-open: https://web.archive.org/cdx/search/cdx?url=www.avito.ru/autoload/documentation/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000
-snap: av_cdx_docs
-wait: 8000
-open: https://web.archive.org/cdx/search/cdx?url=autoload.avito.ru/format/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=3000
-snap: av_cdx_format
-wait: 8000
-open: https://web.archive.org/cdx/search/cdx?url=support.avito.ru/articles/*&fl=original,timestamp&collapse=urlkey&filter=statuscode:200&limit=5000
-snap: av_cdx_support
+# Авито — прогон 4: справка по Автозагрузке, правила для товаров (под заказ), адреса
+follow: (фото|изображ|формат|файл|xml|требован|ошибк|шаблон|категор|наличи|заказ|поля|загруз)
+https://support.avito.ru/partitions/103
+follow: (заказ|наличи|правил|запрещ|требован|описани|фото|товар)
+https://support.avito.ru/sections/1730
+follow: (заказ|наличи|правил|требован|описани|фото)
+https://support.avito.ru/partitions/364
+follow: (адрес|склад|город)
+https://support.avito.ru/sections/1771
+open: https://web.archive.org/web/2022/https://autoload.avito.ru/format/dlya_doma_i_dachi/
+snap: av_arch_dlya_doma_2022
