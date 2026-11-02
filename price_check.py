@@ -1,25 +1,59 @@
 # Открывает страницы из request.txt в Chromium, ждёт загрузки, прокручивает и сохраняет текст.
-# Строка "follow: <regex>" — со следующей страницы дополнительно открыть ссылки, подходящие под regex (до 12).
+# Строки request.txt:
+#   <URL>                 — открыть и сохранить (как раньше)
+#   follow: <regex>       — со следующей страницы открыть подходящие ссылки (до 12)
+#   open: <URL>           — открыть без сохранения (для сценария действий)
+#   click: <текст>        — нажать видимый элемент с таким текстом (точно, потом — по вхождению)
+#   type: <текст>         — набрать текст в поле с фокусом
+#   wait: <мс>            — подождать
+#   snap: <имя>           — сохранить текст текущей страницы в status/<имя>.txt
 import re, asyncio, datetime
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 from playwright.async_api import async_playwright
+
+LOG = []
+
+async def scroll(page):
+    for _ in range(12):
+        await page.mouse.wheel(0, 1500); await page.wait_for_timeout(350)
+    await page.wait_for_timeout(1200)
 
 async def grab(page, url):
     try:
         await page.goto(url, wait_until='domcontentloaded', timeout=60000)
         await page.wait_for_timeout(4000)
-        for _ in range(12):
-            await page.mouse.wheel(0, 1500); await page.wait_for_timeout(400)
-        await page.wait_for_timeout(1500)
-        text = await page.inner_text('body')
-        links = await page.eval_on_selector_all('a[href]', 'els => els.map(e => [e.href, (e.innerText||"").trim().slice(0,80)])')
-        return text, links
+        await scroll(page)
+        return await dump(page)
     except Exception as e:
         return f'ОШИБКА: {e}', []
+
+async def dump(page):
+    text = await page.inner_text('body')
+    links = await page.eval_on_selector_all('a[href]', 'els => els.map(e => [e.href, (e.innerText||"").trim().slice(0,80)])')
+    return text, links
+
+def save(name, url, text, links):
+    open(f'status/{name}.txt', 'w', encoding='utf-8').write(
+        f'URL: {url}\n\n{text}\n\n--- ССЫЛКИ ---\n' + '\n'.join(f'{h} | {t}' for h, t in links))
 
 def slug(u):
     p = urlparse(u); s = (p.netloc + p.path).strip('/').replace('/', '_')
     return re.sub(r'[^A-Za-z0-9_.-]', '-', s)[:90] or 'page'
+
+async def click_text(page, t):
+    for exact in (True, False):
+        loc = page.get_by_text(t, exact=exact)
+        n = await loc.count()
+        for i in range(min(n, 40)):
+            el = loc.nth(i)
+            try:
+                if await el.is_visible():
+                    await el.scroll_into_view_if_needed(timeout=3000)
+                    await el.click(timeout=5000)
+                    return f'ok (exact={exact}, {i+1}/{n})'
+            except Exception as e:
+                last = str(e)[:120]
+    return 'НЕ НАЙДЕНО'
 
 async def main():
     lines = [l.strip() for l in open('request.txt', encoding='utf-8') if l.strip() and not l.startswith('#')]
@@ -31,12 +65,35 @@ async def main():
         page = await ctx.new_page()
         follow = None
         for l in lines:
-            if l.startswith('follow:'):
-                follow = re.compile(l.split(':', 1)[1].strip(), re.I); continue
-            queue = [l]
+            cmd, _, arg = l.partition(':')
+            cmd = cmd.strip().lower(); arg = arg.strip()
+            try:
+                if cmd == 'follow':
+                    follow = re.compile(arg, re.I); continue
+                if cmd == 'open':
+                    await page.goto(arg, wait_until='domcontentloaded', timeout=60000)
+                    await page.wait_for_timeout(4000)
+                    LOG.append(f'open {arg}: ok'); continue
+                if cmd == 'click':
+                    r = await click_text(page, arg); await page.wait_for_timeout(2500)
+                    LOG.append(f'click «{arg}»: {r}'); continue
+                if cmd == 'type':
+                    await page.keyboard.type(arg, delay=60); await page.wait_for_timeout(2500)
+                    LOG.append(f'type «{arg}»: ok'); continue
+                if cmd == 'wait':
+                    await page.wait_for_timeout(int(arg)); continue
+                if cmd == 'snap':
+                    await scroll(page)
+                    text, links = await dump(page)
+                    save(arg, page.url, text, links)
+                    index.append(f'{arg}.txt  {page.url}  ({len(text)} симв.)')
+                    LOG.append(f'snap {arg}: {len(text)} симв.'); continue
+            except Exception as e:
+                LOG.append(f'{cmd} «{arg}»: ОШИБКА {str(e)[:200]}'); continue
+            # иначе — это адрес страницы
             text, links = await grab(page, l)
             seen.add(l)
-            open(f'status/{slug(l)}.txt', 'w', encoding='utf-8').write(f'URL: {l}\n\n{text}\n\n--- ССЫЛКИ ---\n' + '\n'.join(f'{h} | {t}' for h, t in links))
+            save(slug(l), l, text, links)
             index.append(f'{slug(l)}.txt  {l}  ({len(text)} симв.)')
             if follow:
                 host = urlparse(l).netloc
@@ -45,12 +102,12 @@ async def main():
                     if h in seen: continue
                     seen.add(h)
                     t2, l2 = await grab(page, h)
-                    open(f'status/{slug(h)}.txt', 'w', encoding='utf-8').write(f'URL: {h}\n\n{t2}\n')
+                    save(slug(h), h, t2, l2)
                     index.append(f'{slug(h)}.txt  {h}  ({len(t2)} симв.)  [по ссылке с {l}]')
                 follow = None
         await b.close()
     now = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
-    open('status/_index.txt', 'w', encoding='utf-8').write(f'{now}\n' + '\n'.join(index) + '\n')
-    print('\n'.join(index))
+    open('status/_index.txt', 'w', encoding='utf-8').write(f'{now}\n' + '\n'.join(index) + '\n\n--- ЖУРНАЛ ---\n' + '\n'.join(LOG) + '\n')
+    print('\n'.join(index)); print('\n'.join(LOG))
 
 asyncio.run(main())

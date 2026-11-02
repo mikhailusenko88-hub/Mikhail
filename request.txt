@@ -1,12 +1,45 @@
-# Saby: отчётность, ЭДО, тарифы
-follow: tarif|price|цен|тариф|stoim
-https://saby.ru/tariffs
-https://saby.ru/ereport/new
-https://saby.ru/ereport
-follow: tarif|price|цен|тариф
-https://saby.ru/edo/docs
-https://saby.ru/accounting/ip
-# Контур для сравнения
-https://kontur.ru/extern/price
-https://kontur.ru/extern/price-optimal-plus/78
-https://kontur.ru/diadoc/price
+# Saby, прогон 2: регион СПб, вкладка ИП, справка по тарифам, СПОТ
+open: https://saby.ru/ereport/new
+click: г. Москва
+snap: s2_region_popup
+type: Санкт-Петербург
+snap: s2_region_typed
+click: г. Санкт-Петербург
+click: Санкт-Петербург
+snap: s2_ereport_spb
+click: ИП
+snap: s2_ereport_spb_ip
+click: ЮЛ
+snap: s2_ereport_spb_ul
+open: https://saby.ru/ereport/spot
+snap: s2_spot
+open: https://saby.ru/edo/tariffs
+snap: s2_edo_tariffs_after_region
+open: https://saby.ru/accounting/ip
+click: 1 год
+snap: s2_accounting_ip_1y
+click: квартал
+snap: s2_accounting_ip_q
+open: https://saby.ru/tariffs
+click: Отчетность и бухгалтерия
+snap: s2_tariffs_report
+click: Документооборот и EDI
+snap: s2_tariffs_edo
+open: https://saby.ru/tariffs/info
+snap: s2_info_main
+click: Тариф «Нулевка или ИП без сотрудников»
+snap: s2_info_nulevka
+click: Тариф «Выгодный старт»
+snap: s2_info_start
+click: Сравнение тарифов отчетности
+snap: s2_info_compare
+click: Тарификация сотрудников, НДС, ЕНС
+snap: s2_info_nds
+click: Ограничения в сдаче отчётов
+snap: s2_info_limits
+click: Обмен с контрагентами
+snap: s2_info_edo
+click: Обмен с иностранными партнерами
+snap: s2_info_foreign
+click: Типы носителей
+snap: s2_info_media
