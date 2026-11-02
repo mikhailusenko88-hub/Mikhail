@@ -230,8 +230,9 @@ final class BundleScheme: NSObject, WKURLSchemeHandler {
         let mime: String
         switch file.pathExtension {
         case "html": mime = "text/html"
-        case "js": mime = "text/javascript"
+        case "js", "mjs": mime = "text/javascript"
         case "json": mime = "application/json"
+        case "wasm": mime = "application/wasm"   // нейроголос: onnxruntime-web
         default: mime = UTType(filenameExtension: file.pathExtension)?.preferredMIMEType ?? "application/octet-stream"
         }
         let resp = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1",

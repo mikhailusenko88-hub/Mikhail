@@ -667,9 +667,14 @@ MK.VOICE_FX = {
 };
 MK.defaultFx = spec => !spec ? 'fairy' : spec.kind === 'human' ? (spec.age === 'kid' ? 'soft' : 'natural') : ({ mouse: 'squeaky', bear: 'deep', rabbit: 'fluffy', fox: 'sly', chick: 'chipmunk', owl: 'wizard', dragon: 'dragon', robot: 'robot', elephant: 'giant', lion: 'deep', wolf: 'pirate', squirrel: 'chipmunk', frog: 'cartoon' }[spec.kind] || 'cartoon');
 /** Голос рассказчика: «Альбина» с сервера (по умолчанию) или голос iPhone. */
-MK.NARRATOR_VOICES = { albina: { name: 'Альбина (нейроголос с сервера)', server: true, speaker: 'ru_albina', soft: true, rate: 'medium' }, iphone: { name: 'Голос iPhone', server: false } };
+MK.NARRATOR_VOICES = { albina: { name: 'Нейроголос в телефоне (Silero)', server: true }, iphone: { name: 'Голос iPhone', server: false } };
+/** Нейроголоса Silero v5 (MIT) — считаются прямо в телефоне. */
+MK.NEURAL_SPEAKERS = { ru_albina: 'Альбина', ru_zinaida: 'Зинаида', ru_ekaterina: 'Екатерина', ru_vika: 'Вика', ru_karina: 'Карина', ru_oksana: 'Оксана', ru_aigul: 'Айгуль', ru_alexandr: 'Александр', ru_eduard: 'Эдуард', ru_dmitriy: 'Дмитрий', ru_igor: 'Игорь', ru_roman: 'Роман', ru_bogdan: 'Богдан', ru_marat: 'Марат' };
 MK.TTS_URL = 'http://89.126.192.214:8095/tts';
-MK.narratorVoice = lib => MK.NARRATOR_VOICES[(lib && lib.settings && lib.settings.narratorVoice) || 'albina'] || MK.NARRATOR_VOICES.iphone;
+/** Настройки рассказчика: голос, темп, тон, мягкость. */
+MK.narratorCfg = lib => { const st = (lib && lib.settings) || {}, n = st.narrator || {}; const voice = n.voice || st.narratorVoice || 'albina';
+  return { voice, speaker: MK.NEURAL_SPEAKERS[n.speaker] ? n.speaker : 'ru_albina', rate: +n.rate || 1, pitch: +n.pitch || 1, soft: n.soft !== false }; };
+MK.narratorVoice = lib => { const c = MK.narratorCfg(lib), v = MK.NARRATOR_VOICES[c.voice] || MK.NARRATOR_VOICES.iphone; return Object.assign({}, v, c.voice === 'albina' ? { speaker: c.speaker, soft: c.soft, rate: c.rate, pitch: c.pitch } : {}); };
 MK.fxFor = function (lib, who) {
   const c = lib.characters && lib.characters[who];
   const id = who === 'Р' ? ((lib.narratorFx && lib.narratorFx.preset) || 'fairy') : ((c && c.fx && c.fx.preset) || MK.defaultFx(c && c.spec));
@@ -773,8 +778,8 @@ function lineFor(ep, lib, who, text, step, vi) {
   const nv = who === 'Р' && !synth ? MK.narratorVoice(lib) : null;
   if (nv && nv.server && MK.prepSpeech) { // рассказчик — нейроголос со своего сервера (Альбина); нет связи — голос iPhone (fb)
     const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
-    return { key: hash32('srv|' + nv.speaker + '|' + (nv.soft ? 's' : '') + nv.rate + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
-      srv: { text: marked, speaker: nv.speaker, soft: nv.soft, rate: nv.rate }, fb: { fx } }; }
+    return { key: hash32('nv2|' + nv.speaker + '|' + (nv.soft ? 's' : '') + nv.rate + '|' + nv.pitch + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
+      srv: { text: marked, speaker: nv.speaker, soft: nv.soft, rate: nv.rate, pitch: nv.pitch }, fb: { fx } }; }
   return { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + (synth ? '|' + synth + age + variant + (short ? 's' : '') : '')).toString(36), who, text: say, voice: v, fx, synth, age, variant, short, seed };
 }
 

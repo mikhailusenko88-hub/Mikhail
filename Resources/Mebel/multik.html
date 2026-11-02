@@ -124,6 +124,7 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 </div></div>
 <script src="multik-engine.js"></script>
 <script src="multik-audio.js"></script>
+<script src="multik-voice.js"></script>
 <script src="multik-maker.js"></script>
 <script src="multik-script.js"></script>
 <script src="multik-sculpt.js"></script>
@@ -270,18 +271,28 @@ const App = {
       <select id="squal"><option value="hq">Качество: как в кино (шерсть, мягкий свет)</option><option value="std">Качество: быстрое (без шерсти)</option></select></div></div>
       <div class="card"><b>Голоса iPhone</b><div class="mut" style="margin:4px 0 8px">Чтобы голоса звучали лучше, скачай улучшенные русские голоса: Настройки → Универсальный доступ → Устный контент → Голоса → Русский → Milena и Yuri «улучшенный». Делать это лучше до создания персонажей: голос записывается в код персонажа.</div><div id="vlist" class="mut">…</div></div>
       <div class="card"><b>Рассказчик</b><div class="row" style="margin:6px 0"><span class="mut" style="flex:1">Голос:</span><select id="narV">${Object.entries(MK.NARRATOR_VOICES).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join('')}</select></div>
-        <div class="mut" style="margin:4px 0 8px">${MK.narratorVoice(Lib.data).server ? 'Нейроголос берётся с твоего сервера, нужен интернет во время сборки. Нет связи — рассказчик читает голосом iPhone (' + esc(MK.fxFor(Lib.data, 'Р').name) + ').' : 'Голос iPhone: ' + esc(MK.fxFor(Lib.data, 'Р').name)}</div>
-        <div class="btns"><button class="btn" onclick="SrvVoice.preview('Жили-были в маленьком домике кот Барсик, мышонок Пик и пёс Рон. Однажды утром друзья отправились в лес.')">▶ Послушать</button><button class="btn" onclick="VP.open('Р')">🎙 Голос iPhone для рассказчика</button></div></div>
+        ${MK.narratorVoice(Lib.data).server ? `<div class="row" style="margin:6px 0"><span class="mut" style="flex:1">Кто читает:</span><select id="narS">${Object.entries(MK.NEURAL_SPEAKERS).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('')}</select></div>
+        <div class="row" style="margin:6px 0"><span class="mut" style="flex:1">Темп: <b id="narRv"></b></span><input type="range" id="narR" min="70" max="130" step="5" style="flex:1.4"></div>
+        <div class="row" style="margin:6px 0"><span class="mut" style="flex:1">Тон: <b id="narPv"></b></span><input type="range" id="narP" min="80" max="120" step="2" style="flex:1.4"></div>
+        <label class="row" style="margin:6px 0"><input type="checkbox" id="narSoft"> <span style="flex:1">Мягкий тон (теплее, без резкости, лёгкий «воздух»)</span></label>
+        <div class="mut" style="margin:4px 0 8px">Нейроголос считается прямо в телефоне — интернет не нужен. Ударения ставятся сами; если слово прочитано не так — поправь его в «Ударениях» ниже, запомнится навсегда.</div>` : `<div class="mut" style="margin:4px 0 8px">Голос iPhone: ${esc(MK.fxFor(Lib.data, 'Р').name)}</div>`}
+        <div class="btns"><button class="btn" onclick="SrvVoice.preview('Жили-были в маленьком домике кот Барсик, мышонок Пик и пёс Рон. Однажды утром друзья отправились в лес за грибами.', 'narAcc')">▶ Послушать</button><button class="btn" onclick="VP.open('Р')">🎙 Голос iPhone</button></div>
+        <div id="narAcc" class="mut" style="margin-top:6px"></div></div>
       <div class="card"><b>Ударения</b><div class="mut" style="margin:4px 0 8px">В сценарии ставьте <b>+</b> перед ударной буквой: «з+амок», «Б+арсик» — или большую букву: «замОк». Один раз отметили — слово запомнится навсегда. Здесь можно проверить, как iPhone прочитает.</div>
         <div class="row"><input id="stWord" placeholder="например: з+амок" style="flex:1"></div>
-        <div class="btns" style="margin-top:6px"><button class="btn" onclick="Stress.hear('ipa')">▶ Способ 1</button><button class="btn" onclick="Stress.hear('acute')">▶ Способ 2</button><button class="btn" onclick="Stress.hear('respell')">▶ Способ 3</button></div>
+        <div class="btns" style="margin-top:6px"><button class="btn" onclick="Stress.neural()">▶ Нейроголос</button><button class="btn" onclick="Stress.hear('ipa')">▶ Способ 1</button><button class="btn" onclick="Stress.hear('acute')">▶ Способ 2</button><button class="btn" onclick="Stress.hear('respell')">▶ Способ 3</button></div>
         <div class="row" style="margin-top:6px"><span class="mut" style="flex:1">Каким способом ставить ударения:</span><select id="stMode"><option value="ipa">Способ 1 (произношение)</option><option value="acute">Способ 2 (знак ударения)</option><option value="respell">Способ 3 (пишу как слышится)</option></select></div>
         <div class="btns" style="margin-top:6px"><button class="btn ok" onclick="Stress.save()">Запомнить слово</button></div>
+        <div id="stAcc" class="mut" style="margin-top:6px"></div>
         <div id="stList" class="mut" style="margin-top:6px"></div></div>
       <div class="card"><b>Чему я научился</b><div id="lexList" class="mut" style="margin-top:6px"></div></div>
       <div class="card"><b>Персонажи и локации</b><div class="mut">Персонажей: ${Object.keys(Lib.data.characters).length}, локаций: ${Object.keys(Lib.data.locations).length}. Библиотека хранится в «Файлы → Замер 3D → multik».</div></div>`);
     Stress.render();
-    { const nv = document.getElementById('narV'), st = Lib.data.settings = Lib.data.settings || {}; nv.value = st.narratorVoice || 'albina'; nv.onchange = async () => { st.narratorVoice = nv.value; SrvVoice.down = 0; await Lib.save(); App.render(); }; }
+    { const st = Lib.data.settings = Lib.data.settings || {}, cfg = MK.narratorCfg(Lib.data), put = async (k, v, re) => { st.narrator = Object.assign({}, st.narrator || {}, { [k]: v }); if (k === 'voice') st.narratorVoice = v; SrvVoice.down = 0; await Lib.save(); if (re) App.render(); };
+      const $ = id => document.getElementById(id), nv = $('narV'); nv.value = cfg.voice; nv.onchange = () => put('voice', nv.value, true);
+      if ($('narS')) { const sp = $('narS'), R = $('narR'), Pp = $('narP'), so = $('narSoft'), lab = () => { $('narRv').textContent = Math.round(R.value) + '%'; $('narPv').textContent = Math.round(Pp.value) + '%'; };
+        sp.value = cfg.speaker; R.value = Math.round(cfg.rate * 100); Pp.value = Math.round(cfg.pitch * 100); so.checked = cfg.soft; lab();
+        sp.onchange = () => put('speaker', sp.value); R.oninput = lab; Pp.oninput = lab; R.onchange = () => put('rate', +R.value / 100); Pp.onchange = () => put('pitch', +Pp.value / 100); so.onchange = () => put('soft', so.checked); } }
     const sr = document.getElementById('sres'), sf = document.getElementById('sfps'), sq = document.getElementById('squal'); sr.value = s.res; sf.value = s.fps; sq.value = s.quality || 'hq'; sq.onchange = () => { if (Build.busy) { alert('Качество можно поменять, когда сборка закончится.'); sq.value = s.quality || 'hq'; return; } s.quality = sq.value; Lib.save(); if (window.MK3D) MK3D.setQuality(s.quality); };
     sr.onchange = () => { s.res = +sr.value; Lib.save(); }; sf.onchange = () => { s.fps = +sf.value; Lib.save(); };
     const lex = Lib.data.lexicon || {}, rows = [];
@@ -343,19 +354,30 @@ const App = {
 
 // ---------- голос рассказчика со своего сервера (нейроголос «Альбина») ----------
 const SrvVoice = {
-  down: 0, warned: false,
-  async get(ln, timeout) { // → {wav} или null (нет интернета / сервер не отвечает — тогда минуту не спрашиваем, берём голос iPhone)
+  down: 0, warned: false, localFail: false,
+  async local(ln) { // нейроголос прямо в телефоне (папка voice/ в приложении) → {buf}
+    if (this.localFail || !window.MKVoice || !MKVoice.available()) return null;
+    try { const y = await MKVoice.speak(ln.srv.text, { speaker: ln.srv.speaker, rate: ln.srv.rate, pitch: ln.srv.pitch, lex: (Lib.data && Lib.data.lexicon) || {} });
+      if (!y.length) return null;
+      let buf; if (ln.srv.soft) buf = await MKVoice.soften(y); else { buf = new AudioBuffer({ length: y.length, numberOfChannels: 1, sampleRate: 48000 }); buf.getChannelData(0).set(y); }
+      return { buf }; } catch (e) { console.log('нейроголос', e && e.message); this.localFail = true; return null; } },
+  async get(ln, timeout) { // → {buf} (в телефоне) или {wav} (с сервера) или null — тогда голос iPhone
+    const L = await this.local(ln); if (L) return L;
     if (Date.now() - this.down < 60000) return null;
-    let r = null; try { r = await Native.call('ttsServer', { url: MK.TTS_URL, key: ln.key, timeout: timeout || 45, payload: { text: ln.srv.text, speaker: ln.srv.speaker, soft: ln.srv.soft, rate: ln.srv.rate } }); } catch (e) { r = null; }
+    let r = null; try { r = await Native.call('ttsServer', { url: MK.TTS_URL, key: ln.key, timeout: timeout || 45, payload: { text: ln.srv.text, speaker: ln.srv.speaker, soft: ln.srv.soft, rate: 'medium' } }); } catch (e) { r = null; }
     if (r && r.wav) { this.down = 0; return r; }
-    this.down = Date.now(); if (!this.warned) { this.warned = true; try { Build.toast('Голос Альбины недоступен (нет связи с сервером) — рассказчик читает голосом iPhone'); } catch (e) {} }
+    this.down = Date.now(); if (!this.warned) { this.warned = true; try { Build.toast('Нейроголос недоступен — рассказчик читает голосом iPhone'); } catch (e) {} }
     return null; },
-  async preview(text) { audioPlayback(); const lib = Lib.data, nv = MK.narratorVoice(lib);
+  async preview(text, show) { audioPlayback(); const lib = Lib.data, nv = MK.narratorVoice(lib);
     if (!nv.server) { const fx = MK.fxFor(lib, 'Р'); return previewVoice(text, (lib.narrator || {}).voice || { base: 'male', pitch: 1, rate: .47 }, fx, (lib.narratorFx || {}).voiceId); }
     const ln = MK.lineFor ? MK.lineFor({}, lib, 'Р', text, { say: text }, 0) : null; if (!ln || !ln.srv) return 0;
-    this.down = 0; const r = await this.get(ln, 60); if (!r) { alert('Сервер с голосом Альбины не ответил. Проверь интернет. Если сервер ещё не настроен — нужна одна команда на сервере (её даст Claude).'); return 0; }
+    const box = show && document.getElementById(show); if (box) box.textContent = window.MKVoice && !MKVoice.ready ? 'Загружаю голос (первый раз несколько секунд)…' : 'Озвучиваю…';
+    this.down = 0; this.localFail = false; const r = await this.get(ln, 60);
+    if (box) box.innerHTML = window.MKStress && MKStress.ready ? 'Читает так: ' + esc(MKStress.accent(ln.srv.text, lib.lexicon)).replace(/\+([а-яёА-ЯЁ])/g, (m0, c) => '<b style="color:#ffd23f">' + c.toUpperCase() + '</b>') : '';
+    if (!r) { alert('Нейроголос не запустился. ' + (window.MKVoice && MKVoice.error ? 'Причина: ' + MKVoice.error : 'Файлы голоса не найдены в приложении.')); return 0; }
     if (!pvCtx || pvCtx.state === 'closed') pvCtx = new (window.AudioContext || window.webkitAudioContext)(); try { pvCtx.resume(); } catch (e) {} if (pvSrc) { try { pvSrc.stop(); } catch (e) {} }
-    const buf = await MK.voiceFx(await pvCtx.decodeAudioData(unb64(r.wav).buffer), MK.VOICE_FX.natural); pvSrc = pvCtx.createBufferSource(); pvSrc.buffer = buf; pvSrc.connect(pvCtx.destination); pvSrc.start(); return buf.duration; },
+    const raw = r.buf || await pvCtx.decodeAudioData(unb64(r.wav).buffer), buf = await MK.voiceFx(raw, MK.VOICE_FX.natural);
+    pvSrc = pvCtx.createBufferSource(); pvSrc.buffer = buf; pvSrc.connect(pvCtx.destination); pvSrc.start(); return buf.duration; },
 };
 // ---------- озвучка + подготовка ----------
 async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уже в телефоне — нужны только длительности реплик
@@ -368,10 +390,12 @@ async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уж�
     if (audio[ln.key]) continue;
     if (ln.synth && MK.makeVocal) { try { const buf = await MK.makeVocal(ln, lib, (c, b) => Native.call(c, b), async w => ac.decodeAudioData(unb64(w).buffer)); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('vocal', err); } continue; }
     let r = null, fx = ln.fx || MK.VOICE_FX.natural;
-    if (ln.srv) { r = await SrvVoice.get(ln); if (!r) fx = ln.fb.fx; } // рассказчик — Альбина с сервера; нет связи — голос iPhone
+    if (ln.srv) { r = await SrvVoice.get(ln); if (!r) fx = ln.fb.fx; } // рассказчик — нейроголос (в телефоне, иначе с сервера); не вышло — голос iPhone
+    if (r && r.buf) { try { const buf = await MK.voiceFx(r.buf, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('нейроголос', err); } continue; }
     if (!r) r = await Native.call('tts', { text: ln.text, voice: ln.voice, key: ln.key });
     if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
   }
+  if (window.MKVoice && MKVoice.ready) { try { await MKVoice.unload(); } catch (err) {} } // память — под картинку
   const tl = MK.compile(ep, lib, audio); tl.style = (window.MK3D && MK3D.ready) ? '3d' : '2d';
   if (noMix) return { tl, mix: null };
   onStep && onStep('Музыка и звуки', 1, 'Свожу звуковую дорожку…');
@@ -704,6 +728,7 @@ const Stress = {
     L.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { delete d[b.dataset.k]; Lib.save(); this.render(); });
     L.querySelectorAll('[data-h]').forEach(b => b.onclick = () => previewVoice(b.dataset.h, { base: 'female', pitch: 1.1, rate: .5 }, MK.VOICE_FX.natural, null)); },
   word() { return (document.getElementById('stWord').value || '').trim(); },
+  neural() { const w = this.word(); if (!w) { alert('Напишите слово или фразу. Ударение можно поставить «+»: з+амок'); return; } SrvVoice.preview(w.replace(/([а-яё])([АЕЁИОУЫЭЮЯ])/g, (m0, a, b) => a + '+' + b.toLowerCase()), 'stAcc'); },
   hear(mode) { const w = this.word(); if (!w) { alert('Напишите слово с + перед ударной буквой, например: з+амок'); return; } previewVoice(w, { base: 'female', pitch: 1.1, rate: .5 }, MK.VOICE_FX.natural, null, mode); },
   save() { const w = this.word(); const lex = Lib.data.lexicon = Lib.data.lexicon || {}; const n = MK.learnStress(w.replace(/([а-яё])([АЕЁИОУЫЭЮЯ])/g, (m0, a, b) => a + '+' + b.toLowerCase()), lex); if (!n.length) { alert('Поставьте + перед ударной буквой, например: з+амок'); return; } Lib.save(); document.getElementById('stWord').value = ''; this.render(); },
 };
