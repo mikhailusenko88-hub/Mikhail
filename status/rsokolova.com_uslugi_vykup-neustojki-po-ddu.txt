@@ -1,0 +1,8 @@
+URL: https://rsokolova.com/uslugi/vykup-neustojki-po-ddu/
+
+ОШИБКА: Page.goto: Timeout 60000ms exceeded.
+Call log:
+  - navigating to "https://rsokolova.com/uslugi/vykup-neustojki-po-ddu/", waiting until "domcontentloaded"
+
+
+--- ССЫЛКИ ---
