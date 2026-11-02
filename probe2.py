@@ -24,29 +24,29 @@ meta = {"symbol_to_id": pack.symbol_to_id, "symbols": pack.symbols, "alphabet": 
 json.dump(meta, open("out/meta.json", "w"), ensure_ascii=False)
 P("pitch_emb_type", tac.pitch_emb_type, "istft", ist.padding, ist.n_fft, ist.hop_length, ist.win_length)
 
+from typing import Tuple
 class Front(torch.nn.Module):
-    def __init__(s): super().__init__(); s.dp = jm.dur_predictor; s.pp = jm.pitch_predictor
-    def forward(s, seq, spk):
+    def __init__(s, dp, pp): super().__init__(); s.dp = dp; s.pp = pp
+    def forward(s, seq: torch.Tensor, spk: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         mask = torch.eq(seq, 0)
         return s.dp(seq, spk, mask, 1.0, None), s.pp(seq, spk, mask, 1.0)
 class Enc(torch.nn.Module):
-    def __init__(s): super().__init__(); s.t = tac
-    def forward(s, seq, spk, pitch):
-        t = s.t; mask = torch.eq(seq, 0)
-        x = t.embedding(seq)
-        se = t.speaker_embedding(spk).unsqueeze(1).expand(-1, x.shape[1], -1)
-        enc = t.encoder(x, mask, None) + se
-        if t.pitch_emb_type == "default":
-            enc = enc + t.pitch_proj(pitch).transpose(1, 2) * t.pitch_strength
-        return enc
+    def __init__(s, t):
+        super().__init__(); s.emb = t.embedding; s.spe = t.speaker_embedding; s.enc = t.encoder; s.pproj = t.pitch_proj; s.ps = float(t.pitch_strength)
+    def forward(s, seq: torch.Tensor, spk: torch.Tensor, pitch: torch.Tensor) -> torch.Tensor:
+        mask = torch.eq(seq, 0)
+        x = s.emb(seq)
+        se = s.spe(spk).unsqueeze(1).expand(-1, x.size(1), -1)
+        enc = s.enc(x, mask, None) + se
+        return enc + s.pproj(pitch).transpose(1, 2) * s.ps
 class Dec(torch.nn.Module):
-    def __init__(s): super().__init__(); s.t = tac
-    def forward(s, x):
-        return s.t.lin(s.t.decoder(x, None, None)).transpose(1, 2)
+    def __init__(s, t): super().__init__(); s.dec = t.decoder; s.lin = t.lin
+    def forward(s, x: torch.Tensor) -> torch.Tensor:
+        return s.lin(s.dec(x, None, None)).transpose(1, 2)
 class Voc(torch.nn.Module):
-    def __init__(s): super().__init__(); s.v = voc
-    def forward(s, mel):
-        x = s.v.head.out(s.v.backbone(mel)).transpose(1, 2)
+    def __init__(s, v): super().__init__(); s.bb = v.backbone; s.out = v.head.out
+    def forward(s, mel: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        x = s.out(s.bb(mel)).transpose(1, 2)
         mag, p = torch.chunk(x, 2, 1)
         return torch.clamp(torch.exp(mag), max=100.), p
 
@@ -56,7 +56,7 @@ def seq_for(text):
     return seq, sp
 seq, sp = seq_for("Прив+ет! Ж+или-б+ыли кот и мыш+онок.")
 P("seq", seq.shape, seq.tolist())
-fr, en, de, vo = Front().eval(), Enc().eval(), Dec().eval(), Voc().eval()
+fr, en, de, vo = [torch.jit.script(x.eval()) for x in (Front(jm.dur_predictor, jm.pitch_predictor), Enc(tac), Dec(tac), Voc(voc))]
 with torch.no_grad():
     ld, ph = fr(seq, sp); P("logdur", ld.shape, "pitch", ph.shape)
     d = torch.clamp(torch.exp(ld) - 1, min=0).round()
