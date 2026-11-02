@@ -1,8 +1,6 @@
-# Проверка сервера в Казахстане: какие папки отдаёт
-http://89.126.192.214:8080/mebel/t6htram0/
-http://89.126.192.214:8080/mebel/h9zuc3dh/
+# Проверка после починки синхронизации
 http://89.126.192.214:8080/mebel/0f7s1eez/
 http://89.126.192.214:8080/mebel/0f7s1eez/avito.xml
 http://89.126.192.214:8080/mebel/0f7s1eez/img/A907.jpg
-http://89.126.192.214:8080/mebel/ibr3nai/
-http://89.126.192.214:8080/mebel/_lib/three.min.js
+http://89.126.192.214:8080/mebel/t6htram0/
+http://89.126.192.214:8080/mebel/h9zuc3dh/
