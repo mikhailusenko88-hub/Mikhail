@@ -1,20 +1,68 @@
-[0;93m2026-11-02 19:24:21.239338628 [W:onnxruntime:Default, device_discovery.cc:95 GetPciBusId] Skipping pci_bus_id for PCI path at "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/5620e0c7-8062-4dce-aeb7-520c7ef76171" because filename "5620e0c7-8062-4dce-aeb7-520c7ef76171" did not match expected pattern of [0-9a-f]+:[0-9a-f]+:[0-9a-f]+[.][0-9a-f]+[m
-Traceback (most recent call last):
-  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 95, in <module>
-    fr, en, de = Front().eval(), Enc().eval(), Dec().eval()
-                 ^^^^^^^
-  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 75, in __init__
-    def __init__(s): super().__init__(); s.dp = Pred(jm.dur_predictor.dur_pred); s.pp = Pred(jm.pitch_predictor.pitch_pred)
-                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 72, in __init__
-    def __init__(s, sm): super().__init__(); s.emb = leaf(sm.embedding); s.spe = leaf(sm.speaker_embedding); s.tr = FT(sm.transformer); s.lin = leaf(sm.lin)
-                                                                                                                    ^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 52, in __init__
-    def __init__(s, sm): super().__init__(); s.pe = PE(sm.pos_encoder); s.layers = nn.ModuleList([FFT(l) for l in sm.layers]); s.norm = leaf(sm.norm)
-                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_script.py", line 874, in __iter__
-    return self.forward_magic_method("__iter__")
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/jit/_script.py", line 870, in forward_magic_method
-    raise NotImplementedError
-NotImplementedError
+[0;93m2026-11-02 19:25:21.897726391 [W:onnxruntime:Default, device_discovery.cc:95 GetPciBusId] Skipping pci_bus_id for PCI path at "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/5620e0c7-8062-4dce-aeb7-520c7ef76171" because filename "5620e0c7-8062-4dce-aeb7-520c7ef76171" did not match expected pattern of [0-9a-f]+:[0-9a-f]+:[0-9a-f]+[.][0-9a-f]+[m
+HG shorten 3 pool AvgPool1d(kernel_size=(3,), stride=(3,), padding=(0,)) dim 128 n pre/short/post [1, 2, 1]
+dur diff 9.5367431640625e-07 pitch diff 4.172325134277344e-07
+frames 219 mel diff 0.0 mel scale 4.753600120544434
+frames 220 mel diff 0.0 mel scale 4.787621974945068
+frames 221 mel diff 0.0 mel scale 4.820920467376709
+frames 222 mel diff 0.0 mel scale 4.742346286773682
+export front FAIL Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 114, in exp
+    torch.onnx.export(mod, args, path, input_names=ins, output_names=outs, dynamic_axes=dyn, opset_version=17, do_constant_folding=True)
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/__init__.py", line 375, in export
+    export(
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 502, in export
+    _export(
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1564, in _export
+    graph, params_dict, torch_out = _model_to_graph(
+                                    ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1117, in _model_to_graph
+    graph = _optimize_graph(
+            ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 639, in _optimize_graph
+    graph = _C._jit_pass_onnx(graph, operator_export_type)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1848, in _run_symbolic_function
+    raise errors.UnsupportedOperatorError(
+torch.onnx.errors.UnsupportedOperatorError: Exporting the operator 'aten::_native_multi_head_attention' to ONNX opset version 17 is not supported. Please feel free to request support or submit a pull request on PyTorch GitHub: https://github.com/pytorch/pytorch/issues.
+
+export enc FAIL Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 114, in exp
+    torch.onnx.export(mod, args, path, input_names=ins, output_names=outs, dynamic_axes=dyn, opset_version=17, do_constant_folding=True)
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/__init__.py", line 375, in export
+    export(
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 502, in export
+    _export(
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1564, in _export
+    graph, params_dict, torch_out = _model_to_graph(
+                                    ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1117, in _model_to_graph
+    graph = _optimize_graph(
+            ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 639, in _optimize_graph
+    graph = _C._jit_pass_onnx(graph, operator_export_type)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1848, in _run_symbolic_function
+    raise errors.UnsupportedOperatorError(
+torch.onnx.errors.UnsupportedOperatorError: Exporting the operator 'aten::_native_multi_head_attention' to ONNX opset version 17 is not supported. Please feel free to request support or submit a pull request on PyTorch GitHub: https://github.com/pytorch/pytorch/issues.
+
+export dec FAIL Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/probe3.py", line 114, in exp
+    torch.onnx.export(mod, args, path, input_names=ins, output_names=outs, dynamic_axes=dyn, opset_version=17, do_constant_folding=True)
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/__init__.py", line 375, in export
+    export(
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 502, in export
+    _export(
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1564, in _export
+    graph, params_dict, torch_out = _model_to_graph(
+                                    ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1117, in _model_to_graph
+    graph = _optimize_graph(
+            ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 639, in _optimize_graph
+    graph = _C._jit_pass_onnx(graph, operator_export_type)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py", line 1848, in _run_symbolic_function
+    raise errors.UnsupportedOperatorError(
+torch.onnx.errors.UnsupportedOperatorError: Exporting the operator 'aten::_native_multi_head_attention' to ONNX opset version 17 is not supported. Please feel free to request support or submit a pull request on PyTorch GitHub: https://github.com/pytorch/pytorch/issues.
+
+export voc ok 0.5 s 58.3 MB
