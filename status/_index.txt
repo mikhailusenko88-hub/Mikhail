@@ -1,11 +1,9 @@
-2026-11-02 15:03 UTC
-89.126.192.214-8080_mebel_t6htram0.txt  http://89.126.192.214:8080/mebel/t6htram0/  (20459 симв.)
-89.126.192.214-8080_mebel_h9zuc3dh.txt  http://89.126.192.214:8080/mebel/h9zuc3dh/  (114 симв.)
-89.126.192.214-8080_mebel_0f7s1eez.txt  http://89.126.192.214:8080/mebel/0f7s1eez/  (114 симв.)
-89.126.192.214-8080_mebel_0f7s1eez_avito.xml.txt  http://89.126.192.214:8080/mebel/0f7s1eez/avito.xml  (114 симв.)
-89.126.192.214-8080_mebel_0f7s1eez_img_A907.jpg.txt  http://89.126.192.214:8080/mebel/0f7s1eez/img/A907.jpg  (114 симв.)
-89.126.192.214-8080_mebel_ibr3nai.txt  http://89.126.192.214:8080/mebel/ibr3nai/  (179 симв.)
-89.126.192.214-8080_mebel__lib_three.min.js.txt  http://89.126.192.214:8080/mebel/_lib/three.min.js  (603445 симв.)
+2026-11-02 15:20 UTC
+89.126.192.214-8080_mebel_0f7s1eez.txt  http://89.126.192.214:8080/mebel/0f7s1eez/  (6172 симв.)
+89.126.192.214-8080_mebel_0f7s1eez_avito.xml.txt  http://89.126.192.214:8080/mebel/0f7s1eez/avito.xml  (197592 симв.)
+89.126.192.214-8080_mebel_0f7s1eez_img_A907.jpg.txt  http://89.126.192.214:8080/mebel/0f7s1eez/img/A907.jpg  (0 симв.)
+89.126.192.214-8080_mebel_t6htram0.txt  http://89.126.192.214:8080/mebel/t6htram0/  (23465 симв.)
+89.126.192.214-8080_mebel_h9zuc3dh.txt  http://89.126.192.214:8080/mebel/h9zuc3dh/  (84 симв.)
 
 --- ЖУРНАЛ ---
 
