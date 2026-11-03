@@ -357,14 +357,37 @@ def _service_state():
         return "none"
 
 
+UNIT = Path("/etc/systemd/system/multik-tts.service")
+
+
 def _service_ready(wait=240):
-    """Служба на этом сервере уже держит голос в памяти — второй раз его не грузим (это ~2,7 ГБ)."""
-    t0 = time.time()
+    """Служба на этом сервере уже держит голос в памяти — второй раз его не грузим (это ~2,7 ГБ).
+    Если служба установлена, но остановлена — запускаем её и ждём, пока загрузит голос."""
+    t0, started = time.time(), False
     while True:
         st = _service_state()
-        if st != "loading" or time.time() - t0 > wait:
-            return st == "ready"
+        if st == "ready":
+            return True
+        if st == "none" and UNIT.exists() and not started:
+            started = True
+            try:
+                act = subprocess.run(["systemctl", "is-active", "multik-tts"], capture_output=True, text=True).stdout.strip()
+                if act != "active":
+                    _log("Альбина: служба голоса была остановлена — запускаю")
+                    subprocess.run(["systemctl", "start", "multik-tts"], capture_output=True, timeout=60)
+            except Exception:
+                pass
+        if (st == "none" and not UNIT.exists()) or time.time() - t0 > wait:
+            return False
         time.sleep(5)
+
+
+def _mem_free_mb():
+    try:
+        m = dict(l.split(":", 1) for l in open("/proc/meminfo"))
+        return (int(m["MemAvailable"].split()[0]) + int(m.get("SwapFree", "0 kB").split()[0])) // 1024
+    except Exception:
+        return 99999
 
 
 def _readline(p, timeout):
@@ -417,7 +440,11 @@ def _synth(text, spk, soft, rate, pitch, wav, nomono=False):
         wav.write_bytes(data)
         _st["mode"] = "service"
         return ""
+    if UNIT.exists() and not nomono:
+        raise AlbinaFailed("служба голоса multik-tts не отвечает")
     _st["mode"] = "worker"
+    if not (_st["proc"] and _st["proc"].poll() is None) and _mem_free_mb() < 3200:
+        raise AlbinaFailed(f"мало памяти для голоса ({_mem_free_mb()} МБ свободно, нужно 3200)")
     p = _worker()
     q["out"] = str(wav)
     p.stdin.write(json.dumps(q, ensure_ascii=False) + "\n")
