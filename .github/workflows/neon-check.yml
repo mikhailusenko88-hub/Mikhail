@@ -3,6 +3,9 @@ name: neon-check
 # Запуск вручную (workflow_dispatch). Результат — engine/neon/status/ в ветке neon-demo.
 on:
   workflow_dispatch:
+  push:
+    branches: [neon-demo]
+    paths: ['engine/neon/trigger.txt']
 permissions:
   contents: write
 concurrency:
