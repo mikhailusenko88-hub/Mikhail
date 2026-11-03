@@ -1,0 +1,9 @@
+URL: http://89.126.192.214:8080/mebel/smeh1fwe/
+page: 200 13745 bytes
+data-src="01.mp3"
+data-src="02.mp3"
+data-src="03.mp3"
+buttons: 85
+01.mp3: 200 38288 bytes audio/mpeg
+17.mp3: 200 31705 bytes audio/mpeg
+85.mp3: 200 14778 bytes audio/mpeg
