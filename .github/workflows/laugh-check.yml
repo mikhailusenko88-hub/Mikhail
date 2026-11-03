@@ -1,0 +1,27 @@
+name: laugh-check
+on:
+  push:
+    branches: [laugh-bank]
+    paths: ['check_url.txt']
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check page and audio
+        run: |
+          U=$(sed -n 1p check_url.txt | tr -d ' \r')
+          echo "URL: $U" > check_result.txt
+          curl -s -o page.html -w "page: %{http_code} %{size_download} bytes\n" "$U" >> check_result.txt || true
+          grep -o 'data-src="[^"]*"' page.html | head -3 >> check_result.txt || true
+          N=$(grep -o 'data-src="[^"]*"' page.html | wc -l); echo "buttons: $N" >> check_result.txt
+          for f in 01.mp3 17.mp3 85.mp3; do curl -s -o /dev/null -w "$f: %{http_code} %{size_download} bytes %{content_type}\n" "$U$f" >> check_result.txt || true; done
+          cat check_result.txt
+      - name: Commit
+        run: |
+          git config user.name laugh-bank
+          git config user.email laugh-bank@users.noreply.github.com
+          git add check_result.txt && git commit -m "laugh-check result" || echo nothing
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
