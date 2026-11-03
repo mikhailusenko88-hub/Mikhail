@@ -1,6 +1,3 @@
-dl https://multisoft.ru/files/Token_USB_Sonoma_Intel.pkg Token_USB_Sonoma_Intel.pkg
-links https://saby.ru/download saby_download
-links https://saby.ru/download/cryptography saby_crypto
-links https://www.cryptopro.ru/fns_experiment cp_fns
-links https://www.cryptopro.ru/products/csp/downloads cp_downloads
-links https://www.nalog.gov.ru/rn77/related_activities/ucfns/distr_crypto/ nalog_distr
+links https://saby.ru/help/ep/sczi/install/install_cryptopro saby_help_cp
+links https://sbis.ru/help/ep/sczi/install/install_cryptopro sbis_help_cp
+links https://saby.ru/help/ep/sczi/on_sbis saby_help_onsbis

@@ -12,7 +12,7 @@ dl() { # url file
 links() { # url name
   curl -sSL -A "$UA" --max-time 60 "$1" -o "status/$2.html" -w "" 2>>$R
   echo "## links $2 ($1), size $(wc -c < status/$2.html 2>/dev/null)" >> $R
-  grep -oiE '(href|src|data-[a-z-]+)="[^"]+"' "status/$2.html" | grep -iE 'mac|dmg|pkg|tgz|darwin|osx|csp|plugin|download' | sort -u | head -80 >> $R
+  grep -oiE '(href|src|data-[a-z-]+)="[^"]+"' "status/$2.html" | grep -iE 'mac|dmg|pkg|tgz|darwin|osx|csp|plugin|download|update\.s|crypto' | sort -u | head -80 >> $R
 }
 while read -r kind a b; do
   [ -z "${kind:-}" ] && continue
@@ -22,3 +22,4 @@ while read -r kind a b; do
   esac
 done < request.txt
 ls -la files >> $R
+for f in status/*.html; do echo "## urls in $f" >> $R; grep -oiE 'https?://update\.(saby|sbis)\.ru[^"'"'"' <>\\]+' "$f" | grep -iE 'crypt|csp|darwin|mac' | sort -u | head -40 >> $R; done
