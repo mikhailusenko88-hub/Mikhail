@@ -22,6 +22,7 @@ jobs:
           mkdir -p engine/neon/status
           for f in "" scene.bin frames.bin ref_120.jpg ref_210.jpg; do curl -s -m 90 -o /dev/null -w "neonlug1/$f %{http_code} %{size_download} %{content_type} %{time_total}s\n" "http://89.126.192.214:8080/mebel/neonlug1/$f"; done | tee engine/neon/status/server.txt
           for f in "" scene.bin cat.bin; do curl -s -m 120 -o /dev/null -w "barsik1/$f %{http_code} %{size_download} %{content_type} %{time_total}s\n" "http://89.126.192.214:8080/mebel/barsik1/$f"; done | tee -a engine/neon/status/server.txt
+          for f in "" scene.bin cat.bin; do curl -s -m 120 -o /dev/null -w "barsik2/$f %{http_code} %{size_download} %{content_type} %{time_total}s\n" "http://89.126.192.214:8080/mebel/barsik2/$f"; done | tee -a engine/neon/status/server.txt
       - name: Скриншот страницы
         run: |
           npm i --silent playwright@1.47.0 >/dev/null 2>&1
@@ -44,6 +45,11 @@ jobs:
             await page.evaluate(() => { if(window.renderOnce) window.renderOnce(3.2); });
             logs.push('HUD cat: '+await page.evaluate(() => document.getElementById('hud').textContent + ' | ' + document.getElementById('load').textContent));
             await page.screenshot({ path: 'engine/neon/status/server_cat.png', clip:{x:0,y:0,width:1280,height:720}, timeout: 300000 });
+            await page.goto('http://89.126.192.214:8080/mebel/barsik2/?still=1&samples=0&w=1280', { waitUntil: 'load', timeout: 180000 });
+            await page.waitForFunction(() => document.getElementById('load').style.display === 'none' || document.getElementById('load').textContent.startsWith('Ошибка'), null, { timeout: 240000 });
+            await page.evaluate(() => { st.yaw=Math.atan2(-G.sun[0],G.sun[2])+0.45; st.pitch=0.10; st.dist=2.4; st.lookY=0.46; if(window.renderOnce) window.renderOnce(5); });
+            logs.push('HUD cat2: '+await page.evaluate(() => document.getElementById('hud').textContent + ' | ' + document.getElementById('load').textContent));
+            await page.screenshot({ path: 'engine/neon/status/server_cat2.png', clip:{x:0,y:0,width:1280,height:720}, timeout: 300000 });
             require('fs').writeFileSync('engine/neon/status/page.txt', logs.join('\n')+'\n');
             await browser.close();
           })().catch(e => { require('fs').writeFileSync('engine/neon/status/page.txt', 'FAIL: '+e.message+'\n'); process.exit(0); });
