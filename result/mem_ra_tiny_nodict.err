@@ -1,0 +1,22 @@
+[0;93m2026-11-03 18:24:42.053500729 [W:onnxruntime:Default, device_discovery.cc:95 GetPciBusId] Skipping pci_bus_id for PCI path at "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/5620e0c7-8062-4dce-aeb7-520c7ef76171" because filename "5620e0c7-8062-4dce-aeb7-520c7ef76171" did not match expected pattern of [0-9a-f]+:[0-9a-f]+:[0-9a-f]+[.][0-9a-f]+[m
+Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/test/mem_probe.py", line 35, in <module>
+    marks = [a.process_all(l) for l in lines]
+             ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/ruaccent/ruaccent.py", line 284, in process_all
+    return self.process_all_internal(text)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/ruaccent/ruaccent.py", line 246, in process_all_internal
+    processed_words = self._process_accent(processed_words, stress_usages)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/ruaccent/ruaccent.py", line 212, in _process_accent
+    splitted_text[i] = self.accent_model.put_accent(word)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/ruaccent/accent_model.py", line 36, in put_accent
+    outputs = self.session.run(None, inputs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/onnxruntime/capi/onnxruntime_inference_collection.py", line 390, in run
+    self._validate_input(list(input_feed.keys()))
+  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/onnxruntime/capi/onnxruntime_inference_collection.py", line 350, in _validate_input
+    raise ValueError(
+ValueError: Required inputs (['token_type_ids']) are missing from input feed (['input_ids', 'attention_mask']).
