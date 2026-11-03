@@ -1,0 +1,7 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0;background:#111"><canvas id="c" width="1280" height="720"></canvas>
+<script src="engine6.js"></script>
+<script type="module">
+import * as THREE from './three.module.min.js'; window.THREE = THREE;
+window.start = async (o) => { await OB.boot(THREE, document.getElementById('c'), './data4/', o || {}); return { t: OB.t, build: OB.build }; };
+window.ready = true;
+</script></body></html>
