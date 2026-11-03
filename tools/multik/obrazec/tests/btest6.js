@@ -1,0 +1,10 @@
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--js-flags=--max-old-space-size=6000']});const p=await b.newPage({viewport:{width:420,height:1100}});
+p.on('pageerror',e=>console.log('ERR',e.message));p.on('console',m=>{if(m.type()==='error')console.log('C',m.text().slice(0,300))});
+await p.goto('http://127.0.0.1:8765/pub6/local.html#test');
+const idle=()=>p.waitForFunction(()=>!document.getElementById('go').disabled,null,{timeout:900000});
+await p.waitForTimeout(1500);await idle();await p.screenshot({path:'/tmp/ob6/b6_0.png'});await p.selectOption('#rs','1280x720');
+await p.click('[data-h="pik"]');await idle();await p.click('[data-s="face"]');await idle();await p.screenshot({path:'/tmp/ob6/b6_pik.png'});await p.click('[data-s="paw"]');await idle();await p.screenshot({path:'/tmp/ob6/b6_paw.png'});await p.evaluate(()=>document.querySelector('[data-h="barsik"]').click());await idle();await p.evaluate(()=>document.querySelector('[data-s="medium"]').click());await idle();await p.screenshot({path:'/tmp/ob6/b6_bars.png'});
+await p.click('[data-g="1"]');await idle();await p.screenshot({path:'/tmp/ob6/b6_g1.png'});await p.click('[data-g="2"]');await idle();await p.screenshot({path:'/tmp/ob6/b6_g2.png'});
+await p.evaluate(()=>document.getElementById('go').click());await p.waitForFunction(()=>window.benchDone,null,{timeout:900000});
+console.log(await p.evaluate(()=>document.getElementById('out').innerText+'\n---\n'+document.getElementById('log').innerText));await b.close();})();

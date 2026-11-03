@@ -165,6 +165,8 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 <script src="multik-sculpt.js"></script>
 <script src="multik-3d.js"></script>
 <script src="multik-barsik.js"></script>
+<script src="multik-bars-heroes.js"></script>
+<script src="multik-bars-soty.js"></script>
 <script type="module">
 import * as THREE from './three.module.min.js';
 // по умолчанию — «как в кино» (шерсть, мягкий свет)
@@ -436,6 +438,8 @@ async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уж�
   const ac = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
   const audio = {}, bufs = {}; let i = 0;
   if (window.MKBarsik && window.MK3D && MK3D.hq) { try { await MKBarsik.load(); } catch (err) {} }
+  if (window.BARSHeroes && window.MK3D && MK3D.hq && MK3D.THREE) { try { const want = BARSHeroes.wantFor(lib); /* БАРС: шерсть и свет Пика и Рона — один раз */
+    if (want.length) { BARSHeroes.onProgress = (n, k) => onStep && onStep('Герои «как в кино»', k, n === 'pik' ? 'Пик: свет' : 'Рон: свет'); onStep && onStep('Герои «как в кино»', 0, 'шерсть растёт'); await BARSHeroes.prepare(MK3D.THREE, MK3D.renderer(), [...new Set(want)]); } } catch (err) { console.log('БАРС:', err && err.message); } }
   const pre = {}; { const grp = {}; for (const ln of lines) if (ln.srv && !ln.synth) (grp[ln.srv.model || ''] = grp[ln.srv.model || ''] || []).push(ln);
     const order = Object.keys(grp).sort(); let j = 0, tot = order.reduce((a, k) => a + grp[k].length, 0);
     for (const m of order) for (const ln of grp[m]) { if (isCancelled && isCancelled()) throw new Error('cancel'); if (ln.key in pre) continue;

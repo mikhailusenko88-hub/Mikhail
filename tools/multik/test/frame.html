@@ -8,6 +8,8 @@
 <script src="../../../Resources/Mebel/multik-sculpt.js"></script>
 <script src="../../../Resources/Mebel/multik-3d.js"></script>
 <script src="../../../Resources/Mebel/multik-barsik.js"></script>
+<script src="../../../Resources/Mebel/multik-bars-heroes.js"></script>
+<script src="../../../Resources/Mebel/multik-bars-soty.js"></script>
 <script type="module">
 import * as THREE from '../../../Resources/Mebel/three.module.min.js';
 if(location.hash=="#hq")MK3D.hq=true;window.ok3d=MK3D.init(THREE);
@@ -17,5 +19,6 @@ window.setup=function(ep){const lib={characters:{},locations:{}};
 window.setupText=function(txt){const r=MKScript.parse(txt,{characters:{},locations:{}});const ep=(r.episodes||[])[0];if(!ep)return {err:'нет серий',r};return Object.assign(setup(ep),{errors2:r.errors,unknownNames:r.unknownNames,unknownWords:r.unknownWords,unknownObjects:r.unknownObjects,episodes:r.episodes.length});}
 window.frame=function(t){const c=document.getElementById('c'),ctx=c.getContext('2d');ctx.setTransform(c.width/1920,0,0,c.height/1080,0,0);MK.render(ctx,TL,t);}
 if(window.MKBarsik&&location.hash.indexOf('nobarsik')<0){MKBarsik.base='../../../Resources/Mebel/barsik/';window.barsikOk=await MKBarsik.load();}
+if(window.BARSHeroes&&MK3D.hq&&location.search.indexOf('noh6')<0){BARSHeroes.base='../../../Resources/Mebel/heroes6/';const full=location.search.indexOf('h6full')>=0;window.h6T0=performance.now();window.h6Ok=await BARSHeroes.prepare(THREE,MK3D.renderer(),['pik','ron'],full?{}:{sky:10,sun:3,area:2,res:1024});window.h6T=performance.now()-window.h6T0;}
 window.ready=true;
 </script></body></html>

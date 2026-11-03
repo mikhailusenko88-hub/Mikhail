@@ -11,7 +11,7 @@
 
 Пересборка данных (нужны numpy, scipy, scikit-image, g++):
 ```
-python3 build_geo.py --var=s2          # форма, кожа, мех (out/geo_s2.npz); CLUMP=surf по умолчанию
+python3 build_geo_paws.py --var=s2     # форма с лапками-пальчиками (образец 6.2), кожа, мех (out/geo_s2.npz); без пальцев — build_geo.py
 python3 add_tau.py s2
 python3 knit_scarf.py                  # новый шарф + ворсинки → out/geo_s3.npz (--preview — быстрый вид формы)
 python3 add_tau.py s3 && python3 export_geo.py s3
@@ -21,3 +21,7 @@ RAW=out/phone_s3.raw KNIT=1 python3 pack_phone.py 230000                       #
 ```
 Числа шарфа (кольца, узел, концы, кисточки, ROWH/COLW/NR/NC) — в `knit_scarf.py` и в `KNIT` внутри `multik-barsik.js`: менять вместе.
 Проверка без телефона: `node tools/multik/test/render.js сценарий.txt --hq 3 6` (frame.html сам грузит данные Барсика).
+
+## БАРС: лучший Барсик (ноябрь 2026)
+- Лапки с пальцами и розовыми подушечками — `build_geo_paws.py` (функции `toe_paw` из `tools/multik/obrazec/heroes/hero_common.py`): подушечки — область 8 ниже 0,42 м (в телефоне идут за лапой, `extraW`), на пальцах шерсть короче (×0,42).
+- Налёт (из «неона» v4): `VS_SHELL`/`FS_SHELL` в `multik-barsik.js` — кожа ещё 6 раз слоями до 16 мм внутри шерсти; сила `MKBarsik.shellU.value` (0 — выключить).

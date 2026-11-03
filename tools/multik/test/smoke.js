@@ -28,7 +28,7 @@ const ENC=`const y=await MKVoice.speak(a.text,a.opts);const n=y.length,b=new Uin
 await p.exposeFunction('__voiceSpeak',async a=>{try{if(!vp){vctx=await b.newContext();vp=await vctx.newPage();await vp.goto(`http://localhost:${srv.address().port}/voice.html`);}
   const r=await vp.evaluate(new Function('a','return (async()=>{'+ENC+'})()'),a);vpeak=Math.max(vpeak,vrss());return r;}catch(e){return{error:String(e&&e.message||e)};}});
 await p.exposeFunction('__voiceUnload',async()=>{if(vctx){const c=vctx;vctx=null;vp=null;await c.close();}return true;});
-const errs=[],dialogs=[];p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error')errs.push('console: '+m.text().slice(0,200));});
+const errs=[],dialogs=[];p.on('console',m=>{const t=m.text();if(/BARS|БАРС/.test(t))console.log('  '+t.slice(0,220));});p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error')errs.push('console: '+m.text().slice(0,200));});
 p.on('dialog',d=>{dialogs.push(d.message().slice(0,160).replace(/\n/g,' | '));d.type()==='confirm'?d.dismiss():d.accept();});
 await p.goto(`http://localhost:${port}/multik.html`);await p.waitForFunction(()=>window.MK3D&&MK3D.ready&&typeof Lib!=='undefined'&&Lib.data,null,{timeout:90000});
 mainPids=new Set(procs().map(x=>x.pid));
@@ -53,16 +53,19 @@ const res=await p.evaluate(async({txt,hq,forceGc})=>{MK3D.setQuality(hq?'hq':'st
   const shown=getComputedStyle(document.getElementById('player')).display==='flex';const eb=document.getElementById('errbar');
   const out={pv,pvText,lines,neural,fallback,dur,shown,tl:Player.tl?Math.round(Player.tl.dur):0,frameAfterVoice:window.__frameAfterVoice,frames:document.querySelectorAll('iframe').length,errbar:eb&&eb.style.display!=='none'?eb.textContent:'',voiceErr:MKVoice.error};
   Player.stop();return out;},{txt:fs.readFileSync(scn,'utf8'),hq:!args.includes('--std'),forceGc:FORCE_GC});
+const bars=await p.evaluate(()=>({h:window.BARSHeroes?BARSHeroes.log.join(' | '):null,ready:window.BARSHeroes?Object.keys(BARSHeroes.ready).filter(k=>BARSHeroes.ready[k]):[],soty:window.BARSSoty?BARSSoty.stats:null})).catch(()=>({}));
 run=false;await poll;await gc();const end=rss();await b.close();srv.close();
 if(res.err){console.log('✘',res.err);process.exit(1);}
 const voiceUp=voicePeak-base,keep=(marks['после озвучки']||end)-base,KEEP_MAX=280,PEAK_MAX=900;
 console.log(`Сценарий: ${path.basename(scn)} · серия ${res.tl} с · просмотр готов за ${res.dur.toFixed(0)} с · ${args.includes('--std')?'обычное':'как в кино'}`);
 console.log(`Голос: ${PROC?'отдельный процесс (как в телефоне), он занимал до '+vpeak+' МБ и закрыт':'рамка в той же странице (--iframe)'}`);
 console.log(`Память страницы «Мультиков»: в начале ${base} МБ · озвучка до ${voicePeak} МБ · после озвучки ${marks['после озвучки']||'?'} МБ · 3D-сцены до ${mem['сцены']||'?'} МБ`);
+console.log('БАРС: герои '+JSON.stringify(bars.ready)+' · '+(bars.h||'—')+' · соты '+JSON.stringify(bars.soty));
 const ok=[];const chk=(c,t)=>{ok.push(c);console.log((c?'✔ ':'✘ ')+t);};
 chk(!errs.length&&!res.errbar,'без ошибок'+(errs.length||res.errbar?': '+[res.errbar,...errs].filter(Boolean).slice(0,4).join(' | '):''));
 chk(res.pv>1&&/Читает так/.test(res.pvText),'«▶ Послушать» рассказчика: '+(res.pv>0?res.pv.toFixed(1)+' с, '+res.pvText.replace('Читает так: ',''):'не звучит'));
 chk(res.shown,'просмотр открылся');
+if(!args.includes('--std')&&/ПЕРСОНАЖ: (Пик|Рон)/.test(fs.readFileSync(scn,'utf8')))chk((bars.ready||[]).length>0,'БАРС: Пик и Рон образца 6.2 готовы ('+(bars.ready||[]).join(', ')+')');
 chk(res.lines===0||res.neural===res.lines,`рассказчик — нейроголос: ${res.neural} из ${res.lines} реплик`+(res.voiceErr?' ('+res.voiceErr+')':''));
 chk(res.frameAfterVoice===0&&res.frames===0&&!vctx,'голос выгружен перед 3D');
 chk((mem['сцены']||0)<PEAK_MAX,`пик памяти на 3D-сценах ${mem['сцены']||'?'} МБ (можно до ${PEAK_MAX})`);

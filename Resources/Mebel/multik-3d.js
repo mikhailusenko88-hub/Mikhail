@@ -18,7 +18,7 @@ MK3D.init = function (T) {
   R.setPixelRatio(1); R.setSize(1920, 1080, false);
   // iPhone может отобрать видеокарту у свёрнутого приложения: пока её нет, кадры не рисуем (сборка ждёт)
   GL.addEventListener('webglcontextlost', () => { MK3D._lost = true; }, false);
-  GL.addEventListener('webglcontextrestored', () => { MK3D._lost = false; R.shadowMap.needsUpdate = true; for (const k in rigCache) { scene.remove(rigCache[k].root); delete rigCache[k]; } }, false); // шерсть героев хранится только в видеокарте — после потери видеокарты героев строим заново
+  GL.addEventListener('webglcontextrestored', () => { MK3D._lost = false; R.shadowMap.needsUpdate = true; for (const k in rigCache) { scene.remove(rigCache[k].root); delete rigCache[k]; } if (global.BARSHeroes) BARSHeroes.lost(); }, false); // шерсть героев хранится только в видеокарте — после потери видеокарты героев строим заново
   R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap; R.outputColorSpace = THREE.SRGBColorSpace;
   scene = new THREE.Scene();
   cam = new THREE.PerspectiveCamera(38, 16 / 9, .1, 200);
@@ -29,7 +29,7 @@ MK3D.init = function (T) {
   const d = new Uint8Array([90, 170, 255]); grad = new THREE.DataTexture(d, 3, 1, THREE.RedFormat); grad.minFilter = grad.magFilter = THREE.NearestFilter; grad.needsUpdate = true;
   OL = new THREE.MeshBasicMaterial({ color: 0x2b1d16, side: THREE.BackSide });
   if (MK3D.hq) { setupHQ(); hqReady = true; }
-  MK3D.ready = true; return true;
+  MK3D.ready = true; MK3D.THREE = T; return true;
 };
 let rim = null;
 function setupHQ() { // мягкий «киношный» свет без контуров
@@ -83,6 +83,7 @@ function spotTex(base, spot, seed) { return canvasTex(256, 128, (g) => { g.fillS
 // ---------- персонаж ----------
 const rigCache = {};
 MK3D.rigs = () => rigCache; // для проверок
+MK3D.renderer = () => R; // БАРС: запекание света героев на той же видеокарте
 // Опорные точки тела: у каждой детали — крайние точки по 98 направлениям. По ним в любой позе (сидит, лежит, упал,
 // кувыркается) находим самую нижнюю точку героя и ставим его на землю — сквозь пол и песок больше не проваливается.
 const SUP_DIRS = (() => { const a = [], n = 98; for (let i = 0; i < n; i++) { const y = 1 - (i + .5) / n * 2, r = Math.sqrt(1 - y * y), th = i * 2.399963; a.push([Math.cos(th) * r, y, Math.sin(th) * r]); } return a; })();
@@ -121,7 +122,7 @@ function sideHalfW(rig) {
     for (const x of [bb.min.x, bb.max.x]) for (const y of [bb.min.y, bb.max.y]) for (const z of [bb.min.z, bb.max.z]) { v.set(x, y, z).applyMatrix4(M); w = Math.max(w, Math.abs(v.x)); } });
   return w * (rig.scale || 1) + (MK3D.hq ? .025 : .008); // + шерсть
 }
-function buildRig(spec) { inRig = true; try { const r = buildRig0(spec); try { sculptRig(r); } catch (e) { console.log('скульптор:', e && e.message); } try { r.halfW = sideHalfW(r); } catch (e) { r.halfW = (r.headR || .35) * 1.1; } if (MK3D.hq) { const nb = global.MKBarsik && MKBarsik.ready && MKBarsik.isBarsik(spec); if (!nb || !MKBarsik.attach(THREE, r)) addFur(r); r.root.traverse(o => { if (o.isMesh) o.receiveShadow = false; }); /* Барсик «неоновая основа» — свой мех со своим светом */ /* «как в кино»: тени от листвы и от самого себя на героя не ложатся — шерсть их тоже не видит, иначе голая кожа на мордочке темнеет пятнами */ } return r; } finally { inRig = false; } }
+function buildRig(spec) { inRig = true; try { const r = buildRig0(spec); try { sculptRig(r); } catch (e) { console.log('скульптор:', e && e.message); } try { r.halfW = sideHalfW(r); } catch (e) { r.halfW = (r.headR || .35) * 1.1; } if (MK3D.hq) { const nb = global.MKBarsik && MKBarsik.ready && MKBarsik.isBarsik(spec); const nh = !nb && global.BARSHeroes && BARSHeroes.isHero(spec) && BARSHeroes.attach(THREE, r); /* БАРС: Пик и Рон образца 6.2 */ if (!nh && (!nb || !MKBarsik.attach(THREE, r))) addFur(r); r.root.traverse(o => { if (o.isMesh) o.receiveShadow = false; }); /* Барсик «неоновая основа» — свой мех со своим светом */ /* «как в кино»: тени от листвы и от самого себя на героя не ложатся — шерсть их тоже не видит, иначе голая кожа на мордочке темнеет пятнами */ } return r; } finally { inRig = false; } }
 // ---------- «Скульптор»: голова, тело, лапы и хвост — одна плавная поверхность вместо набора шаров ----------
 // Берём те же формы, из которых собран герой (поэтому он остаётся узнаваемым), и сливаем их в «глину»:
 // щёки перетекают в мордочку, пузико в тело, лапка в ладошку; цвет на стыках мягкий; полоски — по форме;
@@ -1170,6 +1171,8 @@ function applyPose(rig, st, T) {
     U.uOpen.value = clamp(o, 0, 1); U.uWide.value = w; U.uRound.value = r; U.uSmile.value = sm; U.uClose.value = cz;
     rig.smile.visible = rig.frown.visible = rig.open.visible = false; }
   if (rig.bars && global.MKBarsik) MKBarsik.frame(rig, st, T, { sun, hemi, rim, fog: scene.fog, envI: scene.environmentIntensity || 0 });
+  if (global.BARSSoty) BARSSoty.setSun(sun);
+  if (rig.h6 && global.BARSHeroes) BARSHeroes.frame(rig, st, T, { sun, hemi, rim, fog: scene.fog, envI: scene.environmentIntensity || 0 });
   if (rig.capM) { const hop = laughing ? Math.abs(Math.sin((an === 'laugh' ? at : T) * 16)) * rig.P.head * .08 : 0; rig.capM.position.copy(rig.capAxis).multiplyScalar(hop);
     if (rig.capBadge) { const b = rig.capBadge, p0 = b.userData.p0 || (b.userData.p0 = b.position.clone()); b.position.copy(p0).addScaledVector(rig.capAxis, hop); } }
 }
@@ -1690,6 +1693,7 @@ function groundTex(base) { const k = 'gr' + base; if (envC[k]) return envC[k]; c
 let _m4, _q, _q2, _v, _s, _c;
 function tmpInit() { _m4 = new THREE.Matrix4(); _q = new THREE.Quaternion(); _q2 = new THREE.Quaternion(); _v = new THREE.Vector3(); _s = new THREE.Vector3(); _c = new THREE.Color(); }
 function grassField(g, r, green, skip, opts) { // трава: ~150–200 тыс. отдельных травинок, гуще у камеры, качаются от ветра
+  if (MK3D.hq && global.BARSSoty && BARSSoty.on) { try { const sg = BARSSoty.grassField(THREE, g, r, green, skip, opts, { windU }); if (sg) return sg; } catch (e) { console.log('соты:', e && e.message); } } /* БАРС: луг из сот с прошитым светом */
   opts = opts || {}; const items = []; const base = new THREE.Color(green), dark = base.clone().multiplyScalar(.7), light = base.clone().lerp(new THREE.Color('#d8e86a'), .25);
   const band = (z0, z1, dens) => { for (let z = z0; z < z1; z += .25) { const half = 3 + (5.5 - z) * .78; const n = Math.round(dens * .25 * half * 2); for (let i = 0; i < n; i++) { const x = (r() - .5) * 2 * half, zz = z + r() * .25; if (skip && skip(x, zz)) continue; items.push([x, zz]); } } };
   band(-1.5, 5.6, 1500); band(-4, -1.5, 850); band(-7, -4, 420);
@@ -1790,7 +1794,7 @@ function buildLoc(spec) {
       const sb = mesh(G.box(2.4, .2, 2.4), toon('#f1d38a'), .03, g); if (MK3D.hq) sb.material = new THREE.MeshStandardMaterial({ color: 0xffffff, map: dirtTex('#f1d38a', 1, 1), roughness: .95 }); sb.position.set(0, .1, -4); tree(g, 7, -7, 1.2); tree(g, -7.5, -7, 1.1); }
     if (snow) { const sm = new THREE.Group(); sm.position.set(3.8, 0, -2); g.add(sm); [[.6, .55], [.42, 1.4], [.3, 2.0]].forEach(([rr, y]) => mesh(G.sph(rr, 24, 18), toon('#ffffff'), .03, sm).position.y = y); const nose = mesh(G.cone(.06, .3, 10), toon('#ff8a1f'), .06, sm); nose.rotation.x = Math.PI / 2; nose.position.set(0, 2.0, .35); }
     if (!snow) flowers(g, r, type === 'meadow' ? 180 : 70, -9, 9, -3.5, 3, skipG);
-    if (MK3D.hq && !snow) { const cine = type === 'forest'; grassField(g, r, cine ? (night ? '#3f6a3a' : time === 'evening' ? '#5f7a34' : '#4f7d33') : green, skipG); if (!cine) rocksHQ(g, r, 10); }
+    if (MK3D.hq && !snow) { const cine = type === 'forest'; grassField(g, r, cine ? (night ? '#3f6a3a' : time === 'evening' ? '#5f7a34' : '#4f7d33') : green, skipG, { forest: cine && !night }); if (!cine) rocksHQ(g, r, 10); }
     for (const [x, z] of [[-6.5, 2.5], [6.5, 2.8], [-8, -1], [8, -1.5]]) bush(g, x, z, 1 + r() * .4, snow ? '#e8f0fa' : night ? '#173a27' : '#3c8f37');
   } else if (type === 'room' || type === 'kitchen') {
     const kit = type === 'kitchen';

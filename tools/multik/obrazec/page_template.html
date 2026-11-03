@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Барсик, Пик и Рон — образец 6</title>
+<style>
+:root{color-scheme:dark}
+body{margin:0;background:#101413;color:#e6ece9;font:16px/1.45 -apple-system,system-ui,sans-serif}
+.w{max-width:980px;margin:0 auto;padding:14px}
+h1{font-size:20px;margin:4px 0 6px}
+p.s{margin:0 0 12px;color:#9fb0aa;font-size:14px}
+.view{position:relative;border-radius:10px;overflow:hidden;background:#5f7f78;aspect-ratio:16/9}
+canvas{width:100%;height:100%;display:block}
+.tag{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.55);border-radius:8px;padding:3px 8px;font-size:13px}
+.lbl{font-size:13px;color:#9fb0aa;margin:12px 0 4px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+button,select{font:inherit;border-radius:10px;border:0;padding:10px 13px}
+button{background:#2a3532;color:#e6ece9}
+button.m{background:#3fae7a;color:#04140c;font-weight:600}
+button.on{outline:2px solid #3fae7a}
+button:disabled{opacity:.45}
+select{background:#2a3532;color:#e6ece9}
+#out{display:none;background:#17201d;border-radius:12px;padding:12px 14px;margin-top:10px}
+#out b{color:#7fe0b0}
+#log{font:13px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;color:#b9c8c2;margin-top:10px}
+.bar{height:6px;background:#2a3532;border-radius:3px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;width:0;background:#3fae7a}
+#ld{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,16,14,.72);text-align:center;padding:10px}
+#ld .big{font-size:40px;font-weight:700;color:#7fe0b0;line-height:1.1}
+#ld .t{font-size:15px;margin-top:6px}
+#ld .s{font-size:13px;color:#9fb0aa;margin-top:4px}
+#ld .b2{width:70%;height:8px;background:#2a3532;border-radius:4px;overflow:hidden;margin-top:10px}
+#ld .b2 i{display:block;height:100%;width:0;background:#3fae7a;transition:width .2s}
+#ld.err .t{color:#ff8f8f}
+</style></head>
+<body><div class="w">
+<h1>Барсик, Пик и Рон — образец 6</h1>
+<p class="s">Трое героев в одном лесу. Пик стал милее, у всех лапки с пальцами: у Пика розовые пальчики, у Барсика розовые подушечки (видно, когда машет), у Рона тёмные (даёт лапу). Шерсть и траву выращивает сам телефон, свет запекается один раз. Около 12 МБ загрузки — один раз: потом герои берутся из памяти телефона.</p>
+<div class="view"><canvas id="c" width="1920" height="1080"></canvas><div class="tag" id="tag">—</div>
+<div id="ld"><div class="big" id="ldp">0%</div><div class="t" id="ldt">Начинаю загрузку…</div><div class="b2"><i id="ldb"></i></div><div class="s" id="lds">прошло 0 с</div></div></div>
+<div class="bar"><i id="pb"></i></div>
+<div class="lbl">Герой</div>
+<div class="row" id="hr"><button data-h="all" class="on">Все трое</button><button data-h="barsik">Барсик</button><button data-h="pik">Пик</button><button data-h="ron">Рон</button></div>
+<div class="lbl">План</div>
+<div class="row" id="sh"><button data-s="full" class="on">Общий</button><button data-s="medium">Средний</button><button data-s="close">Крупный</button><button data-s="face">Мордочка</button><button data-s="paw">Лапки</button></div>
+<div class="lbl">Как создаётся</div>
+<div class="row" id="st"><button data-g="1">1. Глина</button><button data-g="2">2. Шерсть</button><button data-g="3" class="on">3. Свет</button></div>
+<div class="lbl">Ролик</div>
+<div class="row"><button class="m" id="go">▶ Ролик 5 с + замер</button><select id="rs"><option value="1920x1080">1920×1080, как в приложении</option><option value="1280x720">1280×720</option></select></div>
+<div id="out"></div>
+<div class="row" style="margin-top:8px"><button id="cp" disabled>Копировать результат</button></div>
+<div id="log"></div>
+</div>
+<script src="engine6.js"></script>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js';
+const $ = id => document.getElementById(id), logEl = $('log');
+const say = s => { logEl.textContent += s + '\n'; };
+const ldErr = m => { $('ld').style.display = 'flex'; $('ld').classList.add('err'); $('ldt').textContent = 'Ошибка: ' + m + ' — пришли скриншот'; };
+window.addEventListener('error', e => { say('Ошибка: ' + e.message); ldErr(e.message); });
+window.addEventListener('unhandledrejection', e => { const m = (e.reason && e.reason.message || e.reason); say('Ошибка: ' + m); ldErr(m); });
+// ---- счётчик загрузки: что сейчас идёт, сколько процентов, сколько прошло и сколько примерно осталось ----
+OB.ver = '6.2'; const TOTAL_MB = __TOTAL__, START = performance.now(); let LS = { stage: 'load', k: 0, text: '' }, stT0 = START, ldOn = true;
+const NM = { barsik: 'Барсик', pik: 'Пик', ron: 'Рон' };
+function ldPaint() {
+  if (!ldOn) return; const st = LS, t = performance.now(); let pct = 0, txt = '', rem = '';
+  if (st.stage === 'load') { const mb = (OB.dl || 0) / 1e6, k = Math.min(1, mb / TOTAL_MB), dt = (t - stT0) / 1000; pct = 35 * k;
+    txt = 'Шаг 1 из 3 · ' + (OB.fromCache > OB.fromNet ? 'беру героев из памяти телефона' : 'скачиваю героев') + ': ' + mb.toFixed(1).replace('.', ',') + ' из ' + TOTAL_MB.toFixed(0) + ' МБ' + (dt > 1 && mb > 0.2 ? ' · ' + (mb / dt).toFixed(1).replace('.', ',') + ' МБ/с' : '');
+    if (k > 0.04) rem = Math.max(1, Math.round((t - stT0) / k * (1 - k) / 1000)); }
+  else if (st.stage === 'fur') { pct = 35 + 10 * st.k; txt = 'Шаг 2 из 3 · выращиваю шерсть: ' + (NM[st.text] || st.text); }
+  else if (st.stage === 'build') { pct = 46; txt = 'Шаг 2 из 3 · собираю сцену'; }
+  else if (st.stage === 'bake') { pct = 48 + 52 * st.k; txt = 'Шаг 3 из 3 · запекаю свет' + (st.text ? ': проход ' + st.text : '');
+    if (st.k > 0.05) rem = Math.max(1, Math.round((t - stT0) / st.k * (1 - st.k) / 1000)); }
+  else { pct = 100; txt = 'Рисую первый кадр…'; }
+  $('ldp').textContent = Math.floor(pct) + '%'; $('ldt').textContent = txt; $('ldb').style.width = pct.toFixed(1) + '%';
+  $('lds').textContent = 'прошло ' + Math.round((t - START) / 1000) + ' с' + (rem ? ' · осталось примерно ' + rem + ' с' : '');
+}
+OB.onProgress = (stage, k, text) => { if (stage !== LS.stage) stT0 = performance.now(); LS = { stage, k, text }; ldPaint(); };
+const ldTimer = setInterval(ldPaint, 250); ldPaint();
+const sec = ms => (ms / 1000).toFixed(1).replace('.', ',') + ' с';
+const mins = ms => { const m = ms / 60000; return m < 1 ? sec(ms) : (m < 90 ? m.toFixed(1).replace('.', ',') + ' мин' : (m / 60).toFixed(1).replace('.', ',') + ' ч'); };
+const TEST = location.hash === '#test'; const NAMES = { barsik: 'Барсик', pik: 'Пик', ron: 'Рон', all: 'Все трое' };
+let booted = null, text = '', hero = 'all', shot = 'full', stage = 3;
+const busy = on => document.querySelectorAll('button,select').forEach(b => { if (b.id !== 'cp') b.disabled = on; });
+async function boot() {
+  if (booted) return booted;
+  say('Загружаю героев и лес…');
+  booted = OB.boot(THREE, $('c'), './data/', TEST ? { furK: .12, bake: { sky: 4, sun: 1, area: 1, heroRes: 512, fieldRes: 512, farRes: 256 } } : {}).then(() => {
+    const T = OB.t, mbN = OB.fromNet / 1e6, mbC = OB.fromCache / 1e6;
+    say('Загрузка ' + sec(T.load) + (mbN > 0.1 ? ' — скачано ' + mbN.toFixed(1).replace('.', ',') + ' МБ, ' + (mbN / (T.load / 1000)).toFixed(1).replace('.', ',') + ' МБ/с' : '') + (mbC > 0.1 ? (mbN > 0.1 ? ',' : ' —') + ' из памяти телефона ' + mbC.toFixed(1).replace('.', ',') + ' МБ' : ''));
+    for (const b of OB.build) say(`${NAMES[b.name]}: кожа ${Math.round(b.tSkin)} мс, шерсть ${(b.fur / 1000).toFixed(0)} тыс. волосков за ${sec(b.tFur)}`);
+    say('Запекание света на всех: ' + sec(T.bake) + ' (' + T.passes + ' проходов)'); say('Всего до первого кадра: ' + sec(performance.now() - START)); return OB; });
+  return booted;
+}
+const size = () => $('rs').value.split('x').map(Number);
+const T_STILL = 1.7;
+function shotObj() { if (hero === 'all') { const S = OB.SHOTS.all; return shot === 'full' ? S : OB.heroShot('barsik', shot); } return OB.heroShot(hero, shot); }
+async function draw() {
+  busy(true); await boot(); const [W, H] = size();
+  OB.showFur(stage >= 2); OB.DBG.value = stage === 1 ? 5 : stage === 2 ? 2 : 0; OB.DBGS.value = stage === 2 ? 2 : 0;
+  const tS = shot === 'paw' || shot === 'feet' ? 0.3 : T_STILL; const ms = OB.frame(shotObj(), W, H, tS, { anim: tS });
+  $('tag').textContent = NAMES[hero] + ' · ' + ({ full: 'общий', medium: 'средний', close: 'крупный', face: 'мордочка', paw: 'лапки', feet: 'ножки' })[shot] + ' · ' + ['', 'глина', 'шерсть', 'свет'][stage];
+  say('Кадр: ' + Math.round(ms) + ' мс'); busy(false);
+  if (ldOn) { ldOn = false; clearInterval(ldTimer); $('ld').style.display = 'none'; }
+}
+const pick = (rowId, attr, fn) => document.querySelectorAll('#' + rowId + ' [data-' + attr + ']').forEach(b => b.onclick = () => { document.querySelectorAll('#' + rowId + ' button').forEach(x => x.classList.toggle('on', x === b)); fn(b.dataset[attr]); draw(); });
+pick('hr', 'h', v => { hero = v; if (v === 'all') { shot = 'full'; document.querySelectorAll('#sh button').forEach(x => x.classList.toggle('on', x.dataset.s === 'full')); } });
+pick('sh', 's', v => { shot = v; });
+pick('st', 'g', v => { stage = +v; });
+$('go').onclick = async () => {
+  busy(true); $('out').style.display = 'none'; await boot(); const [W, H] = size(); const N = TEST ? 3 : 125, FPS = 25, T0 = 0.6;
+  OB.showFur(true); OB.DBG.value = 0; OB.DBGS.value = 0; stage = 3; document.querySelectorAll('#st button').forEach(x => x.classList.toggle('on', x.dataset.g === '3'));
+  say('Рисую ролик: 125 кадров ' + W + '×' + H + '…'); $('tag').textContent = 'ролик · все трое';
+  const gl = $('c').getContext('webgl2'); const px = new Uint8Array(W * H * 4);
+  const pbo = [gl.createBuffer(), gl.createBuffer()]; for (const b of pbo) { gl.bindBuffer(gl.PIXEL_PACK_BUFFER, b); gl.bufferData(gl.PIXEL_PACK_BUFFER, W * H * 4, gl.STREAM_READ); } gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+  OB.frame(OB.animShot(T0), W, H, T0, { anim: T0 });
+  const t0 = performance.now();
+  for (let i = 0; i < N; i++) {
+    const t = T0 + i / FPS; OB.frame(OB.animShot(t), W, H, t, { anim: t, sync: false });
+    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbo[i % 2]); gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, 0); gl.flush();
+    if (i > 0) { gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbo[(i - 1) % 2]); gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, px); }
+    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null); $('pb').style.width = ((i + 1) / N * 100) + '%';
+    if (i % 10 === 9) await new Promise(r => setTimeout(r, 0));
+  }
+  gl.bindBuffer(gl.PIXEL_PACK_BUFFER, pbo[(N - 1) % 2]); gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, px); gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null); for (const b of pbo) gl.deleteBuffer(b);
+  const wall = performance.now() - t0, per = wall / N, T = OB.t, furAll = OB.build.reduce((a, b) => a + b.fur, 0), grow = OB.build.reduce((a, b) => a + b.tFur, 0);
+  const clip = grow + T.bake + per * 125, ep = (grow + T.bake) * 6 + per * 7500; const ua = navigator.userAgent;
+  text = `Образец 6 (Барсик, Пик и Рон, лапки с пальцами)\nУстройство: ${(/(iPhone|iPad)[^;)]*/.exec(ua) || [ua.slice(0, 60)])[0]}\nКадр ${W}×${H}, шерсть ${(furAll / 1000).toFixed(0)} тыс. волосков на троих\n` +
+    `Вырастить шерсть: ${sec(grow)}; запекание света: ${sec(T.bake)}\nКадр по часам (рисование + выдача в видео): ${Math.round(per)} мс\n` +
+    `5 секунд ролика (125 кадров): ${sec(clip)}\n5 минут серии (7500 кадров, 6 мест): ${mins(ep)}\nРолик нарисован за: ${sec(wall)}`;
+  $('out').innerHTML = text.split('\n').map((l, i) => i >= 5 && i <= 6 ? '<b>' + l + '</b>' : l).join('<br>'); $('out').style.display = 'block';
+  say('Готово.'); $('cp').disabled = false; busy(false); $('go').textContent = '▶ Ещё раз'; window.benchDone = true;
+};
+$('cp').onclick = async () => { try { await navigator.clipboard.writeText(text); $('cp').textContent = 'Скопировано ✓'; } catch (e) { $('cp').textContent = 'Не вышло — сделай скриншот'; } };
+draw();
+</script></body></html>

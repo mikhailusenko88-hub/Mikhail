@@ -601,7 +601,7 @@ static void buildScene() {
     for (size_t i = 0; i < nv; i++) {
         V3 p = gv("skin_v", i); TV.push_back(p); TN.push_back(V3(sn[i * 3], sn[i * 3 + 1], sn[i * 3 + 2])); int r = sr[i]; TR.push_back((uint8_t)r);
         V3 a = V3(sc[i * 3], sc[i * 3 + 1], sc[i * 3 + 2]) * 0.9f;
-        if (r == 2) a = V3(0.9f, 0.76f, 0.6f); if (r == 8) a = V3(0.62f, 0.3f, 0.32f);
+        if (r == 2) a = V3(0.9f, 0.76f, 0.6f); if (r == 8) a = p.z < 0.42f ? V3(0.8f, 0.42f, 0.47f) : V3(0.62f, 0.3f, 0.32f);   /* подушечки лап (образец 6.2) — розовые */
         bool liner = false; for (int e = 0; e < 2; e++) { V3 q = p - EYE[e]; if (len(q) < RE + 0.011f && q.y < 0.01f) liner = true; }
         if (liner) a = V3(0.09f, 0.04f, 0.02f); TA.push_back(a);
     }

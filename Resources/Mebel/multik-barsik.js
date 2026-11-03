@@ -3,7 +3,7 @@
 // в режиме «как в кино»: старый герой остаётся невидимым скелетом (его поза, руки для предметов, тень), а рисуется этот.
 (function (global) {
 'use strict';
-const MKB = global.MKBarsik = { ready: false, error: null, base: 'barsik/', D: null };
+const MKB = global.MKBarsik = { ready: false, error: null, base: 'barsik/', D: null, shellK: 1, shellU: { value: 1 } };   // shellU — сила налёта (0 — выключен)
 MKB.isBarsik = spec => !!spec && spec.kind === 'cat' && /^\s*барсик(?![а-яё])/i.test(String(spec.name || ''));
 
 // ---------- константы модели (метры, z вверх, мордочка к −y) ----------
@@ -13,6 +13,7 @@ const SHS = [[-0.128, -0.035, 0.5], [0.128, -0.035, 0.5]], WRS = [[-0.19, -0.1, 
 const PH = [0, -0.01, 0.6], HEAD_C = 0.76, HEAD_R = 0.21;
 function zc(x) { const ax = Math.abs(x); if (ax <= 0.037) { const c = Math.min(1, Math.max(-1, 1 - ax / 0.0185)); return 0.671 - 0.011 * Math.sin(Math.acos(c)); } return 0.671; }
 function extraW(p, reg) {   // веса костей: ноги, руки, нижняя челюсть, предплечье
+  if (reg === 8 && p[2] < 0.42) reg = 5;   // розовые подушечки лап (образец 6.2) — часть лапы, а не уха
   let wl = 0, wa = 0, wj = 0, wf = 0;
   if (reg !== 7 && reg !== 5 && reg < 20) wl = sstep(0.27, 0.12, p[2]) * sstep(0.012, 0.05, Math.abs(p[0])) * Math.sign(p[0]);
   { const e = p[0] > 0 ? 1 : 0, S = SHS[e], Wr = WRS[e]; const d = [Wr[0] - S[0], Wr[1] - S[1], Wr[2] - S[2]]; const sg = e ? 1 : -1;
@@ -175,6 +176,27 @@ in vec3 position; in vec3 aN; in vec3 aA; in vec3 aB0; in vec3 aB1; in vec4 aW; 
 out vec3 vP; out vec3 vN; out vec3 vA; out vec3 vB0; out vec3 vB1; out float vZ; out vec3 vQ; flat out int vM;
 void main() { vec3 p = position; vec3 P = toW(poseP(p, aW.x, aW.y, aW.z, aW.w, aX)); vN = toWN(poseN(aN, aW.x, aX)); vP = P; vA = aA; vB0 = aB0; vB1 = aB1; vZ = p.z; vQ = p; vM = int(aM + 0.5);
   gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`;
+// БАРС · налёт (из «неона» v4): кожа ещё 6 раз прозрачными слоями внутри шерсти — «молекулы» загораются, когда сквозь них идёт свет
+const VS_SHELL = COMMON + `
+in vec3 position; in vec3 aN; in vec3 aA; in vec3 aB0; in vec3 aB1; in vec4 aW; in vec4 aX; in float aM; uniform float uShellH;
+out vec3 vP; out vec3 vN; out vec3 vA; out vec3 vB0; out vec3 vB1; out vec3 vQ; out float vF;
+void main() { int m = int(aM + 0.5); float fr = (m != 2 && m != 8 && m < 10 && dot(aA, vec3(0.33)) > 0.06) ? 1.0 : 0.0; vec3 p = position + aN * (uShellH * fr);
+  vec3 P = toW(poseP(p, aW.x, aW.y, aW.z, aW.w, aX)); vN = toWN(poseN(aN, aW.x, aX)); vP = P; vA = aA; vB0 = aB0; vB1 = aB1; vQ = position; vF = fr;
+  gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`;
+const FS_SHELL = COMMON + `
+in vec3 vP; in vec3 vN; in vec3 vA; in vec3 vB0; in vec3 vB1; in vec3 vQ; in float vF; uniform float uT, uShellK; out vec4 o;
+void main() { if (vF < 0.5 || uShellK <= 0.0) discard; vec3 V = normalize(cameraPosition - vP), n = snrm(vN, V); if (dot(n, V) < 0.0) n = -n; float nv = max(dot(n, V), 0.0);
+  float m = vn(vQ * 650.0) * 0.7 + vn(vQ * 1900.0) * 0.3; float cover = smoothstep(uT - 0.25, uT + 0.05, m); if (cover < 0.02) discard;
+  vec3 alb = pow(vA, vec3(0.55)) * 0.9; float sun = max(vB0.x, 0.15), sky = max(vB1.y, 0.3);
+  float ndl = dot(n, uSunDir), rim = pow(1.0 - nv, 1.3), back = clamp(dot(-uSunDir, V), 0.0, 1.0);
+  vec3 warm = min(alb, vec3(0.75)) * vec3(1.15, 0.9, 0.6) + vec3(0.10, 0.06, 0.03);
+  float through = rim * (0.35 + 0.65 * back) * clamp(1.0 - ndl * 0.6, 0.0, 1.0) * (0.3 + 0.7 * uT);
+  vec3 c = uSunCol * sun * warm * through * 2.2;                                     // свет насквозь: край шерсти загорается тёплым
+  c += uSunCol * sun * alb * clamp((ndl + 0.9) / 1.9, 0.0, 1.0) * 0.10 * uT;         // бархат от прямого света
+  c += uRimCol * warm * rim * back * 0.6 * uT;                                        // контровой места
+  c += alb * uSky * PI * sky * 0.35 * uT;                                             // пух на фоне светлого неба
+  float a = cover * (0.12 + 0.30 * rim) * (0.4 + 0.6 * uT);
+  vec4 r = outC(c, length(vP - cameraPosition)); o = vec4(r.rgb * cover * uShellK, a * uShellK); }`;
 const KNIT = `
 const float ROWH = 0.0075, COLW = 0.0105;
 const vec3 RC[2] = vec3[2](vec3(0.0, -0.012, 0.582), vec3(0.0, -0.004, 0.614)); const float RR[2] = float[2](0.106, 0.1), RT[2] = float[2](0.044, 0.034), RZ[2] = float[2](0.84, 0.84), RX[2] = float[2](0.05, 0.12), NR[2] = float[2](89.0, 84.0), NC[2] = float[2](24.0, 19.0);
@@ -340,9 +362,11 @@ MKB.attach = function (T, rig) {
   }
   const lidFur = add(s.lidGeo, mat(U, VS_LIDFUR, FS_FUR, { uLE: { value: D.E0.map(e => new THREE.Vector3(...e)) }, uLA: { value: D.LIDN0.map(e => new THREE.Vector3(...e)) }, uLB1: { value: D.LB1.map(e => new THREE.Vector3(...e)) }, uLB2: { value: D.LB2.map(e => new THREE.Vector3(...e)) },
     uLid: { value: new THREE.Vector2(1, 1) }, uLOFF: { value: D.LIDOFF }, uRE0: { value: D.RE }, uLR: { value: D.lidR }, uTh0: { value: D.th0 }, uLidCol: { value: new THREE.Vector3(...D.LIDCOL) } }));
+  const shells = []; if (MKB.shellK > 0) for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; const sm = add(s.skinGeo, mat(U, VS_SHELL, FS_SHELL, { uT: { value: t }, uShellH: { value: 0.016 * t }, uShellK: MKB.shellU },
+      { transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor }), 10 + i); shells.push(sm); }   // БАРС · налёт
   // старый Барсик: только тень и «кости» (поза, руки для предметов), сам не рисуется
   rig.root.traverse(o => { if (!o.isMesh || o.userData.barsik || o.userData.blob) return; if (o.userData.strands) { o.visible = false; return; } o.layers.set(1); });   // слой 1 видит только камера теней
-  rig.fur = []; rig.bars = { U, bg, k, skin, fur, mouth, eyes, lids, lidFur, lid: 1, open: 0 };
+  rig.fur = []; rig.bars = { U, bg, k, skin, fur, mouth, eyes, lids, lidFur, shells, lid: 1, open: 0 };
   rig.headH = HEAD_C * k * (rig.scale || 1); rig.headR = HEAD_R * k * (rig.scale || 1);
   const pre = function (R, scene, cam) { const f = R.info.render.frame; if (rig.bars._f === f && rig.bars._cam === cam) return; rig.bars._f = f; rig.bars._cam = cam; eyeFrame(rig, R, cam); };
   bg.children.forEach(o => { o.onBeforeRender = pre; });
