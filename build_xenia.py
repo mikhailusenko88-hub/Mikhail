@@ -91,12 +91,19 @@ class HG(nn.Module):
         u = s.proj(s.sh1(d)); u = u.view(u.size(0), -1, s.dim)  # слой shorten[0] в оригинале считается, но не используется
         x = (u[:, :L] + x[:, :L])
         return s.norm(s.post(x))
-class Pred(nn.Module):
-    def __init__(s, sm): super().__init__(); s.emb = leaf(sm.embedding); s.spe = leaf(sm.speaker_embedding); s.tr = FT(sm.transformer); s.lin = leaf(sm.lin)
-    def forward(s, x, spk): return s.lin(s.tr(s.emb(x) + s.spe(spk).unsqueeze(1)))
+class Pred(nn.Module):   # у xenia к символам добавляются ещё тип предложения (вопрос/восклицание…) и «фокус» (0 — без выделения)
+    def __init__(s, sm):
+        super().__init__(); s.emb = leaf(sm.embedding); s.spe = leaf(sm.speaker_embedding); s.tr = FT(sm.transformer); s.lin = leaf(sm.lin)
+        s.te = leaf(sm.type_embedding) if bool(sm.utt_type_emb) else None; s.fe = leaf(sm.focus_embedding) if bool(sm.focus_emb) else None
+        P("pred: type", s.te is not None, sm.type_embedding.weight.shape if s.te is not None else None, "focus", s.fe is not None, "emph", bool(sm.emphasis_emb))
+    def forward(s, x, spk, typ, foc):
+        h = s.emb(x) + s.spe(spk).unsqueeze(1)
+        if s.te is not None: h = h + s.te(typ)
+        if s.fe is not None: h = h + s.fe(foc)
+        return s.lin(s.tr(h))
 class Front(nn.Module):
     def __init__(s): super().__init__(); s.dp = Pred(jm.dur_predictor.dur_pred); s.pp = Pred(jm.pitch_predictor.pitch_pred)
-    def forward(s, seq, spk): return s.dp(seq, spk).squeeze(-1), s.pp(seq, spk).transpose(1, 2)
+    def forward(s, seq, spk, typ, foc): return s.dp(seq, spk, typ, foc).squeeze(-1), s.pp(seq, spk, typ, foc).transpose(1, 2)
 class Enc(nn.Module):
     def __init__(s):
         super().__init__(); s.emb = leaf(tac.embedding); s.spe = leaf(tac.speaker_embedding); s.enc = FT(tac.encoder); s.pproj = leaf(tac.pitch_proj); s.ps = float(tac.pitch_strength)
@@ -113,21 +120,24 @@ class VocT(torch.nn.Module):
 
 def seq_for(text, spk=SPK):
     sid = pack.speaker_to_ids[0][spk]
-    try: sentences, clean, br, pr, pp, sp = pack.prepare_tts_model_input(text, ssml=False, speaker_ids=[sid], lang="ru")
-    except TypeError: sentences, clean, br, pr, pp, sp = pack.prepare_tts_model_input(text, ssml=False, speaker_ids=[sid])
-    seq, sd, dr, pc = pack.merge_batch_model(sentences, br, pr, pp)
-    return seq, sp
+    import sys as _s
+    sentences, clean, br, pr, pp, sp = pack.prepare_tts_model_input(text, ssml=False, speaker_ids=[sid], lang=None)
+    seq, sd, dr, pc = pack.merge_batch_model(sentences, br, pr, pp, put_accent=False, put_stress_homo=False, put_yo=False, put_yo_homo=False)
+    pkg = _s.modules[type(pack).__module__]; spans, stx = pack.token_sent_spans(seq[0])
+    types = [pkg.classify_sentence(t.replace("+", "")) for t in stx]
+    typ = pack.build_type_ids_tokens(seq[0], types, set()); foc = torch.zeros_like(seq)
+    return seq, sp, typ, foc, types
 fr, en, de = Front().eval(), Enc().eval(), Dec().eval()
 vo = torch.jit.script(VocT(voc).eval())
-seq, sp = seq_for("Прив+ет! Ж+или-б+ыли кот и мыш+онок.")
-ld, ph = fr(seq, sp); d = torch.clamp(torch.exp(ld) - 1, min=0).round()
+seq, sp, typ, foc, _ = seq_for("Прив+ет! Ж+или-б+ыли кот и мыш+онок.")
+ld, ph = fr(seq, sp, typ, foc); d = torch.clamp(torch.exp(ld) - 1, min=0).round()
 e1 = en(seq, sp, ph); ex = torch.repeat_interleave(e1[0], d[0].long(), 0)[None]; mel = de(ex)
 def exp(name, mod, args, ins, outs, dyn):
     path = f"{VD}/{name}.onnx"
     torch.onnx.export(mod, args, path, input_names=ins, output_names=outs, dynamic_axes=dyn, opset_version=17, do_constant_folding=True)
     P("export", name, round(os.path.getsize(path) / 1e6, 1), "MB")
     return ort.InferenceSession(path, providers=["CPUExecutionProvider"])
-S = {"front": exp("front", fr, (seq, sp), ["seq", "spk"], ["logdur", "pitch"], {"seq": {1: "n"}, "logdur": {1: "n"}, "pitch": {2: "n"}}),
+S = {"front": exp("front", fr, (seq, sp, typ, foc), ["seq", "spk", "typ", "foc"], ["logdur", "pitch"], {"seq": {1: "n"}, "typ": {1: "n"}, "foc": {1: "n"}, "logdur": {1: "n"}, "pitch": {2: "n"}}),
      "enc": exp("enc", en, (seq, sp, ph), ["seq", "spk", "pitch"], ["enc"], {"seq": {1: "n"}, "pitch": {2: "n"}, "enc": {1: "n"}}),
      "dec": exp("dec", de, (ex,), ["x"], ["mel"], {"x": {1: "t"}, "mel": {2: "t"}}),
      "voc": exp("voc", vo, (mel,), ["mel"], ["mag", "phase"], {"mel": {2: "t"}, "mag": {2: "f"}, "phase": {2: "f"}})}
@@ -155,17 +165,19 @@ def durs(ld):
     if d[0, -3] > 13: d[0, -3] = 13
     return d
 tts_refs = []
-for i, text in enumerate(["Прив+ет! Ж+или-б+ыли кот и мыш+онок.", "+Утром друзь+я отпр+авились в л+ес з+а гриб+ами.", "Вдр+уг +из-з+а +ёлки посл+ышался стр+анный ш+орох, +и вс+е з+амерли."]):
-    seq, sp = seq_for(text); a = seq.numpy(); s = sp.numpy()
-    ld, ph = S["front"].run(None, {"seq": a, "spk": s}); d = durs(ld)
+for i, text in enumerate(["Прив+ет! +Я Б+арсик!", "+Ой... Кт+о +это т+ам шурш+ит в куст+ах?", "Пойд+ём посм+отрим! Ур+а!", "Прив+ет! Ж+или-б+ыли кот и мыш+онок.", "Т+ы пойдёшь с н+ами в л+ес?"]):
+    seq, sp, typ, foc, types = seq_for(text); a = seq.numpy(); s = sp.numpy()
+    ld, ph = S["front"].run(None, {"seq": a, "spk": s, "typ": typ.numpy(), "foc": foc.numpy()}); d = durs(ld)
     e = S["enc"].run(None, {"seq": a, "spk": s, "pitch": ph})[0]
     ex = np.repeat(e[0], d[0].astype(np.int64), axis=0)[None].astype(np.float32)
     mel = S["dec"].run(None, {"x": ex})[0]; mg, pz = S["voc"].run(None, {"mel": mel}); y = istft_np(mg, pz)
-    try: ref = m.apply_tts(text=text, speaker=SPK, sample_rate=48000, put_accent=False, put_yo=False).numpy()
+    try: ref = m.apply_tts(text=text, speaker=SPK, sample_rate=48000, put_accent=False, put_yo=False, put_stress_homo=False, put_yo_homo=False).numpy()
     except TypeError: ref = m.apply_tts(text=text, speaker=SPK, sample_rate=48000).numpy()
     n = min(len(ref), len(y)); c = float(np.corrcoef(ref[:n], y[:n])[0, 1])
     P(f"tts[{i}] corr {c:.5f} len {len(y)} ref {len(ref)}")
-    tts_refs.append({"text": text, "ids": a[0].tolist(), "durs": d[0].tolist(), "n": int(len(y)), "rms": float(np.sqrt(np.mean(y ** 2))), "head": [float(x) for x in y[2000:2064]]})
+    with wave.open(f"{RD}/ref{i}.wav", "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(48000); w.writeframes((np.clip(ref, -1, 1) * 32767).astype(np.int16).tobytes())
+    tts_refs.append({"text": text, "ids": a[0].tolist(), "typ": typ[0].tolist(), "types": types, "durs": d[0].tolist(), "n": int(len(y)), "rms": float(np.sqrt(np.mean(y ** 2))), "head": [float(x) for x in y[2000:2064]]})
     with wave.open(f"{RD}/tts{i}.wav", "wb") as w:
         w.setnchannels(1); w.setsampwidth(2); w.setframerate(48000); w.writeframes((np.clip(y, -1, 1) * 32767).astype(np.int16).tobytes())
 json.dump(tts_refs, open(f"{RD}/tts.json", "w"), ensure_ascii=False)

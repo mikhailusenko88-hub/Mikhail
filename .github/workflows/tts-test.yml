@@ -17,9 +17,9 @@ jobs:
         run: pip install -q torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu && pip install -q "numpy<2" onnx onnxruntime "transformers==4.46.3"
       - name: Get current voice branch
         run: git clone -q --depth 1 -b multik-voice https://x-access-token:${{ github.token }}@github.com/${{ github.repository }} vb
-      - name: Probe xenia
-        run: python probe_xenia.py > vb/probe_xenia_run.log 2>&1 || (tail -60 vb/probe_xenia_run.log; exit 1)
+      - name: Build xenia (голос Барсика)
+        run: python build_xenia.py > vb/build_xenia_run.log 2>&1 || (tail -60 vb/build_xenia_run.log; exit 1)
       - name: Publish
         if: always()
         run: |
-          cd vb && git add -A && git -c user.name=voice-build -c user.email=voice-build@users.noreply.github.com commit -qm "xenia: разведка входов модели" && git push -q origin multik-voice
+          cd vb && git add -A && git -c user.name=voice-build -c user.email=voice-build@users.noreply.github.com commit -qm "Голос Барсика xenia: тип предложения и фокус в предсказателях длительностей и высоты" && git push -q origin multik-voice
