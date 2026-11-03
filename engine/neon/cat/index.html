@@ -30,6 +30,7 @@
 <div id="ui">
   <div class="row">
     <button id="bMode" class="on">Стало</button>
+    <button id="bShell" class="on">Налёт</button>
     <button id="bCam" class="on">Свободная камера</button>
     <button id="bWalk" class="on">Идёт</button>
     <button id="bRays">Лучи (экранные)</button>
@@ -37,10 +38,11 @@
   </div>
   <div class="row"><label>Дымка</label><input id="fog" type="range" min="0" max="100" value="35"><span class="val" id="fogV">0.35</span></div>
   <div class="row"><label>Время суток</label><input id="tod" type="range" min="0" max="1000" value="0"><span class="val" id="todV">день</span></div>
+  <div class="row"><label>Налёт</label><input id="shellK" type="range" min="0" max="250" value="100"><span class="val" id="shellV">100%</span></div>
   <div class="row"><label>Шерсть</label><input id="furD" type="range" min="10" max="100" value="100"><span class="val" id="furV">100%</span></div>
   <div class="row"><label>Ветер</label><input id="wind" type="range" min="0" max="300" value="100"><span class="val" id="windV">1.0</span></div>
   <div class="note" id="resV"></div>
-  <div class="note">Крутить — одним пальцем, приближать — двумя. Кнопка «Стало/Было» — новое освещение (тень от солнца, свет под кронами, затенение в складках, свет в воздухе, моргание) против первой версии. Всё на диодах, без лучей в кадре.</div>
+  <div class="note">Крутить — одним пальцем, приближать — двумя. Кнопка «Налёт» — прозрачные оболочки над шерстью, которые загораются там, где свет проходит сквозь неё (контровое солнце, пух на краю). Кнопка «Стало/Было» — новое освещение (тень от солнца, свет под кронами, затенение в складках, свет в воздухе, моргание) против первой версии. Всё на диодах, без лучей в кадре.</div>
 </div>
 <script>
 'use strict';
@@ -172,6 +174,36 @@ void main(){ vec3 n=normalize(vN); vec3 v=normalize(uCam-vWp); vec3 T=normalize(
   col+=alb*ambientSky(n)*root*0.95*mix(1.0,cv.g,0.6)*ambK; col+=alb*vec3(0.17,0.26,0.06)*uSkyK*0.25*(0.5-0.5*n.y)*root*ambK;
   float alpha=(uMode==0)?1.0:(1.0-0.8*smoothstep(0.5,1.0,vTt));   // кончики полупрозрачные (alpha-to-coverage)
   o=vec4(col*uEnc,alpha); }`;
+// --- «налёт»: прозрачные оболочки над кожей, светятся там, где свет проходит сквозь шерсть ---
+const VS_SHELL=`#version 300 es
+precision highp float; precision highp int;
+layout(location=0) in vec3 aPos; layout(location=1) in vec2 aNrm; layout(location=2) in vec3 aCol; layout(location=3) in float aBA; layout(location=4) in float aBB; layout(location=5) in float aW; layout(location=6) in float aFur; layout(location=7) in float aAO;
+uniform mat4 uVP; uniform float uPosScale; uniform float uShellH; ${SKIN_FN}
+out vec3 vWp; out vec3 vN; out vec3 vCol; out float vFur; out float vAO; out vec3 vLp;
+void main(){ int a=int(aBA+0.5), b=int(aBB+0.5); vec3 lp=aPos*uPosScale; vec3 n0=octDec(aNrm); vec3 p=skinP(lp+n0*uShellH*aFur,a,b,aW); vec3 n=skinN(n0,a,b,aW); vWp=p; vN=n; vCol=aCol; vFur=aFur; vAO=aAO; vLp=lp; gl_Position=uVP*vec4(p,1.0); }`;
+const FS_SHELL=`#version 300 es
+precision highp float; in vec3 vWp; in vec3 vN; in vec3 vCol; in float vFur; in float vAO; in vec3 vLp; uniform float uEnc; uniform float uT; uniform float uShellK; out vec4 o;
+${COMMON}
+float hash3(vec3 p){ p=fract(p*0.3183099+vec3(0.1,0.2,0.3)); p*=17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
+float vnoise(vec3 x){ vec3 i=floor(x); vec3 f=fract(x); f=f*f*(3.0-2.0*f);
+  return mix(mix(mix(hash3(i),hash3(i+vec3(1,0,0)),f.x),mix(hash3(i+vec3(0,1,0)),hash3(i+vec3(1,1,0)),f.x),f.y),
+             mix(mix(hash3(i+vec3(0,0,1)),hash3(i+vec3(1,0,1)),f.x),mix(hash3(i+vec3(0,1,1)),hash3(i+vec3(1,1,1)),f.x),f.y),f.z); }
+void main(){ if(vFur<0.5) discard; vec3 n=normalize(vN); vec3 v=normalize(uCam-vWp); if(dot(n,v)<0.0) n=-n; float nv=max(dot(n,v),0.0);
+  // «молекулы»: где волоски — там плёнка, выше по слою их всё меньше
+  float m=vnoise(vLp*650.0)*0.7+vnoise(vLp*1900.0)*0.3; float cover=smoothstep(uT-0.25,uT+0.05,m); if(cover<0.02) discard;
+  vec2 cv=canopy(vWp); float cav=mix(1.0,vAO,0.75); vec3 alb=vCol;
+  float sh=shadowAt(vWp+n*0.03,n)*mix(cv.r,1.0,0.5);
+  float ndl=dot(n,uSun); float rim=pow(1.0-nv,1.3); float back=clamp(dot(-uSun,v),0.0,1.0);
+  // свет насквозь: солнце сзади/сбоку, край шерсти загорается тёплым
+  vec3 warm=min(alb,vec3(0.75))*vec3(1.15,0.9,0.6)+vec3(0.10,0.06,0.03);
+  float through=rim*(0.35+0.65*back)*clamp(1.0-ndl*0.6,0.0,1.0)*(0.3+0.7*uT);
+  vec3 col=uSunCol*sh*warm*through*2.2;
+  // мягкий бархат от прямого света на кончиках
+  float wrap=clamp((ndl+0.9)/1.9,0.0,1.0); col+=uSunCol*sh*alb*wrap*0.10*uT*cav;
+  // небо на кончиках — пух на фоне светлого
+  col+=alb*ambientSky(n)*mix(1.0,cv.g,0.6)*0.35*uT*cav;
+  float alpha=cover*(0.12+0.30*rim)*(0.4+0.6*uT);
+  o=vec4(col*uEnc*uShellK*cover, alpha*uShellK); }`;
 // --- глаза ---
 const VS_EYE=`#version 300 es
 precision highp float; layout(location=0) in vec3 aPos; layout(location=1) in vec3 aNrm; layout(location=2) in vec2 aUv; uniform mat4 uVP; uniform mat4 uM; uniform mat4 uBone; out vec3 vWp; out vec3 vN; out vec3 vL;
@@ -265,7 +297,7 @@ let G={};
 function ground(x,z){ return 0.35*Math.sin(0.07*x+0.3)*Math.cos(0.055*z)+0.18*Math.sin(0.13*x-0.09*z+1.0)+0.09*Math.sin(0.25*x+0.19*z+2.0)+0.0016*Math.max(0,-z-18)**2; }
 function init(){
   const h=S.hdr, ab=S.ab, base=S.base;
-  G.pDiode=prog(VS_DIODE,FS_DIODE); G.pSkin=prog(VS_SKIN,FS_CAT); G.pMesh=prog(VS_MESH,FS_CAT); G.pFur=prog(VS_FUR,FS_FUR); G.pEye=prog(VS_EYE,FS_EYE); G.pLine=prog(VS_LINE,FS_LINE); G.pSky=prog(VS_SKY,FS_SKY); G.pDof=prog(VS_Q,FS_DOF); G.pDown=prog(VS_Q,FS_DOWN); G.pBlur=prog(VS_Q,FS_BLUR); G.pFinal=prog(VS_Q,FS_FINAL);
+  G.pDiode=prog(VS_DIODE,FS_DIODE); G.pSkin=prog(VS_SKIN,FS_CAT); G.pMesh=prog(VS_MESH,FS_CAT); G.pFur=prog(VS_FUR,FS_FUR); G.pShell=prog(VS_SHELL,FS_SHELL); G.pEye=prog(VS_EYE,FS_EYE); G.pLine=prog(VS_LINE,FS_LINE); G.pSky=prog(VS_SKY,FS_SKY); G.pDof=prog(VS_Q,FS_DOF); G.pDown=prog(VS_Q,FS_DOWN); G.pBlur=prog(VS_Q,FS_BLUR); G.pFinal=prog(VS_Q,FS_FINAL);
   G.pSkinSh=prog(VS_SKIN,FS_EMPTY); G.pMeshSh=prog(VS_MESH,FS_EMPTY); G.pFurSh=prog(VS_FUR,FS_EMPTY); G.pVol=prog(VS_Q,FS_VOL);
   G.sun=h.sun; G.suncol=h.suncol; G.sunrad=h.sunrad; G.exposure=h.exposure; G.TR=h.TR;
   const mkBuf=(target,ab_,off,len)=>{ const b=gl.createBuffer(); gl.bindBuffer(target,b); gl.bufferData(target,new Uint8Array(ab_,off,len),gl.STATIC_DRAW); return b; };
@@ -323,7 +355,7 @@ function resize(){ const dpr=Math.min(window.devicePixelRatio||1,3)*(quality?1:0
 window.addEventListener('resize',()=>setTimeout(resize,50));
 
 // ============ состояние, походка ============
-const st={free:true, walk:true, rays:false, mode:1, time:0, tod:0, wind:1, fog:0.035, furD:1, yaw:0.55, pitch:0.22, dist:2.3};
+const st={free:true, walk:true, rays:false, mode:1, shell:true, time:0, tod:0, wind:1, fog:0.035, furD:1, yaw:0.55, pitch:0.22, dist:2.3};
 const CX=6.0, CZ0=-30.0, CZ1=-44.0, SPEED=0.21, STEP_HZ=1.5;
 function todParams(x){ const L=(a,b,t)=>a+(b-a)*t; const L3=(a,b,t)=>[L(a[0],b[0],t),L(a[1],b[1],t),L(a[2],b[2],t)];
   const day={sun:[1.0,0.80,0.55],k:1,sky:1,zen:[0.17,0.36,0.78],hor:[1.0,0.8,0.58],fog:[0.66,0.70,0.62]}, set={sun:[1.0,0.48,0.22],k:0.45,sky:0.55,zen:[0.12,0.2,0.5],hor:[1.0,0.55,0.3],fog:[0.85,0.5,0.35]}, dusk={sun:[0.6,0.35,0.3],k:0.03,sky:0.16,zen:[0.03,0.05,0.16],hor:[0.35,0.22,0.3],fog:[0.3,0.22,0.3]};
@@ -422,6 +454,11 @@ function frame(now,once){ if(!once) requestAnimationFrame(frame);
   { const pf=G.pFur; gl.useProgram(pf.p); setCommon(pf); gl.uniformMatrix4fv(pf.u.uVP,false,VP); gl.uniformMatrix4fv(pf.u.uBones,false,bonesF); gl.uniform1f(pf.u.uPosScale,G.catScale); gl.uniform1f(pf.u.uPixWorld,2*Math.tan(fov/2)/H); gl.uniform3fv(pf.u.uCamPos,eye); gl.uniform1f(pf.u.uTime,t); gl.uniform1f(pf.u.uCanopy,canopy);
     if(st.mode===1 && FB.samples>0) gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
     gl.bindVertexArray(G.fur.vao); gl.drawElementsInstanced(gl.TRIANGLES,18,gl.UNSIGNED_SHORT,0,Math.floor(G.fur.n*st.furD)); gl.disable(gl.SAMPLE_ALPHA_TO_COVERAGE); }
+  // ---- «налёт»: 6 прозрачных оболочек над кожей, изнутри наружу ----
+  if(st.mode===1 && st.shell){ const pq=G.pShell; gl.useProgram(pq.p); setCommon(pq); gl.uniformMatrix4fv(pq.u.uVP,false,VP); gl.uniformMatrix4fv(pq.u.uBones,false,bonesF); gl.uniform1f(pq.u.uPosScale,G.catScale); gl.uniform1f(pq.u.uShellK,st.shellK||1);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); gl.disable(gl.CULL_FACE); gl.bindVertexArray(G.skin.vao);
+    const NL=6, HM=st.shellH||0.016; for(let i=0;i<NL;i++){ const tt=(i+1)/NL; gl.uniform1f(pq.u.uT,tt); gl.uniform1f(pq.u.uShellH,HM*tt); gl.drawElements(gl.TRIANGLES,G.skin.ni,gl.UNSIGNED_INT,0); }
+    gl.depthMask(true); gl.disable(gl.BLEND); }
   // ---- resolve + пост ----
   gl.bindFramebuffer(gl.READ_FRAMEBUFFER,FB.fMS); gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER,FB.fRes); gl.blitFramebuffer(0,0,W,H,0,0,W,H,gl.COLOR_BUFFER_BIT,gl.NEAREST); gl.blitFramebuffer(0,0,W,H,0,0,W,H,gl.DEPTH_BUFFER_BIT,gl.NEAREST);
   gl.disable(gl.DEPTH_TEST); gl.bindVertexArray(G.quad);
@@ -440,6 +477,7 @@ function frame(now,once){ if(!once) requestAnimationFrame(frame);
 }
 
 // ============ управление ============
+$('bShell').onclick=()=>{ st.shell=!st.shell; $('bShell').classList.toggle('on',st.shell); };
 $('bMode').onclick=()=>{ st.mode=st.mode?0:1; $('bMode').textContent=st.mode?'Стало':'Было'; $('bMode').classList.toggle('on',!!st.mode); };
 $('bCam').onclick=()=>{ st.free=!st.free; $('bCam').textContent=st.free?'Свободная камера':'Кино-камера'; $('bCam').classList.toggle('on',st.free); };
 $('bWalk').onclick=()=>{ st.walk=!st.walk; $('bWalk').textContent=st.walk?'Идёт':'Стоит'; $('bWalk').classList.toggle('on',st.walk); };
@@ -447,6 +485,7 @@ $('bRays').onclick=()=>{ st.rays=!st.rays; $('bRays').classList.toggle('on',st.r
 $('bQ').onclick=()=>{ quality=quality?0:1; $('bQ').textContent=quality?'Качество: полное':'Качество: лёгкое'; $('bQ').classList.toggle('on',!!quality); resize(); };
 $('fog').oninput=e=>{ st.fog=e.target.value/1000; $('fogV').textContent=(e.target.value/100).toFixed(2); };
 $('tod').oninput=e=>{ st.tod=e.target.value/1000; $('todV').textContent=st.tod<0.1?'день':st.tod<0.5?'к закату':st.tod<0.9?'закат':'сумерки'; };
+$('shellK').oninput=e=>{ st.shellK=e.target.value/100; $('shellV').textContent=e.target.value+'%'; };
 $('furD').oninput=e=>{ st.furD=e.target.value/100; $('furV').textContent=e.target.value+'%'; };
 $('wind').oninput=e=>{ st.wind=e.target.value/100; $('windV').textContent=st.wind.toFixed(1); };
 const wrap=$('wrap'); const touches=new Map(); let pinch0=null;
