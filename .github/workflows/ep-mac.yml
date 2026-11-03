@@ -1,0 +1,28 @@
+name: ep-mac
+# Скачивает для Мака дистрибутивы для КЭП (драйвер токена «Ангара», КриптоПро) в files/ этой ветки.
+on:
+  push:
+    branches: [ep-mac]
+    paths: ['request.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ep-mac
+  cancel-in-progress: false
+jobs:
+  get:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Скачать
+        run: bash get.sh
+      - name: Сохранить
+        run: |
+          git config user.name "ep-mac"
+          git config user.email "ep-mac@users.noreply.github.com"
+          git add files status
+          git commit -m "result $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin ep-mac || true
+          git push origin HEAD:ep-mac
