@@ -1,3 +1,3 @@
-	Percent of CPU this job got: 187%
-	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:09.99
-	Maximum resident set size (kbytes): 2860372
+	Percent of CPU this job got: 201%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:22.59
+	Maximum resident set size (kbytes): 2861824
