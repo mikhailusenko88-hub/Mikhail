@@ -109,6 +109,7 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
    <span>Голос iPhone</span><span><select id="vpVoice"></select></span></div>
   <div class="btns"><button class="btn" onclick="VP.play()">▶ Послушать</button><button class="btn acc" onclick="VP.save()">Сохранить</button></div>
   <div class="card" id="vpLaugh" style="margin-top:12px;background:var(--card2)"><b>Смех героя</b><div class="mut" style="margin:4px 0 8px">Герой смеётся своим голосом. А можно записать настоящий смех — свой или ребёнка (до 8 секунд): герой будет смеяться им, своим тембром.</div>
+   <div class="kv" style="margin:0 0 8px"><span>Смех из банка</span><span><select id="vpLaughSel" onchange="VP.pickLaugh(this.value)"><option value="">автоматически (по голосу)</option></select></span></div>
    <div class="btns"><button class="btn" onclick="VP.laugh()">▶ Как смеётся</button><button class="btn" id="vpRec" onclick="VP.rec()">🎙 Записать смех</button><button class="btn" id="vpRecDel" onclick="VP.recDel()">✕ Убрать запись</button></div><div id="vpRecMsg" class="mut" style="margin-top:6px"></div></div>
  </div></div>
 <div id="editor"><div class="pv"><div class="row" style="padding:8px 12px"><button class="back" onclick="Ed.close()">‹</button><b id="edTitle" style="flex:1">Новый персонаж</b><button class="btn" onclick="Ed.undo()">↺</button><button class="btn" onclick="Ed.voice()">🔊</button></div><canvas id="edc" width="720" height="600"></canvas></div>
@@ -124,6 +125,7 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 </div></div>
 <script src="multik-engine.js"></script>
 <script src="multik-audio.js"></script>
+<script src="multik-laugh.js"></script>
 <script src="multik-voice.js"></script>
 <script>
 // Нейроголос (~0.5 ГБ: модели и память onnxruntime, которую onnxruntime сам не отдаёт) работает НЕ в этой странице:
@@ -783,7 +785,7 @@ const VP = {
   who: null, cur: null,
   async open(who) {
     this.who = who; const c = Lib.data.characters[who]; const own = who === 'Р' ? (Lib.data.narratorFx || {}) : ((c && c.fx) || {});
-    const fx = MK.fxFor(Lib.data, who); this.cur = { preset: fx.id, k: fx.k, voiceId: own.voiceId || '' };
+    const fx = MK.fxFor(Lib.data, who); this.cur = { preset: fx.id, k: fx.k, voiceId: own.voiceId || '', laughId: (c && c.laughId) || '' };
     document.getElementById('vpTitle').textContent = 'Голос: ' + (who === 'Р' ? 'Рассказчик' : c.spec.name);
     this.list(); document.getElementById('vpanel').style.display = 'flex'; this.recUI();
     const sel = document.getElementById('vpVoice'); const vs = (await Native.call('voices')) || [];
@@ -805,12 +807,16 @@ const VP = {
   },
   async save() {
     const fx = { preset: this.cur.preset, k: this.cur.k }; if (this.cur.voiceId) fx.voiceId = this.cur.voiceId;
-    if (this.who === 'Р') Lib.data.narratorFx = fx; else Lib.data.characters[this.who].fx = fx;
+    if (this.who === 'Р') Lib.data.narratorFx = fx; else { Lib.data.characters[this.who].fx = fx; if (this.cur.laughId) Lib.data.characters[this.who].laughId = this.cur.laughId; else delete Lib.data.characters[this.who].laughId; }
     await Lib.save(); this.close(); App.render();
   },
   close() { if (this.recording) this.rec(); document.getElementById('vpanel').style.display = 'none'; },
   recUI() { const box = document.getElementById('vpLaugh'); box.style.display = this.who === 'Р' ? 'none' : 'block'; const c = Lib.data.characters[this.who] || {};
-    document.getElementById('vpRecDel').style.display = c.laugh ? '' : 'none'; document.getElementById('vpRecMsg').textContent = c.laugh ? 'Смеётся записанным смехом.' : 'Смеётся своим голосом (запись не сделана).'; document.getElementById('vpRec').textContent = this.recording ? '⏹ Стоп' : '🎙 Записать смех'; },
+    document.getElementById('vpRecDel').style.display = c.laugh ? '' : 'none'; document.getElementById('vpRecMsg').textContent = c.laugh ? 'Смеётся записанным смехом.' : 'Смеётся смехом из банка, своим тембром (или своим голосом, если банка нет).'; document.getElementById('vpRec').textContent = this.recording ? '⏹ Стоп' : '🎙 Записать смех';
+    this.laughList(); },
+  async laughList() { const sel = document.getElementById('vpLaughSel'); if (!window.MKLaugh) return; await MKLaugh.load(); const list = MKLaugh.list(); const GN = { K: 'детские', F: 'женские', M: 'мужские', B: 'басистые' };
+    sel.innerHTML = '<option value="">автоматически (по голосу)</option>' + list.map(x => `<option value="${esc(x.id)}">${esc(x.id)} — ${esc(x.name || '')} (${esc(GN[x.group] || x.group)})</option>`).join(''); sel.value = this.cur.laughId || ''; },
+  pickLaugh(id) { this.cur.laughId = id || ''; this.laugh(); },
   async rec() { const who = this.who, key = 'rec-laugh-' + MK.hash32(String(who)).toString(36);
     if (this.recording) { clearTimeout(this.recT); this.recording = false; await Native.call('recStop', {}); Lib.data.characters[who].laugh = key; await Lib.save(); this.recUI(); this.laugh(); return; }
     audioPlayback(); const ok = await Native.call('recStart', { key }); if (!ok) { alert('Нет доступа к микрофону. Откройте Настройки → Замер 3D → Микрофон и включите.'); return; }
@@ -818,7 +824,7 @@ const VP = {
   async recDel() { delete Lib.data.characters[this.who].laugh; await Lib.save(); this.recUI(); },
   async laugh() { audioPlayback(); if (!pvCtx || pvCtx.state === 'closed') pvCtx = new (window.AudioContext || window.webkitAudioContext)(); try { pvCtx.resume(); } catch (e) {}
     const who = this.who, lib = Object.assign({}, Lib.data, { characters: Object.assign({}, Lib.data.characters) }); const c = lib.characters[who];
-    lib.characters[who] = Object.assign({}, c, { fx: { preset: this.cur.preset, k: this.cur.k, voiceId: this.cur.voiceId || undefined } });
+    lib.characters[who] = Object.assign({}, c, { fx: { preset: this.cur.preset, k: this.cur.k, voiceId: this.cur.voiceId || undefined }, laughId: this.cur.laughId || undefined });
     const lns = MK.collectLines({ scenes: [{ steps: [{ who, do: 'laugh' }] }] }, lib); if (!lns.length) return; const ln = lns[0]; ln.variant = (this._lv = ((this._lv || 0) + 1) % 3);
     const buf = await MK.makeVocal(ln, lib, (cmd, b) => Native.call(cmd, b), async w => pvCtx.decodeAudioData(unb64(w).buffer));
     if (pvSrc) { try { pvSrc.stop(); } catch (e) {} } pvSrc = pvCtx.createBufferSource(); pvSrc.buffer = buf; pvSrc.connect(pvCtx.destination); pvSrc.start(); },
