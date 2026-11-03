@@ -1,13 +1,8 @@
 name: laugh-collect
 on:
-  workflow_dispatch:
-    inputs:
-      run_id:
-        description: 'id запуска laugh-bank, чьи результаты забрать'
-        required: true
-      name:
-        description: 'имя артефакта'
-        default: 'laugh-out'
+  push:
+    branches: [laugh-bank]
+    paths: ['collect.txt']
 permissions:
   contents: write
 jobs:
@@ -15,17 +10,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - id: p
+        run: |
+          echo "run_id=$(sed -n 1p collect.txt | tr -d ' \r')" >> $GITHUB_OUTPUT
+          echo "name=$(sed -n 2p collect.txt | tr -d ' \r')" >> $GITHUB_OUTPUT
       - uses: actions/download-artifact@v4
         with:
-          name: ${{ inputs.name }}
-          path: bank/${{ inputs.run_id }}/
-          run-id: ${{ inputs.run_id }}
+          name: ${{ steps.p.outputs.name }}
+          path: bank/${{ steps.p.outputs.run_id }}/
+          run-id: ${{ steps.p.outputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Commit
         run: |
           git config user.name laugh-bank
           git config user.email laugh-bank@users.noreply.github.com
-          du -sh bank/${{ inputs.run_id }} || true
+          du -sh bank/* || true
           git add bank
-          git commit -m "laugh-collect ${{ inputs.run_id }}" || echo nothing
+          git commit -m "laugh-collect ${{ steps.p.outputs.run_id }}" || echo nothing
           for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
