@@ -1,0 +1,80 @@
+name: pochemu-albina-test
+on:
+  push:
+    branches: [pochemu-albina]
+    paths: ['albina.py', 'albina_worker.py', 'albina_fix.json', 'patch_bot.py', 'test/**', 'request.txt', '.github/workflows/test.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: pochemu-albina
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Папка озвучщика (как на сервере)
+        run: sudo mkdir -p /opt/multik-tts && sudo chown $USER /opt/multik-tts
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            /opt/multik-tts/hf
+            /opt/multik-tts/v5_cis_base.pt
+          key: pochemu-albina-v1
+      - name: Служба голоса на сервере отвечает?
+        run: |
+          (curl -s -m 15 http://89.126.192.214:8095/health || echo "нет ответа") > server_health.txt
+          cat server_health.txt
+      - name: Озвучщик
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core >/dev/null
+          python -m venv /opt/multik-tts/venv
+          /opt/multik-tts/venv/bin/pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          /opt/multik-tts/venv/bin/pip install -q numpy ruaccent
+          [ -s /opt/multik-tts/v5_cis_base.pt ] || curl -fsSL -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
+          curl -fsSL -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
+          cp albina_worker.py /opt/multik-tts/
+          du -sh /opt/multik-tts/venv /opt/multik-tts/v5_cis_base.pt
+      - name: Бот (тот же код, что у ботов на сервере)
+        run: |
+          mkdir -p /tmp/bot/fonts /tmp/bot/music
+          R=https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/kz-bot
+          curl -fsSL -o /tmp/bot/make_video.py $R/make_video.py
+          curl -fsSL -o /tmp/bot/fonts/DejaVuSans-Bold.ttf $R/fonts/DejaVuSans-Bold.ttf
+          curl -fsSL -o /tmp/bot/music/lofi_01_Vecherniy_chay.mp3 $R/music/lofi_01_Vecherniy_chay.mp3
+          cp albina.py albina_fix.json /tmp/bot/
+          python patch_bot.py /tmp/bot/make_video.py
+          python patch_bot.py /tmp/bot/make_video.py
+          python -m py_compile /tmp/bot/make_video.py
+          pip install -q pillow edge-tts
+      - name: Пробные ролики
+        run: |
+          mkdir -p out
+          ONLY=$(grep -o 'only=[^ ]*' request.txt | cut -d= -f2 || true)
+          /usr/bin/time -v python test/run_test.py /tmp/bot out $ONLY 2> time.txt
+          grep -E "Maximum resident|Elapsed|Percent of CPU" time.txt | tee out/time.txt
+          cp server_health.txt out/
+          tail -60 /opt/multik-tts/worker.log > out/worker_log.txt 2>/dev/null || true
+      - name: Запасной голос
+        if: always()
+        run: python test/fallback_test.py /tmp/bot out
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: albina-test
+          path: out
+          retention-days: 7
+      - name: Отчёт в ветку
+        if: always()
+        run: |
+          mkdir -p result && cp out/*.md out/*.txt result/ 2>/dev/null || true
+          git config user.name albina-test
+          git config user.email albina-test@users.noreply.github.com
+          git add result && git commit -m "albina test result" || echo nothing
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
