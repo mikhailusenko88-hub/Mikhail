@@ -1,0 +1,10 @@
+def forward(self,
+    text: Tensor,
+    speaker_ids: Tensor,
+    orig_mask: Optional[Tensor]=None,
+    type_ids: Optional[Tensor]=None,
+    focus_mask: Optional[Tensor]=None,
+    emphasis: Optional[Tensor]=None) -> Tensor:
+  pitch_pred = self.pitch_pred
+  pitch_hat = (pitch_pred).forward(text, speaker_ids, orig_mask, 1., None, type_ids, focus_mask, emphasis, )
+  return torch.transpose(pitch_hat, 1, 2)

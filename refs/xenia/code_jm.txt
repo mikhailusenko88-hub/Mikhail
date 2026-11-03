@@ -1,0 +1,192 @@
+def forward(self,
+    sequence: Tensor,
+    speaker_ids: Tensor,
+    sr: int=48000,
+    symb_durs: Optional[Dict[int, int]]=None,
+    durs_rate: Optional[Tensor]=None,
+    pitch_coefs: Optional[Tensor]=None,
+    gt_durs: Optional[Tensor]=None,
+    gt_pitch: Optional[Tensor]=None,
+    device: str="cpu",
+    accent_word: int=-1,
+    question: bool=False,
+    type_ids: Optional[Tensor]=None,
+    focus_mask: Optional[Tensor]=None,
+    emphasis: Optional[Tensor]=None) -> Tuple[Tensor, Tensor]:
+  _0 = __torch__.tacotron2.fastpitch_layers.make_token_len_mask
+  orig_mask = torch.to(_0(torch.transpose(sequence, 0, 1), ), torch.device(device))
+  if torch.__isnot__(type_ids, None):
+    type_ids1 = unchecked_cast(Tensor, type_ids)
+    _1 = torch.select(torch.select(type_ids1, 0, 0), 0, 0)
+    emph, type_ids0 = torch.ge(int(_1), 6), type_ids1
+  else:
+    emph, type_ids0 = False, type_ids
+  if emph:
+    sos_cap = 20
+  else:
+    sos_cap = 5
+  if torch.__isnot__(symb_durs, None):
+    symb_durs1 = unchecked_cast(Dict[int, int], symb_durs)
+    _2, symb_durs0 = torch.gt(torch.len(symb_durs1), 0), symb_durs1
+  else:
+    _2, symb_durs0 = False, symb_durs
+  if _2:
+    symb_durs3 = unchecked_cast(Dict[int, int], symb_durs0)
+    support_ids0 = (self).get_support_ids(sequence, symb_durs3, )
+    support_ids, symb_durs2 = support_ids0, symb_durs3
+  else:
+    support_ids, symb_durs2 = None, symb_durs0
+  if torch.__isnot__(support_ids, None):
+    support_ids2 = unchecked_cast(List[int], support_ids)
+    support_sequence0 = (self).replace_comma(sequence, support_ids2, )
+    support_ids1, support_sequence = support_ids2, support_sequence0
+  else:
+    support_ids1, support_sequence = support_ids, sequence
+  if torch.__is__(gt_durs, None):
+    if torch.__isnot__(symb_durs2, None):
+      symb_durs6 = unchecked_cast(Dict[int, int], symb_durs2)
+      _4 = torch.gt(torch.len(symb_durs6), 0)
+      _3, symb_durs5 = _4, symb_durs6
+    else:
+      _3, symb_durs5 = False, symb_durs2
+    if _3:
+      symb_durs8 = unchecked_cast(Dict[int, int], symb_durs5)
+      _6 = torch.__isnot__(support_ids1, None)
+      _5, symb_durs7 = _6, symb_durs8
+    else:
+      _5, symb_durs7 = False, symb_durs5
+    if _5:
+      symb_durs10 = unchecked_cast(Dict[int, int], symb_durs7)
+      support_ids4 = unchecked_cast(List[int], support_ids1)
+      _7 = torch.eq((torch.size(sequence))[0], 1)
+      if _7:
+        pass
+      else:
+        ops.prim.RaiseException("AssertionError: ")
+      support_sequence1 = torch.to(support_sequence, torch.device(device))
+      dur_predictor = self.dur_predictor
+      _8 = torch.cat([sequence, support_sequence1])
+      pred_log_dur0 = (dur_predictor).forward(_8, speaker_ids, torch.cat([orig_mask, orig_mask]), 1., None, type_ids0, focus_mask, emphasis, )
+      pred_log_dur, symb_durs9, support_ids3 = pred_log_dur0, symb_durs10, support_ids4
+    else:
+      dur_predictor0 = self.dur_predictor
+      pred_log_dur1 = (dur_predictor0).forward(sequence, speaker_ids, orig_mask, 1., None, type_ids0, focus_mask, emphasis, )
+      pred_log_dur, symb_durs9, support_ids3 = pred_log_dur1, symb_durs7, support_ids1
+    pred_log_dur2 = torch.sub(torch.exp(pred_log_dur), 1)
+    _9 = torch.lt(pred_log_dur2, 0.)
+    _10 = torch.tensor(0., dtype=ops.prim.dtype(pred_log_dur2), device=ops.prim.device(pred_log_dur2))
+    _11 = annotate(List[Optional[Tensor]], [_9])
+    _12 = torch.index_put_(pred_log_dur2, _11, _10)
+    dur_hat0 = (self).cap_sos(torch.round(pred_log_dur2), sos_cap, )
+    if torch.__isnot__(symb_durs9, None):
+      symb_durs12 = unchecked_cast(Dict[int, int], symb_durs9)
+      _14 = torch.gt(torch.len(symb_durs12), 0)
+      _13, symb_durs11 = _14, symb_durs12
+    else:
+      _13, symb_durs11 = False, symb_durs9
+    if _13:
+      symb_durs14 = unchecked_cast(Dict[int, int], symb_durs11)
+      _15 = torch.__isnot__(support_ids3, None)
+      if _15:
+        support_ids5 = unchecked_cast(List[int], support_ids3)
+        sdurs = annotate(List[int], [])
+        for _16 in range(torch.len(support_ids5)):
+          sid = support_ids5[_16]
+          _17 = torch.append(sdurs, symb_durs14[sid])
+        pause_len = ops.prim.max(sdurs)
+        dur_hat3 = (self).process_pauses(pred_log_dur2, support_ids5, pause_len, )
+        dur_hat2 = dur_hat3
+      else:
+        dur_hat2 = dur_hat0
+      dur_hat1, symb_durs13 = dur_hat2, symb_durs14
+    else:
+      dur_hat1, symb_durs13 = dur_hat0, symb_durs11
+    dur_hat, symb_durs4 = dur_hat1, symb_durs13
+  else:
+    gt_durs0 = unchecked_cast(Tensor, gt_durs)
+    _18 = torch.lt(gt_durs0, 0.)
+    _19 = torch.tensor(0., dtype=ops.prim.dtype(gt_durs0), device=ops.prim.device(gt_durs0))
+    _20 = annotate(List[Optional[Tensor]], [_18])
+    _21 = torch.index_put_(gt_durs0, _20, _19)
+    dur_hat4 = (self).cap_sos(torch.round(gt_durs0), sos_cap, )
+    dur_hat, symb_durs4 = dur_hat4, symb_durs2
+  if torch.__isnot__(durs_rate, None):
+    durs_rate0 = unchecked_cast(Tensor, durs_rate)
+    _22 = torch.eq(torch.size(durs_rate0), torch.size(dur_hat))
+    if _22:
+      pass
+    else:
+      ops.prim.RaiseException("AssertionError: ")
+    dur_hat6 = torch.round(torch.div(dur_hat, durs_rate0))
+    dur_hat5 = dur_hat6
+  else:
+    dur_hat5 = dur_hat
+  if torch.__isnot__(symb_durs4, None):
+    symb_durs16 = unchecked_cast(Dict[int, int], symb_durs4)
+    _23, symb_durs15 = torch.gt(torch.len(symb_durs16), 0), symb_durs16
+  else:
+    _23, symb_durs15 = False, symb_durs4
+  if _23:
+    symb_durs18 = unchecked_cast(Dict[int, int], symb_durs15)
+    _24 = torch.items(symb_durs18)
+    for _25 in range(torch.len(_24)):
+      sid0, sdur, = _24[_25]
+      _26 = torch.select(torch.select(dur_hat5, 0, 0), 0, sid0)
+      _27 = torch.tensor(sdur, dtype=ops.prim.dtype(_26), device=ops.prim.device(_26))
+      _28 = torch.copy_(_26, _27)
+    symb_durs17 : Optional[Dict[int, int]] = symb_durs18
+  else:
+    symb_durs17 = symb_durs15
+  dur_hat7 = (self).fx_durs(dur_hat5, sos_cap, emph, )
+  if torch.__is__(gt_pitch, None):
+    if torch.__isnot__(pitch_coefs, None):
+      pitch_coefs0 = unchecked_cast(Tensor, pitch_coefs)
+      pitch_coefs_exp : Optional[Tensor] = torch.select(pitch_coefs0, 0, 0)
+    else:
+      pitch_coefs_exp = None
+    pitch_predictor = self.pitch_predictor
+    pitch_hat0 = (pitch_predictor).forward(sequence, speaker_ids, orig_mask, type_ids0, focus_mask, emphasis, )
+    _29 = torch.__isnot__(pitch_coefs_exp, None)
+    if _29:
+      pitch_coefs_exp1 = unchecked_cast(Tensor, pitch_coefs_exp)
+      _30 = torch.unsqueeze(pitch_coefs_exp1, 0)
+      pitch_hat2 = (self).update_pitch_coef(pitch_hat0, _30, speaker_ids, )
+      pitch_hat1 = pitch_hat2
+    else:
+      pitch_hat1 = pitch_hat0
+    pitch_hat = pitch_hat1
+  else:
+    pitch_hat = unchecked_cast(Tensor, gt_pitch)
+  durs_cum = torch.cumsum(torch.pad(dur_hat7, [1, 0]), 0)
+  _31 = torch.len(dur_hat7)
+  _32 = torch.slice(durs_cum, 0, None, -1)
+  _33 = torch.slice(durs_cum, 0, 1)
+  _34 = [_31, torch.len(_32), torch.len(_33), torch.len(sequence)]
+  for idx in range(ops.prim.min(_34)):
+    a = torch.select(_32, 0, idx)
+    b = torch.select(_33, 0, idx)
+    char_id = torch.select(sequence, 0, idx)
+    punkt_symbols = self.punkt_symbols
+    _35 = torch.__contains__(punkt_symbols, annotate(int, char_id))
+    if _35:
+      _36 = torch.slice(pitch_hat, 0, annotate(int, a), annotate(int, b))
+      _37 = torch.tensor(0, dtype=ops.prim.dtype(_36), device=ops.prim.device(_36))
+      _38 = torch.copy_(_36, _37)
+    else:
+      pass
+  tacotron = self.tacotron
+  mel_outputs = (tacotron).forward(sequence, speaker_ids, orig_mask, dur_hat7, pitch_hat, None, )
+  if torch.__isnot__(symb_durs17, None):
+    symb_durs20 = unchecked_cast(Dict[int, int], symb_durs17)
+    _39, symb_durs19 = torch.gt(torch.len(symb_durs20), 0), symb_durs20
+  else:
+    _39, symb_durs19 = False, symb_durs17
+  if _39:
+    symb_durs21 = unchecked_cast(Dict[int, int], symb_durs19)
+    mel_outputs1 = (self).fx_pauses(mel_outputs, dur_hat7, symb_durs21, )
+    mel_outputs0 = mel_outputs1
+  else:
+    mel_outputs0 = mel_outputs
+  vocoder = self.vocoder
+  audio = (vocoder).forward(mel_outputs0, sr, 0., True, )
+  return (audio, dur_hat7)

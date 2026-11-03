@@ -1,0 +1,12 @@
+def forward(self,
+    text: Tensor,
+    speaker_ids: Tensor,
+    orig_mask: Optional[Tensor]=None,
+    alpha: float=1.,
+    coef_speakers: Optional[Tensor]=None,
+    type_ids: Optional[Tensor]=None,
+    focus_mask: Optional[Tensor]=None,
+    emphasis: Optional[Tensor]=None) -> Tensor:
+  dur_pred = self.dur_pred
+  dur_hat = (dur_pred).forward(text, speaker_ids, orig_mask, alpha, coef_speakers, type_ids, focus_mask, emphasis, )
+  return torch.squeeze(dur_hat, -1)

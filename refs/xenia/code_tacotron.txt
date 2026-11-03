@@ -1,0 +1,54 @@
+def forward(self,
+    inputs: Tensor,
+    speaker_ids: Tensor,
+    orig_mask: Tensor,
+    dur_hat: Tensor,
+    pitch_hat: Tensor,
+    energy_hat: Optional[Tensor]=None) -> Tensor:
+  embedding = self.embedding
+  cond_embedded_inputs = (embedding).forward(inputs, )
+  seq_len = torch.size(cond_embedded_inputs, 1)
+  speaker_embedding = self.speaker_embedding
+  _0 = (speaker_embedding).forward(speaker_ids, )
+  speaker_embeds = torch.repeat(torch.unsqueeze(_0, 1), [1, seq_len, 1])
+  encoder = self.encoder
+  encoder_outputs = (encoder).forward(cond_embedded_inputs, orig_mask, None, )
+  cond_encoder_outputs = torch.add(encoder_outputs, speaker_embeds)
+  pitch_proj = self.pitch_proj
+  pitch_proj0 = (pitch_proj).forward(pitch_hat, )
+  pitch_proj1 = torch.transpose(pitch_proj0, 1, 2)
+  pitch_emb_type = self.pitch_emb_type
+  if torch.eq(pitch_emb_type, "default"):
+    pitch_strength = self.pitch_strength
+    _1 = torch.mul(pitch_proj1, pitch_strength)
+    cond_encoder_outputs0 = torch.add(cond_encoder_outputs, _1)
+  else:
+    cond_encoder_outputs0 = cond_encoder_outputs
+  _2 = torch.__not__(torch.__is__(energy_hat, None))
+  if _2:
+    energy_hat0 = unchecked_cast(Tensor, energy_hat)
+    energy_proj = self.energy_proj
+    _3 = (energy_proj).forward(energy_hat0, )
+    energy_proj0 = torch.transpose(_3, 1, 2)
+    energy_strength = self.energy_strength
+    _4 = torch.mul(energy_proj0, energy_strength)
+    cond_encoder_outputs3 = torch.add(cond_encoder_outputs0, _4)
+    cond_encoder_outputs2 = cond_encoder_outputs3
+  else:
+    cond_encoder_outputs2 = cond_encoder_outputs0
+  len_reg = self.len_reg
+  encoder_outputs_expanded = (len_reg).forward(cond_encoder_outputs2, dur_hat, )
+  pitch_emb_type0 = self.pitch_emb_type
+  _5 = torch.eq(pitch_emb_type0, "mel_frame")
+  if _5:
+    pitch_strength0 = self.pitch_strength
+    _6 = torch.mul(pitch_proj1, pitch_strength0)
+    encoder_outputs_expanded1 = torch.add(encoder_outputs_expanded, _6)
+    encoder_outputs_expanded0 = encoder_outputs_expanded1
+  else:
+    encoder_outputs_expanded0 = encoder_outputs_expanded
+  decoder = self.decoder
+  outputs_expanded = (decoder).forward(encoder_outputs_expanded0, None, None, )
+  lin = self.lin
+  mel_outputs = (lin).forward(outputs_expanded, )
+  return torch.transpose(mel_outputs, 1, 2)
