@@ -779,8 +779,8 @@ function lineFor(ep, lib, who, text, step, vi) {
   if (nv && nv.server && MK.prepSpeech) { // рассказчик — нейроголос со своего сервера (Альбина); нет связи — голос iPhone (fb)
     const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
     return { key: hash32('nv2|' + nv.speaker + '|' + (nv.soft ? 's' : '') + nv.rate + '|' + nv.pitch + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
-      srv: { text: marked, speaker: nv.speaker, soft: nv.soft, rate: nv.rate, pitch: nv.pitch }, fb: { fx } }; }
-  return { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + (synth ? '|' + synth + age + variant + (short ? 's' : '') : '')).toString(36), who, text: say, voice: v, fx, synth, age, variant, short, seed };
+      srv: { text: marked, speaker: nv.speaker, soft: nv.soft, rate: nv.rate, pitch: nv.pitch }, fb: { fx }, src: text }; }
+  return { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + (synth ? '|' + synth + age + variant + (short ? 's' : '') : '')).toString(36), who, text: say, voice: v, fx, synth, age, variant, short, seed, src: text };
 }
 
 /** Список всех реплик эпизода (для озвучки до сборки). */

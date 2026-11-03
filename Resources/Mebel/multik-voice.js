@@ -35,8 +35,8 @@
         cur.forEach((t, i) => { const x = t.toLowerCase().replace(/[^А-Яа-яёЁ]/g, ''); tokens.push(t); inputs.push(x); mask.push(x.length > 0 && cm[i]); }); }
       return { tokens, inputs, mask }; },
     /** Текст → текст с «+» перед ударной гласной в каждом слове (свои «+» и «ё» не трогает). lex.stress — словарь пользователя. */
-    userMarks(sentence, lex) { const user = (lex && lex.stress) || {};
-      return sentence.replace(/[А-Яа-яЁё+]+/g, w => { if (w.includes('+')) return w; const u = user[w.toLowerCase().replace(/ё/g, 'е')] || user[w.toLowerCase()]; if (!u) return w;
+    userMarks(sentence, lex) { const user = (lex && lex.stress) || {}, isH = global.MK && global.MK.isHomograph;
+      return sentence.replace(/[А-Яа-яЁё+]+/g, w => { if (w.includes('+')) return w; const u = user[w.toLowerCase().replace(/ё/g, 'е')] || user[w.toLowerCase()]; if (!u || (isH && isH(w))) return w;
         let out = '', j = 0; for (const c of u) { if (c === '+') { out += '+'; continue; } const o = w[j++] || c; out += isLower(o) ? c : c.toUpperCase(); } return out; }); },
     accent(sentence, lex) { if (!this.ready) return sentence;
       if (lex) sentence = this.userMarks(sentence, lex);
@@ -69,17 +69,24 @@
 
   // ---------- омографы (з+амок / зам+ок): фразы + маленький BERT из silero-stress, как HomoSolver ----------
   const MKHomo = {
-    ready: false, _p: null,
-    load(ort) { if (this._p) return this._p;
-      return (this._p = (async () => {
-        const d = await (await fetch(BASE + 'homo.json')).json(), q = await (await fetch(BASE + 'homo_emb.q8')).arrayBuffer();
-        this.q = d.dtype === 'int8' ? new Int8Array(q) : new Uint8Array(q); this.d = d; this.H = d.H;
+    ready: false, _p: null, _pd: null, dictReady: false,
+    /** Только словарь и фразы (homo.json, без нейросети): хватает для многих фраз и для списка омографов в сценарии. */
+    loadDict() { if (this._pd) return this._pd;
+      return (this._pd = (async () => {
+        const d = await (await fetch(BASE + 'homo.json')).json(); this.d = d; this.H = d.H;
         this.vocab = new Map(); d.vocab.split('\n').forEach((t, i) => this.vocab.set(t, i)); this.never = new Set(d.never_split);
         this.re = {}; for (const [w, pat] of Object.entries(d.phrases)) { try { this.re[w] = new RegExp(pat.replace(/\(\?P</g, '(?<'), 'i'); } catch (e) {} }
         this.head = d.head.map(l => l.t === 'lin' ? { t: 'lin', w: Float32Array.from(l.w.flat()), b: Float32Array.from(l.b), o: l.w.length, i: l.w[0].length } : l);
+        this.dictReady = true; })().catch(e => { this._pd = null; throw e; })); },
+    /** Словарь + нейросеть (rubert-tiny) для фраз, которых нет среди типовых. */
+    load(ort) { if (this._p) return this._p;
+      return (this._p = (async () => {
+        await this.loadDict(); const q = await (await fetch(BASE + 'homo_emb.q8')).arrayBuffer(); this.q = this.d.dtype === 'int8' ? new Int8Array(q) : new Uint8Array(q);
         this.sess = await ort.InferenceSession.create(BASE + 'homo.onnx', { executionProviders: ['wasm'], graphOptimizationLevel: 'all' });
         this.ready = true; })().catch(e => { this._p = null; throw e; })); },
-    async unload() { if (this.sess) { try { await this.sess.release(); } catch (e) {} } this.sess = null; this.ready = false; this._p = null; },
+    async unload() { if (this.sess) { try { await this.sess.release(); } catch (e) {} } this.sess = null; this.q = null; this.ready = false; this._p = null; this.d = null; this.re = null; this.vocab = null; this.dictReady = false; this._pd = null; },
+    /** Есть ли в тексте омографы (по словарю, если загружен, иначе по встроенному списку MK.isHomograph). */
+    has(text) { const isH = global.MK && global.MK.isHomograph; for (const w of (String(text || '').toLowerCase().match(/[а-яё]+/g) || [])) { if (this.d && this.d.homodict[w]) return true; if (!this.d && isH && isH(w)) return true; } return false; },
     // BERT-токенизатор (BasicTokenizer + WordPiece, без перевода в нижний регистр)
     basic(text) { let t = ''; for (const c of text) { const cp = c.codePointAt(0); if (cp === 0 || cp === 0xfffd || (/\p{C}/u.test(c) && !'\t\n\r'.includes(c))) continue; t += (/[ \t\n\r]/.test(c) || /\p{Zs}/u.test(c)) ? ' ' : c; }
       const out = []; for (const tok of t.trim().split(/\s+/).filter(Boolean)) { if (this.never.has(tok)) { out.push(tok); continue; }
@@ -100,6 +107,8 @@
     async predict(mark, wl) {
       const re = this.re[wl]; if (re) { const m = re.exec(mark); if (m && m.groups) for (const [k, v] of Object.entries(m.groups)) if (v != null) return this.decap(k); }
       const vars = this.d.homodict[wl]; if (!vars) return null;
+      if (!this.ready) { // нейросеть не загружена: подгрузить (если можно), иначе оставить как есть — голос решит сам
+        if (this.noModel) return null; try { const ort = global.MKVoice ? await global.MKVoice.loadOrt() : null; if (!ort) return null; await this.load(ort); } catch (e) { this.noModel = true; return null; } }
       const ids = this.encode(mark), I = this.d.ids, a = ids.indexOf(I.hs), b = ids.indexOf(I.he); if (a < 0 || b < 0) return null;
       const H = this.H, L = ids.length, E = new Float32Array(L * H), sc = this.d.scale, zp = this.d.zp;
       for (let i = 0; i < L; i++) { const r = ids[i] * H; for (let j = 0; j < H; j++) E[i * H + j] = (this.q[r + j] - zp) * sc; }
@@ -109,7 +118,7 @@
       for (const l of this.head) { if (l.t === 'lin') { const y = new Float32Array(l.o); for (let o = 0; o < l.o; o++) { let s = l.b[o]; const r = o * l.i; for (let i = 0; i < l.i; i++) s += l.w[r + i] * x[i]; y[o] = s; } x = y; }
         else if (l.t === 'ReLU') x = x.map(v => Math.max(0, v)); else if (l.t === 'Tanh') x = x.map(Math.tanh); else if (l.t === 'GELU' || l.t === 'GELUActivation') x = x.map(v => .5 * v * (1 + erf(v / Math.SQRT2))); }
       return [...vars].sort()[x[0] > 0 ? 1 : 0]; },
-    async solve(sentence) { if (!this.ready) return sentence; const hits = [];
+    async solve(sentence) { if (!this.dictReady) return sentence; const hits = [];
       for (const m of sentence.matchAll(/(?=.*[а-яё])[а-яё+]+/gi)) { const w = m[0], wl = w.toLowerCase(); if (!(this.d.homodict[wl] || this.re[wl])) continue;
         const st = this.clean(sentence.slice(0, m.index), true).slice(-(this.d.window >> 1)), en = this.clean(sentence.slice(m.index + w.length), false).slice(0, this.d.window >> 1);
         const p = await this.predict((st + ' [HOMO] ' + wl + ' [/HOMO] ' + en).trim(), wl); if (p) hits.push({ s: m.index, e: m.index + w.length, w, p }); }
@@ -196,11 +205,20 @@
     /** Текст → голос. o: {speaker:'ru_albina', rate:1, pitch:1, lex, accent:true}. Возвращает Float32Array 48 кГц. */
     async speak(text, o) { o = o || {}; await this.load();
       let t = String(text || '').replace(/[«»"“”]/g, '').replace(/\s+/g, ' ').trim(); if (!t) return new Float32Array(0);
-      if (o.accent !== false) { t = MKStress.userMarks(t, o.lex); if (MKHomo.ready) { try { t = await MKHomo.solve(t); } catch (e) { console.log('омографы', e && e.message); } } t = MKStress.accent(t, null); }
+      if (o.accent !== false) { t = MKStress.userMarks(t, o.lex); if (MKHomo.ready || MKHomo.dictReady) { try { t = await MKHomo.solve(t); } catch (e) { console.log('омографы', e && e.message); } } t = MKStress.accent(t, null); }
       this.lastText = t;
       const parts = [], cur = []; for (const s of t.split(/(?<=[.!?…])\s+/)) { if (cur.join(' ').length + s.length > 700 && cur.length) { parts.push(cur.join(' ')); cur.length = 0; } cur.push(s); } if (cur.length) parts.push(cur.join(' '));
       const bufs = []; for (const p of parts) { bufs.push(await this.chunk(p, o)); bufs.push(new Float32Array(Math.round(48000 * .22))); } bufs.pop();
       const n = bufs.reduce((a, b) => a + b.length, 0), y = new Float32Array(n); let k = 0; for (const b of bufs) { y.set(b, k); k += b.length; } return y; },
+  };
+  /** Для голосов iPhone: текст с «+» только у слов из словаря пользователя и у омографов по смыслу (остальное iPhone ставит сам).
+      Свои «+» в тексте не трогаются. Нейросеть омографов подгружается только если словарь фраз не решил. */
+  MKVoice.homoMarks = async function (text, lex) {
+    let t = String(text || ''); if (!t.trim()) return t;
+    t = MKStress.userMarks(t, lex);
+    if (!MKHomo.has(t)) return t;
+    try { await MKHomo.loadDict(); t = await MKHomo.solve(t); } catch (e) { console.log('омографы', e && e.message); }
+    return t;
   };
   /** «Мягкий тон» (как выбирали на слух): чуть теплее, без резкости, ровнее, с лёгким «воздухом». → AudioBuffer */
   MKVoice.soften = async function (y, sr) { sr = sr || 48000; const ac = new OfflineAudioContext(1, y.length + Math.round(sr * .1), sr);

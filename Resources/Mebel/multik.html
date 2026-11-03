@@ -313,7 +313,7 @@ const App = {
         <div class="mut" style="margin:4px 0 8px">Нейроголос считается прямо в телефоне — интернет не нужен. Ударения ставятся сами; если слово прочитано не так — поправь его в «Ударениях» ниже, запомнится навсегда.</div>` : `<div class="mut" style="margin:4px 0 8px">Голос iPhone: ${esc(MK.fxFor(Lib.data, 'Р').name)}</div>`}
         <div class="btns"><button class="btn" onclick="SrvVoice.preview('Жили-были в маленьком домике кот Барсик, мышонок Пик и пёс Рон. Однажды утром друзья отправились в лес за грибами.', 'narAcc')">▶ Послушать</button><button class="btn" onclick="VP.open('Р')">🎙 Голос iPhone</button></div>
         <div id="narAcc" class="mut" style="margin-top:6px"></div></div>
-      <div class="card"><b>Ударения</b><div class="mut" style="margin:4px 0 8px">В сценарии ставьте <b>+</b> перед ударной буквой: «з+амок», «Б+арсик» — или большую букву: «замОк». Один раз отметили — слово запомнится навсегда. Здесь можно проверить, как iPhone прочитает.</div>
+      <div class="card"><b>Ударения</b><div class="mut" style="margin:4px 0 8px">В сценарии ставьте <b>+</b> перед ударной буквой: «з+амок», «Б+арсик» — или большую букву: «замОк». Один раз отметили — слово запомнится навсегда (кроме омографов вроде «замок»: у них ударение выбирается по смыслу в каждой реплике). Здесь можно проверить, как iPhone прочитает.</div>
         <div class="row"><input id="stWord" placeholder="например: з+амок" style="flex:1"></div>
         <div class="btns" style="margin-top:6px"><button class="btn" onclick="Stress.neural()">▶ Нейроголос</button><button class="btn" onclick="Stress.hear('ipa')">▶ Способ 1</button><button class="btn" onclick="Stress.hear('acute')">▶ Способ 2</button><button class="btn" onclick="Stress.hear('respell')">▶ Способ 3</button></div>
         <div class="row" style="margin-top:6px"><span class="mut" style="flex:1">Каким способом ставить ударения:</span><select id="stMode"><option value="ipa">Способ 1 (произношение)</option><option value="acute">Способ 2 (знак ударения)</option><option value="respell">Способ 3 (пишу как слышится)</option></select></div>
@@ -427,7 +427,13 @@ async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уж�
     let r = null, fx = ln.fx || MK.VOICE_FX.natural;
     if (ln.srv) { r = await SrvVoice.get(ln); if (!r) fx = ln.fb.fx; } // рассказчик — нейроголос (в телефоне, иначе с сервера); не вышло — голос iPhone
     if (r && r.buf) { try { const buf = await MK.voiceFx(r.buf, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('нейроголос', err); } continue; }
-    if (!r) r = await Native.call('tts', { text: ln.text, voice: ln.voice, key: ln.key });
+    if (!r) { // голос iPhone: омографы по смыслу (з+амок/зам+ок) — как у рассказчика; свои «+» в реплике важнее
+      let text = ln.text, voice = ln.voice, key = ln.key;
+      if (ln.src && window.MKVoice && MKVoice.homoMarks) { try {
+        const plus = ln.src.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1'), hm = await MKVoice.homoMarks(plus, lib.lexicon || {});
+        if (hm !== plus) { const ps = MK.prepSpeech(hm, lib.lexicon || {}, (lib.settings && lib.settings.stressMode) || 'ipa'); text = ps.text; voice = Object.assign({}, ln.voice, ps.ipa.length ? { ipa: ps.ipa } : {}); key = ln.key + 'h' + MK.hash32(hm).toString(36); }
+      } catch (err) { console.log('омографы', err); } }
+      r = await Native.call('tts', { text, voice, key }); }
     if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
   }
   if (window.MKVoice) { try { await MKVoice.unload(); } catch (err) {} } // память — под картинку (рамка с голосом убрана целиком)
@@ -778,7 +784,9 @@ const Stress = {
   word() { return (document.getElementById('stWord').value || '').trim(); },
   neural() { const w = this.word(); if (!w) { alert('Напишите слово или фразу. Ударение можно поставить «+»: з+амок'); return; } SrvVoice.preview(w.replace(/([а-яё])([АЕЁИОУЫЭЮЯ])/g, (m0, a, b) => a + '+' + b.toLowerCase()), 'stAcc'); },
   hear(mode) { const w = this.word(); if (!w) { alert('Напишите слово с + перед ударной буквой, например: з+амок'); return; } previewVoice(w, { base: 'female', pitch: 1.1, rate: .5 }, MK.VOICE_FX.natural, null, mode); },
-  save() { const w = this.word(); const lex = Lib.data.lexicon = Lib.data.lexicon || {}; const n = MK.learnStress(w.replace(/([а-яё])([АЕЁИОУЫЭЮЯ])/g, (m0, a, b) => a + '+' + b.toLowerCase()), lex); if (!n.length) { alert('Поставьте + перед ударной буквой, например: з+амок'); return; } Lib.save(); document.getElementById('stWord').value = ''; this.render(); },
+  save() { const w = this.word(); const lex = Lib.data.lexicon = Lib.data.lexicon || {}; const n = MK.learnStress(w.replace(/([а-яё])([АЕЁИОУЫЭЮЯ])/g, (m0, a, b) => a + '+' + b.toLowerCase()), lex);
+    if (!n.length) { if (n.homo && n.homo.length) { const g = MK.homoGloss(n.homo[0].replace(/\+/g, '')); alert(`«${n.homo[0].replace(/\+/g, '')}» — омограф: ударение зависит от смысла${g ? ' (' + g.join('; ').replace(/\+([а-яё])/g, (m0, c) => c.toUpperCase()) + ')' : ''}. Навсегда не запоминаю — в реплике ударение выберется по смыслу, а если надо иначе, поставь + прямо в реплике.`); return; } alert('Поставьте + перед ударной буквой, например: з+амок'); return; }
+    Lib.save(); document.getElementById('stWord').value = ''; this.render(); },
 };
 // ---------- настройка голоса персонажа ----------
 const VP = {
@@ -885,9 +893,24 @@ const Wr = {
       + (r.shown && r.shown.length ? `<div style="margin-top:6px">🎃 Покажу в кадре по репликам: ${r.shown.map(x => esc(MKScript.OBJECTS[x.type] || x.type) + (x.how ? ' <span class="mut">(' + esc(x.how) + ')</span>' : '')).join(', ')}</div>` : '')
       + (r.parts.some(e => e.scenes.some(x => x.theme)) ? `<div class="mut">Праздник: ${[...new Set(r.parts.flatMap(e => e.scenes.map(x => x.theme).filter(Boolean)))].map(t => ({ halloween: 'Хэллоуин — тыквы-фонари, летучие мыши, гирлянда', newyear: 'Новый год — ёлка, подарки, снеговик', birthday: 'День рождения — шарики, гирлянда' })[t]).join('; ')}</div>` : '')
       + (r.narrated ? `<div class="mut">Рассказчик прочитает фраз: ${r.narrated}</div>` : '')
+      + this.homoBlock(document.getElementById('wrText').value)
       + (r.parts.length ? `<details style="margin-top:8px"><summary style="color:var(--acc)">📋 Как я понял (раскадровка)</summary><div style="font-size:13px;line-height:1.45;margin-top:6px">${r.parts.map(e => MKScript.storyboard(e, tmp, r.newChars, r.newLocs).map(sc => `<div style="margin-top:6px"><b>${esc(sc.title)}</b>${sc.lines.map(l => `<div>${esc(l)}</div>`).join('')}</div>`).join('')).join('<hr style="border-color:#2a2f3d">')}</div></details>` : '') + (r.warnings.length ? `<div class="warn">${r.warnings.map(esc).join('<br>')}</div>` : '') + (r.errors.length ? '' : '<div class="mut">Длительность примерная — точная будет после озвучки.</div>');
     return r;
   },
+  /** Омографы в сценарии (замок/замок): что есть что, и кнопка — вписать выбранное ударение знаком + в текст. */
+  homoBlock(text) { const hs = MK.homographsIn(text.replace(/[А-Яа-яЁё]*\+[а-яёА-ЯЁ]+/g, ' ')); if (!hs.length) return '';
+    const up = t => esc(t).replace(/\+([а-яё])/g, (m0, c) => '<b>' + c.toUpperCase() + '</b>');
+    return `<details style="margin-top:8px"><summary style="color:var(--acc)">🔤 Омографы — ударение по смыслу (${hs.length})</summary><div style="font-size:13px;line-height:1.5;margin-top:6px">`
+      + hs.map(h => `<div><b>${esc(h.w)}</b>: ${h.gloss ? h.gloss.map(up).join(' / ') : 'ударение выберется по смыслу фразы'}</div>`).join('')
+      + `<div class="mut" style="margin-top:6px">Озвучка сама выберет ударение по смыслу. Чтобы увидеть и поправить — нажми кнопку: выбранное впишется в текст знаком + (з+амок), его можно переставить.</div>
+      <div class="btns" style="margin-top:6px"><button class="btn" onclick="Wr.markHomos()">✏️ Проставить ударения омографов</button></div></div></details>`; },
+  async markHomos() { const el = document.getElementById('wrText'); if (!window.MKVoice || !window.MKHomo) { alert('Нет модуля омографов.'); return; }
+    const o = document.getElementById('wrOut'); const note = document.createElement('div'); note.className = 'mut'; note.textContent = 'Разбираю омографы по смыслу…'; o.prepend(note);
+    try { await MKHomo.loadDict(); const lines = el.value.split('\n'), done = []; for (let i = 0; i < lines.length; i++) { const L = lines[i]; if (/^\s*[А-ЯЁ]{3,}\s*:/.test(L) || !MKHomo.has(L)) continue;
+        const m = await MKHomo.solve(L); if (m !== L) { lines[i] = m; (m.match(/[А-Яа-яЁё]*\+[а-яёА-ЯЁ]+/g) || []).forEach(w => { if (!L.includes(w)) done.push(w); }); } }
+      el.value = lines.join('\n'); this.saveDraft(); this.check(); try { await MKHomo.unload(); } catch (e) {} // память: нейросеть омографов больше не нужна
+      document.getElementById('wrOut').insertAdjacentHTML('afterbegin', `<div class="mut" style="margin-bottom:6px${done.length ? ';color:var(--ok)' : ''}">${done.length ? 'Проставил: ' + [...new Set(done)].map(w => esc(w).replace(/\+([а-яё])/g, (m0, c) => '<b>' + c.toUpperCase() + '</b>')).join(', ') + ' — проверь по смыслу, + можно переставить.' : 'Все омографы уже отмечены.'}</div>`);
+    } catch (e) { note.textContent = 'Не вышло: ' + (e && e.message); } },
   async make() { try { await this._make(); } catch (e) { document.getElementById('wrOut').insertAdjacentHTML('afterbegin', `<div class="err">Ошибка: ${esc(e.message)}</div>`); } },
   async _make() {
     { const lex = Lib.data.lexicon = Lib.data.lexicon || {}; const t = document.getElementById('wrText').value; if (MK.learnStress) { const n = MK.learnStress(t, lex); if (n.length) Lib.save(); } }
