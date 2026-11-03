@@ -1,0 +1,4669 @@
+[
+ {
+  "id": "o-lg-dan-1",
+  "dur": 0.58,
+  "score": -0.006,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.01,
+   "Music": 0.003,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.0,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Slap, smack",
+    0.052
+   ],
+   [
+    "Single-lens reflex camera",
+    0.033
+   ],
+   [
+    "Finger snapping",
+    0.019
+   ],
+   [
+    "Tick",
+    0.019
+   ],
+   [
+    "Sound effect",
+    0.016
+   ]
+  ],
+  "f0": 555.5998167673567,
+  "f0lo": 554.63000296174,
+  "f0hi": 557.4200771867563,
+  "voiced": 0.09259259259259259,
+  "syl": 1,
+  "rate": 1.7,
+  "prompt": "<laugh>",
+  "preset": "dan",
+  "gen_sec": 5.0
+ },
+ {
+  "id": "o-ha-dan-1",
+  "dur": 0.56,
+  "score": -0.007,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.011,
+   "Music": 0.003,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.0,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Finger snapping",
+    0.089
+   ],
+   [
+    "Scissors",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.032
+   ],
+   [
+    "Tick",
+    0.031
+   ],
+   [
+    "Slap, smack",
+    0.024
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 2,
+  "rate": 3.6,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "dan",
+  "gen_sec": 5.2
+ },
+ {
+  "id": "o-hee-leo-0",
+  "dur": 0.34,
+  "score": -0.008,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.014,
+   "Music": 0.011,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.0,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Static",
+    0.549
+   ],
+   [
+    "Burst, pop",
+    0.054
+   ],
+   [
+    "Bang",
+    0.041
+   ],
+   [
+    "Explosion",
+    0.038
+   ],
+   [
+    "White noise",
+    0.026
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 1,
+  "rate": 2.9,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "leo",
+  "gen_sec": 3.0
+ },
+ {
+  "id": "o-lg-tara-0",
+  "dur": 0.34,
+  "score": -0.01,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.017,
+   "Music": 0.014,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.0,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Static",
+    0.109
+   ],
+   [
+    "Burst, pop",
+    0.105
+   ],
+   [
+    "Explosion",
+    0.081
+   ],
+   [
+    "Bang",
+    0.037
+   ],
+   [
+    "Speech",
+    0.017
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 1,
+  "rate": 2.9,
+  "prompt": "<laugh>",
+  "preset": "tara",
+  "gen_sec": 3.6
+ },
+ {
+  "id": "o-hee-leo-1",
+  "dur": 0.34,
+  "score": -0.011,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.018,
+   "Music": 0.011,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.001,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Static",
+    0.186
+   ],
+   [
+    "Sound effect",
+    0.02
+   ],
+   [
+    "White noise",
+    0.019
+   ],
+   [
+    "Slap, smack",
+    0.018
+   ],
+   [
+    "Speech",
+    0.018
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 1,
+  "rate": 2.9,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "leo",
+  "gen_sec": 2.8
+ },
+ {
+  "id": "o-lg-mia-1",
+  "dur": 0.34,
+  "score": -0.014,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.023,
+   "Music": 0.013,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.0,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Static",
+    0.244
+   ],
+   [
+    "Burst, pop",
+    0.049
+   ],
+   [
+    "Explosion",
+    0.033
+   ],
+   [
+    "Bang",
+    0.025
+   ],
+   [
+    "Speech",
+    0.023
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 1,
+  "rate": 2.9,
+  "prompt": "<laugh>",
+  "preset": "mia",
+  "gen_sec": 2.5
+ },
+ {
+  "id": "o-ch-dan-0",
+  "dur": 0.34,
+  "score": -0.016,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.021,
+   "Music": 0.027,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.0,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Static",
+    0.66
+   ],
+   [
+    "White noise",
+    0.036
+   ],
+   [
+    "Music",
+    0.027
+   ],
+   [
+    "Bang",
+    0.026
+   ],
+   [
+    "Sound effect",
+    0.024
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 1,
+  "rate": 2.9,
+  "prompt": "<chuckle>",
+  "preset": "dan",
+  "gen_sec": 2.5
+ },
+ {
+  "id": "o-ha-dan-0",
+  "dur": 0.34,
+  "score": -0.016,
+  "laugh": {
+   "Laughter": 0.001,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.029,
+   "Music": 0.023,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.002,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Slap, smack",
+    0.075
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Slam",
+    0.031
+   ],
+   [
+    "Speech",
+    0.029
+   ],
+   [
+    "Music",
+    0.023
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 1,
+  "rate": 2.9,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "dan",
+  "gen_sec": 2.7
+ },
+ {
+  "id": "o-ch-zoe-0",
+  "dur": 0.34,
+  "score": -0.022,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.014,
+   "Music": 0.036,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.0,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Static",
+    0.629
+   ],
+   [
+    "White noise",
+    0.039
+   ],
+   [
+    "Music",
+    0.036
+   ],
+   [
+    "Bang",
+    0.027
+   ],
+   [
+    "Sound effect",
+    0.019
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 1,
+  "rate": 2.9,
+  "prompt": "<chuckle>",
+  "preset": "zoe",
+  "gen_sec": 1.8
+ },
+ {
+  "id": "o-ha-zoe-0",
+  "dur": 0.34,
+  "score": -0.022,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.016,
+   "Music": 0.036,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.0,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Static",
+    0.727
+   ],
+   [
+    "White noise",
+    0.039
+   ],
+   [
+    "Music",
+    0.036
+   ],
+   [
+    "Bang",
+    0.025
+   ],
+   [
+    "Sound effect",
+    0.02
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 1,
+  "rate": 2.9,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "zoe",
+  "gen_sec": 1.8
+ },
+ {
+  "id": "o-lg2-zoe-1",
+  "dur": 0.43,
+  "score": -0.022,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.012,
+   "Music": 0.038,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.0,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Static",
+    0.053
+   ],
+   [
+    "Bang",
+    0.045
+   ],
+   [
+    "Music",
+    0.038
+   ],
+   [
+    "Slap, smack",
+    0.032
+   ],
+   [
+    "Single-lens reflex camera",
+    0.031
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 1,
+  "rate": 2.3,
+  "prompt": "<laugh> <laugh>",
+  "preset": "zoe",
+  "gen_sec": 2.1
+ },
+ {
+  "id": "o-ch-tara-1",
+  "dur": 0.34,
+  "score": -0.029,
+  "laugh": {
+   "Laughter": 0.001,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.014,
+   "Music": 0.05,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.001,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Sound effect",
+    0.066
+   ],
+   [
+    "Music",
+    0.05
+   ],
+   [
+    "Static",
+    0.037
+   ],
+   [
+    "Slap, smack",
+    0.019
+   ],
+   [
+    "Single-lens reflex camera",
+    0.019
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 2,
+  "rate": 5.9,
+  "prompt": "<chuckle>",
+  "preset": "tara",
+  "gen_sec": 3.3
+ },
+ {
+  "id": "o-lg2-zac-1",
+  "dur": 0.34,
+  "score": -0.035,
+  "laugh": {
+   "Laughter": 0.001,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.018,
+   "Music": 0.06,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.001,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Music",
+    0.06
+   ],
+   [
+    "Sound effect",
+    0.053
+   ],
+   [
+    "Scratch",
+    0.019
+   ],
+   [
+    "Static",
+    0.019
+   ],
+   [
+    "Speech",
+    0.018
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 2,
+  "rate": 5.9,
+  "prompt": "<laugh> <laugh>",
+  "preset": "zac",
+  "gen_sec": 3.4
+ },
+ {
+  "id": "o-lg-jess-0",
+  "dur": 0.34,
+  "score": -0.04,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.061,
+   "Music": 0.066,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.0,
+   "Conversation": 0.0
+  },
+  "top": [
+   [
+    "Static",
+    0.609
+   ],
+   [
+    "White noise",
+    0.106
+   ],
+   [
+    "Music",
+    0.066
+   ],
+   [
+    "Speech",
+    0.061
+   ],
+   [
+    "Pink noise",
+    0.026
+   ]
+  ],
+  "f0": 0,
+  "f0lo": 0,
+  "f0hi": 0,
+  "voiced": 0.0,
+  "syl": 1,
+  "rate": 2.9,
+  "prompt": "<laugh>",
+  "preset": "jess",
+  "gen_sec": 2.4
+ },
+ {
+  "id": "o-lg2-jess-1",
+  "dur": 0.71,
+  "score": -0.203,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.34,
+   "Music": 0.042,
+   "Singing": 0.028,
+   "Child speech, kid speaking": 0.005,
+   "Narration, monologue": 0.009,
+   "Conversation": 0.001
+  },
+  "top": [
+   [
+    "Speech",
+    0.34
+   ],
+   [
+    "Male singing",
+    0.147
+   ],
+   [
+    "Sound effect",
+    0.078
+   ],
+   [
+    "Music",
+    0.042
+   ],
+   [
+    "Female singing",
+    0.03
+   ]
+  ],
+  "f0": 247.78565190313927,
+  "f0lo": 225.4342941915129,
+  "f0hi": 261.1718402567187,
+  "voiced": 0.8208955223880597,
+  "syl": 1,
+  "rate": 1.4,
+  "prompt": "<laugh> <laugh>",
+  "preset": "jess",
+  "gen_sec": 5.8
+ },
+ {
+  "id": "o-ch-leah-1",
+  "dur": 5.08,
+  "score": -0.314,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.525,
+   "Music": 0.03,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.027,
+   "Narration, monologue": 0.026,
+   "Conversation": 0.01
+  },
+  "top": [
+   [
+    "Speech",
+    0.525
+   ],
+   [
+    "Female speech, woman speaking",
+    0.08
+   ],
+   [
+    "Speech synthesizer",
+    0.058
+   ],
+   [
+    "Music",
+    0.03
+   ],
+   [
+    "Child speech, kid speaking",
+    0.027
+   ]
+  ],
+  "f0": 205.79701168855675,
+  "f0lo": 188.0239870827957,
+  "f0hi": 317.8333360326575,
+  "voiced": 0.5972222222222222,
+  "syl": 10,
+  "rate": 2.0,
+  "prompt": "<chuckle>",
+  "preset": "leah",
+  "gen_sec": 35.4
+ },
+ {
+  "id": "o-hee-zac-1",
+  "dur": 10.71,
+  "score": -0.327,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.545,
+   "Music": 0.002,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.005,
+   "Narration, monologue": 0.031,
+   "Conversation": 0.03
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.636
+   ],
+   [
+    "Speech",
+    0.545
+   ],
+   [
+    "Female speech, woman speaking",
+    0.095
+   ],
+   [
+    "Narration, monologue",
+    0.031
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "f0": 194.51333365223434,
+  "f0lo": 168.65271496106277,
+  "f0hi": 279.734129656198,
+  "voiced": 0.4704779756326148,
+  "syl": 27,
+  "rate": 2.5,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "zac",
+  "gen_sec": 97.5
+ },
+ {
+  "id": "o-gg-leo-1",
+  "dur": 10.71,
+  "score": -0.33,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.55,
+   "Music": 0.001,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.04,
+   "Conversation": 0.003
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.903
+   ],
+   [
+    "Speech",
+    0.55
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Male speech, man speaking",
+    0.016
+   ],
+   [
+    "Radio",
+    0.005
+   ]
+  ],
+  "f0": 137.24777255141387,
+  "f0lo": 101.73088503820776,
+  "f0hi": 208.72681734670746,
+  "voiced": 0.5763823805060918,
+  "syl": 31,
+  "rate": 2.9,
+  "prompt": "<giggle>",
+  "preset": "leo",
+  "gen_sec": 74.9
+ },
+ {
+  "id": "o-ch-dan-1",
+  "dur": 10.7,
+  "score": -0.335,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.559,
+   "Music": 0.001,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.043,
+   "Conversation": 0.003
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.903
+   ],
+   [
+    "Speech",
+    0.559
+   ],
+   [
+    "Narration, monologue",
+    0.043
+   ],
+   [
+    "Male speech, man speaking",
+    0.016
+   ],
+   [
+    "Radio",
+    0.003
+   ]
+  ],
+  "f0": 132.77929959789395,
+  "f0lo": 93.80866034688226,
+  "f0hi": 174.88876999823984,
+  "voiced": 0.6472795497185742,
+  "syl": 23,
+  "rate": 2.1,
+  "prompt": "<chuckle>",
+  "preset": "dan",
+  "gen_sec": 72.6
+ },
+ {
+  "id": "o-hee-mia-0",
+  "dur": 8.96,
+  "score": -0.359,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.599,
+   "Music": 0.004,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.004,
+   "Narration, monologue": 0.067,
+   "Conversation": 0.011
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.676
+   ],
+   [
+    "Speech",
+    0.599
+   ],
+   [
+    "Female speech, woman speaking",
+    0.111
+   ],
+   [
+    "Narration, monologue",
+    0.067
+   ],
+   [
+    "Conversation",
+    0.011
+   ]
+  ],
+  "f0": 215.91059192408886,
+  "f0lo": 182.89667550164145,
+  "f0hi": 287.03377534939375,
+  "voiced": 0.5818385650224215,
+  "syl": 29,
+  "rate": 3.2,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "mia",
+  "gen_sec": 59.0
+ },
+ {
+  "id": "o-lg-leah-0",
+  "dur": 1.07,
+  "score": -0.369,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.616,
+   "Music": 0.008,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.002,
+   "Narration, monologue": 0.005,
+   "Conversation": 0.004
+  },
+  "top": [
+   [
+    "Speech",
+    0.616
+   ],
+   [
+    "Grunt",
+    0.041
+   ],
+   [
+    "Speech synthesizer",
+    0.032
+   ],
+   [
+    "Sound effect",
+    0.022
+   ],
+   [
+    "Groan",
+    0.018
+   ]
+  ],
+  "f0": 189.69236221748724,
+  "f0lo": 121.54824217750728,
+  "f0hi": 274.61068188313095,
+  "voiced": 0.8640776699029126,
+  "syl": 3,
+  "rate": 2.8,
+  "prompt": "<laugh>",
+  "preset": "leah",
+  "gen_sec": 12.9
+ },
+ {
+  "id": "o-hee-zoe-0",
+  "dur": 10.76,
+  "score": -0.371,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.619,
+   "Music": 0.002,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.007,
+   "Narration, monologue": 0.06,
+   "Conversation": 0.016
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.782
+   ],
+   [
+    "Speech",
+    0.619
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Female speech, woman speaking",
+    0.057
+   ],
+   [
+    "Conversation",
+    0.016
+   ]
+  ],
+  "f0": 194.28395053249523,
+  "f0lo": 158.9907468279135,
+  "f0hi": 264.98522159769936,
+  "voiced": 0.6044776119402985,
+  "syl": 27,
+  "rate": 2.5,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "zoe",
+  "gen_sec": 53.0
+ },
+ {
+  "id": "o-gg-mia-0",
+  "dur": 9.74,
+  "score": -0.382,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.636,
+   "Music": 0.001,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.106,
+   "Conversation": 0.002
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.761
+   ],
+   [
+    "Speech",
+    0.636
+   ],
+   [
+    "Narration, monologue",
+    0.106
+   ],
+   [
+    "Male speech, man speaking",
+    0.049
+   ],
+   [
+    "Sigh",
+    0.012
+   ]
+  ],
+  "f0": 124.7129963199327,
+  "f0lo": 98.11290190228554,
+  "f0hi": 168.90699816236776,
+  "voiced": 0.6649484536082474,
+  "syl": 30,
+  "rate": 3.1,
+  "prompt": "<giggle>",
+  "preset": "mia",
+  "gen_sec": 64.9
+ },
+ {
+  "id": "o-lg2-mia-1",
+  "dur": 3.43,
+  "score": -0.396,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.664,
+   "Music": 0.004,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.069,
+   "Conversation": 0.006
+  },
+  "top": [
+   [
+    "Speech",
+    0.664
+   ],
+   [
+    "Speech synthesizer",
+    0.31
+   ],
+   [
+    "Narration, monologue",
+    0.069
+   ],
+   [
+    "Male speech, man speaking",
+    0.064
+   ],
+   [
+    "Sound effect",
+    0.032
+   ]
+  ],
+  "f0": 131.87441957487172,
+  "f0lo": 86.72958739686545,
+  "f0hi": 162.41024196454006,
+  "voiced": 0.7964601769911505,
+  "syl": 13,
+  "rate": 3.8,
+  "prompt": "<laugh> <laugh>",
+  "preset": "mia",
+  "gen_sec": 23.8
+ },
+ {
+  "id": "o-ch-leo-1",
+  "dur": 10.66,
+  "score": -0.397,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.662,
+   "Music": 0.001,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.037,
+   "Conversation": 0.001
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.844
+   ],
+   [
+    "Speech",
+    0.662
+   ],
+   [
+    "Narration, monologue",
+    0.037
+   ],
+   [
+    "Male speech, man speaking",
+    0.02
+   ],
+   [
+    "Mantra",
+    0.003
+   ]
+  ],
+  "f0": 114.4979399196046,
+  "f0lo": 98.21806526583876,
+  "f0hi": 151.08675406172992,
+  "voiced": 0.647834274952919,
+  "syl": 30,
+  "rate": 2.8,
+  "prompt": "<chuckle>",
+  "preset": "leo",
+  "gen_sec": 75.6
+ },
+ {
+  "id": "o-ha-tara-1",
+  "dur": 9.5,
+  "score": -0.398,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.663,
+   "Music": 0.002,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.002,
+   "Narration, monologue": 0.059,
+   "Conversation": 0.011
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.731
+   ],
+   [
+    "Speech",
+    0.663
+   ],
+   [
+    "Narration, monologue",
+    0.059
+   ],
+   [
+    "Female speech, woman speaking",
+    0.034
+   ],
+   [
+    "Conversation",
+    0.011
+   ]
+  ],
+  "f0": 171.64186909146179,
+  "f0lo": 149.49367045689547,
+  "f0hi": 231.02685647812595,
+  "voiced": 0.6659619450317125,
+  "syl": 28,
+  "rate": 2.9,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "tara",
+  "gen_sec": 88.1
+ },
+ {
+  "id": "o-ch-leah-0",
+  "dur": 3.54,
+  "score": -0.411,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.687,
+   "Music": 0.003,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.011,
+   "Narration, monologue": 0.061,
+   "Conversation": 0.01
+  },
+  "top": [
+   [
+    "Speech",
+    0.687
+   ],
+   [
+    "Speech synthesizer",
+    0.127
+   ],
+   [
+    "Female speech, woman speaking",
+    0.074
+   ],
+   [
+    "Narration, monologue",
+    0.061
+   ],
+   [
+    "Sound effect",
+    0.04
+   ]
+  ],
+  "f0": 170.8448270825501,
+  "f0lo": 156.99848814242657,
+  "f0hi": 197.37762716992583,
+  "voiced": 0.5771428571428572,
+  "syl": 7,
+  "rate": 2.0,
+  "prompt": "<chuckle>",
+  "preset": "leah",
+  "gen_sec": 25.6
+ },
+ {
+  "id": "o-ch-jess-1",
+  "dur": 8.45,
+  "score": -0.412,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.687,
+   "Music": 0.004,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.099,
+   "Conversation": 0.007
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.693
+   ],
+   [
+    "Speech",
+    0.687
+   ],
+   [
+    "Narration, monologue",
+    0.099
+   ],
+   [
+    "Female speech, woman speaking",
+    0.066
+   ],
+   [
+    "Male speech, man speaking",
+    0.011
+   ]
+  ],
+  "f0": 164.55514643103388,
+  "f0lo": 145.1755175525276,
+  "f0hi": 198.44231722203733,
+  "voiced": 0.7098692033293698,
+  "syl": 24,
+  "rate": 2.8,
+  "prompt": "<chuckle>",
+  "preset": "jess",
+  "gen_sec": 50.3
+ },
+ {
+  "id": "o-ha-zoe-1",
+  "dur": 3.7,
+  "score": -0.415,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.693,
+   "Music": 0.004,
+   "Singing": 0.002,
+   "Child speech, kid speaking": 0.007,
+   "Narration, monologue": 0.047,
+   "Conversation": 0.013
+  },
+  "top": [
+   [
+    "Speech",
+    0.693
+   ],
+   [
+    "Speech synthesizer",
+    0.196
+   ],
+   [
+    "Narration, monologue",
+    0.047
+   ],
+   [
+    "Sound effect",
+    0.038
+   ],
+   [
+    "Female speech, woman speaking",
+    0.036
+   ]
+  ],
+  "f0": 167.8512324668671,
+  "f0lo": 153.86593653751171,
+  "f0hi": 192.66210400023232,
+  "voiced": 0.5956284153005464,
+  "syl": 7,
+  "rate": 1.9,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "zoe",
+  "gen_sec": 18.6
+ },
+ {
+  "id": "o-hee-tara-1",
+  "dur": 9.87,
+  "score": -0.415,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.691,
+   "Music": 0.002,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.002,
+   "Narration, monologue": 0.097,
+   "Conversation": 0.016
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.793
+   ],
+   [
+    "Speech",
+    0.691
+   ],
+   [
+    "Narration, monologue",
+    0.097
+   ],
+   [
+    "Female speech, woman speaking",
+    0.072
+   ],
+   [
+    "Conversation",
+    0.016
+   ]
+  ],
+  "f0": 202.94993450434114,
+  "f0lo": 151.50654492448695,
+  "f0hi": 273.166011523497,
+  "voiced": 0.6673448626653102,
+  "syl": 28,
+  "rate": 2.8,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "tara",
+  "gen_sec": 89.2
+ },
+ {
+  "id": "o-lg-leo-0",
+  "dur": 10.64,
+  "score": -0.416,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.693,
+   "Music": 0.002,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.053,
+   "Conversation": 0.01
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.807
+   ],
+   [
+    "Speech",
+    0.693
+   ],
+   [
+    "Narration, monologue",
+    0.053
+   ],
+   [
+    "Female speech, woman speaking",
+    0.025
+   ],
+   [
+    "Conversation",
+    0.01
+   ]
+  ],
+  "f0": 179.03184621005113,
+  "f0lo": 146.85056982064324,
+  "f0hi": 241.6695529200124,
+  "voiced": 0.6084905660377359,
+  "syl": 41,
+  "rate": 3.9,
+  "prompt": "<laugh>",
+  "preset": "leo",
+  "gen_sec": 75.6
+ },
+ {
+  "id": "o-lg2-mia-0",
+  "dur": 9.29,
+  "score": -0.421,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.702,
+   "Music": 0.005,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.003,
+   "Narration, monologue": 0.072,
+   "Conversation": 0.01
+  },
+  "top": [
+   [
+    "Speech",
+    0.702
+   ],
+   [
+    "Speech synthesizer",
+    0.663
+   ],
+   [
+    "Female speech, woman speaking",
+    0.099
+   ],
+   [
+    "Narration, monologue",
+    0.072
+   ],
+   [
+    "Tick",
+    0.017
+   ]
+  ],
+  "f0": 197.1325414847795,
+  "f0lo": 161.39395495178798,
+  "f0hi": 277.8461528540366,
+  "voiced": 0.547027027027027,
+  "syl": 29,
+  "rate": 3.1,
+  "prompt": "<laugh> <laugh>",
+  "preset": "mia",
+  "gen_sec": 62.3
+ },
+ {
+  "id": "o-gg-zac-0",
+  "dur": 4.77,
+  "score": -0.43,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.718,
+   "Music": 0.004,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.069,
+   "Conversation": 0.015
+  },
+  "top": [
+   [
+    "Speech",
+    0.718
+   ],
+   [
+    "Speech synthesizer",
+    0.553
+   ],
+   [
+    "Narration, monologue",
+    0.069
+   ],
+   [
+    "Female speech, woman speaking",
+    0.044
+   ],
+   [
+    "Conversation",
+    0.015
+   ]
+  ],
+  "f0": 188.31566864795855,
+  "f0lo": 164.71206233086448,
+  "f0hi": 249.3263694885273,
+  "voiced": 0.572938689217759,
+  "syl": 13,
+  "rate": 2.7,
+  "prompt": "<giggle>",
+  "preset": "zac",
+  "gen_sec": 44.9
+ },
+ {
+  "id": "o-lg-zac-1",
+  "dur": 2.02,
+  "score": -0.431,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.721,
+   "Music": 0.006,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.051,
+   "Conversation": 0.005
+  },
+  "top": [
+   [
+    "Speech",
+    0.721
+   ],
+   [
+    "Speech synthesizer",
+    0.131
+   ],
+   [
+    "Narration, monologue",
+    0.051
+   ],
+   [
+    "Male speech, man speaking",
+    0.049
+   ],
+   [
+    "Sound effect",
+    0.045
+   ]
+  ],
+  "f0": 120.41951047181573,
+  "f0lo": 78.49309221612604,
+  "f0hi": 169.72645382202163,
+  "voiced": 0.5,
+  "syl": 7,
+  "rate": 3.5,
+  "prompt": "<laugh>",
+  "preset": "zac",
+  "gen_sec": 21.9
+ },
+ {
+  "id": "o-gg-dan-1",
+  "dur": 5.49,
+  "score": -0.432,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.721,
+   "Music": 0.003,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.099,
+   "Conversation": 0.02
+  },
+  "top": [
+   [
+    "Speech",
+    0.721
+   ],
+   [
+    "Speech synthesizer",
+    0.329
+   ],
+   [
+    "Narration, monologue",
+    0.099
+   ],
+   [
+    "Female speech, woman speaking",
+    0.078
+   ],
+   [
+    "Conversation",
+    0.02
+   ]
+  ],
+  "f0": 159.8623611013901,
+  "f0lo": 146.44136969246856,
+  "f0hi": 191.2239335180088,
+  "voiced": 0.5944954128440367,
+  "syl": 20,
+  "rate": 3.6,
+  "prompt": "<giggle>",
+  "preset": "dan",
+  "gen_sec": 39.6
+ },
+ {
+  "id": "o-ha-mia-0",
+  "dur": 1.68,
+  "score": -0.432,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.724,
+   "Music": 0.008,
+   "Singing": 0.002,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.041,
+   "Conversation": 0.002
+  },
+  "top": [
+   [
+    "Speech",
+    0.724
+   ],
+   [
+    "Grunt",
+    0.136
+   ],
+   [
+    "Sound effect",
+    0.114
+   ],
+   [
+    "Male speech, man speaking",
+    0.091
+   ],
+   [
+    "Speech synthesizer",
+    0.076
+   ]
+  ],
+  "f0": 116.12700727277574,
+  "f0lo": 103.27403078917212,
+  "f0hi": 147.4534772424485,
+  "voiced": 0.7926829268292683,
+  "syl": 4,
+  "rate": 2.4,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "mia",
+  "gen_sec": 13.6
+ },
+ {
+  "id": "o-hee-zac-0",
+  "dur": 3.23,
+  "score": -0.434,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.726,
+   "Music": 0.003,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.067,
+   "Conversation": 0.006
+  },
+  "top": [
+   [
+    "Speech",
+    0.726
+   ],
+   [
+    "Speech synthesizer",
+    0.418
+   ],
+   [
+    "Narration, monologue",
+    0.067
+   ],
+   [
+    "Male speech, man speaking",
+    0.066
+   ],
+   [
+    "Sound effect",
+    0.037
+   ]
+  ],
+  "f0": 127.19268423635177,
+  "f0lo": 93.18102946274757,
+  "f0hi": 154.5759155314845,
+  "voiced": 0.6112852664576802,
+  "syl": 11,
+  "rate": 3.4,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "zac",
+  "gen_sec": 31.4
+ },
+ {
+  "id": "o-hee-zoe-1",
+  "dur": 5.49,
+  "score": -0.438,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.732,
+   "Music": 0.009,
+   "Singing": 0.002,
+   "Child speech, kid speaking": 0.016,
+   "Narration, monologue": 0.04,
+   "Conversation": 0.015
+  },
+  "top": [
+   [
+    "Speech",
+    0.732
+   ],
+   [
+    "Speech synthesizer",
+    0.183
+   ],
+   [
+    "Female speech, woman speaking",
+    0.084
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.024
+   ]
+  ],
+  "f0": 188.61983943545502,
+  "f0lo": 172.63836588693462,
+  "f0hi": 266.51783928890853,
+  "voiced": 0.7027522935779816,
+  "syl": 13,
+  "rate": 2.4,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "zoe",
+  "gen_sec": 29.3
+ },
+ {
+  "id": "o-gg-leah-0",
+  "dur": 3.62,
+  "score": -0.445,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.743,
+   "Music": 0.005,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.004,
+   "Narration, monologue": 0.078,
+   "Conversation": 0.017
+  },
+  "top": [
+   [
+    "Speech",
+    0.743
+   ],
+   [
+    "Speech synthesizer",
+    0.517
+   ],
+   [
+    "Narration, monologue",
+    0.078
+   ],
+   [
+    "Female speech, woman speaking",
+    0.054
+   ],
+   [
+    "Sound effect",
+    0.025
+   ]
+  ],
+  "f0": 200.5908715311171,
+  "f0lo": 155.0639822366529,
+  "f0hi": 251.1328461639156,
+  "voiced": 0.6229050279329609,
+  "syl": 11,
+  "rate": 3.0,
+  "prompt": "<giggle>",
+  "preset": "leah",
+  "gen_sec": 26.4
+ },
+ {
+  "id": "o-hee-dan-1",
+  "dur": 8.21,
+  "score": -0.453,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.755,
+   "Music": 0.002,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.002,
+   "Narration, monologue": 0.091,
+   "Conversation": 0.037
+  },
+  "top": [
+   [
+    "Speech",
+    0.755
+   ],
+   [
+    "Speech synthesizer",
+    0.593
+   ],
+   [
+    "Female speech, woman speaking",
+    0.105
+   ],
+   [
+    "Narration, monologue",
+    0.091
+   ],
+   [
+    "Conversation",
+    0.037
+   ]
+  ],
+  "f0": 192.66903564441685,
+  "f0lo": 155.34696589574264,
+  "f0hi": 237.40388035375204,
+  "voiced": 0.6731946144430845,
+  "syl": 27,
+  "rate": 3.3,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "dan",
+  "gen_sec": 57.6
+ },
+ {
+  "id": "o-gg-zoe-0",
+  "dur": 3.59,
+  "score": -0.454,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.759,
+   "Music": 0.003,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.005,
+   "Narration, monologue": 0.042,
+   "Conversation": 0.019
+  },
+  "top": [
+   [
+    "Speech",
+    0.759
+   ],
+   [
+    "Speech synthesizer",
+    0.188
+   ],
+   [
+    "Female speech, woman speaking",
+    0.056
+   ],
+   [
+    "Narration, monologue",
+    0.042
+   ],
+   [
+    "Quack",
+    0.025
+   ]
+  ],
+  "f0": 210.44085781639552,
+  "f0lo": 189.655865836849,
+  "f0hi": 381.3003224570949,
+  "voiced": 0.6084507042253521,
+  "syl": 9,
+  "rate": 2.5,
+  "prompt": "<giggle>",
+  "preset": "zoe",
+  "gen_sec": 18.2
+ },
+ {
+  "id": "o-lg2-dan-1",
+  "dur": 2.32,
+  "score": -0.455,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.76,
+   "Music": 0.011,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.002,
+   "Narration, monologue": 0.042,
+   "Conversation": 0.012
+  },
+  "top": [
+   [
+    "Speech",
+    0.76
+   ],
+   [
+    "Speech synthesizer",
+    0.057
+   ],
+   [
+    "Narration, monologue",
+    0.042
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ],
+   [
+    "Female speech, woman speaking",
+    0.037
+   ]
+  ],
+  "f0": 211.61089194796654,
+  "f0lo": 161.43527279058551,
+  "f0hi": 261.4229111648224,
+  "voiced": 0.6359649122807017,
+  "syl": 9,
+  "rate": 3.9,
+  "prompt": "<laugh> <laugh>",
+  "preset": "dan",
+  "gen_sec": 17.4
+ },
+ {
+  "id": "o-lg2-leah-1",
+  "dur": 4.61,
+  "score": -0.456,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.761,
+   "Music": 0.003,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.094,
+   "Conversation": 0.014
+  },
+  "top": [
+   [
+    "Speech",
+    0.761
+   ],
+   [
+    "Speech synthesizer",
+    0.38
+   ],
+   [
+    "Narration, monologue",
+    0.094
+   ],
+   [
+    "Male speech, man speaking",
+    0.045
+   ],
+   [
+    "Female speech, woman speaking",
+    0.02
+   ]
+  ],
+  "f0": 162.51557123473563,
+  "f0lo": 148.48495230595958,
+  "f0hi": 241.47194887129268,
+  "voiced": 0.700218818380744,
+  "syl": 13,
+  "rate": 2.8,
+  "prompt": "<laugh> <laugh>",
+  "preset": "leah",
+  "gen_sec": 34.5
+ },
+ {
+  "id": "o-hee-dan-0",
+  "dur": 3.45,
+  "score": -0.457,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.763,
+   "Music": 0.007,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.062,
+   "Conversation": 0.01
+  },
+  "top": [
+   [
+    "Speech",
+    0.763
+   ],
+   [
+    "Narration, monologue",
+    0.062
+   ],
+   [
+    "Speech synthesizer",
+    0.061
+   ],
+   [
+    "Female speech, woman speaking",
+    0.036
+   ],
+   [
+    "Male speech, man speaking",
+    0.027
+   ]
+  ],
+  "f0": 194.38051375676943,
+  "f0lo": 156.85192603708097,
+  "f0hi": 249.40860908109929,
+  "voiced": 0.7982456140350878,
+  "syl": 12,
+  "rate": 3.5,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "dan",
+  "gen_sec": 24.7
+ },
+ {
+  "id": "o-lg2-zoe-0",
+  "dur": 5.26,
+  "score": -0.459,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.767,
+   "Music": 0.004,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.002,
+   "Narration, monologue": 0.074,
+   "Conversation": 0.017
+  },
+  "top": [
+   [
+    "Speech",
+    0.767
+   ],
+   [
+    "Speech synthesizer",
+    0.247
+   ],
+   [
+    "Female speech, woman speaking",
+    0.076
+   ],
+   [
+    "Narration, monologue",
+    0.074
+   ],
+   [
+    "Conversation",
+    0.017
+   ]
+  ],
+  "f0": 167.59464585969562,
+  "f0lo": 156.0655130879431,
+  "f0hi": 225.48439785611876,
+  "voiced": 0.764367816091954,
+  "syl": 17,
+  "rate": 3.2,
+  "prompt": "<laugh> <laugh>",
+  "preset": "zoe",
+  "gen_sec": 26.5
+ },
+ {
+  "id": "o-lg2-leo-1",
+  "dur": 5.66,
+  "score": -0.46,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.769,
+   "Music": 0.004,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.129,
+   "Conversation": 0.008
+  },
+  "top": [
+   [
+    "Speech",
+    0.769
+   ],
+   [
+    "Speech synthesizer",
+    0.338
+   ],
+   [
+    "Narration, monologue",
+    0.129
+   ],
+   [
+    "Female speech, woman speaking",
+    0.072
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "f0": 197.18131195773782,
+  "f0lo": 171.95829189333713,
+  "f0hi": 237.34828117760995,
+  "voiced": 0.6387900355871886,
+  "syl": 19,
+  "rate": 3.4,
+  "prompt": "<laugh> <laugh>",
+  "preset": "leo",
+  "gen_sec": 41.0
+ },
+ {
+  "id": "o-lg-mia-0",
+  "dur": 4.47,
+  "score": -0.462,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.771,
+   "Music": 0.004,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.074,
+   "Conversation": 0.013
+  },
+  "top": [
+   [
+    "Speech",
+    0.771
+   ],
+   [
+    "Speech synthesizer",
+    0.35
+   ],
+   [
+    "Narration, monologue",
+    0.074
+   ],
+   [
+    "Female speech, woman speaking",
+    0.027
+   ],
+   [
+    "Male speech, man speaking",
+    0.026
+   ]
+  ],
+  "f0": 171.6248862833875,
+  "f0lo": 151.33585016103507,
+  "f0hi": 242.41505166896596,
+  "voiced": 0.704954954954955,
+  "syl": 14,
+  "rate": 3.1,
+  "prompt": "<laugh>",
+  "preset": "mia",
+  "gen_sec": 29.8
+ },
+ {
+  "id": "o-ch-zac-1",
+  "dur": 5.97,
+  "score": -0.467,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.78,
+   "Music": 0.004,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.002,
+   "Narration, monologue": 0.092,
+   "Conversation": 0.021
+  },
+  "top": [
+   [
+    "Speech",
+    0.78
+   ],
+   [
+    "Speech synthesizer",
+    0.432
+   ],
+   [
+    "Female speech, woman speaking",
+    0.105
+   ],
+   [
+    "Narration, monologue",
+    0.092
+   ],
+   [
+    "Conversation",
+    0.021
+   ]
+  ],
+  "f0": 166.91896850527147,
+  "f0lo": 151.26502424795396,
+  "f0hi": 248.30873604238872,
+  "voiced": 0.6155143338954469,
+  "syl": 23,
+  "rate": 3.9,
+  "prompt": "<chuckle>",
+  "preset": "zac",
+  "gen_sec": 55.5
+ },
+ {
+  "id": "o-lg-zac-0",
+  "dur": 2.72,
+  "score": -0.469,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.784,
+   "Music": 0.005,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.085,
+   "Conversation": 0.004
+  },
+  "top": [
+   [
+    "Speech",
+    0.784
+   ],
+   [
+    "Speech synthesizer",
+    0.281
+   ],
+   [
+    "Male speech, man speaking",
+    0.106
+   ],
+   [
+    "Narration, monologue",
+    0.085
+   ],
+   [
+    "Sound effect",
+    0.045
+   ]
+  ],
+  "f0": 126.77838913361316,
+  "f0lo": 108.24468752257054,
+  "f0hi": 144.47846970241636,
+  "voiced": 0.8619402985074627,
+  "syl": 6,
+  "rate": 2.2,
+  "prompt": "<laugh>",
+  "preset": "zac",
+  "gen_sec": 26.2
+ },
+ {
+  "id": "o-ha-zac-1",
+  "dur": 7.91,
+  "score": -0.47,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.783,
+   "Music": 0.001,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.093,
+   "Conversation": 0.005
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.885
+   ],
+   [
+    "Speech",
+    0.783
+   ],
+   [
+    "Narration, monologue",
+    0.093
+   ],
+   [
+    "Male speech, man speaking",
+    0.036
+   ],
+   [
+    "Radio",
+    0.007
+   ]
+  ],
+  "f0": 117.43136519923833,
+  "f0lo": 101.48634722076864,
+  "f0hi": 174.87641026635922,
+  "voiced": 0.6404066073697586,
+  "syl": 26,
+  "rate": 3.3,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "zac",
+  "gen_sec": 75.3
+ },
+ {
+  "id": "o-lg2-leo-0",
+  "dur": 6.34,
+  "score": -0.474,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.79,
+   "Music": 0.003,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.102,
+   "Conversation": 0.005
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.802
+   ],
+   [
+    "Speech",
+    0.79
+   ],
+   [
+    "Narration, monologue",
+    0.102
+   ],
+   [
+    "Male speech, man speaking",
+    0.053
+   ],
+   [
+    "Sound effect",
+    0.008
+   ]
+  ],
+  "f0": 127.51855014801535,
+  "f0lo": 96.35776235557138,
+  "f0hi": 205.9688789621577,
+  "voiced": 0.6317460317460317,
+  "syl": 16,
+  "rate": 2.5,
+  "prompt": "<laugh> <laugh>",
+  "preset": "leo",
+  "gen_sec": 48.7
+ },
+ {
+  "id": "o-ch-mia-1",
+  "dur": 3.57,
+  "score": -0.477,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.796,
+   "Music": 0.006,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.059,
+   "Conversation": 0.005
+  },
+  "top": [
+   [
+    "Speech",
+    0.796
+   ],
+   [
+    "Speech synthesizer",
+    0.366
+   ],
+   [
+    "Male speech, man speaking",
+    0.061
+   ],
+   [
+    "Narration, monologue",
+    0.059
+   ],
+   [
+    "Television",
+    0.015
+   ]
+  ],
+  "f0": 139.54069691161385,
+  "f0lo": 99.72389460454687,
+  "f0hi": 184.81465868247778,
+  "voiced": 0.5835694050991501,
+  "syl": 11,
+  "rate": 3.1,
+  "prompt": "<chuckle>",
+  "preset": "mia",
+  "gen_sec": 24.9
+ },
+ {
+  "id": "o-ha-mia-1",
+  "dur": 1.99,
+  "score": -0.477,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.799,
+   "Music": 0.045,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.011,
+   "Narration, monologue": 0.008,
+   "Conversation": 0.005
+  },
+  "top": [
+   [
+    "Speech",
+    0.799
+   ],
+   [
+    "Fart",
+    0.095
+   ],
+   [
+    "Sound effect",
+    0.06
+   ],
+   [
+    "Grunt",
+    0.046
+   ],
+   [
+    "Music",
+    0.045
+   ]
+  ],
+  "f0": 235.12716853385527,
+  "f0lo": 160.7391028850406,
+  "f0hi": 304.2139688401152,
+  "voiced": 0.6820512820512821,
+  "syl": 6,
+  "rate": 3.0,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "mia",
+  "gen_sec": 16.0
+ },
+ {
+  "id": "o-gg-zac-1",
+  "dur": 7.85,
+  "score": -0.478,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.797,
+   "Music": 0.005,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.114,
+   "Conversation": 0.014
+  },
+  "top": [
+   [
+    "Speech",
+    0.797
+   ],
+   [
+    "Speech synthesizer",
+    0.585
+   ],
+   [
+    "Narration, monologue",
+    0.114
+   ],
+   [
+    "Female speech, woman speaking",
+    0.055
+   ],
+   [
+    "Tick",
+    0.019
+   ]
+  ],
+  "f0": 195.82399009319084,
+  "f0lo": 149.91319975040528,
+  "f0hi": 237.61371234573193,
+  "voiced": 0.6350832266325224,
+  "syl": 27,
+  "rate": 3.4,
+  "prompt": "<giggle>",
+  "preset": "zac",
+  "gen_sec": 72.2
+ },
+ {
+  "id": "o-gg-leah-1",
+  "dur": 0.74,
+  "score": -0.479,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.802,
+   "Music": 0.005,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.059,
+   "Conversation": 0.005
+  },
+  "top": [
+   [
+    "Speech",
+    0.802
+   ],
+   [
+    "Male speech, man speaking",
+    0.113
+   ],
+   [
+    "Speech synthesizer",
+    0.081
+   ],
+   [
+    "Narration, monologue",
+    0.059
+   ],
+   [
+    "Sound effect",
+    0.046
+   ]
+  ],
+  "f0": 241.35927361335249,
+  "f0lo": 171.51949115315634,
+  "f0hi": 291.72771205498225,
+  "voiced": 0.6142857142857143,
+  "syl": 2,
+  "rate": 2.7,
+  "prompt": "<giggle>",
+  "preset": "leah",
+  "gen_sec": 8.9
+ },
+ {
+  "id": "o-ch-zoe-1",
+  "dur": 3.6,
+  "score": -0.48,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.801,
+   "Music": 0.006,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.073,
+   "Conversation": 0.003
+  },
+  "top": [
+   [
+    "Speech",
+    0.801
+   ],
+   [
+    "Speech synthesizer",
+    0.379
+   ],
+   [
+    "Narration, monologue",
+    0.073
+   ],
+   [
+    "Male speech, man speaking",
+    0.058
+   ],
+   [
+    "Sound effect",
+    0.033
+   ]
+  ],
+  "f0": 135.01902539016328,
+  "f0lo": 106.56424735561973,
+  "f0hi": 179.73168213026628,
+  "voiced": 0.7752808988764045,
+  "syl": 10,
+  "rate": 2.8,
+  "prompt": "<chuckle>",
+  "preset": "zoe",
+  "gen_sec": 18.4
+ },
+ {
+  "id": "o-ch-leo-0",
+  "dur": 3.98,
+  "score": -0.481,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.803,
+   "Music": 0.002,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.077,
+   "Conversation": 0.009
+  },
+  "top": [
+   [
+    "Speech",
+    0.803
+   ],
+   [
+    "Speech synthesizer",
+    0.482
+   ],
+   [
+    "Narration, monologue",
+    0.077
+   ],
+   [
+    "Male speech, man speaking",
+    0.072
+   ],
+   [
+    "Sound effect",
+    0.016
+   ]
+  ],
+  "f0": 157.3179417633711,
+  "f0lo": 117.53355918589436,
+  "f0hi": 189.73101624507683,
+  "voiced": 0.49238578680203043,
+  "syl": 10,
+  "rate": 2.5,
+  "prompt": "<chuckle>",
+  "preset": "leo",
+  "gen_sec": 27.8
+ },
+ {
+  "id": "o-gg-leo-0",
+  "dur": 6.05,
+  "score": -0.483,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.807,
+   "Music": 0.001,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.159,
+   "Conversation": 0.005
+  },
+  "top": [
+   [
+    "Speech",
+    0.807
+   ],
+   [
+    "Speech synthesizer",
+    0.601
+   ],
+   [
+    "Narration, monologue",
+    0.159
+   ],
+   [
+    "Male speech, man speaking",
+    0.081
+   ],
+   [
+    "Sound effect",
+    0.011
+   ]
+  ],
+  "f0": 165.82692490081817,
+  "f0lo": 112.00116130356542,
+  "f0hi": 193.55428523520055,
+  "voiced": 0.6023294509151415,
+  "syl": 17,
+  "rate": 2.8,
+  "prompt": "<giggle>",
+  "preset": "leo",
+  "gen_sec": 46.0
+ },
+ {
+  "id": "o-lg2-jess-0",
+  "dur": 0.93,
+  "score": -0.483,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.806,
+   "Music": 0.007,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.078,
+   "Conversation": 0.002
+  },
+  "top": [
+   [
+    "Speech",
+    0.806
+   ],
+   [
+    "Male speech, man speaking",
+    0.184
+   ],
+   [
+    "Speech synthesizer",
+    0.177
+   ],
+   [
+    "Sound effect",
+    0.095
+   ],
+   [
+    "Narration, monologue",
+    0.078
+   ]
+  ],
+  "f0": 123.9961822210176,
+  "f0lo": 112.2735785651234,
+  "f0hi": 185.6924301104851,
+  "voiced": 0.7191011235955056,
+  "syl": 3,
+  "rate": 3.2,
+  "prompt": "<laugh> <laugh>",
+  "preset": "jess",
+  "gen_sec": 8.1
+ },
+ {
+  "id": "o-hee-mia-1",
+  "dur": 0.9,
+  "score": -0.486,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.004,
+   "Chuckle, chortle": 0.005,
+   "Belly laugh": 0.0,
+   "Snicker": 0.002,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.818,
+   "Music": 0.014,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.013,
+   "Narration, monologue": 0.015,
+   "Conversation": 0.009
+  },
+  "top": [
+   [
+    "Speech",
+    0.818
+   ],
+   [
+    "Speech synthesizer",
+    0.057
+   ],
+   [
+    "Sound effect",
+    0.039
+   ],
+   [
+    "Oink",
+    0.032
+   ],
+   [
+    "Quack",
+    0.025
+   ]
+  ],
+  "f0": 274.532595761111,
+  "f0lo": 242.45630802734306,
+  "f0hi": 321.83471537289256,
+  "voiced": 0.627906976744186,
+  "syl": 3,
+  "rate": 3.3,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "mia",
+  "gen_sec": 7.9
+ },
+ {
+  "id": "o-hee-jess-1",
+  "dur": 3.14,
+  "score": -0.487,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.815,
+   "Music": 0.008,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.062,
+   "Conversation": 0.009
+  },
+  "top": [
+   [
+    "Speech",
+    0.815
+   ],
+   [
+    "Speech synthesizer",
+    0.164
+   ],
+   [
+    "Narration, monologue",
+    0.062
+   ],
+   [
+    "Female speech, woman speaking",
+    0.042
+   ],
+   [
+    "Sound effect",
+    0.036
+   ]
+  ],
+  "f0": 207.46559771409997,
+  "f0lo": 183.06591457275266,
+  "f0hi": 411.3264530995185,
+  "voiced": 0.6935483870967742,
+  "syl": 15,
+  "rate": 4.8,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "jess",
+  "gen_sec": 20.8
+ },
+ {
+  "id": "o-gg-tara-1",
+  "dur": 7.69,
+  "score": -0.488,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.813,
+   "Music": 0.002,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.117,
+   "Conversation": 0.004
+  },
+  "top": [
+   [
+    "Speech synthesizer",
+    0.815
+   ],
+   [
+    "Speech",
+    0.813
+   ],
+   [
+    "Narration, monologue",
+    0.117
+   ],
+   [
+    "Male speech, man speaking",
+    0.046
+   ],
+   [
+    "Spray",
+    0.007
+   ]
+  ],
+  "f0": 125.12178548306602,
+  "f0lo": 100.61608387494265,
+  "f0hi": 199.76975298496325,
+  "voiced": 0.615686274509804,
+  "syl": 22,
+  "rate": 2.9,
+  "prompt": "<giggle>",
+  "preset": "tara",
+  "gen_sec": 72.2
+ },
+ {
+  "id": "o-lg2-leah-0",
+  "dur": 5.97,
+  "score": -0.488,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.813,
+   "Music": 0.004,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.095,
+   "Conversation": 0.009
+  },
+  "top": [
+   [
+    "Speech",
+    0.813
+   ],
+   [
+    "Speech synthesizer",
+    0.387
+   ],
+   [
+    "Narration, monologue",
+    0.095
+   ],
+   [
+    "Female speech, woman speaking",
+    0.038
+   ],
+   [
+    "Male speech, man speaking",
+    0.02
+   ]
+  ],
+  "f0": 159.84658088852143,
+  "f0lo": 150.9389321316682,
+  "f0hi": 175.83009432904095,
+  "voiced": 0.6829679595278246,
+  "syl": 18,
+  "rate": 3.0,
+  "prompt": "<laugh> <laugh>",
+  "preset": "leah",
+  "gen_sec": 41.9
+ },
+ {
+  "id": "o-lg-zoe-0",
+  "dur": 7.61,
+  "score": -0.489,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.816,
+   "Music": 0.003,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.078,
+   "Conversation": 0.005
+  },
+  "top": [
+   [
+    "Speech",
+    0.816
+   ],
+   [
+    "Speech synthesizer",
+    0.738
+   ],
+   [
+    "Narration, monologue",
+    0.078
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ],
+   [
+    "Spray",
+    0.013
+   ]
+  ],
+  "f0": 136.20480594772687,
+  "f0lo": 98.29468511800657,
+  "f0hi": 201.14108703399205,
+  "voiced": 0.6525759577278731,
+  "syl": 26,
+  "rate": 3.4,
+  "prompt": "<laugh>",
+  "preset": "zoe",
+  "gen_sec": 37.8
+ },
+ {
+  "id": "o-ha-leo-0",
+  "dur": 5.87,
+  "score": -0.491,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.818,
+   "Music": 0.005,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.106,
+   "Conversation": 0.002
+  },
+  "top": [
+   [
+    "Speech",
+    0.818
+   ],
+   [
+    "Speech synthesizer",
+    0.423
+   ],
+   [
+    "Narration, monologue",
+    0.106
+   ],
+   [
+    "Male speech, man speaking",
+    0.065
+   ],
+   [
+    "Spray",
+    0.035
+   ]
+  ],
+  "f0": 147.91988677478435,
+  "f0lo": 100.89341737683438,
+  "f0hi": 188.258938781105,
+  "voiced": 0.6054888507718696,
+  "syl": 10,
+  "rate": 1.7,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "leo",
+  "gen_sec": 43.0
+ },
+ {
+  "id": "o-lg2-dan-0",
+  "dur": 6.64,
+  "score": -0.492,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.822,
+   "Music": 0.004,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.093,
+   "Conversation": 0.004
+  },
+  "top": [
+   [
+    "Speech",
+    0.822
+   ],
+   [
+    "Speech synthesizer",
+    0.623
+   ],
+   [
+    "Narration, monologue",
+    0.093
+   ],
+   [
+    "Male speech, man speaking",
+    0.039
+   ],
+   [
+    "Spray",
+    0.012
+   ]
+  ],
+  "f0": 147.20687732155343,
+  "f0lo": 113.87521657126122,
+  "f0hi": 169.37674773798702,
+  "voiced": 0.6484848484848484,
+  "syl": 21,
+  "rate": 3.2,
+  "prompt": "<laugh> <laugh>",
+  "preset": "dan",
+  "gen_sec": 45.7
+ },
+ {
+  "id": "o-ch-zac-0",
+  "dur": 7.42,
+  "score": -0.493,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.824,
+   "Music": 0.003,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.083,
+   "Conversation": 0.016
+  },
+  "top": [
+   [
+    "Speech",
+    0.824
+   ],
+   [
+    "Speech synthesizer",
+    0.362
+   ],
+   [
+    "Narration, monologue",
+    0.083
+   ],
+   [
+    "Female speech, woman speaking",
+    0.068
+   ],
+   [
+    "Conversation",
+    0.016
+   ]
+  ],
+  "f0": 175.56056841685674,
+  "f0lo": 150.13702384506726,
+  "f0hi": 247.49133343019886,
+  "voiced": 0.6463414634146342,
+  "syl": 25,
+  "rate": 3.4,
+  "prompt": "<chuckle>",
+  "preset": "zac",
+  "gen_sec": 70.4
+ },
+ {
+  "id": "o-gg-zoe-1",
+  "dur": 3.29,
+  "score": -0.496,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.829,
+   "Music": 0.007,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.078,
+   "Conversation": 0.003
+  },
+  "top": [
+   [
+    "Speech",
+    0.829
+   ],
+   [
+    "Speech synthesizer",
+    0.385
+   ],
+   [
+    "Narration, monologue",
+    0.078
+   ],
+   [
+    "Male speech, man speaking",
+    0.07
+   ],
+   [
+    "Sound effect",
+    0.015
+   ]
+  ],
+  "f0": 134.95026185379342,
+  "f0lo": 109.01415477605549,
+  "f0hi": 156.48494284012855,
+  "voiced": 0.6123076923076923,
+  "syl": 10,
+  "rate": 3.0,
+  "prompt": "<giggle>",
+  "preset": "zoe",
+  "gen_sec": 18.6
+ },
+ {
+  "id": "o-hee-jess-0",
+  "dur": 1.02,
+  "score": -0.497,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.832,
+   "Music": 0.008,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.002,
+   "Narration, monologue": 0.041,
+   "Conversation": 0.018
+  },
+  "top": [
+   [
+    "Speech",
+    0.832
+   ],
+   [
+    "Speech synthesizer",
+    0.128
+   ],
+   [
+    "Male speech, man speaking",
+    0.09
+   ],
+   [
+    "Narration, monologue",
+    0.041
+   ],
+   [
+    "Sound effect",
+    0.027
+   ]
+  ],
+  "f0": 238.03870353813312,
+  "f0lo": 194.94215670204574,
+  "f0hi": 333.65355624102676,
+  "voiced": 0.7142857142857143,
+  "syl": 2,
+  "rate": 2.0,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "jess",
+  "gen_sec": 8.8
+ },
+ {
+  "id": "o-ch-jess-0",
+  "dur": 3.4,
+  "score": -0.499,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.835,
+   "Music": 0.006,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.057,
+   "Conversation": 0.005
+  },
+  "top": [
+   [
+    "Speech",
+    0.835
+   ],
+   [
+    "Speech synthesizer",
+    0.188
+   ],
+   [
+    "Spray",
+    0.063
+   ],
+   [
+    "Narration, monologue",
+    0.057
+   ],
+   [
+    "Male speech, man speaking",
+    0.053
+   ]
+  ],
+  "f0": 153.99238738589912,
+  "f0lo": 128.4967192725697,
+  "f0hi": 207.7408185002817,
+  "voiced": 0.6636904761904762,
+  "syl": 13,
+  "rate": 3.8,
+  "prompt": "<chuckle>",
+  "preset": "jess",
+  "gen_sec": 21.3
+ },
+ {
+  "id": "o-gg-mia-1",
+  "dur": 5.62,
+  "score": -0.499,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.833,
+   "Music": 0.002,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.002,
+   "Narration, monologue": 0.083,
+   "Conversation": 0.019
+  },
+  "top": [
+   [
+    "Speech",
+    0.833
+   ],
+   [
+    "Speech synthesizer",
+    0.509
+   ],
+   [
+    "Narration, monologue",
+    0.083
+   ],
+   [
+    "Female speech, woman speaking",
+    0.039
+   ],
+   [
+    "Male speech, man speaking",
+    0.019
+   ]
+  ],
+  "f0": 191.67447575484556,
+  "f0lo": 159.15013435194132,
+  "f0hi": 277.3168840546336,
+  "voiced": 0.6200716845878136,
+  "syl": 19,
+  "rate": 3.4,
+  "prompt": "<giggle>",
+  "preset": "mia",
+  "gen_sec": 38.5
+ },
+ {
+  "id": "o-ha-leah-0",
+  "dur": 6.38,
+  "score": -0.501,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.836,
+   "Music": 0.003,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.067,
+   "Conversation": 0.008
+  },
+  "top": [
+   [
+    "Speech",
+    0.836
+   ],
+   [
+    "Speech synthesizer",
+    0.724
+   ],
+   [
+    "Narration, monologue",
+    0.067
+   ],
+   [
+    "Male speech, man speaking",
+    0.028
+   ],
+   [
+    "Radio",
+    0.01
+   ]
+  ],
+  "f0": 112.0803278481492,
+  "f0lo": 90.47196232980234,
+  "f0hi": 150.57515999116282,
+  "voiced": 0.7003154574132492,
+  "syl": 26,
+  "rate": 4.1,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "leah",
+  "gen_sec": 44.5
+ },
+ {
+  "id": "o-hee-leah-1",
+  "dur": 6.94,
+  "score": -0.501,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.837,
+   "Music": 0.007,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.019,
+   "Narration, monologue": 0.06,
+   "Conversation": 0.018
+  },
+  "top": [
+   [
+    "Speech",
+    0.837
+   ],
+   [
+    "Speech synthesizer",
+    0.486
+   ],
+   [
+    "Female speech, woman speaking",
+    0.085
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Child speech, kid speaking",
+    0.019
+   ]
+  ],
+  "f0": 225.33135766213675,
+  "f0lo": 151.35290636787673,
+  "f0hi": 305.12329642424453,
+  "voiced": 0.6376811594202898,
+  "syl": 19,
+  "rate": 2.7,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "leah",
+  "gen_sec": 49.4
+ },
+ {
+  "id": "o-hee-tara-0",
+  "dur": 6.73,
+  "score": -0.501,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.836,
+   "Music": 0.003,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.107,
+   "Conversation": 0.003
+  },
+  "top": [
+   [
+    "Speech",
+    0.836
+   ],
+   [
+    "Speech synthesizer",
+    0.649
+   ],
+   [
+    "Narration, monologue",
+    0.107
+   ],
+   [
+    "Male speech, man speaking",
+    0.056
+   ],
+   [
+    "Spray",
+    0.009
+   ]
+  ],
+  "f0": 122.90072726350485,
+  "f0lo": 99.30927864411198,
+  "f0hi": 156.04470692872042,
+  "voiced": 0.7249626307922272,
+  "syl": 27,
+  "rate": 4.0,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "tara",
+  "gen_sec": 65.5
+ },
+ {
+  "id": "o-lg-jess-1",
+  "dur": 1.49,
+  "score": -0.501,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.837,
+   "Music": 0.005,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.006,
+   "Narration, monologue": 0.033,
+   "Conversation": 0.011
+  },
+  "top": [
+   [
+    "Speech",
+    0.837
+   ],
+   [
+    "Speech synthesizer",
+    0.096
+   ],
+   [
+    "Sound effect",
+    0.034
+   ],
+   [
+    "Narration, monologue",
+    0.033
+   ],
+   [
+    "Male speech, man speaking",
+    0.024
+   ]
+  ],
+  "f0": 236.9000078998191,
+  "f0lo": 214.3128425170877,
+  "f0hi": 315.3351888640647,
+  "voiced": 0.7517241379310344,
+  "syl": 4,
+  "rate": 2.7,
+  "prompt": "<laugh>",
+  "preset": "jess",
+  "gen_sec": 10.0
+ },
+ {
+  "id": "o-lg-zoe-1",
+  "dur": 1.59,
+  "score": -0.505,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.845,
+   "Music": 0.01,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.032,
+   "Conversation": 0.007
+  },
+  "top": [
+   [
+    "Speech",
+    0.845
+   ],
+   [
+    "Speech synthesizer",
+    0.122
+   ],
+   [
+    "Male speech, man speaking",
+    0.054
+   ],
+   [
+    "Sound effect",
+    0.044
+   ],
+   [
+    "Narration, monologue",
+    0.032
+   ]
+  ],
+  "f0": 111.57502562733649,
+  "f0lo": 95.20626013156354,
+  "f0hi": 298.53259323004283,
+  "voiced": 0.6,
+  "syl": 6,
+  "rate": 3.8,
+  "prompt": "<laugh>",
+  "preset": "zoe",
+  "gen_sec": 10.6
+ },
+ {
+  "id": "o-ha-tara-0",
+  "dur": 2.93,
+  "score": -0.51,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.852,
+   "Music": 0.016,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.005,
+   "Narration, monologue": 0.052,
+   "Conversation": 0.009
+  },
+  "top": [
+   [
+    "Speech",
+    0.852
+   ],
+   [
+    "Female speech, woman speaking",
+    0.071
+   ],
+   [
+    "Narration, monologue",
+    0.052
+   ],
+   [
+    "Speech synthesizer",
+    0.038
+   ],
+   [
+    "Sound effect",
+    0.028
+   ]
+  ],
+  "f0": 218.91357400479353,
+  "f0lo": 168.98538866279273,
+  "f0hi": 250.21518342636793,
+  "voiced": 0.6505190311418685,
+  "syl": 7,
+  "rate": 2.4,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "tara",
+  "gen_sec": 28.3
+ },
+ {
+  "id": "o-lg-tara-1",
+  "dur": 0.8,
+  "score": -0.512,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.002,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.856,
+   "Music": 0.024,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.025,
+   "Narration, monologue": 0.013,
+   "Conversation": 0.01
+  },
+  "top": [
+   [
+    "Speech",
+    0.856
+   ],
+   [
+    "Female speech, woman speaking",
+    0.033
+   ],
+   [
+    "Sound effect",
+    0.032
+   ],
+   [
+    "Child speech, kid speaking",
+    0.025
+   ],
+   [
+    "Music",
+    0.024
+   ]
+  ],
+  "f0": 285.3341415942397,
+  "f0lo": 249.29749251203816,
+  "f0hi": 324.12074256380413,
+  "voiced": 0.8289473684210527,
+  "syl": 2,
+  "rate": 2.5,
+  "prompt": "<laugh>",
+  "preset": "tara",
+  "gen_sec": 12.8
+ },
+ {
+  "id": "o-ch-tara-0",
+  "dur": 2.71,
+  "score": -0.516,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.864,
+   "Music": 0.004,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.002,
+   "Narration, monologue": 0.071,
+   "Conversation": 0.026
+  },
+  "top": [
+   [
+    "Speech",
+    0.864
+   ],
+   [
+    "Speech synthesizer",
+    0.147
+   ],
+   [
+    "Narration, monologue",
+    0.071
+   ],
+   [
+    "Male speech, man speaking",
+    0.043
+   ],
+   [
+    "Female speech, woman speaking",
+    0.036
+   ]
+  ],
+  "f0": 175.11531200485734,
+  "f0lo": 150.54628801084394,
+  "f0hi": 288.8280343334233,
+  "voiced": 0.700374531835206,
+  "syl": 7,
+  "rate": 2.6,
+  "prompt": "<chuckle>",
+  "preset": "tara",
+  "gen_sec": 26.1
+ },
+ {
+  "id": "o-lg-leah-1",
+  "dur": 1.31,
+  "score": -0.516,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.864,
+   "Music": 0.008,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.003,
+   "Narration, monologue": 0.023,
+   "Conversation": 0.008
+  },
+  "top": [
+   [
+    "Speech",
+    0.864
+   ],
+   [
+    "Sound effect",
+    0.076
+   ],
+   [
+    "Speech synthesizer",
+    0.033
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ],
+   [
+    "Female speech, woman speaking",
+    0.024
+   ]
+  ],
+  "f0": 173.72808304968106,
+  "f0lo": 154.40042044752283,
+  "f0hi": 283.466869701442,
+  "voiced": 0.7322834645669292,
+  "syl": 5,
+  "rate": 3.8,
+  "prompt": "<laugh>",
+  "preset": "leah",
+  "gen_sec": 12.2
+ },
+ {
+  "id": "o-lg-dan-0",
+  "dur": 0.88,
+  "score": -0.518,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.866,
+   "Music": 0.009,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.001,
+   "Narration, monologue": 0.082,
+   "Conversation": 0.004
+  },
+  "top": [
+   [
+    "Speech",
+    0.866
+   ],
+   [
+    "Male speech, man speaking",
+    0.226
+   ],
+   [
+    "Narration, monologue",
+    0.082
+   ],
+   [
+    "Sound effect",
+    0.072
+   ],
+   [
+    "Speech synthesizer",
+    0.06
+   ]
+  ],
+  "f0": 196.5303509549747,
+  "f0lo": 171.32019438421406,
+  "f0hi": 201.76330131408614,
+  "voiced": 0.75,
+  "syl": 1,
+  "rate": 1.1,
+  "prompt": "<laugh>",
+  "preset": "dan",
+  "gen_sec": 8.8
+ },
+ {
+  "id": "o-ha-leah-1",
+  "dur": 0.88,
+  "score": -0.521,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.87,
+   "Music": 0.016,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.005,
+   "Narration, monologue": 0.026,
+   "Conversation": 0.01
+  },
+  "top": [
+   [
+    "Speech",
+    0.87
+   ],
+   [
+    "Sound effect",
+    0.038
+   ],
+   [
+    "Male speech, man speaking",
+    0.027
+   ],
+   [
+    "Television",
+    0.027
+   ],
+   [
+    "Narration, monologue",
+    0.026
+   ]
+  ],
+  "f0": 281.6825704566716,
+  "f0lo": 256.012707661033,
+  "f0hi": 289.84094313182163,
+  "voiced": 0.5476190476190477,
+  "syl": 2,
+  "rate": 2.3,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "leah",
+  "gen_sec": 10.3
+ },
+ {
+  "id": "o-hee-leah-0",
+  "dur": 2.52,
+  "score": -0.528,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.884,
+   "Music": 0.008,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.007,
+   "Narration, monologue": 0.017,
+   "Conversation": 0.006
+  },
+  "top": [
+   [
+    "Speech",
+    0.884
+   ],
+   [
+    "Plop",
+    0.369
+   ],
+   [
+    "Speech synthesizer",
+    0.045
+   ],
+   [
+    "Knock",
+    0.032
+   ],
+   [
+    "Male speech, man speaking",
+    0.028
+   ]
+  ],
+  "f0": 218.21768393570994,
+  "f0lo": 174.0456316937029,
+  "f0hi": 361.62170577933364,
+  "voiced": 0.6209677419354839,
+  "syl": 7,
+  "rate": 2.8,
+  "prompt": "Hee hee hee hee! <giggle>",
+  "preset": "leah",
+  "gen_sec": 21.2
+ },
+ {
+  "id": "o-lg2-tara-0",
+  "dur": 7.17,
+  "score": -0.531,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.0,
+   "Chuckle, chortle": 0.0,
+   "Belly laugh": 0.0,
+   "Snicker": 0.0,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.885,
+   "Music": 0.002,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.0,
+   "Narration, monologue": 0.121,
+   "Conversation": 0.002
+  },
+  "top": [
+   [
+    "Speech",
+    0.885
+   ],
+   [
+    "Speech synthesizer",
+    0.623
+   ],
+   [
+    "Narration, monologue",
+    0.121
+   ],
+   [
+    "Male speech, man speaking",
+    0.064
+   ],
+   [
+    "Spray",
+    0.016
+   ]
+  ],
+  "f0": 112.43651954553835,
+  "f0lo": 94.00077439777439,
+  "f0hi": 161.69745029706814,
+  "voiced": 0.6633941093969145,
+  "syl": 19,
+  "rate": 2.6,
+  "prompt": "<laugh> <laugh>",
+  "preset": "tara",
+  "gen_sec": 66.5
+ },
+ {
+  "id": "o-lg-leo-1",
+  "dur": 1.81,
+  "score": -0.532,
+  "laugh": {
+   "Laughter": 0.001,
+   "Giggle": 0.002,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.89,
+   "Music": 0.022,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.002,
+   "Narration, monologue": 0.026,
+   "Conversation": 0.017
+  },
+  "top": [
+   [
+    "Speech",
+    0.89
+   ],
+   [
+    "Female speech, woman speaking",
+    0.046
+   ],
+   [
+    "Speech synthesizer",
+    0.039
+   ],
+   [
+    "Television",
+    0.033
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "f0": 191.50657597475094,
+  "f0lo": 155.70076376425732,
+  "f0hi": 266.7075435321401,
+  "voiced": 0.6440677966101694,
+  "syl": 7,
+  "rate": 3.9,
+  "prompt": "<laugh>",
+  "preset": "leo",
+  "gen_sec": 16.6
+ },
+ {
+  "id": "o-gg-tara-0",
+  "dur": 4.37,
+  "score": -0.537,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.896,
+   "Music": 0.027,
+   "Singing": 0.0,
+   "Child speech, kid speaking": 0.006,
+   "Narration, monologue": 0.045,
+   "Conversation": 0.019
+  },
+  "top": [
+   [
+    "Speech",
+    0.896
+   ],
+   [
+    "Spray",
+    0.389
+   ],
+   [
+    "Speech synthesizer",
+    0.099
+   ],
+   [
+    "Female speech, woman speaking",
+    0.091
+   ],
+   [
+    "Narration, monologue",
+    0.045
+   ]
+  ],
+  "f0": 173.76230963095452,
+  "f0lo": 152.77530475795274,
+  "f0hi": 260.5071774823347,
+  "voiced": 0.625866050808314,
+  "syl": 12,
+  "rate": 2.7,
+  "prompt": "<giggle>",
+  "preset": "tara",
+  "gen_sec": 41.6
+ },
+ {
+  "id": "o-ha-jess-0",
+  "dur": 1.37,
+  "score": -0.541,
+  "laugh": {
+   "Laughter": 0.001,
+   "Giggle": 0.003,
+   "Chuckle, chortle": 0.002,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.907,
+   "Music": 0.007,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.007,
+   "Narration, monologue": 0.021,
+   "Conversation": 0.028
+  },
+  "top": [
+   [
+    "Speech",
+    0.907
+   ],
+   [
+    "Female speech, woman speaking",
+    0.046
+   ],
+   [
+    "Conversation",
+    0.028
+   ],
+   [
+    "Sound effect",
+    0.025
+   ],
+   [
+    "Narration, monologue",
+    0.021
+   ]
+  ],
+  "f0": 194.4438234277769,
+  "f0lo": 165.22121409033676,
+  "f0hi": 329.262296198605,
+  "voiced": 0.8195488721804511,
+  "syl": 3,
+  "rate": 2.2,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "jess",
+  "gen_sec": 9.2
+ },
+ {
+  "id": "o-ha-jess-1",
+  "dur": 0.99,
+  "score": -0.549,
+  "laugh": {
+   "Laughter": 0.0,
+   "Giggle": 0.001,
+   "Chuckle, chortle": 0.001,
+   "Belly laugh": 0.0,
+   "Snicker": 0.001,
+   "Baby laughter": 0.0
+  },
+  "bad": {
+   "Speech": 0.916,
+   "Music": 0.012,
+   "Singing": 0.001,
+   "Child speech, kid speaking": 0.006,
+   "Narration, monologue": 0.027,
+   "Conversation": 0.017
+  },
+  "top": [
+   [
+    "Speech",
+    0.916
+   ],
+   [
+    "Speech synthesizer",
+    0.034
+   ],
+   [
+    "Female speech, woman speaking",
+    0.033
+   ],
+   [
+    "Narration, monologue",
+    0.027
+   ],
+   [
+    "Sound effect",
+    0.024
+   ]
+  ],
+  "f0": 169.72134257915644,
+  "f0lo": 153.36071768719512,
+  "f0hi": 371.84014437709106,
+  "voiced": 0.6631578947368421,
+  "syl": 3,
+  "rate": 3.0,
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "jess",
+  "gen_sec": 9.6
+ },
+ {
+  "id": "o-ch-mia-0",
+  "skip": "too short",
+  "prompt": "<chuckle>",
+  "preset": "mia",
+  "rep": 0,
+  "sr": 24000,
+  "dur": 0.51,
+  "sec": 3.4,
+  "model": "orpheus-3b-gguf",
+  "seed": 8557,
+  "ntok": 44
+ },
+ {
+  "id": "o-gg-dan-0",
+  "skip": "too short",
+  "prompt": "<giggle>",
+  "preset": "dan",
+  "rep": 0,
+  "sr": 24000,
+  "dur": 0.26,
+  "sec": 2.0,
+  "model": "orpheus-3b-gguf",
+  "seed": 21213,
+  "ntok": 23
+ },
+ {
+  "id": "o-gg-jess-1",
+  "skip": "too short",
+  "prompt": "<giggle>",
+  "preset": "jess",
+  "rep": 1,
+  "sr": 24000,
+  "dur": 0.51,
+  "sec": 3.1,
+  "model": "orpheus-3b-gguf",
+  "seed": 4431,
+  "ntok": 44
+ },
+ {
+  "id": "o-ha-leo-1",
+  "skip": "too short",
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "leo",
+  "rep": 1,
+  "sr": 24000,
+  "dur": 0.26,
+  "sec": 2.2,
+  "model": "orpheus-3b-gguf",
+  "seed": 62334,
+  "ntok": 23
+ },
+ {
+  "id": "o-ha-zac-0",
+  "skip": "too short",
+  "prompt": "Hahahaha! <laugh>",
+  "preset": "zac",
+  "rep": 0,
+  "sr": 24000,
+  "dur": 0.26,
+  "sec": 2.9,
+  "model": "orpheus-3b-gguf",
+  "seed": 53243,
+  "ntok": 23
+ },
+ {
+  "id": "o-lg2-tara-1",
+  "skip": "too short",
+  "prompt": "<laugh> <laugh>",
+  "preset": "tara",
+  "rep": 1,
+  "sr": 24000,
+  "dur": 0.26,
+  "sec": 2.8,
+  "model": "orpheus-3b-gguf",
+  "seed": 29175,
+  "ntok": 23
+ },
+ {
+  "id": "o-lg2-zac-0",
+  "skip": "too short",
+  "prompt": "<laugh> <laugh>",
+  "preset": "zac",
+  "rep": 0,
+  "sr": 24000,
+  "dur": 0.26,
+  "sec": 2.7,
+  "model": "orpheus-3b-gguf",
+  "seed": 21954,
+  "ntok": 23
+ }
+]
