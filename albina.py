@@ -703,6 +703,11 @@ def selftest(text=SELFTEST_TEXT, out="/tmp/albina_test.mp3"):
             gh_ok = True
         except urllib.error.HTTPError:
             gh_ok = True                 # GitHub отвечает, просто озвучки ещё нет
+        except urllib.error.URLError as e:
+            if not isinstance(getattr(e, "reason", None), FileNotFoundError):   # file:// в проверке
+                print("ОШИБКА: GitHub не отвечает:", e)
+                return 1
+            gh_ok = True
         except Exception as e:
             print("ОШИБКА: GitHub не отвечает:", e)
             return 1

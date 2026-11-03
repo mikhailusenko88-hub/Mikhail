@@ -67,7 +67,7 @@ jobs:
       - name: Отчёт в ветку
         if: always()
         run: |
-          mkdir -p result && cp /tmp/deploy.log result/deploy_log.txt 2>/dev/null; cp /tmp/deploy2.log result/deploy2_log.txt 2>/dev/null
+          mkdir -p result; cp /tmp/deploy.log result/deploy_log.txt 2>/dev/null || true; cp /tmp/deploy2.log result/deploy2_log.txt 2>/dev/null || true
           cp /tmp/www/klipy-testkey/proba-albina.mp4 result/deploy_proba.mp4 2>/dev/null || true
           git config user.name albina-test
           git config user.email albina-test@users.noreply.github.com
