@@ -1,0 +1,51 @@
+name: neon-check
+# Проверка страницы «неоновый луг» на сервере Михаила: доступность файлов и скриншот из headless Chromium.
+# Запуск вручную (workflow_dispatch). Результат — engine/neon/status/ в ветке neon-demo.
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: neon-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Файлы на сервере
+        run: |
+          mkdir -p engine/neon/status
+          for f in "" scene.bin frames.bin ref_120.jpg ref_210.jpg; do curl -s -m 90 -o /dev/null -w "$f %{http_code} %{size_download} %{content_type} %{time_total}s\n" "http://89.126.192.214:8080/mebel/neonlug1/$f"; done | tee engine/neon/status/server.txt
+      - name: Скриншот страницы
+        run: |
+          npm i --silent playwright@1.47.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+          cat > /tmp/shot.js <<'JS'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ args: ['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'] });
+            const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, deviceScaleFactor: 1 });
+            const logs=[]; page.on('console', m => logs.push(m.type()+': '+m.text())); page.on('pageerror', e => logs.push('ERR: '+e.message));
+            const t0=Date.now();
+            await page.goto('http://89.126.192.214:8080/mebel/neonlug1/?still=1&samples=0&w=1280', { waitUntil: 'load', timeout: 120000 });
+            await page.waitForFunction(() => document.getElementById('load').style.display === 'none' || document.getElementById('load').textContent.startsWith('Ошибка'), null, { timeout: 180000 });
+            logs.push('loaded in '+(Date.now()-t0)+' ms');
+            for (const f of [120,210]) { await page.evaluate((f) => { if(window.renderOnce) window.renderOnce(f); }, f);
+              logs.push('HUD '+f+': '+await page.evaluate(() => document.getElementById('hud').textContent + ' | ' + document.getElementById('load').textContent));
+              await page.screenshot({ path: 'engine/neon/status/server_'+f+'.png', clip:{x:0,y:0,width:1280,height:720}, timeout: 300000 }); }
+            require('fs').writeFileSync('engine/neon/status/page.txt', logs.join('\n')+'\n');
+            await browser.close();
+          })().catch(e => { require('fs').writeFileSync('engine/neon/status/page.txt', 'FAIL: '+e.message+'\n'); process.exit(0); });
+          JS
+          node /tmp/shot.js
+          cat engine/neon/status/page.txt
+      - name: Сохранить результат
+        run: |
+          git config user.name "neon-check"
+          git config user.email "neon-check@users.noreply.github.com"
+          git add engine/neon/status
+          git commit -m "neon-check $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin neon-demo || true
+          git push origin HEAD:neon-demo
