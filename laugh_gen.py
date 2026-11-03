@@ -16,15 +16,39 @@ PROMPTS = [
 PRESETS = ["v2/en_speaker_2", "v2/en_speaker_3", "v2/en_speaker_5", "v2/en_speaker_6",
            "v2/en_speaker_7", "v2/en_speaker_9", "v2/ru_speaker_3", "v2/ru_speaker_5",
            "v2/ru_speaker_6", "v2/ru_speaker_9", "v2/fr_speaker_1", "v2/de_speaker_3"]
+# набор 2: только промпты и голоса, которые дали настоящий смех в первом прогоне
+PROMPTS2 = [
+    ("ha", "Hahahaha! [laughs]"),
+    ("hee", "Hee hee hee hee hee! [laughs]"),
+    ("heh", "[chuckles] Heh heh heh heh."),
+    ("ho", "Ho ho ho ho ho! [laughs]"),
+]
+PRESETS2 = ["v2/en_speaker_9", "v2/en_speaker_3", "v2/en_speaker_5", "v2/de_speaker_3", "v2/fr_speaker_1",
+            "v2/en_speaker_2", "v2/en_speaker_6", "v2/ru_speaker_5", "v2/en_speaker_8", "v2/ru_speaker_4",
+            "v2/pl_speaker_5", "v2/it_speaker_2"]
 
 
-def tasks(reps):
+def tasks(reps, set_=1):
     T = []
+    P, V = (PROMPTS2, PRESETS2) if set_ == 2 else (PROMPTS, PRESETS)
     for rep in range(reps):
-        for pk, ptxt in PROMPTS:
-            for pr in PRESETS:
-                T.append({"id": f"{pk}-{pr.split('/')[-1]}-{rep}", "prompt": ptxt, "preset": pr, "rep": rep})
+        for pk, ptxt in P:
+            for pr in V:
+                T.append({"id": f"s{set_}-{pk}-{pr.split('/')[-1]}-{rep}" if set_ != 1 else f"{pk}-{pr.split('/')[-1]}-{rep}", "prompt": ptxt, "preset": pr, "rep": rep})
     return T
+
+
+def request_opts():
+    o = {"set": 1, "reps": 1}
+    try:
+        for tok in open("request.txt").read().split():
+            if "=" in tok:
+                k, v = tok.split("=", 1)
+                if k in o:
+                    o[k] = int(v)
+    except Exception:
+        pass
+    return o
 
 
 def main():
@@ -37,7 +61,8 @@ def main():
     ap.add_argument("--limit", type=int, default=0)
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
-    T = tasks(a.reps)[a.shard::a.nshards]
+    ro = request_opts()
+    T = tasks(max(a.reps, ro["reps"]), ro["set"])[a.shard::a.nshards]
     if a.limit:
         T = T[:a.limit]
     print(f"shard {a.shard}/{a.nshards}: {len(T)} clips", flush=True)
