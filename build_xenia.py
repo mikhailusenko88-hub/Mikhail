@@ -123,8 +123,8 @@ def seq_for(text, spk=SPK):
     import sys as _s
     sentences, clean, br, pr, pp, sp = pack.prepare_tts_model_input(text, ssml=False, speaker_ids=[sid], lang=None)
     seq, sd, dr, pc = pack.merge_batch_model(sentences, br, pr, pp, put_accent=False, put_stress_homo=False, put_yo=False, put_yo_homo=False)
-    pkg = _s.modules[type(pack).__module__]; spans, stx = pack.token_sent_spans(seq[0])
-    types = [pkg.classify_sentence(t.replace("+", "")) for t in stx]
+    g = type(pack).apply_tts.__globals__; spans, stx = pack.token_sent_spans(seq[0])
+    types = [g['classify_sentence'](t.replace("+", "")) for t in stx]
     typ = pack.build_type_ids_tokens(seq[0], types, set()); foc = torch.zeros_like(seq)
     return seq, sp, typ, foc, types
 fr, en, de = Front().eval(), Enc().eval(), Dec().eval()
