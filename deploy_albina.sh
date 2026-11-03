@@ -229,8 +229,13 @@ for D in "${BOTS[@]}"; do
   echo "== 5/6 Переключаю голос"
   set_voice "$D" albina || { cp -p "$D/config.json.bak-$STAMP" "$D/config.json"; echo "!! config.json не записался"; FAIL=1; continue; }
 
-  echo "== 6/6 Пробный ролик (ничего не выкладывается, 2–5 минут)"
-  proba "$D" "$PY"
+  if [ $LIGHT = 1 ]; then
+    echo "== 6/6 Дальше: GitHub забирает тексты и озвучивает их Альбиной (Claude запускает это сам)."
+    echo "   Пробный ролик — когда озвучка будет готова: curl -fsSL $RAW/albina-start.sh | bash -s test"
+  else
+    echo "== 6/6 Пробный ролик (ничего не выкладывается, 2–5 минут)"
+    proba "$D" "$PY"
+  fi
 done
 
 echo
