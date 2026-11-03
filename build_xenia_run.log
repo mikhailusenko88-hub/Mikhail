@@ -1,10 +1,4 @@
-[0;93m2026-11-03 20:08:36.611751841 [W:onnxruntime:Default, device_discovery.cc:95 GetPciBusId] Skipping pci_bus_id for PCI path at "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/5620e0c7-8062-4dce-aeb7-520c7ef76171" because filename "5620e0c7-8062-4dce-aeb7-520c7ef76171" did not match expected pattern of [0-9a-f]+:[0-9a-f]+:[0-9a-f]+[.][0-9a-f]+[m
-/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/_internal/jit_utils.py:308: UserWarning: Constant folding - Only steps=1 can be constant folded for opset >= 10 onnx::Slice op. Constant folding not applied. (Triggered internally at ../torch/csrc/jit/passes/onnx/constant_fold.cpp:178.)
-  _C._jit_pass_onnx_node_shape_type_inference(node, params_dict, opset_version)
-/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py:663: UserWarning: Constant folding - Only steps=1 can be constant folded for opset >= 10 onnx::Slice op. Constant folding not applied. (Triggered internally at ../torch/csrc/jit/passes/onnx/constant_fold.cpp:178.)
-  _C._jit_pass_onnx_graph_shape_type_inference(
-/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/onnx/utils.py:1186: UserWarning: Constant folding - Only steps=1 can be constant folded for opset >= 10 onnx::Slice op. Constant folding not applied. (Triggered internally at ../torch/csrc/jit/passes/onnx/constant_fold.cpp:178.)
-  _C._jit_pass_onnx_graph_shape_type_inference(
+[0;93m2026-11-03 21:15:56.119831087 [W:onnxruntime:Default, device_discovery.cc:95 GetPciBusId] Skipping pci_bus_id for PCI path at "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/5620e0c7-8062-4dce-aeb7-520c7ef76171" because filename "5620e0c7-8062-4dce-aeb7-520c7ef76171" did not match expected pattern of [0-9a-f]+:[0-9a-f]+:[0-9a-f]+[.][0-9a-f]+[m
 size 147664410
 type <class '<torch_package_0>.tts_package.multi_acc_v3_package.TTSModelMultiAcc_v3'> ['apply_tts', 'packages', 'save_wav', 'speaker_to_package', 'speakers', 'symbols', 'to', 'unpack_q_model']
 speakers ['aidar', 'baya', 'kseniya', 'eugene', 'xenia']
@@ -13,19 +7,14 @@ jm <class 'torch.jit._script.RecursiveScriptModule'> ['tacotron', 'vocoder', 'du
 prepare sig (text: str, ssml: bool, speaker_ids: list, lang: str)
 speaker_to_ids [{'aidar': 0, 'baya': 1, 'kseniya': 2, 'eugene': 3, 'xenia': 4}]
 mha batch_first True
+pred: type True torch.Size([12, 64]) focus True emph False
+pred: type True torch.Size([6, 64]) focus True emph True
 HG shorten 3 pool AvgPool1d(kernel_size=(3,), stride=(3,), padding=(0,)) dim 128 n pre/short/post [1, 2, 1]
-export front 3.3 MB
-export enc 14.2 MB
-export dec 11.6 MB
-export voc 58.3 MB
-tts[0] corr -0.04351 len 130200 ref 123600
-tts[1] corr -0.01991 len 114600 ref 115200
-tts[2] corr 0.09455 len 193800 ref 208200
-vocoder same as albina: False
-tacotron same keys: True shapes same: False
-dec.onnx 11565680 3190f0afc6997cffc41baa4b430932d9
-enc.onnx 14198198 9f4a34b03cdeea2f0dfd5888240516a3
-front.onnx 3262370 c0bb121501310d79da26e77d47a32a65
-tts.json 50083 ac8ddcc9859cee28a00d2150c8fc98bf
-voc.onnx 58289056 395fdfb2f166564548e1614c5f253142
-OK
+Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/build_xenia.py", line 132, in <module>
+    seq, sp, typ, foc, _ = seq_for("Прив+ет! Ж+или-б+ыли кот и мыш+онок.")
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Mikhail/Mikhail/build_xenia.py", line 126, in seq_for
+    pkg = _s.modules[type(pack).__module__]; spans, stx = pack.token_sent_spans(seq[0])
+          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: '<torch_package_0>.tts_package.multi_acc_v3_package'
