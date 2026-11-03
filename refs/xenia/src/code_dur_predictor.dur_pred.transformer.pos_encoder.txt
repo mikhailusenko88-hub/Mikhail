@@ -1,0 +1,8 @@
+def forward(self,
+    x: Tensor) -> Tensor:
+  scale = self.scale
+  pe = self.pe
+  _0 = torch.slice(pe, 0, None, torch.size(x, 0))
+  x0 = torch.add(x, torch.mul(scale, torch.slice(_0, 1)))
+  dropout = self.dropout
+  return (dropout).forward(x0, )

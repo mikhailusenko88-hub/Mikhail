@@ -1,0 +1,300 @@
+def forward(self,
+    query: Tensor,
+    key: Tensor,
+    value: Tensor,
+    key_padding_mask: Optional[Tensor]=None,
+    need_weights: bool=True,
+    attn_mask: Optional[Tensor]=None,
+    average_attn_weights: bool=True,
+    is_causal: bool=False) -> Tuple[Tensor, Optional[Tensor]]:
+  _0 = "AssertionError: Only allow causal mask or attn_mask"
+  _1 = __torch__.torch.nn.functional._none_or_dtype
+  _2 = __torch__.torch.nn.functional._canonical_mask
+  _3 = "input not batched; expected query.dim() of 3 but got {}"
+  why_not_fast_path = "non-self attention was used (query, key, and value are not the same Tensor)"
+  _4 = "dtypes of query ({}) and self.in_proj_bias ({}) don\'t match"
+  _5 = "dtypes of query ({}) and self.in_proj_weight ({}) don\'t match"
+  why_not_fast_path0 = "supplying both src_key_padding_mask and src_mask at the same time                              is not supported with NestedTensor input"
+  why_not_fast_path1 = "some Tensor argument is neither CUDA nor CPU"
+  why_not_fast_path2 = "grad is enabled and at least one of query or the input/output projection weights or biases requires_grad"
+  _6 = "The fast path was not hit because {}"
+  _7 = "MultiheadAttention does not support NestedTensor outside of its fast path. "
+  _8 = __torch__.torch.nn.functional.multi_head_attention_forward
+  _9 = uninitialized(Tuple[Tensor, Tensor])
+  _10 = uninitialized(Optional[Tensor])
+  if torch.__isnot__(attn_mask, None):
+    _11, attn_mask0 = is_causal, unchecked_cast(Tensor, attn_mask)
+  else:
+    _11, attn_mask0 = False, attn_mask
+  if _11:
+    ops.prim.RaiseException(_0)
+    attn_mask1 : Optional[Tensor] = _10
+  else:
+    attn_mask1 = attn_mask0
+  is_batched = torch.eq(torch.dim(query), 3)
+  key_padding_mask0 = _2(key_padding_mask, "key_padding_mask", _1(attn_mask1, ), "attn_mask", ops.prim.dtype(query), True, )
+  if torch.__not__(is_batched):
+    why_not_fast_path3, key_padding_mask1 = torch.format(_3, torch.dim(query)), key_padding_mask0
+  else:
+    if torch.__isnot__(query, key):
+      _12 = True
+    else:
+      _12 = torch.__isnot__(key, value)
+    if _12:
+      why_not_fast_path5, key_padding_mask2 = why_not_fast_path, key_padding_mask0
+    else:
+      _13 = ops.prim.dtype(query)
+      in_proj_bias = self.in_proj_bias
+      _14 = torch.ne(_13, ops.prim.dtype(in_proj_bias))
+      if _14:
+        _15 = ops.prim.dtype(query)
+        in_proj_bias0 = self.in_proj_bias
+        why_not_fast_path7 = torch.format(_4, _15, ops.prim.dtype(in_proj_bias0))
+        why_not_fast_path6, key_padding_mask3 = why_not_fast_path7, key_padding_mask0
+      else:
+        _16 = ops.prim.dtype(query)
+        in_proj_weight = self.in_proj_weight
+        _17 = torch.ne(_16, ops.prim.dtype(in_proj_weight))
+        if _17:
+          _18 = ops.prim.dtype(query)
+          in_proj_weight0 = self.in_proj_weight
+          _19 = ops.prim.dtype(in_proj_weight0)
+          why_not_fast_path8, key_padding_mask4 = torch.format(_5, _18, _19), key_padding_mask0
+        else:
+          training = self.training
+          if training:
+            why_not_fast_path9, key_padding_mask5 = "training is enabled", key_padding_mask0
+          else:
+            bias_k = self.bias_k
+            _20 = torch.__isnot__(bias_k, None)
+            if _20:
+              why_not_fast_path10, key_padding_mask6 = "self.bias_k was not None", key_padding_mask0
+            else:
+              bias_v = self.bias_v
+              _21 = torch.__isnot__(bias_v, None)
+              if _21:
+                why_not_fast_path11, key_padding_mask7 = "self.bias_v was not None", key_padding_mask0
+              else:
+                add_zero_attn = self.add_zero_attn
+                if add_zero_attn:
+                  why_not_fast_path12, key_padding_mask8 = "add_zero_attn was enabled", key_padding_mask0
+                else:
+                  _qkv_same_embed_dim = self._qkv_same_embed_dim
+                  _22 = torch.__not__(_qkv_same_embed_dim)
+                  if _22:
+                    why_not_fast_path13, key_padding_mask9 = "_qkv_same_embed_dim was not True", key_padding_mask0
+                  else:
+                    _23 = ops.prim.is_nested(query)
+                    if _23:
+                      _25 = torch.__isnot__(key_padding_mask0, None)
+                      if _25:
+                        key_padding_mask12 = unchecked_cast(Tensor, key_padding_mask0)
+                        _26, key_padding_mask11 = True, key_padding_mask12
+                      else:
+                        _27 = torch.__isnot__(attn_mask1, None)
+                        _26, key_padding_mask11 = _27, key_padding_mask0
+                      _24, key_padding_mask10 = _26, key_padding_mask11
+                    else:
+                      _24, key_padding_mask10 = False, key_padding_mask0
+                    if _24:
+                      why_not_fast_path14 = why_not_fast_path0
+                    else:
+                      _28 = torch.is_autocast_enabled()
+                      if _28:
+                        why_not_fast_path15 = "autocast is enabled"
+                      else:
+                        why_not_fast_path15 = ""
+                      why_not_fast_path14 = why_not_fast_path15
+                    why_not_fast_path13, key_padding_mask9 = why_not_fast_path14, key_padding_mask10
+                  why_not_fast_path12, key_padding_mask8 = why_not_fast_path13, key_padding_mask9
+                why_not_fast_path11, key_padding_mask7 = why_not_fast_path12, key_padding_mask8
+              why_not_fast_path10, key_padding_mask6 = why_not_fast_path11, key_padding_mask7
+            why_not_fast_path9, key_padding_mask5 = why_not_fast_path10, key_padding_mask6
+          why_not_fast_path8, key_padding_mask4 = why_not_fast_path9, key_padding_mask5
+        why_not_fast_path6, key_padding_mask3 = why_not_fast_path8, key_padding_mask4
+      why_not_fast_path5, key_padding_mask2 = why_not_fast_path6, key_padding_mask3
+    why_not_fast_path3, key_padding_mask1 = why_not_fast_path5, key_padding_mask2
+  _29 = torch.gt(torch.len(why_not_fast_path3), 0)
+  if torch.__not__(_29):
+    in_proj_weight1 = self.in_proj_weight
+    in_proj_bias1 = self.in_proj_bias
+    out_proj = self.out_proj
+    weight = out_proj.weight
+    out_proj0 = self.out_proj
+    bias = out_proj0.bias
+    _32 = annotate(List[bool], [])
+    if ops.prim.is_cuda(query):
+      _33 = True
+    else:
+      _34 = str(ops.prim.device(query))
+      _35 = torch.find(_34, "cpu", 0, torch.len(_34))
+      _33 = torch.ne(_35, -1)
+    _36 = torch.append(_32, _33)
+    if ops.prim.is_cuda(key):
+      _37 = True
+    else:
+      _38 = str(ops.prim.device(key))
+      _39 = torch.find(_38, "cpu", 0, torch.len(_38))
+      _37 = torch.ne(_39, -1)
+    _40 = torch.append(_32, _37)
+    if ops.prim.is_cuda(value):
+      _41 = True
+    else:
+      _42 = str(ops.prim.device(value))
+      _43 = torch.find(_42, "cpu", 0, torch.len(_42))
+      _41 = torch.ne(_43, -1)
+    _44 = torch.append(_32, _41)
+    if ops.prim.is_cuda(in_proj_weight1):
+      _45 = True
+    else:
+      _46 = str(ops.prim.device(in_proj_weight1))
+      _47 = torch.find(_46, "cpu", 0, torch.len(_46))
+      _45 = torch.ne(_47, -1)
+    _48 = torch.append(_32, _45)
+    if ops.prim.is_cuda(in_proj_bias1):
+      _49 = True
+    else:
+      _50 = str(ops.prim.device(in_proj_bias1))
+      _51 = torch.find(_50, "cpu", 0, torch.len(_50))
+      _49 = torch.ne(_51, -1)
+    _52 = torch.append(_32, _49)
+    if ops.prim.is_cuda(weight):
+      _53 = True
+    else:
+      _54 = str(ops.prim.device(weight))
+      _55 = torch.find(_54, "cpu", 0, torch.len(_54))
+      _53 = torch.ne(_55, -1)
+    _56 = torch.append(_32, _53)
+    if ops.prim.is_cuda(bias):
+      _57 = True
+    else:
+      _58 = str(ops.prim.device(bias))
+      _59 = torch.find(_58, "cpu", 0, torch.len(_58))
+      _57 = torch.ne(_59, -1)
+    _60 = torch.append(_32, _57)
+    if torch.__not__(torch.all(_32)):
+      why_not_fast_path17 = why_not_fast_path1
+    else:
+      if torch.is_grad_enabled():
+        _62 = annotate(List[bool], [])
+        _63 = torch.append(_62, ops.prim.requires_grad(query))
+        _64 = torch.append(_62, ops.prim.requires_grad(key))
+        _65 = torch.append(_62, ops.prim.requires_grad(value))
+        _66 = ops.prim.requires_grad(in_proj_weight1)
+        _67 = torch.append(_62, _66)
+        _68 = ops.prim.requires_grad(in_proj_bias1)
+        _69 = torch.append(_62, _68)
+        _70 = torch.append(_62, ops.prim.requires_grad(weight))
+        _71 = torch.append(_62, ops.prim.requires_grad(bias))
+        _61 = torch.any(_62)
+      else:
+        _61 = False
+      if _61:
+        why_not_fast_path18 = why_not_fast_path2
+      else:
+        why_not_fast_path18 = why_not_fast_path3
+      why_not_fast_path17 = why_not_fast_path18
+    _72 = torch.gt(torch.len(why_not_fast_path17), 0)
+    if torch.__not__(_72):
+      _75 = (self).merge_masks(attn_mask1, key_padding_mask1, query, )
+      merged_mask, mask_type, = _75
+      embed_dim = self.embed_dim
+      num_heads = self.num_heads
+      in_proj_weight2 = self.in_proj_weight
+      in_proj_bias2 = self.in_proj_bias
+      out_proj1 = self.out_proj
+      weight0 = out_proj1.weight
+      out_proj2 = self.out_proj
+      bias0 = out_proj2.bias
+      _76, _77 = torch._native_multi_head_attention(query, key, value, embed_dim, num_heads, in_proj_weight2, in_proj_bias2, weight0, bias0, merged_mask, need_weights, average_attn_weights, mask_type)
+      _73, _74 = True, (_76, _77)
+    else:
+      _73, _74 = False, _9
+    _30, _31, why_not_fast_path16 = _73, _74, why_not_fast_path17
+  else:
+    _30, _31, why_not_fast_path16 = False, _9, why_not_fast_path3
+  if _30:
+    _78 = _31
+  else:
+    if ops.prim.is_nested(query):
+      _79 = True
+    else:
+      _79 = ops.prim.is_nested(key)
+    if _79:
+      any_nested = True
+    else:
+      any_nested = ops.prim.is_nested(value)
+    if torch.__not__(any_nested):
+      pass
+    else:
+      _80 = torch.format(_6, why_not_fast_path16)
+      _81 = torch.add("AssertionError: ", torch.add(_7, _80))
+      ops.prim.RaiseException(_81)
+    if is_batched:
+      if torch.__is__(key, value):
+        if torch.__is__(query, key):
+          _82 = torch.transpose(query, 1, 0)
+          query2, key2, value2 = _82, _82, _82
+        else:
+          _83 = annotate(List[Tensor], [])
+          _84 = torch.append(_83, torch.transpose(query, 1, 0))
+          _85 = torch.append(_83, torch.transpose(key, 1, 0))
+          query3, key3, = _83
+          query2, key2, value2 = query3, key3, key3
+        query1, key1, value1 = query2, key2, value2
+      else:
+        _86 = annotate(List[Tensor], [])
+        _87 = torch.append(_86, torch.transpose(query, 1, 0))
+        _88 = torch.append(_86, torch.transpose(key, 1, 0))
+        _89 = torch.append(_86, torch.transpose(value, 1, 0))
+        query4, key4, value3, = _86
+        query1, key1, value1 = query4, key4, value3
+      query0, key0, value0 = query1, key1, value1
+    else:
+      query0, key0, value0 = query, key, value
+    _qkv_same_embed_dim0 = self._qkv_same_embed_dim
+    if torch.__not__(_qkv_same_embed_dim0):
+      embed_dim0 = self.embed_dim
+      num_heads0 = self.num_heads
+      in_proj_weight3 = self.in_proj_weight
+      in_proj_bias3 = self.in_proj_bias
+      bias_k0 = self.bias_k
+      bias_v0 = self.bias_v
+      add_zero_attn0 = self.add_zero_attn
+      dropout = self.dropout
+      out_proj3 = self.out_proj
+      weight1 = out_proj3.weight
+      out_proj4 = self.out_proj
+      bias1 = out_proj4.bias
+      training0 = self.training
+      q_proj_weight = self.q_proj_weight
+      k_proj_weight = self.k_proj_weight
+      v_proj_weight = self.v_proj_weight
+      _90 = _8(query0, key0, value0, embed_dim0, num_heads0, in_proj_weight3, in_proj_bias3, bias_k0, bias_v0, add_zero_attn0, dropout, weight1, bias1, training0, key_padding_mask1, need_weights, attn_mask1, True, q_proj_weight, k_proj_weight, v_proj_weight, None, None, average_attn_weights, is_causal, )
+      attn_output0, attn_output_weights0, = _90
+      attn_output, attn_output_weights = attn_output0, attn_output_weights0
+    else:
+      embed_dim1 = self.embed_dim
+      num_heads1 = self.num_heads
+      in_proj_weight4 = self.in_proj_weight
+      in_proj_bias4 = self.in_proj_bias
+      bias_k1 = self.bias_k
+      bias_v1 = self.bias_v
+      add_zero_attn1 = self.add_zero_attn
+      dropout0 = self.dropout
+      out_proj5 = self.out_proj
+      weight2 = out_proj5.weight
+      out_proj6 = self.out_proj
+      bias2 = out_proj6.bias
+      training1 = self.training
+      _91 = _8(query0, key0, value0, embed_dim1, num_heads1, in_proj_weight4, in_proj_bias4, bias_k1, bias_v1, add_zero_attn1, dropout0, weight2, bias2, training1, key_padding_mask1, need_weights, attn_mask1, False, None, None, None, None, None, average_attn_weights, is_causal, )
+      attn_output1, attn_output_weights1, = _91
+      attn_output, attn_output_weights = attn_output1, attn_output_weights1
+    if is_batched:
+      _93 = torch.transpose(attn_output, 1, 0)
+      _92 = (_93, attn_output_weights)
+    else:
+      _94 = (attn_output, attn_output_weights)
+      _92 = _94
+    _78 = _92
+  return _78

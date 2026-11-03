@@ -1,0 +1,3 @@
+def forward(self,
+    x: Tensor) -> Tensor:
+  return (self).analysis(x, 1, )

@@ -1,0 +1,69 @@
+def forward(self,
+    x: Tensor,
+    speaker_ids: Tensor,
+    src_pad_mask: Optional[Tensor]=None,
+    alpha: float=1.,
+    coef_speakers: Optional[Tensor]=None,
+    type_ids: Optional[Tensor]=None,
+    focus_mask: Optional[Tensor]=None,
+    emphasis: Optional[Tensor]=None) -> Tensor:
+  embedding = self.embedding
+  x0 = (embedding).forward(x, )
+  seq_len = torch.size(x0, 1)
+  if torch.__is__(coef_speakers, None):
+    speaker_embedding = self.speaker_embedding
+    speaker_embeds0 = (speaker_embedding).forward(speaker_ids, )
+    speaker_embeds = speaker_embeds0
+  else:
+    coef_speakers0 = unchecked_cast(Tensor, coef_speakers)
+    speaker_embedding0 = self.speaker_embedding
+    weight = speaker_embedding0.weight
+    _0 = torch.reshape(coef_speakers0, [-1, 1])
+    speaker_embeds_weighted = torch.mul(weight, _0)
+    _1 = annotate(List[Optional[Tensor]], [torch.ne(coef_speakers0, 0)])
+    _2 = torch.index(speaker_embeds_weighted, _1)
+    speaker_embeds1 = torch.unsqueeze(torch.sum(_2, [0]), 0)
+    speaker_embeds = speaker_embeds1
+  speaker_embeds2 = torch.repeat(torch.unsqueeze(speaker_embeds, 1), [1, seq_len, 1])
+  x1 = torch.add(x0, speaker_embeds2)
+  utt_type_emb = self.utt_type_emb
+  if utt_type_emb:
+    _3 = torch.__isnot__(type_ids, None)
+  else:
+    _3 = False
+  if _3:
+    type_ids0 = unchecked_cast(Tensor, type_ids)
+    type_embedding = self.type_embedding
+    _4 = (type_embedding).forward(type_ids0, )
+    x2 = torch.add(x1, _4)
+  else:
+    x2 = x1
+  focus_emb = self.focus_emb
+  if focus_emb:
+    _5 = torch.__isnot__(focus_mask, None)
+  else:
+    _5 = False
+  if _5:
+    focus_mask0 = unchecked_cast(Tensor, focus_mask)
+    focus_embedding = self.focus_embedding
+    _6 = (focus_embedding).forward(focus_mask0, )
+    x3 = torch.add(x2, _6)
+  else:
+    x3 = x2
+  emphasis_emb = self.emphasis_emb
+  if emphasis_emb:
+    _7 = torch.__isnot__(emphasis, None)
+  else:
+    _7 = False
+  if _7:
+    emphasis0 = unchecked_cast(Tensor, emphasis)
+    emphasis_embedding = self.emphasis_embedding
+    _8 = (emphasis_embedding).forward(emphasis0, )
+    x4 = torch.add(x3, _8)
+  else:
+    x4 = x3
+  transformer = self.transformer
+  x5 = (transformer).forward(x4, src_pad_mask, None, )
+  lin = self.lin
+  output = (lin).forward(x5, )
+  return torch.div(output, alpha)

@@ -1,0 +1,19 @@
+def forward(self,
+    x: Tensor,
+    src_pad_mask: Optional[Tensor]=None,
+    style: Optional[Tensor]=None) -> Tensor:
+  x0 = torch.transpose(x, 0, 1)
+  pos_encoder = self.pos_encoder
+  x1 = (pos_encoder).forward(x0, )
+  x2 = torch.transpose(x1, 0, 1)
+  layers = self.layers
+  _0 = getattr(layers, "0")
+  _1 = getattr(layers, "1")
+  _2 = getattr(layers, "2")
+  _3 = getattr(layers, "3")
+  x3 = (_0).forward(x2, src_pad_mask, style, )
+  x4 = (_1).forward(x3, src_pad_mask, style, )
+  x5 = (_2).forward(x4, src_pad_mask, style, )
+  x6 = (_3).forward(x5, src_pad_mask, style, )
+  norm = self.norm
+  return (norm).forward(x6, )

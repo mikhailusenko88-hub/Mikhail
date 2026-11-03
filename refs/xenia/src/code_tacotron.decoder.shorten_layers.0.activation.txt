@@ -1,0 +1,4 @@
+def forward(self,
+    input: Tensor) -> Tensor:
+  _0 = __torch__.torch.nn.functional.___torch_mangle_26.relu
+  return _0(input, False, )

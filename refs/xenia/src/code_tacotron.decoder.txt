@@ -1,0 +1,53 @@
+def forward(self,
+    x: Tensor,
+    src_pad_mask: Optional[Tensor]=None,
+    style: Optional[Tensor]=None) -> Tensor:
+  _0 = __torch__.tacotron2.fastpitch_layers.pad_to_multiple
+  _1 = uninitialized(Tensor)
+  L = (torch.size(x))[1]
+  x8 = torch.transpose(x, 0, 1)
+  pos_encoder = self.pos_encoder
+  x9 = (pos_encoder).forward(x8, )
+  x10 = torch.transpose(x9, 0, 1)
+  pre_vanilla_layers = self.pre_vanilla_layers
+  _00 = getattr(pre_vanilla_layers, "0")
+  x11 = (_00).forward(x10, src_pad_mask, style, )
+  shorten_factor = self.shorten_factor
+  x12 = _0(x11, shorten_factor, 0., )
+  if torch.__isnot__(src_pad_mask, None):
+    src_pad_mask1 = unchecked_cast(Tensor, src_pad_mask)
+    shorten_factor0 = self.shorten_factor
+    padded_mask0 = _0(src_pad_mask1, shorten_factor0, 0., )
+    src_pad_mask0, padded_mask = src_pad_mask1, padded_mask0
+  else:
+    src_pad_mask0, padded_mask = src_pad_mask, src_pad_mask
+  x_residual = torch.clone(x12)
+  downsample = self.downsample
+  downsampled = (downsample).forward(x12, )
+  if torch.__isnot__(src_pad_mask0, None):
+    src_pad_mask3 = unchecked_cast(Tensor, src_pad_mask0)
+    if torch.__isnot__(padded_mask, None):
+      padded_mask2 = unchecked_cast(Tensor, padded_mask)
+      padded_mask1 = padded_mask2
+    else:
+      ops.prim.RaiseException("AssertionError: ")
+      padded_mask1 = _1
+    downsample0 = self.downsample
+    _2 = (downsample0).forward(torch.to(padded_mask1, 6), )
+    downsampled_mask, src_pad_mask2 = torch.gt(_2, 0), src_pad_mask3
+  else:
+    downsampled_mask, src_pad_mask2 = None, src_pad_mask0
+  shorten_layers = self.shorten_layers
+  _01 = getattr(shorten_layers, "0")
+  _10 = getattr(shorten_layers, "1")
+  x13 = (_01).forward(downsampled, downsampled_mask, style, )
+  x14 = (_10).forward(downsampled, downsampled_mask, style, )
+  upsample = self.upsample
+  x15 = (upsample).forward(x14, )
+  x16 = torch.add(x15, x_residual)
+  x17 = torch.slice(torch.slice(x16), 1, None, L)
+  post_vanilla_layers = self.post_vanilla_layers
+  _02 = getattr(post_vanilla_layers, "0")
+  x18 = (_02).forward(x17, src_pad_mask2, style, )
+  norm = self.norm
+  return (norm).forward(x18, )

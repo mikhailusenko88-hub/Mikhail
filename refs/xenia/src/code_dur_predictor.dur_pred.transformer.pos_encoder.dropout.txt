@@ -1,0 +1,5 @@
+def forward(self,
+    input: Tensor) -> Tensor:
+  _0 = __torch__.torch.nn.functional.___torch_mangle_24.dropout
+  training = self.training
+  return _0(input, 0.5, training, False, )

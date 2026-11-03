@@ -1,0 +1,5 @@
+def forward(self,
+    input: Tensor) -> Tensor:
+  weight = self.weight
+  bias = self.bias
+  return torch.linear(input, weight, bias)

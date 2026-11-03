@@ -1,0 +1,7 @@
+def forward(self,
+    x: Tensor) -> Tensor:
+  proj = self.proj
+  x22 = (proj).forward(x, )
+  _0 = (torch.size(x22))[0]
+  dim = self.dim
+  return torch.view(x22, [_0, -1, dim])

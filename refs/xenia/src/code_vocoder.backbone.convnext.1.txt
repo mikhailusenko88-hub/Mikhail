@@ -1,0 +1,17 @@
+def forward(self,
+    x: Tensor) -> Tensor:
+  dwconv = self.dwconv
+  x13 = (dwconv).forward(x, )
+  x14 = torch.transpose(x13, 1, 2)
+  norm = self.norm
+  x15 = (norm).forward(x14, )
+  pwconv1 = self.pwconv1
+  x16 = (pwconv1).forward(x15, )
+  act = self.act
+  x17 = (act).forward(x16, )
+  pwconv2 = self.pwconv2
+  x18 = (pwconv2).forward(x17, )
+  gamma = self.gamma
+  x19 = torch.mul(gamma, x18)
+  x20 = torch.transpose(x19, 1, 2)
+  return torch.add(x, x20)

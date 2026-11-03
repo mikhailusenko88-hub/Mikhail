@@ -1,0 +1,24 @@
+def forward(self,
+    x: Tensor,
+    sample_rate: int,
+    coef: float=0.,
+    inference: bool=True) -> Tensor:
+  backbone = self.backbone
+  x0 = (backbone).forward(x, )
+  head = self.head
+  audio = torch.unsqueeze((head).forward(x0, ), 1)
+  if torch.eq(sample_rate, 24000):
+    pqmf_2 = self.pqmf_2
+    _0 = torch.slice((pqmf_2).forward(audio, ))
+    audio1 = torch.slice(torch.slice(_0, 1, None, 1), 2)
+    audio0 = audio1
+  else:
+    audio0 = audio
+  if torch.eq(sample_rate, 8000):
+    pqmf_6 = self.pqmf_6
+    _1 = torch.slice((pqmf_6).forward(audio0, ))
+    audio3 = torch.slice(torch.slice(_1, 1, None, 1), 2)
+    audio2 = audio3
+  else:
+    audio2 = audio0
+  return torch.select(audio2, 0, 0)

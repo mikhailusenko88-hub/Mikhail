@@ -1,0 +1,7 @@
+def forward(self,
+    input: Tensor) -> Tensor:
+  _0 = __torch__.torch.nn.functional.___torch_mangle_25.layer_norm
+  weight = self.weight
+  bias = self.bias
+  _1 = _0(input, [64], weight, bias, 1.0000000000000001e-05, )
+  return _1

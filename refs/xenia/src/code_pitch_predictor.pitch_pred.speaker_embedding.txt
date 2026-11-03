@@ -1,0 +1,6 @@
+def forward(self,
+    input: Tensor) -> Tensor:
+  _0 = __torch__.torch.nn.functional.___torch_mangle_23.embedding
+  weight = self.weight
+  _1 = _0(input, weight, None, None, 2., False, False, )
+  return _1

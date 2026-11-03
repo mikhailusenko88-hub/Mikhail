@@ -1,0 +1,625 @@
+tacotron JitMultiForward
+  tacotron.embedding Embedding
+  tacotron.speaker_embedding Embedding
+  tacotron.encoder ForwardTransformer
+    tacotron.encoder.pos_encoder PositionalEncoding
+      tacotron.encoder.pos_encoder.dropout Dropout
+    tacotron.encoder.layers ModuleList
+      tacotron.encoder.layers.0 FFTBlock
+        tacotron.encoder.layers.0.self_attn MultiheadAttention
+        tacotron.encoder.layers.0.dropout Dropout
+        tacotron.encoder.layers.0.conv1 Conv1d
+        tacotron.encoder.layers.0.conv2 Conv1d
+        tacotron.encoder.layers.0.norm1 LayerNorm
+        tacotron.encoder.layers.0.norm2 LayerNorm
+        tacotron.encoder.layers.0.dropout1 Dropout
+        tacotron.encoder.layers.0.dropout2 Dropout
+        tacotron.encoder.layers.0.activation ReLU
+      tacotron.encoder.layers.1 FFTBlock
+        tacotron.encoder.layers.1.self_attn MultiheadAttention
+        tacotron.encoder.layers.1.dropout Dropout
+        tacotron.encoder.layers.1.conv1 Conv1d
+        tacotron.encoder.layers.1.conv2 Conv1d
+        tacotron.encoder.layers.1.norm1 LayerNorm
+        tacotron.encoder.layers.1.norm2 LayerNorm
+        tacotron.encoder.layers.1.dropout1 Dropout
+        tacotron.encoder.layers.1.dropout2 Dropout
+        tacotron.encoder.layers.1.activation ReLU
+      tacotron.encoder.layers.2 FFTBlock
+        tacotron.encoder.layers.2.self_attn MultiheadAttention
+        tacotron.encoder.layers.2.dropout Dropout
+        tacotron.encoder.layers.2.conv1 Conv1d
+        tacotron.encoder.layers.2.conv2 Conv1d
+        tacotron.encoder.layers.2.norm1 LayerNorm
+        tacotron.encoder.layers.2.norm2 LayerNorm
+        tacotron.encoder.layers.2.dropout1 Dropout
+        tacotron.encoder.layers.2.dropout2 Dropout
+        tacotron.encoder.layers.2.activation ReLU
+      tacotron.encoder.layers.3 FFTBlock
+        tacotron.encoder.layers.3.self_attn MultiheadAttention
+        tacotron.encoder.layers.3.dropout Dropout
+        tacotron.encoder.layers.3.conv1 Conv1d
+        tacotron.encoder.layers.3.conv2 Conv1d
+        tacotron.encoder.layers.3.norm1 LayerNorm
+        tacotron.encoder.layers.3.norm2 LayerNorm
+        tacotron.encoder.layers.3.dropout1 Dropout
+        tacotron.encoder.layers.3.dropout2 Dropout
+        tacotron.encoder.layers.3.activation ReLU
+    tacotron.encoder.norm LayerNorm
+  tacotron.len_reg LengthRegulator
+  tacotron.pitch_proj Conv1d
+  tacotron.energy_proj Conv1d
+  tacotron.decoder HourGlassTransformer
+    tacotron.decoder.pos_encoder PositionalEncoding
+      tacotron.decoder.pos_encoder.dropout Dropout
+    tacotron.decoder.norm LayerNorm
+    tacotron.decoder.pre_vanilla_layers ModuleList
+      tacotron.decoder.pre_vanilla_layers.0 FFTBlock
+        tacotron.decoder.pre_vanilla_layers.0.self_attn MultiheadAttention
+        tacotron.decoder.pre_vanilla_layers.0.dropout Dropout
+        tacotron.decoder.pre_vanilla_layers.0.conv1 Conv1d
+        tacotron.decoder.pre_vanilla_layers.0.conv2 Conv1d
+        tacotron.decoder.pre_vanilla_layers.0.norm1 LayerNorm
+        tacotron.decoder.pre_vanilla_layers.0.norm2 LayerNorm
+        tacotron.decoder.pre_vanilla_layers.0.dropout1 Dropout
+        tacotron.decoder.pre_vanilla_layers.0.dropout2 Dropout
+        tacotron.decoder.pre_vanilla_layers.0.activation ReLU
+    tacotron.decoder.shorten_layers ModuleList
+      tacotron.decoder.shorten_layers.0 FFTBlock
+        tacotron.decoder.shorten_layers.0.self_attn MultiheadAttention
+        tacotron.decoder.shorten_layers.0.dropout Dropout
+        tacotron.decoder.shorten_layers.0.conv1 Conv1d
+        tacotron.decoder.shorten_layers.0.conv2 Conv1d
+        tacotron.decoder.shorten_layers.0.norm1 LayerNorm
+        tacotron.decoder.shorten_layers.0.norm2 LayerNorm
+        tacotron.decoder.shorten_layers.0.dropout1 Dropout
+        tacotron.decoder.shorten_layers.0.dropout2 Dropout
+        tacotron.decoder.shorten_layers.0.activation ReLU
+      tacotron.decoder.shorten_layers.1 FFTBlock
+        tacotron.decoder.shorten_layers.1.self_attn MultiheadAttention
+        tacotron.decoder.shorten_layers.1.dropout Dropout
+        tacotron.decoder.shorten_layers.1.conv1 Conv1d
+        tacotron.decoder.shorten_layers.1.conv2 Conv1d
+        tacotron.decoder.shorten_layers.1.norm1 LayerNorm
+        tacotron.decoder.shorten_layers.1.norm2 LayerNorm
+        tacotron.decoder.shorten_layers.1.dropout1 Dropout
+        tacotron.decoder.shorten_layers.1.dropout2 Dropout
+        tacotron.decoder.shorten_layers.1.activation ReLU
+    tacotron.decoder.post_vanilla_layers ModuleList
+      tacotron.decoder.post_vanilla_layers.0 FFTBlock
+        tacotron.decoder.post_vanilla_layers.0.self_attn MultiheadAttention
+        tacotron.decoder.post_vanilla_layers.0.dropout Dropout
+        tacotron.decoder.post_vanilla_layers.0.conv1 Conv1d
+        tacotron.decoder.post_vanilla_layers.0.conv2 Conv1d
+        tacotron.decoder.post_vanilla_layers.0.norm1 LayerNorm
+        tacotron.decoder.post_vanilla_layers.0.norm2 LayerNorm
+        tacotron.decoder.post_vanilla_layers.0.dropout1 Dropout
+        tacotron.decoder.post_vanilla_layers.0.dropout2 Dropout
+        tacotron.decoder.post_vanilla_layers.0.activation ReLU
+    tacotron.decoder.downsample AvgPoolDownsample
+      tacotron.decoder.downsample.avg_pool AvgPool1d
+    tacotron.decoder.upsample LinearUpsample
+      tacotron.decoder.upsample.proj Linear
+  tacotron.lin Linear
+vocoder JitV4
+  vocoder.pqmf_6 PQMF
+  vocoder.pqmf_2 PQMF
+  vocoder.backbone JitV4Backbone
+    vocoder.backbone.embed Conv1d
+    vocoder.backbone.norm LayerNorm
+    vocoder.backbone.convnext ModuleList
+      vocoder.backbone.convnext.0 JitConvNeXtBlock
+        vocoder.backbone.convnext.0.dwconv Conv1d
+        vocoder.backbone.convnext.0.norm LayerNorm
+        vocoder.backbone.convnext.0.pwconv1 Linear
+        vocoder.backbone.convnext.0.act GELU
+        vocoder.backbone.convnext.0.pwconv2 Linear
+      vocoder.backbone.convnext.1 JitConvNeXtBlock
+        vocoder.backbone.convnext.1.dwconv Conv1d
+        vocoder.backbone.convnext.1.norm LayerNorm
+        vocoder.backbone.convnext.1.pwconv1 Linear
+        vocoder.backbone.convnext.1.act GELU
+        vocoder.backbone.convnext.1.pwconv2 Linear
+      vocoder.backbone.convnext.2 JitConvNeXtBlock
+        vocoder.backbone.convnext.2.dwconv Conv1d
+        vocoder.backbone.convnext.2.norm LayerNorm
+        vocoder.backbone.convnext.2.pwconv1 Linear
+        vocoder.backbone.convnext.2.act GELU
+        vocoder.backbone.convnext.2.pwconv2 Linear
+      vocoder.backbone.convnext.3 JitConvNeXtBlock
+        vocoder.backbone.convnext.3.dwconv Conv1d
+        vocoder.backbone.convnext.3.norm LayerNorm
+        vocoder.backbone.convnext.3.pwconv1 Linear
+        vocoder.backbone.convnext.3.act GELU
+        vocoder.backbone.convnext.3.pwconv2 Linear
+      vocoder.backbone.convnext.4 JitConvNeXtBlock
+        vocoder.backbone.convnext.4.dwconv Conv1d
+        vocoder.backbone.convnext.4.norm LayerNorm
+        vocoder.backbone.convnext.4.pwconv1 Linear
+        vocoder.backbone.convnext.4.act GELU
+        vocoder.backbone.convnext.4.pwconv2 Linear
+      vocoder.backbone.convnext.5 JitConvNeXtBlock
+        vocoder.backbone.convnext.5.dwconv Conv1d
+        vocoder.backbone.convnext.5.norm LayerNorm
+        vocoder.backbone.convnext.5.pwconv1 Linear
+        vocoder.backbone.convnext.5.act GELU
+        vocoder.backbone.convnext.5.pwconv2 Linear
+      vocoder.backbone.convnext.6 JitConvNeXtBlock
+        vocoder.backbone.convnext.6.dwconv Conv1d
+        vocoder.backbone.convnext.6.norm LayerNorm
+        vocoder.backbone.convnext.6.pwconv1 Linear
+        vocoder.backbone.convnext.6.act GELU
+        vocoder.backbone.convnext.6.pwconv2 Linear
+      vocoder.backbone.convnext.7 JitConvNeXtBlock
+        vocoder.backbone.convnext.7.dwconv Conv1d
+        vocoder.backbone.convnext.7.norm LayerNorm
+        vocoder.backbone.convnext.7.pwconv1 Linear
+        vocoder.backbone.convnext.7.act GELU
+        vocoder.backbone.convnext.7.pwconv2 Linear
+    vocoder.backbone.final_layer_norm LayerNorm
+  vocoder.head ISTFTHead
+    vocoder.head.out Linear
+    vocoder.head.istft ISTFT
+dur_predictor JitDurPredictor
+  dur_predictor.dur_pred TransformerSeriesPredictor
+    dur_predictor.dur_pred.embedding Embedding
+    dur_predictor.dur_pred.transformer ForwardTransformer
+      dur_predictor.dur_pred.transformer.pos_encoder PositionalEncoding
+        dur_predictor.dur_pred.transformer.pos_encoder.dropout Dropout
+      dur_predictor.dur_pred.transformer.layers ModuleList
+        dur_predictor.dur_pred.transformer.layers.0 FFTBlock
+        dur_predictor.dur_pred.transformer.layers.1 FFTBlock
+        dur_predictor.dur_pred.transformer.layers.2 FFTBlock
+        dur_predictor.dur_pred.transformer.layers.3 FFTBlock
+      dur_predictor.dur_pred.transformer.norm LayerNorm
+    dur_predictor.dur_pred.lin Linear
+    dur_predictor.dur_pred.speaker_embedding Embedding
+    dur_predictor.dur_pred.emotion_embedding Embedding
+    dur_predictor.dur_pred.type_embedding Embedding
+    dur_predictor.dur_pred.focus_embedding Embedding
+    dur_predictor.dur_pred.emphasis_embedding Embedding
+pitch_predictor JitPitchPredictorIC
+  pitch_predictor.pitch_pred TransformerSeriesPredictor
+    pitch_predictor.pitch_pred.embedding Embedding
+    pitch_predictor.pitch_pred.transformer ForwardTransformer
+      pitch_predictor.pitch_pred.transformer.pos_encoder PositionalEncoding
+        pitch_predictor.pitch_pred.transformer.pos_encoder.dropout Dropout
+      pitch_predictor.pitch_pred.transformer.layers ModuleList
+        pitch_predictor.pitch_pred.transformer.layers.0 FFTBlock
+        pitch_predictor.pitch_pred.transformer.layers.1 FFTBlock
+        pitch_predictor.pitch_pred.transformer.layers.2 FFTBlock
+        pitch_predictor.pitch_pred.transformer.layers.3 FFTBlock
+      pitch_predictor.pitch_pred.transformer.norm LayerNorm
+    pitch_predictor.pitch_pred.lin Linear
+    pitch_predictor.pitch_pred.speaker_embedding Embedding
+    pitch_predictor.pitch_pred.emotion_embedding Embedding
+    pitch_predictor.pitch_pred.type_embedding Embedding
+    pitch_predictor.pitch_pred.focus_embedding Embedding
+    pitch_predictor.pitch_pred.emphasis_embedding Embedding
+== jm.cap_sos
+def cap_sos(self,
+    dur_hat: Tensor,
+    sos_cap: int) -> Tensor:
+  _0 = torch.select(torch.select(dur_hat, 0, 0), 0, 0)
+  if bool(torch.gt(_0, sos_cap)):
+    _1 = torch.select(torch.select(dur_hat, 0, 0), 0, 0)
+    _2 = torch.tensor(sos_cap, dtype=ops.prim.dtype(_1), device=ops.prim.device(_1))
+    _3 = torch.copy_(_1, _2)
+  else:
+    pass
+  return dur_hat
+
+== jm.fx_durs
+def fx_durs(self,
+    dur_hat: Tensor,
+    sos_cap: int,
+    emph: bool) -> Tensor:
+  dur_hat8 = (self).cap_sos(dur_hat, sos_cap, )
+  if emph:
+    _0 = torch.sub((torch.size(dur_hat8))[1], 1)
+    n = ops.prim.min(5, _0)
+    _1 = torch.slice(torch.select(dur_hat8, 0, 0), 0, 1, n)
+    _2 = torch.clamp(_1, 5.)
+    _3 = torch.slice(torch.select(dur_hat8, 0, 0), 0, 1, n)
+    _4 = torch.copy_(_3, _2)
+  else:
+    pass
+  _5 = torch.select(torch.select(dur_hat8, 0, 0), 0, -1)
+  if bool(torch.gt(_5, 7)):
+    _6 = torch.select(torch.select(dur_hat8, 0, 0), 0, -1)
+    _7 = torch.tensor(7, dtype=ops.prim.dtype(_6), device=ops.prim.device(_6))
+    _8 = torch.copy_(_6, _7)
+  else:
+    pass
+  _9 = torch.select(torch.select(dur_hat8, 0, 0), 0, -2)
+  _10 = torch.tensor(13, dtype=ops.prim.dtype(_9), device=ops.prim.device(_9))
+  _11 = torch.copy_(_9, _10)
+  _12 = torch.select(torch.select(dur_hat8, 0, 0), 0, -3)
+  if bool(torch.gt(_12, 13)):
+    _13 = torch.select(torch.select(dur_hat8, 0, 0), 0, -3)
+    _14 = torch.tensor(13, dtype=ops.prim.dtype(_13), device=ops.prim.device(_13))
+    _15 = torch.copy_(_13, _14)
+  else:
+    pass
+  return dur_hat8
+
+== jm.process_pauses
+def process_pauses(self,
+    comma_point_durs: Tensor,
+    comma_ids: List[int],
+    pause_len: int) -> Tensor:
+  _0 = torch.tensor(comma_ids, dtype=4)
+  _1 = torch.slice(comma_point_durs)
+  _2 = annotate(List[Optional[Tensor]], [None, _0])
+  _3, _4 = torch.min(torch.index(_1, _2), 1)
+  comma_len = torch.item(torch.select(_3, 0, 0))
+  point_len = torch.item(torch.select(_3, 0, 1))
+  if torch.gt(comma_len, point_len):
+    _5 = True
+  else:
+    _5 = torch.le(pause_len, comma_len)
+  if _5:
+    final_dur0 = torch.select(comma_point_durs, 0, 0)
+    final_dur = final_dur0
+  else:
+    if torch.ge(pause_len, point_len):
+      final_dur2 = torch.select(comma_point_durs, 0, 1)
+      final_dur1 = final_dur2
+    else:
+      point_cf = torch.div(torch.sub(pause_len, comma_len), torch.sub(point_len, comma_len))
+      comma_cf = torch.div(torch.sub(point_len, pause_len), torch.sub(point_len, comma_len))
+      _6 = torch.select(comma_point_durs, 0, 0)
+      _7 = torch.mul(_6, comma_cf)
+      _8 = torch.select(comma_point_durs, 0, 1)
+      final_dur3 = torch.add(_7, torch.mul(_8, point_cf))
+      final_dur1 = final_dur3
+    final_dur = final_dur1
+  final_dur4 = torch.unsqueeze(final_dur, 0)
+  return torch.round(final_dur4)
+
+== jm.update_pitch_coef
+def update_pitch_coef(self,
+    norm_pitch: Tensor,
+    pitch_coef: Tensor,
+    speaker_ids: Tensor) -> Tensor:
+  _0 = torch.lt(ops.prim.abs(norm_pitch), 0.001)
+  _1 = torch.tensor(0., dtype=ops.prim.dtype(norm_pitch), device=ops.prim.device(norm_pitch))
+  _2 = annotate(List[Optional[Tensor]], [_0])
+  _3 = torch.index_put_(norm_pitch, _2, _1)
+  norm_pitch_coefd = torch.mul(norm_pitch, pitch_coef)
+  _4 = torch.eq(torch.select(pitch_coef, 0, 0), 0)
+  _5 = (torch.where(_4))[0]
+  _6 = torch.slice(pitch_coef)
+  _7 = torch.tensor(1., dtype=ops.prim.dtype(_6), device=ops.prim.device(_6))
+  _8 = annotate(List[Optional[Tensor]], [None, _5])
+  _9 = torch.index_put_(_6, _8, _7)
+  mean_std_coef = self.mean_std_coef
+  _10 = mean_std_coef[int(torch.item(speaker_ids))]
+  mean_std_shift = torch.mul(torch.sub(pitch_coef, 1.), _10)
+  _11 = torch.eq(torch.select(norm_pitch_coefd, 0, 0), 0)
+  _12 = torch.tensor(0, dtype=ops.prim.dtype(mean_std_shift), device=ops.prim.device(mean_std_shift))
+  _13 = annotate(List[Optional[Tensor]], [_11])
+  _14 = torch.index_put_(mean_std_shift, _13, _12)
+  norm_pitch_shift = torch.add(norm_pitch_coefd, mean_std_shift)
+  return norm_pitch_shift
+
+== jm.get_support_ids
+def get_support_ids(self,
+    sequence: Tensor,
+    symb_durs: Dict[int, int]) -> Optional[List[int]]:
+  temp_ids = annotate(List[int], [])
+  _0 = torch.keys(symb_durs)
+  for _1 in range(torch.len(_0)):
+    sid = _0[_1]
+    _2 = torch.select(torch.select(sequence, 0, 0), 0, sid)
+    comma_ids = self.comma_ids
+    _3 = torch.__contains__(comma_ids, annotate(int, _2))
+    if _3:
+      _4 = torch.append(temp_ids, sid)
+    else:
+      pass
+  if torch.gt(torch.len(temp_ids), 0):
+    support_ids : Optional[List[int]] = temp_ids
+  else:
+    support_ids = None
+  return support_ids
+
+== jm.replace_comma
+def replace_comma(self,
+    sequence: Tensor,
+    support_ids: List[int]) -> Tensor:
+  support_sequence = torch.clone(sequence)
+  point_id = self.point_id
+  _0 = torch.tensor(support_ids, dtype=4)
+  _1 = torch.slice(support_sequence)
+  _2 = torch.tensor(point_id, dtype=ops.prim.dtype(_1), device=ops.prim.device(_1))
+  _3 = annotate(List[Optional[Tensor]], [None, _0])
+  _4 = torch.index_put_(_1, _3, _2)
+  return support_sequence
+
+punkt_symbols [3, 5, 6, 7, 8, 9, 10, 44, 45]
+err Привет! Я Барсик! True AttributeError("'Rec' object has no attribute 'pitch_predictor'")
+err Привет! Я Барсик! False AttributeError("'Rec' object has no attribute 'pitch_predictor'")
+err Ой... Кто это там шуршит в кустах? True AttributeError("'Rec' object has no attribute 'pitch_predictor'")
+err Ой... Кто это там шуршит в кустах? False AttributeError("'Rec' object has no attribute 'pitch_predictor'")
+err Пойдём посмотрим! Ура! True AttributeError("'Rec' object has no attribute 'pitch_predictor'")
+err Пойдём посмотрим! Ура! False AttributeError("'Rec' object has no attribute 'pitch_predictor'")
+err Прив+ет! Ж+или-б+ыли кот и мыш+онок. True AttributeError("'Rec' object has no attribute 'pitch_predictor'")
+err Прив+ет! Ж+или-б+ыли кот и мыш+онок. False AttributeError("'Rec' object has no attribute 'pitch_predictor'")
+calls 0
+    def apply_tts(self, text=None,
+                  ssml_text=None,
+                  speaker: str = 'xenia',
+                  sample_rate: int = 48000,
+                  put_accent=True,
+                  put_stress_homo=True,
+                  put_yo=True,
+                  put_yo_homo=True,
+                  stress_single_vowel=True,
+                  voice_path=None,
+                  symbol_durs=None,
+                  return_ts=False, 
+                  lang=None,
+                  type_str=None,
+                  intensity=3):
+        assert sample_rate in [8000, 24000, 48000], f"`sample_rate` should be in [8000, 24000, 48000], current value is {sample_rate}"
+        assert speaker in self.speakers, f"`speaker` should be in {', '.join(self.speakers)}"
+        assert text is not None or ssml_text is not None, "Both `text` and `ssml_text` are empty"
+        assert symbol_durs is None or ssml_text is None, '`ssml_text` and `symbol_durs` are not compatible'
+        if return_ts:
+            assert hasattr(self.models[0], 'alphabet'), "This model doesn't support `return_ts`"
+
+        if symbol_durs is not None:
+            ssml_text = self.transform_durs_to_ssml(text, symbol_durs)
+
+        if ssml_text is not None and '<intensity' in ssml_text:
+            ssml_text, intensity = self.extract_intensity_from_ssml(ssml_text)
+
+        has_emphasis = False
+        emph_sents = set()
+        emph_idx = set()
+        if (text is not None and '**' in text) or (ssml_text is not None and '**' in ssml_text):
+            target = text if text is not None else self.strip_ssml_tags(ssml_text)
+            matches = re.findall(r'\*\*([^*\s]+)\*\*', target)
+            if target.count('**') != 2 * len(matches):
+                raise ValueError("Некорректная разметка эмфазы. Ожидается формат **слово**.")
+            if len(matches) > 0:
+                has_emphasis = True
+                # which of the star groups are emphasis; their order survives processing
+                emph_idx = {i for i, m in enumerate(STAR_RE.finditer(target))
+                            if len(m.group(1)) == 2}
+                if text is not None:
+                    text = re.sub(r'\*\*([^*\s]+)\*\*', r'*\1*', text)
+                if ssml_text is not None:
+                    ssml_text = re.sub(r'\*\*([^*\s]+)\*\*', r'*\1*', ssml_text)
+
+        has_focus = False
+        original_text_for_focus = None
+        ssml_marked_text = None
+        if text is not None and '*' in text:
+            has_focus = True
+            original_text_for_focus = text
+            text = text.replace('*', '')
+        elif ssml_text is not None and '*' in ssml_text:
+            has_focus = True
+            ssml_marked_text = self.strip_ssml_tags(ssml_text)
+            original_text_for_focus = ssml_marked_text
+            ssml_text = ssml_text.replace('*', '')
+
+        ssml = ssml_text is not None
+        if ssml:
+            input_text = ssml_text
+        else:
+            input_text = text
+        speaker_ids, model_id = self.get_speakers(speaker, voice_path)
+        if not lang and self.ext_alph:
+            lang = speaker.split('_')[0]
+        sentences, clean_sentences, break_lens, prosody_rates, prosody_pitches, sp_ids = self.prepare_tts_model_input(input_text,
+                                                                                                                      ssml=ssml,
+                                                                                                                      speaker_ids=speaker_ids,
+                                                                                                                      lang=lang)
+        # focus and types must come from the text the model gets, not from the raw ssml
+        if has_focus and ssml_marked_text is not None and not self.phons:
+            original_text_for_focus = self.restore_focus_marks(' '.join(sentences), ssml_marked_text)
+        if has_emphasis and original_text_for_focus is not None:
+            emph_sents = self.locate_emph_sents(original_text_for_focus, emph_idx)
+
+        if not self.q_model_unpacked:
+            torch._C._jit_set_profiling_mode(False)
+            self.unpack_q_model()
+            self.q_model_unpacked = True
+
+        with torch.no_grad():
+            try:
+                sequence, symb_durs, durs_rate, pitch_coefs = self.merge_batch_model(sentences, 
+                                                                                     break_lens, 
+                                                                                     prosody_rates, 
+                                                                                     prosody_pitches, 
+                                                                                     put_accent=put_accent,
+                                                                                     put_stress_homo=put_stress_homo,
+                                                                                     put_yo=put_yo,
+                                                                                     put_yo_homo=put_yo_homo,
+                                                                                     stress_single_vowel=stress_single_vowel)
+
+                if type_str is None:
+                    if text is not None:
+                        type_str = classify_text(text)
+                    elif original_text_for_focus is not None:
+                        type_str = classify_text(original_text_for_focus.replace('*', ''))
+                    else:
+                        clean_for_clf = re.sub(r'<[^>]+>', '', ssml_text) if ssml_text else ''
+                        type_str = classify_text(clean_for_clf)
+
+                if has_focus:
+                    if self.accentor:
+                        accented_text = self.accentor(original_text_for_focus.replace('*', ''),
+                                                      put_stress=put_accent,
+                                                      put_stress_homo=put_stress_homo,
+                                                      put_yo=put_yo,
+                                                      put_yo_homo=put_yo_homo,
+                                                      stress_single_vowel=stress_single_vowel)
+                    else:
+                        accented_text = original_text_for_focus.replace('*', '')
+                    focus_words = []
+                    for word in original_text_for_focus.split():
+                        if '*' in word:
+                            focus_words.append(word.replace('*', '').replace('+', '').lower())
+                    accented_with_focus = []
+                    for word in accented_text.split():
+                        clean_word = word.replace('+', '').lower()
+                        if clean_word in focus_words:
+                            accented_with_focus.append('*' + word + '*')
+                            focus_words.remove(clean_word)
+                        else:
+                            accented_with_focus.append(word)
+                    accented_focus_text = ' '.join(accented_with_focus)
+                    _, focus_mask = self.parse_focus_from_text(accented_focus_text, sequence.shape[1], intensity=intensity)
+                    focus_mask = focus_mask.to(self.device)
+                else:
+                    focus_mask = None
+
+                if text is not None:
+                    text_for_types = text
+                elif original_text_for_focus is not None:
+                    text_for_types = original_text_for_focus.replace('*', '')
+                else:
+                    text_for_types = re.sub(r'<[^>]+>', '', ssml_text) if ssml_text else ''
+
+                if focus_mask is None:
+                    focus_mask = torch.zeros(1, sequence.shape[1], dtype=torch.long).to(self.device)
+                fm = focus_mask[0]
+                fm_list = fm.tolist()
+
+                if self.phons:
+                    spans, sent_texts, emph_spans = [], [], set()
+                    type_ids = self.build_type_ids_inference(
+                        text_for_types, type_str, sequence.shape[1], emph_sents=emph_sents)
+                    base_type_ids = type_ids
+                else:
+                    # types laid over the token sequence itself, same layout as training
+                    spans, sent_texts = self.token_sent_spans(sequence[0])
+                    types_list = type_str.split('|')
+                    if len(types_list) != len(spans):
+                        types_list = [classify_sentence(t.replace('+', '')) for t in sent_texts]
+                    emph_spans = self.emph_spans_from_focus(spans, fm_list, emph_idx)
+                    type_ids = self.build_type_ids_tokens(sequence[0], types_list, emph_spans)
+                    base_type_ids = self.build_type_ids_tokens(sequence[0], types_list, set())
+                type_ids = type_ids.to(self.device)
+                base_type_ids = base_type_ids.to(self.device)
+
+                # a pitch predictor that knows only the base types never sees the emphasis shift
+                pitch_type_num = self.models[model_id].pitch_predictor.pitch_pred.type_embedding.weight.shape[0]
+                emph_pitch = self.emph_pitch and pitch_type_num >= 2 * len(TYPE2ID)
+
+                if self.debug:
+                    print(''.join(self.id_to_symbol[i] for i in sequence[0].tolist()))
+                    print(focus_mask[0].tolist())
+                    print(type_ids[0].tolist())
+                    print('emph_pitch', emph_pitch, 'pitch types', pitch_type_num)
+
+                model_kwargs = {'sequence': sequence.to(self.device),
+                                'speaker_ids': sp_ids.to(self.device),
+                                'sr': sample_rate,
+                                'symb_durs': symb_durs,
+                                'durs_rate': durs_rate.to(self.device),
+                                'pitch_coefs': pitch_coefs.to(self.device),
+                                'device': str(self.device),
+                                'type_ids': type_ids,
+                                'focus_mask': focus_mask}
+
+                if has_focus and len(spans) > 1:
+                    seq_len = sequence.shape[1]
+                    seq_dev = sequence.to(self.device)
+                    sp_dev = sp_ids.to(self.device)
+                    zero_focus = torch.zeros(1, seq_len, dtype=torch.long).to(self.device)
+                    orig_mask_bool = torch.zeros(1, seq_len, dtype=torch.bool).to(self.device)
+
+                    # context only: no emphasis type anywhere, focus sentences are replaced whole below
+                    full_pitch = self.models[model_id].pitch_predictor(
+                        seq_dev, sp_dev, orig_mask_bool, type_ids=base_type_ids, focus_mask=zero_focus)
+                    full_durs = self.models[model_id].dur_predictor(
+                        seq_dev, sp_dev, orig_mask_bool, type_ids=base_type_ids, focus_mask=zero_focus)
+                    full_durs = torch.exp(full_durs) - 1
+
+                    zero1 = torch.zeros_like(fm[:1])
+                    for k, (a, b) in enumerate(spans):
+                        if not any(fm_list[a:b]):
+                            continue
+                        tid = TYPE2ID.get(types_list[k], 0)
+                        tid_pitch = tid
+                        if k in emph_spans:
+                            tid += len(TYPE2ID)
+                            if emph_pitch:
+                                tid_pitch = tid
+
+                        # pitch: sentence alone, the predictor knows its contours as utterance-final
+                        short_seq = self.wrap_window(seq_dev[0], a, b, seq_dev[0, :1], seq_dev[0, -1:])
+                        short_focus = self.wrap_window(fm, a, b, fm[a:a + 1], zero1)
+                        short_type = torch.full_like(short_seq, tid_pitch)
+                        short_mask = torch.zeros_like(short_seq, dtype=torch.bool)
+                        short_pitch = self.models[model_id].pitch_predictor(
+                            short_seq, sp_dev, short_mask, type_ids=short_type, focus_mask=short_focus)
+                        full_pitch[0, :, a:b] = short_pitch[0, :, 1:-1]
+
+                        # durs: neighbours stay in the window as context, only the k slice is taken out of it
+                        lo = spans[k - 1][0] if k > 0 else a
+                        hi = spans[k + 1][1] if k + 1 < len(spans) else b
+                        end_k = spans[k + 1][0] if k + 1 < len(spans) else b
+                        focus_k = torch.zeros_like(fm)
+                        focus_k[a:b] = fm[a:b]
+                        type_k = base_type_ids[0].clone()
+                        type_k[a:end_k] = tid
+
+                        win_seq = self.wrap_window(seq_dev[0], lo, hi, seq_dev[0, :1], seq_dev[0, -1:])
+                        win_focus = self.wrap_window(focus_k, lo, hi, focus_k[lo:lo + 1], zero1)
+                        win_type = self.wrap_window(type_k, lo, hi, type_k[lo:lo + 1], type_k[hi - 1:hi])
+                        win_mask = torch.zeros_like(win_seq, dtype=torch.bool)
+                        win_durs = self.models[model_id].dur_predictor(
+                            win_seq, sp_dev, win_mask, type_ids=win_type, focus_mask=win_focus)
+                        win_durs = torch.exp(win_durs) - 1
+
+                        # the emphatic dur predictor dumps utterance-initial silence on the first token
+                        # of its type region (the jit caps the same on sos): keep the base value there
+                        a0 = a + 1 if k in emph_spans else a
+                        s = a0 - lo + 1
+                        if full_durs.dim() == 2:
+                            full_durs[0, a0:b] = win_durs[0, s:s + b - a0]
+                        else:
+                            full_durs[0, :, a0:b] = win_durs[0, :, s:s + b - a0]
+
+                    if self.debug:
+                        toks = [self.id_to_symbol[i] for i in sequence[0].tolist()]
+                        print('durs', [(t, int(d)) for t, d in zip(toks, full_durs[0].round().tolist())])
+
+                    model_kwargs_refined = model_kwargs.copy()
+                    model_kwargs_refined['gt_pitch'] = full_pitch
+                    model_kwargs_refined['gt_durs'] = full_durs
+                    out, out_add = self.models[model_id](**model_kwargs_refined)
+                else:
+                    if has_emphasis and not emph_pitch:
+                        model_kwargs['gt_pitch'] = self.models[model_id].pitch_predictor(
+                            sequence.to(self.device), sp_ids.to(self.device),
+                            torch.zeros(1, sequence.shape[1], dtype=torch.bool).to(self.device),
+                            type_ids=base_type_ids, focus_mask=focus_mask)
+                    out, out_add = self.models[model_id](**model_kwargs)
+            except RuntimeError:
+                raise Exception("Model couldn't generate your text, probably it's too long")
+            except torch.jit.Error as e:
+                if 'AssertionError:' in str(e):
+                    short_msg = f'Неизвестный символ в [[ ]]. Допустимые символы: {" ".join(self.phon_symbols)}'
+                elif 'RuntimeError' in str(e):
+                    short_msg = str(e).split('RuntimeError: ')[-1]
+                else:
+                    short_msg = str(e)
+                raise RuntimeError(short_msg) from None
+        if type(out) == tuple:
+            out = self.wrapped_jit_v(out, sample_rate)
+        audio = out.to('cpu')[0]
+        if return_ts:
+            out_durs, out_word_mask = out_add
+            ts = self.get_word_ts(clean_sentences, out_durs, out_word_mask)
+            return audio, ts
+        else:
+            return audio    
+
+OK

@@ -1,0 +1,11 @@
+def forward(self,
+    x: Tensor) -> Tensor:
+  if torch.eq(torch.len(torch.size(x)), 2):
+    avg_pool = self.avg_pool
+    x19 = (avg_pool).forward(x, )
+  else:
+    x20 = torch.transpose(x, 1, 2)
+    avg_pool0 = self.avg_pool
+    x21 = (avg_pool0).forward(x20, )
+    x19 = torch.transpose(x21, 1, 2)
+  return x19
