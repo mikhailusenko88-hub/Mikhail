@@ -1,0 +1,49 @@
+name: pochemu-albina-mem-test
+on:
+  push:
+    branches: [pochemu-albina]
+    paths: ['test/mem_probe.py', '.github/workflows/mem-test.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  mem:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo mkdir -p /opt/multik-tts && sudo chown $USER /opt/multik-tts
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            /opt/multik-tts/v5_cis_base.pt
+          key: pochemu-albina-mem-v1
+      - name: Пакеты
+        run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q numpy ruaccent silero-stress || pip install -q numpy ruaccent
+          [ -s /opt/multik-tts/v5_cis_base.pt ] || curl -fsSL -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
+          pip list 2>/dev/null | grep -iE "torch|ruaccent|silero|onnx"
+      - name: Замеры
+        run: |
+          mkdir -p result
+          for v in tts ra_turbo_dict ra_tiny_dict ra_turbo_nodict ra_tiny_nodict ss; do
+            python test/mem_probe.py $v >> result/mem.jsonl 2> result/mem_$v.err || echo "{\"variant\": \"$v\", \"error\": \"$(tail -1 result/mem_$v.err | tr -d '\"' | cut -c1-200)\"}" >> result/mem.jsonl
+          done
+          python - <<'PY'
+          import json
+          for l in open("result/mem.jsonl", encoding="utf-8"):
+              d = json.loads(l); d.pop("marks", None); print(d)
+          PY
+      - name: Отчёт
+        if: always()
+        run: |
+          git config user.name albina-test
+          git config user.email albina-test@users.noreply.github.com
+          git add result/mem.jsonl result/mem_*.err && git commit -m "albina mem test" || echo nothing
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
