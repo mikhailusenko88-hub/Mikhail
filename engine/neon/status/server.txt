@@ -1,8 +1,8 @@
-neonlug1/ 200 43694 text/html 0.825974s
-neonlug1/scene.bin 200 5041600 application/octet-stream 2.066658s
-neonlug1/frames.bin 200 412800 application/octet-stream 1.367301s
-neonlug1/ref_120.jpg 200 282151 image/jpeg 1.266877s
-neonlug1/ref_210.jpg 200 352041 image/jpeg 1.331582s
-barsik1/ 200 63335 text/html 0.914541s
-barsik1/scene.bin 200 6205832 application/octet-stream 2.186581s
-barsik1/cat.bin 200 9706864 application/octet-stream 2.310459s
+neonlug1/ 200 43694 text/html 0.723649s
+neonlug1/scene.bin 200 5041600 application/octet-stream 1.932226s
+neonlug1/frames.bin 200 412800 application/octet-stream 1.345776s
+neonlug1/ref_120.jpg 200 282151 image/jpeg 1.193128s
+neonlug1/ref_210.jpg 200 352041 image/jpeg 1.252902s
+barsik1/ 200 63335 text/html 0.836346s
+barsik1/scene.bin 200 6205832 application/octet-stream 2.005261s
+barsik1/cat.bin 200 9706864 application/octet-stream 2.109979s
