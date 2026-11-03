@@ -1,0 +1,32 @@
+   уже установлен в /opt/multik-tts (тот же, что у «Мультиков») — беру его
+   код: Альбина уже подключена
+== ГОТОВО: «Почему так?» теперь говорит голосом Альбины (мягкий тон).
+== 03.11 11:10 Голос «Альбина» для «Почему так?» (back)
+== 1/6 Ищу бота «Почему так?»
+   /tmp/root/root/pochemu-bot — «Почему так?»
+   голос в config.json: ru-RU-DmitryNeural
+== Готово: следующий ролик выйдет прежним голосом.
+== 03.11 11:10 Голос «Альбина» для «Почему так?» (on)
+== 1/6 Ищу бота «Почему так?»
+   /tmp/root/root/pochemu-bot — «Почему так?»
+   голос в config.json: albina
+== Готово: следующий ролик выйдет голосом Альбины.
+total 2452
+drwxr-xr-x 2 runner runner    4096 Nov  3 11:09 .
+drwxr-xr-x 3 runner root      4096 Nov  3 11:09 ..
+-rw-r--r-- 1 root   root   2501124 Nov  3 11:10 proba-albina.mp4
+               total        used        free      shared  buff/cache   available
+Mem:           15983        3772        8540          45        4059       12210
+Swap:           3071           0        3071
+● multik-tts.service - Multik narrator voice (Silero ru_albina)
+     Loaded: loaded (/etc/systemd/system/multik-tts.service; enabled; preset: enabled)
+     Active: active (running) since Tue 2026-11-03 11:08:49 UTC; 1min 23s ago
+ Invocation: ae17bf85f9db4ca7a2a76acc894e7842
+   Main PID: 3644 (python)
+      Tasks: 21 (limit: 17436)
+     Memory: 3.2G (peak: 3.3G)
+        CPU: 20.112s
+     CGroup: /system.slice/multik-tts.service
+             └─3644 /opt/multik-tts/venv/bin/python /opt/multik-tts/server.py
+
+Nov 03 11:09:28 runnervmnwato python[3644]: озвучено за 0.7 с: Поэтому лёд примерно на одну десятую легче такого же объёма
