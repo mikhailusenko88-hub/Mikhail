@@ -17,7 +17,7 @@ N_FUR = 130000
 # 0 body, 1 head, 2 armL, 3 armR, 4 legL_up, 5 legL_low, 6 legR_up, 7 legR_low, 8 tail1, 9 tail2
 PIV = [V(0, 0, 0.36), B.NECK, B.SHOULD[0], B.SHOULD[1],
        B.HIP[0] + V(0, -0.005, 0.03), V(-0.09, -0.045, 0.1), B.HIP[1] + V(0, -0.005, 0.03), V(0.09, -0.045, 0.1),
-       B.TAIL[0], B.TAIL[3]]
+       B.TAIL[0], B.TAIL[3], V(0.062, -0.112, 0.55)]   # 10 — шарф (узел)
 def ss(a, b, x): t = np.clip((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t)
 def weights(p, reg):
     """Две кости и вес второй для каждой точки."""
@@ -64,6 +64,21 @@ furred = ~((reg == 2) | (reg == 8) | (reg == 10) | (reg == 11))
 sa, sb, sw = weights(v, reg)
 log('веса кожи готовы')
 
+def ambient_occ(p, n, seed=5):
+    """Насколько точка в складке: расстояние до ближайшей поверхности в нескольких направлениях от нормали."""
+    rng = np.random.default_rng(seed); out = np.zeros(len(p), F)
+    for e, wgt in ((0.012, 0.35), (0.03, 0.3)):
+        out += wgt * np.clip(B.field(p + n * e) / e, 0, 1)
+    # 8 направлений под 55° к нормали
+    t = nrm(np.cross(n, V(0.3, 0.7, 0.2)[None, :] + 0 * n)); bb = np.cross(n, t); acc = np.zeros(len(p), F); e = 0.05
+    for k in range(8):
+        ang = 2 * math.pi * k / 8 + rng.random() * 0.3
+        d = n * math.cos(0.96) + (t * math.cos(ang) + bb * math.sin(ang)) * math.sin(0.96)
+        acc += np.clip(B.field(p + d * e) / e, 0, 1)
+    out += 0.35 * acc / 8
+    return np.clip(out, 0, 1)
+skin_ao = ambient_occ(v, nor); log('AO кожи: среднее %.2f' % skin_ao.mean())
+
 # ---------- шерсть ----------
 log('шерсть…')
 fur = B.make_fur(v, f, nor, reg, total=N_FUR, P=4, seed=3)
@@ -73,6 +88,11 @@ fa, fb, fw = weights(R, freg)
 fn = nrm(P[:, 1] - P[:, 0])
 # нормаль кожи в корне волоска — для освещения
 fnor = B.grad(R)
+fur_ao = ambient_occ(R, fnor, seed=6)
+# теснота шерсти: сколько соседних корней в клетке 1.5 см — в густых местах темнее
+CELL = 0.015; key = np.floor(R / CELL).astype(np.int64); kid = (key[:, 0] * 73856093) ^ (key[:, 1] * 19349663) ^ (key[:, 2] * 83492791)
+_, inv, cnt = np.unique(kid, return_inverse=True, return_counts=True); dens = cnt[inv] / np.median(cnt)
+fur_ao = np.clip(fur_ao * np.clip(1.15 - 0.2 * dens, 0.55, 1.0), 0, 1); log('AO шерсти: среднее %.2f' % fur_ao.mean())
 
 # ---------- нос, шарф, глаза, усы, рот ----------
 nv, nf = B.small_mesh(B.nose_fn, (-0.05, -0.25, 0.67), (0.05, -0.18, 0.74), h=0.0015)
@@ -103,12 +123,12 @@ def put(name, arr):
 
 # кожа: pos i16x3 | oct i8x2 | col u8x3 | boneA u8 | boneB u8 | w u8 | furred u8 | pad  = 16 B
 skin = np.zeros(len(v), dtype=[('p', np.int16, 3), ('n', np.int8, 2), ('c', np.uint8, 3), ('a', np.uint8), ('b', np.uint8), ('w', np.uint8), ('f', np.uint8), ('pad', np.uint8)])
-skin['p'] = q16(E(v)); skin['n'] = oct8(E(nor)); skin['c'] = u8(col); skin['a'] = sa; skin['b'] = sb; skin['w'] = u8(sw); skin['f'] = furred.astype(np.uint8)
+skin['p'] = q16(E(v)); skin['n'] = oct8(E(nor)); skin['c'] = u8(col); skin['a'] = sa; skin['b'] = sb; skin['w'] = u8(sw); skin['f'] = furred.astype(np.uint8); skin['pad'] = u8(skin_ao)
 put('skin_v', skin); put('skin_i', f.astype(np.uint32))
 # шерсть: 4 точки i16x3 (24) | oct нормали кожи i8x2 (2) | col u8x3 (3) | a,b,w u8 (3) | rad u8 (×0.02 мм) | reg u8 | pad 2 = 36 B
 furv = np.zeros(n_f, dtype=[('p', np.int16, (4, 3)), ('n', np.int8, 2), ('c', np.uint8, 3), ('a', np.uint8), ('b', np.uint8), ('w', np.uint8), ('r', np.uint8), ('g', np.uint8), ('pad', np.uint8, 2)])
 furv['p'] = q16(E(P)); furv['n'] = oct8(E(fnor)); furv['c'] = u8(fur['fur_col']); furv['a'] = fa; furv['b'] = fb; furv['w'] = u8(fw)
-furv['r'] = np.clip(np.round(fur['fur_rad'] / 0.00002), 1, 255).astype(np.uint8); furv['g'] = freg.astype(np.uint8)
+furv['r'] = np.clip(np.round(fur['fur_rad'] / 0.00002), 1, 255).astype(np.uint8); furv['g'] = freg.astype(np.uint8); furv['pad'][:, 0] = u8(fur_ao)
 put('fur', furv)
 # нос, шарф: pos f32x3, normal f32x3 (24 B); индексы u32; кости — голова / тело+голова
 def mesh_sec(name, vv, nn_, ff, bone_fn):
@@ -116,7 +136,11 @@ def mesh_sec(name, vv, nn_, ff, bone_fn):
     m['p'] = E(vv); m['n'] = E(nn_); a_, b_, w_ = bone_fn(vv); m['a'] = a_; m['b'] = b_; m['w'] = u8(w_)
     put(name + '_v', m); put(name + '_i', ff.astype(np.uint32))
 mesh_sec('nose', nv, nn, nf, lambda p: (np.full(len(p), 0), np.full(len(p), 1), np.ones(len(p), F)))
-mesh_sec('scarf', sv, sn, sf, lambda p: (np.full(len(p), 0), np.full(len(p), 1), ss(0.55, 0.63, p[:, 2])))
+def scarf_bones(p):
+    z = p[:, 2]; tails = z < 0.52
+    a = np.where(tails, 0, 0); b = np.where(tails, 10, 1); w = np.where(tails, ss(0.52, 0.46, z), ss(0.55, 0.63, z))
+    return a, b, w
+mesh_sec('scarf', sv, sn, sf, scarf_bones)
 put('whisk', E(whisk).astype(np.float32))                 # 8 усов по 8 точек
 mouth_pts = np.concatenate([E(m) for m in mouth], 0).astype(np.float32); put('mouth', mouth_pts)
 eyes = E(np.array(B.EYES, F)).astype(np.float32); put('eyes', eyes)
@@ -125,7 +149,7 @@ piv = E(np.array(PIV, F)).astype(np.float32); put('piv', piv)
 hdr = {'scale': SCALE, 'skin': {'nv': len(v), 'ni': len(f) * 3}, 'fur': {'n': n_f},
        'nose': {'nv': len(nv), 'ni': len(nf) * 3}, 'scarf': {'nv': len(sv), 'ni': len(sf) * 3},
        'whisk': {'n': int(whisk.shape[0]), 'pts': int(whisk.shape[1])}, 'mouth': [len(m) for m in mouth],
-       'eyeR': float(B.RE), 'bones': ['body', 'head', 'armL', 'armR', 'legL_up', 'legL_low', 'legR_up', 'legR_low', 'tail1', 'tail2'],
+       'eyeR': float(B.RE), 'bones': ['body', 'head', 'armL', 'armR', 'legL_up', 'legL_low', 'legR_up', 'legR_low', 'tail1', 'tail2', 'scarf'],
        'sec': secs}
 hb = json.dumps(hdr).encode(); pad = (4 - len(hb) % 4) % 4
 with open(OUT, 'wb') as fp:

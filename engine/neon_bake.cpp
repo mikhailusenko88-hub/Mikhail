@@ -150,6 +150,43 @@ int main(int argc,char**argv){ const char*outdir=argc>1?argv[1]:"web"; int FPS=2
     snprintf(tmp,512,"\"pollen\":{\"off\":%zu,\"n\":%zu},",off,pol.size()); hdr+=tmp; }
   { bin.align4(); size_t off=bin.pos(); for(const Rip&rp:RIPS){ bin.f32(rp.x); bin.f32(rp.z); bin.f32(rp.t); bin.f32(rp.speed); bin.f32(rp.amp); bin.f32(rp.decay); bin.f32(rp.width); bin.f32(0); }
     snprintf(tmp,512,"\"rips\":{\"off\":%zu,\"n\":%zu},",off,RIPS.size()); hdr+=tmp; }
+  // --- свет под кронами (карта по земле) и свет в воздухе (3D) — только деревья заслоняют ---
+  if(catMode){
+    Scene ts; for(int i=0;i<NT;i++){ ts.meshes.push_back(trees[i].trunk); Mesh lm; buildTreeLeaves(lm,trees[i],0,0); ts.meshes.push_back(lm); }
+    for(const TreeI&t:treeI){ float y=hstat(t.x,t.z); Xf x=xfYaw(V(t.x,y-0.1f,t.z),t.yaw,V(t.sc,t.sc,t.sc)); for(int k=0;k<2;k++){ Inst in; in.mesh=t.v*2+k; in.xf=x; in.inv=xfInverse(x); in.matOverride=-1; in.tint=V(-1,-1,-1); ts.insts.push_back(in); } }
+    buildTLAS(ts); double t0=omp_get_wtime();
+    // карта: x -45..65, z -80..30, шаг 0.2 м; в точке на высоте травы: 8 лучей к солнцу (с диском), 8 к небу
+    const float X0=-45,Z0=-80; const float st=0.2f; const int nx=550,nz=550; std::vector<uint8_t> cmap(nx*nz*2);
+    #pragma omp parallel for schedule(dynamic,8)
+    for(int j=0;j<nz;j++){ for(int i=0;i<nx;i++){ float x=X0+(i+0.5f)*st, z=Z0+(j+0.5f)*st; V P(x,hstat(x,z)+0.25f,z); Rng rng(j*7919+i*13+1); int vs=0,vk=0;
+      for(int k=0;k<16;k++){ V d=coneDir(SUN,cosf(0.035f),rng.f(),rng.f()); if(!sceneAny(ts,P,d,1e30f)) vs++; if(k<8){ V d2=cosHemi(V(0,1,0),rng.f(),rng.f()); if(!sceneAny(ts,P,d2,1e30f)) vk++; } }
+      cmap[(j*nx+i)*2]=(uint8_t)(vs*255/16); cmap[(j*nx+i)*2+1]=(uint8_t)(vk*255/8); } }
+    bin.align4(); size_t coff=bin.pos(); bin.d.insert(bin.d.end(),cmap.begin(),cmap.end());
+    snprintf(tmp,512,"\"canopy\":{\"off\":%zu,\"nx\":%d,\"nz\":%d,\"x0\":%g,\"z0\":%g,\"step\":%g},",coff,nx,nz,X0,Z0,st); hdr+=tmp;
+    fprintf(stderr,"canopy map %dx%d %.1fs\n",nx,nz,omp_get_wtime()-t0); t0=omp_get_wtime();
+    // объём: x -4..16, y 0..8 (над землёй у тропы), z -52..-22, шаг 0.25; видимость солнца из точки воздуха
+    const float VX0=-4,VY0=0.0f,VZ0=-52; const float vst=0.25f; const int vx=80,vy=32,vz=120; std::vector<uint8_t> vol(vx*vy*vz);
+    #pragma omp parallel for schedule(dynamic,2)
+    for(int k=0;k<vz;k++){ for(int j=0;j<vy;j++) for(int i=0;i<vx;i++){ float x=VX0+(i+0.5f)*vst, z=VZ0+(k+0.5f)*vst; float gy=hstat(CX,z); float y=gy+VY0+(j+0.5f)*vst; V P(x,y,z); Rng rng(k*100003+j*1009+i*7+3); int vs=0;
+        for(int q=0;q<6;q++){ V d=coneDir(SUN,cosf(0.025f),rng.f(),rng.f()); if(!sceneAny(ts,P,d,1e30f)) vs++; }
+        vol[(k*vy+j)*vx+i]=(uint8_t)(vs*255/6); } }
+    bin.align4(); size_t voff=bin.pos(); bin.d.insert(bin.d.end(),vol.begin(),vol.end());
+    snprintf(tmp,512,"\"volume\":{\"off\":%zu,\"nx\":%d,\"ny\":%d,\"nz\":%d,\"x0\":%g,\"y0\":%g,\"z0\":%g,\"step\":%g,\"groundX\":%g},",voff,vx,vy,vz,VX0,VY0,VZ0,vst,CX); hdr+=tmp;
+    fprintf(stderr,"light volume %dx%dx%d %.1fs\n",vx,vy,vz,omp_get_wtime()-t0);
+    // камни во мху у тропы: сплюснутые сферы с шумом, диоды с float-позицией (как земля)
+    hdr+="\"props\":[";
+    float rocks[][6]={{8.3f,-33.5f,0.55f,0.32f,0.45f,0.9f},{3.9f,-37.8f,0.42f,0.26f,0.36f,2.1f},{8.9f,-40.2f,0.7f,0.38f,0.55f,0.4f},{3.4f,-42.6f,0.35f,0.22f,0.3f,1.3f},{9.2f,-45.8f,0.5f,0.3f,0.42f,2.8f},{3.1f,-31.0f,0.48f,0.3f,0.4f,0.2f},{8.6f,-29.0f,0.33f,0.2f,0.28f,1.7f}};
+    int nr=sizeof(rocks)/sizeof(rocks[0]); Rng rr(99);
+    for(int r=0;r<nr;r++){ float x=rocks[r][0], z=rocks[r][1], sx=rocks[r][2], sy=rocks[r][3], sz=rocks[r][4], yaw=rocks[r][5]; float gy=hstat(x,z); Buf vb,ib; int nv=0; const int NU=36,NV=20; float c=cosf(yaw),s=sinf(yaw);
+      auto Pt=[&](int i,int j){ float th=PI*j/NV, ph=2*PI*i/NU; V d(sinf(th)*cosf(ph),cosf(th),sinf(th)*sinf(ph)); float nse=1+0.08f*sinf(5*ph+2*th+r)+0.05f*sinf(9*ph-3*th)+0.04f*sinf(3*th*th+7*ph); V p(d.x*sx*nse,d.y*sy*nse,d.z*sz*nse); return V(c*p.x+s*p.z, p.y, -s*p.x+c*p.z)+V(x,gy-sy*0.35f,z); };
+      std::vector<V> P((NU+1)*(NV+1)); for(int j=0;j<=NV;j++) for(int i=0;i<=NU;i++) P[j*(NU+1)+i]=Pt(i,j);
+      for(int j=0;j<=NV;j++) for(int i=0;i<=NU;i++){ V p=P[j*(NU+1)+i]; V du=P[j*(NU+1)+(i+1)%NU]-P[j*(NU+1)+(i+NU-1)%NU]; V dv=P[std::min(j+1,NV)*(NU+1)+i]-P[std::max(j-1,0)*(NU+1)+i]; V n=norm(cross(dv,du)); if(len(n)<0.5f) n=V(0,j==0?1:-1,0);
+        float moss=clampf((n.y-0.25f)*1.6f,0,1)*(0.7f+0.3f*sinf(p.x*9+p.z*7)); V rock=V(0.30f,0.28f,0.25f)*(0.8f+0.4f*rr.f()); V mossC=V(0.16f,0.3f,0.07f)*(0.8f+0.4f*rr.f()); V alb=lerp(rock,mossC,moss);
+        diodeF(vb,p,n,alb,1.0f,0.75f); nv++; }
+      for(int j=0;j<NV;j++) for(int i=0;i<NU;i++){ uint32_t a=j*(NU+1)+i, b=a+1, c2=a+(NU+1), d2=c2+1; ib.u32(a);ib.u32(c2);ib.u32(d2); ib.u32(a);ib.u32(d2);ib.u32(b); }
+      bin.align4(); size_t vo=bin.pos(); bin.d.insert(bin.d.end(),vb.d.begin(),vb.d.end()); bin.align4(); size_t io=bin.pos(); bin.d.insert(bin.d.end(),ib.d.begin(),ib.d.end());
+      snprintf(tmp,512,"%s{\"vOff\":%zu,\"nv\":%d,\"iOff\":%zu,\"ni\":%zu}",r?",":"",vo,nv,io,ib.d.size()/4); hdr+=tmp; }
+    hdr+="],"; }
   // --- меши героя: pos f32x3, normal f32x3, uv f32x2; индексы u16 ---
   hdr+="\"heroMeshes\":[";
   for(int mi=0;mi<8;mi++){ const Mesh&m=SC.meshes[mi]; Buf vb,ib; int nv=0; for(const Tri&t:m.tris){ V P3[3]={t.p0,t.p0+t.e1,t.p0+t.e2}; V N3[3]={t.n0,t.n1,t.n2}; float uu[3]={t.u0,t.u1,t.u2}, vv[3]={t.v0,t.v1,t.v2};
