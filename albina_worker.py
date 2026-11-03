@@ -46,6 +46,18 @@ if not server.state.get("ready"):
     sys.exit(1)
 answer({"ready": True, "load_s": round(time.time() - t0, 1), "rss_mb": rss()})
 
+mark0 = server.mark
+_VOW = "аеёиоуыэюяАЕЁИОУЫЭЮЯ"
+
+
+def mark_nomono(text):
+    """как server.mark, но без «+» в словах с одной гласной (так размечает silero-stress)"""
+    def one(m):
+        w = m.group(0)
+        return w.replace("+", "") if sum(c in _VOW for c in w) <= 1 else w
+    return server.WORD.sub(one, mark0(text))
+
+
 for line in sys.stdin:
     line = line.strip()
     if not line:
@@ -59,6 +71,10 @@ for line in sys.stdin:
     try:
         t = time.time()
         text = re.sub(r"\s+", " ", str(q.get("text") or "")).strip()
+        nomono = bool(q.get("nomono"))
+        server.mark = mark_nomono if nomono else mark0
+        server.CACHE = os.path.join(D, "cache-bot-nomono" if nomono else "cache-bot")
+        os.makedirs(server.CACHE, exist_ok=True)
         wav = server.make(text, q.get("speaker", "ru_albina"), bool(q.get("soft", True)),
                           q.get("rate", "medium"), q.get("pitch", "medium"))
         tmp = q["out"] + ".tmp"
@@ -67,6 +83,7 @@ for line in sys.stdin:
         os.replace(tmp, q["out"])
         try:
             marked = server.mark(text[:server.MAX_TEXT])
+            server.mark = mark0
         except Exception:
             marked = ""
         answer({"ok": True, "s": round(time.time() - t, 2), "marked": marked, "rss_mb": rss()})

@@ -50,11 +50,13 @@ for sc in scripts:
     rep.append(f"## {sc['title']} ({sc['format']}) — {dur:.1f} с ролика, сборка {took:.0f} с")
     # фразы без мягкой обработки — для анализатора ударений
     for i, line in enumerate(sc["lines"]):
-        w = out / "lines" / f"{name}_{i}.wav"
-        albina.say(line, "albina@dry", w)
-        (out / "lines" / f"{name}_{i}.txt").write_text(albina.plain(line) + "\n", encoding="utf-8")
-        (out / "lines" / f"{name}_{i}.voice").write_text("Альбина (бот, без обработки)\n", encoding="utf-8")
-        rep.append(f"- {albina._st['last']}")
+        for var, voice, label in (("a", "albina@dry", "ударения во всех словах"),
+                                  ("b", "albina@dry,nomono", "без ударений в односложных")):
+            w = out / "lines" / f"pt_{name}_{i}{var}.mp3"
+            albina.say(line, voice, w)
+            (out / "lines" / f"pt_{name}_{i}{var}.txt").write_text(albina.plain(line) + "\n", encoding="utf-8")
+            (out / "lines" / f"pt_{name}_{i}{var}.voice").write_text(f"Альбина, бот ({label})\n", encoding="utf-8")
+            rep.append(f"- {var}: {albina._st['last']}")
     rep.append("")
 albina.close()
 rep += ["## Скорость и память", f"- память озвучщика: {albina._st['rss']} МБ",

@@ -24,6 +24,7 @@ import subprocess
 import sys
 import threading
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -59,7 +60,8 @@ def is_albina(voice):
 
 
 def parse(voice):
-    """albina | albina@slow,low | albina:ru_zinaida@dry  ->  (speaker, soft, rate, pitch)"""
+    """albina | albina@slow,low | albina:ru_zinaida@dry  ->  (speaker, soft, rate, pitch)
+    (@nomono — снимать ударения в односложных словах; работает только через свой процесс)"""
     name, _, opts = str(voice).partition("@")
     spk = name.split(":", 1)[1].strip() if ":" in name else "ru_albina"
     if not spk.startswith("ru_"):
@@ -309,12 +311,29 @@ def apply_fix(text):
     return _WORD.sub(one, text)
 
 
+_VSE_LEAVE = {"это", "равно", "время", "же", "ещё", "еще", "больше", "меньше", "сильнее", "чаще", "дальше",
+              "лучше", "хуже", "так", "то", "что", "сразу", "вокруг", "подряд", "сильней", "выше", "ниже"}
+_VSE_PLURAL = re.compile(r"(ые|ие|ии|ы|и|а|я|ов|ев|ей|ах|ях|ами|ями|ют|ят|ут|ат)$")
+
+
+def fix_vse(text):
+    """«Все летучие мыши» ruaccent иногда читает как «Всё летучие мыши». Если после «все» идёт слово во
+    множественном числе (летучие, звёзды, знают…) — закрепляем «все»; остальное решает словарь."""
+    def one(m):
+        w, nxt = m.group(1), m.group(3).lower()
+        if nxt in _VSE_LEAVE or not _VSE_PLURAL.search(nxt):
+            return m.group(0)
+        return w[:2] + "+" + w[2:] + m.group(2) + m.group(3)
+    return re.sub(r"(?<![А-Яа-яЁё+])([Вв]се)(\s+)([А-Яа-яЁё]+)", one, text)
+
+
 def prep(text):
     t = str(text or "")
     t = re.sub(r"([" + VOW + r"])́", r"+\1", t)        # знак ударения -> «+»
     t = t.replace("«", "").replace("»", "").replace("„", "").replace("“", "").replace("”", "")
     t = t.replace("…", "...").replace(" ", " ")
     t = numbers(t)
+    t = fix_vse(t)
     t = apply_fix(t)
     return re.sub(r"\s+", " ", t).strip()
 
@@ -326,12 +345,26 @@ def plain(text):
 
 # ---------------- озвучка ----------------
 
-def _service_ready():
+def _service_state():
+    """ready — служба готова; loading — запущена, но ещё грузит голос; none — службы нет."""
     try:
-        with urllib.request.urlopen(SERVICE + "/health", timeout=2) as r:
-            return json.load(r).get("ready") is True
+        with urllib.request.urlopen(SERVICE + "/health", timeout=3) as r:
+            d = json.load(r)
+        return "ready" if d.get("ready") is True else "loading" if not d.get("error") else "none"
+    except urllib.error.HTTPError:
+        return "none"
     except Exception:
-        return False
+        return "none"
+
+
+def _service_ready(wait=240):
+    """Служба на этом сервере уже держит голос в памяти — второй раз его не грузим (это ~2,7 ГБ)."""
+    t0 = time.time()
+    while True:
+        st = _service_state()
+        if st != "loading" or time.time() - t0 > wait:
+            return st == "ready"
+        time.sleep(5)
 
 
 def _readline(p, timeout):
@@ -370,9 +403,11 @@ def _worker():
     return p
 
 
-def _synth(text, spk, soft, rate, pitch, wav):
+def _synth(text, spk, soft, rate, pitch, wav, nomono=False):
     q = {"text": text, "speaker": spk, "soft": soft, "rate": rate, "pitch": pitch}
-    if _st["mode"] in (None, "service") and _service_ready():
+    if nomono:
+        q["nomono"] = True
+    if not nomono and _st["mode"] in (None, "service") and _service_ready():
         req = urllib.request.Request(SERVICE + "/tts", data=json.dumps(q, ensure_ascii=False).encode(),
                                      headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=300) as r:
@@ -407,6 +442,7 @@ def _to_audio(wav, path):
 def say(text, voice, path):
     path = Path(path)
     spk, soft, rate, pitch = parse(voice)
+    nomono = "nomono" in str(voice).lower()
     t = prep(text)
     if not re.search(r"[А-Яа-яЁё]", t):
         raise AlbinaFailed("в фразе нет русских слов")
@@ -415,7 +451,7 @@ def say(text, voice, path):
     for k in range(2):
         try:
             t0 = time.time()
-            marked = _synth(t, spk, soft, rate, pitch, wav)
+            marked = _synth(t, spk, soft, rate, pitch, wav, nomono)
             _to_audio(wav, path)
             _st["last"] = marked or t
             _st["n"] += 1
