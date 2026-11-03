@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Неоновый луг</title>
+<style>
+  html,body{margin:0;background:#0b0c0e;color:#e8e6e0;font:15px/1.35 -apple-system,system-ui,Segoe UI,Roboto,sans-serif;-webkit-user-select:none;user-select:none;overscroll-behavior:none}
+  #wrap{position:relative;width:100vw;aspect-ratio:16/9;background:#000;overflow:hidden;touch-action:none}
+  #gl{width:100%;height:100%;display:block}
+  #ref{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:fill;pointer-events:none;display:none}
+  #divider{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 6px #000;display:none;pointer-events:none}
+  #divider:after{content:"◀ ▶";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#000;border-radius:14px;padding:2px 8px;font-size:12px;white-space:nowrap}
+  .tag{position:absolute;bottom:6px;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.55);font-size:12px;display:none;pointer-events:none}
+  #tagL{left:6px}#tagR{right:6px}
+  #hud{position:absolute;left:8px;top:6px;font-size:12px;background:rgba(0,0,0,.45);padding:3px 7px;border-radius:6px;pointer-events:none}
+  #load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0b0c0e;font-size:16px;text-align:center;padding:20px}
+  #ui{padding:10px 12px 28px;display:grid;gap:10px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  button{background:#1d2026;color:#e8e6e0;border:1px solid #363a44;border-radius:10px;padding:9px 13px;font-size:14px}
+  button.on{background:#2f6b3a;border-color:#48a05a}
+  input[type=range]{flex:1;min-width:120px}
+  label{font-size:13px;color:#aeb2bb;min-width:92px}
+  .note{font-size:13px;color:#aeb2bb}
+  .val{font-variant-numeric:tabular-nums;min-width:52px;text-align:right;font-size:13px}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="gl"></canvas>
+  <img id="ref" alt="">
+  <div id="divider"></div>
+  <div class="tag" id="tagL">трассировка · 4,1 с/кадр</div>
+  <div class="tag" id="tagR">диоды · живой · <span id="fpsR">—</span> к/с</div>
+  <div id="hud">загрузка…</div>
+  <div id="load">Загружаю луг…</div>
+</div>
+<div id="ui">
+  <div class="row">
+    <button id="bPlay" class="on">⏸ Пауза</button>
+    <button id="bCmp120">Сравнить: кадр 120</button>
+    <button id="bCmp210">Сравнить: кадр 210</button>
+    <button id="bFree">Свободная камера</button>
+    <button id="bCal" class="on">Калибровка</button>
+  </div>
+  <div class="row"><label>Кадр</label><input id="frame" type="range" min="0" max="239" value="0"><span class="val" id="frameV">0</span></div>
+  <div class="row"><label>Время суток</label><input id="tod" type="range" min="0" max="1000" value="0"><span class="val" id="todV">день</span></div>
+  <div class="row"><label>Ветер</label><input id="wind" type="range" min="0" max="300" value="100"><span class="val" id="windV">1.0</span></div>
+  <div class="row"><label>Качество</label><button id="bQ" class="on">полное</button><span class="note" id="resV"></span></div>
+  <div class="note">Ни одного луча в кадре: каждая травинка — диод с прошитым откликом на солнце и небо. Тень героя — сигнал «приглуши солнце», время суток — ручки диммера. Та же сцена, та же камера и тот же герой, что в трассировке. В «Сравнить» двигай шторку пальцем.</div>
+</div>
+<script>
+'use strict';
+// ============ загрузка ============
+const $=id=>document.getElementById(id);
+const canvas=$('gl'); const gl=canvas.getContext('webgl2',{antialias:false,alpha:false,powerPreference:'high-performance',preserveDrawingBuffer:false});
+if(!gl){ $('load').textContent='Нужен WebGL2 (iOS 15+)'; throw new Error('no webgl2'); }
+const extF=gl.getExtension('EXT_color_buffer_float'); const extHF=extF?null:gl.getExtension('EXT_color_buffer_half_float');
+const HDR = !!(extF||extHF); const ENC = HDR?1.0:1/8;   // без float-буфера храним цвет/8 в RGB10_A2
+const PI=Math.PI;
+let S=null, F=null, FR=null;
+let CAL=null;
+async function load(){
+  await new Promise(r=>setTimeout(r,0)); const hud=$('hud');
+  const r1=await fetch('scene.bin'); const ab=await r1.arrayBuffer(); const dv=new DataView(ab);
+  if(String.fromCharCode(dv.getUint8(0),dv.getUint8(1),dv.getUint8(2),dv.getUint8(3))!=='NEON') throw new Error('bad scene');
+  const hl=dv.getUint32(4,true); const hdr=JSON.parse(new TextDecoder().decode(new Uint8Array(ab,8,hl))); const pad=(4-(hl%4))%4; const base=8+hl+pad;
+  S={hdr,ab,base};
+  hud.textContent='луг загружен, кадры…';
+  const r2=await fetch('frames.bin'); FR=new DataView(await r2.arrayBuffer());
+  if(window.NEON_CALIB_B64){ const bin=atob(window.NEON_CALIB_B64); CAL=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) CAL[i]=bin.charCodeAt(i); } else try{ const r3=await fetch('calib.bin'); if(r3.ok){ CAL=new Uint8Array(await r3.arrayBuffer()); } }catch(e){}
+  init();
+}
+load().catch(e=>{ $('load').textContent='Ошибка: '+e.message; console.error(e); });
+
+// ============ шейдеры ============
+const COMMON=`
+const float PI=3.14159265;
+uniform vec3 uSun; uniform vec3 uSunCol; uniform vec3 uSunBase; uniform float uSkyK; uniform vec3 uZen; uniform vec3 uHor; uniform vec3 uCam;
+vec3 ambientSky(vec3 n){ return mix(vec3(0.17,0.26,0.06), vec3(0.45,0.48,0.6), 0.5+0.5*n.y)*uSkyK; }
+float ggxD(float nh,float a){ float a2=a*a; float d=nh*nh*(a2-1.0)+1.0; return a2/(PI*d*d+1e-9); }
+float ggxG1(float nv,float a){ float k=a*a/2.0; return nv/(nv*(1.0-k)+k+1e-9); }
+float fres(float vh,float f0){ float f=pow(1.0-vh,5.0); return f0+(1.0-f0)*f; }
+vec3 skyCol(vec3 d, bool withSun){ float y=d.y; vec3 c; if(y>=0.0) c=mix(uHor,uZen,pow(y,0.42)); else c=mix(uHor,vec3(0.35,0.3,0.22)*uSkyK,clamp(-y*8.0,0.0,1.0));
+  float s=max(0.0,dot(d,uSun)); c+=uSunBase*(0.10*pow(s,6.0)+0.5*pow(s,80.0)+0.9*pow(s,500.0)); c*=0.85; if(withSun && s>0.99997187) c+=uSunBase*220.0;
+  float m=max(c.x,max(c.y,c.z)); if(m>40.0) c*=40.0/m; return c; }
+`;
+// --- диоды: трава, цветы, листва, стволы, земля ---
+const VS_DIODE=`#version 300 es
+precision highp float; precision highp int;
+layout(location=0) in vec3 aPos; layout(location=1) in vec2 aNrm; layout(location=2) in vec3 aAlb; layout(location=3) in float aSunD; layout(location=4) in float aKv; layout(location=5) in float aS; layout(location=6) in float aFlags;
+layout(location=7) in vec4 aInst; layout(location=8) in float aIScale; layout(location=9) in vec3 aCal;
+uniform mat4 uVP; uniform float uPosScale; uniform float uTime; uniform float uWindAmp; uniform float uWiden; uniform int uDeform; uniform vec3 uHero; uniform vec4 uRipA[16]; uniform vec4 uRipB[16]; uniform int uNRip;
+out vec3 vWp; out vec3 vN; out vec3 vAlb; out float vSunD; out float vKv; flat out int vFlags; out float vS; flat out int vVid; out vec3 vCal;
+vec3 octDec(vec2 e){ vec3 v=vec3(e.xy,1.0-abs(e.x)-abs(e.y)); if(v.z<0.0){ vec2 s=vec2(v.x>=0.0?1.0:-1.0, v.y>=0.0?1.0:-1.0); v.xy=(1.0-abs(v.yx))*s; } return normalize(v); }
+void main(){ vec3 p=aPos*uPosScale; int fl=int(aFlags+0.5); float c=cos(aInst.w), s=sin(aInst.w);
+  vec3 n=octDec(aNrm);
+  // расширение травинки для дальних ярусов (меньше травинок — шире каждая)
+  if(uWiden>1.0 && aS<0.999){ float sg=((fl&1)!=0)?1.0:-1.0; vec3 side=normalize(cross(vec3(0,1,0),n)); p+=side*sg*0.013*pow(1.0-aS,0.6)*(uWiden-1.0); }
+  // ветер: то же, что в трассировщике — качание по высоте, своя фаза у травинки
+  float ph=float(fl>>2)/64.0*6.2831853+0.9*p.x+0.5*p.z; float w=uWindAmp*(sin(1.7*uTime+ph)+0.5*sin(3.1*uTime+1.3*ph)); p+=vec3(0.8,0,0.6)*(w*p.y*aS);
+  p*=aIScale; p=vec3(c*p.x+s*p.z, p.y, -s*p.x+c*p.z); n=vec3(c*n.x+s*n.z, n.y, -s*n.x+c*n.z);
+  vec3 wp=p+aInst.xyz;
+  // деформация: кольца от приземлений и примятая трава под героем (dispAt из pt.cpp)
+  if(uDeform==1 && aS>0.0){ vec3 disp=vec3(0.0); for(int i=0;i<16;i++){ if(i>=uNRip) break; vec4 A=uRipA[i]; vec4 B=uRipB[i]; float a=uTime-A.z; if(a<=0.0) continue; float dx=wp.x-A.x, dz=wp.z-A.y; float d=sqrt(dx*dx+dz*dz)+1e-4; float rr=a*A.w; float g=B.x*exp(-a*B.y)/(1.0+0.12*rr); if(g<0.003) continue; float xx=(d-rr)*B.z; g*=exp(-xx*xx); if(g<0.002) continue; disp+=vec3(dx/d*g*1.3,-g*0.8,dz/d*g*1.3); }
+    if(uHero.z>0.5){ float dx=wp.x-uHero.x, dz=wp.z-uHero.y; float d=sqrt(dx*dx+dz*dz)+1e-4; if(d<0.5){ float k=(0.5-d)/0.5; k=k*k; disp+=vec3(dx/d*k*0.25,-k*0.3,dz/d*k*0.25); } }
+    float l=length(disp); float mx=0.85*max(p.y,0.05)/max(aS,0.05); if(l>mx) disp*=mx/l; wp+=disp*aS*aS; }
+  vWp=wp; vN=n; vAlb=aAlb; vSunD=aSunD; vKv=aKv; vFlags=fl; vS=aS; vVid=gl_VertexID; vCal=exp2((aCal*255.0-128.0)/64.0); gl_Position=uVP*vec4(wp,1.0); }`;
+const FS_DIODE=`#version 300 es
+precision highp float; precision highp int;
+in vec3 vWp; in vec3 vN; in vec3 vAlb; in float vSunD; in float vKv; flat in int vFlags; in float vS; flat in int vVid; in vec3 vCal;
+uniform vec4 uHeroSph[3]; uniform float uEnc; uniform int uGround; uniform vec3 uFarAlb; uniform vec2 uFarSK; uniform int uIdMode; uniform int uObj; uniform int uCalOn;
+out vec4 o;
+${COMMON}
+float heroShadow(vec3 p){ float s=1.0; for(int i=0;i<3;i++){ vec4 sp=uHeroSph[i]; vec3 oc=sp.xyz-p; float tc=dot(oc,uSun); if(tc>0.0){ float d2=dot(oc,oc)-tc*tc; float r=sp.w*1.05; s*=smoothstep(r*r*0.6,r*r*1.25,d2); } } return s; }
+void main(){ if(uIdMode==1){ o=vec4(float(vVid&255)/255.0, float((vVid>>8)&255)/255.0, float((vVid>>16)&255)/255.0, float(uObj)/255.0); return; }
+  vec3 n=normalize(vN); bool front=dot(n,uCam-vWp)>=0.0; vec3 ns=front?n:-n; bool sunFront=(vFlags&2)!=0;
+  vec3 alb=vAlb; float sunD=vSunD; float kv=vKv;
+  if(uGround==1){ float dist=length(vWp-uCam); float k=smoothstep(14.0,40.0,dist); alb=mix(alb,uFarAlb,k); sunD=mix(sunD,uFarSK.x,k); kv=mix(kv,uFarSK.y,k); }
+  vec3 trans=alb*vec3(1.4,1.5,0.9); vec3 v=normalize(uCam-vWp); float nv=max(dot(ns,v),1e-4);
+  float sh=heroShadow(vWp); vec3 sunL=uSunCol*sunD*sh; vec3 col;
+  if(front==sunFront){ col=sunL*alb/PI; float ndl=max(dot(ns,uSun),0.0); float vis=clamp(sunD/max(ndl,0.08),0.0,1.0);
+    vec3 h=normalize(v+uSun); float nh=max(dot(ns,h),0.0), vh=max(dot(v,h),0.0); float a=0.1024; float spec=fres(vh,0.035)*ggxD(nh,a)*ggxG1(nv,a)*ggxG1(max(ndl,1e-4),a)/(4.0*nv+1e-6); col+=uSunCol*vis*sh*spec*0.6; }
+  else col=sunL*trans*0.8/PI;
+  col+=alb*ambientSky(ns)*kv*(1.0+0.15*pow(1.0-nv,2.0)); col+=trans*vec3(0.17,0.26,0.06)*uSkyK*0.35*kv;
+  if(uCalOn==1) col*=vCal;   // поправка диода, выученная по эталону завода
+  o=vec4(col*uEnc,1.0); }`;
+// --- герой ---
+const VS_HERO=`#version 300 es
+precision highp float; layout(location=0) in vec3 aPos; layout(location=1) in vec3 aNrm; layout(location=2) in vec2 aUv;
+uniform mat4 uVP; uniform mat4 uM; out vec3 vWp; out vec3 vN; out vec2 vUv;
+void main(){ vec4 wp=uM*vec4(aPos,1.0); vWp=wp.xyz; vN=normalize(transpose(inverse(mat3(uM)))*aNrm); vUv=aUv; gl_Position=uVP*wp; }`;
+const FS_HERO=`#version 300 es
+precision highp float; in vec3 vWp; in vec3 vN; in vec2 vUv; uniform int uMat; uniform float uEnc; out vec4 o;
+${COMMON}
+float smooth01(float a,float b,float x){ float t=clamp((x-a)/(b-a),0.0,1.0); return t*t*(3.0-2.0*t); }
+void main(){ vec3 n=normalize(vN); vec3 v0=normalize(uCam-vWp); if(dot(n,v0)<0.0) n=-n; vec3 alb; float rough=0.5, f0=0.04, sheen=0.0; int m=uMat;
+  if(m==15){ float sb=vUv.y*5.2-0.25; float fr=fract(sb); int band=int(floor(sb)); float edge=smooth01(0.0,0.12,fr)*(1.0-smooth01(0.88,1.0,fr)); vec3 yel=vec3(0.9,0.62,0.1), drk=vec3(0.07,0.05,0.035); bool odd=(band&1)!=0; vec3 c=odd?drk:yel, other=odd?yel:drk; c=mix(other,c,edge); if(vUv.y>0.93) c=drk; alb=c; rough=0.55; f0=0.035; sheen=0.35; }
+  else if(m==16){ alb=vec3(0.9,0.62,0.14); rough=0.75; f0=0.03; sheen=0.7; }
+  else if(m==17){ alb=vec3(0.1,0.07,0.045); rough=0.6; f0=0.035; sheen=0.35; }
+  else if(m==7){ alb=vec3(0.01,0.008,0.006); rough=0.08; f0=0.05; }
+  else if(m==9){ alb=vec3(1.0,0.92,0.6); rough=0.6; f0=0.03; }
+  else alb=vec3(0.5);
+  vec3 v=normalize(uCam-vWp); float nv=max(dot(n,v),1e-4); float ndl=dot(n,uSun); vec3 col=vec3(0.0);
+  if(m==6){ // тонкое стекло крыла: отражение неба + блик солнца, остальное пропускает
+    float cosi=clamp(nv,0.0,1.0); float sint2=(1.0-cosi*cosi)/(1.4*1.4); float cost=sqrt(1.0-sint2); float rs=(cosi-1.4*cost)/(cosi+1.4*cost), rp=(1.4*cosi-cost)/(1.4*cosi+cost); float Fr=0.5*(rs*rs+rp*rp)*0.9;
+    vec3 rd=reflect(-v,n); vec3 refl=skyCol(rd,false)*0.9+uSunBase*11.0*0.02*pow(max(0.0,dot(rd,uSun)),30.0); o=vec4(refl*Fr*uEnc, 1.0-0.95*(1.0-Fr)); return; }
+  // самозатенение: низ тела темнее (дешёвый ambient occlusion)
+  float ao=0.45+0.55*clamp(0.5+0.5*n.y,0.0,1.0);
+  if(ndl>0.0){ vec3 h=normalize(v+uSun); float nh=max(dot(n,h),0.0), vh=max(dot(v,h),0.0); float a=max(0.03,rough*rough); float spec=fres(vh,f0)*ggxD(nh,a)*ggxG1(nv,a)*ggxG1(ndl,a)/(4.0*nv*ndl+1e-6);
+    col+=uSunCol*(alb/PI+vec3(spec))*ndl; if(sheen>0.0){ float rim=pow(1.0-nv,3.0); col+=uSunCol*(alb*0.8+vec3(0.25,0.22,0.18))*sheen*rim*ndl*0.9; } }
+  else if(sheen>0.0){ float rim=pow(1.0-nv,2.5); col+=uSunCol*(alb*0.6+vec3(0.3,0.26,0.2))*sheen*rim*(-ndl)*0.7; }
+  col+=alb*ambientSky(n)*ao*0.9; col+=alb*vec3(0.17,0.26,0.06)*uSkyK*0.25*(0.5-0.5*n.y);
+  o=vec4(col*uEnc,1.0); }`;
+// --- небо, пыльца ---
+const VS_SKY=`#version 300 es
+precision highp float; layout(location=0) in vec2 aP; uniform mat4 uInvVP; out vec3 vDir; void main(){ vec4 a=uInvVP*vec4(aP,1.0,1.0); vec4 b=uInvVP*vec4(aP,-1.0,1.0); vDir=a.xyz/a.w-b.xyz/b.w; gl_Position=vec4(aP,0.99999,1.0); }`;
+const FS_SKY=`#version 300 es
+precision highp float; in vec3 vDir; uniform float uEnc; out vec4 o; ${COMMON} void main(){ o=vec4(skyCol(normalize(vDir),true)*uEnc,1.0); }`;
+const VS_POL=`#version 300 es
+precision highp float; layout(location=0) in vec4 aP; uniform mat4 uVP; uniform float uTime; uniform float uPx; uniform vec3 uCam; out float vA;
+void main(){ float t=uTime, ph=aP.w; vec3 p=vec3(aP.x+0.25*t+0.1*sin(t+ph), aP.y+0.08*sin(1.2*t+ph), aP.z+0.08*sin(0.8*t+ph*2.0)); vec4 c=uVP*vec4(p,1.0); gl_Position=c; float d=length(p-uCam); float sz=uPx*0.012/max(d,0.2); gl_PointSize=clamp(sz,1.0,6.0); vA=clamp(sz,0.0,1.0)*clamp(1.0-(d-4.0)/6.0,0.0,1.0)*0.6; }`;
+const FS_POL=`#version 300 es
+precision highp float; in float vA; uniform float uEnc; out vec4 o; ${COMMON} void main(){ vec2 q=gl_PointCoord-0.5; if(dot(q,q)>0.25) discard; vec3 c=uSunCol*vec3(1.0,0.92,0.6)/PI*0.35+vec3(1.0,0.92,0.6)*ambientSky(vec3(0,1,0)); o=vec4(c*uEnc*vA,1.0); }`;
+// --- пост: глубина резкости + туман ---
+const VS_Q=`#version 300 es
+precision highp float; layout(location=0) in vec2 aP; out vec2 vUv; void main(){ vUv=aP*0.5+0.5; gl_Position=vec4(aP,0.0,1.0); }`;
+const FS_DOF=`#version 300 es
+precision highp float; in vec2 vUv; uniform sampler2D uCol; uniform sampler2D uDep; uniform vec2 uTexel; uniform float uNear; uniform float uFar; uniform float uFocus; uniform float uAper; uniform float uK; uniform float uMaxCoc; uniform mat4 uInvVP; uniform float uEnc; uniform vec3 uFogA; uniform vec3 uFogB; out vec4 o;
+${COMMON}
+float lin(float z){ return uNear*uFar/(uFar-z*(uFar-uNear)); }
+float coc(float d){ return min(uMaxCoc, uAper*abs(d-uFocus)/d*uK); }
+const vec2 P[24]=vec2[24](vec2(-0.613,-0.318),vec2(0.172,-0.883),vec2(0.731,-0.455),vec2(-0.213,0.187),vec2(0.398,0.166),vec2(-0.822,0.287),vec2(0.077,0.555),vec2(0.549,0.721),vec2(-0.458,0.776),vec2(-0.062,-0.414),vec2(0.933,0.117),vec2(-0.344,-0.736),vec2(0.264,-0.266),vec2(-0.946,-0.062),vec2(0.619,-0.056),vec2(-0.147,0.939),vec2(0.428,0.472),vec2(-0.591,0.082),vec2(0.146,0.133),vec2(0.832,0.511),vec2(-0.258,-0.137),vec2(0.312,-0.615),vec2(-0.688,-0.615),vec2(0.023,-0.071));
+void main(){ float z0=texture(uDep,vUv).r; float d0=lin(z0); float c0=coc(d0); vec3 col=texture(uCol,vUv).rgb/uEnc;
+  if(c0>0.6){ vec3 sum=col; float ws=1.0; for(int i=0;i<24;i++){ vec2 off=P[i]*c0; vec2 uv=vUv+off*uTexel; float dt=lin(texture(uDep,uv).r); float ct=coc(dt); float w=(ct>=length(off)*0.75)?1.0:0.12; sum+=texture(uCol,uv).rgb/uEnc*w; ws+=w; } col=sum/ws; }
+  // туман по глубине (воздушная перспектива), небо не трогаем
+  if(d0<250.0){ vec4 a=uInvVP*vec4(vUv*2.0-1.0,1.0,1.0); vec4 b=uInvVP*vec4(vUv*2.0-1.0,-1.0,1.0); vec3 dir=normalize(a.xyz/a.w-b.xyz/b.w); float fg=1.0-exp(-d0*0.022); vec3 fc=mix(uFogA,uFogB,pow(max(0.0,dot(dir,uSun)),4.0)*0.7)*0.75; col=mix(col,fc,fg*0.9); }
+  o=vec4(col,1.0); }`;
+const FS_DOWN=`#version 300 es
+precision highp float; in vec2 vUv; uniform sampler2D uCol; uniform vec2 uTexel; uniform float uExp; out vec4 o;
+void main(){ vec3 s=vec3(0.0); for(int j=0;j<4;j++) for(int i=0;i<4;i++) s+=texture(uCol,vUv+(vec2(float(i),float(j))-1.5)*uTexel).rgb; s/=16.0; float l=(0.2126*s.r+0.7152*s.g+0.0722*s.b)*uExp; float t=clamp((l-0.9)/1.6,0.0,1.0); o=vec4(s*t*t*(3.0-2.0*t),1.0); }`;
+const FS_BLUR=`#version 300 es
+precision highp float; in vec2 vUv; uniform sampler2D uCol; uniform vec2 uDir; out vec4 o;
+void main(){ vec3 s=vec3(0.0); float ws=0.0; for(int i=-14;i<=14;i++){ float w=exp(-float(i*i)/(2.0*5.5*5.5)); s+=texture(uCol,vUv+uDir*float(i)).rgb*w; ws+=w; } o=vec4(s/ws,1.0); }`;
+const FS_FINAL=`#version 300 es
+precision highp float; in vec2 vUv; uniform sampler2D uCol; uniform sampler2D uBloom; uniform float uExp; uniform float uSeed; uniform float uGrain; out vec4 o;
+vec3 aces(vec3 x){ return clamp((x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14),0.0,1.0); }
+float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7))+uSeed)*43758.5453); }
+void main(){ vec3 c=(texture(uCol,vUv).rgb+texture(uBloom,vUv).rgb*0.22)*uExp; vec2 q=vUv-0.5; c*=1.0-0.45*dot(q,q)*2.2; c=aces(c); c+=vec3((hash(gl_FragCoord.xy)-0.5)*0.012*uGrain); o=vec4(pow(clamp(c,0.0,1.0),vec3(1.0/2.2)),1.0); }`;
+
+function prog(vs,fs){ const p=gl.createProgram(); for(const [t,src] of [[gl.VERTEX_SHADER,vs],[gl.FRAGMENT_SHADER,fs]]){ const s=gl.createShader(t); gl.shaderSource(s,src); gl.compileShader(s); if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){ throw new Error('shader: '+gl.getShaderInfoLog(s)); } gl.attachShader(p,s); }
+  gl.linkProgram(p); if(!gl.getProgramParameter(p,gl.LINK_STATUS)) throw new Error('link: '+gl.getProgramInfoLog(p)); const u={}; const n=gl.getProgramParameter(p,gl.ACTIVE_UNIFORMS); for(let i=0;i<n;i++){ const info=gl.getActiveUniform(p,i); u[info.name.replace('[0]','')]=gl.getUniformLocation(p,info.name); } return {p,u}; }
+
+// ============ матрицы ============
+function perspective(fov,asp,n,f){ const t=1/Math.tan(fov/2); return [t/asp,0,0,0, 0,t,0,0, 0,0,(f+n)/(n-f),-1, 0,0,2*f*n/(n-f),0]; }
+function lookAt(e,l){ const f=norm3(sub3(l,e)); const r=norm3(cross3(f,[0,1,0])); const u=cross3(r,f); return [r[0],u[0],-f[0],0, r[1],u[1],-f[1],0, r[2],u[2],-f[2],0, -dot3(r,e),-dot3(u,e),dot3(f,e),1]; }
+function mul4(a,b){ const o=new Array(16); for(let i=0;i<4;i++) for(let j=0;j<4;j++){ let s=0; for(let k=0;k<4;k++) s+=a[k*4+j]*b[i*4+k]; o[i*4+j]=s; } return o; }
+function inv4(m){ const o=new Array(16); const a=m; o[0]=a[5]*a[10]*a[15]-a[5]*a[11]*a[14]-a[9]*a[6]*a[15]+a[9]*a[7]*a[14]+a[13]*a[6]*a[11]-a[13]*a[7]*a[10]; o[4]=-a[4]*a[10]*a[15]+a[4]*a[11]*a[14]+a[8]*a[6]*a[15]-a[8]*a[7]*a[14]-a[12]*a[6]*a[11]+a[12]*a[7]*a[10]; o[8]=a[4]*a[9]*a[15]-a[4]*a[11]*a[13]-a[8]*a[5]*a[15]+a[8]*a[7]*a[13]+a[12]*a[5]*a[11]-a[12]*a[7]*a[9]; o[12]=-a[4]*a[9]*a[14]+a[4]*a[10]*a[13]+a[8]*a[5]*a[14]-a[8]*a[6]*a[13]-a[12]*a[5]*a[10]+a[12]*a[6]*a[9]; o[1]=-a[1]*a[10]*a[15]+a[1]*a[11]*a[14]+a[9]*a[2]*a[15]-a[9]*a[3]*a[14]-a[13]*a[2]*a[11]+a[13]*a[3]*a[10]; o[5]=a[0]*a[10]*a[15]-a[0]*a[11]*a[14]-a[8]*a[2]*a[15]+a[8]*a[3]*a[14]+a[12]*a[2]*a[11]-a[12]*a[3]*a[10]; o[9]=-a[0]*a[9]*a[15]+a[0]*a[11]*a[13]+a[8]*a[1]*a[15]-a[8]*a[3]*a[13]-a[12]*a[1]*a[11]+a[12]*a[3]*a[9]; o[13]=a[0]*a[9]*a[14]-a[0]*a[10]*a[13]-a[8]*a[1]*a[14]+a[8]*a[2]*a[13]+a[12]*a[1]*a[10]-a[12]*a[2]*a[9]; o[2]=a[1]*a[6]*a[15]-a[1]*a[7]*a[14]-a[5]*a[2]*a[15]+a[5]*a[3]*a[14]+a[13]*a[2]*a[7]-a[13]*a[3]*a[6]; o[6]=-a[0]*a[6]*a[15]+a[0]*a[7]*a[14]+a[4]*a[2]*a[15]-a[4]*a[3]*a[14]-a[12]*a[2]*a[7]+a[12]*a[3]*a[6]; o[10]=a[0]*a[5]*a[15]-a[0]*a[7]*a[13]-a[4]*a[1]*a[15]+a[4]*a[3]*a[13]+a[12]*a[1]*a[7]-a[12]*a[3]*a[5]; o[14]=-a[0]*a[5]*a[14]+a[0]*a[6]*a[13]+a[4]*a[1]*a[14]-a[4]*a[2]*a[13]-a[12]*a[1]*a[6]+a[12]*a[2]*a[5]; o[3]=-a[1]*a[6]*a[11]+a[1]*a[7]*a[10]+a[5]*a[2]*a[11]-a[5]*a[3]*a[10]-a[9]*a[2]*a[7]+a[9]*a[3]*a[6]; o[7]=a[0]*a[6]*a[11]-a[0]*a[7]*a[10]-a[4]*a[2]*a[11]+a[4]*a[3]*a[10]+a[8]*a[2]*a[7]-a[8]*a[3]*a[6]; o[11]=-a[0]*a[5]*a[11]+a[0]*a[7]*a[9]+a[4]*a[1]*a[11]-a[4]*a[3]*a[9]-a[8]*a[1]*a[7]+a[8]*a[3]*a[5]; o[15]=a[0]*a[5]*a[10]-a[0]*a[6]*a[9]-a[4]*a[1]*a[10]+a[4]*a[2]*a[9]+a[8]*a[1]*a[6]-a[8]*a[2]*a[5]; let det=a[0]*o[0]+a[1]*o[4]+a[2]*o[8]+a[3]*o[12]; det=1/det; for(let i=0;i<16;i++) o[i]*=det; return o; }
+const sub3=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2], cross3=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]], norm3=a=>{const l=Math.hypot(a[0],a[1],a[2])||1; return [a[0]/l,a[1]/l,a[2]/l];};
+
+// ============ инициализация сцены ============
+let G={};
+function init(){
+  const h=S.hdr, ab=S.ab, base=S.base;
+  G.pDiode=prog(VS_DIODE,FS_DIODE); G.pHero=prog(VS_HERO,FS_HERO); G.pSky=prog(VS_SKY,FS_SKY); G.pPol=prog(VS_POL,FS_POL); G.pDof=prog(VS_Q,FS_DOF); G.pDown=prog(VS_Q,FS_DOWN); G.pBlur=prog(VS_Q,FS_BLUR); G.pFinal=prog(VS_Q,FS_FINAL);
+  G.sun=h.sun; G.suncol=h.suncol; G.sunrad=h.sunrad; G.exposure=h.exposure; G.TR=h.TR;
+  const mkBuf=(target,off,len)=>{ const b=gl.createBuffer(); gl.bindBuffer(target,b); gl.bufferData(target,new Uint8Array(ab,base+off,len),gl.STATIC_DRAW); return b; };
+  const diodeAttribs=(stride,floatPos)=>{ const T=gl; if(floatPos){ T.enableVertexAttribArray(0); T.vertexAttribPointer(0,3,T.FLOAT,false,stride,0); } else { T.enableVertexAttribArray(0); T.vertexAttribPointer(0,3,T.SHORT,false,stride,0); }
+    const o=floatPos?12:6; T.enableVertexAttribArray(1); T.vertexAttribPointer(1,2,T.BYTE,true,stride,o); T.enableVertexAttribArray(2); T.vertexAttribPointer(2,3,T.UNSIGNED_BYTE,true,stride,o+2); T.enableVertexAttribArray(3); T.vertexAttribPointer(3,1,T.UNSIGNED_BYTE,true,stride,o+5); T.enableVertexAttribArray(4); T.vertexAttribPointer(4,1,T.UNSIGNED_BYTE,true,stride,o+6); T.enableVertexAttribArray(5); T.vertexAttribPointer(5,1,T.UNSIGNED_BYTE,true,stride,o+7); T.enableVertexAttribArray(6); T.vertexAttribPointer(6,1,T.UNSIGNED_BYTE,false,stride,o+8); };
+  // поправка диодов (calib.bin: подряд patches[0..9], ground, trees[t].trunk, trees[t].leaves — по 3 байта на вершину, 128 = без поправки)
+  let calOff=0; const calAttrib=(nv)=>{ const b=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,b); let arr; if(CAL && calOff+nv*3<=CAL.length){ arr=CAL.subarray(calOff,calOff+nv*3); } else { arr=new Uint8Array(nv*3); arr.fill(128); } calOff+=nv*3; gl.bufferData(gl.ARRAY_BUFFER,arr,gl.STATIC_DRAW); gl.enableVertexAttribArray(9); gl.vertexAttribPointer(9,3,gl.UNSIGNED_BYTE,true,3,0); };
+  const instAttribs=(buf)=>{ gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.enableVertexAttribArray(7); gl.vertexAttribPointer(7,4,gl.FLOAT,false,20,0); gl.vertexAttribDivisor(7,1); gl.enableVertexAttribArray(8); gl.vertexAttribPointer(8,1,gl.FLOAT,false,20,16); gl.vertexAttribDivisor(8,1); };
+  // образцы травы: VAO + свой буфер инстансов (перезаливается каждый кадр)
+  G.patches=h.patches.map((p,i)=>{ const vao=gl.createVertexArray(); gl.bindVertexArray(vao); mkBuf(gl.ARRAY_BUFFER,p.vOff,p.nv*16); diodeAttribs(16,false); calAttrib(p.nv); const ib=mkBuf(gl.ELEMENT_ARRAY_BUFFER,p.iOff,p.ni*2); const inst=gl.createBuffer(); instAttribs(inst); gl.bindVertexArray(null); return {vao,inst,ni:p.ni,bladeIdx:p.bladeIdx,blades:p.blades,wind:p.wind,tiers:[]}; });
+  // ячейки
+  { const n=h.tiles.n; const dv=new DataView(ab,base+h.tiles.off,n*16); G.tiles=new Array(n); for(let i=0;i<n;i++) G.tiles[i]={x:dv.getFloat32(i*16,true),y:dv.getFloat32(i*16+4,true),z:dv.getFloat32(i*16+8,true),p:dv.getUint32(i*16+12,true)}; }
+  // земля
+  { const g=h.ground; const vao=gl.createVertexArray(); gl.bindVertexArray(vao); mkBuf(gl.ARRAY_BUFFER,g.vOff,g.nv*24); diodeAttribs(24,true); calAttrib(g.nv); mkBuf(gl.ELEMENT_ARRAY_BUFFER,g.iOff,g.ni*4); const inst=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,inst); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,0,0,1]),gl.STATIC_DRAW); instAttribs(inst); gl.bindVertexArray(null); G.ground={vao,ni:g.ni}; }
+  // деревья
+  G.trees=h.trees.map(t=>{ const mk=(vOff,nv,iOff,ni)=>{ const vao=gl.createVertexArray(); gl.bindVertexArray(vao); mkBuf(gl.ARRAY_BUFFER,vOff,nv*16); diodeAttribs(16,false); calAttrib(nv); mkBuf(gl.ELEMENT_ARRAY_BUFFER,iOff,ni*2); const inst=gl.createBuffer(); instAttribs(inst); gl.bindVertexArray(null); return {vao,inst,ni}; }; return {trunk:mk(t.tvOff,t.tnv,t.tiOff,t.tni),leaves:mk(t.lvOff,t.lnv,t.liOff,t.lni)}; });
+  { const n=h.treeInst.n; const dv=new DataView(ab,base+h.treeInst.off,n*32); G.treeInst=[]; for(let i=0;i<n;i++) G.treeInst.push({x:dv.getFloat32(i*32,true),y:dv.getFloat32(i*32+4,true),z:dv.getFloat32(i*32+8,true),yaw:dv.getFloat32(i*32+12,true),sc:dv.getFloat32(i*32+16,true),v:dv.getUint32(i*32+24,true)}); }
+  // пыльца
+  { const n=h.pollen.n; const vao=gl.createVertexArray(); gl.bindVertexArray(vao); mkBuf(gl.ARRAY_BUFFER,h.pollen.off,n*16); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,4,gl.FLOAT,false,16,0); gl.bindVertexArray(null); G.pollen={vao,n}; }
+  // кольца
+  { const n=h.rips.n; const dv=new DataView(ab,base+h.rips.off,n*32); G.ripA=new Float32Array(64); G.ripB=new Float32Array(64); for(let i=0;i<n;i++){ G.ripA[i*4]=dv.getFloat32(i*32,true); G.ripA[i*4+1]=dv.getFloat32(i*32+4,true); G.ripA[i*4+2]=dv.getFloat32(i*32+8,true); G.ripA[i*4+3]=dv.getFloat32(i*32+12,true); G.ripB[i*4]=dv.getFloat32(i*32+16,true); G.ripB[i*4+1]=dv.getFloat32(i*32+20,true); G.ripB[i*4+2]=dv.getFloat32(i*32+24,true); } G.nRip=n; }
+  // герой
+  G.heroMeshes=h.heroMeshes.map(m=>{ const vao=gl.createVertexArray(); gl.bindVertexArray(vao); mkBuf(gl.ARRAY_BUFFER,m.vOff,m.nv*32); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.FLOAT,false,32,0); gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1,3,gl.FLOAT,false,32,12); gl.enableVertexAttribArray(2); gl.vertexAttribPointer(2,2,gl.FLOAT,false,32,24); mkBuf(gl.ELEMENT_ARRAY_BUFFER,m.iOff,m.ni*2); gl.bindVertexArray(null); return {vao,ni:m.ni,mat:m.mat}; });
+  G.nHero=h.heroInst; G.nFrames=h.frames; G.fps=h.fps;
+  // квадрат для неба/поста
+  { const vao=gl.createVertexArray(); gl.bindVertexArray(vao); const b=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,b); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0); gl.bindVertexArray(null); G.quad=vao; }
+  G.instScratch=new Float32Array(2000*5);
+  resize(); $('load').style.display='none'; if(location.search.includes('still')){ window.renderOnce=(f)=>{ st.play=false; st.frame=f; frame(performance.now(),true); }; } else requestAnimationFrame(frame); }
+
+// ============ буферы кадра ============
+let FB=null, W=0, H=0, quality=1;
+function resize(){ const dpr=Math.min(window.devicePixelRatio||1,3)*(quality?1:0.6); const cw=$('wrap').clientWidth; let w=Math.round(cw*dpr); w=Math.min(w,1920); { const qp2=new URLSearchParams(location.search); if(qp2.has('w')) w=+qp2.get('w'); } const hgt=Math.round(w*9/16); if(w===W&&hgt===H) return; W=w; H=hgt; canvas.width=W; canvas.height=H; $('resV').textContent=W+'×'+H+(HDR?'':' · без HDR');
+  if(FB){ for(const k in FB) if(FB[k]&&FB[k].constructor===WebGLTexture) gl.deleteTexture(FB[k]); }
+  const qp=new URLSearchParams(location.search); const samples=Math.min(qp.has('samples')?+qp.get('samples'):4,gl.getParameter(gl.MAX_SAMPLES)); const cfmt=HDR?(extF?gl.RGBA16F:gl.RGBA16F):gl.RGB10_A2;
+  const rbC=gl.createRenderbuffer(); gl.bindRenderbuffer(gl.RENDERBUFFER,rbC); gl.renderbufferStorageMultisample(gl.RENDERBUFFER,samples,cfmt,W,H);
+  const rbD=gl.createRenderbuffer(); gl.bindRenderbuffer(gl.RENDERBUFFER,rbD); gl.renderbufferStorageMultisample(gl.RENDERBUFFER,samples,gl.DEPTH_COMPONENT24,W,H);
+  const fMS=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,fMS); gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.RENDERBUFFER,rbC); gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,rbD);
+  const tex=(ifmt,fmt,type,w,h,filt)=>{ const t=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,t); gl.texStorage2D(gl.TEXTURE_2D,1,ifmt,w,h); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,filt); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,filt); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE); return t; };
+  const tCol=tex(cfmt,0,0,W,H,gl.LINEAR), tDep=tex(gl.DEPTH_COMPONENT24,0,0,W,H,gl.NEAREST); const fRes=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,fRes); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tCol,0); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.TEXTURE_2D,tDep,0);
+  const tDof=tex(cfmt,0,0,W,H,gl.LINEAR); const fDof=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,fDof); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tDof,0);
+  const BW=Math.max(1,W>>2), BH=Math.max(1,H>>2); const tB0=tex(cfmt,0,0,BW,BH,gl.LINEAR), tB1=tex(cfmt,0,0,BW,BH,gl.LINEAR); const fB0=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,fB0); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tB0,0); const fB1=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,fB1); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tB1,0);
+  const st=gl.checkFramebufferStatus(gl.FRAMEBUFFER); gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  const tId=tex(gl.RGBA8,0,0,W,H,gl.NEAREST); const rbId=gl.createRenderbuffer(); gl.bindRenderbuffer(gl.RENDERBUFFER,rbId); gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT24,W,H); const fId=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,fId); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tId,0); gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,rbId); gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  FB={fMS,fRes,tCol,tDep,fDof,tDof,fB0,fB1,tB0,tB1,BW,BH,samples,fId}; }
+window.addEventListener('resize',()=>setTimeout(resize,50));
+
+// ============ состояние ============
+const st={play:true, frame:0, t0:performance.now(), cmp:0, free:false, tod:0, wind:1, yaw:0, pitch:0, dist:0};
+function todParams(x){ // 0 — день, 0.5 — закат, 1 — сумерки
+  const L=(a,b,t)=>a+(b-a)*t; const L3=(a,b,t)=>[L(a[0],b[0],t),L(a[1],b[1],t),L(a[2],b[2],t)];
+  const day={sun:[1.0,0.80,0.55],k:1,sky:1,zen:[0.17,0.36,0.78],hor:[1.0,0.8,0.58],fog:[0.9,0.72,0.55]}, set={sun:[1.0,0.48,0.22],k:0.45,sky:0.55,zen:[0.12,0.2,0.5],hor:[1.0,0.55,0.3],fog:[0.85,0.5,0.35]}, dusk={sun:[0.6,0.35,0.3],k:0.03,sky:0.16,zen:[0.03,0.05,0.16],hor:[0.35,0.22,0.3],fog:[0.3,0.22,0.3]};
+  const a=x<0.5?day:set, b=x<0.5?set:dusk, t=x<0.5?x*2:(x-0.5)*2; return {sun:L3(a.sun,b.sun,t),k:L(a.k,b.k,t),sky:L(a.sky,b.sky,t),zen:L3(a.zen,b.zen,t),hor:L3(a.hor,b.hor,t),fog:L3(a.fog,b.fog,t)}; }
+function readFrame(i){ const R=9+3+12; const stride=(R+G.nHero*14)*4; const o=i*stride; const f=k=>FR.getFloat32(o+k*4,true);
+  const fr={eye:[f(0),f(1),f(2)],look:[f(3),f(4),f(5)],fov:f(6),focus:f(7),aper:f(8),hero:[f(9),f(10),f(11)],sph:[],inst:[]};
+  for(let k=0;k<3;k++) fr.sph.push([f(12+k*4),f(13+k*4),f(14+k*4),f(15+k*4)]);
+  for(let k=0;k<G.nHero;k++){ const b=o+R*4+k*56; const mesh=FR.getUint32(b,true), mat=FR.getUint32(b+4,true); const m=[]; for(let j=0;j<12;j++) m.push(FR.getFloat32(b+8+j*4,true)); fr.inst.push({mesh,mat,m}); }
+  return fr; }
+
+// ============ кадр ============
+let fpsAcc=0, fpsN=0, fpsShown=0, lastT=performance.now();
+function frame(now,once){ if(!once) requestAnimationFrame(frame);
+  const dt=(now-lastT)/1000; lastT=now; fpsAcc+=dt; fpsN++; if(fpsAcc>0.5){ fpsShown=Math.round(fpsN/fpsAcc); fpsAcc=0; fpsN=0; $('fpsR').textContent=fpsShown; }
+  if(st.play && !st.cmp){ st.frame=(st.frame+dt*G.fps)%G.nFrames; $('frame').value=Math.floor(st.frame); $('frameV').textContent=Math.floor(st.frame); }
+  const fi=Math.floor(st.frame); const fr=readFrame(fi); const t=st.frame/G.fps;
+  let eye=fr.eye, look=fr.look, fov=fr.fov;
+  if(st.free){ const c=[fr.look[0],fr.look[1],fr.look[2]]; const d0=Math.hypot(fr.eye[0]-c[0],fr.eye[1]-c[1],fr.eye[2]-c[2]); const az=Math.atan2(fr.eye[2]-c[2],fr.eye[0]-c[0])+st.yaw; const el=Math.asin((fr.eye[1]-c[1])/d0)+st.pitch; const el2=Math.max(0.03,Math.min(1.3,el)); const d=d0*Math.exp(st.dist); eye=[c[0]+Math.cos(az)*Math.cos(el2)*d, Math.max(c[1]+Math.sin(el2)*d,0.08+ground(c[0],c[2])), c[2]+Math.sin(az)*Math.cos(el2)*d]; }
+  const asp=W/H; const P=perspective(fov,asp,0.05,400); const V=lookAt(eye,look); const VP=mul4(P,V); const IVP=inv4(VP);
+  const tp=todParams(st.tod); const sunCol=[tp.sun[0]*G.sunrad*tp.k,tp.sun[1]*G.sunrad*tp.k,tp.sun[2]*G.sunrad*tp.k]; const sunBase=[tp.sun[0]*tp.k,tp.sun[1]*tp.k,tp.sun[2]*tp.k]; const zen=tp.zen.map(v=>v*tp.sky), hor=tp.hor.map(v=>v*tp.sky);
+  const setCommon=(pr)=>{ const u=pr.u; gl.uniform3fv(u.uSun,G.sun); gl.uniform3fv(u.uSunCol,sunCol); gl.uniform3fv(u.uSunBase,sunBase); gl.uniform1f(u.uSkyK,tp.sky); gl.uniform3fv(u.uZen,zen); gl.uniform3fv(u.uHor,hor); gl.uniform3fv(u.uCam,eye); if(u.uEnc) gl.uniform1f(u.uEnc,ENC); };
+  // ---- сцена в MSAA-буфер ----
+  const idMode=!!st.idMode;
+  gl.bindFramebuffer(gl.FRAMEBUFFER,idMode?FB.fId:FB.fMS); gl.viewport(0,0,W,H); gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LESS); gl.disable(gl.BLEND); gl.disable(gl.CULL_FACE); gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  // небо
+  if(!idMode){ const pr=G.pSky; gl.useProgram(pr.p); setCommon(pr); gl.uniformMatrix4fv(pr.u.uInvVP,false,IVP); gl.depthMask(false); gl.bindVertexArray(G.quad); gl.drawArrays(gl.TRIANGLES,0,3); gl.depthMask(true); }
+  // диоды
+  const pr=G.pDiode; gl.useProgram(pr.p); setCommon(pr); gl.uniformMatrix4fv(pr.u.uVP,false,VP); gl.uniform1f(pr.u.uTime,t); gl.uniform4fv(pr.u.uRipA,G.ripA); gl.uniform4fv(pr.u.uRipB,G.ripB); gl.uniform1i(pr.u.uNRip,G.nRip); gl.uniform3fv(pr.u.uHero,fr.hero);
+  const sph=new Float32Array(12); for(let k=0;k<3;k++) for(let j=0;j<4;j++) sph[k*4+j]=fr.sph[k][j]; gl.uniform4fv(pr.u.uHeroSph,sph); gl.uniform1i(pr.u.uIdMode,idMode?1:0); gl.uniform1i(pr.u.uCalOn,st.cal===false?0:1); gl.uniform1i(pr.u.uObj,10);
+  gl.uniform3f(pr.u.uFarAlb,0.17,0.26,0.06); gl.uniform2f(pr.u.uFarSK,0.42,0.7);
+  // земля
+  gl.uniform1i(pr.u.uGround,1); gl.uniform1f(pr.u.uPosScale,1.0); gl.uniform1f(pr.u.uWindAmp,0.0); gl.uniform1f(pr.u.uWiden,1.0); gl.uniform1i(pr.u.uDeform,0); gl.bindVertexArray(G.ground.vao); gl.drawElementsInstanced(gl.TRIANGLES,G.ground.ni,gl.UNSIGNED_INT,0,1);
+  gl.uniform1i(pr.u.uGround,0);
+  // ячейки: отсев по пирамиде зрения и ярусы по расстоянию
+  const tiers=[{d:10,f:1.0,w:1.0,far:false},{d:17,f:0.6,w:1.35,far:false},{d:27,f:0.35,w:1.8,far:false},{d:46,f:0.45,w:1.5,far:true}];
+  for(const p of G.patches) p.tiers=[[],[],[],[]];
+  const planes=frustumPlanes(VP); const TRr=G.TR*1.25;
+  for(let i=0;i<G.tiles.length;i++){ const tl=G.tiles[i]; if(!inFrustum(planes,tl.x,tl.y+0.4,tl.z,TRr+0.5)) continue; const dx=tl.x-eye[0], dz=tl.z-eye[2], dy=tl.y-eye[1]; const d=Math.sqrt(dx*dx+dy*dy+dz*dz)-G.TR*0.5; let tier=-1; for(let k=0;k<4;k++) if(d<tiers[k].d){ tier=k; break; } if(tier<0) continue;
+    const pi=tiers[tier].far?(8+(i&1)):tl.p; G.patches[pi].tiers[tier].push(i); }
+  gl.uniform1f(pr.u.uPosScale,S.hdr.grassScale);
+  let drawn=0, bladesDrawn=0;
+  for(let pi=0;pi<G.patches.length;pi++){ const p=G.patches[pi]; gl.bindVertexArray(p.vao); gl.uniform1f(pr.u.uWindAmp,p.wind*st.wind); gl.uniform1i(pr.u.uObj,pi);
+    for(let k=0;k<4;k++){ const list=p.tiers[k]; if(!list.length) continue; const T=tiers[k]; let n=0; const buf=G.instScratch; for(const i of list){ const tl=G.tiles[i]; buf[n++]=tl.x; buf[n++]=tl.y; buf[n++]=tl.z; buf[n++]=0; buf[n++]=1; }
+      gl.bindBuffer(gl.ARRAY_BUFFER,p.inst); gl.bufferData(gl.ARRAY_BUFFER,buf.subarray(0,n),gl.DYNAMIC_DRAW);
+      const nb=Math.floor(p.blades*T.f); const count=T.f>=1?p.ni:nb*21; gl.uniform1f(pr.u.uWiden,T.w); gl.uniform1i(pr.u.uDeform,k<2?1:0);
+      gl.drawElementsInstanced(gl.TRIANGLES,count,gl.UNSIGNED_SHORT,0,list.length); drawn++; bladesDrawn+=nb*list.length; } }
+  // деревья
+  gl.uniform1f(pr.u.uPosScale,S.hdr.treeScale); gl.uniform1f(pr.u.uWindAmp,0.0); gl.uniform1f(pr.u.uWiden,1.0); gl.uniform1i(pr.u.uDeform,0);
+  { const lists=G.trees.map(()=>[]); for(const ti of G.treeInst){ if(!inFrustum(planes,ti.x,ti.y+4*ti.sc,ti.z,4.5*ti.sc)) continue; const d=Math.hypot(ti.x-eye[0],ti.z-eye[2]); if(d>160) continue; lists[ti.v].push(ti); }
+    for(let v=0;v<G.trees.length;v++){ const L=lists[v]; if(!L.length) continue; let n=0; const buf=G.instScratch; for(const ti of L){ buf[n++]=ti.x; buf[n++]=ti.y; buf[n++]=ti.z; buf[n++]=ti.yaw; buf[n++]=ti.sc; }
+      let pk=0; for(const part of [G.trees[v].trunk,G.trees[v].leaves]){ gl.uniform1i(pr.u.uObj,11+v*2+pk); pk++; gl.bindVertexArray(part.vao); gl.bindBuffer(gl.ARRAY_BUFFER,part.inst); gl.bufferData(gl.ARRAY_BUFFER,buf.subarray(0,n),gl.DYNAMIC_DRAW); gl.drawElementsInstanced(gl.TRIANGLES,part.ni,gl.UNSIGNED_SHORT,0,L.length); } } }
+  // герой (крылья в конце, с прозрачностью)
+  if(idMode){ const ph=G.pHero; gl.useProgram(ph.p); setCommon(ph); gl.uniformMatrix4fv(ph.u.uVP,false,VP); for(const ins of fr.inst){ const mat=ins.mat===255?G.heroMeshes[ins.mesh].mat:ins.mat; if(mat===6) continue; const m=ins.m; const M=[m[0],m[4],m[8],0, m[1],m[5],m[9],0, m[2],m[6],m[10],0, m[3],m[7],m[11],1]; gl.uniformMatrix4fv(ph.u.uM,false,M); const mesh=G.heroMeshes[ins.mesh]; gl.uniform1i(ph.u.uMat,mat); gl.bindVertexArray(mesh.vao); gl.drawElements(gl.TRIANGLES,mesh.ni,gl.UNSIGNED_SHORT,0); }
+    gl.colorMask(false,false,false,true); gl.clearColor(0,0,0,1); gl.disable(gl.DEPTH_TEST); /* alpha героя -> 255 (не диод) делается в readIds */ gl.colorMask(true,true,true,true); gl.enable(gl.DEPTH_TEST);
+    const px=new Uint8Array(W*H*4); gl.readPixels(0,0,W,H,gl.RGBA,gl.UNSIGNED_BYTE,px); G.idPixels=px; gl.bindFramebuffer(gl.FRAMEBUFFER,null); return; }
+  { const ph=G.pHero; gl.useProgram(ph.p); setCommon(ph); gl.uniformMatrix4fv(ph.u.uVP,false,VP); const wings=[];
+    const drawInst=(ins)=>{ const m=ins.m; const M=[m[0],m[4],m[8],0, m[1],m[5],m[9],0, m[2],m[6],m[10],0, m[3],m[7],m[11],1]; gl.uniformMatrix4fv(ph.u.uM,false,M); const mesh=G.heroMeshes[ins.mesh]; gl.uniform1i(ph.u.uMat,ins.mat===255?mesh.mat:ins.mat); gl.bindVertexArray(mesh.vao); gl.drawElements(gl.TRIANGLES,mesh.ni,gl.UNSIGNED_SHORT,0); };
+    for(const ins of fr.inst){ const mat=ins.mat===255?G.heroMeshes[ins.mesh].mat:ins.mat; if(mat===6) wings.push(ins); else drawInst(ins); }
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); for(const ins of wings) drawInst(ins); gl.depthMask(true); gl.disable(gl.BLEND); }
+  // пыльца
+  { const pp=G.pPol; gl.useProgram(pp.p); setCommon(pp); gl.uniformMatrix4fv(pp.u.uVP,false,VP); gl.uniform1f(pp.u.uTime,t); gl.uniform1f(pp.u.uPx,H); gl.bindVertexArray(G.pollen.vao); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE,gl.ONE); gl.depthMask(false); gl.drawArrays(gl.POINTS,0,G.pollen.n); gl.depthMask(true); gl.disable(gl.BLEND); }
+  // ---- resolve ----
+  gl.bindFramebuffer(gl.READ_FRAMEBUFFER,FB.fMS); gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER,FB.fRes); gl.blitFramebuffer(0,0,W,H,0,0,W,H,gl.COLOR_BUFFER_BIT,gl.NEAREST); gl.blitFramebuffer(0,0,W,H,0,0,W,H,gl.DEPTH_BUFFER_BIT,gl.NEAREST);
+  gl.disable(gl.DEPTH_TEST); gl.bindVertexArray(G.quad);
+  // ---- глубина резкости + туман ----
+  { const pd=G.pDof; gl.useProgram(pd.p); setCommon(pd); gl.bindFramebuffer(gl.FRAMEBUFFER,FB.fDof); gl.viewport(0,0,W,H); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,FB.tCol); gl.uniform1i(pd.u.uCol,0); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,FB.tDep); gl.uniform1i(pd.u.uDep,1);
+    gl.uniform2f(pd.u.uTexel,1/W,1/H); gl.uniform1f(pd.u.uNear,0.05); gl.uniform1f(pd.u.uFar,400); gl.uniform1f(pd.u.uFocus,fr.focus); gl.uniform1f(pd.u.uAper,st.free?fr.aper*0.5:fr.aper); gl.uniform1f(pd.u.uK,(H/2)/(fr.focus*Math.tan(fov/2))); gl.uniform1f(pd.u.uMaxCoc,0.024*H); gl.uniformMatrix4fv(pd.u.uInvVP,false,IVP);
+    gl.uniform3fv(pd.u.uFogA,tp.fog); gl.uniform3f(pd.u.uFogB,tp.sun[0]*tp.k*1.3,tp.sun[1]*tp.k*1.3,tp.sun[2]*tp.k*1.3); gl.drawArrays(gl.TRIANGLES,0,3); }
+  // ---- блум ----
+  { const pdn=G.pDown; gl.useProgram(pdn.p); gl.bindFramebuffer(gl.FRAMEBUFFER,FB.fB0); gl.viewport(0,0,FB.BW,FB.BH); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,FB.tDof); gl.uniform1i(pdn.u.uCol,0); gl.uniform2f(pdn.u.uTexel,1/W,1/H); gl.uniform1f(pdn.u.uExp,G.exposure); gl.drawArrays(gl.TRIANGLES,0,3);
+    const pb=G.pBlur; gl.useProgram(pb.p); gl.uniform1i(pb.u.uCol,0); gl.bindFramebuffer(gl.FRAMEBUFFER,FB.fB1); gl.bindTexture(gl.TEXTURE_2D,FB.tB0); gl.uniform2f(pb.u.uDir,1/FB.BW,0); gl.drawArrays(gl.TRIANGLES,0,3); gl.bindFramebuffer(gl.FRAMEBUFFER,FB.fB0); gl.bindTexture(gl.TEXTURE_2D,FB.tB1); gl.uniform2f(pb.u.uDir,0,1/FB.BH); gl.drawArrays(gl.TRIANGLES,0,3); }
+  // ---- финал на экран ----
+  { const pf=G.pFinal; gl.useProgram(pf.p); gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.viewport(0,0,W,H); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,FB.tDof); gl.uniform1i(pf.u.uCol,0); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,FB.tB0); gl.uniform1i(pf.u.uBloom,1); gl.uniform1f(pf.u.uExp,G.exposure); gl.uniform1f(pf.u.uSeed,(now%1000)/7); gl.uniform1f(pf.u.uGrain,st.grain===false?0:1); gl.drawArrays(gl.TRIANGLES,0,3); }
+  $('hud').textContent=`${fpsShown} к/с · кадр ${fi} · ячеек ${G.patches.reduce((a,p)=>a+p.tiers.reduce((b,l)=>b+l.length,0),0)} · травинок ${(bladesDrawn/1000).toFixed(0)} тыс · MSAA ${FB.samples}×`;
+}
+function ground(x,z){ return 0.35*Math.sin(0.07*x+0.3)*Math.cos(0.055*z)+0.18*Math.sin(0.13*x-0.09*z+1.0)+0.09*Math.sin(0.25*x+0.19*z+2.0)+0.0016*Math.max(0,-z-18)**2; }
+function frustumPlanes(m){ const r=(i)=>[m[i],m[4+i],m[8+i],m[12+i]]; const r0=r(0),r1=r(1),r2=r(2),r3=r(3); const pl=[]; const add=(a,b,s)=>pl.push([a[0]+s*b[0],a[1]+s*b[1],a[2]+s*b[2],a[3]+s*b[3]]); add(r3,r0,1); add(r3,r0,-1); add(r3,r1,1); add(r3,r1,-1); add(r3,r2,1); add(r3,r2,-1); for(const p of pl){ const l=Math.hypot(p[0],p[1],p[2]); p[0]/=l;p[1]/=l;p[2]/=l;p[3]/=l; } return pl; }
+function inFrustum(pl,x,y,z,r){ for(const p of pl) if(p[0]*x+p[1]*y+p[2]*z+p[3]<-r) return false; return true; }
+
+// ============ управление ============
+$('bPlay').onclick=()=>{ st.play=!st.play; $('bPlay').textContent=st.play?'⏸ Пауза':'▶ Кино'; $('bPlay').classList.toggle('on',st.play); };
+$('frame').oninput=e=>{ st.frame=+e.target.value; $('frameV').textContent=e.target.value; st.play=false; $('bPlay').textContent='▶ Кино'; $('bPlay').classList.remove('on'); if(st.cmp) setCmp(0); };
+$('tod').oninput=e=>{ st.tod=e.target.value/1000; $('todV').textContent=st.tod<0.1?'день':st.tod<0.5?'к закату':st.tod<0.9?'закат':'сумерки'; if(st.cmp) setCmp(0); };
+$('wind').oninput=e=>{ st.wind=e.target.value/100; $('windV').textContent=st.wind.toFixed(1); };
+$('bQ').onclick=()=>{ quality=quality?0:1; $('bQ').textContent=quality?'полное':'лёгкое'; $('bQ').classList.toggle('on',!!quality); resize(); };
+$('bCal').onclick=()=>{ st.cal=!(st.cal!==false); $('bCal').classList.toggle('on',st.cal!==false); };
+$('bFree').onclick=()=>{ st.free=!st.free; $('bFree').classList.toggle('on',st.free); if(st.free&&st.cmp) setCmp(0); if(!st.free){ st.yaw=st.pitch=st.dist=0; } };
+function setCmp(f){ st.cmp=f; const on=!!f; $('ref').style.display=on?'block':'none'; $('divider').style.display=on?'block':'none'; $('tagL').style.display=$('tagR').style.display=on?'block':'none'; $('bCmp120').classList.toggle('on',f===120); $('bCmp210').classList.toggle('on',f===210);
+  if(on){ $('ref').src='ref_'+f+'.jpg'; st.frame=f; st.play=false; st.free=false; $('bFree').classList.remove('on'); st.yaw=st.pitch=st.dist=0; $('frame').value=f; $('frameV').textContent=f; $('bPlay').textContent='▶ Кино'; $('bPlay').classList.remove('on'); $('tod').value=0; st.tod=0; $('todV').textContent='день'; setDivider(0.5); } }
+let divX=0.5; function setDivider(x){ divX=Math.max(0.02,Math.min(0.98,x)); $('divider').style.left=(divX*100)+'%'; $('ref').style.clipPath=`inset(0 ${(1-divX)*100}% 0 0)`; }
+$('bCmp120').onclick=()=>setCmp(st.cmp===120?0:120); $('bCmp210').onclick=()=>setCmp(st.cmp===210?0:210);
+// касания: шторка в режиме сравнения, орбита в свободной камере
+let touch=null; const wrap=$('wrap');
+wrap.addEventListener('pointerdown',e=>{ touch={x:e.clientX,y:e.clientY,yaw:st.yaw,pitch:st.pitch}; wrap.setPointerCapture(e.pointerId); if(st.cmp){ const r=wrap.getBoundingClientRect(); setDivider((e.clientX-r.left)/r.width); } });
+wrap.addEventListener('pointermove',e=>{ if(!touch) return; const r=wrap.getBoundingClientRect(); if(st.cmp){ setDivider((e.clientX-r.left)/r.width); return; } if(st.free){ st.yaw=touch.yaw+(e.clientX-touch.x)/r.width*3.0; st.pitch=touch.pitch+(e.clientY-touch.y)/r.height*1.5; } });
+wrap.addEventListener('pointerup',()=>{ touch=null; }); wrap.addEventListener('pointercancel',()=>{ touch=null; });
+wrap.addEventListener('wheel',e=>{ if(st.free){ st.dist=Math.max(-1.2,Math.min(1.5,st.dist+e.deltaY*0.001)); e.preventDefault(); } },{passive:false});
+</script>
+</body>
+</html>
