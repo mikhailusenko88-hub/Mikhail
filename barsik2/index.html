@@ -42,7 +42,7 @@
   <div class="row"><label>Шерсть</label><input id="furD" type="range" min="10" max="100" value="100"><span class="val" id="furV">100%</span></div>
   <div class="row"><label>Ветер</label><input id="wind" type="range" min="0" max="300" value="100"><span class="val" id="windV">1.0</span></div>
   <div class="note" id="resV"></div>
-  <div class="note">Крутить — одним пальцем, приближать — двумя. Кнопка «Налёт» — прозрачные оболочки над шерстью, которые загораются там, где свет проходит сквозь неё (контровое солнце, пух на краю). Кнопка «Стало/Было» — новое освещение (тень от солнца, свет под кронами, затенение в складках, свет в воздухе, моргание) против первой версии. Всё на диодах, без лучей в кадре.</div>
+  <div class="note">Крутить — одним пальцем, приближать — двумя. Кнопка «Налёт» — прозрачные «молекулы» поверх всего мира: шерсть кота, пух на земле и мхе, стволы, роса на траве; загораются там, где свет проходит сквозь (контровое солнце). Ползунок — сила, 0% = выключено. Кнопка «Стало/Было» — новое освещение (тень от солнца, свет под кронами, затенение в складках, свет в воздухе, моргание) против первой версии. Всё на диодах, без лучей в кадре.</div>
 </div>
 <script>
 'use strict';
@@ -77,6 +77,10 @@ vec3 skyCol(vec3 d, bool withSun){ float y=d.y; vec3 c; if(y>=0.0) c=mix(uHor,uZ
 uniform vec4 uOcc[4]; uniform int uMode; uniform sampler2D uCanopyT; uniform vec4 uCanopyRect; uniform mat4 uLightVP; uniform mediump sampler2DShadow uShadowT; uniform int uShadowOn;
 vec2 canopy(vec3 wp){ if(uMode==0) return vec2(1.0); vec2 uv=(wp.xz-uCanopyRect.xy)*uCanopyRect.zw; if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0) return vec2(1.0); return texture(uCanopyT,uv).rg; }
 float occShadow(vec3 p);
+float hash3(vec3 p){ p=fract(p*0.3183099+vec3(0.1,0.2,0.3)); p*=17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
+float vnoise(vec3 x){ vec3 i=floor(x); vec3 f=fract(x); f=f*f*(3.0-2.0*f);
+  return mix(mix(mix(hash3(i),hash3(i+vec3(1,0,0)),f.x),mix(hash3(i+vec3(0,1,0)),hash3(i+vec3(1,1,0)),f.x),f.y),
+             mix(mix(hash3(i+vec3(0,0,1)),hash3(i+vec3(1,0,1)),f.x),mix(hash3(i+vec3(0,1,1)),hash3(i+vec3(1,1,1)),f.x),f.y),f.z); }
 float shadowAt(vec3 wp, vec3 n){ if(uMode==0||uShadowOn==0) return occShadow(wp); vec3 no=n*(dot(n,uSun)>=0.0?1.0:-1.0); vec4 lp=uLightVP*vec4(wp+no*0.006,1.0); vec3 sc=lp.xyz/lp.w*0.5+0.5; if(sc.x<0.0||sc.x>1.0||sc.y<0.0||sc.y>1.0||sc.z>1.0) return 1.0; float d=0.75/1024.0; float z=sc.z-0.0012; float s=texture(uShadowT,vec3(sc.xy+vec2(-d,-d),z))+texture(uShadowT,vec3(sc.xy+vec2(d,-d),z))+texture(uShadowT,vec3(sc.xy+vec2(-d,d),z))+texture(uShadowT,vec3(sc.xy+vec2(d,d),z)); return s*0.25; }
 float occShadow(vec3 p){ float s=1.0; for(int i=0;i<4;i++){ vec4 sp=uOcc[i]; if(sp.w<=0.0) continue; vec3 oc=sp.xyz-p; float tc=dot(oc,uSun); if(tc>0.0){ float d2=dot(oc,oc)-tc*tc; float r=sp.w; s*=smoothstep(r*r*0.55,r*r*1.3,d2); } } return s; }
 `;
@@ -84,7 +88,7 @@ const VS_DIODE=`#version 300 es
 precision highp float; precision highp int;
 layout(location=0) in vec3 aPos; layout(location=1) in vec2 aNrm; layout(location=2) in vec3 aAlb; layout(location=3) in float aSunD; layout(location=4) in float aKv; layout(location=5) in float aS; layout(location=6) in float aFlags;
 layout(location=7) in vec4 aInst; layout(location=8) in float aIScale;
-uniform mat4 uVP; uniform float uPosScale; uniform float uTime; uniform float uWindAmp; uniform float uWiden; uniform int uDeform; uniform vec3 uHero;
+uniform mat4 uVP; uniform float uPosScale; uniform float uTime; uniform float uWindAmp; uniform float uWiden; uniform int uDeform; uniform vec3 uHero; uniform float uShellH;
 out vec3 vWp; out vec3 vN; out vec3 vAlb; out float vSunD; out float vKv; flat out int vFlags; out float vS;
 vec3 octDec(vec2 e){ vec3 v=vec3(e.xy,1.0-abs(e.x)-abs(e.y)); if(v.z<0.0){ vec2 s=vec2(v.x>=0.0?1.0:-1.0, v.y>=0.0?1.0:-1.0); v.xy=(1.0-abs(v.yx))*s; } return normalize(v); }
 void main(){ vec3 p=aPos*uPosScale; int fl=int(aFlags+0.5); float c=cos(aInst.w), s=sin(aInst.w); vec3 n=octDec(aNrm);
@@ -93,11 +97,12 @@ void main(){ vec3 p=aPos*uPosScale; int fl=int(aFlags+0.5); float c=cos(aInst.w)
   p*=aIScale; p=vec3(c*p.x+s*p.z, p.y, -s*p.x+c*p.z); n=vec3(c*n.x+s*n.z, n.y, -s*n.x+c*n.z);
   vec3 wp=p+aInst.xyz;
   if(uDeform==1 && aS>0.0 && uHero.z>0.5){ float dx=wp.x-uHero.x, dz=wp.z-uHero.y; float d=sqrt(dx*dx+dz*dz)+1e-4; if(d<0.42){ float k=(0.42-d)/0.42; k=k*k; vec3 disp=vec3(dx/d*k*0.2,-k*0.22,dz/d*k*0.2); wp+=disp*aS*aS; } }
+  wp+=n*uShellH;
   vWp=wp; vN=n; vAlb=aAlb; vSunD=aSunD; vKv=aKv; vFlags=fl; vS=aS; gl_Position=uVP*vec4(wp,1.0); }`;
 const FS_DIODE=`#version 300 es
 precision highp float; precision highp int;
 in vec3 vWp; in vec3 vN; in vec3 vAlb; in float vSunD; in float vKv; flat in int vFlags; in float vS;
-uniform float uEnc; uniform int uGround; uniform vec3 uFarAlb; uniform vec2 uFarSK; uniform int uUseCanopy;
+uniform float uEnc; uniform int uGround; uniform vec3 uFarAlb; uniform vec2 uFarSK; uniform int uUseCanopy; uniform float uDew;
 out vec4 o;
 ${COMMON}
 void main(){ vec3 n=normalize(vN); bool front=dot(n,uCam-vWp)>=0.0; vec3 ns=front?n:-n; bool sunFront=(vFlags&2)!=0;
@@ -109,7 +114,29 @@ void main(){ vec3 n=normalize(vN); bool front=dot(n,uCam-vWp)>=0.0; vec3 ns=fron
     vec3 h=normalize(v+uSun); float nh=max(dot(ns,h),0.0), vh=max(dot(v,h),0.0); float a=0.1024; float spec=fres(vh,0.035)*ggxD(nh,a)*ggxG1(nv,a)*ggxG1(max(ndl,1e-4),a)/(4.0*nv+1e-6); col+=uSunCol*vis*sh*spec*0.6; }
   else col=sunL*trans*0.8/PI;
   col+=alb*ambientSky(ns)*kv*(1.0+0.15*pow(1.0-nv,2.0)); col+=trans*vec3(0.17,0.26,0.06)*uSkyK*0.35*kv;
+  // роса: капли-зеркальца на кончиках, вспыхивают, когда солнце за травой
+  if(uDew>0.0 && vS>0.55){ vec3 cell=floor(vWp*420.0); float r=hash3(cell); if(r>0.975){ vec3 cp=(cell+0.5)/420.0; float dr=length(vWp-cp)*420.0; float drop=1.0-smoothstep(0.25,0.5,dr); vec3 rf=reflect(-uSun,ns); float gl=pow(max(dot(rf,v),0.0),60.0)+0.6*pow(max(dot(-uSun,v),0.0),8.0)*(1.0-nv); col+=uSunCol*sh*vec3(1.0,0.98,0.9)*gl*drop*uDew*0.9*vS; } }
   o=vec4(col*uEnc,1.0); }`;
+// --- «налёт» мира: пух на земле, мхе, камнях и стволах (те же диоды, сдвинутые по нормали) ---
+const FS_SHELL_D=`#version 300 es
+precision highp float; precision highp int;
+in vec3 vWp; in vec3 vN; in vec3 vAlb; in float vSunD; in float vKv; flat in int vFlags; in float vS;
+uniform float uEnc; uniform float uT; uniform float uShellK; uniform vec3 uFuzz; uniform float uFreq; uniform float uFar; uniform float uRimK;
+out vec4 o;
+${COMMON}
+void main(){ vec3 n=normalize(vN); vec3 v=normalize(uCam-vWp); if(dot(n,v)<0.0) n=-n; float nv=max(dot(n,v),0.0);
+  float dist=length(vWp-uCam); float df=1.0-smoothstep(uFar*0.6,uFar,dist); if(df<0.02) discard;
+  float m=vnoise(vWp*uFreq)*0.65+vnoise(vWp*uFreq*3.1)*0.35; float cover=smoothstep(uT-0.22,uT+0.06,m)*df; if(cover<0.02) discard;
+  vec2 cv=canopy(vWp); float sunD=vSunD*mix(cv.r,1.0,0.2); float kv=vKv*mix(1.0,cv.g,0.5);
+  vec3 alb=vAlb*uFuzz; float sh=shadowAt(vWp+n*0.02,n);
+  float ndl=dot(n,uSun); float rim=pow(1.0-nv,1.4); float back=clamp(dot(-uSun,v),0.0,1.0);
+  // просвет сквозь пух на контровом + бархат на прямом свете + небо на кончиках
+  float through=rim*(0.3+0.7*back)*(0.3+0.7*uT)*uRimK;
+  vec3 col=uSunCol*sunD*sh*(min(alb,vec3(0.7))*vec3(1.1,0.95,0.6)+vec3(0.05,0.04,0.02))*through*1.8;
+  col+=uSunCol*sunD*sh*alb*clamp((ndl+0.9)/1.9,0.0,1.0)*0.12*uT;
+  col+=alb*ambientSky(n)*kv*0.4*uT;
+  float alpha=cover*(0.06+0.25*rim*uRimK)*(0.4+0.6*uT);
+  o=vec4(col*uEnc*uShellK*cover, alpha*uShellK); }`;
 // --- кот: кожа / нос / шарф (скиннинг двумя костями) ---
 const SKIN_FN=`
 uniform mat4 uBones[11];
@@ -184,10 +211,6 @@ void main(){ int a=int(aBA+0.5), b=int(aBB+0.5); vec3 lp=aPos*uPosScale; vec3 n0
 const FS_SHELL=`#version 300 es
 precision highp float; in vec3 vWp; in vec3 vN; in vec3 vCol; in float vFur; in float vAO; in vec3 vLp; uniform float uEnc; uniform float uT; uniform float uShellK; out vec4 o;
 ${COMMON}
-float hash3(vec3 p){ p=fract(p*0.3183099+vec3(0.1,0.2,0.3)); p*=17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
-float vnoise(vec3 x){ vec3 i=floor(x); vec3 f=fract(x); f=f*f*(3.0-2.0*f);
-  return mix(mix(mix(hash3(i),hash3(i+vec3(1,0,0)),f.x),mix(hash3(i+vec3(0,1,0)),hash3(i+vec3(1,1,0)),f.x),f.y),
-             mix(mix(hash3(i+vec3(0,0,1)),hash3(i+vec3(1,0,1)),f.x),mix(hash3(i+vec3(0,1,1)),hash3(i+vec3(1,1,1)),f.x),f.y),f.z); }
 void main(){ if(vFur<0.5) discard; vec3 n=normalize(vN); vec3 v=normalize(uCam-vWp); if(dot(n,v)<0.0) n=-n; float nv=max(dot(n,v),0.0);
   // «молекулы»: где волоски — там плёнка, выше по слою их всё меньше
   float m=vnoise(vLp*650.0)*0.7+vnoise(vLp*1900.0)*0.3; float cover=smoothstep(uT-0.25,uT+0.05,m); if(cover<0.02) discard;
@@ -297,7 +320,7 @@ let G={};
 function ground(x,z){ return 0.35*Math.sin(0.07*x+0.3)*Math.cos(0.055*z)+0.18*Math.sin(0.13*x-0.09*z+1.0)+0.09*Math.sin(0.25*x+0.19*z+2.0)+0.0016*Math.max(0,-z-18)**2; }
 function init(){
   const h=S.hdr, ab=S.ab, base=S.base;
-  G.pDiode=prog(VS_DIODE,FS_DIODE); G.pSkin=prog(VS_SKIN,FS_CAT); G.pMesh=prog(VS_MESH,FS_CAT); G.pFur=prog(VS_FUR,FS_FUR); G.pShell=prog(VS_SHELL,FS_SHELL); G.pEye=prog(VS_EYE,FS_EYE); G.pLine=prog(VS_LINE,FS_LINE); G.pSky=prog(VS_SKY,FS_SKY); G.pDof=prog(VS_Q,FS_DOF); G.pDown=prog(VS_Q,FS_DOWN); G.pBlur=prog(VS_Q,FS_BLUR); G.pFinal=prog(VS_Q,FS_FINAL);
+  G.pDiode=prog(VS_DIODE,FS_DIODE); G.pSkin=prog(VS_SKIN,FS_CAT); G.pMesh=prog(VS_MESH,FS_CAT); G.pFur=prog(VS_FUR,FS_FUR); G.pShell=prog(VS_SHELL,FS_SHELL); G.pShellD=prog(VS_DIODE,FS_SHELL_D); G.pEye=prog(VS_EYE,FS_EYE); G.pLine=prog(VS_LINE,FS_LINE); G.pSky=prog(VS_SKY,FS_SKY); G.pDof=prog(VS_Q,FS_DOF); G.pDown=prog(VS_Q,FS_DOWN); G.pBlur=prog(VS_Q,FS_BLUR); G.pFinal=prog(VS_Q,FS_FINAL);
   G.pSkinSh=prog(VS_SKIN,FS_EMPTY); G.pMeshSh=prog(VS_MESH,FS_EMPTY); G.pFurSh=prog(VS_FUR,FS_EMPTY); G.pVol=prog(VS_Q,FS_VOL);
   G.sun=h.sun; G.suncol=h.suncol; G.sunrad=h.sunrad; G.exposure=h.exposure; G.TR=h.TR;
   const mkBuf=(target,ab_,off,len)=>{ const b=gl.createBuffer(); gl.bindBuffer(target,b); gl.bufferData(target,new Uint8Array(ab_,off,len),gl.STATIC_DRAW); return b; };
@@ -421,7 +444,7 @@ function frame(now,once){ if(!once) requestAnimationFrame(frame);
   gl.bindFramebuffer(gl.FRAMEBUFFER,FB.fMS); gl.viewport(0,0,W,H); gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LESS); gl.disable(gl.BLEND); gl.disable(gl.CULL_FACE); gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
   { const pr=G.pSky; gl.useProgram(pr.p); setCommon(pr); gl.uniformMatrix4fv(pr.u.uInvVP,false,IVP); gl.depthMask(false); gl.bindVertexArray(G.quad); gl.drawArrays(gl.TRIANGLES,0,3); gl.depthMask(true); }
   // ---- диоды: земля, ячейки, деревья ----
-  const pr=G.pDiode; gl.useProgram(pr.p); setCommon(pr); gl.uniformMatrix4fv(pr.u.uVP,false,VP); gl.uniform1f(pr.u.uTime,t); gl.uniform3f(pr.u.uHero,cat.x,cat.z,1.0);
+  const pr=G.pDiode; gl.useProgram(pr.p); setCommon(pr); gl.uniformMatrix4fv(pr.u.uVP,false,VP); gl.uniform1f(pr.u.uTime,t); gl.uniform3f(pr.u.uHero,cat.x,cat.z,1.0); gl.uniform1f(pr.u.uShellH,0.0); gl.uniform1f(pr.u.uDew,(st.mode===1&&st.shell)?(st.shellK??1):0.0);
   gl.uniform3f(pr.u.uFarAlb,0.17,0.26,0.06); gl.uniform2f(pr.u.uFarSK,0.42,0.7);
   gl.uniform1i(pr.u.uUseCanopy,1);
   gl.uniform1i(pr.u.uGround,1); gl.uniform1f(pr.u.uPosScale,1.0); gl.uniform1f(pr.u.uWindAmp,0.0); gl.uniform1f(pr.u.uWiden,1.0); gl.uniform1i(pr.u.uDeform,0); gl.bindVertexArray(G.ground.vao); gl.drawElementsInstanced(gl.TRIANGLES,G.ground.ni,gl.UNSIGNED_INT,0,1);
@@ -437,9 +460,10 @@ function frame(now,once){ if(!once) requestAnimationFrame(frame);
       gl.bindBuffer(gl.ARRAY_BUFFER,p.inst); gl.bufferData(gl.ARRAY_BUFFER,buf.subarray(0,n),gl.DYNAMIC_DRAW); const nb=Math.floor(p.blades*T.f); const count=T.f>=1?p.ni:nb*21; gl.uniform1f(pr.u.uWiden,T.w); gl.uniform1i(pr.u.uDeform,k<2?1:0);
       gl.drawElementsInstanced(gl.TRIANGLES,count,gl.UNSIGNED_SHORT,0,list.length); bladesDrawn+=nb*list.length; } }
   gl.uniform1f(pr.u.uPosScale,S.hdr.treeScale); gl.uniform1f(pr.u.uWindAmp,0.0); gl.uniform1f(pr.u.uWiden,1.0); gl.uniform1i(pr.u.uDeform,0);
+  G.treeDrawn=G.trees.map(()=>0);
   { const lists=G.trees.map(()=>[]); for(const ti of G.treeInst){ if(!inFrustum(planes,ti.x,ti.y+4*ti.sc,ti.z,4.5*ti.sc)) continue; const d=Math.hypot(ti.x-eye[0],ti.z-eye[2]); if(d>160) continue; lists[ti.v].push(ti); }
     for(let v=0;v<G.trees.length;v++){ const L=lists[v]; if(!L.length) continue; let n=0; const buf=G.instScratch; for(const ti of L){ buf[n++]=ti.x; buf[n++]=ti.y; buf[n++]=ti.z; buf[n++]=ti.yaw; buf[n++]=ti.sc; }
-      let pi2=0; for(const part of [G.trees[v].trunk,G.trees[v].leaves]){ gl.uniform1i(pr.u.uUseCanopy,pi2===0?1:0); pi2++; gl.bindVertexArray(part.vao); gl.bindBuffer(gl.ARRAY_BUFFER,part.inst); gl.bufferData(gl.ARRAY_BUFFER,buf.subarray(0,n),gl.DYNAMIC_DRAW); gl.drawElementsInstanced(gl.TRIANGLES,part.ni,gl.UNSIGNED_SHORT,0,L.length); } } }
+      G.treeDrawn[v]=L.length; let pi2=0; for(const part of [G.trees[v].trunk,G.trees[v].leaves]){ gl.uniform1i(pr.u.uUseCanopy,pi2===0?1:0); pi2++; gl.bindVertexArray(part.vao); gl.bindBuffer(gl.ARRAY_BUFFER,part.inst); gl.bufferData(gl.ARRAY_BUFFER,buf.subarray(0,n),gl.DYNAMIC_DRAW); gl.drawElementsInstanced(gl.TRIANGLES,part.ni,gl.UNSIGNED_SHORT,0,L.length); } } }
   // ---- кот ----
   const canopy=0.62;
   { const ps=G.pSkin; gl.useProgram(ps.p); setCommon(ps); gl.uniformMatrix4fv(ps.u.uVP,false,VP); gl.uniformMatrix4fv(ps.u.uBones,false,bonesF); gl.uniform1f(ps.u.uPosScale,G.catScale); gl.uniform1i(ps.u.uMat,0); gl.uniform1f(ps.u.uCanopy,canopy); gl.bindVertexArray(G.skin.vao); gl.drawElements(gl.TRIANGLES,G.skin.ni,gl.UNSIGNED_INT,0); }
@@ -454,6 +478,16 @@ function frame(now,once){ if(!once) requestAnimationFrame(frame);
   { const pf=G.pFur; gl.useProgram(pf.p); setCommon(pf); gl.uniformMatrix4fv(pf.u.uVP,false,VP); gl.uniformMatrix4fv(pf.u.uBones,false,bonesF); gl.uniform1f(pf.u.uPosScale,G.catScale); gl.uniform1f(pf.u.uPixWorld,2*Math.tan(fov/2)/H); gl.uniform3fv(pf.u.uCamPos,eye); gl.uniform1f(pf.u.uTime,t); gl.uniform1f(pf.u.uCanopy,canopy);
     if(st.mode===1 && FB.samples>0) gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
     gl.bindVertexArray(G.fur.vao); gl.drawElementsInstanced(gl.TRIANGLES,18,gl.UNSIGNED_SHORT,0,Math.floor(G.fur.n*st.furD)); gl.disable(gl.SAMPLE_ALPHA_TO_COVERAGE); }
+  // ---- «налёт» мира: земля и мох (4 слоя до 3 см), камни, стволы (3 слоя до 2 см) ----
+  if(st.mode===1 && st.shell){ const pq=G.pShellD; gl.useProgram(pq.p); setCommon(pq); gl.uniformMatrix4fv(pq.u.uVP,false,VP); gl.uniform1f(pq.u.uTime,t); gl.uniform3f(pq.u.uHero,cat.x,cat.z,0.0); gl.uniform1f(pq.u.uWindAmp,0.0); gl.uniform1f(pq.u.uWiden,1.0); gl.uniform1i(pq.u.uDeform,0); gl.uniform1f(pq.u.uShellK,st.shellK??1);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
+    const layers=(vao,ni,type,inst,NL,HM,freq,far,fuzz,rimK)=>{ gl.uniform1f(pq.u.uRimK,rimK); gl.uniform1f(pq.u.uFreq,freq); gl.uniform1f(pq.u.uFar,far); gl.uniform3fv(pq.u.uFuzz,fuzz); gl.bindVertexArray(vao); for(let i=0;i<NL;i++){ const tt=(i+1)/NL; gl.uniform1f(pq.u.uT,tt); gl.uniform1f(pq.u.uShellH,HM*tt); gl.drawElementsInstanced(gl.TRIANGLES,ni,type,0,inst); } };
+    gl.uniform1f(pq.u.uPosScale,1.0);
+    layers(G.ground.vao,G.ground.ni,gl.UNSIGNED_INT,1,3,0.018,220,9,[1.0,1.12,0.75],0.25);
+    for(const prp of G.props) layers(prp.vao,prp.ni,gl.UNSIGNED_INT,1,4,0.025,260,14,[1.0,1.1,0.8],0.8);
+    gl.uniform1f(pq.u.uPosScale,S.hdr.treeScale);
+    for(let v=0;v<G.trees.length;v++){ if(!G.treeDrawn[v]) continue; layers(G.trees[v].trunk.vao,G.trees[v].trunk.ni,gl.UNSIGNED_SHORT,G.treeDrawn[v],3,0.02,220,18,[0.95,1.08,0.8],0.9); }
+    gl.depthMask(true); gl.disable(gl.BLEND); }
   // ---- «налёт»: 6 прозрачных оболочек над кожей, изнутри наружу ----
   if(st.mode===1 && st.shell){ const pq=G.pShell; gl.useProgram(pq.p); setCommon(pq); gl.uniformMatrix4fv(pq.u.uVP,false,VP); gl.uniformMatrix4fv(pq.u.uBones,false,bonesF); gl.uniform1f(pq.u.uPosScale,G.catScale); gl.uniform1f(pq.u.uShellK,st.shellK||1);
     gl.enable(gl.BLEND); gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); gl.disable(gl.CULL_FACE); gl.bindVertexArray(G.skin.vao);
