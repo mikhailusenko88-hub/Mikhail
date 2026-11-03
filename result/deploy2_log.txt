@@ -2,32 +2,32 @@
    служба голоса: режим для бота уже есть
    код: Альбина уже подключена
 == ГОТОВО: «Почему так?» теперь говорит голосом Альбины (мягкий тон).
-== 03.11 11:27 Голос «Альбина» для «Почему так?» (back)
+== 03.11 12:04 Голос «Альбина» для «Почему так?» (back)
 == 1/6 Ищу бота «Почему так?»
    /tmp/root/root/pochemu-bot — «Почему так?»
    голос в config.json: ru-RU-DmitryNeural
 == Готово: следующий ролик выйдет прежним голосом.
-== 03.11 11:27 Голос «Альбина» для «Почему так?» (on)
+== 03.11 12:04 Голос «Альбина» для «Почему так?» (on)
 == 1/6 Ищу бота «Почему так?»
    /tmp/root/root/pochemu-bot — «Почему так?»
    голос в config.json: albina
 == Готово: следующий ролик выйдет голосом Альбины.
 total 2448
-drwxr-xr-x 2 runner runner    4096 Nov  3 11:27 .
-drwxr-xr-x 3 runner root      4096 Nov  3 11:26 ..
--rw-r--r-- 1 root   root   2496133 Nov  3 11:27 proba-albina.mp4
+drwxr-xr-x 2 runner runner    4096 Nov  3 12:03 .
+drwxr-xr-x 3 runner root      4096 Nov  3 12:02 ..
+-rw-r--r-- 1 root   root   2496391 Nov  3 12:04 proba-albina.mp4
                total        used        free      shared  buff/cache   available
-Mem:           15983        3677        8632          45        4064       12306
+Mem:           15983        3638        8670          46        4065       12344
 Swap:           3071           0        3071
 ● multik-tts.service - Multik narrator voice (Silero ru_albina)
      Loaded: loaded (/etc/systemd/system/multik-tts.service; enabled; preset: enabled)
-     Active: active (running) since Tue 2026-11-03 11:26:39 UTC; 1min 4s ago
- Invocation: 0a72d4ece9704981b7cb860376884628
-   Main PID: 3867 (python)
+     Active: active (running) since Tue 2026-11-03 12:03:03 UTC; 1min 6s ago
+ Invocation: 56df4fce796b460cbfda024d77f4b09a
+   Main PID: 3863 (python)
       Tasks: 17 (limit: 17436)
      Memory: 2.4G (peak: 2.5G)
-        CPU: 23.463s
+        CPU: 24.681s
      CGroup: /system.slice/multik-tts.service
-             └─3867 /opt/multik-tts/venv/bin/python /opt/multik-tts/server.py
+             └─3863 /opt/multik-tts/venv/bin/python /opt/multik-tts/server.py
 
-Nov 03 11:26:57 runnervmnwato python[3867]: озвучено за 0.6 с: Поэтому лёд примерно на одну десятую легче такого же объёма
+Nov 03 12:03:21 runnervmnwato python[3863]: озвучено за 0.7 с: Поэтому лёд примерно на одну десятую легче такого же объёма
