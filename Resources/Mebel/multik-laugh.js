@@ -28,6 +28,8 @@
     const list = L.list().filter(x => !/\+$/.test(x.id)); if (!list.length) return null;
     const c = (lib.characters || {})[ln.who] || {};
     if (c.laughId && L.byId(c.laughId)) return c.laughId;
+    const nm = String((c.spec && c.spec.name) || '').trim().toLowerCase(), hd = (L.bank && L.bank.heroes) || {}; // выбранные на пробах (Барсик — F9, Рон — M4)
+    if (nm && hd[nm] && L.byId(hd[nm])) return hd[nm];
     if (ln.who === '?') { const K = list.filter(x => x.group === 'K' && x.style === 'giggle'); return (K[0] || list[0]).id; }
     const fx = ln.fx || {}, id = fx.id, t = L.targetF0(c.spec);
     const want = id === 'squeaky' || id === 'chipmunk' || id === 'baby' ? 'giggle' : (id === 'giant' || id === 'monster' || id === 'dragon' || id === 'deep') ? 'belly' : null;

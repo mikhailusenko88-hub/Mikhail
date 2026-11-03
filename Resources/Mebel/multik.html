@@ -823,7 +823,8 @@ const VP = {
     document.getElementById('vpRecDel').style.display = c.laugh ? '' : 'none'; document.getElementById('vpRecMsg').textContent = c.laugh ? 'Смеётся записанным смехом.' : 'Смеётся смехом из банка, своим тембром (или своим голосом, если банка нет).'; document.getElementById('vpRec').textContent = this.recording ? '⏹ Стоп' : '🎙 Записать смех';
     this.laughList(); },
   async laughList() { const sel = document.getElementById('vpLaughSel'); if (!window.MKLaugh) return; await MKLaugh.load(); const list = MKLaugh.list(); const GN = { K: 'детские', F: 'женские', M: 'мужские', B: 'басистые' };
-    sel.innerHTML = '<option value="">автоматически (по голосу)</option>' + list.map(x => `<option value="${esc(x.id)}">${esc(x.id)} — ${esc(x.name || '')} (${esc(GN[x.group] || x.group)})</option>`).join(''); sel.value = this.cur.laughId || ''; },
+    const c0 = Object.assign({}, Lib.data.characters[this.who] || {}); delete c0.laughId; const auto = MKLaugh.idFor({ who: this.who, fx: Object.assign({}, MK.fxFor(Lib.data, this.who), { k: this.cur.k }) }, Object.assign({}, Lib.data, { characters: Object.assign({}, Lib.data.characters, { [this.who]: c0 }) }));
+    sel.innerHTML = `<option value="">по умолчанию${auto ? ' (' + esc(auto) + ')' : ''}</option>` + list.map(x => `<option value="${esc(x.id)}">${esc(x.id)} — ${esc(x.name || '')} (${esc(GN[x.group] || x.group)})</option>`).join(''); sel.value = this.cur.laughId || ''; },
   pickLaugh(id) { this.cur.laughId = id || ''; this.laugh(); },
   async rec() { const who = this.who, key = 'rec-laugh-' + MK.hash32(String(who)).toString(36);
     if (this.recording) { clearTimeout(this.recT); this.recording = false; await Native.call('recStop', {}); Lib.data.characters[who].laugh = key; await Lib.save(); this.recUI(); this.laugh(); return; }
