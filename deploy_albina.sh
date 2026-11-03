@@ -120,6 +120,29 @@ if [ $((mem + sw)) -lt 2500 ] && [ ! -f /swapfile-tts ] && [ "$(df -BM --output=
 fi
 [ -s $T/server.py ] || dl "$MULTIK/server.py" $T/server.py || { echo "!! не скачался server.py"; exit 1; }
 dl "$RAW/albina_worker.py" $T/albina_worker.py || { echo "!! не скачался albina_worker.py"; exit 1; }
+
+# режим «bot» в службе голоса: ударения как в выбранном пробнике + подъём в вопросах (Мультики не меняются)
+if dl "$RAW/patch_server.py" /tmp/albina_patch_server.py; then
+  cp -p $T/server.py $T/server.py.bak-$STAMP
+  OUT=$(python3 /tmp/albina_patch_server.py $T/server.py); echo "$OUT"
+  if echo "$OUT" | grep -q "добавлен"; then
+    if ! $T/venv/bin/python -m py_compile $T/server.py; then
+      cp -p $T/server.py.bak-$STAMP $T/server.py; echo "   ! server.py не прошёл проверку — вернул как было"
+    elif systemctl is-active -q multik-tts 2>/dev/null; then
+      echo "   перезапускаю службу голоса (до 3 минут)…"
+      systemctl restart multik-tts
+      ok=0; for i in $(seq 1 60); do curl -fs localhost:8095/health 2>/dev/null | grep -q '"ready": true' && { ok=1; break; }; sleep 3; done
+      if [ $ok = 1 ]; then echo "   служба голоса снова работает"
+      else
+        echo "   ! служба не поднялась с новым режимом — возвращаю прежний server.py"
+        cp -p $T/server.py.bak-$STAMP $T/server.py; systemctl restart multik-tts
+        for i in $(seq 1 60); do curl -fs localhost:8095/health 2>/dev/null | grep -q '"ready": true' && break; sleep 3; done
+      fi
+    fi
+  fi
+else
+  echo "   ! не скачался patch_server.py — служба голоса без изменений"
+fi
 du -sh $T 2>/dev/null | awk '{print "   занимает на диске: "$1}'
 
 FAIL=0
@@ -149,7 +172,7 @@ for D in "${BOTS[@]}"; do
   set_voice "$D" albina || { cp -p "$D/config.json.bak-$STAMP" "$D/config.json"; echo "!! config.json не записался"; FAIL=1; continue; }
 
   echo "== 6/6 Пробный ролик (ничего не выкладывается, 2–5 минут)"
-  N0=$(wc -l < "$D/bot.log" 2>/dev/null || echo 0)
+  N0=0; [ -f "$D/bot.log" ] && N0=$(wc -l < "$D/bot.log")
   if (cd "$D" && timeout 1200 "$PY" run_daily.py --test > /tmp/albina_run.txt 2>&1); then
     tail -n +$((N0 + 1)) "$D/bot.log" 2>/dev/null | grep -E "Сценарий|Озвучка|голос загружен|ударения|прежним|Ролик готов" | cut -c21-230
     V=$(ls -t "$D"/out/*.mp4 2>/dev/null | head -1)

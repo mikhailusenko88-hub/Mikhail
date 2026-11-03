@@ -61,7 +61,7 @@ def is_albina(voice):
 
 def parse(voice):
     """albina | albina@slow,low | albina:ru_zinaida@dry  ->  (speaker, soft, rate, pitch)
-    (@nomono — снимать ударения в односложных словах; работает только через свой процесс)"""
+    (@plain — разметка ударений как у «Мультиков», без режима «bot»)"""
     name, _, opts = str(voice).partition("@")
     spk = name.split(":", 1)[1].strip() if ":" in name else "ru_albina"
     if not spk.startswith("ru_"):
@@ -426,11 +426,11 @@ def _worker():
     return p
 
 
-def _synth(text, spk, soft, rate, pitch, wav, nomono=False):
-    q = {"text": text, "speaker": spk, "soft": soft, "rate": rate, "pitch": pitch}
-    if nomono:
-        q["nomono"] = True
-    if not nomono and _st["mode"] in (None, "service") and _service_ready():
+def _synth(text, spk, soft, rate, pitch, wav, style="bot", qpitch=None):
+    q = {"text": text, "speaker": spk, "soft": soft, "rate": rate, "pitch": pitch, "style": style}
+    if qpitch is not None:
+        q["qpitch"] = qpitch
+    if qpitch is None and _st["mode"] in (None, "service") and _service_ready():
         req = urllib.request.Request(SERVICE + "/tts", data=json.dumps(q, ensure_ascii=False).encode(),
                                      headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=300) as r:
@@ -439,8 +439,14 @@ def _synth(text, spk, soft, rate, pitch, wav, nomono=False):
             raise AlbinaFailed("служба вернула пустой звук")
         wav.write_bytes(data)
         _st["mode"] = "service"
-        return ""
-    if UNIT.exists() and not nomono:
+        try:                                   # какой текст с ударениями ушёл в голос — для лога
+            req = urllib.request.Request(SERVICE + "/mark", data=json.dumps(q, ensure_ascii=False).encode(),
+                                         headers={"Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return json.load(r).get("marked") or ""
+        except Exception:
+            return ""
+    if UNIT.exists() and qpitch is None:
         raise AlbinaFailed("служба голоса multik-tts не отвечает")
     _st["mode"] = "worker"
     if not (_st["proc"] and _st["proc"].poll() is None) and _mem_free_mb() < 3200:
@@ -469,7 +475,9 @@ def _to_audio(wav, path):
 def say(text, voice, path):
     path = Path(path)
     spk, soft, rate, pitch = parse(voice)
-    nomono = "nomono" in str(voice).lower()
+    opts = str(voice).lower().partition("@")[2].split(",")
+    style = "" if "plain" in opts else "bot"
+    qpitch = next((o[2:] for o in opts if o.startswith("q=")), None)   # только для проб: q=high, q=x-high, q=
     t = prep(text)
     if not re.search(r"[А-Яа-яЁё]", t):
         raise AlbinaFailed("в фразе нет русских слов")
@@ -478,7 +486,7 @@ def say(text, voice, path):
     for k in range(2):
         try:
             t0 = time.time()
-            marked = _synth(t, spk, soft, rate, pitch, wav, nomono)
+            marked = _synth(t, spk, soft, rate, pitch, wav, style, qpitch)
             _to_audio(wav, path)
             _st["last"] = marked or t
             _st["n"] += 1
@@ -575,9 +583,11 @@ def selftest(text="Почему так? Это проверка голоса А�
                               "default=nw=1:nk=1", out], capture_output=True, text=True).stdout.strip()[:4]
     except Exception:
         pass
-    print(f"Альбина работает ({'служба multik-tts' if _st['mode'] == 'service' else 'свой процесс'}): "
-          f"{time.time() - t0:.0f} с, звук {dur} с, память озвучщика {_st['rss'] or '—'} МБ")
-    print("Ударения:", _st["last"])
+    if _st["mode"] == "service":
+        print(f"Альбина работает (служба multik-tts на этом сервере): {time.time() - t0:.0f} с, звук {dur} с")
+    else:
+        print(f"Альбина работает (свой процесс): {time.time() - t0:.0f} с, звук {dur} с, память {_st['rss']} МБ")
+        print("Ударения:", _st["last"])
     close()
     return 0
 

@@ -50,14 +50,26 @@ for sc in scripts:
     rep.append(f"## {sc['title']} ({sc['format']}) — {dur:.1f} с ролика, сборка {took:.0f} с")
     # фразы без мягкой обработки — для анализатора ударений
     for i, line in enumerate(sc["lines"]):
-        for var, voice, label in (("a", "albina@dry", "ударения во всех словах"),
-                                  ("b", "albina@dry,nomono", "без ударений в односложных")):
+        for var, voice, label in (("c", "albina@dry", "режим bot"),):
             w = out / "lines" / f"pt_{name}_{i}{var}.mp3"
             albina.say(line, voice, w)
             (out / "lines" / f"pt_{name}_{i}{var}.txt").write_text(albina.plain(line) + "\n", encoding="utf-8")
             (out / "lines" / f"pt_{name}_{i}{var}.voice").write_text(f"Альбина, бот ({label})\n", encoding="utf-8")
             rep.append(f"- {var}: {albina._st['last']}")
     rep.append("")
+# вопросы без вопросительного слова: насколько поднимать голос на последнем слове
+QS = ["Летучие мыши совсем слепые?", "Хамелеон подстраивается под фон?", "Великую стену видно из космоса?",
+      "Мамонты застали пирамиды?", "Правда, что мы используем только 10% мозга?"]
+rep.append("## Вопросы: подъём на последнем слове")
+for i, qtext in enumerate(QS):
+    for var, qp in (("n", ""), ("h", "high"), ("x", "x-high")):
+        w = out / "lines" / f"pq_{i}{var}.mp3"
+        albina.say(qtext, f"albina@dry,q={qp}", w)
+        (out / "lines" / f"pq_{i}{var}.txt").write_text(albina.plain(qtext) + "\n", encoding="utf-8")
+        (out / "lines" / f"pq_{i}{var}.voice").write_text(f"Альбина, вопрос (подъём: {qp or 'нет'})\n", encoding="utf-8")
+        if var == "h":
+            albina.say(qtext, f"albina@q={qp}", out / f"q_{i}_soft.mp3")
+    rep.append(f"- {albina._st['last']}")
 albina.close()
 rep += ["## Скорость и память", f"- память озвучщика: {albina._st['rss']} МБ",
         f"- память бота: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // 1024} МБ", "",

@@ -46,18 +46,6 @@ if not server.state.get("ready"):
     sys.exit(1)
 answer({"ready": True, "load_s": round(time.time() - t0, 1), "rss_mb": rss()})
 
-mark0 = server.mark
-_VOW = "аеёиоуыэюяАЕЁИОУЫЭЮЯ"
-
-
-def mark_nomono(text):
-    """как server.mark, но без «+» в словах с одной гласной (так размечает silero-stress)"""
-    def one(m):
-        w = m.group(0)
-        return w.replace("+", "") if sum(c in _VOW for c in w) <= 1 else w
-    return server.WORD.sub(one, mark0(text))
-
-
 for line in sys.stdin:
     line = line.strip()
     if not line:
@@ -71,19 +59,20 @@ for line in sys.stdin:
     try:
         t = time.time()
         text = re.sub(r"\s+", " ", str(q.get("text") or "")).strip()
-        nomono = bool(q.get("nomono"))
-        server.mark = mark_nomono if nomono else mark0
-        server.CACHE = os.path.join(D, "cache-bot-nomono" if nomono else "cache-bot")
+        style = str(q.get("style", "bot")) if hasattr(server, "bot_marks") else ""
+        qp = q.get("qpitch")
+        if qp is not None and hasattr(server, "BOT_Q_PITCH"):   # пробы разного подъёма в вопросе
+            server.BOT_Q_PITCH = qp
+        server.CACHE = os.path.join(D, "cache-bot" + ("-q" + (qp or "none") if qp is not None else ""))
         os.makedirs(server.CACHE, exist_ok=True)
-        wav = server.make(text, q.get("speaker", "ru_albina"), bool(q.get("soft", True)),
-                          q.get("rate", "medium"), q.get("pitch", "medium"))
+        args = (text, q.get("speaker", "ru_albina"), bool(q.get("soft", True)), q.get("rate", "medium"), q.get("pitch", "medium"))
+        wav = server.make(*args, style=style) if style else server.make(*args)
         tmp = q["out"] + ".tmp"
         with open(tmp, "wb") as f:
             f.write(wav)
         os.replace(tmp, q["out"])
         try:
-            marked = server.mark(text[:server.MAX_TEXT])
-            server.mark = mark0
+            marked = server.marked_for(text, style) if hasattr(server, "marked_for") else server.mark(text[:server.MAX_TEXT])
         except Exception:
             marked = ""
         answer({"ok": True, "s": round(time.time() - t, 2), "marked": marked, "rss_mb": rss()})
