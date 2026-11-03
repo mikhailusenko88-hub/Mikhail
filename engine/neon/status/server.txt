@@ -1,5 +1,8 @@
- 200 43694 text/html 0.776602s
-scene.bin 200 5041600 application/octet-stream 2.147546s
-frames.bin 200 412800 application/octet-stream 1.380097s
-ref_120.jpg 200 282151 image/jpeg 1.342464s
-ref_210.jpg 200 352041 image/jpeg 1.346876s
+neonlug1/ 200 43694 text/html 0.854987s
+neonlug1/scene.bin 200 5041600 application/octet-stream 2.326277s
+neonlug1/frames.bin 200 412800 application/octet-stream 1.529539s
+neonlug1/ref_120.jpg 200 282151 image/jpeg 1.402526s
+neonlug1/ref_210.jpg 200 352041 image/jpeg 1.456077s
+barsik1/ 200 52030 text/html 0.881906s
+barsik1/scene.bin 200 5041600 application/octet-stream 2.355314s
+barsik1/cat.bin 200 9706844 application/octet-stream 2.503865s
