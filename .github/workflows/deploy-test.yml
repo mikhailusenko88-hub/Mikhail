@@ -41,7 +41,7 @@ jobs:
           echo "$E" > /tmp/env.txt
           sudo env $E bash deploy_albina.sh 2>&1 | tee /tmp/deploy.log
           grep -q "ГОТОВО" /tmp/deploy.log
-          grep -q "нет готовой озвучки" /tmp/root/root/pochemu-bot/bot.log
+          grep -q "тексты для озвучки" /tmp/deploy.log
           sudo python3 -c "import edge_tts; print('edge-tts есть')" || true
           ls -la /tmp/www/albina/
       - name: Озвучка заранее (как в voice-farm)
