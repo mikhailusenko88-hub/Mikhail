@@ -9,3 +9,20 @@ mha batch_first True
 pred: type True torch.Size([12, 64]) focus True emph False
 pred: type True torch.Size([6, 64]) focus True emph True
 HG shorten 3 pool AvgPool1d(kernel_size=(3,), stride=(3,), padding=(0,)) dim 128 n pre/short/post [1, 2, 1]
+export front 3.3 MB
+export enc 14.2 MB
+export dec 11.6 MB
+export voc 58.3 MB
+tts[0] corr 1.00000 len 126600 ref 126600
+tts[1] corr 1.00000 len 121200 ref 121200
+tts[2] corr 1.00000 len 87000 ref 87000
+tts[3] corr 1.00000 len 123600 ref 123600
+tts[4] corr 0.99997 len 71400 ref 71400
+vocoder same as albina: False
+tacotron same keys: True shapes same: False
+dec.onnx 11565680 3190f0afc6997cffc41baa4b430932d9
+enc.onnx 14198198 9f4a34b03cdeea2f0dfd5888240516a3
+front.onnx 3269778 46f787e455d16c1d809e4abc4d8fa8ac
+tts.json 50083 ac8ddcc9859cee28a00d2150c8fc98bf
+voc.onnx 58289056 395fdfb2f166564548e1614c5f253142
+OK
