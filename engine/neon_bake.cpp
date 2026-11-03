@@ -59,7 +59,7 @@ int main(int argc,char**argv){ const char*outdir=argc>1?argv[1]:"web"; int FPS=2
   SC.meshes.push_back(cylinderMesh(M_HEADB,8)); MESH_CYL_DARK=7;
   // образцы травы и их прошивка — ровно как в pt.cpp
   const int NP=10; std::vector<Patch> patches; const float TR=1.6f;
-  for(int i=0;i<NP;i++){ int n = i>=8?650:(i>=6?3000:(i<2?2600:1800)); bool catM=argc>2&&std::string(argv[2])=="cat"; float hm = i>=8?1.15f:(i==6?(catM?0.3f:0.45f):(i==7?(catM?0.5f:0.7f):1.f)); patches.push_back(makePatch(100+i,TR*1.0f, n, (i%2==0)&&i<6, hm)); if(i>=8) for(auto&bl:patches[i].blades) bl.w*=2.2f; }
+  for(int i=0;i<NP;i++){ bool catM=argc>2&&std::string(argv[2])=="cat"; int n = i>=8?650:(i>=6?(catM?4500:3000):(i<2?2600:1800)); float hm = i>=8?1.15f:(i==6?(catM?0.2f:0.45f):(i==7?(catM?0.4f:0.7f):1.f)); patches.push_back(makePatch(100+i,TR*1.0f, n, (i%2==0)&&i<6, hm)); if(i>=8) for(auto&bl:patches[i].blades) bl.w*=2.2f; if(catM&&i>=6&&i<8) for(auto&bl:patches[i].blades){ bl.w*=0.6f; bl.bend*=0.7f; } }
   float windA[NP]; for(int i=0;i<NP;i++) windA[i]=(i>=6&&i<8)?0.03f:0.05f+0.02f*(i%6);
   { double tb=omp_get_wtime(); for(int i=0;i<NP;i++) bakePatch(patches[i], TR, windA[i]); fprintf(stderr,"baked grass %.1fs\n",omp_get_wtime()-tb); }
   // свет на земле под каждым образцом (среднее по ячейке)
@@ -85,7 +85,10 @@ int main(int argc,char**argv){ const char*outdir=argc>1?argv[1]:"web"; int FPS=2
     std::vector<TreeI> keep; for(const TreeI&t:treeI){ if(segDist(t.x,t.z)<1.6f) continue; keep.push_back(t); } treeI.swap(keep);
     // несколько деревьев ближе к тропе, чтобы лес обступал
     float extra[][2]={{3.2f,-33.f},{9.1f,-36.5f},{2.9f,-40.f},{9.4f,-42.5f},{3.6f,-46.f},{8.7f,-30.5f},{10.2f,-47.5f},{2.2f,-27.f}};
-    for(auto&e:extra) treeI.push_back({e[0],e[1],rc.f()*6.28f,0.85f+0.4f*rc.f(),rc.f()*6.28f,(int)(rc.f()*NT)}); }
+    for(auto&e:extra) treeI.push_back({e[0],e[1],rc.f()*6.28f,0.85f+0.4f*rc.f(),rc.f()*6.28f,(int)(rc.f()*NT)});
+    // толстые старые деревья рядом с тропой — как в Blender-кадре
+    float big[][3]={{1.4f,-36.2f,2.0f},{11.3f,-40.8f,2.2f},{0.6f,-44.8f,1.8f},{11.8f,-31.2f,1.9f},{12.2f,-47.0f,2.1f},{0.2f,-28.6f,1.9f}};
+    for(auto&e:big) treeI.push_back({e[0],e[1],rc.f()*6.28f,e[2],rc.f()*6.28f,(int)(rc.f()*NT)}); }
   fprintf(stderr,"tiles %zu trees %zu%s\n",tiles.size(),treeI.size(),catMode?" (cat)":"");
 
   // ---------- scene.bin ----------
@@ -176,13 +179,14 @@ int main(int argc,char**argv){ const char*outdir=argc>1?argv[1]:"web"; int FPS=2
     // камни во мху у тропы: сплюснутые сферы с шумом, диоды с float-позицией (как земля)
     hdr+="\"props\":[";
     float rocks[][6]={{8.3f,-33.5f,0.55f,0.32f,0.45f,0.9f},{3.9f,-37.8f,0.42f,0.26f,0.36f,2.1f},{8.9f,-40.2f,0.7f,0.38f,0.55f,0.4f},{3.4f,-42.6f,0.35f,0.22f,0.3f,1.3f},{9.2f,-45.8f,0.5f,0.3f,0.42f,2.8f},{3.1f,-31.0f,0.48f,0.3f,0.4f,0.2f},{8.6f,-29.0f,0.33f,0.2f,0.28f,1.7f}};
-    int nr=sizeof(rocks)/sizeof(rocks[0]); Rng rr(99);
-    for(int r=0;r<nr;r++){ float x=rocks[r][0], z=rocks[r][1], sx=rocks[r][2], sy=rocks[r][3], sz=rocks[r][4], yaw=rocks[r][5]; float gy=hstat(x,z); Buf vb,ib; int nv=0; const int NU=36,NV=20; float c=cosf(yaw),s=sinf(yaw);
+    float mounds[][6]={{2.4f,-35.5f,1.3f,0.55f,1.0f,0.6f},{10.2f,-38.0f,1.6f,0.6f,1.2f,1.9f},{1.8f,-41.5f,1.1f,0.45f,0.9f,2.4f},{10.6f,-33.0f,1.2f,0.5f,1.0f,0.3f},{3.0f,-47.5f,1.5f,0.6f,1.1f,1.1f},{9.8f,-44.6f,1.0f,0.42f,0.9f,2.9f}};
+    int nr=sizeof(rocks)/sizeof(rocks[0]), nm=sizeof(mounds)/sizeof(mounds[0]); Rng rr(99);
+    for(int r=0;r<nr+nm;r++){ bool isM=r>=nr; const float*R=isM?mounds[r-nr]:rocks[r]; float x=R[0], z=R[1], sx=R[2], sy=R[3], sz=R[4], yaw=R[5]; float gy=hstat(x,z); Buf vb,ib; int nv=0; const int NU=36,NV=20; float c=cosf(yaw),s=sinf(yaw);
       auto Pt=[&](int i,int j){ float th=PI*j/NV, ph=2*PI*i/NU; V d(sinf(th)*cosf(ph),cosf(th),sinf(th)*sinf(ph)); float nse=1+0.08f*sinf(5*ph+2*th+r)+0.05f*sinf(9*ph-3*th)+0.04f*sinf(3*th*th+7*ph); V p(d.x*sx*nse,d.y*sy*nse,d.z*sz*nse); return V(c*p.x+s*p.z, p.y, -s*p.x+c*p.z)+V(x,gy-sy*0.35f,z); };
       std::vector<V> P((NU+1)*(NV+1)); for(int j=0;j<=NV;j++) for(int i=0;i<=NU;i++) P[j*(NU+1)+i]=Pt(i,j);
       for(int j=0;j<=NV;j++) for(int i=0;i<=NU;i++){ V p=P[j*(NU+1)+i]; V du=P[j*(NU+1)+(i+1)%NU]-P[j*(NU+1)+(i+NU-1)%NU]; V dv=P[std::min(j+1,NV)*(NU+1)+i]-P[std::max(j-1,0)*(NU+1)+i]; V n=norm(cross(dv,du)); if(len(n)<0.5f) n=V(0,j==0?1:-1,0);
-        float moss=clampf((n.y-0.25f)*1.6f,0,1)*(0.7f+0.3f*sinf(p.x*9+p.z*7)); V rock=V(0.30f,0.28f,0.25f)*(0.8f+0.4f*rr.f()); V mossC=V(0.16f,0.3f,0.07f)*(0.8f+0.4f*rr.f()); V alb=lerp(rock,mossC,moss);
-        diodeF(vb,p,n,alb,1.0f,0.75f); nv++; }
+        float moss=isM?1.0f:clampf((n.y-0.25f)*1.6f,0,1)*(0.7f+0.3f*sinf(p.x*9+p.z*7)); V rock=V(0.30f,0.28f,0.25f)*(0.8f+0.4f*rr.f()); V mossC=(isM?V(0.2f,0.34f,0.08f):V(0.16f,0.3f,0.07f))*(0.85f+0.3f*rr.f()); V alb=lerp(rock,mossC,moss);
+        diodeF(vb,p,n,alb,isM?0.9f:1.0f,0.75f); nv++; }
       for(int j=0;j<NV;j++) for(int i=0;i<NU;i++){ uint32_t a=j*(NU+1)+i, b=a+1, c2=a+(NU+1), d2=c2+1; ib.u32(a);ib.u32(c2);ib.u32(d2); ib.u32(a);ib.u32(d2);ib.u32(b); }
       bin.align4(); size_t vo=bin.pos(); bin.d.insert(bin.d.end(),vb.d.begin(),vb.d.end()); bin.align4(); size_t io=bin.pos(); bin.d.insert(bin.d.end(),ib.d.begin(),ib.d.end());
       snprintf(tmp,512,"%s{\"vOff\":%zu,\"nv\":%d,\"iOff\":%zu,\"ni\":%zu}",r?",":"",vo,nv,io,ib.d.size()/4); hdr+=tmp; }

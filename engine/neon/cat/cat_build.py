@@ -11,7 +11,7 @@ T0 = time.time()
 def log(*a): print('[%5.1fs]' % (time.time() - T0), *a, flush=True)
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'cat.bin'
 H_SKIN = 0.0048
-N_FUR = 130000
+N_FUR = 190000
 
 # ---------- кости (в координатах Blender) ----------
 # 0 body, 1 head, 2 armL, 3 armR, 4 legL_up, 5 legL_low, 6 legR_up, 7 legR_low, 8 tail1, 9 tail2
@@ -55,7 +55,7 @@ log('кожа…')
 v, f = B.build_skin(H_SKIN); log('кожа', len(v), 'вершин', len(f), 'треугольников')
 nor = B.grad(v); reg = B.region_of(v)
 mel, red, stripe, cream = B.colors(v, reg, nor)
-col = B.mel_rgb(mel).astype(F)
+col = np.stack([np.interp(mel, [0.03, 0.06, 0.12, 0.2, 0.47, 0.8], [c[i] for c in [[0.96, 0.93, 0.88], [0.94, 0.87, 0.74], [0.90, 0.68, 0.42], [0.82, 0.46, 0.19], [0.62, 0.28, 0.09], [0.22, 0.08, 0.03]]]) for i in range(3)], -1).astype(F)
 # кожа под шерстью — чуть темнее и теплее, чтобы просвечивала как подшёрсток; мордочка/внутр. ухо — свои цвета
 col = np.where((reg == 8)[:, None], V(0.95, 0.6, 0.62), col)
 col = np.where((reg == 2)[:, None], V(0.97, 0.9, 0.84), col)              # мордочка кремовая
@@ -81,6 +81,10 @@ skin_ao = ambient_occ(v, nor); log('AO кожи: среднее %.2f' % skin_ao.
 
 # ---------- шерсть ----------
 log('шерсть…')
+def mel_rgb_soft(mel):
+    xs = np.array([0.03, 0.06, 0.12, 0.2, 0.47, 0.8]); cs = np.array([[0.96, 0.93, 0.88], [0.94, 0.87, 0.74], [0.90, 0.68, 0.42], [0.82, 0.46, 0.19], [0.62, 0.28, 0.09], [0.22, 0.08, 0.03]])
+    return np.stack([np.interp(mel, xs, cs[:, i]) for i in range(3)], -1)
+B.mel_rgb = mel_rgb_soft
 fur = B.make_fur(v, f, nor, reg, total=N_FUR, P=4, seed=3)
 P = fur['fur_pts']; n_f = len(P); log('шерсть', n_f, 'волосков')
 R = P[:, 0]; freg = fur['fur_reg'].astype(np.int32)
