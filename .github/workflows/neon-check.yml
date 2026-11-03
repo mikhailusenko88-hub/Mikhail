@@ -25,7 +25,7 @@ jobs:
         run: |
           npm i --silent playwright@1.47.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
-          cat > /tmp/shot.js <<'JS'
+          cat > ./neon_shot.js <<'JS'
           const { chromium } = require('playwright');
           (async () => {
             const browser = await chromium.launch({ args: ['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist'] });
@@ -42,7 +42,7 @@ jobs:
             await browser.close();
           })().catch(e => { require('fs').writeFileSync('engine/neon/status/page.txt', 'FAIL: '+e.message+'\n'); process.exit(0); });
           JS
-          node /tmp/shot.js
+          node ./neon_shot.js
           cat engine/neon/status/page.txt
       - name: Сохранить результат
         run: |
