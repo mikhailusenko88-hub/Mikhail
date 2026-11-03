@@ -1,89 +1,90 @@
-# ep-mac Tue Nov  3 09:24:54 UTC 2026
-- Token_USB_Sonoma_Intel.pkg ← https://multisoft.ru/files/Token_USB_Sonoma_Intel.pkg : 200 125053 https://multisoft.ru/files/Token_USB_Sonoma_Intel.pkg
-  - files/Token_USB_Sonoma_Intel.pkg: xar archive compressed TOC: 4941, SHA-1 checksum
-## links saby_download (https://saby.ru/download), size 5802988
-data-component="SbisRu/DownloadNew/DownloadNew"
-data-for="macos"
-data-for="plugin"
-data-id="macos"
-data-id="plugin"
-href="/download"
-href="/help/plugin/sbis3plugin"
-href="/resources/SbisRu/DownloadNew/resources/tensor_un-2025_gost2012.cer"
-href="/resources/SbisRu/DownloadNew/resources/un_kt-2025_gost2012.crt"
-href="/resources/SbisRu/DownloadNew/resources/un_tensor-2022_gost2012.cer"
-href="/resources/SbisRu/DownloadNew/resources/un_tensor-2023_gost2012.cer"
-href="https://online.saby.ru/reg/?check=SBISPlugin"
-href="https://saby.ru/download"
-href="https://update.saby.ru/SabyAdmin/master/arm64/darwin/portable/sabyadmin-setup.dmg"
-href="https://update.saby.ru/SabyAdmin/master/darwin/portable/sabyadmin-setup.dmg"
-href="https://update.saby.ru/SabyDesktop/master/arm64/darwin/saby-setup.dmg"
-href="https://update.saby.ru/SabyDesktop/master/darwin/saby-setup.dmg"
-href="https://update.saby.ru/SabyGuard/master/arm64/darwin//sabyguard-setup.dmg"
-href="https://update.saby.ru/SabyGuard/master/arm64/darwin/sabyguard.pkg"
-href="https://update.saby.ru/SabyScreen/master/arm64/darwin/sabyscreen-setup.dmg"
-href="https://update.saby.ru/SabyScreen/master/darwin/sabyscreen-setup.dmg"
-href="https://update.saby.ru/ereport/cert/basic/OCSP_TSP-certificates.zip"
-src="/static/resources/SbisRu/DownloadNew/resources/google.svg?x_module=5ec55407724d8aff20ca67d7f2c98c78"
-## links saby_crypto (https://saby.ru/download/cryptography), size 264049
-## links cp_fns (https://www.cryptopro.ru/fns_experiment), size 45909
-href="#download"
-href="//cryptopro.ru/download?pid=1417"
-href="/sites/all/themes/csp_fns/assets/bootstrap/css/bootstrap.min.css"
-href="/sites/all/themes/csp_fns/assets/css/styles.min.css"
-href="/sites/all/themes/csp_fns/assets/fonts/font-awesome.min.css"
-href="/sites/all/themes/csp_fns/assets/fonts/ionicons.min.css"
-href="/sites/all/themes/csp_fns/assets/img/favicon_16.png"
-href="/sites/all/themes/csp_fns/assets/img/favicon_180.png"
-href="/sites/all/themes/csp_fns/assets/img/favicon_192.png"
-href="/sites/all/themes/csp_fns/assets/img/favicon_32.png"
-href="/sites/all/themes/csp_fns/assets/img/favicon_512.png"
-href="https://cryptopro.ru/products/csp"
-href="https://cryptopro.ru/sites/default/files/docs/csp/50r2/%D0%96%D0%A2%D0%AF%D0%98.00101-02%2092%2001.%20%D0%98%D0%BD%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%86%D0%B8%D1%8F%20%D0%BF%D0%BE%20%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8E.%20Windows.pdf"
-href="https://cryptopro.ru/sites/default/files/docs/csp/fns/csp-fns-setup-linux-deb.pdf"
-href="https://cryptopro.ru/sites/default/files/docs/csp/fns/csp-fns-setup-linux-rpm.pdf"
-href="https://cryptopro.ru/sites/default/files/docs/csp/fns/csp-fns-setup-macos.pdf"
-href="https://cryptopro.ru/sites/default/files/docs/csp/fns/csp-fns-setup-windows.pdf"
-href="https://cryptopro.ru/sites/default/files/docs/csp/fns/Установка сертификатов.pdf"
-href="https://support.cryptopro.ru/index.php?/Knowledgebase/Article/View/232/0/rbot-s-kriptopro-csp-v-macos"
-href="https://support.cryptopro.ru/index.php?/Knowledgebase/Article/View/390/0/rbot-s-kriptopro-csp-v-linux-n-primere-debian-11"
-href="https://www.cryptopro.ru/products/cades/plugin"
-src="/sites/all/themes/csp_fns/assets/bootstrap/js/bootstrap.min.js"
-src="/sites/all/themes/csp_fns/assets/img/logo_cryptopro.svg"
-src="/sites/all/themes/csp_fns/assets/img/logo_csp_info.svg"
-src="/sites/all/themes/csp_fns/assets/img/logo_fns.svg"
-src="/sites/all/themes/csp_fns/assets/img/logo_license.svg"
-src="/sites/all/themes/csp_fns/assets/js/jquery.min.js"
-src="/sites/all/themes/csp_fns/assets/js/script.min.js"
-## links cp_downloads (https://www.cryptopro.ru/products/csp/downloads), size 38662
-href="/downloads"
-href="/products/archive/downloads"
-href="/products/cades/plugin"
-href="/products/cpkey/downloads"
-href="/products/csp"
-href="/products/csp/compare"
-href="/products/csp/downloads"
-href="/products/csp/jcp"
-href="/products/csp/jcp/downloads"
-href="/products/csp/jcp/jtls"
-href="/products/csp/jcsp"
-href="/products/csp/lite"
-href="/products/csp/tc26x509cms"
-href="/products/csp/tls"
-href="/products/csp/usage"
-href="/products/csp/versions"
-href="/products/dss/downloads"
-href="/products/hm/downloads"
-href="/products/ipsec/downloads"
-href="/products/ngate/downloads"
-href="https://cryptopro.ru/sites/default/files/public/faq/csp/howto_lic.pdf"
-href="https://cryptopro.ru/sites/default/files/public/faq/Инструкция_по_скачиванию_КриптоПро_CSP.pdf"
-href="https://www.cryptopro.ru/products/cryptopro-csp#fkc"
-href="https://www.cryptopro.ru/sites/default/files/public/faq/csp/zhtyai.00101-01_92_01._instrukciya_po_ispolzovaniyu._windows.pdf"
-## links nalog_distr (https://www.nalog.gov.ru/rn77/related_activities/ucfns/distr_crypto/), size 63262
-src="https://data.nalog.ru/js/ul2018/vendor/isotope.pkgd.min.js"
+# ep-mac Tue Nov  3 09:29:55 UTC 2026
+## links saby_help_cp (https://saby.ru/help/ep/sczi/install/install_cryptopro), size 179343
+data-title="macOS"
+href="//cdn2.saby.ru/static/resources/Controls-default-theme/fonts/TensorInterMac.min.css?x_module=2aa48fe6140b343e6c389ae8ba2af35f"
+href="//cdn2.saby.ru/static/resources/images-EP/crypto03.png?x_module=6ebf128a03670efcd24831627c429233"
+href="//cdn2.saby.ru/static/resources/images-EP/crypto_3.png?x_module=6ebf128a03670efcd24831627c429233"
+href="//cdn2.saby.ru/static/resources/images-EP/crypto_linux_02.png?x_module=6ebf128a03670efcd24831627c429233"
+href="//cdn2.saby.ru/static/resources/images-EP/crypto_reg_02.png?x_module=6ebf128a03670efcd24831627c429233"
+href="//cdn2.saby.ru/static/resources/images-EP/crypto_reg_03.png?x_module=6ebf128a03670efcd24831627c429233"
+href="//cdn2.saby.ru/static/resources/images-EP/macOS_root.png?x_module=6ebf128a03670efcd24831627c429233"
+href="/help/ep/sczi/install/install_cryptopro"
+href="/help/ep/sczi/install/license_cryptopro/"
+href="/help/ep/sczi/install/license_cryptopro?tb=tab2"
+href="/help/ep/sczi/install/license_cryptopro?tb=tab3"
+href="/help/ep/sczi/install/update_cryptopro"
+href="https://saby.ru/help/ep/sczi/install/install_cryptopro"
+href="https://support.cryptopro.ru/"
+href="https://update.saby.ru/rh/SabyAdminInstaller_mac.dmg"
+href="https://www.cryptopro.ru/category/faq/linuxunix-0"
+href="https://www.cryptopro.ru/products/csp/downloads"
+src="//cdn2.saby.ru/static/resources/Controls-DataEnv/compositePlugin.min.js?x_module=97b90a7c5b9cd9caf151d1bde31b4d13"
+src="//cdn2.saby.ru/static/resources/Controls-DataEnv/moveItemsPlugin.min.js?x_module=97b90a7c5b9cd9caf151d1bde31b4d13"
+src="//cdn2.saby.ru/static/resources/Controls-DataEnv/sortingPlugin.min.js?x_module=97b90a7c5b9cd9caf151d1bde31b4d13"
+src="//cdn2.saby.ru/static/resources/images-EP/crypto03.png?x_module=6ebf128a03670efcd24831627c429233"
+src="//cdn2.saby.ru/static/resources/images-EP/crypto_3.png?x_module=6ebf128a03670efcd24831627c429233"
+src="//cdn2.saby.ru/static/resources/images-EP/crypto_linux_02.png?x_module=6ebf128a03670efcd24831627c429233"
+src="//cdn2.saby.ru/static/resources/images-EP/crypto_reg_02.png?x_module=6ebf128a03670efcd24831627c429233"
+src="//cdn2.saby.ru/static/resources/images-EP/crypto_reg_03.png?x_module=6ebf128a03670efcd24831627c429233"
+src="//cdn2.saby.ru/static/resources/images-EP/macOS_root.png?x_module=6ebf128a03670efcd24831627c429233"
+## links sbis_help_cp (https://sbis.ru/help/ep/sczi/install/install_cryptopro), size 179343
+data-title="macOS"
+href="//cdn2.saby.ru/static/resources/Controls-default-theme/fonts/TensorInterMac.min.css?x_module=2aa48fe6140b343e6c389ae8ba2af35f"
+href="//cdn2.saby.ru/static/resources/images-EP/crypto03.png?x_module=6ebf128a03670efcd24831627c429233"
+href="//cdn2.saby.ru/static/resources/images-EP/crypto_3.png?x_module=6ebf128a03670efcd24831627c429233"
+href="//cdn2.saby.ru/static/resources/images-EP/crypto_linux_02.png?x_module=6ebf128a03670efcd24831627c429233"
+href="//cdn2.saby.ru/static/resources/images-EP/crypto_reg_02.png?x_module=6ebf128a03670efcd24831627c429233"
+href="//cdn2.saby.ru/static/resources/images-EP/crypto_reg_03.png?x_module=6ebf128a03670efcd24831627c429233"
+href="//cdn2.saby.ru/static/resources/images-EP/macOS_root.png?x_module=6ebf128a03670efcd24831627c429233"
+href="/help/ep/sczi/install/install_cryptopro"
+href="/help/ep/sczi/install/license_cryptopro/"
+href="/help/ep/sczi/install/license_cryptopro?tb=tab2"
+href="/help/ep/sczi/install/license_cryptopro?tb=tab3"
+href="/help/ep/sczi/install/update_cryptopro"
+href="https://saby.ru/help/ep/sczi/install/install_cryptopro"
+href="https://support.cryptopro.ru/"
+href="https://update.saby.ru/rh/SabyAdminInstaller_mac.dmg"
+href="https://www.cryptopro.ru/category/faq/linuxunix-0"
+href="https://www.cryptopro.ru/products/csp/downloads"
+src="//cdn2.saby.ru/static/resources/Controls-DataEnv/compositePlugin.min.js?x_module=97b90a7c5b9cd9caf151d1bde31b4d13"
+src="//cdn2.saby.ru/static/resources/Controls-DataEnv/moveItemsPlugin.min.js?x_module=97b90a7c5b9cd9caf151d1bde31b4d13"
+src="//cdn2.saby.ru/static/resources/Controls-DataEnv/sortingPlugin.min.js?x_module=97b90a7c5b9cd9caf151d1bde31b4d13"
+src="//cdn2.saby.ru/static/resources/images-EP/crypto03.png?x_module=6ebf128a03670efcd24831627c429233"
+src="//cdn2.saby.ru/static/resources/images-EP/crypto_3.png?x_module=6ebf128a03670efcd24831627c429233"
+src="//cdn2.saby.ru/static/resources/images-EP/crypto_linux_02.png?x_module=6ebf128a03670efcd24831627c429233"
+src="//cdn2.saby.ru/static/resources/images-EP/crypto_reg_02.png?x_module=6ebf128a03670efcd24831627c429233"
+src="//cdn2.saby.ru/static/resources/images-EP/crypto_reg_03.png?x_module=6ebf128a03670efcd24831627c429233"
+src="//cdn2.saby.ru/static/resources/images-EP/macOS_root.png?x_module=6ebf128a03670efcd24831627c429233"
+## links saby_help_onsbis (https://saby.ru/help/ep/sczi/on_sbis), size 152191
+href="//cdn2.saby.ru/static/resources/Controls-default-theme/fonts/TensorInterMac.min.css?x_module=2aa48fe6140b343e6c389ae8ba2af35f"
+href="/help/ep/sczi/install/install_cryptopro"
+href="/help/ep/sczi/install/license_cryptopro/"
+href="https://update.saby.ru/rh/SabyAdminInstaller_mac.dmg"
+src="//cdn2.saby.ru/static/resources/Controls-DataEnv/compositePlugin.min.js?x_module=97b90a7c5b9cd9caf151d1bde31b4d13"
+src="//cdn2.saby.ru/static/resources/Controls-DataEnv/moveItemsPlugin.min.js?x_module=97b90a7c5b9cd9caf151d1bde31b4d13"
+src="//cdn2.saby.ru/static/resources/Controls-DataEnv/sortingPlugin.min.js?x_module=97b90a7c5b9cd9caf151d1bde31b4d13"
 total 132
-drwxr-xr-x 2 runner runner   4096 Nov  3 09:24 .
-drwxr-xr-x 6 runner runner   4096 Nov  3 09:24 ..
--rw-r--r-- 1 runner runner      0 Nov  3 09:24 .gitkeep
--rw-r--r-- 1 runner runner 125053 Nov  3 09:24 Token_USB_Sonoma_Intel.pkg
+drwxr-xr-x 2 runner runner   4096 Nov  3 09:29 .
+drwxr-xr-x 6 runner runner   4096 Nov  3 09:29 ..
+-rw-r--r-- 1 runner runner      0 Nov  3 09:29 .gitkeep
+-rw-r--r-- 1 runner runner 125053 Nov  3 09:29 Token_USB_Sonoma_Intel.pkg
+## urls in status/cp_downloads.html
+## urls in status/cp_fns.html
+## urls in status/nalog_distr.html
+## urls in status/saby_crypto.html
+## urls in status/saby_download.html
+https://update.saby.ru/SabyAdmin/master/arm64/darwin/portable/sabyadmin-setup.dmg
+https://update.saby.ru/SabyAdmin/master/darwin/portable/sabyadmin-setup.dmg
+https://update.saby.ru/SabyDesktop/master/arm64/darwin/saby-setup.dmg
+https://update.saby.ru/SabyDesktop/master/darwin/saby-setup.dmg
+https://update.saby.ru/SabyGuard/master/arm64/darwin//sabyguard-setup.dmg
+https://update.saby.ru/SabyGuard/master/arm64/darwin/sabyguard.pkg
+https://update.saby.ru/SabyScreen/master/arm64/darwin/sabyscreen-setup.dmg
+https://update.saby.ru/SabyScreen/master/darwin/sabyscreen-setup.dmg
+https://update.saby.ru/ereport/cert/basic/OCSP_TSP-certificates.zip
+## urls in status/saby_help_cp.html
+https://update.saby.ru/rh/SabyAdminInstaller_mac.dmg
+## urls in status/saby_help_onsbis.html
+https://update.saby.ru/rh/SabyAdminInstaller_mac.dmg
+## urls in status/sbis_help_cp.html
+https://update.saby.ru/rh/SabyAdminInstaller_mac.dmg
