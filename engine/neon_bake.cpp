@@ -59,7 +59,7 @@ int main(int argc,char**argv){ const char*outdir=argc>1?argv[1]:"web"; int FPS=2
   SC.meshes.push_back(cylinderMesh(M_HEADB,8)); MESH_CYL_DARK=7;
   // образцы травы и их прошивка — ровно как в pt.cpp
   const int NP=10; std::vector<Patch> patches; const float TR=1.6f;
-  for(int i=0;i<NP;i++){ int n = i>=8?650:(i>=6?3000:(i<2?2600:1800)); float hm = i>=8?1.15f:(i==6?0.45f:(i==7?0.7f:1.f)); patches.push_back(makePatch(100+i,TR*1.0f, n, (i%2==0)&&i<6, hm)); if(i>=8) for(auto&bl:patches[i].blades) bl.w*=2.2f; }
+  for(int i=0;i<NP;i++){ int n = i>=8?650:(i>=6?3000:(i<2?2600:1800)); bool catM=argc>2&&std::string(argv[2])=="cat"; float hm = i>=8?1.15f:(i==6?(catM?0.3f:0.45f):(i==7?(catM?0.5f:0.7f):1.f)); patches.push_back(makePatch(100+i,TR*1.0f, n, (i%2==0)&&i<6, hm)); if(i>=8) for(auto&bl:patches[i].blades) bl.w*=2.2f; }
   float windA[NP]; for(int i=0;i<NP;i++) windA[i]=(i>=6&&i<8)?0.03f:0.05f+0.02f*(i%6);
   { double tb=omp_get_wtime(); for(int i=0;i<NP;i++) bakePatch(patches[i], TR, windA[i]); fprintf(stderr,"baked grass %.1fs\n",omp_get_wtime()-tb); }
   // свет на земле под каждым образцом (среднее по ячейке)
@@ -78,7 +78,15 @@ int main(int argc,char**argv){ const char*outdir=argc>1?argv[1]:"web"; int FPS=2
   struct TreeI{float x,z,yaw,sc,ph; int v;}; std::vector<TreeI> treeI; for(int i=0;i<260;i++){ float x=-28+70*r.f(), z=-62+36*r.f(); if(nearPath(x,z)) continue; treeI.push_back({x,z,r.f()*6.28f,0.8f+0.5f*r.f(),r.f()*6.28f,(int)(r.f()*NT)}); }
   for(int i=0;i<16;i++){ float x=-14+34*r.f(), z=-24+30*r.f(); if(nearPath(x,z)) continue; { float px=x-HSTART.x, pz=z-HSTART.z; float along=px*FD.x+pz*FD.z, side=-px*FD.z+pz*FD.x; if(along>-8&&along<26&&fabsf(side)<7) continue; } treeI.push_back({x,z,r.f()*6.28f,0.7f+0.4f*r.f(),r.f()*6.28f,(int)(r.f()*NT)}); }
   struct Pol{float x,y,z,ph;}; std::vector<Pol> pol; for(int i=0;i<500;i++){ float x=-10+26*r.f(), z=-14+16*r.f(); pol.push_back({x,hstat(x,z)+0.15f+1.4f*powf(r.f(),1.5f),z,r.f()*6.28f}); }
-  fprintf(stderr,"tiles %zu trees %zu\n",tiles.size(),treeI.size());
+  // режим «кот в лесу»: тропа с короткой травой на x=CX, z от CZ0 до CZ1, луг вокруг, деревья с тропы убрать
+  bool catMode = argc>2 && std::string(argv[2])=="cat"; const float CX=6.0f, CZ0=-29.0f, CZ1=-45.0f;
+  auto segDist=[&](float x,float z){ float zz=clampf(z,CZ1,CZ0); float dx=x-CX, dz=z-zz; return sqrtf(dx*dx+dz*dz); };
+  if(catMode){ Rng rc(4242); for(auto&t:tiles){ float d=segDist(t.x,t.z); if(d<1.7f) t.patch=6; else if(d<3.4f) t.patch=7; else if(d<18.f && t.patch>=8) t.patch=(int)(rc.f()*6); }
+    std::vector<TreeI> keep; for(const TreeI&t:treeI){ if(segDist(t.x,t.z)<1.6f) continue; keep.push_back(t); } treeI.swap(keep);
+    // несколько деревьев ближе к тропе, чтобы лес обступал
+    float extra[][2]={{3.2f,-33.f},{9.1f,-36.5f},{2.9f,-40.f},{9.4f,-42.5f},{3.6f,-46.f},{8.7f,-30.5f},{10.2f,-47.5f},{2.2f,-27.f}};
+    for(auto&e:extra) treeI.push_back({e[0],e[1],rc.f()*6.28f,0.85f+0.4f*rc.f(),rc.f()*6.28f,(int)(rc.f()*NT)}); }
+  fprintf(stderr,"tiles %zu trees %zu%s\n",tiles.size(),treeI.size(),catMode?" (cat)":"");
 
   // ---------- scene.bin ----------
   Buf bin; std::string hdr="{"; char tmp[512];

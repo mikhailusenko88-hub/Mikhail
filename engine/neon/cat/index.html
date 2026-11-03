@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Барсик в лесу</title>
+<style>
+  html,body{margin:0;background:#0b0c0e;color:#e8e6e0;font:15px/1.35 -apple-system,system-ui,Segoe UI,Roboto,sans-serif;-webkit-user-select:none;user-select:none;overscroll-behavior:none}
+  #wrap{position:relative;width:100vw;aspect-ratio:16/9;background:#000;overflow:hidden;touch-action:none}
+  #gl{width:100%;height:100%;display:block}
+  #hud{position:absolute;left:8px;top:6px;font-size:12px;background:rgba(0,0,0,.45);padding:3px 7px;border-radius:6px;pointer-events:none}
+  #load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0b0c0e;font-size:16px;text-align:center;padding:20px}
+  #ui{padding:10px 12px 28px;display:grid;gap:10px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  button{background:#1d2026;color:#e8e6e0;border:1px solid #363a44;border-radius:10px;padding:9px 13px;font-size:14px}
+  button.on{background:#2f6b3a;border-color:#48a05a}
+  input[type=range]{flex:1;min-width:120px}
+  label{font-size:13px;color:#aeb2bb;min-width:92px}
+  .note{font-size:13px;color:#aeb2bb}
+  .val{font-variant-numeric:tabular-nums;min-width:52px;text-align:right;font-size:13px}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="gl"></canvas>
+  <div id="hud">загрузка…</div>
+  <div id="load">Загружаю лес и Барсика…</div>
+</div>
+<div id="ui">
+  <div class="row">
+    <button id="bCam" class="on">Свободная камера</button>
+    <button id="bWalk" class="on">Идёт</button>
+    <button id="bRays" class="on">Лучи</button>
+    <button id="bQ" class="on">Качество: полное</button>
+  </div>
+  <div class="row"><label>Дымка</label><input id="fog" type="range" min="0" max="100" value="45"><span class="val" id="fogV">0.45</span></div>
+  <div class="row"><label>Время суток</label><input id="tod" type="range" min="0" max="1000" value="0"><span class="val" id="todV">день</span></div>
+  <div class="row"><label>Шерсть</label><input id="furD" type="range" min="10" max="100" value="100"><span class="val" id="furV">100%</span></div>
+  <div class="row"><label>Ветер</label><input id="wind" type="range" min="0" max="300" value="100"><span class="val" id="windV">1.0</span></div>
+  <div class="note" id="resV"></div>
+  <div class="note">Крутить — одним пальцем, приближать — двумя. Кот, лес, трава и свет — всё на диодах, без лучей в кадре. Форма кота и шерсть — те же формулы, что были в Blender.</div>
+</div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const canvas=$('gl'); const gl=canvas.getContext('webgl2',{antialias:false,alpha:false,powerPreference:'high-performance'});
+if(!gl){ $('load').textContent='Нужен WebGL2 (iOS 15+)'; throw new Error('no webgl2'); }
+const extF=gl.getExtension('EXT_color_buffer_float'); const extHF=extF?null:gl.getExtension('EXT_color_buffer_half_float');
+const HDR=!!(extF||extHF); const ENC=HDR?1.0:1/8; const PI=Math.PI;
+let S=null, C=null;
+async function load(){
+  await new Promise(r=>setTimeout(r,0));
+  const b64=(k)=>{ const s=window[k]; const bin=atob(s); const u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); return u.buffer; };
+  const parse=(ab,magic)=>{ const dv=new DataView(ab); const m=String.fromCharCode(dv.getUint8(0),dv.getUint8(1),dv.getUint8(2),dv.getUint8(3)); if(m!==magic) throw new Error('bad '+magic); const hl=dv.getUint32(4,true); const hdr=JSON.parse(new TextDecoder().decode(new Uint8Array(ab,8,hl))); const pad=(4-(hl%4))%4; return {hdr,ab,base:8+hl+pad}; };
+  const ab1=window.NEON_SCENE_B64?b64('NEON_SCENE_B64'):await (await fetch('scene.bin')).arrayBuffer(); S=parse(ab1,'NEON');
+  $('hud').textContent='лес загружен, кот…';
+  const ab2=window.NEON_CAT_B64?b64('NEON_CAT_B64'):await (await fetch('cat.bin')).arrayBuffer(); C=parse(ab2,'NCAT');
+  init();
+}
+load().catch(e=>{ $('load').textContent='Ошибка: '+e.message; console.error(e); });
+
+// ============ шейдеры ============
+const COMMON=`
+const float PI=3.14159265;
+uniform vec3 uSun; uniform vec3 uSunCol; uniform vec3 uSunBase; uniform float uSkyK; uniform vec3 uZen; uniform vec3 uHor; uniform vec3 uCam;
+vec3 ambientSky(vec3 n){ return mix(vec3(0.17,0.26,0.06), vec3(0.45,0.48,0.6), 0.5+0.5*n.y)*uSkyK; }
+float ggxD(float nh,float a){ float a2=a*a; float d=nh*nh*(a2-1.0)+1.0; return a2/(PI*d*d+1e-9); }
+float ggxG1(float nv,float a){ float k=a*a/2.0; return nv/(nv*(1.0-k)+k+1e-9); }
+float fres(float vh,float f0){ float f=pow(1.0-vh,5.0); return f0+(1.0-f0)*f; }
+vec3 skyCol(vec3 d, bool withSun){ float y=d.y; vec3 c; if(y>=0.0) c=mix(uHor,uZen,pow(y,0.42)); else c=mix(uHor,vec3(0.35,0.3,0.22)*uSkyK,clamp(-y*8.0,0.0,1.0));
+  float s=max(0.0,dot(d,uSun)); c+=uSunBase*(0.10*pow(s,6.0)+0.5*pow(s,80.0)+0.9*pow(s,500.0)); c*=0.85; if(withSun && s>0.99997187) c+=uSunBase*220.0;
+  float m=max(c.x,max(c.y,c.z)); if(m>40.0) c*=40.0/m; return c; }
+uniform vec4 uOcc[4];
+float occShadow(vec3 p){ float s=1.0; for(int i=0;i<4;i++){ vec4 sp=uOcc[i]; if(sp.w<=0.0) continue; vec3 oc=sp.xyz-p; float tc=dot(oc,uSun); if(tc>0.0){ float d2=dot(oc,oc)-tc*tc; float r=sp.w; s*=smoothstep(r*r*0.55,r*r*1.3,d2); } } return s; }
+`;
+const VS_DIODE=`#version 300 es
+precision highp float; precision highp int;
+layout(location=0) in vec3 aPos; layout(location=1) in vec2 aNrm; layout(location=2) in vec3 aAlb; layout(location=3) in float aSunD; layout(location=4) in float aKv; layout(location=5) in float aS; layout(location=6) in float aFlags;
+layout(location=7) in vec4 aInst; layout(location=8) in float aIScale;
+uniform mat4 uVP; uniform float uPosScale; uniform float uTime; uniform float uWindAmp; uniform float uWiden; uniform int uDeform; uniform vec3 uHero;
+out vec3 vWp; out vec3 vN; out vec3 vAlb; out float vSunD; out float vKv; flat out int vFlags; out float vS;
+vec3 octDec(vec2 e){ vec3 v=vec3(e.xy,1.0-abs(e.x)-abs(e.y)); if(v.z<0.0){ vec2 s=vec2(v.x>=0.0?1.0:-1.0, v.y>=0.0?1.0:-1.0); v.xy=(1.0-abs(v.yx))*s; } return normalize(v); }
+void main(){ vec3 p=aPos*uPosScale; int fl=int(aFlags+0.5); float c=cos(aInst.w), s=sin(aInst.w); vec3 n=octDec(aNrm);
+  if(uWiden>1.0 && aS<0.999){ float sg=((fl&1)!=0)?1.0:-1.0; vec3 side=normalize(cross(vec3(0,1,0),n)); p+=side*sg*0.013*pow(1.0-aS,0.6)*(uWiden-1.0); }
+  float ph=float(fl>>2)/64.0*6.2831853+0.9*p.x+0.5*p.z; float w=uWindAmp*(sin(1.7*uTime+ph)+0.5*sin(3.1*uTime+1.3*ph)); p+=vec3(0.8,0,0.6)*(w*p.y*aS);
+  p*=aIScale; p=vec3(c*p.x+s*p.z, p.y, -s*p.x+c*p.z); n=vec3(c*n.x+s*n.z, n.y, -s*n.x+c*n.z);
+  vec3 wp=p+aInst.xyz;
+  if(uDeform==1 && aS>0.0 && uHero.z>0.5){ float dx=wp.x-uHero.x, dz=wp.z-uHero.y; float d=sqrt(dx*dx+dz*dz)+1e-4; if(d<0.42){ float k=(0.42-d)/0.42; k=k*k; vec3 disp=vec3(dx/d*k*0.2,-k*0.22,dz/d*k*0.2); wp+=disp*aS*aS; } }
+  vWp=wp; vN=n; vAlb=aAlb; vSunD=aSunD; vKv=aKv; vFlags=fl; vS=aS; gl_Position=uVP*vec4(wp,1.0); }`;
+const FS_DIODE=`#version 300 es
+precision highp float; precision highp int;
+in vec3 vWp; in vec3 vN; in vec3 vAlb; in float vSunD; in float vKv; flat in int vFlags; in float vS;
+uniform float uEnc; uniform int uGround; uniform vec3 uFarAlb; uniform vec2 uFarSK;
+out vec4 o;
+${COMMON}
+void main(){ vec3 n=normalize(vN); bool front=dot(n,uCam-vWp)>=0.0; vec3 ns=front?n:-n; bool sunFront=(vFlags&2)!=0;
+  vec3 alb=vAlb; float sunD=vSunD; float kv=vKv;
+  if(uGround==1){ float dist=length(vWp-uCam); float k=smoothstep(14.0,40.0,dist); alb=mix(alb,uFarAlb,k); sunD=mix(sunD,uFarSK.x,k); kv=mix(kv,uFarSK.y,k); }
+  vec3 trans=alb*vec3(1.4,1.5,0.9); vec3 v=normalize(uCam-vWp); float nv=max(dot(ns,v),1e-4);
+  float sh=occShadow(vWp); vec3 sunL=uSunCol*sunD*sh; vec3 col;
+  if(front==sunFront){ col=sunL*alb/PI; float ndl=max(dot(ns,uSun),0.0); float vis=clamp(sunD/max(ndl,0.08),0.0,1.0);
+    vec3 h=normalize(v+uSun); float nh=max(dot(ns,h),0.0), vh=max(dot(v,h),0.0); float a=0.1024; float spec=fres(vh,0.035)*ggxD(nh,a)*ggxG1(nv,a)*ggxG1(max(ndl,1e-4),a)/(4.0*nv+1e-6); col+=uSunCol*vis*sh*spec*0.6; }
+  else col=sunL*trans*0.8/PI;
+  col+=alb*ambientSky(ns)*kv*(1.0+0.15*pow(1.0-nv,2.0)); col+=trans*vec3(0.17,0.26,0.06)*uSkyK*0.35*kv;
+  o=vec4(col*uEnc,1.0); }`;
+// --- кот: кожа / нос / шарф (скиннинг двумя костями) ---
+const SKIN_FN=`
+uniform mat4 uBones[10];
+vec3 skinP(vec3 p,int a,int b,float w){ vec3 pa=(uBones[a]*vec4(p,1.0)).xyz; vec3 pb=(uBones[b]*vec4(p,1.0)).xyz; return mix(pa,pb,w); }
+vec3 skinN(vec3 n,int a,int b,float w){ vec3 na=mat3(uBones[a])*n; vec3 nb=mat3(uBones[b])*n; return normalize(mix(na,nb,w)); }
+vec3 octDec(vec2 e){ vec3 v=vec3(e.xy,1.0-abs(e.x)-abs(e.y)); if(v.z<0.0){ vec2 s=vec2(v.x>=0.0?1.0:-1.0, v.y>=0.0?1.0:-1.0); v.xy=(1.0-abs(v.yx))*s; } return normalize(v); }`;
+const VS_SKIN=`#version 300 es
+precision highp float; precision highp int;
+layout(location=0) in vec3 aPos; layout(location=1) in vec2 aNrm; layout(location=2) in vec3 aCol; layout(location=3) in float aBA; layout(location=4) in float aBB; layout(location=5) in float aW; layout(location=6) in float aFur;
+uniform mat4 uVP; uniform float uPosScale; ${SKIN_FN}
+out vec3 vWp; out vec3 vN; out vec3 vCol; out float vFur;
+void main(){ int a=int(aBA+0.5), b=int(aBB+0.5); vec3 p=skinP(aPos*uPosScale,a,b,aW); vec3 n=skinN(octDec(aNrm),a,b,aW); vWp=p; vN=n; vCol=aCol; vFur=aFur; gl_Position=uVP*vec4(p,1.0); }`;
+const VS_MESH=`#version 300 es
+precision highp float; precision highp int;
+layout(location=0) in vec3 aPos; layout(location=1) in vec3 aNrm; layout(location=3) in float aBA; layout(location=4) in float aBB; layout(location=5) in float aW;
+uniform mat4 uVP; ${SKIN_FN}
+out vec3 vWp; out vec3 vN; out vec3 vCol; out float vFur;
+void main(){ int a=int(aBA+0.5), b=int(aBB+0.5); vec3 p=skinP(aPos,a,b,aW); vec3 n=skinN(aNrm,a,b,aW); vWp=p; vN=n; vCol=vec3(0.0); vFur=0.0; gl_Position=uVP*vec4(p,1.0); }`;
+const FS_CAT=`#version 300 es
+precision highp float; in vec3 vWp; in vec3 vN; in vec3 vCol; in float vFur; uniform float uEnc; uniform int uMat; uniform float uCanopy; out vec4 o;
+${COMMON}
+void main(){ vec3 n=normalize(vN); vec3 v=normalize(uCam-vWp); if(dot(n,v)<0.0) n=-n; float nv=max(dot(n,v),1e-4); vec3 alb; float rough=0.6, f0=0.03, ao=1.0;
+  if(uMat==0){ alb=vCol*0.9; ao=vFur>0.5?0.55:1.0; rough=0.75; }           // кожа (под шерстью — подшёрсток)
+  else if(uMat==1){ alb=vec3(0.36,0.2,0.22); rough=0.25; f0=0.05; }          // нос
+  else { alb=vec3(0.12,0.32,0.82); rough=0.7; f0=0.03; }                     // шарф
+  float sh=occShadow(vWp)*uCanopy; float ndl=dot(n,uSun); float wrap=clamp((ndl+0.3)/1.3,0.0,1.0);
+  vec3 col=uSunCol*sh*alb/PI*wrap;
+  vec3 h=normalize(v+uSun); float nh=max(dot(n,h),0.0), vh=max(dot(v,h),0.0); float a=max(0.03,rough*rough); float spec=fres(vh,f0)*ggxD(nh,a)*ggxG1(nv,a)*ggxG1(max(ndl,1e-4),a)/(4.0*nv+1e-6); col+=uSunCol*sh*spec*max(ndl,0.0);
+  col+=alb*ambientSky(n)*ao*0.95; col+=alb*vec3(0.17,0.26,0.06)*uSkyK*0.25*(0.5-0.5*n.y)*ao;
+  if(uMat==0 && vFur>0.5) col*=0.85;
+  o=vec4(col*uEnc,1.0); }`;
+// --- шерсть: лента по 4 точкам, повёрнутая к камере ---
+const VS_FUR=`#version 300 es
+precision highp float; precision highp int;
+layout(location=0) in vec2 aT;    // x: сегмент 0..3, y: сторона -1/+1
+layout(location=1) in vec3 aP0; layout(location=2) in vec3 aP1; layout(location=3) in vec3 aP2; layout(location=4) in vec3 aP3;
+layout(location=5) in vec2 aNrm; layout(location=6) in vec3 aCol; layout(location=7) in float aBA; layout(location=8) in float aBB; layout(location=9) in float aW; layout(location=10) in float aRad; layout(location=11) in float aReg;
+uniform mat4 uVP; uniform float uPosScale; uniform float uPixWorld; uniform vec3 uCamPos; uniform float uTime; ${SKIN_FN}
+out vec3 vWp; out vec3 vN; out vec3 vT; out vec3 vCol; out float vTt; out float vEdge;
+void main(){ int k=int(aT.x+0.5); int a=int(aBA+0.5), b=int(aBB+0.5);
+  vec3 P[4]; P[0]=aP0*uPosScale; P[1]=aP1*uPosScale; P[2]=aP2*uPosScale; P[3]=aP3*uPosScale;
+  vec3 p=P[k]; vec3 pn=(k<3)?P[k+1]:P[k]; vec3 pp=(k>0)?P[k-1]:P[k];
+  // лёгкое дыхание ветра на кончиках
+  float t=float(k)/3.0; float sway=0.0015*t*t*sin(uTime*2.3+p.x*40.0+p.z*31.0);
+  p=skinP(p,a,b,aW); pn=skinP(pn,a,b,aW); pp=skinP(pp,a,b,aW); p.x+=sway;
+  vec3 T=normalize(pn-pp); vec3 view=normalize(uCamPos-p); vec3 side=normalize(cross(T,view));
+  float d=length(uCamPos-p); float rad=aRad*0.00002; float wdt=max(rad*(1.1-0.6*t), uPixWorld*d*0.45);
+  p+=side*(aT.y*wdt);
+  vWp=p; vN=skinN(octDec(aNrm),a,b,aW); vT=T; vCol=aCol; vTt=t; vEdge=aT.y; gl_Position=uVP*vec4(p,1.0); }`;
+const FS_FUR=`#version 300 es
+precision highp float; in vec3 vWp; in vec3 vN; in vec3 vT; in vec3 vCol; in float vTt; in float vEdge; uniform float uEnc; uniform float uCanopy; out vec4 o;
+${COMMON}
+void main(){ vec3 n=normalize(vN); vec3 v=normalize(uCam-vWp); vec3 T=normalize(vT); float nv=max(dot(n,v),0.0);
+  float sh=occShadow(vWp)*uCanopy; float ndl=dot(n,uSun); float wrap=clamp((ndl+0.45)/1.45,0.0,1.0);
+  float root=0.42+0.58*vTt;                                  // корни темнее — шерсть сама себя затеняет
+  vec3 alb=vCol;
+  vec3 col=uSunCol*sh*alb/PI*wrap*root;
+  vec3 h=normalize(v+uSun); float th=dot(T,h); float sheen=pow(max(0.0,sqrt(1.0-th*th)),28.0); col+=uSunCol*sh*(alb*0.5+vec3(0.3,0.26,0.2))*sheen*0.22*max(ndl+0.3,0.0);
+  float rim=pow(1.0-nv,2.5)*clamp(-ndl+0.25,0.0,1.0); col+=uSunCol*sh*alb*vec3(1.1,0.85,0.6)*rim*0.5*vTt;   // просвет на контровом свете
+  col+=alb*ambientSky(n)*root*0.95; col+=alb*vec3(0.17,0.26,0.06)*uSkyK*0.25*(0.5-0.5*n.y)*root;
+  o=vec4(col*uEnc,1.0); }`;
+// --- глаза ---
+const VS_EYE=`#version 300 es
+precision highp float; layout(location=0) in vec3 aPos; layout(location=1) in vec3 aNrm; layout(location=2) in vec2 aUv; uniform mat4 uVP; uniform mat4 uM; uniform mat4 uBone; out vec3 vWp; out vec3 vN; out vec3 vL;
+void main(){ vec3 lp=aPos; vL=lp; vec4 wp=uBone*uM*vec4(lp,1.0); vWp=wp.xyz; vN=normalize(mat3(uBone)*mat3(uM)*aNrm); gl_Position=uVP*wp; }`;
+const FS_EYE=`#version 300 es
+precision highp float; in vec3 vWp; in vec3 vN; in vec3 vL; uniform float uEnc; uniform vec3 uFwd; uniform mat4 uBone; out vec4 o;
+${COMMON}
+void main(){ vec3 n=normalize(vN); vec3 v=normalize(uCam-vWp); float nv=max(dot(n,v),1e-4); vec3 d=normalize(vL); float c=dot(d,uFwd);
+  vec3 base; float ang=atan(d.y, dot(d,normalize(cross(uFwd,vec3(0,1,0)))));
+  if(c>0.935) base=vec3(0.02,0.015,0.015);
+  else if(c>0.74){ float r=(c-0.74)/(0.935-0.74); vec3 ir=mix(vec3(0.16,0.42,0.14),vec3(0.42,0.72,0.3),r)*(0.85+0.2*sin(ang*14.0)+0.1*sin(ang*31.0)); if(c<0.765) ir*=0.6; if(c>0.91) ir*=0.7; base=ir; }
+  else base=vec3(0.96,0.96,0.94);
+  float ndl=dot(n,uSun); vec3 col=base*(uSunCol*0.6*occShadow(vWp)*clamp((ndl+0.5)/1.5,0.0,1.0)/PI + ambientSky(n)*0.9);
+  vec3 h=normalize(v+uSun); float nh=max(dot(n,h),0.0), vh=max(dot(v,h),0.0); float a=0.02; float spec=fres(vh,0.05)*ggxD(nh,a)*ggxG1(nv,a)*ggxG1(max(ndl,1e-4),a)/(4.0*nv+1e-6); col+=uSunCol*spec*0.35*max(ndl,0.0)*occShadow(vWp);
+  vec3 rd=reflect(-v,n); col+=skyCol(rd,false)*fres(nv,0.04)*0.9;   // отражение неба — живой блеск
+  o=vec4(col*uEnc,1.0); }`;
+// --- линии (усы, рот) ---
+const VS_LINE=`#version 300 es
+precision highp float; layout(location=0) in vec3 aPos; uniform mat4 uVP; uniform mat4 uBone; void main(){ gl_Position=uVP*uBone*vec4(aPos,1.0); }`;
+const FS_LINE=`#version 300 es
+precision highp float; uniform vec3 uColor; uniform float uEnc; out vec4 o; void main(){ o=vec4(uColor*uEnc,1.0); }`;
+const VS_SKY=`#version 300 es
+precision highp float; layout(location=0) in vec2 aP; uniform mat4 uInvVP; out vec3 vDir; void main(){ vec4 a=uInvVP*vec4(aP,1.0,1.0); vec4 b=uInvVP*vec4(aP,-1.0,1.0); vDir=a.xyz/a.w-b.xyz/b.w; gl_Position=vec4(aP,0.99999,1.0); }`;
+const FS_SKY=`#version 300 es
+precision highp float; in vec3 vDir; uniform float uEnc; out vec4 o; ${COMMON} void main(){ o=vec4(skyCol(normalize(vDir),true)*uEnc,1.0); }`;
+const VS_Q=`#version 300 es
+precision highp float; layout(location=0) in vec2 aP; out vec2 vUv; void main(){ vUv=aP*0.5+0.5; gl_Position=vec4(aP,0.0,1.0); }`;
+const FS_DOF=`#version 300 es
+precision highp float; in vec2 vUv; uniform sampler2D uCol; uniform sampler2D uDep; uniform vec2 uTexel; uniform float uNear; uniform float uFar; uniform float uFocus; uniform float uAper; uniform float uK; uniform float uMaxCoc; uniform mat4 uInvVP; uniform float uEnc; uniform vec3 uFogA; uniform vec3 uFogB; uniform float uFogD; out vec4 o;
+${COMMON}
+float lin(float z){ return uNear*uFar/(uFar-z*(uFar-uNear)); }
+float coc(float d){ return min(uMaxCoc, uAper*abs(d-uFocus)/d*uK); }
+const vec2 P[24]=vec2[24](vec2(-0.613,-0.318),vec2(0.172,-0.883),vec2(0.731,-0.455),vec2(-0.213,0.187),vec2(0.398,0.166),vec2(-0.822,0.287),vec2(0.077,0.555),vec2(0.549,0.721),vec2(-0.458,0.776),vec2(-0.062,-0.414),vec2(0.933,0.117),vec2(-0.344,-0.736),vec2(0.264,-0.266),vec2(-0.946,-0.062),vec2(0.619,-0.056),vec2(-0.147,0.939),vec2(0.428,0.472),vec2(-0.591,0.082),vec2(0.146,0.133),vec2(0.832,0.511),vec2(-0.258,-0.137),vec2(0.312,-0.615),vec2(-0.688,-0.615),vec2(0.023,-0.071));
+void main(){ float z0=texture(uDep,vUv).r; float d0=lin(z0); float c0=coc(d0); vec3 col=texture(uCol,vUv).rgb/uEnc;
+  if(c0>0.6){ vec3 sum=col; float ws=1.0; for(int i=0;i<24;i++){ vec2 off=P[i]*c0; vec2 uv=vUv+off*uTexel; float dt=lin(texture(uDep,uv).r); float ct=coc(dt); float w=(ct>=length(off)*0.75)?1.0:0.12; sum+=texture(uCol,uv).rgb/uEnc*w; ws+=w; } col=sum/ws; }
+  vec4 a=uInvVP*vec4(vUv*2.0-1.0,1.0,1.0); vec4 b=uInvVP*vec4(vUv*2.0-1.0,-1.0,1.0); vec3 dir=normalize(a.xyz/a.w-b.xyz/b.w);
+  float dd=min(d0,120.0); float fg=1.0-exp(-dd*uFogD); vec3 fc=mix(uFogA,uFogB,pow(max(0.0,dot(dir,uSun)),4.0)*0.7)*0.75; col=mix(col,fc,fg*0.92);
+  o=vec4(col,1.0); }`;
+const FS_DOWN=`#version 300 es
+precision highp float; in vec2 vUv; uniform sampler2D uCol; uniform sampler2D uDep; uniform vec2 uTexel; uniform float uExp; uniform vec2 uSunUV; uniform float uRays; out vec4 o;
+void main(){ vec3 s=vec3(0.0); for(int j=0;j<4;j++) for(int i=0;i<4;i++) s+=texture(uCol,vUv+(vec2(float(i),float(j))-1.5)*uTexel).rgb; s/=16.0; float l=(0.2126*s.r+0.7152*s.g+0.0722*s.b)*uExp; float t=clamp((l-0.9)/1.6,0.0,1.0); vec3 bloom=s*t*t*(3.0-2.0*t);
+  // лучи: яркое небо, видимое сквозь деревья, размазываем к солнцу
+  vec3 rays=vec3(0.0); if(uRays>0.0){ vec2 dlt=(uSunUV-vUv)/24.0; vec2 uv=vUv; float w=1.0; for(int i=0;i<24;i++){ uv+=dlt; float z=texture(uDep,uv).r; vec3 c=texture(uCol,uv).rgb; float sky=(z>0.9999)?1.0:0.0; rays+=c*sky*w; w*=0.93; } rays*=uRays/24.0*0.9; }
+  o=vec4(bloom+rays,1.0); }`;
+const FS_BLUR=`#version 300 es
+precision highp float; in vec2 vUv; uniform sampler2D uCol; uniform vec2 uDir; out vec4 o;
+void main(){ vec3 s=vec3(0.0); float ws=0.0; for(int i=-14;i<=14;i++){ float w=exp(-float(i*i)/(2.0*5.5*5.5)); s+=texture(uCol,vUv+uDir*float(i)).rgb*w; ws+=w; } o=vec4(s/ws,1.0); }`;
+const FS_FINAL=`#version 300 es
+precision highp float; in vec2 vUv; uniform sampler2D uCol; uniform sampler2D uBloom; uniform float uExp; uniform float uSeed; out vec4 o;
+vec3 aces(vec3 x){ return clamp((x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14),0.0,1.0); }
+float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7))+uSeed)*43758.5453); }
+void main(){ vec3 c=(texture(uCol,vUv).rgb+texture(uBloom,vUv).rgb*0.22)*uExp; vec2 q=vUv-0.5; c*=1.0-0.45*dot(q,q)*2.2; c=aces(c); c+=vec3((hash(gl_FragCoord.xy)-0.5)*0.012); o=vec4(pow(clamp(c,0.0,1.0),vec3(1.0/2.2)),1.0); }`;
+
+function prog(vs,fs){ const p=gl.createProgram(); for(const [t,src] of [[gl.VERTEX_SHADER,vs],[gl.FRAGMENT_SHADER,fs]]){ const s=gl.createShader(t); gl.shaderSource(s,src); gl.compileShader(s); if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) throw new Error('shader: '+gl.getShaderInfoLog(s)); gl.attachShader(p,s); }
+  gl.linkProgram(p); if(!gl.getProgramParameter(p,gl.LINK_STATUS)) throw new Error('link: '+gl.getProgramInfoLog(p)); const u={}; const n=gl.getProgramParameter(p,gl.ACTIVE_UNIFORMS); for(let i=0;i<n;i++){ const info=gl.getActiveUniform(p,i); u[info.name.replace('[0]','')]=gl.getUniformLocation(p,info.name); } return {p,u}; }
+
+// ============ матрицы ============
+function perspective(fov,asp,n,f){ const t=1/Math.tan(fov/2); return [t/asp,0,0,0, 0,t,0,0, 0,0,(f+n)/(n-f),-1, 0,0,2*f*n/(n-f),0]; }
+function lookAt(e,l){ const f=norm3(sub3(l,e)); const r=norm3(cross3(f,[0,1,0])); const u=cross3(r,f); return [r[0],u[0],-f[0],0, r[1],u[1],-f[1],0, r[2],u[2],-f[2],0, -dot3(r,e),-dot3(u,e),dot3(f,e),1]; }
+function mul4(a,b){ const o=new Array(16); for(let i=0;i<4;i++) for(let j=0;j<4;j++){ let s=0; for(let k=0;k<4;k++) s+=a[k*4+j]*b[i*4+k]; o[i*4+j]=s; } return o; }
+function inv4(m){ const o=new Array(16); const a=m; o[0]=a[5]*a[10]*a[15]-a[5]*a[11]*a[14]-a[9]*a[6]*a[15]+a[9]*a[7]*a[14]+a[13]*a[6]*a[11]-a[13]*a[7]*a[10]; o[4]=-a[4]*a[10]*a[15]+a[4]*a[11]*a[14]+a[8]*a[6]*a[15]-a[8]*a[7]*a[14]-a[12]*a[6]*a[11]+a[12]*a[7]*a[10]; o[8]=a[4]*a[9]*a[15]-a[4]*a[11]*a[13]-a[8]*a[5]*a[15]+a[8]*a[7]*a[13]+a[12]*a[5]*a[11]-a[12]*a[7]*a[9]; o[12]=-a[4]*a[9]*a[14]+a[4]*a[10]*a[13]+a[8]*a[5]*a[14]-a[8]*a[6]*a[13]-a[12]*a[5]*a[10]+a[12]*a[6]*a[9]; o[1]=-a[1]*a[10]*a[15]+a[1]*a[11]*a[14]+a[9]*a[2]*a[15]-a[9]*a[3]*a[14]-a[13]*a[2]*a[11]+a[13]*a[3]*a[10]; o[5]=a[0]*a[10]*a[15]-a[0]*a[11]*a[14]-a[8]*a[2]*a[15]+a[8]*a[3]*a[14]+a[12]*a[2]*a[11]-a[12]*a[3]*a[10]; o[9]=-a[0]*a[9]*a[15]+a[0]*a[11]*a[13]+a[8]*a[1]*a[15]-a[8]*a[3]*a[13]-a[12]*a[1]*a[11]+a[12]*a[3]*a[9]; o[13]=a[0]*a[9]*a[14]-a[0]*a[10]*a[13]-a[8]*a[1]*a[14]+a[8]*a[2]*a[13]+a[12]*a[1]*a[10]-a[12]*a[2]*a[9]; o[2]=a[1]*a[6]*a[15]-a[1]*a[7]*a[14]-a[5]*a[2]*a[15]+a[5]*a[3]*a[14]+a[13]*a[2]*a[7]-a[13]*a[3]*a[6]; o[6]=-a[0]*a[6]*a[15]+a[0]*a[7]*a[14]+a[4]*a[2]*a[15]-a[4]*a[3]*a[14]-a[12]*a[2]*a[7]+a[12]*a[3]*a[6]; o[10]=a[0]*a[5]*a[15]-a[0]*a[7]*a[13]-a[4]*a[1]*a[15]+a[4]*a[3]*a[13]+a[12]*a[1]*a[7]-a[12]*a[3]*a[5]; o[14]=-a[0]*a[5]*a[14]+a[0]*a[6]*a[13]+a[4]*a[1]*a[14]-a[4]*a[2]*a[13]-a[12]*a[1]*a[6]+a[12]*a[2]*a[5]; o[3]=-a[1]*a[6]*a[11]+a[1]*a[7]*a[10]+a[5]*a[2]*a[11]-a[5]*a[3]*a[10]-a[9]*a[2]*a[7]+a[9]*a[3]*a[6]; o[7]=a[0]*a[6]*a[11]-a[0]*a[7]*a[10]-a[4]*a[2]*a[11]+a[4]*a[3]*a[10]+a[8]*a[2]*a[7]-a[8]*a[3]*a[6]; o[11]=-a[0]*a[5]*a[11]+a[0]*a[7]*a[9]+a[4]*a[1]*a[11]-a[4]*a[3]*a[9]-a[8]*a[1]*a[7]+a[8]*a[3]*a[5]; o[15]=a[0]*a[5]*a[10]-a[0]*a[6]*a[9]-a[4]*a[1]*a[10]+a[4]*a[2]*a[9]+a[8]*a[1]*a[6]-a[8]*a[2]*a[5]; let det=a[0]*o[0]+a[1]*o[4]+a[2]*o[8]+a[3]*o[12]; det=1/det; for(let i=0;i<16;i++) o[i]*=det; return o; }
+const sub3=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], add3=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]], dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2], cross3=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]], norm3=a=>{const l=Math.hypot(a[0],a[1],a[2])||1; return [a[0]/l,a[1]/l,a[2]/l];};
+const I4=()=>[1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+const T4=(x,y,z)=>[1,0,0,0, 0,1,0,0, 0,0,1,0, x,y,z,1];
+const RX=(a)=>{const c=Math.cos(a),s=Math.sin(a); return [1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1];};
+const RY=(a)=>{const c=Math.cos(a),s=Math.sin(a); return [c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1];};
+const RZ=(a)=>{const c=Math.cos(a),s=Math.sin(a); return [c,s,0,0, -s,c,0,0, 0,0,1,0, 0,0,0,1];};
+const xf4=(m,p)=>[m[0]*p[0]+m[4]*p[1]+m[8]*p[2]+m[12], m[1]*p[0]+m[5]*p[1]+m[9]*p[2]+m[13], m[2]*p[0]+m[6]*p[1]+m[10]*p[2]+m[14]];
+function mulN(...ms){ let r=ms[0]; for(let i=1;i<ms.length;i++) r=mul4(r,ms[i]); return r; }
+
+// ============ инициализация ============
+let G={};
+function ground(x,z){ return 0.35*Math.sin(0.07*x+0.3)*Math.cos(0.055*z)+0.18*Math.sin(0.13*x-0.09*z+1.0)+0.09*Math.sin(0.25*x+0.19*z+2.0)+0.0016*Math.max(0,-z-18)**2; }
+function init(){
+  const h=S.hdr, ab=S.ab, base=S.base;
+  G.pDiode=prog(VS_DIODE,FS_DIODE); G.pSkin=prog(VS_SKIN,FS_CAT); G.pMesh=prog(VS_MESH,FS_CAT); G.pFur=prog(VS_FUR,FS_FUR); G.pEye=prog(VS_EYE,FS_EYE); G.pLine=prog(VS_LINE,FS_LINE); G.pSky=prog(VS_SKY,FS_SKY); G.pDof=prog(VS_Q,FS_DOF); G.pDown=prog(VS_Q,FS_DOWN); G.pBlur=prog(VS_Q,FS_BLUR); G.pFinal=prog(VS_Q,FS_FINAL);
+  G.sun=h.sun; G.suncol=h.suncol; G.sunrad=h.sunrad; G.exposure=h.exposure; G.TR=h.TR;
+  const mkBuf=(target,ab_,off,len)=>{ const b=gl.createBuffer(); gl.bindBuffer(target,b); gl.bufferData(target,new Uint8Array(ab_,off,len),gl.STATIC_DRAW); return b; };
+  const diodeAttribs=(stride,floatPos)=>{ const T=gl; T.enableVertexAttribArray(0); T.vertexAttribPointer(0,3,floatPos?T.FLOAT:T.SHORT,false,stride,0); const o=floatPos?12:6; T.enableVertexAttribArray(1); T.vertexAttribPointer(1,2,T.BYTE,true,stride,o); T.enableVertexAttribArray(2); T.vertexAttribPointer(2,3,T.UNSIGNED_BYTE,true,stride,o+2); T.enableVertexAttribArray(3); T.vertexAttribPointer(3,1,T.UNSIGNED_BYTE,true,stride,o+5); T.enableVertexAttribArray(4); T.vertexAttribPointer(4,1,T.UNSIGNED_BYTE,true,stride,o+6); T.enableVertexAttribArray(5); T.vertexAttribPointer(5,1,T.UNSIGNED_BYTE,true,stride,o+7); T.enableVertexAttribArray(6); T.vertexAttribPointer(6,1,T.UNSIGNED_BYTE,false,stride,o+8); };
+  const instAttribs=(buf)=>{ gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.enableVertexAttribArray(7); gl.vertexAttribPointer(7,4,gl.FLOAT,false,20,0); gl.vertexAttribDivisor(7,1); gl.enableVertexAttribArray(8); gl.vertexAttribPointer(8,1,gl.FLOAT,false,20,16); gl.vertexAttribDivisor(8,1); };
+  G.patches=h.patches.map((p)=>{ const vao=gl.createVertexArray(); gl.bindVertexArray(vao); mkBuf(gl.ARRAY_BUFFER,ab,base+p.vOff,p.nv*16); diodeAttribs(16,false); mkBuf(gl.ELEMENT_ARRAY_BUFFER,ab,base+p.iOff,p.ni*2); const inst=gl.createBuffer(); instAttribs(inst); gl.bindVertexArray(null); return {vao,inst,ni:p.ni,blades:p.blades,wind:p.wind,tiers:[]}; });
+  { const n=h.tiles.n; const dv=new DataView(ab,base+h.tiles.off,n*16); G.tiles=new Array(n); for(let i=0;i<n;i++) G.tiles[i]={x:dv.getFloat32(i*16,true),y:dv.getFloat32(i*16+4,true),z:dv.getFloat32(i*16+8,true),p:dv.getUint32(i*16+12,true)}; }
+  { const g=h.ground; const vao=gl.createVertexArray(); gl.bindVertexArray(vao); mkBuf(gl.ARRAY_BUFFER,ab,base+g.vOff,g.nv*24); diodeAttribs(24,true); mkBuf(gl.ELEMENT_ARRAY_BUFFER,ab,base+g.iOff,g.ni*4); const inst=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,inst); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,0,0,1]),gl.STATIC_DRAW); instAttribs(inst); gl.bindVertexArray(null); G.ground={vao,ni:g.ni}; }
+  G.trees=h.trees.map(t=>{ const mk=(vOff,nv,iOff,ni)=>{ const vao=gl.createVertexArray(); gl.bindVertexArray(vao); mkBuf(gl.ARRAY_BUFFER,ab,base+vOff,nv*16); diodeAttribs(16,false); mkBuf(gl.ELEMENT_ARRAY_BUFFER,ab,base+iOff,ni*2); const inst=gl.createBuffer(); instAttribs(inst); gl.bindVertexArray(null); return {vao,inst,ni}; }; return {trunk:mk(t.tvOff,t.tnv,t.tiOff,t.tni),leaves:mk(t.lvOff,t.lnv,t.liOff,t.lni)}; });
+  { const n=h.treeInst.n; const dv=new DataView(ab,base+h.treeInst.off,n*32); G.treeInst=[]; for(let i=0;i<n;i++) G.treeInst.push({x:dv.getFloat32(i*32,true),y:dv.getFloat32(i*32+4,true),z:dv.getFloat32(i*32+8,true),yaw:dv.getFloat32(i*32+12,true),sc:dv.getFloat32(i*32+16,true),v:dv.getUint32(i*32+24,true)}); }
+  // сфера для глаз — из мешей героя (28x18)
+  { const m=h.heroMeshes[0]; const vao=gl.createVertexArray(); gl.bindVertexArray(vao); mkBuf(gl.ARRAY_BUFFER,ab,base+m.vOff,m.nv*32); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.FLOAT,false,32,0); gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1,3,gl.FLOAT,false,32,12); gl.enableVertexAttribArray(2); gl.vertexAttribPointer(2,2,gl.FLOAT,false,32,24); mkBuf(gl.ELEMENT_ARRAY_BUFFER,ab,base+m.iOff,m.ni*2); gl.bindVertexArray(null); G.sphere={vao,ni:m.ni}; }
+  { const vao=gl.createVertexArray(); gl.bindVertexArray(vao); const b=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,b); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0); gl.bindVertexArray(null); G.quad=vao; }
+  G.instScratch=new Float32Array(2000*5);
+  // ---- кот ----
+  const ch=C.hdr, cab=C.ab, cb=C.base, sec=ch.sec; G.catScale=ch.scale;
+  { const vao=gl.createVertexArray(); gl.bindVertexArray(vao); mkBuf(gl.ARRAY_BUFFER,cab,cb+sec.skin_v.off,sec.skin_v.len); const st=16;
+    gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.SHORT,false,st,0); gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1,2,gl.BYTE,true,st,6); gl.enableVertexAttribArray(2); gl.vertexAttribPointer(2,3,gl.UNSIGNED_BYTE,true,st,8);
+    gl.enableVertexAttribArray(3); gl.vertexAttribPointer(3,1,gl.UNSIGNED_BYTE,false,st,11); gl.enableVertexAttribArray(4); gl.vertexAttribPointer(4,1,gl.UNSIGNED_BYTE,false,st,12); gl.enableVertexAttribArray(5); gl.vertexAttribPointer(5,1,gl.UNSIGNED_BYTE,true,st,13); gl.enableVertexAttribArray(6); gl.vertexAttribPointer(6,1,gl.UNSIGNED_BYTE,false,st,14);
+    mkBuf(gl.ELEMENT_ARRAY_BUFFER,cab,cb+sec.skin_i.off,sec.skin_i.len); gl.bindVertexArray(null); G.skin={vao,ni:ch.skin.ni}; }
+  const meshVao=(vs,is,ni)=>{ const vao=gl.createVertexArray(); gl.bindVertexArray(vao); mkBuf(gl.ARRAY_BUFFER,cab,cb+vs.off,vs.len); const st=28; gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.FLOAT,false,st,0); gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1,3,gl.FLOAT,false,st,12); gl.enableVertexAttribArray(3); gl.vertexAttribPointer(3,1,gl.UNSIGNED_BYTE,false,st,24); gl.enableVertexAttribArray(4); gl.vertexAttribPointer(4,1,gl.UNSIGNED_BYTE,false,st,25); gl.enableVertexAttribArray(5); gl.vertexAttribPointer(5,1,gl.UNSIGNED_BYTE,true,st,26); mkBuf(gl.ELEMENT_ARRAY_BUFFER,cab,cb+is.off,is.len); gl.bindVertexArray(null); return {vao,ni}; };
+  G.nose=meshVao(sec.nose_v,sec.nose_i,ch.nose.ni); G.scarf=meshVao(sec.scarf_v,sec.scarf_i,ch.scarf.ni);
+  // шерсть: шаблон ленты (8 вершин) + атрибуты на волосок
+  { const vao=gl.createVertexArray(); gl.bindVertexArray(vao); const tb=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,tb); const tv=[]; for(let k=0;k<4;k++){ tv.push(k,-1,k,1); } gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(tv),gl.STATIC_DRAW); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,2,gl.FLOAT,false,8,0);
+    const ib=gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib); const ti=[]; for(let k=0;k<3;k++){ const a=k*2,b=a+1,c=a+2,d=a+3; ti.push(a,b,d, a,d,c); } gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(ti),gl.STATIC_DRAW);
+    const fb=mkBuf(gl.ARRAY_BUFFER,cab,cb+sec.fur.off,sec.fur.len); const st=36; const A=(loc,n,type,norm,off)=>{ gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,n,type,norm,st,off); gl.vertexAttribDivisor(loc,1); };
+    A(1,3,gl.SHORT,false,0); A(2,3,gl.SHORT,false,6); A(3,3,gl.SHORT,false,12); A(4,3,gl.SHORT,false,18); A(5,2,gl.BYTE,true,24); A(6,3,gl.UNSIGNED_BYTE,true,26); A(7,1,gl.UNSIGNED_BYTE,false,29); A(8,1,gl.UNSIGNED_BYTE,false,30); A(9,1,gl.UNSIGNED_BYTE,true,31); A(10,1,gl.UNSIGNED_BYTE,false,32); A(11,1,gl.UNSIGNED_BYTE,false,33);
+    gl.bindVertexArray(null); G.fur={vao,n:ch.fur.n}; }
+  // усы и рот — линии
+  { const f32=(s)=>new Float32Array(cab,cb+s.off,s.len/4); G.whisk=f32(sec.whisk); G.mouthPts=f32(sec.mouth); G.mouthLens=ch.mouth; G.eyes=Array.from(f32(sec.eyes)); G.eyeR=ch.eyeR; G.piv=Array.from(f32(sec.piv));
+    const mk=(arr)=>{ const vao=gl.createVertexArray(); gl.bindVertexArray(vao); const b=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,b); gl.bufferData(gl.ARRAY_BUFFER,arr,gl.STATIC_DRAW); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,3,gl.FLOAT,false,12,0); gl.bindVertexArray(null); return vao; };
+    G.whiskVao=mk(G.whisk); G.mouthVao=mk(G.mouthPts); G.whiskN=ch.whisk.n; G.whiskPts=ch.whisk.pts; }
+  resize(); $('load').style.display='none'; if(location.search.includes('still')){ window.renderOnce=(t)=>{ st.walk=false; st.time=t; frame(performance.now(),true); }; } else requestAnimationFrame(frame); }
+
+// ============ буферы кадра ============
+let FB=null, W=0, H=0, quality=1;
+function resize(){ const dpr=Math.min(window.devicePixelRatio||1,3)*(quality?1:0.6); const cw=$('wrap').clientWidth; let w=Math.round(cw*dpr); w=Math.min(w,1920); { const qp2=new URLSearchParams(location.search); if(qp2.has('w')) w=+qp2.get('w'); } const hgt=Math.round(w*9/16); if(w===W&&hgt===H) return; W=w; H=hgt; canvas.width=W; canvas.height=H; $('resV').textContent='Рендер '+W+'×'+H+(HDR?'':' · без HDR');
+  const qp=new URLSearchParams(location.search); const samples=Math.min(qp.has('samples')?+qp.get('samples'):4,gl.getParameter(gl.MAX_SAMPLES)); const cfmt=HDR?gl.RGBA16F:gl.RGB10_A2;
+  const rbC=gl.createRenderbuffer(); gl.bindRenderbuffer(gl.RENDERBUFFER,rbC); gl.renderbufferStorageMultisample(gl.RENDERBUFFER,samples,cfmt,W,H);
+  const rbD=gl.createRenderbuffer(); gl.bindRenderbuffer(gl.RENDERBUFFER,rbD); gl.renderbufferStorageMultisample(gl.RENDERBUFFER,samples,gl.DEPTH_COMPONENT24,W,H);
+  const fMS=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,fMS); gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.RENDERBUFFER,rbC); gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,rbD);
+  const tex=(ifmt,w,h,filt)=>{ const t=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,t); gl.texStorage2D(gl.TEXTURE_2D,1,ifmt,w,h); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,filt); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,filt); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE); return t; };
+  const tCol=tex(cfmt,W,H,gl.LINEAR), tDep=tex(gl.DEPTH_COMPONENT24,W,H,gl.NEAREST); const fRes=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,fRes); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tCol,0); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.TEXTURE_2D,tDep,0);
+  const tDof=tex(cfmt,W,H,gl.LINEAR); const fDof=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,fDof); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tDof,0);
+  const BW=Math.max(1,W>>2), BH=Math.max(1,H>>2); const tB0=tex(cfmt,BW,BH,gl.LINEAR), tB1=tex(cfmt,BW,BH,gl.LINEAR); const fB0=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,fB0); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tB0,0); const fB1=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,fB1); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tB1,0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null); FB={fMS,fRes,tCol,tDep,fDof,tDof,fB0,fB1,tB0,tB1,BW,BH,samples}; }
+window.addEventListener('resize',()=>setTimeout(resize,50));
+
+// ============ состояние, походка ============
+const st={free:true, walk:true, rays:true, time:0, tod:0, wind:1, fog:0.045, furD:1, yaw:0.55, pitch:0.22, dist:2.3};
+const CX=6.0, CZ0=-30.0, CZ1=-44.0, SPEED=0.21, STEP_HZ=1.5;
+function todParams(x){ const L=(a,b,t)=>a+(b-a)*t; const L3=(a,b,t)=>[L(a[0],b[0],t),L(a[1],b[1],t),L(a[2],b[2],t)];
+  const day={sun:[1.0,0.80,0.55],k:1,sky:1,zen:[0.17,0.36,0.78],hor:[1.0,0.8,0.58],fog:[0.86,0.8,0.68]}, set={sun:[1.0,0.48,0.22],k:0.45,sky:0.55,zen:[0.12,0.2,0.5],hor:[1.0,0.55,0.3],fog:[0.85,0.5,0.35]}, dusk={sun:[0.6,0.35,0.3],k:0.03,sky:0.16,zen:[0.03,0.05,0.16],hor:[0.35,0.22,0.3],fog:[0.3,0.22,0.3]};
+  const a=x<0.5?day:set, b=x<0.5?set:dusk, t=x<0.5?x*2:(x-0.5)*2; return {sun:L3(a.sun,b.sun,t),k:L(a.k,b.k,t),sky:L(a.sky,b.sky,t),zen:L3(a.zen,b.zen,t),hor:L3(a.hor,b.hor,t),fog:L3(a.fog,b.fog,t)}; }
+// положение кота на тропе: туда-обратно с разворотом
+function catPath(t){ const L=CZ0-CZ1; const period=L/SPEED+1.6; const u=t%(2*period); let s,yaw,turn=0;
+  if(u<period){ const q=Math.min(u,L/SPEED); s=q*SPEED; yaw=0; if(u>L/SPEED){ turn=(u-L/SPEED)/1.6; yaw=PI*turn; } }
+  else { const u2=u-period; const q=Math.min(u2,L/SPEED); s=L-q*SPEED; yaw=PI; if(u2>L/SPEED){ turn=(u2-L/SPEED)/1.6; yaw=PI+PI*turn; } }
+  const z=CZ0-s; return {x:CX,z,yaw,moving:turn===0}; }
+function bones(t){ // матрицы костей (покой -> поза), координаты движка: кот смотрит в -z
+  const pv=i=>[G.piv[i*3],G.piv[i*3+1],G.piv[i*3+2]];
+  const ph=2*PI*STEP_HZ*t; const P=catPath(t); const walkK=P.moving?1:0.35; const amp=0.40*walkK;
+  const gy=ground(P.x,P.z); const bob=0.012*(0.5-0.5*Math.cos(2*ph))*walkK;
+  const root=mulN(T4(P.x,gy+bob,P.z),RY(P.yaw));
+  const about=(piv,R)=>mulN(T4(piv[0],piv[1],piv[2]),R,T4(-piv[0],-piv[1],-piv[2]));
+  const M=new Array(10);
+  const bodyR=mulN(RZ(0.04*Math.sin(ph)*walkK),RY(0.05*Math.sin(ph)*walkK),RX(-0.05-0.015*Math.cos(2*ph)));
+  M[0]=mulN(root,about(pv(0),bodyR));
+  const headR=mulN(RX(0.06+0.02*Math.sin(2*ph+0.5)+0.03*Math.sin(t*1.3)),RY(-0.05*Math.sin(ph)*walkK+0.28*Math.sin(t*0.57)+0.1*Math.sin(t*1.9)),RZ(0.04*Math.sin(t*0.9)));
+  M[1]=mulN(M[0],about(pv(1),headR));
+  M[2]=mulN(M[0],about(pv(2),mulN(RX(-0.33*Math.sin(ph)*walkK),RZ(0.1))));
+  M[3]=mulN(M[0],about(pv(3),mulN(RX(0.33*Math.sin(ph)*walkK),RZ(-0.1))));
+  const knee=(phase)=>-0.55*Math.pow(Math.max(0,Math.sin(phase-0.35)),1.4)*walkK;
+  M[4]=mulN(M[0],about(pv(4),RX(amp*Math.sin(ph)))); M[5]=mulN(M[4],about(pv(5),RX(knee(ph))));
+  M[6]=mulN(M[0],about(pv(6),RX(-amp*Math.sin(ph)))); M[7]=mulN(M[6],about(pv(7),RX(knee(ph+PI))));
+  M[8]=mulN(M[0],about(pv(8),mulN(RY(0.28*Math.sin(0.5*ph+1.0)+0.15*Math.sin(t*0.7)),RX(0.08*Math.sin(t*1.1)))));
+  M[9]=mulN(M[8],about(pv(9),mulN(RY(0.35*Math.sin(0.5*ph+2.3)),RX(0.12*Math.sin(t*1.5+1)))));
+  return {M,P,gy};
+}
+function frustumPlanes(m){ const r=(i)=>[m[i],m[4+i],m[8+i],m[12+i]]; const r0=r(0),r1=r(1),r2=r(2),r3=r(3); const pl=[]; const add=(a,b,s)=>pl.push([a[0]+s*b[0],a[1]+s*b[1],a[2]+s*b[2],a[3]+s*b[3]]); add(r3,r0,1); add(r3,r0,-1); add(r3,r1,1); add(r3,r1,-1); add(r3,r2,1); add(r3,r2,-1); for(const p of pl){ const l=Math.hypot(p[0],p[1],p[2]); p[0]/=l;p[1]/=l;p[2]/=l;p[3]/=l; } return pl; }
+function inFrustum(pl,x,y,z,r){ for(const p of pl) if(p[0]*x+p[1]*y+p[2]*z+p[3]<-r) return false; return true; }
+
+// ============ кадр ============
+let fpsAcc=0, fpsN=0, fpsShown=0, lastT=performance.now();
+function frame(now,once){ if(!once) requestAnimationFrame(frame);
+  const dt=Math.min(0.1,(now-lastT)/1000); lastT=now; fpsAcc+=dt; fpsN++; if(fpsAcc>0.5){ fpsShown=Math.round(fpsN/fpsAcc); fpsAcc=0; fpsN=0; }
+  if(st.walk && !once) st.time+=dt; const t=st.time;
+  const B=bones(t); const cat=B.P; const catC=[cat.x,B.gy+0.5,cat.z];
+  // камера
+  let eye,look,fov=34*PI/180,focus,aper;
+  if(st.free){ const el=Math.max(-0.1,Math.min(1.35,st.pitch)); const d=st.dist; eye=[catC[0]+Math.sin(st.yaw+cat.yaw)*Math.cos(el)*d, Math.max(catC[1]+Math.sin(el)*d, ground(catC[0],catC[2])+0.12), catC[2]-Math.cos(st.yaw+cat.yaw)*Math.cos(el)*d]; look=catC; focus=d; aper=0.010; }
+  else { const c=Math.cos(cat.yaw), s=Math.sin(cat.yaw); const off=[0.95,0.42,-2.1]; const o=[c*off[0]+s*off[2], off[1], -s*off[0]+c*off[2]]; eye=[catC[0]+o[0],catC[1]+o[1]+0.0,catC[2]+o[2]]; look=[catC[0],catC[1]+0.05,catC[2]]; focus=Math.hypot(o[0],o[1],o[2]); aper=0.013; }
+  const asp=W/H; const Pm=perspective(fov,asp,0.05,400); const Vm=lookAt(eye,look); const VP=mul4(Pm,Vm); const IVP=inv4(VP);
+  const tp=todParams(st.tod); const sunCol=[tp.sun[0]*G.sunrad*tp.k,tp.sun[1]*G.sunrad*tp.k,tp.sun[2]*G.sunrad*tp.k]; const sunBase=[tp.sun[0]*tp.k,tp.sun[1]*tp.k,tp.sun[2]*tp.k]; const zen=tp.zen.map(v=>v*tp.sky), hor=tp.hor.map(v=>v*tp.sky);
+  // тени-заслонки: голова, грудь, таз (в позе)
+  const occ=new Float32Array(16); { const hc=xf4(B.M[1],[0,0.78,-0.03]); const tc=xf4(B.M[0],[0,0.36,0]); const bc=xf4(B.M[0],[0,0.2,0.01]); const sp=[[hc,0.2],[tc,0.19],[bc,0.17],[[0,0,0],0]]; for(let i=0;i<4;i++){ occ[i*4]=sp[i][0][0]; occ[i*4+1]=sp[i][0][1]; occ[i*4+2]=sp[i][0][2]; occ[i*4+3]=sp[i][1]; } }
+  const setCommon=(pr)=>{ const u=pr.u; gl.uniform3fv(u.uSun,G.sun); gl.uniform3fv(u.uSunCol,sunCol); gl.uniform3fv(u.uSunBase,sunBase); gl.uniform1f(u.uSkyK,tp.sky); gl.uniform3fv(u.uZen,zen); gl.uniform3fv(u.uHor,hor); gl.uniform3fv(u.uCam,eye); if(u.uEnc) gl.uniform1f(u.uEnc,ENC); if(u.uOcc) gl.uniform4fv(u.uOcc,occ); };
+  const bonesF=new Float32Array(160); for(let i=0;i<10;i++) for(let j=0;j<16;j++) bonesF[i*16+j]=B.M[i][j];
+  gl.bindFramebuffer(gl.FRAMEBUFFER,FB.fMS); gl.viewport(0,0,W,H); gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LESS); gl.disable(gl.BLEND); gl.disable(gl.CULL_FACE); gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  { const pr=G.pSky; gl.useProgram(pr.p); setCommon(pr); gl.uniformMatrix4fv(pr.u.uInvVP,false,IVP); gl.depthMask(false); gl.bindVertexArray(G.quad); gl.drawArrays(gl.TRIANGLES,0,3); gl.depthMask(true); }
+  // ---- диоды: земля, ячейки, деревья ----
+  const pr=G.pDiode; gl.useProgram(pr.p); setCommon(pr); gl.uniformMatrix4fv(pr.u.uVP,false,VP); gl.uniform1f(pr.u.uTime,t); gl.uniform3f(pr.u.uHero,cat.x,cat.z,1.0);
+  gl.uniform3f(pr.u.uFarAlb,0.17,0.26,0.06); gl.uniform2f(pr.u.uFarSK,0.42,0.7);
+  gl.uniform1i(pr.u.uGround,1); gl.uniform1f(pr.u.uPosScale,1.0); gl.uniform1f(pr.u.uWindAmp,0.0); gl.uniform1f(pr.u.uWiden,1.0); gl.uniform1i(pr.u.uDeform,0); gl.bindVertexArray(G.ground.vao); gl.drawElementsInstanced(gl.TRIANGLES,G.ground.ni,gl.UNSIGNED_INT,0,1);
+  gl.uniform1i(pr.u.uGround,0);
+  const tiers=[{d:10,f:1.0,w:1.0,far:false},{d:17,f:0.6,w:1.35,far:false},{d:27,f:0.35,w:1.8,far:false},{d:46,f:0.45,w:1.5,far:true}];
+  for(const p of G.patches) p.tiers=[[],[],[],[]];
+  const planes=frustumPlanes(VP); const TRr=G.TR*1.25; let bladesDrawn=0;
+  for(let i=0;i<G.tiles.length;i++){ const tl=G.tiles[i]; if(!inFrustum(planes,tl.x,tl.y+0.4,tl.z,TRr+0.5)) continue; const dx=tl.x-eye[0], dz=tl.z-eye[2], dy=tl.y-eye[1]; const d=Math.sqrt(dx*dx+dy*dy+dz*dz)-G.TR*0.5; let tier=-1; for(let k=0;k<4;k++) if(d<tiers[k].d){ tier=k; break; } if(tier<0) continue; const pi=tiers[tier].far?(8+(i&1)):tl.p; G.patches[pi].tiers[tier].push(i); }
+  gl.uniform1f(pr.u.uPosScale,S.hdr.grassScale);
+  for(let pi=0;pi<G.patches.length;pi++){ const p=G.patches[pi]; gl.bindVertexArray(p.vao); gl.uniform1f(pr.u.uWindAmp,p.wind*st.wind);
+    for(let k=0;k<4;k++){ const list=p.tiers[k]; if(!list.length) continue; const T=tiers[k]; let n=0; const buf=G.instScratch; for(const i of list){ const tl=G.tiles[i]; buf[n++]=tl.x; buf[n++]=tl.y; buf[n++]=tl.z; buf[n++]=0; buf[n++]=1; }
+      gl.bindBuffer(gl.ARRAY_BUFFER,p.inst); gl.bufferData(gl.ARRAY_BUFFER,buf.subarray(0,n),gl.DYNAMIC_DRAW); const nb=Math.floor(p.blades*T.f); const count=T.f>=1?p.ni:nb*21; gl.uniform1f(pr.u.uWiden,T.w); gl.uniform1i(pr.u.uDeform,k<2?1:0);
+      gl.drawElementsInstanced(gl.TRIANGLES,count,gl.UNSIGNED_SHORT,0,list.length); bladesDrawn+=nb*list.length; } }
+  gl.uniform1f(pr.u.uPosScale,S.hdr.treeScale); gl.uniform1f(pr.u.uWindAmp,0.0); gl.uniform1f(pr.u.uWiden,1.0); gl.uniform1i(pr.u.uDeform,0);
+  { const lists=G.trees.map(()=>[]); for(const ti of G.treeInst){ if(!inFrustum(planes,ti.x,ti.y+4*ti.sc,ti.z,4.5*ti.sc)) continue; const d=Math.hypot(ti.x-eye[0],ti.z-eye[2]); if(d>160) continue; lists[ti.v].push(ti); }
+    for(let v=0;v<G.trees.length;v++){ const L=lists[v]; if(!L.length) continue; let n=0; const buf=G.instScratch; for(const ti of L){ buf[n++]=ti.x; buf[n++]=ti.y; buf[n++]=ti.z; buf[n++]=ti.yaw; buf[n++]=ti.sc; }
+      for(const part of [G.trees[v].trunk,G.trees[v].leaves]){ gl.bindVertexArray(part.vao); gl.bindBuffer(gl.ARRAY_BUFFER,part.inst); gl.bufferData(gl.ARRAY_BUFFER,buf.subarray(0,n),gl.DYNAMIC_DRAW); gl.drawElementsInstanced(gl.TRIANGLES,part.ni,gl.UNSIGNED_SHORT,0,L.length); } } }
+  // ---- кот ----
+  const canopy=0.62;
+  { const ps=G.pSkin; gl.useProgram(ps.p); setCommon(ps); gl.uniformMatrix4fv(ps.u.uVP,false,VP); gl.uniformMatrix4fv(ps.u.uBones,false,bonesF); gl.uniform1f(ps.u.uPosScale,G.catScale); gl.uniform1i(ps.u.uMat,0); gl.uniform1f(ps.u.uCanopy,canopy); gl.bindVertexArray(G.skin.vao); gl.drawElements(gl.TRIANGLES,G.skin.ni,gl.UNSIGNED_INT,0); }
+  { const pm=G.pMesh; gl.useProgram(pm.p); setCommon(pm); gl.uniformMatrix4fv(pm.u.uVP,false,VP); gl.uniformMatrix4fv(pm.u.uBones,false,bonesF); gl.uniform1f(pm.u.uCanopy,canopy); gl.uniform1i(pm.u.uMat,1); gl.bindVertexArray(G.nose.vao); gl.drawElements(gl.TRIANGLES,G.nose.ni,gl.UNSIGNED_INT,0); gl.uniform1i(pm.u.uMat,2); gl.bindVertexArray(G.scarf.vao); gl.drawElements(gl.TRIANGLES,G.scarf.ni,gl.UNSIGNED_INT,0); }
+  { const pe=G.pEye; gl.useProgram(pe.p); setCommon(pe); gl.uniformMatrix4fv(pe.u.uVP,false,VP); gl.uniformMatrix4fv(pe.u.uBone,false,B.M[1]); gl.bindVertexArray(G.sphere.vao);
+    for(let i=0;i<2;i++){ const e=[G.eyes[i*3],G.eyes[i*3+1],G.eyes[i*3+2]]; const r=G.eyeR; const Mm=[r,0,0,0, 0,r,0,0, 0,0,r,0, e[0],e[1],e[2],1]; gl.uniformMatrix4fv(pe.u.uM,false,Mm); const sx=e[0]<0?-1:1; gl.uniform3fv(pe.u.uFwd,norm3([sx*0.18,0.02,-1])); gl.drawElements(gl.TRIANGLES,G.sphere.ni,gl.UNSIGNED_SHORT,0); } }
+  { const pl=G.pLine; gl.useProgram(pl.p); gl.uniformMatrix4fv(pl.u.uVP,false,VP); gl.uniformMatrix4fv(pl.u.uBone,false,B.M[1]); gl.uniform1f(pl.u.uEnc,ENC);
+    gl.uniform3f(pl.u.uColor,0.9,0.88,0.85); gl.bindVertexArray(G.whiskVao); for(let i=0;i<G.whiskN;i++) gl.drawArrays(gl.LINE_STRIP,i*G.whiskPts,G.whiskPts);
+    gl.uniform3f(pl.u.uColor,0.08,0.05,0.04); gl.bindVertexArray(G.mouthVao); let o=0; for(const n of G.mouthLens){ gl.drawArrays(gl.LINE_STRIP,o,n); o+=n; } }
+  { const pf=G.pFur; gl.useProgram(pf.p); setCommon(pf); gl.uniformMatrix4fv(pf.u.uVP,false,VP); gl.uniformMatrix4fv(pf.u.uBones,false,bonesF); gl.uniform1f(pf.u.uPosScale,G.catScale); gl.uniform1f(pf.u.uPixWorld,2*Math.tan(fov/2)/H); gl.uniform3fv(pf.u.uCamPos,eye); gl.uniform1f(pf.u.uTime,t); gl.uniform1f(pf.u.uCanopy,canopy);
+    gl.bindVertexArray(G.fur.vao); gl.drawElementsInstanced(gl.TRIANGLES,18,gl.UNSIGNED_SHORT,0,Math.floor(G.fur.n*st.furD)); }
+  // ---- resolve + пост ----
+  gl.bindFramebuffer(gl.READ_FRAMEBUFFER,FB.fMS); gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER,FB.fRes); gl.blitFramebuffer(0,0,W,H,0,0,W,H,gl.COLOR_BUFFER_BIT,gl.NEAREST); gl.blitFramebuffer(0,0,W,H,0,0,W,H,gl.DEPTH_BUFFER_BIT,gl.NEAREST);
+  gl.disable(gl.DEPTH_TEST); gl.bindVertexArray(G.quad);
+  { const pd=G.pDof; gl.useProgram(pd.p); setCommon(pd); gl.bindFramebuffer(gl.FRAMEBUFFER,FB.fDof); gl.viewport(0,0,W,H); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,FB.tCol); gl.uniform1i(pd.u.uCol,0); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,FB.tDep); gl.uniform1i(pd.u.uDep,1);
+    gl.uniform2f(pd.u.uTexel,1/W,1/H); gl.uniform1f(pd.u.uNear,0.05); gl.uniform1f(pd.u.uFar,400); gl.uniform1f(pd.u.uFocus,focus); gl.uniform1f(pd.u.uAper,aper); gl.uniform1f(pd.u.uK,(H/2)/(focus*Math.tan(fov/2))); gl.uniform1f(pd.u.uMaxCoc,0.02*H); gl.uniformMatrix4fv(pd.u.uInvVP,false,IVP); gl.uniform1f(pd.u.uFogD,st.fog);
+    gl.uniform3fv(pd.u.uFogA,tp.fog); gl.uniform3f(pd.u.uFogB,tp.sun[0]*tp.k*1.3,tp.sun[1]*tp.k*1.3,tp.sun[2]*tp.k*1.3); gl.drawArrays(gl.TRIANGLES,0,3); }
+  // солнце на экране (для лучей)
+  let sunUV=[0.5,0.5], raysK=0; { const sp=[G.sun[0]*1000+eye[0],G.sun[1]*1000+eye[1],G.sun[2]*1000+eye[2]]; const c=[VP[0]*sp[0]+VP[4]*sp[1]+VP[8]*sp[2]+VP[12], VP[1]*sp[0]+VP[5]*sp[1]+VP[9]*sp[2]+VP[13], VP[3]*sp[0]+VP[7]*sp[1]+VP[11]*sp[2]+VP[15]]; if(c[2]>0){ sunUV=[c[0]/c[2]*0.5+0.5, c[1]/c[2]*0.5+0.5]; const dd=Math.hypot(sunUV[0]-0.5,(sunUV[1]-0.5)*0.6); raysK=Math.max(0,1-Math.max(0,dd-0.6)/0.6); } }
+  { const pdn=G.pDown; gl.useProgram(pdn.p); gl.bindFramebuffer(gl.FRAMEBUFFER,FB.fB0); gl.viewport(0,0,FB.BW,FB.BH); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,FB.tDof); gl.uniform1i(pdn.u.uCol,0); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,FB.tDep); gl.uniform1i(pdn.u.uDep,1); gl.uniform2f(pdn.u.uTexel,1/W,1/H); gl.uniform1f(pdn.u.uExp,G.exposure); gl.uniform2fv(pdn.u.uSunUV,sunUV); gl.uniform1f(pdn.u.uRays,st.rays?raysK*tp.k:0); gl.drawArrays(gl.TRIANGLES,0,3);
+    const pb=G.pBlur; gl.useProgram(pb.p); gl.uniform1i(pb.u.uCol,0); gl.activeTexture(gl.TEXTURE0); gl.bindFramebuffer(gl.FRAMEBUFFER,FB.fB1); gl.bindTexture(gl.TEXTURE_2D,FB.tB0); gl.uniform2f(pb.u.uDir,1/FB.BW,0); gl.drawArrays(gl.TRIANGLES,0,3); gl.bindFramebuffer(gl.FRAMEBUFFER,FB.fB0); gl.bindTexture(gl.TEXTURE_2D,FB.tB1); gl.uniform2f(pb.u.uDir,0,1/FB.BH); gl.drawArrays(gl.TRIANGLES,0,3); }
+  { const pf=G.pFinal; gl.useProgram(pf.p); gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.viewport(0,0,W,H); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,FB.tDof); gl.uniform1i(pf.u.uCol,0); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,FB.tB0); gl.uniform1i(pf.u.uBloom,1); gl.uniform1f(pf.u.uExp,G.exposure); gl.uniform1f(pf.u.uSeed,(now%1000)/7); gl.drawArrays(gl.TRIANGLES,0,3); }
+  $('hud').textContent=`${fpsShown} к/с · шерсть ${Math.round(G.fur.n*st.furD/1000)} тыс волосков · трава ${(bladesDrawn/1000).toFixed(0)} тыс · MSAA ${FB.samples}×`;
+}
+
+// ============ управление ============
+$('bCam').onclick=()=>{ st.free=!st.free; $('bCam').textContent=st.free?'Свободная камера':'Кино-камера'; $('bCam').classList.toggle('on',st.free); };
+$('bWalk').onclick=()=>{ st.walk=!st.walk; $('bWalk').textContent=st.walk?'Идёт':'Стоит'; $('bWalk').classList.toggle('on',st.walk); };
+$('bRays').onclick=()=>{ st.rays=!st.rays; $('bRays').classList.toggle('on',st.rays); };
+$('bQ').onclick=()=>{ quality=quality?0:1; $('bQ').textContent=quality?'Качество: полное':'Качество: лёгкое'; $('bQ').classList.toggle('on',!!quality); resize(); };
+$('fog').oninput=e=>{ st.fog=e.target.value/1000; $('fogV').textContent=(e.target.value/100).toFixed(2); };
+$('tod').oninput=e=>{ st.tod=e.target.value/1000; $('todV').textContent=st.tod<0.1?'день':st.tod<0.5?'к закату':st.tod<0.9?'закат':'сумерки'; };
+$('furD').oninput=e=>{ st.furD=e.target.value/100; $('furV').textContent=e.target.value+'%'; };
+$('wind').oninput=e=>{ st.wind=e.target.value/100; $('windV').textContent=st.wind.toFixed(1); };
+const wrap=$('wrap'); const touches=new Map(); let pinch0=null;
+wrap.addEventListener('pointerdown',e=>{ touches.set(e.pointerId,{x:e.clientX,y:e.clientY,yaw:st.yaw,pitch:st.pitch}); wrap.setPointerCapture(e.pointerId); if(touches.size===2){ const [a,b]=[...touches.values()]; pinch0={d:Math.hypot(a.x-b.x,a.y-b.y),dist:st.dist}; } });
+wrap.addEventListener('pointermove',e=>{ const tch=touches.get(e.pointerId); if(!tch) return; const r=wrap.getBoundingClientRect(); if(touches.size>=2){ tch.cx=e.clientX; tch.cy=e.clientY; const arr=[...touches.values()]; const ax=arr[0].cx??arr[0].x, ay=arr[0].cy??arr[0].y, bx=arr[1].cx??arr[1].x, by=arr[1].cy??arr[1].y; const d=Math.hypot(ax-bx,ay-by); if(pinch0) st.dist=Math.max(0.7,Math.min(8,pinch0.dist*pinch0.d/Math.max(d,1))); return; }
+  if(st.free){ st.yaw=tch.yaw+(e.clientX-tch.x)/r.width*3.2; st.pitch=tch.pitch+(e.clientY-tch.y)/r.height*1.6; } });
+const up=e=>{ touches.delete(e.pointerId); if(touches.size<2) pinch0=null; for(const t of touches.values()){ t.x=t.cx??t.x; t.y=t.cy??t.y; t.yaw=st.yaw; t.pitch=st.pitch; } };
+wrap.addEventListener('pointerup',up); wrap.addEventListener('pointercancel',up);
+wrap.addEventListener('wheel',e=>{ st.dist=Math.max(0.7,Math.min(8,st.dist*Math.exp(e.deltaY*0.001))); e.preventDefault(); },{passive:false});
+</script>
+</body>
+</html>
