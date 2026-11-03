@@ -16,11 +16,6 @@ jobs:
     timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
-      - name: Служба голоса multik-tts (как на сервере)
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/setup.sh -o /tmp/setup.sh
-          sudo bash /tmp/setup.sh > /tmp/setup.log 2>&1 || { tail -40 /tmp/setup.log; exit 1; }
-          tail -3 /tmp/setup.log
       - name: Бот «Почему так?» (копия кода)
         run: |
           B=/tmp/root/root/pochemu-bot; R=https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/kz-bot
@@ -40,18 +35,35 @@ jobs:
           PY
           echo testkey > $B/.web_key && mkdir -p /tmp/www/klipy-testkey
           sudo pip install -q --break-system-packages pillow edge-tts requests
-      - name: deploy_albina.sh
+      - name: deploy_albina.sh (сервер с 1 ГБ памяти — голос из GitHub)
         run: |
-          sudo env SEARCH_ROOT=/tmp/root ALBINA_RAW=file://$PWD bash deploy_albina.sh 2>&1 | tee /tmp/deploy.log
+          E="SEARCH_ROOT=/tmp/root ALBINA_RAW=file://$PWD ALBINA_VOICE_RAW=file:///tmp/voice ALBINA_LOCAL_MIN_MB=999999"
+          echo "$E" > /tmp/env.txt
+          sudo env $E bash deploy_albina.sh 2>&1 | tee /tmp/deploy.log
           grep -q "ГОТОВО" /tmp/deploy.log
-      - name: Повторный запуск, back, on
+          grep -q "нет готовой озвучки" /tmp/deploy.log
+          ls -la /tmp/www/albina/
+      - name: Озвучка заранее (как в voice-farm)
         run: |
-          sudo env SEARCH_ROOT=/tmp/root ALBINA_RAW=file://$PWD bash deploy_albina.sh 2>&1 | grep -E "уже|ГОТОВО|!!" | tee /tmp/deploy2.log
-          sudo env SEARCH_ROOT=/tmp/root bash deploy_albina.sh back | tee -a /tmp/deploy2.log
-          sudo env SEARCH_ROOT=/tmp/root bash deploy_albina.sh on | tee -a /tmp/deploy2.log
-          ls -la /tmp/www/klipy-testkey/ | tee -a /tmp/deploy2.log
-          free -m | tee -a /tmp/deploy2.log
-          systemctl status multik-tts --no-pager | head -12 | tee -a /tmp/deploy2.log
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+          sudo mkdir -p /opt/multik-tts && sudo chown $USER /opt/multik-tts
+          python3 -m venv /opt/multik-tts/venv
+          /opt/multik-tts/venv/bin/pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          /opt/multik-tts/venv/bin/pip install -q numpy ruaccent
+          curl -fsSL -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
+          curl -fsSL -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
+          python3 patch_server.py /opt/multik-tts/server.py && cp albina_worker.py /opt/multik-tts/
+          ALBINA_NO_GH=1 python3 farm.py /tmp/www/albina/bank.json /tmp/voice | tee /tmp/farm.log
+          ALBINA_NO_GH=1 python3 farm.py /tmp/www/albina/bank.json /tmp/voice | grep "новых"
+      - name: Пробный ролик с готовой озвучкой, back, on
+        run: |
+          E=$(cat /tmp/env.txt)
+          sudo env $E bash deploy_albina.sh test 2>&1 | tee /tmp/deploy2.log
+          grep -q "Озвучка: Альбина (готовая, из GitHub)" /tmp/deploy2.log
+          sudo env $E bash deploy_albina.sh 2>&1 | grep -E "уже|ГОТОВО|!!|Готовая" | tee -a /tmp/deploy2.log
+          sudo env $E bash deploy_albina.sh back | tail -2 | tee -a /tmp/deploy2.log
+          sudo env $E bash deploy_albina.sh on | tail -2 | tee -a /tmp/deploy2.log
+          cat /tmp/farm.log >> /tmp/deploy2.log
       - name: Отчёт в ветку
         if: always()
         run: |

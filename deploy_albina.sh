@@ -7,6 +7,9 @@
 # Посмотреть, как идёт:   tail -n 25 /root/albina.log
 # Вернуть Дмитрия:        bash /root/albina.sh back
 # Снова Альбину:          bash /root/albina.sh on
+# Пробный ролик:          bash /root/albina.sh test
+# На сервере меньше 3,5 ГБ памяти — голос здесь не запускается: тексты будущих роликов выкладываются
+# в /albina/bank.json, GitHub озвучивает их заранее (farm.py), бот скачивает готовые фразы.
 set -u
 RAW=${ALBINA_RAW:-https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/pochemu-albina}
 MULTIK=${MULTIK_RAW:-https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts}
@@ -61,6 +64,45 @@ print("   голос в config.json:", ", ".join(cfg["voices"]))
 PY
 }
 
+bot_py() {  # каким python бот запускается из cron
+  local D=$1 py
+  py=$(crontab -l 2>/dev/null | grep -v '^\s*#' | grep run_daily | grep -F "$D" | head -1 | grep -oE '[^ ;&|()]*python[0-9.]*' | head -1)
+  [ -n "$py" ] && command -v "$py" >/dev/null 2>&1 && { echo "$py"; return; }
+  [ -x "$D/.venv/bin/python" ] && { echo "$D/.venv/bin/python"; return; }
+  [ -x "$D/venv/bin/python" ] && { echo "$D/venv/bin/python"; return; }
+  echo python3
+}
+bot_py0() { bot_py "$@"; }
+
+MEM=$(awk '/MemTotal/{print int($2/1024)}' /proc/meminfo)
+LIGHT=0; [ "$MEM" -lt "${ALBINA_LOCAL_MIN_MB:-3500}" ] && LIGHT=1
+
+proba() {  # пробный ролик (ничего не выкладывается) + ссылка послушать
+  local D=$1 PY=$2 N0=0 V KEY WEB URL
+  [ -f "$D/bot.log" ] && N0=$(wc -l < "$D/bot.log")
+  if (cd "$D" && timeout 1200 "$PY" run_daily.py --test > /tmp/albina_run.txt 2>&1); then
+    tail -n +$((N0 + 1)) "$D/bot.log" 2>/dev/null | grep -E "Сценарий|Озвучка|Альбина|прежним|Ролик готов" | sed -E 's/^[0-9-]+ [0-9:]+ +/   /'
+    V=$(ls -t "$D"/out/*.mp4 2>/dev/null | head -1)
+    KEY=$(cat "$D/.web_key" 2>/dev/null)
+    WEB=$(python3 -c "import json,sys;c=json.load(open(sys.argv[1],encoding='utf-8'));print(c.get('web_root','/var/www/html')+'|'+c.get('web_base_url','http://89.126.192.214:8080'))" "$D/config.json" 2>/dev/null)
+    if [ -n "$V" ] && [ -n "$KEY" ] && [ -d "${WEB%%|*}/klipy-$KEY" ]; then
+      cp -f "$V" "${WEB%%|*}/klipy-$KEY/proba-albina.mp4" && chmod 644 "${WEB%%|*}/klipy-$KEY/proba-albina.mp4"
+      URL=$(echo "${WEB#*|}" | sed 's/89\.207\.252\.121/89.126.192.214/; s:/*$::')
+      echo "   послушать пробный ролик: $URL/klipy-$KEY/proba-albina.mp4"
+    elif [ -n "$V" ]; then
+      echo "   пробный ролик: $V"
+    fi
+  else
+    echo "   ! пробный ролик не собрался. Хвост вывода:"
+    tail -n 8 /tmp/albina_run.txt
+  fi
+}
+
+if [ "$MODE" = test ]; then
+  for D in "${BOTS[@]}"; do echo "== Пробный ролик ($D, 2–5 минут)"; proba "$D" "$(bot_py0 "$D")"; done
+  exit 0
+fi
+
 if [ "$MODE" = back ] || [ "$MODE" = on ]; then
   for D in "${BOTS[@]}"; do
     cp -p "$D/config.json" "$D/config.json.bak-$STAMP"
@@ -84,15 +126,14 @@ wait_bot() {  # не менять файлы, пока бот собирает �
   echo "   ! бот занят больше 15 минут — продолжаю"
 }
 
-bot_py() {  # каким python бот запускается из cron
-  local D=$1 py
-  py=$(crontab -l 2>/dev/null | grep -v '^\s*#' | grep run_daily | grep -F "$D" | head -1 | grep -oE '[^ ;&|()]*python[0-9.]*' | head -1)
-  [ -n "$py" ] && command -v "$py" >/dev/null 2>&1 && { echo "$py"; return; }
-  [ -x "$D/.venv/bin/python" ] && { echo "$D/.venv/bin/python"; return; }
-  [ -x "$D/venv/bin/python" ] && { echo "$D/venv/bin/python"; return; }
-  echo python3
-}
 
+if [ $LIGHT = 1 ]; then
+echo "== 2/6 Голос: памяти на сервере ${MEM} МБ — Альбину здесь не запускаю"
+echo "   тексты будущих роликов будут озвучиваться заранее в GitHub, бот только скачивает готовые фразы"
+if systemctl is-active -q multik-tts 2>/dev/null; then
+  echo "   ! служба multik-tts (~2,5 ГБ) забивает память сервера. Выключить: systemctl disable --now multik-tts"
+fi
+else
 echo "== 2/6 Голос (Silero v5 CIS, ударения ruaccent)"
 need=0
 [ -x $T/venv/bin/python ] && $T/venv/bin/python -c "import torch, ruaccent, numpy" 2>/dev/null || need=1
@@ -152,6 +193,7 @@ if dl "$RAW/patch_server.py" /tmp/albina_patch_server.py; then
 else
   echo "   ! не скачался patch_server.py — служба голоса без изменений"
 fi
+fi  # LIGHT
 du -sh $T 2>/dev/null | awk '{print "   занимает на диске: "$1}'
 
 FAIL=0
@@ -170,7 +212,14 @@ for D in "${BOTS[@]}"; do
     echo "!! не получилось подключить — вернул файлы как были, бот работает с прежним голосом"; restore; FAIL=1; continue
   fi
 
-  echo "== 4/6 Проверка голоса (первый раз до 10 минут: скачиваются словари ударений)"
+  if (cd "$D" && "$PY" -c "import json,albina; n,p=albina.export_bank(json.load(open('config.json',encoding='utf-8'))); print(f'   тексты для озвучки: {n} сценариев -> {p}')"); then
+    for u in http://127.0.0.1:8080/albina/bank.json http://127.0.0.1/albina/bank.json; do
+      [ "$(curl -s -o /dev/null -m 5 -w '%{http_code}' $u)" = 200 ] && { echo "   GitHub заберёт их по адресу ${u/127.0.0.1/89.126.192.214}"; break; }
+    done
+  else
+    echo "   ! тексты для озвучки не выложились"
+  fi
+  echo "== 4/6 Проверка голоса"
   if ! (cd "$D" && timeout 1500 "$PY" albina.py); then
     echo "!! Альбина не заговорила — голос НЕ переключаю, бот работает как раньше. Последние строки озвучщика:"
     tail -n 15 $T/worker.log 2>/dev/null
@@ -181,23 +230,7 @@ for D in "${BOTS[@]}"; do
   set_voice "$D" albina || { cp -p "$D/config.json.bak-$STAMP" "$D/config.json"; echo "!! config.json не записался"; FAIL=1; continue; }
 
   echo "== 6/6 Пробный ролик (ничего не выкладывается, 2–5 минут)"
-  N0=0; [ -f "$D/bot.log" ] && N0=$(wc -l < "$D/bot.log")
-  if (cd "$D" && timeout 1200 "$PY" run_daily.py --test > /tmp/albina_run.txt 2>&1); then
-    tail -n +$((N0 + 1)) "$D/bot.log" 2>/dev/null | grep -E "Сценарий|Озвучка|голос загружен|ударения|прежним|Ролик готов" | cut -c21-230
-    V=$(ls -t "$D"/out/*.mp4 2>/dev/null | head -1)
-    KEY=$(cat "$D/.web_key" 2>/dev/null)
-    WEB=$(python3 -c "import json,sys;c=json.load(open(sys.argv[1],encoding='utf-8'));print(c.get('web_root','/var/www/html')+'|'+c.get('web_base_url','http://89.126.192.214:8080'))" "$D/config.json" 2>/dev/null)
-    if [ -n "$V" ] && [ -n "$KEY" ] && [ -d "${WEB%%|*}/klipy-$KEY" ]; then
-      cp -f "$V" "${WEB%%|*}/klipy-$KEY/proba-albina.mp4" && chmod 644 "${WEB%%|*}/klipy-$KEY/proba-albina.mp4"
-      URL=$(echo "${WEB#*|}" | sed 's/89\.207\.252\.121/89.126.192.214/; s:/*$::')
-      echo "   послушать пробный ролик: $URL/klipy-$KEY/proba-albina.mp4"
-    elif [ -n "$V" ]; then
-      echo "   пробный ролик: $V"
-    fi
-  else
-    echo "   ! пробный ролик не собрался (голос уже переключён, вечером бот попробует сам). Хвост вывода:"
-    tail -n 12 /tmp/albina_run.txt
-  fi
+  proba "$D" "$PY"
 done
 
 echo

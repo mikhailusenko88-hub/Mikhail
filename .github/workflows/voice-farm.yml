@@ -1,0 +1,87 @@
+name: pochemu-albina-voice-farm
+# Озвучка заранее: забирает с сервера тексты будущих роликов (albina/bank.json), озвучивает Альбиной
+# и кладёт готовые фразы в ветку pochemu-albina-voice (одним коммитом, без истории — ветка не растёт).
+on:
+  workflow_dispatch:
+    inputs:
+      bank:
+        description: 'адрес или файл bank.json (пусто — с сервера)'
+        required: false
+        default: ''
+  push:
+    branches: [pochemu-albina]
+    paths: ['request-farm.txt']
+permissions:
+  contents: write
+concurrency:
+  group: pochemu-albina-farm
+  cancel-in-progress: false
+jobs:
+  farm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo mkdir -p /opt/multik-tts && sudo chown $USER /opt/multik-tts
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            /opt/multik-tts/hf
+            /opt/multik-tts/v5_cis_base.pt
+          key: pochemu-albina-v1
+      - name: Тексты с сервера
+        run: |
+          B="${{ github.event.inputs.bank }}"
+          if [ -n "$B" ] && [ -f "$B" ]; then cp "$B" bank.json
+          else
+            for u in ${B:-http://89.126.192.214:8080/albina/bank.json http://89.126.192.214/albina/bank.json}; do
+              curl -fsS -m 30 -o bank.json "$u" && python -c "import json;json.load(open('bank.json'))" && { echo "взял $u"; break; }
+              rm -f bank.json
+            done
+          fi
+          [ -s bank.json ] || { echo "Не получил тексты с сервера"; exit 1; }
+          python -c "import json;b=json.load(open('bank.json'));print('сценариев:',len(b['scripts']),'голос:',b['voices'],'выложено:',b['updated'])"
+      - name: Озвучщик
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+          python -m venv /opt/multik-tts/venv
+          /opt/multik-tts/venv/bin/pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          /opt/multik-tts/venv/bin/pip install -q numpy ruaccent
+          [ -s /opt/multik-tts/v5_cis_base.pt ] || curl -fsSL -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
+          curl -fsSL -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
+          python patch_server.py /opt/multik-tts/server.py
+          cp albina_worker.py /opt/multik-tts/
+      - name: Прежняя озвучка (чтобы не озвучивать заново)
+        run: |
+          mkdir -p voice
+          if git fetch -q --depth 1 origin pochemu-albina-voice 2>/dev/null; then
+            git --work-tree=voice checkout FETCH_HEAD -- . 2>/dev/null || true
+            git reset -q
+          fi
+          ls voice/v 2>/dev/null | wc -l
+      - name: Озвучка
+        run: ALBINA_NO_GH=1 python farm.py bank.json voice
+      - name: В ветку pochemu-albina-voice
+        run: |
+          cd voice
+          rm -rf .git && git init -q -b pochemu-albina-voice
+          git config user.name albina-farm
+          git config user.email albina-farm@users.noreply.github.com
+          printf '# Готовая озвучка «Почему так?» (Альбина)\nДелается автоматически из ветки pochemu-albina (farm.py). Руками не менять.\n' > README.md
+          git add -A && git commit -qm "Озвучка $(date -u '+%F %T')"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:pochemu-albina-voice
+          echo "выложено: $(ls v | wc -l) фраз"
+      - name: Отчёт
+        if: always()
+        run: |
+          mkdir -p result && cp voice/report.md result/farm.md 2>/dev/null || true
+          git config user.name albina-farm
+          git config user.email albina-farm@users.noreply.github.com
+          git add result/farm.md 2>/dev/null && git commit -qm "albina farm report" || echo nothing
+          for i in 1 2 3; do git pull --rebase -q && git push -q && break; sleep 5; done

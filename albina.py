@@ -17,9 +17,11 @@
 Проверка руками:  python3 albina.py "Почему лёд не тонет?" /tmp/test.mp3
 """
 import atexit
+import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import threading
@@ -33,6 +35,14 @@ TTS_DIR = Path(os.environ.get("ALBINA_DIR", "/opt/multik-tts"))
 SERVICE = os.environ.get("ALBINA_URL", "http://127.0.0.1:8095")
 FALLBACK = "ru-RU-DmitryNeural"
 FIX_FILE = HERE / "albina_fix.json"
+# готовая озвучка: GitHub (Actions) заранее озвучивает тексты будущих роликов, бот только скачивает
+VOICE_VER = "1"
+VOICE_RAW = os.environ.get("ALBINA_VOICE_RAW",
+                           "https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/pochemu-albina-voice")
+CACHE_DIR = HERE / "albina_cache"
+LOCAL_MIN_MB = int(os.environ.get("ALBINA_LOCAL_MIN_MB", "3500"))   # меньше памяти — голос на сервере не запускаем
+NO_GH = os.environ.get("ALBINA_NO_GH") == "1"                        # для озвучки в GitHub: только синтез
+SELFTEST_TEXT = "Почему так? Это проверка голоса Альбины для роликов."
 RATES = ("x-slow", "slow", "medium", "fast", "x-fast")
 PITCHES = ("x-low", "low", "medium", "high", "x-high")
 VOW = "аеёиоуыэюяАЕЁИОУЫЭЮЯ"
@@ -478,6 +488,21 @@ def say(text, voice, path):
     opts = str(voice).lower().partition("@")[2].split(",")
     style = "" if "plain" in opts else "bot"
     qpitch = next((o[2:] for o in opts if o.startswith("q=")), None)   # только для проб: q=high, q=x-high, q=
+    if not NO_GH and qpitch is None:
+        f = gh_fetch(cache_key(text, voice))
+        if f:
+            shutil.copyfile(f, path)
+            _st["last"] = gh_marks().get(cache_key(text, voice), "")
+            _st["n"] += 1
+            _st["mode"] = "github"
+            if not _st["said"]:
+                _st["said"] = True
+                _log("Озвучка: Альбина (готовая, из GitHub)")
+            if _st["last"]:
+                _log("  ударения: " + _st["last"])
+            return
+        if not local_ok():
+            raise AlbinaFailed("нет готовой озвучки этой фразы")
     t = prep(text)
     if not re.search(r"[А-Яа-яЁё]", t):
         raise AlbinaFailed("в фразе нет русских слов")
@@ -506,6 +531,88 @@ def say(text, voice, path):
             close()                      # перезапустить озвучщик и попробовать ещё раз
             _st["mode"] = None
     raise AlbinaFailed(str(err))
+
+
+def _mem_total_mb():
+    try:
+        return int(next(l for l in open("/proc/meminfo") if l.startswith("MemTotal")).split()[1]) // 1024
+    except Exception:
+        return 99999
+
+
+def local_ok():
+    """Можно ли озвучивать прямо на этом сервере (голосу нужно ~3 ГБ памяти)."""
+    return _mem_total_mb() >= LOCAL_MIN_MB
+
+
+def cache_key(text, voice="albina"):
+    spk, soft, rate, pitch = parse(voice)
+    style = "" if "plain" in str(voice).lower().partition("@")[2].split(",") else "bot"
+    t = re.sub(r"\s+", " ", str(text)).strip()
+    raw = f"{VOICE_VER}|{spk}|{int(soft)}|{rate}|{pitch}|{style}|{t}"
+    return hashlib.sha1(raw.encode("utf-8")).hexdigest()[:24]
+
+
+def gh_fetch(key):
+    """Готовая фраза: из своей папки albina_cache или скачать из GitHub. Нет — None."""
+    f = CACHE_DIR / f"{key}.mp3"
+    if f.exists() and f.stat().st_size > 2000:
+        return f
+    try:
+        CACHE_DIR.mkdir(exist_ok=True)
+        req = urllib.request.Request(f"{VOICE_RAW}/v/{key}.mp3", headers={"User-Agent": "pochemu-bot"})
+        with urllib.request.urlopen(req, timeout=25) as r:
+            data = r.read()
+        if len(data) < 2000:
+            return None
+        tmp = f.with_suffix(".part")
+        tmp.write_bytes(data)
+        os.replace(tmp, f)
+        return f
+    except Exception:
+        return None
+
+
+def gh_marks():
+    """Тексты с ударениями для лога (index.json рядом с озвучкой) — один раз за запуск."""
+    if "marks" not in _st:
+        _st["marks"] = {}
+        try:
+            req = urllib.request.Request(f"{VOICE_RAW}/index.json", headers={"User-Agent": "pochemu-bot"})
+            with urllib.request.urlopen(req, timeout=25) as r:
+                _st["marks"] = {k: v.get("m", "") for k, v in json.load(r).items()}
+        except Exception:
+            pass
+    return _st["marks"]
+
+
+def gh_prune(keep_days=20):
+    try:
+        now = time.time()
+        for f in CACHE_DIR.glob("*.mp3"):
+            if now - f.stat().st_mtime > keep_days * 86400:
+                f.unlink()
+    except Exception:
+        pass
+
+
+def export_bank(cfg, base=HERE):
+    """Тексты будущих роликов -> <web_root>/albina/bank.json: GitHub заберёт их и озвучит заранее."""
+    bank = json.loads((base / cfg.get("bank_file", "topics.json")).read_text(encoding="utf-8"))
+    st = base / "state.json"
+    used = set(json.loads(st.read_text(encoding="utf-8")).get("used_titles", [])) if st.exists() else set()
+    voices = [v for v in (cfg.get("voices") or []) if is_albina(v)] or ["albina"]
+    items = [{"title": s.get("title", ""), "lines": s["lines"]} for s in bank
+             if isinstance(s, dict) and s.get("lines") and s.get("title") not in used]
+    out = {"updated": time.strftime("%Y-%m-%d %H:%M:%S"), "voices": voices, "ver": VOICE_VER,
+           "use_ai": bool(cfg.get("use_ai")), "selftest": SELFTEST_TEXT, "scripts": items}
+    d = Path(cfg.get("web_root", "/var/www/html")) / "albina"
+    d.mkdir(parents=True, exist_ok=True)
+    tmp = d / "bank.json.tmp"
+    tmp.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
+    os.chmod(tmp, 0o644)
+    os.replace(tmp, d / "bank.json")
+    return len(items), d / "bank.json"
 
 
 def close():
@@ -555,6 +662,21 @@ def wrap_build(orig):
     def build(*a, **k):
         _st["log"] = k.get("log") or print
         _st["n"] = 0
+        script = a[0] if a else k.get("script")
+        cfg = a[1] if len(a) > 1 else (k.get("cfg") or {})
+        voice = next((v for v in (cfg.get("voices") or []) if is_albina(v)), None)
+        if voice and not NO_GH:
+            try:
+                export_bank(cfg)
+            except Exception as e:
+                _log(f"Альбина: не выложил тексты для озвучки ({e})")
+            gh_prune()
+            lines = (script or {}).get("lines") or []
+            miss = [l for l in lines if not gh_fetch(cache_key(l, voice))]
+            if miss and not local_ok():
+                _log(f"Альбина: нет готовой озвучки для {len(miss)} из {len(lines)} фраз — этот ролик прежним голосом "
+                     "(тексты выложены, GitHub озвучит их к следующему разу)")
+                _st["off"] = True
         try:
             try:
                 return orig(*a, **k)
@@ -565,13 +687,29 @@ def wrap_build(orig):
                 return orig(*a, **k)
         finally:
             close()                      # освободить память сразу после ролика
+            _st["off"] = False
     build._albina = True
     build._orig = orig
     return build
 
 
-def selftest(text="Почему так? Это проверка голоса Альбины для роликов.", out="/tmp/albina_test.mp3"):
+def selftest(text=SELFTEST_TEXT, out="/tmp/albina_test.mp3"):
     t0 = time.time()
+    if not local_ok() and not NO_GH:
+        print(f"Памяти на сервере {_mem_total_mb()} МБ — голос не запускаю здесь, беру готовую озвучку из GitHub")
+        try:
+            req = urllib.request.Request(VOICE_RAW + "/index.json", headers={"User-Agent": "pochemu-bot"})
+            urllib.request.urlopen(req, timeout=25).read()
+            gh_ok = True
+        except urllib.error.HTTPError:
+            gh_ok = True                 # GitHub отвечает, просто озвучки ещё нет
+        except Exception as e:
+            print("ОШИБКА: GitHub не отвечает:", e)
+            return 1
+        f = gh_fetch(cache_key(text, "albina"))
+        print("Готовая озвучка: " + ("есть, проверочная фраза скачалась" if f else
+                                    "пока нет — появится после озвучки в GitHub"))
+        return 0 if gh_ok else 1
     try:
         say(text, "albina", out)
     except Exception as e:
