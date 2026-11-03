@@ -31,6 +31,15 @@ for D in "${DIRS[@]}"; do
   BOTS+=("$D"); echo "   $D — «Почему так?»"
 done
 [ ${#BOTS[@]} -gt 0 ] || { echo "!! Не нашёл бота «Почему так?» (папка с make_video.py, run_daily.py и config.json)"; exit 1; }
+# если копий несколько — берём только те, что запускаются по расписанию (cron); старые копии не трогаем
+if [ ${#BOTS[@]} -gt 1 ]; then
+  CRON=$(crontab -l 2>/dev/null | grep -v '^\s*#' | grep run_daily)
+  KEEP=()
+  for D in "${BOTS[@]}"; do
+    if echo "$CRON" | grep -qE "(^|[ ;&|(])$D(/|[ ;&|)]|$)"; then KEEP+=("$D"); else echo "   $D — не в расписании (старая копия), пропускаю"; fi
+  done
+  [ ${#KEEP[@]} -gt 0 ] && BOTS=("${KEEP[@]}")
+fi
 
 set_voice() {  # set_voice DIR albina|old
   python3 - "$1/config.json" "$2" <<'PY'
