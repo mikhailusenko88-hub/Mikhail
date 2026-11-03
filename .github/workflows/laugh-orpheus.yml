@@ -1,0 +1,82 @@
+name: laugh-orpheus
+on:
+  push:
+    branches: [laugh-bank]
+    paths: ['request_orpheus.txt', 'laugh_gen_orpheus.py', '.github/workflows/laugh-orpheus.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: laugh-orpheus
+  cancel-in-progress: false
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+          key: laugh-orpheus-gen-v1
+      - name: Install
+        run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q snac soundfile numpy huggingface_hub
+          pip install -q llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu || pip install llama-cpp-python
+      - name: Generate
+        run: python laugh_gen_orpheus.py --shard ${{ matrix.shard }} --nshards 8 --reps 2 --out gen
+      - uses: actions/upload-artifact@v4
+        with:
+          name: geno-${{ matrix.shard }}
+          path: gen/
+          retention-days: 7
+  score:
+    needs: gen
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+          key: laugh-orpheus-score-v1
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: geno-*
+          merge-multiple: true
+          path: gen/
+      - name: Install
+        run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers soundfile scipy numpy praat-parselmouth matplotlib
+      - name: Score
+        run: python laugh_score.py gen out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: laugh-out-orpheus
+          path: out/
+          retention-days: 14
+      - name: Commit report
+        run: |
+          git config user.name laugh-bank
+          git config user.email laugh-bank@users.noreply.github.com
+          mkdir -p report_orpheus && cp out/report.md out/report.json report_orpheus/
+          git add report_orpheus
+          git commit -m "laugh-orpheus result" || echo nothing
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
