@@ -7,7 +7,7 @@ const pos=args.filter(a=>!a.startsWith('--'));const file=pos[0];const times=pos.
 const p=await b.newPage({viewport:{width:1280,height:720}});
 p.on('pageerror',e=>console.log('ERR',e.message));p.on('console',m=>{if(m.type()==='error')console.log('C',m.text().slice(0,300))});
 await p.goto('file://'+path.join(__dirname,'frame.html')+(hq?'#hq':''));await p.waitForFunction(()=>window.ready,null,{timeout:60000});
-console.log('3d',await p.evaluate(()=>window.ok3d));
+console.log("3d",await p.evaluate(()=>window.ok3d),"barsik",await p.evaluate(()=>[window.barsikOk,window.MKBarsik&&MKBarsik.error]));
 const src=fs.readFileSync(file,'utf8');
 const info=file.endsWith('.json')?await p.evaluate(e=>setup(e),JSON.parse(src)):await p.evaluate(t=>setupText(t),src);
 console.log(JSON.stringify(info).slice(0,1500));

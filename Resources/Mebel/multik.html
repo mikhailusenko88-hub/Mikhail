@@ -106,7 +106,8 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
   <div class="mut" style="margin:6px 0 10px">Нажми ▶, чтобы послушать, и выбери стиль. Внешность персонажа не меняется, голос сохранится для всех серий.</div>
   <div id="vpList"></div>
   <div class="kv" style="margin-top:12px"><span>Высота</span><span><input type="range" id="vpK" min="80" max="160" step="2"></span>
-   <span>Голос iPhone</span><span><select id="vpVoice"></select></span></div>
+   <span>Голос iPhone</span><span><select id="vpVoice"></select></span>
+   <span id="vpNeuralL">Нейроголос</span><span id="vpNeuralS"><select id="vpNeural"></select></span></div>
   <div class="btns"><button class="btn" onclick="VP.play()">▶ Послушать</button><button class="btn acc" onclick="VP.save()">Сохранить</button></div>
   <div class="card" id="vpLaugh" style="margin-top:12px;background:var(--card2)"><b>Смех героя</b><div class="mut" style="margin:4px 0 8px">Герой смеётся своим голосом. А можно записать настоящий смех — свой или ребёнка (до 8 секунд): герой будет смеяться им, своим тембром.</div>
    <div class="kv" style="margin:0 0 8px"><span>Смех из банка</span><span><select id="vpLaughSel" onchange="VP.pickLaugh(this.value)"><option value="">автоматически (по голосу)</option></select></span></div>
@@ -163,10 +164,12 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 <script src="multik-script.js"></script>
 <script src="multik-sculpt.js"></script>
 <script src="multik-3d.js"></script>
+<script src="multik-barsik.js"></script>
 <script type="module">
 import * as THREE from './three.module.min.js';
 // по умолчанию — «как в кино» (шерсть, мягкий свет)
 try { MK3D.init(THREE); MK3D.setQuality((window.Lib && Lib.data && Lib.data.settings && Lib.data.settings.quality) || 'hq'); } catch (e) { console.log('3D не запустился', e); }
+if (window.MKBarsik) MKBarsik.load(); // Барсик «неоновая основа» (шерсть со своим светом) — данные грузятся заранее
 window.dispatchEvent(new Event('mk3d'));
 </script>
 <script>
@@ -387,22 +390,35 @@ const App = {
   },
 };
 
+// Голос Барсика: тон ×shift (как asetrate=53760 при 48 кГц), потом темп ×tempo (как atempo) — WSOLA из банка смехов
+function shiftVoice(y, shift, tempo) { const n = Math.floor((y.length - 2) / shift), out = new Float32Array(n);
+  for (let i = 0; i < n; i++) { const x = i * shift, j = Math.floor(x), f = x - j, a = y[Math.max(0, j - 1)], b = y[j], c = y[j + 1], d = y[Math.min(y.length - 1, j + 2)];
+    out[i] = b + 0.5 * f * (c - a + f * (2 * a - 5 * b + 4 * c - d + f * (3 * (b - c) + d - a))); }
+  if (tempo && tempo !== 1 && window.MKLaugh && MKLaugh.wsola) return Float32Array.from(MKLaugh.wsola(out, 48000, 1 / tempo));
+  return out; }
 // ---------- голос рассказчика со своего сервера (нейроголос «Альбина») ----------
 const SrvVoice = {
-  down: 0, warned: false, localFail: false,
+  down: 0, warned: false, localFail: false, failM: {}, hasM: {},
   async local(ln) { // нейроголос прямо в телефоне (папка voice/ в приложении) → {buf}
-    if (this.localFail || !window.MKVoice || !MKVoice.available()) return null;
-    try { const y = await MKVoice.speak(ln.srv.text, { speaker: ln.srv.speaker, rate: ln.srv.rate, pitch: ln.srv.pitch, lex: (Lib.data && Lib.data.lexicon) || {} });
+    const mdl = ln.srv.model || ''; if ((mdl ? this.failM[mdl] : this.localFail) || !window.MKVoice || !MKVoice.available()) return null;
+    if (mdl && !this.hasM[mdl]) { let ok = false; try { const r = await fetch('voice/' + mdl + '/tts.json'); ok = r.ok && !!(await r.json()).symbols; } catch (e) {} if (!ok) { this.failM[mdl] = true; return null; } this.hasM[mdl] = true; } // файлов голоса нет — голос iPhone, рассказчика не трогаем
+    try { let y = await MKVoice.speak(ln.srv.text, { speaker: ln.srv.speaker, rate: ln.srv.rate, pitch: ln.srv.pitch, model: mdl, lex: (Lib.data && Lib.data.lexicon) || {} });
       if (!y.length) return null;
+      if (ln.srv.shift && ln.srv.shift !== 1) y = shiftVoice(y, ln.srv.shift, ln.srv.tempo || 1);
       let buf; if (ln.srv.soft) buf = await MKVoice.soften(y); else { buf = new AudioBuffer({ length: y.length, numberOfChannels: 1, sampleRate: 48000 }); buf.getChannelData(0).set(y); }
-      return { buf }; } catch (e) { console.log('нейроголос', e && e.message); this.localFail = true; return null; } },
+      return { buf }; } catch (e) { console.log('нейроголос', mdl, e && e.message); if (mdl) this.failM[mdl] = true; else this.localFail = true; return null; } },
   async get(ln, timeout) { // → {buf} (в телефоне) или {wav} (с сервера) или null — тогда голос iPhone
     const L = await this.local(ln); if (L) return L;
-    if (Date.now() - this.down < 60000) return null;
+    if (ln.srv.local || Date.now() - this.down < 60000) return null; // голос героя — только в телефоне
     let r = null; try { r = await Native.call('ttsServer', { url: MK.TTS_URL, key: ln.key, timeout: timeout || 45, payload: { text: ln.srv.text, speaker: ln.srv.speaker, soft: ln.srv.soft, rate: 'medium' } }); } catch (e) { r = null; }
     if (r && r.wav) { this.down = 0; return r; }
     this.down = Date.now(); if (!this.warned) { this.warned = true; try { Build.toast('Нейроголос недоступен — рассказчик читает голосом iPhone'); } catch (e) {} }
     return null; },
+  async previewHero(lib, who, text) { audioPlayback(); const ln = MK.lineFor({}, lib, who, text, { say: text, who }, 0); if (!ln || !ln.srv) return false;
+    try { Build.toast(window.MKVoice && !MKVoice.ready ? 'Загружаю голос (первый раз несколько секунд)…' : 'Озвучиваю…'); } catch (e) {}
+    this.failM = {}; const r = await this.get(ln, 60); if (!r || !r.buf) return false;
+    if (!pvCtx || pvCtx.state === 'closed') pvCtx = new (window.AudioContext || window.webkitAudioContext)(); try { pvCtx.resume(); } catch (e) {} if (pvSrc) { try { pvSrc.stop(); } catch (e) {} }
+    const buf = await MK.voiceFx(r.buf, MK.VOICE_FX.natural); pvSrc = pvCtx.createBufferSource(); pvSrc.buffer = buf; pvSrc.connect(pvCtx.destination); pvSrc.start(); return true; },
   async preview(text, show) { audioPlayback(); const lib = Lib.data, nv = MK.narratorVoice(lib);
     if (!nv.server) { const fx = MK.fxFor(lib, 'Р'); return previewVoice(text, (lib.narrator || {}).voice || { base: 'male', pitch: 1, rate: .47 }, fx, (lib.narratorFx || {}).voiceId); }
     const ln = MK.lineFor ? MK.lineFor({}, lib, 'Р', text, { say: text }, 0) : null; if (!ln || !ln.srv) return 0;
@@ -419,13 +435,18 @@ async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уж�
   const lib = Lib.data, ep = e.script; const lines = MK.collectLines(ep, lib);
   const ac = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
   const audio = {}, bufs = {}; let i = 0;
+  if (window.MKBarsik && window.MK3D && MK3D.hq) { try { await MKBarsik.load(); } catch (err) {} }
+  const pre = {}; { const grp = {}; for (const ln of lines) if (ln.srv && !ln.synth) (grp[ln.srv.model || ''] = grp[ln.srv.model || ''] || []).push(ln);
+    const order = Object.keys(grp).sort(); let j = 0, tot = order.reduce((a, k) => a + grp[k].length, 0);
+    for (const m of order) for (const ln of grp[m]) { if (isCancelled && isCancelled()) throw new Error('cancel'); if (ln.key in pre) continue;
+      onStep && onStep('Озвучка реплик', j++ / Math.max(1, tot), `${j} из ${tot}: ${ln.text.slice(0, 40)}`); pre[ln.key] = await SrvVoice.get(ln); } }
   for (const ln of lines) {
     if (isCancelled && isCancelled()) throw new Error('cancel');
     onStep && onStep('Озвучка реплик', i++ / Math.max(1, lines.length), `${i} из ${lines.length}: ${ln.text.slice(0, 40)}`);
     if (audio[ln.key]) continue;
     if (ln.synth && MK.makeVocal) { try { const buf = await MK.makeVocal(ln, lib, (c, b) => Native.call(c, b), async w => ac.decodeAudioData(unb64(w).buffer)); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('vocal', err); } continue; }
     let r = null, fx = ln.fx || MK.VOICE_FX.natural;
-    if (ln.srv) { r = await SrvVoice.get(ln); if (!r) fx = ln.fb.fx; } // рассказчик — нейроголос (в телефоне, иначе с сервера); не вышло — голос iPhone
+    if (ln.srv) { r = ln.key in pre ? pre[ln.key] : await SrvVoice.get(ln); if (!r) fx = ln.fb.fx; } // рассказчик и Барсик — нейроголос (в телефоне); не вышло — голос iPhone
     if (r && r.buf) { try { const buf = await MK.voiceFx(r.buf, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('нейроголос', err); } continue; }
     if (!r) { // голос iPhone: омографы по смыслу (з+амок/зам+ок) — как у рассказчика; свои «+» в реплике важнее
       let text = ln.text, voice = ln.voice, key = ln.key;
@@ -793,7 +814,11 @@ const VP = {
   who: null, cur: null,
   async open(who) {
     this.who = who; const c = Lib.data.characters[who]; const own = who === 'Р' ? (Lib.data.narratorFx || {}) : ((c && c.fx) || {});
-    const fx = MK.fxFor(Lib.data, who); this.cur = { preset: fx.id, k: fx.k, voiceId: own.voiceId || '', laughId: (c && c.laughId) || '' };
+    const fx = MK.fxFor(Lib.data, who); this.cur = { preset: fx.id, k: fx.k, voiceId: own.voiceId || '', laughId: (c && c.laughId) || '', neural: (c && c.neural) || '' };
+    { const ns = document.getElementById('vpNeural'), show = who !== 'Р'; document.getElementById('vpNeuralL').style.display = document.getElementById('vpNeuralS').style.display = show ? '' : 'none';
+      if (show) { const c0 = Object.assign({}, c); delete c0.neural; const d = MK.heroNeural({ characters: { [who]: c0 } }, who);
+        ns.innerHTML = `<option value="">по умолчанию (${d ? esc(d.name) : 'голос iPhone'})</option>` + Object.entries(MK.HERO_NEURAL).map(([k, v]) => `<option value="${esc(k)}">${esc(v.name)}</option>`).join('') + '<option value="off">выключен — голос iPhone</option>';
+        ns.value = this.cur.neural; ns.onchange = () => { this.cur.neural = ns.value; this.play(); }; } }
     document.getElementById('vpTitle').textContent = 'Голос: ' + (who === 'Р' ? 'Рассказчик' : c.spec.name);
     this.list(); document.getElementById('vpanel').style.display = 'flex'; this.recUI();
     const sel = document.getElementById('vpVoice'); const vs = (await Native.call('voices')) || [];
@@ -811,11 +836,14 @@ const VP = {
     const p = Object.assign({ id: id || this.cur.preset }, MK.VOICE_FX[id || this.cur.preset]); if (!id || id === this.cur.preset) p.k = this.cur.k;
     const voice = who === 'Р' ? ((Lib.data.narrator || {}).voice || { base: 'male', pitch: 1, rate: .47 }) : c.spec.voice;
     const name = who === 'Р' ? 'Жили-были кот и мышонок.' : `Привет! Я ${c.spec.name}. Как дела?`;
+    if (who !== 'Р') { const lib = Object.assign({}, Lib.data, { characters: Object.assign({}, Lib.data.characters, { [who]: Object.assign({}, c, { neural: this.cur.neural || undefined }) }) });
+      if (MK.heroNeural(lib, who)) return SrvVoice.previewHero(lib, who, name).then(ok => { if (!ok) previewVoice(name, voice, p, this.cur.voiceId || (c && c.voiceId)); }); }
     previewVoice(name, voice, p, this.cur.voiceId || (c && c.voiceId));
   },
   async save() {
     const fx = { preset: this.cur.preset, k: this.cur.k }; if (this.cur.voiceId) fx.voiceId = this.cur.voiceId;
-    if (this.who === 'Р') Lib.data.narratorFx = fx; else { Lib.data.characters[this.who].fx = fx; if (this.cur.laughId) Lib.data.characters[this.who].laughId = this.cur.laughId; else delete Lib.data.characters[this.who].laughId; }
+    if (this.who === 'Р') Lib.data.narratorFx = fx; else { Lib.data.characters[this.who].fx = fx; if (this.cur.laughId) Lib.data.characters[this.who].laughId = this.cur.laughId; else delete Lib.data.characters[this.who].laughId;
+      if (this.cur.neural) Lib.data.characters[this.who].neural = this.cur.neural; else delete Lib.data.characters[this.who].neural; }
     await Lib.save(); this.close(); App.render();
   },
   close() { if (this.recording) this.rec(); document.getElementById('vpanel').style.display = 'none'; },

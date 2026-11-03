@@ -160,17 +160,24 @@
       await new Promise((res, rej) => { const s = document.createElement('script'); s.src = ORT + 'ort.wasm.min.js'; s.onload = res; s.onerror = () => rej(new Error('нет onnxruntime')); document.head.appendChild(s); });
       const o = global.ort; o.env.wasm.numThreads = 1; o.env.wasm.proxy = false; o.env.wasm.wasmPaths = new URL(ORT, location.href).href;
       try { o.env.wasm.wasmBinary = await (await fetch(ORT + 'ort-wasm-simd-threaded.wasm')).arrayBuffer(); } catch (e) {} /* сами отдаём wasm — не зависим от типа файла в WKWebView */ return o; },
-    load() { if (this._p) return this._p;
-      return (this._p = (async () => { try {
+    /** model: '' — «Альбина» и другие голоса v5 CIS (voice/), 'xenia' — голос Барсика (voice/xenia/, Silero v5_6_ru). В памяти одна модель голоса. */
+    load(model) { model = model || ''; if (this._p && this._pm === model) return this._p;
+      const prev = this._p; this._pm = model;
+      return (this._p = (async () => { try { if (prev) { try { await prev; } catch (e) {} }
         const ort = await this.loadOrt(); const t0 = Date.now();
-        this.meta = await (await fetch(BASE + 'tts.json')).json();
-        const M = this.meta; M.sym = new Map(Object.entries(M.symbol_to_id)); M.keep = new Set([...M.symbols.slice(3), '^']); M.win = Float32Array.from(M.window);
-        this.ifft = makeIFFT(M.istft.n_fft);
-        const opt = { executionProviders: ['wasm'], graphOptimizationLevel: 'all' }, S = {};
-        for (const k of ['front', 'enc', 'dec', 'voc']) S[k] = await ort.InferenceSession.create(BASE + k + '.onnx', opt);
-        this.S = S; await MKStress.load(); try { await MKHomo.load(ort); } catch (e) { console.log('омографы не загрузились', e && e.message); } this.ready = true; this.loadMs = Date.now() - t0; return true;
+        if (this.S && this.cur !== model) { for (const s of Object.values(this.S)) { try { await s.release(); } catch (e) {} } this.S = null; this.ready = false; }
+        if (!this.S) { const base = BASE + (model ? model + '/' : '');
+          this.meta = await (await fetch(base + 'tts.json')).json();
+          const M = this.meta; M.sym = new Map(Object.entries(M.symbol_to_id)); M.keep = new Set([...M.symbols.slice(3), '^']); M.win = Float32Array.from(M.window);
+          this.ifft = makeIFFT(M.istft.n_fft);
+          const opt = { executionProviders: ['wasm'], graphOptimizationLevel: 'all' }, S = {};
+          for (const k of ['front', 'enc', 'dec', 'voc']) S[k] = await ort.InferenceSession.create(base + k + '.onnx', opt);
+          this.S = S; this.cur = model; this.typ = (S.front.inputNames || []).includes('typ'); }
+        await MKStress.load(); try { await MKHomo.load(ort); } catch (e) { console.log('омографы не загрузились', e && e.message); } this.ready = true; this.loadMs = Date.now() - t0; return true;
       } catch (e) { this.error = e && e.message || String(e); this._p = null; throw e; } })()); },
-    async unload() { if (this.S) for (const s of Object.values(this.S)) { try { await s.release(); } catch (e) {} } await MKHomo.unload(); this.S = null; this.ready = false; this._p = null; },
+    async unload() { if (this.S) for (const s of Object.values(this.S)) { try { await s.release(); } catch (e) {} } await MKHomo.unload(); this.S = null; this.cur = null; this.ready = false; this._p = null; },
+    /** Есть ли в приложении файлы голоса этой модели (без загрузки сети). */
+    async has(model) { try { const r = await fetch(BASE + (model ? model + '/' : '') + 'tts.json', { method: 'HEAD' }); return r.ok; } catch (e) { try { const r = await fetch(BASE + (model ? model + '/' : '') + 'tts.json'); return r.ok; } catch (e2) { return false; } } },
     /** Текст (уже с «+») → номера символов, как у Silero (prepare_text_input + preprocess_tacotron). */
     ids(text) { const M = this.meta;
       let t = String(text).trim().replace(/\n/g, '. ').toLowerCase().replace(/—/g, '–').replace(/‑/g, '-');
@@ -181,9 +188,10 @@
     /** Один кусок (до ~800 знаков) → Float32Array 48 кГц. */
     async chunk(text, o) {
       const ort = global.ort, M = this.meta, S = this.S, ids = this.ids(text); if (!ids) return new Float32Array(0);
-      const N = ids.length, spkId = M.speakers[o.speaker] != null ? M.speakers[o.speaker] : M.speakers.ru_albina;
+      const N = ids.length, spkId = M.speakers[o.speaker] != null ? M.speakers[o.speaker] : M.speakers.ru_albina != null ? M.speakers.ru_albina : Object.values(M.speakers)[0];
       const seq = new ort.Tensor('int64', BigInt64Array.from(ids.map(BigInt)), [1, N]), spk = new ort.Tensor('int64', BigInt64Array.from([BigInt(spkId)]), [1]);
-      const fo = await S.front.run({ seq, spk }), ld = fo.logdur.data, pitch = new Float32Array(fo.pitch.data);
+      const fin = { seq, spk }; if (this.typ) { fin.typ = new ort.Tensor('int64', BigInt64Array.from(typeIds(ids, M).map(BigInt)), [1, N]); fin.foc = new ort.Tensor('int64', new BigInt64Array(N), [1, N]); }
+      const fo = await S.front.run(fin), ld = fo.logdur.data, pitch = new Float32Array(fo.pitch.data);
       // длительности — как в MultiTTSModel.forward
       const d = new Array(N); for (let i = 0; i < N; i++) d[i] = roundEven(Math.max(Math.exp(ld[i]) - 1, 0));
       if (d[0] > 5) d[0] = 5;
@@ -203,7 +211,7 @@
       const y = new Float32Array(L - 2 * pad); for (let i = 0; i < y.length; i++) y[i] = out[pad + i] / Math.max(env[pad + i], 1e-11);
       return y; },
     /** Текст → голос. o: {speaker:'ru_albina', rate:1, pitch:1, lex, accent:true}. Возвращает Float32Array 48 кГц. */
-    async speak(text, o) { o = o || {}; await this.load();
+    async speak(text, o) { o = o || {}; await this.load(o.model);
       let t = String(text || '').replace(/[«»"“”]/g, '').replace(/\s+/g, ' ').trim(); if (!t) return new Float32Array(0);
       if (o.accent !== false) { t = MKStress.userMarks(t, o.lex); if (MKHomo.ready || MKHomo.dictReady) { try { t = await MKHomo.solve(t); } catch (e) { console.log('омографы', e && e.message); } } t = MKStress.accent(t, null); }
       this.lastText = t;
@@ -232,5 +240,25 @@
     const mix = ac.createGain(); node.connect(mix);
     for (const [ms, g] of [[28, .08], [47, .05]]) { const dl = ac.createDelay(.2); dl.delayTime.value = ms / 1000; const gg = ac.createGain(); gg.gain.value = g; node.connect(dl); dl.connect(gg); gg.connect(mix); }
     mix.connect(ac.destination); src.start(0); return ac.startRendering(); };
+  // ---------- тип предложения для xenia (как classify_sentence / build_type_ids_tokens в Silero v5_6_ru) ----------
+  const TYPE2ID = { st: 0, wh_q: 1, general_q: 2, alternative_q: 3, tag_q: 4, exclam: 5 };
+  const WH = new Set('кто кого кому кем ком что чего чему чем чём чё чо где куда откуда когда почему зачем как почём отчего насколько сколько скольких скольким сколькими какой какая какое какие какого каких какому каким какими каком какую чей чья чьё чье чьи чьего чьей чьих чьему чьим чьими чьём чьем чью который которая которое которые которого которой которых которому которым которыми котором которую каков какова каково каковы'.split(' '));
+  const FILL = new Set('а ну и так вот слышь слушай скажите скажи пожалуйста вобще вообще типа короче'.split(' '));
+  const TAG_RE = /(?:[,\s]+(правда|верно|да)\s*\?$)|(?:[,\s]+(не\s+так\s+ли|не\s+правда\s+ли|разве\s+не\s+так|ведь\s+так)\s*\?$)|(?:[,\s]+ведь\s*\?$)|(?:[,\s]+а\s*\?$)/i;
+  const QO = new Set(['"', '«', '“', '„']), QC = new Set(['"', '»', '”', '’']);
+  const stripQ = s => { s = s.trim(); while (s && QO.has(s[0])) s = s.slice(1).trim(); while (s && QC.has(s[s.length - 1])) s = s.slice(0, -1).trim(); return s; };
+  const normClf = s => stripQ(s).replace(/\+/g, '').replace(/ё/g, 'е').replace(/Ё/g, 'Е').replace(/\s+/g, ' ').trim();
+  const hasWh = t => { const words = (t.toLowerCase().match(/[а-яёa-z]+/gi) || []).slice(0, 8), c = []; for (const w of words) { if (FILL.has(w)) continue; c.push(w); if (c.length >= 4) break; } return c.some(w => WH.has(w)); };
+  function classifySentence(s) { s = String(s || '').trim(); if (!s) return 'st'; const sc = stripQ(s); if (!sc) return 'st'; let tail = sc;
+    if (tail.endsWith('?!') || tail.endsWith('?..') || tail.endsWith('?...')) tail = tail.replace(/[.!]+$/, '');
+    if (tail.endsWith('?')) { const q = normClf(tail); if (TAG_RE.test(q)) return 'tag_q'; if (hasWh(q)) return 'wh_q'; if (/(^|[^а-яёa-z0-9_])или([^а-яёa-z0-9_]|$)/i.test(q)) return 'alternative_q'; return 'general_q'; }
+    return sc.endsWith('!') ? 'exclam' : 'st'; }
+  function charSentIds(text) { const ids = [], re = /(?<=[.!?])\s+/g; let pos = 0, si = 0, m; while ((m = re.exec(text))) { const end = m.index + m[0].length; for (let i = pos; i < end; i++) ids.push(si); pos = end; si++; } for (let i = pos; i < text.length; i++) ids.push(si); return ids; }
+  function typeIds(ids, M) { const toks = ids.map(i => M.symbols[i]), N = toks.length, body = toks.slice(1, -1).join(''), sid = charSentIds(body);
+    const nS = sid.length ? sid[sid.length - 1] + 1 : 0, tids = [];
+    for (let k = 0; k < nS; k++) { let a = -1, b = -1; for (let i = 0; i < sid.length; i++) if (sid[i] === k) { if (a < 0) a = i + 1; b = i + 2; } while (b > a && toks[b - 1] === ' ') b--; tids.push(TYPE2ID[classifySentence(toks.slice(a, b).join('').replace(/\+/g, ''))] || 0); }
+    const vals = sid.map(s => tids[Math.min(s, tids.length - 1)] || 0), out = new Array(N).fill(0); if (!vals.length) return out;
+    for (let i = 0; i < vals.length; i++) { const j = i + 1; if (j < N - 1) out[j] = vals[i]; } out[0] = vals[0]; out[N - 1] = vals[vals.length - 1]; return out; }
+  MKVoice._typeIds = typeIds; MKVoice._classify = classifySentence;
   global.MKVoice = MKVoice; global.MKStress = MKStress; global.MKHomo = MKHomo;
 })(typeof window !== 'undefined' ? window : globalThis);

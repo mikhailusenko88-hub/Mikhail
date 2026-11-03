@@ -671,6 +671,11 @@ MK.NARRATOR_VOICES = { albina: { name: 'Нейроголос в телефоне
 /** Нейроголоса Silero v5 (MIT) — считаются прямо в телефоне. */
 MK.NEURAL_SPEAKERS = { ru_albina: 'Альбина', ru_zinaida: 'Зинаида', ru_ekaterina: 'Екатерина', ru_vika: 'Вика', ru_karina: 'Карина', ru_oksana: 'Оксана', ru_aigul: 'Айгуль', ru_alexandr: 'Александр', ru_eduard: 'Эдуард', ru_dmitriy: 'Дмитрий', ru_igor: 'Игорь', ru_roman: 'Роман', ru_bogdan: 'Богдан', ru_marat: 'Марат' };
 MK.TTS_URL = 'http://89.126.192.214:8095/tts';
+/** Нейроголоса героев (считаются в телефоне). xenia — голос Барсика по умолчанию (Silero v5_6_ru, тон ×1,12 и темп ×0,9286 после — как утвердили). */
+MK.HERO_NEURAL = { xenia: { name: 'Нейроголос Барсика (xenia)', model: 'xenia', speaker: 'xenia', shift: 1.12, tempo: 0.9286 } };
+MK.HERO_NEURAL_DEFAULT = { 'барсик': 'xenia' };
+MK.heroNeural = (lib, who) => { const c = lib && lib.characters && lib.characters[who]; if (!c) return null; const v = c.neural; if (v === 'off') return null; if (v && MK.HERO_NEURAL[v]) return MK.HERO_NEURAL[v];
+  const nm = String((c.spec && c.spec.name) || '').trim().toLowerCase(); const d = MK.HERO_NEURAL_DEFAULT[nm]; return d && (!c.spec.kind || c.spec.kind === 'cat') ? MK.HERO_NEURAL[d] : null; };
 /** Настройки рассказчика: голос, темп, тон, мягкость. */
 MK.narratorCfg = lib => { const st = (lib && lib.settings) || {}, n = st.narrator || {}; const voice = n.voice || st.narratorVoice || 'albina';
   return { voice, speaker: MK.NEURAL_SPEAKERS[n.speaker] ? n.speaker : 'ru_albina', rate: Math.min(2, Math.max(.5, +n.rate || 1)), pitch: Math.min(1.5, Math.max(.6, +n.pitch || 1)), soft: n.soft !== false }; /* темп и тон — в разумных пределах */ };
@@ -776,6 +781,12 @@ function lineFor(ep, lib, who, text, step, vi) {
   const short = !!(synth && step && step.short);
   const seed = hash32(String(who) + (ch.name || ''));
   const nv = who === 'Р' && !synth ? MK.narratorVoice(lib) : null;
+  const hn = who !== 'Р' && !synth ? MK.heroNeural(lib, who) : null;
+  if (hn && MK.prepSpeech) { // герой с нейроголосом (Барсик — xenia): считается в телефоне; не вышло — его голос iPhone (fb)
+    const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
+    const pe = step && step.say && PROSODY[step.emotion], rate = pe ? Math.round(clamp(pe[1], .88, 1.15) * 100) / 100 : 1, pitch = pe ? Math.round(clamp(pe[0], .92, 1.12) * 100) / 100 : 1;
+    return { key: hash32('hn1|' + hn.model + '|' + hn.speaker + '|' + hn.shift + '|' + rate + '|' + pitch + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
+      srv: { text: marked, speaker: hn.speaker, model: hn.model, shift: hn.shift, tempo: hn.tempo, rate, pitch, local: true }, fb: { fx }, src: text }; }
   if (nv && nv.server && MK.prepSpeech) { // рассказчик — нейроголос со своего сервера (Альбина); нет связи — голос iPhone (fb)
     const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
     return { key: hash32('nv2|' + nv.speaker + '|' + (nv.soft ? 's' : '') + nv.rate + '|' + nv.pitch + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,

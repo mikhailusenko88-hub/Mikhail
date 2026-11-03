@@ -59,7 +59,7 @@ function matte(c, map) { const k = 'mt' + (c || '') + (map ? map.uuid : ''); if 
 function glossy(c, rough) { const k = 'gl' + c + (rough || 0); if (matCache[k]) return matCache[k]; return (matCache[k] = new THREE.MeshPhysicalMaterial({ color: col(c), roughness: rough != null ? rough : .12, clearcoat: 1, clearcoatRoughness: .05 })); }
 let blobTex = null;
 function contactShadow(parent, r) { if (!blobTex) blobTex = canvasTex(128, 128, (g) => { const gr = g.createRadialGradient(64, 64, 4, 64, 64, 62); gr.addColorStop(0, 'rgba(20,16,12,.55)'); gr.addColorStop(.6, 'rgba(20,16,12,.18)'); gr.addColorStop(1, 'rgba(20,16,12,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); });
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(r * 2, r * 2), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.y = .012; m.renderOrder = 1; parent.add(m); return m;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(r * 2, r * 2), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.y = .012; m.renderOrder = 1; m.userData.blob = true; parent.add(m); return m;
 };
 
 // ---------- материалы и формы ----------
@@ -121,7 +121,7 @@ function sideHalfW(rig) {
     for (const x of [bb.min.x, bb.max.x]) for (const y of [bb.min.y, bb.max.y]) for (const z of [bb.min.z, bb.max.z]) { v.set(x, y, z).applyMatrix4(M); w = Math.max(w, Math.abs(v.x)); } });
   return w * (rig.scale || 1) + (MK3D.hq ? .025 : .008); // + шерсть
 }
-function buildRig(spec) { inRig = true; try { const r = buildRig0(spec); try { sculptRig(r); } catch (e) { console.log('скульптор:', e && e.message); } try { r.halfW = sideHalfW(r); } catch (e) { r.halfW = (r.headR || .35) * 1.1; } if (MK3D.hq) { addFur(r); r.root.traverse(o => { if (o.isMesh) o.receiveShadow = false; }); /* «как в кино»: тени от листвы и от самого себя на героя не ложатся — шерсть их тоже не видит, иначе голая кожа на мордочке темнеет пятнами */ } return r; } finally { inRig = false; } }
+function buildRig(spec) { inRig = true; try { const r = buildRig0(spec); try { sculptRig(r); } catch (e) { console.log('скульптор:', e && e.message); } try { r.halfW = sideHalfW(r); } catch (e) { r.halfW = (r.headR || .35) * 1.1; } if (MK3D.hq) { const nb = global.MKBarsik && MKBarsik.ready && MKBarsik.isBarsik(spec); if (!nb || !MKBarsik.attach(THREE, r)) addFur(r); r.root.traverse(o => { if (o.isMesh) o.receiveShadow = false; }); /* Барсик «неоновая основа» — свой мех со своим светом */ /* «как в кино»: тени от листвы и от самого себя на героя не ложатся — шерсть их тоже не видит, иначе голая кожа на мордочке темнеет пятнами */ } return r; } finally { inRig = false; } }
 // ---------- «Скульптор»: голова, тело, лапы и хвост — одна плавная поверхность вместо набора шаров ----------
 // Берём те же формы, из которых собран герой (поэтому он остаётся узнаваемым), и сливаем их в «глину»:
 // щёки перетекают в мордочку, пузико в тело, лапка в ладошку; цвет на стыках мягкий; полоски — по форме;
@@ -1169,6 +1169,7 @@ function applyPose(rig, st, T) {
     if (laughing) { sm = 1; w = .9; r = 0; } if (an === 'yawn') { r = .75; w = .4; } if (an === 'sing') r = Math.max(r, .6); if (an === 'eat') { r = .3; sm = .5; }
     U.uOpen.value = clamp(o, 0, 1); U.uWide.value = w; U.uRound.value = r; U.uSmile.value = sm; U.uClose.value = cz;
     rig.smile.visible = rig.frown.visible = rig.open.visible = false; }
+  if (rig.bars && global.MKBarsik) MKBarsik.frame(rig, st, T, { sun, hemi, rim, fog: scene.fog, envI: scene.environmentIntensity || 0 });
   if (rig.capM) { const hop = laughing ? Math.abs(Math.sin((an === 'laugh' ? at : T) * 16)) * rig.P.head * .08 : 0; rig.capM.position.copy(rig.capAxis).multiplyScalar(hop);
     if (rig.capBadge) { const b = rig.capBadge, p0 = b.userData.p0 || (b.userData.p0 = b.position.clone()); b.position.copy(p0).addScaledVector(rig.capAxis, hop); } }
 }
