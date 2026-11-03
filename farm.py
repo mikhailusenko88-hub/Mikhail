@@ -84,7 +84,7 @@ def merge(bank, out, parts):
 
 
 def farm(bank, out, prev=None, shard=(0, 1), max_minutes=0):
-    out = Path(out)
+    out = Path(out).resolve()
     (out / "v").mkdir(parents=True, exist_ok=True)
     prev = Path(prev) if prev else out
     pindex = read_index(prev)
@@ -108,6 +108,9 @@ def farm(bank, out, prev=None, shard=(0, 1), max_minutes=0):
             made += 1
         except Exception as e:
             fail.append(f"{line} — {e}")
+            print("  не вышло:", line[:60], "—", str(e)[:200], flush=True)
+            if len(fail) >= 5 and not made:
+                print("! 5 фраз подряд не озвучились — останавливаюсь"); break
         if made and made % 25 == 0:
             (out / "index.json").write_text(json.dumps(index, ensure_ascii=False, indent=0), encoding="utf-8")
             print(f"  часть {i}/{n}: озвучено {made}, {time.time() - t0:.0f} с", flush=True)

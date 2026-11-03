@@ -483,7 +483,7 @@ def _to_audio(wav, path):
 
 
 def say(text, voice, path):
-    path = Path(path)
+    path = Path(path).resolve()          # озвучщик работает в своей папке — путь только полный
     spk, soft, rate, pitch = parse(voice)
     opts = str(voice).lower().partition("@")[2].split(",")
     style = "" if "plain" in opts else "bot"
