@@ -1,1 +1,1 @@
-{"ok": true, "ready": true, "error": null}
+нет ответа
