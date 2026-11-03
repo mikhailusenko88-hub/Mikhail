@@ -31,6 +31,7 @@
   <div class="row">
     <button id="bMode" class="on">Стало</button>
     <button id="bShell" class="on">Налёт</button>
+    <button id="bDap" class="on">Зайчики</button>
     <button id="bCam" class="on">Свободная камера</button>
     <button id="bWalk" class="on">Идёт</button>
     <button id="bRays">Лучи (экранные)</button>
@@ -42,7 +43,7 @@
   <div class="row"><label>Шерсть</label><input id="furD" type="range" min="10" max="100" value="100"><span class="val" id="furV">100%</span></div>
   <div class="row"><label>Ветер</label><input id="wind" type="range" min="0" max="300" value="100"><span class="val" id="windV">1.0</span></div>
   <div class="note" id="resV"></div>
-  <div class="note">Крутить — одним пальцем, приближать — двумя. Кнопка «Налёт» — прозрачные «молекулы» поверх всего мира: шерсть кота, пух на земле и мхе, стволы, роса на траве; загораются там, где свет проходит сквозь (контровое солнце). Ползунок — сила, 0% = выключено. Кнопка «Стало/Было» — новое освещение (тень от солнца, свет под кронами, затенение в складках, свет в воздухе, моргание) против первой версии. Всё на диодах, без лучей в кадре.</div>
+  <div class="note">Крутить — одним пальцем, приближать — двумя. Кнопка «Налёт» — прозрачные «молекулы» поверх всего мира: шерсть кота, пух на земле и мхе, стволы, роса на траве; загораются там, где свет проходит сквозь (контровое солнце). Ползунок — сила, 0% = выключено. Кнопка «Зайчики» — пятна солнца под кронами плывут и мерцают по ветру (сила — ползунок «Ветер»). Кнопка «Стало/Было» — новое освещение (тень от солнца, свет под кронами, затенение в складках, свет в воздухе, моргание) против первой версии. Всё на диодах, без лучей в кадре.</div>
 </div>
 <script>
 'use strict';
@@ -75,7 +76,13 @@ vec3 skyCol(vec3 d, bool withSun){ float y=d.y; vec3 c; if(y>=0.0) c=mix(uHor,uZ
   float s=max(0.0,dot(d,uSun)); c+=uSunBase*(0.10*pow(s,6.0)+0.5*pow(s,80.0)+0.9*pow(s,500.0)); c*=0.85; if(withSun && s>0.99997187) c+=uSunBase*220.0;
   float m=max(c.x,max(c.y,c.z)); if(m>40.0) c*=40.0/m; return c; }
 uniform vec4 uOcc[4]; uniform int uMode; uniform sampler2D uCanopyT; uniform vec4 uCanopyRect; uniform mat4 uLightVP; uniform mediump sampler2DShadow uShadowT; uniform int uShadowOn;
-vec2 canopy(vec3 wp){ if(uMode==0) return vec2(1.0); vec2 uv=(wp.xz-uCanopyRect.xy)*uCanopyRect.zw; if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0) return vec2(1.0); return texture(uCanopyT,uv).rg; }
+uniform float uCT; uniform float uCWind;
+vec2 canopy(vec3 wp){ if(uMode==0) return vec2(1.0); vec2 uv=(wp.xz-uCanopyRect.xy)*uCanopyRect.zw; if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0) return vec2(1.0);
+  // «зайчики»: кроны качает ветер — пятна солнца на земле и герое плывут и мерцают по той же волне, что и трава
+  float ph=0.35*wp.x+0.22*wp.z; float w=uCWind*(sin(1.7*uCT+ph)+0.5*sin(3.1*uCT+1.3*ph)); float w2=uCWind*sin(2.3*uCT+0.7*ph+1.1);
+  vec2 d=vec2(0.8*w+0.3*w2, 0.6*w-0.35*w2)*0.16*uCanopyRect.zw;
+  float s1=texture(uCanopyT,uv+d).r, s2=texture(uCanopyT,uv-d*0.6).r; float sun=mix(s1,s2,0.3+0.2*sin(4.1*uCT+ph));
+  return vec2(sun, texture(uCanopyT,uv).g); }
 float occShadow(vec3 p);
 float hash3(vec3 p){ p=fract(p*0.3183099+vec3(0.1,0.2,0.3)); p*=17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
 float vnoise(vec3 x){ vec3 i=floor(x); vec3 f=fract(x); f=f*f*(3.0-2.0*f);
@@ -431,7 +438,7 @@ function frame(now,once){ if(!once) requestAnimationFrame(frame);
   const bcyc=4.3, bu=t%bcyc; const blink=bu<0.16?Math.pow(Math.sin(Math.PI*bu/0.16),2):0; const lidLevel=1.0-2.3*blink;
   // карта теней от солнца (ортографическая, вокруг кота)
   const lEye=[catC[0]+G.sun[0]*5,catC[1]+G.sun[1]*5,catC[2]+G.sun[2]*5]; const LV=lookAt(lEye,catC); const LP=[2/2.8,0,0,0, 0,2/2.8,0,0, 0,0,-2/(10-0.1),0, 0,0,-(10+0.1)/(10-0.1),1]; const LVP=mul4(LP,LV);
-  const setCommon=(pr)=>{ const u=pr.u; gl.uniform3fv(u.uSun,G.sun); gl.uniform3fv(u.uSunCol,sunCol); gl.uniform3fv(u.uSunBase,sunBase); gl.uniform1f(u.uSkyK,tp.sky); gl.uniform3fv(u.uZen,zen); gl.uniform3fv(u.uHor,hor); gl.uniform3fv(u.uCam,eye); if(u.uEnc) gl.uniform1f(u.uEnc,ENC); if(u.uOcc) gl.uniform4fv(u.uOcc,occ);
+  const setCommon=(pr)=>{ const u=pr.u; if(u.uCT){ gl.uniform1f(u.uCT,t); gl.uniform1f(u.uCWind,st.dapple===false?0:(st.dapK!==undefined?st.dapK:st.wind)); } gl.uniform3fv(u.uSun,G.sun); gl.uniform3fv(u.uSunCol,sunCol); gl.uniform3fv(u.uSunBase,sunBase); gl.uniform1f(u.uSkyK,tp.sky); gl.uniform3fv(u.uZen,zen); gl.uniform3fv(u.uHor,hor); gl.uniform3fv(u.uCam,eye); if(u.uEnc) gl.uniform1f(u.uEnc,ENC); if(u.uOcc) gl.uniform4fv(u.uOcc,occ);
     if(u.uMode) gl.uniform1i(u.uMode,st.mode); if(u.uCanopyT){ gl.uniform1i(u.uCanopyT,5); gl.uniform4fv(u.uCanopyRect,G.canopyRect||[0,0,0,0]); } if(u.uShadowT){ gl.uniform1i(u.uShadowT,6); gl.uniformMatrix4fv(u.uLightVP,false,LVP); gl.uniform1i(u.uShadowOn,st.mode); } };
   // ---- проход теней: кот с точки зрения солнца ----
   if(st.mode===1){ gl.bindFramebuffer(gl.FRAMEBUFFER,G.fShadow); gl.viewport(0,0,1024,1024); gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LESS); gl.disable(gl.BLEND); gl.disable(gl.CULL_FACE); gl.clear(gl.DEPTH_BUFFER_BIT);
@@ -511,6 +518,7 @@ function frame(now,once){ if(!once) requestAnimationFrame(frame);
 }
 
 // ============ управление ============
+$('bDap').onclick=()=>{ st.dapple=!(st.dapple!==false); $('bDap').classList.toggle('on',st.dapple!==false); };
 $('bShell').onclick=()=>{ st.shell=!st.shell; $('bShell').classList.toggle('on',st.shell); };
 $('bMode').onclick=()=>{ st.mode=st.mode?0:1; $('bMode').textContent=st.mode?'Стало':'Было'; $('bMode').classList.toggle('on',!!st.mode); };
 $('bCam').onclick=()=>{ st.free=!st.free; $('bCam').textContent=st.free?'Свободная камера':'Кино-камера'; $('bCam').classList.toggle('on',st.free); };
