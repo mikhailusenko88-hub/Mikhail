@@ -1,0 +1,2 @@
+# ESMART PKI Client для Mac Intel (ссылка со страницы multisoft.ru «В Mac OS не работает токен Ангара»)
+https://cdn.esmart.ru/token/software/pkiclient/4.17/ESMART_PKI_Client_4.17_x86_64.dmg

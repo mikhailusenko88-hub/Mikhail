@@ -1,0 +1,32 @@
+name: mac-drivers
+# Скачивает драйверы для Мака с сайтов производителей (из облака их не скачать).
+# Список ссылок — urls.txt. Результат — папка files/ в этой ветке.
+on:
+  push:
+    branches: [mac-drivers]
+    paths: ['urls.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Скачать
+        run: |
+          mkdir -p files
+          grep -v '^#' urls.txt | while read -r url; do
+            [ -z "$url" ] && continue
+            name=$(basename "$url")
+            curl -fsSL --retry 3 -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)" -o "files/$name" "$url" || echo "FAIL $url" >> files/_errors.txt
+          done
+          (cd files && ls -la && sha256sum * > _sha256.txt) || true
+      - name: Сохранить
+        run: |
+          git config user.name "mac-drivers"
+          git config user.email "mac-drivers@users.noreply.github.com"
+          git add files
+          git commit -m "files $(date -u +%F_%H:%M)" || exit 0
+          git push origin HEAD:mac-drivers
