@@ -29,15 +29,18 @@ def first_line(d):
     return s
 
 
-def make_title(qids, k):
+def make_title(qids, k, limit=100):
     d = QUOTES[qids[0]]
     a = author_key(d)
-    forms = [
-        f"{first_line(d)} ✨ {a} + 2 more quotes #shorts",
-        f"{first_line(d)} 🤍 Три мысли на сегодня | {a} #shorts",
-        f"{first_line(d)} ✨ Words to keep | {a} #shorts",
-    ]
-    return forms[k % 3]
+    a_short = a.split()[-1] if len(a) > 16 and " " in a else a
+    suffixes = [f" ✨ {a} + 2 more #shorts", f" 🤍 Три мысли на сегодня | {a_short} #shorts", f" ✨ Words to keep | {a} #shorts"]
+    suf = suffixes[k % 3]
+    s = d["ru"] if isinstance(d["ru"], str) else " ".join(d["ru"])
+    s = s.strip().rstrip(".!…")
+    room = limit - len(suf)
+    if len(s) > room:
+        s = s[:room - 1].rsplit(" ", 1)[0].rstrip(",;:— ") + "…"
+    return s + suf
 
 
 def make_description(qids):
