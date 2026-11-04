@@ -170,11 +170,44 @@ def video_status(vid):
     return st, meaning, title
 
 
+def video_info(vid):
+    """Строка info:ID — описание, длительность, просмотры и обложки ролика (status/thumbs/)."""
+    import re
+    st, html = get(f"https://www.youtube.com/watch?v={vid}&hl=ru")
+    out = {"id": vid, "status": st}
+    if html:
+        for key in ("title", "shortDescription", "lengthSeconds", "viewCount", "ownerChannelName"):
+            m = re.search(r'"%s":"((?:[^"\\]|\\.)*)"' % key, html)
+            if m:
+                try:
+                    out[key] = json.loads('"' + m.group(1) + '"')
+                except Exception:  # noqa: BLE001
+                    out[key] = m.group(1)[:1000]
+        m = re.search(r'"keywords":\[(.*?)\]', html)
+        if m:
+            out["keywords"] = m.group(1)[:600]
+    thumbs = OUT / "thumbs"
+    thumbs.mkdir(exist_ok=True)
+    for name in ("oar2.jpg", "hqdefault.jpg"):
+        req = urllib.request.Request(f"https://i.ytimg.com/vi/{vid}/{name}", headers=H)
+        try:
+            with urllib.request.urlopen(req, timeout=25) as r:
+                data = r.read()
+            (thumbs / f"{vid}_{name}").write_bytes(data)
+            out.setdefault("thumbs", []).append(name)
+            LOG.append(f"200 thumb {vid}/{name} {len(data)} B")
+        except Exception as e:  # noqa: BLE001
+            LOG.append(f"ERR thumb {vid}/{name} {e}")
+    return out
+
+
 def main():
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     lines = [l.strip() for l in Path("request.txt").read_text(encoding="utf-8").splitlines()]
-    handles = [l.lstrip("@") for l in lines if l and not l.startswith("#") and not l.startswith("video:")]
+    handles = [l.lstrip("@") for l in lines
+               if l and not l.startswith("#") and not l.startswith("video:") and not l.startswith("info:")]
     videos = [l.split(":", 1)[1].strip() for l in lines if l.startswith("video:")]
+    infos = [l.split(":", 1)[1].strip() for l in lines if l.startswith("info:")]
 
     for h in handles:
         info = channel_info(h)
@@ -206,6 +239,21 @@ def main():
             st, meaning, title = video_status(v)
             md.append(f"- {v}: {meaning} {('· ' + title) if title else ''}")
         (OUT / "videos.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+
+    if infos:
+        data = [video_info(v) for v in infos]
+        (OUT / "info.json").write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+        md = ["# Подробности роликов", f"Проверено: {now}", ""]
+        for d in data:
+            md.append(f"## {d.get('title', '?')} · {d['id']}")
+            md.append(f"- HTTP {d['status']} · {d.get('lengthSeconds', '?')} с · {d.get('viewCount', '?')} просм. · "
+                      f"канал: {d.get('ownerChannelName', '?')} · обложки: {', '.join(d.get('thumbs', [])) or 'нет'}")
+            if d.get("shortDescription"):
+                md.append("- Описание: " + d["shortDescription"].replace("\n", " / ")[:1200])
+            if d.get("keywords"):
+                md.append("- Теги: " + d["keywords"][:400])
+            md.append("")
+        (OUT / "info.md").write_text("\n".join(md) + "\n", encoding="utf-8")
 
     (OUT / "_log.txt").write_text(now + "\n" + "\n".join(LOG) + "\n", encoding="utf-8")
 
