@@ -3,7 +3,7 @@
 // в режиме «как в кино»: старый герой остаётся невидимым скелетом (его поза, руки для предметов, тень), а рисуется этот.
 (function (global) {
 'use strict';
-const MKB = global.MKBarsik = { ready: false, error: null, base: 'barsik/', D: null, shellK: 1, shellU: { value: 1 } };   // shellU — сила налёта (0 — выключен)
+const MKB = global.MKBarsik = { ready: false, error: null, base: 'barsik/', D: null, shellK: 1, shellU: { value: 1 }, desatU: { value: 0.22 }, tintU: { value: null }, K: { key: 1.4, expo: 0.74 } };   // сверено с кадром Blender: лоб (152,126,84)   // shellU — сила налёта (0 — выключен)
 MKB.isBarsik = spec => !!spec && spec.kind === 'cat' && /^\s*барсик(?![а-яё])/i.test(String(spec.name || ''));
 
 // ---------- константы модели (метры, z вверх, мордочка к −y) ----------
@@ -92,7 +92,7 @@ function decode(H, ab) {
 // ---------- шейдеры (как в пробной сцене, свет — от места мультика) ----------
 const COMMON = `precision highp float; precision highp int; precision highp sampler2D;
 uniform mat4 modelMatrix, viewMatrix, projectionMatrix; uniform vec3 cameraPosition;
-uniform mat3 uHead, uEar0, uEar1, uLeg0, uLeg1, uArm0, uArm1, uFore0, uFore1, uJawM; uniform vec2 uLift; uniform float uTailA, uTailPh, uBreath, uScale, uPix, uExpo;
+uniform mat3 uHead, uEar0, uEar1, uLeg0, uLeg1, uArm0, uArm1, uFore0, uFore1, uJawM; uniform vec2 uLift; uniform float uTailA, uTailPh, uBreath, uScale, uPix, uExpo, uDesat; uniform vec3 uTint;
 uniform vec3 uSunDir, uSunCol, uRimDir, uRimCol, uFillDir, uFillCol, uSky, uGnd, uUp, uFogCol; uniform vec2 uFog;
 const float PI = 3.14159265;
 vec3 sane(vec3 c) { bvec3 bad = equal(floatBitsToUint(c) & uvec3(0x7f800000u), uvec3(0x7f800000u)); vec3 r = min(max(c, vec3(0.0)), vec3(300.0)); return any(bad) ? vec3(0.0) : r; }
@@ -128,7 +128,7 @@ float vn(vec3 p) { vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
              mix(mix(hash13(i + vec3(0,0,1)), hash13(i + vec3(1,0,1)), f.x), mix(hash13(i + vec3(0,1,1)), hash13(i + vec3(1,1,1)), f.x), f.y), f.z); }
 float fbm(vec3 p, int o) { float a = 0.0, w = 0.5, s = 0.0; for (int i = 0; i < 6; i++) { if (i >= o) break; a += w * vn(p); s += w; p = p * 2.03 + vec3(1.7, 9.2, 3.1); w *= 0.5; } return a / s; }
 vec3 fogMix(vec3 c, float d) { if (uFog.y <= 0.0) return c; return mix(c, uFogCol, clamp((d - uFog.x) / max(uFog.y - uFog.x, 1e-3), 0.0, 1.0)); }
-vec4 outC(vec3 c, float d) { return vec4(sane(fogMix(c * uExpo, d)), 1.0); }
+vec4 outC(vec3 c, float d) { c *= uExpo * uTint; float l = dot(c, vec3(0.2126, 0.7152, 0.0722)); c = mix(c, vec3(l), uDesat * clamp(l * 1.4, 0.0, 1.0)); return vec4(sane(fogMix(c, d)), 1.0); }   // мягче рыжий в светах — как AgX у Blender
 float gauss(float x, float b) { return exp(-x*x / (2.0*b*b)) / (2.5066 * b); }
 vec3 hairSpec(vec3 T, vec3 L, vec3 V, vec3 alb, float k) {
   float si = clamp(dot(T, L), -1.0, 1.0), so = clamp(dot(T, V), -1.0, 1.0); float ti = asin(si), to = asin(so), th = 0.5 * (ti + to), td = 0.5 * (to - ti); float ci = sqrt(max(0.0, 1.0 - si*si));
@@ -169,6 +169,7 @@ void main() {
   vec3 c = alb * (col + uSky * (PI * bk[4] * 0.85) + uGnd * (PI * bk[5] * 0.6)) / PI;
   if (vKind < 200) c += alb * alb * msc * (0.32 / PI);
   c += sp + hairSpec(T, normalize(uUp + V * 0.3), V, alb, 0.5) * uSky * (bk[4] * 1.2 * PI);
+  if (vKind == 201) c = alb * (0.35 + 0.25 * min(1.0, dot(col, vec3(0.333))));   // линия рта «ω» — тёмная, без блеска (как в Blender)
   o = outC(c, length(vP - cameraPosition));
 }`;
 const VS_SKIN = COMMON + `
@@ -228,6 +229,7 @@ void main() {
   float bk[6] = float[6](vB0.x, vB0.y, vB0.z, vB1.x, vB1.y, vB1.z); vec3 alb = vA;
   bool furred = mat == 0 && vM != 2 && vM != 8 && dot(alb, vec3(0.33)) > 0.06;
   if (furred) { alb = pow(alb, vec3(0.55)) * 0.9; for (int i = 0; i < 6; i++) bk[i] = max(bk[i], 0.5); if (dot(n, V) < 0.0) n = -n; }
+  if (vM == 2) { alb = vec3(0.93, 0.89, 0.84); for (int i = 0; i < 6; i++) bk[i] = max(bk[i], 0.62); }   // белая мордочка, как в Blender
   float wrap = mat == 0 ? 0.35 : mat == 2 ? 0.2 : 0.25;
   float knit = 1.0; if (mat == 2) { vec3 kv = knitUV(vQ);
     float fw = max(min(fwidth(kv.x), fwidth(fract(kv.x + 0.5))), min(fwidth(kv.y), fwidth(fract(kv.y + 0.5)))); float aa = 1.0 - smoothstep(0.3, 0.75, fw);
@@ -338,7 +340,7 @@ const M3 = () => new THREE.Matrix3();
 function uniformsNew() {
   const v3 = (x, y, z) => ({ value: new THREE.Vector3(x || 0, y || 0, z || 0) });
   return { uHead: { value: M3() }, uEar0: { value: M3() }, uEar1: { value: M3() }, uLeg0: { value: M3() }, uLeg1: { value: M3() }, uArm0: { value: M3() }, uArm1: { value: M3() }, uFore0: { value: M3() }, uFore1: { value: M3() }, uJawM: { value: M3() },
-    uLift: { value: new THREE.Vector2() }, uTailA: { value: 0.25 }, uTailPh: { value: 0 }, uBreath: { value: 0 }, uScale: { value: 1 }, uPix: { value: 0.001 }, uExpo: { value: 1 },
+    uLift: { value: new THREE.Vector2() }, uTailA: { value: 0.25 }, uTailPh: { value: 0 }, uBreath: { value: 0 }, uScale: { value: 1 }, uPix: { value: 0.001 }, uExpo: { value: 1 }, uDesat: MKB.desatU, uTint: MKB.tintU,
     uSunDir: v3(0, 1, 0), uSunCol: v3(2, 2, 2), uRimDir: v3(0, 0.5, -1), uRimCol: v3(0, 0, 0), uFillDir: v3(0, 0.3, 1), uFillCol: v3(0.2, 0.2, 0.2), uSky: v3(0.4, 0.45, 0.5), uGnd: v3(0.15, 0.15, 0.12), uUp: v3(0, 1, 0), uFogCol: v3(1, 1, 1), uFog: { value: new THREE.Vector2(0, 0) },
     uPos: { value: null }, uBake: { value: null }, uAttr: { value: null } };
 }
@@ -347,6 +349,7 @@ function mat(U, vs, fs, extra, opts) { const u = Object.assign({}, U, extra || {
 /** Подменить обычного Барсика: rig — скелет из multik-3d.js (его поза, руки для предметов и тень остаются). */
 MKB.attach = function (T, rig) {
   if (!MKB.ready) return false; THREE = T; const s = shared(), D = MKB.D;
+  if (!MKB.tintU.value) MKB.tintU.value = new THREE.Vector3(0.95, 1.0, 1.0);   // рыжий ближе к золотистому (Blender)
   const U = uniformsNew(); U.uPos.value = s.tPos; U.uBake.value = s.tBake; U.uAttr.value = s.tAttr;
   const bg = new THREE.Group(); bg.name = 'barsik-neon'; bg.userData.noGround = true; bg.rotation.x = -Math.PI / 2; const k = rig.P.headY / HEAD_C; bg.scale.setScalar(k); rig.pose.add(bg);
   const add = (geo, m, order) => { const o = new THREE.Mesh(geo, m); o.frustumCulled = false; o.castShadow = false; o.receiveShadow = false; o.userData.barsik = true; if (order != null) o.renderOrder = order; bg.add(o); return o; };
@@ -407,9 +410,9 @@ MKB.frame = function (rig, st, T, L) {
     if (sun) { U.uSunDir.value.copy(sun.position).sub(sun.target.position).normalize(); U.uSunCol.value.set(sun.color.r, sun.color.g, sun.color.b).multiplyScalar(sun.intensity); }
     if (rim && rim.visible !== false) { U.uRimDir.value.copy(rim.position).sub(rim.target.position).normalize(); U.uRimCol.value.set(rim.color.r, rim.color.g, rim.color.b).multiplyScalar(rim.intensity * 1.1); } else U.uRimCol.value.set(0, 0, 0);
     if (hemi) { const env = (L.envI || 0) * 0.8; U.uSky.value.set(hemi.color.r * hemi.intensity + env, hemi.color.g * hemi.intensity + env, hemi.color.b * hemi.intensity + env).multiplyScalar(1 / Math.PI);
-      U.uGnd.value.set(hemi.groundColor.r, hemi.groundColor.g, hemi.groundColor.b).multiplyScalar(hemi.intensity / Math.PI); U.uFillCol.value.copy(U.uSky.value).multiplyScalar(0.55 * Math.PI); }
+      U.uGnd.value.set(hemi.groundColor.r, hemi.groundColor.g, hemi.groundColor.b).multiplyScalar(hemi.intensity / Math.PI); U.uFillCol.value.copy(U.uSky.value).multiplyScalar(0.55 * Math.PI); const lb = Math.max(.25, Math.min(1.6, (hemi.color.r + hemi.color.g + hemi.color.b) / 3 * hemi.intensity + env)); U.uFillCol.value.add(new THREE.Vector3(1.0, 0.96, 0.9).multiplyScalar(MKB.K.key * lb)); }   // БАРС: студийный свет на героя
     const f = L.fog; if (f && f.isFog) { U.uFogCol.value.set(f.color.r, f.color.g, f.color.b); U.uFog.value.set(f.near, f.far); } else U.uFog.value.set(0, 0);
-    if (L.expo != null) U.uExpo.value = L.expo; }
+    U.uExpo.value = (L.expo != null ? L.expo : 1) * MKB.K.expo; }
 };
 const _v = [], _mw = { m: null };
 function eyeFrame(rig, R, cam) {   // перед глазами: мир уже посчитан — центры глаз, взгляд, веки
@@ -426,7 +429,7 @@ function eyeFrame(rig, R, cam) {   // перед глазами: мир уже �
   const T = B.T || 0, sd = ((rig.n && rig.n.seed) || 0) % 13 / 13, sacc = Math.floor(T / (1.7 + sd) + sd * 9);
   const hs = (s) => { let h2 = 2166136261; for (let i = 0; i < s.length; i++) { h2 ^= s.charCodeAt(i); h2 = Math.imul(h2, 16777619); } return (h2 >>> 0) % 100 / 100; };
   const sx = (hs('s' + sacc) - 0.5) * 0.3, sy = (hs('y' + sacc) - 0.5) * 0.16;
-  const toCam = _v[3].copy(cam.position).sub(hc).normalize(); const gz = _v[4].copy(HF).lerp(toCam, 0.55).normalize();
+  const toCam = _v[3].copy(cam.position).sub(hc).normalize(); const gz = _v[4].copy(HF).lerp(toCam, 0.75).normalize();   // смотрит в камеру, как в Blender
   const rt = _v[5].crossVectors(gz, _v[6].set(0, 1, 0)).normalize(), upv = _v[6].crossVectors(rt, gz).normalize(); gz.addScaledVector(rt, sx).addScaledVector(upv, sy).normalize();
   const c = gz.dot(HF), lim = 0.5; if (c < Math.cos(lim)) { const pp = _v[7].copy(gz).addScaledVector(HF, -c).normalize(); gz.copy(HF).multiplyScalar(Math.cos(lim)).addScaledVector(pp, Math.sin(lim)); }
   const offL = (-0.72 * D.RE + (D.LIDOFF + 0.72 * D.RE) * B.lid) * sc;
