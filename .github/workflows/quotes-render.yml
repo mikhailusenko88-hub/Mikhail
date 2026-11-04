@@ -1,0 +1,44 @@
+name: quotes-render
+# Рендер роликов-цитат по плану schedule_30d.json: по одной задаче на день, параллельно.
+# Результат каждого дня — ветка quotes-out-dXX (3 mp4 + названия/описания).
+on:
+  push:
+    branches: [quotes]
+    paths: ['render.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        day: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+    steps:
+      - uses: actions/checkout@v4
+      - name: ffmpeg и библиотеки
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
+          pip install -q numpy scipy pillow
+          ffmpeg -version | head -1
+      - name: Рендер дня
+        run: |
+          D=$(printf "%02d" ${{ matrix.day }})
+          python3 render_day.py ${{ matrix.day }} 2>&1 | grep -v "^кадр" 
+          ls -la out
+          for f in out/*.mp4; do
+            ffprobe -v error -show_entries format=duration,size -of csv=p=0 "$f"
+          done
+      - name: Сохранить в ветку quotes-out-dXX
+        run: |
+          D=$(printf "%02d" ${{ matrix.day }})
+          mkdir /tmp/pub && cp out/* /tmp/pub/
+          cd /tmp/pub
+          git init -q -b quotes-out-d$D
+          git config user.name "quotes-render"
+          git config user.email "quotes-render@users.noreply.github.com"
+          git add . && git commit -q -m "день $D"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:quotes-out-d$D
