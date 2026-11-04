@@ -1048,13 +1048,21 @@ final class MultikSegment {
     private var adaptor: AVAssetWriterInputPixelBufferAdaptor?
 
     init(url: URL, w: Int, h: Int, fps: Int32) { self.url = url; self.w = w; self.h = h; self.fps = fps }
+    static let sRGB = CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
 
     func start() -> Bool {
         try? FileManager.default.removeItem(at: url)
         do {
             let wr = try AVAssetWriter(outputURL: url, fileType: .mp4)
+            // Цвет: матрица и метки BT.709 — так HD-видео читают YouTube и плееры. Без них кодер брал свою матрицу,
+            // а плеер — другую: трава и глаза тускнели, рыжая шерсть и нос уходили в оранжевый.
             let vs: [String: Any] = [
                 AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: w, AVVideoHeightKey: h,
+                AVVideoColorPropertiesKey: [
+                    AVVideoColorPrimariesKey: AVVideoColorPrimaries_ITU_R_709_2,
+                    AVVideoTransferFunctionKey: AVVideoTransferFunction_ITU_R_709_2,
+                    AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2,
+                ],
                 AVVideoCompressionPropertiesKey: [
                     AVVideoAverageBitRateKey: w >= 1920 ? 10_000_000 : 5_000_000,
                     AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
@@ -1088,11 +1096,15 @@ final class MultikSegment {
         guard let pb = pbo else { return false }
         CVPixelBufferLockBaseAddress(pb, [])
         if let ctx = CGContext(data: CVPixelBufferGetBaseAddress(pb), width: w, height: h, bitsPerComponent: 8,
-                               bytesPerRow: CVPixelBufferGetBytesPerRow(pb), space: CGColorSpaceCreateDeviceRGB(),
+                               bytesPerRow: CVPixelBufferGetBytesPerRow(pb), space: MultikSegment.sRGB,
                                bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue | CGBitmapInfo.byteOrder32Little.rawValue) {
             ctx.draw(img, in: CGRect(x: 0, y: 0, width: w, height: h))
         }
         CVPixelBufferUnlockBaseAddress(pb, [])
+        // кадр помечен как BT.709 — кодер переводит RGB → YCbCr той же матрицей, что ждёт плеер, и не трогает гамму
+        CVBufferSetAttachment(pb, kCVImageBufferColorPrimariesKey, kCVImageBufferColorPrimaries_ITU_R_709_2, .shouldPropagate)
+        CVBufferSetAttachment(pb, kCVImageBufferTransferFunctionKey, kCVImageBufferTransferFunction_ITU_R_709_2, .shouldPropagate)
+        CVBufferSetAttachment(pb, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_709_2, .shouldPropagate)
         let ok = ad.append(pb, withPresentationTime: CMTime(value: count, timescale: fps))
         if ok { count += 1 } else { error = writer?.error?.localizedDescription }
         return ok
