@@ -630,7 +630,7 @@ const Build = {
           }
           { const si = segAt(i / fps); if (si !== curSeg) { curSeg = si; if (MK3D.keepLocs) MK3D.keepLocs(new Set(tl.segs.slice(si).map(sg => sg.lkey).filter(Boolean))); } } // места, что дальше не нужны, — из памяти
           ctx.setTransform(w / 1920, 0, 0, h / 1080, 0, 0); MK.render(ctx, tl, i / fps);
-          const d = cv.toDataURL('image/jpeg', .9); inflight.push(Native.call('videoFrame', { i, d: d.slice(d.indexOf(',') + 1) })); i++;
+          const d = cv.toDataURL('image/jpeg', .95); inflight.push(Native.call('videoFrame', { i, d: d.slice(d.indexOf(',') + 1) })); i++;
           if (inflight.length >= 2) await take();
           if (rewind >= 0) { await drain(); // телефон просит вернуться (кусок видео оборвался при сворачивании) — перерисую эти кадры
             same = rewind === lastRw ? same + 1 : 0; lastRw = rewind; if (same > 40) throw new Error('запись видео не идёт');

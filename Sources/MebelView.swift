@@ -1064,7 +1064,7 @@ final class MultikSegment {
                     AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2,
                 ],
                 AVVideoCompressionPropertiesKey: [
-                    AVVideoAverageBitRateKey: w >= 1920 ? 10_000_000 : 5_000_000,
+                    AVVideoAverageBitRateKey: w >= 1920 ? 16_000_000 : 8_000_000,   // трава и шерсть — мелкие детали: при 10 Мбит/с они «мылились» при сборке mp4
                     AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
                     AVVideoMaxKeyFrameIntervalKey: Int(fps) * 2,
                 ],

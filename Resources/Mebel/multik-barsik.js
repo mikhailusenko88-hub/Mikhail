@@ -18,7 +18,7 @@ function extraW(p, reg) {   // веса костей: ноги, руки, ниж
   if (reg !== 7 && reg !== 5 && reg < 20) wl = sstep(0.27, 0.12, p[2]) * sstep(0.012, 0.05, Math.abs(p[0])) * Math.sign(p[0]);
   { const e = p[0] > 0 ? 1 : 0, S = SHS[e], Wr = WRS[e]; const d = [Wr[0] - S[0], Wr[1] - S[1], Wr[2] - S[2]]; const sg = e ? 1 : -1;
     const q = ((p[0] - S[0]) * d[0] + (p[1] - S[1]) * d[1] + (p[2] - S[2]) * d[2]) / (d[0] * d[0] + d[1] * d[1] + d[2] * d[2]); const ds = Math.hypot(p[0] - S[0], p[1] - S[1], p[2] - S[2]);
-    if (reg === 5) { wa = sgn1(Math.max(sstep(-0.2, 0.25, q), 0.45 * sstep(0.12, 0.03, ds))) * sg; wf = sstep(0.4, 0.52, q) * sg; } else if (reg === 0 && Math.abs(p[0]) > 0.06) wa = 0.45 * sstep(0.13, 0.03, ds) * sstep(0.3, 0.42, p[2]) * sg; }
+    if (reg === 5) { wa = sg; wf = sstep(0.4, 0.52, q) * sg; } /* лапа — отдельная сетка (с плечом), идёт целиком; бок туловища под ней свой и за лапой не тянется */ }
   if (reg === 1 || reg === 2) wj = sstep(zc(p[0]) + 0.001, zc(p[0]) - 0.0045, p[2]) * sstep(-0.115, -0.15, p[1]) * sstep(0.05, 0.036, Math.abs(p[0]));
   return [Math.round(wl * 127), Math.round(wa * 127), Math.round(wj * 255), Math.round(wf * 127)];
 }
@@ -92,7 +92,7 @@ function decode(H, ab) {
 // ---------- шейдеры (как в пробной сцене, свет — от места мультика) ----------
 const COMMON = `precision highp float; precision highp int; precision highp sampler2D;
 uniform mat4 modelMatrix, viewMatrix, projectionMatrix; uniform vec3 cameraPosition;
-uniform mat3 uHead, uEar0, uEar1, uLeg0, uLeg1, uArm0, uArm1, uFore0, uFore1, uJawM; uniform vec2 uLift; uniform float uTailA, uTailPh, uBreath, uScale, uPix, uExpo, uDesat, uTrim, uSoft, uGloss; uniform vec3 uTint;
+uniform mat3 uHead, uEar0, uEar1, uLeg0, uLeg1, uArm0, uArm1, uFore0, uFore1, uJawM; uniform vec4 uArmQ0, uArmQ1; uniform vec2 uLift; uniform float uTailA, uTailPh, uBreath, uScale, uPix, uExpo, uDesat, uTrim, uSoft, uGloss; uniform vec3 uTint;
 uniform vec3 uSunDir, uSunCol, uRimDir, uRimCol, uFillDir, uFillCol, uSky, uGnd, uUp, uFogCol; uniform vec2 uFog;
 const float PI = 3.14159265;
 vec3 sane(vec3 c) { bvec3 bad = equal(floatBitsToUint(c) & uvec3(0x7f800000u), uvec3(0x7f800000u)); vec3 r = min(max(c, vec3(0.0)), vec3(300.0)); return any(bad) ? vec3(0.0) : r; }
@@ -108,7 +108,7 @@ vec3 poseP(vec3 p, float wh, float ts, float we, float wb, vec4 wx) {
   if (we > 0.001) q = mix(q, uEar1 * (q - EARB1) + EARB1, we); else if (we < -0.001) q = mix(q, uEar0 * (q - EARB0) + EARB0, -we);
   if (wx.x > 0.001) q = mix(q, uLeg1 * (q - HIP1) + HIP1 + vec3(0.0, 0.0, uLift.y), wx.x); else if (wx.x < -0.001) q = mix(q, uLeg0 * (q - HIP0) + HIP0 + vec3(0.0, 0.0, uLift.x), -wx.x);
   if (wx.w > 0.001) q = mix(q, uFore1 * (q - ELB1) + ELB1, wx.w); else if (wx.w < -0.001) q = mix(q, uFore0 * (q - ELB0) + ELB0, -wx.w);
-  if (wx.y > 0.001) q = mix(q, uArm1 * (q - SH1) + SH1, wx.y); else if (wx.y < -0.001) q = mix(q, uArm0 * (q - SH0) + SH0, -wx.y);
+  if (abs(wx.y) > 0.001) { bool r1 = wx.y > 0.0; float w = abs(wx.y); vec3 sh = r1 ? SH1 : SH0; vec4 aq = r1 ? uArmQ1 : uArmQ0; q = (w > 0.995 ? (r1 ? uArm1 : uArm0) : rotAxis(aq.xyz, aq.w * w)) * (q - sh) + sh; }
   if (wx.z > 0.001) q = mix(q, uJawM * (q - JAWP) + JAWP, wx.z);
   if (wh > 0.0) q = mix(q, uHead * (q - PH) + PH, wh);
   return q;
@@ -116,7 +116,7 @@ vec3 poseP(vec3 p, float wh, float ts, float we, float wb, vec4 wx) {
 vec3 poseN(vec3 n, float wh, vec4 wx) { vec3 m = n;
   if (wx.w > 0.001) m = mix(m, uFore1 * m, wx.w); else if (wx.w < -0.001) m = mix(m, uFore0 * m, -wx.w);
   if (wx.x > 0.001) m = mix(m, uLeg1 * m, wx.x); else if (wx.x < -0.001) m = mix(m, uLeg0 * m, -wx.x);
-  if (wx.y > 0.001) m = mix(m, uArm1 * m, wx.y); else if (wx.y < -0.001) m = mix(m, uArm0 * m, -wx.y);
+  if (abs(wx.y) > 0.001) { bool r1 = wx.y > 0.0; float w = abs(wx.y); vec4 aq = r1 ? uArmQ1 : uArmQ0; m = (w > 0.995 ? (r1 ? uArm1 : uArm0) : rotAxis(aq.xyz, aq.w * w)) * m; }
   if (wx.z > 0.001) m = mix(m, uJawM * m, wx.z); return mix(m, uHead * m, wh); }
 vec3 toW(vec3 p) { return (modelMatrix * vec4(p, 1.0)).xyz; }
 vec3 toWN(vec3 n) { return normalize(mat3(modelMatrix) * n); }
@@ -340,7 +340,7 @@ function shared() {
 const M3 = () => new THREE.Matrix3();
 function uniformsNew() {
   const v3 = (x, y, z) => ({ value: new THREE.Vector3(x || 0, y || 0, z || 0) });
-  return { uHead: { value: M3() }, uEar0: { value: M3() }, uEar1: { value: M3() }, uLeg0: { value: M3() }, uLeg1: { value: M3() }, uArm0: { value: M3() }, uArm1: { value: M3() }, uFore0: { value: M3() }, uFore1: { value: M3() }, uJawM: { value: M3() },
+  return { uHead: { value: M3() }, uEar0: { value: M3() }, uEar1: { value: M3() }, uLeg0: { value: M3() }, uLeg1: { value: M3() }, uArm0: { value: M3() }, uArm1: { value: M3() }, uArmQ0: { value: new THREE.Vector4(1, 0, 0, 0) }, uArmQ1: { value: new THREE.Vector4(1, 0, 0, 0) }, uFore0: { value: M3() }, uFore1: { value: M3() }, uJawM: { value: M3() },
     uLift: { value: new THREE.Vector2() }, uTailA: { value: 0.25 }, uTailPh: { value: 0 }, uBreath: { value: 0 }, uScale: { value: 1 }, uPix: { value: 0.001 }, uExpo: { value: 1 }, uDesat: MKB.desatU, uTint: MKB.tintU, uTrim: MKB.trimU, uSoft: MKB.softU, uGloss: MKB.glossU,
     uSunDir: v3(0, 1, 0), uSunCol: v3(2, 2, 2), uRimDir: v3(0, 0.5, -1), uRimCol: v3(0, 0, 0), uFillDir: v3(0, 0.3, 1), uFillCol: v3(0.2, 0.2, 0.2), uSky: v3(0.4, 0.45, 0.5), uGnd: v3(0.15, 0.15, 0.12), uUp: v3(0, 1, 0), uFogCol: v3(1, 1, 1), uFog: { value: new THREE.Vector2(0, 0) },
     uPos: { value: null }, uBake: { value: null }, uAttr: { value: null } };
@@ -381,6 +381,8 @@ MKB.attach = function (T, rig) {
 const AX = () => new THREE.Matrix4().makeRotationX(-Math.PI / 2);   // модель (z вверх) → three (y вверх)
 let _ax = null, _axi = null, _m4 = null, _m4b = null, _e = null, _q = null;
 function conj(R4, out) { /* поворот в осях three → в осях модели */ _m4b.copy(_axi).multiply(R4).multiply(_ax); out.setFromMatrix4(_m4b); return out; }
+const _qt = { x: 0, y: 0, z: 0, w: 1 };
+function armQ(R4, out) { /* поворот плеча → ось и угол (для доли поворота у кожи плеча) */ const q = (_qt.q || (_qt.q = new THREE.Quaternion())).setFromRotationMatrix(R4); const w = Math.min(1, Math.max(-1, q.w)); let a = 2 * Math.acos(w); const sn = Math.sqrt(Math.max(0, 1 - w * w)); if (sn < 1e-5 || !isFinite(a)) { out.set(1, 0, 0, 0); return; } if (a > Math.PI) a -= 2 * Math.PI; out.set(q.x / sn, q.y / sn, q.z / sn, a); }
 function eulerM(x, y, z, out) { _e.set(x, y, z, 'XYZ'); return out.makeRotationFromEuler(_e); }
 const REST_X = -0.39, REST_Z = 0.345;   // лапы модели в покое — в углах скелета (x — вперёд/назад, z — в сторону)
 MKB.frame = function (rig, st, T, L) {
@@ -391,7 +393,7 @@ MKB.frame = function (rig, st, T, L) {
   // руки: от покоя модели к углам скелета
   rig.arms.forEach((g, i) => { const s = g.userData.side || (i ? 1 : -1), j = s < 0 ? 0 : 1; const ax = g.rotation.x; let az = g.rotation.z * s;
     az = REST_Z + (az - REST_Z) * 0.85; /* в сторону — чуть мягче: плечо модели не растягивается */
-    eulerM(ax, 0, s * az, _m4); eulerM(REST_X, 0, s * REST_Z, _q); _m4.multiply(_q.invert()); conj(_m4, j ? U.uArm1.value : U.uArm0.value);
+    eulerM(ax, 0, s * az, _m4); eulerM(REST_X, 0, s * REST_Z, _q); _m4.multiply(_q.invert()); conj(_m4, j ? U.uArm1.value : U.uArm0.value); armQ(_m4b, (j ? U.uArmQ1 : U.uArmQ0).value);
     const up = Math.max(0, az - 1.2); (j ? U.uFore1 : U.uFore0).value.setFromMatrix4(eulerM(0, 0, 0, _q)); if (up > 0) { conj(eulerM(-Math.min(1.1, up * 0.8), 0, 0, _q), (j ? U.uFore1 : U.uFore0).value); } });
   rig.legs.forEach((g, i) => { const j = g.position.x < 0 ? 0 : 1; conj(eulerM(g.rotation.x, 0, 0, _m4), j ? U.uLeg1.value : U.uLeg0.value); });
   if (rig.ears) rig.ears.forEach((e, i) => { const r0 = e.userData.r0; if (!r0) return; const j = (e.getWorldPosition ? (e.position.x < 0 ? 0 : 1) : i);

@@ -11,13 +11,14 @@
 
 Пересборка данных (нужны numpy, scipy, scikit-image, g++):
 ```
-python3 build_geo_paws.py --var=s2     # форма с лапками-пальчиками (образец 6.2), кожа, мех (out/geo_s2.npz); без пальцев — build_geo.py
+TOE_K=0.22 python3 build_geo_split.py --var=s2   # лапки-пальчики (образец 6.2), лапы — отдельной сеткой от туловища (out/geo_s2.npz + out/split_vol.npz)
 python3 add_tau.py s2
 python3 knit_scarf.py                  # новый шарф + ворсинки → out/geo_s3.npz (--preview — быстрый вид формы)
 python3 add_tau.py s3 && python3 export_geo.py s3
 g++ -O3 -march=native -ffast-math -fopenmp -o fur_exp fur.cpp
 ./fur_exp tauk=0.35 geo=out/geo_s3 bake=out/bake_s3.bin export=out/phone_s3.raw    # ~1 мин на 2 ядрах
-RAW=out/phone_s3.raw KNIT=1 python3 pack_phone.py 230000                       # → Resources/Mebel/barsik/barsik_data.js
+RAW=out/phone_s3.raw python3 fix_hidden.py                                     # свет шерсти, спрятанной под лапой в покое → out/phone_s3_fix.raw
+RAW=out/phone_s3_fix.raw KNIT=1 python3 pack_phone.py 230000                   # → Resources/Mebel/barsik/barsik_data.js
 ```
 Числа шарфа (кольца, узел, концы, кисточки, ROWH/COLW/NR/NC) — в `knit_scarf.py` и в `KNIT` внутри `multik-barsik.js`: менять вместе.
 Проверка без телефона: `node tools/multik/test/render.js сценарий.txt --hq 3 6` (frame.html сам грузит данные Барсика).
@@ -25,3 +26,4 @@ RAW=out/phone_s3.raw KNIT=1 python3 pack_phone.py 230000                       #
 ## БАРС: лучший Барсик (ноябрь 2026)
 - Лапки с пальцами и розовыми подушечками — `build_geo_paws.py` (функции `toe_paw` из `tools/multik/obrazec/heroes/hero_common.py`): подушечки — область 8 ниже 0,42 м (в телефоне идут за лапой, `extraW`), на пальцах шерсть короче (×0,42).
 - Налёт (из «неона» v4): `VS_SHELL`/`FS_SHELL` в `multik-barsik.js` — кожа ещё 6 раз слоями до 16 мм внутри шерсти; сила `MKBarsik.shellU.value` (0 — выключить).
+- Лапы отдельно от туловища (4.11.2026): раньше кожа была одной поверхностью — лапа сливалась с боком по всей длине, и при поднятой или разведённой лапе бок тянулся «перепонкой», как у летучей мыши. Теперь `build_geo_split.py` строит две сетки: туловище (голова, ноги, хвост) и лапы с плечом; у туловища под лапой свой бок с шерстью. В телефоне лапа идёт за плечом целиком (`extraW`: область 5 — вес 1), частичные веса крутятся долей поворота вокруг плеча (`uArmQ0/uArmQ1`), а не смесью положений. `fix_hidden.py` даёт шерсти, спрятанной в покое внутри другой части, свет открытых соседей.
