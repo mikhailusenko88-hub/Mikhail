@@ -77,6 +77,10 @@ def main():
         return
 
     yt = None
+    if mode == "publish" and not os.environ.get("FLAGBALL_YT", "").strip():
+        log("секрета FLAGBALL_YT пока нет — жду вход в канал, ничего не делаю")
+        write_status(f"ЖДУ ВХОД: нет секрета FLAGBALL_YT ({d} слот {slot} пропущен)")
+        return
     if mode == "publish":
         import yt as ytmod
         yt = ytmod.YT()
