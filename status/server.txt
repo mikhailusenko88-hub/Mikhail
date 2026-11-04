@@ -1,0 +1,24 @@
+Проверка: 2026-11-04 17:04 UTC из GitHub (US)
+--- ping
+3 packets transmitted, 0 received, 100% packet loss, time 2078ms
+
+--- порты TCP
+22 открыт
+80 открыт
+443 НЕ отвечает
+2222 НЕ отвечает
+8080 открыт
+--- SSH баннер
+SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
+нет ответа от SSH
+
+--- ssh-keyscan
+# 89.126.192.214:22 SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
+# 89.126.192.214:22 SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
+89.126.192.214 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC4iNlXUHb8zl4B5XeO4jD05SzrVAVsl7v2F4LMgrU7PkO9jqAFftXaV76+q3ZsyrTTTOKTIe09wz3lR2yZjXoCY/nfPufaPczSTQai6dPUBpoojupiHHWW/z91q+ii5HY2B+w6Zz7b0A6QJVpepGZ04wzDBWXD2BQUl+Q1Gf3TERt7H+ntpILeIQD1jbdBgYgO8Wb/wjRq79TV9B+ds+zKcCQekA2NZcA5lmKT5Ss3iGtmOZo4cWFBrIXdmm2GGV43WCkntsz76b5FZDiQOiL0x9Eu5ctgDh45hYNcGzAHSnTMT/Get2kxSUwm3lqUNghmeOkeau8C/LhVdVAc7mejiS8GrhatEVBWHRay/lH8nJSRmOtNiDOloJubG29VTMsiB3wJ+pub8BA30/whY9H1nZ/cCnGuOw8l00H8eTJWcvnubXRy1P2Wgr/5wYvMGU5chqksnE0FvuF8/XRPyx28OK+3Ctvr0/52Vbiw6/s7DUxd+GNTblc87fOai4XZVEM=
+--- HTTP
+http://89.126.192.214/ -> 302 за 0.361865s
+https://89.126.192.214/ -> 000 за 0.179859s
+https не ответил
+--- traceroute (последние шаги)
+timeout: failed to execute process: No such file or directory (os error 2)
