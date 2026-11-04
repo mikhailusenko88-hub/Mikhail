@@ -1,13 +1,28 @@
-2026-11-01 15:40 UTC
+2026-11-04 15:49 UTC
+200 https://www.youtube.com/@TheHandwriting_of_Silence
+200 https://www.youtube.com/@TheHandwriting_of_Silence/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
+200 https://www.youtube.com/@Beautiful_shorts-s6u
+200 https://www.youtube.com/@Beautiful_shorts-s6u/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
 200 https://www.youtube.com/@bilesin_be_kz
 200 https://www.youtube.com/@bilesin_be_kz/shorts
 200 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
 200 https://www.youtube.com/@pochemu_tak_fakty
 200 https://www.youtube.com/@pochemu_tak_fakty/shorts
 200 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
-200 https://www.youtube.com/@Beautiful_shorts-s6u
-200 https://www.youtube.com/@Beautiful_shorts-s6u/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
-200 https://www.youtube.com/@TheHandwriting_of_Silence
-200 https://www.youtube.com/@TheHandwriting_of_Silence/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
+200 https://www.youtube.com/watch?v=C92gsy12lVU&hl=ru
+200 thumb C92gsy12lVU/oar2.jpg 139307 B
+200 thumb C92gsy12lVU/hqdefault.jpg 8527 B
+200 https://www.youtube.com/watch?v=upQF0ShhNho&hl=ru
+200 thumb upQF0ShhNho/oar2.jpg 122896 B
+200 thumb upQF0ShhNho/hqdefault.jpg 7021 B
+200 https://www.youtube.com/watch?v=Eaot-Eom2Ts&hl=ru
+200 thumb Eaot-Eom2Ts/oar2.jpg 183882 B
+200 thumb Eaot-Eom2Ts/hqdefault.jpg 12113 B
+200 https://www.youtube.com/watch?v=G3aghJhvkk8&hl=ru
+200 thumb G3aghJhvkk8/oar2.jpg 121337 B
+200 thumb G3aghJhvkk8/hqdefault.jpg 9651 B
+200 https://www.youtube.com/watch?v=W1EheVDF_R8&hl=ru
+200 thumb W1EheVDF_R8/oar2.jpg 178984 B
+200 thumb W1EheVDF_R8/hqdefault.jpg 12193 B
