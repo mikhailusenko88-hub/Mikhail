@@ -2903,27 +2903,28 @@ function ensureIn(obj) { if (obj.parent !== scene) scene.add(obj); }
 // ---------- «киношная» обработка кадра: свечение, размытый фон на крупных планах, цвет, виньетка ----------
 let PP = null;
 const PP_VS = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
-function ppMat(fs, uniforms, final) { return new THREE.ShaderMaterial({ vertexShader: PP_VS, fragmentShader: fs, uniforms, depthTest: false, depthWrite: false, toneMapped: !!final }); }
+const PP_BAD = 'bool badc(vec3 c) { return any(equal(floatBitsToUint(c) & uvec3(0x7f800000u), uvec3(0x7f800000u))); }\nbool badc(vec4 c) { return any(equal(floatBitsToUint(c) & uvec4(0x7f800000u), uvec4(0x7f800000u))); }\n';   // NaN/бесконечность по битам: на iPhone isnan() выкидывается оптимизатором, и одна точка разносится свечением в чёрные квадраты
+function ppMat(fs, uniforms, final) { return new THREE.ShaderMaterial({ vertexShader: PP_VS, fragmentShader: PP_BAD + fs, uniforms, depthTest: false, depthWrite: false, toneMapped: !!final }); }
 function ppInit(w, h) {
   const rt = (ww, hh, depth) => { const r = new THREE.WebGLRenderTarget(Math.max(1, ww | 0), Math.max(1, hh | 0), { type: THREE.HalfFloatType, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: !!depth, samples: depth ? msaaN() : 0 }); if (depth) r.depthTexture = new THREE.DepthTexture(Math.max(1, ww | 0), Math.max(1, hh | 0)); return r; };
   const P = { w, h, main: rt(w, h, true), h1: rt(w / 2, h / 2), h2: rt(w / 2, h / 2), q1: rt(w / 4, h / 4), q2: rt(w / 4, h / 4), b1: rt(w / 4, h / 4), b2: rt(w / 4, h / 4), e1: rt(w / 8, h / 8), e2: rt(w / 8, h / 8) };
   P.scene = new THREE.Scene(); P.cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1); P.quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2)); P.quad.frustumCulled = false; P.scene.add(P.quad);
-  P.copy = ppMat('uniform sampler2D t; varying vec2 vUv; void main(){ vec4 c = texture2D(t, vUv); gl_FragColor = (any(isnan(c)) || any(isinf(c))) ? vec4(0.0, 0.0, 0.0, 1.0) : min(c, vec4(48.0)); }', { t: { value: null } });
-  P.bright = ppMat('uniform sampler2D t; uniform float thr; varying vec2 vUv; void main(){ vec3 c = texture2D(t, vUv).rgb; c = (any(isnan(c)) || any(isinf(c))) ? vec3(0.0) : min(c, vec3(24.0)); float l = max(c.r, max(c.g, c.b)); float k = clamp((l - thr) / (l + 1e-4), 0.0, 1.0); gl_FragColor = vec4(c * k * k, 1.0); }', { t: { value: null }, thr: { value: .92 } });
+  P.copy = ppMat('uniform sampler2D t; varying vec2 vUv; void main(){ vec4 c = texture2D(t, vUv); gl_FragColor = badc(c) ? vec4(0.0, 0.0, 0.0, 1.0) : min(c, vec4(48.0)); }', { t: { value: null } });
+  P.bright = ppMat('uniform sampler2D t; uniform float thr; varying vec2 vUv; void main(){ vec3 c = texture2D(t, vUv).rgb; c = badc(c) ? vec3(0.0) : min(c, vec3(24.0)); float l = max(c.r, max(c.g, c.b)); float k = clamp((l - thr) / (l + 1e-4), 0.0, 1.0); gl_FragColor = vec4(c * k * k, 1.0); }', { t: { value: null }, thr: { value: .92 } });
   P.blur = ppMat('uniform sampler2D t; uniform vec2 d; varying vec2 vUv; void main(){ vec3 c = texture2D(t, vUv).rgb * .2270; c += (texture2D(t, vUv + d * 1.3846).rgb + texture2D(t, vUv - d * 1.3846).rgb) * .3162; c += (texture2D(t, vUv + d * 3.2308).rgb + texture2D(t, vUv - d * 3.2308).rgb) * .0703; gl_FragColor = vec4(c, 1.0); }', { t: { value: null }, d: { value: new THREE.Vector2() } });
   P.r1 = rt(w / 4, h / 4); P.r2 = rt(w / 4, h / 4);
   P.rays = ppMat(`uniform sampler2D tMain, tDepth; uniform vec2 src; varying vec2 vUv;
     void main(){ vec2 uv = vUv, d = (vUv - src) / 56.0; float decay = 1.0; vec3 acc = vec3(0.0);
-      for (int i = 0; i < 56; i++) { uv -= d; vec2 u = clamp(uv, 0.001, .999); float sky = step(.99995, texture2D(tDepth, u).x); vec3 c = texture2D(tMain, u).rgb; float l = max(c.r, max(c.g, c.b)); acc += c * sky * smoothstep(.45, 1.0, l) * decay; decay *= .955; }
+      for (int i = 0; i < 56; i++) { uv -= d; vec2 u = clamp(uv, 0.001, .999); float sky = step(.99995, texture2D(tDepth, u).x); vec3 c = texture2D(tMain, u).rgb; if (badc(c)) c = vec3(0.0); c = min(c, vec3(24.0)); float l = max(c.r, max(c.g, c.b)); acc += c * sky * smoothstep(.45, 1.0, l) * decay; decay *= .955; }
       gl_FragColor = vec4(acc / 22.0, 1.0); }`, { tMain: { value: null }, tDepth: { value: null }, src: { value: new THREE.Vector2(.7, 1.25) } });
   P.comp = ppMat(`#include <packing>
     uniform sampler2D tMain, tHalf, tQuart, tB1, tB2, tDepth, tRays; uniform float near, far, focus, ap, bloom, sat, con, vig, rays; uniform vec3 tintH, tintS, rayCol; varying vec2 vUv;
     void main(){
-      vec3 c = texture2D(tMain, vUv).rgb; c = (any(isnan(c)) || any(isinf(c))) ? vec3(0.0) : min(c, vec3(48.0));
+      vec3 c = texture2D(tMain, vUv).rgb; c = badc(c) ? vec3(0.0) : min(c, vec3(48.0));
       if (ap > 0.0) { float z = -perspectiveDepthToViewZ(texture2D(tDepth, vUv).x, near, far); float coc = clamp(ap * abs(1.0 - focus / max(z, .01)) * 2.4, 0.0, 1.0);
-        vec3 hb = texture2D(tHalf, vUv).rgb, qb = texture2D(tQuart, vUv).rgb; c = coc < .5 ? mix(c, hb, coc * 2.0) : mix(hb, qb, (coc - .5) * 2.0); }
+        vec3 hb = texture2D(tHalf, vUv).rgb, qb = texture2D(tQuart, vUv).rgb; if (badc(hb)) hb = c; if (badc(qb)) qb = hb; c = coc < .5 ? mix(c, hb, coc * 2.0) : mix(hb, qb, (coc - .5) * 2.0); }
       c += texture2D(tB1, vUv).rgb * bloom * .7 + texture2D(tB2, vUv).rgb * bloom;
-      if (rays > 0.0) { vec3 r = texture2D(tRays, vUv).rgb; c += r * rayCol * rays * .8; } // лучи света сквозь кроны
+      if (rays > 0.0) { vec3 r = texture2D(tRays, vUv).rgb; if (!badc(r)) c += r * rayCol * rays * .8; } // лучи света сквозь кроны
       float l = dot(c, vec3(.2126, .7152, .0722)); c = mix(vec3(l), c, sat);
       c *= mix(tintS, tintH, smoothstep(.05, .7, l));
       c = (c - .18) * con + .18; c = max(c, 0.0);

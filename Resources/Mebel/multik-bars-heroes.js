@@ -91,7 +91,7 @@ void main() {
   if (uGrass == 1) col += ae * vec3(0.05, 0.09, 0.03) * .6;
   col = mix(col * uExpo, uMistC, vMist); if (any(isnan(col)) || any(isinf(col))) col = vec3(0.0); col = min(col, vec3(40.0));
   if (uDbgS == 2) col = mix(ae * .8, uMistC, vMist);
-  oc = vec4(sane(col), vCov);
+  float cv = vCov; if ((floatBitsToUint(cv) & 0x7f800000u) == 0x7f800000u) cv = 1.0; oc = vec4(sane(col), clamp(cv, 0.0, 1.0));
 }`;
 const DEPTH_FS = `precision highp float; out vec4 oc; void main() { oc = vec4(1.0); }`;
 // ---------- поверхности (кожа, нос, шарф, глаза, земля, камни, стволы) ----------

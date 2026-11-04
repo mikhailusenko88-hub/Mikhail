@@ -83,7 +83,7 @@ function soMat(windU, maskTex, maskB, wide, dapK) {
     if (uDew > 0.0 && vTip > .55) { vec3 cell = floor(vWp * 420.0); float hr = fract(sin(dot(cell, vec3(12.9898, 78.233, 37.719))) * 43758.5453);   // роса на кончиках
       if (hr > .975) { float dr = length(vWp - (cell + .5) / 420.0) * 420.0; float drop = 1.0 - smoothstep(.25, .5, dr); vec3 rf = reflect(-Ls, normal); float nv = abs(dot(normal, geometryViewDir));
         float gl = pow(max(dot(rf, geometryViewDir), 0.0), 60.0) + .6 * pow(max(dot(-Ls, geometryViewDir), 0.0), 8.0) * (1.0 - nv); reflectedLight.directSpecular += Lc * vec3(1.0, .98, .9) * gl * drop * uDew * .9 * vTip * shf * vSun; } } }
-  #endif`);
+  #endif`).replace('#include <dithering_fragment>', '#include <dithering_fragment>\n  { if (any(equal(floatBitsToUint(gl_FragColor) & uvec4(0x7f800000u), uvec4(0x7f800000u)))) gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); }');   // без NaN (iPhone)
   };
   m.customProgramCacheKey = () => 'bars-soty'; return m;
 }
@@ -145,7 +145,8 @@ S.nalet = function (T, mesh, o) {
     #if NUM_HEMI_LIGHTS > 0
     col += alb * hemisphereLights[0].skyColor * .15 * uT;
     #endif
-    float a = cover * (.04 + .2 * rim * uRimK) * (.4 + .6 * uT); gl_FragColor = vec4(col * cover, a); }`);
+    float a = cover * (.04 + .2 * rim * uRimK) * (.4 + .6 * uT); gl_FragColor = vec4(col * cover, a);
+    if (any(equal(floatBitsToUint(gl_FragColor) & uvec4(0x7f800000u), uvec4(0x7f800000u)))) discard; }`);
     };
     m.customProgramCacheKey = () => 'bars-nalet';
     const c = new THREE.Mesh(mesh.geometry, m); c.castShadow = false; c.receiveShadow = true; c.renderOrder = 5 + i; c.userData.nalet = true; c.userData.noMerge = true; c.frustumCulled = mesh.frustumCulled; mesh.add(c); }
