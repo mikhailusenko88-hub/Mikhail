@@ -1,0 +1,42 @@
+name: srv-check
+on:
+  push:
+    branches: [srv-check]
+    paths: ['run.txt']
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: check server
+        run: |
+          IP=89.126.192.214
+          mkdir -p status
+          {
+            echo "Проверка: $(date -u '+%Y-%m-%d %H:%M UTC') из GitHub ($(curl -s --max-time 5 https://ipinfo.io/country || echo ?))"
+            echo "--- ping"
+            ping -c 3 -W 3 $IP 2>&1 | tail -2 || true
+            echo "--- порты TCP"
+            for p in 22 80 443 2222 8080; do
+              if timeout 6 bash -c "exec 3<>/dev/tcp/$IP/$p" 2>/dev/null; then echo "$p открыт"; else echo "$p НЕ отвечает"; fi
+            done
+            echo "--- SSH баннер"
+            timeout 8 bash -c "exec 3<>/dev/tcp/$IP/22; head -c 80 <&3" 2>&1 || echo "нет ответа от SSH"
+            echo
+            echo "--- ssh-keyscan"
+            timeout 15 ssh-keyscan -T 8 -p 22 $IP 2>&1 | head -3 || echo "keyscan не ответил"
+            echo "--- HTTP"
+            curl -s -o /dev/null -w "http://$IP/ -> %{http_code} за %{time_total}s\n" --max-time 10 http://$IP/ || echo "http не ответил"
+            curl -sk -o /dev/null -w "https://$IP/ -> %{http_code} за %{time_total}s\n" --max-time 10 https://$IP/ || echo "https не ответил"
+            echo "--- traceroute (последние шаги)"
+            timeout 40 traceroute -n -w 2 -q 1 -m 25 $IP 2>&1 | tail -6 || true
+          } > status/server.txt 2>&1
+          cat status/server.txt
+      - name: save
+        run: |
+          git config user.name "srv-check"; git config user.email "srv-check@users.noreply.github.com"
+          git add status; git commit -m "server status" || exit 0
+          git pull --rebase origin srv-check || true; git push origin HEAD:srv-check
