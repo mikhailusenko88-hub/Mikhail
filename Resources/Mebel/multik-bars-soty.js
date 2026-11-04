@@ -111,12 +111,44 @@ S.grassField = function (T, g, r0, green, skip, opts, ctx) {
   const grp = new THREE.Group(); grp.name = 'bars-soty'; const mats = {}; let nb = 0, nc = 0;
   const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1), up = new THREE.Vector3(0, 1, 0);
   tiers.forEach(([, , k, wide], t) => { for (let si = 0; si < S.NS; si++) { const list = cells[t].filter(c => c[2] === si); if (!list.length) continue;
-      const geo = tierGeo(sampleGeo(si, green, 1500), k); const mat = mats[t] || (mats[t] = soMat(ctx.windU, mt, maskB, wide, opts.forest ? 1.5 : 0));
+      const geo = tierGeo(sampleGeo(si, green, 1500), k); const mat = mats[t] || (mats[t] = soMat(ctx.windU, mt, maskB, wide, opts.forest ? 1.0 : 0));
       const im = new THREE.InstancedMesh(geo, mat, list.length); im.castShadow = false; im.receiveShadow = true; im.frustumCulled = false; im.userData.keep = true; im.userData.soty = true;
       list.forEach(([x, z, , rot], i) => { _q.setFromAxisAngle(up, rot * Math.PI / 3); _p.set(x, 0, z); _m.compose(_p, _q, _s); im.setMatrixAt(i, _m); });
       im.instanceMatrix.needsUpdate = true; grp.add(im); nc += list.length; nb += list.length * Math.round(geo.attributes.aRoot.count / 10 * k); } });
   g.add(grp); S.stats = { cells: nc, blades: nb, ms: Math.round(performance.now() - t0) };
   return grp;
+};
+// ---------- налёт на мир (неон v4.1): мох, камни, стволы — прозрачные оболочки «молекул», светятся, когда сквозь них идёт свет ----------
+S.naletOn = true;
+S.nalet = function (T, mesh, o) {
+  THREE = T; if (!S.naletOn || !mesh || !mesh.geometry || !mesh.geometry.attributes.normal) return; o = o || {}; mesh.userData.noMerge = true; /* склейка неподвижных деталей забрала бы оболочки */ const n = o.n || 3, base = mesh.material || {};
+  for (let i = 0; i < n; i++) { const t = (i + 1) / n;
+    const m = new THREE.MeshStandardMaterial({ color: base.color ? base.color.clone() : 0xffffff, map: base.map || null, roughness: 1, metalness: 0, transparent: true, depthWrite: false,
+      blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor });
+    m.onBeforeCompile = (sh) => {
+      Object.assign(sh.uniforms, { uT: { value: t }, uH: { value: (o.h || .02) * t }, uFreq: { value: o.freq || 220 }, uFar: { value: o.far || 14 }, uFuzz: { value: new THREE.Vector3(...(o.fuzz || [1, 1.1, .8])) }, uRimK: { value: o.rimK == null ? .8 : o.rimK }, uTopY: { value: o.topY == null ? 1e4 : o.topY }, uUp: { value: o.up ? 1 : 0 } });
+      sh.vertexShader = 'uniform float uH; varying vec3 vWp, vWn;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n  transformed += normalize(objectNormal) * uH; vWp = (modelMatrix * vec4(transformed, 1.0)).xyz; vWn = normalize(mat3(modelMatrix) * objectNormal);');
+      sh.fragmentShader = 'uniform float uT, uFreq, uFar, uRimK, uTopY, uUp; uniform vec3 uFuzz; varying vec3 vWp, vWn;\n' + NOISE + sh.fragmentShader.replace('#include <opaque_fragment>', `
+  { vec3 nn = normal, V = geometryViewDir; if (dot(nn, V) < 0.0) nn = -nn; float nv = max(dot(nn, V), 0.0);
+    float df = 1.0 - smoothstep(uFar * .6, uFar, length(vViewPosition)); float mm = vnz(vWp * uFreq) * .65 + vnz(vWp * uFreq * 3.1) * .35;
+    float cover = smoothstep(uT - .22, uT + .06, mm) * df * (1.0 - smoothstep(uTopY - .8, uTopY, vWp.y)) * (uUp > .5 ? smoothstep(.05, .55, vWn.y) : 1.0); if (cover < .02) discard;
+    vec3 alb = diffuseColor.rgb * uFuzz; vec3 col = vec3(0.0); float rim = pow(1.0 - nv, 1.4);
+    #if NUM_DIR_LIGHTS > 0
+    { float shf = 1.0;
+      #if defined( USE_SHADOWMAP ) && NUM_DIR_LIGHT_SHADOWS > 0
+      { DirectionalLightShadow dls = directionalLightShadows[ 0 ]; shf = receiveShadow ? getShadow( directionalShadowMap[ 0 ], dls.shadowMapSize, dls.shadowIntensity, dls.shadowBias, dls.shadowRadius, vDirectionalShadowCoord[ 0 ] ) : 1.0; }
+      #endif
+      vec3 Ls = directionalLights[0].direction, Lc = directionalLights[0].color; float ndl = dot(nn, Ls), back = clamp(dot(-Ls, V), 0.0, 1.0);
+      float through = rim * (.3 + .7 * back) * (.3 + .7 * uT) * uRimK;
+      col += Lc * shf * (min(alb, vec3(.7)) * vec3(1.1, .95, .6) + vec3(.05, .04, .02)) * through * 1.8 + Lc * shf * alb * clamp((ndl + .9) / 1.9, 0.0, 1.0) * .12 * uT; }
+    #endif
+    #if NUM_HEMI_LIGHTS > 0
+    col += alb * hemisphereLights[0].skyColor * .15 * uT;
+    #endif
+    float a = cover * (.04 + .2 * rim * uRimK) * (.4 + .6 * uT); gl_FragColor = vec4(col * cover, a); }`);
+    };
+    m.customProgramCacheKey = () => 'bars-nalet';
+    const c = new THREE.Mesh(mesh.geometry, m); c.castShadow = false; c.receiveShadow = true; c.renderOrder = 5 + i; c.userData.nalet = true; c.userData.noMerge = true; c.frustumCulled = mesh.frustumCulled; mesh.add(c); }
 };
 // высота солнца места (для «диммера»): ставит сцена перед кадром
 S.setSun = function (sun) { if (!sun) return; const d = sun.position.clone().sub(sun.target.position).normalize(); S.sunY.value = Math.max(.05, d.y); };

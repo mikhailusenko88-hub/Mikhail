@@ -35,7 +35,7 @@ def make_fur2(v, f, nor, reg, **kw):
     fur = _fur0(v, f, nor, reg, **kw); pts = fur['fur_pts']; N = fur['fur_nrm']; R = pts[:, 0] + N * 0.0015
     rg0 = _reg0(R); toes, pads = paw_masks(R, rg0); onpad = pads | ((fur['fur_reg'] == 8) & (R[:, 2] < 0.42))
     keep = ~onpad; print('лапы: волосков на пальцах', int((toes & keep).sum()), '· убрано с подушечек', int(onpad.sum()))
-    sh = np.where(toes, 0.42, 1.0).astype(F)[:, None, None]; pts = pts[:, :1] + (pts - pts[:, :1]) * sh   # на пальцах шерсть короче — пальцы читаются
+    sh = np.where(toes, float(os.environ.get('TOE_K', '0.42')), 1.0).astype(F)[:, None, None]; pts = pts[:, :1] + (pts - pts[:, :1]) * sh   # на пальцах шерсть короче — пальцы читаются
     fur['fur_pts'] = pts
     for k in list(fur): fur[k] = fur[k][keep]
     return fur
