@@ -318,6 +318,9 @@ function jit(d, ang, i, n) { if (n === 1) return d.clone(); const a = i * 2.3999
 // Шерсть растит телефон (по правилам героя), свет запекается ОДИН раз в осях героя (как в образце: небо, земля, солнце,
 // ключевой, заливной и контровой свет) — «неон»: в кадре свет места только приглушает/подсвечивает прошитые каналы.
 function fetchBuf(url) {
+  const E = global.BARS_H6_DATA, key = String(url).split('/').pop();   // данные, встроенные в страницу (артефакт без .wasm-файлов)
+  if (E && E[key]) { const s = atob(E[key]); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); delete E[key];
+    return Promise.resolve(u.buffer).then(async b => { H6.dl += b.byteLength; const h = new Uint8Array(b, 0, 2); if (h[0] === 0x1f && h[1] === 0x8b) b = await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(); return b; }); }
   return new Promise((res, rej) => { const x = new XMLHttpRequest(); x.open('GET', url, true); x.responseType = 'arraybuffer';
     x.onload = () => ((x.status === 200 || x.status === 0) && x.response && x.response.byteLength) ? res(x.response) : rej(new Error('нет ' + url)); x.onerror = () => rej(new Error('нет ' + url)); x.send(); })
     .then(async b => { H6.dl += b.byteLength; const u = new Uint8Array(b, 0, 2); if (u[0] === 0x1f && u[1] === 0x8b) b = await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer(); return b; });
