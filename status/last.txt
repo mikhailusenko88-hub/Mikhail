@@ -1,0 +1,60 @@
+ТЕСТ ОК: гонка #2 собрана за 857 с, 286 МБ (не выложена)
+
+{
+ "title": "Country Marble Elimination #2 🌍 7 Stages, 1 Winner",
+ "description": "Race #2: 32 countries, 7 stages, only one winner. 3 new races every day — the top 32 of the month meet in the MONTH FINAL on 30.11. Find your country and write in the comments who you were cheering for! 👇\n\n#marblerace #countryballs #marblerun #satisfying #elimination #countries",
+ "race_no": 2,
+ "date": "2026-11-04",
+ "kind": "daily",
+ "ranking": [
+  "AFG",
+  "SEN",
+  "ATG",
+  "COL",
+  "SYC",
+  "LBN",
+  "CHN",
+  "AZE",
+  "KNA",
+  "IRL",
+  "USA",
+  "TON",
+  "TCD",
+  "FJI",
+  "BGR",
+  "SGP",
+  "IRN",
+  "MEX",
+  "BHS",
+  "RWA",
+  "MNG",
+  "VEN",
+  "SWZ",
+  "CYP",
+  "BRN",
+  "LSO",
+  "PNG",
+  "GAB",
+  "NGA",
+  "ROU",
+  "LBY",
+  "SWE"
+ ],
+ "slot": 3
+}
+
+--- журнал ---
+21:38:44 режим test, гонка #2, 2026-11-04 слот 3, событие push
+гонка #2 2026-11-04 (daily), участники: ROU BGR AZE RWA USA TON PNG FJI BRN CYP VEN ATG AFG TCD LBY SEN IRN SWZ IRL LBN GAB SWE MEX SYC BHS CHN MNG SGP KNA NGA LSO COL
+  этап 1: 32→26, блоков 12 ['twin_rings', 'pendulums', 'ring_gate', 'rotor', 'trapdoors', 'windmills', 'pegs', 'stairs', 'tunnels', 'zigzag', 'bumpers', 'tunnels'], Q-финиш 65.1 c, кадров 2030
+  этап 2: 26→20, блоков 12 ['zigzag', 'twin_rings', 'stairs', 'pendulums', 'trapdoors', 'windmills', 'rotor', 'tunnels', 'bumpers', 'pegs', 'ring_gate', 'tunnels'], Q-финиш 60.5 c, кадров 1891
+  этап 3: 20→15, блоков 11 ['trapdoors', 'bumpers', 'stairs', 'twin_rings', 'ring_gate', 'windmills', 'pegs', 'zigzag', 'tunnels', 'rotor', 'pendulums'], Q-финиш 58.2 c, кадров 1824
+  этап 4: 15→10, блоков 10 ['pendulums', 'twin_rings', 'stairs', 'tunnels', 'ring_gate', 'zigzag', 'rotor', 'trapdoors', 'pegs', 'bumpers'], Q-финиш 57.7 c, кадров 1808
+  этап 5: 10→6, блоков 12 ['zigzag', 'ring_gate', 'stairs', 'bumpers', 'twin_rings', 'pegs', 'trapdoors', 'rotor', 'tunnels', 'windmills', 'pendulums', 'tunnels'], Q-финиш 57.2 c, кадров 1791
+  этап 6: 6→3, блоков 11 ['stairs', 'rotor', 'twin_rings', 'tunnels', 'windmills', 'bumpers', 'zigzag', 'trapdoors', 'pegs', 'ring_gate', 'pendulums'], Q-финиш 56.8 c, кадров 1779
+  этап 7: 3→3, блоков 11 ['rotor', 'trapdoors', 'pendulums', 'zigzag', 'twin_rings', 'pegs', 'windmills', 'tunnels', 'ring_gate', 'bumpers', 'stairs'], Q-финиш 57.2 c, кадров 1792
+длительность ролика ≈ 8.5 мин
+готово: 15315 кадров за 855 с
+кадров 15315, 8.51 мин, рендер 857 с
+победитель: AFG
+21:53:02 ролик готов: 286 МБ, 857 с с начала; название: Country Marble Elimination #2 🌍 7 Stages, 1 Winner
