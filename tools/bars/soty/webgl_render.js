@@ -22,7 +22,7 @@ const FPS = 30, DUR = 10;
     }
   } else {
     const out = 'honey_tmp.mp4';
-    const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-', '-vf', 'scale=1920:1080:flags=lanczos', '-c:v', 'libx264', '-preset', 'medium', '-b:v', '9000k', '-maxrate', '12000k', '-bufsize', '18000k', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out], { stdio: ['pipe', 'inherit', 'inherit'] });
+    const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-', '-vf', 'scale=1920:1080:flags=lanczos+accurate_rnd+full_chroma_int:out_color_matrix=bt709:out_range=tv,format=yuv420p', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv', '-c:v', 'libx264', '-preset', 'medium', '-b:v', '9000k', '-maxrate', '12000k', '-bufsize', '18000k', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out], { stdio: ['pipe', 'inherit', 'inherit'] });
     const N = FPS * DUR, t0 = Date.now();
     for (let i = 0; i < N; i++) {
       const d = await p.evaluate(([i, q]) => window.renderFrame(i, q), [i, 0.95]);
