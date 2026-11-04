@@ -116,7 +116,7 @@ float vn(vec3 x) { vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(mix(h3(i), h3(i + vec3(1, 0, 0)), f.x), mix(h3(i + vec3(0, 1, 0)), h3(i + vec3(1, 1, 0)), f.x), f.y), mix(mix(h3(i + vec3(0, 0, 1)), h3(i + vec3(1, 0, 1)), f.x), mix(h3(i + vec3(0, 1, 1)), h3(i + vec3(1, 1, 1)), f.x), f.y), f.z); }
 float fbm(vec3 p) { float s = 0.0, a = .5; for (int i = 0; i < 5; i++) { s += a * vn(p); p *= 2.03; a *= .5; } return s; }`;
 const SURF_FS = GL_HEAD + NOISE + `
-uniform int uMat; uniform vec3 uAlb; uniform vec3 uEyeD, uEyeC; uniform float uRough, uWet; uniform vec3 uIris0, uIris1, uIris2; uniform vec2 uEyeK; uniform float uIrisS;
+uniform int uMat; uniform vec3 uAlb; uniform vec4 uCapC; uniform vec3 uEyeD, uEyeC; uniform float uRough, uWet; uniform vec3 uIris0, uIris1, uIris2; uniform vec2 uEyeK; uniform float uIrisS;
 uniform vec3 uSky, uGnd; uniform mat4 uEyeM; uniform int uDbg; uniform float uGndK;
 in vec3 vE; in vec4 vVis; in vec3 vN; in vec3 vP; in vec4 vC; in vec3 vL; in float vMist; in vec3 vDbg;
 out vec4 oc;
@@ -149,7 +149,16 @@ void main() {
   else if (uMat == 6) spec = .6;                                  // нос — влажный
   else if (uMat == 8) { alb = uAlb * .25; }                                                        // золото (жетон)
   else if (uMat == 9) { float sh = pow(1.0 - max(dot(N, V), 0.0), 2.0); extra = uAlb * sh * .35 * (vE / 3.14159); } // атлас (бантик, ошейник)
-  else if (uMat == 10) { float n = fbm(vP * 90.0); alb = uAlb * (.93 + .07 * n); float sh = pow(1.0 - max(dot(N, V), 0.0), 3.0); extra = uAlb * sh * .25 * (vE / 3.14159); } // ткань кепки
+  else if (uMat == 10) {                                          // ткань кепки: шесть клиньев со швами и строчкой, пуговка, саржа, тень у края
+    vec3 q = vL - uCapC.xyz; float a = atan(q.x, q.z), rr = length(q.xz), top = uCapC.y - vL.y;
+    float wedge = abs(fract(a / 1.0472 + .5) - .5) * 1.0472 * max(rr, .004);                     // расстояние до шва (м)
+    float seam = (1.0 - smoothstep(.0007, .0016, wedge)) * smoothstep(.006, .014, rr);
+    float fs = clamp(1.5 - fwidth(top * 260.0) * 2.5, 0.0, 1.0), ft = clamp(1.5 - fwidth(vL.y * 1100.0) * 2.5, 0.0, 1.0);   // мелкое — только когда кепка крупно (без ряби)
+    float stitch = (1.0 - smoothstep(.0008, .0014, abs(wedge - .0032))) * step(.5, fract(top * 260.0)) * smoothstep(.008, .016, rr) * fs;
+    float twill = (.5 + .5 * sin((vL.x * .7 + vL.y + vL.z * .7) * 1100.0)) * ft, n = fbm(vP * 90.0);
+    float rim = smoothstep(uCapC.w, uCapC.w + .014, vL.y), btn = 1.0 - smoothstep(.009, .012, rr);
+    alb = uAlb * .76 * (.93 + .07 * n) * (.95 + .05 * twill) * (1.0 - .32 * seam) * (1.0 - .16 * stitch) * (.68 + .32 * rim) * (1.0 - .15 * btn * smoothstep(.007, .0095, rr));   // белая ткань, но не «лампа»: без пересвета и ореола
+    float sh = pow(1.0 - max(dot(N, V), 0.0), 3.0); extra = uAlb * sh * .1 * (vE / 3.14159); }
   else if (uMat == 7) { float n = fbm(vP * 7.0), n2 = fbm(vP * 31.0); alb = mix(vec3(0.1, 0.2, 0.05), vec3(0.22, 0.36, 0.11), smoothstep(.3, .75, n)) * (.9 + .2 * n2);
     float fr = pow(1.0 - max(dot(N, V), 0.0), 2.5); extra = vec3(0.36, 0.5, 0.3) * fr * .45 * (vE / 3.14159); }
   vec3 col = alb / 3.14159 * vE + extra;
@@ -469,7 +478,7 @@ function instance(T, U, baked) {
   const dmat = raw(SURF_DVS, DEPTH_FS, {}, { colorWrite: false, side: THREE.DoubleSide });
   const coMat = () => raw(SURF_VS, CORNEA_FS, { uB0: { value: null }, uB1: { value: null }, uBase: { value: 0 }, uB2: { value: null }, uLiveS: { value: 0 }, uRestN: { value: new THREE.Matrix3() }, uPoseOn: { value: 0 }, uPA: { value: null }, uPB: { value: null }, uPW: { value: 0 } }, { transparent: true, blending: THREE.AdditiveBlending, depthWrite: false });
   for (const it of T.items) { const ir = it.iris || [[0.06, 0.2, 0.05], [0.16, 0.42, 0.08], [0.35, 0.62, 0.12]];
-    const uni = { uB0: { value: baked ? T.set.B[0] : null }, uB1: { value: baked ? T.set.B[1] : null }, uB2: { value: baked ? T.set.B[2] : null }, uBase: { value: it.base }, uMat: { value: it.matId }, uAlb: { value: new THREE.Color().setRGB(...it.alb) }, uRough: { value: .5 }, uEyeM: { value: new THREE.Matrix4() }, uDbg: DBG,
+    const uni = { uB0: { value: baked ? T.set.B[0] : null }, uB1: { value: baked ? T.set.B[1] : null }, uB2: { value: baked ? T.set.B[2] : null }, uBase: { value: it.base }, uMat: { value: it.matId }, uAlb: { value: new THREE.Color().setRGB(...it.alb) }, uCapC: { value: capC(it) }, uRough: { value: .5 }, uEyeM: { value: new THREE.Matrix4() }, uDbg: DBG,
       uGndK: { value: 0 }, uLiveS: { value: baked ? 1 : 0 }, uRestN: { value: it.restN }, uPoseOn: { value: 0 }, uPA: { value: null }, uPB: { value: null }, uPW: { value: 0 },
       uWet: { value: it.wet ? 1 : 0 }, uEyeK: { value: new THREE.Vector2(...(it.eyeK || [.70, .915])) }, uIrisS: { value: it.irisS || 0 }, uIris0: { value: new THREE.Vector3(...ir[0]) }, uIris1: { value: new THREE.Vector3(...ir[1]) }, uIris2: { value: new THREE.Vector3(...ir[2]) } };
     const m = new THREE.Mesh(it.geo, raw(SURF_VS, SURF_FS, uni)); m.frustumCulled = false; m.userData = { dmat, mat: m.material, noOcc: !!it.noOcc, bars: true, it };
@@ -492,6 +501,10 @@ const _toB = () => new THREE.Matrix4().set(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 
 function eyeMats(I) { const r = I.T.info.re, toB = _toB(); for (const e of I.eyes) { const sc = new THREE.Matrix4().makeScale(1 / r, 1 / r, 1 / r); const M = e.e.material.uniforms.uEyeM.value.multiplyMatrices(sc, e.e.matrixWorld.clone().invert()); if (e.irisInv) M.premultiply(e.irisInv); M.premultiply(toB); } }
 
 // ---------- запекание света: один раз на героя, в его осях ----------
+function capC(it) {   // кепка: верхушка (пуговка) и нижний край — для швов-клиньев и тени у края
+  const v = new THREE.Vector4(0, 0, 0, 0); if (it.matId !== 10 || !it.geo) return v; const p = it.geo.attributes.position; let ty = -1e9, ti = 0, my = 1e9;
+  for (let i = 0; i < p.count; i++) { const y = p.getY(i); if (y > ty) { ty = y; ti = i; } if (y < my) my = y; }
+  return v.set(p.getX(ti), ty, p.getZ(ti), my); }
 async function bakeTemplate(T, R, o) {
   o = o || {}; const t0 = now(); const L = T.L, NM = NAMES[T.name]; const ZERO = new THREE.Color(0, 0, 0);
   const U = Object.assign({}, T.bakeU, commonU(T.bakeU)); const I = instance(T, U, false); const scene = new THREE.Scene(); scene.add(I.root); scene.updateMatrixWorld(true); partMats(I); eyeMats(I);
@@ -586,7 +599,8 @@ H6.frame = function (rig, st, T, L) {
   // лапы: разница с покоем скелета, вокруг плеч
   const hc = new THREE.Vector3(0, TT.headC, 0.02), hr = TT.headR * 1.08, wv = new THREE.Vector3();
   rig.arms.forEach((g, i) => { const s = g.position.x < 0 ? 'armL' : 'armR', sg = s === 'armL' ? -1 : 1, wr = TT.info.src.wrist[s === 'armL' ? 0 : 1]; const r0 = I.rest.arms[i];
-    const put = (ex) => { _e.set(g.rotation.x - r0.x, g.rotation.y - r0.y, (g.rotation.z - r0.z) * .9 + ex, 'XYZ'); G[s].matrix.copy(about(TT.PIV[s], new THREE.Matrix4().makeRotationFromEuler(_e), new THREE.Matrix4())); wv.set(wr[0], wr[1], wr[2]).applyMatrix4(G[s].matrix);
+    const tw = g.userData.tw || 0, twM = tw ? new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(wr[0] - TT.PIV[s].x, wr[1] - TT.PIV[s].y, wr[2] - TT.PIV[s].z).normalize(), tw) : null;   // «привет»: кисть вокруг самой лапы
+    const put = (ex) => { _e.set(g.rotation.x - r0.x, tw ? 0 : g.rotation.y - r0.y, (g.rotation.z - r0.z) * .9 + ex, 'XYZ'); const Rm = new THREE.Matrix4().makeRotationFromEuler(_e); if (twM) Rm.multiply(twM); G[s].matrix.copy(about(TT.PIV[s], Rm, new THREE.Matrix4())); wv.set(wr[0], wr[1], wr[2]).applyMatrix4(G[s].matrix);
       const dx = wv.x - hc.x, dy = (wv.y - hc.y) * .9, dz = wv.z - hc.z; return dx * dx + dy * dy + dz * dz > hr * hr || wv.y < hc.y - hr; };
     if (!put(0)) { let done = false; for (let it = 1; it <= 14 && !done; it++) for (const sgn of [-sg, sg]) if (put(sgn * it * .08)) { done = true; break; } if (!done) put(0); } });   // лапа не проваливается в морду
   rig.legs.forEach((g, i) => { const j = g.position.x < 0 ? 0 : 1; const r0 = I.rest.legs[i]; _e.set((g.rotation.x - r0.x) * .8, 0, (g.rotation.z - r0.z) * .5, 'XYZ');

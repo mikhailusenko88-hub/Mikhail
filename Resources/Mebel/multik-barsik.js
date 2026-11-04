@@ -393,7 +393,7 @@ MKB.frame = function (rig, st, T, L) {
   // руки: от покоя модели к углам скелета
   rig.arms.forEach((g, i) => { const s = g.userData.side || (i ? 1 : -1), j = s < 0 ? 0 : 1; const ax = g.rotation.x; let az = g.rotation.z * s;
     az = REST_Z + (az - REST_Z) * 0.85; /* в сторону — чуть мягче: плечо модели не растягивается */
-    eulerM(ax, 0, s * az, _m4); eulerM(REST_X, 0, s * REST_Z, _q); _m4.multiply(_q.invert()); conj(_m4, j ? U.uArm1.value : U.uArm0.value); armQ(_m4b, (j ? U.uArmQ1 : U.uArmQ0).value);
+    eulerM(ax, 0, s * az, _m4); const tw = (g.userData.tw || 0) * (MKB.K.twist || 0); if (tw) _m4.multiply((MKB._tw || (MKB._tw = new THREE.Matrix4())).makeRotationY(tw)); /* «привет»: кисть подушечками вперёд */ eulerM(REST_X, 0, s * REST_Z, _q); _m4.multiply(_q.invert()); conj(_m4, j ? U.uArm1.value : U.uArm0.value); armQ(_m4b, (j ? U.uArmQ1 : U.uArmQ0).value);
     const up = Math.max(0, az - 1.2); (j ? U.uFore1 : U.uFore0).value.setFromMatrix4(eulerM(0, 0, 0, _q)); if (up > 0) { conj(eulerM(-Math.min(1.1, up * 0.8), 0, 0, _q), (j ? U.uFore1 : U.uFore0).value); } });
   rig.legs.forEach((g, i) => { const j = g.position.x < 0 ? 0 : 1; conj(eulerM(g.rotation.x, 0, 0, _m4), j ? U.uLeg1.value : U.uLeg0.value); });
   if (rig.ears) rig.ears.forEach((e, i) => { const r0 = e.userData.r0; if (!r0) return; const j = (e.getWorldPosition ? (e.position.x < 0 ? 0 : 1) : i);

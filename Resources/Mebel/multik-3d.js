@@ -1032,6 +1032,7 @@ function buildAcc(a, head, body, hr, rig, human) {
 function rigFor(lc) { const key = lc.code || global.MK.canon(lc.spec); let r = rigCache[key]; if (!r) { r = buildRig(lc.spec); rigCache[key] = r; } return r; }
 
 // ---------- поза по состоянию ----------
+const WAVE_TW0 = -1.2;   // поворот кисти при «привет», рад
 function applyPose(rig, st, T) {
   const P = rig.P, act = st.act || {}, an = act.n, ap = act.p || 0, at = act.t || 0, wk = st.walk || {}, emo = st.emo || 'neutral';
   const sd = (rig.n.seed % 13) / 13;
@@ -1051,7 +1052,7 @@ function applyPose(rig, st, T) {
   const base = { L: { x: L_.x, z: L_.z }, R: { x: R_.x, z: R_.z }, leg: leg.slice(), head: Object.assign({}, head), lift, pitch, sideTilt, hipYaw };
   switch (an) {
     case 'jump': { lift = Math.sin(ap * Math.PI) * .75; const s = ap < .14 ? Math.sin(ap / .14 * Math.PI) : ap > .86 ? Math.sin((ap - .86) / .14 * Math.PI) : 0; sq = 1 - s * .15; L_.z = R_.z = .35 + Math.sin(ap * Math.PI) * 2.2; leg[0] = leg[1] = -Math.sin(ap * Math.PI) * .5; break; }
-    case 'wave': R_.z = 2.6 + Math.sin(at * 11) * .35; R_.x = -.2; head.z = .12; break;
+    case 'wave': R_.z = 2.3 + Math.sin(at * 11) * .3; R_.x = -.55; R_.tw = global.WAVE_TW != null ? global.WAVE_TW : WAVE_TW0; head.z = .12; break;   // машет подушечками вперёд (кисть повёрнута вокруг лапы)
     case 'point': R_.x = -1.55; R_.z = .15; break;
     case 'think': R_.x = -2.3; R_.z = -.55; head.z = .15; head.x = -.1; break;
     case 'clap': { const k = Math.max(0, Math.sin(at * 14)); L_.x = R_.x = -1.3; L_.z = R_.z = -.15 + k * .4; break; }
@@ -1114,7 +1115,7 @@ function applyPose(rig, st, T) {
   if (crouch) { low = Math.max(low, .25 * crouch); leg[0] = leg[1] = -.8 * crouch; L_.x = R_.x = -2.6; L_.z = R_.z = -.6; pitch = .25 * crouch; }
   // применяем
   rig.legs[0].rotation.x = leg[0]; rig.legs[1].rotation.x = leg[1];
-  rig.arms.forEach((g, i) => { const a = arm[i], s = g.userData.side; g.rotation.set(a.x, 0, s * a.z); });
+  rig.arms.forEach((g, i) => { const a = arm[i], s = g.userData.side, tw = (a.tw || 0) * s; g.userData.tw = tw; if (tw) { g.rotation.order = 'XZY'; g.rotation.set(a.x, tw, s * a.z); } else { g.rotation.order = 'XYZ'; g.rotation.set(a.x, 0, s * a.z); } });
   rig.head.rotation.set(head.x, head.y, head.z);
   rig.pose.rotation.set(pitch, hipYaw, sideTilt + lie * Math.PI / 2);
   const hgt = rig.P.headY + rig.P.head;
@@ -1736,7 +1737,7 @@ function treeHQ(g, x, z, s, kind, cl, snow) {
 function bushHQ(g, x, z, s, cl) { const t = new THREE.Group(); t.position.set(x, 0, z); g.add(t); const r = rng(global.MK.hash32('b' + x + z)); const cols = [cl || '#3c8f37', '#4a9e42', '#357f33'];
   for (const [a, b, c, R] of [[0, .32, 0, .5], [-.35, .24, .1, .36], [.38, .26, -.05, .38]]) crown(t, a * s, b * s, c * s, R * s, cols, r); }
 function flowersHQ(g, r, n, x0, x1, z0, z1, skip) { const cols = ['#ff6fa8', '#ffd23f', '#ffffff', '#a974ff', '#ff8a3d', '#ff4d6d', '#7fc8ff'];
-  if (!envC.petal) { const sh = new THREE.Shape(); for (let i = 0; i <= 60; i++) { const a = i / 60 * Math.PI * 2, rr = .55 + .45 * Math.abs(Math.cos(a * 2.5)); const px = Math.cos(a) * rr, py = Math.sin(a) * rr; i ? sh.lineTo(px, py) : sh.moveTo(px, py); } const pg = new THREE.ShapeGeometry(sh, 2); pg.rotateX(-Math.PI / 2); const pp = pg.attributes.position; for (let i = 0; i < pp.count; i++) { const d = Math.hypot(pp.getX(i), pp.getZ(i)); pp.setY(i, d * d * .18); } pg.computeVertexNormals(); envC.petal = pg; }
+  if (!envC.petal) { const sh = new THREE.Shape(); for (let i = 0; i <= 60; i++) { const a = i / 60 * Math.PI * 2, rr = .18 + .82 * Math.pow(Math.abs(Math.cos(a * 2.5)), .6); const px = Math.cos(a) * rr, py = Math.sin(a) * rr; i ? sh.lineTo(px, py) : sh.moveTo(px, py); } const pg = new THREE.ShapeGeometry(sh, 2); pg.rotateX(-Math.PI / 2); const pp = pg.attributes.position; for (let i = 0; i < pp.count; i++) { const d = Math.hypot(pp.getX(i), pp.getZ(i)); pp.setY(i, d * d * .18); } pg.computeVertexNormals(); envC.petal = pg; }
   const ok = []; for (let i = 0; i < n; i++) { const x = lerp(x0, x1, r()), z = lerp(z0, z1, r()); if (skip && skip(x, z)) continue; if (Math.abs(z) < .5 && Math.abs(x) < 6) continue; ok.push([x, z]); }
   const stem = new THREE.InstancedMesh(new THREE.CylinderGeometry(.5, .5, 1, 5).translate(0, .5, 0), new THREE.MeshStandardMaterial({ color: '#4a8f3a', roughness: .8 }), ok.length);
   const head = new THREE.InstancedMesh(envC.petal, new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide, roughness: .55 }), ok.length);
@@ -2110,9 +2111,20 @@ function flowerGeos() { if (envC.fgeo) return envC.fgeo; const star = (n, inner,
     const g = new THREE.ShapeGeometry(sh, 1); g.rotateX(-Math.PI / 2); const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const d = Math.hypot(p.getX(i), p.getZ(i)); p.setY(i, d * d * .22 - d * .05); } g.computeVertexNormals(); return g; };
   const cup = new THREE.SphereGeometry(1, 12, 6, 0, Math.PI * 2, Math.PI * .45, Math.PI * .55); cup.scale(1, .8, 1); cup.translate(0, .8, 0);
   const ball = new THREE.SphereGeometry(1, 7, 5); { const p = ball.attributes.position, v = new THREE.Vector3(); for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); v.multiplyScalar(1 + noise3(v.x * 5, v.y * 5, v.z * 5) * .25); p.setXYZ(i, v.x, v.y * 1.15, v.z); } ball.computeVertexNormals(); }
-  return (envC.fgeo = { daisy: star(16, .12, 3), corn: star(9, .3, .6), poppy: star(4, .55, 1.4), cup, ball, eye: new THREE.SphereGeometry(1, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2) }); }
+  // лютик: пять круглых лепестков чашечкой (было — гладкая полусфера, сверху как жёлтая монетка)
+  const butter = (() => { const sh = new THREE.Shape(); for (let i = 0; i <= 150; i++) { const a = i / 150 * Math.PI * 2, c = Math.abs(Math.cos(a * 2.5)), rr = .16 + .84 * Math.pow(c, .55); const x = Math.cos(a) * rr, y = Math.sin(a) * rr; i ? sh.lineTo(x, y) : sh.moveTo(x, y); }
+    const g = new THREE.ShapeGeometry(sh, 2); g.rotateX(-Math.PI / 2); const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const d = Math.hypot(p.getX(i), p.getZ(i)); p.setY(i, d * d * .55); } g.computeVertexNormals(); return g; })();
+  // клевер: шарик из узких лепестков-трубочек, к кончикам светлее (было — бугристый шарик-«ягода»)
+  const clover = (() => { const P = [], C = [], I = []; const N = 46, up = new THREE.Vector3(0, 1, 0), d = new THREE.Vector3(), t1 = new THREE.Vector3(), t2 = new THREE.Vector3();
+    for (let k = 0; k < N; k++) { const yy = 1 - (k + .5) / N * 1.55, rr = Math.sqrt(Math.max(0, 1 - yy * yy)), a = k * 2.39996; d.set(Math.cos(a) * rr, yy, Math.sin(a) * rr).normalize();
+      t1.crossVectors(d, Math.abs(d.y) > .9 ? new THREE.Vector3(1, 0, 0) : up).normalize(); t2.crossVectors(d, t1).normalize(); const L = .95 + .1 * Math.sin(k * 7.3), w = .16, b = P.length / 3;
+      const base = d.clone().multiplyScalar(.15), tip = d.clone().multiplyScalar(L);
+      for (const [v, sh] of [[base.clone().addScaledVector(t1, -w * .5), .45], [base.clone().addScaledVector(t1, w * .5), .45], [tip.clone().addScaledVector(t1, w * .35).addScaledVector(t2, .05), 1], [tip.clone().addScaledVector(t1, -w * .35).addScaledVector(t2, .05), 1]]) { P.push(v.x, v.y * .9 + .25, v.z); C.push(sh, sh, sh); }
+      I.push(b, b + 1, b + 2, b, b + 2, b + 3); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(C, 3)); g.setIndex(I); g.computeVertexNormals(); return g; })();
+  return (envC.fgeo = { daisy: star(16, .12, 3), corn: star(9, .3, .6), poppy: star(4, .55, 1.4), cup, ball, butter, clover, eye: new THREE.SphereGeometry(1, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2) }); }
 function wildflowers(g, r, o) { // o: {x0,x1,z0,z1,n, skip, h(x,z), mix:{daisy, butter, clover, corn, poppy}}
-  const FG = flowerGeos(), types = [['daisy', '#ffffff', FG.daisy, .05], ['butter', '#ffd21a', FG.cup, .028], ['clover', '#d06ac8', FG.ball, .022], ['corn', '#5a86ff', FG.corn, .04], ['poppy', '#ff3a2a', FG.poppy, .05]];
+  const FG = flowerGeos(), types = [['daisy', '#ffffff', FG.daisy, .05], ['butter', '#ffd21a', FG.butter, .034], ['clover', '#d06ac8', FG.clover, .026], ['corn', '#5a86ff', FG.corn, .04], ['poppy', '#ff3a2a', FG.poppy, .05]];
   const per = {}; types.forEach(t => per[t[0]] = []); const stems = [];
   const w = o.mix || { daisy: 1, butter: .8, clover: .5, corn: .35, poppy: .12 }, tot = Object.values(w).reduce((a, b) => a + b, 0);
   for (let i = 0; i < o.n; i++) { const x = lerp(o.x0, o.x1, r()), z = lerp(o.z0, o.z1, r()); if (o.skip && o.skip(x, z)) continue;
@@ -2122,8 +2134,8 @@ function wildflowers(g, r, o) { // o: {x0,x1,z0,z1,n, skip, h(x,z), mix:{daisy, 
   const stem = new THREE.InstancedMesh(new THREE.CylinderGeometry(.5, .5, 1, 4).translate(0, .5, 0), new THREE.MeshStandardMaterial({ color: '#4f8a34', roughness: .8 }), stems.length);
   stems.forEach(([x, y, z, h], i) => { _q.setFromEuler(new THREE.Euler((r() - .5) * .25, 0, (r() - .5) * .25)); _v.set(x, y, z); _s.set(.005, h, .005); _m4.compose(_v, _q, _s); stem.setMatrixAt(i, _m4); });
   stem.instanceMatrix.needsUpdate = true; stem.castShadow = false; stem.receiveShadow = true; stem.frustumCulled = false; stem.userData.keep = true; g.add(stem);
-  for (const [ty, c, geo, sz] of types) { const L = per[ty]; if (!L.length) continue; const im = new THREE.InstancedMesh(geo, new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide, roughness: ty === 'butter' ? .3 : .6, emissive: new THREE.Color(c).multiplyScalar(.08) }), L.length);
-    const ctr = (ty === 'daisy' || ty === 'corn' || ty === 'poppy') ? new THREE.InstancedMesh(FG.eye, new THREE.MeshStandardMaterial({ color: ty === 'poppy' ? '#1a1a1a' : ty === 'corn' ? '#2a2a6a' : '#ffbe12', roughness: .6 }), L.length) : null;
+  for (const [ty, c, geo, sz] of types) { const L = per[ty]; if (!L.length) continue; const im = new THREE.InstancedMesh(geo, new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide, roughness: ty === 'butter' ? .3 : .6, vertexColors: !!geo.attributes.color, emissive: new THREE.Color(c).multiplyScalar(.08) }), L.length);
+    const ctr = (ty === 'daisy' || ty === 'corn' || ty === 'poppy' || ty === 'butter') ? new THREE.InstancedMesh(FG.eye, new THREE.MeshStandardMaterial({ color: ty === 'poppy' ? '#1a1a1a' : ty === 'corn' ? '#2a2a6a' : ty === 'butter' ? '#b8a40e' : '#ffbe12', roughness: .6 }), L.length) : null;
     L.forEach(([x, y, z, h], i) => { const s = sz * (.75 + r() * .5); _v.set(x, y + h, z); _q.setFromEuler(new THREE.Euler(.3 + (r() - .5) * .5, r() * 6.28, (r() - .5) * .3)); _s.set(s, s, s); _m4.compose(_v, _q, _s); im.setMatrixAt(i, _m4);
       im.setColorAt(i, _c.set(c).offsetHSL((r() - .5) * .03, 0, (r() - .5) * .08)); if (ctr) { _s.set(s * .26, s * .2, s * .26); _v.y += .004; _m4.compose(_v, _q, _s); ctr.setMatrixAt(i, _m4); } });
     for (const q of [im, ctr]) { if (!q) continue; q.instanceMatrix.needsUpdate = true; if (q.instanceColor) q.instanceColor.needsUpdate = true; q.castShadow = false; q.receiveShadow = true; q.frustumCulled = false; q.userData.keep = true; g.add(q); } } }
@@ -2138,14 +2150,23 @@ function glowPoints(g, pts, c, size, mode) { const P = new Float32Array(pts.leng
   if (mode > 1.5) m.blending = THREE.NormalBlending;
   const pts3 = new THREE.Points(geo, m); pts3.frustumCulled = false; pts3.userData.keep = true; g.add(pts3); return pts3; }
 // ---------- порхающие бабочки ----------
-function butterflies(g, r, n, area, cols) { const fl = []; const wingG = (() => { const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.bezierCurveTo(.25, .35, .55, .3, .5, .02); sh.bezierCurveTo(.48, -.18, .2, -.25, 0, 0); return new THREE.ShapeGeometry(sh, 6); })();
-  for (let i = 0; i < n; i++) { const b = new THREE.Group(), cl = cols[i % cols.length]; const mt = new THREE.MeshStandardMaterial({ color: cl, side: THREE.DoubleSide, roughness: .5, emissive: new THREE.Color(cl).multiplyScalar(.15) });
+function wingTex(cl) { const k = 'wing' + cl; if (envC[k]) return envC[k];   // узор крыла: тёмный корень, цвет, жилки, тёмная кайма с белыми точками — читается с любой стороны
+  const dk = new THREE.Color(cl).multiplyScalar(.55).getStyle(); return (envC[k] = canvasTex(128, 128, (x) => {
+    const gr = x.createRadialGradient(4, 64, 4, 4, 64, 124); gr.addColorStop(0, dk); gr.addColorStop(.3, cl); gr.addColorStop(.78, cl); gr.addColorStop(.86, '#24180f'); gr.addColorStop(1, '#1a120c'); x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
+    x.strokeStyle = 'rgba(36,24,15,.55)'; x.lineWidth = 2.2; for (let q = 0; q < 7; q++) { const a = -1.15 + q * .38; x.beginPath(); x.moveTo(4, 64); x.quadraticCurveTo(4 + Math.cos(a) * 60, 64 + Math.sin(a) * 52, 4 + Math.cos(a) * 128, 64 + Math.sin(a) * 128); x.stroke(); }
+    x.fillStyle = '#fffaf0'; for (let q = 0; q < 10; q++) { const a = -1.25 + q * .27; x.beginPath(); x.arc(4 + Math.cos(a) * 112, 64 + Math.sin(a) * 112, 3.4, 0, 6.283); x.fill(); }
+    x.fillStyle = 'rgba(255,250,235,.85)'; x.beginPath(); x.arc(70, 48, 7, 0, 6.283); x.fill(); })); }
+function butterflies(g, r, n, area, cols) { const fl = []; const wingG = (() => { const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.bezierCurveTo(.25, .35, .55, .3, .5, .02); sh.bezierCurveTo(.48, -.18, .2, -.25, 0, 0); const wg = new THREE.ShapeGeometry(sh, 6);
+    const p = wg.attributes.position, uv = wg.attributes.uv; for (let i = 0; i < p.count; i++) uv.setXY(i, p.getX(i) / .56, (p.getY(i) + .28) / .64); uv.needsUpdate = true; return wg; })();
+  for (let i = 0; i < n; i++) { const b = new THREE.Group(), cl = cols[i % cols.length]; const mt = new THREE.MeshStandardMaterial({ color: 0xffffff, map: wingTex(cl), side: THREE.DoubleSide, roughness: .5, emissive: new THREE.Color(cl).multiplyScalar(.12) });
     const L = new THREE.Mesh(wingG, mt), Rw = new THREE.Mesh(wingG, mt); Rw.scale.x = -1; const wl = new THREE.Group(), wr = new THREE.Group(); wl.add(L); wr.add(Rw); wl.rotation.x = -Math.PI / 2; wr.rotation.x = -Math.PI / 2;
-    const body = new THREE.Mesh(G.cap(.012, .06, 4, 6), stdM('#3a2a20')); body.rotation.x = Math.PI / 2; b.add(wl, wr, body); b.scale.setScalar(.22); g.add(b);
+    const body = new THREE.Mesh(G.cap(.012, .06, 4, 6), stdM('#3a2a20')); body.rotation.x = Math.PI / 2; b.add(wl, wr, body); b.scale.setScalar(.26); g.add(b);
     fl.push({ b, wl, wr, x: lerp(area[0], area[1], r()), z: lerp(area[2], area[3], r()), ph: r() * 10, sp: .5 + r() * .5 }); }
   g.userData.flyers = (g.userData.flyers || []).concat(fl); }
-function animFlyers(g, T) { const F = g.userData.flyers; if (!F) return; for (const f of F) { const t = T * f.sp + f.ph; f.b.position.set(f.x + Math.sin(t * .7) * 1.6 + Math.sin(t * 1.9) * .3, .55 + Math.sin(t * 1.3) * .25 + Math.abs(Math.sin(t * 11)) * .04, f.z + Math.cos(t * .5) * 1.1);
-  f.b.rotation.y = Math.atan2(Math.cos(t * .7) * 1.12, -Math.sin(t * .5) * .55); const a = Math.sin(T * 22 + f.ph * 7) * .9 + .2; f.wl.rotation.z = a; f.wr.rotation.z = -a; } }
+function animFlyers(g, T) { const F = g.userData.flyers; if (!F) return; for (const f of F) { const t = T * f.sp + f.ph; let x = f.x + Math.sin(t * .7) * 1.6 + Math.sin(t * 1.9) * .3, z = f.z + Math.cos(t * .5) * 1.1, y = .55 + Math.sin(t * 1.3) * .25 + Math.abs(Math.sin(t * 11)) * .04;
+  const st = smooth(3.8, 2.6, Math.abs(x)) * smooth(-2.6, -1.4, z);   // на «сцене» с героями — выше голов и чуть дальше, не перед мордочкой
+  y += st * 1.35; z -= st * .9; f.b.position.set(x, y, z);
+  f.b.rotation.y = Math.atan2(Math.cos(t * .7) * 1.12, -Math.sin(t * .5) * .55); const a = Math.sin(T * 22 + f.ph * 7) * .75 + .35; f.wl.rotation.z = a; f.wr.rotation.z = -a; } }
 // ---------- изгородь из жердей (старая, серо-коричневая) ----------
 function railFence(g, pts, r, cl) { const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, map: grainTex(cl || '#8f7a62'), roughness: .9 }); const out = new THREE.Group(); g.add(out);
   for (let i = 0; i < pts.length; i++) { const [x, y, z] = pts[i]; const post = new THREE.Mesh(new THREE.CylinderGeometry(.06, .075, 1.15, 7), mat); post.position.set(x, y + .5, z); post.rotation.set((r() - .5) * .08, r() * 3, (r() - .5) * .08); post.castShadow = post.receiveShadow = true; out.add(post);
@@ -2221,7 +2242,7 @@ function meadowHQ(g, spec, r) { const time = spec.time || 'day', night = time ==
     const a = gableHouse({ w: 4.2, d: 3.2, h: 2.4, rh: 1.6, wall: '#f4ead8', roof: '#c8483a', lit }); farm.add(a);
     const b = gableHouse({ w: 3.6, d: 4.6, h: 3.2, rh: 1.9, wall: '#b8463a', roof: '#6a5a50', chimney: false, lit: null }); b.position.set(6, 0, -1.5); b.rotation.y = Math.PI / 2; farm.add(b); }
   // живое: бабочки днём, светлячки ночью
-  if (!night) butterflies(g, r, eve ? 2 : 5, [-6, 6, -4, 2], ['#ffd23f', '#ffffff', '#ff8a3d', '#8fc8ff']);
+  if (!night) butterflies(g, r, eve ? 2 : 5, [-6, 6, -4, 2], ['#ffd23f', '#ff7ab8', '#ff8a3d', '#5aa8ff']);
   else { const fl = []; for (let i = 0; i < 70; i++) fl.push([(r() - .5) * 18, .25 + r() * 1.6, -9 + r() * 11]); glowPoints(g, fl, '#d8ff7a', .2, 0); }
   C.rays = night ? 0 : eve ? .6 : .28; C.grade = night ? 'night' : eve ? 'sunset' : 'meadow';
 }
@@ -2343,7 +2364,7 @@ function yardHQ(g, spec, r) { const time = spec.time || 'day', night = time === 
   wildflowers(g, r, { x0: -10, x1: 10, z0: -13, z1: 4, n: 1600, skip: (x, z) => skip(x, z) || (Math.abs(z) < .5 && Math.abs(x) < 6), mix: { daisy: 1, butter: .8, clover: .4 } });
   suburbBack(g, r, H, { night, eve, z0: -30, houses: [[-15, -30, .3], [9, -36, -.2], [22, -31, -.5], [-28, -38, .5]] });
   for (const [x, z, s2] of [[-14, -19, 1.2], [15, -18, 1.3], [1.5, -22, 1.1], [7, -27, 1], [-6, -26, 1.1]]) bigTree(g, x, H(x, z) - .1, z, s2, lc, r, { dens: 75, leaf: .27 });
-  if (!night) butterflies(g, r, 3, [-6, 6, -4, 2], ['#ffd23f', '#ffffff', '#8fc8ff']); else { const fl = []; for (let i = 0; i < 40; i++) fl.push([(r() - .5) * 16, .3 + r() * 1.4, -9 + r() * 10]); glowPoints(g, fl, '#d8ff7a', .2, 0); }
+  if (!night) butterflies(g, r, 3, [-6, 6, -4, 2], ['#ffd23f', '#ff7ab8', '#5aa8ff']); else { const fl = []; for (let i = 0; i < 40; i++) fl.push([(r() - .5) * 16, .3 + r() * 1.4, -9 + r() * 10]); glowPoints(g, fl, '#d8ff7a', .2, 0); }
   C.rays = night ? 0 : eve ? .55 : .28; C.grade = night ? 'night' : eve ? 'sunset' : 'meadow'; }
 // ================= ДЕТСКАЯ ПЛОЩАДКА: качели, горка с башенкой, песочница, качалка, лавочки, парк и дома в дымке =================
 function slideGeo(curve, w, wall, n) { const P = [], I = [], prof = []; const k = 9; for (let i = 0; i <= k; i++) { const a = i / k * Math.PI; prof.push([-Math.cos(a) * w / 2, (1 - Math.sin(a)) * wall]); } // U-образный жёлоб
@@ -2420,7 +2441,7 @@ function playgroundHQ(g, spec, r) { const time = spec.time || 'day', night = tim
   for (const [x, z, w, f] of [[-34, -78, 18, 7], [-8, -88, 16, 9], [16, -80, 20, 7], [42, -92, 18, 10], [-60, -95, 20, 9]]) { const b = aptBlock(w, f, ac[(r() * ac.length) | 0], night, r); b.position.set(x, H(x, z) - .1, z); b.rotation.y = (r() - .5) * .2; g.add(b); }
   wildflowers(g, r, { x0: -14, x1: 14, z0: 2.5, z1: 7, n: 1500, skip, mix: { daisy: 1, butter: .9, clover: .6 } });
   suburbBack(g, r, H, { night, eve, z0: -22 });
-  if (night) { const fl = []; for (let i = 0; i < 30; i++) fl.push([(r() - .5) * 18, .4 + r() * 1.4, -10 + r() * 6]); glowPoints(g, fl, '#d8ff7a', .18, 0); } else butterflies(g, r, 2, [-6, 6, -6, -1], ['#ffd23f', '#ffffff']);
+  if (night) { const fl = []; for (let i = 0; i < 30; i++) fl.push([(r() - .5) * 18, .4 + r() * 1.4, -10 + r() * 6]); glowPoints(g, fl, '#d8ff7a', .18, 0); } else butterflies(g, r, 2, [-6, 6, -6, -1], ['#ffd23f', '#ff8a3d']);
   C.rays = night ? 0 : eve ? .5 : .25; C.grade = night ? 'night' : eve ? 'sunset' : 'meadow'; }
 // фонарь: классический (улица) или парковый; ночью горит
 function streetLamp(g, x, z, lit, kind, noLight) { const lp = new THREE.Group(); lp.position.set(x, 0, z); g.add(lp); const dm = new THREE.MeshStandardMaterial({ color: '#23282e', roughness: .4, metalness: .5 });

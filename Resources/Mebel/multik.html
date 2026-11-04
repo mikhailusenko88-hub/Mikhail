@@ -492,17 +492,18 @@ const Player = {
     if (Lib.data.settings && Lib.data.settings.previewCrash) { delete Lib.data.settings.previewCrash; Lib.save(); }
     this.off = 0; this.play();
   },
-  play() { audioPlayback(); if (this.ac.state !== 'running') { try { this.ac.resume(); } catch (e) {} } this.src = this.ac.createBufferSource(); this.src.buffer = this.mix; this.src.connect(this.ac.destination); this.src.start(0, this.off); this.t0 = this.ac.currentTime - this.off; this.playing = true; document.getElementById('pp').textContent = '❚❚'; this.loop();
+  play() { audioPlayback(); if (this.ac.state !== 'running') { try { this.ac.resume(); } catch (e) {} } this.src = this.ac.createBufferSource(); this.src.buffer = this.mix; this.src.connect(this.ac.destination); this.src.start(0, this.off); this.t0 = this.ac.currentTime - this.off; this.playing = true; this.hiRes(false); document.getElementById('pp').textContent = '❚❚'; this.loop();
     const ac = this.ac, c0 = ac.currentTime; clearTimeout(this._chk); this._chk = setTimeout(() => { if (this.playing && this.ac === ac && ac.currentTime - c0 < .05) document.getElementById('pkick').style.display = ''; }, 1200); }, // звук не пошёл (iPhone придержал звук) — кнопка запустить заново
   kick() { // нажатие пальцем — новый звук с того же места (iPhone разрешает звук только по нажатию)
     document.getElementById('pkick').style.display = 'none'; const off = this.now(); if (this.src) { try { this.src.stop(); } catch (e) {} } try { this.ac.close(); } catch (e) {}
     audioPlayback(); this.ac = new (window.AudioContext || window.webkitAudioContext)(); try { this.ac.resume(); } catch (e) {} this.off = off; this.play(); },
-  pause() { if (this.src) { try { this.src.stop(); } catch (e) {} } this.off = this.now(); this.playing = false; document.getElementById('pp').textContent = '▶'; },
-  toggle() { this.playing ? this.pause() : this.play(); },
+  pause(hi) { if (this.src) { try { this.src.stop(); } catch (e) {} } this.off = this.now(); this.playing = false; document.getElementById('pp').textContent = '▶'; if (hi && this.tl) { this.hiRes(true); this.draw(); } },
+  hiRes(on) { const c = document.getElementById('pc'), w = on ? 1920 : 1280, h = on ? 1080 : 720; if (c.width !== w) { c.width = w; c.height = h; } }, // на паузе — кадр 1920×1080 (чётко, как в видео), во время просмотра — 1280×720 (плавно)
+  toggle() { this.playing ? this.pause(true) : this.play(); },
   now() { return this.playing ? this.ac.currentTime - this.t0 : this.off; },
   seek(f) { const was = this.playing; if (was) this.pause(); this.off = f * this.tl.dur; if (was) this.play(); else this.draw(); },
   draw() { const t = Math.min(this.now(), this.tl.dur - .01), c = document.getElementById('pc').getContext('2d'); c.setTransform(c.canvas.width / 1920, 0, 0, c.canvas.height / 1080, 0, 0); MK.render(c, this.tl, t); document.getElementById('seek').value = Math.round(t / this.tl.dur * 1000); document.getElementById('ptime').textContent = fmt(t) + ' / ' + fmt(this.tl.dur); },
-  loop() { cancelAnimationFrame(this.raf); let last = -1; const f = () => { const fi = Math.floor(this.now() * 25); if (fi !== last) { last = fi; this.draw(); } if (this.playing && this.now() < this.tl.dur) this.raf = requestAnimationFrame(f); else if (this.playing) { this.draw(); this.pause(); } }; f(); }, // просмотр: 25 кадров/с, 1280×720 — экран телефона больше не нужен, а нагрев в 5–10 раз меньше
+  loop() { cancelAnimationFrame(this.raf); let last = -1; const f = () => { const fi = Math.floor(this.now() * 25); if (fi !== last) { last = fi; this.draw(); } if (this.playing && this.now() < this.tl.dur) this.raf = requestAnimationFrame(f); else if (this.playing) { this.draw(); this.pause(true); } }; f(); }, // просмотр: 25 кадров/с, 1280×720 — экран телефона больше не нужен, а нагрев в 5–10 раз меньше
   stop() { Stage.set(''); clearTimeout(this._chk); document.getElementById('pkick').style.display = 'none'; this.pause(); cancelAnimationFrame(this.raf); if (this.ac) { this.ac.close(); this.ac = null; } this.mix = null; this.tl = null; this.src = null; document.getElementById('player').style.display = 'none'; }, // звук серии — из памяти
 };
 const Prog = {
