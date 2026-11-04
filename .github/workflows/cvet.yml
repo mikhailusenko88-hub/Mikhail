@@ -1,0 +1,32 @@
+name: Cvet test (phone video assembly)
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: cvet-test
+jobs:
+  mac:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15-intel, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run assembly test
+        run: |
+          sw_vers; swift --version
+          swiftc -O cvet_mac.swift -o cvet_mac
+          mkdir -p out/${{ matrix.os }}
+          ./cvet_mac test out/${{ matrix.os }} 2>&1 | tee out/${{ matrix.os }}/log.txt
+      - name: Save results to branch
+        run: |
+          git config user.name "cvet-bot"; git config user.email "cvet-bot@users.noreply.github.com"
+          for k in 1 2 3 4 5; do
+            git pull --rebase -q origin cvet-test || true
+            mkdir -p results; rm -rf results/${{ matrix.os }}; cp -R out/${{ matrix.os }} results/
+            git add results; git commit -qm "results ${{ matrix.os }} [skip ci]" || true
+            git push -q origin HEAD:cvet-test && break
+            sleep $((k * 7))
+          done
