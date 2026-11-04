@@ -34,7 +34,7 @@ function THREE_Color(r, g, b) { return { r, g, b, isColor: true, _lazy: [r, g, b
 // ---------- нити: шерсть и трава, ленточки из текстуры точек (без атрибутов, по gl_VertexID) ----------
 function strandVS(depth) { return GL_HEAD + `
 uniform sampler2D uPts, uCol, uB0, uB1, uB2, uNrm; uniform int uK; uniform int uLive, uCull; uniform float uCullK, uKT; uniform float uRadK, uTaper, uPx, uMinPx; uniform vec4 uGR; uniform int uGrass; uniform vec3 uCamDir;
-uniform float uTime, uWind; uniform mat4 uPartM[6]; uniform int uBlink, uDec; uniform int uPoseOn; uniform sampler2D uPA, uPB; uniform float uPW;
+uniform float uTime, uWind; uniform mat4 uPartM[6]; uniform int uBlink, uDec, uHideArm; uniform int uPoseOn; uniform sampler2D uPA, uPB; uniform float uPW;
 out vec3 vCol; out vec3 vE; out vec4 vVis; out vec3 vT; out vec3 vP; out float vCov; out float vTT; out float vMist;
 vec3 P(int i) { return TX(uPts, i).xyz; }
 void main() {
@@ -43,6 +43,7 @@ void main() {
   int base = s * uK; int i = base + kk; vec4 q0 = TX(uPts, i); int ip = int(q0.w + .5); int part = ip & 7; float lw = float((ip >> 3) & 63) / 63.0; mat4 M = uPartM[part]; if (lw > 0.0) M = M + (uLegM[ip >> 9] - M) * lw;
   if (part == 5 && uBlink == 0) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
   ${depth ? 'if (uDec > 1 && s % uDec != 0) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }' : ''}
+  ${depth ? 'if ((uHideArm == 1 && (part == 2 || part == 3)) || (uHideArm == 2 && part != 2 && part != 3)) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }' : ''}
   ${depth ? '' : `if (uCull == 1) { // шерсть за телом не рисуем (кроме длинных кисточек, они торчат за край)
     vec3 n0 = TX(uNrm, s).xyz * 2.0 - 1.0; vec3 r0 = TX(uPts, base).xyz, r4 = TX(uPts, base + uK - 1).xyz;
     vec3 rw = (M * vec4(r0, 1.0)).xyz; if (dot(normalize(mat3(M) * n0), normalize(cameraPosition - rw)) < uCullK && distance(r0, r4) < .018) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; } }`}
@@ -176,12 +177,13 @@ void main() { vec3 N = normalize(vN), V = normalize(cameraPosition - vP); float 
 // Точки-приёмники: «нити» (тангенс из соседних точек) и «поверхности» (нормаль). Для каждого направления света:
 // 1) глубина сцены из света (орто-камера по коробке группы), 2) для каждой точки: видна ли она свету / сколько шерсти перед ней.
 const GATHER_FS = `precision highp float; precision highp int; precision highp sampler2D;
-uniform sampler2D uPos, uDir, uDepth, uFCol; uniform mat4 uLVP; uniform vec3 uL, uCol, uBounce; uniform float uKT, uW; uniform int uGrassG, uDirect, uPosed, uOnlyVis; uniform mat4 uPartM[6]; uniform vec4 uMask; uniform float uTexel, uRange, uTauH, uTauS, uTauO, uAO; uniform int uKind, uK, uN;
+uniform sampler2D uPos, uDir, uDepth, uDepthArm, uFCol; uniform int uSplit; uniform mat4 uLVP; uniform vec3 uL, uCol, uBounce; uniform float uKT, uW; uniform int uGrassG, uDirect, uPosed, uOnlyVis; uniform mat4 uPartM[6]; uniform vec4 uMask; uniform float uTexel, uRange, uTauH, uTauS, uTauO, uAO; uniform int uKind, uK, uN;
 layout(location = 0) out vec4 o0; layout(location = 1) out vec4 o1; layout(location = 2) out vec4 o2;
 vec4 TX(sampler2D t, int i) { return texelFetch(t, ivec2(i % ${TW}, i / ${TW}), 0); }
 void main() {
   ivec2 ij = ivec2(gl_FragCoord.xy); int i = ij.y * ${TW} + ij.x; if (i >= uN) discard;
-  vec4 P0 = TX(uPos, i); vec3 p = P0.xyz; mat3 Mr = mat3(1.0); if (uPosed == 1) { mat4 Mp = uPartM[int(P0.w + .5)]; p = (Mp * vec4(p, 1.0)).xyz; Mr = mat3(Mp); }
+  vec4 P0 = TX(uPos, i); int prt = int(P0.w + .5) & 7; bool armP = uSplit == 1 && (prt == 2 || prt == 3);   // лапу затеняет только лапа, туловище — всё, кроме лап
+  vec3 p = P0.xyz; mat3 Mr = mat3(1.0); if (uPosed == 1) { mat4 Mp = uPartM[int(P0.w + .5)]; p = (Mp * vec4(p, 1.0)).xyz; Mr = mat3(Mp); }
   vec3 d; float g, sss = 0.0; bool hair = uKind == 1;
   if (hair) { int k = i % uK; int b = i - k; d = normalize(Mr * (TX(uPos, b + min(k + 1, uK - 1)).xyz - TX(uPos, b + max(k - 1, 0)).xyz)); float c = dot(d, uL); g = sqrt(max(0.0, 1.0 - c * c)); }
   else { vec4 D = TX(uDir, i); d = normalize(Mr * D.xyz); sss = D.w; g = dot(d, uL); }
@@ -194,7 +196,7 @@ void main() {
   else {
     vec2 ts = vec2(1.0) / vec2(textureSize(uDepth, 0)); float rot = fract(sin(float(i) * 12.9898) * 43758.5453) * 6.2832;
     for (int j = 0; j < 12; j++) { float a = float(j) * 2.39996 + rot, r = sqrt((float(j) + .5) / 12.0) * 1.9; vec2 o = vec2(cos(a), sin(a)) * r;
-      float zo = texture(uDepth, q.xy + o * ts).r; float dz = (q.z - zo) * uRange; // метры «за» первым препятствием
+      vec2 uv = q.xy + o * ts; float zo = armP ? texture(uDepthArm, uv).r : texture(uDepth, uv).r; float dz = (q.z - zo) * uRange; // метры «за» первым препятствием
       if (hair) { float e = max(dz - uTexel, 0.0); vis += exp(-e / uTauH); visC += exp(-e / tauC); }
       else { vis += dz < uTexel * 2.0 ? 1.0 : exp(-(dz - uTexel * 2.0) / uTauO); tr += exp(-max(dz, 0.0) / uTauS); }
     }
@@ -224,13 +226,25 @@ function growFur(skin, cfg, src, partId, out, seed, kScale) {
   const r = rng32(seed), D = [0, -1, 0];
   const SH = src.should, WR = src.wrist, HI = src.hip, FO = src.foot, TL = src.tail, NO = src.nose, EO = src.earOff, NE = src.neck;
   const nrm3 = v => { const l = Math.hypot(v[0], v[1], v[2]) || 1; v[0] /= l; v[1] /= l; v[2] /= l; return v; };
+  // бок под лапой: в данных там шерсти нет (вершина внутри лапы), но лапа поднимается — бок должен быть пушистым, а не голым
+  // и внутренняя сторона лапы (в покое она в боку) — тоже: поднял лапу — снизу пушистая
+  const segT = (R, A, B) => { const dx = B[0] - A[0], dy = B[1] - A[1], dz = B[2] - A[2]; const t = ((R[0] - A[0]) * dx + (R[1] - A[1]) * dy + (R[2] - A[2]) * dz) / (dx * dx + dy * dy + dz * dz || 1), tc = Math.max(0, Math.min(1, t));
+    return [Math.hypot(R[0] - A[0] - dx * tc, R[1] - A[1] - dy * tc, R[2] - A[2] - dz * tc), t]; };
+  const underOk = !(src.armR > 0 && SH && WR) ? null : (R, N, rg) => { const a = segT(R, SH[0], WR[0]), b = segT(R, SH[1], WR[1]); const [d, t] = a[0] < b[0] ? a : b;
+    const sd = R[0] > 0 ? 1 : -1, nx = N[0] * sd; if (t < (partId === 0 ? .12 : .03) || d > src.armR + 0.004) return false;
+    if (partId === 0) return (rg === 0 || rg === 5 || rg === 6) && t < .95 && nx > .3;         // бок туловища под лапой (в данных он там «лапа»)
+    if (partId === 2 || partId === 3) return (rg === 5 || rg === 0 || rg === 6) && t < .85 && nx < .05;   // лапа изнутри (не кисть, не плечо; в данных она там «туловище»)
+    return false; };
   const roots = [], rec = [];
   for (let s = 0; s < want; s++) {
     const x = r() * tot; let lo = 0, hi = nt - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (cum[m] < x) lo = m + 1; else hi = m; }
     const a = I[lo * 3], b = I[lo * 3 + 1], c = I[lo * 3 + 2]; let u1 = r(), u2 = r(); if (u1 + u2 > 1) { u1 = 1 - u1; u2 = 1 - u2; } const w0 = 1 - u1 - u2;
-    const near = w0 >= u1 && w0 >= u2 ? a : u1 >= u2 ? b : c; if (FD[near * 5 + 3] < 128) continue; // «можно ли расти» на ближайшей вершине
-    const rg = FD[near * 5 + 4]; const R = [0, 1, 2].map(k => P[a * 3 + k] * w0 + P[b * 3 + k] * u1 + P[c * 3 + k] * u2);
+    const near = w0 >= u1 && w0 >= u2 ? a : u1 >= u2 ? b : c;
+    let rg = FD[near * 5 + 4]; const R = [0, 1, 2].map(k => P[a * 3 + k] * w0 + P[b * 3 + k] * u1 + P[c * 3 + k] * u2);
     const N = nrm3([0, 1, 2].map(k => (Nn[a * 3 + k] * w0 + Nn[b * 3 + k] * u1 + Nn[c * 3 + k] * u2) / 127));
+    let underArm = false;
+    if (FD[near * 5 + 3] < 128) { // «можно ли расти» на ближайшей вершине; под лапой и на лапе изнутри — да, но короче
+      if (!underOk || !underOk(R, N, rg)) continue; underArm = true; rg = partId === 0 ? (rg === 6 ? 6 : 0) : 5; }
     const col = [0, 1, 2].map(k => (FD[a * 5 + k] * w0 + FD[b * 5 + k] * u1 + FD[c * 5 + k] * u2) / 255);
     // откуда растёт
     let f; const side = R[0] > 0 ? 1 : 0; const sub = (p, q) => [p[0] - q[0], p[1] - q[1], p[2] - q[2]];
@@ -250,13 +264,14 @@ function growFur(skin, cfg, src, partId, out, seed, kScale) {
     if (rg === 0 && cfg.chest) { const q = cfg.chest; if (yB < q[0] && zB > q[1]) L *= q[2]; }
     if (rg === 4 && cfg.earTip) { const q = cfg.earTip; if (zB > q[0]) { L *= 1 + (zB - q[0]) * q[1]; lean = .5; } }
     if (rg === 7 && cfg.tailTip) { const q = cfg.tailTip; if (zB > q[0]) L *= q[1]; }
-    L *= .82 + .36 * r(); const guard = r() < .12; if (guard && rg !== 3) L *= 1.35;
+    L *= .82 + .36 * r(); const guard = r() < .12; if (guard && rg !== 3) L *= 1.35; if (underArm) L *= partId === 0 ? .7 : .85;
     // разброс
     let j = nrm3([r() * 2 - 1, r() * 2 - 1, r() * 2 - 1]); const jn = j[0] * N[0] + j[1] * N[1] + j[2] * N[2]; j = [j[0] - N[0] * jn, j[1] - N[1] * jn, j[2] - N[2] * jn];
     f = nrm3([f[0] + j[0] * .28, f[1] + j[1] * .28, f[2] + j[2] * .28]);
     const cl = Math.cos(lean), sl = Math.sin(lean); const d0 = nrm3([N[0] * cl + f[0] * sl, N[1] * cl + f[1] * sl, N[2] * cl + f[2] * sl]);
     const cr = [N[1] * f[2] - N[2] * f[1], N[2] * f[0] - N[0] * f[2], N[0] * f[1] - N[1] * f[0]]; nrm3(cr); const ck = (r() - .5) * .25;
     const shade = (1.04 - .08 * r()) * (guard ? .96 : 1);
+    if (underArm) { out.under = (out.under || 0) + 1; if (H6.dbgUnder) col[0] = 1, col[1] = 0, col[2] = 0; }
     rec.push({ R, N, f, d0, L, cr: [cr[0] * ck, cr[1] * ck, cr[2] * ck], col: [col[0] * shade, col[1] * shade, col[2] * shade], rad: rg === 3 ? cfg.radLid : cfg.rad, lid: rg === 3 });
   }
   // пряди: кончики соседних волосков тянутся к общему центру
@@ -368,6 +383,10 @@ async function buildTemplate(name) {
   T.hip = info.src.hip.map(V3); T.ankleY = Math.max(info.src.foot[0][1], 0) + 0.02;
   // ---- шерсть: растит телефон ----
   const cfg = info.fur, src = info.src, kS = H6.furK; let cap = 0;
+  if (src.should && src.wrist && !(src.armR > 0)) { const ds = []; for (const sk of ['armL', 'armR']) { const s = D.skins[sk]; if (!s) continue; const P = s.p, n = P.length / 3;   // толщина лапы — по её коже
+      for (let i = 0; i < n; i += 5) { const R = [P[i * 3], P[i * 3 + 1], P[i * 3 + 2]]; let d = 1e9; for (let j = 0; j < 2; j++) { const A = src.should[j], B = src.wrist[j]; const dx = B[0] - A[0], dy = B[1] - A[1], dz = B[2] - A[2];
+        const t = Math.max(0, Math.min(1, ((R[0] - A[0]) * dx + (R[1] - A[1]) * dy + (R[2] - A[2]) * dz) / (dx * dx + dy * dy + dz * dz || 1))); d = Math.min(d, Math.hypot(R[0] - A[0] - dx * t, R[1] - A[1] - dy * t, R[2] - A[2] - dz * t)); } ds.push(d); } }
+    if (ds.length) { ds.sort((x, y) => x - y); src.armR = ds[Math.floor(ds.length * .8)]; } }
   for (const sk of ['body', 'feet', 'head', 'armL', 'armR', 'tail', 'head_blink']) if (D.skins[sk]) cap += furWant(D.skins[sk], cfg, kS);
   cap = Math.ceil(cap * 1.05) + 100; const out = { pts: new Float32Array(cap * 5 * 4), col: new Uint8Array(cap * 4), nrm: new Uint8Array(cap * 4), n: 0, cap };
   const tf = now(); let si = 0; const seedH = name === 'pik' ? 2 : 3;
@@ -421,7 +440,7 @@ async function buildTemplate(name) {
       P[o] = v.x; P[o + 1] = v.y; P[o + 2] = v.z; P[o + 3] = it.part || 0; Dd[o] = nn.x; Dd[o + 1] = nn.y; Dd[o + 2] = nn.z; Dd[o + 3] = it.sss && ca.itemSize === 4 ? ca.getW(i) : 0; } }
   T.set = { posTex: dataTex(P, base), dirTex: dataTex(Dd, base), n: base, kind: 0, tauO: .002 };
   T.t.build = now() - t0 - T.t.load;
-  hlog(name, ': шерсть', out.n, 'волосков за', Math.round(T.t.fur), 'мс; сборка', Math.round(T.t.build), 'мс');
+  hlog(name, ': шерсть', out.n, 'волосков за', Math.round(T.t.fur), 'мс; сборка', Math.round(T.t.build), 'мс; под лапами', out.under || 0, '(толщина лапы', Math.round((src.armR || 0) * 1000), 'мм)');
   return T;
 }
 // вес «ноги» для точки покоя: ниже бедра — за ногой, у самого паха — с телом
@@ -441,7 +460,7 @@ function instance(T, U, baked) {
   const fu = { uPts: { value: T.fur.ptsTex }, uCol: { value: T.fur.colTex }, uB0: { value: baked ? T.fur.B[0] : null }, uB1: { value: baked ? T.fur.B[1] : null }, uB2: { value: baked ? T.fur.B[2] : null }, uK: { value: 5 }, uRadK: { value: 0.001 }, uTaper: { value: .85 },
     uPx: { value: .001 }, uMinPx: { value: .6 }, uGR: { value: new THREE.Vector4() }, uGrass: { value: 0 }, uCamDir: { value: new THREE.Vector3() }, uTime: { value: 0 }, uWind: { value: 0 }, uHairK: { value: .095 }, uMS: { value: .25 }, uSpec: { value: .2 }, uDesat: { value: 0 },
     uGold: { value: .85 }, uGoldT: { value: new THREE.Vector3(1, .66, .25) }, uPartM: { value: [0, 1, 2, 3, 4, 5].map(() => new THREE.Matrix4()) }, uBlink: { value: 0 }, uNrm: { value: T.fur.nrmTex }, uLive: { value: baked ? 1 : 0 }, uCull: { value: baked ? 1 : 0 }, uCullK: { value: -.3 }, uKT: { value: .5 }, uDec: { value: 2 },
-    uPoseOn: { value: 0 }, uPA: { value: null }, uPB: { value: null }, uPW: { value: 0 }, uDbgS: { value: 0 } };
+    uPoseOn: { value: 0 }, uPA: { value: null }, uPB: { value: null }, uPW: { value: 0 }, uDbgS: { value: 0 }, uHideArm: { value: 0 } };
   const fmat = raw(strandVS(false), STRAND_FS, fu, { side: THREE.DoubleSide, alphaToCoverage: false });   // alpha-to-coverage на iPhone рисует сетку тёмных точек — шерсть сплошная, сглаживает MSAA
   const fd = raw(strandVS(true), DEPTH_FS, fu, { side: THREE.DoubleSide, colorWrite: false });
   const fg = new THREE.BufferGeometry(); fg.setDrawRange(0, T.fur.n * 4 * 6); fg.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e4);
@@ -482,7 +501,7 @@ async function bakeTemplate(T, R, o) {
   const sets = [Object.assign({ name: 'fur', kind: 1, k: 5, tauH: .004 }, T.fur), Object.assign({ name: 'skin' }, T.set)];
   const accOf = set => new THREE.WebGLRenderTarget(TW, Math.max(1, Math.ceil(set.n * (set.kind === 1 ? 5 : 1) / TW)), { type: THREE.HalfFloatType, count: 3, depthBuffer: false, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, generateMipmaps: false });
   const gMat = new THREE.RawShaderMaterial({ vertexShader: 'in vec3 position; void main() { gl_Position = vec4(position.xy, 0.0, 1.0); }', fragmentShader: GATHER_FS, glslVersion: THREE.GLSL3,
-    uniforms: { uW: { value: 0 }, uDirect: { value: 0 }, uPosed: { value: 0 }, uOnlyVis: { value: 0 }, uPartM: { value: [0, 1, 2, 3, 4, 5].map(() => new THREE.Matrix4()) }, uPos: { value: null }, uDir: { value: null }, uDepth: { value: null }, uFCol: { value: null }, uBounce: { value: new THREE.Color() }, uKT: { value: .85 }, uGrassG: { value: 0 }, uLVP: { value: new THREE.Matrix4() }, uL: { value: new THREE.Vector3() }, uCol: { value: new THREE.Color() }, uMask: { value: new THREE.Vector4() },
+    uniforms: { uW: { value: 0 }, uDirect: { value: 0 }, uPosed: { value: 0 }, uOnlyVis: { value: 0 }, uSplit: { value: 0 }, uDepthArm: { value: null }, uPartM: { value: [0, 1, 2, 3, 4, 5].map(() => new THREE.Matrix4()) }, uPos: { value: null }, uDir: { value: null }, uDepth: { value: null }, uFCol: { value: null }, uBounce: { value: new THREE.Color() }, uKT: { value: .85 }, uGrassG: { value: 0 }, uLVP: { value: new THREE.Matrix4() }, uL: { value: new THREE.Vector3() }, uCol: { value: new THREE.Color() }, uMask: { value: new THREE.Vector4() },
       uTexel: { value: .001 }, uRange: { value: 1 }, uTauH: { value: .004 }, uTauS: { value: .006 }, uTauO: { value: .002 }, uAO: { value: 0 }, uKind: { value: 0 }, uK: { value: 1 }, uN: { value: 0 } },
     blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, depthTest: false, depthWrite: false });
   const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), gMat); quad.frustumCulled = false; const qScene = new THREE.Scene(); qScene.add(quad); const qCam = new THREE.Camera();
@@ -490,6 +509,9 @@ async function bakeTemplate(T, R, o) {
   for (const s of sets) { s.acc = accOf(s); R.setRenderTarget(s.acc); R.setClearColor(0x000000, 0); R.clear(true, false, false); }
   const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, .1, 200);
   const rt = new THREE.WebGLRenderTarget(res, res, { depthBuffer: true, type: THREE.UnsignedByteType }); rt.depthTexture = new THREE.DepthTexture(res, res, THREE.UnsignedIntType); rt.depthTexture.minFilter = rt.depthTexture.magFilter = THREE.NearestFilter;
+  const split = H6.K.splitBake !== false, rtA = split ? new THREE.WebGLRenderTarget(res, res, { depthBuffer: true, type: THREE.UnsignedByteType }) : null;   // тень от лап — отдельно: лапа в покое не затемняет бок
+  if (rtA) { rtA.depthTexture = new THREE.DepthTexture(res, res, THREE.UnsignedIntType); rtA.depthTexture.minFilter = rtA.depthTexture.magFilter = THREE.NearestFilter; }
+  const armOf = m => !!(m.userData.it && (m.userData.it.part === 2 || m.userData.it.part === 3));
   const bounce = new THREE.Color(...NM.bounce), skyW = 2 * Math.PI / nSky, passes = [];
   for (let i = 0; i < 2 * nSky; i++) { const d = fib(2 * nSky, i);
     if (d.y > 0.02) passes.push([d, L.sky.clone().multiplyScalar(skyW), new THREE.Vector4(0, 0, 0, 0), 1 / nSky, bounce.clone().multiplyScalar(skyW * .5)]);
@@ -508,16 +530,20 @@ async function bakeTemplate(T, R, o) {
     const texel = Math.max(x1 - x0, y1 - y0) / res;
     for (const m of I.meshes) { m.material = m.userData.dmat || m.material; if (m.userData.strands) { const u = m.userData.dmat.uniforms; u.uPx.value = texel; u.uMinPx.value = 0.0; u.uCamDir.value.copy(dir).negate(); } }
     for (const m of I.corn) m.visible = false; for (const m of I.meshes) if (m.userData.noOcc) m.visible = false;
-    R.setRenderTarget(rt); R.setClearColor(0xffffff, 1); R.clear(true, true, false); R.render(scene, cam);
+    if (rtA) { const hid = []; for (const m of I.meshes) if (!m.userData.strands && m.visible && armOf(m)) { m.visible = false; hid.push(m); } I.fu.uHideArm.value = 1;
+      R.setRenderTarget(rt); R.setClearColor(0xffffff, 1); R.clear(true, true, false); R.render(scene, cam); hid.forEach(m => m.visible = true); hid.length = 0;
+      for (const m of I.meshes) if (!m.userData.strands && m.visible && !armOf(m)) { m.visible = false; hid.push(m); } I.fu.uHideArm.value = 2;
+      R.setRenderTarget(rtA); R.setClearColor(0xffffff, 1); R.clear(true, true, false); R.render(scene, cam); hid.forEach(m => m.visible = true); I.fu.uHideArm.value = 0;
+    } else { R.setRenderTarget(rt); R.setClearColor(0xffffff, 1); R.clear(true, true, false); R.render(scene, cam); }
     for (const m of I.meshes) { if (m.userData.mat) m.material = m.userData.mat; } for (const m of I.corn) m.visible = true; for (const m of I.meshes) if (m.userData.noOcc) m.visible = true;
     const lvp = new THREE.Matrix4().multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse);
-    for (const s of sets) { const u = gMat.uniforms; u.uPos.value = s.posTex; u.uDir.value = s.dirTex || s.posTex; u.uDepth.value = rt.depthTexture; u.uLVP.value.copy(lvp); u.uL.value.copy(dir); u.uCol.value.copy(col); u.uMask.value.copy(mask);
+    for (const s of sets) { const u = gMat.uniforms; u.uPos.value = s.posTex; u.uDir.value = s.dirTex || s.posTex; u.uDepth.value = rt.depthTexture; u.uDepthArm.value = rtA ? rtA.depthTexture : rt.depthTexture; u.uSplit.value = rtA ? 1 : 0; u.uLVP.value.copy(lvp); u.uL.value.copy(dir); u.uCol.value.copy(col); u.uMask.value.copy(mask);
       u.uDirect.value = mask.lengthSq() > 0 ? 1 : 0; u.uW.value = 1 / (2 * nSky); u.uBounce.value.copy(bnc); u.uFCol.value = s.colTex || s.posTex; u.uGrassG.value = 0; u.uKT.value = o.kt == null ? .5 : o.kt; u.uTexel.value = texel; u.uRange.value = cam.far - cam.near;
       u.uTauH.value = s.tauH || .004; u.uTauO.value = s.tauO || .002; u.uAO.value = ao; u.uKind.value = s.kind; u.uK.value = s.k || 1; u.uN.value = s.n * (s.kind === 1 ? 5 : 1);
       R.setRenderTarget(s.acc); R.render(qScene, qCam); }
   }
   T.fur.B = sets[0].acc.textures; T.set.B = sets[1].acc.textures; T.fur.acc = sets[0].acc; T.set.acc = sets[1].acc;
-  rt.dispose(); rt.depthTexture.dispose(); gMat.dispose(); quad.geometry.dispose();
+  rt.dispose(); rt.depthTexture.dispose(); if (rtA) { rtA.dispose(); rtA.depthTexture.dispose(); } gMat.dispose(); quad.geometry.dispose();
   for (const m of I.meshes) { if (m.userData.mat && m.userData.mat !== m.material) m.userData.mat.dispose(); m.material.dispose && m.material.dispose(); }
   R.setRenderTarget(prevRT); R.setClearColor(prevCC, prevCA); R.autoClear = prevAC;
   T.t.bake = now() - t0; T.t.passes = passes.length; hlog(T.name, ': свет запечён за', Math.round(T.t.bake), 'мс,', passes.length, 'проходов');

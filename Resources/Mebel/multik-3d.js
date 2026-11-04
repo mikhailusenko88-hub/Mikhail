@@ -369,10 +369,12 @@ function sculptRig(rig) {
   if (!parts.length) return;
   if (MK3D.debug) console.log('скульптор ' + rig.spec.name + ': ' + parts.map(p => p.region + '[' + p.prims.map(q => q.type + (q.pat ? '/' + q.pat.mode : '') + (q.op !== 'add' ? '/' + q.op : '')).join(',') + ']').join(' '));
   const groups = parts.map(p => p.prims.filter(q => q.op !== 'paint'));
+  // правило для всех героев: лапы не оставляют запечённой тени на туловище и голове, а туловище — на лапах (лапа двигается: поднял — бок под ней не тёмный)
+  const occFor = p => p.region === 'arm' ? [groups[parts.indexOf(p)]] : parts.map((q, i) => q.region === 'arm' ? null : groups[i]).filter(Boolean);
   for (const p of parts) {
     const res = p.region === 'head' ? 46 : p.region === 'body' ? 40 : p.region === 'tail' ? 34 : p.region === 'ear' ? 28 : 24;
     const m = SC.mesh(p.prims, { res }); if (!m.idx.length) continue;
-    { const ao = SC.occlusion(groups, m.pos, m.nor, hr * .9), fl = MK3D.hq ? .46 : .62; SC.bake(m.col, ao, fl); SC.bake(m.colB, ao, fl); }
+    { const ao = SC.occlusion(occFor(p), m.pos, m.nor, hr * .9), fl = MK3D.hq ? .46 : .62; SC.bake(m.col, ao, fl); SC.bake(m.colB, ao, fl); }
     const thick = SC.thickness(p.prims, m.pos, m.nor, hr * .8, m.cell * .5); // до перевода в координаты части
     const toPart = new THREE.Matrix4().multiplyMatrices(poseInv, p.grp.matrixWorld).invert();
     const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(m.pos, 3)); geo.setAttribute('normal', new THREE.BufferAttribute(m.nor, 3)); geo.setAttribute('color', new THREE.BufferAttribute(m.col, 3)); geo.setIndex(new THREE.BufferAttribute(m.idx, 1)); geo.applyMatrix4(toPart);
