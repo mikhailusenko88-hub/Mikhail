@@ -328,10 +328,11 @@ function fetchBuf(url) {
 const fetchJSON = url => fetchBuf(url).then(b => JSON.parse(new TextDecoder().decode(b)));
 const yieldUI = () => new Promise(r => setTimeout(r, 0));
 
-const NAMES = { pik: { kind: 'mouse', re: /^\s*пик(?![а-яё])/i, k: .56, bounce: [0.36, 0.35, 0.33] }, ron: { kind: 'dog', re: /^\s*рон(?![а-яё])/i, k: .82, bounce: [0.34, 0.35, 0.36] } };
-H6.whoIs = spec => { if (!spec) return null; const nm = String(spec.name || ''); for (const k in NAMES) if (spec.kind === NAMES[k].kind && NAMES[k].re.test(nm)) return k; return null; };
+const NAMES = { pik: { kind: 'mouse', re: /^\s*пик(?![а-яё])/i, k: .56, bounce: [0.36, 0.35, 0.33] }, ron: { kind: 'dog', re: /^\s*рон(?![а-яё])/i, k: .82, bounce: [0.34, 0.35, 0.36] }, barsik: { kind: 'cat', re: /^\s*барсик(?![а-яё])/i, k: 1, bounce: [0.5, 0.36, 0.24], opt: true } };
+H6.useBarsik = false;   // Барсик образца 6.2 (шерсть растит телефон, свет как в Blender) вместо «неонового»
+H6.whoIs = spec => { if (!spec) return null; const nm = String(spec.name || ''); for (const k in NAMES) if ((!NAMES[k].opt || H6.useBarsik) && spec.kind === NAMES[k].kind && NAMES[k].re.test(nm)) return k; return null; };
 H6.isHero = spec => !!H6.whoIs(spec);
-H6.wantFor = lib => { const out = new Set(); for (const c0 of Object.values((lib && lib.characters) || {})) { const c = (c0 && c0.spec) || c0 || {}; const nm = String(c.name || c.title || ''); for (const k in NAMES) if (NAMES[k].re.test(nm) && (!c.kind || c.kind === NAMES[k].kind)) out.add(k); } return [...out]; };   // по имени: вид героя в библиотеке может появиться позже
+H6.wantFor = lib => { const out = new Set(); for (const c0 of Object.values((lib && lib.characters) || {})) { const c = (c0 && c0.spec) || c0 || {}; const nm = String(c.name || c.title || ''); for (const k in NAMES) if ((!NAMES[k].opt || H6.useBarsik) && NAMES[k].re.test(nm) && (!c.kind || c.kind === NAMES[k].kind)) out.add(k); } return [...out]; };   // по имени: вид героя в библиотеке может появиться позже
 
 // лампы как в Blender-версии (render.py): в осях героя, герой стоит в начале координат
 function lamps() { return {
@@ -392,7 +393,8 @@ async function buildTemplate(name) {
   for (const sk of ['body', 'feet', 'armL', 'armR', 'tail']) if (D.skins[sk]) item(geoOf(sk), 1, null, { sss: true, name: sk, group: sk === 'feet' ? 'body' : sk, part: PART[sk === 'feet' ? 'body' : sk] });
   for (const [k, sk] of [['base', 'head'], ['a', 'head_a'], ['o', 'head_o'], ['blink', 'head_blink']]) if (D.skins[sk]) item(geoOf(sk), 1, null, { sss: true, name: sk, group: 'head', part: 1, head: k, noOcc: k !== 'base' });
   const MAT = { nose: 6, tooth: 6, scarf: 4, satin: 9, cloth: 10, gold: 8 };
-  for (const k in D.small) { const s = D.small[k]; const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(s.p, 3)); g.setIndex(new THREE.BufferAttribute(s.idx, 1));
+  for (const k in D.small) { const s = D.small[k];
+ const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(s.p, 3)); g.setIndex(new THREE.BufferAttribute(s.idx, 1));
     const isNose = s.mat === 'nose'; item(g, MAT[s.mat] || 0, isNose ? info.nose.col : s.col, { name: k, group: s.part, part: PART[s.part], wet: isNose && info.nose.wet }); }
   // ---- глаза: стоят по осям головы, радужка повёрнута отдельно (v6.2) ----
   const RE = info.re; T.eyes = [];
@@ -437,10 +439,10 @@ function instance(T, U, baked) {
   const I = { T, U, root, G, meshes: [], heads: {}, eyes: [], mouthB: [], mouthO: [], creases: [], corn: [] };
   // шерсть
   const fu = { uPts: { value: T.fur.ptsTex }, uCol: { value: T.fur.colTex }, uB0: { value: baked ? T.fur.B[0] : null }, uB1: { value: baked ? T.fur.B[1] : null }, uB2: { value: baked ? T.fur.B[2] : null }, uK: { value: 5 }, uRadK: { value: 0.001 }, uTaper: { value: .85 },
-    uPx: { value: .001 }, uMinPx: { value: .75 }, uGR: { value: new THREE.Vector4() }, uGrass: { value: 0 }, uCamDir: { value: new THREE.Vector3() }, uTime: { value: 0 }, uWind: { value: 0 }, uHairK: { value: .095 }, uMS: { value: .25 }, uSpec: { value: .2 }, uDesat: { value: 0 },
+    uPx: { value: .001 }, uMinPx: { value: .6 }, uGR: { value: new THREE.Vector4() }, uGrass: { value: 0 }, uCamDir: { value: new THREE.Vector3() }, uTime: { value: 0 }, uWind: { value: 0 }, uHairK: { value: .095 }, uMS: { value: .25 }, uSpec: { value: .2 }, uDesat: { value: 0 },
     uGold: { value: .85 }, uGoldT: { value: new THREE.Vector3(1, .66, .25) }, uPartM: { value: [0, 1, 2, 3, 4, 5].map(() => new THREE.Matrix4()) }, uBlink: { value: 0 }, uNrm: { value: T.fur.nrmTex }, uLive: { value: baked ? 1 : 0 }, uCull: { value: baked ? 1 : 0 }, uCullK: { value: -.3 }, uKT: { value: .5 }, uDec: { value: 2 },
     uPoseOn: { value: 0 }, uPA: { value: null }, uPB: { value: null }, uPW: { value: 0 }, uDbgS: { value: 0 } };
-  const fmat = raw(strandVS(false), STRAND_FS, fu, { side: THREE.DoubleSide, alphaToCoverage: true });
+  const fmat = raw(strandVS(false), STRAND_FS, fu, { side: THREE.DoubleSide, alphaToCoverage: false });   // alpha-to-coverage на iPhone рисует сетку тёмных точек — шерсть сплошная, сглаживает MSAA
   const fd = raw(strandVS(true), DEPTH_FS, fu, { side: THREE.DoubleSide, colorWrite: false });
   const fg = new THREE.BufferGeometry(); fg.setDrawRange(0, T.fur.n * 4 * 6); fg.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e4);
   const fm = new THREE.Mesh(fg, fmat); fm.frustumCulled = false; fm.userData = { dmat: fd, mat: fmat, strands: true, bars: true }; root.add(fm); I.fur = fm; I.fu = fu; I.meshes.push(fm);
@@ -539,7 +541,7 @@ H6.attach = function (T3, rig) {
   THREE = T3; const who = H6.whoIs(rig.spec || rig.n); if (!who || !H6.ready[who]) return false; const T = H6.T[who];
   const U = Object.assign({}, lightsFor(T.L, T.center), commonU(T.bakeU)); const I = instance(T, U, true);
   const k = (rig.P && rig.P.headY ? rig.P.headY : T.headC) / T.headC; I.root.scale.setScalar(k); I.root.userData.noGround = true; rig.pose.add(I.root);
-  I.k = k; rig.h6 = I; rig.fur = []; I.rest = { arms: rig.arms.map(g => g.rotation.clone()), legs: rig.legs.map(g => g.rotation.clone()) };
+  I.k = k; rig.h6 = I; rig.fur = []; I.rest = { arms: rig.arms.map(g => new THREE.Euler(0, 0, (g.userData.side || (g.position.x < 0 ? -1 : 1)) * .35)), legs: rig.legs.map(g => g.rotation.clone()) };   // покой скелета: лапы отведены на .35 рад — у героя образца они висят вдоль тела (иначе плечи заходят в ошейник)
   rig.root.traverse(o => { if (!o.isMesh || o.userData.bars || o.userData.blob) return; if (o.userData.strands) { o.visible = false; return; } o.layers.set(1); });   // старый герой: только тень и «кости»
   rig.headH = T.headC * k * (rig.scale || 1); rig.headR = T.headR * k * (rig.scale || 1);
   const pre = function (R, scene, cam) { const f = R.info.render.frame; if (I._f === f && I._cam === cam) return; I._f = f; I._cam = cam; camFrame(I, R, cam); };
@@ -556,8 +558,11 @@ H6.frame = function (rig, st, T, L) {
   // голова
   _e.set(rig.head.rotation.x * .75, rig.head.rotation.y, rig.head.rotation.z * .8, 'XYZ'); G.head.matrix.copy(about(TT.PIV.head, new THREE.Matrix4().makeRotationFromEuler(_e), new THREE.Matrix4()));
   // лапы: разница с покоем скелета, вокруг плеч
-  rig.arms.forEach((g, i) => { const s = g.position.x < 0 ? 'armL' : 'armR'; const r0 = I.rest.arms[i]; _e.set(g.rotation.x - r0.x, g.rotation.y - r0.y, (g.rotation.z - r0.z) * .9, 'XYZ');
-    G[s].matrix.copy(about(TT.PIV[s], new THREE.Matrix4().makeRotationFromEuler(_e), new THREE.Matrix4())); });
+  const hc = new THREE.Vector3(0, TT.headC, 0.02), hr = TT.headR * 1.08, wv = new THREE.Vector3();
+  rig.arms.forEach((g, i) => { const s = g.position.x < 0 ? 'armL' : 'armR', sg = s === 'armL' ? -1 : 1, wr = TT.info.src.wrist[s === 'armL' ? 0 : 1]; const r0 = I.rest.arms[i];
+    const put = (ex) => { _e.set(g.rotation.x - r0.x, g.rotation.y - r0.y, (g.rotation.z - r0.z) * .9 + ex, 'XYZ'); G[s].matrix.copy(about(TT.PIV[s], new THREE.Matrix4().makeRotationFromEuler(_e), new THREE.Matrix4())); wv.set(wr[0], wr[1], wr[2]).applyMatrix4(G[s].matrix);
+      const dx = wv.x - hc.x, dy = (wv.y - hc.y) * .9, dz = wv.z - hc.z; return dx * dx + dy * dy + dz * dz > hr * hr || wv.y < hc.y - hr; };
+    if (!put(0)) { let done = false; for (let it = 1; it <= 14 && !done; it++) for (const sgn of [-sg, sg]) if (put(sgn * it * .08)) { done = true; break; } if (!done) put(0); } });   // лапа не проваливается в морду
   rig.legs.forEach((g, i) => { const j = g.position.x < 0 ? 0 : 1; const r0 = I.rest.legs[i]; _e.set((g.rotation.x - r0.x) * .8, 0, (g.rotation.z - r0.z) * .5, 'XYZ');
     G.legs[j].matrix.copy(about(TT.hip[j], new THREE.Matrix4().makeRotationFromEuler(_e), new THREE.Matrix4())); });
   // хвост

@@ -3,7 +3,7 @@
 // в режиме «как в кино»: старый герой остаётся невидимым скелетом (его поза, руки для предметов, тень), а рисуется этот.
 (function (global) {
 'use strict';
-const MKB = global.MKBarsik = { ready: false, error: null, base: 'barsik/', D: null, shellK: 1, shellU: { value: 1 }, desatU: { value: 0.22 }, tintU: { value: null }, K: { key: 1.4, expo: 0.74 } };   // сверено с кадром Blender: лоб (152,126,84)   // shellU — сила налёта (0 — выключен)
+const MKB = global.MKBarsik = { ready: false, error: null, base: 'barsik/', D: null, shellK: 1, shellU: { value: 1 }, desatU: { value: 0.22 }, tintU: { value: null }, trimU: { value: .82 }, softU: { value: .6 }, glossU: { value: 1 }, /* вариант «Б»: подстрижен, гладкий блеск (просьба Михаила 4.11) */ K: { key: 1.4, expo: 0.74 } };   // сверено с кадром Blender: лоб (152,126,84)   // shellU — сила налёта (0 — выключен)
 MKB.isBarsik = spec => !!spec && spec.kind === 'cat' && /^\s*барсик(?![а-яё])/i.test(String(spec.name || ''));
 
 // ---------- константы модели (метры, z вверх, мордочка к −y) ----------
@@ -92,7 +92,7 @@ function decode(H, ab) {
 // ---------- шейдеры (как в пробной сцене, свет — от места мультика) ----------
 const COMMON = `precision highp float; precision highp int; precision highp sampler2D;
 uniform mat4 modelMatrix, viewMatrix, projectionMatrix; uniform vec3 cameraPosition;
-uniform mat3 uHead, uEar0, uEar1, uLeg0, uLeg1, uArm0, uArm1, uFore0, uFore1, uJawM; uniform vec2 uLift; uniform float uTailA, uTailPh, uBreath, uScale, uPix, uExpo, uDesat; uniform vec3 uTint;
+uniform mat3 uHead, uEar0, uEar1, uLeg0, uLeg1, uArm0, uArm1, uFore0, uFore1, uJawM; uniform vec2 uLift; uniform float uTailA, uTailPh, uBreath, uScale, uPix, uExpo, uDesat, uTrim, uSoft, uGloss; uniform vec3 uTint;
 uniform vec3 uSunDir, uSunCol, uRimDir, uRimCol, uFillDir, uFillCol, uSky, uGnd, uUp, uFogCol; uniform vec2 uFog;
 const float PI = 3.14159265;
 vec3 sane(vec3 c) { bvec3 bad = equal(floatBitsToUint(c) & uvec3(0x7f800000u), uvec3(0x7f800000u)); vec3 r = min(max(c, vec3(0.0)), vec3(300.0)); return any(bad) ? vec3(0.0) : r; }
@@ -146,17 +146,17 @@ void main() {
   vec4 wx = vec4(a2.x * 255.0, a2.y * 255.0, a2.z, a2.w * 255.0); wx.x = (wx.x > 127.5 ? wx.x - 256.0 : wx.x) / 127.0; wx.y = (wx.y > 127.5 ? wx.y - 256.0 : wx.y) / 127.0; wx.w = (wx.w > 127.5 ? wx.w - 256.0 : wx.w) / 127.0;
   float wh = a1.x, ts = a1.y > 0.999 ? -1.0 : a1.y * 255.0 / 254.0, we = a1.z * 255.0; we = (we > 127.5 ? we - 256.0 : we) / 127.0; float wb = a1.w;
   vec4 r0 = texelFetch(uPos, ti(s * 5), 0); int kind = int(texelFetch(uPos, ti(s * 5 + 1), 0).w + 0.5);
-  int ka = max(k - 1, 0), kb = min(k + 1, 4);
-  vec3 p = toW(poseP(texelFetch(uPos, ti(s * 5 + k), 0).xyz, wh, ts, we, wb, wx));
-  vec3 pa = toW(poseP(texelFetch(uPos, ti(s * 5 + ka), 0).xyz, wh, ts, we, wb, wx)), pb = toW(poseP(texelFetch(uPos, ti(s * 5 + kb), 0).xyz, wh, ts, we, wb, wx));
+  int ka = max(k - 1, 0), kb = min(k + 1, 4); float tr = (kind == 0 || kind == 5 || kind == 6 || kind == 7) ? uTrim : 1.0;   // «подстричь» тело, лапы, хвост
+  vec3 p = toW(poseP(r0.xyz + (texelFetch(uPos, ti(s * 5 + k), 0).xyz - r0.xyz) * tr, wh, ts, we, wb, wx));
+  vec3 pa = toW(poseP(r0.xyz + (texelFetch(uPos, ti(s * 5 + ka), 0).xyz - r0.xyz) * tr, wh, ts, we, wb, wx)), pb = toW(poseP(r0.xyz + (texelFetch(uPos, ti(s * 5 + kb), 0).xyz - r0.xyz) * tr, wh, ts, we, wb, wx));
   vec3 T = normalize(pb - pa + 1e-7); float t = float(k) / 4.0;
   float rad = r0.w * uScale * (kind == 201 ? 1.0 : (1.0 - 0.85 * pow(t, 1.3)));
-  float dist = length(p - cameraPosition); float w = max(rad, uPix * dist * 0.55);
+  float dist = length(p - cameraPosition); float w = max(rad, uPix * dist * mix(0.55, 0.42, uGloss));
   vec3 sd = normalize(cross(T, p - cameraPosition) + 1e-7) * w * side;
   vec3 P = p + sd; gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0);
   vec3 c[6]; for (int j = 0; j < 6; j++) { vec3 b = texelFetch(uBake, ti(s * 6 + j), 0).rgb; float u = clamp((t - 0.5) * 4.0, 0.0, 2.0); float v = u < 1.0 ? mix(b.x, b.y, u) : mix(b.y, b.z, u - 1.0); if (t < 0.5) v = b.x * (0.45 + 1.1 * t); c[j] = vec3(v); }
   vB0 = vec3(c[0].x, c[1].x, c[2].x); vB1 = vec3(c[3].x, c[4].x, c[5].x);
-  vec3 alb = a0.rgb * a0.rgb; if (kind < 200) alb *= mix(vec3(1.0), kind == 12 ? vec3(0.8) : vec3(0.62, 0.55, 0.5), (1.0 - t) * (1.0 - t));
+  vec3 alb = a0.rgb * a0.rgb; if (kind < 200) alb *= mix(vec3(1.0), kind == 12 ? vec3(0.8) : mix(vec3(0.62, 0.55, 0.5), vec3(0.84, 0.8, 0.77), uSoft), (1.0 - t) * (1.0 - t));   // мягче: корни не такие тёмные
   vAlb = alb; vP = P; vT = T; vt = t; vKind = kind;
 }`;
 const FS_FUR = COMMON + `
@@ -168,6 +168,7 @@ void main() {
     col += E * (bk[i] * (0.35 + 0.65 * sl)); msc += E * pow(max(bk[i], 0.0), 0.33); sp += hairSpec(T, L, V, alb, sk) * E * bk[i]; }
   vec3 c = alb * (col + uSky * (PI * bk[4] * 0.85) + uGnd * (PI * bk[5] * 0.6)) / PI;
   if (vKind < 200) c += alb * alb * msc * (0.32 / PI);
+  sp *= mix(1.0, 1.8, uGloss); sp = mix(sp, sp * vec3(1.0, 0.8, 0.55) * 1.25, 0.5 * uGloss);   // гладкий блеск вдоль шерсти, тёплый, как в образце 6.2
   c += sp + hairSpec(T, normalize(uUp + V * 0.3), V, alb, 0.5) * uSky * (bk[4] * 1.2 * PI);
   if (vKind == 201) c = alb * (0.35 + 0.25 * min(1.0, dot(col, vec3(0.333))));   // линия рта «ω» — тёмная, без блеска (как в Blender)
   o = outC(c, length(vP - cameraPosition));
@@ -340,7 +341,7 @@ const M3 = () => new THREE.Matrix3();
 function uniformsNew() {
   const v3 = (x, y, z) => ({ value: new THREE.Vector3(x || 0, y || 0, z || 0) });
   return { uHead: { value: M3() }, uEar0: { value: M3() }, uEar1: { value: M3() }, uLeg0: { value: M3() }, uLeg1: { value: M3() }, uArm0: { value: M3() }, uArm1: { value: M3() }, uFore0: { value: M3() }, uFore1: { value: M3() }, uJawM: { value: M3() },
-    uLift: { value: new THREE.Vector2() }, uTailA: { value: 0.25 }, uTailPh: { value: 0 }, uBreath: { value: 0 }, uScale: { value: 1 }, uPix: { value: 0.001 }, uExpo: { value: 1 }, uDesat: MKB.desatU, uTint: MKB.tintU,
+    uLift: { value: new THREE.Vector2() }, uTailA: { value: 0.25 }, uTailPh: { value: 0 }, uBreath: { value: 0 }, uScale: { value: 1 }, uPix: { value: 0.001 }, uExpo: { value: 1 }, uDesat: MKB.desatU, uTint: MKB.tintU, uTrim: MKB.trimU, uSoft: MKB.softU, uGloss: MKB.glossU,
     uSunDir: v3(0, 1, 0), uSunCol: v3(2, 2, 2), uRimDir: v3(0, 0.5, -1), uRimCol: v3(0, 0, 0), uFillDir: v3(0, 0.3, 1), uFillCol: v3(0.2, 0.2, 0.2), uSky: v3(0.4, 0.45, 0.5), uGnd: v3(0.15, 0.15, 0.12), uUp: v3(0, 1, 0), uFogCol: v3(1, 1, 1), uFog: { value: new THREE.Vector2(0, 0) },
     uPos: { value: null }, uBake: { value: null }, uAttr: { value: null } };
 }
