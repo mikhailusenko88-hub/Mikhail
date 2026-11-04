@@ -42,7 +42,12 @@ for f in files {
 }
 print("кадров:", frames.count)
 
-struct V { let name: String; let q: Double?; let props: Bool; let attach: Bool; let rate: Int }
+struct V { let name: String; let q: Double?; let props: Bool; let attach: Bool; let rate: Int; var asIphone = false }
+// какое цветовое пространство ImageIO даёт картинкам без профиля (на iPhone такие считаются sRGB)
+do {
+    let j = decode(jpeg(frames[0], 0.9))
+    print("PNG:", frames[0].colorSpace?.name as Any, " JPEG после декодирования:", j.colorSpace?.name as Any)
+}
 let variants = [
     V(name: "app_seichas", q: 0.9, props: false, attach: false, rate: 10_000_000),   // как в приложении сейчас
     V(name: "app_709props", q: 0.9, props: true, attach: false, rate: 10_000_000),   // только метки в настройках
@@ -50,6 +55,8 @@ let variants = [
     V(name: "app_709_q1", q: 1.0, props: true, attach: true, rate: 10_000_000),      // + JPEG 1.0
     V(name: "app_709_bezjpeg", q: nil, props: true, attach: true, rate: 10_000_000), // без JPEG (вклад JPEG)
     V(name: "app_709_q1_16m", q: 1.0, props: true, attach: true, rate: 16_000_000),  // + 16 Мбит/с
+    V(name: "app_seichas_kak_iphone", q: 0.9, props: false, attach: false, rate: 10_000_000, asIphone: true), // JPEG без профиля = sRGB, как на iOS
+    V(name: "app_709_kak_iphone", q: 0.9, props: true, attach: true, rate: 10_000_000, asIphone: true),
 ]
 
 // образцы JPEG (для проверки 4:2:0)
@@ -90,7 +97,8 @@ for v in variants {
     var jpegBytes = 0
     for f in frames {
         var img = f
-        if let q = v.q { let d = jpeg(f, q); jpegBytes += d.count; img = decode(d) }
+        if let q = v.q { let d = jpeg(f, q); jpegBytes += d.count; img = decode(d)
+            if v.asIphone, let c = img.copy(colorSpace: sRGB) { img = c } }
         while !vin.isReadyForMoreMediaData { usleep(1000) }
         var pbo: CVPixelBuffer?
         CVPixelBufferPoolCreatePixelBuffer(nil, ad.pixelBufferPool!, &pbo)
