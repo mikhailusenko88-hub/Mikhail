@@ -211,6 +211,8 @@ if getattr(HERO, 'EYE_CENTER', 0):   # радужка — в середину в
     man['info']['eyeDirs'] = dirs; log('радужка смотрит', [[round(x, 3) for x in d] for d in dirs])
 if getattr(HERO, 'EYE_S', None) is not None: es = HERO.EYE_S; man['info']['eyeS'] = [float(es[0]), float(es[2]), float(es[1])]   # в осях глаза: вбок, вверх, вперёд
 man['info']['toeY'] = float(getattr(HERO, 'TOE_Z', 0.0)); man['info']['irisS'] = int(getattr(HERO, 'IRIS_STYLE', 0))
+if getattr(HERO, 'MOUTHS', None):   # где открыт рот (в осях телефона) — там шерсть закрытых губ прячется, пока рот открыт
+    man['info']['mouth'] = {k: {'c': ax(c).tolist(), 'r': [float(r[0]), float(r[2]), float(r[1])]} for k, (c, r) in HERO.MOUTHS.items()}
 import gzip
 for fn, b in blobs.items():
     z = gzip.compress(bytes(b), 9); open(os.path.join(OUT, fn), 'wb').write(z); log(fn, round(len(b) / 1e6, 1), 'МБ ->', round(len(z) / 1e6, 1), 'МБ сжато')

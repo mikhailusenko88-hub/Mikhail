@@ -27,7 +27,8 @@
   L.idFor = function (ln, lib) {
     const list = L.list().filter(x => !/\+$/.test(x.id)); if (!list.length) return null;
     const c = (lib.characters || {})[ln.who] || {};
-    if (c.laughId && L.byId(c.laughId)) return c.laughId;
+    const pk = typeof MK !== 'undefined' && MK.laughPick ? MK.laughPick(lib, ln.who) : c.laughId; // 'voice' — своим голосом (Барсик, Пик по умолчанию)
+    if (pk === 'voice') return 'voice'; if (pk && L.byId(pk)) return pk;
     const nm = String((c.spec && c.spec.name) || '').trim().toLowerCase(), hd = (L.bank && L.bank.heroes) || {}; // выбранные на пробах (Барсик — F9, Рон — M4)
     if (nm && hd[nm] && L.byId(hd[nm])) return hd[nm];
     if (ln.who === '?') { const K = list.filter(x => x.group === 'K' && x.style === 'giggle'); return (K[0] || list[0]).id; }

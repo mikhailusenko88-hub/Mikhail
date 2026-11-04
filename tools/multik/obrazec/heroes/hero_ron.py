@@ -21,8 +21,9 @@ class Ron(Hero):
     NECK = V(0, -0.01, 0.49)
     SN_A = V(0, -0.085, 0.622); SN_B = V(0, -0.252, 0.594)
     NOSE_C = V(0, -0.272, 0.61)
-    MOUTHS = {'a': (V(0, -0.216, 0.556), V(0.034, 0.045, 0.019)), 'o': (V(0, -0.216, 0.558), V(0.018, 0.045, 0.016))}
-    TONGUE = (V(0, -0.208, 0.548), V(0.019, 0.028, 0.006))
+    # рот крупнее и ближе к кончику морды — открытый виден спереди (v6.3); язык внутри рта, не высунут
+    MOUTHS = {'a': (V(0, -0.24, 0.559), V(0.042, 0.042, 0.026)), 'o': (V(0, -0.242, 0.559), V(0.025, 0.042, 0.026))}
+    TONGUE = (V(0, -0.205, 0.541), V(0.023, 0.032, 0.007))
     PIV = {'head': V(0, -0.01, 0.5), 'armL': SHOULD[0], 'armR': SHOULD[1], 'tail': TAIL[0]}
     BOX = {'head': ((-0.27, -0.34, 0.47), (0.27, 0.2, 0.83)), 'body': ((-0.22, -0.2, -0.01), (0.22, 0.2, 0.58)),
            'armL': ((-0.22, -0.16, 0.2), (-0.04, 0.06, 0.5)), 'armR': ((0.04, -0.16, 0.2), (0.22, 0.06, 0.5)), 'tail': ((-0.06, 0.06, 0.13), (0.06, 0.27, 0.5)),
@@ -110,13 +111,13 @@ class Ron(Hero):
         vis = sd_ell(p, V(0, 0.19, 0.744), V(0.105, 0.085, 0.0075)); vis = smax(vis, -(hd - 0.014), 0.004); vis = smax(vis, -(p[:, 1] - 0.09), 0.01)
         btn = sd_sph(p, V(0, -0.02, 0.818), 0.012)
         return np.minimum(smin(dome, vis, 0.01), btn)
-    def collar_fn(self, p): return sd_torus(p, self.NECK + V(0, -0.006, -0.03), 0.1, 0.015, rotx=0.16)
+    def collar_fn(self, p): return sd_torus(p, self.NECK + V(0, -0.006, 0.0), 0.1, 0.015, rotx=0.16)      # v6.3: выше, на шее (был на плечах)
     def tag_fn(self, p):
-        q = p - V(0, -0.123, 0.418); q = rotx(q, -0.25); return smax(np.sqrt(q[:, 0] ** 2 + q[:, 2] ** 2) - 0.021, np.abs(q[:, 1]) - 0.0035, 0.002)
+        q = p - V(0, -0.118, 0.466); q = rotx(q, -0.25); return smax(np.sqrt(q[:, 0] ** 2 + q[:, 2] ** 2) - 0.021, np.abs(q[:, 1]) - 0.0035, 0.002)
     def acc_fn(self, p): return np.minimum(np.minimum(self.cap_fn(p), self.collar_fn(p)), self.tag_fn(p))
     ACCS = [{'name': 'cap', 'fn': 'cap_fn', 'box': ((-0.2, -0.2, 0.64), (0.2, 0.31, 0.84)), 'mat': 'cloth', 'col': (0.86, 0.86, 0.84), 'h': 0.0016},
-            {'name': 'collar', 'fn': 'collar_fn', 'box': ((-0.13, -0.14, 0.4), (0.13, 0.11, 0.5)), 'mat': 'satin', 'col': (0.6, 0.03, 0.03), 'h': 0.0014},
-            {'name': 'tag', 'fn': 'tag_fn', 'box': ((-0.03, -0.14, 0.39), (0.03, -0.1, 0.45)), 'mat': 'gold', 'col': (1.0, 0.72, 0.28), 'h': 0.0008}]
+            {'name': 'collar', 'fn': 'collar_fn', 'box': ((-0.13, -0.14, 0.43), (0.13, 0.11, 0.53)), 'mat': 'satin', 'col': (0.6, 0.03, 0.03), 'h': 0.0014},
+            {'name': 'tag', 'fn': 'tag_fn', 'box': ((-0.03, -0.14, 0.43), (0.03, -0.09, 0.5)), 'mat': 'gold', 'col': (1.0, 0.72, 0.28), 'h': 0.0008}]
     def fur_ok(self, p, reg):
         ok = (reg != 10) & (reg != 11) & (reg != 8) & (reg != 12)
         for E in self.EYES: ok &= self.eye_d(p, E) > self.RE + 0.005
@@ -133,7 +134,11 @@ class Ron(Hero):
     def mouth_lines(self):
         lines = []; nz = self.NOSE_C
         phil = [V(0, -0.5, nz[2] - 0.026 - 0.02 * i / 6) for i in range(7)]
-        lines.append(self.hit(np.array(phil), np.tile(V(0, 1, 0), (7, 1)), 0.6))
+        ph = self.hit(np.array(phil), np.tile(V(0, 1, 0), (7, 1)), 0.6)
+        if self.MOUTH is not None:      # открытый рот: желобок кончается у верхней губы (где кожа та же, что у закрытого)
+            m0 = self.MOUTH; self.MOUTH = None; pb = self.hit(np.array(phil), np.tile(V(0, 1, 0), (7, 1)), 0.6); self.MOUTH = m0
+            keep = np.linalg.norm(ph - pb, axis=-1) < 0.003; ph = ph[keep] if keep.sum() >= 2 else pb[:2]
+        lines.append(ph)
         for s in (-1, 1):
             ang = np.linspace(0, math.pi, 12); xs = s * (0.026 - 0.026 * np.cos(ang)); zs = nz[2] - 0.047 - 0.012 * np.sin(ang)
             lines.append(self.hit(np.stack([xs, np.full(12, -0.5, F), zs], -1).astype(F), np.tile(V(0, 1, 0), (12, 1)), 0.6))

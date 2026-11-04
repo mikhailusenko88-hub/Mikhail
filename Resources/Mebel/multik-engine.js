@@ -674,6 +674,11 @@ MK.TTS_URL = 'http://89.126.192.214:8095/tts';
 /** Нейроголоса героев (считаются в телефоне). xenia — голос Барсика по умолчанию (Silero v5_6_ru, тон ×1,12 и темп ×0,9286 после — как утвердили). */
 MK.HERO_NEURAL = { xenia: { name: 'Нейроголос Барсика (xenia)', model: 'xenia', speaker: 'xenia', shift: 1.12, tempo: 0.9286 } };
 MK.HERO_NEURAL_DEFAULT = { 'барсик': 'xenia' };
+/** Смех героя: 'voice' — своим голосом (Барсик — тем же нейроголосом Ксюши-xenia, что и говорит; герои с голосом iPhone — смех из слогов своего голоса, как было раньше),
+    иначе id записи из банка (multik-laugh.js). Выбор в «🎙 Голос» (c.laughId) важнее; Рон по умолчанию — M4 из банка (bank.json → heroes). */
+MK.LAUGH_DEFAULT = { 'барсик': 'voice', 'пик': 'voice' };
+MK.laughPick = (lib, who) => { const c = lib && lib.characters && lib.characters[who]; if (!c) return ''; if (c.laughId) return c.laughId; return MK.LAUGH_DEFAULT[String((c.spec && c.spec.name) || '').trim().toLowerCase()] || ''; };
+const HERO_LAUGH = { full: ['Ха-ха-ха!', 'Ах-ха-ха-ха!', 'Ха-ха-ха-ха!'], short: ['Ха-ха!', 'Ах-ха-ха!', 'Ха-ха!'] };
 MK.heroNeural = (lib, who) => { const c = lib && lib.characters && lib.characters[who]; if (!c) return null; const v = c.neural; if (v === 'off') return null; if (v && MK.HERO_NEURAL[v]) return MK.HERO_NEURAL[v];
   const nm = String((c.spec && c.spec.name) || '').trim().toLowerCase(); const d = MK.HERO_NEURAL_DEFAULT[nm]; return d && (!c.spec.kind || c.spec.kind === 'cat') ? MK.HERO_NEURAL[d] : null; };
 /** Настройки рассказчика: голос, темп, тон, мягкость. */
@@ -782,6 +787,11 @@ function lineFor(ep, lib, who, text, step, vi) {
   const seed = hash32(String(who) + (ch.name || ''));
   const nv = who === 'Р' && !synth ? MK.narratorVoice(lib) : null;
   const hn = who !== 'Р' && !synth ? MK.heroNeural(lib, who) : null;
+  if (synth === 'laugh' && who !== 'Р' && !(lib.characters[who] || {}).laugh && MK.laughPick(lib, who) === 'voice') { const hl = MK.heroNeural(lib, who); // смех тем же нейроголосом, что и речь
+    if (hl) { const lt = (short ? HERO_LAUGH.short : HERO_LAUGH.full)[variant] || 'Ха-ха-ха!', rate = 1.06, pitch = 1.06;
+      const fb = { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + '|laugh' + age + variant + (short ? 's' : '')).toString(36), text: say, voice: v, fx, synth: 'laugh' };
+      return { key: hash32('hl1|' + hl.model + '|' + hl.speaker + '|' + hl.shift + '|' + rate + '|' + pitch + '|' + lt).toString(36), who, text: lt, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant, short, seed,
+        srv: { text: lt, speaker: hl.speaker, model: hl.model, shift: hl.shift, tempo: hl.tempo, rate, pitch, local: true }, fb: { fx }, laughFb: fb, src: lt }; } }
   if (hn && MK.prepSpeech) { // герой с нейроголосом (Барсик — xenia): считается в телефоне; не вышло — его голос iPhone (fb)
     const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
     const pe = step && step.say && PROSODY[step.emotion], rate = pe ? Math.round(clamp(pe[1], .88, 1.15) * 100) / 100 : 1, pitch = pe ? Math.round(clamp(pe[0], .92, 1.12) * 100) / 100 : 1;

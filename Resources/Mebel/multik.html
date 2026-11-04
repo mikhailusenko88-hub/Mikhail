@@ -451,6 +451,7 @@ async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уж�
     if (ln.synth && MK.makeVocal) { try { const buf = await MK.makeVocal(ln, lib, (c, b) => Native.call(c, b), async w => ac.decodeAudioData(unb64(w).buffer)); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('vocal', err); } continue; }
     let r = null, fx = ln.fx || MK.VOICE_FX.natural;
     if (ln.srv) { r = ln.key in pre ? pre[ln.key] : await SrvVoice.get(ln); if (!r) fx = ln.fb.fx; } // рассказчик и Барсик — нейроголос (в телефоне); не вышло — голос iPhone
+    if (!r && ln.laughFb && MK.makeVocal) { try { const buf = await MK.makeVocal(Object.assign({}, ln, ln.laughFb, { srv: null }), lib, (c, b) => Native.call(c, b), async w => ac.decodeAudioData(unb64(w).buffer)); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('vocal', err); } continue; } // смех нейроголосом не вышел — смех из голоса iPhone
     if (r && r.buf) { try { const buf = await MK.voiceFx(r.buf, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('нейроголос', err); } continue; }
     if (!r) { // голос iPhone: омографы по смыслу (з+амок/зам+ок) — как у рассказчика; свои «+» в реплике важнее
       let text = ln.text, voice = ln.voice, key = ln.key;
@@ -853,11 +854,12 @@ const VP = {
   },
   close() { if (this.recording) this.rec(); document.getElementById('vpanel').style.display = 'none'; },
   recUI() { const box = document.getElementById('vpLaugh'); box.style.display = this.who === 'Р' ? 'none' : 'block'; const c = Lib.data.characters[this.who] || {};
-    document.getElementById('vpRecDel').style.display = c.laugh ? '' : 'none'; document.getElementById('vpRecMsg').textContent = c.laugh ? 'Смеётся записанным смехом.' : 'Смеётся смехом из банка, своим тембром (или своим голосом, если банка нет).'; document.getElementById('vpRec').textContent = this.recording ? '⏹ Стоп' : '🎙 Записать смех';
+    document.getElementById('vpRecDel').style.display = c.laugh ? '' : 'none'; document.getElementById('vpRecMsg').textContent = c.laugh ? 'Смеётся записанным смехом.' : 'Смеётся своим голосом или записью из банка — как выбрано ниже.'; document.getElementById('vpRec').textContent = this.recording ? '⏹ Стоп' : '🎙 Записать смех';
     this.laughList(); },
   async laughList() { const sel = document.getElementById('vpLaughSel'); if (!window.MKLaugh) return; await MKLaugh.load(); const list = MKLaugh.list(); const GN = { K: 'детские', F: 'женские', M: 'мужские', B: 'басистые' };
     const c0 = Object.assign({}, Lib.data.characters[this.who] || {}); delete c0.laughId; const auto = MKLaugh.idFor({ who: this.who, fx: Object.assign({}, MK.fxFor(Lib.data, this.who), { k: this.cur.k }) }, Object.assign({}, Lib.data, { characters: Object.assign({}, Lib.data.characters, { [this.who]: c0 }) }));
-    sel.innerHTML = `<option value="">по умолчанию${auto ? ' (' + esc(auto) + ')' : ''}</option>` + list.map(x => `<option value="${esc(x.id)}">${esc(x.id)} — ${esc(x.name || '')} (${esc(GN[x.group] || x.group)})</option>`).join(''); sel.value = this.cur.laughId || ''; },
+    const own = MK.heroNeural(Object.assign({}, Lib.data, { characters: Object.assign({}, Lib.data.characters, { [this.who]: Object.assign({}, Lib.data.characters[this.who], { neural: this.cur.neural || undefined }) }) }), this.who) ? 'своим голосом — как говорит' : 'из своего голоса';
+    sel.innerHTML = `<option value="">по умолчанию${auto ? ' (' + esc(auto === 'voice' ? own : auto) + ')' : ''}</option><option value="voice">${own}</option>` + list.map(x => `<option value="${esc(x.id)}">${esc(x.id)} — ${esc(x.name || '')} (${esc(GN[x.group] || x.group)})</option>`).join(''); sel.value = this.cur.laughId || ''; },
   pickLaugh(id) { this.cur.laughId = id || ''; this.laugh(); },
   async rec() { const who = this.who, key = 'rec-laugh-' + MK.hash32(String(who)).toString(36);
     if (this.recording) { clearTimeout(this.recT); this.recording = false; await Native.call('recStop', {}); Lib.data.characters[who].laugh = key; await Lib.save(); this.recUI(); this.laugh(); return; }
@@ -866,9 +868,10 @@ const VP = {
   async recDel() { delete Lib.data.characters[this.who].laugh; await Lib.save(); this.recUI(); },
   async laugh() { audioPlayback(); if (!pvCtx || pvCtx.state === 'closed') pvCtx = new (window.AudioContext || window.webkitAudioContext)(); try { pvCtx.resume(); } catch (e) {}
     const who = this.who, lib = Object.assign({}, Lib.data, { characters: Object.assign({}, Lib.data.characters) }); const c = lib.characters[who];
-    lib.characters[who] = Object.assign({}, c, { fx: { preset: this.cur.preset, k: this.cur.k, voiceId: this.cur.voiceId || undefined }, laughId: this.cur.laughId || undefined });
-    const lns = MK.collectLines({ scenes: [{ steps: [{ who, do: 'laugh' }] }] }, lib); if (!lns.length) return; const ln = lns[0]; ln.variant = (this._lv = ((this._lv || 0) + 1) % 3);
-    const buf = await MK.makeVocal(ln, lib, (cmd, b) => Native.call(cmd, b), async w => pvCtx.decodeAudioData(unb64(w).buffer));
+    lib.characters[who] = Object.assign({}, c, { fx: { preset: this.cur.preset, k: this.cur.k, voiceId: this.cur.voiceId || undefined }, laughId: this.cur.laughId || undefined, neural: this.cur.neural || undefined });
+    this._lv = ((this._lv || 0) + 1) % 3; const ep = { scenes: [{ steps: [{ who, do: 'laugh' }] }] }; const ln = MK.lineFor(ep, lib, who, MK.stepVoiceText(ep.scenes[0].steps[0]), ep.scenes[0].steps[0], this._lv); if (!ln) return;
+    let buf = null; if (ln.srv) { try { Build.toast(window.MKVoice && !MKVoice.ready ? 'Загружаю голос (первый раз несколько секунд)…' : 'Озвучиваю…'); } catch (e) {} SrvVoice.failM = {}; const r = await SrvVoice.get(ln, 60); if (r && r.buf) buf = await MK.voiceFx(r.buf, MK.VOICE_FX.natural); } // смех нейроголосом (Барсик)
+    if (!buf) buf = await MK.makeVocal(ln.laughFb ? Object.assign({}, ln, ln.laughFb, { srv: null }) : ln, lib, (cmd, b) => Native.call(cmd, b), async w => pvCtx.decodeAudioData(unb64(w).buffer));
     if (pvSrc) { try { pvSrc.stop(); } catch (e) {} } pvSrc = pvCtx.createBufferSource(); pvSrc.buffer = buf; pvSrc.connect(pvCtx.destination); pvSrc.start(); },
 };
 // ---------- «Мой сценарий» ----------
