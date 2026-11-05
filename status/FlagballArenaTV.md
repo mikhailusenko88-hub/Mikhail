@@ -1,5 +1,5 @@
 # Flagball Arena  (@FlagballArenaTV)
-Проверено: 2026-11-05 07:21 UTC
+Проверено: 2026-11-05 07:30 UTC
 
 - Страница канала: HTTP 200; ID: UCUKgRxWtL1kPWr9hdfL8qQw
 - Шапка: 1 видео
