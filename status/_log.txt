@@ -1,4 +1,2 @@
-2026-11-05 07:31 UTC
-200 https://www.youtube.com/watch?v=jkju-LY3PpU&hl=ru
-ERR thumb jkju-LY3PpU/oar2.jpg HTTP Error 404: Not Found
-200 thumb jkju-LY3PpU/hqdefault.jpg 19831 B
+2026-11-05 08:25 UTC
+200 https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=JnN4DJ-qlgU&format=json
