@@ -219,6 +219,15 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
     import race_leagues as RL
     ls = league_state(state, league)
     new_season(ls, league, log)
+    # города по просьбам из комментариев (kz_places.py)
+    new_cities = []
+    try:
+        import kz_places as KP
+        if league == "cities" and not test:
+            new_cities, _ = KP.take_requests(state, ls, log, cfg)
+    except Exception as e:
+        log(f"Города из комментариев: ошибка {e}")
+    RL.set_extra_cities(state.get("race", {}).get("extra", []))
     sid = season_id(league)
     no = ls.get("no", 0) + 1
     ent = None
@@ -251,6 +260,12 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
                          season_races=None if final else ls.get("season_races", 0) + 1,
                          champions=ls.get("champions", []), season_id=sid,
                          final_in=None if final else days_to_final(cfg, league, ls))
+    if league == "cities":
+        try:
+            import kz_places as KP
+            info["description"] = KP.note(new_cities) + KP.fix_desc(info["description"], len(RL.entries("cities")))
+        except Exception as e:
+            log(f"Описание: {e}")
     out.with_suffix(".txt").write_text(info["title"] + "\n\n" + info["description"], encoding="utf-8")
     log(f"Заезд №{no} ({RL.LEAGUES[league]['name']}{', ФИНАЛ' if final else ''}): победил {info['winner']}, "
         f"топ-3: {', '.join(info['ranking'][:3])}, ролик {info['duration']:.0f} с")

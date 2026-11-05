@@ -142,10 +142,19 @@ def _e(key, kk, ru, num, **kw):
     return d
 
 
+# города, добавленные по просьбам из комментариев (ставит race_bot из state.json → race.extra)
+EXTRA_CITIES = []
+
+
+def set_extra_cities(rows):
+    EXTRA_CITIES[:] = [(r["kk"], r["ru"], r["lat"], r["lon"]) for r in rows or []]
+
+
 def entries(league, state=None, rnd=None):
     """Участники заезда. Для имён — 10 мальчиков + 10 девочек (сначала те, кого просили в комментариях)."""
     if league == "cities":
-        return [_e(kk, kk, ru, str(i + 1), lat=la, lon=lo) for i, (kk, ru, la, lo) in enumerate(CITIES)]
+        rows = list(CITIES) + [r for r in EXTRA_CITIES if r[0] not in {c[0] for c in CITIES}]
+        return [_e(kk, kk, ru, str(i + 1), lat=la, lon=lo) for i, (kk, ru, la, lo) in enumerate(rows)]
     if league == "regions":
         return [_e(kk, kk, ru, code, full_kk=fk, full_ru=fr, lat=la, lon=lo, code=code)
                 for code, kk, ru, fk, fr, la, lo in REGIONS]
