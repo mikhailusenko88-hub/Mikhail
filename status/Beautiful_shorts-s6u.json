@@ -5,18 +5,28 @@
  "title": "Beautiful_shorts",
  "description": "",
  "header": [
-  "216 подписчиков",
-  "127 видео"
+  "217 подписчиков",
+  "128 видео"
  ],
  "alerts": [],
- "checked": "2026-11-05 07:21 UTC",
+ "images": {
+  "avatar": "https://yt3.googleusercontent.com/3SkKQKzbtqBO-oV1lqFtoaDen4tgg8hlao1TVZcMdY9LUtqppGJBftTFyKYp3H1P5pTekG9tog=s900-c-k-c0x00ffffff-no-rj",
+  "banner": "https://yt3.googleusercontent.com/6_IYCMEMtoe0Q__Y2_zj7OKcLMKAO9UGQ8aCjGFh5-3XlnsPQBUApKWlK2iCM9InaG-mlW-rq7A=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
+ },
+ "checked": "2026-11-05 17:12 UTC",
  "shorts_status": 200,
  "shorts": [
   {
+   "id": "yHSe_VfF-0E",
+   "title": "Part 2: it was STUCK by 3 px… can it break free? 😱 #shorts",
+   "views": "945 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Part 2: it was STUCK by 3 px… can it break free? 😱 #shorts, 945 просмотров\""
+  },
+  {
    "id": "NxErJ5KTOos",
    "title": "Every bounce = BIGGER ball… this time it was SO close 😭 #shorts",
-   "views": "2,3 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Every bounce = BIGGER ball… this time it was SO close 😭 #shorts, 2,3 тысячи просмотров\""
+   "views": "2,4 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Every bounce = BIGGER ball… this time it was SO close 😭 #shorts, 2,4 тысячи просмотров\""
   },
   {
    "id": "GQSZJ4qQ5so",
@@ -33,14 +43,14 @@
   {
    "id": "dxhgeNxbpPE",
    "title": "Every bounce = +1 ball… how many to break 8 rings? 😱 #shorts",
-   "views": "1,6 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Every bounce = +1 ball… how many to break 8 rings? 😱 #shorts, 1,6 тысячи просмотров\""
+   "views": "1,7 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Every bounce = +1 ball… how many to break 8 rings? 😱 #shorts, 1,7 тысячи просмотров\""
   },
   {
    "id": "TDj4LWSysdk",
    "title": "Which TREND wins? 6-7 vs Rizz vs Aura 😱 #shorts",
-   "views": "897 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Which TREND wins? 6-7 vs Rizz vs Aura 😱 #shorts, 897 просмотров\""
+   "views": "907 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Which TREND wins? 6-7 vs Rizz vs Aura 😱 #shorts, 907 просмотров\""
   },
   {
    "id": "PiIV46k2M8A",
@@ -293,14 +303,99 @@
    "title": "Sky",
    "views": "219 просмотров",
    "a11y": "Воспроизвести короткое видео \"Sky, 219 просмотров\""
-  },
-  {
-   "id": "o5l3gzag1zc",
-   "title": "Dangerous cat",
-   "views": "175 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Dangerous cat, 175 просмотров\""
   }
  ],
- "rss_status": 404,
- "rss": []
+ "rss_status": 200,
+ "rss": [
+  {
+   "id": "yHSe_VfF-0E",
+   "published": "2026-11-05T09:14:41+00:00",
+   "title": "Part 2: it was STUCK by 3 px… can it break free? 😱 #shorts",
+   "views": 943
+  },
+  {
+   "id": "NxErJ5KTOos",
+   "published": "2026-11-04T15:47:13+00:00",
+   "title": "Every bounce = BIGGER ball… this time it was SO close 😭 #shorts",
+   "views": 2422
+  },
+  {
+   "id": "GQSZJ4qQ5so",
+   "published": "2026-11-04T09:33:50+00:00",
+   "title": "Every bounce = BIGGER ball… can it still escape 5 rings? 😱 #shorts",
+   "views": 1256
+  },
+  {
+   "id": "7YIpYrIIfCA",
+   "published": "2026-11-03T19:28:07+00:00",
+   "title": "Can it break out of 5 RINGS? 😱 #shorts",
+   "views": 1581
+  },
+  {
+   "id": "dxhgeNxbpPE",
+   "published": "2026-11-02T16:29:05+00:00",
+   "title": "Every bounce = +1 ball… how many to break 8 rings? 😱 #shorts",
+   "views": 1740
+  },
+  {
+   "id": "TDj4LWSysdk",
+   "published": "2026-11-01T18:14:51+00:00",
+   "title": "Which TREND wins? 6-7 vs Rizz vs Aura 😱 #shorts",
+   "views": 906
+  },
+  {
+   "id": "PiIV46k2M8A",
+   "published": "2026-11-01T12:45:44+00:00",
+   "title": "Can it break out of 7 rings? 😱 #shorts",
+   "views": 1273
+  },
+  {
+   "id": "uZwE4HiXpxE",
+   "published": "2026-10-31T14:37:06+00:00",
+   "title": "Can it break out of 7 rings? 😱 #shorts",
+   "views": 1085
+  },
+  {
+   "id": "xWbt7K7oJhw",
+   "published": "2026-10-30T08:47:17+00:00",
+   "title": "It grows every bounce… will it fit? 😱 #shorts",
+   "views": 1281
+  },
+  {
+   "id": "4pYf0Jb6waA",
+   "published": "2026-10-29T20:14:23+00:00",
+   "title": "Can 1 ball escape 10 rings? 😱 #shorts",
+   "views": 1134
+  },
+  {
+   "id": "kFeoWRy41mI",
+   "published": "2026-10-28T21:56:48+00:00",
+   "title": "Can it break out of 10 rings? 😱 #shorts",
+   "views": 1475
+  },
+  {
+   "id": "_IT_CPQ6Ysk",
+   "published": "2026-10-28T21:46:04+00:00",
+   "title": "Northern lights watercolor 🌌 wait for the tape peel! #shorts",
+   "views": 1267
+  },
+  {
+   "id": "TKkd16DFUMU",
+   "published": "2026-10-27T19:03:02+00:00",
+   "title": "27 октября 2026 г.",
+   "views": 193
+  },
+  {
+   "id": "JsycXIxtM8M",
+   "published": "2026-10-27T18:21:37+00:00",
+   "title": "27 октября 2026 г.",
+   "views": 235
+  },
+  {
+   "id": "MjGmiyuFNiY",
+   "published": "2026-10-27T15:01:30+00:00",
+   "title": "Can it break out of 6 rings? 😱 #shorts",
+   "views": 1331
+  }
+ ]
 }
