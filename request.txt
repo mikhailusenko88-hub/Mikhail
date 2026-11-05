@@ -1,0 +1,6 @@
+# 2026-11-05 — первая проверка
+mode: test       # test — только собрать | publish — собрать и выложить | login — вход в канал (код google.com/device)
+league: cities   # auto | cities | cars
+final: auto      # auto | yes
+date: auto
+slot: auto
