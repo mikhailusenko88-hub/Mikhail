@@ -1,6 +1,18 @@
-2026-11-05 10:25 UTC
-89.126.192.214-8080_mebel_0f7s1eez.txt  http://89.126.192.214:8080/mebel/0f7s1eez/  (6230 симв.)
-89.126.192.214-8080_mebel_0f7s1eez_oferta.html.txt  http://89.126.192.214:8080/mebel/0f7s1eez/oferta.html  (7155 симв.)
+2026-11-05 10:30 UTC
+site_desktop.png  http://89.126.192.214:8080/mebel/0f7s1eez/
+oferta_desktop.png  http://89.126.192.214:8080/mebel/0f7s1eez/oferta.html
 
 --- ЖУРНАЛ ---
+open http://89.126.192.214:8080/mebel/0f7s1eez/: ok
+shot site_desktop: ok
+size 390x844: ok
+open http://89.126.192.214:8080/mebel/0f7s1eez/: ok
+shot «site_phone»: ОШИБКА Page.screenshot: Timeout 30000ms exceeded.
+Call log:
+  - taking page screenshot
+  - waiting for fonts to load...
+  - fonts loaded
 
+size 1366x900: ok
+open http://89.126.192.214:8080/mebel/0f7s1eez/oferta.html: ok
+shot oferta_desktop: ok
