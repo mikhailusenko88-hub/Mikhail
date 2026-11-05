@@ -72,6 +72,8 @@ class YT:
         c = channel_info(self.tok)
         if not c["title"]:
             raise SystemExit("под этим входом нет канала")
+        if not self.k.get("channel_id") and not os.environ.get("UZ_YT", "").strip():
+            raise SystemExit("вход без номера канала (старый) — нужен новый вход (mode: login)")
         why = wrong_channel(c, self.k.get("channel_id"))
         if why:
             raise SystemExit(why + " — выкладку отменил")
