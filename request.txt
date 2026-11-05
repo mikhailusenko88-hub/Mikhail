@@ -1,7 +1,3 @@
-# проверка 2026-11-05 07:31 UTC — свободны ли адреса для канала цитат
-@zhivye_stroki
-@zhivyestroki
-@LivingLinesTV
-@LivingLines
-@zhivye.stroki
-@LivingLinesQuotes
+# проверка 2026-11-05 07:30 UTC — Flagball Arena
+@FlagballArenaTV
+video:jkju-LY3PpU
