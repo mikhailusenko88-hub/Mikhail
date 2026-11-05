@@ -1,55 +1,11 @@
-ВЫЛОЖЕНО 2026-11-05 слот 0: cars №1 https://youtube.com/shorts/pR3p1cAbElU, за 54 с
+КОММЕНТАРИИ прочитаны; добавлены по просьбам: {"cities": [], "cars": []}
 
-{
- "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №1",
- "description": "⏳ Finalgacha 3 kun · До финала 3 дня\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
- "tags": [
-  "oʻzbekiston",
-  "uzbekistan",
-  "узбекистан",
-  "poyga",
-  "sharchalar poygasi",
-  "гонка шариков",
-  "marble race",
-  "mashina",
-  "cobalt",
-  "gentra",
-  "nexia",
-  "damas",
-  "malibu",
-  "chevrolet",
-  "машины узбекистана"
- ]
-}
+
 
 --- журнал (время Ташкента) ---
-21:02:32 режим publish, событие push
-21:02:32 дополнительный ролик сейчас: cars
-21:02:33 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-21:02:33 Тема: гонка машин. Подбираю трассу и заезд…
-21:02:35   трасса 1 (spinners, hammers, stairs, bumpy, pegs, funnel, split): победа на 26.7 с, смен лидера 2, финишировали 1, расчёт 2 с — не подходит
-21:02:37   трасса 2 (pegs, funnel, bumpers, hammers, tramps, tunnel, stairs, spinners): победа на 46.7 с, смен лидера 2, финишировали 2, расчёт 3 с
-21:02:40   трасса 3 (tramps, tunnel, stairs, hammers, funnel, bumpers, spinners, pegs): победа на 52.5 с, смен лидера 18, финишировали 12, расчёт 3 с
-21:02:40 Рисую трассу…
-21:02:40 Рисую кадры: заезд 59 с + финал 8 с…
-21:02:41   кадр 0/1760, 8 с
-21:02:47   кадр 300/1760, 14 с
-21:02:53   кадр 600/1760, 20 с
-21:02:59   кадр 900/1760, 26 с
-21:03:05   кадр 1200/1760, 32 с
-21:03:11   кадр 1500/1760, 38 с
-21:03:22 Свожу звук…
-21:03:23 Готово за 50 с: победил Matiz, ролик 66 с
-21:03:23 ролик готов: 66 с, 45 МБ, сборка 51 с; победил Matiz, топ-3: Matiz, Captiva, Lacetti
-21:03:25 YouTube: https://youtube.com/shorts/pR3p1cAbElU
-21:03:26 плейлист: 409 {
+21:38:44 режим comments, событие push
+21:38:45 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+21:38:45 комментарии по каналу не отдались (403 {
   "error": {
-    "code": 409,
-    "message": "The operation was aborted.",
-    "errors": [
-      {
-        "domain": "youtube.CoreErrorDomain",
-        "reason": "SERVICE_UNAVAILABLE"
-      }
-    ],
-21:03:26 статус: public uploaded
+    "code": 403,
+    "message": "Request had insufficient aut), читал по роликам
