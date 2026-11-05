@@ -1,0 +1,78 @@
+name: pochta-test
+# Проверка setup-pochta.sh на чистой Ubuntu 24.04 (как сервер FirstVDS):
+# сначала setup-prostranstvo.sh с доменом, потом почта, потом повторный запуск.
+on:
+  push:
+    branches: [domain-check]
+    paths: ["pochta-test/**"]
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Скрипты из папки pochta-test
+        run: cp pochta-test/*.sh .
+      - name: shellcheck
+        continue-on-error: true
+        run: |
+          awk "/<<'PRS_POCHTA'/{f=1;next}/^PRS_POCHTA/{f=0}f" setup-pochta.sh > /tmp/helper.sh
+          shellcheck -S warning -e SC2034,SC1090,SC1091 setup-pochta.sh /tmp/helper.sh || true
+      - name: Сделать раннер похожим на новый сервер
+        run: |
+          sudo systemctl stop apache2 nginx mysql postgresql 2>/dev/null || true
+          sudo apt-get purge -y -q 'apache2*' libapache2-mod-php* >/dev/null 2>&1 || true
+          sudo apt-get update -qq
+          apt-cache policy rspamd roundcube-core dovecot-core postfix | grep -E '^[a-z]|Candidate'
+          echo "--- depends roundcube-core:"; apt-cache depends roundcube-core | grep -E 'Depends|PreDepends' | head -30
+          ip -4 -o addr show scope global
+      - name: setup-prostranstvo.sh (сайт, домен без DNS)
+        run: sudo bash setup-prostranstvo.sh nashdekor.ru test@example.com --force 2>&1 | tail -n 40
+      - name: setup-pochta.sh — первый запуск
+        run: sudo bash setup-pochta.sh 2>&1
+      - name: setup-pochta.sh — повторный запуск + новый ящик
+        run: sudo bash setup-pochta.sh info zakaz yulia mikhail test2 2>&1 | tail -n 45
+      - name: Проверки после установки
+        run: |
+          set -x
+          sudo prostranstvo-pochta || true
+          sudo prostranstvo-pochta dns || true
+          sudo prostranstvo-pochta passwords | head -n 12
+          curl -s -H 'Host: mail.nashdekor.ru' http://127.0.0.1/pochta-dns.txt | cut -c1-120
+          curl -s -o /dev/null -w 'site %{http_code}\n' -H 'Host: nashdekor.ru' http://127.0.0.1/
+          curl -s -o /dev/null -w 'mail http %{http_code} -> %{redirect_url}\n' -H 'Host: mail.nashdekor.ru' http://127.0.0.1/
+          sudo nginx -t
+          dpkg -l | grep -E '^ii +(apache2|libapache2)' || echo "apache2 нет — хорошо"
+          sudo fail2ban-client status
+          sudo fail2ban-client get postfix-sasl journalmatch || true
+          free -m
+          ps -eo rss,comm --sort=-rss | head -n 15
+      - name: Вход в веб-почту (Roundcube) настоящим логином
+        run: |
+          PW=$(sudo awk '$1=="info@nashdekor.ru"{print $2}' /etc/prostranstvo/pochta-paroli.txt)
+          J=/tmp/rc.jar; R="--resolve mail.nashdekor.ru:443:127.0.0.1"
+          page=$(curl -sk $R -c $J -b $J https://mail.nashdekor.ru/)
+          tok=$(grep -o 'name="_token" value="[^"]*"' <<<"$page" | head -n1 | sed 's/.*value="//;s/"$//')
+          echo "token: ${tok:0:6}…"
+          out=$(curl -sk $R -c $J -b $J -o /tmp/rc2.html -w '%{http_code} %{redirect_url}' \
+            --data-urlencode "_token=$tok" --data "_task=login&_action=login&_timezone=Europe/Moscow&_url=" \
+            --data-urlencode "_user=info" --data-urlencode "_pass=$PW" "https://mail.nashdekor.ru/?_task=login")
+          echo "login: $out"
+          [[ $out == 302* && $out == *_task=mail* ]] && echo "ВХОД В ВЕБ-ПОЧТУ: ОК" || { echo "ВХОД НЕ УДАЛСЯ"; grep -o 'class="[^"]*error[^"]*"[^<]*<[^>]*>[^<]*' /tmp/rc2.html | head; }
+          inbox=$(curl -sk $R -c $J -b $J "https://mail.nashdekor.ru/?_task=mail&_mbox=INBOX")
+          grep -q 'rcmloginuser' <<<"$inbox" && echo "после входа снова форма входа — плохо" || echo "папка «Входящие» открылась"
+      - name: Ошибочные пароли видит fail2ban
+        run: |
+          for i in 1 2 3; do swaks --silent 2 --server 127.0.0.1 --port 587 --tls --auth LOGIN --auth-user info@nashdekor.ru --auth-password bad$i --quit-after AUTH >/dev/null 2>&1 || true; done
+          for i in 1 2 3; do curl -sk --max-time 10 "imaps://127.0.0.1/" --user "info@nashdekor.ru:bad$i" -X NOOP >/dev/null 2>&1 || true; done
+          sleep 3
+          sudo fail2ban-regex "systemd-journal[journalmatch='_SYSTEMD_UNIT=postfix@-.service']" 'postfix[mode=auth]' | grep -E '^(Lines|Failregex):' || true
+          sudo fail2ban-regex "systemd-journal[journalmatch='_SYSTEMD_UNIT=dovecot.service']" 'dovecot' | grep -E '^(Lines|Failregex):' || true
+      - name: Пробное письмо наружу (у GitHub порт 25 закрыт — ждём «не ушло/нет ответа»)
+        run: sudo timeout 120 prostranstvo-pochta test probe@gmail.com || true
+      - name: Журналы при ошибке
+        if: always()
+        run: |
+          sudo tail -n 60 /var/log/prostranstvo-pochta-setup-details.log || true
+          sudo journalctl -u postfix@- -u dovecot -u rspamd --no-pager -n 60 || true
