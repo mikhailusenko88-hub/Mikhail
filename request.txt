@@ -1,6 +1,7 @@
-# 2026-11-05 17:30 МСК — первая гонка (повтор после ошибки описания)
+# 2026-11-05 18:30 МСК — ещё одна гонка сейчас (машины)
 mode: publish    # test — только собрать | publish — собрать и выложить | login — вход (после входа сразу выкладка) | check — что стоит на канале
-league: auto     # auto | cities | cars
+extra: yes       # yes — ещё один ролик сейчас, сверх расписания
+league: cars     # auto | cities | cars
 final: auto      # auto | yes
 date: auto
 slot: auto

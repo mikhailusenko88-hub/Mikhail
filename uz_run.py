@@ -12,6 +12,7 @@ request.txt (ручной запуск — поменять и запушить)
           после входа сразу выкладывается гонка текущего слота) | check (что стоит на канале → status/channel.txt)
   league: auto | cities | cars
   final:  auto | yes
+  extra:  yes — ещё один ролик прямо сейчас, сверх расписания (то же делает кнопка Run workflow на GitHub)
 Отчёт всегда в status/last.txt (логи Actions из облака не видно).
 """
 import datetime as dt
@@ -70,6 +71,8 @@ def read_request():
             if ":" in line:
                 k, v = (x.strip() for x in line.split(":", 1))
                 req[k] = v
+    if os.environ.get("EVENT") == "workflow_dispatch":      # кнопка «Run workflow» на GitHub — ещё один ролик сейчас
+        req.update({"mode": "publish", "extra": "yes", "league": os.environ.get("IN_LEAGUE") or "auto"})
     return req
 
 
@@ -187,7 +190,14 @@ def main():
     day = dt.datetime(d.year, d.month, d.day, SLOTS[slot][1], tzinfo=TASH)
 
     state = json.loads(Path("state.json").read_text(encoding="utf-8"))
-    if mode == "publish" and any(h.get("date") == d.isoformat() and h.get("slot") == slot
+    extra = req.get("extra") == "yes"
+    if extra:            # дополнительный ролик сверх расписания: слот 0, расписание не трогает
+        d, slot, day = now.date(), 0, now
+        if req["league"] == "auto":
+            last = [h.get("league") for h in state.get("history", [])]
+            league = "cars" if (last and last[-1] == "cities") else "cities"
+        log(f"дополнительный ролик сейчас: {league}")
+    if mode == "publish" and not extra and any(h.get("date") == d.isoformat() and h.get("slot") == slot
                                  for h in state.get("history", [])):
         log("этот слот уже выложен — пропускаю")
         write_status(f"ПРОПУСК {d} слот {slot}: уже выложено")
