@@ -1,24 +1,3 @@
-# «Наш декор» — точный поиск и карточки (05.11)
-open: https://searchplatform.rospatent.gov.ru/trademarks
-wait: 5000
-click: Строгое совпадение (четкий поиск)
-fill: input[type=text], input:not([type]), textarea => наш декор
-press: Enter
-wait: 10000
-snap: tm_strict_nashdekor
-open: https://searchplatform.rospatent.gov.ru/trademarks
-wait: 5000
-fill: input[type=text], input:not([type]), textarea => нашдекор
-press: Enter
-wait: 10000
-click: 2024778541
-wait: 6000
-snap: tm_card_2024778541
-open: https://searchplatform.rospatent.gov.ru/trademarks
-wait: 5000
-fill: input[type=text], input:not([type]), textarea => нашдекор
-press: Enter
-wait: 10000
-click: 2021708617
-wait: 6000
-snap: tm_card_bashdekor
+# проверка сайта после переименования в «Наш декор» — 05.11
+http://89.126.192.214:8080/mebel/0f7s1eez/
+http://89.126.192.214:8080/mebel/0f7s1eez/oferta.html
