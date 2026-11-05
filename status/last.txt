@@ -1,11 +1,16 @@
-КОММЕНТАРИИ прочитаны; добавлены по просьбам: {"cities": [], "cars": []}
+ОШИБКА: Google не выдал код: {'error': 'invalid_scope', 'error_description': 'Invalid device flow scope: https://www.googleapis.com/auth/youtube.force-ssl'}
 
 
 
 --- журнал (время Ташкента) ---
-21:38:44 режим comments, событие push
-21:38:45 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-21:38:45 комментарии по каналу не отдались (403 {
-  "error": {
-    "code": 403,
-    "message": "Request had insufficient aut), читал по роликам
+21:40:34 режим login, событие push
+Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/uz_run.py", line 369, in <module>
+    main()
+  File "/home/runner/work/Mikhail/Mikhail/uz_run.py", line 221, in main
+    if not login() or then not in ("publish", "comments"):
+           ^^^^^^^
+  File "/home/runner/work/Mikhail/Mikhail/uz_run.py", line 103, in login
+    raise SystemExit(f"Google не выдал код: {r}")
+SystemExit: Google не выдал код: {'error': 'invalid_scope', 'error_description': 'Invalid device flow scope: https://www.googleapis.com/auth/youtube.force-ssl'}
+

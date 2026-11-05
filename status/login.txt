@@ -1,24 +1,6 @@
-ВХОД ОК: канал «Kim yutadi?» https://www.youtube.com/channel/UC93S31Qkgoz4cFgKBzz-mLA
+ВХОД: Google не выдал код: {'error': 'invalid_scope', 'error_description': 'Invalid device flow scope: https://www.googleapis.com/auth/youtube.force-ssl'}
 
-Название: Kim yutadi?
-Адрес: @kimyutsdi_uz
-Ссылка: https://www.youtube.com/channel/UC93S31Qkgoz4cFgKBzz-mLA
-Страна: — НЕ УКАЗАНА
-Ключевые слова: — нет
-Для детей: None (сам указал: None)
-Фото: https://yt3.ggpht.com/j2tLoAL4x5fvNzHWi3KRNvl0jHgW8CocxBppBuFeYpVPjFXmEHurGEgfg1xMvHE05hqjBWTUeQ=s800-c-k-c0x00ffffff-no-rj
-Шапка: есть
-Подписчики: 0 · роликов: 0
-Описание:
-Kim yutadi? — har kuni sharchalar poygasi! 🏁
-Oʻzbekiston shaharlari va mashinalari bitta poygada: Toshkent, Samarqand, Buxoro, Namangan, Andijon… Cobalt, Gentra, Nexia, Damas, Malibu…
-Har hafta — final va chempion. Sen kimning muxlisisan? Izohlarda yoz! 👇
-
-Кто победит? — гонки шариков каждый день! 🏁
-Города и машины Узбекистана в одной гонке. Каждую неделю — финал и чемпион. За кого болеешь? Пиши в комментариях! 👇
 
 
 --- журнал (время Ташкента) ---
-19:24:14 режим login, событие push
-19:24:15 код MVV-XPC-QSFP, действует 30 мин
-19:26:36 вход сделан: «Kim yutadi?» @kimyutsdi_uz (UC93S31Qkgoz4cFgKBzz-mLA), роликов 0
+21:40:34 режим login, событие push
