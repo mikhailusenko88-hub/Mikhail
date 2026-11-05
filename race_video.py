@@ -142,7 +142,13 @@ class Course:
         self.rnd = rnd
         self.segs, self.pegs, self.spins = [], [], []
         self.tubes, self.tramps, self.marks = [], [], []
-        self.start = [(60 + c * 76 + (38 if r_ % 2 else 0), 50 + r_ * 48) for r_ in range(3) for c in range(7)][:n]
+        if n <= 21:     # как было: 3 ряда по 7
+            self.start = [(60 + c * 76 + (38 if r_ % 2 else 0), 50 + r_ * 48) for r_ in range(3) for c in range(7)][:n]
+        else:           # городов больше 21 (просят в комментариях) — те же 3 ряда, но плотнее
+            cols = math.ceil(n / 3)
+            sp = min(76.0, (CW - 90) / (cols - 0.5))
+            self.start = [(45 + c * sp + (sp / 2 if r_ % 2 else 0), 50 + r_ * 48)
+                          for r_ in range(3) for c in range(cols)][:n]
         self.gate_y = 190
         self.segs.append([0, self.gate_y, CW, self.gate_y, 0.2])   # ворота (индекс 0)
         y = 260.0
