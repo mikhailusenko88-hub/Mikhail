@@ -1,0 +1,41 @@
+ТЕСТ ОК: cities №1 собран за 66 с, 43 МБ (не выложен)
+
+{
+ "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №1",
+ "description": "⏳ Finalgacha 3 kun · До финала 3 дня\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
+ "tags": [
+  "oʻzbekiston",
+  "uzbekistan",
+  "узбекистан",
+  "poyga",
+  "sharchalar poygasi",
+  "гонка шариков",
+  "marble race",
+  "toshkent",
+  "samarqand",
+  "buxoro",
+  "namangan",
+  "andijon",
+  "fargʻona",
+  "города узбекистана",
+  "shaharlar"
+ ]
+}
+
+--- журнал (время Ташкента) ---
+18:14:59 режим test, событие push
+18:14:59 Тема: гонка городов. Подбираю трассу и заезд…
+18:15:04   трасса 1 (bumpy, split, stairs, bumpers, tunnel, spinners, funnel, pegs): победа на 50.5 с, смен лидера 15, финишировали 11, расчёт 5 с
+18:15:08   трасса 2 (spinners, tunnel, funnel, split, hammers, pegs, tramps, bumpers): победа на 52.2 с, смен лидера 4, финишировали 1, расчёт 4 с
+18:15:12   трасса 3 (tramps, spinners, pegs, bumpers, bumpy, stairs, funnel, tunnel): победа на 40.0 с, смен лидера 10, финишировали 4, расчёт 3 с — не подходит
+18:15:12 Рисую трассу…
+18:15:12 Рисую кадры: заезд 57 с + финал 8 с…
+18:15:13   кадр 0/1700, 14 с
+18:15:21   кадр 300/1700, 22 с
+18:15:29   кадр 600/1700, 30 с
+18:15:37   кадр 900/1700, 38 с
+18:15:44   кадр 1200/1700, 45 с
+18:15:52   кадр 1500/1700, 53 с
+18:16:02 Свожу звук…
+18:16:04 Готово за 65 с: победил Buxoro, ролик 64 с
+18:16:04 ролик готов: 64 с, 43 МБ, сборка 65 с; победил Buxoro, топ-3: Buxoro, Toshkent, Andijon
