@@ -1,47 +1,40 @@
-# Проверка доменов — 2026-11-05 09:50 UTC
+# Проверка доменов — 2026-11-05 09:54 UTC
 
 | Домен | Статус | Подробности |
 |---|---|---|
-| baltdekor.ru | свободен |  |
-| dekobox.ru | свободен |  |
-| dekor-na-neve.ru | свободен |  |
-| lavka-dekora.ru | свободен |  |
-| lepota-dekor.ru | свободен |  |
-| masterskaya-sten.ru | свободен |  |
-| novaya-stena.ru | свободен |  |
-| ornamo.ru | свободен |  |
-| parete.ru | свободен |  |
-| petrodekor.ru | свободен |  |
-| stenalab.ru | свободен |  |
-| stensvet.ru | свободен |  |
-| stuko.ru | свободен |  |
-| svetostena.ru | свободен |  |
-| svoya-stena.ru | свободен |  |
-| ten-i-svet.ru | свободен |  |
-| игра-теней.рф (xn----7sbikanm4axw.xn--p1ai) | свободен |  |
-| лавка-декора.рф (xn----7sbabhoh0bec5bya.xn--p1ai) | свободен |  |
-| мастерская-стен.рф (xn----7sbatc1alowicdgh6q.xn--p1ai) | свободен |  |
-| decorama.ru | занят | registrar: DOMAINS-RU; created: 2019-01-18T14:04:23Z; paid-till: 2027-01-18T14:04:23Z |
-| dekorlab.ru | занят | registrar: DOMAINS-RU; created: 2012-08-21T13:06:48Z; paid-till: 2027-08-21T14:06:48Z |
-| deksa.ru | занят | registrar: RU-CENTER-RU; created: 2007-05-13T20:00:00Z; paid-till: 2027-05-13T21:00:00Z |
-| faceta.ru | занят | registrar: RU-CENTER-RU; created: 2025-10-18T09:14:39Z; paid-till: 2027-10-18T09:14:39Z |
-| formia.ru | занят | registrar: DOMAINS-RU; created: 2006-12-11T21:00:00Z; paid-till: 2026-12-11T21:00:00Z |
-| igrateney.ru | занят | registrar: REGRU-RU; created: 2017-06-01T15:31:15Z; paid-till: 2027-06-01T15:31:15Z |
-| lamo.ru | занят | registrar: RU-CENTER-RU; created: 2011-03-23T19:42:29Z; paid-till: 2027-03-23T19:42:29Z |
-| lepota.ru | занят | registrar: RU-CENTER-RU; created: 2006-01-10T21:00:00Z; paid-till: 2027-01-10T21:00:00Z |
-| lumea.ru | занят | registrar: RU-CENTER-RU; created: 2013-01-23T13:04:54Z; paid-till: 2027-01-23T14:04:54Z |
-| lumio.ru | занят | registrar: REGRU-RU; created: 2019-03-26T14:00:32Z; paid-till: 2027-03-26T14:00:32Z |
-| moldo.ru | занят | registrar: RU-CENTER-RU; created: 2026-05-05T16:56:08Z; paid-till: 2027-05-05T16:56:08Z |
-| muralia.ru | занят | registrar: BEGET-RU; created: 2026-03-23T09:02:02Z; paid-till: 2027-03-23T09:02:02Z |
-| profilo.ru | занят | registrar: REGRU-RU; created: 2025-11-11T19:08:31Z; paid-till: 2026-11-11T19:08:31Z |
-| reil.ru | занят | registrar: DOMAINS-RU; created: 2007-05-29T20:00:00Z; paid-till: 2027-05-29T21:00:00Z |
-| relevo.ru | занят | registrar: RU-CENTER-RU; created: 2025-12-03T09:10:17Z; paid-till: 2026-12-03T09:10:17Z |
-| stukko.ru | занят | registrar: REGRU-RU; created: 2016-10-25T15:06:31Z; paid-till: 2027-10-25T15:06:31Z |
-| tekstura.ru | занят | registrar: REGRU-RU; created: 2025-04-16T14:05:01Z; paid-till: 2027-04-16T14:05:01Z |
-| tekto.ru | занят | registrar: RU-CENTER-RU; created: 2006-10-02T20:00:00Z; paid-till: 2027-10-02T21:00:00Z |
-| uzorochie.ru | занят | registrar: RU-CENTER-RU; created: 2026-04-19T17:31:54Z; paid-till: 2027-04-19T17:31:54Z |
-| volumo.ru | занят | registrar: REGRU-RU; created: 2026-05-27T14:06:19Z; paid-till: 2027-05-27T14:06:19Z |
-| wallio.ru | занят | registrar: SELECTEL-RU; created: 2026-06-08T22:18:43Z; paid-till: 2027-06-08T22:18:43Z |
-| walllab.ru | занят | registrar: BEGET-RU; created: 2021-11-14T23:52:09Z; paid-till: 2027-11-14T23:52:09Z |
-| лепота.рф (xn--80ajrnet.xn--p1ai) | занят | registrar: REGRU-RF; created: 2017-12-12T14:30:18Z; paid-till: 2026-12-12T14:30:18Z |
-| узорочье.рф (xn--e1advajp6a3b.xn--p1ai) | занят | registrar: REGRU-RF; created: 2026-09-15T19:11:30Z; paid-till: 2027-09-15T19:11:30Z |
+| anfilada-dekor.ru | свободен |  |
+| oblik-dekor.ru | свободен |  |
+| raumdekor.ru | свободен |  |
+| spazio-dekor.ru | свободен |  |
+| tretye-izmerenie.ru | свободен |  |
+| ubranstvo-dekor.ru | свободен |  |
+| vertikal-dekor.ru | свободен |  |
+| пилястра.рф (xn--80apjohfh6h.xn--p1ai) | свободен |  |
+| простена.рф (xn--80ajycegii.xn--p1ai) | свободен |  |
+| простенок.рф (xn--e1akiccchjj.xn--p1ai) | свободен |  |
+| anfilada.ru | занят | registrar: REGRU-RU; created: 2021-10-26T17:30:23Z; paid-till: 2027-10-26T17:30:23Z |
+| barelef.ru | занят | registrar: RU-CENTER-RU; created: 2023-10-31T14:02:45Z; paid-till: 2027-10-31T14:02:45Z |
+| gornica.ru | занят | registrar: DOMAINS-RU; created: 2026-01-30T14:01:08Z; paid-till: 2027-01-30T14:01:08Z |
+| horomy.ru | занят | registrar: DOMAINS-RU; created: 2005-06-01T20:00:00Z; paid-till: 2027-06-01T21:00:00Z |
+| izmerenie.ru | занят | registrar: RU-CENTER-RU; created: 2024-04-22T09:54:27Z; paid-till: 2027-04-22T09:54:27Z |
+| kapitel.ru | занят | registrar: RU-CENTER-RU; created: 2007-05-28T20:00:00Z; paid-till: 2027-05-28T21:00:00Z |
+| kvadratura.ru | занят | registrar: RU-CENTER-RU; created: 2005-12-04T21:00:00Z; paid-till: 2026-12-04T21:00:00Z |
+| oblik.ru | занят | registrar: RU-CENTER-RU; created: 1999-04-02T08:38:48Z; paid-till: 2027-04-30T21:00:00Z |
+| obstanovka.ru | занят | registrar: REGRU-RU; created: 2003-06-23T20:00:00Z; paid-till: 2027-06-24T21:00:00Z |
+| pilyastra.ru | занят | registrar: REGRU-RU; created: 2016-10-20T14:06:30Z; paid-till: 2026-10-20T14:06:30Z |
+| portik.ru | занят | registrar: DOMAINS-RU; created: 2006-01-10T21:00:00Z; paid-till: 2027-01-10T21:00:00Z |
+| proporciya.ru | занят | registrar: RU-CENTER-RU; created: 2007-09-08T20:00:00Z; paid-till: 2027-09-08T21:00:00Z |
+| prostena.ru | занят | registrar: REGRU-RU; created: 2025-04-22T14:09:46Z; paid-till: 2027-04-22T14:09:46Z |
+| prostenok.ru | занят | registrar: REGRU-RU; created: 2026-05-24T21:13:46Z; paid-till: 2027-05-24T21:13:46Z |
+| raum.ru | занят | registrar: TIMEWEB-RU; created: 2018-01-30T14:14:53Z; paid-till: 2027-01-30T14:14:53Z |
+| spazio.ru | занят | registrar: RU-CENTER-RU; created: 2000-05-03T15:49:31Z; paid-till: 2027-05-31T21:00:00Z |
+| spaziodecor.ru | занят | registrar: RU-CENTER-RU; created: 2011-11-10T06:35:58Z; paid-till: 2027-11-10T07:35:58Z |
+| ubranstvo.ru | занят | registrar: REGRU-RU; created: 2020-06-30T14:09:49Z; paid-till: 2027-06-30T14:09:49Z |
+| zodchiy.ru | занят | registrar: RU-CENTER-RU; created: 1997-12-26T08:33:00Z; paid-till: 2026-12-31T21:00:00Z |
+| анфилада.рф (xn--80aaapssm0d.xn--p1ai) | занят | registrar: REGRU-RF; created: 2012-01-13T13:24:48Z; paid-till: 2027-01-13T14:24:48Z |
+| барельеф.рф (xn--80abna3a2a5a3d.xn--p1ai) | занят | registrar: REGRU-RF; created: 2017-12-12T14:09:00Z; paid-till: 2026-12-12T14:09:00Z |
+| горница.рф (xn--80afptem8b.xn--p1ai) | занят | registrar: SPRINTNAMES-RF; created: 2009-11-25T09:57:53Z; paid-till: 2027-11-25T09:57:53Z |
+| пропорция.рф (xn--h1alacbed2c0e.xn--p1ai) | занят | registrar: DOMAINS-RF; created: 2010-11-11T10:04:58Z; paid-till: 2026-11-11T10:04:58Z |
+| третье-измерение.рф (xn----itbabaalhd1bn1ahtc4n.xn--p1ai) | занят | registrar: REGRU-RF; created: 2026-05-28T13:24:09Z; paid-till: 2027-05-28T13:24:09Z |
+| убранство.рф (xn--80abe7bgijid.xn--p1ai) | занят | registrar: RUCENTER-RF; created: 2019-12-13T14:11:39Z; paid-till: 2026-12-13T14:11:39Z |
+| хоромы.рф (xn--l1adahx4b.xn--p1ai) | занят | registrar: REGRU-RF; created: 2015-08-26T14:05:39Z; paid-till: 2027-08-26T14:05:39Z |
