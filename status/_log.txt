@@ -1,43 +1,13 @@
-2026-11-05 07:22 UTC
-200 https://www.youtube.com/watch?v=tJTxK3oLLN8&hl=ru
-200 thumb tJTxK3oLLN8/oar2.jpg 164370 B
-200 thumb tJTxK3oLLN8/hqdefault.jpg 11502 B
-200 https://www.youtube.com/watch?v=OzpFhsHuE7w&hl=ru
-200 thumb OzpFhsHuE7w/oar2.jpg 199660 B
-200 thumb OzpFhsHuE7w/hqdefault.jpg 13266 B
-200 https://www.youtube.com/watch?v=_6U1_Y9HNGQ&hl=ru
-200 thumb _6U1_Y9HNGQ/oar2.jpg 186586 B
-200 thumb _6U1_Y9HNGQ/hqdefault.jpg 12532 B
-200 https://www.youtube.com/watch?v=eKmQE1Udpew&hl=ru
-200 thumb eKmQE1Udpew/oar2.jpg 217237 B
-200 thumb eKmQE1Udpew/hqdefault.jpg 12246 B
-200 https://www.youtube.com/watch?v=BzF_6X1Zs3s&hl=ru
-200 thumb BzF_6X1Zs3s/oar2.jpg 192437 B
-200 thumb BzF_6X1Zs3s/hqdefault.jpg 13009 B
-200 https://www.youtube.com/watch?v=HtJ4juV0G9k&hl=ru
-200 thumb HtJ4juV0G9k/oar2.jpg 119187 B
-200 thumb HtJ4juV0G9k/hqdefault.jpg 12651 B
-200 https://www.youtube.com/watch?v=2NGt4CXKhb8&hl=ru
-200 thumb 2NGt4CXKhb8/oar2.jpg 127583 B
-200 thumb 2NGt4CXKhb8/hqdefault.jpg 12950 B
-200 https://www.youtube.com/watch?v=d55sUItVC24&hl=ru
-200 thumb d55sUItVC24/oar2.jpg 127045 B
-200 thumb d55sUItVC24/hqdefault.jpg 13088 B
-200 https://www.youtube.com/watch?v=E4LLR-bMI08&hl=ru
-200 thumb E4LLR-bMI08/oar2.jpg 119189 B
-200 thumb E4LLR-bMI08/hqdefault.jpg 13135 B
-200 https://www.youtube.com/watch?v=NxErJ5KTOos&hl=ru
-200 thumb NxErJ5KTOos/oar2.jpg 125981 B
-200 thumb NxErJ5KTOos/hqdefault.jpg 9172 B
-200 https://www.youtube.com/watch?v=GQSZJ4qQ5so&hl=ru
-200 thumb GQSZJ4qQ5so/oar2.jpg 138608 B
-200 thumb GQSZJ4qQ5so/hqdefault.jpg 10607 B
-200 https://www.youtube.com/watch?v=7YIpYrIIfCA&hl=ru
-200 thumb 7YIpYrIIfCA/oar2.jpg 136934 B
-200 thumb 7YIpYrIIfCA/hqdefault.jpg 9887 B
-200 https://www.youtube.com/watch?v=aQp0xp3PMGw&hl=ru
-200 thumb aQp0xp3PMGw/oar2.jpg 295943 B
-200 thumb aQp0xp3PMGw/hqdefault.jpg 24248 B
-200 https://www.youtube.com/watch?v=QXtBK4AcqzA&hl=ru
-200 thumb QXtBK4AcqzA/oar2.jpg 207081 B
-200 thumb QXtBK4AcqzA/hqdefault.jpg 12312 B
+2026-11-05 07:28 UTC
+404 https://www.youtube.com/@zhivye_stroki
+404 https://www.youtube.com/@zhivye_stroki/shorts
+404 https://www.youtube.com/@zhivyestroki
+404 https://www.youtube.com/@zhivyestroki/shorts
+404 https://www.youtube.com/@LivingLinesTV
+404 https://www.youtube.com/@LivingLinesTV/shorts
+404 https://www.youtube.com/@LivingLines
+404 https://www.youtube.com/@LivingLines/shorts
+404 https://www.youtube.com/@zhivye.stroki
+404 https://www.youtube.com/@zhivye.stroki/shorts
+404 https://www.youtube.com/@LivingLinesQuotes
+404 https://www.youtube.com/@LivingLinesQuotes/shorts
