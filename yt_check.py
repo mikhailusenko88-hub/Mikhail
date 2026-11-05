@@ -241,7 +241,10 @@ def main():
         (OUT / "videos.md").write_text("\n".join(md) + "\n", encoding="utf-8")
 
     if infos:
-        data = [video_info(v) for v in infos]
+        data = []
+        for v in infos:
+            data.append(video_info(v))
+            time.sleep(4)
         (OUT / "info.json").write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
         md = ["# Подробности роликов", f"Проверено: {now}", ""]
         for d in data:
