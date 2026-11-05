@@ -8,7 +8,13 @@ on:
   push:
     branches: [uz-race]
     paths: [request.txt]
-  workflow_dispatch:
+  workflow_dispatch:          # кнопка «Run workflow» — ещё один ролик прямо сейчас
+    inputs:
+      league:
+        description: "Какая гонка: auto (по очереди) / cities (города) / cars (машины)"
+        type: choice
+        options: [auto, cities, cars]
+        default: auto
 
 permissions:
   contents: write
@@ -36,6 +42,7 @@ jobs:
           FLAGBALL_YT: ${{ secrets.FLAGBALL_YT }}
           UZ_YT: ${{ secrets.UZ_YT }}
           EVENT: ${{ github.event_name }}
+          IN_LEAGUE: ${{ inputs.league }}
         run: python uz_run.py
       - name: Сохранить таблицу и отчёт
         if: always()
