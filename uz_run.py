@@ -197,7 +197,7 @@ def main():
     no = ls.get("no", 0) + 1
     ent, final = None, False
     want_final = req["final"] == "yes" or (day.weekday() == 6 and slot == LAST_SLOT[league])
-    if want_final and ls.get("final_season") != sid and (ls.get("season_races", 0) >= 3 or req["final"] == "yes"):
+    if want_final and ls.get("final_season") != sid and (ls.get("season_races", 0) >= 2 or req["final"] == "yes"):
         allx = RL.entries(league)
         by_key = {e["key"]: e for e in allx}
         best = [k for k, _ in sorted(ls.get("points", {}).items(), key=lambda kv: -kv[1]) if k in by_key][:8]
@@ -226,8 +226,6 @@ def main():
         for k, ts in enumerate((2.5, dur * 0.45, dur - 9.0, dur - 3.0, dur - 0.5)):
             subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-ss", f"{max(0, ts):.2f}", "-i", str(out),
                             "-frames:v", "1", "-vf", "scale=540:-1", f"status/test/{league}_{k + 1}.jpg"])
-        if size < 45:
-            shutil.copy(out, f"status/test/{league}.mp4")
         write_status(f"ТЕСТ ОК: {league} №{no}{' ФИНАЛ' if final else ''} собран за {time.time() - t0:.0f} с, "
                      f"{size:.0f} МБ (не выложен)", json.dumps(meta, ensure_ascii=False, indent=1))
         return
