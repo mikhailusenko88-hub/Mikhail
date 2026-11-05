@@ -9,6 +9,8 @@
 #   snap: <имя>           — сохранить текст текущей страницы в status/<имя>.txt
 #   fill: <css> => <текст> — вписать текст в первое видимое поле по CSS-селектору
 #   press: <клавиша>      — нажать клавишу (Enter и т.п.)
+#   size: <ширина>x<высота> — размер окна (390x844 — как телефон)
+#   shot: <имя>           — снимок всей страницы в status/<имя>.png
 import re, asyncio, datetime
 from urllib.parse import urlparse
 from playwright.async_api import async_playwright
@@ -95,6 +97,15 @@ async def main():
                 if cmd == 'press':
                     await page.keyboard.press(arg); await page.wait_for_timeout(2500)
                     LOG.append(f'press {arg}: ok'); continue
+                if cmd == 'size':
+                    w, h = [int(x) for x in arg.lower().split('x')]
+                    await page.set_viewport_size({'width': w, 'height': h})
+                    LOG.append(f'size {w}x{h}: ok'); continue
+                if cmd == 'shot':
+                    await page.evaluate('window.scrollTo(0,0)'); await page.wait_for_timeout(800)
+                    await page.screenshot(path=f'status/{arg}.png', full_page=True)
+                    index.append(f'{arg}.png  {page.url}')
+                    LOG.append(f'shot {arg}: ok'); continue
                 if cmd == 'wait':
                     await page.wait_for_timeout(int(arg)); continue
                 if cmd == 'snap':

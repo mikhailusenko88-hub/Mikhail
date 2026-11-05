@@ -1,3 +1,12 @@
-# проверка сайта после переименования в «Наш декор» — 05.11
-http://89.126.192.214:8080/mebel/0f7s1eez/
-http://89.126.192.214:8080/mebel/0f7s1eez/oferta.html
+# снимки сайта «Наш декор» — 05.11
+open: http://89.126.192.214:8080/mebel/0f7s1eez/
+wait: 6000
+shot: site_desktop
+size: 390x844
+open: http://89.126.192.214:8080/mebel/0f7s1eez/
+wait: 6000
+shot: site_phone
+size: 1366x900
+open: http://89.126.192.214:8080/mebel/0f7s1eez/oferta.html
+wait: 3000
+shot: oferta_desktop
