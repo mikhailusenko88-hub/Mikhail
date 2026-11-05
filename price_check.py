@@ -7,6 +7,8 @@
 #   type: <текст>         — набрать текст в поле с фокусом
 #   wait: <мс>            — подождать
 #   snap: <имя>           — сохранить текст текущей страницы в status/<имя>.txt
+#   fill: <css> => <текст> — вписать текст в первое видимое поле по CSS-селектору
+#   press: <клавиша>      — нажать клавишу (Enter и т.п.)
 import re, asyncio, datetime
 from urllib.parse import urlparse
 from playwright.async_api import async_playwright
@@ -80,6 +82,19 @@ async def main():
                 if cmd == 'type':
                     await page.keyboard.type(arg, delay=60); await page.wait_for_timeout(2500)
                     LOG.append(f'type «{arg}»: ok'); continue
+                if cmd == 'fill':
+                    css, _, txt = arg.partition('=>')
+                    loc = page.locator(css.strip())
+                    n = await loc.count(); done = 'НЕ НАЙДЕНО'
+                    for i in range(min(n, 20)):
+                        el = loc.nth(i)
+                        if await el.is_visible():
+                            await el.click(timeout=5000); await el.fill(txt.strip(), timeout=5000); done = f'ok ({i+1}/{n})'; break
+                    await page.wait_for_timeout(1500)
+                    LOG.append(f'fill «{css.strip()}»: {done}'); continue
+                if cmd == 'press':
+                    await page.keyboard.press(arg); await page.wait_for_timeout(2500)
+                    LOG.append(f'press {arg}: ok'); continue
                 if cmd == 'wait':
                     await page.wait_for_timeout(int(arg)); continue
                 if cmd == 'snap':
