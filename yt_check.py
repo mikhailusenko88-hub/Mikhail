@@ -191,6 +191,8 @@ def video_info(vid):
             m = re.search(r'"accessibilityText":"([^"]*)"', html[i:i + 6000])
             if m:
                 out["likes_text"] = m.group(1)[:200]
+        out["like_snips"] = re.findall(r'"[^"]{0,90}(?:[Нн]равится|отмет\w* «Нравится»|like this video)[^"]{0,90}"', html)[:4]
+        out["html_len"] = len(html)
         m = re.search(r'"keywords":\[(.*?)\]', html)
         if m:
             out["keywords"] = m.group(1)[:600]
