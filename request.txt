@@ -1,6 +1,6 @@
-# 2026-11-05 — вход в канал Kim yutadi?
-mode: login      # test — только собрать | publish — собрать и выложить | login — вход в канал (код google.com/device)
-league: auto     # auto | cities | cars
+# 2026-11-05 — проверка машин после правок
+mode: test       # test — только собрать | publish — собрать и выложить | login — вход (после входа сразу выкладка) | check — что стоит на канале
+league: cars     # auto | cities | cars
 final: auto      # auto | yes
 date: auto
 slot: auto

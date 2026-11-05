@@ -36,6 +36,29 @@ def channel_info(access):
             "videos": int(it.get("statistics", {}).get("videoCount", 0))}
 
 
+def channel_report(access):
+    """Что сейчас стоит на канале: название, адрес, описание, страна, ключевые слова, «для детей», картинки."""
+    r = requests.get(f"{API}/channels", params={"part": "snippet,brandingSettings,status,statistics", "mine": "true"},
+                     headers={"Authorization": f"Bearer {access}"}, timeout=30)
+    items = r.json().get("items", []) if r.status_code == 200 else []
+    if not items:
+        return f"канал не прочитался: {r.status_code} {r.text[:200]}"
+    it = items[0]
+    sn, br, st = it.get("snippet", {}), it.get("brandingSettings", {}), it.get("status", {})
+    ch = br.get("channel", {})
+    th = (sn.get("thumbnails") or {}).get("high", {}).get("url", "")
+    lines = [f"Название: {sn.get('title')}", f"Адрес: {sn.get('customUrl') or '— (ещё нет)'}",
+             f"Ссылка: https://www.youtube.com/channel/{it['id']}",
+             f"Страна: {sn.get('country') or ch.get('country') or '— НЕ УКАЗАНА'}",
+             f"Ключевые слова: {ch.get('keywords') or '— нет'}",
+             f"Для детей: {st.get('madeForKids')} (сам указал: {st.get('selfDeclaredMadeForKids')})",
+             f"Фото: {th or '— нет'}",
+             f"Шапка: {'есть' if (br.get('image') or {}).get('bannerExternalUrl') else '— нет'}",
+             f"Подписчики: {it.get('statistics', {}).get('subscriberCount')} · роликов: {it.get('statistics', {}).get('videoCount')}",
+             "Описание:", sn.get("description") or "— пусто"]
+    return "\n".join(lines)
+
+
 def channel_title(access):
     c = channel_info(access)
     return c["title"], c["id"]
@@ -58,6 +81,7 @@ class YT:
         if not self.k:
             raise SystemExit("вход в канал ещё не сделан (mode: login)")
         self.tok, self.t_tok = None, 0
+        self.handle = ""
 
     def h(self, extra=None):
         if not self.tok or time.time() - self.t_tok > 2700:
@@ -77,6 +101,7 @@ class YT:
         why = wrong_channel(c, self.k.get("channel_id"))
         if why:
             raise SystemExit(why + " — выкладку отменил")
+        self.handle = c["handle"]
         return f"{c['title']} {c['handle']} ({c['id']})"
 
     def upload(self, path, meta):

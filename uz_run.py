@@ -8,7 +8,8 @@
 таблица заново, чемпионы недель сохраняются навсегда (★ у шарика).
 
 request.txt (ручной запуск — поменять и запушить):
-  mode:   test (собрать, не выкладывать) | publish (собрать и выложить) | login (вход в канал кодом)
+  mode:   test (собрать, не выкладывать) | publish (собрать и выложить) | login (вход в канал кодом,
+          после входа сразу выкладывается гонка текущего слота) | check (что стоит на канале → status/channel.txt)
   league: auto | cities | cars
   final:  auto | yes
 Отчёт всегда в status/last.txt (логи Actions из облака не видно).
@@ -127,9 +128,10 @@ def login():
             raise SystemExit(why)
         ytkey.seal(t["refresh_token"], cid, sec, title, ch_id)
         log(f"вход сделан: «{title}» {c['handle']} ({ch_id}), роликов {c['videos']}")
-        write_status(f"ВХОД ОК: канал «{title}» https://www.youtube.com/channel/{ch_id}", name="login.txt")
+        write_status(f"ВХОД ОК: канал «{title}» https://www.youtube.com/channel/{ch_id}",
+                     yt.channel_report(t["access_token"]), name="login.txt")
         git_push(f"ВХОД ОК: {title}", ["status/login.txt", "login"])
-        return
+        return True
     write_status("ВХОД: код истёк, никто не ввёл — запусти вход ещё раз", name="login.txt")
     raise SystemExit("код истёк")
 
@@ -164,7 +166,16 @@ def main():
     mode = req["mode"]
     log(f"режим {mode}, событие {os.environ.get('EVENT')}")
     if mode == "login":
-        return login()
+        if not login() or req.get("then", "publish") != "publish":
+            return
+        log("вход сделан — сразу выкладываю первую гонку")
+        mode = req["mode"] = "publish"
+    if mode == "check":          # что сейчас стоит на канале (описание, страна, ключевые слова…)
+        import yt as ytmod
+        y_ = ytmod.YT()
+        y_.h()
+        write_status("КАНАЛ: " + y_.channel(), ytmod.channel_report(y_.tok), name="channel.txt")
+        return
 
     now = dt.datetime.now(TASH)
     d, slot = auto_slot(now)
@@ -213,7 +224,7 @@ def main():
     WORK.mkdir(parents=True, exist_ok=True)
     out = WORK / f"{d}_{slot}_{league}{no}.mp4"
     info = rv.build_race(out, race_no=no, points=ls.get("points", {}), log=log, music_dir=BASE / "music",
-                         handle=HANDLE, league=league, entries=ent, final=final,
+                         handle=(yt.handle if yt and yt.handle else HANDLE), league=league, entries=ent, final=final,
                          season_races=None if final else ls.get("season_races", 0) + 1,
                          champions=ls.get("champions", []), season_id=sid, final_in=final_in,
                          seed=random.SystemRandom().randrange(100000))

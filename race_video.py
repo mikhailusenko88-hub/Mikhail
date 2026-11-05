@@ -1320,7 +1320,7 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
             n = 3 - int(t / 0.4)
             text_c(d, OX + CW / 2, 640, str(n), 230, acc, 12)
             if final:
-                text_c(d, OX + CW / 2, 900, "ФИНАЛ", 64, acc, 7)
+                text_c(d, OX + CW / 2, 900, "FINAL", 64, acc, 7)
                 s_ = "ҰЛДАР vs ҚЫЗДАР" if LG.get("teams") else f"TOP-{N}"
                 text_c(d, OX + CW / 2, 976, s_, fit_size(s_, 56, CW - 40), (255, 255, 255), 7)
             else:
