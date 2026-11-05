@@ -5,12 +5,25 @@
  "title": "Flagball Arena",
  "description": "FLAGBALL ARENA — the daily marble race of all 193 countries of the world.\n\n3 new races every day. 32 countries enter the rings, 7 elimination stages, only 1 winner.\nEvery race gives points to the mont",
  "header": [
-  "1 видео"
+  "2 видео"
  ],
  "alerts": [],
- "checked": "2026-11-05 07:30 UTC",
+ "checked": "2026-11-05 13:45 UTC",
  "shorts_status": 200,
  "shorts": [],
- "rss_status": 404,
- "rss": []
+ "rss_status": 200,
+ "rss": [
+  {
+   "id": "pZNdHyeOSzo",
+   "published": "2026-11-05T09:05:12+00:00",
+   "title": "Which Countries Survive? 🌍 Marble Elimination · Round 1 Heat 2/7",
+   "views": 10
+  },
+  {
+   "id": "jkju-LY3PpU",
+   "published": "2026-11-04T18:14:51+00:00",
+   "title": "32 Countries Marble Race 🌍 Elimination #1 – Who Wins?",
+   "views": 76
+  }
+ ]
 }
