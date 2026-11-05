@@ -221,6 +221,18 @@ def main():
             return
         log(f"вход сделан — дальше: {then}")
         mode = req["mode"] = then
+    if mode == "probe":          # проверка чтения комментариев на чужом/старом ролике: probe: VIDEOID
+        import comments_pub
+        import uz_places as P
+        from youtube_comment_downloader import SORT_BY_RECENT, YoutubeCommentDownloader
+        got = []
+        for n, c in enumerate(YoutubeCommentDownloader().get_comments_from_url(
+                f"https://www.youtube.com/watch?v={req.get('probe')}", sort_by=SORT_BY_RECENT)):
+            if n >= 20:
+                break
+            got.append(f"- {c.get('text', '')[:80]} → города {P.find(c.get('text', ''), 'cities')}")
+        write_status(f"ПРОБА комментариев {req.get('probe')}: прочитано {len(got)}", "\n".join(got))
+        return
     if mode == "comments":       # только прочитать комментарии и добавить просьбы (без ролика)
         import yt as ytmod
         y_ = ytmod.YT()

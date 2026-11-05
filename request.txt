@@ -1,5 +1,6 @@
-# 2026-11-05 19:55 МСК — проверка: чтение комментариев открытым способом
-mode: comments   # test | publish | login | check | comments
+# 2026-11-05 19:58 МСК — проба чтения комментариев на ролике Білесің бе? №9
+mode: probe      # test | publish | login | check | comments | probe
+probe: tJTxK3oLLN8
 then: publish    # после входа: publish — выложить гонку | comments — прочитать комментарии | no
 extra: no        # yes — ещё один ролик сейчас, сверх расписания
 league: auto     # auto | cities | cars
