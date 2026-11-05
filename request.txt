@@ -1,15 +1,7 @@
-# проверка 2026-11-05 07:34 UTC (меняй эту строку, чтобы запустить заново)
-info:tJTxK3oLLN8
-info:OzpFhsHuE7w
-info:_6U1_Y9HNGQ
-info:eKmQE1Udpew
-info:BzF_6X1Zs3s
-info:HtJ4juV0G9k
-info:2NGt4CXKhb8
-info:d55sUItVC24
-info:E4LLR-bMI08
-info:NxErJ5KTOos
-info:GQSZJ4qQ5so
-info:7YIpYrIIfCA
-info:aQp0xp3PMGw
-info:QXtBK4AcqzA
+# проверка 2026-11-05 07:31 UTC — свободны ли адреса для канала цитат
+@zhivye_stroki
+@zhivyestroki
+@LivingLinesTV
+@LivingLines
+@zhivye.stroki
+@LivingLinesQuotes
