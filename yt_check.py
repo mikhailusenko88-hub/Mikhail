@@ -176,7 +176,7 @@ def video_info(vid):
     st, html = get(f"https://www.youtube.com/watch?v={vid}&hl=ru")
     out = {"id": vid, "status": st}
     if html:
-        for key in ("title", "shortDescription", "lengthSeconds", "viewCount", "ownerChannelName"):
+        for key in ("title", "shortDescription", "lengthSeconds", "viewCount", "ownerChannelName", "publishDate", "uploadDate"):
             m = re.search(r'"%s":"((?:[^"\\]|\\.)*)"' % key, html)
             if m:
                 try:
@@ -246,7 +246,7 @@ def main():
         md = ["# Подробности роликов", f"Проверено: {now}", ""]
         for d in data:
             md.append(f"## {d.get('title', '?')} · {d['id']}")
-            md.append(f"- HTTP {d['status']} · {d.get('lengthSeconds', '?')} с · {d.get('viewCount', '?')} просм. · "
+            md.append(f"- HTTP {d['status']} · опубликован {d.get('publishDate', '?')} · {d.get('lengthSeconds', '?')} с · {d.get('viewCount', '?')} просм. · "
                       f"канал: {d.get('ownerChannelName', '?')} · обложки: {', '.join(d.get('thumbs', [])) or 'нет'}")
             if d.get("shortDescription"):
                 md.append("- Описание: " + d["shortDescription"].replace("\n", " / ")[:1200])
