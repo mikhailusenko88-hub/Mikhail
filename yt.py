@@ -82,6 +82,7 @@ class YT:
             raise SystemExit("вход в канал ещё не сделан (mode: login)")
         self.tok, self.t_tok = None, 0
         self.handle = ""
+        self.retag = None
 
     def h(self, extra=None):
         if not self.tok or time.time() - self.t_tok > 2700:
@@ -105,18 +106,34 @@ class YT:
         return f"{c['title']} {c['handle']} ({c['id']})"
 
     def upload(self, path, meta):
-        body = {
-            "snippet": {"title": meta["title"][:100], "description": meta["description"][:4900],
-                        "tags": meta.get("tags", [])[:30], "categoryId": "24", "defaultLanguage": "uz",
-                        "defaultAudioLanguage": "zxx"},
-            "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False, "embeddable": True},
-        }
+        # теги — без ʻ и спецзнаков (YouTube на них отвечает INVALID_REQUEST_METADATA), всего не больше 450 знаков
+        tags, n = [], 0
+        for t in meta.get("tags", []):
+            t = t.replace("ʻ", "").replace("'", "").replace("<", "").replace(">", "").strip()
+            if t and n + len(t) + 3 <= 450:
+                tags.append(t)
+                n += len(t) + 3
+        title = meta["title"].replace("<", "").replace(">", "")[:100]
+        desc = meta["description"].replace("<", "").replace(">", "")[:4900]
+        variants = [
+            {"title": title, "description": desc, "tags": tags, "categoryId": "24", "defaultLanguage": "uz"},
+            {"title": title, "description": desc, "categoryId": "24"},          # запасной: без тегов и языка
+        ]
         size = os.path.getsize(path)
-        r = requests.post(f"{UP}/videos", params={"uploadType": "resumable", "part": "snippet,status"},
-                          headers=self.h({"Content-Type": "application/json; charset=UTF-8",
-                                          "X-Upload-Content-Type": "video/mp4",
-                                          "X-Upload-Content-Length": str(size)}),
-                          data=json.dumps(body), timeout=60)
+        for k, sn in enumerate(variants):
+            body = {"snippet": sn,
+                    "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False, "embeddable": True}}
+            r = requests.post(f"{UP}/videos", params={"uploadType": "resumable", "part": "snippet,status"},
+                              headers=self.h({"Content-Type": "application/json; charset=UTF-8",
+                                              "X-Upload-Content-Type": "video/mp4",
+                                              "X-Upload-Content-Length": str(size)}),
+                              data=json.dumps(body), timeout=60)
+            if r.status_code == 200:
+                if k:
+                    print("загрузка: запасной вариант (без тегов)", flush=True)
+                    self.retag = tags
+                break
+            print(f"YouTube не принял описание (вариант {k + 1}): {r.status_code} {r.text[:300]}", flush=True)
         if r.status_code != 200:
             raise SystemExit(f"YouTube не начал загрузку: {r.status_code} {r.text[:500]}")
         url = r.headers["Location"]
