@@ -568,7 +568,7 @@ async function bakeTemplate(T, R, o) {
 // ---------- загрузка: данные + шерсть + свет (в prepare, до картинки) ----------
 H6.need = {};
 H6.prepare = async function (T3, R, names, opts) {
-  THREE = T3; if (!R) return false; const list = (names || Object.keys(NAMES)).filter(n => NAMES[n]); let ok = true;
+  THREE = T3; if (!R) return false; H6._R = R; H6._opts = opts; const list = (names || Object.keys(NAMES)).filter(n => NAMES[n]); let ok = true;
   for (const n of list) { if (H6.ready[n]) continue;
     if (!H6.need[n]) H6.need[n] = (async () => { const T = await buildTemplate(n); await bakeTemplate(T, R, opts); H6.T[n] = T; H6.ready[n] = true; return T; })().catch(e => { hlog(n, 'не загрузился:', e && e.message); H6.need[n] = null; ok = false; });
     await H6.need[n]; }
@@ -576,7 +576,9 @@ H6.prepare = async function (T3, R, names, opts) {
   try { const rc = global.MK3D && MK3D.rigs && MK3D.rigs(); if (rc) for (const k in rc) { const r = rc[k]; const w = r && H6.whoIs(r.spec); if (r && w && H6.ready[w] && !r.h6) { r.root.visible = false; if (r.root.parent) r.root.parent.remove(r.root); delete rc[k]; } } } catch (e) {}
   return ok;
 };
-H6.lost = function () { for (const k in H6.ready) { H6.ready[k] = false; H6.need[k] = null; delete H6.T[k]; } };
+H6.lost = function () { const was = Object.keys(H6.ready).filter(k => H6.ready[k]); for (const k in H6.ready) { H6.ready[k] = false; H6.need[k] = null; delete H6.T[k]; }
+  // видеокарту вернули (приложение сворачивали, экран гас) — шерсть и свет растим заново сами, иначе до конца серии были бы старые Пик и Рон
+  if (was.length && H6._R) setTimeout(() => { H6.prepare(THREE, H6._R, was, H6._opts).then(ok => hlog('видеокарта вернулась — герои снова готовы:', was.join(', '), ok ? '' : '(не все)')).catch(e => hlog('после видеокарты:', e && e.message)); }, 300); };
 
 // ---------- герой в сцене ----------
 H6.attach = function (T3, rig) {
@@ -633,13 +635,17 @@ function camFrame(I, R, cam) {
   if (sun) { U.uSunD.value.copy(sun.position).sub(sun.target.position).normalize(); U.uSunC.value.setRGB(sun.color.r, sun.color.g, sun.color.b).multiplyScalar(sun.intensity * K.sun); }
   // ключевой и заливной — как в студии, от камеры; сила — от неба места
   let sk = 1, skyC = new THREE.Color(1, 1, 1); if (hemi) { const env = (L.envI || 0) * .8; skyC.setRGB(hemi.color.r * hemi.intensity + env, hemi.color.g * hemi.intensity + env, hemi.color.b * hemi.intensity + env); sk = (skyC.r + skyC.g + skyC.b) / 3; }
-  U.uKeyD.value.copy(toCam).addScaledVector(camR, -.75).addScaledVector(camU, .8).normalize(); U.uKeyC.value.copy(I.T.bakeU.uKeyC.value).multiplyScalar(K.key * sk);
-  U.uFillD.value.copy(toCam).addScaledVector(camR, .9).addScaledVector(camU, .1).normalize(); U.uFillC.value.copy(I.T.bakeU.uFillC.value).multiplyScalar(K.fill * sk);
+  const skL = Math.max(sk, K.skMin != null ? K.skMin : .72);   // вечером небо тусклое — но мордочки героев не темнеют (ключевой и заливной — как днём)
+  U.uKeyD.value.copy(toCam).addScaledVector(camR, -.75).addScaledVector(camU, .8).normalize(); U.uKeyC.value.copy(I.T.bakeU.uKeyC.value).multiplyScalar(K.key * skL);
+  U.uFillD.value.copy(toCam).addScaledVector(camR, .9).addScaledVector(camU, .1).normalize(); U.uFillC.value.copy(I.T.bakeU.uFillC.value).multiplyScalar(K.fill * skL);
   if (rim && rim.visible !== false) { U.uRimD.value.copy(rim.position).sub(rim.target.position).normalize(); U.uRimC.value.setRGB(rim.color.r, rim.color.g, rim.color.b).multiplyScalar(rim.intensity * K.rim); }
   else { U.uRimD.value.copy(toCam).negate().addScaledVector(camU, .9).normalize(); U.uRimC.value.copy(I.T.bakeU.uRimC.value).multiplyScalar(K.rim0 * sk); }
   U.uEyeD.value.copy(toCam).addScaledVector(camU, .35).addScaledVector(camR, -.25).normalize(); U.uEyeC.value.copy(I.T.bakeU.uEyeC.value).multiplyScalar(K.eye);
   // небо: прошито под небо образца — пересчитываем под небо места
-  const s0 = I.T.L.sky; U.uSkyK.value.set(skyC.r / s0.r, skyC.g / s0.g, skyC.b / s0.b).multiplyScalar(K.sky);
+  const s0 = I.T.L.sky; let kr = skyC.r / s0.r, kg = skyC.g / s0.g, kb = skyC.b / s0.b; const km = (kr + kg + kb) / 3;
+  { const t = Math.min(1, Math.max(0, (1.3 - km) / .5)), kd = 1 - .5 * t, kf = Math.max(km, K.skyMin != null ? K.skyMin : 1.15) / Math.max(km, 1e-3); // вечер: небо тусклое и синее — на героях синевы вполовину, свет неба не тусклее ~80% дневного (днём и ночью без изменений)
+    kr = (km + (kr - km) * kd) * kf; kg = (km + (kg - km) * kd) * kf; kb = (km + (kb - km) * kd) * kf; }
+  U.uSkyK.value.set(kr, kg, kb).multiplyScalar(K.sky);
   U.uSky.value.copy(skyC).multiplyScalar(K.sky * .45); if (hemi) U.uGnd.value.setRGB(hemi.groundColor.r, hemi.groundColor.g, hemi.groundColor.b).multiplyScalar(hemi.intensity * .3);
   const f = L.fog; if (f && f.isFog) { U.uMistS.value = f.near; U.uMistD.value = Math.max(1e-3, f.far - f.near); U.uMistK.value = 1; U.uMistC.value.copy(f.color); } else { U.uMistK.value = 0; U.uMistD.value = 0; }
   U.uExpo.value = K.expo;

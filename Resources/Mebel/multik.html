@@ -437,9 +437,11 @@ async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уж�
   const lib = Lib.data, ep = e.script; const lines = MK.collectLines(ep, lib);
   const ac = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
   const audio = {}, bufs = {}; let i = 0;
+  if (window.MK3D && !MK3D.THREE) await new Promise(res => { const t = setTimeout(res, 10000); window.addEventListener('mk3d', () => { clearTimeout(t); res(); }, { once: true }); }); // после перезапуска страницы 3D поднимается чуть позже — ждём, иначе герои были бы старые
   if (window.MKBarsik && window.MK3D && MK3D.hq) { try { await MKBarsik.load(); } catch (err) {} }
   if (window.BARSHeroes && window.MK3D && MK3D.hq && MK3D.THREE) { try { const want = BARSHeroes.wantFor(lib); /* БАРС: шерсть и свет Пика и Рона — один раз */
-    if (want.length) { BARSHeroes.onProgress = (n, k) => onStep && onStep('Герои «как в кино»', k, n === 'pik' ? 'Пик: свет' : 'Рон: свет'); onStep && onStep('Герои «как в кино»', 0, 'шерсть растёт'); await BARSHeroes.prepare(MK3D.THREE, MK3D.renderer(), [...new Set(want)]); } } catch (err) { console.log('БАРС:', err && err.message); } }
+    if (want.length) { BARSHeroes.onProgress = (n, k) => onStep && onStep('Герои «как в кино»', k, n === 'pik' ? 'Пик: свет' : 'Рон: свет'); onStep && onStep('Герои «как в кино»', 0, 'шерсть растёт'); const list = [...new Set(want)]; let ok = await BARSHeroes.prepare(MK3D.THREE, MK3D.renderer(), list);
+      if (!ok) { await new Promise(r => setTimeout(r, 1500)); ok = await BARSHeroes.prepare(MK3D.THREE, MK3D.renderer(), list); } } } catch (err) { console.log('БАРС:', err && err.message); } } // не вышло (память) — ещё раз
   const pre = {}; { const grp = {}; for (const ln of lines) if (ln.srv && !ln.synth) (grp[ln.srv.model || ''] = grp[ln.srv.model || ''] || []).push(ln);
     const order = Object.keys(grp).sort(); let j = 0, tot = order.reduce((a, k) => a + grp[k].length, 0);
     for (const m of order) for (const ln of grp[m]) { if (isCancelled && isCancelled()) throw new Error('cancel'); if (ln.key in pre) continue;
@@ -621,6 +623,7 @@ const Build = {
       if (i > 0) this.set(title, .08 + .9 * i / N, `Продолжаю с кадра ${i} из ${N}`);
       const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d');
       const t0 = performance.now(); let paused = 0, same = 0, lastRw = -1, curSeg = -1;
+      const h6Want = tl.style === '3d' && window.BARSHeroes && MK3D.hq && MK3D.THREE ? [...new Set(BARSHeroes.wantFor(Lib.data))] : []; let h6Try = 0;
       const segAt = t => { let k = 0; for (let j = 0; j < tl.segs.length; j++) if (tl.segs[j].t0 <= t) k = j; return k; };
       for (;;) {
         while (i < N) {
@@ -630,6 +633,8 @@ const Build = {
             if (MK3D.lost()) { // не вернули — перезапускаю страницу, сборка продолжится с этого кадра сама
               await Native.call('videoCancel', { keep: true }); began = false; s.autoResume = 1; await Lib.save(); location.reload(); await sleep(60000); throw new Error('нет видеокарты'); }
           }
+          if (h6Want.length && h6Try < 3 && h6Want.some(n => !BARSHeroes.ready[n])) { // видеокарту отбирали — шерсть и свет Пика и Рона пропали вместе с ней: растим заново, иначе дальше были бы старые герои
+            await drain(); h6Try++; this.set(title, .08 + .9 * i / N, 'Видеокарта вернулась — снова готовлю Пика и Рона…'); try { await BARSHeroes.prepare(MK3D.THREE, MK3D.renderer(), h6Want); } catch (er) { console.log('БАРС:', er && er.message); } }
           { const si = segAt(i / fps); if (si !== curSeg) { curSeg = si; if (MK3D.keepLocs) MK3D.keepLocs(new Set(tl.segs.slice(si).map(sg => sg.lkey).filter(Boolean))); } } // места, что дальше не нужны, — из памяти
           ctx.setTransform(w / 1920, 0, 0, h / 1080, 0, 0); MK.render(ctx, tl, i / fps);
           const d = cv.toDataURL('image/jpeg', .95); inflight.push(Native.call('videoFrame', { i, d: d.slice(d.indexOf(',') + 1) })); i++;
