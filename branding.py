@@ -61,7 +61,7 @@ def avatar():
     # тёплый рассвет: небо, солнце, вода — в круге
     blot(canvas, valley, 400, 330, 310, (0.70, 0.78, 0.94), 0.8, 21, soft=2.0)
     blot(canvas, valley, 400, 450, 260, (0.98, 0.74, 0.58), 0.75, 22, soft=2.0)
-    blot(canvas, valley, 400, 430, 140, (0.99, 0.86, 0.56), 0.8, 23, soft=2.5)
+    blot(canvas, valley, 370, 430, 140, (0.99, 0.86, 0.56), 0.8, 23, soft=2.5)
     # линия горизонта-холмы
     yy, xx = np.mgrid[0:S, 0:S].astype(np.float32)
     ridge = 470 - 40 * np.abs(np.sin(xx / 90 + 0.8)) - 15 * np.sin(xx / 31)
@@ -72,16 +72,32 @@ def avatar():
     d = ImageDraw.Draw(img, "RGBA")
     # солнце
     glow = Image.new("RGBA", (S, S), (0, 0, 0, 0))
-    ImageDraw.Draw(glow).ellipse([400 - 70, 430 - 70, 400 + 70, 430 + 70], fill=(255, 250, 230, 200))
+    ImageDraw.Draw(glow).ellipse([360 - 70, 430 - 70, 360 + 70, 430 + 70], fill=(255, 250, 230, 200))
     img.paste(glow.filter(ImageFilter.GaussianBlur(26)), (0, 0), glow.filter(ImageFilter.GaussianBlur(26)))
-    d.ellipse([400 - 30, 430 - 30, 400 + 30, 430 + 30], fill=(255, 253, 244, 245))
-    # буквы «ЖС» сверху
-    f = qc.font(qc.F_RU, 210)
-    s = "ЖС"
-    w = d.textlength(s, font=f)
-    d.text(((S - w) / 2, 112), s, font=f, fill=(52, 44, 40, 235))
-    # тонкая линия-перо под буквами
-    d.line([(300, 372), (500, 372)], fill=(170, 140, 90, 210), width=4)
+    d.ellipse([360 - 30, 430 - 30, 360 + 30, 430 + 30], fill=(255, 253, 244, 245))
+    # перо над рассветом — универсальный знак без букв
+    import math as _m
+    pts_l, pts_r = [], []
+    x0, y0, x1, y1 = 585, 110, 425, 575          # от кончика опахала к кончику пера
+    for k in range(41):
+        t = k / 40
+        x = x0 + (x1 - x0) * t + 40 * _m.sin(_m.pi * t) * 0.6
+        y = y0 + (y1 - y0) * t
+        w = (0 if t > 0.86 else 58 * _m.sin(_m.pi * min(1, t / 0.86)) ** 0.8)
+        nx, ny = (y1 - y0), -(x1 - x0)
+        L = _m.hypot(nx, ny)
+        nx, ny = nx / L, ny / L
+        pts_l.append((x + nx * w * 0.55, y + ny * w * 0.55))
+        pts_r.append((x - nx * w, y - ny * w))
+    d.polygon(pts_l + pts_r[::-1], fill=(58, 50, 62, 235))
+    # стержень и бородки
+    d.line([(x0 + 4, y0 + 6), (x1, y1)], fill=(236, 228, 214, 230), width=4)
+    for k in range(6, 34, 3):
+        t = k / 40
+        x = x0 + (x1 - x0) * t + 40 * _m.sin(_m.pi * t) * 0.6
+        y = y0 + (y1 - y0) * t
+        d.line([(x, y), (x - 34 * (1 - t), y - 10)], fill=(236, 228, 214, 110), width=2)
+    d.polygon([(x1 - 9, y1 - 18), (x1 + 9, y1 - 14), (x1 - 2, y1 + 22)], fill=(40, 34, 44, 255))
     img.save(f"{OUT}/avatar_800.png")
     # превью в круге, как увидит YouTube
     mask = Image.new("L", (S, S), 0)
@@ -125,7 +141,7 @@ def banner():
     img = finish(canvas, shade)
     d = ImageDraw.Draw(img, "RGBA")
     # солнце и дорожка
-    sx, sy = 2010, hor - 48
+    sx, sy = 2290, hor - 48
     glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     ImageDraw.Draw(glow).ellipse([sx - 120, sy - 120, sx + 120, sy + 120], fill=(255, 248, 225, 210))
     g = glow.filter(ImageFilter.GaussianBlur(40))
@@ -138,17 +154,17 @@ def banner():
         x0 = sx + rnd.uniform(-hw * 0.4, hw * 0.4)
         ln = rnd.uniform(0.3, 0.7) * hw
         d.line([(x0 - ln, y), (x0 + ln, y)], fill=(255, 252, 244, int(rnd.uniform(120, 210))), width=5)
-    for bx, by, s in ((560, 600, 18), (615, 635, 14), (2150, 560, 16), (2215, 590, 12)):
+    for bx, by, s in ((300, 600, 18), (355, 635, 14), (2330, 560, 16), (2395, 590, 12)):
         d.line([(bx - s, by + 2), (bx - s * 0.5, by - s * 0.45), (bx, by + 1), (bx + s * 0.5, by - s * 0.45), (bx + s, by + 2)],
                fill=(80, 78, 98, 220), width=4, joint="curve")
     # текст — в безопасной зоне 1546×423 по центру
     d = ImageDraw.Draw(img, "RGBA")
-    f1 = qc.font(qc.F_RU, 140)
-    f2 = qc.font(qc.F_EN, 68, 500)
-    t1, t2 = "Живые строки", "Living Lines · мысли классиков на акварели"
-    y = 528
+    f1 = qc.font(qc.F_RU, 100)
+    f2 = qc.font(qc.F_EN, 58, 500)
+    t1, t2 = "Живые строки · Living Lines", "мысли классиков на акварели  ·  timeless words on watercolor"
+    y = 545
     d.text(((W - d.textlength(t1, font=f1)) / 2, y), t1, font=f1, fill=(46, 38, 34, 255))
-    d.text(((W - d.textlength(t2, font=f2)) / 2, y + 178), t2, font=f2, fill=(98, 82, 72, 255))
+    d.text(((W - d.textlength(t2, font=f2)) / 2, y + 140), t2, font=f2, fill=(98, 82, 72, 255))
     img.save(f"{OUT}/banner_2560x1440.jpg", quality=92)
     # превью: как видно на телефоне (центр 1546×423) и на ПК (2560×423)
     tv = img.resize((640, 360), Image.LANCZOS)
