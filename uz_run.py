@@ -12,6 +12,7 @@ request.txt (ручной запуск — поменять и запушить)
           после входа сразу выкладывается гонка текущего слота) | check (что стоит на канале → status/channel.txt)
   league: auto | cities | cars
   final:  auto | yes
+  mode: comments — только прочитать комментарии и добавить просьбы (без ролика)
   extra:  yes — ещё один ролик прямо сейчас, сверх расписания (то же делает кнопка Run workflow на GitHub)
 Отчёт всегда в status/last.txt (логи Actions из облака не видно).
 """
@@ -141,6 +142,52 @@ def login():
 
 # ---------------- сезоны ----------------
 
+CAP = {"cities": 30, "cars": 28}       # больше шариков трасса не вмещает красиво
+
+
+def take_requests(state, yt, log):
+    """Новые города и машины из комментариев: узнаём в любом написании, уже участвующих не добавляем второй раз."""
+    import race_leagues as RL
+    import uz_places as P
+    vids = [h["link"].rsplit("/", 1)[-1] for h in state.get("history", []) if h.get("link")]
+    try:
+        items, err = yt.comments(yt.k.get("channel_id"), vids)
+    except Exception as e:  # noqa: BLE001
+        log(f"комментарии не прочитались: {str(e)[:150]}")
+        return
+    if err:
+        log(f"комментарии по каналу не отдались ({err[:80]}), читал по роликам")
+    seen = state.setdefault("seen_comments", [])
+    seen_set = set(seen)
+    fresh = [c for c in items if c[0] not in seen_set][::-1]          # от старых к новым
+    rows = []
+    for cid, text, _ in fresh:
+        seen.append(cid)
+        for lg in ("cities", "cars"):
+            ls = league_state(state, lg)
+            for key in P.find(text, lg):
+                have = {e["key"] for e in RL.entries(lg, ls.get("extra"))}
+                if key in have:
+                    res = "уже есть"
+                elif len(have) >= CAP[lg]:
+                    q = ls.setdefault("queue", [])
+                    res = "в очереди (трасса полная)" if key in q else (q.append(key) or "в очереди (трасса полная)")
+                else:
+                    ls.setdefault("extra", []).append(key)
+                    ls.setdefault("new_pending", []).append(key)
+                    res = "ДОБАВЛЕН"
+                    log(f"из комментария добавлен: {key} ({lg})")
+                rows.append(f"| {dt.datetime.now(TASH):%m-%d %H:%M} | {lg} | {key} | {res} | {text[:60].replace('|', '/')} |")
+    state["seen_comments"] = seen[-3000:]
+    if fresh:
+        log(f"комментариев новых: {len(fresh)}, просьб: {len(rows)}")
+    if rows:
+        f = Path("status/comments.md")
+        old = f.read_text(encoding="utf-8").splitlines()[2:] if f.exists() else []
+        f.write_text("| когда | гонка | что | итог | комментарий |\n|---|---|---|---|---|\n" +
+                     "\n".join((rows[::-1] + old)[:300]) + "\n", encoding="utf-8")
+
+
 def league_state(state, key):
     return state.setdefault("leagues", {}).setdefault(key, {"no": 0, "points": {}, "results": []})
 
@@ -173,6 +220,16 @@ def main():
             return
         log("вход сделан — сразу выкладываю первую гонку")
         mode = req["mode"] = "publish"
+    if mode == "comments":       # только прочитать комментарии и добавить просьбы (без ролика)
+        import yt as ytmod
+        y_ = ytmod.YT()
+        log("канал:", y_.channel())
+        st_ = json.loads(Path("state.json").read_text(encoding="utf-8"))
+        take_requests(st_, y_, log)
+        Path("state.json").write_text(json.dumps(st_, ensure_ascii=False, indent=1), encoding="utf-8")
+        ex = {lg: v.get("extra", []) for lg, v in st_.get("leagues", {}).items()}
+        write_status(f"КОММЕНТАРИИ прочитаны; добавлены по просьбам: {json.dumps(ex, ensure_ascii=False)}")
+        return
     if mode == "check":          # что сейчас стоит на канале (описание, страна, ключевые слова…)
         import yt as ytmod
         y_ = ytmod.YT()
@@ -222,6 +279,10 @@ def main():
                     res = str(e)[:120]
                 h_["pl"] = res == "в плейлисте"
                 log(f"плейлист для {h_['league']} №{h_['no']}: {res[:120]}")
+        try:
+            take_requests(state, yt, log)
+        except Exception as e:  # noqa: BLE001 — просьбы из комментариев не должны мешать выкладке
+            log(f"просьбы из комментариев: ошибка {type(e).__name__}: {str(e)[:150]}")
 
     import race_leagues as RL
     import race_video as rv
@@ -229,10 +290,11 @@ def main():
     sid = season_id(day)
     new_season(ls, sid)
     no = ls.get("no", 0) + 1
-    ent, final = None, False
+    extra = ls.get("extra", [])
+    ent, final = RL.entries(league, extra), False
     want_final = req["final"] == "yes" or (day.weekday() == 6 and slot == LAST_SLOT[league])
     if want_final and ls.get("final_season") != sid and (ls.get("season_races", 0) >= 2 or req["final"] == "yes"):
-        allx = RL.entries(league)
+        allx = RL.entries(league, extra)
         by_key = {e["key"]: e for e in allx}
         best = [k for k, _ in sorted(ls.get("points", {}).items(), key=lambda kv: -kv[1]) if k in by_key][:8]
         if len(best) >= 4:
@@ -246,7 +308,8 @@ def main():
                          handle=(yt.handle if yt and yt.handle else HANDLE), league=league, entries=ent, final=final,
                          season_races=None if final else ls.get("season_races", 0) + 1,
                          champions=ls.get("champions", []), season_id=sid, final_in=final_in,
-                         seed=random.SystemRandom().randrange(100000))
+                         seed=random.SystemRandom().randrange(100000), extra=extra,
+                         new=None if final else ls.get("new_pending", []))
     size = out.stat().st_size / 1e6
     log(f"ролик готов: {info['duration']:.0f} с, {size:.0f} МБ, сборка {time.time() - t0:.0f} с; "
         f"победил {info['winner']}, топ-3: {', '.join(info['ranking'][:3])}")
@@ -273,6 +336,8 @@ def main():
     log("статус:", st.get("privacyStatus"), st.get("uploadStatus"))
     # таблица двигается только после удачной выкладки
     ls["no"] = no
+    if not final:
+        ls["new_pending"] = []
     if final:
         ls["champion"] = info["winner"]
         ls["final_season"] = sid

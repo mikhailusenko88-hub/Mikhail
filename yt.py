@@ -172,6 +172,29 @@ class YT:
                 rg = q.headers.get("Range")
                 pos = int(rg.split("-")[1]) + 1 if (q.status_code == 308 and rg) else 0
 
+    def comments(self, channel_id, video_ids=()):
+        """Свежие комментарии под роликами канала: [(id, текст, id_автора)]. Свои (от канала) не берём."""
+        out, err = [], None
+        r = requests.get(f"{API}/commentThreads", headers=self.h(), timeout=30, params={
+            "part": "snippet", "allThreadsRelatedToChannelId": channel_id, "maxResults": 100, "order": "time",
+            "textFormat": "plainText"})
+        items = r.json().get("items", []) if r.status_code == 200 else None
+        if items is None:
+            err = f"{r.status_code} {r.text[:200]}"
+            items = []
+            for vid in list(video_ids)[-15:]:
+                q = requests.get(f"{API}/commentThreads", headers=self.h(), timeout=30, params={
+                    "part": "snippet", "videoId": vid, "maxResults": 100, "order": "time", "textFormat": "plainText"})
+                if q.status_code == 200:
+                    items += q.json().get("items", [])
+        for it in items:
+            sn = it["snippet"]["topLevelComment"]["snippet"]
+            author = (sn.get("authorChannelId") or {}).get("value", "")
+            if author == channel_id:
+                continue
+            out.append((it["id"], sn.get("textOriginal") or sn.get("textDisplay") or "", author))
+        return out, err
+
     def status(self, vid):
         r = requests.get(f"{API}/videos", params={"part": "status", "id": vid}, headers=self.h(), timeout=30)
         items = r.json().get("items", []) if r.status_code == 200 else []

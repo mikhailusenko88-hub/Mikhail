@@ -96,11 +96,27 @@ def _e(key, kk, ru, num, **kw):
     return d
 
 
-def entries(league, state=None, rnd=None):
+def entries(league, extra=None, rnd=None):
+    """Участники: основной список + добавленные по просьбам зрителей (extra — ключи из uz_places)."""
+    import uz_places as P
     if league == "cities":
-        return [_e(kk, kk, ru, str(i + 1), lat=la, lon=lo) for i, (kk, ru, la, lo) in enumerate(CITIES)]
+        rows = list(CITIES)
+        have = {r[0] for r in rows}
+        for k in extra or []:
+            if k in P.CITY_BY_KEY and k not in have:
+                kk, ru, la, lo, _ = P.CITY_BY_KEY[k]
+                rows.append((kk, ru, la, lo))
+                have.add(k)
+        return [_e(kk, kk, ru, str(i + 1), lat=la, lon=lo) for i, (kk, ru, la, lo) in enumerate(rows)]
     if league == "cars":
-        return [_e(kk, kk, ru, str(i + 1), body=b) for i, (kk, ru, b) in enumerate(CARS)]
+        rows = list(CARS)
+        have = {r[0] for r in rows}
+        for k in extra or []:
+            if k in P.CAR_BY_KEY and k not in have:
+                kk, ru, b, _ = P.CAR_BY_KEY[k]
+                rows.append((kk, ru, b))
+                have.add(k)
+        return [_e(kk, kk, ru, str(i + 1), body=b) for i, (kk, ru, b) in enumerate(rows)]
     raise ValueError(f"нет такой темы: {league}")
 
 
@@ -178,6 +194,7 @@ UI = {
     "tour": "TURNIR JADVALI",
     "top5": ("ENG YAXSHI BESHLIK · 1-poyga", "ПЯТЁРКА ЛИДЕРОВ · заезд №1"),
     "write": "Izohlarda yoz · Пиши в комментариях",
+    "new": ("Yangi: {uz} — izohlardan!", "Новые: {ru} — из комментариев!"),
     "marks": {"tunnel": "TUNNEL · ТУННЕЛЬ", "stairs": "ZINAPOYA · ЛЕСЕНКА", "bumps": "DOʻNGLIKLAR · КОЧКИ",
               "tramp": "BATUT · БАТУТ", "hammer": "BOLGʻA · МОЛОТ", "fork": "IKKI YOʻL · ДВА ПУТИ"},
 }
@@ -210,8 +227,12 @@ def make_title(league, no, ent, final=False):
     return LEAGUES[league]["title"].format(no=no)
 
 
-def make_desc(league, ent, final=False):
-    d = LEAGUES[league]["desc"].format(n=len(entries(league)))
+def make_desc(league, ent, final=False, n=None, new=None):
+    d = LEAGUES[league]["desc"].format(n=n or len(ent))
+    if new:
+        ru = ", ".join(e["ru"] for e in new)
+        uz = ", ".join(e["kk"] for e in new)
+        d = f"🆕 Yangi: {uz} — izohlaringiz boʻyicha! · Новые по вашим комментариям: {ru}\n\n" + d
     if final:
         return stxt(league)["final_desc"] + d
     head, sep, tags = d.rpartition("\n\n")

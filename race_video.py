@@ -1164,14 +1164,15 @@ def mid_teams(race_team, total_team, races, acc, final=False):
 
 def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir=None,
                handle="@kimyutadi_uz", tries=10, league="cities", entries=None, team_total=None,
-               final=False, season_races=None, champions=None, season_id="", final_in=None):
+               final=False, season_races=None, champions=None, season_id="", final_in=None, extra=None, new=None):
     t_start = time.time()
     set_league(league, entries)
     champions = list(champions or [])
     TITLES.clear()
     for ch in champions:
         TITLES[ch["champion"]] = TITLES.get(ch["champion"], 0) + 1
-    allents = {e["key"]: e for e in RL.entries(league)} if league != "names" else {}
+    allents = {e["key"]: e for e in RL.entries(league, extra)}
+    new_ents = [allents[k] for k in (new or []) if k in allents]
     out_path = Path(out_path)
     points = dict(points or {})
     seed = int(time.time()) % 100000 if seed is None else seed
@@ -1217,6 +1218,11 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     elif not final and champions and LG.get("teams") and champions[-1]["champion"] in RL.TEAMS:
         tm = RL.TEAMS[champions[-1]["champion"]]
         pill3 = early_pill(acc, (f"Өткен ай жеңімпазы — {tm[0]} ★", f"Победитель прошлого месяца — {tm[1]} ★"))
+    pill_new = None
+    if new_ents and not final:
+        nu = ", ".join(e["kk"] for e in new_ents[:3]) + ("…" if len(new_ents) > 3 else "")
+        nr = ", ".join(e["ru"] for e in new_ents[:3]) + ("…" if len(new_ents) > 3 else "")
+        pill_new = early_pill(acc, (RL.UI["new"][0].format(uz=nu), RL.UI["new"][1].format(ru=nr)))
     hand = Image.new("RGBA", (420, 50), (0, 0, 0, 0))
     ImageDraw.Draw(hand).text((0, 0), handle, font=font(26), fill=(255, 255, 255, 170))
 
@@ -1309,6 +1315,13 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
                 p3 = pill3.copy()
                 p3.putalpha(p3.getchannel("A").point(lambda v: int(v * k)))
             paste(img, p3, OX, 1386)
+        if pill_new is not None and GATE_T + 11 < t < GATE_T + 18 and (winner_t is None or t < winner_t):
+            k = min(1.0, (t - GATE_T - 11) / 0.3, (GATE_T + 18 - t) / 0.3)
+            p4 = pill_new
+            if k < 1:
+                p4 = pill_new.copy()
+                p4.putalpha(p4.getchannel("A").point(lambda v: int(v * k)))
+            paste(img, p4, OX, 1386)
         if pill2 is not None and GATE_T + 22 < t < GATE_T + 29 and (winner_t is None or t < winner_t):
             k = min(1.0, (t - GATE_T - 22) / 0.3, (GATE_T + 29 - t) / 0.3)
             p2 = pill2
@@ -1536,7 +1549,7 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
 
     # оба языка в самом начале названия — в ленте Shorts видно только начало
     title = RL.make_title(league, race_no, ENT, final)
-    desc = RL.make_desc(league, ENT, final)
+    desc = RL.make_desc(league, ENT, final, n=len(allents), new=new_ents if not final else None)
     if CD:
         desc = f"⏳ {CD[0]} · {CD[1]}\n\n" + desc
     if champions and allents and not final:

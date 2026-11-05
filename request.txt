@@ -1,7 +1,7 @@
-# 2026-11-05 18:30 МСК — ещё одна гонка сейчас (машины)
-mode: publish    # test — только собрать | publish — собрать и выложить | login — вход (после входа сразу выкладка) | check — что стоит на канале
-extra: yes       # yes — ещё один ролик сейчас, сверх расписания
-league: cars     # auto | cities | cars
+# 2026-11-05 21:40 МСК — проверка: чтение комментариев (без ролика)
+mode: comments   # test | publish | login | check | comments — только прочитать комментарии
+extra: no        # yes — ещё один ролик сейчас, сверх расписания
+league: auto     # auto | cities | cars
 final: auto      # auto | yes
 date: auto
 slot: auto
