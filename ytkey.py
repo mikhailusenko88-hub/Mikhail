@@ -59,14 +59,14 @@ def _stream(key, nonce, n):
     return bytes(out[:n])
 
 
-def seal(refresh_token, client_id, client_secret, channel):
+def seal(refresh_token, client_id, client_secret, channel, channel_id=""):
     key = _key(client_secret)
     nonce = os.urandom(16)
     pt = refresh_token.encode()
     ct = bytes(a ^ b for a, b in zip(pt, _stream(key, nonce, len(pt))))
     tag = hmac.new(key, nonce + ct, hashlib.sha256).hexdigest()[:32]
     TOKEN_FILE.parent.mkdir(exist_ok=True)
-    TOKEN_FILE.write_text(json.dumps({"client_id": client_id, "channel": channel,
+    TOKEN_FILE.write_text(json.dumps({"client_id": client_id, "channel": channel, "channel_id": channel_id,
                                       "nonce": base64.b64encode(nonce).decode(),
                                       "ct": base64.b64encode(ct).decode(), "tag": tag}, ensure_ascii=False, indent=1))
 
@@ -87,4 +87,4 @@ def credentials():
     if not hmac.compare_digest(hmac.new(key, nonce + ct, hashlib.sha256).hexdigest()[:32], d["tag"]):
         raise SystemExit("ключ входа не расшифровался — нужен новый вход (mode: login)")
     rt = bytes(a ^ b for a, b in zip(ct, _stream(key, nonce, len(ct)))).decode()
-    return {"client_id": cid, "client_secret": sec, "refresh_token": rt}
+    return {"client_id": cid, "client_secret": sec, "refresh_token": rt, "channel_id": d.get("channel_id")}

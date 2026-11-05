@@ -20,12 +20,36 @@ def token(cid, sec, rt):
     return r.json()["access_token"]
 
 
-def channel_title(access):
-    r = requests.get(f"{API}/channels", params={"part": "snippet", "mine": "true"},
+# другие каналы Михаила — на них эта гонка не выкладывается никогда, даже если их переименовать
+OTHER = {"@bilesin_be_kz", "@flagballarenatv", "@pochemu_tak_fakty", "@beautiful_shorts-s6u"}
+
+
+def channel_info(access):
+    r = requests.get(f"{API}/channels", params={"part": "snippet,statistics", "mine": "true"},
                      headers={"Authorization": f"Bearer {access}"}, timeout=30)
     r.raise_for_status()
     items = r.json().get("items", [])
-    return (items[0]["snippet"]["title"], items[0]["id"]) if items else ("", "")
+    if not items:
+        return {"title": "", "id": "", "handle": "", "videos": 0}
+    it = items[0]
+    return {"title": it["snippet"]["title"], "id": it["id"], "handle": (it["snippet"].get("customUrl") or "").lower(),
+            "videos": int(it.get("statistics", {}).get("videoCount", 0))}
+
+
+def channel_title(access):
+    c = channel_info(access)
+    return c["title"], c["id"]
+
+
+def wrong_channel(c, expect_id=None):
+    """Почему этот канал не наш (или None, если наш)."""
+    if CHANNEL_MUST not in c["title"].lower():
+        return f"вход сделан не в тот канал: «{c['title']}»"
+    if c["handle"] in OTHER:
+        return f"это другой канал ({c['handle']}), хоть и называется «{c['title']}»"
+    if expect_id and c["id"] != expect_id:
+        return f"канал не тот, что подключали ({c['id']} вместо {expect_id})"
+    return None
 
 
 class YT:
@@ -45,12 +69,13 @@ class YT:
 
     def channel(self):
         self.h()
-        title, cid = channel_title(self.tok)
-        if not title:
+        c = channel_info(self.tok)
+        if not c["title"]:
             raise SystemExit("под этим входом нет канала")
-        if CHANNEL_MUST not in title.lower():
-            raise SystemExit(f"вход сделан не в тот канал: «{title}» — выкладку отменил")
-        return title
+        why = wrong_channel(c, self.k.get("channel_id"))
+        if why:
+            raise SystemExit(why + " — выкладку отменил")
+        return f"{c['title']} {c['handle']} ({c['id']})"
 
     def upload(self, path, meta):
         body = {

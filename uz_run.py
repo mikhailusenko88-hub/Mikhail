@@ -116,13 +116,17 @@ def login():
         if "refresh_token" not in t:
             write_status(f"ВХОД НЕ ПОЛУЧИЛСЯ: {t}", name="login.txt")
             raise SystemExit(f"вход не получился: {t}")
-        title, ch_id = yt.channel_title(t["access_token"])
-        if yt.CHANNEL_MUST not in title.lower():
-            write_status(f"ВХОД В ДРУГОЙ КАНАЛ: «{title}» — нужен Kim yutadi?, запусти вход ещё раз",
+        c = yt.channel_info(t["access_token"])
+        title, ch_id = c["title"], c["id"]
+        why = yt.wrong_channel(c)
+        if not why and c["videos"] > 30:
+            why = f"на канале «{title}» уже {c['videos']} роликов — это не новый канал"
+        if why:
+            write_status(f"ВХОД В ДРУГОЙ КАНАЛ: {why} — нужен новый Kim yutadi?, запусти вход ещё раз",
                          name="login.txt")
-            raise SystemExit(f"вход в другой канал: {title}")
-        ytkey.seal(t["refresh_token"], cid, sec, title)
-        log(f"вход сделан: «{title}» ({ch_id})")
+            raise SystemExit(why)
+        ytkey.seal(t["refresh_token"], cid, sec, title, ch_id)
+        log(f"вход сделан: «{title}» {c['handle']} ({ch_id}), роликов {c['videos']}")
         write_status(f"ВХОД ОК: канал «{title}» https://www.youtube.com/channel/{ch_id}", name="login.txt")
         git_push(f"ВХОД ОК: {title}", ["status/login.txt", "login"])
         return
