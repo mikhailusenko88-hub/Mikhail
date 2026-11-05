@@ -1,24 +1,66 @@
-ОШИБКА: Invalid base64-encoded string: number of data characters (353) cannot be 1 more than a multiple of 4
+ВЫЛОЖЕНО #2 2026-11-05 слот 2: https://youtu.be/pZNdHyeOSzo (public), за 411 с
 
-
+{
+ "title": "Which Countries Survive? 🌍 Marble Elimination · Round 1 Heat 2/7",
+ "description": "Flagball Arena · Season 1, Round 1 · Heat 2/7: 27 countries race through 3 stages — only 14 survive and go to Round 2.\n\nCountries in this heat: Afghanistan, Antigua and Barbuda, Azerbaijan, Bahamas, Brunei, Bulgaria, Chad, China, Cyprus, Eswatini, Fiji, Gabon, Iran, Ireland, Lebanon, Libya, Mexico, Mongolia, Papua New Guinea, Romania, Rwanda, Senegal, Seychelles, Sweden, Tonga, USA, Venezuela.\n\nCountries still in the game before this race: 176 of 193.\nNext race: Round 1 · Heat 3/7. Grand Final: Nov 9.\n\nHow it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, then a new season starts. 3 new races every day.\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "race_no": 2,
+ "date": "2026-11-05",
+ "slot": 2,
+ "season": 1,
+ "round": 1,
+ "heat": 2,
+ "heats": 7,
+ "survive": 14,
+ "final": false,
+ "kind": "heat",
+ "label": "ROUND 1 · HEAT 2/7",
+ "n": 27,
+ "ranking": [
+  "TON",
+  "VEN",
+  "IRL",
+  "SYC",
+  "LBY",
+  "AFG",
+  "MEX",
+  "MNG",
+  "BRN",
+  "GAB",
+  "LBN",
+  "PNG",
+  "IRN",
+  "RWA",
+  "SWE",
+  "SWZ",
+  "CYP",
+  "ATG",
+  "BHS",
+  "BGR",
+  "TCD",
+  "USA",
+  "SEN",
+  "CHN",
+  "AZE",
+  "FJI",
+  "ROU"
+ ],
+ "video_id": "pZNdHyeOSzo",
+ "privacy": "public"
+}
 
 --- журнал ---
-11:49:54 режим publish, гонка #2, 2026-11-05 слот 2, событие push
-11:49:54 по плану: S1 ROUND 1 · HEAT 2/7
-Traceback (most recent call last):
-  File "/home/runner/work/Mikhail/Mikhail/ci_run.py", line 139, in <module>
-    main()
-  File "/home/runner/work/Mikhail/Mikhail/ci_run.py", line 88, in main
-    yt = ytmod.YT()
-         ^^^^^^^^^^
-  File "/home/runner/work/Mikhail/Mikhail/yt.py", line 27, in __init__
-    self.k = self._fb1(raw)
-             ^^^^^^^^^^^^^^
-  File "/home/runner/work/Mikhail/Mikhail/yt.py", line 60, in _fb1
-    data = base64.b64decode(b64 + "=" * (-len(b64) % 4))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/base64.py", line 88, in b64decode
-    return binascii.a2b_base64(s, strict_mode=validate)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-binascii.Error: Invalid base64-encoded string: number of data characters (353) cannot be 1 more than a multiple of 4
-
+11:57:49 режим publish, гонка #2, 2026-11-05 слот 2, событие push
+11:57:49 по плану: S1 ROUND 1 · HEAT 2/7
+11:57:49 канал: Flagball Arena
+гонка #2 2026-11-05 слот 2: S1 ROUND 1 · HEAT 2/7, 27→14, участники: ROU BGR AZE RWA USA TON PNG FJI BRN CYP VEN ATG AFG TCD LBY SEN IRN SWZ IRL LBN GAB SWE MEX SYC BHS CHN MNG
+  этап 1: 27→23, блоков 11 ['twin_rings', 'stairs', 'tunnels', 'pegs', 'trapdoors', 'pendulums', 'zigzag', 'bumpers', 'ring_gate', 'windmills', 'rotor'], Q-финиш 65.1 c, кадров 2030
+  этап 2: 23→18, блоков 11 ['rotor', 'ring_gate', 'stairs', 'trapdoors', 'tunnels', 'pegs', 'bumpers', 'twin_rings', 'zigzag', 'windmills', 'pendulums'], Q-финиш 58.3 c, кадров 1826
+  этап 3: 18→14, блоков 12 ['stairs', 'twin_rings', 'tunnels', 'bumpers', 'trapdoors', 'pendulums', 'windmills', 'pegs', 'ring_gate', 'rotor', 'zigzag', 'trapdoors'], Q-финиш 59.3 c, кадров 1856
+длительность ролика ≈ 4.0 мин
+готово: 7236 кадров за 393 с
+кадров 7236, 4.02 мин, рендер 394 с
+выжили: TON VEN IRL SYC LBY AFG MEX MNG BRN GAB LBN PNG IRN RWA
+12:04:24 ролик готов: 130 МБ, 395 с с начала; название: Which Countries Survive? 🌍 Marble Elimination · Round 1 Heat 2/7
+12:04:39 обложка: 200 
+12:04:40 в плейлисте
+12:04:40 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'madeForKids': False, 'selfDeclaredMadeForKids': False}

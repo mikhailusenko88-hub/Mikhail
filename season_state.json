@@ -1,9 +1,9 @@
 {
  "season": 1,
- "race_no": 1,
+ "race_no": 2,
  "seed": 2026,
  "round": 1,
- "heat": 1,
+ "heat": 2,
  "heats": [
   [
    "so",
@@ -237,7 +237,21 @@
   "ad",
   "bb",
   "zw",
-  "ni"
+  "ni",
+  "to",
+  "ve",
+  "ie",
+  "sc",
+  "ly",
+  "af",
+  "mx",
+  "mn",
+  "bn",
+  "ga",
+  "lb",
+  "pg",
+  "ir",
+  "rw"
  ],
  "eliminated": [
   "es",
@@ -256,10 +270,132 @@
   "tj",
   "sy",
   "ma",
-  "gr"
+  "gr",
+  "se",
+  "sz",
+  "cy",
+  "ag",
+  "bs",
+  "bg",
+  "td",
+  "us",
+  "sn",
+  "cn",
+  "az",
+  "fj",
+  "ro"
  ],
  "champions": [],
- "hall": {},
+ "hall": {
+  "to": {
+   "titles": 0,
+   "finals": 0
+  },
+  "ve": {
+   "titles": 0,
+   "finals": 0
+  },
+  "ie": {
+   "titles": 0,
+   "finals": 0
+  },
+  "sc": {
+   "titles": 0,
+   "finals": 0
+  },
+  "ly": {
+   "titles": 0,
+   "finals": 0
+  },
+  "af": {
+   "titles": 0,
+   "finals": 0
+  },
+  "mx": {
+   "titles": 0,
+   "finals": 0
+  },
+  "mn": {
+   "titles": 0,
+   "finals": 0
+  },
+  "bn": {
+   "titles": 0,
+   "finals": 0
+  },
+  "ga": {
+   "titles": 0,
+   "finals": 0
+  },
+  "lb": {
+   "titles": 0,
+   "finals": 0
+  },
+  "pg": {
+   "titles": 0,
+   "finals": 0
+  },
+  "ir": {
+   "titles": 0,
+   "finals": 0
+  },
+  "rw": {
+   "titles": 0,
+   "finals": 0
+  },
+  "se": {
+   "titles": 0,
+   "finals": 0
+  },
+  "sz": {
+   "titles": 0,
+   "finals": 0
+  },
+  "cy": {
+   "titles": 0,
+   "finals": 0
+  },
+  "ag": {
+   "titles": 0,
+   "finals": 0
+  },
+  "bs": {
+   "titles": 0,
+   "finals": 0
+  },
+  "bg": {
+   "titles": 0,
+   "finals": 0
+  },
+  "td": {
+   "titles": 0,
+   "finals": 0
+  },
+  "us": {
+   "titles": 0,
+   "finals": 0
+  },
+  "sn": {
+   "titles": 0,
+   "finals": 0
+  },
+  "cn": {
+   "titles": 0,
+   "finals": 0
+  },
+  "az": {
+   "titles": 0,
+   "finals": 0
+  },
+  "fj": {
+   "titles": 0,
+   "finals": 0
+  },
+  "ro": {
+   "titles": 0,
+   "finals": 0
+  }
+ },
  "history": [
   {
    "no": 1,
@@ -303,6 +439,44 @@
     "gr"
    ],
    "survive": 15
+  },
+  {
+   "no": 2,
+   "date": "2026-11-05",
+   "slot": 2,
+   "season": 1,
+   "round": 1,
+   "heat": 2,
+   "ranking": [
+    "to",
+    "ve",
+    "ie",
+    "sc",
+    "ly",
+    "af",
+    "mx",
+    "mn",
+    "bn",
+    "ga",
+    "lb",
+    "pg",
+    "ir",
+    "rw",
+    "se",
+    "sz",
+    "cy",
+    "ag",
+    "bs",
+    "bg",
+    "td",
+    "us",
+    "sn",
+    "cn",
+    "az",
+    "fj",
+    "ro"
+   ],
+   "survive": 14
   }
  ]
 }
