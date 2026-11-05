@@ -1,5 +1,4 @@
 2026-11-05 07:30 UTC
-200 https://www.youtube.com/@FlagballArenaTV
-200 https://www.youtube.com/@FlagballArenaTV/shorts
-404 https://www.youtube.com/feeds/videos.xml?channel_id=UCUKgRxWtL1kPWr9hdfL8qQw
-200 https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=jkju-LY3PpU&format=json
+200 https://www.youtube.com/watch?v=jkju-LY3PpU&hl=ru
+ERR thumb jkju-LY3PpU/oar2.jpg HTTP Error 404: Not Found
+200 thumb jkju-LY3PpU/hqdefault.jpg 19831 B
