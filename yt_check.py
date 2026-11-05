@@ -103,6 +103,30 @@ def channel_info(handle):
         if t:
             alerts.append(t)
     info["alerts"] = alerts
+    # аватар и шапка канала — картинками в status/branding (чтобы видеть, что сейчас стоит)
+    imgs = {}
+    av = (md.get("avatar") or {}).get("thumbnails") or []
+    if av:
+        imgs["avatar"] = av[-1].get("url")
+    for node in walk(header):
+        bn = node.get("imageBannerViewModel") if isinstance(node, dict) else None
+        if bn:
+            src = (bn.get("image") or {}).get("sources") or []
+            if src:
+                imgs["banner"] = max(src, key=lambda x: x.get("width", 0)).get("url")
+    br = OUT / "branding"
+    br.mkdir(exist_ok=True)
+    for k, u in imgs.items():
+        if not u:
+            continue
+        u = u if u.startswith("http") else "https:" + u
+        try:
+            with urllib.request.urlopen(urllib.request.Request(u, headers=H), timeout=25) as r:
+                (br / f"{handle}_{k}.jpg").write_bytes(r.read())
+            LOG.append(f"200 {k} {handle}")
+        except Exception as e:  # noqa: BLE001
+            LOG.append(f"ERR {k} {handle} {e}")
+    info["images"] = imgs
     return info
 
 
