@@ -1,13 +1,16 @@
-# товарный знак «Наш декор» — 05.11, второй заход
-open: https://searchplatform.rospatent.gov.ru/trademarks
-wait: 5000
-fill: input[type=text], input:not([type]), textarea => наш декор
-press: Enter
-wait: 10000
-snap: tm_rospatent_nashdekor
-open: https://searchplatform.rospatent.gov.ru/trademarks
-wait: 5000
-fill: input[type=text], input:not([type]), textarea => нашдекор
-press: Enter
-wait: 10000
-snap: tm_rospatent_nashdekor2
+# карточки знаков, похожих на «Наш декор» — 05.11
+open: https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=1080393&TypeFile=html
+wait: 3000
+snap: fips_1080393
+open: https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=838186&TypeFile=html
+wait: 3000
+snap: fips_838186
+open: https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=909006&TypeFile=html
+wait: 3000
+snap: fips_909006
+open: https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=925775&TypeFile=html
+wait: 3000
+snap: fips_925775
+open: https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=381324&TypeFile=html
+wait: 3000
+snap: fips_381324
