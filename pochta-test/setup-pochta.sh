@@ -1125,11 +1125,11 @@ EOF
 # --- самопроверка ------------------------------------------------------------------
 maildir_count() { # maildir_count ЯЩИК — писем во «Входящих»
   local d="$VMAIL_DIR/$DOMAIN/$1/Maildir"
-  find "$d/new" "$d/cur" -type f 2>/dev/null | wc -l
+  { find "$d/new" "$d/cur" -type f 2>/dev/null || true; } | wc -l
 }
 last_mail() { # last_mail ЯЩИК — путь к последнему письму
   local d="$VMAIL_DIR/$DOMAIN/$1/Maildir"
-  ls -1t "$d/new"/* "$d/cur"/* 2>/dev/null | head -n1
+  { ls -1t "$d/new"/* "$d/cur"/* 2>/dev/null || true; } | sed -n 1p
 }
 pw_of() { awk -v a="$1@$DOMAIN" '$1 == a {print $2}' "$PASS_FILE"; }
 check() { if [[ $2 == "$3" ]]; then printf '   [да]  %s\n' "$1"; else printf '   [НЕТ] %s (%s)\n' "$1" "$2"; SELFTEST_FAIL=$((SELFTEST_FAIL + 1)); fi; }
@@ -1180,7 +1180,7 @@ step_selftest() {
   else
     check "неверный пароль не принимается" да да
   fi
-  ip=$(ip -4 -o addr show scope global 2>/dev/null | awk '{sub(/\/.*/, "", $4); print $4; exit}')
+  ip=$(ip -4 -o addr show scope global 2>/dev/null | awk 'NR == 1 {sub(/\/.*/, "", $4); print $4}') || ip=""
   if [[ -n $ip ]]; then
     res=$(swaks --server "$ip" --port 25 --from "relaytest@gmail.com" --to "relaytest@example.com" --quit-after RCPT 2>&1) && code=ok || code=fail
     if [[ $code == fail ]] && grep -qiE 'Relay access denied' <<<"$res"; then
