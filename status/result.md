@@ -1,17 +1,23 @@
-# Проверка доменов — 2026-11-05 10:07 UTC
+# Проверка доменов — 2026-11-05 10:08 UTC
 
 | Домен | Статус | Подробности |
 |---|---|---|
-| nash-decor.ru | свободен |  |
-| nash-dekor.ru | свободен |  |
-| nashdekor.com | свободен |  |
-| nashdekor.online | свободен |  |
-| nashdekor.ru | свободен |  |
-| nashdekor.store | свободен |  |
-| nashdekor78.ru | свободен |  |
-| nashdekorspb.ru | свободен |  |
-| наш-декор.рф (xn----7sbneznmq0e.xn--p1ai) | свободен |  |
-| nashdecor.com | занят | Registrar: TurnCommerce, Inc. DBA NameBright.com; Creation Date: 2018-02-10T19:37:16Z; Registry Expiry Date: 2027-02-10T19:37:16Z |
-| nashdecor.ru | занят | registrar: REGRU-RU; created: 2025-12-04T15:01:21Z; paid-till: 2027-12-04T15:01:21Z |
+| dekornash.ru | свободен |  |
+| dekorryadom.ru | свободен |  |
+| dekorunas.ru | свободен |  |
+| dobrydekor.ru | свободен |  |
+| domashniydekor.ru | свободен |  |
+| domidekor.ru | свободен |  |
+| nashastena.ru | свободен |  |
+| nashdomdekor.ru | свободен |  |
+| nashinterer.ru | свободен |  |
+| nashisteny.ru | свободен |  |
+| rodnoydekor.ru | свободен |  |
+| teplydekor.ru | свободен |  |
+| vsemdekor.ru | свободен |  |
+| свойдекор.рф (xn--b1aedohueqb.xn--p1ai) | свободен |  |
 | nashdekor.shop | ? | пустой ответ |
-| нашдекор.рф (xn--80aidulko3d.xn--p1ai) | занят | registrar: DOMENUS-RF; created: 2024-11-23T13:20:02Z; paid-till: 2026-11-23T13:20:02Z |
+| nashuyut.ru | занят | registrar: REGTIME-RU; created: 2026-08-16T22:48:52Z; paid-till: 2027-08-16T22:48:52Z |
+| svoisteny.ru | занят | registrar: REGRU-RU; created: 2025-08-21T08:26:38Z; paid-till: 2027-08-21T08:26:38Z |
+| svoydekor.ru | занят | registrar: REGRU-RU; created: 2026-01-13T10:47:55Z; paid-till: 2027-01-13T10:47:55Z |
+| vashdekor.ru | занят | registrar: RU-CENTER-RU; created: 2010-09-12T08:16:46Z; paid-till: 2027-09-12T09:16:46Z |
