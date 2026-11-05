@@ -1,8 +1,66 @@
-ПРОПУСК 2026-11-05 слот 2: уже выложено
+ВЫЛОЖЕНО #3 2026-11-05 слот 3: https://youtu.be/O-AzfGIQ2f4 (public), за 265 с
 
-
+{
+ "title": "27 Countries Enter, 14 Survive 🔥 Marble Survival Race · Heat 3/7",
+ "description": "Flagball Arena · Season 1, Round 1 · Heat 3/7: 27 countries race through 3 stages — only 14 survive and go to Round 2.\n\nCountries in this heat: Algeria, Bolivia, Bosnia and Herzegovina, Burkina Faso, Cape Verde, Central African Republic, Chile, Colombia, Congo, Czechia, DR Congo, Djibouti, Dominica, Ethiopia, Germany, Guinea-Bissau, Kyrgyzstan, Lesotho, Moldova, Nigeria, Paraguay, Saint Kitts and Nevis, Saint Vincent and the Grenadines, Samoa, Singapore, United Kingdom, Zambia.\n\nCountries still in the game before this race: 163 of 193.\nNext race: Round 1 · Heat 4/7. Grand Final: Nov 9.\n\nHow it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, then a new season starts. 3 new races every day.\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "race_no": 3,
+ "date": "2026-11-05",
+ "slot": 3,
+ "season": 1,
+ "round": 1,
+ "heat": 3,
+ "heats": 7,
+ "survive": 14,
+ "final": false,
+ "kind": "heat",
+ "label": "ROUND 1 · HEAT 3/7",
+ "n": 27,
+ "ranking": [
+  "DZA",
+  "VCT",
+  "CPV",
+  "BFA",
+  "CAF",
+  "COD",
+  "GNB",
+  "GBR",
+  "MDA",
+  "CZE",
+  "BOL",
+  "SGP",
+  "KGZ",
+  "PRY",
+  "DMA",
+  "NGA",
+  "DJI",
+  "COG",
+  "BIH",
+  "ETH",
+  "CHL",
+  "ZMB",
+  "LSO",
+  "WSM",
+  "KNA",
+  "DEU",
+  "COL"
+ ],
+ "video_id": "O-AzfGIQ2f4",
+ "privacy": "public"
+}
 
 --- журнал ---
-15:24:47 режим publish, гонка #3, 2026-11-05 слот 2, событие schedule
-15:24:47 по плану: S1 ROUND 1 · HEAT 3/7
-15:24:47 эта гонка уже выложена — пропускаю
+23:15:22 режим publish, гонка #3, 2026-11-05 слот 3, событие schedule
+23:15:22 по плану: S1 ROUND 1 · HEAT 3/7
+23:15:22 канал: Flagball Arena
+гонка #3 2026-11-05 слот 3: S1 ROUND 1 · HEAT 3/7, 27→14, участники: SGP KNA NGA LSO COL BFA CAF VCT BOL MDA COG DEU COD DMA BIH CZE DZA WSM GNB PRY DJI ETH CPV ZMB GBR KGZ CHL
+  этап 1: 27→23, блоков 11 ['trapdoors', 'twin_rings', 'ring_gate', 'zigzag', 'pendulums', 'pegs', 'tunnels', 'stairs', 'windmills', 'rotor', 'bumpers'], Q-финиш 62.4 c, кадров 1949
+  этап 2: 23→18, блоков 11 ['twin_rings', 'tunnels', 'trapdoors', 'bumpers', 'zigzag', 'pendulums', 'pegs', 'windmills', 'ring_gate', 'rotor', 'stairs'], Q-финиш 60.9 c, кадров 1905
+  этап 3: 18→14, блоков 11 ['zigzag', 'pendulums', 'rotor', 'trapdoors', 'bumpers', 'tunnels', 'twin_rings', 'pegs', 'stairs', 'ring_gate', 'windmills'], Q-финиш 65.8 c, кадров 2049
+длительность ролика ≈ 4.1 мин
+готово: 7427 кадров за 254 с
+кадров 7427, 4.13 мин, рендер 255 с
+выжили: DZA VCT CPV BFA CAF COD GNB GBR MDA CZE BOL SGP KGZ PRY
+23:19:38 ролик готов: 134 МБ, 256 с с начала; название: 27 Countries Enter, 14 Survive 🔥 Marble Survival Race · Heat 3/7
+23:19:46 обложка: 200 
+23:19:47 в плейлисте
+23:19:47 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'madeForKids': False, 'selfDeclaredMadeForKids': False}
