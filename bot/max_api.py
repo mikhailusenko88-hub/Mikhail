@@ -1,4 +1,4 @@
-"""MAX (мессенджер VK) для бота «Пространство»: тонкий клиент Bot API и перевод событий в ядро.
+"""MAX (мессенджер VK) для бота «Наш декор»: тонкий клиент Bot API и перевод событий в ядро.
 
 Документация: https://dev.max.ru/docs-api , схема OpenAPI: github.com/max-messenger/api-schema.
   * адрес API — https://platform-api2.max.ru, токен — в заголовке «Authorization» как есть;

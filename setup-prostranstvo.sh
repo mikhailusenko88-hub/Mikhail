@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # =============================================================================
-#  setup-prostranstvo.sh — установка сервера магазина «Пространство»
+#  setup-prostranstvo.sh — установка сервера магазина «Наш декор»
 #  (Selectel, Ubuntu 24.04 LTS). Запускать от root одной командой:
 #
 #    curl -fsSL https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/server/setup-prostranstvo.sh | bash -s -- ДОМЕН EMAIL
 #
-#  Пример:  ... | bash -s -- prostranstvo-dekor.ru name@example.ru
+#  Пример:  ... | bash -s -- nashdekor.ru name@example.ru
 #
 #  Что делает: ставит nginx, забирает сайт из GitHub (ветка mebel, папка 0f7s1eez)
 #  и обновляет его каждую минуту, кладёт three.js r128 в /mebel/_lib/, включает
@@ -103,10 +103,10 @@ on_exit() {
 
 usage() {
   cat <<'EOF'
-Установка сервера «Пространство».
+Установка сервера «Наш декор».
   curl -fsSL https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/server/setup-prostranstvo.sh | bash -s -- ДОМЕН EMAIL
 
-  ДОМЕН  — например prostranstvo-dekor.ru (без www и https://). «-» — пока без домена (сайт по IP).
+  ДОМЕН  — например nashdekor.ru (без www и https://). «-» — пока без домена (сайт по IP).
   EMAIL  — почта для Let's Encrypt (необязательно).
   --force — запустить, даже если сервер не выглядит новым (осторожно!).
 Повторный запуск без параметров берёт домен и email из /etc/prostranstvo/prostranstvo.conf.
@@ -151,7 +151,7 @@ resolve_settings() {
   if [[ $ARG_DOMAIN == "-" ]]; then
     DOMAIN=""
   elif [[ -n $ARG_DOMAIN ]]; then
-    DOMAIN=$(normalize_domain "$ARG_DOMAIN") || die "непонятный домен «$ARG_DOMAIN». Пример: prostranstvo-dekor.ru"
+    DOMAIN=$(normalize_domain "$ARG_DOMAIN") || die "непонятный домен «$ARG_DOMAIN». Пример: nashdekor.ru"
   else
     DOMAIN=$saved_domain
   fi
@@ -340,7 +340,7 @@ step_user_dirs() {
   chown root:adm "$CERT_LOG"; chmod 640 "$CERT_LOG"
 
   put_file "$CONF_FILE" 644 <<EOF
-# Настройки сервера «Пространство» (создано setup-prostranstvo.sh).
+# Настройки сервера «Наш декор» (создано setup-prostranstvo.sh).
 # Чтобы сменить домен — запустите установку заново с новым доменом.
 DOMAIN=$(printf '%q' "$DOMAIN")
 EMAIL=$(printf '%q' "$EMAIL")
@@ -430,7 +430,7 @@ step_site_sync() {
     warn "сайт пока не загрузился из GitHub. Сервер пробует каждую минуту сам; ошибки — в $SYNC_LOG"
   fi
   put_file /etc/cron.d/prostranstvo 644 <<'EOF'
-# «Пространство» (создано setup-prostranstvo.sh, не править руками):
+# «Наш декор» (создано setup-prostranstvo.sh, не править руками):
 #  - каждую минуту: обновить сайт из GitHub (ошибки: /var/log/prostranstvo-sync.log и journalctl -t prostranstvo-sync);
 #  - каждые 15 минут: если HTTPS-сертификата ещё нет, а DNS уже указывает на сервер — получить его.
 SHELL=/bin/bash
@@ -519,7 +519,7 @@ step_selftest_and_summary() {
   if ((${#WARNINGS[@]})); then
     printf ' ГОТОВО, но есть замечания (см. ниже)\n'
   else
-    printf ' ГОТОВО: сервер «Пространство» настроен\n'
+    printf ' ГОТОВО: сервер «Наш декор» настроен\n'
   fi
   printf '==================================================\n'
   printf ' Сайт:         %s/\n' "$site_url"
@@ -608,7 +608,7 @@ write_helpers() {
   # ---------------------------------------------------------------- common.sh
   put_file "$LIB_SH" 644 <<'PRS_COMMON'
 # shellcheck shell=bash
-# Общие функции служебных команд «Пространства». Создано setup-prostranstvo.sh —
+# Общие функции служебных команд сервера «Наш декор». Создано setup-prostranstvo.sh —
 # руками не править (повторная установка перезапишет файл).
 PROSTRANSTVO_CONF=/etc/prostranstvo/prostranstvo.conf
 if [[ ! -r $PROSTRANSTVO_CONF ]]; then
@@ -721,7 +721,7 @@ PRS_COMMON
   # ------------------------------------------------------- prostranstvo-sync
   put_file /usr/local/sbin/prostranstvo-sync 755 <<'PRS_SYNC'
 #!/bin/bash
-# prostranstvo-sync — обновить сайт «Пространство» из GitHub.
+# prostranstvo-sync — обновить сайт «Наш декор» из GitHub.
 # Запускается cron'ом КАЖДУЮ МИНУТУ от пользователя prostranstvo (/etc/cron.d/prostranstvo).
 # Никаких «тихих» условий: любая ошибка пишется в /var/log/prostranstvo-sync.log
 # и в системный журнал (journalctl -t prostranstvo-sync).
@@ -796,7 +796,7 @@ PRS_SYNC
   # ------------------------------------------------------ prostranstvo-nginx
   put_file /usr/local/sbin/prostranstvo-nginx 755 <<'PRS_NGINX'
 #!/bin/bash
-# prostranstvo-nginx — собрать конфигурацию nginx для сайта «Пространство» и перезагрузить nginx.
+# prostranstvo-nginx — собрать конфигурацию nginx для сайта «Наш декор» и перезагрузить nginx.
 # Если сертификат Let's Encrypt уже есть — включает HTTPS и перенаправление http → https.
 # Если nginx не принимает новую конфигурацию — возвращает прежние файлы (сайт не ломается).
 set -Eeuo pipefail
@@ -873,7 +873,7 @@ EOF
 
 # ---------- сам сайт (общий для http и https)
 cat >"$work/site.conf" <<EOF
-# Сайт «Пространство». Создано prostranstvo-nginx — не править руками.
+# Сайт «Наш декор». Создано prostranstvo-nginx — не править руками.
 root $WWW_DIR;
 index index.html;
 charset utf-8;
@@ -928,7 +928,7 @@ EOF
 
 # ---------- server-блоки
 {
-  echo "# Сайт «Пространство». Создано prostranstvo-nginx $(ts) — не править руками:"
+  echo "# Сайт «Наш декор». Создано prostranstvo-nginx $(ts) — не править руками:"
   echo "# файл пересоздаётся при установке и при получении сертификата."
   if [[ $https == yes ]]; then
     echo "server {"
@@ -1137,7 +1137,7 @@ set -uo pipefail
 
 now=$(date +%s)
 ip=$(server_ip)
-echo "=== Сервер «Пространство», $(date '+%d.%m.%Y %H:%M') ==="
+echo "=== Сервер «Наш декор», $(date '+%d.%m.%Y %H:%M') ==="
 if cert_ok; then
   echo "Сайт:   https://$DOMAIN/  (сертификат до $(cert_until), продление авто)"
 else
@@ -1221,7 +1221,7 @@ main() {
   trap on_exit EXIT
   trap 'on_err $? $LINENO' ERR
 
-  printf '\n=== Установка сервера «Пространство» — %s ===\n' "$(date '+%d.%m.%Y %H:%M')"
+  printf '\n=== Установка сервера «Наш декор» — %s ===\n' "$(date '+%d.%m.%Y %H:%M')"
   printf '\n=== %s: запуск установки ===\n' "$(date '+%F %T')" >>"$DETAIL_LOG"
   if [[ $OS_VERSION != 24.04 ]]; then
     warn "скрипт рассчитан на Ubuntu 24.04, здесь $OS_VERSION — продолжаю"

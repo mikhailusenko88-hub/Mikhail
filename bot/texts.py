@@ -1,4 +1,4 @@
-"""Все тексты бота «Пространство» — в одном месте, чтобы их было легко править.
+"""Все тексты бота «Наш декор» — в одном месте, чтобы их было легко править.
 
 Разметка — HTML (её понимают и Telegram, и MAX: <b>, <i>, <a>, <code>).
 Всё, что пришло от людей (имена, комментарии, ответы), обязательно пропускать через esc().
@@ -16,7 +16,7 @@ from calc import MAX_LINEAR_M, MAX_WALL_HEIGHT_M, MAX_WALL_WIDTH_M, AreaResult, 
 from catalog import Product, group_title
 
 NBSP = " "
-SHOP = "«Пространство»"
+SHOP = "«Наш декор»"
 CHANNEL_NAMES = {"tg": "Telegram", "max": "MAX"}
 HIDDEN = "скрыто — смотрите в MAX"
 

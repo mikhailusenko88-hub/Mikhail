@@ -32,8 +32,8 @@ from config import Config  # noqa: E402
 from core import Engine  # noqa: E402
 from db import Database  # noqa: E402
 
-TG_BOT = {"id": 42, "is_bot": True, "first_name": "Пространство", "username": "prostranstvo_test_bot"}
-MAX_BOT = {"user_id": 7000, "first_name": "Пространство", "username": "id000000000000_bot", "is_bot": True}
+TG_BOT = {"id": 42, "is_bot": True, "first_name": "Наш декор", "username": "prostranstvo_test_bot"}
+MAX_BOT = {"user_id": 7000, "first_name": "Наш декор", "username": "id000000000000_bot", "is_bot": True}
 MAX_TOKEN = "max-test-token-0123456789"
 NB = " "
 

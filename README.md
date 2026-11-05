@@ -1,4 +1,4 @@
-# Сервер магазина «Пространство» (Selectel, Ubuntu 24.04)
+# Сервер магазина «Наш декор» (Selectel, Ubuntu 24.04)
 
 Скрипт `setup-prostranstvo.sh` одной командой настраивает новый сервер:
 
@@ -22,7 +22,7 @@
 ## Запуск (одна команда, от root)
 
 ```
-curl -fsSL https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/server/setup-prostranstvo.sh | bash -s -- prostranstvo-dekor.ru ВАШ@EMAIL
+curl -fsSL https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/server/setup-prostranstvo.sh | bash -s -- nashdekor.ru ВАШ@EMAIL
 ```
 
 Займёт 2–5 минут, в конце — сводка: адреса сайта, что работает, что сделать дальше.

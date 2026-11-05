@@ -1,4 +1,4 @@
-"""Запуск бота магазина «Пространство» (Санкт-Петербург, декор ARTDEC).
+"""Запуск бота магазина «Наш декор» (Санкт-Петербург, декор ARTDEC).
 
     python bot.py                 — Telegram (служба prostranstvo-bot)
     python bot.py --channel max   — MAX      (служба prostranstvo-max)
@@ -62,7 +62,7 @@ async def run(channel: str) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Бот магазина «Пространство»")
+    parser = argparse.ArgumentParser(description="Бот магазина «Наш декор»")
     parser.add_argument("--channel", choices=(CH_TG, CH_MAX), default=CH_TG,
                         help="мессенджер: tg (Telegram, по умолчанию) или max")
     args = parser.parse_args(argv)

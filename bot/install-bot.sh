@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-#  install-bot.sh — установка и обновление бота магазина «Пространство» в Telegram и MAX
+#  install-bot.sh — установка и обновление бота магазина «Наш декор» в Telegram и MAX
 #  (Selectel, Ubuntu 24.04; сервер, настроенный setup-prostranstvo.sh). От root:
 #
 #  Установка (токены необязательны и независимы — можно один из двух):
@@ -14,7 +14,7 @@
 #              --tg-contacts 0|1          Telegram: принимать заявки с телефоном (по умолчанию 0)
 #              --new-code                 новый одноразовый код для /owner
 #              --site-url АДРЕС           адрес сайта для ссылок в боте («-» — без ссылок)
-#              --force                    ставить, даже если это не сервер сайта «Пространство»
+#              --force                    ставить, даже если это не сервер сайта «Наш декор»
 #
 #  Что делает: python3-venv, пользователь prostranstvo, код бота из GitHub (ветка server,
 #  папка bot) → /opt/prostranstvo-bot, venv + pip, /etc/prostranstvo/bot.env (chmod 600),
@@ -95,7 +95,7 @@ run() {
 
 usage() {
   cat <<EOF
-Установка бота «Пространство» (от root), токены — от @BotFather (Telegram) и с платформы MAX:
+Установка бота «Наш декор» (от root), токены — от @BotFather (Telegram) и с платформы MAX:
   curl -fsSL $RAW_INSTALL_URL | bash -s -- --tg 'ТОКЕН_TELEGRAM' --max 'ТОКЕН_MAX'
 Можно только один из токенов. Обновление (токены и база сохраняются):
   curl -fsSL $RAW_INSTALL_URL | bash
@@ -160,7 +160,7 @@ check_root_and_os() {
 # Защита от запуска «не на том» сервере (например, на старом сервере в Казахстане).
 check_server() {
   [[ $FORCE == yes || -f $SITE_CONF || -f $ENV_FILE ]] && return 0
-  printf '\nНа этом сервере нет настроек сайта «Пространство» (%s).\n' "$SITE_CONF"
+  printf '\nНа этом сервере нет настроек сайта «Наш декор» (%s).\n' "$SITE_CONF"
   printf 'Похоже, команда запущена не на том сервере. Бот хранит заявки клиентов,\n'
   printf 'поэтому его ставят на сервер Selectel в России, настроенный setup-prostranstvo.sh.\n'
   printf 'НИЧЕГО НЕ ИЗМЕНЕНО. Если сервер точно нужный — добавьте в конец команды: --force\n'
@@ -213,7 +213,7 @@ write_env_template() {
   local tmp
   tmp=$(mktemp "$CONF_DIR/.bot.env.XXXXXX")
   cat >"$tmp" <<'EOF'
-# Настройки бота «Пространство» в Telegram и MAX (создано install-bot.sh).
+# Настройки бота «Наш декор» в Telegram и MAX (создано install-bot.sh).
 # СЕКРЕТНО: файл читает только root (chmod 600). Не публиковать и не пересылать.
 # После правки:  systemctl restart prostranstvo-bot prostranstvo-max
 #
@@ -529,7 +529,7 @@ step_config() {
     else
       SITE_URL=${ARG_SITE_URL%/}
       [[ $SITE_URL == http://* || $SITE_URL == https://* ]] || SITE_URL="https://$SITE_URL"
-      valid_site_url "$SITE_URL" || die "непонятный адрес сайта «$ARG_SITE_URL». Пример: https://prostranstvo-dekor.ru"
+      valid_site_url "$SITE_URL" || die "непонятный адрес сайта «$ARG_SITE_URL». Пример: https://nashdekor.ru"
     fi
   elif [[ -z $current && -n $auto ]]; then
     SITE_URL=$auto
@@ -639,7 +639,7 @@ summary() {
   if ((${#WARNINGS[@]})); then
     printf ' ГОТОВО, но есть замечания (см. ниже)\n'
   else
-    printf ' ГОТОВО: бот «Пространство» работает\n'
+    printf ' ГОТОВО: бот «Наш декор» работает\n'
   fi
   printf '==================================================\n'
   if [[ $TG_ON == yes ]]; then
@@ -698,7 +698,7 @@ main() {
   flock -n 9 || die "установка бота уже идёт в другом окне. Дождитесь её окончания."
   check_server
 
-  printf '\n=== Установка бота «Пространство» (Telegram и MAX) — %s ===\n' "$(date '+%d.%m.%Y %H:%M')"
+  printf '\n=== Установка бота «Наш декор» (Telegram и MAX) — %s ===\n' "$(date '+%d.%m.%Y %H:%M')"
   step_packages
   step_user
   step_code

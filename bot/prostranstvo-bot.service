@@ -1,9 +1,9 @@
-# Telegram-бот магазина «Пространство». Ставится install-bot.sh в /etc/systemd/system/.
+# Telegram-бот магазина «Наш декор». Ставится install-bot.sh в /etc/systemd/system/.
 # Бот в MAX — отдельная служба prostranstvo-max (сбой одного мессенджера не трогает другой).
 # Настройки и токен — в /etc/prostranstvo/bot.env (chmod 600, читает только systemd).
 # Журнал:  journalctl -u prostranstvo-bot -n 50
 [Unit]
-Description=Бот магазина «Пространство» — Telegram
+Description=Бот магазина «Наш декор» — Telegram
 After=network-online.target
 Wants=network-online.target
 # не сдаваться при долгих сбоях сети: перезапускать всегда
