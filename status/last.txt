@@ -1,19 +1,14 @@
-ОШИБКА: Expecting value: line 1 column 1 (char 0)
+ОШИБКА: секрет FLAGBALL_YT не похож на строку входа: длина 280, начало не {, есть client_id: True, есть refresh_token: True, строк: 10
 
 
 
 --- журнал ---
-11:33:07 режим publish, гонка #2, 2026-11-05 слот 2, событие push
-11:33:07 по плану: S1 ROUND 1 · HEAT 2/7
+11:34:07 режим publish, гонка #2, 2026-11-05 слот 2, событие push
+11:34:07 по плану: S1 ROUND 1 · HEAT 2/7
 Traceback (most recent call last):
-  File "/home/runner/work/Mikhail/Mikhail/ci_run.py", line 139, in <module>
-    main()
-  File "/home/runner/work/Mikhail/Mikhail/ci_run.py", line 88, in main
-    yt = ytmod.YT()
-         ^^^^^^^^^^
-  File "/home/runner/work/Mikhail/Mikhail/yt.py", line 25, in __init__
-    self.k = json.loads(raw)
-             ^^^^^^^^^^^^^^^
+  File "/home/runner/work/Mikhail/Mikhail/yt.py", line 30, in __init__
+    self.k = json.loads(t)
+             ^^^^^^^^^^^^^
   File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/json/__init__.py", line 346, in loads
     return _default_decoder.decode(s)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -23,4 +18,16 @@ Traceback (most recent call last):
   File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/json/decoder.py", line 356, in raw_decode
     raise JSONDecodeError("Expecting value", s, err.value) from None
 json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/ci_run.py", line 139, in <module>
+    main()
+  File "/home/runner/work/Mikhail/Mikhail/ci_run.py", line 88, in main
+    yt = ytmod.YT()
+         ^^^^^^^^^^
+  File "/home/runner/work/Mikhail/Mikhail/yt.py", line 34, in __init__
+    raise SystemExit(f"секрет FLAGBALL_YT не похож на строку входа: длина {len(raw)}, "
+SystemExit: секрет FLAGBALL_YT не похож на строку входа: длина 280, начало не {, есть client_id: True, есть refresh_token: True, строк: 10
 
