@@ -463,25 +463,30 @@ def titles(plan, nxt_label):
     return v[rno % len(v)][:100]
 
 
-def describe(plan, alive_after, nxt_label, fin_txt, ranking):
+NAMES = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "names.json")))
+
+
+def describe(plan, alive_before, nxt_label, fin_txt):
+    """Описание без спойлеров: кто бежит, но не кто выжил."""
     s = plan["season"]
     if plan["final"]:
         head = (f"Flagball Arena · Season {s} GRAND FINAL: the last 32 countries of the world in one marble race, "
                 f"7 stages, only one champion.")
+        who = "The 32 finalists"
     else:
         head = (f"Flagball Arena · Season {s}, {season.label(plan).title()}: {len(plan['codes'])} countries race "
                 f"through {len(plan['stages'])} stages — only {plan['survive']} survive and go to "
                 f"{next_round_name(plan).title()}.")
-    surv = ", ".join(A3[c] for c in (ranking[:plan["survive"]] if not plan["final"] else ranking[:3]))
-    body = (f"{head}\n\n"
-            f"{'Podium' if plan['final'] else 'Survivors'}: {surv}\n"
-            f"Still in the game: {alive_after} of {season.TOTAL} countries.\n"
-            f"Next race: {nxt_label.title()}.{(' Grand Final: ' + fin_txt + '.') if fin_txt else ''}\n\n"
-            f"How it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final. "
-            f"3 new races every day.\n\n"
+        who = "Countries in this heat"
+    names = ", ".join(sorted(NAMES[c] for c in plan["codes"]))
+    return (f"{head}\n\n"
+            f"{who}: {names}.\n\n"
+            f"Countries still in the game before this race: {alive_before} of {season.TOTAL}.\n"
+            f"Next race: {nxt_label.title()}.{(' Grand Final: ' + fin_txt.title() + '.') if fin_txt else ''}\n\n"
+            f"How it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, "
+            f"then a new season starts. 3 new races every day.\n\n"
             f"Like 👍 if your country survived and write in the comments who you're cheering for!\n\n"
             f"#marblerace #countryballs #marblerun #survival #elimination #countries")
-    return body
 
 
 # ============================================================ сборка ролика
@@ -859,7 +864,7 @@ def build(args):
 
     # ---- описание и сохранение сезона
     nlab = season.label(nxt) if not new_season else f"Season {plan['season'] + 1} · Round 1 · Heat 1/7"
-    meta = {"title": titles(plan, nlab), "description": describe(plan, alive_after, nlab, fin_txt, ranking),
+    meta = {"title": titles(plan, nlab), "description": describe(plan, plan["alive"], nlab, fin_txt),
             "race_no": race_no, "date": d.isoformat(), "slot": slot, "season": plan["season"], "round": plan["round"],
             "heat": plan["heat"], "heats": plan["heats"], "survive": plan["survive"], "final": final_race,
             "kind": "final" if final_race else "heat", "label": lab, "n": N,
