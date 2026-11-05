@@ -49,8 +49,33 @@ else:
     if not ch: P('роликов нет'); sys.exit(0)
     url = 'https://www.youtube.com/watch?v=' + ch[0]['id']
 P('качаю', url)
-r = run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', 'out/ep.%(ext)s', '--write-info-json', url] + CL, timeout=1800)
-mp4 = next((os.path.join('out', f) for f in os.listdir('out') if f.startswith('ep.') and f.endswith('.mp4')), None)
+vid = url.split('v=')[-1]
+mp4 = None
+for cl in ['youtube:player_client=android_vr;player_skip=webpage,configs', 'youtube:player_client=tv_simply', 'youtube:player_client=mweb', 'youtube:player_client=web_embedded', 'youtube:player_client=ios,web_safari']:
+    r = run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', 'out/ep.%(ext)s', '--extractor-args', cl, url], timeout=1800)
+    mp4 = next((os.path.join('out', f) for f in os.listdir('out') if f.startswith('ep.') and f.endswith('.mp4')), None)
+    if mp4: P('вышло через', cl); break
+if not mp4:   # запасной путь: открытые зеркала YouTube
+    import urllib.request
+    def get(u, t=60):
+        rq = urllib.request.Request(u, headers={'User-Agent': 'Mozilla/5.0'}); return urllib.request.urlopen(rq, timeout=t).read()
+    for inst in ['https://inv.nadeko.net', 'https://invidious.nerdvpn.de', 'https://yewtu.be', 'https://invidious.f5.si', 'https://iv.datura.network', 'https://invidious.privacyredirect.com']:
+        for itag in ['22', '18']:
+            try:
+                d = get(f'{inst}/latest_version?id={vid}&itag={itag}&local=true', 600)
+                if len(d) > 2_000_000: open('out/ep.mp4', 'wb').write(d); mp4 = 'out/ep.mp4'; P('вышло через', inst, itag, len(d)); break
+                P(inst, itag, 'мало', len(d))
+            except Exception as e: P(inst, itag, 'нет', str(e)[:120])
+        if mp4: break
+    if not mp4:
+        for api in ['https://pipedapi.kavin.rocks', 'https://pipedapi.adminforge.de', 'https://api.piped.private.coffee', 'https://pipedapi.r4fo.com', 'https://pipedapi.leptons.xyz']:
+            try:
+                j = json.loads(get(f'{api}/streams/{vid}'))
+                vs = [v for v in j.get('videoStreams', []) if not v.get('videoOnly') and v.get('url')]
+                vs.sort(key=lambda v: int(re.sub(r'\D', '', v.get('quality') or '0') or 0), reverse=True)
+                if vs: d = get(vs[0]['url'], 900); open('out/ep.mp4', 'wb').write(d); mp4 = 'out/ep.mp4'; P('вышло через', api, vs[0].get('quality'), len(d)); break
+                P(api, 'нет потоков')
+            except Exception as e: P(api, 'нет', str(e)[:120])
 if not mp4: P('не скачалось'); sys.exit(0)
 P('скачано', mp4, os.path.getsize(mp4))
 # листы кадров: кадр каждые 4 с, по 30 на лист, с подписью времени
