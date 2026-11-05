@@ -191,6 +191,10 @@ class YT:
             if r.status_code != 200:
                 return f"плейлист не создался: {r.status_code} {r.text[:200]}"
             pid = r.json()["id"]
+        q = requests.get(f"{API}/playlistItems", params={"part": "id", "playlistId": pid, "videoId": vid},
+                         headers=self.h(), timeout=30)
+        if q.status_code == 200 and q.json().get("items"):
+            return "в плейлисте"
         r = requests.post(f"{API}/playlistItems", params={"part": "snippet"}, headers=self.h(), timeout=30,
                           json={"snippet": {"playlistId": pid, "resourceId": {"kind": "youtube#video", "videoId": vid}}})
         return "в плейлисте" if r.status_code == 200 else f"плейлист: {r.status_code} {r.text[:200]}"

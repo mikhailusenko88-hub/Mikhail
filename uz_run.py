@@ -213,6 +213,15 @@ def main():
         import yt as ytmod
         yt = ytmod.YT()
         log("канал:", yt.channel())
+        # ролики, которые сразу после выкладки не встали в плейлист (YouTube ещё обрабатывал) — добавляем сейчас
+        for h_ in state.get("history", [])[-12:]:
+            if h_.get("link") and not h_.get("pl"):
+                try:
+                    res = yt.to_playlist(h_["link"].rsplit("/", 1)[-1], PLAYLIST[h_["league"]])
+                except Exception as e:  # noqa: BLE001
+                    res = str(e)[:120]
+                h_["pl"] = res == "в плейлисте"
+                log(f"плейлист для {h_['league']} №{h_['no']}: {res[:120]}")
 
     import race_leagues as RL
     import race_video as rv
@@ -258,7 +267,8 @@ def main():
     vid = yt.upload(str(out), meta)
     link = f"https://youtube.com/shorts/{vid}"
     log("YouTube:", link)
-    log(yt.to_playlist(vid, PLAYLIST[league]))
+    pl = yt.to_playlist(vid, PLAYLIST[league])
+    log(pl)
     st = yt.status(vid)
     log("статус:", st.get("privacyStatus"), st.get("uploadStatus"))
     # таблица двигается только после удачной выкладки
@@ -274,7 +284,8 @@ def main():
                                          "top3": info["ranking"][:3], "link": link, "final": final})
     ls["results"] = ls["results"][-300:]
     state.setdefault("history", []).append({"date": d.isoformat(), "slot": slot, "league": league, "no": no,
-                                            "final": final, "link": link, "title": info["title"]})
+                                            "final": final, "link": link, "title": info["title"],
+                                            "pl": pl == "в плейлисте"})
     state["history"] = state["history"][-500:]
     Path("state.json").write_text(json.dumps(state, ensure_ascii=False, indent=1), encoding="utf-8")
     with open("status/uploads.md", "a", encoding="utf-8") as f:
