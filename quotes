@@ -15,8 +15,8 @@ case "${1:-status}" in
   tick)   "$PY" quotes_bot.py tick ;;
   now)    "$PY" quotes_bot.py now ;;
   pause|resume) "$PY" quotes_bot.py "$1" ;;
-  login)  "$PY" yt_upload.py --login-start ;;
-  check)  "$PY" yt_upload.py --check ;;
+  login)  "$PY" yt_upload.py --login-start 2>&1 ;;
+  check)  "$PY" yt_upload.py --check 2>&1 ;;
   log)    tail -15 bot.log 2>/dev/null || echo "лога пока нет" ;;
   update) curl -fsSL https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/quotes/deploy_quotes.sh | bash ;;
   *) sed -n 2,10p "$0" ;;

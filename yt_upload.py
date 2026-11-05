@@ -103,10 +103,12 @@ def login_start():
         if not found:
             sys.exit("Нет ключа клиента — запусти --setup")
         cid, secret = found
+    # для входа по коду Google разрешает только право «youtube» (выкладка) — без права на комментарии
     r = requests.post("https://oauth2.googleapis.com/device/code",
-                      data={"client_id": cid, "scope": " ".join(SCOPES_FULL)}, timeout=30).json()
+                      data={"client_id": cid, "scope": SCOPE}, timeout=30).json()
     if "device_code" not in r:
-        sys.exit(f"Google не выдал код: {r}")
+        print(f"Google не выдал код: {r}", flush=True)
+        sys.exit(1)
     LOGIN.write_text(json.dumps({"client_id": cid, "client_secret": secret, "device_code": r["device_code"],
                                  "interval": r.get("interval", 5),
                                  "deadline": time.time() + r.get("expires_in", 1800)}))
@@ -143,10 +145,10 @@ def login_wait():
         if TOKEN.exists():
             TOKEN.rename(TOKEN.with_name(f"yt_token.json.bak-{time.strftime('%Y%m%d-%H%M%S')}"))
         TOKEN.write_text(json.dumps({"client_id": d["client_id"], "client_secret": d["client_secret"],
-                                     "refresh_token": t["refresh_token"], "scopes": SCOPES_FULL}))
+                                     "refresh_token": t["refresh_token"], "scopes": [SCOPE]}))
         TOKEN.chmod(0o600)
         LOGIN.unlink(missing_ok=True)
-        print(f"{time.strftime('%Y-%m-%d %H:%M:%S')}  YouTube вход: готово, есть право на комментарии", flush=True)
+        print(f"{time.strftime('%Y-%m-%d %H:%M:%S')}  YouTube вход: готово", flush=True)
         try:
             check()
         except SystemExit as e:
