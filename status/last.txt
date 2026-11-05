@@ -1,54 +1,7 @@
-ВЫЛОЖЕНО 2026-11-05 слот 3: cities №1 https://youtube.com/shorts/0erkMjYIh-k, за 62 с
+ПРОПУСК 2026-11-05 слот 3: уже выложено
 
-{
- "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №1",
- "description": "⏳ Finalgacha 3 kun · До финала 3 дня\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
- "tags": [
-  "oʻzbekiston",
-  "uzbekistan",
-  "узбекистан",
-  "poyga",
-  "sharchalar poygasi",
-  "гонка шариков",
-  "marble race",
-  "toshkent",
-  "samarqand",
-  "buxoro",
-  "namangan",
-  "andijon",
-  "fargʻona",
-  "города узбекистана",
-  "shaharlar"
- ]
-}
+
 
 --- журнал (время Ташкента) ---
-19:28:54 режим publish, событие push
-19:28:54 канал: Kim yutadi? @kimyutsdi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-19:28:54 Тема: гонка городов. Подбираю трассу и заезд…
-19:28:57   трасса 1 (funnel, hammers, tramps, pegs, tunnel, split, bumpers): победа на 38.0 с, смен лидера 1, финишировали 3, расчёт 3 с — не подходит
-19:29:00   трасса 2 (stairs, hammers, funnel, bumpers, spinners, split, tramps): победа на 39.9 с, смен лидера 14, финишировали 13, расчёт 3 с — не подходит
-19:29:03   трасса 3 (bumpers, spinners, tramps, funnel, hammers, stairs, pegs, split): победа на 34.9 с, смен лидера 12, финишировали 1, расчёт 2 с — не подходит
-19:29:06   трасса 4 (funnel, bumpy, split, tramps, bumpers, pegs, spinners, stairs): победа на 43.4 с, смен лидера 21, финишировали 9, расчёт 3 с
-19:29:06 Рисую трассу…
-19:29:07 Рисую кадры: заезд 50 с + финал 8 с…
-19:29:07   кадр 0/1488, 13 с
-19:29:14   кадр 300/1488, 20 с
-19:29:22   кадр 600/1488, 28 с
-19:29:30   кадр 900/1488, 35 с
-19:29:37   кадр 1200/1488, 43 с
-19:29:51 Свожу звук…
-19:29:52 Готово за 58 с: победил Xiva, ролик 57 с
-19:29:52 ролик готов: 57 с, 38 МБ, сборка 58 с; победил Xiva, топ-3: Xiva, Urganch, Andijon
-19:29:54 YouTube: https://youtube.com/shorts/0erkMjYIh-k
-19:29:55 плейлист: 409 {
-  "error": {
-    "code": 409,
-    "message": "The operation was aborted.",
-    "errors": [
-      {
-        "domain": "youtube.CoreErrorDomain",
-        "reason": "SERVICE_UNAVAILABLE"
-      }
-    ],
-19:29:55 статус: public uploaded
+20:29:20 режим publish, событие schedule
+20:29:20 этот слот уже выложен — пропускаю
