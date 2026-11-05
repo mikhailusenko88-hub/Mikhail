@@ -1,0 +1,42 @@
+name: Kim yutadi? — гонки Узбекистана
+
+on:
+  schedule:
+    - cron: "35 6 * * *"    # 11:35 Ташкента → ролик ~12:00 (города)
+    - cron: "35 10 * * *"   # 15:35 → ~16:00 (машины)
+    - cron: "35 14 * * *"   # 19:35 → ~20:00 (города)
+  push:
+    branches: [uz-race]
+    paths: [request.txt]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: uz-race
+  cancel-in-progress: false
+
+jobs:
+  race:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: uz-race
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Подготовка
+        run: bash ci_setup.sh
+      - name: Гонка / вход
+        env:
+          FLAGBALL_YT: ${{ secrets.FLAGBALL_YT }}
+          UZ_YT: ${{ secrets.UZ_YT }}
+          EVENT: ${{ github.event_name }}
+        run: python uz_run.py
+      - name: Сохранить таблицу и отчёт
+        if: always()
+        run: bash ci_commit.sh
