@@ -1,26 +1,31 @@
-# Проверка доменов — 2026-11-05 10:00 UTC
+# Проверка доменов — 2026-11-05 10:05 UTC
 
 | Домен | Статус | Подробности |
 |---|---|---|
-| baltdekor.ru | свободен |  |
-| dekoriy.ru | свободен |  |
-| fakturia.ru | свободен |  |
-| petrodekor.ru | свободен |  |
-| prostordekor.ru | свободен |  |
-| prostranstvo78.ru | свободен |  |
-| relefika.ru | свободен |  |
-| relefiya.ru | свободен |  |
-| stenoriya.ru | свободен |  |
-| stensvet.ru | свободен |  |
-| svetostena.ru | свободен |  |
-| светостена.рф (xn--80adja4besdhc.xn--p1ai) | свободен |  |
-| стенория.рф (xn--e1agoekch3i.xn--p1ai) | свободен |  |
-| фактурия.рф (xn--80aqfyjgd8g.xn--p1ai) | свободен |  |
-| interiya.ru | занят | registrar: RU-CENTER-RU; created: 2023-12-07T11:26:03Z; paid-till: 2026-12-07T11:26:03Z |
-| ladnydom.ru | занят | registrar: DOMAINSHOP-RU; created: 2025-05-20T14:00:45Z; paid-till: 2027-05-20T14:00:45Z |
-| lepninka.ru | занят | registrar: REGRU-RU; created: 2022-04-20T14:01:25Z; paid-till: 2027-04-20T14:01:25Z |
-| prostoriya.ru | занят | registrar: RU-CENTER-RU; created: 2014-08-08T11:57:29Z; paid-till: 2027-08-08T12:57:29Z |
-| stenodekor.ru | занят | registrar: RU-CENTER-RU; created: 2015-04-23T14:06:47Z; paid-till: 2027-04-23T14:06:47Z |
-| svetlica.ru | занят | registrar: DOMAINS-RU; created: 2006-10-25T20:00:00Z; paid-till: 2027-10-25T21:00:00Z |
-| svetlitsa.ru | занят | registrar: REGRU-RU; created: 2020-10-21T14:00:51Z; paid-till: 2026-10-21T14:00:51Z |
-| простория.рф (xn--h1alacfcfi4j.xn--p1ai) | занят | registrar: TILDA-RF; created: 2026-09-17T04:29:48Z; paid-till: 2027-09-17T04:29:48Z |
+| dekorlavka.ru | свободен |  |
+| dekorneva.ru | свободен |  |
+| dekorpiter.ru | свободен |  |
+| nashdekor.ru | свободен |  |
+| piterdekor.ru | свободен |  |
+| prostodekor.ru | свободен |  |
+| декор-спб.рф (xn----btbhezyigk.xn--p1ai) | свободен |  |
+| декорспб.рф (xn--90afduuggi.xn--p1ai) | свободен |  |
+| просто-декор.рф (xn----htbduqaebjhem.xn--p1ai) | свободен |  |
+| decor.ru | занят | registrar: REGRU-RU; created: 1999-11-29T15:35:00Z; paid-till: 2026-11-30T21:00:00Z |
+| decorspb.ru | занят | registrar: REGRU-RU; created: 2016-07-26T14:05:04Z; paid-till: 2027-07-26T14:05:04Z |
+| dekor.ru | занят | registrar: RU-CENTER-RU; created: 2000-04-14T15:16:20Z; paid-till: 2027-04-30T21:00:00Z |
+| dekorin.ru | занят | registrar: REGRU-RU; created: 2019-04-23T14:33:28Z; paid-till: 2027-04-23T14:33:28Z |
+| dekormarket.ru | занят | registrar: REGRU-RU; created: 2015-06-26T14:06:57Z; paid-till: 2027-06-26T14:06:57Z |
+| dekoro.ru | занят | registrar: DOMAINS-RU; created: 2013-08-30T13:02:50Z; paid-till: 2027-08-30T14:02:50Z |
+| dekorplus.ru | занят | registrar: RU-CENTER-RU; created: 2006-05-30T20:00:00Z; paid-till: 2027-05-30T21:00:00Z |
+| dekorshop.ru | занят | registrar: DOMAINS-RU; created: 2010-09-22T15:31:02Z; paid-till: 2027-09-22T16:31:02Z |
+| dekorspb.ru | занят | registrar: REGRU-RU; created: 2018-05-16T14:11:50Z; paid-till: 2027-05-16T14:11:50Z |
+| dekorstore.ru | занят | registrar: REGRU-RU; created: 2017-06-22T14:07:21Z; paid-till: 2027-06-22T14:07:21Z |
+| dekorum.ru | занят | registrar: REGRU-RU; created: 2008-01-09T21:00:00Z; paid-till: 2027-01-09T21:00:00Z |
+| moydekor.ru | занят | registrar: RU-CENTER-RU; created: 2023-02-28T14:35:04Z; paid-till: 2027-02-28T14:35:04Z |
+| prostodecor.ru | занят | registrar: REGRU-RU; created: 2022-07-26T14:07:04Z; paid-till: 2027-07-26T14:07:04Z |
+| spbdekor.ru | занят | registrar: REGRU-RU; created: 2009-10-26T21:00:00Z; paid-till: 2027-10-26T21:00:00Z |
+| tvoydekor.ru | занят | registrar: REGRU-RU; created: 2019-03-28T14:02:27Z; paid-till: 2027-03-28T14:02:27Z |
+| vsedekor.ru | занят | registrar: RU-CENTER-RU; created: 2018-08-24T10:18:24Z; paid-till: 2027-08-24T10:18:24Z |
+| декор.рф (xn--d1acpqk.xn--p1ai) | занят | registrar: REGRU-RF; created: 2009-11-25T09:33:11Z; paid-till: 2026-11-25T09:33:11Z |
+| простодекор.рф (xn--d1acpnadbigel.xn--p1ai) | занят | registrar: REGRU-RF; created: 2021-10-03T19:40:58Z; paid-till: 2027-10-03T19:40:58Z |
