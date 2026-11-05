@@ -19,17 +19,25 @@ if vid: url = 'https://www.youtube.com/watch?v=' + vid
 else:
     ch_url = chan if chan.startswith('http') or chan.startswith('@') else None
     if ch_url and ch_url.startswith('@'): ch_url = 'https://www.youtube.com/' + ch_url
+    norm = lambda x: re.sub(r'[^a-zа-яё0-9]', '', (x or '').lower())
     if not ch_url:
-        r = run(['yt-dlp', '--flat-playlist', '-J', 'ytsearch20:' + chan] + CL)
-        try:
-            ents = json.loads(r.stdout).get('entries') or []
-        except Exception: ents = []
         cands = {}
-        for e in ents:
-            nm = (e.get('channel') or e.get('uploader') or '').strip()
-            P('search:', nm, '|', e.get('channel_id'), '|', e.get('title'))
-            if nm.lower() == chan.lower() and e.get('channel_id'): cands[e['channel_id']] = nm
+        for q in [chan, 'Кот Барсик Кто перепутал время', 'Кот Барсик Куда пропал дождь', 'Кот Барсик мультик серия', 'Кот Барсик Кто оставил огромные следы']:
+            r = run(['yt-dlp', '--flat-playlist', '-J', 'ytsearch20:' + q] + CL)
+            try: ents = json.loads(r.stdout).get('entries') or []
+            except Exception: ents = []
+            for e in ents:
+                nm = (e.get('channel') or e.get('uploader') or '').strip()
+                if 'барсик' in (e.get('title') or '').lower() or norm(chan) in norm(nm): P('search:', nm, '|', e.get('channel_id'), '|', e.get('title'))
+                if norm(chan) in norm(nm) and e.get('channel_id'): cands[e['channel_id']] = nm
+            if cands: break
         if cands: ch_url = 'https://www.youtube.com/channel/' + list(cands)[0]
+    if not ch_url:
+        for h in ['@CartoonFriend3', '@cartoonfriend3', '@Cartoon_Friend3', '@Cartoon_Friend_3', '@CartoonFriend-3', '@cartoon-friend-3']:
+            r = run(['yt-dlp', '--flat-playlist', '-J', '--playlist-end', '3', 'https://www.youtube.com/' + h + '/videos'] + CL)
+            try: j = json.loads(r.stdout)
+            except Exception: j = None
+            if j and (j.get('entries') or []): P('нашёл по адресу', h, j.get('channel') or j.get('uploader')); ch_url = 'https://www.youtube.com/' + h; break
     if not ch_url: P('канал не найден'); sys.exit(0)
     P('канал', ch_url)
     r = run(['yt-dlp', '--flat-playlist', '-J', '--playlist-end', '15', ch_url + '/videos'] + CL)
