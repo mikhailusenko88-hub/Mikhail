@@ -1,13 +1,18 @@
-2026-11-05 10:16 UTC
-tm_rospatent_nashdekor.txt  https://searchplatform.rospatent.gov.ru/trademarks  (1804 симв.)
-tm_rospatent_nashdekor2.txt  https://searchplatform.rospatent.gov.ru/trademarks  (1848 симв.)
+2026-11-05 10:18 UTC
+fips_1080393.txt  https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=1080393&TypeFile=html  (177 симв.)
+fips_838186.txt  https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=838186&TypeFile=html  (177 симв.)
+fips_909006.txt  https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=909006&TypeFile=html  (177 симв.)
+fips_925775.txt  https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=925775&TypeFile=html  (177 симв.)
+fips_381324.txt  https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=381324&TypeFile=html  (177 симв.)
 
 --- ЖУРНАЛ ---
-open https://searchplatform.rospatent.gov.ru/trademarks: ok
-fill «input[type=text], input:not([type]), textarea»: ok (1/1)
-press Enter: ok
-snap tm_rospatent_nashdekor: 1804 симв.
-open https://searchplatform.rospatent.gov.ru/trademarks: ok
-fill «input[type=text], input:not([type]), textarea»: ok (1/1)
-press Enter: ok
-snap tm_rospatent_nashdekor2: 1848 симв.
+open https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=1080393&TypeFile=html: ok
+snap fips_1080393: 177 симв.
+open https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=838186&TypeFile=html: ok
+snap fips_838186: 177 симв.
+open https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=909006&TypeFile=html: ok
+snap fips_909006: 177 симв.
+open https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=925775&TypeFile=html: ok
+snap fips_925775: 177 симв.
+open https://new.fips.ru/registers-doc-view/fips_servlet?DB=RUTM&DocNumber=381324&TypeFile=html: ok
+snap fips_381324: 177 симв.
