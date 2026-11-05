@@ -1,0 +1,52 @@
+URL: https://searchplatform.rospatent.gov.ru/trademarks?q=%D0%BD%D0%B0%D1%88%20%D0%B4%D0%B5%D0%BA%D0%BE%D1%80
+
+Версия: 1.0.0.3
+Патенты
+Поиск A.I.
+Генетический поиск
+Товарные знаки
+ПрЭВМ БД ТИМС
+Классификаторы
+Непатентная литература
+Статистика
+Справка
+Видео Справка
+RU
+СПРАВКА
+Войти
+Товарные знаки
+Промышленные образцы
+ТЗ РФ
+Общеизвестные ТЗ РФ
+Международные ТЗ
+Словесный
+Изобразительный
+Атрибутный
+Поиск
+По написанию
+Семантический
+Фонетический
+Буквенный дизайн
+Строгое совпадение (четкий поиск)
+Частичное сходство (нечеткий поиск)
+Игнорировать пробелы
+Разбить слова на части
+Совпадение начала слова
+Совпадение конца слова
+Алгоритм поиска
+Двубуквенные основы
+Фильтр:
+
+--- ССЫЛКИ ---
+https://searchplatform.rospatent.gov.ru/ | 
+https://searchplatform.rospatent.gov.ru/patents | Патенты
+https://searchplatform.rospatent.gov.ru/equal_docs | Поиск A.I.
+https://searchplatform.rospatent.gov.ru/genetic | Генетический поиск
+https://searchplatform.rospatent.gov.ru/trademarks?q=%D0%BD%D0%B0%D1%88%20%D0%B4%D0%B5%D0%BA%D0%BE%D1%80 | Товарные знаки
+https://searchplatform.rospatent.gov.ru/tims | ПрЭВМ БД ТИМС
+https://searchplatform.rospatent.gov.ru/classifiers | Классификаторы
+https://searchplatform.rospatent.gov.ru/patent_literature | Непатентная литература
+https://searchplatform.rospatent.gov.ru/statistics | Статистика
+https://searchplatform.rospatent.gov.ru/help | Справка
+https://searchplatform.rospatent.gov.ru/video_help | Видео Справка
+mailto:new_helpdesk@rupto.ru | 
