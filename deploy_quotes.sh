@@ -15,7 +15,7 @@ if [ ! -f config.json ]; then
   cat > config.json <<'JSON'
 {
   "enabled": true,
-  "channel_name": "Живые строки",
+  "channel_name": "Living Lines",
   "youtube_category_id": "22",
   "youtube_privacy": "public",
   "yt_extra_tags": ["цитаты", "мудрость", "цитаты великих людей", "мудрые мысли", "классика", "литература", "акварель", "quotes", "wisdom"]

@@ -52,7 +52,7 @@ def setup():
     print("\n" + "=" * 50)
     print(f"  На телефоне открой:  {r['verification_url']}")
     print(f"  Введи код:           {r['user_code']}")
-    print("  Выбери канал «Живые строки» и нажми «Разрешить».")
+    print("  Выбери канал «Living Lines» и нажми «Разрешить».")
     print("  (Если Google напишет «приложение не проверено» —")
     print("   «Дополнительные настройки» → «Перейти на страницу…»)")
     print("=" * 50 + "\nЖду подтверждения...")
@@ -116,7 +116,7 @@ def login_start():
                          stdout=lf, stderr=lf, start_new_session=True)
     print(f"1) Открой на телефоне:  {r['verification_url']}")
     print(f"2) Введи код:  {r['user_code']}")
-    print("3) Выбери аккаунт и канал «Живые строки», нажми «Разрешить»")
+    print("3) Выбери аккаунт и канал «Living Lines», нажми «Разрешить»")
     print("   (если «приложение не проверено» — «Дополнительно» → «Перейти…»)")
     print("4) Через минуту проверь:  quotes check")
     print("Код действует 30 минут.")
@@ -168,10 +168,10 @@ def check():
     ch = _yt().channels().list(part="snippet", mine=True).execute()
     items = ch.get("items", [])
     if not items:
-        sys.exit("Под этим входом нет канала. Запусти quotes login и выбери канал «Живые строки».")
+        sys.exit("Под этим входом нет канала. Запусти quotes login и выбери канал «Living Lines».")
     sn = items[0]["snippet"]
     print(f"Канал для выкладки: {sn['title']} ({sn.get('customUrl', '')})")
-    want = json.loads((BASE / "config.json").read_text(encoding="utf-8")).get("channel_name", "Живые строки")
+    want = json.loads((BASE / "config.json").read_text(encoding="utf-8")).get("channel_name", "Living Lines")
     if want.lower() not in sn["title"].lower():
         print(f"⚠️ Это не «{want}». Запусти quotes login и выбери нужный канал.")
 
