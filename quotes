@@ -1,0 +1,23 @@
+#!/bin/bash
+# quotes — бот «Живые строки» (для «Команд» на iPhone, кнопка «Сервер»)
+#   quotes          — что выложено и что дальше
+#   quotes login    — войти в YouTube (код для google.com/device), выбрать канал «Живые строки»
+#   quotes check    — проверить, в какой канал пойдут ролики
+#   quotes now      — выложить следующий ролик сейчас
+#   quotes pause | resume — остановить / продолжить
+#   quotes log      — последние записи бота
+#   quotes update   — обновить бота из GitHub
+D=/root/quotes-bot
+PY=__PY__
+cd "$D" || exit 1
+case "${1:-status}" in
+  status) "$PY" quotes_bot.py status ;;
+  tick)   "$PY" quotes_bot.py tick ;;
+  now)    "$PY" quotes_bot.py now ;;
+  pause|resume) "$PY" quotes_bot.py "$1" ;;
+  login)  "$PY" yt_upload.py --login-start ;;
+  check)  "$PY" yt_upload.py --check ;;
+  log)    tail -15 bot.log 2>/dev/null || echo "лога пока нет" ;;
+  update) curl -fsSL https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/quotes/deploy_quotes.sh | bash ;;
+  *) sed -n 2,10p "$0" ;;
+esac
