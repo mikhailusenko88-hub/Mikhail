@@ -156,7 +156,7 @@ step_packages() {
   export DEBIAN_FRONTEND=noninteractive NEEDRESTART_SUSPEND=1 NEEDRESTART_MODE=l
   local apt=(apt-get -y -q -o DPkg::Lock::Timeout=600 -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold)
   local base=(postfix dovecot-core dovecot-imapd dovecot-lmtpd dovecot-sieve rspamd redis-server
-    ssl-cert swaks bind9-dnsutils openssl ca-certificates cron)
+    ssl-cert swaks libnet-ssleay-perl libio-socket-ssl-perl bind9-dnsutils openssl ca-certificates cron)
   local web=(php-fpm roundcube-core roundcube-sqlite3 roundcube-plugins sqlite3)
   local n
 
@@ -266,7 +266,11 @@ norm_box() { # norm_box ИМЯ|АДРЕС → имя до @
   [[ $n =~ ^[a-z0-9]([a-z0-9._-]{0,30}[a-z0-9])?$ ]] || { echo "Непонятное имя ящика: «$1»" >&2; return 1; }
   printf '%s\n' "$n"
 }
-gen_pw() { LC_ALL=C tr -dc 'A-HJ-NP-Za-km-z2-9' </dev/urandom | head -c 14; echo; }
+gen_pw() {
+  local s=""
+  while ((${#s} < 14)); do s+=$(head -c 96 /dev/urandom | LC_ALL=C tr -dc 'A-HJ-NP-Za-km-z2-9'); done
+  printf '%s\n' "${s:0:14}"
+}
 hash_pw() { printf '%s' "$1" | openssl passwd -6 -stdin; }
 boxes() { [[ -f $USERS_FILE ]] && cut -d: -f1 "$USERS_FILE" | sed -n "s/@$DOMAIN\$//p" || true; }
 has_box() { boxes | grep -qxF "$1"; }
@@ -1159,7 +1163,7 @@ step_selftest() {
   before=$(maildir_count "$b")
   res=$(swaks --silent 1 --server 127.0.0.1 --port 465 --tls-on-connect --auth LOGIN \
     --auth-user "$a@$DOMAIN" --auth-password "$pw" --from "$a@$DOMAIN" --to "$b@$DOMAIN" \
-    --header "Subject: selftest-out" --body "Проверка отправки" 2>&1) && code=ok || code=$(grep -m1 -E '^<~?\*+ *[45]' <<<"$res" || echo "ошибка")
+    --header "Subject: selftest-out" --body "Проверка отправки" 2>&1) && code=ok || code=$(grep -m1 -E '^(<~?\*+ *[45]|\*\*\*)' <<<"$res" || echo "ошибка")
   for s in $(seq 1 15); do (($(maildir_count "$b") > before)) && break; sleep 1; done
   if (($(maildir_count "$b") > before)); then
     check "отправка с паролем (порт 465)" да да
@@ -1174,11 +1178,12 @@ step_selftest() {
   fi
 
   # 3) неверный пароль — отказ; чужим (без пароля) — не пересылаем
-  if swaks --silent 2 --server 127.0.0.1 --port 587 --tls --auth LOGIN --auth-user "$a@$DOMAIN" \
-    --auth-password "wrong-$RANDOM" --from "$a@$DOMAIN" --to "$b@$DOMAIN" --quit-after AUTH >/dev/null 2>&1; then
-    check "неверный пароль не принимается" "принят!" да
+  res=$(swaks --server 127.0.0.1 --port 587 --tls --auth LOGIN --auth-user "$a@$DOMAIN" \
+    --auth-password "wrong-$RANDOM" --from "$a@$DOMAIN" --to "$b@$DOMAIN" --quit-after AUTH 2>&1) || true
+  if grep -qE '^<~?\*+ *535' <<<"$res"; then
+    check "неверный пароль не принимается (587, STARTTLS)" да да
   else
-    check "неверный пароль не принимается" да да
+    check "неверный пароль не принимается (587, STARTTLS)" "$(grep -m1 -E '^(<~?\*|\*\*\*)' <<<"$res" || echo 'нет ответа 535')" да
   fi
   ip=$(ip -4 -o addr show scope global 2>/dev/null | awk 'NR == 1 {sub(/\/.*/, "", $4); print $4}') || ip=""
   if [[ -n $ip ]]; then
