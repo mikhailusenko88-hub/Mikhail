@@ -96,8 +96,7 @@ def login():
     import yt
     cid, sec = ytkey.app_client()
     r = requests.post("https://oauth2.googleapis.com/device/code", timeout=30,
-                      data={"client_id": cid, "scope": "https://www.googleapis.com/auth/youtube "
-                                                         "https://www.googleapis.com/auth/youtube.force-ssl"}).json()
+                      data={"client_id": cid, "scope": "https://www.googleapis.com/auth/youtube"}).json()
     if "device_code" not in r:
         write_status(f"ВХОД: Google не выдал код: {r}", name="login.txt")
         raise SystemExit(f"Google не выдал код: {r}")
@@ -157,7 +156,7 @@ def take_requests(state, yt, log):
         log(f"комментарии не прочитались: {str(e)[:150]}")
         return
     if err:
-        log(f"комментарии по каналу не отдались ({err[:80]}), читал по роликам")
+        log(f"комментарии: {err.strip(' ·')}")
     seen = state.setdefault("seen_comments", [])
     seen_set = set(seen)
     fresh = [c for c in items if c[0] not in seen_set][::-1]          # от старых к новым
@@ -334,7 +333,6 @@ def main():
     log("YouTube:", link)
     pl = yt.to_playlist(vid, PLAYLIST[league])
     log(pl)
-    log("первый комментарий:", yt.first_comment(vid, RL.LEAGUES[league]["first_comment"]))
     st = yt.status(vid)
     log("статус:", st.get("privacyStatus"), st.get("uploadStatus"))
     # таблица двигается только после удачной выкладки

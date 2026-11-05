@@ -173,43 +173,12 @@ class YT:
                 pos = int(rg.split("-")[1]) + 1 if (q.status_code == 308 and rg) else 0
 
     def comments(self, channel_id, video_ids=()):
-        """Свежие комментарии под роликами канала: [(id, текст, id_автора)]. Свои (от канала) не берём."""
-        out, err = [], None
-        r = requests.get(f"{API}/commentThreads", headers=self.h(), timeout=30, params={
-            "part": "snippet", "allThreadsRelatedToChannelId": channel_id, "maxResults": 100, "order": "time",
-            "textFormat": "plainText"})
-        items = r.json().get("items", []) if r.status_code == 200 else None
-        if items is None:
-            err = f"{r.status_code} {r.text[:200]}"
-            items = []
-            for vid in list(video_ids)[-15:]:
-                q = requests.get(f"{API}/commentThreads", headers=self.h(), timeout=30, params={
-                    "part": "snippet", "videoId": vid, "maxResults": 100, "order": "time", "textFormat": "plainText"})
-                if q.status_code == 200:
-                    items += q.json().get("items", [])
-        for it in items:
-            sn = it["snippet"]["topLevelComment"]["snippet"]
-            author = (sn.get("authorChannelId") or {}).get("value", "")
-            if author == channel_id:
-                continue
-            out.append((it["id"], sn.get("textOriginal") or sn.get("textDisplay") or "", author))
-        return out, err
-
-    def first_comment(self, vid, text, tries=4, pause=45):
-        """Комментарий от канала под роликом (нужен вход с правом на комментарии). Сразу после загрузки YouTube
-        может не пускать — пробуем ещё до 4 раз."""
-        last = ""
-        for k in range(tries):
-            if k:
-                time.sleep(pause)
-            r = requests.post(f"{API}/commentThreads", params={"part": "snippet"}, headers=self.h(), timeout=30,
-                              json={"snippet": {"videoId": vid, "topLevelComment": {"snippet": {"textOriginal": text}}}})
-            if r.status_code == 200:
-                return "оставил" + (f" (с {k + 1}-й попытки)" if k else "")
-            last = f"{r.status_code} {r.text[:160]}"
-            if r.status_code == 403 and "insufficient" in r.text.lower():
-                return "нет права на комментарии — нужен новый вход (mode: login)"
-        return "не получилось: " + last
+        """Свежие комментарии под роликами канала: [(id, текст, id_автора)]. Свои (от канала) не берём.
+        Через API нельзя (вход без права на комментарии) — читаем открыто, как зритель (comments_pub)."""
+        import comments_pub
+        items, err, n = comments_pub.comments(channel_id, video_ids)
+        out = [c for c in items if c[2] != channel_id]
+        return out, (err or "") + f" · роликов просмотрено: {n}, комментариев: {len(items)}"
 
     def status(self, vid):
         r = requests.get(f"{API}/videos", params={"part": "status", "id": vid}, headers=self.h(), timeout=30)
