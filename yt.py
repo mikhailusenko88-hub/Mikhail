@@ -23,6 +23,10 @@ class YT:
         raw = os.environ.get("FLAGBALL_YT", "").strip()
         if not raw:
             raise SystemExit("нет секрета FLAGBALL_YT — вход в YouTube ещё не сделан")
+        if "FB1:" in raw and ":END" in raw:
+            self.k = self._fb1(raw)
+            self.tok, self.t_tok = None, 0
+            return
         t = raw.replace("\u201c", '"').replace("\u201d", '"').replace("\u00ab", '"').replace("\u00bb", '"')
         i, j = t.find("{"), t.rfind("}")
         if i >= 0 and j > i:
@@ -45,6 +49,20 @@ class YT:
                              f"строк: {raw.count(chr(10)) + 1}")
         self.tok = None
         self.t_tok = 0
+
+    @staticmethod
+    def _fb1(raw):
+        """Формат с сервера (fb-token.sh): FB1:<base64>:<проверка>:END, разбит на короткие строки."""
+        import base64, hashlib
+        body = raw[raw.index("FB1:") + 4:raw.rindex(":END")]
+        body = re.sub(r"[^A-Za-z0-9+/=:]", "", body)       # переносы, дефисы, мусор от копирования
+        b64, chk = body.rsplit(":", 1)
+        data = base64.b64decode(b64 + "=" * (-len(b64) % 4))
+        if hashlib.sha256(data).hexdigest()[:8] != chk:
+            raise SystemExit("строка входа испорчена при копировании (не сходится проверка) — скопируй ещё раз")
+        k = json.loads(data)
+        assert all(k.get(x) for x in ("client_id", "client_secret", "refresh_token"))
+        return k
 
     def h(self, extra=None):
         if not self.tok or time.time() - self.t_tok > 2700:
