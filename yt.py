@@ -22,7 +22,19 @@ class YT:
         raw = os.environ.get("FLAGBALL_YT", "").strip()
         if not raw:
             raise SystemExit("нет секрета FLAGBALL_YT — вход в YouTube ещё не сделан")
-        self.k = json.loads(raw)
+        t = raw.replace("\u201c", '"').replace("\u201d", '"').replace("\u00ab", '"').replace("\u00bb", '"')
+        i, j = t.find("{"), t.rfind("}")
+        if i >= 0 and j > i:
+            t = t[i:j + 1]
+        try:
+            self.k = json.loads(t)
+            assert all(self.k.get(x) for x in ("client_id", "client_secret", "refresh_token"))
+        except Exception:
+            # сам секрет не печатаем — только приметы, чтобы понять, что вставлено
+            raise SystemExit(f"секрет FLAGBALL_YT не похож на строку входа: длина {len(raw)}, "
+                             f"начало {'{' if raw[:1] == '{' else 'не {'}, "
+                             f"есть client_id: {'client_id' in raw}, есть refresh_token: {'refresh_token' in raw}, "
+                             f"строк: {raw.count(chr(10)) + 1}")
         self.tok = None
         self.t_tok = 0
 
