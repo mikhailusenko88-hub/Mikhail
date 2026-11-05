@@ -1,26 +1,24 @@
-ОШИБКА: Google не пустил (вход устарел?): 401 {
-  "error": "invalid_client",
-  "error_description": "The provided client secret is invalid."
-}
+ОШИБКА: Invalid base64-encoded string: number of data characters (353) cannot be 1 more than a multiple of 4
 
 
 
 --- журнал ---
-11:35:15 режим publish, гонка #2, 2026-11-05 слот 2, событие push
-11:35:15 по плану: S1 ROUND 1 · HEAT 2/7
+11:49:54 режим publish, гонка #2, 2026-11-05 слот 2, событие push
+11:49:54 по плану: S1 ROUND 1 · HEAT 2/7
 Traceback (most recent call last):
   File "/home/runner/work/Mikhail/Mikhail/ci_run.py", line 139, in <module>
     main()
-  File "/home/runner/work/Mikhail/Mikhail/ci_run.py", line 89, in main
-    log("канал:", yt.channel())
-                  ^^^^^^^^^^^^
-  File "/home/runner/work/Mikhail/Mikhail/yt.py", line 62, in channel
-    r = requests.get(f"{API}/channels", params={"part": "snippet", "mine": "true"}, headers=self.h(), timeout=30)
-                                                                                            ^^^^^^^^
-  File "/home/runner/work/Mikhail/Mikhail/yt.py", line 55, in h
-    raise SystemExit(f"Google не пустил (вход устарел?): {r.status_code} {r.text[:300]}")
-SystemExit: Google не пустил (вход устарел?): 401 {
-  "error": "invalid_client",
-  "error_description": "The provided client secret is invalid."
-}
+  File "/home/runner/work/Mikhail/Mikhail/ci_run.py", line 88, in main
+    yt = ytmod.YT()
+         ^^^^^^^^^^
+  File "/home/runner/work/Mikhail/Mikhail/yt.py", line 27, in __init__
+    self.k = self._fb1(raw)
+             ^^^^^^^^^^^^^^
+  File "/home/runner/work/Mikhail/Mikhail/yt.py", line 60, in _fb1
+    data = base64.b64decode(b64 + "=" * (-len(b64) % 4))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/base64.py", line 88, in b64decode
+    return binascii.a2b_base64(s, strict_mode=validate)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+binascii.Error: Invalid base64-encoded string: number of data characters (353) cannot be 1 more than a multiple of 4
 
