@@ -69,9 +69,9 @@ fi
 echo "== Место на диске: $(df -h / | awk 'NR==2{print "свободно "$4" из "$2}')"
 echo
 if [ -f yt_token.json ]; then
-  "$PY" yt_upload.py --check
+  "$PY" yt_upload.py --check 2>&1
   "$PY" quotes_bot.py status
 else
   echo "Осталось войти в YouTube. Сейчас покажу код:"
-  "$PY" yt_upload.py --login-start
+  "$PY" yt_upload.py --login-start 2>&1
 fi
