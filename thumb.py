@@ -14,7 +14,8 @@ from render import font, mix
 W, H = 1280, 720
 
 
-def make(codes, race_no, out, final=False):
+def make(codes, race_no, out, final=False, n=32, surv=1, tag=""):
+    tag = tag or f"#{race_no}"
     rr = random.Random(race_no)
     th = render.THEMES[race_no % (len(render.THEMES) - 1)] if not final else render.THEMES[-1]
     g = np.linspace(0, 1, H)[:, None, None]
@@ -46,7 +47,7 @@ def make(codes, race_no, out, final=False):
                 ang, dist = rr.uniform(-2.6, 0.9), rr.uniform(300, 520)
                 r = rr.choice([40, 46, 52])
             x, y = cx + dist * math.cos(ang), cy + dist * math.sin(ang)
-            if not (40 < x < 760 and 40 < y < 690) or (x < 200 and y < 130):
+            if not (40 < x < 760 and 40 < y < 690) or (y < 130 and x < 60 + 26 * len(tag)):
                 continue
             if all(math.hypot(x - px, y - py) > r + pr + 4 for px, py, pr, _ in pts):
                 pts.append((x, y, r, c))
@@ -56,15 +57,17 @@ def make(codes, race_no, out, final=False):
         render.paste_center(img, spr, x, y)
     dr = ImageDraw.Draw(img)
     x0 = 790
+    st = dict(stroke_fill=(0, 0, 0))
     if final:
-        dr.text((x0, 70), "MONTH", font=font(96), fill=(255, 255, 255), stroke_width=6, stroke_fill=(0, 0, 0))
-        dr.text((x0, 170), "FINAL", font=font(150), fill=render.THEMES[-1]["wall"], stroke_width=8, stroke_fill=(0, 0, 0))
+        dr.text((x0, 60), "GRAND", font=font(120), fill=(255, 255, 255), stroke_width=7, **st)
+        dr.text((x0, 190), "FINAL", font=font(150), fill=(255, 214, 64), stroke_width=8, **st)
+        dr.text((x0, 410), "WHO", font=font(118), fill=(70, 235, 130), stroke_width=7, **st)
+        dr.text((x0, 545), "WINS?", font=font(118), fill=(70, 235, 130), stroke_width=7, **st)
     else:
-        dr.text((x0, 40), "32", font=font(230), fill=(255, 214, 64), stroke_width=9, stroke_fill=(0, 0, 0))
-        dr.text((x0, 290), "COUNTRIES", font=font(84), fill=(255, 255, 255), stroke_width=6, stroke_fill=(0, 0, 0))
-    dr.text((x0, 410), "WHO", font=font(118), fill=(70, 235, 130), stroke_width=7, stroke_fill=(0, 0, 0))
-    dr.text((x0, 545), "WINS?", font=font(118), fill=(70, 235, 130), stroke_width=7, stroke_fill=(0, 0, 0))
-    tag = f"#{race_no}"
+        dr.text((x0, 40), str(n), font=font(230), fill=(255, 214, 64), stroke_width=9, **st)
+        dr.text((x0, 290), "COUNTRIES", font=font(84), fill=(255, 255, 255), stroke_width=6, **st)
+        dr.text((x0, 420), f"ONLY {surv}", font=font(112), fill=(70, 235, 130), stroke_width=7, **st)
+        dr.text((x0, 550), "SURVIVE", font=font(104), fill=(70, 235, 130), stroke_width=7, **st)
     dr.rounded_rectangle([20, 20, 40 + dr.textlength(tag, font=font(44)), 84], 14, fill=(235, 60, 70))
     dr.text((30, 22), tag, font=font(44), fill=(255, 255, 255))
     img.save(out, quality=92)
@@ -74,5 +77,10 @@ if __name__ == "__main__":
     meta = json.load(open(sys.argv[1]))
     a2 = {v: k for k, v in countries.A3.items()}
     codes = [a2[c] for c in meta["ranking"]]
-    random.Random(meta["race_no"] * 3).shuffle(codes)   # не выдаём победителя
-    make(codes, meta["race_no"], sys.argv[2], meta["kind"] == "final")
+    random.Random(meta["race_no"] * 3).shuffle(codes)   # не выдаём, кто выжил
+    if meta.get("final"):
+        tag = f"SEASON {meta['season']}"
+    else:
+        rn = {1: "ROUND 1", 2: "ROUND 2", 3: "SEMI-FINAL"}[meta["round"]]
+        tag = f"{rn} · HEAT {meta['heat']}/{meta['heats']}"
+    make(codes, meta["race_no"], sys.argv[2], meta.get("final", False), meta.get("n", 32), meta.get("survive", 1), tag)

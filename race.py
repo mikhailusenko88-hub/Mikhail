@@ -1,6 +1,6 @@
-"""Ролик гонки 32 стран (выбывание за 7 этапов) + таблица месяца.
+"""Ролик одного заезда сезона на выживание (отбор / 2-й тур / полуфинал / гранд-финал).
 
-python3 race.py --date 2026-11-05 --state league_state.json --out race.mp4 [--preview SECONDS] [--no-save]
+python3 race.py --date 2026-11-05 --slot 2 --state season_state.json --out race.mp4 [--preview SECONDS] [--no-save]
 """
 import argparse
 import bisect
@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw, ImageFilter
 import audio
 import countries
 import fastvid
-import league
+import season
 import render
 import track
 from render import (H, MAX_S, MIN_S, PANEL_X, VIEW_W, W, ball_sprite, flag_rect, font, mix, paste_center,
@@ -27,8 +27,8 @@ from render import (H, MAX_S, MIN_S, PANEL_X, VIEW_W, W, ball_sprite, flag_rect,
 FPS = 30
 CHANNEL = "FLAGBALL ARENA"
 FRAMES_MODE = False
-STAGES = [(32, 26), (26, 20), (20, 15), (15, 10), (10, 6), (6, 3), (3, 3)]
-TARGETS = [66, 64, 62, 60, 58, 56, 60]
+FINAL_TARGETS = [66, 64, 62, 60, 58, 56, 60]
+HEAT_TARGET = 62
 A3 = countries.A3
 WHITE = (255, 255, 255)
 GREEN = (60, 220, 120)
@@ -43,8 +43,7 @@ def log(*a):
 
 
 # ============================================================ планирование этапов
-def plan_stage(k, nb, q, seed0):
-    target = TARGETS[k]
+def plan_stage(k, nb, q, seed0, target):
     nm = max(4, round(target / 5.4))
     best = None
     for attempt in range(80):
@@ -123,7 +122,7 @@ def camera_path(T, res, q, cy0, s0):
 
 # ============================================================ таблица справа
 class Panel:
-    def __init__(self, codes, q, k, race_no, date, fdate, theme, final_race):
+    def __init__(self, codes, q, k, nst, race_no, foot, theme, podium_stage):
         self.codes = codes
         self.nb = len(codes)
         self.q = q
@@ -136,13 +135,12 @@ class Panel:
         d = ImageDraw.Draw(img)
         acc = theme["accent"]
         d.rectangle([0, 0, 3, H], fill=acc + (255,))
-        title = "FINAL STAGE" if k == len(STAGES) - 1 else f"STAGE {k + 1}/{len(STAGES)}"
+        title = "FINAL STAGE" if podium_stage else f"STAGE {k + 1}/{nst}"
         d.text((24, 16), title, font=font(30), fill=acc)
-        tag = "FINAL" if final_race else f"#{race_no}"
+        tag = f"#{race_no}"
         tw = d.textlength(tag, font=font(30))
         d.text((W - PANEL_X - 22 - tw, 16), tag, font=font(30), fill=WHITE)
-        # 32 → 26
-        if k < len(STAGES) - 1:
+        if not podium_stage:
             s1, s2 = str(self.nb), str(q)
             x = 24
             d.text((x, 54), s1, font=font(40), fill=WHITE)
@@ -164,8 +162,6 @@ class Panel:
             x, y = self.slot_xy(q)
             col_x0 = x - 42
             d.line([col_x0, y - 6, col_x0 + self.roww() + 46, y - 6], fill=RED, width=3)
-        fd = f"{fdate.day:02d}.{fdate.month:02d}"
-        foot = "TODAY: MONTH FINAL" if final_race else f"MONTH FINAL  {fd}"
         fw = d.textlength(foot, font=font(22))
         d.text(((W - PANEL_X - fw) / 2, H - 46), foot, font=font(22), fill=GOLD)
         self.base = img.convert("RGB")
@@ -400,25 +396,45 @@ def big_ball(a2, rpx):
     return ball_sprite(a2, rpx, 0.0)
 
 
-def next_card_frames(cbg, nkind, nparts, race_no, secs):
+def flag_grid(img, dd, codes, tt, cx, y0, per=8, fw=116, fh=87, dx=162, dy=160, lab=26, t0=0.25, step=0.045):
+    n = len(codes)
+    for i, c in enumerate(codes):
+        r, cc = divmod(i, per)
+        cnt = min(per, n - r * per)
+        ap = ease((tt - t0 - i * step) / 0.35)
+        if ap <= 0:
+            continue
+        fx = cx + (cc - (cnt - 1) / 2) * dx
+        fy = y0 + r * dy
+        fl = flag_rect(c, fw, fh, 8)
+        if ap < 1:
+            fl = fl.resize((max(4, int(fw * ap)), max(3, int(fh * ap))), Image.BILINEAR)
+        paste_center(img, fl, fx, fy)
+        if ap >= 1:
+            text_center(dd, fx, fy + fh / 2 + 6, A3[c], font(lab), WHITE, 3)
+
+
+def next_round_name(plan):
+    return {1: "ROUND 2", 2: "THE SEMI-FINALS", 3: "THE GRAND FINAL"}[plan["round"]]
+
+
+def sub_line(p):
+    if p["final"]:
+        return f"{len(p['codes'])} COUNTRIES  ·  1 CHAMPION"
+    return f"{len(p['codes'])} COUNTRIES  ·  ONLY {p['survive']} SURVIVE"
+
+
+def next_card_frames(cbg, nxt, secs, new_season):
     """Конечная заставка: флаги следующей гонки в верхней половине, низ свободен под элементы YouTube."""
     for j in range(int(secs * FPS)):
         tt = j / FPS
         img = cbg.copy()
         dd = ImageDraw.Draw(img)
-        ttl = "NEXT RACE: MONTH FINAL" if nkind == "final" else f"NEXT RACE  #{race_no + 1}"
-        text_center(dd, W / 2, 26, ttl, font(56), GOLD, 5)
-        for n, c in enumerate(nparts):
-            r, cc = divmod(n, 8)
-            ap = ease((tt - 0.2 - n * 0.03) / 0.3)
-            if ap <= 0:
-                continue
-            fx = W / 2 + (cc - 3.5) * 150
-            fy = 150 + r * 112
-            fl = flag_rect(c, 92, 69, 7)
-            paste_center(img, fl, fx, fy + (1 - ap) * 30)
-            text_center(dd, fx, fy + 38, A3[c], font(22), WHITE, 3)
-        text_center(dd, W / 2, 590, "3 RACES EVERY DAY  ·  IS YOUR COUNTRY NEXT?", font(38), WHITE, 4)
+        text_center(dd, W / 2, 22, "NEXT:  " + season.label(nxt), font(54), GOLD, 5)
+        text_center(dd, W / 2, 92, "ALL 193 COUNTRIES START AGAIN" if new_season else sub_line(nxt), font(34), GREEN, 4)
+        flag_grid(img, dd, nxt["codes"], tt, W / 2, 205, per=10, fw=88, fh=66, dx=138, dy=104, lab=20, t0=0.2,
+                  step=0.025)
+        text_center(dd, W / 2, 640, "LIKE IF YOUR COUNTRY SURVIVED  ·  3 RACES EVERY DAY", font(36), WHITE, 4)
         yield img
 
 
@@ -427,19 +443,65 @@ class _NoMix:
         return lambda *a, **k: None
 
 
+def titles(plan, nxt_label):
+    s, h, hs, n, k = plan["season"], plan["heat"], plan["heats"], len(plan["codes"]), plan["survive"]
+    rno = plan["race_no"]
+    if plan["final"]:
+        v = [f"GRAND FINAL 🏆 Season {s} – 32 Countries, 1 Champion | Marble Survival Race",
+             f"Season {s} GRAND FINAL 🏆 Which Country Becomes Champion? Marble Race"]
+    elif plan["round"] == 1:
+        v = [f"193 Countries Marble Survival 🌍 Round 1 · Heat {h}/{hs} – Only {k} Survive",
+             f"Country Marble Survival Race ⚠️ Heat {h}/{hs} – {n} Countries, {k} Survive",
+             f"Which Countries Survive? 🌍 Marble Elimination · Round 1 Heat {h}/{hs}",
+             f"{n} Countries Enter, {k} Survive 🔥 Marble Survival Race · Heat {h}/{hs}"]
+    elif plan["round"] == 2:
+        v = [f"Round 2 · Heat {h}/{hs} 🔥 {plan['alive']} Countries Left – Marble Survival Race",
+             f"Only Half Survive ⚠️ Country Marble Race · Round 2 Heat {h}/{hs}"]
+    else:
+        v = [f"SEMI-FINAL {h}/{hs} ⚔️ {plan['alive']} Countries Left – Who Reaches the Grand Final?",
+             f"Country Marble Race SEMI-FINAL {h}/{hs} 🔥 16 Go to the Grand Final"]
+    return v[rno % len(v)][:100]
+
+
+def describe(plan, alive_after, nxt_label, fin_txt, ranking):
+    s = plan["season"]
+    if plan["final"]:
+        head = (f"Flagball Arena · Season {s} GRAND FINAL: the last 32 countries of the world in one marble race, "
+                f"7 stages, only one champion.")
+    else:
+        head = (f"Flagball Arena · Season {s}, {season.label(plan).title()}: {len(plan['codes'])} countries race "
+                f"through {len(plan['stages'])} stages — only {plan['survive']} survive and go to "
+                f"{next_round_name(plan).title()}.")
+    surv = ", ".join(A3[c] for c in (ranking[:plan["survive"]] if not plan["final"] else ranking[:3]))
+    body = (f"{head}\n\n"
+            f"{'Podium' if plan['final'] else 'Survivors'}: {surv}\n"
+            f"Still in the game: {alive_after} of {season.TOTAL} countries.\n"
+            f"Next race: {nxt_label.title()}.{(' Grand Final: ' + fin_txt + '.') if fin_txt else ''}\n\n"
+            f"How it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final. "
+            f"3 new races every day.\n\n"
+            f"Like 👍 if your country survived and write in the comments who you're cheering for!\n\n"
+            f"#marblerace #countryballs #marblerun #survival #elimination #countries")
+    return body
+
+
 # ============================================================ сборка ролика
 def build(args):
     t_start = time.time()
     d = dt.date.fromisoformat(args.date)
-    state = league.load(args.state)
     slot = args.slot
-    kind, parts = league.take_participants(state, d, slot)
-    race_no = state["race_no"] + 1
-    fdate = league.final_date(d)
-    final_race = kind == "final"
+    state = season.load(args.state)
+    plan = season.current(state)
+    parts = plan["codes"]
+    N = len(parts)
+    race_no = plan["race_no"]
+    final_race = plan["final"]
+    STAGES = plan["stages"]
+    nst = len(STAGES)
     seed0 = state["seed"] * 7 + race_no * 131
     rng = random.Random(seed0)
-    log(f"гонка #{race_no} {d} ({kind}), участники: {' '.join(A3[c] for c in parts)}")
+    lab = season.label(plan)
+    log(f"гонка #{race_no} {d} слот {slot}: S{plan['season']} {lab}, {N}→{plan['survive']}, "
+        f"участники: {' '.join(A3[c] for c in parts)}")
 
     # ---- физика всех этапов
     stages = []
@@ -447,13 +509,15 @@ def build(args):
     elim_blocks = []
     themes = list(range(len(render.THEMES) - 1))
     rng.shuffle(themes)
-    themes = themes[:len(STAGES) - 1] + [len(render.THEMES) - 1]
+    themes = themes * 2
+    if final_race:
+        themes = themes[:nst - 1] + [len(render.THEMES) - 1]
     for k, (nb, q) in enumerate(STAGES):
         assert len(alive) == nb, (len(alive), nb)
         codes = list(alive)
         rng.shuffle(codes)
-        best = plan_stage(k, nb, q, seed0)
-        err, T, res, seed = best
+        target = FINAL_TARGETS[k] if final_race else HEAT_TARGET
+        err, T, res, seed = plan_stage(k, nb, q, seed0, target)
         order = stage_order(res, nb)
         qual = [codes[i] for i in order[:q]]
         out = [codes[i] for i in order[q:]]
@@ -464,22 +528,27 @@ def build(args):
         if out:
             elim_blocks.append(out)
         alive = qual
-    final_order = stages[-1]["qual"]
-    ranking = list(final_order)
+    ranking = list(stages[-1]["qual"])
     for blk in reversed(elim_blocks):
         ranking += blk
-    assert len(ranking) == 32 and len(set(ranking)) == 32
-    prev_table = json.loads(json.dumps(state["table"]))
-    gained = league.apply_result(state, d, kind, ranking, slot)
-    nd, nslot = league.next_slot(d, slot)
-    nkind, nparts = league.peek_participants(state, nd, nslot)
+    assert len(ranking) == N and len(set(ranking)) == N
+    nxt, after = season.peek_after(state, plan, ranking, d, slot)
+    new_season = final_race
+    alive_after = plan["alive"] - (N - plan["survive"]) if not final_race else 0
+    rem = 0 if final_race else season.remaining_to_final(after)
+    fin_txt = ""
+    if rem:
+        fd, fs = season.slot_after(d, slot, rem)
+        fin_txt = f"{MON[fd.month - 1]} {fd.day}"
+    foot = f"S{plan['season']}  ·  {lab}"
 
     # ---- длительность и звук
-    INTRO0 = 4.2       # открытие (флаги всех участников)
-    INTRO = 3.6        # «этап N» + 3-2-1
+    INTRO0 = 4.2
+    INTRO = 3.6
     OUTC = 3.6
-    POD, TAB, NXT = 7.0, 10.0, 12.0
-    total = INTRO0 + sum(INTRO + len(s["res"]["pos"]) / FPS + OUTC for s in stages) - OUTC + POD + TAB + NXT
+    END1, END2, NXT = (7.0, 8.0, 10.0)
+    total = INTRO0 + sum(INTRO + len(s["res"]["pos"]) / FPS + OUTC for s in stages) - (0 if not final_race else OUTC) \
+        + END1 + END2 + NXT
     if args.preview:
         total = min(total, args.preview)
     log(f"длительность ролика ≈ {total / 60:.1f} мин")
@@ -489,9 +558,8 @@ def build(args):
     global FRAMES_MODE
     FRAMES_MODE = bool(args.frames)
     out = None if FRAMES_MODE else fastvid.Writer(args.out, w=W, h=H, fps=FPS, bitrate="4500k", preset="veryfast")
-    gt = 0.0          # глобальное время, с
+    gt = 0.0
     nframes = [0]
-
     want = set()
     if FRAMES_MODE:
         want = {int(float(x) * FPS) for x in args.frames.split(",")}
@@ -516,15 +584,16 @@ def build(args):
             break
         k, T, res, codes, q = st["k"], st["T"], st["res"], st["codes"], st["q"]
         theme = st["theme"]
-        panel = Panel(codes, q, k, race_no, d, fdate, theme, final_race)
+        podium_stage = final_race and k == nst - 1
+        last_heat_stage = (not final_race) and k == nst - 1
+        panel = Panel(codes, q, k, nst, race_no, foot, theme, podium_stage)
         view = StageView(k, T, res, codes, q, theme, panel)
         cx, cy0 = T.ring_center
         s0 = 0.92
         cams = camera_path(T, res, q, cy0 + 30, s0)
         nf = len(res["pos"])
-        # музыка этапа
         sec = INTRO + nf / FPS + OUTC + (INTRO0 if k == 0 else 0)
-        mixer.music_section(gt, gt + sec, key=(key_base + 2 * k) % 12 - 5, energy=1.0 if k < 6 else 1.15, seed=k)
+        mixer.music_section(gt, gt + sec, key=(key_base + 2 * k) % 12 - 5, energy=1.15 if k == nst - 1 else 1.0, seed=k)
 
         # --- открытие
         if k == 0:
@@ -538,26 +607,16 @@ def build(args):
                     img.paste(reg)
                     dd = ImageDraw.Draw(img)
                     e = ease(tt / 0.5)
-                    title = f"{CHANNEL}  ·  MONTH FINAL" if final_race else f"{CHANNEL}  ·  RACE #{race_no}"
-                    text_center(dd, VIEW_W / 2, 40 - 30 * (1 - e), title, font(44), GOLD, 4)
-                    text_center(dd, VIEW_W / 2, 98, "32 COUNTRIES  ·  1 WINNER", font(64), WHITE, 5)
-                    # сетка флагов 8×4
-                    for n, c in enumerate(parts):
-                        r, cc = divmod(n, 8)
-                        appear = ease((tt - 0.25 - n * 0.045) / 0.35)
-                        if appear <= 0:
-                            continue
-                        fx = VIEW_W / 2 + (cc - 3.5) * 165
-                        fy = 300 + r * 170
-                        fl = flag_rect(c, 120, 90, 8)
-                        if appear < 1:
-                            sz = max(4, int(120 * appear))
-                            fl = fl.resize((sz, max(3, int(90 * appear))), Image.BILINEAR)
-                        paste_center(img, fl, fx, fy)
-                        if appear >= 1:
-                            text_center(dd, fx, fy + 50, A3[c], font(26), WHITE, 3)
-                    if tt > 2.6:
-                        text_center(dd, VIEW_W / 2, 975, "FIND YOUR COUNTRY", font(40), GOLD, 4)
+                    text_center(dd, VIEW_W / 2, 30 - 30 * (1 - e), f"{CHANNEL}  ·  SEASON {plan['season']}",
+                                font(42), GOLD, 4)
+                    if final_race:
+                        text_center(dd, VIEW_W / 2, 84, "GRAND FINAL", font(86), GOLD, 6)
+                    else:
+                        text_center(dd, VIEW_W / 2, 88, lab, font(70), WHITE, 5)
+                    text_center(dd, VIEW_W / 2, 196, sub_line(plan), font(44), GREEN, 4)
+                    flag_grid(img, dd, parts, tt, VIEW_W / 2, 350, per=8, fw=116, fh=87, dx=165, dy=158)
+                    if tt > 2.4:
+                        text_center(dd, VIEW_W / 2, 985, "FIND YOUR COUNTRY", font(40), GOLD, 4)
                 emit(lambda ov=ov, j=j: view.frame(0, cy0 + 30, s0, ov, snap=(j == 0) or FRAMES_MODE))
                 if done():
                     break
@@ -574,22 +633,20 @@ def build(args):
                 dd = ImageDraw.Draw(img)
                 if tt < 1.2:
                     e = pop(tt / 0.35)
-                    title = "FINAL STAGE" if k == len(STAGES) - 1 else f"STAGE {k + 1}"
-                    f1 = font(max(10, int(110 * e)))
-                    text_center(dd, VIEW_W / 2, 330, title, f1, WHITE, 7)
-                    if k < len(STAGES) - 1:
-                        sub = f"{st['nb']}  →  {q}"
-                        text_center(dd, VIEW_W / 2, 470, f"TOP {q} GO ON", font(54), GREEN, 5)
-                    else:
+                    title = "FINAL STAGE" if podium_stage else ("LAST STAGE" if last_heat_stage else f"STAGE {k + 1}")
+                    text_center(dd, VIEW_W / 2, 330, title, font(max(10, int(110 * e))), WHITE, 7)
+                    if podium_stage:
                         text_center(dd, VIEW_W / 2, 470, "WHO WINS?", font(54), GOLD, 5)
+                    elif last_heat_stage:
+                        text_center(dd, VIEW_W / 2, 470, f"TOP {q} SURVIVE", font(58), GREEN, 5)
+                    else:
+                        text_center(dd, VIEW_W / 2, 470, f"TOP {q} GO ON", font(54), GREEN, 5)
                 else:
                     n = 3 - int((tt - 1.2) / 0.8)
                     loc = ((tt - 1.2) % 0.8) / 0.8
                     sz = int(220 * (1.25 - 0.35 * ease(loc / 0.4)))
                     col = [GREEN, GOLD, RED][max(0, min(2, n - 1))]
                     text_center(dd, VIEW_W / 2, 360 - sz * 0.3, str(max(1, n)), font(sz), col, 9)
-            if tt >= 1.2 and abs(((tt - 1.2) % 0.8)) < 1e-6 + 1 / FPS / 2 and tt < 3.6:
-                pass
             emit(lambda ov=ov, j=j: view.frame(0, cy0 + 30, s0, ov, snap=(j == 0) or FRAMES_MODE))
         for b in range(3):
             mixer.beep(gt + 1.2 + b * 0.8)
@@ -614,13 +671,13 @@ def build(args):
                     text_center(dd, VIEW_W / 2, 330, "GO!", font(max(10, int(170 * e))), GREEN, 8)
             emit(lambda f=f, ov=ov: view.frame(f, cams[f, 0], cams[f, 1], ov, snap=FRAMES_MODE))
         gt += nf / FPS
-        # --- выбывшие
+        # --- вылетевшие
         if st["out"] and not done():
             mixer.buzzer(gt + 0.15)
             no = int(OUTC * FPS)
             lastf = nf - 1
             outs = st["out"]
-            place0 = 32 - sum(len(b) for b in elim_blocks[:k + 1]) + 1
+            place0 = N - sum(len(b) for b in elim_blocks[:k + 1]) + 1
             for j in range(no):
                 if done():
                     break
@@ -631,7 +688,7 @@ def build(args):
                     img.paste(reg)
                     dd = ImageDraw.Draw(img)
                     e = pop(tt / 0.3)
-                    text_center(dd, VIEW_W / 2, 150, "OUT", font(max(10, int(150 * e))), RED, 8)
+                    text_center(dd, VIEW_W / 2, 150, "ELIMINATED", font(max(10, int(124 * e))), RED, 8)
                     n = len(outs)
                     per = min(n, 6)
                     rows = math.ceil(n / per)
@@ -653,39 +710,15 @@ def build(args):
                 emit(lambda ov=ov: view.frame(lastf, cams[lastf, 0], cams[lastf, 1], ov, final_status=True, snap=FRAMES_MODE))
             gt += no / FPS
 
-    # ---- пьедестал
+    # ---- концовка
     th = render.THEMES[-1]
     cbg = card_bg(th)
     conf_r = random.Random(seed0 + 5)
     confetti = [(conf_r.uniform(0, W), conf_r.uniform(-H, 0), conf_r.uniform(-60, 60), conf_r.uniform(160, 320),
                  conf_r.uniform(0, 6.28), conf_r.uniform(-6, 6),
                  conf_r.choice([GOLD, (255, 90, 120), (90, 200, 255), (120, 255, 150), WHITE])) for _ in range(220)]
-    if not done():
-        mixer.fanfare(gt + 0.2)
-        mixer.music_section(gt, gt + POD + TAB + NXT, key=(key_base + 7) % 12 - 5, energy=0.8, seed=11)
-    top3 = ranking[:3]
-    for j in range(int(POD * FPS)):
-        if done():
-            break
-        tt = j / FPS
-        img = cbg.copy()
-        dd = ImageDraw.Draw(img)
-        title = f"{league.MONTHS_EN[d.month - 1]} CHAMPION" if final_race else f"RACE #{race_no} · WINNER"
-        text_center(dd, W / 2, 40, title, font(60), GOLD, 5)
-        spots = [(0, W / 2, 470, 150, GOLD, 260), (1, W / 2 - 520, 560, 110, SILVER, 170), (2, W / 2 + 520, 600, 100, BRONZE, 130)]
-        for (pi, fx, fy, rp, col, ph) in spots:
-            ap = pop((tt - 0.3 - [0.6, 0.3, 0][pi]) / 0.4)
-            # ступень
-            dd.rectangle([fx - 190, fy + rp + 40, fx + 190, H], fill=mix(col, (0, 0, 0), 0.55))
-            dd.rectangle([fx - 190, fy + rp + 40, fx + 190, fy + rp + 52], fill=col)
-            text_center(dd, fx, fy + rp + 70, str([1, 2, 3][pi]), font(90), col, 4)
-            if ap <= 0:
-                continue
-            paste_center(img, big_ball(top3[pi], max(6, int(rp * ap))), fx, fy)
-            if ap >= 0.99:
-                text_center(dd, fx, fy - rp - 70, A3[top3[pi]], font(52), WHITE, 5)
-                if not final_race:
-                    text_center(dd, fx, fy + rp + 175, f"+{league.POINTS[pi]}", font(40), GREEN, 4)
+
+    def draw_confetti(dd, tt):
         for (x, y, vx, vy, a, wa, col) in confetti:
             Y = y + vy * tt
             if Y < -20 or Y > H + 20 or tt < 0.9:
@@ -694,60 +727,125 @@ def build(args):
             an = a + wa * tt
             hx, hy = 9 * math.cos(an), 5 * math.sin(an)
             dd.polygon([(X - hx, Y - hy), (X + hy, Y - hx), (X + hx, Y + hy), (X - hy, Y + hx)], fill=col)
-        emit(img)
-    gt += POD
 
-    # ---- таблица месяца
+    if not done():
+        mixer.fanfare(gt + 0.2)
+        mixer.music_section(gt, gt + END1 + END2 + NXT, key=(key_base + 7) % 12 - 5, energy=0.8, seed=11)
     if final_race:
-        tab_rows = [(c, {"pts": state["alltime"][c].get("titles", 0)}) for c in [ch["code"] for ch in state["champions"]][-16:]]
-        tab_title = "CHAMPIONS"
+        # пьедестал чемпиона сезона
+        top3 = ranking[:3]
+        for j in range(int(END1 * FPS)):
+            if done():
+                break
+            tt = j / FPS
+            img = cbg.copy()
+            dd = ImageDraw.Draw(img)
+            text_center(dd, W / 2, 40, f"SEASON {plan['season']} CHAMPION", font(60), GOLD, 5)
+            spots = [(0, W / 2, 470, 150, GOLD), (1, W / 2 - 520, 560, 110, SILVER), (2, W / 2 + 520, 600, 100, BRONZE)]
+            for (pi, fx, fy, rp, col) in spots:
+                ap = pop((tt - 0.3 - [0.6, 0.3, 0][pi]) / 0.4)
+                dd.rectangle([fx - 190, fy + rp + 40, fx + 190, H], fill=mix(col, (0, 0, 0), 0.55))
+                dd.rectangle([fx - 190, fy + rp + 40, fx + 190, fy + rp + 52], fill=col)
+                text_center(dd, fx, fy + rp + 70, str(pi + 1), font(90), col, 4)
+                if ap <= 0:
+                    continue
+                paste_center(img, big_ball(top3[pi], max(6, int(rp * ap))), fx, fy)
+                if ap >= 0.99:
+                    text_center(dd, fx, fy - rp - 70, A3[top3[pi]], font(52), WHITE, 5)
+            draw_confetti(dd, tt)
+            emit(img)
+        gt += END1
+        # зал чемпионов
+        champs = after["champions"][-8:]
+        for j in range(int(END2 * FPS)):
+            if done():
+                break
+            tt = j / FPS
+            img = cbg.copy()
+            dd = ImageDraw.Draw(img)
+            text_center(dd, W / 2, 34, "HALL OF CHAMPIONS", font(62), GOLD, 5)
+            for n, ch in enumerate(reversed(champs)):
+                ap = ease((tt - 0.2 - n * 0.12) / 0.35)
+                if ap <= 0:
+                    continue
+                x = W / 2 - 420 - (1 - ap) * 80
+                y = 160 + n * 104
+                ov = Image.new("RGBA", (840, 88), (255, 205, 70, 60) if n == 0 else (255, 255, 255, 18))
+                img.paste(ov, (int(x), y), ov)
+                dd.text((x + 24, y + 18), f"SEASON {ch['season']}", font=font(40), fill=WHITE)
+                fl = flag_rect(ch["code"], 88, 66, 6)
+                img.paste(fl, (int(x + 380), y + 11), fl)
+                dd.text((x + 500, y + 14), A3[ch["code"]], font=font(46), fill=GOLD)
+                t = after["hall"][ch["code"]]["titles"]
+                if t > 1:
+                    dd.text((x + 680, y + 22), f"x{t}", font=font(36), fill=GREEN)
+            emit(img)
+        gt += END2
     else:
-        tab_rows = league.sorted_table(state["table"])[:16]
-        tab_title = f"{league.MONTHS_EN[d.month - 1]}  ·  TABLE"
-    old_rank = {c: n for n, (c, _) in enumerate(league.sorted_table(prev_table))}
-    days_left = (fdate - d).days
-    for j in range(int(TAB * FPS)):
-        if done():
-            break
-        tt = j / FPS
-        img = cbg.copy()
-        dd = ImageDraw.Draw(img)
-        text_center(dd, W / 2, 34, tab_title, font(62), WHITE, 5)
-        for n, (c, row) in enumerate(tab_rows):
-            col, r = divmod(n, 8)
-            ap = ease((tt - 0.2 - n * 0.06) / 0.35)
-            if ap <= 0:
-                continue
-            x = 170 + col * 820 - (1 - ap) * 80
-            y = 150 + r * 96
-            fill = (255, 205, 70, 60) if n == 0 else (255, 255, 255, 18)
-            ov = Image.new("RGBA", (760, 82), fill)
-            img.paste(ov, (int(x), y), ov)
-            dd.text((x + 18, y + 14), f"{n + 1}", font=font(40), fill=GOLD if n < 3 else WHITE)
-            fl = flag_rect(c, 84, 63, 6)
-            img.paste(fl, (int(x + 96), y + 10), fl)
-            dd.text((x + 200, y + 12), A3[c], font=font(42), fill=WHITE)
-            pts = str(row["pts"])
-            pw = dd.textlength(pts, font=font(44))
-            dd.text((x + 740 - pw, y + 12), pts, font=font(44), fill=GOLD)
-            g = gained.get(c, 0)
-            if g and not final_race:
-                gs = f"+{g}"
-                dd.text((x + 560, y + 22), gs, font=font(30), fill=GREEN)
-            if not final_race and c in old_rank and old_rank[c] > n:
-                dd.polygon([(x + 330, y + 50), (x + 346, y + 26), (x + 362, y + 50)], fill=GREEN)
-        if final_race:
-            foot = f"{league.MONTHS_EN[nd.month - 1]} STARTS TOMORROW"
-        elif days_left == 0:
-            foot = "MONTH FINAL TODAY"
-        else:
-            foot = f"MONTH FINAL  {fdate.day:02d}.{fdate.month:02d}  ·  TOP 32  ·  {days_left} DAYS LEFT"
-        text_center(dd, W / 2, 940, foot, font(44), GOLD, 4)
-        emit(img)
-    gt += TAB
+        # выжившие
+        surv = ranking[:plan["survive"]]
+        for j in range(int(END1 * FPS)):
+            if done():
+                break
+            tt = j / FPS
+            img = cbg.copy()
+            dd = ImageDraw.Draw(img)
+            text_center(dd, W / 2, 30, "SURVIVORS", font(76), GREEN, 6)
+            text_center(dd, W / 2, 128, f"{len(surv)} COUNTRIES GO TO {next_round_name(plan)}", font(42), WHITE, 4)
+            n = len(surv)
+            per = 8
+            for m, c in enumerate(surv):
+                r, cc = divmod(m, per)
+                cnt = min(per, n - r * per)
+                ap = pop((tt - 0.3 - m * 0.07) / 0.35)
+                if ap <= 0:
+                    continue
+                fx = W / 2 + (cc - (cnt - 1) / 2) * 210
+                fy = 330 + r * 240
+                rp = max(6, int(68 * ap))
+                paste_center(img, big_ball(c, rp), fx, fy)
+                if ap >= 0.99:
+                    dd.ellipse([fx - 76, fy - 76, fx + 76, fy + 76], outline=GREEN, width=6)
+                    text_center(dd, fx, fy + 84, A3[c], font(36), WHITE, 4)
+            draw_confetti(dd, tt)
+            emit(img)
+        gt += END1
+        # где сезон
+        rounds = [(1, season.R1_HEATS), (2, 3), (3, 2), (4, 1)]
+        done_heats = {r: (n if r < after["round"] else (after["heat"] if r == after["round"] else 0)) for r, n in rounds}
+        for j in range(int(END2 * FPS)):
+            if done():
+                break
+            tt = j / FPS
+            img = cbg.copy()
+            dd = ImageDraw.Draw(img)
+            text_center(dd, W / 2, 34, f"SEASON {plan['season']}", font(62), WHITE, 5)
+            text_center(dd, W / 2, 160, "STILL IN THE GAME", font(46), GREEN, 4)
+            shown = int(plan["alive"] - (plan["alive"] - alive_after) * ease((tt - 0.4) / 1.4))
+            big = str(shown)
+            bw = dd.textlength(big, font=font(230))
+            tw = dd.textlength(f" / {season.TOTAL}", font=font(90))
+            x0 = W / 2 - (bw + tw) / 2
+            dd.text((x0, 210), big, font=font(230), fill=GOLD, stroke_width=8, stroke_fill=(0, 0, 0))
+            dd.text((x0 + bw, 330), f" / {season.TOTAL}", font=font(90), fill=WHITE, stroke_width=5, stroke_fill=(0, 0, 0))
+            for b, (r, nh) in enumerate(rounds):
+                bx = W / 2 + (b - 1.5) * 430
+                cur = r == after["round"]
+                fin = done_heats[r] >= nh
+                col = GOLD if cur else (GREEN if fin else (110, 120, 140))
+                dd.rounded_rectangle([bx - 195, 590, bx + 195, 690], 18, outline=col, width=6 if cur else 3)
+                text_center(dd, bx, 615, season.ROUND_SHORT[r], font(40), col, 3)
+                for h in range(nh):
+                    hx = bx + (h - (nh - 1) / 2) * 42
+                    filled = h < done_heats[r]
+                    dd.ellipse([hx - 13, 715, hx + 13, 741], fill=col if filled else None, outline=col, width=3)
+            if fin_txt:
+                text_center(dd, W / 2, 800, f"GRAND FINAL: {fin_txt}  ·  {rem} RACES TO GO", font(46), GOLD, 4)
+            emit(img)
+        gt += END2
 
-    # ---- следующая гонка (конечная заставка)
-    for img in next_card_frames(cbg, nkind, nparts, race_no, NXT):
+    # ---- следующая гонка
+    for img in next_card_frames(cbg, nxt, NXT, new_season):
         if done():
             break
         emit(img)
@@ -759,37 +857,28 @@ def build(args):
     out.close(mixer.final()[: int(nframes[0] / FPS * audio.SR) + 1000], sr=audio.SR)
     log(f"кадров {nframes[0]}, {nframes[0] / FPS / 60:.2f} мин, рендер {time.time() - t_start:.0f} с")
 
-    # ---- описание и сохранение лиги
-    a3w = A3[ranking[0]]
-    if final_race:
-        title = f"{league.MONTHS_EN[d.month - 1].title()} FINAL 🏆 32 Best Countries Marble Race – Who Is the Champion?"
-    else:
-        variants = [
-            f"32 Countries Marble Race 🌍 Elimination #{race_no} – Who Wins?",
-            f"Marble Race of 32 Countries #{race_no} 🏁 Only One Survives the Rings",
-            f"Country Marble Elimination #{race_no} 🌍 7 Stages, 1 Winner",
-            f"Which Country Wins? 32 Nations Marble Race #{race_no} 🔥",
-            f"32 Flags, 7 Stages, 1 Champion 🏆 Country Marble Race #{race_no}",
-        ]
-        title = variants[race_no % len(variants)]
-    desc = (f"Race #{race_no}: 32 countries, 7 stages, only one winner. 3 new races every day — the top 32 of the month "
-            f"meet in the MONTH FINAL on {fdate.day:02d}.{fdate.month:02d}. Find your country and write in the comments "
-            f"who you were cheering for! 👇\n\n#marblerace #countryballs #marblerun #satisfying #elimination #countries")
-    meta = {"title": title, "description": desc, "race_no": race_no, "date": d.isoformat(), "kind": kind,
+    # ---- описание и сохранение сезона
+    nlab = season.label(nxt) if not new_season else f"Season {plan['season'] + 1} · Round 1 · Heat 1/7"
+    meta = {"title": titles(plan, nlab), "description": describe(plan, alive_after, nlab, fin_txt, ranking),
+            "race_no": race_no, "date": d.isoformat(), "slot": slot, "season": plan["season"], "round": plan["round"],
+            "heat": plan["heat"], "heats": plan["heats"], "survive": plan["survive"], "final": final_race,
+            "kind": "final" if final_race else "heat", "label": lab, "n": N,
             "ranking": [A3[c] for c in ranking]}
     json.dump(meta, open(os.path.splitext(args.out)[0] + ".json", "w"), ensure_ascii=False, indent=1)
     if not args.no_save:
-        league.save(state, args.state)
-    log("победитель:", a3w)
+        season.save(after, args.state)
+    log("победитель:" if final_race else "выжили:", " ".join(A3[c] for c in ranking[:max(1, plan["survive"])]))
 
+
+MON = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", required=True)
-    ap.add_argument("--state", default="league_state.json")
+    ap.add_argument("--slot", type=int, default=1)
+    ap.add_argument("--state", default="season_state.json")
     ap.add_argument("--out", default="race.mp4")
     ap.add_argument("--preview", type=float, default=0)
     ap.add_argument("--no-save", action="store_true")
     ap.add_argument("--frames", default="")
-    ap.add_argument("--slot", type=int, default=1)
     build(ap.parse_args())

@@ -1,4 +1,4 @@
-"""Один запуск на GitHub: гонка → обложка → YouTube → лига сохраняется в ветке.
+"""Один запуск на GitHub: заезд сезона → обложка → YouTube → сезон сохраняется в ветке.
 
 По расписанию (3 раза в день) — выкладка. По изменению request.txt — что там написано:
   mode: test     собрать ролик и обложку, ничего не выкладывать, лигу не менять
@@ -67,9 +67,11 @@ def main():
         d = dt.date.fromisoformat(req["date"])
     if req["slot"] != "auto":
         slot = int(req["slot"])
-    state = json.load(open("league_state.json"))
+    state = json.load(open("season_state.json"))
     n = state["race_no"] + 1
     log(f"режим {mode}, гонка #{n}, {d} слот {slot}, событие {os.environ.get('EVENT')}")
+    import season
+    log("по плану:", f"S{state['season']}", season.label(season.current(state)))
 
     if mode == "publish" and any(h.get("date") == d.isoformat() and h.get("slot") == slot for h in state["history"]):
         log("эта гонка уже выложена — пропускаю")
@@ -88,7 +90,7 @@ def main():
 
     os.makedirs(WORK, exist_ok=True)
     tmp_state = f"{WORK}/state.json"
-    shutil.copy("league_state.json", tmp_state)
+    shutil.copy("season_state.json", tmp_state)
     name = f"{WORK}/race_{n:03d}"
     cmd = [sys.executable, "race.py", "--date", d.isoformat(), "--slot", str(slot), "--state", tmp_state,
            "--out", name + ".mp4"]
@@ -122,11 +124,11 @@ def main():
     st = yt.status(vid)
     meta["privacy"] = st.get("privacyStatus")
     log("статус на YouTube:", st)
-    # лига: только после удачной выкладки
-    shutil.copy(tmp_state, "league_state.json")
+    # сезон двигается только после удачной выкладки
+    shutil.copy(tmp_state, "season_state.json")
     json.dump(meta, open(f"races/race_{n:03d}.json", "w"), ensure_ascii=False, indent=1)
     with open("status/uploads.md", "a", encoding="utf-8") as f:
-        f.write(f"| {n} | {d} | {slot} | https://youtu.be/{vid} | {meta['privacy']} | {meta['ranking'][0]} |\n")
+        f.write(f"| {n} | {d} | {slot} | S{meta['season']} {meta['label']} | https://youtu.be/{vid} | {meta['privacy']} |\n")
     warn = "" if meta["privacy"] == "public" else "  ⚠️ НЕ ОТКРЫТ"
     write_status(f"ВЫЛОЖЕНО #{n} {d} слот {slot}: https://youtu.be/{vid} ({meta['privacy']}){warn}, "
                  f"за {time.time() - t0:.0f} с", json.dumps(meta, ensure_ascii=False, indent=1))

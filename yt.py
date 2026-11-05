@@ -11,7 +11,7 @@ import requests
 
 API = "https://www.googleapis.com/youtube/v3"
 UP = "https://www.googleapis.com/upload/youtube/v3"
-TAGS = ["marble race", "country marble race", "countryballs", "marble run", "elimination", "32 countries",
+TAGS = ["marble race", "country marble race", "countryballs", "marble run", "elimination", "survival",
         "flags", "satisfying", "marble league", "who wins"]
 CHANNEL_MUST = "flagball"          # защита: выкладываем только на Flagball Arena
 PLAYLIST = "daily races"
