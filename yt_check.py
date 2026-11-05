@@ -183,6 +183,14 @@ def video_info(vid):
                     out[key] = json.loads('"' + m.group(1) + '"')
                 except Exception:  # noqa: BLE001
                     out[key] = m.group(1)[:1000]
+        i = html.find("likeButtonViewModel")
+        if i > 0:
+            m = re.search(r'"title":"([^"]*)"', html[i:i + 4000])
+            if m:
+                out["likes"] = m.group(1)
+            m = re.search(r'"accessibilityText":"([^"]*)"', html[i:i + 6000])
+            if m:
+                out["likes_text"] = m.group(1)[:200]
         m = re.search(r'"keywords":\[(.*?)\]', html)
         if m:
             out["keywords"] = m.group(1)[:600]
@@ -249,7 +257,7 @@ def main():
         md = ["# Подробности роликов", f"Проверено: {now}", ""]
         for d in data:
             md.append(f"## {d.get('title', '?')} · {d['id']}")
-            md.append(f"- HTTP {d['status']} · опубликован {d.get('publishDate', '?')} · {d.get('lengthSeconds', '?')} с · {d.get('viewCount', '?')} просм. · "
+            md.append(f"- HTTP {d['status']} · опубликован {d.get('publishDate', '?')} · {d.get('lengthSeconds', '?')} с · {d.get('viewCount', '?')} просм. · лайки: {d.get('likes', '?')} ({d.get('likes_text', '')}) · "
                       f"канал: {d.get('ownerChannelName', '?')} · обложки: {', '.join(d.get('thumbs', [])) or 'нет'}")
             if d.get("shortDescription"):
                 md.append("- Описание: " + d["shortDescription"].replace("\n", " / ")[:1200])
