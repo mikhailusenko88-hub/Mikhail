@@ -593,6 +593,14 @@ H6.attach = function (T3, rig) {
   return true;
 };
 
+// где у героя образца глаза, рот и лапки сейчас (в мире) — чтобы книга была в лапках, а бинокль у глаз именно этого героя, а не «старого скелета»
+H6.anchors = function (rig) { const I = rig && rig.h6; if (!I) return null; const TT = I.T, info = TT.info, G = I.G, src = info.src || {};
+  const v = (a, g) => new THREE.Vector3(a[0], a[1], a[2]).applyMatrix4(g.matrixWorld);
+  const paw = i => { const w = src.wrist[i], sh = src.should[i], g = i ? G.armR : G.armL; return v([w[0] + (w[0] - sh[0]) * .25, w[1] + (w[1] - sh[1]) * .25, w[2] + (w[2] - sh[2]) * .25], g); };
+  let low = null; for (const l of info.lines.mouth_base || []) for (const q of l) if (!low || q[1] < low[1]) low = q;
+  const hq = new THREE.Quaternion(); G.head.matrixWorld.decompose(new THREE.Vector3(), hq, new THREE.Vector3());
+  const sc = new THREE.Vector3().setFromMatrixColumn(I.root.matrixWorld, 0).length();
+  return { eyes: info.eyes.map(e => v(e, G.head)), handL: src.wrist ? paw(0) : null, handR: src.wrist ? paw(1) : null, mouthY: low ? v(low, G.head).y : null, headQ: hq, eR: info.re * sc, sc }; };
 // поза: из скелета «Мультиков» в части героя
 let _m4 = null, _m4b = null, _e = null, _v3 = null;
 const about = (P, M, out) => out.makeTranslation(P.x, P.y, P.z).multiply(M).multiply(_m4b.makeTranslation(-P.x, -P.y, -P.z));

@@ -165,7 +165,8 @@ void main() {
   vec3 V = normalize(cameraPosition - vP), T = snrm(vT, V), alb = vAlb; float bk[6] = float[6](vB0.x, vB0.y, vB0.z, vB1.x, vB1.y, vB1.z);
   vec3 col = vec3(0.0), msc = vec3(0.0), sp = vec3(0.0); float sk = vKind == 200 ? 1.6 : 1.0;
   for (int i = 0; i < 3; i++) { vec3 L, E; lightAt(i, vP, L, E); float sl = sqrt(max(0.0, 1.0 - dot(T, L) * dot(T, L)));
-    col += E * (bk[i] * (0.35 + 0.65 * sl)); msc += E * pow(max(bk[i], 0.0), 0.33); sp += hairSpec(T, L, V, alb, sk) * E * bk[i]; }
+    float bv = i == 2 ? max(bk[2], bk[4] * 0.9) : bk[i];   // свет спереди идёт от камеры: прошитая тень для него — по открытости неба, иначе бок, повёрнутый к нам, чёрный
+    col += E * (bv * (0.35 + 0.65 * sl)); msc += E * pow(max(bv, 0.0), 0.33); sp += hairSpec(T, L, V, alb, sk) * E * bv; }
   vec3 c = alb * (col + uSky * (PI * bk[4] * 0.85) + uGnd * (PI * bk[5] * 0.6)) / PI;
   if (vKind < 200) c += alb * alb * msc * (0.32 / PI);
   sp *= mix(1.0, 1.8, uGloss); sp = mix(sp, sp * vec3(1.0, 0.8, 0.55) * 1.25, 0.5 * uGloss);   // гладкий блеск вдоль шерсти, тёплый, как в образце 6.2
@@ -238,8 +239,8 @@ void main() {
     vec3 dpx = dFdx(vP), dpy = dFdy(vP); float hx = dFdx(h), hy = dFdy(h); vec3 r1 = cross(dpy, n), r2 = cross(n, dpx); float det = dot(dpx, r1);
     vec3 g = sign(det) * (hx * r1 + hy * r2) * (0.0022 * uScale); n = snrm(abs(det) * n - g, n); knit = h; alb *= mix(0.42, 1.15, h); }
   vec3 dif = vec3(0.0), spec = vec3(0.0);
-  for (int i = 0; i < 3; i++) { vec3 L, E; lightAt(i, vP, L, E); float nl = (dot(n, L) + wrap) / (1.0 + wrap); if (nl <= 0.0) continue; dif += E * (nl * bk[i]);
-    vec3 h = snrm(L + V, n); float nh = max(0.0, dot(n, h)); float ex = mat == 1 ? 60.0 : mat == 2 ? 6.0 : 14.0; float ks = mat == 1 ? 0.35 : mat == 2 ? 0.02 : 0.05; spec += E * (pow(nh, ex) * ks * (ex + 2.0) / 25.0 * bk[i] * nl); }
+  for (int i = 0; i < 3; i++) { vec3 L, E; lightAt(i, vP, L, E); float nl = (dot(n, L) + wrap) / (1.0 + wrap); if (nl <= 0.0) continue; float bv = i == 2 ? max(bk[2], bk[4] * 0.9) : bk[i]; dif += E * (nl * bv);
+    vec3 h = snrm(L + V, n); float nh = max(0.0, dot(n, h)); float ex = mat == 1 ? 60.0 : mat == 2 ? 6.0 : 14.0; float ks = mat == 1 ? 0.35 : mat == 2 ? 0.02 : 0.05; spec += E * (pow(nh, ex) * ks * (ex + 2.0) / 25.0 * bv * nl); }
   float nu = dot(n, uUp); dif += uSky * (PI * bk[4] * (0.6 + 0.4 * nu)) + uGnd * (PI * bk[5] * (0.5 - 0.4 * nu));
   vec3 c = alb * dif / PI + spec;
   if (mat == 2) { float nv = abs(dot(n, V)); c += 0.35 * (0.25 + 0.75 * pow(1.0 - nv, 1.6)) * knit * mix(vec3(dot(dif, vec3(0.33))), dif, 0.5) / PI; }
@@ -413,7 +414,7 @@ MKB.frame = function (rig, st, T, L) {
     if (sun) { U.uSunDir.value.copy(sun.position).sub(sun.target.position).normalize(); U.uSunCol.value.set(sun.color.r, sun.color.g, sun.color.b).multiplyScalar(sun.intensity); }
     if (rim && rim.visible !== false) { U.uRimDir.value.copy(rim.position).sub(rim.target.position).normalize(); U.uRimCol.value.set(rim.color.r, rim.color.g, rim.color.b).multiplyScalar(rim.intensity * 1.1); } else U.uRimCol.value.set(0, 0, 0);
     if (hemi) { const env = (L.envI || 0) * 0.8; U.uSky.value.set(hemi.color.r * hemi.intensity + env, hemi.color.g * hemi.intensity + env, hemi.color.b * hemi.intensity + env).multiplyScalar(1 / Math.PI);
-      U.uGnd.value.set(hemi.groundColor.r, hemi.groundColor.g, hemi.groundColor.b).multiplyScalar(hemi.intensity / Math.PI); U.uFillCol.value.copy(U.uSky.value).multiplyScalar(0.55 * Math.PI); const lb = Math.max(.25, Math.min(1.6, (hemi.color.r + hemi.color.g + hemi.color.b) / 3 * hemi.intensity + env)); U.uFillCol.value.add(new THREE.Vector3(1.0, 0.96, 0.9).multiplyScalar(MKB.K.key * lb)); }   // БАРС: студийный свет на героя
+      U.uGnd.value.set(hemi.groundColor.r, hemi.groundColor.g, hemi.groundColor.b).multiplyScalar(hemi.intensity / Math.PI); U.uFillCol.value.copy(U.uSky.value).multiplyScalar(0.55 * Math.PI); const lb = Math.max(.25, Math.min(1.6, (hemi.color.r + hemi.color.g + hemi.color.b) / 3 * hemi.intensity + env)); U.uFillCol.value.add(new THREE.Vector3(1.0, 0.96, 0.9).multiplyScalar(MKB.K.key * lb)); B.fill0 = (B.fill0 || new THREE.Vector3()).copy(U.uFillCol.value); }   // БАРС: студийный свет на героя
     const f = L.fog; if (f && f.isFog) { U.uFogCol.value.set(f.color.r, f.color.g, f.color.b); U.uFog.value.set(f.near, f.far); } else U.uFog.value.set(0, 0);
     U.uExpo.value = (L.expo != null ? L.expo : 1) * MKB.K.expo; }
 };
@@ -424,6 +425,8 @@ function eyeFrame(rig, R, cam) {   // перед глазами: мир уже �
   const h = R.getRenderTarget() ? R.getRenderTarget().height : R.getContext().drawingBufferHeight; U.uPix.value = 2 * Math.tan((cam.fov || 38) * Math.PI / 360) / Math.max(1, h);
   // мягкий свет спереди — со стороны камеры
   const hc = _v[0].set(0, -0.01, HEAD_C).applyMatrix4(MW); U.uFillDir.value.copy(cam.position).sub(hc).normalize().add(_v[1].set(0, 0.35, 0)).normalize();
+  if (B.fill0) { const sd = U.uSunDir.value, fd = U.uFillDir.value, hs = Math.hypot(sd.x, sd.z), hf = Math.hypot(fd.x, fd.z); const facing = hs > 1e-3 && hf > 1e-3 ? Math.max(0, (sd.x * fd.x + sd.z * fd.z) / (hs * hf)) : 1;
+    U.uFillCol.value.copy(B.fill0).multiplyScalar(1 + (MKB.K.side != null ? MKB.K.side : .5) * (1 - facing)); }   // солнце сбоку или сзади (лес) — бок к камере не тёмный: свет спереди сильнее, как у Пика и Рона
   const Hm = U.uHead.value.elements; const head = (p) => { const q = [p[0] - PH[0], p[1] - PH[1], p[2] - PH[2]]; return [Hm[0] * q[0] + Hm[3] * q[1] + Hm[6] * q[2] + PH[0], Hm[1] * q[0] + Hm[4] * q[1] + Hm[7] * q[2] + PH[1], Hm[2] * q[0] + Hm[5] * q[1] + Hm[8] * q[2] + PH[2]]; };
   const headN = (n) => [Hm[0] * n[0] + Hm[3] * n[1] + Hm[6] * n[2], Hm[1] * n[0] + Hm[4] * n[1] + Hm[7] * n[2], Hm[2] * n[0] + Hm[5] * n[1] + Hm[8] * n[2]];
   const N3 = new THREE.Matrix3().setFromMatrix4(MW);
