@@ -1,5 +1,6 @@
-# 2026-11-05 21:40 МСК — проверка: чтение комментариев (без ролика)
-mode: comments   # test | publish | login | check | comments — только прочитать комментарии
+# 2026-11-05 19:50 МСК — новый вход: с правом читать и писать комментарии; потом прочитать комментарии
+mode: login      # test | publish | login | check | comments
+then: comments   # после входа: publish — выложить гонку | comments — прочитать комментарии | no
 extra: no        # yes — ещё один ролик сейчас, сверх расписания
 league: auto     # auto | cities | cars
 final: auto      # auto | yes

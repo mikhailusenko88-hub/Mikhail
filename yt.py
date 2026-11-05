@@ -195,6 +195,22 @@ class YT:
             out.append((it["id"], sn.get("textOriginal") or sn.get("textDisplay") or "", author))
         return out, err
 
+    def first_comment(self, vid, text, tries=4, pause=45):
+        """Комментарий от канала под роликом (нужен вход с правом на комментарии). Сразу после загрузки YouTube
+        может не пускать — пробуем ещё до 4 раз."""
+        last = ""
+        for k in range(tries):
+            if k:
+                time.sleep(pause)
+            r = requests.post(f"{API}/commentThreads", params={"part": "snippet"}, headers=self.h(), timeout=30,
+                              json={"snippet": {"videoId": vid, "topLevelComment": {"snippet": {"textOriginal": text}}}})
+            if r.status_code == 200:
+                return "оставил" + (f" (с {k + 1}-й попытки)" if k else "")
+            last = f"{r.status_code} {r.text[:160]}"
+            if r.status_code == 403 and "insufficient" in r.text.lower():
+                return "нет права на комментарии — нужен новый вход (mode: login)"
+        return "не получилось: " + last
+
     def status(self, vid):
         r = requests.get(f"{API}/videos", params={"part": "status", "id": vid}, headers=self.h(), timeout=30)
         items = r.json().get("items", []) if r.status_code == 200 else []

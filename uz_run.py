@@ -96,7 +96,8 @@ def login():
     import yt
     cid, sec = ytkey.app_client()
     r = requests.post("https://oauth2.googleapis.com/device/code", timeout=30,
-                      data={"client_id": cid, "scope": "https://www.googleapis.com/auth/youtube"}).json()
+                      data={"client_id": cid, "scope": "https://www.googleapis.com/auth/youtube "
+                                                         "https://www.googleapis.com/auth/youtube.force-ssl"}).json()
     if "device_code" not in r:
         write_status(f"ВХОД: Google не выдал код: {r}", name="login.txt")
         raise SystemExit(f"Google не выдал код: {r}")
@@ -216,10 +217,11 @@ def main():
     mode = req["mode"]
     log(f"режим {mode}, событие {os.environ.get('EVENT')}")
     if mode == "login":
-        if not login() or req.get("then", "publish") != "publish":
+        then = req.get("then", "publish")
+        if not login() or then not in ("publish", "comments"):
             return
-        log("вход сделан — сразу выкладываю первую гонку")
-        mode = req["mode"] = "publish"
+        log(f"вход сделан — дальше: {then}")
+        mode = req["mode"] = then
     if mode == "comments":       # только прочитать комментарии и добавить просьбы (без ролика)
         import yt as ytmod
         y_ = ytmod.YT()
@@ -332,6 +334,7 @@ def main():
     log("YouTube:", link)
     pl = yt.to_playlist(vid, PLAYLIST[league])
     log(pl)
+    log("первый комментарий:", yt.first_comment(vid, RL.LEAGUES[league]["first_comment"]))
     st = yt.status(vid)
     log("статус:", st.get("privacyStatus"), st.get("uploadStatus"))
     # таблица двигается только после удачной выкладки

@@ -131,6 +131,9 @@ LEAGUES = {
         "early": ("Kim yutadi? Bashoratingni yoz!", "Кто победит? Пиши прогноз!"),
         "cta": ("Sen qaysi shahar muxlisisan?", "А ты за какой город болеешь?"),
         "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №{no}",
+        "first_comment": ("Sen qaysi shahar muxlisisan? 👇\nЗа какой город болеешь? Пиши 👇\n\n"
+                          "Shahring yoʻqmi? Yoz — keyingi poygaga qoʻshamiz!\n"
+                          "Нет твоего города? Напиши — добавим в следующую гонку!"),
         "q": "Qaysi shahar yutadi? Какой город победит?",
         "season": "week",
         "desc": ("{n} ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n"
@@ -148,6 +151,9 @@ LEAGUES = {
         "early": ("Sening mashinang yutadimi?", "Твоя машина победит?"),
         "cta": ("Sen qaysi mashinada yurasan?", "А ты на какой машине ездишь?"),
         "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №{no}",
+        "first_comment": ("Sen qaysi mashinada yurasan? 👇\nА ты на какой машине ездишь? Пиши 👇\n\n"
+                          "Mashinang yoʻqmi? Yoz — keyingi poygaga qoʻshamiz!\n"
+                          "Нет твоей машины? Напиши — добавим в следующую гонку!"),
         "q": "Qaysi mashina yutadi? Какая машина победит?",
         "season": "week",
         "desc": ("Cobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n"
