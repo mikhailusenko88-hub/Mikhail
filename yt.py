@@ -5,6 +5,7 @@
 """
 import json
 import os
+import re
 import time
 
 import requests
@@ -26,10 +27,17 @@ class YT:
         i, j = t.find("{"), t.rfind("}")
         if i >= 0 and j > i:
             t = t[i:j + 1]
+        # при копировании с телефона длинная строка рвётся переносами — в ключах пробелов не бывает, убираем всё лишнее
+        t = re.sub(r"[\s\u200b-\u200f\ufeff\u2028\u2029\u00a0]+", "", t)
+        if not t.startswith("{") and '"client_id"' in t:
+            t = "{" + t[t.index('"client_id"'):]
+        if not t.endswith("}"):
+            t = t + "}"
         try:
             self.k = json.loads(t)
             assert all(self.k.get(x) for x in ("client_id", "client_secret", "refresh_token"))
-        except Exception:
+        except Exception as e:
+            print("разбор секрета:", type(e).__name__, str(e)[:80].split(":")[0], flush=True)
             # сам секрет не печатаем — только приметы, чтобы понять, что вставлено
             raise SystemExit(f"секрет FLAGBALL_YT не похож на строку входа: длина {len(raw)}, "
                              f"начало {'{' if raw[:1] == '{' else 'не {'}, "
