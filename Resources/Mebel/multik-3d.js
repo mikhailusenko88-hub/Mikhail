@@ -1034,7 +1034,7 @@ function rigFor(lc) { const key = lc.code || global.MK.canon(lc.spec); let r = r
 // ---------- поза по состоянию ----------
 const WAVE_TW0 = -1.2;   // поворот кисти при «привет», рад
 function applyPose(rig, st, T) {
-  const P = rig.P, act = st.act || {}, an = act.n, ap = act.p || 0, at = act.t || 0, wk = st.walk || {}, emo = st.emo || 'neutral';
+  const P = rig.P, act = st.act || {}, an = act.n, ap = act.p || 0, at = act.t || 0, wk = st.walk || {}, emo0 = st.emo || 'neutral', emo = emo0 === 'smile' ? 'happy' : emo0 === 'frown' ? 'angry' : emo0, ek = st.emoK != null ? st.emoK : 1;
   const sd = (rig.n.seed % 13) / 13;
   let lift = 0, bob = Math.sin(T * 2.2 + sd * 6) * .008, pitch = 0, lie = 0, rollA = 0, sq = 1, low = 0, hipYaw = 0, sideTilt = 0;
   const arm = [{ x: 0, z: .35 + Math.sin(T * 1.7 + sd) * .04 }, { x: 0, z: .35 + Math.sin(T * 1.7 + 2 + sd) * .04 }]; // [левая, правая]
@@ -1103,7 +1103,13 @@ function applyPose(rig, st, T) {
     if (bf < 1) { const L2 = (a, b) => lerp(a, b, bf); L_.x = L2(base.L.x, L_.x); L_.z = L2(base.L.z, L_.z); R_.x = L2(base.R.x, R_.x); R_.z = L2(base.R.z, R_.z); leg[0] = L2(base.leg[0], leg[0]); leg[1] = L2(base.leg[1], leg[1]);
       head.x = L2(base.head.x, head.x); head.y = L2(base.head.y, head.y); head.z = L2(base.head.z, head.z); pitch = L2(base.pitch, pitch); hipYaw = L2(base.hipYaw, hipYaw); sideTilt = L2(base.sideTilt, sideTilt); } }
   if (st.prop && !['wave', 'throw', 'point', 'give', 'eat', 'hug', 'read', 'peer', 'dig', 'knock', 'push', 'pull', 'drink', 'paint', 'write', 'play', 'cheer', 'listen', 'shrug', 'lookaround'].includes(an)) { R_.x = -.95; R_.z = .2; }
-  if (emo === 'scared') { L_.x = R_.x = -2.2; L_.z = R_.z = -.3; }
+  if (emo === 'scared') { L_.x = R_.x = -1.5 * ek; L_.z = R_.z = -.2 * ek; }   // испуг мягкий — лапки к груди, не к лицу
+  if (!an && !wk.on) { const et = st.et || 0;   // мимика телом: мягко, понятно детям
+    if (emo0 === 'sad' || emo0 === 'cry') { head.x += .2 * ek; sideTilt += .03 * ek; L_.z = R_.z = Math.min(R_.z, .22); }
+    else if (emo0 === 'shy') { const g = et < 1.8 ? Math.min(1, et / .3) : Math.max(.35, 1 - (et - 1.8) / .5); head.x += .22 * ek * g; head.z += .13 * ek; L_.x = R_.x = -.45 * ek; L_.z = R_.z = .12; }
+    else if (emo0 === 'frown') { head.x += .1 * ek; }
+    else if (emo0 === 'smile') { head.z += .07 * ek; }
+    else if (emo0 === 'surprised') { head.x -= .1 * ek; } }
   // устойчивые позы
   const pers = st.persist, pk = ease((st.pt || 0) / .35), back = an === 'stand' ? 1 - ease(ap) : 0;
   const isP = (v) => pers === v ? pk : (an === 'stand' && st.prev === v ? back : 0);
@@ -1144,7 +1150,7 @@ function applyPose(rig, st, T) {
   // лицо
   const talk = clamp(st.talk || 0, 0, 1);
   const bp = 3.1 + (rig.n.seed % 17) / 10, bt = (T + (rig.n.seed % 7)) % bp, dbl = Math.floor((T + (rig.n.seed % 7)) / bp) % 3 === 1; let blink = bt < .14 ? Math.sin(bt / .14 * Math.PI) : dbl && bt > .22 && bt < .36 ? Math.sin((bt - .22) / .14 * Math.PI) : 0;
-  const speaking = talk > .02 && !!st.vz, laughing = (emo === 'laugh' && !speaking) || an === 'laugh' || (an === 'roll' && emo === 'laugh');
+  const speaking = talk > .02 && !!st.vz, laughing = (emo === 'laugh' && !speaking && !an && ek > .5) || an === 'laugh' || (an === 'roll' && emo === 'laugh');
   let closed = pers === 'sleep' || laughing || (an === 'hug' && st._hug && st._hug.k > .6) || an === 'yawn' || (an === 'sneeze' && ap > .3 && ap < .62) || (an === 'roll' && emo === 'laugh');
   let lidOpen = rig.kind === 'cat' || rig.kind === 'dog' ? -0.8 : -0.75, browY = 0, browRot = 0, eyeS = 1, pupS = 1;
   if (emo === 'sleepy') lidOpen = .15; if (emo === 'surprised') { eyeS = 1.15; pupS = .7; browY = .5; } if (emo === 'scared') { eyeS = 1.1; pupS = .55; browRot = .35; }
@@ -2386,6 +2392,7 @@ function playgroundHQ(g, spec, r) { const time = spec.time || 'day', night = tim
   const C = cineSky(g, 'playground', time, '#5f7f3a');
   const H = (x, z) => smooth(-14, -40, z) * (1.2 + 2 * fbm2(x * .03, z * .03, 3)) + smooth(-60, -110, z) * (4 + 8 * fbm2(x * .012, 1.7, 3));
   const PADX = 7.6, PZ0 = -7.4, PZ1 = 2.2, onPad = (x, z) => Math.abs(x) < PADX && z > PZ0 && z < PZ1;
+  C.floor = (x, z) => onPad(x, z) ? .062 : 0;   // герои и вещи стоят НА мягком покрытии (оно на 6 см выше земли), а не проваливаются в него
   const gA = new THREE.Color(night ? '#2c4a34' : '#4f8a32'), gB = new THREE.Color(night ? '#3a5a3a' : '#7aa840');
   terrain(g, { w: 320, d: 240, cx: 0, cz: -100, sx: 180, sz: 140, h: H, map: detailTex(5, .1, .08), c: (x, z, y, out) => { out.copy(gA).lerp(gB, smooth(.45, .7, fbm2(x * .05, z * .05, 3)) * .6); out.multiplyScalar(1.12); } });
   // мягкое покрытие с бордюром
@@ -2992,6 +2999,7 @@ function render(ctx) {
   if (MK3D.hq) { scene.updateMatrixWorld(true); for (const k in rigCache) { const rg = rigCache[k]; if (rg.root.visible && rg.fur) furFrame(rg, MK3D._T || 0); } renderHQ(W, H); }
   else R.render(scene, cam);
   MK3D._ap = 0; MK3D._vig = null; MK3D._rays = 0;
+  if (MK3D._defer) { MK3D._blit = () => { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'destination-over'; ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(GL, 0, 0, w, h); ctx.restore(); }; return; }   // сборка: картинку видеокарта рисует, пока телефон сжимает прошлый кадр; подложим её под надписи потом
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(GL, 0, 0, w, h); ctx.restore();
 }
 MK3D.draw = function (ctx, tl, seg, t, T) {
@@ -3014,7 +3022,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   for (const id in S) {
     const st = S[id], lc = tl.lib.characters[id]; if (!lc || !st.vis) continue;
     const rig = rigFor(lc); ensureIn(rig.root); rig.root.visible = true; const hf = hugF[id]; st._hug = hf || null;
-    rig.root.position.set(hf ? hf.x : X(st.x), 0, -(st.z || 0) * 1.5);
+    { const rx = hf ? hf.x : X(st.x), rz = -(st.z || 0) * 1.5; rig.root.position.set(rx, CF && CF.floor ? CF.floor(rx, rz) : 0, rz); }
     rig.yaw.rotation.y = hf ? lerp(st.face * .72, hf.dir * .3, hf.k) : st.face * (st.walk && st.walk.on ? 1.35 : .72);
     const held = seg.props.find(p => p._holder === id && p._vis !== false); st.prop = held || null;
     applyPose(rig, st, T); fxFor(rig, st, T); rig._held = held; rig._needFur = true;
@@ -3023,7 +3031,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   for (const p of seg.props) { const m = propMesh(p); ensureIn(m); const fa = p._fxAge;
     let sc = 1; if (!p._vis) { if (p._fx === 'vanish' && fa < .45) sc = 1 - ease(fa / .45); else { m.visible = false; poof(p, fa); continue; } } else if (p._fx === 'appear' && fa < .6) sc = ease(fa / .6) * (1 + Math.sin(Math.min(1, fa / .6) * Math.PI) * .25);
     m.visible = sc > .01; const big = p.big || 1;
-    if (p._holder && S[p._holder] && S[p._holder].vis) { const lc = tl.lib.characters[p._holder]; const rig = rigFor(lc); const v = new THREE.Vector3(); const A = rig.h6 && global.BARSHeroes && BARSHeroes.anchors ? BARSHeroes.anchors(rig) : null; // герой образца: его настоящие лапки, глаза и рот
+    if (p._holder && S[p._holder] && S[p._holder].vis) { const lc = tl.lib.characters[p._holder]; const rig = rigFor(lc); const v = new THREE.Vector3(); const A = rig.h6 && global.BARSHeroes && BARSHeroes.anchors ? BARSHeroes.anchors(rig) : rig.bars && global.MKBarsik && MKBarsik.anchors ? MKBarsik.anchors(rig) : null; // герой образца: его настоящие лапки, глаза и рот (Барсик — только рот)
       if (A && A.handR) v.copy(A.handR); else rig.hand.getWorldPosition(v); m.position.set(v.x, v.y - .12 * rig.scale, v.z); m.scale.setScalar((m.userData.heldS || .7) * rig.scale * sc); const hr = m.userData.heldRot; m.rotation.set(hr ? hr[0] : 0, hr ? hr[1] : 0, hr ? hr[2] : 0);
       const ha = S[p._holder].act || {}, hk = ha.n === 'read' && READ_FLAT.has(p.type) && rig.handL ? 1 : ha.n === 'peer' && EYE_HELD.has(p.type) ? 2 : 0;
       if (hk) { // читает — карта/письмо в обеих лапах перед грудкой; смотрит в бинокль — бинокль у глаз
@@ -3036,7 +3044,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
       if (A && A.mouthY != null && hk !== 2 && ha.n !== 'eat' && ha.n !== 'drink') { m.updateMatrixWorld(true); const bb = new THREE.Box3().setFromObject(m), lim = A.mouthY - .02 * A.sc; if (bb.max.y > lim) m.position.y -= bb.max.y - lim; } } // книга, письмо, вещь в лапках — ниже рта, мордочку не закрывают
     else if (p._holder && S[p._holder] && !S[p._holder].vis) { m.visible = false; continue; } // вещь у героя, которого ещё нет в кадре
     else if (p._tb && L.type === 'kitchen') { m.position.set(clamp(X(p._x), 3.35, 4.45), .83, -.95); m.scale.setScalar(1.15 * sc); m.rotation.set(0, 0, 0); }
-    else { const zz = p.decor && big > 1.5 ? -1.9 : p.decor ? -.5 : .35; m.position.set(X(p._x), (p._air || 0) * 1.2 + (m.userData.float ? Math.sin(T * 2 + p._x * 9) * .08 : 0), zz); m.scale.setScalar(big * (p.decor && big < 1.5 ? 1.6 : 1) * sc); m.rotation.set(0, 0, -(p._air || 0) * 3); }
+    else { const zz = p.decor && big > 1.5 ? -1.9 : p.decor ? -.5 : .35; m.position.set(X(p._x), (CF && CF.floor ? CF.floor(X(p._x), zz) : 0) + (p._air || 0) * 1.2 + (m.userData.float ? Math.sin(T * 2 + p._x * 9) * .08 : 0), zz); m.scale.setScalar(big * (p.decor && big < 1.5 ? 1.6 : 1) * sc); m.rotation.set(0, 0, -(p._air || 0) * 3); }
     if (m.userData.leaf) { const ok = p._open || 0; m.userData.leaf.rotation.y = -ok * 1.75; m.userData.doorLight.material.opacity = Math.min(1, ok * 1.6); if (ok > .05 && m.visible) sprite(haloTex('#ffe6a0'), m.position.x, m.position.y + .55 * m.scale.x, m.position.z + .1, 1.6 * m.scale.x * (.6 + ok * .4), .7 * ok); }
     if (m.userData.flames) m.userData.flames.forEach((f, i) => { const s0 = f.userData.s0 || (f.userData.s0 = f.scale.clone()); const k = 1 + Math.sin(T * 13 + i * 2.1) * .08 + Math.sin(T * 7.3 + i) * .06; f.scale.set(s0.x * (2 - k), s0.y * k, s0.z * (2 - k)); });
     const gl = m.userData.alwaysGlow ? 1 : (p._glow || 0); if (m.userData.faceMat) m.userData.faceMat.color.set(gl > 0 ? 0xffc23a : 0x3a1a08);

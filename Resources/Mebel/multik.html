@@ -622,7 +622,9 @@ const Build = {
       const N = Math.ceil(tl.dur * fps); let i = Math.max(0, Math.min(N, (rb && rb.frames) | 0)), i0 = i;
       if (i > 0) this.set(title, .08 + .9 * i / N, `Продолжаю с кадра ${i} из ${N}`);
       const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d');
-      const t0 = performance.now(); let paused = 0, same = 0, lastRw = -1, curSeg = -1;
+      const pipe = tl.style === '3d' && !!MK.renderSplit && !(s.noPipe || (Lib.data.settings && Lib.data.settings.noPipe)), cv2 = pipe ? document.createElement('canvas') : null; if (cv2) { cv2.width = w; cv2.height = h; }
+      const PB = [[cv, ctx], pipe ? [cv2, cv2.getContext('2d')] : [cv, ctx]]; let cur = 0, pre = -1;   // два холста: пока телефон сжимает кадр, видеокарта уже рисует следующий
+      const t0 = performance.now(); let paused = 0, same = 0, lastRw = -1, curSeg = -1; const perf = { r: 0, e: 0, b: 0, w: 0, n: 0 };
       const h6Want = tl.style === '3d' && window.BARSHeroes && MK3D.hq && MK3D.THREE ? [...new Set(BARSHeroes.wantFor(Lib.data))] : []; let h6Try = 0;
       const segAt = t => { let k = 0; for (let j = 0; j < tl.segs.length; j++) if (tl.segs[j].t0 <= t) k = j; return k; };
       for (;;) {
@@ -630,28 +632,32 @@ const Build = {
           if (this.stop) { await drain(); throw new Error('cancel'); }
           if (tl.style === '3d' && MK3D.lost()) { // видеокарту отобрали (приложение сворачивали) — ждём, пока вернут
             await drain(); this.set(title, .08 + .9 * i / N, 'Жду видеокарту…'); let k = 0; while (MK3D.lost() && k++ < 100) await sleep(200);
-            if (MK3D.lost()) { // не вернули — перезапускаю страницу, сборка продолжится с этого кадра сама
+            pre = -1; if (MK3D.lost()) { // не вернули — перезапускаю страницу, сборка продолжится с этого кадра сама
               await Native.call('videoCancel', { keep: true }); began = false; s.autoResume = 1; await Lib.save(); location.reload(); await sleep(60000); throw new Error('нет видеокарты'); }
           }
           if (h6Want.length && h6Try < 3 && h6Want.some(n => !BARSHeroes.ready[n])) { // видеокарту отбирали — шерсть и свет Пика и Рона пропали вместе с ней: растим заново, иначе дальше были бы старые герои
             await drain(); h6Try++; this.set(title, .08 + .9 * i / N, 'Видеокарта вернулась — снова готовлю Пика и Рона…'); try { await BARSHeroes.prepare(MK3D.THREE, MK3D.renderer(), h6Want); } catch (er) { console.log('БАРС:', er && er.message); } }
           { const si = segAt(i / fps); if (si !== curSeg) { curSeg = si; if (MK3D.keepLocs) MK3D.keepLocs(new Set(tl.segs.slice(si).map(sg => sg.lkey).filter(Boolean))); } } // места, что дальше не нужны, — из памяти
-          ctx.setTransform(w / 1920, 0, 0, h / 1080, 0, 0); MK.render(ctx, tl, i / fps);
-          const d = cv.toDataURL('image/jpeg', .95); inflight.push(Native.call('videoFrame', { i, d: d.slice(d.indexOf(',') + 1) })); i++;
-          if (inflight.length >= 2) await take();
+          const pa = performance.now();
+          if (pre !== i) { const x0 = PB[cur][1]; x0.setTransform(w / 1920, 0, 0, h / 1080, 0, 0); MK.render(x0, tl, i / fps); }   // этот кадр ещё не нарисован заранее — рисуем сейчас
+          let fin = null; if (pipe && i + 1 < N) { const x1 = PB[1 - cur][1]; x1.setTransform(w / 1920, 0, 0, h / 1080, 0, 0); fin = MK.renderSplit(x1, tl, (i + 1) / fps); }   // следующий кадр — видеокарте сразу
+          const pb = performance.now(); const d = PB[cur][0].toDataURL('image/jpeg', .95); const pc = performance.now(); inflight.push(Native.call('videoFrame', { i, d: d.slice(d.indexOf(',') + 1) })); i++;
+          if (fin) { fin(); cur = 1 - cur; pre = i; } else pre = -1; const pe = performance.now();
+          if (inflight.length >= 2) await take(); const pd = performance.now(); perf.r += pb - pa; perf.e += pc - pb; perf.b += pe - pc; perf.w += pd - pe; perf.n++;   // где уходит время кадра: картинка / сжатие / ожидание телефона
           if (rewind >= 0) { await drain(); // телефон просит вернуться (кусок видео оборвался при сворачивании) — перерисую эти кадры
             same = rewind === lastRw ? same + 1 : 0; lastRw = rewind; if (same > 40) throw new Error('запись видео не идёт');
             if (same > 2) await sleep(1000);
-            i = rewind; rewind = -1; i0 = Math.min(i0, i); continue; }
+            i = rewind; rewind = -1; i0 = Math.min(i0, i); pre = -1; continue; }
           if (heat >= 4) { // критично: ждём (до 3 минут), пока телефон остынет
             await drain(); const tp = performance.now(); this.set(title, .08 + .9 * i / N, `${i} из ${N} · телефон горячий — даю остыть…`);
             for (let k = 0; k < 60 && !this.stop; k++) { await sleep(3000); const st = await Native.call('thermal'); if (typeof st === 'number' && st <= 1) break; }
             paused += performance.now() - tp; heat = 2;
           } else if (heat === 3) await sleep(120); else if (heat === 2) await sleep(8);
-          if (i % 10 === 0) { const el = (performance.now() - t0 - paused) / 1000, eta = el / Math.max(1, i - i0) * (N - i); this.set(title, .08 + .9 * i / N, `${Math.round(100 * i / N)}% · осталось ≈ ${fmt(eta)}${heat >= 3 ? ' · телефон тёплый, бережём его' : ''}${more()}`); }
+          if (i % 10 === 0) { const el = (performance.now() - t0 - paused) / 1000, eta = el / Math.max(1, i - i0) * (N - i), pn = Math.max(1, perf.n), pf = ` · кадр: картинка ${Math.round(perf.r / pn)} · сжатие ${Math.round(perf.e / pn)} · видеокарта ${Math.round(perf.b / pn)} · запись ${Math.round(perf.w / pn)} мс`;
+            s.buildPerf = { r: Math.round(perf.r / pn), e: Math.round(perf.e / pn), b: Math.round(perf.b / pn), w: Math.round(perf.w / pn), n: perf.n, at: i, pipe }; this.set(title, .08 + .9 * i / N, `${Math.round(100 * i / N)}% · осталось ≈ ${fmt(eta)}${heat >= 3 ? ' · телефон тёплый, бережём его' : ''}${pf}${more()}`); }
         }
         await drain();
-        if (rewind >= 0) { i = rewind; rewind = -1; continue; }
+        if (rewind >= 0) { i = rewind; rewind = -1; pre = -1; continue; }
         break;
       }
       this.set(title, .99, 'Склеиваю видео и звук…');

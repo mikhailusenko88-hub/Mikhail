@@ -1056,19 +1056,29 @@ final class MultikSegment {
             let wr = try AVAssetWriter(outputURL: url, fileType: .mp4)
             // Цвет: матрица и метки BT.709 — так HD-видео читают YouTube и плееры. Без них кодер брал свою матрицу,
             // а плеер — другую: трава и глаза тускнели, рыжая шерсть и нос уходили в оранжевый.
-            let vs: [String: Any] = [
-                AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: w, AVVideoHeightKey: h,
-                AVVideoColorPropertiesKey: [
-                    AVVideoColorPrimariesKey: AVVideoColorPrimaries_ITU_R_709_2,
-                    AVVideoTransferFunctionKey: AVVideoTransferFunction_ITU_R_709_2,
-                    AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2,
-                ],
+            let color: [String: Any] = [
+                AVVideoColorPrimariesKey: AVVideoColorPrimaries_ITU_R_709_2,
+                AVVideoTransferFunctionKey: AVVideoTransferFunction_ITU_R_709_2,
+                AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2,
+            ]
+            // H.265 (HEVC): та же чёткость травы и шерсти, что у H.264 на 16 Мбит/с, при ~10 Мбит/с — файл примерно на треть меньше; YouTube его принимает.
+            // Если телефон HEVC не пишет — как раньше, H.264 16 Мбит/с (при 10 Мбит/с H.264 трава и шерсть «мылились»).
+            let hevc: [String: Any] = [
+                AVVideoCodecKey: AVVideoCodecType.hevc, AVVideoWidthKey: w, AVVideoHeightKey: h, AVVideoColorPropertiesKey: color,
                 AVVideoCompressionPropertiesKey: [
-                    AVVideoAverageBitRateKey: w >= 1920 ? 16_000_000 : 8_000_000,   // трава и шерсть — мелкие детали: при 10 Мбит/с они «мылились» при сборке mp4
+                    AVVideoAverageBitRateKey: w >= 1920 ? 10_500_000 : 5_500_000,
+                    AVVideoMaxKeyFrameIntervalKey: Int(fps) * 2,
+                ],
+            ]
+            let h264: [String: Any] = [
+                AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: w, AVVideoHeightKey: h, AVVideoColorPropertiesKey: color,
+                AVVideoCompressionPropertiesKey: [
+                    AVVideoAverageBitRateKey: w >= 1920 ? 16_000_000 : 8_000_000,
                     AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
                     AVVideoMaxKeyFrameIntervalKey: Int(fps) * 2,
                 ],
             ]
+            let vs = wr.canApply(outputSettings: hevc, forMediaType: .video) ? hevc : h264
             let v = AVAssetWriterInput(mediaType: .video, outputSettings: vs)
             v.expectsMediaDataInRealTime = false
             let ad = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: v, sourcePixelBufferAttributes: [

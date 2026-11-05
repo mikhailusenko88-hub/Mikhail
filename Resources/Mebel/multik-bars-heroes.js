@@ -34,7 +34,7 @@ function THREE_Color(r, g, b) { return { r, g, b, isColor: true, _lazy: [r, g, b
 // ---------- нити: шерсть и трава, ленточки из текстуры точек (без атрибутов, по gl_VertexID) ----------
 function strandVS(depth) { return GL_HEAD + `
 uniform sampler2D uPts, uCol, uB0, uB1, uB2, uNrm; uniform int uK; uniform int uLive, uCull; uniform float uCullK, uKT; uniform float uRadK, uTaper, uPx, uMinPx; uniform vec4 uGR; uniform int uGrass; uniform vec3 uCamDir;
-uniform float uTime, uWind; uniform mat4 uPartM[6]; uniform int uBlink, uDec, uHideArm; uniform vec4 uMouthC; uniform vec3 uMouthR; uniform int uPoseOn; uniform sampler2D uPA, uPB; uniform float uPW;
+uniform float uTime, uWind; uniform mat4 uPartM[6]; uniform int uBlink, uDec, uDecC, uHideArm; uniform vec4 uMouthC; uniform vec3 uMouthR; uniform int uPoseOn; uniform sampler2D uPA, uPB; uniform float uPW;
 out vec3 vCol; out vec3 vE; out vec4 vVis; out vec3 vT; out vec3 vP; out float vCov; out float vTT; out float vMist;
 vec3 P(int i) { return TX(uPts, i).xyz; }
 void main() {
@@ -43,7 +43,7 @@ void main() {
   int base = s * uK; int i = base + kk; vec4 q0 = TX(uPts, i); int ip = int(q0.w + .5); int part = ip & 7; float lw = float((ip >> 3) & 63) / 63.0; mat4 M = uPartM[part]; if (lw > 0.0) M = M + (uLegM[ip >> 9] - M) * lw;
   if (part == 5 && uBlink == 0) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
   if (part == 1 && uMouthC.w > 0.0) { vec3 dm = (TX(uPts, base).xyz - uMouthC.xyz) / uMouthR; if (dot(dm, dm) < 1.0) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; } }   // рот открыт — шерсть закрытых губ не закрывает его
-  ${depth ? 'if (uDec > 1 && s % uDec != 0) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }' : ''}
+  ${depth ? 'if (uDec > 1 && s % uDec != 0) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }' : 'if (uDecC > 1 && s % uDecC != 0) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }   // герой далеко: волосков на пиксель много — рисуем каждый N-й, чуть шире (та же площадь шерсти)'}
   ${depth ? 'if ((uHideArm == 1 && (part == 2 || part == 3)) || (uHideArm == 2 && part != 2 && part != 3)) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }' : ''}
   ${depth ? '' : `if (uCull == 1) { // шерсть за телом не рисуем (кроме длинных кисточек, они торчат за край)
     vec3 n0 = TX(uNrm, s).xyz * 2.0 - 1.0; vec3 r0 = TX(uPts, base).xyz, r4 = TX(uPts, base + uK - 1).xyz;
@@ -60,6 +60,7 @@ void main() {
   vec3 V = isOrthographic ? -uCamDir : cameraPosition - p; float dist = length(V); vec3 vd = V / dist;
   vec3 bn = cross(t, vd); float bl = length(bn); bn = bl > 1e-5 ? bn / bl : normalize(cross(t, vec3(0.0, 1.0, 0.0)));
   float px = isOrthographic ? uPx : uPx * dist; float hw = max(rad, .5 * px * uMinPx); vCov = clamp(rad / hw, 0.0, 1.0);
+  ${depth ? '' : 'if (uDecC > 1) hw *= pow(float(uDecC), .85);'}
   vec3 wp = p + bn * side * hw;
   gl_Position = projectionMatrix * viewMatrix * vec4(wp, 1.0);
   ${depth ? '' : `vec4 b0 = TX(uB0, i), b1 = TX(uB1, i); vE = b0.rgb * uSkyK; vVis = b1; vT = t; vP = wp; vTT = tt; vMist = mistF(wp);
@@ -441,6 +442,48 @@ async function buildTemplate(name) {
   T.mouthB = info.lines.mouth_base.map(l => tube(l, .0017 * sc, .0015 * sc, [0.12, 0.04, 0.03], 'mouth'));
   T.mouthO = info.lines.mouth_open.map(l => tube(l, .0017 * sc, .0015 * sc, [0.12, 0.04, 0.03], 'mouthO', { noOcc: true }));
   T.creases = info.lines.creases.map(l => tube(l, .0012 * sc, .0024 * sc, [0.07, 0.035, 0.02], 'crease', { noOcc: true }));
+  // ---- мимика: брови (мягкие, чуть темнее шерсти) и улыбка/грусть линией рта — варианты, телефон переключает по эмоции ----
+  { const hs = D.skins.head, HP = hs.p, HN = hs.n, HF = hs.fd, nh = hs.nv, RE2 = info.re, Lf = info.fur && info.fur.L ? info.fur.L[1] || .006 : .006;
+    const cand = []; { const ctr = info.eyes.map(V3); for (const l of info.lines.mouth_base) ctr.push(V3(l[l.length >> 1])); const r2 = (RE2 * 3.2) ** 2;   // искать поверхность только у глаз и рта — в 20 раз быстрее
+      for (let i = 0; i < nh; i++) for (const c of ctr) { const dx = HP[i * 3] - c.x, dy = HP[i * 3 + 1] - c.y, dz = HP[i * 3 + 2] - c.z; if (dx * dx + dy * dy + dz * dz < r2) { cand.push(i); break; } } }
+    const near = q => { let bi = 0, bd = 1e9; for (const i of cand) { const dx = HP[i * 3] - q.x, dy = HP[i * 3 + 1] - q.y, dz = HP[i * 3 + 2] - q.z, d = dx * dx + dy * dy + dz * dz; if (d < bd) { bd = d; bi = i; } } return bi; };
+    const snap = (q, lift) => { const i = near(q), n = new THREE.Vector3(HN[i * 3], HN[i * 3 + 1], HN[i * 3 + 2]).normalize(); return new THREE.Vector3(HP[i * 3], HP[i * 3 + 1], HP[i * 3 + 2]).addScaledVector(n, lift); };
+    const BROW = { neutral: [0, 0, 0], up: [.3, .3, .06], sad: [.28, -.05, 0], frown: [-.2, .07, 0], shy: [.15, 0, 0] };   // подъём у переносицы, у виска, дуга (в радиусах глаза)
+    T.brows = {}; let bcol = null;
+    for (const k in BROW) { T.brows[k] = [];
+      for (let ei = 0; ei < info.eyes.length; ei++) { const c = V3(info.eyes[ei]), dL = new THREE.Vector3(...(info.eyeDirs ? info.eyeDirs[ei] : [0, 0, 1])).normalize();
+        const U0 = new THREE.Vector3(0, 1, 0).addScaledVector(dL, -dL.y).normalize(), S = new THREE.Vector3().crossVectors(U0, dL).normalize(); const inSgn = Math.sign(-c.x) * Math.sign(S.x) || 1;
+        const [bi, bo, ba] = BROW[k], pts = [];
+        for (let j = 0; j < 9; j++) { const u = j / 8 * 2 - 1, wi = (1 + u * inSgn) / 2, arch = 1 - u * u;
+          const q = c.clone().addScaledVector(dL, RE2 * .55).addScaledVector(U0, RE2 * (1.32 + .14 * arch + (bi * wi + bo * (1 - wi) + ba * arch))).addScaledVector(S, u * RE2 * .82 + (k === 'frown' ? -inSgn * wi * RE2 * .08 : 0));
+          pts.push(snap(q, Lf * .75 + .0016 * sc)); }
+        if (!bcol && HF) { const i = near(pts[4]), f = [HF[i * 5] / 255, HF[i * 5 + 1] / 255, HF[i * 5 + 2] / 255], lum = .3 * f[0] + .55 * f[1] + .15 * f[2];   // на светлой шерсти — темнее шерсти, на тёмной (Рон) — светлее, иначе бровей не видно
+          bcol = lum < .14 ? f.map((x, j) => Math.min(.55, x * 2.4 + [.12, .1, .08][j])) : f.map(x => x * .4); }
+        const pa = pts.map(v => [v.x, v.y, v.z]); T.brows[k].push(tube(pa, .0034 * sc, .0018 * sc, bcol || [0.1, 0.09, 0.09], 'brow', { noOcc: true })); } }
+    // рот: улыбка — уголки вверх, грусть — вниз (только линии губ; желобок как был)
+    const lip = (l, d) => { const xm = Math.max(...l.map(p => Math.abs(p[0]))) || 1; return l.map(p => { const w = Math.pow(Math.min(1, Math.max(0, (Math.abs(p[0]) / xm - .25) / .75)), 1.3); const v = snap(new THREE.Vector3(p[0], p[1] + d * RE2 * w, p[2]), .0004 * sc); return [v.x, v.y, v.z]; }); };
+    const mvar = d => info.lines.mouth_base.map((l, i) => tube(i === 0 ? l : lip(l, d), .0017 * sc, .0015 * sc, [0.12, 0.04, 0.03], 'mouth'));
+    T.mouthSm = mvar(.46); T.mouthSd = mvar(-.34);
+    // закрытые глаза: веко цвета шерсти (а не бледный шар) и тёмная линия ресниц — спокойная «‿» и смеющаяся «∩»
+    const bs = D.skins.head_blink, bIt = T.items.find(it => it.head === 'blink');
+    if (bs && bIt) { const BP = bs.p, nb = bs.nv, eS = info.eyeS || [1, 1, 1], ctr = info.eyes.map(V3), dLs = info.eyes.map((e, ei) => new THREE.Vector3(...(info.eyeDirs ? info.eyeDirs[ei] : [0, 0, 1])).normalize());
+      const rn = (x, y, z, ei) => { const c = ctr[ei]; return Math.hypot((x - c.x) / (RE2 * eS[0]), (y - c.y) / (RE2 * eS[1]), (z - c.z) / (RE2 * eS[2])); };
+      const fr = (x, y, z, ei) => (x - ctr[ei].x) * dLs[ei].x + (y - ctr[ei].y) * dLs[ei].y + (z - ctr[ei].z) * dLs[ei].z;
+      let fc = [0, 0, 0], fn = 0; if (HF) for (let i = 0; i < nh; i++) for (let ei = 0; ei < ctr.length; ei++) { const r = rn(HP[i * 3], HP[i * 3 + 1], HP[i * 3 + 2], ei); if (r > 1.35 && r < 1.75 && fr(HP[i * 3], HP[i * 3 + 1], HP[i * 3 + 2], ei) > 0) { fc[0] += HF[i * 5]; fc[1] += HF[i * 5 + 1]; fc[2] += HF[i * 5 + 2]; fn++; } }
+      if (fn) { fc = fc.map(x => x / fn / 255); const lum = .3 * fc[0] + .55 * fc[1] + .15 * fc[2], lidC = fc.map(x => Math.pow(x, 2.2) * (lum < .14 ? 1.3 : 1.4)), CA = bIt.geo.attributes.color;   // цвет шерсти записан в sRGB, на вершинах — линейный
+        for (let i = 0; i < nb; i++) { let w = 0; for (let ei = 0; ei < ctr.length; ei++) { const x = BP[i * 3], y = BP[i * 3 + 1], z = BP[i * 3 + 2]; if (fr(x, y, z, ei) < -.25 * RE2) continue; const r = rn(x, y, z, ei); w = Math.max(w, Math.min(1, Math.max(0, (1.42 - r) / .22))); }
+          if (w > 0) for (let c = 0; c < 3; c++) CA.setComponent(i, c, CA.getComponent(i, c) * (1 - w) + lidC[c] * w); }
+        const bc = []; for (let i = 0; i < nb; i++) for (let ei = 0; ei < ctr.length; ei++) if (rn(BP[i * 3], BP[i * 3 + 1], BP[i * 3 + 2], ei) < 1.6) { bc.push(i); break; }
+        const bnear = q => { let bi = bc[0], bd = 1e9; for (const i of bc) { const dx = BP[i * 3] - q.x, dy = BP[i * 3 + 1] - q.y, dz = BP[i * 3 + 2] - q.z, d = dx * dx + dy * dy + dz * dz; if (d < bd) { bd = d; bi = i; } } return bi; };
+        const lcol = lum < .14 ? fc.map((x, j) => Math.min(.5, x * 2.2 + [.1, .09, .08][j])) : [0.07, 0.05, 0.05];
+        T.lash = {};
+        for (const [k, a0, ar] of [['calm', -.08, -.16], ['up', -.2, .34]]) { T.lash[k] = [];
+          for (let ei = 0; ei < ctr.length; ei++) { const c = ctr[ei], dL = dLs[ei], U0 = new THREE.Vector3(0, 1, 0).addScaledVector(dL, -dL.y).normalize(), S = new THREE.Vector3().crossVectors(U0, dL).normalize(), inSgn = Math.sign(-c.x) * Math.sign(S.x) || 1, pts = [];
+            for (let j = 0; j < 15; j++) { const u = (j / 14 * 2 - 1) * -inSgn, arch = 1 - u * u;   // от внутреннего уголка к внешнему
+              const q = c.clone().addScaledVector(dL, RE2 * 1.3).addScaledVector(U0, RE2 * eS[1] * (a0 + ar * arch)).addScaledVector(S, u * RE2 * eS[0] * .9);
+              const i = bnear(q), n = new THREE.Vector3(bs.n[i * 3], bs.n[i * 3 + 1], bs.n[i * 3 + 2]).normalize(), P0 = new THREE.Vector3(BP[i * 3], BP[i * 3 + 1], BP[i * 3 + 2]);
+              const v = q.clone().addScaledVector(n, P0.clone().sub(q).dot(n) + .0012 * sc); pts.push([v.x, v.y, v.z]); }   // на касательную плоскость ближайшей точки — линия ровная, без ступенек
+            T.lash[k].push(tube(pts, .0016 * sc, .0028 * sc, lcol, 'lash', { noOcc: true })); } } } } }
   info.lines.whisk.forEach(l => tube(l, info.whisk.r[0], info.whisk.r[1], info.whisk.col, 'whisk'));
   T.nSurf = base;
   // ---- приёмники света кожи (поза покоя, оси героя) ----
@@ -471,7 +514,7 @@ function instance(T, U, baked) {
   const fu = { uPts: { value: T.fur.ptsTex }, uCol: { value: T.fur.colTex }, uB0: { value: baked ? T.fur.B[0] : null }, uB1: { value: baked ? T.fur.B[1] : null }, uB2: { value: baked ? T.fur.B[2] : null }, uK: { value: 5 }, uRadK: { value: 0.001 }, uTaper: { value: .85 },
     uPx: { value: .001 }, uMinPx: { value: .6 }, uGR: { value: new THREE.Vector4() }, uGrass: { value: 0 }, uCamDir: { value: new THREE.Vector3() }, uTime: { value: 0 }, uWind: { value: 0 }, uHairK: { value: .095 }, uMS: { value: .25 }, uSpec: { value: .2 }, uDesat: { value: 0 },
     uGold: { value: .85 }, uGoldT: { value: new THREE.Vector3(1, .66, .25) }, uPartM: { value: [0, 1, 2, 3, 4, 5].map(() => new THREE.Matrix4()) }, uBlink: { value: 0 }, uNrm: { value: T.fur.nrmTex }, uLive: { value: baked ? 1 : 0 }, uCull: { value: baked ? 1 : 0 }, uCullK: { value: -.3 }, uKT: { value: .5 }, uDec: { value: 2 },
-    uPoseOn: { value: 0 }, uPA: { value: null }, uPB: { value: null }, uPW: { value: 0 }, uDbgS: { value: 0 }, uHideArm: { value: 0 }, uMouthC: { value: new THREE.Vector4() }, uMouthR: { value: new THREE.Vector3(1, 1, 1) } };
+    uPoseOn: { value: 0 }, uPA: { value: null }, uPB: { value: null }, uPW: { value: 0 }, uDbgS: { value: 0 }, uHideArm: { value: 0 }, uDecC: { value: 1 }, uMouthC: { value: new THREE.Vector4() }, uMouthR: { value: new THREE.Vector3(1, 1, 1) } };
   const fmat = raw(strandVS(false), STRAND_FS, fu, { side: THREE.DoubleSide, alphaToCoverage: false });   // alpha-to-coverage на iPhone рисует сетку тёмных точек — шерсть сплошная, сглаживает MSAA
   const fd = raw(strandVS(true), DEPTH_FS, fu, { side: THREE.DoubleSide, colorWrite: false });
   const fg = new THREE.BufferGeometry(); fg.setDrawRange(0, T.fur.n * 4 * 6); fg.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e4);
@@ -491,14 +534,19 @@ function instance(T, U, baked) {
   }
   const byIt = new Map(I.meshes.filter(m => m.userData.it).map(m => [m.userData.it, m]));
   I.mouthB = T.mouthB.map(it => byIt.get(it)); I.mouthO = T.mouthO.map(it => byIt.get(it)); I.creases = T.creases.map(it => byIt.get(it));
-  I.restPose = () => { for (const k of ['head', 'armL', 'armR', 'tail', 'body']) G[k].matrix.identity(); G.legs.forEach(g => g.matrix.identity()); setFace(I, 'base', false); root.updateMatrixWorld(true); partMats(I); };
+  I.mouthSm = (T.mouthSm || []).map(it => byIt.get(it)); I.mouthSd = (T.mouthSd || []).map(it => byIt.get(it)); I.brows = {}; for (const k in (T.brows || {})) I.brows[k] = T.brows[k].map(it => byIt.get(it)); I.lash = {}; for (const k in (T.lash || {})) I.lash[k] = T.lash[k].map(it => byIt.get(it));
+  I.restPose = () => { for (const k of ['head', 'armL', 'armR', 'tail', 'body']) G[k].matrix.identity(); G.legs.forEach(g => g.matrix.identity()); setFace(I, 'base', false, 'neutral', 1); root.updateMatrixWorld(true); partMats(I); };
   I.restPose();
   return I;
 }
 function partMats(I) { const G = I.G, pm = I.fu.uPartM.value; pm[0].copy(G.body.matrixWorld); pm[1].copy(G.head.matrixWorld); pm[2].copy(G.armL.matrixWorld); pm[3].copy(G.armR.matrixWorld); pm[4].copy(G.tail.matrixWorld); pm[5].copy(G.head.matrixWorld);
   I.U.uLegM.value[0].copy(G.legs[0].matrixWorld); I.U.uLegM.value[1].copy(G.legs[1].matrixWorld); }
-function setFace(I, m, closed) { for (const k in I.heads) I.heads[k].visible = k === (closed ? 'blink' : m); for (const e of I.eyes) { e.e.visible = !closed; e.co.visible = !closed; }
-  for (const o of I.mouthB) o.visible = !closed && m === 'base'; for (const o of I.mouthO) o.visible = !closed && m !== 'base'; for (const o of I.creases) o.visible = closed; I.fu.uBlink.value = closed ? 1 : 0;
+const FACE = { smile: ['sm', 'neutral'], happy: ['sm', 'neutral'], love: ['sm', 'neutral'], laugh: ['sm', 'up'], shy: ['sm', 'shy'], sad: ['sd', 'sad'], cry: ['sd', 'sad'], frown: ['b', 'frown'], angry: ['b', 'frown'], surprised: ['b', 'up'], scared: ['sd', 'sad'], sleepy: ['b', 'neutral'] };   // рот (улыбка/грусть) и брови по эмоции — мягко, для детей
+function setFace(I, m, closed, emo, ek) { for (const k in I.heads) I.heads[k].visible = k === (closed ? 'blink' : m); for (const e of I.eyes) { e.e.visible = !closed; e.co.visible = !closed; }
+  const fc = FACE[(ek == null || ek > .4) ? emo : 'neutral'] || ['b', 'neutral'], mv = m === 'base' && !closed ? fc[0] : '';
+  for (const o of I.mouthSm || []) o.visible = mv === 'sm'; for (const o of I.mouthSd || []) o.visible = mv === 'sd'; for (const k in I.brows || {}) for (const o of I.brows[k]) o.visible = k === fc[1];
+  for (const o of I.mouthB) o.visible = !closed && m === 'base' && mv === 'b'; for (const o of I.mouthO) o.visible = !closed && m !== 'base'; for (const o of I.creases) o.visible = closed && !I.lash.calm; I.fu.uBlink.value = closed ? 1 : 0;
+  { const lk = closed ? (/^(laugh|happy|smile|love)$/.test((ek == null || ek > .4) ? emo : '') ? 'up' : 'calm') : ''; for (const k in I.lash || {}) for (const o of I.lash[k]) o.visible = k === lk; }
   const mz = I.T.mouthZ && !closed && I.T.mouthZ[m]; I.fu.uMouthC.value.set(mz ? mz.c[0] : 0, mz ? mz.c[1] : 0, mz ? mz.c[2] : 0, mz ? 1 : 0); if (mz) I.fu.uMouthR.value.set(mz.r[0], mz.r[1], mz.r[2]); }
 const _toB = () => new THREE.Matrix4().set(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
 function eyeMats(I) { const r = I.T.info.re, toB = _toB(); for (const e of I.eyes) { const sc = new THREE.Matrix4().makeScale(1 / r, 1 / r, 1 / r); const M = e.e.material.uniforms.uEyeM.value.multiplyMatrices(sc, e.e.matrixWorld.clone().invert()); if (e.irisInv) M.premultiply(e.irisInv); M.premultiply(toB); } }
@@ -627,7 +675,9 @@ H6.frame = function (rig, st, T, L) {
   const vz = st.vz || {}; let m = 'base'; if (open > .22) m = (vz.o || 0) > (vz.w || 0) * 1.1 ? 'o' : 'a';
   const e0 = rig.eyes && rig.eyes[0]; let lid = 1; if (e0 && e0.g) { const sx = e0.g.scale.x || 1, sy = e0.g.scale.y; lid = 1 - Math.min(1, Math.max(0, (1 - sy / sx) / 0.92)); }
   const emo = st.emo || 'neutral'; if (emo === 'sleepy') lid *= .45;
-  setFace(I, m, lid < .25);   /* закрыты только при моргании и сне; прищур от улыбки — глаза открыты */
+  const ek = st.emoK != null ? st.emoK : 1, et = st.et || 0; setFace(I, m, lid < .25, emo, ek);   /* закрыты только при моргании и сне; прищур от улыбки — глаза открыты */
+  { let gz = 0; if (emo === 'shy') gz = .3 * ek * Math.min(1, et / .3) * (et < 1.8 ? 1 : Math.max(0, 1 - (et - 1.8) / .5)); else if (emo === 'sad' || emo === 'cry') gz = .13 * ek;   // смущается — взгляд ненадолго вниз; грустит — чуть вниз
+    const ax = H6._ax || (H6._ax = new THREE.Vector3(1, 0, 0)); for (const e of I.eyes) e.e.quaternion.setFromAxisAngle(ax, gz); }
   I.L = L; I.T3 = T;
   I.fu.uTime.value = T || 0;
 };
@@ -635,6 +685,8 @@ function camFrame(I, R, cam) {
   const U = I.U, L = I.L || {}, TT = I.T; I.root.updateMatrixWorld(true); partMats(I); eyeMats(I);
   const h = R.getRenderTarget() ? R.getRenderTarget().height : R.getContext().drawingBufferHeight; I.fu.uPx.value = 2 * Math.tan((cam.fov || 38) * Math.PI / 360) / Math.max(1, h);
   const MW = I.root.matrixWorld, hc = _v3.set(0, TT.headC, 0).applyMatrix4(MW).clone();
+  { const hp = (TT.headC * 1.25 * new THREE.Vector3().setFromMatrixColumn(MW, 1).length()) * h / (2 * Math.tan((cam.fov || 38) * Math.PI / 360) * Math.max(.1, cam.position.distanceTo(hc)));   // рост героя на кадре, пикселей
+    const spp = 1.67 * TT.fur.n / Math.max(1, hp * hp), dec = H6.K.lod === false ? 1 : spp < 2.4 ? 1 : spp < 4.8 ? 2 : spp < 9 ? 3 : 4; I.fu.uDecC.value = dec; I.lod = { hp: Math.round(hp), dec }; }   // крупно — вся шерсть, издалека — каждый N-й волосок
   const toCam = cam.position.clone().sub(hc).normalize(); const camR = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0), camU = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 1);
   const K = H6.K;
   // солнце места

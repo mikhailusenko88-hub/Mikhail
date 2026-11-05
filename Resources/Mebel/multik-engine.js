@@ -916,8 +916,10 @@ MK.compile = function (ep, lib, audio) {
     const GAP = .13, near = (a, b) => Math.abs(a - b) < GAP;
     const BW = { slim: .085, normal: .1, chubby: .125, stocky: .115, tall: .09, round: .11 }; // ширина героя по телосложению (доля ширины сцены)
     const wOf = wid => { const sp = (lib.characters[wid] || {}).spec || {}; const b = sp.build || (global.MKMaker ? global.MKMaker.defaultBuild(sp) : 'normal'); return (sp.kind === 'human' ? .09 : BW[b] || .1) * (sp.height || 1); };
+    let PR = [];   // вещи на земле: герой не встаёт прямо на них (зонтик сквозь пса)
     const spaceX = (id, x, fromX, gap) => { gap = gap || GAP; x = clamp(x, .07, .93); const z = C[id] ? C[id].z : 0;
-      const free = (xx, zz) => { for (const o in C) { if (o === id || !C[o].vis) continue; const oz = C[o].z || 0, ww = (wOf(id) + wOf(o)) / 2, need = oz === zz ? Math.max(gap, ww + .025) : (zz > oz ? Math.max(gap * .5, ww * .85) : 0); if (need && Math.abs(C[o].x - xx) < need - 1e-6) return false; } return true; };
+      const free = (xx, zz) => { if (!zz) for (const p of PR) { if (p.holder || !p.vis || p.tb || (p.big || 1) > 1.2) continue; if (Math.abs(p.x - xx) < wOf(id) / 2 + .035 * Math.min(1, p.big || 1)) return false; }
+        for (const o in C) { if (o === id || !C[o].vis) continue; const oz = C[o].z || 0, ww = (wOf(id) + wOf(o)) / 2, need = oz === zz ? Math.max(gap, ww + .025) : (zz > oz ? Math.max(gap * .5, ww * .85) : 0); if (need && Math.abs(C[o].x - xx) < need - 1e-6) return false; } return true; };
       if (free(x, z)) return x; const pref = fromX != null && fromX > x ? 1 : -1;
       for (let k = 1; k < 40; k++) for (const sd of [-pref, pref]) { const xx = x + sd * k * .02; if (xx < .07 || xx > .93) continue; if (free(xx, z)) return xx; }
       if (C[id] && !z) { C[id].z = .6; return spaceX(id, x, fromX, gap); }
@@ -933,13 +935,14 @@ MK.compile = function (ep, lib, audio) {
       if (vis.length > 6) vis.forEach((id, i) => { if (i % 2) C[id].z = .6; }); }
     for (const cs of sc.cast || []) if (C[cs.who]) cs._x = C[cs.who].x, cs._z = C[cs.who].z;
     const props = (sc.props || []).map(p => ({ id: p.id, type: p.type, color: p.color, x: p.x != null ? p.x : .5, x0: p.x != null ? p.x : .5, holder: p.holder && C[p.holder] ? p.holder : null, h0: p.holder && C[p.holder] ? p.holder : null, decor: !!p.decor, big: p.big || 1, vis0: !p.hidden, glow0: !!p.glow, vis: !p.hidden, ev: [] }));
+    PR = props;
     const TB = TABLE_X[lspec.type]; if (TB != null) { let k = 0; for (const p of props) if (!p.holder && FOOD.has(p.type) && !(p.big > 1)) { p.x = p.x0 = TB + (k++ % 3) * .025; p.tb0 = p.tb = true; } }
     const beats = [];
     const free = p => !p.holder && !p.decor && p.vis;
     const cam = [{ t: 0, mode: sc.camera || 'wide', on: sc.cameraOn || null }];
     let cur = .6, prevStart = .6, prevEnter = false; const st0 = t;
     for (const step of sc.steps || []) {
-      const start = step.with ? prevStart : step.do === 'enter' && prevEnter && !step.after ? prevStart + .5 : cur + (step.after || 0); let dur = 0; prevEnter = step.do === 'enter';
+      const start = step.with ? prevStart : step.do === 'enter' && prevEnter && !step.after ? prevStart + .5 : cur + (step.after || 0); let dur = 0; prevEnter = step.do === 'enter'; let emoEv = null;
       const who = step.who, ch = who && C[who];
       if (step.camera) { cam.push({ t: start, mode: step.camera, on: step.on || null, zoom: step.zoom, auto: !!step.auto, cut: true }); }
       if (step.shake) cam.push({ t: start, shake: step.shake === true ? .6 : step.shake });
@@ -961,7 +964,7 @@ MK.compile = function (ep, lib, audio) {
       if (step.look) { const p = props.find(p => p.id === step.look); if (p) { beats.push({ t: start, t1: start + 1.6, k: 'look', who: step.who && C[step.who] ? step.who : null, px: p.holder && C[p.holder] ? C[p.holder].x : p.x }); for (const id in C) { if (!C[id].vis) continue; C[id].ev.push({ t: start + .2, k: 'face', v: p.x >= C[id].x ? 1 : -1 }); } }
         if (step.who && C[step.who]) C[step.who].ev.push({ t: start + .1, k: 'act', n: 'point', t1: start + 1.3 }); }
       if (ch) {
-        if (step.emotion) ch.ev.push({ t: start, k: 'emo', v: step.emotion });
+        if (step.emotion) { emoEv = { t: start, k: 'emo', v: step.emotion }; ch.ev.push(emoEv); }
         if (step.face) ch.ev.push({ t: start, k: 'face', v: faceVal(step.face, ch, C) });
         const d = step.do;
         if (MOVES[d] != null) {
@@ -1000,7 +1003,9 @@ MK.compile = function (ep, lib, audio) {
               const tf = s0 + .45, fd = .5 + Math.abs(to - fromX) * .8; p.ev.push({ t: tf, holder: null, fly: { x0: fromX, x1: to, t1: tf + fd, h: d === 'kick' ? .9 : 1.2 }, x: to }); p.holder = null; p.x = to;
               if (step.to && C[step.to]) { p.ev.push({ t: tf + fd, holder: step.to }); p.holder = step.to; } } }
           if (d === 'take') { const p = props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; if (p) { for (const q of props) if (q !== p && q.holder === who && q.vis) { q.ev.push({ t: s0 + .3, holder: null, x: ch.x - .05 * (ch.face || 1) }); q.holder = null; q.x = ch.x - .05 * (ch.face || 1); } p.ev.push({ t: s0 + .3, holder: who, tb: false }); p.holder = who; if (!p.vis) { p.ev.push({ t: s0 + .3, vis: true }); p.vis = true; } } }
-          if (d === 'drop') { const p = props.find(p => p.holder === who); if (p) { const onT = TB != null && FOOD.has(p.type); const xx = onT ? TB : ch.x + .03 * (ch.face || 1); p.ev.push({ t: s0 + .3, holder: null, x: xx, tb: onT }); p.holder = null; p.x = xx; } }
+          if (d === 'drop') { const p = props.find(p => p.holder === who); if (p) { const onT = TB != null && FOOD.has(p.type); const tall = /^(umbrella|flag|ladder|bike|scooter|telescope|rod|net|sled|boat|guitar|drum|kite|broom|shovel|stick|lantern|teddy|box|basket|bucket|backpack|gift|pumpkin)$/.test(p.type);   // высокую вещь ставит сбоку, а не себе под нос
+            const side = sd => { const x = ch.x + sd * (C[who].w / 2 + .045); return x > .06 && x < .94 && !Object.keys(C).some(o => o !== who && C[o].vis && Math.abs(C[o].x - x) < C[o].w / 2 + .03) ? x : null; };
+            const xx = onT ? TB : tall ? (side(ch.x > .5 ? -1 : 1) ?? side(ch.x > .5 ? 1 : -1) ?? clamp(ch.x + (ch.x > .5 ? -1 : 1) * (C[who].w / 2 + .045), .05, .95)) : ch.x + .03 * (ch.face || 1); /* к середине кадра, где нет соседа */ p.ev.push({ t: s0 + .3, holder: null, x: xx, tb: onT }); p.holder = null; p.x = xx; } }
           if (d === 'give' && step.to && C[step.to]) { const p = props.find(p => p.holder === who); if (p) { p.ev.push({ t: s0 + .5, holder: step.to, from: who }); p.holder = step.to; } ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); }
         }
         if (step.to && step.say && C[step.to]) ch.ev.push({ t: start, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 });
@@ -1019,6 +1024,7 @@ MK.compile = function (ep, lib, audio) {
         if (lp.post) { const ld = laughAt(vt + sd + .08, true); dur = Math.max(dur, (vt - start) + sd + .08 + ld + .25); }
       }
       if (!step.say && !step.do && !step.wait && step.emotion && !step.with) dur = Math.max(dur, .4);
+      if (emoEv) emoEv.t1 = start + dur + (step.say ? 1.6 : 2.6); // эмоция держится реплику (или пару секунд молча) и мягко уходит — лицо не застывает грустным до конца сцены
       prevStart = start; cur = Math.max(cur, start + dur);
     }
     props.forEach(p => p.ev.sort((a, b) => a.t - b.t));
@@ -1060,14 +1066,15 @@ MK.viseme = function (text, k, d) { const q = visSeq(text); if (!q.length || !q.
   let pv = null, nv = null, pd = 9, nd = 9; for (let j = i; j >= 0 && !pv; j--) if (q[j].v) { pv = q[j]; pd = pos - (q[j].a + q[j].w * .5); } for (let j = i; j < q.length && !nv; j++) if (q[j].v) { nv = q[j]; nd = (q[j].a + q[j].w * .5) - pos; }
   const A = pv || nv, B = nv || pv; if (!A) return { w: .5, r: .2, o: .6, c: 0 }; const f = A === B ? 0 : clamp(pd / Math.max(.01, pd + nd), 0, 1), sm = f * f * (3 - 2 * f);
   const u = q[i]; return { w: lerp(A.v[0], B.v[0], sm), r: lerp(A.v[1], B.v[1], sm), o: lerp(A.v[2], B.v[2], sm), c: u.c || 0 }; };
+MK.evalChar = (...a) => evalChar(...a);   // для проверок
 function evalChar(init, ev, t, audio, T) {
-  let x = init.x0, face = init.face0, faceFrom = init.face0, faceT = -9, emo = 'neutral', emoT = -9, vis = init.vis0, persist = 'none', prev = 'none', pT = 0, act = null, walk = { on: false }, talk = 0, thinkText = null, vz = null;
+  let x = init.x0, face = init.face0, faceFrom = init.face0, faceT = -9, emo = 'neutral', emoT = -9, emoT1 = Infinity, vis = init.vis0, persist = 'none', prev = 'none', pT = 0, act = null, walk = { on: false }, talk = 0, thinkText = null, vz = null;
   for (const e of ev) {
     if (e.t > t) break;
     switch (e.k) {
       case 'move': { const p = clamp((t - e.t) / (e.t1 - e.t), 0, 1); x = lerp(e.x0, e.x1, p); if (p < 1) { walk = { on: true, run: e.run, style: e.style, ph: (t - e.t) * (e.run ? 15 : e.style ? 6 : 9.5), x0: e.x0, x1: e.x1 }; } else walk = { on: false }; break; }
       case 'face': if (e.v !== face) { faceFrom = face; face = e.v; faceT = e.t; } break;
-      case 'emo': emo = e.v; emoT = e.t; break;
+      case 'emo': emo = e.v; emoT = e.t; emoT1 = e.t1 != null ? e.t1 : Infinity; break;
       case 'vis': vis = e.v; break;
       case 'persist': prev = persist; persist = e.v; pT = e.t; break;
       case 'act': if (t < e.t1) act = { n: e.n, p: (t - e.t) / (e.t1 - e.t), t: t - e.t, to: e.to }, thinkText = e.text; break;
@@ -1075,7 +1082,8 @@ function evalChar(init, ev, t, audio, T) {
     }
   }
   const fk = ease((t - faceT) / .22); const fv = lerp(faceFrom, face, fk);
-  return { x, face: fv, emo, et: t - emoT, vis, persist, prev, pt: t - pT, act, walk, talk, thinkText, vz };
+  let emoK = 1; if (t > emoT1 && emo !== 'sleepy') { emoK = clamp(1 - (t - emoT1) / .8, 0, 1); if (emoK <= 0) { emo = 'neutral'; emoK = 1; } }
+  return { x, face: fv, emo, emoK, et: t - emoT, vis, persist, prev, pt: t - pT, act, walk, talk, thinkText, vz };
 }
 
 function camTarget(c, seg, t, S) {
@@ -1090,6 +1098,10 @@ function camTarget(c, seg, t, S) {
 }
 
 // ---------- рендер кадра ----------
+/** Кадр в два шага (для сборки): сейчас — надписи и заказ картинки видеокарте, потом (finish) — картинка под надписи. Пока видеокарта рисует, телефон успевает сжать предыдущий кадр. */
+MK.renderSplit = function (ctx, tl, T) { const M3 = global.MK3D; ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); ctx.restore();
+  if (M3) { M3._defer = true; M3._blit = null; } let blit = null; try { MK.render(ctx, tl, T); blit = M3 && M3._blit; } finally { if (M3) { M3._defer = false; M3._blit = null; } }
+  return () => { if (blit) blit(); }; };
 MK.render = function (ctx, tl, T) {
   const seg = tl.segs.find(s => T >= s.t0 && T < s.t1) || tl.segs[tl.segs.length - 1];
   if (!seg) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); return; }

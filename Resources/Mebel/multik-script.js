@@ -41,9 +41,9 @@ const SEE = /(смотри|гляди|глянь|глядите|(^|[^а-я])во
 // Вещи, о которых говорят, но их нет рядом: «Где наш торт?», «Верни торт!», «Мы не нашли торт», «Хочу попробовать торт»
 const ABSENT = /(^|[^а-я])(где|куда|откуда|верн[иу]|отдай|найт|найд|нашл|ищ|иска|потеря|забра|украл|укра|похит|съел|съест|съеш|доел|попроб|хотел|хочу|хоч|мечта|любим|вспомина|без|нет|не было|пропаж)/;
 const THEMES = [[/(хэллоуин|хеллоуин|halloween)/, 'halloween'], [/(новый год|новог|нового года|новым годом|дед мороз|снегурочк)/, 'newyear'], [/(день рождени|дня рождени|днем рождени|именин)/, 'birthday']];
-const EMO = [[/(радост|весел|счастлив|улыба|довольн)/, 'happy'], [/(сме[ея]|хохоч|смешн|смех|хихик|усмеха)/, 'laugh'], [/(груст|печал|расстро)/, 'sad'], [/(плач|рыда|сл[её]з)/, 'cry'],
+const EMO = [[/(улыба|с улыбкой)/, 'smile'], [/(хмур|насуп|сосредоточ|задумчив)/, 'frown'], [/(радост|весел|счастлив|довольн|горд)/, 'happy'], [/(сме[ея]|хохоч|смешн|смех|хихик|усмеха)/, 'laugh'], [/(груст|печал|расстро)/, 'sad'], [/(плач|рыда|сл[её]з)/, 'cry'],
   [/(злит|сердит|зло(?![а-я])|злой|злая|гневн|обиж)/, 'angry'], [/(удивл|изумл|(^|[^а-я])ого(?![а-я]))/, 'surprised'], [/(испуг|страшн|бои|боя|дрож)/, 'scared'], [/(сонн|зева|устал)/, 'sleepy'],
-  [/(влюбл|нежно|с любов)/, 'love'], [/(смущ|стесн)/, 'shy'], [/(спокойн|обычн)/, 'neutral']];
+  [/(влюбл|нежно|с любов)/, 'love'], [/(смущ|стесн|винова)/, 'shy'], [/(спокойн|обычн)/, 'neutral']];
 const VERBS = [ // stem → действие (порядок важен)
   // новые действия: читает карту, смотрит в бинокль, копает, стучит, толкает, тянет, пьёт, рисует, пишет, играет, нюхает, слушает, ликует, ищет, пожимает плечами
   [/^(стоит|стоят|стоял|стояла|стояли|ждет|ждут|ждал|ждала|ждали)$/, 'wait'],
@@ -145,7 +145,8 @@ S.parse = function (text, lib, opts) {
     const d = low(desc), type = pick(PLACES, d) || (sc && sc._type) || 'yard', time = pick(TIMES, d) || 'day', weather = /дожд/.test(d) ? 'rain' : /снег|снежн/.test(d) ? 'snow' : 'none';
     let lid = Object.keys(locs).find(id => { const s = locs[id].spec; return s.type === type && (s.time || 'day') === time && (s.weather || 'none') === weather; });
     if (!lid) { lid = 'Л' + (++nextL); const spec = { id: lid, name: desc.trim().slice(0, 40) || type, type, time, weather, seed: nextL }; locs[lid] = { spec }; newLocs[lid] = spec; }
-    sc = { id: 'С' + (ep.scenes.length + 1), location: lid, cast: [], props: [], steps: [], _cast: {}, _x: {}, _type: type };
+    const carry = {}; if (sc && ep.scenes.includes(sc)) { Object.assign(carry, sc._carry || {}); for (const p of sc.props) if (p._held && !p._gone) carry[p._held] = { type: p.type, color: p.color }; }   // что у героя осталось в лапах — несёт дальше
+    sc = { id: 'С' + (ep.scenes.length + 1), location: lid, cast: [], props: [], steps: [], _cast: {}, _x: {}, _type: type, _carry: carry };
     { const th = themeWord(d); if (th) theme = th; } if (theme && type !== 'space') sc.theme = theme;
     const mu = pick(MUSIC, d); if (mu) sc.music = mu;
     { const prev = ep.scenes.slice().reverse().find(s => s._type === type); if (prev) for (const p of prev.props) if (!p._gone && !p._held && !p.holder && !p.decor && !p.hidden && p._used) sc.props.push({ id: 'П' + (sc.props.length + 1), type: p.type, x: p.x, color: p.color, _used: true, _carried: true }); }
@@ -171,11 +172,12 @@ S.parse = function (text, lib, opts) {
       let found = false;
       words.forEach((w, wi) => {
         let type = objOf(w);
-        if (!type) { if (cue && wi > 0 && /^(огромн|больш|волшебн|страшн|светящ|чудесн|странн|необычн)/.test(words[wi - 1]) && w.length > 3 && !/^(одн|свет|цвет|друг|сам|так|очен|как|кто|что)/.test(w) && !GENERIC.has(w) && !idx.some(([n]) => w.startsWith(n.slice(0, 4)))) unknownObj.set(w, text.trim()); return; }
+        if (!type) { if (cue && wi > 0 && /^(огромн|больш|волшебн|страшн|светящ|чудесн|странн|необычн)/.test(words[wi - 1]) && w.length > 3 && !/^(одн|свет|цвет|друг|сам|так|очен|как|кто|что|след|потол|небо|неб|ж[её]лт|красн|зел[её]н|син|рыж|бел|ч[её]рн|сер|розов|голуб|оранж|фиолет|коричн)/.test(w) && !GENERIC.has(w) && !idx.some(([n]) => w.startsWith(n.slice(0, 4)))) unknownObj.set(w, text.trim()); return; }
         const vanish0 = /(исчез|пропал|растаял|улетел|нет больше)/.test(d);
         // «Где наш торт?» — если торт тут лежал, он пропадает (на звук «вжух», если он был только что)
         if (absent && !vanish0) { if (/(^|[^а-я])где(?![а-я])/.test(d)) { const ex = sc.props.find(x => x.type === type && !x._gone && !x._held && !x.holder && !x.hidden); if (ex) vanishNow(ex); } return; }
         if (isQ || maybe || !cue) return; if (wi > 0 && words[wi - 1] === 'не') return;
+        if (!SEE.test(d)) { let j = wi - 1; if (j >= 0 && /^(мо[йяеёю]|мое[йм]|моего|моему|мои[хм]?|тво|сво|наш|ваш|его|е[её]|их|эт|т[оае][йм]?$|больш|маленьк|стар|нов|друг)/.test(words[j])) j--; if (j >= 0 && /^(в|во|на|под|из|у|с|со|за|над|о|об|по|при|к|ко|от|до|без|про|через|около|возле|внутри)$/.test(words[j])) return; }   // «И в моей чашке» — где-то там, не здесь
         if (wi > 0 && objOf(words[wi - 1])) return;   // «карта клада», «коробка конфет» — вторая вещь только уточняет первую
         if (type === 'decor' || type === 'faces') { if (type === 'faces') { theme = theme || 'halloween'; type = 'jack'; } else { if (!theme) theme = null; return; } }
         found = true;
@@ -376,8 +378,8 @@ S.parse = function (text, lib, opts) {
           if (verb === 'kick') { const pr = ensureProp(p, id); step.prop = pr.id; } else if (p && !sc.props.some(x => x._held === id)) { const pr = ensureProp(p, id); sc.steps.push({ who: id, do: 'take', prop: pr.id }); pr._held = id; }
           if (tgt) { castOf(tgt); step.to = tgt; } }
         else if (verb === 'crawl' || verb === 'sneak') { step.do = verb; if (tgt) { castOf(tgt); step.to = tgt; } else if (/(вправо|направо)/.test(d)) step.to = Math.min(.85, (sc._x[id] || .5) + .3); else if (/(влево|налево)/.test(d)) step.to = Math.max(.15, (sc._x[id] || .5) - .3); else step.to = (sc._x[id] || .5) > .5 ? .35 : .65; if (typeof step.to === 'number') sc._x[id] = step.to; }
-        else if (verb === 'drop') { step.do = 'drop'; const p = propIn(d); const pr = sc.props.find(x => x._held === id && !x._gone && (!p || x.type === p)); if (pr) { pr._held = null; step.prop = pr.id; } }
-        else if (verb === 'take') { const p = propIn(d); if (!p) { if (!step.emotion) continue; } else { if (sc.props.some(x => x.type === p && x._held === id && !x._gone)) continue; for (const c of sc.props.filter(x => x._held === id && !x._gone)) { sc.steps.push({ who: id, do: 'drop', prop: c.id }); c._held = null; } const pr = ensureProp(p, id); step.do = 'take'; step.prop = pr.id; pr._held = id; } }
+        else if (verb === 'drop') { step.do = 'drop'; const p = propIn(d); const pr = sc.props.find(x => x._held === id && !x._gone && (!p || x.type === p)) || fromCarry(id, p); if (pr) { pr._held = null; step.prop = pr.id; } }
+        else if (verb === 'take') { const p = propIn(d); if (!p) { if (!step.emotion) continue; } else { if (sc.props.some(x => x.type === p && x._held === id && !x._gone)) continue; if (fromCarry(id, p)) continue; if (sc._carry) delete sc._carry[id]; for (const c of sc.props.filter(x => x._held === id && !x._gone)) { sc.steps.push({ who: id, do: 'drop', prop: c.id }); c._held = null; } const pr = ensureProp(p, id); step.do = 'take'; step.prop = pr.id; pr._held = id; } }
         else if (verb === 'give') { step.do = 'give'; if (tgt) { castOf(tgt); step.to = tgt; const p = propIn(d); let pr = sc.props.find(x => x._held === id && !x._gone && (!p || x.type === p)); if (!pr && p) { pr = ensureProp(p, id); sc.steps.push({ who: id, do: 'take', prop: pr.id }); pr._held = id; } if (pr) pr._held = tgt; } else delete step.do; }
         else if (verb) step.do = verb;
       }
@@ -391,8 +393,11 @@ S.parse = function (text, lib, opts) {
     }
     return true;
   }
+  function fromCarry(id, p) { // «Рон кладёт зонтик», а зонтик он взял ещё в прошлой сцене — входит с ним в лапах
+    const cr = sc._carry && sc._carry[id]; if (!cr || (p && cr.type !== p) || sc.props.some(x => x.type === cr.type && !x._gone && !x._held && !x.holder)) return null;
+    const pr = { id: 'П' + (sc.props.length + 1), type: cr.type, x: sc._x[id] != null ? sc._x[id] : .5, holder: id, _used: true }; if (cr.color) pr.color = cr.color; pr._held = id; sc.props.push(pr); delete sc._carry[id]; return pr; }
   function grab(id, p) { // герой берёт вещь p; если в лапах уже другая — сначала кладёт её
-    let pr = sc.props.find(x => x._held === id && x.type === p && !x._gone); if (pr) return pr;
+    let pr = sc.props.find(x => x._held === id && x.type === p && !x._gone); if (pr) return pr; if ((pr = fromCarry(id, p))) return pr; if (sc._carry) delete sc._carry[id];
     for (const c of sc.props.filter(x => x._held === id && !x._gone)) { sc.steps.push({ who: id, do: 'drop', prop: c.id }); c._held = null; }
     pr = ensureProp(p, id); sc.steps.push({ who: id, do: 'take', prop: pr.id }); pr._held = id; return pr; }
   function propIn(d) { // сама вещь, а не место: «достал из рюкзака бинокль» → бинокль; «под дубом», «в корзине» — только если другой вещи нет
