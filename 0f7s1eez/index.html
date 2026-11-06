@@ -1,4 +1,5 @@
-<!doctype html><html><head><meta charset=utf8><meta name="robots" content="noindex, nofollow"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name="robots" content="noindex, nofollow"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.hp{position:absolute!important;left:-10000px;width:1px;height:1px;opacity:0;pointer-events:none}
+</style></head><body>
 <title>Наш декор — рейки, панели и молдинги для стен</title>
 <style>
 /* Layout: витрина — шапка, каталог с фильтром, калькулятор стены рядом с итогом, заявка; на телефоне всё в одну колонку */
@@ -218,6 +219,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
       <label class="f">Комментарий<textarea id="lMsg" rows="3" placeholder="Адрес, сроки, нужна ли доставка"></textarea></label>
       <label class="chk"><input type="checkbox" id="lCalc" checked> Приложить расчёт стены</label>
       <label class="chk" style="align-items:flex-start"><input type="checkbox" id="lAgree" required style="margin-top:3px"> <span>Я даю <a href="consent.html" style="color:var(--ink)">согласие на обработку персональных данных</a> и ознакомлен с <a href="privacy.html" style="color:var(--ink)">Политикой обработки персональных данных</a></span></label>
+      <input type="text" id="lHp" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="err" id="lErr" hidden></div>
       <button class="btn" type="submit" id="lSend">Отправить заявку</button>
       <div id="lDone" hidden></div>
@@ -435,7 +437,24 @@ async function copy(text, btn){
 
 /* Заявки: сохраняются в базу магазина; если база недоступна — готовый текст для мессенджера */
 let dbP = null;
-function getDb(){ return Promise.resolve(null); }
+// Заявка уходит в CRM магазина на нашем сервере (crm.nashdekor.ru). Если CRM не ответила —
+// покупатель видит текст заявки и может отправить его в мессенджер.
+const LEAD_API = "https://crm.nashdekor.ru/api/lead";
+const WHO = {"Дизайнер": "designer", "Компания, объект": "company", "Ремонтная бригада": "company"};
+async function sendLead(lead){
+  if (!/(^|\.)nashdekor\.ru$/.test(location.hostname)) return false;
+  const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 12000);
+  try {
+    const r = await fetch(LEAD_API, { method: "POST", mode: "cors", credentials: "omit", signal: ctl.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: lead.name, contact: lead.contact, who: WHO[lead.who] || "private",
+        message: [lead.who && lead.who !== "Делаю ремонт у себя" ? "Кто: " + lead.who : "", lead.message].filter(Boolean).join("\n"),
+        calc: lead.calc, total: lead.total, consent: true, consentAt: lead.consentAt, consentVersion: lead.consentVersion,
+        website: ($("lHp") || {}).value || "" }) });
+    const j = await r.json().catch(() => ({}));
+    return r.ok && j.ok === true;
+  } finally { clearTimeout(timer); }
+}
 
 async function submit(e){
   e.preventDefault();
@@ -449,8 +468,7 @@ async function submit(e){
     source: "сайт", status: "новая", createdAt: new Date().toISOString(), consentAt: new Date().toISOString(), consentVersion: "2026-10-29" };
   const btn = $("lSend"); btn.disabled = true; btn.textContent = "Отправляем…";
   let saved = false;
-  const db = await getDb();
-  if (db) { try { await db.collection("leads").doc(Date.now().toString(36) + Math.random().toString(36).slice(2,6)).set(lead); saved = true; } catch (e) { saved = false; } }
+  try { saved = await sendLead(lead); } catch (e) { saved = false; }
   btn.disabled = false; btn.textContent = "Отправить заявку";
   const text = `Заявка: ${name}, ${contact} (${lead.who})${lead.message ? "\n" + lead.message : ""}${lead.calc ? "\n" + lead.calc : ""}`;
   const done = $("lDone"); done.hidden = false;
