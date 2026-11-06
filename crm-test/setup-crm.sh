@@ -341,16 +341,22 @@ cmd_backup() {
   local d f keep=14
   d="$BACKUP_DIR/$(date +%F)"
   install -d -m 700 "$BACKUP_DIR" "$d"
-  manage backup "$STATE/crm-backup.tmp" >/dev/null && mv -f "$STATE/crm-backup.tmp" "$d/crm.db"
+  local tmp=/var/lib/prostranstvo/.crm-backup.tmp ok=yes
+  rm -f "$tmp"
+  if manage backup "$tmp" >/dev/null 2>&1 && [[ -s $tmp ]]; then
+    mv -f "$tmp" "$d/crm.db"
+  else
+    ok=no; rm -f "$tmp"; echo "копия базы CRM не получилась" >&2
+  fi
   if [[ -f ${BOT_DB:-/var/lib/prostranstvo/bot.db} ]]; then
-    sqlite3 "$BOT_DB" ".backup '$d/bot.db'" 2>/dev/null || cp -a "$BOT_DB" "$d/bot.db"
+    sqlite3 "$BOT_DB" ".backup '$d/bot.db'" 2>/dev/null || cp -a "$BOT_DB" "$d/bot.db" || ok=no
   fi
   for f in /etc/prostranstvo/*.env /etc/prostranstvo/*.conf; do [[ -f $f ]] && cp -a "$f" "$d/"; done
   chmod -R go-rwx "$d"
   find "$BACKUP_DIR" -mindepth 1 -maxdepth 1 -type d -name '20*' -mtime +$keep -exec rm -rf {} + 2>/dev/null || true
-  logger -t prostranstvo-backup "копия баз: $d" 2>/dev/null || true
-  [[ -t 1 ]] && echo "Копия: $d"
-  return 0
+  logger -t prostranstvo-backup "копия баз: $d ($ok)" 2>/dev/null || true
+  if [[ -t 1 ]]; then echo "Копия: $d"; fi
+  [[ $ok == yes ]]
 }
 
 cmd_update() {
@@ -378,7 +384,7 @@ case ${1:-status} in
   passwd) shift; cmd_passwd "$@" || rc=$? ;;
   add-user) shift; cmd_add_user "$@" || rc=$? ;;
   site-leads) shift; cmd_site_leads "$@" || rc=$? ;;
-  backup) cmd_backup ;;
+  backup) cmd_backup || rc=$? ;;
   update) cmd_update ;;
   cert) shift; cmd_cert "$@" || rc=$? ;;
   -h | --help | help) usage ;;
