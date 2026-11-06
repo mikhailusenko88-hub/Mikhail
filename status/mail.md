@@ -1,4 +1,4 @@
-# Проверка почты и CRM — 2026-11-06 07:07 UTC
+# Проверка почты и CRM — 2026-11-06 07:45 UTC
 
 ## DNS (публичный 8.8.8.8 и сервер хостинга ns1.firstvds.ru)
 ### 8.8.8.8
@@ -11,7 +11,7 @@
 - [да] SPF: v=spf1 ip4:185.60.134.150 mx ~all
 - [да] DMARC: v=DMARC1; p=none; adkim=r; aspf=r
 - [да] DKIM есть, длина 410, sha256 d8be577aab581d77
-- [да] MX: 10 mail.nashdekor.ru. 20 mail.nashdekor.ru. 
+- [да] MX: 20 mail.nashdekor.ru. 10 mail.nashdekor.ru. 
 - [да] mail.nashdekor.ru → 185.60.134.150 
 
 ## PTR (обратная запись)
