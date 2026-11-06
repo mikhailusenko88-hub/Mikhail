@@ -1103,10 +1103,11 @@ function applyPose(rig, st, T) {
     if (bf < 1) { const L2 = (a, b) => lerp(a, b, bf); L_.x = L2(base.L.x, L_.x); L_.z = L2(base.L.z, L_.z); R_.x = L2(base.R.x, R_.x); R_.z = L2(base.R.z, R_.z); leg[0] = L2(base.leg[0], leg[0]); leg[1] = L2(base.leg[1], leg[1]);
       head.x = L2(base.head.x, head.x); head.y = L2(base.head.y, head.y); head.z = L2(base.head.z, head.z); pitch = L2(base.pitch, pitch); hipYaw = L2(base.hipYaw, hipYaw); sideTilt = L2(base.sideTilt, sideTilt); } }
   if (st.prop && !['wave', 'throw', 'point', 'give', 'eat', 'hug', 'read', 'peer', 'dig', 'knock', 'push', 'pull', 'drink', 'paint', 'write', 'play', 'cheer', 'listen', 'shrug', 'lookaround'].includes(an)) { R_.x = -.95; R_.z = .2; }
-  if (emo === 'scared') { L_.x = R_.x = -1.5 * ek; L_.z = R_.z = -.2 * ek; }   // испуг мягкий — лапки к груди, не к лицу
+  const armTo = (x, z, k) => { L_.x = lerp(L_.x, x, k); R_.x = lerp(R_.x, x, k); L_.z = lerp(L_.z, z, k); R_.z = lerp(R_.z, z, k); };   // к позе эмоции и обратно — плавно, от того, как лапы стояли
+  if (emo === 'scared' && an !== 'scared') armTo(-1.5, -.2, ek);   // испуг мягкий — лапки к груди, не к лицу
   if (!an && !wk.on) { const et = st.et || 0;   // мимика телом: мягко, понятно детям
-    if (emo0 === 'sad' || emo0 === 'cry') { head.x += .2 * ek; sideTilt += .03 * ek; L_.z = R_.z = Math.min(R_.z, .22); }
-    else if (emo0 === 'shy') { const g = et < 1.8 ? Math.min(1, et / .3) : Math.max(.35, 1 - (et - 1.8) / .5); head.x += .22 * ek * g; head.z += .13 * ek; L_.x = R_.x = -.45 * ek; L_.z = R_.z = .12; }
+    if (emo0 === 'sad' || emo0 === 'cry') { head.x += .2 * ek; sideTilt += .03 * ek; armTo(L_.x, Math.min(R_.z, .24), ek); }
+    else if (emo0 === 'shy') { const g = et < 1.8 ? Math.min(1, et / .3) : Math.max(.35, 1 - (et - 1.8) / .5); head.x += .22 * ek * g; head.z += .13 * ek; armTo(-.45, .2, ek); }
     else if (emo0 === 'frown') { head.x += .1 * ek; }
     else if (emo0 === 'smile') { head.z += .07 * ek; }
     else if (emo0 === 'surprised') { head.x -= .1 * ek; } }
@@ -1115,10 +1116,12 @@ function applyPose(rig, st, T) {
   const isP = (v) => pers === v ? pk : (an === 'stand' && st.prev === v ? back : 0);
   const fallen = Math.max(isP('fallen'), isP('lie'));
   const sit = Math.max(isP('sit'), isP('sleep'));
-  const crouch = isP('crouch');
+  const hide = isP('hide'), crouch = Math.max(isP('crouch'), hide);
   if (fallen) lie = Math.max(lie, fallen);
   if (sit) { low = Math.max(low, (P.hip - .05) * sit); leg[0] = leg[1] = -1.45 * sit; if (pers === 'sleep') head.x = .35 * sit, head.z = .25 * sit; }
-  if (crouch) { low = Math.max(low, .25 * crouch); leg[0] = leg[1] = -.8 * crouch; L_.x = R_.x = -2.6; L_.z = R_.z = -.6; pitch = .25 * crouch; }
+  if (crouch) { low = Math.max(low, .25 * crouch); leg[0] = leg[1] = -.8 * crouch; pitch = .25 * crouch;
+    if (hide) armTo(-2.6, -.6, hide);   // прячется — лапки закрывают мордочку
+    else if (!an || an === 'stand') armTo(-.7, .24, crouch); }   // присел — лапки вперёд-вниз, к коленкам (а не у горла)
   // применяем
   rig.legs[0].rotation.x = leg[0]; rig.legs[1].rotation.x = leg[1];
   rig.arms.forEach((g, i) => { const a = arm[i], s = g.userData.side, tw = (a.tw || 0) * s; g.userData.tw = tw; if (tw) { g.rotation.order = 'XZY'; g.rotation.set(a.x, tw, s * a.z); } else { g.rotation.order = 'XYZ'; g.rotation.set(a.x, 0, s * a.z); } });

@@ -131,7 +131,7 @@ function drawChar(ctx, ch, st, T) {
   if (an === 'somersault') { ctx.translate(0, -.45); ctx.rotate((face < 0 ? -1 : 1) * ap * Math.PI * 2); ctx.translate(0, .45); }
   ctx.rotate(rot * (face === 0 ? 0 : 1) * .5);
   ctx.scale(flip * sx, sy);
-  const crouch = st.persist === 'crouch' ? ease((st.pt || 0) / .3) : (an === 'stand' && st.prev === 'crouch' ? 1 - ease(ap) : 0);
+  const crouch = st.persist === 'crouch' || st.persist === 'hide' ? ease((st.pt || 0) / .3) : (an === 'stand' && (st.prev === 'crouch' || st.prev === 'hide') ? 1 - ease(ap) : 0);
   const sit = Math.max(crouch * .7, st.persist === 'sit' || st.persist === 'sleep' ? ease((st.pt || 0) / .4) : (an === 'stand' && (st.prev === 'sit' || st.prev === 'sleep') ? 1 - ease(ap) : 0));
   const down = sit * (-P.hipY * .62);
   ctx.translate(0, bob + down);
@@ -991,7 +991,7 @@ MK.compile = function (ep, lib, audio) {
             : d === 'kick' ? (() => { const p = props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; return p ? p.x - (p.x > ch.x ? .07 : -.07) : null; })() : null;
           if (tgtX != null && Math.abs(tgtX - ch.x) > .04) { const wd = Math.abs(tgtX - ch.x) / .22; { const indoor = /^(room|kitchen)$/.test(lspec.type || ''); for (let tt = s0 + .05, k = 0; tt < s0 + wd - .05; tt += .3, k++) sfx.push({ t: st0 + tt, n: indoor ? 'tap' : lspec.type === 'winter' ? 'crunch' : 'step', v: .5 * (k % 2 ? .85 : 1) }); } ch.ev.push({ t: s0, k: 'move', x0: ch.x, x1: tgtX, t1: s0 + wd }); ch.ev.push({ t: s0, k: 'face', v: tgtX >= ch.x ? 1 : -1 }); ch.x = tgtX; s0 += wd; }
           dur = (s0 - start) + (step.dur || DUR[d]);
-          if (['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d)) ch.ev.push({ t: s0, k: 'persist', v: d === 'fall' ? 'fallen' : d === 'hide' ? 'crouch' : d });
+          if (['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d)) ch.ev.push({ t: s0, k: 'persist', v: d === 'fall' ? 'fallen' : d });
           if (d === 'stand' || d === 'wake') { ch.ev.push({ t: start, k: 'act', n: 'stand', t1: start + dur }); ch.ev.push({ t: start + dur, k: 'persist', v: 'none' }); }
           else if (d === 'turn' || d === 'look') ch.ev.push({ t: start, k: 'face', v: faceVal(step.to || step.face || 'camera', ch, C) });
           else if (!['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d) || d === 'fall') ch.ev.push({ t: s0, k: 'act', n: d, t1: start + dur, text: step.text, to: step.to });
@@ -1027,6 +1027,7 @@ MK.compile = function (ep, lib, audio) {
       if (emoEv) emoEv.t1 = start + dur + (step.say ? 1.6 : 2.6); // эмоция держится реплику (или пару секунд молча) и мягко уходит — лицо не застывает грустным до конца сцены
       prevStart = start; cur = Math.max(cur, start + dur);
     }
+    for (const id in C) autoStand(C[id].ev);   // «присел» — посмотрел и встал сам, а не сидит на корточках до конца сцены
     props.forEach(p => p.ev.sort((a, b) => a.t - b.t));
     const sdur = Math.max(1.5, cur + (sc.tail != null ? sc.tail : .8));
     if (ep.autoCam !== false) { const inits = {}; for (const cs of sc.cast || []) if (C[cs.who]) inits[cs.who] = { x0: cs._x != null ? cs._x : cs.x != null ? cs.x : .5, face0: cs.face === 'left' ? -1 : cs.face === 'camera' ? 0 : 1, vis0: !cs.hidden };
@@ -1066,6 +1067,15 @@ MK.viseme = function (text, k, d) { const q = visSeq(text); if (!q.length || !q.
   let pv = null, nv = null, pd = 9, nd = 9; for (let j = i; j >= 0 && !pv; j--) if (q[j].v) { pv = q[j]; pd = pos - (q[j].a + q[j].w * .5); } for (let j = i; j < q.length && !nv; j++) if (q[j].v) { nv = q[j]; nd = (q[j].a + q[j].w * .5) - pos; }
   const A = pv || nv, B = nv || pv; if (!A) return { w: .5, r: .2, o: .6, c: 0 }; const f = A === B ? 0 : clamp(pd / Math.max(.01, pd + nd), 0, 1), sm = f * f * (3 - 2 * f);
   const u = q[i]; return { w: lerp(A.v[0], B.v[0], sm), r: lerp(A.v[1], B.v[1], sm), o: lerp(A.v[2], B.v[2], sm), c: u.c || 0 }; };
+function autoStand(ev) {   // присел на корточки → через ~4 с (или перед тем, как пойти) встаёт; «прячется» — сидит, пока не скажут
+  ev.sort((a, b) => a.t - b.t);
+  for (let i = 0; i < ev.length; i++) { const e = ev[i]; if (e.k !== 'persist' || e.v !== 'crouch') continue;
+    let up = e.t + 4; const nextP = ev.find((x, j) => j > i && x.k === 'persist'); const mv = ev.find((x, j) => j > i && x.k === 'move' && x.t > e.t);
+    if (mv && mv.t - .5 < up) up = Math.max(e.t + .8, mv.t - .5);
+    for (const a of ev) if (a.k === 'act' && a.t <= up && a.t1 > up && a.n !== 'stand') up = a.t1;   // не посреди действия
+    if (nextP && nextP.t <= up + .5) continue;
+    ev.push({ t: up, k: 'act', n: 'stand', t1: up + .45 }, { t: up + .45, k: 'persist', v: 'none' }); ev.sort((a, b) => a.t - b.t); }
+}
 MK.evalChar = (...a) => evalChar(...a);   // для проверок
 function evalChar(init, ev, t, audio, T) {
   let x = init.x0, face = init.face0, faceFrom = init.face0, faceT = -9, emo = 'neutral', emoT = -9, emoT1 = Infinity, vis = init.vis0, persist = 'none', prev = 'none', pT = 0, act = null, walk = { on: false }, talk = 0, thinkText = null, vz = null;
