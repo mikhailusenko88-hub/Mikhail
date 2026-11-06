@@ -1,9 +1,9 @@
 {
  "season": 1,
- "race_no": 5,
+ "race_no": 6,
  "seed": 2026,
  "round": 1,
- "heat": 5,
+ "heat": 6,
  "heats": [
   [
    "so",
@@ -292,7 +292,20 @@
   "tz",
   "ph",
   "eg",
-  "au"
+  "au",
+  "ye",
+  "ru",
+  "nz",
+  "jp",
+  "st",
+  "mk",
+  "ua",
+  "lr",
+  "sk",
+  "na",
+  "bd",
+  "bt",
+  "mt"
  ],
  "eliminated": [
   "es",
@@ -364,7 +377,21 @@
   "qa",
   "gm",
   "ch",
-  "by"
+  "by",
+  "nl",
+  "tn",
+  "ml",
+  "pw",
+  "vu",
+  "tt",
+  "li",
+  "ao",
+  "cu",
+  "tm",
+  "no",
+  "sd",
+  "sl",
+  "pa"
  ],
  "champions": [],
  "hall": {
@@ -799,6 +826,114 @@
   "by": {
    "titles": 0,
    "finals": 0
+  },
+  "ye": {
+   "titles": 0,
+   "finals": 0
+  },
+  "ru": {
+   "titles": 0,
+   "finals": 0
+  },
+  "nz": {
+   "titles": 0,
+   "finals": 0
+  },
+  "jp": {
+   "titles": 0,
+   "finals": 0
+  },
+  "st": {
+   "titles": 0,
+   "finals": 0
+  },
+  "mk": {
+   "titles": 0,
+   "finals": 0
+  },
+  "ua": {
+   "titles": 0,
+   "finals": 0
+  },
+  "lr": {
+   "titles": 0,
+   "finals": 0
+  },
+  "sk": {
+   "titles": 0,
+   "finals": 0
+  },
+  "na": {
+   "titles": 0,
+   "finals": 0
+  },
+  "bd": {
+   "titles": 0,
+   "finals": 0
+  },
+  "bt": {
+   "titles": 0,
+   "finals": 0
+  },
+  "mt": {
+   "titles": 0,
+   "finals": 0
+  },
+  "nl": {
+   "titles": 0,
+   "finals": 0
+  },
+  "tn": {
+   "titles": 0,
+   "finals": 0
+  },
+  "ml": {
+   "titles": 0,
+   "finals": 0
+  },
+  "pw": {
+   "titles": 0,
+   "finals": 0
+  },
+  "vu": {
+   "titles": 0,
+   "finals": 0
+  },
+  "tt": {
+   "titles": 0,
+   "finals": 0
+  },
+  "li": {
+   "titles": 0,
+   "finals": 0
+  },
+  "ao": {
+   "titles": 0,
+   "finals": 0
+  },
+  "cu": {
+   "titles": 0,
+   "finals": 0
+  },
+  "tm": {
+   "titles": 0,
+   "finals": 0
+  },
+  "no": {
+   "titles": 0,
+   "finals": 0
+  },
+  "sd": {
+   "titles": 0,
+   "finals": 0
+  },
+  "sl": {
+   "titles": 0,
+   "finals": 0
+  },
+  "pa": {
+   "titles": 0,
+   "finals": 0
   }
  },
  "history": [
@@ -994,6 +1129,44 @@
     "gm",
     "ch",
     "by"
+   ],
+   "survive": 13
+  },
+  {
+   "no": 6,
+   "date": "2026-11-06",
+   "slot": 3,
+   "season": 1,
+   "round": 1,
+   "heat": 6,
+   "ranking": [
+    "ye",
+    "ru",
+    "nz",
+    "jp",
+    "st",
+    "mk",
+    "ua",
+    "lr",
+    "sk",
+    "na",
+    "bd",
+    "bt",
+    "mt",
+    "nl",
+    "tn",
+    "ml",
+    "pw",
+    "vu",
+    "tt",
+    "li",
+    "ao",
+    "cu",
+    "tm",
+    "no",
+    "sd",
+    "sl",
+    "pa"
    ],
    "survive": 13
   }

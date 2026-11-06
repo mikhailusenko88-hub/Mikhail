@@ -1,66 +1,66 @@
-ВЫЛОЖЕНО #5 2026-11-06 слот 2: https://youtu.be/LnPtf-Wi83I (public), за 434 с
+ВЫЛОЖЕНО #6 2026-11-06 слот 3: https://youtu.be/AcRlpxjSPyQ (public), за 359 с
 
 {
- "title": "Country Marble Survival Race ⚠️ Heat 5/7 – 27 Countries, 13 Survive",
- "description": "Flagball Arena · Season 1, Round 1 · Heat 5/7: 27 countries race through 3 stages — only 13 survive and go to Round 2.\n\nCountries in this heat: Australia, Austria, Belarus, Burundi, Egypt, Equatorial Guinea, Eritrea, Gambia, Georgia, Haiti, Honduras, Israel, Italy, Jordan, Latvia, Marshall Islands, Mauritius, Monaco, Mozambique, Peru, Philippines, Qatar, Saudi Arabia, Serbia, Solomon Islands, Switzerland, Tanzania.\n\nCountries still in the game before this race: 137 of 193.\nNext race: Round 1 · Heat 6/7. Grand Final: Nov 9.\n\nHow it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, then a new season starts. 3 new races every day.\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
- "race_no": 5,
+ "title": "Which Countries Survive? 🌍 Marble Elimination · Round 1 Heat 6/7",
+ "description": "Flagball Arena · Season 1, Round 1 · Heat 6/7: 27 countries race through 3 stages — only 13 survive and go to Round 2.\n\nCountries in this heat: Angola, Bangladesh, Bhutan, Cuba, Japan, Liberia, Liechtenstein, Mali, Malta, Namibia, Netherlands, New Zealand, North Macedonia, Norway, Palau, Panama, Russia, Sao Tome and Principe, Sierra Leone, Slovakia, Sudan, Trinidad and Tobago, Tunisia, Turkmenistan, Ukraine, Vanuatu, Yemen.\n\nCountries still in the game before this race: 123 of 193.\nNext race: Round 1 · Heat 7/7. Grand Final: Nov 9.\n\nHow it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, then a new season starts. 3 new races every day.\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "race_no": 6,
  "date": "2026-11-06",
- "slot": 2,
+ "slot": 3,
  "season": 1,
  "round": 1,
- "heat": 5,
+ "heat": 6,
  "heats": 7,
  "survive": 13,
  "final": false,
  "kind": "heat",
- "label": "ROUND 1 · HEAT 5/7",
+ "label": "ROUND 1 · HEAT 6/7",
  "n": 27,
  "ranking": [
-  "SAU",
-  "ERI",
-  "HND",
-  "MHL",
-  "LVA",
-  "MOZ",
-  "SRB",
-  "BDI",
-  "JOR",
-  "TZA",
-  "PHL",
-  "EGY",
-  "AUS",
-  "MCO",
-  "PER",
-  "GEO",
-  "AUT",
-  "HTI",
-  "ITA",
-  "SLB",
-  "MUS",
-  "GNQ",
-  "ISR",
-  "QAT",
-  "GMB",
-  "CHE",
-  "BLR"
+  "YEM",
+  "RUS",
+  "NZL",
+  "JPN",
+  "STP",
+  "MKD",
+  "UKR",
+  "LBR",
+  "SVK",
+  "NAM",
+  "BGD",
+  "BTN",
+  "MLT",
+  "NLD",
+  "TUN",
+  "MLI",
+  "PLW",
+  "VUT",
+  "TTO",
+  "LIE",
+  "AGO",
+  "CUB",
+  "TKM",
+  "NOR",
+  "SDN",
+  "SLE",
+  "PAN"
  ],
- "video_id": "LnPtf-Wi83I",
+ "video_id": "AcRlpxjSPyQ",
  "privacy": "public"
 }
 
 --- журнал ---
-15:21:33 режим publish, гонка #5, 2026-11-06 слот 2, событие schedule
-15:21:33 по плану: S1 ROUND 1 · HEAT 5/7
-15:21:33 канал: Flagball Arena
-гонка #5 2026-11-06 слот 2: S1 ROUND 1 · HEAT 5/7, 27→13, участники: GEO SAU SRB MOZ EGY GNQ MCO ITA BDI ISR MHL PHL JOR BLR CHE QAT ERI HND SLB GMB MUS AUS HTI TZA PER LVA AUT
-  этап 1: 27→22, блоков 11 ['ring_gate', 'twin_rings', 'windmills', 'pegs', 'bumpers', 'tunnels', 'pendulums', 'stairs', 'zigzag', 'trapdoors', 'rotor'], Q-финиш 64.5 c, кадров 2013
-  этап 2: 22→18, блоков 10 ['rotor', 'ring_gate', 'zigzag', 'stairs', 'pegs', 'tunnels', 'pendulums', 'trapdoors', 'twin_rings', 'bumpers'], Q-финиш 58.8 c, кадров 1841
-  этап 3: 18→13, блоков 11 ['stairs', 'zigzag', 'windmills', 'rotor', 'pegs', 'trapdoors', 'pendulums', 'bumpers', 'tunnels', 'ring_gate', 'twin_rings'], Q-финиш 65.6 c, кадров 2045
-длительность ролика ≈ 4.1 мин
-готово: 7423 кадров за 422 с
-кадров 7423, 4.12 мин, рендер 423 с
-выжили: SAU ERI HND MHL LVA MOZ SRB BDI JOR TZA PHL EGY AUS
-15:28:37 ролик готов: 134 МБ, 424 с с начала; название: Country Marble Survival Race ⚠️ Heat 5/7 – 27 Countries, 13 Survive
-15:28:46 обложка: 200 
-15:28:47 в плейлисте
-15:28:47 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'madeForKids': False, 'selfDeclaredMadeForKids': False}
+23:22:22 режим publish, гонка #6, 2026-11-06 слот 3, событие schedule
+23:22:22 по плану: S1 ROUND 1 · HEAT 6/7
+23:22:22 канал: Flagball Arena
+гонка #6 2026-11-06 слот 3: S1 ROUND 1 · HEAT 6/7, 27→13, участники: BTN TKM STP BGD YEM PAN NZL MLT PLW CUB SDN UKR RUS TUN SVK NAM SLE JPN LBR TTO AGO MKD MLI NLD LIE NOR VUT
+  этап 1: 27→22, блоков 11 ['stairs', 'ring_gate', 'zigzag', 'windmills', 'tunnels', 'bumpers', 'rotor', 'trapdoors', 'pegs', 'twin_rings', 'pendulums'], Q-финиш 61.8 c, кадров 1931
+  этап 2: 22→18, блоков 12 ['rotor', 'trapdoors', 'ring_gate', 'twin_rings', 'pegs', 'stairs', 'pendulums', 'zigzag', 'bumpers', 'windmills', 'tunnels', 'pendulums'], Q-финиш 58.5 c, кадров 1831
+  этап 3: 18→13, блоков 11 ['twin_rings', 'bumpers', 'stairs', 'windmills', 'pegs', 'ring_gate', 'rotor', 'zigzag', 'trapdoors', 'pendulums', 'tunnels'], Q-финиш 61.2 c, кадров 1912
+длительность ролика ≈ 4.0 мин
+готово: 7198 кадров за 348 с
+кадров 7198, 4.00 мин, рендер 348 с
+выжили: YEM RUS NZL JPN STP MKD UKR LBR SVK NAM BGD BTN MLT
+23:28:11 ролик готов: 130 МБ, 349 с с начала; название: Which Countries Survive? 🌍 Marble Elimination · Round 1 Heat 6/7
+23:28:20 обложка: 200 
+23:28:21 в плейлисте
+23:28:21 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'madeForKids': False, 'selfDeclaredMadeForKids': False}

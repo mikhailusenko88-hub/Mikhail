@@ -5,3 +5,4 @@
 | 3 | 2026-11-05 | 3 | S1 ROUND 1 · HEAT 3/7 | https://youtu.be/O-AzfGIQ2f4 | public |
 | 4 | 2026-11-06 | 1 | S1 ROUND 1 · HEAT 4/7 | https://youtu.be/V6QbQEtDImM | public |
 | 5 | 2026-11-06 | 2 | S1 ROUND 1 · HEAT 5/7 | https://youtu.be/LnPtf-Wi83I | public |
+| 6 | 2026-11-06 | 3 | S1 ROUND 1 · HEAT 6/7 | https://youtu.be/AcRlpxjSPyQ | public |
