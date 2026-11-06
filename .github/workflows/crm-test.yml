@@ -1,0 +1,76 @@
+name: crm-test
+# Проверка setup-crm.sh на чистой Ubuntu 24.04: сайт → почта → CRM, вход, заявки, защита.
+on:
+  push:
+    branches: [domain-check]
+    paths: ["crm-test/**"]
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Подготовка раннера
+        run: |
+          cp crm-test/*.sh .
+          sudo systemctl stop apache2 nginx mysql postgresql 2>/dev/null || true
+          sudo apt-get purge -y -q 'apache2*' >/dev/null 2>&1 || true
+          shellcheck -S warning -e SC2034,SC1090,SC1091 setup-crm.sh || true
+      - name: Сайт и почта
+        run: |
+          sudo bash setup-prostranstvo.sh nashdekor.ru test@example.com --force 2>&1 | tail -n 5
+          sudo bash setup-pochta.sh 2>&1 | grep -E 'ПОЧТА|НЕТ|ВНИМАНИЕ' || true
+      - name: CRM — установка
+        run: sudo bash setup-crm.sh 2>&1
+      - name: CRM — повторная установка (пароли не меняются)
+        run: |
+          before=$(sudo md5sum /etc/prostranstvo/crm-paroli.txt)
+          sudo bash setup-crm.sh 2>&1 | tail -n 14
+          after=$(sudo md5sum /etc/prostranstvo/crm-paroli.txt)
+          [[ $before == "$after" ]] && echo "ПАРОЛИ НЕ ИЗМЕНИЛИСЬ — хорошо" || { echo "ПАРОЛИ ИЗМЕНИЛИСЬ"; exit 1; }
+      - name: CRM — вход и работа через https
+        run: |
+          set -e
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/j
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok); echo "csrf ${T:0:5}…"
+          code=$(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login)
+          echo "вход: $code"; [[ $code == 302 ]]
+          curl -sk $R -c $J -b $J https://$H/ | grep -q 'Сегодня' && echo "главная открылась"
+          T=$(curl -sk $R -c $J -b $J https://$H/deals/new | tok)
+          loc=$(curl -sk $R -c $J -b $J -o /dev/null -w '%{redirect_url}' --data-urlencode "csrf=$T" --data-urlencode "name=Тест Клиент" --data-urlencode "phone=+7 900 000 00 00" --data-urlencode "source=avito" --data-urlencode "want=A912 на стену" https://$H/deals/new)
+          echo "новая заявка: $loc"; [[ $loc == */deals/* ]]
+          T=$(curl -sk $R -c $J -b $J "$loc" | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "article=A912" --data-urlencode "qty=10" "$loc/lines"
+          curl -sk $R -c $J -b $J "$loc" | grep -o '[0-9 ]*₽' | head -n 3
+          curl -sk $R -c $J -b $J https://$H/stock | grep -c 'name="qty"' | xargs echo "строк на складе:"
+          for p in /board /clients /tasks /reports /settings; do echo "$p $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' https://$H$p)"; done
+          curl -sk $R -I https://$H/login | grep -iE 'content-security|strict-transport|x-frame' || true
+      - name: Заявка с сайта (выключена → включена) и письмо на zakaz@
+        run: |
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"
+          body='{"name":"Сайт Тест","contact":"+7 911 222-33-44","consent":true,"message":"Нужен расчёт","consentVersion":"2026-10-29"}'
+          curl -sk $R -o /dev/null -w 'выключено: %{http_code}\n' -H 'Origin: https://nashdekor.ru' -H 'Content-Type: application/json' -d "$body" https://$H/api/lead
+          sudo prostranstvo-crm site-leads on
+          sleep 3
+          curl -sk $R -D - -H 'Origin: https://nashdekor.ru' -H 'Content-Type: application/json' -d "$body" https://$H/api/lead | grep -iE '^HTTP|access-control-allow-origin|"ok"'
+          curl -sk $R -o /dev/null -w 'preflight: %{http_code}\n' -X OPTIONS -H 'Origin: https://nashdekor.ru' -H 'Access-Control-Request-Method: POST' https://$H/api/lead
+          sleep 8
+          sudo grep -rl 'Заявка с сайта' /var/mail/vhosts/nashdekor.ru/zakaz/Maildir/new 2>/dev/null | head -n1 | xargs -r sudo grep -m3 -E '^(Subject|DKIM-Signature|From):' || echo "письма на zakaz@ нет"
+      - name: fail2ban видит подбор пароля
+        run: |
+          for i in $(seq 1 9); do curl -s -o /dev/null -H 'X-Forwarded-For: 203.0.113.5' --data 'login=yulia&password=bad' http://127.0.0.1:8081/login; done
+          T=$(curl -s -c /tmp/k -b /tmp/k http://127.0.0.1:8081/login | grep -o 'name="csrf" value="[^"]*"' | sed 's/.*value="//;s/"$//')
+          for i in $(seq 1 9); do curl -s -o /dev/null -c /tmp/k -b /tmp/k -H 'X-Forwarded-For: 203.0.113.5' --data-urlencode "csrf=$T" --data 'login=yulia&password=bad-password' http://127.0.0.1:8081/login; done
+          sleep 5
+          sudo journalctl -u prostranstvo-crm --no-pager -n 3 | cut -c1-160
+          sudo fail2ban-client status prostranstvo-crm | grep -E 'Total failed|Banned IP'
+      - name: Состояние
+        if: always()
+        run: |
+          sudo prostranstvo-crm || true
+          sudo prostranstvo-crm backup; sudo ls -la /var/backups/prostranstvo/*/ | head
+          systemctl show prostranstvo-crm -p MemoryCurrent
+          sudo tail -n 40 /var/log/prostranstvo-crm-setup-details.log
