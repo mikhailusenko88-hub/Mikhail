@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "macros.html" import deal_row, task_row with context %}
+{% block title %}Сегодня{% endblock %}
+{% block main %}
+<h1>Сегодня</h1>
+<p class="sub">{{ me['name'] }}, {{ fmt_day(today) }}</p>
+{% set bs = s['by_stage'] %}
+<div class="stats">
+  <a class="stat" href="{{ url_for('board') }}"><b>{{ new|length }}</b><span>новых заявок</span></a>
+  <a class="stat" href="{{ url_for('tasks_view') }}"><b>{{ tasks|length }}</b><span>задач на сегодня</span></a>
+  <a class="stat" href="{{ url_for('board') }}"><b>{{ rub((bs.get('work', (0,0))[1]) + (bs.get('quote', (0,0))[1])) }}</b><span>в работе ({{ bs.get('work',(0,0))[0] + bs.get('quote',(0,0))[0] }})</span></a>
+  <a class="stat" href="{{ url_for('reports_view') }}"><b>{{ rub(s['paid_week']) }}</b><span>оплачено за 7 дней</span></a>
+</div>
+
+<h2>Новые заявки</h2>
+<div class="panel list">{% for d in new %}{{ deal_row(d) }}{% else %}<div class="row"><span class="d">Новых заявок нет</span></div>{% endfor %}</div>
+
+<h2>Задачи на сегодня</h2>
+<div class="panel list">{% for t in tasks %}{{ task_row(t, url_for('today_view')) }}{% else %}<div class="row"><span class="d">Всё сделано</span></div>{% endfor %}</div>
+
+{% if paid %}
+<h2>Оплачено — ждёт отгрузки</h2>
+<div class="panel list">{% for d in paid %}{{ deal_row(d) }}{% endfor %}</div>
+{% endif %}
+
+{% if short %}
+<h2>Не хватает под заказы</h2>
+<div class="panel list">{% for r in short %}<a class="row btn" href="{{ url_for('stock_view', q=r['article']) }}"><div class="grow"><div class="t mono">{{ r['article'] }}</div><div class="d">на складе {{ r['qty'] }} · отложено {{ r['reserved'] }}</div></div><span class="pill crit">−{{ r['reserved'] - r['qty'] }}</span></a>{% endfor %}</div>
+{% endif %}
+{% if low %}
+<h2>Склад: заканчивается</h2>
+<div class="panel list">{% for r in low %}<a class="row btn" href="{{ url_for('stock_view', q=r['article']) }}"><div class="grow"><div class="t mono">{{ r['article'] }}</div><div class="d">свободно {{ r['qty'] - r['reserved'] }} шт · в коробке {{ r['per_box'] }}</div></div><span class="pill warn">мало</span></a>{% endfor %}</div>
+{% endif %}
+{% endblock %}

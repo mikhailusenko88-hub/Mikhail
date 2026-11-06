@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "macros.html" import stage_pill with context %}
+{% block title %}Воронка{% endblock %}
+{% block main %}
+<div class="bar"><h1>Воронка</h1>
+  <a class="btn-g" href="{{ url_for('board', q=q, all=('0' if show_closed else '1')) }}">{{ 'Скрыть старые' if show_closed else 'Показать все закрытые' }}</a></div>
+{% if q %}<p class="sub">Поиск: «{{ q }}» · <a href="{{ url_for('board') }}">сбросить</a></p>{% endif %}
+<div class="board">
+{% for st, name, ds, sum in cols %}
+  <section class="col">
+    <h3><span>{{ name }} · {{ ds|length }}</span>{% if sum %}<span class="num muted">{{ rub(sum) }}</span>{% endif %}</h3>
+    {% for d in ds %}
+    <div class="card">
+      <a href="{{ url_for('deal_view', did=d['id']) }}" class="cardlink">
+        <div class="t">{{ d['client_name'] }}</div>
+        <div class="d">{{ (d['want'] or 'без описания')[:80] }}</div>
+      </a>
+      <div class="m">
+        <span class="pill">{{ SOURCE_NAMES.get(d['source'], d['source']) }}</span>
+        {% set s = total(d['gross'], d['discount']) %}<span class="num">{{ rub(s) if s else '—' }}</span>
+        {% if st not in ('shipped','lost') %}
+        <form method="post" action="{{ url_for('deal_stage', did=d['id']) }}">
+          <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="next" value="1">
+          <input type="hidden" name="back" value="{{ url_for('board', q=q) }}">
+          <button class="btn-s sm" aria-label="На следующий этап" title="На следующий этап">→</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% else %}<p class="empty">пусто</p>{% endfor %}
+  </section>
+{% endfor %}
+</div>
+{% endblock %}

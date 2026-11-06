@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% from "macros.html" import stage_pill, task_row with context %}
+{% block title %}№{{ d['id'] }} {{ d['client_name'] }}{% endblock %}
+{% block main %}
+{% set here = url_for('deal_view', did=d['id']) %}
+<div class="bar">
+  <h1><a href="{{ url_for('client_view', cid=d['client_id']) }}">{{ d['client_name'] }}</a> <span class="muted">№{{ d['id'] }}</span></h1>
+</div>
+<div class="btns">
+  {{ stage_pill(d['stage']) }}<span class="pill">{{ KIND_NAMES.get(d['kind'], '') }}</span><span class="pill">{{ SOURCE_NAMES.get(d['source'], d['source']) }}</span><span class="pill">с {{ fmt_day(d['created_at']) }}</span>
+</div>
+<div class="contacts">
+  {% if d['phone'] %}<a class="btn-s" href="tel:{{ d['phone'] }}">☎ {{ d['phone'] }}</a>{% endif %}
+  {% if d['email'] %}<a class="btn-s" href="mailto:{{ d['email'] }}">✉ {{ d['email'] }}</a>{% endif %}
+  {% if d['messenger'] %}<span class="btn-s static">{{ d['messenger'] }}</span>{% endif %}
+  {% if d['company'] %}<span class="btn-s static">{{ d['company'] }}{% if d['inn'] %} · ИНН {{ d['inn'] }}{% endif %}</span>{% endif %}
+</div>
+
+<form class="stagebar" method="post" action="{{ url_for('deal_stage', did=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f inline">Этап
+    <select name="stage" data-autosubmit>{% for k, n in STAGES %}<option value="{{ k }}" {% if k==d['stage'] %}selected{% endif %}>{{ n }}</option>{% endfor %}</select>
+  </label>
+  <noscript><button class="btn-s">Сменить</button></noscript>
+</form>
+{% if d['stage'] not in ('shipped','lost') %}
+<form method="post" action="{{ url_for('deal_stage', did=d['id']) }}" class="inline-form">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="next" value="1">
+  <button class="btn-p">Дальше →</button>
+</form>
+{% endif %}
+
+<h2 id="lines">Расчёт{% if d['discount'] %} · скидка {{ d['discount'] }}%{% endif %}</h2>
+<div class="panel tbl">
+<table class="cards">
+  <thead><tr><th>Артикул</th><th class="r">Шт</th><th class="r">Цена</th><th class="r">Сумма</th><th>Склад</th><th></th></tr></thead>
+  <tbody>
+  {% for ln in lines %}
+    {% set st = stock.get(ln['article']) %}
+    <tr>
+      <td class="c-main"><span class="mono">{{ ln['article'] }}</span>{% if st %}<div class="d">{{ st['name'][:40] }}</div>{% endif %}</td>
+      <td class="r" data-l="Шт"><input class="ed" form="ln-{{ ln['id'] }}" name="qty" inputmode="numeric" pattern="[0-9]*" value="{{ ln['qty'] }}" aria-label="Количество {{ ln['article'] }}"></td>
+      <td class="r" data-l="Цена, ₽"><input class="ed" form="ln-{{ ln['id'] }}" name="price" inputmode="numeric" pattern="[0-9]*" value="{{ ln['price'] }}" aria-label="Цена {{ ln['article'] }}"></td>
+      <td class="r num" data-l="Сумма">{{ rub(ln['qty'] * ln['price']) }}</td>
+      <td class="c-stk">{% if st %}{% set free = st['qty'] - st['reserved'] + (ln['qty'] if d['stage'] in ('work','quote','paid') else 0) %}{% if d['stage']=='shipped' %}<span class="pill">списано</span>{% elif free >= ln['qty'] %}<span class="pill good">есть</span>{% else %}<span class="pill warn">свободно {{ [free,0]|max }}</span>{% endif %}{% endif %}</td>
+      <td class="r nowrap c-act">
+        <form id="ln-{{ ln['id'] }}" method="post" action="{{ url_for('line_set', lid=ln['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="deal" value="{{ d['id'] }}"><button class="btn-g sm">Сохранить</button></form>
+        <form method="post" action="{{ url_for('line_set', lid=ln['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="deal" value="{{ d['id'] }}"><input type="hidden" name="delete" value="1"><button class="btn-g sm" aria-label="Убрать {{ ln['article'] }}" title="Убрать">×</button></form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="6" class="d">Позиций пока нет — добавьте ниже.</td></tr>
+  {% endfor %}
+  </tbody>
+  {% if lines %}<tfoot>
+    {% if d['discount'] %}<tr><td colspan="3">Без скидки</td><td class="r num">{{ rub(gross) }}</td><td colspan="2"></td></tr>{% endif %}
+    <tr><td colspan="3"><b>Итого</b></td><td class="r num"><b>{{ rub(total_sum) }}</b></td><td colspan="2"></td></tr>
+  </tfoot>{% endif %}
+</table>
+</div>
+<form class="addline" method="post" action="{{ url_for('line_add', did=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input name="article" list="cat" placeholder="Артикул, например A912" autocomplete="off" required aria-label="Артикул">
+  <input name="qty" inputmode="numeric" pattern="[0-9]*" placeholder="шт" aria-label="Количество" class="qty">
+  <button class="btn-p">Добавить</button>
+  <datalist id="cat">{% for p in catalog %}<option value="{{ p.article }}">{{ p.name }} · {{ p.price }} ₽</option>{% endfor %}</datalist>
+</form>
+
+<h2 id="info">Заявка</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('deal_edit', did=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="anchor" value="info">
+  <label class="f span2">Что хочет<textarea name="want" rows="2">{{ d['want'] }}</textarea></label>
+  <label class="f">Скидка, %<input name="discount" inputmode="numeric" pattern="[0-9]*" value="{{ d['discount'] }}"></label>
+  <label class="f">Откуда<select name="source">{% for k, n in SOURCES %}<option value="{{ k }}" {% if k==d['source'] %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
+  <label class="f">Адрес доставки<input name="address" value="{{ d['address'] }}"></label>
+  <label class="f">Дата отгрузки<input name="ship_date" type="date" value="{{ d['ship_date'] }}"></label>
+  {% if d['stage'] == 'lost' or d['lost_reason'] %}<label class="f span2">Причина отказа<input name="lost_reason" value="{{ d['lost_reason'] }}" placeholder="цена, срок, нет в наличии…"></label>{% endif %}
+  <label class="f span2">Заметка<textarea name="note" rows="2">{{ d['note'] }}</textarea></label>
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
+{% if d['calc'] %}<h2>Расчёт клиента</h2><pre class="panel pad calc">{{ d['calc'] }}</pre>{% endif %}
+
+<h2 id="tasks">Задачи</h2>
+<div class="panel list">{% for t in tasks %}{{ task_row(t, here + '#tasks') }}{% else %}<div class="row"><span class="d">Задач нет</span></div>{% endfor %}</div>
+<form class="addline" method="post" action="{{ url_for('task_add', did=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input name="title" placeholder="Например: перезвонить, выставить счёт" required aria-label="Задача">
+  <input name="due" type="date" value="{{ today }}" aria-label="Срок" class="date">
+  <button class="btn-s">Поставить</button>
+</form>
+
+{% if bot and bot['lead'] %}
+<h2>Заявка в боте №{{ d['bot_lead_id'] }}</h2>
+<div class="panel pad">
+  <p class="d">Статус в боте: {{ {'new':'новая','confirmed':'передана на отгрузку','shipping':'на отгрузке','shipped':'отгружено'}.get(bot['lead']['status'], bot['lead']['status']) }}</p>
+  {% if bot['ship'] %}<p class="d">Отгрузка: {{ bot['ship']['items'] }} · {{ bot['ship']['address'] }} · {{ bot['ship']['when_text'] }}</p>{% endif %}
+  <p class="d">Ответить клиенту можно в боте — ответом на карточку заявки.</p>
+</div>
+{% endif %}
+{% if msgs %}
+<h2>Переписка в {{ SOURCE_NAMES.get(d['source'], 'мессенджере') }}</h2>
+<div class="chat">{% for m in msgs %}<div class="msg {{ 'c' if m['direction']=='in' else 'm' }}">{{ m['text'] or ('[' + m['kind'] + ']') }}<small>{{ m['created_at'][11:16] if m['created_at'] }} {{ 'клиент' if m['direction']=='in' else (m['admin_name'] or 'магазин') }}</small></div>{% endfor %}</div>
+{% endif %}
+
+{% if other|length > 1 %}
+<h2>Другие заявки клиента</h2>
+<div class="panel list">{% for o in other if o['id'] != d['id'] %}<a class="row btn" href="{{ url_for('deal_view', did=o['id']) }}"><div class="grow"><div class="t">№{{ o['id'] }} · {{ (o['want'] or '')[:60] }}</div><div class="d">{{ fmt_day(o['created_at']) }}</div></div>{{ stage_pill(o['stage']) }}</a>{% endfor %}</div>
+{% endif %}
+
+<h2>История</h2>
+<div class="panel list hist">{% for e in events %}<div class="row"><div class="grow"><div>{{ e['text'] }}</div><div class="d">{{ fmt_dt(e['at']) }}{% if e['user_name'] %} · {{ e['user_name'] }}{% endif %}</div></div></div>{% endfor %}</div>
+{% if d['consent_at'] %}<p class="note">Согласие на обработку данных: {{ fmt_dt(d['consent_at']) }}{% if d['consent_version'] %}, редакция {{ d['consent_version'] }}{% endif %}</p>{% endif %}
+
+{% if me['role'] == 'admin' %}
+<form class="danger" method="post" action="{{ url_for('deal_delete', did=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label><input type="checkbox" name="confirm" value="1"> Да, удалить заявку №{{ d['id'] }}</label>
+  <button class="btn-g sm crit">Удалить</button>
+</form>
+{% endif %}
+{% endblock %}

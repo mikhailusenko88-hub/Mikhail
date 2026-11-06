@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Отчёты{% endblock %}
+{% block main %}
+<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}" aria-current="page">Отчёты</a><a href="{{ url_for('settings_view') }}">Настройки</a></div>
+<h1>Отчёты</h1>
+<h2>Заявки по этапам</h2>
+<div class="panel tbl"><table><thead><tr><th>Этап</th><th class="r">Заявок</th><th class="r">Сумма</th></tr></thead><tbody>
+{% for k, n in STAGES %}{% set v = s['by_stage'].get(k, (0, 0)) %}<tr><td>{{ n }}</td><td class="r">{{ v[0] }}</td><td class="r num">{{ rub(v[1]) }}</td></tr>{% endfor %}
+</tbody></table></div>
+<h2>Откуда приходят</h2>
+{% set mx = (s['by_source']|map(attribute='n')|max) if s['by_source'] else 1 %}
+<div class="panel list">{% for r in s['by_source'] %}<div class="row"><div class="src">{{ SOURCE_NAMES.get(r['source'], r['source']) }}</div><meter class="grow" min="0" max="{{ mx }}" value="{{ r['n'] }}"></meter><span class="num src-n">{{ r['n'] }} заяв. · {{ r['won'] or 0 }} продаж</span></div>{% else %}<div class="row"><span class="d">Заявок пока нет</span></div>{% endfor %}</div>
+<h2>Отказы</h2>
+<div class="panel list">{% for d in lost %}<a class="row btn" href="{{ url_for('deal_view', did=d['id']) }}"><span class="grow">{{ d['client_name'] }}</span><span class="d">{{ d['lost_reason'] or 'причина не указана' }}</span></a>{% else %}<div class="row"><span class="d">Отказов нет</span></div>{% endfor %}</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Клиенты{% endblock %}
+{% block main %}
+<div class="bar"><h1>Клиенты</h1><a class="btn-p" href="{{ url_for('deal_new') }}">Новая заявка</a></div>
+<form class="addline" method="get" action="{{ url_for('clients_view') }}" role="search">
+  <input type="search" name="q" value="{{ q }}" placeholder="Имя, телефон, почта, компания, ИНН" aria-label="Поиск клиентов">
+  <button class="btn-s">Найти</button>
+</form>
+<p class="sub">{{ clients|length }} {% if q %}найдено{% else %}в базе (последние сверху){% endif %}</p>
+<div class="panel list">
+{% for c in clients %}
+  <a class="row btn" href="{{ url_for('client_view', cid=c['id']) }}">
+    <div class="grow"><div class="t">{{ c['name'] }}</div>
+      <div class="d">{{ KIND_NAMES.get(c['kind'], '') }}{% if c['phone'] %} · {{ c['phone'] }}{% endif %}{% if c['messenger'] %} · {{ c['messenger'] }}{% endif %}{% if c['company'] %} · {{ c['company'] }}{% endif %}</div></div>
+    <span class="pill">{{ c['deals_n'] }} заяв.</span>
+  </a>
+{% else %}<div class="row"><span class="d">Никого не нашлось</span></div>{% endfor %}
+</div>
+{% endblock %}

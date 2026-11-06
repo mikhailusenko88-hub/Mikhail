@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "macros.html" import task_row with context %}
+{% block title %}Ещё{% endblock %}
+{% block main %}
+<div class="subnav"><a href="{{ url_for('tasks_view') }}" aria-current="page">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a><a href="{{ url_for('settings_view') }}">Настройки</a></div>
+<h1>Задачи</h1>
+<div class="panel list">{% for t in tasks %}{{ task_row(t, url_for('tasks_view')) }}{% else %}<div class="row"><span class="d">Открытых задач нет</span></div>{% endfor %}</div>
+<form class="addline" method="post" action="{{ url_for('tasks_view') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input name="title" placeholder="Задача без заявки: заказать коробки, позвонить в ТК…" required aria-label="Задача">
+  <input name="due" type="date" value="{{ today }}" aria-label="Срок" class="date">
+  <button class="btn-s">Поставить</button>
+</form>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% macro stage_pill(st) -%}
+<span class="pill st-{{ st }}">{{ STAGE_NAMES.get(st, st) }}</span>
+{%- endmacro %}
+{% macro deal_row(d) -%}
+<a class="row btn" href="{{ url_for('deal_view', did=d['id']) }}">
+  <div class="grow">
+    <div class="t">{{ d['client_name'] }} <span class="muted">№{{ d['id'] }}</span></div>
+    <div class="d">{{ SOURCE_NAMES.get(d['source'], d['source']) }} · {{ fmt_day(d['created_at']) }}{% if d['want'] %} · {{ d['want'][:90] }}{% endif %}</div>
+  </div>
+  {% set s = total(d['gross'], d['discount']) %}{% if s %}<span class="num">{{ rub(s) }}</span>{% endif %}
+</a>
+{%- endmacro %}
+{% macro task_row(t, back) -%}
+<div class="row">
+  <form method="post" action="{{ url_for('task_done', tid=t['id']) }}">
+    <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="back" value="{{ back }}">
+    <input type="hidden" name="done" value="{{ '0' if t['done_at'] else '1' }}">
+    <button class="check {{ 'on' if t['done_at'] }}" aria-label="{{ 'Вернуть' if t['done_at'] else 'Готово' }}">{% if t['done_at'] %}✓{% endif %}</button>
+  </form>
+  <div class="grow">
+    <div class="t {{ 'done' if t['done_at'] }}">{{ t['title'] }}</div>
+    {% if t['deal_id'] %}<div class="d"><a href="{{ url_for('deal_view', did=t['deal_id']) }}">{{ t['client_name'] }} · №{{ t['deal_id'] }}</a></div>{% endif %}
+  </div>
+  {% if not t['done_at'] %}{% if t['due'] < today %}<span class="pill crit">{{ fmt_day(t['due']) }}</span>{% elif t['due'] == today %}<span class="pill warn">сегодня</span>{% else %}<span class="pill">{{ fmt_day(t['due']) }}</span>{% endif %}{% endif %}
+</div>
+{%- endmacro %}

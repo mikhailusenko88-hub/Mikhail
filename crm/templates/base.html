@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1d5e57">
+<title>{% block title %}CRM{% endblock %} · Наш декор</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='crm.css') }}?v=1">
+<link rel="icon" href="{{ url_for('static', filename='icon.svg') }}" type="image/svg+xml">
+<script src="{{ url_for('static', filename='crm.js') }}?v=1" defer></script>
+</head>
+<body>
+{% if me %}
+<div class="app">
+<header class="top">
+  <a class="brand" href="{{ url_for('today_view') }}">Наш декор<small>CRM</small></a>
+  <form class="search" action="{{ url_for('board') }}" method="get" role="search">
+    <input type="search" name="q" placeholder="Поиск" aria-label="Поиск" value="{{ request.args.get('q','') if request.endpoint=='board' else '' }}">
+  </form>
+  <a class="btn-p add" href="{{ url_for('deal_new') }}">+ Заявка</a>
+</header>
+<nav class="tabs" aria-label="Разделы">
+  {% set ep = request.endpoint or '' %}
+  <a href="{{ url_for('today_view') }}" {% if ep=='today_view' %}aria-current="page"{% endif %}><span class="ic ic-today"></span>Сегодня</a>
+  <a href="{{ url_for('board') }}" {% if ep in ('board','deal_view','deal_new') %}aria-current="page"{% endif %}><span class="ic ic-funnel"></span>Воронка{% if nav_new %}<span class="badge">{{ nav_new }}</span>{% endif %}</a>
+  <a href="{{ url_for('clients_view') }}" {% if ep in ('clients_view','client_view') %}aria-current="page"{% endif %}><span class="ic ic-clients"></span>Клиенты</a>
+  <a href="{{ url_for('stock_view') }}" {% if ep=='stock_view' %}aria-current="page"{% endif %}><span class="ic ic-stock"></span>Склад</a>
+  <a href="{{ url_for('tasks_view') }}" {% if ep in ('tasks_view','reports_view','settings_view') %}aria-current="page"{% endif %}><span class="ic ic-more"></span>Ещё</a>
+</nav>
+<main id="top">
+  {% with msgs = get_flashed_messages(with_categories=true) %}{% for cat, m in msgs %}<div class="flash {{ cat }}" role="status">{{ m }}</div>{% endfor %}{% endwith %}
+  {% block main %}{% endblock %}
+</main>
+</div>
+{% else %}
+<main class="solo">{% block solo %}{% endblock %}</main>
+{% endif %}
+</body>
+</html>

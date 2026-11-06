@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Новая заявка{% endblock %}
+{% block main %}
+<h1>Новая заявка</h1>
+<form class="panel pad grid2" method="post" action="{{ url_for('deal_new') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  {% if cl %}
+    <input type="hidden" name="client" value="{{ cl['id'] }}">
+    <p class="span2">Клиент: <a href="{{ url_for('client_view', cid=cl['id']) }}"><b>{{ cl['name'] }}</b></a> {{ cl['phone'] }}</p>
+  {% else %}
+    <label class="f">Имя или компания *<input name="name" required value="{{ f.get('name','') }}" autocomplete="off"></label>
+    <label class="f">Телефон<input name="phone" type="tel" inputmode="tel" value="{{ f.get('phone','') }}" autocomplete="off"></label>
+    <label class="f">Почта<input name="email" type="email" value="{{ f.get('email','') }}" autocomplete="off"></label>
+    <label class="f">Мессенджер, Авито<input name="messenger" placeholder="@ник, ссылка на чат" value="{{ f.get('messenger','') }}" autocomplete="off"></label>
+    <label class="f">Кто это<select name="kind">{% for k, n in KINDS %}<option value="{{ k }}">{{ n }}</option>{% endfor %}</select></label>
+    <label class="f">Компания (для счёта)<input name="company" value="{{ f.get('company','') }}" autocomplete="off"></label>
+  {% endif %}
+  <label class="f">Откуда<select name="source">{% for k, n in SOURCES %}<option value="{{ k }}" {% if k=='avito' %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
+  <label class="f span2">Что хочет<textarea name="want" rows="3" placeholder="Например: ТВ-зона, A912 белые, 3 м стены">{{ f.get('want','') }}</textarea></label>
+  <div class="span2"><button class="btn-p">Создать</button></div>
+</form>
+{% endblock %}

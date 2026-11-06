@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Склад{% endblock %}
+{% block main %}
+<h1>Склад и цены</h1>
+<p class="sub">{{ rows|length }} позиций · на складе на {{ rub(value) }} по розничной цене. «Отложено» — товар в открытых заявках (в работе, расчёт, оплачено). При отгрузке остаток списывается сам.</p>
+<div class="chips">
+  <a class="chip" href="{{ url_for('stock_view', q=q, only=only) }}" {% if not kind %}aria-current="true"{% endif %}>Все</a>
+  {% for k, n in KIND_TITLES.items() %}<a class="chip" href="{{ url_for('stock_view', kind=k, q=q, only=only) }}" {% if kind==k %}aria-current="true"{% endif %}>{{ n }}</a>{% endfor %}
+</div>
+<form class="addline" method="get" action="{{ url_for('stock_view') }}" role="search">
+  <input type="hidden" name="kind" value="{{ kind }}">
+  <input type="search" name="q" value="{{ q }}" placeholder="Артикул или название" aria-label="Поиск по складу">
+  <label class="inline"><input type="checkbox" name="only" value="have" {% if only=='have' %}checked{% endif %} data-autosubmit> только в наличии</label>
+  <button class="btn-s">Найти</button>
+</form>
+<div class="panel tbl">
+<table class="stock cards">
+<thead><tr><th>Артикул</th><th class="r">Остаток</th><th class="r">Отложено</th><th class="r">Цена, ₽</th><th class="r">Коробка</th><th></th></tr></thead>
+<tbody>
+{% for r in rows %}
+{% set fid = 'st-' ~ loop.index %}
+<tr id="a-{{ r['article']|replace(' ','-')|replace('/','-') }}">
+  <td class="c-main"><span class="mono">{{ r['article'] }}</span><div class="d">{{ r['name'][:44] }}{% if r['size'] %} · {{ r['size'] }}{% endif %}</div></td>
+  <td class="r" data-l="Остаток"><input class="ed" form="{{ fid }}" name="qty" inputmode="numeric" pattern="[0-9]*" value="{{ r['qty'] }}" aria-label="Остаток {{ r['article'] }}"></td>
+  <td class="r" data-l="Отложено">{% if r['reserved'] %}<span class="pill {{ 'crit' if r['reserved'] > r['qty'] else 'warn' }}">{{ r['reserved'] }}</span>{% else %}—{% endif %}</td>
+  <td class="r" data-l="Цена, ₽"><input class="ed" form="{{ fid }}" name="price" inputmode="numeric" pattern="[0-9]*" value="{{ r['price'] }}" aria-label="Цена {{ r['article'] }}">{% if r['own_price'] %}<div class="d">сайт {{ r['site_price'] }}</div>{% endif %}</td>
+  <td class="r c-box" data-l="В коробке">{{ r['per_box'] or '—' }}</td>
+  <td class="c-act"><form id="{{ fid }}" method="post" action="{{ url_for('stock_set', article=r['article']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="back" value="{{ request.full_path }}"><button class="btn-g sm">Сохранить</button></form></td>
+</tr>
+{% else %}<tr><td colspan="6" class="d">Ничего не найдено{% if not q and not kind %} — каталог сайта ещё не загружен{% endif %}</td></tr>{% endfor %}
+</tbody></table>
+</div>
+<p class="note">Цена здесь — для расчётов в CRM. Чтобы её меняли сайт и Авито, нужно отдельно обновить каталог сайта.</p>
+{% endblock %}

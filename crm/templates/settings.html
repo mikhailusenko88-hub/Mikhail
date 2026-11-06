@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Настройки{% endblock %}
+{% block main %}
+<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a><a href="{{ url_for('settings_view') }}" aria-current="page">Настройки</a></div>
+<h1>Настройки</h1>
+<h2>Мой пароль</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('settings_password') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="text" name="username" value="{{ me['login'] }}" autocomplete="username" hidden>
+  <label class="f span2">Старый пароль<input name="old" type="password" autocomplete="current-password" required></label>
+  <label class="f">Новый (от 10 символов)<input name="new" type="password" autocomplete="new-password" minlength="10" required></label>
+  <label class="f">Ещё раз<input name="new2" type="password" autocomplete="new-password" minlength="10" required></label>
+  <div class="span2"><button class="btn-p">Сменить пароль</button></div>
+</form>
+{% if me['role'] == 'admin' %}
+<h2>Пользователи</h2>
+<div class="panel list">
+{% for u in users %}
+  <form class="row wrap" method="post" action="{{ url_for('settings_user_set', uid=u['id']) }}">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <div class="grow"><div class="t">{{ u['login'] }}{% if not u['active'] %} <span class="pill crit">отключён</span>{% endif %}</div>
+      <div class="d">последний вход: {{ fmt_dt(u['last_login']) or 'не входил' }}</div></div>
+    <input name="name" value="{{ u['name'] }}" aria-label="Имя" class="mid">
+    <select name="role" aria-label="Роль">{% for k, n in ROLES %}<option value="{{ k }}" {% if k==u['role'] %}selected{% endif %}>{{ n }}</option>{% endfor %}</select>
+    <select name="active" aria-label="Доступ"><option value="1" {% if u['active'] %}selected{% endif %}>доступ есть</option><option value="0" {% if not u['active'] %}selected{% endif %}>отключён</option></select>
+    <input name="password" type="password" placeholder="новый пароль" autocomplete="new-password" aria-label="Новый пароль" class="mid">
+    <button class="btn-s sm">Сохранить</button>
+  </form>
+{% endfor %}
+</div>
+<h2>Добавить пользователя</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('settings_user_add') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f">Логин (латиница)<input name="login" pattern="[a-z0-9][a-z0-9._-]{1,30}" required autocapitalize="none"></label>
+  <label class="f">Имя<input name="name" required></label>
+  <label class="f">Роль<select name="role">{% for k, n in ROLES %}<option value="{{ k }}" {% if k=='staff' %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
+  <label class="f">Пароль (от 10 символов)<input name="password" type="password" minlength="10" autocomplete="new-password" required></label>
+  <div class="span2"><button class="btn-p">Добавить</button></div>
+</form>
+<h2>Связи</h2>
+<div class="panel list">
+  <div class="row"><span class="grow">Бот MAX/Telegram</span>{% if bot %}<span class="pill good">заявки подтягиваются</span>{% else %}<span class="pill">бот ещё не установлен</span>{% endif %}</div>
+  <div class="row"><span class="grow">Заявки с сайта</span>{% if conf['SITE_LEADS'] %}<span class="pill good">включены</span>{% else %}<span class="pill warn">выключены (до уведомления в Роскомнадзор)</span>{% endif %}</div>
+  <div class="row"><span class="grow">Письмо о новой заявке</span><span class="pill">{{ conf['NOTIFY_EMAIL'] or 'не отправляется' }}</span></div>
+</div>
+{% endif %}
+<form class="logout" method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g">Выйти</button></form>
+{% endblock %}
