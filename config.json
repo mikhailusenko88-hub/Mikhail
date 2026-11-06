@@ -5,7 +5,7 @@
   "texts_json": "/home/claude/cards/avito_texts.json",
   "output_xml": "/home/claude/avito/avito.xml",
 
-  "photo_base": "http://89.126.192.214:8080/mebel/0f7s1eez/img/",
+  "photo_base": "https://nashdekor.ru/mebel/0f7s1eez/img/",
   "_extra_photos": "Доп. фото к объявлениям: ключ — артикул или вид товара (panel/color/mold/plinth/cornice/corner), значение — список имён файлов из img/. Пример: {\"panel\": [\"hero.jpg\"]}. Сейчас пусто: img/tex и img/dot — мелкие текстуры 64×512 и 56×56, для Авито не годятся.",
   "extra_photos": {},
 
