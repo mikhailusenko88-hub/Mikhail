@@ -81,34 +81,41 @@ if os.path.exists('episodes.txt'):
     P('episodes.txt:', len(episodes))
 if not episodes: P('серий не найдено'); sys.exit(0)
 
-# ---------- выбор серии ----------
+# ---------- выбор серии и скачивание ----------
 # Принцип: по кругу, начиная с самой новой; серия, из которой уже сделано ≥3 ролика, уходит в конец.
 def used(ep): return state['episodes'].get(ep['id'], {}).get('segments', [])
-cand = None
+order = []
 if cfg['episode']:
-    cand = next((e for e in episodes if cfg['episode'] in e['id'] or cfg['episode'].lower() in e['title'].lower()), None)
-if not cand:
-    episodes.sort(key=lambda e: (-(e['num'] or 0)))
-    # сначала серии, из которых ещё ничего не брали (самая новая первой), потом по минимуму взятого
-    cand = min(episodes, key=lambda e: (len(used(e)), -(e['num'] or 0)))
-P('серия:', cand['num'], cand['title'], cand['url'], 'уже взято:', len(used(cand)))
-
-# ---------- скачать ----------
+    order = [e for e in episodes if cfg['episode'] in e['id'] or cfg['episode'].lower() in e['title'].lower()]
+if not order:
+    order = sorted(episodes, key=lambda e: (len(used(e)), -(e['num'] or 0)))
+yt_list = None
+def yt_entries():
+    global yt_list
+    if yt_list is None:
+        yt_list = flat(YT_CHANNEL, ['--extractor-args', 'youtube:player_client=default,web_safari,ios,tv'])
+        for e in yt_list: P('yt:', e.get('id'), e.get('title'))
+    return yt_list
 mp4 = 'out/ep.mp4'
-if os.path.exists(mp4): os.remove(mp4)
-if cand['src'] == 'rutube':
-    run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', mp4, cand['url']], timeout=1500)
-if not os.path.exists(mp4):
-    for cl in ['youtube:player_client=android_vr;player_skip=webpage,configs', 'youtube:player_client=tv_simply', 'youtube:player_client=mweb', 'youtube:player_client=ios,web_safari']:
-        yurl = cand['url'] if cand['src'] == 'youtube' else None
-        if not yurl:
-            # найти ту же серию на YouTube по номеру
-            for e in flat(YT_CHANNEL, ['--extractor-args', 'youtube:player_client=default,web_safari,ios,tv']):
-                if ep_num(e.get('title')) == cand['num'] and cand['num']: yurl = 'https://www.youtube.com/watch?v=' + e['id']; break
-        if not yurl: break
-        run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', mp4, '--extractor-args', cl, yurl], timeout=1500)
-        if os.path.exists(mp4): break
-if not os.path.exists(mp4): P('не скачалось'); sys.exit(0)
+cand = None
+for ep in order[:4]:
+    if os.path.exists(mp4): os.remove(mp4)
+    P('пробую серию:', ep['num'], ep['title'], ep['url'], 'уже взято:', len(used(ep)))
+    if ep['src'] == 'rutube':
+        run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', mp4, ep['url']], timeout=1500)
+    if not os.path.exists(mp4):
+        yurl = ep['url'] if ep['src'] == 'youtube' else None
+        if not yurl and ep['num']:
+            for e in yt_entries():
+                if ep_num(e.get('title')) == ep['num']: yurl = 'https://www.youtube.com/watch?v=' + e['id']; break
+        if yurl:
+            for cl in ['youtube:player_client=android_vr;player_skip=webpage,configs', 'youtube:player_client=tv_simply', 'youtube:player_client=mweb', 'youtube:player_client=ios,web_safari']:
+                run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', mp4, '--extractor-args', cl, yurl], timeout=1500)
+                if os.path.exists(mp4): break
+    if os.path.exists(mp4): cand = ep; break
+    P('серия недоступна, беру следующую')
+if not cand: P('не скачалось'); sys.exit(0)
+P('серия:', cand['num'], cand['title'], cand['url'])
 
 # длительность
 r = run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp4])
