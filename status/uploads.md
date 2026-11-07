@@ -4,3 +4,4 @@
 | 2026-11-06 | 2 | cars №2 | Malibu | https://youtube.com/shorts/BnWWFWrkd3w | public |
 | 2026-11-06 | 3 | cities №3 | Urganch | https://youtube.com/shorts/Whe76DcdOhU | public |
 | 2026-11-07 | 1 | cities №4 | Jizzax | https://youtube.com/shorts/EK5EzrtpOfQ | public |
+| 2026-11-07 | 2 | cars №3 | Epica | https://youtube.com/shorts/DQuwCiz6_kg | public |

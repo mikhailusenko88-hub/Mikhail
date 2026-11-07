@@ -1,8 +1,8 @@
-ТЕСТ ОК: clubs №1 собран за 46 с, 37 МБ (не выложен)
+ВЫЛОЖЕНО 2026-11-07 слот 2: cars №3 https://youtube.com/shorts/DQuwCiz6_kg, за 60 с
 
 {
- "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №1 #shorts",
- "description": "⏳ Final — ertaga! · Финал — завтра!\n\nPaxtakor, Bunyodkor, Nasaf, Navbahor… qaysi jamoa tezroq? Izohlarda yoz 👇\n22 клубов Суперлиги Узбекистана в одной гонке: Пахтакор, Бунёдкор, Насаф, Навбахор и другие. Какой победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nJamoangiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего клуба? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #futbol #superliga #paxtakor #bunyodkor #nasaf #navbahor #гонкашариков #shorts",
+ "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №3 #shorts",
+ "description": "⏳ Final — ertaga! · Финал — завтра!\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,33 +11,37 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "futbol",
-  "футбол",
-  "superliga",
-  "суперлига узбекистана",
-  "paxtakor",
-  "bunyodkor",
-  "nasaf",
-  "navbahor",
-  "neftchi",
-  "pfl uzbekistan"
+  "mashina",
+  "cobalt",
+  "gentra",
+  "nexia",
+  "damas",
+  "malibu",
+  "chevrolet",
+  "машины узбекистана"
  ]
 }
 
 --- журнал (время Ташкента) ---
-14:58:57 режим test, событие push
-14:58:57 Тема: гонка футбольных клубов. Подбираю трассу и заезд…
-14:59:01   трасса 1 (spinners, hammers, bumpy, stairs, pegs, tramps, bumpers): победа на 44.3 с, смен лидера 17, финишировали 2, расчёт 4 с
-14:59:03   трасса 2 (spinners, pegs, bumpers, stairs, tramps, split, funnel, hammers): победа на 39.5 с, смен лидера 18, финишировали 8, расчёт 2 с — не подходит
-14:59:06   трасса 3 (tunnel, bumpers, split, funnel, bumpy, spinners, stairs, pegs): победа на 38.9 с, смен лидера 12, финишировали 13, расчёт 2 с — не подходит
-14:59:06 Рисую трассу…
-14:59:06 Рисую кадры: заезд 50 с + финал 8 с…
-14:59:07   кадр 0/1515, 9 с
-14:59:12   кадр 300/1515, 14 с
-14:59:17   кадр 600/1515, 19 с
-14:59:22   кадр 900/1515, 25 с
-14:59:28   кадр 1200/1515, 30 с
-14:59:33   кадр 1500/1515, 36 с
-14:59:41 Свожу звук…
-14:59:42 Готово за 44 с: победил Lokomotiv, ролик 58 с
-14:59:42 ролик готов: 58 с, 37 МБ, сборка 44 с; победил Lokomotiv, топ-3: Lokomotiv, Aral, Olimpik
+16:14:50 режим publish, событие schedule
+16:14:51 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+16:14:55 комментарии: роликов просмотрено: 6, комментариев: 0
+16:14:55 Тема: гонка машин. Подбираю трассу и заезд…
+16:14:57   трасса 1 (tunnel, spinners, tramps, bumpy, pegs, stairs, funnel, bumpers): победа на 42.7 с, смен лидера 6, финишировали 5, расчёт 2 с
+16:15:00   трасса 2 (tunnel, funnel, bumpy, pegs, split, bumpers, hammers): победа на 39.5 с, смен лидера 12, финишировали 7, расчёт 2 с — не подходит
+16:15:02   трасса 3 (spinners, bumpers, stairs, hammers, bumpy, pegs, funnel, tunnel): победа на 41.3 с, смен лидера 9, финишировали 2, расчёт 3 с — не подходит
+16:15:05   трасса 4 (split, spinners, pegs, funnel, stairs, bumpers, tramps, tunnel): победа на 50.7 с, смен лидера 13, финишировали 8, расчёт 2 с
+16:15:05 Рисую трассу…
+16:15:06 Рисую кадры: заезд 57 с + финал 8 с…
+16:15:06   кадр 0/1707, 10 с
+16:15:12   кадр 300/1707, 17 с
+16:15:18   кадр 600/1707, 23 с
+16:15:24   кадр 900/1707, 29 с
+16:15:30   кадр 1200/1707, 35 с
+16:15:36   кадр 1500/1707, 41 с
+16:15:46 Свожу звук…
+16:15:47 Готово за 51 с: победил Epica, ролик 64 с
+16:15:47 ролик готов: 64 с, 44 МБ, сборка 56 с; победил Epica, топ-3: Epica, Tahoe, Labo
+16:15:50 YouTube: https://youtube.com/shorts/DQuwCiz6_kg
+16:15:50 в плейлисте
+16:15:50 статус: public uploaded
