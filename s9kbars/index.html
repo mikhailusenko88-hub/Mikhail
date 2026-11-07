@@ -51,7 +51,7 @@
   <small id="upd"></small>
 </header>
 <div class="wrap">
-  <p class="hint">Каждое утро тут появляются новые ролики. «Скачать» → iPhone предложит «Загрузить» (файл ляжет в Файлы → Загрузки) или открой ролик и через «Поделиться» → «Сохранить видео», потом в Rutube или YouTube: «+» → загрузить → вставить название и описание кнопками ниже (для каждой площадки своё описание и ссылки). Галочка «выложено» запоминается на этом телефоне.</p>
+  <p class="hint">Каждое утро в 07:00 тут появляются новые ролики (хранятся 2 недели). «Скачать» → iPhone предложит «Загрузить» (файл ляжет в Файлы → Загрузки) или открой ролик и через «Поделиться» → «Сохранить видео», потом в Rutube или YouTube: «+» → загрузить → вставить название и описание кнопками ниже (для каждой площадки своё описание и ссылки). Галочка «выложено» запоминается на этом телефоне.</p>
   <div id="list"><div class="empty">Загружаю…</div></div>
 </div>
 <div class="toast" id="toast">Скопировано</div>
@@ -88,7 +88,7 @@
           '<div class="meta"><div class="ep">'+(it.ep_num?it.ep_num+' серия · ':'')+'момент '+Math.floor(it.start/60)+':'+String(it.start%60).padStart(2,'0')+' · '+mb+' МБ</div>'+
           '<div class="t">'+esc(it.title)+'</div>'+
           '<div class="btns"><a class="btn dl" href="'+esc(loc(it.file))+'" download="'+esc(it.file)+'">⬇︎ Скачать mp4</a></div>'+
-          '<div class="hint2">Если не играет — ролик ещё едет на сервер (до 5 мин). <a href="'+esc(it.url)+'">Запасная ссылка</a></div></div></div>'+
+          '</div></div>'+
           '<div class="plat"><div class="ph">RUTUBE</div><div class="btns"><button class="btn" data-copy="title">Название</button><button class="btn" data-copy="desc_rt">Описание</button><button class="btn all" data-copy="full_rt">Всё сразу</button></div>'+
           '<div class="field"><label>Описание для Rutube</label><pre>'+esc(it.desc_rt||it.desc)+'</pre></div></div>'+
           '<div class="plat yt"><div class="ph">YOUTUBE</div><div class="btns"><button class="btn" data-copy="title">Название</button><button class="btn" data-copy="desc_yt">Описание</button><button class="btn all" data-copy="full_yt">Всё сразу</button></div>'+
@@ -100,7 +100,7 @@
       });
     });
   }
-  fetch('feed.json?t='+Date.now()).then(function(r){return r.json()}).then(render).catch(function(){document.getElementById('list').innerHTML='<div class="empty">Пока пусто — первые ролики появятся после первого запуска.</div>'});
+  fetch('../s9kbars-v/feed.json?t='+Date.now()).then(function(r){return r.json()}).then(render).catch(function(){document.getElementById('list').innerHTML='<div class="empty">Пока пусто — первые ролики появятся после первого запуска.</div>'});
 })();
 </script>
 </body>
