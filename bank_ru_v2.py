@@ -5,8 +5,13 @@ import json
 J, N, S, M = "Жуткий факт", "Нельзя", "Самый", "Миф или правда"
 
 
+from caps_ru_v2 import CAPS
+
+
 def s(fmt, title, lines, tags, stock):
-    return {"format": fmt, "title": title, "lines": lines, "tags": tags, "stock": stock}
+    caps = CAPS.get(title)
+    assert caps and len(caps) == len(lines) - 1, f"нет титров: {title}"
+    return {"format": fmt, "title": title, "lines": lines, "caps": [""] + caps, "tags": tags, "stock": stock}
 
 
 B = [

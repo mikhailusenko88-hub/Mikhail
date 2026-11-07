@@ -24,7 +24,7 @@ echo "== Бот: $D"
 cd "$D" || exit 1
 PY=python3; [ -x "$D/.venv/bin/python" ] && PY="$D/.venv/bin/python"
 
-FILES="make_video.py icons.py topics_ru_v2.json"
+FILES="make_video.py icons.py sfx.py topics_ru_v2.json"
 cp -p config.json "config.json.bak-$STAMP"
 for f in $FILES; do [ -f "$f" ] && cp -p "$f" "$f.bak-$STAMP"; done
 restore() {
@@ -40,7 +40,9 @@ echo "== Скачиваю"
 for f in $FILES; do
   curl -fsSL "$RAW/$f?$STAMP" -o "$f.new" && mv "$f.new" "$f" || { echo "!! не скачался $f"; restore; }
 done
-"$PY" -m py_compile make_video.py icons.py || restore
+"$PY" -m py_compile make_video.py icons.py sfx.py || restore
+
+"$PY" -c "import numpy" 2>/dev/null || "$PY" -m pip install -q numpy 2>/dev/null || echo "   ! numpy не поставился — ролики выйдут без звуковых акцентов"
 
 echo "== Голос «Альбина»"
 if [ -f albina.py ]; then

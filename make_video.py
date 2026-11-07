@@ -407,7 +407,7 @@ def _hl_words(text):
     return out
 
 
-def text_v2(accent, kind, title, text, idx, total, handle, path):
+def text_v2(accent, kind, title, text, idx, total, handle, path, cap=None):
     """kind: hook (первый кадр), body, cta (концовка)."""
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
@@ -464,6 +464,10 @@ def text_v2(accent, kind, title, text, idx, total, handle, path):
         f3 = font(44)
         s3 = "пиши в комментариях 👇" if False else "пиши в комментариях"
         d.text(((W - d.textlength(s3, font=f3)) / 2, 1440), s3, font=f3, fill=(255, 255, 255, 230))
+    elif cap:
+        # короткий титр: 2–4 ключевых слова крупно, голос читает полную фразу
+        hl.update(cap.split())
+        draw_block(cap.upper(), (124, 112, 100, 90, 80), (1020, 1540), 3)
     else:
         draw_block(text, (84, 78, 72, 66, 60), (960, 1560), 6)
 
@@ -531,8 +535,10 @@ def build_v2(script, cfg, out_path, work_dir, tts=speak, log=print):
             dur = durs[i]
             kind = "hook" if i == 0 else ("cta" if i == total - 1 else "body")
             txt = work / f"t{i:02d}.png"
+            caps = script.get("caps") or []
+            cap = caps[i] if (kind == "body" and i < len(caps) and caps[i]) else None
             text_v2(accent, kind, script["title"], lines[i] if i < len(lines) else CTA_TEXT, i, total,
-                    cfg.get("channel_handle", ""), txt)
+                    cfg.get("channel_handle", ""), txt, cap=cap)
             seg = work / f"s{i:02d}.mp4"
             # фон один на ролик, медленный наезд; у каждой сцены свой сдвиг
             sx, sy = rnd.choice([(1, 1), (-1, 1), (1, -1), (-1, -1)])
@@ -560,15 +566,46 @@ def build_v2(script, cfg, out_path, work_dir, tts=speak, log=print):
     voice_f = work / "voice.m4a"
     run(["ffmpeg", "-y", *ins, "-filter_complex", ";".join(parts), "-map", "[voice]", "-c:a", "aac", "-b:a", "160k", voice_f])
 
+    # звуковые акценты: свист на крючке, акцент рубрики на ответе, тик на смене фразы, колокольчик на концовке
+    sfx_plan = []
+    if cfg.get("sfx", True):
+        try:
+            import sfx as SFX
+            starts = [sum(durs[:i]) for i in range(total)]
+            sfx_plan.append(("whoosh", 0.0, 0.9))
+            for i in range(1, total):
+                if i == total - 1:
+                    kind = "ding"
+                elif i == 1:
+                    low = lines[1].lower()
+                    kind = "buzz" if "миф" in low else ("ding" if "правда" in low else SFX.for_format(script.get("format")))
+                else:
+                    kind = "tick"
+                sfx_plan.append((kind, max(0.0, starts[i] - 0.05), 0.7 if kind != "tick" else 0.5))
+            for j, (kind, _, _) in enumerate(sfx_plan):
+                SFX.make(kind, work / f"sfx{j:02d}.wav")
+        except Exception as e:  # noqa: BLE001 — без акцентов ролик всё равно выходит
+            log(f"звуковые акценты: {e}")
+            sfx_plan = []
+
     music_files = sorted((BASE / "music").glob("*.mp3")) if (BASE / "music").exists() else []
     cmd = ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", seg_list, "-i", voice_f]
+    chains, mix, nin = [], ["[1:a]"], 2
     if music_files:
         want = (cfg.get("music_by_format") or {}).get(script.get("format") or "", [])
         fit = [f for f in music_files if f.name in want]
         m = rnd.choice(fit or music_files)
-        cmd += ["-stream_loop", "-1", "-i", m, "-filter_complex",
-                f"[2:a]volume={cfg.get('music_volume', 0.08)},afade=t=out:st={max(total_dur - 1.5, 0):.2f}:d=1.5[m];"
-                f"[1:a][m]amix=inputs=2:duration=first:normalize=0[a]", "-map", "0:v", "-map", "[a]"]
+        cmd += ["-stream_loop", "-1", "-i", m]
+        chains.append(f"[{nin}:a]volume={cfg.get('music_volume', 0.08)},afade=t=out:st={max(total_dur - 1.5, 0):.2f}:d=1.5[m]")
+        mix.append("[m]"); nin += 1
+    for j, (kind, at, vol) in enumerate(sfx_plan):
+        cmd += ["-i", work / f"sfx{j:02d}.wav"]
+        ms = int(at * 1000)
+        chains.append(f"[{nin}:a]aformat=sample_rates=44100:channel_layouts=mono,adelay={ms}|{ms},volume={vol * cfg.get('sfx_volume', 0.35):.2f}[x{j}]")
+        mix.append(f"[x{j}]"); nin += 1
+    if len(mix) > 1:
+        chains.append("".join(mix) + f"amix=inputs={len(mix)}:duration=first:normalize=0[a]")
+        cmd += ["-filter_complex", ";".join(chains), "-map", "0:v", "-map", "[a]"]
     else:
         cmd += ["-map", "0:v", "-map", "1:a"]
     cmd += ["-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-t", f"{total_dur:.3f}", "-movflags", "+faststart", out_path]
@@ -620,9 +657,11 @@ def ai_script(cfg, used_titles, n_done):
 («Волосы растут после смерти?», «Сердце может биться вне тела»). Без «А вы знали» и без вступлений.
 Вторая фраза — сразу ответ («Это миф.» / «Да, и вот почему.»). Дальше 2–3 фразы объяснения, каждая до 90 символов.
 Всего 4–5 фраз, озвучка 12–18 секунд. Числа пиши словами.
+К каждой фразе, кроме первой, дай титр — 2–4 ключевых слова, которые появятся на экране, пока голос читает фразу
+(пример: фраза «Клещ может ждать тебя на травинке месяцами» → титр «ЖДЁТ МЕСЯЦАМИ»).
 Ответь только JSON:
-{{"title": "крючок до 45 символов (можно тот же, что первая фраза)", "lines": ["..."], "tags": ["3-4 тега без #"],
- "stock": "2-3 русских слова о предмете ролика, например 'сердце кровь'"}}"""
+{{"title": "крючок до 45 символов (можно тот же, что первая фраза)", "lines": ["..."], "caps": ["", "титр 2", "титр 3", ...],
+ "tags": ["3-4 тега без #"], "stock": "2-3 русских слова о предмете ролика, например 'сердце кровь'"}}"""
     else:
         prompt = f"""Придумай сценарий короткого вертикального ролика (VK Клипы / Shorts) на русском.
 Канал: {cfg['topic']}. Тема сегодня: {sub}. Рубрика «{fmt}»: {RULES.get(fmt, '')}.
@@ -643,7 +682,8 @@ def ai_script(cfg, used_titles, n_done):
     lines = [l.strip() for l in data["lines"] if l.strip()]
     if not (3 <= len(lines) <= 8) or not data.get("title") or data["title"] in used_titles:
         raise ValueError("сценарий не прошёл проверку")
-    return {"format": fmt, "title": data["title"].strip()[:70], "lines": lines,
+    caps = [str(c).strip() for c in (data.get("caps") or [])]
+    return {"format": fmt, "title": data["title"].strip()[:70], "lines": lines, "caps": caps,
             "tags": [t.strip("# ") for t in data.get("tags", [])][:4],
             "stock": data.get("stock", "")}
 
