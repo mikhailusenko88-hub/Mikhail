@@ -90,7 +90,7 @@ for e in flat(RUTUBE_CHANNEL):
 P('rutube episodes:', len(rt))
 for r_ in rt:
     m = next((e for e in episodes if same(e['title'], r_['title'])), None)
-    if m: m['rutube'] = r_['url']; m['rid'] = r_['id']; m['rnum'] = r_['num']; P('пара:', r_['num'], '↔ yt', m['num'], '|', r_['title'][:50])
+    if m: m['rutube'] = r_['url']; m['rid'] = r_['id']; m['rnum'] = r_['num']; m['rtitle'] = r_['title']; P('пара:', r_['num'], '↔ yt', m['num'], '|', r_['title'][:50])
     else: episodes.append(r_)
 if os.path.exists('episodes.txt'):
     for l in open('episodes.txt', encoding='utf-8'):
@@ -102,7 +102,7 @@ if os.path.exists('episodes.txt'):
             if any(e['id'] == parts[0] or e.get('rid') == parts[0] for e in episodes): continue
             m = next((e for e in episodes if same(e['title'], parts[1])), None)
             if m:
-                if not m.get('rutube'): m['rutube'] = f'https://rutube.ru/video/{parts[0]}/'; m['rid'] = parts[0]; m['rnum'] = n_
+                if not m.get('rutube'): m['rutube'] = f'https://rutube.ru/video/{parts[0]}/'; m['rid'] = parts[0]; m['rnum'] = n_; m['rtitle'] = parts[1]
                 continue
             episodes.append({'id': parts[0], 'title': parts[1], 'url': f'https://rutube.ru/video/{parts[0]}/', 'src': 'rutube', 'dur': 0, 'num': n_, 'rutube': f'https://rutube.ru/video/{parts[0]}/', 'rid': parts[0], 'rnum': n_})
     P('episodes.txt:', len(episodes))
@@ -193,14 +193,19 @@ P('моменты:', chosen)
 
 # ---------- подписи ----------
 def clean_title(t):
-    t = re.sub(r'[\U0001F000-\U0001FFFF☀-➿⬀-⯿️]', '', t)
+    t = re.sub(r'[\U0001F000-\U0001FFFF\u2600-\u27BF\u2B00-\u2BFF\uFE0F\u200d]', '', t or '')
+    if '|' in t:
+        chunks = [c.strip() for c in t.split('|') if c.strip()]
+        chunks = [c for c in chunks if not re.search(r'кот барсик|мультик|сери[яи]|часть', c, re.I)] or chunks[:1]
+        t = chunks[0]
     t = re.sub(r'\s*[|–—-]\s*\d+\s*серия.*$', '', t, flags=re.I)
     t = re.sub(r'\.?\s*\d+\s*серия\s*$', '', t, flags=re.I)
     t = re.sub(r'^\s*Кот Барсик\s*[-–—:]\s*', '', t, flags=re.I)
     t = re.sub(r'\s*Кот Барсик\s*[-–—]\s*мультик для детей.*$', '', t, flags=re.I)
-    t = re.sub(r'\s+', ' ', t).strip(' .-—–|')
+    t = re.sub(r'\s*\(?часть\s*\d[-я ]*\)?', '', t, flags=re.I)
+    t = re.sub(r'\s+', ' ', t).strip(' .-—–|,')
     return t or 'Кот Барсик'
-hook = clean_title(cand['title'])
+hook = clean_title(cand.get('rtitle') or cand['title'])
 num = cand.get('rnum') or cand['num']
 P('hook:', hook, 'num', num)
 

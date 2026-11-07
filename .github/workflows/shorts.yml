@@ -50,6 +50,12 @@ jobs:
           git diff --cached --quiet || git commit -m "shorts feed $(date -u +%F)"
           git pull --rebase origin mebel || true
           git push origin HEAD:mebel || true
+      - name: проверка сервера
+        run: |
+          sleep 80
+          echo "--- страница:"; curl -s -o /dev/null -w "%{http_code} %{size_download} байт\n" http://89.126.192.214:8080/mebel/s9kbars/
+          echo "--- лента:"; curl -s http://89.126.192.214:8080/mebel/s9kbars/feed.json | python3 -c "import json,sys; f=json.load(sys.stdin); print('обновлено', f.get('updated')); [print(' ', i['date'], i['file'], '|', i['title']) for i in f['items']]"
+          echo "--- скачивание ролика:"; curl -sL -o /dev/null -w "%{http_code} %{size_download} байт\n" "$(curl -s http://89.126.192.214:8080/mebel/s9kbars/feed.json | python3 -c "import json,sys; print(json.load(sys.stdin)['items'][0]['url'])")"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
