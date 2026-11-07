@@ -5,25 +5,59 @@
  "title": "Flagball Arena",
  "description": "FLAGBALL ARENA — the daily marble race of all 193 countries of the world.\n\n3 new races every day. 32 countries enter the rings, 7 elimination stages, only 1 winner.\nEvery race gives points to the mont",
  "header": [
-  "2 видео"
+  "7 видео"
  ],
  "alerts": [],
- "checked": "2026-11-05 13:45 UTC",
+ "images": {
+  "avatar": "https://yt3.googleusercontent.com/xu7h2og5iSZCG6NtEe_eBpFtfbhrJojN5lel6FCv63ejuuj82lQWDfyOXsJL9zlnPI7rSeMPHKE=s900-c-k-c0x00ffffff-no-rj",
+  "banner": "https://yt3.googleusercontent.com/aMASbaEO15bPHRiwt0p4Dnz1VM_Dg0eR1-q_j5aJkYNxF7nnGYk4uTAtq_FGhFn9IAr4VZM=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
+ },
+ "checked": "2026-11-07 09:53 UTC",
  "shorts_status": 200,
  "shorts": [],
  "rss_status": 200,
  "rss": [
   {
+   "id": "ZeI8Tm-7B3M",
+   "published": "2026-11-07T04:28:18+00:00",
+   "title": "26 Countries Enter, 13 Survive 🔥 Marble Survival Race · Heat 7/7",
+   "views": 36
+  },
+  {
+   "id": "AcRlpxjSPyQ",
+   "published": "2026-11-06T20:28:46+00:00",
+   "title": "Which Countries Survive? 🌍 Marble Elimination · Round 1 Heat 6/7",
+   "views": 25
+  },
+  {
+   "id": "LnPtf-Wi83I",
+   "published": "2026-11-06T12:29:12+00:00",
+   "title": "Country Marble Survival Race ⚠️ Heat 5/7 – 27 Countries, 13 Survive",
+   "views": 15
+  },
+  {
+   "id": "V6QbQEtDImM",
+   "published": "2026-11-06T04:33:57+00:00",
+   "title": "193 Countries Marble Survival 🌍 Round 1 · Heat 4/7 – Only 14 Survive",
+   "views": 25
+  },
+  {
+   "id": "O-AzfGIQ2f4",
+   "published": "2026-11-05T20:20:24+00:00",
+   "title": "27 Countries Enter, 14 Survive 🔥 Marble Survival Race · Heat 3/7",
+   "views": 171
+  },
+  {
    "id": "pZNdHyeOSzo",
    "published": "2026-11-05T09:05:12+00:00",
    "title": "Which Countries Survive? 🌍 Marble Elimination · Round 1 Heat 2/7",
-   "views": 10
+   "views": 26
   },
   {
    "id": "jkju-LY3PpU",
    "published": "2026-11-04T18:14:51+00:00",
    "title": "32 Countries Marble Race 🌍 Elimination #1 – Who Wins?",
-   "views": 76
+   "views": 99
   }
  ]
 }
