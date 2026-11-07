@@ -56,6 +56,22 @@ def ep_num(title):
     m = re.search(r'(\d+)\s*[-]?\s*сери', t, re.I) or re.search(r'сери[яи]\s*[№#:]?\s*(\d+)', t, re.I)
     return int(m.group(1)) if m else None
 
+STOP = set('кот барсик мультик мультфильм для детей серия серии новая часть и в на с о the a'.split())
+def toks(t):
+    t = re.sub(r'[\U0001F000-\U0001FFFF\u2600-\u27BF\u2B00-\u2BFF\uFE0F]', ' ', (t or '').lower())
+    t = re.sub(r'[^a-zа-яё0-9 ]+', ' ', t)
+    return {w for w in t.split() if w not in STOP and len(w) > 2}
+def same(t1, t2):
+    a, b = toks(t1), toks(t2)
+    if not a or not b: return False
+    j = len(a & b) / len(a | b)
+    p1 = re.search(r'часть\s*(\d)', (t1 or '').lower()); p2 = re.search(r'часть\s*(\d)', (t2 or '').lower())
+    if p1 and p2 and p1.group(1) != p2.group(1): return False
+    if (p1 and not p2) or (p2 and not p1):
+        # у одного есть «часть N», у другого нет: считаем совпадением только для части 1
+        pn = (p1 or p2).group(1)
+        if pn != '1': return False
+    return j >= 0.45
 episodes = []
 for e in flat(YT_CHANNEL, ['--extractor-args', 'youtube:player_client=default,web_safari,ios,tv']):
     t = e.get('title') or ''
@@ -73,8 +89,8 @@ for e in flat(RUTUBE_CHANNEL):
     rt.append({'id': e['id'], 'title': t, 'url': f"https://rutube.ru/video/{e['id']}/", 'src': 'rutube', 'dur': d, 'num': ep_num(t), 'rutube': f"https://rutube.ru/video/{e['id']}/"})
 P('rutube episodes:', len(rt))
 for r_ in rt:
-    m = next((e for e in episodes if e['num'] and e['num'] == r_['num']), None)
-    if m: m['rutube'] = r_['url']
+    m = next((e for e in episodes if same(e['title'], r_['title'])), None)
+    if m: m['rutube'] = r_['url']; m['rid'] = r_['id']; m['rnum'] = r_['num']; P('пара:', r_['num'], '↔ yt', m['num'], '|', r_['title'][:50])
     else: episodes.append(r_)
 if os.path.exists('episodes.txt'):
     for l in open('episodes.txt', encoding='utf-8'):
@@ -83,14 +99,19 @@ if os.path.exists('episodes.txt'):
         parts = l.split('\t')
         if len(parts) >= 2 and not any(e['id'] == parts[0] for e in episodes):
             n_ = ep_num(parts[1])
-            if any(e['num'] == n_ and n_ for e in episodes): continue
-            episodes.append({'id': parts[0], 'title': parts[1], 'url': f'https://rutube.ru/video/{parts[0]}/', 'src': 'rutube', 'dur': 0, 'num': n_, 'rutube': f'https://rutube.ru/video/{parts[0]}/'})
+            if any(e['id'] == parts[0] or e.get('rid') == parts[0] for e in episodes): continue
+            m = next((e for e in episodes if same(e['title'], parts[1])), None)
+            if m:
+                if not m.get('rutube'): m['rutube'] = f'https://rutube.ru/video/{parts[0]}/'; m['rid'] = parts[0]; m['rnum'] = n_
+                continue
+            episodes.append({'id': parts[0], 'title': parts[1], 'url': f'https://rutube.ru/video/{parts[0]}/', 'src': 'rutube', 'dur': 0, 'num': n_, 'rutube': f'https://rutube.ru/video/{parts[0]}/', 'rid': parts[0], 'rnum': n_})
     P('episodes.txt:', len(episodes))
 if not episodes: P('серий не найдено'); sys.exit(0)
 
 # ---------- выбор серии и скачивание ----------
 # Принцип: по кругу, начиная с самой новой; серия, из которой уже сделано ≥3 ролика, уходит в конец.
-def used(ep): return state['episodes'].get(ep['id'], {}).get('segments', [])
+def key(ep): return ep.get('rid') or ep['id']
+def used(ep): return state['episodes'].get(key(ep), {}).get('segments', [])
 order = []
 if cfg['episode']:
     order = [e for e in episodes if cfg['episode'] in e['id'] or cfg['episode'].lower() in e['title'].lower()]
@@ -185,7 +206,7 @@ for st in cands:
         if lo <= s2 <= hi - L and rms[s2] < rms[best]: best = s2
     chosen.append((best, best + L))
     if len(chosen) >= cfg['count']: break
-if not chosen: P('свободных моментов в серии больше нет'); state['episodes'].setdefault(cand['id'], {})['done'] = True; json.dump(state, open('state.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1); sys.exit(0)
+if not chosen: P('свободных моментов в серии больше нет'); state['episodes'].setdefault(key(cand), {})['done'] = True; json.dump(state, open('state.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1); sys.exit(0)
 chosen.sort()
 P('моменты:', chosen)
 
@@ -199,15 +220,15 @@ def clean_title(t):
     t = re.sub(r'\s+', ' ', t).strip(' .-—–|')
     return t or 'Кот Барсик'
 hook = clean_title(cand['title'])
-num = cand['num']
-P('hook:', hook)
+num = cand.get('rnum') or cand['num']
+P('hook:', hook, 'num', num)
 
 HOOKS = ['Что тут происходит?!', 'Ну и дела!', 'Вот это поворот!', 'Кто бы мог подумать!', 'Смотри, что было дальше!', 'Самый смешной момент!', 'Ты только посмотри!', 'Вот это да!']
 TAGS = '#КотБарсик #МультикиДляДетей #Shorts #Мультфильмы #ДетскиеМультфильмы #МультикиПроЖивотных #ДобрыеМультики #МультикДляМалышей #КотенокБарсик'
 
 today = datetime.date.today().isoformat()
 made_today = [m for m in state['made'] if m.get('date') == today]
-k0 = len([m for m in state['made'] if m.get('ep') == cand['id']])
+k0 = len([m for m in state['made'] if m.get('ep') == key(cand)])
 
 font = next((f for f in ['/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf'] if os.path.exists(f)), None)
 def esc(s): return s.replace('\\', '\\\\').replace(':', '\\:').replace("'", "\\'").replace('%', '\\%')
@@ -222,7 +243,7 @@ def wrap(s, n=22):
 new_items = []
 for i, (a, b) in enumerate(chosen):
     k = k0 + i + 1
-    name = f'barsik_ep{num or 0:02d}_{k}_{today}.mp4'
+    name = f'barsik_ep{num or 0:02d}_{k}_{today}_{datetime.datetime.now().strftime("%H%M")}.mp4'
     outp = os.path.join('out', name)
     top_lines = wrap(hook.upper(), 20)
     top = '\n'.join(top_lines)
@@ -263,11 +284,11 @@ for i, (a, b) in enumerate(chosen):
             f'Котёнок Барсик, мышонок Пик и щенок Рон — добрые и смешные истории о дружбе для детей.\n'
             f'❤️ Подписывайтесь, чтобы не пропустить новые серии!\n\n{TAGS}')
     item = {'date': today, 'file': name, 'url': ASSET_BASE + name, 'thumb': ASSET_BASE + name.replace('.mp4', '.jpg'),
-            'title': title, 'desc': desc, 'tags': TAGS, 'ep': cand['id'], 'ep_num': num, 'ep_title': cand['title'], 'ep_url': cand['url'],
+            'title': title, 'desc': desc, 'tags': TAGS, 'ep': key(cand), 'ep_num': num, 'ep_title': cand['title'], 'ep_url': cand['url'],
             'start': a, 'end': b, 'size': os.path.getsize(outp)}
     new_items.append(item)
-    state['made'].append({'date': today, 'ep': cand['id'], 'file': name, 'seg': [a, b]})
-    state['episodes'].setdefault(cand['id'], {'title': cand['title'], 'segments': []})['segments'].append([a, b])
+    state['made'].append({'date': today, 'ep': key(cand), 'file': name, 'seg': [a, b]})
+    state['episodes'].setdefault(key(cand), {'title': cand['title'], 'segments': []})['segments'].append([a, b])
     P('готово', name, os.path.getsize(outp))
 
 if not new_items: P('ничего не сделано'); sys.exit(0)
@@ -291,6 +312,7 @@ if os.path.exists(feed_p):
     try: feed = json.load(open(feed_p, encoding='utf-8'))
     except Exception: pass
 feed['items'] = new_items + feed.get('items', [])
+seen = set(); feed['items'] = [it for it in feed['items'] if not (it['file'] in seen or seen.add(it['file']))]
 feed['items'] = feed['items'][:90]
 feed['updated'] = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=3))).strftime('%d.%m.%Y %H:%M')
 feed['channel'] = CHANNEL_URL
