@@ -13,6 +13,11 @@ WORK = '/var/www/shorts'                   # состояние, настрой�
 TMP = os.path.join(WORK, 'tmp')
 KEEP_DAYS = 14
 for d in (OUT, WORK, TMP): os.makedirs(d, exist_ok=True)
+# защита от двойного запуска
+import fcntl
+_lock = open(os.path.join(WORK, '.lock'), 'w')
+try: fcntl.flock(_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+except OSError: print('уже идёт другая нарезка — выхожу'); sys.exit(0)
 open(os.path.join(OUT, '.keep'), 'a').close()
 log = open(os.path.join(WORK, 'log.txt'), 'a', encoding='utf-8')
 def P(*a):
@@ -120,7 +125,7 @@ for ep in order:
     if os.path.exists(mp4): os.remove(mp4)
     P('серия:', ep['num'], ep['title'][:70])
     if ep['src'] == 'youtube':
-        run(['yt-dlp', '--js-runtimes', 'deno', '-f', 'bv*[height<=1080][ext=mp4]+ba[ext=m4a]/bv*[height<=1080]+ba/b', '--merge-output-format', 'mp4', '-o', mp4, '--no-playlist', ep['url']], timeout=1800)
+        run(['nice', '-n', '10', 'yt-dlp', '--js-runtimes', 'deno', '-f', 'bv*[height<=1080][ext=mp4]+ba[ext=m4a]/bv*[height<=1080]+ba/b', '--merge-output-format', 'mp4', '-o', mp4, '--no-playlist', ep['url']], timeout=1800)
     if not os.path.exists(mp4) and ep.get('rutube'):
         run(['yt-dlp', '-f', 'bv*[height<=1080]+ba/b', '--merge-output-format', 'mp4', '-o', mp4, ep['rutube']], timeout=1800)
     if os.path.exists(mp4) and os.path.getsize(mp4) > 1_000_000: cand = ep; break
@@ -213,8 +218,8 @@ for i, (a, b) in enumerate(chosen):
     else:
         parts.append(f"[v1]fade=t=in:st=0:d=0.4,fade=t=out:st={dur-0.5}:d=0.5[v]")
     af = f"[0:a]afade=t=in:st=0:d=0.3,afade=t=out:st={dur-0.5}:d=0.5[a]"
-    run(['ffmpeg', '-y', '-v', 'error', '-ss', a, '-t', dur, '-i', mp4, '-filter_complex', vf + ','.join(parts) + ';' + af,
-         '-map', '[v]', '-map', '[a]', '-c:v', 'libx264', '-preset', 'medium', '-crf', '21', '-pix_fmt', 'yuv420p', '-r', '30',
+    run(['nice', '-n', '10', 'ffmpeg', '-y', '-v', 'error', '-ss', a, '-t', dur, '-i', mp4, '-filter_complex', vf + ','.join(parts) + ';' + af,
+         '-map', '[v]', '-map', '[a]', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '21', '-threads', '2', '-pix_fmt', 'yuv420p', '-r', '30',
          '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', outp], timeout=2400)
     if not os.path.exists(outp): P('не собрался', name); continue
     run(['ffmpeg', '-y', '-v', 'error', '-ss', '2', '-i', outp, '-frames:v', '1', '-vf', 'scale=270:-2', outp[:-4] + '.jpg'])
