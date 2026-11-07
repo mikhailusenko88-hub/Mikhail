@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-06 слот 3: cities №3 https://youtube.com/shorts/Whe76DcdOhU, за 56 с
+ВЫЛОЖЕНО 2026-11-07 слот 1: cities №4 https://youtube.com/shorts/EK5EzrtpOfQ, за 74 с
 
 {
- "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №3",
- "description": "⏳ Finalgacha 2 kun · До финала 2 дня\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
+ "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №4",
+ "description": "⏳ Final — ertaga! · Финал — завтра!\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -23,23 +23,29 @@
 }
 
 --- журнал (время Ташкента) ---
-20:18:52 режим publish, событие schedule
-20:18:52 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-20:18:56 комментарии: роликов просмотрено: 4, комментариев: 0
-20:18:56 Тема: гонка городов. Подбираю трассу и заезд…
-20:19:00   трасса 1 (pegs, split, hammers, stairs, tramps, funnel, bumpers, spinners): победа на 39.9 с, смен лидера 14, финишировали 2, расчёт 4 с — не подходит
-20:19:03   трасса 2 (stairs, tunnel, spinners, bumpy, bumpers, funnel, pegs, split): победа на 35.4 с, смен лидера 8, финишировали 1, расчёт 3 с — не подходит
-20:19:06   трасса 3 (split, tramps, spinners, bumpers, funnel, stairs, pegs, tunnel): победа на 42.4 с, смен лидера 16, финишировали 4, расчёт 3 с
-20:19:06 Рисую трассу…
-20:19:07 Рисую кадры: заезд 49 с + финал 8 с…
-20:19:08   кадр 0/1458, 11 с
-20:19:14   кадр 300/1458, 17 с
-20:19:19   кадр 600/1458, 23 с
-20:19:25   кадр 900/1458, 29 с
-20:19:31   кадр 1200/1458, 35 с
-20:19:42 Свожу звук…
-20:19:43 Готово за 47 с: победил Urganch, ролик 56 с
-20:19:43 ролик готов: 56 с, 38 МБ, сборка 52 с; победил Urganch, топ-3: Urganch, Buxoro, Zarafshon
-20:19:47 YouTube: https://youtube.com/shorts/Whe76DcdOhU
-20:19:48 в плейлисте
-20:19:48 статус: public uploaded
+12:34:09 режим publish, событие schedule
+12:34:09 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+12:34:13 комментарии: роликов просмотрено: 5, комментариев: 0
+12:34:13 Тема: гонка городов. Подбираю трассу и заезд…
+12:34:17   трасса 1 (tramps, split, bumpy, pegs, spinners, funnel, tunnel, bumpers): победа на 39.6 с, смен лидера 12, финишировали 10, расчёт 4 с — не подходит
+12:34:20   трасса 2 (tramps, pegs, split, bumpy, bumpers, hammers, funnel, spinners): победа на 35.7 с, смен лидера 32, финишировали 1, расчёт 3 с — не подходит
+12:34:22   трасса 3 (split, bumpers, tunnel, pegs, tramps, hammers, funnel): победа на 28.1 с, смен лидера 10, финишировали 1, расчёт 2 с — не подходит
+12:34:26   трасса 4 (pegs, hammers, funnel, stairs, bumpers, tramps, spinners, tunnel): победа на 44.5 с, смен лидера 9, финишировали 2, расчёт 4 с
+12:34:30   трасса 5 (bumpers, pegs, funnel, spinners, stairs, hammers, bumpy, tramps): победа на 38.1 с, смен лидера 18, финишировали 3, расчёт 4 с — не подходит
+12:34:34   трасса 6 (bumpers, spinners, tramps, tunnel, bumpy, pegs, funnel, stairs): победа на 43.5 с, смен лидера 11, финишировали 5, расчёт 4 с
+12:34:38   трасса 7 (stairs, hammers, pegs, spinners, tunnel, tramps, funnel, bumpers): победа на 38.1 с, смен лидера 9, финишировали 11, расчёт 4 с — не подходит
+12:34:41   трасса 8 (funnel, tramps, spinners, tunnel, bumpy, stairs, bumpers, pegs): победа на 45.6 с, смен лидера 34, финишировали 7, расчёт 4 с
+12:34:41 Рисую трассу…
+12:34:42 Рисую кадры: заезд 52 с + финал 8 с…
+12:34:43   кадр 0/1555, 30 с
+12:34:48   кадр 300/1555, 35 с
+12:34:54   кадр 600/1555, 41 с
+12:34:59   кадр 900/1555, 46 с
+12:35:05   кадр 1200/1555, 52 с
+12:35:11   кадр 1500/1555, 58 с
+12:35:18 Свожу звук…
+12:35:20 Готово за 67 с: победил Jizzax, ролик 59 с
+12:35:20 ролик готов: 59 с, 41 МБ, сборка 71 с; победил Jizzax, топ-3: Jizzax, Qarshi, Buxoro
+12:35:22 YouTube: https://youtube.com/shorts/EK5EzrtpOfQ
+12:35:23 в плейлисте
+12:35:23 статус: public uploaded

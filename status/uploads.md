@@ -3,3 +3,4 @@
 | 2026-11-06 | 1 | cities №2 | Asaka | https://youtube.com/shorts/-FSYqlw4SAg | public |
 | 2026-11-06 | 2 | cars №2 | Malibu | https://youtube.com/shorts/BnWWFWrkd3w | public |
 | 2026-11-06 | 3 | cities №3 | Urganch | https://youtube.com/shorts/Whe76DcdOhU | public |
+| 2026-11-07 | 1 | cities №4 | Jizzax | https://youtube.com/shorts/EK5EzrtpOfQ | public |
