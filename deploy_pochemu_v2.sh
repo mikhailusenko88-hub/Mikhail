@@ -42,6 +42,16 @@ for f in $FILES; do
 done
 "$PY" -m py_compile make_video.py icons.py || restore
 
+echo "== Голос «Альбина»"
+if [ -f albina.py ]; then
+  curl -fsSL "https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/pochemu-albina/patch_bot.py?$STAMP" -o /tmp/albina_patch.py || restore
+  "$PY" /tmp/albina_patch.py make_video.py || restore
+  "$PY" -m py_compile make_video.py || restore
+  grep -q "albina" config.json && echo "   голос в config.json: Альбина" || echo "   ! в config.json голос не Альбина — проверь \"voices\""
+else
+  echo "   albina.py не найден — бот будет говорить голосом Microsoft (как «Білесің бе?»)"
+fi
+
 echo "== Настройки"
 "$PY" - <<'PY' || restore
 import json
@@ -57,12 +67,20 @@ cfg["subtopics"] = ["космос: жуть и масштаб", "тело чел
                     "опасные места и рекорды Земли", "шокирующая история", "мифы, в которые верят все", "сон и мозг"]
 cfg["bank_file"] = "topics_ru_v2.json"
 cfg["use_stock_video"] = False
+if any(str(v).startswith("albina") for v in (cfg.get("voices") or [])):
+    cfg["use_ai_old"] = cfg.get("use_ai")
+    cfg["use_ai"] = False          # ИИ-тексты Альбина озвучить заранее не может — только банк
 cp.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 print("   было:", json.dumps(old, ensure_ascii=False))
 print("   стало: style=v2, рубрики:", " / ".join(cfg["formats"]), "| банк: topics_ru_v2.json | ИИ-сценарии:", cfg.get("use_ai"))
 PY
 
-echo "== Пробная сборка (без выкладки, ~1 мин)"
+echo "== Тексты нового банка для озвучки в GitHub"
+if [ -f albina.py ]; then
+  "$PY" -c "import json,albina; n,p=albina.export_bank(json.load(open('config.json',encoding='utf-8'))); print(f'   выложено: {n} сценариев -> {p}')" || echo "   ! тексты не выложились"
+fi
+
+echo "== Пробная сборка (без выкладки, ~1 мин; пока GitHub не озвучил новый банк — ролик запасным голосом)"
 "$PY" run_daily.py --test 2>&1 | tail -6 || restore
 LAST=$(ls -t out/*.mp4 2>/dev/null | head -1)
 if [ -n "$LAST" ]; then
@@ -73,6 +91,7 @@ else
 fi
 
 echo
-echo "== Готово. Следующий ролик по расписанию выйдет уже в новом виде."
+echo "== Готово. Напиши Клоду «готово» — он запустит озвучку нового банка Альбиной в GitHub (20–40 мин)."
+echo "   До этого ролики выходят запасным голосом; как только озвучка готова — Альбиной."
 echo "   Выложить прямо сейчас:  cd $D && $PY run_daily.py"
 echo "   Вернуть старый вид:     в $D/config.json поставить \"style\": \"v1\""
