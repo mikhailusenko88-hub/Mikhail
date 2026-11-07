@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Shorts — Кот Барсик</title>
+<style>
+  :root{--bg:#0f1115;--card:#181b22;--line:#2a2f3a;--txt:#eef1f5;--mut:#9aa3b2;--acc:#e8452c;--ok:#36c26a;--yel:#ffe14d}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+  header{position:sticky;top:0;background:#0f1115ee;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:5}
+  header h1{font-size:18px;margin:0;flex:1}
+  header small{color:var(--mut)}
+  .wrap{max-width:720px;margin:0 auto;padding:12px}
+  .day{margin:18px 0 8px;font-size:14px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:14px}
+  .card.done{opacity:.55}
+  .top{display:flex;gap:12px}
+  .top video{width:120px;height:213px;border-radius:10px;background:#000;object-fit:cover;flex:none}
+  .meta{flex:1;min-width:0}
+  .meta .ep{font-size:13px;color:var(--mut);margin-bottom:6px}
+  .meta .t{font-weight:600;word-break:break-word}
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .btn{border:0;border-radius:10px;padding:10px 14px;font-size:15px;font-weight:600;cursor:pointer;color:#fff;background:#2c3240;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  .btn.dl{background:var(--acc)}
+  .btn.all{background:#3a6ff2}
+  .btn:active{transform:scale(.97)}
+  .btn.copied{background:var(--ok)}
+  .field{margin-top:10px}
+  .field label{font-size:12px;color:var(--mut);display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .field label button{background:none;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer}
+  .field pre{margin:0;white-space:pre-wrap;word-break:break-word;background:#0f1115;border:1px solid var(--line);border-radius:10px;padding:10px;font:14px/1.4 inherit;max-height:160px;overflow:auto}
+  .chk{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--mut)}
+  .chk input{width:20px;height:20px}
+  .empty{color:var(--mut);text-align:center;padding:40px 0}
+  .hint{font-size:13px;color:var(--mut);margin:6px 0 0}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ok);color:#fff;padding:10px 18px;border-radius:12px;font-weight:600;opacity:0;transition:.2s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <h1>Shorts — Кот Барсик</h1>
+  <small id="upd"></small>
+</header>
+<div class="wrap">
+  <p class="hint">Каждое утро тут появляются новые ролики. «Скачать» → в Файлы, потом в Rutube/YouTube: «+» → загрузить → вставить название и описание кнопками ниже. Галочка «выложено» запоминается на этом телефоне.</p>
+  <div id="list"><div class="empty">Загружаю…</div></div>
+</div>
+<div class="toast" id="toast">Скопировано</div>
+<script>
+(function(){
+  var LS='barsik_shorts_done'; var done={};
+  try{done=JSON.parse(localStorage.getItem(LS)||'{}')}catch(e){}
+  function save(){try{localStorage.setItem(LS,JSON.stringify(done))}catch(e){}}
+  function toast(t){var el=document.getElementById('toast');el.textContent=t||'Скопировано';el.classList.add('show');setTimeout(function(){el.classList.remove('show')},1200)}
+  function copy(txt,btn){
+    var ok=function(){toast();if(btn){btn.classList.add('copied');setTimeout(function(){btn.classList.remove('copied')},1200)}};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,function(){fallback(txt);ok()})}else{fallback(txt);ok()}
+  }
+  function fallback(txt){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity=0;document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta)}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function fmtDate(d){var p=d.split('-');return p[2]+'.'+p[1]+'.'+p[0]}
+  function render(feed){
+    var list=document.getElementById('list');list.innerHTML='';
+    document.getElementById('upd').textContent=feed.updated?('обновлено '+feed.updated):'';
+    var items=feed.items||[];
+    if(!items.length){list.innerHTML='<div class="empty">Пока пусто — первые ролики появятся после первого запуска.</div>';return}
+    var byDay={};var order=[];
+    items.forEach(function(it){if(!byDay[it.date]){byDay[it.date]=[];order.push(it.date)}byDay[it.date].push(it)});
+    order.forEach(function(d){
+      var h=document.createElement('div');h.className='day';h.textContent=fmtDate(d)+(d===new Date().toISOString().slice(0,10)?' — сегодня':'');list.appendChild(h);
+      byDay[d].forEach(function(it){
+        var c=document.createElement('div');c.className='card'+(done[it.file]?' done':'');
+        var mb=(it.size/1048576).toFixed(1);
+        var full=it.title+'\n\n'+it.desc;
+        c.innerHTML=
+          '<div class="top"><video playsinline preload="none" controls poster="'+esc(it.thumb||'')+'" src="'+esc(it.url)+'"></video>'+
+          '<div class="meta"><div class="ep">'+(it.ep_num?it.ep_num+' серия · ':'')+'момент '+Math.floor(it.start/60)+':'+String(it.start%60).padStart(2,'0')+' · '+mb+' МБ</div>'+
+          '<div class="t">'+esc(it.title)+'</div>'+
+          '<div class="btns"><a class="btn dl" href="'+esc(it.url)+'" download>⬇︎ Скачать mp4</a>'+
+          '<button class="btn all" data-copy="full">Скопировать всё</button></div></div></div>'+
+          '<div class="field"><label>Название <button data-copy="title">Скопировать</button></label><pre>'+esc(it.title)+'</pre></div>'+
+          '<div class="field"><label>Описание (с хэштегами) <button data-copy="desc">Скопировать</button></label><pre>'+esc(it.desc)+'</pre></div>'+
+          '<label class="chk"><input type="checkbox" '+(done[it.file]?'checked':'')+'> выложено</label>';
+        c.querySelectorAll('[data-copy]').forEach(function(b){b.addEventListener('click',function(){var k=b.getAttribute('data-copy');copy(k==='full'?full:(k==='title'?it.title:it.desc),b)})});
+        c.querySelector('.chk input').addEventListener('change',function(e){if(e.target.checked)done[it.file]=1;else delete done[it.file];save();c.classList.toggle('done',!!e.target.checked)});
+        list.appendChild(c);
+      });
+    });
+  }
+  fetch('feed.json?t='+Date.now()).then(function(r){return r.json()}).then(render).catch(function(){document.getElementById('list').innerHTML='<div class="empty">Пока пусто — первые ролики появятся после первого запуска.</div>'});
+})();
+</script>
+</body>
+</html>
