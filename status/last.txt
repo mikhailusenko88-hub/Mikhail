@@ -1,8 +1,121 @@
-ПРОПУСК 2026-11-07 слот 2: уже выложено
+ВЫЛОЖЕНО #11 2026-11-07 слот 3: https://youtu.be/zZZ6LgVsers (public) + Shorts https://youtube.com/shorts/GSiDPgF75Lk, за 495 с
 
-
+{
+ "title": "SEMI-FINAL 🔥 Japan vs Vietnam vs Thailand… 16 Go to the Grand Final | Country Marble Race Heats 1–2/",
+ "description": "Flagball Arena · Season 1, Semi-Final · Heats 1–2/2: 48 countries, only 32 survive.\n\nHeat 1/2 — 24 countries, 16 survive: Algeria, Andorra, Bhutan, El Salvador, Ghana, Guinea, Ireland, Kenya, Kuwait, Latvia, Lebanon, Libya, Micronesia, Namibia, North Macedonia, Papua New Guinea, Saint Vincent and the Grenadines, Saudi Arabia, Tonga, Uganda, United Arab Emirates, United Kingdom, Venezuela, Zimbabwe.\n\nHeat 2/2 — 24 countries, 16 survive: Afghanistan, Australia, Bangladesh, Botswana, Brunei, Burkina Faso, Cape Verde, Costa Rica, Denmark, Honduras, Japan, Kyrgyzstan, Malaysia, Maldives, Marshall Islands, Mongolia, Nicaragua, Saint Lucia, Slovakia, Somalia, South Korea, Thailand, Vietnam, Yemen.\n\nCountries still in the game before this race: 40 of 193.\nNext race: Season 1 · Grand Final. Grand Final: Nov 8.\n\nHow it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, then a new season starts. New races every day.\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries\n\nChapters:\n00:00 Heat 1/2 — UK vs Saudi Arabia\n02:44 Heat 2/2 — Japan vs Vietnam",
+ "race_no": 11,
+ "date": "2026-11-07",
+ "slot": 3,
+ "season": 1,
+ "round": 3,
+ "heat": 1,
+ "heats": 2,
+ "survive": 32,
+ "final": false,
+ "kind": "heat",
+ "label": "SEMI-FINAL · HEATS 1–2/2",
+ "n": 48,
+ "codes": [
+  "ie",
+  "ke",
+  "lb",
+  "ae",
+  "lv",
+  "bt",
+  "gn",
+  "ad",
+  "vc",
+  "na",
+  "dz",
+  "sa",
+  "ve",
+  "mk",
+  "ug",
+  "kw",
+  "pg",
+  "ly",
+  "gh",
+  "gb",
+  "to",
+  "sv",
+  "zw",
+  "fm",
+  "cv",
+  "af",
+  "hn",
+  "kr",
+  "mv",
+  "ye",
+  "kg",
+  "vn",
+  "sk",
+  "cr",
+  "bn",
+  "bw",
+  "au",
+  "dk",
+  "th",
+  "mn",
+  "bd",
+  "jp",
+  "ni",
+  "mh",
+  "my",
+  "so",
+  "lc",
+  "bf"
+ ],
+ "spans": [
+  [
+   7.800000000000001,
+   72.33333333333333,
+   75.93333333333332
+  ],
+  [
+   79.53333333333332,
+   146.09999999999997,
+   149.69999999999996
+  ]
+ ],
+ "duration": 164.7,
+ "heats_in_video": 2,
+ "races": [
+  11,
+  12
+ ],
+ "featured": [
+  "jp",
+  "vn",
+  "th"
+ ],
+ "heat_label": "HEATS 1–2/2",
+ "video_id": "zZZ6LgVsers",
+ "privacy": "public"
+}
 
 --- журнал ---
-15:07:39 режим publish, гонка #11, 2026-11-07 слот 2, событие schedule
-15:07:39 по плану: S1 SEMI-FINAL · HEAT 1/2
-15:07:39 эта гонка уже выложена — пропускаю
+01:53:23 режим publish, гонка #11, 2026-11-07 слот 3, событие schedule
+01:53:23 по плану: S1 SEMI-FINAL · HEAT 1/2
+01:53:24 канал: Flagball Arena
+01:53:24 в этом видео заездов: 2 (раунд 3, осталось в раунде 2)
+гонка #11 2026-11-07 слот 3: S1 SEMI-FINAL · HEAT 1/2, 24→16, участники: IRL KEN LBN ARE LVA BTN GIN AND VCT NAM DZA SAU VEN MKD UGA KWT PNG LBY GHA GBR TON SLV ZWE FSM
+  этап 1: 24→20, блоков 11 ['trapdoors', 'bumpers', 'zigzag', 'rotor', 'pegs', 'twin_rings', 'ring_gate', 'windmills', 'pendulums', 'stairs', 'tunnels'], Q-финиш 62.0 c, кадров 1936
+  этап 2: 20→16, блоков 11 ['pendulums', 'bumpers', 'trapdoors', 'rotor', 'twin_rings', 'zigzag', 'tunnels', 'pegs', 'ring_gate', 'windmills', 'stairs'], Q-финиш 64.0 c, кадров 1997
+длительность ролика ≈ 2.7 мин
+готово: 4941 кадров за 231 с
+кадров 4941, 2.74 мин, рендер 231 с
+выжили: KEN LVA TON MKD NAM LBN VCT ARE KWT SAU SLV ZWE LBY UGA GBR IRL
+01:57:15 заезд 1/2 готов: 89 МБ, 232 с
+гонка #12 2026-11-07 слот 3: S1 SEMI-FINAL · HEAT 2/2, 24→16, участники: CPV AFG HND KOR MDV YEM KGZ VNM SVK CRI BRN BWA AUS DNK THA MNG BGD JPN NIC MHL MYS SOM LCA BFA
+  этап 1: 24→20, блоков 10 ['zigzag', 'windmills', 'stairs', 'rotor', 'twin_rings', 'pegs', 'bumpers', 'ring_gate', 'trapdoors', 'pendulums'], Q-финиш 58.9 c, кадров 1845
+  этап 2: 20→16, блоков 11 ['pegs', 'twin_rings', 'pendulums', 'tunnels', 'ring_gate', 'zigzag', 'bumpers', 'trapdoors', 'stairs', 'rotor', 'windmills'], Q-финиш 59.3 c, кадров 1856
+длительность ролика ≈ 2.8 мин
+готово: 5009 кадров за 235 с
+кадров 5009, 2.78 мин, рендер 235 с
+выжили: MNG MYS VNM YEM SOM DNK BWA BFA AUS NIC LCA KGZ CRI THA JPN MHL
+02:01:11 заезд 2/2 готов: 86 МБ, 467 с
+02:01:12 видео готово: 175 МБ, 5.5 мин, 468 с с начала; название: SEMI-FINAL 🔥 Japan vs Vietnam vs Thailand… 16 Go to the Grand Final | Country Marble Race Heats 1–2/
+02:01:27 Shorts готов: 26 с — Japan vs Vietnam vs Thailand 😱 Who Survives? Country Marble Race #shorts
+02:01:35 обложка: 200 
+02:01:36 в плейлисте
+02:01:36 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}

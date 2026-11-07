@@ -9,3 +9,5 @@
 | 7 | 2026-11-07 | 1 | S1 ROUND 1 · HEAT 7/7 | https://youtu.be/ZeI8Tm-7B3M | public |
 | 8–9–10 | 2026-11-07 | 2 | S1 ROUND 2 · HEATS 1–3/3 | https://youtu.be/FJkoSHYGqh0 | public |
 | shorts | 2026-11-07 | 2 | Mexico vs Japan vs UK | https://youtube.com/shorts/MXay3QS1Pr0 | |
+| 11–12 | 2026-11-07 | 3 | S1 SEMI-FINAL · HEATS 1–2/2 | https://youtu.be/zZZ6LgVsers | public |
+| shorts | 2026-11-07 | 3 | Japan vs Vietnam vs Thailand | https://youtube.com/shorts/GSiDPgF75Lk | |
