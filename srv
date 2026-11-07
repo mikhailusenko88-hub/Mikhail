@@ -6,6 +6,8 @@
 #   srv name Айгерім — добавить имя в следующий заезд с именами
 #   srv city Степногорск — добавить город в гонку городов (из списка городов Казахстана)
 #   srv cities — какие города просили в комментариях и что бот с ними сделал
+#   srv ru Тарақты — добавить ру в гонку родов (только настоящие ру из справочника)
+#   srv rus — какие ру просили в комментариях и что бот с ними сделал
 #   srv comment — оставить первый комментарий под последним роликом
 #   srv yt-login — войти в YouTube заново (с правом на комментарии)
 #   srv speed  — скорость интернета самого сервера
@@ -64,6 +66,21 @@ case "${1:-status}" in
     PY=python3; [ -x "$BOT/.venv/bin/python" ] && PY="$BOT/.venv/bin/python"
     cd "$BOT" && "$PY" -c "import json,race_leagues as RL; s=json.load(open('state.json')); x=[e['kk'] for e in s.get('race',{}).get('extra',[])]; print('Добавлены по просьбам:', ', '.join(x) or 'пока никого'); print('Городов в гонке:', len(RL.CITIES)+len(x))"
     ;;
+  ru)
+    shift
+    [ -n "${1:-}" ] || { echo "Напиши ру: srv ru Тарақты"; exit 1; }
+    PY=python3; [ -x "$BOT/.venv/bin/python" ] && PY="$BOT/.venv/bin/python"
+    R=$(cd "$BOT" && "$PY" kz_ru.py "$*" 2>/dev/null)
+    case "$R" in
+      *"[('"*) echo "$*" >> "$BOT/ru_requests.txt" && echo "Добавлю в следующую гонку родов: ${R#*→ }" ;;
+      *) echo "Нет в списке настоящих ру: $* (${R#*→ }) — напиши Claude, если это ру" ;;
+    esac
+    ;;
+  rus)
+    if [ -f "$BOT/ru_requests.log" ]; then tail -15 "$BOT/ru_requests.log" | cut -c1-150; else echo "Просьб про ру пока не было"; fi
+    PY=python3; [ -x "$BOT/.venv/bin/python" ] && PY="$BOT/.venv/bin/python"
+    cd "$BOT" && "$PY" -c "import json,race_leagues as RL; s=json.load(open('state.json')); x=[e['kk'] for e in s.get('leagues',{}).get('ru',{}).get('extra',[])]; print('Добавлены по просьбам:', ', '.join(x) or 'пока никого'); print('Ру в гонке:', len(RL.RU)+len(x))"
+    ;;
   speed)
     curl -s -o /dev/null -w "%{speed_download}" --max-time 15 "https://speed.cloudflare.com/__down?bytes=50000000" \
       | awk '{printf "Скорость сервера: %.0f Мбит/с\n", $1*8/1000000}'
@@ -73,6 +90,6 @@ case "${1:-status}" in
       && chmod +x /usr/local/bin/srv.new && mv /usr/local/bin/srv.new /usr/local/bin/srv && echo "srv обновлён"
     ;;
   *)
-    echo "Есть: srv status | srv bot | srv race <тема> | srv name <имя> | srv city <город> | srv cities | srv comment | srv yt-login | srv speed | srv update"
+    echo "Есть: srv status | srv bot | srv race <тема> | srv name <имя> | srv city <город> | srv cities | srv ru <ру> | srv rus | srv comment | srv yt-login | srv speed | srv update"
     ;;
 esac

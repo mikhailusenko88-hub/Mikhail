@@ -6,7 +6,7 @@
   regions — 20 регионов по кодам автономеров 01–20 («Қай өңір жеңеді?»)
   mushel  — 12 животных мүшел, восточный календарь («Қай мүшел жеңеді?»)
   names   — популярные имена, мальчики против девочек («Қай есім жеңеді?»)
-  ru      — 19 казахских родов из трёх жузов («Қай ру жеңеді?») — попросили в комментариях (6.11.2026)
+  ru      — казахские роды трёх жузов («Қай ру жеңеді?»): 19 + те, что зрители просят в комментариях (kz_ru.py)
 """
 import random
 
@@ -68,7 +68,8 @@ REGIONS = [
 ]
 
 # ---------- 19 руов трёх жузов (каз, рус, жүз) — попросили зрители: «сделайте ру — Найман, Қыпшақ, Арғын» ----------
-ZHUZ = {"ұлы": ("Ұлы жүз", "Старший жуз"), "орта": ("Орта жүз", "Средний жуз"), "кіші": ("Кіші жүз", "Младший жуз")}
+ZHUZ = {"ұлы": ("Ұлы жүз", "Старший жуз"), "орта": ("Орта жүз", "Средний жуз"), "кіші": ("Кіші жүз", "Младший жуз"),
+        "тыс": ("Жүзден тыс", "Вне жузов")}
 RU = [
     ("Дулат", "Дулат", "ұлы"), ("Албан", "Албан", "ұлы"), ("Суан", "Суан", "ұлы"), ("Жалайыр", "Жалаир", "ұлы"),
     ("Шапырашты", "Шапрашты", "ұлы"), ("Қаңлы", "Канлы", "ұлы"), ("Сіргелі", "Сиргели", "ұлы"),
@@ -186,6 +187,18 @@ def set_extra_cities(rows):
     EXTRA_CITIES[:] = [(r["kk"], r["ru"], r["lat"], r["lon"]) for r in rows or []]
 
 
+# ру, добавленные по просьбам из комментариев (ставит race_bot из state.json → leagues.ru.extra, см. kz_ru.py)
+EXTRA_RU = []
+
+
+def set_extra_ru(rows):
+    EXTRA_RU[:] = [(r["kk"], r["ru"], r["zhuz"]) for r in rows or [] if r.get("zhuz") in ZHUZ]
+
+
+def ru_rows():
+    return list(RU) + [r for r in EXTRA_RU if r[0] not in {x[0] for x in RU}]
+
+
 def entries(league, state=None, rnd=None):
     """Участники заезда. Для имён — 10 мальчиков + 10 девочек (сначала те, кого просили в комментариях)."""
     if league == "cities":
@@ -197,7 +210,8 @@ def entries(league, state=None, rnd=None):
     if league == "mushel":
         return [_e(kk, kk, ru, str(i + 1), years=yrs) for i, (kk, ru, yrs) in enumerate(MUSHEL)]
     if league == "ru":
-        return [_e(kk, kk, ru, str(i + 1), zhuz_kk=ZHUZ[z][0], zhuz_ru=ZHUZ[z][1]) for i, (kk, ru, z) in enumerate(RU)]
+        return [_e(kk, kk, ru, str(i + 1), zhuz_kk=ZHUZ[z][0], zhuz_ru=ZHUZ[z][1])
+                for i, (kk, ru, z) in enumerate(ru_rows())]
     if league == "clubs":
         return [_e(kk, kk, ru, str(i + 1), city=c, city_ru=cr, color=col)
                 for i, (kk, ru, c, cr, col) in enumerate(CLUBS)]
@@ -423,12 +437,16 @@ def _desc(league, ent):
                 "12 животных восточного календаря в одной гонке. Болей за свой год рождения!\n\n"
                 f"{yrs}\n\n#мүшел #қазақстан #казахстан #жарыс #гонкашариков #shorts")
     if league == "ru":
-        by = {z: ", ".join(kk for kk, ru, zz in RU if zz == z) for z in ZHUZ}
-        return ("Үш жүздің 19 руы — бір жарыста! Сен қай рудансың? Пікірге жаз 👇\n"
-                "19 казахских родов из трёх жузов в одной гонке. Болей за свой род!\n\n"
-                f"Ұлы жүз · Старший жуз: {by['ұлы']}\n"
-                f"Орта жүз · Средний жуз: {by['орта']}\n"
-                f"Кіші жүз · Младший жуз: {by['кіші']}\n\n"
+        rows = ru_rows()
+        n = len(rows)
+        w = "род" if n % 10 == 1 and n % 100 != 11 else ("рода" if n % 10 in (2, 3, 4) and n % 100 not in (12, 13, 14) else "родов")
+        by = "".join(f"{ZHUZ[z][0]} · {ZHUZ[z][1]}: {', '.join(kk for kk, ru, zz in rows if zz == z)}\n"
+                     for z in ZHUZ if any(zz == z for _, _, zz in rows))
+        return (f"Үш жүздің {n} руы — бір жарыста! Сен қай рудансың? Пікірге жаз 👇\n"
+                f"{n} {w} из трёх жузов в одной гонке. Болей за свой род!\n"
+                "Сенің руың жоқ па? Пікірге жаз — келесі жарысқа қосамыз! · "
+                "Нет твоего рода? Напиши — добавим в следующий заезд!\n\n"
+                f"{by}\n"
                 "#ру #жүз #қазақстан #казахстан #жарыс #гонкашариков #shorts")
     if league == "names":
         b = ", ".join(e["kk"] for e in ent if e.get("team") == "boys")

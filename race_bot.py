@@ -228,6 +228,16 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
     except Exception as e:
         log(f"Города из комментариев: ошибка {e}")
     RL.set_extra_cities(state.get("race", {}).get("extra", []))
+    # ру по просьбам из комментариев (kz_ru.py) — только настоящие ру из справочника
+    new_ru = []
+    if league == "ru":
+        try:
+            import kz_ru as KR
+            if not test:
+                new_ru, _ = KR.take_requests(state, ls, log, cfg)
+        except Exception as e:
+            log(f"Ру из комментариев: ошибка {e}")
+        RL.set_extra_ru(ls.get("extra", []))
     sid = season_id(league)
     no = ls.get("no", 0) + 1
     ent = None
@@ -264,6 +274,12 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
         try:
             import kz_places as KP
             info["description"] = KP.note(new_cities) + KP.fix_desc(info["description"], len(RL.entries("cities")))
+        except Exception as e:
+            log(f"Описание: {e}")
+    if league == "ru" and new_ru:
+        try:
+            import kz_ru as KR
+            info["description"] = KR.note(new_ru) + info["description"]
         except Exception as e:
             log(f"Описание: {e}")
     out.with_suffix(".txt").write_text(info["title"] + "\n\n" + info["description"], encoding="utf-8")
