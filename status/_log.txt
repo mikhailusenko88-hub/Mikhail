@@ -1,6 +1,7 @@
-2026-11-07 10:27 UTC
-200 https://www.youtube.com/@pochemu_tak_fakty
-200 avatar pochemu_tak_fakty
-200 banner pochemu_tak_fakty
-200 https://www.youtube.com/@pochemu_tak_fakty/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
+2026-11-07 11:42 UTC
+200 https://www.youtube.com/@kimyutadi_uz
+200 avatar kimyutadi_uz
+200 banner kimyutadi_uz
+200 https://www.youtube.com/@kimyutadi_uz/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC93S31Qkgoz4cFgKBzz-mLA
+200 https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=DQuwCiz6_kg&format=json
