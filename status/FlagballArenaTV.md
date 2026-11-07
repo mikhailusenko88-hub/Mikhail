@@ -1,10 +1,12 @@
 # Flagball Arena  (@FlagballArenaTV)
-Проверено: 2026-11-07 09:53 UTC
+Проверено: 2026-11-07 12:18 UTC
 
 - Страница канала: HTTP 200; ID: UCUKgRxWtL1kPWr9hdfL8qQw
-- Шапка: 7 видео
+- Шапка: 9 видео
 
-## Последние открытые ролики (RSS, точные просмотры) — 7 шт.
+## Последние открытые ролики (RSS, точные просмотры) — 9 шт.
+- 2026-11-07 11:59 · 0 просм. · Mexico vs Japan vs Russia ⚔️ Round 2 – Only Half Survive | Country Marble Race Heats 1–3/3 · FJkoSHYGqh0
+- 2026-11-07 11:58 · 112 просм. · Mexico vs Japan vs UK 😱 Who Survives? Country Marble Race #shorts · MXay3QS1Pr0
 - 2026-11-07 04:28 · 36 просм. · 26 Countries Enter, 13 Survive 🔥 Marble Survival Race · Heat 7/7 · ZeI8Tm-7B3M
 - 2026-11-06 20:28 · 25 просм. · Which Countries Survive? 🌍 Marble Elimination · Round 1 Heat 6/7 · AcRlpxjSPyQ
 - 2026-11-06 12:29 · 15 просм. · Country Marble Survival Race ⚠️ Heat 5/7 – 27 Countries, 13 Survive · LnPtf-Wi83I
@@ -13,4 +15,5 @@
 - 2026-11-05 09:05 · 26 просм. · Which Countries Survive? 🌍 Marble Elimination · Round 1 Heat 2/7 · pZNdHyeOSzo
 - 2026-11-04 18:14 · 99 просм. · 32 Countries Marble Race 🌍 Elimination #1 – Who Wins? · jkju-LY3PpU
 
-## Вкладка Shorts (видно всем) — 0 шт. на первой странице
+## Вкладка Shorts (видно всем) — 1 шт. на первой странице
+- 112 просмотров · Mexico vs Japan vs UK 😱 Who Survives? Country Marble Race #shorts · MXay3QS1Pr0
