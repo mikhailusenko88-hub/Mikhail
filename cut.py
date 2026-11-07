@@ -25,13 +25,13 @@ def run(args, timeout=1200, check=False):
     return r
 
 # ---------- настройки ----------
-cfg = {'count': 2, 'length': 32, 'skip_start': 12, 'skip_end': 25, 'episode': ''}
+cfg = {'count': 2, 'length': 32, 'skip_start': 12, 'skip_end': 25, 'episode': '', 'per_episode': 2}
 if os.path.exists('config.txt'):
     for l in open('config.txt', encoding='utf-8'):
         l = l.strip()
         if l and not l.startswith('#') and ':' in l:
             k, v = l.split(':', 1); k = k.strip().lower(); v = v.split('#', 1)[0].strip()
-            if k in ('count', 'length', 'skip_start', 'skip_end'):
+            if k in ('count', 'length', 'skip_start', 'skip_end', 'per_episode'):
                 try: cfg[k] = int(v)
                 except Exception: pass
             elif k == 'episode': cfg[k] = v
@@ -117,7 +117,7 @@ order = []
 if cfg['episode']:
     order = [e for e in episodes if cfg['episode'] in e['id'] or cfg['episode'].lower() in e['title'].lower()]
 if not order:
-    order = sorted(episodes, key=lambda e: (len(used(e)) >= 5, len(used(e)), 0 if e.get('rutube') else 1, -(e.get('rnum') or e['num'] or 0)))
+    order = sorted(episodes, key=lambda e: (len(used(e)) >= cfg['per_episode'], len(used(e)), 0 if e.get('rutube') else 1, -(e.get('rnum') or e['num'] or 0)))
 yt_list = None
 def yt_entries():
     global yt_list
@@ -176,6 +176,8 @@ def score(st):
 def overlaps(st, segs, gap=15):
     return any(not (st + L + gap <= a or st >= b + gap) for a, b in segs)
 taken = [tuple(s) for s in used(cand)]
+left = max(0, cfg['per_episode'] - len(taken))
+want = min(cfg['count'], left) if left else cfg['count']   # если все серии исчерпаны — всё равно режем
 chosen = []
 cands = sorted(range(lo, max(lo, hi - L) + 1), key=score, reverse=True)
 for st in cands:
@@ -187,7 +189,7 @@ for st in cands:
         s2 = st + d
         if lo <= s2 <= hi - L and rms[s2] < rms[best]: best = s2
     chosen.append((best, best + L))
-    if len(chosen) >= cfg['count']: break
+    if len(chosen) >= want: break
 if not chosen: P('свободных моментов в серии больше нет'); state['episodes'].setdefault(key(cand), {})['done'] = True; json.dump(state, open('state.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1); sys.exit(0)
 chosen.sort()
 P('моменты:', chosen)
@@ -262,8 +264,8 @@ for i, (a, b) in enumerate(chosen):
     # превью
     run(['ffmpeg', '-y', '-v', 'error', '-ss', '2', '-i', outp, '-frames:v', '1', '-vf', 'scale=270:-2', outp.replace('.mp4', '.jpg')])
     h2 = random.choice(HOOKS)
-    title = f'{hook} 🐱 Кот Барсик | момент {k} #shorts'
-    if len(title) > 100: title = f'{hook[:60]} 🐱 Кот Барсик #shorts'
+    title = f'{hook} 🐱 Кот Барсик' + (f' | {num} серия' if num else '') + ' #shorts'
+    if len(title) > 100: title = f'{hook[:55]} 🐱 Кот Барсик' + (f' | {num} серия' if num else '') + ' #shorts'
     body = (f'Котёнок Барсик, мышонок Пик и щенок Рон — добрые и смешные истории о дружбе для детей.\n'
             f'❤️ Подписывайтесь, чтобы не пропустить новые серии!\n\n')
     head = f'{h2} 😺 Отрывок из мультика «Кот Барсик»' + (f', {num} серия' if num else '') + '.\n\n'
