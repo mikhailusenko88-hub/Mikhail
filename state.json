@@ -148,6 +148,40 @@
    "season_races": 3,
    "season": "2026-W45",
    "new_pending": []
+  },
+  "clubs": {
+   "no": 1,
+   "points": {
+    "Paxtakor": 25,
+    "Olmaliq": 18,
+    "Navbahor": 15,
+    "Metallurg": 12,
+    "Lokomotiv": 10,
+    "Bunyodkor": 8,
+    "Mashʼal": 6,
+    "Aral": 4,
+    "Olimpik": 2,
+    "Surxon": 1
+   },
+   "results": [
+    {
+     "no": 1,
+     "date": "2026-11-07",
+     "slot": 3,
+     "winner": "Paxtakor",
+     "top3": [
+      "Paxtakor",
+      "Olmaliq",
+      "Navbahor"
+     ],
+     "link": "https://youtube.com/shorts/3RAKmJ4Jjc0",
+     "final": false
+    }
+   ],
+   "champion": null,
+   "season_races": 1,
+   "season": "2026-W45",
+   "new_pending": []
   }
  },
  "history": [
@@ -219,6 +253,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/DQuwCiz6_kg",
    "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №3 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-07",
+   "slot": 3,
+   "league": "clubs",
+   "no": 1,
+   "final": false,
+   "link": "https://youtube.com/shorts/3RAKmJ4Jjc0",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №1 #shorts",
    "pl": true
   }
  ],
