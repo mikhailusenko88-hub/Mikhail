@@ -263,6 +263,12 @@ def text_layer(accent, style, fmt, title, text, idx, total, handle, path, sub=No
 # ---------- сборка ----------
 
 def build(script, cfg, out_path, work_dir, tts=speak, log=print):
+    if cfg.get("style", "v1") == "v2":
+        return build_v2(script, cfg, out_path, work_dir, tts, log)
+    return build_v1(script, cfg, out_path, work_dir, tts, log)
+
+
+def build_v1(script, cfg, out_path, work_dir, tts=speak, log=print):
     work = Path(work_dir)
     if work.exists():
         shutil.rmtree(work)
@@ -361,9 +367,222 @@ def build(script, cfg, out_path, work_dir, tts=speak, log=print):
     return total_dur
 
 
+# ---------- новый вид «Почему так» (v2): крючок сразу, картинка по теме, короче ----------
+
+def bg_v2(palette, rnd, icon_name, accent, path):
+    """Тёмный фон с виньеткой, лёгкими звёздами и большой рисованной картинкой по теме."""
+    import icons
+    top, bottom, _ = palette
+    img = Image.new("RGB", (W, H))
+    px = ImageDraw.Draw(img)
+    for y in range(H):
+        t = y / (H - 1)
+        px.line([(0, y), (W, y)], fill=tuple(int(top[i] * (1 - t) + bottom[i] * t) for i in range(3)))
+    img = img.convert("RGBA")
+    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    g = ImageDraw.Draw(glow)
+    g.ellipse([W / 2 - 520, 330, W / 2 + 520, 1100], fill=accent + (46,))
+    img = Image.alpha_composite(img, glow.filter(ImageFilter.GaussianBlur(120)))
+    d = ImageDraw.Draw(img)
+    for _ in range(70):                       # пыль/звёзды
+        x, y, r = rnd.randint(0, W), rnd.randint(0, H), rnd.choice([1, 1, 2, 2, 3])
+        d.ellipse([x - r, y - r, x + r, y + r], fill=(255, 255, 255, rnd.randint(30, 110)))
+    ic = icons.draw(icon_name, 620, accent)
+    img.alpha_composite(ic, (int(W / 2 - 310), 270))
+    vign = Image.new("L", (W, H), 0)
+    ImageDraw.Draw(vign).ellipse([-250, -200, W + 250, H + 200], fill=255)
+    vign = vign.filter(ImageFilter.GaussianBlur(220))
+    dark = Image.new("RGBA", (W, H), (0, 0, 0, 255))
+    img = Image.composite(img, Image.alpha_composite(img, Image.new("RGBA", (W, H), (0, 0, 0, 120))), vign)
+    img.convert("RGB").resize((int(W * 1.12), int(H * 1.12))).save(path, quality=92)
+
+
+def _hl_words(text):
+    """Слова, которые подсветим акцентом: числа и слова в кавычках/ЗАГЛАВНЫМИ, «не», «нет», «миф», «правда»."""
+    out = set()
+    for w in re.findall(r"[\w\-]+", text):
+        lw = w.lower().strip("-")
+        if re.search(r"\d", w) or (w.isupper() and len(w) > 1) or lw in ("не", "нет", "миф", "правда", "никогда", "всегда", "нельзя"):
+            out.add(w)
+    return out
+
+
+def text_v2(accent, kind, title, text, idx, total, handle, path):
+    """kind: hook (первый кадр), body, cta (концовка)."""
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    hl = _hl_words(text)
+
+    def draw_block(txt, size_list, zone, max_lines, center=True, shadow=True):
+        for size in size_list:
+            f = font(size)
+            lines = wrap(d, txt, f, W - 150)
+            bl = int(size * 1.18)
+            if len(lines) <= max_lines and bl * len(lines) <= zone[1] - zone[0]:
+                break
+        bh = bl * len(lines)
+        y = zone[0] + (zone[1] - zone[0] - bh) / 2
+        for ln in lines:
+            words = ln.split(" ")
+            widths = [d.textlength(w + " ", font=f) for w in words]
+            x = (W - sum(widths)) / 2 if center else 75
+            for w, ww in zip(words, widths):
+                col = accent + (255,) if w in hl else (255, 255, 255, 255)
+                if shadow:
+                    d.text((x + 3, y + 5), w, font=f, fill=(0, 0, 0, 200))
+                d.text((x, y), w, font=f, fill=col, stroke_width=3, stroke_fill=(0, 0, 0, 170))
+                x += ww
+            y += bl
+        return y
+
+    if kind == "hook":
+        # крючок: огромный текст в нижней половине, над ним маленькая плашка «ПРАВДА?»
+        low = text.lower()
+        if any(w in low for w in ("жутк", "страшн", "пугающ")):
+            tag = "ЖУТКИЙ ФАКТ"
+        elif any(w in low for w in ("нельзя", "никогда", "убить", "убьёт", "опасн", "не делай")):
+            tag = "ОПАСНО"
+        elif any(w in low for w in ("самый", "самая", "самое", "самые")):
+            tag = "РЕКОРД"
+        elif text.rstrip().endswith("?") or "хватит верить" in low or "миф" in low:
+            tag = "ПРАВДА ИЛИ МИФ?"
+        else:
+            tag = "НЕ МОЖЕТ БЫТЬ!"
+        tf = font(40)
+        tw = d.textlength(tag, font=tf)
+        bx, by = (W - tw) / 2 - 34, 905
+        d.rounded_rectangle([bx, by, bx + tw + 68, by + 72], radius=36, fill=accent + (255,))
+        d.text((bx + 34, by + 13), tag, font=tf, fill=(18, 18, 22))
+        draw_block(text, (118, 108, 98, 90, 82, 74, 66), (1000, 1580), 5)
+    elif kind == "cta":
+        draw_block(text, (84, 76, 68), (980, 1240), 3)
+        f2 = font(56)
+        for k, (lab, x0) in enumerate((("ДА", W / 2 - 300), ("НЕТ", W / 2 + 40))):
+            d.rounded_rectangle([x0, 1300, x0 + 260, 1410], radius=40, fill=accent + (255,) if k == 0 else (255, 255, 255, 235))
+            lw_ = d.textlength(lab, font=f2)
+            d.text((x0 + 130 - lw_ / 2, 1322), lab, font=f2, fill=(18, 18, 22))
+        f3 = font(44)
+        s3 = "пиши в комментариях 👇" if False else "пиши в комментариях"
+        d.text(((W - d.textlength(s3, font=f3)) / 2, 1440), s3, font=f3, fill=(255, 255, 255, 230))
+    else:
+        draw_block(text, (84, 78, 72, 66, 60), (960, 1560), 6)
+
+    # низ: заголовок мелко + точки прогресса + канал
+    if title and kind != "hook":
+        sf = font(34)
+        st = title.upper()
+        if d.textlength(st, font=sf) > W - 160:
+            while d.textlength(st + "…", font=sf) > W - 160 and len(st) > 10:
+                st = st[:-1].rstrip()
+            st += "…"
+        d.text(((W - d.textlength(st, font=sf)) / 2, 1618), st, font=sf, fill=accent + (235,))
+    dot, gap = 16, 16
+    sx = (W - (total * dot + (total - 1) * gap)) / 2
+    for i in range(total):
+        x = sx + i * (dot + gap)
+        d.ellipse([x, 1690, x + dot, 1690 + dot], fill=accent + (255,) if i <= idx else (255, 255, 255, 110))
+    if handle:
+        hf = font(36)
+        hw = d.textlength(handle, font=hf)
+        d.text(((W - hw) / 2, 1730), handle, font=hf, fill=(255, 255, 255, 200))
+    img.save(path)
+
+
+MAX_LINES_V2 = 5
+CTA_TEXT = "А ты это знал?"
+
+
+def build_v2(script, cfg, out_path, work_dir, tts=speak, log=print):
+    import icons
+    work = Path(work_dir)
+    if work.exists():
+        shutil.rmtree(work)
+    work.mkdir(parents=True)
+    rnd = random.Random(int(hashlib.md5(script["title"].encode()).hexdigest(), 16))
+    voices = cfg.get("voices") or ["ru-RU-DmitryNeural"]
+    voice = rnd.choice(voices)
+    pal = PALETTES[rnd.randrange(len(PALETTES))]
+    accent = pal[2]
+    lines = [l for l in script["lines"] if l.strip()][:cfg.get("max_lines", MAX_LINES_V2)]
+    total = len(lines) + 1                               # + концовка «А ты знал?»
+    icon = icons.pick(" ".join([script["title"]] + lines + script.get("tags", []) + [script.get("stock", "")]))
+    log(f"Вид v2: картинка «{icon}», фраз {len(lines)}, голос {voice}")
+
+    rate = cfg.get("voice_rate_v2", "+8%")
+    durs, audios = [], []
+    for i, line in enumerate(lines):
+        mp3 = work / f"a{i:02d}.mp3"
+        tts(line, voice, rate, mp3)
+        durs.append(duration(mp3) + (0.45 if i == 0 else PAUSE))
+        audios.append(mp3)
+    cta_mp3 = work / "cta.mp3"
+    tts(CTA_TEXT, voice, rate, cta_mp3)
+    durs.append(duration(cta_mp3) + 1.3)
+    audios.append(cta_mp3)
+    total_dur = sum(durs)
+
+    bgimg = work / "bg.jpg"
+    bg_v2((pal[0], pal[1], accent), random.Random(rnd.random()), icon, accent, bgimg)
+
+    seg_list = work / "segments.txt"
+    start = 0.0
+    with open(seg_list, "w") as sl:
+        for i in range(total):
+            dur = durs[i]
+            kind = "hook" if i == 0 else ("cta" if i == total - 1 else "body")
+            txt = work / f"t{i:02d}.png"
+            text_v2(accent, kind, script["title"], lines[i] if i < len(lines) else CTA_TEXT, i, total,
+                    cfg.get("channel_handle", ""), txt)
+            seg = work / f"s{i:02d}.mp4"
+            # фон один на ролик, медленный наезд; у каждой сцены свой сдвиг
+            sx, sy = rnd.choice([(1, 1), (-1, 1), (1, -1), (-1, -1)])
+            z0 = 1.0 + 0.012 * i
+            bg_f = (f"[0:v]crop={W}:{H}:x='(iw-{W})/2+{sx}*(iw-{W})/2*t/{dur:.2f}*0.6':"
+                    f"y='(ih-{H})/2+{sy}*(ih-{H})/2*t/{dur:.2f}*0.6',setsar=1[bg]")
+            pop = "" if i == 0 else ",fade=t=in:st=0:d=0.18:alpha=1"
+            filt = (bg_f + ";"
+                    f"[1:v]format=rgba{pop}[tx];"
+                    f"color=c=white@0.9:s={W}x10:r={FPS}[bar];"
+                    f"[bg][tx]overlay=0:0:shortest=1[v1];"
+                    f"[v1][bar]overlay=x='-w+W*(t+{start:.3f})/{total_dur:.3f}':y=H-70:shortest=1[v]")
+            run(["ffmpeg", "-y", "-loop", "1", "-framerate", str(FPS), "-i", bgimg,
+                 "-loop", "1", "-framerate", FPS, "-i", txt,
+                 "-filter_complex", filt, "-map", "[v]", "-t", f"{dur:.3f}", "-an", *X264, seg])
+            sl.write(f"file '{seg.name}'\n")
+            start += dur
+
+    ins, parts = [], []
+    for i, a in enumerate(audios):
+        pad = 0.45 if i == 0 else (1.3 if i == total - 1 else PAUSE)
+        ins += ["-i", a]
+        parts.append(f"[{i}:a]aresample=44100,apad=pad_dur={pad}[s{i}]")
+    parts.append("".join(f"[s{i}]" for i in range(total)) + f"concat=n={total}:v=0:a=1[voice]")
+    voice_f = work / "voice.m4a"
+    run(["ffmpeg", "-y", *ins, "-filter_complex", ";".join(parts), "-map", "[voice]", "-c:a", "aac", "-b:a", "160k", voice_f])
+
+    music_files = sorted((BASE / "music").glob("*.mp3")) if (BASE / "music").exists() else []
+    cmd = ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", seg_list, "-i", voice_f]
+    if music_files:
+        want = (cfg.get("music_by_format") or {}).get(script.get("format") or "", [])
+        fit = [f for f in music_files if f.name in want]
+        m = rnd.choice(fit or music_files)
+        cmd += ["-stream_loop", "-1", "-i", m, "-filter_complex",
+                f"[2:a]volume={cfg.get('music_volume', 0.08)},afade=t=out:st={max(total_dur - 1.5, 0):.2f}:d=1.5[m];"
+                f"[1:a][m]amix=inputs=2:duration=first:normalize=0[a]", "-map", "0:v", "-map", "[a]"]
+    else:
+        cmd += ["-map", "0:v", "-map", "1:a"]
+    cmd += ["-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-t", f"{total_dur:.3f}", "-movflags", "+faststart", out_path]
+    run(cmd)
+    return total_dur
+
+
 # ---------- сценарий ----------
 
 RULES = {
+    "Жуткий факт": "один пугающий, но правдивый факт (космос, тело, природа); первая фраза вида «Самый жуткий факт о …» или «Жуткий факт: …»",
+    "Нельзя": "реальная опасность или запрет; первая фраза вида «Вот почему нельзя …» или «Никогда не делай …» — и честное объяснение, что будет",
+    "Самый": "рекорд: самый опасный / глубокий / быстрый / сложный; первая фраза называет рекордсмена без вступлений",
+    "Миф или правда": "популярное убеждение; первая фраза — напористое «Хватит верить, что …» или вопрос; вторая — «Это миф» / «Это правда», дальше объяснение",
     "Факт дня": "один удивительный, но проверенный факт и простое объяснение, почему так",
     "Миф или правда": "популярное убеждение; вторая фраза — чёткий ответ «Это миф» или «Это правда», дальше объяснение",
     "Топ-3": "три коротких пункта: «Первый: ...», «Второй: ...», «Третий: ...»",
@@ -382,7 +601,30 @@ def ai_script(cfg, used_titles, n_done):
     import anthropic
     fmt, sub = pick_rotation(cfg, n_done)
     recent = "\n".join(f"- {t}" for t in used_titles[-80:]) or "(пока нет)"
-    prompt = f"""Придумай сценарий короткого вертикального ролика (VK Клипы / Shorts) на русском.
+    if cfg.get("style") == "v2":
+        prompt = f"""Придумай сценарий короткого YouTube Shorts на русском для канала «{cfg['topic']}».
+Тема сегодня: {sub}. Рубрика «{fmt}»: {RULES.get(fmt, '')}.
+
+ГЛАВНОЕ ПРАВИЛО: первая фраза должна остановить палец. Рабочие формулы (бери одну):
+«Самый жуткий факт о …», «Вот почему нельзя …», «Никогда не делай …», «Эти … могут тебя убить»,
+«Самый опасный … в мире», «Хватит верить, что …», «Почему … на самом деле».
+Слова, которые работают: самый, жуткий, опасный, нельзя, никогда, убить, на самом деле, тебя/твой.
+Темы-лидеры: космос (жуть и масштаб), тело человека и смерть, опасные животные и места, еда и химия, шокирующая история.
+Только правда: пугать можно только реальными фактами, никаких выдуманных страшилок и преувеличений.
+НЕ берём нейтральное («интересные факты», «топ-3», «а ты знал») и школьные «почему» (небо голубое, радуга, лук, лёд) — их пролистывают.
+Только достоверные, общепризнанные факты. Если не уверен в цифре — не используй её.
+Не повторяй уже вышедшие ролики:
+{recent}
+
+Первая фраза — сам крючок: короткое утверждение или вопрос до 55 символов, крупно на экране
+(«Волосы растут после смерти?», «Сердце может биться вне тела»). Без «А вы знали» и без вступлений.
+Вторая фраза — сразу ответ («Это миф.» / «Да, и вот почему.»). Дальше 2–3 фразы объяснения, каждая до 90 символов.
+Всего 4–5 фраз, озвучка 12–18 секунд. Числа пиши словами.
+Ответь только JSON:
+{{"title": "крючок до 45 символов (можно тот же, что первая фраза)", "lines": ["..."], "tags": ["3-4 тега без #"],
+ "stock": "2-3 русских слова о предмете ролика, например 'сердце кровь'"}}"""
+    else:
+        prompt = f"""Придумай сценарий короткого вертикального ролика (VK Клипы / Shorts) на русском.
 Канал: {cfg['topic']}. Тема сегодня: {sub}. Рубрика «{fmt}»: {RULES.get(fmt, '')}.
 Только достоверные, общепризнанные научные факты. Если не уверен в цифре — не используй её.
 Не повторяй уже вышедшие ролики:
@@ -399,7 +641,7 @@ def ai_script(cfg, used_titles, n_done):
     text = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
     data = json.loads(re.search(r"\{.*\}", text, re.S).group(0))
     lines = [l.strip() for l in data["lines"] if l.strip()]
-    if not (4 <= len(lines) <= 8) or not data.get("title") or data["title"] in used_titles:
+    if not (3 <= len(lines) <= 8) or not data.get("title") or data["title"] in used_titles:
         raise ValueError("сценарий не прошёл проверку")
     return {"format": fmt, "title": data["title"].strip()[:70], "lines": lines,
             "tags": [t.strip("# ") for t in data.get("tags", [])][:4],
