@@ -1,5 +1,8 @@
 name: shorts-barsik
 on:
+  push:
+    branches: [shorts]
+    paths: [run.txt]
   schedule:
     - cron: '0 4 * * *'      # каждый день 07:00 по Москве
   workflow_dispatch:
