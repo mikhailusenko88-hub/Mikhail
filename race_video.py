@@ -82,6 +82,8 @@ def make_colors():
             r, g, b = colorsys.hsv_to_rgb(h, s, v)
             out.append((int(r * 255), int(g * 255), int(b * 255)))
         return out
+    if all(e.get("color") for e in ENT):          # свои цвета (клубы)
+        return [tuple(e["color"]) for e in ENT]
     for i in range(N):
         h = (0.03 + i * 0.618034) % 1.0
         s = 0.82 if i % 2 == 0 else 0.55
@@ -1042,6 +1044,41 @@ def mid_car(winner, acc):
     return im
 
 
+def soccer_ball(r, col):
+    """Футбольный мяч: белый шар с тёмными пятиугольниками, снизу — цвет клуба."""
+    s = int(2 * r + 6)
+    im = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    c = s / 2
+    d.ellipse([c - r, c - r, c + r, c + r], fill=(245, 245, 245, 255), outline=(30, 30, 30, 255), width=max(2, int(r / 14)))
+    import math
+    for cx, cy, rr in [(c, c, r * 0.22), (c - r * 0.6, c - r * 0.35, r * 0.17), (c + r * 0.6, c - r * 0.35, r * 0.17),
+                       (c - r * 0.38, c + r * 0.62, r * 0.16), (c + r * 0.38, c + r * 0.62, r * 0.16), (c, c - r * 0.85, r * 0.1)]:
+        pts = [(cx + rr * math.cos(math.radians(90 + 72 * k)), cy - rr * math.sin(math.radians(90 + 72 * k))) for k in range(5)]
+        d.polygon(pts, fill=(35, 35, 40, 255))
+    sh = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    ImageDraw.Draw(sh).ellipse([c - r, c - r, c + r, c + r], fill=col + (90,))
+    return Image.alpha_composite(im, sh)
+
+
+def mid_club(winner, acc):
+    im = Image.new("RGBA", (W, MID_H), (0, 0, 0, 0))
+    col = COLORS[winner]
+    glow = Image.new("RGBA", (W, MID_H), (0, 0, 0, 0))
+    ImageDraw.Draw(glow).ellipse([W / 2 - 150, 0, W / 2 + 150, 250], fill=col + (150,))
+    im = Image.alpha_composite(glow.filter(ImageFilter.GaussianBlur(30)), im)
+    ball = soccer_ball(96, col)
+    im.paste(ball, (int(W / 2 - ball.size[0] / 2), 20), ball)
+    d = ImageDraw.Draw(im)
+    e = ENT[winner]
+    c1, c2 = e.get("city", ""), e.get("city_ru", "")
+    s = c1 if c1.lower() == c2.lower() else f"{c1} · {c2}"
+    text_c(d, W / 2, 236, s, fit_size(s, 44, 800), (255, 255, 255), 5)
+    s2 = "Superliga · Суперлига"
+    text_c(d, W / 2, 290, s2, fit_size(s2, 30, 800), acc, 4)
+    return im
+
+
 # ---------------- звук ----------------
 
 class Sfx:
@@ -1382,6 +1419,8 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     else:
         if LG.get("car"):
             mid = mid_car(winner, acc)
+        elif LG.get("club"):
+            mid = mid_club(winner, acc)
         else:
             mid = mid_teams(race_team, team_total, race_no, acc, final) if LG.get("teams") else mid_mushel(winner, acc)
     b1 = Image.new("RGBA", (W, H), (0, 0, 0, 0))

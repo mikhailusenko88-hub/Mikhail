@@ -86,6 +86,33 @@ CARS = [
     ("Chery Tiggo", "Chery Tiggo", "suv"),
     ("Jiguli", "Жигули", "classic"),
 ]
+
+# ---------- футбольные клубы Суперлиги: имя, по-русски, город (uz), город (ru), цвет шарика ----------
+CLUBS = [
+    ("Paxtakor", "Пахтакор", "Toshkent", "Ташкент", (255, 210, 40)),
+    ("Bunyodkor", "Бунёдкор", "Toshkent", "Ташкент", (40, 90, 220)),
+    ("Nasaf", "Насаф", "Qarshi", "Карши", (30, 170, 80)),
+    ("Navbahor", "Навбахор", "Namangan", "Наманган", (230, 60, 50)),
+    ("Neftchi", "Нефтчи", "Fargʻona", "Фергана", (255, 140, 30)),
+    ("Andijon", "Андижан", "Andijon", "Андижан", (60, 150, 255)),
+    ("Lokomotiv", "Локомотив", "Toshkent", "Ташкент", (220, 40, 40)),
+    ("Olmaliq", "Алмалык", "Olmaliq", "Алмалык", (250, 230, 60)),
+    ("Qizilqum", "Кызылкум", "Zarafshon", "Зарафшан", (230, 120, 40)),
+    ("Surxon", "Сурхан", "Termiz", "Термез", (120, 60, 200)),
+    ("Dinamo", "Динамо", "Samarqand", "Самарканд", (40, 140, 230)),
+    ("Metallurg", "Металлург", "Bekobod", "Бекабад", (160, 170, 190)),
+    ("Soʻgʻdiyona", "Согдиана", "Jizzax", "Джизак", (60, 200, 200)),
+    ("Buxoro", "Бухара", "Buxoro", "Бухара", (40, 170, 120)),
+    ("Mashʼal", "Машъал", "Muborak", "Мубарек", (240, 90, 160)),
+    ("Turon", "Турон", "Yaypan", "Яйпан", (90, 200, 90)),
+    ("Xorazm", "Хорезм", "Urganch", "Ургенч", (200, 170, 60)),
+    ("Qoʻqon 1912", "Коканд 1912", "Qoʻqon", "Коканд", (200, 40, 80)),
+    ("Shoʻrtan", "Шуртан", "Gʻuzor", "Гузар", (40, 120, 200)),
+    ("Olimpik", "Олимпик", "Toshkent", "Ташкент", (255, 255, 255)),
+    ("Aral", "Арал", "Nukus", "Нукус", (90, 210, 240)),
+    ("Sementchi", "Сементчи", "Quvasoy", "Кувасай", (180, 180, 180)),
+]
+
 BODY = {k: b for k, _, b in CARS}
 
 
@@ -117,6 +144,9 @@ def entries(league, extra=None, rnd=None):
                 rows.append((kk, ru, b))
                 have.add(k)
         return [_e(kk, kk, ru, str(i + 1), body=b) for i, (kk, ru, b) in enumerate(rows)]
+    if league == "clubs":
+        return [_e(kk, kk, ru, str(i + 1), city=c, city_ru=cr, color=col)
+                for i, (kk, ru, c, cr, col) in enumerate(CLUBS)]
     raise ValueError(f"нет такой темы: {league}")
 
 
@@ -130,7 +160,7 @@ LEAGUES = {
         "map": True, "panel": "kk", "label": "kk",
         "early": ("Kim yutadi? Bashoratingni yoz!", "Кто победит? Пиши прогноз!"),
         "cta": ("Sen qaysi shahar muxlisisan?", "А ты за какой город болеешь?"),
-        "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №{no}",
+        "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №{no} #shorts",
         "first_comment": ("Sen qaysi shahar muxlisisan? 👇\nЗа какой город болеешь? Пиши 👇\n\n"
                           "Shahring yoʻqmi? Yoz — keyingi poygaga qoʻshamiz!\n"
                           "Нет твоего города? Напиши — добавим в следующую гонку!"),
@@ -150,7 +180,7 @@ LEAGUES = {
         "map": False, "panel": "kk", "label": "kk", "car": True,
         "early": ("Sening mashinang yutadimi?", "Твоя машина победит?"),
         "cta": ("Sen qaysi mashinada yurasan?", "А ты на какой машине ездишь?"),
-        "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №{no}",
+        "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №{no} #shorts",
         "first_comment": ("Sen qaysi mashinada yurasan? 👇\nА ты на какой машине ездишь? Пиши 👇\n\n"
                           "Mashinang yoʻqmi? Yoz — keyingi poygaga qoʻshamiz!\n"
                           "Нет твоей машины? Напиши — добавим в следующую гонку!"),
@@ -163,6 +193,27 @@ LEAGUES = {
                  "#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts"),
         "tags": TAGS_COMMON + ["mashina", "cobalt", "gentra", "nexia", "damas", "malibu", "chevrolet",
                                "машины узбекистана"],
+    },
+    "clubs": {
+        "name": "гонка футбольных клубов",
+        "head": ("QAYSI JAMOA YUTADI?", "КАКОЙ КЛУБ ПОБЕДИТ?"),
+        "map": False, "panel": "kk", "label": "kk", "club": True,
+        "early": ("Sening jamoang yutadimi?", "Твой клуб победит?"),
+        "cta": ("Sen qaysi jamoa muxlisisan?", "А ты за какой клуб болеешь?"),
+        "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №{no} #shorts",
+        "first_comment": ("Sen qaysi jamoa muxlisisan? 👇\nЗа какой клуб болеешь? Пиши 👇\n\n"
+                          "Jamoang yoʻqmi? Yoz — keyingi poygaga qoʻshamiz!\n"
+                          "Нет твоего клуба? Напиши — добавим в следующую гонку!"),
+        "q": "Qaysi jamoa yutadi? Какой клуб победит?",
+        "season": "week",
+        "desc": ("Paxtakor, Bunyodkor, Nasaf, Navbahor… qaysi jamoa tezroq? Izohlarda yoz 👇\n"
+                 "{n} клубов Суперлиги Узбекистана в одной гонке: Пахтакор, Бунёдкор, Насаф, Навбахор и другие. "
+                 "Какой победит? Пиши в комментариях!\n\n"
+                 "Har kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n"
+                 "Jamoangiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего клуба? Напиши — добавим!\n\n"
+                 "#uzbekistan #futbol #superliga #paxtakor #bunyodkor #nasaf #navbahor #гонкашариков #shorts"),
+        "tags": TAGS_COMMON + ["futbol", "футбол", "superliga", "суперлига узбекистана", "paxtakor", "bunyodkor",
+                               "nasaf", "navbahor", "neftchi", "pfl uzbekistan"],
     },
 }
 
@@ -229,7 +280,7 @@ def season_label(league, ch, n):
 
 def make_title(league, no, ent, final=False):
     if final:
-        return f"{LEAGUES[league]['q']} 🏆 {stxt(league)['final_title']}"
+        return f"{LEAGUES[league]['q']} 🏆 {stxt(league)['final_title']} #shorts"
     return LEAGUES[league]["title"].format(no=no)
 
 

@@ -3,14 +3,14 @@
 Расписание по Ташкенту (UTC+5), 3 ролика в день:
   слот 1 — ~12:00 гонка городов   (Qaysi shahar yutadi?)
   слот 2 — ~16:00 гонка машин     (Qaysi mashina yutadi?)
-  слот 3 — ~20:00 гонка городов
+  слот 3 — ~20:00 гонка футбольных клубов (Qaysi jamoa yutadi?)
 Сезон — неделя (пн–вс по Ташкенту): в воскресенье последний заезд темы — ФИНАЛ (топ-8 недели), с понедельника
 таблица заново, чемпионы недель сохраняются навсегда (★ у шарика).
 
 request.txt (ручной запуск — поменять и запушить):
   mode:   test (собрать, не выкладывать) | publish (собрать и выложить) | login (вход в канал кодом,
           после входа сразу выкладывается гонка текущего слота) | check (что стоит на канале → status/channel.txt)
-  league: auto | cities | cars
+  league: auto | cities | cars | clubs
   final:  auto | yes
   mode: comments — только прочитать комментарии и добавить просьбы (без ролика)
   extra:  yes — ещё один ролик прямо сейчас, сверх расписания (то же делает кнопка Run workflow на GitHub)
@@ -32,9 +32,10 @@ os.chdir(BASE)
 TASH = dt.timezone(dt.timedelta(hours=5))
 WORK = Path("/tmp/uz")
 LOG = []
-SLOTS = {1: ("cities", 12), 2: ("cars", 16), 3: ("cities", 20)}
-LAST_SLOT = {"cities": 3, "cars": 2}           # в воскресенье в этот слот — финал недели
-PLAYLIST = {"cities": "Qaysi shahar yutadi? · Гонка городов", "cars": "Qaysi mashina yutadi? · Гонка машин"}
+SLOTS = {1: ("cities", 12), 2: ("cars", 16), 3: ("clubs", 20)}
+LAST_SLOT = {"cities": 1, "cars": 2, "clubs": 3}           # в воскресенье в этот слот — финал недели
+PLAYLIST = {"cities": "Qaysi shahar yutadi? · Гонка городов", "cars": "Qaysi mashina yutadi? · Гонка машин",
+            "clubs": "Qaysi jamoa yutadi? · Гонка клубов"}
 HANDLE = "@kimyutadi_uz"
 
 
@@ -142,7 +143,7 @@ def login():
 
 # ---------------- сезоны ----------------
 
-CAP = {"cities": 30, "cars": 28}       # больше шариков трасса не вмещает красиво
+CAP = {"cities": 30, "cars": 28, "clubs": 26}       # больше шариков трасса не вмещает красиво
 
 
 def take_requests(state, yt, log):
@@ -265,7 +266,7 @@ def main():
         d, slot, day = now.date(), 0, now
         if req["league"] == "auto":
             last = [h.get("league") for h in state.get("history", [])]
-            league = "cars" if (last and last[-1] == "cities") else "cities"
+            league = {"cities": "cars", "cars": "clubs"}.get(last[-1] if last else "", "cities")
         log(f"дополнительный ролик сейчас: {league}")
     if mode == "publish" and not extra and any(h.get("date") == d.isoformat() and h.get("slot") == slot
                                  for h in state.get("history", [])):

@@ -4,16 +4,16 @@ on:
   schedule:
     - cron: "35 6 * * *"    # 11:35 Ташкента → ролик ~12:00 (города)
     - cron: "35 10 * * *"   # 15:35 → ~16:00 (машины)
-    - cron: "35 14 * * *"   # 19:35 → ~20:00 (города)
+    - cron: "35 14 * * *"   # 19:35 → ~20:00 (футбольные клубы)
   push:
     branches: [uz-race]
     paths: [request.txt]
   workflow_dispatch:          # кнопка «Run workflow» — ещё один ролик прямо сейчас
     inputs:
       league:
-        description: "Какая гонка: auto (по очереди) / cities (города) / cars (машины)"
+        description: "Какая гонка: auto (по очереди) / cities (города) / cars (машины) / clubs (клубы)"
         type: choice
-        options: [auto, cities, cars]
+        options: [auto, cities, cars, clubs]
         default: auto
 
 permissions:
