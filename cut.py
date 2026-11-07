@@ -29,7 +29,7 @@ if os.path.exists('config.txt'):
     for l in open('config.txt', encoding='utf-8'):
         l = l.strip()
         if l and not l.startswith('#') and ':' in l:
-            k, v = l.split(':', 1); k = k.strip().lower(); v = v.strip()
+            k, v = l.split(':', 1); k = k.strip().lower(); v = v.split('#', 1)[0].strip()
             if k in ('count', 'length', 'skip_start', 'skip_end'):
                 try: cfg[k] = int(v)
                 except Exception: pass
@@ -71,12 +71,12 @@ if not episodes:
         if not e.get('id') or (d and d < 70): continue
         episodes.append({'id': e['id'], 'title': t, 'url': 'https://www.youtube.com/watch?v=' + e['id'], 'src': 'youtube', 'dur': d, 'num': ep_num(t)})
     P('youtube episodes:', len(episodes))
-if not episodes and os.path.exists('episodes.txt'):
+if os.path.exists('episodes.txt'):
     for l in open('episodes.txt', encoding='utf-8'):
         l = l.strip()
         if not l or l.startswith('#'): continue
         parts = l.split('\t')
-        if len(parts) >= 2:
+        if len(parts) >= 2 and not any(e['id'] == parts[0] for e in episodes):
             episodes.append({'id': parts[0], 'title': parts[1], 'url': f'https://rutube.ru/video/{parts[0]}/', 'src': 'rutube', 'dur': 0, 'num': ep_num(parts[1])})
     P('episodes.txt:', len(episodes))
 if not episodes: P('серий не найдено'); sys.exit(0)
@@ -201,13 +201,15 @@ for i, (a, b) in enumerate(chosen):
           '[bg][fg]overlay=0:(H-h)/2[v1];')
     draw = ''
     if font:
-        open('out/top.txt', 'w', encoding='utf-8').write(top)
         open('out/bot.txt', 'w', encoding='utf-8').write('ПОЛНАЯ СЕРИЯ — НА КАНАЛЕ')
         open('out/badge.txt', 'w', encoding='utf-8').write('КОТ БАРСИК')
-        draw = (f"[v1]drawtext=fontfile={font}:textfile=out/badge.txt:fontsize=44:fontcolor=white:box=1:boxcolor=0xE8452C@0.95:boxborderw=18:x=(w-tw)/2:y=250,"
-                f"drawtext=fontfile={font}:textfile=out/top.txt:fontsize=72:fontcolor=white:borderw=5:bordercolor=black@0.85:line_spacing=10:x=(w-tw)/2:y=360:text_align=C,"
-                f"drawtext=fontfile={font}:textfile=out/bot.txt:fontsize=46:fontcolor=0xFFE14D:borderw=4:bordercolor=black@0.85:x=(w-tw)/2:y=1440,"
-                f"fade=t=in:st=0:d=0.4,fade=t=out:st={dur-0.5}:d=0.5[v]")
+        parts = [f"[v1]drawtext=fontfile={font}:textfile=out/badge.txt:fontsize=44:fontcolor=white:box=1:boxcolor=0xE8452C@0.95:boxborderw=18:x=(w-tw)/2:y=250"]
+        for li, ln in enumerate(top_lines):
+            open(f'out/top{li}.txt', 'w', encoding='utf-8').write(ln)
+            parts.append(f"drawtext=fontfile={font}:textfile=out/top{li}.txt:fontsize=72:fontcolor=white:borderw=5:bordercolor=black@0.85:x=(w-tw)/2:y={360 + li*88}")
+        parts.append(f"drawtext=fontfile={font}:textfile=out/bot.txt:fontsize=46:fontcolor=0xFFE14D:borderw=4:bordercolor=black@0.85:x=(w-tw)/2:y=1440")
+        parts.append(f"fade=t=in:st=0:d=0.4,fade=t=out:st={dur-0.5}:d=0.5[v]")
+        draw = ','.join(parts)
     else:
         draw = f"[v1]fade=t=in:st=0:d=0.4,fade=t=out:st={dur-0.5}:d=0.5[v]"
     af = f"[0:a]afade=t=in:st=0:d=0.3,afade=t=out:st={dur-0.5}:d=0.5[a]"
