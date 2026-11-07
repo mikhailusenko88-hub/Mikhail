@@ -66,7 +66,8 @@ def make(part_mp4, part_json, out_mp4):
 
 def description(meta, full_link):
     names = ", ".join(sorted(race.NAMES[c] for c in meta["codes"]))
-    return (f"{meta['n']} countries, only {meta['survive']} survive. Full race: {full_link}\n\n"
+    return (f"{meta['n']} countries, only {meta['survive']} survive.\n"
+            f"▶ Full race on @FlagballArenaTV — {full_link}\n\n"
             f"Countries: {names}.\n\nLike 👍 if your country survived! Comment who you're cheering for.\n\n"
             f"#shorts #marblerace #countryballs #marblerun #survival #countries")
 
