@@ -11,6 +11,7 @@ REPO = os.environ.get('GITHUB_REPOSITORY', 'mikhailusenko88-hub/mikhail')
 ASSET_BASE = f'https://github.com/{REPO}/releases/download/{RELEASE_TAG}/'
 PAGE_CODE = os.environ.get('PAGE_CODE', 's9kbars')
 CHANNEL_URL = 'https://rutube.ru/channel/82826859/'
+YT_CHANNEL_URL = 'https://www.youtube.com/@Cartoon_Friend3'
 
 os.makedirs('out', exist_ok=True)
 log = open('out/log.txt', 'a', encoding='utf-8')
@@ -210,6 +211,7 @@ num = cand.get('rnum') or cand['num']
 P('hook:', hook, 'num', num)
 
 HOOKS = ['Что тут происходит?!', 'Ну и дела!', 'Вот это поворот!', 'Кто бы мог подумать!', 'Смотри, что было дальше!', 'Самый смешной момент!', 'Ты только посмотри!', 'Вот это да!']
+TAGS_YT = '#КотБарсик #МультикиДляДетей #Shorts #Мультфильмы #ДетскиеМультфильмы #МультикДляМалышей #cartoon #kidscartoon #shorts'
 TAGS = '#КотБарсик #МультикиДляДетей #Shorts #Мультфильмы #ДетскиеМультфильмы #МультикиПроЖивотных #ДобрыеМультики #МультикДляМалышей #КотенокБарсик'
 
 today = datetime.date.today().isoformat()
@@ -262,15 +264,16 @@ for i, (a, b) in enumerate(chosen):
     h2 = random.choice(HOOKS)
     title = f'{hook} 🐱 Кот Барсик | момент {k} #shorts'
     if len(title) > 100: title = f'{hook[:60]} 🐱 Кот Барсик #shorts'
-    links = ''
-    if cand.get('rutube'): links += f'🎬 Полная серия на Rutube: {cand["rutube"]}\n'
-    if cand['src'] == 'youtube': links += f'▶️ Полная серия на YouTube: {cand["url"]}\n'
-    desc = (f'{h2} 😺 Отрывок из мультика «Кот Барсик»' + (f', {num} серия' if num else '') + '.\n\n'
-            + links + f'📺 Все серии: {CHANNEL_URL}\n\n'
-            f'Котёнок Барсик, мышонок Пик и щенок Рон — добрые и смешные истории о дружбе для детей.\n'
-            f'❤️ Подписывайтесь, чтобы не пропустить новые серии!\n\n{TAGS}')
+    body = (f'Котёнок Барсик, мышонок Пик и щенок Рон — добрые и смешные истории о дружбе для детей.\n'
+            f'❤️ Подписывайтесь, чтобы не пропустить новые серии!\n\n')
+    head = f'{h2} 😺 Отрывок из мультика «Кот Барсик»' + (f', {num} серия' if num else '') + '.\n\n'
+    rt_ep = cand.get('rutube') or (cand['url'] if cand['src'] == 'rutube' else None)
+    yt_ep = cand['url'] if cand['src'] == 'youtube' else None
+    desc_rt = head + (f'🎬 Полная серия: {rt_ep}\n' if rt_ep else '') + f'📺 Все серии на канале: {CHANNEL_URL}\n\n' + body + TAGS
+    desc_yt = head + (f'🎬 Полная серия: {yt_ep}\n' if yt_ep else '') + f'📺 Все серии на канале: {YT_CHANNEL_URL}\n\n' + body + TAGS_YT
+    desc = desc_rt
     item = {'date': today, 'file': name, 'url': ASSET_BASE + name, 'thumb': ASSET_BASE + name.replace('.mp4', '.jpg'),
-            'title': title, 'desc': desc, 'tags': TAGS, 'ep': key(cand), 'ep_num': num, 'ep_title': cand['title'], 'ep_url': cand['url'],
+            'title': title, 'desc': desc, 'desc_rt': desc_rt, 'desc_yt': desc_yt, 'tags': TAGS, 'ep': key(cand), 'ep_num': num, 'ep_title': cand['title'], 'ep_url': cand['url'],
             'start': a, 'end': b, 'size': os.path.getsize(outp)}
     new_items.append(item)
     state['made'].append({'date': today, 'ep': key(cand), 'file': name, 'seg': [a, b]})
