@@ -33,6 +33,8 @@ def needed(bank):
     for voice in bank.get("voices") or ["albina"]:
         st = bank.get("selftest") or albina.SELFTEST_TEXT
         need[albina.cache_key(st, voice)] = (st, voice)
+        for extra in list(bank.get("extra") or []) + ["А ты это знал?"]:     # концовка роликов v2
+            need.setdefault(albina.cache_key(extra, voice), (extra, voice))
         for s in bank.get("scripts", []):
             for line in s.get("lines", []):
                 need.setdefault(albina.cache_key(line, voice), (line, voice))
