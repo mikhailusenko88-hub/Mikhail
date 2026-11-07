@@ -692,6 +692,10 @@ def render_quote(cfg, out_path, preview=None, log=print):
     S_A1 = text_sprite(cfg["author_ru"], f_auth, (122, 108, 98, 255))
     S_A2 = text_sprite(cfg["author_en"], f_auth, (140, 126, 116, 255))
     DIV = Image.new("RGBA", (140, 3), (170, 140, 90, 200))
+    n_seg = len(cfg["segments"])
+    f_cnt = font(F_MARK, 64, 700)
+    S_CNT = [text_sprite(f"{j + 1} / {n_seg}", f_cnt, (104, 80, 60, 255), spacing=3) for j in range(n_seg)]
+    S_HINT = [hint_sprite(n_seg - j - 1) for j in range(n_seg)]
     # раскладка
     y = 290
     Y_RU = [y + i * int(ru_size * 1.42) for i in range(len(ru))]
@@ -1332,8 +1336,14 @@ def prepare_segment(seg, idx, seed):
     scene_fn, hor_frac = SCENES[seg["scene"]]
     hor = int(py0 + hor_frac * (py1 - py0))
     ops, paint_end, particles = scene_fn((px0, px1, py0, py1), hor, seed=seed + idx)
-    T_RU = [2.2 + 1.1 * i for i in range(len(ru))]
-    T_EN = [T_RU[-1] + 1.4 + 0.35 * i for i in range(len(en))]
+    if idx == 0:
+        # первая цитата видна целиком с первого кадра — чтобы не пролистывали пустой лист
+        T_RU = [-0.9 for i in range(len(ru))]
+        T_EN = [0.4 + 0.25 * i for i in range(len(en))]
+    else:
+        # следующие цитаты появляются сразу после перехода, без паузы на пустой бумаге
+        T_RU = [0.25 + 0.5 * i for i in range(len(ru))]
+        T_EN = [T_RU[-1] + 1.0 + 0.3 * i for i in range(len(en))]
     T_AUTHOR = T_EN[-1] + 1.4
     seg_total = max(13.0, T_AUTHOR + 4.8, paint_end + 3.2)
     rnd = random.Random(3 + seed + idx)
@@ -1350,6 +1360,21 @@ def prepare_segment(seg, idx, seed):
                 box=(px0, px1, py0, py1), ru=ru, en=en, sizes=(ru_size, en_size), scene=seg["scene"])
 
 
+def hint_sprite(left):
+    """Надпись на переходе между цитатами: по-русски и по-английски."""
+    if left <= 0:
+        return None
+    ru = "Дальше — ещё 2 мысли" if left == 2 else ("И ещё одна" if left == 1 else f"Дальше — ещё {left}")
+    en = "2 more thoughts ahead" if left == 2 else ("One more to go" if left == 1 else f"{left} more ahead")
+    a = text_sprite(ru, font(F_RU, 58), (70, 58, 50, 255))
+    b = text_sprite(en, font(F_EN, 50, 500), (120, 104, 92, 255))
+    wd = max(a.size[0], b.size[0])
+    im = Image.new("RGBA", (wd, a.size[1] + b.size[1] + 22), (0, 0, 0, 0))
+    im.alpha_composite(a, ((wd - a.size[0]) // 2, 0))
+    im.alpha_composite(b, ((wd - b.size[0]) // 2, a.size[1] + 22))
+    return im
+
+
 def render_multi(cfg, out_path, preview=None, log=print):
     """cfg: dict(mark, music, seed, segments=[dict(scene, ru, en, author_ru, author_en), ...])"""
     t_start = time.time()
@@ -1358,6 +1383,10 @@ def render_multi(cfg, out_path, preview=None, log=print):
     f_mark = font(F_MARK, 30, 600)
     S_MARK = text_sprite(cfg.get("mark", "ЖИВЫЕ СТРОКИ  ·  LIVING LINES"), f_mark, (120, 104, 92, 255), spacing=5)
     DIV = Image.new("RGBA", (140, 3), (170, 140, 90, 200))
+    n_seg = len(cfg["segments"])
+    f_cnt = font(F_MARK, 64, 700)
+    S_CNT = [text_sprite(f"{j + 1} / {n_seg}", f_cnt, (104, 80, 60, 255), spacing=3) for j in range(n_seg)]
+    S_HINT = [hint_sprite(n_seg - j - 1) for j in range(n_seg)]
     TOTAL = sum(s["total"] for s in segs)
     offsets = np.cumsum([0] + [s["total"] for s in segs[:-1]])
     for s, off in zip(segs, offsets):
@@ -1447,17 +1476,20 @@ def render_multi(cfg, out_path, preview=None, log=print):
             # шапка и точки-индикатор — поверх, без затухания (кроме самого конца)
             last = si == len(segs) - 1
             top_a = 1.0 if not last else max(0.0, 1 - max(0.0, (t - S["T_END"] - 0.3) / 0.7))
-            top_a *= ease(0.3, 1.0, tg) if si == 0 else 1.0
-            paste_fade(img, S_MARK, (W - S_MARK.size[0]) / 2, 140, top_a)
+            paste_fade(img, S_MARK, (W - S_MARK.size[0]) / 2, 132, top_a)
             dr = ImageDraw.Draw(img, "RGBA")
             n = len(segs)
-            for j in range(n):
-                cx_ = W / 2 + (j - (n - 1) / 2) * 30
-                cy_ = 204
-                if j <= si:
-                    dr.ellipse([cx_ - 5, cy_ - 5, cx_ + 5, cy_ + 5], fill=(150, 130, 110, int(255 * top_a)))
-                else:
-                    dr.ellipse([cx_ - 5, cy_ - 5, cx_ + 5, cy_ + 5], outline=(160, 142, 124, int(200 * top_a)), width=2)
+            # счётчик «1 / 3» — крупно, чтобы было видно, что мыслей три
+            cnt = S_CNT[si]
+            paste_fade(img, cnt, (W - cnt.size[0]) / 2, 172, top_a)
+            # подсказка на переходе: «Дальше — ещё 2 мысли» (и в начале следующей цитаты гаснет)
+            h_spr, h_a = None, 0.0
+            if si < n - 1 and t > S["T_END"] + 0.1:
+                h_spr, h_a = S_HINT[si], ease(S["T_END"] + 0.1, 0.45, t)
+            elif si > 0 and t < 1.3:
+                h_spr, h_a = S_HINT[si - 1], 1.0 - ease(0.8, 0.45, t)
+            if h_spr is not None and h_a > 0.01:
+                paste_fade(img, h_spr, (W - h_spr.size[0]) / 2, 820, h_a)
             z = 1.0 + 0.04 * (gi / nfr_total)
             x0, y0, cw, ch = fv.camera_window(W / 2, H / 2, z)
             img = img.crop((x0, y0, x0 + cw, y0 + ch)).resize((W, H), Image.BILINEAR)
