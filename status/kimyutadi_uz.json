@@ -1,9 +1,94 @@
 {
  "handle": "kimyutadi_uz",
- "page_status": 404,
- "checked": "2026-11-05 13:47 UTC",
- "shorts_status": 404,
- "shorts": [],
- "rss_status": 0,
- "rss": []
+ "page_status": 200,
+ "channel_id": "UC93S31Qkgoz4cFgKBzz-mLA",
+ "title": "Kim yutadi?",
+ "description": "Kim yutadi? — har kuni sharchalar poygasi! 🏁\nOʻzbekiston shaharlari va mashinalari bitta poygada: Toshkent, Samarqand, Buxoro, Namangan, Andijon… Cobalt, Gentra, Nexia, Damas, Malibu…\nHar hafta — fina",
+ "header": [
+  "6 видео"
+ ],
+ "alerts": [],
+ "images": {
+  "avatar": "https://yt3.googleusercontent.com/j2tLoAL4x5fvNzHWi3KRNvl0jHgW8CocxBppBuFeYpVPjFXmEHurGEgfg1xMvHE05hqjBWTUeQ=s900-c-k-c0x00ffffff-no-rj",
+  "banner": "https://yt3.googleusercontent.com/nH-KKjx0Hz9KqmmObOPHEiXyPjsRBGS_56QhfHcc7LUzHxdMjAku4YzvOUYTN6bIZOIuHomPLA=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
+ },
+ "checked": "2026-11-07 09:53 UTC",
+ "shorts_status": 200,
+ "shorts": [
+  {
+   "id": "EK5EzrtpOfQ",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №4",
+   "views": "8 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Qaysi shahar yutadi? Какой город победит? 🏁 №4, 8 просмотров\""
+  },
+  {
+   "id": "Whe76DcdOhU",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №3",
+   "views": "46 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Qaysi shahar yutadi? Какой город победит? 🏁 №3, 46 просмотров\""
+  },
+  {
+   "id": "BnWWFWrkd3w",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №2",
+   "views": "356 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Qaysi mashina yutadi? Какая машина победит? 🚗 №2, 356 просмотров\""
+  },
+  {
+   "id": "-FSYqlw4SAg",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №2",
+   "views": "67 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Qaysi shahar yutadi? Какой город победит? 🏁 №2, 67 просмотров\""
+  },
+  {
+   "id": "pR3p1cAbElU",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №1",
+   "views": "259 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Qaysi mashina yutadi? Какая машина победит? 🚗 №1, 259 просмотров\""
+  },
+  {
+   "id": "0erkMjYIh-k",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №1",
+   "views": "202 просмотра",
+   "a11y": "Воспроизвести короткое видео \"Qaysi shahar yutadi? Какой город победит? 🏁 №1, 202 просмотра\""
+  }
+ ],
+ "rss_status": 200,
+ "rss": [
+  {
+   "id": "EK5EzrtpOfQ",
+   "published": "2026-11-07T07:35:53+00:00",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №4",
+   "views": 8
+  },
+  {
+   "id": "Whe76DcdOhU",
+   "published": "2026-11-06T15:20:12+00:00",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №3",
+   "views": 46
+  },
+  {
+   "id": "BnWWFWrkd3w",
+   "published": "2026-11-06T12:03:32+00:00",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №2",
+   "views": 356
+  },
+  {
+   "id": "-FSYqlw4SAg",
+   "published": "2026-11-06T07:47:11+00:00",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №2",
+   "views": 67
+  },
+  {
+   "id": "pR3p1cAbElU",
+   "published": "2026-11-05T16:03:46+00:00",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №1",
+   "views": 259
+  },
+  {
+   "id": "0erkMjYIh-k",
+   "published": "2026-11-05T14:30:26+00:00",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №1",
+   "views": 202
+  }
+ ]
 }
