@@ -71,7 +71,7 @@ def same(t1, t2):
         # у одного есть «часть N», у другого нет: считаем совпадением только для части 1
         pn = (p1 or p2).group(1)
         if pn != '1': return False
-    return j >= 0.45
+    return j >= 0.3
 episodes = []
 for e in flat(YT_CHANNEL, ['--extractor-args', 'youtube:player_client=default,web_safari,ios,tv']):
     t = e.get('title') or ''
@@ -116,7 +116,7 @@ order = []
 if cfg['episode']:
     order = [e for e in episodes if cfg['episode'] in e['id'] or cfg['episode'].lower() in e['title'].lower()]
 if not order:
-    order = sorted(episodes, key=lambda e: (len(used(e)), 0 if e.get('rutube') else 1, -(e['num'] or 0)))
+    order = sorted(episodes, key=lambda e: (len(used(e)) >= 5, len(used(e)), 0 if e.get('rutube') else 1, -(e.get('rnum') or e['num'] or 0)))
 yt_list = None
 def yt_entries():
     global yt_list
@@ -126,7 +126,8 @@ def yt_entries():
     return yt_list
 mp4 = 'out/ep.mp4'
 cand = None
-for ep in order[:6]:
+for ep in order:
+    if not (ep.get('rutube') or ep['src'] == 'rutube'): continue   # без Rutube не скачать (YouTube с GitHub закрыт)
     if os.path.exists(mp4): os.remove(mp4)
     P('пробую серию:', ep['num'], ep['title'], ep['url'], 'уже взято:', len(used(ep)))
     yurl = ep['url'] if ep['src'] == 'youtube' else None
@@ -135,29 +136,9 @@ for ep in order[:6]:
         run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', mp4, rurl], timeout=1500)
         if os.path.exists(mp4): P('скачано с rutube')
     if not os.path.exists(mp4) and yurl:
-        for cl in ['youtube:player_client=android_vr;player_skip=webpage,configs', 'youtube:player_client=tv_simply', 'youtube:player_client=mweb']:
-            run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', mp4, '--extractor-args', cl, yurl], timeout=900)
+        for cl in ['youtube:player_client=android_vr;player_skip=webpage,configs']:
+            run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', mp4, '--extractor-args', cl, yurl], timeout=600)
             if os.path.exists(mp4): P('скачано с youtube через', cl); break
-    if not os.path.exists(mp4) and yurl:   # открытые зеркала YouTube
-        import urllib.request
-        vid = yurl.split('v=')[-1]
-        def get(u, t=60):
-            rq = urllib.request.Request(u, headers={'User-Agent': 'Mozilla/5.0'}); return urllib.request.urlopen(rq, timeout=t).read()
-        for inst in ['https://inv.nadeko.net', 'https://invidious.nerdvpn.de', 'https://yewtu.be', 'https://invidious.f5.si', 'https://iv.datura.network', 'https://invidious.privacyredirect.com']:
-            for itag in ['22', '18']:
-                try:
-                    d = get(f'{inst}/latest_version?id={vid}&itag={itag}&local=true', 600)
-                    if len(d) > 2_000_000: open(mp4, 'wb').write(d); P('скачано через', inst, itag, len(d)); break
-                except Exception as e: P(inst, itag, 'нет', str(e)[:80])
-            if os.path.exists(mp4): break
-        if not os.path.exists(mp4):
-            for api in ['https://pipedapi.kavin.rocks', 'https://pipedapi.adminforge.de', 'https://api.piped.private.coffee', 'https://pipedapi.r4fo.com', 'https://pipedapi.leptons.xyz']:
-                try:
-                    j = json.loads(get(f'{api}/streams/{vid}'))
-                    vs = [v for v in j.get('videoStreams', []) if not v.get('videoOnly') and v.get('url')]
-                    vs.sort(key=lambda v: int(re.sub(r'\D', '', v.get('quality') or '0') or 0), reverse=True)
-                    if vs: d = get(vs[0]['url'], 900); open(mp4, 'wb').write(d); P('скачано через', api, vs[0].get('quality'), len(d)); break
-                except Exception as e: P(api, 'нет', str(e)[:80])
     if os.path.exists(mp4): cand = ep; break
     P('серия недоступна, беру следующую')
 if not cand: P('не скачалось'); sys.exit(0)
