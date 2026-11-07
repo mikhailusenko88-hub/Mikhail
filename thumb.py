@@ -1,4 +1,5 @@
-"""Обложка 1280×720 для ролика: кольца, из которых вылетают шарики-флаги, и крупный текст."""
+"""Обложка 1280×720: три самых «кликабельных» флага заезда лицом к лицу, большое VS, «WHO SURVIVES?»
+и сколько выживает. Без спойлеров (кто выжил — не показываем)."""
 import json
 import math
 import random
@@ -8,79 +9,99 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
 import countries
+import popular
 import render
-from render import font, mix
+from render import font
 
 W, H = 1280, 720
+GOLD = (255, 214, 64)
+GREEN = (70, 235, 130)
+RED = (235, 60, 70)
+WHITE = (255, 255, 255)
 
 
-def make(codes, race_no, out, final=False, n=32, surv=1, tag=""):
-    tag = tag or f"#{race_no}"
-    rr = random.Random(race_no)
+def _bg(race_no, final):
     th = render.THEMES[race_no % (len(render.THEMES) - 1)] if not final else render.THEMES[-1]
     g = np.linspace(0, 1, H)[:, None, None]
-    a, b = np.array(th["bg0"], np.float32), np.array(th["bg1"], np.float32) * 1.6
+    a, b = np.array(th["bg0"], np.float32), np.array(th["bg1"], np.float32) * 1.5
     arr = np.repeat(a + (b - a) * g, W, 1)
-    img = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
-    S = 2
-    lay = Image.new("RGBA", (W * S, H * S), (0, 0, 0, 0))
-    glow = Image.new("RGBA", (W // 2, H // 2), (0, 0, 0, 0))
-    d, gd = ImageDraw.Draw(lay), ImageDraw.Draw(glow)
-    cx, cy = 400, 380
-    for i, (R, gap, rot) in enumerate([(130, 40, 20), (205, 34, 150), (280, 30, 260)]):
-        col = th["rings"][i]
-        a0, a1 = rot + gap / 2, rot + 360 - gap / 2
-        d.arc([(cx - R) * S, (cy - R) * S, (cx + R) * S, (cy + R) * S], a0, a1, fill=col + (255,), width=16 * S)
-        gd.arc([(cx - R) / 2, (cy - R) / 2, (cx + R) / 2, (cy + R) / 2], a0, a1, fill=col + (200,), width=14)
-    lay = lay.resize((W, H), Image.LANCZOS)
-    glow = glow.filter(ImageFilter.GaussianBlur(9)).resize((W, H), Image.BILINEAR)
-    img.paste(glow, (0, 0), glow)
-    img.paste(lay, (0, 0), lay)
-    # шарики: часть внутри, часть вылетает
-    pts = []
-    for k, c in enumerate(codes[:22]):
-        for _ in range(600):
-            if k < 9:
-                ang, dist = rr.uniform(0, 6.28), rr.uniform(0, 88)
-                r = 27
-            else:
-                ang, dist = rr.uniform(-2.6, 0.9), rr.uniform(300, 520)
-                r = rr.choice([40, 46, 52])
-            x, y = cx + dist * math.cos(ang), cy + dist * math.sin(ang)
-            if not (40 < x < 760 and 40 < y < 690) or (y < 130 and x < 60 + 26 * len(tag)):
-                continue
-            if all(math.hypot(x - px, y - py) > r + pr + 4 for px, py, pr, _ in pts):
-                pts.append((x, y, r, c))
-                break
-    for (x, y, r, c) in sorted(pts, key=lambda p: p[2]):
-        spr = render.ball_sprite(c, r, rr.uniform(-0.6, 0.6))
+    img = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).convert("RGBA")
+    # лучи из центра + лёгкая виньетка
+    rays = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    rd = ImageDraw.Draw(rays)
+    cx, cy = 430, 360
+    for k in range(18):
+        a0 = k * 20
+        rd.pieslice([cx - 1400, cy - 1400, cx + 1400, cy + 1400], a0, a0 + 7, fill=(255, 255, 255, 22))
+    img = Image.alpha_composite(img, rays.filter(ImageFilter.GaussianBlur(3)))
+    v = Image.new("L", (W, H), 0)
+    ImageDraw.Draw(v).ellipse([-200, -150, W + 200, H + 150], fill=255)
+    v = v.filter(ImageFilter.GaussianBlur(160))
+    dark = Image.new("RGBA", (W, H), (0, 0, 0, 255))
+    img = Image.composite(img, Image.alpha_composite(img, Image.new("RGBA", (W, H), (0, 0, 0, 110))), v)
+    return img, th
+
+
+def _ball_shadow(img, x, y, r):
+    sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(sh).ellipse([x - r, y - r + 18, x + r, y + r + 18], fill=(0, 0, 0, 150))
+    return Image.alpha_composite(img, sh.filter(ImageFilter.GaussianBlur(14)))
+
+
+def make(codes, race_no, out, final=False, n=32, surv=1, tag="", ranking=None):
+    rr = random.Random(race_no)
+    img, th = _bg(race_no, final)
+    feat = popular.featured(codes, 3)
+    # три шара: слева два по диагонали, справа один крупный — «лицом к лицу»
+    layout = [(230, 300, 150), (470, 470, 125), (640, 250, 118)] if len(feat) == 3 else [(260, 330, 160), (600, 360, 160)]
+    for (x, y, r), c in zip(layout, feat):
+        img = _ball_shadow(img, x, y, r)
+        spr = render.ball_sprite(c, r, rr.uniform(-0.5, 0.5))
         render.paste_center(img, spr, x, y)
-    dr = ImageDraw.Draw(img)
+    d = ImageDraw.Draw(img)
+    # VS
+    vx, vy = 455, 318
+    d.ellipse([vx - 62, vy - 62, vx + 62, vy + 62], fill=(20, 20, 26, 235), outline=GOLD, width=6)
+    render.text_center(d, vx, vy - 34, "VS", font(64), GOLD, 4)
+    # мелкие флаги остальных — строкой снизу слева (ещё 8 стран), чтобы было видно масштаб
+    rest = [c for c in codes if c not in feat]
+    rr.shuffle(rest)
+    for i, c in enumerate(rest[:9]):
+        x = 60 + i * 76
+        spr = render.ball_sprite(c, 30, 0)
+        render.paste_center(img, spr, x, 650)
+    if len(rest) > 9:
+        render.text_center(d, 60 + 9 * 76 + 10, 632, f"+{len(rest) - 9}", font(40), WHITE, 4)
+    # текст справа
     x0 = 790
     st = dict(stroke_fill=(0, 0, 0))
     if final:
-        dr.text((x0, 60), "GRAND", font=font(120), fill=(255, 255, 255), stroke_width=7, **st)
-        dr.text((x0, 190), "FINAL", font=font(150), fill=(255, 214, 64), stroke_width=8, **st)
-        dr.text((x0, 410), "WHO", font=font(118), fill=(70, 235, 130), stroke_width=7, **st)
-        dr.text((x0, 545), "WINS?", font=font(118), fill=(70, 235, 130), stroke_width=7, **st)
+        d.text((x0, 70), "GRAND", font=font(118), fill=WHITE, stroke_width=7, **st)
+        d.text((x0, 195), "FINAL", font=font(150), fill=GOLD, stroke_width=8, **st)
+        d.text((x0, 420), "WHO", font=font(110), fill=GREEN, stroke_width=7, **st)
+        d.text((x0, 540), "WINS?", font=font(110), fill=GREEN, stroke_width=7, **st)
     else:
-        dr.text((x0, 40), str(n), font=font(230), fill=(255, 214, 64), stroke_width=9, **st)
-        dr.text((x0, 290), "COUNTRIES", font=font(84), fill=(255, 255, 255), stroke_width=6, **st)
-        dr.text((x0, 420), f"ONLY {surv}", font=font(112), fill=(70, 235, 130), stroke_width=7, **st)
-        dr.text((x0, 550), "SURVIVE", font=font(104), fill=(70, 235, 130), stroke_width=7, **st)
-    dr.rounded_rectangle([20, 20, 40 + dr.textlength(tag, font=font(44)), 84], 14, fill=(235, 60, 70))
-    dr.text((30, 22), tag, font=font(44), fill=(255, 255, 255))
-    img.save(out, quality=92)
+        d.text((x0, 60), "WHO", font=font(132), fill=WHITE, stroke_width=8, **st)
+        d.text((x0, 205), "SURVIVES?", font=font(86), fill=WHITE, stroke_width=6, **st)
+        d.rounded_rectangle([x0 - 10, 380, W - 30, 520], 24, fill=(0, 0, 0, 150), outline=RED, width=6)
+        d.text((x0 + 14, 392), f"ONLY {surv}", font=font(100), fill=GREEN, stroke_width=6, **st)
+        d.text((x0 + 14, 522), f"OF {n} COUNTRIES", font=font(52), fill=GOLD, stroke_width=4, **st)
+        # красный крест — намёк на вылет
+        d.line([W - 150, 600, W - 60, 690], fill=RED, width=18)
+        d.line([W - 60, 600, W - 150, 690], fill=RED, width=18)
+    if tag:
+        d.rounded_rectangle([20, 20, 40 + d.textlength(tag, font=font(40)), 80], 14, fill=RED)
+        d.text((30, 24), tag, font=font(40), fill=WHITE)
+    img.convert("RGB").save(out, quality=92)
 
 
 if __name__ == "__main__":
     meta = json.load(open(sys.argv[1]))
     a2 = {v: k for k, v in countries.A3.items()}
-    codes = [a2[c] for c in meta["ranking"]]
-    random.Random(meta["race_no"] * 3).shuffle(codes)   # не выдаём, кто выжил
+    codes = meta.get("codes") or [a2[c] for c in meta["ranking"]]
     if meta.get("final"):
         tag = f"SEASON {meta['season']}"
     else:
         rn = {1: "ROUND 1", 2: "ROUND 2", 3: "SEMI-FINAL"}[meta["round"]]
-        tag = f"{rn} · HEAT {meta['heat']}/{meta['heats']}"
+        tag = f"{rn} · {meta.get('heat_label') or f'HEAT {meta['heat']}/{meta['heats']}'}"
     make(codes, meta["race_no"], sys.argv[2], meta.get("final", False), meta.get("n", 32), meta.get("survive", 1), tag)

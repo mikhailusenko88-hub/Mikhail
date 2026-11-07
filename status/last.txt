@@ -1,65 +1,165 @@
-ВЫЛОЖЕНО #7 2026-11-07 слот 1: https://youtu.be/ZeI8Tm-7B3M (public), за 414 с
+ТЕСТ ОК: видео #8 (3 заезд.) собрано за 149 с, 50 МБ (не выложено)
 
 {
- "title": "26 Countries Enter, 13 Survive 🔥 Marble Survival Race · Heat 7/7",
- "description": "Flagball Arena · Season 1, Round 1 · Heat 7/7: 26 countries race through 3 stages — only 13 survive and go to Round 2.\n\nCountries in this heat: Albania, Argentina, Bahrain, Comoros, El Salvador, Hungary, Iceland, Iraq, Jamaica, Laos, Lithuania, Luxembourg, Malaysia, Micronesia, Montenegro, Nauru, Oman, San Marino, South Africa, South Korea, Sri Lanka, Suriname, Thailand, Togo, Uganda, Uruguay.\n\nCountries still in the game before this race: 109 of 193.\nNext race: Round 2 · Heat 1/3. Grand Final: Nov 9.\n\nHow it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, then a new season starts. 3 new races every day.\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
- "race_no": 7,
+ "title": "Mexico vs Japan vs Russia ⚔️ Round 2 – Only Half Survive | Country Marble Race Heats 1–3/3",
+ "description": "Flagball Arena · Season 1, Round 2 · Heats 1–3/3: 96 countries, only 48 survive.\n\nHeat 1/3 — 32 countries, 16 survive: Andorra, Benin, Bolivia, Botswana, Canada, Costa Rica, Denmark, Dominican Republic, Egypt, El Salvador, Ghana, Guinea, Guinea-Bissau, Ireland, Kuwait, Kyrgyzstan, Libya, Luxembourg, Marshall Islands, Mozambique, Myanmar, Namibia, Nauru, Nicaragua, Niger, Papua New Guinea, Russia, Serbia, Seychelles, Slovenia, Timor-Leste, Vietnam.\n\nHeat 2/3 — 32 countries, 16 survive: Afghanistan, Australia, Bangladesh, Barbados, Burkina Faso, Cape Verde, Comoros, DR Congo, Gabon, Hungary, Iran, Iraq, Japan, Kenya, Malaysia, Mexico, Micronesia, New Zealand, North Korea, Philippines, Saint Lucia, Saint Vincent and the Grenadines, Singapore, Slovakia, South Korea, Suriname, Tanzania, Türkiye, Ukraine, United Kingdom, Yemen, Zimbabwe.\n\nHeat 3/3 — 32 countries, 16 survive: Algeria, Armenia, Belize, Bhutan, Brunei, Burundi, Cameroon, Central African Republic, Czechia, Eritrea, Honduras, Jordan, Latvia, Lebanon, Liberia, Maldives, Malta, Moldova, Mongolia, North Macedonia, Paraguay, Poland, Rwanda, Sao Tome and Principe, Saudi Arabia, Somalia, Sri Lanka, Thailand, Tonga, Uganda, United Arab Emirates, Venezuela.\n\nCountries in this heat: Algeria, Armenia, Belize, Bhutan, Brunei, Burundi, Cameroon, Central African Republic, Czechia, Eritrea, Honduras, Jordan, Latvia, Lebanon, Liberia, Maldives, Malta, Moldova, Mongolia, North Macedonia, Paraguay, Poland, Rwanda, Sao Tome and Principe, Saudi Arabia, Somalia, Sri Lanka, Thailand, Tonga, Uganda, United Arab Emirates, Venezuela.\n\nCountries still in the game before this race: 64 of 193.\nNext race: Semi-Final · Heat 1/2. Grand Final: Nov 8.\n\nHow it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, then a new season starts. 3 new races every day.\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries\n\nChapters:\n00:00 Heat 1/3 — Russia vs Vietnam\n00:30 Heat 2/3 — Mexico vs Japan\n01:00 Heat 3/3 — Thailand vs Saudi Arabia",
+ "race_no": 8,
  "date": "2026-11-07",
- "slot": 1,
+ "slot": 2,
  "season": 1,
- "round": 1,
- "heat": 7,
- "heats": 7,
- "survive": 13,
+ "round": 2,
+ "heat": 1,
+ "heats": 3,
+ "survive": 48,
  "final": false,
  "kind": "heat",
- "label": "ROUND 1 · HEAT 7/7",
- "n": 26,
- "ranking": [
-  "THA",
-  "SUR",
-  "MYS",
-  "SLV",
-  "UGA",
-  "LKA",
-  "FSM",
-  "IRQ",
-  "NRU",
-  "LUX",
-  "KOR",
-  "COM",
-  "HUN",
-  "OMN",
-  "BHR",
-  "SMR",
-  "LTU",
-  "ISL",
-  "TGO",
-  "ZAF",
-  "LAO",
-  "URY",
-  "JAM",
-  "ALB",
-  "MNE",
-  "ARG"
+ "label": "ROUND 2 · HEATS 1–3/3",
+ "n": 96,
+ "codes": [
+  "dk",
+  "gn",
+  "do",
+  "cr",
+  "ru",
+  "bo",
+  "vn",
+  "kw",
+  "gw",
+  "ad",
+  "sv",
+  "ni",
+  "pg",
+  "sc",
+  "si",
+  "eg",
+  "nr",
+  "gh",
+  "lu",
+  "na",
+  "ie",
+  "bw",
+  "bj",
+  "tl",
+  "kg",
+  "rs",
+  "mm",
+  "mz",
+  "ly",
+  "ne",
+  "mh",
+  "ca",
+  "bf",
+  "gb",
+  "sr",
+  "jp",
+  "bd",
+  "ye",
+  "tz",
+  "lc",
+  "my",
+  "sg",
+  "sk",
+  "af",
+  "zw",
+  "iq",
+  "km",
+  "ga",
+  "cv",
+  "ir",
+  "ph",
+  "tr",
+  "mx",
+  "fm",
+  "ua",
+  "hu",
+  "kr",
+  "nz",
+  "kp",
+  "bb",
+  "vc",
+  "au",
+  "cd",
+  "ke",
+  "bt",
+  "sa",
+  "hn",
+  "lv",
+  "rw",
+  "bi",
+  "bz",
+  "jo",
+  "am",
+  "mv",
+  "dz",
+  "to",
+  "mt",
+  "ve",
+  "so",
+  "cf",
+  "py",
+  "mn",
+  "lr",
+  "mk",
+  "md",
+  "bn",
+  "ae",
+  "ug",
+  "lk",
+  "pl",
+  "cm",
+  "st",
+  "cz",
+  "th",
+  "er",
+  "lb"
  ],
- "video_id": "ZeI8Tm-7B3M",
- "privacy": "public"
+ "spans": [
+  [
+   7.800000000000001,
+   76.03333333333333,
+   76.03333333333333
+  ]
+ ],
+ "duration": 30.0,
+ "heats_in_video": 3,
+ "races": [
+  8,
+  9,
+  10
+ ],
+ "heat_label": "HEATS 1–3/3"
 }
 
 --- журнал ---
-07:20:26 режим publish, гонка #7, 2026-11-07 слот 1, событие schedule
-07:20:26 по плану: S1 ROUND 1 · HEAT 7/7
-07:20:26 канал: Flagball Arena
-гонка #7 2026-11-07 слот 1: S1 ROUND 1 · HEAT 7/7, 26→13, участники: NRU ISL TGO LUX OMN JAM BHR IRQ KOR MNE UGA LAO LKA SLV THA SUR MYS SMR HUN FSM URY ARG ALB COM ZAF LTU
-  этап 1: 26→22, блоков 12 ['bumpers', 'ring_gate', 'tunnels', 'twin_rings', 'pegs', 'rotor', 'trapdoors', 'windmills', 'zigzag', 'pendulums', 'stairs', 'pegs'], Q-финиш 64.9 c, кадров 2022
-  этап 2: 22→17, блоков 11 ['stairs', 'rotor', 'windmills', 'ring_gate', 'trapdoors', 'bumpers', 'twin_rings', 'tunnels', 'pendulums', 'pegs', 'zigzag'], Q-финиш 60.6 c, кадров 1896
-  этап 3: 17→13, блоков 11 ['tunnels', 'zigzag', 'bumpers', 'windmills', 'pendulums', 'trapdoors', 'stairs', 'ring_gate', 'pegs', 'rotor', 'twin_rings'], Q-финиш 60.2 c, кадров 1881
-длительность ролика ≈ 4.1 мин
-готово: 7323 кадров за 404 с
-кадров 7323, 4.07 мин, рендер 405 с
-выжили: THA SUR MYS SLV UGA LKA FSM IRQ NRU LUX KOR COM HUN
-07:27:12 ролик готов: 131 МБ, 406 с с начала; название: 26 Countries Enter, 13 Survive 🔥 Marble Survival Race · Heat 7/7
-07:27:19 обложка: 200 
-07:27:20 в плейлисте
-07:27:20 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'madeForKids': False, 'selfDeclaredMadeForKids': False}
+14:37:18 режим test, гонка #8, 2026-11-07 слот 2, событие push
+14:37:18 по плану: S1 ROUND 2 · HEAT 1/3
+14:37:18 в этом видео заездов: 3 (раунд 2, осталось в раунде 3)
+гонка #8 2026-11-07 слот 2: S1 ROUND 2 · HEAT 1/3, 32→16, участники: DNK GIN DOM CRI RUS BOL VNM KWT GNB AND SLV NIC PNG SYC SVN EGY NRU GHA LUX NAM IRL BWA BEN TLS KGZ SRB MMR MOZ LBY NER MHL CAN
+  этап 1: 32→27, блоков 11 ['trapdoors', 'pendulums', 'twin_rings', 'tunnels', 'zigzag', 'rotor', 'windmills', 'bumpers', 'ring_gate', 'stairs', 'pegs'], Q-финиш 65.7 c, кадров 2047
+  этап 2: 27→21, блоков 11 ['rotor', 'bumpers', 'trapdoors', 'pendulums', 'pegs', 'windmills', 'stairs', 'zigzag', 'twin_rings', 'tunnels', 'ring_gate'], Q-финиш 61.7 c, кадров 1926
+  этап 3: 21→16, блоков 11 ['tunnels', 'pendulums', 'zigzag', 'bumpers', 'stairs', 'rotor', 'trapdoors', 'pegs', 'twin_rings', 'ring_gate', 'windmills'], Q-финиш 62.8 c, кадров 1959
+длительность ролика ≈ 0.5 мин
+готово: 900 кадров за 50 с
+кадров 900, 0.50 мин, рендер 52 с
+выжили: MOZ NIC MHL MMR CRI GNB EGY VNM KWT SYC TLS LBY CAN NAM NER GHA
+14:38:10 заезд 1/3 готов: 17 МБ, 52 с
+гонка #9 2026-11-07 слот 2: S1 ROUND 2 · HEAT 2/3, 32→16, участники: BFA GBR SUR JPN BGD YEM TZA LCA MYS SGP SVK AFG ZWE IRQ COM GAB CPV IRN PHL TUR MEX FSM UKR HUN KOR NZL PRK BRB VCT AUS COD KEN
+  этап 1: 32→27, блоков 11 ['zigzag', 'pegs', 'pendulums', 'stairs', 'twin_rings', 'rotor', 'bumpers', 'windmills', 'trapdoors', 'tunnels', 'ring_gate'], Q-финиш 64.1 c, кадров 2000
+  этап 2: 27→21, блоков 11 ['ring_gate', 'trapdoors', 'stairs', 'rotor', 'tunnels', 'twin_rings', 'pegs', 'bumpers', 'zigzag', 'pendulums', 'windmills'], Q-финиш 62.9 c, кадров 1964
+  этап 3: 21→16, блоков 12 ['windmills', 'pendulums', 'stairs', 'pegs', 'zigzag', 'bumpers', 'twin_rings', 'trapdoors', 'ring_gate', 'rotor', 'tunnels', 'twin_rings'], Q-финиш 64.0 c, кадров 1997
+длительность ролика ≈ 0.5 мин
+готово: 900 кадров за 47 с
+кадров 900, 0.50 мин, рендер 49 с
+выжили: COM ZWE MYS LCA CPV SVK COD IRN HUN BRB PHL YEM TUR KEN TZA BFA
+14:38:58 заезд 2/3 готов: 17 МБ, 101 с
+гонка #10 2026-11-07 слот 2: S1 ROUND 2 · HEAT 3/3, 32→16, участники: BTN SAU HND LVA RWA BDI BLZ JOR ARM MDV DZA TON MLT VEN SOM CAF PRY MNG LBR MKD MDA BRN ARE UGA LKA POL CMR STP CZE THA ERI LBN
+  этап 1: 32→27, блоков 11 ['ring_gate', 'pegs', 'windmills', 'rotor', 'tunnels', 'zigzag', 'pendulums', 'twin_rings', 'trapdoors', 'bumpers', 'stairs'], Q-финиш 64.6 c, кадров 2014
+  этап 2: 27→21, блоков 12 ['windmills', 'ring_gate', 'stairs', 'rotor', 'zigzag', 'twin_rings', 'pegs', 'pendulums', 'tunnels', 'bumpers', 'trapdoors', 'twin_rings'], Q-финиш 63.0 c, кадров 1967
+  этап 3: 21→16, блоков 12 ['ring_gate', 'rotor', 'bumpers', 'pegs', 'trapdoors', 'twin_rings', 'windmills', 'tunnels', 'stairs', 'zigzag', 'pendulums', 'rotor'], Q-финиш 63.8 c, кадров 1989
+длительность ролика ≈ 0.5 мин
+готово: 900 кадров за 46 с
+кадров 900, 0.50 мин, рендер 47 с
+выжили: PRY CZE RWA MLT SAU SOM LKA VEN CAF BLZ LVA ARM BRN LBR MDA UGA
+14:39:45 заезд 3/3 готов: 16 МБ, 148 с
+14:39:46 видео готово: 50 МБ, 1.5 мин, 148 с с начала; название: Mexico vs Japan vs Russia ⚔️ Round 2 – Only Half Survive | Country Marble Race Heats 1–3/3
+14:39:46 Shorts не собрался: Command '['ffmpeg', '-y', '-loglevel', 'error', '-ss', '52.47', '-t', '-22.47', '-i', '/tmp/fb/race_009.mp4', '-loop', '1', '-i', '/tmp/fb/video_008_short.mp4.png', '-filter_complex', '[0:v]crop=608:1080:416:0,scale=1080:1920:flags=lanczos,setsar=1[v0];[1:v]format=rgba[ov];[v0][ov]overlay=0:0,fade=t=out:st=-22.97:d=0.5[v]', '-map', '[v]', '-map', '0:a?', '-c:v', 'libx264', '-preset', 'veryfast', '-b:v', '6000k', '-pix_fmt', 'yuv420p', '-r', '30', '-c:a', 'aac', '-b:a', '160k', '-shortest', '-movflags', '+faststart', '/tmp/fb/video_008_short.mp4']' returned non-zero exit status 222.

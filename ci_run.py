@@ -20,6 +20,7 @@ os.chdir(HERE)
 MSK = dt.timezone(dt.timedelta(hours=3))
 WORK = "/tmp/fb"
 LOG = []
+HEATS_PER_VIDEO = {1: 2, 2: 3, 3: 2, 4: 1}     # заездов в одном видео по раундам
 
 
 def log(*a):
@@ -91,29 +92,97 @@ def main():
     os.makedirs(WORK, exist_ok=True)
     tmp_state = f"{WORK}/state.json"
     shutil.copy("season_state.json", tmp_state)
-    name = f"{WORK}/race_{n:03d}"
-    cmd = [sys.executable, "race.py", "--date", d.isoformat(), "--slot", str(slot), "--state", tmp_state,
-           "--out", name + ".mp4"]
-    if req.get("preview"):
-        cmd += ["--preview", req["preview"]]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-    for line in p.stdout:
-        line = line.rstrip()
-        print(line, flush=True)
-        if not line.startswith("кадр "):
-            LOG.append(line)
-    if p.wait():
-        raise SystemExit("race.py упал")
+
+    # ---- сколько заездов в одном видео: раунд целиком (отбор — по 2), чтобы ролик был 4–8 минут
+    import season as SE
+    cur = SE.current(state)
+    left = cur["heats"] - (cur["heat"] - 1)
+    k = min(HEATS_PER_VIDEO.get(cur["round"], 1), left)
+    log(f"в этом видео заездов: {k} (раунд {cur['round']}, осталось в раунде {left})")
+    parts = []
+    for j in range(k):
+        name = f"{WORK}/race_{n + j:03d}"
+        cmd = [sys.executable, "race.py", "--date", d.isoformat(), "--slot", str(slot), "--state", tmp_state,
+               "--out", name + ".mp4"]
+        if j < k - 1:
+            cmd.append("--no-next")
+        if req.get("preview"):
+            cmd += ["--preview", req["preview"]]
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        for line in p.stdout:
+            line = line.rstrip()
+            print(line, flush=True)
+            if not line.startswith("кадр "):
+                LOG.append(line)
+        if p.wait():
+            raise SystemExit("race.py упал")
+        parts.append((name + ".mp4", json.load(open(name + ".json"))))
+        log(f"заезд {j + 1}/{k} готов: {os.path.getsize(name + '.mp4') / 1e6:.0f} МБ, {time.time() - t0:.0f} с")
+
+    # ---- склейка
+    name = f"{WORK}/video_{n:03d}"
+    if k == 1:
+        shutil.copy(parts[0][0], name + ".mp4")
+    else:
+        with open(f"{WORK}/concat.txt", "w") as f:
+            for mp4, _ in parts:
+                f.write(f"file '{mp4}'\n")
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", f"{WORK}/concat.txt",
+                        "-c", "copy", "-movflags", "+faststart", name + ".mp4"], check=True)
+    metas = [m for _, m in parts]
+    m0 = metas[0]
+    codes = [c for m in metas for c in m["codes"]]
+    meta = dict(m0)
+    meta.update({"codes": codes, "n": sum(m["n"] for m in metas), "survive": sum(m["survive"] for m in metas),
+                 "heats_in_video": k, "ranking": [c for m in metas for c in m["ranking"]],
+                 "races": [m["race_no"] for m in metas], "slot": slot})
+    if k > 1:
+        h0, h1 = m0["heat"], metas[-1]["heat"]
+        meta["heat_label"] = f"HEATS {h0}–{h1}/{m0['heats']}"
+        meta["label"] = f"{m0['label'].split(' · ')[0]} · HEATS {h0}–{h1}/{m0['heats']}"
+        import race as RC
+        plan = {"season": m0["season"], "round": m0["round"], "heat": h0, "heats": m0["heats"], "codes": m0["codes"],
+                "survive": meta["survive"], "final": m0["final"], "race_no": m0["race_no"], "alive": 0}
+        meta["title"] = RC.titles(plan, "", codes=codes, heats_txt=f"Heats {h0}–{h1}/{m0['heats']}")
+        blocks = []
+        for m in metas:
+            names = ", ".join(sorted(RC.NAMES[c] for c in m["codes"]))
+            blocks.append(f"Heat {m['heat']}/{m['heats']} — {m['n']} countries, {m['survive']} survive: {names}.")
+        tail = metas[-1]["description"]
+        i = tail.find("Countries still in the game")
+        tail = tail[i:] if i >= 0 else ""
+        meta["description"] = (f"Flagball Arena · Season {m0['season']}, {meta['label'].title()}: {meta['n']} countries, "
+                               f"only {meta['survive']} survive.\n\n" + "\n\n".join(blocks) + "\n\n" + tail)
+        # главы
+        t = 0.0
+        ch = []
+        for m in metas:
+            mm, ss = divmod(int(t), 60)
+            ch.append(f"{mm:02d}:{ss:02d} Heat {m['heat']}/{m['heats']} — {RC.vs_line(m['codes'], 2)}")
+            t += m.get("duration", 0)
+        meta["description"] = meta["description"].rstrip() + "\n\nChapters:\n" + "\n".join(ch)
+    json.dump(meta, open(name + ".json", "w"), ensure_ascii=False, indent=1)
     subprocess.run([sys.executable, "thumb.py", name + ".json", name + ".jpg"], check=True)
-    meta = json.load(open(name + ".json"))
-    meta["slot"] = slot
     size = os.path.getsize(name + ".mp4") / 1e6
-    log(f"ролик готов: {size:.0f} МБ, {time.time() - t0:.0f} с с начала; название: {meta['title']}")
+    log(f"видео готово: {size:.0f} МБ, {sum(m.get('duration', 0) for m in metas) / 60:.1f} мин, "
+        f"{time.time() - t0:.0f} с с начала; название: {meta['title']}")
+
+    # ---- Shorts из самого «кликабельного» заезда (1 на выкладку — лимит YouTube API)
+    short = None
+    try:
+        import popular
+        import shorts
+        best = max(parts, key=lambda pm: -popular.POS.get(popular.featured(pm[1]["codes"], 1)[0], 999))
+        short = shorts.make(best[0], best[0][:-4] + ".json", name + "_short.mp4")
+        short["meta"] = best[1]
+        log(f"Shorts готов: {short['duration']:.0f} с — {short['title']}")
+    except Exception as e:  # noqa: BLE001 — Shorts не должен ломать выкладку
+        log(f"Shorts не собрался: {e}")
 
     if mode != "publish":
         shutil.copy(name + ".jpg", "status/test_thumb.jpg")
-        write_status(f"ТЕСТ ОК: гонка #{n} собрана за {time.time() - t0:.0f} с, {size:.0f} МБ (не выложена)",
-                     json.dumps(meta, ensure_ascii=False, indent=1))
+        write_status(f"ТЕСТ ОК: видео #{n} ({k} заезд.) собрано за {time.time() - t0:.0f} с, {size:.0f} МБ (не выложено)",
+                     json.dumps({kk: v for kk, v in meta.items() if kk != "ranking"}, ensure_ascii=False, indent=1))
         return
 
     vid = yt.upload(name + ".mp4", meta)
@@ -126,12 +195,26 @@ def main():
     log("статус на YouTube:", st)
     # сезон двигается только после удачной выкладки
     shutil.copy(tmp_state, "season_state.json")
-    json.dump(meta, open(f"races/race_{n:03d}.json", "w"), ensure_ascii=False, indent=1)
+    for m in metas:
+        m["video_id"] = vid
+        json.dump(m, open(f"races/race_{m['race_no']:03d}.json", "w"), ensure_ascii=False, indent=1)
     with open("status/uploads.md", "a", encoding="utf-8") as f:
-        f.write(f"| {n} | {d} | {slot} | S{meta['season']} {meta['label']} | https://youtu.be/{vid} | {meta['privacy']} |\n")
+        f.write(f"| {'–'.join(str(x) for x in meta['races'])} | {d} | {slot} | S{meta['season']} {meta['label']} | "
+                f"https://youtu.be/{vid} | {meta['privacy']} |\n")
+    short_link = ""
+    if short:
+        try:
+            smeta = {"title": short["title"], "description": shorts.description(short["meta"], f"https://youtu.be/{vid}")}
+            svid = yt.upload(name + "_short.mp4", smeta)
+            short_link = f" + Shorts https://youtube.com/shorts/{svid}"
+            with open("status/uploads.md", "a", encoding="utf-8") as f:
+                f.write(f"| shorts | {d} | {slot} | {short['vs']} | https://youtube.com/shorts/{svid} | |\n")
+        except BaseException as e:  # noqa: BLE001
+            log(f"Shorts не выложился: {e}")
     warn = "" if meta["privacy"] == "public" else "  ⚠️ НЕ ОТКРЫТ"
-    write_status(f"ВЫЛОЖЕНО #{n} {d} слот {slot}: https://youtu.be/{vid} ({meta['privacy']}){warn}, "
-                 f"за {time.time() - t0:.0f} с", json.dumps(meta, ensure_ascii=False, indent=1))
+    write_status(f"ВЫЛОЖЕНО #{n} {d} слот {slot}: https://youtu.be/{vid} ({meta['privacy']}){warn}{short_link}, "
+                 f"за {time.time() - t0:.0f} с", json.dumps({kk: v for kk, v in meta.items() if kk != "ranking"},
+                                                             ensure_ascii=False, indent=1))
 
 
 if __name__ == "__main__":

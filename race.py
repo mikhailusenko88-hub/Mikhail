@@ -443,27 +443,45 @@ class _NoMix:
         return lambda *a, **k: None
 
 
-def titles(plan, nxt_label):
-    s, h, hs, n, k = plan["season"], plan["heat"], plan["heats"], len(plan["codes"]), plan["survive"]
+NAMES = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "names.json")))
+SHORT = {"us": "USA", "gb": "UK", "ae": "UAE", "kr": "Korea", "cz": "Czechia", "ru": "Russia", "do": "Dominican Rep.",
+         "ba": "Bosnia", "tt": "Trinidad", "kn": "St Kitts", "vc": "St Vincent", "lc": "St Lucia", "cd": "DR Congo",
+         "cf": "C. Africa", "sa": "Saudi Arabia", "ir": "Iran", "sy": "Syria", "ve": "Venezuela", "bo": "Bolivia",
+         "tz": "Tanzania", "mm": "Myanmar", "la": "Laos", "kp": "North Korea", "fm": "Micronesia", "pg": "Papua"}
+
+
+def cname(c):
+    return SHORT.get(c, NAMES[c])
+
+
+def vs_line(codes, k=3):
+    import popular
+    return " vs ".join(cname(c) for c in popular.featured(codes, k))
+
+
+def titles(plan, nxt_label, codes=None, heats_txt=None):
+    """Название со странами-«лицами» заезда: зритель ищет свою страну."""
+    s, n, k = plan["season"], len(plan["codes"]), plan["survive"]
+    codes = codes or plan["codes"]
+    vs = vs_line(codes)
     rno = plan["race_no"]
+    tail = heats_txt or f"Heat {plan['heat']}/{plan['heats']}"
     if plan["final"]:
-        v = [f"GRAND FINAL 🏆 Season {s} – 32 Countries, 1 Champion | Marble Survival Race",
-             f"Season {s} GRAND FINAL 🏆 Which Country Becomes Champion? Marble Race"]
+        v = [f"{vs} 🏆 GRAND FINAL – 32 Countries, 1 Champion | Country Marble Race",
+             f"GRAND FINAL 🏆 {vs}… Which Country Wins Season {s}? Marble Race"]
     elif plan["round"] == 1:
-        v = [f"193 Countries Marble Survival 🌍 Round 1 · Heat {h}/{hs} – Only {k} Survive",
-             f"Country Marble Survival Race ⚠️ Heat {h}/{hs} – {n} Countries, {k} Survive",
-             f"Which Countries Survive? 🌍 Marble Elimination · Round 1 Heat {h}/{hs}",
-             f"{n} Countries Enter, {k} Survive 🔥 Marble Survival Race · Heat {h}/{hs}"]
+        v = [f"{vs} 🌍 Only {k} of {n} Countries Survive | Marble Race {tail}",
+             f"{vs}… Who Survives? ⚠️ {n} Countries Marble Race · {tail}",
+             f"{n} Countries, {k} Survive 🔥 {vs} | Country Marble Race {tail}"]
     elif plan["round"] == 2:
-        v = [f"Round 2 · Heat {h}/{hs} 🔥 {plan['alive']} Countries Left – Marble Survival Race",
-             f"Only Half Survive ⚠️ Country Marble Race · Round 2 Heat {h}/{hs}"]
+        v = [f"{vs} ⚔️ Round 2 – Only Half Survive | Country Marble Race {tail}",
+             f"Round 2 🔥 {vs}… Who Goes to the Semi-Final? Marble Race {tail}"]
     else:
-        v = [f"SEMI-FINAL {h}/{hs} ⚔️ {plan['alive']} Countries Left – Who Reaches the Grand Final?",
-             f"Country Marble Race SEMI-FINAL {h}/{hs} 🔥 16 Go to the Grand Final"]
+        v = [f"{vs} ⚔️ SEMI-FINAL – Who Reaches the Grand Final? Marble Race {tail}",
+             f"SEMI-FINAL 🔥 {vs}… 16 Go to the Grand Final | Country Marble Race {tail}"]
     return v[rno % len(v)][:100]
 
 
-NAMES = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "names.json")))
 
 
 def describe(plan, alive_before, nxt_label, fin_txt):
@@ -484,7 +502,7 @@ def describe(plan, alive_before, nxt_label, fin_txt):
             f"Countries still in the game before this race: {alive_before} of {season.TOTAL}.\n"
             f"Next race: {nxt_label.title()}.{(' Grand Final: ' + fin_txt.title() + '.') if fin_txt else ''}\n\n"
             f"How it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, "
-            f"then a new season starts. 3 new races every day.\n\n"
+            f"then a new season starts. New races every day.\n\n"
             f"Like 👍 if your country survived and write in the comments who you're cheering for!\n\n"
             f"#marblerace #countryballs #marblerun #survival #elimination #countries")
 
@@ -553,7 +571,7 @@ def build(args):
     OUTC = 3.6
     END1, END2, NXT = (7.0, 8.0, 10.0)
     total = INTRO0 + sum(INTRO + len(s["res"]["pos"]) / FPS + OUTC for s in stages) - (0 if not final_race else OUTC) \
-        + END1 + END2 + NXT
+        + END1 + END2 + (0 if args.no_next else NXT)
     if args.preview:
         total = min(total, args.preview)
     log(f"длительность ролика ≈ {total / 60:.1f} мин")
@@ -564,6 +582,7 @@ def build(args):
     FRAMES_MODE = bool(args.frames)
     out = None if FRAMES_MODE else fastvid.Writer(args.out, w=W, h=H, fps=FPS, bitrate="4500k", preset="veryfast")
     gt = 0.0
+    spans = []                       # (начало гонки этапа, конец гонки, конец «вылетевших») — для Shorts
     nframes = [0]
     want = set()
     if FRAMES_MODE:
@@ -664,6 +683,7 @@ def build(args):
             mixer.shatter(gt + tb)
         for n, (tf, i) in enumerate(sorted(res["fins"])):
             mixer.finish_ding(gt + tf, n, n < q)
+        span0 = gt
         for f in range(nf):
             if done():
                 break
@@ -714,6 +734,7 @@ def build(args):
                             text_center(dd, fx, fy + 122, f"#{place0 + m}", font(26), (200, 170, 170), 3)
                 emit(lambda ov=ov: view.frame(lastf, cams[lastf, 0], cams[lastf, 1], ov, final_status=True, snap=FRAMES_MODE))
             gt += no / FPS
+        spans.append((span0, span0 + nf / FPS, gt))
 
     # ---- концовка
     th = render.THEMES[-1]
@@ -849,12 +870,13 @@ def build(args):
             emit(img)
         gt += END2
 
-    # ---- следующая гонка
-    for img in next_card_frames(cbg, nxt, NXT, new_season):
-        if done():
-            break
-        emit(img)
-    gt += NXT
+    # ---- следующая гонка (при склейке нескольких заездов — только у последнего)
+    if not args.no_next:
+        for img in next_card_frames(cbg, nxt, NXT, new_season):
+            if done():
+                break
+            emit(img)
+        gt += NXT
 
     if FRAMES_MODE:
         log("всего секунд", nframes[0] / FPS)
@@ -868,7 +890,8 @@ def build(args):
             "race_no": race_no, "date": d.isoformat(), "slot": slot, "season": plan["season"], "round": plan["round"],
             "heat": plan["heat"], "heats": plan["heats"], "survive": plan["survive"], "final": final_race,
             "kind": "final" if final_race else "heat", "label": lab, "n": N,
-            "ranking": [A3[c] for c in ranking]}
+            "ranking": [A3[c] for c in ranking], "codes": list(parts), "spans": spans,
+            "duration": nframes[0] / FPS}
     json.dump(meta, open(os.path.splitext(args.out)[0] + ".json", "w"), ensure_ascii=False, indent=1)
     if not args.no_save:
         season.save(after, args.state)
@@ -886,4 +909,5 @@ if __name__ == "__main__":
     ap.add_argument("--preview", type=float, default=0)
     ap.add_argument("--no-save", action="store_true")
     ap.add_argument("--frames", default="")
+    ap.add_argument("--no-next", action="store_true", help="без карточки следующей гонки (для склейки заездов)")
     build(ap.parse_args())
