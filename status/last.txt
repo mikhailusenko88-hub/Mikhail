@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-07 слот 1: cities №4 https://youtube.com/shorts/EK5EzrtpOfQ, за 74 с
+ТЕСТ ОК: clubs №1 собран за 46 с, 37 МБ (не выложен)
 
 {
- "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №4",
- "description": "⏳ Final — ertaga! · Финал — завтра!\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
+ "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №1 #shorts",
+ "description": "⏳ Final — ertaga! · Финал — завтра!\n\nPaxtakor, Bunyodkor, Nasaf, Navbahor… qaysi jamoa tezroq? Izohlarda yoz 👇\n22 клубов Суперлиги Узбекистана в одной гонке: Пахтакор, Бунёдкор, Насаф, Навбахор и другие. Какой победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nJamoangiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего клуба? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #futbol #superliga #paxtakor #bunyodkor #nasaf #navbahor #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,41 +11,33 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "toshkent",
-  "samarqand",
-  "buxoro",
-  "namangan",
-  "andijon",
-  "fargʻona",
-  "города узбекистана",
-  "shaharlar"
+  "futbol",
+  "футбол",
+  "superliga",
+  "суперлига узбекистана",
+  "paxtakor",
+  "bunyodkor",
+  "nasaf",
+  "navbahor",
+  "neftchi",
+  "pfl uzbekistan"
  ]
 }
 
 --- журнал (время Ташкента) ---
-12:34:09 режим publish, событие schedule
-12:34:09 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-12:34:13 комментарии: роликов просмотрено: 5, комментариев: 0
-12:34:13 Тема: гонка городов. Подбираю трассу и заезд…
-12:34:17   трасса 1 (tramps, split, bumpy, pegs, spinners, funnel, tunnel, bumpers): победа на 39.6 с, смен лидера 12, финишировали 10, расчёт 4 с — не подходит
-12:34:20   трасса 2 (tramps, pegs, split, bumpy, bumpers, hammers, funnel, spinners): победа на 35.7 с, смен лидера 32, финишировали 1, расчёт 3 с — не подходит
-12:34:22   трасса 3 (split, bumpers, tunnel, pegs, tramps, hammers, funnel): победа на 28.1 с, смен лидера 10, финишировали 1, расчёт 2 с — не подходит
-12:34:26   трасса 4 (pegs, hammers, funnel, stairs, bumpers, tramps, spinners, tunnel): победа на 44.5 с, смен лидера 9, финишировали 2, расчёт 4 с
-12:34:30   трасса 5 (bumpers, pegs, funnel, spinners, stairs, hammers, bumpy, tramps): победа на 38.1 с, смен лидера 18, финишировали 3, расчёт 4 с — не подходит
-12:34:34   трасса 6 (bumpers, spinners, tramps, tunnel, bumpy, pegs, funnel, stairs): победа на 43.5 с, смен лидера 11, финишировали 5, расчёт 4 с
-12:34:38   трасса 7 (stairs, hammers, pegs, spinners, tunnel, tramps, funnel, bumpers): победа на 38.1 с, смен лидера 9, финишировали 11, расчёт 4 с — не подходит
-12:34:41   трасса 8 (funnel, tramps, spinners, tunnel, bumpy, stairs, bumpers, pegs): победа на 45.6 с, смен лидера 34, финишировали 7, расчёт 4 с
-12:34:41 Рисую трассу…
-12:34:42 Рисую кадры: заезд 52 с + финал 8 с…
-12:34:43   кадр 0/1555, 30 с
-12:34:48   кадр 300/1555, 35 с
-12:34:54   кадр 600/1555, 41 с
-12:34:59   кадр 900/1555, 46 с
-12:35:05   кадр 1200/1555, 52 с
-12:35:11   кадр 1500/1555, 58 с
-12:35:18 Свожу звук…
-12:35:20 Готово за 67 с: победил Jizzax, ролик 59 с
-12:35:20 ролик готов: 59 с, 41 МБ, сборка 71 с; победил Jizzax, топ-3: Jizzax, Qarshi, Buxoro
-12:35:22 YouTube: https://youtube.com/shorts/EK5EzrtpOfQ
-12:35:23 в плейлисте
-12:35:23 статус: public uploaded
+14:58:57 режим test, событие push
+14:58:57 Тема: гонка футбольных клубов. Подбираю трассу и заезд…
+14:59:01   трасса 1 (spinners, hammers, bumpy, stairs, pegs, tramps, bumpers): победа на 44.3 с, смен лидера 17, финишировали 2, расчёт 4 с
+14:59:03   трасса 2 (spinners, pegs, bumpers, stairs, tramps, split, funnel, hammers): победа на 39.5 с, смен лидера 18, финишировали 8, расчёт 2 с — не подходит
+14:59:06   трасса 3 (tunnel, bumpers, split, funnel, bumpy, spinners, stairs, pegs): победа на 38.9 с, смен лидера 12, финишировали 13, расчёт 2 с — не подходит
+14:59:06 Рисую трассу…
+14:59:06 Рисую кадры: заезд 50 с + финал 8 с…
+14:59:07   кадр 0/1515, 9 с
+14:59:12   кадр 300/1515, 14 с
+14:59:17   кадр 600/1515, 19 с
+14:59:22   кадр 900/1515, 25 с
+14:59:28   кадр 1200/1515, 30 с
+14:59:33   кадр 1500/1515, 36 с
+14:59:41 Свожу звук…
+14:59:42 Готово за 44 с: победил Lokomotiv, ролик 58 с
+14:59:42 ролик готов: 58 с, 37 МБ, сборка 44 с; победил Lokomotiv, топ-3: Lokomotiv, Aral, Olimpik
