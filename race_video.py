@@ -1013,10 +1013,14 @@ def mid_mushel(winner, acc):
     d = ImageDraw.Draw(im)
     im.paste(big, (int(W / 2 - big.size[0] / 2), 34), big)
     yrs = ENT[winner].get("years", [])
-    s1, s2 = "Туған жылдар", "Годы рождения"
+    if yrs:
+        s1, s2 = "Туған жылдар", "Годы рождения"
+        ys = "  ·  ".join(map(str, yrs))
+    else:                                   # ру: под шариком — жүз
+        s1, s2 = "Жүзі", "Жуз"
+        ys = f"{ENT[winner].get('zhuz_kk', '')}  ·  {ENT[winner].get('zhuz_ru', '')}"
     hs = pair_size([s1 + " · " + s2], 28, 760)
     text_c(d, W / 2, 238, f"{s1} · {s2}", hs, (255, 255, 255), 4)
-    ys = "  ·  ".join(map(str, yrs))
     text_c(d, W / 2, 282, ys, fit_size(ys, 52, 800), acc, 6)
     return im
 
@@ -1455,7 +1459,7 @@ if __name__ == "__main__":
     no = int(args[1]) if len(args) > 1 else 1
     sd = int(args[2]) if len(args) > 2 else None
     if "--check" in sys.argv:      # быстрая проверка на сервере: трасса и физика без рисования
-        for k_ in ("cities", "regions", "mushel", "names"):
+        for k_ in ("cities", "regions", "mushel", "names", "ru"):
             set_league(k_)
             rnd_ = random.Random(1)
             c_ = Course(rnd_, N)

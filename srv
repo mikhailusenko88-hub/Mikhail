@@ -30,7 +30,7 @@ case "${1:-status}" in
     ;;
   race)
     L="${2:-cities}"
-    case "$L" in cities|regions|mushel|names) ;; *) echo "Темы: cities | regions | mushel | names"; exit 1;; esac
+    case "$L" in cities|regions|mushel|names|ru) ;; *) echo "Темы: cities | regions | mushel | names | ru"; exit 1;; esac
     if pgrep -f "run_daily.py" >/dev/null; then echo "Бот уже делает ролик — подожди пару минут"; exit 0; fi
     PY=python3; [ -x "$BOT/.venv/bin/python" ] && PY="$BOT/.venv/bin/python"
     cd "$BOT" && nohup "$PY" run_daily.py --league "$L" >> bot.log 2>&1 &

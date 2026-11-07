@@ -4,7 +4,7 @@
     12:00 — гонка городов «Қай қала жеңеді?»
     15:00 — тема дня по очереди (config "theme_leagues"): мүшел → регионы по номерам → имена
     18:00 — гонка городов
-Вручную:  run_daily.py --league names     (cities | regions | mushel | names)
+Вручную:  run_daily.py --league names     (cities | regions | mushel | names | ru)
 Проба без выкладки:  run_daily.py --test --league mushel
 Если тема почему-то не собралась — вместо неё выходит гонка городов (слот не пропадает).
 
@@ -30,7 +30,7 @@ import traceback
 
 ASTANA = dt.timezone(dt.timedelta(hours=5))
 DEFAULT_SLOTS = {"12": "cities", "15": "theme", "18": "cities"}
-DEFAULT_THEMES = ["mushel", "regions", "names"]
+DEFAULT_THEMES = ["mushel", "regions", "names", "ru"]
 
 
 def pick_league(cfg, state, argv):
