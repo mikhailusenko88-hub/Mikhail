@@ -35,6 +35,8 @@
   .ph{font-size:12px;font-weight:700;letter-spacing:.08em;color:#ff6a4d;margin-bottom:6px}
   .plat.yt .ph{color:#ff4d4d}
   .plat .btns{margin-top:0}
+  .hint2{font-size:12px;color:var(--mut);margin-top:6px}
+  .hint2 a{color:#8ab4ff}
   .chk{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--mut)}
   .chk input{width:20px;height:20px}
   .empty{color:var(--mut);text-align:center;padding:40px 0}
@@ -49,7 +51,7 @@
   <small id="upd"></small>
 </header>
 <div class="wrap">
-  <p class="hint">Каждое утро тут появляются новые ролики. «Скачать» → в Файлы, потом в Rutube или YouTube: «+» → загрузить → вставить название и описание кнопками ниже (для каждой площадки своё описание и ссылки). Галочка «выложено» запоминается на этом телефоне.</p>
+  <p class="hint">Каждое утро тут появляются новые ролики. «Скачать» → iPhone предложит «Загрузить» (файл ляжет в Файлы → Загрузки) или открой ролик и через «Поделиться» → «Сохранить видео», потом в Rutube или YouTube: «+» → загрузить → вставить название и описание кнопками ниже (для каждой площадки своё описание и ссылки). Галочка «выложено» запоминается на этом телефоне.</p>
   <div id="list"><div class="empty">Загружаю…</div></div>
 </div>
 <div class="toast" id="toast">Скопировано</div>
@@ -64,6 +66,7 @@
     if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,function(){fallback(txt);ok()})}else{fallback(txt);ok()}
   }
   function fallback(txt){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity=0;document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta)}
+  function loc(n){return '../s9kbars-v/'+n}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
   function fmtDate(d){var p=d.split('-');return p[2]+'.'+p[1]+'.'+p[0]}
   function render(feed){
@@ -81,10 +84,11 @@
         var drt=it.desc_rt||it.desc, dyt=it.desc_yt||it.desc;
         var M={title:it.title,desc_rt:drt,desc_yt:dyt,full_rt:it.title+'\n\n'+drt,full_yt:it.title+'\n\n'+dyt};
         c.innerHTML=
-          '<div class="top"><video playsinline preload="none" controls poster="'+esc(it.thumb||'')+'" src="'+esc(it.url)+'"></video>'+
+          '<div class="top"><video playsinline preload="metadata" controls poster="'+esc(loc(it.file.replace('.mp4','.jpg')))+'" src="'+esc(loc(it.file))+'"></video>'+
           '<div class="meta"><div class="ep">'+(it.ep_num?it.ep_num+' серия · ':'')+'момент '+Math.floor(it.start/60)+':'+String(it.start%60).padStart(2,'0')+' · '+mb+' МБ</div>'+
           '<div class="t">'+esc(it.title)+'</div>'+
-          '<div class="btns"><a class="btn dl" href="'+esc(it.url)+'" download>⬇︎ Скачать mp4</a></div></div></div>'+
+          '<div class="btns"><a class="btn dl" href="'+esc(loc(it.file))+'" download="'+esc(it.file)+'">⬇︎ Скачать mp4</a></div>'+
+          '<div class="hint2">Если не играет — ролик ещё едет на сервер (до 5 мин). <a href="'+esc(it.url)+'">Запасная ссылка</a></div></div></div>'+
           '<div class="plat"><div class="ph">RUTUBE</div><div class="btns"><button class="btn" data-copy="title">Название</button><button class="btn" data-copy="desc_rt">Описание</button><button class="btn all" data-copy="full_rt">Всё сразу</button></div>'+
           '<div class="field"><label>Описание для Rutube</label><pre>'+esc(it.desc_rt||it.desc)+'</pre></div></div>'+
           '<div class="plat yt"><div class="ph">YOUTUBE</div><div class="btns"><button class="btn" data-copy="title">Название</button><button class="btn" data-copy="desc_yt">Описание</button><button class="btn all" data-copy="full_yt">Всё сразу</button></div>'+
