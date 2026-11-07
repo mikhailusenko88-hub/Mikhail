@@ -31,6 +31,10 @@
   .field label{font-size:12px;color:var(--mut);display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
   .field label button{background:none;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer}
   .field pre{margin:0;white-space:pre-wrap;word-break:break-word;background:#0f1115;border:1px solid var(--line);border-radius:10px;padding:10px;font:14px/1.4 inherit;max-height:160px;overflow:auto}
+  .plat{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+  .ph{font-size:12px;font-weight:700;letter-spacing:.08em;color:#ff6a4d;margin-bottom:6px}
+  .plat.yt .ph{color:#ff4d4d}
+  .plat .btns{margin-top:0}
   .chk{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--mut)}
   .chk input{width:20px;height:20px}
   .empty{color:var(--mut);text-align:center;padding:40px 0}
@@ -45,7 +49,7 @@
   <small id="upd"></small>
 </header>
 <div class="wrap">
-  <p class="hint">Каждое утро тут появляются новые ролики. «Скачать» → в Файлы, потом в Rutube/YouTube: «+» → загрузить → вставить название и описание кнопками ниже. Галочка «выложено» запоминается на этом телефоне.</p>
+  <p class="hint">Каждое утро тут появляются новые ролики. «Скачать» → в Файлы, потом в Rutube или YouTube: «+» → загрузить → вставить название и описание кнопками ниже (для каждой площадки своё описание и ссылки). Галочка «выложено» запоминается на этом телефоне.</p>
   <div id="list"><div class="empty">Загружаю…</div></div>
 </div>
 <div class="toast" id="toast">Скопировано</div>
@@ -74,17 +78,19 @@
       byDay[d].forEach(function(it){
         var c=document.createElement('div');c.className='card'+(done[it.file]?' done':'');
         var mb=(it.size/1048576).toFixed(1);
-        var full=it.title+'\n\n'+it.desc;
+        var drt=it.desc_rt||it.desc, dyt=it.desc_yt||it.desc;
+        var M={title:it.title,desc_rt:drt,desc_yt:dyt,full_rt:it.title+'\n\n'+drt,full_yt:it.title+'\n\n'+dyt};
         c.innerHTML=
           '<div class="top"><video playsinline preload="none" controls poster="'+esc(it.thumb||'')+'" src="'+esc(it.url)+'"></video>'+
           '<div class="meta"><div class="ep">'+(it.ep_num?it.ep_num+' серия · ':'')+'момент '+Math.floor(it.start/60)+':'+String(it.start%60).padStart(2,'0')+' · '+mb+' МБ</div>'+
           '<div class="t">'+esc(it.title)+'</div>'+
-          '<div class="btns"><a class="btn dl" href="'+esc(it.url)+'" download>⬇︎ Скачать mp4</a>'+
-          '<button class="btn all" data-copy="full">Скопировать всё</button></div></div></div>'+
-          '<div class="field"><label>Название <button data-copy="title">Скопировать</button></label><pre>'+esc(it.title)+'</pre></div>'+
-          '<div class="field"><label>Описание (с хэштегами) <button data-copy="desc">Скопировать</button></label><pre>'+esc(it.desc)+'</pre></div>'+
+          '<div class="btns"><a class="btn dl" href="'+esc(it.url)+'" download>⬇︎ Скачать mp4</a></div></div></div>'+
+          '<div class="plat"><div class="ph">RUTUBE</div><div class="btns"><button class="btn" data-copy="title">Название</button><button class="btn" data-copy="desc_rt">Описание</button><button class="btn all" data-copy="full_rt">Всё сразу</button></div>'+
+          '<div class="field"><label>Описание для Rutube</label><pre>'+esc(it.desc_rt||it.desc)+'</pre></div></div>'+
+          '<div class="plat yt"><div class="ph">YOUTUBE</div><div class="btns"><button class="btn" data-copy="title">Название</button><button class="btn" data-copy="desc_yt">Описание</button><button class="btn all" data-copy="full_yt">Всё сразу</button></div>'+
+          '<div class="field"><label>Описание для YouTube</label><pre>'+esc(it.desc_yt||it.desc)+'</pre></div></div>'+
           '<label class="chk"><input type="checkbox" '+(done[it.file]?'checked':'')+'> выложено</label>';
-        c.querySelectorAll('[data-copy]').forEach(function(b){b.addEventListener('click',function(){var k=b.getAttribute('data-copy');copy(k==='full'?full:(k==='title'?it.title:it.desc),b)})});
+        c.querySelectorAll('[data-copy]').forEach(function(b){b.addEventListener('click',function(){var k=b.getAttribute('data-copy');copy(M[k]||'',b)})});
         c.querySelector('.chk input').addEventListener('change',function(e){if(e.target.checked)done[it.file]=1;else delete done[it.file];save();c.classList.toggle('done',!!e.target.checked)});
         list.appendChild(c);
       });
