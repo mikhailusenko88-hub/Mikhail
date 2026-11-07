@@ -6,7 +6,14 @@ echo "== пакеты"
 export DEBIAN_FRONTEND=noninteractive
 apt-get -qq update >/dev/null 2>&1 || true
 apt-get -qq install -y ffmpeg fonts-dejavu-core python3 python3-pip curl >/dev/null 2>&1 || apt-get -qq install -y ffmpeg fonts-dejavu python3 python3-pip curl >/dev/null 2>&1 || true
+apt-get -qq install -y unzip >/dev/null 2>&1 || true
 pip3 install -q -U yt-dlp 2>/dev/null || pip3 install -q -U --break-system-packages yt-dlp
+# deno — движок JS, нужен yt-dlp для YouTube
+if ! command -v deno >/dev/null 2>&1; then
+  curl -fsSL https://deno.land/install.sh | DENO_INSTALL=/usr/local sh -s -- -y >/dev/null 2>&1 || true
+  [ -x /usr/local/bin/deno ] || { curl -fsSL -o /tmp/deno.zip https://github.com/denoland/deno/releases/latest/download/deno-x86_64-unknown-linux-gnu.zip && unzip -qo /tmp/deno.zip -d /usr/local/bin && chmod +x /usr/local/bin/deno; }
+fi
+echo "deno: $(deno --version 2>/dev/null | head -1 || echo НЕТ)"
 echo "ffmpeg: $(ffmpeg -version 2>/dev/null | head -1 | cut -d' ' -f3)  yt-dlp: $(yt-dlp --version 2>/dev/null)"
 
 echo "== папки"
@@ -35,7 +42,7 @@ echo "cron: $(crontab -l | grep shorts-cut)"
 
 echo "== проверка YouTube с сервера"
 cd /var/www/shorts/tmp && rm -f yt-test.mp4
-yt-dlp -q -f "b[height<=360]" -o yt-test.mp4 --no-playlist "https://www.youtube.com/watch?v=fa7knKC0dNs" 2>&1 | tail -2 || true
+yt-dlp -q --js-runtimes deno -f "b[height<=360]" -o yt-test.mp4 --no-playlist "https://www.youtube.com/watch?v=fa7knKC0dNs" 2>&1 | tail -2 || true
 if [ -s yt-test.mp4 ]; then echo "YouTube: РАБОТАЕТ ($(du -h yt-test.mp4 | cut -f1))"; rm -f yt-test.mp4; else echo "YouTube: НЕ КАЧАЕТ (будет Rutube)"; fi
 
 echo "== первая нарезка (2–5 минут)"

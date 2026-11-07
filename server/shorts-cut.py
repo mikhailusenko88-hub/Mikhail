@@ -2,6 +2,7 @@
 # Нарезка Shorts «Кот Барсик» на сервере: серии с YouTube (1080p), запас — Rutube.
 # Результат: /var/www/mebel/s9kbars-v/<файл>.mp4 + .jpg + feed.json; страница — /var/www/mebel/s9kbars/
 import json, os, re, subprocess, sys, math, datetime, wave, array, random, shutil, time
+os.environ['PATH'] = '/usr/local/bin:/usr/bin:/bin:' + os.environ.get('PATH', '')
 
 YT_CHANNEL = 'https://www.youtube.com/@Cartoon_Friend3/videos'
 YT_CHANNEL_URL = 'https://www.youtube.com/@Cartoon_Friend3'
@@ -61,7 +62,7 @@ for n in os.listdir(TMP): os.remove(os.path.join(TMP, n))
 
 # ---------- список серий ----------
 def flat(url, extra=()):
-    r = run(['yt-dlp', '--flat-playlist', '-J', '--playlist-end', '80', *extra, url], timeout=300)
+    r = run(['yt-dlp', '--js-runtimes', 'deno', '--flat-playlist', '-J', '--playlist-end', '80', *extra, url], timeout=300)
     try: return json.loads(r.stdout).get('entries') or []
     except Exception: return []
 def ep_num(title):
@@ -114,11 +115,12 @@ if not order:
 # ---------- скачать ----------
 mp4 = os.path.join(TMP, 'ep.mp4')
 cand = None
-for ep in order[:5]:
+order = order[:5] + [e for e in order[5:] if e.get('rutube')][:4]
+for ep in order:
     if os.path.exists(mp4): os.remove(mp4)
     P('серия:', ep['num'], ep['title'][:70])
     if ep['src'] == 'youtube':
-        run(['yt-dlp', '-f', 'bv*[height<=1080][ext=mp4]+ba[ext=m4a]/bv*[height<=1080]+ba/b', '--merge-output-format', 'mp4', '-o', mp4, '--no-playlist', ep['url']], timeout=1800)
+        run(['yt-dlp', '--js-runtimes', 'deno', '-f', 'bv*[height<=1080][ext=mp4]+ba[ext=m4a]/bv*[height<=1080]+ba/b', '--merge-output-format', 'mp4', '-o', mp4, '--no-playlist', ep['url']], timeout=1800)
     if not os.path.exists(mp4) and ep.get('rutube'):
         run(['yt-dlp', '-f', 'bv*[height<=1080]+ba/b', '--merge-output-format', 'mp4', '-o', mp4, ep['rutube']], timeout=1800)
     if os.path.exists(mp4) and os.path.getsize(mp4) > 1_000_000: cand = ep; break
