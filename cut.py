@@ -273,7 +273,7 @@ for i, (a, b) in enumerate(chosen):
     desc_yt = head + (f'🎬 Полная серия: {yt_ep}\n' if yt_ep else '') + f'📺 Все серии на канале: {YT_CHANNEL_URL}\n\n' + body + TAGS_YT
     desc = desc_rt
     item = {'date': today, 'file': name, 'url': ASSET_BASE + name, 'thumb': ASSET_BASE + name.replace('.mp4', '.jpg'),
-            'title': title, 'desc': desc, 'desc_rt': desc_rt, 'desc_yt': desc_yt, 'tags': TAGS, 'ep': key(cand), 'ep_num': num, 'ep_title': cand['title'], 'ep_url': cand['url'],
+            'title': title, 'desc': desc, 'desc_rt': desc_rt, 'desc_yt': desc_yt, 'tags': TAGS, 'ep': key(cand), 'ep_num': num, 'ep_title': cand['title'], 'ep_url': rt_ep or cand['url'], 'yt_url': yt_ep,
             'start': a, 'end': b, 'size': os.path.getsize(outp)}
     new_items.append(item)
     state['made'].append({'date': today, 'ep': key(cand), 'file': name, 'seg': [a, b]})
