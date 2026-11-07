@@ -8,3 +8,7 @@
 5. кладёт mp4 + превью в Release `shorts-kids`, пишет `feed.json` на страницу ветки `mebel` → http://89.126.192.214:8080/mebel/s9kbars/
 
 Настройки — `config.txt`. Что уже взято — `state.json` (удалить запись серии = брать заново).
+
+
+## Сервер (основной режим с 07.11.2026)
+Нарезка идёт на сервере 89.126.192.214: `server/install.sh` ставит `/usr/local/bin/shorts-cut` (cron 07:00), скрипт `server/shorts-cut.py` подтягивается с этой ветки при каждом запуске. Серии — с YouTube 1080p, запас Rutube. Ролики: `/var/www/mebel/s9kbars-v/` (+feed.json), хранятся 14 дней. Настройки: `/var/www/shorts/config.txt`, лог: `/var/www/shorts/log.txt`. Ручной запуск: `shorts-cut 2` (2 ролика) или `shorts-cut 1 6` (1 ролик из 6 серии). GitHub-вариант остался как ручной запасной.
