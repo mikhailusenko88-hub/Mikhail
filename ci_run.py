@@ -136,6 +136,13 @@ def main():
     meta.update({"codes": codes, "n": sum(m["n"] for m in metas), "survive": sum(m["survive"] for m in metas),
                  "heats_in_video": k, "ranking": [c for m in metas for c in m["ranking"]],
                  "races": [m["race_no"] for m in metas], "slot": slot})
+    # «лица» выкладки: три страны из одного заезда — тот же заезд идёт в Shorts.
+    # Название видео, обложка и Shorts показывают одни и те же страны (зритель из Shorts
+    # жмёт «связанное видео» и видит то, что обещали).
+    import popular
+    best = max(parts, key=lambda pm: -popular.POS.get(popular.featured(pm[1]["codes"], 1)[0], 999))
+    trio = popular.featured(best[1]["codes"], 3)
+    meta["featured"] = trio
     if k > 1:
         h0, h1 = m0["heat"], metas[-1]["heat"]
         meta["heat_label"] = f"HEATS {h0}–{h1}/{m0['heats']}"
@@ -143,7 +150,7 @@ def main():
         import race as RC
         plan = {"season": m0["season"], "round": m0["round"], "heat": h0, "heats": m0["heats"], "codes": m0["codes"],
                 "survive": meta["survive"], "final": m0["final"], "race_no": m0["race_no"], "alive": 0}
-        meta["title"] = RC.titles(plan, "", codes=codes, heats_txt=f"Heats {h0}–{h1}/{m0['heats']}")
+        meta["title"] = RC.titles(plan, "", codes=trio, heats_txt=f"Heats {h0}–{h1}/{m0['heats']}")
         blocks = []
         for m in metas:
             names = ", ".join(sorted(RC.NAMES[c] for c in m["codes"]))
@@ -170,9 +177,7 @@ def main():
     # ---- Shorts из самого «кликабельного» заезда (1 на выкладку — лимит YouTube API)
     short = None
     try:
-        import popular
         import shorts
-        best = max(parts, key=lambda pm: -popular.POS.get(popular.featured(pm[1]["codes"], 1)[0], 999))
         short = shorts.make(best[0], best[0][:-4] + ".json", name + "_short.mp4")
         short["meta"] = best[1]
         log(f"Shorts готов: {short['duration']:.0f} с — {short['title']}")

@@ -48,10 +48,10 @@ def _ball_shadow(img, x, y, r):
     return Image.alpha_composite(img, sh.filter(ImageFilter.GaussianBlur(14)))
 
 
-def make(codes, race_no, out, final=False, n=32, surv=1, tag="", ranking=None):
+def make(codes, race_no, out, final=False, n=32, surv=1, tag="", ranking=None, feat=None):
     rr = random.Random(race_no)
     img, th = _bg(race_no, final)
-    feat = popular.featured(codes, 3)
+    feat = list(feat) if feat else popular.featured(codes, 3)
     # три шара: слева два по диагонали, справа один крупный — «лицом к лицу»
     layout = [(230, 300, 150), (470, 470, 125), (640, 250, 118)] if len(feat) == 3 else [(260, 330, 160), (600, 360, 160)]
     for (x, y, r), c in zip(layout, feat):
@@ -104,4 +104,5 @@ if __name__ == "__main__":
     else:
         rn = {1: "ROUND 1", 2: "ROUND 2", 3: "SEMI-FINAL"}[meta["round"]]
         tag = f"{rn} · {meta.get('heat_label') or f'HEAT {meta['heat']}/{meta['heats']}'}"
-    make(codes, meta["race_no"], sys.argv[2], meta.get("final", False), meta.get("n", 32), meta.get("survive", 1), tag)
+    make(codes, meta["race_no"], sys.argv[2], meta.get("final", False), meta.get("n", 32), meta.get("survive", 1), tag,
+         feat=meta.get("featured"))
