@@ -52,32 +52,39 @@ def flat(url, extra=()):
     except Exception: return []
 
 def ep_num(title):
-    m = re.search(r'(\d+)\s*сери', title or '', re.I)
+    t = title or ''
+    m = re.search(r'(\d+)\s*[-]?\s*сери', t, re.I) or re.search(r'сери[яи]\s*[№#:]?\s*(\d+)', t, re.I)
     return int(m.group(1)) if m else None
 
 episodes = []
+for e in flat(YT_CHANNEL, ['--extractor-args', 'youtube:player_client=default,web_safari,ios,tv']):
+    t = e.get('title') or ''
+    d = e.get('duration') or 0
+    if not e.get('id') or (d and d < 70): continue
+    if 'все серии' in t.lower() or 'сборник' in t.lower(): continue
+    episodes.append({'id': e['id'], 'title': t, 'url': 'https://www.youtube.com/watch?v=' + e['id'], 'src': 'youtube', 'dur': d, 'num': ep_num(t), 'rutube': None})
+P('youtube episodes:', len(episodes))
+rt = []
 for e in flat(RUTUBE_CHANNEL):
     t = e.get('title') or ''
     d = e.get('duration') or 0
-    if not e.get('id'): continue
-    if d and d < 70: continue                      # шортсы и трейлеры пропускаем
+    if not e.get('id') or (d and d < 70): continue
     if 'все серии' in t.lower() or 'сборник' in t.lower(): continue
-    episodes.append({'id': e['id'], 'title': t, 'url': f"https://rutube.ru/video/{e['id']}/", 'src': 'rutube', 'dur': d, 'num': ep_num(t)})
-P('rutube episodes:', len(episodes))
-if not episodes:
-    for e in flat(YT_CHANNEL, ['--extractor-args', 'youtube:player_client=default,web_safari,ios,tv']):
-        t = e.get('title') or ''
-        d = e.get('duration') or 0
-        if not e.get('id') or (d and d < 70): continue
-        episodes.append({'id': e['id'], 'title': t, 'url': 'https://www.youtube.com/watch?v=' + e['id'], 'src': 'youtube', 'dur': d, 'num': ep_num(t)})
-    P('youtube episodes:', len(episodes))
+    rt.append({'id': e['id'], 'title': t, 'url': f"https://rutube.ru/video/{e['id']}/", 'src': 'rutube', 'dur': d, 'num': ep_num(t), 'rutube': f"https://rutube.ru/video/{e['id']}/"})
+P('rutube episodes:', len(rt))
+for r_ in rt:
+    m = next((e for e in episodes if e['num'] and e['num'] == r_['num']), None)
+    if m: m['rutube'] = r_['url']
+    else: episodes.append(r_)
 if os.path.exists('episodes.txt'):
     for l in open('episodes.txt', encoding='utf-8'):
         l = l.strip()
         if not l or l.startswith('#'): continue
         parts = l.split('\t')
         if len(parts) >= 2 and not any(e['id'] == parts[0] for e in episodes):
-            episodes.append({'id': parts[0], 'title': parts[1], 'url': f'https://rutube.ru/video/{parts[0]}/', 'src': 'rutube', 'dur': 0, 'num': ep_num(parts[1])})
+            n_ = ep_num(parts[1])
+            if any(e['num'] == n_ and n_ for e in episodes): continue
+            episodes.append({'id': parts[0], 'title': parts[1], 'url': f'https://rutube.ru/video/{parts[0]}/', 'src': 'rutube', 'dur': 0, 'num': n_, 'rutube': f'https://rutube.ru/video/{parts[0]}/'})
     P('episodes.txt:', len(episodes))
 if not episodes: P('серий не найдено'); sys.exit(0)
 
@@ -101,17 +108,15 @@ cand = None
 for ep in order[:4]:
     if os.path.exists(mp4): os.remove(mp4)
     P('пробую серию:', ep['num'], ep['title'], ep['url'], 'уже взято:', len(used(ep)))
-    if ep['src'] == 'rutube':
-        run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', mp4, ep['url']], timeout=1500)
-    if not os.path.exists(mp4):
-        yurl = ep['url'] if ep['src'] == 'youtube' else None
-        if not yurl and ep['num']:
-            for e in yt_entries():
-                if ep_num(e.get('title')) == ep['num']: yurl = 'https://www.youtube.com/watch?v=' + e['id']; break
-        if yurl:
-            for cl in ['youtube:player_client=android_vr;player_skip=webpage,configs', 'youtube:player_client=tv_simply', 'youtube:player_client=mweb', 'youtube:player_client=ios,web_safari']:
-                run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', mp4, '--extractor-args', cl, yurl], timeout=1500)
-                if os.path.exists(mp4): break
+    yurl = ep['url'] if ep['src'] == 'youtube' else None
+    rurl = ep.get('rutube') or (ep['url'] if ep['src'] == 'rutube' else None)
+    if yurl:
+        for cl in ['youtube:player_client=android_vr;player_skip=webpage,configs', 'youtube:player_client=tv_simply', 'youtube:player_client=mweb', 'youtube:player_client=web_embedded', 'youtube:player_client=ios,web_safari']:
+            run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', mp4, '--extractor-args', cl, yurl], timeout=1500)
+            if os.path.exists(mp4): P('скачано с youtube через', cl); break
+    if not os.path.exists(mp4) and rurl:
+        run(['yt-dlp', '-f', 'bv*[height<=720]+ba/b[height<=720]/b', '--merge-output-format', 'mp4', '-o', mp4, rurl], timeout=1500)
+        if os.path.exists(mp4): P('скачано с rutube')
     if os.path.exists(mp4): cand = ep; break
     P('серия недоступна, беру следующую')
 if not cand: P('не скачалось'); sys.exit(0)
@@ -230,9 +235,11 @@ for i, (a, b) in enumerate(chosen):
     h2 = random.choice(HOOKS)
     title = f'{hook} 🐱 Кот Барсик | момент {k} #shorts'
     if len(title) > 100: title = f'{hook[:60]} 🐱 Кот Барсик #shorts'
+    links = ''
+    if cand.get('rutube'): links += f'🎬 Полная серия на Rutube: {cand["rutube"]}\n'
+    if cand['src'] == 'youtube': links += f'▶️ Полная серия на YouTube: {cand["url"]}\n'
     desc = (f'{h2} 😺 Отрывок из мультика «Кот Барсик»' + (f', {num} серия' if num else '') + '.\n\n'
-            f'🎬 Полная серия: {cand["url"]}\n'
-            f'📺 Все серии на канале: {CHANNEL_URL}\n\n'
+            + links + f'📺 Все серии: {CHANNEL_URL}\n\n'
             f'Котёнок Барсик, мышонок Пик и щенок Рон — добрые и смешные истории о дружбе для детей.\n'
             f'❤️ Подписывайтесь, чтобы не пропустить новые серии!\n\n{TAGS}')
     item = {'date': today, 'file': name, 'url': ASSET_BASE + name, 'thumb': ASSET_BASE + name.replace('.mp4', '.jpg'),
