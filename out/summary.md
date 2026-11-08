@@ -176,6 +176,13 @@
 | pt_zagadka_4a | Альбина, бот (ударения во всех словах) | 3.84 | 1.0 | 0 (+0) | 1/1 |
 | pt_zagadka_4b | Альбина, бот (без ударений в односложных) | 3.89 | 1.0 | 0 (+0) | 1/1 |
 | pt_zagadka_4c | Альбина, бот (режим bot) | 3.89 | 1.0 | 0 (+0) | 1/1 |
+| qm1_tpl | silero_cis:ru_albina@ssml,soft,tpl | 3.27 | 1.0 | 0 (+0) | 1/1 |
+| qm2_vrise | silero_cis:ru_albina@ssml,soft,vrise | 3.27 | 1.0 | 0 (+0) | 1/1 |
+| qm3_v5_tpl | silero_cis:ru_albina@ssml,soft,tpl | 2.74 | 1.0 | 0 (+0) | 1/1 |
+| qm4_vrise_slow | silero_cis:ru_albina@ssml,soft,vrise | 3.39 | 1.0 | 0 (+0) | 0/1 |
+| qm5_verblyud | silero_cis:ru_albina@ssml,soft,vrisew380 | 2.74 | 1.0 | 0 (+0) | 0/1 |
+| qm6_pauki | silero_cis:ru_albina@ssml,soft,vrisew450 | 3.51 | 0.6 | 0 (+0) | 0/1 |
+| qm7_myshi | silero_cis:ru_albina@ssml,soft,vrisew420 | 3.69 | 1.0 | 0 (+1) | 0/1 |
 | qm_r9 | silero_cis:ru_albina@ssml,soft,rise9w400 | 3.69 | 1.0 | 0 (+1) | 0/1 |
 | qp_r9 | silero_cis:ru_albina@ssml,soft,rise9w450 | 3.51 | 0.6 | 0 (+0) | 0/1 |
 | qv_r9 | silero_cis:ru_albina@ssml,soft,rise9w350 | 2.74 | 1.0 | 0 (+0) | 0/1 |
