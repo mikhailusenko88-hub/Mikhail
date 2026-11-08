@@ -1,136 +1,89 @@
-ВЫЛОЖЕНО #14 2026-11-08 слот 2: https://youtu.be/Uyla-VXUYU8 (public) + Shorts https://youtube.com/shorts/xUvlH38tyfQ, за 840 с
+ТЕСТ ОК: видео #16 (1 заезд.) собрано за 384 с, 135 МБ (не выложено)
 
 {
- "title": "28 Countries, 28 Survive 🔥 Brazil vs Germany vs Egypt | Country Marble Race Heats 1–2/7",
- "description": "Flagball Arena · Season 2, Round 1 · Heats 1–2/7: 56 countries, only 28 survive.\n\nHeat 1/7 — 28 countries, 14 survive: Algeria, Bahrain, Belarus, Bhutan, Bosnia and Herzegovina, Brazil, Burundi, Chile, Comoros, Costa Rica, Egypt, El Salvador, Equatorial Guinea, Germany, Ghana, Honduras, Jordan, Latvia, Malawi, Mauritania, Micronesia, Netherlands, Nigeria, Palau, Rwanda, Saudi Arabia, Solomon Islands, United Arab Emirates.\n\nHeat 2/7 — 28 countries, 14 survive: Angola, Barbados, Belgium, Botswana, Brunei, Bulgaria, Burkina Faso, Cape Verde, China, Guinea, Iraq, Italy, Japan, Kenya, Kiribati, Laos, Luxembourg, Malaysia, Malta, Moldova, Nauru, Nepal, Nicaragua, Serbia, Singapore, South Sudan, Turkmenistan, Uruguay.\n\nCountries still in the game before this race: 179 of 193.\nNext race: Round 1 · Heat 3/7. Grand Final: Nov 12.\n\nHow it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, then a new season starts. New races every day.\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries\n\nChapters:\n00:00 Heat 1/7 — Brazil vs Germany\n03:49 Heat 2/7 — Japan vs Italy",
- "race_no": 14,
+ "title": "India vs Philippines vs Argentina… Who Survives? 💔 7 of 24 Lose a Life | Marble Race #3",
+ "description": "Flagball Arena · Season 2, Race 3 of 68: 24 countries, 3 stages — the last 7 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Argentina ❤❤❤, Austria ❤❤❤, Cyprus ❤❤❤, Czechia ❤❤❤, Djibouti ❤❤❤, Finland ❤❤❤, Greece ❤❤❤, Haiti ❤❤❤, India ❤❤❤, Iran ❤❤❤, Ireland ❤❤❤, Marshall Islands ❤❤❤, Montenegro ❤❤❤, Niger ❤❤❤, Norway ❤❤❤, Philippines ❤❤❤, Saint Lucia ❤❤❤, Saint Vincent and the Grenadines ❤❤❤, Seychelles ❤❤❤, Somalia ❤❤❤, Syria ❤❤❤, Tonga ❤❤❤, Uzbekistan ❤❤❤, Yemen ❤❤❤.\n\nCountries still in the game before this race: 193 of 193.\nNext race: Race 4/68. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "race_no": 16,
  "date": "2026-11-08",
- "slot": 2,
+ "slot": 3,
  "season": 2,
  "round": 1,
- "heat": 1,
- "heats": 7,
- "survive": 28,
+ "heat": 3,
+ "heats": 68,
+ "survive": 17,
  "final": false,
  "kind": "heat",
- "label": "ROUND 1 · HEATS 1–2/7",
- "n": 56,
+ "label": "RACE 3/68",
+ "n": 24,
+ "lives_mode": true,
+ "losers": 7,
  "codes": [
-  "sb",
-  "km",
-  "by",
-  "bh",
-  "br",
-  "sa",
-  "pw",
-  "gh",
-  "dz",
-  "ng",
-  "eg",
-  "rw",
-  "sv",
-  "hn",
-  "jo",
-  "cl",
-  "gq",
-  "lv",
-  "nl",
-  "bt",
-  "bi",
-  "mw",
-  "fm",
-  "ae",
-  "cr",
-  "mr",
-  "ba",
-  "de",
-  "bn",
-  "ni",
-  "jp",
-  "iq",
-  "sg",
-  "it",
-  "lu",
-  "rs",
-  "bf",
-  "ao",
-  "cv",
-  "be",
-  "bw",
-  "bb",
-  "md",
-  "gn",
-  "tm",
-  "cn",
-  "np",
-  "ki",
-  "nr",
-  "my",
-  "mt",
-  "la",
-  "ke",
-  "bg",
-  "ss",
-  "uy"
+  "ir",
+  "cy",
+  "sy",
+  "mh",
+  "to",
+  "no",
+  "so",
+  "ht",
+  "ar",
+  "ie",
+  "ph",
+  "fi",
+  "dj",
+  "sc",
+  "me",
+  "vc",
+  "ne",
+  "in",
+  "at",
+  "gr",
+  "cz",
+  "lc",
+  "uz",
+  "ye"
  ],
  "spans": [
   [
    7.800000000000001,
-   71.83333333333333,
-   75.43333333333332
+   70.46666666666667,
+   74.06666666666666
   ],
   [
-   79.03333333333332,
-   140.29999999999998,
-   143.89999999999998
+   77.66666666666666,
+   145.46666666666664,
+   149.06666666666663
   ],
   [
-   147.49999999999997,
-   210.99999999999997,
-   214.59999999999997
+   152.66666666666663,
+   220.36666666666662,
+   223.9666666666666
   ]
  ],
- "duration": 229.6,
- "heats_in_video": 2,
+ "duration": 248.96666666666667,
+ "heats_in_video": 1,
  "races": [
-  14,
-  15
+  16
  ],
  "featured": [
-  "br",
-  "de",
-  "eg"
- ],
- "heat_label": "HEATS 1–2/7",
- "video_id": "Uyla-VXUYU8",
- "privacy": "public"
+  "in",
+  "ph",
+  "ar"
+ ]
 }
 
 --- журнал ---
-14:30:42 режим publish, гонка #14, 2026-11-08 слот 2, событие workflow_dispatch
-14:30:43 по плану: S2 ROUND 1 · HEAT 1/7
-14:30:43 канал: Flagball Arena
-14:30:43 в этом видео заездов: 2 (раунд 1, осталось в раунде 7)
-гонка #14 2026-11-08 слот 2: S2 ROUND 1 · HEAT 1/7, 28→14, участники: SLB COM BLR BHR BRA SAU PLW GHA DZA NGA EGY RWA SLV HND JOR CHL GNQ LVA NLD BTN BDI MWI FSM ARE CRI MRT BIH DEU
-  этап 1: 28→23, блоков 11 ['ring_gate', 'windmills', 'bumpers', 'rotor', 'trapdoors', 'twin_rings', 'pegs', 'tunnels', 'stairs', 'zigzag', 'pendulums'], Q-финиш 61.5 c, кадров 1921
-  этап 2: 23→19, блоков 11 ['pendulums', 'tunnels', 'rotor', 'stairs', 'trapdoors', 'bumpers', 'pegs', 'twin_rings', 'zigzag', 'windmills', 'ring_gate'], Q-финиш 58.7 c, кадров 1838
-  этап 3: 19→14, блоков 11 ['stairs', 'ring_gate', 'trapdoors', 'windmills', 'rotor', 'tunnels', 'zigzag', 'pegs', 'bumpers', 'pendulums', 'twin_rings'], Q-финиш 61.0 c, кадров 1905
-длительность ролика ≈ 3.8 мин
-готово: 6888 кадров за 399 с
-кадров 6888, 3.83 мин, рендер 400 с
-выжили: LVA CRI HND EGY GNQ NLD SLV BLR MWI CHL BIH BHR SLB FSM
-14:37:23 заезд 1/2 готов: 128 МБ, 400 с
-гонка #15 2026-11-08 слот 2: S2 ROUND 1 · HEAT 2/7, 28→14, участники: BRN NIC JPN IRQ SGP ITA LUX SRB BFA AGO CPV BEL BWA BRB MDA GIN TKM CHN NPL KIR NRU MYS MLT LAO KEN BGR SSD URY
-  этап 1: 28→23, блоков 12 ['ring_gate', 'bumpers', 'tunnels', 'pendulums', 'trapdoors', 'pegs', 'stairs', 'windmills', 'zigzag', 'twin_rings', 'rotor', 'twin_rings'], Q-финиш 60.5 c, кадров 1891
-  этап 2: 23→19, блоков 13 ['pendulums', 'trapdoors', 'zigzag', 'stairs', 'tunnels', 'ring_gate', 'windmills', 'rotor', 'pegs', 'bumpers', 'twin_rings', 'pegs', 'tunnels'], Q-финиш 62.4 c, кадров 1949
-  этап 3: 19→14, блоков 12 ['stairs', 'pegs', 'windmills', 'trapdoors', 'pendulums', 'rotor', 'bumpers', 'tunnels', 'zigzag', 'ring_gate', 'twin_rings', 'stairs'], Q-финиш 64.1 c, кадров 1999
+14:47:53 режим test, гонка #16, 2026-11-08 слот 3, событие push
+14:47:53 по плану: S2 RACE 3/68
+14:47:53 в этом видео заездов: 1 (раунд 1, осталось в раунде 66)
+гонка #16 2026-11-08 слот 3: S2 RACE 3/68, 24→17, участники: IRN CYP SYR MHL TON NOR SOM HTI ARG IRL PHL FIN DJI SYC MNE VCT NER IND AUT GRC CZE LCA UZB YEM
+  этап 1: 24→22, блоков 12 ['trapdoors', 'tunnels', 'ring_gate', 'stairs', 'zigzag', 'pegs', 'bumpers', 'twin_rings', 'windmills', 'pendulums', 'rotor', 'pendulums'], Q-финиш 60.1 c, кадров 1880
+  этап 2: 22→19, блоков 11 ['pegs', 'trapdoors', 'twin_rings', 'rotor', 'tunnels', 'windmills', 'bumpers', 'zigzag', 'stairs', 'ring_gate', 'pendulums'], Q-финиш 65.2 c, кадров 2034
+  этап 3: 19→17, блоков 12 ['trapdoors', 'stairs', 'zigzag', 'bumpers', 'ring_gate', 'rotor', 'windmills', 'pendulums', 'twin_rings', 'tunnels', 'pegs', 'windmills'], Q-финиш 65.2 c, кадров 2031
 длительность ролика ≈ 4.1 мин
-готово: 7363 кадров за 407 с
-кадров 7363, 4.09 мин, рендер 409 с
-выжили: CHN BRN BEL GIN LUX BFA ITA CPV URY LAO NRU TKM IRQ SRB
-14:44:12 заезд 2/2 готов: 133 МБ, 809 с
-14:44:13 видео готово: 261 МБ, 7.9 мин, 810 с с начала; название: 28 Countries, 28 Survive 🔥 Brazil vs Germany vs Egypt | Country Marble Race Heats 1–2/7
-14:44:32 Shorts готов: 26 с — Brazil vs Germany vs Egypt 😱 Who Survives? Country Marble Race #shorts
-14:44:40 обложка: 200 
-14:44:40 в плейлисте
-14:44:40 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'madeForKids': False, 'selfDeclaredMadeForKids': False}
+готово: 7469 кадров за 360 с
+кадров 7469, 4.15 мин, рендер 361 с
+выжили: NOR IRN MHL HTI ARG VCT FIN SOM PHL IRL LCA CYP UZB SYR TON AUT IND
+14:53:55 заезд 1/1 готов: 135 МБ, 361 с
+14:53:55 видео готово: 135 МБ, 4.1 мин, 362 с с начала; название: India vs Philippines vs Argentina… Who Survives? 💔 7 of 24 Lose a Life | Marble Race #3
+14:54:17 Shorts готов: 26 с — India vs Philippines vs Argentina 😱 Who Survives? Country Marble Race #shorts
