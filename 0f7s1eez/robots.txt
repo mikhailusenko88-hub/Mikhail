@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /pochta/
 
 Sitemap: https://nashdekor.ru/sitemap.xml
