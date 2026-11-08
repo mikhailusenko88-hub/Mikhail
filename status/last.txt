@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-07 слот 3: clubs №1 https://youtube.com/shorts/3RAKmJ4Jjc0, за 71 с
+ВЫЛОЖЕНО 2026-11-08 слот 1: cities №5 ФИНАЛ https://youtube.com/shorts/Z_9cGwbFfE0, за 62 с
 
 {
- "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №1 #shorts",
- "description": "⏳ Final — ertaga! · Финал — завтра!\n\nPaxtakor, Bunyodkor, Nasaf, Navbahor… qaysi jamoa tezroq? Izohlarda yoz 👇\n22 клубов Суперлиги Узбекистана в одной гонке: Пахтакор, Бунёдкор, Насаф, Навбахор и другие. Какой победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nJamoangiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего клуба? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #futbol #superliga #paxtakor #bunyodkor #nasaf #navbahor #гонкашариков #shorts",
+ "title": "Qaysi shahar yutadi? Какой город победит? 🏆 Hafta finali · Финал недели #shorts",
+ "description": "🏆 Hafta finali: haftaning eng yaxshilari bitta poygada! Kim chempion boʻladi?\nФинал недели: лучшие участники недели в одной гонке. Кто станет чемпионом?\nDushanbadan — yangi hafta, jadval noldan boshlanadi. С понедельника — новая неделя.\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,39 +11,37 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "futbol",
-  "футбол",
-  "superliga",
-  "суперлига узбекистана",
-  "paxtakor",
-  "bunyodkor",
-  "nasaf",
-  "navbahor",
-  "neftchi",
-  "pfl uzbekistan"
+  "toshkent",
+  "samarqand",
+  "buxoro",
+  "namangan",
+  "andijon",
+  "fargʻona",
+  "города узбекистана",
+  "shaharlar"
  ]
 }
 
 --- журнал (время Ташкента) ---
-20:15:10 режим publish, событие schedule
-20:15:11 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-20:15:19 комментарии: роликов просмотрено: 7, комментариев: 0
-20:15:20 Тема: гонка футбольных клубов. Подбираю трассу и заезд…
-20:15:22   трасса 1 (pegs, stairs, funnel, bumpy, bumpers, tramps, split, spinners): победа на 32.1 с, смен лидера 16, финишировали 1, расчёт 3 с — не подходит
-20:15:26   трасса 2 (tramps, split, tunnel, funnel, spinners, bumpers, pegs, hammers): победа на 39.9 с, смен лидера 21, финишировали 4, расчёт 4 с — не подходит
-20:15:30   трасса 3 (pegs, funnel, split, bumpy, spinners, tramps, bumpers, hammers): победа на 38.9 с, смен лидера 13, финишировали 5, расчёт 4 с — не подходит
-20:15:33   трасса 4 (split, pegs, tunnel, bumpy, stairs, bumpers, spinners): победа на 37.7 с, смен лидера 21, финишировали 9, расчёт 3 с — не подходит
-20:15:36   трасса 5 (pegs, split, bumpers, tramps, funnel, spinners, bumpy, stairs): победа на 42.9 с, смен лидера 33, финишировали 11, расчёт 4 с
-20:15:36 Рисую трассу…
-20:15:37 Рисую кадры: заезд 49 с + финал 8 с…
-20:15:37   кадр 0/1471, 18 с
-20:15:45   кадр 300/1471, 25 с
-20:15:51   кадр 600/1471, 31 с
-20:15:58   кадр 900/1471, 38 с
-20:16:03   кадр 1200/1471, 44 с
-20:16:15 Свожу звук…
-20:16:16 Готово за 57 с: победил Paxtakor, ролик 57 с
-20:16:16 ролик готов: 57 с, 37 МБ, сборка 66 с; победил Paxtakor, топ-3: Paxtakor, Olmaliq, Navbahor
-20:16:20 YouTube: https://youtube.com/shorts/3RAKmJ4Jjc0
-20:16:22 в плейлисте
-20:16:22 статус: public uploaded
+15:35:05 режим publish, событие push
+15:35:05 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+15:35:12 комментарии: роликов просмотрено: 8, комментариев: 0
+15:35:12 ФИНАЛ НЕДЕЛИ (cities, 2026-W45): Urganch, Zarafshon, Buxoro, Xiva, Toshkent, Jizzax, Asaka, Margʻilon
+15:35:12 Тема: гонка городов. Подбираю трассу и заезд…
+15:35:15   трасса 1 (bumpers, split, pegs, tramps, hammers, funnel, spinners, tunnel): победа на 39.7 с, смен лидера 10, финишировали 4, расчёт 2 с — не подходит
+15:35:17   трасса 2 (hammers, split, bumpers, spinners, bumpy, pegs, tramps, funnel): победа на 52.5 с, смен лидера 14, финишировали 5, расчёт 3 с
+15:35:20   трасса 3 (funnel, bumpers, tramps, tunnel, hammers, spinners, bumpy, pegs): победа на 46.8 с, смен лидера 9, финишировали 2, расчёт 3 с
+15:35:20 Рисую трассу…
+15:35:21 Рисую кадры: заезд 59 с + финал 8 с…
+15:35:21   кадр 0/1762, 8 с
+15:35:26   кадр 300/1762, 14 с
+15:35:32   кадр 600/1762, 19 с
+15:35:37   кадр 900/1762, 25 с
+15:35:43   кадр 1200/1762, 31 с
+15:35:48   кадр 1500/1762, 36 с
+15:36:00 Свожу звук…
+15:36:01 Готово за 49 с: победил Xiva, ролик 66 с
+15:36:01 ролик готов: 66 с, 47 МБ, сборка 56 с; победил Xiva, топ-3: Xiva, Urganch, Zarafshon
+15:36:06 YouTube: https://youtube.com/shorts/Z_9cGwbFfE0
+15:36:07 в плейлисте
+15:36:07 статус: public uploaded

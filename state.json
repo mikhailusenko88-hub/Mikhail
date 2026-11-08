@@ -1,7 +1,7 @@
 {
  "leagues": {
   "cities": {
-   "no": 4,
+   "no": 5,
    "points": {
     "Xiva": 35,
     "Urganch": 51,
@@ -74,12 +74,33 @@
      ],
      "link": "https://youtube.com/shorts/EK5EzrtpOfQ",
      "final": false
+    },
+    {
+     "no": 5,
+     "date": "2026-11-08",
+     "slot": 1,
+     "winner": "Xiva",
+     "top3": [
+      "Xiva",
+      "Urganch",
+      "Zarafshon"
+     ],
+     "link": "https://youtube.com/shorts/Z_9cGwbFfE0",
+     "final": true
     }
    ],
-   "champion": null,
+   "champion": "Xiva",
    "season_races": 4,
    "season": "2026-W45",
-   "new_pending": []
+   "new_pending": [],
+   "final_season": "2026-W45",
+   "champions": [
+    {
+     "season": "2026-W45",
+     "champion": "Xiva",
+     "link": "https://youtube.com/shorts/Z_9cGwbFfE0"
+    }
+   ]
   },
   "cars": {
    "no": 3,
@@ -263,6 +284,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/3RAKmJ4Jjc0",
    "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №1 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-08",
+   "slot": 1,
+   "league": "cities",
+   "no": 5,
+   "final": true,
+   "link": "https://youtube.com/shorts/Z_9cGwbFfE0",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏆 Hafta finali · Финал недели #shorts",
    "pl": true
   }
  ],
