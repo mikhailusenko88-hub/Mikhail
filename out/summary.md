@@ -176,6 +176,14 @@
 | pt_zagadka_4a | Альбина, бот (ударения во всех словах) | 3.84 | 1.0 | 0 (+0) | 1/1 |
 | pt_zagadka_4b | Альбина, бот (без ударений в односложных) | 3.89 | 1.0 | 0 (+0) | 1/1 |
 | pt_zagadka_4c | Альбина, бот (режим bot) | 3.89 | 1.0 | 0 (+0) | 1/1 |
+| qm_r9 | silero_cis:ru_albina@ssml,soft,rise9w400 | 3.69 | 1.0 | 0 (+1) | 0/1 |
+| qp_r9 | silero_cis:ru_albina@ssml,soft,rise9w450 | 3.51 | 0.6 | 0 (+0) | 0/1 |
+| qv_r9 | silero_cis:ru_albina@ssml,soft,rise9w350 | 2.74 | 1.0 | 0 (+0) | 0/1 |
+| qz0_now | silero_cis:ru_albina@ssml,soft | 2.74 | 1.0 | 0 (+0) | 1/1 |
+| qz1_r6 | silero_cis:ru_albina@ssml,soft,rise6w300 | 3.27 | 1.0 | 0 (+0) | 1/1 |
+| qz2_r9 | silero_cis:ru_albina@ssml,soft,rise9w300 | 3.27 | 1.0 | 0 (+0) | 1/1 |
+| qz3_r12 | silero_cis:ru_albina@ssml,soft,rise12w350 | 3.27 | 1.0 | 0 (+0) | 1/1 |
+| qz4_now_r9 | silero_cis:ru_albina@ssml,soft,rise9w300 | 2.74 | 1.0 | 0 (+0) | 1/1 |
 | r11 | silero_random:11 | 1.43 | 0.915 | 0 (+0) | 4/4 |
 | r23 | silero_random:23 | 1.52 | 0.967 | 2 (+2) | 4/4 |
 | r37 | silero_random:37 | 1.46 | 0.915 | 4 (+1) | 4/4 |
