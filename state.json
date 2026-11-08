@@ -192,18 +192,24 @@
    ]
   },
   "clubs": {
-   "no": 1,
+   "no": 2,
    "points": {
     "Paxtakor": 25,
     "Olmaliq": 18,
     "Navbahor": 15,
-    "Metallurg": 12,
-    "Lokomotiv": 10,
-    "Bunyodkor": 8,
+    "Metallurg": 18,
+    "Lokomotiv": 11,
+    "Bunyodkor": 16,
     "Mashʼal": 6,
     "Aral": 4,
     "Olimpik": 2,
-    "Surxon": 1
+    "Surxon": 19,
+    "Turon": 25,
+    "Dinamo": 15,
+    "Nasaf": 12,
+    "Buxoro": 10,
+    "Sementchi": 4,
+    "Qoʻqon 1912": 2
    },
    "results": [
     {
@@ -218,10 +224,23 @@
      ],
      "link": "https://youtube.com/shorts/3RAKmJ4Jjc0",
      "final": false
+    },
+    {
+     "no": 2,
+     "date": "2026-11-08",
+     "slot": 3,
+     "winner": "Turon",
+     "top3": [
+      "Turon",
+      "Surxon",
+      "Dinamo"
+     ],
+     "link": "https://youtube.com/shorts/TVIZNeuxQdU",
+     "final": false
     }
    ],
    "champion": null,
-   "season_races": 1,
+   "season_races": 2,
    "season": "2026-W45",
    "new_pending": []
   }
@@ -325,6 +344,16 @@
    "final": true,
    "link": "https://youtube.com/shorts/5sIu0BCsPB4",
    "title": "Qaysi mashina yutadi? Какая машина победит? 🏆 Hafta finali · Финал недели #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-08",
+   "slot": 3,
+   "league": "clubs",
+   "no": 2,
+   "final": false,
+   "link": "https://youtube.com/shorts/TVIZNeuxQdU",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №2 #shorts",
    "pl": true
   }
  ],
