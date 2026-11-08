@@ -1,8 +1,8 @@
-# 2026-11-07 13:05 МСК — тест гонки клубов (не выкладывать)
-mode: test       # test | publish | login | check | comments | probe
+# 2026-11-08 13:40 МСК — догоняем пропущенный слот 1 (города, финал недели); GitHub не запустил по расписанию
+mode: publish    # test | publish | login | check | comments | probe
 then: publish
 extra: no
-league: clubs    # auto | cities | cars | clubs
+league: auto     # auto | cities | cars | clubs
 final: auto
-date: auto
-slot: auto
+date: 2026-11-08
+slot: 1
