@@ -21,8 +21,13 @@ _QW = {"почему", "зачем", "как", "что", "чего", "чем", "
        "сколько", "какой", "какая", "какое", "какие", "каких", "каким", "чей", "чья", "чьё", "чьи", "ли", "разве",
        "неужели", "отчего", "почём", "каков", "какова", "сколь"}
 _SENT = re.compile(r"[^.!?…]+[.!?…]*")
-BOT_Q_PITCH = "x-high"  # подъём в конце вопроса без вопросительного слова ("" — выключить)
-BOT_Q_BASE = "low"      # начало такого вопроса ниже — так подъём слышен (пробы 08.11: вопрос слышен в 6 из 7, было 0 из 3)
+BOT_Q_PITCH = "x-high"  # старый способ (до 08.11 вечера): подъём через голос; сейчас не используется
+BOT_Q_BASE = "low"
+# Вопрос без вопросительного слова («А ты это знал?») — мелодия по живому образцу (Михаил выбрал 08.11, вариант 4):
+# последнее слово чуть медленнее, перед ним голос проваливается на BOT_Q_LOW полутонов от средней высоты фразы,
+# затем взлетает до BOT_Q_HIGH к самому концу, без спада. Делается в Praat (PSOLA), тембр не меняется.
+BOT_Q_MELODY = True
+BOT_Q_LOW, BOT_Q_HIGH, BOT_Q_PRE = -3.0, 6.5, 0.14
 
 
 def _guess_stress(w):
@@ -61,6 +66,81 @@ def bot_marks(marked):
     return WORD.sub(_bot_word, marked)
 
 
+def is_yesno(s0):
+    """Вопрос без вопросительного слова: «Верблюд хранит воду в горбу?», «А ты это знал?»."""
+    s0 = s0.strip()
+    if not s0.endswith("?"):
+        return False
+    words = [w.replace("+", "").lower() for w in WORD.findall(s0)]
+    lead = words[:]
+    while lead and lead[0] in ("а", "и", "но", "ну", "так", "вот", "ой"):
+        lead = lead[1:]
+    return bool(lead) and lead[0] not in _QW and "ли" not in words
+
+
+def q_win(s0):
+    """Длина взлёта, с: по слогам последнего слова (знал — 0,32, горбу — 0,40, слепые — 0,48)."""
+    ms = WORD.findall(s0)
+    n = sum(c in VOW for c in ms[-1]) if ms else 1
+    return min(0.48, 0.22 + 0.10 * max(1, n))
+
+
+def q_ssml(s0, rate="medium", pitch="medium"):
+    """SSML для вопроса без вопросительного слова: последнее слово чуть медленнее."""
+    ms = list(WORD.finditer(s0))
+    body = s0
+    if ms:
+        mm = ms[-1]
+        body = s0[:mm.start()] + '<prosody rate="slow">' + mm.group(0) + "</prosody>" + s0[mm.end():]
+    if rate != "medium" or pitch != "medium":
+        body = f'<prosody rate="{rate}" pitch="{pitch}">{body}</prosody>'
+    return "<speak>" + body + "</speak>"
+
+
+def q_melody(x, sr, win, low=None, high=None, pre=None):
+    """Мелодия вопроса на готовом звуке (numpy float32): провал перед последним словом и взлёт до конца."""
+    import numpy as np
+    low = BOT_Q_LOW if low is None else low
+    high = BOT_Q_HIGH if high is None else high
+    pre = BOT_Q_PRE if pre is None else pre
+    try:
+        import parselmouth
+        from parselmouth.praat import call
+    except Exception as e:
+        print("мелодия вопроса пропущена (нет parselmouth):", e, flush=True)
+        return x
+    snd = parselmouth.Sound(np.asarray(x, dtype="float64"), sampling_frequency=sr)
+    pitch = snd.to_pitch(time_step=0.01, pitch_floor=75, pitch_ceiling=600)
+    f0 = pitch.selected_array["frequency"]
+    voiced = [(t, v) for t, v in zip(pitch.xs(), f0) if v > 0]
+    if len(voiced) < 5:
+        return x
+    base = float(np.median([v for _, v in voiced]))
+    te = voiced[-1][0]
+    a = te - win
+
+    def sm(u):
+        u = min(1.0, max(0.0, u))
+        return u * u * (3 - 2 * u)
+
+    manip = call(snd, "To Manipulation", 0.01, 75, 600)
+    tier = call(manip, "Extract pitch tier")
+    new = call("Create PitchTier", "q", snd.xmin, snd.xmax)
+    for i in range(1, call(tier, "Get number of points") + 1):
+        t = call(tier, "Get time from index", i)
+        v = call(tier, "Get value at index", i)
+        if t >= a - pre:
+            if t < a:
+                cur = 12 * np.log2(max(v, 1.0) / base)
+                v = base * 2 ** ((cur + (low - cur) * sm((t - (a - pre)) / pre)) / 12)
+            else:
+                v = base * 2 ** ((low + (high - low) * sm((t - a) / win)) / 12)
+        call(new, "Add point", t, v)
+    call([manip, new], "Replace pitch tier")
+    out = call(manip, "Get resynthesis (overlap-add)")
+    return np.asarray(out.values[0], dtype="float32")
+
+
 def bot_ssml(marked, rate="medium", pitch="medium"):
     """Текст -> SSML: в вопросе без вопросительного слова последнее слово чуть выше (подъём, как в живой речи)."""
     out = []
@@ -95,12 +175,33 @@ def bot_ssml(marked, rate="medium", pitch="medium"):
 
 def synth_bot(text, speaker, rate, pitch):
     import numpy as np
+
+    def tts(ssml):
+        a = model.apply_tts(ssml_text=ssml, speaker=speaker, sample_rate=SR_SYN)
+        return a.numpy() if hasattr(a, "numpy") else np.asarray(a)
+
     pieces = []
     for c in chunks(text):
         c = c.replace("&", " и ").replace("<", " ").replace(">", " ")
-        a = model.apply_tts(ssml_text=bot_ssml(c, rate, pitch), speaker=speaker, sample_rate=SR_SYN)
-        pieces.append(a.numpy() if hasattr(a, "numpy") else np.asarray(a))
-        pieces.append(np.zeros(int(SR_SYN * .22), dtype="float32"))
+        sents = [x.strip() for x in _SENT.findall(c) if x.strip()]
+        if not (BOT_Q_MELODY and any(is_yesno(x) for x in sents)):
+            pieces.append(tts(bot_ssml(c, rate, pitch)))
+            pieces.append(np.zeros(int(SR_SYN * .22), dtype="float32"))
+            continue
+        # есть вопрос без вопросительного слова: он озвучивается отдельно и получает мелодию вопроса
+        buf = []
+        for x in sents + [None]:
+            if x is not None and not is_yesno(x):
+                buf.append(x)
+                continue
+            if buf:
+                pieces.append(tts(bot_ssml(" ".join(buf), rate, pitch)))
+                pieces.append(np.zeros(int(SR_SYN * .28), dtype="float32"))
+                buf = []
+            if x is not None:
+                pieces.append(q_melody(tts(q_ssml(x, rate, pitch)), SR_SYN, q_win(x)))
+                pieces.append(np.zeros(int(SR_SYN * .28), dtype="float32"))
+        pieces[-1] = np.zeros(int(SR_SYN * .22), dtype="float32")
     x = np.concatenate(pieces[:-1]) if pieces else np.zeros(SR_SYN // 4, dtype="float32")
     b = io.BytesIO()
     with wave.open(b, "wb") as w:
@@ -122,7 +223,7 @@ REPL = [
      'def make(text, speaker="ru_albina", soft=True, rate="medium", pitch="medium", style=""):'),
     ('    key = hashlib.sha1(f"v1|{speaker}|{soft}|{rate}|{pitch}|{text}".encode()).hexdigest()',
      '    style = "bot" if style == "bot" else ""\n'
-     '    key = hashlib.sha1((f"v1|{speaker}|{soft}|{rate}|{pitch}|{text}" + ("|bot3" if style else "")).encode()).hexdigest()'),
+     '    key = hashlib.sha1((f"v1|{speaker}|{soft}|{rate}|{pitch}|{text}" + ("|bot4" if style else "")).encode()).hexdigest()'),
     ('        raw = synth(mark(text), speaker, rate, pitch)',
      '        raw = synth_bot(bot_marks(mark(text)), speaker, rate, pitch) if style == "bot" else synth(mark(text), speaker, rate, pitch)'),
     ('q.get("rate", "medium"), q.get("pitch", "medium"))',
