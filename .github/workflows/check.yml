@@ -1,0 +1,14 @@
+name: shorts-check
+on: push
+permissions: { contents: write }
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          mkdir out
+          curl -s -m 30 http://89.126.192.214:8080/mebel/s9kbars-v/feed.json -o out/feed.json || echo fail > out/feed.json
+          curl -s -m 30 http://89.126.192.214:8080/mebel/s9kbars-v/ -o out/dir.html || true
+          curl -s -m 30 -I http://89.126.192.214:8080/mebel/s9kbars/ > out/page.txt || true
+          cd out && git init -q && git checkout -q -b shorts-check-out && git add . && git -c user.name=bot -c user.email=bot@x commit -qm out
+          git push -qf https://x-access-token:${{ github.token }}@github.com/${{ github.repository }} shorts-check-out
