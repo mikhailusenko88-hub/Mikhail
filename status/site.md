@@ -1,16 +1,18 @@
-# Сайт снаружи — 2026-11-08 22:35 UTC
+# Сайт снаружи — 2026-11-08 23:08 UTC
 
 ```
-/                      200 text/html; charset=utf-8
-/robots.txt            200 text/plain; charset=utf-8
-/sitemap.xml           200 text/xml; charset=utf-8
-/favicon.ico           200 image/x-icon
-/apple-touch-icon.png  200 image/png
-/og.jpg                200 image/jpeg
-/oferta.html           200 text/html; charset=utf-8
-/privacy.html          200 text/html; charset=utf-8
-/consent.html          200 text/html; charset=utf-8
-/avito.xml             200 text/xml; charset=utf-8
+/                                  200 text/html; charset=utf-8
+/robots.txt                        200 text/plain; charset=utf-8
+/sitemap.xml                       200 text/xml; charset=utf-8
+/favicon.ico                       200 image/x-icon
+/apple-touch-icon.png              200 image/png
+/og.jpg                            200 image/jpeg
+/oferta.html                       200 text/html; charset=utf-8
+/privacy.html                      200 text/html; charset=utf-8
+/consent.html                      200 text/html; charset=utf-8
+/avito.xml                         200 text/xml; charset=utf-8
+/pochta/yulia.mobileconfig         404 text/html; charset=utf-8
+/pochta/mikhail.mobileconfig       404 text/html; charset=utf-8
 
 noindex в главной: 0
 lang=ru: 1
