@@ -1,8 +1,8 @@
-ТЕСТ ОК: видео #16 (1 заезд.) собрано за 384 с, 135 МБ (не выложено)
+ТЕСТ ОК: видео #16 (1 заезд.) собрано за 500 с, 163 МБ (не выложено)
 
 {
- "title": "India vs Philippines vs Argentina… Who Survives? 💔 7 of 24 Lose a Life | Marble Race #3",
- "description": "Flagball Arena · Season 2, Race 3 of 68: 24 countries, 3 stages — the last 7 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Argentina ❤❤❤, Austria ❤❤❤, Cyprus ❤❤❤, Czechia ❤❤❤, Djibouti ❤❤❤, Finland ❤❤❤, Greece ❤❤❤, Haiti ❤❤❤, India ❤❤❤, Iran ❤❤❤, Ireland ❤❤❤, Marshall Islands ❤❤❤, Montenegro ❤❤❤, Niger ❤❤❤, Norway ❤❤❤, Philippines ❤❤❤, Saint Lucia ❤❤❤, Saint Vincent and the Grenadines ❤❤❤, Seychelles ❤❤❤, Somalia ❤❤❤, Syria ❤❤❤, Tonga ❤❤❤, Uzbekistan ❤❤❤, Yemen ❤❤❤.\n\nCountries still in the game before this race: 193 of 193.\nNext race: Race 4/68. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "title": "India vs Philippines vs Argentina 🔥 SUNDAY MEGA TRACK – Who Loses a Life? | Marble Race #3",
+ "description": "🔥 SUNDAY MEGA TRACK — longer stages, the craziest obstacles of the week.\n\nFlagball Arena · Season 2, Race 3 of 68: 24 countries, 3 stages — the last 7 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Argentina ❤❤❤, Austria ❤❤❤, Cyprus ❤❤❤, Czechia ❤❤❤, Djibouti ❤❤❤, Finland ❤❤❤, Greece ❤❤❤, Haiti ❤❤❤, India ❤❤❤, Iran ❤❤❤, Ireland ❤❤❤, Marshall Islands ❤❤❤, Montenegro ❤❤❤, Niger ❤❤❤, Norway ❤❤❤, Philippines ❤❤❤, Saint Lucia ❤❤❤, Saint Vincent and the Grenadines ❤❤❤, Seychelles ❤❤❤, Somalia ❤❤❤, Syria ❤❤❤, Tonga ❤❤❤, Uzbekistan ❤❤❤, Yemen ❤❤❤.\n\nCountries still in the game before this race: 193 of 193.\nNext race: Race 4/68. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
  "race_no": 16,
  "date": "2026-11-08",
  "slot": 3,
@@ -17,6 +17,7 @@
  "n": 24,
  "lives_mode": true,
  "losers": 7,
+ "mega": true,
  "codes": [
   "ir",
   "cy",
@@ -46,21 +47,21 @@
  "spans": [
   [
    7.800000000000001,
-   70.46666666666667,
-   74.06666666666666
+   92.36666666666666,
+   95.96666666666665
   ],
   [
-   77.66666666666666,
-   145.46666666666664,
-   149.06666666666663
+   99.56666666666665,
+   181.63333333333333,
+   185.23333333333332
   ],
   [
-   152.66666666666663,
-   220.36666666666662,
-   223.9666666666666
+   188.83333333333331,
+   270.9333333333333,
+   274.5333333333333
   ]
  ],
- "duration": 248.96666666666667,
+ "duration": 299.53333333333336,
  "heats_in_video": 1,
  "races": [
   16
@@ -73,17 +74,17 @@
 }
 
 --- журнал ---
-14:47:53 режим test, гонка #16, 2026-11-08 слот 3, событие push
-14:47:53 по плану: S2 RACE 3/68
-14:47:53 в этом видео заездов: 1 (раунд 1, осталось в раунде 66)
+15:02:56 режим test, гонка #16, 2026-11-08 слот 3, событие push
+15:02:56 по плану: S2 RACE 3/68
+15:02:56 в этом видео заездов: 1 (раунд 1, осталось в раунде 66)
 гонка #16 2026-11-08 слот 3: S2 RACE 3/68, 24→17, участники: IRN CYP SYR MHL TON NOR SOM HTI ARG IRL PHL FIN DJI SYC MNE VCT NER IND AUT GRC CZE LCA UZB YEM
-  этап 1: 24→22, блоков 12 ['trapdoors', 'tunnels', 'ring_gate', 'stairs', 'zigzag', 'pegs', 'bumpers', 'twin_rings', 'windmills', 'pendulums', 'rotor', 'pendulums'], Q-финиш 60.1 c, кадров 1880
-  этап 2: 22→19, блоков 11 ['pegs', 'trapdoors', 'twin_rings', 'rotor', 'tunnels', 'windmills', 'bumpers', 'zigzag', 'stairs', 'ring_gate', 'pendulums'], Q-финиш 65.2 c, кадров 2034
-  этап 3: 19→17, блоков 12 ['trapdoors', 'stairs', 'zigzag', 'bumpers', 'ring_gate', 'rotor', 'windmills', 'pendulums', 'twin_rings', 'tunnels', 'pegs', 'windmills'], Q-финиш 65.2 c, кадров 2031
-длительность ролика ≈ 4.1 мин
-готово: 7469 кадров за 360 с
-кадров 7469, 4.15 мин, рендер 361 с
-выжили: NOR IRN MHL HTI ARG VCT FIN SOM PHL IRL LCA CYP UZB SYR TON AUT IND
-14:53:55 заезд 1/1 готов: 135 МБ, 361 с
-14:53:55 видео готово: 135 МБ, 4.1 мин, 362 с с начала; название: India vs Philippines vs Argentina… Who Survives? 💔 7 of 24 Lose a Life | Marble Race #3
-14:54:17 Shorts готов: 26 с — India vs Philippines vs Argentina 😱 Who Survives? Country Marble Race #shorts
+  этап 1: 24→22, блоков 18 ['ring_gate', 'sliders', 'drum', 'rotor', 'trapdoors', 'comb', 'glass', 'tunnels', 'pushers', 'split', 'pendulums', 'rotor', 'trapdoors', 'tunnels', 'pushers', 'drum', 'ring_gate', 'glass'], Q-финиш 82.0 c, кадров 2537
+  этап 2: 22→19, блоков 18 ['pendulums', 'split', 'rotor', 'glass', 'sliders', 'trapdoors', 'comb', 'ring_gate', 'pushers', 'tunnels', 'drum', 'ring_gate', 'sliders', 'tunnels', 'rotor', 'split', 'drum', 'glass'], Q-финиш 79.5 c, кадров 2462
+  этап 3: 19→17, блоков 17 ['split', 'pendulums', 'glass', 'pushers', 'ring_gate', 'comb', 'trapdoors', 'tunnels', 'drum', 'rotor', 'sliders', 'glass', 'trapdoors', 'drum', 'pushers', 'rotor', 'ring_gate'], Q-финиш 79.5 c, кадров 2463
+длительность ролика ≈ 5.0 мин
+готово: 8986 кадров за 477 с
+кадров 8986, 4.99 мин, рендер 479 с
+выжили: AUT MNE MHL SYR GRC PHL IRN NER YEM LCA TON SYC VCT DJI NOR IND CYP
+15:10:55 заезд 1/1 готов: 163 МБ, 479 с
+15:10:56 видео готово: 163 МБ, 5.0 мин, 480 с с начала; название: India vs Philippines vs Argentina 🔥 SUNDAY MEGA TRACK – Who Loses a Life? | Marble Race #3
+15:11:16 Shorts готов: 26 с — India vs Philippines vs Argentina 😱 Who Survives? Country Marble Race #shorts
