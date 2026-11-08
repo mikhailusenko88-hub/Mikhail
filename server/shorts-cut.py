@@ -94,19 +94,31 @@ for e in flat(YT_CHANNEL):
     t = e.get('title') or ''; d = e.get('duration') or 0
     if not e.get('id') or (d and d < 70): continue
     if 'все серии' in t.lower() or 'сборник' in t.lower(): continue
-    episodes.append({'id': e['id'], 'title': t, 'url': 'https://www.youtube.com/watch?v=' + e['id'], 'src': 'youtube', 'num': ep_num(t), 'rutube': None, 'rtitle': None})
+    episodes.append({'id': e['id'], 'title': t, 'url': 'https://www.youtube.com/watch?v=' + e['id'], 'src': 'youtube', 'num': ep_num(t), 'rutube': None, 'rtitle': None, 'dur': d})
 P('youtube серий:', len(episodes))
 rt = []
 for e in flat(RUTUBE_CHANNEL):
     t = e.get('title') or ''; d = e.get('duration') or 0
     if not e.get('id') or (d and d < 70): continue
     if 'все серии' in t.lower() or 'сборник' in t.lower(): continue
-    rt.append({'id': e['id'], 'title': t, 'url': f"https://rutube.ru/video/{e['id']}/", 'src': 'rutube', 'num': ep_num(t), 'rutube': f"https://rutube.ru/video/{e['id']}/", 'rtitle': t})
+    rt.append({'id': e['id'], 'title': t, 'url': f"https://rutube.ru/video/{e['id']}/", 'src': 'rutube', 'num': ep_num(t), 'rutube': f"https://rutube.ru/video/{e['id']}/", 'rtitle': t, 'dur': d})
 P('rutube серий:', len(rt))
+# одна и та же серия на YouTube и Rutube: сначала по длительности (совпадает до 1–2 сек), потом по названию.
+# Номер серии — как на Rutube (там «5 серия», на YouTube та же серия названа «Серия 4 часть 2»).
+yt_list = [e for e in episodes]
 for r_ in rt:
-    m = next((e for e in episodes if same(e['title'], r_['title'])), None)
+    free = [e for e in yt_list if not e.get('rutube')]
+    m = None
+    if r_.get('dur'):
+        near = [e for e in free if e.get('dur') and abs(e['dur'] - r_['dur']) <= 2]
+        if len(near) == 1: m = near[0]
+        elif near: m = next((e for e in near if same(e['title'], r_['title'])), None) or min(near, key=lambda e: abs((e['num'] or 0) - (r_['num'] or 0)))
+    if not m: m = next((e for e in free if same(e['title'], r_['title'])), None)
     if m: m['rutube'] = r_['url']; m['rtitle'] = r_['title']; m['rnum'] = r_['num']
     else: episodes.append(r_)
+for e in episodes:
+    if e.get('rnum'): e['num'] = e['rnum']
+
 if not episodes: P('серий нет'); sys.exit(0)
 
 def key(ep): return ep['id']
