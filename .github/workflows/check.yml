@@ -6,9 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
+          pip -q install -U "yt-dlp[default]" >/dev/null 2>&1
           mkdir out
-          curl -s -m 30 http://89.126.192.214:8080/mebel/s9kbars-v/feed.json -o out/feed.json || echo fail > out/feed.json
-          curl -s -m 30 http://89.126.192.214:8080/mebel/s9kbars-v/ -o out/dir.html || true
-          curl -s -m 30 -I http://89.126.192.214:8080/mebel/s9kbars/ > out/page.txt || true
+          yt-dlp --flat-playlist --print "%(id)s|%(duration)s|%(title)s" --playlist-end 80 https://www.youtube.com/@Cartoon_Friend3/videos > out/yt.txt 2> out/yt.err || true
+          yt-dlp --flat-playlist --print "%(id)s|%(duration)s|%(title)s" --playlist-end 80 https://rutube.ru/channel/82826859/videos/ > out/rt.txt 2> out/rt.err || true
           cd out && git init -q && git checkout -q -b shorts-check-out && git add . && git -c user.name=bot -c user.email=bot@x commit -qm out
           git push -qf https://x-access-token:${{ github.token }}@github.com/${{ github.repository }} shorts-check-out
