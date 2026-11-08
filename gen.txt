@@ -71,3 +71,22 @@ bs7_med | silero_cis:ru_albina@ssml,soft | <speak>Мочег+онный эфф+�
 bs7_slow | silero_cis:ru_albina@ssml,soft | <speak><prosody rate="slow">Мочег+онный эфф+ект слаб+ее, чем объ+ём в+ыпитого.</prosody></speak> | Мочегонный эффект слабее, чем объём выпитого.
 bs10_med | silero_cis:ru_albina@ssml,soft | <speak>У челов+ека и шимпанз+е был +общий пр+едок милли+оны лет наз+ад.</speak> | У человека и шимпанзе был общий предок миллионы лет назад.
 bs10_slow | silero_cis:ru_albina@ssml,soft | <speak><prosody rate="slow">У челов+ека и шимпанз+е был +общий пр+едок милли+оны лет наз+ад.</prosody></speak> | У человека и шимпанзе был общий предок миллионы лет назад.
+
+# второй круг: подъём на 1–3 последних словах (если последнее односложное)
+br1_hi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">А ты</prosody> <prosody pitch="high">+это знал</prosody>?</speak> | А ты это знал?
+br1_xhi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">А ты</prosody> <prosody pitch="x-high">+это знал</prosody>?</speak> | А ты это знал?
+br2_hi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Ч+ерез г+олову ух+одит полов+ина тепл+а</prosody> <prosody pitch="high">т+ела</prosody>?</speak> | Через голову уходит половина тепла тела?
+br2_xhi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Ч+ерез г+олову ух+одит полов+ина тепл+а</prosody> <prosody pitch="x-high">т+ела</prosody>?</speak> | Через голову уходит половина тепла тела?
+br3_hi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Ты глот+аешь</prosody> <prosody pitch="high">паук+ов во сне</prosody>?</speak> | Ты глотаешь пауков во сне?
+br3_xhi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Ты глот+аешь</prosody> <prosody pitch="x-high">паук+ов во сне</prosody>?</speak> | Ты глотаешь пауков во сне?
+br4_hi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Вербл+юд хран+ит в+оду в</prosody> <prosody pitch="high">горб+у</prosody>?</speak> | Верблюд хранит воду в горбу?
+br4_xhi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Вербл+юд хран+ит в+оду в</prosody> <prosody pitch="x-high">горб+у</prosody>?</speak> | Верблюд хранит воду в горбу?
+br5_now | silero_cis:ru_albina@ssml,soft | <speak>Лет+учие м+ыши совс+ем <prosody pitch="high">слеп+ые</prosody>?</speak> | Летучие мыши совсем слепые?
+br5_hi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Лет+учие м+ыши совс+ем</prosody> <prosody pitch="high">слеп+ые</prosody>?</speak> | Летучие мыши совсем слепые?
+br5_xhi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Лет+учие м+ыши совс+ем</prosody> <prosody pitch="x-high">слеп+ые</prosody>?</speak> | Летучие мыши совсем слепые?
+br6_now | silero_cis:ru_albina@ssml,soft | <speak>Золот+ая р+ыбка п+омнит всег+о три <prosody pitch="high">сек+унды</prosody>?</speak> | Золотая рыбка помнит всего три секунды?
+br6_hi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Золот+ая р+ыбка п+омнит всег+о три</prosody> <prosody pitch="high">сек+унды</prosody>?</speak> | Золотая рыбка помнит всего три секунды?
+br6_xhi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Золот+ая р+ыбка п+омнит всег+о три</prosody> <prosody pitch="x-high">сек+унды</prosody>?</speak> | Золотая рыбка помнит всего три секунды?
+br7_now | silero_cis:ru_albina@ssml,soft | <speak>Ты в+идишь зв+ёзды, кот+орых уж+е <prosody pitch="high">нет</prosody>?</speak> | Ты видишь звёзды, которых уже нет?
+br7_hi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Ты в+идишь зв+ёзды, кот+орых</prosody> <prosody pitch="high">уж+е нет</prosody>?</speak> | Ты видишь звёзды, которых уже нет?
+br7_xhi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Ты в+идишь зв+ёзды, кот+орых</prosody> <prosody pitch="x-high">уж+е нет</prosody>?</speak> | Ты видишь звёзды, которых уже нет?
