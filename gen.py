@@ -77,8 +77,17 @@ def main():
                 # голос можно уточнить: silero_cis:ru_albina@slow,low  (темп: x-slow/slow/medium/fast, тон: x-low/low/high)
                 import voice_check as vc
                 spk, _, opts = spk.partition("@")
-                ws = vc.tokenize(text)
-                vc.accentize(text, ws)
+                if "ssml" in opts.split(","):
+                    # готовая разметка: текст уже с «+» и тегами <prosody> (пробы интонации бота «Почему так?»)
+                    m = silero_model("v5_cis_base")
+                    body = text if text.startswith("<speak>") else "<speak>" + text + "</speak>"
+                    open(f"in/{name}.marked", "w", encoding="utf-8").write(body + "\n")
+                    a = m.apply_tts(ssml_text=body, speaker=spk, sample_rate=48000)
+                    save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
+                    text = ""
+                ws = vc.tokenize(text) if text else []
+                if ws:
+                    vc.accentize(text, ws)
                 out = []
                 for w in ws:
                     e = w["exp"]
@@ -94,9 +103,14 @@ def main():
                     else:
                         out.append(w["w"] + w["punct"])
                 marked = " ".join(out)
-                open(f"in/{name}.marked", "w", encoding="utf-8").write(marked + "\n")
+                if not ws:
+                    pass
+                else:
+                    open(f"in/{name}.marked", "w", encoding="utf-8").write(marked + "\n")
                 m = silero_model("v5_cis_base")
-                if opts:
+                if not ws:
+                    pass
+                elif opts:
                     rate = next((o for o in opts.split(",") if o in ("x-slow", "slow", "medium", "fast", "x-fast")), "medium")
                 # «soft» — только обработка звука, на синтез не влияет
                     pitch = next((o for o in opts.split(",") if o in ("x-low", "low", "medium", "high", "x-high")), "medium")

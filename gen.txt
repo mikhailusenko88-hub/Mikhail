@@ -47,3 +47,27 @@ g_albina_slow_soft | silero_cis:ru_albina@slow,soft | Зн+аете ли вы, �
 g_zinaida_slow_soft | silero_cis:ru_zinaida@slow,soft | Зн+аете ли вы, почем+у н+ебо голуб+ое? С+олнечный свет состо+ит из всех цвет+ов р+адуги. Но с+иние луч+и расс+еиваются в в+оздухе сильн+ее остальн+ых. По+этому, куд+а бы вы ни посмотр+ели, вы в+идите голуб+ое н+ебо. | Знаете ли вы, почему небо голубое? Солнечный свет состоит из всех цветов радуги. Но синие лучи рассеиваются в воздухе сильнее остальных. Поэтому, куда бы вы ни посмотрели, вы видите голубое небо.
 g_kseniya | silero:kseniya | Знаете ли вы, почему небо голубое? Солнечный свет состоит из всех цветов радуги. Но синие лучи рассеиваются в воздухе сильнее остальных. Поэтому, куда бы вы ни посмотрели, вы видите голубое небо. |
 g_oldmarks_check | silero_cis:ru_albina@slow | Зн+аете ли вы, почем+у н+ебо голуб+ое? С+олнечный свет сост+оит из всех цвет+ов р+адуги. Но с+иние луч+и расс+еиваются в в+оздухе сильн+ее остальн+ых. Поэт+ому, куд+а бы вы ни посмотр+ели, вы в+идите голуб+ое н+ебо. | Знаете ли вы, почему небо голубое? Солнечный свет состоит из всех цветов радуги. Но синие лучи рассеиваются в воздухе сильнее остальных. Поэтому, куда бы вы ни посмотрели, вы видите голубое небо.
+
+# пробы интонации вопросов и темпа для бота «Почему так?» (08.11.2026)
+bq1_q0 | silero_cis:ru_albina@ssml,soft | <speak>А ты +это <prosody pitch="high">знал</prosody>?</speak> | А ты это знал?
+bq1_q1 | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">А ты +это</prosody> <prosody pitch="x-high">знал</prosody>?</speak> | А ты это знал?
+bq1_q2 | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">А ты +это</prosody> <prosody pitch="high">знал</prosody>?</speak> | А ты это знал?
+bq1_q3 | silero_cis:ru_albina@ssml,soft | <speak>А ты +это <prosody pitch="x-high" rate="slow">знал</prosody>?</speak> | А ты это знал?
+bq2_q0 | silero_cis:ru_albina@ssml,soft | <speak>Ч+ерез г+олову ух+одит полов+ина тепл+а <prosody pitch="high">т+ела</prosody>?</speak> | Через голову уходит половина тепла тела?
+bq2_q1 | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Ч+ерез г+олову ух+одит полов+ина тепл+а</prosody> <prosody pitch="x-high">т+ела</prosody>?</speak> | Через голову уходит половина тепла тела?
+bq2_q2 | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Ч+ерез г+олову ух+одит полов+ина тепл+а</prosody> <prosody pitch="high">т+ела</prosody>?</speak> | Через голову уходит половина тепла тела?
+bq2_q3 | silero_cis:ru_albina@ssml,soft | <speak>Ч+ерез г+олову ух+одит полов+ина тепл+а <prosody pitch="x-high" rate="slow">т+ела</prosody>?</speak> | Через голову уходит половина тепла тела?
+bq3_q0 | silero_cis:ru_albina@ssml,soft | <speak>Ты глот+аешь паук+ов во <prosody pitch="high">сне</prosody>?</speak> | Ты глотаешь пауков во сне?
+bq3_q1 | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Ты глот+аешь паук+ов во</prosody> <prosody pitch="x-high">сне</prosody>?</speak> | Ты глотаешь пауков во сне?
+bq3_q2 | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Ты глот+аешь паук+ов во</prosody> <prosody pitch="high">сне</prosody>?</speak> | Ты глотаешь пауков во сне?
+bq3_q3 | silero_cis:ru_albina@ssml,soft | <speak>Ты глот+аешь паук+ов во <prosody pitch="x-high" rate="slow">сне</prosody>?</speak> | Ты глотаешь пауков во сне?
+bq4_q0 | silero_cis:ru_albina@ssml,soft | <speak>Вербл+юд хран+ит в+оду в <prosody pitch="high">горб+у</prosody>?</speak> | Верблюд хранит воду в горбу?
+bq4_q1 | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Вербл+юд хран+ит в+оду в</prosody> <prosody pitch="x-high">горб+у</prosody>?</speak> | Верблюд хранит воду в горбу?
+bq4_q2 | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Вербл+юд хран+ит в+оду в</prosody> <prosody pitch="high">горб+у</prosody>?</speak> | Верблюд хранит воду в горбу?
+bq4_q3 | silero_cis:ru_albina@ssml,soft | <speak>Вербл+юд хран+ит в+оду в <prosody pitch="x-high" rate="slow">горб+у</prosody>?</speak> | Верблюд хранит воду в горбу?
+bs5_med | silero_cis:ru_albina@ssml,soft | <speak>За всю ист+орию е+ё получ+или м+еньше одн+ой милли+ардной гр+амма.</speak> | За всю историю её получили меньше одной миллиардной грамма.
+bs5_slow | silero_cis:ru_albina@ssml,soft | <speak><prosody rate="slow">За всю ист+орию е+ё получ+или м+еньше одн+ой милли+ардной гр+амма.</prosody></speak> | За всю историю её получили меньше одной миллиардной грамма.
+bs7_med | silero_cis:ru_albina@ssml,soft | <speak>Мочег+онный эфф+ект слаб+ее, чем объ+ём в+ыпитого.</speak> | Мочегонный эффект слабее, чем объём выпитого.
+bs7_slow | silero_cis:ru_albina@ssml,soft | <speak><prosody rate="slow">Мочег+онный эфф+ект слаб+ее, чем объ+ём в+ыпитого.</prosody></speak> | Мочегонный эффект слабее, чем объём выпитого.
+bs10_med | silero_cis:ru_albina@ssml,soft | <speak>У челов+ека и шимпанз+е был +общий пр+едок милли+оны лет наз+ад.</speak> | У человека и шимпанзе был общий предок миллионы лет назад.
+bs10_slow | silero_cis:ru_albina@ssml,soft | <speak><prosody rate="slow">У челов+ека и шимпанз+е был +общий пр+едок милли+оны лет наз+ад.</prosody></speak> | У человека и шимпанзе был общий предок миллионы лет назад.
