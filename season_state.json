@@ -1,217 +1,245 @@
 {
- "season": 1,
- "race_no": 12,
+ "season": 2,
+ "race_no": 13,
  "seed": 2026,
- "round": 4,
+ "round": 1,
  "heat": 0,
  "heats": [
   [
-   "zw",
-   "th",
+   "sb",
+   "km",
+   "by",
+   "bh",
+   "br",
    "sa",
-   "mh",
-   "ke",
-   "mn",
-   "cr",
-   "bf",
-   "ie",
-   "bw",
-   "vc",
-   "mk",
-   "to",
-   "ye",
-   "lb",
+   "pw",
+   "gh",
+   "dz",
+   "ng",
+   "eg",
+   "rw",
    "sv",
-   "vn",
-   "jp",
-   "na",
-   "ni",
-   "ly",
+   "hn",
+   "jo",
+   "cl",
+   "gq",
    "lv",
-   "dk",
-   "ug",
-   "kg",
-   "gb",
-   "kw",
+   "nl",
+   "bt",
+   "bi",
+   "mw",
+   "fm",
    "ae",
-   "au",
+   "cr",
+   "mr",
+   "ba",
+   "de"
+  ],
+  [
+   "bn",
+   "ni",
+   "jp",
+   "iq",
+   "sg",
+   "it",
+   "lu",
+   "rs",
+   "bf",
+   "ao",
+   "cv",
+   "be",
+   "bw",
+   "bb",
+   "md",
+   "gn",
+   "tm",
+   "cn",
+   "np",
+   "ki",
+   "nr",
    "my",
+   "mt",
+   "la",
+   "ke",
+   "bg",
+   "ss",
+   "uy"
+  ],
+  [
+   "in",
+   "ar",
+   "lb",
+   "af",
+   "pl",
+   "gy",
+   "ru",
+   "mx",
+   "lk",
+   "mh",
+   "tv",
+   "mm",
+   "ug",
+   "az",
+   "mk",
+   "th",
+   "gd",
+   "ch",
+   "hr",
+   "na",
+   "sz",
+   "kh",
+   "pg",
+   "gb",
+   "zm",
+   "mc",
+   "td",
+   "bd"
+  ],
+  [
+   "py",
+   "kr",
+   "al",
+   "pa",
+   "ci",
+   "ph",
+   "so",
+   "ml",
+   "mg",
+   "bz",
+   "es",
+   "ir",
+   "ve",
+   "kn",
+   "ne",
+   "gm",
+   "pe",
+   "bj",
+   "fi",
+   "il",
+   "cg",
+   "sm",
+   "ge",
+   "au",
+   "ec",
+   "tt",
+   "ag",
+   "nz"
+  ],
+  [
+   "id",
+   "no",
+   "kg",
+   "mu",
+   "ht",
    "lc",
-   "so"
+   "qa",
+   "et",
+   "lr",
+   "ie",
+   "us",
+   "dk",
+   "za",
+   "at",
+   "bo",
+   "pk",
+   "sk",
+   "sd",
+   "gt",
+   "uz",
+   "gw",
+   "ws",
+   "se",
+   "mz",
+   "om",
+   "vn",
+   "ee"
+  ],
+  [
+   "am",
+   "do",
+   "tn",
+   "cm",
+   "vc",
+   "tz",
+   "ga",
+   "ad",
+   "vu",
+   "tj",
+   "st",
+   "me",
+   "cf",
+   "sy",
+   "mn",
+   "ma",
+   "sl",
+   "ly",
+   "co",
+   "fj",
+   "cz",
+   "ro",
+   "pt",
+   "sn",
+   "jm",
+   "cd",
+   "sr"
+  ],
+  [
+   "ye",
+   "tr",
+   "kw",
+   "zw",
+   "hu",
+   "lt",
+   "kz",
+   "bs",
+   "to",
+   "fr",
+   "tg",
+   "si",
+   "li",
+   "mv",
+   "is",
+   "dm",
+   "cy",
+   "ua",
+   "sc",
+   "ls",
+   "er",
+   "tl",
+   "dj",
+   "cu",
+   "kp",
+   "ca",
+   "gr"
   ]
  ],
  "survive": [
-  1
+  14,
+  14,
+  14,
+  14,
+  14,
+  13,
+  13
  ],
  "survivors": [],
- "eliminated": [
-  "es",
-  "pt",
-  "br",
-  "kz",
-  "gy",
-  "in",
-  "tv",
-  "ki",
-  "uz",
-  "kh",
-  "pk",
-  "mr",
-  "mg",
-  "tj",
-  "sy",
-  "ma",
-  "gr",
-  "se",
-  "sz",
-  "cy",
-  "ag",
-  "bs",
-  "bg",
-  "td",
-  "us",
-  "sn",
-  "cn",
-  "az",
-  "fj",
-  "ro",
-  "dm",
-  "ng",
-  "dj",
-  "cg",
-  "ba",
-  "et",
-  "cl",
-  "zm",
-  "ls",
-  "ws",
-  "kn",
-  "de",
-  "co",
-  "ee",
-  "np",
-  "gt",
-  "id",
-  "be",
-  "fi",
-  "gd",
-  "ci",
-  "mw",
-  "ec",
-  "hr",
-  "fr",
-  "ss",
-  "mc",
-  "pe",
-  "ge",
-  "at",
-  "ht",
-  "it",
-  "sb",
-  "mu",
-  "gq",
-  "il",
-  "qa",
-  "gm",
-  "ch",
-  "by",
-  "nl",
-  "tn",
-  "ml",
-  "pw",
-  "vu",
-  "tt",
-  "li",
-  "ao",
-  "cu",
-  "tm",
-  "no",
-  "sd",
-  "sl",
-  "pa",
-  "om",
-  "bh",
-  "sm",
-  "lt",
-  "is",
-  "tg",
-  "za",
-  "la",
-  "uy",
-  "jm",
-  "al",
-  "me",
-  "ar",
-  "mm",
-  "lu",
-  "si",
-  "ne",
-  "eg",
-  "ru",
-  "bj",
-  "nr",
-  "mz",
-  "tl",
-  "gw",
-  "ca",
-  "do",
-  "bo",
-  "sc",
-  "rs",
-  "tr",
-  "sg",
-  "tz",
-  "km",
-  "ga",
-  "ir",
-  "kp",
-  "ph",
-  "cd",
-  "ua",
-  "mx",
-  "bb",
-  "nz",
-  "iq",
-  "sr",
-  "hu",
-  "bz",
-  "cm",
-  "rw",
-  "lr",
-  "st",
-  "cf",
-  "am",
-  "jo",
-  "er",
-  "mt",
-  "py",
-  "bi",
-  "md",
-  "lk",
-  "pl",
-  "cz",
-  "ad",
-  "gn",
-  "ve",
-  "gh",
-  "fm",
-  "bt",
-  "dz",
-  "pg",
-  "sk",
-  "bn",
-  "af",
-  "bd",
-  "mv",
-  "hn",
-  "cv",
-  "kr"
+ "eliminated": [],
+ "champions": [
+  {
+   "season": 1,
+   "code": "so",
+   "podium": [
+    "so",
+    "kw",
+    "bf"
+   ],
+   "date": "2026-11-08"
+  }
  ],
- "champions": [],
  "hall": {
   "to": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "ve": {
    "titles": 0,
@@ -219,7 +247,7 @@
   },
   "ie": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "sc": {
    "titles": 0,
@@ -227,7 +255,7 @@
   },
   "ly": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "af": {
    "titles": 0,
@@ -239,7 +267,7 @@
   },
   "mn": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "bn": {
    "titles": 0,
@@ -251,7 +279,7 @@
   },
   "lb": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "pg": {
    "titles": 0,
@@ -323,7 +351,7 @@
   },
   "vc": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "cv": {
    "titles": 0,
@@ -331,7 +359,7 @@
   },
   "bf": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "cf": {
    "titles": 0,
@@ -347,7 +375,7 @@
   },
   "gb": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "md": {
    "titles": 0,
@@ -367,7 +395,7 @@
   },
   "kg": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "py": {
    "titles": 0,
@@ -451,11 +479,11 @@
   },
   "ke": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "bw": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "bz": {
    "titles": 0,
@@ -463,7 +491,7 @@
   },
   "dk": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "bj": {
    "titles": 0,
@@ -471,7 +499,7 @@
   },
   "kw": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "gn": {
    "titles": 0,
@@ -479,7 +507,7 @@
   },
   "cr": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "ee": {
    "titles": 0,
@@ -535,7 +563,7 @@
   },
   "sa": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "er": {
    "titles": 0,
@@ -547,11 +575,11 @@
   },
   "mh": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "lv": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "mz": {
    "titles": 0,
@@ -583,7 +611,7 @@
   },
   "au": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "mc": {
    "titles": 0,
@@ -643,7 +671,7 @@
   },
   "ye": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "ru": {
    "titles": 0,
@@ -655,7 +683,7 @@
   },
   "jp": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "st": {
    "titles": 0,
@@ -663,7 +691,7 @@
   },
   "mk": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "ua": {
    "titles": 0,
@@ -679,7 +707,7 @@
   },
   "na": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "bd": {
    "titles": 0,
@@ -751,7 +779,7 @@
   },
   "th": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "sr": {
    "titles": 0,
@@ -759,15 +787,15 @@
   },
   "my": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "sv": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "ug": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "lk": {
    "titles": 0,
@@ -859,11 +887,11 @@
   },
   "vn": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "ni": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "si": {
    "titles": 0,
@@ -879,11 +907,11 @@
   },
   "lc": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "zw": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "kp": {
    "titles": 0,
@@ -894,12 +922,12 @@
    "finals": 0
   },
   "so": {
-   "titles": 0,
-   "finals": 0
+   "titles": 1,
+   "finals": 1
   },
   "ae": {
    "titles": 0,
-   "finals": 0
+   "finals": 1
   },
   "cm": {
    "titles": 0,
@@ -1383,6 +1411,49 @@
     "kr"
    ],
    "survive": 16
+  },
+  {
+   "no": 13,
+   "date": "2026-11-08",
+   "slot": 1,
+   "season": 1,
+   "round": 4,
+   "heat": 1,
+   "ranking": [
+    "so",
+    "kw",
+    "bf",
+    "ae",
+    "ni",
+    "sv",
+    "vn",
+    "vc",
+    "ly",
+    "lb",
+    "kg",
+    "zw",
+    "lv",
+    "ke",
+    "dk",
+    "sa",
+    "th",
+    "au",
+    "cr",
+    "bw",
+    "ye",
+    "ug",
+    "lc",
+    "to",
+    "mn",
+    "na",
+    "mk",
+    "jp",
+    "gb",
+    "my",
+    "ie",
+    "mh"
+   ],
+   "survive": 1
   }
  ]
 }

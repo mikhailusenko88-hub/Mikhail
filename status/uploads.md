@@ -11,3 +11,5 @@
 | shorts | 2026-11-07 | 2 | Mexico vs Japan vs UK | https://youtube.com/shorts/MXay3QS1Pr0 | |
 | 11–12 | 2026-11-07 | 3 | S1 SEMI-FINAL · HEATS 1–2/2 | https://youtu.be/zZZ6LgVsers | public |
 | shorts | 2026-11-07 | 3 | Japan vs Vietnam vs Thailand | https://youtube.com/shorts/GSiDPgF75Lk | |
+| 13 | 2026-11-08 | 1 | S1 SEASON 1 · GRAND FINAL | https://youtu.be/0qTI7eOQtEc | public |
+| shorts | 2026-11-08 | 1 | Japan vs UK vs Vietnam | https://youtube.com/shorts/zkyW0HKH1fY | |
