@@ -7,8 +7,8 @@ U=https://nashdekor.ru
 echo "# Сайт снаружи — $(date -u '+%F %H:%M') UTC"
 echo
 echo '```'
-for p in / /robots.txt /sitemap.xml /favicon.ico /apple-touch-icon.png /og.jpg /oferta.html /privacy.html /consent.html /avito.xml; do
-  printf '%-22s %s\n' "$p" "$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "$U$p")"
+for p in / /robots.txt /sitemap.xml /favicon.ico /apple-touch-icon.png /og.jpg /oferta.html /privacy.html /consent.html /avito.xml /pochta/yulia.mobileconfig /pochta/mikhail.mobileconfig; do
+  printf '%-34s %s\n' "$p" "$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "$U$p")"
 done
 curl -s "$U/" -o /tmp/i.html
 echo
