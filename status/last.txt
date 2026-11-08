@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-08 слот 2: cars №4 ФИНАЛ https://youtube.com/shorts/5sIu0BCsPB4, за 86 с
+ТЕСТ ОК: cars №5 собран за 35 с, 22 МБ (не выложен)
 
 {
- "title": "Qaysi mashina yutadi? Какая машина победит? 🏆 Hafta finali · Финал недели #shorts",
- "description": "🏆 Hafta finali: haftaning eng yaxshilari bitta poygada! Kim chempion boʻladi?\nФинал недели: лучшие участники недели в одной гонке. Кто станет чемпионом?\nDushanbadan — yangi hafta, jadval noldan boshlanadi. С понедельника — новая неделя.\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
+ "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №5 #shorts",
+ "description": "🏆 Oʻtgan hafta chempioni: Kia K5 · Чемпион прошлой недели: Kia K5\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -23,30 +23,21 @@
 }
 
 --- журнал (время Ташкента) ---
-15:38:31 режим publish, событие push
-15:38:31 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-15:38:40 комментарии: роликов просмотрено: 9, комментариев: 0
-15:38:40 ФИНАЛ НЕДЕЛИ (cars, 2026-W45): Epica, Labo, Captiva, Matiz, Lacetti, Malibu, Kia K5, Tahoe
-15:38:40 Тема: гонка машин. Подбираю трассу и заезд…
-15:38:42   трасса 1 (pegs, stairs, bumpers, funnel, tramps, spinners, tunnel, bumpy): победа на 51.3 с, смен лидера 11, финишировали 4, расчёт 2 с
-15:38:46   трасса 2 (spinners, bumpers, funnel, hammers, pegs, bumpy, tramps, stairs): победа на 45.7 с, смен лидера 5, финишировали 1, расчёт 3 с
-15:38:49   трасса 3: никто не доехал за 60 с — не подходит
-15:38:53   трасса 4 (tunnel, bumpers, pegs, hammers, spinners, tramps, stairs, funnel): победа на 44.4 с, смен лидера 7, финишировали 4, расчёт 3 с
-15:38:55   трасса 5 (funnel, tunnel, stairs, pegs, bumpers, tramps, spinners, hammers): победа на 44.0 с, смен лидера 7, финишировали 6, расчёт 2 с
-15:39:00   трасса 6 (pegs, hammers, funnel, bumpers, spinners, stairs, tramps, tunnel): победа на 50.3 с, смен лидера 7, финишировали 4, расчёт 5 с
-15:39:04   трасса 7 (spinners, stairs, hammers, split, funnel, pegs, tunnel, bumpers): победа на 49.4 с, смен лидера 13, финишировали 3, расчёт 4 с
-15:39:07   трасса 8 (spinners, funnel, pegs, stairs, bumpy, hammers, tunnel, bumpers): победа на 49.0 с, смен лидера 19, финишировали 2, расчёт 3 с
-15:39:07 Рисую трассу…
-15:39:07 Рисую кадры: заезд 55 с + финал 8 с…
-15:39:07   кадр 0/1655, 28 с
-15:39:14   кадр 300/1655, 34 с
-15:39:21   кадр 600/1655, 41 с
-15:39:28   кадр 900/1655, 48 с
-15:39:35   кадр 1200/1655, 55 с
-15:39:41   кадр 1500/1655, 62 с
-15:39:51 Свожу звук…
-15:39:53 Готово за 73 с: победил Kia K5, ролик 63 с
-15:39:53 ролик готов: 63 с, 43 МБ, сборка 82 с; победил Kia K5, топ-3: Kia K5, Tahoe, Lacetti
-15:39:55 YouTube: https://youtube.com/shorts/5sIu0BCsPB4
-15:39:56 в плейлисте
-15:39:56 статус: public uploaded
+17:03:09 режим test, событие push
+17:03:09 Тема: гонка машин. Подбираю трассу и заезд…
+17:03:11   трасса 1 (hammers, bumpy, stairs, split): победа на 35.1 с, смен лидера 14, финишировали 6, расчёт 1 с — не подходит
+17:03:12   трасса 2 (bumpy, split, stairs, hammers, pegs): победа на 32.2 с, смен лидера 22, финишировали 6, расчёт 1 с — не подходит
+17:03:13   трасса 3 (tramps, hammers, stairs, split): победа на 27.5 с, смен лидера 13, финишировали 2, расчёт 1 с
+17:03:14   трасса 4 (bumpy, hammers, stairs, tunnel): победа на 34.8 с, смен лидера 17, финишировали 2, расчёт 1 с — не подходит
+17:03:15   трасса 5 (tunnel, split, bumpy, bumpers, hammers): победа на 30.1 с, смен лидера 9, финишировали 1, расчёт 1 с
+17:03:16   трасса 6: никто не доехал за 37 с — не подходит
+17:03:17   трасса 7 (bumpy, tunnel, tramps, split): победа на 32.7 с, смен лидера 9, финишировали 3, расчёт 1 с — не подходит
+17:03:18   трасса 8 (tunnel, tramps, hammers, funnel, split): победа на 25.3 с, смен лидера 10, финишировали 7, расчёт 1 с
+17:03:18 Рисую трассу…
+17:03:18 Рисую кадры: заезд 28 с + финал 6 с…
+17:03:19   кадр 0/842, 9 с
+17:03:26   кадр 300/842, 16 с
+17:03:33   кадр 600/842, 24 с
+17:03:42 Свожу звук…
+17:03:43 Готово за 34 с: победил Labo, ролик 34 с
+17:03:43 ролик готов: 34 с, 22 МБ, сборка 34 с; победил Labo, топ-3: Labo, Damas, BYD Song
