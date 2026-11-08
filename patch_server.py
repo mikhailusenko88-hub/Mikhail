@@ -21,17 +21,40 @@ _QW = {"почему", "зачем", "как", "что", "чего", "чем", "
        "сколько", "какой", "какая", "какое", "какие", "каких", "каким", "чей", "чья", "чьё", "чьи", "ли", "разве",
        "неужели", "отчего", "почём", "каков", "какова", "сколь"}
 _SENT = re.compile(r"[^.!?…]+[.!?…]*")
-BOT_Q_PITCH = "high"   # подъём на последнем слове вопроса без вопросительного слова ("" — выключить)
+BOT_Q_PITCH = "x-high"  # подъём в конце вопроса без вопросительного слова ("" — выключить)
+BOT_Q_BASE = "low"      # начало такого вопроса ниже — так подъём слышен (пробы 08.11: вопрос слышен в 6 из 7, было 0 из 3)
+
+
+def _guess_stress(w):
+    """Слово без «+» (ruaccent не знает или пропустил во фразе): спросить ruaccent одно слово,
+    иначе — ударение на предпоследний гласный («Манцин+елла», «Кар+ибах», «обжиг+ает», «к+ожу»)."""
+    try:
+        r = acc.process_all(w)
+        if "+" in r and r.replace("+", "").lower() == w.lower():
+            return r
+    except Exception:
+        pass
+    idx = [i for i, c in enumerate(w) if c in VOW]
+    i = idx[-2] if len(idx) >= 2 else idx[-1]
+    return w[:i] + "+" + w[i:]
+
+
+def _bot_part(w):
+    if sum(c in VOW for c in w) <= 1:
+        return w.replace("+", "")          # односложные — без ударения
+    if "+" in w:
+        return w
+    if "ё" in w or "Ё" in w:
+        i = w.lower().index("ё")
+        return w[:i] + "+" + w[i:]           # «озёр» -> «оз+ёр»
+    return _guess_stress(w)                  # без ударения Альбина угадывает и смазывает слово
 
 
 def _bot_word(m):
     w = m.group(0)
-    if sum(c in VOW for c in w) <= 1:
-        return w.replace("+", "")          # односложные — без ударения
-    if "+" not in w and ("ё" in w or "Ё" in w):
-        i = w.lower().index("ё")
-        return w[:i] + "+" + w[i:]           # «озёр» -> «оз+ёр»
-    return w
+    if "-" in w and "+" in w:
+        return w                             # «чт+о-нибудь»: ударение уже есть у слова целиком
+    return "-".join(_bot_part(x) for x in w.split("-"))
 
 
 def bot_marks(marked):
@@ -50,8 +73,19 @@ def bot_ssml(marked, rate="medium", pitch="medium"):
         while lead and lead[0] in ("а", "и", "но", "ну", "так", "вот", "ой"):
             lead = lead[1:]
         if BOT_Q_PITCH and s0.endswith("?") and lead and lead[0] not in _QW and "ли" not in words:
-            mm = list(WORD.finditer(s0))[-1]
-            s0 = s0[:mm.start()] + f'<prosody pitch="{BOT_Q_PITCH}">' + mm.group(0) + "</prosody>" + s0[mm.end():]
+            ms = list(WORD.finditer(s0))
+            # подъём — на последнем слове; если оно односложное («знал», «нет») — и на предыдущем,
+            # а если и то односложное («во сне») — ещё на одном (так проверено 08.11)
+            k = len(ms) - 1
+            if sum(c in VOW for c in ms[k].group(0)) <= 1 and k >= 1:
+                k -= 1
+                if sum(c in VOW for c in ms[k].group(0)) <= 1 and k >= 1:
+                    k -= 1
+            a_, b_ = ms[k].start(), ms[-1].end()
+            head = s0[:a_].rstrip()
+            if BOT_Q_BASE and head:
+                head = f'<prosody pitch="{BOT_Q_BASE}">' + head + "</prosody>"
+            s0 = (head + " " if head else "") + f'<prosody pitch="{BOT_Q_PITCH}">' + s0[a_:b_] + "</prosody>" + s0[b_:]
         out.append(s0)
     body = " ".join(out)
     if rate != "medium" or pitch != "medium":
@@ -88,7 +122,7 @@ REPL = [
      'def make(text, speaker="ru_albina", soft=True, rate="medium", pitch="medium", style=""):'),
     ('    key = hashlib.sha1(f"v1|{speaker}|{soft}|{rate}|{pitch}|{text}".encode()).hexdigest()',
      '    style = "bot" if style == "bot" else ""\n'
-     '    key = hashlib.sha1((f"v1|{speaker}|{soft}|{rate}|{pitch}|{text}" + ("|bot2" if style else "")).encode()).hexdigest()'),
+     '    key = hashlib.sha1((f"v1|{speaker}|{soft}|{rate}|{pitch}|{text}" + ("|bot3" if style else "")).encode()).hexdigest()'),
     ('        raw = synth(mark(text), speaker, rate, pitch)',
      '        raw = synth_bot(bot_marks(mark(text)), speaker, rate, pitch) if style == "bot" else synth(mark(text), speaker, rate, pitch)'),
     ('q.get("rate", "medium"), q.get("pitch", "medium"))',

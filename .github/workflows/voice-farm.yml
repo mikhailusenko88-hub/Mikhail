@@ -60,6 +60,7 @@ jobs:
       - name: Прежняя озвучка
         run: |
           mkdir -p prev
+          if grep -qi force request-farm.txt; then echo "force — озвучиваю всё заново"; ls prev | wc -l; exit 0; fi
           if git fetch -q --depth 1 origin pochemu-albina-voice 2>/dev/null; then git --work-tree=prev checkout FETCH_HEAD -- . 2>/dev/null || true; git reset -q; fi
           ls prev/v 2>/dev/null | wc -l
       - name: Озвучка (часть ${{ matrix.shard }} из 6)
