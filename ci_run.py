@@ -40,6 +40,26 @@ def read_request():
     return req
 
 
+SLOT_HOURS = {1: 7, 2: 15, 3: 23}                  # по Москве; запуск ~за 30 мин до выхода
+
+
+def due_slot(now, history):
+    """Догонялка: самый ранний слот, время которого уже наступило, а ролика ещё нет.
+    GitHub иногда пропускает запуск по расписанию — тогда следующий запуск выложит пропущенный."""
+    done = {(h.get("date"), h.get("slot")) for h in history}
+    cands = []
+    if now.hour < 5:                                   # вечерний слот вчера (запуск ушёл за полночь)
+        cands.append((now.date() - dt.timedelta(days=1), 3))
+    for s, hr in sorted(SLOT_HOURS.items()):
+        start = dt.datetime(now.year, now.month, now.day, hr, tzinfo=MSK) - dt.timedelta(minutes=45)
+        if now >= start:
+            cands.append((now.date(), s))
+    for d, s in cands:
+        if (d.isoformat(), s) not in done:
+            return d, s
+    return None
+
+
 def auto_slot(now):
     """Слоты по Москве: 1 — утро (~07:00), 2 — день (~15:00), 3 — вечер (~23:00)."""
     h = now.hour
@@ -69,6 +89,17 @@ def main():
     if req["slot"] != "auto":
         slot = int(req["slot"])
     state = json.load(open("season_state.json"))
+    if mode == "publish" and req["date"] == "auto" and req["slot"] == "auto":
+        due = due_slot(now, state["history"])
+        if due is None:
+            log("все слоты на это время уже выложены — ничего не делаю")
+            os.makedirs("status", exist_ok=True)
+            with open("status/kick.txt", "w", encoding="utf-8") as f:
+                f.write(f"ПРОПУСК {now:%Y-%m-%d %H:%M} МСК: всё по расписанию уже выложено\n")
+            return
+        if due != (d, slot):
+            log(f"догоняю пропущенный слот: {due[0]} слот {due[1]}")
+        d, slot = due
     n = state["race_no"] + 1
     log(f"режим {mode}, гонка #{n}, {d} слот {slot}, событие {os.environ.get('EVENT')}")
     import season
