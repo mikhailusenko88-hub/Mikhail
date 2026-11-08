@@ -103,7 +103,7 @@
    ]
   },
   "cars": {
-   "no": 3,
+   "no": 4,
    "points": {
     "Matiz": 27,
     "Captiva": 30,
@@ -163,12 +163,33 @@
      ],
      "link": "https://youtube.com/shorts/DQuwCiz6_kg",
      "final": false
+    },
+    {
+     "no": 4,
+     "date": "2026-11-08",
+     "slot": 2,
+     "winner": "Kia K5",
+     "top3": [
+      "Kia K5",
+      "Tahoe",
+      "Lacetti"
+     ],
+     "link": "https://youtube.com/shorts/5sIu0BCsPB4",
+     "final": true
     }
    ],
-   "champion": null,
+   "champion": "Kia K5",
    "season_races": 3,
    "season": "2026-W45",
-   "new_pending": []
+   "new_pending": [],
+   "final_season": "2026-W45",
+   "champions": [
+    {
+     "season": "2026-W45",
+     "champion": "Kia K5",
+     "link": "https://youtube.com/shorts/5sIu0BCsPB4"
+    }
+   ]
   },
   "clubs": {
    "no": 1,
@@ -294,6 +315,16 @@
    "final": true,
    "link": "https://youtube.com/shorts/Z_9cGwbFfE0",
    "title": "Qaysi shahar yutadi? Какой город победит? 🏆 Hafta finali · Финал недели #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-08",
+   "slot": 2,
+   "league": "cars",
+   "no": 4,
+   "final": true,
+   "link": "https://youtube.com/shorts/5sIu0BCsPB4",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🏆 Hafta finali · Финал недели #shorts",
    "pl": true
   }
  ],

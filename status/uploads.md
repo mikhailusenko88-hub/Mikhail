@@ -7,3 +7,4 @@
 | 2026-11-07 | 2 | cars №3 | Epica | https://youtube.com/shorts/DQuwCiz6_kg | public |
 | 2026-11-07 | 3 | clubs №1 | Paxtakor | https://youtube.com/shorts/3RAKmJ4Jjc0 | public |
 | 2026-11-08 | 1 | cities №5 ФИНАЛ | Xiva | https://youtube.com/shorts/Z_9cGwbFfE0 | public |
+| 2026-11-08 | 2 | cars №4 ФИНАЛ | Kia K5 | https://youtube.com/shorts/5sIu0BCsPB4 | public |
