@@ -264,7 +264,9 @@ class StageArt:
         if b.look == "ring":
             col = th["rings"][b.ring_idx % len(th["rings"])]
             col = mix(col, (255, 255, 255), [0, 0.3, 0.55, 0.8][level])
-        elif b.look == "flap":
+        elif b.look == "glass":
+            col = mix(th["rings"][b.ring_idx % len(th["rings"])], (255, 255, 255), [0.45, 0.6, 0.75, 0.9][level])
+        elif b.look in ("flap", "slider", "pusher"):
             col = th["flap"]
         else:
             col = th["spin"]
@@ -290,6 +292,19 @@ class StageArt:
                     py += rr.uniform(-9, 9) * S
                     pts.append((px, py))
                 d.line(pts, fill=(30, 10, 10, 230), width=3 * S)
+        if b.look == "glass" and level > 0:               # трещины по стеклу
+            rr = random_state(bi * 11 + level)
+            segs = b.segs
+            for _ in range(7 * level):
+                ax, ay, bx, by = segs[rr.randrange(len(segs))][:4]
+                u = rr.random()
+                px, py = (half + ax + (bx - ax) * u) * S, (half + ay + (by - ay) * u) * S
+                pts = [(px, py)]
+                for _k in range(3):
+                    px += rr.uniform(-14, 14) * S
+                    py += rr.uniform(-7, 7) * S
+                    pts.append((px, py))
+                d.line(pts, fill=(20, 30, 50, 235), width=3 * S)
         lay = lay.resize((size, size), Image.LANCZOS)
         glow = Image.new("RGBA", (size // 2, size // 2), (0, 0, 0, 0))
         gd = ImageDraw.Draw(glow)

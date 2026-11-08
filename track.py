@@ -420,6 +420,131 @@ def m_pendulums(T, y, nb=0):
     return yy + 30
 
 
+# ===================== новые блоки (ноябрь 2026) =====================
+
+def m_glass(T, y, nb=0):
+    """Стеклянный пол: шарики падают на стекло, оно трескается от ударов и лопается — все сыплются разом."""
+    rng = T.rng
+    T.seg(0, y, 150, y + 250, 9, 0)
+    T.seg(1000, y, 850, y + 250, 9, 0)
+    hp = max(3, int(round(nb / 4))) + rng.randint(0, 1)
+    b = T.add_body(Body(500, y + 268, "glass", hp=hp, ring_idx=rng.randint(0, 5)))
+    T.seg(-372, -26, 0, 0, 8, 2, b)
+    T.seg(0, 0, 372, -26, 8, 2, b)
+    T.modules.append(("glass", y))
+    return funnel(T, y + 330, 220, 240)
+
+
+def m_sliders(T, y, nb=0):
+    """Движущиеся рампы: зигзаг, но рампы ездят — у стенки то открывается щель (срезать путь), то закрывается."""
+    rng = T.rng
+    n = rng.randint(4, 5)
+    t = math.tan(math.radians(rng.uniform(13, 16)))
+    L = 700.0
+    P = rng.uniform(3.2, 4.6)
+    yy = y + 30
+    for i in range(n):
+        cy = yy + L * t / 2
+        left = i % 2 == 0
+        cx = 110 + L / 2 if left else 890 - L / 2
+        b = T.add_body(Body(cx, cy, "slider", ox=(1 if left else -1) * 105, P2=P, ph2=i * 1.9 + rng.uniform(0, 1)))
+        if left:
+            T.seg(-L / 2, -L * t / 2, L / 2, L * t / 2, 9, 5, b)
+        else:
+            T.seg(L / 2, -L * t / 2, -L / 2, L * t / 2, 9, 5, b)
+        yy += L * t + 100
+    T.modules.append(("sliders", y))
+    return yy + 40
+
+
+def m_comb(T, y, nb=0):
+    """Ходячие колышки: плинко, где каждый второй ряд ездит влево-вправо."""
+    rng = T.rng
+    rows = rng.randint(7, 9)
+    dy = 78.0
+    P = rng.uniform(1.8, 2.6)
+    for r in range(rows):
+        yy = y + 40 + r * dy
+        if r % 2:
+            b = T.add_body(Body(500, yy, "slider", ox=rng.choice([-1, 1]) * 52, P2=P, ph2=r * 0.9))
+            x = -360.0
+            while x <= 360:
+                T.peg(x, 0, 9, 1, b)
+                x += 120
+        else:
+            x = 80.0
+            while x <= 920:
+                T.peg(x, yy, 8, 1)
+                x += 120
+    T.modules.append(("comb", y))
+    return y + 40 + rows * dy + 50
+
+
+def m_pushers(T, y, nb=0):
+    """Толкатели: из стен выезжают брусья и сбрасывают шарики в сторону."""
+    rng = T.rng
+    n = rng.randint(4, 5)
+    P = rng.uniform(2.0, 2.8)
+    yy = y + 80
+    for i in range(n):
+        left = i % 2 == 0
+        b = T.add_body(Body(-150 if left else 1150, yy, "pusher", ox=(1 if left else -1) * 150, P2=P,
+                            ph2=i * 1.3 + rng.uniform(0, 0.6)))
+        sx = 1 if left else -1
+        T.seg(-sx * 60, -10, sx * 460, 55, 13, 4, b)      # брус с наклоном — шарик скатывается, не застревает
+        for x in ([620, 820] if left else [180, 380]):
+            T.peg(x, yy + 120, 9, 1)
+        yy += 210
+    T.modules.append(("pushers", y))
+    return yy + 40
+
+
+def m_drum(T, y, nb=0):
+    """Барабан с зубцами: шарики ждут проём сверху, зубцы сбивают их и раскидывают."""
+    rng = T.rng
+    cx, cy, R = 500.0, y + 330.0, 220.0
+    d = R + 8 + 34 + 8 + 30 + 8
+    a = math.radians(50)
+    tipx, tipy = d * math.sin(a), cy - d * math.cos(a)
+    T.seg(0, y, cx - tipx, tipy, 9, 0)
+    T.seg(1000, y, cx + tipx, tipy, 9, 0)
+    gap = math.radians(58)
+    w = rng.choice([-1, 1]) * rng.uniform(0.9, 1.15)
+    b = T.add_body(Body(cx, cy, "ring", a0=rng.uniform(0, 6.28), w=w, ring_r=R, ring_idx=3))
+    span = 2 * math.pi - gap
+    n = int(span / math.radians(5))
+    T.poly([(R * math.cos(gap / 2 + span * j / n), R * math.sin(gap / 2 + span * j / n)) for j in range(n + 1)], 8, 2, b)
+    for j in range(3):                                   # зубцы снаружи: сбивают тех, кто ждёт проём сверху
+        th = gap / 2 + span * (j + 0.5) / 3
+        T.seg(R * math.cos(th), R * math.sin(th), (R + 34) * math.cos(th), (R + 34) * math.sin(th), 8, 4, b)
+    T.modules.append(("drum", y))
+    return cy + R + 8 + 90
+
+
+def m_split(T, y, nb=0):
+    """Развилка: слева короткий путь за люком (открывается редко), справа — длинный зигзаг, зато всегда открыт."""
+    rng = T.rng
+    H = rng.uniform(820, 980)
+    T.poly([(390, y + 110), (500, y + 30), (610, y + 110)], 9, 0)
+    T.seg(500, y + 30, 500, y + H, 9, 0)
+    # люк слева
+    P = rng.uniform(4.0, 5.2)
+    a = math.radians(40)
+    gate = T.add_body(Body(14, y + 230, "flap", a0=a, amp=a, k=6.0, P=P, ph=rng.uniform(0, 6.28), bias=0.45))
+    T.seg(0, 0, 470, 0, 8, 4, gate)
+    T.seg(0, y + 120, 0, y + 240, 9, 0)
+    yy = y + 400
+    while yy < y + H - 80:                                # короткий путь: пара колышков
+        T.peg(250 + rng.uniform(-60, 60), yy, 9, 1)
+        yy += 210
+    _chan_zig(T, 509, 991, y + 60, H - 60)
+    T.modules.append(("split", y))
+    return funnel(T, y + H + 20, 200, 260)
+
+
+NEW_MODULES = ("glass", "sliders", "comb", "pushers", "drum", "split")
+
+
 def m_finish(T, y):
     y2 = funnel(T, y, 230, 260)
     top = y2 - 50
@@ -434,20 +559,24 @@ MODULES = {
     "pegs": m_pegs, "zigzag": m_zigzag, "windmills": m_windmills, "trapdoors": m_trapdoors,
     "tunnels": m_tunnels, "ring_gate": m_ring_gate, "bumpers": m_bumpers, "rotor": m_rotor,
     "stairs": m_stairs, "twin_rings": m_twin_rings, "pendulums": m_pendulums,
+    "glass": m_glass, "sliders": m_sliders, "comb": m_comb, "pushers": m_pushers, "drum": m_drum, "split": m_split,
 }
 
 
-def build_stage(rng, nb, n_modules):
+def build_stage(rng, nb, n_modules, pool=None, last=None):
+    """pool — из каких блоков собирать (по умолчанию все); last — блок прямо перед финишем (для особых трасс)."""
     T = Track(rng)
     y = m_ring_start(T, 0.0, nb)
     order = []
     while len(order) < n_modules:
-        names = list(MODULES)
+        names = list(pool or MODULES)
         rng.shuffle(names)
         if order and names[0] == order[-1]:
             names.append(names.pop(0))
         order += names
     order = order[:n_modules]
+    if last:
+        order = [m for m in order if m != last][:max(1, n_modules - 1)] + [last]
     for name in order:
         y = MODULES[name](T, y, nb)
     y = m_finish(T, y)

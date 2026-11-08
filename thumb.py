@@ -113,7 +113,8 @@ if __name__ == "__main__":
     if meta.get("final"):
         tag = f"SEASON {meta['season']}"
     elif meta.get("lives_mode"):
-        tag = f"SEASON {meta['season']} · RACE {meta['heat']}/{meta['heats']}"
+        tag = (f"MEGA TRACK · RACE {meta['heat']}/{meta['heats']}" if meta.get("mega") else
+               f"SEASON {meta['season']} · RACE {meta['heat']}/{meta['heats']}")
     else:
         rn = {1: "ROUND 1", 2: "ROUND 2", 3: "SEMI-FINAL"}[meta["round"]]
         tag = f"{rn} · {meta.get('heat_label') or f'HEAT {meta['heat']}/{meta['heats']}'}"

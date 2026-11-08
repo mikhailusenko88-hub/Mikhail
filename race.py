@@ -43,13 +43,16 @@ def log(*a):
 
 
 # ============================================================ планирование этапов
-def plan_stage(k, nb, q, seed0, target):
+MEGA_POOL = track.NEW_MODULES + ("rotor", "ring_gate", "pendulums", "tunnels", "trapdoors")
+
+
+def plan_stage(k, nb, q, seed0, target, pool=None, last=None):
     nm = max(4, round(target / 5.4))
     best = None
     for attempt in range(80):
         seed = seed0 * 1000 + k * 100 + attempt
         rng = random.Random(seed)
-        T = track.build_stage(rng, nb, nm)
+        T = track.build_stage(rng, nb, nm, pool=pool, last=last)
         res = track.run_stage(T, q, seed)
         f = [t for t, i in res["fins"]]
         if len(f) < q:
@@ -243,11 +246,11 @@ class StageView:
         self.pos = res["pos"]
         self.fin = {i: t for t, i in res["fins"]}
         self.fin_rank = {i: n for n, (t, i) in enumerate(sorted(res["fins"]))}
-        self.dyn = [bi for bi, b in enumerate(T.bodies) if b.dynamic]
+        self.dyn = [bi for bi, b in enumerate(T.bodies) if b.dynamic or b.hp > 0]
         # разрушение колец: событие или запасной срок
         self.gone = {}
         for bi, b in enumerate(T.bodies):
-            if b.look == "ring" and b.hp > 0:
+            if b.look in ("ring", "glass") and b.hp > 0:
                 tb = res["breaks"].get(bi, None)
                 tt = b.toff if b.toff < 1e8 else None
                 cands = [v for v in (tb, tt) if v is not None]
@@ -266,6 +269,11 @@ class StageView:
                 a = rr.uniform(0, 2 * math.pi)
                 R0 = b.ring_r
                 px, py = b.px + R0 * math.cos(a + th), b.py + R0 * math.sin(a + th)
+                if b.look == "glass":                       # осколки стекла — вдоль пола, летят вниз
+                    ax, ay, bx, by = b.segs[j % len(b.segs)][:4]
+                    u = rr.random()
+                    px, py = b.px + ax + (bx - ax) * u, b.py + ay + (by - ay) * u
+                    a = rr.uniform(0.2, math.pi - 0.2)
                 sp = rr.uniform(120, 460)
                 vx = math.cos(a + th) * sp - math.sin(a + th) * b.w * R0
                 vy = math.sin(a + th) * sp + math.cos(a + th) * b.w * R0 - 150
@@ -342,7 +350,16 @@ class StageView:
             spr, halfs = art.body_sprite_scaled(bi, lvl, s)
             if sy + halfs < -20 or sy - halfs > H + 20:
                 continue
-            rot = spr.rotate(-math.degrees(b.angle(t)), Image.BILINEAR)
+            rot = spr if (b.w == 0 and b.P == 0 and b.a0 == 0) else spr.rotate(-math.degrees(b.angle(t)), Image.BILINEAR)
+            if b.look == "pusher":                   # толкатель «уходит в стену»: снаружи трассы не рисуем
+                wl, wr = (-9 - x0) * s, (1009 - x0) * s
+                lx = int(max(0, wl - (sx - rot.size[0] / 2)))
+                rx = int(min(rot.size[0], wr - (sx - rot.size[0] / 2)))
+                if rx <= lx:
+                    continue
+                part = rot.crop((lx, 0, rx, rot.size[1]))
+                paste_center(bg, part, sx - rot.size[0] / 2 + (lx + rx) / 2, sy)
+                continue
             paste_center(bg, rot, sx, sy)
         # осколки
         d = ImageDraw.Draw(bg)
@@ -460,14 +477,15 @@ def sub_line(p):
     return f"{len(p['codes'])} COUNTRIES  ·  ONLY {p['survive']} SURVIVE"
 
 
-def next_card_frames(cbg, nxt, secs, new_season):
+def next_card_frames(cbg, nxt, secs, new_season, next_mega=False):
     """Конечная заставка: флаги следующей гонки в верхней половине, низ свободен под элементы YouTube."""
     for j in range(int(secs * FPS)):
         tt = j / FPS
         img = cbg.copy()
         dd = ImageDraw.Draw(img)
         text_center(dd, W / 2, 22, "NEXT:  " + season.label(nxt), font(54), GOLD, 5)
-        text_center(dd, W / 2, 92, "ALL 193 COUNTRIES START AGAIN" if new_season else sub_line(nxt), font(34), GREEN, 4)
+        text_center(dd, W / 2, 92, "ALL 193 COUNTRIES START AGAIN" if new_season else
+                    (sub_line(nxt) + ("  ·  SUNDAY MEGA TRACK" if next_mega else "")), font(34), GREEN, 4)
         lv = nxt.get("lives") if nxt.get("lives_mode") and not new_season else None
         flag_grid(img, dd, nxt["codes"], tt, W / 2, 205, per=10, fw=88, fh=66, dx=138, dy=118 if lv else 104, lab=20,
                   t0=0.2, step=0.025, lives=lv)
@@ -506,6 +524,9 @@ def titles(plan, nxt_label, codes=None, heats_txt=None):
     if plan["final"]:
         v = [f"{vs} 🏆 GRAND FINAL – 32 Countries, 1 Champion | Country Marble Race",
              f"GRAND FINAL 🏆 {vs}… Which Country Wins Season {s}? Marble Race"]
+    elif plan.get("lives_mode") and plan.get("mega"):
+        v = [f"{vs} 🔥 SUNDAY MEGA TRACK – Who Loses a Life? | Marble Race #{plan['heat']}",
+             f"MEGA TRACK 🔥 {vs}… {n - k} of {n} Lose a Life | Country Marble Race #{plan['heat']}"]
     elif plan.get("lives_mode"):
         L = n - k
         v = [f"{vs} ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #{plan['heat']}",
@@ -540,6 +561,8 @@ def describe(plan, alive_before, nxt_label, fin_txt):
         n = len(plan["codes"])
         head = (f"Flagball Arena · Season {s}, Race {plan['heat']} of {plan['heats']}: {n} countries, 3 stages — "
                 f"the last {n - plan['survive']} lose a life ❤️. No lives left = out of the season.")
+        if plan.get("mega"):
+            head = "🔥 SUNDAY MEGA TRACK — longer stages, the craziest obstacles of the week.\n\n" + head
         who = "Countries in this race (lives before the race)"
     else:
         head = (f"Flagball Arena · Season {s}, {season.label(plan).title()}: {len(plan['codes'])} countries race "
@@ -583,6 +606,8 @@ def build(args):
     seed0 = state["seed"] * 7 + race_no * 131
     rng = random.Random(seed0)
     lab = season.label(plan)
+    mega = (not plan["final"]) and d.weekday() == 6          # воскресенье — мега-трасса
+    plan["mega"] = mega
     log(f"гонка #{race_no} {d} слот {slot}: S{plan['season']} {lab}, {N}→{plan['survive']}, "
         f"участники: {' '.join(A3[c] for c in parts)}")
 
@@ -599,8 +624,10 @@ def build(args):
         assert len(alive) == nb, (len(alive), nb)
         codes = list(alive)
         rng.shuffle(codes)
-        target = FINAL_TARGETS[k] if final_race else HEAT_TARGET
-        err, T, res, seed = plan_stage(k, nb, q, seed0, target)
+        target = FINAL_TARGETS[k] if final_race else HEAT_TARGET * (1.3 if mega else 1.0)
+        # особые трассы: воскресная мега-трасса (новые блоки, длиннее), в финале — стеклянный пол перед финишем
+        last = "glass" if final_race and k == nst - 1 else None
+        err, T, res, seed = plan_stage(k, nb, q, seed0, target, pool=MEGA_POOL if mega else None, last=last)
         order = stage_order(res, nb)
         qual = [codes[i] for i in order[:q]]
         out = [codes[i] for i in order[q:]]
@@ -702,6 +729,8 @@ def build(args):
                     else:
                         text_center(dd, VIEW_W / 2, 88, lab, font(70), WHITE, 5)
                     text_center(dd, VIEW_W / 2, 196, sub_line(plan), font(44), GREEN, 4)
+                    if mega:
+                        text_center(dd, VIEW_W / 2, 850, "SUNDAY MEGA TRACK", font(76), (255, 120, 60), 6)
                     flag_grid(img, dd, parts, tt, VIEW_W / 2, 350, per=8, fw=116, fh=87, dx=165, dy=158,
                               lives=plan["lives"] if LIVES else None)
                     if tt > 2.4:
@@ -961,7 +990,8 @@ def build(args):
 
     # ---- следующая гонка (при склейке нескольких заездов — только у последнего)
     if not args.no_next:
-        for img in next_card_frames(cbg, nxt, NXT, new_season):
+        nd, _ns = season.slot_after(d, slot, 1)
+        for img in next_card_frames(cbg, nxt, NXT, new_season, next_mega=(nd.weekday() == 6 and not mega)):
             if done():
                 break
             emit(img)
@@ -980,7 +1010,7 @@ def build(args):
             "race_no": race_no, "date": d.isoformat(), "slot": slot, "season": plan["season"], "round": plan["round"],
             "heat": plan["heat"], "heats": plan["heats"], "survive": plan["survive"], "final": final_race,
             "kind": "final" if final_race else "heat", "label": lab, "n": N,
-            "lives_mode": bool(plan.get("lives_mode")), "losers": N - plan["survive"],
+            "lives_mode": bool(plan.get("lives_mode")), "losers": N - plan["survive"], "mega": mega,
             "ranking": [A3[c] for c in ranking], "codes": list(parts), "spans": spans,
             "duration": nframes[0] / FPS}
     json.dump(meta, open(os.path.splitext(args.out)[0] + ".json", "w"), ensure_ascii=False, indent=1)
