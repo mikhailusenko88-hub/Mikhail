@@ -78,8 +78,144 @@ def stages_for(n, k, rnd):
     return list(zip(cnt[:-1], cnt[1:]))
 
 
+# ============================================================ сезон «3 жизни» (с сезона 2)
+# У каждой страны 3 жизни. Гонка — 24 страны (сначала те, кто бежал меньше всех), нижние L теряют жизнь,
+# без жизней — вылет. L подбирается сам, чтобы к финалу (фиксированное число гонок) осталось ~40 стран.
+# Гранд-финал — 32 лучшие по жизням (при равенстве — по среднему месту). Финал в дату, обещанную зрителям.
+LIVES = 3
+LIFE_HEAT = 24
+FINALISTS = 32
+TARGET_ALIVE = 40          # сколько стран примерно доживает до финала (борьба за 32 места)
+
+
+def is_lives(state):
+    return state.get("mode") == "lives"
+
+
+def alive_codes(state):
+    return [c for c, v in state["lives"].items() if v > 0]
+
+
+def _life_losers(state, n):
+    """Сколько стран теряет жизнь в этой гонке: чтобы к финалу осталось ~TARGET_ALIVE стран."""
+    left = max(1, state["life_total"] - state["heat"])
+    lives_now = sum(v for v in state["lives"].values() if v > 0)
+    want = TARGET_ALIVE * 1.6                       # у доживших в среднем ~1,6 жизни
+    L = round((lives_now - want) / left)
+    return max(2, min(n // 2, L))
+
+
+def _life_heat(state):
+    pool = alive_codes(state)
+    r = _rng(state, 7, state["heat"] + 1)
+    r.shuffle(pool)
+    pool.sort(key=lambda c: state["raced"].get(c, 0))   # кто бежал меньше — тот первый
+    return pool[:LIFE_HEAT]
+
+
+def finalists(state):
+    al = alive_codes(state)
+    sc = state["score"]
+    return sorted(al, key=lambda c: (-state["lives"][c], -sc.get(c, 0) / max(1, state["raced"].get(c, 0)), c))[:FINALISTS]
+
+
+def start_lives_season(state, life_total, prior=None):
+    """Новый сезон «3 жизни». prior — уже прошедшие гонки этого сезона по старым правилам (их учитываем)."""
+    state.update({"mode": "lives", "round": 1, "heat": 0, "life_total": life_total,
+                  "lives": {a2: LIVES for a2, _ in countries.COUNTRIES}, "raced": {}, "score": {},
+                  "heats": [], "survive": [], "survivors": [], "eliminated": []})
+
+
+def _life_current(state):
+    if state["round"] == 4:
+        codes = list(state["heats"][0])
+        return {"season": state["season"], "round": 4, "round_name": ROUND_NAMES[4], "heat": 1, "heats": 1,
+                "codes": codes, "survive": 1, "final": True, "stages": stages_for(len(codes), 1, 4) if len(codes) == 32
+                else _final_stages(len(codes)), "alive": len(alive_codes(state)), "race_no": state["race_no"] + 1,
+                "lives_mode": True, "lives": {c: state["lives"][c] for c in codes}, "life_total": state["life_total"]}
+    codes = _life_heat(state)
+    n = len(codes)
+    L = _life_losers(state, n)
+    return {"season": state["season"], "round": 1, "round_name": "RACE", "heat": state["heat"] + 1,
+            "heats": state["life_total"], "codes": codes, "survive": n - L, "final": False,
+            "stages": stages_for(n, n - L, 1), "alive": len(alive_codes(state)), "race_no": state["race_no"] + 1,
+            "lives_mode": True, "lives": {c: state["lives"][c] for c in codes}, "life_total": state["life_total"]}
+
+
+def _final_stages(n):
+    """Этапы финала, если финалистов не 32 (запасной случай)."""
+    cnt = [n]
+    while cnt[-1] > 3:
+        cnt.append(max(3, round(cnt[-1] * 0.75)))
+    st = list(zip(cnt[:-1], cnt[1:]))
+    return st + [(3, 3)]
+
+
+def _life_apply(state, plan, ranking, d, slot):
+    n = len(ranking)
+    k = plan["survive"]
+    state["race_no"] += 1
+    state["history"].append({"no": state["race_no"], "date": d.isoformat(), "slot": slot, "season": plan["season"],
+                             "round": plan["round"], "heat": plan["heat"], "ranking": ranking, "survive": k,
+                             "mode": "lives"})
+    if plan["final"]:
+        for c in ranking:
+            state["hall"].setdefault(c, {"titles": 0, "finals": 0})["finals"] += 1
+        state["hall"][ranking[0]]["titles"] += 1
+        state["champions"].append({"season": plan["season"], "code": ranking[0], "podium": ranking[:3],
+                                   "date": d.isoformat()})
+        state["season"] += 1
+        start_lives_season(state, state.get("next_life_total", state["life_total"]))
+        return
+    for i, c in enumerate(ranking):
+        state["raced"][c] = state["raced"].get(c, 0) + 1
+        state["score"][c] = state["score"].get(c, 0) + (n - 1 - i) / max(1, n - 1)
+    alive = len(alive_codes(state))
+    for c in ranking[k:]:                       # от лучшего из проигравших к худшему
+        if state["lives"][c] == 1 and alive <= FINALISTS:
+            continue                            # меньше 32 не опускаемся — финал всегда полный
+        state["lives"][c] -= 1
+        if state["lives"][c] == 0:
+            alive -= 1
+            state["eliminated"].append(c)
+    state["heat"] += 1
+    if state["heat"] >= state["life_total"]:
+        state["round"], state["heats"], state["survive"] = 4, [finalists(state)], [1]
+
+
+def races_until(d, slot, final_d, final_slot):
+    """Сколько выкладок от (d, slot) включительно до финала (не включая сам финал)."""
+    return (final_d - d).days * 3 + (final_slot - slot)
+
+
+def migrate_to_lives(state, next_d, next_slot, final_d, final_slot=3):
+    """Перевод текущего сезона на «3 жизни». Гонки этого сезона, уже прошедшие по старым правилам, засчитываются:
+    кто в них вылетел — минус жизнь."""
+    done = [h for h in state["history"] if h["season"] == state["season"]]
+    start_lives_season(state, races_until(next_d, next_slot, final_d, final_slot) + len(done))
+    for h in done:
+        r, k, n = h["ranking"], h["survive"], len(h["ranking"])
+        for i, c in enumerate(r):
+            state["raced"][c] = state["raced"].get(c, 0) + 1
+            state["score"][c] = state["score"].get(c, 0) + (n - 1 - i) / max(1, n - 1)
+        for c in r[k:]:
+            state["lives"][c] -= 1
+        h["lives_heat"] = True
+    state["heat"] = len(done)
+    state["final_date"] = final_d.isoformat()
+    return state
+
+
+def life_lost(before_plan, after_state):
+    """Кто в этой гонке потерял жизнь и сколько осталось: {код: жизней после}."""
+    return {c: after_state["lives"][c] for c in before_plan["codes"]
+            if after_state["lives"][c] < before_plan["lives"][c]}
+
+
 def current(state):
     """Что за гонка следующая: раунд, заезд, участники, сколько выживает, этапы."""
+    if is_lives(state):
+        return _life_current(state)
     rnd, h = state["round"], state["heat"]
     codes = list(state["heats"][h])
     k = state["survive"][h]
@@ -92,11 +228,15 @@ def current(state):
 def label(p):
     if p["final"]:
         return f"SEASON {p['season']} · GRAND FINAL"
+    if p.get("lives_mode"):
+        return f"RACE {p['heat']}/{p['heats']}"
     return f"{p['round_name']} · HEAT {p['heat']}/{p['heats']}" if p["heats"] > 1 else p["round_name"]
 
 
 def apply(state, plan, ranking, d, slot):
     """ranking — коды от 1-го места к последнему. Двигает сезон вперёд."""
+    if is_lives(state):
+        return _life_apply(state, plan, ranking, d, slot)
     k = plan["survive"]
     state["race_no"] += 1
     surv, out = ranking[:k], ranking[k:]
@@ -131,6 +271,8 @@ def remaining_to_final(state_after):
     s = state_after
     if s["round"] == 4:
         return 1
+    if is_lives(s):
+        return s["life_total"] - s["heat"] + 1
     n = len(s["heats"]) - s["heat"]
     for r in range(s["round"] + 1, 4):
         n += {2: 3, 3: 2}[r]

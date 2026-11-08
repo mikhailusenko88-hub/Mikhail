@@ -128,7 +128,7 @@ def main():
     import season as SE
     cur = SE.current(state)
     left = cur["heats"] - (cur["heat"] - 1)
-    k = min(HEATS_PER_VIDEO.get(cur["round"], 1), left)
+    k = 1 if cur.get("lives_mode") else min(HEATS_PER_VIDEO.get(cur["round"], 1), left)   # «3 жизни»: 1 гонка = 1 видео
     log(f"в этом видео заездов: {k} (раунд {cur['round']}, осталось в раунде {left})")
     parts = []
     for j in range(k):

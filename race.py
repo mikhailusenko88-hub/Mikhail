@@ -120,9 +120,30 @@ def camera_path(T, res, q, cy0, s0):
     return cams
 
 
+# ============================================================ жизни (сезон «3 жизни»)
+HEART_OFF = (70, 72, 86)
+
+
+def heart(d, cx, cy, s, fill):
+    """Сердечко шириной s с центром (cx, cy)."""
+    r = s / 4
+    for x in (cx - r, cx + r):
+        d.ellipse([x - r, cy - r * 1.5, x + r, cy + r * 0.5], fill=fill)
+    d.polygon([(cx - 2 * r, cy - r * 0.4), (cx + 2 * r, cy - r * 0.4), (cx, cy + r * 1.9)], fill=fill)
+
+
+def hearts(d, cx, cy, n, s, total=None, gap=None):
+    """Ряд сердечек: n полных из total (по умолчанию 3), центр ряда (cx, cy)."""
+    total = total or season.LIVES
+    gap = gap or s * 1.15
+    for i in range(total):
+        heart(d, cx + (i - (total - 1) / 2) * gap, cy, s, RED if i < n else HEART_OFF)
+
+
 # ============================================================ таблица справа
 class Panel:
-    def __init__(self, codes, q, k, nst, race_no, foot, theme, podium_stage):
+    def __init__(self, codes, q, k, nst, race_no, foot, theme, podium_stage, lives=None):
+        self.lives = lives or {}
         self.codes = codes
         self.nb = len(codes)
         self.q = q
@@ -187,11 +208,15 @@ class Panel:
             fl = flag_rect(self.codes[i], 48, 36, 5)
             im.paste(fl, (6, 5), fl)
             d.text((64, 6), A3[self.codes[i]], font=font(25), fill=WHITE if status != "out" else (255, 200, 200))
-            if status == "ok":
-                d.line([(w - 34, 23), (w - 25, 32), (w - 11, 13)], fill=WHITE, width=5)
+            lv = self.lives.get(self.codes[i])
+            tx = w - 34
+            if lv is not None:                       # сердечки страны вместо галочки (цвет строки и так виден)
+                hearts(d, w - 27, 24, lv - (status == "out"), 11, gap=12)
+            elif status == "ok":
+                d.line([(tx, 23), (tx + 9, 32), (tx + 23, 13)], fill=WHITE, width=5)
             elif status == "out":
-                d.line([(w - 32, 12), (w - 12, 34)], fill=WHITE, width=5)
-                d.line([(w - 12, 12), (w - 32, 34)], fill=WHITE, width=5)
+                d.line([(tx + 2, 12), (tx + 22, 34)], fill=WHITE, width=5)
+                d.line([(tx + 22, 12), (tx + 2, 34)], fill=WHITE, width=5)
             self.rows[key] = im
         return self.rows[key]
 
@@ -396,7 +421,8 @@ def big_ball(a2, rpx):
     return ball_sprite(a2, rpx, 0.0)
 
 
-def flag_grid(img, dd, codes, tt, cx, y0, per=8, fw=116, fh=87, dx=162, dy=160, lab=26, t0=0.25, step=0.045):
+def flag_grid(img, dd, codes, tt, cx, y0, per=8, fw=116, fh=87, dx=162, dy=160, lab=26, t0=0.25, step=0.045,
+              lives=None):
     n = len(codes)
     for i, c in enumerate(codes):
         r, cc = divmod(i, per)
@@ -412,15 +438,25 @@ def flag_grid(img, dd, codes, tt, cx, y0, per=8, fw=116, fh=87, dx=162, dy=160, 
         paste_center(img, fl, fx, fy)
         if ap >= 1:
             text_center(dd, fx, fy + fh / 2 + 6, A3[c], font(lab), WHITE, 3)
+            if lives and c in lives:
+                hearts(dd, fx, fy + fh / 2 + lab + 22, lives[c], max(12, lab * 0.62))
 
 
 def next_round_name(plan):
+    if plan.get("lives_mode"):
+        return "THE NEXT RACE"
     return {1: "ROUND 2", 2: "THE SEMI-FINALS", 3: "THE GRAND FINAL"}[plan["round"]]
+
+
+def losers(p):
+    return len(p["codes"]) - p["survive"]
 
 
 def sub_line(p):
     if p["final"]:
         return f"{len(p['codes'])} COUNTRIES  ·  1 CHAMPION"
+    if p.get("lives_mode"):
+        return f"{len(p['codes'])} COUNTRIES  ·  {losers(p)} LOSE A LIFE"
     return f"{len(p['codes'])} COUNTRIES  ·  ONLY {p['survive']} SURVIVE"
 
 
@@ -432,9 +468,10 @@ def next_card_frames(cbg, nxt, secs, new_season):
         dd = ImageDraw.Draw(img)
         text_center(dd, W / 2, 22, "NEXT:  " + season.label(nxt), font(54), GOLD, 5)
         text_center(dd, W / 2, 92, "ALL 193 COUNTRIES START AGAIN" if new_season else sub_line(nxt), font(34), GREEN, 4)
-        flag_grid(img, dd, nxt["codes"], tt, W / 2, 205, per=10, fw=88, fh=66, dx=138, dy=104, lab=20, t0=0.2,
-                  step=0.025)
-        text_center(dd, W / 2, 640, "LIKE IF YOUR COUNTRY SURVIVED  ·  3 RACES EVERY DAY", font(36), WHITE, 4)
+        lv = nxt.get("lives") if nxt.get("lives_mode") and not new_season else None
+        flag_grid(img, dd, nxt["codes"], tt, W / 2, 205, per=10, fw=88, fh=66, dx=138, dy=118 if lv else 104, lab=20,
+                  t0=0.2, step=0.025, lives=lv)
+        text_center(dd, W / 2, 660 if lv else 640, "LIKE IF YOUR COUNTRY SURVIVED  ·  3 RACES EVERY DAY", font(36), WHITE, 4)
         yield img
 
 
@@ -469,6 +506,11 @@ def titles(plan, nxt_label, codes=None, heats_txt=None):
     if plan["final"]:
         v = [f"{vs} 🏆 GRAND FINAL – 32 Countries, 1 Champion | Country Marble Race",
              f"GRAND FINAL 🏆 {vs}… Which Country Wins Season {s}? Marble Race"]
+    elif plan.get("lives_mode"):
+        L = n - k
+        v = [f"{vs} ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #{plan['heat']}",
+             f"{vs}… Who Survives? 💔 {L} of {n} Lose a Life | Marble Race #{plan['heat']}",
+             f"{n} Countries, 3 Lives ❤️ {vs} | Country Marble Survival #{plan['heat']}"]
     elif plan["round"] == 1:
         v = [f"{vs} 🌍 Only {k} of {n} Countries Survive | Marble Race {tail}",
              f"{vs}… Who Survives? ⚠️ {n} Countries Marble Race · {tail}",
@@ -484,6 +526,9 @@ def titles(plan, nxt_label, codes=None, heats_txt=None):
 
 
 
+CHAMPS = []
+
+
 def describe(plan, alive_before, nxt_label, fin_txt):
     """Описание без спойлеров: кто бежит, но не кто выжил."""
     s = plan["season"]
@@ -491,18 +536,33 @@ def describe(plan, alive_before, nxt_label, fin_txt):
         head = (f"Flagball Arena · Season {s} GRAND FINAL: the last 32 countries of the world in one marble race, "
                 f"7 stages, only one champion.")
         who = "The 32 finalists"
+    elif plan.get("lives_mode"):
+        n = len(plan["codes"])
+        head = (f"Flagball Arena · Season {s}, Race {plan['heat']} of {plan['heats']}: {n} countries, 3 stages — "
+                f"the last {n - plan['survive']} lose a life ❤️. No lives left = out of the season.")
+        who = "Countries in this race (lives before the race)"
     else:
         head = (f"Flagball Arena · Season {s}, {season.label(plan).title()}: {len(plan['codes'])} countries race "
                 f"through {len(plan['stages'])} stages — only {plan['survive']} survive and go to "
                 f"{next_round_name(plan).title()}.")
         who = "Countries in this heat"
-    names = ", ".join(sorted(NAMES[c] for c in plan["codes"]))
+    if plan.get("lives_mode") and not plan["final"]:
+        names = ", ".join(f"{NAMES[c]} {'❤' * plan['lives'][c]}" for c in sorted(plan["codes"], key=lambda c: NAMES[c]))
+        how = (f"How it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. "
+               f"On {fin_txt.title() or 'the final day'} the top {season.FINALISTS} countries race the Grand Final. "
+               f"3 races every day — find your country!")
+    else:
+        names = ", ".join(sorted(NAMES[c] for c in plan["codes"]))
+        how = ("How it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, "
+               "then a new season starts. New races every day.")
+    champ = ""
+    if CHAMPS:
+        champ = "Last champion: " + ", ".join(f"Season {c['season']} — {NAMES[c['code']]} 🏆" for c in CHAMPS[-2:]) + "\n\n"
     return (f"{head}\n\n"
             f"{who}: {names}.\n\n"
             f"Countries still in the game before this race: {alive_before} of {season.TOTAL}.\n"
             f"Next race: {nxt_label.title()}.{(' Grand Final: ' + fin_txt.title() + '.') if fin_txt else ''}\n\n"
-            f"How it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, "
-            f"then a new season starts. New races every day.\n\n"
+            f"{how}\n\n{champ}"
             f"Like 👍 if your country survived and write in the comments who you're cheering for!\n\n"
             f"#marblerace #countryballs #marblerun #survival #elimination #countries")
 
@@ -557,7 +617,11 @@ def build(args):
     assert len(ranking) == N and len(set(ranking)) == N
     nxt, after = season.peek_after(state, plan, ranking, d, slot)
     new_season = final_race
+    LIVES = bool(plan.get("lives_mode")) and not final_race       # сезон «3 жизни», обычная гонка
+    CHAMPS[:] = state.get("champions", [])
     alive_after = plan["alive"] - (N - plan["survive"]) if not final_race else 0
+    if LIVES:
+        alive_after = len(season.alive_codes(after))
     rem = 0 if final_race else season.remaining_to_final(after)
     fin_txt = ""
     if rem:
@@ -610,7 +674,7 @@ def build(args):
         theme = st["theme"]
         podium_stage = final_race and k == nst - 1
         last_heat_stage = (not final_race) and k == nst - 1
-        panel = Panel(codes, q, k, nst, race_no, foot, theme, podium_stage)
+        panel = Panel(codes, q, k, nst, race_no, foot, theme, podium_stage, lives=plan["lives"] if LIVES else None)
         view = StageView(k, T, res, codes, q, theme, panel)
         cx, cy0 = T.ring_center
         s0 = 0.92
@@ -638,7 +702,8 @@ def build(args):
                     else:
                         text_center(dd, VIEW_W / 2, 88, lab, font(70), WHITE, 5)
                     text_center(dd, VIEW_W / 2, 196, sub_line(plan), font(44), GREEN, 4)
-                    flag_grid(img, dd, parts, tt, VIEW_W / 2, 350, per=8, fw=116, fh=87, dx=165, dy=158)
+                    flag_grid(img, dd, parts, tt, VIEW_W / 2, 350, per=8, fw=116, fh=87, dx=165, dy=158,
+                              lives=plan["lives"] if LIVES else None)
                     if tt > 2.4:
                         text_center(dd, VIEW_W / 2, 985, "FIND YOUR COUNTRY", font(40), GOLD, 4)
                 emit(lambda ov=ov, j=j: view.frame(0, cy0 + 30, s0, ov, snap=(j == 0) or FRAMES_MODE))
@@ -661,6 +726,8 @@ def build(args):
                     text_center(dd, VIEW_W / 2, 330, title, font(max(10, int(110 * e))), WHITE, 7)
                     if podium_stage:
                         text_center(dd, VIEW_W / 2, 470, "WHO WINS?", font(54), GOLD, 5)
+                    elif last_heat_stage and LIVES:
+                        text_center(dd, VIEW_W / 2, 470, f"TOP {q} SAFE  ·  LAST {N - q} LOSE A LIFE", font(52), GREEN, 5)
                     elif last_heat_stage:
                         text_center(dd, VIEW_W / 2, 470, f"TOP {q} SURVIVE", font(58), GREEN, 5)
                     else:
@@ -713,7 +780,8 @@ def build(args):
                     img.paste(reg)
                     dd = ImageDraw.Draw(img)
                     e = pop(tt / 0.3)
-                    text_center(dd, VIEW_W / 2, 150, "ELIMINATED", font(max(10, int(124 * e))), RED, 8)
+                    text_center(dd, VIEW_W / 2, 150, "-1 LIFE" if LIVES else "ELIMINATED", font(max(10, int(124 * e))),
+                                RED, 8)
                     n = len(outs)
                     per = min(n, 6)
                     rows = math.ceil(n / per)
@@ -728,10 +796,18 @@ def build(args):
                         rp = max(6, int(70 * ap))
                         paste_center(img, big_ball(c, rp), fx, fy)
                         if ap >= 1:
-                            dd.line([fx - 52, fy - 52, fx + 52, fy + 52], fill=RED, width=12)
-                            dd.line([fx + 52, fy - 52, fx - 52, fy + 52], fill=RED, width=12)
+                            left = after["lives"].get(c, 0) if LIVES else 0
+                            if left == 0:
+                                dd.line([fx - 52, fy - 52, fx + 52, fy + 52], fill=RED, width=12)
+                                dd.line([fx + 52, fy - 52, fx - 52, fy + 52], fill=RED, width=12)
                             text_center(dd, fx, fy + 80, A3[c], font(34), WHITE, 4)
-                            text_center(dd, fx, fy + 122, f"#{place0 + m}", font(26), (200, 170, 170), 3)
+                            if LIVES:
+                                if left:
+                                    hearts(dd, fx, fy + 140, left, 26)
+                                else:
+                                    text_center(dd, fx, fy + 122, "OUT", font(30), RED, 3)
+                            else:
+                                text_center(dd, fx, fy + 122, f"#{place0 + m}", font(26), (200, 170, 170), 3)
                 emit(lambda ov=ov: view.frame(lastf, cams[lastf, 0], cams[lastf, 1], ov, final_status=True, snap=FRAMES_MODE))
             gt += no / FPS
         spans.append((span0, span0 + nf / FPS, gt))
@@ -816,8 +892,9 @@ def build(args):
             tt = j / FPS
             img = cbg.copy()
             dd = ImageDraw.Draw(img)
-            text_center(dd, W / 2, 30, "SURVIVORS", font(76), GREEN, 6)
-            text_center(dd, W / 2, 128, f"{len(surv)} COUNTRIES GO TO {next_round_name(plan)}", font(42), WHITE, 4)
+            text_center(dd, W / 2, 30, "SAFE" if LIVES else "SURVIVORS", font(76), GREEN, 6)
+            text_center(dd, W / 2, 128, f"{len(surv)} COUNTRIES KEEP THEIR LIVES" if LIVES else
+                        f"{len(surv)} COUNTRIES GO TO {next_round_name(plan)}", font(42), WHITE, 4)
             n = len(surv)
             per = 8
             for m, c in enumerate(surv):
@@ -833,6 +910,8 @@ def build(args):
                 if ap >= 0.99:
                     dd.ellipse([fx - 76, fy - 76, fx + 76, fy + 76], outline=GREEN, width=6)
                     text_center(dd, fx, fy + 84, A3[c], font(36), WHITE, 4)
+                    if LIVES:
+                        hearts(dd, fx, fy + 146, after["lives"][c], 22)
             draw_confetti(dd, tt)
             emit(img)
         gt += END1
@@ -854,7 +933,7 @@ def build(args):
             x0 = W / 2 - (bw + tw) / 2
             dd.text((x0, 210), big, font=font(230), fill=GOLD, stroke_width=8, stroke_fill=(0, 0, 0))
             dd.text((x0 + bw, 330), f" / {season.TOTAL}", font=font(90), fill=WHITE, stroke_width=5, stroke_fill=(0, 0, 0))
-            for b, (r, nh) in enumerate(rounds):
+            for b, (r, nh) in enumerate([] if LIVES else rounds):
                 bx = W / 2 + (b - 1.5) * 430
                 cur = r == after["round"]
                 fin = done_heats[r] >= nh
@@ -865,7 +944,17 @@ def build(args):
                     hx = bx + (h - (nh - 1) / 2) * 42
                     filled = h < done_heats[r]
                     dd.ellipse([hx - 13, 715, hx + 13, 741], fill=col if filled else None, outline=col, width=3)
-            if fin_txt:
+            if LIVES:
+                cnt = {v: sum(1 for x in after["lives"].values() if x == v) for v in (3, 2, 1)}
+                for b, v in enumerate((3, 2, 1)):
+                    bx = W / 2 + (b - 1) * 520
+                    dd.rounded_rectangle([bx - 230, 575, bx + 230, 735], 22, outline=RED if v == 1 else (180, 70, 80),
+                                         width=4)
+                    hearts(dd, bx, 615, v, 44)
+                    text_center(dd, bx, 655, f"{cnt[v]} COUNTRIES", font(44), WHITE, 4)
+                fin_txt and text_center(dd, W / 2, 790, f"GRAND FINAL {fin_txt}: TOP {season.FINALISTS}  ·  {rem - 1} RACES TO GO",
+                                        font(44), GOLD, 4)
+            elif fin_txt:
                 text_center(dd, W / 2, 800, f"GRAND FINAL: {fin_txt}  ·  {rem} RACES TO GO", font(46), GOLD, 4)
             emit(img)
         gt += END2
@@ -885,11 +974,13 @@ def build(args):
     log(f"кадров {nframes[0]}, {nframes[0] / FPS / 60:.2f} мин, рендер {time.time() - t_start:.0f} с")
 
     # ---- описание и сохранение сезона
-    nlab = season.label(nxt) if not new_season else f"Season {plan['season'] + 1} · Round 1 · Heat 1/7"
+    nlab = season.label(nxt) if not new_season else (f"Season {plan['season'] + 1} · Race 1" if plan.get("lives_mode")
+                                                     else f"Season {plan['season'] + 1} · Round 1 · Heat 1/7")
     meta = {"title": titles(plan, nlab), "description": describe(plan, plan["alive"], nlab, fin_txt),
             "race_no": race_no, "date": d.isoformat(), "slot": slot, "season": plan["season"], "round": plan["round"],
             "heat": plan["heat"], "heats": plan["heats"], "survive": plan["survive"], "final": final_race,
             "kind": "final" if final_race else "heat", "label": lab, "n": N,
+            "lives_mode": bool(plan.get("lives_mode")), "losers": N - plan["survive"],
             "ranking": [A3[c] for c in ranking], "codes": list(parts), "spans": spans,
             "duration": nframes[0] / FPS}
     json.dump(meta, open(os.path.splitext(args.out)[0] + ".json", "w"), ensure_ascii=False, indent=1)

@@ -48,7 +48,7 @@ def _ball_shadow(img, x, y, r):
     return Image.alpha_composite(img, sh.filter(ImageFilter.GaussianBlur(14)))
 
 
-def make(codes, race_no, out, final=False, n=32, surv=1, tag="", ranking=None, feat=None):
+def make(codes, race_no, out, final=False, n=32, surv=1, tag="", ranking=None, feat=None, lives=False):
     rr = random.Random(race_no)
     img, th = _bg(race_no, final)
     feat = list(feat) if feat else popular.featured(codes, 3)
@@ -84,11 +84,22 @@ def make(codes, race_no, out, final=False, n=32, surv=1, tag="", ranking=None, f
         d.text((x0, 60), "WHO", font=font(132), fill=WHITE, stroke_width=8, **st)
         d.text((x0, 205), "SURVIVES?", font=font(86), fill=WHITE, stroke_width=6, **st)
         d.rounded_rectangle([x0 - 10, 380, W - 30, 520], 24, fill=(0, 0, 0, 150), outline=RED, width=6)
-        d.text((x0 + 14, 392), f"ONLY {surv}", font=font(100), fill=GREEN, stroke_width=6, **st)
-        d.text((x0 + 14, 522), f"OF {n} COUNTRIES", font=font(52), fill=GOLD, stroke_width=4, **st)
-        # красный крест — намёк на вылет
-        d.line([W - 150, 600, W - 60, 690], fill=RED, width=18)
-        d.line([W - 60, 600, W - 150, 690], fill=RED, width=18)
+        if lives:
+            d.text((x0 + 14, 392), "-1 LIFE", font=font(100), fill=(255, 90, 100), stroke_width=6, **st)
+            d.text((x0 + 14, 522), f"FOR {n - surv} OF {n}", font=font(52), fill=GOLD, stroke_width=4, **st)
+            # три сердечка, одно погасло — намёк на «жизни»
+            for i in range(3):
+                cx, cy, r = W - 250 + i * 95, 640, 20
+                col = (235, 60, 70) if i < 2 else (70, 72, 86)
+                for x in (cx - r, cx + r):
+                    d.ellipse([x - r, cy - r * 1.5, x + r, cy + r * 0.5], fill=col, outline=(0, 0, 0), width=3)
+                d.polygon([(cx - 2 * r, cy - r * 0.4), (cx + 2 * r, cy - r * 0.4), (cx, cy + r * 1.9)], fill=col)
+        else:
+            d.text((x0 + 14, 392), f"ONLY {surv}", font=font(100), fill=GREEN, stroke_width=6, **st)
+            d.text((x0 + 14, 522), f"OF {n} COUNTRIES", font=font(52), fill=GOLD, stroke_width=4, **st)
+            # красный крест — намёк на вылет
+            d.line([W - 150, 600, W - 60, 690], fill=RED, width=18)
+            d.line([W - 60, 600, W - 150, 690], fill=RED, width=18)
     if tag:
         d.rounded_rectangle([20, 20, 40 + d.textlength(tag, font=font(40)), 80], 14, fill=RED)
         d.text((30, 24), tag, font=font(40), fill=WHITE)
@@ -101,8 +112,10 @@ if __name__ == "__main__":
     codes = meta.get("codes") or [a2[c] for c in meta["ranking"]]
     if meta.get("final"):
         tag = f"SEASON {meta['season']}"
+    elif meta.get("lives_mode"):
+        tag = f"SEASON {meta['season']} · RACE {meta['heat']}/{meta['heats']}"
     else:
         rn = {1: "ROUND 1", 2: "ROUND 2", 3: "SEMI-FINAL"}[meta["round"]]
         tag = f"{rn} · {meta.get('heat_label') or f'HEAT {meta['heat']}/{meta['heats']}'}"
     make(codes, meta["race_no"], sys.argv[2], meta.get("final", False), meta.get("n", 32), meta.get("survive", 1), tag,
-         feat=meta.get("featured"))
+         feat=meta.get("featured"), lives=meta.get("lives_mode", False))
