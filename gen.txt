@@ -100,3 +100,12 @@ qz4_now_r9 | silero_cis:ru_albina@ssml,soft,rise9w300 | <speak><prosody pitch="l
 qv_r9 | silero_cis:ru_albina@ssml,soft,rise9w350 | <speak>Вербл+юд хран+ит в+оду в горб+у?</speak> | Верблюд хранит воду в горбу?
 qp_r9 | silero_cis:ru_albina@ssml,soft,rise9w450 | <speak>Ты глот+аешь паук+ов во сне?</speak> | Ты глотаешь пауков во сне?
 qm_r9 | silero_cis:ru_albina@ssml,soft,rise9w400 | <speak>Лет+учие м+ыши совс+ем слеп+ые?</speak> | Летучие мыши совсем слепые?
+
+# мелодия по живому образцу Михаила (только цифры высоты, q_template.json): провал перед последним словом и взлёт до конца
+qm1_tpl | silero_cis:ru_albina@ssml,soft,tpl | <speak>А ты +это знал?</speak> | А ты это знал?
+qm2_vrise | silero_cis:ru_albina@ssml,soft,vrise | <speak>А ты +это знал?</speak> | А ты это знал?
+qm3_v5_tpl | silero_cis:ru_albina@ssml,soft,tpl | <speak><prosody pitch="low">А ты</prosody> <prosody pitch="x-high">+это знал</prosody>?</speak> | А ты это знал?
+qm4_vrise_slow | silero_cis:ru_albina@ssml,soft,vrise | <speak>А ты +это <prosody rate="slow">знал</prosody>?</speak> | А ты это знал?
+qm5_verblyud | silero_cis:ru_albina@ssml,soft,vrisew380 | <speak>Вербл+юд хран+ит в+оду в горб+у?</speak> | Верблюд хранит воду в горбу?
+qm6_pauki | silero_cis:ru_albina@ssml,soft,vrisew450 | <speak>Ты глот+аешь паук+ов во сне?</speak> | Ты глотаешь пауков во сне?
+qm7_myshi | silero_cis:ru_albina@ssml,soft,vrisew420 | <speak>Лет+учие м+ыши совс+ем слеп+ые?</speak> | Летучие мыши совсем слепые?

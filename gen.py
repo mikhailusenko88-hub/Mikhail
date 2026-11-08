@@ -46,16 +46,17 @@ def check_marks(name, text):
     print("метки", name, bad or "ok")
 
 
-def qrise(path, st=8.0, win=0.35):
-    """Вопросительная мелодия: в последние win секунд звучащей речи высота плавно поднимается
-    до st полутонов над средней высотой фразы (Praat, PSOLA — тембр и темп не меняются)."""
+def qrise(path, st=8.0, win=0.35, fall=0.0, peak=1.0, stretch=1.0):
+    """Вопросительная мелодия (Praat, PSOLA — тембр не меняется). В последние win секунд звучащей речи
+    высота взлетает до st полутонов над средней высотой фразы (вершина — на доле peak окна),
+    потом опускается на fall полутонов (русский вопрос: подъём на ударном слоге и спад после него).
+    stretch — во сколько раз растянуть этот кусок (ударный слог чуть тянется)."""
     import parselmouth
     from parselmouth.praat import call
     snd = parselmouth.Sound(path)
     pitch = snd.to_pitch(time_step=0.01, pitch_floor=75, pitch_ceiling=600)
     f = pitch.selected_array["frequency"]
-    ts = pitch.xs()
-    voiced = [(t, v) for t, v in zip(ts, f) if v > 0]
+    voiced = [(t, v) for t, v in zip(pitch.xs(), f) if v > 0]
     if len(voiced) < 5:
         return
     base = float(np.median([v for _, v in voiced]))
@@ -64,19 +65,88 @@ def qrise(path, st=8.0, win=0.35):
     manip = call(snd, "To Manipulation", 0.01, 75, 600)
     tier = call(manip, "Extract pitch tier")
     new = call("Create PitchTier", "q", snd.xmin, snd.xmax)
+
+    def sm(x):
+        x = min(1.0, max(0.0, x))
+        return x * x * (3 - 2 * x)
+
     n = call(tier, "Get number of points")
     for i in range(1, n + 1):
         t = call(tier, "Get time from index", i)
         v = call(tier, "Get value at index", i)
         if t >= t0:
-            r = min(1.0, (t - t0) / max(win, 1e-3))
-            r = r * r * (3 - 2 * r)                      # плавно, без ступеньки
-            v = max(v, base * 2 ** (st * r / 12))
+            r = (t - t0) / max(win, 1e-3)
+            if r <= peak:
+                st_ = st * sm(r / max(peak, 1e-3))
+                v = max(v, base * 2 ** (st_ / 12))
+            else:
+                st_ = st - fall * sm((r - peak) / max(1 - peak, 1e-3))
+                v = base * 2 ** (st_ / 12)
         call(new, "Add point", t, v)
     call([manip, new], "Replace pitch tier")
+    if abs(stretch - 1.0) > 0.01:
+        dur = call("Create DurationTier", "d", snd.xmin, snd.xmax)
+        call(dur, "Add point", max(snd.xmin, t0 - 0.02), 1.0)
+        call(dur, "Add point", t0 + 0.03, stretch)
+        call(dur, "Add point", t_end, stretch)
+        call(dur, "Add point", min(snd.xmax, t_end + 0.03), 1.0)
+        call([manip, dur], "Replace duration tier")
     out = call(manip, "Get resynthesis (overlap-add)")
     out.save(path, "WAV")
 
+
+def _contour(path, shape):
+    """Общая часть: Praat-манипуляция, новая высота f0 = shape(t, v, base, t_start, t_end) для каждой точки."""
+    import parselmouth
+    from parselmouth.praat import call
+    snd = parselmouth.Sound(path)
+    pitch = snd.to_pitch(time_step=0.01, pitch_floor=75, pitch_ceiling=600)
+    f = pitch.selected_array["frequency"]
+    voiced = [(t, v) for t, v in zip(pitch.xs(), f) if v > 0]
+    if len(voiced) < 5:
+        return
+    base = float(np.median([v for _, v in voiced]))
+    ts, te = voiced[0][0], voiced[-1][0]
+    manip = call(snd, "To Manipulation", 0.01, 75, 600)
+    tier = call(manip, "Extract pitch tier")
+    new = call("Create PitchTier", "q", snd.xmin, snd.xmax)
+    for i in range(1, call(tier, "Get number of points") + 1):
+        t = call(tier, "Get time from index", i)
+        v = call(tier, "Get value at index", i)
+        call(new, "Add point", t, shape(t, v, base, ts, te))
+    call([manip, new], "Replace pitch tier")
+    call(manip, "Get resynthesis (overlap-add)").save(path, "WAV")
+
+
+def qtpl(path, tpl="q_template.json", scale=1.0):
+    """Мелодия целиком по шаблону (снят с живого голоса): полутоны от средней высоты по доле звучащей речи."""
+    import json as _j
+    d = _j.load(open(tpl, encoding="utf-8"))
+    xs, ys = np.array(d["x"]), np.array(d["st"]) * scale
+
+    def shape(t, v, base, ts, te):
+        r = (t - ts) / max(te - ts, 1e-3)
+        return base * 2 ** (float(np.interp(r, xs, ys)) / 12)
+    _contour(path, shape)
+
+
+def qvrise(path, low=-3.0, high=6.5, win=0.32, pre=0.14):
+    """Русский вопрос по живому образцу: перед последним словом голос проваливается (low),
+    затем взлетает до high полутонов к самому концу (win секунд), без спада. Остальное не трогаем."""
+    def sm(x):
+        x = min(1.0, max(0.0, x))
+        return x * x * (3 - 2 * x)
+
+    def shape(t, v, base, ts, te):
+        a = te - win          # начало взлёта
+        if t < a - pre:
+            return v
+        if t < a:              # спуск в провал
+            k = sm((t - (a - pre)) / pre)
+            cur = 12 * np.log2(max(v, 1) / base)
+            return base * 2 ** ((cur + (low - cur) * k) / 12)
+        return base * 2 ** ((low + (high - low) * sm((t - a) / win)) / 12)
+    _contour(path, shape)
 
 def main():
     for line in open("gen.txt", encoding="utf-8"):
@@ -116,9 +186,17 @@ def main():
                     open(f"in/{name}.marked", "w", encoding="utf-8").write(body + "\n")
                     a = m.apply_tts(ssml_text=body, speaker=spk, sample_rate=48000)
                     save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
-                    rq = next((re.match(r"rise(\d+)(?:w(\d+))?$", o) for o in opts.split(",") if o.startswith("rise")), None)
+                    # rise9w300f4p60s125: +9 полутонов, окно 300 мс, спад 4 после вершины на 60% окна, растяжение 1,25
+                    rq = next((re.match(r"rise(\d+)(?:w(\d+))?(?:f(\d+))?(?:p(\d+))?(?:s(\d+))?$", o)
+                               for o in opts.split(",") if o.startswith("rise")), None)
                     if rq:
-                        qrise(f"in/{name}.wav", float(rq.group(1)), int(rq.group(2) or 350) / 1000)
+                        qrise(f"in/{name}.wav", float(rq.group(1)), int(rq.group(2) or 350) / 1000,
+                              float(rq.group(3) or 0), int(rq.group(4) or 100) / 100, int(rq.group(5) or 100) / 100)
+                    if "tpl" in opts.split(","):
+                        qtpl(f"in/{name}.wav")
+                    vr = next((re.match(r"vrise(?:w(\d+))?(?:h(\d+))?$", o) for o in opts.split(",") if o.startswith("vrise")), None)
+                    if vr:
+                        qvrise(f"in/{name}.wav", win=int(vr.group(1) or 320) / 1000, high=float(vr.group(2) or 65) / 10)
                     text = ""
                 ws = vc.tokenize(text) if text else []
                 if ws:
