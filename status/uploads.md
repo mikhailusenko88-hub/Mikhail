@@ -13,3 +13,5 @@
 | shorts | 2026-11-07 | 3 | Japan vs Vietnam vs Thailand | https://youtube.com/shorts/GSiDPgF75Lk | |
 | 13 | 2026-11-08 | 1 | S1 SEASON 1 · GRAND FINAL | https://youtu.be/0qTI7eOQtEc | public |
 | shorts | 2026-11-08 | 1 | Japan vs UK vs Vietnam | https://youtube.com/shorts/zkyW0HKH1fY | |
+| 14–15 | 2026-11-08 | 2 | S2 ROUND 1 · HEATS 1–2/7 | https://youtu.be/Uyla-VXUYU8 | public |
+| shorts | 2026-11-08 | 2 | Brazil vs Germany vs Egypt | https://youtube.com/shorts/xUvlH38tyfQ | |

@@ -1,126 +1,136 @@
-ВЫЛОЖЕНО #13 2026-11-08 слот 1: https://youtu.be/0qTI7eOQtEc (public) + Shorts https://youtube.com/shorts/zkyW0HKH1fY, за 904 с
+ВЫЛОЖЕНО #14 2026-11-08 слот 2: https://youtu.be/Uyla-VXUYU8 (public) + Shorts https://youtube.com/shorts/xUvlH38tyfQ, за 840 с
 
 {
- "title": "GRAND FINAL 🏆 Japan vs UK vs Vietnam… Which Country Wins Season 1? Marble Race",
- "description": "Flagball Arena · Season 1 GRAND FINAL: the last 32 countries of the world in one marble race, 7 stages, only one champion.\n\nThe 32 finalists: Australia, Botswana, Burkina Faso, Costa Rica, Denmark, El Salvador, Ireland, Japan, Kenya, Kuwait, Kyrgyzstan, Latvia, Lebanon, Libya, Malaysia, Marshall Islands, Mongolia, Namibia, Nicaragua, North Macedonia, Saint Lucia, Saint Vincent and the Grenadines, Saudi Arabia, Somalia, Thailand, Tonga, Uganda, United Arab Emirates, United Kingdom, Vietnam, Yemen, Zimbabwe.\n\nCountries still in the game before this race: 32 of 193.\nNext race: Season 2 · Round 1 · Heat 1/7.\n\nHow it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, then a new season starts. New races every day.\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
- "race_no": 13,
+ "title": "28 Countries, 28 Survive 🔥 Brazil vs Germany vs Egypt | Country Marble Race Heats 1–2/7",
+ "description": "Flagball Arena · Season 2, Round 1 · Heats 1–2/7: 56 countries, only 28 survive.\n\nHeat 1/7 — 28 countries, 14 survive: Algeria, Bahrain, Belarus, Bhutan, Bosnia and Herzegovina, Brazil, Burundi, Chile, Comoros, Costa Rica, Egypt, El Salvador, Equatorial Guinea, Germany, Ghana, Honduras, Jordan, Latvia, Malawi, Mauritania, Micronesia, Netherlands, Nigeria, Palau, Rwanda, Saudi Arabia, Solomon Islands, United Arab Emirates.\n\nHeat 2/7 — 28 countries, 14 survive: Angola, Barbados, Belgium, Botswana, Brunei, Bulgaria, Burkina Faso, Cape Verde, China, Guinea, Iraq, Italy, Japan, Kenya, Kiribati, Laos, Luxembourg, Malaysia, Malta, Moldova, Nauru, Nepal, Nicaragua, Serbia, Singapore, South Sudan, Turkmenistan, Uruguay.\n\nCountries still in the game before this race: 179 of 193.\nNext race: Round 1 · Heat 3/7. Grand Final: Nov 12.\n\nHow it works: all 193 countries race in heats → Round 2 → Semi-finals → Grand Final, then a new season starts. New races every day.\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries\n\nChapters:\n00:00 Heat 1/7 — Brazil vs Germany\n03:49 Heat 2/7 — Japan vs Italy",
+ "race_no": 14,
  "date": "2026-11-08",
- "slot": 1,
- "season": 1,
- "round": 4,
+ "slot": 2,
+ "season": 2,
+ "round": 1,
  "heat": 1,
- "heats": 1,
- "survive": 1,
- "final": true,
- "kind": "final",
- "label": "SEASON 1 · GRAND FINAL",
- "n": 32,
+ "heats": 7,
+ "survive": 28,
+ "final": false,
+ "kind": "heat",
+ "label": "ROUND 1 · HEATS 1–2/7",
+ "n": 56,
  "codes": [
-  "zw",
-  "th",
+  "sb",
+  "km",
+  "by",
+  "bh",
+  "br",
   "sa",
-  "mh",
-  "ke",
-  "mn",
-  "cr",
-  "bf",
-  "ie",
-  "bw",
-  "vc",
-  "mk",
-  "to",
-  "ye",
-  "lb",
+  "pw",
+  "gh",
+  "dz",
+  "ng",
+  "eg",
+  "rw",
   "sv",
-  "vn",
-  "jp",
-  "na",
-  "ni",
-  "ly",
+  "hn",
+  "jo",
+  "cl",
+  "gq",
   "lv",
-  "dk",
-  "ug",
-  "kg",
-  "gb",
-  "kw",
+  "nl",
+  "bt",
+  "bi",
+  "mw",
+  "fm",
   "ae",
-  "au",
+  "cr",
+  "mr",
+  "ba",
+  "de",
+  "bn",
+  "ni",
+  "jp",
+  "iq",
+  "sg",
+  "it",
+  "lu",
+  "rs",
+  "bf",
+  "ao",
+  "cv",
+  "be",
+  "bw",
+  "bb",
+  "md",
+  "gn",
+  "tm",
+  "cn",
+  "np",
+  "ki",
+  "nr",
   "my",
-  "lc",
-  "so"
+  "mt",
+  "la",
+  "ke",
+  "bg",
+  "ss",
+  "uy"
  ],
  "spans": [
   [
    7.800000000000001,
-   78.3,
-   81.89999999999999
+   71.83333333333333,
+   75.43333333333332
   ],
   [
-   85.49999999999999,
-   148.39999999999998,
-   151.99999999999997
+   79.03333333333332,
+   140.29999999999998,
+   143.89999999999998
   ],
   [
-   155.59999999999997,
-   216.56666666666663,
-   220.16666666666663
-  ],
-  [
-   223.76666666666662,
-   286.5333333333333,
-   290.1333333333333
-  ],
-  [
-   293.73333333333335,
-   351.4666666666667,
-   355.0666666666667
-  ],
-  [
-   358.66666666666674,
-   419.9333333333334,
-   423.5333333333334
-  ],
-  [
-   427.13333333333344,
-   486.76666666666677,
-   486.76666666666677
+   147.49999999999997,
+   210.99999999999997,
+   214.59999999999997
   ]
  ],
- "duration": 511.76666666666665,
- "heats_in_video": 1,
+ "duration": 229.6,
+ "heats_in_video": 2,
  "races": [
-  13
+  14,
+  15
  ],
  "featured": [
-  "jp",
-  "gb",
-  "vn"
+  "br",
+  "de",
+  "eg"
  ],
- "video_id": "0qTI7eOQtEc",
+ "heat_label": "HEATS 1–2/7",
+ "video_id": "Uyla-VXUYU8",
  "privacy": "public"
 }
 
 --- журнал ---
-13:38:58 догоняю пропущенный слот: 2026-11-08 слот 1
-13:38:58 режим publish, гонка #13, 2026-11-08 слот 1, событие push
-13:38:58 по плану: S1 SEASON 1 · GRAND FINAL
-13:38:58 канал: Flagball Arena
-13:38:58 в этом видео заездов: 1 (раунд 4, осталось в раунде 1)
-гонка #13 2026-11-08 слот 1: S1 SEASON 1 · GRAND FINAL, 32→1, участники: ZWE THA SAU MHL KEN MNG CRI BFA IRL BWA VCT MKD TON YEM LBN SLV VNM JPN NAM NIC LBY LVA DNK UGA KGZ GBR KWT ARE AUS MYS LCA SOM
-  этап 1: 32→26, блоков 13 ['tunnels', 'twin_rings', 'pegs', 'stairs', 'zigzag', 'pendulums', 'windmills', 'ring_gate', 'trapdoors', 'bumpers', 'rotor', 'tunnels', 'pendulums'], Q-финиш 68.0 c, кадров 2115
-  этап 2: 26→20, блоков 12 ['stairs', 'bumpers', 'rotor', 'trapdoors', 'windmills', 'pendulums', 'tunnels', 'ring_gate', 'twin_rings', 'pegs', 'zigzag', 'tunnels'], Q-финиш 60.4 c, кадров 1887
-  этап 3: 20→15, блоков 11 ['pegs', 'pendulums', 'zigzag', 'tunnels', 'bumpers', 'stairs', 'trapdoors', 'windmills', 'ring_gate', 'rotor', 'twin_rings'], Q-финиш 58.4 c, кадров 1829
-  этап 4: 15→10, блоков 12 ['bumpers', 'stairs', 'pendulums', 'rotor', 'windmills', 'twin_rings', 'ring_gate', 'tunnels', 'zigzag', 'pegs', 'trapdoors', 'pendulums'], Q-финиш 60.2 c, кадров 1883
-  этап 5: 10→6, блоков 11 ['tunnels', 'ring_gate', 'stairs', 'zigzag', 'windmills', 'pendulums', 'pegs', 'bumpers', 'trapdoors', 'twin_rings', 'rotor'], Q-финиш 55.2 c, кадров 1732
-  этап 6: 6→3, блоков 12 ['zigzag', 'pendulums', 'bumpers', 'tunnels', 'windmills', 'stairs', 'trapdoors', 'ring_gate', 'rotor', 'pegs', 'twin_rings', 'trapdoors'], Q-финиш 58.7 c, кадров 1838
-  этап 7: 3→3, блоков 11 ['trapdoors', 'tunnels', 'stairs', 'pendulums', 'windmills', 'zigzag', 'twin_rings', 'pegs', 'rotor', 'ring_gate', 'bumpers'], Q-финиш 57.1 c, кадров 1789
-длительность ролика ≈ 8.5 мин
-готово: 15353 кадров за 865 с
-кадров 15353, 8.53 мин, рендер 869 с
-победитель: SOM
-13:53:28 заезд 1/1 готов: 289 МБ, 870 с
-13:53:29 видео готово: 289 МБ, 8.5 мин, 871 с с начала; название: GRAND FINAL 🏆 Japan vs UK vs Vietnam… Which Country Wins Season 1? Marble Race
-13:53:46 Shorts готов: 22 с — Japan vs UK vs Vietnam 😱 Who Survives? Country Marble Race #shorts
-13:53:58 обложка: 200 
-13:53:59 в плейлисте
-13:53:59 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'madeForKids': False, 'selfDeclaredMadeForKids': False}
+14:30:42 режим publish, гонка #14, 2026-11-08 слот 2, событие workflow_dispatch
+14:30:43 по плану: S2 ROUND 1 · HEAT 1/7
+14:30:43 канал: Flagball Arena
+14:30:43 в этом видео заездов: 2 (раунд 1, осталось в раунде 7)
+гонка #14 2026-11-08 слот 2: S2 ROUND 1 · HEAT 1/7, 28→14, участники: SLB COM BLR BHR BRA SAU PLW GHA DZA NGA EGY RWA SLV HND JOR CHL GNQ LVA NLD BTN BDI MWI FSM ARE CRI MRT BIH DEU
+  этап 1: 28→23, блоков 11 ['ring_gate', 'windmills', 'bumpers', 'rotor', 'trapdoors', 'twin_rings', 'pegs', 'tunnels', 'stairs', 'zigzag', 'pendulums'], Q-финиш 61.5 c, кадров 1921
+  этап 2: 23→19, блоков 11 ['pendulums', 'tunnels', 'rotor', 'stairs', 'trapdoors', 'bumpers', 'pegs', 'twin_rings', 'zigzag', 'windmills', 'ring_gate'], Q-финиш 58.7 c, кадров 1838
+  этап 3: 19→14, блоков 11 ['stairs', 'ring_gate', 'trapdoors', 'windmills', 'rotor', 'tunnels', 'zigzag', 'pegs', 'bumpers', 'pendulums', 'twin_rings'], Q-финиш 61.0 c, кадров 1905
+длительность ролика ≈ 3.8 мин
+готово: 6888 кадров за 399 с
+кадров 6888, 3.83 мин, рендер 400 с
+выжили: LVA CRI HND EGY GNQ NLD SLV BLR MWI CHL BIH BHR SLB FSM
+14:37:23 заезд 1/2 готов: 128 МБ, 400 с
+гонка #15 2026-11-08 слот 2: S2 ROUND 1 · HEAT 2/7, 28→14, участники: BRN NIC JPN IRQ SGP ITA LUX SRB BFA AGO CPV BEL BWA BRB MDA GIN TKM CHN NPL KIR NRU MYS MLT LAO KEN BGR SSD URY
+  этап 1: 28→23, блоков 12 ['ring_gate', 'bumpers', 'tunnels', 'pendulums', 'trapdoors', 'pegs', 'stairs', 'windmills', 'zigzag', 'twin_rings', 'rotor', 'twin_rings'], Q-финиш 60.5 c, кадров 1891
+  этап 2: 23→19, блоков 13 ['pendulums', 'trapdoors', 'zigzag', 'stairs', 'tunnels', 'ring_gate', 'windmills', 'rotor', 'pegs', 'bumpers', 'twin_rings', 'pegs', 'tunnels'], Q-финиш 62.4 c, кадров 1949
+  этап 3: 19→14, блоков 12 ['stairs', 'pegs', 'windmills', 'trapdoors', 'pendulums', 'rotor', 'bumpers', 'tunnels', 'zigzag', 'ring_gate', 'twin_rings', 'stairs'], Q-финиш 64.1 c, кадров 1999
+длительность ролика ≈ 4.1 мин
+готово: 7363 кадров за 407 с
+кадров 7363, 4.09 мин, рендер 409 с
+выжили: CHN BRN BEL GIN LUX BFA ITA CPV URY LAO NRU TKM IRQ SRB
+14:44:12 заезд 2/2 готов: 133 МБ, 809 с
+14:44:13 видео готово: 261 МБ, 7.9 мин, 810 с с начала; название: 28 Countries, 28 Survive 🔥 Brazil vs Germany vs Egypt | Country Marble Race Heats 1–2/7
+14:44:32 Shorts готов: 26 с — Brazil vs Germany vs Egypt 😱 Who Survives? Country Marble Race #shorts
+14:44:40 обложка: 200 
+14:44:40 в плейлисте
+14:44:40 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'madeForKids': False, 'selfDeclaredMadeForKids': False}

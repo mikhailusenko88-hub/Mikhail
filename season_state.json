@@ -1,9 +1,9 @@
 {
  "season": 2,
- "race_no": 13,
+ "race_no": 15,
  "seed": 2026,
  "round": 1,
- "heat": 0,
+ "heat": 2,
  "heats": [
   [
    "sb",
@@ -222,8 +222,66 @@
   13,
   13
  ],
- "survivors": [],
- "eliminated": [],
+ "survivors": [
+  "lv",
+  "cr",
+  "hn",
+  "eg",
+  "gq",
+  "nl",
+  "sv",
+  "by",
+  "mw",
+  "cl",
+  "ba",
+  "bh",
+  "sb",
+  "fm",
+  "cn",
+  "bn",
+  "be",
+  "gn",
+  "lu",
+  "bf",
+  "it",
+  "cv",
+  "uy",
+  "la",
+  "nr",
+  "tm",
+  "iq",
+  "rs"
+ ],
+ "eliminated": [
+  "ae",
+  "pw",
+  "de",
+  "jo",
+  "gh",
+  "dz",
+  "bt",
+  "ng",
+  "rw",
+  "br",
+  "bi",
+  "mr",
+  "km",
+  "sa",
+  "ni",
+  "bw",
+  "my",
+  "mt",
+  "np",
+  "bg",
+  "ss",
+  "bb",
+  "jp",
+  "md",
+  "ki",
+  "ao",
+  "sg",
+  "ke"
+ ],
  "champions": [
   {
    "season": 1,
@@ -940,6 +998,18 @@
   "pl": {
    "titles": 0,
    "finals": 0
+  },
+  "br": {
+   "titles": 0,
+   "finals": 0
+  },
+  "mr": {
+   "titles": 0,
+   "finals": 0
+  },
+  "ki": {
+   "titles": 0,
+   "finals": 0
   }
  },
  "history": [
@@ -1454,6 +1524,84 @@
     "mh"
    ],
    "survive": 1
+  },
+  {
+   "no": 14,
+   "date": "2026-11-08",
+   "slot": 2,
+   "season": 2,
+   "round": 1,
+   "heat": 1,
+   "ranking": [
+    "lv",
+    "cr",
+    "hn",
+    "eg",
+    "gq",
+    "nl",
+    "sv",
+    "by",
+    "mw",
+    "cl",
+    "ba",
+    "bh",
+    "sb",
+    "fm",
+    "ae",
+    "pw",
+    "de",
+    "jo",
+    "gh",
+    "dz",
+    "bt",
+    "ng",
+    "rw",
+    "br",
+    "bi",
+    "mr",
+    "km",
+    "sa"
+   ],
+   "survive": 14
+  },
+  {
+   "no": 15,
+   "date": "2026-11-08",
+   "slot": 2,
+   "season": 2,
+   "round": 1,
+   "heat": 2,
+   "ranking": [
+    "cn",
+    "bn",
+    "be",
+    "gn",
+    "lu",
+    "bf",
+    "it",
+    "cv",
+    "uy",
+    "la",
+    "nr",
+    "tm",
+    "iq",
+    "rs",
+    "ni",
+    "bw",
+    "my",
+    "mt",
+    "np",
+    "bg",
+    "ss",
+    "bb",
+    "jp",
+    "md",
+    "ki",
+    "ao",
+    "sg",
+    "ke"
+   ],
+   "survive": 14
   }
  ]
 }
