@@ -27,7 +27,7 @@ def run(args, timeout=1800):
     if r.returncode: P('rc', r.returncode, ' '.join(str(a) for a in args)[:80], '|', (r.stderr or '')[-300:].replace('\n', ' '))
     return r
 
-cfg = {'count': 2, 'length': 32, 'skip_start': 12, 'skip_end': 25, 'episode': '', 'per_episode': 2}
+cfg = {'count': 2, 'length': 32, 'skip_start': 12, 'skip_end': 25, 'episode': '', 'per_episode': 2, 'start_from': 5}
 cfg_p = os.path.join(WORK, 'config.txt')
 if not os.path.exists(cfg_p):
     open(cfg_p, 'w', encoding='utf-8').write('# Настройки нарезки Shorts\ncount: 2          # роликов в день\nper_episode: 2    # всего роликов с одной серии\nlength: 32        # длина ролика, сек\nskip_start: 12    # пропустить начало серии, сек\nskip_end: 25      # пропустить конец серии, сек\nepisode:          # пусто = по очереди; или номер/часть названия\n')
@@ -35,7 +35,7 @@ for l in open(cfg_p, encoding='utf-8'):
     l = l.strip()
     if l and not l.startswith('#') and ':' in l:
         k, v = l.split(':', 1); k = k.strip().lower(); v = v.split('#', 1)[0].strip()
-        if k in ('count', 'length', 'skip_start', 'skip_end', 'per_episode'):
+        if k in ('count', 'length', 'skip_start', 'skip_end', 'per_episode', 'start_from'):
             try: cfg[k] = int(v)
             except Exception: pass
         elif k == 'episode': cfg[k] = v
@@ -115,7 +115,17 @@ order = []
 if cfg['episode']:
     order = [e for e in episodes if cfg['episode'] in e['id'] or cfg['episode'].lower() in e['title'].lower() or (cfg['episode'].isdigit() and e['num'] == int(cfg['episode']))]
 if not order:
-    order = sorted(episodes, key=lambda e: (len(used(e)) >= cfg['per_episode'], len(used(e)), -(e['num'] or 0)))
+    # строго по порядку серий: 5, 6, 7, 8… (начиная с start_from); уже нарезанные пропускаются,
+    # потом недоделанные серии до start_from (1–4), потом серии без номера; если всё нарезано — по кругу с самой ранней
+    def part(e):
+        m = re.search(r'часть\s*(\d+)', (e['title'] or '').lower()); return int(m.group(1)) if m else 0
+    def done(e): return len(used(e)) >= cfg['per_episode']
+    def seq(e):
+        n = e['num']
+        grp = 0 if (n is not None and n >= cfg['start_from']) else (1 if n is not None else 2)
+        return (done(e), grp, n if n is not None else 9999, part(e), e['title'])
+    order = sorted(episodes, key=seq)
+P('очередь серий:', [e['num'] for e in order[:8]])
 
 # ---------- скачать ----------
 mp4 = os.path.join(TMP, 'ep.mp4')
