@@ -1337,6 +1337,12 @@ def prepare_segment(seg, idx, seed):
     hor = int(py0 + hor_frac * (py1 - py0))
     ops, paint_end, particles = scene_fn((px0, px1, py0, py1), hor, seed=seed + idx)
     if idx == 0:
+        # первая цитата короче (~8 с вместо 13): по Studio зрители уходили на 12–15 с, до второй мысли не доходили.
+        # Картина рисуется в FIRST_SPEED раз быстрее — успевает дорисоваться.
+        for op in ops:
+            op.t0 *= FIRST_SPEED
+            op.t1 *= FIRST_SPEED
+        paint_end *= FIRST_SPEED
         # первая цитата видна целиком с первого кадра — чтобы не пролистывали пустой лист
         T_RU = [-0.9 for i in range(len(ru))]
         T_EN = [0.4 + 0.25 * i for i in range(len(en))]
@@ -1345,7 +1351,10 @@ def prepare_segment(seg, idx, seed):
         T_RU = [0.25 + 0.5 * i for i in range(len(ru))]
         T_EN = [T_RU[-1] + 1.0 + 0.3 * i for i in range(len(en))]
     T_AUTHOR = T_EN[-1] + 1.4
-    seg_total = max(13.0, T_AUTHOR + 4.8, paint_end + 3.2)
+    if idx == 0:
+        seg_total = max(FIRST_TOTAL, T_AUTHOR + 3.6, paint_end + 1.6)
+    else:
+        seg_total = max(13.0, T_AUTHOR + 4.8, paint_end + 3.2)
     rnd = random.Random(3 + seed + idx)
     spec = PARTICLES.get(particles)
     parts = []
@@ -1358,6 +1367,19 @@ def prepare_segment(seg, idx, seed):
     return dict(S_RU=S_RU, S_EN=S_EN, S_A1=S_A1, S_A2=S_A2, Y_RU=Y_RU, Y_EN=Y_EN, y_div=y_div, y_auth=y_auth, ops=ops,
                 T_RU=T_RU, T_EN=T_EN, T_AUTHOR=T_AUTHOR, total=seg_total, T_END=seg_total - 1.1, parts=parts, spec=spec,
                 box=(px0, px1, py0, py1), ru=ru, en=en, sizes=(ru_size, en_size), scene=seg["scene"])
+
+
+FIRST_SPEED = 0.62   # первая картина рисуется быстрее
+FIRST_TOTAL = 8.0    # длина первой цитаты, с
+
+
+def early_hint_sprite(left):
+    """Маленькая строка под счётчиком уже во время цитаты: видно, что ролик не закончился."""
+    if left <= 0:
+        return None
+    s = "дальше — ещё 2 мысли  ·  2 more ahead" if left == 2 else \
+        ("дальше — ещё одна  ·  one more to go" if left == 1 else f"дальше — ещё {left}  ·  {left} more ahead")
+    return text_sprite(s, font(F_SMALL, 31), (140, 100, 62, 255))
 
 
 def hint_sprite(left):
@@ -1387,6 +1409,7 @@ def render_multi(cfg, out_path, preview=None, log=print):
     f_cnt = font(F_MARK, 64, 700)
     S_CNT = [text_sprite(f"{j + 1} / {n_seg}", f_cnt, (104, 80, 60, 255), spacing=3) for j in range(n_seg)]
     S_HINT = [hint_sprite(n_seg - j - 1) for j in range(n_seg)]
+    S_EARLY = [early_hint_sprite(n_seg - j - 1) for j in range(n_seg)]
     TOTAL = sum(s["total"] for s in segs)
     offsets = np.cumsum([0] + [s["total"] for s in segs[:-1]])
     for s, off in zip(segs, offsets):
@@ -1482,6 +1505,21 @@ def render_multi(cfg, out_path, preview=None, log=print):
             # счётчик «1 / 3» — крупно, чтобы было видно, что мыслей три
             cnt = S_CNT[si]
             paste_fade(img, cnt, (W - cnt.size[0]) / 2, 172, top_a)
+            # полоса прогресса из n частей (как в историях): сразу видно, что мыслей несколько
+            BX0, BX1, BY, GAP = 150, 930, 104, 18
+            sw_ = (BX1 - BX0 - GAP * (n - 1)) / n
+            for j in range(n):
+                xa = BX0 + j * (sw_ + GAP)
+                dr.rounded_rectangle([xa, BY, xa + sw_, BY + 9], radius=4, fill=(205, 192, 172, int(200 * top_a)))
+                fr = 1.0 if j < si else (min(1.0, t / S["total"]) if j == si else 0.0)
+                if fr > 0:
+                    dr.rounded_rectangle([xa, BY, xa + max(9, sw_ * fr), BY + 9], radius=4,
+                                         fill=(150, 112, 74, int(255 * top_a)))
+            # «дальше — ещё 2 мысли» мелко под счётчиком — уже с 3,5 с, а не только на переходе
+            eh = S_EARLY[si]
+            if eh is not None and t > 3.5:
+                ea = ease(3.5, 0.6, t) * (1.0 - (ease(S["T_END"], 0.3, t) if t > S["T_END"] else 0.0))
+                paste_fade(img, eh, (W - eh.size[0]) / 2, 244, ea)
             # подсказка на переходе: «Дальше — ещё 2 мысли» (и в начале следующей цитаты гаснет)
             h_spr, h_a = None, 0.0
             if si < n - 1 and t > S["T_END"] + 0.1:
