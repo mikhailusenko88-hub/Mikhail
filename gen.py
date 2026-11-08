@@ -186,17 +186,6 @@ def main():
                     open(f"in/{name}.marked", "w", encoding="utf-8").write(body + "\n")
                     a = m.apply_tts(ssml_text=body, speaker=spk, sample_rate=48000)
                     save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
-                    # rise9w300f4p60s125: +9 полутонов, окно 300 мс, спад 4 после вершины на 60% окна, растяжение 1,25
-                    rq = next((re.match(r"rise(\d+)(?:w(\d+))?(?:f(\d+))?(?:p(\d+))?(?:s(\d+))?$", o)
-                               for o in opts.split(",") if o.startswith("rise")), None)
-                    if rq:
-                        qrise(f"in/{name}.wav", float(rq.group(1)), int(rq.group(2) or 350) / 1000,
-                              float(rq.group(3) or 0), int(rq.group(4) or 100) / 100, int(rq.group(5) or 100) / 100)
-                    if "tpl" in opts.split(","):
-                        qtpl(f"in/{name}.wav")
-                    vr = next((re.match(r"vrise(?:w(\d+))?(?:h(\d+))?$", o) for o in opts.split(",") if o.startswith("vrise")), None)
-                    if vr:
-                        qvrise(f"in/{name}.wav", win=int(vr.group(1) or 320) / 1000, high=float(vr.group(2) or 65) / 10)
                     text = ""
                 ws = vc.tokenize(text) if text else []
                 if ws:
@@ -232,6 +221,18 @@ def main():
                 else:
                     a = m.apply_tts(text=marked, speaker=spk, sample_rate=48000)
                 save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
+                # мелодия вопроса (Praat) — после записи файла, иначе её затирает (так было 08.11)
+                # rise9w300f4p60s125: +9 полутонов, окно 300 мс, спад 4 после вершины на 60% окна, растяжение 1,25
+                rq = next((re.match(r"rise(\d+)(?:w(\d+))?(?:f(\d+))?(?:p(\d+))?(?:s(\d+))?$", o)
+                           for o in opts.split(",") if o.startswith("rise")), None)
+                if rq:
+                    qrise(f"in/{name}.wav", float(rq.group(1)), int(rq.group(2) or 350) / 1000,
+                          float(rq.group(3) or 0), int(rq.group(4) or 100) / 100, int(rq.group(5) or 100) / 100)
+                if "tpl" in opts.split(","):
+                    qtpl(f"in/{name}.wav")
+                vr = next((re.match(r"vrise(?:w(\d+))?(?:h(\d+))?$", o) for o in opts.split(",") if o.startswith("vrise")), None)
+                if vr:
+                    qvrise(f"in/{name}.wav", win=int(vr.group(1) or 320) / 1000, high=float(vr.group(2) or 65) / 10)
                 if "soft" in opts.split(","):
                     # мягкий тон: теплее, без резкости и шипящих, ровная громкость (без сдвига высоты)
                     af = ("highpass=f=70,bass=g=2.5:f=160:w=0.7,equalizer=f=3200:t=q:w=1.0:g=-2.5,deesser=i=0.35,"
