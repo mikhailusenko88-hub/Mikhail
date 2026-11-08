@@ -1,8 +1,6 @@
-# 2026-11-08 13:55 МСК — запуск по расписанию с догонялкой (GitHub пропустил слот)
-mode: publish    # test | publish | login | check | comments | probe
-then: publish
-extra: no
-league: auto     # auto | cities | cars | clubs
+# 2026-11-08 15:15 МСК — ТЕСТ нового вида ролика (крупная камера, без отсчёта, ~35 с), не выкладывать
+mode: test    # test | publish | login | check | comments | probe
+league: cars     # auto | cities | cars | clubs
 final: auto
 date: auto
 slot: auto
