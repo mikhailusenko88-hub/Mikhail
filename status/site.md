@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-08 23:08 UTC
+# Сайт снаружи — 2026-11-08 23:10 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -11,8 +11,8 @@
 /privacy.html                      200 text/html; charset=utf-8
 /consent.html                      200 text/html; charset=utf-8
 /avito.xml                         200 text/xml; charset=utf-8
-/pochta/yulia.mobileconfig         404 text/html; charset=utf-8
-/pochta/mikhail.mobileconfig       404 text/html; charset=utf-8
+/pochta/yulia.mobileconfig         200 application/octet-stream
+/pochta/mikhail.mobileconfig       200 application/octet-stream
 
 noindex в главной: 0
 lang=ru: 1
@@ -25,6 +25,7 @@ ld+json: 1
 --- robots.txt
 User-agent: *
 Allow: /
+Disallow: /pochta/
 
 Sitemap: https://nashdekor.ru/sitemap.xml
 --- заголовки X-Robots-Tag главной: нет
