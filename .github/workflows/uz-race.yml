@@ -15,6 +15,11 @@ on:
         type: choice
         options: [auto, cities, cars, clubs]
         default: auto
+      kind:
+        description: "extra — ещё один ролик сейчас; schedule — как по расписанию (так зовёт будильник с сервера)"
+        type: choice
+        options: [extra, schedule]
+        default: extra
 
 permissions:
   contents: write
@@ -43,6 +48,7 @@ jobs:
           UZ_YT: ${{ secrets.UZ_YT }}
           EVENT: ${{ github.event_name }}
           IN_LEAGUE: ${{ inputs.league }}
+          IN_KIND: ${{ inputs.kind }}
         run: python uz_run.py
       - name: Сохранить таблицу и отчёт
         if: always()

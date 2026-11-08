@@ -73,9 +73,29 @@ def read_request():
             if ":" in line:
                 k, v = (x.strip() for x in line.split(":", 1))
                 req[k] = v
-    if os.environ.get("EVENT") == "workflow_dispatch":      # кнопка «Run workflow» на GitHub — ещё один ролик сейчас
-        req.update({"mode": "publish", "extra": "yes", "league": os.environ.get("IN_LEAGUE") or "auto"})
+    if os.environ.get("EVENT") == "workflow_dispatch":
+        if os.environ.get("IN_KIND") == "schedule":         # будильник с сервера — как обычный запуск по расписанию
+            req.update({"mode": "publish"})
+        else:                                               # кнопка «Run workflow» на GitHub — ещё один ролик сейчас
+            req.update({"mode": "publish", "extra": "yes", "league": os.environ.get("IN_LEAGUE") or "auto"})
     return req
+
+
+def due_slot(now, history):
+    """Догонялка: самый ранний слот, время которого уже наступило, а ролика ещё нет.
+    GitHub иногда пропускает запуск по расписанию — тогда следующий запуск выложит пропущенный."""
+    done = {(h.get("date"), h.get("slot")) for h in history}
+    cands = []
+    if now.hour < 5:                                        # вечерний слот вчера (запуск ушёл за полночь)
+        cands.append((now.date() - dt.timedelta(days=1), 3))
+    for s, (_, hr) in sorted(SLOTS.items()):
+        start = dt.datetime(now.year, now.month, now.day, hr, tzinfo=TASH) - dt.timedelta(minutes=40)
+        if now >= start:
+            cands.append((now.date(), s))
+    for d, s in cands:
+        if (d.isoformat(), s) not in done:
+            return d, s
+    return None
 
 
 def auto_slot(now):
@@ -253,6 +273,16 @@ def main():
 
     now = dt.datetime.now(TASH)
     d, slot = auto_slot(now)
+    if mode == "publish" and req.get("extra") != "yes" and req["date"] == "auto" and req["slot"] == "auto":
+        st0 = json.loads(Path("state.json").read_text(encoding="utf-8"))
+        due = due_slot(now, st0.get("history", []))
+        if due is None:
+            log("все слоты на это время уже выложены — ничего не делаю")
+            write_status(f"ПРОПУСК {now:%Y-%m-%d %H:%M}: всё по расписанию уже выложено", name="kick.txt")
+            return
+        if due != (d, slot):
+            log(f"догоняю пропущенный слот: {due[0]} слот {due[1]}")
+        d, slot = due
     if req["date"] != "auto":
         d = dt.date.fromisoformat(req["date"])
     if req["slot"] != "auto":

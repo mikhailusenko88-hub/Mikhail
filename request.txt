@@ -1,8 +1,8 @@
-# 2026-11-08 13:40 МСК — догоняем пропущенный слот 1 (города, финал недели); GitHub не запустил по расписанию
+# 2026-11-08 13:55 МСК — запуск по расписанию с догонялкой (GitHub пропустил слот)
 mode: publish    # test | publish | login | check | comments | probe
 then: publish
 extra: no
 league: auto     # auto | cities | cars | clubs
 final: auto
-date: 2026-11-08
-slot: 1
+date: auto
+slot: auto
