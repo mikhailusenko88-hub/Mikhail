@@ -1,12 +1,12 @@
-# Сайт снаружи — 2026-11-08 22:33 UTC
+# Сайт снаружи — 2026-11-08 22:35 UTC
 
 ```
 /                      200 text/html; charset=utf-8
-/robots.txt            404 text/html; charset=utf-8
-/sitemap.xml           404 text/html; charset=utf-8
-/favicon.ico           404 text/html; charset=utf-8
-/apple-touch-icon.png  404 text/html; charset=utf-8
-/og.jpg                404 text/html; charset=utf-8
+/robots.txt            200 text/plain; charset=utf-8
+/sitemap.xml           200 text/xml; charset=utf-8
+/favicon.ico           200 image/x-icon
+/apple-touch-icon.png  200 image/png
+/og.jpg                200 image/jpeg
 /oferta.html           200 text/html; charset=utf-8
 /privacy.html          200 text/html; charset=utf-8
 /consent.html          200 text/html; charset=utf-8
