@@ -12,6 +12,28 @@
 | bot_alb_10 | Альбина (бот «Почему так?», режим bot) | 3.09 | 1.0 | 0 (+3) | 1/1 |
 | bot_alb_11 | Альбина (бот «Почему так?», режим bot) | 2.53 | 0.857 | 0 (+1) | 1/1 |
 | bot_alb_12 | Альбина (бот «Почему так?», режим bot) | 3.19 | 1.0 | 0 (+0) | 1/1 |
+| bq1_q0 | silero_cis:ru_albina@ssml,soft | 3.19 | 1.0 | 0 (+0) | 0/1 |
+| bq1_q1 | silero_cis:ru_albina@ssml,soft | 2.73 | 1.0 | 0 (+0) | 0/1 |
+| bq1_q2 | silero_cis:ru_albina@ssml,soft | 2.64 | 1.0 | 0 (+0) | 0/1 |
+| bq1_q3 | silero_cis:ru_albina@ssml,soft | 2.79 | 1.0 | 0 (+0) | 0/1 |
+| bq2_q0 | silero_cis:ru_albina@ssml,soft | 3.75 | 0.727 | 0 (+0) | 1/1 |
+| bq2_q1 | silero_cis:ru_albina@ssml,soft | 3.63 | 0.727 | 0 (+0) | 1/1 |
+| bq2_q2 | silero_cis:ru_albina@ssml,soft | 3.63 | 0.727 | 0 (+0) | 1/1 |
+| bq2_q3 | silero_cis:ru_albina@ssml,soft | 3.33 | 0.727 | 0 (+0) | 1/1 |
+| bq3_q0 | silero_cis:ru_albina@ssml,soft | 3.41 | 0.6 | 0 (+0) | 0/1 |
+| bq3_q1 | silero_cis:ru_albina@ssml,soft | 3.12 | 0.6 | 0 (+0) | 0/1 |
+| bq3_q2 | silero_cis:ru_albina@ssml,soft | 3.24 | 0.6 | 0 (+0) | 0/1 |
+| bq3_q3 | silero_cis:ru_albina@ssml,soft | 3.3 | 0.6 | 0 (+0) | 0/1 |
+| bq4_q0 | silero_cis:ru_albina@ssml,soft | 2.69 | 1.0 | 0 (+0) | 0/1 |
+| bq4_q1 | silero_cis:ru_albina@ssml,soft | 2.4 | 1.0 | 0 (+1) | 1/1 |
+| bq4_q2 | silero_cis:ru_albina@ssml,soft | 2.62 | 1.0 | 0 (+1) | 1/1 |
+| bq4_q3 | silero_cis:ru_albina@ssml,soft | 2.64 | 1.0 | 0 (+0) | 0/1 |
+| bs10_med | silero_cis:ru_albina@ssml,soft | 3.09 | 1.0 | 0 (+3) | 1/1 |
+| bs10_slow | silero_cis:ru_albina@ssml,soft | 3.32 | 1.0 | 3 (+0) | 1/1 |
+| bs5_med | silero_cis:ru_albina@ssml,soft | 3.22 | 0.778 | 1 (+1) | 1/1 |
+| bs5_slow | silero_cis:ru_albina@ssml,soft | 2.9 | 1.0 | 0 (+0) | 1/1 |
+| bs7_med | silero_cis:ru_albina@ssml,soft | 3.54 | 0.667 | 2 (+0) | 1/1 |
+| bs7_slow | silero_cis:ru_albina@ssml,soft | 3.4 | 0.833 | 2 (+0) | 1/1 |
 | dm_q | edge:ru-RU-DmitryNeural | 3.79 | 1.0 | 0 (+0) | 1/1 |
 | dm_raw | edge:ru-RU-DmitryNeural | 3.71 | 0.846 | 2 (+0) | 2/2 |
 | f2_albina_slow | silero_cis:ru_albina@slow | 3.2 | 0.935 | 0 (+1) | 4/4 |
