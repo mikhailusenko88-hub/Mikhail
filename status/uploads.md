@@ -15,3 +15,5 @@
 | shorts | 2026-11-08 | 1 | Japan vs UK vs Vietnam | https://youtube.com/shorts/zkyW0HKH1fY | |
 | 14–15 | 2026-11-08 | 2 | S2 ROUND 1 · HEATS 1–2/7 | https://youtu.be/Uyla-VXUYU8 | public |
 | shorts | 2026-11-08 | 2 | Brazil vs Germany vs Egypt | https://youtube.com/shorts/xUvlH38tyfQ | |
+| 16 | 2026-11-08 | 3 | S2 RACE 3/68 | https://youtu.be/Ldee_bsNR8M | public |
+| shorts | 2026-11-08 | 3 | India vs Philippines vs Argentina | https://youtube.com/shorts/ZX2dnIFx-yw | |

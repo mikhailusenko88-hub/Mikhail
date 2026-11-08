@@ -1,4 +1,4 @@
-ТЕСТ ОК: видео #16 (1 заезд.) собрано за 500 с, 163 МБ (не выложено)
+ВЫЛОЖЕНО #16 2026-11-08 слот 3: https://youtu.be/Ldee_bsNR8M (public) + Shorts https://youtube.com/shorts/ZX2dnIFx-yw, за 368 с
 
 {
  "title": "India vs Philippines vs Argentina 🔥 SUNDAY MEGA TRACK – Who Loses a Life? | Marble Race #3",
@@ -70,21 +70,27 @@
   "in",
   "ph",
   "ar"
- ]
+ ],
+ "video_id": "Ldee_bsNR8M",
+ "privacy": "public"
 }
 
 --- журнал ---
-15:02:56 режим test, гонка #16, 2026-11-08 слот 3, событие push
-15:02:56 по плану: S2 RACE 3/68
-15:02:56 в этом видео заездов: 1 (раунд 1, осталось в раунде 66)
+22:30:35 режим publish, гонка #16, 2026-11-08 слот 3, событие workflow_dispatch
+22:30:35 по плану: S2 RACE 3/68
+22:30:35 канал: Flagball Arena
+22:30:35 в этом видео заездов: 1 (раунд 1, осталось в раунде 66)
 гонка #16 2026-11-08 слот 3: S2 RACE 3/68, 24→17, участники: IRN CYP SYR MHL TON NOR SOM HTI ARG IRL PHL FIN DJI SYC MNE VCT NER IND AUT GRC CZE LCA UZB YEM
   этап 1: 24→22, блоков 18 ['ring_gate', 'sliders', 'drum', 'rotor', 'trapdoors', 'comb', 'glass', 'tunnels', 'pushers', 'split', 'pendulums', 'rotor', 'trapdoors', 'tunnels', 'pushers', 'drum', 'ring_gate', 'glass'], Q-финиш 82.0 c, кадров 2537
   этап 2: 22→19, блоков 18 ['pendulums', 'split', 'rotor', 'glass', 'sliders', 'trapdoors', 'comb', 'ring_gate', 'pushers', 'tunnels', 'drum', 'ring_gate', 'sliders', 'tunnels', 'rotor', 'split', 'drum', 'glass'], Q-финиш 79.5 c, кадров 2462
   этап 3: 19→17, блоков 17 ['split', 'pendulums', 'glass', 'pushers', 'ring_gate', 'comb', 'trapdoors', 'tunnels', 'drum', 'rotor', 'sliders', 'glass', 'trapdoors', 'drum', 'pushers', 'rotor', 'ring_gate'], Q-финиш 79.5 c, кадров 2463
 длительность ролика ≈ 5.0 мин
-готово: 8986 кадров за 477 с
-кадров 8986, 4.99 мин, рендер 479 с
+готово: 8986 кадров за 335 с
+кадров 8986, 4.99 мин, рендер 336 с
 выжили: AUT MNE MHL SYR GRC PHL IRN NER YEM LCA TON SYC VCT DJI NOR IND CYP
-15:10:55 заезд 1/1 готов: 163 МБ, 479 с
-15:10:56 видео готово: 163 МБ, 5.0 мин, 480 с с начала; название: India vs Philippines vs Argentina 🔥 SUNDAY MEGA TRACK – Who Loses a Life? | Marble Race #3
-15:11:16 Shorts готов: 26 с — India vs Philippines vs Argentina 😱 Who Survives? Country Marble Race #shorts
+22:36:12 заезд 1/1 готов: 163 МБ, 337 с
+22:36:12 видео готово: 163 МБ, 5.0 мин, 337 с с начала; название: India vs Philippines vs Argentina 🔥 SUNDAY MEGA TRACK – Who Loses a Life? | Marble Race #3
+22:36:28 Shorts готов: 26 с — India vs Philippines vs Argentina 😱 Who Survives? Country Marble Race #shorts
+22:36:36 обложка: 200 
+22:36:37 в плейлисте
+22:36:37 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'madeForKids': False, 'selfDeclaredMadeForKids': False}
