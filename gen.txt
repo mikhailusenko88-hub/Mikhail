@@ -90,3 +90,13 @@ br6_xhi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Золо�
 br7_now | silero_cis:ru_albina@ssml,soft | <speak>Ты в+идишь зв+ёзды, кот+орых уж+е <prosody pitch="high">нет</prosody>?</speak> | Ты видишь звёзды, которых уже нет?
 br7_hi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Ты в+идишь зв+ёзды, кот+орых</prosody> <prosody pitch="high">уж+е нет</prosody>?</speak> | Ты видишь звёзды, которых уже нет?
 br7_xhi | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">Ты в+идишь зв+ёзды, кот+орых</prosody> <prosody pitch="x-high">уж+е нет</prosody>?</speak> | Ты видишь звёзды, которых уже нет?
+
+# вопрос через мелодию (Praat): подъём в конце на N полутонов (08.11, после прослушивания Михаилом)
+qz0_now | silero_cis:ru_albina@ssml,soft | <speak><prosody pitch="low">А ты</prosody> <prosody pitch="x-high">+это знал</prosody>?</speak> | А ты это знал?
+qz1_r6 | silero_cis:ru_albina@ssml,soft,rise6w300 | <speak>А ты +это знал?</speak> | А ты это знал?
+qz2_r9 | silero_cis:ru_albina@ssml,soft,rise9w300 | <speak>А ты +это знал?</speak> | А ты это знал?
+qz3_r12 | silero_cis:ru_albina@ssml,soft,rise12w350 | <speak>А ты +это знал?</speak> | А ты это знал?
+qz4_now_r9 | silero_cis:ru_albina@ssml,soft,rise9w300 | <speak><prosody pitch="low">А ты</prosody> <prosody pitch="x-high">+это знал</prosody>?</speak> | А ты это знал?
+qv_r9 | silero_cis:ru_albina@ssml,soft,rise9w350 | <speak>Вербл+юд хран+ит в+оду в горб+у?</speak> | Верблюд хранит воду в горбу?
+qp_r9 | silero_cis:ru_albina@ssml,soft,rise9w450 | <speak>Ты глот+аешь паук+ов во сне?</speak> | Ты глотаешь пауков во сне?
+qm_r9 | silero_cis:ru_albina@ssml,soft,rise9w400 | <speak>Лет+учие м+ыши совс+ем слеп+ые?</speak> | Летучие мыши совсем слепые?

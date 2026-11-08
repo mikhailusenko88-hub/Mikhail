@@ -46,6 +46,38 @@ def check_marks(name, text):
     print("метки", name, bad or "ok")
 
 
+def qrise(path, st=8.0, win=0.35):
+    """Вопросительная мелодия: в последние win секунд звучащей речи высота плавно поднимается
+    до st полутонов над средней высотой фразы (Praat, PSOLA — тембр и темп не меняются)."""
+    import parselmouth
+    from parselmouth.praat import call
+    snd = parselmouth.Sound(path)
+    pitch = snd.to_pitch(time_step=0.01, pitch_floor=75, pitch_ceiling=600)
+    f = pitch.selected_array["frequency"]
+    ts = pitch.xs()
+    voiced = [(t, v) for t, v in zip(ts, f) if v > 0]
+    if len(voiced) < 5:
+        return
+    base = float(np.median([v for _, v in voiced]))
+    t_end = voiced[-1][0]
+    t0 = t_end - win
+    manip = call(snd, "To Manipulation", 0.01, 75, 600)
+    tier = call(manip, "Extract pitch tier")
+    new = call("Create PitchTier", "q", snd.xmin, snd.xmax)
+    n = call(tier, "Get number of points")
+    for i in range(1, n + 1):
+        t = call(tier, "Get time from index", i)
+        v = call(tier, "Get value at index", i)
+        if t >= t0:
+            r = min(1.0, (t - t0) / max(win, 1e-3))
+            r = r * r * (3 - 2 * r)                      # плавно, без ступеньки
+            v = max(v, base * 2 ** (st * r / 12))
+        call(new, "Add point", t, v)
+    call([manip, new], "Replace pitch tier")
+    out = call(manip, "Get resynthesis (overlap-add)")
+    out.save(path, "WAV")
+
+
 def main():
     for line in open("gen.txt", encoding="utf-8"):
         line = line.strip()
@@ -84,6 +116,9 @@ def main():
                     open(f"in/{name}.marked", "w", encoding="utf-8").write(body + "\n")
                     a = m.apply_tts(ssml_text=body, speaker=spk, sample_rate=48000)
                     save_wav(a.numpy() if hasattr(a, "numpy") else a, f"in/{name}.wav")
+                    rq = next((re.match(r"rise(\d+)(?:w(\d+))?$", o) for o in opts.split(",") if o.startswith("rise")), None)
+                    if rq:
+                        qrise(f"in/{name}.wav", float(rq.group(1)), int(rq.group(2) or 350) / 1000)
                     text = ""
                 ws = vc.tokenize(text) if text else []
                 if ws:
