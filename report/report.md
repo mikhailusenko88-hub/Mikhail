@@ -1,98 +1,146 @@
 | id | score | dur | laugh | speech | f0 | range | syl | rate | prompt | preset |
 |---|---|---|---|---|---|---|---|---|---|---|
-| s2-ha-fr_speaker_1-1 | 0.53 | 5.64 | Snicker 0.54 | 0.01 | 313 | 254-503 | 17 | 3.0 | Hahahaha! [laughs] | v2/fr_speaker_1 |
-| s2-ho-en_speaker_3-0 | 0.49 | 4.51 | Snicker 0.53 | 0.06 | 114 | 96-165 | 11 | 2.4 | Ho ho ho ho ho! [laughs] | v2/en_speaker_3 |
-| s2-hee-ru_speaker_4-0 | 0.47 | 4.19 | Snicker 0.47 | 0.01 | 178 | 148-236 | 21 | 5.0 | Hee hee hee hee hee! [laughs] | v2/ru_speaker_4 |
-| s2-ha-ru_speaker_4-1 | 0.43 | 2.08 | Snicker 0.46 | 0.04 | 156 | 126-199 | 12 | 5.8 | Hahahaha! [laughs] | v2/ru_speaker_4 |
-| s2-ha-de_speaker_3-0 | 0.23 | 6.5 | Snicker 0.32 | 0.14 | 221 | 206-272 | 28 | 4.3 | Hahahaha! [laughs] | v2/de_speaker_3 |
-| s2-heh-pl_speaker_5-1 | 0.21 | 2.09 | Snicker 0.23 | 0.02 | 235 | 154-645 | 7 | 3.3 | [chuckles] Heh heh heh heh. | v2/pl_speaker_5 |
-| s2-heh-fr_speaker_1-1 | 0.20 | 1.81 | Chuckle, chortle 0.24 | 0.07 | 261 | 226-667 | 9 | 5.0 | [chuckles] Heh heh heh heh. | v2/fr_speaker_1 |
-| s2-ha-en_speaker_6-1 | 0.19 | 4.86 | Snicker 0.23 | 0.06 | 297 | 96-373 | 19 | 3.9 | Hahahaha! [laughs] | v2/en_speaker_6 |
-| s2-heh-en_speaker_9-1 | 0.16 | 2.15 | Snicker 0.18 | 0.04 | 293 | 261-338 | 7 | 3.3 | [chuckles] Heh heh heh heh. | v2/en_speaker_9 |
-| s2-ho-en_speaker_3-1 | 0.15 | 3.83 | Snicker 0.16 | 0.02 | 173 | 135-222 | 9 | 2.4 | Ho ho ho ho ho! [laughs] | v2/en_speaker_3 |
-| s2-hee-de_speaker_3-1 | 0.14 | 2.39 | Snicker 0.16 | 0.03 | 180 | 86-201 | 9 | 3.8 | Hee hee hee hee hee! [laughs] | v2/de_speaker_3 |
-| s2-ho-ru_speaker_5-1 | 0.13 | 1.96 | Snicker 0.16 | 0.05 | 316 | 270-350 | 8 | 4.1 | Ho ho ho ho ho! [laughs] | v2/ru_speaker_5 |
-| s2-hee-de_speaker_3-0 | 0.12 | 6.37 | Snicker 0.13 | 0.02 | 252 | 218-434 | 22 | 3.5 | Hee hee hee hee hee! [laughs] | v2/de_speaker_3 |
-| s2-ha-en_speaker_9-1 | 0.11 | 3.0 | Giggle 0.19 | 0.13 | 291 | 260-329 | 15 | 5.0 | Hahahaha! [laughs] | v2/en_speaker_9 |
-| s2-ha-en_speaker_5-0 | 0.11 | 6.59 | Snicker 0.12 | 0.01 | 172 | 82-674 | 13 | 2.0 | Hahahaha! [laughs] | v2/en_speaker_5 |
-| s2-ha-en_speaker_9-0 | 0.07 | 4.63 | Snicker 0.09 | 0.02 | 367 | 292-617 | 11 | 2.4 | Hahahaha! [laughs] | v2/en_speaker_9 |
-| s2-ha-en_speaker_2-1 | 0.07 | 2.96 | Snicker 0.09 | 0.03 | 237 | 233-279 | 5 | 1.7 | Hahahaha! [laughs] | v2/en_speaker_2 |
-| s2-heh-it_speaker_2-1 | 0.06 | 2.01 | Snicker 0.08 | 0.03 | 339 | 272-699 | 7 | 3.5 | [chuckles] Heh heh heh heh. | v2/it_speaker_2 |
-| s2-heh-ru_speaker_4-1 | 0.06 | 2.58 | Snicker 0.07 | 0.02 | 194 | 138-224 | 9 | 3.5 | [chuckles] Heh heh heh heh. | v2/ru_speaker_4 |
-| s2-hee-en_speaker_3-1 | 0.05 | 2.38 | Snicker 0.06 | 0.02 | 193 | 145-242 | 7 | 2.9 | Hee hee hee hee hee! [laughs] | v2/en_speaker_3 |
-| s2-ho-ru_speaker_4-0 | 0.04 | 7.02 | Snicker 0.06 | 0.03 | 158 | 144-181 | 13 | 1.9 | Ho ho ho ho ho! [laughs] | v2/ru_speaker_4 |
-| s2-hee-it_speaker_2-1 | 0.04 | 7.21 | Laughter 0.07 | 0.05 | 254 | 210-310 | 17 | 2.4 | Hee hee hee hee hee! [laughs] | v2/it_speaker_2 |
-| s2-heh-en_speaker_2-0 | 0.03 | 3.8 | Snicker 0.11 | 0.13 | 659 | 208-765 | 12 | 3.2 | [chuckles] Heh heh heh heh. | v2/en_speaker_2 |
-| s2-heh-en_speaker_9-0 | 0.03 | 4.32 | Chuckle, chortle 0.05 | 0.04 | 272 | 241-370 | 10 | 2.3 | [chuckles] Heh heh heh heh. | v2/en_speaker_9 |
-| s2-heh-ru_speaker_5-0 | 0.03 | 7.21 | Snicker 0.04 | 0.02 | 414 | 305-420 | 10 | 1.4 | [chuckles] Heh heh heh heh. | v2/ru_speaker_5 |
-| s2-hee-en_speaker_9-0 | 0.03 | 5.84 | Giggle 0.04 | 0.02 | 355 | 282-473 | 9 | 1.5 | Hee hee hee hee hee! [laughs] | v2/en_speaker_9 |
-| s2-ha-pl_speaker_5-1 | 0.02 | 5.81 | Snicker 0.04 | 0.03 | 218 | 99-241 | 15 | 2.6 | Hahahaha! [laughs] | v2/pl_speaker_5 |
-| s2-heh-en_speaker_3-1 | 0.02 | 3.0 | Snicker 0.06 | 0.06 | 130 | 111-164 | 9 | 3.0 | [chuckles] Heh heh heh heh. | v2/en_speaker_3 |
-| s2-ha-en_speaker_5-1 | 0.02 | 2.6 | Snicker 0.05 | 0.05 | 181 | 159-265 | 7 | 2.7 | Hahahaha! [laughs] | v2/en_speaker_5 |
-| s2-hee-fr_speaker_1-0 | 0.02 | 6.42 | Giggle 0.04 | 0.04 | 238 | 187-497 | 14 | 2.2 | Hee hee hee hee hee! [laughs] | v2/fr_speaker_1 |
-| s2-heh-ru_speaker_4-0 | 0.02 | 3.56 | Snicker 0.03 | 0.02 | 118 | 110-188 | 8 | 2.2 | [chuckles] Heh heh heh heh. | v2/ru_speaker_4 |
-| s2-heh-de_speaker_3-0 | 0.01 | 2.84 | Snicker 0.04 | 0.04 | 237 | 215-534 | 6 | 2.1 | [chuckles] Heh heh heh heh. | v2/de_speaker_3 |
-| s2-ho-en_speaker_9-0 | 0.01 | 3.34 | Snicker 0.03 | 0.04 | 338 | 261-447 | 5 | 1.5 | Ho ho ho ho ho! [laughs] | v2/en_speaker_9 |
-| s2-ho-ru_speaker_4-1 | 0.01 | 6.99 | Snicker 0.02 | 0.01 | 144 | 115-153 | 17 | 2.4 | Ho ho ho ho ho! [laughs] | v2/ru_speaker_4 |
-| s2-heh-ru_speaker_5-1 | 0.01 | 4.71 | Laughter 0.03 | 0.04 | 277 | 240-389 | 10 | 2.1 | [chuckles] Heh heh heh heh. | v2/ru_speaker_5 |
-| s2-ho-en_speaker_2-1 | 0.01 | 4.67 | Snicker 0.01 | 0.01 | 459 | 152-464 | 11 | 2.4 | Ho ho ho ho ho! [laughs] | v2/en_speaker_2 |
-| s2-ho-de_speaker_3-1 | 0.00 | 5.89 | Snicker 0.01 | 0.01 | 144 | 110-166 | 15 | 2.5 | Ho ho ho ho ho! [laughs] | v2/de_speaker_3 |
-| s2-ha-en_speaker_3-0 | -0.00 | 7.21 | Laughter 0.01 | 0.02 | 149 | 88-680 | 18 | 2.5 | Hahahaha! [laughs] | v2/en_speaker_3 |
-| s2-heh-it_speaker_2-0 | -0.00 | 3.48 | Laughter 0.02 | 0.04 | 237 | 223-339 | 6 | 1.7 | [chuckles] Heh heh heh heh. | v2/it_speaker_2 |
-| s2-hee-fr_speaker_1-1 | -0.00 | 4.1 | Laughter 0.00 | 0.01 | 225 | 172-226 | 2 | 0.5 | Hee hee hee hee hee! [laughs] | v2/fr_speaker_1 |
-| s2-ho-en_speaker_2-0 | -0.01 | 6.56 | Laughter 0.00 | 0.01 | 329 | 267-516 | 7 | 1.1 | Ho ho ho ho ho! [laughs] | v2/en_speaker_2 |
-| s2-ho-en_speaker_9-1 | -0.01 | 6.63 | Laughter 0.00 | 0.01 | 276 | 255-306 | 3 | 0.5 | Ho ho ho ho ho! [laughs] | v2/en_speaker_9 |
-| s2-ho-it_speaker_2-1 | -0.01 | 2.35 | Laughter 0.00 | 0.02 | 246 | 219-263 | 5 | 2.1 | Ho ho ho ho ho! [laughs] | v2/it_speaker_2 |
-| s2-ha-en_speaker_2-0 | -0.01 | 3.17 | Snicker 0.01 | 0.04 | 221 | 135-490 | 8 | 2.5 | Hahahaha! [laughs] | v2/en_speaker_2 |
-| s2-ha-it_speaker_2-0 | -0.01 | 4.83 | Laughter 0.00 | 0.02 | 314 | 263-334 | 3 | 0.6 | Hahahaha! [laughs] | v2/it_speaker_2 |
-| s2-ho-en_speaker_5-0 | -0.01 | 7.21 | Laughter 0.00 | 0.02 | 173 | 173-174 | 1 | 0.1 | Ho ho ho ho ho! [laughs] | v2/en_speaker_5 |
-| s2-hee-en_speaker_5-0 | -0.02 | 7.21 | Laughter 0.00 | 0.01 | 669 | 626-775 | 5 | 0.7 | Hee hee hee hee hee! [laughs] | v2/en_speaker_5 |
-| s2-ho-de_speaker_3-0 | -0.02 | 4.08 | Giggle 0.00 | 0.02 | 299 | 274-312 | 5 | 1.2 | Ho ho ho ho ho! [laughs] | v2/de_speaker_3 |
-| s2-hee-pl_speaker_5-0 | -0.02 | 6.84 | Chuckle, chortle 0.01 | 0.05 | 168 | 138-201 | 13 | 1.9 | Hee hee hee hee hee! [laughs] | v2/pl_speaker_5 |
-| s2-hee-ru_speaker_4-1 | -0.02 | 7.12 | Laughter 0.00 | 0.01 | 178 | 148-209 | 9 | 1.3 | Hee hee hee hee hee! [laughs] | v2/ru_speaker_4 |
-| s2-ha-ru_speaker_5-1 | -0.03 | 7.21 | Laughter 0.00 | 0.05 | 208 | 163-222 | 6 | 0.8 | Hahahaha! [laughs] | v2/ru_speaker_5 |
-| s2-ho-fr_speaker_1-0 | -0.03 | 6.48 | Snicker 0.02 | 0.08 | 554 | 391-682 | 15 | 2.3 | Ho ho ho ho ho! [laughs] | v2/fr_speaker_1 |
-| s2-heh-en_speaker_2-1 | -0.03 | 6.29 | Laughter 0.01 | 0.06 | 236 | 145-782 | 21 | 3.3 | [chuckles] Heh heh heh heh. | v2/en_speaker_2 |
-| s2-hee-it_speaker_2-0 | -0.05 | 7.08 | Giggle 0.00 | 0.08 | 227 | 221-264 | 13 | 1.8 | Hee hee hee hee hee! [laughs] | v2/it_speaker_2 |
-| s2-ha-it_speaker_2-1 | -0.05 | 4.06 | Laughter 0.01 | 0.12 | 440 | 220-724 | 6 | 1.5 | Hahahaha! [laughs] | v2/it_speaker_2 |
-| s2-hee-en_speaker_6-0 | -0.06 | 4.95 | Snicker 0.01 | 0.10 | 119 | 99-269 | 13 | 2.6 | Hee hee hee hee hee! [laughs] | v2/en_speaker_6 |
-| s2-heh-en_speaker_5-0 | -0.07 | 2.4 | Snicker 0.01 | 0.13 | 119 | 100-129 | 9 | 3.8 | [chuckles] Heh heh heh heh. | v2/en_speaker_5 |
-| s2-ho-fr_speaker_1-1 | -0.08 | 3.52 | Snicker 0.01 | 0.14 | 197 | 182-265 | 8 | 2.3 | Ho ho ho ho ho! [laughs] | v2/fr_speaker_1 |
-| s2-ho-ru_speaker_5-0 | -0.08 | 7.21 | Laughter 0.00 | 0.13 | 220 | 197-238 | 23 | 3.2 | Ho ho ho ho ho! [laughs] | v2/ru_speaker_5 |
-| s2-heh-fr_speaker_1-0 | -0.10 | 2.76 | Chuckle, chortle 0.01 | 0.18 | 315 | 236-662 | 9 | 3.3 | [chuckles] Heh heh heh heh. | v2/fr_speaker_1 |
-| s2-hee-en_speaker_8-1 | -0.10 | 3.36 | Snicker 0.09 | 0.31 | 171 | 153-186 | 12 | 3.6 | Hee hee hee hee hee! [laughs] | v2/en_speaker_8 |
-| s2-heh-de_speaker_3-1 | -0.10 | 1.71 | Laughter 0.00 | 0.17 | 185 | 182-191 | 3 | 1.8 | [chuckles] Heh heh heh heh. | v2/de_speaker_3 |
-| s2-ha-fr_speaker_1-0 | -0.10 | 5.79 | Snicker 0.00 | 0.18 | 274 | 240-375 | 8 | 1.4 | Hahahaha! [laughs] | v2/fr_speaker_1 |
-| s2-ha-en_speaker_6-0 | -0.12 | 7.16 | Snicker 0.01 | 0.21 | 101 | 91-300 | 11 | 1.5 | Hahahaha! [laughs] | v2/en_speaker_6 |
-| s2-hee-en_speaker_9-1 | -0.12 | 4.99 | Laughter 0.00 | 0.02 | 292 | 236-329 | 5 | 1.0 | Hee hee hee hee hee! [laughs] | v2/en_speaker_9 |
-| s2-hee-ru_speaker_5-0 | -0.13 | 7.01 | Laughter 0.00 | 0.22 | 242 | 101-489 | 11 | 1.6 | Hee hee hee hee hee! [laughs] | v2/ru_speaker_5 |
-| s2-hee-en_speaker_6-1 | -0.14 | 3.64 | Snicker 0.03 | 0.28 | 96 | 87-134 | 12 | 3.3 | Hee hee hee hee hee! [laughs] | v2/en_speaker_6 |
-| s2-ho-pl_speaker_5-0 | -0.16 | 7.14 | Snicker 0.01 | 0.29 | 147 | 138-191 | 18 | 2.5 | Ho ho ho ho ho! [laughs] | v2/pl_speaker_5 |
-| s2-hee-ru_speaker_5-1 | -0.16 | 7.21 | Laughter 0.00 | 0.27 | 199 | 175-221 | 11 | 1.5 | Hee hee hee hee hee! [laughs] | v2/ru_speaker_5 |
-| s2-heh-en_speaker_6-0 | -0.17 | 3.47 | Snicker 0.01 | 0.30 | 195 | 109-297 | 9 | 2.6 | [chuckles] Heh heh heh heh. | v2/en_speaker_6 |
-| s2-hee-pl_speaker_5-1 | -0.17 | 4.76 | Chuckle, chortle 0.00 | 0.28 | 135 | 116-159 | 7 | 1.5 | Hee hee hee hee hee! [laughs] | v2/pl_speaker_5 |
-| s2-ho-en_speaker_6-1 | -0.18 | 5.7 | Snicker 0.21 | 0.65 | 169 | 92-302 | 17 | 3.0 | Ho ho ho ho ho! [laughs] | v2/en_speaker_6 |
-| s2-ho-it_speaker_2-0 | -0.18 | 7.21 | Laughter 0.00 | 0.15 | 207 | 184-220 | 6 | 0.8 | Ho ho ho ho ho! [laughs] | v2/it_speaker_2 |
-| s2-heh-en_speaker_5-1 | -0.19 | 6.93 | Snicker 0.01 | 0.33 | 149 | 116-150 | 7 | 1.0 | [chuckles] Heh heh heh heh. | v2/en_speaker_5 |
-| s2-hee-en_speaker_5-1 | -0.20 | 7.21 | Laughter 0.00 | 0.34 | 97 | 85-104 | 9 | 1.2 | Hee hee hee hee hee! [laughs] | v2/en_speaker_5 |
-| s2-hee-en_speaker_2-1 | -0.21 | 2.32 | Laughter 0.00 | 0.35 | 104 | 100-161 | 5 | 2.2 | Hee hee hee hee hee! [laughs] | v2/en_speaker_2 |
-| s2-ha-ru_speaker_4-0 | -0.23 | 3.27 | Snicker 0.09 | 0.06 | 110 | 72-143 | 12 | 3.7 | Hahahaha! [laughs] | v2/ru_speaker_4 |
-| s2-hee-en_speaker_3-0 | -0.26 | 7.21 | Snicker 0.01 | 0.45 | 108 | 88-146 | 15 | 2.1 | Hee hee hee hee hee! [laughs] | v2/en_speaker_3 |
-| s2-heh-en_speaker_6-1 | -0.27 | 2.89 | Snicker 0.00 | 0.46 | 99 | 92-181 | 7 | 2.4 | [chuckles] Heh heh heh heh. | v2/en_speaker_6 |
-| s2-hee-en_speaker_2-0 | -0.30 | 1.79 | Giggle 0.00 | 0.50 | 219 | 120-453 | 4 | 2.2 | Hee hee hee hee hee! [laughs] | v2/en_speaker_2 |
-| s2-ha-ru_speaker_5-0 | -0.34 | 7.21 | Laughter 0.01 | 0.57 | 227 | 197-273 | 19 | 2.6 | Hahahaha! [laughs] | v2/ru_speaker_5 |
-| s2-heh-pl_speaker_5-0 | -0.34 | 3.77 | Snicker 0.01 | 0.59 | 124 | 115-147 | 15 | 4.0 | [chuckles] Heh heh heh heh. | v2/pl_speaker_5 |
-| s2-ho-en_speaker_6-0 | -0.34 | 5.18 | Laughter 0.00 | 0.57 | 92 | 83-144 | 8 | 1.5 | Ho ho ho ho ho! [laughs] | v2/en_speaker_6 |
-| s2-ha-de_speaker_3-1 | -0.36 | 6.44 | Laughter 0.00 | 0.60 | 491 | 165-511 | 4 | 0.6 | Hahahaha! [laughs] | v2/de_speaker_3 |
-| s2-ha-en_speaker_3-1 | -0.36 | 6.28 | Snicker 0.01 | 0.62 | 126 | 96-375 | 14 | 2.2 | Hahahaha! [laughs] | v2/en_speaker_3 |
-| s2-ho-en_speaker_5-1 | -0.38 | 3.14 | Laughter 0.00 | 0.65 | 116 | 97-133 | 6 | 1.9 | Ho ho ho ho ho! [laughs] | v2/en_speaker_5 |
-| s2-heh-en_speaker_3-0 | -0.39 | 6.0 | Snicker 0.03 | 0.70 | 175 | 96-561 | 16 | 2.7 | [chuckles] Heh heh heh heh. | v2/en_speaker_3 |
-| s2-heh-en_speaker_8-0 | -0.43 | 1.68 | Chuckle, chortle 0.00 | 0.73 | 151 | 141-159 | 5 | 3.0 | [chuckles] Heh heh heh heh. | v2/en_speaker_8 |
-| s2-heh-en_speaker_8-1 | -0.44 | 6.46 | Chuckle, chortle 0.00 | 0.73 | 186 | 149-233 | 16 | 2.5 | [chuckles] Heh heh heh heh. | v2/en_speaker_8 |
-| s2-ha-en_speaker_8-1 | -0.45 | 5.85 | Chuckle, chortle 0.00 | 0.76 | 162 | 140-194 | 15 | 2.6 | Hahahaha! [laughs] | v2/en_speaker_8 |
-| s2-hee-en_speaker_8-0 | -0.46 | 4.96 | Laughter 0.00 | 0.77 | 179 | 136-430 | 9 | 1.8 | Hee hee hee hee hee! [laughs] | v2/en_speaker_8 |
-| s2-ha-en_speaker_8-0 | -0.51 | 4.51 | Chuckle, chortle 0.00 | 0.85 | 154 | 141-182 | 8 | 1.8 | Hahahaha! [laughs] | v2/en_speaker_8 |
-| s2-ho-en_speaker_8-1 | -0.51 | 6.64 | Laughter 0.00 | 0.85 | 464 | 120-499 | 18 | 2.7 | Ho ho ho ho ho! [laughs] | v2/en_speaker_8 |
-| s2-ho-en_speaker_8-0 | -0.52 | 6.72 | Chuckle, chortle 0.00 | 0.87 | 159 | 134-220 | 18 | 2.7 | Ho ho ho ho ho! [laughs] | v2/en_speaker_8 |
-| s2-ho-pl_speaker_5-1 | -0.53 | 6.88 | Laughter 0.00 | 0.88 | 225 | 159-335 | 14 | 2.0 | Ho ho ho ho ho! [laughs] | v2/pl_speaker_5 |
-| s2-ha-pl_speaker_5-0 | -0.54 | 5.96 | Chuckle, chortle 0.00 | 0.90 | 173 | 141-202 | 18 | 3.0 | Hahahaha! [laughs] | v2/pl_speaker_5 |
+| s3-haM-en_speaker_3-1 | 0.53 | 6.95 | Snicker 0.54 | 0.01 | 219 | 94-276 | 20 | 2.9 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_3 |
+| s3-ahha-en_speaker_1-0 | 0.45 | 2.12 | Snicker 0.46 | 0.02 | 241 | 167-285 | 9 | 4.2 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_1 |
+| s3-hoM-fr_speaker_1-1 | 0.41 | 6.88 | Snicker 0.42 | 0.01 | 465 | 360-555 | 20 | 2.9 | [MAN] Ho ho ho ho ho! [laughs] | v2/fr_speaker_1 |
+| s3-ahha-ru_speaker_3-1 | 0.33 | 2.21 | Snicker 0.34 | 0.03 | 143 | 122-179 | 10 | 4.5 | Ah-ha-ha-ha-ha! [laughs] | v2/ru_speaker_3 |
+| s3-hoM-en_speaker_3-0 | 0.30 | 3.21 | Snicker 0.31 | 0.01 | 219 | 185-754 | 8 | 2.5 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_3 |
+| s3-ahha-en_speaker_3-0 | 0.23 | 2.56 | Snicker 0.25 | 0.04 | 121 | 93-170 | 8 | 3.1 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_3 |
+| s3-ahha-de_speaker_3-0 | 0.21 | 2.52 | Snicker 0.30 | 0.15 | 306 | 244-321 | 10 | 4.0 | Ah-ha-ha-ha-ha! [laughs] | v2/de_speaker_3 |
+| s3-haM-en_speaker_4-1 | 0.20 | 1.91 | Snicker 0.21 | 0.02 | 170 | 136-437 | 6 | 3.1 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_4 |
+| s3-haM-de_speaker_1-0 | 0.20 | 7.13 | Snicker 0.22 | 0.03 | 216 | 171-224 | 17 | 2.4 | [MAN] Ha ha ha ha ha! [laughs] | v2/de_speaker_1 |
+| s3-hah-ru_speaker_4-0 | 0.14 | 6.98 | Snicker 0.18 | 0.07 | 329 | 149-389 | 19 | 2.7 | Hah hah hah hah! [laughs] | v2/ru_speaker_4 |
+| s3-hah-de_speaker_3-0 | 0.13 | 3.43 | Snicker 0.15 | 0.04 | 304 | 248-358 | 13 | 3.8 | Hah hah hah hah! [laughs] | v2/de_speaker_3 |
+| s3-hihi-fr_speaker_1-1 | 0.13 | 6.54 | Snicker 0.13 | 0.01 | 514 | 217-564 | 23 | 3.5 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/fr_speaker_1 |
+| s3-hoho-ru_speaker_3-1 | 0.13 | 7.21 | Snicker 0.16 | 0.06 | 202 | 187-341 | 16 | 2.2 | Ho-ho-ho! Ho-ho! [laughter] | v2/ru_speaker_3 |
+| s3-hah-de_speaker_3-1 | 0.12 | 6.78 | Snicker 0.13 | 0.01 | 266 | 225-342 | 24 | 3.5 | Hah hah hah hah! [laughs] | v2/de_speaker_3 |
+| s3-hah-en_speaker_3-1 | 0.10 | 5.95 | Snicker 0.11 | 0.02 | 244 | 155-645 | 19 | 3.2 | Hah hah hah hah! [laughs] | v2/en_speaker_3 |
+| s3-hihi-en_speaker_8-0 | 0.10 | 4.99 | Snicker 0.12 | 0.02 | 221 | 162-785 | 17 | 3.4 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_8 |
+| s3-hah-en_speaker_4-0 | 0.09 | 3.5 | Snicker 0.11 | 0.03 | 207 | 176-711 | 11 | 3.1 | Hah hah hah hah! [laughs] | v2/en_speaker_4 |
+| s3-ahha-en_speaker_3-1 | 0.09 | 7.21 | Snicker 0.10 | 0.01 | 195 | 147-221 | 13 | 1.8 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_3 |
+| s3-hoM-de_speaker_3-0 | 0.08 | 2.75 | Snicker 0.09 | 0.02 | 174 | 162-193 | 7 | 2.5 | [MAN] Ho ho ho ho ho! [laughs] | v2/de_speaker_3 |
+| s3-hah-en_speaker_3-0 | 0.08 | 5.09 | Snicker 0.09 | 0.03 | 139 | 115-474 | 14 | 2.8 | Hah hah hah hah! [laughs] | v2/en_speaker_3 |
+| s3-haM-en_speaker_1-1 | 0.06 | 6.57 | Snicker 0.07 | 0.01 | 525 | 150-529 | 14 | 2.1 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_1 |
+| s3-ahha-en_speaker_0-0 | 0.04 | 3.59 | Snicker 0.05 | 0.01 | 156 | 118-195 | 9 | 2.5 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_0 |
+| s3-ahha-fr_speaker_1-0 | 0.04 | 3.44 | Snicker 0.07 | 0.03 | 390 | 371-415 | 13 | 3.8 | Ah-ha-ha-ha-ha! [laughs] | v2/fr_speaker_1 |
+| s3-hoho-en_speaker_3-0 | 0.04 | 5.87 | Snicker 0.05 | 0.02 | 682 | 142-717 | 16 | 2.7 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_3 |
+| s3-hoM-de_speaker_3-1 | 0.03 | 3.44 | Snicker 0.05 | 0.02 | 151 | 126-506 | 6 | 1.7 | [MAN] Ho ho ho ho ho! [laughs] | v2/de_speaker_3 |
+| s3-hah-ru_speaker_3-1 | 0.03 | 2.66 | Snicker 0.06 | 0.05 | 130 | 109-205 | 6 | 2.3 | Hah hah hah hah! [laughs] | v2/ru_speaker_3 |
+| s3-hah-en_speaker_1-0 | 0.03 | 1.32 | Snicker 0.11 | 0.04 | 197 | 172-219 | 6 | 4.5 | Hah hah hah hah! [laughs] | v2/en_speaker_1 |
+| s3-haM-en_speaker_5-0 | 0.03 | 1.84 | Snicker 0.05 | 0.03 | 661 | 145-677 | 4 | 2.2 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_5 |
+| s3-hihi-en_speaker_3-0 | 0.02 | 7.21 | Snicker 0.03 | 0.01 | 138 | 122-574 | 21 | 2.9 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_3 |
+| s3-haM-fr_speaker_1-1 | 0.02 | 4.17 | Laughter 0.03 | 0.02 | 396 | 250-461 | 10 | 2.4 | [MAN] Ha ha ha ha ha! [laughs] | v2/fr_speaker_1 |
+| s3-hoM-en_speaker_4-1 | 0.01 | 3.31 | Laughter 0.03 | 0.03 | 239 | 149-275 | 9 | 2.7 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_4 |
+| s3-hoho-fr_speaker_1-0 | 0.01 | 6.79 | Laughter 0.02 | 0.01 | 489 | 373-627 | 13 | 1.9 | Ho-ho-ho! Ho-ho! [laughter] | v2/fr_speaker_1 |
+| s3-ahha-ru_speaker_4-0 | 0.01 | 7.07 | Snicker 0.01 | 0.01 | 699 | 146-748 | 14 | 2.0 | Ah-ha-ha-ha-ha! [laughs] | v2/ru_speaker_4 |
+| s3-haM-en_speaker_3-0 | 0.01 | 7.21 | Snicker 0.03 | 0.04 | 128 | 97-220 | 10 | 1.4 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_3 |
+| s3-hah-en_speaker_5-1 | -0.00 | 6.66 | Chuckle, chortle 0.00 | 0.01 | 0 | 0-0 | 17 | 2.6 | Hah hah hah hah! [laughs] | v2/en_speaker_5 |
+| s3-ahha-en_speaker_8-0 | -0.00 | 6.16 | Snicker 0.00 | 0.01 | 392 | 135-422 | 4 | 0.6 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_8 |
+| s3-haM-de_speaker_3-0 | -0.00 | 7.02 | Laughter 0.00 | 0.01 | 371 | 367-374 | 2 | 0.3 | [MAN] Ha ha ha ha ha! [laughs] | v2/de_speaker_3 |
+| s3-hihi-ru_speaker_3-1 | -0.00 | 7.18 | Laughter 0.00 | 0.01 | 248 | 204-273 | 8 | 1.1 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/ru_speaker_3 |
+| s3-hoho-ru_speaker_4-1 | -0.00 | 6.78 | Snicker 0.00 | 0.01 | 111 | 101-125 | 15 | 2.2 | Ho-ho-ho! Ho-ho! [laughter] | v2/ru_speaker_4 |
+| s3-haM-en_speaker_4-0 | -0.01 | 6.69 | Snicker 0.02 | 0.04 | 525 | 319-630 | 16 | 2.4 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_4 |
+| s3-hah-fr_speaker_1-0 | -0.01 | 6.0 | Snicker 0.03 | 0.06 | 200 | 150-272 | 8 | 1.3 | Hah hah hah hah! [laughs] | v2/fr_speaker_1 |
+| s3-hihi-en_speaker_4-0 | -0.01 | 5.35 | Laughter 0.00 | 0.01 | 427 | 203-723 | 3 | 0.6 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_4 |
+| s3-hoM-ru_speaker_4-0 | -0.01 | 4.54 | Snicker 0.06 | 0.12 | 196 | 150-226 | 11 | 2.4 | [MAN] Ho ho ho ho ho! [laughs] | v2/ru_speaker_4 |
+| s3-hoM-ru_speaker_4-1 | -0.01 | 7.09 | Giggle 0.00 | 0.02 | 98 | 88-135 | 4 | 0.6 | [MAN] Ho ho ho ho ho! [laughs] | v2/ru_speaker_4 |
+| s3-hoho-en_speaker_4-0 | -0.01 | 5.92 | Laughter 0.00 | 0.02 | 308 | 137-466 | 7 | 1.2 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_4 |
+| s3-ahha-en_speaker_5-1 | -0.01 | 6.28 | Snicker 0.01 | 0.03 | 141 | 132-166 | 13 | 2.1 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_5 |
+| s3-hoM-en_speaker_5-0 | -0.01 | 7.21 | Snicker 0.00 | 0.02 | 92 | 89-95 | 4 | 0.6 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_5 |
+| s3-ahha-en_speaker_1-1 | -0.01 | 3.71 | Snicker 0.04 | 0.09 | 192 | 119-575 | 12 | 3.2 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_1 |
+| s3-haM-de_speaker_3-1 | -0.02 | 3.26 | Snicker 0.00 | 0.03 | 203 | 181-233 | 1 | 0.3 | [MAN] Ha ha ha ha ha! [laughs] | v2/de_speaker_3 |
+| s3-hihi-de_speaker_3-1 | -0.02 | 6.79 | Laughter 0.00 | 0.02 | 600 | 84-627 | 3 | 0.4 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/de_speaker_3 |
+| s3-hoho-en_speaker_5-0 | -0.02 | 6.82 | Laughter 0.00 | 0.03 | 112 | 86-136 | 3 | 0.4 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_5 |
+| s3-ahha-de_speaker_1-0 | -0.02 | 3.18 | Snicker 0.03 | 0.08 | 117 | 113-121 | 8 | 2.5 | Ah-ha-ha-ha-ha! [laughs] | v2/de_speaker_1 |
+| s3-hoM-en_speaker_1-1 | -0.03 | 2.65 | Laughter 0.00 | 0.02 | 156 | 131-157 | 5 | 1.9 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_1 |
+| s3-ahha-de_speaker_1-1 | -0.03 | 7.21 | Laughter 0.00 | 0.04 | 136 | 107-150 | 9 | 1.2 | Ah-ha-ha-ha-ha! [laughs] | v2/de_speaker_1 |
+| s3-hoho-en_speaker_3-1 | -0.03 | 4.61 | Snicker 0.01 | 0.07 | 183 | 150-222 | 9 | 2.0 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_3 |
+| s3-hoho-de_speaker_3-0 | -0.03 | 6.49 | Laughter 0.00 | 0.05 | 262 | 254-268 | 4 | 0.6 | Ho-ho-ho! Ho-ho! [laughter] | v2/de_speaker_3 |
+| s3-hoM-fr_speaker_1-0 | -0.04 | 7.06 | Snicker 0.00 | 0.06 | 0 | 0-0 | 2 | 0.3 | [MAN] Ho ho ho ho ho! [laughs] | v2/fr_speaker_1 |
+| s3-ahha-de_speaker_3-1 | -0.04 | 6.54 | Chuckle, chortle 0.00 | 0.01 | 241 | 236-245 | 5 | 0.8 | Ah-ha-ha-ha-ha! [laughs] | v2/de_speaker_3 |
+| s3-hihi-ru_speaker_4-0 | -0.04 | 6.77 | Giggle 0.02 | 0.10 | 449 | 341-525 | 16 | 2.4 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/ru_speaker_4 |
+| s3-haM-ru_speaker_3-1 | -0.04 | 3.44 | Snicker 0.14 | 0.30 | 169 | 125-215 | 10 | 2.9 | [MAN] Ha ha ha ha ha! [laughs] | v2/ru_speaker_3 |
+| s3-ahha-en_speaker_4-0 | -0.04 | 6.36 | Snicker 0.01 | 0.09 | 134 | 103-152 | 9 | 1.4 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_4 |
+| s3-hihi-en_speaker_5-0 | -0.05 | 7.21 | Snicker 0.03 | 0.14 | 100 | 86-171 | 16 | 2.2 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_5 |
+| s3-hah-en_speaker_6-0 | -0.05 | 3.92 | Snicker 0.00 | 0.09 | 145 | 91-199 | 6 | 1.5 | Hah hah hah hah! [laughs] | v2/en_speaker_6 |
+| s3-ahha-en_speaker_4-1 | -0.06 | 4.48 | Snicker 0.00 | 0.10 | 421 | 138-432 | 5 | 1.1 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_4 |
+| s3-hoho-en_speaker_1-0 | -0.06 | 7.21 | Laughter 0.00 | 0.02 | 331 | 330-332 | 1 | 0.1 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_1 |
+| s3-hoho-fr_speaker_1-1 | -0.06 | 5.0 | Giggle 0.00 | 0.11 | 446 | 297-490 | 10 | 2.0 | Ho-ho-ho! Ho-ho! [laughter] | v2/fr_speaker_1 |
+| s3-haM-en_speaker_1-0 | -0.06 | 2.48 | Snicker 0.02 | 0.02 | 120 | 107-136 | 10 | 4.0 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_1 |
+| s3-hihi-ru_speaker_4-1 | -0.07 | 4.46 | Snicker 0.03 | 0.16 | 151 | 90-199 | 9 | 2.0 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/ru_speaker_4 |
+| s3-ahha-en_speaker_5-0 | -0.07 | 7.21 | Snicker 0.00 | 0.06 | 94 | 86-100 | 6 | 0.8 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_5 |
+| s3-hoM-en_speaker_6-0 | -0.08 | 7.11 | Snicker 0.01 | 0.16 | 168 | 103-281 | 15 | 2.1 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_6 |
+| s3-hoho-de_speaker_3-1 | -0.09 | 4.78 | Laughter 0.00 | 0.14 | 299 | 284-303 | 6 | 1.3 | Ho-ho-ho! Ho-ho! [laughter] | v2/de_speaker_3 |
+| s3-hah-en_speaker_6-1 | -0.10 | 5.46 | Chuckle, chortle 0.02 | 0.20 | 101 | 98-248 | 7 | 1.3 | Hah hah hah hah! [laughs] | v2/en_speaker_6 |
+| s3-hihi-de_speaker_1-1 | -0.13 | 2.69 | Chuckle, chortle 0.00 | 0.22 | 159 | 123-183 | 8 | 3.0 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/de_speaker_1 |
+| s3-haM-de_speaker_1-1 | -0.13 | 4.12 | Snicker 0.01 | 0.24 | 145 | 112-231 | 6 | 1.5 | [MAN] Ha ha ha ha ha! [laughs] | v2/de_speaker_1 |
+| s3-hoho-de_speaker_1-0 | -0.15 | 2.89 | Snicker 0.01 | 0.28 | 117 | 111-126 | 3 | 1.0 | Ho-ho-ho! Ho-ho! [laughter] | v2/de_speaker_1 |
+| s3-hah-de_speaker_1-1 | -0.16 | 3.68 | Snicker 0.01 | 0.27 | 173 | 137-239 | 7 | 1.9 | Hah hah hah hah! [laughs] | v2/de_speaker_1 |
+| s3-hihi-en_speaker_8-1 | -0.17 | 6.2 | Snicker 0.04 | 0.34 | 509 | 199-701 | 17 | 2.7 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_8 |
+| s3-ahha-en_speaker_6-1 | -0.17 | 2.78 | Snicker 0.01 | 0.30 | 146 | 94-631 | 10 | 3.6 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_6 |
+| s3-hoM-de_speaker_1-1 | -0.17 | 3.66 | Snicker 0.03 | 0.34 | 123 | 113-142 | 8 | 2.2 | [MAN] Ho ho ho ho ho! [laughs] | v2/de_speaker_1 |
+| s3-hah-en_speaker_5-0 | -0.18 | 7.21 | Snicker 0.04 | 0.36 | 113 | 100-145 | 9 | 1.2 | Hah hah hah hah! [laughs] | v2/en_speaker_5 |
+| s3-hihi-en_speaker_1-1 | -0.18 | 7.21 | Laughter 0.00 | 0.02 | 464 | 261-598 | 2 | 0.3 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_1 |
+| s3-hoho-de_speaker_1-1 | -0.18 | 7.21 | Laughter 0.00 | 0.31 | 122 | 91-414 | 4 | 0.6 | Ho-ho-ho! Ho-ho! [laughter] | v2/de_speaker_1 |
+| s3-hah-ru_speaker_3-0 | -0.19 | 7.19 | Snicker 0.00 | 0.32 | 127 | 114-178 | 19 | 2.6 | Hah hah hah hah! [laughs] | v2/ru_speaker_3 |
+| s3-hoM-en_speaker_0-1 | -0.20 | 1.96 | Snicker 0.01 | 0.34 | 144 | 111-191 | 7 | 3.6 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_0 |
+| s3-hoM-en_speaker_6-1 | -0.20 | 5.35 | Snicker 0.08 | 0.47 | 187 | 82-584 | 22 | 4.1 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_6 |
+| s3-hoho-en_speaker_4-1 | -0.21 | 5.13 | Snicker 0.01 | 0.37 | 182 | 144-220 | 10 | 1.9 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_4 |
+| s3-hah-en_speaker_1-1 | -0.21 | 6.7 | Snicker 0.01 | 0.37 | 86 | 79-212 | 14 | 2.1 | Hah hah hah hah! [laughs] | v2/en_speaker_1 |
+| s3-hah-en_speaker_0-1 | -0.22 | 7.21 | Laughter 0.00 | 0.36 | 150 | 114-198 | 28 | 3.9 | Hah hah hah hah! [laughs] | v2/en_speaker_0 |
+| s3-hihi-ru_speaker_3-0 | -0.24 | 4.41 | Snicker 0.01 | 0.40 | 133 | 116-181 | 8 | 1.8 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/ru_speaker_3 |
+| s3-hihi-en_speaker_5-1 | -0.25 | 7.21 | Snicker 0.00 | 0.29 | 95 | 84-100 | 8 | 1.1 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_5 |
+| s3-hoho-en_speaker_1-1 | -0.25 | 6.58 | Laughter 0.00 | 0.02 | 222 | 147-248 | 7 | 1.1 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_1 |
+| s3-hihi-en_speaker_1-0 | -0.26 | 1.9 | Snicker 0.00 | 0.44 | 109 | 71-146 | 3 | 1.6 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_1 |
+| s3-hihi-fr_speaker_1-0 | -0.27 | 6.94 | Laughter 0.00 | 0.09 | 364 | 74-595 | 6 | 0.9 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/fr_speaker_1 |
+| s3-hoM-en_speaker_4-0 | -0.28 | 6.56 | Chuckle, chortle 0.01 | 0.48 | 221 | 157-248 | 9 | 1.4 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_4 |
+| s3-hihi-en_speaker_6-0 | -0.29 | 7.18 | Laughter 0.01 | 0.49 | 233 | 104-297 | 21 | 2.9 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_6 |
+| s3-hihi-de_speaker_1-0 | -0.29 | 7.21 | Laughter 0.00 | 0.48 | 115 | 107-123 | 15 | 2.1 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/de_speaker_1 |
+| s3-hihi-en_speaker_4-1 | -0.30 | 6.66 | Laughter 0.00 | 0.50 | 242 | 225-394 | 6 | 0.9 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_4 |
+| s3-hoho-en_speaker_5-1 | -0.31 | 2.9 | Snicker 0.00 | 0.53 | 97 | 86-109 | 5 | 1.7 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_5 |
+| s3-hoho-ru_speaker_4-0 | -0.31 | 7.08 | Chuckle, chortle 0.00 | 0.53 | 124 | 103-163 | 14 | 2.0 | Ho-ho-ho! Ho-ho! [laughter] | v2/ru_speaker_4 |
+| s3-hah-en_speaker_8-0 | -0.32 | 2.96 | Chuckle, chortle 0.03 | 0.57 | 180 | 157-703 | 8 | 2.7 | Hah hah hah hah! [laughs] | v2/en_speaker_8 |
+| s3-hihi-en_speaker_0-0 | -0.32 | 3.33 | Snicker 0.01 | 0.54 | 149 | 120-182 | 14 | 4.2 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_0 |
+| s3-hoM-ru_speaker_3-0 | -0.32 | 3.71 | Laughter 0.00 | 0.53 | 150 | 130-228 | 8 | 2.2 | [MAN] Ho ho ho ho ho! [laughs] | v2/ru_speaker_3 |
+| s3-ahha-ru_speaker_4-1 | -0.33 | 4.51 | Chuckle, chortle 0.00 | 0.56 | 107 | 88-181 | 8 | 1.8 | Ah-ha-ha-ha-ha! [laughs] | v2/ru_speaker_4 |
+| s3-ahha-fr_speaker_1-1 | -0.34 | 4.47 | Giggle 0.01 | 0.57 | 553 | 484-574 | 15 | 3.4 | Ah-ha-ha-ha-ha! [laughs] | v2/fr_speaker_1 |
+| s3-hoho-en_speaker_6-1 | -0.35 | 6.34 | Snicker 0.01 | 0.60 | 147 | 104-332 | 15 | 2.4 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_6 |
+| s3-hah-fr_speaker_1-1 | -0.36 | 3.64 | Snicker 0.09 | 0.75 | 293 | 238-365 | 6 | 1.6 | Hah hah hah hah! [laughs] | v2/fr_speaker_1 |
+| s3-hah-en_speaker_4-1 | -0.36 | 2.87 | Giggle 0.01 | 0.63 | 441 | 262-481 | 8 | 2.8 | Hah hah hah hah! [laughs] | v2/en_speaker_4 |
+| s3-ahha-ru_speaker_3-0 | -0.38 | 7.19 | Snicker 0.06 | 0.72 | 146 | 125-169 | 22 | 3.1 | Ah-ha-ha-ha-ha! [laughs] | v2/ru_speaker_3 |
+| s3-hihi-en_speaker_6-1 | -0.38 | 6.34 | Snicker 0.02 | 0.67 | 129 | 83-246 | 12 | 1.9 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_6 |
+| s3-hoM-en_speaker_5-1 | -0.39 | 4.97 | Laughter 0.00 | 0.65 | 113 | 93-125 | 6 | 1.2 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_5 |
+| s3-haM-en_speaker_0-0 | -0.39 | 4.52 | Chuckle, chortle 0.00 | 0.66 | 149 | 110-201 | 22 | 4.9 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_0 |
+| s3-ahha-en_speaker_0-1 | -0.40 | 7.21 | Snicker 0.01 | 0.67 | 137 | 104-167 | 27 | 3.7 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_0 |
+| s3-hah-en_speaker_0-0 | -0.40 | 7.21 | Laughter 0.00 | 0.66 | 148 | 105-199 | 18 | 2.5 | Hah hah hah hah! [laughs] | v2/en_speaker_0 |
+| s3-hoho-en_speaker_6-0 | -0.41 | 5.99 | Snicker 0.03 | 0.73 | 169 | 95-243 | 12 | 2.0 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_6 |
+| s3-hihi-en_speaker_0-1 | -0.42 | 7.21 | Laughter 0.00 | 0.69 | 146 | 113-199 | 37 | 5.1 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_0 |
+| s3-hah-de_speaker_1-0 | -0.42 | 5.03 | Laughter 0.00 | 0.70 | 122 | 115-139 | 11 | 2.2 | Hah hah hah hah! [laughs] | v2/de_speaker_1 |
+| s3-haM-fr_speaker_1-0 | -0.42 | 6.54 | Laughter 0.00 | 0.01 | 207 | 71-208 | 10 | 1.5 | [MAN] Ha ha ha ha ha! [laughs] | v2/fr_speaker_1 |
+| s3-haM-ru_speaker_3-0 | -0.42 | 7.17 | Chuckle, chortle 0.00 | 0.71 | 142 | 123-195 | 26 | 3.6 | [MAN] Ha ha ha ha ha! [laughs] | v2/ru_speaker_3 |
+| s3-haM-en_speaker_5-1 | -0.43 | 7.21 | Chuckle, chortle 0.00 | 0.72 | 97 | 86-119 | 5 | 0.7 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_5 |
+| s3-hihi-en_speaker_3-1 | -0.43 | 7.21 | Chuckle, chortle 0.01 | 0.73 | 129 | 105-221 | 10 | 1.4 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/en_speaker_3 |
+| s3-hoho-ru_speaker_3-0 | -0.44 | 6.32 | Chuckle, chortle 0.00 | 0.73 | 146 | 121-172 | 21 | 3.3 | Ho-ho-ho! Ho-ho! [laughter] | v2/ru_speaker_3 |
+| s3-ahha-en_speaker_6-0 | -0.45 | 4.58 | Giggle 0.02 | 0.78 | 211 | 93-376 | 12 | 2.6 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_6 |
+| s3-hah-ru_speaker_4-1 | -0.46 | 2.01 | Chuckle, chortle 0.01 | 0.77 | 163 | 122-190 | 7 | 3.5 | Hah hah hah hah! [laughs] | v2/ru_speaker_4 |
+| s3-haM-en_speaker_6-1 | -0.46 | 6.87 | Chuckle, chortle 0.00 | 0.77 | 98 | 84-113 | 15 | 2.2 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_6 |
+| s3-haM-ru_speaker_4-0 | -0.47 | 5.79 | Laughter 0.00 | 0.75 | 164 | 90-547 | 11 | 1.9 | [MAN] Ha ha ha ha ha! [laughs] | v2/ru_speaker_4 |
+| s3-haM-en_speaker_6-0 | -0.47 | 6.69 | Giggle 0.00 | 0.79 | 105 | 97-144 | 23 | 3.4 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_6 |
+| s3-haM-ru_speaker_4-1 | -0.47 | 4.99 | Laughter 0.00 | 0.79 | 127 | 93-277 | 13 | 2.6 | [MAN] Ha ha ha ha ha! [laughs] | v2/ru_speaker_4 |
+| s3-hoho-en_speaker_0-0 | -0.48 | 7.21 | Chuckle, chortle 0.00 | 0.80 | 148 | 112-200 | 30 | 4.2 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_0 |
+| s3-hoM-en_speaker_0-0 | -0.49 | 2.92 | Chuckle, chortle 0.00 | 0.81 | 161 | 110-239 | 12 | 4.1 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_0 |
+| s3-hoM-en_speaker_1-0 | -0.49 | 6.77 | Chuckle, chortle 0.00 | 0.81 | 142 | 116-203 | 14 | 2.1 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_1 |
+| s3-hah-en_speaker_8-1 | -0.49 | 7.21 | Chuckle, chortle 0.00 | 0.81 | 150 | 139-164 | 22 | 3.0 | Hah hah hah hah! [laughs] | v2/en_speaker_8 |
+| s3-haM-en_speaker_0-1 | -0.49 | 7.21 | Chuckle, chortle 0.00 | 0.82 | 141 | 108-185 | 30 | 4.2 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_0 |
+| s3-hoho-en_speaker_8-1 | -0.49 | 6.6 | Chuckle, chortle 0.00 | 0.83 | 157 | 134-251 | 15 | 2.3 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_8 |
+| s3-hoM-en_speaker_3-1 | -0.50 | 6.83 | Chuckle, chortle 0.00 | 0.83 | 107 | 97-120 | 13 | 1.9 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_3 |
+| s3-hihi-de_speaker_3-0 | -0.50 | 6.68 | Snicker 0.02 | 0.87 | 333 | 205-438 | 16 | 2.4 | Hee-hee-hee! Hi-hi-hi! [laughs] | v2/de_speaker_3 |
+| s3-hoho-en_speaker_0-1 | -0.52 | 6.43 | Chuckle, chortle 0.00 | 0.86 | 143 | 106-188 | 32 | 5.0 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_0 |
+| s3-haM-en_speaker_8-1 | -0.52 | 6.91 | Giggle 0.00 | 0.86 | 154 | 124-199 | 20 | 2.9 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_8 |
+| s3-hoho-en_speaker_8-0 | -0.52 | 7.21 | Chuckle, chortle 0.00 | 0.87 | 201 | 144-226 | 22 | 3.0 | Ho-ho-ho! Ho-ho! [laughter] | v2/en_speaker_8 |
+| s3-hoM-en_speaker_8-0 | -0.53 | 7.21 | Chuckle, chortle 0.00 | 0.88 | 193 | 160-226 | 19 | 2.6 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_8 |
+| s3-ahha-en_speaker_8-1 | -0.53 | 5.0 | Chuckle, chortle 0.00 | 0.89 | 193 | 143-241 | 15 | 3.0 | Ah-ha-ha-ha-ha! [laughs] | v2/en_speaker_8 |
+| s3-hoM-en_speaker_8-1 | -0.53 | 7.21 | Chuckle, chortle 0.00 | 0.89 | 167 | 124-221 | 15 | 2.1 | [MAN] Ho ho ho ho ho! [laughs] | v2/en_speaker_8 |
+| s3-haM-en_speaker_8-0 | -0.54 | 6.53 | Chuckle, chortle 0.00 | 0.91 | 147 | 113-182 | 18 | 2.8 | [MAN] Ha ha ha ha ha! [laughs] | v2/en_speaker_8 |
+| s3-hoM-ru_speaker_3-1 | -0.55 | 7.15 | Chuckle, chortle 0.00 | 0.91 | 124 | 92-150 | 19 | 2.7 | [MAN] Ho ho ho ho ho! [laughs] | v2/ru_speaker_3 |
+| s3-hoM-de_speaker_1-0 | -0.56 | 5.6 | Chuckle, chortle 0.00 | 0.93 | 126 | 111-140 | 9 | 1.6 | [MAN] Ho ho ho ho ho! [laughs] | v2/de_speaker_1 |
