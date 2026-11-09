@@ -246,6 +246,31 @@ class TestDeals(Base):
         self.assertEqual(self.store.user_by_login("yulia")["role"], "admin")
 
 
+class TestServerPage(Base):
+    def test_server_page(self) -> None:
+        sf = os.path.join(self.tmp.name, "server-status.txt")
+        rq = os.path.join(self.tmp.name, "server-request")
+        self.login()
+        r = self.c.get("/server")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("Отчёта ещё нет", r.get_data(as_text=True))
+        with open(sf, "w", encoding="utf-8") as f:
+            f.write("=== Сервер <тест> ===\nnginx: active\n")
+        body = self.c.get("/server").get_data(as_text=True)
+        self.assertIn("nginx: active", body)
+        self.assertIn("&lt;тест&gt;", body)
+        r = self.post("/server/refresh")
+        self.assertEqual(r.status_code, 302)
+        self.assertTrue(os.path.exists(rq))
+        self.assertIn("Обновляю", self.c.get("/server").get_data(as_text=True))
+
+    def test_server_page_admin_only(self) -> None:
+        self.login("mikhail", "Secret-pass-2")
+        self.assertEqual(self.c.get("/server").status_code, 403)
+        self.assertEqual(self.post("/server/refresh").status_code, 403)
+        self.assertNotIn("/server", self.c.get("/tasks").get_data(as_text=True))
+
+
 class TestApi(Base):
     def lead(self, origin="https://nashdekor.ru", **kw):
         body = {"name": "Елена", "contact": "+7 999 111-22-33", "consent": True, "message": "A907 в гостиную",

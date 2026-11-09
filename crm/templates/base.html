@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#1d5e57">
 <title>{% block title %}CRM{% endblock %} · Наш декор</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='crm.css') }}?v=1">
+<link rel="stylesheet" href="{{ url_for('static', filename='crm.css') }}?v=2">
 <link rel="icon" href="{{ url_for('static', filename='icon.svg') }}" type="image/svg+xml">
 <script src="{{ url_for('static', filename='crm.js') }}?v=1" defer></script>
 </head>
@@ -26,7 +26,7 @@
   <a href="{{ url_for('board') }}" {% if ep in ('board','deal_view','deal_new') %}aria-current="page"{% endif %}><span class="ic ic-funnel"></span>Воронка{% if nav_new %}<span class="badge">{{ nav_new }}</span>{% endif %}</a>
   <a href="{{ url_for('clients_view') }}" {% if ep in ('clients_view','client_view') %}aria-current="page"{% endif %}><span class="ic ic-clients"></span>Клиенты</a>
   <a href="{{ url_for('stock_view') }}" {% if ep=='stock_view' %}aria-current="page"{% endif %}><span class="ic ic-stock"></span>Склад</a>
-  <a href="{{ url_for('tasks_view') }}" {% if ep in ('tasks_view','reports_view','settings_view') %}aria-current="page"{% endif %}><span class="ic ic-more"></span>Ещё</a>
+  <a href="{{ url_for('tasks_view') }}" {% if ep in ('tasks_view','reports_view','settings_view','server_view') %}aria-current="page"{% endif %}><span class="ic ic-more"></span>Ещё</a>
 </nav>
 <main id="top">
   {% with msgs = get_flashed_messages(with_categories=true) %}{% for cat, m in msgs %}<div class="flash {{ cat }}" role="status">{{ m }}</div>{% endfor %}{% endwith %}

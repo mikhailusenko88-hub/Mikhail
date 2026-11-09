@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Сервер{% endblock %}
+{% block main %}
+{% if pending %}<meta http-equiv="refresh" content="15">{% endif %}
+<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a><a href="{{ url_for('settings_view') }}">Настройки</a><a href="{{ url_for('server_view') }}" aria-current="page">Сервер</a></div>
+<h1>Сервер</h1>
+<div class="row wrap srv-head">
+  <span class="d grow">{% if pending %}Обновляю — страница обновится сама…{% elif age is none %}Отчёта ещё нет — нажмите «Обновить».{% elif age == 0 %}Обновлено только что{% else %}Обновлено {{ age }} мин назад{% endif %}</span>
+  <form method="post" action="{{ url_for('server_refresh') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-p" type="submit">Обновить</button></form>
+</div>
+{% if text %}<div class="panel"><pre class="srv">{{ text }}</pre></div>{% endif %}
+<p class="d">Сайт, почта, CRM, сертификаты, диск и входы на сервер. Отчёт обновляется сам раз в 15 минут.</p>
+{% endblock %}

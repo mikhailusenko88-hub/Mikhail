@@ -163,3 +163,5 @@ td .d{font-family:var(--f)}
   table.cards tfoot td:empty{display:none}
   table.cards td[colspan]{grid-column:1/-1}
 }
+pre.srv{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.45 var(--mono);margin:0;padding:12px 14px}
+.srv-head{padding:0 0 10px;border:0}

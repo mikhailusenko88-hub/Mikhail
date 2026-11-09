@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Настройки{% endblock %}
 {% block main %}
-<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a><a href="{{ url_for('settings_view') }}" aria-current="page">Настройки</a></div>
+<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a><a href="{{ url_for('settings_view') }}" aria-current="page">Настройки</a>{% if me and me['role']=='admin' %}<a href="{{ url_for('server_view') }}">Сервер</a>{% endif %}</div>
 <h1>Настройки</h1>
 <h2>Мой пароль</h2>
 <form class="panel pad grid2" method="post" action="{{ url_for('settings_password') }}">

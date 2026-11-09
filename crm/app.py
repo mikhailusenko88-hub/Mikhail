@@ -440,6 +440,37 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         flash("Сохранено.", "ok")
         return redirect(url_for("settings_view"))
 
+    # ------------------------------------------------------------ сервер (только просмотр)
+    # Отчёт пишет root (prostranstvo-crm server-page, cron раз в минуту); CRM только читает его
+    # и по кнопке оставляет файл-просьбу «обновить». Никаких команд из CRM на сервере не выполняется.
+    status_file = cfg.get("SERVER_STATUS_FILE") or os.path.join(
+        os.path.dirname(os.path.abspath(conf["CRM_DB"])), "server-status.txt")
+    request_file = os.path.join(os.path.dirname(status_file), "server-request")
+
+    @app.route("/server")
+    @admin_required
+    def server_view() -> Any:
+        text, age = "", None
+        try:
+            st = os.stat(status_file)
+            with open(status_file, encoding="utf-8", errors="replace") as f:
+                text = f.read(200_000)
+            age = max(0, int((time.time() - st.st_mtime) // 60))
+        except OSError:
+            pass
+        return render_template("server.html", text=text, age=age, pending=os.path.exists(request_file))
+
+    @app.post("/server/refresh")
+    @admin_required
+    def server_refresh() -> Any:
+        try:
+            with open(request_file, "w", encoding="utf-8") as f:
+                f.write("refresh\n")
+            flash("Обновлю в течение минуты — страница обновится сама.", "ok")
+        except OSError:
+            flash("Не удалось запросить обновление.", "err")
+        return redirect(url_for("server_view"))
+
     # ------------------------------------------------------------ API: заявка с сайта
     def cors(resp: Response) -> Response:
         origin = request.headers.get("Origin", "").rstrip("/")
