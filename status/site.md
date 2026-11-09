@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-09 18:50 UTC
+# Сайт снаружи — 2026-11-09 19:24 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -35,11 +35,11 @@ ld+json: 1
 /catalog/reechnye-paneli/          200 text/html; charset=utf-8 35616
 /catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 45272
 /catalog/plintusy/                 200 text/html; charset=utf-8 43096
-/catalog/stenovye-paneli/          200 text/html; charset=utf-8 73194
+/catalog/stenovye-paneli/          200 text/html; charset=utf-8 73302
 /catalog/plintus-s-podsvetkoy/     200 text/html; charset=utf-8 19670
 /stati/                            200 text/html; charset=utf-8 13858
-/stati/kak-otrezat-ugol-potolochnogo-plintusa/ 200 text/html; charset=utf-8 19391
-/dostavka/                         200 text/html; charset=utf-8 20369
+/stati/kak-otrezat-ugol-potolochnogo-plintusa/ 200 text/html; charset=utf-8 19389
+/dostavka/                         200 text/html; charset=utf-8 21294
 /assets/p.js                       200 application/javascript; charset=utf-8 36429
 /assets/p.css                      200 text/css 22009
 /mebel/_lib/three.min.js           200 application/javascript; charset=utf-8 603445
@@ -74,5 +74,7 @@ access-control-allow-origin: https://nashdekor.ru
 {"ok":true}
   HTTP 200
 --- CRM health: {"ok":true}
+--- CRM страницы (пуши/PWA): login 200 1420б, manifest 200 application/manifest+json, sw.js 200 application/javascript; charset=utf-8, иконка 200, корень 302 → https://crm.nashdekor.ru/login?next=/?
+    вход: форма 1, манифест в странице 1, crm.js crm.js?v=3, CSP: content-security-policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; form-action 'self'; frame-ancestors 
 --- robots на crm/mail: crm 404, mail 404
 ```
