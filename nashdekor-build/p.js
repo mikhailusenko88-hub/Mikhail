@@ -1,0 +1,325 @@
+/* Страница товара и страницы разделов «Наш декор».
+   Данные страницы — в window.P (собирает nashdekor-build/build.py). */
+(() => {
+"use strict";
+const P = window.P || {};
+const $ = id => document.getElementById(id);
+const fmt = n => Math.round(n).toLocaleString("ru-RU");
+const ROOT = P.root || "../../";
+const ON_SITE = /(^|\.)nashdekor\.ru$/.test(location.hostname);
+const WHITE = "#F6F4EF";
+
+/* ---------- счётчик посещений (как на главной: без cookie, только «что открыли и что нажали») ---------- */
+const HIT_API = "https://crm.nashdekor.ru/api/hit";
+const hitOn = ON_SITE && !!navigator.sendBeacon && navigator.doNotTrack !== "1" && !navigator.globalPrivacyControl;
+const hitQ = [], hitSeen = new Set(); let hitT = 0;
+function hitSend(){
+  clearTimeout(hitT);
+  if (!hitOn || !hitQ.length) return;
+  let r = ""; try { r = document.referrer ? new URL(document.referrer).hostname : ""; } catch (e) {}
+  const body = { e: hitQ.splice(0, 40), r, u: (new URLSearchParams(location.search).get("utm_source") || "").slice(0, 30),
+    m: matchMedia("(pointer: coarse)").matches ? 1 : 0 };
+  try { navigator.sendBeacon(HIT_API, new Blob([JSON.stringify(body)], { type: "text/plain" })); } catch (e) {}
+  if (hitQ.length) hitSend();
+}
+function hit(kind, key = "", act = ""){
+  const id = kind + "|" + key + "|" + act;
+  if (!hitOn || hitSeen.has(id)) return;
+  hitSeen.add(id); hitQ.push([kind, String(key).slice(0, 40), act]);
+  clearTimeout(hitT); hitT = setTimeout(hitSend, 4000);
+}
+if (hitOn) {
+  hit("view", location.pathname); hitSend();
+  addEventListener("pagehide", hitSend);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") hitSend(); });
+}
+
+/* ---------- цены и наличие из CRM (crm.nashdekor.ru → «Склад и цены») ---------- */
+const CAT_API = "https://crm.nashdekor.ru/api/catalog";
+async function loadCatalog(){
+  if (!ON_SITE) return null;
+  try {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 5000);
+    const r = await fetch(CAT_API, { signal: ctl.signal, credentials: "omit" });
+    clearTimeout(t);
+    if (!r.ok) return null;
+    return (await r.json()).items || null;
+  } catch (e) { return null; }
+}
+const stockText = q => q > 0 ? `В наличии: ${fmt(q)} шт` : "Под заказ, 3–4 недели";
+
+/* ================= режим списка (страница раздела) ================= */
+if (P.list) {
+  loadCatalog().then(items => {
+    if (!items) return;
+    document.querySelectorAll("[data-p]").forEach(el => {
+      const k = items[el.dataset.p]; if (!k) return;
+      const pr = el.querySelector(".price b"), st = el.querySelector(".stock");
+      if (pr && k.p > 0) pr.textContent = fmt(k.p) + " ₽";
+      if (st) { const q = Math.max(0, k.q | 0); st.textContent = stockText(q); st.classList.toggle("ok", q > 0); }
+    });
+  });
+  return;
+}
+
+/* ================= страница товара ================= */
+const X = P.item; if (!X) return;
+const PAINT = P.paint || [];
+const isWood = X.c === "color";
+let cur = { name: "Белый", hex: WHITE, code: "" };    // выбранный цвет покраски
+let qty = 1;
+
+/* ---------- цвет ---------- */
+function renderDots(){
+  const box = $("colors"); if (!box || isWood) return;
+  const custom = !PAINT.some(([n]) => n === cur.name);
+  box.innerHTML = `<div class="eyebrow">Цвет покраски</div>
+    <div class="dots" role="group" aria-label="Цвет покраски">${PAINT.map(([n,h]) => `<button type="button" class="dot" data-name="${n}" data-hex="${h}" aria-pressed="${cur.name === n}" title="${n}" style="background:${h}"></button>`).join("")}
+    <label class="dot own" title="Свой цвет" aria-pressed="${custom}" style="${custom ? `background:${cur.hex}` : ""}"><input type="color" id="ownColor" value="${custom ? cur.hex : "#9A8C7A"}" aria-label="Свой цвет"></label></div>
+    <div class="cname">Цвет: <b id="cname"></b> <span class="note" id="cnote"></span></div>
+    ${custom ? `<input type="text" class="ralcode" id="ral" value="${cur.code || ""}" placeholder="Код цвета (RAL, NCS), если есть" aria-label="Код своего цвета">` : ""}`;
+  box.querySelectorAll("button.dot").forEach(b => b.addEventListener("click", () => {
+    cur = { name: b.dataset.name, hex: b.dataset.hex, code: "" }; renderDots(); applyColor(); hit("item", X.a, "paint");
+  }));
+  const own = $("ownColor");
+  own.addEventListener("input", () => { cur = { name: "Свой цвет", hex: own.value, code: cur.code || "" }; own.parentElement.style.background = own.value; own.parentElement.setAttribute("aria-pressed", "true"); box.querySelectorAll("button.dot").forEach(d => d.setAttribute("aria-pressed", "false")); applyColor(); });
+  own.addEventListener("change", () => { renderDots(); applyColor(); hit("item", X.a, "paint"); });
+  const ral = $("ral"); if (ral) ral.addEventListener("input", () => { cur.code = ral.value.trim(); applyColor(); });
+  applyColorLabel();
+}
+const colorText = () => isWood ? X.d.split(",")[0] : cur.name + (cur.code ? " · " + cur.code : "") + (cur.name === "Свой цвет" ? " " + cur.hex : "");
+function applyColorLabel(){
+  if ($("cname")) $("cname").textContent = cur.name + (cur.code ? " · " + cur.code : "");
+  if ($("cnote")) $("cnote").textContent = cur.name === "Белый" ? "— как с завода, под покраску" : cur.name === "Свой цвет" ? cur.hex : "";
+}
+function applyColor(){
+  applyColorLabel();
+  if (W3.setColor) W3.setColor(cur.hex);
+  if (view === "photo") paintPhoto();
+  updateLinks();
+}
+function updateLinks(){
+  const a = $("toCalc"); if (!a) return;
+  const q = new URLSearchParams({ panel: X.a });
+  if (!isWood && cur.name !== "Белый") { q.set("hex", cur.hex.slice(1)); q.set("cname", cur.name); if (cur.code) q.set("code", cur.code); }
+  a.href = `${ROOT}?${q.toString()}#calc`;
+}
+
+/* ---------- перекраска фото: красим светлые малонасыщенные пиксели (само изделие), синий фон не трогаем ---------- */
+const PX = new Map(); let MIMG = null, maskLoading = false;
+function prep(img){
+  if (PX.has(img.src)) return PX.get(img.src);
+  const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement("canvas"); c.width = w; c.height = h;
+  const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(img, 0, 0);
+  const d = g.getImageData(0, 0, w, h).data, n = w * h, m = new Float32Array(n), L = new Float32Array(n), hist = new Uint32Array(256);
+  const ss = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+  for (let i = 0, p = 0; i < n; i++, p += 4) {
+    const r = d[p], gg = d[p+1], b = d[p+2], mx = Math.max(r, gg, b), mn = Math.min(r, gg, b);
+    const s = mx ? (mx - mn) / mx : 0, v = mx / 255;
+    const wgt = (1 - ss(0.16, 0.30, s)) * ss(0.10, 0.24, v) * (1 - ss(6, 16, r - b));
+    m[i] = wgt; L[i] = 0.299 * r + 0.587 * gg + 0.114 * b;
+    if (wgt > 0.6) hist[L[i] | 0]++;
+  }
+  if (MIMG) { const mc = document.createElement("canvas"); mc.width = w; mc.height = h; const mg = mc.getContext("2d"); mg.drawImage(MIMG, 0, 0, w, h);
+    const md = mg.getImageData(0, 0, w, h).data; for (let i = 0; i < n; i++) m[i] *= md[i * 4] / 255; }
+  let tot = 0; for (const k of hist) tot += k; let acc = 0, ref = 230;
+  for (let k = 0; k < 256; k++) { acc += hist[k]; if (acc >= tot * 0.9) { ref = Math.max(120, k); break; } }
+  const res = { w, h, d: new Uint8ClampedArray(d), m, L, ref };
+  PX.set(img.src, res); return res;
+}
+function paintPhoto(){
+  const img = $("photo"); if (!img || isWood) return;
+  let cv = img.parentElement.querySelector("canvas.pc");
+  if (cur.name === "Белый") { if (cv) cv.hidden = true; return; }
+  if (!img.complete || !img.naturalWidth) { img.addEventListener("load", paintPhoto, { once: true }); return; }
+  if (P.mask && !MIMG) { if (!maskLoading) { maskLoading = true; const mi = new Image(); mi.onload = () => { MIMG = mi; PX.clear(); paintPhoto(); }; mi.onerror = () => { P.mask = false; paintPhoto(); }; mi.src = ROOT + "img/mask/" + P.photo.split("/").pop().replace(".jpg", ".png"); } return; }
+  let D; try { D = prep(img); } catch (e) { return; }
+  const hex = cur.hex, cr = parseInt(hex.slice(1,3),16), cg = parseInt(hex.slice(3,5),16), cb = parseInt(hex.slice(5,7),16);
+  if (!cv) { cv = document.createElement("canvas"); cv.className = "pc"; img.parentElement.appendChild(cv); }
+  cv.hidden = false; cv.width = D.w; cv.height = D.h;
+  const g = cv.getContext("2d"), out = g.createImageData(D.w, D.h), o = out.data, d = D.d;
+  for (let i = 0, p = 0; i < D.m.length; i++, p += 4) {
+    const k = D.m[i];
+    if (k < 0.01) { o[p] = d[p]; o[p+1] = d[p+1]; o[p+2] = d[p+2]; o[p+3] = 255; continue; }
+    const sh0 = D.L[i] / D.ref, sh = sh0 < 1 ? Math.pow(sh0, 1.7) : sh0, base = Math.min(sh, 1), hi = Math.max(0, Math.min(sh - 1, 0.35)) * 0.9;
+    const r = cr * base + (255 - cr) * hi, gg = cg * base + (255 - cg) * hi, b = cb * base + (255 - cb) * hi;
+    o[p] = d[p] + (r - d[p]) * k; o[p+1] = d[p+1] + (gg - d[p+1]) * k; o[p+2] = d[p+2] + (b - d[p+2]) * k; o[p+3] = 255;
+  }
+  g.putImageData(out, 0, 0);
+}
+
+/* ---------- 3D: одна панель по профилю (или ламели под дерево), вращение пальцем ---------- */
+const has3d = !!(P.prof || P.wood);
+let view = has3d && !(isWood && P.photo) ? "frag" : "photo";   // под дерево — сначала фото, 3D по кнопке
+const W3 = (() => {
+  let R, S, cam, ctl, grp, mat, ready = false, inited = false, tex = null;
+  const stage = $("pview"), cv = $("c3");
+  function init(){
+    if (inited) return; inited = true;
+    if (!window.THREE || !THREE.OrbitControls || !cv) { if ($("nogl")) $("nogl").hidden = false; return; }
+    try { R = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true }); }
+    catch (e) { if ($("nogl")) $("nogl").hidden = false; return; }
+    R.setPixelRatio(Math.min(devicePixelRatio, 2)); R.outputEncoding = THREE.sRGBEncoding; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.2;
+    R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap;
+    S = new THREE.Scene();
+    cam = new THREE.PerspectiveCamera(35, 1, 5, 40000);
+    ctl = new THREE.OrbitControls(cam, cv); ctl.enableDamping = true; ctl.enablePan = false; ctl.maxPolarAngle = Math.PI * 0.62;
+    S.add(new THREE.HemisphereLight(0xffffff, 0xa89f93, 0.7));
+    const sun = new THREE.DirectionalLight(0xfff6ea, 1.1); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0005; sun.shadow.normalBias = 2;
+    S.add(sun); S.add(sun.target); S.userData.sun = sun;
+    const fill = new THREE.DirectionalLight(0xdfe6f2, 0.35); fill.position.set(1, 0.6, -1); S.add(fill);
+    new ResizeObserver(size).observe(stage); size();
+    ready = true; build();
+    (function loop(){ ctl.update(); R.render(S, cam); requestAnimationFrame(loop); })();
+  }
+  function size(){ if (!R) return; const r = stage.getBoundingClientRect(); if (!r.width) return; R.setSize(r.width, r.height, false); cam.aspect = r.width / Math.max(1, r.height); cam.updateProjectionMatrix(); }
+  function profGeo(len){
+    const pts = P.prof, sh = new THREE.Shape();
+    sh.moveTo(0, 0); pts.forEach(p => sh.lineTo(p[0], p[1])); sh.lineTo(pts[pts.length-1][0], 0); sh.lineTo(0, 0);
+    return new THREE.ExtrudeGeometry(sh, { depth: len, bevelEnabled: false, curveSegments: 1 });
+  }
+  const box = (x0, x1, y0, y1, len) => { const g = new THREE.BoxGeometry(x1 - x0, y1 - y0, len); g.translate((x0 + x1) / 2, (y0 + y1) / 2, len / 2); return g; };
+  /* Панели стоят вертикально, как на стене (рельеф к зрителю, срез сверху — виден профиль);
+     сзади светлая стена с тенью, свет скользит слева — рельеф читается. */
+  function build(){
+    if (!ready) return;
+    if (grp) { S.remove(grp); grp.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }
+    grp = new THREE.Group(); S.add(grp);
+    const len = view === "full" ? X.l : Math.min(X.l, 600), n = 3, W = X.w;
+    const put = (me, c) => { me.rotation.x = Math.PI / 2; me.position.set(c * W, len, 0); me.castShadow = me.receiveShadow = true; grp.add(me); };
+    if (P.wood) {
+      if (!tex && P.tex) { tex = new THREE.TextureLoader().load(ROOT + P.tex); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.encoding = THREE.sRGBEncoding; }
+      if (tex) tex.repeat.set(1, Math.max(1, len / 400));
+      const blackM = new THREE.MeshStandardMaterial({ color: 0x141415, roughness: .7 });
+      const woodM = new THREE.MeshStandardMaterial({ color: tex ? 0xffffff : 0x9a6a40, map: tex, roughness: .55 });
+      const { base, slats } = P.wood;
+      for (let c = 0; c < n; c++) {
+        put(new THREE.Mesh(box(0, W, 0, base, len), blackM), c);
+        slats.forEach(([a0, a1]) => put(new THREE.Mesh(box(a0, a1, base, X.t, len), woodM), c));
+      }
+    } else {
+      mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(cur.hex).convertSRGBToLinear(), roughness: .6 });
+      const g = profGeo(len);
+      for (let c = 0; c < n; c++) put(new THREE.Mesh(g, mat), c);
+    }
+    // стена за панелями — принимает тень
+    const wallM = new THREE.MeshStandardMaterial({ color: 0xe9e4db, roughness: .95 });
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(len * 8 + 6000, len * 8 + 6000), wallM);
+    wall.position.set(n * W / 2, len / 2, -1.5); wall.receiveShadow = true; grp.add(wall);
+    if (view === "full") {   // пол, чтобы панель 3 м имела опору
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(len * 8 + 6000, len * 8 + 6000), new THREE.MeshStandardMaterial({ color: 0xb79b7a, roughness: .85 }));
+      floor.rotation.x = -Math.PI / 2; floor.position.set(n * W / 2, 0, (len * 8 + 6000) / 2 - 2); floor.receiveShadow = true; grp.add(floor);
+    }
+    const sun = S.userData.sun, span = Math.max(n * W, len);
+    sun.position.set(-span * 1.2, len + span * 0.6, span * 0.9); sun.target.position.set(n * W / 2, len / 2, 0);
+    Object.assign(sun.shadow.camera, { left: -span, right: span, top: span, bottom: -span, near: 10, far: span * 6 }); sun.shadow.camera.updateProjectionMatrix();
+    place(len, n * W);
+  }
+  function place(len, width){
+    const cx = width / 2, cy = len / 2, r = Math.hypot(width, len) / 2;
+    const d = r / Math.sin(cam.fov * Math.PI / 360) * (view === "full" ? 0.78 : 0.7) / Math.min(1, cam.aspect / 1.15);
+    const dir = view === "full" ? new THREE.Vector3(0.55, 0.25, 1) : new THREE.Vector3(0.6, 0.45, 1);
+    dir.normalize(); cam.position.copy(dir.multiplyScalar(d)).add(new THREE.Vector3(cx, cy, 0));
+    ctl.target.set(cx, cy, 0); ctl.minDistance = r * 0.3; ctl.maxDistance = d * 3; ctl.update();
+  }
+  function setColor(hex){ if (mat) mat.color.set(hex).convertSRGBToLinear(); }
+  return { init, rebuild: build, setColor: has3d && !P.wood ? setColor : null };
+})();
+
+/* ---------- вкладки: фрагмент / вся панель / фото ---------- */
+function setView(v){
+  view = v;
+  document.querySelectorAll("[data-v]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === v)));
+  const pv = $("pview"); pv.classList.toggle("is3d", v !== "photo");
+  if ($("c3")) $("c3").hidden = v === "photo";
+  if ($("photo")) $("photo").hidden = v !== "photo";
+  const pc = pv.querySelector("canvas.pc"); if (pc) pc.hidden = v !== "photo" || cur.name === "Белый";
+  if ($("hint")) $("hint").textContent = v === "photo" ? "" : "Вращайте пальцем, щипок — масштаб";
+  if (v === "photo") paintPhoto(); else { W3.init(); W3.rebuild(); hit("3d", X.a); }
+}
+document.querySelectorAll("[data-v]").forEach(b => b.addEventListener("click", () => setView(b.dataset.v)));
+
+/* ---------- количество и сумма ---------- */
+function price(){ return X.r || 0; }
+function renderQty(){
+  $("qty").value = qty;
+  const sum = qty * price(), boxes = Math.floor(qty / X.b), rest = qty % X.b;
+  $("tSum").textContent = sum ? fmt(sum) + " ₽" : "По запросу";
+  $("tPack").textContent = boxes ? `${boxes} кор.${rest ? " + " + rest + " шт" : ""} · ${X.b} шт в коробке` : `поштучно · ${X.b} шт в коробке`;
+  if ($("oQty")) $("oQty").textContent = qty;
+}
+$("qMinus").addEventListener("click", () => { qty = Math.max(1, qty - 1); renderQty(); });
+$("qPlus").addEventListener("click", () => { qty = Math.min(9999, qty + 1); renderQty(); });
+$("qBox").addEventListener("click", () => { qty = Math.max(X.b, Math.ceil(qty / X.b) * X.b); renderQty(); });
+$("qty").addEventListener("input", () => { qty = Math.min(9999, Math.max(1, parseInt($("qty").value) || 1)); renderQty(); });
+
+/* ---------- заявка на этот товар → CRM ---------- */
+const LEAD_API = "https://crm.nashdekor.ru/api/lead";
+const WHO = {"Дизайнер": "designer", "Компания, объект": "company", "Ремонтная бригада": "company"};
+const SHOP = P.shop || {};
+const MSG = () => SHOP.max ? `MAX ${SHOP.max}` : `Telegram ${SHOP.telegram || ""}`;
+function orderText(){
+  const sum = qty * price();
+  return `Товар: ${X.a} (${P.kind.toLowerCase()}) — ${qty} шт, ${isWood ? "декор" : "цвет"}: ${colorText()}${sum ? `\nИтого ≈ ${fmt(sum)} ₽ (предварительно)` : ""}`;
+}
+async function sendLead(lead){
+  if (!ON_SITE) return false;
+  const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 12000);
+  try {
+    const r = await fetch(LEAD_API, { method: "POST", mode: "cors", credentials: "omit", signal: ctl.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: lead.name, contact: lead.contact, who: WHO[lead.who] || "private",
+        message: [lead.who && lead.who !== "Делаю ремонт у себя" ? "Кто: " + lead.who : "", lead.message].filter(Boolean).join("\n"),
+        calc: lead.calc, total: lead.total, consent: true, consentAt: lead.consentAt, consentVersion: lead.consentVersion,
+        website: ($("lHp") || {}).value || "" }) });
+    const j = await r.json().catch(() => ({}));
+    return r.ok && j.ok === true;
+  } finally { clearTimeout(timer); }
+}
+async function copy(text, btn){
+  try { await navigator.clipboard.writeText(text); btn.textContent = "Скопировано"; }
+  catch (e) { btn.textContent = "Выделите и скопируйте"; }
+  setTimeout(() => btn.textContent = "Копировать заявку", 1800);
+}
+$("leadForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = $("lName").value.trim(), contact = $("lContact").value.trim(), err = $("lErr");
+  if (!name || !contact) { err.textContent = "Укажите имя и телефон или ник в мессенджере — по ним мы ответим."; err.hidden = false; return; }
+  if (!$("lAgree").checked) { err.textContent = "Отметьте согласие на обработку персональных данных."; err.hidden = false; return; }
+  err.hidden = true;
+  const now = new Date().toISOString();
+  const lead = { name, contact, who: $("lWho").value, message: $("lMsg").value.trim(), calc: orderText(), total: Math.round(qty * price()), consentAt: now, consentVersion: "2026-10-29" };
+  const btn = $("lSend"); btn.disabled = true; btn.textContent = "Отправляем…";
+  let saved = false; try { saved = await sendLead(lead); } catch (x) { saved = false; }
+  btn.disabled = false; btn.textContent = "Отправить заявку";
+  const text = `Заявка: ${name}, ${contact} (${lead.who})${lead.message ? "\n" + lead.message : ""}\n${lead.calc}`;
+  const done = $("lDone"); done.hidden = false;
+  if (saved) {
+    done.innerHTML = `<div class="stack" style="gap:12px"><div class="ok" role="status"><b id="lThanks"></b>Мы ответим с ценой и наличием в рабочее время.<p>Свяжемся с вами:<br><span id="lTo" style="white-space:nowrap;font-weight:600"></span></p><p>Если в номере ошибка — отправьте заявку ещё раз или напишите нам в ${MSG()}.</p></div><button class="btn ghost" type="button" id="lAgain">Отправить ещё одну заявку</button></div>`;
+    $("lThanks").textContent = `Спасибо, ${name}! Заявка отправлена.`; $("lTo").textContent = contact;
+    $("lAgain").onclick = () => { $("leadForm").classList.remove("sent"); $("leadForm").reset(); done.hidden = true; done.innerHTML = ""; $("lName").focus(); };
+    $("leadForm").reset(); $("leadForm").classList.add("sent");
+    done.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    hit("lead", X.a); hitSend();
+  } else {
+    hit("leadfail", X.a);
+    done.innerHTML = `<div class="stack" style="gap:8px"><div class="err">Форма сейчас не отправляется. Скопируйте текст заявки и пришлите его в ${MSG()} или позвоните ${SHOP.phone || ""}.</div><pre class="copy" id="lText"></pre><button class="btn sm" type="button" id="lCopy">Копировать заявку</button></div>`;
+    $("lText").textContent = text; $("lCopy").onclick = ev => copy(text, ev.currentTarget);
+  }
+});
+$("toOrder").addEventListener("click", () => { hit("item", X.a, "order"); $("order").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); setTimeout(() => $("lName").focus({ preventScroll: true }), 400); });
+if ($("toCalc")) $("toCalc").addEventListener("click", () => hit("item", X.a, "use"));
+$("leadForm").addEventListener("focusin", () => hit("form", X.a));
+if ($("c3")) $("c3").addEventListener("pointerdown", () => hit("3d", X.a, "rotate"), { passive: true });
+
+/* ---------- запуск ---------- */
+renderDots(); renderQty(); updateLinks(); setView(view);
+loadCatalog().then(items => {
+  const k = items && items[X.a]; if (!k) return;
+  if (k.p > 0) X.r = k.p;
+  const q = Math.max(0, k.q | 0);
+  $("price").textContent = X.r ? fmt(X.r) + " ₽" : "По запросу";
+  const st = $("stock"); st.textContent = stockText(q); st.classList.toggle("ok", q > 0);
+  renderQty();
+});
+})();
