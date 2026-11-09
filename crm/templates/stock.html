@@ -2,7 +2,7 @@
 {% block title %}Склад{% endblock %}
 {% block main %}
 <h1>Склад и цены</h1>
-<p class="sub">{{ rows|length }} позиций · на складе на {{ rub(value) }} по розничной цене. «Отложено» — товар в открытых заявках (в работе, расчёт, оплачено). При отгрузке остаток списывается сам.</p>
+<p class="sub">{{ rows|length }} позиций · на складе на {{ rub(value) }} по розничной цене. «Отложено» — товар в открытых заявках (в работе, расчёт, оплачено). При отгрузке остаток списывается сам. Цены и остатки сразу видны на сайте.</p>
 <div class="chips">
   <a class="chip" href="{{ url_for('stock_view', q=q, only=only) }}" {% if not kind %}aria-current="true"{% endif %}>Все</a>
   {% for k, n in KIND_TITLES.items() %}<a class="chip" href="{{ url_for('stock_view', kind=k, q=q, only=only) }}" {% if kind==k %}aria-current="true"{% endif %}>{{ n }}</a>{% endfor %}
@@ -30,5 +30,5 @@
 {% else %}<tr><td colspan="6" class="d">Ничего не найдено{% if not q and not kind %} — каталог сайта ещё не загружен{% endif %}</td></tr>{% endfor %}
 </tbody></table>
 </div>
-<p class="note">Цена здесь — для расчётов в CRM. Чтобы её меняли сайт и Авито, нужно отдельно обновить каталог сайта.</p>
+<p class="note">Цена и остаток отсюда показываются на сайте nashdekor.ru (в течение минуты после сохранения). На сайте видно «В наличии: N шт» — это остаток минус отложенное; если свободного нет — «Под заказ, 3–4 недели».</p>
 {% endblock %}

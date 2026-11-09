@@ -539,16 +539,30 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         return redirect(url_for("server_view"))
 
     # ------------------------------------------------------------ API: заявка с сайта
-    def cors(resp: Response) -> Response:
+    def cors(resp: Response, cache: str = "no-store") -> Response:
         origin = request.headers.get("Origin", "").rstrip("/")
         if origin and origin in conf["SITE_ORIGINS"]:
             resp.headers["Access-Control-Allow-Origin"] = origin
-            resp.headers["Vary"] = "Origin"
-            resp.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+            resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
             resp.headers["Access-Control-Allow-Headers"] = "Content-Type"
             resp.headers["Access-Control-Max-Age"] = "600"
-        resp.headers["Cache-Control"] = "no-store"
+        resp.headers["Vary"] = "Origin"
+        resp.headers["Cache-Control"] = cache
         return resp
+
+    # ------------------------------------------------------------ API: цены и наличие для сайта
+    # Цены и остатки ведём в CRM («Склад и цены»), сайт показывает их отсюда.
+    # Отдаём только цену и свободный остаток по артикулу — то, что и так видит покупатель.
+    @app.route("/api/catalog", methods=["GET", "OPTIONS"])
+    def api_catalog() -> Any:
+        if request.method == "OPTIONS":
+            return cors(Response(status=204))
+        try:
+            items = store.public_catalog()
+        except Exception:  # noqa: BLE001 — сайт тогда покажет свои вшитые цены
+            log.warning("каталог для сайта не собран")
+            return cors(jsonify(ok=False)), 500
+        return cors(jsonify(ok=True, items=items), cache="public, max-age=30")
 
     @app.route("/api/lead", methods=["POST", "OPTIONS"])
     def api_lead() -> Any:

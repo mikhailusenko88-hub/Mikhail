@@ -799,6 +799,15 @@ class Store:
                             "reserved": res.get(a, 0), "in_catalog": False})
         return out
 
+    def public_catalog(self) -> dict[str, dict[str, int]]:
+        """Для сайта и Авито: цена (своя из CRM или сайта) и свободный остаток (на складе минус отложено).
+        Только то, что и так видит покупатель — без себестоимости и заявок."""
+        out: dict[str, dict[str, int]] = {}
+        for r in self.stock_rows():
+            if r["in_catalog"]:
+                out[r["article"]] = {"p": int(r["price"] or 0), "q": max(int(r["qty"]) - int(r["reserved"]), 0)}
+        return out
+
     def set_stock(self, article: str, user: str, qty: Any = None, price: Any = None) -> bool:
         p = self.catalog.get(article)
         art = p.article if p else (article or "").strip().upper()

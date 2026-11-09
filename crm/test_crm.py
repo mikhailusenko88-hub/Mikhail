@@ -232,6 +232,27 @@ class TestDeals(Base):
         self.assertEqual(r.status_code, 302)
         self.assertEqual({r["article"]: r for r in self.store.stock_rows()}["GS 1"]["qty"], 3)
 
+    def test_public_catalog_for_site(self) -> None:
+        # цена из CRM и свободный остаток (минус отложенное) видны сайту; чужим сайтам — без CORS
+        self.post("/stock/A912", {"qty": "50", "price": "1100"})
+        did = self.new_deal()
+        self.post(f"/deals/{did}/lines", {"article": "A912", "qty": "8"})
+        self.post(f"/deals/{did}/stage", {"stage": "work"})
+        anon = self.app.test_client()                            # покупатель на сайте — без входа в CRM
+        r = anon.get("/api/catalog", headers={"Origin": "https://nashdekor.ru"})
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.headers["Access-Control-Allow-Origin"], "https://nashdekor.ru")
+        self.assertIn("max-age", r.headers["Cache-Control"])
+        items = r.get_json()["items"]
+        self.assertEqual(items["A912"], {"p": 1100, "q": 42})
+        self.assertEqual(items["A116"], {"p": 350, "q": 0})      # своей цены нет — цена сайта, на складе 0
+        self.assertEqual(set(items["GS 1"]), {"p", "q"})        # ничего лишнего (себестоимость, заявки) не отдаём
+        r = anon.get("/api/catalog", headers={"Origin": "https://evil.example"})
+        self.assertNotIn("Access-Control-Allow-Origin", r.headers)
+        r = anon.options("/api/catalog", headers={"Origin": "https://nashdekor.ru", "Access-Control-Request-Method": "GET"})
+        self.assertEqual(r.status_code, 204)
+        self.assertIn("GET", r.headers["Access-Control-Allow-Methods"])
+
     def test_admin_delete(self) -> None:
         did = self.new_deal()
         self.post(f"/deals/{did}/delete", {})
