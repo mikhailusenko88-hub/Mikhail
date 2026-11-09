@@ -101,8 +101,10 @@ function applyColor(){
 function updateLinks(){
   const a = $("toCalc"); if (!a) return;
   const q = new URLSearchParams({ panel: X.a });
+  if (wall.used && wall.W && wall.H) { q.set("w", wall.W); q.set("h", wall.H); if (wall.open) q.set("o", wall.open); }
   if (!isWood && cur.name !== "Белый") { q.set("hex", cur.hex.slice(1)); q.set("cname", cur.name); if (cur.code) q.set("code", cur.code); }
   a.href = `${ROOT}?${q.toString()}#calc`;
+  if ($("wFull")) $("wFull").href = a.href;
 }
 
 /* ---------- перекраска фото: красим светлые малонасыщенные пиксели (само изделие), синий фон не трогаем ---------- */
@@ -152,7 +154,29 @@ function paintPhoto(){
 const has3d = !!(P.prof || P.wood || P.poly);
 const isPanel = X.c === "panel" || X.c === "color";
 let nPan = 1;                                   // панелей рядом (по умолчанию одна, «+» добавляет)
-const fragLen = () => Math.min(X.l, 600);
+const fragLen = () => Math.min(X.l, 600);   // фрагмент 60 см — рельеф виден крупно; вся панель — в «моей стене»
+/* «Моя стена»: размеры клиента → сколько панелей (как в расчёте на главной: колонки по ширине, куски по высоте, минус проёмы, плюс запас) */
+const wall = { W: 320, H: 270, open: 0, reserve: true, pcs: 0, used: false };
+function wallCalc(){
+  const Wcm = Math.max(0, +($("wW") || {}).value || 0), Hcm = Math.max(0, +($("wH") || {}).value || 0);
+  wall.W = Wcm; wall.H = Hcm; wall.open = Math.max(0, +($("wO") || {}).value || 0); wall.reserve = !!($("wR") && $("wR").checked);
+  const area = Wcm * Hcm / 10000, net = Math.max(0, area - wall.open);
+  if (!Wcm || !Hcm) { wall.pcs = 0; return; }
+  const cols = Math.ceil(Wcm * 10 / X.w), perCol = Math.ceil(Hcm * 10 / X.l);
+  wall.pcs = Math.ceil(cols * perCol * (area ? net / area : 1) * (wall.reserve ? 1.1 : 1));
+  wall.area = area; wall.net = net;
+}
+function renderWall(){
+  wallCalc();
+  if (!$("wPcs")) return;
+  const n = wall.pcs, sum = n * price(), boxes = Math.floor(n / X.b), rest = n % X.b;
+  $("wPcs").textContent = n ? `${n} шт` : "—";
+  $("wPack").textContent = n ? (boxes ? `${boxes} кор.${rest ? " + " + rest + " шт" : ""}` : "поштучно") + ` · ${X.b} шт в коробке` : "укажите ширину и высоту";
+  $("wSum").textContent = n && sum ? fmt(sum) + " ₽" : n ? "По запросу" : "—";
+  $("wArea").textContent = n ? `стена ${wall.area.toLocaleString("ru-RU", { maximumFractionDigits: 2 })} м², под отделку ${wall.net.toLocaleString("ru-RU", { maximumFractionDigits: 2 })} м²` : "";
+  if (n) { qty = n; wall.used = true; renderQty(); }
+  updateLinks();
+}
 let view = has3d && !(isWood && P.photo) ? "frag" : "photo";   // под дерево — сначала фото, 3D по кнопке
 const W3 = (() => {
   let R, S, cam, ctl, grp, mat, ready = false, inited = false, tex = null;
@@ -163,7 +187,7 @@ const W3 = (() => {
     try { R = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true }); }
     catch (e) { if ($("nogl")) $("nogl").hidden = false; return; }
     R.setPixelRatio(Math.min(devicePixelRatio, 2)); R.outputEncoding = THREE.sRGBEncoding; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.2;
-    R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap;
+    R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap; R.localClippingEnabled = true;
     S = new THREE.Scene();
     cam = new THREE.PerspectiveCamera(35, 1, 5, 40000);
     ctl = new THREE.OrbitControls(cam, cv); ctl.enableDamping = true; ctl.enablePan = false; ctl.maxPolarAngle = Math.PI * 0.62;
@@ -198,6 +222,7 @@ const W3 = (() => {
     if (!ready) return;
     if (grp) { S.remove(grp); grp.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }
     grp = new THREE.Group(); S.add(grp);
+    if (view === "wall") { buildWall(); return; }
     const len = view === "full" ? X.l : fragLen(), n = isPanel ? nPan : 1, W = X.w;
     const put = (me, c) => { me.rotation.x = Math.PI / 2; me.position.set(c * W, len, 0); me.castShadow = me.receiveShadow = true; grp.add(me); };
     if (P.poly) {
@@ -237,6 +262,44 @@ const W3 = (() => {
     Object.assign(sun.shadow.camera, { left: -span, right: span, top: span, bottom: -span, near: 10, far: span * 6 }); sun.shadow.camera.updateProjectionMatrix();
     place(bh, bw);
   }
+  /* Стена клиента: комната, панели рядами по ширине и высоте, обрезка по размерам стены (как на главной) */
+  function buildWall(){
+    wallCalc();
+    const Wmm = Math.max(300, wall.W * 10), Hmm = Math.max(300, wall.H * 10), W = X.w;
+    const clip = [new THREE.Plane(new THREE.Vector3(-1, 0, 0), Wmm), new THREE.Plane(new THREE.Vector3(0, -1, 0), Hmm)];
+    const cols = Math.ceil(Wmm / W), rows = Math.ceil(Hmm / X.l);
+    const wallM = new THREE.MeshStandardMaterial({ color: 0xe7e2d9, roughness: .95 });
+    const back = new THREE.Mesh(new THREE.PlaneGeometry(Wmm + 1400, Hmm), wallM); back.position.set(Wmm / 2 + 500, Hmm / 2, -2); back.receiveShadow = true; grp.add(back);
+    const side = new THREE.Mesh(new THREE.PlaneGeometry(14000, Hmm), wallM); side.rotation.y = Math.PI / 2; side.position.set(-2, Hmm / 2, 7000); side.receiveShadow = true; grp.add(side);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(Wmm + 8000, 14000), new THREE.MeshStandardMaterial({ color: 0xb79b7a, roughness: .8 }));
+    floor.rotation.x = -Math.PI / 2; floor.position.set(Wmm / 2 + 3000, 0, 7000); floor.receiveShadow = true; grp.add(floor);
+    const ceil = new THREE.Mesh(new THREE.PlaneGeometry(Wmm + 8000, 14000), new THREE.MeshBasicMaterial({ color: 0xefebe4 }));
+    ceil.rotation.x = Math.PI / 2; ceil.position.set(Wmm / 2 + 3000, Hmm, 7000); grp.add(ceil);
+    const put = (me, c, r) => { me.rotation.x = Math.PI / 2; me.position.set(c * W, (r + 1) * X.l, 0); me.castShadow = me.receiveShadow = true; grp.add(me); };
+    if (P.wood) {
+      if (!tex && P.tex) { tex = new THREE.TextureLoader().load(ROOT + P.tex); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.encoding = THREE.sRGBEncoding; }
+      if (tex) tex.repeat.set(1, X.l / 400);
+      const blackM = new THREE.MeshStandardMaterial({ color: 0x141415, roughness: .7, clippingPlanes: clip });
+      const woodM = new THREE.MeshStandardMaterial({ color: tex ? 0xffffff : 0x9a6a40, map: tex, roughness: .55, clippingPlanes: clip });
+      const { base, slats } = P.wood, gBase = box(0, W, 0, base, X.l), gSl = slats.map(([a0, a1]) => box(a0, a1, base, X.t, X.l));
+      for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) { put(new THREE.Mesh(gBase, blackM), c, r); gSl.forEach(g => put(new THREE.Mesh(g, woodM), c, r)); }
+    } else {
+      mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(cur.hex).convertSRGBToLinear(), roughness: .62, clippingPlanes: clip });
+      const g = profGeo(X.l);
+      for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) put(new THREE.Mesh(g, mat), c, r);
+    }
+    if (Wmm > 2400) {   // диван для масштаба
+      const sofaM = new THREE.MeshStandardMaterial({ color: 0xd8d2c6, roughness: .9 });
+      const s1 = new THREE.Mesh(box(0, 2100, 0, 420, 900), sofaM), s2 = new THREE.Mesh(box(0, 2100, 0, 380, 200), sofaM);
+      s1.position.set(Wmm / 2 - 1050, 0, 160); s2.position.set(Wmm / 2 - 1050, 420, 160);
+      [s1, s2].forEach(m => { m.castShadow = m.receiveShadow = true; grp.add(m); });
+    }
+    const sun = S.userData.sun; sun.position.set(-Wmm * 0.4 - 2500, Hmm + 1200, 1100); sun.target.position.set(Wmm / 2, Hmm / 2, 0);
+    const span = Math.max(Wmm, Hmm) * 0.9 + 1500;
+    Object.assign(sun.shadow.camera, { left: -span, right: span, top: span, bottom: -span, near: 100, far: 16000 }); sun.shadow.camera.updateProjectionMatrix();
+    const d = Math.max(Wmm / (2 * Math.tan(20 * Math.PI / 180)) / Math.max(.6, cam.aspect), Hmm * 1.6) + 600;
+    cam.position.set(Wmm * 0.62, Hmm * 0.5, d); ctl.target.set(Wmm / 2, Hmm * 0.45, 0); ctl.minDistance = 600; ctl.maxDistance = d * 3; ctl.update();
+  }
   function place(len, width){
     if (P.poly) {   // погонаж лежит вдоль X: камера у ближнего (левого) торца, как на фото каталога — профиль крупно, длина уходит вглубь
       const W = X.w, T = P.poly.t, d = Math.max(W * 4.2, 130) + T;
@@ -263,9 +326,14 @@ function setView(v){
   if ($("c3")) $("c3").hidden = v === "photo";
   if ($("photo")) $("photo").hidden = v !== "photo";
   const pc = pv.querySelector("canvas.pc"); if (pc) pc.hidden = v !== "photo" || cur.name === "Белый";
-  if ($("hint")) $("hint").textContent = v === "photo" ? "" : "Вращайте пальцем, щипок — масштаб";
-  if (v === "photo") paintPhoto(); else { W3.init(); W3.rebuild(); hit("3d", X.a); }
+  if ($("hint")) $("hint").textContent = v === "photo" ? "" : v === "frag" ? `Фрагмент ${Math.round(fragLen() / 10)} см · вращайте пальцем` : "Вращайте пальцем, щипок — масштаб";
+  if ($("wallBox")) $("wallBox").hidden = v !== "wall";
+  const nc = document.querySelector(".ncount"); if (nc) nc.hidden = v !== "frag";
+  if (v === "wall") renderWall();
+  if (v === "photo") paintPhoto(); else { W3.init(); W3.rebuild(); hit("3d", X.a, v); }
 }
+["wW", "wH", "wO", "wR"].forEach(id => { if ($(id)) $(id).addEventListener("input", () => { renderWall(); W3.rebuild(); hit("calc", X.a); }); });
+if ($("wOrder")) $("wOrder").addEventListener("click", () => { renderWall(); hit("item", X.a, "order"); $("order").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); setTimeout(() => $("lName").focus({ preventScroll: true }), 400); });
 document.querySelectorAll("[data-v]").forEach(b => b.addEventListener("click", () => setView(b.dataset.v)));
 function setN(n){ nPan = Math.max(1, Math.min(6, n)); if ($("nVal")) $("nVal").textContent = nPan; if (view !== "photo") W3.rebuild(); hit("3d", X.a, "n" + nPan); }
 if ($("nMinus")) $("nMinus").addEventListener("click", () => setN(nPan - 1));
@@ -292,7 +360,8 @@ const SHOP = P.shop || {};
 const MSG = () => SHOP.max ? `MAX ${SHOP.max}` : `Telegram ${SHOP.telegram || ""}`;
 function orderText(){
   const sum = qty * price();
-  return `Товар: ${X.a} (${P.kind.toLowerCase()}) — ${qty} шт, ${isWood ? "декор" : "цвет"}: ${colorText()}${sum ? `\nИтого ≈ ${fmt(sum)} ₽ (предварительно)` : ""}`;
+  const w = wall.used && wall.pcs === qty && wall.W && wall.H ? `\nСтена ${wall.W}×${wall.H} см${wall.open ? ", проёмы " + wall.open + " м²" : ""}${wall.reserve ? ", запас 10%" : ""}` : "";
+  return `Товар: ${X.a} (${P.kind.toLowerCase()}) — ${qty} шт, ${isWood ? "декор" : "цвет"}: ${colorText()}${w}${sum ? `\nИтого ≈ ${fmt(sum)} ₽ (предварительно)` : ""}`;
 }
 async function sendLead(lead){
   if (!ON_SITE) return false;
@@ -352,6 +421,6 @@ loadCatalog().then(items => {
   const q = Math.max(0, k.q | 0);
   $("price").textContent = X.r ? fmt(X.r) + " ₽" : "По запросу";
   const st = $("stock"); st.textContent = stockText(q); st.classList.toggle("ok", q > 0);
-  renderQty();
+  renderQty(); if (view === "wall") renderWall();
 });
 })();

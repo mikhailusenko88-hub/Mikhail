@@ -591,6 +591,8 @@ if (qPanel && byA[qPanel]) {
   if (/^[0-9a-f]{6}$/i.test(QS.get("hex") || "") && byA[qPanel].c !== "color") paint[qPanel] = { name: (QS.get("cname") || "Свой цвет").slice(0, 40), hex: "#" + QS.get("hex").toLowerCase(), code: (QS.get("code") || "").slice(0, 40) };
   if (byA[qPanel].c === "color") pick[series(byA[qPanel])] = qPanel;
 }
+// размеры стены со страницы товара: ?w=320&h=270&o=1.5 (см, см, м²)
+[["w", "cW", 10, 3000], ["h", "cH", 10, 1000], ["o", "cOpen", 0, 100]].forEach(([k, id, lo, hi]) => { const v = parseFloat(QS.get(k)); if (!isNaN(v) && v >= lo && v <= hi) $(id).value = v; });
 opts("cPanel", x => x.c === "panel" || x.c === "color", qPanel && byA[qPanel] && (byA[qPanel].c === "panel" || byA[qPanel].c === "color") ? qPanel : "A907");
 opts("cPlinth", x => x.c === "plinth" && x.r, "A704");
 opts("cCornice", x => x.c === "cornice" && x.r, "A38");

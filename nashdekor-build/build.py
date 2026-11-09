@@ -233,15 +233,24 @@ def product_page(x):
     if has3d:
         cnt = ('<span class="sp"></span><span class="ncount" role="group" aria-label="Сколько панелей рядом"><span class="note">Панелей рядом</span>'
                '<button type="button" id="nMinus" aria-label="Меньше">−</button><b id="nVal">1</b><button type="button" id="nPlus" aria-label="Больше">+</button></span>') if is_panel else ""
-        tabs = ('<div class="vtabs" role="group" aria-label="Вид"><button type="button" data-v="frag" aria-pressed="true">3D · фрагмент</button>'
-                '<button type="button" data-v="full" aria-pressed="false">3D · %s</button>%s%s</div>'
-                % ("вся панель" if is_panel else "вся длина %d м" % (x["l"] // 1000) if x["l"] % 1000 == 0 else "вся длина %.1f м" % (x["l"] / 1000),
-                   '<button type="button" data-v="photo" aria-pressed="false">Фото</button>' if ph else "", cnt))
+        second = ('<button type="button" data-v="wall" aria-pressed="false">3D · моя стена</button>' if is_panel else
+                  '<button type="button" data-v="full" aria-pressed="false">3D · вся длина %s м</button>' % (("%d" % (x["l"] // 1000)) if x["l"] % 1000 == 0 else "%.1f" % (x["l"] / 1000)))
+        tabs = ('<div class="vtabs" role="group" aria-label="Вид"><button type="button" data-v="frag" aria-pressed="true">3D · %s</button>%s%s%s</div>'
+                % ("панель" if is_panel else "фрагмент", second, '<button type="button" data-v="photo" aria-pressed="false">Фото</button>' if ph else "", cnt))
     stage = '<div class="pview%s" id="pview">' % (" is3d" if has3d else " photoonly")
     if has3d: stage += '<canvas id="c3" aria-label="%s %s в 3D"></canvas><div class="nogl" id="nogl" hidden>3D не запускается в этом браузере — посмотрите фото.</div>' % (esc(KIND[c]), esc(a))
     if ph: stage += '<img id="photo" src="%s%s" alt="%s %s — %s" width="790" height="449"%s>' % (ROOT, ph, esc(KIND[c]), esc(a), esc(x["d"]), " hidden" if has3d else "")
     elif not has3d: stage += '<div class="nogl">Фото скоро. Размеры и цена — ниже.</div>'
     stage += '<div class="hint" id="hint"></div></div>'
+    if is_panel:
+        stage += ('<div class="wallbox" id="wallBox" hidden><div class="wf"><label class="f">Ширина стены, см<input type="number" id="wW" min="10" step="1" value="320" inputmode="numeric"></label>'
+                  '<label class="f">Высота, см<input type="number" id="wH" min="10" step="1" value="270" inputmode="numeric"></label>'
+                  '<label class="f">Окна и двери, м²<input type="number" id="wO" min="0" step="0.1" value="0" inputmode="decimal"></label></div>'
+                  '<label class="chk"><input type="checkbox" id="wR" checked> Запас 10%% на подрезку</label>'
+                  '<div class="wres"><div><div class="eyebrow">На эту стену</div><b class="num" id="wPcs">—</b><small class="note" id="wPack"></small></div>'
+                  '<div style="text-align:right"><div class="eyebrow">Предварительно</div><b class="num" id="wSum">—</b><small class="note" id="wArea"></small></div></div>'
+                  '<div class="wbtns"><button class="btn" type="button" id="wOrder">Заказать это количество</button>'
+                  '<a class="btn ghost" id="wFull" href="%s?panel=%s#calc">Расчёт с плинтусом и карнизом</a></div></div>' % (ROOT, esc(a)))
 
     # цвет / декор
     if is_wood:

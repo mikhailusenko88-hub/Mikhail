@@ -92,3 +92,11 @@ a.card .price b{color:var(--ink)}
 .ncount{display:inline-flex;align-items:center;gap:6px}
 .ncount button{width:30px;height:30px;padding:0;border-radius:50%;font-size:17px;line-height:1}
 .ncount b{min-width:18px;text-align:center;font-size:15px}
+.wallbox{margin-top:10px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.wallbox .wf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:480px){.wallbox .wf{grid-template-columns:1fr 1fr}.wallbox .wf label:last-child{grid-column:1/-1}}
+.wallbox .wres{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:10px}
+.wallbox .wres b{font-family:var(--f-display);font-size:22px;display:block}
+.wallbox .wres small{display:block}
+.wallbox .wbtns{display:flex;gap:8px;flex-wrap:wrap}
+.wallbox .wbtns .btn{flex:1;min-width:180px}
