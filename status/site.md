@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-09 14:22 UTC
+# Сайт снаружи — 2026-11-09 14:30 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -26,22 +26,23 @@ ld+json: 1
 счётчик на главной: 1, в политике п. 3.4: 1, на документах: 1 1 1 
 
 --- страницы товаров и разделов (сборка nashdekor-build/build.py)
-/p/a907/                           200 text/html; charset=utf-8 20299
-/p/2-7/                            200 text/html; charset=utf-8 18587
+/p/a907/                           200 text/html; charset=utf-8 21412
+/p/2-7/                            200 text/html; charset=utf-8 19699
 /p/a35/                            200 text/html; charset=utf-8 16209
 /p/a002-2/                         200 text/html; charset=utf-8 17865
-/p/gs1/                            200 text/html; charset=utf-8 20283
+/p/gs1/                            200 text/html; charset=utf-8 21396
 /catalog/reechnye-paneli/          200 text/html; charset=utf-8 21153
 /catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 27604
 /catalog/plintusy/                 200 text/html; charset=utf-8 24558
-/assets/p.js                       200 application/javascript; charset=utf-8 25749
-/assets/p.css                      200 text/css 16850
+/assets/p.js                       200 application/javascript; charset=utf-8 32541
+/assets/p.css                      200 text/css 17531
 /mebel/_lib/three.min.js           200 application/javascript; charset=utf-8 603445
 /mebel/_lib/OrbitControls.js       200 application/javascript; charset=utf-8 26375
 /img/A907.jpg                      200 image/jpeg 22169
 товар A907: title: <title>Реечная панель A907 180×10×3000 мм под покраску — купить в СПб | Наш декор</title>
   canonical: rel="canonical" href="https://nashdekor.ru/p/a907/", ld+json: 1, Product: 1, 3D canvas: 1, профиль svg: 1, window.P: 1
 молдинг A35: 3D canvas: 1, профиль svg: 1, контур poly: 1; счётчик панелей на A907: 1
+«моя стена» на A907: блок: 1, вкладка: 1; p.js со стеной: 1
 sitemap: адресов 117, из них /p/: 107, /catalog/: 6
 главная: ссылок на p/ в коде карточек: 3, ссылки на разделы: 6, ?panel= в расчёт: 1
 
