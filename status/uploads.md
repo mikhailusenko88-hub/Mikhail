@@ -21,3 +21,5 @@
 | shorts | 2026-11-09 | 1 | UK vs Vietnam vs Pakistan | https://youtube.com/shorts/vn1j4zb-Leg | |
 | 18 | 2026-11-09 | 2 | S2 RACE 5/68 | https://youtu.be/RFmgrFv8ghw | public |
 | shorts | 2026-11-09 | 2 | Mexico vs Peru vs Romania | https://youtube.com/shorts/zP2ZThH9Q7U | |
+| 19 | 2026-11-09 | 3 | S2 RACE 6/68 | https://youtu.be/VLEkz_I-hio | public |
+| shorts | 2026-11-09 | 3 | Indonesia vs Thailand vs Spain | https://youtube.com/shorts/4c2PskJ3TL4 | |
