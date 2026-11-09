@@ -7,12 +7,12 @@ on:
 jobs:
   get:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - name: tools
         run: |
-          python3 -m pip install -q -U yt-dlp
+          python3 -m pip install -q -U yt-dlp faster-whisper
           sudo apt-get -qq update && sudo apt-get -qq install -y ffmpeg > /dev/null
       - name: fetch
         run: python3 fetch.py
