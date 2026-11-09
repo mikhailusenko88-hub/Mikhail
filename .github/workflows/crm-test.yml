@@ -174,6 +174,25 @@ jobs:
           curl -sk $R -c $J -b $J "https://$H$id" | grep -o 'Письмо от клиента: «[^»]*»\|Ответить на письмо клиента' | sort -u
           curl -sk $R -c $J -b $J https://$H/settings | grep -o 'Уведомления на телефон\|data-key="[A-Za-z0-9_-]\{20\}' | head -n2
           sudo prostranstvo-crm digest
+      - name: Чат с сайта — сообщение, ответ, заявка из чата
+        run: |
+          set -e
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/j5
+          SID=chatTEST0123456789abcdefXYZ
+          post() { curl -sk $R -H 'Origin: https://nashdekor.ru' -H 'Content-Type: application/json' -d "$1" https://$H/api/chat; }
+          echo "без согласия: $(curl -sk $R -o /dev/null -w '%{http_code}' -H 'Origin: https://nashdekor.ru' -H 'Content-Type: application/json' -d '{"sid":"'$SID'","text":"Привет"}' https://$H/api/chat)"
+          post '{"sid":"'$SID'","text":"Есть A907 в наличии?","consent":true,"page":"/p/a907/"}' | head -c 200; echo
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          curl -sk $R -c $J -b $J https://$H/ | grep -o 'Чат<span class="badge">[0-9]*' | head -n1
+          cid=$(curl -sk $R -c $J -b $J https://$H/chats | grep -o '/chats/[0-9]*' | head -n1); echo "чат: $cid"
+          T=$(curl -sk $R -c $J -b $J "https://$H$cid" | tok)
+          curl -sk $R -c $J -b $J -o /dev/null -w 'ответ: %{http_code}\n' --data-urlencode "csrf=$T" --data-urlencode "text=Да, есть. Сколько нужно?" "https://$H$cid/reply"
+          curl -sk $R -H 'Origin: https://nashdekor.ru' "https://$H/api/chat?sid=$SID&after=0" | python3 -c "import json,sys; d=json.load(sys.stdin); print('клиент видит:', [(m['who'], m['text']) for m in d['msgs']])"
+          post '{"sid":"'$SID'","text":"12 шт, телефон +7 921 555-44-33","name":"Ольга"}' >/dev/null
+          curl -sk $R -c $J -b $J "https://$H$cid" | grep -o 'Заявка №[0-9]* · [^<]*' | head -n1
       - name: fail2ban видит подбор пароля
         run: |
           for i in $(seq 1 9); do curl -s -o /dev/null -H 'X-Forwarded-For: 203.0.113.5' --data 'login=yulia&password=bad' http://127.0.0.1:8081/login; done
