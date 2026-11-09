@@ -100,6 +100,40 @@ jobs:
           git add status; git commit -m "crm-test server page $(date -u +%F_%H:%M)" || exit 0
           git pull --rebase origin domain-check || true
           git push origin HEAD:domain-check || true
+      - name: Счётчик посещений (вкладка «Сайт»)
+        if: always()
+        run: |
+          mkdir -p status; O=status/crm-site-stats.md
+          {
+          echo "# Счётчик посещений — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/j3
+          UA='Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1'
+          B='{"e":[["view","/",""],["sec","catalog",""],["item","A907","use"],["item","A910","ask"],["calcpanel","A910",""],["3d","",""],["lead","",""]],"r":"yandex.ru","u":"","m":1}'
+          echo "--- отметка с сайта:"
+          curl -sk $R -D - -o /dev/null -A "$UA" -H 'Origin: https://nashdekor.ru' -H 'Content-Type: text/plain;charset=UTF-8' --data-binary "$B" https://$H/api/hit | grep -iE '^HTTP|set-cookie' || true
+          echo "cookie посетителю: $(curl -sk $R -D - -o /dev/null -A "$UA" -H 'Origin: https://nashdekor.ru' --data-binary "$B" https://$H/api/hit | grep -ci set-cookie)"
+          echo "чужой сайт: $(curl -sk $R -o /dev/null -w '%{http_code}' -A "$UA" -H 'Origin: https://evil.example' --data-binary "$B" https://$H/api/hit)"
+          echo "бот: $(curl -sk $R -o /dev/null -w '%{http_code}' -A 'Mozilla/5.0 (compatible; YandexBot/3.0)' -H 'Origin: https://nashdekor.ru' --data-binary "$B" https://$H/api/hit)"
+          echo "записей в базе: $(sudo sqlite3 /var/lib/prostranstvo/crm.db 'select count(*) from visits' 2>&1)"
+          echo "IP в базе: $(sudo sqlite3 /var/lib/prostranstvo/crm.db 'select count(*) from visits where vid like "%127.0.0.1%" or key like "%127.0.0.1%" or src like "%127.0.0.1%"' 2>&1)"
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          echo "/site: $(curl -sk $R -c $J -b $J -o /tmp/site.html -w '%{http_code}' 'https://'$H'/site?d=1')"
+          for s in 'Посещаемость сайта' 'A907' 'A910' 'Яндекс' 'Телефон' 'Отправили заявку'; do echo "  «$s»: $(grep -c "$s" /tmp/site.html)"; done
+          echo "вкладка «Сайт» в меню: $(curl -sk $R -c $J -b $J https://$H/board | grep -c 'ic-site')"
+          echo "на «Сегодня»: $(curl -sk $R -c $J -b $J https://$H/ | grep -o 'На сайте сегодня: [0-9]* [а-я]*')"
+          echo "свой визит (вошли в CRM) записался: $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' -A "$UA" -H 'Origin: https://nashdekor.ru' --data-binary "$B" https://$H/api/hit); записей: $(sudo sqlite3 /var/lib/prostranstvo/crm.db 'select count(*) from visits')"
+          echo "X-Robots-Tag CRM: $(curl -sk $R -I https://$H/login | grep -i x-robots | tr -d '\r')"
+          echo "тесты CRM при установке: $(sudo grep -c 'FAILED\|Error' /var/log/prostranstvo-crm-setup-details.log) ошибок; $(sudo grep -o 'Ran [0-9]* tests' /var/log/prostranstvo-crm-setup-details.log | tail -n1)"
+          echo '```'
+          } > "$O" 2>&1
+          cat "$O"
+          git config user.name crm-test; git config user.email crm-test@users.noreply.github.com
+          git add status; git commit -m "crm-test site stats $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
       - name: Состояние
         if: always()
         run: |
