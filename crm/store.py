@@ -319,6 +319,21 @@ class Catalog:
         self._load()
         return self._by.get((article or "").upper().replace(" ", "").translate(_LOOKALIKE))
 
+    def find(self, text: str) -> Product | None:
+        """Нестрогий поиск: точный артикул; без буквы («902» → A902); единственное совпадение по цифрам."""
+        p = self.get(text)
+        if p:
+            return p
+        key = (text or "").upper().replace(" ", "").translate(_LOOKALIKE)
+        if not key:
+            return None
+        for pref in ("A", "GS", "AP"):
+            p = self._by.get(pref + key)
+            if p:
+                return p
+        hits = [v for k, v in self._by.items() if k.endswith(key) or k.replace("-", "").replace("/", "") == key.replace("-", "").replace("/", "")]
+        return hits[0] if len(hits) == 1 else None
+
 
 _LOOKALIKE = str.maketrans("АВЕКМНОРСТХУЛ", "ABEKMHOPCTXYL")
 
@@ -364,6 +379,10 @@ class Store:
         try:
             for stmt in [s.strip() for s in SCHEMA.split(";") if s.strip()]:
                 c.execute(stmt)
+            cols = {r[1] for r in c.execute("PRAGMA table_info(deals)").fetchall()}
+            for col in ("client_note", "pay_link"):          # 09.11.2026: текст клиенту и ссылка на оплату в письме-расчёте
+                if col not in cols:
+                    c.execute(f"ALTER TABLE deals ADD COLUMN {col} TEXT NOT NULL DEFAULT ''")
             row = c.execute("SELECT value FROM settings WHERE key='schema_version'").fetchone()
             if row and int(row[0]) > SCHEMA_VERSION:
                 raise RuntimeError(f"база CRM версии {row[0]}, программа знает только {SCHEMA_VERSION}")
@@ -579,6 +598,11 @@ class Store:
     def total(gross: int, discount: int) -> int:
         return int(round(gross * (100 - max(0, min(discount, 90))) / 100))
 
+    def set_deal_text(self, did: int, user: str, client_note: str, pay_link: str) -> None:
+        with self.tx() as c:
+            c.execute("UPDATE deals SET client_note=?, pay_link=?, updated_at=? WHERE id=?",
+                      (client_note.strip()[:2000], pay_link.strip()[:500], iso_now(), did))
+
     def deal_total(self, did: int) -> tuple[int, int]:
         d = self.c().execute("SELECT discount FROM deals WHERE id=?", (did,)).fetchone()
         gross = int(self.c().execute("SELECT COALESCE(SUM(qty*price),0) FROM lines WHERE deal_id=?", (did,)).fetchone()[0])
@@ -675,6 +699,15 @@ class Store:
     # позиции
     def lines(self, did: int) -> list[sqlite3.Row]:
         return self.c().execute("SELECT * FROM lines WHERE deal_id=? ORDER BY id", (did,)).fetchall()
+
+    def lines_from_calc(self, did: int, calc: str, user: str) -> int:
+        """Разобрать расчёт с сайта и сразу положить позиции в сделку. Возвращает число позиций."""
+        n = 0
+        for m in re.finditer(r"(?:^|\n|Товар:\s*)([A-ZА-Я]{0,2}\s?[0-9][0-9A-Za-zА-Яа-я/\-]*)(?:\s*\([^)]*\))?\s*[—-]\s*(\d+)\s*шт", calc or ""):
+            p = self.catalog.find(m.group(1))
+            if p and self.add_line(did, p.article, int(m.group(2)), user):
+                n += 1
+        return n
 
     def add_line(self, did: int, article: str, qty: int, user: str, price: int | None = None) -> str | None:
         p = self.catalog.get(article)

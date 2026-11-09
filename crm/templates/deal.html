@@ -60,12 +60,14 @@
 </div>
 {% if lines %}
 <div class="panel pad sendcalc">
-  <form class="row wrap" method="post" action="{{ url_for('deal_send_calc', did=d['id']) }}">
+  <form class="grid2" method="post" action="{{ url_for('deal_send_calc', did=d['id']) }}">
     <input type="hidden" name="csrf" value="{{ csrf }}">
-    <label class="f grow">E-mail клиента<input name="email" type="email" value="{{ d['email'] }}" placeholder="кому прислать расчёт" required></label>
-    <button class="btn-p">Отправить расчёт на почту</button>
+    <label class="f span2">Текст клиенту в начале письма (необязательно)<textarea name="client_note" rows="3" placeholder="Например: как договорились по телефону — 20 панелей A907 и плинтус A704; срок поставки 3–4 недели.">{{ d['client_note'] }}</textarea></label>
+    <label class="f span2">Ссылка на оплату из Точки (если клиент готов платить)<input name="pay_link" type="url" value="{{ d['pay_link'] }}" placeholder="https://… — ссылка или QR из Точки"></label>
+    <label class="f">E-mail клиента<input name="email" type="email" value="{{ d['email'] }}" placeholder="кому прислать расчёт"></label>
+    <div class="f"><span>&nbsp;</span><div class="row wrap"><button class="btn-p">Отправить расчёт на почту</button><button class="btn-s" name="save_only" value="1">Сохранить текст</button></div></div>
   </form>
-  <div class="row wrap" style="margin-top:8px"><button class="btn-s" type="button" id="copyCalc">Скопировать расчёт для мессенджера</button><span class="d">Письмо уйдёт с noreply@{{ SHOP_DOMAIN }}, ответы — на zakaz@. После отправки этап станет «Расчёт отправлен».</span></div>
+  <div class="row wrap" style="margin-top:8px"><button class="btn-s" type="button" id="copyCalc">Скопировать расчёт для мессенджера</button><span class="d">Письмо уйдёт с noreply@{{ SHOP_DOMAIN }}, ответы — на zakaz@. После отправки этап станет «Расчёт отправлен». Позиции из заявки с сайта подставляются в расчёт сами.</span></div>
   <pre id="calcText" hidden>{{ calc_text }}</pre>
 </div>
 {% endif %}

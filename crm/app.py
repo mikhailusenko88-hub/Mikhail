@@ -302,14 +302,20 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         gross = sum(int(ln["qty"]) * int(ln["price"]) for ln in lines)
         total = Store.total(gross, d["discount"])
         dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
-        out = [f"Здравствуйте, {d['client_name']}!", "", f"Расчёт №{d['id']} от «Наш декор»:", ""]
+        out = [f"Здравствуйте, {d['client_name']}!", ""]
+        if (d["client_note"] or "").strip():
+            out += [d["client_note"].strip(), ""]
+        out += [f"Расчёт №{d['id']} от «Наш декор»:", ""]
         for ln in lines:
             p = store.catalog.get(ln["article"])
             nm = p.name if p and ln["article"] in p.name else (f"{ln['article']} {p.name}" if p else ln["article"])
             out.append(f"• {nm} — {ln['qty']} шт × {int(ln['price']):,} ₽ = {int(ln['qty']) * int(ln['price']):,} ₽".replace(",", " "))
         if d["discount"]:
             out += ["", f"Без скидки: {gross:,} ₽".replace(",", " "), f"Скидка {d['discount']}%"]
-        out += ["", f"Итого: {total:,} ₽".replace(",", " "), "",
+        out += ["", f"Итого: {total:,} ₽".replace(",", " ")]
+        if (d["pay_link"] or "").strip():
+            out += ["", f"Оплатить онлайн (карта, СБП): {d['pay_link'].strip()}", "После оплаты пришлём подтверждение и согласуем доставку."]
+        out += ["",
                 "Цены без НДС. Доставка по Санкт-Петербургу и Ленобласти рассчитывается отдельно, самовывоз со склада — бесплатно.",
                 "Расчёт действует 7 дней; наличие и срок поставки подтвердим при заказе.", "",
                 f"Ответить на это письмо или написать: zakaz@{dom}", f"Сайт: https://{dom}", "", "С уважением, «Наш декор»"]
@@ -325,6 +331,11 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         lines = store.lines(did)
         if not lines:
             flash("В расчёте нет позиций — добавьте товар.", "err")
+            return redirect(url_for("deal_view", did=did) + "#lines")
+        store.set_deal_text(did, who(), request.form.get("client_note", ""), request.form.get("pay_link", ""))
+        d = store.deal(did)
+        if request.form.get("save_only"):
+            flash("Текст для клиента сохранён.", "ok")
             return redirect(url_for("deal_view", did=did) + "#lines")
         email = request.form.get("email", "").strip()[:120]
         if not email or "@" not in email or " " in email:
@@ -389,9 +400,13 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         art = (request.form.get("article") or "").strip()
         qty = request.form.get("qty", "0")
         if art:
-            got = store.add_line(did, art, int(qty) if qty.strip().isdigit() else 0, who())
-            if got and not store.catalog.get(got):
-                flash(f"Артикула {got} нет в каталоге сайта — цену впишите сами.", "err")
+            p = store.catalog.find(art)
+            if not p:
+                flash(f"Артикула «{art}» нет в каталоге сайта. Проверьте написание — например A902, GS 1, 2-7, A611/2.", "err")
+                return redirect(url_for("deal_view", did=did) + "#lines")
+            store.add_line(did, p.article, int(qty) if qty.strip().isdigit() else 0, who())
+            if p.article.upper() != art.upper().replace(" ", ""):
+                flash(f"Добавлен {p.article} («{art}»).", "ok")
         return redirect(url_for("deal_view", did=did) + "#lines")
 
     @app.post("/lines/<int:lid>")
@@ -695,6 +710,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                 kind=who_kind, want=msg, source="site",
                                 calc=calc, consent_at=str(data.get("consentAt") or "")[:40] or store_now(),
                                 consent_version=str(data.get("consentVersion") or "")[:40])
+        if calc:
+            store.lines_from_calc(did, calc, "сайт")
         txt = f"Новая заявка с сайта №{did}: {name}, {contact}" + (f", {email}" if email else "") + (f"\n{msg}" if msg else "")
         store.notify_team(txt)
         send_mail(conf["NOTIFY_EMAIL"], f"Заявка с сайта №{did}", txt + f"\n\nCRM: https://crm.{conf['SHOP_DOMAIN']}/deals/{did}"

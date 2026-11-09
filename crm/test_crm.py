@@ -489,6 +489,39 @@ class TestApi(Base):
         page = self.c.get(f"/deals/{did}").get_data(as_text=True)
         self.assertIn("Отправить расчёт на почту", page); self.assertIn('id="calcText"', page)
 
+    def test_lines_from_site_calc_and_fuzzy_article(self) -> None:
+        cat = self.store.catalog
+        self.assertEqual(cat.find("912").article, "A912")          # без буквы
+        self.assertEqual(cat.find("a 912").article, "A912")
+        self.assertEqual(cat.find("gs1").article, "GS 1")
+        self.assertIsNone(cat.find("999"))
+        # страница товара: «Товар: A912 (реечная панель) — 12 шт»
+        did = self.lead(calc="Товар: A912 (реечная панель) — 12 шт, цвет: Шалфей\nСтена 450×280 см, запас 10%\nИтого ≈ 11 880 ₽ (предварительно)").get_json()["id"]
+        ln = {r["article"]: r["qty"] for r in self.store.lines(did)}
+        self.assertEqual(ln, {"A912": 12})
+        # расчёт стены с главной: панель + уголок
+        did2 = self.lead(calc="Стена 320×270 см, проёмы 0 м², запас 10%\nA912 — 20 шт, цвет: белый, под покраску, ≈ 19 800 ₽\nA116 — 4 шт, цвет: белый\nИтого ≈ 21 200 ₽ (предварительно)").get_json()["id"]
+        ln = {r["article"]: (r["qty"], r["price"]) for r in self.store.lines(did2)}
+        self.assertEqual(ln, {"A912": (20, 990), "A116": (4, 350)})
+        # вручную: «912» → A912, «999» — отказ без строки
+        self.login()
+        self.post(f"/deals/{did}/lines", {"article": "912", "qty": "3"})
+        self.assertEqual({r["article"]: r["qty"] for r in self.store.lines(did)}, {"A912": 3})
+        self.post(f"/deals/{did}/lines", {"article": "999", "qty": "1"})
+        self.assertEqual(len(self.store.lines(did)), 1)
+        # текст клиенту и ссылка на оплату — в письме
+        sent = {}
+        def fake_mail(to, subject, body, sender="", reply_to=""):
+            sent.update(to=to, body=body); return True
+        orig = crm_app.send_mail; crm_app.send_mail = fake_mail
+        try:
+            self.post(f"/deals/{did}/send-calc", {"email": "e@example.com", "client_note": "Как договорились по телефону.", "pay_link": "https://pay.tochka.com/abc"})
+        finally:
+            crm_app.send_mail = orig
+        self.assertIn("Как договорились по телефону.", sent["body"]); self.assertIn("https://pay.tochka.com/abc", sent["body"])
+        d = self.store.deal(did)
+        self.assertEqual((d["client_note"], d["pay_link"], d["stage"]), ("Как договорились по телефону.", "https://pay.tochka.com/abc", "quote"))
+
     def test_preflight(self) -> None:
         r = self.c.options("/api/lead", headers={"Origin": "https://nashdekor.ru",
                                                  "Access-Control-Request-Method": "POST"})
