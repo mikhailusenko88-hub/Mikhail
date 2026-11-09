@@ -680,6 +680,10 @@ class Store:
                 c.execute("UPDATE deals SET stock_written=0 WHERE id=?", (did,))
             return d["stage"]
 
+    def rename_open_task(self, did: int, old: str, new: str, user: str) -> None:
+        with self.tx() as c:
+            c.execute("UPDATE tasks SET title=? WHERE deal_id=? AND done_at IS NULL AND title=?", (new, did, old))
+
     def next_stage(self, did: int, user: str) -> str | None:
         d = self.c().execute("SELECT stage FROM deals WHERE id=?", (did,)).fetchone()
         if not d:

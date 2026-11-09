@@ -744,10 +744,14 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         email = str(data.get("email") or "").strip()[:120]
         if email and ("@" not in email or " " in email):
             email = ""
-        is_order = str(data.get("intent") or "").lower() == "buy"
+        intent = str(data.get("intent") or "").lower()
+        is_order = intent == "buy"
+        is_call = intent == "call"
         address = str(data.get("address") or "").strip()[:500]
         if is_order:
             msg = ("ЗАКАЗ. " + (f"Доставка: {address}. " if address else "") + msg).strip()
+        elif is_call:
+            msg = ("ПЕРЕЗВОНИТЬ. " + msg).strip()
         phone, cemail, messenger = split_contact(contact)
         did = store.create_deal("сайт", None, name=name, contact=contact, phone=phone, email=email or cemail, messenger=messenger,
                                 kind=who_kind, want=msg, source="site",
@@ -757,9 +761,12 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             store.lines_from_calc(did, calc, "сайт")
         if is_order and address:
             store.update_deal(did, "сайт", address=address)
-        txt = (f"Новый ЗАКАЗ с сайта №{did}" if is_order else f"Новая заявка с сайта №{did}") + f": {name}, {contact}" + (f", {email}" if email else "") + (f"\n{msg}" if msg else "")
+        if is_call:
+            store.rename_open_task(did, "Связаться с клиентом", "Перезвонить клиенту", "сайт")
+        head = f"Новый ЗАКАЗ с сайта №{did}" if is_order else f"Просьба ПЕРЕЗВОНИТЬ с сайта №{did}" if is_call else f"Новая заявка с сайта №{did}"
+        txt = head + f": {name}, {contact}" + (f", {email}" if email else "") + (f"\n{msg}" if msg else "")
         store.notify_team(txt)
-        send_mail(conf["NOTIFY_EMAIL"], f"Заявка с сайта №{did}", txt + f"\n\nCRM: https://crm.{conf['SHOP_DOMAIN']}/deals/{did}"
+        send_mail(conf["NOTIFY_EMAIL"], head, txt + f"\n\nCRM: https://crm.{conf['SHOP_DOMAIN']}/deals/{did}"
                   if conf["SHOP_DOMAIN"] else txt)
         return cors(jsonify(ok=True, id=did)), 200
 

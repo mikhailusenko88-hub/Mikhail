@@ -540,6 +540,17 @@ class TestApi(Base):
         page = self.c.get("/board").get_data(as_text=True)
         self.assertIn("card warm", page)                                          # открытая задача → подсвечена
 
+    def test_site_callback_request(self) -> None:
+        orig = crm_app.send_mail; crm_app.send_mail = lambda *a, **k: True
+        try:
+            r = self.lead(intent="call", message="Перезвоните мне, пожалуйста. Удобное время: после 18", calc="")
+        finally:
+            crm_app.send_mail = orig
+        did = r.get_json()["id"]
+        d = self.store.deal(did)
+        self.assertTrue(d["want"].startswith("ПЕРЕЗВОНИТЬ."))
+        self.assertEqual([x["title"] for x in self.store.tasks(deal_id=did)], ["Перезвонить клиенту"])
+
     def test_lines_from_site_calc_and_fuzzy_article(self) -> None:
         cat = self.store.catalog
         self.assertEqual(cat.find("912").article, "A912")          # без буквы
