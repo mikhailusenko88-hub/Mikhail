@@ -20,6 +20,7 @@ echo "og:image: $(grep -o 'og:image" content="[^"]*"' /tmp/i.html | head -1)"
 echo "ld+json: $(grep -c 'application/ld+json' /tmp/i.html)"
 echo "адрес формы в сайте: $(grep -o 'https://crm\.[a-z.]*/api/lead' /tmp/i.html | head -1)"
 echo "форма — ответ «Спасибо… Заявка отправлена» и кнопка «ещё одна»: $(grep -c 'id="lAgain"' /tmp/i.html), версия сайта: $(grep -c 'openLeadForm' /tmp/i.html)"
+echo "счётчик на главной: $(grep -c 'crm.nashdekor.ru/api/hit' /tmp/i.html), в политике п. 3.4: $(curl -s "$U/privacy.html" | grep -c 'счётчик посещений'), на документах: $(for f in oferta privacy consent; do curl -s "$U/$f.html" | grep -c api/hit; done | tr '\n' ' ')"
 echo
 echo "--- robots.txt"; curl -s "$U/robots.txt"
 echo "--- заголовки X-Robots-Tag главной: $(curl -sI "$U/" | grep -i x-robots || echo нет)"
