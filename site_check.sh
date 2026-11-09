@@ -25,13 +25,18 @@ echo "контакты: MAX в списке: $(grep -c '\["MAX", SHOP.max' /tmp/
 echo "счётчик на главной: $(grep -c 'crm.nashdekor.ru/api/hit' /tmp/i.html), в политике п. 3.4: $(curl -s "$U/privacy.html" | grep -c 'счётчик посещений'), на документах: $(for f in oferta privacy consent; do curl -s "$U/$f.html" | grep -c api/hit; done | tr '\n' ' ')"
 echo
 echo "--- страницы товаров и разделов (сборка nashdekor-build/build.py)"
-for p in /p/a907/ /p/2-7/ /p/a35/ /p/a002-2/ /p/gs1/ /catalog/reechnye-paneli/ /catalog/paneli-pod-derevo/ /catalog/plintusy/ /assets/p.js /assets/p.css /mebel/_lib/three.min.js /mebel/_lib/OrbitControls.js /img/A907.jpg; do
+for p in /p/a907/ /p/2-7/ /p/a35/ /p/a002-2/ /p/gs1/ /catalog/reechnye-paneli/ /catalog/paneli-pod-derevo/ /catalog/plintusy/ /catalog/stenovye-paneli/ /catalog/plintus-s-podsvetkoy/ /stati/ /stati/kak-otrezat-ugol-potolochnogo-plintusa/ /dostavka/ /assets/p.js /assets/p.css /mebel/_lib/three.min.js /mebel/_lib/OrbitControls.js /img/A907.jpg; do
   printf '%-34s %s\n' "$p" "$(curl -s -o /dev/null -w '%{http_code} %{content_type} %{size_download}' "$U$p")"
 done
 curl -s "$U/p/a907/" -o /tmp/p.html
 echo "товар A907: title: $(grep -o '<title>[^<]*</title>' /tmp/p.html | head -1)"
 echo "  canonical: $(grep -o 'rel="canonical" href="[^"]*"' /tmp/p.html | head -1), ld+json: $(grep -c 'application/ld+json' /tmp/p.html), Product: $(grep -c '"@type": "Product"' /tmp/p.html), 3D canvas: $(grep -c 'id="c3"' /tmp/p.html), профиль svg: $(grep -c '<svg viewBox' /tmp/p.html), window.P: $(grep -c 'window.P=' /tmp/p.html)"
 echo "  форма A907: «Купить»: $(grep -c 'id="toBuy"' /tmp/p.html), режимы Заявка/Купить/Звонок: $(grep -o 'data-m="[a-z]*"' /tmp/p.html | sort -u | tr '\n' ' '), адрес доставки: $(grep -c 'id="lAddr"' /tmp/p.html), телефон (0): $(grep -c '204-10-47' /tmp/p.html), Г2 (0): $(grep -c 'Г2' /tmp/p.html)"
+echo "SEO 09.11: главная title: $(grep -o '<title>[^<]*' /tmp/i.html | sed 's/<title>//'), H1: $(grep -o '<h1>[^<]*' /tmp/i.html | sed 's/<h1>//')"
+echo "  A907 title: $(grep -o '<title>[^<]*' /tmp/p.html | sed 's/<title>//'), «С этим берут»: $(grep -c 'С этим берут' /tmp/p.html), отправка ТК: $(grep -c 'Отправляем в Москву' /tmp/p.html)"
+curl -s "$U/catalog/stenovye-paneli/" -o /tmp/hub.html; echo "  хаб: H1 $(grep -o '<h1[^>]*>[^<]*' /tmp/hub.html | sed 's/<h1[^>]*>//'), карточек: $(grep -c 'class="card"' /tmp/hub.html), FAQ: $(grep -c '<details>' /tmp/hub.html), запрещённые слова (0): $(grep -c 'пенопласт\|МДФ\|ПВХ\|Г2' /tmp/hub.html)"
+curl -s "$U/catalog/plintusy/" -o /tmp/pl.html; echo "  плинтусы: групп по высоте: $(grep -c 'id="h[0-9]*"' /tmp/pl.html), title: $(grep -o '<title>[^<]*' /tmp/pl.html | sed 's/<title>//')"
+echo "  статей в sitemap: $(curl -s "$U/sitemap.xml" | grep -c '/stati/'), всего адресов: $(curl -s "$U/sitemap.xml" | grep -c '<loc>'), доставка: $(curl -s "$U/dostavka/" | grep -c 'FAQPage')"
 curl -s "$U/p/a35/" -o /tmp/m.html
 echo "молдинг A35: 3D canvas: $(grep -c 'id="c3"' /tmp/m.html), профиль svg: $(grep -c '<svg viewBox' /tmp/m.html), контур poly: $(grep -c '"poly":' /tmp/m.html); счётчик панелей на A907: $(grep -c 'id="nPlus"' /tmp/p.html)"
 echo "«моя стена» на A907: блок: $(grep -c 'id="wallBox"' /tmp/p.html), вкладка: $(grep -c 'data-v="wall"' /tmp/p.html); p.js со стеной: $(curl -s "$U/assets/p.js" | grep -c 'function buildWall')"
