@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-09 06:38 UTC
+# Сайт снаружи — 2026-11-09 09:18 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -22,6 +22,7 @@ og:image: og:image" content="https://nashdekor.ru/og.jpg"
 ld+json: 1
 адрес формы в сайте: https://crm.nashdekor.ru/api/lead
 форма — ответ «Спасибо… Заявка отправлена» и кнопка «ещё одна»: 1, версия сайта: 3
+счётчик на главной: 1, в политике п. 3.4: 1, на документах: 1 1 1 
 
 --- robots.txt
 User-agent: *
