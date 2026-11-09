@@ -23,6 +23,16 @@ echo "форма — ответ «Спасибо… Заявка отправл�
 echo "контакты: MAX в списке: $(grep -c '\["MAX", SHOP.max' /tmp/i.html), подсказка «позвонить или написать в MAX»: $(grep -c 'написать в MAX' /tmp/i.html), WhatsApp: $(grep -ci whatsapp /tmp/i.html); боты в политике: $(curl -s "$U/privacy.html" | grep -c 'далее — Боты'), в согласии: $(curl -s "$U/consent.html" | grep -c 'MAX, Telegram'), в оферте: $(curl -s "$U/oferta.html" | grep -c 'чат-боте магазина в MAX')"
 echo "счётчик на главной: $(grep -c 'crm.nashdekor.ru/api/hit' /tmp/i.html), в политике п. 3.4: $(curl -s "$U/privacy.html" | grep -c 'счётчик посещений'), на документах: $(for f in oferta privacy consent; do curl -s "$U/$f.html" | grep -c api/hit; done | tr '\n' ' ')"
 echo
+echo "--- страницы товаров и разделов (сборка nashdekor-build/build.py)"
+for p in /p/a907/ /p/2-7/ /p/a35/ /p/a002-2/ /p/gs1/ /catalog/reechnye-paneli/ /catalog/paneli-pod-derevo/ /catalog/plintusy/ /assets/p.js /assets/p.css /mebel/_lib/three.min.js /mebel/_lib/OrbitControls.js /img/A907.jpg; do
+  printf '%-34s %s\n' "$p" "$(curl -s -o /dev/null -w '%{http_code} %{content_type} %{size_download}' "$U$p")"
+done
+curl -s "$U/p/a907/" -o /tmp/p.html
+echo "товар A907: title: $(grep -o '<title>[^<]*</title>' /tmp/p.html | head -1)"
+echo "  canonical: $(grep -o 'rel="canonical" href="[^"]*"' /tmp/p.html | head -1), ld+json: $(grep -c 'application/ld+json' /tmp/p.html), Product: $(grep -c '"@type": "Product"' /tmp/p.html), 3D canvas: $(grep -c 'id="c3"' /tmp/p.html), профиль svg: $(grep -c '<svg viewBox' /tmp/p.html), window.P: $(grep -c 'window.P=' /tmp/p.html)"
+echo "sitemap: адресов $(curl -s "$U/sitemap.xml" | grep -c '<loc>'), из них /p/: $(curl -s "$U/sitemap.xml" | grep -c '<loc>https://nashdekor.ru/p/'), /catalog/: $(curl -s "$U/sitemap.xml" | grep -c '/catalog/')"
+echo "главная: ссылок на p/ в коде карточек: $(grep -c 'href="\${href}"' /tmp/i.html), ссылки на разделы: $(grep -o 'catalog/[a-z-]*/' /tmp/i.html | sort -u | wc -l), ?panel= в расчёт: $(grep -c 'QS.get("panel")' /tmp/i.html)"
+echo
 echo "--- robots.txt"; curl -s "$U/robots.txt"
 echo "--- заголовки X-Robots-Tag главной: $(curl -sI "$U/" | grep -i x-robots || echo нет)"
 echo
