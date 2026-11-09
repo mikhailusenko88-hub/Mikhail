@@ -1024,10 +1024,12 @@ MK.compile = function (ep, lib, audio) {
         if (step.to && step.say && C[step.to]) ch.ev.push({ t: start, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 });
         else if (step.say && ch && ch.vis && !step.with && who !== 'Р') {   // говорит — смотрит на собеседника (кто говорил перед ним, иначе ближайший), а не в пустоту; к зрителям — в экран
           const busy = ch.ev.some(e => (e.k === 'move' && e.t <= start + .6 && e.t1 >= start) || (e.k === 'act' && e.t <= start + .3 && e.t1 >= start)); let lp = null, lf = null; for (const e of ch.ev) { if (e.t > start + .2) continue; if (e.k === 'persist' && (!lp || e.t >= lp.t)) lp = e; if (e.k === 'face' && (!lf || e.t >= lf.t)) lf = e; }
-          if (!busy && !(lp && lp.v !== 'none') && !(lf && lf.t > start - .05 && lf.t <= start + .2)) {
+          const mv = busy ? ch.ev.find(e => e.k === 'move' && e.t <= start + .6 && e.t1 >= start && e.t1 < start + 2.5 && ch.x > .02 && ch.x < .98) : null;   // договаривает на ходу — дошёл и повернулся к собеседнику
+          const fT = mv ? mv.t1 + .3 : start;
+          if ((!busy || mv) && !(lp && lp.v !== 'none') && !(lf && lf.t > start - .05 && lf.t <= start + .2)) {
             let pt = lastSpk && lastSpk !== who && C[lastSpk] && C[lastSpk].vis ? C[lastSpk] : null; if (!pt) { let nd = 9; for (const id in C) { const o = C[id]; if (id === who || !o.vis) continue; const d0 = Math.abs(o.x - ch.x); if (d0 < nd) { nd = d0; pt = o; } } }
             const v2 = /(^|[^а-яё])(зрител|дети,|ребята, привет|привет, ребята)/i.test(String(step.say)) || !pt || Math.abs(pt.x - ch.x) < .03 ? 0 : pt.x >= ch.x ? 1 : -1;
-            if (!lf || lf.v !== v2) ch.ev.push({ t: start, k: 'face', v: v2 }); } }
+            if (mv || !lf || lf.v !== v2) ch.ev.push({ t: fT, k: 'face', v: v2 }); } }
         if (step.say && ch && who !== 'Р' && !step.with) lastSpk = who;
         if (step.say && !step.with) { let k = 0; for (const id in C) { const o = C[id]; if (id === who || !o.vis || Math.abs(o.x - ch.x) < .03) continue;
             if (o.ev.some(e => (e.k === 'move' && e.t <= start + 1.2 && e.t1 >= start) || (e.k === 'act' && e.t <= start + .6 && e.t1 >= start))) continue;   // идёт или занят делом — не дёргаем
