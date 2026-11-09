@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-09 19:24 UTC
+# Сайт снаружи — 2026-11-09 19:45 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -22,25 +22,26 @@ og:image: og:image" content="https://nashdekor.ru/og.jpg"
 ld+json: 1
 адрес формы в сайте: https://crm.nashdekor.ru/api/lead
 форма — ответ «Спасибо… Заявка отправлена» и кнопка «ещё одна»: 1, версия сайта: 3
+чат: скрипт на главной 0, на A907 0, файл 404 146б, личный Telegram (0): 1 4 1 1
 телефон на сайте (должно быть 0): 0, класс Г2 (должно быть 0): 0, кнопка «Заказать звонок»: 1
-контакты: MAX в списке: 1, подсказка «позвонить или написать в MAX»: 1, WhatsApp: 0; боты в политике: 1, в согласии: 1, в оферте: 1
+контакты: MAX в списке: 1, подсказка «позвонить или написать в MAX»: 1, WhatsApp: 0; боты в политике: 1, в согласии: 1, в оферте: 0
 счётчик на главной: 1, в политике п. 3.4: 1, на документах: 1 1 1 
 
 --- страницы товаров и разделов (сборка nashdekor-build/build.py)
-/p/a907/                           200 text/html; charset=utf-8 31596
-/p/2-7/                            200 text/html; charset=utf-8 29874
-/p/a35/                            200 text/html; charset=utf-8 24567
-/p/a002-2/                         200 text/html; charset=utf-8 26219
-/p/gs1/                            200 text/html; charset=utf-8 31490
-/catalog/reechnye-paneli/          200 text/html; charset=utf-8 35616
-/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 45272
-/catalog/plintusy/                 200 text/html; charset=utf-8 43096
-/catalog/stenovye-paneli/          200 text/html; charset=utf-8 73302
-/catalog/plintus-s-podsvetkoy/     200 text/html; charset=utf-8 19670
-/stati/                            200 text/html; charset=utf-8 13858
-/stati/kak-otrezat-ugol-potolochnogo-plintusa/ 200 text/html; charset=utf-8 19389
-/dostavka/                         200 text/html; charset=utf-8 21294
-/assets/p.js                       200 application/javascript; charset=utf-8 36429
+/p/a907/                           200 text/html; charset=utf-8 31784
+/p/2-7/                            200 text/html; charset=utf-8 30062
+/p/a35/                            200 text/html; charset=utf-8 24755
+/p/a002-2/                         200 text/html; charset=utf-8 26407
+/p/gs1/                            200 text/html; charset=utf-8 31678
+/catalog/reechnye-paneli/          200 text/html; charset=utf-8 35804
+/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 45460
+/catalog/plintusy/                 200 text/html; charset=utf-8 43284
+/catalog/stenovye-paneli/          200 text/html; charset=utf-8 73490
+/catalog/plintus-s-podsvetkoy/     200 text/html; charset=utf-8 19858
+/stati/                            200 text/html; charset=utf-8 14043
+/stati/kak-otrezat-ugol-potolochnogo-plintusa/ 200 text/html; charset=utf-8 19577
+/dostavka/                         200 text/html; charset=utf-8 21479
+/assets/p.js                       200 application/javascript; charset=utf-8 36472
 /assets/p.css                      200 text/css 22009
 /mebel/_lib/three.min.js           200 application/javascript; charset=utf-8 603445
 /mebel/_lib/OrbitControls.js       200 application/javascript; charset=utf-8 26375
