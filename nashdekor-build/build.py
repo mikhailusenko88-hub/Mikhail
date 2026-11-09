@@ -344,11 +344,12 @@ def product_page(x):
     calc_btn = ('<a class="btn ghost" id="toCalc" href="%s?panel=%s#calc">Рассчитать на стену в 3D</a>' % (ROOT, esc(a))) if c in ("panel", "color") else ""
     per = ("за штуку · ≈ <span id=\"pm2\">%s</span> ₽/м² · %d шт в коробке" % (fmt(m2(x)), x["b"])) if m2(x) else "за штуку · %d шт в коробке" % x["b"]
     buy = ('<aside class="buy" aria-label="Цена и заказ"><div class="price">%s<small>%s</small></div><div class="stock" id="stock">Под заказ, 3–4 недели</div>'
-           '<div class="qty"><button type="button" id="qMinus" aria-label="Меньше">−</button><input type="number" id="qty" min="1" max="9999" value="1" inputmode="numeric" aria-label="Количество, шт">'
-           '<button type="button" id="qPlus" aria-label="Больше">+</button><button type="button" class="btn sm ghost" id="qBox">Коробка</button></div>'
+           '<div class="qty"><span class="qlbl">Количество</span><button type="button" id="qMinus" aria-label="Меньше">−</button><input type="number" id="qty" min="1" max="9999" value="1" inputmode="numeric" aria-label="Количество, штук">'
+           '<span class="unit">шт</span><button type="button" id="qPlus" aria-label="Больше">+</button></div>'
+           '<button type="button" class="btn sm ghost qbox" id="qBox">Взять коробкой — %d шт</button>'
            '<div class="total"><div><small>Итого, предварительно</small><b class="num" id="tSum">—</b></div><small id="tPack"></small></div>'
            '<button class="btn" type="button" id="toOrder">Заказать</button>%s'
-           '<p class="fine">Цена без НДС. Точную стоимость, наличие и доставку подтвердим в ответ на заявку.</p></aside>' % (price_b, per, calc_btn))
+           '<p class="fine">Цена без НДС. Точную стоимость, наличие и доставку подтвердим в ответ на заявку.</p></aside>' % (price_b, per, x["b"], calc_btn))
 
     rel = [y for y in CAT if y["c"] == c and y["a"] != a]
     if is_wood: rel = [y for y in rel if series(y) != series(x)][:6] or rel[:6]

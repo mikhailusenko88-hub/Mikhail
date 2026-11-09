@@ -50,7 +50,10 @@
 .buy .price small{font-size:13px}
 .buy .stock{font-size:14px;color:var(--muted)}
 .buy .stock.ok{color:#2b7a4b;font-weight:600}
-.qty{display:flex;align-items:center;gap:8px}
+.qty{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qty .qlbl{flex-basis:100%;font-size:13px;color:var(--muted)}
+.qty .unit{font-size:15px;color:var(--muted)}
+.buy .qbox{width:auto;align-self:flex-start;margin-top:-4px}
 .qty button{width:40px;height:40px;border:1px solid var(--line);background:var(--bg);border-radius:6px;font-size:20px;line-height:1}
 .qty input{width:84px;text-align:center;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 6px;font-size:16px}
 .ralcode{font-size:16px}

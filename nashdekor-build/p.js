@@ -345,7 +345,7 @@ function renderQty(){
   $("qty").value = qty;
   const sum = qty * price(), boxes = Math.floor(qty / X.b), rest = qty % X.b;
   $("tSum").textContent = sum ? fmt(sum) + " ₽" : "По запросу";
-  $("tPack").textContent = boxes ? `${boxes} кор.${rest ? " + " + rest + " шт" : ""} · ${X.b} шт в коробке` : `поштучно · ${X.b} шт в коробке`;
+  $("tPack").textContent = boxes ? `это ${boxes} кор.${rest ? " + " + rest + " шт" : ""} · в коробке ${X.b} шт` : `поштучно · в коробке ${X.b} шт`;
   if ($("oQty")) $("oQty").textContent = qty;
 }
 $("qMinus").addEventListener("click", () => { qty = Math.max(1, qty - 1); renderQty(); });
