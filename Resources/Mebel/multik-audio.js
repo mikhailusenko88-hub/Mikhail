@@ -261,7 +261,7 @@ MK.makeVocal = async function (ln, lib, nat, decode) {
     const rk = ((lib.characters || {})[ln.who] || {}).laugh;
     if (rk) { try { const r = await nat('recLoad', { key: rk }); if (r && r.wav) buf = await MK.prepRecorded(await decode(r.wav), ln.variant); } catch (e) { console.log('rec', e); } }
     // банк настоящих смехов (multik-laugh.js): запись смеха под голос героя, через его же тембр
-    if (!buf && typeof MKLaugh !== 'undefined') { try { await MKLaugh.load(); const id = MKLaugh.idFor(ln, lib); if (id && id !== 'voice') buf = await MKLaugh.render(id, { variant: ln.variant, short: ln.short, k: (ln.fx || {}).k }); } catch (e) { console.log('laughbank', e); } }
+    if (!buf && typeof MKLaugh !== 'undefined') { try { await MKLaugh.load(); const id = MKLaugh.idFor(ln, lib); if (id && id !== 'voice') buf = await MKLaugh.render(id, { variant: ln.variant, short: ln.short, k: (ln.fx || {}).k, m: MKLaugh.matchFor ? MKLaugh.matchFor(id, ((lib.characters || {})[ln.who] || {}).spec) : 1 }); } catch (e) { console.log('laughbank', e); } }
     if (!buf) { try { const r = await nat('tts', { text: MK.laughSyllable(ln), voice: ln.voice, key: 'syl-' + MK.hash32(MK.canon(ln.voice) + MK.laughSyllable(ln)).toString(36) }); if (r && r.wav) buf = await MK.buildLaughFrom(await decode(r.wav), ln); } catch (e) { console.log('syl', e); } }
   }
   if (!buf) buf = MK.synthVocal(ln);

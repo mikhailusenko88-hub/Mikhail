@@ -18,6 +18,8 @@
   };
   L.list = () => (L.bank && L.bank.laughs) || [];
   L.byId = id => L.list().find(x => x.id === id) || null;
+  /** Насколько поднять/опустить смех к голосу героя: наполовину (в логарифме) к его высоте, не больше ±25% — смех остаётся живым. Только у смехов с match. */
+  L.matchFor = function (id, spec) { const e = L.byId(id); if (!e || !e.match || !e.f0) return 1; return Math.min(1.25, Math.max(.8, Math.sqrt(L.targetF0(spec) / e.f0))); };
 
   /** Высота голоса героя до обработки тембром (тембр k потом одинаково сдвигает и речь, и смех):
       голос iPhone ≈ 205 Гц женский / 115 Гц мужской, умноженный на pitch. */
@@ -31,6 +33,7 @@
     if (pk === 'voice') return 'voice'; if (pk && L.byId(pk)) return pk;
     const nm = String((c.spec && c.spec.name) || '').trim().toLowerCase(), hd = (L.bank && L.bank.heroes) || {}; // выбранные на пробах (Барсик — F9, Рон — M4)
     if (nm && hd[nm] && L.byId(hd[nm])) return hd[nm];
+    { const kd = c.spec && c.spec.kind, fav = kd ? list.filter(x => (x.for || []).includes(kd)) : []; if (fav.length) return fav[hash32(String(ln.who) + ((c.spec && c.spec.name) || '')) % fav.length].id; }   // смех, подобранный под вид героя (медвежонку — тёплое низкое «хо-хо-хо», а не женское)
     if (ln.who === '?') { const K = list.filter(x => x.group === 'K' && x.style === 'giggle'); return (K[0] || list[0]).id; }
     const fx = ln.fx || {}, id = fx.id, t = L.targetF0(c.spec);
     const want = id === 'squeaky' || id === 'chipmunk' || id === 'baby' ? 'giggle' : (id === 'giant' || id === 'monster' || id === 'dragon' || id === 'deep') ? 'belly' : null;
@@ -83,9 +86,10 @@
     const v = (opt.variant || 0) % 3, rate = [1, 1.035, .97][v];
     let out = new Float32Array(b - a); out.set(d.subarray(a, b));
     { const n = out.length, f = Math.min(n >> 2, Math.round(sr * .04)); for (let i = 0; i < f; i++) { const g = i / f; out[n - 1 - i] *= g; out[i] *= Math.min(1, g * 4); } }
-    const k = opt.k || 1; if (k !== 1) out = wsola(out, sr, Math.min(1.8, Math.max(.6, k)));
-    const n = out.length, ac = new OfflineAudioContext(1, Math.ceil(n / rate) + 64, 44100);
-    const src = ac.createBufferSource(), bb = ac.createBuffer(1, n, sr); bb.copyToChannel(out, 0); src.buffer = bb; src.playbackRate.value = rate; src.connect(ac.destination); src.start(0);
+    const m = opt.m && Math.abs(opt.m - 1) > .02 ? Math.min(1.25, Math.max(.8, opt.m)) : 1;   // подтянуть высоту смеха к голосу героя (только у новых смехов с match): та же длина, тон ×m
+    const k = (opt.k || 1) * m; if (k !== 1) out = wsola(out, sr, Math.min(1.8, Math.max(.6, k)));
+    const n = out.length, ac = new OfflineAudioContext(1, Math.ceil(n / (rate * m)) + 64, 44100);
+    const src = ac.createBufferSource(), bb = ac.createBuffer(1, n, sr); bb.copyToChannel(out, 0); src.buffer = bb; src.playbackRate.value = rate * m; src.connect(ac.destination); src.start(0);
     return ac.startRendering();
   };
   global.MKLaugh = L;
