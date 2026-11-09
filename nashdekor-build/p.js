@@ -456,3 +456,10 @@ loadCatalog().then(items => {
   renderQty(); if (view === "wall") renderWall();
 });
 })();
+
+/* строка разделов: текущий раздел виден в строке, тень, когда строка «прилипла» */
+(() => { const sn = document.querySelector("nav.sections"); if (!sn) return;
+  const on = sn.querySelector('[aria-current="page"]'); if (on) sn.scrollLeft = Math.max(0, on.offsetLeft - 16);
+  let raf = 0;
+  addEventListener("scroll", () => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0;
+    sn.classList.toggle("stuck", sn.getBoundingClientRect().top <= 62.5 && scrollY > 80); }); }, { passive: true }); })();

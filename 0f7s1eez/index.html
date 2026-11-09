@@ -53,7 +53,7 @@ nav.links a{color:var(--ink);text-decoration:none}
 section{padding-block:8px 56px}
 .head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
 .head p{color:var(--muted);margin:6px 0 0;max-width:60ch;font-size:15px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tabs{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-bottom:12px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:4;padding:8px 0;background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax)}.tabs::-webkit-scrollbar{display:none}.tabs button{flex:0 0 auto;white-space:nowrap}.tabs.stuck{clip-path:inset(0 -100vmax -12px);box-shadow:0 0 0 100vmax var(--bg),0 8px 10px -8px rgba(0,0,0,.18)}
 .tabs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 14px;font-size:14px}
 .tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .search{width:100%;max-width:320px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:9px 12px}
@@ -526,7 +526,13 @@ document.addEventListener("click", e => {
   const t = e.target.closest("button"); if (!t) return;
   if (t.dataset.paint) { paint[t.dataset.paint] = { name: t.dataset.name, hex: t.dataset.hex }; if (t.dataset.name === "Белый") delete paint[t.dataset.paint]; renderGrid(); renderCalc(); return; }
   if (t.dataset.decor) { if (t.dataset.key === "calc") { $("cPanel").value = t.dataset.decor; renderCalc(); return; } pick[t.dataset.key] = t.dataset.decor; renderGrid(); return; }
-  if (t.dataset.cat) { cat = t.dataset.cat; shown = 12; renderTabs(); renderGrid(); }
+  if (t.dataset.cat) {
+    cat = t.dataset.cat; shown = 12; renderTabs(); renderGrid();
+    // строка разделов «едет» за прокруткой; после выбора — к началу списка, если клиент уже ушёл вниз
+    const y = $("grid").getBoundingClientRect().top + scrollY - (62 + $("tabs").offsetHeight + 8);
+    if (scrollY > y + 4) scrollTo({ top: y, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    const on = $("tabs").querySelector('[aria-pressed="true"]'); if (on) on.scrollIntoView({ block: "nearest", inline: "center" });
+  }
   else if (t.id === "moreBtn") { shown += 12; renderGrid(); }
   else if (t.dataset.use) { $("cPanel").value = t.dataset.use; renderCalc(); $("calc").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); }
   else if (t.dataset.ask) { openLeadForm(); $("lMsg").value = `Интересует ${t.dataset.ask}: цена и наличие`; $("lCalc").checked = false; $("order").scrollIntoView(); $("lName").focus({preventScroll:true}); }
@@ -752,6 +758,12 @@ const W3 = (() => {
 
 window.__w3 = W3; W3.init();
 
+
+/* вкладки каталога «прилипли» под шапкой — лёгкая тень снизу */
+(() => { const tb = $("tabs"); if (!tb) return; let raf = 0;
+  addEventListener("scroll", () => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0;
+    const r = tb.getBoundingClientRect(), g = $("grid").getBoundingClientRect();
+    tb.classList.toggle("stuck", r.top <= 62.5 && g.bottom > r.bottom + 40); }); }, { passive: true }); })();
 </script>
 
 <script src="assets/chat.js?v=20261109c" defer></script>

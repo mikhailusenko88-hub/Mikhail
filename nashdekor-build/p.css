@@ -172,3 +172,12 @@ a.card .price b{color:var(--ink)}
 .buy .fine.ship a{color:var(--ink)}
 .shipline{margin:26px 0 0;padding:12px 14px;border-left:3px solid var(--accent,#1d5e57);background:#fff;font-size:15px;line-height:1.5}
 .shipline a{color:var(--ink)}
+
+/* строка разделов на страницах разделов «едет» за прокруткой под шапкой, в одну строку с прокруткой вбок */
+.sections{position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:4;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;white-space:nowrap;padding:10px 0;margin:0 0 14px;background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax)}
+.sections::-webkit-scrollbar{display:none}
+.sections a{flex:0 0 auto}
+.sections a[aria-current="page"]{border-bottom:2px solid var(--ink)}
+.sections.stuck{clip-path:inset(0 -100vmax -12px);box-shadow:0 0 0 100vmax var(--bg),0 8px 10px -8px rgba(0,0,0,.18)}
+main h2[id]{scroll-margin-top:130px}

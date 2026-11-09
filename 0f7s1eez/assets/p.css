@@ -51,7 +51,7 @@ nav.links a{color:var(--ink);text-decoration:none}
 section{padding-block:8px 56px}
 .head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
 .head p{color:var(--muted);margin:6px 0 0;max-width:60ch;font-size:15px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tabs{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-bottom:12px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:4;padding:8px 0;background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax)}.tabs::-webkit-scrollbar{display:none}.tabs button{flex:0 0 auto;white-space:nowrap}.tabs.stuck{clip-path:inset(0 -100vmax -12px);box-shadow:0 0 0 100vmax var(--bg),0 8px 10px -8px rgba(0,0,0,.18)}
 .tabs button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 14px;font-size:14px}
 .tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .search{width:100%;max-width:320px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:9px 12px}
@@ -306,3 +306,12 @@ a.card .price b{color:var(--ink)}
 .buy .fine.ship a{color:var(--ink)}
 .shipline{margin:26px 0 0;padding:12px 14px;border-left:3px solid var(--accent,#1d5e57);background:#fff;font-size:15px;line-height:1.5}
 .shipline a{color:var(--ink)}
+
+/* строка разделов на страницах разделов «едет» за прокруткой под шапкой, в одну строку с прокруткой вбок */
+.sections{position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:4;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;white-space:nowrap;padding:10px 0;margin:0 0 14px;background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax)}
+.sections::-webkit-scrollbar{display:none}
+.sections a{flex:0 0 auto}
+.sections a[aria-current="page"]{border-bottom:2px solid var(--ink)}
+.sections.stuck{clip-path:inset(0 -100vmax -12px);box-shadow:0 0 0 100vmax var(--bg),0 8px 10px -8px rgba(0,0,0,.18)}
+main h2[id]{scroll-margin-top:130px}
