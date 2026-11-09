@@ -277,7 +277,7 @@ def test_team_leads_and_shipping_in_telegram(tmp_path):
 
 
 def test_telegram_without_contacts(tmp_path):
-    """TELEGRAM_COLLECT_CONTACTS=0 (по умолчанию): заявки — на сайт и в MAX, сотрудникам в Telegram — без ПДн."""
+    """TELEGRAM_COLLECT_CONTACTS=0 (по выбору): заявки — на сайт и в MAX, сотрудникам в Telegram — без ПДн."""
     async def scenario():
         h = harness(tmp_path, telegram_collect_contacts=False, site_url="https://example.ru",
                     max_bot_url="https://max.ru/id000000000000_bot")

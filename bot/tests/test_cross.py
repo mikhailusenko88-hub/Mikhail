@@ -2,7 +2,7 @@
 
 Сценарий как на сервере: менеджер подключён и в Telegram, и в MAX — уведомления
 ему идут в MAX; отгрузка — только в Telegram. Telegram без сбора контактов
-(TELEGRAM_COLLECT_CONTACTS=0, как по умолчанию).
+(TELEGRAM_COLLECT_CONTACTS=0, по выбору).
 """
 
 from __future__ import annotations

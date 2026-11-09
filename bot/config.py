@@ -91,9 +91,11 @@ class Config:
     catalog_refresh_min: int = 60
     reserve_percent: int = 7
     log_level: str = "INFO"
-    # Telegram: собирать ли контакты клиентов (заявки). 0 — нет: пока не подано уведомление
-    # в Роскомнадзор о трансграничной передаче, заявки принимает сайт и бот в MAX.
-    telegram_collect_contacts: bool = False
+    # Telegram: собирать ли контакты клиентов (заявки). По умолчанию 1: по разъяснению Роскомнадзора
+    # от 14.08.2026 переписка двух лиц из РФ через иностранный мессенджер — не трансграничная передача,
+    # отдельного уведомления не нужно (данные клиентов хранятся только на нашем сервере в РФ).
+    # 0 — заявки принимают только сайт и бот в MAX, сотрудникам в Telegram ПДн не показываются.
+    telegram_collect_contacts: bool = True
     staff_default_channel: str = CH_MAX                 # куда слать сотруднику, если он в обоих
     max_bot_url: str = ""                               # https://max.ru/<ник бота>
     max_api_url: str = DEFAULT_MAX_API_URL
@@ -141,7 +143,7 @@ def load_config(channel: str | None = None) -> Config:
         catalog_refresh_min=_env_int("CATALOG_REFRESH_MIN", 60, 5, 24 * 60),
         reserve_percent=_env_int("RESERVE_PERCENT", 7, 0, 30),
         log_level=(_env("LOG_LEVEL", "INFO") or "INFO").upper(),
-        telegram_collect_contacts=_env_bool("TELEGRAM_COLLECT_CONTACTS", False),
+        telegram_collect_contacts=_env_bool("TELEGRAM_COLLECT_CONTACTS", True),
         staff_default_channel=_env("STAFF_DEFAULT_CHANNEL", CH_MAX) or CH_MAX,
         max_bot_url=_url(_env("MAX_BOT_URL")),
         max_api_url=_url(_env("MAX_API_URL", DEFAULT_MAX_API_URL)) or DEFAULT_MAX_API_URL,
