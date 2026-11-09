@@ -273,8 +273,8 @@ function swatch(x){
   const band = Math.max(8, Math.min(40, Math.round(x.w / 3)));
   return `background:linear-gradient(180deg,var(--paper) 0 calc(50% - ${band/2}px),var(--line) calc(50% - ${band/2}px) calc(50% - ${band/2 - 2}px),var(--sunk) calc(50% - ${band/2 - 2}px) calc(50% + ${band/2}px),var(--line) calc(50% + ${band/2}px) calc(50% + ${band/2 + 2}px),var(--paper) calc(50% + ${band/2 + 2}px))`;
 }
-/* Наличие — из CRM магазина: x.q — свободный остаток (null — CRM не ответила, тогда строку не показываем) */
-const stockHtml = x => x.q == null ? "" : x.q > 0 ? `<small class="stock ok">В наличии: ${fmt(x.q)} шт</small>` : `<small class="stock">Под заказ, 3–4 недели</small>`;
+/* Наличие — из CRM магазина: x.q — свободный остаток. Нет остатка (0) или CRM не ответила — «Под заказ, 3–4 недели» */
+const stockHtml = x => x.q > 0 ? `<small class="stock ok">В наличии: ${fmt(x.q)} шт</small>` : `<small class="stock">Под заказ, 3–4 недели</small>`;
 const priceHtml = x => (x.r ? `<b class="num">${fmt(x.r)} ₽</b><small>за шт · ${x.b} шт в коробке</small>` : `<b>По запросу</b><small>${x.b} шт в коробке</small>`) + stockHtml(x);
 
 function renderTabs(){
