@@ -1,0 +1,62 @@
+name: carriers-check
+# Калькуляторы перевозчиков Алматы -> Санкт-Петербург снаружи (не через VPN).
+# Запуск — изменение этого файла в ветке domain-check или вручную. Результат — status/carriers.md
+on:
+  push:
+    branches: [domain-check]
+    paths: ['.github/workflows/carriers-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Проверить
+        shell: python
+        run: |
+          import json, urllib.request, urllib.parse, os, traceback
+          UA = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36', 'Accept-Language': 'ru-RU,ru'}
+          out = ['# Перевозчики Алматы -> СПб, проверка с GitHub', '']
+          def get(u):
+              r = urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=40)
+              return r.status, r.read().decode('utf-8', 'replace')
+          for u in ['https://www.dellin.ru/', 'https://pecom.ru/', 'https://tk-kit.com/', 'https://www.cdek.ru/ru/calculate/', 'https://api.ipify.org']:
+              try:
+                  s, b = get(u); out.append(f'- {u}: {s}, {len(b)} байт' + (f' ({b[:40]})' if 'ipify' in u else ''))
+              except Exception as e:
+                  out.append(f'- {u}: ошибка {e}')
+          out.append('')
+          try:
+              s, b = get('https://pecom.ru/ru/calc/towns.php')
+              towns = json.loads(b)
+              ids = {}
+              for reg, d in towns.items():
+                  for tid, name in d.items():
+                      n = name.strip()
+                      if n in ('Алматы', 'Санкт-Петербург'):
+                          ids.setdefault(n, tid); out.append(f'- ПЭК город: {reg} / {n} = {tid}')
+              fr = ids.get('Алматы'); to = ids.get('Санкт-Петербург')
+              for crate in (0, 1):
+                  p = [('take[town]', fr), ('deliver[town]', to), ('strah', '0'), ('ashan', '0'), ('night', '0'), ('pal', '0'), ('pallets', '0')]
+                  places = [[0.19, 3, 0.13, 0.074, 20.6, 0, crate]] * 17 + [[0.2, 2, 0.15, 0.06, 20, 0, crate]] * 7
+                  for i, pl in enumerate(places):
+                      for v in pl: p.append((f'places[{i}][]', str(v)))
+                  q = p + [('deliver[gidro]', '0'), ('deliver[speed]', '0'), ('deliver[tent]', '0'), ('deliver[manip]', '0'), ('deliver[moscow]', '0')]
+                  s, b = get('https://calc.pecom.ru/bitrix/components/pecom/calc/ajax.php?' + urllib.parse.urlencode(q))
+                  out.append(f'\n## ПЭК обрешётка={crate}\n```\n{b[:3000]}\n```')
+          except Exception:
+              out.append('ПЭК: ' + traceback.format_exc()[-800:])
+          os.makedirs('status', exist_ok=True)
+          open('status/carriers.md', 'w').write('\n'.join(out) + '\n')
+          print('\n'.join(out))
+      - name: Сохранить результат
+        run: |
+          git config user.name "carriers-check"
+          git config user.email "carriers-check@users.noreply.github.com"
+          git add status
+          git commit -m "carriers $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check
