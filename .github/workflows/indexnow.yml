@@ -1,0 +1,43 @@
+name: indexnow
+# Сообщить Bing и Яндексу о новых/изменённых страницах nashdekor.ru (IndexNow).
+# Срабатывает на push в ветку mebel, если меняется сайт (0f7s1eez/) или indexnow.txt.
+# Изменить indexnow.txt — переотправить все страницы из sitemap. Отчёт — status/indexnow.md в ветке domain-check.
+on:
+  push:
+    branches: [mebel]
+    paths: ['0f7s1eez/**', 'indexnow.txt']
+permissions:
+  contents: write
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
+          sparse-checkout: .github
+      - uses: actions/checkout@v4
+        with:
+          ref: domain-check
+          path: st
+      - name: Отправить в IndexNow
+        env:
+          INDEXNOW_KEY: 1a06371a537e385ae6bb830b593a5315
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          STATUS_FILE: st/status/indexnow.md
+        run: python3 .github/indexnow.py
+      - name: Сохранить отчёт
+        if: always()
+        working-directory: st
+        run: |
+          git config user.name "indexnow"
+          git config user.email "indexnow@users.noreply.github.com"
+          git add status/indexnow.md 2>/dev/null || exit 0
+          git commit -m "indexnow $(date -u +%F_%H:%M)" || exit 0
+          for i in 1 2 3 4; do git pull --rebase origin domain-check && git push origin HEAD:domain-check && break; sleep 7; done
