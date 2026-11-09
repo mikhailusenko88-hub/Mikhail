@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -33,7 +33,7 @@ jobs:
           pip install -q torch --index-url https://download.pytorch.org/whl/cpu
           pip install -q transformers soundfile scipy numpy accelerate
       - name: Generate
-        run: python laugh_gen.py --shard ${{ matrix.shard }} --nshards 8 --out gen
+        run: python laugh_gen.py --shard ${{ matrix.shard }} --nshards 16 --out gen
       - uses: actions/upload-artifact@v4
         with:
           name: gen-${{ matrix.shard }}
@@ -76,6 +76,7 @@ jobs:
           git config user.name laugh-bank
           git config user.email laugh-bank@users.noreply.github.com
           mkdir -p report && cp out/report.md out/report.json report/
-          git add report
+          mkdir -p bank/${{ github.run_id }} && cp -r out/. bank/${{ github.run_id }}/
+          git add report bank
           git commit -m "laugh-bank result" || echo nothing
           for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done

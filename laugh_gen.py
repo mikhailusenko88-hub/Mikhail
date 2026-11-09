@@ -27,10 +27,23 @@ PRESETS2 = ["v2/en_speaker_9", "v2/en_speaker_3", "v2/en_speaker_5", "v2/de_spea
             "v2/en_speaker_2", "v2/en_speaker_6", "v2/ru_speaker_5", "v2/en_speaker_8", "v2/ru_speaker_4",
             "v2/pl_speaker_5", "v2/it_speaker_2"]
 
+# набор 3 (10.11.2026): тёплые низкие «хо-хо-хо» и «ха-ха-ха» для медвежонка и великанов + новые детские смехи
+PROMPTS3 = [
+    ("hoM", "[MAN] Ho ho ho ho ho! [laughs]"),
+    ("haM", "[MAN] Ha ha ha ha ha! [laughs]"),
+    ("hoho", "Ho-ho-ho! Ho-ho! [laughter]"),
+    ("ahha", "Ah-ha-ha-ha-ha! [laughs]"),
+    ("hah", "Hah hah hah hah! [laughs]"),
+    ("hihi", "Hee-hee-hee! Hi-hi-hi! [laughs]"),
+]
+PRESETS3 = ["v2/en_speaker_3", "v2/en_speaker_6", "v2/en_speaker_5", "v2/en_speaker_8", "v2/en_speaker_0",
+            "v2/en_speaker_1", "v2/en_speaker_4", "v2/de_speaker_3", "v2/de_speaker_1", "v2/ru_speaker_4",
+            "v2/ru_speaker_3", "v2/fr_speaker_1"]
+
 
 def tasks(reps, set_=1):
     T = []
-    P, V = (PROMPTS2, PRESETS2) if set_ == 2 else (PROMPTS, PRESETS)
+    P, V = (PROMPTS3, PRESETS3) if set_ == 3 else (PROMPTS2, PRESETS2) if set_ == 2 else (PROMPTS, PRESETS)
     for rep in range(reps):
         for pk, ptxt in P:
             for pr in V:
