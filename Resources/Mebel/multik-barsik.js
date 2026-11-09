@@ -3,7 +3,7 @@
 // в режиме «как в кино»: старый герой остаётся невидимым скелетом (его поза, руки для предметов, тень), а рисуется этот.
 (function (global) {
 'use strict';
-const MKB = global.MKBarsik = { ready: false, error: null, base: 'barsik/', D: null, shellK: 1, shellU: { value: 1 }, desatU: { value: 0.22 }, tintU: { value: null }, trimU: { value: .82 }, softU: { value: .6 }, glossU: { value: 1 }, /* вариант «Б»: подстрижен, гладкий блеск (просьба Михаила 4.11) */ K: { key: 1.4, expo: 0.74 } };   // сверено с кадром Blender: лоб (152,126,84)   // shellU — сила налёта (0 — выключен)
+const MKB = global.MKBarsik = { ready: false, error: null, base: 'barsik/', D: null, shellK: 1, shellU: { value: 1 }, desatU: { value: 0.22 }, tintU: { value: null }, trimU: { value: .82 }, softU: { value: .6 }, glossU: { value: 1 }, tailU: { value: 1.1 }, /* tailU — хвост опущен назад дугой, а не стоит «обручем» до плеча (0 — как в данных) */ /* вариант «Б»: подстрижен, гладкий блеск (просьба Михаила 4.11) */ K: { key: 1.4, expo: 0.74 } };   // сверено с кадром Blender: лоб (152,126,84)   // shellU — сила налёта (0 — выключен)
 MKB.isBarsik = spec => !!spec && spec.kind === 'cat' && /^\s*барсик(?![а-яё])/i.test(String(spec.name || ''));
 
 // ---------- константы модели (метры, z вверх, мордочка к −y) ----------
@@ -92,7 +92,7 @@ function decode(H, ab) {
 // ---------- шейдеры (как в пробной сцене, свет — от места мультика) ----------
 const COMMON = `precision highp float; precision highp int; precision highp sampler2D;
 uniform mat4 modelMatrix, viewMatrix, projectionMatrix; uniform vec3 cameraPosition;
-uniform mat3 uHead, uEar0, uEar1, uLeg0, uLeg1, uArm0, uArm1, uFore0, uFore1, uJawM; uniform float uSmile; uniform vec4 uArmQ0, uArmQ1; uniform vec2 uLift; uniform float uTailA, uTailPh, uBreath, uScale, uPix, uExpo, uDesat, uTrim, uSoft, uGloss; uniform vec3 uTint;
+uniform mat3 uHead, uEar0, uEar1, uLeg0, uLeg1, uArm0, uArm1, uFore0, uFore1, uJawM; uniform float uSmile; uniform vec4 uArmQ0, uArmQ1; uniform vec2 uLift; uniform float uTailU, uTailA, uTailPh, uBreath, uScale, uPix, uExpo, uDesat, uTrim, uSoft, uGloss; uniform vec3 uTint;
 uniform vec3 uSunDir, uSunCol, uRimDir, uRimCol, uFillDir, uFillCol, uSky, uGnd, uUp, uFogCol; uniform vec2 uFog;
 const float PI = 3.14159265;
 vec3 sane(vec3 c) { bvec3 bad = equal(floatBitsToUint(c) & uvec3(0x7f800000u), uvec3(0x7f800000u)); vec3 r = min(max(c, vec3(0.0)), vec3(300.0)); return any(bad) ? vec3(0.0) : r; }
@@ -104,7 +104,8 @@ mat3 rotAxis(vec3 a, float g) { a = normalize(a); float c = cos(g), s = sin(g), 
 vec3 poseP(vec3 p, float wh, float ts, float we, float wb, vec4 wx) {
   vec3 q = p;
   if (wb > 0.01) { float b = uBreath * wb; q.x *= 1.0 + b; q.y = (q.y + 0.02) * (1.0 + b * 0.9) - 0.02; }
-  if (ts >= 0.0) { float a = uTailA * sin(uTailPh - 2.4 * ts) * pow(ts, 1.2); q = rotAxis(vec3(0.15, 0.0, 1.0), a) * (q - TAIL0) + TAIL0; }
+  if (ts >= 0.0) { q = rotAxis(vec3(1.0, 0.0, 0.0), -uTailU * pow(ts, 1.1)) * (q - TAIL0) + TAIL0;   // хвост: от корня дугой назад, кончик чуть вверх
+    float a = uTailA * sin(uTailPh - 2.4 * ts) * pow(ts, 1.2); q = rotAxis(vec3(0.15, 0.0, 1.0), a) * (q - TAIL0) + TAIL0; }
   if (we > 0.001) q = mix(q, uEar1 * (q - EARB1) + EARB1, we); else if (we < -0.001) q = mix(q, uEar0 * (q - EARB0) + EARB0, -we);
   if (wx.x > 0.001) q = mix(q, uLeg1 * (q - HIP1) + HIP1 + vec3(0.0, 0.0, uLift.y), wx.x); else if (wx.x < -0.001) q = mix(q, uLeg0 * (q - HIP0) + HIP0 + vec3(0.0, 0.0, uLift.x), -wx.x);
   if (wx.w > 0.001) q = mix(q, uFore1 * (q - ELB1) + ELB1, wx.w); else if (wx.w < -0.001) q = mix(q, uFore0 * (q - ELB0) + ELB0, -wx.w);
@@ -113,6 +114,8 @@ vec3 poseP(vec3 p, float wh, float ts, float we, float wb, vec4 wx) {
   if (wh > 0.0) q = mix(q, uHead * (q - PH) + PH, wh);
   return q;
 }
+vec3 tailN(vec3 n, float ts) { return ts >= 0.0 ? rotAxis(vec3(1.0, 0.0, 0.0), -uTailU * pow(ts, 1.1)) * n : n; }
+const vec3 TAILB[6] = vec3[6](vec3(0.17, 0.25, 0.31), vec3(0.18, 0.25, 0.31), vec3(0.17, 0.24, 0.30), vec3(0.18, 0.24, 0.30), vec3(0.16, 0.23, 0.28), vec3(0.14, 0.21, 0.26));   // свет хвоста — как у спины (в данных хвост «в тени» тела — был тёмно-коричневый)
 vec3 poseN(vec3 n, float wh, vec4 wx) { vec3 m = n;
   if (wx.w > 0.001) m = mix(m, uFore1 * m, wx.w); else if (wx.w < -0.001) m = mix(m, uFore0 * m, -wx.w);
   if (wx.x > 0.001) m = mix(m, uLeg1 * m, wx.x); else if (wx.x < -0.001) m = mix(m, uLeg0 * m, -wx.x);
@@ -157,9 +160,9 @@ void main() {
   float dist = length(p - cameraPosition); float w = max(rad, uPix * dist * mix(0.55, 0.42, uGloss)); if (uDecC > 1 && kind < 200) w *= pow(float(uDecC), 0.85);
   vec3 sd = normalize(cross(T, p - cameraPosition) + 1e-7) * w * side;
   vec3 P = p + sd; gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0);
-  vec3 c[6]; for (int j = 0; j < 6; j++) { vec3 b = texelFetch(uBake, ti(s * 6 + j), 0).rgb; float u = clamp((t - 0.5) * 4.0, 0.0, 2.0); float v = u < 1.0 ? mix(b.x, b.y, u) : mix(b.y, b.z, u - 1.0); if (t < 0.5) v = b.x * (0.45 + 1.1 * t); c[j] = vec3(v); }
+  vec3 c[6]; for (int j = 0; j < 6; j++) { vec3 b = texelFetch(uBake, ti(s * 6 + j), 0).rgb; if (ts >= 0.0) b = max(b, TAILB[j]); float u = clamp((t - 0.5) * 4.0, 0.0, 2.0); float v = u < 1.0 ? mix(b.x, b.y, u) : mix(b.y, b.z, u - 1.0); if (t < 0.5) v = b.x * (0.45 + 1.1 * t); c[j] = vec3(v); }
   vB0 = vec3(c[0].x, c[1].x, c[2].x); vB1 = vec3(c[3].x, c[4].x, c[5].x);
-  vec3 alb = a0.rgb * a0.rgb; if (kind < 200) alb *= mix(vec3(1.0), kind == 12 ? vec3(0.8) : mix(vec3(0.62, 0.55, 0.5), vec3(0.84, 0.8, 0.77), uSoft), (1.0 - t) * (1.0 - t));   // мягче: корни не такие тёмные
+  vec3 alb = a0.rgb * a0.rgb; if (ts >= 0.0) alb = mix(alb, vec3(0.67, 0.43, 0.28), 0.35); if (kind < 200) alb *= mix(vec3(1.0), kind == 12 ? vec3(0.8) : mix(vec3(0.62, 0.55, 0.5), vec3(0.84, 0.8, 0.77), uSoft), (1.0 - t) * (1.0 - t));   // мягче: корни не такие тёмные
   vAlb = alb; vP = P; vT = T; vt = t; vKind = kind;
 }`;
 const FS_FUR = COMMON + `
@@ -180,14 +183,14 @@ void main() {
 const VS_SKIN = COMMON + `
 in vec3 position; in vec3 aN; in vec3 aA; in vec3 aB0; in vec3 aB1; in vec4 aW; in vec4 aX; in float aM;
 out vec3 vP; out vec3 vN; out vec3 vA; out vec3 vB0; out vec3 vB1; out float vZ; out vec3 vQ; flat out int vM;
-void main() { vec3 p = position; vec3 P = toW(poseP(p, aW.x, aW.y, aW.z, aW.w, aX)); vN = toWN(poseN(aN, aW.x, aX)); vP = P; vA = aA; vB0 = aB0; vB1 = aB1; vZ = p.z; vQ = p; vM = int(aM + 0.5);
+void main() { vec3 p = position; vec3 P = toW(poseP(p, aW.x, aW.y, aW.z, aW.w, aX)); vN = toWN(tailN(poseN(aN, aW.x, aX), aW.y)); vP = P; vA = aA; vB0 = aB0; vB1 = aB1; if (aW.y >= 0.0) { vB0 = max(aB0, vec3(0.10, 0.086, 0.106)); vB1 = max(aB1, vec3(0.114, 0.082, 0.075)); vA = mix(aA, vec3(0.50, 0.19, 0.054), 0.35); } vZ = p.z; vQ = p; vM = int(aM + 0.5);
   gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`;
 // БАРС · налёт (из «неона» v4): кожа ещё 6 раз прозрачными слоями внутри шерсти — «молекулы» загораются, когда сквозь них идёт свет
 const VS_SHELL = COMMON + `
 in vec3 position; in vec3 aN; in vec3 aA; in vec3 aB0; in vec3 aB1; in vec4 aW; in vec4 aX; in float aM; uniform float uShellH;
 out vec3 vP; out vec3 vN; out vec3 vA; out vec3 vB0; out vec3 vB1; out vec3 vQ; out float vF;
 void main() { int m = int(aM + 0.5); float fr = (m != 2 && m != 8 && m < 10 && dot(aA, vec3(0.33)) > 0.06) ? 1.0 : 0.0; vec3 p = position + aN * (uShellH * fr);
-  vec3 P = toW(poseP(p, aW.x, aW.y, aW.z, aW.w, aX)); vN = toWN(poseN(aN, aW.x, aX)); vP = P; vA = aA; vB0 = aB0; vB1 = aB1; vQ = position; vF = fr;
+  vec3 P = toW(poseP(p, aW.x, aW.y, aW.z, aW.w, aX)); vN = toWN(tailN(poseN(aN, aW.x, aX), aW.y)); vP = P; vA = aA; vB0 = aB0; vB1 = aB1; if (aW.y >= 0.0) { vB0 = max(aB0, vec3(0.10, 0.086, 0.106)); vB1 = max(aB1, vec3(0.114, 0.082, 0.075)); } vQ = position; vF = fr;
   gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`;
 const FS_SHELL = COMMON + `
 in vec3 vP; in vec3 vN; in vec3 vA; in vec3 vB0; in vec3 vB1; in vec3 vQ; in float vF; uniform float uT, uShellK; out vec4 o;
@@ -345,7 +348,7 @@ const M3 = () => new THREE.Matrix3();
 function uniformsNew() {
   const v3 = (x, y, z) => ({ value: new THREE.Vector3(x || 0, y || 0, z || 0) });
   return { uHead: { value: M3() }, uEar0: { value: M3() }, uEar1: { value: M3() }, uLeg0: { value: M3() }, uLeg1: { value: M3() }, uArm0: { value: M3() }, uArm1: { value: M3() }, uArmQ0: { value: new THREE.Vector4(1, 0, 0, 0) }, uArmQ1: { value: new THREE.Vector4(1, 0, 0, 0) }, uFore0: { value: M3() }, uFore1: { value: M3() }, uJawM: { value: M3() },
-    uLift: { value: new THREE.Vector2() }, uSmile: { value: 0 }, uDecC: { value: 1 }, uTailA: { value: 0.25 }, uTailPh: { value: 0 }, uBreath: { value: 0 }, uScale: { value: 1 }, uPix: { value: 0.001 }, uExpo: { value: 1 }, uDesat: MKB.desatU, uTint: MKB.tintU, uTrim: MKB.trimU, uSoft: MKB.softU, uGloss: MKB.glossU,
+    uLift: { value: new THREE.Vector2() }, uSmile: { value: 0 }, uDecC: { value: 1 }, uTailU: MKB.tailU, uTailA: { value: 0.25 }, uTailPh: { value: 0 }, uBreath: { value: 0 }, uScale: { value: 1 }, uPix: { value: 0.001 }, uExpo: { value: 1 }, uDesat: MKB.desatU, uTint: MKB.tintU, uTrim: MKB.trimU, uSoft: MKB.softU, uGloss: MKB.glossU,
     uSunDir: v3(0, 1, 0), uSunCol: v3(2, 2, 2), uRimDir: v3(0, 0.5, -1), uRimCol: v3(0, 0, 0), uFillDir: v3(0, 0.3, 1), uFillCol: v3(0.2, 0.2, 0.2), uSky: v3(0.4, 0.45, 0.5), uGnd: v3(0.15, 0.15, 0.12), uUp: v3(0, 1, 0), uFogCol: v3(1, 1, 1), uFog: { value: new THREE.Vector2(0, 0) },
     uPos: { value: null }, uBake: { value: null }, uAttr: { value: null } };
 }
