@@ -507,6 +507,7 @@ step_nginx() {
     echo "    server_tokens off;"
     echo "    client_max_body_size 1m;"
     echo "    add_header Strict-Transport-Security \"max-age=15552000\" always;"
+    echo "    add_header X-Robots-Tag \"noindex, nofollow\" always;"
     echo "    location / {"
     echo "        proxy_pass http://127.0.0.1:$PORT;"
     echo "        proxy_set_header Host \$host;"

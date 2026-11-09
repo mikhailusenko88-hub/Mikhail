@@ -11,6 +11,7 @@
   <a class="stat" href="{{ url_for('board') }}"><b>{{ rub((bs.get('work', (0,0))[1]) + (bs.get('quote', (0,0))[1])) }}</b><span>в работе ({{ bs.get('work',(0,0))[0] + bs.get('quote',(0,0))[0] }})</span></a>
   <a class="stat" href="{{ url_for('reports_view') }}"><b>{{ rub(s['paid_week']) }}</b><span>оплачено за 7 дней</span></a>
 </div>
+<div class="panel list site-today"><a class="row btn" href="{{ url_for('site_view', d=1) }}"><span class="ic ic-site"></span><div class="grow"><div class="t">На сайте сегодня: {{ vb['today'] }} {{ 'человек' if vb['today'] % 10 not in (2,3,4) or vb['today'] % 100 in (12,13,14) else 'человека' }}</div><div class="d">вчера {{ vb['yesterday'] }}{% if vb['leads'] %} · заявок с сайта сегодня: {{ vb['leads'] }}{% endif %}</div></div><span class="d">Подробно ›</span></a></div>
 
 <h2>Новые заявки</h2>
 <div class="panel list">{% for d in new %}{{ deal_row(d) }}{% else %}<div class="row"><span class="d">Новых заявок нет</span></div>{% endfor %}</div>

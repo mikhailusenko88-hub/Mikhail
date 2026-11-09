@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Сайт{% endblock %}
+{% block main %}
+<h1>Посещаемость сайта</h1>
+<div class="subnav">{% for k, n in ((1, 'Сегодня'), (7, '7 дней'), (30, '30 дней'), (90, '90 дней')) %}<a href="{{ url_for('site_view', d=k) }}" {% if d == k %}aria-current="page"{% endif %}>{{ n }}</a>{% endfor %}</div>
+<p class="sub">{% if r['days'] == 1 %}{{ fmt_day(r['end']) }}{% else %}{{ fmt_day(r['start']) }} — {{ fmt_day(r['end']) }}{% endif %}</p>
+
+<div class="stats">
+  <div class="stat"><b>{{ r['visitors'] }}</b><span>посетителей</span></div>
+  <div class="stat"><b>{{ r['views'] }}</b><span>просмотров страниц</span></div>
+  <div class="stat"><b>{{ r['leads'] }}</b><span>отправили заявку</span></div>
+  <div class="stat"><b>{% if r['visitors'] %}{{ ('%.1f'|format(100 * r['leads'] / r['visitors'])).replace('.0', '').replace('.', ',') }}%{% else %}—{% endif %}</b><span>из зашедших — в заявку</span></div>
+</div>
+
+<h2>Путь по сайту</h2>
+{% set mx = r['visitors'] or 1 %}
+<div class="panel list">{% for name, n in r['funnel'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}{% if r['visitors'] %} · {{ (100 * n / r['visitors'])|round|int }}%{% endif %}</span></div>{% endfor %}
+{% for name, n in r['copies'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}</span></div>{% endfor %}</div>
+
+<h2>Товары: на что нажимали</h2>
+<div class="panel tbl"><table class="site-items"><thead><tr><th>Артикул</th><th class="r">Людей</th><th class="r">В расчёт</th><th class="r">Узнать</th><th class="r">Цвет</th></tr></thead><tbody>
+{% for it in r['items'] %}<tr><td><span class="mono t">{{ it['article'] }}</span>{% if it['name'] %}<div class="d">{{ it['name'] }}</div>{% endif %}</td><td class="r num">{{ it['visitors'] }}</td><td class="r num">{{ it['use'] + it['calc'] }}</td><td class="r num">{{ it['ask'] }}</td><td class="r num">{{ it['color'] }}</td></tr>
+{% else %}<tr><td colspan="5"><span class="d">Пока никто не нажимал на товары</span></td></tr>{% endfor %}
+</tbody></table></div>
+<p class="d site-note">«Людей» — сколько посетителей нажимали на артикул (кнопки, цвет, выбор в расчёте). «В расчёт» — кнопка у товара и выбор панели в расчёте стены.</p>
+
+<h2>Разделы: сколько людей долистали</h2>
+<div class="panel list">{% for name, n in r['sections'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}{% if r['visitors'] %} · {{ (100 * n / r['visitors'])|round|int }}%{% endif %}</span></div>{% endfor %}</div>
+
+<h2>Откуда пришли</h2>
+<div class="panel list">{% for name, n in r['sources'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}</span></div>{% else %}<div class="row"><span class="d">Пока никого</span></div>{% endfor %}</div>
+
+<h2>Устройства</h2>
+<div class="panel list">{% for name, n in r['devices'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}</span></div>{% else %}<div class="row"><span class="d">Пока никого</span></div>{% endfor %}</div>
+
+{% if r['cats'] or r['searches'] %}
+<h2>Каталог: вкладки и поиск</h2>
+<div class="panel list">{% for k, n in r['cats'] %}<div class="row"><span class="grow">Вкладка «{{ KIND_TITLES.get(k, 'Все' if k == 'all' else k) }}»</span><span class="num site-n">{{ n }}</span></div>{% endfor %}
+{% for q, n in r['searches'] %}<div class="row"><span class="grow">Искали: «{{ q }}»</span><span class="num site-n">{{ n }}</span></div>{% endfor %}</div>
+{% endif %}
+
+<h2>По дням</h2>
+<div class="panel tbl"><table><thead><tr><th>День</th><th class="r">Посетители</th><th class="r">Просмотры</th><th class="r">Заявки</th></tr></thead><tbody>
+{% for x in r['by_day'] %}<tr><td>{{ fmt_day(x['day']) }}</td><td class="r num">{{ x['visitors'] }}</td><td class="r num">{{ x['views'] }}</td><td class="r num">{{ x['leads'] }}</td></tr>{% endfor %}
+</tbody></table></div>
+
+{% if r['pages'] %}
+<h2>Страницы</h2>
+<div class="panel list">{% for name, n in r['pages'] %}<div class="row"><span class="grow">{{ name }}</span><span class="num site-n">{{ n }} чел.</span></div>{% endfor %}</div>
+{% endif %}
+
+<p class="d site-note">Посетитель — одно устройство за сутки: тот же человек на следующий день считается снова. Ваши визиты не считаются, если в этом же браузере вы вошли в CRM. Боты и браузеры с запретом отслеживания не считаются. Cookie не ставятся, IP-адреса не хранятся.</p>
+{% endblock %}

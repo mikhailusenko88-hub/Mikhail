@@ -27,7 +27,8 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from store import (KIND_NAMES, KIND_TITLES, KINDS, OPEN_STAGES, ROLE_NAMES, ROLES, SOURCE_NAMES, SOURCES,
-                   STAGE_NAMES, STAGES, Catalog, Store, fmt_day, fmt_dt, rub, today)
+                   STAGE_NAMES, STAGES, Catalog, Store, fmt_day, fmt_dt, now, rub, today)
+from visits import Visits, is_bot, parse_body
 
 log = logging.getLogger("crm")
 
@@ -35,6 +36,8 @@ LOGIN_WINDOW = 15 * 60
 LOGIN_MAX_FAILS = 10
 LEAD_WINDOW = 10 * 60
 LEAD_MAX = 5
+HIT_WINDOW = 10 * 60
+HIT_MAX = 150
 
 
 def _secret(path: str) -> str:
@@ -74,6 +77,9 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     store = Store(conf["CRM_DB"], conf["BOT_DB"], Catalog(conf["CATALOG_FILE"]))
     app.extensions["store"] = store
     app.extensions["crm_conf"] = conf
+    visits = Visits(store, conf["SHOP_DOMAIN"])
+    app.extensions["visits"] = visits
+    hits_by_ip: dict[str, deque[float]] = defaultdict(deque)
     fails: dict[str, deque[float]] = defaultdict(deque)
     leads_by_ip: dict[str, deque[float]] = defaultdict(deque)
 
@@ -111,7 +117,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     @app.before_request
     def load_user() -> Any:
         g.user = None
-        if "csrf" not in session:
+        api = request.path.startswith("/api/")
+        if "csrf" not in session and not api:  # посетителям сайта (заявка, счётчик) cookie не ставим
             session["csrf"] = secrets.token_urlsafe(24)
         uid = session.get("uid")
         if uid:
@@ -124,7 +131,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             tok = request.form.get("csrf", "")
             if not tok or not hmac.compare_digest(tok, session.get("csrf", "")):
                 abort(400, "Страница устарела — обновите её и повторите.")
-        if g.user is not None:
+        if g.user is not None and not api:
             store.import_bot_leads()
             g.nav_new = len(store.deals(stage="new", limit=99))
         return None
@@ -200,7 +207,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         low = [r for r in rows if r["qty"] > 0 and r["per_box"] and r["qty"] - r["reserved"] < r["per_box"] * 0.5]
         short = [r for r in rows if r["reserved"] > r["qty"]]
         s = store.summary()
-        return render_template("today.html", new=new, tasks=tasks, paid=paid, low=low[:20], short=short[:20], s=s)
+        return render_template("today.html", new=new, tasks=tasks, paid=paid, low=low[:20], short=short[:20], s=s,
+                               vb=visits.brief(t))
 
     # ------------------------------------------------------------ Воронка и сделки
     @app.route("/board")
@@ -384,6 +392,17 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     def reports_view() -> Any:
         return render_template("reports.html", s=store.summary(), lost=store.deals(stage="lost", limit=50))
 
+    # ------------------------------------------------------------ посещаемость сайта
+    @app.route("/site")
+    @login_required
+    def site_view() -> Any:
+        try:
+            d = int(request.args.get("d", "7"))
+        except ValueError:
+            d = 7
+        d = d if d in (1, 7, 30, 90) else 7
+        return render_template("site.html", r=visits.report(today(), d), d=d)
+
     # ------------------------------------------------------------ настройки
     @app.route("/settings")
     @login_required
@@ -517,6 +536,33 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         send_mail(conf["NOTIFY_EMAIL"], f"Заявка с сайта №{did}", txt + f"\n\nCRM: https://crm.{conf['SHOP_DOMAIN']}/deals/{did}"
                   if conf["SHOP_DOMAIN"] else txt)
         return cors(jsonify(ok=True, id=did)), 200
+
+    # ------------------------------------------------------------ API: счётчик посещений
+    # Сайт присылает отметки «что открыли и нажали» (navigator.sendBeacon, text/plain).
+    # IP и браузер в базу не пишутся — только обезличенный номер посетителя на текущие сутки.
+    @app.route("/api/hit", methods=["POST", "OPTIONS"])
+    def api_hit() -> Any:
+        if request.method == "OPTIONS":
+            return cors(Response(status=204))
+        origin = request.headers.get("Origin", "").rstrip("/")
+        ua = request.headers.get("User-Agent", "")[:400]
+        if (not origin or origin not in conf["SITE_ORIGINS"] or g.user is not None or is_bot(ua)
+                or request.headers.get("DNT") == "1" or request.headers.get("Sec-GPC") == "1"):
+            return cors(Response(status=204))   # свои (вошли в CRM), боты и «не отслеживать» — не считаем
+        if len(hits_by_ip) > 20000:
+            hits_by_ip.clear()
+        q = _recent(hits_by_ip[ip()], HIT_WINDOW)
+        if len(q) >= HIT_MAX:
+            return cors(Response(status=204))
+        q.append(time.monotonic())
+        body = parse_body(request.get_data(cache=False)[:20000])
+        if body:
+            t = now()
+            try:
+                visits.add(day=t.date().isoformat(), at=t.strftime("%H:%M"), ip=ip(), ua=ua, body=body)
+            except Exception:  # noqa: BLE001 — счётчик не должен ронять CRM
+                log.warning("счётчик: отметка не записана")
+        return cors(Response(status=204))
 
     @app.route("/api/health")
     def api_health() -> Any:

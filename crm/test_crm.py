@@ -274,6 +274,95 @@ class TestServerPage(Base):
         self.assertNotIn("/server", self.c.get("/tasks").get_data(as_text=True))
 
 
+IPHONE = ("Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 "
+          "(KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1")
+MAC = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15"
+
+
+class TestVisits(Base):
+    def hit(self, events, ua=IPHONE, ip="203.0.113.7", origin="https://nashdekor.ru", client=None, **extra):
+        body = {"e": events, "r": extra.pop("r", ""), "u": extra.pop("u", ""), "m": extra.pop("m", 1)}
+        h = {"User-Agent": ua, "Content-Type": "text/plain;charset=UTF-8"}
+        if origin:
+            h["Origin"] = origin
+        h.update(extra.pop("headers", {}))
+        return (client or self.c).post("/api/hit", data=json.dumps(body, ensure_ascii=False), headers=h,
+                                       environ_base={"REMOTE_ADDR": ip})
+
+    def rows(self):
+        return [dict(r) for r in self.store.c().execute("SELECT * FROM visits ORDER BY id").fetchall()]
+
+    def test_hits_counted_and_report(self) -> None:
+        r = self.hit([["view", "/"], ["sec", "catalog"], ["item", "A912", "use"], ["item", "A116", "ask"],
+                      ["calcpanel", "A912"], ["3d", ""], ["form", ""], ["lead", ""], ["copy", "phone"]], r="yandex.ru")
+        self.assertEqual(r.status_code, 204)
+        self.assertNotIn("Set-Cookie", r.headers)          # посетителю сайта cookie не ставим
+        self.hit([["view", "/"], ["item", "A912", "paint"]], ua=MAC, ip="198.51.100.9", r="www.avito.ru", m=0)
+        self.hit([["view", "/privacy.html"]], ua=MAC, ip="198.51.100.9", r="nashdekor.ru", m=0)
+        rows = self.rows()
+        self.assertEqual(len(rows), 12)
+        self.assertEqual(len({x["vid"] for x in rows}), 2)
+        blob = json.dumps(rows, ensure_ascii=False)
+        for secret in ("203.0.113.7", "198.51.100.9", "iPhone OS", "Macintosh"):
+            self.assertNotIn(secret, blob)                 # ни IP, ни строки браузера в базе
+        rep = self.app.extensions["visits"].report(crm_app.today(), 7)
+        self.assertEqual(rep["visitors"], 2)
+        self.assertEqual(rep["views"], 3)
+        self.assertEqual(rep["leads"], 1)
+        self.assertEqual(dict(rep["sources"]), {"Яндекс": 1, "Авито": 1})
+        self.assertEqual(dict(rep["devices"]), {"Телефон": 1, "Компьютер": 1})
+        f = dict(rep["funnel"])
+        self.assertEqual((f["Зашли на сайт"], f["Нажимали на товары"], f["Считали стену"], f["Отправили заявку"]), (2, 2, 1, 1))
+        it = {x["article"]: x for x in rep["items"]}
+        self.assertEqual((it["A912"]["visitors"], it["A912"]["use"], it["A912"]["calc"], it["A912"]["color"]), (2, 1, 1, 1))
+        self.assertEqual(it["A116"]["ask"], 1)
+        self.assertEqual(dict(rep["pages"]), {"Главная": 2, "Политика": 1})
+        self.assertEqual(self.app.extensions["visits"].brief(crm_app.today()), {"today": 2, "yesterday": 0, "leads": 1})
+
+    def test_rejects_junk_bots_strangers_and_staff(self) -> None:
+        self.hit([["view", "/"]], origin="https://evil.example")
+        self.hit([["view", "/"]], origin="")
+        self.hit([["view", "/"]], ua="Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)")
+        self.hit([["view", "/"]], ua=IPHONE.replace("Mobile", "HeadlessChrome Mobile"))
+        self.hit([["view", "/"]], headers={"DNT": "1"})
+        self.hit([["view", "/"]], headers={"Sec-GPC": "1"})
+        self.assertEqual(self.rows(), [])
+        self.hit([["drop", "x"], ["item", "NOPE1", "use"], ["item", "A912", "hack"], ["view", "/admin"],
+                  ["search", "+7 911 123 45 67"], ["search", "дуб"], ["copy", "x"], ["sec", "zzz"], ["item", "a912", "ask"]])
+        self.assertEqual([(x["kind"], x["key"], x["act"]) for x in self.rows()],
+                         [("search", "дуб", ""), ("item", "A912", "ask")])
+        staff = self.app.test_client()
+        self.login(client=staff)
+        self.hit([["view", "/"]], client=staff)              # вошли в CRM — свои визиты не считаем
+        self.assertEqual(len(self.rows()), 2)
+
+    def test_daily_key_rotates(self) -> None:
+        v = self.app.extensions["visits"]
+        a = v.visitor("2026-11-09", "1.2.3.4", IPHONE)
+        self.assertEqual(a, v.visitor("2026-11-09", "1.2.3.4", IPHONE))
+        b = v.visitor("2026-11-10", "1.2.3.4", IPHONE)
+        self.assertNotEqual(a, b)
+        salt = self.store.setting("visit_salt")
+        self.assertTrue(salt.startswith("2026-11-10:"))      # ключ прошлых суток стёрт
+
+    def test_site_page_and_today(self) -> None:
+        self.hit([["view", "/"], ["item", "A912", "use"]], r="google.com")
+        self.login()
+        r = self.c.get("/site?d=30")
+        self.assertEqual(r.status_code, 200)
+        t = r.get_data(as_text=True)
+        for s in ("Посещаемость сайта", "A912", "Рейка 912", "Google", "Телефон", "Путь по сайту"):
+            self.assertIn(s, t)
+        self.assertIn("Сайт</a>", self.c.get("/board").get_data(as_text=True))
+        t = self.c.get("/").get_data(as_text=True)
+        self.assertIn("На сайте сегодня: 1 человек", t)
+        self.assertEqual(self.c.get("/site?d=abc").status_code, 200)
+
+    def test_site_page_needs_login(self) -> None:
+        r = self.c.get("/site")
+        self.assertEqual(r.status_code, 302)
+
+
 class TestApi(Base):
     def lead(self, origin="https://nashdekor.ru", **kw):
         body = {"name": "Елена", "contact": "+7 999 111-22-33", "consent": True, "message": "A907 в гостиную",
