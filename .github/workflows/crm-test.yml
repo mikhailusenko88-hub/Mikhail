@@ -111,6 +111,14 @@ jobs:
           echo "$page" | grep -o 'Следующий шаг: <a href="#tasks">[^<]*' | sed 's/.*">/задача: /'
           sleep 6; echo "писем у buyer (локально не доставляется — смотрим очередь postfix):"; sudo postqueue -p | tail -n 3 || true
           curl -sk $R -c $J -b $J 'https://'$H'/board?hot=1' | grep -o 'горит [0-9]*\|card warm\|card hot' | sort | uniq -c
+      - name: Напоминания клиентам (cron-команда) и блок «Что дальше» в письме
+        run: |
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"
+          grep -c followups /etc/cron.d/prostranstvo-crm | xargs echo "строк cron с followups:"
+          sudo prostranstvo-crm followups
+          f=$(sudo ls -1t /var/mail/vhosts/nashdekor.ru/zakaz/Maildir/new/ 2>/dev/null | head -n1)
+          echo "последнее письмо на zakaz@: $(sudo grep -m1 '^Subject:' "/var/mail/vhosts/nashdekor.ru/zakaz/Maildir/new/$f" 2>/dev/null)"
+          sudo journalctl -t postfix/smtp --no-pager -n 4 | cut -c1-200 || true
       - name: fail2ban видит подбор пароля
         run: |
           for i in $(seq 1 9); do curl -s -o /dev/null -H 'X-Forwarded-For: 203.0.113.5' --data 'login=yulia&password=bad' http://127.0.0.1:8081/login; done

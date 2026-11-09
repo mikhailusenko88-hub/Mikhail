@@ -464,6 +464,7 @@ prostranstvo-crm — CRM https://$CRM_HOST
   prostranstvo-crm backup               — копия баз сейчас (ночью делается сама)
   prostranstvo-crm update               — обновить CRM из GitHub
   prostranstvo-crm server-page --now   — обновить отчёт для страницы CRM «Сервер» (там же кнопки действий)
+  prostranstvo-crm followups           — разослать напоминания клиентам, не ответившим на расчёт (cron, раз в день в 11:25)
   prostranstvo-crm cert                 — получить сертификат для $CRM_HOST сейчас
 EOF
 }
@@ -478,6 +479,7 @@ case ${1:-status} in
   backup) cmd_backup || rc=$? ;;
   update) cmd_update ;;
   server-page) shift; cmd_server_page "$@" || rc=$? ;;
+  followups) manage followups || rc=$? ;;
   cert) shift; cmd_cert "$@" || rc=$? ;;
   -h | --help | help) usage ;;
   *) usage; rc=1 ;;
@@ -591,12 +593,14 @@ step_nginx() {
   ok "nginx: $CRM_HOST → CRM"
   put_file /etc/cron.d/prostranstvo-crm 644 <<'EOF'
 # Создано setup-crm.sh: сертификат для crm.ДОМЕН, когда домен заработает; ночные копии баз в 03:15;
-# отчёт для страницы CRM «Сервер» (пересобирается по кнопке или раз в 15 минут).
+# отчёт для страницы CRM «Сервер» (пересобирается по кнопке или раз в 15 минут);
+# напоминания клиентам о расчёте — раз в день в 11:25 (выключаются в CRM → Настройки → Письма клиентам).
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 7,22,37,52 * * * *  root  /usr/local/sbin/prostranstvo-crm cert --auto 2>&1 | logger -t prostranstvo-crm
 15 3 * * *          root  /usr/local/sbin/prostranstvo-crm backup 2>&1 | logger -t prostranstvo-backup
 * * * * *           root  flock -n /run/prostranstvo-server-page.lock /usr/local/sbin/prostranstvo-crm server-page 2>&1 | logger -t prostranstvo-server
+25 11 * * *         root  /usr/local/sbin/prostranstvo-crm followups 2>&1 | logger -t prostranstvo-followups
 EOF
   /usr/local/sbin/prostranstvo-crm server-page --now >/dev/null 2>&1 || true
   local rc=0
