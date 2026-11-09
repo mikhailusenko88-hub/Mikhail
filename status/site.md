@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-09 13:52 UTC
+# Сайт снаружи — 2026-11-09 14:03 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -22,7 +22,27 @@ og:image: og:image" content="https://nashdekor.ru/og.jpg"
 ld+json: 1
 адрес формы в сайте: https://crm.nashdekor.ru/api/lead
 форма — ответ «Спасибо… Заявка отправлена» и кнопка «ещё одна»: 1, версия сайта: 3
+контакты: MAX в списке: 1, подсказка «позвонить или написать в MAX»: 1, WhatsApp: 0; боты в политике: 1, в согласии: 1, в оферте: 1
 счётчик на главной: 1, в политике п. 3.4: 1, на документах: 1 1 1 
+
+--- страницы товаров и разделов (сборка nashdekor-build/build.py)
+/p/a907/                           200 text/html; charset=utf-8 20074
+/p/2-7/                            200 text/html; charset=utf-8 18362
+/p/a35/                            200 text/html; charset=utf-8 13977
+/p/a002-2/                         200 text/html; charset=utf-8 14026
+/p/gs1/                            200 text/html; charset=utf-8 20058
+/catalog/reechnye-paneli/          200 text/html; charset=utf-8 21155
+/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 27606
+/catalog/plintusy/                 200 text/html; charset=utf-8 24538
+/assets/p.js                       200 application/javascript; charset=utf-8 22663
+/assets/p.css                      200 text/css 16652
+/mebel/_lib/three.min.js           200 application/javascript; charset=utf-8 603445
+/mebel/_lib/OrbitControls.js       200 application/javascript; charset=utf-8 26375
+/img/A907.jpg                      200 image/jpeg 22169
+товар A907: title: <title>Реечная панель A907 180×10×3000 мм под покраску — купить в СПб | Наш декор</title>
+  canonical: rel="canonical" href="https://nashdekor.ru/p/a907/", ld+json: 1, Product: 1, 3D canvas: 1, профиль svg: 1, window.P: 1
+sitemap: адресов 117, из них /p/: 107, /catalog/: 6
+главная: ссылок на p/ в коде карточек: 3, ссылки на разделы: 6, ?panel= в расчёт: 1
 
 --- robots.txt
 User-agent: *
