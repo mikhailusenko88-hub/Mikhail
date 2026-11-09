@@ -172,8 +172,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .prof h2{font-size:18px;margin-bottom:6px}
 .prof p{color:var(--muted);font-size:14px;margin:0 0 10px}
 .prof svg{display:block;width:100%;height:auto;max-height:220px;background:var(--paper);border:1px solid var(--line);border-radius:6px}
-.prof .dim{font:12px var(--f-body);fill:var(--muted)}
-.prof .dimline{stroke:var(--muted);stroke-width:1;fill:none}
+.prof .dim{font-family:var(--f-body);fill:var(--muted)}
+.prof .dimline{stroke:var(--muted);fill:none}
 .prof .body{fill:var(--sunk);stroke:var(--ink);stroke-width:1.2;stroke-linejoin:round}
 .prof .slat{fill:#B88A5A;stroke:var(--ink);stroke-width:1}
 .prof .base{fill:#2a2a2c;stroke:var(--ink);stroke-width:1}
@@ -222,3 +222,6 @@ a.card .price b{color:var(--ink)}
 .porder .form{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}
 .porder .prodline{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:14px}
 .porder .prodline b{display:block}
+.ncount{display:inline-flex;align-items:center;gap:6px}
+.ncount button{width:30px;height:30px;padding:0;border-radius:50%;font-size:17px;line-height:1}
+.ncount b{min-width:18px;text-align:center;font-size:15px}

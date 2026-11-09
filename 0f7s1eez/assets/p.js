@@ -149,7 +149,10 @@ function paintPhoto(){
 }
 
 /* ---------- 3D: одна панель по профилю (или ламели под дерево), вращение пальцем ---------- */
-const has3d = !!(P.prof || P.wood);
+const has3d = !!(P.prof || P.wood || P.poly);
+const isPanel = X.c === "panel" || X.c === "color";
+let nPan = 1;                                   // панелей рядом (по умолчанию одна, «+» добавляет)
+const fragLen = () => Math.min(X.l, 600);
 let view = has3d && !(isWood && P.photo) ? "frag" : "photo";   // под дерево — сначала фото, 3D по кнопке
 const W3 = (() => {
   let R, S, cam, ctl, grp, mat, ready = false, inited = false, tex = null;
@@ -178,6 +181,16 @@ const W3 = (() => {
     sh.moveTo(0, 0); pts.forEach(p => sh.lineTo(p[0], p[1])); sh.lineTo(pts[pts.length-1][0], 0); sh.lineTo(0, 0);
     return new THREE.ExtrudeGeometry(sh, { depth: len, bevelEnabled: false, curveSegments: 1 });
   }
+  /* Погонаж (молдинг, плинтус, карниз, уголок): контур сечения с отверстиями из каталога; кладём горизонтально:
+     длина по X, высота изделия по Y (начало контура — верх), рельеф к зрителю (+Z) */
+  function polyGeo(len){
+    const W = P.poly.w, ring = r => r.map(p => new THREE.Vector2(W - p[0], p[1]));
+    const sh = new THREE.Shape(ring(P.poly.outer));
+    P.poly.holes.forEach(h => sh.holes.push(new THREE.Path(ring(h))));
+    const g = new THREE.ExtrudeGeometry(sh, { depth: len, bevelEnabled: false, curveSegments: 1 });
+    g.applyMatrix4(new THREE.Matrix4().set(0, 0, 1, 0,  1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 0, 1));   // X←Z, Y←X, Z←Y
+    return g;
+  }
   const box = (x0, x1, y0, y1, len) => { const g = new THREE.BoxGeometry(x1 - x0, y1 - y0, len); g.translate((x0 + x1) / 2, (y0 + y1) / 2, len / 2); return g; };
   /* Панели стоят вертикально, как на стене (рельеф к зрителю, срез сверху — виден профиль);
      сзади светлая стена с тенью, свет скользит слева — рельеф читается. */
@@ -185,9 +198,12 @@ const W3 = (() => {
     if (!ready) return;
     if (grp) { S.remove(grp); grp.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }
     grp = new THREE.Group(); S.add(grp);
-    const len = view === "full" ? X.l : Math.min(X.l, 600), n = 3, W = X.w;
+    const len = view === "full" ? X.l : fragLen(), n = isPanel ? nPan : 1, W = X.w;
     const put = (me, c) => { me.rotation.x = Math.PI / 2; me.position.set(c * W, len, 0); me.castShadow = me.receiveShadow = true; grp.add(me); };
-    if (P.wood) {
+    if (P.poly) {
+      mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(cur.hex).convertSRGBToLinear(), roughness: .6 });
+      const me = new THREE.Mesh(polyGeo(len), mat); me.castShadow = me.receiveShadow = true; grp.add(me);
+    } else if (P.wood) {
       if (!tex && P.tex) { tex = new THREE.TextureLoader().load(ROOT + P.tex); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.encoding = THREE.sRGBEncoding; }
       if (tex) tex.repeat.set(1, Math.max(1, len / 400));
       const blackM = new THREE.MeshStandardMaterial({ color: 0x141415, roughness: .7 });
@@ -202,22 +218,35 @@ const W3 = (() => {
       const g = profGeo(len);
       for (let c = 0; c < n; c++) put(new THREE.Mesh(g, mat), c);
     }
-    // стена за панелями — принимает тень
+    // габарит сцены: панели стоят (ширина по X, длина по Y), погонаж лежит (длина по X, высота по Y)
+    const bw = P.poly ? len : n * W, bh = P.poly ? W : len, big = Math.max(bw, bh) * 8 + 6000;
+    // стена за изделием — принимает тень
     const wallM = new THREE.MeshStandardMaterial({ color: 0xe9e4db, roughness: .95 });
-    const wall = new THREE.Mesh(new THREE.PlaneGeometry(len * 8 + 6000, len * 8 + 6000), wallM);
-    wall.position.set(n * W / 2, len / 2, -1.5); wall.receiveShadow = true; grp.add(wall);
-    if (view === "full") {   // пол, чтобы панель 3 м имела опору
-      const floor = new THREE.Mesh(new THREE.PlaneGeometry(len * 8 + 6000, len * 8 + 6000), new THREE.MeshStandardMaterial({ color: 0xb79b7a, roughness: .85 }));
-      floor.rotation.x = -Math.PI / 2; floor.position.set(n * W / 2, 0, (len * 8 + 6000) / 2 - 2); floor.receiveShadow = true; grp.add(floor);
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(big, big), wallM);
+    wall.position.set(bw / 2, bh / 2, -1.5); wall.receiveShadow = true; grp.add(wall);
+    if (view === "full" && isPanel || X.c === "plinth") {   // пол: под панелью 3 м и под плинтусом
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(big, big), new THREE.MeshStandardMaterial({ color: 0xb79b7a, roughness: .85 }));
+      floor.rotation.x = -Math.PI / 2; floor.position.set(bw / 2, 0, big / 2 - 2); floor.receiveShadow = true; grp.add(floor);
     }
-    const sun = S.userData.sun, span = Math.max(n * W, len);
-    sun.position.set(-span * 1.2, len + span * 0.6, span * 0.9); sun.target.position.set(n * W / 2, len / 2, 0);
+    if (X.c === "cornice") {   // потолок над карнизом
+      const ceil = new THREE.Mesh(new THREE.PlaneGeometry(big, big), new THREE.MeshBasicMaterial({ color: 0xf1ede6 }));
+      ceil.rotation.x = Math.PI / 2; ceil.position.set(bw / 2, bh, big / 2 - 2); grp.add(ceil);
+    }
+    const sun = S.userData.sun, span = Math.max(bw, bh);
+    sun.position.set(-span * 1.2, bh + span * 0.6, span * 0.9); sun.target.position.set(bw / 2, bh / 2, 0);
     Object.assign(sun.shadow.camera, { left: -span, right: span, top: span, bottom: -span, near: 10, far: span * 6 }); sun.shadow.camera.updateProjectionMatrix();
-    place(len, n * W);
+    place(bh, bw);
   }
   function place(len, width){
+    if (P.poly) {   // погонаж лежит вдоль X: камера у ближнего (левого) торца, как на фото каталога — профиль крупно, длина уходит вглубь
+      const W = X.w, T = P.poly.t, d = Math.max(W * 4.2, 130) + T;
+      const tgt = new THREE.Vector3(Math.min(width * 0.4, d * 0.3), W / 2, T / 2);
+      const dir = X.c === "cornice" ? new THREE.Vector3(-0.6, -0.35, 1) : new THREE.Vector3(-0.6, 0.45, 1);   // камера левее торца и спереди — виден и профиль, и рельеф
+      dir.normalize(); cam.position.copy(dir.multiplyScalar(d)).add(tgt);
+      ctl.target.copy(tgt); ctl.minDistance = W * 1.2; ctl.maxDistance = Math.max(width, W * 10) * 2; ctl.update(); return;
+    }
     const cx = width / 2, cy = len / 2, r = Math.hypot(width, len) / 2;
-    const d = r / Math.sin(cam.fov * Math.PI / 360) * (view === "full" ? 0.78 : 0.7) / Math.min(1, cam.aspect / 1.15);
+    const d = r / Math.sin(cam.fov * Math.PI / 360) * (view === "full" ? 0.8 : width / len < 0.6 ? 1.0 : 0.9) / Math.min(1, cam.aspect / 1.15);   // одна панель выше, чем шире — дальше
     const dir = view === "full" ? new THREE.Vector3(0.55, 0.25, 1) : new THREE.Vector3(0.6, 0.45, 1);
     dir.normalize(); cam.position.copy(dir.multiplyScalar(d)).add(new THREE.Vector3(cx, cy, 0));
     ctl.target.set(cx, cy, 0); ctl.minDistance = r * 0.3; ctl.maxDistance = d * 3; ctl.update();
@@ -238,6 +267,9 @@ function setView(v){
   if (v === "photo") paintPhoto(); else { W3.init(); W3.rebuild(); hit("3d", X.a); }
 }
 document.querySelectorAll("[data-v]").forEach(b => b.addEventListener("click", () => setView(b.dataset.v)));
+function setN(n){ nPan = Math.max(1, Math.min(6, n)); if ($("nVal")) $("nVal").textContent = nPan; if (view !== "photo") W3.rebuild(); hit("3d", X.a, "n" + nPan); }
+if ($("nMinus")) $("nMinus").addEventListener("click", () => setN(nPan - 1));
+if ($("nPlus")) $("nPlus").addEventListener("click", () => { if (view === "photo") setView("frag"); setN(nPan + 1); });
 
 /* ---------- количество и сумма ---------- */
 function price(){ return X.r || 0; }

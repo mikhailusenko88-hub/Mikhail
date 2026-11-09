@@ -40,6 +40,8 @@ def js_assign(name):
             if depth == 0: return json.loads(src[i:j + 1])
 
 CAT = js_array("CAT"); PROF = js_array("PROF"); PHOTO = js_assign("PHOTO"); PAINT = js_assign("PAINT")
+# сечения молдингов, плинтусов, карнизов и уголков — сняты из PDF-каталога ARTDEC (extract_profiles.py)
+PROF2 = json.load(open(os.path.join(HERE, "profiles-mold.json"), encoding="utf-8"))
 shop_m = re.search(r"const SHOP = \{(.*?)\};", src)
 SHOP = dict(re.findall(r'(\w+):\s*"([^"]*)"', shop_m.group(1)))
 MSG = ("MAX " + SHOP["max"]) if SHOP.get("max") else ("Telegram " + SHOP["telegram"])   # основной мессенджер — как на главной
@@ -95,19 +97,24 @@ def title(x):
 def description(x):
     price = "Цена %s ₽ за шт, %d шт в коробке." % (fmt(x["r"]), x["b"]) if x.get("r") else "%d шт в коробке." % x["b"]
     return "%s: %s. %s Со склада в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и Ленобласти. %s" % (
-        x["n"], x["d"], price, "3D-просмотр, профиль и расчёт стены." if x["c"] in ("panel", "color") else "Фото, размеры и заявка на сайте.")
+        x["n"], x["d"], price, "3D-просмотр, профиль и расчёт стены." if x["c"] in ("panel", "color") else "3D-просмотр, чертёж профиля и заявка на сайте.")
 
 # ---------- чертёж профиля (сечение), мм ----------
 def prof_svg(x):
     W, T = x["w"], x["t"]
-    pts = PROF.get(x["a"]); wood = wood_parts(x) if x["c"] == "color" else None
-    if not pts and not wood: return ""
-    fs = W / 30.0; sw = W / 500.0; padL, padR, padT, padB = W * 0.03, fs * 7.5, fs * 1.6, fs * 3.4
+    pts = PROF.get(x["a"]); wood = wood_parts(x) if x["c"] == "color" else None; poly = PROF2.get(x["a"])
+    if not pts and not wood and not poly: return ""
+    if poly: T = poly["t"]   # у карнизов вылет взят с чертежа
+    fs = max(W / 30.0, (T + 6) / 9.0); sw = fs / 14.0; padL, padR, padT, padB = W * 0.03, fs * 7.5, fs * 1.6, fs * 3.4   # шрифт ~14–20 px на экране при любом масштабе
     vb = "%.1f %.1f %.1f %.1f" % (-padL, -padT, W + padL + padR, T + padT + padB)
     body = ""
     if pts:
         d = "M0,%.2f " % T + " ".join("L%.2f,%.2f" % (px, T - py) for px, py in pts) + " L%.2f,%.2f Z" % (W, T)
         body = '<path class="body" d="%s" stroke-width="%.2f"/>' % (d, sw * 1.2)
+    elif poly:
+        ring = lambda r: "M" + " L".join("%.2f,%.2f" % (px, T - py) for px, py in r) + " Z"
+        d = " ".join(ring(r) for r in [poly["outer"]] + poly["holes"])
+        body = '<path class="body" fill-rule="evenodd" d="%s" stroke-width="%.2f"/>' % (d, sw * 1.2)
     else:
         body = '<rect class="base" x="0" y="%.2f" width="%d" height="%.2f" stroke-width="%.2f"/>' % (T - wood["base"], W, wood["base"], sw)
         body += "".join('<rect class="slat" x="%.2f" y="0" width="%.2f" height="%.2f" stroke-width="%.2f"/>' % (a0, a1 - a0, T - wood["base"], sw) for a0, a1 in wood["slats"])
@@ -116,8 +123,8 @@ def prof_svg(x):
            '<path d="M%.2f,0 H%.2f M%.2f,%d H%.2f M%.2f,0 V%d"/></g>' % (sw, T + fs * 0.3, y1 + fs * 0.4, W, T + fs * 0.3, y1 + fs * 0.4, y1, W,
                                                                          W + fs * 0.3, xr + fs * 0.4, W + fs * 0.3, T, xr + fs * 0.4, xr, T))
     txt = ('<text class="dim" x="%.2f" y="%.2f" text-anchor="middle" font-size="%.2f">%d мм</text>'
-           '<text class="dim" x="%.2f" y="%.2f" text-anchor="start" font-size="%.2f" dominant-baseline="middle">%d мм</text>' % (W / 2, y2, fs, W, xr + fs * 0.5, T / 2, fs * 0.9, T))
-    return '<svg viewBox="%s" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Профиль %s: ширина %d мм, толщина %d мм">%s%s%s</svg>' % (vb, esc(x["a"]), W, T, body, dim, txt)
+           '<text class="dim" x="%.2f" y="%.2f" text-anchor="start" font-size="%.2f" dominant-baseline="middle">%s мм</text>' % (W / 2, y2, fs, W, xr + fs * 0.5, T / 2, fs * 0.9, ("%d" % T) if float(T).is_integer() else ("%.0f" % T)))
+    return '<svg viewBox="%s" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Профиль %s: ширина %d мм, толщина %.0f мм">%s%s%s</svg>' % (vb, esc(x["a"]), W, T, body, dim, txt)
 
 # ---------- общие куски страницы ----------
 def head(t, desc, canon, og_img, extra_ld, root):
@@ -209,7 +216,7 @@ def product_page(x):
     a, c = x["a"], x["c"]
     sl = slug(a); url = "%s/p/%s/" % (BASE, sl); catc = CAT_BY[c]
     ph = photo(a); og_img = (BASE + "/" + ph) if ph else BASE + "/og.jpg"
-    is_wood = c == "color"; has3d = a in PROF or is_wood
+    is_wood = c == "color"; has3d = a in PROF or is_wood or a in PROF2; is_panel = c in ("panel", "color")
     crumb_items = [("Главная", ROOT), (catc[2], "%scatalog/%s/" % (ROOT, catc[1])), (a, "")]
     ld_prod = {"@context": "https://schema.org", "@type": "Product", "name": x["n"], "sku": a, "mpn": a, "brand": {"@type": "Brand", "name": "ARTDEC"},
                "description": x["d"], "category": KIND[c], "url": url,
@@ -224,9 +231,12 @@ def product_page(x):
     # вид: вкладки и сцена
     tabs = ""
     if has3d:
+        cnt = ('<span class="sp"></span><span class="ncount" role="group" aria-label="Сколько панелей рядом"><span class="note">Панелей рядом</span>'
+               '<button type="button" id="nMinus" aria-label="Меньше">−</button><b id="nVal">1</b><button type="button" id="nPlus" aria-label="Больше">+</button></span>') if is_panel else ""
         tabs = ('<div class="vtabs" role="group" aria-label="Вид"><button type="button" data-v="frag" aria-pressed="true">3D · фрагмент</button>'
-                '<button type="button" data-v="full" aria-pressed="false">3D · вся панель</button>%s<span class="sp"></span><span class="note">три панели рядом — виден стык</span></div>'
-                % ('<button type="button" data-v="photo" aria-pressed="false">Фото</button>' if ph else ""))
+                '<button type="button" data-v="full" aria-pressed="false">3D · %s</button>%s%s</div>'
+                % ("вся панель" if is_panel else "вся длина %d м" % (x["l"] // 1000) if x["l"] % 1000 == 0 else "вся длина %.1f м" % (x["l"] / 1000),
+                   '<button type="button" data-v="photo" aria-pressed="false">Фото</button>' if ph else "", cnt))
     stage = '<div class="pview%s" id="pview">' % (" is3d" if has3d else " photoonly")
     if has3d: stage += '<canvas id="c3" aria-label="%s %s в 3D"></canvas><div class="nogl" id="nogl" hidden>3D не запускается в этом браузере — посмотрите фото.</div>' % (esc(KIND[c]), esc(a))
     if ph: stage += '<img id="photo" src="%s%s" alt="%s %s — %s" width="790" height="449"%s>' % (ROOT, ph, esc(KIND[c]), esc(a), esc(x["d"]), " hidden" if has3d else "")
@@ -243,8 +253,15 @@ def product_page(x):
         colors = '<div class="colors" id="colors"></div>'
 
     prof = prof_svg(x)
-    prof_html = ('<div class="prof"><h2>Профиль (сечение)</h2><p>Вид с торца в масштабе: ширина %d мм, толщина %d мм. %s</p>%s</div>' % (
-        x["w"], x["t"], "Рельеф снят с каталога производителя." if a in PROF else "Схема: чёрная основа и ламели с декором.", prof)) if prof else ""
+    if a in PROF2:
+        pv = PROF2[a]
+        if c == "cornice": ptxt = "Сечение карниза в масштабе: высота по стене %d мм, вылет от стены ≈ %.0f мм (потолок слева, стена снизу). Контур снят с каталога производителя." % (x["w"], pv["t"])
+        elif c == "plinth": ptxt = "Сечение плинтуса в масштабе: высота %d мм, толщина %d мм (верх плинтуса слева, стена снизу). Контур снят с каталога производителя." % (x["w"], x["t"])
+        elif c == "corner": ptxt = "Сечение уголка в масштабе: полки %d×%d мм. Контур снят с каталога производителя." % (x["w"], x["t"])
+        else: ptxt = "Сечение в масштабе: ширина %d мм, толщина %d мм (стена снизу). Контур снят с каталога производителя." % (x["w"], x["t"])
+    else:
+        ptxt = "Вид с торца в масштабе: ширина %d мм, толщина %d мм. %s" % (x["w"], x["t"], "Рельеф снят с каталога производителя." if a in PROF else "Схема: чёрная основа и ламели с декором.")
+    prof_html = ('<div class="prof"><h2>Профиль (сечение)</h2><p>%s</p>%s</div>' % (ptxt, prof)) if prof else ""
 
     specs = [("Артикул", a), ("Тип", KIND[c]), ("Ширина", "%d мм" % x["w"]), ("Толщина", "%d мм" % x["t"]), ("Длина", "%d мм" % x["l"]),
              ("В коробке", "%d шт" % x["b"]), ("Материал", "высокоплотный полистирол"), ("Пожарная опасность", "класс Г2"),
@@ -272,6 +289,7 @@ def product_page(x):
     data = {"root": ROOT, "item": x, "kind": KIND[c], "photo": ph, "mask": PHOTO.get(a, "") in ("A172.jpg", "A38.jpg", "A503.jpg", "A504.jpg"),
             "paint": PAINT, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", ""), "phone": SHOP["phone"]}}
     if a in PROF: data["prof"] = PROF[a]
+    elif a in PROF2: data["poly"] = PROF2[a]
     if is_wood: data["wood"] = wood_parts(x); data["tex"] = "img/tex/" + PHOTO[a] if PHOTO.get(a) else ""
 
     body = (header(ROOT) + '<main><div class="wrap">' + crumbs(crumb_items) +
@@ -306,7 +324,7 @@ def category_page(code, sl, menu, h1, intro):
     body = (header(ROOT) + '<main><div class="wrap">' + crumbs(crumb_items) +
             '<div class="head" style="margin-top:6px"><div><h1 style="font-size:clamp(24px,4.2vw,38px)">%s</h1><p class="catintro">%s</p></div></div>' % (esc(h1), esc(intro)) +
             sections_nav(code, ROOT) + grid +
-            '<p class="note" style="margin-top:18px">Цены предварительные, за штуку, без НДС. Нажмите на товар — там фото, %sразмеры, цена и заявка.</p></div>' % ("3D и профиль, " if code in ("panel", "color") else "") +
+            '<p class="note" style="margin-top:18px">Цены предварительные, за штуку, без НДС. Нажмите на товар — там фото, 3D, профиль, размеры, цена и заявка.</p></div>' % () +
             lead_form(None) + "</main>" + footer(ROOT) +
             '<script>window.P=%s</script><script src="%sassets/p.js?v=%s"></script></body></html>' % (json.dumps({"root": ROOT, "list": True, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", "")}}, ensure_ascii=False), ROOT, VER))
     return head(t, desc, url, og_img, ld, ROOT) + body
