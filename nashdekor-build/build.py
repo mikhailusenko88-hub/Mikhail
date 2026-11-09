@@ -44,7 +44,7 @@ CAT = js_array("CAT"); PROF = js_array("PROF"); PHOTO = js_assign("PHOTO"); PAIN
 PROF2 = json.load(open(os.path.join(HERE, "profiles-mold.json"), encoding="utf-8"))
 shop_m = re.search(r"const SHOP = \{(.*?)\};", src)
 SHOP = dict(re.findall(r'(\w+):\s*"([^"]*)"', shop_m.group(1)))
-MSG = ("MAX " + SHOP["max"]) if SHOP.get("max") else ("Telegram " + SHOP["telegram"])   # основной мессенджер — как на главной
+MSG = ("MAX " + SHOP["max"]) if SHOP.get("max") else "чат на сайте"   # личный Telegram с сайта убран 09.11 — общение через чат и ботов
 m = re.search(r"<style>\n/\* Layout(.*?)</style>", src, re.S)
 BASE_CSS = "/* Базовые стили — копия с главной страницы (собирает build.py) */\n/* Layout" + m.group(1)
 m = re.search(r'<style>(:root\{color-scheme.*?)</style>', src, re.S)
@@ -236,7 +236,7 @@ def footer(root):
             '<nav aria-label="Разделы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px">%s<a href="%sstati/" style="color:inherit">Статьи</a><a href="%sdostavka/" style="color:inherit">Доставка в Москву и по России</a></nav>'
             '<nav aria-label="Документы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px"><a href="%soferta.html" style="color:inherit">Оферта</a>'
             '<a href="%sprivacy.html" style="color:inherit">Политика конфиденциальности</a><a href="%sconsent.html" style="color:inherit">Согласие на обработку данных</a></nav>'
-            '</div></footer>' % (esc(SHOP["legal"]), cats, root, root, root, root, root))
+            '</div></footer><script src="%sassets/chat.js?v=%s" defer></script>' % (esc(SHOP["legal"]), cats, root, root, root, root, root, root, VER))
 
 def sections_nav(cur_code, root):
     return '<nav class="sections" aria-label="Разделы каталога">' + "".join(
@@ -256,7 +256,7 @@ def lead_form(x=None):
            '<button type="button" role="tab" data-m="buy" aria-selected="false">Купить<small>оформить заказ</small></button>'
            '<button type="button" role="tab" data-m="call" aria-selected="false">Звонок<small>перезвоним вам</small></button></div>') if x else ""
     return ('<section class="porder" id="order"><div class="wrap"><div class="form"><div><h2 id="oTitle">Заявка</h2>'
-            '<p class="note" id="oNote" style="font-size:15px;margin-top:8px">Ответим с ценой, наличием и сроком в рабочее время. Удобнее всего — написать в %s; или закажите обратный звонок — перезвоним сами.</p>'
+            '<p class="note" id="oNote" style="font-size:15px;margin-top:8px">Ответим с ценой, наличием и сроком в рабочее время. Быстрее всего — написать в <a href="#chat" onclick="return window.NDChat?(NDChat.open(),false):true" style="color:var(--ink)">чат</a> (кнопка «Чат» внизу справа) или заказать обратный звонок — перезвоним сами.</p>'
             '<p class="note" id="oNoteCall" hidden style="font-size:15px;margin-top:8px">Оставьте номер — перезвоним в рабочее время, расскажем про наличие, цену и доставку. Укажите в комментарии, когда удобно принять звонок.</p>'
             '<p class="note" id="oNoteBuy" hidden style="font-size:15px;margin-top:8px">Менеджер подтвердит наличие и стоимость доставки и пришлёт ссылку на оплату картой или СБП: предоплата 50%% (остаток при получении) или 100%%. Самовывоз со склада в СПб — бесплатно.</p>%s</div>'
             '<form class="panel stack" id="leadForm" novalidate>%s<div class="two">'
@@ -272,7 +272,7 @@ def lead_form(x=None):
             '<label class="chk" style="align-items:flex-start"><input type="checkbox" id="lAgree" required style="margin-top:3px"> <span>Я даю <a href="%sconsent.html" style="color:var(--ink)">согласие на обработку персональных данных</a> и ознакомлен с <a href="%sprivacy.html" style="color:var(--ink)">Политикой обработки персональных данных</a><span id="lOferta" hidden> и <a href="%soferta.html" style="color:var(--ink)">условиями продажи</a></span></span></label>'
             '<input type="text" id="lHp" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
             '<div class="err" id="lErr" hidden></div><button class="btn" type="submit" id="lSend">Отправить заявку</button><div id="lDone" hidden></div></form></div></div></section>'
-            % (esc(MSG), prod, seg, ROOT, ROOT, ROOT))
+            % (prod, seg, ROOT, ROOT, ROOT))
 
 def card(x, root):
     ph = photo(x["a"])
@@ -602,6 +602,7 @@ VER = datetime.datetime.now().strftime("%Y%m%d%H%M")
 os.makedirs(os.path.join(SITE, "assets"), exist_ok=True)
 open(os.path.join(SITE, "assets", "p.css"), "w", encoding="utf-8").write(BASE_CSS + "\n" + open(os.path.join(HERE, "p.css"), encoding="utf-8").read())
 shutil.copy(os.path.join(HERE, "p.js"), os.path.join(SITE, "assets", "p.js"))
+shutil.copy(os.path.join(HERE, "chat.js"), os.path.join(SITE, "assets", "chat.js"))
 
 pdir = os.path.join(SITE, "p"); cdir = os.path.join(SITE, "catalog"); adir = os.path.join(SITE, "stati"); ddir = os.path.join(SITE, "dostavka")
 for d in (pdir, cdir, adir, ddir):
