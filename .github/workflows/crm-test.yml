@@ -119,6 +119,61 @@ jobs:
           f=$(sudo ls -1t /var/mail/vhosts/nashdekor.ru/zakaz/Maildir/new/ 2>/dev/null | head -n1)
           echo "последнее письмо на zakaz@: $(sudo grep -m1 '^Subject:' "/var/mail/vhosts/nashdekor.ru/zakaz/Maildir/new/$f" 2>/dev/null)"
           sudo journalctl -t postfix/smtp --no-pager -n 4 | cut -c1-200 || true
+      - name: Пуши — пакет, манифест, service worker, службы Apple/Google, письмо клиента → сделка
+        run: |
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"
+          sudo runuser -u prostranstvo -- python3 -c "import cryptography; print('cryptography', cryptography.__version__)"
+          curl -sk $R -o /dev/null -w 'manifest: %{http_code} %{content_type}\n' https://$H/manifest.webmanifest
+          curl -sk $R -o /dev/null -w 'sw.js: %{http_code} %{content_type}\n' https://$H/sw.js
+          curl -sk $R -o /dev/null -w 'иконка 192: %{http_code}\n' https://$H/static/icon-192.png
+          grep -E 'mail-watch|digest' /etc/cron.d/prostranstvo-crm | sed 's/  */ /g'
+          # Настоящие запросы к службам пушей с выдуманной подпиской: проверяем, что подпись VAPID и шифрование приняты
+          # (ответ про «нет такого устройства» — нормально; «плохой токен/ключ» — ошибка у нас)
+          cd /opt/prostranstvo-crm/src/crm && sudo runuser -u prostranstvo -- python3 - <<'PY'
+          import json, os, urllib.request, urllib.error
+          import push as P
+          from cryptography.hazmat.primitives import serialization
+          from cryptography.hazmat.primitives.asymmetric import ec
+          class S(dict):
+              def setting(self, k, d=""): return self.get(k, d)
+              def set_setting(self, k, v): self[k] = v
+          wp = P.WebPush(S(), "mailto:zakaz@nashdekor.ru")
+          ua = ec.generate_private_key(ec.SECP256R1())
+          pub = ua.public_key().public_bytes(serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint)
+          for ep in ("https://web.push.apple.com/QGuQyavXutnMH9eB0oF9jmuJ2plpm1L8h4JEBoQnUSGTWg", "https://fcm.googleapis.com/fcm/send/fake-test-token:APA91bTest"):
+              body = P.encrypt(b'{"title":"t"}', pub, os.urandom(16))
+              h = {"Content-Type": "application/octet-stream", "Content-Encoding": "aes128gcm", "TTL": "60",
+                   "Authorization": f"vapid t={wp._vapid(ep)}, k={wp.public_key()}"}
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(ep, data=body, headers=h, method="POST"), timeout=15) as r:
+                      print(ep.split("/")[2], r.status, r.read()[:200])
+              except urllib.error.HTTPError as e:
+                  print(ep.split("/")[2], e.code, e.read()[:300])
+              except Exception as e:
+                  print(ep.split("/")[2], "нет связи:", e)
+          PY
+          cd - >/dev/null
+          # письмо от клиента (buyer@example.com из шага «Воронка») на zakaz@ → в его сделку
+          sudo prostranstvo-crm mail-watch; echo "первый проход сторожа почты: только запомнил старые письма"
+          python3 - <<'PY'
+          import smtplib
+          from email.message import EmailMessage
+          m = EmailMessage(); m["From"] = "Покупатель <buyer@example.com>"; m["To"] = "zakaz@nashdekor.ru"; m["Subject"] = "Re: Заказ №3 — подтверждаю"
+          m.set_content("Подтверждаю заказ, присылайте ссылку на оплату.")
+          with smtplib.SMTP("127.0.0.1", 25, timeout=15) as s: s.send_message(m)
+          print("письмо клиента отправлено на zakaz@")
+          PY
+          sleep 8
+          sudo prostranstvo-crm mail-watch
+          sudo journalctl -t prostranstvo-mailwatch --no-pager -n 3 | cut -c1-200 || true
+          J=/tmp/j4; PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          id=/deals/$(sudo sqlite3 /var/lib/prostranstvo/crm.db "select d.id from deals d join clients c on c.id=d.client_id where lower(c.email)='buyer@example.com' order by d.id desc limit 1"); echo "сделка покупателя: $id"
+          curl -sk $R -c $J -b $J "https://$H$id" | grep -o 'Письмо от клиента: «[^»]*»\|Ответить на письмо клиента' | sort -u
+          curl -sk $R -c $J -b $J https://$H/settings | grep -o 'Уведомления на телефон\|data-key="[A-Za-z0-9_-]\{20\}' | head -n2
+          sudo prostranstvo-crm digest
       - name: fail2ban видит подбор пароля
         run: |
           for i in $(seq 1 9); do curl -s -o /dev/null -H 'X-Forwarded-For: 203.0.113.5' --data 'login=yulia&password=bad' http://127.0.0.1:8081/login; done
