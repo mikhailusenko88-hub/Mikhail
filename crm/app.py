@@ -214,7 +214,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if request.method == "POST":
             q = _recent(fails[ip()], LOGIN_WINDOW)
             login_s = (request.form.get("login") or "").strip().lower()[:40]
-            if len(q) >= LOGIN_MAX_FAILS:
+            if len(q) >= LOGIN_MAX_FAILS and not ip_is_own(ip()):   # свои адреса (VPN семьи) не блокируем
                 err = "Слишком много попыток. Подождите 15 минут."
                 log.warning("crm login blocked login=%s ip=%s", login_s, ip())
             else:
