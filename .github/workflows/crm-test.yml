@@ -83,6 +83,34 @@ jobs:
           T=$(curl -sk $R -c $J -b $J https://$H/settings | tok)
           curl -sk $R -c $J -b $J -o /dev/null -w 'обнуление: %{http_code}\n' --data-urlencode "csrf=$T" --data-urlencode "reset=1" https://$H/settings/hit-ips
           d=$(cnt); echo "после обнуления: $d"; [[ $d -eq 0 ]]
+      - name: Воронка — автозадачи, стража «Расчёт отправлен», заказ с сайта
+        run: |
+          set -e
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/j3
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          # заказ с сайта («Купить»): позиции сразу в расчёте, адрес, задача «Связаться»
+          body='{"name":"Покупатель","contact":"+7 921 000-11-22","email":"buyer@example.com","consent":true,"intent":"buy","address":"СПб, Невский пр., 1","message":"Хочу купить","calc":"Товар: A912 (реечная панель) — 6 шт, цвет: белый\nИтого ≈ 5 940 ₽","consentVersion":"2026-10-29"}'
+          id=$(curl -sk $R -H 'Origin: https://nashdekor.ru' -H 'Content-Type: application/json' -d "$body" https://$H/api/lead | grep -o '"id": *[0-9]*' | grep -o '[0-9]*')
+          echo "заказ с сайта: сделка №$id"; [[ -n $id ]]
+          page=$(curl -sk $R -c $J -b $J https://$H/deals/$id)
+          echo "$page" | grep -q 'ЗАКАЗ' && echo "помечен как ЗАКАЗ"
+          echo "$page" | grep -q 'Невский' && echo "адрес доставки записан"
+          echo "$page" | grep -q 'A912' && echo "позиция A912 в расчёте"
+          echo "$page" | grep -o 'Следующий шаг: <a href="#tasks">[^<]*' | sed 's/.*">//'
+          # «Дальше» из «Новая» → «В работе», затем «Дальше» → «Расчёт отправлен» должен сработать только через письмо
+          T=$(echo "$page" | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "next=1" https://$H/deals/$id/stage
+          curl -sk $R -c $J -b $J https://$H/deals/$id | grep -o 'Следующий шаг: <a href="#tasks">[^<]*' | sed 's/.*">/после «В работе»: /'
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "next=1" https://$H/deals/$id/stage
+          page=$(curl -sk $R -c $J -b $J https://$H/deals/$id)
+          echo "$page" | grep -o 'Расчёт отправлен на [^,]*' || echo "$page" | grep -o 'Этап не сменён[^<]*'
+          echo "$page" | grep -o '<option value="[a-z]*" selected' | sed 's/.*value="/этап: /;s/" selected//'
+          echo "$page" | grep -o 'Следующий шаг: <a href="#tasks">[^<]*' | sed 's/.*">/задача: /'
+          sleep 6; echo "писем у buyer (локально не доставляется — смотрим очередь postfix):"; sudo postqueue -p | tail -n 3 || true
+          curl -sk $R -c $J -b $J 'https://'$H'/board?hot=1' | grep -o 'горит [0-9]*\|card warm\|card hot' | sort | uniq -c
       - name: fail2ban видит подбор пароля
         run: |
           for i in $(seq 1 9); do curl -s -o /dev/null -H 'X-Forwarded-For: 203.0.113.5' --data 'login=yulia&password=bad' http://127.0.0.1:8081/login; done
