@@ -423,7 +423,7 @@ $("leadForm").addEventListener("submit", async e => {
   const done = $("lDone"); done.hidden = false;
   if (saved) {
     const next = buy
-      ? `Менеджер проверит наличие, посчитает доставку и пришлёт ссылку на оплату${lead.email ? " на " + lead.email : ""} в рабочее время. Оплата картой или СБП: 50% предоплата или 100% сразу.`
+      ? `Менеджер проверит наличие, посчитает доставку и пришлёт ссылку на оплату${lead.email ? " на " + lead.email : ""} в рабочее время. Оплата картой или через СБП, чек придёт на e-mail; компаниям — счёт.`
       : call ? "Перезвоним в рабочее время." : "Мы ответим с ценой и наличием в рабочее время.";
     done.innerHTML = `<div class="stack" style="gap:12px"><div class="ok" role="status"><b id="lThanks"></b>${next}<p>Свяжемся с вами:<br><span id="lTo" style="white-space:nowrap;font-weight:600"></span></p><p>Если в номере ошибка — отправьте ещё раз или напишите нам в ${MSG()}.</p></div><button class="btn ghost" type="button" id="lAgain">${buy ? "Оформить ещё один заказ" : "Отправить ещё одну заявку"}</button></div>`;
     $("lThanks").textContent = buy ? `Спасибо, ${name}! Заказ принят. ` : call ? `Спасибо, ${name}! Заявка на звонок принята. ` : `Спасибо, ${name}! Заявка отправлена. `; $("lTo").textContent = contact;

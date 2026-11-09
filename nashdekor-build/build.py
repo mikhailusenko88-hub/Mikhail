@@ -234,9 +234,9 @@ def footer(root):
     cats = "".join('<a href="%scatalog/%s/" style="color:inherit">%s</a>' % (root, s, esc(menu)) for _, s, menu, _, _, _, _ in CATS)
     return ('<footer><div class="wrap"><span><b>Наш</b> декор · Санкт-Петербург</span><span>%s</span>'
             '<nav aria-label="Разделы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px">%s<a href="%sstati/" style="color:inherit">Статьи</a><a href="%sdostavka/" style="color:inherit">Доставка в Москву и по России</a></nav>'
-            '<nav aria-label="Документы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px"><a href="%soferta.html" style="color:inherit">Оферта</a>'
+            '<nav aria-label="Документы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px"><a href="%soplata/" style="color:inherit">Оплата и возврат</a><a href="%soferta.html" style="color:inherit">Оферта</a>'
             '<a href="%sprivacy.html" style="color:inherit">Политика конфиденциальности</a><a href="%sconsent.html" style="color:inherit">Согласие на обработку данных</a></nav>'
-            '</div></footer><script src="%sassets/chat.js?v=%s" defer></script>' % (esc(SHOP["legal"]), cats, root, root, root, root, root, root, VER))
+            '</div></footer><script src="%sassets/chat.js?v=%s" defer></script>' % (esc(SHOP["legal"]), cats, root, root, root, root, root, root, root, VER))
 
 def sections_nav(cur_code, root):
     return '<nav class="sections" aria-label="Разделы каталога">' + "".join(
@@ -258,7 +258,7 @@ def lead_form(x=None):
     return ('<section class="porder" id="order"><div class="wrap"><div class="form"><div><h2 id="oTitle">Заявка</h2>'
             '<p class="note" id="oNote" style="font-size:15px;margin-top:8px">Ответим с ценой, наличием и сроком в рабочее время. Быстрее всего — написать в <a href="#chat" onclick="return window.NDChat?(NDChat.open(),false):true" style="color:var(--ink)">чат</a> (кнопка «Чат» внизу справа) или заказать обратный звонок — перезвоним сами.</p>'
             '<p class="note" id="oNoteCall" hidden style="font-size:15px;margin-top:8px">Оставьте номер — перезвоним в рабочее время, расскажем про наличие, цену и доставку. Укажите в комментарии, когда удобно принять звонок.</p>'
-            '<p class="note" id="oNoteBuy" hidden style="font-size:15px;margin-top:8px">Менеджер подтвердит наличие и стоимость доставки и пришлёт ссылку на оплату картой или СБП: предоплата 50%% (остаток при получении) или 100%%. Самовывоз со склада в СПб — бесплатно.</p>%s</div>'
+            '<p class="note" id="oNoteBuy" hidden style="font-size:15px;margin-top:8px">Менеджер подтвердит наличие и стоимость доставки и пришлёт ссылку на оплату картой или через СБП — оплата до отгрузки, электронный чек придёт на e-mail. Компаниям и ИП — счёт. Самовывоз со склада в СПб — бесплатно. <a href="%soplata/" style="color:var(--ink)">Об оплате и возврате</a></p>%s</div>'
             '<form class="panel stack" id="leadForm" novalidate>%s<div class="two">'
             '<label class="f">Имя<input type="text" id="lName" autocomplete="name" required></label>'
             '<label class="f"><span id="lContactLbl">Телефон или мессенджер</span><input type="text" id="lContact" autocomplete="tel" placeholder="+7 … или @ник" required></label></div>'
@@ -272,7 +272,7 @@ def lead_form(x=None):
             '<label class="chk" style="align-items:flex-start"><input type="checkbox" id="lAgree" required style="margin-top:3px"> <span>Я даю <a href="%sconsent.html" style="color:var(--ink)">согласие на обработку персональных данных</a> и ознакомлен с <a href="%sprivacy.html" style="color:var(--ink)">Политикой обработки персональных данных</a><span id="lOferta" hidden> и <a href="%soferta.html" style="color:var(--ink)">условиями продажи</a></span></span></label>'
             '<input type="text" id="lHp" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
             '<div class="err" id="lErr" hidden></div><button class="btn" type="submit" id="lSend">Отправить заявку</button><div id="lDone" hidden></div></form></div></div></section>'
-            % (prod, seg, ROOT, ROOT, ROOT))
+            % (ROOT, prod, seg, ROOT, ROOT, ROOT))
 
 def card(x, root):
     ph = photo(x["a"])
@@ -596,6 +596,54 @@ def delivery_page():
                 "Отправляем стеновые панели 3 м, плинтусы и молдинги в Москву и любой регион транспортной компанией (ПЭК и другие): сроки, упаковка, оплата; доставку получатель оплачивает перевозчику по его тарифу. Самовывоз в СПб бесплатно.",
                 url, BASE + "/og.jpg", ld, root) + body
 
+# ---------- оплата и возврат ----------
+def payment_page():
+    root = "../"; url = BASE + "/oplata/"
+    crumb_items = [("Главная", root), ("Оплата и возврат", "")]
+    faq = [
+        ("Безопасно ли платить по ссылке?", "Да. Ссылка ведёт на платёжную страницу банка, данные карты обрабатывает банк — магазин их не получает и не хранит. Ссылку присылаем только мы: письмом с адреса @nashdekor.ru или в чате на сайте. Если сомневаетесь в ссылке — спросите в чате, прежде чем платить."),
+        ("Можно ли оплатить при получении?", "Мы работаем по предоплате: после оплаты товар закрепляется за вами, и мы собираем заказ. При самовывозе ссылку можно оплатить заранее с телефона — к вашему приезду заказ будет готов."),
+        ("Сколько действует ссылка на оплату?", "7 дней — столько же, сколько расчёт. Если не успели, напишите в чат: пришлём новую ссылку по актуальной цене и наличию."),
+        ("Чек приходит сразу?", "Да, электронный кассовый чек приходит на e-mail из заказа сразу после оплаты. Если письма нет — проверьте папку «Спам» или напишите в чат, отправим повторно."),
+        ("Как вернуть деньги, если товар не подошёл?", "Напишите в чат или на info@nashdekor.ru: номер заказа, что и сколько возвращаете. После возврата товара деньги придут на ту же карту или счёт, с которых платили, вместе с чеком возврата. Срок зачисления на карту зависит от вашего банка."),
+    ]
+    ld = '<script type="application/ld+json">%s</script>' % json.dumps({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a_}} for q, a_ in faq]}, ensure_ascii=False)
+    ld += '<script type="application/ld+json">%s</script>' % json.dumps(crumbs_ld(crumb_items, lambda h: BASE + "/" if h == root else url), ensure_ascii=False)
+    faq_html = '<section class="faq"><h2>Вопросы и ответы</h2>%s</section>' % "".join('<details><summary>%s</summary><p>%s</p></details>' % (esc(q), esc(a_)) for q, a_ in faq)
+    body = (header(root) + '<main><div class="wrap">' + crumbs(crumb_items) +
+            '<article class="article"><h1>Оплата и возврат</h1>'
+            '<p class="lead">Частным покупателям — оплата картой или через СБП по ссылке, которую присылаем после подтверждения заказа. Компаниям и ИП — по счёту. На каждую оплату картой или СБП приходит электронный кассовый чек.</p>'
+            '<h2>Как оплатить заказ</h2><ol>'
+            '<li>Оформите заказ: кнопка «Купить» в карточке товара, <a href="#chat" onclick="return window.NDChat?(NDChat.open(),false):true">чат на сайте</a> или письмо на info@nashdekor.ru. Менеджер подтвердит наличие, сумму и способ получения.</li>'
+            '<li>Пришлём ссылку на оплату — на e-mail или в чат. Ссылка ведёт на защищённую платёжную страницу банка.</li>'
+            '<li>Оплатите банковской картой или через СБП — в приложении своего банка, без ввода данных карты. Данные карты вводятся только на странице банка: магазин их не видит и не хранит.</li>'
+            '<li>Электронный кассовый чек придёт на e-mail из заказа. Дальше собираем заказ и согласуем отгрузку или самовывоз.</li></ol>'
+            '<h2>Когда платить</h2><ul>'
+            '<li><b>Товар в наличии</b> — оплата 100%% до отгрузки или самовывоза.</li>'
+            '<li><b>Товар под заказ</b> (едет с ближайшей поставкой, срок называем заранее) — частные покупатели оплачивают заказ полностью по ссылке; компаниям и ИП по счёту — предоплата 50%%, остаток — когда товар пришёл на склад.</li>'
+            '<li><b>Доставка</b> по Санкт-Петербургу и Ленобласти оплачивается вместе с товаром. В другие города доставку вы оплачиваете транспортной компании сами, при получении, — <a href="%sdostavka/">как устроена доставка</a>.</li></ul>'
+            '<p>Цены на сайте — в рублях, без НДС: продавец применяет упрощённую систему налогообложения и освобождён от НДС.</p>'
+            '<h2>Компаниям и ИП</h2>'
+            '<p>Выставим счёт на реквизиты вашей организации — пришлите ИНН или карточку предприятия. Оплата безналичным переводом с расчётного счёта. Закрывающие документы — УПД по ЭДО (Saby; с другими операторами работаем через роуминг) или на бумаге. По просьбе заключим договор поставки.</p>'
+            '<h2>Кассовый чек</h2>'
+            '<p>По закону 54-ФЗ на каждую оплату картой или через СБП формируется электронный кассовый чек — он приходит на e-mail, указанный в заказе. Сохраните его: он подтверждает покупку и пригодится при возврате. При оплате по счёту организации кассовый чек не нужен — документом служит УПД.</p>'
+            '<h2>Возврат и обмен</h2><ul>'
+            '<li><b>До получения</b> от заказа можно отказаться в любое время — вернём деньги полностью в течение 10 дней.</li>'
+            '<li><b>Товар не подошёл</b> — вернуть можно в течение 7 дней после получения, если он не распилен, не окрашен, не монтировался, без следов клея и сохранил товарный вид. Деньги возвращаем в течение 10 дней со дня требования, за вычетом наших расходов на доставку возвращённого товара.</li>'
+            '<li><b>Брак или повреждение при доставке</b> — на ваш выбор: замена, снижение цены или возврат денег.</li>'
+            '<li><b>Не возвращается</b> товар, сделанный под покупателя: распил в его размер, покраска в выбранный им цвет.</li></ul>'
+            '<p><b>Как вернуть.</b> Напишите в чат на сайте или на info@nashdekor.ru: номер заказа, что и сколько возвращаете, причина, фото. Договоримся о дне: привезите товар на склад в Санкт-Петербурге или мы заберём его сами. Деньги вернём тем же способом, каким была оплата, — на ту же карту или счёт, — и пришлём чек возврата. Срок зачисления на карту зависит от банка покупателя.</p>'
+            '<p>Полные условия — в <a href="%soferta.html#oplata">оферте</a>, разделы «Оплата» и <a href="%soferta.html#vozvrat">«Возврат и обмен»</a>.</p>'
+            '<h2>Продавец</h2>'
+            '<p>%s, магазин «Наш декор», Санкт-Петербург. E-mail: info@nashdekor.ru, чат на сайте — кнопка «Чат» внизу страницы.</p>'
+            '%s</article></div>' % (root, root, root, esc(SHOP["legal"]), faq_html) +
+            lead_form(None) + "</main>" + footer(root) +
+            '<script>window.P=%s</script><script src="%sassets/p.js?v=%s"></script></body></html>' % (json.dumps({"root": root, "list": True, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", "")}}, ensure_ascii=False), root, VER))
+    return head("Оплата и возврат — картой, через СБП или по счёту | Наш декор",
+                "Как оплатить заказ в магазине «Наш декор»: картой или через СБП по ссылке на защищённой странице банка, компаниям и ИП — по счёту с УПД. Электронный чек на e-mail. Возврат неподошедшего товара в течение 7 дней.",
+                url, BASE + "/og.jpg", ld, root) + body
+
 # ---------- сборка ----------
 ROOT = "../../"
 VER = datetime.datetime.now().strftime("%Y%m%d%H%M")
@@ -604,8 +652,8 @@ open(os.path.join(SITE, "assets", "p.css"), "w", encoding="utf-8").write(BASE_CS
 shutil.copy(os.path.join(HERE, "p.js"), os.path.join(SITE, "assets", "p.js"))
 shutil.copy(os.path.join(HERE, "chat.js"), os.path.join(SITE, "assets", "chat.js"))
 
-pdir = os.path.join(SITE, "p"); cdir = os.path.join(SITE, "catalog"); adir = os.path.join(SITE, "stati"); ddir = os.path.join(SITE, "dostavka")
-for d in (pdir, cdir, adir, ddir):
+pdir = os.path.join(SITE, "p"); cdir = os.path.join(SITE, "catalog"); adir = os.path.join(SITE, "stati"); ddir = os.path.join(SITE, "dostavka"); odir = os.path.join(SITE, "oplata")
+for d in (pdir, cdir, adir, ddir, odir):
     if os.path.isdir(d): shutil.rmtree(d)
 urls = []
 for x in CAT:
@@ -619,6 +667,9 @@ for code, sl, menu, h1, intro, ctitle, cdesc in CATS:
 os.makedirs(ddir, exist_ok=True)
 open(os.path.join(ddir, "index.html"), "w", encoding="utf-8").write(delivery_page())
 urls.append(("%s/dostavka/" % BASE, "monthly", "0.6"))
+os.makedirs(odir, exist_ok=True)
+open(os.path.join(odir, "index.html"), "w", encoding="utf-8").write(payment_page())
+urls.append(("%s/oplata/" % BASE, "monthly", "0.5"))
 os.makedirs(adir, exist_ok=True)
 open(os.path.join(adir, "index.html"), "w", encoding="utf-8").write(articles_index())
 urls.append(("%s/stati/" % BASE, "weekly", "0.6"))
@@ -629,7 +680,7 @@ for a in ARTICLES:
 sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
       '  <url><loc>%s/</loc><lastmod>%s</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>' % (BASE, TODAY)]
 sm += ['  <url><loc>%s</loc><lastmod>%s</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>' % (u, TODAY, f, p) for u, f, p in urls]
-sm += ['  <url><loc>%s/%s</loc><lastmod>2026-11-09</lastmod><changefreq>yearly</changefreq><priority>%s</priority></url>' % (BASE, f, p) for f, p in (("oferta.html", "0.3"), ("privacy.html", "0.2"), ("consent.html", "0.2"))]
+sm += ['  <url><loc>%s/%s</loc><lastmod>2026-11-10</lastmod><changefreq>yearly</changefreq><priority>%s</priority></url>' % (BASE, f, p) for f, p in (("oferta.html", "0.3"), ("privacy.html", "0.2"), ("consent.html", "0.2"))]
 sm.append("</urlset>")
 open(os.path.join(SITE, "sitemap.xml"), "w", encoding="utf-8").write("\n".join(sm) + "\n")
 print("товаров: %d, разделов: %d, статей: %d, в sitemap: %d адресов, версия ассетов %s" % (len(CAT), len(CATS), len(ARTICLES), len(urls) + 4, VER))
