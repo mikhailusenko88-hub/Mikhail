@@ -369,7 +369,7 @@ async function sendLead(lead){
   try {
     const r = await fetch(LEAD_API, { method: "POST", mode: "cors", credentials: "omit", signal: ctl.signal,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: lead.name, contact: lead.contact, who: WHO[lead.who] || "private",
+      body: JSON.stringify({ name: lead.name, contact: lead.contact, email: lead.email || "", who: WHO[lead.who] || "private",
         message: [lead.who && lead.who !== "Делаю ремонт у себя" ? "Кто: " + lead.who : "", lead.message].filter(Boolean).join("\n"),
         calc: lead.calc, total: lead.total, consent: true, consentAt: lead.consentAt, consentVersion: lead.consentVersion,
         website: ($("lHp") || {}).value || "" }) });
@@ -389,11 +389,11 @@ $("leadForm").addEventListener("submit", async e => {
   if (!$("lAgree").checked) { err.textContent = "Отметьте согласие на обработку персональных данных."; err.hidden = false; return; }
   err.hidden = true;
   const now = new Date().toISOString();
-  const lead = { name, contact, who: $("lWho").value, message: $("lMsg").value.trim(), calc: orderText(), total: Math.round(qty * price()), consentAt: now, consentVersion: "2026-10-29" };
+  const lead = { name, contact, email: ($("lEmail") ? $("lEmail").value.trim() : ""), who: $("lWho").value, message: $("lMsg").value.trim(), calc: orderText(), total: Math.round(qty * price()), consentAt: now, consentVersion: "2026-10-29" };
   const btn = $("lSend"); btn.disabled = true; btn.textContent = "Отправляем…";
   let saved = false; try { saved = await sendLead(lead); } catch (x) { saved = false; }
   btn.disabled = false; btn.textContent = "Отправить заявку";
-  const text = `Заявка: ${name}, ${contact} (${lead.who})${lead.message ? "\n" + lead.message : ""}\n${lead.calc}`;
+  const text = `Заявка: ${name}, ${contact}${lead.email ? ", " + lead.email : ""} (${lead.who})${lead.message ? "\n" + lead.message : ""}\n${lead.calc}`;
   const done = $("lDone"); done.hidden = false;
   if (saved) {
     done.innerHTML = `<div class="stack" style="gap:12px"><div class="ok" role="status"><b id="lThanks"></b>Мы ответим с ценой и наличием в рабочее время.<p>Свяжемся с вами:<br><span id="lTo" style="white-space:nowrap;font-weight:600"></span></p><p>Если в номере ошибка — отправьте заявку ещё раз или напишите нам в ${MSG()}.</p></div><button class="btn ghost" type="button" id="lAgain">Отправить ещё одну заявку</button></div>`;

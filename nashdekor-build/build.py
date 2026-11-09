@@ -223,6 +223,7 @@ def lead_form(x=None):
             '<form class="panel stack" id="leadForm" novalidate><div class="two">'
             '<label class="f">Имя<input type="text" id="lName" autocomplete="name" required></label>'
             '<label class="f">Телефон или мессенджер<input type="text" id="lContact" autocomplete="tel" placeholder="+7 … или @ник" required></label></div>'
+            '<label class="f">E-mail — пришлём расчёт письмом (необязательно)<input type="email" id="lEmail" autocomplete="email" inputmode="email" placeholder="name@mail.ru"></label>'
             '<label class="f">Кто вы<select id="lWho"><option>Делаю ремонт у себя</option><option>Дизайнер</option><option>Ремонтная бригада</option><option>Компания, объект</option></select></label>'
             '<label class="f">Комментарий<textarea id="lMsg" rows="3" placeholder="Адрес, сроки, нужна ли доставка"></textarea></label>'
             '<label class="chk" style="align-items:flex-start"><input type="checkbox" id="lAgree" required style="margin-top:3px"> <span>Я даю <a href="%sconsent.html" style="color:var(--ink)">согласие на обработку персональных данных</a> и ознакомлен с <a href="%sprivacy.html" style="color:var(--ink)">Политикой обработки персональных данных</a></span></label>'

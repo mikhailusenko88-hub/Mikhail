@@ -225,6 +225,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
         <label class="f">Имя<input type="text" id="lName" autocomplete="name" required></label>
         <label class="f">Телефон или мессенджер<input type="text" id="lContact" autocomplete="tel" placeholder="+7 … или @ник" required></label>
       </div>
+      <label class="f">E-mail — пришлём расчёт письмом (необязательно)<input type="email" id="lEmail" autocomplete="email" inputmode="email" placeholder="name@mail.ru"></label>
       <label class="f">Кто вы<select id="lWho"><option>Делаю ремонт у себя</option><option>Дизайнер</option><option>Ремонтная бригада</option><option>Компания, объект</option></select></label>
       <label class="f">Комментарий<textarea id="lMsg" rows="3" placeholder="Адрес, сроки, нужна ли доставка"></textarea></label>
       <label class="chk"><input type="checkbox" id="lCalc" checked> Приложить расчёт стены</label>
@@ -468,7 +469,7 @@ async function sendLead(lead){
   try {
     const r = await fetch(LEAD_API, { method: "POST", mode: "cors", credentials: "omit", signal: ctl.signal,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: lead.name, contact: lead.contact, who: WHO[lead.who] || "private",
+      body: JSON.stringify({ name: lead.name, contact: lead.contact, email: lead.email || "", who: WHO[lead.who] || "private",
         message: [lead.who && lead.who !== "Делаю ремонт у себя" ? "Кто: " + lead.who : "", lead.message].filter(Boolean).join("\n"),
         calc: lead.calc, total: lead.total, consent: true, consentAt: lead.consentAt, consentVersion: lead.consentVersion,
         website: ($("lHp") || {}).value || "" }) });
@@ -489,14 +490,14 @@ async function submit(e){
   if (!name || !contact) { err.textContent = "Укажите имя и телефон или ник в мессенджере — по ним мы ответим."; err.hidden = false; return; }
   if (!$("lAgree").checked) { err.textContent = "Отметьте согласие на обработку персональных данных."; err.hidden = false; return; }
   err.hidden = true;
-  const lead = { name, contact, who: $("lWho").value, message: $("lMsg").value.trim(),
+  const lead = { name, contact, email: ($("lEmail") ? $("lEmail").value.trim() : ""), who: $("lWho").value, message: $("lMsg").value.trim(),
     calc: $("lCalc").checked ? calcText() : "", total: $("lCalc").checked ? Math.round(calc().sum) : 0,
     source: "сайт", status: "новая", createdAt: new Date().toISOString(), consentAt: new Date().toISOString(), consentVersion: "2026-10-29" };
   const btn = $("lSend"); btn.disabled = true; btn.textContent = "Отправляем…";
   let saved = false;
   try { saved = await sendLead(lead); } catch (e) { saved = false; }
   btn.disabled = false; btn.textContent = "Отправить заявку";
-  const text = `Заявка: ${name}, ${contact} (${lead.who})${lead.message ? "\n" + lead.message : ""}${lead.calc ? "\n" + lead.calc : ""}`;
+  const text = `Заявка: ${name}, ${contact}${lead.email ? ", " + lead.email : ""} (${lead.who})${lead.message ? "\n" + lead.message : ""}${lead.calc ? "\n" + lead.calc : ""}`;
   const done = $("lDone"); done.hidden = false;
   if (saved) {
     done.innerHTML = `<div class="stack" style="gap:12px"><div class="ok" role="status"><b id="lThanks"></b>Мы ответим с ценой и наличием в рабочее время.<p>Свяжемся с вами:<br><span id="lTo" style="white-space:nowrap;font-weight:600"></span></p><p>Если в номере ошибка — отправьте заявку ещё раз или напишите нам в ${MSG()}.</p></div><button class="btn ghost" type="button" id="lAgain">Отправить ещё одну заявку</button></div>`;
