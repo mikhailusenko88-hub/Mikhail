@@ -1,0 +1,54 @@
+name: live-prices
+# Проверка снаружи: какие цены на живом сайте и в фиде Авито, отдаёт ли CRM цены и наличие (/api/catalog).
+# Запуск — изменение этого файла в ветке domain-check или вручную. Результат — status/live-prices.md
+on:
+  push:
+    branches: [domain-check]
+    paths: ['.github/workflows/live-prices.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Проверить
+        shell: python
+        run: |
+          import json, re, urllib.request, os
+          def get(u, h=None):
+              try:
+                  r = urllib.request.urlopen(urllib.request.Request(u, headers=h or {'User-Agent': 'Mozilla/5.0 live-prices'}), timeout=30)
+                  return r.status, dict(r.headers), r.read().decode('utf-8', 'replace')
+              except urllib.error.HTTPError as e:
+                  return e.code, dict(e.headers), ''
+              except Exception as e:
+                  return 0, {}, str(e)
+          out = ['# Цены на живом сайте', '']
+          s, h, b = get('https://nashdekor.ru/')
+          i = b.find('const CAT=')
+          cat = json.JSONDecoder().raw_decode(b, i + 10)[0] if i >= 0 else []
+          pr = {x['a']: x.get('r') for x in cat}
+          out.append(f'- сайт: {s}, артикулов {len(cat)}, есть загрузка из CRM: {"да" if "api/catalog" in b else "нет"}')
+          out.append('- цены: ' + ', '.join(f'{a} {pr.get(a)}' for a in ['A902', 'A907', 'A910', 'A912', '3-7', 'A005', 'A703', 'A704', 'A35', 'A157', 'A702', 'A503']))
+          s, h, b = get('https://nashdekor.ru/avito.xml')
+          ap = dict(re.findall(r'<Id>([^<]+)</Id>.*?<Price>(\d+)</Price>', b, re.S))
+          out.append(f'- фид Авито: {s}, объявлений {len(ap)}; A902 {ap.get("A902")}, A907 {ap.get("A907")}, A704 {ap.get("A704")}')
+          s, h, b = get('https://crm.nashdekor.ru/api/catalog', {'Origin': 'https://nashdekor.ru', 'User-Agent': 'Mozilla/5.0'})
+          out.append(f'- CRM /api/catalog: {s}, CORS: {h.get("Access-Control-Allow-Origin", "нет")}, кэш: {h.get("Cache-Control", "")}')
+          if s == 200:
+              it = json.loads(b).get('items', {})
+              out.append(f'  артикулов {len(it)}; A907 {it.get("A907")}, A704 {it.get("A704")}, A503 {it.get("A503")}')
+          os.makedirs('status', exist_ok=True)
+          open('status/live-prices.md', 'w').write('\n'.join(out) + '\n')
+          print('\n'.join(out))
+      - name: Сохранить результат
+        run: |
+          git config user.name "live-prices"
+          git config user.email "live-prices@users.noreply.github.com"
+          git add status
+          git commit -m "live-prices $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check
