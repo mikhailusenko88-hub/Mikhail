@@ -589,6 +589,98 @@ class TestApi(Base):
         finally:
             crm_app.send_mail = orig
 
+    def _phone(self):
+        """Имитация телефона: ключи браузера и подписка как у Safari на iPhone."""
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric import ec
+        import push as P
+        ua = ec.generate_private_key(ec.SECP256R1())
+        pub = ua.public_key().public_bytes(serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint)
+        auth = os.urandom(16)
+        sub = {"endpoint": "https://web.push.apple.com/QK" + P.b64u(os.urandom(12)), "keys": {"p256dh": P.b64u(pub), "auth": P.b64u(auth)}}
+        return ua, auth, sub
+
+    def test_web_push(self) -> None:
+        import push as P
+        wp = self.app.extensions["push"]
+        got = []
+        def transport(url, headers, body):
+            got.append((url, headers, body)); return 201
+        wp.transport = transport
+        # 1. шифрование RFC 8291 туда-обратно
+        ua, auth, sub = self._phone()
+        enc = P.encrypt(b'{"title":"x"}', P.unb64u(sub["keys"]["p256dh"]), auth)
+        self.assertEqual(P.decrypt(enc, ua, auth), b'{"title":"x"}')
+        # 2. манифест и service worker открыты без входа
+        r = self.c.get("/manifest.webmanifest"); self.assertEqual(r.status_code, 200); self.assertIn("standalone", r.get_data(as_text=True))
+        r = self.c.get("/sw.js"); self.assertEqual(r.status_code, 200); self.assertIn("showNotification", r.get_data(as_text=True))
+        self.assertIn("javascript", r.headers["Content-Type"])
+        # 3. подписка: чужой адрес отклоняется, Apple — принимается
+        self.login()
+        bad = dict(sub, endpoint="https://evil.example.com/x")
+        r = self.post("/push/subscribe", {"sub": json.dumps(bad)}); self.assertFalse(r.get_json()["ok"])
+        r = self.post("/push/subscribe", {"sub": json.dumps(sub)}); self.assertTrue(r.get_json()["ok"], r.get_json())
+        self.post("/push/subscribe", {"sub": json.dumps(sub)})                       # повторно — без дубля
+        self.assertEqual(len(self.store.push_subs()), 1)
+        page = self.c.get("/settings").get_data(as_text=True)
+        self.assertIn("data-push", page); self.assertIn('data-key="' + wp.public_key() + '"', page)
+        # 4. проверка уходит и расшифровывается на «телефоне»; заголовки VAPID
+        r = self.post("/push/test", {"endpoint": sub["endpoint"]}); self.assertTrue(r.get_json()["ok"])
+        url, headers, body = got[-1]
+        self.assertEqual(url, sub["endpoint"]); self.assertEqual(headers["Content-Encoding"], "aes128gcm")
+        self.assertTrue(headers["Authorization"].startswith("vapid t=")); self.assertIn("k=" + wp.public_key(), headers["Authorization"])
+        jwt_claims = json.loads(P.unb64u(headers["Authorization"].split("t=")[1].split(",")[0].split(".")[1]))
+        self.assertEqual(jwt_claims["aud"], "https://web.push.apple.com"); self.assertTrue(jwt_claims["sub"].startswith("mailto:"))
+        data = json.loads(P.decrypt(body, ua, auth)); self.assertEqual(data["title"], "Проверка уведомлений")
+        # 5. заявка с сайта → пуш с переходом в сделку
+        n = len(got)
+        did = self.lead(intent="buy", address="СПб", calc="Товар: A912 (реечная панель) — 2 шт").get_json()["id"]
+        self.assertEqual(len(got), n + 1)
+        data = json.loads(P.decrypt(got[-1][2], ua, auth))
+        self.assertEqual(data["title"], f"Новый ЗАКАЗ с сайта №{did}"); self.assertEqual(data["url"], f"/deals/{did}")
+        self.assertIn("Елена", data["body"]); self.assertFalse(data["body"].startswith("Новый"))
+        # 6. оплата → пуш
+        self.post(f"/deals/{did}/stage", {"stage": "paid"})
+        self.assertIn("Оплачено", json.loads(P.decrypt(got[-1][2], ua, auth))["title"])
+        # 7. письмо от клиента → в его сделку, задача, пуш; от незнакомого — просто пуш
+        self.store.update_client(int(self.store.deal(did)["client_id"]), "тест", email="client@example.com")
+        out = self.app.extensions["mail_in"]([{"box": "zakaz", "from": "client@example.com", "name": "Елена", "subject": "Re: Расчёт"},
+                                              {"box": "info", "from": "x@example.org", "name": "", "subject": "Вопрос"}])
+        self.assertIn(f"сделка №{did}", out[0]); self.assertIn("без сделки", out[1])
+        self.assertIn("Ответить на письмо клиента", [t["title"] for t in self.store.tasks(deal_id=did)])
+        self.assertTrue(any("Письмо от клиента" in e["text"] for e in self.store.events(deal_id=did)))
+        titles = [json.loads(P.decrypt(g[2], ua, auth))["title"] for g in got[-2:]]
+        self.assertEqual(titles, [f"Письмо от клиента: Елена · №{did}", "Новое письмо на info@"])
+        # 8. утренняя сводка
+        txt = self.app.extensions["digest"]()
+        self.assertIn("задач", txt.lower())
+        # 9. служба сказала «подписки больше нет» → удаляем
+        wp.transport = lambda u, h, b: 410
+        self.app.extensions["digest"]()
+        self.assertEqual(self.store.push_subs(), [])
+
+    def test_mailwatch(self) -> None:
+        import subprocess, tempfile
+        d = tempfile.mkdtemp()
+        md = os.path.join(d, "vh", "nashdekor.ru", "zakaz", "Maildir")
+        for s in ("new", "cur", "tmp"):
+            os.makedirs(os.path.join(md, s))
+        def put(name, sub, frm, subj, extra=""):
+            with open(os.path.join(md, sub, name), "w", encoding="utf-8") as f:
+                f.write(f"From: {frm}\nTo: zakaz@nashdekor.ru\nSubject: {subj}\n{extra}\nТекст\n")
+        env = dict(os.environ, MAILWATCH_VMAIL=os.path.join(d, "vh"), MAILWATCH_STATE=os.path.join(d, "st"))
+        run = lambda: [json.loads(x) for x in subprocess.run([sys.executable, "-I", os.path.join(HERE, "mailwatch.py"), "nashdekor.ru", "zakaz", "info"],
+                                                             env=env, capture_output=True, text=True, check=True).stdout.splitlines()]
+        put("1.old", "cur", "a@example.com", "старое")
+        self.assertEqual(run(), [])                                  # первый запуск — только запоминает
+        put("2.new:2,", "cur", "=?utf-8?b?0JXQu9C10L3QsA==?= <Client@Example.com>", "=?utf-8?b?0KDQsNGB0YfRkdGC?=")
+        put("3.n", "new", "Наш декор <noreply@nashdekor.ru>", "Заявка с сайта №5")
+        put("4.n", "new", "spam@example.com", "SALE", "X-Spam-Flag: YES\n")
+        out = run()
+        self.assertEqual(out, [{"box": "zakaz", "from": "client@example.com", "name": "Елена", "subject": "Расчёт"}])
+        os.rename(os.path.join(md, "new", "3.n"), os.path.join(md, "cur", "3.n:2,S"))   # телефон прочитал — уже не новое
+        self.assertEqual(run(), [])
+
     def test_lines_from_site_calc_and_fuzzy_article(self) -> None:
         cat = self.store.catalog
         self.assertEqual(cat.find("912").article, "A912")          # без буквы

@@ -8,6 +8,9 @@
   python3 manage.py backup ФАЙЛ                — копия базы (sqlite backup)
   python3 manage.py stats                      — сколько клиентов и заявок
   python3 manage.py followups                  — разослать напоминания клиентам, не ответившим на расчёт (cron, раз в день)
+  python3 manage.py mail-in                    — новые письма (JSON-строки из mailwatch.py на stdin) → пуши и сделки
+  python3 manage.py digest                     — утренняя сводка пушем (cron, раз в день)
+  python3 manage.py push "Заголовок" "Текст"   — пуш всем сотрудникам с включёнными уведомлениями
 """
 
 from __future__ import annotations
@@ -61,6 +64,25 @@ def main(argv: list[str]) -> int:
         print(s.import_bot_leads(force=True))
     elif cmd == "backup" and len(args) == 1:
         s.backup(args[0])
+        print("ok")
+    elif cmd in ("mail-in", "digest", "push"):
+        import json as _json
+        from app import create_app
+        app = create_app({"PUSH_SYNC": True})
+        if cmd == "mail-in":
+            items = []
+            for line in sys.stdin:
+                try:
+                    items.append(_json.loads(line))
+                except ValueError:
+                    pass
+            for line in app.extensions["mail_in"](items):
+                print(line)
+        elif cmd == "digest":
+            print(app.extensions["digest"]() or "нечего сообщать")
+        else:
+            ok, bad = app.extensions["push"].notify(args[0] if args else "Наш декор", args[1] if len(args) > 1 else "", "/")
+            print(f"доставлено: {ok}, не доставлено: {bad}")
         print("ok")
     elif cmd == "followups":
         from app import create_app

@@ -132,7 +132,7 @@ step_packages() {
   step "Программы (Python Flask, gunicorn) — 1–2 минуты"
   export DEBIAN_FRONTEND=noninteractive NEEDRESTART_SUSPEND=1 NEEDRESTART_MODE=l
   local apt=(apt-get -y -q -o DPkg::Lock::Timeout=600 -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold)
-  local pkgs=(python3 python3-flask gunicorn git sqlite3 ssl-cert curl ca-certificates cron bind9-dnsutils) n
+  local pkgs=(python3 python3-flask python3-cryptography gunicorn git sqlite3 ssl-cert curl ca-certificates cron bind9-dnsutils) n
   for n in 1 2 3 4 5; do
     if run "${apt[@]}" update; then break; fi
     ((n < 5)) || die "не удалось обновить список пакетов (apt-get update)."
@@ -338,6 +338,15 @@ cmd_site_leads() {
   echo "Заявки с сайта: $([[ $v == 1 ]] && echo включены || echo выключены)."
 }
 
+cmd_mail_watch() {   # новые письма в ящиках магазина → CRM (пуш; письмо клиента — в его сделку)
+  local out boxes=() b
+  for b in zakaz info; do [[ -d /var/mail/vhosts/$SHOP_DOMAIN/$b/Maildir ]] && boxes+=("$b"); done
+  ((${#boxes[@]})) || return 0
+  out=$(python3 -I "$APP/mailwatch.py" "$SHOP_DOMAIN" "${boxes[@]}") || return 1
+  [[ -n $out ]] && printf '%s\n' "$out" | manage mail-in
+  return 0
+}
+
 cmd_backup() {
   local d f keep=14
   d="$BACKUP_DIR/$(date +%F)"
@@ -465,6 +474,9 @@ prostranstvo-crm — CRM https://$CRM_HOST
   prostranstvo-crm update               — обновить CRM из GitHub
   prostranstvo-crm server-page --now   — обновить отчёт для страницы CRM «Сервер» (там же кнопки действий)
   prostranstvo-crm followups           — разослать напоминания клиентам, не ответившим на расчёт (cron, раз в день в 11:25)
+  prostranstvo-crm mail-watch          — новые письма в zakaz@ и info@ → пуш на телефоны (cron, раз в минуту)
+  prostranstvo-crm digest              — утренняя сводка пушем (cron, 9:35)
+  prostranstvo-crm push "Текст"        — пуш всем сотрудникам с включёнными уведомлениями
   prostranstvo-crm cert                 — получить сертификат для $CRM_HOST сейчас
 EOF
 }
@@ -480,6 +492,9 @@ case ${1:-status} in
   update) cmd_update ;;
   server-page) shift; cmd_server_page "$@" || rc=$? ;;
   followups) manage followups || rc=$? ;;
+  mail-watch) cmd_mail_watch || rc=$? ;;
+  digest) manage digest || rc=$? ;;
+  push) shift; manage push "Наш декор" "${1:-Проверка уведомлений}" || rc=$? ;;
   cert) shift; cmd_cert "$@" || rc=$? ;;
   -h | --help | help) usage ;;
   *) usage; rc=1 ;;
@@ -594,13 +609,16 @@ step_nginx() {
   put_file /etc/cron.d/prostranstvo-crm 644 <<'EOF'
 # Создано setup-crm.sh: сертификат для crm.ДОМЕН, когда домен заработает; ночные копии баз в 03:15;
 # отчёт для страницы CRM «Сервер» (пересобирается по кнопке или раз в 15 минут);
-# напоминания клиентам о расчёте — раз в день в 11:25 (выключаются в CRM → Настройки → Письма клиентам).
+# напоминания клиентам о расчёте — раз в день в 11:25 (выключаются в CRM → Настройки → Письма клиентам);
+# пуши: новые письма в zakaz@/info@ — раз в минуту, утренняя сводка — 9:35.
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 7,22,37,52 * * * *  root  /usr/local/sbin/prostranstvo-crm cert --auto 2>&1 | logger -t prostranstvo-crm
 15 3 * * *          root  /usr/local/sbin/prostranstvo-crm backup 2>&1 | logger -t prostranstvo-backup
 * * * * *           root  flock -n /run/prostranstvo-server-page.lock /usr/local/sbin/prostranstvo-crm server-page 2>&1 | logger -t prostranstvo-server
 25 11 * * *         root  /usr/local/sbin/prostranstvo-crm followups 2>&1 | logger -t prostranstvo-followups
+* * * * *           root  flock -n /run/prostranstvo-mailwatch.lock /usr/local/sbin/prostranstvo-crm mail-watch 2>&1 | logger -t prostranstvo-mailwatch
+35 9 * * *          root  /usr/local/sbin/prostranstvo-crm digest 2>&1 | logger -t prostranstvo-digest
 EOF
   /usr/local/sbin/prostranstvo-crm server-page --now >/dev/null 2>&1 || true
   local rc=0

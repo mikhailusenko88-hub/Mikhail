@@ -6,9 +6,15 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#1d5e57">
 <title>{% block title %}CRM{% endblock %} · Наш декор</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='crm.css') }}?v=7">
+<link rel="stylesheet" href="{{ url_for('static', filename='crm.css') }}?v=8">
 <link rel="icon" href="{{ url_for('static', filename='icon.svg') }}" type="image/svg+xml">
-<script src="{{ url_for('static', filename='crm.js') }}?v=2" defer></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Наш декор">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script src="{{ url_for('static', filename='crm.js') }}?v=3" defer></script>
 </head>
 <body>
 {% if me %}

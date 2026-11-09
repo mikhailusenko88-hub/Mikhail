@@ -12,6 +12,7 @@ from __future__ import annotations
 import functools
 import hmac
 import ipaddress
+import json
 import logging
 import os
 import re
@@ -30,6 +31,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from store import (KIND_NAMES, KIND_TITLES, KINDS, OPEN_STAGES, ROLE_NAMES, ROLES, SOURCE_NAMES, SOURCES,
                    STAGE_NAMES, STAGES, Catalog, Store, fmt_day, fmt_dt, now, rub, today, split_contact)
+from push import WebPush
 from visits import Visits, is_bot, parse_body
 
 log = logging.getLogger("crm")
@@ -95,6 +97,10 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     app.extensions["store"] = store
     app.extensions["crm_conf"] = conf
     visits = Visits(store, conf["SHOP_DOMAIN"])
+    wp = WebPush(store, f"mailto:zakaz@{conf['SHOP_DOMAIN'] or 'nashdekor.ru'}")
+    wp.sync = bool(cfg.get("TESTING")) or bool(cfg.get("PUSH_SYNC"))
+    app.extensions["push"] = wp
+    store.on_notify = lambda title, text, url: wp.notify(title, text, url, tag=url)
     app.extensions["visits"] = visits
     hits_by_ip: dict[str, deque[float]] = defaultdict(deque)
     fails: dict[str, deque[float]] = defaultdict(deque)
@@ -136,7 +142,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 "KINDS": KINDS, "KIND_NAMES": KIND_NAMES, "ROLES": ROLES, "ROLE_NAMES": ROLE_NAMES,
                 "KIND_TITLES": KIND_TITLES, "rub": rub, "fmt_dt": fmt_dt, "fmt_day": fmt_day, "today": today(),
                 "me": getattr(g, "user", None), "csrf": session.get("csrf", ""), "total": Store.total,
-                "nav_new": getattr(g, "nav_new", 0), "SHOP_DOMAIN": conf["SHOP_DOMAIN"] or "nashdekor.ru"}
+                "nav_new": getattr(g, "nav_new", 0), "SHOP_DOMAIN": conf["SHOP_DOMAIN"] or "nashdekor.ru",
+                "PUSH_KEY": wp.public_key() if getattr(g, "user", None) and wp.enabled else ""}
 
     @app.after_request
     def headers(resp: Response) -> Response:
@@ -231,6 +238,90 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     def logout() -> Any:
         session.clear()
         return redirect(url_for("login"))
+
+    # ------------------------------------------------------------ приложение на экране «Домой» и пуши
+    @app.route("/manifest.webmanifest")
+    def manifest() -> Any:
+        m = {"name": "Наш декор — CRM", "short_name": "Наш декор", "lang": "ru", "start_url": "/", "scope": "/",
+             "display": "standalone", "background_color": "#f3f2ee", "theme_color": "#1d5e57",
+             "icons": [{"src": url_for("static", filename="icon-192.png"), "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+                       {"src": url_for("static", filename="icon-512.png"), "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}]}
+        return Response(json.dumps(m, ensure_ascii=False), mimetype="application/manifest+json")
+
+    @app.route("/sw.js")
+    def service_worker() -> Any:
+        return Response(SW_JS, mimetype="application/javascript")
+
+    @app.post("/push/subscribe")
+    @login_required
+    def push_subscribe() -> Any:
+        if not wp.enabled:
+            return jsonify(ok=False, error="на сервере нет python3-cryptography — обновите CRM"), 200
+        try:
+            sub = json.loads(request.form.get("sub") or "{}")
+        except ValueError:
+            sub = {}
+        err = wp.subscribe(int(g.user["id"]), sub if isinstance(sub, dict) else {}, request.headers.get("User-Agent", ""))
+        if err:
+            return jsonify(ok=False, error=err), 200
+        c = store.c(); store.log(c, "Включены уведомления на устройстве", who()); c.commit()
+        return jsonify(ok=True)
+
+    @app.post("/push/unsubscribe")
+    @login_required
+    def push_unsubscribe() -> Any:
+        store.push_sub_delete(endpoint=request.form.get("endpoint", ""), user_id=int(g.user["id"]))
+        return jsonify(ok=True)
+
+    @app.post("/push/test")
+    @login_required
+    def push_test() -> Any:
+        subs = store.push_subs(user_ids=[int(g.user["id"])])
+        ep = request.form.get("endpoint", "")
+        if ep:
+            subs = [s for s in subs if s["endpoint"] == ep]
+        if not subs:
+            return jsonify(ok=False, error="на этом устройстве уведомления ещё не включены")
+        ok, bad = wp._send_many(subs, {"title": "Проверка уведомлений", "body": f"{g.user['name']}, уведомления CRM работают на этом телефоне.",
+                                       "url": "/settings#push", "tag": "test"})
+        return jsonify(ok=ok > 0, sent=ok, failed=bad, error="" if ok else "служба уведомлений не приняла пуш — выключите и включите снова")
+
+    @app.post("/settings/push-delete")
+    @admin_required
+    def settings_push_delete() -> Any:
+        store.push_sub_delete(sid=request.form.get("id", type=int))
+        flash("Устройство отключено от уведомлений.", "ok")
+        return redirect(url_for("settings_view") + "#push")
+
+    def mail_in_push(items: list[dict[str, Any]]) -> list[str]:
+        """Новые письма на ящики магазина (присылает cron mail-watch): письмо от клиента — в его сделку и пуш, иначе — просто пуш."""
+        out = []
+        for it in items[:30]:
+            frm, name, subj, box = str(it.get("from") or ""), str(it.get("name") or ""), str(it.get("subject") or "(без темы)"), str(it.get("box") or "zakaz")
+            did, cname = store.mail_in(frm, subj)
+            if did:
+                title, url = f"Письмо от клиента: {cname} · №{did}", f"/deals/{did}"
+            else:
+                title, url = f"Новое письмо на {box}@", "/"
+            body = subj[:150] + (f" — {name or frm}" if not did else "")
+            wp.notify(title, body, url, tag=f"mail-{did or box}")
+            out.append(f"{box}: {frm} → " + (f"сделка №{did}" if did else "без сделки"))
+        return out
+    app.extensions["mail_in"] = mail_in_push
+
+    def morning_digest(day: str | None = None) -> str:
+        s = store.digest(day or today())
+        if not (s["new"] or s["today"] or s["overdue"] or s["paid"]):
+            return ""
+        parts = []
+        if s["overdue"]: parts.append(f"просрочено задач: {s['overdue']}")
+        if s["today"]: parts.append(f"задач на сегодня: {s['today']}")
+        if s["new"]: parts.append(f"новых заявок: {s['new']}")
+        if s["paid"]: parts.append(f"оплачено, ждут отгрузки: {s['paid']}")
+        text = "; ".join(parts).capitalize() + "."
+        wp.notify("Наш декор — на сегодня", text, "/board?hot=1" if s["overdue"] else "/", tag="digest")
+        return text
+    app.extensions["digest"] = morning_digest
 
     # ------------------------------------------------------------ Сегодня
     @app.route("/")
@@ -504,6 +595,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                     d = store.deal(did)
                     if d:
                         store.notify_team(f"CRM: заявка №{did} ({d['client_name']}) оплачена — можно готовить отгрузку.",
+                                          title=f"Оплачено №{did} — готовить отгрузку", url=f"/deals/{did}",
                                           roles=("manager", "shipping"))
         return redirect(safe_next(request.form.get("back")) if request.form.get("back") else url_for("deal_view", did=did))
 
@@ -643,7 +735,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         return render_template("settings.html", users=store.users() if g.user["role"] == "admin" else [],
                                conf=conf, bot=bool(store._bot()), hit_ips="\n".join(own_ips()), my_ip=ip(),
                                my_ip_own=ip_is_own(ip()), visits_total=visits.count(),
-                               followup_auto=store.setting("followup_auto", "1") == "1", mail_contacts=mail_contacts())
+                               followup_auto=store.setting("followup_auto", "1") == "1", mail_contacts=mail_contacts(),
+                               push_devices=store.push_subs_all() if g.user["role"] == "admin" else [])
 
     @app.post("/settings/hit-ips")
     @admin_required
@@ -868,7 +961,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             store.rename_open_task(did, "Связаться с клиентом", "Перезвонить клиенту", "сайт")
         head = f"Новый ЗАКАЗ с сайта №{did}" if is_order else f"Просьба ПЕРЕЗВОНИТЬ с сайта №{did}" if is_call else f"Новая заявка с сайта №{did}"
         txt = head + f": {name}, {contact}" + (f", {email}" if email else "") + (f"\n{msg}" if msg else "")
-        store.notify_team(txt)
+        store.notify_team(txt, title=head, url=f"/deals/{did}")
         send_mail(conf["NOTIFY_EMAIL"], head, txt + f"\n\nCRM: https://crm.{conf['SHOP_DOMAIN']}/deals/{did}"
                   if conf["SHOP_DOMAIN"] else txt)
         return cors(jsonify(ok=True, id=did)), 200
@@ -922,6 +1015,32 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
 def store_now() -> str:
     from store import iso_now
     return iso_now()
+
+
+SW_JS = """/* Наш декор CRM — service worker: пуши и переход в нужную сделку по нажатию */
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));
+self.addEventListener("push", e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (x) { d = { body: e.data ? e.data.text() : "" }; }
+  e.waitUntil(self.registration.showNotification(d.title || "Наш декор", {
+    body: d.body || "", tag: d.tag || undefined, renotify: !!d.tag, data: { url: d.url || "/" },
+    icon: "/static/icon-192.png", badge: "/static/icon-192.png", lang: "ru"
+  }));
+});
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.url) || "/", self.location.origin).href;
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+    for (const c of list) {
+      if (c.url.startsWith(self.location.origin) && "focus" in c) {
+        return c.focus().then(w => (w && "navigate" in w) ? w.navigate(url) : w);
+      }
+    }
+    return self.clients.openWindow(url);
+  }));
+});
+"""
 
 
 def send_mail(to: str, subject: str, body: str, sender: str = "", reply_to: str = "") -> bool:

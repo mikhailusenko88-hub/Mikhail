@@ -192,3 +192,11 @@ pre.srv{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.45 var(--mono);m
 
 details.src summary{cursor:pointer;font-weight:600;color:var(--ink,#1f2a2a)}
 details.src .calc{margin:10px 0 6px;white-space:pre-wrap}
+
+.pushbox{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:14px;background:#fff;border:1px solid #d7e5e1;margin:8px 0 12px}
+.pushbox.compact{background:#eef6f3;border-color:#cfe3dc}
+.pushbox[hidden]{display:none}
+.pushbox .grow{flex:1 1 220px}
+.pushbox .d{margin-top:3px}
+.pushbox button[hidden]{display:none}
+.pushhelp{margin:-4px 0 12px;line-height:1.5}

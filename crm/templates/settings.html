@@ -1,8 +1,22 @@
 {% extends "base.html" %}
+{% from "macros.html" import push_box with context %}
 {% block title %}Настройки{% endblock %}
 {% block main %}
 <div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a><a href="{{ url_for('settings_view') }}" aria-current="page">Настройки</a>{% if me and me['role']=='admin' %}<a href="{{ url_for('server_view') }}">Сервер</a>{% endif %}</div>
 <h1>Настройки</h1>
+<h2 id="push">Уведомления на телефон</h2>
+{{ push_box() }}
+<div class="panel pad d pushhelp">
+  Приходят: новая заявка, заказ и «перезвоните» с сайта, заявка из бота, оплата, новое письмо на zakaz@ и info@ (письмо клиента — сразу с переходом в его сделку), утренняя сводка в 9:35 — сколько задач на сегодня и просрочено. Нажатие на уведомление открывает нужную сделку.<br>
+  <b>iPhone:</b> откройте crm.{{ SHOP_DOMAIN }} в Safari → «Поделиться» → «На экран „Домой“», откройте CRM со значка, войдите и нажмите здесь «Включить уведомления» → «Разрешить». Нужен iOS 16.4 или новее. Если значок CRM уже был на экране до 09.11 — удалите его и добавьте заново. Включать на каждом телефоне отдельно.
+</div>
+{% if push_devices %}
+<div class="panel list">
+  {% for s in push_devices %}<form class="row" method="post" action="{{ url_for('settings_push_delete') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ s['id'] }}">
+    <span class="grow">{{ s['user_name'] }} · {% if 'iPhone' in s['ua'] %}iPhone{% elif 'iPad' in s['ua'] %}iPad{% elif 'Android' in s['ua'] %}Android{% elif 'Mac' in s['ua'] %}Mac{% else %}браузер{% endif %}<span class="d"> · с {{ fmt_dt(s['created_at']) }}{% if s['last_ok'] %} · последний пуш {{ fmt_dt(s['last_ok']) }}{% endif %}{% if s['fails'] %} · ошибок {{ s['fails'] }}{% endif %}</span></span>
+    <button class="btn-g">Отключить</button></form>{% endfor %}
+</div>
+{% endif %}
 <h2>Мой пароль</h2>
 <form class="panel pad grid2" method="post" action="{{ url_for('settings_password') }}">
   <input type="hidden" name="csrf" value="{{ csrf }}">

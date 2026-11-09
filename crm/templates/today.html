@@ -1,8 +1,9 @@
 {% extends "base.html" %}
-{% from "macros.html" import deal_row, task_row with context %}
+{% from "macros.html" import deal_row, task_row, push_box with context %}
 {% block title %}Сегодня{% endblock %}
 {% block main %}
 <h1>Сегодня</h1>
+{{ push_box(compact=True) }}
 <p class="sub">{{ me['name'] }}, {{ fmt_day(today) }}</p>
 {% set bs = s['by_stage'] %}
 <div class="stats">

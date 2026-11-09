@@ -21,7 +21,7 @@ import threading
 import time
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 try:
     from zoneinfo import ZoneInfo
@@ -59,6 +59,17 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS settings (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS push_subs (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL,
+    endpoint   TEXT NOT NULL UNIQUE,
+    p256dh     TEXT NOT NULL,
+    auth       TEXT NOT NULL,
+    ua         TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL,
+    last_ok    TEXT NOT NULL DEFAULT '',
+    fails      INTEGER NOT NULL DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS users (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -347,6 +358,7 @@ class Store:
         self._local = threading.local()
         self._import_lock = threading.Lock()
         self._last_import = 0.0
+        self.on_notify: Callable[[str, str, str], Any] | None = None   # пуш на телефоны команды (title, text, url) — ставит app.py
         self._init()
 
     # соединение на поток (gunicorn с потоками)
@@ -710,6 +722,74 @@ class Store:
             self.log(c, "Автонапоминания клиенту выключены" if off else "Автонапоминания клиенту включены", user,
                      deal_id=did, client_id=d["client_id"] if d else None)
 
+    # ---------------------------------------------------------------- пуши
+    def push_sub_save(self, user_id: int, endpoint: str, p256dh: str, auth: str, ua: str) -> None:
+        with self.tx() as c:
+            c.execute("INSERT INTO push_subs(user_id, endpoint, p256dh, auth, ua, created_at) VALUES (?,?,?,?,?,?)"
+                      " ON CONFLICT(endpoint) DO UPDATE SET user_id=excluded.user_id, p256dh=excluded.p256dh,"
+                      " auth=excluded.auth, ua=excluded.ua, fails=0", (user_id, endpoint, p256dh, auth, ua, iso_now()))
+
+    def push_subs(self, user_ids: list[int] | None = None) -> list[sqlite3.Row]:
+        sql = "SELECT s.* FROM push_subs s JOIN users u ON u.id=s.user_id WHERE u.active=1"
+        args: list[Any] = []
+        if user_ids is not None:
+            if not user_ids:
+                return []
+            sql += f" AND s.user_id IN ({','.join('?' * len(user_ids))})"
+            args += list(user_ids)
+        return self.c().execute(sql + " ORDER BY s.id", args).fetchall()
+
+    def push_subs_all(self) -> list[sqlite3.Row]:
+        return self.c().execute("SELECT s.*, u.name AS user_name FROM push_subs s JOIN users u ON u.id=s.user_id ORDER BY u.name, s.id").fetchall()
+
+    def push_sub_result(self, sid: int, ok: bool) -> None:
+        with self.tx() as c:
+            if ok:
+                c.execute("UPDATE push_subs SET last_ok=?, fails=0 WHERE id=?", (iso_now(), sid))
+            else:
+                c.execute("UPDATE push_subs SET fails=fails+1 WHERE id=?", (sid,))
+                c.execute("DELETE FROM push_subs WHERE id=? AND fails>=20", (sid,))
+
+    def push_sub_delete(self, sid: int | None = None, endpoint: str = "", user_id: int | None = None) -> None:
+        with self.tx() as c:
+            if sid is not None:
+                c.execute("DELETE FROM push_subs WHERE id=?", (sid,))
+            elif endpoint:
+                c.execute("DELETE FROM push_subs WHERE endpoint=?" + (" AND user_id=?" if user_id else ""),
+                          (endpoint, user_id) if user_id else (endpoint,))
+
+    def mail_in(self, from_email: str, subject: str) -> tuple[int | None, str]:
+        """Письмо на ящик магазина: если от клиента — запись в сделку, задача «Ответить на письмо клиента»,
+        автонапоминание о расчёте откладывается. Возвращает (номер сделки или None, имя клиента)."""
+        em = (from_email or "").strip().lower()
+        if "@" not in em:
+            return None, ""
+        cl = self.c().execute("SELECT id, name FROM clients WHERE lower(email)=? ORDER BY id DESC LIMIT 1", (em,)).fetchone()
+        if not cl:
+            return None, ""
+        d = self.c().execute("SELECT id FROM deals WHERE client_id=? ORDER BY (stage IN ('shipped','lost')), updated_at DESC LIMIT 1",
+                             (cl["id"],)).fetchone()
+        if not d:
+            return None, cl["name"]
+        did = int(d["id"])
+        with self.tx() as c:
+            self.log(c, f"Письмо от клиента: «{(subject or '(без темы)')[:150]}»", "почта", deal_id=did, client_id=cl["id"])
+            self.auto_task(c, did, "Ответить на письмо клиента", 0, "почта")
+            later = (date.fromisoformat(today()) + timedelta(days=2)).isoformat()
+            c.execute("UPDATE tasks SET due=? WHERE deal_id=? AND done_at IS NULL AND title LIKE 'Узнать решение%' AND due<?",
+                      (later, did, later))
+            c.execute("UPDATE deals SET updated_at=? WHERE id=?", (iso_now(), did))
+        return did, cl["name"]
+
+    def digest(self, day: str) -> dict[str, int]:
+        c = self.c()
+        return {
+            "new": int(c.execute("SELECT COUNT(*) FROM deals WHERE stage='new'").fetchone()[0]),
+            "today": int(c.execute("SELECT COUNT(*) FROM tasks WHERE done_at IS NULL AND due=?", (day,)).fetchone()[0]),
+            "overdue": int(c.execute("SELECT COUNT(*) FROM tasks WHERE done_at IS NULL AND due<?", (day,)).fetchone()[0]),
+            "paid": int(c.execute("SELECT COUNT(*) FROM deals WHERE stage='paid'").fetchone()[0]),
+        }
+
     def rename_open_task(self, did: int, old: str, new: str, user: str) -> None:
         with self.tx() as c:
             c.execute("UPDATE tasks SET title=? WHERE deal_id=? AND done_at IS NULL AND title=?", (new, did, old))
@@ -987,6 +1067,7 @@ class Store:
             finally:
                 b.close()
             n = 0
+            bot_new: list[tuple[Any, ...]] = []
             for r in rows:
                 with self.tx() as c:
                     if not c.execute("SELECT 1 FROM deals WHERE bot_lead_id=?", (r["id"],)).fetchone():
@@ -997,12 +1078,19 @@ class Store:
                         ch = r["channel"] if r["channel"] in ("tg", "max") else "tg"
                         if not messenger:
                             messenger = "MAX" if ch == "max" else "Telegram"
-                        self.create_deal("бот", None, name=r["name"] or r["c_name"] or "Клиент", phone=phone, email=email,
+                        bot_new.append((r["name"] or r["c_name"] or "Клиент", r["comment"] or "", ch))
+                        bot_new[-1] += (self.create_deal("бот", None, name=r["name"] or r["c_name"] or "Клиент", phone=phone, email=email,
                                          messenger=messenger, want=r["comment"] or "", source=ch, calc=r["calc"] or "",
                                          consent_at=r["consent_at"] or "", consent_version=r["consent_version"] or "",
-                                         bot_lead_id=int(r["id"]), bot_client_id=r["client_id"], c=c)
+                                         bot_lead_id=int(r["id"]), bot_client_id=r["client_id"], c=c),)
                         n += 1
                     c.execute("INSERT OR REPLACE INTO settings(key, value) VALUES ('bot_last_lead', ?)", (str(r["id"]),))
+            if self.on_notify:
+                for nm, want, ch, did in bot_new:
+                    try:
+                        self.on_notify(f"Новая заявка из {'MAX' if ch == 'max' else 'Telegram'} №{did}", f"{nm}" + (f": {want[:150]}" if want else ""), f"/deals/{did}")
+                    except Exception:  # noqa: BLE001
+                        pass
             return n
         finally:
             self._import_lock.release()
@@ -1033,8 +1121,14 @@ class Store:
         finally:
             b.close()
 
-    def notify_team(self, text: str, roles: tuple[str, ...] = ("manager",)) -> int:
-        """Текст сотрудникам магазина через очередь бота (MAX/Telegram). Без бота — ничего."""
+    def notify_team(self, text: str, roles: tuple[str, ...] = ("manager",), title: str = "", url: str = "") -> int:
+        """Оповестить команду: пуш на телефоны (если включены) и текст через очередь бота (MAX/Telegram, если бот есть)."""
+        if self.on_notify:
+            try:
+                body = text[len(title):].lstrip(" :,\n") if title and text.startswith(title) else text
+                self.on_notify(title or "Наш декор", body, url or "/")
+            except Exception:  # noqa: BLE001 — пуш не должен ломать заявку
+                pass
         b = self._bot(readonly=False)
         if b is None:
             return 0

@@ -24,3 +24,17 @@
   {% if not t['done_at'] %}{% if t['due'] < today %}<span class="pill crit">{{ fmt_day(t['due']) }}</span>{% elif t['due'] == today %}<span class="pill warn">сегодня</span>{% else %}<span class="pill">{{ fmt_day(t['due']) }}</span>{% endif %}{% endif %}
 </div>
 {%- endmacro %}
+
+{% macro push_box(compact=False) %}
+<div class="pushbox{% if compact %} compact{% endif %}" data-push data-key="{{ PUSH_KEY }}" data-csrf="{{ csrf }}" {% if compact %}hidden{% endif %}>
+  <div class="grow">
+    <b>Уведомления на этом телефоне</b>
+    <div class="d" data-push-msg>{% if not PUSH_KEY %}На сервере не включены — нужно «Обновить CRM».{% else %}Проверяю…{% endif %}</div>
+  </div>
+  <div class="row wrap">
+    <button type="button" class="btn-p" data-push-on hidden>Включить уведомления</button>
+    <button type="button" class="btn-s" data-push-test hidden>Прислать проверку</button>
+    <button type="button" class="btn-g" data-push-off hidden>Выключить</button>
+  </div>
+</div>
+{% endmacro %}
