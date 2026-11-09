@@ -1926,3 +1926,7 @@ SCENES.update({"rain_window": (scene_rain_window, 0.55), "windmill": (scene_wind
                "forest_rays": (scene_forest_rays, 0.5), "waterfall": (scene_waterfall, 0.5), "deer": (scene_deer, 0.45),
                "lotus": (scene_lotus, 0.5), "wheat": (scene_wheat, 0.45), "savanna": (scene_savanna, 0.55),
                "swans": (scene_swans, 0.45), "candle": (scene_candle, 0.5), "beach": (scene_beach, 0.42)})
+
+
+# новые сцены второго месяца (Казахстан, зима, Новый год…)
+import scenes2  # noqa: E402,F401
