@@ -141,7 +141,7 @@ class TochkaError(Exception):
     def human(self) -> str:
         if self.status == 0:
             return "банк не ответил (нет связи) — попробуйте через минуту"
-        if self.status == 401:
+        if self.status == 401 or (self.status == 403 and "token" in self.message.lower()):
             return "банк не принял ключ — он неверный или истёк; выпустите новый JWT-ключ в интернет-банке"
         if self.status == 403:
             return "у ключа нет нужного разрешения — выпустите ключ с разрешениями из инструкции (" + self.message[:120] + ")"
