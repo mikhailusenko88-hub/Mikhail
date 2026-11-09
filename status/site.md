@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-09 17:45 UTC
+# Сайт снаружи — 2026-11-09 18:50 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -16,7 +16,7 @@
 
 noindex в главной: 0
 lang=ru: 1
-title: <title>Реечные панели, молдинги и плинтусы под покраску — купить в СПб | Наш декор</title>
+title: <title>Стеновые панели, плинтусы и молдинги под покраску — купить в СПб | Наш декор</title>
 description: 1, canonical: rel="canonical" href="https://nashdekor.ru/"
 og:image: og:image" content="https://nashdekor.ru/og.jpg"
 ld+json: 1
@@ -27,27 +27,37 @@ ld+json: 1
 счётчик на главной: 1, в политике п. 3.4: 1, на документах: 1 1 1 
 
 --- страницы товаров и разделов (сборка nashdekor-build/build.py)
-/p/a907/                           200 text/html; charset=utf-8 25190
-/p/2-7/                            200 text/html; charset=utf-8 23473
-/p/a35/                            200 text/html; charset=utf-8 19061
-/p/a002-2/                         200 text/html; charset=utf-8 20710
-/p/gs1/                            200 text/html; charset=utf-8 25084
-/catalog/reechnye-paneli/          200 text/html; charset=utf-8 31094
-/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 37930
-/catalog/plintusy/                 200 text/html; charset=utf-8 33809
+/p/a907/                           200 text/html; charset=utf-8 31596
+/p/2-7/                            200 text/html; charset=utf-8 29874
+/p/a35/                            200 text/html; charset=utf-8 24567
+/p/a002-2/                         200 text/html; charset=utf-8 26219
+/p/gs1/                            200 text/html; charset=utf-8 31490
+/catalog/reechnye-paneli/          200 text/html; charset=utf-8 35616
+/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 45272
+/catalog/plintusy/                 200 text/html; charset=utf-8 43096
+/catalog/stenovye-paneli/          200 text/html; charset=utf-8 73194
+/catalog/plintus-s-podsvetkoy/     200 text/html; charset=utf-8 19670
+/stati/                            200 text/html; charset=utf-8 13858
+/stati/kak-otrezat-ugol-potolochnogo-plintusa/ 200 text/html; charset=utf-8 19391
+/dostavka/                         200 text/html; charset=utf-8 20369
 /assets/p.js                       200 application/javascript; charset=utf-8 36429
-/assets/p.css                      200 text/css 19311
+/assets/p.css                      200 text/css 22009
 /mebel/_lib/three.min.js           200 application/javascript; charset=utf-8 603445
 /mebel/_lib/OrbitControls.js       200 application/javascript; charset=utf-8 26375
 /img/A907.jpg                      200 image/jpeg 22169
-товар A907: title: <title>Реечная панель A907 белая под покраску — купить в СПб | Наш декор</title>
+товар A907: title: <title>Стеновая реечная панель белая под покраску, ударопрочная, 180×10×3000 мм — A907 | Наш декор</title>
   canonical: rel="canonical" href="https://nashdekor.ru/p/a907/", ld+json: 1, Product: 1, 3D canvas: 1, профиль svg: 1, window.P: 1
   форма A907: «Купить»: 1, режимы Заявка/Купить/Звонок: data-m="buy" data-m="call" data-m="lead" , адрес доставки: 1, телефон (0): 0, Г2 (0): 0
+SEO 09.11: главная title: Стеновые панели, плинтусы и молдинги под покраску — купить в СПб | Наш декор, H1: Стеновые панели, плинтусы и молдинги под покраску
+  A907 title: Стеновая реечная панель белая под покраску, ударопрочная, 180×10×3000 мм — A907 | Наш декор, «С этим берут»: 1, отправка ТК: 1
+  хаб: H1 Стеновые панели для стен, карточек: 1, FAQ: 1, запрещённые слова (0): 0
+  плинтусы: групп по высоте: 1, title: Плинтус напольный белый под покраску — купить в СПб, ударопрочный, из дюрополимера | Наш декор
+  статей в sitemap: 8, всего адресов: 128, доставка: 1
 молдинг A35: 3D canvas: 1, профиль svg: 1, контур poly: 1; счётчик панелей на A907: 1
 «моя стена» на A907: блок: 1, вкладка: 1; p.js со стеной: 1
-SEO: title главной: <title>Реечные панели, молдинги и плинтусы под покраску — купить в СПб | Наш декор</title>; FAQ на плинтусах: 1, title раздела: <title>Плинтус напольный дюрополимер 65–150 мм под покраску — купить в СПб | Наш декор</title>; цена за м² в A907: 2
-sitemap: адресов 117, из них /p/: 107, /catalog/: 6
-главная: ссылок на p/ в коде карточек: 3, ссылки на разделы: 6, ?panel= в расчёт: 1
+SEO: title главной: <title>Стеновые панели, плинтусы и молдинги под покраску — купить в СПб | Наш декор</title>; FAQ на плинтусах: 1, title раздела: <title>Плинтус напольный белый под покраску — купить в СПб, ударопрочный, из дюрополимера | Наш декор</title>; цена за м² в A907: 2
+sitemap: адресов 128, из них /p/: 107, /catalog/: 8
+главная: ссылок на p/ в коде карточек: 3, ссылки на разделы: 8, ?panel= в расчёт: 1
 
 --- robots.txt
 User-agent: *
