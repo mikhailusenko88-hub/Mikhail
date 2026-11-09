@@ -118,6 +118,8 @@ section{padding-block:8px 56px}
 .contacts .c{display:flex;justify-content:space-between;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:10px 12px;align-items:center}
 .contacts .c span{user-select:all}
 .ok{border:1px solid var(--good);color:var(--good);border-radius:6px;padding:12px 14px}
+#leadForm.sent>:not(#lDone){display:none!important}
+.ok b{display:block;font-size:17px;margin-bottom:4px}.ok p{margin:4px 0 0;color:var(--ink)}
 .err{color:var(--warn);font-size:14px}
 pre.copy{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;font:13px/1.45 var(--f-body);margin:8px 0}
 footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--muted);font-size:14px}
@@ -455,6 +457,11 @@ async function sendLead(lead){
   } finally { clearTimeout(timer); }
 }
 
+// Вернуть пустую форму после отправленной заявки
+function openLeadForm(){
+  const f = $("leadForm"); if (!f.classList.contains("sent")) return;
+  f.classList.remove("sent"); f.reset(); $("lDone").hidden = true; $("lDone").innerHTML = ""; $("lErr").hidden = true;
+}
 async function submit(e){
   e.preventDefault();
   const name = $("lName").value.trim(), contact = $("lContact").value.trim();
@@ -472,8 +479,12 @@ async function submit(e){
   const text = `Заявка: ${name}, ${contact} (${lead.who})${lead.message ? "\n" + lead.message : ""}${lead.calc ? "\n" + lead.calc : ""}`;
   const done = $("lDone"); done.hidden = false;
   if (saved) {
-    done.innerHTML = `<div class="ok">Заявка принята. Ответим с ценой и наличием в рабочее время.</div>`;
-    $("lName").value = ""; $("lMsg").value = "";
+    done.innerHTML = `<div class="stack" style="gap:12px"><div class="ok" role="status"><b id="lThanks"></b>Мы ответим с ценой и наличием в рабочее время.<p>Свяжемся с вами:<br><span id="lTo" style="white-space:nowrap;font-weight:600"></span></p><p>Если в номере ошибка — отправьте заявку ещё раз или напишите нам в Telegram ${SHOP.telegram}.</p></div><button class="btn ghost" type="button" id="lAgain">Отправить ещё одну заявку</button></div>`;
+    $("lThanks").textContent = `Спасибо, ${name}! Заявка отправлена.`;
+    $("lTo").textContent = contact;
+    $("lAgain").onclick = () => { openLeadForm(); $("lName").focus(); };
+    $("leadForm").reset(); $("leadForm").classList.add("sent");
+    done.scrollIntoView({block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
   } else {
     done.innerHTML = `<div class="stack" style="gap:8px"><div class="err">Форма сейчас не отправляется. Скопируйте текст заявки и пришлите его в Telegram ${SHOP.telegram}.</div><pre class="copy" id="lText"></pre><button class="btn sm" type="button" id="lCopy">Копировать заявку</button></div>`;
     $("lText").textContent = text;
@@ -488,7 +499,7 @@ document.addEventListener("click", e => {
   if (t.dataset.cat) { cat = t.dataset.cat; shown = 12; renderTabs(); renderGrid(); }
   else if (t.id === "moreBtn") { shown += 12; renderGrid(); }
   else if (t.dataset.use) { $("cPanel").value = t.dataset.use; renderCalc(); $("calc").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); }
-  else if (t.dataset.ask) { $("lMsg").value = `Интересует ${t.dataset.ask}: цена и наличие`; $("lCalc").checked = false; $("order").scrollIntoView(); $("lName").focus({preventScroll:true}); }
+  else if (t.dataset.ask) { openLeadForm(); $("lMsg").value = `Интересует ${t.dataset.ask}: цена и наличие`; $("lCalc").checked = false; $("order").scrollIntoView(); $("lName").focus({preventScroll:true}); }
   else if (t.dataset.copy) { const v = [SHOP.phone, SHOP.telegram, SHOP.avito][+t.dataset.copy]; copy(v, t); }
 });
 $("q").addEventListener("input", () => { shown = 12; renderGrid(); });
