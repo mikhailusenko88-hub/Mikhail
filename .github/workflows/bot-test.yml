@@ -1,0 +1,55 @@
+name: bot-test
+# Тесты бота магазина (ветка server, папка bot/) на чистой Ubuntu: Telegram, MAX, база, расчёт.
+on:
+  push:
+    branches: [domain-check]
+    paths: [".github/workflows/bot-test.yml", "bot-test/**"]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Ветка или коммит бота (ветка server)"
+        default: server
+permissions:
+  contents: write
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || 'server' }}
+          path: srv
+      - uses: actions/checkout@v4
+        with:
+          ref: mebel
+          path: site
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Зависимости
+        run: python -m pip install -q -r srv/bot/requirements.txt pytest
+      - name: Тесты
+        id: tests
+        run: |
+          mkdir -p status; O=status/bot-test.md
+          cd srv/bot
+          {
+          echo "# Тесты бота — $(date -u '+%F %H:%M') UTC"; echo
+          echo "Коммит бота: $(git rev-parse --short HEAD) ($(git log -1 --format=%s | cut -c1-80))"; echo
+          echo "TELEGRAM_COLLECT_CONTACTS по умолчанию: $(BOT_TOKEN=x python -c 'import config; print(1 if config.load_config().telegram_collect_contacts else 0)' 2>&1 | tail -n1)"; echo
+          echo '```'
+          CATALOG_SAMPLE=$GITHUB_WORKSPACE/site/0f7s1eez/index.html python -m pytest -q tests 2>&1 | tail -n 25
+          echo "код выхода pytest: ${PIPESTATUS[0]}"
+          echo '```'
+          } > "$GITHUB_WORKSPACE/$O" 2>&1
+          cat "$GITHUB_WORKSPACE/$O"
+          grep -q "код выхода pytest: 0" "$GITHUB_WORKSPACE/$O"
+      - name: Записать результат
+        if: always()
+        run: |
+          git config user.name bot-test; git config user.email bot-test@users.noreply.github.com
+          git add status; git commit -m "bot-test $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
