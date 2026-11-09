@@ -1,0 +1,45 @@
+$ yt-dlp --flat-playlist -J --playlist-end 40 https://www.youtube.com/@Cartoon_Friend3/videos
+yt: Zd2QhucOkRI 20 🌈 РАДУГА БЕЗ ДОЖДЯ?! Тайна волшебных красок | Кот Барсик | Новая серия 20 620 63
+yt: l61AzijCVZA 19 🎁 ЧЕЙ ЭТО ПОДАРОК?! Тайный зритель и новый друг | Кот Барсик | Новая серия 19 581 13
+yt: Mk8UGv07r5o 18 🔔 КТО УКРАЛ МУЗЫКУ?! Тайна молчащего колокольчика | Кот Барсик | Новая серия 18 596 44
+yt: Vv8jYkyEjt0 17 🐾 😱 КТО ОСТАВИЛ ОГРОМНЫЕ СЛЕДЫ?! Тайна маленького незнакомца | Кот Барсик | Серия 17 638 12
+yt: QjhP44GyXy0 16 😱 КУДА ПРОПАЛ ДОЖДЬ?! ☔ Барсик и друзья ищут дождик | Кот Барсик | НОВАЯ СЕРИЯ 16 551 27
+yt: ZtjOnXXti4Q 15 😱 КТО ПЕРЕПУТАЛ ВРЕМЯ?! ⏰ Тайна волшебных часов | Кот Барсик | НОВАЯ СЕРИЯ 15 643 5
+yt: R0f4u9M84pE 14 😱 ЧТО СКРЫВАЕТ ЗЕРКАЛЬЦЕ?! 🪞 Тайна настоящего сокровища | Кот Барсик | НОВАЯ СЕРИЯ 14 273 26
+yt: cO5kakdyw7U 13 😱КТО УКРАЛ ЗОЛОТОЙ ФЛАГ? Кот Барсик и тайна королевства 👑 | НОВАЯ СЕРИЯ 13 318 16
+yt: 2HP0pF8_ZfU 12 😳КОРОЛЕВСТВО ИСЧЕЗАЕТ! 🏰 Кот Барсик спасает волшебный замок 🎵 | НОВАЯ СЕРИЯ 12 362 32
+yt: Rdq6oW2p8MA 11 👑 КТО СТАНЕТ КОРОЛЁМ? 😱 Кот Барсик и тайна золотой короны 🐱 | НОВАЯ СЕРИЯ 11 | Мультики для детей 395 13
+yt: WfeFImjg5gA 10 🌙 ТАЙНА ЗОЛОТОЙ ЛУНЫ! 🔔 Кот Барсик и волшебный колокольчик | НОВАЯ СЕРИЯ 10 | Мультики для детей 364 22
+yt: 40K4_oE1vsE 9 🌈 Куда пропала волшебная звезда? ⭐ Кот Барсик и тайна радуги | НОВАЯ СЕРИЯ 9 | Мультики для детей 305 6
+yt: QhCuEGBz1Kc 8 😱 КТО СТУЧИТ НОЧЬЮ?! 🥁 Тайна волшебного барабана 🐱 | Кот Барсик | НОВАЯ СЕРИЯ 8 306 59
+yt: c-0t9Xs25_o 7 😱 КТО ТАМ СТУЧИТ?! 🔑 Тайна ЗОЛОТОГО СУНДУКА! 🐱 Кот Барсик | Мультик для детей | Серия 7 337 29
+yt: N3uhLZmH4Kk 6 😱 КТО УКРАЛ ТОРТ?! 🎂🐶 Невидимый гость и смешной переполох! | Кот Барсик | Серия 6 347 26
+yt: dhwJAPJ0PTE 4 🎃 ХЭЛЛОУИН! Часть 2😱 ТЫКВА СКРЫВАЕТ ТАЙНУ?! 🔑 | Кот Барсик 🐱 Мультик для детей | Серия 4 127 14
+yt: 3hRay_8EPXc 4 🎃 ХЭЛЛОУИН! 😱 ТЫКВА СКРЫВАЕТ ТАЙНУ?! 🔑 | Кот Барсик 🐱 Мультик для детей | Серия 4 часть 1-я 238 23
+yt: fa7knKC0dNs 3 🐱 ТАЙНАЯ ДВЕРЬ И ПЕРЕПОЛОХ В ЛЕСУ! 🚪😱 | Кот Барсик | Мультик для детей | Серия 3 287 26
+yt: LEZk8I7BpRM 2 🐱🐭🐶 Новый друг Рон и ТАЙНА ЗОЛОТОГО КЛЮЧА! 🔑✨ | Кот Барсик | Мультик для детей | Серия 2 240 26
+yt: ECGA3PVqfS8 1 🐱 Кот Барсик и мышонок Пик 🐭 | Начало приключений! 🌈 Мультик для детей | Серия 1 81 12
+rt: 540c1f38f368709b11d24b9ebe8271ac None Куда пропала волшебная звезда?🌟 Кот Барсик - мультик для детей | 9 серия 304
+rt: 5f2c9c27da3ed8b27a391b76d104f0f0 None Тайна ночного стука и волшебный барабан 🙀Кот Барсик - мультик для детей | 8 серия 306
+rt: 6b8921313d46023b4eed6fdc0aa3666b None Невидимый гость и тайна золотого сундука 🔑 👻 Кот Барсик — мультик для детей | 7 серия 337
+rt: d21d392698c06f82fcc6cdd1965b4ffc None Кто украл торт? 🍰 Кот Барсик — мультик для детей | 6 серия 347
+rt: d2f8d7833a186ddfeda26c405a253668 None Тыква скрывает тайну! 🎃 Кот Барсик — мультик для детей | 5 серия 127
+rt: 8156838e9306743767d90e3502c1c49a None Хэллоуин и светящаяся тыква 🎃 Кот Барсик — мультик для детей | 4 серия 238
+rt: 4923d98229ba6706b191b825bde5b3b6 None Тайная дверь в лесу 🚪 Кот Барсик — мультик для детей | 3 серия 286
+rt: afdd98ae45c0e0e83fb7e2d0046602be None Тайна золотого ключа 🔑 Кот Барсик — мультик для детей | 2 серия 240
+rt: 27fc243ecd58bf78de1d3e02af67e40f None Кот Барсик — знакомься с героями! 🐱 Мультик для детей | 1 серия 80
+$ yt-dlp -f bv*[height<=720]+ba/b[height<=720]/b --merge-output-format mp4 -o /tmp/ep18.mp4 --extractor-args youtube:player_client=android_vr;player_skip=webpage,configs https://www.youtube.com/watch?v=Mk8UGv07r5o
+rc 1 ERROR: [youtube] Mk8UGv07r5o: This video is not available
+
+$ yt-dlp -f bv*[height<=720]+ba/b[height<=720]/b --merge-output-format mp4 -o /tmp/ep18.mp4 --extractor-args youtube:player_client=tv_simply https://www.youtube.com/watch?v=Mk8UGv07r5o
+rc 1 ERROR: [youtube] Mk8UGv07r5o: Sign in to confirm you’re not a bot. This helps protect our community. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+серия 18 не скачалась
+$ yt-dlp -f bv*[height<=720]+ba/b[height<=720]/b --merge-output-format mp4 -o /tmp/ep19.mp4 --extractor-args youtube:player_client=android_vr;player_skip=webpage,configs https://www.youtube.com/watch?v=l61AzijCVZA
+rc 1 ERROR: [youtube] l61AzijCVZA: This video is not available
+
+$ yt-dlp -f bv*[height<=720]+ba/b[height<=720]/b --merge-output-format mp4 -o /tmp/ep19.mp4 --extractor-args youtube:player_client=tv_simply https://www.youtube.com/watch?v=l61AzijCVZA
+rc 1 ERROR: [youtube] l61AzijCVZA: Sign in to confirm you’re not a bot. This helps protect our community. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+серия 19 не скачалась
+готово
