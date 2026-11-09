@@ -7,6 +7,7 @@
   python3 manage.py import-bot                 — подтянуть заявки из бота сейчас
   python3 manage.py backup ФАЙЛ                — копия базы (sqlite backup)
   python3 manage.py stats                      — сколько клиентов и заявок
+  python3 manage.py followups                  — разослать напоминания клиентам, не ответившим на расчёт (cron, раз в день)
 """
 
 from __future__ import annotations
@@ -60,6 +61,11 @@ def main(argv: list[str]) -> int:
         print(s.import_bot_leads(force=True))
     elif cmd == "backup" and len(args) == 1:
         s.backup(args[0])
+        print("ok")
+    elif cmd == "followups":
+        from app import create_app
+        for line in create_app().extensions["run_followups"]():
+            print(line)
         print("ok")
     elif cmd == "stats":
         c = s.c()

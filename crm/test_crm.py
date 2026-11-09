@@ -551,6 +551,44 @@ class TestApi(Base):
         self.assertTrue(d["want"].startswith("ПЕРЕЗВОНИТЬ."))
         self.assertEqual([x["title"] for x in self.store.tasks(deal_id=did)], ["Перезвонить клиенту"])
 
+    def test_followups_auto_and_manual(self) -> None:
+        sent = []
+        def fake_mail(to, subject, body, sender="", reply_to=""):
+            sent.append((to, subject, body)); return True
+        orig = crm_app.send_mail; crm_app.send_mail = fake_mail
+        try:
+            did = self.lead(email="wait@example.com", calc="Товар: A912 (реечная панель) — 3 шт").get_json()["id"]
+            self.login()
+            self.post(f"/deals/{did}/send-calc", {"email": "wait@example.com"})        # письмо-расчёт → этап quote
+            self.assertEqual(self.store.deal(did)["stage"], "quote")
+            body = sent[-1][2]
+            self.assertIn("Что дальше", body); self.assertIn("пришлём ссылку на оплату", body); self.assertIn("Telegram @IuliiaUsenko", body)
+            run = self.app.extensions["run_followups"]
+            self.assertEqual(run("2026-11-09"), [])                                     # задача «Узнать решение» ещё не подошла (срок +2 дня)
+            r = run("2026-11-11")
+            self.assertEqual(len(r), 1); self.assertIn("напоминание 1", r[0])
+            self.assertIn("подошёл ли он вам", sent[-1][1]); self.assertIn("A912 — 3 шт", sent[-1][2])
+            d = self.store.deal(did); self.assertEqual(d["followups"], 1)
+            self.assertEqual(run("2026-11-11"), [])                                     # в тот же день второй раз не шлём
+            t = [x for x in self.store.tasks(deal_id=did) if x["title"].startswith("Узнать")][0]
+            self.assertGreater(t["due"], "2026-11-11")                                  # задача сдвинута вперёд
+            r = run(t["due"]); self.assertEqual(len(r), 1); self.assertIn("напоминание 2", r[0])
+            self.assertIn("действует до", sent[-1][1]); self.assertIn("последнее напоминание", sent[-1][2])
+            self.assertEqual(run("2026-12-01"), [])                                     # больше двух не уходит
+            # выключатель и ручная кнопка
+            self.post(f"/deals/{did}/followup", {"toggle": "1"})
+            self.assertEqual(self.store.deal(did)["no_followup"], 1)
+            n = len(sent); self.post(f"/deals/{did}/followup", {}); self.assertEqual(len(sent), n + 1)
+            # глобальный выключатель
+            self.store.set_setting("followup_auto", "0")
+            self.assertEqual(run("2026-12-01"), ["автонапоминания выключены в настройках"])
+            page = self.c.get(f"/deals/{did}").get_data(as_text=True)
+            self.assertIn("исходная заявка с сайта", page); self.assertIn("Напомнить сейчас", page)
+            page = self.c.get("/settings").get_data(as_text=True)
+            self.assertIn("Письма клиентам", page)
+        finally:
+            crm_app.send_mail = orig
+
     def test_lines_from_site_calc_and_fuzzy_article(self) -> None:
         cat = self.store.catalog
         self.assertEqual(cat.find("912").article, "A912")          # без буквы

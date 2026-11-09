@@ -45,6 +45,13 @@
   <div class="span2 row wrap"><button class="btn-p">Сохранить список</button><button class="btn-s" name="add_mine" value="1">Добавить мой адрес {{ my_ip }}</button>
     <button class="btn-s" name="reset" value="1" onclick="return confirm('Стереть всю статистику сайта ({{ visits_total }} отметок)? Это не отменить.')">Обнулить статистику ({{ visits_total }})</button></div>
 </form>
+<h2>Письма клиентам</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('settings_mail') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="chk span2"><input type="checkbox" name="followup_auto" value="1" {% if followup_auto %}checked{% endif %}> Автонапоминания о расчёте: если клиент не ответил и задача «Узнать решение по расчёту» не закрыта к сроку — раз в несколько дней уходит вежливое письмо (не больше двух на сделку). Выключить для одной сделки можно в её карточке.</label>
+  <label class="f span2">Контакты в подписи писем (мессенджер, без телефона)<input name="mail_contacts" value="{{ mail_contacts }}" placeholder="Telegram @…, MAX …"></label>
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
 <h2>Связи</h2>
 <div class="panel list">
   <div class="row"><span class="grow">Бот MAX/Telegram</span>{% if bot %}<span class="pill good">заявки подтягиваются</span>{% else %}<span class="pill">бот ещё не установлен</span>{% endif %}</div>

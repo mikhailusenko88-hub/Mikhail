@@ -189,3 +189,6 @@ pre.srv{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.45 var(--mono);m
 .nexthint a{color:inherit;font-weight:600}
 .nexthint.late{background:#ffe5e5;color:#8a1c1c}
 .nexthint.done{background:#e8f5ee;color:#1d5e57}
+
+details.src summary{cursor:pointer;font-weight:600;color:var(--ink,#1f2a2a)}
+details.src .calc{margin:10px 0 6px;white-space:pre-wrap}

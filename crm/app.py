@@ -19,6 +19,7 @@ import secrets
 import sys
 import time
 from collections import defaultdict, deque
+from datetime import datetime, timedelta
 from email.message import EmailMessage
 from typing import Any
 
@@ -296,20 +297,29 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         bot = store.bot_lead(d["bot_lead_id"]) if d["bot_lead_id"] else None
         msgs = store.bot_messages(d["bot_client_id"]) if d["bot_client_id"] else []
         return render_template("deal.html", d=d, lines=lines, gross=gross, total_sum=Store.total(gross, d["discount"]),
-                               calc_text=calc_text(d, lines) if lines else "",
+                               calc_text=calc_text(d, lines, who()) if lines else "",
                                stock=stock, tasks=store.tasks(deal_id=did, open_only=False),
                                events=store.events(deal_id=did), bot=bot, msgs=msgs,
                                catalog=store.catalog.all(), other=store.deals(client_id=d["client_id"], limit=20))
 
-    def calc_text(d: Any, lines: list[Any]) -> str:
-        """Расчёт для клиента: позиции, суммы, итог, контакты — в письмо или в мессенджер."""
+    def mail_contacts() -> str:
+        """Строка контактов в письмах клиентам (Настройки → Письма клиентам)."""
+        return store.setting("mail_contacts", "Telegram @IuliiaUsenko")
+
+    def mail_signature(manager: str = "") -> list[str]:
+        dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
+        return ["", f"Ответить на это письмо или написать: zakaz@{dom}" + (f" · {mail_contacts()}" if mail_contacts() else ""),
+                f"Сайт: https://{dom}", "", "С уважением, " + (f"{manager}, " if manager else "") + "«Наш декор»"]
+
+    def calc_text(d: Any, lines: list[Any], manager: str = "") -> str:
+        """Расчёт для клиента: позиции, суммы, итог, что дальше, контакты — в письмо или в мессенджер."""
         gross = sum(int(ln["qty"]) * int(ln["price"]) for ln in lines)
         total = Store.total(gross, d["discount"])
-        dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
+        is_order = (d["want"] or "").startswith("ЗАКАЗ.")
         out = [f"Здравствуйте, {d['client_name']}!", ""]
         if (d["client_note"] or "").strip():
             out += [d["client_note"].strip(), ""]
-        out += [f"Расчёт №{d['id']} от «Наш декор»:", ""]
+        out += [f"Ваш заказ №{d['id']} в «Наш декор» — состав и сумма к оплате:" if is_order else f"Расчёт №{d['id']} от «Наш декор»:", ""]
         for ln in lines:
             p = store.catalog.get(ln["article"])
             nm = p.name if p and ln["article"] in p.name else (f"{ln['article']} {p.name}" if p else ln["article"])
@@ -317,13 +327,69 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if d["discount"]:
             out += ["", f"Без скидки: {gross:,} ₽".replace(",", " "), f"Скидка {d['discount']}%"]
         out += ["", f"Итого: {total:,} ₽".replace(",", " ")]
+        if (d["address"] or "").strip():
+            out += ["", f"Получение: {d['address'].strip()}"]
         if (d["pay_link"] or "").strip():
-            out += ["", f"Оплатить онлайн (карта, СБП): {d['pay_link'].strip()}", "После оплаты пришлём подтверждение и согласуем доставку."]
+            out += ["", f"Оплатить онлайн (карта, СБП): {d['pay_link'].strip()}",
+                    "Можно внести предоплату 50% (остаток — при получении) или оплатить полностью. После оплаты пришлём подтверждение и согласуем доставку."]
         out += ["",
                 "Цены без НДС. Доставка по Санкт-Петербургу и Ленобласти рассчитывается отдельно, самовывоз со склада — бесплатно.",
                 "Расчёт действует 7 дней; наличие и срок поставки подтвердим при заказе.", "",
-                f"Ответить на это письмо или написать: zakaz@{dom}", f"Сайт: https://{dom}", "", "С уважением, «Наш декор»"]
+                "Что дальше:"]
+        if (d["pay_link"] or "").strip():
+            out += ["• Если всё верно — оплатите по ссылке выше, и мы начнём собирать заказ. Или просто ответьте «подтверждаю» — свяжемся и согласуем доставку."]
+        else:
+            out += ["• Если расчёт подходит — ответьте на это письмо или напишите нам: пришлём ссылку на оплату (предоплата 50% или 100%) и согласуем доставку."]
+        out += ["• Нужно изменить количество, цвет, добавить плинтус или карниз — напишите, пересчитаем.",
+                "• Если ответа не будет, через пару дней мы сами напишем или позвоним, чтобы узнать решение. Если планы изменились — просто скажите, беспокоить не будем."]
+        out += mail_signature(manager)
         return "\n".join(out)
+
+    def followup_text(d: Any, lines: list[Any], n: int) -> tuple[str, str]:
+        """Вежливое напоминание №n (1 или 2) клиенту, который не ответил на расчёт."""
+        gross = sum(int(ln["qty"]) * int(ln["price"]) for ln in lines)
+        total = Store.total(gross, d["discount"])
+        sent = fmt_day(d["stage_at"][:10]) if d["stage_at"] else ""
+        until = (datetime.fromisoformat(d["stage_at"][:19]) + timedelta(days=7)).date().isoformat() if d["stage_at"] else ""
+        items = "; ".join(f"{ln['article']} — {ln['qty']} шт" for ln in lines[:6]) + (" …" if len(lines) > 6 else "")
+        tot = f"{total:,} ₽".replace(",", " ")
+        if n == 1:
+            subj = f"Расчёт №{d['id']} — подошёл ли он вам? «Наш декор»"
+            body = [f"Здравствуйте, {d['client_name']}!", "",
+                    f"{sent} мы отправили вам расчёт №{d['id']} на {tot} ({items}).",
+                    "Подскажите, пожалуйста, подходит ли он?", "",
+                    "• Если да — ответьте на это письмо или напишите нам, и мы пришлём ссылку на оплату (предоплата 50% или 100%) и согласуем доставку.",
+                    "• Если нужно что-то изменить — количество, цвет, добавить плинтус или карниз — напишите, пересчитаем.",
+                    "• Если планы изменились — тоже напишите, мы не будем беспокоить."]
+        else:
+            subj = f"Расчёт №{d['id']} действует до {fmt_day(until) if until else 'конца недели'} — «Наш декор»"
+            body = [f"Здравствуйте, {d['client_name']}!", "",
+                    f"Напоминаем: расчёт №{d['id']} на {tot} ({items}) действует до {fmt_day(until) if until else 'конца недели'}; после этого цены и наличие могут измениться.",
+                    "Чтобы зафиксировать сумму и забронировать товар, ответьте на это письмо или напишите нам — пришлём ссылку на оплату и согласуем доставку.", "",
+                    "Это последнее напоминание — больше писать не будем. Если решите позже, просто напишите: сделаем новый расчёт по актуальным ценам."]
+        return subj, "\n".join(body + mail_signature())
+
+    def run_followups(day: str | None = None) -> list[str]:
+        """Разослать напоминания клиентам, от которых нет ответа на расчёт (вызывается раз в день из cron: manage.py followups)."""
+        day = day or today()
+        if store.setting("followup_auto", "1") != "1":
+            return ["автонапоминания выключены в настройках"]
+        out: list[str] = []
+        dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
+        for row in store.followup_candidates(day):
+            d = store.deal(int(row["id"]))
+            lines = store.lines(int(row["id"]))
+            if not d or not lines:
+                continue
+            n = int(row["followups"]) + 1
+            subj, body = followup_text(d, lines, n)
+            if send_mail(d["email"], subj, body, sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}"):
+                store.mark_followup(int(row["id"]), "авто", d["email"], n, postpone_days=3 if n == 1 else 4)
+                out.append(f"№{row['id']}: напоминание {n} → {d['email']}")
+            else:
+                out.append(f"№{row['id']}: почта не ответила")
+        return out
+    app.extensions["run_followups"] = run_followups
 
     def send_calc_to(did: int, email: str) -> tuple[bool, str]:
         """Отправить письмо-расчёт клиенту. Возвращает (ушло?, почему нет)."""
@@ -339,8 +405,9 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if email != (d["email"] or ""):
             store.update_client(int(d["client_id"]), who(), email=email)
         dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
-        ok = send_mail(email, f"Расчёт №{did} — реечные панели и декор, «Наш декор»", calc_text(d, lines),
-                       sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}")
+        is_order = (d["want"] or "").startswith("ЗАКАЗ.")
+        ok = send_mail(email, (f"Заказ №{did} — состав и сумма к оплате, «Наш декор»" if is_order else f"Расчёт №{did} — реечные панели и декор, «Наш декор»"),
+                       calc_text(d, lines, who()), sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}")
         c = store.c()
         if ok:
             store.log(c, f"Расчёт отправлен на {email}", who(), deal_id=did, client_id=d["client_id"]); c.commit()
@@ -349,6 +416,32 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             return True, email
         store.log(c, f"Не удалось отправить расчёт на {email} (почта не ответила)", who(), deal_id=did, client_id=d["client_id"]); c.commit()
         return False, "почта не ответила"
+
+    @app.post("/deals/<int:did>/followup")
+    @login_required
+    def deal_followup(did: int) -> Any:
+        """Напоминание клиенту вручную («Напомнить сейчас») и выключатель автонапоминаний по сделке."""
+        d = store.deal(did)
+        if not d:
+            abort(404)
+        if request.form.get("toggle"):
+            store.set_no_followup(did, who(), not d["no_followup"])
+            flash("Автонапоминания по этой сделке " + ("включены." if d["no_followup"] else "выключены."), "ok")
+            return redirect(url_for("deal_view", did=did) + "#lines")
+        lines = store.lines(did)
+        email = (d["email"] or "").strip()
+        if not lines or "@" not in email:
+            flash("Нельзя напомнить: " + ("в расчёте нет позиций." if not lines else "у клиента нет e-mail."), "err")
+            return redirect(url_for("deal_view", did=did) + "#lines")
+        n = min(int(d["followups"] or 0) + 1, 2)
+        subj, body = followup_text(d, lines, n)
+        dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
+        if send_mail(email, subj, body, sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}"):
+            store.mark_followup(did, who(), email, n)
+            flash(f"Напоминание отправлено на {email}.", "ok")
+        else:
+            flash("Почта не ответила — напоминание не ушло.", "err")
+        return redirect(url_for("deal_view", did=did) + "#lines")
 
     @app.post("/deals/<int:did>/send-calc")
     @login_required
@@ -549,7 +642,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     def settings_view() -> Any:
         return render_template("settings.html", users=store.users() if g.user["role"] == "admin" else [],
                                conf=conf, bot=bool(store._bot()), hit_ips="\n".join(own_ips()), my_ip=ip(),
-                               my_ip_own=ip_is_own(ip()), visits_total=visits.count())
+                               my_ip_own=ip_is_own(ip()), visits_total=visits.count(),
+                               followup_auto=store.setting("followup_auto", "1") == "1", mail_contacts=mail_contacts())
 
     @app.post("/settings/hit-ips")
     @admin_required
@@ -574,6 +668,15 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 bad.append(tok)
         store.set_setting("hit_ignore_ips", "\n".join(good))
         flash(("Свои адреса сохранены: %d." % len(good)) + (" Не похоже на IP: " + ", ".join(bad) if bad else ""), "err" if bad else "ok")
+        return redirect(url_for("settings_view"))
+
+    @app.post("/settings/mail")
+    @admin_required
+    def settings_mail() -> Any:
+        """Письма клиентам: автонапоминания вкл/выкл и строка контактов в подписи."""
+        store.set_setting("followup_auto", "1" if request.form.get("followup_auto") else "0")
+        store.set_setting("mail_contacts", (request.form.get("mail_contacts") or "").strip()[:200])
+        flash("Настройки писем сохранены.", "ok")
         return redirect(url_for("settings_view"))
 
     @app.post("/settings/password")

@@ -383,6 +383,10 @@ class Store:
             for col in ("client_note", "pay_link"):          # 09.11.2026: текст клиенту и ссылка на оплату в письме-расчёте
                 if col not in cols:
                     c.execute(f"ALTER TABLE deals ADD COLUMN {col} TEXT NOT NULL DEFAULT ''")
+            for col, typ in (("followups", "INTEGER NOT NULL DEFAULT 0"), ("followup_at", "TEXT NOT NULL DEFAULT ''"),
+                             ("no_followup", "INTEGER NOT NULL DEFAULT 0")):   # 09.11.2026: автонапоминания клиенту о расчёте
+                if col not in cols:
+                    c.execute(f"ALTER TABLE deals ADD COLUMN {col} {typ}")
             row = c.execute("SELECT value FROM settings WHERE key='schema_version'").fetchone()
             if row and int(row[0]) > SCHEMA_VERSION:
                 raise RuntimeError(f"база CRM версии {row[0]}, программа знает только {SCHEMA_VERSION}")
@@ -679,6 +683,32 @@ class Store:
                 self._move_stock(c, did, +1, user)
                 c.execute("UPDATE deals SET stock_written=0 WHERE id=?", (did,))
             return d["stage"]
+
+    def followup_candidates(self, day: str) -> list[sqlite3.Row]:
+        """Сделки на этапе «Расчёт отправлен», где задача «Узнать решение…» подошла или просрочена, а менеджер её не закрыл:
+        клиенту уходит вежливое напоминание (не больше двух), если у него есть e-mail и напоминания не выключены."""
+        return self.c().execute(
+            "SELECT d.id, d.followups FROM deals d JOIN clients cl ON cl.id=d.client_id"
+            " WHERE d.stage='quote' AND d.no_followup=0 AND d.followups<2 AND cl.email LIKE '%@%'"
+            " AND EXISTS (SELECT 1 FROM tasks t WHERE t.deal_id=d.id AND t.done_at IS NULL AND t.title LIKE 'Узнать решение%' AND t.due<=?)"
+            " AND (d.followup_at='' OR substr(d.followup_at,1,10)<?) ORDER BY d.id", (day, day)).fetchall()
+
+    def mark_followup(self, did: int, user: str, email: str, n: int, postpone_days: int = 3) -> None:
+        """Записать отправленное напоминание и сдвинуть задачу «Узнать решение…» на несколько дней вперёд."""
+        with self.tx() as c:
+            c.execute("UPDATE deals SET followups=?, followup_at=?, updated_at=? WHERE id=?", (n, iso_now(), iso_now(), did))
+            c.execute("UPDATE tasks SET due=? WHERE deal_id=? AND done_at IS NULL AND title LIKE 'Узнать решение%'",
+                      ((date.fromisoformat(today()) + timedelta(days=postpone_days)).isoformat(), did))
+            d = c.execute("SELECT client_id FROM deals WHERE id=?", (did,)).fetchone()
+            self.log(c, f"Клиенту отправлено напоминание №{n} о расчёте на {email}", user, deal_id=did,
+                     client_id=d["client_id"] if d else None)
+
+    def set_no_followup(self, did: int, user: str, off: bool) -> None:
+        with self.tx() as c:
+            c.execute("UPDATE deals SET no_followup=?, updated_at=? WHERE id=?", (1 if off else 0, iso_now(), did))
+            d = c.execute("SELECT client_id FROM deals WHERE id=?", (did,)).fetchone()
+            self.log(c, "Автонапоминания клиенту выключены" if off else "Автонапоминания клиенту включены", user,
+                     deal_id=did, client_id=d["client_id"] if d else None)
 
     def rename_open_task(self, did: int, old: str, new: str, user: str) -> None:
         with self.tx() as c:
