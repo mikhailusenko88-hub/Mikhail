@@ -161,7 +161,7 @@ step_code() {
   chown -R root:root "$SRC"; chmod -R a+rX,go-w "$SRC"
   find "$APP" -name '__pycache__' -prune -exec rm -rf {} + 2>/dev/null || true
   ok "версия $(git -C "$SRC" rev-parse --short HEAD) → $APP"
-  if (cd "$APP" && runuser -u "$APP_USER" -- env PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -q test_crm >>"$DETAIL_LOG" 2>&1); then
+  if (cd "$APP" && runuser -u "$APP_USER" -- env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin HOME=/tmp LANG=C.UTF-8 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -q test_crm >>"$DETAIL_LOG" 2>&1); then
     ok "проверки кода прошли (тесты CRM)"
   else
     warn "тесты CRM не прошли — подробности в $DETAIL_LOG (CRM всё равно ставлю)"

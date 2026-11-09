@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import os as _os
+for _k in ("NOTIFY_EMAIL", "CRM_DB", "BOT_DB", "CATALOG_FILE", "SITE_ORIGINS", "SITE_LEADS", "SHOP_DOMAIN", "CRM_SECRET_FILE"):
+    _os.environ.pop(_k, None)  # тесты никогда не трогают настоящую базу и почту сервера
 import json
 import os
 import re
@@ -46,7 +49,7 @@ class Base(unittest.TestCase):
         self.app = crm_app.create_app({"CRM_DB": os.path.join(d, "crm.db"), "BOT_DB": self.botdb,
                                        "CATALOG_FILE": self.cat, "SECRET_KEY": "x" * 40, "COOKIE_SECURE": "0",
                                        "SITE_ORIGINS": "https://nashdekor.ru", "SITE_LEADS": "1", "TESTING": True,
-                                       "SHOP_DOMAIN": "nashdekor.ru"})
+                                       "SHOP_DOMAIN": "nashdekor.ru", "NOTIFY_EMAIL": ""})
         self.store = self.app.extensions["store"]
         self.store.add_user("yulia", "Юлия", "admin", generate_password_hash("Secret-pass-1"))
         self.store.add_user("mikhail", "Михаил", "staff", generate_password_hash("Secret-pass-2"))
