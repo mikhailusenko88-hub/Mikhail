@@ -111,3 +111,18 @@ a.card .price b{color:var(--ink)}
 .faq summary::after{content:"+";color:var(--muted);font-weight:400}
 .faq details[open] summary::after{content:"−"}
 .faq p{margin:8px 0 0;color:var(--ink);font-size:15px}
+
+/* заявка / купить */
+.buy .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.buy .btns .btn{width:100%;padding-left:8px;padding-right:8px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:14px;background:var(--bg2,#eef0ee);margin-bottom:4px}
+.seg button{appearance:none;border:0;background:transparent;border-radius:11px;padding:10px 8px;font:inherit;font-weight:600;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2}
+.seg button small{font-weight:400;font-size:12px;color:var(--mute,#6b7280)}
+.seg button.on{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.ship{border:0;padding:0;margin:0}
+.ship legend{font-size:13px;color:var(--mute,#6b7280);margin-bottom:6px;padding:0}
+.ship .radios{display:flex;flex-wrap:wrap;gap:6px 16px;margin-bottom:8px}
+.ship .radios .chk{font-size:15px}
+.ship input[type=text]{width:100%}
+.ship input[type=text][hidden]{display:none}
+#leadForm.buy #lSend{background:var(--accent,#1d5e57)}

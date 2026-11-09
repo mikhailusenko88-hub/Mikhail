@@ -57,7 +57,7 @@ CATS = [  # код, адрес, название в меню, H1, вводный
      "Реечные панели (их же называют декоративные рейки для стен, стеновые панели-рейки, ламели) из дюрополимера — полистирола высокой плотности. "
      "Длина 3 метра — стена до потолка без горизонтальных стыков. Панели белые, под покраску: красятся в любой цвет вместе со стеной, стыки шпаклюются. "
      "Профили — от классических каннелюр до широких ламелей и глубоких пазов; объёмный рельеф для ТВ-зоны, изголовья кровати, прихожей и стены за диваном. "
-     "Класс пожарной опасности Г2. Цены за штуку и за м², продаём поштучно и коробками, доставка по Санкт-Петербургу и Ленобласти.",
+     "Цены за штуку и за м², продаём поштучно и коробками, доставка по Санкт-Петербургу и Ленобласти.",
      "Реечные панели и декоративные рейки для стен — купить в СПб | Наш декор",
      "Реечные панели для стен из дюрополимера под покраску, длина 3 м: 18 профилей, цена за шт и за м², наличие в Санкт-Петербурге. 3D-просмотр, чертёж профиля, расчёт стены онлайн."),
     ("color", "paneli-pod-derevo", "Цветные и под дерево", "Реечные панели цветные и под дерево — серии 2, 3 и 5",
@@ -217,19 +217,27 @@ def crumbs_ld(items, url_of):
         {"@type": "ListItem", "position": i + 1, "name": t, "item": url_of(h)} for i, (t, h) in enumerate(items) if h]}
 
 def lead_form(x=None):
-    prod = ('<div class="prodline"><b>%s %s</b>Количество: <span id="oQty">1</span> шт · цвет и количество подставятся в заявку</div>' % (esc(KIND[x["c"]]), esc(x["a"]))) if x else ""
-    return ('<section class="porder" id="order"><div class="wrap"><div class="form"><div><h2>Заявка</h2>'
-            '<p class="note" style="font-size:15px;margin-top:8px">Ответим с ценой, наличием и сроком в рабочее время. Удобнее всего — позвонить %s или написать в %s.</p>%s</div>'
-            '<form class="panel stack" id="leadForm" novalidate><div class="two">'
+    prod = ('<div class="prodline"><b>%s %s</b>Количество: <span id="oQty">1</span> шт · <span id="oSum">—</span> · цвет и количество подставятся автоматически</div>' % (esc(KIND[x["c"]]), esc(x["a"]))) if x else ""
+    seg = ('<div class="seg" id="oMode" role="tablist" aria-label="Что отправить">'
+           '<button type="button" role="tab" data-m="lead" class="on" aria-selected="true">Заявка<small>узнать цену, срок и наличие</small></button>'
+           '<button type="button" role="tab" data-m="buy" aria-selected="false">Купить<small>оформить заказ и оплатить</small></button></div>') if x else ""
+    return ('<section class="porder" id="order"><div class="wrap"><div class="form"><div><h2 id="oTitle">Заявка</h2>'
+            '<p class="note" id="oNote" style="font-size:15px;margin-top:8px">Ответим с ценой, наличием и сроком в рабочее время. Удобнее всего — позвонить %s или написать в %s.</p>'
+            '<p class="note" id="oNoteBuy" hidden style="font-size:15px;margin-top:8px">Менеджер подтвердит наличие и стоимость доставки и пришлёт ссылку на оплату картой или СБП: предоплата 50%% (остаток при получении) или 100%%. Самовывоз со склада в СПб — бесплатно.</p>%s</div>'
+            '<form class="panel stack" id="leadForm" novalidate>%s<div class="two">'
             '<label class="f">Имя<input type="text" id="lName" autocomplete="name" required></label>'
             '<label class="f">Телефон или мессенджер<input type="text" id="lContact" autocomplete="tel" placeholder="+7 … или @ник" required></label></div>'
-            '<label class="f">E-mail — пришлём расчёт письмом (необязательно)<input type="email" id="lEmail" autocomplete="email" inputmode="email" placeholder="name@mail.ru"></label>'
+            '<label class="f">E-mail — <span id="lEmailHint">пришлём расчёт письмом (необязательно)</span><input type="email" id="lEmail" autocomplete="email" inputmode="email" placeholder="name@mail.ru"></label>'
+            '<fieldset class="f ship" id="oShip" hidden><legend>Получение</legend>'
+            '<div class="radios"><label class="chk"><input type="radio" name="ship" value="delivery" checked> Доставка по адресу</label>'
+            '<label class="chk"><input type="radio" name="ship" value="pickup"> Самовывоз со склада, СПб</label></div>'
+            '<input type="text" id="lAddr" autocomplete="street-address" placeholder="Город, улица, дом, квартира, этаж"></fieldset>'
             '<label class="f">Кто вы<select id="lWho"><option>Делаю ремонт у себя</option><option>Дизайнер</option><option>Ремонтная бригада</option><option>Компания, объект</option></select></label>'
             '<label class="f">Комментарий<textarea id="lMsg" rows="3" placeholder="Адрес, сроки, нужна ли доставка"></textarea></label>'
-            '<label class="chk" style="align-items:flex-start"><input type="checkbox" id="lAgree" required style="margin-top:3px"> <span>Я даю <a href="%sconsent.html" style="color:var(--ink)">согласие на обработку персональных данных</a> и ознакомлен с <a href="%sprivacy.html" style="color:var(--ink)">Политикой обработки персональных данных</a></span></label>'
+            '<label class="chk" style="align-items:flex-start"><input type="checkbox" id="lAgree" required style="margin-top:3px"> <span>Я даю <a href="%sconsent.html" style="color:var(--ink)">согласие на обработку персональных данных</a> и ознакомлен с <a href="%sprivacy.html" style="color:var(--ink)">Политикой обработки персональных данных</a><span id="lOferta" hidden> и <a href="%soferta.html" style="color:var(--ink)">условиями продажи</a></span></span></label>'
             '<input type="text" id="lHp" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
             '<div class="err" id="lErr" hidden></div><button class="btn" type="submit" id="lSend">Отправить заявку</button><div id="lDone" hidden></div></form></div></div></section>'
-            % (esc(SHOP["phone"]), esc(MSG), prod, ROOT, ROOT))
+            % (esc(SHOP["phone"]), esc(MSG), prod, seg, ROOT, ROOT, ROOT))
 
 def card(x, root):
     ph = photo(x["a"])
@@ -333,7 +341,7 @@ def product_page(x):
     prof_html = ('<div class="prof"><h2>Профиль (сечение)</h2><p>%s</p>%s</div>' % (ptxt, prof)) if prof else ""
 
     specs = [("Артикул", a), ("Тип", KIND[c]), ("Ширина", "%d мм" % x["w"]), ("Толщина", "%d мм" % x["t"]), ("Длина", "%d мм" % x["l"]),
-             ("В коробке", "%d шт" % x["b"]), ("Материал", MATERIAL), ("Пожарная опасность", "класс Г2"),
+             ("В коробке", "%d шт" % x["b"]), ("Материал", MATERIAL),
              ("Покрытие", "декор «%s», красить не нужно" % x["d"].split(",")[0] if is_wood else "белый грунт, под покраску"),
              ("Производитель", "ARTDEC (Казахстан)")]
     if "LED" in x["d"]: specs.append(("Подсветка", "паз под LED-ленту"))
@@ -348,7 +356,7 @@ def product_page(x):
            '<span class="unit">шт</span><button type="button" id="qPlus" aria-label="Больше">+</button></div>'
            '<button type="button" class="btn sm ghost qbox" id="qBox">Взять коробкой — %d шт</button>'
            '<div class="total"><div><small>Итого, предварительно</small><b class="num" id="tSum">—</b></div><small id="tPack"></small></div>'
-           '<button class="btn" type="button" id="toOrder">Заказать</button>%s'
+           '<div class="btns"><button class="btn" type="button" id="toBuy">Купить</button><button class="btn ghost" type="button" id="toOrder">Запросить расчёт</button></div>%s'
            '<p class="fine">Цена без НДС. Точную стоимость, наличие и доставку подтвердим в ответ на заявку.</p></aside>' % (price_b, per, x["b"], calc_btn))
 
     rel = [y for y in CAT if y["c"] == c and y["a"] != a]

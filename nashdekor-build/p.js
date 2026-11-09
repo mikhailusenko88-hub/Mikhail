@@ -347,14 +347,32 @@ function renderQty(){
   $("tSum").textContent = sum ? fmt(sum) + " ₽" : "По запросу";
   $("tPack").textContent = boxes ? `это ${boxes} кор.${rest ? " + " + rest + " шт" : ""} · в коробке ${X.b} шт` : `поштучно · в коробке ${X.b} шт`;
   if ($("oQty")) $("oQty").textContent = qty;
+  if ($("oSum")) $("oSum").textContent = sum ? "≈ " + fmt(sum) + " ₽" : "цена по запросу";
 }
 $("qMinus").addEventListener("click", () => { qty = Math.max(1, qty - 1); renderQty(); });
 $("qPlus").addEventListener("click", () => { qty = Math.min(9999, qty + 1); renderQty(); });
 $("qBox").addEventListener("click", () => { qty = Math.max(X.b, Math.ceil(qty / X.b) * X.b); renderQty(); });
 $("qty").addEventListener("input", () => { qty = Math.min(9999, Math.max(1, parseInt($("qty").value) || 1)); renderQty(); });
 
-/* ---------- заявка на этот товар → CRM ---------- */
+/* ---------- заявка или заказ на этот товар → CRM ---------- */
 const LEAD_API = "https://crm.nashdekor.ru/api/lead";
+let mode = "lead";                                   // lead — узнать цену/срок; buy — оформить заказ
+function setMode(m){
+  mode = m === "buy" ? "buy" : "lead";
+  const buy = mode === "buy";
+  document.querySelectorAll("#oMode [data-m]").forEach(b => { const on = b.dataset.m === mode; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); });
+  $("oTitle").textContent = buy ? "Заказ" : "Заявка";
+  $("oNote").hidden = buy; $("oNoteBuy").hidden = !buy;
+  $("oShip").hidden = !buy; $("lOferta").hidden = !buy;
+  $("lEmailHint").textContent = buy ? "пришлём подтверждение заказа и ссылку на оплату" : "пришлём расчёт письмом (необязательно)";
+  $("lMsg").placeholder = buy ? "Удобное время доставки, этаж, домофон, пожелания" : "Адрес, сроки, нужна ли доставка";
+  if (!$("leadForm").classList.contains("sent")) $("lSend").textContent = buy ? "Отправить заказ" : "Отправить заявку";
+  $("leadForm").classList.toggle("buy", buy);
+  shipUI();
+}
+function shipUI(){ const d = document.querySelector('input[name="ship"]:checked'); const pick = d && d.value === "pickup"; $("lAddr").hidden = pick; $("lAddr").required = mode === "buy" && !pick; }
+document.querySelectorAll("#oMode [data-m]").forEach(b => b.addEventListener("click", () => { setMode(b.dataset.m); hit("item", X.a, "ask"); }));
+document.querySelectorAll('input[name="ship"]').forEach(r => r.addEventListener("change", shipUI));
 const WHO = {"Дизайнер": "designer", "Компания, объект": "company", "Ремонтная бригада": "company"};
 const SHOP = P.shop || {};
 const MSG = () => SHOP.max ? `MAX ${SHOP.max}` : `Telegram ${SHOP.telegram || ""}`;
@@ -372,6 +390,7 @@ async function sendLead(lead){
       body: JSON.stringify({ name: lead.name, contact: lead.contact, email: lead.email || "", who: WHO[lead.who] || "private",
         message: [lead.who && lead.who !== "Делаю ремонт у себя" ? "Кто: " + lead.who : "", lead.message].filter(Boolean).join("\n"),
         calc: lead.calc, total: lead.total, consent: true, consentAt: lead.consentAt, consentVersion: lead.consentVersion,
+        intent: lead.intent || "lead", address: lead.address || "",
         website: ($("lHp") || {}).value || "" }) });
     const j = await r.json().catch(() => ({}));
     return r.ok && j.ok === true;
@@ -386,29 +405,39 @@ $("leadForm").addEventListener("submit", async e => {
   e.preventDefault();
   const name = $("lName").value.trim(), contact = $("lContact").value.trim(), err = $("lErr");
   if (!name || !contact) { err.textContent = "Укажите имя и телефон или ник в мессенджере — по ним мы ответим."; err.hidden = false; return; }
-  if (!$("lAgree").checked) { err.textContent = "Отметьте согласие на обработку персональных данных."; err.hidden = false; return; }
+  if (!$("lAgree").checked) { err.textContent = mode === "buy" ? "Отметьте согласие на обработку данных и условия продажи." : "Отметьте согласие на обработку персональных данных."; err.hidden = false; return; }
+  const buy = mode === "buy";
+  const pickup = buy && (document.querySelector('input[name="ship"]:checked') || {}).value === "pickup";
+  const addr = buy ? (pickup ? "Самовывоз, СПб" : $("lAddr").value.trim()) : "";
+  if (buy && !pickup && !addr) { err.textContent = "Укажите адрес доставки или выберите самовывоз."; err.hidden = false; $("lAddr").focus(); return; }
   err.hidden = true;
   const now = new Date().toISOString();
-  const lead = { name, contact, email: ($("lEmail") ? $("lEmail").value.trim() : ""), who: $("lWho").value, message: $("lMsg").value.trim(), calc: orderText(), total: Math.round(qty * price()), consentAt: now, consentVersion: "2026-10-29" };
+  const lead = { name, contact, email: ($("lEmail") ? $("lEmail").value.trim() : ""), who: $("lWho").value, message: $("lMsg").value.trim(), calc: orderText(), total: Math.round(qty * price()), consentAt: now, consentVersion: "2026-10-29", intent: buy ? "buy" : "lead", address: addr };
   const btn = $("lSend"); btn.disabled = true; btn.textContent = "Отправляем…";
   let saved = false; try { saved = await sendLead(lead); } catch (x) { saved = false; }
-  btn.disabled = false; btn.textContent = "Отправить заявку";
-  const text = `Заявка: ${name}, ${contact}${lead.email ? ", " + lead.email : ""} (${lead.who})${lead.message ? "\n" + lead.message : ""}\n${lead.calc}`;
+  btn.disabled = false; btn.textContent = buy ? "Отправить заказ" : "Отправить заявку";
+  const text = `${buy ? "Заказ" : "Заявка"}: ${name}, ${contact}${lead.email ? ", " + lead.email : ""} (${lead.who})${addr ? "\nДоставка: " + addr : ""}${lead.message ? "\n" + lead.message : ""}\n${lead.calc}`;
   const done = $("lDone"); done.hidden = false;
   if (saved) {
-    done.innerHTML = `<div class="stack" style="gap:12px"><div class="ok" role="status"><b id="lThanks"></b>Мы ответим с ценой и наличием в рабочее время.<p>Свяжемся с вами:<br><span id="lTo" style="white-space:nowrap;font-weight:600"></span></p><p>Если в номере ошибка — отправьте заявку ещё раз или напишите нам в ${MSG()}.</p></div><button class="btn ghost" type="button" id="lAgain">Отправить ещё одну заявку</button></div>`;
-    $("lThanks").textContent = `Спасибо, ${name}! Заявка отправлена.`; $("lTo").textContent = contact;
-    $("lAgain").onclick = () => { $("leadForm").classList.remove("sent"); $("leadForm").reset(); done.hidden = true; done.innerHTML = ""; $("lName").focus(); };
+    const next = buy
+      ? `Менеджер проверит наличие, посчитает доставку и пришлёт ссылку на оплату${lead.email ? " на " + lead.email : ""} в рабочее время. Оплата картой или СБП: 50% предоплата или 100% сразу.`
+      : "Мы ответим с ценой и наличием в рабочее время.";
+    done.innerHTML = `<div class="stack" style="gap:12px"><div class="ok" role="status"><b id="lThanks"></b>${next}<p>Свяжемся с вами:<br><span id="lTo" style="white-space:nowrap;font-weight:600"></span></p><p>Если в номере ошибка — отправьте ещё раз или напишите нам в ${MSG()}.</p></div><button class="btn ghost" type="button" id="lAgain">${buy ? "Оформить ещё один заказ" : "Отправить ещё одну заявку"}</button></div>`;
+    $("lThanks").textContent = buy ? `Спасибо, ${name}! Заказ принят. ` : `Спасибо, ${name}! Заявка отправлена. `; $("lTo").textContent = contact;
+    $("lAgain").onclick = () => { $("leadForm").classList.remove("sent"); $("leadForm").reset(); done.hidden = true; done.innerHTML = ""; setMode(mode); $("lName").focus(); };
     $("leadForm").reset(); $("leadForm").classList.add("sent");
     done.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-    hit("lead", X.a); hitSend();
+    hit("lead", X.a, buy ? "buy" : ""); hitSend();
   } else {
     hit("leadfail", X.a);
     done.innerHTML = `<div class="stack" style="gap:8px"><div class="err">Форма сейчас не отправляется. Скопируйте текст заявки и пришлите его в ${MSG()} или позвоните ${SHOP.phone || ""}.</div><pre class="copy" id="lText"></pre><button class="btn sm" type="button" id="lCopy">Копировать заявку</button></div>`;
     $("lText").textContent = text; $("lCopy").onclick = ev => copy(text, ev.currentTarget);
   }
 });
-$("toOrder").addEventListener("click", () => { hit("item", X.a, "order"); $("order").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); setTimeout(() => $("lName").focus({ preventScroll: true }), 400); });
+function goOrder(m){ setMode(m); hit("item", X.a, "ask"); $("order").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); setTimeout(() => $("lName").focus({ preventScroll: true }), 400); }
+$("toOrder").addEventListener("click", () => goOrder("lead"));
+if ($("toBuy")) $("toBuy").addEventListener("click", () => goOrder("buy"));
+if (location.hash === "#buy") setMode("buy");
 if ($("toCalc")) $("toCalc").addEventListener("click", () => hit("item", X.a, "use"));
 $("leadForm").addEventListener("focusin", () => hit("form", X.a));
 if ($("c3")) $("c3").addEventListener("pointerdown", () => hit("3d", X.a, "rotate"), { passive: true });
