@@ -5,6 +5,8 @@ on:
     branches: [domain-check]
     paths: ["crm-test/**"]
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -70,6 +72,34 @@ jobs:
           sleep 5
           sudo journalctl -u prostranstvo-crm --no-pager -n 3 | cut -c1-160
           sudo fail2ban-client status prostranstvo-crm | grep -E 'Total failed|Banned IP'
+      - name: Страница CRM «Сервер»
+        if: always()
+        run: |
+          mkdir -p status; O=status/crm-server-page.md
+          {
+          echo "# Страница CRM «Сервер» — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/j2
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          echo "cron: $(grep -c server-page /etc/cron.d/prostranstvo-crm) строк"
+          echo "файл отчёта: $(sudo stat -c '%U %a %s байт' /var/lib/prostranstvo/server-status.txt 2>&1)"
+          echo "/server: $(curl -sk $R -c $J -b $J -o /tmp/srv.html -w '%{http_code}' https://$H/server)"
+          grep -c 'Обновлено' /tmp/srv.html | xargs echo "строк «Обновлено» на странице:"
+          T=$(curl -sk $R -c $J -b $J https://$H/server | tok)
+          echo "кнопка Обновить: $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' --data-urlencode "csrf=$T" https://$H/server/refresh)"
+          echo "просьба на диске: $(sudo ls /var/lib/prostranstvo/server-request 2>&1)"
+          sudo /usr/local/sbin/prostranstvo-crm server-page; echo "после cron просьба: $(sudo ls /var/lib/prostranstvo/server-request 2>&1 | head -c 60)"
+          echo; echo "--- отчёт (начало) ---"
+          sudo head -n 60 /var/lib/prostranstvo/server-status.txt
+          echo '```'
+          } > "$O" 2>&1
+          cat "$O"
+          git config user.name crm-test; git config user.email crm-test@users.noreply.github.com
+          git add status; git commit -m "crm-test server page $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
       - name: Состояние
         if: always()
         run: |

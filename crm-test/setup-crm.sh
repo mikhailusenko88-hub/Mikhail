@@ -359,6 +359,36 @@ cmd_backup() {
   [[ $ok == yes ]]
 }
 
+cmd_server_page() {
+  # Отчёт о сервере для страницы CRM «Сервер» (только просмотр). Cron зовёт каждую минуту:
+  # пересобирает отчёт, если CRM оставила просьбу (кнопка «Обновить») или отчёт старше 15 минут.
+  local dir=/var/lib/prostranstvo out req tmp need=no
+  out=$dir/server-status.txt; req=$dir/server-request
+  [[ -d $dir ]] || return 0
+  if [[ -e $req || -L $req ]]; then need=yes; rm -f -- "$req"; fi
+  if [[ ! -f $out || -L $out ]] || [[ -n $(find "$out" -maxdepth 0 -mmin +14 2>/dev/null) ]]; then need=yes; fi
+  [[ ${1:-} == --now ]] && need=yes
+  [[ $need == yes ]] || return 0
+  tmp=$(mktemp "$dir/.server-status.XXXXXX")
+  {
+    echo "Обновлено: $(date '+%d.%m.%Y %H:%M')"
+    echo
+    if command -v prostranstvo-status >/dev/null; then timeout 90 prostranstvo-status 2>&1 || true; fi
+    echo; echo "=== Почта ==="
+    if command -v prostranstvo-pochta >/dev/null; then timeout 90 prostranstvo-pochta 2>&1 || true; else echo "почта не установлена"; fi
+    echo; echo "=== CRM ==="
+    (cmd_status) 2>&1 || true
+    echo; echo "=== Нагрузка ==="
+    uptime 2>&1 || true
+    free -h 2>&1 || true
+    df -h / 2>&1 || true
+    echo; echo "=== Вход на сервер по SSH ==="
+    fail2ban-client status sshd 2>/dev/null | grep -E "Currently banned|Banned IP" || true
+    journalctl -u ssh --since "-24h" --no-pager -o short 2>/dev/null | grep -E "Accepted |Failed password for root" | tail -n 8 || true
+  } 2>&1 | sed -e 's/\x1b\[[0-9;]*[A-Za-z]//g' >"$tmp" || true
+  chmod 644 "$tmp"; mv -f -- "$tmp" "$out"
+}
+
 cmd_update() {
   curl -fsSL https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/server/setup-crm.sh | bash
 }
@@ -373,6 +403,7 @@ prostranstvo-crm — CRM https://$CRM_HOST
   prostranstvo-crm site-leads on|off    — заявки с формы сайта (включать после уведомления РКН)
   prostranstvo-crm backup               — копия баз сейчас (ночью делается сама)
   prostranstvo-crm update               — обновить CRM из GitHub
+  prostranstvo-crm server-page --now   — обновить отчёт для страницы CRM «Сервер»
   prostranstvo-crm cert                 — получить сертификат для $CRM_HOST сейчас
 EOF
 }
@@ -386,6 +417,7 @@ case ${1:-status} in
   site-leads) shift; cmd_site_leads "$@" || rc=$? ;;
   backup) cmd_backup || rc=$? ;;
   update) cmd_update ;;
+  server-page) shift; cmd_server_page "$@" || rc=$? ;;
   cert) shift; cmd_cert "$@" || rc=$? ;;
   -h | --help | help) usage ;;
   *) usage; rc=1 ;;
@@ -497,12 +529,15 @@ step_nginx() {
   run systemctl reload nginx || run systemctl restart nginx
   ok "nginx: $CRM_HOST → CRM"
   put_file /etc/cron.d/prostranstvo-crm 644 <<'EOF'
-# Создано setup-crm.sh: сертификат для crm.ДОМЕН, когда домен заработает; ночные копии баз в 03:15.
+# Создано setup-crm.sh: сертификат для crm.ДОМЕН, когда домен заработает; ночные копии баз в 03:15;
+# отчёт для страницы CRM «Сервер» (пересобирается по кнопке или раз в 15 минут).
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 7,22,37,52 * * * *  root  /usr/local/sbin/prostranstvo-crm cert --auto 2>&1 | logger -t prostranstvo-crm
 15 3 * * *          root  /usr/local/sbin/prostranstvo-crm backup 2>&1 | logger -t prostranstvo-backup
+* * * * *           root  flock -n /run/prostranstvo-server-page.lock /usr/local/sbin/prostranstvo-crm server-page 2>&1 | logger -t prostranstvo-server
 EOF
+  /usr/local/sbin/prostranstvo-crm server-page --now >/dev/null 2>&1 || true
   local rc=0
   "$HELPER" cert 2>&1 | sed 's/^/     /' || rc=${PIPESTATUS[0]}
   ((rc == 2)) && info "пока временный сертификат — браузер предупредит; настоящий будет в течение часа после запуска домена."
