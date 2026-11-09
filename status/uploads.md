@@ -10,3 +10,4 @@
 | 2026-11-08 | 2 | cars №4 ФИНАЛ | Kia K5 | https://youtube.com/shorts/5sIu0BCsPB4 | public |
 | 2026-11-08 | 3 | clubs №2 | Turon | https://youtube.com/shorts/TVIZNeuxQdU | public |
 | 2026-11-09 | 1 | cities №6 | Angren | https://youtube.com/shorts/GhdHYuWpwmY | public |
+| 2026-11-09 | 2 | cars №5 | Epica | https://youtube.com/shorts/fZ5DMJvsSPk | public |

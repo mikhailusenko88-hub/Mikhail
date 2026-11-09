@@ -148,26 +148,18 @@
    ]
   },
   "cars": {
-   "no": 4,
+   "no": 5,
    "points": {
-    "Matiz": 27,
-    "Captiva": 30,
-    "Lacetti": 27,
-    "Tracker": 12,
-    "Gentra": 12,
-    "Tico": 8,
-    "Epica": 37,
-    "Kia K5": 19,
-    "Spark": 2,
-    "Damas": 7,
-    "Malibu": 25,
-    "Labo": 33,
-    "Cobalt": 16,
-    "Equinox": 10,
-    "Onix": 8,
-    "BYD Song": 2,
-    "Tahoe": 18,
-    "Nexia": 10
+    "Epica": 25,
+    "Tracker": 18,
+    "Onix": 15,
+    "Matiz": 12,
+    "Malibu": 10,
+    "Chery Tiggo": 8,
+    "Jiguli": 6,
+    "Gentra": 4,
+    "Captiva": 2,
+    "Labo": 1
    },
    "results": [
     {
@@ -221,11 +213,24 @@
      ],
      "link": "https://youtube.com/shorts/5sIu0BCsPB4",
      "final": true
+    },
+    {
+     "no": 5,
+     "date": "2026-11-09",
+     "slot": 2,
+     "winner": "Epica",
+     "top3": [
+      "Epica",
+      "Tracker",
+      "Onix"
+     ],
+     "link": "https://youtube.com/shorts/fZ5DMJvsSPk",
+     "final": false
     }
    ],
-   "champion": "Kia K5",
-   "season_races": 3,
-   "season": "2026-W45",
+   "champion": null,
+   "season_races": 1,
+   "season": "2026-W46",
    "new_pending": [],
    "final_season": "2026-W45",
    "champions": [
@@ -233,6 +238,46 @@
      "season": "2026-W45",
      "champion": "Kia K5",
      "link": "https://youtube.com/shorts/5sIu0BCsPB4"
+    }
+   ],
+   "seasons": [
+    {
+     "season": "2026-W45",
+     "top": [
+      [
+       "Epica",
+       37
+      ],
+      [
+       "Labo",
+       33
+      ],
+      [
+       "Captiva",
+       30
+      ],
+      [
+       "Matiz",
+       27
+      ],
+      [
+       "Lacetti",
+       27
+      ],
+      [
+       "Malibu",
+       25
+      ],
+      [
+       "Kia K5",
+       19
+      ],
+      [
+       "Tahoe",
+       18
+      ]
+     ],
+     "champion": "Kia K5"
     }
    ]
   },
@@ -409,6 +454,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/GhdHYuWpwmY",
    "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №6 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-09",
+   "slot": 2,
+   "league": "cars",
+   "no": 5,
+   "final": false,
+   "link": "https://youtube.com/shorts/fZ5DMJvsSPk",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №5 #shorts",
    "pl": true
   }
  ],
