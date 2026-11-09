@@ -1326,7 +1326,7 @@ def prepare_segment(seg, idx, seed):
     S_EN = [text_sprite(s, f_en, (104, 90, 80, 255)) for s in en]
     S_A1 = text_sprite(seg["author_ru"], f_auth, (122, 108, 98, 255))
     S_A2 = text_sprite(seg["author_en"], f_auth, (140, 126, 116, 255))
-    y = 290
+    y = QUOTE_Y
     Y_RU = [y + i * int(ru_size * 1.42) for i in range(len(ru))]
     y_div = Y_RU[-1] + int(ru_size * 1.42) + 8
     Y_EN = [y_div + 34 + i * int(en_size * 1.24) for i in range(len(en))]
@@ -1369,6 +1369,9 @@ def prepare_segment(seg, idx, seed):
                 box=(px0, px1, py0, py1), ru=ru, en=en, sizes=(ru_size, en_size), scene=seg["scene"])
 
 
+QUOTE_Y = 374       # верх цитаты (было 290: над ней теперь полоса прогресса и «дальше — ещё 2 мысли»)
+BAR_Y = 282         # полоса прогресса — под «1 / 3» (была 104: пряталась под «островком» и часами iPhone)
+EARLY_Y = 308       # строка «дальше — ещё 2 мысли» под полосой
 FIRST_SPEED = 0.62   # первая картина рисуется быстрее
 FIRST_TOTAL = 8.0    # длина первой цитаты, с
 
@@ -1379,7 +1382,7 @@ def early_hint_sprite(left):
         return None
     s = "дальше — ещё 2 мысли  ·  2 more ahead" if left == 2 else \
         ("дальше — ещё одна  ·  one more to go" if left == 1 else f"дальше — ещё {left}  ·  {left} more ahead")
-    return text_sprite(s, font(F_SMALL, 31), (140, 100, 62, 255))
+    return text_sprite(s, font(F_SMALL, 37), (118, 80, 46, 255))
 
 
 def hint_sprite(left):
@@ -1505,21 +1508,22 @@ def render_multi(cfg, out_path, preview=None, log=print):
             # счётчик «1 / 3» — крупно, чтобы было видно, что мыслей три
             cnt = S_CNT[si]
             paste_fade(img, cnt, (W - cnt.size[0]) / 2, 172, top_a)
-            # полоса прогресса из n частей (как в историях): сразу видно, что мыслей несколько
-            BX0, BX1, BY, GAP = 150, 930, 104, 18
+            # полоса прогресса из n частей (как в историях) — под «1 / 3», в видимой зоне любого телефона
+            BX0, BX1, BY, BH, GAP = 250, 830, BAR_Y, 12, 16
             sw_ = (BX1 - BX0 - GAP * (n - 1)) / n
             for j in range(n):
                 xa = BX0 + j * (sw_ + GAP)
-                dr.rounded_rectangle([xa, BY, xa + sw_, BY + 9], radius=4, fill=(205, 192, 172, int(200 * top_a)))
+                dr.rounded_rectangle([xa, BY, xa + sw_, BY + BH], radius=6, fill=(214, 200, 180, int(235 * top_a)))
                 fr = 1.0 if j < si else (min(1.0, t / S["total"]) if j == si else 0.0)
                 if fr > 0:
-                    dr.rounded_rectangle([xa, BY, xa + max(9, sw_ * fr), BY + 9], radius=4,
-                                         fill=(150, 112, 74, int(255 * top_a)))
-            # «дальше — ещё 2 мысли» мелко под счётчиком — уже с 3,5 с, а не только на переходе
+                    dr.rounded_rectangle([xa, BY, xa + max(BH, sw_ * fr), BY + BH], radius=6,
+                                         fill=(120, 82, 50, int(255 * top_a)))
+            # «дальше — ещё 2 мысли» под полосой — выезжает сразу (0,4 с в первой цитате, 1 с в следующих)
             eh = S_EARLY[si]
-            if eh is not None and t > 3.5:
-                ea = ease(3.5, 0.6, t) * (1.0 - (ease(S["T_END"], 0.3, t) if t > S["T_END"] else 0.0))
-                paste_fade(img, eh, (W - eh.size[0]) / 2, 244, ea)
+            e0 = 0.4 if si == 0 else 1.0
+            if eh is not None and t > e0:
+                ea = ease(e0, 0.5, t) * (1.0 - (ease(S["T_END"], 0.3, t) if t > S["T_END"] else 0.0))
+                paste_fade(img, eh, (W - eh.size[0]) / 2, EARLY_Y + 16 * (1 - ease(e0, 0.5, t)), ea)
             # подсказка на переходе: «Дальше — ещё 2 мысли» (и в начале следующей цитаты гаснет)
             h_spr, h_a = None, 0.0
             if si < n - 1 and t > S["T_END"] + 0.1:
