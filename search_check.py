@@ -32,6 +32,14 @@ for q in BRAND + COMM:
         JOBS.append((e, q))
 for q in BRAND[:1] + COMM[:2]:
     JOBS.append(("rambler", q))
+# свой список запросов: файл search-queries.txt, строки «поисковик|запрос» — тогда только он, без карт
+CUSTOM = []
+if os.path.exists("search-queries.txt"):
+    for line in open("search-queries.txt", encoding="utf-8"):
+        if "|" in line and not line.startswith("#"):
+            e, q = line.strip().split("|", 1)
+            if e in ENG:
+                CUSTOM.append((e, q))
 EXTRA = [
     ("ymaps", "Наш декор", "https://yandex.ru/maps/2/saint-petersburg/search/%D0%9D%D0%B0%D1%88%20%D0%B4%D0%B5%D0%BA%D0%BE%D1%80/"),
     ("ymaps", "стеновые панели наш декор", "https://yandex.ru/maps/2/saint-petersburg/search/%D1%81%D1%82%D0%B5%D0%BD%D0%BE%D0%B2%D1%8B%D0%B5%20%D0%BF%D0%B0%D0%BD%D0%B5%D0%BB%D0%B8%20%D0%BD%D0%B0%D1%88%20%D0%B4%D0%B5%D0%BA%D0%BE%D1%80/"),
@@ -131,7 +139,8 @@ def run():
                              extra_http_headers={"Accept-Language": "ru-RU,ru;q=0.9,en;q=0.5"})
         ctx.add_init_script("Object.defineProperty(navigator,'webdriver',{get:()=>undefined})")
         page = ctx.new_page()
-        jobs = [(e, q, ENG[e].format(q=urllib.parse.quote(q))) for e, q in JOBS] + EXTRA
+        jobs = ([(e, q, ENG[e].format(q=urllib.parse.quote(q))) for e, q in CUSTOM] if CUSTOM else
+                [(e, q, ENG[e].format(q=urllib.parse.quote(q))) for e, q in JOBS] + EXTRA)
         for n, (e, q, url) in enumerate(jobs, 1):
             tag = f"{n:02d}_{e}"
             st, cnt, pos, top, text, final = "ok", "", "", [], "", url
