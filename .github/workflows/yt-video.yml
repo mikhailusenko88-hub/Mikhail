@@ -4,10 +4,12 @@ on:
     branches: [yt-video]
     paths: [request.txt]
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   get:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - name: tools
@@ -16,9 +18,12 @@ jobs:
           sudo apt-get -qq update && sudo apt-get -qq install -y ffmpeg > /dev/null
       - name: fetch
         run: python3 fetch.py
-      - uses: actions/upload-artifact@v4
+      - name: save
         if: always()
-        with:
-          name: video
-          path: out/
-          retention-days: 3
+        run: |
+          mkdir -p /tmp/res && cp -r res/. /tmp/res/
+          git config user.name yt-video && git config user.email yt-video@users.noreply.github.com
+          git fetch -q origin yt-video-res && git checkout -q -B yt-video-res origin/yt-video-res || git checkout -q --orphan yt-video-res
+          git rm -rq --cached . > /dev/null 2>&1 || true
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -r /tmp/res/. . && git add -A && git commit -qm "разбор серий" && git push -q -f origin yt-video-res

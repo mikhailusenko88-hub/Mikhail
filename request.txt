@@ -1,3 +1,4 @@
-# 2026-11-09 17:39:39
+# 2026-11-10 00:39:03
 channel: @Cartoon_Friend3
 rutube: 82826859
+episodes: 18, 19
