@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-09 14:53 UTC
+# Сайт снаружи — 2026-11-09 17:43 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -26,16 +26,16 @@ ld+json: 1
 счётчик на главной: 1, в политике п. 3.4: 1, на документах: 1 1 1 
 
 --- страницы товаров и разделов (сборка nashdekor-build/build.py)
-/p/a907/                           200 text/html; charset=utf-8 22822
-/p/2-7/                            200 text/html; charset=utf-8 21105
-/p/a35/                            200 text/html; charset=utf-8 16692
-/p/a002-2/                         200 text/html; charset=utf-8 18342
-/p/gs1/                            200 text/html; charset=utf-8 22716
-/catalog/reechnye-paneli/          200 text/html; charset=utf-8 29502
-/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 36234
-/catalog/plintusy/                 200 text/html; charset=utf-8 32113
-/assets/p.js                       200 application/javascript; charset=utf-8 32510
-/assets/p.css                      200 text/css 18034
+/p/a907/                           200 text/html; charset=utf-8 25190
+/p/2-7/                            200 text/html; charset=utf-8 23473
+/p/a35/                            200 text/html; charset=utf-8 19061
+/p/a002-2/                         200 text/html; charset=utf-8 20710
+/p/gs1/                            200 text/html; charset=utf-8 25084
+/catalog/reechnye-paneli/          200 text/html; charset=utf-8 31094
+/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 37930
+/catalog/plintusy/                 200 text/html; charset=utf-8 33809
+/assets/p.js                       200 application/javascript; charset=utf-8 36429
+/assets/p.css                      200 text/css 19311
 /mebel/_lib/three.min.js           200 application/javascript; charset=utf-8 603445
 /mebel/_lib/OrbitControls.js       200 application/javascript; charset=utf-8 26375
 /img/A907.jpg                      200 image/jpeg 22169
