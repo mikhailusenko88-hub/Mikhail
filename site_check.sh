@@ -20,6 +20,7 @@ echo "og:image: $(grep -o 'og:image" content="[^"]*"' /tmp/i.html | head -1)"
 echo "ld+json: $(grep -c 'application/ld+json' /tmp/i.html)"
 echo "адрес формы в сайте: $(grep -o 'https://crm\.[a-z.]*/api/lead' /tmp/i.html | head -1)"
 echo "форма — ответ «Спасибо… Заявка отправлена» и кнопка «ещё одна»: $(grep -c 'id="lAgain"' /tmp/i.html), версия сайта: $(grep -c 'openLeadForm' /tmp/i.html)"
+echo "телефон на сайте (должно быть 0): $(grep -c '204-10-47\|2041047' /tmp/i.html), класс Г2 (должно быть 0): $(grep -c 'Г2' /tmp/i.html), кнопка «Заказать звонок»: $(grep -c 'id="callMe"' /tmp/i.html)"
 echo "контакты: MAX в списке: $(grep -c '\["MAX", SHOP.max' /tmp/i.html), подсказка «позвонить или написать в MAX»: $(grep -c 'написать в MAX' /tmp/i.html), WhatsApp: $(grep -ci whatsapp /tmp/i.html); боты в политике: $(curl -s "$U/privacy.html" | grep -c 'далее — Боты'), в согласии: $(curl -s "$U/consent.html" | grep -c 'MAX, Telegram'), в оферте: $(curl -s "$U/oferta.html" | grep -c 'чат-боте магазина в MAX')"
 echo "счётчик на главной: $(grep -c 'crm.nashdekor.ru/api/hit' /tmp/i.html), в политике п. 3.4: $(curl -s "$U/privacy.html" | grep -c 'счётчик посещений'), на документах: $(for f in oferta privacy consent; do curl -s "$U/$f.html" | grep -c api/hit; done | tr '\n' ' ')"
 echo
@@ -30,6 +31,7 @@ done
 curl -s "$U/p/a907/" -o /tmp/p.html
 echo "товар A907: title: $(grep -o '<title>[^<]*</title>' /tmp/p.html | head -1)"
 echo "  canonical: $(grep -o 'rel="canonical" href="[^"]*"' /tmp/p.html | head -1), ld+json: $(grep -c 'application/ld+json' /tmp/p.html), Product: $(grep -c '"@type": "Product"' /tmp/p.html), 3D canvas: $(grep -c 'id="c3"' /tmp/p.html), профиль svg: $(grep -c '<svg viewBox' /tmp/p.html), window.P: $(grep -c 'window.P=' /tmp/p.html)"
+echo "  форма A907: «Купить»: $(grep -c 'id="toBuy"' /tmp/p.html), режимы Заявка/Купить/Звонок: $(grep -o 'data-m="[a-z]*"' /tmp/p.html | sort -u | tr '\n' ' '), адрес доставки: $(grep -c 'id="lAddr"' /tmp/p.html), телефон (0): $(grep -c '204-10-47' /tmp/p.html), Г2 (0): $(grep -c 'Г2' /tmp/p.html)"
 curl -s "$U/p/a35/" -o /tmp/m.html
 echo "молдинг A35: 3D canvas: $(grep -c 'id="c3"' /tmp/m.html), профиль svg: $(grep -c '<svg viewBox' /tmp/m.html), контур poly: $(grep -c '"poly":' /tmp/m.html); счётчик панелей на A907: $(grep -c 'id="nPlus"' /tmp/p.html)"
 echo "«моя стена» на A907: блок: $(grep -c 'id="wallBox"' /tmp/p.html), вкладка: $(grep -c 'data-v="wall"' /tmp/p.html); p.js со стеной: $(curl -s "$U/assets/p.js" | grep -c 'function buildWall')"
