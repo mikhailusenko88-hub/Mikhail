@@ -1118,6 +1118,10 @@ class TestTochka(Base):
         self.assertEqual(len(self.pushes), n + 1)
         self.hook(dict(inc, paymentId="pay-4", purpose="Зачисление по операциям эквайринга", SidePayer={"name": "Точка", "inn": "", "amount": "50.00"}))
         self.assertEqual(len(self.pushes), n + 1)
+        # номер чужой заявки в назначении, а ИНН не её клиента — не засчитываем (номер счёта из банка мог совпасть)
+        did3 = self.deal(kind="c", phone="+79990007788")
+        self.hook(dict(inc, paymentId="pay-6", purpose=f"Оплата по счёту № {did3}", SidePayer={"name": "ООО Другая", "inn": "7800000001", "amount": "500.00"}))
+        self.assertEqual(self.store.paid_kop(did3), 0)
         ev = [e for e in self.store.bank_events() if e["payment_id"] == "pay-3"][0]
         did2 = self.deal(phone="+79990005566")
         self.post("/money/link", {"event": str(ev["id"]), "deal": str(did2)})

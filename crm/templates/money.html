@@ -23,7 +23,7 @@
 <div class="panel list">{% for p in m['rows'] if p['paid_at'][:7] == month %}<a class="row btn" href="{{ url_for('deal_view', did=p['deal_id']) }}#pay"><span class="grow">№{{ p['deal_id'] }} · {{ p['client_name'] }}<span class="d"> · {{ fmt_dt(p['paid_at']) }} · {{ {'link': 'ссылка', 'invoice': 'по счёту', 'manual': 'вручную'}.get(p['kind'], p['kind']) }}{% if p['pay_type'] %} {{ PAY_TYPES.get(p['pay_type'], p['pay_type']) }}{% endif %}{% if p['refunded'] %} · возврат {{ rubk(p['refunded']) }}{% endif %}</span></span><b>{{ rubk(p['amount'] - p['refunded']) }}</b></a>{% else %}<div class="row"><span class="d">Оплат за месяц нет</span></div>{% endfor %}</div>
 
 <h2>Поступления на расчётный счёт</h2>
-<p class="d">Приходят из уведомлений Точки. Оплата по счёту сама попадает в сделку, если в назначении есть «счёт №…» или «заказ №…» с номером заявки, или если ИНН плательщика есть у клиента с одной открытой заявкой.</p>
+<p class="d">Приходят из уведомлений Точки. Оплата сама попадает в сделку, только если ИНН плательщика записан в карточке клиента: по номеру заявки в назначении («заказ №…», «счёт №…») или если у клиента одна открытая заявка. Остальные поступления привяжите вручную — впишите номер заявки.</p>
 <div class="panel list">{% for e in events %}
   <div class="row wrap"><div class="grow"><div class="t">{{ rubk(e['amount']) }} · {{ e['payer'] or 'плательщик не указан' }}{% if e['inn'] %} · ИНН {{ e['inn'] }}{% endif %}</div><div class="d">{{ fmt_dt(e['at']) }} · {{ e['purpose'] }}</div></div>
   {% if e['deal_id'] %}<a class="pill good" href="{{ url_for('deal_view', did=e['deal_id']) }}#pay">заявка №{{ e['deal_id'] }}</a>{% else %}

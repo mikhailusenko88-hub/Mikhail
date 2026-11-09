@@ -1413,12 +1413,15 @@ class Store:
 
     def match_bank_event(self, inn: str, purpose: str) -> int | None:
         """Чья это оплата: «счёт/заказ №N» в назначении платежа или ИНН клиента с одной открытой сделкой."""
-        m = re.search(r"(?:сч[её]т[ау]?|заказ[ау]?|сделк[еи])\D{0,8}(\d{1,7})", purpose or "", flags=re.I)
-        if m:
-            row = self.c().execute("SELECT id FROM deals WHERE id=? AND stage NOT IN ('lost')", (int(m.group(1)),)).fetchone()
+        # номер в назначении сам по себе не доказательство (у счёта из интернет-банка свой номер — может совпасть
+        # с чужой заявкой), поэтому заявка по номеру засчитывается, только если ИНН плательщика записан у её клиента
+        inn = re.sub(r"\D", "", inn or "")
+        m = re.search(r"(?:сч[её]т[ау]?|заказ[ау]?|заявк[еаи]|сделк[еи])\D{0,8}(\d{1,7})", purpose or "", flags=re.I)
+        if m and len(inn) in (10, 12):
+            row = self.c().execute("SELECT d.id FROM deals d JOIN clients cl ON cl.id=d.client_id WHERE d.id=? AND d.stage!='lost'"
+                                   " AND cl.inn=?", (int(m.group(1)), inn)).fetchone()
             if row:
                 return int(row["id"])
-        inn = re.sub(r"\D", "", inn or "")
         if len(inn) in (10, 12):
             rows = self.c().execute("SELECT d.id FROM deals d JOIN clients cl ON cl.id=d.client_id WHERE cl.inn=? AND d.stage IN"
                                     " ('new','work','quote','paid')", (inn,)).fetchall()
