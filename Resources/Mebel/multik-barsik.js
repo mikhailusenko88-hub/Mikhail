@@ -377,7 +377,7 @@ MKB.attach = function (T, rig) {
       { transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor }), 10 + i); shells.push(sm); }   // БАРС · налёт
   // старый Барсик: только тень и «кости» (поза, руки для предметов), сам не рисуется
   rig.root.traverse(o => { if (!o.isMesh || o.userData.barsik || o.userData.blob) return; if (o.userData.strands) { o.visible = false; return; } o.layers.set(1); });   // слой 1 видит только камера теней
-  rig.fur = []; rig.bars = { U, bg, k, skin, fur, mouth, eyes, lids, lidFur, shells, lid: 1, open: 0 };
+  rig.fur = []; rig._gp = rig._gpB = null; rig.bars = { U, bg, k, skin, fur, mouth, eyes, lids, lidFur, shells, lid: 1, open: 0 };
   rig.headH = HEAD_C * k * (rig.scale || 1); rig.headR = HEAD_R * k * (rig.scale || 1);
   const pre = function (R, scene, cam) { const f = R.info.render.frame; if (rig.bars._f === f && rig.bars._cam === cam) return; rig.bars._f = f; rig.bars._cam = cam; eyeFrame(rig, R, cam); };
   bg.children.forEach(o => { o.onBeforeRender = pre; });

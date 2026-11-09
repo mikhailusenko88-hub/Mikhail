@@ -633,7 +633,7 @@ H6.attach = function (T3, rig) {
   THREE = T3; const who = H6.whoIs(rig.spec || rig.n); if (!who || !H6.ready[who]) return false; const T = H6.T[who];
   const U = Object.assign({}, lightsFor(T.L, T.center), commonU(T.bakeU)); const I = instance(T, U, true);
   const k = (rig.P && rig.P.headY ? rig.P.headY : T.headC) / T.headC; I.root.scale.setScalar(k); I.root.userData.noGround = true; rig.pose.add(I.root);
-  I.k = k; rig.h6 = I; rig.fur = []; I.rest = { arms: rig.arms.map(g => new THREE.Euler(0, 0, (g.userData.side || (g.position.x < 0 ? -1 : 1)) * .35)), legs: rig.legs.map(g => g.rotation.clone()) };   // покой скелета: лапы отведены на .35 рад — у героя образца они висят вдоль тела (иначе плечи заходят в ошейник)
+  I.k = k; rig.h6 = I; rig._gp = rig._gpB = null; rig.fur = []; I.rest = { arms: rig.arms.map(g => new THREE.Euler(0, 0, (g.userData.side || (g.position.x < 0 ? -1 : 1)) * .35)), legs: rig.legs.map(g => g.rotation.clone()) };   // покой скелета: лапы отведены на .35 рад — у героя образца они висят вдоль тела (иначе плечи заходят в ошейник)
   rig.root.traverse(o => { if (!o.isMesh || o.userData.bars || o.userData.blob) return; if (o.userData.strands) { o.visible = false; return; } o.layers.set(1); });   // старый герой: только тень и «кости»
   rig.headH = T.headC * k * (rig.scale || 1); rig.headR = T.headR * k * (rig.scale || 1);
   const pre = function (R, scene, cam) { const f = R.info.render.frame; if (I._f === f && I._cam === cam) return; I._f = f; I._cam = cam; camFrame(I, R, cam); };

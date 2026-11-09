@@ -87,10 +87,11 @@ MK3D.renderer = () => R; // БАРС: запекание света героев
 // Опорные точки тела: у каждой детали — крайние точки по 98 направлениям. По ним в любой позе (сидит, лежит, упал,
 // кувыркается) находим самую нижнюю точку героя и ставим его на землю — сквозь пол и песок больше не проваливается.
 const SUP_DIRS = (() => { const a = [], n = 98; for (let i = 0; i < n; i++) { const y = 1 - (i + .5) / n * 2, r = Math.sqrt(1 - y * y), th = i * 2.399963; a.push([Math.cos(th) * r, y, Math.sin(th) * r]); } return a; })();
-function groundPts(rig) {
-  const list = [], skip = new Set(); if (rig.blob) skip.add(rig.blob);
+function groundPts(rig, body) {
+  const list = [], skip = new Set(); if (rig.blob) skip.add(rig.blob); if (body) for (const a of rig.arms || []) a.traverse(c => skip.add(c));   // лежит: опора — тело, а не лапы
   rig.root.traverse(o => { if (o.userData.strands || o.userData.groove || o.userData.carve || o.userData.noGround) o.traverse(c => skip.add(c)); });
   if (rig.tail) rig.tail.traverse(c => skip.add(c)); // хвост может лечь на пол — героя из-за него не поднимаем
+  if (rig.h6 || rig.bars) for (const e of (rig.ears || []).concat(rig.hats || [])) if (e) e.traverse(c => skip.add(c)); // у героев образца видна своя модель; уши и кепка старой «глины» (Рон: длинные уши-листики) не должны поднимать лежащего героя над полом
   rig.root.traverse(o => {
     if (!o.isMesh || o.isInstancedMesh || skip.has(o) || o.material === OL || !o.geometry || !o.geometry.attributes.position) return;
     for (let v = o; v; v = v.parent) if (!v.visible) return;
@@ -101,16 +102,16 @@ function groundPts(rig) {
   return list;
 }
 /** Самая нижняя точка героя относительно его «земли» (в размерах героя). */
-function lowPoint(rig) {
-  const gp = rig._gp || (rig._gp = groundPts(rig)); let mn = Infinity;
+function lowPoint(rig, body) {
+  const gp = body ? rig._gpB || (rig._gpB = groundPts(rig, true)) : rig._gp || (rig._gp = groundPts(rig)); let mn = Infinity;
   rig.root.updateMatrixWorld(true);
   for (const g of gp) { if (!g.o.visible) continue; const e = g.o.matrixWorld.elements, p = g.pts;
     for (let i = 0; i < p.length; i += 3) { const y = e[1] * p[i] + e[5] * p[i + 1] + e[9] * p[i + 2] + e[13]; if (y < mn) mn = y; } }
   return mn === Infinity ? 0 : (mn - rig.root.position.y) / (rig.scale || 1);
 }
 /** w = 0 — стоит/идёт: только не даём уйти под землю; w = 1 — сидит/лежит: ровно касается земли. */
-function groundFix(rig, w) {
-  rig.yaw.position.y = 0; const rel = lowPoint(rig);
+function groundFix(rig, w, body) {
+  rig.yaw.position.y = 0; const rel = lowPoint(rig, body);
   const lift = Math.max(0, -.015 - rel), touch = -.006 - rel;
   rig.yaw.position.y = lerp(lift, touch, clamp(w, 0, 1)); rig._low = rel;
 }
@@ -1134,7 +1135,7 @@ function applyPose(rig, st, T) {
   if (rollA) { const cy = lie ? .22 : hgt * .5; rig.rollG.position.set(0, cy, 0); rig.rollG.rotation.x = rollA; rig.pose.position.y += -cy + (lie ? .22 * 0 : 0); }
   else { rig.rollG.position.set(0, 0, 0); rig.rollG.rotation.x = 0; }
   if (lie) rig.pose.position.y += .16 * lie;
-  groundFix(rig, Math.max(fallen, sit, crouch, an === 'roll' ? lie : 0));
+  groundFix(rig, Math.max(fallen, sit, crouch, an === 'roll' ? lie : 0), !!(lie > .5 && (rig.h6 || rig.bars)));   // герой образца лежит: на пол ложится тело (лапы старой модели длиннее и подпирали его над полом)
   { const dt = T - dyn.t; const y = rig.pose.position.y + rig.root.position.y, yaw = rig.yaw.rotation.y;
     if (dt > 0 && dt < .25) { const vy = (y - dyn.y) / dt, ay = (vy - dyn.vy) / dt, wy = (yaw - dyn.yaw) / dt;
       const spring = (x, v, target, k, d) => { const a = (target - x) * k - v * d; v += a * dt; x += v * dt; return [x, v]; };
@@ -2969,6 +2970,9 @@ function camFor(c, S, seg, lib) {
     return { pos: new THREE.Vector3(x + side * (close ? .13 : .3), (close ? .78 : .8) * hh + (close ? .02 : .06), z + (close ? 1.15 : 2.15) * Math.max(.8, hh) / (c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1)), look: new THREE.Vector3(x + side * (close ? .03 : .08), (close ? .7 : .56) * hh, z) }; }
   if (c.mode === 'group') { const list = (c.ids || ids).filter(id => S[id] && S[id].vis !== false); let lo = 1e9, hi = -1e9, hh = .9;
     for (const id of list) { const x = px(id), w = .5 * h(id); lo = Math.min(lo, x - w); hi = Math.max(hi, x + w); hh = Math.max(hh, h(id)); } for (const q of c.px || []) { lo = Math.min(lo, X(q) - .45); hi = Math.max(hi, X(q) + .45); }
+    if (lo <= hi) for (let it = 0; it < 2; it++) { const d0 = clamp((hi - lo + 1.1) / 2 / .612, 3.3, 8.4), hw = d0 * .612, m0 = (lo + hi) / 2; let ch = false;   // сосед на краю кадра — целиком, а не половинкой
+      for (const id of ids) { if (list.includes(id) || !S[id] || S[id].vis === false) continue; const x = px(id), w = .42 * h(id); if (x + w > m0 - hw && x - w < m0 + hw && (x - w < m0 - hw || x + w > m0 + hw)) { lo = Math.min(lo, x - .5 * h(id)); hi = Math.max(hi, x + .5 * h(id)); list.push(id); hh = Math.max(hh, h(id)); ch = true; } }
+      if (!ch) break; }
     if (lo <= hi) { const mid = (lo + hi) / 2, d = clamp((hi - lo + 1.1) / 2 / .612, 3.3, 8.4), tp = Math.max(...list.map(topOf)), ly = Math.max(.52 * hh + d * .035, tp - .28 * d); return { pos: new THREE.Vector3(mid, ly + .08 * hh + d * .095, d), look: new THREE.Vector3(mid, ly, 0) }; } }
   if (c.mode === 'two') { const pair = Array.isArray(c.on) ? c.on : ids.slice(0, 2); const a = px(pair[0]), b = px(pair[1] || pair[0]), hh = Math.max(h(pair[0]), h(pair[1] || pair[0])), wa = .5 * h(pair[0]), wb = .5 * h(pair[1] || pair[0]);
     let lo = Math.min(a - wa, b - wb), hi = Math.max(a + wa, b + wb), mid = (lo + hi) / 2, d = clamp((hi - lo + .9) / 2 / .612, 2.9, 7), inc = pair.slice();

@@ -214,8 +214,8 @@ S.parse = function (text, lib, opts) {
           if (glowStatic && !pr.hidden) pr.glow = true; if (mine) { pr.holder = who; castOf(who); delete pr.decor; } if (morph && sc._vanishHeld && !big) { pr.holder = sc._vanishHeld; delete pr.decor; } sc.props.push(pr);
           shown.push({ pr, type, scene: sc.id, how: [pr.kind ? ({ birch: 'берёза', fir: 'ёлка', xmas: 'новогодняя ёлка', apple: 'яблоня', palm: 'пальма', leafy: 'лиственное' })[pr.kind] || '' : '', pr.big > 1 ? 'большая' : '', glow || glowNow ? 'светится' : '', pr.hidden ? 'появляется' : '', vanish ? 'исчезает' : '', mine ? 'у героя в руках' : ''].filter(Boolean).join(', ') }); }
         if (pr.type === 'pumpkin' && type === 'jack') pr.type = 'jack';
-        if (pr.hidden && !pr._shown) { const ap = { prop: pr.id, state: 'appear', with: true }; if (pr._quiet) ap.quiet = true; sc.steps.push(ap); pr._shown = true; if (glow || glowNow) { sc.steps.push({ prop: pr.id, state: 'glow', with: true }); pr._glow = true; } }
-        else if (vanish && !pr._gone) { sc.steps.push({ prop: pr.id, state: 'vanish', with: true }); pr._gone = true; sc._vanishLn = sc._ln; sc._vanishHeld = pr._held || pr.holder || null; }
+        if (pr.hidden && !pr._shown) { const ap = { prop: pr.id, state: 'appear', with: true }; if (pr._quiet) ap.quiet = true; if (who && who !== 'Р') ap.who = who; sc.steps.push(ap); pr._shown = true; if (glow || glowNow) { sc.steps.push({ prop: pr.id, state: 'glow', with: true }); pr._glow = true; } }
+        else if (vanish && !pr._gone) { sc.steps.push(Object.assign({ prop: pr.id, state: 'vanish', with: true }, who && who !== 'Р' ? { who } : {})); pr._gone = true; sc._vanishLn = sc._ln; sc._vanishHeld = pr._held || pr.holder || null; }
         else if ((glowNow || glowAdj) && !pr.glow && !pr._glow) { sc.steps.push({ prop: pr.id, state: 'glow', with: true }); pr._glow = true; }
         if (!vanish && type === 'door' && (opening || closing) && !!pr._open !== opening) { sc.steps.push({ prop: pr.id, state: opening ? 'open' : 'close', with: true }); pr._open = opening; }
         if (!vanish && moving && !pr.big && !pr._held && !pr.holder) sc.steps.push({ prop: pr.id, state: 'move', with: true });
@@ -435,9 +435,9 @@ S.parse = function (text, lib, opts) {
     const ws = d.split(/[^а-яa-z]+/).filter(Boolean); let loc = null;
     for (let i = 0; i < ws.length; i++) { const p = pick(PROPS, ws[i]); if (!p) continue; if (i > 0 && /^(из|в|во|под|на|у|от|с|со|за|возле|около|над|внутри|рядом)$/.test(ws[i - 1])) { loc = loc || p; continue; } return p; }
     return loc; }
-  function ensureProp(type, nearId, ground) { let p = sc.props.find(x => x.type === type && !x._gone && !x._held); if (!p) { const x = Math.max(.08, Math.min(.92, (sc._x[nearId] != null ? sc._x[nearId] : .5) + .15)); p = { id: 'П' + (sc.props.length + 1), type, x }; sc.props.push(p);
+  function ensureProp(type, nearId, ground) { let p = sc.props.find(x => x.type === type && !x._gone && !x._held); if (!p) { const x = Math.max(.08, Math.min(.92, (sc._x[nearId] != null ? sc._x[nearId] : .5) + .15)); const first = !sc.props.some(q => q.type === type); p = { id: 'П' + (sc.props.length + 1), type, x }; sc.props.push(p);
       // о вещи уже говорили («А вдруг в подарке…») — она появляется с той реплики рядом с тем, кто сказал; не говорили — герой достаёт её, когда берёт
-      const m = !ground && sc._said && sc._said[type]; if (m) { p.hidden = true; p._shown = true; sc.steps.splice(m.at, 0, { prop: p.id, state: 'appear', quiet: true, with: true }); if (m.who && sc._x[m.who] != null) p.x = Math.max(.08, Math.min(.92, sc._x[m.who] + (sc._x[m.who] > .5 ? -.1 : .1))); }
+      const m = !ground && first && sc._said && sc._said[type]; if (m) { p.hidden = true; p._shown = true; sc.steps.splice(m.at, 0, { prop: p.id, state: 'appear', quiet: true, with: true }); if (m.who && sc._x[m.who] != null) p.x = Math.max(.08, Math.min(.92, sc._x[m.who] + (sc._x[m.who] > .5 ? -.1 : .1))); }
       else if (!ground) { p.hidden = true; p._shown = true; } } p._used = true; if (p.decor && !p.big) delete p.decor; return p; }
 
   // чистка служебных полей, персонажи/локации в серии, автоделение длинных серий
