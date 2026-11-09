@@ -326,7 +326,7 @@ function setView(v){
   if ($("c3")) $("c3").hidden = v === "photo";
   if ($("photo")) $("photo").hidden = v !== "photo";
   const pc = pv.querySelector("canvas.pc"); if (pc) pc.hidden = v !== "photo" || cur.name === "Белый";
-  if ($("hint")) $("hint").textContent = v === "photo" ? "" : v === "frag" ? `Фрагмент ${Math.round(fragLen() / 10)} см · вращайте пальцем, щипок — масштаб` : "Вращайте пальцем, щипок — масштаб";
+  if ($("hint")) $("hint").textContent = v === "photo" ? "" : v === "frag" ? `Фрагмент ${Math.round(fragLen() / 10)} см · вращайте пальцем` : "Вращайте пальцем, щипок — масштаб";
   if ($("wallBox")) $("wallBox").hidden = v !== "wall";
   const nc = document.querySelector(".ncount"); if (nc) nc.hidden = v !== "frag";
   if (v === "wall") renderWall();

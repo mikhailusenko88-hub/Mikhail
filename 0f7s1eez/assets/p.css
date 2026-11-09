@@ -233,3 +233,11 @@ a.card .price b{color:var(--ink)}
 .wallbox .wres small{display:block}
 .wallbox .wbtns{display:flex;gap:8px;flex-wrap:wrap}
 .wallbox .wbtns .btn{flex:1;min-width:180px}
+.faq{margin-top:36px;max-width:76ch}
+.faq h2{font-size:20px;margin-bottom:10px}
+.faq details{border-top:1px solid var(--line);padding:10px 0}
+.faq details:last-child{border-bottom:1px solid var(--line)}
+.faq summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.faq summary::after{content:"+";color:var(--muted);font-weight:400}
+.faq details[open] summary::after{content:"−"}
+.faq p{margin:8px 0 0;color:var(--ink);font-size:15px}
