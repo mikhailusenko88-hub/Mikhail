@@ -216,6 +216,7 @@ write_helper() {
 #!/bin/bash
 # prostranstvo-crm — CRM сервера «Наш декор». Создано setup-crm.sh — руками не править.
 set -Eeuo pipefail
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 # shellcheck source=/dev/null
 . /usr/local/lib/prostranstvo/common.sh
 if [[ $(id -u) -ne 0 ]]; then echo "Запустите от root." >&2; exit 1; fi
@@ -359,13 +360,72 @@ cmd_backup() {
   [[ $ok == yes ]]
 }
 
+write_action() {  # заголовок кто состояние [вывод] → /var/lib/prostranstvo/server-action.txt (читает CRM)
+  local dir=/var/lib/prostranstvo tmp
+  tmp=$(mktemp "$dir/.server-action.XXXXXX")
+  {
+    echo "Действие: $1"
+    echo "Запросил: ${2:-?}, $(date '+%d.%m.%Y %H:%M')"
+    echo "Состояние: $3"
+    if [[ -n ${4:-} ]]; then echo; printf '%s\n' "$4"; fi
+  } >"$tmp"
+  chmod 644 "$tmp"; mv -f -- "$tmp" "$dir/server-action.txt"
+}
+
+server_action() {
+  # Кнопки страницы CRM «Сервер». Выполняется ТОЛЬКО то, что перечислено здесь, — произвольных команд нет.
+  local act=$1 who=$2 title log rc=0
+  case $act in
+    update) title="Обновить CRM из GitHub" ;;
+    sync) title="Обновить сайт из GitHub" ;;
+    restart-crm) title="Перезапустить CRM" ;;
+    restart-mail) title="Перезапустить почту" ;;
+    reload-web) title="Перезапустить веб-сервер (nginx)" ;;
+    backup) title="Сделать копию баз" ;;
+    leads-on) title="Заявки с сайта — включить" ;;
+    leads-off) title="Заявки с сайта — выключить" ;;
+    unban) title="Снять блокировки fail2ban" ;;
+    reboot) title="Перезагрузить сервер" ;;
+    *) logger -t prostranstvo-server "CRM: неизвестное действие «$act» — пропущено"; return 0 ;;
+  esac
+  logger -t prostranstvo-server "CRM: действие $act (запросил ${who:-?})"
+  write_action "$title" "$who" "выполняется…"
+  if [[ $act == reboot ]]; then
+    write_action "$title" "$who" "сервер перезагружается — CRM откроется снова через 1–2 минуты"
+    systemctl reboot --no-block; return 0
+  fi
+  log=$(mktemp /run/prostranstvo-action.XXXXXX)
+  case $act in
+    update) timeout 1500 /usr/local/sbin/prostranstvo-crm update ;;
+    sync) if [[ -x /usr/local/sbin/prostranstvo-sync ]]; then timeout 300 /usr/local/sbin/prostranstvo-sync; else echo "prostranstvo-sync не найден"; false; fi ;;
+    restart-crm) systemctl restart prostranstvo-crm && sleep 3 && systemctl is-active prostranstvo-crm ;;
+    restart-mail) systemctl restart postfix dovecot rspamd && sleep 3 && systemctl is-active postfix dovecot rspamd ;;
+    reload-web) nginx -t && systemctl reload nginx && systemctl is-active nginx ;;
+    backup) cmd_backup && ls -la "$BACKUP_DIR/$(date +%F)" ;;
+    leads-on) cmd_site_leads on ;;
+    leads-off) cmd_site_leads off ;;
+    unban) fail2ban-client unban --all ;;
+  esac >"$log" 2>&1 || rc=$?
+  write_action "$title" "$who" "$([[ $rc == 0 ]] && echo готово || echo "ошибка (код $rc)")" \
+    "$(tail -n 80 "$log" | sed -e 's/\x1b\[[0-9;]*[A-Za-z]//g' | grep -viE 'парол|password')"
+  rm -f -- "$log"
+}
+
 cmd_server_page() {
-  # Отчёт о сервере для страницы CRM «Сервер» (только просмотр). Cron зовёт каждую минуту:
-  # пересобирает отчёт, если CRM оставила просьбу (кнопка «Обновить») или отчёт старше 15 минут.
-  local dir=/var/lib/prostranstvo out req tmp need=no
+  # Отчёт о сервере для страницы CRM «Сервер». Cron зовёт каждую минуту: выполняет кнопку из CRM (если нажата)
+  # и пересобирает отчёт, если CRM оставила просьбу или отчёт старше 15 минут.
+  local dir=/var/lib/prostranstvo out req tmp need=no line="" act="" who=""
   out=$dir/server-status.txt; req=$dir/server-request
   [[ -d $dir ]] || return 0
-  if [[ -e $req || -L $req ]]; then need=yes; rm -f -- "$req"; fi
+  if [[ -e $req || -L $req ]]; then
+    need=yes
+    # файл пишет CRM (не root) — читаем только обычный файл, 64 байта, допустимые символы
+    if [[ -f $req && ! -L $req ]]; then line=$(head -c 64 -- "$req" | head -n 1 | LC_ALL=C tr -cd 'a-z0-9 ._-'); fi
+    rm -f -- "$req"
+    act=${line%% *}
+    if [[ $line == *" "* ]]; then who=${line#* }; fi
+  fi
+  if [[ -n $act && $act != refresh ]]; then server_action "$act" "${who:0:31}"; fi
   if [[ ! -f $out || -L $out ]] || [[ -n $(find "$out" -maxdepth 0 -mmin +14 2>/dev/null) ]]; then need=yes; fi
   [[ ${1:-} == --now ]] && need=yes
   [[ $need == yes ]] || return 0
@@ -403,7 +463,7 @@ prostranstvo-crm — CRM https://$CRM_HOST
   prostranstvo-crm site-leads on|off    — заявки с формы сайта (включать после уведомления РКН)
   prostranstvo-crm backup               — копия баз сейчас (ночью делается сама)
   prostranstvo-crm update               — обновить CRM из GitHub
-  prostranstvo-crm server-page --now   — обновить отчёт для страницы CRM «Сервер»
+  prostranstvo-crm server-page --now   — обновить отчёт для страницы CRM «Сервер» (там же кнопки действий)
   prostranstvo-crm cert                 — получить сертификат для $CRM_HOST сейчас
 EOF
 }

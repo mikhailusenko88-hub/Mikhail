@@ -267,10 +267,48 @@ class TestServerPage(Base):
         self.assertTrue(os.path.exists(rq))
         self.assertIn("Обновляю", self.c.get("/server").get_data(as_text=True))
 
+    def test_server_actions(self) -> None:
+        rq = os.path.join(self.tmp.name, "server-request")
+        af = os.path.join(self.tmp.name, "server-action.txt")
+        self.login()
+        t = self.c.get("/server").get_data(as_text=True)
+        for s in ("Обновить CRM", "Копия баз", "Перезагрузить сервер", "Снять блокировки", "Выключить заявки с сайта"):
+            self.assertIn(s, t)
+        self.assertNotIn("Включить заявки с сайта", t)          # заявки уже включены — показываем только «выключить»
+        self.assertEqual(self.post("/server/run", {"action": "rm -rf /"}).status_code, 400)
+        self.assertFalse(os.path.exists(rq))
+        self.post("/server/run", {"action": "reboot"})            # без галочки — не перезагружаем
+        self.assertFalse(os.path.exists(rq))
+        r = self.post("/server/run", {"action": "update"})
+        self.assertEqual(r.status_code, 302)
+        with open(rq, encoding="utf-8") as f:
+            self.assertEqual(f.read(), "update yulia\n")
+        self.post("/server/run", {"action": "backup"})            # пока первая не выполнена — вторую не берём
+        with open(rq, encoding="utf-8") as f:
+            self.assertEqual(f.read(), "update yulia\n")
+        os.remove(rq)
+        with open(af, "w", encoding="utf-8") as f:
+            f.write("Действие: Обновить CRM из GitHub\nЗапросил: yulia, 09.11.2026 12:40\nСостояние: выполняется…\n")
+        t = self.c.get("/server").get_data(as_text=True)
+        self.assertIn("выполняется", t)
+        self.assertIn('http-equiv="refresh"', t)
+        self.assertIn("disabled", t)
+        self.post("/server/run", {"action": "backup"})
+        self.assertFalse(os.path.exists(rq))
+        with open(af, "w", encoding="utf-8") as f:
+            f.write("Действие: Обновить CRM из GitHub\nСостояние: готово\n\nCRM УСТАНОВЛЕНА\n")
+        t = self.c.get("/server").get_data(as_text=True)
+        self.assertIn("CRM УСТАНОВЛЕНА", t)
+        self.assertNotIn('http-equiv="refresh"', t)
+        self.post("/server/run", {"action": "reboot", "confirm": "1"})
+        with open(rq, encoding="utf-8") as f:
+            self.assertEqual(f.read(), "reboot yulia\n")
+
     def test_server_page_admin_only(self) -> None:
         self.login("mikhail", "Secret-pass-2")
         self.assertEqual(self.c.get("/server").status_code, 403)
         self.assertEqual(self.post("/server/refresh").status_code, 403)
+        self.assertEqual(self.post("/server/run", {"action": "update"}).status_code, 403)
         self.assertNotIn("/server", self.c.get("/tasks").get_data(as_text=True))
 
 

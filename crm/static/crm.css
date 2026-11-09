@@ -173,3 +173,8 @@ pre.srv{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.45 var(--mono);m
 .site-today{margin-top:10px}
 .site-today .ic{color:var(--accent);flex:0 0 auto}
 .site-items .d{overflow-wrap:normal;font-size:12.5px}
+/* страница «Сервер»: команды */
+.srv-act button{flex:0 0 auto}
+.srv-act button:disabled{opacity:.45;cursor:not-allowed}
+.srv-ok{display:flex;gap:8px;align-items:center;margin-top:8px;font-size:14px;font-weight:600}
+.row .srv-ok input{width:20px;height:20px;flex:0 0 auto;padding:0;margin:0}

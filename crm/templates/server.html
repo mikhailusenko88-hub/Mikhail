@@ -4,9 +4,30 @@
 {% if pending %}<meta http-equiv="refresh" content="15">{% endif %}
 <div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a><a href="{{ url_for('settings_view') }}">Настройки</a><a href="{{ url_for('server_view') }}" aria-current="page">Сервер</a></div>
 <h1>Сервер</h1>
+
+{% if act %}
+<h2>Последняя команда{% if running %} — выполняется…{% endif %}</h2>
+<div class="panel"><pre class="srv">{{ act }}</pre></div>
+{% endif %}
+
+<h2>Команды</h2>
+<div class="panel list">
+{% for key, title, hint in actions %}
+  <form class="row srv-act" method="post" action="{{ url_for('server_run') }}">
+    <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="{{ key }}">
+    <div class="grow"><div class="t">{{ title }}</div><div class="d">{{ hint }}</div>
+      {% if key == 'reboot' %}<label class="chk srv-ok"><input type="checkbox" name="confirm" value="1" required> Да, перезагрузить</label>{% endif %}
+    </div>
+    <button class="{{ 'btn-p' if key == 'update' else 'btn-s' }}" type="submit" {% if pending %}disabled{% endif %}>{{ 'Обновить' if key == 'update' else 'Выполнить' }}</button>
+  </form>
+{% endfor %}
+</div>
+<p class="d">Выполняются только эти действия — набрать свою команду отсюда нельзя: если кто-то узнает пароль от CRM, он не получит управление сервером. Команда начинается в течение минуты, результат появится выше.</p>
+
+<h2>Отчёт</h2>
 <div class="row wrap srv-head">
-  <span class="d grow">{% if pending %}Обновляю — страница обновится сама…{% elif age is none %}Отчёта ещё нет — нажмите «Обновить».{% elif age == 0 %}Обновлено только что{% else %}Обновлено {{ age }} мин назад{% endif %}</span>
-  <form method="post" action="{{ url_for('server_refresh') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-p" type="submit">Обновить</button></form>
+  <span class="d grow">{% if pending and not running %}Обновляю — страница обновится сама…{% elif age is none %}Отчёта ещё нет — нажмите «Обновить отчёт».{% elif age == 0 %}Обновлено только что{% else %}Обновлено {{ age }} мин назад{% endif %}</span>
+  <form method="post" action="{{ url_for('server_refresh') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-s" type="submit" {% if pending %}disabled{% endif %}>Обновить отчёт</button></form>
 </div>
 {% if text %}<div class="panel"><pre class="srv">{{ text }}</pre></div>{% endif %}
 <p class="d">Сайт, почта, CRM, сертификаты, диск и входы на сервер. Отчёт обновляется сам раз в 15 минут.</p>

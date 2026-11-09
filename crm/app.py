@@ -37,6 +37,21 @@ LOGIN_MAX_FAILS = 10
 LEAD_WINDOW = 10 * 60
 LEAD_MAX = 5
 HIT_WINDOW = 10 * 60
+# Кнопки страницы «Сервер»: (код, надпись, пояснение). Выполняет их root по cron (prostranstvo-crm server-page),
+# и только из этого списка — произвольных команд из CRM нет.
+SERVER_ACTIONS: list[tuple[str, str, str]] = [
+    ("update", "Обновить CRM", "свежая версия из GitHub, 1–3 минуты; пароли не меняются"),
+    ("sync", "Обновить сайт", "сразу забрать сайт из GitHub (сам обновляется раз в минуту)"),
+    ("backup", "Копия баз", "копия CRM и бота сейчас (ночью делается сама)"),
+    ("restart-crm", "Перезапустить CRM", "если CRM тормозит или выдаёт ошибку"),
+    ("restart-mail", "Перезапустить почту", "если письма не уходят или не приходят"),
+    ("reload-web", "Перезапустить веб-сервер", "если сайт не открывается"),
+    ("unban", "Снять блокировки", "если сервер заблокировал вас после неверных паролей (fail2ban)"),
+    ("leads-on", "Включить заявки с сайта", "форма на сайте снова принимает заявки"),
+    ("leads-off", "Выключить заявки с сайта", "форма перестанет принимать заявки"),
+    ("reboot", "Перезагрузить сервер", "сайт, почта и CRM недоступны 1–2 минуты"),
+]
+SERVER_ACTION_KEYS = {k for k, _, _ in SERVER_ACTIONS}
 HIT_MAX = 150
 
 
@@ -465,6 +480,15 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     status_file = cfg.get("SERVER_STATUS_FILE") or os.path.join(
         os.path.dirname(os.path.abspath(conf["CRM_DB"])), "server-status.txt")
     request_file = os.path.join(os.path.dirname(status_file), "server-request")
+    action_file = os.path.join(os.path.dirname(status_file), "server-action.txt")
+
+    def last_action() -> tuple[str, bool]:
+        try:
+            with open(action_file, encoding="utf-8", errors="replace") as f:
+                t = f.read(60_000)
+        except OSError:
+            return "", False
+        return t, "Состояние: выполняется" in t
 
     @app.route("/server")
     @admin_required
@@ -477,7 +501,31 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             age = max(0, int((time.time() - st.st_mtime) // 60))
         except OSError:
             pass
-        return render_template("server.html", text=text, age=age, pending=os.path.exists(request_file))
+        act, running = last_action()
+        actions = [a for a in SERVER_ACTIONS if a[0] != ("leads-off" if not conf["SITE_LEADS"] else "leads-on")]
+        return render_template("server.html", text=text, age=age, pending=os.path.exists(request_file) or running,
+                               act=act, running=running, actions=actions)
+
+    @app.post("/server/run")
+    @admin_required
+    def server_run() -> Any:
+        a = request.form.get("action", "")
+        if a not in SERVER_ACTION_KEYS:
+            abort(400, "Нет такого действия.")
+        if a == "reboot" and request.form.get("confirm") != "1":
+            flash("Для перезагрузки отметьте «Да, перезагрузить».", "err")
+            return redirect(url_for("server_view"))
+        if os.path.exists(request_file) or last_action()[1]:
+            flash("Предыдущая команда ещё выполняется — дождитесь её.", "err")
+            return redirect(url_for("server_view"))
+        try:
+            with open(request_file, "w", encoding="utf-8") as f:
+                f.write(f"{a} {g.user['login']}\n")
+            log.info("сервер: действие %s запросил %s", a, g.user["login"])
+            flash("Принято — выполню в течение минуты, результат появится ниже. Страница обновится сама.", "ok")
+        except OSError:
+            flash("Не удалось передать команду серверу.", "err")
+        return redirect(url_for("server_view"))
 
     @app.post("/server/refresh")
     @admin_required
