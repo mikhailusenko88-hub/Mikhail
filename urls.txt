@@ -1,0 +1,19 @@
+# 23:30:17 счётчик кадра
+http://89.126.192.214:8080/mebel/kadr7m2q/
+http://89.126.192.214:8080/mebel/kadr7m2q/multik-3d.js
+http://89.126.192.214:8080/mebel/kadr7m2q/multik-audio.js
+http://89.126.192.214:8080/mebel/kadr7m2q/multik-bars-aura.js
+http://89.126.192.214:8080/mebel/kadr7m2q/multik-bars-heroes.js
+http://89.126.192.214:8080/mebel/kadr7m2q/multik-bars-soty.js
+http://89.126.192.214:8080/mebel/kadr7m2q/multik-barsik.js
+http://89.126.192.214:8080/mebel/kadr7m2q/multik-engine.js
+http://89.126.192.214:8080/mebel/kadr7m2q/multik-laugh.js
+http://89.126.192.214:8080/mebel/kadr7m2q/multik-maker.js
+http://89.126.192.214:8080/mebel/kadr7m2q/multik-script.js
+http://89.126.192.214:8080/mebel/kadr7m2q/multik-sculpt.js
+http://89.126.192.214:8080/mebel/kadr7m2q/three.module.min.js
+http://89.126.192.214:8080/mebel/kadr7m2q/barsik/barsik_data.js
+http://89.126.192.214:8080/mebel/kadr7m2q/heroes6/pik.json
+http://89.126.192.214:8080/mebel/kadr7m2q/heroes6/pik_0.wasm
+http://89.126.192.214:8080/mebel/kadr7m2q/heroes6/ron.json
+http://89.126.192.214:8080/mebel/kadr7m2q/heroes6/ron_0.wasm
