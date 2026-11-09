@@ -17,3 +17,5 @@
 | shorts | 2026-11-08 | 2 | Brazil vs Germany vs Egypt | https://youtube.com/shorts/xUvlH38tyfQ | |
 | 16 | 2026-11-08 | 3 | S2 RACE 3/68 | https://youtu.be/Ldee_bsNR8M | public |
 | shorts | 2026-11-08 | 3 | India vs Philippines vs Argentina | https://youtube.com/shorts/ZX2dnIFx-yw | |
+| 17 | 2026-11-09 | 1 | S2 RACE 4/68 | https://youtu.be/qbldBeQU9_k | public |
+| shorts | 2026-11-09 | 1 | UK vs Vietnam vs Pakistan | https://youtube.com/shorts/vn1j4zb-Leg | |
