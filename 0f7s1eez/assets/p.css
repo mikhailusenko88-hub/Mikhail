@@ -260,3 +260,49 @@ a.card .price b{color:var(--ink)}
 .ship input[type=text]{width:100%}
 .ship input[type=text][hidden]{display:none}
 #leadForm.buy #lSend{background:var(--accent,#1d5e57)}
+
+/* разделы: плинтус по высоте, хаб «Стеновые панели», «С этим берут» */
+.heights{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin:14px 0 4px}
+.heights a{display:inline-block;padding:6px 11px;border:1px solid var(--line,#d9d6cf);border-radius:999px;font-size:14px;color:var(--ink);text-decoration:none;background:#fff}
+.heights a:hover{border-color:var(--ink)}
+.hub{display:grid;gap:18px;margin:28px 0 8px}
+.hub section{background:#fff;border:1px solid var(--line,#e4e1da);border-radius:16px;padding:18px 20px}
+.hub h2{font-size:20px;margin:0 0 8px}
+.hub p,.hub li{font-size:16px;line-height:1.55;color:var(--ink)}
+.hub ul{margin:6px 0 0;padding-left:20px}
+.hub li{margin:4px 0}
+.hub a{color:var(--ink)}
+.rel.with{border-top:1px dashed var(--line,#e4e1da)}
+.rel.with .note{margin:-6px 0 12px}
+@media (min-width:900px){.hub{grid-template-columns:1fr 1fr}}
+
+/* статьи */
+.artlist{list-style:none;padding:0;margin:18px 0 30px;display:grid;gap:12px}
+.artlist a{display:block;padding:16px 18px;background:#fff;border:1px solid var(--line,#e4e1da);border-radius:14px;color:var(--ink);text-decoration:none}
+.artlist a b{display:block;font-size:18px;margin-bottom:4px}
+.artlist a span{font-size:15px;color:var(--mute,#6b7280);line-height:1.45}
+.artlist a:hover{border-color:var(--ink)}
+@media (min-width:800px){.artlist{grid-template-columns:1fr 1fr}}
+.article{max-width:760px;margin:6px auto 34px}
+.article h1{font-size:clamp(26px,4.2vw,38px);line-height:1.15;margin:8px 0 12px}
+.article .lead{font-size:18px;line-height:1.5;color:var(--ink)}
+.article .meta{font-size:13px;color:var(--mute,#6b7280);margin:0 0 20px}
+.article h2{font-size:22px;margin:30px 0 10px}
+.article p,.article li{font-size:17px;line-height:1.6}
+.article ul,.article ol{padding-left:22px}
+.article li{margin:6px 0}
+.article a{color:var(--ink)}
+.article figure{margin:20px 0}
+.article figure img{width:100%;height:auto;border-radius:14px;display:block}
+.article figcaption{font-size:13px;color:var(--mute,#6b7280);margin-top:6px}
+.article .scheme{background:#fff;border:1px solid var(--line,#e4e1da);border-radius:14px;padding:12px}
+.article .scheme svg{width:100%;height:auto;display:block}
+.more-art{margin-top:34px;padding:18px 20px;background:#fff;border:1px solid var(--line,#e4e1da);border-radius:14px}
+.more-art h2{font-size:17px;margin:0 0 8px}
+.more-art ul{margin:0;padding-left:20px}
+.more-art li{font-size:16px}
+
+.buy .fine.ship{margin-top:4px}
+.buy .fine.ship a{color:var(--ink)}
+.shipline{margin:26px 0 0;padding:12px 14px;border-left:3px solid var(--accent,#1d5e57);background:#fff;font-size:15px;line-height:1.5}
+.shipline a{color:var(--ink)}

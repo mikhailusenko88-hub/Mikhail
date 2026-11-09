@@ -2,11 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://nashdekor.ru/</loc><lastmod>2026-11-09</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://nashdekor.ru/catalog/ugolki/</loc><lastmod>2026-11-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://nashdekor.ru/catalog/karnizy/</loc><lastmod>2026-11-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://nashdekor.ru/catalog/plintusy/</loc><lastmod>2026-11-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://nashdekor.ru/catalog/moldingi/</loc><lastmod>2026-11-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nashdekor.ru/catalog/karnizy/</loc><lastmod>2026-11-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nashdekor.ru/catalog/plintus-s-podsvetkoy/</loc><lastmod>2026-11-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nashdekor.ru/catalog/plintusy/</loc><lastmod>2026-11-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://nashdekor.ru/catalog/paneli-pod-derevo/</loc><lastmod>2026-11-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://nashdekor.ru/catalog/reechnye-paneli/</loc><lastmod>2026-11-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nashdekor.ru/catalog/stenovye-paneli/</loc><lastmod>2026-11-09</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://nashdekor.ru/p/a902/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://nashdekor.ru/p/a907/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://nashdekor.ru/p/a910/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -114,6 +116,15 @@
   <url><loc>https://nashdekor.ru/p/a80l/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://nashdekor.ru/p/a100l/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://nashdekor.ru/p/a201-2/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nashdekor.ru/dostavka/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nashdekor.ru/stati/</loc><lastmod>2026-11-09</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nashdekor.ru/stati/kak-otrezat-ugol-potolochnogo-plintusa/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nashdekor.ru/stati/kak-kleit-plintus-iz-duropolimera/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nashdekor.ru/stati/montazh-stenovyh-panelej/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nashdekor.ru/stati/kak-pokrasit-plintus-i-paneli/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nashdekor.ru/stati/duropolimer-chto-eto/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nashdekor.ru/stati/moldingi-na-stene-v-interere/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nashdekor.ru/stati/rejki-na-stenu-v-interere/</loc><lastmod>2026-11-09</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://nashdekor.ru/oferta.html</loc><lastmod>2026-11-09</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://nashdekor.ru/privacy.html</loc><lastmod>2026-11-09</lastmod><changefreq>yearly</changefreq><priority>0.2</priority></url>
   <url><loc>https://nashdekor.ru/consent.html</loc><lastmod>2026-11-09</lastmod><changefreq>yearly</changefreq><priority>0.2</priority></url>
