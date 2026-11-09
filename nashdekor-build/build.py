@@ -613,6 +613,9 @@ def payment_page():
     faq_html = '<section class="faq"><h2>Вопросы и ответы</h2>%s</section>' % "".join('<details><summary>%s</summary><p>%s</p></details>' % (esc(q), esc(a_)) for q, a_ in faq)
     body = (header(root) + '<main><div class="wrap">' + crumbs(crumb_items) +
             '<article class="article"><h1>Оплата и возврат</h1>'
+            '<p class="lead" id="payOk" hidden><b>Спасибо, оплата прошла!</b> Электронный чек придёт на e-mail, менеджер свяжется в рабочее время и согласует отгрузку.</p>'
+            '<p class="lead" id="payFail" hidden><b>Оплата не прошла.</b> Попробуйте ещё раз по той же ссылке или напишите в чат — пришлём новую. Если деньги всё же списались, напишите нам — проверим по банку.</p>'
+            '<script>(function(){var q=new URLSearchParams(location.search);if(q.has("paid"))document.getElementById("payOk").hidden=false;if(q.has("fail"))document.getElementById("payFail").hidden=false})()</script>'
             '<p class="lead">Частным покупателям — оплата картой или через СБП по ссылке, которую присылаем после подтверждения заказа. Компаниям и ИП — по счёту. На каждую оплату картой или СБП приходит электронный кассовый чек.</p>'
             '<h2>Как оплатить заказ</h2><ol>'
             '<li>Оформите заказ: кнопка «Купить» в карточке товара, <a href="#chat" onclick="return window.NDChat?(NDChat.open(),false):true">чат на сайте</a> или письмо на info@nashdekor.ru. Менеджер подтвердит наличие, сумму и способ получения.</li>'
