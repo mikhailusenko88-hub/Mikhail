@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Счётчик кадра</title>
+<style>
+body{margin:0;background:#12151b;color:#eef1f5;font:16px/1.4 -apple-system,system-ui,sans-serif;padding:16px calc(16px + env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+h1{font-size:22px;margin:4px 0 8px}h2{font-size:18px;margin:20px 0 4px}p{margin:8px 0;color:#b9c0cb}
+button{font:600 18px -apple-system,system-ui,sans-serif;padding:14px 18px;border-radius:14px;border:0;background:#3d8fe0;color:#fff;width:100%;margin:10px 0}button:disabled{opacity:.5}
+#c{width:100%;height:auto;border-radius:12px;background:#000;display:block;margin:10px 0}
+#st{font-weight:600;min-height:1.4em}#bar{height:6px;background:#2a303a;border-radius:3px;overflow:hidden;margin:8px 0}#bar i{display:block;height:100%;width:0;background:#5fbf4a}
+table{border-collapse:collapse;width:100%;margin:8px 0}td{padding:7px 4px;border-bottom:1px solid #2a303a}td:nth-child(2),td:nth-child(3){text-align:right;white-space:nowrap}
+tr.sub td:first-child{padding-left:18px;color:#b9c0cb}tr.tot td{font-weight:700}tr.sep td{border-bottom:2px solid #4a5260}
+textarea{width:100%;box-sizing:border-box;height:200px;background:#1b2028;color:#cfd6e0;border:1px solid #2a303a;border-radius:10px;font:12px ui-monospace,Menlo,monospace;padding:8px}
+#err{background:#ff5d6c;color:#fff;padding:10px;border-radius:10px;white-space:pre-wrap;display:none;margin:8px 0}
+</style></head><body>
+<h1>Счётчик кадра</h1>
+<p>Страница рисует тот же кадр «как в кино», что и приложение: Барсик, Пик и Рон, 1920×1080. Потом по очереди выключает части кадра — мир, шерсть, тени, обработку — и смотрит, насколько кадр ускорился. Так видно, на что уходит время.</p>
+<p>Замер идёт несколько минут. Не сворачивайте страницу и не блокируйте экран.</p>
+<button id="go">Начать замер</button>
+<div id="err"></div>
+<div id="st"></div><div id="bar"><i></i></div>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div id="res"></div>
+<div id="copybox" style="display:none"><button id="copy">Скопировать результат</button><textarea id="txt" readonly></textarea><p>Скопируйте этот текст и пришлите в чат. Можно и скриншотом таблиц.</p></div>
+<script src="multik-engine.js"></script>
+<script src="multik-audio.js"></script>
+<script src="multik-laugh.js"></script>
+<script src="multik-maker.js"></script>
+<script src="multik-script.js"></script>
+<script src="multik-sculpt.js"></script>
+<script src="multik-bars-aura.js"></script>
+<script src="multik-3d.js"></script>
+<script src="multik-barsik.js"></script>
+<script src="multik-bars-heroes.js"></script>
+<script src="multik-bars-soty.js"></script>
+<script type="module">
+import * as THREE from './three.module.min.js';
+const Q = new URLSearchParams(location.search), W = +(Q.get('w') || 1920), NT = +(Q.get('n') || 6), WARM = +(Q.get('warm') || 2), NNAT = +(Q.get('nat') || 10), ONLY = Q.get('scene');
+const $ = id => document.getElementById(id), sleep = ms => new Promise(r => setTimeout(r, ms));
+const showErr = t => { const e = $('err'); e.style.display = 'block'; e.textContent = '⚠️ ' + t + '\n(сделайте скриншот и пришлите в чат)'; window.ERR = t; };
+window.addEventListener('error', e => showErr((e.message || 'ошибка') + (e.filename ? ' @' + e.filename.split('/').pop() + ':' + e.lineno : '')));
+window.addEventListener('unhandledrejection', e => showErr('Ошибка: ' + ((e.reason && (e.reason.message || e.reason)) || '?')));
+const c = $('c'); c.width = W; c.height = Math.round(W * 9 / 16); const ctx = c.getContext('2d');
+let hidden = false; document.addEventListener('visibilitychange', () => { if (document.hidden) hidden = true; });
+
+const HEAD = 'СЕРИАЛ: Кот Барсик\nСЕРИЯ: 1. Замер\nПЕРСОНАЖ: Барсик — рыжий полосатый котёнок с синим шарфом, голос мальчика\nПЕРСОНАЖ: Пик — маленький серый мышонок с красным бантиком, голос девочки\nПЕРСОНАЖ: Рон — маленький серый пёс с белым животом, белые лапки, с белой кепкой, голос мальчика\n';
+const BODY = 'Барсик входит слева.\nПик входит справа.\nРон входит справа.\nБарсик (радостно): Привет! Мы вместе!\nПик (радостно): Ура!\nРон (радостно): Улыбаемся!\nБарсик помахал лапой.\nПик помахал лапой.\nРон помахал лапой.\nБарсик (радостно): Какой чудесный день!\nПАУЗА 3\n';
+let SCENES = [['Площадка, день', 'СЦЕНА: площадка, день\n'], ['Лес, день', 'СЦЕНА: лес, день\n']]; if (ONLY) SCENES = SCENES.filter((s, i) => String(i + 1) === ONLY);
+const T0 = 11.0;   // общий план: все трое в кадре, Барсик машет
+
+function setup(txt) { const r = MKScript.parse(txt, { characters: {}, locations: {} }), ep = (r.episodes || [])[0]; if (!ep) throw new Error('сценарий не разобран');
+  const lib = { characters: {}, locations: {} }, v = MK.validate(ep, lib); for (const ch of v.newChars) lib.characters[ch.id] = { spec: ch, code: ch._code }; for (const l of v.newLocs) lib.locations[l.id] = { spec: l, code: l._code };
+  const TL = MK.compile(ep, lib, {}); TL.style = '3d'; return { TL, lib }; }
+function frame(TL, t) { ctx.setTransform(c.width / 1920, 0, 0, c.height / 1080, 0, 0); MK.render(ctx, TL, t); }
+const sync = () => ctx.getImageData(c.width >> 1, c.height >> 1, 1, 1).data[0];   // дождаться, пока видеокарта дорисует кадр
+let done = 0, total = 1; const status = t => { $('st').textContent = t; }, tick = () => { done++; $('bar').firstChild.style.width = Math.min(100, 100 * done / total).toFixed(1) + '%'; };
+async function tv(TL, prof, n, warm, mean) { const ts = [];
+  for (let i = 0; i < n + warm; i++) { if (MK3D.lost()) throw new Error('телефон забрал видеокарту — откройте страницу заново и не сворачивайте её');
+    MK3D._prof = prof; const a = performance.now(); frame(TL, T0 + i * .04); sync(); const b = performance.now(); MK3D._prof = null; if (i >= warm) ts.push(b - a); tick(); await sleep(0); }
+  if (mean) return ts.reduce((x, y) => x + y, 0) / ts.length; ts.sort((x, y) => x - y); return ts[ts.length >> 1]; }
+
+async function run() {
+  $('go').disabled = true; let wl = null; try { wl = await navigator.wakeLock.request('screen'); } catch (e) {}
+  status('Запускаю движок…'); await sleep(30);
+  MK3D.hq = true; if (!MK3D.init(THREE)) throw new Error('3D не запустился'); if (window.BARSAura) BARSAura.on = false;
+  const gl = MK3D.renderer().getContext(), dbg = gl.getExtension('WEBGL_debug_renderer_info'), gpu = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+  status('Загружаю Барсика (14 МБ)…'); await sleep(30); const tl0 = performance.now(); const bOk = await MKBarsik.load(); if (!bOk) throw new Error('Барсик не загрузился: ' + (MKBarsik.error || ''));
+  const first = setup(HEAD + SCENES[0][1] + BODY); const want = [...new Set(BARSHeroes.wantFor(first.lib))];
+  status('Пик и Рон: растёт шерсть, запекается свет…'); await sleep(30); BARSHeroes.onProgress = (n, k) => status((n === 'pik' ? 'Пик' : 'Рон') + ': свет ' + Math.round(k * 100) + '%');
+  const hOk = await BARSHeroes.prepare(THREE, MK3D.renderer(), want, Q.get('lite') ? { sky: 10, sun: 3, area: 2, res: 1024 } : undefined);   // lite — только для проверки страницы без телефона if (!hOk) throw new Error('Пик и Рон не подготовились: ' + BARSHeroes.log.slice(-2).join(' | '));
+  const prep = performance.now() - tl0;
+  const perScene = 10 * (NT + WARM) + 2 * (NNAT + WARM) + 5 + 3; total = SCENES.length * perScene; const OUT = [];
+  for (const [name, place] of SCENES) {
+    const S = setup(HEAD + place + BODY), TL = S.TL; status(name + ': строю место…'); await sleep(30);
+    const tb = performance.now(); frame(TL, T0); sync(); frame(TL, T0 + .04); sync(); const build = performance.now() - tb; tick(); tick(); tick();
+    const rigs = MK3D.rigs(), keys = Object.keys(rigs).filter(k => rigs[k].root.visible), nm = k => (rigs[k].spec && rigs[k].spec.name) || k;
+    const A = { shadow: 'always' }, R = { build }; const step = async (label, key, prof, n, mean) => { status(name + ': ' + label + '…'); R[key] = await tv(TL, prof, n, WARM, mean); };
+    await step('весь кадр', 'base', A, NT);
+    await step('без героев', 'noHeroes', Object.assign({ noHeroes: true }, A), NT);
+    R.hero = {}; for (const k of keys) { status(name + ': без героя ' + nm(k) + '…'); R.hero[nm(k)] = await tv(TL, Object.assign({ noHeroK: k }, A), NT, WARM); }
+    for (let i = keys.length; i < 3; i++) for (let j = 0; j < NT + WARM; j++) tick();
+    await step('без мира', 'noWorld', Object.assign({ noWorld: true }, A), NT);
+    await step('без травы', 'noGrass', Object.assign({ noGrass: true }, A), NT);
+    await step('без обработки', 'noPost', Object.assign({ noPost: true }, A), NT);
+    await step('без пересчёта теней', 'noShadow', { shadow: 'never' }, NT);
+    await step('только процессор', 'noGL', { noGL: true }, NT);
+    await step('как в серии', 'nat', null, NNAT, true);
+    if (window.BARSAura) { BARSAura.on = true; await step('с «Аурой»', 'aura', null, NNAT, true); BARSAura.on = false; frame(TL, T0); sync(); }
+    status(name + ': сохранение кадра…'); const js = []; let bytes = 0; for (let i = 0; i < 5; i++) { frame(TL, T0 + i * .04); sync(); const a = performance.now(); const d = c.toDataURL('image/jpeg', .95); js.push(performance.now() - a); bytes = d.length; tick(); await sleep(0); } js.sort((x, y) => x - y); R.jpeg = js[2]; R.jpegKB = Math.round(bytes * .75 / 1024);
+    R.name = name; OUT.push(R); show(OUT, gpu, prep);
+  }
+  status(hidden ? 'Готово, но страницу сворачивали — цифры могут быть неточными, лучше повторить.' : 'Готово.'); $('bar').firstChild.style.width = '100%'; try { wl && wl.release(); } catch (e) {} window.DONE = true;
+}
+const f1 = x => x == null ? '—' : (Math.round(x * 10) / 10).toFixed(1), pc = (x, t) => x == null || !t ? '' : Math.round(100 * Math.max(0, x) / t) + '%';
+function show(OUT, gpu, prep) { let h = ''; const L = ['Счётчик кадра v1', navigator.userAgent, 'Видеокарта: ' + gpu + ' · кадр ' + c.width + '×' + c.height + ' · сглаживание: ' + (MK3D.ss() === 1 ? 'MSAA' : 'кадр ×' + MK3D.ss()) + ' · подготовка героев ' + Math.round(prep / 1000) + ' с', 'Герои: ' + BARSHeroes.log.filter(s => s.indexOf('шерсть') >= 0).map(s => s.split(';')[0]).join(' | ')];
+  for (const R of OUT) { const heroes = R.base - R.noHeroes, world = R.base - R.noWorld, grass = R.base - R.noGrass, post = R.base - R.noPost, shU = R.base - R.noShadow, sh = shU / 2, cpu = R.noGL, T = R.nat, sum = heroes + world + post + sh + cpu;
+    const row = (cls, a, v, p) => `<tr class="${cls}"><td>${a}</td><td>${f1(v == null ? v : Math.max(0, v))} мс</td><td>${p == null ? pc(v, T) : p}</td></tr>`;
+    h += `<h2>${R.name}</h2><table>` + row('tot sep', 'Весь кадр, как в серии', T, '100%') + row('', 'Герои (шерсть)', heroes) + Object.keys(R.hero).map(n => row('sub', n, R.base - R.hero[n])).join('') + row('', 'Мир', world) + row('sub', 'в том числе трава', grass) + row('', 'Тени (в среднем на кадр)', sh) + row('', 'Обработка: свечение, размытие, цвет', post) + row('sep', 'Процессор и чтение кадра', cpu) + row('', 'Сумма частей', sum) +
+      (R.aura != null ? row('', 'Весь кадр с «Аурой»', R.aura, (R.aura >= T ? '+' : '−') + Math.abs(Math.round(100 * (R.aura - T) / T)) + '%') : '') + row('', 'Сохранение кадра в JPEG', R.jpeg, R.jpegKB + ' КБ') + '</table>';
+    L.push('[' + R.name + '] кадр ' + f1(T) + ' · герои ' + f1(heroes) + ' (' + Object.keys(R.hero).map(n => n + ' ' + f1(R.base - R.hero[n])).join(', ') + ') · мир ' + f1(world) + ' (трава ' + f1(grass) + ') · тени ' + f1(shU) + ' за пересчёт · обработка ' + f1(post) + ' · процессор ' + f1(cpu) + ' · сумма ' + f1(sum) + (R.aura != null ? ' · с аурой ' + f1(R.aura) : '') + ' · jpeg ' + f1(R.jpeg) + ' (' + R.jpegKB + ' КБ) · первый кадр ' + Math.round(R.build) + ' мс');
+    L.push('  сырые: base ' + f1(R.base) + ', noHeroes ' + f1(R.noHeroes) + ', noWorld ' + f1(R.noWorld) + ', noGrass ' + f1(R.noGrass) + ', noPost ' + f1(R.noPost) + ', noShadow ' + f1(R.noShadow) + ', noGL ' + f1(R.noGL) + ', nat ' + f1(R.nat)); }
+  if (hidden) L.push('ВНИМАНИЕ: страницу сворачивали во время замера');
+  $('res').innerHTML = h; $('txt').value = L.join('\n'); $('copybox').style.display = 'block'; window.RESULT = L.join('\n'); }
+$('copy').onclick = async () => { const t = $('txt'); try { await navigator.clipboard.writeText(t.value); } catch (e) { t.focus(); t.select(); try { document.execCommand('copy'); } catch (e2) {} } $('copy').textContent = 'Скопировано'; setTimeout(() => { $('copy').textContent = 'Скопировать результат'; }, 1500); };
+$('go').onclick = () => run().catch(e => { showErr((e && e.message) || String(e)); $('go').disabled = false; });
+if (Q.get('auto')) $('go').click();
+</script></body></html>
