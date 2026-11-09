@@ -1,0 +1,15 @@
+https://yandex.ru/showcaptcha?cc=1&form-fb-hint=2.1.f5a8993465912b1b13b2781dfd9e10c54772d51513fbfcf6ffe298e27c9236f661ec288f5c93d14019f593632add563aa365b775bb02a481fe89540a&mt=F3DCA0CEF071E03E93FB860E7D00FC2A120F026E9FBD5EA56A3B2ED1FB42786360C8AA6974E7D6CA284E097752F4A3CFF7FA723336C32FF979AF16E63FAEDFF80BCEBB045D41EEE9F66ABDA434E4FD8EA7A01F16D4DBBA833C10176E9EFE7DE7EE781C37B6B048B719771527E333F9D470C796F82DD0BDEF0E1CE5E7B92D0A708862D57AAC8B4E1AB0F68A3913756C315A848A1899815A025D4B5C&retpath=aHR0cHM6Ly95YW5kZXgucnUvc2VhcmNoP3RleHQ9c2l0ZSUzQW5hc2hkZWtvci5ydSZscj0y_877e5917391b0c12176388f19a809bc2&t=2%252F1794241801%252Fd61604c55f82a27f302a373e1ed93ceb&u=9729064602894344647&s=ca376c9ae613388f38b7c24bd3679e00
+
+Подтвердите, что запросы отправляли вы, а не робот
+Нам очень жаль, но запросы с вашего устройства похожи на автоматические. Почему это могло произойти?
+Я не робот 
+Нажмите, чтобы продолжить
+Yandex SmartCaptcha
+Если у вас возникли проблемы, пожалуйста, воспользуйтесь формой обратной связи
+Если вам нужно автоматически задавать запросы к Поиску, используйте Yandex Search API v2
+9729064602894344647:1794241801
+Yandex uses cookies
+They ensure the smooth operation of all Yandex sites and services. For more information, please read our Cookie Policy
+Allow all
+Allow essential cookies
+Settings

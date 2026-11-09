@@ -1,0 +1,15 @@
+https://yandex.ru/showcaptcha?form-fb-hint=2.1.3660645ca0ca65bcd9928c1ce2a0e6731b5ebe87c175f97d362d9b3edecc0a078679c909102c87a0f91601c960728af2b3fa2696814bc24490121f4611bed0f6c52a891884e92fea0e806b406ffe6b80b38132db&mt=BEBE1CC3C6114E4ADFB0C16F70E79DC7ADBFEDB100E4BC55C81A5E6923E7319D31B98569FCCC278A4A82255555543297E18636878643A5E13B45EBCD7E3DD29581D54FD8FD29286A9EBA2B54487E4010192A67F427A3FE3E070F366A18389FC00BD896602E68B3608F8C0AA83C81777D0D420AB43FDF171F7A408E4BAB8708BA613F58076F784C3699E0F93F7218DEAF6E0A9805F616F2366E6DA99F2EB7253A81FB8757F26F1BF08B0CDCC9CE3CBBF091920B&retpath=aHR0cHM6Ly95YW5kZXgucnUvc2VhcmNoP3RleHQ9bmFzaGRla29yJmxyPTI%2C_0fc6540900998448e13200559d6ac528&t=2%252F1794241993%252F6d1119317c005b9b3974f57ade44ae3a&u=9729077461959319811&s=f6c8153b8f7755a6dc4032952aef85dd
+
+Подтвердите, что запросы отправляли вы, а не робот
+Нам очень жаль, но запросы с вашего устройства похожи на автоматические. Почему это могло произойти?
+Я не робот 
+Нажмите, чтобы продолжить
+Yandex SmartCaptcha
+Если у вас возникли проблемы, пожалуйста, воспользуйтесь формой обратной связи
+Если вам нужно автоматически задавать запросы к Поиску, используйте Yandex Search API v2
+9729077461959319811:1794241993
+Yandex uses cookies
+They ensure the smooth operation of all Yandex sites and services. For more information, please read our Cookie Policy
+Allow all
+Allow essential cookies
+Settings

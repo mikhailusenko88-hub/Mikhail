@@ -1,0 +1,55 @@
+https://www.startpage.com/sp/captcha-block?bc=US&bi=Microsoft+Azure&be=3051d43f71749ac3c2d50eb3bc3201ef&bds_t=1794241845T64030cccf2b2aed8e02cc267463d5731d81855a38aca62f66febf31c87c5a0d1&bds_s=19cc962b997a4e9f9653b1dc40bff8b2&language=russian&lui=english&t=device&query=site%3Anashdekor.ru&cat=web&sc=FQvBsxDPovlPFNLiLltRnPCX0b8rbKlNxFZd21mDBRU4QAfZzojHeNysJnVRKEk9uRlh8Yuwai0Cue7Bt0T3RnMysjfUekU0C9&cmd=gen_page
+
+Your connection has been suspended.
+SEARCH
+
+Settings
+
+PRODUCTS
+
+Startpage Search
+
+Mobile Browser
+
+Browser Extension
+
+RESOURCES
+
+About Us
+
+Privacy Policy
+
+Press
+
+Support
+
+Imprint
+
+We're sorry for the inconvenience! Our system has detected the type of high-volume traffic coming from your internet connection that is normally associated with bots and scrapers.
+
+VPN users can often resolve this issue by connecting through a different server. If you are using Tor, try connecting through a different exit node.
+
+If you find that you are continously blocked, submit the CAPTCHA below so our support team can verify your connection to Startpage.
+
+Please consider providing the following information, which will help us better assist you and fine tune our anti-abuse systems.
+
+Are you using any of the following:
+VPN
+Tor
+Proxy
+Company or other shared network
+Email (optional)
+Description of the issue (optional)
+Please enter the text below to submit your request.
+The text in the image is case-sensitive.
+Time remaining for this CAPTCHA:01:58
+Have trouble reading the CAPTCHA? Pleaseclick here to view a new CAPTCHA.
+You may do this as many times as you need.
+Submit
+
+Learn more about how to be private online. Visit our privacy blog.
+
+Privacy Policy
+About Us
+Press
+Blog
