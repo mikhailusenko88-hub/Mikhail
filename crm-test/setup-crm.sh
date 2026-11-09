@@ -654,6 +654,8 @@ step_selftest() {
   body=$(curl -sk --max-time 10 --resolve "$CRM_HOST:443:127.0.0.1" -X POST -H 'Content-Type: application/json' \
     -H 'Origin: https://evil.example' -d '{}' "https://$CRM_HOST/api/lead" 2>/dev/null) || body=""
   if [[ $body == *origin* ]]; then check "чужие сайты не могут слать заявки" да да; else check "чужие сайты не могут слать заявки" "${body:0:40}" да; fi
+  body=$(curl -sk --max-time 10 --resolve "$CRM_HOST:443:127.0.0.1" -H "Origin: https://$DOMAIN" "https://$CRM_HOST/api/catalog" 2>/dev/null) || body=""
+  if [[ $body == *'"items"'* ]]; then check "цены и наличие для сайта (/api/catalog)" да да; else check "цены и наличие для сайта (/api/catalog)" "${body:0:40}" да; fi
   code=$(ss -Htln "sport = :$PORT" | awk '{print $4}' | head -n1)
   if [[ $code == 127.0.0.1:* ]]; then check "приложение снаружи напрямую не видно" да да; else check "приложение снаружи напрямую не видно" "$code" да; fi
   rm -f /tmp/crm-st.html

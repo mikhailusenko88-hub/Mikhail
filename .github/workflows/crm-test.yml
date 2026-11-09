@@ -64,6 +64,25 @@ jobs:
           f=$(sudo ls -1t /var/mail/vhosts/nashdekor.ru/zakaz/Maildir/new/ 2>/dev/null | head -n1)
           [[ -n $f ]] && sudo grep -m4 -E '^(Subject|From|To|DKIM-Signature):' "/var/mail/vhosts/nashdekor.ru/zakaz/Maildir/new/$f" || echo "письма на zakaz@ нет"
           sudo journalctl -t postfix/lmtp -t postfix/smtpd --no-pager -n 6 | cut -c1-200
+      - name: Счётчик — свои IP не считаются, обнуление
+        run: |
+          set -e
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/j2
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          cnt() { sudo python3 -c "import sqlite3;print(sqlite3.connect('/var/lib/prostranstvo/crm.db').execute('select count(*) from visits').fetchone()[0])"; }
+          hit() { curl -s -o /dev/null -w '%{http_code} ' -H "X-Forwarded-For: $1" -H 'Origin: https://nashdekor.ru' -H 'Content-Type: text/plain' -H 'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 Version/18.1 Mobile/15E148 Safari/604.1' -d '{"e":[["view","/"]],"r":"","u":"","m":1}' http://127.0.0.1:8081/api/hit; }
+          hit 198.51.100.7; sleep 1; a=$(cnt); echo "отметок после чужого захода: $a"; [[ $a -ge 1 ]]
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          T=$(curl -sk $R -c $J -b $J https://$H/settings | tok)
+          curl -sk $R -c $J -b $J -o /dev/null -w 'свои IP сохранены: %{http_code}\n' --data-urlencode "csrf=$T" --data-urlencode "ips=198.51.100.7" https://$H/settings/hit-ips
+          curl -sk $R -c $J -b $J https://$H/settings | grep -o 'Обнулить статистику ([0-9]*)'
+          hit 198.51.100.7; hit 198.51.100.7; sleep 1; b=$(cnt); echo "после своих заходов: $b (должно быть $a)"; [[ $b -eq $a ]]
+          hit 203.0.113.77; sleep 1; c=$(cnt); echo "после чужого: $c (должно быть больше $a)"; [[ $c -gt $a ]]
+          T=$(curl -sk $R -c $J -b $J https://$H/settings | tok)
+          curl -sk $R -c $J -b $J -o /dev/null -w 'обнуление: %{http_code}\n' --data-urlencode "csrf=$T" --data-urlencode "reset=1" https://$H/settings/hit-ips
+          d=$(cnt); echo "после обнуления: $d"; [[ $d -eq 0 ]]
       - name: fail2ban видит подбор пароля
         run: |
           for i in $(seq 1 9); do curl -s -o /dev/null -H 'X-Forwarded-For: 203.0.113.5' --data 'login=yulia&password=bad' http://127.0.0.1:8081/login; done
