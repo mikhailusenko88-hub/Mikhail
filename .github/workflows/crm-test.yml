@@ -182,6 +182,13 @@ jobs:
           sleep 5
           sudo journalctl -u prostranstvo-crm --no-pager -n 3 | cut -c1-160
           sudo fail2ban-client status prostranstvo-crm | grep -E 'Total failed|Banned IP'
+          # «Свои IP» (в шаге счётчика сохранён 198.51.100.7) — fail2ban их не блокирует
+          sudo prostranstvo-crm server-page; sleep 2
+          sudo cat /etc/fail2ban/jail.d/zz-prostranstvo-own.local | tail -n1
+          echo "ignoreip у защиты CRM: $(sudo fail2ban-client get prostranstvo-crm ignoreip | tr '\n' ' ')"
+          for i in $(seq 1 10); do curl -s -o /dev/null -H 'X-Forwarded-For: 198.51.100.7' --data 'login=yulia&password=bad' http://127.0.0.1:8081/login; done
+          sleep 4
+          sudo fail2ban-client status prostranstvo-crm | grep -E 'Banned IP' | grep -q 198.51.100.7 && echo "ОШИБКА: свой адрес заблокирован" || echo "свой адрес 198.51.100.7 не заблокирован после 10 неверных паролей — правильно"
       - name: Страница CRM «Сервер»
         if: always()
         run: |

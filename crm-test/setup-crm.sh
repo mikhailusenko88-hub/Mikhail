@@ -338,6 +338,25 @@ cmd_site_leads() {
   echo "Заявки с сайта: $([[ $v == 1 ]] && echo включены || echo выключены)."
 }
 
+own_ips_sync() {   # CRM → Настройки → «Свои IP» (дом, офис, VPN семьи): fail2ban эти адреса никогда не блокирует
+  local f=/etc/fail2ban/jail.d/zz-prostranstvo-own.local ips new ip
+  [[ -r ${CRM_DB:-} ]] && command -v sqlite3 >/dev/null && command -v fail2ban-client >/dev/null || return 0
+  ips=$(sqlite3 -readonly "$CRM_DB" "SELECT value FROM settings WHERE key='hit_ignore_ips'" 2>/dev/null \
+        | tr ',\n\t' '   ' | LC_ALL=C tr -cd '0-9a-fA-F.:/ ' | tr -s ' ' '\n' | grep -E '^(([0-9]{1,3}[.]){3}[0-9]{1,3}(/[0-9]{1,2})?|[0-9a-fA-F]{0,4}(:[0-9a-fA-F]{0,4}){2,7}(/[0-9]{1,3})?)$' | sort -u | head -n 50 | paste -sd' ')
+  new="# Создано setup-crm.sh из CRM → Настройки → «Свои IP»: эти адреса fail2ban не блокирует. Руками не править.
+[DEFAULT]
+ignoreip = 127.0.0.1/8 ::1${ips:+ $ips}"
+  [[ -f $f && "$(cat -- "$f")" == "$new" ]] && return 0
+  printf '%s\n' "$new" >"$f.tmp" && mv -f -- "$f.tmp" "$f"
+  if fail2ban-client -t >/dev/null 2>&1; then
+    fail2ban-client reload >/dev/null 2>&1 || true
+    for ip in $ips; do fail2ban-client unban "$ip" >/dev/null 2>&1 || true; done
+    logger -t prostranstvo-server "fail2ban: свои адреса не блокируются: ${ips:-нет}"
+  else
+    rm -f -- "$f"; logger -t prostranstvo-server "fail2ban не принял список своих адресов — убран"
+  fi
+}
+
 cmd_mail_watch() {   # новые письма в ящиках магазина → CRM (пуш; письмо клиента — в его сделку)
   local out boxes=() b
   for b in zakaz info; do [[ -d /var/mail/vhosts/$SHOP_DOMAIN/$b/Maildir ]] && boxes+=("$b"); done
@@ -426,6 +445,7 @@ cmd_server_page() {
   local dir=/var/lib/prostranstvo out req tmp need=no line="" act="" who=""
   out=$dir/server-status.txt; req=$dir/server-request
   [[ -d $dir ]] || return 0
+  own_ips_sync || true
   if [[ -e $req || -L $req ]]; then
     need=yes
     # файл пишет CRM (не root) — читаем только обычный файл, 64 байта, допустимые символы
@@ -451,6 +471,9 @@ cmd_server_page() {
     uptime 2>&1 || true
     free -h 2>&1 || true
     df -h / 2>&1 || true
+    echo; echo "=== Блокировки входа в CRM (fail2ban) ==="
+    fail2ban-client status prostranstvo-crm 2>/dev/null | grep -E "Currently banned|Banned IP" || true
+    echo "Свои адреса (не блокируются): $(sed -n 's/^ignoreip = //p' /etc/fail2ban/jail.d/zz-prostranstvo-own.local 2>/dev/null)"
     echo; echo "=== Вход на сервер по SSH ==="
     fail2ban-client status sshd 2>/dev/null | grep -E "Currently banned|Banned IP" || true
     journalctl -u ssh --since "-24h" --no-pager -o short 2>/dev/null | grep -E "Accepted |Failed password for root" | tail -n 8 || true
