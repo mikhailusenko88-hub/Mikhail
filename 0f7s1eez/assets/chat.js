@@ -106,7 +106,8 @@
     log.appendChild(d); log.scrollTop = log.scrollHeight; return d;
   }
   // Подсказки «по месту»: товар — про этот артикул, раздел — про раздел, доставка — про доставку, главная — общие.
-  // Показываются только до первого сообщения и прячутся, как только клиент начал печатать сам.
+  // Показываются до первого сообщения; пока клиент печатает (например, «Здравствуйте»), остаются —
+  // нажатая подсказка дописывается к его тексту, а не заменяет его.
   function suggestions() {
     var it = window.P && window.P.item, path = location.pathname;
     if (it && it.a) {
@@ -211,7 +212,7 @@
   $(".ndc-x").addEventListener("click", hide);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && open) hide(); });
   form.addEventListener("submit", function (e) { e.preventDefault(); var t = ta.value.trim(); if (t) send(t); });
-  ta.addEventListener("input", function () { grow(); quickShow(!started && !ta.value.trim()); });
+  ta.addEventListener("input", grow);
   ta.addEventListener("keydown", function (e) {
     if (e.key === "Enter" && !e.shiftKey && !IS_TOUCH) { e.preventDefault(); var t = ta.value.trim(); if (t) send(t); }
   });
@@ -219,6 +220,11 @@
     var b = e.target.closest("button"); if (!b) return;
     var t = b.textContent;
     if (t === "Вопрос по статье") { var h = document.querySelector("h1"); t = "Вопрос по статье «" + (h ? h.textContent.trim() : document.title) + "»: "; }
+    var cur = ta.value.replace(/\s+$/, "");
+    if (cur) {   // «Добрый день» + подсказка → «Добрый день! Есть A907 в наличии?»
+      var sep = /[.!?,:;)]$/.test(cur) ? " " : "! ";
+      t = cur + sep + (/^Вопрос по статье/.test(t) ? t.charAt(0).toLowerCase() + t.slice(1) : t);
+    }
     ta.value = t; grow(); quickShow(false);
     ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
   });
