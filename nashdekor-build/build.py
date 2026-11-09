@@ -220,24 +220,26 @@ def lead_form(x=None):
     prod = ('<div class="prodline"><b>%s %s</b>Количество: <span id="oQty">1</span> шт · <span id="oSum">—</span> · цвет и количество подставятся автоматически</div>' % (esc(KIND[x["c"]]), esc(x["a"]))) if x else ""
     seg = ('<div class="seg" id="oMode" role="tablist" aria-label="Что отправить">'
            '<button type="button" role="tab" data-m="lead" class="on" aria-selected="true">Заявка<small>узнать цену, срок и наличие</small></button>'
-           '<button type="button" role="tab" data-m="buy" aria-selected="false">Купить<small>оформить заказ и оплатить</small></button></div>') if x else ""
+           '<button type="button" role="tab" data-m="buy" aria-selected="false">Купить<small>оформить заказ</small></button>'
+           '<button type="button" role="tab" data-m="call" aria-selected="false">Звонок<small>перезвоним вам</small></button></div>') if x else ""
     return ('<section class="porder" id="order"><div class="wrap"><div class="form"><div><h2 id="oTitle">Заявка</h2>'
-            '<p class="note" id="oNote" style="font-size:15px;margin-top:8px">Ответим с ценой, наличием и сроком в рабочее время. Удобнее всего — позвонить %s или написать в %s.</p>'
+            '<p class="note" id="oNote" style="font-size:15px;margin-top:8px">Ответим с ценой, наличием и сроком в рабочее время. Удобнее всего — написать в %s; или закажите обратный звонок — перезвоним сами.</p>'
+            '<p class="note" id="oNoteCall" hidden style="font-size:15px;margin-top:8px">Оставьте номер — перезвоним в рабочее время, расскажем про наличие, цену и доставку. Укажите в комментарии, когда удобно принять звонок.</p>'
             '<p class="note" id="oNoteBuy" hidden style="font-size:15px;margin-top:8px">Менеджер подтвердит наличие и стоимость доставки и пришлёт ссылку на оплату картой или СБП: предоплата 50%% (остаток при получении) или 100%%. Самовывоз со склада в СПб — бесплатно.</p>%s</div>'
             '<form class="panel stack" id="leadForm" novalidate>%s<div class="two">'
             '<label class="f">Имя<input type="text" id="lName" autocomplete="name" required></label>'
-            '<label class="f">Телефон или мессенджер<input type="text" id="lContact" autocomplete="tel" placeholder="+7 … или @ник" required></label></div>'
-            '<label class="f">E-mail — <span id="lEmailHint">пришлём расчёт письмом (необязательно)</span><input type="email" id="lEmail" autocomplete="email" inputmode="email" placeholder="name@mail.ru"></label>'
+            '<label class="f"><span id="lContactLbl">Телефон или мессенджер</span><input type="text" id="lContact" autocomplete="tel" placeholder="+7 … или @ник" required></label></div>'
+            '<label class="f" id="fEmail">E-mail — <span id="lEmailHint">пришлём расчёт письмом (необязательно)</span><input type="email" id="lEmail" autocomplete="email" inputmode="email" placeholder="name@mail.ru"></label>'
             '<fieldset class="f ship" id="oShip" hidden><legend>Получение</legend>'
             '<div class="radios"><label class="chk"><input type="radio" name="ship" value="delivery" checked> Доставка по адресу</label>'
             '<label class="chk"><input type="radio" name="ship" value="pickup"> Самовывоз со склада, СПб</label></div>'
             '<input type="text" id="lAddr" autocomplete="street-address" placeholder="Город, улица, дом, квартира, этаж"></fieldset>'
-            '<label class="f">Кто вы<select id="lWho"><option>Делаю ремонт у себя</option><option>Дизайнер</option><option>Ремонтная бригада</option><option>Компания, объект</option></select></label>'
+            '<label class="f" id="fWho">Кто вы<select id="lWho"><option>Делаю ремонт у себя</option><option>Дизайнер</option><option>Ремонтная бригада</option><option>Компания, объект</option></select></label>'
             '<label class="f">Комментарий<textarea id="lMsg" rows="3" placeholder="Адрес, сроки, нужна ли доставка"></textarea></label>'
             '<label class="chk" style="align-items:flex-start"><input type="checkbox" id="lAgree" required style="margin-top:3px"> <span>Я даю <a href="%sconsent.html" style="color:var(--ink)">согласие на обработку персональных данных</a> и ознакомлен с <a href="%sprivacy.html" style="color:var(--ink)">Политикой обработки персональных данных</a><span id="lOferta" hidden> и <a href="%soferta.html" style="color:var(--ink)">условиями продажи</a></span></span></label>'
             '<input type="text" id="lHp" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
             '<div class="err" id="lErr" hidden></div><button class="btn" type="submit" id="lSend">Отправить заявку</button><div id="lDone" hidden></div></form></div></div></section>'
-            % (esc(SHOP["phone"]), esc(MSG), prod, seg, ROOT, ROOT, ROOT))
+            % (esc(MSG), prod, seg, ROOT, ROOT, ROOT))
 
 def card(x, root):
     ph = photo(x["a"])
@@ -366,7 +368,7 @@ def product_page(x):
                '<p class="more"><a class="btn ghost" href="%scatalog/%s/">Весь раздел</a></p></div></section>' % (esc(catc[2]), "".join(card(y, ROOT) for y in rel), ROOT, catc[1])) if rel else ""
 
     data = {"root": ROOT, "item": x, "kind": KIND[c], "photo": ph, "mask": PHOTO.get(a, "") in ("A172.jpg", "A38.jpg", "A503.jpg", "A504.jpg"),
-            "paint": PAINT, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", ""), "phone": SHOP["phone"]}}
+            "paint": PAINT, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", "")}}
     if a in PROF: data["prof"] = PROF[a]
     elif a in PROF2: data["poly"] = PROF2[a]
     if is_wood: data["wood"] = wood_parts(x); data["tex"] = "img/tex/" + PHOTO[a] if PHOTO.get(a) else ""
