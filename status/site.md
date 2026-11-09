@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-09 21:20 UTC
+# Сайт снаружи — 2026-11-09 22:27 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -29,20 +29,21 @@ ld+json: 1
 счётчик на главной: 1, в политике п. 3.4: 1, на документах: 1 1 1 
 
 --- страницы товаров и разделов (сборка nashdekor-build/build.py)
-/p/a907/                           200 text/html; charset=utf-8 31784
-/p/2-7/                            200 text/html; charset=utf-8 30062
-/p/a35/                            200 text/html; charset=utf-8 24755
-/p/a002-2/                         200 text/html; charset=utf-8 26407
-/p/gs1/                            200 text/html; charset=utf-8 31678
-/catalog/reechnye-paneli/          200 text/html; charset=utf-8 35804
-/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 45460
-/catalog/plintusy/                 200 text/html; charset=utf-8 43284
-/catalog/stenovye-paneli/          200 text/html; charset=utf-8 73490
-/catalog/plintus-s-podsvetkoy/     200 text/html; charset=utf-8 19858
-/stati/                            200 text/html; charset=utf-8 14043
-/stati/kak-otrezat-ugol-potolochnogo-plintusa/ 200 text/html; charset=utf-8 19577
-/dostavka/                         200 text/html; charset=utf-8 21479
-/assets/p.js                       200 application/javascript; charset=utf-8 37048
+/p/a907/                           200 text/html; charset=utf-8 32021
+/p/2-7/                            200 text/html; charset=utf-8 30299
+/p/a35/                            200 text/html; charset=utf-8 24992
+/p/a002-2/                         200 text/html; charset=utf-8 26644
+/p/gs1/                            200 text/html; charset=utf-8 31915
+/catalog/reechnye-paneli/          200 text/html; charset=utf-8 36041
+/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 45697
+/catalog/plintusy/                 200 text/html; charset=utf-8 43521
+/catalog/stenovye-paneli/          200 text/html; charset=utf-8 73727
+/catalog/plintus-s-podsvetkoy/     200 text/html; charset=utf-8 20095
+/stati/                            200 text/html; charset=utf-8 14277
+/stati/kak-otrezat-ugol-potolochnogo-plintusa/ 200 text/html; charset=utf-8 19814
+/dostavka/                         200 text/html; charset=utf-8 21713
+/oplata/                           200 text/html; charset=utf-8 20536
+/assets/p.js                       200 application/javascript; charset=utf-8 37076
 /assets/p.css                      200 text/css 23245
 /mebel/_lib/three.min.js           200 application/javascript; charset=utf-8 603445
 /mebel/_lib/OrbitControls.js       200 application/javascript; charset=utf-8 26375
@@ -54,11 +55,12 @@ SEO 09.11: главная title: Стеновые панели, плинтусы
   A907 title: Стеновая реечная панель белая под покраску, ударопрочная, 180×10×3000 мм — A907 | Наш декор, «С этим берут»: 1, отправка ТК: 1
   хаб: H1 Стеновые панели для стен, карточек: 1, FAQ: 1, запрещённые слова (0): 0
   плинтусы: групп по высоте: 1, title: Плинтус напольный белый под покраску — купить в СПб, ударопрочный, из дюрополимера | Наш декор
-  статей в sitemap: 8, всего адресов: 128, доставка: 1
+  статей в sitemap: 8, всего адресов: 129, доставка: 1
+  оплата: FAQPage Оплата и возврат</h1> защищённую платёжную страницу банка , ссылок на /oplata/ в подвале главной: 2, «50%» в форме «Купить»: 0
 молдинг A35: 3D canvas: 1, профиль svg: 1, контур poly: 1; счётчик панелей на A907: 1
 «моя стена» на A907: блок: 1, вкладка: 1; p.js со стеной: 1
 SEO: title главной: <title>Стеновые панели, плинтусы и молдинги под покраску — купить в СПб | Наш декор</title>; FAQ на плинтусах: 1, title раздела: <title>Плинтус напольный белый под покраску — купить в СПб, ударопрочный, из дюрополимера | Наш декор</title>; цена за м² в A907: 2
-sitemap: адресов 128, из них /p/: 107, /catalog/: 8
+sitemap: адресов 129, из них /p/: 107, /catalog/: 8
 главная: ссылок на p/ в коде карточек: 3, ссылки на разделы: 8, ?panel= в расчёт: 1
 
 --- robots.txt
