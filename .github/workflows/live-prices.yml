@@ -31,7 +31,7 @@ jobs:
           i = b.find('const CAT=')
           cat = json.JSONDecoder().raw_decode(b, i + 10)[0] if i >= 0 else []
           pr = {x['a']: x.get('r') for x in cat}
-          out.append(f'- сайт: {s}, артикулов {len(cat)}, есть загрузка из CRM: {"да" if "api/catalog" in b else "нет"}')
+          out.append(f'- сайт: {s}, артикулов {len(cat)}, есть загрузка из CRM: {"да" if "api/catalog" in b else "нет"}, «под заказ» по умолчанию: {"да" if "x.q > 0 ?" in b else "нет"}')
           out.append('- цены: ' + ', '.join(f'{a} {pr.get(a)}' for a in ['A902', 'A907', 'A910', 'A912', '3-7', 'A005', 'A703', 'A704', 'A35', 'A157', 'A702', 'A503']))
           s, h, b = get('https://nashdekor.ru/avito.xml')
           ap = dict(re.findall(r'<Id>([^<]+)</Id>.*?<Price>(\d+)</Price>', b, re.S))
