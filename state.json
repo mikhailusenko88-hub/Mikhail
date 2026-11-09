@@ -1,26 +1,18 @@
 {
  "leagues": {
   "cities": {
-   "no": 5,
+   "no": 6,
    "points": {
-    "Xiva": 35,
-    "Urganch": 51,
-    "Andijon": 15,
-    "Termiz": 20,
-    "Toshkent": 30,
-    "Navoiy": 14,
-    "Samarqand": 6,
-    "Zarafshon": 44,
-    "Shahrisabz": 22,
-    "Asaka": 26,
-    "Margʻilon": 24,
-    "Chirchiq": 16,
-    "Buxoro": 41,
-    "Jizzax": 27,
-    "Qarshi": 19,
-    "Fargʻona": 11,
-    "Guliston": 2,
-    "Angren": 1
+    "Angren": 25,
+    "Chirchiq": 18,
+    "Shahrisabz": 15,
+    "Navoiy": 12,
+    "Jizzax": 10,
+    "Olmaliq": 8,
+    "Nukus": 6,
+    "Asaka": 4,
+    "Namangan": 2,
+    "Buxoro": 1
    },
    "results": [
     {
@@ -87,11 +79,24 @@
      ],
      "link": "https://youtube.com/shorts/Z_9cGwbFfE0",
      "final": true
+    },
+    {
+     "no": 6,
+     "date": "2026-11-09",
+     "slot": 1,
+     "winner": "Angren",
+     "top3": [
+      "Angren",
+      "Chirchiq",
+      "Shahrisabz"
+     ],
+     "link": "https://youtube.com/shorts/GhdHYuWpwmY",
+     "final": false
     }
    ],
-   "champion": "Xiva",
-   "season_races": 4,
-   "season": "2026-W45",
+   "champion": null,
+   "season_races": 1,
+   "season": "2026-W46",
    "new_pending": [],
    "final_season": "2026-W45",
    "champions": [
@@ -99,6 +104,46 @@
      "season": "2026-W45",
      "champion": "Xiva",
      "link": "https://youtube.com/shorts/Z_9cGwbFfE0"
+    }
+   ],
+   "seasons": [
+    {
+     "season": "2026-W45",
+     "top": [
+      [
+       "Urganch",
+       51
+      ],
+      [
+       "Zarafshon",
+       44
+      ],
+      [
+       "Buxoro",
+       41
+      ],
+      [
+       "Xiva",
+       35
+      ],
+      [
+       "Toshkent",
+       30
+      ],
+      [
+       "Jizzax",
+       27
+      ],
+      [
+       "Asaka",
+       26
+      ],
+      [
+       "Margʻilon",
+       24
+      ]
+     ],
+     "champion": "Xiva"
     }
    ]
   },
@@ -354,6 +399,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/TVIZNeuxQdU",
    "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №2 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-09",
+   "slot": 1,
+   "league": "cities",
+   "no": 6,
+   "final": false,
+   "link": "https://youtube.com/shorts/GhdHYuWpwmY",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №6 #shorts",
    "pl": true
   }
  ],
