@@ -946,7 +946,7 @@ MK.compile = function (ep, lib, audio) {
     const strokes = {}; for (const st of sc.steps || []) if (st.prop && st.state === 'paint') strokes[st.prop] = (strokes[st.prop] || 0) + 1; const strokeN = {};
     const free = p => !p.holder && !p.decor && p.vis;
     const cam = [{ t: 0, mode: sc.camera || 'wide', on: sc.cameraOn || null }];
-    let cur = .6, prevStart = .6, prevEnter = false; const st0 = t;
+    let cur = .6, prevStart = .6, prevEnter = false, lastSpk = null; const st0 = t;
     // в начале сцены входят трое и больше — входят бодрее и плотнее, чтобы до первой реплики не было долгой тишины
     const chainN = (() => { let n = 0; for (const st of sc.steps || []) { if (st.do === 'enter') n++; else if (st.say || (st.do && st.do !== 'enter')) break; } return n; })(); let enterI = 0;
     for (const step of sc.steps || []) {
@@ -971,7 +971,8 @@ MK.compile = function (ep, lib, audio) {
             sfx.push({ t: st0 + start + .55, n: 'boing', v: .45 }); sfx.push({ t: st0 + start + 1.05, n: 'boing', v: .3 }); }
           beats.push({ t: start, t1: start + 1.4, k: 'prop', who: step.who && C[step.who] ? step.who : null, px: p.holder && C[p.holder] ? C[p.holder].x : p.x, big: p.big });
           if (!step.with && step.state !== 'paint') dur = Math.max(dur, .6); if (step.state === 'vanish' || (step.state === 'appear' && !step.quiet)) sfx.push({ t: st0 + start, n: step.state === 'vanish' ? 'pop' : 'sparkle' }); } }
-      if (step.look) { const p = props.find(p => p.id === step.look); if (p) { beats.push({ t: start, t1: start + 1.6, k: 'look', who: step.who && C[step.who] ? step.who : null, px: p.holder && C[p.holder] ? C[p.holder].x : p.x }); for (const id in C) { if (!C[id].vis) continue; C[id].ev.push({ t: start + .2, k: 'face', v: p.x >= C[id].x ? 1 : -1 }); } }
+      if (step.look && step.solo) { const p = props.find(p => p.id === step.look), c0 = C[step.who]; if (p && c0 && c0.vis) { const lx = p.holder && C[p.holder] ? C[p.holder].x : p.x; if (Math.abs(lx - c0.x) > .03) c0.ev.push({ t: start + .15, k: 'face', v: lx >= c0.x ? 1 : -1 }); } }
+      else if (step.look) { const p = props.find(p => p.id === step.look); if (p) { beats.push({ t: start, t1: start + 1.6, k: 'look', who: step.who && C[step.who] ? step.who : null, px: p.holder && C[p.holder] ? C[p.holder].x : p.x }); for (const id in C) { if (!C[id].vis) continue; C[id].ev.push({ t: start + .2, k: 'face', v: p.x >= C[id].x ? 1 : -1 }); } }
         if (step.who && C[step.who]) C[step.who].ev.push({ t: start + .1, k: 'act', n: 'point', t1: start + 1.3 }); }
       if (ch) {
         if (step.emotion) { emoEv = { t: start, k: 'emo', v: step.emotion }; ch.ev.push(emoEv); }
@@ -991,6 +992,7 @@ MK.compile = function (ep, lib, audio) {
           if (d === 'exit') { ch.ev.push({ t: start + dur, k: 'vis', v: false }); ch.vis = false; }
           ch.x = x1; beats.push({ t: start, t1: start + dur, k: 'move', who, d });
           if (step.face) ch.ev.push({ t: start + dur, k: 'face', v: faceVal(step.face, ch, C) });
+          else if (d !== 'exit') ch.ev.push({ t: start + dur + .15, k: 'face', v: 0 });   // дошёл — повернулся к зрителю, а не стоит боком (заговорят — повернётся к собеседнику)
         } else if (d && DUR[d] != null) {
           let s0 = start;
           // подойти, если для действия нужно быть рядом (обнять, отдать, пнуть мяч)
@@ -1020,6 +1022,13 @@ MK.compile = function (ep, lib, audio) {
           if (d === 'give' && step.to && C[step.to]) { const p = props.find(p => p.holder === who); if (p) { p.ev.push({ t: s0 + .5, holder: step.to, from: who }); p.holder = step.to; } ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); }
         }
         if (step.to && step.say && C[step.to]) ch.ev.push({ t: start, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 });
+        else if (step.say && ch && ch.vis && !step.with && who !== 'Р') {   // говорит — смотрит на собеседника (кто говорил перед ним, иначе ближайший), а не в пустоту; к зрителям — в экран
+          const busy = ch.ev.some(e => (e.k === 'move' && e.t <= start + .6 && e.t1 >= start) || (e.k === 'act' && e.t <= start + .3 && e.t1 >= start)); let lp = null, lf = null; for (const e of ch.ev) { if (e.t > start + .2) continue; if (e.k === 'persist' && (!lp || e.t >= lp.t)) lp = e; if (e.k === 'face' && (!lf || e.t >= lf.t)) lf = e; }
+          if (!busy && !(lp && lp.v !== 'none') && !(lf && lf.t > start - .05 && lf.t <= start + .2)) {
+            let pt = lastSpk && lastSpk !== who && C[lastSpk] && C[lastSpk].vis ? C[lastSpk] : null; if (!pt) { let nd = 9; for (const id in C) { const o = C[id]; if (id === who || !o.vis) continue; const d0 = Math.abs(o.x - ch.x); if (d0 < nd) { nd = d0; pt = o; } } }
+            const v2 = /(^|[^а-яё])(зрител|дети,|ребята, привет|привет, ребята)/i.test(String(step.say)) || !pt || Math.abs(pt.x - ch.x) < .03 ? 0 : pt.x >= ch.x ? 1 : -1;
+            if (!lf || lf.v !== v2) ch.ev.push({ t: start, k: 'face', v: v2 }); } }
+        if (step.say && ch && who !== 'Р' && !step.with) lastSpk = who;
         if (step.say && !step.with) { let k = 0; for (const id in C) { const o = C[id]; if (id === who || !o.vis || Math.abs(o.x - ch.x) < .03) continue;
             if (o.ev.some(e => (e.k === 'move' && e.t <= start + 1.2 && e.t1 >= start) || (e.k === 'act' && e.t <= start + .6 && e.t1 >= start))) continue;   // идёт или занят делом — не дёргаем
             let lp = null, lf = null; for (const e of o.ev) { if (e.t > start) continue; if (e.k === 'persist' && (!lp || e.t >= lp.t)) lp = e; if (e.k === 'face' && (!lf || e.t >= lf.t)) lf = e; } if (lp && lp.v !== 'none') continue;   // лежит, сидит, спит

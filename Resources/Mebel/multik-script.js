@@ -48,6 +48,12 @@ const SEE = /(смотри|гляди|глянь|глядите|(^|[^а-я])во
 // Вещи, о которых говорят, но их нет рядом: «Где наш торт?», «Верни торт!», «Мы не нашли торт», «Хочу попробовать торт»
 const ABSENT = /(^|[^а-я])(где|куда|откуда|верн[иу]|отдай|найт|найд|нашл|ищ|иска|потеря|забра|украл|укра|похит|съел|съест|съеш|доел|попроб|хотел|хочу|хоч|мечта|любим|вспомина|без|нет|не было|пропаж)/;
 const THEMES = [[/(хэллоуин|хеллоуин|halloween)/, 'halloween'], [/(новый год|новог|нового года|новым годом|дед мороз|снегурочк)/, 'newyear'], [/(день рождени|дня рождени|днем рождени|именин)/, 'birthday']];
+// эмоция по самой реплике, если в сценарии её не указали («Ура!», «Ого!», «Боюсь…», «Извини…») — лицо и голос живее
+const AUTO_EMO = [[/(^|[^а-я])(я догадал(ся|ась)|догадалась|догадался|я понял[а]?|я знаю|придумал[а]?|нашёл|нашел|нашла|нашлось|нашлась)(?![а-я])/, 'happy'], [/(^|[^а-я])(ура+|здорово|отлично|получилось|получается|мы разгадали|молод(ец|цы)|какая красота|как красиво|вот это да|класс(но)?|я так рад|я рада|я рад|весело)(?![а-я])/, 'happy'],
+  [/^(ого|ух ты|ничего себе|не может быть|вот это да)/, 'surprised'], [/(^|[^а-я])(боюсь|страшно|ой-ой|мне страшно)(?![а-я])/, 'scared'],
+  [/(^|[^а-я])(извини(те)?|прости(те)?|я поспешил|я поспешила|мне стыдно|неловко|я лучше посмотрю|вдруг я всё испорчу|вдруг я все испорчу)(?![а-я])/, 'shy'],
+  [/(^|[^а-я])(жаль|жалко|грустно|не получилось|не получится|не отвечает|не нашли|потерял[аи]?|пропал[аи]?|испорчу)(?![а-я])/, 'sad'],
+  [/^(хм+|кажется|наверное|интересно|подождите|подожди|странно|погодите)(?![а-я])/, 'frown'], [/^(привет|здравствуй|доброе утро|смотрите|давайте|пойдём|пойдем)(?![а-я])/, 'smile']];
 const EMO = [[/(улыба|с улыбкой)/, 'smile'], [/(хмур|насуп|сосредоточ|задумчив)/, 'frown'], [/(радост|весел|счастлив|довольн|горд)/, 'happy'], [/(сме[ея]|хохоч|смешн|смех|хихик|усмеха)/, 'laugh'], [/(груст|печал|расстро)/, 'sad'], [/(плач|рыда|сл[её]з)/, 'cry'],
   [/(злит|сердит|зло(?![а-я])|злой|злая|гневн|обиж)/, 'angry'], [/(удивл|изумл|(^|[^а-я])ого(?![а-я]))/, 'surprised'], [/(испуг|страшн|бои|боя|дрож)/, 'scared'], [/(сонн|зева|устал)/, 'sleepy'],
   [/(влюбл|нежно|с любов)/, 'love'], [/(смущ|стесн|винова)/, 'shy'], [/(спокойн|обычн)/, 'neutral']];
@@ -227,6 +233,8 @@ S.parse = function (text, lib, opts) {
       if (!found && /(исчез|пропал)/.test(d) && sc._lastObj && /(она|он(?![а-я])|оно)/.test(d)) { const pr = sc.props.find(x => x.id === sc._lastObj); if (pr && !pr._gone) { sc.steps.push({ prop: pr.id, state: 'vanish', with: true }); pr._gone = true; sc._vanishLn = sc._ln; } }
     });
     if (firstId && /(смотри|гляди|глянь|вот(?![а-я])|видите|видишь)/.test(d0)) sc.steps.push({ look: firstId, who: who && who !== 'Р' ? who : undefined, with: true });
+    else if (who && who !== 'Р' && !FUTURE.test(d0) && !ABSENT.test(d0)) {   // говорит о вещи, которая тут есть, — смотрит на неё (один говорящий, без смены плана)
+      for (const w of d0.split(/[^а-яё-]+/)) { const t = w && objOf(w); if (!t) continue; const pr = sc.props.find(x => x.type === t && !x._gone && (!x.hidden || x._shown) && x._held !== who); if (pr) { sc.steps.push({ look: pr.id, who, with: true, solo: true }); break; } } }
   }
   let lineNo = 0, narrated = 0;
   const applyTheme = () => { if (theme && sc && !sc.theme && sc._type !== 'space') sc.theme = theme; };
@@ -275,6 +283,7 @@ S.parse = function (text, lib, opts) {
       const step = { who, say: cl.text };
       if (m[2]) { const e = pick(EMO, low(m[2])); if (e) step.emotion = e; const v = verbOf(low(m[2])); if (v && who !== 'Р') step.do = v; }
       { const rest = low(m[1]).replace(/^\S+\s*/, ''); const v2 = rest && who !== 'Р' ? verbOf(rest) : null; if (v2 && !step.do) step.do = v2; const e2 = rest ? pick(EMO, rest) : null; if (e2 && !step.emotion) step.emotion = e2; }
+      if (who !== 'Р' && !step.emotion) { const ae = pick(AUTO_EMO, low(cl.text).replace(/^[\s«"—-]+/, '')); if (ae) { step.emotion = ae; step._auto = true; } }
       if (who !== 'Р') { const other = lastSpeaker && lastSpeaker !== who && lastSpeaker !== 'Р' ? lastSpeaker : sceneSpeakers.filter(x => x !== who && x !== 'Р').slice(-1)[0]; if (other) step.to = other;
         backIn(who); autoCam(who); }
       { const lt = low(cl.text), painting = sc.props.some(x => (x.type === 'easel' || x.type === 'paints') && !x._gone) || /(краск|кисточк|кисть|мольберт)/.test(lt);

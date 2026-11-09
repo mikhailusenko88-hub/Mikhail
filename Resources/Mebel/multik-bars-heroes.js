@@ -633,7 +633,7 @@ H6.attach = function (T3, rig) {
   THREE = T3; const who = H6.whoIs(rig.spec || rig.n); if (!who || !H6.ready[who]) return false; const T = H6.T[who];
   const U = Object.assign({}, lightsFor(T.L, T.center), commonU(T.bakeU)); const I = instance(T, U, true);
   const k = (rig.P && rig.P.headY ? rig.P.headY : T.headC) / T.headC; I.root.scale.setScalar(k); I.root.userData.noGround = true; rig.pose.add(I.root);
-  I.k = k; rig.h6 = I; rig._gp = rig._gpB = null; rig.fur = []; I.rest = { arms: rig.arms.map(g => new THREE.Euler(0, 0, (g.userData.side || (g.position.x < 0 ? -1 : 1)) * .35)), legs: rig.legs.map(g => g.rotation.clone()) };   // покой скелета: лапы отведены на .35 рад — у героя образца они висят вдоль тела (иначе плечи заходят в ошейник)
+  I.k = k; I.who = who; rig.h6 = I; rig._gp = rig._gpB = null; rig.fur = []; I.rest = { arms: rig.arms.map(g => new THREE.Euler(0, 0, (g.userData.side || (g.position.x < 0 ? -1 : 1)) * .35)), legs: rig.legs.map(g => g.rotation.clone()) };   // покой скелета: лапы отведены на .35 рад — у героя образца они висят вдоль тела (иначе плечи заходят в ошейник)
   rig.root.traverse(o => { if (!o.isMesh || o.userData.bars || o.userData.blob) return; if (o.userData.strands) { o.visible = false; return; } o.layers.set(1); });   // старый герой: только тень и «кости»
   rig.headH = T.headC * k * (rig.scale || 1); rig.headR = T.headR * k * (rig.scale || 1);
   const pre = function (R, scene, cam) { const f = R.info.render.frame; if (I._f === f && I._cam === cam) return; I._f = f; I._cam = cam; camFrame(I, R, cam); };
@@ -661,7 +661,9 @@ H6.frame = function (rig, st, T, L) {
   const hc = new THREE.Vector3(0, TT.headC, 0.02), hr = TT.headR * 1.08, wv = new THREE.Vector3();
   rig.arms.forEach((g, i) => { const s = g.position.x < 0 ? 'armL' : 'armR', sg = s === 'armL' ? -1 : 1, wr = TT.info.src.wrist[s === 'armL' ? 0 : 1]; const r0 = I.rest.arms[i];
     const tw = g.userData.tw || 0, twM = tw ? new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(wr[0] - TT.PIV[s].x, wr[1] - TT.PIV[s].y, wr[2] - TT.PIV[s].z).normalize(), tw) : null;   // «привет»: кисть вокруг самой лапы
-    const put = (ex) => { _e.set(g.rotation.x - r0.x, tw ? 0 : g.rotation.y - r0.y, (g.rotation.z - r0.z) * .9 + ex, 'XYZ'); const Rm = new THREE.Matrix4().makeRotationFromEuler(_e); if (twM) Rm.multiply(twM); G[s].matrix.copy(about(TT.PIV[s], Rm, new THREE.Matrix4())); wv.set(wr[0], wr[1], wr[2]).applyMatrix4(G[s].matrix);
+    const ar = (H6.K.armRest || {})[I.who], arW = ar ? Math.max(0, Math.min(1, 1 - Math.hypot(g.rotation.x - r0.x, g.rotation.z - r0.z, tw) / .9)) : 0, arP = ar ? ar[0] * arW : 0, arR = ar ? sg * ar[1] * arW : 0, arT = ar ? sg * ar[2] * arW : 0;   /* в жестах (машет, показывает, держит) поза покоя уходит — жест как был */   // своя поза покоя лап героя (Пик: лапки опущены вдоль тела, а не вытянуты вперёд)
+    const twR = arT ? new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(wr[0] - TT.PIV[s].x, wr[1] - TT.PIV[s].y, wr[2] - TT.PIV[s].z).normalize(), arT) : null;
+    const put = (ex) => { _e.set(g.rotation.x - r0.x + arP, tw ? 0 : g.rotation.y - r0.y, (g.rotation.z - r0.z) * .9 + ex + arR, 'XYZ'); const Rm = new THREE.Matrix4().makeRotationFromEuler(_e); if (twM) Rm.multiply(twM); if (twR) Rm.multiply(twR); G[s].matrix.copy(about(TT.PIV[s], Rm, new THREE.Matrix4())); wv.set(wr[0], wr[1], wr[2]).applyMatrix4(G[s].matrix);
       const dx = wv.x - hc.x, dy = (wv.y - hc.y) * .9, dz = wv.z - hc.z; return dx * dx + dy * dy + dz * dz > hr * hr || wv.y < hc.y - hr; };
     if (!put(0)) { let done = false; for (let it = 1; it <= 14 && !done; it++) for (const sgn of [-sg, sg]) if (put(sgn * it * .08)) { done = true; break; } if (!done) put(0); } });   // лапа не проваливается в морду
   rig.legs.forEach((g, i) => { const j = g.position.x < 0 ? 0 : 1; const r0 = I.rest.legs[i]; _e.set((g.rotation.x - r0.x) * .8, 0, (g.rotation.z - r0.z) * .5, 'XYZ');
@@ -711,6 +713,6 @@ function camFrame(I, R, cam) {
   U.uExpo.value = K.expo;
   H6.dbgL = { sun: sun ? [sun.intensity, sun.color.getHexString()] : null, hemi: hemi ? [hemi.intensity, hemi.color.getHexString(), hemi.groundColor.getHexString()] : null, rim: rim ? [rim.visible, rim.intensity] : null, envI: L.envI, fog: f ? [f.near, f.far] : null, sk };
 }
-H6.K = { sun: 1.0, key: 1.0, fill: 1.0, rim: 1.0, rim0: .7, eye: 1.0, sky: 1.0, expo: .62 };   // сверено по кадрам: Пик серый, кепка Рона не «горит»
+H6.K = { sun: 1.0, key: 1.0, fill: 1.0, rim: 1.0, rim0: .7, eye: 1.0, sky: 1.0, expo: .62, armRest: { pik: [.45, 0, .5] } };   // armRest: лапки Пика в покое опущены вдоль тела ладошками к себе (а не вперёд и развёрнуты к зрителю)   // сверено по кадрам: Пик серый, кепка Рона не «горит»
 
 })(typeof window !== "undefined" ? window : globalThis);

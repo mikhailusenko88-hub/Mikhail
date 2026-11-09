@@ -109,7 +109,7 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
    <span>Голос iPhone</span><span><select id="vpVoice"></select></span>
    <span id="vpNeuralL">Нейроголос</span><span id="vpNeuralS"><select id="vpNeural"></select></span></div>
   <div class="btns"><button class="btn" onclick="VP.play()">▶ Послушать</button><button class="btn acc" onclick="VP.save()">Сохранить</button></div>
-  <div class="card" id="vpLaugh" style="margin-top:12px;background:var(--card2)"><b>Смех героя</b><div class="mut" style="margin:4px 0 8px">Герой смеётся своим голосом. А можно записать настоящий смех — свой или ребёнка (до 8 секунд): герой будет смеяться им, своим тембром.</div>
+  <div class="card" id="vpLaugh" style="margin-top:12px;background:var(--card2)"><b>😂 Поменять смех</b><div class="mut" style="margin:4px 0 8px">Выбери смех из банка и нажми «▶ Как смеётся» — смех звучит тембром героя. А можно записать настоящий смех — свой или ребёнка (до 8 секунд): герой будет смеяться им, своим тембром.</div>
    <div class="kv" style="margin:0 0 8px"><span>Смех из банка</span><span><select id="vpLaughSel" onchange="VP.pickLaugh(this.value)"><option value="">автоматически (по голосу)</option></select></span></div>
    <div class="btns"><button class="btn" onclick="VP.laugh()">▶ Как смеётся</button><button class="btn" id="vpRec" onclick="VP.rec()">🎙 Записать смех</button><button class="btn" id="vpRecDel" onclick="VP.recDel()">✕ Убрать запись</button></div><div id="vpRecMsg" class="mut" style="margin-top:6px"></div></div>
  </div></div>
@@ -286,8 +286,9 @@ const App = {
       const v = c.spec.voice || {};
       d.insertAdjacentHTML('beforeend', `<div class="i"><b>${esc(c.spec.name)}</b><div><span class="code">${esc(c.code)}</span> <span class="lock">🔒</span></div>
         <div class="mut">${esc(MK.KIND_NAMES[c.spec.kind] || c.spec.kind)} · голос: ${esc(MK.fxFor(Lib.data, c.spec.id).name)}</div>
-        ${c.spec.about ? `<div class="mut">${esc(c.spec.about)}</div>` : ''}<div class="btns"><button class="btn" data-a="hear">🔊</button><button class="btn" data-a="voice">🎙 Голос</button><button class="btn" data-a="like">＋ Похожий</button></div></div>`);
+        ${c.spec.about ? `<div class="mut">${esc(c.spec.about)}</div>` : ''}<div class="btns"><button class="btn" data-a="hear">🔊</button><button class="btn" data-a="voice">🎙 Голос</button><button class="btn" data-a="laugh">😂 Смех</button><button class="btn" data-a="like">＋ Похожий</button></div></div>`);
       d.querySelector('[data-a=voice]').onclick = () => VP.open(c.spec.id);
+      d.querySelector('[data-a=laugh]').onclick = () => VP.open(c.spec.id, 'laugh');   // поменять смех — отдельной кнопкой, а не в самом низу «Голоса»
       d.querySelector('[data-a=hear]').onclick = () => previewVoice(`Привет! Я ${c.spec.name}.`, c.spec.voice, MK.fxFor(Lib.data, c.spec.id), c.voiceId);
       d.querySelector('[data-a=like]').onclick = () => Ed.open(c.spec);
       g.appendChild(d);
@@ -829,7 +830,7 @@ const Stress = {
 // ---------- настройка голоса персонажа ----------
 const VP = {
   who: null, cur: null,
-  async open(who) {
+  async open(who, focus) {
     this.who = who; const c = Lib.data.characters[who]; const own = who === 'Р' ? (Lib.data.narratorFx || {}) : ((c && c.fx) || {});
     const fx = MK.fxFor(Lib.data, who); this.cur = { preset: fx.id, k: fx.k, voiceId: own.voiceId || '', laughId: (c && c.laughId) || '', neural: (c && c.neural) || '' };
     { const ns = document.getElementById('vpNeural'), show = who !== 'Р'; document.getElementById('vpNeuralL').style.display = document.getElementById('vpNeuralS').style.display = show ? '' : 'none';
@@ -838,6 +839,7 @@ const VP = {
         ns.value = this.cur.neural; ns.onchange = () => { this.cur.neural = ns.value; this.play(); }; } }
     document.getElementById('vpTitle').textContent = 'Голос: ' + (who === 'Р' ? 'Рассказчик' : c.spec.name);
     this.list(); document.getElementById('vpanel').style.display = 'flex'; this.recUI();
+    { const lb = document.getElementById('vpLaugh'); lb.style.outline = ''; if (focus === 'laugh' && who !== 'Р') { document.getElementById('vpTitle').textContent = 'Смех: ' + c.spec.name; setTimeout(() => { try { lb.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) { lb.scrollIntoView(); } lb.style.outline = '2px solid var(--acc, #ff9f0a)'; }, 60); } }
     const sel = document.getElementById('vpVoice'); const vs = (await Native.call('voices')) || [];
     sel.innerHTML = '<option value="">как при создании</option>' + vs.map(v => `<option value="${esc(v.id)}">${esc(v.name)} (${esc(v.quality)})</option>`).join('');
     sel.value = this.cur.voiceId; sel.onchange = () => { this.cur.voiceId = sel.value; this.play(); };
@@ -870,8 +872,11 @@ const VP = {
   async laughList() { const sel = document.getElementById('vpLaughSel'); if (!window.MKLaugh) return; await MKLaugh.load(); const list = MKLaugh.list(); const GN = { K: 'детские', F: 'женские', M: 'мужские', B: 'басистые' };
     const c0 = Object.assign({}, Lib.data.characters[this.who] || {}); delete c0.laughId; const auto = MKLaugh.idFor({ who: this.who, fx: Object.assign({}, MK.fxFor(Lib.data, this.who), { k: this.cur.k }) }, Object.assign({}, Lib.data, { characters: Object.assign({}, Lib.data.characters, { [this.who]: c0 }) }));
     const own = MK.heroNeural(Object.assign({}, Lib.data, { characters: Object.assign({}, Lib.data.characters, { [this.who]: Object.assign({}, Lib.data.characters[this.who], { neural: this.cur.neural || undefined }) }) }), this.who) ? 'своим голосом — как говорит' : 'из своего голоса';
-    sel.innerHTML = `<option value="">по умолчанию${auto ? ' (' + esc(auto === 'voice' ? own : auto) + ')' : ''}</option><option value="voice">${own}</option>` + list.map(x => `<option value="${esc(x.id)}">${esc(x.id)} — ${esc(x.name || '')} (${esc(GN[x.group] || x.group)})</option>`).join(''); sel.value = this.cur.laughId || ''; },
-  pickLaugh(id) { this.cur.laughId = id || ''; this.laugh(); },
+    const byG = {}; for (const x of list) (byG[x.group] = byG[x.group] || []).push(x); const ax = auto && auto !== 'voice' ? MKLaugh.byId(auto) : null;   // по группам: детские, женские, мужские, басистые — новые смехи сразу видно
+    sel.innerHTML = `<option value="">по умолчанию${auto ? ' (' + esc(auto === 'voice' ? own : auto + (ax && ax.name ? ' — ' + ax.name : '')) + ')' : ''}</option><option value="voice">${own}</option>` + ['K', 'F', 'M', 'B'].concat(Object.keys(byG).filter(g => !GN[g])).filter(g => byG[g]).map(g => `<optgroup label="${esc((GN[g] || g) + ' · ' + byG[g].length)}">` + byG[g].map(x => `<option value="${esc(x.id)}">${esc(x.id)} — ${esc(x.name || '')}${x.isNew ? ' ★' : ''}</option>`).join('') + '</optgroup>').join(''); sel.value = this.cur.laughId || ''; },
+  pickLaugh(id) { this.cur.laughId = id || ''; const c = Lib.data.characters[this.who];   // выбранный смех сохраняется сразу — даже если закрыть «Готово», не нажав «Сохранить»
+    if (c) { if (this.cur.laughId) c.laughId = this.cur.laughId; else delete c.laughId; Lib.save(); const m = document.getElementById('vpRecMsg'); if (m && !c.laugh) m.textContent = 'Смех выбран и сохранён — так герой будет смеяться во всех сериях.'; }
+    this.laugh(); },
   async rec() { const who = this.who, key = 'rec-laugh-' + MK.hash32(String(who)).toString(36);
     if (this.recording) { clearTimeout(this.recT); this.recording = false; await Native.call('recStop', {}); Lib.data.characters[who].laugh = key; await Lib.save(); this.recUI(); this.laugh(); return; }
     audioPlayback(); const ok = await Native.call('recStart', { key }); if (!ok) { alert('Нет доступа к микрофону. Откройте Настройки → Замер 3D → Микрофон и включите.'); return; }
