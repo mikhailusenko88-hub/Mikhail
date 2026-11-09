@@ -485,7 +485,9 @@ async function submit(e){
     $("lAgain").onclick = () => { openLeadForm(); $("lName").focus(); };
     $("leadForm").reset(); $("leadForm").classList.add("sent");
     done.scrollIntoView({block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+    hit("lead"); hitSend();
   } else {
+    hit("leadfail");
     done.innerHTML = `<div class="stack" style="gap:8px"><div class="err">Форма сейчас не отправляется. Скопируйте текст заявки и пришлите его в Telegram ${SHOP.telegram}.</div><pre class="copy" id="lText"></pre><button class="btn sm" type="button" id="lCopy">Копировать заявку</button></div>`;
     $("lText").textContent = text;
     $("lCopy").onclick = ev => copy(text, ev.currentTarget);
@@ -514,6 +516,55 @@ $("q").addEventListener("input", () => { shown = 12; renderGrid(); });
 }));
 ["cPanel","cW","cH","cOpen","cReserve","cPlinthOn","cPlinth","cCorniceOn","cCornice"].forEach(id => $(id).addEventListener("input", renderCalc));
 $("leadForm").addEventListener("submit", submit);
+
+/* Счётчик посещений — свой, на нашем сервере. Без cookie: уходит только «что открыли и на что нажали»,
+   сайт-источник (например yandex.ru) и «сенсорный экран или нет». При «Не отслеживать» — не работает. */
+const HIT_API = "https://crm.nashdekor.ru/api/hit";
+const hitOn = /(^|\.)nashdekor\.ru$/.test(location.hostname) && !!navigator.sendBeacon &&
+  navigator.doNotTrack !== "1" && !navigator.globalPrivacyControl;
+const hitQ = [], hitSeen = new Set(); let hitT = 0;
+function hitSend(){
+  clearTimeout(hitT);
+  if (!hitOn || !hitQ.length) return;
+  let r = ""; try { r = document.referrer ? new URL(document.referrer).hostname : ""; } catch (e) {}
+  const body = { e: hitQ.splice(0, 40), r, u: (new URLSearchParams(location.search).get("utm_source") || "").slice(0, 30),
+    m: matchMedia("(pointer: coarse)").matches ? 1 : 0 };
+  try { navigator.sendBeacon(HIT_API, new Blob([JSON.stringify(body)], { type: "text/plain" })); } catch (e) {}
+  if (hitQ.length) hitSend();
+}
+function hit(kind, key = "", act = ""){
+  const id = kind + "|" + key + "|" + act;
+  if (!hitOn || hitSeen.has(id)) return;           // одно и то же за один заход считаем один раз
+  hitSeen.add(id); hitQ.push([kind, String(key).slice(0, 40), act]);
+  clearTimeout(hitT); hitT = setTimeout(hitSend, 4000);
+}
+if (hitOn) {
+  hit("view", location.pathname); hitSend();
+  addEventListener("pagehide", hitSend);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") hitSend(); });
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { hit("sec", e.target.dataset.sec); io.unobserve(e.target); } }), { threshold: 0.6 });
+    document.querySelectorAll("main section[id]").forEach(sec => { const h = sec.querySelector("h2"); if (h) { h.dataset.sec = sec.id; io.observe(h); } });
+  }
+  document.addEventListener("click", e => {
+    const t = e.target.closest("button"); if (!t) return;
+    const d = t.dataset;
+    if (d.use) hit("item", d.use, "use");
+    else if (d.ask) hit("item", d.ask, "ask");
+    else if (d.decor) hit("item", d.decor, "decor");
+    else if (d.paint) hit("item", d.paint, "paint");
+    else if (d.cat) hit("cat", d.cat);
+    else if (d.copy) hit("copy", ["phone", "telegram", "avito"][+d.copy] || "");
+    else if (t.id === "moreBtn") hit("more");
+  }, true);
+  document.addEventListener("change", e => { const own = e.target.dataset?.own; if (own) hit("item", own, "paint"); }, true);
+  let qT = 0;
+  $("q").addEventListener("input", () => { clearTimeout(qT); qT = setTimeout(() => { const v = $("q").value.trim().toLowerCase(); if (v.length >= 2) hit("search", v); }, 1500); });
+  ["cW","cH","cOpen","cReserve","cPlinthOn","cPlinth","cCorniceOn","cCornice"].forEach(id => $(id).addEventListener("input", () => hit("calc")));
+  $("cPanel").addEventListener("change", () => { hit("calc"); hit("calcpanel", $("cPanel").value); });
+  $("c3").addEventListener("pointerdown", () => hit("3d"), { passive: true });
+  $("leadForm").addEventListener("focusin", () => hit("form"));
+}
 
 $("fCount").textContent = CAT.length;
 opts("cPanel", x => x.c === "panel" || x.c === "color", "A907");
