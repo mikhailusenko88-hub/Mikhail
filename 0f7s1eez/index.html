@@ -92,8 +92,9 @@ section{padding-block:8px 56px}
 .calc{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start}
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:18px}
 .f{display:flex;flex-direction:column;gap:5px;font-size:14px;color:var(--muted)}
-.f input,.f select,.f textarea{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;width:100%;min-width:0;color:var(--ink)}
+.f input,.f select,.f textarea{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;width:100%;min-width:0;color:var(--ink);font-size:16px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.two{grid-template-columns:1fr}}
 .stack{display:flex;flex-direction:column;gap:14px}
 .chk{display:flex;gap:10px;align-items:center;font-size:15px}
 .chk input{width:18px;height:18px;accent-color:var(--ink)}

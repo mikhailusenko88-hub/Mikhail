@@ -90,8 +90,9 @@ section{padding-block:8px 56px}
 .calc{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start}
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:18px}
 .f{display:flex;flex-direction:column;gap:5px;font-size:14px;color:var(--muted)}
-.f input,.f select,.f textarea{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;width:100%;min-width:0;color:var(--ink)}
+.f input,.f select,.f textarea{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;width:100%;min-width:0;color:var(--ink);font-size:16px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.two{grid-template-columns:1fr}}
 .stack{display:flex;flex-direction:column;gap:14px}
 .chk{display:flex;gap:10px;align-items:center;font-size:15px}
 .chk input{width:18px;height:18px;accent-color:var(--ink)}
@@ -186,6 +187,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .qty{display:flex;align-items:center;gap:8px}
 .qty button{width:40px;height:40px;border:1px solid var(--line);background:var(--bg);border-radius:6px;font-size:20px;line-height:1}
 .qty input{width:84px;text-align:center;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 6px;font-size:16px}
+.ralcode{font-size:16px}
 .qty .per{font-size:13px;color:var(--muted)}
 .total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:10px}
 .total b{font-size:20px}
@@ -219,7 +221,6 @@ a.card .price b{color:var(--ink)}
 .sections a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
 .sections a[aria-current="page"]{border-bottom-color:var(--ink);font-weight:600}
 .porder{padding-block:8px 48px}
-.porder .form{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}
 .porder .prodline{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:14px}
 .porder .prodline b{display:block}
 .ncount{display:inline-flex;align-items:center;gap:6px}
