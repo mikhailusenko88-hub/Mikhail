@@ -21,6 +21,8 @@ from __future__ import annotations
 import base64
 import json
 import logging
+import os
+import ssl
 import urllib.error
 import urllib.request
 from typing import Any, Callable
@@ -49,6 +51,20 @@ TAX_SYSTEMS = [("usn_income_outcome", "УСН «доходы минус расх
                ("osn", "ОСН"), ("patent", "Патент")]
 
 Http = Callable[[str, str, dict[str, str], bytes | None], tuple[int, bytes]]
+
+# У Точки сертификат от Минцифры (Russian Trusted Root CA) — его нет в системных хранилищах. Доверяем ему
+# только в запросах к Точке: системные корни + russian_trusted_ca.pem рядом с этим файлом.
+CA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "russian_trusted_ca.pem")
+
+
+def ssl_context() -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    if os.path.exists(CA_FILE):
+        ctx.load_verify_locations(cafile=CA_FILE)
+    return ctx
+
+
+_SSL: ssl.SSLContext | None = None
 
 
 def b64u_dec(s: str) -> bytes:
@@ -97,17 +113,22 @@ def parse_jwk(text: str) -> list[dict[str, Any]]:
 
 
 def http_request(method: str, url: str, headers: dict[str, str], body: bytes | None) -> tuple[int, bytes]:
+    global _SSL
+    if not url.startswith("https://enter.tochka.com/"):        # ключ доверия Минцифры — только для Точки
+        raise ValueError("запросы только к enter.tochka.com")
+    if _SSL is None:
+        _SSL = ssl_context()
     req = urllib.request.Request(url, data=body, headers=headers, method=method)
     try:
-        with urllib.request.urlopen(req, timeout=25) as r:
+        with urllib.request.urlopen(req, timeout=25, context=_SSL) as r:
             return r.status, r.read(2_000_000)
     except urllib.error.HTTPError as e:
         try:
             return e.code, e.read(200_000)
         except Exception:  # noqa: BLE001
             return e.code, b""
-    except Exception as e:  # noqa: BLE001 — сеть, DNS, таймаут
-        log.warning("Точка не ответила: %s", type(e).__name__)
+    except Exception as e:  # noqa: BLE001 — сеть, DNS, таймаут, сертификат
+        log.warning("Точка не ответила: %s %s", type(e).__name__, str(e)[:120])
         return 0, b""
 
 
