@@ -282,24 +282,18 @@
    ]
   },
   "clubs": {
-   "no": 2,
+   "no": 3,
    "points": {
     "Paxtakor": 25,
-    "Olmaliq": 18,
-    "Navbahor": 15,
-    "Metallurg": 18,
-    "Lokomotiv": 11,
-    "Bunyodkor": 16,
-    "Mashʼal": 6,
-    "Aral": 4,
-    "Olimpik": 2,
-    "Surxon": 19,
-    "Turon": 25,
-    "Dinamo": 15,
-    "Nasaf": 12,
-    "Buxoro": 10,
-    "Sementchi": 4,
-    "Qoʻqon 1912": 2
+    "Navbahor": 18,
+    "Olmaliq": 15,
+    "Xorazm": 12,
+    "Aral": 10,
+    "Buxoro": 8,
+    "Qizilqum": 6,
+    "Metallurg": 4,
+    "Sementchi": 2,
+    "Shoʻrtan": 1
    },
    "results": [
     {
@@ -327,12 +321,65 @@
      ],
      "link": "https://youtube.com/shorts/TVIZNeuxQdU",
      "final": false
+    },
+    {
+     "no": 3,
+     "date": "2026-11-09",
+     "slot": 3,
+     "winner": "Paxtakor",
+     "top3": [
+      "Paxtakor",
+      "Navbahor",
+      "Olmaliq"
+     ],
+     "link": "https://youtube.com/shorts/ghWysRy343s",
+     "final": false
     }
    ],
    "champion": null,
-   "season_races": 2,
-   "season": "2026-W45",
-   "new_pending": []
+   "season_races": 1,
+   "season": "2026-W46",
+   "new_pending": [],
+   "seasons": [
+    {
+     "season": "2026-W45",
+     "top": [
+      [
+       "Paxtakor",
+       25
+      ],
+      [
+       "Turon",
+       25
+      ],
+      [
+       "Surxon",
+       19
+      ],
+      [
+       "Olmaliq",
+       18
+      ],
+      [
+       "Metallurg",
+       18
+      ],
+      [
+       "Bunyodkor",
+       16
+      ],
+      [
+       "Navbahor",
+       15
+      ],
+      [
+       "Dinamo",
+       15
+      ]
+     ],
+     "champion": null
+    }
+   ]
   }
  },
  "history": [
@@ -464,6 +511,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/fZ5DMJvsSPk",
    "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №5 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-09",
+   "slot": 3,
+   "league": "clubs",
+   "no": 3,
+   "final": false,
+   "link": "https://youtube.com/shorts/ghWysRy343s",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №3 #shorts",
    "pl": true
   }
  ],

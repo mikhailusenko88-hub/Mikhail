@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-09 слот 2: cars №5 https://youtube.com/shorts/fZ5DMJvsSPk, за 74 с
+ВЫЛОЖЕНО 2026-11-09 слот 3: clubs №3 https://youtube.com/shorts/ghWysRy343s, за 65 с
 
 {
- "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №5 #shorts",
- "description": "🏆 Oʻtgan hafta chempioni: Kia K5 · Чемпион прошлой недели: Kia K5\n\n⏳ Finalgacha 6 kun · До финала 6 дней\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
+ "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №3 #shorts",
+ "description": "⏳ Finalgacha 6 kun · До финала 6 дней\n\nPaxtakor, Bunyodkor, Nasaf, Navbahor… qaysi jamoa tezroq? Izohlarda yoz 👇\n22 клубов Суперлиги Узбекистана в одной гонке: Пахтакор, Бунёдкор, Насаф, Навбахор и другие. Какой победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nJamoangiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего клуба? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #futbol #superliga #paxtakor #bunyodkor #nasaf #navbahor #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,35 +11,40 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "mashina",
-  "cobalt",
-  "gentra",
-  "nexia",
-  "damas",
-  "malibu",
-  "chevrolet",
-  "машины узбекистана"
+  "futbol",
+  "футбол",
+  "superliga",
+  "суперлига узбекистана",
+  "paxtakor",
+  "bunyodkor",
+  "nasaf",
+  "navbahor",
+  "neftchi",
+  "pfl uzbekistan"
  ]
 }
 
 --- журнал (время Ташкента) ---
-15:35:32 режим publish, событие workflow_dispatch
-15:35:32 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-15:35:42 комментарии: роликов просмотрено: 12, комментариев: 0
-15:35:42 новая неделя (2026-W46): таблица начата заново
-15:35:42 Тема: гонка машин. Подбираю трассу и заезд…
-15:35:45   трасса 1 (stairs, hammers, split, tramps): победа на 29.6 с, смен лидера 13, финишировали 3, расчёт 3 с
-15:35:47   трасса 2 (hammers, stairs, bumpy, tunnel): победа на 31.2 с, смен лидера 0, финишировали 4, расчёт 3 с — не подходит
-15:35:49   трасса 3 (bumpy, tramps, tunnel, split): победа на 31.0 с, смен лидера 11, финишировали 4, расчёт 2 с
-15:35:49 Рисую трассу…
-15:35:50 Рисую кадры: заезд 34 с + финал 6 с…
-15:35:50   кадр 0/1011, 8 с
-15:36:03   кадр 300/1011, 21 с
-15:36:16   кадр 600/1011, 34 с
-15:36:29   кадр 900/1011, 47 с
-15:36:40 Свожу звук…
-15:36:40 Готово за 59 с: победил Epica, ролик 40 с
-15:36:40 ролик готов: 40 с, 26 МБ, сборка 69 с; победил Epica, топ-3: Epica, Tracker, Onix
-15:36:45 YouTube: https://youtube.com/shorts/fZ5DMJvsSPk
-15:36:46 в плейлисте
-15:36:46 статус: public uploaded
+19:35:58 режим publish, событие workflow_dispatch
+19:35:59 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+19:36:10 комментарии: роликов просмотрено: 13, комментариев: 0
+19:36:10 новая неделя (2026-W46): таблица начата заново
+19:36:10 Тема: гонка футбольных клубов. Подбираю трассу и заезд…
+19:36:11   трасса 1 (tunnel, stairs, split, tramps): победа на 19.6 с, смен лидера 8, финишировали 3, расчёт 1 с — не подходит
+19:36:12   трасса 2 (tunnel, split, stairs, hammers): победа на 20.4 с, смен лидера 7, финишировали 1, расчёт 1 с — не подходит
+19:36:14   трасса 3 (stairs, bumpy, spinners, split, hammers): победа на 35.9 с, смен лидера 10, финишировали 1, расчёт 2 с — не подходит
+19:36:16   трасса 4: никто не доехал за 37 с — не подходит
+19:36:18   трасса 5: никто не доехал за 37 с — не подходит
+19:36:19   трасса 6 (stairs, bumpers, tramps, tunnel, bumpy): победа на 29.7 с, смен лидера 22, финишировали 5, расчёт 1 с
+19:36:19 Рисую трассу…
+19:36:20 Рисую кадры: заезд 32 с + финал 6 с…
+19:36:20   кадр 0/974, 10 с
+19:36:30   кадр 300/974, 20 с
+19:36:40   кадр 600/974, 31 с
+19:36:51   кадр 900/974, 41 с
+19:36:58 Свожу звук…
+19:36:59 Готово за 49 с: победил Paxtakor, ролик 38 с
+19:36:59 ролик готов: 38 с, 25 МБ, сборка 61 с; победил Paxtakor, топ-3: Paxtakor, Navbahor, Olmaliq
+19:37:02 YouTube: https://youtube.com/shorts/ghWysRy343s
+19:37:03 в плейлисте
+19:37:03 статус: public uploaded
