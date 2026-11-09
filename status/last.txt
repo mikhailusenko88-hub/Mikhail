@@ -1,96 +1,96 @@
-ВЫЛОЖЕНО #17 2026-11-09 слот 1: https://youtu.be/qbldBeQU9_k (public) + Shorts https://youtube.com/shorts/vn1j4zb-Leg, за 476 с
+ВЫЛОЖЕНО #18 2026-11-09 слот 2: https://youtu.be/RFmgrFv8ghw (public) + Shorts https://youtube.com/shorts/zP2ZThH9Q7U, за 396 с
 
 {
- "title": "24 Countries, 3 Lives ❤️ UK vs Vietnam vs Pakistan | Country Marble Survival #4",
- "description": "Flagball Arena · Season 2, Race 4 of 68: 24 countries, 3 stages — the last 7 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Belize ❤❤❤, Benin ❤❤❤, Cambodia ❤❤❤, Canada ❤❤❤, Central African Republic ❤❤❤, Estonia ❤❤❤, Ethiopia ❤❤❤, Gabon ❤❤❤, Guatemala ❤❤❤, Guinea-Bissau ❤❤❤, Kyrgyzstan ❤❤❤, Liechtenstein ❤❤❤, Maldives ❤❤❤, Pakistan ❤❤❤, Samoa ❤❤❤, San Marino ❤❤❤, Sao Tome and Principe ❤❤❤, Slovakia ❤❤❤, South Africa ❤❤❤, Sweden ❤❤❤, Timor-Leste ❤❤❤, Tuvalu ❤❤❤, United Kingdom ❤❤❤, Vietnam ❤❤❤.\n\nCountries still in the game before this race: 193 of 193.\nNext race: Race 5/68. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
- "race_no": 17,
+ "title": "Mexico vs Peru vs Romania ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #5",
+ "description": "Flagball Arena · Season 2, Race 5 of 68: 24 countries, 3 stages — the last 7 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Afghanistan ❤❤❤, Antigua and Barbuda ❤❤❤, Armenia ❤❤❤, Croatia ❤❤❤, Denmark ❤❤❤, Grenada ❤❤❤, Iceland ❤❤❤, Kuwait ❤❤❤, Lesotho ❤❤❤, Lithuania ❤❤❤, Mali ❤❤❤, Mexico ❤❤❤, Mongolia ❤❤❤, Myanmar ❤❤❤, North Macedonia ❤❤❤, Oman ❤❤❤, Peru ❤❤❤, Romania ❤❤❤, Sierra Leone ❤❤❤, Sri Lanka ❤❤❤, Tajikistan ❤❤❤, Uganda ❤❤❤, Vanuatu ❤❤❤, Zambia ❤❤❤.\n\nCountries still in the game before this race: 193 of 193.\nNext race: Race 6/68. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "race_no": 18,
  "date": "2026-11-09",
- "slot": 1,
+ "slot": 2,
  "season": 2,
  "round": 1,
- "heat": 4,
+ "heat": 5,
  "heats": 68,
  "survive": 17,
  "final": false,
  "kind": "heat",
- "label": "RACE 4/68",
+ "label": "RACE 5/68",
  "n": 24,
  "lives_mode": true,
  "losers": 7,
  "mega": false,
  "codes": [
-  "sm",
-  "bj",
-  "bz",
-  "pk",
-  "vn",
-  "cf",
-  "li",
-  "mv",
-  "ee",
-  "kg",
-  "gt",
-  "sk",
-  "ga",
-  "gw",
-  "gb",
-  "ws",
-  "ca",
-  "se",
-  "st",
-  "za",
-  "kh",
-  "tl",
-  "tv",
-  "et"
+  "mk",
+  "ml",
+  "af",
+  "gd",
+  "ls",
+  "lk",
+  "ug",
+  "is",
+  "ro",
+  "mx",
+  "ag",
+  "mn",
+  "om",
+  "kw",
+  "tj",
+  "pe",
+  "lt",
+  "hr",
+  "vu",
+  "zm",
+  "dk",
+  "am",
+  "sl",
+  "mm"
  ],
  "spans": [
   [
    7.800000000000001,
-   72.73333333333333,
-   76.33333333333333
+   73.93333333333334,
+   77.53333333333333
   ],
   [
-   79.93333333333332,
-   148.39999999999998,
-   151.99999999999997
+   81.13333333333333,
+   147.3,
+   150.9
   ],
   [
-   155.59999999999997,
-   221.83333333333331,
-   225.4333333333333
+   154.5,
+   218.6,
+   222.2
   ]
  ],
- "duration": 250.43333333333334,
+ "duration": 247.2,
  "heats_in_video": 1,
  "races": [
-  17
+  18
  ],
  "featured": [
-  "gb",
-  "vn",
-  "pk"
+  "mx",
+  "pe",
+  "ro"
  ],
- "video_id": "qbldBeQU9_k",
+ "video_id": "RFmgrFv8ghw",
  "privacy": "public"
 }
 
 --- журнал ---
-06:30:38 режим publish, гонка #17, 2026-11-09 слот 1, событие workflow_dispatch
-06:30:38 по плану: S2 RACE 4/68
-06:30:39 канал: Flagball Arena
-06:30:39 в этом видео заездов: 1 (раунд 1, осталось в раунде 65)
-гонка #17 2026-11-09 слот 1: S2 RACE 4/68, 24→17, участники: SMR BEN BLZ PAK VNM CAF LIE MDV EST KGZ GTM SVK GAB GNB GBR WSM CAN SWE STP ZAF KHM TLS TUV ETH
-  этап 1: 24→22, блоков 11 ['tunnels', 'ring_gate', 'glass', 'windmills', 'rotor', 'stairs', 'pushers', 'trapdoors', 'pendulums', 'twin_rings', 'split'], Q-финиш 62.4 c, кадров 1948
-  этап 2: 22→19, блоков 13 ['stairs', 'ring_gate', 'twin_rings', 'pushers', 'bumpers', 'comb', 'pendulums', 'glass', 'split', 'rotor', 'drum', 'trapdoors', 'pegs'], Q-финиш 65.9 c, кадров 2054
-  этап 3: 19→17, блоков 11 ['rotor', 'trapdoors', 'stairs', 'windmills', 'sliders', 'ring_gate', 'comb', 'twin_rings', 'zigzag', 'glass', 'drum'], Q-финиш 63.7 c, кадров 1987
-длительность ролика ≈ 4.2 мин
-готово: 7513 кадров за 437 с
-кадров 7513, 4.17 мин, рендер 438 с
-выжили: WSM VNM BLZ GTM ETH TUV TLS CAN GAB SMR LIE PAK SVK KHM KGZ BEN SWE
-06:37:57 заезд 1/1 готов: 134 МБ, 439 с
-06:37:58 видео готово: 134 МБ, 4.2 мин, 439 с с начала; название: 24 Countries, 3 Lives ❤️ UK vs Vietnam vs Pakistan | Country Marble Survival #4
-06:38:23 Shorts готов: 26 с — UK vs Vietnam vs Pakistan 😱 Who Survives? Country Marble Race #shorts
-06:38:32 обложка: 200 
-06:38:32 в плейлисте
-06:38:32 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'madeForKids': False, 'selfDeclaredMadeForKids': False}
+14:30:57 режим publish, гонка #18, 2026-11-09 слот 2, событие workflow_dispatch
+14:30:57 по плану: S2 RACE 5/68
+14:30:58 канал: Flagball Arena
+14:30:58 в этом видео заездов: 1 (раунд 1, осталось в раунде 64)
+гонка #18 2026-11-09 слот 2: S2 RACE 5/68, 24→17, участники: MKD MLI AFG GRD LSO LKA UGA ISL ROU MEX ATG MNG OMN KWT TJK PER LTU HRV VUT ZMB DNK ARM SLE MMR
+  этап 1: 24→22, блоков 12 ['sliders', 'drum', 'pendulums', 'windmills', 'tunnels', 'trapdoors', 'zigzag', 'bumpers', 'split', 'ring_gate', 'stairs', 'rotor'], Q-финиш 63.6 c, кадров 1984
+  этап 2: 22→19, блоков 13 ['trapdoors', 'zigzag', 'twin_rings', 'ring_gate', 'tunnels', 'pegs', 'pushers', 'split', 'bumpers', 'pendulums', 'glass', 'drum', 'comb'], Q-финиш 63.6 c, кадров 1985
+  этап 3: 19→17, блоков 13 ['comb', 'ring_gate', 'split', 'pushers', 'rotor', 'trapdoors', 'twin_rings', 'drum', 'pegs', 'pendulums', 'bumpers', 'zigzag', 'windmills'], Q-финиш 61.6 c, кадров 1923
+длительность ролика ≈ 4.1 мин
+готово: 7416 кадров за 362 с
+кадров 7416, 4.12 мин, рендер 363 с
+выжили: MLI LTU MMR MEX DNK ZMB VUT ROU KWT ARM HRV MKD AFG LSO MNG SLE UGA
+14:37:01 заезд 1/1 готов: 133 МБ, 364 с
+14:37:02 видео готово: 133 МБ, 4.1 мин, 364 с с начала; название: Mexico vs Peru vs Romania ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #5
+14:37:23 Shorts готов: 26 с — Mexico vs Peru vs Romania 😱 Who Survives? Country Marble Race #shorts
+14:37:30 обложка: 200 
+14:37:31 в плейлисте
+14:37:31 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}

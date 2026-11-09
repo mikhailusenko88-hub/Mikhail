@@ -19,3 +19,5 @@
 | shorts | 2026-11-08 | 3 | India vs Philippines vs Argentina | https://youtube.com/shorts/ZX2dnIFx-yw | |
 | 17 | 2026-11-09 | 1 | S2 RACE 4/68 | https://youtu.be/qbldBeQU9_k | public |
 | shorts | 2026-11-09 | 1 | UK vs Vietnam vs Pakistan | https://youtube.com/shorts/vn1j4zb-Leg | |
+| 18 | 2026-11-09 | 2 | S2 RACE 5/68 | https://youtu.be/RFmgrFv8ghw | public |
+| shorts | 2026-11-09 | 2 | Mexico vs Peru vs Romania | https://youtube.com/shorts/zP2ZThH9Q7U | |
