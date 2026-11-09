@@ -194,6 +194,39 @@ jobs:
           post '{"sid":"'$SID'","text":"12 шт, телефон +7 921 555-44-33","name":"Ольга"}' >/dev/null
           curl -sk $R -c $J -b $J "https://$H$cid" | grep -o 'Заявка №[0-9]* · [^<]*' | head -n1
           curl -sk $R -c $J -b $J https://$H/settings | grep -o 'Чат на сайте<span class="d">[^<]*\|pill good">работает\|pill warn">новых [0-9]*' | head -n3
+      - name: Точка Банк — страницы, вебхук, ключ банка, опрос
+        run: |
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/j6
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          echo "/money: $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' https://$H/money)"
+          curl -sk $R -c $J -b $J https://$H/settings | grep -o 'Точка Банк<span class="d">[^<]*\|pill">не подключена\|id="tochka"' | head -n3
+          echo "вебхук — мусор: $(curl -sk $R -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: text/plain' --data 'x' https://$H/api/tochka/webhook) (ждём 400)"
+          B=$(python3 -c "import base64,json;e=lambda d:base64.urlsafe_b64encode(json.dumps(d).encode()).rstrip(b'=').decode();print(e({'alg':'RS256','typ':'JWT'})+'.'+e({'webhookType':'acquiringInternetPayment','customerCode':'300123123','operationId':'x','status':'APPROVED'})+'.c2ln')")
+          echo "вебхук с поддельной подписью: $(curl -sk $R -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: text/plain' --data "$B" https://$H/api/tochka/webhook) (400 — если ключ банка скачан)"
+          echo "ключ банка в CRM: $(sudo sqlite3 /var/lib/prostranstvo/crm.db "select length(value) from settings where key='tochka_jwk'" 2>&1) символов"
+          echo "--- открытый ключ Точки с сервера:"
+          curl -s -m 20 https://enter.tochka.com/doc/openapi/static/keys/public | head -c 300; echo
+          echo "--- API Точки без ключа (формат ошибки):"
+          curl -s -m 20 -w '\nHTTP %{http_code}\n' https://enter.tochka.com/uapi/open-banking/v1.0/customers | head -c 400; echo
+          echo "--- проверка подписи настоящего вебхука Точки (тестовая отправка банка из открытой интеграции) ключом с сайта Точки:"
+          mkdir -p /tmp/tw && curl -s -m 20 -o /tmp/tw/live.jwt https://raw.githubusercontent.com/itrcz/calab/HEAD/apps/server/internal/billing/providers/tochka/testdata/webhook_live_test_send.jwt
+          curl -s -m 20 -o /tmp/tw/key.json https://enter.tochka.com/doc/openapi/static/keys/public
+          sudo -u prostranstvo env PYTHONPATH=/opt/prostranstvo-crm/src/crm python3 -I -c "
+          import sys; sys.path.insert(0, '/opt/prostranstvo-crm/src/crm')
+          import tochka
+          keys = tochka.parse_jwk(open('/tmp/tw/key.json').read())
+          tok = open('/tmp/tw/live.jwt').read().strip()
+          for k in keys:
+              try:
+                  c = tochka.verify_rs256(tok, k); print('ПОДПИСЬ ВЕРНА:', c.get('webhookType'), c.get('status')); break
+              except ValueError as e:
+                  print('не подошёл ключ:', e)
+          " 2>&1 | tail -n 3
+          sudo prostranstvo-crm tochka-poll
+          grep tochka-poll /etc/cron.d/prostranstvo-crm
       - name: fail2ban видит подбор пароля
         run: |
           for i in $(seq 1 9); do curl -s -o /dev/null -H 'X-Forwarded-For: 203.0.113.5' --data 'login=yulia&password=bad' http://127.0.0.1:8081/login; done
