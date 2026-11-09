@@ -395,6 +395,29 @@ class TestVisits(Base):
         self.hit([["view", "/"]], client=staff)              # вошли в CRM — свои визиты не считаем
         self.assertEqual(len(self.rows()), 2)
 
+    def test_own_ips_not_counted_and_reset(self) -> None:
+        self.hit([["view", "/"]], ip="89.126.192.214")
+        self.assertEqual(len(self.rows()), 1)                 # пока адрес не в списке — считается
+        self.login()
+        r = self.post("/settings/hit-ips", {"ips": "89.126.192.214\n10.0.0.0/8\nне-адрес"})
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(self.store.setting("hit_ignore_ips"), "89.126.192.214\n10.0.0.0/8")   # мусор отброшен
+        other = self.app.test_client()
+        self.hit([["view", "/"]], ip="89.126.192.214", client=other)     # свой адрес
+        self.hit([["view", "/"]], ip="10.20.30.40", client=other)        # своя сеть
+        self.assertEqual(len(self.rows()), 1)
+        self.hit([["view", "/"]], ip="203.0.113.9", client=other)        # чужой — считается
+        self.assertEqual(len(self.rows()), 2)
+        r = self.post("/settings/hit-ips", {"ips": "89.126.192.214", "add_mine": "1"})   # «добавить мой адрес» (тестовый клиент — 127.0.0.1)
+        self.assertEqual(self.store.setting("hit_ignore_ips"), "89.126.192.214\n127.0.0.1")
+        r = self.c.get("/settings")
+        self.assertIn("89.126.192.214", r.get_data(as_text=True))
+        self.assertIn("Обнулить статистику (2)", r.get_data(as_text=True))
+        r = self.post("/settings/hit-ips", {"reset": "1"})
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(self.rows(), [])
+        self.assertEqual(self.app.extensions["visits"].count(), 0)
+
     def test_daily_key_rotates(self) -> None:
         v = self.app.extensions["visits"]
         a = v.visitor("2026-11-09", "1.2.3.4", IPHONE)

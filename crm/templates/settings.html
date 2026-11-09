@@ -37,6 +37,14 @@
   <label class="f">Пароль (от 10 символов)<input name="password" type="password" minlength="10" autocomplete="new-password" required></label>
   <div class="span2"><button class="btn-p">Добавить</button></div>
 </form>
+<h2>Счётчик посещений сайта</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('settings_hit_ips') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f span2">Свои IP-адреса — заходы с них не считаются (дом, офис, VPN; по одному в строке, можно сеть вида 1.2.3.0/24)<textarea name="ips" rows="4" placeholder="например 89.126.192.214">{{ hit_ips }}</textarea></label>
+  <div class="d span2">Сейчас вы заходите с адреса <b>{{ my_ip }}</b>{% if my_ip_own %} — он уже в списке{% else %} — его нет в списке{% endif %}. Домашний адрес у провайдера может меняться — тогда добавить заново. Вошедшие в CRM в том же браузере не считаются и так.</div>
+  <div class="span2 row wrap"><button class="btn-p">Сохранить список</button><button class="btn-s" name="add_mine" value="1">Добавить мой адрес {{ my_ip }}</button>
+    <button class="btn-s" name="reset" value="1" onclick="return confirm('Стереть всю статистику сайта ({{ visits_total }} отметок)? Это не отменить.')">Обнулить статистику ({{ visits_total }})</button></div>
+</form>
 <h2>Связи</h2>
 <div class="panel list">
   <div class="row"><span class="grow">Бот MAX/Telegram</span>{% if bot %}<span class="pill good">заявки подтягиваются</span>{% else %}<span class="pill">бот ещё не установлен</span>{% endif %}</div>

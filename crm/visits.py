@@ -219,6 +219,17 @@ class Visits:
             return int(c.execute("SELECT COUNT(DISTINCT vid) FROM visits WHERE day=? AND kind=?", (d, kind)).fetchone()[0])
         return {"today": n(day, "view"), "yesterday": n(y, "view"), "leads": n(day, "lead")}
 
+    def count(self) -> int:
+        return int(self.store.c().execute("SELECT COUNT(*) FROM visits").fetchone()[0])
+
+    def clear(self) -> int:
+        """Обнулить статистику сайта (все отметки). Возвращает, сколько удалено."""
+        c = self.store.c()
+        n = self.count()
+        c.execute("DELETE FROM visits")
+        c.commit()
+        return n
+
     def report(self, day: str, days: int) -> dict[str, Any]:
         days = max(1, min(int(days), KEEP_DAYS))
         start = (date.fromisoformat(day) - timedelta(days=days - 1)).isoformat()

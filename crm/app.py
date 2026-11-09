@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import functools
 import hmac
+import ipaddress
 import logging
 import os
 import re
@@ -100,6 +101,26 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
 
     def ip() -> str:
         return request.remote_addr or "?"
+
+    def own_ips() -> list[str]:
+        """Свои IP-адреса и сети (дом, офис, VPN) из настроек — заходы с них счётчик не считает."""
+        return [t for t in store.setting("hit_ignore_ips", "").replace(",", " ").split() if t]
+
+    def ip_is_own(addr: str) -> bool:
+        toks = own_ips()
+        if not toks:
+            return False
+        try:
+            a = ipaddress.ip_address(addr)
+        except ValueError:
+            return False
+        for tok in toks:
+            try:
+                if a in ipaddress.ip_network(tok, strict=False):
+                    return True
+            except ValueError:
+                continue
+        return False
 
     def _recent(q: deque[float], window: int) -> deque[float]:
         t = time.monotonic()
@@ -423,7 +444,33 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     @login_required
     def settings_view() -> Any:
         return render_template("settings.html", users=store.users() if g.user["role"] == "admin" else [],
-                               conf=conf, bot=bool(store._bot()))
+                               conf=conf, bot=bool(store._bot()), hit_ips="\n".join(own_ips()), my_ip=ip(),
+                               my_ip_own=ip_is_own(ip()), visits_total=visits.count())
+
+    @app.post("/settings/hit-ips")
+    @admin_required
+    def settings_hit_ips() -> Any:
+        """Свои IP для счётчика: сохранить список, добавить текущий адрес или обнулить статистику."""
+        if request.form.get("reset"):
+            n = visits.clear()
+            c = store.c(); store.log(c, f"Обнулена статистика сайта: {n} отметок", who()); c.commit()
+            flash(f"Статистика сайта обнулена ({n} отметок).", "ok")
+            return redirect(url_for("settings_view"))
+        raw = request.form.get("ips", "")
+        if request.form.get("add_mine"):
+            raw += "\n" + ip()
+        good: list[str] = []
+        bad: list[str] = []
+        for tok in raw.replace(",", " ").split():
+            try:
+                ipaddress.ip_network(tok, strict=False)
+                if tok not in good:
+                    good.append(tok)
+            except ValueError:
+                bad.append(tok)
+        store.set_setting("hit_ignore_ips", "\n".join(good))
+        flash(("Свои адреса сохранены: %d." % len(good)) + (" Не похоже на IP: " + ", ".join(bad) if bad else ""), "err" if bad else "ok")
+        return redirect(url_for("settings_view"))
 
     @app.post("/settings/password")
     @login_required
@@ -609,8 +656,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         origin = request.headers.get("Origin", "").rstrip("/")
         ua = request.headers.get("User-Agent", "")[:400]
         if (not origin or origin not in conf["SITE_ORIGINS"] or g.user is not None or is_bot(ua)
-                or request.headers.get("DNT") == "1" or request.headers.get("Sec-GPC") == "1"):
-            return cors(Response(status=204))   # свои (вошли в CRM), боты и «не отслеживать» — не считаем
+                or request.headers.get("DNT") == "1" or request.headers.get("Sec-GPC") == "1" or ip_is_own(ip())):
+            return cors(Response(status=204))   # свои (вошли в CRM или со своих IP), боты и «не отслеживать» — не считаем
         if len(hits_by_ip) > 20000:
             hits_by_ip.clear()
         q = _recent(hits_by_ip[ip()], HIT_WINDOW)
