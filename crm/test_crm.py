@@ -462,6 +462,33 @@ class TestApi(Base):
         self.assertEqual((d["source"], d["kind"], d["discount"], d["phone"]), ("site", "d", 10, "+79991112233"))
         self.assertTrue(d["consent_at"])
 
+    def test_lead_with_email_and_send_calc(self) -> None:
+        r = self.lead(email="elena@example.com", calc="Товар: A907 — 12 шт")
+        did = r.get_json()["id"]
+        d = self.store.deal(did)
+        self.assertEqual((d["phone"], d["email"]), ("+79991112233", "elena@example.com"))   # телефон из контакта + почта отдельным полем
+        self.login()
+        r = self.post(f"/deals/{did}/send-calc", {"email": "elena@example.com"})
+        self.assertEqual(r.status_code, 302)                   # позиций нет — отказ с подсказкой
+        self.assertEqual(self.store.deal(did)["stage"], "new")
+        self.post(f"/deals/{did}/lines", {"article": "A912", "qty": "10"})
+        sent = {}
+        def fake_mail(to, subject, body, sender="", reply_to=""):
+            sent.update(to=to, subject=subject, body=body, sender=sender, reply_to=reply_to); return True
+        orig = crm_app.send_mail; crm_app.send_mail = fake_mail
+        try:
+            r = self.post(f"/deals/{did}/send-calc", {"email": "new@example.com"})   # почту поменяли прямо в форме
+        finally:
+            crm_app.send_mail = orig
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(sent["to"], "new@example.com")
+        self.assertIn("A912", sent["body"]); self.assertIn("10 шт", sent["body"]); self.assertIn("Итого", sent["body"])
+        self.assertIn("noreply@nashdekor.ru", sent["sender"]); self.assertEqual(sent["reply_to"], "zakaz@nashdekor.ru")
+        d = self.store.deal(did)
+        self.assertEqual((d["stage"], d["email"]), ("quote", "new@example.com"))
+        page = self.c.get(f"/deals/{did}").get_data(as_text=True)
+        self.assertIn("Отправить расчёт на почту", page); self.assertIn('id="calcText"', page)
+
     def test_preflight(self) -> None:
         r = self.c.options("/api/lead", headers={"Origin": "https://nashdekor.ru",
                                                  "Access-Control-Request-Method": "POST"})

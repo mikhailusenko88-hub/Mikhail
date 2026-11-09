@@ -28,7 +28,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from store import (KIND_NAMES, KIND_TITLES, KINDS, OPEN_STAGES, ROLE_NAMES, ROLES, SOURCE_NAMES, SOURCES,
-                   STAGE_NAMES, STAGES, Catalog, Store, fmt_day, fmt_dt, now, rub, today)
+                   STAGE_NAMES, STAGES, Catalog, Store, fmt_day, fmt_dt, now, rub, today, split_contact)
 from visits import Visits, is_bot, parse_body
 
 log = logging.getLogger("crm")
@@ -135,7 +135,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 "KINDS": KINDS, "KIND_NAMES": KIND_NAMES, "ROLES": ROLES, "ROLE_NAMES": ROLE_NAMES,
                 "KIND_TITLES": KIND_TITLES, "rub": rub, "fmt_dt": fmt_dt, "fmt_day": fmt_day, "today": today(),
                 "me": getattr(g, "user", None), "csrf": session.get("csrf", ""), "total": Store.total,
-                "nav_new": getattr(g, "nav_new", 0)}
+                "nav_new": getattr(g, "nav_new", 0), "SHOP_DOMAIN": conf["SHOP_DOMAIN"] or "nashdekor.ru"}
 
     @app.after_request
     def headers(resp: Response) -> Response:
@@ -292,9 +292,59 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         bot = store.bot_lead(d["bot_lead_id"]) if d["bot_lead_id"] else None
         msgs = store.bot_messages(d["bot_client_id"]) if d["bot_client_id"] else []
         return render_template("deal.html", d=d, lines=lines, gross=gross, total_sum=Store.total(gross, d["discount"]),
+                               calc_text=calc_text(d, lines) if lines else "",
                                stock=stock, tasks=store.tasks(deal_id=did, open_only=False),
                                events=store.events(deal_id=did), bot=bot, msgs=msgs,
                                catalog=store.catalog.all(), other=store.deals(client_id=d["client_id"], limit=20))
+
+    def calc_text(d: Any, lines: list[Any]) -> str:
+        """Расчёт для клиента: позиции, суммы, итог, контакты — в письмо или в мессенджер."""
+        gross = sum(int(ln["qty"]) * int(ln["price"]) for ln in lines)
+        total = Store.total(gross, d["discount"])
+        dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
+        out = [f"Здравствуйте, {d['client_name']}!", "", f"Расчёт №{d['id']} от «Наш декор»:", ""]
+        for ln in lines:
+            p = store.catalog.get(ln["article"])
+            nm = p.name if p and ln["article"] in p.name else (f"{ln['article']} {p.name}" if p else ln["article"])
+            out.append(f"• {nm} — {ln['qty']} шт × {int(ln['price']):,} ₽ = {int(ln['qty']) * int(ln['price']):,} ₽".replace(",", " "))
+        if d["discount"]:
+            out += ["", f"Без скидки: {gross:,} ₽".replace(",", " "), f"Скидка {d['discount']}%"]
+        out += ["", f"Итого: {total:,} ₽".replace(",", " "), "",
+                "Цены без НДС. Доставка по Санкт-Петербургу и Ленобласти рассчитывается отдельно, самовывоз со склада — бесплатно.",
+                "Расчёт действует 7 дней; наличие и срок поставки подтвердим при заказе.", "",
+                f"Ответить на это письмо или написать: zakaz@{dom}", f"Сайт: https://{dom}", "", "С уважением, «Наш декор»"]
+        return "\n".join(out)
+
+    @app.post("/deals/<int:did>/send-calc")
+    @login_required
+    def deal_send_calc(did: int) -> Any:
+        """Отправить расчёт клиенту на e-mail (почта своего сервера) и перевести сделку в «Расчёт отправлен»."""
+        d = store.deal(did)
+        if not d:
+            abort(404)
+        lines = store.lines(did)
+        if not lines:
+            flash("В расчёте нет позиций — добавьте товар.", "err")
+            return redirect(url_for("deal_view", did=did) + "#lines")
+        email = request.form.get("email", "").strip()[:120]
+        if not email or "@" not in email or " " in email:
+            flash("Укажите e-mail клиента.", "err")
+            return redirect(url_for("deal_view", did=did) + "#lines")
+        if email != (d["email"] or ""):
+            store.update_client(int(d["client_id"]), who(), email=email)
+        dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
+        ok = send_mail(email, f"Расчёт №{did} — реечные панели и декор, «Наш декор»", calc_text(d, lines),
+                       sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}")
+        c = store.c()
+        if ok:
+            store.log(c, f"Расчёт отправлен на {email}", who(), deal_id=did, client_id=d["client_id"]); c.commit()
+            if d["stage"] in ("new", "work"):
+                store.set_stage(did, "quote", who())
+            flash(f"Расчёт отправлен на {email}.", "ok")
+        else:
+            store.log(c, f"Не удалось отправить расчёт на {email} (почта не ответила)", who(), deal_id=did, client_id=d["client_id"]); c.commit()
+            flash("Почта не ответила — письмо не ушло. Скопируйте расчёт и отправьте в мессенджер.", "err")
+        return redirect(url_for("deal_view", did=did) + "#lines")
 
     @app.post("/deals/<int:did>/stage")
     @login_required
@@ -637,10 +687,15 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         who_kind = {"designer": "d", "дизайнер": "d", "company": "c", "компания": "c"}.get(str(data.get("who") or "").lower(), "p")
         msg = str(data.get("message") or "").strip()[:2000]
         calc = str(data.get("calc") or "").strip()[:4000]
-        did = store.create_deal("сайт", None, name=name, contact=contact, kind=who_kind, want=msg, source="site",
+        email = str(data.get("email") or "").strip()[:120]
+        if email and ("@" not in email or " " in email):
+            email = ""
+        phone, cemail, messenger = split_contact(contact)
+        did = store.create_deal("сайт", None, name=name, contact=contact, phone=phone, email=email or cemail, messenger=messenger,
+                                kind=who_kind, want=msg, source="site",
                                 calc=calc, consent_at=str(data.get("consentAt") or "")[:40] or store_now(),
                                 consent_version=str(data.get("consentVersion") or "")[:40])
-        txt = f"Новая заявка с сайта №{did}: {name}, {contact}" + (f"\n{msg}" if msg else "")
+        txt = f"Новая заявка с сайта №{did}: {name}, {contact}" + (f", {email}" if email else "") + (f"\n{msg}" if msg else "")
         store.notify_team(txt)
         send_mail(conf["NOTIFY_EMAIL"], f"Заявка с сайта №{did}", txt + f"\n\nCRM: https://crm.{conf['SHOP_DOMAIN']}/deals/{did}"
                   if conf["SHOP_DOMAIN"] else txt)
@@ -697,21 +752,26 @@ def store_now() -> str:
     return iso_now()
 
 
-def send_mail(to: str, subject: str, body: str) -> None:
-    """Письмо через почту своего сервера (Postfix на 127.0.0.1:25). Нет почты — тихо пропускаем."""
+def send_mail(to: str, subject: str, body: str, sender: str = "", reply_to: str = "") -> bool:
+    """Письмо через почту своего сервера (Postfix на 127.0.0.1:25). Нет почты — тихо пропускаем.
+    sender — адрес нашего домена (для писем клиентам); по умолчанию noreply@ домена получателя (свои уведомления)."""
     if not to:
-        return
+        return False
     import smtplib
     m = EmailMessage()
     m["To"] = to
-    m["From"] = "noreply@" + to.split("@", 1)[-1]
+    m["From"] = sender or ("noreply@" + to.split("@", 1)[-1])
+    if reply_to:
+        m["Reply-To"] = reply_to
     m["Subject"] = subject
     m.set_content(body)
     try:
         with smtplib.SMTP("127.0.0.1", 25, timeout=15) as smtp:
             smtp.send_message(m)
+        return True
     except Exception:  # noqa: BLE001
-        log.warning("не удалось отправить письмо-уведомление")
+        log.warning("не удалось отправить письмо")
+        return False
 
 
 logging.basicConfig(level=logging.INFO, stream=sys.stderr, format="%(levelname)s %(name)s: %(message)s")

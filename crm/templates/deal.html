@@ -32,7 +32,7 @@
 
 <h2 id="lines">Расчёт{% if d['discount'] %} · скидка {{ d['discount'] }}%{% endif %}</h2>
 <div class="panel tbl">
-<table class="cards">
+<table class="cards" data-lines data-discount="{{ d['discount'] or 0 }}">
   <thead><tr><th>Артикул</th><th class="r">Шт</th><th class="r">Цена</th><th class="r">Сумма</th><th>Склад</th><th></th></tr></thead>
   <tbody>
   {% for ln in lines %}
@@ -53,11 +53,22 @@
   {% endfor %}
   </tbody>
   {% if lines %}<tfoot>
-    {% if d['discount'] %}<tr><td colspan="3">Без скидки</td><td class="r num">{{ rub(gross) }}</td><td colspan="2"></td></tr>{% endif %}
-    <tr><td colspan="3"><b>Итого</b></td><td class="r num"><b>{{ rub(total_sum) }}</b></td><td colspan="2"></td></tr>
+    {% if d['discount'] %}<tr><td colspan="3">Без скидки</td><td class="r num" data-gross>{{ rub(gross) }}</td><td colspan="2"></td></tr>{% endif %}
+    <tr><td colspan="3"><b>Итого</b></td><td class="r num"><b data-total>{{ rub(total_sum) }}</b></td><td colspan="2"></td></tr>
   </tfoot>{% endif %}
 </table>
 </div>
+{% if lines %}
+<div class="panel pad sendcalc">
+  <form class="row wrap" method="post" action="{{ url_for('deal_send_calc', did=d['id']) }}">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label class="f grow">E-mail клиента<input name="email" type="email" value="{{ d['email'] }}" placeholder="кому прислать расчёт" required></label>
+    <button class="btn-p">Отправить расчёт на почту</button>
+  </form>
+  <div class="row wrap" style="margin-top:8px"><button class="btn-s" type="button" id="copyCalc">Скопировать расчёт для мессенджера</button><span class="d">Письмо уйдёт с noreply@{{ SHOP_DOMAIN }}, ответы — на zakaz@. После отправки этап станет «Расчёт отправлен».</span></div>
+  <pre id="calcText" hidden>{{ calc_text }}</pre>
+</div>
+{% endif %}
 <form class="addline" method="post" action="{{ url_for('line_add', did=d['id']) }}">
   <input type="hidden" name="csrf" value="{{ csrf }}">
   <input name="article" list="cat" placeholder="Артикул, например A912" autocomplete="off" required aria-label="Артикул">
