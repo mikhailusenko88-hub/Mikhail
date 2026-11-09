@@ -1043,13 +1043,23 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 flash("Не знаю client_id ключа — впишите его в поле «client_id» (показан в интернет-банке рядом с ключом).", "err")
                 return back
             url = f"https://{request.host}/api/tochka/webhook"
+            only_links = False
             try:
                 t.set_webhook(cid, url)
             except TochkaError as e:
-                flash("Уведомления не подключены: " + e.human(), "err")
-                return back
-            store.set_setting("tochka_webhook", f"{url} · {iso_now_app()}")
-            flash("Уведомления об оплатах подключены: банк будет сообщать CRM об оплате сам.", "ok")
+                if e.status not in (400, 403, 422):
+                    flash("Уведомления не подключены: " + e.human(), "err")
+                    return back
+                try:                                   # ключу не разрешены поступления на счёт — хотя бы оплаты по ссылкам
+                    t.set_webhook(cid, url, ["acquiringInternetPayment"])
+                    only_links = True
+                except TochkaError as e2:
+                    flash("Уведомления не подключены: " + e2.human(), "err")
+                    return back
+            store.set_setting("tochka_webhook", f"{url} · {iso_now_app()}" + (" · только оплаты по ссылкам" if only_links else ""))
+            flash("Уведомления подключены: банк будет сообщать CRM об оплате по ссылке" + (
+                  ". Поступления по счетам банк этому ключу не отдаёт — их отмечайте кнопкой в сделке." if only_links else
+                  " и о поступлениях на расчётный счёт."), "ok")
             return back
         if act in ("enable", "disable"):
             if act == "enable":
@@ -1080,6 +1090,9 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     @admin_required
     def deal_delete(did: int) -> Any:
         d = store.deal(did)
+        if d and store.payments(did):
+            flash("У заявки есть платежи — удалить нельзя, иначе пропадут записи о деньгах. Поставьте этап «Отказ».", "err")
+            return redirect(url_for("deal_view", did=did))
         if d and request.form.get("confirm") == "1" and store.delete_deal(did, who()):
             flash(f"Заявка №{did} удалена.", "ok")
             return redirect(url_for("client_view", cid=d["client_id"]))

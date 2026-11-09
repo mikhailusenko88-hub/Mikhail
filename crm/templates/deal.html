@@ -202,7 +202,7 @@
 <div class="panel list hist">{% for e in events %}<div class="row"><div class="grow"><div>{{ e['text'] }}</div><div class="d">{{ fmt_dt(e['at']) }}{% if e['user_name'] %} · {{ e['user_name'] }}{% endif %}</div></div></div>{% endfor %}</div>
 {% if d['consent_at'] %}<p class="note">Согласие на обработку данных: {{ fmt_dt(d['consent_at']) }}{% if d['consent_version'] %}, редакция {{ d['consent_version'] }}{% endif %}</p>{% endif %}
 
-{% if me['role'] == 'admin' %}
+{% if me['role'] == 'admin' and not payments %}
 <form class="danger" method="post" action="{{ url_for('deal_delete', did=d['id']) }}">
   <input type="hidden" name="csrf" value="{{ csrf }}">
   <label><input type="checkbox" name="confirm" value="1"> Да, удалить заявку №{{ d['id'] }}</label>

@@ -1146,6 +1146,8 @@ class TestTochka(Base):
         self.assertIn("по счёту", page); self.assertIn("платёжка №1", page)
         self.assertEqual(self.c.get("/money").status_code, 200)
         self.assertEqual(self.app.extensions["tochka_poll"](), ["Точка не подключена"])
+        self.post(f"/deals/{did}/delete", {"confirm": "1"})                       # с платежами не удаляется
+        self.assertIsNotNone(self.store.deal(did))
 
 
 if __name__ == "__main__":
