@@ -193,6 +193,7 @@ jobs:
           curl -sk $R -H 'Origin: https://nashdekor.ru' "https://$H/api/chat?sid=$SID&after=0" | python3 -c "import json,sys; d=json.load(sys.stdin); print('клиент видит:', [(m['who'], m['text']) for m in d['msgs']])"
           post '{"sid":"'$SID'","text":"12 шт, телефон +7 921 555-44-33","name":"Ольга"}' >/dev/null
           curl -sk $R -c $J -b $J "https://$H$cid" | grep -o 'Заявка №[0-9]* · [^<]*' | head -n1
+          curl -sk $R -c $J -b $J https://$H/settings | grep -o 'Чат на сайте<span class="d">[^<]*\|pill good">работает\|pill warn">новых [0-9]*' | head -n3
       - name: fail2ban видит подбор пароля
         run: |
           for i in $(seq 1 9); do curl -s -o /dev/null -H 'X-Forwarded-For: 203.0.113.5' --data 'login=yulia&password=bad' http://127.0.0.1:8081/login; done
