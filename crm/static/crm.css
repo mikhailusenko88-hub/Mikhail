@@ -217,3 +217,6 @@ details.src .calc{margin:10px 0 6px;white-space:pre-wrap}
 .chatreply{display:flex;gap:8px;align-items:flex-end;position:sticky;bottom:calc(64px + env(safe-area-inset-bottom));background:var(--bg,#f3f2ee);padding:6px 0}
 .chatreply textarea{flex:1;min-height:44px;font-size:16px}
 @media (min-width:900px){.chatreply{bottom:0}}
+
+.linkrow{display:flex;gap:10px;align-items:center;text-decoration:none;color:inherit}
+.linkrow .grow{display:flex;flex-direction:column;gap:2px}

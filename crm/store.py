@@ -796,6 +796,17 @@ class Store:
             " FROM chats ch WHERE EXISTS (SELECT 1 FROM chat_msgs m WHERE m.chat_id=ch.id)"
             " ORDER BY ch.unread>0 DESC, ch.updated_at DESC LIMIT ?", (limit,)).fetchall()
 
+    def chat_stats(self) -> dict[str, Any]:
+        c = self.c()
+        week = (date.fromisoformat(today()) - timedelta(days=7)).isoformat()
+        return {
+            "total": int(c.execute("SELECT COUNT(*) FROM chats WHERE EXISTS (SELECT 1 FROM chat_msgs m WHERE m.chat_id=chats.id)").fetchone()[0]),
+            "week": int(c.execute("SELECT COUNT(*) FROM chats WHERE created_at>=? AND EXISTS (SELECT 1 FROM chat_msgs m WHERE m.chat_id=chats.id)", (week,)).fetchone()[0]),
+            "deals": int(c.execute("SELECT COUNT(*) FROM chats WHERE deal_id IS NOT NULL").fetchone()[0]),
+            "unread": self.chat_unread(),
+            "last": (c.execute("SELECT MAX(created_at) FROM chat_msgs WHERE who='client'").fetchone()[0] or ""),
+        }
+
     def chat_unread(self) -> int:
         return int(self.c().execute("SELECT COUNT(*) FROM chats WHERE unread>0").fetchone()[0])
 

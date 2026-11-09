@@ -744,7 +744,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                conf=conf, bot=bool(store._bot()), hit_ips="\n".join(own_ips()), my_ip=ip(),
                                my_ip_own=ip_is_own(ip()), visits_total=visits.count(),
                                followup_auto=store.setting("followup_auto", "1") == "1", mail_contacts=mail_contacts(),
-                               push_devices=store.push_subs_all() if g.user["role"] == "admin" else [])
+                               push_devices=store.push_subs_all() if g.user["role"] == "admin" else [],
+                               chat_stats=store.chat_stats(), push_total=len(store.push_subs_all()))
 
     @app.post("/settings/hit-ips")
     @admin_required

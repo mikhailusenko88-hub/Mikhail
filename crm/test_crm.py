@@ -723,6 +723,9 @@ class TestApi(Base):
             r = self.post(f"/chats/{cid3}/deal", {"name": "Иван", "contact": ""})
             self.assertTrue(self.store.chat(cid3)["deal_id"])
             self.assertIn("Иван", self.c.get("/chats").get_data(as_text=True))
+            page = self.c.get("/settings").get_data(as_text=True)
+            self.assertIn("Чат на сайте", page); self.assertIn("Всего переписок: 3", page); self.assertIn("стали заявками: 3", page)
+            self.assertIn("устройств: 1", page)
             # чат выключен вместе с заявками с сайта
             self.app.extensions["crm_conf"]["SITE_LEADS"] = False
             self.assertEqual(self.chat(sid=sid, text="ещё", consent=True).status_code, 503)
