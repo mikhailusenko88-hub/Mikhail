@@ -105,12 +105,35 @@
     d.innerHTML = esc(text) + (small ? "<small>" + esc(small) + "</small>" : "");
     log.appendChild(d); log.scrollTop = log.scrollHeight; return d;
   }
+  // Подсказки «по месту»: товар — про этот артикул, раздел — про раздел, доставка — про доставку, главная — общие.
+  // Показываются только до первого сообщения и прячутся, как только клиент начал печатать сам.
+  function suggestions() {
+    var it = window.P && window.P.item, path = location.pathname;
+    if (it && it.a) {
+      var a = it.a, c = it.c;
+      if (c === "panel" || c === "color") return ["Есть " + a + " в наличии?", "Сколько " + a + " нужно на мою стену?", "Доставка " + a + " в мой город"];
+      if (c === "plinth") return ["Есть " + a + " в наличии?", "Сколько " + a + " нужно на комнату?", "Чем клеить и красить " + a + "?"];
+      if (c === "cornice") return ["Есть " + a + " в наличии?", "Подойдёт " + a + " к натяжному потолку?", "Сколько " + a + " нужно на комнату?"];
+      if (c === "mold") return ["Есть " + a + " в наличии?", "Сколько " + a + " нужно на рамки?", "Чем клеить и красить " + a + "?"];
+      return ["Есть " + a + " в наличии?", "Какой уголок подойдёт к моим панелям?", "Доставка " + a + " в мой город"];
+    }
+    var m = path.match(/\/catalog\/([a-z-]+)\//), s = m ? m[1] : "";
+    if (/stenovye-paneli|reechnye-paneli/.test(s)) return ["Какую панель выбрать для ТВ-зоны?", "Посчитайте панели на мою стену", "Что есть в наличии?"];
+    if (s === "paneli-pod-derevo") return ["Какой декор ближе к дубу?", "Посчитайте панели на мою стену", "Что есть в наличии?"];
+    if (s === "plintusy") return ["Какой высоты плинтус выбрать?", "Сколько плинтуса нужно на комнату?", "Что есть в наличии?"];
+    if (s === "plintus-s-podsvetkoy") return ["Какая LED-лента подойдёт?", "Сколько нужно на комнату?", "Что есть в наличии?"];
+    if (s === "karnizy") return ["Какой потолочный плинтус к натяжному потолку?", "Сколько нужно на комнату?", "Что есть в наличии?"];
+    if (s === "moldingi") return ["Помогите разложить рамки на стене", "Сколько молдинга нужно на рамки?", "Что есть в наличии?"];
+    if (s === "ugolki") return ["Какой уголок подойдёт к моим панелям?", "Сколько уголков нужно?"];
+    if (/\/dostavka\//.test(path)) return ["Сколько стоит доставка в мой город?", "Когда отправите заказ?", "Можно забрать самовывозом?"];
+    if (/\/stati\/[a-z]/.test(path)) return ["Вопрос по статье", "Посчитайте материал на мою комнату"];
+    return ["Что есть в наличии?", "Посчитайте мою стену", "Доставка в мой город"];
+  }
   function hello() {
     add("hello", "Здравствуйте! Это чат магазина «Наш декор». Спросите про наличие, цену, расчёт стены или доставку — ответим здесь же.", "Наш декор");
-    var art = window.P && window.P.item && window.P.item.a;
-    var q = art ? ["Вопрос про " + art, "Есть в наличии?", "Посчитайте мою стену"] : ["Есть в наличии?", "Посчитайте мою стену", "Доставка в мой город"];
-    quick.innerHTML = q.map(function (x) { return "<button type=\"button\">" + esc(x) + "</button>"; }).join("");
+    if (!started) quick.innerHTML = suggestions().map(function (x) { return "<button type=\"button\">" + esc(x) + "</button>"; }).join("");
   }
+  function quickShow(on) { if (quick.innerHTML) quick.hidden = !on; }
   function showErr(t) { err.textContent = t; err.hidden = !t; }
   function render(msgs) {
     msgs.forEach(function (m) {
@@ -154,6 +177,7 @@
       if (j.ok) {
         ls("consent", "1"); $(".ndc-consent").hidden = true;
         if (!started) { started = true; ls("started", "1"); }
+        quick.innerHTML = ""; quick.hidden = true;
         render(j.msgs || []); schedule();
         if (text && ls("contact") !== "1" && !card.dataset.skip) setTimeout(function () { card.hidden = false; log.scrollTop = log.scrollHeight; }, 600);
         return true;
@@ -187,15 +211,16 @@
   $(".ndc-x").addEventListener("click", hide);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && open) hide(); });
   form.addEventListener("submit", function (e) { e.preventDefault(); var t = ta.value.trim(); if (t) send(t); });
-  ta.addEventListener("input", grow);
+  ta.addEventListener("input", function () { grow(); quickShow(!started && !ta.value.trim()); });
   ta.addEventListener("keydown", function (e) {
     if (e.key === "Enter" && !e.shiftKey && !IS_TOUCH) { e.preventDefault(); var t = ta.value.trim(); if (t) send(t); }
   });
   quick.addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b) return;
     var t = b.textContent;
-    ta.value = /^Вопрос про /.test(t) ? "Здравствуйте! Вопрос про " + t.slice(11) + ": " : t;
-    grow(); ta.focus(); quick.innerHTML = "";
+    if (t === "Вопрос по статье") { var h = document.querySelector("h1"); t = "Вопрос по статье «" + (h ? h.textContent.trim() : document.title) + "»: "; }
+    ta.value = t; grow(); quickShow(false);
+    ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
   });
   $(".ndc-save").addEventListener("click", function () {
     var c = $(".ndc-contact").value.trim(), n = $(".ndc-name").value.trim();
