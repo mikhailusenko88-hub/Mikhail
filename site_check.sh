@@ -33,6 +33,7 @@ echo "  canonical: $(grep -o 'rel="canonical" href="[^"]*"' /tmp/p.html | head -
 curl -s "$U/p/a35/" -o /tmp/m.html
 echo "молдинг A35: 3D canvas: $(grep -c 'id="c3"' /tmp/m.html), профиль svg: $(grep -c '<svg viewBox' /tmp/m.html), контур poly: $(grep -c '"poly":' /tmp/m.html); счётчик панелей на A907: $(grep -c 'id="nPlus"' /tmp/p.html)"
 echo "«моя стена» на A907: блок: $(grep -c 'id="wallBox"' /tmp/p.html), вкладка: $(grep -c 'data-v="wall"' /tmp/p.html); p.js со стеной: $(curl -s "$U/assets/p.js" | grep -c 'function buildWall')"
+echo "SEO: title главной: $(grep -o '<title>[^<]*</title>' /tmp/i.html | head -1); FAQ на плинтусах: $(curl -s "$U/catalog/plintusy/" | grep -c FAQPage), title раздела: $(curl -s "$U/catalog/plintusy/" | grep -o '<title>[^<]*</title>'); цена за м² в A907: $(grep -c '₽/м²' /tmp/p.html)"
 echo "sitemap: адресов $(curl -s "$U/sitemap.xml" | grep -c '<loc>'), из них /p/: $(curl -s "$U/sitemap.xml" | grep -c '<loc>https://nashdekor.ru/p/'), /catalog/: $(curl -s "$U/sitemap.xml" | grep -c '/catalog/')"
 echo "главная: ссылок на p/ в коде карточек: $(grep -c 'href="\${href}"' /tmp/i.html), ссылки на разделы: $(grep -o 'catalog/[a-z-]*/' /tmp/i.html | sort -u | wc -l), ?panel= в расчёт: $(grep -c 'QS.get("panel")' /tmp/i.html)"
 echo
