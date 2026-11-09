@@ -2,7 +2,7 @@
 {% from "macros.html" import task_row with context %}
 {% block title %}Ещё{% endblock %}
 {% block main %}
-<div class="subnav"><a href="{{ url_for('tasks_view') }}" aria-current="page">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a><a href="{{ url_for('settings_view') }}">Настройки</a>{% if me and me['role']=='admin' %}<a href="{{ url_for('server_view') }}">Сервер</a>{% endif %}</div>
+<div class="subnav"><a href="{{ url_for('tasks_view') }}" aria-current="page">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a>{% if me and me['role']=='admin' %}<a href="{{ url_for('money_view') }}">Деньги</a>{% endif %}<a href="{{ url_for('settings_view') }}">Настройки</a>{% if me and me['role']=='admin' %}<a href="{{ url_for('server_view') }}">Сервер</a>{% endif %}</div>
 <h1>Задачи</h1>
 <div class="panel list">{% for t in tasks %}{{ task_row(t, url_for('tasks_view')) }}{% else %}<div class="row"><span class="d">Открытых задач нет</span></div>{% endfor %}</div>
 <form class="addline" method="post" action="{{ url_for('tasks_view') }}">

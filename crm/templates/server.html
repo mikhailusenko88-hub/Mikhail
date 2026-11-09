@@ -2,7 +2,7 @@
 {% block title %}Сервер{% endblock %}
 {% block main %}
 {% if pending %}<meta http-equiv="refresh" content="15">{% endif %}
-<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a><a href="{{ url_for('settings_view') }}">Настройки</a><a href="{{ url_for('server_view') }}" aria-current="page">Сервер</a></div>
+<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a>{% if me and me['role']=='admin' %}<a href="{{ url_for('money_view') }}">Деньги</a>{% endif %}<a href="{{ url_for('settings_view') }}">Настройки</a><a href="{{ url_for('server_view') }}" aria-current="page">Сервер</a></div>
 <h1>Сервер</h1>
 
 {% if act %}

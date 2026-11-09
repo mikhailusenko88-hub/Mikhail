@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Деньги{% endblock %}
+{% block main %}
+<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a><a href="{{ url_for('money_view') }}" aria-current="page">Деньги</a><a href="{{ url_for('settings_view') }}">Настройки</a><a href="{{ url_for('server_view') }}">Сервер</a></div>
+<h1>Деньги</h1>
+<div class="bar"><a class="btn-g sm" href="{{ url_for('money_view', m=prev) }}">←</a><b>{{ month_name }}</b><a class="btn-g sm" href="{{ url_for('money_view', m=nxt) }}">→</a></div>
+<div class="stats">
+  <div class="stat"><b>{{ rubk(m['got']) }}</b><span>пришло за месяц</span></div>
+  <div class="stat"><b>{{ rubk(m['links']) }}</b><span>из них по ссылкам</span></div>
+  <div class="stat"><b>{{ rubk(m['year']) }}</b><span>с начала года</span></div>
+</div>
+<p class="d">«С начала года» — сумма оплат в CRM. Для налогов (УСН, порог НДС 20 млн ₽ в год) ориентир, а точные цифры — по выписке банка. {% if not tochka %}Точка не подключена: оплаты по ссылкам здесь появятся после подключения (Настройки → «Точка Банк»).{% endif %}</p>
+
+{% if m['closing'] %}
+<h2>Нужен второй чек «Полный расчёт»</h2>
+<div class="panel list">{% for p in m['closing'] %}<a class="row btn" href="{{ url_for('deal_view', did=p['deal_id']) }}#pay"><span class="grow">№{{ p['deal_id'] }} · {{ p['client_name'] }}<span class="d"> · оплачено {{ fmt_dt(p['paid_at']) }} с чеком «Предоплата 100%», заказ отгружен</span></span><b>{{ rubk(p['amount'] - p['refunded']) }}</b></a>{% endfor %}</div>
+{% endif %}
+
+<h2>Ждут оплаты по ссылке</h2>
+<div class="panel list">{% for p in m['waiting'] %}<a class="row btn" href="{{ url_for('deal_view', did=p['deal_id']) }}#pay"><span class="grow">№{{ p['deal_id'] }} · {{ p['client_name'] }}<span class="d"> · ссылка от {{ fmt_dt(p['created_at']) }}</span></span><b>{{ rubk(p['amount']) }}</b></a>{% else %}<div class="row"><span class="d">Неоплаченных ссылок нет</span></div>{% endfor %}</div>
+
+<h2>Оплаты за месяц</h2>
+<div class="panel list">{% for p in m['rows'] if p['paid_at'][:7] == month %}<a class="row btn" href="{{ url_for('deal_view', did=p['deal_id']) }}#pay"><span class="grow">№{{ p['deal_id'] }} · {{ p['client_name'] }}<span class="d"> · {{ fmt_dt(p['paid_at']) }} · {{ {'link': 'ссылка', 'invoice': 'по счёту', 'manual': 'вручную'}.get(p['kind'], p['kind']) }}{% if p['pay_type'] %} {{ PAY_TYPES.get(p['pay_type'], p['pay_type']) }}{% endif %}{% if p['refunded'] %} · возврат {{ rubk(p['refunded']) }}{% endif %}</span></span><b>{{ rubk(p['amount'] - p['refunded']) }}</b></a>{% else %}<div class="row"><span class="d">Оплат за месяц нет</span></div>{% endfor %}</div>
+
+<h2>Поступления на расчётный счёт</h2>
+<p class="d">Приходят из уведомлений Точки. Оплата по счёту сама попадает в сделку, если в назначении есть «счёт №…» или «заказ №…» с номером заявки, или если ИНН плательщика есть у клиента с одной открытой заявкой.</p>
+<div class="panel list">{% for e in events %}
+  <div class="row wrap"><div class="grow"><div class="t">{{ rubk(e['amount']) }} · {{ e['payer'] or 'плательщик не указан' }}{% if e['inn'] %} · ИНН {{ e['inn'] }}{% endif %}</div><div class="d">{{ fmt_dt(e['at']) }} · {{ e['purpose'] }}</div></div>
+  {% if e['deal_id'] %}<a class="pill good" href="{{ url_for('deal_view', did=e['deal_id']) }}#pay">заявка №{{ e['deal_id'] }}</a>{% else %}
+  <form class="row" method="post" action="{{ url_for('money_link') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="event" value="{{ e['id'] }}"><input name="deal" inputmode="numeric" pattern="[0-9]*" placeholder="№ заявки" class="qty" aria-label="Номер заявки"><button class="btn-s sm">Привязать</button></form>{% endif %}
+  </div>{% else %}<div class="row"><span class="d">Поступлений пока нет{% if not tochka %} — подключите уведомления Точки{% endif %}</span></div>{% endfor %}</div>
+{% endblock %}

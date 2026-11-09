@@ -70,7 +70,7 @@
   <form class="grid2" method="post" action="{{ url_for('deal_send_calc', did=d['id']) }}">
     <input type="hidden" name="csrf" value="{{ csrf }}">
     <label class="f span2">Текст клиенту в начале письма (необязательно)<textarea name="client_note" rows="3" placeholder="Например: как договорились по телефону — 20 панелей A907 и плинтус A704; срок поставки 3–4 недели.">{{ d['client_note'] }}</textarea></label>
-    <label class="f span2">Ссылка на оплату из Точки (если клиент готов платить)<input name="pay_link" type="url" value="{{ d['pay_link'] }}" placeholder="https://… — ссылка или QR из Точки"></label>
+    <label class="f span2">Ссылка на оплату{% if tochka_on %} — создаётся кнопкой в блоке «Оплата» ниже и встаёт сюда сама{% else %} (из интернет-банка Точки){% endif %}<input name="pay_link" type="url" value="{{ d['pay_link'] }}" placeholder="https://… — ссылка на оплату"></label>
     <label class="f">E-mail клиента<input name="email" type="email" value="{{ d['email'] }}" placeholder="кому прислать расчёт"></label>
     <div class="f"><span>&nbsp;</span><div class="row wrap"><button class="btn-p">Отправить расчёт на почту</button><button class="btn-s" name="save_only" value="1">Сохранить текст</button></div></div>
     <div class="row wrap span2"><button class="btn-s" type="button" id="copyCalc">Скопировать расчёт для мессенджера</button><button class="btn-s" name="manual" value="1">Отправил сам (мессенджер / по телефону)</button></div>
@@ -94,6 +94,67 @@
   <button class="btn-p">Добавить</button>
   <datalist id="cat">{% for p in catalog %}<option value="{{ p.article }}">{{ p.name }} · {{ p.price }} ₽</option>{% endfor %}</datalist>
 </form>
+
+
+<h2 id="pay">Оплата{% if paid_kop %} · получено {{ rubk(paid_kop) }} из {{ rubk(total_sum * 100) }}{% endif %}</h2>
+{% if closing and d['stage'] == 'shipped' %}
+<form class="panel pad warnbox" method="post" action="{{ url_for('payment_closing_done', did=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <p><b>Нужен второй чек.</b> Клиент платил по ссылке с чеком «Предоплата 100%», товар отгружен — по закону нужен чек «Полный расчёт» с зачётом предоплаты. Через API банка его не сделать: оформите в интернет-банке Точки (раздел с чеками интернет-эквайринга) или спросите в чате Точки, как это сделать для заказа №{{ d['id'] }}.</p>
+  <button class="btn-s">Чек «Полный расчёт» оформлен</button>
+</form>
+{% endif %}
+{% if payments %}
+<div class="panel list">
+  {% for p in payments %}
+  <div class="row wrap payrow">
+    <div class="grow">
+      <div class="t">{{ rubk(p['amount']) }} · {{ {'link': 'ссылка с чеком', 'invoice': 'по счёту', 'manual': 'отмечено вручную'}.get(p['kind'], p['kind']) }}
+        {% set st = p['status'] %}<span class="pill {% if p['paid_at'] and st not in ('REFUNDED',) %}good{% elif st in ('EXPIRED','REFUNDED') %}crit{% else %}warn{% endif %}">{{ PAY_STATUS.get(st, st) }}{% if p['pay_type'] %} {{ PAY_TYPES.get(p['pay_type'], p['pay_type']) }}{% endif %}</span></div>
+      <div class="d">{{ fmt_dt(p['created_at']) }}{% if p['created_by'] %} · {{ p['created_by'] }}{% endif %}{% if p['paid_at'] %} · оплачено {{ fmt_dt(p['paid_at']) }}{% endif %}{% if p['refunded'] %} · возвращено {{ rubk(p['refunded']) }}{% endif %}{% if p['kind'] == 'link' %} · чек «{{ 'Предоплата 100%' if p['method'] == 'full_prepayment' else 'Полный расчёт' }}»{% if p['email'] %} на {{ p['email'] }}{% endif %}{% endif %}{% if p['note'] %} · {{ p['note'] }}{% endif %}</div>
+      {% if p['kind'] == 'link' and p['status'] in ('CREATED', 'AUTHORIZED') %}<div class="d"><a href="{{ p['url'] }}" target="_blank" rel="noopener noreferrer">{{ p['url'] }}</a></div>{% endif %}
+    </div>
+    {% if p['kind'] == 'link' and p['operation_id'] %}
+    <form method="post" action="{{ url_for('payment_check', did=d['id'], pid=p['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g sm">Проверить в банке</button></form>
+    {% endif %}
+    {% if me['role'] == 'admin' and p['kind'] == 'link' and p['paid_at'] and p['refunded'] < p['amount'] %}
+    <details class="refund"><summary class="btn-g sm">Возврат</summary>
+      <form class="row wrap" method="post" action="{{ url_for('payment_refund', did=d['id'], pid=p['id']) }}">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <label class="f inline">Сумма, ₽<input name="amount" inputmode="decimal" value="{{ '%.2f'|format((p['amount'] - p['refunded']) / 100) }}" class="mid"></label>
+        <label class="chk"><input type="checkbox" name="confirm" value="1"> Да, вернуть — не отменить</label>
+        <button class="btn-s crit">Вернуть деньги</button>
+      </form></details>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% if lines and tochka_on and not paid_kop %}
+{% set live = payments|selectattr('kind', 'equalto', 'link')|selectattr('status', 'in', ['CREATED', 'AUTHORIZED'])|list %}
+<form class="panel pad grid2" method="post" action="{{ url_for('deal_paylink', did=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <div class="span2"><b>Ссылка на оплату с чеком</b> — на сумму расчёта {{ rubk(total_sum * 100) }}{% if d['kind'] == 'c' %}. <span class="d">Это компания: обычно ей удобнее счёт из интернет-банка — оплата по нему отметится сама.</span>{% endif %}</div>
+  <label class="f">E-mail для чека<input name="email" type="email" value="{{ d['email'] }}" required placeholder="на него банк пришлёт чек"></label>
+  <label class="f">Доставка по СПб, ₽ — если платит вместе с товаром<input name="delivery" inputmode="numeric" pattern="[0-9]*" placeholder="0"></label>
+  <label class="chk span2"><input type="checkbox" name="full" value="1" {% if tochka_method == 'full_payment' %}checked{% endif %}> Товар отдаём сразу после оплаты (клиент на складе) — чек «Полный расчёт». Без галочки — чек «Предоплата 100%», а после отгрузки CRM напомнит про второй чек.</label>
+  {% if live %}<label class="chk span2"><input type="checkbox" name="again" value="1"> Новая ссылка вместо прежней (состав изменился) — предупредите клиента не платить по старой</label>{% endif %}
+  <div class="span2"><button class="btn-p">Создать ссылку на оплату</button></div>
+  <div class="d span2">Оплата картой или через СБП на странице Точка Банка, ссылка действует 7 дней. Ссылка сама встанет в письмо-расчёт выше. Когда клиент оплатит, сделка станет «Оплачено», придёт пуш.</div>
+</form>
+{% elif lines and not tochka_on and not payments %}
+<div class="panel pad d">Ссылки на оплату с чеком появятся здесь после подключения Точки: Ещё → Настройки → «Точка Банк». До этого частным клиентам ссылки на оплату не отправляем.</div>
+{% endif %}
+{% if lines and d['stage'] not in ('shipped', 'lost') %}
+<details class="panel pad"><summary>Отметить оплату, прошедшую мимо CRM (по счёту, по ссылке из интернет-банка)</summary>
+<form class="grid2" method="post" action="{{ url_for('payment_manual', did=d['id']) }}" style="margin-top:10px">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f">Сумма, ₽<input name="amount" inputmode="decimal" required placeholder="{{ total_sum - (paid_kop // 100) }}"></label>
+  <label class="f">Как платили<select name="kind"><option value="invoice">по счёту, с расчётного счёта</option><option value="manual">по ссылке из интернет-банка / другое</option></select></label>
+  <label class="f span2">Заметка<input name="note" placeholder="например: платёжка №125 от ООО «Ромашка»"></label>
+  <div class="span2"><button class="btn-s">Отметить оплату</button></div>
+</form></details>
+{% endif %}
 
 <h2 id="info">Заявка</h2>
 <form class="panel pad grid2" method="post" action="{{ url_for('deal_edit', did=d['id']) }}">

@@ -175,6 +175,39 @@ CREATE TABLE IF NOT EXISTS stock (
     updated_at TEXT NOT NULL,
     updated_by TEXT NOT NULL DEFAULT ''
 );
+CREATE TABLE IF NOT EXISTS payments (               -- деньги по сделке: ссылки Точки, оплаты по счёту, отметки вручную
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    deal_id      INTEGER NOT NULL,
+    kind         TEXT NOT NULL DEFAULT 'link',    -- link (ссылка Точки с чеком), invoice (по счёту), manual (отметили руками)
+    link_id      TEXT NOT NULL DEFAULT '',        -- наш paymentLinkId
+    operation_id TEXT NOT NULL DEFAULT '',        -- operationId банка
+    url          TEXT NOT NULL DEFAULT '',
+    amount       INTEGER NOT NULL,                -- копейки
+    refunded     INTEGER NOT NULL DEFAULT 0,      -- копейки
+    method       TEXT NOT NULL DEFAULT '',        -- full_prepayment | full_payment (признак расчёта в чеке)
+    status       TEXT NOT NULL DEFAULT 'CREATED',
+    pay_type     TEXT NOT NULL DEFAULT '',        -- card | sbp …
+    email        TEXT NOT NULL DEFAULT '',        -- куда банк пришлёт чек
+    note         TEXT NOT NULL DEFAULT '',
+    created_at   TEXT NOT NULL,
+    created_by   TEXT NOT NULL DEFAULT '',
+    paid_at      TEXT NOT NULL DEFAULT '',
+    checked_at   TEXT NOT NULL DEFAULT '',
+    closing_done INTEGER NOT NULL DEFAULT 0       -- чек «Полный расчёт» при отгрузке оформлен
+);
+CREATE INDEX IF NOT EXISTS payments_deal ON payments(deal_id);
+CREATE UNIQUE INDEX IF NOT EXISTS payments_op ON payments(operation_id) WHERE operation_id != '';
+CREATE TABLE IF NOT EXISTS bank_events (            -- поступления на расчётный счёт из вебхука incomingPayment
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    payment_id TEXT NOT NULL UNIQUE,              -- paymentId банка (повторная доставка — та же строка)
+    at         TEXT NOT NULL,
+    day        TEXT NOT NULL DEFAULT '',
+    amount     INTEGER NOT NULL,                  -- копейки
+    payer      TEXT NOT NULL DEFAULT '',
+    inn        TEXT NOT NULL DEFAULT '',
+    purpose    TEXT NOT NULL DEFAULT '',
+    deal_id    INTEGER
+);
 """
 
 
@@ -708,6 +741,11 @@ class Store:
             elif stage == "shipped":
                 self.close_tasks(c, did, user)
                 self.auto_task(c, did, "Попросить отзыв и фото стены", 7, user)
+                # оплачено по ссылке с чеком «Предоплата 100%» — при передаче товара нужен второй чек (54-ФЗ),
+                # через API Точки его не сделать: задача оформить в интернет-банке
+                if c.execute("SELECT 1 FROM payments WHERE deal_id=? AND kind='link' AND method='full_prepayment' AND paid_at!=''"
+                             " AND refunded<amount AND closing_done=0", (did,)).fetchone():
+                    self.auto_task(c, did, "Чек «Полный расчёт» (зачёт предоплаты) — оформить в Точке", 0, user)
             elif stage == "lost":
                 self.close_tasks(c, did, user)
             if stage == "shipped" and not d["stock_written"]:
@@ -1037,6 +1075,9 @@ class Store:
             c.execute("UPDATE tasks SET done_at=? WHERE id=?", (iso_now() if done else None, tid))
             if t["deal_id"] and done and not t["done_at"]:
                 self.log(c, f"Сделано: {t['title']}", user, deal_id=t["deal_id"])
+                if t["title"].startswith("Чек «Полный расчёт»"):   # второй чек оформлен в банке — по сделке больше не напоминаем
+                    c.execute("UPDATE payments SET closing_done=1 WHERE deal_id=? AND kind='link' AND method='full_prepayment'"
+                              " AND paid_at!=''", (t["deal_id"],))
             return t["deal_id"]
 
     def tasks(self, deal_id: int | None = None, open_only: bool = True, until: str | None = None) -> list[sqlite3.Row]:
@@ -1253,6 +1294,168 @@ class Store:
             return 0
         finally:
             b.close()
+
+    # ---------------------------------------------------------------- деньги
+    PAID_STATUSES = ("APPROVED", "WAIT_FULL_PAYMENT", "ON-REFUND", "REFUNDED", "REFUNDED_PARTIALLY")
+
+    def payments(self, did: int) -> list[sqlite3.Row]:
+        return self.c().execute("SELECT * FROM payments WHERE deal_id=? ORDER BY id DESC", (did,)).fetchall()
+
+    def payment(self, pid: int) -> sqlite3.Row | None:
+        return self.c().execute("SELECT * FROM payments WHERE id=?", (pid,)).fetchone()
+
+    def payment_by_op(self, operation_id: str) -> sqlite3.Row | None:
+        if not operation_id:
+            return None
+        return self.c().execute("SELECT * FROM payments WHERE operation_id=?", (operation_id,)).fetchone()
+
+    def paid_kop(self, did: int) -> int:
+        """Сколько по сделке реально пришло (минус возвраты), копейки."""
+        return int(self.c().execute("SELECT COALESCE(SUM(amount - refunded),0) FROM payments WHERE deal_id=? AND paid_at!=''",
+                                    (did,)).fetchone()[0])
+
+    def add_payment(self, did: int, user: str, *, kind: str, amount_kop: int, link_id: str = "", operation_id: str = "",
+                    url: str = "", method: str = "", status: str = "CREATED", email: str = "", note: str = "",
+                    paid: bool = False, pay_type: str = "") -> int:
+        ts = iso_now()
+        with self.tx() as c:
+            d = c.execute("SELECT client_id FROM deals WHERE id=?", (did,)).fetchone()
+            cur = c.execute("INSERT INTO payments(deal_id, kind, link_id, operation_id, url, amount, method, status, pay_type, email,"
+                            " note, created_at, created_by, paid_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                            (did, kind, link_id, operation_id, url[:500], int(amount_kop), method, status, pay_type, email[:120],
+                             note[:500], ts, user, ts if paid else ""))
+            if kind == "link" and url:
+                c.execute("UPDATE deals SET pay_link=?, updated_at=? WHERE id=?", (url[:500], ts, did))
+            what = {"link": f"Ссылка на оплату {rub(amount_kop // 100)} с чеком «{'Предоплата 100%' if method == 'full_prepayment' else 'Полный расчёт'}»"
+                            + (f", чек — на {email}" if email else ""),
+                    "invoice": f"Оплата по счёту {rub(amount_kop // 100)}" + (f" ({note})" if note else ""),
+                    "manual": f"Отмечена оплата {rub(amount_kop // 100)} вручную" + (f" ({note})" if note else "")}.get(kind, kind)
+            self.log(c, what, user, deal_id=did, client_id=d["client_id"] if d else None)
+            return int(cur.lastrowid)
+
+    def payment_update(self, pid: int, user: str, *, status: str, pay_type: str = "", refunded_kop: int | None = None) -> bool:
+        """Записать статус из банка. True — если платёж только что стал оплаченным."""
+        with self.tx() as c:
+            p = c.execute("SELECT * FROM payments WHERE id=?", (pid,)).fetchone()
+            if not p:
+                return False
+            ts = iso_now()
+            newly = status in self.PAID_STATUSES and not p["paid_at"]
+            sets = {"status": status, "checked_at": ts}
+            if pay_type and not p["pay_type"]:
+                sets["pay_type"] = pay_type
+            if newly:
+                sets["paid_at"] = ts
+            if refunded_kop is not None and refunded_kop != p["refunded"]:
+                sets["refunded"] = max(0, min(int(refunded_kop), int(p["amount"])))
+            c.execute(f"UPDATE payments SET {', '.join(k + '=?' for k in sets)} WHERE id=?", (*sets.values(), pid))
+            if status != p["status"] or newly:
+                d = c.execute("SELECT client_id FROM deals WHERE id=?", (p["deal_id"],)).fetchone()
+                names = {"APPROVED": "оплачена", "EXPIRED": "истекла без оплаты", "ON-REFUND": "банк делает возврат",
+                         "REFUNDED": "деньги возвращены", "REFUNDED_PARTIALLY": "частично возвращены", "AUTHORIZED": "деньги заблокированы"}
+                self.log(c, f"Ссылка на оплату {rub(int(p['amount']) // 100)}: {names.get(status, status)}"
+                            + (f" ({ {'card': 'картой', 'sbp': 'через СБП'}.get(pay_type, pay_type) })" if newly and pay_type else ""),
+                         user, deal_id=p["deal_id"], client_id=d["client_id"] if d else None)
+            return newly
+
+    def open_payments(self, days: int = 9) -> list[sqlite3.Row]:
+        """Ссылки, чей итог банк ещё может поменять: ждут оплаты или возврата (вебхук приходит только об оплате)."""
+        since = (now() - timedelta(days=days)).isoformat(timespec="seconds")
+        return self.c().execute("SELECT * FROM payments WHERE kind='link' AND operation_id!='' AND (status='ON-REFUND' OR"
+                                " (status IN ('CREATED','AUTHORIZED','WAIT_FULL_PAYMENT') AND created_at>=?)) ORDER BY id", (since,)).fetchall()
+
+    def after_payment(self, did: int, user: str) -> str:
+        """Деньги пришли: оплачено всё — этап «Оплачено» (и задача «Отгрузить»), часть — задача взять доплату.
+        Возвращает 'paid' | 'part' | ''."""
+        d = self.c().execute("SELECT stage FROM deals WHERE id=?", (did,)).fetchone()
+        if not d:
+            return ""
+        _, total = self.deal_total(did)
+        paid = self.paid_kop(did)
+        if paid <= 0:
+            return ""
+        if paid >= total * 100:
+            if d["stage"] in ("new", "work", "quote"):
+                self.set_stage(did, "paid", user)
+            with self.tx() as c:
+                self.close_tasks(c, did, user, "Получить доплату")
+            return "paid"
+        with self.tx() as c:
+            title = f"Получить доплату {rub(total - paid // 100)} до отгрузки"
+            if not c.execute("SELECT 1 FROM tasks WHERE deal_id=? AND done_at IS NULL AND title LIKE 'Получить доплату%'", (did,)).fetchone():
+                self.auto_task(c, did, title, 1, user)
+        return "part"
+
+    def closing_receipts_due(self, did: int) -> list[sqlite3.Row]:
+        """Оплаты по ссылке с чеком «Предоплата 100%», по которым при отгрузке нужен второй чек «Полный расчёт»."""
+        return self.c().execute("SELECT * FROM payments WHERE deal_id=? AND kind='link' AND method='full_prepayment'"
+                                " AND paid_at!='' AND refunded<amount AND closing_done=0", (did,)).fetchall()
+
+    def set_closing_done(self, did: int, user: str) -> int:
+        with self.tx() as c:
+            n = c.execute("UPDATE payments SET closing_done=1 WHERE deal_id=? AND kind='link' AND method='full_prepayment'"
+                          " AND paid_at!='' AND closing_done=0", (did,)).rowcount
+            if n:
+                d = c.execute("SELECT client_id FROM deals WHERE id=?", (did,)).fetchone()
+                self.log(c, "Чек «Полный расчёт» (зачёт предоплаты) оформлен", user, deal_id=did, client_id=d["client_id"] if d else None)
+                self.close_tasks(c, did, user, "Чек «Полный расчёт»")
+            return n
+
+    def add_bank_event(self, payment_id: str, amount_kop: int, payer: str, inn: str, purpose: str, day: str) -> tuple[int, bool]:
+        """Поступление на расчётный счёт (вебхук incomingPayment). (номер строки, новое ли)."""
+        with self.tx() as c:
+            row = c.execute("SELECT id FROM bank_events WHERE payment_id=?", (payment_id,)).fetchone()
+            if row:
+                return int(row["id"]), False
+            cur = c.execute("INSERT INTO bank_events(payment_id, at, day, amount, payer, inn, purpose) VALUES (?,?,?,?,?,?,?)",
+                            (payment_id[:80], iso_now(), day[:10], int(amount_kop), payer[:200], inn[:12], purpose[:300]))
+            return int(cur.lastrowid), True
+
+    def match_bank_event(self, inn: str, purpose: str) -> int | None:
+        """Чья это оплата: «счёт/заказ №N» в назначении платежа или ИНН клиента с одной открытой сделкой."""
+        m = re.search(r"(?:сч[её]т[ау]?|заказ[ау]?|сделк[еи])\D{0,8}(\d{1,7})", purpose or "", flags=re.I)
+        if m:
+            row = self.c().execute("SELECT id FROM deals WHERE id=? AND stage NOT IN ('lost')", (int(m.group(1)),)).fetchone()
+            if row:
+                return int(row["id"])
+        inn = re.sub(r"\D", "", inn or "")
+        if len(inn) in (10, 12):
+            rows = self.c().execute("SELECT d.id FROM deals d JOIN clients cl ON cl.id=d.client_id WHERE cl.inn=? AND d.stage IN"
+                                    " ('new','work','quote','paid')", (inn,)).fetchall()
+            if len(rows) == 1:
+                return int(rows[0]["id"])
+        return None
+
+    def link_bank_event(self, eid: int, did: int, user: str) -> int | None:
+        """Привязать поступление к сделке: в сделке появляется оплата по счёту. Возвращает номер оплаты."""
+        ev = self.c().execute("SELECT * FROM bank_events WHERE id=?", (eid,)).fetchone()
+        if not ev or ev["deal_id"] or not self.c().execute("SELECT 1 FROM deals WHERE id=?", (did,)).fetchone():
+            return None
+        pid = self.add_payment(did, user, kind="invoice", amount_kop=int(ev["amount"]), status="APPROVED", paid=True,
+                               note=(ev["payer"] + (f", ИНН {ev['inn']}" if ev["inn"] else "")).strip(", "))
+        with self.tx() as c:
+            c.execute("UPDATE bank_events SET deal_id=? WHERE id=?", (did, eid))
+        return pid
+
+    def bank_events(self, limit: int = 100, unlinked: bool = False) -> list[sqlite3.Row]:
+        sql = "SELECT * FROM bank_events" + (" WHERE deal_id IS NULL" if unlinked else "") + " ORDER BY id DESC LIMIT ?"
+        return self.c().execute(sql, (limit,)).fetchall()
+
+    def money(self, month: str) -> dict[str, Any]:
+        """Сводка для вкладки «Деньги»: месяц YYYY-MM."""
+        c = self.c()
+        rows = c.execute("SELECT p.*, cl.name AS client_name FROM payments p JOIN deals d ON d.id=p.deal_id JOIN clients cl ON cl.id=d.client_id"
+                         " WHERE substr(p.created_at,1,7)=? OR substr(p.paid_at,1,7)=? ORDER BY p.id DESC", (month, month)).fetchall()
+        waiting = c.execute("SELECT p.*, cl.name AS client_name FROM payments p JOIN deals d ON d.id=p.deal_id JOIN clients cl ON cl.id=d.client_id"
+                            " WHERE p.kind='link' AND p.status IN ('CREATED','AUTHORIZED') ORDER BY p.id DESC LIMIT 100").fetchall()
+        closing = c.execute("SELECT p.*, cl.name AS client_name FROM payments p JOIN deals d ON d.id=p.deal_id JOIN clients cl ON cl.id=d.client_id"
+                            " WHERE p.kind='link' AND p.method='full_prepayment' AND p.paid_at!='' AND p.closing_done=0 AND p.refunded<p.amount"
+                            " AND d.stage='shipped' ORDER BY p.id").fetchall()
+        got = sum(int(r["amount"]) - int(r["refunded"]) for r in rows if r["paid_at"][:7] == month)
+        links = sum(int(r["amount"]) - int(r["refunded"]) for r in rows if r["paid_at"][:7] == month and r["kind"] == "link")
+        year = month[:4]
+        year_kop = int(c.execute("SELECT COALESCE(SUM(amount - refunded),0) FROM payments WHERE substr(paid_at,1,4)=?", (year,)).fetchone()[0])
+        return {"rows": rows, "waiting": waiting, "closing": closing, "got": got, "links": links, "year": year_kop}
 
     # ---------------------------------------------------------------- копия
     def backup(self, dest: str) -> None:

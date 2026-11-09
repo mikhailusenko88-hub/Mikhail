@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Отчёты{% endblock %}
 {% block main %}
-<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}" aria-current="page">Отчёты</a><a href="{{ url_for('settings_view') }}">Настройки</a>{% if me and me['role']=='admin' %}<a href="{{ url_for('server_view') }}">Сервер</a>{% endif %}</div>
+<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}" aria-current="page">Отчёты</a>{% if me and me['role']=='admin' %}<a href="{{ url_for('money_view') }}">Деньги</a>{% endif %}<a href="{{ url_for('settings_view') }}">Настройки</a>{% if me and me['role']=='admin' %}<a href="{{ url_for('server_view') }}">Сервер</a>{% endif %}</div>
 <h1>Отчёты</h1>
 <h2>Заявки по этапам</h2>
 <div class="panel tbl"><table><thead><tr><th>Этап</th><th class="r">Заявок</th><th class="r">Сумма</th></tr></thead><tbody>

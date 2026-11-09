@@ -11,6 +11,7 @@
   python3 manage.py mail-in                    — новые письма (JSON-строки из mailwatch.py на stdin) → пуши и сделки
   python3 manage.py digest                     — утренняя сводка пушем (cron, раз в день)
   python3 manage.py push "Заголовок" "Текст"   — пуш всем сотрудникам с включёнными уведомлениями
+  python3 manage.py tochka-poll                — спросить Точку об открытых ссылках на оплату (cron, раз в 5 минут)
 """
 
 from __future__ import annotations
@@ -83,6 +84,12 @@ def main(argv: list[str]) -> int:
         else:
             ok, bad = app.extensions["push"].notify(args[0] if args else "Наш декор", args[1] if len(args) > 1 else "", "/")
             print(f"доставлено: {ok}, не доставлено: {bad}")
+        print("ok")
+    elif cmd == "tochka-poll":
+        from app import create_app
+        lines = create_app({"PUSH_SYNC": True}).extensions["tochka_poll"]()
+        for line in lines:
+            print(line)
         print("ok")
     elif cmd == "followups":
         from app import create_app

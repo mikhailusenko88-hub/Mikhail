@@ -499,6 +499,7 @@ prostranstvo-crm — CRM https://$CRM_HOST
   prostranstvo-crm followups           — разослать напоминания клиентам, не ответившим на расчёт (cron, раз в день в 11:25)
   prostranstvo-crm mail-watch          — новые письма в zakaz@ и info@ → пуш на телефоны (cron, раз в минуту)
   prostranstvo-crm digest              — утренняя сводка пушем (cron, 9:35)
+  prostranstvo-crm tochka-poll         — спросить Точку об открытых ссылках на оплату (cron, раз в 5 минут)
   prostranstvo-crm push "Текст"        — пуш всем сотрудникам с включёнными уведомлениями
   prostranstvo-crm cert                 — получить сертификат для $CRM_HOST сейчас
 EOF
@@ -517,6 +518,7 @@ case ${1:-status} in
   followups) manage followups || rc=$? ;;
   mail-watch) cmd_mail_watch || rc=$? ;;
   digest) manage digest || rc=$? ;;
+  tochka-poll) manage tochka-poll || rc=$? ;;
   push) shift; manage push "Наш декор" "${1:-Проверка уведомлений}" || rc=$? ;;
   cert) shift; cmd_cert "$@" || rc=$? ;;
   -h | --help | help) usage ;;
@@ -633,7 +635,8 @@ step_nginx() {
 # Создано setup-crm.sh: сертификат для crm.ДОМЕН, когда домен заработает; ночные копии баз в 03:15;
 # отчёт для страницы CRM «Сервер» (пересобирается по кнопке или раз в 15 минут);
 # напоминания клиентам о расчёте — раз в день в 11:25 (выключаются в CRM → Настройки → Письма клиентам);
-# пуши: новые письма в zakaz@/info@ — раз в минуту, утренняя сводка — 9:35.
+# пуши: новые письма в zakaz@/info@ — раз в минуту, утренняя сводка — 9:35;
+# Точка Банк: статус открытых ссылок на оплату — раз в 5 минут (пока Точка не подключена, команда ничего не делает).
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 7,22,37,52 * * * *  root  /usr/local/sbin/prostranstvo-crm cert --auto 2>&1 | logger -t prostranstvo-crm
@@ -642,6 +645,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 25 11 * * *         root  /usr/local/sbin/prostranstvo-crm followups 2>&1 | logger -t prostranstvo-followups
 * * * * *           root  flock -n /run/prostranstvo-mailwatch.lock /usr/local/sbin/prostranstvo-crm mail-watch 2>&1 | logger -t prostranstvo-mailwatch
 35 9 * * *          root  /usr/local/sbin/prostranstvo-crm digest 2>&1 | logger -t prostranstvo-digest
+*/5 * * * *         root  flock -n /run/prostranstvo-tochka.lock /usr/local/sbin/prostranstvo-crm tochka-poll 2>&1 | grep -v '^ok$\|не подключена' | logger -t prostranstvo-tochka
 EOF
   /usr/local/sbin/prostranstvo-crm server-page --now >/dev/null 2>&1 || true
   local rc=0

@@ -32,6 +32,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from store import (KIND_NAMES, KIND_TITLES, KINDS, OPEN_STAGES, ROLE_NAMES, ROLES, SOURCE_NAMES, SOURCES,
                    STAGE_NAMES, STAGES, Catalog, Store, fmt_day, fmt_dt, now, rub, today, split_contact)
 from push import WebPush
+from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, TochkaError, http_request, jwt_claims,
+                    parse_jwk, receipt_items, verify_rs256)
 from visits import Visits, is_bot, parse_body
 
 log = logging.getLogger("crm")
@@ -105,6 +107,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     wp.sync = bool(cfg.get("TESTING")) or bool(cfg.get("PUSH_SYNC"))
     app.extensions["push"] = wp
     store.on_notify = lambda title, text, url: wp.notify(title, text, url, tag=url)
+    app.extensions["tochka_http"] = cfg.get("TOCHKA_HTTP")      # в тестах — подставной банк; на сервере — None (urllib)
     app.extensions["visits"] = visits
     hits_by_ip: dict[str, deque[float]] = defaultdict(deque)
     fails: dict[str, deque[float]] = defaultdict(deque)
@@ -148,7 +151,15 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 "KIND_TITLES": KIND_TITLES, "rub": rub, "fmt_dt": fmt_dt, "fmt_day": fmt_day, "today": today(),
                 "me": getattr(g, "user", None), "csrf": session.get("csrf", ""), "total": Store.total,
                 "nav_new": getattr(g, "nav_new", 0), "nav_chat": getattr(g, "nav_chat", 0), "SHOP_DOMAIN": conf["SHOP_DOMAIN"] or "nashdekor.ru",
-                "PUSH_KEY": wp.public_key() if getattr(g, "user", None) and wp.enabled else ""}
+                "PUSH_KEY": wp.public_key() if getattr(g, "user", None) and wp.enabled else "",
+                "rubk": rubk, "PAY_STATUS": STATUS_NAMES, "PAY_TYPES": PAY_TYPES}
+
+    @app.template_filter("ts_iso")
+    def ts_iso(ts: Any) -> str:
+        try:
+            return datetime.fromtimestamp(int(ts), now().tzinfo).isoformat(timespec="seconds")
+        except (TypeError, ValueError, OverflowError, OSError):
+            return ""
 
     @app.after_request
     def headers(resp: Response) -> Response:
@@ -399,7 +410,9 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                stock=stock, tasks=store.tasks(deal_id=did, open_only=False),
                                events=store.events(deal_id=did), bot=bot, msgs=msgs,
                                catalog=store.catalog.all(), other=store.deals(client_id=d["client_id"], limit=20),
-                               chat=store.chat_of_deal(did))
+                               chat=store.chat_of_deal(did), payments=store.payments(did), paid_kop=store.paid_kop(did),
+                               tochka_on=tochka_on(), closing=store.closing_receipts_due(did),
+                               tochka_method=store.setting("tochka_method", "full_prepayment"))
 
     def mail_contacts() -> str:
         """Строка контактов в письмах клиентам (Настройки → Письма клиентам)."""
@@ -429,8 +442,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if (d["address"] or "").strip():
             out += ["", f"Получение: {d['address'].strip()}"]
         if (d["pay_link"] or "").strip():
-            out += ["", f"Оплатить онлайн (карта, СБП): {d['pay_link'].strip()}",
-                    "Можно внести предоплату 50% (остаток — при получении) или оплатить полностью. После оплаты пришлём подтверждение и согласуем доставку."]
+            out += ["", f"Оплатить картой или через СБП: {d['pay_link'].strip()}",
+                    "Оплата проходит на защищённой странице банка, ссылка действует 7 дней. Электронный чек придёт на e-mail. После оплаты пришлём подтверждение и согласуем доставку."]
         out += ["",
                 "Цены без НДС. Доставка по Санкт-Петербургу и Ленобласти рассчитывается отдельно, самовывоз со склада — бесплатно.",
                 "Расчёт действует 7 дней; наличие и срок поставки подтвердим при заказе.", "",
@@ -438,7 +451,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if (d["pay_link"] or "").strip():
             out += ["• Если всё верно — оплатите по ссылке выше, и мы начнём собирать заказ. Или просто ответьте «подтверждаю» — свяжемся и согласуем доставку."]
         else:
-            out += ["• Если расчёт подходит — ответьте на это письмо или напишите нам: пришлём ссылку на оплату (предоплата 50% или 100%) и согласуем доставку."]
+            out += ["• Если расчёт подходит — ответьте на это письмо или напишите нам: пришлём ссылку на оплату картой или через СБП (компаниям — счёт) и согласуем доставку."]
         out += ["• Нужно изменить количество, цвет, добавить плинтус или карниз — напишите, пересчитаем.",
                 "• Если ответа не будет, через пару дней мы сами напишем или позвоним, чтобы узнать решение. Если планы изменились — просто скажите, беспокоить не будем."]
         out += mail_signature(manager)
@@ -457,7 +470,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             body = [f"Здравствуйте, {d['client_name']}!", "",
                     f"{sent} мы отправили вам расчёт №{d['id']} на {tot} ({items}).",
                     "Подскажите, пожалуйста, подходит ли он?", "",
-                    "• Если да — ответьте на это письмо или напишите нам, и мы пришлём ссылку на оплату (предоплата 50% или 100%) и согласуем доставку.",
+                    "• Если да — ответьте на это письмо или напишите нам, и мы пришлём ссылку на оплату картой или через СБП (компаниям — счёт) и согласуем доставку.",
                     "• Если нужно что-то изменить — количество, цвет, добавить плинтус или карниз — напишите, пересчитаем.",
                     "• Если планы изменились — тоже напишите, мы не будем беспокоить."]
         else:
@@ -584,6 +597,12 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if request.form.get("next") == "1":
             order = [s for s, _ in STAGES if s != "lost"]
             target = order[order.index(d["stage"]) + 1] if d["stage"] in order and d["stage"] != order[-1] else ""
+        if target == "shipped" and d["stage"] != "shipped":
+            _, total = store.deal_total(did)
+            paid = store.paid_kop(did)
+            if 0 < paid < total * 100:
+                flash(f"Не отгружаем: оплачено {rubk(paid)} из {rubk(total * 100)}. Возьмите доплату и отметьте её в блоке «Оплата».", "err")
+                return redirect(safe_next(request.form.get("back")) if request.form.get("back") else url_for("deal_view", did=did) + "#pay")
         if target == "quote" and d["stage"] != "quote":
             # «Расчёт отправлен» нельзя поставить руками: либо письмо ушло, либо «Отправил сам» в карточке
             ok, info = send_calc_to(did, "")
@@ -606,6 +625,447 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                           title=f"Оплачено №{did} — готовить отгрузку", url=f"/deals/{did}",
                                           roles=("manager", "shipping"))
         return redirect(safe_next(request.form.get("back")) if request.form.get("back") else url_for("deal_view", did=did))
+
+    # ------------------------------------------------------------ Точка Банк: ссылки на оплату с чеком, вебхук, деньги
+    def bank() -> Tochka | None:
+        tok = store.setting("tochka_jwt", "")
+        if not tok:
+            return None
+        return Tochka(tok, store.setting("tochka_customer", ""), store.setting("tochka_merchant", ""),
+                      http=app.extensions.get("tochka_http"))
+
+    def tochka_info() -> dict[str, Any]:
+        try:
+            v = json.loads(store.setting("tochka_info", "") or "{}")
+            return v if isinstance(v, dict) else {}
+        except ValueError:
+            return {}
+
+    def tochka_on() -> bool:
+        """Можно создавать ссылки: ключ есть, клиент банка выбран, приём включён в Настройках."""
+        return bool(store.setting("tochka_jwt", "") and store.setting("tochka_customer", "")) and store.setting("tochka_enabled", "0") == "1"
+
+    def notify_money(did: int, kop: int, how: str, result: str) -> None:
+        d = store.deal(did)
+        if not d:
+            return
+        if result == "paid":
+            store.notify_team(f"Оплачено №{did} — {rubk(kop)} {how}: {d['client_name']}. Можно готовить отгрузку.",
+                              title=f"Оплачено №{did} — {rubk(kop)} {how}", url=f"/deals/{did}", roles=("manager", "shipping"))
+        elif result == "part":
+            store.notify_team(f"Предоплата №{did} — {rubk(kop)} {how}: {d['client_name']}. Остаток — до отгрузки.",
+                              title=f"Предоплата №{did} — {rubk(kop)} {how}", url=f"/deals/{did}")
+
+    def check_payment(p: Any, user: str = "банк") -> str:
+        """Спросить банк о ссылке и записать итог. Сумму и статус берём только отсюда, не из вебхука."""
+        t = bank()
+        if t is None:
+            return "Точка не подключена"
+        op = t.payment(str(p["operation_id"]))
+        if op is None:
+            return "банк не нашёл операцию"
+        status = str(op.get("status") or "")
+        pay_type = str(op.get("paymentType") or "")
+        refunds = [float(o.get("amount") or 0) for o in (op.get("Order") or []) if isinstance(o, dict) and o.get("type") == "refund"]
+        refunded: int | None = int(round(sum(refunds) * 100)) if refunds else None
+        if status == "REFUNDED" and not refunded:
+            refunded = int(p["amount"])
+        newly = store.payment_update(int(p["id"]), user, status=status, pay_type=pay_type, refunded_kop=refunded)
+        if newly:
+            res = store.after_payment(int(p["deal_id"]), user)
+            notify_money(int(p["deal_id"]), int(p["amount"]), PAY_TYPES.get(pay_type, "по ссылке"), res)
+        return status
+
+    def run_tochka_poll() -> list[str]:
+        """Опрос банка по открытым ссылкам (cron раз в 5 минут): вебхук приходит только об оплате, а истечение
+        и возвраты узнаём сами. Свежие ссылки — каждые 5 минут, за первые сутки — раз в 15 минут, дальше — раз в час."""
+        if bank() is None:
+            return ["Точка не подключена"]
+        out: list[str] = []
+        t0 = now()
+        for p in store.open_payments():
+            age = (t0 - datetime.fromisoformat(p["created_at"])).total_seconds()
+            gap = (t0 - datetime.fromisoformat(p["checked_at"])).total_seconds() if p["checked_at"] else 1e9
+            if gap < (240 if age < 3600 else 840 if age < 86400 else 3540):
+                continue
+            try:
+                out.append(f"№{p['deal_id']} ссылка {p['id']}: {check_payment(p, 'банк (проверка)')}")
+            except TochkaError as e:
+                out.append(f"№{p['deal_id']} ссылка {p['id']}: {e.human()}")
+        return out
+    app.extensions["tochka_poll"] = run_tochka_poll
+
+    def money_back(did: int) -> Any:
+        return redirect(url_for("deal_view", did=did) + "#pay")
+
+    @app.post("/deals/<int:did>/paylink")
+    @login_required
+    def deal_paylink(did: int) -> Any:
+        """Ссылка на оплату с чеком 54-ФЗ на сумму расчёта (+ доставка), вставляется в письмо-расчёт."""
+        d = store.deal(did)
+        if not d:
+            abort(404)
+        t = bank()
+        if t is None or not tochka_on():
+            flash("Точка не подключена: Ещё → Настройки → «Точка Банк».", "err")
+            return money_back(did)
+        lines = store.lines(did)
+        if not lines:
+            flash("В расчёте нет позиций — добавьте товар.", "err")
+            return money_back(did)
+        if store.paid_kop(did) > 0:
+            flash("По сделке уже есть оплата. Доплату по ссылке с чеком банк не поддерживает: возьмите остаток по счёту "
+                  "или сделайте возврат и новую ссылку на всю сумму.", "err")
+            return money_back(did)
+        live = [p for p in store.payments(did) if p["kind"] == "link" and p["status"] in ("CREATED", "AUTHORIZED")]
+        if live and not request.form.get("again"):
+            flash("Предыдущая ссылка ещё действует. Если состав изменился — отметьте «Новая ссылка вместо прежней» и предупредите "
+                  "клиента не платить по старой (если заплатит дважды — лишнее вернёте кнопкой «Возврат»).", "err")
+            return money_back(did)
+        email = (request.form.get("email") or d["email"] or "").strip()[:120]
+        if not EMAIL_RE.fullmatch(email):
+            flash("Нужен e-mail клиента — на него банк пришлёт кассовый чек.", "err")
+            return money_back(did)
+        if email != (d["email"] or ""):
+            store.update_client(int(d["client_id"]), who(), email=email)
+        try:
+            delivery = max(0, min(int(re.sub(r"\D", "", request.form.get("delivery", "") or "0") or 0), 300000))
+        except ValueError:
+            delivery = 0
+        method = "full_payment" if request.form.get("full") else store.setting("tochka_method", "full_prepayment")
+        method = method if method in ("full_payment", "full_prepayment") else "full_prepayment"
+        _, total = store.deal_total(did)
+        rows = []
+        for ln in lines:
+            p = store.catalog.get(ln["article"])
+            nm = p.name if p and ln["article"] in p.name else (f"{ln['article']} {p.name}" if p else ln["article"])
+            rows.append((nm, int(ln["qty"]), int(ln["price"])))
+        try:
+            items, kop = receipt_items(rows, int(d["discount"] or 0), delivery, method, goods_total=total)
+        except ValueError as e:
+            flash(f"Не получилось собрать чек: {e}.", "err")
+            return money_back(did)
+        if kop < 100:
+            flash("Сумма к оплате меньше 1 ₽.", "err")
+            return money_back(did)
+        dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
+        modes = [m for m in (tochka_info().get("retailer") or {}).get("paymentModes") or [] if m in ("card", "sbp")] or ["card", "sbp"]
+        client: dict[str, str] = {"name": (d["client_name"] or "")[:100], "email": email}
+        if re.fullmatch(r"\+7\d{10}", d["phone"] or ""):
+            client["phone"] = d["phone"]
+        link_id = f"ND{did}-{len(store.payments(did)) + 1}-{secrets.token_hex(3)}"
+        data = {"amount": kop / 100, "purpose": f"Заказ №{did} в магазине «Наш декор»", "paymentMode": modes,
+                "paymentLinkId": link_id, "ttl": 10080, "redirectUrl": f"https://{dom}/oplata/?paid={did}",
+                "failRedirectUrl": f"https://{dom}/oplata/?fail={did}", "taxSystemCode": store.setting("tochka_tax", "usn_income_outcome"),
+                "Client": client, "Items": items}
+        try:
+            out = t.create_link(data)
+        except TochkaError as e:
+            c = store.c(); store.log(c, f"Ссылка на оплату не создана: {e.human()}", who(), deal_id=did, client_id=d["client_id"]); c.commit()
+            flash("Ссылка не создана: " + e.human(), "err")
+            return money_back(did)
+        store.add_payment(did, who(), kind="link", amount_kop=kop, link_id=link_id, operation_id=str(out["operationId"]),
+                          url=str(out["paymentLink"]), method=method, status=str(out.get("status") or "CREATED"), email=email)
+        flash(f"Ссылка на {rubk(kop)} создана и вставлена в расчёт — отправьте его клиенту: «Отправить расчёт на почту» "
+              "или «Скопировать расчёт для мессенджера». Когда клиент оплатит, сделка сама станет «Оплачено».", "ok")
+        return redirect(url_for("deal_view", did=did) + "#lines")
+
+    @app.post("/deals/<int:did>/payments/<int:pid>/check")
+    @login_required
+    def payment_check(did: int, pid: int) -> Any:
+        p = store.payment(pid)
+        if not p or int(p["deal_id"]) != did or p["kind"] != "link":
+            abort(404)
+        try:
+            st = check_payment(p, who())
+            flash(f"Банк: {STATUS_NAMES.get(st, st)}.", "ok")
+        except TochkaError as e:
+            flash("Не удалось проверить: " + e.human(), "err")
+        return money_back(did)
+
+    @app.post("/deals/<int:did>/payments/<int:pid>/refund")
+    @admin_required
+    def payment_refund(did: int, pid: int) -> Any:
+        """Возврат по оплате ссылкой (полный или часть). Чек возврата формирует банк."""
+        p = store.payment(pid)
+        if not p or int(p["deal_id"]) != did:
+            abort(404)
+        if p["kind"] != "link" or not p["paid_at"] or not p["operation_id"]:
+            flash("Через банк возвращается только оплата по ссылке. Оплату по счёту возвращают платёжкой из интернет-банка.", "err")
+            return money_back(did)
+        if request.form.get("confirm") != "1":
+            flash("Поставьте галочку «Да, вернуть» — возврат не отменить.", "err")
+            return money_back(did)
+        raw = (request.form.get("amount") or "").replace(" ", "").replace(",", ".")
+        try:
+            kop = int(round(float(raw) * 100))
+        except ValueError:
+            kop = 0
+        left = int(p["amount"]) - int(p["refunded"])
+        if kop <= 0 or kop > left:
+            flash(f"Сумма возврата — от 1 ₽ до {rubk(left)}.", "err")
+            return money_back(did)
+        t = bank()
+        if t is None:
+            flash("Точка не подключена.", "err")
+            return money_back(did)
+        try:
+            r = t.refund(str(p["operation_id"]), kop / 100)
+        except TochkaError as e:
+            flash("Возврат не прошёл: " + e.human(), "err")
+            return money_back(did)
+        if r.get("isRefund") is False:
+            flash("Банк отказал в возврате — уточните в чате Точки.", "err")
+            return money_back(did)
+        store.payment_update(pid, who(), status="ON-REFUND", refunded_kop=int(p["refunded"]) + kop)
+        c = store.c(); store.log(c, f"Возврат {rubk(kop)} отправлен в банк", who(), deal_id=did); c.commit()
+        flash(f"Возврат {rubk(kop)} отправлен в банк. Деньги вернутся клиенту на карту или счёт, с которых он платил; статус обновится сам.", "ok")
+        return money_back(did)
+
+    @app.post("/deals/<int:did>/payments/manual")
+    @login_required
+    def payment_manual(did: int) -> Any:
+        """Отметить оплату, которая прошла мимо CRM: по счёту с расчётного счёта или по ссылке из интернет-банка."""
+        d = store.deal(did)
+        if not d:
+            abort(404)
+        raw = (request.form.get("amount") or "").replace(" ", "").replace(",", ".")
+        try:
+            kop = int(round(float(raw) * 100))
+        except ValueError:
+            kop = 0
+        if kop <= 0 or kop > 100_000_000:
+            flash("Укажите сумму оплаты.", "err")
+            return money_back(did)
+        kind = "invoice" if request.form.get("kind") == "invoice" else "manual"
+        store.add_payment(did, who(), kind=kind, amount_kop=kop, status="APPROVED", paid=True,
+                          note=(request.form.get("note") or "").strip()[:200])
+        res = store.after_payment(did, who())
+        notify_money(did, kop, "по счёту" if kind == "invoice" else "", res)
+        flash("Оплата отмечена." + (" Этап — «Оплачено»." if res == "paid" else " Остаток — задачей до отгрузки." if res == "part" else ""), "ok")
+        return money_back(did)
+
+    @app.post("/deals/<int:did>/closing-done")
+    @login_required
+    def payment_closing_done(did: int) -> Any:
+        n = store.set_closing_done(did, who())
+        flash("Отмечено: чек «Полный расчёт» оформлен." if n else "Нечего отмечать.", "ok" if n else "err")
+        return money_back(did)
+
+    def bank_keys(refresh: bool = False) -> list[dict[str, Any]]:
+        """Открытый ключ банка для подписи вебхуков: из настроек, при отсутствии — с сайта Точки (не чаще раза в 10 минут)."""
+        txt = store.setting("tochka_jwk", "")
+        if (not txt or refresh) and (app.extensions.get("tochka_http") or not app.testing):
+            last = float(store.setting("tochka_jwk_try", "0") or 0)
+            if time.time() - last > 600:
+                store.set_setting("tochka_jwk_try", str(int(time.time())))
+                st, body = (app.extensions.get("tochka_http") or http_request)("GET", KEY_URL, {"Accept": "application/json"}, None)
+                if st == 200:
+                    try:
+                        parse_jwk(body.decode("utf-8"))
+                        txt = body.decode("utf-8")
+                        store.set_setting("tochka_jwk", txt)
+                    except (ValueError, UnicodeDecodeError):
+                        log.warning("Точка: ключ для вебхуков не разобран")
+        try:
+            return parse_jwk(txt) if txt else []
+        except ValueError:
+            return []
+
+    @app.route("/api/tochka/webhook", methods=["POST"])
+    def tochka_webhook() -> Any:
+        """Вебхук Точки: тело — JWT, подписанный банком (RS256). Ответ 200 — принято; 400 — подпись не банка;
+        503 — банк не ответил на проверку (Точка повторит). Тестовые вебхуки банка при регистрации — 200."""
+        raw = request.get_data(cache=False)[:65536]
+        token = raw.decode("ascii", "ignore").strip()
+        claims = jwt_claims(token)
+        if not claims:
+            return Response("not a jwt", status=400, mimetype="text/plain")
+        verified = False
+        keys = bank_keys()
+        if keys:
+            for attempt in (0, 1):
+                for k in keys:
+                    try:
+                        claims = verify_rs256(token, k)
+                        verified = True
+                        break
+                    except (ValueError, KeyError):
+                        continue
+                if verified or attempt:
+                    break
+                keys = bank_keys(refresh=True)     # банк мог сменить ключ
+            if not verified:
+                log.warning("Точка: вебхук с неверной подписью от %s", ip())
+                return Response("bad signature", status=400, mimetype="text/plain")
+        our = store.setting("tochka_customer", "")
+        if not our or str(claims.get("customerCode") or "") != our:
+            return Response("ok", mimetype="text/plain")            # чужой или тестовый вебхук
+        kind = str(claims.get("webhookType") or "")
+        if kind == "acquiringInternetPayment":
+            p = store.payment_by_op(str(claims.get("operationId") or ""))
+            if p:
+                try:
+                    check_payment(p, "банк")
+                except TochkaError as e:
+                    log.warning("Точка: проверка оплаты не прошла: %s", e.human())
+                    return Response("retry", status=503, mimetype="text/plain")
+        elif kind == "incomingPayment" and verified:                # без подписи поступлению не верим: перепроверить его нечем
+            payer = claims.get("SidePayer") or {}
+            try:
+                kop = int(round(float(str(payer.get("amount") or claims.get("amount") or "0").replace(",", ".")) * 100))
+            except ValueError:
+                kop = 0
+            pid = str(claims.get("paymentId") or claims.get("documentNumber") or "")
+            if kop > 0 and pid:
+                purpose = str(claims.get("purpose") or "")
+                eid, new = store.add_bank_event(pid, kop, str(payer.get("name") or ""), str(payer.get("inn") or ""), purpose,
+                                                str(claims.get("date") or ""))
+                if new:
+                    did = store.match_bank_event(str(payer.get("inn") or ""), purpose)
+                    if did:
+                        store.link_bank_event(eid, did, "банк")
+                        notify_money(did, kop, "по счёту", store.after_payment(did, "банк"))
+                    elif "эквайр" not in purpose.lower():
+                        store.notify_team(f"Поступило {rubk(kop)} от {payer.get('name') or 'плательщика'} — сделку не нашли. "
+                                          f"Назначение: {purpose[:120]}", title=f"Поступило {rubk(kop)} — привяжите к сделке",
+                                          url="/money", roles=("admin",))
+        return Response("ok", mimetype="text/plain")
+
+    @app.route("/money")
+    @admin_required
+    def money_view() -> Any:
+        month = request.args.get("m", "") or today()[:7]
+        if not re.fullmatch(r"\d{4}-\d{2}", month):
+            month = today()[:7]
+        y, mo = int(month[:4]), int(month[5:])
+        prev = f"{y - 1}-12" if mo == 1 else f"{y}-{mo - 1:02d}"
+        nxt = f"{y + 1}-01" if mo == 12 else f"{y}-{mo + 1:02d}"
+        names = ("январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь")
+        return render_template("money.html", m=store.money(month), month=month, prev=prev, nxt=nxt, month_name=f"{names[mo - 1]} {y}",
+                               events=store.bank_events(60), tochka=tochka_on(), info=tochka_info())
+
+    @app.post("/money/link")
+    @admin_required
+    def money_link() -> Any:
+        try:
+            eid, did = int(request.form.get("event", "0")), int(re.sub(r"\D", "", request.form.get("deal", "")) or 0)
+        except ValueError:
+            eid, did = 0, 0
+        if store.link_bank_event(eid, did, who()):
+            res = store.after_payment(did, who())
+            flash(f"Поступление привязано к заявке №{did}." + (" Этап — «Оплачено»." if res == "paid" else ""), "ok")
+        else:
+            flash("Не привязано: проверьте номер заявки (или поступление уже привязано).", "err")
+        return redirect(url_for("money_view"))
+
+    @app.post("/settings/tochka")
+    @admin_required
+    def settings_tochka() -> Any:
+        """Точка Банк: ключ, проверка связи (клиент банка, торговая точка, касса), вебхук, включение приёма оплат."""
+        act = request.form.get("act", "save")
+        back = redirect(url_for("settings_view") + "#tochka")
+        if act == "forget":
+            for k in ("tochka_jwt", "tochka_customer", "tochka_merchant", "tochka_info", "tochka_client_id", "tochka_webhook"):
+                store.set_setting(k, "")
+            store.set_setting("tochka_enabled", "0")
+            c = store.c(); store.log(c, "Точка: ключ удалён из CRM", who()); c.commit()
+            flash("Ключ Точки удалён из CRM. Удалите его и в интернет-банке: «Интеграции и API».", "ok")
+            return back
+        if act == "save":
+            tok = re.sub(r"\s+", "", request.form.get("jwt", ""))
+            if tok:
+                if tok.count(".") != 2 or len(tok) > 8000 or not jwt_claims(tok):
+                    flash("Это не похоже на JWT-ключ: он длинный и состоит из трёх частей через точку.", "err")
+                    return back
+                store.set_setting("tochka_jwt", tok)
+                store.set_setting("tochka_enabled", "0")
+                c = store.c(); store.log(c, "Точка: сохранён новый JWT-ключ", who()); c.commit()
+            for k, f in (("tochka_customer", "customer"), ("tochka_merchant", "merchant"), ("tochka_client_id", "client_id")):
+                if f in request.form:
+                    store.set_setting(k, re.sub(r"[^\w-]", "", request.form.get(f, ""))[:64])
+            tax = request.form.get("tax", "")
+            if tax in dict(TAX_SYSTEMS):
+                store.set_setting("tochka_tax", tax)
+            meth = request.form.get("method", "")
+            if meth in ("full_prepayment", "full_payment"):
+                store.set_setting("tochka_method", meth)
+            flash("Сохранено." + (" Теперь нажмите «Проверить связь с банком»." if tok else ""), "ok")
+            return back
+        t = bank()
+        if t is None:
+            flash("Сначала вставьте JWT-ключ из интернет-банка Точки.", "err")
+            return back
+        if act == "check":
+            info: dict[str, Any] = {"checked_at": iso_now_app(), "exp": t.expires(), "client_id": t.client_id()}
+            try:
+                custs = t.customers()
+                biz = [c for c in custs if c.get("customerType") == "Business"]
+                info["customers"] = [{"code": c.get("customerCode"), "name": c.get("shortName") or c.get("fullName"),
+                                      "type": c.get("customerType"), "inn": c.get("taxCode")} for c in custs]
+                if not store.setting("tochka_customer", "") and len(biz) == 1:
+                    store.set_setting("tochka_customer", str(biz[0].get("customerCode") or ""))
+                code = store.setting("tochka_customer", "")
+                if not code:
+                    store.set_setting("tochka_info", json.dumps(info, ensure_ascii=False))
+                    flash("Ключ работает. Выберите, чей счёт — ИП: " + ", ".join(f"{c['code']} ({c['name']})" for c in info["customers"]), "err")
+                    return back
+                rs = Tochka(t.token, code, "", http=t.http).retailers(code)
+                info["retailers"] = [{k: r.get(k) for k in ("merchantId", "status", "isActive", "name", "url", "cashbox", "paymentModes", "rate", "mcc")} for r in rs]
+                mine = [r for r in rs if r.get("merchantId") == store.setting("tochka_merchant", "")] or \
+                       [r for r in rs if r.get("status") == "REG" and r.get("isActive")]
+                if mine:
+                    if not store.setting("tochka_merchant", ""):
+                        store.set_setting("tochka_merchant", str(mine[0].get("merchantId") or ""))
+                    info["retailer"] = info["retailers"][rs.index(mine[0])]
+            except TochkaError as e:
+                info["error"] = e.human()
+                store.set_setting("tochka_info", json.dumps(info, ensure_ascii=False))
+                flash("Проверка не прошла: " + e.human(), "err")
+                return back
+            store.set_setting("tochka_info", json.dumps(info, ensure_ascii=False))
+            store.set_setting("tochka_jwk_try", "0")
+            bank_keys(refresh=True)                       # открытый ключ банка для подписи вебхуков — заранее
+            r = info.get("retailer") or {}
+            if not r:
+                flash("Ключ работает, но интернет-эквайринга у ИП ещё нет (или он не одобрен). Подайте заявку в интернет-банке: «Интернет-эквайринг».", "err")
+            elif r.get("status") != "REG" or not r.get("isActive"):
+                flash(f"Эквайринг ещё оформляется (статус {r.get('status')}). Проверьте позже.", "err")
+            elif not r.get("cashbox"):
+                flash("Эквайринг работает, но к нему не подключены «Чеки» или облачная касса — без них ссылку с чеком банк не создаст. "
+                      "Подключите «Чеки» в интернет-банке и проверьте снова.", "err")
+            else:
+                flash("Связь с банком есть: эквайринг и чеки подключены. Можно включать приём оплат.", "ok")
+            return back
+        if act == "webhook":
+            cid = store.setting("tochka_client_id", "") or t.client_id()
+            if not cid:
+                flash("Не знаю client_id ключа — впишите его в поле «client_id» (показан в интернет-банке рядом с ключом).", "err")
+                return back
+            url = f"https://{request.host}/api/tochka/webhook"
+            try:
+                t.set_webhook(cid, url)
+            except TochkaError as e:
+                flash("Уведомления не подключены: " + e.human(), "err")
+                return back
+            store.set_setting("tochka_webhook", f"{url} · {iso_now_app()}")
+            flash("Уведомления об оплатах подключены: банк будет сообщать CRM об оплате сам.", "ok")
+            return back
+        if act in ("enable", "disable"):
+            if act == "enable":
+                r = tochka_info().get("retailer") or {}
+                ok = r.get("status") == "REG" and r.get("isActive") and (r.get("cashbox") or request.form.get("force") == "1")
+                if not (store.setting("tochka_customer", "") and ok):
+                    flash("Включить нельзя: сначала «Проверить связь с банком» — эквайринг должен быть активен и с подключёнными чеками.", "err")
+                    return back
+            store.set_setting("tochka_enabled", "1" if act == "enable" else "0")
+            c = store.c(); store.log(c, "Точка: приём оплат по ссылкам " + ("включён" if act == "enable" else "выключен"), who()); c.commit()
+            flash("Приём оплат по ссылкам " + ("включён: в сделках появилась кнопка «Создать ссылку на оплату»." if act == "enable" else "выключен."), "ok")
+            return back
+        abort(400)
+
+    def iso_now_app() -> str:
+        return now().isoformat(timespec="seconds")
 
     @app.post("/deals/<int:did>/edit")
     @login_required
@@ -745,7 +1205,13 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                my_ip_own=ip_is_own(ip()), visits_total=visits.count(),
                                followup_auto=store.setting("followup_auto", "1") == "1", mail_contacts=mail_contacts(),
                                push_devices=store.push_subs_all() if g.user["role"] == "admin" else [],
-                               chat_stats=store.chat_stats(), push_total=len(store.push_subs_all()))
+                               chat_stats=store.chat_stats(), push_total=len(store.push_subs_all()),
+                               tochka=dict(has_key=bool(store.setting("tochka_jwt", "")), on=tochka_on(), info=tochka_info(),
+                                           customer=store.setting("tochka_customer", ""), merchant=store.setting("tochka_merchant", ""),
+                                           client_id=store.setting("tochka_client_id", ""), tax=store.setting("tochka_tax", "usn_income_outcome"),
+                                           method=store.setting("tochka_method", "full_prepayment"), webhook=store.setting("tochka_webhook", ""),
+                                           unlinked=len(store.bank_events(200, unlinked=True))),
+                               TAX_SYSTEMS=TAX_SYSTEMS)
 
     @app.post("/settings/hit-ips")
     @admin_required
@@ -1167,6 +1633,13 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         return render_template("error.html", code=code, text=text), code
 
     return app
+
+
+def rubk(kop: Any) -> str:
+    """Копейки → «12 345 ₽» или «12 345,50 ₽»."""
+    kop = int(kop or 0)
+    r, k = divmod(abs(kop), 100)
+    return ("−" if kop < 0 else "") + f"{r:,}".replace(",", " ") + (f",{k:02d}" if k else "") + " ₽"
 
 
 def store_now() -> str:

@@ -2,7 +2,7 @@
 {% from "macros.html" import push_box with context %}
 {% block title %}Настройки{% endblock %}
 {% block main %}
-<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a><a href="{{ url_for('settings_view') }}" aria-current="page">Настройки</a>{% if me and me['role']=='admin' %}<a href="{{ url_for('server_view') }}">Сервер</a>{% endif %}</div>
+<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a>{% if me and me['role']=='admin' %}<a href="{{ url_for('money_view') }}">Деньги</a>{% endif %}<a href="{{ url_for('settings_view') }}" aria-current="page">Настройки</a>{% if me and me['role']=='admin' %}<a href="{{ url_for('server_view') }}">Сервер</a>{% endif %}</div>
 <h1>Настройки</h1>
 <h2 id="push">Уведомления на телефон</h2>
 {{ push_box() }}
@@ -66,12 +66,46 @@
   <label class="f span2">Контакты в подписи писем (мессенджер, без телефона)<input name="mail_contacts" value="{{ mail_contacts }}" placeholder="Telegram @…, MAX …"></label>
   <div class="span2"><button class="btn-p">Сохранить</button></div>
 </form>
+<h2 id="tochka">Точка Банк — оплата по ссылке с чеком</h2>
+{% set ti = tochka['info'] %}{% set r = ti.get('retailer') or {} %}
+<div class="panel pad d">
+  Как подключить: 1) в интернет-банке Точки подать заявку на <b>интернет-эквайринг</b> и подключить <b>«Чеки»</b> (или облачную кассу); 2) там же «Интеграции и API» → «Сгенерировать JWT-ключ» с разрешениями <i>ReadCustomerData, ReadAcquiringData, MakeAcquiringOperation, ManageWebhookData</i> (подписывать платежи — не нужно); 3) вставить ключ сюда — только на этой странице, не в чат и не в письма; 4) «Проверить связь», «Подключить уведомления», «Включить приём оплат».
+</div>
+<div class="panel list">
+  <div class="row"><span class="grow">JWT-ключ{% if ti.get('exp') %}<span class="d"> · действует до {{ fmt_dt(ti['exp']|int|ts_iso) }}</span>{% endif %}</span>{% if tochka['has_key'] %}<span class="pill good">сохранён</span>{% else %}<span class="pill warn">нет</span>{% endif %}</div>
+  <div class="row"><span class="grow">Клиент банка (ИП){% if tochka['customer'] %}<span class="d"> · {{ tochka['customer'] }}{% for c in ti.get('customers', []) if c['code'] == tochka['customer'] %} · {{ c['name'] }}{% endfor %}</span>{% endif %}</span>{% if tochka['customer'] %}<span class="pill good">выбран</span>{% else %}<span class="pill">не выбран</span>{% endif %}</div>
+  <div class="row"><span class="grow">Интернет-эквайринг{% if r %}<span class="d"> · {{ r.get('name') or '' }} · {{ r.get('merchantId') or '' }}{% if r.get('rate') %} · комиссия по карте {{ r['rate'] }}%{% endif %}{% if r.get('paymentModes') %} · {{ r['paymentModes']|join(', ') }}{% endif %}</span>{% endif %}</span>{% if r.get('status') == 'REG' and r.get('isActive') %}<span class="pill good">работает</span>{% elif r %}<span class="pill warn">{{ r.get('status') }}</span>{% else %}<span class="pill">нет данных</span>{% endif %}</div>
+  <div class="row"><span class="grow">Чеки 54-ФЗ{% if r.get('cashbox') %}<span class="d"> · {{ r['cashbox'] }}</span>{% endif %}</span>{% if r.get('cashbox') %}<span class="pill good">подключены</span>{% elif r %}<span class="pill crit">не подключены</span>{% else %}<span class="pill">нет данных</span>{% endif %}</div>
+  <div class="row"><span class="grow">Уведомления об оплате{% if tochka['webhook'] %}<span class="d"> · {{ tochka['webhook'] }}</span>{% endif %}</span>{% if tochka['webhook'] %}<span class="pill good">подключены</span>{% else %}<span class="pill warn">нет — оплаты проверяются опросом раз в 5–15 минут</span>{% endif %}</div>
+  <div class="row"><span class="grow">Приём оплат по ссылкам</span>{% if tochka['on'] %}<span class="pill good">включён</span>{% else %}<span class="pill warn">выключен</span>{% endif %}</div>
+  {% if ti.get('error') %}<div class="row"><span class="grow d">Последняя проверка: {{ ti['error'] }}</span></div>{% endif %}
+  {% if ti.get('checked_at') %}<div class="row"><span class="grow d">Проверено {{ fmt_dt(ti['checked_at']) }}</span></div>{% endif %}
+</div>
+<form class="panel pad grid2" method="post" action="{{ url_for('settings_tochka') }}" autocomplete="off">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f span2">JWT-ключ из интернет-банка {% if tochka['has_key'] %}(сохранён; вставьте новый, только если меняете){% endif %}<input name="jwt" type="password" autocomplete="off" spellcheck="false" placeholder="eyJ…"></label>
+  <label class="f">Код клиента (customerCode){% if ti.get('customers') %}<select name="customer"><option value="">—</option>{% for c in ti['customers'] %}<option value="{{ c['code'] }}" {% if c['code'] == tochka['customer'] %}selected{% endif %}>{{ c['code'] }} · {{ c['name'] }}{% if c['type'] != 'Business' %} (личный){% endif %}</option>{% endfor %}</select>{% else %}<input name="customer" value="{{ tochka['customer'] }}" placeholder="определится при проверке">{% endif %}</label>
+  <label class="f">Торговая точка (merchantId){% if ti.get('retailers') %}<select name="merchant">{% for x in ti['retailers'] %}<option value="{{ x['merchantId'] or '' }}" {% if x['merchantId'] == tochka['merchant'] %}selected{% endif %}>{{ x['merchantId'] }} · {{ x['name'] }} · {{ x['status'] }}</option>{% endfor %}</select>{% else %}<input name="merchant" value="{{ tochka['merchant'] }}" placeholder="определится при проверке">{% endif %}</label>
+  <label class="f">Система налогообложения в чеке<select name="tax">{% for k, n in TAX_SYSTEMS %}<option value="{{ k }}" {% if k == tochka['tax'] %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
+  <label class="f">Чек по ссылке по умолчанию<select name="method"><option value="full_prepayment" {% if tochka['method'] == 'full_prepayment' %}selected{% endif %}>«Предоплата 100%» — отгрузка позже (обычно)</option><option value="full_payment" {% if tochka['method'] == 'full_payment' %}selected{% endif %}>«Полный расчёт» — товар отдаём сразу</option></select></label>
+  <label class="f span2">client_id ключа (для уведомлений; обычно определяется сам){% if ti.get('client_id') %} — из ключа: {{ ti['client_id'] }}{% endif %}<input name="client_id" value="{{ tochka['client_id'] }}" placeholder="если пусто — берётся из ключа"></label>
+  <div class="span2 row wrap">
+    <button class="btn-p" name="act" value="save">Сохранить</button>
+    <button class="btn-s" name="act" value="check" {% if not tochka['has_key'] %}disabled{% endif %}>Проверить связь с банком</button>
+    <button class="btn-s" name="act" value="webhook" {% if not tochka['has_key'] %}disabled{% endif %}>Подключить уведомления</button>
+    {% if tochka['on'] %}<button class="btn-s" name="act" value="disable">Выключить приём оплат</button>{% else %}<button class="btn-s" name="act" value="enable" {% if not tochka['has_key'] %}disabled{% endif %}>Включить приём оплат</button>{% endif %}
+    {% if tochka['has_key'] %}<button class="btn-g" name="act" value="forget" onclick="return confirm('Удалить ключ Точки из CRM? Ссылки перестанут создаваться.')">Удалить ключ</button>{% endif %}
+  </div>
+  {% if r and r.get('status') == 'REG' and not r.get('cashbox') %}<label class="chk span2"><input type="checkbox" name="force" value="1"> Банк подтвердил, что «Чеки» подключены, хотя здесь не видно (тогда «Включить приём оплат»)</label>{% endif %}
+  <div class="d span2">Ключ хранится только в базе CRM на сервере и обратно на страницу не выводится. Деньги со счёта по нему не списать: подписывать платежи ключу не разрешено.</div>
+</form>
 <h2>Связи</h2>
 <div class="panel list">
   <div class="row"><span class="grow">Бот MAX/Telegram</span>{% if bot %}<span class="pill good">заявки подтягиваются</span>{% else %}<span class="pill">бот ещё не установлен</span>{% endif %}</div>
   <div class="row"><span class="grow">Заявки с сайта</span>{% if conf['SITE_LEADS'] %}<span class="pill good">включены</span>{% else %}<span class="pill warn">выключены (до уведомления в Роскомнадзор)</span>{% endif %}</div>
   <a class="row linkrow" href="{{ url_for('chats_view') }}"><span class="grow">Чат на сайте<span class="d">Кнопка «Чат» на всех страницах nashdekor.ru. Всего переписок: {{ chat_stats['total'] }}, за неделю: {{ chat_stats['week'] }}, стали заявками: {{ chat_stats['deals'] }}{% if chat_stats['last'] %} · последнее сообщение {{ fmt_dt(chat_stats['last']) }}{% endif %}</span></span>{% if not conf['SITE_LEADS'] %}<span class="pill warn">выключен вместе с заявками</span>{% elif chat_stats['unread'] %}<span class="pill warn">новых {{ chat_stats['unread'] }}</span>{% else %}<span class="pill good">работает</span>{% endif %}</a>
   <a class="row linkrow" href="#push"><span class="grow">Уведомления на телефон<span class="d">Заявки, заказы, чат, письма на zakaz@ и info@, утренняя сводка</span></span>{% if push_total %}<span class="pill good">устройств: {{ push_total }}</span>{% else %}<span class="pill warn">ни на одном телефоне не включены</span>{% endif %}</a>
+  <a class="row linkrow" href="#tochka"><span class="grow">Точка Банк<span class="d">Ссылки на оплату картой и СБП с чеком, оплата сама отмечается в сделке{% if tochka['unlinked'] %} · поступлений без сделки: {{ tochka['unlinked'] }}{% endif %}</span></span>{% if tochka['on'] %}<span class="pill good">оплаты принимаются</span>{% elif tochka['has_key'] %}<span class="pill warn">ключ есть, приём выключен</span>{% else %}<span class="pill">не подключена</span>{% endif %}</a>
   <div class="row"><span class="grow">Письмо о новой заявке</span><span class="pill">{{ conf['NOTIFY_EMAIL'] or 'не отправляется' }}</span></div>
 </div>
 {% endif %}

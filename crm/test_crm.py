@@ -564,14 +564,16 @@ class TestApi(Base):
             body = sent[-1][2]
             self.assertIn("Что дальше", body); self.assertIn("пришлём ссылку на оплату", body); self.assertIn("чат на сайте", body); self.assertNotIn("IuliiaUsenko", body)
             run = self.app.extensions["run_followups"]
-            self.assertEqual(run("2026-11-09"), [])                                     # задача «Узнать решение» ещё не подошла (срок +2 дня)
-            r = run("2026-11-11")
+            from datetime import date as _d, timedelta as _td
+            due0 = [x for x in self.store.tasks(deal_id=did) if x["title"].startswith("Узнать")][0]["due"]
+            self.assertEqual(run((_d.fromisoformat(due0) - _td(days=1)).isoformat()), [])   # задача «Узнать решение» ещё не подошла (срок +2 дня)
+            r = run(due0)
             self.assertEqual(len(r), 1); self.assertIn("напоминание 1", r[0])
             self.assertIn("подошёл ли он вам", sent[-1][1]); self.assertIn("A912 — 3 шт", sent[-1][2])
             d = self.store.deal(did); self.assertEqual(d["followups"], 1)
-            self.assertEqual(run("2026-11-11"), [])                                     # в тот же день второй раз не шлём
+            self.assertEqual(run(due0), [])                                             # в тот же день второй раз не шлём
             t = [x for x in self.store.tasks(deal_id=did) if x["title"].startswith("Узнать")][0]
-            self.assertGreater(t["due"], "2026-11-11")                                  # задача сдвинута вперёд
+            self.assertGreater(t["due"], due0)                                          # задача сдвинута вперёд
             r = run(t["due"]); self.assertEqual(len(r), 1); self.assertIn("напоминание 2", r[0])
             self.assertIn("действует до", sent[-1][1]); self.assertIn("последнее напоминание", sent[-1][2])
             self.assertEqual(run("2026-12-01"), [])                                     # больше двух не уходит
@@ -851,6 +853,295 @@ class TestBot(Base):
         self.assertEqual(rows[0][:2], ("max", 777))
         self.assertEqual(json.loads(rows[0][2])["t"], "text")
         self.assertEqual(self.c.get("/settings").status_code, 200)
+
+
+class FakeBank:
+    """Подставной Точка Банк: отвечает как API (схема 1.90) и подписывает вебхуки своим RSA-ключом."""
+    CUST, MERCH = "300123123", "200000000001234"
+
+    def __init__(self) -> None:
+        from cryptography.hazmat.primitives.asymmetric import rsa
+        self.key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+        self.calls: list[tuple[str, str, dict]] = []
+        self.ops: dict[str, dict] = {}
+        self.webhook: dict | None = None
+        self.cashbox = "digitalKassaTochka"
+
+    def jwk(self) -> dict:
+        import base64
+        n = self.key.public_key().public_numbers()
+        b = lambda i: base64.urlsafe_b64encode(i.to_bytes((i.bit_length() + 7) // 8, "big")).rstrip(b"=").decode()
+        return {"kty": "RSA", "e": b(n.e), "n": b(n.n), "use": "sig", "alg": "RS256"}
+
+    def sign(self, claims: dict, key=None) -> str:
+        import base64
+        from cryptography.hazmat.primitives import hashes
+        from cryptography.hazmat.primitives.asymmetric import padding
+        e = lambda bb: base64.urlsafe_b64encode(bb).rstrip(b"=").decode()
+        head = e(json.dumps({"alg": "RS256", "typ": "JWT"}).encode()) + "." + e(json.dumps(claims, ensure_ascii=False).encode())
+        sig = (key or self.key).sign(head.encode(), padding.PKCS1v15(), hashes.SHA256())
+        return head + "." + e(sig)
+
+    def http(self, method, url, headers, body):
+        data = json.loads(body) if body else {}
+        self.calls.append((method, url, data))
+        if url.endswith("/keys/public"):
+            return 200, json.dumps(self.jwk()).encode()
+        if headers.get("Authorization") != "Bearer " + TestTochka.TOKEN:
+            return 401, b'{"message":"Unauthorized"}'
+        path = url.split("/uapi", 1)[1]
+        if path == "/open-banking/v1.0/customers":
+            return 200, json.dumps({"Data": {"Customer": [
+                {"customerCode": self.CUST, "customerType": "Business", "isResident": True, "taxCode": "470331302505", "fullName": "ИП Тест", "shortName": "ИП Тест"},
+                {"customerCode": "300999999", "customerType": "Personal", "isResident": True, "fullName": "Тест", "shortName": "Тест"}]}}).encode()
+        if path.startswith("/acquiring/v1.0/retailers"):
+            return 200, json.dumps({"Data": {"Retailer": [{"status": "REG", "isActive": True, "mcc": "5211", "rate": 2.8, "name": "NASHDEKOR.RU",
+                                     "url": "https://nashdekor.ru", "merchantId": self.MERCH, "terminalId": "20001234",
+                                     "paymentModes": ["sbp", "card"], "cashbox": self.cashbox}]}}).encode()
+        if path == "/acquiring/v1.0/payments_with_receipt" and method == "POST":
+            d = data["Data"]
+            if any(o["link"] == d.get("paymentLinkId") for o in self.ops.values()):
+                return 424, '{"Errors":[{"message":"Заказ уже существует"}]}'.encode()
+            op = f"op-{len(self.ops) + 1}"
+            self.ops[op] = {"status": "CREATED", "amount": d["amount"], "link": d.get("paymentLinkId"), "Order": [], "type": ""}
+            return 200, json.dumps({"Data": dict(d, operationId=op, paymentLink=f"https://merch.securepaytb.ru/order/?uuid={op}", status="CREATED")}).encode()
+        if path.startswith("/acquiring/v1.0/payments/") and path.endswith("/refund"):
+            op = path.split("/")[4]
+            o = self.ops[op]; o["status"] = "ON-REFUND"
+            return 200, json.dumps({"Data": {"isRefund": True, "operationId": op, "amount": data["Data"]["amount"], "date": "2026-11-10", "orderId": "7"}}).encode()
+        if path.startswith("/acquiring/v1.0/payments/"):
+            op = path.split("/")[4]
+            if op not in self.ops:
+                return 424, b'{"Errors":[{"message":"Order not found"}]}'
+            o = self.ops[op]
+            res = {"customerCode": self.CUST, "createdAt": "2026-11-10T10:00:00+03:00", "amount": o["amount"], "status": o["status"],
+                   "operationId": op, "paymentLink": "x", "Order": o["Order"], "paymentLinkId": o["link"]}
+            if o["type"]:
+                res["paymentType"] = o["type"]
+            return 200, json.dumps({"Data": {"Operation": [res]}}).encode()
+        if path.startswith("/webhook/v1.0/"):
+            if method == "GET":
+                return (200, json.dumps({"Data": self.webhook}).encode()) if self.webhook else (404, b'{"message":"not found"}')
+            self.webhook = data
+            return 200, json.dumps({"Data": data}).encode()
+        return 404, b'{"message":"no route"}'
+
+
+class TestTochka(Base):
+    TOKEN = ""
+
+    def setUp(self) -> None:
+        super().setUp()
+        import base64
+        e = lambda d: base64.urlsafe_b64encode(json.dumps(d).encode()).rstrip(b"=").decode()
+        TestTochka.TOKEN = e({"alg": "RS256", "typ": "JWT"}) + "." + e({"iss": "clientid-777", "exp": int(time.time()) + 86400 * 300}) + ".c2ln"
+        self.bank = FakeBank()
+        self.app.extensions["tochka_http"] = self.bank.http
+        self.pushes: list[tuple[str, str, str]] = []
+        self.store.on_notify = lambda title, text, url: self.pushes.append((title, text, url))
+
+    def connect(self) -> None:
+        self.login()
+        self.post("/settings/tochka", {"act": "save", "jwt": self.TOKEN})
+        self.post("/settings/tochka", {"act": "check"})
+        self.post("/settings/tochka", {"act": "enable"})
+
+    def deal(self, kind="p", email="anna@example.com", discount=None, phone="+79990001122") -> int:
+        did = self.store.create_deal("t", None, name="Анна", phone=phone, email=email, kind=kind, want="стена")
+        self.store.add_line(did, "A912", 3, "t")
+        if discount is not None:
+            self.store.update_deal(did, "t", discount=discount)
+        return did
+
+    def hook(self, claims: dict, key=None):
+        return self.c.post("/api/tochka/webhook", data=self.bank.sign(claims, key), content_type="text/plain")
+
+    def test_receipt_items_exact(self) -> None:
+        from store import Store
+        from tochka import receipt_items
+        total = Store.total(3 * 999, 7)
+        items, kop = receipt_items([("Панель A1", 3, 999)], 7, 0, goods_total=total)
+        self.assertEqual(kop, total * 100)
+        self.assertEqual(round(sum(i["amount"] * i["quantity"] for i in items) * 100), total * 100)
+        self.assertTrue(all(i["amount"] > 0 and i["paymentMethod"] == "full_prepayment" and i["vatType"] == "none" for i in items))
+        items, kop = receipt_items([("A", 2, 500), ("B", 1, 300)], 0, 450, method="full_payment", goods_total=1300)
+        self.assertEqual(kop, 175000); self.assertEqual(items[-1]["paymentObject"], "service")
+        self.assertEqual({i["paymentMethod"] for i in items}, {"full_payment"})
+
+    def test_connect_settings(self) -> None:
+        self.login()
+        page = self.c.get("/settings").get_data(as_text=True)
+        self.assertIn("Точка Банк", page); self.assertIn("не подключена", page)
+        r = self.post("/settings/tochka", {"act": "save", "jwt": "не ключ"}); self.assertEqual(r.status_code, 302)
+        self.assertEqual(self.store.setting("tochka_jwt"), "")
+        self.post("/settings/tochka", {"act": "enable"})                      # без ключа включить нельзя
+        self.assertNotEqual(self.store.setting("tochka_enabled"), "1")
+        self.post("/settings/tochka", {"act": "save", "jwt": self.TOKEN})
+        self.assertEqual(self.store.setting("tochka_jwt"), self.TOKEN)
+        page = self.c.get("/settings").get_data(as_text=True)
+        self.assertNotIn(self.TOKEN.split(".")[1], page)                       # ключ на страницу не выводится
+        self.post("/settings/tochka", {"act": "check"})
+        self.assertEqual((self.store.setting("tochka_customer"), self.store.setting("tochka_merchant")), (FakeBank.CUST, FakeBank.MERCH))
+        page = self.c.get("/settings").get_data(as_text=True)
+        self.assertIn("подключены", page); self.assertIn("ИП Тест", page)
+        self.post("/settings/tochka", {"act": "enable"})
+        self.assertEqual(self.store.setting("tochka_enabled"), "1")
+        self.post("/settings/tochka", {"act": "webhook"})
+        self.assertEqual(self.bank.webhook["url"], "https://localhost/api/tochka/webhook")
+        self.assertIn("acquiringInternetPayment", self.bank.webhook["webhooksList"])
+        self.assertTrue(any(u.endswith("/webhook/v1.0/clientid-777") and m == "PUT" for m, u, _ in self.bank.calls))
+        # без «Чеков» включить приём нельзя
+        self.post("/settings/tochka", {"act": "disable"})
+        self.bank.cashbox = ""
+        self.post("/settings/tochka", {"act": "check"}); self.post("/settings/tochka", {"act": "enable"})
+        self.assertEqual(self.store.setting("tochka_enabled"), "0")
+        # сотруднику настройки Точки недоступны
+        self.c.post("/logout", data={"csrf": self.csrf()})
+        self.login("mikhail", "Secret-pass-2")
+        self.assertEqual(self.post("/settings/tochka", {"act": "forget"}).status_code, 403)
+        self.assertEqual(self.c.get("/money").status_code, 403)
+
+    def test_link_webhook_refund_ship(self) -> None:
+        self.connect()
+        did = self.deal(discount=7)
+        _, total = self.store.deal_total(did)
+        page = self.c.get(f"/deals/{did}").get_data(as_text=True)
+        self.assertIn("Создать ссылку на оплату", page)
+        self.post(f"/deals/{did}/paylink", {"email": "anna@example.com", "delivery": "500"})
+        m, u, body = [c for c in self.bank.calls if c[1].endswith("/payments_with_receipt")][-1]
+        d = body["Data"]
+        self.assertEqual(d["amount"], total + 500)
+        self.assertEqual(round(sum(i["amount"] * i["quantity"] for i in d["Items"]) * 100), (total + 500) * 100)
+        self.assertEqual((d["customerCode"], d["merchantId"], d["taxSystemCode"], d["ttl"]), (FakeBank.CUST, FakeBank.MERCH, "usn_income_outcome", 10080))
+        self.assertEqual(d["Client"]["email"], "anna@example.com"); self.assertEqual(d["Client"]["phone"], "+79990001122")
+        self.assertTrue(d["paymentLinkId"].startswith(f"ND{did}-1-")); self.assertEqual(set(d["paymentMode"]), {"card", "sbp"})
+        self.assertEqual({i["paymentMethod"] for i in d["Items"]}, {"full_prepayment"})
+        pays = self.store.payments(did); self.assertEqual(len(pays), 1); self.assertEqual(pays[0]["status"], "CREATED")
+        self.assertEqual(self.store.deal(did)["pay_link"], pays[0]["url"])
+        # вторая ссылка без галочки — нельзя (иначе клиент может заплатить дважды)
+        self.post(f"/deals/{did}/paylink", {"email": "anna@example.com"}); self.assertEqual(len(self.store.payments(did)), 1)
+        # письмо-расчёт со ссылкой, без «50%»
+        page = self.c.get(f"/deals/{did}").get_data(as_text=True)
+        self.assertIn(pays[0]["url"], page); self.assertIn("Электронный чек придёт", page); self.assertNotIn("50%", page)
+        op = pays[0]["operation_id"]
+        # чужая подпись — 400, ничего не меняется
+        from cryptography.hazmat.primitives.asymmetric import rsa
+        evil = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+        claims = {"webhookType": "acquiringInternetPayment", "customerCode": FakeBank.CUST, "operationId": op, "status": "APPROVED", "amount": "1"}
+        self.bank.ops[op].update(status="APPROVED", type="sbp")
+        self.assertEqual(self.hook(claims, evil).status_code, 400)
+        self.assertEqual(self.store.deal(did)["stage"], "new")
+        # тестовый вебхук банка (чужой клиент) — 200 и без последствий
+        self.assertEqual(self.hook(dict(claims, customerCode="300123123x")).status_code, 200)
+        self.assertEqual(self.store.deal(did)["stage"], "new")
+        # настоящий вебхук: сумма и статус — из банка; этап «Оплачено», задача «Отгрузить», пуш
+        r = self.hook(claims); self.assertEqual(r.status_code, 200, r.get_data(as_text=True))
+        p = self.store.payments(did)[0]
+        self.assertEqual((p["status"], p["pay_type"]), ("APPROVED", "sbp")); self.assertTrue(p["paid_at"])
+        self.assertEqual(self.store.deal(did)["stage"], "paid")
+        self.assertTrue(any(t["title"].startswith("Отгрузить") for t in self.store.tasks(deal_id=did)))
+        self.assertTrue(any(t.startswith(f"Оплачено №{did}") and "через СБП" in t for t, _, _ in self.pushes), self.pushes)
+        self.assertEqual(self.store.paid_kop(did), (total + 500) * 100)
+        self.hook(claims)                                                       # повторная доставка — без дублей
+        self.assertEqual(sum(1 for t, _, _ in self.pushes if t.startswith("Оплачено")), 1)
+        # возврат: сотруднику нельзя, владельцу — да
+        self.c.post("/logout", data={"csrf": self.csrf()}); self.login("mikhail", "Secret-pass-2")
+        self.assertEqual(self.post(f"/deals/{did}/payments/{p['id']}/refund", {"amount": "100", "confirm": "1"}).status_code, 403)
+        self.c.post("/logout", data={"csrf": self.csrf()}); self.login()
+        self.post(f"/deals/{did}/payments/{p['id']}/refund", {"amount": "100"})                 # без галочки — нет
+        self.assertFalse(any(u.endswith("/refund") for _, u, _ in self.bank.calls))
+        self.post(f"/deals/{did}/payments/{p['id']}/refund", {"amount": "100,00", "confirm": "1"})
+        m, u, body = [c for c in self.bank.calls if c[1].endswith("/refund")][-1]
+        self.assertEqual(body, {"Data": {"amount": 100.0}})
+        p = self.store.payment(p["id"]); self.assertEqual((p["status"], p["refunded"]), ("ON-REFUND", 10000))
+        self.bank.ops[op].update(status="REFUNDED_PARTIALLY", Order=[{"orderId": "7", "type": "refund", "amount": 100.0, "time": "x"}])
+        self.c.post("/logout", data={"csrf": self.csrf()})
+        self.app.extensions["tochka_poll"]()                                    # только что проверяли — опрос подождёт
+        self.assertEqual(self.store.payment(p["id"])["status"], "ON-REFUND")
+        self.store.c().execute("UPDATE payments SET checked_at='2026-01-01T00:00:00+03:00' WHERE id=?", (p["id"],))
+        self.app.extensions["tochka_poll"]()
+        self.assertEqual(self.store.payment(p["id"])["status"], "REFUNDED_PARTIALLY")
+        self.login()
+        # отгрузка: чек «Предоплата 100%» → задача на второй чек, видна в «Деньгах»
+        self.post(f"/deals/{did}/stage", {"stage": "shipped"})
+        self.assertEqual(self.store.deal(did)["stage"], "shipped")
+        self.assertTrue(any(t["title"].startswith("Чек «Полный расчёт»") and not t["done_at"] for t in self.store.tasks(deal_id=did)))
+        money = self.c.get("/money").get_data(as_text=True)
+        self.assertIn("Нужен второй чек", money); self.assertIn(f"№{did}", money)
+        self.post(f"/deals/{did}/closing-done")
+        self.assertFalse(self.store.closing_receipts_due(did))
+        self.assertFalse(any(t["title"].startswith("Чек «Полный расчёт»") and not t["done_at"] for t in self.store.tasks(deal_id=did)))
+
+    def test_poll_expired_and_full_payment(self) -> None:
+        self.connect()
+        did = self.deal()
+        self.post(f"/deals/{did}/paylink", {"email": "anna@example.com", "full": "1"})
+        p = self.store.payments(did)[0]
+        self.assertEqual(p["method"], "full_payment")
+        self.bank.ops[p["operation_id"]]["status"] = "EXPIRED"
+        out = self.app.extensions["tochka_poll"]()
+        self.assertTrue(any("EXPIRED" in x for x in out), out)
+        self.assertEqual(self.store.payment(p["id"])["status"], "EXPIRED")
+        self.assertEqual(self.app.extensions["tochka_poll"](), [])               # закрытые ссылки больше не опрашиваются
+        # после истечения — новая ссылка без галочки
+        self.post(f"/deals/{did}/paylink", {"email": "anna@example.com"})
+        self.assertEqual(len(self.store.payments(did)), 2)
+        # без e-mail чек некуда отправить
+        did2 = self.deal(email="", phone="+79990003344")
+        self.post(f"/deals/{did2}/paylink", {"email": ""})
+        self.assertEqual(self.store.payments(did2), [])
+
+    def test_incoming_invoice_and_debt_guard(self) -> None:
+        self.connect()
+        did = self.deal(kind="c")
+        self.store.update_client(int(self.store.deal(did)["client_id"]), "t", inn="7700000000")
+        _, total = self.store.deal_total(did)
+        inc = {"webhookType": "incomingPayment", "customerCode": FakeBank.CUST, "paymentId": "pay-1", "date": "2026-11-10",
+               "purpose": f"Оплата по счёту № {did} от 10.11.2026. Без НДС", "documentNumber": "5",
+               "SidePayer": {"name": "ООО Ромашка", "inn": "7700000000", "amount": f"{total / 2:.2f}"}}
+        self.assertEqual(self.hook(inc).status_code, 200)
+        self.assertEqual(self.store.paid_kop(did), total * 50)
+        self.assertNotEqual(self.store.deal(did)["stage"], "paid")
+        self.assertTrue(any(t["title"].startswith("Получить доплату") for t in self.store.tasks(deal_id=did)))
+        self.hook(inc)                                                            # повтор — без второй оплаты
+        self.assertEqual(len(self.store.payments(did)), 1)
+        # с долгом не отгружаем
+        self.post(f"/deals/{did}/stage", {"stage": "shipped"})
+        self.assertNotEqual(self.store.deal(did)["stage"], "shipped")
+        # остаток по ИНН (без номера в назначении) — сделка единственная открытая у клиента
+        self.hook(dict(inc, paymentId="pay-2", purpose="Доплата за декор"))
+        self.assertEqual(self.store.paid_kop(did), total * 100)
+        self.assertEqual(self.store.deal(did)["stage"], "paid")
+        # чужое поступление — без сделки, привязывается руками на «Деньгах»; эквайринг без пуша
+        n = len(self.pushes)
+        self.hook(dict(inc, paymentId="pay-3", purpose="Возврат займа", SidePayer={"name": "Иванов", "inn": "", "amount": "1000.00"}))
+        self.assertEqual(len(self.pushes), n + 1)
+        self.hook(dict(inc, paymentId="pay-4", purpose="Зачисление по операциям эквайринга", SidePayer={"name": "Точка", "inn": "", "amount": "50.00"}))
+        self.assertEqual(len(self.pushes), n + 1)
+        ev = [e for e in self.store.bank_events() if e["payment_id"] == "pay-3"][0]
+        did2 = self.deal(phone="+79990005566")
+        self.post("/money/link", {"event": str(ev["id"]), "deal": str(did2)})
+        self.assertEqual(self.store.paid_kop(did2), 100000)
+        page = self.c.get("/money").get_data(as_text=True)
+        self.assertIn("Поступления на расчётный счёт", page); self.assertIn("ООО Ромашка", page)
+        # без подписи поступлению не верим: ключа банка нет → вебхук принят, но не записан
+        self.store.set_setting("tochka_jwk", ""); self.store.set_setting("tochka_jwk_try", str(int(time.time())))
+        tok = self.bank.sign(dict(inc, paymentId="pay-5")).rsplit(".", 1)[0] + ".AAAA"
+        self.c.post("/api/tochka/webhook", data=tok, content_type="text/plain")
+        self.assertFalse(any(e["payment_id"] == "pay-5" for e in self.store.bank_events()))
+
+    def test_manual_payment_and_pages(self) -> None:
+        self.login()
+        did = self.deal()
+        page = self.c.get(f"/deals/{did}").get_data(as_text=True)
+        self.assertIn("после подключения Точки", page); self.assertNotIn("Создать ссылку на оплату", page)
+        _, total = self.store.deal_total(did)
+        self.post(f"/deals/{did}/payments/manual", {"amount": str(total), "kind": "invoice", "note": "платёжка №1"})
+        self.assertEqual(self.store.deal(did)["stage"], "paid")
+        page = self.c.get(f"/deals/{did}").get_data(as_text=True)
+        self.assertIn("по счёту", page); self.assertIn("платёжка №1", page)
+        self.assertEqual(self.c.get("/money").status_code, 200)
+        self.assertEqual(self.app.extensions["tochka_poll"](), ["Точка не подключена"])
 
 
 if __name__ == "__main__":

@@ -220,3 +220,12 @@ details.src .calc{margin:10px 0 6px;white-space:pre-wrap}
 
 .linkrow{display:flex;gap:10px;align-items:center;text-decoration:none;color:inherit}
 .linkrow .grow{display:flex;flex-direction:column;gap:2px}
+/* оплата в сделке (Точка) */
+.warnbox{border-color:var(--warn);background:var(--warn-soft)}
+.warnbox p{margin:0 0 10px}
+details.refund>summary{list-style:none;cursor:pointer}
+details.refund>summary::-webkit-details-marker{display:none}
+details.refund[open]{flex-basis:100%}
+details.refund form{margin-top:8px}
+.btn-s.crit{color:var(--crit);border-color:var(--crit)}
+.payrow>.grow{flex:1 1 100%}
