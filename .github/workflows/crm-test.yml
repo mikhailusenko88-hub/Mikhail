@@ -134,6 +134,45 @@ jobs:
           git add status; git commit -m "crm-test site stats $(date -u +%F_%H:%M)" || exit 0
           git pull --rebase origin domain-check || true
           git push origin HEAD:domain-check || true
+      - name: Кнопки страницы «Сервер»
+        if: always()
+        run: |
+          mkdir -p status; O=status/crm-server-actions.md
+          {
+          echo "# Кнопки «Сервер» — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
+          D=/var/lib/prostranstvo; H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/j4
+          run_page() { sudo timeout 1800 /usr/local/sbin/prostranstvo-crm server-page; echo "  (server-page код $?)"; }
+          state() { sudo sed -n 's/^Состояние: //p' $D/server-action.txt 2>/dev/null | head -n1; }
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          press() { local t; t=$(curl -sk $R -c $J -b $J https://$H/server | tok); curl -sk $R -c $J -b $J -o /dev/null -w "%{http_code}" --data-urlencode "csrf=$t" --data-urlencode "action=$1" ${2:+--data-urlencode "confirm=1"} https://$H/server/run; }
+          echo "1) кнопка «Копия баз»: $(press backup); просьба: $(sudo cat $D/server-request 2>&1)"; run_page; echo "   состояние: $(state)"
+          echo "   на странице: $(curl -sk $R -c $J -b $J https://$H/server | grep -c 'Сделать копию баз')"
+          echo "2) «Выключить заявки»: $(press leads-off)"; run_page; echo "   состояние: $(state); SITE_LEADS=$(sudo grep -o 'SITE_LEADS=.' /etc/prostranstvo/crm.env)"
+          echo "   «Включить заявки»: $(press leads-on)"; run_page; echo "   состояние: $(state); SITE_LEADS=$(sudo grep -o 'SITE_LEADS=.' /etc/prostranstvo/crm.env)"
+          echo "3) «Перезапустить CRM»: $(press restart-crm)"; run_page; echo "   состояние: $(state)"; sleep 3
+          echo "4) «Перезапустить почту»: $(press restart-mail)"; run_page; echo "   состояние: $(state)"
+          echo "5) «Перезапустить веб-сервер»: $(press reload-web)"; run_page; echo "   состояние: $(state)"
+          echo "6) «Снять блокировки»: $(press unban)"; run_page; echo "   состояние: $(state)"
+          echo "7) «Обновить сайт»: $(press sync)"; run_page; echo "   состояние: $(state)"
+          echo "8) чужая команда в файле-просьбе:"
+          sudo -u prostranstvo bash -c "printf 'rm -rf / x\n' > $D/server-request"; before=$(sudo md5sum $D/server-action.txt); run_page
+          echo "   файл результата не изменился: $([[ $(sudo md5sum $D/server-action.txt) == "$before" ]] && echo да || echo НЕТ)"; sudo journalctl -t prostranstvo-server --no-pager -n 3 | grep -o 'неизвестное.*' | tail -n1
+          echo "   FIFO вместо файла:"; sudo -u prostranstvo mkfifo $D/server-request; run_page; echo "   FIFO убран: $([[ -e $D/server-request ]] && echo НЕТ || echo да)"
+          echo "   ссылка на /etc/shadow вместо результата:"; sudo -u prostranstvo ln -sfn /etc/shadow $D/server-action.txt; echo "   нажатие: $(press backup)"; run_page; echo "   результат — обычный файл: $([[ -L $D/server-action.txt ]] && echo НЕТ || echo да); /etc/shadow цел: $(sudo head -c 5 /etc/shadow | grep -c root)"
+          echo "   перезагрузка без галочки: $(press reboot); просьба: $(sudo ls $D/server-request 2>&1 | grep -c request)"
+          echo "9) «Обновить CRM» (полное обновление):  $(press update)"; run_page; echo "   состояние: $(state)"
+          sudo tail -n 12 $D/server-action.txt
+          echo "   CRM после обновления: $(curl -sk $R -o /dev/null -w '%{http_code}' https://$H/login); на странице: $(curl -sk $R -c $J -b $J https://$H/server | grep -c 'CRM УСТАНОВЛЕНА')"
+          echo '```'
+          } > "$O" 2>&1
+          cat "$O"
+          git config user.name crm-test; git config user.email crm-test@users.noreply.github.com
+          git add status; git commit -m "crm-test server actions $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
       - name: Состояние
         if: always()
         run: |
