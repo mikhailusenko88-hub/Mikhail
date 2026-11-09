@@ -29,6 +29,12 @@
   <button class="btn-p">Дальше →</button>
 </form>
 {% endif %}
+{% set open_t = tasks|rejectattr('done_at')|list %}
+{% if open_t %}
+<p class="nexthint {% if open_t[0]['due'] < today %}late{% endif %}">⚑ Следующий шаг: <a href="#tasks">{{ open_t[0]['title'] }}</a> · {% if open_t[0]['due'] < today %}просрочено с {{ fmt_day(open_t[0]['due']) }}{% else %}до {{ fmt_day(open_t[0]['due']) }}{% endif %}{% if open_t|length > 1 %} · ещё {{ open_t|length - 1 }}{% endif %}</p>
+{% elif d['stage'] in ('shipped','lost') %}
+<p class="nexthint done">✓ Сделка закрыта, открытых задач нет</p>
+{% endif %}
 
 <h2 id="lines">Расчёт{% if d['discount'] %} · скидка {{ d['discount'] }}%{% endif %}</h2>
 <div class="panel tbl">
@@ -66,8 +72,9 @@
     <label class="f span2">Ссылка на оплату из Точки (если клиент готов платить)<input name="pay_link" type="url" value="{{ d['pay_link'] }}" placeholder="https://… — ссылка или QR из Точки"></label>
     <label class="f">E-mail клиента<input name="email" type="email" value="{{ d['email'] }}" placeholder="кому прислать расчёт"></label>
     <div class="f"><span>&nbsp;</span><div class="row wrap"><button class="btn-p">Отправить расчёт на почту</button><button class="btn-s" name="save_only" value="1">Сохранить текст</button></div></div>
+    <div class="row wrap span2"><button class="btn-s" type="button" id="copyCalc">Скопировать расчёт для мессенджера</button><button class="btn-s" name="manual" value="1">Отправил сам (мессенджер / по телефону)</button></div>
   </form>
-  <div class="row wrap" style="margin-top:8px"><button class="btn-s" type="button" id="copyCalc">Скопировать расчёт для мессенджера</button><span class="d">Письмо уйдёт с noreply@{{ SHOP_DOMAIN }}, ответы — на zakaz@. После отправки этап станет «Расчёт отправлен». Позиции из заявки с сайта подставляются в расчёт сами.</span></div>
+  <div class="d" style="margin-top:8px">Письмо уйдёт с noreply@{{ SHOP_DOMAIN }}, ответы — на zakaz@. Этап «Расчёт отправлен» ставится только после письма или кнопки «Отправил сам». Позиции из заявки с сайта подставляются в расчёт сами.</div>
   <pre id="calcText" hidden>{{ calc_text }}</pre>
 </div>
 {% endif %}

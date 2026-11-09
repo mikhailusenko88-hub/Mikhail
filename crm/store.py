@@ -562,6 +562,7 @@ class Store:
                              ts, ts, ts, user_id))
             did = int(cur.lastrowid)
             self.log(c, f"Создана заявка ({SOURCE_NAMES[source]})", user, deal_id=did, client_id=cid)
+            self.auto_task(c, did, "Связаться с клиентом", 0, user)
             return did
 
         if c is not None:
@@ -576,10 +577,15 @@ class Store:
             (did,)).fetchone()
 
     def deals(self, stage: str | None = None, q: str = "", client_id: int | None = None, limit: int = 500) -> list[sqlite3.Row]:
+        t = today()
         sql = ("SELECT d.*, cl.name AS client_name, cl.phone, cl.kind,"
-               " (SELECT COALESCE(SUM(qty*price),0) FROM lines l WHERE l.deal_id=d.id) AS gross"
+               " (SELECT COALESCE(SUM(qty*price),0) FROM lines l WHERE l.deal_id=d.id) AS gross,"
+               " (SELECT COUNT(*) FROM tasks tk WHERE tk.deal_id=d.id AND tk.done_at IS NULL) AS open_tasks,"
+               " (SELECT COUNT(*) FROM tasks tk WHERE tk.deal_id=d.id AND tk.done_at IS NULL AND tk.due<?) AS overdue_tasks,"
+               " (SELECT tk.title FROM tasks tk WHERE tk.deal_id=d.id AND tk.done_at IS NULL ORDER BY tk.due, tk.id LIMIT 1) AS task_title,"
+               " (SELECT tk.due FROM tasks tk WHERE tk.deal_id=d.id AND tk.done_at IS NULL ORDER BY tk.due, tk.id LIMIT 1) AS task_due"
                " FROM deals d JOIN clients cl ON cl.id=d.client_id WHERE 1=1")
-        args: list[Any] = []
+        args: list[Any] = [t]
         if stage:
             sql += " AND d.stage=?"
             args.append(stage)
@@ -651,6 +657,21 @@ class Store:
             ts = iso_now()
             c.execute("UPDATE deals SET stage=?, stage_at=?, updated_at=? WHERE id=?", (stage, ts, ts, did))
             self.log(c, f"Этап: {STAGE_NAMES[d['stage']]} → {STAGE_NAMES[stage]}", user, deal_id=did, client_id=d["client_id"])
+            # воронка замыкается задачами: что делать дальше на каждом этапе
+            if stage == "work":
+                self.close_tasks(c, did, user, "Связаться с клиентом")
+                self.auto_task(c, did, "Отправить расчёт клиенту", 1, user)
+            elif stage == "quote":
+                self.close_tasks(c, did, user, "Связаться с клиентом"); self.close_tasks(c, did, user, "Отправить расчёт")
+                self.auto_task(c, did, "Узнать решение по расчёту, предложить оплату", 2, user)
+            elif stage == "paid":
+                self.close_tasks(c, did, user, "Узнать решение"); self.close_tasks(c, did, user, "Отправить расчёт"); self.close_tasks(c, did, user, "Связаться с клиентом")
+                self.auto_task(c, did, "Отгрузить: собрать заказ, согласовать доставку", 1, user)
+            elif stage == "shipped":
+                self.close_tasks(c, did, user)
+                self.auto_task(c, did, "Попросить отзыв и фото стены", 7, user)
+            elif stage == "lost":
+                self.close_tasks(c, did, user)
             if stage == "shipped" and not d["stock_written"]:
                 self._move_stock(c, did, -1, user)
                 c.execute("UPDATE deals SET stock_written=1 WHERE id=?", (did,))
@@ -773,6 +794,23 @@ class Store:
                       (did, title, due, user_id, iso_now()))
             if did:
                 self.log(c, f"Задача: {title} (до {fmt_day(due)})", user, deal_id=did)
+
+    def auto_task(self, c: sqlite3.Connection, did: int, title: str, days: int, user: str) -> None:
+        """Задача по воронке (если такой открытой ещё нет): срок — через days дней."""
+        if c.execute("SELECT 1 FROM tasks WHERE deal_id=? AND title=? AND done_at IS NULL", (did, title)).fetchone():
+            return
+        due = (date.fromisoformat(today()) + timedelta(days=days)).isoformat()
+        c.execute("INSERT INTO tasks(deal_id, title, due, created_by, created_at) VALUES (?,?,?,?,?)", (did, title, due, None, iso_now()))
+        self.log(c, f"Задача: {title} (до {fmt_day(due)})", user or "воронка", deal_id=did)
+
+    def close_tasks(self, c: sqlite3.Connection, did: int, user: str, title_like: str = "") -> int:
+        """Закрыть открытые задачи сделки (все или по началу названия)."""
+        rows = c.execute("SELECT id, title FROM tasks WHERE deal_id=? AND done_at IS NULL" + (" AND title LIKE ?" if title_like else ""),
+                         (did, title_like + "%") if title_like else (did,)).fetchall()
+        for r in rows:
+            c.execute("UPDATE tasks SET done_at=? WHERE id=?", (iso_now(), r["id"]))
+            self.log(c, f"Сделано: {r['title']}", user or "воронка", deal_id=did)
+        return len(rows)
 
     def done_task(self, tid: int, done: bool, user: str) -> int | None:
         with self.tx() as c:

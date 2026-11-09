@@ -253,13 +253,17 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         q = (request.args.get("q") or "").strip()
         show_closed = request.args.get("all") == "1"
         deals = store.deals(q=q, limit=1000)
+        hot_only = request.args.get("hot") == "1"
+        if hot_only:
+            deals = [d for d in deals if d["overdue_tasks"] or (d["open_tasks"] and d["stage"] in ("new", "work", "quote", "paid"))]
         cols = []
         for st, name in STAGES:
             ds = [d for d in deals if d["stage"] == st]
             if not show_closed and st in ("shipped", "lost"):
                 ds = ds[:15]
             cols.append((st, name, ds, sum(Store.total(d["gross"], d["discount"]) for d in ds)))
-        return render_template("board.html", cols=cols, q=q, show_closed=show_closed)
+        hot = sum(1 for d in deals if d["overdue_tasks"])
+        return render_template("board.html", cols=cols, q=q, show_closed=show_closed, hot_only=hot_only, hot=hot)
 
     @app.route("/deals/new", methods=["GET", "POST"])
     @login_required
@@ -321,26 +325,17 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 f"Ответить на это письмо или написать: zakaz@{dom}", f"Сайт: https://{dom}", "", "С уважением, «Наш декор»"]
         return "\n".join(out)
 
-    @app.post("/deals/<int:did>/send-calc")
-    @login_required
-    def deal_send_calc(did: int) -> Any:
-        """Отправить расчёт клиенту на e-mail (почта своего сервера) и перевести сделку в «Расчёт отправлен»."""
+    def send_calc_to(did: int, email: str) -> tuple[bool, str]:
+        """Отправить письмо-расчёт клиенту. Возвращает (ушло?, почему нет)."""
         d = store.deal(did)
         if not d:
-            abort(404)
+            return False, "нет сделки"
         lines = store.lines(did)
         if not lines:
-            flash("В расчёте нет позиций — добавьте товар.", "err")
-            return redirect(url_for("deal_view", did=did) + "#lines")
-        store.set_deal_text(did, who(), request.form.get("client_note", ""), request.form.get("pay_link", ""))
-        d = store.deal(did)
-        if request.form.get("save_only"):
-            flash("Текст для клиента сохранён.", "ok")
-            return redirect(url_for("deal_view", did=did) + "#lines")
-        email = request.form.get("email", "").strip()[:120]
+            return False, "в расчёте нет позиций"
+        email = (email or d["email"] or "").strip()[:120]
         if not email or "@" not in email or " " in email:
-            flash("Укажите e-mail клиента.", "err")
-            return redirect(url_for("deal_view", did=did) + "#lines")
+            return False, "у клиента нет e-mail"
         if email != (d["email"] or ""):
             store.update_client(int(d["client_id"]), who(), email=email)
         dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
@@ -351,16 +346,60 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             store.log(c, f"Расчёт отправлен на {email}", who(), deal_id=did, client_id=d["client_id"]); c.commit()
             if d["stage"] in ("new", "work"):
                 store.set_stage(did, "quote", who())
-            flash(f"Расчёт отправлен на {email}.", "ok")
+            return True, email
+        store.log(c, f"Не удалось отправить расчёт на {email} (почта не ответила)", who(), deal_id=did, client_id=d["client_id"]); c.commit()
+        return False, "почта не ответила"
+
+    @app.post("/deals/<int:did>/send-calc")
+    @login_required
+    def deal_send_calc(did: int) -> Any:
+        """Кнопки под расчётом: отправить на почту / сохранить текст / «отправил сам» (мессенджер, звонок)."""
+        d = store.deal(did)
+        if not d:
+            abort(404)
+        store.set_deal_text(did, who(), request.form.get("client_note", ""), request.form.get("pay_link", ""))
+        if request.form.get("save_only"):
+            flash("Текст для клиента сохранён.", "ok")
+            return redirect(url_for("deal_view", did=did) + "#lines")
+        if request.form.get("manual"):
+            if not store.lines(did):
+                flash("В расчёте нет позиций — добавьте товар.", "err")
+                return redirect(url_for("deal_view", did=did) + "#lines")
+            c = store.c(); store.log(c, "Расчёт отправлен вручную (мессенджер / по телефону)", who(), deal_id=did, client_id=d["client_id"]); c.commit()
+            if d["stage"] in ("new", "work"):
+                store.set_stage(did, "quote", who())
+            flash("Отмечено: расчёт отправлен вручную.", "ok")
+            return redirect(url_for("deal_view", did=did) + "#lines")
+        ok, info = send_calc_to(did, request.form.get("email", ""))
+        if ok:
+            flash(f"Расчёт отправлен на {info}.", "ok")
+        elif info == "у клиента нет e-mail":
+            flash("Укажите e-mail клиента — или скопируйте расчёт в мессенджер и нажмите «Отправил сам».", "err")
+        elif info == "почта не ответила":
+            flash("Почта не ответила — письмо не ушло. Скопируйте расчёт в мессенджер и нажмите «Отправил сам».", "err")
         else:
-            store.log(c, f"Не удалось отправить расчёт на {email} (почта не ответила)", who(), deal_id=did, client_id=d["client_id"]); c.commit()
-            flash("Почта не ответила — письмо не ушло. Скопируйте расчёт и отправьте в мессенджер.", "err")
+            flash(info[0].upper() + info[1:] + " — добавьте товар.", "err")
         return redirect(url_for("deal_view", did=did) + "#lines")
 
     @app.post("/deals/<int:did>/stage")
     @login_required
     def deal_stage(did: int) -> Any:
         st = request.form.get("stage", "")
+        d = store.deal(did)
+        if not d:
+            abort(404)
+        target = st
+        if request.form.get("next") == "1":
+            order = [s for s, _ in STAGES if s != "lost"]
+            target = order[order.index(d["stage"]) + 1] if d["stage"] in order and d["stage"] != order[-1] else ""
+        if target == "quote" and d["stage"] != "quote":
+            # «Расчёт отправлен» нельзя поставить руками: либо письмо ушло, либо «Отправил сам» в карточке
+            ok, info = send_calc_to(did, "")
+            if ok:
+                flash(f"Расчёт отправлен на {info}, этап — «Расчёт отправлен».", "ok")
+            else:
+                flash(f"Этап не сменён: расчёт клиенту ещё не отправлен ({info}). Откройте сделку: отправьте на почту или скопируйте в мессенджер и нажмите «Отправил сам».", "err")
+            return redirect(safe_next(request.form.get("back")) if request.form.get("back") else url_for("deal_view", did=did) + "#lines")
         if request.form.get("next") == "1":
             nxt = store.next_stage(did, who())
             if nxt:
@@ -705,6 +744,10 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         email = str(data.get("email") or "").strip()[:120]
         if email and ("@" not in email or " " in email):
             email = ""
+        is_order = str(data.get("intent") or "").lower() == "buy"
+        address = str(data.get("address") or "").strip()[:500]
+        if is_order:
+            msg = ("ЗАКАЗ. " + (f"Доставка: {address}. " if address else "") + msg).strip()
         phone, cemail, messenger = split_contact(contact)
         did = store.create_deal("сайт", None, name=name, contact=contact, phone=phone, email=email or cemail, messenger=messenger,
                                 kind=who_kind, want=msg, source="site",
@@ -712,7 +755,9 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                 consent_version=str(data.get("consentVersion") or "")[:40])
         if calc:
             store.lines_from_calc(did, calc, "сайт")
-        txt = f"Новая заявка с сайта №{did}: {name}, {contact}" + (f", {email}" if email else "") + (f"\n{msg}" if msg else "")
+        if is_order and address:
+            store.update_deal(did, "сайт", address=address)
+        txt = (f"Новый ЗАКАЗ с сайта №{did}" if is_order else f"Новая заявка с сайта №{did}") + f": {name}, {contact}" + (f", {email}" if email else "") + (f"\n{msg}" if msg else "")
         store.notify_team(txt)
         send_mail(conf["NOTIFY_EMAIL"], f"Заявка с сайта №{did}", txt + f"\n\nCRM: https://crm.{conf['SHOP_DOMAIN']}/deals/{did}"
                   if conf["SHOP_DOMAIN"] else txt)

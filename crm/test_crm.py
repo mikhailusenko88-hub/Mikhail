@@ -199,8 +199,40 @@ class TestDeals(Base):
         self.post(f"/deals/{did}/tasks", {"title": "Перезвонить", "due": "2026-11-06"})
         t = self.store.tasks(deal_id=did)[0]
         self.post(f"/tasks/{t['id']}", {"done": "1", "back": f"/deals/{did}"})
-        self.assertIsNotNone(self.store.tasks(deal_id=did, open_only=False)[0]["done_at"])
+        done = {r["id"]: r["done_at"] for r in self.store.tasks(deal_id=did, open_only=False)}
+        self.assertIsNotNone(done[t["id"]])
         self.assertEqual(self.c.get("/tasks").status_code, 200)
+
+    def test_funnel_auto_tasks_and_quote_guard(self) -> None:
+        did = self.new_deal()
+        titles = lambda: [r["title"] for r in self.store.tasks(deal_id=did)]
+        self.assertEqual(titles(), ["Связаться с клиентом"])                  # новая заявка → задача сегодня
+        # «Дальше» в «Расчёт отправлен» без письма — этап не меняется
+        self.post(f"/deals/{did}/stage", {"stage": "work"})
+        self.assertEqual(titles(), ["Отправить расчёт клиенту"])
+        r = self.post(f"/deals/{did}/stage", {"next": "1"})
+        self.assertEqual(self.store.deal(did)["stage"], "work")                  # позиций нет → нельзя
+        self.post(f"/deals/{did}/lines", {"article": "A912", "qty": "4"})
+        r = self.post(f"/deals/{did}/stage", {"next": "1"})
+        self.assertEqual(self.store.deal(did)["stage"], "work")                  # e-mail нет → нельзя
+        # «Отправил сам» — можно
+        self.post(f"/deals/{did}/send-calc", {"manual": "1"})
+        self.assertEqual(self.store.deal(did)["stage"], "quote")
+        self.assertEqual(titles(), ["Узнать решение по расчёту, предложить оплату"])
+        self.post(f"/deals/{did}/stage", {"stage": "paid"})
+        self.assertEqual(titles(), ["Отгрузить: собрать заказ, согласовать доставку"])
+        self.store.set_stock("A912", 10, 990, "тест") if hasattr(self.store, "set_stock") else None
+        self.post(f"/deals/{did}/stage", {"stage": "shipped"})
+        self.assertEqual(titles(), ["Попросить отзыв и фото стены"])
+        page = self.c.get("/board").get_data(as_text=True)
+        self.assertIn("Попросить отзыв", page)                                   # задача видна на карточке
+        page = self.c.get("/board?hot=1").get_data(as_text=True)
+        self.assertNotIn("Попросить отзыв", page)                                # отгружено и не просрочено → не горит
+        # доска подсвечивает просроченные задачи
+        did2 = self.new_deal(name="Пётр", phone="+7 900 555 55 55")
+        self.post(f"/deals/{did2}/tasks", {"title": "Перезвонить", "due": "2026-01-01"})
+        page = self.c.get("/board").get_data(as_text=True)
+        self.assertIn("card hot", page); self.assertIn("просрочено", page)
 
     def test_clients_and_edit(self) -> None:
         did = self.new_deal()
@@ -488,6 +520,25 @@ class TestApi(Base):
         self.assertEqual((d["stage"], d["email"]), ("quote", "new@example.com"))
         page = self.c.get(f"/deals/{did}").get_data(as_text=True)
         self.assertIn("Отправить расчёт на почту", page); self.assertIn('id="calcText"', page)
+
+    def test_site_order_buy(self) -> None:
+        sent = []
+        orig = crm_app.send_mail; crm_app.send_mail = lambda *a, **k: sent.append((a, k)) or True
+        try:
+            r = self.lead(intent="buy", address="СПб, Невский пр., 1, кв. 5", email="buyer@example.com",
+                          calc="Товар: A912 (реечная панель) — 6 шт, цвет: белый\nИтого ≈ 5 940 ₽")
+        finally:
+            crm_app.send_mail = orig
+        self.assertEqual(r.status_code, 200, r.get_data(as_text=True))
+        did = r.get_json()["id"]
+        d = self.store.deal(did)
+        self.assertTrue(d["want"].startswith("ЗАКАЗ."))                          # заказ отличим от заявки
+        self.assertEqual(d["address"], "СПб, Невский пр., 1, кв. 5")
+        self.assertEqual({r["article"]: r["qty"] for r in self.store.lines(did)}, {"A912": 6})   # позиции сразу в расчёте
+        self.assertEqual([r["title"] for r in self.store.tasks(deal_id=did)], ["Связаться с клиентом"])
+        self.login()
+        page = self.c.get("/board").get_data(as_text=True)
+        self.assertIn("card warm", page)                                          # открытая задача → подсвечена
 
     def test_lines_from_site_calc_and_fuzzy_article(self) -> None:
         cat = self.store.catalog

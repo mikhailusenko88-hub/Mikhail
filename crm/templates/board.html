@@ -3,6 +3,7 @@
 {% block title %}Воронка{% endblock %}
 {% block main %}
 <div class="bar"><h1>Воронка</h1>
+  <a class="btn-g" href="{{ url_for('board', q=q, hot=('0' if hot_only else '1')) }}">{% if hot_only %}Все сделки{% else %}Только с задачами{% if hot %} · горит {{ hot }}{% endif %}{% endif %}</a>
   <a class="btn-g" href="{{ url_for('board', q=q, all=('0' if show_closed else '1')) }}">{{ 'Скрыть старые' if show_closed else 'Показать все закрытые' }}</a></div>
 {% if q %}<p class="sub">Поиск: «{{ q }}» · <a href="{{ url_for('board') }}">сбросить</a></p>{% endif %}
 <div class="board">
@@ -10,10 +11,11 @@
   <section class="col">
     <h3><span>{{ name }} · {{ ds|length }}</span>{% if sum %}<span class="num muted">{{ rub(sum) }}</span>{% endif %}</h3>
     {% for d in ds %}
-    <div class="card">
+    <div class="card{% if d['overdue_tasks'] %} hot{% elif d['open_tasks'] and st not in ('shipped','lost') %} warm{% endif %}">
       <a href="{{ url_for('deal_view', did=d['id']) }}" class="cardlink">
         <div class="t">{{ d['client_name'] }}</div>
         <div class="d">{{ (d['want'] or 'без описания')[:80] }}</div>
+        {% if d['task_title'] %}<div class="task{% if d['overdue_tasks'] %} crit{% endif %}">⚑ {{ d['task_title'] }} · {% if d['overdue_tasks'] %}просрочено с {{ fmt_day(d['task_due']) }}{% else %}до {{ fmt_day(d['task_due']) }}{% endif %}{% if d['open_tasks'] > 1 %} (+{{ d['open_tasks'] - 1 }}){% endif %}</div>{% endif %}
       </a>
       <div class="m">
         <span class="pill">{{ SOURCE_NAMES.get(d['source'], d['source']) }}</span>
