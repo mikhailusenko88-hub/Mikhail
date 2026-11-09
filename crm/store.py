@@ -60,6 +60,28 @@ CREATE TABLE IF NOT EXISTS settings (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS chats (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    sid        TEXT NOT NULL UNIQUE,
+    name       TEXT NOT NULL DEFAULT '',
+    contact    TEXT NOT NULL DEFAULT '',
+    page       TEXT NOT NULL DEFAULT '',
+    deal_id    INTEGER,
+    unread     INTEGER NOT NULL DEFAULT 0,
+    consent_at TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    seen_at    TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS chat_msgs (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    chat_id    INTEGER NOT NULL,
+    who        TEXT NOT NULL,
+    author     TEXT NOT NULL DEFAULT '',
+    text       TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS chat_msgs_chat ON chat_msgs(chat_id, id);
 CREATE TABLE IF NOT EXISTS push_subs (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id    INTEGER NOT NULL,
@@ -721,6 +743,76 @@ class Store:
             d = c.execute("SELECT client_id FROM deals WHERE id=?", (did,)).fetchone()
             self.log(c, "Автонапоминания клиенту выключены" if off else "Автонапоминания клиенту включены", user,
                      deal_id=did, client_id=d["client_id"] if d else None)
+
+    # ---------------------------------------------------------------- чат на сайте
+    def chat_by_sid(self, sid: str) -> sqlite3.Row | None:
+        return self.c().execute("SELECT * FROM chats WHERE sid=?", (sid,)).fetchone()
+
+    def chat(self, cid: int) -> sqlite3.Row | None:
+        return self.c().execute("SELECT * FROM chats WHERE id=?", (cid,)).fetchone()
+
+    def chat_post(self, sid: str, who: str, text: str, author: str = "", name: str = "", contact: str = "",
+                  page: str = "", consent: bool = False) -> tuple[int, int, bool]:
+        """Сообщение в чат (who: client | staff | note). Возвращает (номер чата, номер сообщения или 0, новый ли чат)."""
+        ts = iso_now()
+        with self.tx() as c:
+            ch = c.execute("SELECT * FROM chats WHERE sid=?", (sid,)).fetchone()
+            new = ch is None
+            if new:
+                c.execute("INSERT INTO chats(sid, name, contact, page, consent_at, created_at, updated_at) VALUES (?,?,?,?,?,?,?)",
+                          (sid, name[:120], contact[:200], page[:300], ts if consent else "", ts, ts))
+                cid = int(c.execute("SELECT last_insert_rowid()").fetchone()[0])
+            else:
+                cid = int(ch["id"])
+                sets, args = ["updated_at=?"], [ts]
+                if name and name != ch["name"]:
+                    sets.append("name=?"); args.append(name[:120])
+                if contact and contact != ch["contact"]:
+                    sets.append("contact=?"); args.append(contact[:200])
+                if page:
+                    sets.append("page=?"); args.append(page[:300])
+                if consent and not ch["consent_at"]:
+                    sets.append("consent_at=?"); args.append(ts)
+                c.execute(f"UPDATE chats SET {', '.join(sets)} WHERE id=?", (*args, cid))
+            mid = 0
+            if text:
+                c.execute("INSERT INTO chat_msgs(chat_id, who, author, text, created_at) VALUES (?,?,?,?,?)",
+                          (cid, who, author[:60], text[:2000], ts))
+                mid = int(c.execute("SELECT last_insert_rowid()").fetchone()[0])
+                if who == "client":
+                    c.execute("UPDATE chats SET unread=unread+1 WHERE id=?", (cid,))
+                elif who == "staff":
+                    c.execute("UPDATE chats SET unread=0 WHERE id=?", (cid,))
+        return cid, mid, new
+
+    def chat_msgs(self, cid: int, after: int = 0, limit: int = 300) -> list[sqlite3.Row]:
+        return self.c().execute("SELECT * FROM chat_msgs WHERE chat_id=? AND id>? ORDER BY id LIMIT ?", (cid, after, limit)).fetchall()
+
+    def chats(self, limit: int = 200) -> list[sqlite3.Row]:
+        return self.c().execute(
+            "SELECT ch.*, (SELECT text FROM chat_msgs m WHERE m.chat_id=ch.id ORDER BY m.id DESC LIMIT 1) AS last_text,"
+            " (SELECT who FROM chat_msgs m WHERE m.chat_id=ch.id ORDER BY m.id DESC LIMIT 1) AS last_who,"
+            " (SELECT COUNT(*) FROM chat_msgs m WHERE m.chat_id=ch.id) AS n"
+            " FROM chats ch WHERE EXISTS (SELECT 1 FROM chat_msgs m WHERE m.chat_id=ch.id)"
+            " ORDER BY ch.unread>0 DESC, ch.updated_at DESC LIMIT ?", (limit,)).fetchall()
+
+    def chat_unread(self) -> int:
+        return int(self.c().execute("SELECT COUNT(*) FROM chats WHERE unread>0").fetchone()[0])
+
+    def chat_read(self, cid: int) -> None:
+        with self.tx() as c:
+            c.execute("UPDATE chats SET unread=0 WHERE id=?", (cid,))
+
+    def chat_seen(self, cid: int) -> None:
+        with self.tx() as c:
+            c.execute("UPDATE chats SET seen_at=? WHERE id=?", (iso_now(), cid))
+
+    def chat_link_deal(self, cid: int, did: int) -> None:
+        with self.tx() as c:
+            c.execute("UPDATE chats SET deal_id=? WHERE id=?", (did, cid))
+
+    def chat_of_deal(self, did: int) -> sqlite3.Row | None:
+        return self.c().execute("SELECT * FROM chats WHERE deal_id=? ORDER BY id DESC LIMIT 1", (did,)).fetchone()
 
     # ---------------------------------------------------------------- пуши
     def push_sub_save(self, user_id: int, endpoint: str, p256dh: str, auth: str, ua: str) -> None:

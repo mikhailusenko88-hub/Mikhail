@@ -38,7 +38,7 @@ h2{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07e
 .mono{font-family:var(--mono);font-size:13px}
 .note{color:var(--muted);font-size:13px;margin-top:12px}
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);
-  display:grid;grid-template-columns:repeat(6,1fr);padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+  display:grid;grid-template-columns:repeat(7,1fr);padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 nav.tabs a{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px 9px;text-decoration:none;color:var(--muted);font-size:11px;font-weight:600}
 nav.tabs a[aria-current="page"]{color:var(--accent)}
 .badge{position:absolute;top:3px;left:calc(50% + 6px);background:var(--crit);color:#fff;border-radius:999px;font-size:10px;min-width:17px;height:17px;line-height:17px;text-align:center;padding:0 4px}
@@ -200,3 +200,20 @@ details.src .calc{margin:10px 0 6px;white-space:pre-wrap}
 .pushbox .d{margin-top:3px}
 .pushbox button[hidden]{display:none}
 .pushhelp{margin:-4px 0 12px;line-height:1.5}
+
+.ic-chat{--m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M4 5h16v11H9l-5 4z'/%3E%3C/svg%3E")}
+.chatrow{display:flex;gap:12px;text-decoration:none;color:inherit}
+.chatrow .grow{display:flex;flex-direction:column;gap:2px;min-width:0}
+.chatrow.unread b{color:var(--accent)}
+.chatsnew .row{display:flex;gap:10px;align-items:center;text-decoration:none;color:inherit}
+.chatsnew .ic{color:var(--accent)}
+.chatsnew .grow{display:flex;flex-direction:column}
+.chatlog{display:flex;flex-direction:column;gap:8px;margin:14px 0;padding:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;max-height:60vh;overflow:auto}
+.msg{max-width:82%;padding:8px 12px;border-radius:14px;white-space:pre-wrap;word-wrap:break-word}
+.msg .d{font-size:11px;margin-top:3px}
+.msg.client{align-self:flex-start;background:#f1f0ec}
+.msg.staff{align-self:flex-end;background:#e2f0ec}
+.msg.note{align-self:center;background:transparent;color:var(--muted);font-size:13px;padding:2px}
+.chatreply{display:flex;gap:8px;align-items:flex-end;position:sticky;bottom:calc(64px + env(safe-area-inset-bottom));background:var(--bg,#f3f2ee);padding:6px 0}
+.chatreply textarea{flex:1;min-height:44px;font-size:16px}
+@media (min-width:900px){.chatreply{bottom:0}}

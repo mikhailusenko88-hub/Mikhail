@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Чат{% endblock %}
+{% block main %}
+<h1>Чат с сайта</h1>
+<p class="sub">Окно «Чат» на каждой странице nashdekor.ru. Новое сообщение — пуш на телефон; ответ клиент видит в том же окне, а если ушёл с сайта и оставил e-mail — получит письмом.</p>
+<div class="panel list">
+{% for c in chats %}
+  <a class="row chatrow{% if c['unread'] %} unread{% endif %}" href="{{ url_for('chat_view', cid=c['id']) }}">
+    <span class="grow"><b>{{ c['name'] or 'Посетитель' }}</b>{% if c['contact'] %} · {{ c['contact'] }}{% endif %}{% if c['deal_id'] %} · заявка №{{ c['deal_id'] }}{% endif %}
+      <span class="d">{% if c['last_who'] == 'staff' %}Вы: {% endif %}{{ (c['last_text'] or '')[:90] }}</span></span>
+    <span class="d r">{{ fmt_dt(c['updated_at']) }}{% if c['unread'] %}<br><span class="pill warn">новых {{ c['unread'] }}</span>{% endif %}</span>
+  </a>
+{% else %}
+  <div class="row"><span class="d">Пока никто не писал. Окно чата — внизу справа на сайте.</span></div>
+{% endfor %}
+</div>
+{% endblock %}

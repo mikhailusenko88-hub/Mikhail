@@ -110,3 +110,37 @@ document.addEventListener("click", async e => {
   });
   state().catch(e => { msg("Не получилось проверить уведомления: " + (e && e.message ? e.message : e)); });
 })();
+
+
+// Чат с сайта: новые сообщения подгружаются сами, ответ уходит без перезагрузки страницы
+(function () {
+  const log = document.querySelector("[data-chat]");
+  if (!log) return;
+  const cid = log.dataset.chat, form = document.querySelector("[data-chat-reply]");
+  let last = +log.dataset.last || 0;
+  const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const add = m => {
+    const d = document.createElement("div"); d.className = "msg " + m.who;
+    d.innerHTML = `<div class="t">${esc(m.text)}</div><div class="d">${m.who === "staff" ? esc(m.author) + " · " : ""}${esc(m.at)}</div>`;
+    log.appendChild(d); last = Math.max(last, m.id); log.scrollTop = log.scrollHeight;
+  };
+  log.scrollTop = log.scrollHeight;
+  async function poll() {
+    try {
+      const r = await fetch(`/chats/${cid}/msgs?after=${last}`, { credentials: "same-origin" }).then(r => r.json());
+      (r.msgs || []).forEach(add);
+      const s = document.querySelector("[data-seen]"); if (s && r.seen) s.textContent = "был на сайте " + r.seen.replace("T", " ");
+    } catch (e) {}
+  }
+  setInterval(() => { if (!document.hidden) poll(); }, 4000);
+  if (form) form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const ta = form.querySelector("textarea"); if (!ta.value.trim()) return;
+    const body = new URLSearchParams(new FormData(form));
+    const btn = form.querySelector("button"); btn.disabled = true;
+    try {
+      await fetch(form.action, { method: "POST", credentials: "same-origin", headers: { "X-Requested-With": "fetch" }, body });
+      ta.value = ""; await poll();
+    } finally { btn.disabled = false; ta.focus(); }
+  });
+})();

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Чат — {{ ch['name'] or 'посетитель' }}{% endblock %}
+{% block main %}
+<div class="bar"><h1>{{ ch['name'] or 'Посетитель' }}</h1><a class="btn-g" href="{{ url_for('chats_view') }}">Все чаты</a></div>
+<p class="sub">{% if ch['contact'] %}{{ ch['contact'] }} · {% endif %}начат {{ fmt_dt(ch['created_at']) }}{% if ch['page'] %} · страница <span class="mono">{{ ch['page'] }}</span>{% endif %}
+  · <span data-seen>{% if ch['seen_at'] %}был на сайте {{ fmt_dt(ch['seen_at']) }}{% else %}ещё не открывал ответы{% endif %}</span></p>
+{% if deal %}<p><a class="btn-s" href="{{ url_for('deal_view', did=deal['id']) }}">Заявка №{{ deal['id'] }} · {{ STAGE_NAMES[deal['stage']] }}</a></p>
+{% else %}
+<form class="panel pad grid2" method="post" action="{{ url_for('chat_deal', cid=ch['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f">Имя<input name="name" value="{{ ch['name'] }}" placeholder="как зовут клиента"></label>
+  <label class="f">Телефон или e-mail<input name="contact" value="{{ ch['contact'] }}" placeholder="если клиент назвал"></label>
+  <div class="span2"><button class="btn-s">Создать заявку из чата</button> <span class="d">Когда клиент оставляет телефон или e-mail в чате, заявка создаётся сама.</span></div>
+</form>
+{% endif %}
+<div class="chatlog" data-chat="{{ ch['id'] }}" data-last="{{ msgs[-1]['id'] if msgs else 0 }}">
+{% for m in msgs %}
+  <div class="msg {{ m['who'] }}"><div class="t">{{ m['text'] }}</div><div class="d">{% if m['who'] == 'staff' %}{{ m['author'] }} · {% endif %}{{ fmt_dt(m['created_at']) }}</div></div>
+{% endfor %}
+</div>
+<form class="chatreply" id="bottom" method="post" action="{{ url_for('chat_reply', cid=ch['id']) }}" data-chat-reply>
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <textarea name="text" rows="2" placeholder="Ответ клиенту — он увидит его в окне чата на сайте" required></textarea>
+  <button class="btn-p">Отправить</button>
+</form>
+{% endblock %}

@@ -29,6 +29,7 @@
   <button class="btn-p">Дальше →</button>
 </form>
 {% endif %}
+{% if chat %}<p><a class="btn-s" href="{{ url_for('chat_view', cid=chat['id']) }}">Переписка в чате сайта{% if chat['unread'] %} · новых {{ chat['unread'] }}{% endif %}</a></p>{% endif %}
 {% set open_t = tasks|rejectattr('done_at')|list %}
 {% if open_t %}
 <p class="nexthint {% if open_t[0]['due'] < today %}late{% endif %}">⚑ Следующий шаг: <a href="#tasks">{{ open_t[0]['title'] }}</a> · {% if open_t[0]['due'] < today %}просрочено с {{ fmt_day(open_t[0]['due']) }}{% else %}до {{ fmt_day(open_t[0]['due']) }}{% endif %}{% if open_t|length > 1 %} · ещё {{ open_t|length - 1 }}{% endif %}</p>

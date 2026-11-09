@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#1d5e57">
 <title>{% block title %}CRM{% endblock %} · Наш декор</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='crm.css') }}?v=8">
+<link rel="stylesheet" href="{{ url_for('static', filename='crm.css') }}?v=9">
 <link rel="icon" href="{{ url_for('static', filename='icon.svg') }}" type="image/svg+xml">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
@@ -14,7 +14,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Наш декор">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="{{ url_for('static', filename='crm.js') }}?v=3" defer></script>
+<script src="{{ url_for('static', filename='crm.js') }}?v=4" defer></script>
 </head>
 <body>
 {% if me %}
@@ -32,6 +32,7 @@
   <a href="{{ url_for('board') }}" {% if ep in ('board','deal_view','deal_new') %}aria-current="page"{% endif %}><span class="ic ic-funnel"></span>Воронка{% if nav_new %}<span class="badge">{{ nav_new }}</span>{% endif %}</a>
   <a href="{{ url_for('clients_view') }}" {% if ep in ('clients_view','client_view') %}aria-current="page"{% endif %}><span class="ic ic-clients"></span>Клиенты</a>
   <a href="{{ url_for('stock_view') }}" {% if ep=='stock_view' %}aria-current="page"{% endif %}><span class="ic ic-stock"></span>Склад</a>
+  <a href="{{ url_for('chats_view') }}" {% if ep in ('chats_view','chat_view') %}aria-current="page"{% endif %}><span class="ic ic-chat"></span>Чат{% if nav_chat %}<span class="badge">{{ nav_chat }}</span>{% endif %}</a>
   <a href="{{ url_for('site_view') }}" {% if ep=='site_view' %}aria-current="page"{% endif %}><span class="ic ic-site"></span>Сайт</a>
   <a href="{{ url_for('tasks_view') }}" {% if ep in ('tasks_view','reports_view','settings_view','server_view') %}aria-current="page"{% endif %}><span class="ic ic-more"></span>Ещё</a>
 </nav>

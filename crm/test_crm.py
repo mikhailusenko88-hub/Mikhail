@@ -562,7 +562,7 @@ class TestApi(Base):
             self.post(f"/deals/{did}/send-calc", {"email": "wait@example.com"})        # письмо-расчёт → этап quote
             self.assertEqual(self.store.deal(did)["stage"], "quote")
             body = sent[-1][2]
-            self.assertIn("Что дальше", body); self.assertIn("пришлём ссылку на оплату", body); self.assertIn("Telegram @IuliiaUsenko", body)
+            self.assertIn("Что дальше", body); self.assertIn("пришлём ссылку на оплату", body); self.assertIn("чат на сайте", body); self.assertNotIn("IuliiaUsenko", body)
             run = self.app.extensions["run_followups"]
             self.assertEqual(run("2026-11-09"), [])                                     # задача «Узнать решение» ещё не подошла (срок +2 дня)
             r = run("2026-11-11")
@@ -658,6 +658,76 @@ class TestApi(Base):
         wp.transport = lambda u, h, b: 410
         self.app.extensions["digest"]()
         self.assertEqual(self.store.push_subs(), [])
+
+    def chat(self, method="POST", origin="https://nashdekor.ru", **kw):
+        h = {"Origin": origin} if origin else {}
+        if method == "GET":
+            return self.c.get("/api/chat?" + "&".join(f"{k}={v}" for k, v in kw.items()), headers=h)
+        return self.c.post("/api/chat", data=json.dumps(kw), content_type="application/json", headers=h)
+
+    def test_site_chat(self) -> None:
+        import push as P
+        wp = self.app.extensions["push"]; got = []
+        wp.transport = lambda u, h, b: got.append(b) or 201
+        sent = []
+        orig = crm_app.send_mail; crm_app.send_mail = lambda to, s, b, sender="", reply_to="": sent.append((to, s, b)) or True
+        try:
+            ua, auth, sub = self._phone()
+            self.login(); self.post("/push/subscribe", {"sub": json.dumps(sub)})
+            sid = "s" * 10 + "0123456789abcdefXYZ_-"
+            # без согласия — нельзя; чужой сайт — нельзя; плохой sid — нельзя
+            self.assertEqual(self.chat(sid=sid, text="Здравствуйте").status_code, 400)
+            self.assertEqual(self.chat(origin="https://evil.example", sid=sid, text="x", consent=True).status_code, 403)
+            self.assertEqual(self.chat(sid="short", text="x", consent=True).status_code, 400)
+            # первое сообщение — чат создан, пуш сотрудникам со ссылкой на чат
+            r = self.chat(sid=sid, text="Есть A907 в наличии?", consent=True, page="/p/a907/")
+            self.assertEqual(r.status_code, 200, r.get_data(as_text=True))
+            self.assertEqual(r.headers["Access-Control-Allow-Origin"], "https://nashdekor.ru")
+            self.assertEqual([m["who"] for m in r.get_json()["msgs"]], ["me"])
+            cid = self.store.chat_by_sid(sid)["id"]
+            data = json.loads(P.decrypt(got[-1], ua, auth))
+            self.assertEqual(data["url"], f"/chats/{cid}"); self.assertIn("A907", data["body"])
+            self.assertIsNone(self.store.chat(cid)["deal_id"])                    # контакта нет — заявки ещё нет
+            # в CRM: вкладка с непрочитанным, страница чата
+            page = self.c.get("/").get_data(as_text=True)
+            self.assertIn("Чат<span class=\"badge\">1</span>", page); self.assertIn("Есть A907", page)
+            page = self.c.get(f"/chats/{cid}").get_data(as_text=True)
+            self.assertIn("Есть A907 в наличии?", page); self.assertIn("Создать заявку из чата", page)
+            self.assertEqual(self.store.chat_unread(), 0)                          # прочитано
+            # ответ сотрудника — клиент видит в окне (опрос)
+            self.post(f"/chats/{cid}/reply", {"text": "Да, есть 40 шт. Сколько нужно?"})
+            r = self.chat(method="GET", sid=sid, after=0)
+            msgs = r.get_json()["msgs"]
+            self.assertEqual([m["who"] for m in msgs], ["me", "staff"]); self.assertEqual(msgs[1]["author"], "Юлия")
+            last = msgs[-1]["id"]
+            self.assertEqual(self.chat(method="GET", sid=sid, after=last).get_json()["msgs"], [])
+            # клиент пишет телефон в тексте — контакт подхватывается, заявка создаётся сама
+            self.chat(sid=sid, text="12 шт, мой телефон +7 921 555-44-33", name="Ольга")
+            ch = self.store.chat(cid)
+            self.assertEqual(ch["contact"], "+7 921 555-44-33"); self.assertEqual(ch["name"], "Ольга")
+            did = ch["deal_id"]; self.assertTrue(did)
+            d = self.store.deal(did)
+            self.assertTrue(d["want"].startswith("Чат с сайта: Есть A907"))
+            self.assertIn("Связаться с клиентом", [x["title"] for x in self.store.tasks(deal_id=did)])
+            self.assertIn("Переписка в чате сайта", self.c.get(f"/deals/{did}").get_data(as_text=True))
+            # клиент ушёл, оставил e-mail — ответ дублируется письмом
+            sid2 = "t" * 30
+            self.chat(sid=sid2, text="Напишите на почту olga@example.com", consent=True)
+            cid2 = self.store.chat_by_sid(sid2)["id"]
+            self.post(f"/chats/{cid2}/reply", {"text": "Отправили расчёт"})
+            self.assertEqual(sent[-1][0], "olga@example.com"); self.assertIn("Отправили расчёт", sent[-1][2])
+            # создать заявку из чата вручную
+            sid3 = "u" * 30
+            self.chat(sid=sid3, text="Привет", consent=True)
+            cid3 = self.store.chat_by_sid(sid3)["id"]
+            r = self.post(f"/chats/{cid3}/deal", {"name": "Иван", "contact": ""})
+            self.assertTrue(self.store.chat(cid3)["deal_id"])
+            self.assertIn("Иван", self.c.get("/chats").get_data(as_text=True))
+            # чат выключен вместе с заявками с сайта
+            self.app.extensions["crm_conf"]["SITE_LEADS"] = False
+            self.assertEqual(self.chat(sid=sid, text="ещё", consent=True).status_code, 503)
+        finally:
+            crm_app.send_mail = orig
 
     def test_mailwatch(self) -> None:
         import subprocess, tempfile

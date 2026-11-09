@@ -40,6 +40,10 @@ LOGIN_WINDOW = 15 * 60
 LOGIN_MAX_FAILS = 10
 LEAD_WINDOW = 10 * 60
 LEAD_MAX = 5
+CHAT_MAX = 30                     # сообщений в чат с одного адреса за 10 минут
+SID_RE = re.compile(r"^[A-Za-z0-9_-]{24,64}$")
+EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+PHONE_RE = re.compile(r"(?:\+7|\b8)[\s(-]*\d{3}[\s)-]*\d{3}[\s-]*\d{2}[\s-]*\d{2}\b")
 HIT_WINDOW = 10 * 60
 # Кнопки страницы «Сервер»: (код, надпись, пояснение). Выполняет их root по cron (prostranstvo-crm server-page),
 # и только из этого списка — произвольных команд из CRM нет.
@@ -105,6 +109,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     hits_by_ip: dict[str, deque[float]] = defaultdict(deque)
     fails: dict[str, deque[float]] = defaultdict(deque)
     leads_by_ip: dict[str, deque[float]] = defaultdict(deque)
+    chat_by_ip: dict[str, deque[float]] = defaultdict(deque)
 
     def ip() -> str:
         return request.remote_addr or "?"
@@ -142,7 +147,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 "KINDS": KINDS, "KIND_NAMES": KIND_NAMES, "ROLES": ROLES, "ROLE_NAMES": ROLE_NAMES,
                 "KIND_TITLES": KIND_TITLES, "rub": rub, "fmt_dt": fmt_dt, "fmt_day": fmt_day, "today": today(),
                 "me": getattr(g, "user", None), "csrf": session.get("csrf", ""), "total": Store.total,
-                "nav_new": getattr(g, "nav_new", 0), "SHOP_DOMAIN": conf["SHOP_DOMAIN"] or "nashdekor.ru",
+                "nav_new": getattr(g, "nav_new", 0), "nav_chat": getattr(g, "nav_chat", 0), "SHOP_DOMAIN": conf["SHOP_DOMAIN"] or "nashdekor.ru",
                 "PUSH_KEY": wp.public_key() if getattr(g, "user", None) and wp.enabled else ""}
 
     @app.after_request
@@ -178,6 +183,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if g.user is not None and not api:
             store.import_bot_leads()
             g.nav_new = len(store.deals(stage="new", limit=99))
+            g.nav_chat = store.chat_unread()
         return None
 
     def login_required(fn: Any) -> Any:
@@ -336,6 +342,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         short = [r for r in rows if r["reserved"] > r["qty"]]
         s = store.summary()
         return render_template("today.html", new=new, tasks=tasks, paid=paid, low=low[:20], short=short[:20], s=s,
+                               chats_unread=[c for c in store.chats(limit=50) if c["unread"]],
                                vb=visits.brief(t))
 
     # ------------------------------------------------------------ Воронка и сделки
@@ -391,11 +398,12 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                calc_text=calc_text(d, lines, who()) if lines else "",
                                stock=stock, tasks=store.tasks(deal_id=did, open_only=False),
                                events=store.events(deal_id=did), bot=bot, msgs=msgs,
-                               catalog=store.catalog.all(), other=store.deals(client_id=d["client_id"], limit=20))
+                               catalog=store.catalog.all(), other=store.deals(client_id=d["client_id"], limit=20),
+                               chat=store.chat_of_deal(did))
 
     def mail_contacts() -> str:
         """Строка контактов в письмах клиентам (Настройки → Письма клиентам)."""
-        return store.setting("mail_contacts", "Telegram @IuliiaUsenko")
+        return store.setting("mail_contacts", "чат на сайте nashdekor.ru")
 
     def mail_signature(manager: str = "") -> list[str]:
         dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
@@ -965,6 +973,154 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         send_mail(conf["NOTIFY_EMAIL"], head, txt + f"\n\nCRM: https://crm.{conf['SHOP_DOMAIN']}/deals/{did}"
                   if conf["SHOP_DOMAIN"] else txt)
         return cors(jsonify(ok=True, id=did)), 200
+
+    # ------------------------------------------------------------ API: чат на сайте
+    # Окно «Чат» на каждой странице сайта. Посетитель — без входа: его переписку определяет случайный
+    # ключ sid в его браузере (localStorage). Сообщения — в CRM («Чат»), сотрудникам — пуш; ответ виден в том же окне.
+    def chat_json(rows: list[Any]) -> list[dict[str, Any]]:
+        return [{"id": int(r["id"]), "who": "me" if r["who"] == "client" else r["who"], "author": r["author"] if r["who"] == "staff" else "",
+                 "text": r["text"], "at": r["created_at"][:16]} for r in rows if r["who"] in ("client", "staff")]
+
+    def chat_contact_in(text: str) -> str:
+        m = EMAIL_RE.search(text) or PHONE_RE.search(text)
+        return m.group(0).strip() if m else ""
+
+    def chat_to_deal(cid: int) -> int | None:
+        """Есть контакт, а сделки ещё нет — создаём заявку из чата (воронка: задача «Связаться с клиентом»)."""
+        ch = store.chat(cid)
+        if not ch or ch["deal_id"] or not ch["contact"]:
+            return ch["deal_id"] if ch else None
+        first = " / ".join(r["text"] for r in store.chat_msgs(cid) if r["who"] == "client")[:300]
+        phone, email, messenger = split_contact(ch["contact"])
+        did = store.create_deal("сайт", None, name=ch["name"] or "Посетитель чата", contact=ch["contact"], phone=phone, email=email,
+                                messenger=messenger, want=("Чат с сайта: " + first).strip(), source="site",
+                                consent_at=ch["consent_at"] or store_now(), consent_version="chat-2026-11-09")
+        store.chat_link_deal(cid, did)
+        return did
+
+    @app.route("/api/chat", methods=["GET", "POST", "OPTIONS"])
+    def api_chat() -> Any:
+        if request.method == "OPTIONS":
+            return cors(Response(status=204))
+        origin = request.headers.get("Origin", "").rstrip("/")
+        if origin and origin not in conf["SITE_ORIGINS"]:
+            return cors(jsonify(ok=False, error="origin")), 403
+        if not conf["SITE_LEADS"]:
+            return cors(jsonify(ok=False, error="off")), 503
+        if request.method == "GET":
+            sid = request.args.get("sid", "")
+            if not SID_RE.match(sid):
+                return cors(jsonify(ok=False, error="sid")), 400
+            ch = store.chat_by_sid(sid)
+            if not ch:
+                return cors(jsonify(ok=True, msgs=[]))
+            store.chat_seen(int(ch["id"]))
+            return cors(jsonify(ok=True, msgs=chat_json(store.chat_msgs(int(ch["id"]), request.args.get("after", 0, type=int)))))
+        data = request.get_json(silent=True) or request.form.to_dict()
+        if not isinstance(data, dict):
+            return cors(jsonify(ok=False, error="format")), 400
+        if str(data.get("website") or "").strip():
+            return cors(jsonify(ok=True, msgs=[])), 200
+        sid = str(data.get("sid") or "")
+        text = str(data.get("text") or "").strip()[:1000]
+        name = str(data.get("name") or "").strip()[:120]
+        contact = str(data.get("contact") or "").strip()[:200]
+        consent = data.get("consent") in (True, "1", 1, "true", "on")
+        if not SID_RE.match(sid) or not (text or contact):
+            return cors(jsonify(ok=False, error="fields")), 400
+        ch = store.chat_by_sid(sid)
+        if not consent and not (ch and ch["consent_at"]):
+            return cors(jsonify(ok=False, error="consent")), 400
+        q = _recent(chat_by_ip[ip()], LEAD_WINDOW)
+        if len(q) >= CHAT_MAX:
+            return cors(jsonify(ok=False, error="rate")), 429
+        q.append(time.monotonic())
+        if not contact and text and not (ch and ch["contact"]):
+            contact = chat_contact_in(text)
+        cid, mid, new = store.chat_post(sid, "client", text, name=name, contact=contact,
+                                        page=str(data.get("page") or "")[:300], consent=consent)
+        if contact and not text:
+            store.chat_post(sid, "note", f"Оставил контакт: {name + ', ' if name else ''}{contact}")
+        did = chat_to_deal(cid)
+        ch = store.chat(cid)
+        who_s = ch["name"] or (ch["contact"] if ch["contact"] else "посетитель")
+        wp.notify(f"Чат с сайта: {who_s}" + (f" · №{did}" if did else ""), text or f"Оставил контакт: {contact}", f"/chats/{cid}", tag=f"chat-{cid}")
+        return cors(jsonify(ok=True, msgs=chat_json(store.chat_msgs(cid, data.get("after", 0) if isinstance(data.get("after"), int) else 0))))
+
+    # ------------------------------------------------------------ Чат — сотрудникам
+    @app.route("/chats")
+    @login_required
+    def chats_view() -> Any:
+        return render_template("chats.html", chats=store.chats())
+
+    @app.route("/chats/<int:cid>")
+    @login_required
+    def chat_view(cid: int) -> Any:
+        ch = store.chat(cid)
+        if not ch:
+            abort(404)
+        store.chat_read(cid)
+        g.nav_chat = store.chat_unread()
+        return render_template("chat.html", ch=ch, msgs=store.chat_msgs(cid), deal=store.deal(ch["deal_id"]) if ch["deal_id"] else None)
+
+    @app.route("/chats/<int:cid>/msgs")
+    @login_required
+    def chat_msgs_json(cid: int) -> Any:
+        ch = store.chat(cid)
+        if not ch:
+            abort(404)
+        rows = store.chat_msgs(cid, request.args.get("after", 0, type=int))
+        if rows:
+            store.chat_read(cid)
+        return jsonify(ok=True, seen=ch["seen_at"][:16], msgs=[{"id": int(r["id"]), "who": r["who"], "author": r["author"], "text": r["text"],
+                                                                 "at": fmt_dt(r["created_at"])} for r in rows])
+
+    @app.post("/chats/<int:cid>/reply")
+    @login_required
+    def chat_reply(cid: int) -> Any:
+        ch = store.chat(cid)
+        if not ch:
+            abort(404)
+        text = (request.form.get("text") or "").strip()[:2000]
+        if text:
+            store.chat_post(ch["sid"], "staff", text, author=g.user["name"])
+            # клиент ушёл с сайта, а e-mail оставил — ответ уходит и письмом
+            em = EMAIL_RE.search(ch["contact"] or "")
+            gone = not ch["seen_at"] or (now() - datetime.fromisoformat(ch["seen_at"])).total_seconds() > 120
+            if em and gone:
+                dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
+                body = (f"Здравствуйте{', ' + ch['name'] if ch['name'] else ''}!\n\nОтвет на ваш вопрос в чате на сайте «Наш декор»:\n\n{text}\n\n"
+                        f"Продолжить переписку — в окне «Чат» на https://{dom} (с того же устройства) или ответом на это письмо.")
+                if send_mail(em.group(0), "Ответ в чате — «Наш декор»", "\n".join([body] + mail_signature(g.user["name"])),
+                             sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}"):
+                    store.chat_post(ch["sid"], "note", f"Ответ также отправлен на {em.group(0)} (клиент не на сайте)")
+            if ch["deal_id"]:
+                c = store.c(); store.log(c, f"Ответ в чате: {text[:150]}", who(), deal_id=int(ch["deal_id"])); c.commit()
+        if request.headers.get("X-Requested-With") == "fetch":
+            return jsonify(ok=True)
+        return redirect(url_for("chat_view", cid=cid) + "#bottom")
+
+    @app.post("/chats/<int:cid>/deal")
+    @login_required
+    def chat_deal(cid: int) -> Any:
+        ch = store.chat(cid)
+        if not ch:
+            abort(404)
+        if ch["deal_id"]:
+            return redirect(url_for("deal_view", did=int(ch["deal_id"])))
+        name = (request.form.get("name") or ch["name"] or "Посетитель чата").strip()[:120]
+        contact = (request.form.get("contact") or ch["contact"] or "").strip()[:200]
+        if contact or name != ch["name"]:
+            store.chat_post(ch["sid"], "note", "", name=name, contact=contact)
+        if not contact:
+            first = " / ".join(r["text"] for r in store.chat_msgs(cid) if r["who"] == "client")[:300]
+            did = store.create_deal(who(), int(g.user["id"]), name=name, want=("Чат с сайта: " + first).strip(), source="site",
+                                    consent_at=ch["consent_at"] or "", consent_version="chat-2026-11-09")
+            store.chat_link_deal(cid, did)
+        else:
+            did = chat_to_deal(cid)
+        flash("Заявка создана из чата.", "ok")
+        return redirect(url_for("deal_view", did=did))
 
     # ------------------------------------------------------------ API: счётчик посещений
     # Сайт присылает отметки «что открыли и нажали» (navigator.sendBeacon, text/plain).

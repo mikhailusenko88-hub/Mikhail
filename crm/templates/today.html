@@ -4,6 +4,7 @@
 {% block main %}
 <h1>Сегодня</h1>
 {{ push_box(compact=True) }}
+{% if chats_unread %}<div class="panel list chatsnew">{% for c in chats_unread %}<a class="row" href="{{ url_for('chat_view', cid=c['id']) }}"><span class="ic ic-chat"></span><span class="grow"><b>Чат: {{ c['name'] or c['contact'] or 'посетитель сайта' }}</b><span class="d">{{ (c['last_text'] or '')[:80] }}</span></span><span class="pill warn">{{ c['unread'] }}</span></a>{% endfor %}</div>{% endif %}
 <p class="sub">{{ me['name'] }}, {{ fmt_day(today) }}</p>
 {% set bs = s['by_stage'] %}
 <div class="stats">
