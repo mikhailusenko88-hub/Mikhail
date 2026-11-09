@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-09 19:51 UTC
+# Сайт снаружи — 2026-11-09 21:20 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -22,7 +22,8 @@ og:image: og:image" content="https://nashdekor.ru/og.jpg"
 ld+json: 1
 адрес формы в сайте: https://crm.nashdekor.ru/api/lead
 форма — ответ «Спасибо… Заявка отправлена» и кнопка «ещё одна»: 1, версия сайта: 3
-чат: скрипт на главной 1, на A907 1, файл 200 16409б, личный Telegram (0): 0 0 0 0
+чат: скрипт на главной 1, на A907 1, файл 200 20273б, личный Telegram (0): 0 0 0 0
+строка разделов «едет»: главная 1, p.css 1
 телефон на сайте (должно быть 0): 0, класс Г2 (должно быть 0): 0, кнопка «Заказать звонок»: 1
 контакты: MAX в списке: 1, подсказка «позвонить или написать в MAX»: 0, WhatsApp: 0; боты в политике: 1, в согласии: 1, в оферте: 0
 счётчик на главной: 1, в политике п. 3.4: 1, на документах: 1 1 1 
@@ -41,8 +42,8 @@ ld+json: 1
 /stati/                            200 text/html; charset=utf-8 14043
 /stati/kak-otrezat-ugol-potolochnogo-plintusa/ 200 text/html; charset=utf-8 19577
 /dostavka/                         200 text/html; charset=utf-8 21479
-/assets/p.js                       200 application/javascript; charset=utf-8 36472
-/assets/p.css                      200 text/css 22009
+/assets/p.js                       200 application/javascript; charset=utf-8 37048
+/assets/p.css                      200 text/css 23245
 /mebel/_lib/three.min.js           200 application/javascript; charset=utf-8 603445
 /mebel/_lib/OrbitControls.js       200 application/javascript; charset=utf-8 26375
 /img/A907.jpg                      200 image/jpeg 22169
@@ -75,7 +76,7 @@ access-control-allow-origin: https://nashdekor.ru
 {"ok":true}
   HTTP 200
 --- CRM health: {"ok":true}
---- CRM страницы (пуши/PWA): login 200 1420б, manifest 200 application/manifest+json, sw.js 200 application/javascript; charset=utf-8, иконка 200, корень 302 → https://crm.nashdekor.ru/login?next=/?
-    вход: форма 1, манифест в странице 1, crm.js crm.js?v=3, CSP: content-security-policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; form-action 'self'; frame-ancestors 
+--- CRM страницы (пуши/PWA): login 200 1421б, manifest 200 application/manifest+json, sw.js 200 application/javascript; charset=utf-8, иконка 200, корень 302 → https://crm.nashdekor.ru/login?next=/?
+    вход: форма 1, манифест в странице 1, crm.js crm.js?v=4, CSP: content-security-policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; form-action 'self'; frame-ancestors 
 --- robots на crm/mail: crm 404, mail 404
 ```
