@@ -147,8 +147,10 @@ class Outbox:
     def _git(self, *args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
         env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": str(self.workdir.parent),
                "GIT_TERMINAL_PROMPT": "0", "GIT_CONFIG_NOSYSTEM": "1", "LC_ALL": "C"}
-        return subprocess.run(["git", *args], cwd=str(cwd) if cwd else None, env=env, capture_output=True,
-                               text=True, timeout=90, check=False)
+        base = cwd or self.workdir.parent                 # не текущая папка: у cron это /root, недоступный пользователю CRM
+        base.mkdir(parents=True, exist_ok=True)
+        return subprocess.run(["git", *args], cwd=str(base), env=env, capture_output=True,
+                              text=True, timeout=90, check=False)
 
     def fetch(self) -> list[Path]:
         """Забрать ветку outbox (только если она изменилась). Возвращает файлы писем."""
