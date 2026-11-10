@@ -1,0 +1,869 @@
+aerial_asphalt_01	Aerial Asphalt 01	asphalt,outdoor,floor,road,man made,aerial	road,flat,cracked	[30000, 30000]		[8192, 8192]	148940
+aerial_beach_01	Aerial Beach 01	terrain,sand,outdoor,natural,aerial	beach,wavy,costal,ocean,seaside	[30000, 30000]		[8192, 8192]	161544
+aerial_beach_02	Aerial Beach 02	terrain,sand,natural,outdoor,aerial	beach,flat,costal,ocean,seaside	[20000.011444091797, 20000]		[8192, 8192]	37091
+aerial_beach_03	Aerial Beach 03	outdoor,terrain,sand,natural,aerial	beach,seaside,sand,trampled,uneven,brown,footprints,costal,ocean	[19999.950408935547, 20000]		[8192, 8192]	17187
+aerial_grass_rock	Aerial Grass Rock	terrain,rock,outdoor,natural,aerial	moss,grass,cliff,cave,rock face	[15000, 15000]		[8192, 8192]	366542
+aerial_ground_rock	Aerial Ground Rock	terrain,outdoor,natural,aerial	mud,rocks,stones,dirt,dry	[19999.950408935547, 20000]		[8192, 8192]	32703
+aerial_mud_1	Aerial Mud 1	terrain,road,outdoor,natural,aerial	mud,tracks,tire tracks,wet soil,uneven surface,ruts,surface depressions	[8000, 8000]		[8192, 8192]	26860
+aerial_rocks_01	Aerial Rocks 01	terrain,outdoor,natural,rock,aerial	rocks,moss,cliff,rock face,cave	[80000, 80000.20599365234]		[8192, 8192]	125660
+aerial_rocks_02	Aerial Rocks 02	terrain,outdoor,natural,rock,aerial	rocks,rough,moss,cliff,rock face,cave	[50000, 50000]		[8192, 8192]	403013
+aerial_rocks_04	Aerial Rocks 04	terrain,outdoor,natural,rock,aerial	rough,rocks,moss,cliff,rock face,cave	[80000, 80000]		[8192, 8192]	224830
+aerial_sand	Aerial Sand	terrain,sand,outdoor,natural,aerial	sand,costal,seaside,ocean,sea	[15000, 15000]		[8192, 8192]	37198
+aerial_wood_snips	Aerial Wood Snips	terrain,outdoor,natural,aerial	rough,wood,mud,dirt,wood chips,wood splinters,tire tracks,organic debris,earth	[30000, 30000]		[8192, 8192]	15759
+american_walnut_veneer	American Walnut Veneer	wood,raw wood	american walnut,natural grain,hardwood,grain,natural wood grain,natural wood,gray,wood grain,veneer,walnut	[1000, 1000]		[8192, 8192]	1864
+angli_veneer	Angli Veneer	wood,raw wood	veneer,veneer wood,natural grain,grain,wood,natural wood grain,wood grain,angli,light wood,flat wood surface	[1000, 1000]		[8192, 8192]	636
+anti_skid_tiles	Anti Skid Tiles	floor,man made	antislip,antiskid,tiles,patio,nonslip,grip,slipresistant,durable	[1800.0000715255737, 1800.0000715255737]		[16384, 16384]	3667
+anti_slip_concrete	Anti Slip Concrete	floor,man made,concrete,plaster-concrete	rough,concrete,antislip,outdoor,weathered,exterior,scuffed,chipped,scratched,nonslip	[2500, 2500]		[8192, 8192]	4672
+asbestos_sheet	Asbestos Sheet	wall,man made	asbestos,corrugated,dirty,sheet,corrugation,industrial,material,fireresistant	[2000, 2000]		[16384, 16384]	1409
+asbestos_sheet_02	Asbestos Sheet 02	wall,man made	asbestos,sheet,asbestos sheet,corrugated,dirty,fireresistant,building material,durable	[1800.0000715255737, 1800.0000715255737]		[16384, 16384]	1221
+ash_veneer	Ash Veneer	wood,raw wood	ash wood,ash,wood,hardwood,veneer,veneer wood,natural grain,natural veneer,fine grain,natural wood	[1000, 1000]		[8192, 8192]	1522
+asphalt_01	Asphalt 01	asphalt,floor,outdoor,road	rough,dirty,asphalt,road,worn	[2079.9994468688965, 2079.9996852874756]		[8192, 8192]	72530
+asphalt_02	Asphalt 02	terrain,road,man made,outdoor,floor	asphalt,cracked,flat,road,asphalt road,tarmac road,gritty,weathered,grey,cracking	[3000.000238418579, 3000]		[8192, 8192]	402855
+asphalt_03	Asphalt 03	outdoor,man made,dirty,road,asphalt	rough,worn,dirty,floor,road,asphalt,city,urban	[2049.999713897705, 2049.999713897705]		[8192, 8192]	14750
+asphalt_04	Asphalt 04	man made,outdoor,road	rough,weathered,dry,cracked,discolored,asphalt,road,street	[4039.9999618530273, 4039.9999618530273]		[16384, 16384]	58064
+asphalt_05	Asphalt 05	floor,asphalt	rough,floor,road,asphalt,coarse,brown,street,roadway	[1999.9996423721313, 1999.9996423721313]		[8192, 8192]	6782
+asphalt_06	Asphalt 06	asphalt,outdoor,floor,road	rough,dirty,scuffed,driveway texture,sidewalk,hard surface,handmade,raw	[3000, 3000]		[8192, 8192]	39067
+asphalt_07	Asphalt 07	floor,asphalt,man made,road	rough,weathered,asphalt,chipped,granular,abrasive,road,paving	[2500, 2500]		[16384, 16384]	4218
+asphalt_floor	Asphalt Floor	outdoor,man made,floor,clean,concrete,road,asphalt,plaster-concrete	flat,asphalt,brown,even,dry,smooth,ground	[2349.9999046325684, 2349.9999046325684]		[8192, 8192]	32808
+asphalt_pit_lane	Asphalt Pit Lane	floor,asphalt,road	asphalt,asphalt road,road,roadway,tarmac road,race track,pit lane	[2000, 2000]		[8192, 8192]	69544
+asphalt_snow	Asphalt Snow	outdoor,man made,asphalt,snow	rough,asphalt,road,snow,urban,floor	[2000, 2000]		[8192, 8192]	12855
+asphalt_track	Asphalt Track	asphalt	track,asphalt,racing,road,speedway,asphalt road,race track,tarmac road	[2000, 2000]		[8192, 8192]	57023
+bamboo_veneer	Bamboo Veneer	wood,raw wood	bamboo,bamboo texture,veneer,natural grain,grain,natural wood grain,wood grain,natural wood,veneer wood,flat wood surface	[1000, 1000]		[8192, 8192]	1185
+bamboo_wall	Bamboo Wall	wall,wood,raw wood	wood,raw,bamboo,wood wall,wooden,culm,bamboo culm,bamboo pole,bamboo texture,organic	[2000, 2000]		[8192, 8192]	3205
+bamboo_wall_02	Bamboo Wall 02	wood	wood,raw,bamboo,wood wall,wooden,culm,bamboo culm,bamboo pole,bamboo texture,organic	[1700.0000476837158, 1700.0000476837158]		[16384, 16384]	1725
+bamboo_wall_03	Bamboo Wall 03	wood	wood,raw,bamboo,wood wall,wooden,culm,bamboo culm,bamboo pole,bamboo texture,organic	[1850.000023841858, 1850.000023841858]		[16384, 16384]	2790
+bark_bluegum	Bark Blue gum	bark,natural	bark,tree,tree bark,tree bark texture,tree trunk,nature,outdoor,bluegum,organic,environment	[1820.0000524520874, 1820.0000524520874]		[8192, 8192]	2853
+bark_brown_01	Bark Brown 01	wood,outdoor,natural,bark	bark,tree,forest,knots,bark grooves,tree bark,tree trunk	[999.9990463256836, 999.998927116394]		[8192, 8192]	130016
+bark_brown_02	Bark Brown 02	wood,outdoor,natural,bark	bark,tree,forest,knots,wooden knots,tree trunk	[999.9990463256836, 999.998927116394]		[8192, 8192]	233386
+bark_platanus	Bark Platanus	natural,bark	bark,tree bark,natural,bark texture,forestry,tree,tree trunk,tree texture,platanus,nature	[1500.0001192092896, 1500.0001192092896]		[8192, 8192]	3004
+bark_willow	Bark Willow	outdoor,natural,bark,wood	willow,bark,tree,forest,nature,brown,uneven,sallow,osier,old	[1000, 1000]		[8192, 8192]	122155
+bark_willow_02	Bark Willow 02	outdoor,natural,wood,raw wood,bark	rough,dry,nature,tree,bark,wood,forest	[2150.0000953674316, 2150.0000953674316]		[8192, 8192]	121157
+baseball_playground	Baseball Playground	outdoor,terrain,sand	dirt,playground,sand,baseball,ground,brown,dry,trampled,footprints	[3000, 3000]		[8192, 8192]	12448
+beam_wall_01	Beam Wall 01	wood,outdoor,man made,wall	wall,stacked,cabin,house,hut,forest	[999.9990463256836, 999.998927116394]		[8192, 8192]	34323
+beige_wall_001	Beige Wall 001	man made,wall,plaster,outdoor,indoor,plaster-concrete	beige,painted,smooth,suburb,house,home	[3000, 3000.000238418579]		[16384, 16384]	430803
+beige_wall_002	Beige Wall 002	man made,wall,plaster,outdoor,indoor,plaster-concrete	beige,painted,suburb,house,spikey,textured,home	[3000, 3000.000238418579]		[32767, 8192]	84333
+bi_stretch	Bi Stretch	fabric,stretchy	yellow,fine,flexible,bi-stretch,polyester,textile ,woven	[264.5644946243421, 264.4000053405762]		[8042, 8037]	11120
+bicolour_gravel	Bicolour Gravel	floor,gravel	gravel,gravelly,driveway gravel,driveway stones,driveway,garden walkway,stones,garden path gravel	[1899.9998569488525, 1899.9998569488525]		[8192, 8192]	7772
+bitumen	Bitumen	roofing	rough,cracked,cracks,dirty,bitumen,asphalt,roofing material,tar,gritty,rough  	[19999.996185302734, 19999.996185302734]		[8192, 8192]	14923
+black_oak_veneer	Black Oak Veneer	wood,raw wood	raw,wood,oak,natural wood grain,natural grain,grain,gray,wood grain,veneer,veneer wood	[1000, 1000]		[8192, 8192]	2140
+black_painted_planks	Black Painted Planks	wood	painted,painted wood,wood,wooden planks,weathered,scratched,worn,grain,wood grain,distressed wood	[1599.9999046325684, 1599.9999046325684]		[8192, 8192]	17591
+black_walnut_veneer_01	Black Walnut Veneer 01	wood,raw wood	natural grain,grain,natural wood grain,wood grain,natural wood,fine grain,natural veneer,natural,veneer,veneer wood	[1000, 1000]		[8192, 8192]	1129
+black_walnut_veneer_02	Black Walnut Veneer 02	wood,raw wood	walnut,walnut wood,wood,veneer,natural grain,grain,natural wood,natural wood grain,wood grain	[1000, 1000]		[8192, 8192]	1337
+black_walnut_veneer_03	Black Walnut Veneer 03	raw wood,wood	walnut,walnut wood,natural grain,grain,wood,hardwood,veneer,natural veneer	[1000, 1000]		[8192, 8192]	899
+blue_floor_tiles_01	Blue Floor Tiles 01	floor,man made,outdoor,dirty,brick	floor,moss,damp,wet,bright,walkway,pavement	[2000, 2000.0009536743164]		[8192, 8192]	53702
+blue_metal_plate	Blue Metal Plate	metal,industrial	scratched,metal sheet,metal,painted,industrial,scratches,scuffed,steel panel,abrasion marks,blue	[2500, 2500]		[16384, 16384]	100847
+blue_painted_planks	Blue Painted Planks	wood,wall,man made,dirty	planks,painted,house,wooden,peeling	[1000, 1000]		[8192, 8192]	61583
+blue_plaster_wall	Blue Plaster Wall	outdoor,wall,plaster-concrete	rough,painted,cracking paint,cracks,bumpy,cracking,plaster,blue,plastering,painted concrete	[2000, 2000]		[8192, 8192]	7160
+blue_plaster_weathered	Blue Plaster Weathered	wall,man made,plaster,outdoor	old,weathered,worn,discolored,chipped,damaged,wall,plaster,plastered,deteriorated	[2000, 2000]		[16384, 16384]	8429
+book_pattern	Book Pattern	fabric,cotton	plain,book,cover,textile ,olive,olive green,woven	[299.9999523162842, 300.00001192092896]		[8192, 8192]	242630
+box_profile_metal_sheet	Box Profile Metal Sheet	wall,outdoor,roofing	sheet,metal sheet,box profile,industrial,corrugated,steel,red,roofing material,metal roofing sheet,galvanized steel	[2000, 2000]		[16384, 16384]	52556
+brick_4	Brick 4	wall,man made,dirty,outdoor,brick	red,moss,urban,city,damp,wet	[500, 500]		[8192, 8192]	136667
+brick_crosswalk	Brick Crosswalk	floor,brick	brick,bricks,multicoloured,pedestrian crossing ,crosswalk,street,sidewalk,urban	[1899.9998569488525, 1899.9998569488525]		[8192, 8192]	15178
+brick_floor	Brick Floor	floor,man made,dirty,outdoor,brick	herringbone,diagonal,brick,paving,repeat pattern,aged	[500, 500]		[8192, 8192]	55604
+brick_floor_003	Brick Floor 003	floor,brick,man made,outdoor,indoor,clean,wall	brown,floor,pavement	[2000, 2000]		[8192, 8192]	46584
+brick_floor_02	Brick Floor 02	floor,man made	weathered,worn,brick,bricks,red brick,outdoor,weatherbeaten,exterior	[1870.0000047683716, 1870.0000047683716]		[8192, 8192]	5670
+brick_floor_04	Brick Floor 04	outdoor,wall,brick,dirty,man made	dark,weathered,scratched,dirty,smooth,rough,grout,staggered,rectangular	[1909.999966621399, 1909.999966621399]		[8192, 8192]	4462
+brick_gravel	Brick Gravel	outdoor,gravel,brick	rough,uneven,brick,gravel,broken pieces,rubble,fragmented,crushed,aggregate,terracotta	[2000, 2000]		[8192, 8192]	2889
+brick_moss_001	Brick Moss 001	outdoor,floor,man made,brick,road	moss,pavement,dirty,discolored,damp,pattern	[2239.999771118164, 2240.0002479553223]		[8192, 8192]	59665
+brick_pavement	Brick Pavement	brick,cobblestone,dirty,man made,road	brick,pavement,sidewalk,bricks,red brick,interlocking bricks,pavement patterned,patterned,interlocking,pavers	[2000, 2000]		[8192, 8192]	9958
+brick_pavement_02	Brick Pavement 02	floor,man made,brick	old,rough,brick,bricks,pavement,gray,outdoor flooring,urban,sidewalk	[2000, 2000]		[8192, 8192]	50649
+brick_pavement_03	Brick Pavement 03	floor,brick,man made	rough,uneven,brick,bricks,pavement,paving,interlocking bricks,pavement patterned,sidewalk,rough  	[2500, 2500]		[16384, 16384]	25942
+brick_pavement_04	Brick Pavement 04	outdoor,man made,floor	rough,brick,bricks,pavement,exterior,rough  ,outdoor walkway	[2000, 2000]		[16384, 16384]	2719
+brick_villa_floor	Brick Villa Floor	floor,man made,outdoor	rough,brick,bricks,interlocking bricks,pattern,patterned,floor,outdoor flooring,outdoor,rough  	[2099.9999046325684, 2099.9999046325684]		[8192, 8192]	4174
+brick_wall_001	Brick Wall 001	brick,man made,outdoor,indoor,clean,wall	red,rough,industrial,plain,baked	[3000, 3000]		[8192, 8192]	115783
+brick_wall_003	Brick Wall 003	brick,wall,man made,outdoor,indoor,clean	wall,modern,pavement	[4000, 4000]		[8192, 8192]	47025
+brick_wall_005	Brick Wall 005	man made,wall,brick	rough,uneven,wall,chipped,damaged,concrete,brick,bricks	[1440.000057220459, 1440.000057220459]		[8192, 8192]	58212
+brick_wall_006	Brick Wall 006	outdoor,man made,wall,brick	rough,wall,chipped,worn,cracked,discolored,dry,red,brick,bricks	[3000, 3000]		[8192, 8192]	88186
+brick_wall_02	Brick Wall 02	wall,brick,outdoor,man made	weathered,cracked,concrete,scratched,brick,bricks,wall,exterior,red brick	[2000, 2000]		[8192, 8192]	51709
+brick_wall_04	Brick Wall 04	outdoor,man made,wall,brick,plaster-concrete	rough,uneven,wall,chipped,damaged,rock,rocks,concrete,plaster,brick	[1389.9999856948853, 1389.9999856948853]		[8192, 8192]	37445
+brick_wall_07	Brick Wall 07	wall,brick,man made	rough,old,brick,bricks,walling,coarse,outdoors,outdoor,wall,exterior	[1700.0000476837158, 1700.0000476837158]		[8192, 8192]	17133
+brick_wall_08	Brick Wall 08	brick,wall,outdoor,man made	rough,mortar,raw,grey,coarse	[1899.9998569488525, 1899.9998569488525]		[16384, 16384]	23410
+brick_wall_09	Brick Wall 09	wall,man made,brick	rough,wall,exterior,outdoor,brick,red brick,construction,building,structure	[2009.9999904632568, 2009.9999904632568]		[16384, 16384]	46215
+brick_wall_10	Brick Wall 10	wall,brick	brick,bricks,wall,brick wall,dark,weathered,walling,rough surface,exterior wall,weather-beaten	[1899.9998569488525, 1899.9998569488525]		[8192, 8192]	19644
+brick_wall_11	Brick Wall 11	wall,brick	brick,wall,bricks,brick wall,walling,weathered,weatherbeaten,exterior	[4000, 4000]		[8192, 8192]	6873
+brick_wall_12	Brick Wall 12	wall,brick	rough,brick,wall,brick wall,coarse,outdoor,walling,masonry,bricks,exterior	[1899.9998569488525, 1899.9998569488525]		[8192, 8192]	2457
+brick_wall_13	Brick Wall 13	wall,brick,indoor	rough,old,discolored,brick,bricks,brick wall,walling,wall	[2000, 2000]		[8192, 8192]	13165
+broken_brick_wall	Broken Brick Wall	wall,brick	weathered,broken,brick,wall,bricks,crumbling,timeworn,exterior,red brick,deteriorating	[1800.0000715255737, 1800.0000715255737]		[16384, 16384]	50211
+broken_wall	Broken Wall	rock,outdoor,indoor,wall,man made	rough,wall,stacked,stones,castle,old,ancient,modern	[3000, 3000]		[8192, 8192]	92547
+brown_brick_02	Brown Brick 02	brick,wall,outdoor,indoor,clean,man made	brown,rough,sandy,urban,yellow	[1000, 1000]		[8192, 8192]	33568
+brown_floor_tiles	Brown Floor Tilles	tiles,floor	tiles,ceramic,square,outdoor flooring,flat,continuous,consistent,brown,terracotta,grout lines	[1700.0000476837158, 1700.0000476837158]		[8192, 8192]	18593
+brown_leather	Brown Leather	fabric,leather	leather,brown,chair,seat,upholstery,vintage,matte,wrinkled,textile ,creased	[400.0000059604645, 400.00003576278687]		[8192, 8192]	213165
+brown_mud	Brown Mud	terrain,natural,outdoor	mud,dirt,stones,dry,ground,soil,plant debris,granular,organic matter,earthy	[1299.996018409729, 1299.996018409729]		[8192, 8192]	56285
+brown_mud_02	Brown Mud 02	terrain,natural,outdoor	mud,dirt,stones,dry,ground,footprints,soil,compact soil,wet soil,plant debris	[1299.996018409729, 1299.996018409729]		[8192, 8192]	82818
+brown_mud_03	Brown Mud 03	terrain,natural,outdoor	mud,dirt,stones,dry,ground,soil,wet soil,footprints,earth,muddy surface	[1299.996018409729, 1299.996018409729]		[8192, 8192]	92046
+brown_mud_dry	Brown Mud Dry	terrain,natural,outdoor,collection: the_shed	mud,dirt,stones,dry,ground	[1299.996018409729, 1299.996018409729]		[8192, 8192]	129759
+brown_mud_leaves_01	Brown Mud Leaves 01	terrain,natural,outdoor	grass,mud,moss,stones,orange,forest	[1299.9998331069946, 1299.9998331069946]		[8192, 8192]	531512
+brown_mud_rocks_01	Brown Mud Rocks 01	terrain,natural,outdoor	gravel,mud,moss,stones,forest,rocks,loose stones,plants,weeds,scattered weeds	[1299.996018409729, 1299.996018409729]		[8192, 8192]	51124
+brown_planks_03	Brown Planks 03	wood,man made,indoor,outdoor,clean,wall	planks,untreated,boat,costal,dry,old,withered	[1000, 1000]		[8192, 8192]	157893
+brown_planks_04	Brown Planks 04	wood,man made,indoor,outdoor,clean,wall	planks,old,untreated,shed,cabin,cottage,rough	[1000, 1000]		[8192, 8192]	49506
+brown_planks_05	Brown Planks 05	wood,outdoor,indoor,clean,wall,man made	planks,painted,shed,house,suburb	[1000, 1000]		[8192, 8192]	112824
+brown_planks_07	Brown Planks 07	wood,outdoor,indoor,clean,wall,man made	planks,shed,house,suburb,untreated	[1000, 1000]		[8192, 8192]	39148
+brown_planks_08	Brown Planks 08	wood,outdoor,indoor,clean,wall,man made	planks,rough,shed,untreated	[1000, 1000]		[8192, 8192]	35011
+brown_planks_09	Brown Planks 09	wood,outdoor,indoor,clean,wall,man made	brown,planks,shed,deck,raw wood,nail holes,horizontal layout,weathered wood,knots,natural grain	[1000, 1000]		[8192, 8192]	42830
+brushed_concrete	Brushed Concrete 	man made,dirty,floor,plaster-concrete,concrete	rough,weathered,dirty,floor,ground,discolored,stained	[2500, 2500]		[8192, 8192]	75933
+brushed_concrete_03	Brushed Concrete 03	outdoor,man made,floor,plaster-concrete,concrete	rough,weathered,dirty,dry,worn,scratched,brown,concrete,chipped	[2000, 2000]		[8192, 8192]	36326
+brushed_concrete_04	Brushed Concrete 04	outdoor,man made,plaster-concrete,concrete	rough,weathered,concrete,plaster,brushed,linear grooves,scratched,grooved,concrete blocks,chipped	[2000.9167194366455, 2000.917911529541]		[8192, 8192]	7968
+brushed_concrete_2	Brushed Concrete 2	man made,dirty,concrete,floor,plaster-concrete	rough,weathered,dirty,discolored,ground,stained,floor	[2500, 2500]		[8192, 8192]	29948
+burned_ground_01	Burned Ground 01	terrain,outdoor,natural	mud,burned,fire,dirt,ash,plant debris,plant litter,leaves,dry leaves,dry grass	[1000, 1000]		[8192, 8192]	43869
+caban	Caban	fabric,wool,fleece	orange,fluffy,textile ,fabric,fleece,soft,fuzzy,fibrous,napped,cozy	[273.9921411828764, 273.2999920845032]		[8313, 8292]	12727
+castle_brick_01	Castle Brick 01	brick,outdoor,man made,wall,dirty	rough,moss,sewer,damp,dark,wet,old,uneven	[1500, 1500]		[8192, 8192]	39148
+castle_brick_02_red	Castle Brick 02 Red	brick,outdoor,man made,wall,dirty	rough,red,sewer,damp,old,uneven	[1500, 1500]		[8192, 8192]	133356
+castle_brick_02_white	Castle Brick 02 White	brick,outdoor,indoor,wall,dirty,man made	rough,painted,uneven	[2500, 2500]		[8192, 8192]	24348
+castle_brick_07	Castle Brick 07	brick,outdoor,man made,indoor,wall,dirty	rough,uneven,loose,gaps,old,castle	[2500, 2500]		[8192, 8192]	64924
+castle_brick_broken_06	Castle Brick Broken 06	brick,outdoor,man made,indoor,wall	rough,uneven,cracked,loose,gaps,old,castle	[2500, 2500]		[8192, 8192]	44167
+castle_wall_slates	Castle Wall Slates	rock,outdoor,wall,clean,man made	wall,rough,blocks,stacked,old,castle,medieval	[2500, 2500]		[8192, 8192]	99686
+castle_wall_varriation	Castle Wall Variation	rock,wall,outdoor,clean,man made	wall,rough,blocks,old,castle	[2000, 2000]		[8192, 8192]	46232
+ceiling_interior	Ceiling Interior	indoor,man made	paint,spikey,wavy,ceiling,dry paint,dripping paint,dry,faded	[2000, 2000]		[8192, 8192]	10919
+ceramic_roof_01	Ceramic Roof 01	roofing,outdoor,man made,dirty	ceramic,tiles,roof,old,city,moss	[3500.000238418579, 3500.000238418579]		[8192, 8192]	71277
+checkered_pavement_tiles	Checkered Pavement Tiles	floor,man made,tiles	rough,outdoor,outdoor flooring,concrete,tiled,pavement,urban,sidewalk,rough  ,checkerboard	[2000, 2000]		[16384, 16384]	26788
+cherry_veneer	Cherry Veneer	wood,raw wood	natural grain,grain,natural wood grain,wood grain,natural wood,natural veneer,natural,veneer,veneer wood,blonde	[1000, 1000]		[8192, 8192]	4457
+chinese_cedar_bark	Chinese Cedar Bark	natural,bark	rough,tree,tree bark,tree trunk,nature,trunk,bark texture,cedar bark,chinese cedar	[2269.9999809265137, 2269.9999809265137]		[8192, 8192]	9675
+chinese_hackberry_bark	Chinese Hackberry Bark	natural,bark	bark,chinese,chinese hackberry,tree trunk,forestry,trunk,tree bark texture,tree texture,natural,tree bark	[1800.0000715255737, 1800.0000715255737]		[8192, 16384]	1382
+chipped_concrete	Chipped Concrete	floor,man made,plaster-concrete	rough,pitted,weathered,concrete,chipped,cement,stippled,rough  ,scuffed,plaster	[2002.079963684082, 2002.0811557769775]		[8192, 8192]	1798
+church_bricks_02	Church Bricks 02	brick,man made,outdoor	red,rough,old,city,factory,industrial	[2000, 2000]		[8192, 8192]	48008
+church_bricks_03	Church Bricks 03	brick,man made,outdoor	rough,red,uneven,industrial,factory,brick,bricks,red brick,mortar lines,weathered	[1200.0000476837158, 1200.0000476837158]		[8192, 8192]	29447
+clay_block_wall	Clay Block Wall	wall,man made	clay,traditional,blocks,uneven,rough,bumpy,cracked,cracks,handmade,building	[2000, 2000]		[16384, 16384]	2147
+clay_floor_001	Clay Floor 001	floor,man made,plaster-concrete,dirty	flat,cracked,floor,plain,brown,discolored,clay,yellow,painted	[2000, 2000]		[16384, 16384]	50551
+clay_plaster	Clay Plaster	wall,man made,plaster-concrete,outdoor	rough,wall,plaster,plastered,cracked,exterior,cracks,scratched,uneven,clay	[1999.9996423721313, 1999.9996423721313]		[16384, 16384]	20717
+clay_roof_tiles	Clay Roof Tiles	roofing	weathered,rough,worn,uneven,discolored,clay,roof,roofing,tile roofing,exterior	[4000, 4000]		[8192, 8192]	16859
+clay_roof_tiles_02	Clay Roof Tiles 02	man made,roofing,outdoor	weathered,old,interlocking,roof,roofing,tile roofing,clay,clay tiles,traditional,traditional roofing 	[2500, 2500]		[8192, 8192]	55959
+clay_roof_tiles_03	Clay Roof Tiles 03	man made,outdoor,roofing	weathered,uneven,clay,clay tiles,roof,roofing,tile roofing,overlapping tiles,traditional,traditional roofing 	[2599.9999046325684, 2599.9999046325684]		[8192, 8192]	26115
+clean_asphalt	Clean Asphalt	floor,asphalt	rough,asphalt,grey,gray,course,gritty,fine-grained,road,asphalt road,roadway	[2099.9999046325684, 2099.9999046325684]		[8192, 8192]	31466
+clean_pebbles	Clean Pebbles	rock,natural,outdoor	rock,gravel,pebbles,stones,uneven,path	[2000, 2000]		[8192, 8192]	50774
+cliff_side	Cliff Side	outdoor,rock,natural,collection: namaqualand	cliff,rock face,rugged,eroded,boulder,landscape,mountain,terrain,orange,sediment	[1830.0000429153442, 1830.0000429153442]		[16384, 16384]	52640
+climbing_wall	Climbing Wall	wall,man made,indoor	rough,even,climbing,handholds,flat,foothold,grip,sport,bouldering,gym	[2200.000047683716, 2200.000047683716]		[8192, 8192]	1184
+climbing_wall_02	Climbing Wall 02	wall,man made,concrete,indoor,plaster-concrete	rough,foothold,handholds,climbing,rock climbing,grip,climbing holds,gym,concrete,bouldering	[1899.9998569488525, 1899.9998569488525]		[8192, 8192]	3950
+climbing_wall_base	Climbing Wall Base	wall,man made,indoor	bouldering,rock climbing,grip,concrete,climbing surface,climbing,holes,climbing gym	[2000, 2000]		[8192, 8192]	2189
+coast_land_rocks_01	Coast Land Rocks 01	outdoor,natural,terrain,aerial,sand,collection: smugglers_cove	rough,uneven,stones,moss,rock,dirt,cracked,seaside,ocean,costal	[19999.950408935547, 20000]		[8192, 8192]	47009
+coast_sand_01	Coast Sand 01	outdoor,terrain,sand,natural,aerial,collection: smugglers_cove,collection: verdant_trail	beach,costal,ocean,seaside,sand,brown,rough,gravel,damp,dirt	[15000, 15000]		[8192, 8192]	91958
+coast_sand_02	Coast Sand 02	outdoor,terrain,sand,natural,collection: smugglers_cove,aerial	beach,sand,seaside,rough,coastal,ocean,uneven,stones,brown,dirt	[15000, 15000]		[8192, 8192]	42829
+coast_sand_03	Coast Sand 03	sand,terrain,rock,outdoor,natural,collection: smugglers_cove	sand,pebbles,stones,beach,seaside,ocean,costal,brown,ground,gravel	[3000, 3000.000238418579]		[16384, 16384]	22710
+coast_sand_04	Coast Sand 04	outdoor,terrain,sand,natural	stones,pebbles,sand,coastal,coast,dirt,ocean,beach,seaside,brown	[3940.000057220459, 3940.000057220459]		[8192, 8192]	14884
+coast_sand_05	Coast Sand 05	sand,natural,terrain,dirty,rock,outdoor,aerial	costal,seaside,stones,ground,brown,gravel,beach,coastal,dirt,path	[24999.998092651367, 25000.001907348633]		[8192, 8192]	46380
+coast_sand_rocks_02	Coast Sand Rocks 02	outdoor,natural,terrain,aerial,rock,collection: smugglers_cove	grass,rock face,rock,moss,rough,uneven,weathered,stones,cliff,ground	[15000, 15000]		[8192, 8192]	548778
+coated_pine	Coated Pine	wood	knots,glossy surface,coated finish,pine,coated wood,pine wood,varnished wood,scratched,knotty pine	[740.0000095367432, 740.0000095367432]		[16384, 16384]	20925
+coated_pine_02	Coated Pine 02	wood	knots,glossy surface,coated finish,pine,coated wood,pine wood,varnished wood,scratched,knotty pine	[1049.7100353240967, 1049.7100353240967]		[16384, 16384]	3451
+cobblestone_01	Cobblestone 01	floor,man made,outdoor,dirty,cobblestone	cobblestone,old,garden,moss	[2400.0000953674316, 2400.0000953674316]		[8192, 8192]	32892
+cobblestone_02	Cobblestone 02	man made,floor,outdoor,cobblestone	cobblestone,path,footpath,stones,pebbles,dirty,walkway,garden walkway,outdoors,dry	[1799.9995946884155, 1799.9995946884155]		[16384, 16384]	6750
+cobblestone_03	Cobblestone 03	floor,man made,dirty,cobblestone	rough,weathered,concrete,cobblestone,walkway,pavement,outdoor,floor,outdoor flooring,pavement patterned	[1999.9996423721313, 1999.9996423721313]		[8192, 8192]	21059
+cobblestone_04	Cobblestone 04	floor,man made,cobblestone,plaster-concrete,concrete	rough,concrete,uneven,weathered,exterior,cobblestone,paving,stonework,square,grid	[2019.9999809265137, 2019.9999809265137]		[16384, 16384]	1517
+cobblestone_05	Cobblestone 05	floor,man made,outdoor,dirty,road,cobblestone	cobblestone,old,garden,pathway,moss,pavement	[2400.0000953674316, 2400.0000953674316]		[8192, 8192]	26324
+cobblestone_color	Cobblestone Color	floor,man made,outdoor,dirty,cobblestone	cobblestone,old,moss,pavement	[2400.0000953674316, 2400.0000953674316]		[8192, 8192]	43449
+cobblestone_embedded_asphalt	Cobblestone Embedded Asphalt	floor,man made,asphalt	rocks,asphalt,rocky,stone,coarse,gravelly,gravelly ground,gritty texture,rough,gravelly texture	[1899.999976158142, 1899.999976158142]		[16384, 16384]	8305
+cobblestone_floor_001	Cobblestone Floor 001	road,man made,outdoor,dirty,floor,cobblestone	cobblestone,mud,path,pathway,uneven,medieval	[2400.0000953674316, 2400.0000953674316]		[8192, 8192]	27897
+cobblestone_floor_01	Cobblestone Floor 01	outdoor,floor,man made,dirty,cobblestone	cobblestone,mud,path,pavement	[1000, 1000]		[8192, 8192]	18989
+cobblestone_floor_02	Cobblestone Floor 02	floor,outdoor,man made,cobblestone	cobblestone,plastered,cracked,fixed,smooth,pavement	[2000, 2000]		[8192, 8192]	24081
+cobblestone_floor_03	Cobblestone Floor 03	floor,outdoor,dirty,man made,cobblestone	cobblestone,plastered,mud,moss,pavement	[2400.0000953674316, 2400.0000953674316]		[8192, 8192]	24749
+cobblestone_floor_04	Cobblestone Floor 04	floor,outdoor,dirty,man made,cobblestone	cobblestone,moss,damp,wet	[1500, 1500]		[8192, 8192]	68559
+cobblestone_floor_05	Cobblestone Floor 05	floor,outdoor,dirty,man made,road,cobblestone	cobblestone,uneven,old,pavement	[2000, 2000]		[8192, 8192]	21548
+cobblestone_floor_06	Cobblestone Floor 06	floor,cobblestone,man made,dirty	old,rough,weathered,dirty,pavement	[2000, 2000]		[16384, 16384]	12281
+cobblestone_floor_07	Cobblestone Floor 07	floor,outdoor,man made,dirty,cobblestone	cobblestone,stacked,moss,old,damp,garden,pavement	[2000, 2000]		[8192, 8192]	30456
+cobblestone_floor_08	Cobblestone Floor 08	road,floor,man made,dirty,cobblestone	cobblestone,smooth,old,moss,pavement	[2000, 2000]		[8192, 8192]	52118
+cobblestone_floor_09	Cobblestone Floor 09	floor,cobblestone	weathered,uneven,floor,cobblestone,cobblestones,stone pavement,gritty,stones,pavement,pavement patterned	[2174.999952316284, 2174.999952316284]		[16384, 16384]	10920
+cobblestone_floor_13	Cobblestone Floor 13	floor,outdoor,man made,dirty,cobblestone	cobblestone,farm,rural,old	[2000, 2000]		[8192, 8192]	24940
+cobblestone_large_01	Cobblestone Large 01	floor,outdoor,man made,road,cobblestone	cobblestone,farm,old,village,path,dry,mud	[4000, 4000]		[8192, 8192]	32665
+cobblestone_pavement	Cobblestone Pavement	floor,cobblestone	cobblestone,cobblestones,rocks,squares,stone slabs,stone pavement,grout lines,rough,weathered surface,weathered	[2500, 2500]		[16384, 16384]	12537
+cobblestone_square	Cobblestone Square	floor,outdoor,man made,dirty,cobblestone	cobblestone,mud,moss,smooth	[1000, 1000]		[8192, 8192]	24054
+concrete	Concrete	plaster-concrete,man made,dirty,outdoor,wall,concrete	bare,old,weathered,panels	[4000, 4000]		[8192, 8192]	91757
+concrete_block_wall	Concrete Block Wall	wall,man made,concrete,plaster-concrete	masonry,concrete,rough,coarse,exterior,blocks,outdoor,stonework,ancient walls,rough concrete	[2000, 2000]		[8192, 8192]	6835
+concrete_block_wall_02	Concrete Block Wall 02	wall,man made,concrete,plaster-concrete,dirty	masonry,concrete,rough,coarse,exterior,blocks,outdoor,stonework,ancient walls	[2005.000114440918, 2005.000114440918]		[8192, 8192]	3040
+concrete_block_wall_03	Concrete Block Wall 03	outdoor,man made,concrete,plaster-concrete	rough,weathered,worn,uneven,wall,discolored,concrete,exterior,cement,beveled blocks	[1809.999942779541, 1809.999942779541]		[16384, 16384]	3851
+concrete_brick_wall_001	Concrete Brick Wall 001	sandstone,wall,man made,outdoor,indoor,brick	wall,blocks,modern,slab	[3000, 3000]		[8192, 8192]	57068
+concrete_debris	Concrete Debris	man made,plaster-concrete,concrete,plaster	stones,dry,debris,crumbling,concrete,broken,grey,plaster,cement,damaged	[2000, 2000]		[8192, 8192]	16649
+concrete_floor	Concrete Floor	outdoor,man made,floor,plaster-concrete,concrete	rough,concrete,floor,old,brown,wall,dirty,cement,worn	[2079.9996852874756, 2079.9996852874756]		[8192, 8192]	28188
+concrete_floor_01	Concrete Floor 01	concrete,clean,plaster-concrete,man made,outdoor	rough,park,concrete,cement,rough  ,stone embedded,gravel embedded,weathered,granular	[2000, 2000]		[8192, 8192]	101445
+concrete_floor_02	Concrete Floor 02	concrete,plaster-concrete,dirty,man made,outdoor,indoor,wall,floor	rough,moss,plain	[2000, 2000]		[8192, 8192]	195541
+concrete_floor_03	Concrete Floor 03	man made,floor,outdoor	rough,weathered,concrete,cement,scratched,cemented floor,exterior,gritty,grey,outdoor	[2499.999761581421, 2499.999761581421]		[16384, 16384]	11699
+concrete_floor_damaged_01	Concrete Floor Damaged 01	floor,man made,concrete,plaster-concrete	rough,uneven,weathered,chipped,cracked,damaged,dry,concrete,rocks,cracked cement	[5000, 5000]		[16384, 16384]	33261
+concrete_floor_painted	Concrete Floor Painted	concrete,outdoor,wall,floor,plaster-concrete,dirty,plaster,man made	painted,rough,textured,urban,worn,weathered	[2000, 2000]		[8192, 8192]	87816
+concrete_floor_worn_001	Concrete Floor Worn 001	floor,man made,indoor,dirty,concrete,plaster-concrete	worn,old,plain,grey,weathered,bare,discolored	[3000, 3000.000238418579]		[16384, 16384]	451259
+concrete_floor_worn_02	Concrete Floor Worn 02	floor,man made,concrete,plaster-concrete	rough,uneven,weathered,chipped,cracked,damaged,exterior,dry,concrete,rocks	[1999.9996423721313, 1999.9996423721313]		[8192, 8192]	23628
+concrete_layers	Concrete Layers	wall,plaster-concrete,outdoor	rough,old,concrete,cracked,chipped,cement,cracked cement,worn,scratched,wall	[1549.9999523162842, 1549.9999523162842]		[16384, 16384]	47773
+concrete_layers_02	Concrete Layers 02	man made,concrete,plaster-concrete	worn,chipped,rough,weathered,cracked,damaged,wall,discolored,dirty,dry	[2000, 2000]		[16384, 16384]	137789
+concrete_moss	Concrete Moss	floor,concrete,plaster-concrete	concrete,moss,mossy,mosscovered,scratched,worn,timeworn,weatherbeaten,weathered,aged	[3000.000238418579, 3000.000238418579]		[8192, 8192]	18620
+concrete_panels	Concrete Panels	man made,outdoor,wall,plaster-concrete	rough,weathered,wall,concrete,stamped concrete,patterned concrete,timeworn,building material,underpass,bridge	[8000, 8000]		[8192, 8192]	7106
+concrete_pavement	Concrete Pavement	floor,man made,concrete,plaster-concrete	rough,urban,concrete,floor,rough  ,exterior,pavers,outdoor flooring,cement,flat	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	53996
+concrete_pavement_02	Concrete Pavement 02	outdoor,road,cobblestone	concrete,sidewalk,urban,city,pavement,street,cityscape,infrastructure,walkway,sidewalk texture	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	25266
+concrete_pavement_03	Concrete Pavement 03	floor,man made,concrete,outdoor,plaster-concrete	rough,outdoor,outdoor flooring,concrete,tiled,pavement,urban,sidewalk,rough  ,checkerboard	[2099.9999046325684, 2099.9999046325684]		[8192, 8192]	9666
+concrete_pavers	Concrete Pavers	floor,man made	interlocking,pavers,pavement,outdoor,interlocking bricks,concrete,stamped concrete,precast,pavement patterned,patterned	[1920.0000762939453, 1920.0000762939453]		[16384, 16384]	21477
+concrete_pavers_02	Concrete Pavers 02	concrete,outdoor,floor	weathered,rough,old,concrete,exterior,cement,coarse,outdoor,outdoor flooring,weatherbeaten	[2000, 2000]		[16384, 16384]	7825
+concrete_pavers_03	Concrete Pavers 03	concrete,outdoor,floor,plaster-concrete	weathered,rough,old,concrete,exterior,cement,coarse,outdoor,outdoor flooring,weatherbeaten	[2000, 2000]		[8192, 8192]	2077
+concrete_rock_path	Concrete Rock Path	outdoor,man made,dirty,floor,concrete,rock,plaster-concrete	rough,uneven,old,weathered,brown,rock,dirty,ground,concrete,pathway	[2000, 2000]		[8192, 8192]	26722
+concrete_slab_wall	Concrete Slab Wall	wall,concrete,plaster-concrete	rough,old,concrete,cracked,chipped,cement,cracked cement,worn,scratched,wall	[2299.999952316284, 2299.999952316284]		[8192, 8192]	3560
+concrete_slab_wall_02	Concrete Slab Wall 02	outdoor,man made,plaster-concrete,concrete,wall	rough,weathered,wall,concrete,precast,concrete panel,exterior,dirty,cement,timeworn	[2102.315902709961, 2102.315902709961]		[8192, 8192]	6258
+concrete_tile_facade	Concrete Tile Facade	wall,man made,concrete,plaster-concrete	concrete,wall,walling,tiles,tiled wall,grooved,square tiles,square,building facade,urban design	[2089.9999141693115, 2089.9999141693115]		[8192, 8192]	22309
+concrete_tiles	Concrete Tiles	floor,man made,outdoor,concrete,plaster-concrete	rough,old,weathered,concrete,pattern,pavement patterned,coarse,outdoor flooring,urban,outdoor	[1850.0001430511475, 1850.0001430511475]		[8192, 8192]	7594
+concrete_tiles_02	Concrete Tiles 02	floor,tiles,concrete,plaster-concrete	concrete,rough concrete,outdoor,pavement,walkway,sidewalk texture,sidewalk,urban,outdoor flooring,pavers	[1825.0000476837158, 1825.0000476837158]		[8192, 8192]	21201
+concrete_wall_001	Concrete Wall 001	outdoor,man made,wall,plaster,concrete,plaster-concrete,collection: the_shed	cracked,plaster,white,trimsheet,painted,chipped,clean,damaged	[1500.0001192092896, 1500]		[8192, 8192]	66149
+concrete_wall_003	Concrete Wall 003	man made,wall,concrete,plaster,outdoor,dirty,plaster-concrete	worn,painted,discolored,dirty,yellow,white,weathered,cracked,scratched,chipped	[3000, 3000.000238418579]		[16384, 16384]	108967
+concrete_wall_004	Concrete Wall 004	man made,wall,plaster-concrete,concrete,collection: the_shed	worn,painted,dry,flat,wall,stained,dirty,weathered	[2000, 2000]		[8192, 8192]	55847
+concrete_wall_005	Concrete Wall 005	outdoor,wall,concrete,plaster-concrete	wall,worn,chipped,dirty,cracked,damaged,weathered,discolored,uneven	[1149.999976158142, 1150.0000953674316]		[8192, 8192]	25298
+concrete_wall_006	Concrete Wall 006	man made,wall,dirty,plaster-concrete,concrete	rough,weathered,damaged,chipped,wall,stained,dirty,scratched,plaster,concrete	[2000, 2000]		[8192, 8192]	45318
+concrete_wall_007	Concrete Wall 007	outdoor,man made,wall,plaster-concrete,concrete,plaster	rough,old,weathered,wall,worn,damaged,chipped,discolored,cracked,stained	[2159.9998474121094, 2159.9998474121094]		[8192, 8192]	86319
+concrete_wall_008	Concrete Wall 008	outdoor,man made,wall,plaster-concrete,concrete,plaster	weathered,chipped,wall,damaged,cracked,stained,dry,plaster,concrete,scratched	[2710.0000381469727, 2710.0000381469727]		[8192, 8192]	80206
+concrete_wall_009	Concrete Wall 009	outdoor,man made,wall,plaster-concrete	rough,old,concrete,wall,exterior,discolored,damaged,chipped,plasterconcrete,worn	[1804.9999475479126, 1804.9999475479126]		[16384, 16384]	19081
+container_side	Container Side	man made,metal	damaged,worn,metal,container,shipping container,battered,green,industrial,transport container,freight container	[1940.000057220459, 1939.9999380111694]		[8192, 8192]	20459
+coral_fort_wall_01	Coral Fort Wall 01	wall,outdoor,man made,rock,plaster,plaster-concrete,dirty	ocean,coastal,coral,fort,wall,weathered,damaged,damp,rough,uneven	[1360.0000143051147, 1360.0001335144043]		[16384, 16384]	39547
+coral_fort_wall_02	Coral Fort Wall 02	wall,man made,outdoor,dirty,plaster-concrete,concrete,plaster	ocean,coral,fort,wall,rough,uneven,weathered,old,stones,damaged	[991.7500019073486, 991.7501211166382]		[8192, 8192]	39033
+coral_fort_wall_03	Coral Fort Wall 03	outdoor,wall,man made,rock	rough,wall,dirty,weathered,stones,rocks,old,worn,castle,fort	[1099.9999046325684, 1100.0001430511475]		[16384, 16384]	14474
+coral_gravel	Coral Gravel	terrain,outdoor,rock,natural	gravel,coral,ground,stones,costal	[2000, 2000]		[8192, 8192]	23296
+coral_ground_02	Coral Ground 02	terrain,outdoor,rock,natural	coral,ground,costal,stones,ocean,gravel,debris,sandy,porous surface,dirt	[2000, 2000]		[8192, 8192]	30777
+coral_mud_01	Coral Mud 01	terrain,outdoor,road,natural	coral,ground,costal,stones,gravel,gravelly,coastal sediment,rock fragments,coastline,ocean	[2000, 2000]		[8192, 8192]	28687
+coral_stone_wall	Coral Stone Wall	wall,man made	rough,wall,chipped,coral,stone,rocks,rock,fort,stonework,coastal	[1999.9996423721313, 1999.9996423721313]		[8192, 8192]	21500
+corrugated_iron	Corrugated Iron	man made,roofing,wall,metal	metal,corrugated,roof,roofing,steel,metallic,sheet,metal sheet,weathered,rusty	[1120.0000047683716, 1120.0000047683716]		[16384, 16384]	102165
+corrugated_iron_02	Corrugated Iron 02	man made,wall,metal	metal,metallic,metal sheet,steel sheeting,corrugation,galvanized,sheet,roofing,roof,iron	[2700.000047683716, 2700.000047683716]		[16384, 16384]	86808
+corrugated_iron_03	Corrugated Iron 03	wall,man made,metal	corrugated,corrugation,corrugated iron,sheet metal,industrial,roofing,galvanized steel,steel sheeting,metal sheet	[2000, 2000]		[8192, 8192]	13141
+cotton_jersey	Cotton Jersey	fabric,cotton,stretchy	beige,rough,fabric,textile ,matte,woven,weave,cotton,jersey,ribbed	[263.6027473872483, 263.7999951839447]		[8018, 8024]	40296
+cracked_concrete	Cracked Concrete	floor,man made,concrete,plaster-concrete	weathered,cracked,cracks,concrete,damaged,flat,floor,cracked cement,cemented floor,timeworn	[2000, 2000]		[8192, 8192]	41290
+cracked_concrete_02	Cracked Concrete 02	man made,floor,plaster-concrete	uneven,rough,weathered,gritty,exterior,cracked,concrete,worn,weatherbeaten,plasterconcrete	[2230.0000190734863, 2230.0000190734863]		[16384, 16384]	7056
+cracked_concrete_wall	Cracked Concrete Wall	outdoor,man made,wall,dirty,brick,plaster-concrete,plaster	rough,uneven,old,weathered,wall,worn,discolored,cracked,chipped,stained	[1000, 1000]		[8192, 8192]	137076
+cracked_red_ground	Cracked Red Ground	outdoor,natural,dirty,floor,sand	rough,uneven,old,weathered,worn,cracked,brown,dirty,stones,dry	[2000, 2000]		[8192, 8192]	19602
+crepe_georgette	Crepe Georgette	fabric,crepe	fluffy,teal,fine,crepe,flowy,soft,gauze-like,gauzy,georgette,sheer	[261.1946943115489, 265.5999958515167]		[7945, 8079]	6852
+crepe_satin	Crepe Satin	fabric,crepe,satin	gold,shiny,fine,luxury,crepe,satin finish,silky,soft,smooth,glossy	[263.19942218838304, 267.8999900817871]		[8007, 8150]	40211
+curly_teddy_checkered	Curly Teddy Checkered	fabric,fur	fluffy,teal,blanket,fleece,plush,soft,fuzzy,shaggy,textile ,napped	[561.8443344798735, 474.0999639034271]		[14420, 12168]	32159
+curly_teddy_natural	Curly Teddy Natural	fabric,fur	beige,fluffy,blanket,fleece,plush,softbox,fuzzy,shaggy,textile ,napped	[335.804452696631, 330.90004324913025]		[10065, 9918]	32423
+damaged_concrete_floor	Damaged Concrete Floor	floor,concrete,dirty,man made,plaster-concrete	rough,old,concrete,damaged,cracked,scratched,weathered,chipped,floor,cemented floor	[4500, 4500]		[16384, 16384]	10863
+damaged_concrete_floor_02	Damaged Concrete Floor 02	concrete,floor,plaster-concrete	old,damaged,chipped,concrete,scratched,scuffed,rough,industrial,cemented floor,deteriorated	[3499.999761581421, 3499.999761581421]		[8192, 8192]	8680
+damaged_concrete_floor_03	Damaged Concrete Floor 03	floor,concrete,plaster-concrete	old,damaged,chipped,concrete,floor,dilapidated,cemented floor,battered,crumbling,deteriorated	[2000, 2000]		[16384, 16384]	7337
+damaged_plaster	Damaged Plaster	wall,brick,plaster-concrete	brick,bricks,plaster,plasterconcrete,chipped,deteriorating,weathered,cracked,crumbling,plastering	[1850.0001430511475, 1850.0001430511475]		[16384, 16384]	55071
+damp_beach_sand	Damp Beach Sand	outdoor,natural	wet,beach,sandy,sandy beach,compact soil,beach sediment,gritty,pitted,imprinted	[2000, 2000]		[8192, 8192]	1165
+damp_beach_sand_02	Damp Beach Sand 02	outdoor,sand	sand,sandy,beach,sandy beach,damp,tidal,striated,pitted,impressions,imprinted	[1870.0000047683716, 1870.0000047683716]		[8192, 8192]	677
+damp_sand	Damp Sand	outdoor,sand	coarse,sand,beach,wet,brown,ground,costal,granular,grainy,moist	[2039.9997234344482, 2039.9997234344482]		[8192, 8192]	11982
+dark_brick_wall	Dark Brick Wall	outdoor,man made,wall,brick	rough,uneven,wall,dry,bricks,brick,dark	[1049.9998331069946, 1049.9999523162842]		[8192, 8192]	43320
+dark_paneled_wood	Dark Paneled Wood	wood	rough,wood,painted wood,lacquered,paneling,wood panel ,inlaid,door	[1400.0000953674316, 1400.0000953674316]		[8192, 8192]	4374
+dark_planks	Dark Planks	wood,outdoor,wall,man made	planks,cabin,shed,overlapping planks ,nail holes,weathered,distressed,knots,plank,wooden planks	[2000, 2000]		[8192, 8192]	34346
+dark_rock	Dark Rock	natural,outdoor,rock	uneven,rough,weathered,rock,fissured,cracked,craggy,striated,geological,rock formation	[2421.1976528167725, 2421.199083328247]		[8192, 8192]	20232
+dark_rock_02	Dark Rock 02	outdoor,natural,rock	rough,rock face,rock,weathered,fractured,stratified,craggy,striated,fissured,geological	[2000.9167194366455, 2000.917911529541]		[8192, 8192]	11244
+dark_wood	Dark Wood	wood,indoor	brown,wood,wooden,cabinet,mahogany,dark cherry,cherry wood,grain,hardwood,satin finish	[2000, 2000]		[8192, 8192]	222158
+dark_wooden_planks	Dark Wooden Planks	floor,man made,indoor,wood,raw wood	rough,old,weathered,cracked,damaged,brown,wood,wooden,floor,planks	[2000, 2000]		[8192, 8192]	92840
+decrepit_wallpaper	Decrepit Wallpaper	wall,man made	weathered,wall,discolored,peeling,scratched,wallpaper,dilapidated,worn,grungy,flaking	[2500, 2500]		[8192, 8192]	9819
+defense_wall	Defense Wall	wall,rock,outdoor,man made	wall,castle,fort,fortress walls,stone wall,aged,weathered	[20000, 20000]		[8192, 8192]	19437
+defense_wall_02	Defense Wall 02	outdoor,wall,rock,man made,aerial	rough,wall,bricks,castle,fort	[12000.000953674316, 12000.000953674316]		[8192, 8192]	16387
+denim_fabric	Denim Fabric	fabric,denim	jeans,pants,cloth,clothing,denim,stitching,textile,fashion,creased,folds	[100.00000149011612, 99.99999403953552]		[8192, 8192]	97333
+denim_fabric_03	Denim Fabric 03	fabric,denim	jeans,light,blue,denim,twill,matte,durable,textile,weave	[271.42801281852286, 270.9999978542328]		[8244, 8231]	12585
+denim_fabric_04	Denim Fabric 04	fabric,denim	jeans,light,blue,denim,twill,matte,durable,textile ,weave	[272.8973422962554, 269.3000137805939]		[8193, 8085]	7686
+denim_fabric_05	Denim Fabric 05	fabric,denim	jeans,dark,grey,denim,twill,matte,durable,textile ,weave	[270.1520343364256, 271.49999141693115]		[8217, 8258]	9873
+denim_fabric_06	Denim Fabric 06	fabric,denim	dark,worn,jeans,denim,twill,matte,durable,textile ,weave	[254.15802731412134, 254.0000081062317]		[8192, 8192]	27063
+denmin_fabric_02	Denim Fabric 02	fabric,denim	jeans,pants,cloth,clothing,denim,textile ,creased,folds	[100.00000149011612, 99.99999403953552]		[8192, 8192]	195316
+dense_sand	Dense Sand	outdoor,sand,natural	rough,sand,sandy,sandpit,granular,coarse,gritty,compact,footprints,tan	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	6266
+diagonal_parquet	Diagonal Parquet	floor,man made,wood,indoor	parquet flooring,wood,floor,shiny,coated,interior design,polished,interior,wooden flooring ,wooden planks	[2359.999418258667, 2359.999418258667]		[16384, 16384]	54303
+dirt	Dirt	floor,dirty,sand	dirt,dirty,ground,nature,earth,dusty,rocky,debris,footprints	[2000, 2000]		[8192, 8192]	33482
+dirt_aerial_02	Dirt Aerial 02	terrain,outdoor,sand,natural,aerial	mud,rough,soil,erosion,compacted,tracks	[20000, 20000]		[8192, 8192]	41976
+dirt_aerial_03	Dirt Aerial 03	terrain,outdoor,sand,natural,aerial	mud,gravel,stones,dry,organic,ground,rock fragments	[25000, 25000]		[8192, 8192]	31773
+dirt_floor	Dirt Floor	outdoor,natural,terrain,collection: verdant_trail	dirt,ground,brown,nature,uneven,mud,debris,forest,pathway,woodland	[2069.9996948242188, 2069.9996948242188]		[8192, 8192]	53056
+dirty_carpet	Dirty Carpet	floor,fabric,carpet	carpet,dirty,floor,textile ,rug,discolored,faded	[599.9999046325684, 599.9999046325684]		[8192, 8192]	87462
+dirty_concrete	Dirty Concrete	concrete,outdoor,floor,man made,sand,dirty,plaster-concrete	rough,mud	[3000, 3000]		[8192, 8192]	66434
+dirty_tiles	Dirty Tiles	floor,tiles	dirty,tiles,indoor,indoor flooring,grout,scuffed,square tiles,square,grout lines,ceramic	[2259.999990463257, 2259.999990463257]		[16384, 16384]	5560
+distressed_painted_planks	Distressed Painted Planks	man made,wood	weathered,old,wood,planks,wooden planks,rustic,distressed,distressed wood,painted	[1599.9999046325684, 1599.9999046325684]		[16384, 16384]	9972
+double_brick_floor	Double Brick Floor	man made,plaster-concrete,brick	rough,uneven,weathered,chipped,cracked,worn,brick,bricks,pattern,floor	[2159.9998474121094, 2159.9998474121094]		[8192, 8192]	14710
+dry_decay_leaves	Dry Decay Leaves	outdoor,natural,terrain	leaves,forest,dry,sticks,winter,dead grass,twigs,nature,leaf litter,organic	[2000, 2000]		[16384, 16384]	12858
+dry_ground_01	Dry Ground 01	terrain,outdoor,natural	dry,sand,mud,cracked,desert,baked,rough,fissured,baked earth,compact	[4000, 4000]		[8192, 8192]	27673
+dry_ground_rocks	Dry Ground Rocks	terrain,outdoor,natural	mud,rocks,cracked,ground,dry,parched,soil,dirt,stones,rough	[4000, 4000]		[8192, 8192]	56483
+dry_mud_field_001	Dry Mud Field 001	outdoor,terrain,natural	road,mud,dry,uneven,dirt,farm,ground,rough,brown	[3000, 3000.000238418579]		[16384, 16384]	38667
+dry_river_pebbles	Dry River Pebbles	outdoor,natural,rock	river,rocks,pebbles,loose stones,loose rocks,rounded rocks,rounded pebbles,debris,riverbed	[2000.9167194366455, 2000.917911529541]		[8192, 8192]	12344
+dry_riverbed_rock	Dry Riverbed Rock	floor,natural,terrain,rock,outdoor	rough,rock face,uneven,weathered,cracked,stone	[2000, 2000]		[16384, 16384]	97629
+embedded_plank_flooring	Embedded Plank Flooring	floor,man made,plaster-concrete,wood	rough,uneven,wood,embedded planks,wood planks,cement,wooden planks,planks,lumber,roughhewn	[2029.9999713897705, 2029.9999713897705]		[8192, 8192]	2251
+embedded_rock_floor	Embedded Rock Floor	floor,man made,plaster-concrete,rock	rough,weathered,uneven,stone,exterior,cement,rocky,rocks,rugged	[1799.9995946884155, 1799.9995946884155]		[8192, 8192]	5084
+eucalyptus_bark	Eucalyptus Bark	bark,natural,outdoor	rough,weathered,uneven,moss,lichen,bark,tree,tree bark,eucalyptus,trunk	[1809.999942779541, 1809.999942779541]		[8192, 8192]	5172
+european_walnut_veneer_04	European Walnut Veneer 04	wood,raw wood	natural grain,grain,natural wood grain,wood grain,fine grain,european walnut,walnut,natural wood,natural veneer,natural	[1000, 1000]		[8192, 8192]	2164
+european_walnut_veneer_05	European Walnut Veneer 05	wood,raw wood	natural grain,natural wood grain,grain,wood,wood grain,walnut,walnut wood,veneer,veneer wood,natural wood	[1000, 1000]		[8192, 8192]	1482
+excavated_soil_wall	Excavated Soil Wall	outdoor,wall,sand	sand,wall,cracks,excavation,soil,earth,dirt,dusty,dry,uneven	[1999.9996423721313, 1999.9996423721313]		[16384, 16384]	12907
+exterior_wall_cladding	Exterior Wall Cladding	outdoor,man made,brick	exterior,cladding,wall,brick,faux brick,outdoor facade,building facade	[2000, 2000]		[16384, 16384]	13437
+exterior_wall_cladding_02	Exterior Wall Cladding 02	outdoor,man made,wall,brick	smooth,brick,bricks,red brick,exterior siding,cladding,red-brown,brick design,outdoor facade,faux brick	[1990.0001287460327, 1990.0001287460327]		[8192, 8192]	8399
+exterior_wall_cladding_03	Exterior Wall Cladding 03	outdoor,man made,wall,plaster-concrete	rough,grooved,concrete,plaster,plastered,painted,painted concrete,facade,cladding,grainy	[1960.0000381469727, 1960.0000381469727]		[8192, 8192]	6673
+fabric_leather_01	Fabric Leather 01	fabric,leather	leather,couch,seat,chair,wrinkled,aged,vintage,textile ,creased,stitched	[400.0000059604645, 400.00003576278687]		[8192, 8192]	92962
+fabric_leather_02	Fabric Leather 02	fabric,leather	leather,couch,seat,upholstery,stitched,vintage,wrinkled,aged,creased,chair	[500, 499.9999403953552]		[8192, 8192]	120891
+fabric_pattern_05	Fabric Pattern 05	fabric,cotton	plain,cloth,towel,checker,checkered,plaid,grid pattern,windowpane plaid,upholstery,textile 	[500, 499.9999403953552]		[8192, 8192]	170173
+fabric_pattern_07	Fabric Pattern 07	fabric,cotton	towel,plain,cloth,checkered,woven,textile,picnic	[400.0000059604645, 400.00003576278687]		[8192, 8192]	337955
+factory_brick	Factory Brick	brick,man made,clean,indoor,outdoor	brown,fatory,bricks,weathered,brick wall,worndown,rough,industrial,red brick,exterior	[1500, 1500.0001192092896]		[8192, 8192]	75337
+factory_wall	Factory Wall	metal,outdoor,wall,clean,roofing,man made	wall,fence,industrial,corrugated	[3000, 3000]		[8192, 8192]	108288
+farm_furrows	Farm Furrows	outdoor,floor	rough,uneven,dirt,dirty,dirt soil,soil,farm,sticks,twigs,small twigs	[2097.8498458862305, 2097.850799560547]		[8192, 8192]	2006
+farm_soil	Farm Soil	floor,natural,dirty	uneven,sand,sandy,dusty,ploughed,soil,earth,ground,granulated,cloddy	[1999.9992847442627, 2000.000238418579]		[8192, 8192]	8175
+faux_fur_geometric	Faux Fur Geometric	fabric,fur	pink,luxury,fluffy,textile ,fabric,blanket,geometric,diamond,plush,fuzzy	[301.9999563694, 301.9766083948956]		[9186, 9062]	6707
+fever_tree_bark	Fever Tree Bark	outdoor,natural	rough,uneven,bark,tree,tree bark,grooved,wrinkled,nature,organic,forestry	[1360.0000143051147, 1360.0000143051147]		[8192, 8192]	1746
+fine_grained_wood	Fine Grained Wood	wood,man made,dirty,raw wood	clean,wood,plain,damaged,aged,used	[600.0000238418579, 600.0000238418579]		[8192, 8192]	142082
+flamed_black_veneer	Flamed Black Veneer	wood,raw wood	smooth,grain,wood grain,raw,raw wood,veneer,veneer wood,timber,natural wood grain,natural grain	[1000, 1000]		[8192, 8192]	3587
+floor_bricks_02	Floor Bricks 02	floor,outdoor,man made,dirty,brick	bricks,moss,pavement,scattered plants ,weeds,mosscovered,aged bricks,cracked bricks,plant growth,weathered bricks	[1299.9999523162842, 1299.9999523162842]		[16384, 16384]	56625
+floor_klinkers_01	Floor Klinkers 01	floor,brick,outdoor,dirty,man made	bricks,moss,rough,weathered,aged,uneven,mosscovered,weatherbeaten	[1200.0000476837158, 1200.0000476837158]		[8192, 8192]	25230
+floor_klinkers_04	Floor Klinkers 04	floor,brick,outdoor,dirty,man made,wall	smooth,aged,worn,brown,yellow	[1200.0000476837158, 1200.0000476837158]		[8192, 8192]	31332
+floor_pattern_01	Floor Pattern 01	floor,road,outdoor,man made,dirty,cobblestone	cobblestone,moss,castle,fort,pavement	[1200.0000476837158, 1200.0000476837158]		[8192, 8192]	36158
+floor_pattern_02	Floor Pattern 02	floor,road,outdoor,man made,cobblestone	pavement,cobblestone,patterned stone,pavement patterned,pavers,decorative paving,historical style,sidewalk	[1200.0000476837158, 1200.0000476837158]		[8192, 8192]	45698
+floor_pavement	Floor Pavement	man made,dirty,brick,floor,outdoor	ground,sidewalk,cracked,damaged,floor,pavement,cement,square	[2000, 2000]		[8192, 8192]	50321
+floor_pebbles_01	Floor Pebbles 01	terrain,outdoor,natural	pebbles,pathway,stones,walkway,driveway stones,stony,pebbly,gravelly,driveway gravel,scattered pebbles	[3000, 3000]		[8192, 8192]	50427
+floor_tiles_02	Floor Tiles 02	floor,wall,outdoor,indoor,clean,man made	marble,floor,square tiles,smooth surface,stone,wall,dirty,uneven,marble blocks	[4000, 4000]		[8192, 8192]	123239
+floor_tiles_04	Floor Tiles 04	floor,wall,outdoor,indoor,clean,man made	tiles,floor,stone blocks,uneven,smooth finish,square,marble,masonry,cracked,grout lines	[4000, 4000]		[8192, 8192]	65836
+floor_tiles_06	Floor Tiles 06	floor,indoor,clean,man made	marble,tiles,checkerboard,checkered,floor,tiled,square tiles,dirty	[3000, 3000]		[8192, 8192]	174964
+floor_tiles_08	Floor Tiles 08	floor,clean,indoor,outdoor,man made	tiles,square,ceramic,regular,grid,beige	[1500, 1500]		[8192, 8192]	93967
+floor_tiles_09	Floor Tiles 09	floor,outdoor,man made,clean	regular,square,pavement,soviet,sidewalk texture,concrete,concrete tiles,grid pattern,grid,dirty	[2000, 2000]		[8192, 8192]	40341
+floral_jacquard	Floral Jacquard	fabric,jacquard	decorative,dark,pattern,fabric,textile ,cloth,floral,embossed,black,woven	[252.9498182468769, 383.59999656677246]		[7694, 11668]	14900
+flour	Flour	man made,food,clean	white,flour,food,powder,ingredient,baking,cooking,bakery,bright,wheat flour	[1269.9999809265137, 1269.9999809265137]		[16384, 16384]	15810
+flower_scattered_asphalt	Flower Scattered Asphalt	floor,asphalt	asphalt,asphalt road,petals,plant debris,outdoor,cracked,driveway,sticks,twigs,leaf litter	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	3185
+flower_scattered_dirt	Flower Scattered Dirt	floor,outdoor,natural,sand	dirt,dirty,ground,petals,sand,flowers,jacaranda,scattered,earth,soil	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	1529
+flower_scattered_gravel	Flower Scattered Gravel	floor,gravel	gravel,stones,driveway gravel,gravelly ground,petals,scattered,scattered petals,jacaranda,driveway stones,scattered flowers	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	2985
+forest_floor	Forest Floor	outdoor,natural,terrain	sand,leaves,autumn,forest,dirt,nature,dry,mud,debris,pathway	[2139.9996280670166, 2139.9996280670166]		[8192, 8192]	37369
+forest_ground_04	Forest Ground 04	outdoor,natural,terrain,rock,collection: pine_forest,collection: verdant_trail	rough,uneven,stones,ground,forest,dry,brown,gravel,rock,debris	[3150.0000953674316, 3150.0000953674316]		[8192, 8192]	170464
+forest_ground_05	Forest Ground 05	outdoor,terrain,natural,sand	rough,uneven,dirt,soil,compact soil,scattered rocks,scattered leaves,forest debris,organic matter,leaf litter	[2000, 2000]		[16384, 16384]	5612
+forest_ground_06	Forest Ground 06	outdoor,natural,terrain,floor	dirt,dirty,soil,compact soil,loose earth,scattered leaves,forest soil,forest,scattered rocks,forest debris	[2109.999895095825, 2109.999895095825]		[8192, 8192]	21739
+forest_leaves_02	Forest Leaves 02	outdoor,terrain,natural	moss,sticks,leaves,twigs,autumn,mossy,mosscovered,mossy patches,forest floor,fallen leaves	[3000.9725093841553, 3000.9801387786865]		[8192, 8192]	160463
+forest_leaves_03	Forest Leaves 03	outdoor,natural,terrain	leaves,autumn,dry,nature,forest,ground,cover,dirt,debris,brown	[2299.999952316284, 2300.0001907348633]		[8192, 8192]	44572
+forest_leaves_04	Forest Leaves 04	outdoor,terrain,natural,collection: pine_forest,collection: verdant_trail	leaves,nature,ground,dirt,debris,dry,autumn,sticks,twigs,brown	[1500, 1500.0001192092896]		[8192, 8192]	71572
+forrest_ground_01	Forest Ground 01	terrain,outdoor,natural	grass,twigs,forest,leaves,sticks,foliage,dead grass,plant litter,underbrush,underbrush	[2000, 2000]		[8192, 8192]	328613
+forrest_ground_03	Forest Ground 03	terrain,outdoor,natural	pine,needles,forest,plant debris,dirt soil,leaf litter,twigs,fallen leaves,ground cover,fallen pine needles	[2000, 2000]		[8192, 8192]	41220
+forrest_sand_01	Forest Sand 01	terrain,outdoor,natural,sand	sand,pine,needles,forest,plant debris,plant litter,soil,organic matter,granular,twigs	[2000, 2000]		[8192, 8192]	29467
+ganges_river_pebbles	Ganges River Pebbles	natural,rock,outdoor,terrain	rough,uneven,rock,pebbles,pebble,scattered pebbles,scattered,river,pebbly,rocky	[2159.9998474121094, 2159.9998474121094]		[16384, 16384]	124770
+garage_floor	Garage Floor	man made,plaster-concrete,indoor,floor,concrete	weathered,chipped,cracked,damaged,discolored,scratched,concrete,grungy,industrial,stained	[1886.4402770996094, 1886.4402770996094]		[8192, 8192]	59339
+gingham_check	Gingham Check	fabric,cotton	checker,green,table cloth,picnic,pattern,textile ,checkered,plaid,woven,fabric	[283.65123073689267, 296.79998755455017]		[8629, 9029]	17231
+granite_tile	Granite Tile	floor,man made	granite,tiles,tiled,stone tile,granite tile,flooring,interior,home decor,square tiles,grid	[2299.999952316284, 2299.999952316284]		[8192, 8192]	157263
+granite_tile_02	Granite Tile 02	floor,man made	home decor,tiled,decorative tiles,grid,interior,square tiles,stone tile,flooring,decor,multicoloured	[1879.9999952316284, 1879.9999952316284]		[8192, 8192]	9154
+granite_tile_03	Granite Tile 03	wall,tiles	granite,granite tile,granite blocks,wall,urban,speckled ,slab,outdoor,stone tile	[1802.0000457763672, 1802.0000457763672]		[8192, 8192]	7185
+granite_tile_04	Granite Tile 04	floor,outdoor	rough,weathered,granite,stone tile,stone tiles,square tiles,grout lines,natural stone,course,sidewalk	[2000, 2000]		[8192, 8192]	23386
+granite_wall	Granite Wall	wall,outdoor	granite,granite blocks,rough,coarse,uneven,wall,monument,fortress walls,stonework,architecture	[1899.9998569488525, 1899.9998569488525]		[8192, 8192]	1489
+granular_concrete	Granular Concrete	concrete,man made,floor,plaster-concrete	rough,stones,rock,gravel,dirt,ground	[2400.0000953674316, 2400.0000953674316]		[8192, 8192]	88643
+grass_concrete_pavement	Grass Concrete Pavement	man made,outdoor,cobblestone	rough,uneven,weathered,old,discolored,grass,dead grass,dry,grey,pavement	[1970.0000286102295, 1970.0000286102295]		[8192, 8192]	3398
+grass_ground	Grass Ground	outdoor,natural,terrain,dirty	grass,dry grass,dirt,root,dead grass,turf,dry	[2509.999990463257, 2509.999990463257]		[16384, 16384]	18119
+grass_path_2	Grass Path 2	terrain,natural,outdoor	grass,pathway,path,ground,stones,sidewalk,rural,farm	[1000, 1000]		[8192, 8192]	81150
+grass_path_3	Grass Path 3	terrain,outdoor,natural	grass,pathway,path,ground,stones,sidewalk,rural,farm	[1000, 1000]		[8192, 8192]	40361
+grassy_cobblestone	Grassy Cobblestone	natural,sand,outdoor,floor,cobblestone	ground,dirt,rock,grass,dirty,path,trampled,pathway	[2000, 2000]		[8192, 8192]	54775
+gravel	Gravel	floor,outdoor	rock,stones,driveway gravel,gravel,gravelly,gravelly ground,stony,scattered leaves,plant debris,dirt	[2000, 2000]		[8192, 8192]	4960
+gravel_concrete	Gravel Concrete	floor,outdoor,man made,concrete,plaster-concrete	rough,uneven,stones,gravel,dry,concrete,cement	[2119.999885559082, 2119.999885559082]		[8192, 8192]	81049
+gravel_concrete_02	Gravel Concrete 02	outdoor,man made,floor,plaster-concrete,concrete	rough,uneven,stones,ground,chipped,pavement,pebble,gravel	[2099.9996662139893, 2099.9999046325684]		[8192, 8192]	13451
+gravel_concrete_03	Gravel Concrete 03	floor,man made,concrete,plaster-concrete	rough,weathered,old,urban,sidewalk,gravel,concrete,coarse,rough  ,pavement	[2099.9999046325684, 2099.9999046325684]		[8192, 8192]	101697
+gravel_concrete_04	Gravel Concrete 04	floor,man made,concrete,plaster-concrete	rough,weathered,old,urban,sidewalk,gravel,concrete,coarse,rough  ,pavement	[2000, 2000]		[8192, 8192]	7612
+gravel_embedded_concrete	Gravel Embedded Concrete	outdoor,man made,plaster-concrete,concrete,floor	pavement,rough,concrete,cement,gravel,coarse,stony,gravelly,cemented floor,floor	[2000, 2000]		[8192, 8192]	109918
+gravel_embedded_concrete_02	Gravel Embedded Concrete 02	floor,plaster-concrete,man made	rough,concrete,pavement,coarse,cement,sidewalk,urban,stone embedded,gritty,granular	[2000, 2000]		[16384, 16384]	2049
+gravel_floor	Gravel Floor	outdoor,gravel	rough,uneven,stones,gravel,pathway,driveway stones,path,pebbles,outdoor flooring,gravelly ground	[2250, 2250]		[8192, 8192]	9409
+gravel_floor_02	Gravel Floor 02	floor,gravel	rough,rocks,gravel,gravelly,gravelly ground,driveway gravel,driveway,stones,coarse,gray	[2000, 2000]		[8192, 8192]	30671
+gravel_floor_03	Gravel Floor 03	floor,outdoor	rough,gravel,gravelly,gravelly ground,driveway texture,driveway gravel,stones,driveway stones,driveway	[2500, 2500]		[16384, 16384]	4537
+gravel_floor_04	Gravel Floor 04	floor,gravel	rough,uneven,granular,gravel,gravelly,coarse,gritty,gravelly ground,stones,rock fragments	[2460.0000381469727, 2460.0000381469727]		[16384, 16384]	7658
+gravel_ground_01	Gravel Ground 01	terrain,outdoor,natural	gravel,pathway,path,stones,ground,sidewalk,rural,farm	[3000, 3000]		[8192, 8192]	25669
+gravel_road	Gravel Road	outdoor,natural,terrain,rock,road,asphalt,dirty,man made	old,worn,rough,aged,stone,gravel,gravelly,gravelly texture,road,gravelly ground	[2000, 2000]		[16384, 16384]	18360
+gravel_stones	Gravel Stones	outdoor,gravel,natural	rough,uneven,stones,gravel,gritty,grey,pebbles,coarse,pebbly,pathway	[2000, 2000]		[16384, 16384]	36638
+gravelly_sand	Gravelly Sand	outdoor,natural,terrain,sand,gravel,collection: namaqualand	sand,gravel,stony,terrain,ground,dirt,coarse,debris,dusty	[2480.0000190734863, 2480.0000190734863]		[16384, 16384]	85498
+gray_rocks	Gray Rocks	outdoor,terrain,natural,rock	uneven,rocks,rocky,rock,gray,rough	[1799.9995946884155, 1799.9995946884155]		[8192, 8192]	129678
+green_metal_rust	Green Metal Rust	metal,outdoor,indoor,man made,dirty	painted,ship,tank,industrial,canister	[1000, 1000]		[8192, 8192]	296590
+green_rough_planks	Green Rough Planks	wood,outdoor,man made,dirty,wall	planks,painted,peeling,weathered	[1500, 1500]		[8192, 8192]	71849
+grey_cartago_01	Grey Cartago 01	floor,tiles	rock,tiles,marble,flooring,cartago,smooth,stone,stone tile,granite tile	[750.0000596046448, 750.0000596046448]		[16384, 16384]	7919
+grey_cartago_02	Grey Cartago 02	floor,man made	tiles,grey,cartago,stones,smooth,hard,modern,durable,patio,courtyard	[1700.0000476837158, 1700.0000476837158]		[16384, 16384]	18650
+grey_cartago_03	Grey Cartago 03	floor,tiles	rock,tiles,marble,flooring,cartago,smooth,stone,stone tile,granite tile	[930.0000071525574, 930.0000071525574]		[16384, 16384]	10545
+grey_lati_veneer	Grey Lati Veneer	wood,raw wood	natural grain,grain,natural wood grain,wood grain,wood,natural wood,natural veneer,natural,fine grain,lati	[1000, 1000]		[8192, 8192]	4053
+grey_oak_veneer_01	Grey Oak Veneer 01	wood,raw wood	natural grain,grain,natural wood grain,wood grain,fine grain,veneer,veneer wood,natural veneer,natural wood,natural	[1000, 1000]		[8192, 8192]	1370
+grey_oak_veneer_02	Grey Oak Veneer 02	raw wood,wood	raw,wood,oak,natural wood grain,natural grain,grain,gray,wood grain,veneer,veneer wood	[1000, 1000]		[8192, 8192]	791
+grey_plaster	Grey Plaster	plaster,outdoor,indoor,man made,wall,floor,plaster-concrete	moss,plain,bare	[1000, 1000]		[8192, 8192]	126431
+grey_plaster_02	Grey Plaster 02	plaster,outdoor,indoor,man made,dirty,wall,floor,plaster-concrete,collection: the_shed	rough,worn,cracked	[1000, 1000]		[8192, 8192]	78778
+grey_plaster_03	Grey Plaster 03	plaster,outdoor,indoor,man made,dirty,wall,floor,plaster-concrete	rough,grey,uneven	[1000, 1000]		[8192, 8192]	41388
+grey_roof_01	Grey Roof 01	roofing,outdoor,man made,clean	modern,tiles,roofing material,gray,gray roof,tiled roofing,interlocking tiles,slate roofing,roof tiles,traditional roof tiles	[8000, 8000]		[8192, 8192]	72642
+grey_roof_tiles	Grey Roof Tiles	roofing,outdoor,man made,clean	grey,moss,damp,mosscovered,ceramic tiles,overlapping,weathered,overlapping tiles,roofing material,roof tiles	[3000, 3000]		[8192, 8192]	39340
+grey_roof_tiles_02	Grey Roof Tiles 02	roofing,outdoor,man made,clean	slates,moss,tiles,cottage,roofing material,lichen,housing material,gray,traditional roof tiles,tiled roofing	[1500, 1500]		[8192, 8192]	57338
+grey_stone_path	Grey Stone Path	man made,outdoor	rocks,exterior,stonework,outdoors,path,pathway,footpath,concrete,walkway,grey	[1799.999713897705, 1799.999713897705]		[16384, 16384]	24740
+grey_tiles	Grey Tiles	outdoor,floor,man made	weathered,old,discolored,grey,gray,exterior pavement,pavement,concrete tiles,concrete,precast	[2200.000047683716, 2200.000047683716]		[16384, 16384]	7280
+grooved_concrete_driveway	Grooved Concrete Driveway	man made,concrete,plaster-concrete	driveway,concrete,rough,gritty,driveway texture,cement,grooved,coarse,cemented floor	[1799.9999523162842, 1799.9999523162842]		[8192, 8192]	2564
+ground_grey	Ground Grey	terrain,outdoor,natural,road	gravel,grey,gravelly,rough,uneven,coarse,concrete	[1000, 1000]		[8192, 8192]	49957
+hacked_concrete	Hacked Concrete	wall,plaster-concrete,man made	rough,weathered,uneven,chipped,concrete,cement,rough  ,pitted,plasterconcrete,damaged	[1500.0001192092896, 1500.0001192092896]		[8192, 8192]	1134
+hangar_concrete_floor	Hangar Concrete Floor	floor,man made,concrete,indoor,plaster-concrete	rough,scratched,flat,concrete,cracked,damaged,chipped,scuffed,cemented floor,worn	[2000, 2000]		[8192, 8192]	46284
+herringbone_brick	Herringbone Brick	man made,outdoor,floor,brick	herringbone,interlocking bricks,worndown,brick,bricks,pavement,sidewalk,street,ground,pavement patterned	[1800.0000715255737, 1800.0000715255737]		[16384, 16384]	8943
+herringbone_brick_02	Herringbone Brick 02	floor,brick	brick,bricks,interlocking bricks,paving,street,herringbone,herringbone pattern,pavement,outdoor flooring,sidewalk	[1840.0001525878906, 1840.0001525878906]		[8192, 8192]	9938
+herringbone_brick_03	Herringbone Brick 03	floor,man made,brick	rough,herringbone pattern,brick,bricks,herringbone,herringbone brick,outdoor,paving,sidewalk,red brick	[1980.0000190734863, 1980.0000190734863]		[16384, 16384]	13025
+herringbone_concrete_tile	Herringbone Concrete Tile	concrete,outdoor,man made,plaster-concrete	weathered,rough,discolored,concrete,herringbone,herringbone pattern,patterned concrete,weatherbeaten,scuffed	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	6350
+herringbone_concrete_tile_02	Herringbone Concrete Tile 02	wall,concrete,plaster-concrete	rough,uneven,weathered,wall,concrete,concrete blocks,retaining wall,urban,herringbone,herringbone pattern	[2214.9999141693115, 2214.9999141693115]		[16384, 16384]	2447
+herringbone_concrete_tile_03	Herringbone Concrete Tile 03	man made,outdoor,plaster-concrete	herringbone,weathered,wet patches,herringbone pattern,exterior,urban,concrete pavers,concrete blocks,mottled,discolored	[2140.000104904175, 2140.000104904175]		[8192, 8192]	4231
+herringbone_parquet	Herringbone Parquet	man made,floor,wood	smooth,wood,coated,shiny,plank,herringbone,wooden planks,parquet flooring,flooring,polished	[3400.0000953674316, 3400.0000953674316]		[16384, 16384]	86643
+herringbone_pavement	Herringbone Pavement	floor,man made,brick,outdoor	rough,herringbone,brick,bricks,pavement,pavement patterned,patterned,urban,sidewalk,interlocking bricks	[1999.9996423721313, 1999.9996423721313]		[8192, 8192]	32035
+herringbone_pavement_02	Herringbone Pavement 02	outdoor,road,man made,dirty	weathered,rough,discolored,exterior,coarse,weatherbeaten,driveway texture,timeworn,hard surface,pathway	[2480.0000190734863, 2480.0000190734863]		[16384, 16384]	4792
+herringbone_pavement_03	Herringbone Pavement 03	dirty,brick,outdoor	weathered,worn,rough,discolored,damaged,dirty,aged,timeworn,moss,trampled	[2400.0000953674316, 2400.0000953674316]		[16384, 16384]	11787
+herringbone_pavement_04	Herringbone Pavement 04	man made,road,outdoor	weathered,rough,discolored,dirty,coarse,outdoor,aged,weatherbeaten,timeworn,driveway texture	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	1437
+hessian_230	Hessian 230	fabric,hessian	burlap,rough,brown,natural,coarse,sack,hessian,jute,rustic,textile 	[268.7538661074732, 267.1999931335449]		[8129, 8082]	42906
+hessian_380	Hessian 380	fabric,hessian	burlap,rough,brown,natural,fine,sack,hessian,jute,rustic,textile 	[273.86577004511844, 273.79998564720154]		[8327, 8325]	29860
+hexagonal_concrete_paving	Hexagonal Concrete Paving	outdoor,floor,concrete,plaster-concrete	hexagon,tiles,bricks,pavement,paving,courtyard	[1600.0003814697266, 1600.0001430511475]		[8192, 8192]	58149
+hinoki_planks	Hinoki Planks	raw wood,wood	grain,wood,wooden planks,wooden plank,hinoki,knotty wood,knots,wooden,wooden knots,timber	[1889.9999856948853, 1889.9999856948853]		[16384, 16384]	8726
+interior_tiles	Interior Tiles	floor,man made,tiles	tiles,tiled,floor,indoor flooring,grout lines,square tiles,ceramic,ceramic tiles,beige,squares	[1899.9998569488525, 1899.9998569488525]		[16384, 16384]	60953
+interlocking_concrete_pavers	Interlocking Concrete Pavers	floor,concrete,plaster-concrete	rough,dirt,concrete,pavers,concrete pavers,patterned,geometric,interlocking	[1800.0000715255737, 1800.0000715255737]		[16384, 16384]	4918
+japanese_camphor_bark	Japanese Camphor Bark	natural,bark	bark,tree,tree bark,japanese,forest,organic,tree trunk,forestry,environment,bark texture	[1799.9999523162842, 1799.9999523162842]		[8192, 8192]	8968
+japanese_cedar_bark	Japanese Cedar Bark	outdoor,natural,bark	bark,tree,tree bark,nature,bark texture,natural,forestry,japanese,cedar bark,cedar	[1000, 2000]		[8192, 16384]	3744
+japanese_cedar_planks	Japanese Cedar Planks	wood	japanese,cedar,japanses cedar,natural wood grain,vertical planks,wood planks,wooden plank,paneling,roughhewn,sawn timber	[1130.000114440918, 1130.000114440918]		[8192, 8192]	12278
+japanese_hackberry_bark	Japanese Hackberry Bark	outdoor,bark,natural,wood	tree,bark,forest,natural,tree bark,tree trunk,organic,moss,nature	[1888.9999389648438, 1888.9999389648438]		[8192, 8192]	13689
+japanese_stone_wall	Japanese Stone Wall	outdoor,man made,rock	uneven,stones,wall,rocks,stone,rock	[1899.9998569488525, 1899.9998569488525]		[8192, 8192]	96754
+japanese_sycamore	Japanese Sycamore	outdoor,natural,bark,wood	dry,tree,bark,wood,nature,forest,wooden,non square	[1099.9999046325684, 2199.9998092651367]		[8192, 16384]	16073
+japanese_zelkova_bark	Japanese Zelkova Bark	natural,bark,wood	japanese,bark,tree bark,tree,tree trunk,natural,environment,bark texture,organic,forestry	[1799.999713897705, 1799.999713897705]		[8192, 8192]	9618
+jersey_melange	Jersey Melange	fabric,stretchy,knitted	blue,patchey,melange,knit,textile ,fabric,heathered,mottled,jersey,soft	[290.62397202303356, 276.19999647140503]		[8402, 7985]	7376
+jogging_melange	Jogging Melange	fabric,fleece,stretchy	white,grey,tracksuit,joggers,melange,sweatpants,cozy,comfortable,cotton blend,soft	[273.4973732349353, 273.2999920845032]		[8314, 8308]	18531
+jolcham_oak_bark_01	Jolcham Oak Bark 01	outdoor,natural,bark	rough,weathered,uneven,moss,mossy,mosscovered,bark,tree,tree bark,organic	[1000, 2000]		[8192, 16384]	6732
+kitchen_wood	Kitchen Wood	wood,man made,clean	plain,clean,pine,board,varnished wood,wood grain,oak,smooth finish,flat wood	[600.0000238418579, 600.0000238418579]		[8192, 8192]	216671
+knitted_fleece	Knitted Fleece	fabric,knitted,fleece,wool	brown,jersey,warm,knitted,fleece,textile ,knit,dense weave,woven,soft	[266.35669526830077, 270.3999876976013]		[8103, 8226]	14022
+knotted_pine_bark	Knotted Pine Bark	bark,natural	bark,tree,tree bark,tree trunk,pine,knotty pine,pine bark ,tree bark texture,organic,environment	[1700.0000476837158, 1700.0000476837158]		[8192, 8192]	7474
+lacquered_cherry_wood	Lacquered Cherry Wood	wood	lacquered,polished,glossy,reflective,smooth,hardwood,scratch marks,cherry wood,cherry,grain	[1000, 1000]		[16384, 16384]	19718
+laminate_floor	Laminate Floor	floor,man made,wood	damaged,wood,wooden,dirty,scratched,stained,flat,floor,grain	[2000, 2000]		[8192, 8192]	113903
+laminate_floor_02	Laminate Floor 02	floor,man made,indoor,clean,wood	even,flat,wooden,floor,laminate,smooth,tiles,brown,wood,planks	[1699.9999284744263, 1700.0000476837158]		[8192, 8192]	507421
+laminate_floor_03	Laminate Floor 03	man made,floor,wood	flat,planks,wood,floor,even,lines,synthetic,varnished,wooden	[2079.9996852874756, 2079.9996852874756]		[8192, 8192]	141528
+large_floor_tiles_02	Large Floor Tiles 02	floor,man made,outdoor,dirty	tiles,flat,large,square,even	[3000, 3000]		[8192, 8192]	129437
+large_grey_tiles	Large Grey Tiles	floor,man made,outdoor,dirty	grey,tiles,large,uneven,weathered,damaged	[3000, 3000]		[8192, 8192]	116528
+large_pebbles	Large Pebbles	outdoor,natural,man made,road	old,worn,dirty,pebbles,large,sidewalk,parking,stones,rocks,gravel	[2000, 2000]		[8192, 8192]	11409
+large_red_bricks	Large Red Bricks	brick,wall,man made,outdoor,indoor,clean	red,large,rough	[2000, 2000]		[8192, 8192]	68484
+large_sandstone_blocks	Large Sandstone Blocks	wall,outdoor,sandstone,man made,dirty	grey,discolored,blocks,sandstone,wall,trimsheet,urban,stained	[3000, 3000.000238418579]		[8192, 8192]	21442
+large_sandstone_blocks_01	Large Sandstone Blocks 01	wall,floor,man made,dirty,brick	wall,stones,rough,uneven,old,large	[3000, 3000]		[8192, 8192]	51273
+large_square_pattern_01	Large Square Pattern 01	floor,man made,outdoor,clean	tiles,concrete,large,even,concrete pavers,concrete blocks,urban,urban design,grid pattern,grid	[3000, 3000]		[8192, 8192]	118495
+leaf_scattered_gravel	Leaf Scattered Gravel	outdoor,natural,terrain,gravel,rock	forest,nature,stones,autumn,leaves,stone-fragments,organic-debris,organic-debris,loose pebbles	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	2479
+leafy_grass	Leafy Grass	outdoor,floor	grass,green,nature,ground,foliage,leaves,plants,outdoors,twigs,sticks	[2000, 2000]		[8192, 8192]	97867
+leather_red_02	Leather Red 02	fabric,leather	leather,even,smooth,new,creased,wrinkled,semi-gloss,upholstery,textile ,animal-hide	[600.0000238418579, 600.0000238418579]		[8192, 8192]	256609
+leather_red_03	Leather Red 03	fabric,leather	leather,red,even,smooth,new,lustrous,textile ,upholstery	[300.00001192092896, 300.00001192092896]		[8192, 8192]	132644
+leather_white	Leather White	fabric,leather	leather,white,smooth,new,even,textile ,upholstery,fashion,animal-hide	[300.00001192092896, 300.00001192092896]		[8192, 8192]	205543
+leaves_forest_ground	Leaves Forest Ground	outdoor,natural,terrain	dirt,forest,leaves,twigs,yellow,green,sticks,autumn,nature,brown	[1259.9999904632568, 1260.0001096725464]		[8192, 8192]	41491
+lichen_rock	Lichen Rock	collection: verdant_trail,rock,terrain,natural	rock,cliff,lichen,moss,rock face,boulder,mossy,stone,nature,rugged	[2000, 2000]		[8192, 8192]	62547
+linoleum_brown	Linoleum Brown	floor,man made	linolium,wood,wood look,flooring,synthetic,vinyl,canvas,weathered,brown	[2000, 2000]		[8192, 8192]	11445
+long_white_tiles	Long White Tiles	floor,man made	wall,weathered,chipped,discolored,damaged,long,white,tiles,scuffed,rectangular	[1269.9999809265137, 1269.9999809265137]		[16384, 16384]	54225
+low_tide_rocks	Low Tide Rocks	floor,outdoor,natural,sand	rocks,scattered rocks,pebbles,wet,wet ground,low tide,granular,scattered pebbles,riverbank,pebbly	[2170.0000762939453, 2170.0000762939453]		[8192, 8192]	3341
+macro_flour	Macro Flour	man made,clean,food	flour,wheat flour,ingredient,powder,food,cooking,bakery,allpurpose flour,bright,baking	[299.9999523162842, 299.9999523162842]		[16384, 16384]	34702
+marble_01	Marble 01	floor,man made,indoor,clean,wall	marble,smooth,even,tiles	[1500, 1500]		[8192, 8192]	316256
+marble_cliff_01	Marble Cliff 01	natural,rock,aerial	uneven,weathered,marble,cliff,discolored,cracked,fractured,metamorphic,fissured,crag	[4299.351692199707, 4299.351692199707]		[8192, 8192]	6943
+marble_cliff_02	Marble Cliff 02	natural,rock,outdoor,aerial	rough,weathered,uneven,rock,cracked,sedimentary,sedimentary,fissured,marble,craggy	[6801.3715744018555, 6801.3715744018555]		[8192, 8192]	7036
+marble_cliff_03	Marble Cliff 03	outdoor,rock,natural,aerial	rough,weathered,uneven,cliff,marble,rock,craggy,sedimentary,fractured,cracked	[5748.3086585998535, 5748.3086585998535]		[8192, 8192]	13943
+marble_cliff_04	Marble Cliff 04	outdoor,natural,rock,aerial	uneven,rough,weathered,cracked,rock face,rock,cliff,stratified,veined,marble	[12656.517028808594, 12656.39877319336]		[8192, 8192]	7429
+marble_cliff_05	Marble Cliff 05	aerial,rock,natural,outdoor	rough,weathered,uneven,rock,chipped,stone,marble,striated,veined,fractured	[20002.0694732666, 20001.800537109375]		[8192, 8192]	17900
+marble_cliff_06	Marble Cliff 06	outdoor,aerial,natural,rock	rough,uneven,rock,cracked,stone,marble,cliff,veined,striations,rock formation	[8140.669822692871, 8140.56396484375]		[8192, 8192]	7375
+marble_mosaic_tiles	Marble Mosaic Tiles	floor,man made	tiles,floor,ceramic,mosaic,marble,decorative,square,tiled	[2000, 2000]		[16384, 16384]	10846
+marble_rock_01	Marble Rock 01	outdoor,rock,natural	uneven,rock,rock face,geological,cracked,boulder,craggy,marble,veined,weathered	[2002.079963684082, 2002.0811557769775]		[8192, 8192]	4018
+marble_rock_02	Marble Rock 02	outdoor,natural,rock	uneven,rock,cracked,weathered,marble,craggy,stone,rock face,chipped,striated	[2002.079963684082, 2002.0811557769775]		[8192, 8192]	5966
+marble_rock_03	Marble Rock 03	rock,outdoor,natural	uneven,weathered,cracked,worn,rock face,rock,dirty,marble,rock formation,exposed rock	[1798.436999320984, 1798.4380722045898]		[8192, 8192]	7420
+marble_tiles	Marble Tiles	floor,man made,outdoor,dirty	floor,tiles,marble,dirty,ceramic,decorative,consistent,square,waterproof tiles	[2000, 2000]		[8192, 8192]	15653
+medieval_blocks_02	Medieval Blocks 02	wall,man made,dirty,outdoor,rock	stones,sandstone,old,weathered,rough,uneven	[1500, 1500]		[8192, 8192]	25397
+medieval_blocks_03	Medieval Blocks 03	wall,brick,man made,outdoor,indoor,clean	blocks,large,old,rough	[2000, 2000]		[8192, 8192]	145198
+medieval_blocks_05	Medieval Blocks 05	wall,rock,man made,outdoor,dirty,floor	blocks,road,stones,gaps	[2000, 2000]		[8192, 8192]	69306
+medieval_blocks_06	Medieval Blocks 06	wall,man made,rock,dirty,outdoor	wall,blocks,rocks,fortress walls,stonework,ancient walls,dungeon,fort,stone blocks,rough	[2000, 2000]		[8192, 8192]	30700
+medieval_red_brick	Medieval Red Brick	wall,brick,man made	concrete,medieval,red,brick,bricks,red brick,walling,building material,structural,textured	[2000, 2000]		[16384, 16384]	70596
+medieval_wall_01	Medieval Wall 01	plaster-concrete,wall,man made,outdoor,indoor,dirty	wall,rough,uneven,plastered	[2000, 2000]		[8192, 8192]	61243
+medieval_wall_02	Medieval Wall 02	wall,man made,rock,outdoor	rough,uneven,weathered,old,wall,worn,chipped,damaged,cracked,brown	[3499.999761581421, 3500]		[16384, 16384]	12103
+medieval_wood	Medieval Wood	wood,wall,man made,outdoor,indoor	planks,weathered,old,uneven	[2000, 2000]		[8192, 8192]	47134
+metal_grate_rusty	Metal Grate Rusty	man made,metal,outdoor	rusty,rust,metallic,grate,weathered,worn,old,manhole,pattern,pavement	[500, 500]		[8192, 8192]	51008
+metal_plate	Metal Plate	metal,floor,man made,indoor,outdoor,dirty	bare,painted,rusty,pattern,iron,factory,industrial,steel	[500, 500]		[8192, 8192]	311524
+metal_plate_02	Metal Plate 02	man made,metal	worn,metal sheet,corroded metal sheet,metal sheet ,steel sheeting,rusted,rusty,iron,industrial,grunge	[2000, 2000]		[8192, 8192]	78469
+metasequoia_bark	Metasequoia Bark	natural,bark	bark,tree bark,natural,bark texture,forestry,tree,tree trunk,tree texture,nature,organic	[1939.9999380111694, 1939.9999380111694]		[8192, 8192]	2214
+mixed_brick_wall	Mixed Brick Wall	wall,brick	brick,bricks,masonry,brick wall,worndown,walling,mortar,red brick,rough,weathered	[1700.0000476837158, 1700.0000476837158]		[8192, 8192]	33785
+mixed_rock_tiles	Mixed Rock Tiles	floor,rock	rough,uneven,old,pebbles,rocks,stone tiles,embedded rock,dirty,stone slabs,outdoor	[1899.9998569488525, 1899.9998569488525]		[8192, 8192]	3045
+mixed_stone_tiles	Mixed Stone Tiles	floor,man made	tiles,floor,embedded pebble,stone embedded,tiled,square tiles,pebble finish ,mixed stone,speckled tiles ,speckled 	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	6766
+mocha_oak_veneer	Mocha Oak Veneer	wood,raw wood	oak,veneer,veneer wood,natural grain,natural wood,natural veneer,wood,hardwood,grain,natural wood grain	[1000, 1000]		[8192, 8192]	813
+monastery_stone_floor	Monastery Stone Floor	rock,outdoor,floor,man made	rock,rocks,stone,floor,pathway,slates,slate,path,walkway,weathered	[1799.9999523162842, 1799.9999523162842]		[8192, 8192]	56957
+moon_01	Moon 01	outdoor,sand,terrain,collection: moon	rough,uneven,dirt,coarse,exterior,regolith,lunar,extraterrestrial,space	[3100.0001430511475, 3100.0001430511475]		[16384, 16384]	20346
+moon_02	Moon 02	outdoor,sand,terrain,collection: moon	rough,uneven,dirt,course,exterior,regolith,lunar,extraterrestrial,space	[3100.0001430511475, 3100.0001430511475]		[16384, 16384]	4059
+moon_03	Moon 03	outdoor,sand,terrain,collection: moon	rough,uneven,dirt,coarse,exterior,regolith,lunar,extraterrestrial,space	[3199.9998092651367, 3199.9998092651367]		[16384, 16384]	2587
+moon_04	Moon 04	outdoor,sand,terrain,collection: moon	rough,uneven,dirt,coarse,exterior,regolith,lunar,extraterrestrial,space	[3199.9998092651367, 3199.9998092651367]		[16384, 16384]	1869
+moon_dusted_01	Moon Dusted 01	outdoor,sand,terrain,collection: moon	rough,dirt,coarse,exterior,regolith,dusted,lunar,extraterrestrial,space	[370.0000047683716, 370.0000047683716]		[16384, 16384]	12527
+moon_dusted_02	Moon Dusted 02	outdoor,sand,terrain,collection: moon	rough,dirt,coarse,exterior,regolith,dusted,pebbles,lunar,extraterrestrial,space	[399.9999761581421, 399.9999761581421]		[16384, 16384]	4343
+moon_dusted_03	Moon Dusted 03	outdoor,sand,terrain,collection: moon	rough,dirt,coarse,exterior,regolith,dusted,lunar,extraterrestrial,space	[399.9999761581421, 399.9999761581421]		[16384, 16384]	1607
+moon_dusted_04	Moon Dusted 04	outdoor,sand,terrain,collection: moon	rough,dirt,course,exterior,regolith,dusted,lunar,extraterrestrial,space	[560.0000023841858, 560.0000023841858]		[16384, 16384]	1560
+moon_dusted_05	Moon Dusted 05	outdoor,sand,terrain,collection: moon	rough,dirt,coarse,exterior,regolith,dusted,extraterrestrial,lunar,space	[500, 500]		[16384, 16384]	2403
+moon_flat_macro_01	Moon Flat Macro 01	outdoor,sand,terrain,collection: moon	flat,macro,dirt,exterior,regolith,dusted,lunar,extraterrestrial,space	[370.0000047683716, 370.0000047683716]		[16384, 16384]	6002
+moon_flat_macro_02	Moon Flat Macro 02	outdoor,sand,terrain,collection: moon	flat,macro,dirt,exterior,regolith,dusted,extraterrestrial,lunar,space	[399.9999761581421, 399.9999761581421]		[10836, 10836]	2564
+moon_footprints_01	Moon Footprints 01	outdoor,sand,terrain,collection: moon	rough,dirt,course,exterior,regolith,dusted,footprints,path,trail,extraterrestrial	[1550.0000715255737, 3100.0001430511475]		[11664, 16384]	1117
+moon_footprints_02	Moon Footprints 02	outdoor,sand,terrain,collection: moon	rough,dirt,course,exterior,regolith,dusted,footprints,garden path gravel,trail,lunar	[1550.0000715255737, 3100.0001430511475]		[8192, 16384]	809
+moon_macro_01	Moon Macro 01	outdoor,sand,terrain,collection: moon	rough,dirt,course,exterior,regolith,dusted,lunar,extraterrestrial,space	[399.9999761581421, 399.9999761581421]		[16384, 16384]	2742
+moon_meteor_01	Moon Meteor 01	outdoor,sand,terrain,collection: moon	rough,dirt,course,exterior,regolith,dusted,meteor,craters,rock,extraterrestrial	[3199.9998092651367, 3199.9998092651367]		[16384, 16384]	1686
+moon_meteor_02	Moon Meteor 02	outdoor,sand,terrain,collection: moon	rough,dirt,course,exterior,regolith,dusted,meteor,craters,rock,lunar	[3199.9998092651367, 3199.9998092651367]		[16384, 16384]	3565
+moon_track_01	Moon Track 01	sand,terrain,outdoor,collection: moon	rough,dirt,course,exterior,regolith,dusted,tracks,tyre tracks,tire tracks,extraterrestrial	[199.99998807907104, 399.9999761581421]		[10854, 16384]	814
+moon_track_02	Moon Track 02	outdoor,sand,terrain,collection: moon	rough,dirt,course,exterior,regolith,dusted,tracks,tyre tracks,tire tracks,extraterrestrial	[199.99998807907104, 399.9999761581421]		[9233, 15921]	610
+moon_track_03	Moon Track 03	outdoor,sand,terrain,collection: moon	rough,dirt,course,exterior,regolith,dusted,tracks,tyre tracks,tire tracks,extraterrestrial	[199.99998807907104, 399.9999761581421]		[7944, 16384]	449
+moon_track_04	Moon Track 04	outdoor,sand,terrain,collection: moon	rough,dirt,course,exterior,regolith,dusted,tracks,tyre tracks,tire tracks,extraterrestrial	[199.99998807907104, 399.9999761581421]		[10745, 16384]	464
+moss_wood	Moss Wood	wood,wall,floor,man made,outdoor	moss,planks,rough,old,green	[1000, 1000]		[8192, 8192]	69624
+mossy_brick	Mossy Brick	brick	brick,moss,mossy,mosscovered,outdoor,wall,green,weathered,outdoors,dark brick	[1449.9999284744263, 1449.9999284744263]		[16384, 16384]	30647
+mossy_brick_floor	Mossy Brick Floor	floor,brick,man made	weathered,worn,brick,bricks,moss,pattern,outdoor,worndown,paving,herringbone	[1880.000114440918, 1879.9999952316284]		[8192, 8192]	9339
+mossy_cobblestone	Mossy Cobblestone	floor,outdoor,man made,cobblestone	weathered,stone,earthy,moss,cobblestone,walkway,stonework,outdoor flooring,pathway	[2000, 2000]		[8192, 8192]	33540
+mossy_rock	Mossy Rock	rock,natural,outdoor,terrain	rough,moss,rock face,cracked,lichen,striations,striated,mosscovered,mossy,uneven	[3000, 3000]		[8192, 8192]	117545
+mossy_sandstone	Mossy Sandstone	wall,man made,sandstone	rough,weathered,uneven,old,worn,wall,mosscovered,mossy,mossy ,outdoor	[1889.9996280670166, 1889.9996280670166]		[8192, 8192]	11749
+mossy_stone_wall	Mossy Stone Wall	wall,man made,rock	discolored,weathered,uneven,exterior,moss,concrete,weatherbeaten,aged,worn,wall	[1999.9996423721313, 1999.9996423721313]		[16384, 16384]	8093
+mud_cracked_dry_03	Mud Cracked Dry 03	outdoor,natural,terrain,sand	dry,mud,sand,uneven,ground,cracked,cracks,nature	[1500, 1500.0001192092896]		[8192, 8192]	45758
+mud_cracked_dry_riverbed_002	Mud Cracked Dry Riverbed 002	outdoor,natural,terrain,sand	weathered,cracked,rough,ground,dry,uneven,mud,cracks,nature,flaked	[2000, 2000]		[8192, 8192]	29643
+mud_forest	Mud Forest	outdoor,floor,natural,dirty	brown,ground,dirty,leaves,mud,forest,sticks	[2349.9999046325684, 2349.9999046325684]		[8192, 8192]	38149
+muddy_tracks	Muddy Tracks	floor,natural,outdoor,sand,dirty	mud,muddy surface,tracks,tire tracks,wet,organic,outdoor,earth,dirty,earthy	[2250, 2250]		[8192, 8192]	7035
+multicolored_pebble_floor	Multicolored Pebble Floor	outdoor,floor,man made,cobblestone	pebble mosaic,rounded stones,stone paving,street,embedded stones,natural stone	[2000, 2000]		[8192, 8192]	2824
+natural_walnut_veneer	Natural Walnut Veneer	wood,raw wood	natural grain,natural wood grain,grain,wood,wood grain,walnut,walnut wood,veneer,veneer wood,natural wood	[1000, 1000]		[8192, 8192]	1543
+oak_veneer_01	Oak Veneer 01	wood,raw wood,natural	veneer,oak,grain,wood grain,natural wood,road	[1830.0000429153442, 1830.0000429153442]		[16384, 16384]	430392
+oak_veneer_02	Oak Veneer 02	wood,raw wood	oak,raw wood,veneer,veneer wood,natural grain,grain,natural wood grain,wood grain,wood,natural wood	[1000, 1000]		[8192, 8192]	1496
+oak_veneer_03	Oak Veneer 03	wood,raw wood	oak,raw wood,veneer,veneer wood,natural grain,grain,natural wood grain,wood grain,wood,natural wood	[1000, 1000]		[8192, 8192]	2104
+oak_veneer_04	Oak Veneer 04	wood,raw wood	oak,raw wood,veneer,veneer wood,natural grain,grain,natural wood grain,wood grain,wood,natural wood	[1000, 1000]		[8192, 8192]	1110
+oak_veneer_05	Oak Veneer 05	wood,raw wood	natural grain,grain,natural wood grain,wood grain,natural wood,natural veneer,natural,veneer,veneer wood,brown	[1000, 1000]		[8192, 8192]	10509
+oak_wood_planks	Oak Wood Planks	wood	wood,planks,oak,wooden floor,wooden flooring ,wooden planks,varnished,timber,plank,coated	[1200.0000476837158, 1200.0000476837158]		[8192, 8192]	20913
+okoume_veneer	Okoume Veneer	wood,raw wood	natural grain,natural wood grain,grain,wood grain,light,blonde,veneer,smooth surface,raw,okoume	[1000, 1000]		[8192, 8192]	777
+old_linoleum_flooring_01	Old Linoleum Flooring 01	floor,man made	smooth,linolium,linoleum,glossy,vinyl,vinyl flooring,patterned,vintage,glossy sheen,geometric pattern	[1990.0001287460327, 1990.0001287460327]		[16384, 16384]	15095
+old_mosaic_floor	Old Mosaic Floor	floor,plaster-concrete,concrete	road,weathered,terrazzo,mosaic,tiles,gritty,rough surface,stone chips,irregular pattern,embedded-stones	[2000.000238418579, 2000.000238418579]		[8192, 8192]	1711
+old_planks_02	Old Planks 02	wood,wall,floor,man made,outdoor,indoor	planks,old,damaged,worn	[2000, 2000]		[8192, 8192]	123817
+old_sandstone_02	Old Sandstone 02	outdoor,man made,sandstone,wall	rough,weathered,wall,stone,sandstone,old,worn,chipped,aged,stonework	[1529.9999713897705, 1529.9999713897705]		[8192, 8192]	9824
+old_stone_wall	Old Stone Wall	wall,outdoor	stone,wall,rock wall,stone wall,fortress walls,stonework,ancient walls,fort,masonry,rough surface	[2000, 2000]		[16384, 16384]	13363
+old_stone_wall_02	Old Stone Wall 02	wall,rock	rough,weathered,uneven,old,worn,wall,discolored,cracked,chipped,stone	[2085.0000381469727, 2085.0000381469727]		[16384, 16384]	3485
+old_wood_floor	Old Wood Floor	outdoor,man made,floor,wood,dirty	wood,wooden,deck,planks,old,uneven,weathered,worn,brown,floor	[3000, 3000]		[8192, 8192]	37855
+old_wooden_floor_01	Old Wooden Floor 01	wood	wood,hardwood,hardwood floors,wooden flooring ,wooden planks,wooden floor,grain,aged wood,scratches,interior	[2000, 2000]		[8192, 8192]	2708
+old_wooden_floor_02	Old Wooden Floor 02	wood	wood,hardwood,hardwood floors,wooden flooring ,wooden planks,wooden floor,grain,aged wood,scratches,interior	[2029.9999713897705, 2029.9999713897705]		[16384, 16384]	6021
+old_wooden_floor_03	Old Wooden Floor 03	floor,wood	wood,hardwood,hardwood floors,wooden flooring ,wooden planks,wooden floor,grain,aged wood,scratches,interior	[1199.049949645996, 1199.049949645996]		[16384, 16384]	10313
+olive_veneer	Olive Veneer	wood,raw wood	natural grain,grain,natural wood grain,wood grain,natural wood,natural veneer,natural,veneer,veneer wood,light wood	[1000, 1000]		[8192, 8192]	1068
+oriented_strand_board	Oriented Strand Board	wood	compressed,coated finish,coated wood,coated,osb,industrial,waferboard,oriented strand board,wood chips,pressed wood panel	[2509.999990463257, 2509.999990463257]		[8192, 8192]	13590
+overgrown_concrete_pavers	Overgrown Concrete Pavers	outdoor,floor	rough,weathered,uneven,old,plant debris,dirt,overgrown,concrete pavers,pavers,concrete slab	[2000, 2000]		[8192, 8192]	3872
+painted_brick	Painted Brick	wall,brick,plaster,man made,outdoor,indoor	old,worn,wall,rough,exterior,plaster,painted,paint,rustic,rustic architecture	[1800.0000715255737, 1800.0000715255737]		[16384, 16384]	12427
+painted_concrete	Painted Concrete	floor,indoor,plaster-concrete,concrete	weathered,worn,dirty,damaged,chipped,cracked,stained,painted,ground,scratched	[2000, 2000]		[8192, 8192]	77472
+painted_concrete_02	Painted Concrete 02	floor,man made,concrete,plaster-concrete	concrete,scratched,painted,weatherbeaten,grunge,cemented floor,worn,urban,industrial,scuffed	[4000, 4000]		[16384, 16384]	63096
+painted_metal_shutter	Painted Metal Shutter	man made,metal	weathered,worn,dirty,stained,scratched,discolored,painted,metal,corrugated	[2000, 2000]		[8192, 8192]	56100
+painted_plaster_wall	Painted Plaster Wall	wall,plaster-concrete,outdoor	rough,weathered,worn,wall,discolored,plaster,plastered,damaged,old,stained	[2000, 2000]		[16384, 16384]	312675
+painted_worn_brick	Painted Worn Brick	wall,brick,outdoor,man made	yellow,dirty,weathered,worn,grungy	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	5545
+palm_bark	Palm Bark	natural,bark	tree,tree bark,tree trunk,palm,bark texture,natural,environment,tropical,bark,trunk	[1860.0000143051147, 1860.0000143051147]		[8192, 8192]	3775
+palm_tree_bark	Palm Tree Bark	outdoor,bark,wood,natural	seaside,palm,tree,bark,damaged,forest,tropical,nature	[1299.9999523162842, 1300.0000715255737]		[8192, 16384]	41089
+park_dirt	Park Dirt	outdoor,natural,terrain,sand	sand,park,dirt,leaves,twigs,debris,seaside,ground,damp,pathway	[3000, 3000]		[8192, 8192]	13452
+park_sand	Park Sand	outdoor,natural,sand	brown,ground,sand,trampled,tracks,park	[2000, 2000]		[8192, 8192]	19587
+patio_tiles	Patio Tiles	man made,floor,clean,indoor,outdoor	tiles,ceramic,square,outdoor flooring,flat,continuous,consistent,patio,brown,terracotta	[2150.0000953674316, 2150.0000953674316]		[8192, 8192]	48518
+patterned_brick_floor	Patterned Brick Floor	man made,outdoor,floor	bricks,gray,grey,concrete,pattern,pavement patterned,walkway	[1810.9997510910034, 1810.9997510910034]		[8192, 8192]	57717
+patterned_brick_floor_02	Patterned Brick Floor 02	floor,outdoor,brick	pattern,brick,bricks,paving,sidewalk,patterned,pavement,urban	[2000, 2000]		[8192, 8192]	27720
+patterned_brick_floor_03	Patterned Brick Floor 03	floor,outdoor	brick,bricks,pattern,pavement patterned,driveway,paving,outdoor flooring,exterior	[2099.9999046325684, 2099.9999046325684]		[8192, 8192]	6590
+patterned_brick_wall	Patterned Brick Wall	man made,brick,wall	road,rough,wall,damaged,chipped,dry,bricks,brick	[2000, 2000]		[8192, 8192]	29719
+patterned_brick_wall_02	Patterned Brick Wall 02	outdoor,man made,wall,brick,plaster-concrete	stones,wall,chipped,rocks,pattern,weathered,concrete,bricks,brick,plastered	[2210.0000381469727, 2210.0000381469727]		[8192, 8192]	11124
+patterned_brick_wall_03	Patterned Brick Wall 03	wall,brick	rough,brick,bricks,patterned,interlocking bricks,building facade,urban,outdoor,pattern,brick design	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	16144
+patterned_clay_plaster	Patterned Clay Plaster	wall,outdoor,plaster-concrete,man made	weathered,rough,wall,pattern,clay,patterned,lines,decorative,traditional,outdoor	[2000, 2000]		[16384, 16384]	24604
+patterned_clay_wall	Patterned Clay Wall	outdoor,man made,wall	uneven,weathered,damaged,cracked,worn,discolored,chipped,stained,dry,wall	[1250, 1250]		[8192, 8192]	5465
+patterned_cobblestone	Patterned Cobblestone	man made,outdoor,cobblestone,floor,brick	uneven,weathered,cobblestone,walkway,bricks,pattern,pavement,ground,pathway,driveway stones	[2499.999523162842, 2499.999523162842]		[8192, 8192]	33318
+patterned_cobblestone_02	Patterned Cobblestone 02	floor,cobblestone	weathered,rough,cobblestone,cobblestones,pattern,pavement patterned,patterned,stones,stone,outdoor	[2099.9999046325684, 2099.9999046325684]		[16384, 16384]	6619
+patterned_concrete_pavers	Patterned Concrete Pavers	man made,outdoor,concrete,plaster-concrete	interlocking,pavement,pavers,city,concrete,sidewalk,cement,paving,cemented floor,pavement patterned	[1799.9999523162842, 1799.9999523162842]		[16384, 16384]	13292
+patterned_concrete_pavers_02	Patterned Concrete Pavers 02	man made,outdoor,floor	worn,cracked,patterned,pavers,weathered,paving,concrete,discolored,dirt,outdoor	[2039.9994850158691, 2039.9994850158691]		[16384, 16384]	6798
+patterned_concrete_pavers_03	Patterned Concrete Pavers 03	man made,outdoor,floor	concrete,pavers,pavement patterned,patterned concrete,walkway,dirt,grass,dead grass,stamped concrete,urban design	[2000, 2000]		[16384, 16384]	2778
+patterned_concrete_wall	Patterned Concrete Wall	wall,concrete,plaster-concrete	concrete,wall,patterned,patterned concrete,plasterconcrete,exterior,rough,rough concrete,grooved,worn	[2000, 2000]		[8192, 8192]	13457
+patterned_paving	Patterned Paving	floor,man made,outdoor	footpath,pavement,sidewalk,sidewalk texture,pavement patterned,walkway,urban,city,pavers,cityscape	[2000, 2000]		[8192, 8192]	7325
+patterned_paving_02	Patterned Paving 02	floor,outdoor	paving,driveway stones,stone paving,outdoor,outdoor flooring,decorative paving,pattern,pavement patterned,pavers,multicoloured	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	8913
+patterned_plaster_wall	Patterned Plaster Wall	wall,plaster	plaster,plastered,concrete,pattern,patterned,patterned concrete,dirty,exterior,rough	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	2372
+patterned_slate_tiles	Patterned Slate Tiles	floor,man made	weathered,rough,tiles,slates,slate,exterior,tiled,outdoor,natural,stone	[2200.000047683716, 2200.000047683716]		[8192, 8192]	6035
+patterned_terracotta_tiling	Patterned Terracotta Tiling	floor,man made,clean	terracotta,tiles,grout lines,grout,ceramic tiles,indoor flooring,indoor,geometric pattern,octagonal tiles,consistent	[2151.7231464385986, 2151.724338531494]		[8192, 8192]	3320
+pavement_01	Pavement 01	floor,outdoor,man made	pavement,square,pattern,worn,uneven,stone,stone tiles,grid,roughhewn,blocks	[1500, 1500]		[8192, 8192]	35873
+pavement_02	Pavement 02	outdoor,man made,floor,plaster-concrete,plaster	worn,floor,sidewalk,pavement,flat,dirty,city,textured,paving,ground	[2119.999647140503, 2119.999885559082]		[8192, 8192]	62587
+pavement_03	Pavement 03	outdoor,man made,floor,brick	rough,weathered,sidewalk,brick,bricks,cement,pavement	[1999.9996423721313, 1999.9996423721313]		[8192, 8192]	60861
+pavement_04	Pavement 04	outdoor,man made,floor,brick	grey,brick,bricks,pavement,floor,sidewalk,dry,synthetic	[3099.9999046325684, 3099.9999046325684]		[8192, 8192]	45133
+pavement_05	Pavement 05	outdoor,man made,floor,brick,cobblestone	stones,path,floor,pavement,sidewalk,pathway,cobblestone,stone,paving,brick	[3449.9998092651367, 3449.9998092651367]		[8192, 8192]	19105
+pavement_06	Pavement 06	dirty,brick,floor,man made	rough,exterior,outdoor,walkway,pavers,outdoor flooring,urban,footpath,cityscape,interlocking bricks	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	14162
+pebble_bricks	Pebble Bricks	floor,man made,brick	rough,uneven,weathered,embedded pebble,brick,bricks,herringbone,interlocking pattern,herringbone pattern,herringbone brick	[2180.000066757202, 2180.000066757202]		[8192, 8192]	1892
+pebble_cemented_floor	Pebble Cemented Floor	outdoor,man made,floor,road	pebble,cement,floor,flat,rough,stones,small,gravel,pathway,path	[1559.999942779541, 1560.0000619888306]		[8192, 8192]	34544
+pebble_embedded_concrete	Pebble Embedded Concrete	floor,outdoor,man made	embedded pebble,concrete,pavers,rough,outdoor,durable,pavement,coarse,outdoor flooring,cement	[2599.9999046325684, 2599.9999046325684]		[16384, 16384]	2540
+pebble_embedded_concrete_02	Pebble Embedded Concrete 02	floor,outdoor,man made	embedded pebble,concrete,concrete tiles,pavers,rough,outdoor,durable,pavement,coarse	[2150.0000953674316, 2150.0000953674316]		[8192, 8192]	7436
+pebble_embedded_pavement	Pebble Embedded Pavement	floor,man made,outdoor,concrete,plaster-concrete	pebbles,pebble,concrete,bumpy,walkway,outdoor,embedded pebble,cemented floor,outdoor walkway,pavement	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	4636
+pebble_ground_01	Pebble Ground 01	terrain,outdoor,natural,road	pebble,stones,even,pebbles,pebbly,sticks,scattered pebbles,small stones,dirt,plant litter	[1500, 1500]		[8192, 8192]	24076
+pebbles	Pebbles	outdoor	pebbles,pebble,gravel,gravelly,gravelly ground,pebbly,stony,gritty texture,driveway gravel	[4000, 4000]		[8192, 8192]	2418
+peeling_painted_wall	Peeling Painted Wall	wall,man made	painted,peeling,peeling paint,wall,concrete,cracked,scuffed,scratched,deteriorated,cracking paint	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	12790
+pine_bark	Pine Bark	natural,bark,collection: pine_forest,wood	rough,weathered,bark,tree,tree bark,pine,organic	[1999.9996423721313, 1999.9996423721313]		[8192, 8192]	64544
+plank_flooring	Plank Flooring	floor,wood,indoor	brown,worn,dirty,stained,damaged,smooth,scratched,floor,wood,chipped	[1339.9999141693115, 1340.0001525878906]		[8192, 8192]	42463
+plank_flooring_02	Plank Flooring 02	floor,wood,indoor	flat,planks,scratched,yellow,wood,floor,varnished	[1980.0000190734863, 1980.0000190734863]		[8192, 8192]	18560
+plank_flooring_03	Plank Flooring 03	floor,wood,raw wood	rough,weathered,old,worn,wood,wooden planks,planks,cabin,exterior,discolored	[2250, 2250]		[16384, 16384]	31248
+plank_flooring_04	Plank Flooring 04	floor,wood	wooden planks,plank flooring ,wooden flooring ,plank,timber,coated,varnished,wooden floor,wood,grain	[2000, 2000]		[8192, 8192]	74517
+planks_brown_10	Planks Brown 10	wood,wall,man made,outdoor	planks,old,discolored,weathered,rough	[1000, 1000]		[8192, 8192]	149340
+plaster_brick_01	Plaster Brick 01	brick,plaster-concrete,wall,man made,dirty,outdoor	plaster,rough,old,moss,sewer,tunnel,trimsheet	[2700.000286102295, 2700.000286102295]		[8192, 8192]	44838
+plaster_brick_pattern	Plaster Brick Pattern	wall,man made,plaster,brick,plaster-concrete	rough,weathered,wall,plastered,outdoor,patterned concrete,patterned,coarse,blocks,brick	[2000, 2000]		[16384, 16384]	59347
+plaster_grey_04	Plaster Grey 04	plaster-concrete,wall,man made,clean,outdoor,indoor	rough,even,plastered	[1500, 1500]		[8192, 8192]	120931
+plaster_stone_wall_01	Plaster Stone Wall 01	wall,plaster,plaster-concrete	rough,uneven,wall,rocks,weathered,old,stone embedded,coarse,weatherbeaten,exterior	[2299.999952316284, 2299.999952316284]		[16384, 16384]	1426
+plaster_stone_wall_02	Plaster Stone Wall 02	plaster-concrete,plaster,concrete	rough,uneven,weathered,old,stone embedded,embedded rock,concrete,plaster,cement,mortar	[2119.999885559082, 2119.999885559082]		[8192, 8192]	10343
+plastered_stone_wall	Plastered Stone Wall	wall,man made,plaster-concrete,rock	rough,weathered,chipped,wall,damaged,cracked,discolored,worn,concrete,scratched	[2500, 2500]		[16384, 16384]	82367
+plastered_wall	Plastered Wall	wall,plaster	rough,concrete,discolored,damaged,scratched,plaster,plastered,exterior,worn,chipped	[1999.9996423721313, 1999.9996423721313]		[16384, 16384]	89630
+plastered_wall_02	Plastered Wall 02	wall,man made,outdoor,plaster,plaster-concrete	rough,weathered,wall,discolored,flat,plastered,plaster,urban,exterior,concrete	[2229.999542236328, 2229.999542236328]		[8192, 8192]	45904
+plastered_wall_03	Plastered Wall 03	wall,plaster-concrete	plaster,plastered,chipped,concrete,scuffed,discolored,scratched,plasterconcrete,rough,cement	[4000, 4000]		[8192, 8192]	67191
+plastered_wall_04	Plastered Wall 04	wall,plaster-concrete,indoor	rough,scratched,gray,plaster,plastered,concrete,plasterconcrete,industrial,weathered,scuffed	[3199.9998092651367, 3199.9998092651367]		[16384, 16384]	80042
+plastered_wall_05	Plastered Wall 05	wall,man made,outdoor,plaster,plaster-concrete	rough,scratched,gray,plaster,plastered,concrete,plasterconcrete,industrial,weathered,scuffed	[2000, 2000]		[8192, 8192]	61832
+playground_sand	Playground Sand	outdoor,floor,sand	brown,sand,floor,rough,ground,playground,dirty,wet,footprints	[2069.9996948242188, 2069.9996948242188]		[8192, 8192]	9675
+plywood	Plywood	wood,clean,man made,natural,raw wood	clean,even,smooth,flat,continuous,consistent	[499.999940395355, 499.999940395355]		[8192, 8192]	733673
+polar_fleece	Polar Fleece	fabric,fleece	beige,fluffy,soft,cream,fleece,cozy,gauzy,fuzzy,napped,plush	[273.2870444699951, 271.49999141693115]		[8258, 8204]	14753
+poly_wool_herringbone	Poly Wool Herringbone	fabric,wool	grey,rough,textile ,poly wool,fabric blend,polyester,wool,woven	[270.0788548673393, 275.70000290870667]		[8216, 8387]	30503
+polystyrene	Polystyrene	man made,dirty,indoor	damaged,discolored,worn,white,scratched,flat	[1500, 1500.0001192092896]		[8192, 8192]	73168
+precast_concrete_wall	Precast Concrete Wall	wall,man made,plaster-concrete	wall,worn,concrete,stamped concrete,exterior,outdoor,weathered,weatherbeaten,precast,dirty	[1589.999794960022, 1589.999794960022]		[8192, 8192]	7339
+precast_stone_paving	Precast Stone Paving	floor,man made,outdoor	worn,concrete,patterned concrete,floor,outdoor,outdoor walkway,outdoor flooring,precast,pavers,paving	[2240.000009536743, 2240.000009536743]		[8192, 8192]	8487
+preconcrete_wall_001	Preconcrete Wall 001	concrete,wall,outdoor,man made,dirty,plaster,plaster-concrete	cracked,rough,damaged,house,beige,stained,painted,chipped	[4000, 4000]		[16384, 16384]	11912
+preconcrete_wall_001_long	Preconcrete Wall 001 Long	wall,plaster-concrete,concrete,outdoor,man made,dirty	cracked,rough,damaged,house,beige,painted,stained,chipped	[4000, 4000]		[24576, 8192]	6731
+quarry_wall	Quarry Wall	outdoor,natural,rock	rough,rock face,wall,rock,quarry,solid,stonework,exterior,mining,quarrying	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	6345
+quarry_wall_02	Quarry Wall 02	wall,outdoor,rock	rough,wall,rock,quarry,quarry stone,rock face,roughhewn,solid rock,mining,quarrying	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	6613
+quatrefoil_jacquard_fabric	Quatrefoil Jacquard Fabric	fabric,jacquard	red,patterned,floral,jacquard,quatrefoil pattern,red fabric,burgundy,material,fabric,woven	[280.11855714681565, 283.80000591278076]		[8522, 8634]	21677
+rabdentse_ruins_wall	Rabdentse Ruins Wall	outdoor,man made,rock	chipped,wall,weathered,damaged,worn,rocks,rock,dilapidated,fortress walls,rugged	[2000, 2000]		[16384, 16384]	21087
+raked_dirt	Raked Dirt	outdoor,natural,dirty,floor	brown,nature,ground,sand,leaves,dirt,floor,dirty	[2000, 2000]		[8192, 8192]	7224
+random_bricks_thick	Random Bricks Thick	outdoor,wall,dirty,man made,brick	rough,old,uneven,discolored,damaged	[1000, 1000]		[8192, 8192]	36706
+raw_plank_wall	Raw Plank Wall	wall,man made,raw wood,wood	weathered,chipped,worn,scratched,wooden,discolored,damaged,wood,planks,cabin	[1870.0001239776611, 1870.0001239776611]		[8192, 8192]	83891
+raw_wooden_floor_01	Raw Wooden Floor 01	wood,floor,man made,raw wood,dirty	wood,planks,weathered,rough-sawn,unfinished,knotty,nail holes,worn,old,timber	[2000, 2000]		[16384, 16384]	4870
+rebar_reinforced_concrete	Rebar Reinforced Concrete	concrete,plaster-concrete	weathered,old,rebar,concrete,painted,crumbling,damaged,cement,deteriorated,industrial	[2000, 2000]		[8192, 8192]	28768
+rectangular_facade_tiles	Rectangular Facade Tiles	wall,tiles	tiles,rectangular,building facade,wall,walling,urban design,exterior,concrete,aggregate	[2000, 2000]		[8192, 8192]	6074
+rectangular_facade_tiles_02	Rectangular Facade Tiles 02	wall,tiles	tiles,rectangular,building facade,wall,walling,urban design,exterior,concrete,aggregate,rectangular	[2105.0000190734863, 2105.0000190734863]		[8192, 8192]	939
+rectangular_parquet	Rectangular Parquet	floor,wood,indoor,man made	flat,rectangular,parquet flooring,parquet,wood,varnished,wooden flooring ,wooden floor,interior design,flooring	[2250, 2250]		[16384, 16384]	20243
+rectangular_paving	Rectangular Paving	floor,outdoor,man made	coarse,driveway texture,paving,driveway stones,stone paving,multicoloured,outdoor flooring,decorative paving,outdoor walkway,exterior flooring	[2000, 2000]		[8192, 8192]	8326
+recycled_brick_floor	Recycled Brick Floor	floor,brick	weathered,worn,chipped,damaged,old,dirty,timeworn,weatherbeaten,crumbling,aged	[2000, 2000]		[8192, 8192]	6382
+red_brick	Red Brick	wall,brick,man made	brick,bricks,wall,red brick,brick wall,rough,exterior	[1399.999976158142, 1399.999976158142]		[16384, 16384]	183018
+red_brick_03	Red Brick 03	outdoor,wall,clean,man made,brick	red,industrial,factory,brown	[1000, 1000]		[8192, 8192]	146813
+red_brick_pavers	Red Brick Pavers	floor,man made,outdoor	uneven,red brick,brick,pavers,interlocking bricks,sidewalk texture,outdoor paving,cityscape	[1800.0000715255737, 1800.0000715255737]		[16384, 16384]	3582
+red_brick_plaster_patch_02	Red Brick Plaster Patch 02	outdoor,wall,dirty,man made,brick	red,rough,broken,bricks,crumbling,timeworn,worn down,exposed brick,plaster,deteriorating facade	[1500, 1500]		[8192, 8192]	37637
+red_bricks_02	Red Bricks 02	outdoor,wall,dirty,man made,brick	rough,broken,red,bricks,brick wall,old brick,brick,exposed brick,crumbling,deteriorating	[2500, 2500]		[8192, 8192]	24271
+red_bricks_04	Red Bricks 04	outdoor,man made,wall,brick	textured,bricks,baked,rough,uneven,urban,clean,red	[2500, 2500]		[8192, 8192]	103645
+red_dirt_mud_01	Red Dirt Mud 01	terrain,outdoor,natural	gravel,mud,dirt,rough,pathway,path,road,village	[1500, 1500]		[8192, 8192]	42382
+red_laterite_soil_stones	Red Laterite Soil Stones	outdoor,natural,terrain,rock,road,sand	rough,red,laterite,stones,ground,dirt,pebbles,rocks,gravel,debris	[2000, 2000]		[8192, 8192]	71525
+red_mud_stones	Red Mud Stones	terrain,outdoor,natural	mud,dirt,flat,dry,rocks,compact soil,organic debris,roots,gothic,soil	[1500, 1500]		[8192, 8192]	50969
+red_oak_veneer	Red Oak Veneer	wood,raw wood	oak,raw wood,veneer,veneer wood,natural grain,grain,natural wood grain,wood grain,wood,natural wood	[1000, 1000]		[8192, 8192]	889
+red_plaster_weathered	Red Plaster Weathered	outdoor,man made,wall,dirty,plaster-concrete,plaster	weathered,red,wall,old,worn,damaged,discolored,stained,cracked,brown	[2000, 2000]		[8192, 8192]	61354
+red_sand	Red Sand	floor,sand,outdoor	red,sand,outdoor,footprints,dusty,ground,tracks,tyre tracks,tire tracks,trampled	[2999.999523162842, 2999.999523162842]		[8192, 8192]	14710
+red_sandstone_pavement	Red Sandstone Pavement	outdoor,floor,sandstone,man made,rock	weathered,plaster,rock,sandstone,concrete,pavement,floor,dirty,discolored,brown	[2150.0000953674316, 2150.0000953674316]		[8192, 8192]	24680
+red_sandstone_tiles	Red Sandstone Tiles	floor,outdoor,man made	rough,paving,sandstone,coarse,exterior,rough  ,gritty,stone tiles,chipped,stone blocks	[2050.408124923706, 2050.410032272339]		[8192, 8192]	2948
+red_sandstone_wall	Red Sandstone Wall	man made,wall,outdoor,dirty,sandstone	rough,uneven,old,weathered,wall,worn,chipped,damaged,cracked,discolored	[2000, 2000]		[8192, 8192]	9569
+red_slate_roof_tiles_01	Red Slate Roof Tiles 01	roofing,outdoor,man made,dirty	old,slate,moss,roofing material,roof tiles,tiled roofing,overlapping,weathered,mosscovered,overlapping tiles	[2500, 2500]		[8192, 8192]	31231
+reed_roof_03	Reed Roof 03	roofing,outdoor,man made	reed,rough,village,thatch,hay,straw,hut,medieval	[2500, 2500]		[8192, 8192]	28018
+reed_roof_04	Reed Roof 04	roofing,outdoor,man made	reed,rough,village,thatch,hay,straw,hut,medieval	[2500, 2500]		[8192, 8192]	35920
+ribbed_concrete_wall	Ribbed Concrete Wall	wall,concrete,plaster-concrete	grooved,outdoor,patterned,patterned concrete,urban,vertical lines,rough concrete,gritty,wall	[2000, 2000]		[8192, 8192]	3801
+ribbed_corduroy	Ribbed Corduroy	fabric,corduroy	green,striped,fabric,textile ,corduroy,woven,corded velveteen,wales	[266.40417517521894, 266.69999957084656]		[8105, 8114]	24317
+riet_01	Riet 01	roofing,outdoor,man made	reed,grey,old,village,straw,hut,thatch,rural,medieval	[2500, 2500]		[8192, 8192]	33840
+river_small_rocks	River Small Rocks	terrain,rock,natural,outdoor	rough,uneven,stones,rock,pebbles,river,pathway,debris,scattered,ground	[2900.0000953674316, 2900.0003337860107]		[16384, 16384]	30524
+road_damaged	Road Damaged	man made,road,asphalt	rough,weathered,uneven,crumbling,asphalt,asphalt road,dusty,dirty,cracked,damaged	[2200.000047683716, 2200.000047683716]		[8192, 8192]	2620
+road_damaged_2	Road Damaged 2	road,asphalt,man made	uneven,rough,asphalt,asphalt road,damaged,weathered,damaged,pothole,potholes,deteriorating	[2200.000047683716, 2200.000047683716]		[8192, 8192]	2568
+road_damaged_clean	Road Damaged Clean	asphalt,outdoor,man made	rough,weathered,dirty,dusty,asphalt,road,asphalt road,pitted,granular,tar	[2200.000047683716, 2200.000047683716]		[8192, 8192]	1023
+rock_01	Rock 01	rock,outdoor,terrain,natural	grey,smooth,rock,stone,gray,weathered,rock face,solid rock	[1500, 1500]		[8192, 8192]	132847
+rock_04	Rock 04	rock,outdoor,terrain,natural	rough,uneven,stone,bumpy,rock,rock formation,weathered,dirty,coarse,mossy	[1500, 1500]		[8192, 8192]	82000
+rock_05	Rock 05	rock,outdoor,terrain,natural	rough,uneven,old,stone,geological,irregular,rock,pitted,rock face	[1500, 1500]		[8192, 8192]	93446
+rock_06	Rock 06	rock,outdoor,terrain,natural	yellow,cliff,rough,rock face,solid rock,rock,striated,geological,exposed rock,uneven	[1500, 1500]		[8192, 8192]	81089
+rock_08	Rock 08	rock,outdoor,terrain,natural	rough,rock face,bare,rock,boulder,coarse,geological,stone,uneven	[1500, 1500]		[8192, 8192]	83409
+rock_2	Rock 2	rock,outdoor,terrain,natural	rough,stone,dirty,rock face,rock,coarse,geological,uneven	[1500, 1500]		[8192, 8192]	31967
+rock_3	Rock 3	rock,outdoor,terrain,natural	grey,seaside,rough,rock face,rock,uneven,boulder,mossy,mossy patches,eroded	[1500, 1500]		[8192, 8192]	30096
+rock_boulder_cracked	Rock Boulder Cracked	outdoor,terrain,rock,natural	rough,weathered,rock face,rock,orange,cliff,cave,stone,uneven,eroded	[1389.9999856948853, 1390.0001049041748]		[8192, 8192]	58485
+rock_boulder_dry	Rock Boulder Dry	rock,outdoor,natural,terrain	weathered,chipped,rocks,boulder,stone,flat,damaged,eroded,cracked,rough	[1799.9999523162842, 1800.0001907348633]		[16384, 16384]	144346
+rock_embedded_concrete	Rock Embedded Concrete	floor,man made,cobblestone	rocks,embedded rock,pebbles,stone embedded,embedded pebble,coarse,concrete,rounded pebbles,rounded rocks,pebbled surface	[2000, 2000]		[8192, 8192]	6568
+rock_embedded_concrete_wall	Rock Embedded Concrete Wall	man made,outdoor,rock,concrete,plaster-concrete	rough,uneven,old,wall,worn,chipped,cracked,discolored,concrete,rocks	[1759.9998712539673, 1759.9999904632568]		[8192, 8192]	9965
+rock_embedded_floor	Rock Embedded Floor	floor,rock,cobblestone	rough,uneven,stone embedded,embedded rock,concrete,embedded pebble,bumpy	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	4035
+rock_embedded_tiles	Rock Embedded Tiles	wall,rock	rocks,rock,tiles,outdoor,city,wall,tiled wall,exterior,embedded pebble,embedded rock	[2000, 2000]		[8192, 8192]	1629
+rock_face	Rock Face	outdoor,terrain,natural,rock,collection: namaqualand	terrain,landscape,rock face,solid rock,cliff,solid	[2380.000114440918, 2380.000114440918]		[16384, 16384]	28498
+rock_face_03	Rock Face 03	natural,terrain,rock,outdoor,collection: verdant_trail	rough,rock,cliff,uneven,weathered,wall,cracked,stone,rock face,rugged	[2699.9995708465576, 2699.9995708465576]		[16384, 16384]	187501
+rock_face_04	Rock Face 04	outdoor,natural,rock	rough,uneven,weathered,old,cracked,chipped,rock face,rock,leaves,dry leaves	[2000, 2000]		[8192, 8192]	3250
+rock_ground	Rock Ground	terrain,natural,rock,outdoor	gravel,rough,broken,rock,ground	[1500, 1500]		[8192, 8192]	46610
+rock_ground_02	Rock Ground 02	terrain,natural,rock,outdoor	rough,broken,gravel,ground,scattered plants ,stones,loose stones,dirt,sand,rocks	[3000, 3000]		[8192, 8192]	52723
+rock_path	Rock Path	natural,outdoor,floor	rough,weathered,leaves,rocks,rocky,grass,path,pathway,exterior,dirt	[2000, 2000]		[16384, 16384]	9071
+rock_pitted_mossy	Rock Pitted Mossy	outdoor,rock,terrain,natural,sandstone	cracked,weathered,rock face,rock,boulder,red,discolored,eroded,moss,stone	[1000, 1000]		[8192, 8192]	78351
+rock_surface	Rock Surface	natural,rock	rough,weathered,discolored,dirty,stone,rock,boulder,coarse	[2000, 2000]		[16384, 16384]	44282
+rock_tile_floor	Rock Tile Floor	outdoor,floor,rock,man made	stone,rough,rock,rocks,gray,rugged,floor,stonework,stone tile,paving	[1960.0000381469727, 1960.0000381469727]		[8192, 8192]	85883
+rock_tile_floor_02	Rock Tile Floor 02	floor,man made,rock	rough,weathered,worn,walkway,rocks,rock,grass,dead grass,outdoor,outdoor walkway	[2400.0000953674316, 2400.0000953674316]		[8192, 8192]	4550
+rock_wall	Rock Wall	wall,rock,outdoor	rough,uneven,wall,chipped,rocks,rock,discolored,weathered	[2000, 2000]		[8192, 8192]	10702
+rock_wall_02	Rock Wall 02	rock,natural,terrain,outdoor	rough,rock face,bare,rock,uneven,rough  ,discolored,coastal landscape,weathered,eroded	[2000, 2000]		[8192, 8192]	59283
+rock_wall_03	Rock Wall 03	outdoor,wall,rock,man made	rough,uneven,old,weathered,cracked,wall,discolored,stones,brown,rock	[2569.9996948242188, 2570.000171661377]		[8192, 8192]	23935
+rock_wall_04	Rock Wall 04	outdoor,wall,rock,man made	old,rough,wall,stones,worn,rocks,dirty,weathered,stone,brown	[2269.9999809265137, 2269.9999809265137]		[8192, 8192]	44463
+rock_wall_05	Rock Wall 05	wall,rock,outdoor	uneven,rough,weathered,stones,worn,discolored,rocks,wall,moss	[2259.9997520446777, 2259.9997520446777]		[8192, 8192]	14581
+rock_wall_06	Rock Wall 06	wall,dirty,rock,outdoor	rough,uneven,stones,wall,rock,chipped,rocks,dry	[1309.999942779541, 1309.999942779541]		[8192, 8192]	23563
+rock_wall_07	Rock Wall 07	outdoor,man made,wall,rock	rough,uneven,weathered,wall,worn,rock,concrete,exterior,stone,rocks	[1799.9999523162842, 1799.9999523162842]		[8192, 8192]	8201
+rock_wall_08	Rock Wall 08	outdoor,man made,wall,rock	uneven,rock,rocks,wall,weathered,stone,timeworn,worn,stonework,gray	[1799.9999523162842, 1799.9999523162842]		[16384, 16384]	45691
+rock_wall_09	Rock Wall 09	wall,rock,man made,dirty	rough,uneven,wall,rock,rocks,fort,dry,weathered,fortress walls	[1220.0000286102295, 1220.0000286102295]		[8192, 8192]	21465
+rock_wall_10	Rock Wall 10	outdoor,wall,rock	uneven,rock,rocks,wall,rocky,cracks,dirt,exterior,stone,hard	[1799.9995946884155, 1799.9995946884155]		[8192, 8192]	51900
+rock_wall_11	Rock Wall 11	man made,wall,rock	weathered,wall,discolored,worn,stonework,fortress walls,rocks,rock,outdoor,exterior	[1909.9996089935303, 1909.9996089935303]		[8192, 8192]	46806
+rock_wall_12	Rock Wall 12	floor,man made,rock	rock,wall,fortress walls,exterior,weatherbeaten,dungeon,stonework,concrete,stone wall,scratched	[1599.9999046325684, 1599.9999046325684]		[16384, 16384]	10460
+rock_wall_13	Rock Wall 13	wall,man made,rock	outdoor,weathered,weatherbeaten,concrete,rocks,rock,stone,rugged,ancient walls,fortress walls	[2000, 2000]		[16384, 16384]	52963
+rock_wall_14	Rock Wall 14	wall,rock,man made	rough,rocks,rock,concrete,wall,embedded rock,stonework,coarse	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	4584
+rock_wall_15	Rock Wall 15	wall,rock,man made	rough,rocks,rock,concrete,wall,embedded rock,stonework,coarse	[1850.000023841858, 1850.000023841858]		[8192, 8192]	17489
+rock_wall_16	Rock Wall 16	wall,outdoor,rock	rough,weathered,uneven,wall,rock wall,stone blocks,stonework,rock,timeworn,fortress walls	[2000, 2000]		[8192, 8192]	21641
+rock_wall_17	Rock Wall 17	wall,rock,plaster-concrete	rough,uneven,rock,rocks,embedded rocks,coarse,stonework,fortress walls,dungeon,embedded rock	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	7074
+rocks_ground_01	Rocks Ground 01	terrain,natural,outdoor,rock,collection: verdant_trail	rough,rock,cracked,stones	[2000, 2000]		[8192, 8192]	75659
+rocks_ground_02	Rocks Ground 02	terrain,natural,outdoor,rock	rough,mud,rock,stones,uneven,rocks,scattered rocks,gravel,dirt,exposed rock	[2000, 2000]		[8192, 8192]	151590
+rocks_ground_03	Rocks Ground 03	terrain,natural,outdoor,rock	rocks,rough,stones,uneven,pebbles,pebbly,scattered pebbles,scattered rocks,gravel,gravelly	[3000, 3000]		[8192, 8192]	45249
+rocks_ground_04	Rocks Ground 04	terrain,outdoor,rock,natural	rocks,rough,smooth,stones,gravel,gravelly,rock,rocky,dirt,cracks	[2000, 2000]		[8192, 8192]	60784
+rocks_ground_05	Rocks Ground 05	terrain,outdoor,rock,natural	rough,rock,gravel,dirt,rocky,soil,uneven,stony,dry,pebbles	[3000, 3000]		[8192, 8192]	71694
+rocks_ground_06	Rocks Ground 06	terrain,outdoor,rock,natural	rocks,rough,broken,rock,uneven,gravel,scattered pebbles,scattered rocks,coastal,layered rock	[3000, 3000]		[8192, 8192]	68024
+rocks_ground_08	Rocks Ground 08	terrain,natural,outdoor	mud,rough,dry,damp,dirt,rocks,scattered rocks,muddy surface,footprints,gritty	[3000, 3000]		[8192, 8192]	32135
+rocks_ground_09	Rocks Ground 09	terrain,natural,outdoor	rough,rock,stones,broken,gravel,gravelly,scattered pebbles,scattered rocks,stony,gravelly ground	[3000, 3000]		[8192, 8192]	20922
+rocky_gravel	Rocky Gravel	outdoor,floor,gravel,dirty	rough,stones,rocks,gravel,dirt,path,nature,leaves,ground,uneven	[1809.999942779541, 1809.999942779541]		[8192, 8192]	8438
+rocky_terrain	Rocky Terrain	outdoor,terrain,natural,rock,aerial	rock face,rocky,solid rock,nature,grass,terrain,wilderness,uneven terrain,mountain,rugged	[90000, 90000]		[8192, 8192]	85650
+rocky_terrain_02	Rocky Terrain 02	outdoor,terrain,natural,aerial	rocky,terrain,uneven terrain,grass,drone,landscape,nature,nature,boulders,wilderness	[90000, 90000]		[8192, 8192]	287674
+rocky_terrain_03	Rocky Terrain 03	outdoor,natural,rock,aerial,terrain	rocks,aerial,terrain,landscape,natural landscape,nature,boulders,landform,scenic,uneven terrain	[90000, 90000]		[8192, 8192]	31192
+rocky_trail	Rocky Trail	outdoor,natural,terrain,rock,collection: pine_forest	rough,uneven,stones,rock,gravel,chipped,rocks,nature,path,broken	[2000, 2000]		[8192, 8192]	116349
+rocky_trail_02	Rocky Trail 02	outdoor,natural,dirty,sand,floor	stones,earthy,rugged,rough,terrain,gravelly,pathway,gritty,dusty,rocky	[2000, 2000]		[16384, 16384]	108967
+romantic_veneer	Romantic Veneer	wood,raw wood	natural grain,grain,natural wood grain,wood,wood grain,fine grain,natural wood,natural veneer,natural	[1000, 1000]		[8192, 8192]	2597
+roof_07	Roof 07	roofing,man made,outdoor,dirty	ceramic,tiles,old,worn,damaged,discolored,roofing material,roof,roofing,tile roofing	[2000, 2000]		[8192, 8192]	37568
+roof_09	Roof 09	roofing,man made,outdoor,dirty	ceramic,old,worn,tiles,roofing material,roofing,roof,clay tiles,overlapping tiles,discolored	[4000, 4000]		[8192, 8192]	92256
+roof_3	Roof 3	roofing,man made,outdoor,dirty	ceramic,old,worn,tiles,moss	[2000, 2000]		[8192, 8192]	32168
+roof_planks	Roof Planks	wood	weathered,wood,wooden,wooden flooring ,wooden planks,wooden floor,planks,plank,varnished,pine	[1500.0001192092896, 1500.0001192092896]		[8192, 8192]	3095
+roof_slates_02	Roof Slates 02	roofing,man made,outdoor	slates,uneven,old,tiles,weathered,discolored,slate roofing,slate,roofing material,roof	[3000, 3000]		[8192, 8192]	50929
+roof_slates_03	Roof Slates 03	roofing,man made,outdoor,clean	slates,even,tiles,slate,roof tiles,overlapping,roofing material,aged,durable roofing,slate roofing	[3000, 3000]		[8192, 8192]	82465
+roof_tiles	Roof Tiles	roofing,man made	roofing material,roof tiles,durable roofing,ceramic tiles,tiled roofing,traditional roof tiles,clay roof tiles,roofing,tile roofing,terracotta	[2000, 2000]		[16384, 16384]	12914
+roof_tiles_14	Roof Tiles 14	roofing,man made,outdoor,dirty	ceramic,tiles,moss,old,discolored,weathered	[1500, 1500]		[8192, 8192]	54411
+roots	Roots	outdoor,natural,floor	uneven,old,weathered,brown,dirty,ground,dry,nature,dirt,tree	[1670.0000762939453, 1670.0000762939453]		[8192, 8192]	8385
+rosewood_veneer1	Rosewood Veneer1	natural,wood	wood,hardwood,grain,wooden,rose,veneer,natural wood grain,natural grain,natural wood,wood grain	[2430.000066757202, 2430.000066757202]		[16384, 16384]	131255
+rosewood_veneer_02	Rosewood Veneer 02	wood,raw wood	wood,hardwood,grain,wooden,rose,veneer,wood grain,natural grain,rosewood	[1000, 1000]		[8192, 8192]	3441
+rough_block_wall	Rough Block Wall	man made,outdoor,brick,wall	rough,uneven,stone,blocks,patterned,weathered,jagged,precast,cast stone blocks,exterior	[3039.9999618530273, 3000]		[8192, 8192]	86389
+rough_concrete	Rough Concrete	man made,plaster-concrete,concrete	rough,concrete,dry,plaster,coarse,white,grey	[1230.0000190734863, 1230.0000190734863]		[8192, 8192]	64473
+rough_linen	Rough Linen	fabric,cotton,hessian	blue,fine,textile ,fabric,woven,linen,weave,crosshatch	[270.7081392676629, 271.29998803138733]		[8233, 8251]	40760
+rough_pine_door	Rough Pine Door	wood,outdoor	rough,weathered,weatherbeaten,outdoor,pine,pine wood,wood,roughhewn,barn door,rustic	[2000, 2000]		[8192, 8192]	8389
+rough_plaster_03	Rough Plaster 03	plaster-concrete,man made,outdoor,brick,wall	rough,uneven,plaster,brick,old,weathered	[1500, 1500]		[8192, 8192]	42677
+rough_plaster_brick	Rough Plaster Brick	plaster-concrete,man made,outdoor,brick,wall	rough,uneven,plaster,old,dirty,weathered,moss,sewer,tunnel	[1500, 1500]		[8192, 8192]	34773
+rough_plaster_brick_02	Rough Plaster Brick 02	plaster-concrete,man made,brick,wall,outdoor,dirty	rough,uneven,weathered,plaster,discolored,patchey,damaged,worn	[1500, 1500]		[8192, 8192]	29965
+rough_plaster_brick_04	Rough Plaster Brick 04	plaster-concrete,man made,wall,outdoor,dirty	rough,grey,weathered,plaster,old	[2000, 2000]		[8192, 8192]	33593
+rough_plaster_broken	Rough Plaster Broken	plaster-concrete,man made,wall,outdoor,dirty	rough,brown,weathered,uneven,old,peeling,patches,cement,plastered,damaged	[1500, 1500]		[8192, 8192]	43533
+rough_plasterbrick_05	Rough Plasterbrick 05	plaster-concrete,man made,wall,outdoor,floor	rough,grey,flat,even	[1500, 1500]		[8192, 8192]	71266
+rough_wood	Rough Wood	wood,natural,outdoor	rough,weathered,old,uneven,aged,cracked,natural grain,natural wood,natural,timber	[500, 500]		[8192, 8192]	224489
+rounded_square_tiled_wall	Rounded Square Tiled Wall	wall	wall,tiles,rounded square,ceramic,building facade,small tiles,cladding,patterned cladding	[2000, 2000]		[8192, 8192]	5835
+rubber_tiles	Rubber Tiles	floor,man made	tiles,smooth,rubber,durable flooring,waterproof tiles,gym floor,gym,square	[1999.9996423721313, 1999.9996423721313]		[16384, 16384]	118938
+rubberized_track	Rubberized Track	floor,man made	rubber,gym,gym floor,athletics,track,running,rubberized	[2000, 2000]		[8192, 8192]	21074
+rubble	Rubble	floor,dirty,indoor	rubble,debris,concrete,waste,building materials,demolition,broken,crumbling,construction,plasterconcrete	[2000, 2000]		[16384, 16384]	10171
+running_track	Running Track	man made,floor,outdoor,indoor	tracks,track,athletics,running,rubber,synthetic,flat,floor,path,urban	[2419.999837875366, 2420.0000762939453]		[8192, 8192]	17578
+rust_coarse_01	Rust Coarse 01	metal,outdoor,man made,dirty,wall	coarse,rusty,rust,red,stained,grunge,old,weathered,iron,metal	[2199.9998092651367, 2200.000286102295]		[16384, 16384]	234641
+rusted_shutter	Rusted Shutter	outdoor,metal	rusted,weathered,weatherbeaten,metal,corroded,corroded metal sheet,peeling paint,cracking paint,dilapidated,grungy	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	13635
+rustic_stone_wall	Rustic Stone Wall	outdoor,wall,rock,man made	weathered,old,uneven,wall,rock,rocks	[1519.9998617172241, 1519.9998617172241]		[8192, 8192]	32995
+rustic_stone_wall_02	Rustic Stone Wall 02	man made,outdoor,wall,rock	rough,uneven,weathered,wall,rock,old,worn,chipped,damaged,cracked	[1500, 1500]		[16384, 16384]	133422
+rusty_corrugated_iron	Rusty Corrugated Iron	metal,industrial	rough,old,corrugated,corrugation,rusted,rusty,rust,corroded metal sheet,metal sheet,oxidized	[2000, 2000]		[16384, 16384]	4551
+rusty_metal	Rusty Metal	metal,man made,wall,dirty,outdoor	rust,old,rusty,shutter,metal shutter,corrosion,weathered,dented,metal	[1500, 1500]		[8192, 8192]	54249
+rusty_metal_02	Rusty Metal 02	metal,man made,dirty,wall,indoor,outdoor	rust,old,weathered,painted	[1000, 1000]		[8192, 8192]	213525
+rusty_metal_03	Rusty Metal 03	man made,metal	rough,weathered,worn,old,metal,rusted,rusty,rust,metal sheet,corroded	[1350.0001430511475, 1350.0001430511475]		[16384, 16384]	65499
+rusty_metal_04	Rusty Metal 04	man made,metal	metal sheet,metal,rusted,rusty,rust,steel,oxidized,corrosion,oxidized metal,corroded	[2000, 2000]		[16384, 16384]	129347
+rusty_metal_05	Rusty Metal 05	metal,man made	rough,rusted,metal sheet,metal,sheet metal,corroded,corroded metal sheet,corroded surface,rust,oxidized metal	[1250, 1250]		[16384, 16384]	25731
+rusty_metal_grid	Rusty Metal Grid	wall,metal	rusted,metal sheet,metal,painted,rusty,rust,corroded metal sheet,rusty metal,grunge,corrosion	[1800.0000715255737, 1800.0000715255737]		[16384, 16384]	43621
+rusty_metal_sheet	Rusty Metal Sheet	man made,metal	metal,rusty,rust,rusted,corroded,sheet,tarnished,oxidized,corroded metal sheet	[1999.9996423721313, 1999.9996423721313]		[16384, 16384]	93215
+rusty_metal_shutter	Rusty Metal Shutter	metal,outdoor	weathered,rusted,metal shutter,corrugated iron,corrosion,painted,horizontal ridges,corroded metal sheet,metal,steel sheeting	[1899.9998569488525, 1899.9998569488525]		[16384, 16384]	3300
+rusty_painted_metal	Rusty Painted Metal	man made,metal	weathered,worn,discolored,rough,metal sheet,rusty,rust,rusted,steel sheeting,painted	[2200.000047683716, 2200.000047683716]		[16384, 16384]	10910
+sakura_bark	Sakura Bark	outdoor,bark,natural,wood	rough,bark,tree,tree bark,nature,japanese,trunk,wood,natural,bark texture	[1599.9999046325684, 1599.9999046325684]		[8192, 8192]	31558
+sand_01	Sand 01	terrain,sand,outdoor,natural	sand,uneven,trampled,clay,plaster,dry	[1500, 1500]		[8192, 8192]	103561
+sand_02	Sand 02	floor,sand	dirty,sand,sandy,beach,gritty,coast,shore,granular	[2140.000104904175, 2140.000104904175]		[8192, 8192]	13766
+sand_03	Sand 03	floor,sand	sand,sandy,beach,seaside,gritty,shore,costal,sandy beach,coastline,granular	[2000, 2000]		[8192, 8192]	32682
+sandstone_blocks_04	Sandstone Blocks 04	wall,man made,outdoor,clean,brick	rough,sandstone,flat,uneven,old	[3000, 3000]		[8192, 8192]	42170
+sandstone_blocks_05	Sandstone Blocks 05	wall,man made,outdoor,brick	blocks,old,rough,uneven,large,sandstone	[3000, 3000]		[8192, 8192]	102438
+sandstone_blocks_08	Sandstone Blocks 08	wall,floor,man made,outdoor,clean,indoor	blocks,uneven,large,sandstone	[3000, 3000]		[8192, 8192]	62013
+sandstone_brick_wall_01	Sandstone Brick Wall 01	wall,brick,man made,outdoor,sandstone	red,rough,uneven,industrial,baked,urban,weathered	[2000, 2000]		[8192, 8192]	21359
+sandstone_cracks	Sandstone Cracks	wall,floor,natural,man made,outdoor,road,terrain	rough,dirt,ground,sandstone,cracked,plaster	[2000, 2000]		[8192, 8192]	119818
+sandy_gravel	Sandy Gravel	outdoor,sand,gravel	rough,weathered,stones,sand,sandy,gravel,gravelly ground,gravelly texture,gravelly,gritty	[2099.99942779541, 2099.99942779541]		[8192, 8192]	39268
+sandy_gravel_02	Sandy Gravel 02	outdoor,terrain,natural,sand,gravel,collection: namaqualand	terrain,sand,gravel,stony,gravelly,dusty,desert,ground,pebbles,debris	[2529.9999713897705, 2529.9999713897705]		[16384, 16384]	54331
+sapele_veneer	Sapele Veneer	raw wood,wood	grain,wood,wood grain,raw,raw wood,veneer,sapele,veneer wood,timber,natural wood	[500, 500]		[8192, 8192]	2158
+sapele_veneer_02	Sapele Veneer 02	wood,raw wood	grain,wood,wood grain,raw,raw wood,veneer,sapele,veneer wood,timber,natural wood	[1000, 1000]		[8192, 8192]	506
+scuba_suede	Scuba Suede	fabric,suede	blue,turquoise,waterproof,scuba,suede,neoprene	[285.2202902890041, 278.89999747276306]		[8484, 8296]	8218
+scuffed_cement	Scuffed Cement	man made,floor,indoor,plaster-concrete,concrete	weathered,worn,chipped,plaster,concrete,paving,scratched,grey,floor,cracked	[1619.999885559082, 1619.999885559082]		[8192, 8192]	47321
+seaside_rock	Seaside Rock	natural,rock	rough,weathered,seaside,rock face,rock,coastal,cliff,shore,solid rock,coastal landscape	[2000, 2000]		[8192, 8192]	46749
+seaworn_sandstone_brick	Seaworn Sandstone Brick	brick,sandstone,outdoor,wall,man made	rough,worn,precast,concrete,blocks,brick,bricks,sandstone,rustic,weathered	[1690.0001764297485, 1690.0001764297485]		[8192, 8192]	43778
+seaworn_stone_tiles	Seaworn Stone Tiles	sandstone,brick,wall,man made	rough,stonework,stone blocks,cast stone blocks,timeworn,wall,exterior,coarse,stone,synthetic stone	[2000, 2000]		[8192, 8192]	30685
+shell_floor_01	Shell Floor 01	terrain,natural,outdoor	shells,seaside,uneven,rough,broken shells,gravel,gravelly,gravelly ground,marine debris,coastal	[3000, 3000]		[8192, 8192]	22233
+short_bricks_floor	Short Bricks Floor	man made,outdoor,floor,brick	rough,brick,bricks,red brick,paving,sidewalk,weathered,worn,pavement	[1940.000057220459, 1939.9999380111694]		[8192, 8192]	18387
+silver_oak_veneer_01	Silver Oak Veneer 01	wood,raw wood	natural grain,oak,natural veneer,grain,natural wood grain,white,white oak,wood grain,wood	[1000, 1000]		[8192, 8192]	5565
+silver_oak_veneer_02	Silver Oak Veneer 02	wood,raw wood	natural grain,grain,natural wood grain,wood,natural wood,natural veneer,veneer,veneer wood,fine grain,oak	[1000, 1000]		[8192, 8192]	2906
+slab_tiles	Slab Tiles	floor,man made,rock,indoor	flat,rocks,smooth,floor,stone,slates,tiles	[2369.999885559082, 2370.000123977661]		[8192, 8192]	59710
+slate_driveway	Slate Driveway	man made,outdoor,floor	rough,old,worn,concrete,slate,slates,rock,exterior,driveway,stone	[2090.0001525878906, 2090.0001525878906]		[8192, 8192]	17935
+slate_floor	Slate Floor	floor,man made	slates,slate,shiny,coated,polished,reflective,stone,flooring,interior design,stone tile	[2289.9999618530273, 2290.0002002716064]		[8192, 8192]	16940
+slate_floor_02	Slate Floor 02	floor,cobblestone,rock	old,weathered,worn,slates,slate,floor,vintage,rustic,rustic architecture,natural	[2000, 2000]		[8192, 8192]	15852
+slate_floor_03	Slate Floor 03	floor,man made,indoor	slates,slate,floor,rustic architecture,vintage,stone floor,rustic,mosaic,stone,stone tile	[2000, 2000]		[8192, 8192]	3811
+slumped_mortar_brick	Slumped Mortar Brick	outdoor,man made,wall,brick,plaster-concrete	concrete,cement,plasterconcrete,mortar,brick,bricks,weathered,deteriorating,painted,rough	[1769.9999809265137, 1769.9999809265137]		[8192, 8192]	6132
+smoke_speckled_veneer	Smoke Speckled Veneer	wood,raw wood	natural grain,grain,natural wood grain,wood grain,natural wood,natural veneer,natural,dark,veneer,veneer wood	[1000, 1000]		[8192, 8192]	5443
+smoked_walnut_veneer	Smoked Walnut Veneer	wood,raw wood	natural grain,grain,walnut,walnut wood,hardwood,natural wood grain,natural wood,brown,veneer,veneer wood	[1000, 1000]		[8192, 8192]	6181
+smooth_concrete_floor	Smooth Concrete Floor	floor,indoor,concrete,plaster-concrete	worn,scratched,cracked,dirty,floor,scuffed,grungy	[2000, 2000]		[8192, 8192]	9287
+snow_01	Snow 01	terrain,natural,outdoor,snow	snow,rough,uneven,footprints,powdery,trail,snowfield	[2000, 2000]		[8192, 8192]	110499
+snow_02	Snow 02	terrain,natural,outdoor,snow	snow,uneven,smooth,powdery,frosty,snowfield,soft,wintery	[2000, 2000]		[8192, 8192]	235474
+snow_03	Snow 03	terrain,natural,snow,dirty,outdoor	snow,uneven,rough,trampled,mud	[2000, 2000]		[8192, 8192]	41939
+snow_04	Snow 04	terrain,snow,outdoor,natural,dirty	snow,mud,field,uneven,rough	[4000, 4000]		[8192, 8192]	19919
+snow_05	Snow 05	terrain,snow,outdoor,dirty,road	snow,mud,uneven,rough	[3000, 3000]		[8192, 8192]	33308
+snow_field_aerial	Snow Field Aerial	terrain,snow,outdoor,dirty,natural,aerial	snow,mud,field,uneven	[80000, 80000]		[8192, 8192]	62784
+snow_floor	Snow Floor	outdoor,man made,floor,snow,asphalt	rough,snow,floor,asphalt	[2000, 2000]		[8192, 8192]	16254
+sparse_grass	Sparse Grass	floor,natural	grass,nature,sparse,roots,root,vegetation,greenery,landscape,soil,environment	[2000, 2000]		[8192, 8192]	47133
+square_brick_floor	Square Brick Floor	indoor,brick,man made	rough,uneven,weathered,chipped,brick,bricks,grouted,scratched,floor,discolored	[2000, 2000]		[8192, 8192]	3052
+square_brick_paving	Square Brick Paving	floor,man made,brick	weathered,rough,brick,bricks,paving,driveway texture,driveway,old brick,brick design	[2099.9999046325684, 2099.9999046325684]		[8192, 8192]	2630
+square_cobblestone	Square Cobblestone	outdoor,rock,floor,man made,cobblestone	weathered,worn,chipped,discolored,grey,concrete,cobblestone,cement,dry,dirty	[2000, 2000]		[8192, 8192]	16020
+square_concrete_pavers	Square Concrete Pavers	man made,floor,outdoor,concrete,plaster-concrete	pavement,tiles,square,cement,concrete,pattern,weathered,brown,urban,sidewalk	[1799.9999523162842, 1799.9999523162842]		[8192, 8192]	15183
+square_floor	Square Floor	floor,man made,indoor,outdoor,clean,wall	tiles,square	[2000, 2000]		[8192, 8192]	98355
+square_floor_patern_01	Square Floor Patern 01	floor,man made,outdoor,clean,road	regular,tiles,square,uneven,pattern	[3000.000238418579, 3000.000238418579]		[8192, 8192]	40229
+square_pavers	Square Pavers	floor,man made,outdoor,brick	brick,bricks,pavement,weathered,floor,paving,paving stones,recessed seams,rounded corners,walkway	[2200.000047683716, 2200.000047683716]		[8192, 8192]	851
+square_tiled_wall	Square Tiled Wall	wall,man made,outdoor	patterned,brick,square tiles,outdoor,pattern,decorative tiles,decorative,walling,building facade,brick design	[2000, 2000]		[8192, 8192]	2765
+square_tiles	Square Tiles	floor,man made,outdoor,indoor,dirty	rough,sidewalk,station,urban,pavers,patterned,city,pavement patterned,sidewalk texture,handmade	[2400.0000953674316, 2400.0000953674316]		[8192, 8192]	17640
+square_tiles_02	Square Tiles 02	floor,man made	uneven,rough,tiles,multicoloured,patterned,outdoor,square,square tiles	[2400.0000953674316, 2400.0000953674316]		[8192, 8192]	10850
+square_tiles_03	Square Tiles 03	outdoor,road,floor	exterior,outdoor,pavement patterned,outdoor flooring,outdoor walkway,parking,walkway design,stone paving,architecture,station	[2000, 2000]		[8192, 8192]	18414
+stacked_brick_wall	Stacked Brick Wall	outdoor,wall,man made,brick	rough,weathered,uneven,old,coarse,brick,bricks,stacked bricks,aged,irregular pattern	[1731.5727472305298, 1731.5782308578491]		[8192, 8192]	9697
+stacked_stone_wall	Stacked Stone Wall	wall,rock	rock,stonework,wall,exterior wall,stone wall,stone,layered rock,stacked stones	[2000, 2000]		[8192, 8192]	8942
+stained_pine	Stained Pine	wood	rough,pine,pine wood,coated finish,coated wood,varnished wood,varnished,tabletop,wooden planks,planks	[900.0000357627869, 900.0000357627869]		[16384, 16384]	31472
+stair_planks	Stair Planks	wood	planks,wooden,wooden flooring ,wood,wooden planks,varnished,grain,wood grain,stairs,timber	[1200.0000476837158, 1200.0000476837158]		[8192, 8192]	4576
+stenciled_brick_floor	Stenciled Brick Floor	outdoor,man made,floor,brick	worn,old,damaged,dry,brick,bricks,floor,outdoor flooring,scratched,paving	[1919.9998378753662, 1919.9998378753662]		[16384, 16384]	16717
+stone_block_wall	Stone Block Wall	wall,outdoor	rough,stone,wall,stone blocks,ancient walls,fortress walls,stonework,stone wall,weathered,coarse	[2099.9999046325684, 2099.9999046325684]		[16384, 16384]	2792
+stone_brick_wall_001	Stone Brick Wall 001	outdoor,wall,brick	stones,bricks,blocks,castle,fort,dungeon,dark	[2500, 2500]		[16384, 16384]	113272
+stone_embedded_concrete	Stone Embedded Concrete	outdoor,wall,man made,cobblestone	rough,weathered,wall,rock,concrete,stone,stonework,dungeon,castle,stones	[2009.9999904632568, 2009.9999904632568]		[8192, 8192]	6896
+stone_embedded_tiles	Stone Embedded Tiles	floor,man made,tiles	tiles,outdoor,embedded pebble,stone embedded,mixed stone,speckled ,speckled tiles ,square tiles	[2000, 2000]		[8192, 8192]	26942
+stone_floor	Stone Floor	outdoor,man made,floor,rock,cobblestone	rough,old,uneven,worn,brown,dirty,dry,rock,floor,pathway	[1849.9999046325684, 1849.9999046325684]		[8192, 8192]	10196
+stone_pathway	Stone Pathway	outdoor,man made,rock	weathered,rock,pathway,path,uneven,rocks,discolored,dry,brown,chipped	[2000, 2000]		[8192, 8192]	34994
+stone_pathway_02	Stone Pathway 02	floor,outdoor,cobblestone	rough,weathered,leaves,fallen leaves,plant debris,stones,cobblestone,garden walkway,stone pathway,path	[1950.0000476837158, 1950.0000476837158]		[8192, 8192]	16985
+stone_pavers	Stone Pavers	floor,man made	pavers,concrete,cracked,rough,coarse,weathered,stone,stonework,timeworn,cracks	[2000, 2000]		[16384, 16384]	4278
+stone_tile_wall	Stone Tile Wall	wall,man made	stone,wall,walling,stonework,rough,roughhewn,exterior,masonry	[2000, 2000]		[8192, 8192]	36095
+stone_tiles	Stone Tiles	man made,wall,floor,indoor,outdoor	tiles,stones,flat,rocks,shiny,reflective,uneven,rock,floor,smooth	[3170.0000762939453, 3169.999837875366]		[8192, 8192]	59133
+stone_tiles_02	Stone Tiles 02	floor,rock,outdoor,wall	uneven,rock,stones,stone,floor,tiles,rocks,slates	[2000, 2000]		[8192, 8192]	134691
+stone_tiles_03	Stone Tiles 03	outdoor,man made,floor,rock	rough,weathered,dirty,stones,dirt,leaves,pathway,rocks,worn,floor	[1919.9998378753662, 1919.9998378753662]		[8192, 8192]	25091
+stone_wall	Stone Wall	outdoor,rock,wall	rough,uneven,weathered,cracked,stones,worn,chipped,dry,rocks,rock	[2000, 2000]		[8192, 8192]	111341
+stone_wall_02	Stone Wall 02	wall,man made,rock	cracked,damaged,weathered,dirty,wall,brown,rough,chipped,old	[2000, 2000]		[8192, 8192]	22166
+stone_wall_03	Stone Wall 03	outdoor,man made,plaster-concrete,concrete,rock	rough,uneven,weathered,wall,chipped,cracked,worn,discolored,brown,stones	[2170.0000762939453, 2170.0000762939453]		[8192, 8192]	10648
+stone_wall_04	Stone Wall 04	wall,rock,man made	weathered,rough,worn,wall,uneven,rocks,rock,fortress walls,sturdy,ancient walls	[1700.0000476837158, 1700.0000476837158]		[8192, 8192]	42927
+stone_wall_05	Stone Wall 05	wall,outdoor	rough,stone,stonework,wall,ancient walls,worn,timeworn,weatherbeaten,stone tile,stone block	[2055.000066757202, 2055.000066757202]		[8192, 8192]	8046
+stony_dirt_path	Stony Dirt Path	dirty,floor,outdoor,natural	brown,ground,leaves,rocks,stones,dirt,pathway,path,forest,nature	[2170.0000762939453, 2170.0000762939453]		[8192, 8192]	17018
+stretch_poplin	Stretch Poplin	fabric,stretchy	green,fine,flexible,tight weave,textile ,cotton,stretch cotton,poplin,woven,tightweave	[291.0233241569048, 280.8000147342682]		[8540, 8240]	7235
+synthetic_wood	Synthetic Wood	man made,wall,wood,outdoor	wall,planks,wood,wooden,brown,flat,square	[2000, 2000]		[8192, 8192]	153171
+t_brick_floor_002	Brick Floor 002	floor,outdoor,man made,clean,brick	concrete,stones,tiles,floor,pattern	[3000, 3000]		[8192, 8192]	57072
+t_concrete_wall_002	Concrete Wall 002	brick,wall,man made,outdoor	wall,concrete,rough,bricks,slits,grid,cement,weathered,rough  	[3000, 3000]		[8192, 8192]	26601
+tarred_gravel	Tarred Gravel	asphalt,gravel	rough,weathered,uneven,old,worn,floor,tar,gravel,stone embedded,gritty	[2200.000047683716, 2200.000047683716]		[8192, 8192]	4691
+tatami_mat	Tatami Mat	floor,woven	floor,mat ,tatami,japanese,woven,traditional,padding,cultural	[1800.0000715255737, 1800.0000715255737]		[16384, 16384]	5963
+teak_veneer	Teak Veneer	wood,raw wood	natural grain,grain,natural wood grain,natural wood,natural veneer,natural,teak,brown,wood,wood grain	[1000, 1000]		[8192, 8192]	7558
+terlenka	Terlenka	fabric,stretchy	beige,fine,flexible,cream,terlenka,weave,woven,synthetic,polyester,fashion	[265.70814767607123, 266.2999927997589]		[8081, 8099]	24019
+terracotta_floor_tiles	Terracotta Floor Tiles	man made,indoor,tiles	terracotta,tiles,ceramic,square,consistent,grout lines,indoor flooring,chipped,ceramic tiles,uneven	[2079.9999237060547, 2079.9999237060547]		[8192, 8192]	4750
+terrain_red_01	Terrain Red 01	terrain,natural,outdoor,road,rock	gravel,stones,rough,pebbles,railroad,pathway,path	[2000, 2000]		[8192, 8192]	48590
+terrazzo_tiles	Terrazzo Tiles	tiles	floor,home decor,flooring,terrazzo,decorative tiles,speckled tiles ,speckled ,square tiles,tiled,interior	[2000, 2000]		[16384, 16384]	8461
+terry_cloth	Terry Cloth	fabric,knitted	blue,absorbent,microfiber,terry cloth,terry,woven,textile ,soft,plush,raised loops	[367.0535953781794, 363.20000886917114]		[11049, 10933]	17426
+thatch_roof_angled	Thatch Roof Angled	outdoor,man made,roofing	rough,thatch,reed,roof,roofing,structure,structural,weathered,straw,grass	[539.9999618530273, 539.9999618530273]		[8192, 8192]	48332
+tiger_rock	Tiger Rock	collection: namaqualand,rock,terrain,natural,outdoor	cliff,boulder,rock face,cave,weathered,landscape,solid rock,mountain,solid,rugged	[2549.999952316284, 2549.999952316284]		[16384, 16384]	14048
+tiled_floor_001	Tiled Floor 001	floor,indoor,man made,outdoor,clean,wall	tiles,clean,uneven,smooth,square,large	[1500, 1500]		[8192, 8192]	115041
+tree_bark_03	Tree Bark 03	wood,natural,outdoor,bark	bark,moss,rough,old	[1000, 1000]		[8192, 8192]	64707
+trident_maple_bark	Trident Maple Bark	natural,bark	tree,tree bark,bark,tree bark texture,tree trunk,nature,botanical,outdoor,trident maple,forest	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	4404
+velour_velvet	Velour Velvet	fabric,velvet	red,luxury,royal,patchey,velvet,velveteen,microsuede,napped,upholstery,fashion	[284.22817052147235, 273.499995470047]		[8319, 8005]	62600
+volcanic_herringbone_01	Volcanic Herringbone 01	outdoor,man made,rock	weathered,rough,wall,floor,concrete,rocks,exterior,damaged,cement,chipped	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	4948
+volcanic_rock_tiles	Volcanic Rock Tiles	wall,man made	wall,rocks,rock,mosaic,rough,volcanic rock	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	2921
+waffle_pique_cotton	Waffle Pique Cotton	fabric,cotton	yellow,squares,cotton,woven,waffle weave,waffle pique,grid pattern,grid,textile 	[280.787176718274, 276.8000066280365]		[8419, 8300]	13919
+wall_bricks_plaster	Wall Bricks Plaster	plaster-concrete,brick,man made,outdoor,dirty,wall	rough,uneven,damaged,plastered,chipped	[1000, 1000]		[8192, 8192]	51612
+walnut_veneer	Walnut Veneer	wood,raw wood	smooth,grain,wood grain,raw,raw wood,veneer,veneer wood,walnut,timber,walnut wood	[1799.9999523162842, 1799.9999523162842]		[16384, 16384]	1835
+walnut_veneer_02	Walnut Veneer 02	wood,raw wood	natural grain,grain,natural wood grain,wood grain,natural wood,natural veneer,natural,veneer,veneer wood,walnut	[1000, 1000]		[8192, 8192]	12208
+washed_grey_oak_veneer	Washed Grey Oak Veneer	wood,raw wood	veneer,veneer wood,natural grain,grain,oak,flat wood surface,natural wood grain,wood grain,raw wood	[1000, 1000]		[8192, 8192]	847
+weathered_brown_planks	Weathered Brown Planks	man made,wood,dirty,wall,outdoor,floor	wood,planks,old,worn,brown,maroon,painted,chipped,damaged,dirty	[1799.9999523162842, 1799.9999523162842]		[16384, 16384]	300895
+weathered_peeling_timber	Weathered Peeling Timber	outdoor,wood,man made	rough,weathered,wood,wood planks,peeling,peeling paint,wooden planks,rustic,plank,distressed	[1100.000023841858, 1100.000023841858]		[8192, 8192]	4555
+weathered_plank_siding	Weathered Plank Siding	outdoor,wall,wood	rough,wood,wooden planks,exterior,rustic,plank siding,weathered,weatherbeaten,horizontal planks,cladding	[1570.0000524520874, 1570.0000524520874]		[8192, 8192]	4424
+weathered_planks	Weathered Planks	outdoor,wood,man made,wall,floor	wood,wooden,bridge,planks,old,weathered,worn,damaged,discolored,chipped	[2000, 2000]		[8192, 8192]	141583
+white_bricks	White Bricks	brick,wall,outdoor,man made,dirty	rough,old,uneven,damaged,worn,painted,peeling	[1500, 1500]		[8192, 8192]	27708
+white_maple_veneer	White Maple Veneer	wood,raw wood	natural grain,grain,natural wood grain,wood grain,white,natural wood,wood,natural veneer,natural,light wood	[1000, 1000]		[8192, 8192]	7295
+white_oak_veneer	White Oak Veneer	wood,raw wood	raw,veneer,veneer wood,grain,wood grain,oak,white oak,natural wood,timber,natural veneer	[500, 500]		[8192, 8192]	7837
+white_planks_clean	White Planks Clean	wall,wood	painted,painted wood,wood,wood wall,wooden,wooden planks,white,paneling	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	4861
+white_plaster_02	White Plaster 02	plaster-concrete,wall,man made,outdoor,indoor,clean,floor	smooth,flat,even	[1000, 1000]		[8192, 8192]	228908
+white_plaster_rough_01	White Plaster Rough 01	plaster-concrete,wall,floor,man made,outdoor	moss,smooth,flat,even,patches	[1000, 1000]		[8192, 8192]	35154
+white_plaster_rough_02	White Plaster Rough 02	plaster-concrete,wall,man made,outdoor,dirty	rough,broken,cracked,moss,uneven,cement,damaged,old,sewer,tunnel	[1000, 1000]		[8192, 8192]	54958
+white_rough_plaster	White Rough Plaster	plaster-concrete,man made,wall,outdoor,indoor,dirty	broken,chipped,damaged,rough	[1000, 1000]		[8192, 8192]	84563
+white_sandstone_blocks_02	White Sandstone Blocks 02	brick,man made,outdoor,wall,collection: the_shed	blocks,sandstone,uneven,damaged	[2000, 2000]		[8192, 8192]	56470
+white_sandstone_bricks	White Sandstone Bricks	brick,man made,outdoor,wall	blocks,sandstone,uneven,damaged,worn,plastered,old,crumbling	[2000, 2000]		[8192, 8192]	32263
+white_sandstone_bricks_03	White Sandstone Bricks 03	brick,man made,outdoor,wall,clean	blocks,white,standstone,uneven	[2000, 2000]		[8192, 8192]	48337
+white_stucco	White Stucco	wall,man made,wall,man made,plaster,indoor	rough,wall,painted,stucco,white,granular,matte,uneven,porous,plaster	[1998.0629682540894, 1998.0640411376953]		[8192, 8192]	29373
+white_stucco_02	White Stucco 02	outdoor,wall,plaster,plaster-concrete,man made	stucco,rough,coarse,exterior,architectural,rendered,skim-coat	[7.868050033721374e-05, 1800.0000715255737]		[8192, 8192]	7041
+whitewashed_brick	Whitewashed Brick	wall,brick,man made	rough,old,old brick,white,whitewashed,weathered,aged,distressed,painted	[2000, 2000]		[16384, 16384]	23371
+winter_leaves	Winter Leaves	outdoor,floor,natural	leaves,forest,dry,sticks,winter,dead grass,twigs,nature,leaf litter	[1999.9996423721313, 1999.9996423721313]		[8192, 8192]	7969
+withered_grass	Withered Grass	natural,outdoor,floor	old,weathered,grass,dead grass,discolored,driedup,dry	[1999.9996423721313, 1999.9996423721313]		[8192, 8192]	8718
+wood_cabinet_worn_long	Wood Cabinet Worn Long	man made,wood,indoor,wall,floor	wood,planks,cabinet,worn,non square,long,rough,old,weathered,damaged	[1000, 500]		[16384, 8192]	279798
+wood_chip_path	Wood Chip Path	outdoor,terrain	wood chips,plant debris,organic debris,petals,pathway,path,mulch,small twigs,mulch layer	[2099.9999046325684, 2099.9999046325684]		[8192, 8192]	7224
+wood_chips	Wood Chips	outdoor,natural,raw wood,wood	weathered,wood,ground,brown,nature,leaves	[2000, 2000]		[8192, 8192]	10143
+wood_floor	Wood Floor	floor,wood,man made,clean	wood,floor,wooden,wooden flooring ,grain,wood grain,interior design,interior,flooring	[1699.9996900558472, 1699.9996900558472]		[8192, 8192]	296278
+wood_floor_deck	Wood Floor Deck	man made,wood,floor,outdoor	brown,worn,chipped,stained,wood,scratched,planks,floor,deck,varnished	[1799.9999523162842, 1799.9999523162842]		[8192, 8192]	149044
+wood_floor_worn	Wood Floor Worn	floor,wood,man made	old,weathered,rough,worn,discolored,flat,pine,wood,planks,wooden flooring 	[1999.9996423721313, 1999.9996423721313]		[8192, 8192]	119404
+wood_inlaid_concrete_wall	Wood Inlaid Concrete Wall	wall,concrete,plaster-concrete,wood	wood,concrete,rough,inlaid,aged wood,decorative,brick pattern,rustic	[1700.0000476837158, 1700.0000476837158]		[16384, 16384]	2242
+wood_inlaid_stone_wall	Wood Inlaid Stone Wall	wall,rock,outdoor	wood,concrete,rough,inlaid,aged wood,decorative,brick pattern,rustic,carved wood,rocks	[1299.9999523162842, 1299.9999523162842]		[16384, 16384]	5336
+wood_peeling_paint_weathered	Wood Peeling Paint Weathered	outdoor,man made,wall,wood,dirty	rough,old,weathered,wood,planks,painted,chipped,flaked,paint,worn	[761.9999647140503, 762.0000243186951]		[8192, 8192]	104923
+wood_plank_wall	Wood Plank Wall	outdoor,wall,wood,man made,dirty	planks,varnished,dusty,dirty,brown,wood,cabin	[1000, 1000]		[8192, 8192]	24643
+wood_planks	Wood Planks	floor,wood,raw wood,man made	rough,weathered,old,discolored,wood,floor,wooden planks,wooden flooring ,planks,plank	[1499.999761581421, 1499.999761581421]		[8192, 8192]	137151
+wood_planks_dirt	Wood Planks Dirt	wood,wall,man made,outdoor,indoor,clean	planks,even,weathered	[2000, 2000]		[8192, 8192]	152265
+wood_planks_grey	Wood Planks Grey	floor,wall,wood,outdoor,man made	planks,worn,old,grey,flat,seaside,costal,ocean,dirty,discolored	[1500, 1500.0001192092896]		[8192, 8192]	122344
+wood_shutter	Wood Shutter	wood,raw wood	wood,rough,shutter,wood shutter,planks,wooden planks,wooden,plank,timber,cabin	[1000, 1000]		[8192, 8192]	29535
+wood_stone_pathway	Wood Stone Pathway	outdoor,man made,rock,raw wood	dirt,path,pathway,rocks,rock,wood,dusty,worn,exterior,walkway	[1850.0001430511475, 1850.0001430511475]		[8192, 8192]	5755
+wood_table	Wood Table	wood	pine,coated finish,coated wood,wood,planks,knots,wooden,wooden knots,pine wood,plank	[1000, 1000]		[8192, 8192]	71897
+wood_table_001	Wood Table 001	wood,clean,man made	wood,table,varnished,clean,stained,red,furniture,fancy,fine,grain	[1500, 1500.0001192092896]		[16384, 16384]	467803
+wood_table_large	Wood Table Large	wood	wood,damaged,weathered,wooden,wooden planks,furniture,table,rustic,varnished,coated	[1550.0000715255737, 1550.0000715255737]		[8192, 8192]	2855
+wood_table_worn	Wood Table Worn	man made,wood,dirty,raw wood	rough,planks,table,worn,old,damaged,discolored,stained,brown,dry	[549.9999523162842, 550.0000715255737]		[8192, 8192]	419832
+wood_textured_concrete	Wood Textured Concrete	outdoor,wall,concrete,plaster-concrete,plaster	rough,concrete,plaster,plastered,wood grain,stamped concrete,grain stamped ,grainy,coarse,industrial	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	3410
+wood_trunk_wall	Wood Trunk Wall	outdoor,wall,wood,man made	tree trunk,wood,wall,trunk,logs,log cabin,brown,timber,lumber,forest	[1250, 1250]		[8192, 8192]	23651
+wooden_barrel	Wooden Barrel	man made,wood	rough,weathered,discolored,aged,metal hoops,barrel,wood,wood planks,timeworn,stained	[1289.9999618530273, 1289.9999618530273]		[8192, 8192]	3700
+wooden_floor_01	Wooden Floor 01	floor,wood	weathered,wood,wooden plank,lacquered,coated finish,coated wood,coated,indoor,natural grain,grain	[1988.0001544952393, 1988.0001544952393]		[16384, 16384]	7222
+wooden_floor_02	Wooden Floor 02	floor,wood,raw wood	wood planks,hardwood,wooden,wood,wooden flooring ,wooden plank,wooden floor,wooden knots,grain,wood grain	[1942.000150680542, 1942.000150680542]		[16384, 16384]	4450
+wooden_garage_door	Wooden Garage Door	man made,outdoor,wood	worn,wood,wooden,outdoor,door,weathered,wood grain,stained,scratched,weatherbeaten	[1979.9997806549072, 1979.9997806549072]		[8192, 8192]	37669
+wooden_gate	Wooden Gate	man made,wood	wood,wooden,wooden planks,gate,varnished,planks,grain,timber,plank,wood grain	[1899.9998569488525, 1899.9998569488525]		[16384, 16384]	29419
+wooden_panels	Wooden Panels	wood,man made	rough,wood,paneling,lacquered,wood panel ,wood grain,recessed panels,varnished,framed panels,garage door	[2099.9999046325684, 2099.9999046325684]		[8192, 8192]	7993
+wooden_planks	Wooden Planks	wood,raw wood,outdoor	cracked,flat,even,wooden,wood,old,worn,dry	[2000, 2000]		[8192, 8192]	118772
+wooden_rough_planks	Wooden Rough Planks	wood,wall,man made,outdoor	moss,rough,logs,planks,uneven,round,shed,cabin,hut,lodge	[2000, 2000]		[8192, 8192]	36412
+wool_boucle	Wool Boucle	fabric,wool,knitted	checker,blanket,boucle,wool,textile ,woven,upholstery,wool boucle,looped,looped fibers	[314.78237097288206, 390.10000228881836]		[9575, 11866]	16068
+worn_asphalt	Worn Asphalt	floor,asphalt	asphalt,asphalt road,petals,plant debris,outdoor,cracked,driveway,sticks,twigs,leaf litter	[2000, 2000]		[16384, 16384]	6171
+worn_brick_floor	Worn Brick Floor	floor,brick	old,weathered,weatherbeaten,brick,bricks,broken,cracked,crumbling,dilapidated,damaged	[2000, 2000]		[16384, 16384]	16744
+worn_brick_path	Worn Brick Path	outdoor,floor,brick	rough,brick,bricks,herringbone,herringbone pattern,worn,old,pathway,moss,mosscovered	[1949.9682188034058, 1949.9682188034058]		[8192, 8192]	1167
+worn_brick_wall	Worn Brick Wall	wall,man made,brick	rough,weathered,old,uneven,worn,weatherbeaten,concrete,rough  ,rough concrete,mortar	[2000, 2000]		[16384, 16384]	8169
+worn_concrete_floor	Worn Concrete Floor	floor,concrete,plaster-concrete	rough,weathered,uneven,old,cracked,concrete,chipped surface,distressed,discolored,scratched	[2000, 2000]		[8192, 8192]	6653
+worn_corrugated_iron	Worn Corrugated Iron	outdoor,man made,metal	rough,weathered,worn,chipped,corrugated,corrugation,metal,metal sheet,iron,steel sheeting	[1799.9995946884155, 1799.9995946884155]		[16384, 16384]	33283
+worn_cracked_plaster	Worn Cracked Plaster	wall,man made,plaster-concrete,plaster	rough,weathered,cracked,cracks,damaged,old,worn,wall,discolored,weatherbeaten	[1799.9999523162842, 1799.9999523162842]		[8192, 8192]	1351
+worn_mossy_plasterwall	Worn Mossy Plasterwall	wall,outdoor,plaster,plaster-concrete	rough,weathered,weatherbeaten,moss,aged,exterior,worn,discolored,old,chipped	[1800.0000715255737, 1800.0000715255737]		[16384, 16384]	21610
+worn_patterned_pavers	Worn Patterned Pavers	man made,floor	old,weathered,worn,concrete,chipped,discolored,scratched,deteriorated,pavement,exterior	[1949.9996900558472, 1949.9996900558472]		[16384, 16384]	7399
+worn_planks	Worn Planks	wood	aged wood,distressed,wood,wooden planks,wooden,wooden flooring ,wooden floor,peeling,rustic,weathered	[1400.0000953674316, 1400.0000953674316]		[8192, 8192]	86620
+worn_plaster_wall	Worn Plaster Wall	wall,concrete,plaster-concrete,plaster	uneven,rough,plaster,concrete,wall,crumbling,chipped,weathered,cracked,damaged	[1800.0000715255737, 1800.0000715255737]		[8192, 8192]	8344
+worn_rock_natural_01	Worn Rock Natural 01	outdoor,natural,terrain,rock,sandstone	weathered,yellow,rock face,rock,flat,brown,boulder,cliff,chipped,nature	[2000, 2000]		[8192, 8192]	54571
+worn_shutter	Worn Shutter	man made,metal	weathered,metal sheet,metal,shutter,corrugated,metal shutter,corrugation	[1370.0000047683716, 1370.0000047683716]		[8192, 8192]	17180
+worn_tile_floor	Worn Tile Floor	floor,man made,tiles	old,weathered,worn,rough,tiles,tiled,distressed,discolored,damaged,floor	[2000, 2000]		[8192, 8192]	27208
+yellow_brick	Yellow Brick	brick,wall,man made,outdoor,indoor,clean	yellow,rough,lines,neat	[2000, 2000]		[8192, 8192]	33686
+yellow_bricks	Yellow Bricks	brick,wall,man made,outdoor,dirty	wall,rough,uneven,moss,sewer,tunnel,old	[2000, 2000]		[8192, 8192]	35532
+yellow_flower_mulch	Yellow Flower Mulch	floor,bark	scattered flowers,mulch,plant debris,floral debris,scattered petals,petals,mulch bed,bark,tree bark,sticks	[2000, 2000]		[8192, 8192]	5455
+yellow_plaster	Yellow Plaster	wall,plaster-concrete,man made,indoor,outdoor,dirty	yellow,plastered,worn,scratched,smooth,concrete,cement,moss	[2000, 2000]		[8192, 8192]	39701
+yellow_plaster_02	Yellow Plaster 02	outdoor,man made,wall,plaster-concrete,wood,concrete,plaster	rough,old,yellow,wall,wood,plastered,cracks,weathered,uneven,brown	[2000, 2000]		[8192, 8192]	11786
+yellow_stone_wall	Yellow Stone Wall	outdoor,rock,man made	wall,damaged,old,cracked,chipped,worn,yellow,concrete,rocks,rock	[2000, 2000]		[8192, 8192]	19937
