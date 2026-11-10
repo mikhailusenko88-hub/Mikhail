@@ -23,3 +23,5 @@
 | shorts | 2026-11-09 | 2 | Mexico vs Peru vs Romania | https://youtube.com/shorts/zP2ZThH9Q7U | |
 | 19 | 2026-11-09 | 3 | S2 RACE 6/68 | https://youtu.be/VLEkz_I-hio | public |
 | shorts | 2026-11-09 | 3 | Indonesia vs Thailand vs Spain | https://youtube.com/shorts/4c2PskJ3TL4 | |
+| 20 | 2026-11-10 | 1 | S2 RACE 7/68 | https://youtu.be/3upV0M-9h1g | public |
+| shorts | 2026-11-10 | 1 | USA vs Korea vs Colombia | https://youtube.com/shorts/T8iLBd0E1Ag | |
