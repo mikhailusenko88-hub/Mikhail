@@ -1,5 +1,5 @@
-# проверка страницы с пробами
+# проверка обновлённой страницы с пробами (раздел 7 — длинная фраза)
 http://89.126.192.214:8080/mebel/bz4aaoig/
-http://89.126.192.214:8080/mebel/bz4aaoig/c1.mp3
-http://89.126.192.214:8080/mebel/bz4aaoig/p1-stalo.mp3
-http://89.126.192.214:8080/mebel/bz4aaoig/g12-say.mp3
+http://89.126.192.214:8080/mebel/bz4aaoig/n1-stalo.mp3
+http://89.126.192.214:8080/mebel/bz4aaoig/d-b1.mp3
+http://89.126.192.214:8080/mebel/bz4aaoig/d-g10.mp3
