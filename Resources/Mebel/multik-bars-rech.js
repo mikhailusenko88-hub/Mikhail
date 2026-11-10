@@ -91,6 +91,8 @@
     if (key === 'уже') return ((i === ws.length - 1 || n1 === 'чем') && /^(стал|стала|стало|стали|становится|становятся|намного|гораздо|чуть|немного|ещё|еще)$/.test(p1)) ? '+уже' : 'уж+е';   // «под деревом уже́ темнее» / «тропинка стала у́же»
     if (key === 'начала') return (PREP_GEN.has(p1) || isAdjGsM(p1)) ? 'нач+ала' : (isInf(n1) || PRON.has(p1)) ? 'начал+а' : null;   // «с самого нача́ла» / «она начала́ петь»
     if (key === 'начало') return isInf(n1) ? 'н+ачало' : null;                                                                       // «солнце на́чало садиться» / «нача́ло сказки»
+    if (/ите$/.test(key) && vars) { const imp = vars.find(v => /\+ите$/.test(v)), ind = vars.find(v => !/\+ите$/.test(v));   // «Приходи́те утром!» (просьба) / «вы прихо́дите» (делаете)
+      if (imp && ind) { if (ws.slice(Math.max(0, i - 3), i).includes('вы')) return ind; if (i === 0 || (i === 1 && /^(не|ну|а|и|пожалуйста|лучше|скорее|теперь|тогда|сначала|потом|обязательно)$/.test(p1))) return imp; return null; } }
     vars = EXTRA[key] || vars; const es = endStem(vars); if (!es) return null;
     const cls = FEM.has(key) ? 'F' : MASC.has(key) ? 'M' : NEUT.has(key) ? 'N' : LOC2.has(key) || key === 'мосту' ? 'L2' : LOC3[key] ? 'L3' : key === 'груди' ? 'G' : key === 'утра' ? 'U' : null;
     if (!cls) return null;
