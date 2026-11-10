@@ -397,6 +397,33 @@ def bg_v2(palette, rnd, icon_name, accent, path):
     img.convert("RGB").resize((int(W * 1.12), int(H * 1.12))).save(path, quality=92)
 
 
+SAFE_W = 840     # ширина текста: по 120 px от краёв. Справа у YouTube кнопки, а высокие телефоны срезают бока кадра
+# блоки текста v2: (размеры шрифта от крупного к мелкому, зона по высоте, максимум строк)
+V2_BLOCKS = {
+    "hook": ((118, 108, 98, 90, 82, 74, 66), (1000, 1580), 5),   # первая фраза — крючок
+    "cap": ((124, 112, 100, 90, 80), (1020, 1540), 3),           # короткий титр ЗАГЛАВНЫМИ
+    "body": ((84, 78, 72, 66, 60), (960, 1560), 6),              # полная фраза (если титра нет)
+    "cta": ((84, 76, 68), (980, 1240), 3),                       # концовка «А ты это знал?»
+}
+
+
+def fit_text(d, txt, size_list, zone_h, max_lines, max_w=SAFE_W):
+    """Размер шрифта, при котором текст влезает и по высоте, и ПО ШИРИНЕ.
+    Раньше ширина одного длинного слова не проверялась: «ДЕФОРМИРУЮТСЯ» крупным шрифтом выходило за края кадра.
+    Если слово не влезает — берём шрифт мельче (ниже обычных размеров идёт запас до 40)."""
+    sizes = list(size_list)
+    while sizes[-1] > 40:
+        sizes.append(max(40, int(sizes[-1] * 0.9)))
+    for size in sizes:
+        f = font(size)
+        lines = wrap(d, txt, f, max_w)
+        bl = int(size * 1.18)
+        if (len(lines) <= max_lines and bl * len(lines) <= zone_h
+                and all(d.textlength(ln, font=f) <= max_w for ln in lines)):
+            break
+    return f, lines, bl
+
+
 def _hl_words(text):
     """Слова, которые подсветим акцентом: числа и слова в кавычках/ЗАГЛАВНЫМИ, «не», «нет», «миф», «правда»."""
     out = set()
@@ -414,18 +441,13 @@ def text_v2(accent, kind, title, text, idx, total, handle, path, cap=None):
     hl = _hl_words(text)
 
     def draw_block(txt, size_list, zone, max_lines, center=True, shadow=True):
-        for size in size_list:
-            f = font(size)
-            lines = wrap(d, txt, f, W - 150)
-            bl = int(size * 1.18)
-            if len(lines) <= max_lines and bl * len(lines) <= zone[1] - zone[0]:
-                break
+        f, lines, bl = fit_text(d, txt, size_list, zone[1] - zone[0], max_lines)
         bh = bl * len(lines)
         y = zone[0] + (zone[1] - zone[0] - bh) / 2
         for ln in lines:
             words = ln.split(" ")
             widths = [d.textlength(w + " ", font=f) for w in words]
-            x = (W - sum(widths)) / 2 if center else 75
+            x = (W - d.textlength(ln, font=f)) / 2 if center else (W - SAFE_W) / 2
             for w, ww in zip(words, widths):
                 col = accent + (255,) if w in hl else (255, 255, 255, 255)
                 if shadow:
@@ -453,9 +475,9 @@ def text_v2(accent, kind, title, text, idx, total, handle, path, cap=None):
         bx, by = (W - tw) / 2 - 34, 905
         d.rounded_rectangle([bx, by, bx + tw + 68, by + 72], radius=36, fill=accent + (255,))
         d.text((bx + 34, by + 13), tag, font=tf, fill=(18, 18, 22))
-        draw_block(text, (118, 108, 98, 90, 82, 74, 66), (1000, 1580), 5)
+        draw_block(text, *V2_BLOCKS["hook"])
     elif kind == "cta":
-        draw_block(text, (84, 76, 68), (980, 1240), 3)
+        draw_block(text, *V2_BLOCKS["cta"])
         f2 = font(56)
         for k, (lab, x0) in enumerate((("ДА", W / 2 - 300), ("НЕТ", W / 2 + 40))):
             d.rounded_rectangle([x0, 1300, x0 + 260, 1410], radius=40, fill=accent + (255,) if k == 0 else (255, 255, 255, 235))
@@ -467,9 +489,9 @@ def text_v2(accent, kind, title, text, idx, total, handle, path, cap=None):
     elif cap:
         # короткий титр: 2–4 ключевых слова крупно, голос читает полную фразу
         hl.update(cap.split())
-        draw_block(cap.upper(), (124, 112, 100, 90, 80), (1020, 1540), 3)
+        draw_block(cap.upper(), *V2_BLOCKS["cap"])
     else:
-        draw_block(text, (84, 78, 72, 66, 60), (960, 1560), 6)
+        draw_block(text, *V2_BLOCKS["body"])
 
     # низ: заголовок мелко + точки прогресса + канал
     if title and kind != "hook":
@@ -494,6 +516,32 @@ def text_v2(accent, kind, title, text, idx, total, handle, path, cap=None):
 
 MAX_LINES_V2 = 5
 CTA_TEXT = "А ты это знал?"
+
+
+def text_fit_report(scripts, max_lines=MAX_LINES_V2):
+    """Проверка надписей для списка сценариев: (кадров, самая широкая строка в px, где текст не влез)."""
+    d = ImageDraw.Draw(Image.new("RGBA", (8, 8)))
+    n, widest, bad = 0, 0, []
+    for s in scripts:
+        lines = [l for l in s["lines"] if l.strip()][:max_lines]
+        caps = s.get("caps") or []
+        for i, txt in enumerate(lines + [CTA_TEXT]):
+            if i == 0:
+                key = "hook"
+            elif i == len(lines):
+                key = "cta"
+            elif i < len(caps) and caps[i]:
+                key, txt = "cap", caps[i].upper()
+            else:
+                key = "body"
+            sizes, zone, ml = V2_BLOCKS[key]
+            f, ls, bl = fit_text(d, txt, sizes, zone[1] - zone[0], ml)
+            w = max(d.textlength(x, font=f) for x in ls)
+            n += 1
+            widest = max(widest, w)
+            if w > SAFE_W or len(ls) > ml or bl * len(ls) > zone[1] - zone[0]:
+                bad.append(f"{s['title']}: {txt}")
+    return n, widest, bad
 
 
 def build_v2(script, cfg, out_path, work_dir, tts=speak, log=print):

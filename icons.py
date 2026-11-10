@@ -7,6 +7,8 @@ import math
 from PIL import Image, ImageDraw, ImageFilter
 
 KEYS = [
+    ("car", "машин автомобил мотор двигател бензин тормоз водител радиатор гараж шина= шины= шин= руль= руля= рулём= рулем="),
+    ("pill", "таблет лекарств аптек пилюл антибиотик"),
     ("planet", "планет венер меркур сатурн юпитер марс космос орбит галакт"),
     ("sun", "солнц звезд светил"),
     ("moon", "луна= луны= луне= луну= лунн месяц"),
@@ -207,6 +209,32 @@ def draw_icon(name, size, col, line=None):
         d.polygon([(0.66 * s, 0.44 * s), (0.8 * s, 0.7 * s), (0.66 * s, 0.62 * s)], fill=C)
         d.ellipse([0.44 * s, 0.3 * s, 0.56 * s, 0.42 * s], fill=C)
         d.polygon([(0.42 * s, 0.64 * s), (0.58 * s, 0.64 * s), (0.5 * s, 0.9 * s)], fill=col + (180,))
+    elif name == "car":
+        body = [(0.06, 0.66), (0.08, 0.52), (0.24, 0.48), (0.36, 0.32), (0.66, 0.32), (0.78, 0.48),
+                (0.92, 0.52), (0.94, 0.66)]
+        d.polygon([(x * s, y * s) for x, y in body], fill=F, outline=C, width=lw)
+        d.line([(0.38 * s, 0.47 * s), (0.44 * s, 0.38 * s), (0.62 * s, 0.38 * s), (0.69 * s, 0.47 * s), (0.38 * s, 0.47 * s)],
+               fill=C, width=max(4, lw // 2), joint="curve")
+        d.line([(0.52 * s, 0.38 * s), (0.52 * s, 0.47 * s)], fill=C, width=max(4, lw // 2))
+        for x in (0.27, 0.74):
+            d.ellipse([x * s - s * 0.1, 0.66 * s - s * 0.1, x * s + s * 0.1, 0.66 * s + s * 0.1], fill=C)
+            d.ellipse([x * s - s * 0.04, 0.66 * s - s * 0.04, x * s + s * 0.04, 0.66 * s + s * 0.04], fill=(0, 0, 0, 0))
+        d.line([(0.02 * s, 0.77 * s), (0.98 * s, 0.77 * s)], fill=col + (150,), width=max(4, lw // 2))
+    elif name == "pill":
+        cap = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+        cd = ImageDraw.Draw(cap)
+        r = s * 0.15
+        cd.rounded_rectangle([c - s * 0.38, c - r, c + s * 0.38, c + r], radius=r, fill=F, outline=C, width=lw)
+        cd.rounded_rectangle([c - s * 0.38, c - r, c, c + r], radius=r, fill=C)
+        cd.rectangle([c - r, c - r, c, c + r], fill=C)
+        cap = cap.rotate(38, resample=Image.BICUBIC)
+        shifted = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+        shifted.alpha_composite(cap, (int(-s * 0.06), int(-s * 0.08)))
+        im.alpha_composite(shifted)
+        d = ImageDraw.Draw(im)
+        x0, y0, rr = 0.72 * s, 0.74 * s, 0.14 * s
+        d.ellipse([x0 - rr, y0 - rr, x0 + rr, y0 + rr], fill=F, outline=C, width=lw)
+        d.line([(x0 - rr * 0.62, y0 + rr * 0.62), (x0 + rr * 0.62, y0 - rr * 0.62)], fill=C, width=max(4, lw // 2))
     else:  # question
         d.arc([c - s * 0.22, c - s * 0.4, c + s * 0.22, c + s * 0.02], 180, 400, fill=C, width=lw * 2)
         d.line([(c + s * 0.16, c - s * 0.08), (c, c + s * 0.1), (c, c + s * 0.22)], fill=C, width=lw * 2, joint="curve")
