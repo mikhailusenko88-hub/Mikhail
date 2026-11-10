@@ -76,13 +76,16 @@ def slat(art, name, sub, tex_path, out, pack=19):
         for ch in (1, 2):
             lab[..., ch] = (lab[..., ch] - 128) / c.get('sat', 1.0) + 128
         tex = Image.fromarray(cv2.cvtColor(np.clip(lab, 0, 255).astype(np.uint8), cv2.COLOR_LAB2RGB))
+    size_mm = 1000
+    if tex is not None:
+        size_mm = c.get('size_mm', 1000)
     rnd = random.Random(5)
     d.rectangle([px * S, py * S, (px + pw) * S, (py + ph) * S], fill=(14, 14, 15))
     for i in range(3):
         xl = px + (i * 40 + 15.2) * k
         lw = 24.8 * k
         if tex:
-            tw = max(8, int(tex.width * 24.8 / 1000))
+            tw = max(8, int(tex.width * 24.8 / size_mm))
             th = min(tex.height - 1, int(tw * ph / lw))
             x0 = rnd.randint(0, tex.width - tw - 1)
             y0 = rnd.randint(0, tex.height - th - 1)
