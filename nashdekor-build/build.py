@@ -384,6 +384,7 @@ def product_page(x):
     if "LED" in x["d"]: specs.append(("Подсветка", "паз под LED-ленту"))
     if "канал" in x["d"]: specs.append(("Кабель-канал", "есть, сзади"))
     specs_html = '<div class="specs"><h2>Характеристики</h2><table>%s</table></div>' % "".join("<tr><td>%s</td><td>%s</td></tr>" % (esc(k), esc(v)) for k, v in specs)
+    specs_html += ('<p class="fine m3d"><a href="%s#models">3D-модель этого профиля для 3ds Max, SketchUp, ArchiCAD и Revit — пришлём дизайнерам бесплатно</a></p>' % ROOT)
 
     price_b = ('<b class="num" id="price">%s ₽</b>' % fmt(x["r"])) if x.get("r") else '<b id="price">По запросу</b>'
     calc_btn = ('<a class="btn ghost" id="toCalc" href="%s?panel=%s#calc">Рассчитать на стену в 3D</a>' % (ROOT, esc(a))) if c in ("panel", "color") else ""

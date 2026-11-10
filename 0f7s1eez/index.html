@@ -211,6 +211,26 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
     <div><h3>Расчёт по проекту</h3><p>Пришлите развёртку стены — вернём спецификацию по артикулам и смету.</p></div>
     <div><h3>Документы для объекта</h3><p>Счёт, накладная и закрывающие документы для компаний и ИП, по ЭДО или на бумаге.</p></div>
   </div>
+  <div class="form" id="models" style="margin-top:28px">
+    <div>
+      <h3 style="font-size:22px;margin:0 0 8px">3D-модели всех профилей — бесплатно</h3>
+      <p class="note" style="font-size:15px">105 моделей в натуральную величину: белые панели под покраску, панели с декором под дерево и бетон, плинтусы, потолочные плинтусы, молдинги и уголки. Точные сечения, длина как у товара, материалы и текстуры декоров.</p>
+      <p class="note" style="font-size:15px">Форматы: FBX и OBJ — 3ds Max, Corona, V-Ray; DAE — SketchUp; GLB — Blender; сечения в DXF — AutoCAD. Оставьте e-mail и телефон — пришлём архив на почту.</p>
+    </div>
+    <form class="panel stack" id="mForm" novalidate>
+      <div class="two">
+        <label class="f">Имя<input type="text" id="mName" autocomplete="name" required></label>
+        <label class="f">Телефон<input type="tel" id="mPhone" autocomplete="tel" inputmode="tel" placeholder="+7 …" required></label>
+      </div>
+      <label class="f">E-mail — пришлём архив сюда<input type="email" id="mEmail" autocomplete="email" inputmode="email" placeholder="name@mail.ru" required></label>
+      <label class="f">В какой программе работаете<select id="mApp"><option>3ds Max</option><option>SketchUp</option><option>ArchiCAD</option><option>Revit</option><option>Blender</option><option>Другая</option></select></label>
+      <label class="chk" style="align-items:flex-start"><input type="checkbox" id="mAgree" required style="margin-top:3px"> <span>Я даю <a href="consent.html" style="color:var(--ink)">согласие на обработку персональных данных</a> и ознакомлен с <a href="privacy.html" style="color:var(--ink)">Политикой обработки персональных данных</a></span></label>
+      <input type="text" id="mHp" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="err" id="mErr" hidden></div>
+      <button class="btn" type="submit" id="mSend">Прислать 3D-модели</button>
+      <div id="mDone" hidden></div>
+    </form>
+  </div>
 </div></section>
 
 <section id="order"><div class="wrap">
@@ -552,6 +572,45 @@ $("q").addEventListener("input", () => { shown = 12; renderGrid(); });
 }));
 ["cPanel","cW","cH","cOpen","cReserve","cPlinthOn","cPlinth","cCorniceOn","cCornice"].forEach(id => $(id).addEventListener("input", renderCalc));
 $("leadForm").addEventListener("submit", submit);
+
+/* 3D-модели для дизайнеров: заявка в CRM с пометкой «3D-МОДЕЛИ», архив отправляем с почты магазина */
+async function sendModels(e){
+  e.preventDefault();
+  const name = $("mName").value.trim(), phone = $("mPhone").value.trim(), email = $("mEmail").value.trim(), app = $("mApp").value;
+  const err = $("mErr");
+  const bad = !name ? "Укажите имя." : phone.replace(/\D/g, "").length < 10 ? "Укажите телефон — например, +7 921 123-45-67." :
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? "Укажите e-mail — на него пришлём архив." :
+    !$("mAgree").checked ? "Отметьте согласие на обработку персональных данных." : "";
+  if (bad) { err.textContent = bad; err.hidden = false; return; }
+  err.hidden = true;
+  const btn = $("mSend"); btn.disabled = true; btn.textContent = "Отправляем…";
+  let ok = false;
+  if (/(^|\.)nashdekor\.ru$/.test(location.hostname)) {
+    const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 12000);
+    try {
+      const r = await fetch(LEAD_API, { method: "POST", mode: "cors", credentials: "omit", signal: ctl.signal,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, contact: phone, email, who: "designer",
+          message: `3D-МОДЕЛИ: прислать архив 3D-моделей на ${email}. Программа: ${app}.`,
+          consent: true, consentAt: new Date().toISOString(), consentVersion: "2026-10-29", intent: "models",
+          website: $("mHp").value || "" }) });
+      const j = await r.json().catch(() => ({}));
+      ok = r.ok && j.ok === true;
+    } catch (x) { ok = false; } finally { clearTimeout(timer); }
+  }
+  btn.disabled = false; btn.textContent = "Прислать 3D-модели";
+  const done = $("mDone"); done.hidden = false;
+  if (ok) {
+    done.innerHTML = '<div class="ok" role="status"><b id="mThanks"></b> Пришлём архив на <b id="mTo"></b> в рабочее время.</div>';
+    $("mThanks").textContent = `Спасибо, ${name}!`; $("mTo").textContent = email;
+    $("mForm").reset(); hit("lead", "3d-models"); hitSend();
+  } else {
+    hit("leadfail", "3d-models");
+    done.innerHTML = '<div class="err">Форма сейчас не отправляется. Напишите нам в чат (кнопка «Чат» внизу справа): «Пришлите 3D-модели» и ваш e-mail.</div>';
+  }
+}
+$("mForm").addEventListener("submit", sendModels);
+$("mForm").addEventListener("focusin", () => hit("form", "3d-models"), { once: true });
 
 /* Счётчик посещений — свой, на нашем сервере. Без cookie: уходит только «что открыли и на что нажали»,
    сайт-источник (например yandex.ru) и «сенсорный экран или нет». При «Не отслеживать» — не работает. */
