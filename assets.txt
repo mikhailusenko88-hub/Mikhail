@@ -25,3 +25,10 @@ model ceramic_vase_04 1k
 model ceramic_vase_02 1k
 model ceramic_vase_03 1k
 model standing_picture_frame_02 1k
+model wicker_basket_02 1k
+model ceramic_vase_01 1k
+model potted_plant_02 2k
+model modern_arm_chair_01 2k
+model side_table_tall_01 1k
+model hanging_picture_frame_01 1k
+model modern_ceiling_lamp_01 1k

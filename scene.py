@@ -20,7 +20,7 @@ W_PX, H_PX = [int(v) for v in A.get('res', '1200x900').split('x')]
 SAMPLES = int(A.get('samples', 160))
 SEED = int(A.get('seed', 7))
 EV = float(A.get('ev', 0))
-SUN_RATIO = float(A.get('sun', 3.0))
+SUN_RATIO = float(A.get('sun', 1.3))
 NOISE = float(A.get('noise', 0.03))
 ROOT = os.path.abspath('.')
 OUT = f'{ROOT}/out/{NAME}'
@@ -324,8 +324,13 @@ def slat_wall(name, x0, x1, z_top, y_wall, m_wood, m_black, zbot=None, step=0.04
         za, zc = zb(xa + 1e-6), zb(xb - 1e-6)
         if min(za, zc) >= z_top - 1e-4:
             continue
-        # основа
-        quad([(xa, yb, za), (xb, yb, zc), (xb, yb, z_top), (xa, yb, z_top)], 1, [(0, 0)] * 4, 0.5)
+        # основа (в проёмах дробим, чтобы низ шёл по дуге, а не по хорде)
+        nsub = 8 if (zbot and max(za, zc) > 1e-4) else 1
+        for q in range(nsub):
+            xq0, xq1 = xa + (xb - xa) * q / nsub, xa + (xb - xa) * (q + 1) / nsub
+            zq0 = zb(min(max(xq0, xa + 1e-6), xb - 1e-6))
+            zq1 = zb(min(max(xq1, xa + 1e-6), xb - 1e-6))
+            quad([(xq0, yb, zq0), (xq1, yb, zq1), (xq1, yb, z_top), (xq0, yb, z_top)], 1, [(0, 0)] * 4, 0.5)
         xl, xr = xa + (step - lam_w) / 2, xa + (step + lam_w) / 2
         prof = [(xl, yb), (xl, yf + cham), (xl + cham, yf), (xr - cham, yf), (xr, yf + cham), (xr, yb)]
         u0, v0, j = random.random(), random.random(), random.random()
@@ -333,6 +338,14 @@ def slat_wall(name, x0, x1, z_top, y_wall, m_wood, m_black, zbot=None, step=0.04
         for k in range(5):
             (xA, yA), (xB, yB) = prof[k], prof[k + 1]
             wood = k in (1, 2, 3)
+            if k == 2 and zbot and max(zs) > 1e-4:
+                for q in range(4):
+                    xq0, xq1 = xA + (xB - xA) * q / 4, xA + (xB - xA) * (q + 1) / 4
+                    zq0, zq1 = zb(xq0), zb(xq1)
+                    uv = [(u0 + (xq0 - xl) / tex_m, v0 + zq0 / tex_m), (u0 + (xq1 - xl) / tex_m, v0 + zq1 / tex_m),
+                          (u0 + (xq1 - xl) / tex_m, v0 + z_top / tex_m), (u0 + (xq0 - xl) / tex_m, v0 + z_top / tex_m)]
+                    quad([(xq0, yA, zq0), (xq1, yA, zq1), (xq1, yA, z_top), (xq0, yA, z_top)], 0, uv, j)
+                continue
             if wood:
                 uv = [(u0 + (xA - xl) / tex_m, v0 + zs[k] / tex_m), (u0 + (xB - xl) / tex_m, v0 + zs[k + 1] / tex_m),
                       (u0 + (xB - xl) / tex_m, v0 + z_top / tex_m), (u0 + (xA - xl) / tex_m, v0 + z_top / tex_m)]
@@ -437,7 +450,7 @@ def setup_render():
     c.diffuse_bounces = 6
     c.glossy_bounces = 4
     c.transmission_bounces = 8
-    c.transparent_max_bounces = 32
+    c.transparent_max_bounces = 16
     c.volume_bounces = 0
     c.caustics_reflective = False
     c.caustics_refractive = False
@@ -695,6 +708,79 @@ def books(x, y, z, n=3, rot=0.0, seed=3):
     return zz
 
 
+def credenza(x0, x1, y_back, z0=0.17, h=0.46, depth=0.42, n_doors=4, color=None):
+    """Тумба: матовая эмаль, фасады без ручек с тонкими зазорами, чёрные металлические опоры. Возвращает высоту столешницы."""
+    mc = mat_simple('cab_lacquer', color or srgb(232, 228, 219), rough=0.36, bump=0.015, bump_scale=900.0)
+    yf, dt, gap, top_t = y_back - depth, 0.019, 0.003, 0.022
+    box('cab_body', x0, x1, yf + dt + 0.002, y_back, z0, z0 + h, mc, bevel=0.0015)
+    box('cab_top', x0 - 0.004, x1 + 0.004, yf - 0.004, y_back, z0 + h, z0 + h + top_t, mc, bevel=0.002)
+    dw = (x1 - x0 - gap * (n_doors - 1)) / n_doors
+    for i in range(n_doors):
+        xa = x0 + i * (dw + gap)
+        box(f'cab_door{i}', xa, xa + dw, yf, yf + dt, z0 + 0.002, z0 + h - 0.003, mc, bevel=0.0015)
+    ml = mat_simple('cab_legs', (0.012, 0.012, 0.013, 1), rough=0.42, metallic=1.0)
+    for k, xx in enumerate((x0 + 0.20, x1 - 0.20 - 0.018)):
+        box(f'cab_leg{k}a', xx, xx + 0.018, yf + 0.05, yf + 0.068, 0.018, z0, ml)
+        box(f'cab_leg{k}b', xx, xx + 0.018, y_back - 0.068, y_back - 0.05, 0.018, z0, ml)
+        box(f'cab_leg{k}c', xx, xx + 0.018, yf + 0.05, y_back - 0.05, 0.0, 0.018, ml)
+    return z0 + h + top_t
+
+
+def bench(x0, x1, y_back, depth=0.36, z=0.44, wood_id='oak_veneer_01'):
+    mw = mat_pbr('bench_wood', wood_id, 1.83, rough=0.45, tint=srgb(214, 190, 160))
+    box('bench_seat', x0, x1, y_back - depth, y_back, z - 0.04, z, mw, bevel=0.003)
+    ml = mat_simple('bench_legs', (0.012, 0.012, 0.013, 1), rough=0.42, metallic=1.0)
+    for k, xx in enumerate((x0 + 0.10, x1 - 0.10 - 0.02)):
+        box(f'bn{k}a', xx, xx + 0.02, y_back - depth + 0.03, y_back - depth + 0.05, 0.02, z - 0.04, ml)
+        box(f'bn{k}b', xx, xx + 0.02, y_back - 0.05, y_back - 0.03, 0.02, z - 0.04, ml)
+        box(f'bn{k}c', xx, xx + 0.02, y_back - depth + 0.03, y_back - 0.03, 0.0, 0.02, ml)
+    return z
+
+
+def arch_wall(name, x_from, x_to, a, b, hj, y0, T, H, mat, seg=0.01):
+    """Стена толщиной T (y0..y0+T) с арочным проёмом a..b: прямые откосы до hj, выше — полукруг."""
+    c, rr = (a + b) / 2, (b - a) / 2
+
+    def zb(x):
+        return hj + math.sqrt(max(0.0, rr * rr - (x - c) ** 2)) if a - 1e-9 <= x <= b + 1e-9 else 0.0
+
+    V, F, SM, UV = [], [], [], []
+
+    def quad(pts, uv, sm=False):
+        k = len(V)
+        V.extend(pts)
+        F.append((k, k + 1, k + 2, k + 3))
+        SM.append(sm)
+        UV.append(uv)
+
+    def colm(xa, xb, za, zc):
+        quad([(xa, y0, za), (xb, y0, zc), (xb, y0, H), (xa, y0, H)], [(xa, za), (xb, zc), (xb, H), (xa, H)])
+        quad([(xb, y0 + T, zc), (xa, y0 + T, za), (xa, y0 + T, H), (xb, y0 + T, H)], [(xb, zc), (xa, za), (xa, H), (xb, H)])
+
+    colm(x_from, a, 0.0, 0.0)
+    colm(b, x_to, 0.0, 0.0)
+    n = int(round((b - a) / seg))
+    xi = [a + (b - a) * k / n for k in range(n + 1)]
+    for k in range(n):
+        colm(xi[k], xi[k + 1], zb(xi[k]), zb(xi[k + 1]))
+    strip = [(a, 0.0)] + [(x, zb(x)) for x in xi] + [(b, 0.0)]
+    base = len(V)
+    s_len = 0.0
+    lens = [0.0]
+    for j in range(1, len(strip)):
+        s_len += math.hypot(strip[j][0] - strip[j - 1][0], strip[j][1] - strip[j - 1][1])
+        lens.append(s_len)
+    for (x, z) in strip:
+        V.append((x, y0, z))
+        V.append((x, y0 + T, z))
+    for j in range(len(strip) - 1):
+        F.append((base + 2 * j, base + 2 * j + 1, base + 2 * j + 3, base + 2 * j + 2))
+        SM.append(True)
+        UV.append([(lens[j], 0.0), (lens[j], T), (lens[j + 1], T), (lens[j + 1], 0.0)])
+    ob = make_obj(name, V, F, [mat], uvs=UV, smooth=SM)
+    return ob, zb
+
+
 def table_lamp(x, y, z, lamps):
     mb = mat_simple('lamp_base', srgb(46, 52, 48), rough=0.35)
     cyl('lamp_base', x, y, z, z + 0.03, 0.075, 0.075, mb)
@@ -726,12 +812,12 @@ def scene_lounge():
     box('track', 0.07, 0.17, 2.0, 5.05, 2.64, 2.67, mat_simple('track', srgb(240, 240, 238), rough=0.4))
     lamps = []
     # тумба у стены
-    cab = load_asset('modern_wooden_cabinet', loc=(2.15, D - 0.012 - 0.28, 0), rot=float(A.get('cab_rot', 180)))
-    top = 0.68
-    yc = D - 0.012 - 0.28
-    if cab is None:
-        box('cab', 1.2, 3.1, D - 0.45, D - 0.012, 0.15, 0.6, mat_simple('cabm', srgb(232, 228, 220), rough=0.4), bevel=0.003)
-        top = 0.6
+    yc = D - 0.012 - 0.015 - 0.21
+    if A.get('cab', 'proc') == 'asset':
+        load_asset('modern_wooden_cabinet', loc=(2.15, D - 0.012 - 0.28, 0), rot=float(A.get('cab_rot', 180)))
+        top = 0.68
+    else:
+        top = credenza(1.2, 3.1, D - 0.012 - 0.015)
     table_lamp(1.45, yc, top, lamps)
     zz = books(2.25, yc - 0.02, top, 3, seed=4)
     load_asset('ceramic_vase_02', loc=(2.25, yc - 0.02, zz), rot=20)
@@ -748,11 +834,87 @@ def scene_lounge():
     az, el = float(A.get('sun_az', 40)), float(A.get('sun_el', 30))
     sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
     world, sun = setup_world(sun_dir)
-    camera((2.55, 0.75, 1.22), (2.15, D, 1.02), lens=float(A.get('lens', 30)), fstop=float(A.get('fstop', 5.6)), focus=4.3)
+    if A.get('cam', 'main') == 'close':
+        camera((1.05, 4.15, 1.10), (2.05, D, 0.98), lens=float(A.get('lens', 50)), fstop=float(A.get('fstop', 4.0)), focus=1.45)
+    else:
+        camera((2.55, 0.75, 1.22), (2.15, D, 1.02), lens=float(A.get('lens', 30)), fstop=float(A.get('fstop', 5.6)), focus=4.3)
     return world, sun, sun_dir, lamps
 
 
-SCENES = {'lounge': scene_lounge}
+def left_wall_with_windows(D, H, wins, m_wall, wall_t=0.3):
+    mf = mat_simple('frame', srgb(238, 238, 236), rough=0.35)
+    y = 0.0
+    for k, (y0, y1, z0, z1) in enumerate(wins):
+        box(f'wall_left_{k}', -wall_t, 0, y, y0, 0, H, m_wall)
+        box(f'wall_left_top{k}', -wall_t, 0, y0, y1, z1, H, m_wall)
+        if z0 > 0:
+            box(f'wall_left_bot{k}', -wall_t, 0, y0, y1, 0, z0, m_wall)
+        fx0, fx1, fw = -wall_t + 0.08, -wall_t + 0.15, 0.055
+        box(f'frame_b{k}', fx0, fx1, y0, y1, z0, z0 + fw, mf)
+        box(f'frame_t{k}', fx0, fx1, y0, y1, z1 - fw, z1, mf)
+        n = max(1, int(round((y1 - y0) / 0.9)))
+        for i in range(n + 1):
+            yy = y0 + (y1 - y0) * i / n
+            ya = yy if i == 0 else (yy - fw if i == n else yy - fw / 2)
+            box(f'frame_v{k}_{i}', fx0, fx1, ya, ya + fw, z0, z1, mf)
+        y = y1
+    box('wall_left_end', -wall_t, 0, y, D, 0, H, m_wall)
+
+
+def scene_arch():
+    W, Y0, T, D2, H = 4.0, 4.2, 0.16, 8.2, 2.7
+    wt = 0.3
+    m_wall = mat_pbr('wall_paint', 'beige_wall_001', 3.0, color=srgb(236, 232, 224), rough=0.9, nstrength=0.6)
+    m_ceil = mat_simple('ceil_paint', srgb(244, 243, 240), rough=0.95)
+    m_floor = mat_pbr('floor', 'laminate_floor_02', 1.7, rough_add=-0.05, nstrength=0.8, rot=R(float(A.get('floor_rot', 90))),
+                      tint=srgb(232, 222, 210))
+    box('floor', -wt, W + wt, -wt, D2 + wt, -0.1, 0.0, m_floor)
+    box('ceil', -wt, W + wt, -wt, D2 + wt, H, H + 0.1, m_ceil)
+    box('wall_front', -wt, W + wt, -wt, 0, 0, H, m_wall)
+    box('wall_far', -wt, W + wt, D2, D2 + wt, 0, H, m_wall)
+    box('wall_right', W, W + wt, 0, D2, 0, H, m_wall)
+    left_wall_with_windows(D2, H, [(1.3, 3.5, 0.06, 2.46), (Y0 + T + 0.9, D2 - 0.9, 0.06, 2.46)], m_wall, wt)
+    box('outside_ground', -400, 400, -400, 400, -12.1, -12.0, mat_simple('ground', (0.16, 0.17, 0.13, 1), rough=1.0))
+    a, b, hj = 2.0, 3.0, float(A.get('hj', 1.62))
+    ob, zb = arch_wall('wall_arch', -wt, W + wt, a, b, hj, Y0, T, H, m_wall)
+    m_wood, m_black = mat_decor(DECOR), mat_simple('pan_black', (0.007, 0.007, 0.008, 1), rough=0.8, **{'Specular IOR Level': 0.25})
+    slat_wall('panels', 0.0, W, H, Y0, m_wood, m_black, zbot=lambda x: zb(x) if a < x < b else 0.0)
+    mp = mat_simple('plinth', srgb(240, 240, 238), rough=0.4)
+    box('plinth_r', W - 0.013, W, 0, Y0 - 0.012, 0, 0.08, mp, bevel=0.002)
+    box('plinth_r2', W - 0.013, W, Y0 + T, D2, 0, 0.08, mp, bevel=0.002)
+    box('plinth_far', 0, W, D2 - 0.013, D2, 0, 0.08, mp, bevel=0.002)
+    box('plinth_b1', 0, a, Y0 + T, Y0 + T + 0.013, 0, 0.08, mp, bevel=0.002)
+    box('plinth_b2', b, W, Y0 + T, Y0 + T + 0.013, 0, 0.08, mp, bevel=0.002)
+    sh = mat_sheer()
+    curtain('sheer1', 0.12, 1.1, 3.75, 0.012, 2.64, sh, seed=1)
+    curtain('sheer2', 0.12, Y0 + T + 0.7, D2 - 0.7, 0.012, 2.64, sh, seed=2)
+    mt = mat_simple('track', srgb(240, 240, 238), rough=0.4)
+    box('track1', 0.07, 0.17, 1.0, 3.85, 2.64, 2.67, mt)
+    box('track2', 0.07, 0.17, Y0 + T + 0.6, D2 - 0.6, 2.64, 2.67, mt)
+    lamps = []
+    # перед стеной: скамья, корзина, книги, ваза; растение справа от арки
+    yb = Y0 - 0.012 - 0.01
+    zs = bench(0.55, 1.75, yb)
+    load_asset('wicker_basket_02', loc=(0.95, yb - 0.2, 0), rot=10, scale=1.25)
+    zt = books(1.45, yb - 0.17, zs, 2, seed=5)
+    load_asset('ceramic_vase_01', loc=(0.8, yb - 0.17, zs), rot=30)
+    load_asset('potted_plant_02', loc=(3.5, Y0 - 0.5, 0), rot=120)
+    # за аркой: кресло, столик с вазой, картина, подвес
+    load_asset('modern_arm_chair_01', loc=(3.15, Y0 + T + 2.2, 0), rot=float(A.get('chair_rot', 150)))
+    load_asset('side_table_tall_01', loc=(2.8, Y0 + T + 2.9, 0), rot=0)
+    load_asset('ceramic_vase_04', loc=(2.8, Y0 + T + 2.9, 0.761), rot=40)
+    load_asset('hanging_picture_frame_01', loc=(3.2, D2 - 0.012, 1.05), rot=float(A.get('pic_rot', 0)))
+    load_asset('modern_ceiling_lamp_01', loc=(2.75, Y0 + T + 1.5, H - 0.9515), rot=0)
+    m_rug = mat_pbr('rug', 'hessian_230', 0.55, tint=srgb(240, 232, 218), nstrength=1.5)
+    box('rug', 1.9, 3.8, Y0 + T + 1.2, Y0 + T + 3.4, 0.0, 0.012, m_rug, bevel=0.004)
+    az, el = float(A.get('sun_az', 38)), float(A.get('sun_el', 32))
+    sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
+    world, sun = setup_world(sun_dir)
+    camera((1.5, 0.5, 1.25), (2.05, Y0, 1.08), lens=float(A.get('lens', 28)), fstop=float(A.get('fstop', 8)), focus=4.0)
+    return world, sun, sun_dir, lamps
+
+
+SCENES = {'lounge': scene_lounge, 'arch': scene_arch}
 
 setup_render()
 world, sun, sun_dir, lamps = SCENES[SCENE]()
