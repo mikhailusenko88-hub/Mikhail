@@ -284,6 +284,22 @@ jobs:
           curl -sk $R -c $J -b $J https://$H/taxes > /tmp/tax.html
           grep -o 'Фиксированные взносы ИП за 2026 год\|9 405,58 ₽\|Статформа в таможню — закупка № [0-9]*\|Декларация по косвенным налогам + заявление о ввозе, НДС — закупка № [0-9]*' /tmp/tax.html | sort -u
           echo "утренняя сводка: $(sudo prostranstvo-crm digest 2>&1 | head -n 2 | tr '\n' ' ')"
+          echo "--- счёт на оплату (PDF + QR):"
+          dpkg -l python3-reportlab fonts-dejavu-core 2>/dev/null | awk '/^ii/{print "пакет:", $2, $3}'
+          read ACC INN < <(sudo -u prostranstvo python3 -c "
+          import sys; sys.path.insert(0, '/opt/prostranstvo-crm/src/crm')
+          from test_crm import valid_account, valid_inn12; print(valid_account('044525104'), valid_inn12())" 2>/dev/null | tail -n1)
+          T=$(curl -sk $R -c $J -b $J https://$H/settings | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "inv_name=Индивидуальный предприниматель Тестова Анна Петровна" --data-urlencode "inv_inn=$INN" --data-urlencode "inv_account=$ACC" --data-urlencode "inv_bank=ООО «Банк Точка»" --data-urlencode "inv_bik=044525104" --data-urlencode "inv_corr=30101810745374525104" --data-urlencode "inv_city=г. Санкт-Петербург" --data-urlencode "inv_signer=Тестова А. П." --data-urlencode "inv_days=3" https://$H/settings/invoice
+          D=$(sudo sqlite3 /var/lib/prostranstvo/crm.db "select deal_id from lines order by id limit 1")
+          echo "заявка для счёта: $D"
+          T=$(curl -sk $R -c $J -b $J https://$H/deals/$D | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "pct=50" https://$H/deals/$D/invoice
+          echo "счёт в базе: $(sudo sqlite3 /var/lib/prostranstvo/crm.db "select deal_id||'/'||n||' pct '||pct||' amount '||amount||' '||status from invoices order by id desc limit 1")"
+          IID=$(sudo sqlite3 /var/lib/prostranstvo/crm.db "select id from invoices order by id desc limit 1")
+          code=$(curl -sk $R -c $J -b $J -o /tmp/inv.pdf -w '%{http_code} %{content_type}' https://$H/invoices/$IID.pdf)
+          echo "PDF: $code, $(stat -c %s /tmp/inv.pdf) байт, начало: $(head -c 5 /tmp/inv.pdf)"
+          curl -sk $R -c $J -b $J https://$H/deals/$D | grep -o "№ $D/1 от [0-9.]*\|ждёт оплаты" | sort -u
           echo "--- ЕГРЮЛ ФНС с раннера GitHub (за границей сервис может не ответить — на сервере в Москве работает):"
           sudo -u prostranstvo python3 -I -c "
           import sys; sys.path.insert(0, '/opt/prostranstvo-crm/src/crm')
