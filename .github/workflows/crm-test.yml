@@ -266,6 +266,19 @@ jobs:
           curl -sk $R -c $J -b $J "$loc" > /tmp/pur.html
           grep -o 'Нужен ДОПП: ввоз из [^ ]* автомобилем' /tmp/pur.html | head -n1
           grep -o '<tfoot>.*</tfoot>' /tmp/pur.html | sed 's/<[^>]*>/ /g;s/  */ /g' | head -n1
+          echo "--- загрузка из Excel (вторая закупка):"
+          sudo -u prostranstvo python3 -c "
+          import sys; sys.path.insert(0, '/opt/prostranstvo-crm/src/crm')
+          from test_crm import make_xlsx
+          open('/tmp/spec.xlsx', 'wb').write(make_xlsx({'Спецификация': [['№', 'Артикул', 'Коробки', 'Штуки', 'Цена, ₽', 'Вес, кг'], [1, 'А 902', 3, 33, 423.85, 36.3], [2, 'A907', 2, 24, 504.59, 39.7], [None, 'Итого', 5, 57, None, 76]]}))
+          " 2>&1 | tail -n 2
+          sudo cp /tmp/spec.xlsx /tmp/spec2.xlsx; sudo chmod 644 /tmp/spec2.xlsx
+          loc2=$(curl -sk $R -c $J -b $J -o /dev/null -w '%{redirect_url}' --data-urlencode "csrf=$T" --data-urlencode "num=" --data-urlencode "transport=rail" https://$H/purchases/new)
+          echo "загрузка: $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' -F "csrf=$T" -F "replace=1" -F "file=@/tmp/spec2.xlsx;filename=Спецификация.xlsx" "$loc2/xlsx")"
+          curl -sk $R -c $J -b $J "$loc2" | grep -o 'загружено позиций: [0-9]* (лист «[^»]*»)\|ДОПП не нужен' | sort -u
+          echo "позиции из файла: $(sudo sqlite3 /var/lib/prostranstvo/crm.db "select group_concat(article||' '||qty||' шт '||price_kop||' коп '||weight_g||' г', '; ') from purchase_lines where purchase_id=2")"
+          head -c 1100000 /dev/urandom > /tmp/big.bin
+          echo "файл больше 1 МБ через nginx: $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' -F "csrf=$T" -F "file=@/tmp/big.bin;filename=big.xlsx" "$loc2/xlsx") (ждём 413)"
           curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "day=$(date +%F)" "$loc/receive"
           echo "склад и партии:"; sudo sqlite3 /var/lib/prostranstvo/crm.db "select s.article, s.qty, l.qty_in, l.unit_kop from stock s join lots l on l.article=s.article"
           curl -sk $R -c $J -b $J https://$H/taxes > /tmp/tax.html
