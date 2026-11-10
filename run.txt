@@ -1,10 +1,23 @@
 # имя  аргументы для scene.py (или "py script.py")
-q1 scene=lounge decor=3-7 res=800x600 samples=64 noise=0.06 cam=sample
-q2 scene=lounge decor=3-15 res=800x600 samples=48 noise=0.08 cam=diag
-q3 scene=lounge decor=3-9 res=800x600 samples=48 noise=0.08 tv=1 chair=modern_arm_chair_01 chair_at=3.3,3.7
-q4 scene=arch decor=3-9 res=800x600 samples=48 noise=0.08 cam=b
-q5 scene=lounge decor=A910 paint=5F7563 res=800x600 samples=48 noise=0.08 cam=mid sun_az=24 sun_el=22
-q6 scene=lounge decor=A910 res=800x600 samples=64 noise=0.06 cam=macro2 sun_az=24 sun_el=22
-q7 scene=plinth decor=A703 res=800x600 samples=64 noise=0.06
-q8 scene=plinth decor=A703 res=800x600 samples=64 noise=0.06 cam=wide
-q9 scene=arch decor=A910 paint=C9BBA8 res=800x600 samples=48 noise=0.08
+a37_arch scene=arch decor=3-7 res=1600x1200 samples=200 noise=0.035
+a37_macro scene=lounge decor=3-7 cam=macro res=1600x1200 samples=200 noise=0.035
+a37_close scene=lounge decor=3-7 cam=close res=1600x1200 samples=200 noise=0.035
+a37_sample scene=lounge decor=3-7 cam=sample res=1600x1200 samples=200 noise=0.035
+b315_diag scene=lounge decor=3-15 cam=diag res=1600x1200 samples=200 noise=0.035
+b315_arch scene=arch decor=3-15 cam=c res=1600x1200 samples=200 noise=0.035
+b315_macro scene=lounge decor=3-15 cam=macro res=1600x1200 samples=200 noise=0.035
+b315_sample scene=lounge decor=3-15 cam=sample piece_rot=24 res=1600x1200 samples=200 noise=0.035
+b315_mid scene=lounge decor=3-15 cam=mid res=1600x1200 samples=200 noise=0.035
+c39_tv scene=lounge decor=3-9 tv=1 chair=modern_arm_chair_01 chair_at=3.3,3.7 res=1600x1200 samples=200 noise=0.035
+c39_arch scene=arch decor=3-9 cam=b res=1600x1200 samples=200 noise=0.035
+c39_macro scene=lounge decor=3-9 cam=macro res=1600x1200 samples=200 noise=0.035
+c39_sample scene=lounge decor=3-9 cam=sample piece_rot=34 res=1600x1200 samples=200 noise=0.035
+c39_close scene=lounge decor=3-9 cam=close res=1600x1200 samples=200 noise=0.035
+d910_mid scene=lounge decor=A910 paint=5F7563 cam=mid sun_az=24 sun_el=22 res=1600x1200 samples=200 noise=0.035
+d910_white scene=lounge decor=A910 cabcol=3B3F42 sun_az=24 sun_el=22 ev=-0.35 res=1600x1200 samples=200 noise=0.035
+d910_arch scene=arch decor=A910 paint=C9BBA8 res=1600x1200 samples=200 noise=0.035
+d910_macro scene=lounge decor=A910 cam=macro2 sun_az=24 sun_el=22 ev=-1.0 res=1600x1200 samples=200 noise=0.035
+d910_sample scene=lounge decor=A910 cam=sample tblcol=50545A res=1600x1200 samples=200 noise=0.035
+e703_close scene=plinth decor=A703 res=1600x1200 samples=200 noise=0.035
+e703_wide scene=plinth decor=A703 cam=wide res=1600x1200 samples=200 noise=0.035
+e703_light scene=plinth decor=A703 paint=CFC8BA res=1600x1200 samples=200 noise=0.035

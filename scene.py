@@ -946,6 +946,42 @@ def panel_piece(name, loc, rot, length, step=0.040, lam_w=0.0248, total_t=0.012,
     return ob
 
 
+def reeded_piece(name, loc, rot, length, mat, pitch=0.020, t_min=0.00822, t_max=0.012, n=9, seg=12):
+    """Отрезок панели A910 лежит лицом вверх: виден торец с валиками."""
+    h = t_max - t_min
+    rr = ((pitch / 2) ** 2 + h * h) / (2 * h)
+    w, L = n * pitch, length
+    V, F, SM = [], [], []
+    prof = []
+    for i in range(n):
+        base = len(V)
+        for k in range(seg + 1):
+            x = i * pitch + pitch * k / seg
+            t = t_min + math.sqrt(max(0.0, rr * rr - (x - i * pitch - pitch / 2) ** 2)) - (rr - h)
+            V.append((x, 0.0, t))
+            V.append((x, L, t))
+            prof.append((x, t))
+        for k in range(seg):
+            F.append((base + 2 * k, base + 2 * k + 2, base + 2 * k + 3, base + 2 * k + 1))
+            SM.append(True)
+
+    def flat(pts):
+        k = len(V)
+        V.extend(pts)
+        F.append(tuple(range(k, k + len(pts))))
+        SM.append(False)
+
+    flat([(0, 0, 0), (0, L, 0), (w, L, 0), (w, 0, 0)])
+    flat([(0, L, 0), (0, 0, 0), (0, 0, t_min), (0, L, t_min)])
+    flat([(w, 0, 0), (w, L, 0), (w, L, t_min), (w, 0, t_min)])
+    flat([(0, 0, 0), (w, 0, 0)] + [(x, 0.0, t) for x, t in reversed(prof)])
+    flat([(w, L, 0), (0, L, 0)] + [(x, L, t) for x, t in prof])
+    ob = make_obj(name, V, F, [mat], smooth=SM)
+    ob.location = loc
+    ob.rotation_euler = (0, 0, R(rot))
+    return ob
+
+
 def hexcol(h):
     h = h.lstrip('#')
     return srgb(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
@@ -1025,15 +1061,21 @@ def scene_lounge():
         camera((3.95, 1.25, 1.2), (1.5, D, 1.0), lens=30, fstop=5.6, focus=4.2)
     elif cm == 'sample':
         # образец панели на светлом столике, стена с тумбой — фоном
-        mt = mat_simple('tbl', srgb(236, 233, 226), rough=0.5, bump=0.01, bump_scale=700.0)
+        mt = mat_simple('tbl', hexcol(A['tblcol']) if 'tblcol' in A else srgb(236, 233, 226), rough=0.5, bump=0.01, bump_scale=700.0)
         box('tbl_top', 1.55, 2.75, 2.75, 3.45, 0.70, 0.73, mt, bevel=0.003)
         ml = mat_simple('tbl_legs', (0.012, 0.012, 0.013, 1), rough=0.42, metallic=1.0)
         for k, (lx, ly) in enumerate(((1.6, 2.8), (2.68, 2.8), (1.6, 3.38), (2.68, 3.38))):
             box(f'tbl_leg{k}', lx, lx + 0.02, ly, ly + 0.02, 0, 0.70, ml)
         pr = float(A.get('piece_rot', 30))
-        panel_piece('piece_a', (2.0, 2.95, 0.73), pr, 0.46)
-        panel_piece('piece_b', (2.0 + 0.145 * math.cos(R(pr)) + 0.07 * math.sin(R(pr)), 2.95 + 0.145 * math.sin(R(pr)) - 0.07 * math.cos(R(pr)), 0.73),
-                    pr, 0.38)
+        if DECOR.upper() == 'A910':
+            mpc = bpy.data.materials.get('a910_paint')
+            reeded_piece('piece_a', (1.93, 2.95, 0.73), pr, 0.46, mpc)
+            reeded_piece('piece_b', (1.93 + 0.21 * math.cos(R(pr)) + 0.07 * math.sin(R(pr)), 2.95 + 0.21 * math.sin(R(pr)) - 0.07 * math.cos(R(pr)), 0.73),
+                         pr, 0.38, mpc)
+        else:
+            panel_piece('piece_a', (2.0, 2.95, 0.73), pr, 0.46)
+            panel_piece('piece_b', (2.0 + 0.145 * math.cos(R(pr)) + 0.07 * math.sin(R(pr)), 2.95 + 0.145 * math.sin(R(pr)) - 0.07 * math.cos(R(pr)), 0.73),
+                        pr, 0.38)
         load_asset('potted_plant_04', loc=(1.72, 3.3, 0.73), rot=20)
         camera((2.04, 2.5, 0.95), (2.1, 3.02, 0.735), lens=50, fstop=float(A.get('fstop', 5.6)), focus=0.52, level=False)
     return world, sun, sun_dir, lamps, cal
@@ -1111,6 +1153,8 @@ def scene_arch():
     cal = camera((1.5, 0.5, 1.25), (2.05, Y0, 1.08), lens=float(A.get('lens', 28)), fstop=float(A.get('fstop', 8)), focus=4.0)
     if A.get('cam') == 'b':     # с другой стороны: виден откос арки и дальняя комната с окном
         camera((3.05, 0.6, 1.25), (1.9, Y0, 1.05), lens=28, fstop=8, focus=4.0)
+    elif A.get('cam') == 'c':   # ближе и почти в лоб: арка крупно
+        camera((2.2, 1.35, 1.25), (2.35, Y0, 1.12), lens=30, fstop=8, focus=3.0)
     return world, sun, sun_dir, lamps, cal
 
 
@@ -1127,10 +1171,11 @@ def scene_plinth():
     mp = mat_simple('plinth_white', srgb(242, 242, 239), rough=0.38)
     plinth_run('pl_back', (0.0, D), (W, D), (0, -1), mp, miter1=True)
     plinth_run('pl_right', (W, 0.0), (W, D), (-1, 0), mp, miter1=True)
-    plinth_piece('pl_piece', (2.7, 4.5, 0.0), float(A.get('piece_rot', 12)), 0.55, mp)
+    if A.get('cam') != 'wide':
+        plinth_piece('pl_piece', (2.62, 4.42, 0.0), float(A.get('piece_rot', 73)), 0.40, mp)
     curtain('sheer', 0.12, 1.8, 4.65, 0.012, 2.64, mat_sheer())
     box('track', 0.07, 0.17, 1.7, 4.75, 2.64, 2.67, mat_simple('track', srgb(240, 240, 238), rough=0.4))
-    load_asset('potted_plant_02', loc=(3.62, D - 0.36, 0), rot=120)
+    load_asset('potted_plant_02', loc=(3.66, D - 0.34, 0), rot=120)
     az, el = float(A.get('sun_az', 40)), float(A.get('sun_el', 24))
     sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
     world, sun = setup_world(sun_dir)
@@ -1138,8 +1183,8 @@ def scene_plinth():
     if A.get('cam') == 'wide':
         camera((1.6, 2.2, 0.55), (3.2, D, 0.3), lens=30, fstop=8, focus=2.6)
     else:
-        camera((2.55, 4.0, float(A.get('cam_z', 0.2))), (3.5, D, 0.06), lens=float(A.get('lens', 35)), fstop=float(A.get('fstop', 11)),
-               focus=float(A.get('focus', 0.8)))
+        camera((2.55, 4.0, float(A.get('cam_z', 0.2))), (3.5, D, 0.06), lens=float(A.get('lens', 35)), fstop=float(A.get('fstop', 16)),
+               focus=float(A.get('focus', 0.65)))
     return world, sun, sun_dir, [], cal
 
 

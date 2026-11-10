@@ -65,6 +65,17 @@ def slat(art, name, sub, tex_path, out, pack=19):
     px, py, ph = 150, 250, 800
     pw = 120 * k
     tex = Image.open(tex_path).convert('RGB') if tex_path else None
+    if tex is not None:
+        # текстура подготовлена под рендер (темнее и насыщеннее); для схемы возвращаем цвет каталога
+        import json
+        import numpy as np
+        import cv2
+        c = json.load(open('decors.json', encoding='utf-8'))['decors'].get(art, {})
+        lab = cv2.cvtColor(np.asarray(tex), cv2.COLOR_RGB2LAB).astype(np.float32)
+        lab[..., 0] -= c.get('dl', 0.0)
+        for ch in (1, 2):
+            lab[..., ch] = (lab[..., ch] - 128) / c.get('sat', 1.0) + 128
+        tex = Image.fromarray(cv2.cvtColor(np.clip(lab, 0, 255).astype(np.uint8), cv2.COLOR_LAB2RGB))
     rnd = random.Random(5)
     d.rectangle([px * S, py * S, (px + pw) * S, (py + ph) * S], fill=(14, 14, 15))
     for i in range(3):
