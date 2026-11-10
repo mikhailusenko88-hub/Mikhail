@@ -1,0 +1,14 @@
+fetched model wicker_basket_02 1k 4 files
+fetched model ceramic_vase_01 1k 5 files
+fetched model potted_plant_02 2k 8 files
+fetched model modern_arm_chair_01 2k 9 files
+fetched model side_table_tall_01 1k 5 files
+fetched model hanging_picture_frame_01 1k 9 files
+fetched model modern_ceiling_lamp_01 1k 5 files
+assets ready: 33 of 33
+src mocha_oak_veneer (2048, 2048, 3) gx/gy 1.62 4.28 rotated
+decor 3-7 {'src': 'mocha_oak_veneer', 'size_mm': 1000, 'l_gain': 2.2, 'shape': [2048, 2048], 'mean_bgr': [86.1, 121.3, 170.3]}
+src oak_veneer_01 (4096, 4096, 3) gx/gy 7.83 1.93 
+decor 3-15 {'src': 'oak_veneer_01', 'size_mm': 1830, 'l_gain': 1.14, 'shape': [4096, 4096], 'mean_bgr': [91.5, 148.5, 195.2]}
+src walnut_veneer_02 (2048, 2048, 3) gx/gy 1.64 6.46 rotated
+decor 3-9 {'src': 'walnut_veneer_02', 'size_mm': 1000, 'l_gain': 2.2, 'shape': [2048, 2048], 'mean_bgr': [70.7, 96.6, 137.0]}
