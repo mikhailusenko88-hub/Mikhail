@@ -245,6 +245,48 @@ jobs:
           for i in $(seq 1 10); do curl -s -o /dev/null -H 'X-Forwarded-For: 198.51.100.7' --data 'login=yulia&password=bad' http://127.0.0.1:8081/login; done
           sleep 4
           sudo fail2ban-client status prostranstvo-crm | grep -E 'Banned IP' | grep -q 198.51.100.7 && echo "ОШИБКА: свой адрес заблокирован" || echo "свой адрес 198.51.100.7 не заблокирован после 10 неверных паролей — правильно"
+      - name: Учёт — закупки, ДОПП, налоги, дизайнеры, ЕГРЮЛ
+        if: always()
+        run: |
+          mkdir -p status; O=status/crm-buh.md
+          {
+          echo "# Учёт: закупки, налоги, дизайнеры — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/j9
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          for p in / /purchases /taxes /designers /stock/docs /tasks /money; do echo "$p $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' https://$H$p)"; done
+          T=$(curl -sk $R -c $J -b $J https://$H/purchases | tok)
+          loc=$(curl -sk $R -c $J -b $J -o /dev/null -w '%{redirect_url}' --data-urlencode "csrf=$T" --data-urlencode "num=" --data-urlencode "transport=auto" https://$H/purchases/new)
+          echo "закупка: $loc"
+          T=$(curl -sk $R -c $J -b $J "$loc" | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "paste=$(printf 'A902 18 423,85\nA907 12 504,59')" "$loc/lines"
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "sec=dopp" --data-urlencode "border_date=$(date -d '+20 days' +%F)" --data-urlencode "ship_date=$(date -d '+15 days' +%F)" "$loc"
+          curl -sk $R -c $J -b $J "$loc" > /tmp/pur.html
+          grep -o 'Нужен ДОПП: ввоз из [^ ]* автомобилем' /tmp/pur.html | head -n1
+          grep -o '<tfoot>.*</tfoot>' /tmp/pur.html | sed 's/<[^>]*>/ /g;s/  */ /g' | head -n1
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "day=$(date +%F)" "$loc/receive"
+          echo "склад и партии:"; sudo sqlite3 /var/lib/prostranstvo/crm.db "select s.article, s.qty, l.qty_in, l.unit_kop from stock s join lots l on l.article=s.article"
+          curl -sk $R -c $J -b $J https://$H/taxes > /tmp/tax.html
+          grep -o 'Фиксированные взносы ИП за 2026 год\|9 405,58 ₽\|Статформа в таможню — закупка № [0-9]*\|Декларация по косвенным налогам + заявление о ввозе, НДС — закупка № [0-9]*' /tmp/tax.html | sort -u
+          echo "утренняя сводка: $(sudo prostranstvo-crm digest 2>&1 | head -n 2 | tr '\n' ' ')"
+          echo "--- ЕГРЮЛ ФНС с раннера GitHub (за границей сервис может не ответить — на сервере в Москве работает):"
+          sudo -u prostranstvo python3 -I -c "
+          import sys; sys.path.insert(0, '/opt/prostranstvo-crm/src/crm')
+          import buh
+          try:
+              r = buh.egrul_lookup('7707083893'); print('ОК:', r['company'], '| КПП', r['kpp'], '| ОГРН', r['ogrn'], '|', r['signer'][:60])
+          except Exception as e:
+              print('нет ответа:', e)
+          " 2>&1 | tail -n 2
+          echo '```'
+          } > "$O" 2>&1
+          cat "$O"
+          git config user.name crm-test; git config user.email crm-test@users.noreply.github.com
+          git add status; git commit -m "crm-test buh $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
       - name: Страница CRM «Сервер»
         if: always()
         run: |
