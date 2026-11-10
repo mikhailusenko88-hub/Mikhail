@@ -2958,15 +2958,24 @@ function lightBase(type, time) { // свет всегда почти белый:
 }
 
 // ---------- камера ----------
+// трое и больше стоят в ряд — мягкая дуга к зрителю (крайние чуть ближе), как компания в разговоре, а не строй на линейке
+function arcOf(S, lib, hugF) { const ids = Object.keys(S).filter(id => S[id].vis && lib.characters[id] && !(hugF && hugF[id])); if (ids.length < 3) return null; let a = 9, b = -9; for (const id of ids) { a = Math.min(a, S[id].x); b = Math.max(b, S[id].x); } if (b - a < .25 || a < -.05 || b > 1.05) return null; return { mid: (a + b) / 2, half: (b - a) / 2, k: MK3D.ARC_DEPTH != null ? MK3D.ARC_DEPTH : .5 }; }
+function arcDz(A, st) { return A && st && st.x >= -.02 && st.x <= 1.02 ? A.k * Math.pow(Math.min(1, Math.abs(st.x - A.mid) / A.half), 2) : 0; }
 function camFor(c, S, seg, lib) {
   const h = id => { const lc = lib.characters[id]; return lc ? (lc.spec.height || 1) * (lc.spec.kind === 'human' && (lc.spec.age === 'adult' || lc.spec.age === 'old') ? 1.62 : lc.spec.kind === 'human' ? 1.02 : 1) : 1; };
   const px = id => S[id] ? X(S[id].x) : 0, pz = id => S[id] ? -(S[id].z || 0) * 1.5 : 0;
   const ids = Object.keys(seg.C);
   const topOf = id => { const lc = lib.characters[id], rg = lc && rigFor(lc); return rg && rg.headH ? rg.headH + rg.headR * 1.75 : 1.1 * h(id); }; // макушка с ушками — всегда в кадре
+  // средний план: сосед не должен торчать половиной у края кадра — чуть сдвигаем кадр, чтобы он вошёл целиком или ушёл совсем
+  const edgeFit = (v, id) => { const A = arcOf(S, lib), zOf = o => pz(o) + arcDz(A, S[o]), dist = v.pos.z - zOf(id); if (!(dist > .3)) return v; const half = dist * Math.tan(19 * Math.PI / 180) * 16 / 9, cx = v.look.x, hx = px(id); let need = 0;
+    for (const o of ids) { if (o === id || !S[o] || S[o].vis === false) continue; const k = dist / Math.max(.3, v.pos.z - zOf(o)), ox = v.pos.x + (px(o) - v.pos.x) * k, ow = (.5 * h(o) + .2) * k, L = cx - half, R = cx + half; if (ox + ow <= L || ox - ow >= R) continue; if (ox - ow >= L && ox + ow <= R) continue;   // сосед ближе к камере — на экране шире и дальше от центра
+      const opts = ox < cx ? [ox + ow - L, -(L - (ox - ow))] : [-(R - (ox - ow)), (ox + ow) - R];   // [убрать соседа, взять целиком] — сдвиг центра кадра
+      const ok = opts.filter(d => Math.abs(d) <= half * .4 && Math.abs(hx - (cx + d)) <= half * .55).sort((a, b) => Math.abs(a) - Math.abs(b)); if (ok.length && Math.abs(ok[0]) > Math.abs(need)) need = ok[0]; }
+    if (need) { v.pos.x += need; v.look.x += need; } return v; };
   if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close', side = S[id] && S[id].face < 0 ? -1 : 1;
     const lc = lib.characters[id], rg = lc && rigFor(lc); if (rg && rg.headH) { const hy = rg.headH, hr = rg.headR, zk = c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1; // кадр по голове героя: крупно — лицо и плечи, средний — во весь рост
       return close ? { pos: new THREE.Vector3(x + side * hr * .9, hy - hr * .05, z + hr * 6.4 / zk), look: new THREE.Vector3(x + side * hr * .2, hy - hr * .32, z) }
-        : { pos: new THREE.Vector3(x + side * hr * 1.6, hy * .78, z + Math.max(hr * 11.5, hy * 1.9) / zk), look: new THREE.Vector3(x + side * hr * .4, hy * .6, z) }; }
+        : edgeFit({ pos: new THREE.Vector3(x + side * hr * 1.6, hy * .78, z + Math.max(hr * 11.5, hy * 1.9) / zk), look: new THREE.Vector3(x + side * hr * .4, hy * .6, z) }, id); }
     return { pos: new THREE.Vector3(x + side * (close ? .13 : .3), (close ? .78 : .8) * hh + (close ? .02 : .06), z + (close ? 1.15 : 2.15) * Math.max(.8, hh) / (c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1)), look: new THREE.Vector3(x + side * (close ? .03 : .08), (close ? .7 : .56) * hh, z) }; }
   if (c.mode === 'group') { const list = (c.ids || ids).filter(id => S[id] && S[id].vis !== false); let lo = 1e9, hi = -1e9, hh = .9;
     for (const id of list) { const x = px(id), w = .5 * h(id); lo = Math.min(lo, x - w); hi = Math.max(hi, x + w); hh = Math.max(hh, h(id)); } for (const q of c.px || []) { lo = Math.min(lo, X(q) - .45); hi = Math.max(hi, X(q) + .45); }
@@ -3081,11 +3090,13 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
     hugF[id] = { x: lerp(xa, mid - sg * D / 2, k), dir: sg, k, lead }; hugF[a.to] = { x: lerp(xb, mid + sg * D / 2, k), dir: -sg, k, lead: !lead };
     const z = ((A.z || 0) + (B.z || 0)) / 2; A.z = lerp(A.z || 0, z, k); B.z = lerp(B.z || 0, z, k); }
   // где будет камера в этом кадре — чтобы герой, повернувшись к другу, не стоял к зрителю спиной (камера сбоку от него)
+  // трое и больше стоят в ряд — ставим их мягкой дугой к зрителю (крайние чуть ближе), как компания в разговоре, а не строй на линейке
+  const ARC = arcOf(S, tl.lib, hugF);
   let camE = null; try { let ci0 = 0; const cs = seg.cam.filter(c => !c.shake); for (let i = 0; i < cs.length; i++) if (cs[i].t <= t) ci0 = i; if (cs.length) { const c1 = camFor(cs[ci0], S, seg, tl.lib), c0 = ci0 > 0 ? camFor(cs[ci0 - 1], S, seg, tl.lib) : c1, k0 = cs[ci0].cut ? 1 : ease((t - cs[ci0].t) / .9); camE = new THREE.Vector3().lerpVectors(c0.pos, c1.pos, k0); } } catch (e) { camE = null; }
   for (const id in S) {
     const st = S[id], lc = tl.lib.characters[id]; if (!lc || !st.vis) continue;
     const rig = rigFor(lc); ensureIn(rig.root); rig.root.visible = true; const hf = hugF[id]; st._hug = hf || null;
-    const rx = hf ? hf.x : X(st.x), rz = -(st.z || 0) * 1.5; rig.root.position.set(rx, CF && CF.floor ? CF.floor(rx, rz) : 0, rz);
+    const rx = hf ? hf.x : X(st.x), rz = -(st.z || 0) * 1.5 + (hf ? 0 : arcDz(ARC, st)); rig.root.position.set(rx, CF && CF.floor ? CF.floor(rx, rz) : 0, rz);
     let yw = hf ? lerp(st.face * .72, hf.dir * .3, hf.k) : st.face * (st.walk && st.walk.on ? 1.35 : .72);
     if (!hf && camE && st.face) { const az = Math.atan2(camE.x - rx, camE.z - rz), lim = st.walk && st.walk.on ? 1.45 : .95; let d = yw - az; d = Math.atan2(Math.sin(d), Math.cos(d)); if (Math.abs(d) > lim) yw = az + Math.sign(d) * lim; }   // стоит — не больше ~55° от зрителя, идёт — не спиной
     rig.yaw.rotation.y = yw;

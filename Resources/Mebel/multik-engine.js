@@ -953,11 +953,12 @@ MK.compile = function (ep, lib, audio) {
     // если уходом сцена кончается — не ждём, пока последний дойдёт до края: склейка, когда компания уже пошла
     const XC = new Map(); { const ss = sc.steps || []; for (let i = 0; i < ss.length;) { if (ss[i].do !== 'exit') { i++; continue; } let j = i; const g = { n: 0, side: null, last: 0, trail: false, mem: [] }; while (j < ss.length && (ss[j].do === 'exit' || (ss[j].with && !ss[j].say && !ss[j].do) || ss[j].sfx || ss[j].music || ss[j].camera)) { if (ss[j].do === 'exit') { g.mem.push(ss[j]); XC.set(ss[j], g); } j++; } g.n = new Set(g.mem.map(x => x.who)).size;
         g.trail = !ss.slice(j).some(x => x.say || (x.do && x.do !== 'exit') || x.wait); i = j; } }
-    let exitPrev = null;
+    let exitPrev = null, prevAct = null; const arriveAt = {};   // «Барсик танцует. Пик танцует. Рон танцует.» — танцуют вместе, вступая по очереди, а не по три секунды каждый по одному
+    const CHORUS = new Set(['dance', 'jump', 'clap', 'wave', 'nod', 'shake', 'spin', 'bow', 'laugh', 'cry', 'scared', 'surprise', 'sit', 'stand', 'sleep', 'wake', 'think']);   // входят компанией — первый, кто дошёл, уже может говорить: не ждём, пока дойдёт последний
     for (const step of sc.steps || []) {
       const fastIn = chainN >= 3 && step.do === 'enter' && enterI < chainN; if (step.do === 'enter') enterI++;
       const xg = step.do === 'exit' ? XC.get(step) : null, xGroup = xg && xg.n >= 2;
-      const start = step.with ? prevStart + (xGroup ? .2 : 0) : xGroup && exitPrev && exitPrev.g === xg && !step.after ? exitPrev.t + .4 : step.do === 'enter' && prevEnter && !step.after ? prevStart + (fastIn ? .35 : .5) : cur + (step.after || 0); let dur = 0; prevEnter = step.do === 'enter'; let emoEv = null;
+      const start = step.with ? prevStart + (xGroup ? .2 : 0) : xGroup && exitPrev && exitPrev.g === xg && !step.after ? exitPrev.t + .4 : step.do === 'enter' && prevEnter && !step.after ? prevStart + (fastIn ? .35 : .5) : step.do && CHORUS.has(step.do) && !step.after && !step.say && prevAct && prevAct.d === step.do && prevAct.who !== step.who && prevAct.n < 6 ? prevAct.t + .5 : Math.max(cur + (step.after || 0), step.who && arriveAt[step.who] ? arriveAt[step.who] + .15 : 0); let dur = 0; prevEnter = step.do === 'enter'; let emoEv = null;
       if (xg) { if (xGroup && !xg.side) { const xs = xg.mem.map(m => C[m.who] && C[m.who].x).filter(v => v != null); xg.side = xs.filter(v => v > .5).length * 2 > xs.length ? 'right' : xs.filter(v => v > .5).length * 2 < xs.length ? 'left' : (C[step.who] && C[step.who].x > .5 ? 'right' : 'left'); }
         if (xGroup && !step.side) step._xside = xg.side; if (xGroup && !(exitPrev && exitPrev.g === xg)) cam.push({ t: start, mode: 'wide', cut: true, exitGroup: true });   // компания уходит — общий план: видно, как уходят все, а не толкучка спин крупно
         exitPrev = { g: xg, t: start }; }
@@ -1060,7 +1061,9 @@ MK.compile = function (ep, lib, audio) {
       }
       if (!step.say && !step.do && !step.wait && step.emotion && !step.with) dur = Math.max(dur, .4);
       if (emoEv) emoEv.t1 = start + dur + (step.say ? 1.6 : 2.6); // эмоция держится реплику (или пару секунд молча) и мягко уходит — лицо не застывает грустным до конца сцены
-      prevStart = start; cur = Math.max(cur, start + (xg && xg.trail && step.do === 'exit' ? Math.min(dur, xGroup ? 1.5 : 2.2) : dur));   // ушли в конце сцены — склейка, когда уже пошли
+      if (fastIn && step.do === 'enter' && step.who) arriveAt[step.who] = start + dur;
+      if (!step.with) prevAct = step.do && CHORUS.has(step.do) && !step.say ? (prevAct && prevAct.d === step.do && prevAct.who !== step.who && start < prevAct.t + 1 ? { d: step.do, who: step.who, t: start, n: prevAct.n + 1 } : { d: step.do, who: step.who, t: start, n: 1 }) : step.say || step.do ? null : prevAct;
+      prevStart = start; cur = Math.max(cur, start + (xg && xg.trail && step.do === 'exit' ? Math.min(dur, xGroup ? 1.5 : 2.2) : fastIn && step.do === 'enter' ? Math.min(dur, 1.1) : dur));   // ушли в конце сцены — склейка, когда уже пошли
     }
     for (const id in C) autoStand(C[id].ev);   // «присел» — посмотрел и встал сам, а не сидит на корточках до конца сцены
     props.forEach(p => p.ev.sort((a, b) => a.t - b.t));
@@ -1179,10 +1182,21 @@ function drawCard(ctx, tl, seg, t, T, textOnly) {
   const k = ease(t / .6), bounce = 1 + Math.sin(clamp(t / .6, 0, 1) * Math.PI) * .08;
   ctx.save(); ctx.translate(W / 2, H * (title ? .27 : .35)); ctx.scale(k * bounce, k * bounce); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   const big = title ? (ep.series || ep.title || '') : (ep.endText || 'Продолжение следует…');
-  ctx.font = `900 ${big.length > 18 ? 104 : 132}px -apple-system, "SF Pro Rounded", "Arial Rounded MT Bold", "DejaVu Sans", sans-serif`; ctx.lineJoin = 'round';
-  ctx.lineWidth = 26; ctx.strokeStyle = '#3a1d10'; ctx.strokeText(big, 0, 0); ctx.fillStyle = '#fff'; ctx.fillText(big, 0, 0);
-  if (title && ep.title) { ctx.font = '800 62px -apple-system, "SF Pro Rounded", "DejaVu Sans", sans-serif'; const sub = (ep.episode ? `Серия ${ep.episode}. ` : '') + ep.title; ctx.lineWidth = 14; ctx.strokeText(sub, 0, 125); ctx.fillStyle = '#ffe36b'; ctx.fillText(sub, 0, 125); }
-  if (!title && ep.endSub) { ctx.font = '800 56px -apple-system, "DejaVu Sans", sans-serif'; ctx.lineWidth = 12; ctx.strokeText(ep.endSub, 0, 120); ctx.fillStyle = '#ffe36b'; ctx.fillText(ep.endSub, 0, 120); }
+  // длинное название не вылезает за экран: переносим по словам на 2–3 строки и при нужде уменьшаем шрифт
+  const fit = (text, weight, sizes, maxLines, fam) => { const maxW = W * .8; for (const sz of sizes) { ctx.font = `${weight} ${sz}px ${fam}`; const ws = String(text).split(/\s+/).filter(Boolean), lines = []; let cur = '';
+      for (const w of ws) { const tryL = cur ? cur + ' ' + w : w; if (ctx.measureText(tryL).width <= maxW || !cur) cur = tryL; else { lines.push(cur); cur = w; } } if (cur) lines.push(cur);
+      if (lines.length <= maxLines && lines.every(l => ctx.measureText(l).width <= maxW)) return { lines, sz }; if (sz === sizes[sizes.length - 1]) return { lines, sz }; } };
+  const FB = '-apple-system, "SF Pro Rounded", "Arial Rounded MT Bold", "DejaVu Sans", sans-serif';
+  const bf = fit(big, 900, big.length > 18 ? [104, 92, 80, 70] : [132, 116, 104, 92, 80], 2, FB); ctx.lineJoin = 'round'; ctx.font = `900 ${bf.sz}px ${FB}`;
+  const subTxt = title && ep.title ? (ep.episode ? `Серия ${ep.episode}. ` : '') + ep.title : !title && ep.endSub ? ep.endSub : '';
+  const subN = subTxt ? fit(subTxt, 800, title ? [62, 56, 50, 44] : [56, 50, 44], 3, '-apple-system, "SF Pro Rounded", "DejaVu Sans", sans-serif').lines.length : 0;
+  const bLH = bf.sz * 1.05, bTop = -(bf.lines.length - 1) * bLH / 2 - (bf.lines.length > 1 ? bLH * .35 : 0) - Math.max(0, subN - 1) * 34;   // в две-три строки — весь текст чуть выше, чтобы не наезжал на прыгающих героев
+  ctx.font = `900 ${bf.sz}px ${FB}`; bf.lines.forEach((ln, i) => { ctx.lineWidth = 26 * bf.sz / 132 + 6; ctx.strokeStyle = '#3a1d10'; ctx.strokeText(ln, 0, bTop + i * bLH); ctx.fillStyle = '#fff'; ctx.fillText(ln, 0, bTop + i * bLH); });
+  const subY = bTop + (bf.lines.length - 1) * bLH + bf.sz * .5 + 60;
+  const drawSub = (sub, sizes, fill, lw) => { const sf = fit(sub, 800, sizes, 3, '-apple-system, "SF Pro Rounded", "DejaVu Sans", sans-serif'); ctx.font = `800 ${sf.sz}px -apple-system, "SF Pro Rounded", "DejaVu Sans", sans-serif`; const lh = sf.sz * 1.15;
+    sf.lines.forEach((ln, i) => { ctx.lineWidth = lw; ctx.strokeStyle = '#3a1d10'; ctx.strokeText(ln, 0, subY + i * lh); ctx.fillStyle = fill; ctx.fillText(ln, 0, subY + i * lh); }); };
+  if (title && ep.title) drawSub((ep.episode ? `Серия ${ep.episode}. ` : '') + ep.title, [62, 56, 50, 44], '#ffe36b', 14);
+  if (!title && ep.endSub) drawSub(ep.endSub, [56, 50, 44], '#ffe36b', 12);
   ctx.restore();
   if (textOnly) return;
   // персонажи серии машут
