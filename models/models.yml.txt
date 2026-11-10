@@ -1,0 +1,45 @@
+name: models-build
+on:
+  push:
+    branches: [models-build]
+    paths: [go.txt]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Blender 4.2
+        run: |
+          for u in https://download.blender.org/release/Blender4.2/blender-4.2.0-linux-x64.tar.xz https://ftp.nluug.nl/pub/graphics/blender/release/Blender4.2/blender-4.2.0-linux-x64.tar.xz; do
+            wget -q --tries=3 --waitretry=5 -O blender.tar.xz "$u" && break
+          done
+          mkdir -p blender && tar xf blender.tar.xz -C blender --strip-components=1 && rm -f blender.tar.xz
+          ./blender/blender --version | head -1 || (sudo apt-get update -qq && sudo apt-get install -y -qq libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libgl1 libsm6 libegl1)
+      - name: Textures
+        if: ${{ !contains(github.event.head_commit.message, 'verify') }}
+        run: |
+          mkdir -p out
+          pip install -q numpy pillow opencv-python-headless
+          python3 fetch_assets.py 2>&1 | tail -20 | tee out/tex_log.txt
+          python3 make_textures.py 2>&1 | tee -a out/tex_log.txt
+          mkdir -p out/tex_preview && cp tex_out/*.jpg out/tex_preview/ && cp tex_out/tex.json out/
+      - name: Verify only
+        if: ${{ startsWith(hashFiles('verify.txt'), '') && contains(github.event.head_commit.message, 'verify') }}
+        run: |
+          ./blender/blender -b --factory-startup -P verify.py 2>&1 | grep -v "^Fra:" | tail -40
+      - name: Models
+        if: ${{ !contains(github.event.head_commit.message, 'verify') }}
+        run: |
+          set -o pipefail
+          ./blender/blender -b --factory-startup --python-exit-code 1 -P build_models.py -- $(cat go.txt) 2>&1 | grep -v "^Fra:\| Sample \|Rendered \|Updating \|Loading render kernels\|Path Tracing\|Denoising\|Synchronizing\|Waiting for\|^Info: \|^Saved:\|^Time:" | tee out/log.txt | tail -150
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name render-bot
+          git config user.email render-bot@users.noreply.github.com
+          git add -A out
+          git commit -q -m "models: $(cat go.txt)" || echo nothing
+          for i in 1 2 3 4 5; do git push -q origin HEAD:models-build && break; sleep 5; done
