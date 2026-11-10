@@ -1,0 +1,54 @@
+name: golos-ep
+on:
+  push:
+    branches: [golos]
+    paths: [ep_request.txt]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      eps: ${{ steps.p.outputs.eps }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: p
+        run: |
+          echo "eps=$(python3 -c "import re,json;print(json.dumps(re.findall(r'[re]\d+', next(l for l in open('ep_request.txt') if l.startswith('episodes:')))))")" >> "$GITHUB_OUTPUT"
+  listen:
+    needs: plan
+    strategy:
+      fail-fast: false
+      matrix:
+        ep: ${{ fromJson(needs.plan.outputs.eps) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+          key: golos-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib faster-whisper yt-dlp
+      - name: Listen
+        run: python ep_listen.py ${{ matrix.ep }}
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name golos
+          git config user.email golos@users.noreply.github.com
+          git add -A ep 2>/dev/null || true
+          git commit -qm "серия ${{ matrix.ep }}: разбор озвучки" || echo nothing
+          for i in 1 2 3 4 5 6; do git pull --rebase -q origin golos && git push -q origin HEAD:golos && break; sleep $((RANDOM % 20 + 5)); done
