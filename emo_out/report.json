@@ -18016,5 +18016,785 @@
   "rate": 4.7,
   "hf": -15.5,
   "dur": 1.5
+ },
+ {
+  "name": "e7_a_happy_new",
+  "text": "Ура! Мы нашли клад! Как же здорово!",
+  "hash": "d0cce9c3a86299a860d43cbca6765fe6",
+  "ser1": {
+   "neutral": 0.005,
+   "angry": 0.002,
+   "positive": 0.993,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.004,
+   "fear": 0.0,
+   "happiness": 0.995,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.007,
+   "плач": 0.003,
+   "смех": 0.001,
+   "речь": 0.8,
+   "вздох": 0.007
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.8
+   ],
+   [
+    "Female speech, woman speaking",
+    0.08
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Speech synthesizer",
+    0.05
+   ],
+   [
+    "Conversation",
+    0.04
+   ]
+  ],
+  "utmos": 2.46,
+  "heard": "Ура! Мы наш веклад! Как же здорово!",
+  "match": 0.714,
+  "f0": 286.0,
+  "range": 8.2,
+  "voiced": 0.51,
+  "rate": 4.4,
+  "hf": -13.4,
+  "dur": 2.5
+ },
+ {
+  "name": "e7_s1_fin_happy",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "41a65867ba76a815a3cb89fe065d90b9",
+  "ser1": {
+   "neutral": 0.911,
+   "angry": 0.013,
+   "positive": 0.073,
+   "sad": 0.003,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.046,
+   "fear": 0.003,
+   "happiness": 0.001,
+   "neutral": 0.949,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.79,
+   "вздох": 0.005
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.79
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 3.72,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 245.0,
+  "range": 7.5,
+  "voiced": 0.66,
+  "rate": 8.0,
+  "hf": -17.7,
+  "dur": 1.5
+ },
+ {
+  "name": "e7_s2_fin_happy",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "1f162c5e85e22e7340fb59031a11fc9e",
+  "ser1": {
+   "neutral": 0.403,
+   "angry": 0.006,
+   "positive": 0.59,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.808,
+   "вздох": 0.005
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.81
+   ],
+   [
+    "Female speech, woman speaking",
+    0.09
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "utmos": 3.0,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 254.0,
+  "range": 7.8,
+  "voiced": 0.61,
+  "rate": 6.8,
+  "hf": -20.4,
+  "dur": 1.32
+ },
+ {
+  "name": "e7_s3_fin_happy",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "34be0805130083e2a96030660ff55620",
+  "ser1": {
+   "neutral": 0.953,
+   "angry": 0.001,
+   "positive": 0.045,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.001,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.714,
+   "вздох": 0.005
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.71
+   ],
+   [
+    "Finger snapping",
+    0.09
+   ],
+   [
+    "Female speech, woman speaking",
+    0.02
+   ],
+   [
+    "Sound effect",
+    0.02
+   ],
+   [
+    "Ping",
+    0.02
+   ]
+  ],
+  "utmos": 3.0,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 267.0,
+  "range": 7.0,
+  "voiced": 0.56,
+  "rate": 6.5,
+  "hf": -11.1,
+  "dur": 1.54
+ },
+ {
+  "name": "e7_s4_fin_happy",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "fb910330a0bc8aece919822061451443",
+  "ser1": {
+   "neutral": 0.934,
+   "angry": 0.004,
+   "positive": 0.059,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.004,
+   "смех": 0.001,
+   "речь": 0.795,
+   "вздох": 0.014
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.79
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.02
+   ],
+   [
+    "Conversation",
+    0.02
+   ]
+  ],
+  "utmos": 3.64,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 270.0,
+  "range": 6.4,
+  "voiced": 0.61,
+  "rate": 6.3,
+  "hf": -15.5,
+  "dur": 1.74
+ },
+ {
+  "name": "e7_sc_k13_0",
+  "text": "Смотрите, какой большой дом!",
+  "hash": "14f900ecf5fa48cd070afe80410ec157",
+  "ser1": {
+   "neutral": 0.307,
+   "angry": 0.004,
+   "positive": 0.688,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.938,
+   "disgust": 0.005,
+   "enthusiasm": 0.003,
+   "fear": 0.001,
+   "happiness": 0.001,
+   "neutral": 0.053,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.848,
+   "вздох": 0.01
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.85
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "utmos": 3.93,
+  "heard": "Смотрите, какой большой дом.",
+  "match": 1.0,
+  "f0": 278.0,
+  "range": 8.6,
+  "voiced": 0.6,
+  "rate": 5.9,
+  "hf": -10.8,
+  "dur": 1.36
+ },
+ {
+  "name": "e7_sc_k13_1",
+  "text": "Ого! А дверь-то открыта?",
+  "hash": "23be485861b23318cdd3d0d6f1ed65c5",
+  "ser1": {
+   "neutral": 0.067,
+   "angry": 0.002,
+   "positive": 0.93,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.006,
+   "fear": 0.0,
+   "happiness": 0.994,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.005,
+   "плач": 0.049,
+   "смех": 0.016,
+   "речь": 0.785,
+   "вздох": 0.158
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.79
+   ],
+   [
+    "Gasp",
+    0.16
+   ],
+   [
+    "Whimper",
+    0.05
+   ],
+   [
+    "Groan",
+    0.03
+   ],
+   [
+    "Conversation",
+    0.02
+   ]
+  ],
+  "utmos": 2.51,
+  "heard": "Ого! А дверь-то открыта.",
+  "match": 1.0,
+  "f0": 319.0,
+  "range": 10.9,
+  "voiced": 0.43,
+  "rate": 3.2,
+  "hf": -15.9,
+  "dur": 2.48
+ },
+ {
+  "name": "e7_sc_k13_2",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "ac6b204617b3e5e3ef3bcc46d9833950",
+  "ser1": {
+   "neutral": 0.962,
+   "angry": 0.029,
+   "positive": 0.001,
+   "sad": 0.007,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.004,
+   "enthusiasm": 0.002,
+   "fear": 0.003,
+   "happiness": 0.0,
+   "neutral": 0.133,
+   "sadness": 0.857
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.003,
+   "плач": 0.006,
+   "смех": 0.006,
+   "речь": 0.535,
+   "вздох": 0.025
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.53
+   ],
+   [
+    "Male speech, man speaking",
+    0.08
+   ],
+   [
+    "Sound effect",
+    0.05
+   ],
+   [
+    "Gasp",
+    0.02
+   ],
+   [
+    "Snort",
+    0.02
+   ]
+  ],
+  "utmos": 1.27,
+  "heard": "Тише. Там кто-то есть.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.01,
+  "rate": 2.9,
+  "hf": -16.2,
+  "dur": 2.06
+ },
+ {
+  "name": "e7_sc_k13_3",
+  "text": "Ой! Оно идёт сюда!",
+  "hash": "1b8bda528c2e1fc58e8eae9199ebf53d",
+  "ser1": {
+   "neutral": 0.02,
+   "angry": 0.001,
+   "positive": 0.977,
+   "sad": 0.002,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.617,
+   "fear": 0.364,
+   "happiness": 0.017,
+   "neutral": 0.001,
+   "sadness": 0.001
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.838,
+   "вздох": 0.008
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.84
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Television",
+    0.03
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 2.78,
+  "heard": "Ой, оно идет сюда.",
+  "match": 1.0,
+  "f0": 313.0,
+  "range": 4.0,
+  "voiced": 0.62,
+  "rate": 6.2,
+  "hf": -15.9,
+  "dur": 1.12
+ },
+ {
+  "name": "e7_sc_k13_4",
+  "text": "Бежим!",
+  "hash": "7e2bbb9841fccb2732db865a7525ed4a",
+  "ser1": {
+   "neutral": 0.719,
+   "angry": 0.01,
+   "positive": 0.262,
+   "sad": 0.009,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.002,
+   "disgust": 0.9,
+   "enthusiasm": 0.091,
+   "fear": 0.001,
+   "happiness": 0.001,
+   "neutral": 0.0,
+   "sadness": 0.005
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.012,
+   "плач": 0.003,
+   "смех": 0.002,
+   "речь": 0.807,
+   "вздох": 0.057
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.81
+   ],
+   [
+    "Male speech, man speaking",
+    0.13
+   ],
+   [
+    "Gasp",
+    0.06
+   ],
+   [
+    "Sigh",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.05
+   ]
+  ],
+  "utmos": 2.5,
+  "heard": "Бежим!",
+  "match": 1.0,
+  "f0": 309.0,
+  "range": 6.4,
+  "voiced": 0.58,
+  "rate": 4.2,
+  "hf": -8.6,
+  "dur": 0.48
+ },
+ {
+  "name": "e7_sc_k13_5",
+  "text": "Стойте! Да это же Рон!",
+  "hash": "090acb7274e214275458e92fdc8ce04f",
+  "ser1": {
+   "neutral": 0.185,
+   "angry": 0.07,
+   "positive": 0.744,
+   "sad": 0.001,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.018,
+   "disgust": 0.244,
+   "enthusiasm": 0.721,
+   "fear": 0.015,
+   "happiness": 0.0,
+   "neutral": 0.002,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.005,
+   "плач": 0.004,
+   "смех": 0.002,
+   "речь": 0.822,
+   "вздох": 0.016
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.82
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Conversation",
+    0.02
+   ]
+  ],
+  "utmos": 3.91,
+  "heard": "Стойте, да это же Рон.",
+  "match": 1.0,
+  "f0": 270.0,
+  "range": 7.9,
+  "voiced": 0.51,
+  "rate": 4.7,
+  "hf": -15.2,
+  "dur": 1.5
+ },
+ {
+  "name": "e7_sc_new_0",
+  "text": "Смотрите, какой большой дом!",
+  "hash": "53a09566e2faa60d85faa90794426260",
+  "ser1": {
+   "neutral": 0.452,
+   "angry": 0.004,
+   "positive": 0.542,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.958,
+   "disgust": 0.004,
+   "enthusiasm": 0.001,
+   "fear": 0.001,
+   "happiness": 0.0,
+   "neutral": 0.037,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.845,
+   "вздох": 0.014
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.85
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Male speech, man speaking",
+    0.06
+   ],
+   [
+    "Female speech, woman speaking",
+    0.03
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "utmos": 3.9,
+  "heard": "Смотрите, какой большой дом.",
+  "match": 1.0,
+  "f0": 273.0,
+  "range": 8.4,
+  "voiced": 0.6,
+  "rate": 5.8,
+  "hf": -11.4,
+  "dur": 1.38
+ },
+ {
+  "name": "e7_sc_new_5",
+  "text": "Стойте! Да это же Рон!",
+  "hash": "6d721bf557f6559a67e013cf41807231",
+  "ser1": {
+   "neutral": 0.146,
+   "angry": 0.063,
+   "positive": 0.791,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.235,
+   "disgust": 0.725,
+   "enthusiasm": 0.021,
+   "fear": 0.018,
+   "happiness": 0.0,
+   "neutral": 0.001,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.006,
+   "плач": 0.004,
+   "смех": 0.002,
+   "речь": 0.835,
+   "вздох": 0.013
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.83
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "utmos": 3.5,
+  "heard": "Стойте, да это же Рон.",
+  "match": 1.0,
+  "f0": 267.0,
+  "range": 7.5,
+  "voiced": 0.51,
+  "rate": 4.5,
+  "hf": -15.5,
+  "dur": 1.54
  }
 ]
