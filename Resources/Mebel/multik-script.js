@@ -54,7 +54,7 @@ const AUTO_EMO = [[/(^|[^а-я])(я догадал(ся|ась)|догадала
   [/(^|[^а-я])(извини(те)?|прости(те)?|я поспешил|я поспешила|мне стыдно|неловко|я лучше посмотрю|вдруг я всё испорчу|вдруг я все испорчу)(?![а-я])/, 'shy'],
   [/(^|[^а-я])(жаль|жалко|грустно|не получилось|не получится|не отвечает|не нашли|потерял[аи]?|пропал[аи]?|испорчу)(?![а-я])/, 'sad'],
   [/^(хм+|кажется|наверное|интересно|подождите|подожди|странно|погодите)(?![а-я])/, 'frown'], [/^(привет|здравствуй|доброе утро|смотрите|давайте|пойдём|пойдем)(?![а-я])/, 'smile']];
-const EMO = [[/(улыба|с улыбкой)/, 'smile'], [/(хмур|насуп|сосредоточ|задумчив)/, 'frown'], [/(радост|весел|счастлив|довольн|горд)/, 'happy'], [/(сме[ея]|хохоч|смешн|смех|хихик|усмеха)/, 'laugh'], [/(груст|печал|расстро)/, 'sad'], [/(плач|рыда|сл[её]з)/, 'cry'],
+const EMO = [[/(улыба|с улыбкой|подмиг|хитро|лукаво)/, 'smile'], [/(хмур|насуп|сосредоточ|задумчив)/, 'frown'], [/(радост|весел|счастлив|довольн|горд)/, 'happy'], [/(сме[ея]|хохоч|смешн|смех|хихик|усмеха)/, 'laugh'], [/(груст|печал|расстро)/, 'sad'], [/(плач|рыда|сл[её]з)/, 'cry'],
   [/(злит|сердит|зло(?![а-я])|злой|злая|гневн|обиж)/, 'angry'], [/(удивл|изумл|(^|[^а-я])ого(?![а-я]))/, 'surprised'], [/(испуг|страшн|бои|боя|дрож)/, 'scared'], [/(сонн|зева|устал)/, 'sleepy'],
   [/(влюбл|нежно|с любов)/, 'love'], [/(смущ|стесн|винова)/, 'shy'], [/(спокойн|обычн)/, 'neutral']];
 const VERBS = [ // stem → действие (порядок важен)
@@ -276,8 +276,9 @@ S.parse = function (text, lib, opts) {
     if (m) {
       let who = NARR.test(low(m[1].trim())) ? 'Р' : (findNameAt(m[1], idx) || {}).id;
       if (!who) { const w0 = m[1].trim().split(/\s+/)[0]; const sj = subjectsOf(low(m[1].trim())); if (sj && sj.length === 1) who = sj[0]; else if (AUTO_HERO.has(low(w0))) who = autoHero(w0); }
-      if (!who && sc && /^(все|все вместе|вместе|хором|все хором|друзья|все друзья)$/.test(low(m[1].trim()))) { const list = Object.keys(sc._cast).filter(id => id !== 'Р' && !sc._out[id]);
-        const cl = global.MK ? global.MK.cleanSpeech(m[3].trim()) : { text: m[3].trim() }; const e = m[2] ? pick(EMO, low(m[2])) : null;
+      const many = namesIn(low(m[1]), idx); if (many.length > 1 && /(\sи\s|,)/.test(m[1])) who = null;   // «Барсик и Пик: Ура!» — говорят оба
+      if (!who && sc && (/^(все|все вместе|вместе|хором|все хором|друзья|все друзья)$/.test(low(m[1].trim())) || (many.length > 1 && /(\sи\s|,)/.test(m[1])))) { const list = many.length > 1 && /(\sи\s|,)/.test(m[1]) ? many.map(id => (castOf(id), backIn(id), id)) : Object.keys(sc._cast).filter(id => id !== 'Р' && !sc._out[id]);
+        const cl = global.MK ? global.MK.cleanSpeech(m[3].trim()) : { text: m[3].trim() }; const e = (m[2] ? pick(EMO, low(m[2])) : null) || pick(AUTO_EMO, low(cl.text || '').replace(/^[\s«"—-]+/, ''));
         if (list.length && cl.text) { list.forEach((w, k) => { const st = { who: w, say: cl.text }; if (k) st.with = true; if (e) st.emotion = e; sc.steps.push(st); }); lastSpeaker = list[0]; continue; } }
       if (!who) { if (/^[А-ЯЁA-Z]/.test(m[1].trim()) && m[1].trim().split(/\s+/).length <= 3) { unknownNames.add(m[1].trim()); errors.push(`Строка ${lineNo}: кто такой «${m[1].trim()}»? Выбери ниже, кто это, или добавь строку «ПЕРСОНАЖ: ${m[1].trim()} — описание».`); continue; }
         m = null; } else {
@@ -286,7 +287,7 @@ S.parse = function (text, lib, opts) {
       if (cl.removed.length) warnings.push(`Строка ${lineNo}: убрал из озвучки лишнее: ${cl.removed.join(' ')}`);
       if (!cl.text) continue;
       const step = { who, say: cl.text };
-      if (m[2]) { const e = pick(EMO, low(m[2])); if (e) step.emotion = e; const v = verbOf(low(m[2])); if (v && who !== 'Р') step.do = v; }
+      if (m[2]) { const e = pick(EMO, low(m[2])); if (e) step.emotion = e; const v = verbOf(low(m[2])); if (v && who !== 'Р') step.do = v; } if (m[2] && /(шёпот|шепот|шепчет|прошепт|тихо|тихонько|еле слышно|вполголоса)/.test(low(m[2]))) step.whisper = true;   // «(шёпотом)» — тише остальных
       { const rest = low(m[1]).replace(/^\S+\s*/, ''); const v2 = rest && who !== 'Р' ? verbOf(rest) : null; if (v2 && !step.do) step.do = v2; const e2 = rest ? pick(EMO, rest) : null; if (e2 && !step.emotion) step.emotion = e2; }
       if (who !== 'Р' && !step.emotion) { const ae = pick(AUTO_EMO, low(cl.text).replace(/^[\s«"—-]+/, '')); if (ae) { step.emotion = ae; step._auto = true; } }
       if (who !== 'Р') { const other = addressee(who, cl.text) || (lastSpeaker && lastSpeaker !== who && lastSpeaker !== 'Р' ? lastSpeaker : sceneSpeakers.filter(x => x !== who && x !== 'Р').slice(-1)[0]); if (other) step.to = other;

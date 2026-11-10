@@ -1057,7 +1057,7 @@ MK.compile = function (ep, lib, audio) {
       if (vtext) {
         const ln = lineFor(ep, lib, who || 'Р', vtext, step, stepVocalKind(step) ? tl_vi++ : 0); const a = ln && audio[ln.key]; const sd = a ? a.dur : estSpeech(vtext);
         const vt = step.say ? start + pre : start + (dur > 1.5 ? .15 : .05);
-        speech.push({ t: st0 + vt, dur: sd, key: ln && ln.key, who: who || 'Р', text: vtext, vocal: !step.say });
+        speech.push(Object.assign({ t: st0 + vt, dur: sd, key: ln && ln.key, who: who || 'Р', text: vtext, vocal: !step.say }, step.whisper && step.say ? { soft: true } : {}));
         beats.push({ t: vt, t1: vt + sd, k: 'say', who: who || 'Р', emo: step.emotion, to: step.to, text: vtext, vocal: !step.say });
         if (ch) ch.ev.push({ t: vt, k: 'say', t1: vt + sd, key: ln && ln.key, text: vtext, vocal: !step.say });
         dur = Math.max(dur, (vt - start) + sd + (step.say ? (step.pause != null ? step.pause : .3) : .1));
