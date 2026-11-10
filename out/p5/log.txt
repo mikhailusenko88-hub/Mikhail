@@ -1,0 +1,22 @@
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.1s] slat wall panels lamellas 100 faces 875
+[scene   0.1s] asset wicker_basket_02 size 0.37 x 0.27 x 0.22 objs 2
+[scene   0.1s] asset ceramic_vase_01 size 0.20 x 0.20 x 0.40 objs 1
+[scene   0.2s] asset potted_plant_02 size 0.70 x 0.66 x 0.84 objs 3
+[scene   0.2s] asset modern_arm_chair_01 size 0.82 x 0.99 x 1.02 objs 1
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Error: Failed to read blend file '/home/runner/work/Mikhail/Mikhail/assets/models/side_table_tall_01/side_table_tall_01.blend', not a blend file
+Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/scene.py", line 920, in <module>
+    world, sun, sun_dir, lamps = SCENES[SCENE]()
+                                 ^^^^^^^^^^^^^^^
+  File "/home/runner/work/Mikhail/Mikhail/scene.py", line 904, in scene_arch
+    load_asset('side_table_tall_01', loc=(2.8, Y0 + T + 2.9, 0), rot=0)
+  File "/home/runner/work/Mikhail/Mikhail/scene.py", line 396, in load_asset
+    with bpy.data.libraries.load(path, link=False) as (src, dst):
+OSError: Error: Failed to read blend file '/home/runner/work/Mikhail/Mikhail/assets/models/side_table_tall_01/side_table_tall_01.blend', not a blend file
+
+
+Error: script failed, file: 'scene.py', exiting.
+
+Blender quit
