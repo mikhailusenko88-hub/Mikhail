@@ -1,0 +1,28 @@
+fetched texture mocha_oak_veneer 4k 1 files
+fetched texture walnut_veneer_02 4k 1 files
+fetched texture hessian_230 2k 3 files
+assets ready: 26 of 26
+src mocha_oak_veneer (2048, 2048, 3) gx/gy 1.62 4.28 rotated
+decor 3-7 {'src': 'mocha_oak_veneer', 'size_mm': 1000, 'l_gain': 2.2, 'shape': [2048, 2048], 'mean_bgr': [118.7, 145.9, 187.2]}
+src oak_veneer_01 (4096, 4096, 3) gx/gy 7.83 1.93 
+decor 3-15 {'src': 'oak_veneer_01', 'size_mm': 1830, 'l_gain': 1.14, 'shape': [4096, 4096], 'mean_bgr': [129.0, 173.4, 212.9]}
+src walnut_veneer_02 (2048, 2048, 3) gx/gy 1.64 6.46 rotated
+decor 3-9 {'src': 'walnut_veneer_02', 'size_mm': 1000, 'l_gain': 2.2, 'shape': [2048, 2048], 'mean_bgr': [99.7, 120.5, 152.9]}
+src oak_veneer_05 (4096, 4096, 3) gx/gy 1.54 3.76 rotated
+src oak_veneer_04 (2048, 2048, 3) gx/gy 1.01 2.63 rotated
+src oak_veneer_02 (2048, 2048, 3) gx/gy 1.67 3.29 rotated
+src mocha_oak_veneer (2048, 2048, 3) gx/gy 1.62 4.28 rotated
+src european_walnut_veneer_04 (2048, 2048, 3) gx/gy 1.37 3.3 rotated
+lab sheet 3-7 (832, 2928, 3)
+src oak_veneer_01 (4096, 4096, 3) gx/gy 7.83 1.93 
+src ash_veneer (2048, 2048, 3) gx/gy 1.65 7.86 rotated
+src white_oak_veneer (2048, 2048, 3) gx/gy 4.37 1.89 
+src teak_veneer (2048, 2048, 3) gx/gy 1.66 5.44 rotated
+src olive_veneer (2048, 2048, 3) gx/gy 1.35 8.9 rotated
+lab sheet 3-15 (832, 2928, 3)
+src smoked_walnut_veneer (4096, 4096, 3) gx/gy 1.27 5.91 rotated
+src natural_walnut_veneer (2048, 2048, 3) gx/gy 2.2 9.88 rotated
+src walnut_veneer (2048, 2048, 3) gx/gy 3.96 1.11 
+src american_walnut_veneer (2048, 2048, 3) gx/gy 1.85 3.88 rotated
+src walnut_veneer_02 (2048, 2048, 3) gx/gy 1.64 6.46 rotated
+lab sheet 3-9 (832, 2922, 3)
