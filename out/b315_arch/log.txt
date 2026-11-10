@@ -1,0 +1,33 @@
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.1s] slat wall panels lamellas 100 faces 875
+[scene   0.1s] asset wicker_basket_02 size 0.37 x 0.27 x 0.22 objs 2
+[scene   0.2s] asset ceramic_vase_01 size 0.20 x 0.20 x 0.40 objs 1
+[scene   0.2s] asset potted_plant_02 size 0.70 x 0.66 x 0.84 objs 3
+[scene   0.2s] asset modern_arm_chair_01 size 0.82 x 0.99 x 1.02 objs 1
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Error: Failed to read blend file '/home/runner/work/Mikhail/Mikhail/assets/models/side_table_tall_01/side_table_tall_01.blend', not a blend file
+[scene   0.2s] blend failed for side_table_tall_01 -> gltf True Error: Failed to read blend file '/home/runner/work/Mikhail/Mikhail/assets/model
+20:49:01 | INFO: Data are loaded, start creating Blender stuff
+20:49:01 | INFO: Blender create Mesh node Cube.001
+20:49:01 | INFO: glTF import finished in 0.01s
+[scene   0.3s] asset side_table_tall_01 size 0.38 x 0.38 x 0.76 objs 1
+[scene   0.3s] asset ceramic_vase_04 size 0.18 x 0.18 x 0.34 objs 1
+[scene   0.3s] asset hanging_picture_frame_01 size 0.59 x 0.02 x 0.84 objs 1
+[scene   0.4s] asset modern_ceiling_lamp_01 size 0.43 x 0.43 x 0.95 objs 1
+[scene   1.0s] asset potted_plant_01 size 0.59 x 0.63 x 1.35 objs 4
+[scene   1.2s] objects 73 scene built
+Saved: '/home/runner/work/Mikhail/Mikhail/out/b315_arch/_sky.exr'
+Time: 00:03.14 (Saving: 00:00.00)
+
+[scene   4.4s] sky irradiance [ 9.869 10.773 13.127] sun strength 41.582
+Saved: '/home/runner/work/Mikhail/Mikhail/out/b315_arch/_pre.exr'
+Time: 00:11.55 (Saving: 00:00.00)
+
+[scene  16.7s] white pixels 8511 illuminant [1.333 0.942 0.594] wb gains [0.783 1.022 1.421] wall Y 0.5357 exposure 0.97
+Saved: '/home/runner/work/Mikhail/Mikhail/out/b315_arch/b315_arch.jpg'
+Time: 26:06.64 (Saving: 00:00.33)
+
+[scene 1583.4s] final render 1566.6s /home/runner/work/Mikhail/Mikhail/out/b315_arch/b315_arch.jpg
+[scene 1583.4s] done
+
+Blender quit
