@@ -1,0 +1,19 @@
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.1s] asset potted_plant_02 size 0.70 x 0.66 x 0.84 objs 3
+[scene   0.1s] objects 28 scene built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/e703_close/_sky.exr'
+Time: 00:01.37 (Saving: 00:00.00)
+
+[scene   1.5s] sky irradiance [ 8.89   9.723 11.642] sun strength 48.803
+Saved: '/home/runner/work/Mikhail/Mikhail/out/e703_close/_pre.exr'
+Time: 00:06.55 (Saving: 00:00.00)
+
+[scene   8.4s] white pixels 3734 illuminant [1.171 0.981 0.686] wb gains [0.89  1.004 1.28 ] wall Y 0.4379 exposure 1.26
+Saved: '/home/runner/work/Mikhail/Mikhail/out/e703_close/e703_close.jpg'
+Time: 14:14.51 (Saving: 00:00.33)
+
+[scene 863.0s] final render 854.5s /home/runner/work/Mikhail/Mikhail/out/e703_close/e703_close.jpg
+[scene 863.0s] done
+
+Blender quit
