@@ -1055,6 +1055,7 @@ function applyPose(rig, st, T) {
     case 'jump': { lift = Math.sin(ap * Math.PI) * .75; const s = ap < .14 ? Math.sin(ap / .14 * Math.PI) : ap > .86 ? Math.sin((ap - .86) / .14 * Math.PI) : 0; sq = 1 - s * .15; L_.z = R_.z = .35 + Math.sin(ap * Math.PI) * 2.2; leg[0] = leg[1] = -Math.sin(ap * Math.PI) * .5; break; }
     case 'wave': R_.z = 2.3 + Math.sin(at * 11) * .3; R_.x = -.55; R_.tw = global.WAVE_TW != null ? global.WAVE_TW : WAVE_TW0; head.z = .12; break;   // машет подушечками вперёд (кисть повёрнута вокруг лапы)
     case 'point': R_.x = -1.55; R_.z = .15; break;
+    case 'water': R_.x = -1.15 - Math.sin(Math.min(1, ap / .2) * Math.PI / 2) * .25; R_.z = .25; head.x = .18; break;   // поливает: лапа с лейкой вперёд, смотрит вниз
     case 'think': R_.x = -2.3; R_.z = -.55; head.z = .15; head.x = -.1; break;
     case 'clap': { const k = Math.max(0, Math.sin(at * 14)); L_.x = R_.x = -1.3; L_.z = R_.z = -.15 + k * .4; break; }
     case 'laugh': bob = Math.abs(Math.sin(at * 16)) * .04; L_.x = R_.x = -.7; L_.z = R_.z = -.25; head.x = -.25; sideTilt = Math.sin(at * 8) * .06; break;
@@ -1103,7 +1104,7 @@ function applyPose(rig, st, T) {
   if (an && !['jump', 'somersault', 'roll', 'spin', 'kick'].includes(an)) { const dur = ap > .02 ? at / ap : 9, bf = Math.min(ease(at / .22), ease((dur - at) / .25));
     if (bf < 1) { const L2 = (a, b) => lerp(a, b, bf); L_.x = L2(base.L.x, L_.x); L_.z = L2(base.L.z, L_.z); R_.x = L2(base.R.x, R_.x); R_.z = L2(base.R.z, R_.z); leg[0] = L2(base.leg[0], leg[0]); leg[1] = L2(base.leg[1], leg[1]);
       head.x = L2(base.head.x, head.x); head.y = L2(base.head.y, head.y); head.z = L2(base.head.z, head.z); pitch = L2(base.pitch, pitch); hipYaw = L2(base.hipYaw, hipYaw); sideTilt = L2(base.sideTilt, sideTilt); } }
-  if (st.prop && !['wave', 'throw', 'point', 'give', 'eat', 'hug', 'read', 'peer', 'dig', 'knock', 'push', 'pull', 'drink', 'paint', 'write', 'play', 'cheer', 'listen', 'shrug', 'lookaround'].includes(an)) { R_.x = -.95; R_.z = .2; }
+  if (st.prop && !['water', 'wave', 'throw', 'point', 'give', 'eat', 'hug', 'read', 'peer', 'dig', 'knock', 'push', 'pull', 'drink', 'paint', 'write', 'play', 'cheer', 'listen', 'shrug', 'lookaround'].includes(an)) { R_.x = -.95; R_.z = .2; }
   const armTo = (x, z, k) => { L_.x = lerp(L_.x, x, k); R_.x = lerp(R_.x, x, k); L_.z = lerp(L_.z, z, k); R_.z = lerp(R_.z, z, k); };   // к позе эмоции и обратно — плавно, от того, как лапы стояли
   if (emo === 'scared' && an !== 'scared') armTo(-1.5, -.2, ek);   // испуг мягкий — лапки к груди, не к лицу
   if (!an && !wk.on) { const et = st.et || 0;   // мимика телом: мягко, понятно детям
@@ -1404,6 +1405,10 @@ function propMesh(p) {
       const lab = A(lathe([[.133, .09], [.137, .09], [.137, .15], [.133, .15]], 36), P('#fff3d0', 'paper'), g, 0);
       A(lathe([[0, .245], [.075, .245], [.075, .255], [0, .26]], 24), P('#ffb514', 'gloss'), g, 0); for (let i = 0; i < 5; i++) { const a = i * 1.3, dl = .03 + (i % 3) * .02; const d = A(G.cap(.012, dl), P('#ffb514', 'gloss'), g, 0); d.position.set(Math.cos(a) * .088, .235 - dl / 2, Math.sin(a) * .088); }
       const dp = A(G.cyl(.006, .006, .22, 8), P('#a8743f', 'wood'), g, 0); dp.position.set(.03, .3, 0); dp.rotation.z = -.35; const dh = A(lathe([[0, 0], [.02, .005], [.022, .03], [.02, .045], [0, .05]], 12), P('#a8743f', 'wood'), g, 0); dh.position.set(-.005, .2, 0); dh.rotation.z = -.35; break; }
+    case 'wateringcan': { const c0 = cl || '#4caf6a'; const b = A(lathe([[0, 0], [.1, 0], [.115, .02], [.115, .17], [.1, .19], [.04, .2], [0, .2]], 32), P(c0, 'plastic')); b.scale.z = .8;   // лейка: носик вдоль +x, ручка сверху-сзади
+      const sp = A(G.cyl(.012, .022, .26, 12), P(c0, 'plastic'), g, 0); sp.position.set(.17, .14, 0); sp.rotation.z = -1.0; const rs = A(G.cyl(.035, .014, .04, 16), P(shadeC(c0, .85), 'plastic'), g, 0); rs.position.set(.285, .215, 0); rs.rotation.z = -1.0;
+      const hd = A(G.tor(.075, .012, 8, 24, Math.PI * 1.1), P(shadeC(c0, .85), 'plastic'), g, 0); hd.position.set(-.04, .2, 0); hd.rotation.z = .25;
+      g.userData.spout = new THREE.Vector3(.31, .23, 0); g.userData.heldS = 1; g.userData.overHead = true; break; }
     case 'bucket': { const c0 = cl || '#3d8fe0'; const b = A(lathe([[0, 0], [.11, 0], [.15, .22], [.16, .225], [.155, .235], [.14, .23], [.1, .015], [0, .015]], 36), P(c0, 'plastic')); b.material.side = THREE.DoubleSide;
       for (const y of [.06, .16]) { const rr = .11 + (y / .22) * .04; const band = A(G.tor(rr + .004, .005, 8, 40), P(shadeC(c0, .85), 'plastic'), g, 0); band.rotation.x = Math.PI / 2; band.position.y = y; }
       const hd = A(G.tor(.155, .006, 8, 32, Math.PI), P('#9a9a9a', 'metal'), g, 0); hd.position.y = .225; hd.rotation.y = .3; break; }
@@ -3137,6 +3142,8 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
     if (p._holder && S[p._holder] && S[p._holder].vis) { const lc = tl.lib.characters[p._holder]; const rig = rigFor(lc); const v = new THREE.Vector3(); const A = rig.h6 && global.BARSHeroes && BARSHeroes.anchors ? BARSHeroes.anchors(rig) : rig.bars && global.MKBarsik && MKBarsik.anchors ? MKBarsik.anchors(rig) : null; // герой образца: его настоящие лапки, глаза и рот (Барсик — только рот)
       if (A && A.handR) v.copy(A.handR); else rig.hand.getWorldPosition(v); m.position.set(v.x, v.y - .12 * rig.scale, v.z); m.scale.setScalar((m.userData.heldS || .7) * rig.scale * sc); const hr = m.userData.heldRot; m.rotation.set(hr ? hr[0] : 0, hr ? hr[1] : 0, hr ? hr[2] : 0);
       const ha = S[p._holder].act || {}, hk = ha.n === 'read' && READ_FLAT.has(p.type) && rig.handL ? 1 : ha.n === 'peer' && EYE_HELD.has(p.type) ? 2 : 0;
+      if (p.type === 'wateringcan') { const w = ha.n === 'water' ? Math.max(0, Math.min(1, (ha.t || 0) / .45, (1 - (ha.p || 0)) / .15)) : 0; m.rotation.set(0, rig.yaw.rotation.y - Math.PI / 2, 0); m.rotateZ(-.1 - w * .7);   // носик туда, куда смотрит герой; поливает — наклоняет, из носика капает
+        if (w > .4) { m.updateMatrixWorld(true); const tip = m.localToWorld(m.userData.spout.clone()); for (let i = 0; i < 10; i++) { const ph = (T * 1.7 + i / 10) % 1; sprite(haloTex('#9fd8ff'), tip.x + Math.sin(i * 2.3) * .025, tip.y - ph * .6, tip.z + Math.cos(i * 1.7) * .025, .06, .9 * (1 - ph) * w); } } }
       if (hk) { // читает — карта/письмо в обеих лапах перед грудкой; смотрит в бинокль — бинокль у глаз
         const k = Math.max(0, Math.min(1, (ha.t || 0) / .35, (1 - (ha.p || 0)) / .12)), q1 = new THREE.Quaternion(), p1 = new THREE.Vector3(), boost = hk === 1 ? 1.25 : 1.45;
         if (hk === 1) { const v2 = new THREE.Vector3(); if (A && A.handL) { v2.copy(A.handL); p1.copy(A.handR); } else { rig.handL.getWorldPosition(v2); rig.hand.getWorldPosition(p1); } p1.add(v2).multiplyScalar(.5); const yw = rig.yaw.rotation.y; p1.x += Math.sin(yw) * .05 * rig.scale; p1.z += Math.cos(yw) * .05 * rig.scale; p1.y += .02 * rig.scale; q1.setFromEuler(new THREE.Euler(-.85, yw, 0, 'YXZ')); }

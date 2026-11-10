@@ -464,7 +464,7 @@ function drawFx(ctx, ch, st, T, S, emo, an, at, P, lift, down, fall, flip, fs) {
 function drawStar(ctx, x, y, r, col) { ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } ctx.closePath(); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = '#2b1d16'; ctx.lineWidth = r * .15; ctx.stroke(); }
 
 // ---------- предметы ----------
-const PROPS = ['ball', 'apple', 'fish', 'box', 'gift', 'flower', 'book', 'star', 'cake', 'bone', 'carrot', 'cheese', 'balloon', 'key', 'cup', 'pumpkin', 'mushroom', 'umbrella', 'candy', 'icecream', 'lollipop', 'banana', 'pear', 'watermelon', 'honey', 'bucket', 'shovel', 'car', 'teddy', 'drum', 'guitar', 'wand', 'lantern', 'map', 'letter', 'basket', 'chest', 'coin', 'egg', 'pie', 'cookie', 'milk', 'clock', 'candle', 'leaf', 'rock', 'stick', 'phone', 'kite', 'bag',
+const PROPS = ['wateringcan', 'ball', 'apple', 'fish', 'box', 'gift', 'flower', 'book', 'star', 'cake', 'bone', 'carrot', 'cheese', 'balloon', 'key', 'cup', 'pumpkin', 'mushroom', 'umbrella', 'candy', 'icecream', 'lollipop', 'banana', 'pear', 'watermelon', 'honey', 'bucket', 'shovel', 'car', 'teddy', 'drum', 'guitar', 'wand', 'lantern', 'map', 'letter', 'basket', 'chest', 'coin', 'egg', 'pie', 'cookie', 'milk', 'clock', 'candle', 'leaf', 'rock', 'stick', 'phone', 'kite', 'bag',
   'binoculars', 'magnifier', 'compass', 'backpack', 'hat', 'glasses', 'ladder', 'rope', 'rod', 'boat', 'bike', 'scooter', 'telescope', 'rocket', 'crown', 'flag', 'paints', 'pencil', 'pot', 'plate', 'spoon', 'teapot', 'sandwich', 'pizza',
   'strawberry', 'grapes', 'cherry', 'acorn', 'pinecone', 'snowball', 'sled', 'bell', 'mirror', 'jar', 'feather', 'plane', 'pillow', 'butterfly', 'net', 'flute'];
 MK.PROPS = PROPS;
@@ -628,7 +628,7 @@ function drawWeather(ctx, L, T) {
 }
 
 // ---------- сборка таймлайна ----------
-const DUR = { jump: .9, wave: 1.6, dance: 3, spin: .8, nod: .9, shake: 1, clap: 1.6, point: 1.4, think: 2.2, laugh: 1.8, scared: 1.4, fall: 1.0, sit: .6, stand: .6, sleep: .8, wake: .8, take: .6, give: 1.1, drop: .5, turn: .25, look: .25, bow: 1.0, cry: 2, surprise: .8,
+const DUR = { water: 2.6, jump: .9, wave: 1.6, dance: 3, spin: .8, nod: .9, shake: 1, clap: 1.6, point: 1.4, think: 2.2, laugh: 1.8, scared: 1.4, fall: 1.0, sit: .6, stand: .6, sleep: .8, wake: .8, take: .6, give: 1.1, drop: .5, turn: .25, look: .25, bow: 1.0, cry: 2, surprise: .8,
   roll: 2.8, somersault: 1.1, lie: .6, hug: 1.8, scratch: 1.6, yawn: 2.0, stretch: 1.8, sneeze: 1.3, eat: 2.2, stomp: 1.3, crouch: .5, hide: .5, sing: 2.6, kick: 1.0, throw: 1.1, shout: 1.4,
   read: 2.4, peer: 2.2, dig: 2.6, knock: 1.4, push: 1.8, pull: 1.8, drink: 1.8, paint: 2.4, write: 2.4, play: 2.8, sniff: 1.6, listen: 2.0, cheer: 1.8, lookaround: 2.4, shrug: 1.2 };
 const MOVES = { walk: .2, run: .42, enter: .2, exit: .2, crawl: .1, sneak: .11 };
