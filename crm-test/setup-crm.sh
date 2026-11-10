@@ -231,7 +231,7 @@ BACKUP_DIR=/var/backups/prostranstvo
 # shellcheck source=/dev/null
 set -a; . "$ENV_FILE"; set +a
 
-manage() { runuser -u prostranstvo -- env CRM_DB="$CRM_DB" BOT_DB="$BOT_DB" CATALOG_FILE="$CATALOG_FILE" python3 "$APP/manage.py" "$@"; }
+manage() { runuser -u prostranstvo -- env CRM_DB="$CRM_DB" BOT_DB="$BOT_DB" CATALOG_FILE="$CATALOG_FILE" SHOP_DOMAIN="${SHOP_DOMAIN:-}" python3 "$APP/manage.py" "$@"; }
 gen_pw() { local s=""; while ((${#s} < 14)); do s+=$(head -c 96 /dev/urandom | LC_ALL=C tr -dc 'A-HJ-NP-Za-km-z2-9'); done; printf '%s\n' "${s:0:14}"; }
 save_pw() {
   touch "$PASS_FILE"; chmod 600 "$PASS_FILE"
@@ -500,6 +500,8 @@ prostranstvo-crm — CRM https://$CRM_HOST
   prostranstvo-crm mail-watch          — новые письма в zakaz@ и info@ → пуш на телефоны (cron, раз в минуту)
   prostranstvo-crm digest              — утренняя сводка пушем (cron, 9:35)
   prostranstvo-crm tochka-poll         — спросить Точку об открытых ссылках на оплату (cron, раз в 5 минут)
+  prostranstvo-crm outbox              — отправить новые письма с zapros@ из ветки outbox на GitHub (cron, раз в минуту)
+  prostranstvo-crm outbox-key          — открытый ключ для шифрования писем (он же — https://$CRM_HOST/api/outbox/key)
   prostranstvo-crm push "Текст"        — пуш всем сотрудникам с включёнными уведомлениями
   prostranstvo-crm cert                 — получить сертификат для $CRM_HOST сейчас
 EOF
@@ -518,6 +520,8 @@ case ${1:-status} in
   followups) manage followups || rc=$? ;;
   mail-watch) cmd_mail_watch || rc=$? ;;
   digest) manage digest || rc=$? ;;
+  outbox) manage outbox || rc=$? ;;
+  outbox-key) manage outbox-key || rc=$? ;;
   tochka-poll) manage tochka-poll || rc=$? ;;
   push) shift; manage push "Наш декор" "${1:-Проверка уведомлений}" || rc=$? ;;
   cert) shift; cmd_cert "$@" || rc=$? ;;
@@ -636,7 +640,8 @@ step_nginx() {
 # отчёт для страницы CRM «Сервер» (пересобирается по кнопке или раз в 15 минут);
 # напоминания клиентам о расчёте — раз в день в 11:25 (выключаются в CRM → Настройки → Письма клиентам);
 # пуши: новые письма в zakaz@/info@ — раз в минуту, утренняя сводка — 9:35;
-# Точка Банк: статус открытых ссылок на оплату — раз в 5 минут (пока Точка не подключена, команда ничего не делает).
+# Точка Банк: статус открытых ссылок на оплату — раз в 5 минут (пока Точка не подключена, команда ничего не делает);
+# исходящие письма с zapros@ (шифр из ветки outbox на GitHub) — раз в минуту.
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 7,22,37,52 * * * *  root  /usr/local/sbin/prostranstvo-crm cert --auto 2>&1 | logger -t prostranstvo-crm
@@ -646,8 +651,23 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 * * * * *           root  flock -n /run/prostranstvo-mailwatch.lock /usr/local/sbin/prostranstvo-crm mail-watch 2>&1 | logger -t prostranstvo-mailwatch
 35 9 * * *          root  /usr/local/sbin/prostranstvo-crm digest 2>&1 | logger -t prostranstvo-digest
 */5 * * * *         root  flock -n /run/prostranstvo-tochka.lock /usr/local/sbin/prostranstvo-crm tochka-poll 2>&1 | grep -v '^ok$\|не подключена' | logger -t prostranstvo-tochka
+* * * * *           root  flock -n /run/prostranstvo-outbox.lock /usr/local/sbin/prostranstvo-crm outbox 2>&1 | grep -v '^ok$' | logger -t prostranstvo-outbox
 EOF
   /usr/local/sbin/prostranstvo-crm server-page --now >/dev/null 2>&1 || true
+  # исходящие письма с zapros@: ответы и возвраты на zapros@ — в ящик info@ (своя пересылка почты)
+  local al=/etc/prostranstvo/pochta-aliases.txt
+  if [[ -x /usr/local/sbin/prostranstvo-pochta ]]; then
+    if ! grep -qE '^[[:space:]]*zapros(@[^[:space:]]+)?[[:space:]]' "$al" 2>/dev/null; then
+      printf 'zapros info\n' >>"$al"; chmod 644 "$al"
+    fi
+    if /usr/local/sbin/prostranstvo-pochta rebuild >>"$DETAIL_LOG" 2>&1; then
+      ok "исходящие: письма от zapros@$DOMAIN, ответы — в info@$DOMAIN"
+    else
+      warn "пересылку zapros@ → info@ не удалось включить — см. $DETAIL_LOG"
+    fi
+  else
+    info "почты на сервере нет — письма с zapros@ отправлять не с чего"
+  fi
   local rc=0
   "$HELPER" cert 2>&1 | sed 's/^/     /' || rc=${PIPESTATUS[0]}
   ((rc == 2)) && info "пока временный сертификат — браузер предупредит; настоящий будет в течение часа после запуска домена."

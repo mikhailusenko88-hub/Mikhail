@@ -333,8 +333,8 @@ jobs:
           echo "пересылка zapros@: $(grep -h '^zapros' /etc/prostranstvo/pochta-aliases.txt 2>&1)"
           echo "в таблице Postfix: $(sudo postmap -q zapros@nashdekor.ru hash:/etc/postfix/pochta-aliases 2>&1)"
           sudo install -d -o prostranstvo -g prostranstvo /tmp/ob
-          sudo -u prostranstvo git init -q --bare /tmp/ob/remote.git
-          sudo -u prostranstvo git init -q -b outbox /tmp/ob/work
+          sudo -u prostranstvo -H git init -q --bare /tmp/ob/remote.git
+          sudo -u prostranstvo -H git init -q -b outbox /tmp/ob/work
           ID=$(sudo -u prostranstvo env KEY="$KEY" python3 -I -c "
           import json, sys, uuid, os; sys.path.insert(0, '/opt/prostranstvo-crm/src/crm')
           import outbox
@@ -345,9 +345,9 @@ jobs:
           print(p['id'])")
           echo "письмо: $ID"
           cd /tmp/ob/work
-          sudo -u prostranstvo git -c user.email=t@t -c user.name=t add -A
-          sudo -u prostranstvo git -c user.email=t@t -c user.name=t commit -q -m letter
-          sudo -u prostranstvo git push -q /tmp/ob/remote.git outbox
+          sudo -u prostranstvo -H git -c user.email=t@t -c user.name=t add -A
+          sudo -u prostranstvo -H git -c user.email=t@t -c user.name=t commit -q -m letter
+          sudo -u prostranstvo -H git push -q /tmp/ob/remote.git outbox
           cd - >/dev/null
           echo "отправка: $(sudo env OUTBOX_REPO=/tmp/ob/remote.git OUTBOX_DIR=/tmp/ob/clone prostranstvo-crm outbox 2>&1 | tr '\n' ' ')"
           echo "повтор (не должен отправить второй раз): $(sudo env OUTBOX_REPO=/tmp/ob/remote.git OUTBOX_DIR=/tmp/ob/clone prostranstvo-crm outbox 2>&1 | tr '\n' ' ')"
