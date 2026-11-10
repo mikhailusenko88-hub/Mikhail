@@ -14,3 +14,4 @@
 | 2026-11-09 | 3 | clubs №3 | Paxtakor | https://youtube.com/shorts/ghWysRy343s | public |
 | 2026-11-10 | 1 | cities №7 | Samarqand | https://youtube.com/shorts/fXjgrOsRP88 | public |
 | 2026-11-10 | 2 | cars №6 | Tico | https://youtube.com/shorts/_5EqS-RCHKM | public |
+| 2026-11-10 | 3 | clubs №4 | Qoʻqon 1912 | https://youtube.com/shorts/WVoOKB-mmNU | public |
