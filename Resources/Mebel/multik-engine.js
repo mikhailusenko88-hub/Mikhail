@@ -972,7 +972,7 @@ MK.compile = function (ep, lib, audio) {
       if (step.weather) (lspec.wxAt = lspec.wxAt || []).push({ t: +(start + .3).toFixed(2), v: step.weather });   // «Пошёл дождь» — дождь начинается посреди сцены
       if (step.prop && step.state) { const p = props.find(p => p.id === step.prop); if (p) {
           if (step.state === 'appear') { p.ev.push({ t: start, vis: true, fx: step.quiet ? 'quiet' : 'appear' }); p.vis = true; }
-          if (step.state === 'vanish') { p.ev.push(step.quiet ? { t: start + .35, vis: false, fx: 'quiet' } : { t: start, vis: false, fx: 'vanish', holder: null }); p.vis = false; p.holder = null; }   // quiet — убрал в рюкзак: без «пуфа»
+          if (step.state === 'vanish') { p.ev.push(step.quiet ? { t: start + (step.delay || .35), vis: false, fx: 'quiet' } : { t: start, vis: false, fx: 'vanish', holder: null }); p.vis = false; p.holder = null; }   // quiet — убрал в рюкзак: без «пуфа»
           if (step.state === 'glow') p.ev.push({ t: start + (step.with ? .4 : 0), glow: true });
           if (step.state === 'unglow') p.ev.push({ t: start, glow: false });
           if (step.state === 'paint') { strokeN[p.id] = (strokeN[p.id] || 0) + 1; p.ev.push({ t: start + (step.with ? .6 : .2), paint: strokeN[p.id] / strokes[p.id] }); }
