@@ -113,7 +113,9 @@ function findNameAt(text, idx) { // имя в начале строки
   for (const [n, id] of idx) { if (t.startsWith(n)) { const rest = t.slice(n.length); const m = rest.match(/^[а-яa-z]{0,3}/); if (!rest || /^[^а-яa-z]/.test(rest) || (m && /^(а|у|ом|ой|е|ы|ой|ю|я|ем|ей|ам)?(\s|$|[,.:!?()])/.test(rest))) return { id, len: n.length + ((rest.match(/^[а-я]{0,3}/) || [''])[0].length) }; } }
   return null;
 }
-function namesIn(text, idx) { const out = []; const t = low(text); for (const [n, id] of idx) { const re = new RegExp('(^|[^а-яa-z])' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[а-я]{0,3}(?=$|[^а-яa-z])', 'g'); if (re.test(t) && !out.includes(id)) out.push(id); } return out; }
+// «Топа» → к Топе, Топу, с Топой; «Филя» → Филе, Филю, Филей — у имён на -а/-я окончание меняется, а не дописывается
+function namePat(n) { const e = n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); return /[аяйь]$/.test(n) && n.length >= 4 && !/\s/.test(n) ? e.slice(0, -1) + '(?:а|я|у|ю|е|и|ы|ой|ей|ою|ею|ь|й|ем|ём)' : e + '[а-я]{0,3}'; }
+function namesIn(text, idx) { const out = []; const t = low(text); for (const [n, id] of idx) { const re = new RegExp('(^|[^а-яa-z])' + namePat(n) + '(?=$|[^а-яa-z])', 'g'); if (re.test(t) && !out.includes(id)) out.push(id); } return out; }
 function pick(list, t) { for (const [re, v] of list) if (re.test(t)) return v; return null; }
 
 /** Разобрать текст. lib — библиотека (characters, locations). opts: {series}. → {episodes:[ep], errors, warnings, newChars} */

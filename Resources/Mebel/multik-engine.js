@@ -1262,7 +1262,7 @@ function avoidWalkers(S, seg) {
       if ((B.x - w.x0) * (B.x - w.x1) >= 0 || Math.abs((A.z || 0) - (B.z || 0)) > .3) continue; // не на пути или уже на другой глубине
       const need = (((seg.C[a] || {}).w || .1) + ((seg.C[b] || {}).w || .1)) / 2 + .005, dx = Math.abs(A.x - B.x);
       let k = sm(need * 2.2, need * .9, dx) * sm(0, .04, Math.abs(A.x - w.x0)) * sm(0, need * 1.3, Math.abs(A.x - w.x1)); /* к концу пути — плавно вперёд */ if (k <= 0) continue;
-      const bw = B.walk && B.walk.on, dir = (B.z || 0) > .2 ? -1 : bw ? (a < b ? 1 : -1) : 1;
+      const bw = B.walk && B.walk.on && B.walk.x0 != null && Math.sign(B.walk.x1 - B.walk.x0) !== Math.sign(w.x1 - w.x0), dir = (B.z || 0) > .2 ? -1 : bw ? (a < b ? 1 : -1) : -1;   /* встречные расходятся по разные стороны; мимо стоящего и попутного — проходит перед ним, а не прячется за спиной */   // мимо стоящего проходит перед ним, а не прячется за спиной
       const amt = .55 * k * dir; if (Math.abs(amt) > Math.abs(best)) best = amt; }
     if (best) dz[a] = best; }
   for (const a in dz) S[a].z = (S[a].z || 0) + dz[a];
