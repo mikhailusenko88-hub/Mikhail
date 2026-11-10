@@ -969,6 +969,7 @@ MK.compile = function (ep, lib, audio) {
       if (step.sfx === 'laugh') { const ll = laughLine(ep, lib, '?', tl_vi++), a = audio[ll.key]; if (a) { speech.push({ t: st0 + start, dur: a.dur, key: ll.key, who: '?', text: ll.text, vocal: true }); if (!step.with) dur = Math.max(dur, a.dur * .85); } else sfx.push({ t: st0 + start, n: 'laugh' }); }
       else if (step.sfx) sfx.push({ t: st0 + start, n: step.sfx });
       if (step.music) music.push({ t0: st0 + start, mood: step.music });
+      if (step.weather) (lspec.wxAt = lspec.wxAt || []).push({ t: +(start + .3).toFixed(2), v: step.weather });   // «Пошёл дождь» — дождь начинается посреди сцены
       if (step.prop && step.state) { const p = props.find(p => p.id === step.prop); if (p) {
           if (step.state === 'appear') { p.ev.push({ t: start, vis: true, fx: step.quiet ? 'quiet' : 'appear' }); p.vis = true; }
           if (step.state === 'vanish') { p.ev.push({ t: start, vis: false, fx: 'vanish', holder: null }); p.vis = false; p.holder = null; }
@@ -988,7 +989,8 @@ MK.compile = function (ep, lib, audio) {
         if (step.emotion) { emoEv = { t: start, k: 'emo', v: step.emotion }; ch.ev.push(emoEv); }
         if (step.face) ch.ev.push({ t: start, k: 'face', v: faceVal(step.face, ch, C) });
         const d = step.do;
-        if (MOVES[d] != null) {
+        if (d === 'walk' && step.huddle && typeof step.to === 'string' && C[step.to] && C[step.to].vis && Math.abs(C[step.to].x - ch.x) < .26) { ch.ev.push({ t: start, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); dur = Math.max(dur, .3); }   // «прячутся под зонтик», а он и так рядом — не перебегает на другую сторону
+        else if (MOVES[d] != null) {
           let x0 = ch.x, x1 = step.to != null ? (typeof step.to === 'string' ? (C[step.to] ? C[step.to].x + (C[step.to].x > ch.x ? -.12 : .12) : ch.x) : +step.to) : ch.x;
           if (d === 'enter') { const from = step.from || (x1 > .5 ? 'right' : 'left'); x0 = from === 'right' ? 1 + OFF : -OFF; ch.ev.push({ t: start, k: 'vis', v: true }); ch.vis = true; if (step.to == null) { const xs = Object.keys(C).filter(o => o !== who && C[o].vis).map(o => C[o].x); x1 = from === 'right' ? (xs.length ? Math.min(.88, Math.max(...xs) + .15) : .6) : (xs.length ? Math.max(.12, Math.min(...xs) - .15) : .4); } }
           if (d === 'exit') { const side = step.side || step._xside || (ch.x > .5 ? 'right' : 'left'); x1 = side === 'right' ? 1 + OFF : -OFF; }

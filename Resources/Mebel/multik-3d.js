@@ -2132,7 +2132,7 @@ function outdoorLight(type, time) { const night = time === 'night', eve = time =
   return { hs: '#c8e2ff', hg: '#5f7a40', hi: .46, sc: '#fff0d2', si: 3.6, sp: [5, 8.5, 6], rc: '#fff4e6', ri: 1.4, ei: .45 }; }
 // небо и воздух места
 function cineSky(g, type, time, ground) { const p = skyP(type, time), rain = g.userData.weather0 === 'rain' && type !== 'space';
-  if (rain) Object.assign(p, time === 'night' ? { cloud: .9, cloudL: '#2a3450', cloudD: '#141a2c', stars: 0, milky: 0, moon: 0, sunC: '#000000', haze: 0, fog: ['#1a2236', p.fog[1] * 1.8] } : { zen: '#6a7686', mid: '#8a94a2', hor: '#b4bcc4', cloud: .92, cloudL: '#c8ccd4', cloudD: '#6a707c', haze: .1, sunC: '#d8dce0', sunR: .0001, fog: ['#a2acb6', p.fog[1] * 2.2] }); if (type !== 'room' && type !== 'kitchen') g.add(skyDome(p));
+  if (rain) Object.assign(p, time === 'night' ? { cloud: .9, cloudL: '#2a3450', cloudD: '#141a2c', stars: 0, milky: 0, moon: 0, sunC: '#000000', haze: 0, fog: ['#1a2236', p.fog[1] * 1.8] } : { zen: '#6a7686', mid: '#8a94a2', hor: '#b4bcc4', cloud: .92, cloudL: '#c8ccd4', cloudD: '#6a707c', haze: .1, sunC: '#d8dce0', sunR: .0001, fog: ['#a2acb6', p.fog[1] * 2.2] }); if (type !== 'room' && type !== 'kitchen') { const dm = skyDome(p); g.add(dm); if (g.userData.wxRain && !rain) { g.userData.skyU = dm.material.uniforms; g.userData.rainP = time === 'night' ? { cloud: .9, cloudL: '#2a3450', cloudD: '#141a2c', stars: 0, moon: 0, sunC: '#000000', haze: 0, fog: '#1a2236' } : { zen: '#6a7686', mid: '#8a94a2', hor: '#b4bcc4', cloud: .92, cloudL: '#c8ccd4', cloudD: '#6a707c', haze: .1, sunC: '#d8dce0', sunR: .0001, fog: '#a2acb6' }; } }   // дождь пойдёт посреди сцены — небо затянет постепенно
   const fog = p.fog.length > 2 ? new THREE.Fog(col(p.fog[0]), p.fog[1], p.fog[2]) : new THREE.FogExp2(col(p.fog[0]), p.fog[1]); const env = cineEnv(type + time, p, ground || '#7a8a5a');
   const s = new THREE.Vector3(...p.sun).normalize();
   const lt = outdoorLight(type, time);
@@ -2933,18 +2933,24 @@ function kitchenHQ(g, spec, r) { const time = spec.time || 'day', night = time =
 // ---------- погода (дождь/снег) — та же, что была ----------
 function addWeather(g, spec, r) { const type = spec.type || 'meadow', weather = spec.weather || (type === 'winter' ? 'snow' : 'none'); g.userData.weather0 = weather;
   if (type === 'room' || type === 'kitchen' || type === 'space') return;
-  if (weather === 'rain') { // косые струи дождя вокруг кадра
+  const need = new Set([weather].concat((spec.wxAt || []).map(e => e.v)));   // «Пошёл дождь» посреди сцены — дождь есть, но виден с этой минуты (wxK)
+  const kOf = w => { const K = g.userData.wxK; return K ? K[w] || 0 : 1; };
+  if (need.has('rain')) { // косые струи дождя вокруг кадра
     const N = 1600, P = new Float32Array(N * 6), sd = []; for (let i = 0; i < N; i++) sd.push([(r() - .5) * 28, r() * 12, -12 + r() * 18, .8 + r() * .4]);
     const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(P, 3)); const ln = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: spec.time === 'night' ? '#6a7a9a' : '#dfe8f4', transparent: true, opacity: .42, depthWrite: false })); ln.frustumCulled = false; g.add(ln);
-    (g.userData.anims = g.userData.anims || []).push(T => { for (let i = 0; i < N; i++) { const q = sd[i], y = 12 - ((q[1] + T * 11 * q[3]) % 12), x = q[0] + (12 - y) * .12, L = .38 * q[3]; P[i * 6] = x; P[i * 6 + 1] = y; P[i * 6 + 2] = q[2]; P[i * 6 + 3] = x - .045 * L; P[i * 6 + 4] = y + L; P[i * 6 + 5] = q[2]; } geo.attributes.position.needsUpdate = true; }); }
-  if (weather === 'snow') { // мягкие хлопья: падают и покачиваются
+    (g.userData.anims = g.userData.anims || []).push(T => { const k = kOf('rain'); ln.visible = k > .01; ln.material.opacity = .42 * k; if (!ln.visible) return; for (let i = 0; i < N; i++) { const q = sd[i], y = 12 - ((q[1] + T * 11 * q[3]) % 12), x = q[0] + (12 - y) * .12, L = .38 * q[3]; P[i * 6] = x; P[i * 6 + 1] = y; P[i * 6 + 2] = q[2]; P[i * 6 + 3] = x - .045 * L; P[i * 6 + 4] = y + L; P[i * 6 + 5] = q[2]; } geo.attributes.position.needsUpdate = true; }); }
+  if (need.has('snow')) { // мягкие хлопья: падают и покачиваются
     const N = 1400, P = new Float32Array(N * 3), S = new Float32Array(N), sd = []; for (let i = 0; i < N; i++) { sd.push([(r() - .5) * 26, r() * 10, -12 + r() * 18, .5 + r() * .6]); S[i] = .6 + r() * .8; }
     const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(P, 3)); geo.setAttribute('aS', new THREE.BufferAttribute(S, 1));
-    const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, fog: false, uniforms: { uC: { value: col(spec.time === 'night' ? '#c8d4ff' : '#ffffff') } }, vertexShader: 'attribute float aS; varying float vA; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.); gl_Position = projectionMatrix * mv; gl_PointSize = .055 * aS * 900. / -mv.z; vA = smoothstep(40., 6., -mv.z); }', fragmentShader: 'uniform vec3 uC; varying float vA; void main(){ float d = length(gl_PointCoord - .5); float a = smoothstep(.5, .15, d); gl_FragColor = vec4(uC, a * .9 * vA); }' });
+    const m = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, fog: false, uniforms: { uC: { value: col(spec.time === 'night' ? '#c8d4ff' : '#ffffff') }, uK: { value: 1 } }, vertexShader: 'attribute float aS; varying float vA; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.); gl_Position = projectionMatrix * mv; gl_PointSize = .055 * aS * 900. / -mv.z; vA = smoothstep(40., 6., -mv.z); }', fragmentShader: 'uniform vec3 uC; uniform float uK; varying float vA; void main(){ float d = length(gl_PointCoord - .5); float a = smoothstep(.5, .15, d); gl_FragColor = vec4(uC, a * .9 * vA * uK); }' });
     const pts = new THREE.Points(geo, m); pts.frustumCulled = false; g.add(pts);
-    (g.userData.anims = g.userData.anims || []).push(T => { for (let i = 0; i < N; i++) { const q = sd[i]; P[i * 3] = q[0] + Math.sin(T * .8 + i) * .3; P[i * 3 + 1] = 10 - ((q[1] + T * q[3]) % 10); P[i * 3 + 2] = q[2] + Math.cos(T * .6 + i * 1.7) * .2; } geo.attributes.position.needsUpdate = true; }); } }
+    (g.userData.anims = g.userData.anims || []).push(T => { const k = kOf('snow'); pts.visible = k > .01; m.uniforms.uK.value = k; if (!pts.visible) return; for (let i = 0; i < N; i++) { const q = sd[i]; P[i * 3] = q[0] + Math.sin(T * .8 + i) * .3; P[i * 3 + 1] = 10 - ((q[1] + T * q[3]) % 10); P[i * 3 + 2] = q[2] + Math.cos(T * .6 + i * 1.7) * .2; } geo.attributes.position.needsUpdate = true; }); } }
+function wxNow(L, t) { // сколько сейчас дождя/снега (0…1): погода сменилась посреди сцены — плавно за полторы секунды
+  if (!L.wxAt || !L.wxAt.length) return null; const K = { rain: 0, snow: 0 }; let cur = L.weather || (L.type === 'winter' ? 'snow' : 'none'), prev = 'none', tc = -99;
+  for (const e of L.wxAt) if (e.t <= t) { prev = cur; cur = e.v; tc = e.t; } const f = Math.max(0, Math.min(1, (t - tc) / 1.5));
+  if (cur !== 'none') K[cur] = f; if (prev !== 'none' && prev !== cur) K[prev] = Math.max(K[prev], 1 - f); return K; }
 const CINE_BUILD = { meadow: meadowHQ, yard: yardHQ, playground: playgroundHQ, winter: winterHQ, beach: beachHQ, street: streetHQ, space: spaceHQ, room: roomHQ, kitchen: kitchenHQ };
-function cineLoc(spec) { const g = new THREE.Group(), type = spec.type || 'meadow', time = spec.time || 'day'; const r = rng(global.MK.hash32(String(spec.seed || 1) + type + 'cine')); const t0 = performance.now();
+function cineLoc(spec) { const g = new THREE.Group(), type = spec.type || 'meadow', time = spec.time || 'day'; const r = rng(global.MK.hash32(String(spec.seed || 1) + type + 'cine')); const t0 = performance.now(); g.userData.wxRain = (spec.wxAt || []).some(e => e.v === 'rain');
   g.userData.type = type; g.userData.time = time; g.userData.weather0 = spec.weather || (type === 'winter' ? 'snow' : 'none'); (CINE_BUILD[type] || meadowHQ)(g, spec, r); addWeather(g, spec, r);
   const C = g.userData.cine; if (C && C.rain) { C.rays = 0; C.grade = time === 'night' ? 'night' : 'rainy'; if (C.light) Object.assign(C.light, { hs: '#c8d4e4', hi: C.light.hi * 1.4, si: C.light.si * .45, ri: C.light.ri * .5 }); }
   MK3D._buildMs = performance.now() - t0; return g; }
@@ -3068,7 +3074,7 @@ function renderHQ(w, h) {
   for (const r of [1.5, 3]) { ppPass(P.blur, { t: P.b1.texture, d: new THREE.Vector2(r * f / P.b1.width, 0) }, P.b2); ppPass(P.blur, { t: P.b2.texture, d: new THREE.Vector2(0, r * f / P.b1.height) }, P.b1); }
   ppPass(P.copy, { t: P.b1.texture }, P.e1); ppPass(P.blur, { t: P.e1.texture, d: new THREE.Vector2(2 * f / P.e1.width, 0) }, P.e2); ppPass(P.blur, { t: P.e2.texture, d: new THREE.Vector2(0, 2 * f / P.e1.height) }, P.e1);
   const rs = MK3D._rays || 0; if (rs > 0) { ppPass(P.rays, { tMain: P.main.texture, tDepth: P.main.depthTexture, src: MK3D._raySrc || new THREE.Vector2(.7, 1.25) }, P.r1); ppPass(P.blur, { t: P.r1.texture, d: new THREE.Vector2(1.2 * f / P.r1.width, 0) }, P.r2); ppPass(P.blur, { t: P.r2.texture, d: new THREE.Vector2(0, 1.2 * f / P.r1.height) }, P.r1); }
-  const gr = GRADE[MK3D._grade || 'day'] || GRADE.day;
+  let gr = GRADE[MK3D._grade || 'day'] || GRADE.day; if (MK3D._wxRain) { const k = MK3D._wxRain, b = GRADE.rainy, m = (x, y) => x + (y - x) * k; gr = [gr[0].map((v, i) => m(v, b[0][i])), gr[1].map((v, i) => m(v, b[1][i])), m(gr[2], b[2]), m(gr[3], b[3])]; }
   ppPass(P.comp, { tRays: P.r1.texture, rays: rs, rayCol: MK3D._rayCol || new THREE.Vector3(1, .95, .82), tMain: P.main.texture, tHalf: P.h1.texture, tQuart: P.q1.texture, tB1: P.b1.texture, tB2: P.e1.texture, tDepth: P.main.depthTexture, near: cam.near, far: cam.far, focus: MK3D._focus || 5, ap, bloom: .55, sat: gr[2], con: gr[3], vig: MK3D._vig != null ? MK3D._vig : .22, tintH: new THREE.Vector3(...gr[0]), tintS: new THREE.Vector3(...gr[1]) }, null);
 }
 let shN = 0, shT = -9, shLoc = null, shP = null;
@@ -3087,11 +3093,17 @@ function render(ctx) {
 MK3D.draw = function (ctx, tl, seg, t, T) {
   hideAllRigs();
   if (seg.kind === 'title' || seg.kind === 'end') return drawCard3D(ctx, tl, seg, t, T);
-  const L = seg.lspec || {}; const g = showLoc(seg.lkey, L); animateLoc(g, T);
+  const L = seg.lspec || {}; const g = showLoc(seg.lkey, L); g.userData.wxK = wxNow(L, t); animateLoc(g, T);
   const cineF = MK3D.hq && L.type === 'forest', CF = MK3D.hq ? g.userData.cine : null;
   if (CF) { scene.background = CF.bg; scene.fog = CF.fog; lightFor(L.type, L.time || 'day'); lightCine(CF.light); scene.environment = CF.env; }
   else { scene.background = cineF ? mistTex(L.time || 'day') : skyTex(L.time || 'day', L.type); scene.fog = ['room', 'kitchen', 'space'].includes(L.type) ? null : cineF ? new THREE.Fog(new THREE.Color(L.time === 'night' ? '#1e2e4c' : L.time === 'evening' ? '#cdb79c' : '#a9cbbd'), 4.5, L.time === 'night' ? 26 : 30) : new THREE.Fog(new THREE.Color(SKY[L.time || 'day'][1]), 18, 70);
   lightFor(L.type, L.time || 'day'); }
+  { const kr = g.userData.wxK ? g.userData.wxK.rain : 0, k = MK3D._wxRain = kr && L.weather !== 'rain' ? kr : 0;   // пошёл дождь посреди сцены: небо затягивает, солнце прячется
+    if (k) { sun.intensity *= 1 - .55 * k; hemi.intensity *= 1 + .35 * k; hemi.color.lerp(col('#c8d4e4'), k); if (rim) rim.intensity *= 1 - .5 * k; }
+    const u = g.userData.skyU, b = g.userData.rainP; if (u && b) { if (!g.userData.sky0) { g.userData.sky0 = {}; for (const n in u) if (n !== 'uT') g.userData.sky0[n] = u[n].value && u[n].value.clone ? u[n].value.clone() : u[n].value; }
+      const s0 = g.userData.sky0, M = { zen: 'uZen', mid: 'uMid', hor: 'uHor', sunC: 'uSunC', cloudL: 'uCloudL', cloudD: 'uCloudD', cloud: 'uCloud', haze: 'uHaze', sunR: 'uSunR', moon: 'uMoon', stars: 'uStars' };
+      for (const kk in M) { const n = M[kk]; if (!(n in s0)) continue; if (b[kk] == null) { if (s0[n] && s0[n].isColor) u[n].value.copy(s0[n]); else u[n].value = s0[n]; continue; } if (s0[n] && s0[n].isColor) u[n].value.copy(s0[n]).lerp(col(b[kk]), k); else u[n].value = s0[n] + (b[kk] - s0[n]) * k; }
+      if (CF && CF.fog) { CF._fog0 = CF._fog0 || CF.fog.color.clone(); CF.fog.color.copy(CF._fog0).lerp(col(b.fog), k); } } }
   const S = global.MK._sceneState(tl, seg, t, T);
   // обнимаются: подходят вплотную по настоящей ширине (щека к щеке, но не друг в друге), лицом к зрителю и чуть друг к другу
   const hugF = {};
@@ -3157,7 +3169,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   { const mode = cams[ci].mode || 'wide', AP = { close: .38, medium: .3, two: .22, group: .14, pan: .12 }, ap0 = AP[mode] || .08, apP = ci > 0 && !cams[ci].cut ? (AP[cams[ci - 1].mode] || .08) : ap0; MK3D._ap = lerp(apP, ap0, k); MK3D._focus = cam.position.distanceTo(look) * .95; // резкость — на лице героя, фон мягко размыт
     MK3D._grade = CF ? CF.grade : ['room', 'kitchen'].includes(L.type) ? 'indoor' : L.type === 'space' ? 'space' : cineF && L.time === 'night' ? 'forestNight' : cineF && L.time !== 'evening' ? 'forest' : (L.time || 'day');
     if (CF) { MK3D._rays = L.weather === 'rain' ? 0 : CF.rays; MK3D._rayCol = CF.rayCol; let src = new THREE.Vector2(.5, 1.28); if (CF.sunDir) { cam.updateMatrixWorld(); const v = cam.position.clone().addScaledVector(CF.sunDir, 120).project(cam); if (v.z < 1) src = new THREE.Vector2(clamp((v.x + 1) / 2, -.6, 1.6), clamp((v.y + 1) / 2, -.6, 1.8)); } MK3D._raySrc = src; }
-    else { const tm = L.time || 'day', ty = L.type || 'yard'; MK3D._rays = tm === 'night' || ['space', 'room', 'kitchen'].includes(ty) || L.weather === 'rain' ? 0 : (ty === 'forest' ? .7 : .3) * (tm === 'evening' ? 1.25 : 1); MK3D._rayCol = tm === 'evening' ? new THREE.Vector3(1, .78, .55) : new THREE.Vector3(1, .95, .82); MK3D._raySrc = new THREE.Vector2(.5 + Math.sin((L.seed || 3) * 1.7) * .25, 1.28); } }
+    else { const tm = L.time || 'day', ty = L.type || 'yard'; MK3D._rays = tm === 'night' || ['space', 'room', 'kitchen'].includes(ty) || L.weather === 'rain' ? 0 : (ty === 'forest' ? .7 : .3) * (tm === 'evening' ? 1.25 : 1); MK3D._rayCol = tm === 'evening' ? new THREE.Vector3(1, .78, .55) : new THREE.Vector3(1, .95, .82); MK3D._raySrc = new THREE.Vector2(.5 + Math.sin((L.seed || 3) * 1.7) * .25, 1.28); } if (g.userData.wxK) MK3D._rays *= 1 - g.userData.wxK.rain; }
   sun.target.position.copy(look); sun.position.add(look); MK3D._T = t; if (rim) { rim.target.position.copy(look); const rp = CF && CF.light.rp; if (rp) rim.position.set(look.x + rp[0], rp[1], look.z + rp[2]); else rim.position.set(look.x - 3, 4, look.z - 6); }
   render(ctx);
 };
@@ -3192,7 +3204,7 @@ MK3D.keepLocs = function (keys) { for (const k in locCache) { if (k === '__stage
 MK3D.lowMem = function (on) { on = !!on; if (!!MK3D._noMsaa === on) return; MK3D._noMsaa = on; MK3D._ssOverride = on ? 1 : 0; MSAA = null;
   if (PP) { for (const k of ['main', 'h1', 'h2', 'q1', 'q2', 'b1', 'b2', 'e1', 'e2', 'r1', 'r2']) PP[k].dispose(); PP = null; } };
 MK3D.locPreview = function (canvas, spec, T) {
-  if (!MK3D.ready) return false; hideAllRigs(); const key = global.MK.canon(spec); const g = showLoc(key, spec); animateLoc(g, T || 2);
+  if (!MK3D.ready) return false; hideAllRigs(); const key = global.MK.canon(spec); const g = showLoc(key, spec); g.userData.wxK = null; animateLoc(g, T || 2);
   const cineF = MK3D.hq && spec.type === 'forest'; // лес «как в кино» — с тем же туманом, что в серии (иначе сверху видны тёмные полосы крон на голом небе)
   const CF = MK3D.hq ? g.userData.cine : null;
   if (CF) { scene.background = CF.bg; scene.fog = CF.fog; lightFor(spec.type, spec.time || 'day'); lightCine(CF.light); scene.environment = CF.env; }

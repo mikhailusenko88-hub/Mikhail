@@ -19,7 +19,7 @@ const PROPS = [[/^тыкв/, 'pumpkin'], [/^(гриб|грибок)/, 'mushroom'
   [/^карт[аеуы]$|^картой$/, 'map'], [/^(письм|конверт)/, 'letter'], [/^(корзин|лукошк)/, 'basket'], [/^(сундук|клад$|клада$|кладом$|кладе$|клады$|кладов$)/, 'chest'], [/^(монет|монетк)/, 'coin'], [/^(яйц|яичк)/, 'egg'],
   [/^(пирог|пирож)/, 'pie'], [/^(печень)/, 'cookie'], [/^(молок|бутылк)/, 'milk'], [/^(часы|часики|будильник)/, 'clock'], [/^(свеч)/, 'candle'], [/^(лист|листик|листок)/, 'leaf'],
   [/^(камень|камешек|камн|камуш)/, 'rock'], [/^(палк|ветк|прут)/, 'stick'], [/^(телефон|смартфон)/, 'phone'], [/^(змей|змея)/, 'kite'], [/^(сумк|сумоч|портфел)/, 'bag'],
-  [/^мяч/, 'ball'], [/^яблок/, 'apple'], [/^рыб/, 'fish'], [/^(коробк|ящик)/, 'box'], [/^подар/, 'gift'], [/^цвет(ок|оч|к)/, 'flower'], [/^книг/, 'book'], [/^зв[её]зд/, 'star'],
+  [/^мяч/, 'ball'], [/^яблок/, 'apple'], [/^рыб/, 'fish'], [/^(коробк|ящик)/, 'box'], [/^подар/, 'gift'], [/^цвет(ок|оч|к)/, 'flower'], [/^цвет(ы|ов|ами|ам|ах)$/, 'flower'], [/^книг/, 'book'], [/^зв[её]зд/, 'star'],
   [/^бинокл/, 'binoculars'], [/^(лупа|лупу|лупы|лупой|лупе|лупочк)$/, 'magnifier'], [/^компас/, 'compass'], [/^(рюкзак|ранец|ранц)/, 'backpack'], [/^(шляп|панам|шапк|шапочк|кепочк)/, 'hat'], [/^(очки|очков|очками|очкам)$/, 'glasses'],
   [/^(лестниц|стремянк)/, 'ladder'], [/^(веревк|верев|канат)/, 'rope'], [/^(удочк|удочек|удилищ)/, 'rod'], [/^(лодк|лодоч|кораблик)/, 'boat'], [/^(велосипед|велик$|велика$|велике$|великом$)/, 'bike'], [/^самокат/, 'scooter'],
   [/^(телескоп|подзорн)/, 'telescope'], [/^ракет/, 'rocket'], [/^корон/, 'crown'], [/^(флаг|флажок|флажк)/, 'flag'], [/^(краск|кисточк|кисть$|кисти$|палитр)/, 'paints'], [/^(карандаш|фломастер|мелок|мелки$|мелков$|мелками$)/, 'pencil'],
@@ -63,7 +63,7 @@ const VERBS = [ // stem → действие (порядок важен)
   [/^(читает|читают|читал|читала|прочитал|прочитала|прочел|прочла|разглядыва|разглядел|рассматрива|рассмотрел|изуча|изучил|развернул|развернула|разворачива)/, 'read'],
   [/^(копа|копнул|выкопал|выкопала|раскопал|рыл$|рыла$|роет|роют)/, 'dig'], [/^(стуч|постуч|стукнул|постукал)/, 'knock'],
   [/^(толка|толкнул|подтолкнул|пихнул|пихает)/, 'push'], [/^(тянет|тянут|тянул|потянул$|потянула$|потянули$|тащит|тащат|тащил|вытащил|вытащила|вытянул|дернул|дергает)/, 'pull'],
-  [/^(открыва|открыл|открою|отворя|отворил|распахива|распахнул|закрыва|закрыл|захлопыва|захлопнул)/, 'open'], [/^(включа|включил|выключа|выключил|нажима|нажал)/, 'point'],   // открывает подарок, выключает свет — тянется лапкой (крышка/дверь откроется сама), без «Научи меня»
+  [/^(открыва|открыл|открою|отворя|отворил|распахива|распахнул|закрыва|закрыл|захлопыва|захлопнул)/, 'open'], [/^(включа|включил|выключа|выключил|нажима|нажал)/, 'point'], [/^(ловит|ловят|ловил|ловила|ловили|поймал|поймала|поймали|подхватил|подхватила|подхватыва)/, 'take'], [/^(раскрыва|раскрыл)/, 'open'],   // открывает подарок, выключает свет — тянется лапкой (крышка/дверь откроется сама), без «Научи меня»
   [/^(держит|держат|держал|держала|держали|удерживает)$/, 'take'], [/^(приносит|приносят|приносил|приносила|приносили)/, 'take'], [/^(выпрыгива|выскакива)/, 'jump'], [/^(лепит|лепят|лепил|лепила|лепили|слепил|слепила|слепили|строит|строят|построил|построила|построили|мастерит|смастерил)/, 'build'], [/^(звонит|звонят|звенит|позвонил|позвонила|зазвонил|зазвонила|звякнул|звякнула|трезвонит)$/, 'play'],   // «Топа держит колокольчик» — колокольчик у него в лапах; «звонит в колокольчик» — играет на нём
   [/^(пьет|пьют|пил$|пила$|пили$|выпил|выпила|попил|попила|отпил|глотну)/, 'drink'], [/^(рису|нарисовал|нарисовала|раскраш|раскрасил|красит|покрасил)/, 'paint'],
   [/^(пишет|пишут|писал|написал|написала|записал|записала|записыва)/, 'write'], [/^(играет|играют|играл|играла|сыграл|сыграла|заиграл|заиграла|бренчит|дудит|подудел)/, 'play'],
@@ -91,7 +91,7 @@ const VERBS = [ // stem → действие (порядок важен)
   [/^(ест$|едят|кушает|кушают|жует|жуёт|грызет|грызёт|лопает|уплета|съел|ел$|поедает)/, 'eat'], [/^(топает|топают|топнул|топочет)/, 'stomp'],
   [/^(присед|присел|пригнул|пригиба)/, 'crouch'], [/^(прячет|прячут|спрятал|спрята|прятал)/, 'hide'], [/^(поет|поёт|поют|напева|запел|спел)/, 'sing'],
   [/^(пинает|пнул|пинают|бьет|бьёт|ударил)/, 'kick'], [/^(бросает|бросил|кидает|кинул|бросают|швыря)/, 'throw'], [/^(кричит|крикнул|закричал|орет|орёт|вопит)/, 'shout'],
-  [/^(вход(ит|ят|я$)|приход(ит|ят|я$)|появля|прибега(ет|ют)|заход(ит|ят|я$)|прилета(ет|ют)|выбега(ет|ют))/, 'enter'], [/^(уход(ит|ят|я$)|убега(ет|ют)|выход(ит|ят|я$)|исчеза(ет|ют)|улета(ет|ют))/, 'exit'],
+  [/^(вход(ит|ят|я$)|приход(ит|ят|я$)|появля|прибега(ет|ют)|заход(ит|ят|я$)|прилета(ет|ют)|выбега(ет|ют)|вбега(ет|ют)|забега(ет|ют)|влета(ет|ют)|залета(ет|ют)|приплыва(ет|ют)|приезжа(ет|ют)|въезжа(ет|ют))/, 'enter'], [/^(уход(ит|ят|я$)|убега(ет|ют)|выход(ит|ят|я$)|исчеза(ет|ют)|улета(ет|ют))/, 'exit'],
   [/^(бежит|бегут|бега|мчит|несет|несут)/, 'run'], [/^(ид[её]т|идут|подход|шага|направля|подбега)/, 'walk'],
   [/^(прыга|подпрыг|скач)/, 'jump'], [/^(маш[еу]т|помаха)/, 'wave'], [/^(танцу|пляш)/, 'dance'], [/^(кружит|крутит|вертит)/, 'spin'], [/^(кива)/, 'nod'],
   [/^(кача|мота)/, 'shake'], [/^(хлопа|аплодир)/, 'clap'], [/^(показыва|указыва)/, 'point'], [/^(дума|размышля|мечта|задума)/, 'think'],
@@ -165,7 +165,7 @@ S.parse = function (text, lib, opts) {
     let lid = Object.keys(locs).find(id => { const s = locs[id].spec; return s.type === type && (s.time || 'day') === time && (s.weather || 'none') === weather && (s.variant || null) === variant; });
     if (!lid) { lid = 'Л' + (++nextL); const spec = { id: lid, name: desc.trim().slice(0, 40) || type, type, time, weather, seed: nextL }; if (variant) spec.variant = variant; locs[lid] = { spec }; newLocs[lid] = spec; }
     const carry = {}; if (sc && ep.scenes.includes(sc)) { Object.assign(carry, sc._carry || {}); for (const p of sc.props) if (p._held && !p._gone) carry[p._held] = { type: p.type, color: p.color }; }   // что у героя осталось в лапах — несёт дальше
-    sc = { id: 'С' + (ep.scenes.length + 1), location: lid, cast: [], props: [], steps: [], _cast: {}, _x: {}, _type: type, _variant: variant, _carry: carry, _out: {} };
+    sc = { id: 'С' + (ep.scenes.length + 1), location: lid, cast: [], props: [], steps: [], _cast: {}, _x: {}, _type: type, _variant: variant, _carry: carry, _out: {}, _wx: weather !== 'none' ? weather : type === 'winter' ? 'snow' : 'none' };
     { const th = themeWord(d); if (th) theme = th; } if (theme && type !== 'space') sc.theme = theme;
     const mu = pick(MUSIC, d); if (mu) sc.music = mu;
     { const prev = ep.scenes.slice().reverse().find(s => s._type === type && (s._variant || null) === variant); if (prev) for (const p of prev.props) if (!p._gone && !p._held && !p.holder && !p.decor && !p.hidden && p._used) sc.props.push({ id: 'П' + (sc.props.length + 1), type: p.type, x: p.x, color: p.color, _used: true, _carried: true }); }
@@ -189,6 +189,7 @@ S.parse = function (text, lib, opts) {
     sents.forEach((d) => {
       const words = d.split(/[^а-яa-z]+/).filter(Boolean); const cue = SEE.test(d) || (lineCue && !/\?\s*$/.test(d));
       const isQ = /\?\s*$/.test(d) && !SEE.test(d), maybe = /(может|вдруг|наверн|если|(^|[^а-я])бы(?![а-я])|хоч)/.test(d) || FUTURE.test(d) || elsewhere(d);
+      if (!isQ && !maybe) weatherCue(d);   // «Пошёл дождь.» — с этой минуты идёт дождь
       const glowNow = /(засвет|зажгл|загорел|засия|вспыхн)/.test(d), glowAdj = /(свет|сия|горит|сверка|блест)/.test(d);
       const absent = ABSENT.test(d), opening = /(открыва|открыл|распахн|отвори|отворя)/.test(d), closing = /(закрыва|закрыл|захлопн)/.test(d), moving = /(двига|кати|покати|шевел|сам[аио]? (по)?(ехал|полз|прыг)|прыгает сам|убега)/.test(d);
       let found = false;
@@ -268,7 +269,7 @@ S.parse = function (text, lib, opts) {
           if (actPart && actPart !== pre) { if (action(actPart)) { const sj2 = sc.steps[sc.steps.length - 1]; if (sj2) sj2.with = false; } } else if (actPart && pick(EMO, low(actPart))) {}
           const cl = global.MK ? global.MK.cleanSpeech(q[2].trim()) : { text: q[2].trim(), removed: [] };
           const step = { who, say: cl.text }; const e = pick(EMO, ctx); if (e) step.emotion = e; const vv = verbOf(low(pre)); if (vv && ['laugh', 'cry', 'shout', 'jump', 'wave', 'nod', 'shake', 'point', 'scared', 'surprise', 'dance'].includes(vv)) step.do = vv;
-          const other = lastSpeaker && lastSpeaker !== who && lastSpeaker !== 'Р' ? lastSpeaker : sceneSpeakers.filter(x => x !== who && x !== 'Р').slice(-1)[0]; if (other) step.to = other;
+          const other = addressee(who, cl.text) || (lastSpeaker && lastSpeaker !== who && lastSpeaker !== 'Р' ? lastSpeaker : sceneSpeakers.filter(x => x !== who && x !== 'Р').slice(-1)[0]); if (other) step.to = other;
           autoCam(who); sc.steps.push(step); lastSpeaker = who; if (!sceneSpeakers.includes(who)) sceneSpeakers.push(who); nameFromLine(who, cl.text); stage(cl.text, who); continue; } } }
     // реплика «Имя (как): текст»
     m = raw.match(/^([^:()]{1,40}?)\s*(?:\(([^)]*)\))?\s*:\s*(.+)$/);
@@ -288,7 +289,7 @@ S.parse = function (text, lib, opts) {
       if (m[2]) { const e = pick(EMO, low(m[2])); if (e) step.emotion = e; const v = verbOf(low(m[2])); if (v && who !== 'Р') step.do = v; }
       { const rest = low(m[1]).replace(/^\S+\s*/, ''); const v2 = rest && who !== 'Р' ? verbOf(rest) : null; if (v2 && !step.do) step.do = v2; const e2 = rest ? pick(EMO, rest) : null; if (e2 && !step.emotion) step.emotion = e2; }
       if (who !== 'Р' && !step.emotion) { const ae = pick(AUTO_EMO, low(cl.text).replace(/^[\s«"—-]+/, '')); if (ae) { step.emotion = ae; step._auto = true; } }
-      if (who !== 'Р') { const other = lastSpeaker && lastSpeaker !== who && lastSpeaker !== 'Р' ? lastSpeaker : sceneSpeakers.filter(x => x !== who && x !== 'Р').slice(-1)[0]; if (other) step.to = other;
+      if (who !== 'Р') { const other = addressee(who, cl.text) || (lastSpeaker && lastSpeaker !== who && lastSpeaker !== 'Р' ? lastSpeaker : sceneSpeakers.filter(x => x !== who && x !== 'Р').slice(-1)[0]); if (other) step.to = other;
         backIn(who); autoCam(who); }
       { const lt = low(cl.text), painting = sc.props.some(x => (x.type === 'easel' || x.type === 'paints') && !x._gone) || /(краск|кисточк|кисть|мольберт)/.test(lt);
         if (who !== 'Р' && painting && /(картин|нарису|порису|рисова|рисуем|рисую|дорису)/.test(lt) && !/(нарисовано|на рисунке)/.test(lt)) easel();
@@ -316,7 +317,7 @@ S.parse = function (text, lib, opts) {
       const past = /[а-яё]+(?:ал|ял|ил|ел|ул|ыл|ла|ли|лся|лась|лись)(?![а-яё])/i.test(core) && core.split(/\s+/).length >= 3;
       if (did && past && !bracket) { sc.steps.push({ who: 'Р', say: sent, with: true }); }
       if (!did && !bracket) { sc.steps.push({ who: 'Р', say: sent }); narrated++; stage(sent, 'Р'); }
-      else if (!did) warnings.push(`Строка ${lineNo}: не понял «${sent.slice(0, 50)}» — пропускаю.`);
+      else if (!did && !weatherCue(low(core))) warnings.push(`Строка ${lineNo}: не понял «${sent.slice(0, 50)}» — пропускаю.`);
     }
   }
   applyTheme();
@@ -342,11 +343,22 @@ S.parse = function (text, lib, opts) {
     if (group) { const named = namesIn(low(text), idx); group = group.filter(id => !named.includes(id)); if (!group.length) return false; }
     const list = group ? (text.split(/\s+/).length <= 5 ? group : group.slice(0, 1)) : [who];
     list.forEach((w, k) => { castOf(w); backIn(w); const step = { who: w, say: text }; if (k) step.with = true; if (emo) step.emotion = emo; if (act) step.do = act;
-      const other = sceneSpeakers.filter(x => x !== w && x !== 'Р').slice(-1)[0]; if (other && !group) step.to = other;
+      const other = (!group && addressee(w, text)) || sceneSpeakers.filter(x => x !== w && x !== 'Р').slice(-1)[0]; if (other && !group) step.to = other;
       if (!k) autoCam(w); sc.steps.push(step); lastSpeaker = w; lastSubj = w; if (!sceneSpeakers.includes(w)) sceneSpeakers.push(w); });
     return true;
   }
   function verbOf(t) { if (/(выход\S*|вышел|вышла|вышли)\s+(во|в|на)\s/.test(t) && !/(из|прочь)/.test(t)) return 'enter'; if (/(выход\S*|вышел|вышла|вышли|выглядыва\S*|выглянул\S*)\s+из-за\s/.test(t)) return 'enter'; if (/(^|\s)(ждал|ждала|ждали|ждет|ждут|стоял|стояла|стояли|сидел и ждал)(\s|$)/.test(t) && !/(встал|сел)/.test(t)) return 'wait'; for (const w of t.split(/[^а-яa-z]+/)) { const u = userVerbs.find(([k]) => w === k || (k.length > 4 && w.startsWith(k.slice(0, -1)))); if (u) return u[1]; const v = pick(VERBS, w); if (v) return v; } return null; }
+  function weatherCue(d) { // погода меняется посреди сцены: «Пошёл дождь», «Начался снегопад», «Дождь кончился»
+    if (!sc || /^(room|kitchen|space)$/.test(sc._type || '')) return false;
+    const v = /((^|[^а-я])дожд\S*|ливень|(^|[^а-я])снег(?![а-я])|снегопад)\s+(кончил|закончил|перестал|прекратил|прош[её]л|утих|стих)|(кончил|закончил|перестал|прекратил)\S*\s+(дожд|ливень|снег)|(выглянуло|вышло) солнце/.test(d) ? 'none'
+      : /(пош[её]л|начал\S*|полил|хлынул|ль[её]т|ид[её]т|припустил|забарабанил|закапал)\s+(\S+\s+)?(дожд|ливень|ливн)|(^|[^а-я])(дожд\S*|ливень)\s+(пош[её]л|начал|полил|хлынул|закапал|ль[её]т|ид[её]т|припустил)|закапало/.test(d) ? 'rain'
+      : /(пош[её]л|начал\S*|повалил|посыпал|ид[её]т|пада[её]т)\s+(\S+\s+)?(снег|снежок|снегопад)|(^|[^а-я])(снег|снежок)\s+(пош[её]л|начал|повалил|посыпал|ид[её]т|пада)|начался снегопад/.test(d) ? 'snow' : null;
+    if (!v) return false; if (sc._wx !== v) { sc.steps.push({ weather: v, with: true }); sc._wx = v; } return true; }
+  function addressee(who, text) { // к кому обращаются: «Спасибо, Рон!», «Пик, смотри!»; а если только что что-то сделал другой герой (чихнул, упал, подарил) — к нему
+    const t = low(text);
+    for (const [n, id] of idx) { if (id === who || !sc._cast[id] || (sc._out && sc._out[id])) continue; const np = namePat(n); if (new RegExp('(^|[,!?.…—]\\s*)' + np + '\\s*[,!?.…]').test(t) || new RegExp(',\\s*' + np + '\\s*[!?.…]*\\s*$').test(t)) return id; }
+    for (let i = sc.steps.length - 1; i >= 0; i--) { const st = sc.steps[i]; if (st.camera || (st.prop && st.state) || st.look || st.shake || st.wait != null || st.sfx || st.who === 'Р') continue; if (st.say) break; if (st.who && st.who !== who && st.do && !/^(enter|exit|hide)$/.test(st.do) && sc._cast[st.who] && !(sc._out && sc._out[st.who])) return st.who; break; }
+    return null; }
   function backIn(id) { // говорит тот, кто ушёл, — сначала возвращается туда, где стоял
     if (!sc || !sc._out || !sc._out[id]) return; delete sc._out[id]; const x = sc._x[id] != null ? sc._x[id] : placeX(); sc.steps.push({ who: id, do: 'enter', from: x > .5 ? 'right' : 'left', to: x }); }
   function camera(t) { const d = low(t); const who = namesIn(d, idx);
@@ -380,7 +392,7 @@ S.parse = function (text, lib, opts) {
     return did; }
   function action(sent) {
     const d = low(sent); let who = namesIn(d, idx).filter(id => { const n = findNameAt(d, idx); return true; }); let grpAll = null;
-    { const sj = subjectsOf(d.replace(/^\s+/, '')); if (sj && sj.length > 1 && /^(все|они|друзья|ребята|вместе|оба|обе)(?![а-я])/.test(d.replace(/^\s+/, ''))) grpAll = sj.filter(id => !sc._out[id]); if (sj && sj.length) { who = sj.concat(who.filter(x => !sj.includes(x))); if (sj.length > 1) { const v = verbOf(d), e = pick(EMO, d); if ((v || e) && !['kick', 'throw', 'give', 'take', 'walk', 'run', 'enter', 'exit', 'hug'].includes(v)) { sj.forEach((id, k) => { castOf(id); const st = { who: id }; if (k) st.with = true; if (v && !['walk', 'run', 'enter', 'exit', 'give', 'take', 'hug', 'turn', 'kick', 'throw'].includes(v)) st.do = v; if (e) st.emotion = e; if (!st.do && !st.emotion) return; sc.steps.push(st); }); return true; } } } }
+    { const sj = subjectsOf(d.replace(/^\s+/, '')); if (sj && sj.length > 1 && /^(все|они|друзья|ребята|вместе|оба|обе)(?![а-я])/.test(d.replace(/^\s+/, ''))) grpAll = sj.filter(id => !sc._out[id]); if (sj && sj.length) { who = sj.concat(who.filter(x => !sj.includes(x))); if (sj.length > 1) { const v = verbOf(d), e = pick(EMO, d); if ((v || e) && !['kick', 'throw', 'give', 'take', 'walk', 'run', 'enter', 'exit', 'hug'].includes(v) && !(v === 'hide' && /под\s+зонт/.test(d))) { sj.forEach((id, k) => { castOf(id); const st = { who: id }; if (k) st.with = true; if (v && !['walk', 'run', 'enter', 'exit', 'give', 'take', 'hug', 'turn', 'kick', 'throw'].includes(v)) st.do = v; if (e) st.emotion = e; if (!st.do && !st.emotion) return; sc.steps.push(st); }); return true; } } } }
     // порядок имён по позиции в предложении
     who = who.map(id => [id, d.search(low(chars[id].name).split(' ').slice(-1)[0].slice(0, 4))]).sort((a, b) => a[1] - b[1]).map(x => x[0]);
     if (!who.length) { if (/(крупн|общий план)/.test(d)) { camera(d); return true; } const s = pick(SFX, d); if (s && /(звук|слышно|раздает)/.test(d)) { sc.steps.push({ sfx: s }); return true; } return false; }
@@ -400,7 +412,7 @@ S.parse = function (text, lib, opts) {
       if (emo) step.emotion = emo;
       const tgt = targets[0];
       if (verb === 'enter' && sc._on && sc._on[id] && !tgt) { if (!/(выпрыг|выскоч|выскак)/.test(d)) continue; step.do = 'jump'; sc.steps.push(step); continue; }   // «выпрыгнул из-за дерева», а он уже тут (прятался) — подпрыгивает   // уже вышел к нам («выглядывает из-за дерева», потом «входит») — второй раз не выходит из-за края
-      if (verb === 'enter') { (sc._on = sc._on || {})[id] = true; delete sc._out[id]; const side = /(слева|левой)/.test(d) ? 'left' : /(справа|правой)/.test(d) ? 'right' : null; castOf(id, true, side); step.do = 'enter'; step.from = side || (sc._x[id] > .5 ? 'right' : 'left'); step.to = tgt && sc._x[tgt] != null ? tgt : sc._x[id]; if (step.to === undefined) delete step.to; }
+      if (verb === 'enter') { (sc._on = sc._on || {})[id] = true; delete sc._out[id]; const side = /(слева|левой)/.test(d) ? 'left' : /(справа|правой)/.test(d) ? 'right' : null; castOf(id, true, side); step.do = 'enter'; step.from = side || (sc._x[id] > .5 ? 'right' : 'left'); step.to = tgt && sc._x[tgt] != null ? tgt : sc._x[id]; if (step.to === undefined) delete step.to; { const wm = d.match(/(?:^|\s)(?:с|со)\s+(?:(?:сво|больш|маленьк|нов|красн|син|ж[её]лт|зел[её]н|огромн|круглы|любим|вкусн)[а-яё]*\s+)?([а-яё]+)/), pt = wm && pick(PROPS, wm[1]); if (pt && !sc.props.some(x => x._held === id && !x._gone)) { const pr = { id: 'П' + (sc.props.length + 1), type: pt, x: sc._x[id] != null ? sc._x[id] : .5, holder: id, _used: true }; pr._held = id; sc.props.push(pr); } } }   // «вбегает с мячом», «входит с книгой» — входит, держа вещь
       else {
         castOf(id);
         if (verb === 'exit') { sc._out[id] = true; if (sc._on) delete sc._on[id]; step.do = 'exit'; step.side = /(влево|налево|слева)/.test(d) ? 'left' : /(вправо|направо|справа)/.test(d) ? 'right' : undefined; if (!step.side) delete step.side; }
@@ -415,11 +427,14 @@ S.parse = function (text, lib, opts) {
         else if (verb === 'turn' && !tgt && propIn(d) && sc.props.some(x => x.type === propIn(d) && !x._gone && (!x.hidden || x._shown))) { const pt = propIn(d), pr = sc.props.find(x => x.type === pt && !x._gone && (!x.hidden || x._shown)); sc.steps.push(Object.assign({}, step)); step.look = pr.id; step.with = true; step.solo = true; delete step.emotion; }   // «смотрит на тарелку» — смотрит на неё, а не в камеру
         else if (verb === 'build') { step.do = 'crouch'; const p = propIn(d) || d.split(/[^а-яё]+/).map(w => w && objOf(w)).find(Boolean); if (p) { const had = sc.props.some(x => x.type === p && !x._gone); const pr = ensureProp(p, id); if (!had) { pr.hidden = true; pr._shown = true; step._open = { prop: pr.id, state: 'appear', with: true, who: id }; const hx = sc._x[id] != null ? sc._x[id] : .5, others = Object.keys(sc._x).filter(o => o !== id && o !== 'Р' && !sc._out[o] && sc._x[o] != null).map(o => sc._x[o]); let best = null, bd = -1; for (const c of [hx + .12, hx - .12, hx + .18, hx - .18]) { const cx = Math.max(.12, Math.min(.88, c)), md = others.length ? Math.min(...others.map(o => Math.abs(o - cx))) : 1; if (md >= .1) { best = cx; break; } if (md > bd) { bd = md; best = cx; } } pr.x = best; } } }   // снеговик рядом с тем, кто лепит, но не на соседе   // «лепит снеговика», «строит замок» — присел, и вот он
         else if (verb === 'turn') { step.do = 'turn'; step.to = tgt || (/(на нас|в камеру|к зрител)/.test(d) ? 'camera' : /(влево|налево)/.test(d) ? 'left' : /(вправо|направо)/.test(d) ? 'right' : /(^|[^а-я])на\s+\S/.test(d) ? null : 'camera'); if (step.to == null) { delete step.to; delete step.do; } if (tgt) castOf(tgt); }   // «смотрит на пустую тарелку» (такой вещи нет) — не отворачивается к камере
+        else if ((verb === 'sit' || verb === 'lie' || verb === 'sleep') && tgt && /(рядом|возле|около|(^|\s)к\s|ко\s)/.test(d)) { castOf(tgt); if (sc._x[id] != null && sc._x[tgt] != null && Math.abs(sc._x[id] - sc._x[tgt]) > .2) { sc.steps.push({ who: id, do: 'walk', to: tgt }); sc._x[id] = sc._x[tgt] + (sc._x[tgt] > sc._x[id] ? -.12 : .12); } step.do = verb; }   // «садится рядом с Пик» — сначала подходит к ней
+        else if (verb === 'hide' && /под\s+зонт/.test(d)) { const um = sc.props.find(x => x.type === 'umbrella' && !x._gone && x._held); if (!um) { grab(id, 'umbrella'); continue; } if (um._held === id) continue; castOf(um._held); step.do = 'walk'; step.to = um._held; step.huddle = true; if (sc._x[um._held] != null) sc._x[id] = sc._x[um._held] + ((sc._x[id] || .5) > sc._x[um._held] ? .12 : -.12); }   // «Все прячутся под зонтик» — бегут к тому, у кого зонтик
         else if (verb === 'hug') { step.do = 'hug'; if (tgt) { castOf(tgt); step.to = tgt; } }
+        else if (verb === 'open' && /^(umbrella|book)$/.test(propIn(d) || '')) { const p = propIn(d); if (sc.props.some(x => x.type === p && x._held === id && !x._gone)) { if (!step.emotion) continue; } else { grab(id, p); if (!step.emotion) continue; } }   // «раскрывает зонтик/книгу» — берёт в лапы
         else if (verb === 'open') { step.do = 'point'; const p = propIn(d); if (p && /^(door|gift|chest)$/.test(p)) { const pr = sc.props.find(x => x.type === p && !x._gone && x._held === id) || sc.props.find(x => x.type === p && !x._gone) || ensureProp(p, id, true); const op = !/(закры|захлоп)/.test(d); if (!!pr._open !== op) { step._open = { prop: pr.id, state: op ? 'open' : 'close', with: true }; pr._open = op; } } }   // открывает подарок/сундук/дверь — тянется лапкой, крышка откидывается
         else if (verb === 'kick' || verb === 'throw') { step.do = verb; const p = propIn(d) || (verb === 'kick' ? 'ball' : null);
           if (verb === 'kick') { const pr = ensureProp(p, id, true); step.prop = pr.id; } else if (p && !sc.props.some(x => x._held === id)) { const pr = ensureProp(p, id); sc.steps.push({ who: id, do: 'take', prop: pr.id }); pr._held = id; }
-          if (tgt) { castOf(tgt); step.to = tgt; } }
+          if (tgt) { castOf(tgt); step.to = tgt; if (verb === 'throw') { const hp = sc.props.find(x => x._held === id && !x._gone); if (hp) hp._held = tgt; } } }
         else if (verb === 'crawl' || verb === 'sneak') { step.do = verb; if (tgt) { castOf(tgt); step.to = tgt; } else if (/(вправо|направо)/.test(d)) step.to = Math.min(.85, (sc._x[id] || .5) + .3); else if (/(влево|налево)/.test(d)) step.to = Math.max(.15, (sc._x[id] || .5) - .3); else step.to = (sc._x[id] || .5) > .5 ? .35 : .65; if (typeof step.to === 'number') sc._x[id] = step.to; }
         else if (verb === 'drop') { step.do = 'drop'; const p = propIn(d); const pr = sc.props.find(x => x._held === id && !x._gone && (!p || x.type === p)) || fromCarry(id, p); if (pr) { pr._held = null; step.prop = pr.id; } }
         else if (verb === 'take') { const p = propIn(d); if (!p) { if (!step.emotion) continue; } else { if (sc.props.some(x => x.type === p && x._held === id && !x._gone)) continue; if (fromCarry(id, p)) continue; if (sc._carry) delete sc._carry[id]; for (const c of sc.props.filter(x => x._held === id && !x._gone)) { sc.steps.push({ who: id, do: 'drop', prop: c.id }); c._held = null; } const pr = ensureProp(p, id); step.do = 'take'; step.prop = pr.id; pr._held = id; } }
@@ -462,7 +477,7 @@ S.parse = function (text, lib, opts) {
   for (const e of eps) {
     if (e.scenes.length > 1) e.scenes = e.scenes.filter(x => x.steps.length || x === e.scenes[e.scenes.length - 1]); e.scenes.forEach((x, i) => x.id = 'С' + (i + 1));
     if (!e.scenes.length) continue;
-    for (const s of e.scenes) { delete s._cast; delete s._x; delete s._type; delete s._cam; s.props.forEach(p => { delete p._used; delete p._holder; delete p._held; delete p._gone; delete p._shown; delete p._glow; }); delete s._ln; delete s._vanishLn; delete s._lastObj; delete s._vanishHeld; if (!s.props.length) delete s.props; }
+    for (const s of e.scenes) { delete s._cast; delete s._x; delete s._type; delete s._cam; delete s._wx; s.props.forEach(p => { delete p._used; delete p._holder; delete p._held; delete p._gone; delete p._shown; delete p._glow; }); delete s._ln; delete s._vanishLn; delete s._lastObj; delete s._vanishHeld; if (!s.props.length) delete s.props; }
     const usedC = new Set(), usedL = new Set(); e.scenes.forEach(s => { usedL.add(s.location); s.cast.forEach(c => usedC.add(c.who)); s.steps.forEach(st => st.who && usedC.add(st.who)); });
     e.characters = [...usedC].filter(id => newChars[id]).map(id => newChars[id]);
     e.locations = [...usedL].filter(id => newLocs[id]).map(id => newLocs[id]);

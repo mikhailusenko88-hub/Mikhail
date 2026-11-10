@@ -515,8 +515,10 @@ function scheduleAmbience(ac, out, seg, seed) {
   if (type === 'room') { loopNoise(ac, out, t0, t1, 'lowpass', 160, .5, .01); for (let t = t0 + .3; t < t1; t += 1) play(ac, out, drum(ac, 'tick'), t, .012); }
   if (type === 'kitchen') { loopNoise(ac, out, t0, t1, 'lowpass', 160, .5, .01); const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = 100; g.gain.value = .004; o.connect(g); g.connect(out); o.start(t0); o.stop(t1); }
   if (type === 'space') { for (const f of [55, 82.4, 110.6]) { const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = f; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.012, t0 + 2); g.gain.setValueAtTime(.012, Math.max(t0 + 2, t1 - 1)); g.gain.linearRampToValueAtTime(0, t1); o.connect(g); g.connect(out); o.start(t0); o.stop(t1); } }
-  if (weather === 'rain') { loopNoise(ac, out, t0, t1, 'bandpass', 2600, .4, .05); for (let t = t0; t < t1; t += .03 + r() * .12) { const s = ac.createBufferSource(); s.buffer = drum(ac, 'tick'); s.playbackRate.value = .4 + r() * .5; const g = ac.createGain(); g.gain.value = .006 + r() * .01; s.connect(g); g.connect(out); s.start(t); } }
-  if (weather === 'snow' || type === 'winter') loopNoise(ac, out, t0, t1, 'bandpass', 700, .8, .03, [.08, .6]);
+  const rainSnd = (a, b) => { loopNoise(ac, out, a, b, 'bandpass', 2600, .4, .05); for (let t = a + (a > t0 ? .4 : 0); t < b - (b < t1 ? .4 : 0); t += .03 + r() * .12) { const s = ac.createBufferSource(); s.buffer = drum(ac, 'tick'); s.playbackRate.value = .4 + r() * .5; const g = ac.createGain(); g.gain.value = .006 + r() * .01; s.connect(g); g.connect(out); s.start(t); } };
+  const snowSnd = (a, b) => loopNoise(ac, out, a, b, 'bandpass', 700, .8, .03, [.08, .6]);
+  { let cur = weather === 'none' && type === 'winter' ? 'snow' : weather, tc = t0; const ivs = []; for (const e of (L.wxAt || [])) { const te = Math.min(t1, t0 + e.t); if (te > tc) ivs.push([cur, tc, te]); cur = e.v; tc = te; } if (t1 > tc) ivs.push([cur, tc, t1]);   // «Пошёл дождь» посреди сцены — шум дождя с этой минуты
+    for (const [w, a, b] of ivs) { if (b - a < .3) continue; if (w === 'rain') rainSnd(a, b); else if (w === 'snow' || type === 'winter') snowSnd(a, b); } }
 }
 const SFX2 = Object.assign({}, MK._SFX, {
   step: (ac, o, t) => { MK._noiseHit(ac, o, t, .07, .22, 'lowpass', 800); MK._tone(ac, o, t, 110, 70, .05, .1); },
