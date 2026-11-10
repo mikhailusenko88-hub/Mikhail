@@ -80,11 +80,14 @@ jobs:
         run: |
           git config user.name render-bot
           git config user.email render-bot@users.noreply.github.com
-          git add -A out
-          git commit -q -m "render: $NAME" || echo nothing
           rm -f out/*/_*.exr
+          # результат кладём поверх свежей ветки (без rebase: одинаковые имена кадров из разных запусков иначе конфликтуют и теряются)
+          rm -rf /tmp/res && cp -r "out/$NAME" /tmp/res
           for i in 1 2 3 4 5 6 7 8 9 10; do
-            git fetch -q --depth=30 origin "$GITHUB_REF_NAME" && git rebase -q FETCH_HEAD && git push -q origin "HEAD:$GITHUB_REF_NAME" && break
-            git rebase --abort 2>/dev/null || true
+            git fetch -q --depth=5 origin "$GITHUB_REF_NAME" && git reset -q --hard FETCH_HEAD || { sleep 3; continue; }
+            rm -rf "out/$NAME" && mkdir -p out && cp -r /tmp/res "out/$NAME"
+            git add -A "out/$NAME"
+            git commit -q -m "render: $NAME" || { echo nothing to commit; break; }
+            git push -q origin "HEAD:$GITHUB_REF_NAME" && break
             sleep $((RANDOM % 8 + 2))
           done
