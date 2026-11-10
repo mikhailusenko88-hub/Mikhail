@@ -820,7 +820,7 @@ function lineFor(ep, lib, who, text, step, vi) {
   const bp = who !== 'Р' && !synth && !hn ? MK.barsPassport(lib, who) : null;
   if (bp && MK.prepSpeech) { // БАРС-озвучка: герой с паспортом голоса — нейроголос в телефоне (тон и тембр раздельно, живость, эмоции); не вышло — его голос iPhone (fb)
     const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
-    const bars = { P: bp.P || 1, F: bp.F || 1, T: bp.T || 1, R: bp.R || 1 }; if (step && step.say && step.emotion && BARSGolos.EMO[step.emotion]) bars.emo = step.emotion;
+    const bars = { P: bp.P || 1, F: bp.F || 1, T: bp.T || 1, R: bp.R || 1 }; if (bp.pause) bars.pause = bp.pause; if (step && step.say && step.emotion && BARSGolos.EMO[step.emotion]) bars.emo = step.emotion;
     return { key: hash32('bg1|' + (bp.model || '') + '|' + bp.speaker + '|' + JSON.stringify(bars) + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
       srv: { text: marked, speaker: bp.speaker, model: bp.model || '', bars, local: true }, fb: { fx }, src: text }; }
   if (nv && nv.server && MK.prepSpeech) { // рассказчик — нейроголос со своего сервера (Альбина); нет связи — голос iPhone (fb)

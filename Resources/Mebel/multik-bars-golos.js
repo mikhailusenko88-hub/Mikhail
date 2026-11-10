@@ -31,7 +31,7 @@
     bear:    { name: 'медведь', speaker: 'ru_alexandr', F: .88, P: .84, T: .92 },
     fox:     { name: 'лиса', speaker: 'ru_zara', P: 1.02, R: 1.3 },
     tiny:    { name: 'крошка (птенчик, ёжик, белочка)', speaker: 'ru_alfia', F: 1.2, P: 1.4, R: 1.1 },
-    owl:     { name: 'сова', speaker: 'ru_nurgul', P: .95, T: .97 },
+    owl:     { name: 'сова', speaker: 'ru_nurgul', P: .95, T: .97, pause: .6 },   // у этого голоса запятая тянется больше секунды — паузы укорачиваем
     wolf:    { name: 'волк', speaker: 'ru_kejilgan', F: .94, P: .9 },
     giant:   { name: 'великан', speaker: 'ru_safarhuja', F: .84, P: .78, T: .9 },
   };
@@ -49,6 +49,10 @@
 
   /** Живость: размах интонации вокруг средней высоты ×R (R > 1 — выразительнее), дрожь голоса trem (полутоны). */
   G.liveShape = (R, trem) => c => { let k = 0; for (let i = 0; i < c.N; i++) if (Math.abs(c.pitch[i]) > .001) { let s = p2st(c.pitch[i], c.coef) * R; if (trem && VOW.includes(c.toks[i])) s += (k++ % 2 ? -trem : trem); c.pitch[i] = st2p(s, c.coef); } };
+
+  /** Паузы на знаках не длиннее sec секунд (на «?», «!», «…» внутри реплики — в полтора раза длиннее). Нужно голосам, у которых запятая тянется больше секунды. */
+  G.pauseShape = (sec, F) => c => { const cap = Math.max(4, Math.round(sec * (F || 1) / c.frame)), cap2 = Math.round(cap * 1.5);
+    for (let i = 1; i < c.N - 3; i++) { const t = c.toks[i]; if (',;:—–-'.includes(t)) { if (c.d[i] > cap) c.d[i] = cap; } else if ('.!?…'.includes(t)) { if (c.d[i] > cap2) c.d[i] = cap2; } } };
 
   // ---------- протяжные слова: «Ура-а-а!», «Не-е-ет», «Приве-е-ет» ----------
   /** → {text: обычные слова, cues: [{w — номер слова, v — номер гласной в нём, n — сколько раз её повторили}]} */
@@ -154,7 +158,7 @@
   const core = (text, o, extra) => MKVoice.speak(text, Object.assign({ model: o.model || '', speaker: o.speaker, lex: o.lex }, extra));
   async function say(text, o, b) { const F = b.F || 1, e = (b.emo && G.EMO[b.emo]) || {}, P = (b.P || 1) * (e.P || 1), T = (b.T || 1) * (e.T || 1), R = (b.R || 1) * (e.R || 1);
     const s = G.stretch(text); let marked = o.accent === false ? s.text : await MKVoice.marks(s.text, o.lex); marked = G.applyStretch(marked, s.cues); MKVoice.lastText = marked;
-    const shapes = []; if (R !== 1 || e.trem) shapes.push(G.liveShape(R, e.trem)); if (s.cues.length) shapes.push(G.stretchShape(F));
+    const shapes = []; if (R !== 1 || e.trem) shapes.push(G.liveShape(R, e.trem)); if (s.cues.length) shapes.push(G.stretchShape(F)); if (b.pause) shapes.push(G.pauseShape(b.pause, F));
     const y = await core(marked, o, { rate: T / F * (o.rate || 1), pitch: P / F * (o.pitch || 1), accent: false, shape: shapes.length ? c => shapes.forEach(f => f(c)) : null });
     return G.resample(y, F); }
   async function sound(name, o, b) { const F = b.F || 1, mk = G.SOUNDS[name]; if (!mk) return new Float32Array(0); const sc = G.score(mk());
@@ -166,7 +170,7 @@
     return G.resample(G.laughEnv(y, MKVoice.lastAlign, T), F); }
   const join = (bufs, gap) => { const g = Math.round(48000 * gap), n = bufs.reduce((a, x) => a + x.length, 0) + g * Math.max(0, bufs.length - 1), y = new Float32Array(n); let k = 0; for (const x of bufs) { y.set(x, k); k += x.length + g; } return y; };
   /** Главный вход: текст + описание bars → звук 48 кГц.
-      bars: { P — тон, F — тембр, T — темп, R — живость, emo — эмоция; kind: 'say' (по умолчанию) | 'laugh' | 'sound'; … } */
+      bars: { P — тон, F — тембр, T — темп, R — живость, emo — эмоция, pause — паузы на знаках не длиннее стольких секунд; kind: 'say' (по умолчанию) | 'laugh' | 'sound'; … } */
   G.render = async function (text, o) { const b = o.bars || {};
     if (b.kind === 'laugh') return laugh(o, b);
     if (b.kind === 'sound') return sound(b.name, o, b);
