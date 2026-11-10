@@ -15,6 +15,7 @@ jobs:
   prep:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Тексты с сервера
         run: |
           for u in http://89.126.192.214:8080/albina/bank.json http://89.126.192.214/albina/bank.json; do
@@ -23,6 +24,23 @@ jobs:
           done
           [ -s bank.json ] || { echo "Не получил тексты с сервера"; exit 1; }
           python3 -c "import json;b=json.load(open('bank.json'));print('сценариев:',len(b['scripts']),'фраз:',sum(len(s['lines']) for s in b['scripts']),'выложено:',b['updated'])"
+      - name: Плюс темы из extra_bank.json (новые темы озвучиваются до того, как попадут на сервер)
+        run: |
+          python3 - <<'PY'
+          import json
+          b = json.load(open('bank.json', encoding='utf-8'))
+          try:
+              extra = json.load(open('extra_bank.json', encoding='utf-8'))
+          except FileNotFoundError:
+              extra = []
+          have = {s.get('title') for s in b.get('scripts', [])}
+          add = [{'title': s['title'], 'lines': s['lines']} for s in extra
+                 if isinstance(s, dict) and s.get('lines') and s.get('title') not in have]
+          b.setdefault('scripts', []).extend(add)
+          json.dump(b, open('bank.json', 'w', encoding='utf-8'), ensure_ascii=False)
+          print('добавлено из extra_bank.json:', len(add), '| всего сценариев:', len(b['scripts']),
+                '| фраз:', sum(len(s['lines']) for s in b['scripts']))
+          PY
       - uses: actions/upload-artifact@v4
         with: {name: bank, path: bank.json, retention-days: 2}
   farm:
