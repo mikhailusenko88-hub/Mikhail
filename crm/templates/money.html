@@ -17,6 +17,9 @@
 <div class="panel list">{% for p in m['closing'] %}<a class="row btn" href="{{ url_for('deal_view', did=p['deal_id']) }}#pay"><span class="grow">№{{ p['deal_id'] }} · {{ p['client_name'] }}<span class="d"> · оплачено {{ fmt_dt(p['paid_at']) }} с чеком «Предоплата 100%», заказ отгружен</span></span><b>{{ rubk(p['amount'] - p['refunded']) }}</b></a>{% endfor %}</div>
 {% endif %}
 
+<h2>Счета — ждут оплаты</h2>
+<div class="panel list">{% for i in inv_open %}<a class="row btn" href="{{ url_for('deal_view', did=i['deal_id']) }}#invoice"><span class="grow">Счёт № {{ inv_number(i) }} · {{ i['client_name'] }}<span class="d"> · от {{ dmy(i['day']) }}{% if i['pct'] < 100 %} · предоплата {{ i['pct'] }} %{% endif %}</span></span><b>{{ rubk(i['amount']) }}</b></a>{% else %}<div class="row"><span class="d">Неоплаченных счетов нет</span></div>{% endfor %}</div>
+
 <h2>Ждут оплаты по ссылке</h2>
 <div class="panel list">{% for p in m['waiting'] %}<a class="row btn" href="{{ url_for('deal_view', did=p['deal_id']) }}#pay"><span class="grow">№{{ p['deal_id'] }} · {{ p['client_name'] }}<span class="d"> · ссылка от {{ fmt_dt(p['created_at']) }}</span></span><b>{{ rubk(p['amount']) }}</b></a>{% else %}<div class="row"><span class="d">Неоплаченных ссылок нет</span></div>{% endfor %}</div>
 

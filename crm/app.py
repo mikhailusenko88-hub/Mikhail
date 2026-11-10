@@ -33,6 +33,7 @@ from store import (CLIENT_DOC_FIELDS, KIND_NAMES, KIND_TITLES, KINDS, OPEN_STAGE
                    STAGE_NAMES, STAGES, Catalog, Store, fmt_day, fmt_dt, now, rub, today, split_contact)
 from buh import Buh
 from buh_web import register as register_buh
+from invoice import Invoices
 from push import WebPush
 from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, TochkaError, http_request, jwt_claims,
                     parse_jwk, receipt_items, verify_rs256)
@@ -128,6 +129,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     app.extensions["visits"] = visits
     buh = Buh(store, cfg.get("EGRUL_HTTP"))      # в тестах — подставной ЕГРЮЛ
     app.extensions["buh"] = buh
+    invoices = Invoices(store)
+    app.extensions["invoices"] = invoices
     hits_by_ip: dict[str, deque[float]] = defaultdict(deque)
     fails: dict[str, deque[float]] = defaultdict(deque)
     leads_by_ip: dict[str, deque[float]] = defaultdict(deque)
@@ -242,8 +245,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             return url_for("today_view")
         return n.rstrip("?") or url_for("today_view")
 
-    register_buh(app, store, buh, {"login_required": login_required, "admin_required": admin_required, "who": who,
-                                   "safe_next": safe_next})
+
 
     @app.route("/login", methods=["GET", "POST"])
     def login() -> Any:
@@ -443,6 +445,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                tochka_on=tochka_on(), closing=store.closing_receipts_due(did),
                                tochka_method=store.setting("tochka_method", "full_prepayment"),
                                designers=buh.designers(), dz_base=buh.deal_base_kop(did) if d["designer_id"] else None,
+                               invoices=invoices.for_deal(did), inv_number=Invoices.number, inv_ready=not invoices.seller_problems(),
                                sale_costs=buh.sale_costs(did) if g.user["role"] == "admin" else [])
 
     def mail_contacts() -> str:
@@ -453,6 +456,10 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
         return ["", f"Ответить на это письмо или написать: zakaz@{dom}" + (f" · {mail_contacts()}" if mail_contacts() else ""),
                 f"Сайт: https://{dom}", "", "С уважением, " + (f"{manager}, " if manager else "") + "«Наш декор»"]
+
+    register_buh(app, store, buh, {"login_required": login_required, "admin_required": admin_required, "who": who,
+                                   "safe_next": safe_next, "send_mail": lambda *a, **k: send_mail(*a, **k),
+                                   "mail_signature": mail_signature, "shop_domain": conf["SHOP_DOMAIN"] or "nashdekor.ru"})
 
     def calc_text(d: Any, lines: list[Any], manager: str = "") -> str:
         """Расчёт для клиента: позиции, суммы, итог, что дальше, контакты — в письмо или в мессенджер."""
@@ -869,8 +876,10 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             flash("Укажите сумму оплаты.", "err")
             return money_back(did)
         kind = "invoice" if request.form.get("kind") == "invoice" else "manual"
-        store.add_payment(did, who(), kind=kind, amount_kop=kop, status="APPROVED", paid=True,
-                          note=(request.form.get("note") or "").strip()[:200])
+        pay_id = store.add_payment(did, who(), kind=kind, amount_kop=kop, status="APPROVED", paid=True,
+                                   note=(request.form.get("note") or "").strip()[:200])
+        if kind == "invoice":
+            invoices.settle(did, kop, pay_id, who())
         res = store.after_payment(did, who())
         notify_money(did, kop, "по счёту" if kind == "invoice" else "", res)
         flash("Оплата отмечена." + (" Этап — «Оплачено»." if res == "paid" else " Остаток — задачей до отгрузки." if res == "part" else ""), "ok")
@@ -953,9 +962,15 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 eid, new = store.add_bank_event(pid, kop, str(payer.get("name") or ""), str(payer.get("inn") or ""), purpose,
                                                 str(claims.get("date") or ""))
                 if new:
-                    did = store.match_bank_event(str(payer.get("inn") or ""), purpose)
+                    iid = invoices.match(str(payer.get("inn") or ""), purpose, kop)          # наш счёт «№ 15/1»
+                    inv = invoices.get(iid) if iid else None
+                    did = int(inv["deal_id"]) if inv else store.match_bank_event(str(payer.get("inn") or ""), purpose)
                     if did:
-                        store.link_bank_event(eid, did, "банк")
+                        pay_id = store.link_bank_event(eid, did, "банк")
+                        if inv:
+                            invoices.mark_paid(int(inv["id"]), "банк", pay_id)
+                        else:
+                            invoices.settle(did, kop, pay_id, "банк")
                         notify_money(did, kop, "по счёту", store.after_payment(did, "банк"))
                     elif "эквайр" not in purpose.lower():
                         store.notify_team(f"Поступило {rubk(kop)} от {payer.get('name') or 'плательщика'} — сделку не нашли. "
@@ -973,7 +988,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         prev = f"{y - 1}-12" if mo == 1 else f"{y}-{mo - 1:02d}"
         nxt = f"{y + 1}-01" if mo == 12 else f"{y}-{mo + 1:02d}"
         names = ("январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь")
-        return render_template("money.html", m=store.money(month), month=month, prev=prev, nxt=nxt, month_name=f"{names[mo - 1]} {y}",
+        return render_template("money.html", inv_open=invoices.open_list(), inv_number=Invoices.number, m=store.money(month), month=month, prev=prev, nxt=nxt, month_name=f"{names[mo - 1]} {y}",
                                events=store.bank_events(60), tochka=tochka_on(), info=tochka_info())
 
     @app.post("/money/link")
@@ -983,7 +998,11 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             eid, did = int(request.form.get("event", "0")), int(re.sub(r"\D", "", request.form.get("deal", "")) or 0)
         except ValueError:
             eid, did = 0, 0
-        if store.link_bank_event(eid, did, who()):
+        pay_id = store.link_bank_event(eid, did, who())
+        if pay_id:
+            ev = next((e for e in store.bank_events(500) if int(e["id"]) == eid), None)
+            if ev:
+                invoices.settle(did, int(ev["amount"]), pay_id, who())
             res = store.after_payment(did, who())
             flash(f"Поступление привязано к заявке №{did}." + (" Этап — «Оплачено»." if res == "paid" else ""), "ok")
         else:
@@ -1121,8 +1140,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     @admin_required
     def deal_delete(did: int) -> Any:
         d = store.deal(did)
-        if d and store.payments(did):
-            flash("У заявки есть платежи — удалить нельзя, иначе пропадут записи о деньгах. Поставьте этап «Отказ».", "err")
+        if d and (store.payments(did) or invoices.for_deal(did)):
+            flash("У заявки есть платежи или счета — удалить нельзя, иначе пропадут записи о деньгах. Поставьте этап «Отказ».", "err")
             return redirect(url_for("deal_view", did=did))
         if d and request.form.get("confirm") == "1" and store.delete_deal(did, who()):
             flash(f"Заявка №{did} удалена.", "ok")
@@ -1257,7 +1276,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                            client_id=store.setting("tochka_client_id", ""), tax=store.setting("tochka_tax", "usn_income_outcome"),
                                            method=store.setting("tochka_method", "full_prepayment"), webhook=store.setting("tochka_webhook", ""),
                                            unlinked=len(store.bank_events(200, unlinked=True))),
-                               TAX_SYSTEMS=TAX_SYSTEMS)
+                               TAX_SYSTEMS=TAX_SYSTEMS, inv=invoices.seller(), inv_probs=invoices.seller_problems())
 
     @app.post("/settings/hit-ips")
     @admin_required
@@ -1719,7 +1738,8 @@ self.addEventListener("notificationclick", e => {
 """
 
 
-def send_mail(to: str, subject: str, body: str, sender: str = "", reply_to: str = "") -> bool:
+def send_mail(to: str, subject: str, body: str, sender: str = "", reply_to: str = "",
+              attachments: list[tuple[str, bytes, str]] | None = None) -> bool:
     """Письмо через почту своего сервера (Postfix на 127.0.0.1:25). Нет почты — тихо пропускаем.
     sender — адрес нашего домена (для писем клиентам); по умолчанию noreply@ домена получателя (свои уведомления)."""
     if not to:
@@ -1732,6 +1752,9 @@ def send_mail(to: str, subject: str, body: str, sender: str = "", reply_to: str 
         m["Reply-To"] = reply_to
     m["Subject"] = subject
     m.set_content(body)
+    for fname, data, mime in attachments or []:
+        maintype, _, subtype = mime.partition("/")
+        m.add_attachment(data, maintype=maintype, subtype=subtype or "octet-stream", filename=fname)
     try:
         with smtplib.SMTP("127.0.0.1", 25, timeout=15) as smtp:
             smtp.send_message(m)

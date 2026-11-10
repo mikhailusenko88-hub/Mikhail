@@ -132,7 +132,7 @@ step_packages() {
   step "Программы (Python Flask, gunicorn) — 1–2 минуты"
   export DEBIAN_FRONTEND=noninteractive NEEDRESTART_SUSPEND=1 NEEDRESTART_MODE=l
   local apt=(apt-get -y -q -o DPkg::Lock::Timeout=600 -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold)
-  local pkgs=(python3 python3-flask python3-cryptography gunicorn git sqlite3 ssl-cert curl ca-certificates cron bind9-dnsutils) n
+  local pkgs=(python3 python3-flask python3-cryptography python3-reportlab fonts-dejavu-core gunicorn git sqlite3 ssl-cert curl ca-certificates cron bind9-dnsutils) n
   for n in 1 2 3 4 5; do
     if run "${apt[@]}" update; then break; fi
     ((n < 5)) || die "не удалось обновить список пакетов (apt-get update)."

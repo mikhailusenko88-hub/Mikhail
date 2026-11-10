@@ -13,6 +13,7 @@ from flask import Flask, Response, abort, flash, redirect, render_template, requ
 
 from buh import (CONTRACT_LIMIT_KOP, import_table, DOPP_STATUS, EAEU, EAEU_FROM, TRANSPORTS, VAT_FREE_LIMIT_KOP, VAT_RATE, Buh, calendar_known, dmy,
                  egrul_lookup, iso, kop_in)
+from invoice import Invoices, rub_s
 from store import TAX_STATUSES, Store, today
 
 
@@ -238,6 +239,87 @@ def register(app: Flask, store: Store, buh: Buh, h: dict[str, Any]) -> None:
         buh.del_payout(pid, who())
         flash("Выплата удалена.", "ok")
         return redirect(url_for("designers_view"))
+
+    # ------------------------------------------------------------ счета на оплату
+    invoices: Invoices = app.extensions["invoices"]
+
+    @app.post("/deals/<int:did>/invoice")
+    @login_required
+    def invoice_new(did: int) -> Any:
+        pct = request.form.get("pct_custom") if request.form.get("pct") == "custom" else request.form.get("pct")
+        iid, err = invoices.create(did, who(), pct or 100, request.form.get("delivery", ""))
+        if err:
+            flash("Счёт не выставлен: " + err + ".", "err")
+        else:
+            inv = invoices.get(iid)
+            flash(f"Счёт № {Invoices.number(inv)} на {rub_s(inv['amount'])} ₽ выставлен — откройте PDF или отправьте на почту.", "ok")
+        return redirect(url_for("deal_view", did=did) + "#invoice")
+
+    @app.route("/invoices/<int:iid>.pdf")
+    @login_required
+    def invoice_pdf(iid: int) -> Any:
+        inv = invoices.get(iid)
+        if not inv:
+            abort(404)
+        try:
+            data = invoices.pdf(inv)
+        except RuntimeError as e:
+            flash(str(e), "err")
+            return redirect(url_for("deal_view", did=inv["deal_id"]) + "#invoice")
+        fn = f"Schet-{inv['deal_id']}-{inv['n']}.pdf"
+        return Response(data, mimetype="application/pdf", headers={"Content-Disposition": f"inline; filename={fn}",
+                                                                   "Cache-Control": "no-store"})
+
+    @app.post("/invoices/<int:iid>/email")
+    @login_required
+    def invoice_email(iid: int) -> Any:
+        inv = invoices.get(iid)
+        if not inv:
+            abort(404)
+        d = store.deal(int(inv["deal_id"]))
+        to = (request.form.get("to") or d["doc_email"] or d["email"] or "").strip()
+        back = redirect(url_for("deal_view", did=inv["deal_id"]) + "#invoice")
+        if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", to):
+            flash("Нет почты покупателя — впишите e-mail в карточке клиента («Почта для документов»).", "err")
+            return back
+        try:
+            data = invoices.pdf(inv)
+        except RuntimeError as e:
+            flash(str(e), "err")
+            return back
+        dom, num = h["shop_domain"], Invoices.number(inv)
+        body = "\n".join([f"Здравствуйте!", "",
+                          f"Во вложении — счёт на оплату № {num} от {dmy(inv['day'])} на сумму {rub_s(inv['amount'])} ₽ (заказ № {inv['deal_id']}).",
+                          "Оплатить можно по QR-коду в приложении банка или по реквизитам из счёта.",
+                          f"В назначении платежа укажите: «{Invoices.purpose(inv)}».",
+                          "Товар отпускается после поступления денег на расчётный счёт."] + h["mail_signature"](who()))
+        ok = h["send_mail"](to, f"Счёт № {num} от {dmy(inv['day'])} — «Наш декор»", body, sender=f"Наш декор <noreply@{dom}>",
+                            reply_to=f"zakaz@{dom}", attachments=[(f"Счёт {inv['deal_id']}-{inv['n']}.pdf", data, "application/pdf")])
+        if ok:
+            with store.tx() as c:
+                c.execute("UPDATE invoices SET emailed_at=? WHERE id=?", (today(), iid))
+                store.log(c, f"Счёт № {num} отправлен на {to}", who(), deal_id=inv["deal_id"])
+            flash(f"Счёт отправлен на {to}.", "ok")
+        else:
+            flash("Письмо не ушло — почта сервера не ответила. Скачайте PDF и отправьте сами.", "err")
+        return back
+
+    @app.post("/invoices/<int:iid>/cancel")
+    @login_required
+    def invoice_cancel(iid: int) -> Any:
+        inv = invoices.get(iid)
+        if not inv:
+            abort(404)
+        err = invoices.cancel(iid, who())
+        flash(err or "Счёт отменён.", "err" if err else "ok")
+        return redirect(url_for("deal_view", did=inv["deal_id"]) + "#invoice")
+
+    @app.post("/settings/invoice")
+    @admin_required
+    def settings_invoice() -> Any:
+        probs = invoices.save_seller(request.form.to_dict(), who())
+        flash("Реквизиты сохранены." if not probs else "Сохранено, но проверьте: " + ", ".join(probs) + ".", "ok" if not probs else "err")
+        return redirect(url_for("settings_view") + "#inv")
 
     @app.post("/deals/<int:did>/designer")
     @login_required

@@ -96,6 +96,27 @@
 </form>
 
 
+<h2 id="invoice">Счёт на оплату</h2>
+{% if invoices %}<div class="panel list">{% for i in invoices %}<div class="row wrap"><div class="grow"><div class="t">№ {{ inv_number(i) }} от {{ dmy(i['day']) }} · {{ rubk(i['amount']) }}{% if i['pct'] < 100 %} <span class="d">(предоплата {{ i['pct'] }} % от {{ rubk(i['total']) }})</span>{% endif %}</div><div class="d">{% if i['status'] == 'paid' %}оплачен {{ fmt_dt(i['paid_at']) }}{% elif i['status'] == 'cancelled' %}отменён{% else %}ждёт оплаты{% endif %}{% if i['emailed_at'] %} · отправлен на почту {{ dmy(i['emailed_at']) }}{% endif %}</div></div>
+<span class="pill {{ 'good' if i['status'] == 'paid' else ('' if i['status'] == 'cancelled' else 'warn') }}">{{ {'paid': 'оплачен', 'cancelled': 'отменён'}.get(i['status'], 'выставлен') }}</span>
+<a class="btn-s sm" href="{{ url_for('invoice_pdf', iid=i['id']) }}" target="_blank" rel="noopener">PDF</a>
+{% if i['status'] == 'issued' %}<form method="post" action="{{ url_for('invoice_email', iid=i['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-s sm">На почту</button></form>
+<form method="post" action="{{ url_for('invoice_cancel', iid=i['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g crit sm">Отменить</button></form>{% endif %}
+</div>{% endfor %}</div>{% endif %}
+{% if lines and d['stage'] != 'lost' %}
+{% if not inv_ready %}<p class="alert warn">Чтобы выставлять счета, заполните реквизиты ИП: {% if me['role'] == 'admin' %}<a href="{{ url_for('settings_view') }}#inv">Настройки → «Реквизиты для счетов»</a>{% else %}попросите владельца — Настройки → «Реквизиты для счетов»{% endif %}.</p>
+{% else %}
+{% if d['kind'] == 'p' %}<p class="alert warn">Покупатель — частное лицо: при оплате по счёту тоже нужен кассовый чек. Частным обычно удобнее ссылка на оплату через СБП (ниже).</p>{% endif %}
+<form class="panel pad grid2" method="post" action="{{ url_for('invoice_new', did=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f">Что оплачивают<select name="pct"><option value="100">весь заказ — {{ rub(total_sum) }}</option><option value="50">предоплата 50 % (под заказ)</option><option value="custom">другой процент</option></select></label>
+  <label class="f">Свой процент предоплаты<input name="pct_custom" inputmode="numeric" placeholder="например, 30"></label>
+  <label class="f">Доставка в счёт, ₽<input name="delivery" inputmode="decimal" placeholder="если доставку оплачивают нам"></label>
+  <div class="f"><span>&nbsp;</span><button class="btn-p">Выставить счёт</button></div>
+  <p class="d span2">В счёте — позиции из «Расчёта» (со скидкой), реквизиты ИП и QR-код для оплаты из приложения банка. Номер счёта — «{{ d['id'] }}/1», «{{ d['id'] }}/2»…: когда покупатель оплатит с ним в назначении, оплата сама попадёт в эту заявку.</p>
+</form>
+{% endif %}{% endif %}
+
 <h2 id="pay">Оплата{% if paid_kop %} · получено {{ rubk(paid_kop) }} из {{ rubk(total_sum * 100) }}{% endif %}</h2>
 {% if closing and d['stage'] == 'shipped' %}
 <form class="panel pad warnbox" method="post" action="{{ url_for('payment_closing_done', did=d['id']) }}">

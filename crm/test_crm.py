@@ -1495,3 +1495,124 @@ class TestPurchaseExcel(Base):
         self.assertEqual(self.buh.purchase_lines(pid), [])
         # обычные формы по-прежнему ограничены 256 КБ
         self.assertEqual(self.c.post("/tasks", data={"csrf": "x", "title": "y" * 300_000}).status_code, 413)
+
+
+def valid_account(bik: str, base: str = "40802810000000012345") -> str:
+    from invoice import account_ok
+    for k in range(10):
+        acc = base[:8] + str(k) + base[9:]
+        if account_ok(acc, bik):
+            return acc
+    raise AssertionError("нет ключа")
+
+
+def valid_inn12(base: str = "7801234567") -> str:
+    from invoice import inn_ok
+    for a in range(10):
+        for b in range(10):
+            if inn_ok(f"{base}{a}{b}"):
+                return f"{base}{a}{b}"
+    raise AssertionError("нет ИНН")
+
+
+class TestInvoices(Base):
+    """Счёт компании: реквизиты продавца, PDF с QR, письмо, автопривязка оплаты по номеру счёта."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.inv = self.app.extensions["invoices"]
+        self.login()
+        self.acc = valid_account("044525104")
+        self.inn = valid_inn12()
+
+    def seller(self, **kw):
+        data = {"inv_name": "Индивидуальный предприниматель Тестова Анна Петровна", "inv_inn": self.inn, "inv_ogrn": "326784700000001",
+                "inv_account": self.acc, "inv_bank": "ООО «Банк Точка»", "inv_bik": "044525104",
+                "inv_corr": "30101810745374525104", "inv_city": "г. Санкт-Петербург", "inv_signer": "Тестова А. П.", "inv_days": "3"}
+        data.update(kw)
+        return self.post("/settings/invoice", data)
+
+    def company_deal(self) -> int:
+        did = self.store.create_deal("t", None, name="Бухгалтерия", phone="+79990005555", kind="c")
+        cid = self.store.deal(did)["client_id"]
+        self.store.update_client(cid, "t", full_name="ООО «Ремонт Плюс»", inn="7801234567", kpp="780101001",
+                                 legal_address="190000, г. Санкт-Петербург", doc_email="buh@remont.example")
+        self.store.add_line(did, "A912", 10, "t")                 # 10 × 990 ₽
+        self.store.update_deal(did, "t", discount=10)            # −10 % → 891 ₽
+        return did
+
+    def test_checks_and_words(self) -> None:
+        from invoice import account_ok, amount_words, corr_ok, inn_ok
+        self.assertTrue(corr_ok("30101810745374525104", "044525104"))
+        self.assertTrue(account_ok(self.acc, "044525104"))
+        self.assertFalse(account_ok(self.acc[:-1] + str((int(self.acc[-1]) + 1) % 10), "044525104"))
+        self.assertTrue(inn_ok("7707083893")); self.assertFalse(inn_ok("7707083894"))
+        self.assertEqual(amount_words(4120050), "Сорок одна тысяча двести рублей 50 копеек")
+        self.assertEqual(amount_words(101), "Один рубль 01 копейка")
+
+    def test_seller_settings_required(self) -> None:
+        did = self.company_deal()
+        self.post(f"/deals/{did}/invoice", {"pct": "100"})
+        self.assertEqual(self.inv.for_deal(did), [])
+        self.assertIn("заполните реквизиты ИП", self.c.get(f"/deals/{did}").get_data(as_text=True))
+        self.seller(inv_account="40802810000000000000")             # опечатка в счёте — не пропускаем
+        self.assertIn("расчётный счёт", " ".join(self.inv.seller_problems()))
+        self.seller()
+        self.assertEqual(self.inv.seller_problems(), [])
+        # сотрудник реквизиты не меняет
+        self.c.post("/logout", data={"csrf": self.csrf()})
+        self.login("mikhail", "Secret-pass-2")
+        self.assertEqual(self.seller().status_code, 403)
+
+    def test_invoice_pdf_email_and_payment(self) -> None:
+        self.seller()
+        did = self.company_deal()
+        self.post(f"/deals/{did}/invoice", {"pct": "100", "delivery": "500"})
+        inv = self.inv.for_deal(did)[0]
+        self.assertEqual((inv["n"], inv["total"], inv["amount"], inv["status"]), (1, 891000 + 50000, 941000, "issued"))
+        qr = self.inv.qr_text(inv)
+        self.assertTrue(qr.startswith("ST00012|Name=Индивидуальный предприниматель Тестова Анна Петровна|PersonalAcc=" + self.acc))
+        self.assertIn("|Sum=941000|", qr); self.assertIn(f"Purpose=Оплата по счёту № {did}/1 от", qr)
+        page = self.c.get(f"/deals/{did}").get_data(as_text=True)
+        self.assertIn(f"№ {did}/1", page); self.assertIn("ждёт оплаты", page)
+        try:
+            import reportlab  # noqa: F401
+        except ImportError:
+            self.skipTest("нет reportlab")
+        r = self.c.get(f"/invoices/{inv['id']}.pdf")
+        self.assertEqual(r.status_code, 200); self.assertTrue(r.data.startswith(b"%PDF")); self.assertEqual(r.mimetype, "application/pdf")
+        # письмо с PDF: перехватываем отправку
+        sent = []
+        orig = crm_app.send_mail
+        crm_app.send_mail = lambda to, subj, body, **kw: sent.append((to, subj, body, kw)) or True
+        try:
+            self.post(f"/invoices/{inv['id']}/email")
+        finally:
+            crm_app.send_mail = orig
+        self.assertEqual(sent[0][0], "buh@remont.example")
+        self.assertIn(f"Счёт № {did}/1", sent[0][1]); self.assertIn("9 410,00 ₽", sent[0][2])
+        self.assertTrue(sent[0][3]["attachments"][0][1].startswith(b"%PDF"))
+        # предоплата 50 % — второй счёт «/2»
+        self.post(f"/deals/{did}/invoice", {"pct": "50"})
+        inv2 = self.inv.for_deal(did)[0]
+        self.assertEqual((inv2["n"], inv2["pct"], inv2["amount"]), (2, 50, 445500))
+        # оплата: номер счёта в назначении + сумма → счёт и заявка (ИНН клиента не нужен)
+        self.assertEqual(self.inv.match("", f"Оплата по счету N {did}/2 от 10.11.2026 без НДС", 445500), inv2["id"])
+        self.assertIsNone(self.inv.match("", f"Оплата по счету № {did}/2", 100))            # сумма не та и ИНН нет
+        self.assertEqual(self.inv.match("7801234567", "оплата за панели", 941000), inv["id"])  # ИНН покупателя + точная сумма
+        # оплата прошла мимо — ручная отметка «по счёту» закрывает счёт с той же суммой
+        self.post(f"/deals/{did}/payments/manual", {"amount": "4455", "kind": "invoice"})
+        self.assertEqual(self.inv.get(inv2["id"])["status"], "paid")
+        self.assertEqual(self.inv.get(inv["id"])["status"], "issued")
+        self.assertIn(f"№ {did}/1", self.c.get("/money").get_data(as_text=True))
+        # отмена; заявку со счетами удалить нельзя
+        self.post(f"/invoices/{inv['id']}/cancel")
+        self.assertEqual(self.inv.get(inv["id"])["status"], "cancelled")
+        self.post(f"/deals/{did}/delete", {"confirm": "1"})
+        self.assertIsNotNone(self.store.deal(did))
+
+    def test_private_buyer_warning(self) -> None:
+        self.seller()
+        did = self.store.create_deal("t", None, name="Анна", phone="+79990006666")
+        self.store.add_line(did, "A912", 1, "t")
+        self.assertIn("при оплате по счёту тоже нужен кассовый чек", self.c.get(f"/deals/{did}").get_data(as_text=True))

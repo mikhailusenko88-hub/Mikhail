@@ -66,6 +66,25 @@
   <label class="f span2">Контакты в подписи писем (мессенджер, без телефона)<input name="mail_contacts" value="{{ mail_contacts }}" placeholder="Telegram @…, MAX …"></label>
   <div class="span2"><button class="btn-p">Сохранить</button></div>
 </form>
+{% if me['role'] == 'admin' %}
+<h2 id="inv">Реквизиты для счетов</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('settings_invoice') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  {% if inv_probs %}<p class="alert warn span2">Счета пока не выставляются — проверьте: {{ inv_probs|join(', ') }}.</p>{% else %}<p class="d span2">Реквизиты заполнены — счета выставляются в заявке, блок «Счёт на оплату».</p>{% endif %}
+  <label class="f span2">Продавец (полностью)<input name="inv_name" value="{{ inv['inv_name'] }}" placeholder="Индивидуальный предприниматель Фамилия Имя Отчество"></label>
+  <label class="f">ИНН<input name="inv_inn" inputmode="numeric" value="{{ inv['inv_inn'] }}"></label>
+  <label class="f">ОГРНИП<input name="inv_ogrn" inputmode="numeric" value="{{ inv['inv_ogrn'] }}"></label>
+  <label class="f span2">Расчётный счёт<input name="inv_account" inputmode="numeric" value="{{ inv['inv_account'] }}" placeholder="20 цифр"></label>
+  <label class="f">Банк<input name="inv_bank" value="{{ inv['inv_bank'] }}"></label>
+  <label class="f">БИК<input name="inv_bik" inputmode="numeric" value="{{ inv['inv_bik'] }}"></label>
+  <label class="f">Корр. счёт<input name="inv_corr" inputmode="numeric" value="{{ inv['inv_corr'] }}"></label>
+  <label class="f">Город (в строке продавца)<input name="inv_city" value="{{ inv['inv_city'] }}"></label>
+  <label class="f">Подпись: фамилия и инициалы<input name="inv_signer" value="{{ inv['inv_signer'] }}" placeholder="Фамилия И. О."></label>
+  <label class="f">Срок оплаты, банковских дней<input name="inv_days" inputmode="numeric" value="{{ inv['inv_days'] }}"></label>
+  <p class="d span2">Домашний адрес в счёте не печатается — только город. Счёт проверяет расчётный и корреспондентский счёт по БИК, чтобы опечатка не ушла покупателю.</p>
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
+{% endif %}
 <h2 id="tochka">Точка Банк — оплата по ссылке с чеком</h2>
 {% set ti = tochka['info'] %}{% set r = ti.get('retailer') or {} %}
 <div class="panel pad d">

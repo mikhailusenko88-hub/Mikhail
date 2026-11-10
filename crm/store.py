@@ -286,6 +286,25 @@ CREATE TABLE IF NOT EXISTS designer_payouts (       -- выплаты возна
     created_at  TEXT NOT NULL,
     created_by  TEXT NOT NULL DEFAULT ''
 );
+CREATE TABLE IF NOT EXISTS invoices (              -- счета на оплату компаниям и ИП: номер «заявка/порядковый»
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    deal_id    INTEGER NOT NULL,
+    n          INTEGER NOT NULL,
+    day        TEXT NOT NULL,
+    pct        INTEGER NOT NULL DEFAULT 100,           -- 100 — полная оплата, меньше — предоплата
+    total      INTEGER NOT NULL,                       -- сумма по позициям, копейки
+    amount     INTEGER NOT NULL,                       -- к оплате, копейки
+    items      TEXT NOT NULL,                          -- позиции на момент выставления (JSON)
+    buyer      TEXT NOT NULL,                          -- реквизиты покупателя (JSON)
+    seller     TEXT NOT NULL,                          -- реквизиты продавца (JSON)
+    status     TEXT NOT NULL DEFAULT 'issued',         -- issued | paid | cancelled
+    paid_at    TEXT NOT NULL DEFAULT '',
+    payment_id INTEGER,
+    emailed_at TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL,
+    created_by TEXT NOT NULL DEFAULT '',
+    UNIQUE(deal_id, n)
+);
 CREATE TABLE IF NOT EXISTS tax_done (               -- отметки «сделано» в налоговом календаре
     key     TEXT PRIMARY KEY,
     done_at TEXT NOT NULL,
