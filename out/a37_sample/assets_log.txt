@@ -1,0 +1,7 @@
+assets ready: 34 of 34
+src mocha_oak_veneer (4096, 4096, 3) gx/gy 1.61 4.27 rotated
+decor 3-7 {'src': 'mocha_oak_veneer', 'size_mm': 1000, 'l_gain': 2.2, 'shape': [4096, 4096], 'mean_bgr': [89.4, 121.9, 167.8]}
+src oak_veneer_01 (4096, 4096, 3) gx/gy 7.83 1.93 
+decor 3-15 {'src': 'oak_veneer_01', 'size_mm': 1830, 'l_gain': 1.14, 'shape': [4096, 4096], 'mean_bgr': [105.4, 160.9, 208.4]}
+src walnut_veneer_02 (4096, 4096, 3) gx/gy 1.63 6.45 rotated
+decor 3-9 {'src': 'walnut_veneer_02', 'size_mm': 1000, 'l_gain': 1.8, 'shape': [4096, 4096], 'mean_bgr': [69.2, 93.2, 130.6]}
