@@ -68,8 +68,21 @@ if full:
     urls = re.findall(r"<loc>([^<]+)</loc>", sm)
     say(f"- режим: все адреса из sitemap.xml ({len(urls)})")
 else:
-    urls = sorted({u for u in (file_to_url(f) for f in files if f.startswith(SITE_DIR)) if u})
-    say(f"- режим: изменённые страницы ({len(urls)}) из {len(files)} изменённых файлов")
+    VER = re.compile(r"[?&]v=[0-9A-Za-z]+")
+    def blob(rev, path):
+        r = subprocess.run(["git", "show", f"{rev}:{path}"], capture_output=True)
+        return r.stdout.decode("utf-8", "replace") if r.returncode == 0 else None
+    real, same = [], 0
+    for f in files:
+        if not f.startswith(SITE_DIR) or not file_to_url(f):
+            continue
+        a, b = blob(os.environ.get("BEFORE", ""), f), blob(os.environ.get("AFTER", "HEAD"), f)
+        if a is not None and b is not None and VER.sub("", a) == VER.sub("", b):
+            same += 1  # поменялась только версия файлов (?v=...), сама страница та же
+            continue
+        real.append(f)
+    urls = sorted({file_to_url(f) for f in real})
+    say(f"- режим: изменённые страницы ({len(urls)}) из {len(files)} изменённых файлов; без изменений по сути (только ?v=): {same}")
     if urls:
         time.sleep(90)  # дать серверу забрать новую версию
 if not urls:
