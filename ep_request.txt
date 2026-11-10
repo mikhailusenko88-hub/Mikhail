@@ -1,2 +1,2 @@
-# 2026-11-10 18:47 МСК — серия 21 с YouTube (звук записан в браузере Мака)
-episodes: file:audio/ep21.ogg|21
+# 2026-11-10 18:58 МСК — серия 20 с YouTube
+episodes: file:audio/ep20.ogg|20

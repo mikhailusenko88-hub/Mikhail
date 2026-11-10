@@ -1,0 +1,45 @@
+name: golos-check
+on:
+  push:
+    branches: [golos]
+    paths: [check_request.txt]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: golos-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+          key: golos-check-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib
+      - name: Speech (ударения, слова, интонация, естественность)
+        run: python voice_check.py
+      - name: Sounds (смех, звуки зверей)
+        run: python sound_check.py
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name golos
+          git config user.email golos@users.noreply.github.com
+          git add -A out snd_out 2>/dev/null || true
+          git commit -qm "golos-check: результат" || echo nothing
+          for i in 1 2 3 4 5 6; do git pull --rebase -q origin golos && git push -q origin HEAD:golos && break; sleep $((RANDOM % 20 + 5)); done
