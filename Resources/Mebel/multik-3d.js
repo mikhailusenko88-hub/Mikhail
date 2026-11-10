@@ -1210,16 +1210,23 @@ function showTheme(seg, T) {
   if (g.userData.bats) g.userData.bats.forEach((b, i) => { b.position.x = ((T * .6 + i * 3.3) % 12) - 6; b.position.y = Math.sin(T * 2 + i) * .3 + .6; });
   if (g.userData.halloween) g.children.forEach(c => { if (c.userData.faceMat) { c.userData.faceMat.color.set(0xffc23a); sprite(haloTex('#ffb347'), c.position.x, c.position.y + .15 * c.scale.x, c.position.z + .05, .8 * c.scale.x * (1 + Math.sin(T * 4 + c.position.x) * .05), .7); } });
 }
+let fxCam = null;   // где будет камера в этом кадре — чтобы облачко мысли и значки над головой не обрезались верхом кадра
+function fitAbove(hp, s, dx, dy, size) {   // над головой не влезает (крупный план) — сбоку от головы, ниже; у правого края — слева
+  if (!fxCam) return [hp.x + dx * s, hp.y + dy * s];
+  const ok = (x, y) => { const c = new THREE.Vector3(x, y + size * .5, hp.z).project(fxCam), l = new THREE.Vector3(x - size * .6, y, hp.z).project(fxCam), r = new THREE.Vector3(x + size * .6, y, hp.z).project(fxCam); return c.y < .93 && l.x > -.97 && r.x < .97 && c.z < 1; };
+  const cand = [[dx, dy], [dx * 1.25, dy * .55], [dx * 1.35, dy * .2], [-dx, dy], [-dx * 1.25, dy * .55], [-dx * 1.35, dy * .2]];
+  for (const [ax, ay] of cand) if (ok(hp.x + ax * s, hp.y + ay * s)) return [hp.x + ax * s, hp.y + ay * s];
+  return [hp.x + dx * 1.35 * s, hp.y + dy * .2 * s]; }
 function fxFor(rig, st, T) {
   const hp = new THREE.Vector3(); rig.head.getWorldPosition(hp); const s = rig.scale, an = (st.act || {}).n, at = (st.act || {}).t || 0, emo = st.emo;
   if (st.persist === 'sleep') for (let i = 0; i < 3; i++) { const p = (T * .45 + i / 3) % 1; sprite(glyphTex('Z', '#ffffff', '#2b3a6a'), hp.x + .3 + p * .3, hp.y + .3 + p * .7, hp.z, .25 * s, Math.sin(p * Math.PI)); }
   if (st.persist === 'fallen' && (st.pt || 0) < 3.5) for (let i = 0; i < 4; i++) { const a = T * 4 + i * Math.PI / 2; sprite(glyphTex('★', '#ffd23f', '#2b1d16'), hp.x + Math.cos(a) * .35, hp.y + .25, hp.z + Math.sin(a) * .35, .18 * s); }
   if (emo === 'love') for (let i = 0; i < 3; i++) { const p = (T * .5 + i / 3) % 1; sprite(glyphTex('♥', '#ff4d6d'), hp.x + Math.sin(i * 2 + T) * .35, hp.y + .4 + p * .6, hp.z, .22 * s, Math.sin(p * Math.PI)); }
-  if (emo === 'surprised' && (st.et || 9) < 1.2) sprite(glyphTex('!', '#ffd23f', '#2b1d16'), hp.x + .35 * s, hp.y + .55 * s, hp.z, .35 * s * clamp((st.et || 0) / .2, 0, 1));
+  if (emo === 'surprised' && (st.et || 9) < 1.2) { const [gx, gy] = fitAbove(hp, s, .35, .55, .35 * s); sprite(glyphTex('!', '#ffd23f', '#2b1d16'), gx, gy, hp.z, .35 * s * clamp((st.et || 0) / .2, 0, 1)); }
   if (emo === 'scared' || an === 'scared') sprite(glyphTex('💧', '#7fc8ff'), hp.x + .38 * s, hp.y + .25 * s, hp.z + .1, .16 * s);
   if (emo === 'angry') sprite(glyphTex('✷', '#e8344e'), hp.x - .35 * s, hp.y + .45 * s, hp.z, .22 * s * (1 + Math.sin(T * 9) * .15));
   if (an === 'sing') for (let i = 0; i < 3; i++) { const p = (T * .6 + i / 3) % 1; sprite(glyphTex(i % 2 ? '♫' : '♪', ['#ff6fa8', '#3d8fe0', '#ffd23f'][i]), hp.x + .3 + p * .3, hp.y + .2 + p * .7, hp.z, .22 * s, Math.sin(p * Math.PI)); }
-  if (an === 'think') sprite(bubbleTex(st.thinkText || '?'), hp.x + .65 * s, hp.y + .65 * s, hp.z, .55 * s, ease(at / .3));
+  if (an === 'think') { const [bx, by] = fitAbove(hp, s, .65, .65, .55 * s); sprite(bubbleTex(st.thinkText || '?'), bx, by, hp.z, .55 * s, ease(at / .3)); }
   if (emo === 'cry') for (const sd of [-1, 1]) { const p = (T * 1.6 + (sd > 0 ? .5 : 0)) % 1; sprite(glyphTex('💧', '#7fc8ff'), hp.x + sd * .12 * s, hp.y - .05 - p * .3, hp.z + .3 * s, .08 * s, 1 - p); }
   if (an === 'sneeze' && st.act.p > .5 && st.act.p < .85) sprite(glyphTex('✺', '#cfe8ff'), hp.x + .3 * s, hp.y - .1, hp.z + .4, .25 * s, 1 - (st.act.p - .5) / .35);
 }
@@ -3092,7 +3099,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   // где будет камера в этом кадре — чтобы герой, повернувшись к другу, не стоял к зрителю спиной (камера сбоку от него)
   // трое и больше стоят в ряд — ставим их мягкой дугой к зрителю (крайние чуть ближе), как компания в разговоре, а не строй на линейке
   const ARC = arcOf(S, tl.lib, hugF);
-  let camE = null; try { let ci0 = 0; const cs = seg.cam.filter(c => !c.shake); for (let i = 0; i < cs.length; i++) if (cs[i].t <= t) ci0 = i; if (cs.length) { const c1 = camFor(cs[ci0], S, seg, tl.lib), c0 = ci0 > 0 ? camFor(cs[ci0 - 1], S, seg, tl.lib) : c1, k0 = cs[ci0].cut ? 1 : ease((t - cs[ci0].t) / .9); camE = new THREE.Vector3().lerpVectors(c0.pos, c1.pos, k0); } } catch (e) { camE = null; }
+  let camE = null; try { let ci0 = 0; const cs = seg.cam.filter(c => !c.shake); for (let i = 0; i < cs.length; i++) if (cs[i].t <= t) ci0 = i; if (cs.length) { const c1 = camFor(cs[ci0], S, seg, tl.lib), c0 = ci0 > 0 ? camFor(cs[ci0 - 1], S, seg, tl.lib) : c1, k0 = cs[ci0].cut ? 1 : ease((t - cs[ci0].t) / .9); camE = new THREE.Vector3().lerpVectors(c0.pos, c1.pos, k0); const camL = new THREE.Vector3().lerpVectors(c0.look, c1.look, k0); fxCam = fxCam || new THREE.PerspectiveCamera(38, 16 / 9, .1, 200); fxCam.position.copy(camE); fxCam.lookAt(camL); fxCam.updateMatrixWorld(); fxCam.updateProjectionMatrix(); } } catch (e) { camE = null; }
   for (const id in S) {
     const st = S[id], lc = tl.lib.characters[id]; if (!lc || !st.vis) continue;
     const rig = rigFor(lc); ensureIn(rig.root); rig.root.visible = true; const hf = hugF[id]; st._hug = hf || null;
