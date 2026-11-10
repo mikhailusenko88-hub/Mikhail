@@ -1570,6 +1570,124 @@ def valid_inn12(base: str = "7801234567") -> str:
     raise AssertionError("нет ИНН")
 
 
+class TestOutbox(Base):
+    """Исходящие с zapros@: шифр из ветки outbox → расшифровать на сервере → отправить один раз."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        import subprocess
+        from pathlib import Path
+        self.sp = subprocess
+        d = self.tmp.name
+        self.bare = os.path.join(d, "remote.git")
+        self.work = os.path.join(d, "work")
+        env = {**os.environ, "GIT_CONFIG_NOSYSTEM": "1", "HOME": d}
+        self.genv = env
+        self.git("init", "-q", "--bare", self.bare)
+        self.git("init", "-q", "-b", "outbox", self.work)
+        self.git("-C", self.work, "config", "user.email", "t@t"); self.git("-C", self.work, "config", "user.name", "t")
+        self.git("-C", self.work, "remote", "add", "origin", self.bare)
+        self.ob = self.app.extensions["outbox"]
+        self.ob.repo_url = self.bare
+        self.ob.workdir = Path(d) / "outbox-git"
+        self.sent = []
+        self.orig = crm_app.send_mail
+        self.ok = True
+        crm_app.send_mail = lambda to, subj, body, **kw: (self.sent.append((to, subj, body, kw)) or True) if self.ok else False
+        self.login()
+
+    def tearDown(self) -> None:
+        crm_app.send_mail = self.orig
+        super().tearDown()
+
+    def git(self, *a: str) -> None:
+        self.sp.run(["git", *a], check=True, capture_output=True, env=self.genv)
+
+    def put(self, env: dict, name: str = "") -> None:
+        import json as _j
+        os.makedirs(os.path.join(self.work, "outbox"), exist_ok=True)
+        with open(os.path.join(self.work, "outbox", (name or env["id"]) + ".json"), "w", encoding="utf-8") as f:
+            _j.dump(env, f)
+        self.git("-C", self.work, "add", "-A"); self.git("-C", self.work, "commit", "-q", "-m", "m")
+        self.git("-C", self.work, "push", "-q", "origin", "outbox")
+
+    def letter(self, **kw):
+        import uuid
+        import outbox
+        p = {"id": str(uuid.uuid4()), "to": "lab@example.ru", "subject": "Запрос на испытания", "body": "Добрый день!\nТекст.",
+             "attachments": [{"name": "спец.docx", "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                              "b64": "UEsDBA=="}]}
+        p.update(kw)
+        key = self.c.get("/api/outbox/key").get_data(as_text=True).strip()
+        return p, outbox.seal(key, p)
+
+    def test_send_once_and_status(self) -> None:
+        import outbox
+        self.assertEqual(self.ob.run(), [])                                  # ветки ещё нет — ничего
+        key = self.c.get("/api/outbox/key").get_data(as_text=True).strip()
+        self.assertEqual(len(outbox._ub64(key)), 32); self.assertEqual(key, self.ob.public_key())
+        p, env = self.letter()
+        self.assertNotIn("Запрос", str(env))                                  # в GitHub — только шифр
+        self.put(env)
+        out = self.ob.run()
+        self.assertEqual(len(self.sent), 1, out)
+        to, subj, body, kw = self.sent[0]
+        self.assertEqual((to, subj), ("lab@example.ru", "Запрос на испытания"))
+        self.assertEqual(kw["sender"], "Наш декор <zapros@nashdekor.ru>"); self.assertEqual(kw["reply_to"], "info@nashdekor.ru")
+        self.assertEqual(kw["attachments"][0][0], "спец.docx"); self.assertEqual(kw["attachments"][0][1][:2], b"PK")
+        st = self.c.get(f"/api/outbox/status/{p['id']}").get_json()
+        self.assertEqual(st["status"], "sent")
+        self.assertEqual(self.c.get("/api/outbox/status/abc").get_json(), {"status": "unknown"})
+        self.ob.run(); self.ob.run()
+        self.assertEqual(len(self.sent), 1)                                   # второй раз не уходит
+        page = self.c.get("/outbox").get_data(as_text=True)
+        self.assertIn("Запрос на испытания", page); self.assertIn("отправлено", page); self.assertIn("Добрый день!", page)
+        row = self.ob._row(p["id"]); self.assertEqual(row["payload"], "")      # расшифровка после отправки не хранится
+
+    def test_bad_letters_limits_and_switch(self) -> None:
+        import uuid
+        import outbox
+        from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
+        from cryptography.hazmat.primitives import serialization
+        other = X25519PrivateKey.generate().public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
+        mid = str(uuid.uuid4())
+        self.put(outbox.seal(outbox._b64(other), {"id": mid, "to": "a@b.ru", "subject": "x", "body": "y"}))   # чужой ключ
+        p2, env2 = self.letter(to="не адрес")
+        self.put(env2)
+        self.ob.run()
+        self.assertEqual(self.sent, [])
+        self.assertEqual(self.ob.status(mid)["status"], "error")
+        self.assertIn("непонятный адрес", self.ob.status(p2["id"])["error"])
+        # выключено — ждёт; лимит 1 в сутки — второе ждёт до завтра (или пока не поднимут лимит)
+        self.post("/outbox", {"daily": "1"})                                  # галочки нет → выключено
+        p3, env3 = self.letter(subject="Первое"); self.put(env3)
+        self.assertEqual(self.ob.run(), ["отправка выключена в CRM"])
+        self.post("/outbox", {"on": "1", "daily": "1"})
+        p4, env4 = self.letter(subject="Второе"); self.put(env4)
+        self.ob.run()
+        self.assertEqual([x[1] for x in self.sent], ["Первое"])
+        self.assertEqual(self.ob.status(p4["id"])["status"], "unknown")
+        self.post("/outbox", {"on": "1", "daily": "5"})
+        self.ob.run()
+        self.assertEqual([x[1] for x in self.sent], ["Первое", "Второе"])
+
+    def test_retry_when_mail_server_refuses(self) -> None:
+        p, env = self.letter(); self.put(env)
+        self.ok = False
+        self.ob.run()
+        self.assertEqual(self.ob.status(p["id"])["status"], "retry")
+        self.ok = True
+        self.ob.run()
+        self.assertEqual(self.ob.status(p["id"])["status"], "sent"); self.assertEqual(len(self.sent), 1)
+        p2, env2 = self.letter(subject="Не уйдёт"); self.put(env2)
+        self.ok = False
+        for _ in range(3):
+            self.ob.run()
+        self.assertEqual(self.ob.status(p2["id"])["status"], "error")
+        self.ob.repo_url = os.path.join(self.tmp.name, "нет-такого.git")
+        self.assertTrue(any("GitHub не ответил" in x for x in self.ob.run()))
+
+
 class TestInvoices(Base):
     """Счёт компании: реквизиты продавца, PDF с QR, письмо, автопривязка оплаты по номеру счёта."""
 

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}Исходящие{% endblock %}
+{% block main %}
+{{ more_nav('outbox') }}
+<h1>Исходящие с zapros@</h1>
+<p class="sub">Запросы поставщикам, лабораториям и перевозчикам уходят от «{{ sender }}». Ответы приходят на info@{{ dom }} (с zapros@ тоже пересылаются туда) — о них придёт пуш, как о других письмах.</p>
+<form class="panel pad grid2" method="post" action="{{ url_for('outbox_view') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f inline"><input type="checkbox" name="on" value="1" {% if on %}checked{% endif %}> Отправлять письма</label>
+  <label class="f">Не больше писем в сутки<input name="daily" inputmode="numeric" value="{{ daily }}"></label>
+  <p class="d span2">Сегодня отправлено: {{ today_sent }} из {{ daily }}. Если выключить — новые письма подождут, пока отправку не включат снова.</p>
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
+<h2>Письма</h2>
+<div class="panel list">{% for m in mails %}<details class="row src" id="m-{{ m['id'] }}"><summary><span class="grow">{{ m['to_addr'] or '—' }} · {{ m['subject'] or 'без темы' }}<span class="d"> · {{ fmt_dt(m['sent_at'] or m['received_at']) }}{% if m['att_names'] %} · вложения: {{ m['att_names'] }}{% endif %}</span></span> {% if m['status'] == 'sent' %}<span class="pill good">отправлено</span>{% elif m['status'] == 'error' %}<span class="pill crit">не отправлено</span>{% else %}<span class="pill warn">в очереди</span>{% endif %}</summary>
+{% if m['error'] %}<p class="d">{{ m['error'] }}</p>{% endif %}
+{% if m['body'] %}<div class="calc">{{ m['body'] }}</div>{% endif %}
+</details>{% else %}<div class="row"><span class="d">Писем пока не было</span></div>{% endfor %}</div>
+{% endblock %}

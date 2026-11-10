@@ -33,6 +33,7 @@ from store import (CLIENT_DOC_FIELDS, KIND_NAMES, KIND_TITLES, KINDS, OPEN_STAGE
                    STAGE_NAMES, STAGES, Catalog, Store, fmt_day, fmt_dt, now, rub, today, split_contact)
 from buh import Buh
 from buh_web import register as register_buh
+from outbox import Outbox
 from invoice import Invoices
 from push import WebPush
 from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, TochkaError, http_request, jwt_claims,
@@ -466,6 +467,33 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     register_buh(app, store, buh, {"login_required": login_required, "admin_required": admin_required, "who": who,
                                    "safe_next": safe_next, "send_mail": lambda *a, **k: send_mail(*a, **k),
                                    "mail_signature": mail_signature, "shop_domain": conf["SHOP_DOMAIN"] or "nashdekor.ru"})
+
+    # ------------------------------------------------------------ исходящие письма с zapros@ (шифр из ветки outbox)
+    ob = Outbox(store, conf["SHOP_DOMAIN"], lambda *a, **k: send_mail(*a, **k),
+                lambda title, text, url: wp.notify(title, text, url, tag="outbox"),
+                repo_url=cfg.get("OUTBOX_REPO", ""), workdir=cfg.get("OUTBOX_DIR", ""))
+    app.extensions["outbox"] = ob
+    app.extensions["outbox_run"] = ob.run
+
+    @app.route("/api/outbox/key")
+    def outbox_key() -> Any:
+        return Response(ob.public_key() + "\n", mimetype="text/plain", headers={"Cache-Control": "no-store"})
+
+    @app.route("/api/outbox/status/<mid>")
+    def outbox_status(mid: str) -> Any:
+        resp = jsonify(ob.status(mid))
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
+
+    @app.route("/outbox", methods=["GET", "POST"])
+    @admin_required
+    def outbox_view() -> Any:
+        if request.method == "POST":
+            ob.set_options(request.form.get("on") == "1", request.form.get("daily", ""))
+            flash("Сохранено.", "ok")
+            return redirect(url_for("outbox_view"))
+        return render_template("outbox.html", mails=ob.recent(), on=ob.enabled(), daily=ob.daily_limit(),
+                               today_sent=ob.sent_today(), sender=ob.sender(), dom=conf["SHOP_DOMAIN"] or "nashdekor.ru")
 
     def calc_text(d: Any, lines: list[Any], manager: str = "") -> str:
         """Расчёт для клиента: позиции, суммы, итог, что дальше, контакты — в письмо или в мессенджер."""

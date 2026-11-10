@@ -12,6 +12,8 @@
   python3 manage.py digest                     — утренняя сводка пушем (cron, раз в день)
   python3 manage.py push "Заголовок" "Текст"   — пуш всем сотрудникам с включёнными уведомлениями
   python3 manage.py tochka-poll                — спросить Точку об открытых ссылках на оплату (cron, раз в 5 минут)
+  python3 manage.py outbox                     — отправить новые письма с zapros@ из ветки outbox (cron, раз в минуту)
+  python3 manage.py outbox-key                 — открытый ключ для шифрования писем
 """
 
 from __future__ import annotations
@@ -91,6 +93,15 @@ def main(argv: list[str]) -> int:
         for line in lines:
             print(line)
         print("ok")
+    elif cmd in ("outbox", "outbox-key"):
+        from app import create_app
+        app = create_app({"PUSH_SYNC": True})
+        if cmd == "outbox-key":
+            print(app.extensions["outbox"].public_key())
+        else:
+            for line in app.extensions["outbox_run"]():
+                print(line)
+            print("ok")
     elif cmd == "followups":
         from app import create_app
         for line in create_app().extensions["run_followups"]():
