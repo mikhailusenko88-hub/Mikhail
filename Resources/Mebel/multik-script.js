@@ -384,7 +384,7 @@ S.parse = function (text, lib, opts) {
     // порядок имён по позиции в предложении
     who = who.map(id => [id, d.search(low(chars[id].name).split(' ').slice(-1)[0].slice(0, 4))]).sort((a, b) => a[1] - b[1]).map(x => x[0]);
     if (!who.length) { if (/(крупн|общий план)/.test(d)) { camera(d); return true; } const s = pick(SFX, d); if (s && /(звук|слышно|раздает)/.test(d)) { sc.steps.push({ sfx: s }); return true; } return false; }
-    let verb = verbOf(d); const emo = pick(EMO, d); if (verb === 'knock' && /(барабан|бубен|бубн)/.test(d)) verb = 'play';   // «стучит в барабан» — играет на барабане, а не стучит в дверь
+    let verb = verbOf(d); const emo = pick(EMO, d); if (verb === 'knock' && /(барабан|бубен|бубн)/.test(d)) verb = 'play'; if (verb === 'lie' && /(спать|поспать|дремать|вздремнуть|баиньки|отдыхать)/.test(d)) verb = 'sleep';   // «ложится спать» — засыпает (глаза закрыты, «Z-z-z»), а не лежит с открытыми глазами   // «стучит в барабан» — играет на барабане, а не стучит в дверь
     if (verb === 'wait') { who.forEach(id => castOf(id)); return true; }
     if (!verb && !emo) { const words = d.split(/[^а-яa-z]+/).filter(w => w.length > 3 && !idx.some(([n]) => w.startsWith(n.slice(0, 4))) && !/^(тоже|потом|сразу|снова|очень|когда|вдруг|затем|тогда|после|перед|около|возле|вместе)$/.test(w));
       if (words[0]) unknownWords.set(words[0], sent.trim()); return false; }
