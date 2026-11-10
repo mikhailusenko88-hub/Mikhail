@@ -57,6 +57,8 @@ const AUTO_EMO = [[/(^|[^а-я])(я догадал(ся|ась)|догадала
 const EMO = [[/(улыба|с улыбкой|подмиг|хитро|лукаво)/, 'smile'], [/(виляет хвост|виляя хвост|завилял)/, 'happy'], [/(хмур|насуп|сосредоточ|задумчив)/, 'frown'], [/(радост|весел|счастлив|довольн|горд)/, 'happy'], [/(сме[ея]|хохоч|смешн|смех|хихик|усмеха)/, 'laugh'], [/(груст|печал|расстро)/, 'sad'], [/(плач|рыда|сл[её]з)/, 'cry'],
   [/(злит|сердит|зло(?![а-я])|злой|злая|гневн|обиж)/, 'angry'], [/(удивл|изумл|(^|[^а-я])ого(?![а-я]))/, 'surprised'], [/(испуг|страшн|бои|боя|дрож)/, 'scared'], [/(сонн|зева|устал)/, 'sleepy'],
   [/(влюбл|нежно|с любов)/, 'love'], [/(смущ|стесн|винова)/, 'shy'], [/(спокойн|обычн)/, 'neutral']];
+// подача голоса из ремарки: «(громко)», «(кричит)» — голос героя кричит (БАРС-актёр); на лицо и движения не влияет. «(шёпотом)» — отдельный признак step.whisper (ниже)
+const mannerOf = s => /(^|[^а-яё])(громко(?!\s+(?:сме|хохо|хихик|плач|рыда|зева|чиха|вздых|по[её]т|храп))|кричит|кричат|крича|крикнул[аи]?|закричал[аи]?|ор[её]т|вопит|во весь голос)/.test(s || '') ? 'shout' : null;   // «громко смеётся» — не крик
 const VERBS = [ // stem → действие (порядок важен)
   // новые действия: читает карту, смотрит в бинокль, копает, стучит, толкает, тянет, пьёт, рисует, пишет, играет, нюхает, слушает, ликует, ищет, пожимает плечами
   [/^(стоит|стоят|стоял|стояла|стояли|ждет|ждут|ждал|ждала|ждали)$/, 'wait'],
@@ -268,7 +270,7 @@ S.parse = function (text, lib, opts) {
           const actPart = pre.replace(/(,?\s*(и\s+)?(сказал|сказала|сказали|ответил|ответила|спросил|спросила|крикнул|крикнула|закричал|закричала|прошептал|прошептала|воскликнул|воскликнула|произн[её]с|произнесла|добавил|добавила|пискнул|пискнула|буркнул|заявил|объявил)[а-я]*)\s*$/i, '').trim();
           if (actPart && actPart !== pre) { if (action(actPart)) { const sj2 = sc.steps[sc.steps.length - 1]; if (sj2) sj2.with = false; } } else if (actPart && pick(EMO, low(actPart))) {}
           const cl = global.MK ? global.MK.cleanSpeech(q[2].trim()) : { text: q[2].trim(), removed: [] };
-          const step = { who, say: cl.text }; const e = pick(EMO, ctx); if (e) step.emotion = e; const vv = verbOf(low(pre)); if (vv && ['laugh', 'cry', 'shout', 'jump', 'wave', 'nod', 'shake', 'point', 'scared', 'surprise', 'dance'].includes(vv)) step.do = vv;
+          const step = { who, say: cl.text }; const e = pick(EMO, ctx); if (e) step.emotion = e; { const mn = mannerOf(ctx); if (mn) step.manner = mn; } const vv = verbOf(low(pre)); if (vv && ['laugh', 'cry', 'shout', 'jump', 'wave', 'nod', 'shake', 'point', 'scared', 'surprise', 'dance'].includes(vv)) step.do = vv;
           const other = addressee(who, cl.text) || (lastSpeaker && lastSpeaker !== who && lastSpeaker !== 'Р' ? lastSpeaker : sceneSpeakers.filter(x => x !== who && x !== 'Р').slice(-1)[0]); if (other) step.to = other;
           autoCam(who); sc.steps.push(step); lastSpeaker = who; if (!sceneSpeakers.includes(who)) sceneSpeakers.push(who); nameFromLine(who, cl.text); stage(cl.text, who); continue; } } }
     // реплика «Имя (как): текст»
@@ -287,7 +289,7 @@ S.parse = function (text, lib, opts) {
       if (cl.removed.length) warnings.push(`Строка ${lineNo}: убрал из озвучки лишнее: ${cl.removed.join(' ')}`);
       if (!cl.text) continue;
       const step = { who, say: cl.text };
-      if (m[2]) { const e = pick(EMO, low(m[2])); if (e) step.emotion = e; const v = verbOf(low(m[2])); if (v && who !== 'Р') step.do = v; } if (m[2] && /(шёпот|шепот|шепчет|прошепт|тихо|тихонько|еле слышно|вполголоса)/.test(low(m[2]))) step.whisper = true;   // «(шёпотом)» — тише остальных
+      if (m[2]) { const e = pick(EMO, low(m[2])); if (e) step.emotion = e; const mn = mannerOf(low(m[2])); if (mn) step.manner = mn; const v = verbOf(low(m[2])); if (v && who !== 'Р') step.do = v; } if (m[2] && /(шёпот|шепот|шепчет|прошепт|тихо|тихонько|еле слышно|вполголоса)/.test(low(m[2]))) step.whisper = true;   // «(шёпотом)» — тише остальных
       { const rest = low(m[1]).replace(/^\S+\s*/, ''); const v2 = rest && who !== 'Р' ? verbOf(rest) : null; if (v2 && !step.do) step.do = v2; const e2 = rest ? pick(EMO, rest) : null; if (e2 && !step.emotion) step.emotion = e2; }
       if (who !== 'Р' && !step.emotion) { const ae = pick(AUTO_EMO, low(cl.text).replace(/^[\s«"—-]+/, '')); if (ae) { step.emotion = ae; step._auto = true; } }
       if (who !== 'Р') { const other = addressee(who, cl.text) || (lastSpeaker && lastSpeaker !== who && lastSpeaker !== 'Р' ? lastSpeaker : sceneSpeakers.filter(x => x !== who && x !== 'Р').slice(-1)[0]); if (other) step.to = other;

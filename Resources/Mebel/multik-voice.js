@@ -120,8 +120,11 @@
       return [...vars].sort()[x[0] > 0 ? 1 : 0]; },
     async solve(sentence) { if (!this.dictReady) return sentence; const hits = [];
       for (const m of sentence.matchAll(/(?=.*[а-яё])[а-яё+]+/gi)) { const w = m[0], wl = w.toLowerCase(); if (!(this.d.homodict[wl] || this.re[wl])) continue;
-        const st = this.clean(sentence.slice(0, m.index), true).slice(-(this.d.window >> 1)), en = this.clean(sentence.slice(m.index + w.length), false).slice(0, this.d.window >> 1);
-        const p = await this.predict((st + ' [HOMO] ' + wl + ' [/HOMO] ' + en).trim(), wl); if (p) hits.push({ s: m.index, e: m.index + w.length, w, p }); }
+        let a0 = 0, b0 = sentence.length; if (global.__HOMO_SENT !== false) { // контекст для нейросети — только своё предложение: соседнее («У сестры есть кот. Старый замок…») сбивало её
+          for (let k = m.index - 1; k >= 0; k--) if ('.!?…\n'.includes(sentence[k])) { a0 = k + 1; break; } for (let k = m.index + w.length; k < sentence.length; k++) if ('.!?…\n'.includes(sentence[k])) { b0 = k + 1; break; } }
+        const st = this.clean(sentence.slice(a0, m.index), true).slice(-(this.d.window >> 1)), en = this.clean(sentence.slice(m.index + w.length, b0), false).slice(0, this.d.window >> 1);
+        let p = null; const BR = global.BARSRech; if (BR && BR.rule && this.d.homodict[wl]) { try { p = BR.rule(sentence, m.index, wl, this.d.homodict[wl]); } catch (e) {} }   // БАРС-озвучка: сначала грамматика («у две́ри / на двери́»), потом нейросеть
+        if (!p) p = await this.predict((st + ' [HOMO] ' + wl + ' [/HOMO] ' + en).trim(), wl); if (p) hits.push({ s: m.index, e: m.index + w.length, w, p }); }
       let out = sentence, off = 0;
       for (const h of hits) { const nv = [...h.p].filter(c => VOW.includes(c.toLowerCase())).length, si = h.p.indexOf('+'); let wp = h.p.replace('+', '');
         wp = [...h.w].map((c1, i) => wp[i] == null ? '' : (isLower(c1) ? wp[i].toLowerCase() : wp[i].toUpperCase())).join('');
@@ -168,7 +171,7 @@
         if (this.S && this.cur !== model) { for (const s of Object.values(this.S)) { try { await s.release(); } catch (e) {} } this.S = null; this.ready = false; }
         if (!this.S) { const base = BASE + (model ? model + '/' : '');
           this.meta = await (await fetch(base + 'tts.json')).json();
-          const M = this.meta; M.sym = new Map(Object.entries(M.symbol_to_id)); M.keep = new Set([...M.symbols.slice(3), '^']); M.win = Float32Array.from(M.window);
+          const M = this.meta; M.sym = new Map(Object.entries(M.symbol_to_id)); M.id2s = []; for (const [ch, id] of Object.entries(M.symbol_to_id)) M.id2s[id] = ch; M.keep = new Set([...M.symbols.slice(3), '^']); M.win = Float32Array.from(M.window);
           this.ifft = makeIFFT(M.istft.n_fft);
           const opt = { executionProviders: ['wasm'], graphOptimizationLevel: 'all' }, S = {};
           for (const k of ['front', 'enc', 'dec', 'voc']) S[k] = await ort.InferenceSession.create(base + k + '.onnx', opt);
@@ -190,7 +193,7 @@
       const ort = global.ort, M = this.meta, S = this.S, ids = this.ids(text); if (!ids) return new Float32Array(0);
       const N = ids.length, spkId = M.speakers[o.speaker] != null ? M.speakers[o.speaker] : M.speakers.ru_albina != null ? M.speakers.ru_albina : Object.values(M.speakers)[0];
       const seq = new ort.Tensor('int64', BigInt64Array.from(ids.map(BigInt)), [1, N]), spk = new ort.Tensor('int64', BigInt64Array.from([BigInt(spkId)]), [1]);
-      const fin = { seq, spk }; if (this.typ) { fin.typ = new ort.Tensor('int64', BigInt64Array.from(typeIds(ids, M).map(BigInt)), [1, N]); fin.foc = new ort.Tensor('int64', new BigInt64Array(N), [1, N]); }
+      const fin = { seq, spk }; if (this.typ) { fin.typ = new ort.Tensor('int64', BigInt64Array.from(typeIds(ids, M, o.typeFix).map(BigInt)), [1, N]); fin.foc = new ort.Tensor('int64', new BigInt64Array(N), [1, N]); }
       const fo = await S.front.run(fin), ld = fo.logdur.data, pitch = new Float32Array(fo.pitch.data);
       // длительности — как в MultiTTSModel.forward
       const d = new Array(N); for (let i = 0; i < N; i++) d[i] = roundEven(Math.max(Math.exp(ld[i]) - 1, 0));
@@ -198,6 +201,9 @@
       const rate = o.rate || 1; if (rate !== 1) for (let i = 0; i < N; i++) d[i] = roundEven(d[i] / rate);
       if (d[0] > 5) d[0] = 5; if (d[N - 1] > 7) d[N - 1] = 7; d[N - 2] = 13; if (d[N - 3] > 13) d[N - 3] = 13;
       const pc = o.pitch || 1; if (pc !== 1) { const sh = (pc - 1) * (M.mean_std_coef[spkId] || 0); for (let i = 0; i < N; i++) { let v = Math.abs(pitch[i]) < .001 ? 0 : pitch[i] * pc; pitch[i] = v === 0 ? 0 : v + sh; } }
+      // БАРС-озвучка: «режиссёр» правит длительности и высоту по символам (смех в ритме настоящего, «ура-а-а», пение, живость интонации)
+      if (o.shape) { try { o.shape({ toks: ids.map(i => M.id2s[i]), d, pitch, coef: M.mean_std_coef[spkId] || 0, N, frame: M.istft.hop / 48000 }); } catch (e) { console.log('shape', e && e.message); } for (let i = 0; i < N; i++) d[i] = Math.max(0, Math.round(d[i])); }
+      this.lastAlign = { toks: ids.map(i => M.id2s[i]), d: d.slice(), frame: M.istft.hop / 48000 };
       const eo = await S.enc.run({ seq, spk, pitch: new ort.Tensor('float32', pitch, [1, 1, N]) }), E = eo.enc.data, D = eo.enc.dims[2];
       let T = 0; for (const x of d) T += x; if (T < 3) return new Float32Array(0);
       const X = new Float32Array(T * D); let r = 0; for (let i = 0; i < N; i++) for (let k = 0; k < d[i]; k++) { X.set(E.subarray(i * D, (i + 1) * D), r * D); r++; }
@@ -210,10 +216,20 @@
         this.ifft(re, im, fr); const o0 = t * hop; for (let i = 0; i < win; i++) { out[o0 + i] += fr[i] * W[i]; env[o0 + i] += W[i] * W[i]; } }
       const y = new Float32Array(L - 2 * pad); for (let i = 0; i < y.length; i++) y[i] = out[pad + i] / Math.max(env[pad + i], 1e-11);
       return y; },
+    /** Текст → текст с «+» у каждого слова: словарь пользователя → грамматика (БАРС) → омографы по смыслу → модель ударений. Один путь для всех нейроголосов. */
+    async marks(text, lex) { await MKStress.load(); if (!MKHomo.ready && !MKHomo.dictReady) { try { await MKHomo.loadDict(); } catch (e) {} }
+      if (global.BARSRech) { global.BARSRech.yo = !!(lex && lex.yo); global.BARSRech.lineYo = lex && lex.yoLine != null ? !!lex.yoLine : null; }   // в серии (yo) или в этой реплике (yoLine) автор ставит «ё» — значит «все» это «все», а не «всё»
+      let t = MKStress.userMarks(String(text || ''), lex); if (global.BARSRech) { try { t = global.BARSRech.pre(t); } catch (e) {} }
+      if (MKHomo.ready || MKHomo.dictReady) { try { t = await MKHomo.solve(t); } catch (e) { console.log('омографы', e && e.message); } } return MKStress.accent(t, null); },
     /** Текст → голос. o: {speaker:'ru_albina', rate:1, pitch:1, lex, accent:true}. Возвращает Float32Array 48 кГц. */
-    async speak(text, o) { o = o || {}; await this.load(o.model);
+    async speak(text, o) { o = o || {};
+      if (o.marksOnly) { // только ударения, без звука (голоса iPhone спрашивают отсюда, из отдельного процесса): 'homo' — словарь пользователя + грамматика + омографы, 'all' — «+» у каждого слова
+        this.lastText = o.marksOnly === 'all' ? await this.marks(text, o.lex) : await this.homoMarks(text, o.lex);
+        return new Float32Array(0); }
+      if (o.bars && global.BARSGolos && global.BARSGolos.render) return global.BARSGolos.render(text, o);   // БАРС-озвучка: смех, звуки, протяжные слова, паспорт голоса
+      await this.load(o.model);
       let t = String(text || '').replace(/[«»"“”]/g, '').replace(/\s+/g, ' ').trim(); if (!t) return new Float32Array(0);
-      if (o.accent !== false) { t = MKStress.userMarks(t, o.lex); if (MKHomo.ready || MKHomo.dictReady) { try { t = await MKHomo.solve(t); } catch (e) { console.log('омографы', e && e.message); } } t = MKStress.accent(t, null); }
+      if (o.accent !== false) t = await this.marks(t, o.lex);
       this.lastText = t;
       const parts = [], cur = []; for (const s of t.split(/(?<=[.!?…])\s+/)) { if (cur.join(' ').length + s.length > 700 && cur.length) { parts.push(cur.join(' ')); cur.length = 0; } cur.push(s); } if (cur.length) parts.push(cur.join(' '));
       const bufs = []; for (const p of parts) { bufs.push(await this.chunk(p, o)); bufs.push(new Float32Array(Math.round(48000 * .22))); } bufs.pop();
@@ -223,7 +239,9 @@
       Свои «+» в тексте не трогаются. Нейросеть омографов подгружается только если словарь фраз не решил. */
   MKVoice.homoMarks = async function (text, lex) {
     let t = String(text || ''); if (!t.trim()) return t;
-    t = MKStress.userMarks(t, lex);
+    if (global.BARSRech) { global.BARSRech.yo = !!(lex && lex.yo); global.BARSRech.lineYo = lex && lex.yoLine != null ? !!lex.yoLine : null; }
+    t = MKStress.userMarks(t, lex); if (global.BARSRech) { try { t = global.BARSRech.pre(t); } catch (e) {} }
+    if (!MKHomo.dictReady && !(global.MK && global.MK.isHomograph)) { try { await MKHomo.loadDict(); } catch (e) { return t; } }   // в странице голоса встроенного списка омографов нет — нужен словарь
     if (!MKHomo.has(t)) return t;
     try { await MKHomo.loadDict(); t = await MKHomo.solve(t); } catch (e) { console.log('омографы', e && e.message); }
     return t;
@@ -254,11 +272,21 @@
     if (tail.endsWith('?')) { const q = normClf(tail); if (TAG_RE.test(q)) return 'tag_q'; if (hasWh(q)) return 'wh_q'; if (/(^|[^а-яёa-z0-9_])или([^а-яёa-z0-9_]|$)/i.test(q)) return 'alternative_q'; return 'general_q'; }
     return sc.endsWith('!') ? 'exclam' : 'st'; }
   function charSentIds(text) { const ids = [], re = /(?<=[.!?])\s+/g; let pos = 0, si = 0, m; while ((m = re.exec(text))) { const end = m.index + m[0].length; for (let i = pos; i < end; i++) ids.push(si); pos = end; si++; } for (let i = pos; i < text.length; i++) ids.push(si); return ids; }
-  function typeIds(ids, M) { const toks = ids.map(i => M.symbols[i]), N = toks.length, body = toks.slice(1, -1).join(''), sid = charSentIds(body);
+  function typeIds(ids, M, fix) { const toks = ids.map(i => M.symbols[i]), N = toks.length, body = toks.slice(1, -1).join(''), sid = charSentIds(body);
     const nS = sid.length ? sid[sid.length - 1] + 1 : 0, tids = [];
     for (let k = 0; k < nS; k++) { let a = -1, b = -1; for (let i = 0; i < sid.length; i++) if (sid[i] === k) { if (a < 0) a = i + 1; b = i + 2; } while (b > a && toks[b - 1] === ' ') b--; tids.push(TYPE2ID[classifySentence(toks.slice(a, b).join('').replace(/\+/g, ''))] || 0); }
     const vals = sid.map(s => tids[Math.min(s, tids.length - 1)] || 0), out = new Array(N).fill(0); if (!vals.length) return out;
-    for (let i = 0; i < vals.length; i++) { const j = i + 1; if (j < N - 1) out[j] = vals[i]; } out[0] = vals[0]; out[N - 1] = vals[vals.length - 1]; return out; }
+    for (let i = 0; i < vals.length; i++) { const j = i + 1; if (j < N - 1) out[j] = vals[i]; } out[0] = vals[0]; out[N - 1] = vals[vals.length - 1];
+    if (fix) { // БАРС-озвучка: «…и шёпотом спросил: Пик, ты слышишь?» — рассказ до двоеточия остаётся рассказом, вопрос после двоеточия — вопросом
+      // (без этого вся фраза считалась вопросом «когда…?» по первому слову, и «ты слышишь?» звучало ровно)
+      for (let k = 0; k < nS; k++) { let a = -1, b = -1; for (let i = 0; i < sid.length; i++) if (sid[i] === k) { if (a < 0) a = i + 1; b = i + 2; } if (a < 0) continue;
+        while (b > a && toks[b - 1] === ' ') b--; let c = -1; for (let j = b - 1; j >= a; j--) if (toks[j] === ':') { c = j; break; } if (c < 0) continue;
+        const tail = toks.slice(c + 1, b).join('').replace(/\+/g, '').trim(), head = toks.slice(a, c).join('').replace(/\+/g, '');
+        if (!/[?!]$/.test(stripQ(tail)) || (head.match(/[а-яё]+/gi) || []).length < 3) continue;
+        const tt = /\?$/.test(stripQ(tail)) && /(^|[^а-яё])или([^а-яё]|$)/i.test(tail) ? TYPE2ID.alternative_q : (TYPE2ID[classifySentence(tail)] || 0);   // «кто это там — Рон или сова?» — выбор
+        for (let j = a; j <= c; j++) out[j] = 0; for (let j = c + 1; j < Math.min(b + 1, N - 1); j++) out[j] = tt; }
+      out[0] = out[1]; out[N - 1] = out[N - 2]; }
+    return out; }
   MKVoice._typeIds = typeIds; MKVoice._classify = classifySentence;
   global.MKVoice = MKVoice; global.MKStress = MKStress; global.MKHomo = MKHomo;
 })(typeof window !== 'undefined' ? window : globalThis);

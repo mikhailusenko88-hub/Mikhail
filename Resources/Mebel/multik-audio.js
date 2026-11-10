@@ -65,8 +65,10 @@ function ruIPA(word, si) {
   return out.map(o => o.p).join('');
 }
 MK.ruIPA = ruIPA;
-/** Готовит реплику к озвучке: «+» и заглавная гласная → ударение, словарь ударений, «ё». → {text, ipa:[[начало, длина, ipa]]} */
-MK.prepSpeech = function (text, lex, mode) {
+/** Готовит реплику к озвучке: «+» и заглавная гласная → ударение, словарь ударений, «ё». → {text, ipa:[[начало, длина, ipa]]}
+    byMeaning (для нейроголосов с БАРС-речью): «все/всё» и пары-омографы «е/ё» («пчелы/пчёлы», «поешь/поёшь») здесь не трогаем — их решает
+    грамматика в странице голоса по смыслу («все вместе», «от пчелы́»). Для голосов iPhone (без byMeaning) всё как раньше. */
+MK.prepSpeech = function (text, lex, mode, byMeaning) {
   lex = lex || {}; const dict = lex.stress || {}; mode = mode || 'ipa';
   let t = String(text || '').replace(/\+([аеёиоуыэюяАЕЁИОУЫЭЮЯ])/g, '$1' + ACUTE);
   const parts = t.split(/([А-Яа-яЁё́-]+)/); let out = '', ipa = [];
@@ -77,8 +79,8 @@ MK.prepSpeech = function (text, lex, mode) {
       if (ups.length === 1 && !otherUp && inner !== inner.toUpperCase()) { const j = ups[0]; w = w.slice(0, j) + w[j].toLowerCase() + ACUTE + w.slice(j + 1); } }
     const base = lowBase(w);
     if (!w.includes(ACUTE)) { const d = dict[base]; if (d && !MK.isHomograph(base)) { let st = d.replace(/\+([аеёиоуыэюя])/gi, '$1' + ACUTE); w = matchCase(w, st); } } // омографы — не из словаря, а по смыслу
-    if (!w.includes(ACUTE) && !w.includes('ё') && !w.includes('Ё')) { const y = YO[base]; if (y && y !== base) w = matchCase(w, y);
-      else if (base === 'все') { const nxt = (parts.slice(i + 1).join('').match(/^\s*([А-Яа-яЁё]+)/) || [])[1]; const end = /^\s*([.!?…,—]|$)/.test(parts.slice(i + 1).join('')); if (end || (nxt && VSE_YO.test(nxt.toLowerCase()))) w = matchCase(w, 'всё'); } }
+    if (!w.includes(ACUTE) && !w.includes('ё') && !w.includes('Ё')) { const y = YO[base]; if (y && y !== base) { if (!byMeaning || !MK.isHomograph(base)) w = matchCase(w, y); }
+      else if (base === 'все' && !byMeaning) { const nxt = (parts.slice(i + 1).join('').match(/^\s*([А-Яа-яЁё]+)/) || [])[1]; const end = /^\s*([.!?…,—]|$)/.test(parts.slice(i + 1).join('')); if (end || (nxt && VSE_YO.test(nxt.toLowerCase()))) w = matchCase(w, 'всё'); } }
     const ai = w.indexOf(ACUTE);
     if (ai > 0) { const plain = w.replace(/́/g, ''), si = ai - 1;
       if (mode === 'acute') { out += w; continue; }
