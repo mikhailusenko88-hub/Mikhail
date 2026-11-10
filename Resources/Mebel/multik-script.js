@@ -375,8 +375,8 @@ S.parse = function (text, lib, opts) {
     pieces.forEach((pc, k) => { let q = pc; const fw = (low(pc).match(/^[а-яё]+/) || [])[0]; if (k > 0 && subjName && (!namesIn(low(q), idx).length || (fw && verbOf(fw)))) q = subjName + ' ' + q; const ok = action(q); if (ok) { did = true; if (k === 0) { const ids = namesIn(low(pc), idx); if (ids[0]) subjName = chars[ids[0]] ? chars[ids[0]].name : null; } } });
     return did; }
   function action(sent) {
-    const d = low(sent); let who = namesIn(d, idx).filter(id => { const n = findNameAt(d, idx); return true; });
-    { const sj = subjectsOf(d.replace(/^\s+/, '')); if (sj && sj.length) { who = sj.concat(who.filter(x => !sj.includes(x))); if (sj.length > 1) { const v = verbOf(d), e = pick(EMO, d); if ((v || e) && !['kick', 'throw', 'give', 'take', 'walk', 'run', 'enter', 'exit', 'hug'].includes(v)) { sj.forEach((id, k) => { castOf(id); const st = { who: id }; if (k) st.with = true; if (v && !['walk', 'run', 'enter', 'exit', 'give', 'take', 'hug', 'turn', 'kick', 'throw'].includes(v)) st.do = v; if (e) st.emotion = e; if (!st.do && !st.emotion) return; sc.steps.push(st); }); return true; } } } }
+    const d = low(sent); let who = namesIn(d, idx).filter(id => { const n = findNameAt(d, idx); return true; }); let grpAll = null;
+    { const sj = subjectsOf(d.replace(/^\s+/, '')); if (sj && sj.length > 1 && /^(все|они|друзья|ребята|вместе|оба|обе)(?![а-я])/.test(d.replace(/^\s+/, ''))) grpAll = sj.filter(id => !sc._out[id]); if (sj && sj.length) { who = sj.concat(who.filter(x => !sj.includes(x))); if (sj.length > 1) { const v = verbOf(d), e = pick(EMO, d); if ((v || e) && !['kick', 'throw', 'give', 'take', 'walk', 'run', 'enter', 'exit', 'hug'].includes(v)) { sj.forEach((id, k) => { castOf(id); const st = { who: id }; if (k) st.with = true; if (v && !['walk', 'run', 'enter', 'exit', 'give', 'take', 'hug', 'turn', 'kick', 'throw'].includes(v)) st.do = v; if (e) st.emotion = e; if (!st.do && !st.emotion) return; sc.steps.push(st); }); return true; } } } }
     // порядок имён по позиции в предложении
     who = who.map(id => [id, d.search(low(chars[id].name).split(' ').slice(-1)[0].slice(0, 4))]).sort((a, b) => a[1] - b[1]).map(x => x[0]);
     if (!who.length) { if (/(крупн|общий план)/.test(d)) { camera(d); return true; } const s = pick(SFX, d); if (s && /(звук|слышно|раздает)/.test(d)) { sc.steps.push({ sfx: s }); return true; } return false; }
@@ -388,7 +388,7 @@ S.parse = function (text, lib, opts) {
     const vpos = (() => { for (const w of d.split(/[^а-яa-z]+/)) if (pick(VERBS, w)) return d.indexOf(w); return 999; })();
     const pron = /^(он|она|оно)(?![а-я])/.test(d) && lastSubj ? lastSubj : null;
     const subj = pron ? [pron] : who.filter(id => { const nm = low(chars[id].name).split(' ').slice(-1)[0]; let p = d.indexOf(nm.slice(0, 4)); if (p < 0) { for (const [n2, id2] of idx) if (id2 === id) { const q = d.indexOf(n2.slice(0, 4)); if (q >= 0) { p = q; break; } } } return p >= 0 && p < vpos; });
-    const S = subj.length ? subj : [who[0]]; lastSubj = S[0];
+    const S = subj.length ? subj : grpAll && grpAll.length ? grpAll : [who[0]]; lastSubj = S[0];   // «Все уходят» — уходят все, кто в сцене, а не один первый
     const targets = who.filter(id => !S.includes(id));
     let first = true;
     for (const id of S) {

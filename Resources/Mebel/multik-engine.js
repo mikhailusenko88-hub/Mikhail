@@ -949,9 +949,18 @@ MK.compile = function (ep, lib, audio) {
     let cur = .6, prevStart = .6, prevEnter = false, lastSpk = null; const st0 = t;
     // в начале сцены входят трое и больше — входят бодрее и плотнее, чтобы до первой реплики не было долгой тишины
     const chainN = (() => { let n = 0; for (const st of sc.steps || []) { if (st.do === 'enter') n++; else if (st.say || (st.do && st.do !== 'enter')) break; } return n; })(); let enterI = 0;
+    // уходят по одному строкой за строкой — уходят компанией: следующий трогается через полшага, все в одну сторону, чуть бодрее;
+    // если уходом сцена кончается — не ждём, пока последний дойдёт до края: склейка, когда компания уже пошла
+    const XC = new Map(); { const ss = sc.steps || []; for (let i = 0; i < ss.length;) { if (ss[i].do !== 'exit') { i++; continue; } let j = i; const g = { n: 0, side: null, last: 0, trail: false, mem: [] }; while (j < ss.length && (ss[j].do === 'exit' || (ss[j].with && !ss[j].say && !ss[j].do) || ss[j].sfx || ss[j].music || ss[j].camera)) { if (ss[j].do === 'exit') { g.mem.push(ss[j]); XC.set(ss[j], g); } j++; } g.n = new Set(g.mem.map(x => x.who)).size;
+        g.trail = !ss.slice(j).some(x => x.say || (x.do && x.do !== 'exit') || x.wait); i = j; } }
+    let exitPrev = null;
     for (const step of sc.steps || []) {
       const fastIn = chainN >= 3 && step.do === 'enter' && enterI < chainN; if (step.do === 'enter') enterI++;
-      const start = step.with ? prevStart : step.do === 'enter' && prevEnter && !step.after ? prevStart + (fastIn ? .35 : .5) : cur + (step.after || 0); let dur = 0; prevEnter = step.do === 'enter'; let emoEv = null;
+      const xg = step.do === 'exit' ? XC.get(step) : null, xGroup = xg && xg.n >= 2;
+      const start = step.with ? prevStart + (xGroup ? .2 : 0) : xGroup && exitPrev && exitPrev.g === xg && !step.after ? exitPrev.t + .4 : step.do === 'enter' && prevEnter && !step.after ? prevStart + (fastIn ? .35 : .5) : cur + (step.after || 0); let dur = 0; prevEnter = step.do === 'enter'; let emoEv = null;
+      if (xg) { if (xGroup && !xg.side) { const xs = xg.mem.map(m => C[m.who] && C[m.who].x).filter(v => v != null); xg.side = xs.filter(v => v > .5).length * 2 > xs.length ? 'right' : xs.filter(v => v > .5).length * 2 < xs.length ? 'left' : (C[step.who] && C[step.who].x > .5 ? 'right' : 'left'); }
+        if (xGroup && !step.side) step._xside = xg.side; if (xGroup && !(exitPrev && exitPrev.g === xg)) cam.push({ t: start, mode: 'wide', cut: true, exitGroup: true });   // компания уходит — общий план: видно, как уходят все, а не толкучка спин крупно
+        exitPrev = { g: xg, t: start }; }
       const who = step.who, ch = who && C[who];
       if (step.camera) { cam.push({ t: start, mode: step.camera, on: step.on || null, zoom: step.zoom, auto: !!step.auto, cut: true }); }
       if (step.shake) cam.push({ t: start, shake: step.shake === true ? .6 : step.shake });
@@ -981,9 +990,9 @@ MK.compile = function (ep, lib, audio) {
         if (MOVES[d] != null) {
           let x0 = ch.x, x1 = step.to != null ? (typeof step.to === 'string' ? (C[step.to] ? C[step.to].x + (C[step.to].x > ch.x ? -.12 : .12) : ch.x) : +step.to) : ch.x;
           if (d === 'enter') { const from = step.from || (x1 > .5 ? 'right' : 'left'); x0 = from === 'right' ? 1 + OFF : -OFF; ch.ev.push({ t: start, k: 'vis', v: true }); ch.vis = true; if (step.to == null) { const xs = Object.keys(C).filter(o => o !== who && C[o].vis).map(o => C[o].x); x1 = from === 'right' ? (xs.length ? Math.min(.88, Math.max(...xs) + .15) : .6) : (xs.length ? Math.max(.12, Math.min(...xs) - .15) : .4); } }
-          if (d === 'exit') { const side = step.side || (ch.x > .5 ? 'right' : 'left'); x1 = side === 'right' ? 1 + OFF : -OFF; }
+          if (d === 'exit') { const side = step.side || step._xside || (ch.x > .5 ? 'right' : 'left'); x1 = side === 'right' ? 1 + OFF : -OFF; }
           else x1 = spaceX(who, x1, x0);
-          const run = d === 'run' || step.run; const sp = (run ? MOVES.run : MOVES[d] || .2) * (lib.characters[who].spec.speed || 1) * (fastIn ? 1.45 : 1);
+          const run = d === 'run' || step.run; const sp = (run ? MOVES.run : MOVES[d] || .2) * (lib.characters[who].spec.speed || 1) * (fastIn ? 1.45 : xGroup ? 1.3 : 1);
           dur = Math.max(.3, Math.abs(x1 - x0) / sp);
           ch.ev.push({ t: start, k: 'move', x0, x1, t1: start + dur, run, style: d === 'crawl' || d === 'sneak' ? d : null });
           { const indoor = /^(room|kitchen)$/.test(lspec.type || ''), gap = run ? .2 : d === 'crawl' || d === 'sneak' ? .42 : .3, vol = d === 'sneak' ? .25 : d === 'crawl' ? .3 : run ? .75 : .55;
@@ -1051,7 +1060,7 @@ MK.compile = function (ep, lib, audio) {
       }
       if (!step.say && !step.do && !step.wait && step.emotion && !step.with) dur = Math.max(dur, .4);
       if (emoEv) emoEv.t1 = start + dur + (step.say ? 1.6 : 2.6); // эмоция держится реплику (или пару секунд молча) и мягко уходит — лицо не застывает грустным до конца сцены
-      prevStart = start; cur = Math.max(cur, start + dur);
+      prevStart = start; cur = Math.max(cur, start + (xg && xg.trail && step.do === 'exit' ? Math.min(dur, xGroup ? 1.5 : 2.2) : dur));   // ушли в конце сцены — склейка, когда уже пошли
     }
     for (const id in C) autoStand(C[id].ev);   // «присел» — посмотрел и встал сам, а не сидит на корточках до конца сцены
     props.forEach(p => p.ev.sort((a, b) => a.t - b.t));
