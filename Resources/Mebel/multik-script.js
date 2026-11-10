@@ -63,6 +63,8 @@ const VERBS = [ // stem → действие (порядок важен)
   [/^(читает|читают|читал|читала|прочитал|прочитала|прочел|прочла|разглядыва|разглядел|рассматрива|рассмотрел|изуча|изучил|развернул|развернула|разворачива)/, 'read'],
   [/^(копа|копнул|выкопал|выкопала|раскопал|рыл$|рыла$|роет|роют)/, 'dig'], [/^(стуч|постуч|стукнул|постукал)/, 'knock'],
   [/^(толка|толкнул|подтолкнул|пихнул|пихает)/, 'push'], [/^(тянет|тянут|тянул|потянул$|потянула$|потянули$|тащит|тащат|тащил|вытащил|вытащила|вытянул|дернул|дергает)/, 'pull'],
+  [/^(открыва|открыл|открою|отворя|отворил|распахива|распахнул|закрыва|закрыл|захлопыва|захлопнул)/, 'open'], [/^(включа|включил|выключа|выключил|нажима|нажал)/, 'point'],   // открывает подарок, выключает свет — тянется лапкой (крышка/дверь откроется сама), без «Научи меня»
+  [/^(держит|держат|держал|держала|держали|удерживает)$/, 'take'], [/^(звонит|звонят|звенит|позвонил|позвонила|зазвонил|зазвонила|звякнул|звякнула|трезвонит)$/, 'play'],   // «Топа держит колокольчик» — колокольчик у него в лапах; «звонит в колокольчик» — играет на нём
   [/^(пьет|пьют|пил$|пила$|пили$|выпил|выпила|попил|попила|отпил|глотну)/, 'drink'], [/^(рису|нарисовал|нарисовала|раскраш|раскрасил|красит|покрасил)/, 'paint'],
   [/^(пишет|пишут|писал|написал|написала|записал|записала|записыва)/, 'write'], [/^(играет|играют|играл|играла|сыграл|сыграла|заиграл|заиграла|бренчит|дудит|подудел)/, 'play'],
   [/^(нюха|понюхал|принюхал|обнюхал)/, 'sniff'], [/^(слушает|слушают|слушал|прислушал|прислушива|послушал)/, 'listen'],
@@ -225,7 +227,7 @@ S.parse = function (text, lib, opts) {
         if (pr.hidden && !pr._shown) { const ap = { prop: pr.id, state: 'appear', with: true }; if (pr._quiet) ap.quiet = true; if (who && who !== 'Р') ap.who = who; sc.steps.push(ap); pr._shown = true; if (glow || glowNow) { sc.steps.push({ prop: pr.id, state: 'glow', with: true }); pr._glow = true; } }
         else if (vanish && !pr._gone) { sc.steps.push(Object.assign({ prop: pr.id, state: 'vanish', with: true }, who && who !== 'Р' ? { who } : {})); pr._gone = true; sc._vanishLn = sc._ln; sc._vanishHeld = pr._held || pr.holder || null; }
         else if ((glowNow || glowAdj) && !pr.glow && !pr._glow) { sc.steps.push({ prop: pr.id, state: 'glow', with: true }); pr._glow = true; }
-        if (!vanish && type === 'door' && (opening || closing) && !!pr._open !== opening) { sc.steps.push({ prop: pr.id, state: opening ? 'open' : 'close', with: true }); pr._open = opening; }
+        if (!vanish && /^(door|gift|chest)$/.test(type) && (opening || closing) && !!pr._open !== opening) { /* открывает подарок/сундук — крышка откидывается */ sc.steps.push({ prop: pr.id, state: opening ? 'open' : 'close', with: true }); pr._open = opening; }
         if (!vanish && moving && !pr.big && !pr._held && !pr.holder) sc.steps.push({ prop: pr.id, state: 'move', with: true });
         if (!vanish) { firstId = firstId || pr.id; sc._lastObj = pr.id; }
       });
@@ -382,7 +384,7 @@ S.parse = function (text, lib, opts) {
     // порядок имён по позиции в предложении
     who = who.map(id => [id, d.search(low(chars[id].name).split(' ').slice(-1)[0].slice(0, 4))]).sort((a, b) => a[1] - b[1]).map(x => x[0]);
     if (!who.length) { if (/(крупн|общий план)/.test(d)) { camera(d); return true; } const s = pick(SFX, d); if (s && /(звук|слышно|раздает)/.test(d)) { sc.steps.push({ sfx: s }); return true; } return false; }
-    const verb = verbOf(d); const emo = pick(EMO, d);
+    let verb = verbOf(d); const emo = pick(EMO, d); if (verb === 'knock' && /(барабан|бубен|бубн)/.test(d)) verb = 'play';   // «стучит в барабан» — играет на барабане, а не стучит в дверь
     if (verb === 'wait') { who.forEach(id => castOf(id)); return true; }
     if (!verb && !emo) { const words = d.split(/[^а-яa-z]+/).filter(w => w.length > 3 && !idx.some(([n]) => w.startsWith(n.slice(0, 4))) && !/^(тоже|потом|сразу|снова|очень|когда|вдруг|затем|тогда|после|перед|около|возле|вместе)$/.test(w));
       if (words[0]) unknownWords.set(words[0], sent.trim()); return false; }
@@ -397,10 +399,11 @@ S.parse = function (text, lib, opts) {
       const step = { who: id }; if (!first) step.with = true; first = false;
       if (emo) step.emotion = emo;
       const tgt = targets[0];
-      if (verb === 'enter') { delete sc._out[id]; const side = /(слева|левой)/.test(d) ? 'left' : /(справа|правой)/.test(d) ? 'right' : null; castOf(id, true, side); step.do = 'enter'; step.from = side || (sc._x[id] > .5 ? 'right' : 'left'); step.to = tgt && sc._x[tgt] != null ? tgt : sc._x[id]; if (step.to === undefined) delete step.to; }
+      if (verb === 'enter' && sc._on && sc._on[id] && !tgt) continue;   // уже вышел к нам («выглядывает из-за дерева», потом «входит») — второй раз не выходит из-за края
+      if (verb === 'enter') { (sc._on = sc._on || {})[id] = true; delete sc._out[id]; const side = /(слева|левой)/.test(d) ? 'left' : /(справа|правой)/.test(d) ? 'right' : null; castOf(id, true, side); step.do = 'enter'; step.from = side || (sc._x[id] > .5 ? 'right' : 'left'); step.to = tgt && sc._x[tgt] != null ? tgt : sc._x[id]; if (step.to === undefined) delete step.to; }
       else {
         castOf(id);
-        if (verb === 'exit') { sc._out[id] = true; step.do = 'exit'; step.side = /(влево|налево|слева)/.test(d) ? 'left' : /(вправо|направо|справа)/.test(d) ? 'right' : undefined; if (!step.side) delete step.side; }
+        if (verb === 'exit') { sc._out[id] = true; if (sc._on) delete sc._on[id]; step.do = 'exit'; step.side = /(влево|налево|слева)/.test(d) ? 'left' : /(вправо|направо|справа)/.test(d) ? 'right' : undefined; if (!step.side) delete step.side; }
         else if (verb === 'walk' || verb === 'run') { step.do = verb; if (tgt) { castOf(tgt); step.to = tgt; } else if (/(вправо|направо)/.test(d)) step.to = Math.min(.85, (sc._x[id] || .5) + .3); else if (/(влево|налево)/.test(d)) step.to = Math.max(.15, (sc._x[id] || .5) - .3); else if (/(центр|середин)/.test(d)) step.to = .5; else { const p = propIn(d); if (p) { const pr = ensureProp(p, id); step.to = Math.max(.08, Math.min(.92, pr.x - .06)); } else step.to = (sc._x[id] || .5) > .5 ? .3 : .7; }
           if (typeof step.to === 'number') sc._x[id] = step.to; else if (sc._x[step.to] != null) sc._x[id] = sc._x[step.to] + (sc._x[step.to] > sc._x[id] ? -.12 : .12); }
         else if (verb === 'think') { step.do = 'think'; const q = sent.match(/[«"]([^»"]+)[»"]/); step.text = q ? q[1] : (d.match(/(о|об|про)\s+(\S+)/) ? '?' : '?'); }
@@ -411,6 +414,7 @@ S.parse = function (text, lib, opts) {
         else if (['push', 'pull', 'sniff', 'knock'].includes(verb)) { const p = propIn(d); if (p) { if (verb === 'pull' && /^(rope|kite|sled|balloon)$/.test(p)) grab(id, p); else { const pr = ensureProp(p, id, true); pr._used = true; } } step.do = verb; }
         else if (verb === 'turn') { step.do = 'turn'; step.to = tgt || (/(на нас|в камеру|к зрител)/.test(d) ? 'camera' : /(влево|налево)/.test(d) ? 'left' : /(вправо|направо)/.test(d) ? 'right' : 'camera'); if (tgt) castOf(tgt); }
         else if (verb === 'hug') { step.do = 'hug'; if (tgt) { castOf(tgt); step.to = tgt; } }
+        else if (verb === 'open') { step.do = 'point'; const p = propIn(d); if (p && /^(door|gift|chest)$/.test(p)) { const pr = sc.props.find(x => x.type === p && !x._gone && x._held === id) || sc.props.find(x => x.type === p && !x._gone) || ensureProp(p, id, true); const op = !/(закры|захлоп)/.test(d); if (!!pr._open !== op) { step._open = { prop: pr.id, state: op ? 'open' : 'close', with: true }; pr._open = op; } } }   // открывает подарок/сундук/дверь — тянется лапкой, крышка откидывается
         else if (verb === 'kick' || verb === 'throw') { step.do = verb; const p = propIn(d) || (verb === 'kick' ? 'ball' : null);
           if (verb === 'kick') { const pr = ensureProp(p, id, true); step.prop = pr.id; } else if (p && !sc.props.some(x => x._held === id)) { const pr = ensureProp(p, id); sc.steps.push({ who: id, do: 'take', prop: pr.id }); pr._held = id; }
           if (tgt) { castOf(tgt); step.to = tgt; } }
@@ -422,7 +426,7 @@ S.parse = function (text, lib, opts) {
       }
       if (!step.do && !step.emotion) { if (emo == null && !verb) return false; }
       if (!step.do) delete step.do;
-      sc.steps.push(step); if (step.do === 'paint') stroke(id);
+      const opSt = step._open; delete step._open; sc.steps.push(step); if (opSt) sc.steps.push(opSt); if (step.do === 'paint') stroke(id);
       if (step.do === 'jump' || step.do === 'enter' || step.do === 'dance' || step.do === 'fall') { if (sc._cam && sc._cam !== 'manual' && sc._cam !== 'wide') { sc.steps.push({ camera: 'wide', with: true, auto: true }); sc._cam = 'wide'; } }
       else if (sc._cam !== 'manual' && sc._cam !== 'medium:' + id && step.do && id !== 'Р') { // важная вещь в лапах или дело руками — камера подходит ближе
         const pt = step.prop && (sc.props.find(x => x.id === step.prop) || {}).type;
