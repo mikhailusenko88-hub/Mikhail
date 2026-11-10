@@ -67,6 +67,8 @@
 | pg_u1_stalo |  | 2.28 | 1.0 | 0 (+0) | 0/1 |
 | pg_u2_bylo |  | 3.61 | 0.667 | 0 (+0) | 0/1 |
 | pg_u2_stalo |  | 3.39 | 0.571 | 0 (+0) | 0/1 |
+| q1_dver_bylo | barsik_bylo | 3.26 | 1.0 | 0 (+0) | 0/1 |
+| q1_dver_stalo | barsik_stalo | 2.81 | 1.0 | 1 (+0) | 0/1 |
 | sv_ru_aigul | ru_aigul | 3.5 | 1.0 | 0 (+0) | 1/3 |
 | sv_ru_albina | ru_albina | 3.32 | 1.0 | 0 (+0) | 3/3 |
 | sv_ru_alexandr | ru_alexandr | 3.2 | 1.0 | 1 (+0) | 2/3 |
