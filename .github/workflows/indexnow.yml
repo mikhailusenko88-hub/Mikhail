@@ -27,7 +27,7 @@ jobs:
           path: st
       - name: Отправить в IndexNow
         env:
-          INDEXNOW_KEY: 1a06371a537e385ae6bb830b593a5315
+          INDEXNOW_KEY: 00822149077422ab29d00b8938ccdbcb
           BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.sha }}
           STATUS_FILE: st/status/indexnow.md
