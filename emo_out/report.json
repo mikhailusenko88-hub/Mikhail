@@ -2658,5 +2658,5703 @@
   "rate": 6.2,
   "hf": -24.1,
   "dur": 1.44
+ },
+ {
+  "name": "e2_s1_angA",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "ffaa798c2370c4c75565b3e826a7f611",
+  "ser1": {
+   "neutral": 0.923,
+   "angry": 0.018,
+   "positive": 0.055,
+   "sad": 0.003,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.95,
+   "fear": 0.002,
+   "happiness": 0.012,
+   "neutral": 0.035,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.005,
+   "плач": 0.003,
+   "смех": 0.002,
+   "речь": 0.86,
+   "вздох": 0.003
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.86
+   ],
+   [
+    "Narration, monologue",
+    0.09
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ],
+   [
+    "Speech synthesizer",
+    0.05
+   ]
+  ],
+  "utmos": 3.11,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 228.0,
+  "range": 9.9,
+  "voiced": 0.68,
+  "rate": 7.6,
+  "hf": -11.6,
+  "dur": 1.58
+ },
+ {
+  "name": "e2_s1_angB",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "de05528ad0b6c594c1090c786dce2030",
+  "ser1": {
+   "neutral": 0.937,
+   "angry": 0.053,
+   "positive": 0.007,
+   "sad": 0.003,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.001,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.998,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.85,
+   "вздох": 0.002
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.85
+   ],
+   [
+    "Speech synthesizer",
+    0.16
+   ],
+   [
+    "Narration, monologue",
+    0.09
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ]
+  ],
+  "utmos": 3.18,
+  "heard": "Я нашел это возле Старого Дуба.",
+  "match": 1.0,
+  "f0": 196.0,
+  "range": 15.9,
+  "voiced": 0.65,
+  "rate": 7.6,
+  "hf": -10.7,
+  "dur": 1.58
+ },
+ {
+  "name": "e2_s1_angC",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "407e4b899bfd27fd711ad51b972dda65",
+  "ser1": {
+   "neutral": 0.756,
+   "angry": 0.042,
+   "positive": 0.195,
+   "sad": 0.007,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.112,
+   "disgust": 0.002,
+   "enthusiasm": 0.679,
+   "fear": 0.042,
+   "happiness": 0.063,
+   "neutral": 0.102,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.005,
+   "плач": 0.004,
+   "смех": 0.002,
+   "речь": 0.87,
+   "вздох": 0.002
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.87
+   ],
+   [
+    "Narration, monologue",
+    0.1
+   ],
+   [
+    "Speech synthesizer",
+    0.08
+   ],
+   [
+    "Female speech, woman speaking",
+    0.07
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ]
+  ],
+  "utmos": 2.95,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 250.0,
+  "range": 10.7,
+  "voiced": 0.71,
+  "rate": 7.1,
+  "hf": -11.9,
+  "dur": 1.68
+ },
+ {
+  "name": "e2_s1_angD",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "6a684bddda0e2a59339e9b5cbf94d943",
+  "ser1": {
+   "neutral": 0.943,
+   "angry": 0.044,
+   "positive": 0.012,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.795,
+   "fear": 0.009,
+   "happiness": 0.14,
+   "neutral": 0.055,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.001,
+   "речь": 0.859,
+   "вздох": 0.001
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.86
+   ],
+   [
+    "Speech synthesizer",
+    0.09
+   ],
+   [
+    "Narration, monologue",
+    0.08
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ]
+  ],
+  "utmos": 3.05,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 219.0,
+  "range": 6.4,
+  "voiced": 0.66,
+  "rate": 7.7,
+  "hf": -11.9,
+  "dur": 1.56
+ },
+ {
+  "name": "e2_s1_cryA",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "2b9829dacb2da4d9317ceb9fc3f0f0d5",
+  "ser1": {
+   "neutral": 0.973,
+   "angry": 0.011,
+   "positive": 0.014,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.968,
+   "fear": 0.001,
+   "happiness": 0.0,
+   "neutral": 0.031,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.785,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.78
+   ],
+   [
+    "Narration, monologue",
+    0.09
+   ],
+   [
+    "Female speech, woman speaking",
+    0.09
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ],
+   [
+    "Speech synthesizer",
+    0.03
+   ]
+  ],
+  "utmos": 3.62,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 232.0,
+  "range": 7.6,
+  "voiced": 0.72,
+  "rate": 6.1,
+  "hf": -21.6,
+  "dur": 1.96
+ },
+ {
+  "name": "e2_s1_cryS",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "8c9fcb2771cc50831e3f693a28412ea1",
+  "ser1": {
+   "neutral": 0.69,
+   "angry": 0.012,
+   "positive": 0.293,
+   "sad": 0.004,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.999,
+   "fear": 0.001,
+   "happiness": 0.001,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.038,
+   "плач": 0.026,
+   "смех": 0.007,
+   "речь": 0.828,
+   "вздох": 0.009
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.83
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Yell",
+    0.04
+   ],
+   [
+    "Groan",
+    0.03
+   ],
+   [
+    "Whoop",
+    0.03
+   ]
+  ],
+  "utmos": 2.36,
+  "heard": "Уаа, уаа, уаа, уаа! Я нашел это возле старого дуба.",
+  "match": 0.75,
+  "f0": 264.0,
+  "range": 8.5,
+  "voiced": 0.71,
+  "rate": 2.7,
+  "hf": -15.8,
+  "dur": 4.42
+ },
+ {
+  "name": "e2_s1_hapA",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "af44fa2609b52c7b3fbbfd07dad3328c",
+  "ser1": {
+   "neutral": 0.657,
+   "angry": 0.016,
+   "positive": 0.324,
+   "sad": 0.003,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.166,
+   "fear": 0.003,
+   "happiness": 0.001,
+   "neutral": 0.829,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.811,
+   "вздох": 0.005
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.81
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Female speech, woman speaking",
+    0.07
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "utmos": 3.76,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 249.0,
+  "range": 8.1,
+  "voiced": 0.68,
+  "rate": 8.3,
+  "hf": -16.3,
+  "dur": 1.44
+ },
+ {
+  "name": "e2_s1_hapB",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "df7a6eb37d9fbdc653f8ca4d26dd4da9",
+  "ser1": {
+   "neutral": 0.235,
+   "angry": 0.014,
+   "positive": 0.748,
+   "sad": 0.003,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.936,
+   "fear": 0.003,
+   "happiness": 0.002,
+   "neutral": 0.059,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.003,
+   "смех": 0.003,
+   "речь": 0.833,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.83
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "utmos": 3.52,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 254.0,
+  "range": 8.9,
+  "voiced": 0.67,
+  "rate": 8.2,
+  "hf": -15.8,
+  "dur": 1.46
+ },
+ {
+  "name": "e2_s1_lovA",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "d7120701b8b4b672ebe3252272ee56b8",
+  "ser1": {
+   "neutral": 0.973,
+   "angry": 0.019,
+   "positive": 0.007,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.104,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.896,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.003,
+   "смех": 0.002,
+   "речь": 0.646,
+   "вздох": 0.01
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.65
+   ],
+   [
+    "Sound effect",
+    0.05
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Speech synthesizer",
+    0.03
+   ]
+  ],
+  "utmos": 3.74,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 223.0,
+  "range": 5.4,
+  "voiced": 0.69,
+  "rate": 6.6,
+  "hf": -19.3,
+  "dur": 1.82
+ },
+ {
+  "name": "e2_s1_sadA",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "8b0c70cc7daf07339d87f44a810832cf",
+  "ser1": {
+   "neutral": 0.775,
+   "angry": 0.211,
+   "positive": 0.006,
+   "sad": 0.008,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.148,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.851,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.759,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.76
+   ],
+   [
+    "Narration, monologue",
+    0.1
+   ],
+   [
+    "Speech synthesizer",
+    0.07
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ]
+  ],
+  "utmos": 3.72,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 193.0,
+  "range": 6.1,
+  "voiced": 0.7,
+  "rate": 6.1,
+  "hf": -22.7,
+  "dur": 1.98
+ },
+ {
+  "name": "e2_s1_sadB",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "6095f8bae62085487908fc12c0f84fb1",
+  "ser1": {
+   "neutral": 0.942,
+   "angry": 0.038,
+   "positive": 0.016,
+   "sad": 0.004,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.999,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.001,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.609,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.61
+   ],
+   [
+    "Music",
+    0.14
+   ],
+   [
+    "Sound effect",
+    0.11
+   ],
+   [
+    "Scratch",
+    0.03
+   ],
+   [
+    "Narration, monologue",
+    0.02
+   ]
+  ],
+  "utmos": 3.06,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 193.0,
+  "range": 6.1,
+  "voiced": 0.7,
+  "rate": 6.1,
+  "hf": -20.8,
+  "dur": 1.98
+ },
+ {
+  "name": "e2_s1_sadC",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "197066f92aa494ce06c6cd9f2c5a76f8",
+  "ser1": {
+   "neutral": 0.988,
+   "angry": 0.008,
+   "positive": 0.003,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.99,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.009,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.73,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.73
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ],
+   [
+    "Speech synthesizer",
+    0.04
+   ]
+  ],
+  "utmos": 3.34,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 210.0,
+  "range": 4.0,
+  "voiced": 0.7,
+  "rate": 5.8,
+  "hf": -21.6,
+  "dur": 2.06
+ },
+ {
+  "name": "e2_s1_sadD",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "7c9f154ef7ab7cc95217ab9193b0622e",
+  "ser1": {
+   "neutral": 0.817,
+   "angry": 0.154,
+   "positive": 0.006,
+   "sad": 0.022,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.96,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.04,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.728,
+   "вздох": 0.008
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.73
+   ],
+   [
+    "Speech synthesizer",
+    0.08
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.04
+   ]
+  ],
+  "utmos": 3.52,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 182.0,
+  "range": 3.2,
+  "voiced": 0.7,
+  "rate": 5.8,
+  "hf": -23.7,
+  "dur": 2.08
+ },
+ {
+  "name": "e2_s1_sadE",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "7fa5301aa7de8ac92c65e4c98debeed3",
+  "ser1": {
+   "neutral": 0.96,
+   "angry": 0.024,
+   "positive": 0.014,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.426,
+   "fear": 0.002,
+   "happiness": 0.0,
+   "neutral": 0.571,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.796,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.8
+   ],
+   [
+    "Narration, monologue",
+    0.09
+   ],
+   [
+    "Female speech, woman speaking",
+    0.09
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ],
+   [
+    "Speech synthesizer",
+    0.03
+   ]
+  ],
+  "utmos": 3.76,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 239.0,
+  "range": 8.3,
+  "voiced": 0.72,
+  "rate": 6.1,
+  "hf": -22.4,
+  "dur": 1.96
+ },
+ {
+  "name": "e2_s1_scA",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "32ba32493f9be1217f3aa0980d8b389f",
+  "ser1": {
+   "neutral": 0.945,
+   "angry": 0.008,
+   "positive": 0.047,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.002,
+   "disgust": 0.0,
+   "enthusiasm": 0.267,
+   "fear": 0.295,
+   "happiness": 0.004,
+   "neutral": 0.43,
+   "sadness": 0.001
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.003,
+   "речь": 0.838,
+   "вздох": 0.003
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.84
+   ],
+   [
+    "Narration, monologue",
+    0.13
+   ],
+   [
+    "Female speech, woman speaking",
+    0.09
+   ],
+   [
+    "Male speech, man speaking",
+    0.08
+   ],
+   [
+    "Sound effect",
+    0.04
+   ]
+  ],
+  "utmos": 3.6,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 272.0,
+  "range": 5.3,
+  "voiced": 0.69,
+  "rate": 8.2,
+  "hf": -20.7,
+  "dur": 1.46
+ },
+ {
+  "name": "e2_s1_scB",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "59d27b612422132b10bf2ac5f51bee67",
+  "ser1": {
+   "neutral": 0.899,
+   "angry": 0.003,
+   "positive": 0.097,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.042,
+   "fear": 0.954,
+   "happiness": 0.002,
+   "neutral": 0.001,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.679,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.68
+   ],
+   [
+    "Sound effect",
+    0.06
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 3.19,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 273.0,
+  "range": 5.4,
+  "voiced": 0.69,
+  "rate": 8.2,
+  "hf": -19.7,
+  "dur": 1.46
+ },
+ {
+  "name": "e2_s1_scC",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "69f018b91796f624cf95aaf700e9c231",
+  "ser1": {
+   "neutral": 0.784,
+   "angry": 0.008,
+   "positive": 0.205,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.602,
+   "fear": 0.304,
+   "happiness": 0.008,
+   "neutral": 0.084,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.003,
+   "речь": 0.821,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.82
+   ],
+   [
+    "Narration, monologue",
+    0.08
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 3.4,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 286.0,
+  "range": 7.6,
+  "voiced": 0.67,
+  "rate": 8.5,
+  "hf": -19.4,
+  "dur": 1.42
+ },
+ {
+  "name": "e2_s1_scD",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "13f345cd1896d1b74544bc1117c7ad2a",
+  "ser1": {
+   "neutral": 0.986,
+   "angry": 0.002,
+   "positive": 0.01,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.003,
+   "fear": 0.063,
+   "happiness": 0.932,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.011,
+   "плач": 0.003,
+   "смех": 0.004,
+   "речь": 0.767,
+   "вздох": 0.01
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.77
+   ],
+   [
+    "Male speech, man speaking",
+    0.14
+   ],
+   [
+    "Narration, monologue",
+    0.1
+   ],
+   [
+    "Speech synthesizer",
+    0.1
+   ],
+   [
+    "Sound effect",
+    0.06
+   ]
+  ],
+  "utmos": 1.32,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 257.0,
+  "range": 4.7,
+  "voiced": 0.66,
+  "rate": 8.2,
+  "hf": -17.8,
+  "dur": 1.46
+ },
+ {
+  "name": "e2_s1_shyA",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "078f5db39ab76f08f5705f619e46ada7",
+  "ser1": {
+   "neutral": 0.988,
+   "angry": 0.005,
+   "positive": 0.007,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.552,
+   "fear": 0.002,
+   "happiness": 0.0,
+   "neutral": 0.445,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.571,
+   "вздох": 0.002
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.57
+   ],
+   [
+    "Sound effect",
+    0.14
+   ],
+   [
+    "Scratch",
+    0.07
+   ],
+   [
+    "Spray",
+    0.04
+   ],
+   [
+    "Female speech, woman speaking",
+    0.03
+   ]
+  ],
+  "utmos": 3.47,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 231.0,
+  "range": 4.5,
+  "voiced": 0.7,
+  "rate": 6.6,
+  "hf": -20.6,
+  "dur": 1.82
+ },
+ {
+  "name": "e2_s1_slpA",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "3ad33c3a63b176f592232ff95eea475b",
+  "ser1": {
+   "neutral": 0.942,
+   "angry": 0.04,
+   "positive": 0.004,
+   "sad": 0.014,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.036,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.963,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.742,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.74
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Speech synthesizer",
+    0.06
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 3.79,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 197.0,
+  "range": 4.9,
+  "voiced": 0.69,
+  "rate": 6.1,
+  "hf": -21.2,
+  "dur": 1.96
+ },
+ {
+  "name": "e2_s1_surK",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "a36c01917dc3ca0c02742f0c76474d18",
+  "ser1": {
+   "neutral": 0.265,
+   "angry": 0.035,
+   "positive": 0.692,
+   "sad": 0.008,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.982,
+   "fear": 0.002,
+   "happiness": 0.015,
+   "neutral": 0.001,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.67,
+   "вздох": 0.001
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.67
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Ding",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Clang",
+    0.03
+   ]
+  ],
+  "utmos": 3.54,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 245.0,
+  "range": 10.7,
+  "voiced": 0.66,
+  "rate": 7.5,
+  "hf": -17.2,
+  "dur": 1.6
+ },
+ {
+  "name": "e2_s1_whA",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "443545801547676f59e2122c00167f66",
+  "ser1": {
+   "neutral": 0.78,
+   "angry": 0.212,
+   "positive": 0.004,
+   "sad": 0.003,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.002,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.81,
+   "happiness": 0.188,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.003,
+   "плач": 0.001,
+   "смех": 0.003,
+   "речь": 0.441,
+   "вздох": 0.002
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.44
+   ],
+   [
+    "Sound effect",
+    0.15
+   ],
+   [
+    "Scratch",
+    0.06
+   ],
+   [
+    "Speech synthesizer",
+    0.06
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ]
+  ],
+  "utmos": 1.25,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 6.5,
+  "hf": -10.3,
+  "dur": 1.84
+ },
+ {
+  "name": "e2_s1_whB",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "7f227cc7f4d1319b5813b23afffcfced",
+  "ser1": {
+   "neutral": 0.961,
+   "angry": 0.027,
+   "positive": 0.003,
+   "sad": 0.009,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.004,
+   "happiness": 0.995,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.008,
+   "плач": 0.003,
+   "смех": 0.004,
+   "речь": 0.71,
+   "вздох": 0.007
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.71
+   ],
+   [
+    "Speech synthesizer",
+    0.19
+   ],
+   [
+    "Male speech, man speaking",
+    0.08
+   ],
+   [
+    "Narration, monologue",
+    0.08
+   ],
+   [
+    "Sound effect",
+    0.07
+   ]
+  ],
+  "utmos": 1.28,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 227.0,
+  "range": 4.7,
+  "voiced": 0.57,
+  "rate": 6.5,
+  "hf": -14.7,
+  "dur": 1.84
+ },
+ {
+  "name": "e2_s2_angA",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "5a52b4708d0a1da0d8d3868090965d9a",
+  "ser1": {
+   "neutral": 0.428,
+   "angry": 0.129,
+   "positive": 0.439,
+   "sad": 0.004,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.864,
+   "disgust": 0.002,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.133,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.69,
+   "вздох": 0.002
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.69
+   ],
+   [
+    "Narration, monologue",
+    0.08
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Sound effect",
+    0.05
+   ],
+   [
+    "Speech synthesizer",
+    0.04
+   ]
+  ],
+  "utmos": 2.92,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 226.0,
+  "range": 9.3,
+  "voiced": 0.62,
+  "rate": 6.5,
+  "hf": -14.4,
+  "dur": 1.38
+ },
+ {
+  "name": "e2_s2_angB",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "db1cc5bf27a402d74ba0bfbf7402fbd1",
+  "ser1": {
+   "neutral": 0.571,
+   "angry": 0.401,
+   "positive": 0.026,
+   "sad": 0.001,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.005,
+   "disgust": 0.001,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.994,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.003,
+   "смех": 0.004,
+   "речь": 0.786,
+   "вздох": 0.002
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.79
+   ],
+   [
+    "Speech synthesizer",
+    0.1
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.04
+   ]
+  ],
+  "utmos": 2.42,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 205.0,
+  "range": 7.8,
+  "voiced": 0.6,
+  "rate": 6.6,
+  "hf": -12.7,
+  "dur": 1.36
+ },
+ {
+  "name": "e2_s2_angC",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "327eaeab2742e32994447bb642cb6511",
+  "ser1": {
+   "neutral": 0.119,
+   "angry": 0.021,
+   "positive": 0.858,
+   "sad": 0.001,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.562,
+   "disgust": 0.001,
+   "enthusiasm": 0.0,
+   "fear": 0.001,
+   "happiness": 0.0,
+   "neutral": 0.436,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.003,
+   "смех": 0.001,
+   "речь": 0.817,
+   "вздох": 0.001
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.82
+   ],
+   [
+    "Female speech, woman speaking",
+    0.07
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Speech synthesizer",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 2.89,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 242.0,
+  "range": 9.9,
+  "voiced": 0.64,
+  "rate": 6.2,
+  "hf": -12.5,
+  "dur": 1.44
+ },
+ {
+  "name": "e2_s2_angD",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "e9cca6215cb519af48b2ade270d0dff5",
+  "ser1": {
+   "neutral": 0.576,
+   "angry": 0.206,
+   "positive": 0.215,
+   "sad": 0.002,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.004,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.995,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.805,
+   "вздох": 0.002
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.8
+   ],
+   [
+    "Female speech, woman speaking",
+    0.09
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Sound effect",
+    0.05
+   ],
+   [
+    "Speech synthesizer",
+    0.04
+   ]
+  ],
+  "utmos": 2.55,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 218.0,
+  "range": 5.9,
+  "voiced": 0.63,
+  "rate": 6.4,
+  "hf": -13.5,
+  "dur": 1.4
+ },
+ {
+  "name": "e2_s2_cryA",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "c89de4489253482683e7e2e3f5787922",
+  "ser1": {
+   "neutral": 0.965,
+   "angry": 0.006,
+   "positive": 0.028,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.003,
+   "речь": 0.646,
+   "вздох": 0.005
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.65
+   ],
+   [
+    "Female speech, woman speaking",
+    0.08
+   ],
+   [
+    "Sound effect",
+    0.06
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "utmos": 3.41,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 231.0,
+  "range": 7.1,
+  "voiced": 0.65,
+  "rate": 5.2,
+  "hf": -26.3,
+  "dur": 1.74
+ },
+ {
+  "name": "e2_s2_cryS",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "3f207bd9bd5b97bf1d2f60d3dda12d2c",
+  "ser1": {
+   "neutral": 0.426,
+   "angry": 0.004,
+   "positive": 0.569,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.999,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.001,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.025,
+   "плач": 0.064,
+   "смех": 0.011,
+   "речь": 0.806,
+   "вздох": 0.012
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.81
+   ],
+   [
+    "Wail, moan",
+    0.06
+   ],
+   [
+    "Groan",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Yell",
+    0.03
+   ]
+  ],
+  "utmos": 2.14,
+  "heard": "Уаа, уаа, уаа, уаа! Мы пойдем туда завтра утром.",
+  "match": 0.714,
+  "f0": 267.0,
+  "range": 8.6,
+  "voiced": 0.68,
+  "rate": 2.1,
+  "hf": -27.7,
+  "dur": 4.22
+ },
+ {
+  "name": "e2_s2_hapA",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "4ddca6461120838d96570e9dd26353f3",
+  "ser1": {
+   "neutral": 0.298,
+   "angry": 0.015,
+   "positive": 0.687,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.002,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.997,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.003,
+   "речь": 0.706,
+   "вздох": 0.002
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.71
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Sound effect",
+    0.05
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 3.13,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 251.0,
+  "range": 8.0,
+  "voiced": 0.65,
+  "rate": 6.9,
+  "hf": -19.2,
+  "dur": 1.3
+ },
+ {
+  "name": "e2_s2_hapB",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "85f7565289e0eca1558edc321662b57f",
+  "ser1": {
+   "neutral": 0.114,
+   "angry": 0.005,
+   "positive": 0.879,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.005,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.995,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.003,
+   "речь": 0.753,
+   "вздох": 0.002
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.75
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Sound effect",
+    0.06
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 3.07,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 263.0,
+  "range": 8.7,
+  "voiced": 0.62,
+  "rate": 6.9,
+  "hf": -18.5,
+  "dur": 1.3
+ },
+ {
+  "name": "e2_s2_lovA",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "c3eec1e4b9e5b4c03e3cbd7200cd7809",
+  "ser1": {
+   "neutral": 0.974,
+   "angry": 0.001,
+   "positive": 0.024,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.627,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.63
+   ],
+   [
+    "Sound effect",
+    0.07
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Zipper (clothing)",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.02
+   ]
+  ],
+  "utmos": 3.34,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 221.0,
+  "range": 5.4,
+  "voiced": 0.61,
+  "rate": 5.6,
+  "hf": -23.0,
+  "dur": 1.6
+ },
+ {
+  "name": "e2_s2_sadA",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "5488abb5903b3cf7567ca4beba202264",
+  "ser1": {
+   "neutral": 0.968,
+   "angry": 0.015,
+   "positive": 0.016,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.776,
+   "вздох": 0.007
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.78
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Speech synthesizer",
+    0.03
+   ]
+  ],
+  "utmos": 3.6,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 189.0,
+  "range": 4.9,
+  "voiced": 0.67,
+  "rate": 5.1,
+  "hf": -26.9,
+  "dur": 1.78
+ },
+ {
+  "name": "e2_s2_sadB",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "f2b176ac71745f75cf594d8fd3c488b6",
+  "ser1": {
+   "neutral": 0.964,
+   "angry": 0.003,
+   "positive": 0.032,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.001,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.717,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.72
+   ],
+   [
+    "Speech synthesizer",
+    0.07
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ]
+  ],
+  "utmos": 2.79,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 189.0,
+  "range": 4.9,
+  "voiced": 0.67,
+  "rate": 5.1,
+  "hf": -23.0,
+  "dur": 1.78
+ },
+ {
+  "name": "e2_s2_sadC",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "e5714efebe0a351fc9b55d2c70ea7459",
+  "ser1": {
+   "neutral": 0.971,
+   "angry": 0.012,
+   "positive": 0.016,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.666,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.67
+   ],
+   [
+    "Female speech, woman speaking",
+    0.07
+   ],
+   [
+    "Sound effect",
+    0.06
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Chopping (food)",
+    0.03
+   ]
+  ],
+  "utmos": 3.51,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 210.0,
+  "range": 3.5,
+  "voiced": 0.68,
+  "rate": 4.8,
+  "hf": -26.3,
+  "dur": 1.88
+ },
+ {
+  "name": "e2_s2_sadD",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "adf91d67d1c9ed3fa91dcda3cbeba676",
+  "ser1": {
+   "neutral": 0.773,
+   "angry": 0.22,
+   "positive": 0.005,
+   "sad": 0.002,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.001,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.829,
+   "вздох": 0.007
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.83
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Zipper (clothing)",
+    0.02
+   ]
+  ],
+  "utmos": 3.49,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 180.0,
+  "range": 3.0,
+  "voiced": 0.67,
+  "rate": 4.8,
+  "hf": -27.3,
+  "dur": 1.88
+ },
+ {
+  "name": "e2_s2_sadE",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "877cde0ab8f6b56845b6f71373867015",
+  "ser1": {
+   "neutral": 0.891,
+   "angry": 0.005,
+   "positive": 0.103,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.002,
+   "смех": 0.003,
+   "речь": 0.71,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.71
+   ],
+   [
+    "Female speech, woman speaking",
+    0.12
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "utmos": 3.65,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 237.0,
+  "range": 7.8,
+  "voiced": 0.65,
+  "rate": 5.1,
+  "hf": -26.4,
+  "dur": 1.76
+ },
+ {
+  "name": "e2_s2_scA",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "b94d9ce12b8afa5782fd625b5242c61f",
+  "ser1": {
+   "neutral": 0.366,
+   "angry": 0.007,
+   "positive": 0.626,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.002,
+   "смех": 0.003,
+   "речь": 0.734,
+   "вздох": 0.007
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.73
+   ],
+   [
+    "Female speech, woman speaking",
+    0.1
+   ],
+   [
+    "Narration, monologue",
+    0.08
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 2.63,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 274.0,
+  "range": 5.1,
+  "voiced": 0.68,
+  "rate": 6.8,
+  "hf": -23.0,
+  "dur": 1.32
+ },
+ {
+  "name": "e2_s2_scB",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "c2221c67cc091e87e38212fcc13c24b4",
+  "ser1": {
+   "neutral": 0.457,
+   "angry": 0.003,
+   "positive": 0.538,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.002,
+   "смех": 0.003,
+   "речь": 0.672,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.67
+   ],
+   [
+    "Female speech, woman speaking",
+    0.08
+   ],
+   [
+    "Sound effect",
+    0.07
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 2.21,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 277.0,
+  "range": 5.2,
+  "voiced": 0.68,
+  "rate": 6.8,
+  "hf": -21.3,
+  "dur": 1.32
+ },
+ {
+  "name": "e2_s2_scC",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "5808c7edc9f0caf3ad8409bc431ba9c5",
+  "ser1": {
+   "neutral": 0.111,
+   "angry": 0.008,
+   "positive": 0.88,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.006,
+   "disgust": 0.0,
+   "enthusiasm": 0.001,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.993,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.003,
+   "смех": 0.004,
+   "речь": 0.823,
+   "вздох": 0.003
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.82
+   ],
+   [
+    "Female speech, woman speaking",
+    0.15
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Conversation",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 2.8,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 288.0,
+  "range": 7.1,
+  "voiced": 0.66,
+  "rate": 7.0,
+  "hf": -21.7,
+  "dur": 1.28
+ },
+ {
+  "name": "e2_s2_scD",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "f161bef2b5618da2fc20371a93ae7623",
+  "ser1": {
+   "neutral": 0.91,
+   "angry": 0.006,
+   "positive": 0.081,
+   "sad": 0.003,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.043,
+   "fear": 0.001,
+   "happiness": 0.0,
+   "neutral": 0.954,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.006,
+   "смех": 0.007,
+   "речь": 0.755,
+   "вздох": 0.014
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.76
+   ],
+   [
+    "Male speech, man speaking",
+    0.09
+   ],
+   [
+    "Speech synthesizer",
+    0.08
+   ],
+   [
+    "Sound effect",
+    0.07
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ]
+  ],
+  "utmos": 1.33,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 259.0,
+  "range": 17.5,
+  "voiced": 0.59,
+  "rate": 7.0,
+  "hf": -20.1,
+  "dur": 1.28
+ },
+ {
+  "name": "e2_s2_shyA",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "775081b40b14d1e29e8c44fbd162443f",
+  "ser1": {
+   "neutral": 0.975,
+   "angry": 0.002,
+   "positive": 0.022,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.608,
+   "вздох": 0.003
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.61
+   ],
+   [
+    "Sound effect",
+    0.06
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Narration, monologue",
+    0.02
+   ],
+   [
+    "Speech synthesizer",
+    0.02
+   ]
+  ],
+  "utmos": 2.89,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 229.0,
+  "range": 4.3,
+  "voiced": 0.66,
+  "rate": 5.6,
+  "hf": -23.6,
+  "dur": 1.6
+ },
+ {
+  "name": "e2_s2_slpA",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "3a2450fd6691c839fcd7b47d6a43e649",
+  "ser1": {
+   "neutral": 0.972,
+   "angry": 0.016,
+   "positive": 0.011,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.765,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.76
+   ],
+   [
+    "Female speech, woman speaking",
+    0.07
+   ],
+   [
+    "Sound effect",
+    0.05
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Conversation",
+    0.02
+   ]
+  ],
+  "utmos": 3.66,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 193.0,
+  "range": 4.5,
+  "voiced": 0.68,
+  "rate": 5.1,
+  "hf": -25.9,
+  "dur": 1.78
+ },
+ {
+  "name": "e2_s2_surK",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "88d5bfd5df4e443c7aa69b86158e4b39",
+  "ser1": {
+   "neutral": 0.052,
+   "angry": 0.002,
+   "positive": 0.945,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.002,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.997,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.004,
+   "смех": 0.002,
+   "речь": 0.758,
+   "вздох": 0.01
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.76
+   ],
+   [
+    "Female speech, woman speaking",
+    0.09
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Conversation",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 2.66,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 260.0,
+  "range": 9.6,
+  "voiced": 0.66,
+  "rate": 6.3,
+  "hf": -20.3,
+  "dur": 1.42
+ },
+ {
+  "name": "e2_s2_whA",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "5917b823c0b53f0143142eaae5354c83",
+  "ser1": {
+   "neutral": 0.79,
+   "angry": 0.197,
+   "positive": 0.007,
+   "sad": 0.004,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.63,
+   "fear": 0.336,
+   "happiness": 0.031,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.005,
+   "смех": 0.007,
+   "речь": 0.19,
+   "вздох": 0.01
+  },
+  "ast_top": [
+   [
+    "Zipper (clothing)",
+    0.26
+   ],
+   [
+    "Speech",
+    0.19
+   ],
+   [
+    "Sound effect",
+    0.1
+   ],
+   [
+    "Scratch",
+    0.06
+   ],
+   [
+    "Grunt",
+    0.04
+   ]
+  ],
+  "utmos": 1.25,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 5.9,
+  "hf": -15.6,
+  "dur": 1.52
+ },
+ {
+  "name": "e2_s2_whB",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "97ca580e96f4edb6d1cd85360a727e3b",
+  "ser1": {
+   "neutral": 0.983,
+   "angry": 0.011,
+   "positive": 0.004,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.718,
+   "fear": 0.001,
+   "happiness": 0.001,
+   "neutral": 0.279,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.006,
+   "плач": 0.008,
+   "смех": 0.014,
+   "речь": 0.567,
+   "вздох": 0.02
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.57
+   ],
+   [
+    "Sound effect",
+    0.08
+   ],
+   [
+    "Male speech, man speaking",
+    0.06
+   ],
+   [
+    "Speech synthesizer",
+    0.05
+   ],
+   [
+    "Grunt",
+    0.04
+   ]
+  ],
+  "utmos": 1.29,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 237.0,
+  "range": 4.9,
+  "voiced": 0.46,
+  "rate": 5.6,
+  "hf": -18.3,
+  "dur": 1.6
+ },
+ {
+  "name": "e2_s3_angA",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "0b0e240510d70d40c70f41e4252aa55a",
+  "ser1": {
+   "neutral": 0.984,
+   "angry": 0.001,
+   "positive": 0.015,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.788,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.79
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Speech synthesizer",
+    0.03
+   ],
+   [
+    "Female speech, woman speaking",
+    0.03
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 2.8,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 234.0,
+  "range": 8.0,
+  "voiced": 0.56,
+  "rate": 6.4,
+  "hf": -6.6,
+  "dur": 1.56
+ },
+ {
+  "name": "e2_s3_angB",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "5b0761e408c11f02eb1a47061bd23f60",
+  "ser1": {
+   "neutral": 0.99,
+   "angry": 0.006,
+   "positive": 0.003,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.802,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.8
+   ],
+   [
+    "Speech synthesizer",
+    0.05
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ],
+   [
+    "Plop",
+    0.05
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ]
+  ],
+  "utmos": 2.09,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 200.0,
+  "range": 14.8,
+  "voiced": 0.52,
+  "rate": 6.4,
+  "hf": -6.4,
+  "dur": 1.56
+ },
+ {
+  "name": "e2_s3_angC",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "f6da8a5a0ec9bc97b403be9ff9ff6457",
+  "ser1": {
+   "neutral": 0.773,
+   "angry": 0.003,
+   "positive": 0.223,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.004,
+   "смех": 0.002,
+   "речь": 0.873,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.87
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Speech synthesizer",
+    0.04
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 2.66,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 263.0,
+  "range": 9.8,
+  "voiced": 0.58,
+  "rate": 6.1,
+  "hf": -6.1,
+  "dur": 1.64
+ },
+ {
+  "name": "e2_s3_angD",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "7077fcc02dfc96a4431769858a611be4",
+  "ser1": {
+   "neutral": 0.991,
+   "angry": 0.003,
+   "positive": 0.005,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.005,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.787,
+   "вздох": 0.003
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.79
+   ],
+   [
+    "Speech synthesizer",
+    0.05
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ],
+   [
+    "Female speech, woman speaking",
+    0.03
+   ]
+  ],
+  "utmos": 2.5,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 223.0,
+  "range": 5.8,
+  "voiced": 0.55,
+  "rate": 6.3,
+  "hf": -6.5,
+  "dur": 1.58
+ },
+ {
+  "name": "e2_s3_cryA",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "340bf3bb16bd6e5961645561e00b039b",
+  "ser1": {
+   "neutral": 0.997,
+   "angry": 0.0,
+   "positive": 0.002,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.002,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.766,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.77
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Speech synthesizer",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 3.08,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 236.0,
+  "range": 6.4,
+  "voiced": 0.59,
+  "rate": 5.0,
+  "hf": -13.4,
+  "dur": 2.0
+ },
+ {
+  "name": "e2_s3_cryS",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "8114bf7afc78efd59e2de520324a7e59",
+  "ser1": {
+   "neutral": 0.67,
+   "angry": 0.003,
+   "positive": 0.323,
+   "sad": 0.003,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.999,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.025,
+   "плач": 0.031,
+   "смех": 0.008,
+   "речь": 0.785,
+   "вздох": 0.01
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.79
+   ],
+   [
+    "Groan",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Music",
+    0.03
+   ],
+   [
+    "Wail, moan",
+    0.03
+   ]
+  ],
+  "utmos": 2.29,
+  "heard": "Уааа, уаа, уаа, уаа! Сегодня утром пошел первый снег.",
+  "match": 0.714,
+  "f0": 265.0,
+  "range": 7.3,
+  "voiced": 0.65,
+  "rate": 2.2,
+  "hf": -18.8,
+  "dur": 4.46
+ },
+ {
+  "name": "e2_s3_hapA",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "6dd52820dcff2f23ce7f7630ceb3b657",
+  "ser1": {
+   "neutral": 0.737,
+   "angry": 0.002,
+   "positive": 0.26,
+   "sad": 0.001,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.766,
+   "вздох": 0.007
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.77
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Female speech, woman speaking",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.02
+   ],
+   [
+    "Male speech, man speaking",
+    0.02
+   ]
+  ],
+  "utmos": 2.9,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 262.0,
+  "range": 7.1,
+  "voiced": 0.55,
+  "rate": 6.8,
+  "hf": -9.3,
+  "dur": 1.48
+ },
+ {
+  "name": "e2_s3_hapB",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "fa7e57819e0b7b985666ddcadf2b4d9d",
+  "ser1": {
+   "neutral": 0.52,
+   "angry": 0.002,
+   "positive": 0.477,
+   "sad": 0.001,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.768,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.77
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.02
+   ],
+   [
+    "Male speech, man speaking",
+    0.02
+   ],
+   [
+    "Finger snapping",
+    0.02
+   ]
+  ],
+  "utmos": 3.01,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 275.0,
+  "range": 7.7,
+  "voiced": 0.55,
+  "rate": 6.8,
+  "hf": -9.1,
+  "dur": 1.48
+ },
+ {
+  "name": "e2_s3_lovA",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "f88a2ff36d67bf4092858f61514feec8",
+  "ser1": {
+   "neutral": 0.994,
+   "angry": 0.001,
+   "positive": 0.005,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.691,
+   "вздох": 0.007
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.69
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Speech synthesizer",
+    0.02
+   ]
+  ],
+  "utmos": 2.79,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 229.0,
+  "range": 5.2,
+  "voiced": 0.58,
+  "rate": 5.6,
+  "hf": -13.1,
+  "dur": 1.8
+ },
+ {
+  "name": "e2_s3_neu",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "87d57a04e9774e7ee0f11b9405b1adc2",
+  "ser1": {
+   "neutral": 0.99,
+   "angry": 0.001,
+   "positive": 0.008,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.759,
+   "вздох": 0.007
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.76
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Female speech, woman speaking",
+    0.02
+   ]
+  ],
+  "utmos": 3.1,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 222.0,
+  "range": 5.5,
+  "voiced": 0.52,
+  "rate": 6.6,
+  "hf": -11.4,
+  "dur": 1.52
+ },
+ {
+  "name": "e2_s3_sadA",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "d635a6de30b4ecdb7fc7d908cb7f7caf",
+  "ser1": {
+   "neutral": 0.996,
+   "angry": 0.002,
+   "positive": 0.001,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.005,
+   "крик": 0.002,
+   "плач": 0.003,
+   "смех": 0.002,
+   "речь": 0.804,
+   "вздох": 0.01
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.8
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Speech synthesizer",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.04
+   ]
+  ],
+  "utmos": 3.47,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 198.0,
+  "range": 4.3,
+  "voiced": 0.57,
+  "rate": 5.0,
+  "hf": -14.4,
+  "dur": 2.02
+ },
+ {
+  "name": "e2_s3_sadB",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "d8f7079bc8d6a748fb147688abb5a099",
+  "ser1": {
+   "neutral": 0.997,
+   "angry": 0.001,
+   "positive": 0.001,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.002,
+   "плач": 0.002,
+   "смех": 0.001,
+   "речь": 0.708,
+   "вздох": 0.011
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.71
+   ],
+   [
+    "Sound effect",
+    0.06
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Speech synthesizer",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ]
+  ],
+  "utmos": 2.83,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 198.0,
+  "range": 4.3,
+  "voiced": 0.57,
+  "rate": 5.0,
+  "hf": -14.1,
+  "dur": 2.02
+ },
+ {
+  "name": "e2_s3_sadC",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "bca3e6986e38c776408b95954bc5e956",
+  "ser1": {
+   "neutral": 0.996,
+   "angry": 0.001,
+   "positive": 0.002,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.656,
+   "вздох": 0.007
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.66
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Finger snapping",
+    0.03
+   ]
+  ],
+  "utmos": 2.99,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 212.0,
+  "range": 3.6,
+  "voiced": 0.58,
+  "rate": 4.8,
+  "hf": -12.9,
+  "dur": 2.08
+ },
+ {
+  "name": "e2_s3_sadD",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "015156469cb766581fe99a693ca44957",
+  "ser1": {
+   "neutral": 0.997,
+   "angry": 0.002,
+   "positive": 0.001,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.001,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.75,
+   "вздох": 0.01
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.75
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Tick",
+    0.03
+   ],
+   [
+    "Female speech, woman speaking",
+    0.03
+   ],
+   [
+    "Narration, monologue",
+    0.02
+   ]
+  ],
+  "utmos": 3.5,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 182.0,
+  "range": 2.7,
+  "voiced": 0.53,
+  "rate": 4.7,
+  "hf": -14.8,
+  "dur": 2.14
+ },
+ {
+  "name": "e2_s3_sadE",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "9d7560873eddafac35505c3c61023d45",
+  "ser1": {
+   "neutral": 0.993,
+   "angry": 0.0,
+   "positive": 0.006,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.795,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.79
+   ],
+   [
+    "Female speech, woman speaking",
+    0.07
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Speech synthesizer",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 3.25,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 246.0,
+  "range": 6.6,
+  "voiced": 0.59,
+  "rate": 5.0,
+  "hf": -14.6,
+  "dur": 2.0
+ },
+ {
+  "name": "e2_s3_scA",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "827409afe0fef8ca05c663862eac1513",
+  "ser1": {
+   "neutral": 0.912,
+   "angry": 0.001,
+   "positive": 0.086,
+   "sad": 0.001,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.001,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.998,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.782,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.78
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 3.0,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 279.0,
+  "range": 4.8,
+  "voiced": 0.56,
+  "rate": 6.8,
+  "hf": -14.4,
+  "dur": 1.48
+ },
+ {
+  "name": "e2_s3_scB",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "d149024ba676adc25a57d93dc19238a7",
+  "ser1": {
+   "neutral": 0.859,
+   "angry": 0.001,
+   "positive": 0.139,
+   "sad": 0.001,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.004,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.995,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.003,
+   "речь": 0.712,
+   "вздох": 0.014
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.71
+   ],
+   [
+    "Sound effect",
+    0.1
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Music",
+    0.03
+   ]
+  ],
+  "utmos": 2.75,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 278.0,
+  "range": 4.7,
+  "voiced": 0.56,
+  "rate": 6.8,
+  "hf": -14.5,
+  "dur": 1.48
+ },
+ {
+  "name": "e2_s3_scC",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "dd64166cbd4477f30f027d724ee491b4",
+  "ser1": {
+   "neutral": 0.815,
+   "angry": 0.001,
+   "positive": 0.182,
+   "sad": 0.001,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.001,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.003,
+   "речь": 0.784,
+   "вздох": 0.005
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.78
+   ],
+   [
+    "Female speech, woman speaking",
+    0.07
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 3.07,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 301.0,
+  "range": 7.2,
+  "voiced": 0.55,
+  "rate": 6.8,
+  "hf": -13.8,
+  "dur": 1.46
+ },
+ {
+  "name": "e2_s3_scD",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "870b9b9b76cbdd34b9fbea7da08ea582",
+  "ser1": {
+   "neutral": 0.991,
+   "angry": 0.0,
+   "positive": 0.008,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.078,
+   "fear": 0.004,
+   "happiness": 0.004,
+   "neutral": 0.914,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.004,
+   "речь": 0.769,
+   "вздох": 0.005
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.77
+   ],
+   [
+    "Speech synthesizer",
+    0.08
+   ],
+   [
+    "Male speech, man speaking",
+    0.08
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 1.48,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 267.0,
+  "range": 4.0,
+  "voiced": 0.52,
+  "rate": 6.7,
+  "hf": -10.3,
+  "dur": 1.5
+ },
+ {
+  "name": "e2_s3_shyA",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "13a44735b3354613fc123c929ff83974",
+  "ser1": {
+   "neutral": 0.994,
+   "angry": 0.001,
+   "positive": 0.005,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.677,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.68
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Female speech, woman speaking",
+    0.03
+   ],
+   [
+    "Plop",
+    0.03
+   ],
+   [
+    "Narration, monologue",
+    0.02
+   ]
+  ],
+  "utmos": 2.75,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 233.0,
+  "range": 4.1,
+  "voiced": 0.57,
+  "rate": 5.6,
+  "hf": -14.3,
+  "dur": 1.8
+ },
+ {
+  "name": "e2_s3_slpA",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "87ebf60d3636e003b9c87d310e5f114d",
+  "ser1": {
+   "neutral": 0.997,
+   "angry": 0.002,
+   "positive": 0.001,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.002,
+   "плач": 0.002,
+   "смех": 0.001,
+   "речь": 0.795,
+   "вздох": 0.009
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.8
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Speech synthesizer",
+    0.06
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Sound effect",
+    0.04
+   ]
+  ],
+  "utmos": 3.37,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 200.0,
+  "range": 4.5,
+  "voiced": 0.57,
+  "rate": 5.0,
+  "hf": -12.7,
+  "dur": 2.0
+ },
+ {
+  "name": "e2_s3_surK",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "3322861a83e1d2c367e45e7f11b5d7e9",
+  "ser1": {
+   "neutral": 0.733,
+   "angry": 0.001,
+   "positive": 0.265,
+   "sad": 0.001,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.002,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.998,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.814,
+   "вздох": 0.012
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.81
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Male speech, man speaking",
+    0.02
+   ]
+  ],
+  "utmos": 3.26,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 264.0,
+  "range": 9.0,
+  "voiced": 0.56,
+  "rate": 6.1,
+  "hf": -11.2,
+  "dur": 1.64
+ },
+ {
+  "name": "e2_s3_whA",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "8af62bac4dca7cb0a3f43e05dcf10679",
+  "ser1": {
+   "neutral": 0.993,
+   "angry": 0.004,
+   "positive": 0.003,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.437,
+   "fear": 0.339,
+   "happiness": 0.218,
+   "neutral": 0.004,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.004,
+   "плач": 0.001,
+   "смех": 0.005,
+   "речь": 0.631,
+   "вздох": 0.008
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.63
+   ],
+   [
+    "Sound effect",
+    0.13
+   ],
+   [
+    "Male speech, man speaking",
+    0.12
+   ],
+   [
+    "Speech synthesizer",
+    0.06
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ]
+  ],
+  "utmos": 1.25,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.01,
+  "rate": 5.5,
+  "hf": -2.5,
+  "dur": 1.82
+ },
+ {
+  "name": "e2_s3_whB",
+  "text": "Сегодня утром пошёл первый снег.",
+  "hash": "2d612a89387bd4459c8ea52c7e707823",
+  "ser1": {
+   "neutral": 0.998,
+   "angry": 0.0,
+   "positive": 0.001,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.7,
+   "fear": 0.027,
+   "happiness": 0.004,
+   "neutral": 0.268,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.002,
+   "смех": 0.004,
+   "речь": 0.755,
+   "вздох": 0.007
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.75
+   ],
+   [
+    "Speech synthesizer",
+    0.15
+   ],
+   [
+    "Male speech, man speaking",
+    0.1
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Slap, smack",
+    0.03
+   ]
+  ],
+  "utmos": 1.33,
+  "heard": "Сегодня утром пошел первый снег.",
+  "match": 1.0,
+  "f0": 227.0,
+  "range": 13.3,
+  "voiced": 0.5,
+  "rate": 5.5,
+  "hf": -7.7,
+  "dur": 1.82
+ },
+ {
+  "name": "e2_s4_angA",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "24046fb2a0d2180f06230799ac7b3e49",
+  "ser1": {
+   "neutral": 0.99,
+   "angry": 0.005,
+   "positive": 0.003,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.004,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.996,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.005,
+   "плач": 0.006,
+   "смех": 0.002,
+   "речь": 0.835,
+   "вздох": 0.008
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.84
+   ],
+   [
+    "Narration, monologue",
+    0.09
+   ],
+   [
+    "Speech synthesizer",
+    0.08
+   ],
+   [
+    "Female speech, woman speaking",
+    0.07
+   ],
+   [
+    "Conversation",
+    0.04
+   ]
+  ],
+  "utmos": 2.67,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 245.0,
+  "range": 9.5,
+  "voiced": 0.62,
+  "rate": 6.1,
+  "hf": -10.7,
+  "dur": 1.8
+ },
+ {
+  "name": "e2_s4_angB",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "dd5c25c039101d453fe94b0f982c3601",
+  "ser1": {
+   "neutral": 0.868,
+   "angry": 0.126,
+   "positive": 0.002,
+   "sad": 0.003,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.998,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.004,
+   "смех": 0.001,
+   "речь": 0.779,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.78
+   ],
+   [
+    "Speech synthesizer",
+    0.09
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "utmos": 2.52,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 205.0,
+  "range": 6.6,
+  "voiced": 0.62,
+  "rate": 6.1,
+  "hf": -10.6,
+  "dur": 1.8
+ },
+ {
+  "name": "e2_s4_angC",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "07c48a7027069a63d7a87638556b5d40",
+  "ser1": {
+   "neutral": 0.929,
+   "angry": 0.036,
+   "positive": 0.017,
+   "sad": 0.017,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.004,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.996,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.006,
+   "плач": 0.011,
+   "смех": 0.001,
+   "речь": 0.865,
+   "вздох": 0.012
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.86
+   ],
+   [
+    "Female speech, woman speaking",
+    0.08
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Speech synthesizer",
+    0.05
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "utmos": 2.58,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 279.0,
+  "range": 13.8,
+  "voiced": 0.66,
+  "rate": 5.7,
+  "hf": -10.9,
+  "dur": 1.94
+ },
+ {
+  "name": "e2_s4_angD",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "b87ae6ca17fd71d26e8a2a6788a9702f",
+  "ser1": {
+   "neutral": 0.981,
+   "angry": 0.015,
+   "positive": 0.001,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.006,
+   "смех": 0.002,
+   "речь": 0.862,
+   "вздох": 0.01
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.86
+   ],
+   [
+    "Female speech, woman speaking",
+    0.07
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Speech synthesizer",
+    0.05
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "utmos": 2.67,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 227.0,
+  "range": 5.9,
+  "voiced": 0.63,
+  "rate": 6.1,
+  "hf": -10.6,
+  "dur": 1.8
+ },
+ {
+  "name": "e2_s4_cryA",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "c095add61ed3862236486916a43125ae",
+  "ser1": {
+   "neutral": 0.997,
+   "angry": 0.001,
+   "positive": 0.002,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.004,
+   "плач": 0.005,
+   "смех": 0.002,
+   "речь": 0.76,
+   "вздох": 0.036
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.76
+   ],
+   [
+    "Female speech, woman speaking",
+    0.08
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Gasp",
+    0.04
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 3.55,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 241.0,
+  "range": 6.8,
+  "voiced": 0.62,
+  "rate": 4.9,
+  "hf": -19.1,
+  "dur": 2.24
+ },
+ {
+  "name": "e2_s4_cryS",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "2b4acf9e4060fc8f6e7eda5c26f04df5",
+  "ser1": {
+   "neutral": 0.797,
+   "angry": 0.005,
+   "positive": 0.195,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.851,
+   "fear": 0.003,
+   "happiness": 0.001,
+   "neutral": 0.144,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.026,
+   "плач": 0.036,
+   "смех": 0.009,
+   "речь": 0.74,
+   "вздох": 0.008
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.74
+   ],
+   [
+    "Wail, moan",
+    0.04
+   ],
+   [
+    "Groan",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Music",
+    0.03
+   ]
+  ],
+  "utmos": 2.48,
+  "heard": "Уа, уа, уа, уа! Он положил книгу на стол и вышел.",
+  "match": 0.778,
+  "f0": 264.0,
+  "range": 8.2,
+  "voiced": 0.66,
+  "rate": 2.3,
+  "hf": -19.0,
+  "dur": 4.72
+ },
+ {
+  "name": "e2_s4_hapA",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "b0f100806b5d5f7aeee9c6f720dd45b0",
+  "ser1": {
+   "neutral": 0.757,
+   "angry": 0.006,
+   "positive": 0.235,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.002,
+   "смех": 0.001,
+   "речь": 0.778,
+   "вздох": 0.005
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.78
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Female speech, woman speaking",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Conversation",
+    0.02
+   ]
+  ],
+  "utmos": 3.4,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 269.0,
+  "range": 6.9,
+  "voiced": 0.59,
+  "rate": 6.5,
+  "hf": -13.5,
+  "dur": 1.68
+ },
+ {
+  "name": "e2_s4_hapB",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "1e82489c343150c86ff1c882c4f34216",
+  "ser1": {
+   "neutral": 0.708,
+   "angry": 0.006,
+   "positive": 0.281,
+   "sad": 0.003,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.001,
+   "речь": 0.809,
+   "вздох": 0.005
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.81
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Female speech, woman speaking",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Conversation",
+    0.02
+   ]
+  ],
+  "utmos": 3.36,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 281.0,
+  "range": 7.7,
+  "voiced": 0.6,
+  "rate": 6.5,
+  "hf": -13.0,
+  "dur": 1.68
+ },
+ {
+  "name": "e2_s4_lovA",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "7c6df9a7d2008bb7213cd5f799a7c36a",
+  "ser1": {
+   "neutral": 0.997,
+   "angry": 0.001,
+   "positive": 0.001,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.004,
+   "смех": 0.001,
+   "речь": 0.706,
+   "вздох": 0.024
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.71
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 3.17,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 232.0,
+  "range": 5.0,
+  "voiced": 0.6,
+  "rate": 5.4,
+  "hf": -17.8,
+  "dur": 2.02
+ },
+ {
+  "name": "e2_s4_neu",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "e373b46fba91cb61107f48c15b45a1b7",
+  "ser1": {
+   "neutral": 0.993,
+   "angry": 0.005,
+   "positive": 0.001,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.004,
+   "смех": 0.002,
+   "речь": 0.778,
+   "вздох": 0.028
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.78
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ],
+   [
+    "Gasp",
+    0.03
+   ]
+  ],
+  "utmos": 3.59,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 229.0,
+  "range": 5.4,
+  "voiced": 0.57,
+  "rate": 6.2,
+  "hf": -16.3,
+  "dur": 1.78
+ },
+ {
+  "name": "e2_s4_sadA",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "a4864312294b80c947219b2c163f05b0",
+  "ser1": {
+   "neutral": 0.997,
+   "angry": 0.002,
+   "positive": 0.0,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.002,
+   "плач": 0.003,
+   "смех": 0.001,
+   "речь": 0.756,
+   "вздох": 0.026
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.76
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Speech synthesizer",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 3.52,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 195.0,
+  "range": 4.8,
+  "voiced": 0.61,
+  "rate": 4.8,
+  "hf": -20.9,
+  "dur": 2.28
+ },
+ {
+  "name": "e2_s4_sadB",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "8b743a0d75c163fb61a0b0cc4d81b19a",
+  "ser1": {
+   "neutral": 0.997,
+   "angry": 0.001,
+   "positive": 0.0,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.003,
+   "плач": 0.004,
+   "смех": 0.001,
+   "речь": 0.547,
+   "вздох": 0.016
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.55
+   ],
+   [
+    "Sound effect",
+    0.14
+   ],
+   [
+    "Music",
+    0.08
+   ],
+   [
+    "Female speech, woman speaking",
+    0.03
+   ],
+   [
+    "Spray",
+    0.02
+   ]
+  ],
+  "utmos": 2.71,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 195.0,
+  "range": 4.8,
+  "voiced": 0.61,
+  "rate": 4.8,
+  "hf": -19.5,
+  "dur": 2.28
+ },
+ {
+  "name": "e2_s4_sadC",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "aee2ca90bab8c39d569e15ef0dc4fb46",
+  "ser1": {
+   "neutral": 0.996,
+   "angry": 0.002,
+   "positive": 0.001,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.003,
+   "смех": 0.001,
+   "речь": 0.725,
+   "вздох": 0.017
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.72
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Speech synthesizer",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 3.21,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 219.0,
+  "range": 3.7,
+  "voiced": 0.62,
+  "rate": 4.6,
+  "hf": -19.7,
+  "dur": 2.38
+ },
+ {
+  "name": "e2_s4_sadD",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "ec905626f77570fa11bd1206b6211190",
+  "ser1": {
+   "neutral": 0.994,
+   "angry": 0.003,
+   "positive": 0.0,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.003,
+   "смех": 0.001,
+   "речь": 0.733,
+   "вздох": 0.018
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.73
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Female speech, woman speaking",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.02
+   ],
+   [
+    "Speech synthesizer",
+    0.02
+   ]
+  ],
+  "utmos": 3.52,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 182.0,
+  "range": 3.3,
+  "voiced": 0.62,
+  "rate": 4.6,
+  "hf": -21.4,
+  "dur": 2.4
+ },
+ {
+  "name": "e2_s4_sadE",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "77e8595e3b604553747e54840d183e30",
+  "ser1": {
+   "neutral": 0.997,
+   "angry": 0.001,
+   "positive": 0.001,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.004,
+   "плач": 0.004,
+   "смех": 0.001,
+   "речь": 0.735,
+   "вздох": 0.026
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.73
+   ],
+   [
+    "Female speech, woman speaking",
+    0.07
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Gasp",
+    0.03
+   ]
+  ],
+  "utmos": 3.45,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 247.0,
+  "range": 7.6,
+  "voiced": 0.6,
+  "rate": 4.9,
+  "hf": -20.4,
+  "dur": 2.26
+ },
+ {
+  "name": "e2_s4_scA",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "531c9c0f11ee3539a9e6b778c7a8289f",
+  "ser1": {
+   "neutral": 0.938,
+   "angry": 0.009,
+   "positive": 0.051,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.004,
+   "плач": 0.004,
+   "смех": 0.003,
+   "речь": 0.786,
+   "вздох": 0.01
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.79
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ],
+   [
+    "Throat clearing",
+    0.03
+   ]
+  ],
+  "utmos": 3.06,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 279.0,
+  "range": 4.4,
+  "voiced": 0.61,
+  "rate": 6.5,
+  "hf": -17.9,
+  "dur": 1.7
+ },
+ {
+  "name": "e2_s4_scB",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "a9d10360a351e34ae465a4e1b59c57c1",
+  "ser1": {
+   "neutral": 0.831,
+   "angry": 0.003,
+   "positive": 0.163,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.004,
+   "плач": 0.006,
+   "смех": 0.004,
+   "речь": 0.652,
+   "вздох": 0.009
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.65
+   ],
+   [
+    "Sound effect",
+    0.09
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ]
+  ],
+  "utmos": 2.73,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 278.0,
+  "range": 4.5,
+  "voiced": 0.61,
+  "rate": 6.5,
+  "hf": -17.4,
+  "dur": 1.7
+ },
+ {
+  "name": "e2_s4_scC",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "3288db8a0b3a06ce9624153814fdb306",
+  "ser1": {
+   "neutral": 0.703,
+   "angry": 0.012,
+   "positive": 0.271,
+   "sad": 0.014,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.998,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.003,
+   "смех": 0.002,
+   "речь": 0.814,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.81
+   ],
+   [
+    "Female speech, woman speaking",
+    0.06
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Conversation",
+    0.03
+   ]
+  ],
+  "utmos": 2.93,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 302.0,
+  "range": 7.2,
+  "voiced": 0.59,
+  "rate": 6.7,
+  "hf": -16.7,
+  "dur": 1.64
+ },
+ {
+  "name": "e2_s4_scD",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "4273d0b3e776af878fd440e0d79ad281",
+  "ser1": {
+   "neutral": 0.988,
+   "angry": 0.001,
+   "positive": 0.009,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.003,
+   "disgust": 0.0,
+   "enthusiasm": 0.001,
+   "fear": 0.007,
+   "happiness": 0.001,
+   "neutral": 0.988,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.005,
+   "плач": 0.005,
+   "смех": 0.003,
+   "речь": 0.773,
+   "вздох": 0.011
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.77
+   ],
+   [
+    "Speech synthesizer",
+    0.13
+   ],
+   [
+    "Male speech, man speaking",
+    0.11
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Sound effect",
+    0.04
+   ]
+  ],
+  "utmos": 1.4,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 265.0,
+  "range": 3.9,
+  "voiced": 0.59,
+  "rate": 6.4,
+  "hf": -14.1,
+  "dur": 1.72
+ },
+ {
+  "name": "e2_s4_shyA",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "ddd689f6490edb1aea051810244fac7b",
+  "ser1": {
+   "neutral": 0.998,
+   "angry": 0.001,
+   "positive": 0.001,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.004,
+   "смех": 0.001,
+   "речь": 0.677,
+   "вздох": 0.026
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.68
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Gasp",
+    0.03
+   ]
+  ],
+  "utmos": 3.07,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 237.0,
+  "range": 4.1,
+  "voiced": 0.61,
+  "rate": 5.4,
+  "hf": -19.1,
+  "dur": 2.04
+ },
+ {
+  "name": "e2_s4_slpA",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "9f4e60f7679818ff6eb1f7347ffe8aa3",
+  "ser1": {
+   "neutral": 0.994,
+   "angry": 0.004,
+   "positive": 0.001,
+   "sad": 0.001,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.002,
+   "плач": 0.003,
+   "смех": 0.001,
+   "речь": 0.77,
+   "вздох": 0.029
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.77
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Gasp",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 3.73,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 202.0,
+  "range": 4.1,
+  "voiced": 0.6,
+  "rate": 4.9,
+  "hf": -19.5,
+  "dur": 2.26
+ },
+ {
+  "name": "e2_s4_surK",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "4e11651ba07096a647ded31ef3fb1859",
+  "ser1": {
+   "neutral": 0.792,
+   "angry": 0.008,
+   "positive": 0.188,
+   "sad": 0.012,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.005,
+   "смех": 0.002,
+   "речь": 0.817,
+   "вздох": 0.008
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.82
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Female speech, woman speaking",
+    0.04
+   ],
+   [
+    "Conversation",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.02
+   ]
+  ],
+  "utmos": 3.5,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 269.0,
+  "range": 10.4,
+  "voiced": 0.61,
+  "rate": 5.9,
+  "hf": -15.3,
+  "dur": 1.88
+ },
+ {
+  "name": "e2_s4_whA",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "0d70ec0d3405a0bd419c500e750c615a",
+  "ser1": {
+   "neutral": 0.832,
+   "angry": 0.158,
+   "positive": 0.006,
+   "sad": 0.003,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.002,
+   "fear": 0.842,
+   "happiness": 0.154,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.003,
+   "крик": 0.004,
+   "плач": 0.012,
+   "смех": 0.005,
+   "речь": 0.496,
+   "вздох": 0.08
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.5
+   ],
+   [
+    "Grunt",
+    0.08
+   ],
+   [
+    "Gasp",
+    0.08
+   ],
+   [
+    "Sound effect",
+    0.08
+   ],
+   [
+    "Male speech, man speaking",
+    0.07
+   ]
+  ],
+  "utmos": 1.24,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 5.4,
+  "hf": -5.7,
+  "dur": 2.04
+ },
+ {
+  "name": "e2_s4_whB",
+  "text": "Он положил книгу на стол и вышел.",
+  "hash": "09a246695f1ebb7109e58f890f5b96cf",
+  "ser1": {
+   "neutral": 0.994,
+   "angry": 0.002,
+   "positive": 0.001,
+   "sad": 0.003,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.001,
+   "happiness": 0.0,
+   "neutral": 0.998,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.008,
+   "плач": 0.007,
+   "смех": 0.003,
+   "речь": 0.648,
+   "вздох": 0.031
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.65
+   ],
+   [
+    "Male speech, man speaking",
+    0.07
+   ],
+   [
+    "Sound effect",
+    0.06
+   ],
+   [
+    "Speech synthesizer",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ]
+  ],
+  "utmos": 1.35,
+  "heard": "Он положил книгу на стол и вышел.",
+  "match": 1.0,
+  "f0": 238.0,
+  "range": 4.8,
+  "voiced": 0.55,
+  "rate": 5.4,
+  "hf": -11.6,
+  "dur": 2.02
+ },
+ {
+  "name": "e2_snd_cry",
+  "text": "",
+  "hash": "2c3b547faa28656ef53022e7045be242",
+  "ser1": {
+   "neutral": 0.62,
+   "angry": 0.002,
+   "positive": 0.375,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.094,
+   "fear": 0.001,
+   "happiness": 0.905,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.036,
+   "плач": 0.19,
+   "смех": 0.015,
+   "речь": 0.051,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Wail, moan",
+    0.19
+   ],
+   [
+    "Sound effect",
+    0.12
+   ],
+   [
+    "Groan",
+    0.05
+   ],
+   [
+    "Speech",
+    0.05
+   ],
+   [
+    "Yell",
+    0.04
+   ]
+  ],
+  "utmos": 1.37,
+  "f0": 280.0,
+  "range": 4.1,
+  "voiced": 0.75,
+  "rate": null,
+  "hf": -29.6,
+  "dur": 2.06
  }
 ]
