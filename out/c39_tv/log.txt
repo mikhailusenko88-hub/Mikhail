@@ -2,23 +2,23 @@
 [scene   0.0s] slat wall panels lamellas 110 faces 660
 [scene   0.1s] asset ceramic_vase_02 size 0.22 x 0.22 x 0.31 objs 1
 [scene   0.1s] asset ceramic_vase_03 size 0.11 x 0.11 x 0.41 objs 1
-[scene   0.1s] asset potted_plant_04 size 0.17 x 0.18 x 0.27 objs 4
-[scene   0.5s] asset potted_plant_01 size 0.59 x 0.63 x 1.35 objs 4
-[scene   0.7s] asset modern_arm_chair_01 size 0.82 x 0.99 x 1.02 objs 1
-[scene   0.7s] objects 61 scene built
+[scene   0.2s] asset potted_plant_04 size 0.17 x 0.18 x 0.27 objs 4
+[scene   0.7s] asset potted_plant_01 size 0.59 x 0.63 x 1.35 objs 4
+[scene   0.8s] asset modern_arm_chair_01 size 0.82 x 0.99 x 1.02 objs 1
+[scene   0.9s] objects 61 scene built
 Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
 Saved: '/home/runner/work/Mikhail/Mikhail/out/c39_tv/_sky.exr'
-Time: 00:01.57 (Saving: 00:00.00)
+Time: 00:02.05 (Saving: 00:00.00)
 
-[scene   2.2s] sky irradiance [ 9.661 10.549 12.803] sun strength 43.136
+[scene   2.9s] sky irradiance [ 9.661 10.549 12.803] sun strength 43.136
 Saved: '/home/runner/work/Mikhail/Mikhail/out/c39_tv/_pre.exr'
-Time: 00:03.60 (Saving: 00:00.00)
+Time: 00:05.21 (Saving: 00:00.00)
 
-[scene   6.3s] white pixels 5092 illuminant [1.263 0.957 0.655] wb gains [0.828 1.019 1.321] wall Y 0.4129 exposure 1.35
+[scene   8.7s] white pixels 5092 illuminant [1.265 0.956 0.653] wb gains [0.827 1.019 1.324] wall Y 0.4149 exposure 1.34
 Saved: '/home/runner/work/Mikhail/Mikhail/out/c39_tv/c39_tv.jpg'
-Time: 09:56.49 (Saving: 00:00.23)
+Time: 13:30.76 (Saving: 00:00.26)
 
-[scene 602.8s] final render 596.5s /home/runner/work/Mikhail/Mikhail/out/c39_tv/c39_tv.jpg
-[scene 602.8s] done
+[scene 819.5s] final render 810.8s /home/runner/work/Mikhail/Mikhail/out/c39_tv/c39_tv.jpg
+[scene 819.5s] done
 
 Blender quit
