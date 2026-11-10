@@ -27,3 +27,5 @@
 | shorts | 2026-11-10 | 1 | USA vs Korea vs Colombia | https://youtube.com/shorts/T8iLBd0E1Ag | |
 | 21 | 2026-11-10 | 2 | S2 RACE 8/68 | https://youtu.be/s2X14FRQ2X0 | public |
 | shorts | 2026-11-10 | 2 | Russia vs Türkiye vs France | https://youtube.com/shorts/iqgHBXZ6LQ0 | |
+| 22 | 2026-11-10 | 3 | S2 RACE 9/68 | https://youtu.be/YVtSvMTiR-Y | public |
+| shorts | 2026-11-10 | 3 | UK vs Germany vs Italy | https://youtube.com/shorts/WIWliSCdx6o | |
