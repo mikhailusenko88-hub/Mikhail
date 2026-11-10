@@ -59,6 +59,7 @@ for f in files:
                 r["ser2"] = {str(L2[i]): round(float(p2[i]), 3) for i in range(len(p2))}
             pa = torch.sigmoid(ast(**ast_fe(x, sampling_rate=16000, return_tensors="pt")).logits)[0].numpy()
             r["ast"] = {g: round(float(max(pa[lab2id[l]] for l in ls if l in lab2id)), 3) for g, ls in AST_G.items()}
+            r["ast_top"] = [[ast.config.id2label[int(i)], round(float(pa[i]), 2)] for i in np.argsort(-pa)[:5]]
             r["utmos"] = round(float(vc.utmos_model()(torch.from_numpy(x)[None], 16000)), 2)
         if text:
             heard = vc.whisper_model().transcribe(f, language="ru", fp16=False)["text"].strip(); a, b = vc.norm_words(text), vc.norm_words(heard)
