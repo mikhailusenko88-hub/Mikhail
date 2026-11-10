@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-10 слот 1: cities №7 https://youtube.com/shorts/fXjgrOsRP88, за 63 с
+ВЫЛОЖЕНО 2026-11-10 слот 2: cars №6 https://youtube.com/shorts/_5EqS-RCHKM, за 61 с
 
 {
- "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №7 #shorts",
- "description": "🏆 Oʻtgan hafta chempioni: Xiva · Чемпион прошлой недели: Хива\n\n⏳ Finalgacha 5 kun · До финала 5 дней\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
+ "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №6 #shorts",
+ "description": "🏆 Oʻtgan hafta chempioni: Kia K5 · Чемпион прошлой недели: Kia K5\n\n⏳ Finalgacha 5 kun · До финала 5 дней\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,34 +11,35 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "toshkent",
-  "samarqand",
-  "buxoro",
-  "namangan",
-  "andijon",
-  "fargʻona",
-  "города узбекистана",
-  "shaharlar"
+  "mashina",
+  "cobalt",
+  "gentra",
+  "nexia",
+  "damas",
+  "malibu",
+  "chevrolet",
+  "машины узбекистана"
  ]
 }
 
 --- журнал (время Ташкента) ---
-11:35:32 режим publish, событие workflow_dispatch
-11:35:32 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-11:35:44 комментарии: роликов просмотрено: 14, комментариев: 0
-11:35:44 Тема: гонка городов. Подбираю трассу и заезд…
-11:35:46   трасса 1 (split, tunnel, funnel, stairs, bumpy): победа на 33.9 с, смен лидера 18, финишировали 4, расчёт 2 с — не подходит
-11:35:48   трасса 2 (tunnel, tramps, stairs, split): победа на 23.4 с, смен лидера 17, финишировали 11, расчёт 1 с
-11:35:50   трасса 3: никто не доехал за 37 с — не подходит
-11:35:52   трасса 4 (split, tramps, pegs, hammers, bumpy): победа на 30.5 с, смен лидера 14, финишировали 2, расчёт 2 с
-11:35:52 Рисую трассу…
-11:35:53 Рисую кадры: заезд 26 с + финал 6 с…
-11:35:53   кадр 0/784, 8 с
-11:36:05   кадр 300/784, 21 с
-11:36:17   кадр 600/784, 33 с
-11:36:30 Свожу звук…
-11:36:31 Готово за 46 с: победил Samarqand, ролик 32 с
-11:36:31 ролик готов: 32 с, 21 МБ, сборка 59 с; победил Samarqand, топ-3: Samarqand, Toshkent, Termiz
-11:36:34 YouTube: https://youtube.com/shorts/fXjgrOsRP88
-11:36:35 в плейлисте
-11:36:35 статус: public uploaded
+15:35:36 режим publish, событие workflow_dispatch
+15:35:37 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+15:35:50 комментарии: роликов просмотрено: 15, комментариев: 0
+15:35:50 Тема: гонка машин. Подбираю трассу и заезд…
+15:35:51   трасса 1: никто не доехал за 37 с — не подходит
+15:35:53   трасса 2 (bumpers, bumpy, tramps, split, hammers): победа на 31.0 с, смен лидера 5, финишировали 3, расчёт 1 с
+15:35:55   трасса 3 (hammers, bumpy, tunnel, funnel, stairs): победа на 33.9 с, смен лидера 12, финишировали 2, расчёт 2 с — не подходит
+15:35:56   трасса 4 (stairs, bumpy, hammers, tunnel): победа на 37.0 с, смен лидера 10, финишировали 3, расчёт 2 с — не подходит
+15:35:57   трасса 5 (tramps, stairs, split, tunnel): победа на 25.4 с, смен лидера 16, финишировали 8, расчёт 1 с
+15:35:57 Рисую трассу…
+15:35:58 Рисую кадры: заезд 28 с + финал 6 с…
+15:35:58   кадр 0/844, 8 с
+15:36:08   кадр 300/844, 18 с
+15:36:19   кадр 600/844, 29 с
+15:36:32 Свожу звук…
+15:36:33 Готово за 43 с: победил Tico, ролик 34 с
+15:36:33 ролик готов: 34 с, 22 МБ, сборка 56 с; победил Tico, топ-3: Tico, Cobalt, Malibu
+15:36:37 YouTube: https://youtube.com/shorts/_5EqS-RCHKM
+15:36:37 в плейлисте
+15:36:38 статус: public uploaded
