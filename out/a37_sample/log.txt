@@ -10,17 +10,17 @@
 [scene   1.1s] objects 76 scene built
 Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
 Saved: '/home/runner/work/Mikhail/Mikhail/out/a37_sample/_sky.exr'
-Time: 00:02.38 (Saving: 00:00.00)
+Time: 00:02.42 (Saving: 00:00.00)
 
 [scene   3.5s] sky irradiance [ 9.661 10.549 12.803] sun strength 43.136
 Saved: '/home/runner/work/Mikhail/Mikhail/out/a37_sample/_pre.exr'
-Time: 00:09.04 (Saving: 00:00.00)
+Time: 00:08.73 (Saving: 00:00.00)
 
-[scene  13.4s] white pixels 5099 illuminant [1.31  0.946 0.626] wb gains [0.799 1.023 1.366] wall Y 0.4239 exposure 1.31
+[scene  13.2s] white pixels 5099 illuminant [1.308 0.946 0.626] wb gains [0.8   1.023 1.366] wall Y 0.4196 exposure 1.32
 Saved: '/home/runner/work/Mikhail/Mikhail/out/a37_sample/a37_sample.jpg'
-Time: 27:34.68 (Saving: 00:00.33)
+Time: 18:56.28 (Saving: 00:00.33)
 
-[scene 1668.1s] final render 1654.7s /home/runner/work/Mikhail/Mikhail/out/a37_sample/a37_sample.jpg
-[scene 1668.1s] done
+[scene 1149.5s] final render 1136.3s /home/runner/work/Mikhail/Mikhail/out/a37_sample/a37_sample.jpg
+[scene 1149.5s] done
 
 Blender quit
