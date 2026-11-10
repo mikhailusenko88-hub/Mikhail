@@ -1,16 +1,18 @@
 # запросы покупателя: поисковик|запрос
+google|site:nashdekor.ru
 google|Наш декор
 google|наш декор панели спб
-google|artdec спб
-google|артдек купить спб
-google|где купить artdec в санкт-петербурге
 google|artdec a907
 google|artdec a503
-google|a005 плинтус artdec
 google|реечные панели под покраску купить спб
 google|плинтус с подсветкой купить спб
-google|потолочный плинтус под led подсветку спб
-google|плинтус скрытого монтажа купить спб
-google|молдинги из дюрополимера купить спб
-google|реечные панели для тв зоны купить спб
-google|где купить реечные панели в санкт-петербурге
+google|плинтус дюрополимер спб
+google|молдинги для стен купить спб
+google|стеновые панели купить в спб
+bing|site:nashdekor.ru
+bing|nashdekor.ru
+bing|Наш декор СПб
+bing|artdec a907
+bing|реечные панели под покраску купить спб
+bing|плинтус дюрополимер спб
+ddg|site:nashdekor.ru
