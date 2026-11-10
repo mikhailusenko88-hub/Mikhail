@@ -1,5 +1,3 @@
-http://89.126.192.214:8080/mebel/bz4aaoig/ -> 200 19388 text/html
+http://89.126.192.214:8080/mebel/bz4aaoig/ -> 200 19560 text/html
 <title>БАРС-озвучка — пробы</title>
 79
-http://89.126.192.214:8080/mebel/bz4aaoig/d-b3.mp3 -> 200 254790 audio/mpeg
-http://89.126.192.214:8080/mebel/bz4aaoig/n4-stalo.mp3 -> 200 19480 audio/mpeg
