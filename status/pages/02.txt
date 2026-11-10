@@ -1,6 +1,51 @@
-URL: https://78.mchs.gov.ru/glavnoe-upravlenie/sily-i-sredstva/ispytatelnaya-pozharnaya-laboratoriya
-КОД: ошибка: <urlopen error timed out>
+URL: https://ipl-spb.ru/lab.html
+КОД: 200
 
-
+ИСПЫТАТЕЛЬНАЯ ПОЖАРНАЯ ЛАБОРАТОРИЯ - Санкт-Петербург 
+ Главная 
+ Новости 
+ История создания 
+ Б.В.Мегорский 
+ Аккредитация и свидетельства 
+ Экспертные исследования 
+ Технические возможности 
+ Аттестованные эксперты 
+ Руководство лаборатории 
+ Вакансии 
+ Услуги для юридических и физических лиц 
+ Орган инспекции 
+ Статьи 
+ Образцы документов 
+ схема проезда 
+ График работы 
+ Контакты, реквизиты 
+ Полезные ссылки 
+ Испытательная Пожарная Лаборатории (ИПЛ)
+ по г. Санкт-Петербургу 
+ ipl.spb@ipl.78.mchs.gov.ru 
+ ФГБУ «СУДЕБНО-ЭКСПЕРТНОЕ УЧРЕЖДЕНИЕ ФЕДЕРАЛЬНОЙ ПРОТИВОПОЖАРНОЙ СЛУЖБЫ 
+ «ИСПЫТАТЕЛЬНАЯ ПОЖАРНАЯ ЛАБОРАТОРИЯ» ПО ГОРОДУ САНКТ-ПЕТЕРБУРГУ» 
+ 197046, Санкт-Петербург, ул. Пеньковая, д. 6
+ т/ф: (812) 230-56-17
 
 ССЫЛКИ:
+articles.html
+bosses.html
+contact.html
+doc.html
+exp.html
+expert.html
+expertiza.html
+files/2.css
+history.html
+index.html
+lab.html
+links.html
+mailto:ipl.spb@ipl.78.mchs.gov.ru
+map.html
+megorsky.html
+news.html
+org_insp.html
+tech.html
+usl.html
+work.html
