@@ -1,0 +1,2 @@
+# имя  команда: "py script.py" — обычный питон, иначе — аргументы для scene.py в Blender
+probe py probe.py
