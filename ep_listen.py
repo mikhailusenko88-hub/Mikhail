@@ -30,7 +30,11 @@ def rutube_list():
         if n and (v.get("duration") or 0) > 100 and n not in eps: eps[n] = v
     return eps
 mp4 = "/tmp/ep.mp4"; src = ""
-if arg.startswith("url:"):
+if arg.startswith("file:"):
+    # звук уже лежит в ветке (записан с YouTube в браузере Мака): file:<путь>|<номер серии>|<название>
+    u, n, title = (arg[5:].split("|") + ["0", ""])[:3]; n = int(n or 0); title = title or f"серия {n} (YouTube)"
+    import shutil as _sh; _sh.copy(u, mp4); src = "YouTube (запись с Мака)"
+elif arg.startswith("url:"):
     # звук/видео по прямой ссылке (например, со своего сервера): url:<ссылка>|<номер серии>|<название>
     u, n, title = (arg[4:].split("|") + ["0", ""])[:3]; n = int(n or 0); title = title or f"серия {n} (звук с YouTube через свой сервер)"
     import time
@@ -76,7 +80,7 @@ else:
         sh(["yt-dlp", "-q", "-f", fmt, "-o", mp4, "--force-overwrites", eps[n].get("video_url")])
         if os.path.exists(mp4): src = "rutube"; break
 if not os.path.exists(mp4): print("не скачалась", arg); sys.exit(1)
-name = f"ep{n:02d}" + ("yt" if arg.startswith(("yt", "url:")) else ""); D = f"ep/{name}"; os.makedirs(D, exist_ok=True)
+name = f"ep{n:02d}" + ("yt" if arg.startswith(("yt", "url:", "file:")) else ""); D = f"ep/{name}"; os.makedirs(D, exist_ok=True)
 v = {"title": title}
 print("серия", n, title, "| источник:", src, flush=True)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", mp4, "-vn", "-ac", "1", "-ar", "16000", "/tmp/a16.wav"], check=True)
