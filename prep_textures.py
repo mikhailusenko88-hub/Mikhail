@@ -78,6 +78,11 @@ for decor, c in CFG['decors'].items():
                    'mean_bgr': [round(float(v), 1) for v in res.reshape(-1, 3).mean(0, dtype=np.float64)]}
     print('decor', decor, made[decor])
 json.dump(made, open('assets/decor/made.json', 'w'), indent=1)
+if 'lab' in ARGS:                                   # уменьшенные текстуры декоров — для схем с размерами
+    os.makedirs(ARGS['lab'], exist_ok=True)
+    for decor in made:
+        t = cv2.imread(f'assets/decor/{decor}_diff.jpg')
+        cv2.imwrite(f"{ARGS['lab']}/decor_{decor}.jpg", cv2.resize(t, (1536, 1536), interpolation=cv2.INTER_AREA), [cv2.IMWRITE_JPEG_QUALITY, 90])
 
 if 'lab' in ARGS:
     os.makedirs(ARGS['lab'], exist_ok=True)

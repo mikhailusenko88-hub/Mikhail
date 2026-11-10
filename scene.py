@@ -22,6 +22,7 @@ SEED = int(A.get('seed', 7))
 EV = float(A.get('ev', 0))
 SUN_RATIO = float(A.get('sun', 1.8))
 NOISE = float(A.get('noise', 0.03))
+NEUTRAL = ('wall', 'ceil')        # по каким объектам меряем баланс белого (сцена может сузить список)
 ROOT = os.path.abspath('.')
 OUT = f'{ROOT}/out/{NAME}'
 os.makedirs(OUT, exist_ok=True)
@@ -365,6 +366,87 @@ def slat_wall(name, x0, x1, z_top, y_wall, m_wood, m_black, zbot=None, step=0.04
     return ob
 
 
+def reeded_wall(name, x0, x1, z_top, y_wall, mat, zbot=None, pitch=0.020, t_min=0.00822, t_max=0.012, seg=16):
+    """Панель A910 «волна»: полукруглые валики шагом 20 мм (9 на панели 180 мм), толщина 8,2…12 мм. Лицом к −Y."""
+    zb = zbot or (lambda x: 0.0)
+    h = t_max - t_min
+    rr = ((pitch / 2) ** 2 + h * h) / (2 * h)
+    n = int(math.ceil((x1 - x0) / pitch - 1e-6))
+    V, F = [], []
+    for i in range(n):
+        xa = x0 + i * pitch
+        xb = min(xa + pitch, x1)
+        base = len(V)
+        cnt = 0
+        for k in range(seg + 1):
+            x = xa + pitch * k / seg
+            if x > xb + 1e-9:
+                break
+            t = t_min + math.sqrt(max(0.0, rr * rr - (x - xa - pitch / 2) ** 2)) - (rr - h)
+            z0 = zb(min(max(x, xa + 1e-6), xb - 1e-6))
+            if z0 >= z_top - 1e-4:
+                z0 = z_top
+            V.append((x, y_wall - t, z0))
+            V.append((x, y_wall - t, z_top))
+            cnt += 1
+        for k in range(cnt - 1):
+            if V[base + 2 * k][2] >= z_top - 1e-4 and V[base + 2 * k + 2][2] >= z_top - 1e-4:
+                continue
+            F.append((base + 2 * k, base + 2 * k + 2, base + 2 * k + 3, base + 2 * k + 1))
+    ob = make_obj(name, V, F, [mat], smooth=[True] * len(F))
+    log('reeded wall', name, 'ribs', n, 'faces', len(F))
+    return ob
+
+
+A703 = [[0.0, 6.99], [9.97, 15.0], [80.0, 15.0], [80.0, 9.82], [65.01, 9.82], [65.01, 0.0], [60.92, 0.0], [60.73, 0.57], [60.11, 0.93],
+        [59.41, 0.74], [59.17, 0.47], [59.04, 0.0], [54.78, 0.0], [54.78, 9.82], [13.28, 9.79], [12.37, 9.54], [11.57, 9.08],
+        [10.66, 8.05], [10.3, 7.2], [10.17, 6.25], [10.17, 0.0], [5.97, 0.0], [5.7, 0.66], [5.16, 0.93], [4.45, 0.74], [4.16, 0.36],
+        [4.09, 0.0], [0.0, 0.0]]      # контур сечения плинтуса A703: [от верха вниз, мм; толщина от стены, мм]
+PL_FACE = [(0.015, 0.0), (0.015, 0.07003), (0.00699, 0.080), (0.0, 0.080)]   # видимая часть: (вылет от стены, высота)
+
+
+def plinth_run(name, p0, p1, normal, mat, miter0=False, miter1=False):
+    """Плинтус A703 вдоль стены от p0 до p1 (точки на полу у стены), normal — в комнату. miter — запил 45° во внутренний угол."""
+    p0, p1, nrm = Vector((p0[0], p0[1], 0)), Vector((p1[0], p1[1], 0)), Vector((normal[0], normal[1], 0)).normalized()
+    d = (p1 - p0).normalized()
+    V, F = [], []
+    for (dep, z) in PL_FACE:
+        a = p0 + nrm * dep + d * (dep if miter0 else 0.0)
+        b = p1 + nrm * dep - d * (dep if miter1 else 0.0)
+        V.append((a.x, a.y, z))
+        V.append((b.x, b.y, z))
+    flip = d.cross(Vector((0, 0, 1))).dot(nrm) < 0
+    for k in range(len(PL_FACE) - 1):
+        q = (2 * k, 2 * k + 1, 2 * k + 3, 2 * k + 2)
+        F.append(q if not flip else q[::-1])
+    return make_obj(name, V, F, [mat])
+
+
+def plinth_piece(name, loc, rot, length, mat):
+    """Отрезок плинтуса лежит лицом вверх, виден торец с кабель-каналом."""
+    pts = [(p[0] / 1000.0, p[1] / 1000.0) for p in A703]
+    n = len(pts)
+    V = [(0.0, u, t) for (u, t) in pts] + [(length, u, t) for (u, t) in pts]
+    F = [tuple(range(n)), tuple(reversed(range(n, 2 * n)))]
+    for k in range(n):
+        j = (k + 1) % n
+        F.append((k, n + k, n + j, j))
+    ob = make_obj(name, V, F, [mat])
+    try:
+        ob.data.validate()
+        import bmesh
+        bm = bmesh.new()
+        bm.from_mesh(ob.data)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(ob.data)
+        bm.free()
+    except Exception as e:  # noqa
+        log('plinth piece normals', e)
+    ob.location = loc
+    ob.rotation_euler = (0, 0, R(rot))
+    return ob
+
+
 def curtain(name, x, y0, y1, z0, z1, mat, fold=0.115, amp=0.032, seed=1):
     rnd = random.Random(seed)
     ph1, ph2 = rnd.random() * 6.28, rnd.random() * 6.28
@@ -577,8 +659,12 @@ def lum(a):
     return 0.2126 * a[..., 0] + 0.7152 * a[..., 1] + 0.0722 * a[..., 2]
 
 
-def calibrate(world, sun, sun_dir, neutral_prefixes=('wall', 'ceil'), lamps=()):
-    """1) сила солнца относительно неба, 2) баланс белого по белым стенам, 3) экспозиция."""
+def calibrate(world, sun, sun_dir, neutral_prefixes=('wall', 'ceil'), lamps=(), cal_cam=None):
+    """1) сила солнца относительно неба, 2) баланс белого по белым стенам, 3) экспозиция.
+    cal_cam — общий план сцены: по нему меряем свет, даже если снимаем крупный план."""
+    final_cam = scene.camera
+    if cal_cam is not None:
+        scene.camera = cal_cam
     cam_keep = scene.camera
     # --- замер освещённости от неба на открытой горизонтальной площадке
     pm = mat_simple('probe', (1, 1, 1, 1), rough=1.0)
@@ -648,6 +734,7 @@ def calibrate(world, sun, sun_dir, neutral_prefixes=('wall', 'ceil'), lamps=()):
     log('white pixels', int(mask.sum()), 'illuminant', ill.round(3), 'wb gains', gains.round(3), 'wall Y', round(y_ref, 4), 'exposure', round(ev, 2))
     for ld, k in lamps:
         ld.energy = k * y_ref
+    scene.camera = final_cam
     return y_ref
 
 
@@ -806,6 +893,74 @@ def table_lamp(x, y, z, lamps):
     lamps.append((ld, float(A.get('lamp', 5.0))))
 
 
+def panel_piece(name, loc, rot, length, step=0.040, lam_w=0.0248, total_t=0.012, base_t=0.0042, n=3):
+    """Отрезок реечной панели (3 ламели на чёрной основе) лежит лицом вверх: виден торец."""
+    m_wood = bpy.data.materials.get('decor_' + DECOR) or mat_decor(DECOR)
+    m_black = bpy.data.materials.get('pan_black') or mat_simple('pan_black', (0.007, 0.007, 0.008, 1), rough=0.8,
+                                                                **{'Specular IOR Level': 0.25})
+    w = n * step
+    V, F, FM, UV, JIT = [], [], [], [], []
+
+    def face(pts, mat, uv=None, j=0.5):
+        k = len(V)
+        V.extend(pts)
+        F.append(tuple(range(k, k + len(pts))))
+        FM.append(mat)
+        UV.append(uv or [(0, 0)] * len(pts))
+        JIT.append(j)
+
+    L = length
+    # основа: коробка 0..w × 0..L × 0..base_t (ось X — поперёк, Y — вдоль)
+    face([(0, 0, 0), (0, L, 0), (w, L, 0), (w, 0, 0)], 1)
+    face([(0, 0, base_t), (w, 0, base_t), (w, L, base_t), (0, L, base_t)], 1)
+    face([(0, 0, 0), (w, 0, 0), (w, 0, base_t), (0, 0, base_t)], 1)
+    face([(w, L, 0), (0, L, 0), (0, L, base_t), (w, L, base_t)], 1)
+    face([(0, L, 0), (0, 0, 0), (0, 0, base_t), (0, L, base_t)], 1)
+    face([(w, 0, 0), (w, L, 0), (w, L, base_t), (w, 0, base_t)], 1)
+    for i in range(n):
+        xl = i * step + (step - lam_w) / 2
+        xr = xl + lam_w
+        u0, v0, j = random.random(), random.random(), random.random()
+        uv = [(u0, v0), (u0 + lam_w, v0), (u0 + lam_w, v0 + L), (u0, v0 + L)]
+        face([(xl, 0, total_t), (xr, 0, total_t), (xr, L, total_t), (xl, L, total_t)], 0, uv, j)
+        face([(xl, 0, base_t), (xr, 0, base_t), (xr, 0, total_t), (xl, 0, total_t)], 1)
+        face([(xr, L, base_t), (xl, L, base_t), (xl, L, total_t), (xr, L, total_t)], 1)
+        face([(xl, L, base_t), (xl, 0, base_t), (xl, 0, total_t), (xl, L, total_t)], 1)
+        face([(xr, 0, base_t), (xr, L, base_t), (xr, L, total_t), (xr, 0, total_t)], 1)
+    ob = make_obj(name, V, F, [m_wood, m_black], face_mats=FM, uvs=UV, jit=JIT)
+    try:
+        import bmesh
+        bm = bmesh.new()
+        bm.from_mesh(ob.data)
+        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-6)
+        bm.to_mesh(ob.data)
+        bm.free()
+    except Exception as e:  # noqa
+        log('piece weld', e)
+    md = ob.modifiers.new('bev', 'BEVEL')
+    md.width = 0.0005
+    md.segments = 2
+    md.limit_method = 'ANGLE'
+    ob.location = loc
+    ob.rotation_euler = (0, 0, R(rot))
+    return ob
+
+
+def hexcol(h):
+    h = h.lstrip('#')
+    return srgb(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+
+
+def panel_wall(x0, x1, z_top, y_wall, zbot=None):
+    """Стена из панелей выбранного артикула: реечные «под дерево» (3-7, 3-15, 3-9) или A910 под покраску."""
+    if DECOR.upper() == 'A910':
+        mp = mat_simple('a910_paint', hexcol(A.get('paint', 'EFEEEA')), rough=float(A.get('paint_rough', 0.55)), bump=0.02, bump_scale=1500.0)
+        return reeded_wall('panels', x0, x1, z_top, y_wall, mp, zbot=zbot)
+    m_wood = mat_decor(DECOR)
+    m_black = mat_simple('pan_black', (0.007, 0.007, 0.008, 1), rough=0.8, **{'Specular IOR Level': 0.25})
+    return slat_wall('panels', x0, x1, z_top, y_wall, m_wood, m_black, zbot=zbot)
+
+
 # ------------------------------------------------------------------ сцены
 def scene_lounge():
     W, D, H = 4.4, 5.2, 2.7
@@ -814,8 +969,7 @@ def scene_lounge():
     m_floor = mat_pbr('floor', 'laminate_floor_02', 1.7, rough_add=-0.05, nstrength=0.8, rot=R(float(A.get('floor_rot', 90))),
                       tint=srgb(232, 222, 210))
     room(W, D, H, win=(2.3, 4.7, 0.06, 2.46), m_wall=m_wall, m_floor=m_floor, m_ceil=m_ceil)
-    m_wood, m_black = mat_decor(DECOR), mat_simple('pan_black', (0.007, 0.007, 0.008, 1), rough=0.8, **{'Specular IOR Level': 0.25})
-    slat_wall('panels', 0.0, W, H, D, m_wood, m_black)
+    panel_wall(0.0, W, H, D)
     # тюль и карниз
     curtain('sheer', 0.12, 2.1, 4.95, 0.012, 2.64, mat_sheer())
     box('track', 0.07, 0.17, 2.0, 5.05, 2.64, 2.67, mat_simple('track', srgb(240, 240, 238), rough=0.4))
@@ -826,7 +980,7 @@ def scene_lounge():
         load_asset('modern_wooden_cabinet', loc=(2.15, D - 0.012 - 0.28, 0), rot=float(A.get('cab_rot', 180)))
         top = 0.68
     else:
-        top = credenza(1.2, 3.1, D - 0.012 - 0.015)
+        top = credenza(1.2, 3.1, D - 0.012 - 0.015, color=hexcol(A['cabcol']) if 'cabcol' in A else None)
     table_lamp(1.45, yc, top, lamps)
     zz = books(2.25, yc - 0.02, top, 3, seed=4)
     load_asset('ceramic_vase_02', loc=(2.25, yc - 0.02, zz), rot=20)
@@ -843,13 +997,25 @@ def scene_lounge():
     az, el = float(A.get('sun_az', 40)), float(A.get('sun_el', 30))
     sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
     world, sun = setup_world(sun_dir)
-    if A.get('cam', 'main') == 'close':
-        camera((1.75, 4.15, 1.10), (2.75, D, 0.96), lens=float(A.get('lens', 50)), fstop=float(A.get('fstop', 5.6)), focus=1.35)
-    elif A.get('cam') == 'macro':
-        camera((2.35, 4.62, 1.32), (1.75, D - 0.012, 1.25), lens=float(A.get('lens', 60)), fstop=float(A.get('fstop', 8.0)), focus=0.83)
-    else:
-        camera((2.55, 0.75, 1.22), (2.15, D, 1.02), lens=float(A.get('lens', 30)), fstop=float(A.get('fstop', 5.6)), focus=4.3)
-    return world, sun, sun_dir, lamps
+    cal = camera((2.55, 0.75, 1.22), (2.15, D, 1.02), lens=float(A.get('lens', 30)), fstop=float(A.get('fstop', 5.6)), focus=4.3)
+    cm = A.get('cam', 'main')
+    if cm == 'close':
+        camera((1.85, 3.95, 1.12), (2.72, D, 0.95), lens=50, fstop=5.6, focus=1.55)
+    elif cm == 'macro':
+        camera((3.0, 4.55, 1.2), (3.75, D - 0.012, 1.15), lens=60, fstop=8.0, focus=0.98)
+    elif cm == 'sample':
+        # образец панели на светлом столике, стена с тумбой — фоном
+        mt = mat_simple('tbl', srgb(236, 233, 226), rough=0.5, bump=0.01, bump_scale=700.0)
+        box('tbl_top', 1.55, 2.75, 2.75, 3.45, 0.70, 0.73, mt, bevel=0.003)
+        ml = mat_simple('tbl_legs', (0.012, 0.012, 0.013, 1), rough=0.42, metallic=1.0)
+        for k, (lx, ly) in enumerate(((1.6, 2.8), (2.68, 2.8), (1.6, 3.38), (2.68, 3.38))):
+            box(f'tbl_leg{k}', lx, lx + 0.02, ly, ly + 0.02, 0, 0.70, ml)
+        pr = float(A.get('piece_rot', 30))
+        panel_piece('piece_a', (2.0, 2.95, 0.73), pr, 0.46)
+        panel_piece('piece_b', (2.0 + 0.145 * math.cos(R(pr)) + 0.07 * math.sin(R(pr)), 2.95 + 0.145 * math.sin(R(pr)) - 0.07 * math.cos(R(pr)), 0.73),
+                    pr, 0.38)
+        camera((2.02, 2.42, 1.02), (2.2, 3.03, 0.735), lens=50, fstop=float(A.get('fstop', 4.5)), focus=0.62, level=False)
+    return world, sun, sun_dir, lamps, cal
 
 
 def left_wall_with_windows(D, H, wins, m_wall, wall_t=0.3):
@@ -888,8 +1054,7 @@ def scene_arch():
     box('outside_ground', -400, 400, -400, 400, -12.1, -12.0, mat_simple('ground', (0.16, 0.17, 0.13, 1), rough=1.0))
     a, b, hj = 2.0, 3.0, float(A.get('hj', 1.62))
     ob, zb = arch_wall('wall_arch', -wt, W + wt, a, b, hj, Y0, T, H, m_wall)
-    m_wood, m_black = mat_decor(DECOR), mat_simple('pan_black', (0.007, 0.007, 0.008, 1), rough=0.8, **{'Specular IOR Level': 0.25})
-    slat_wall('panels', 0.0, W, H, Y0, m_wood, m_black, zbot=lambda x: zb(x) if a < x < b else 0.0)
+    panel_wall(0.0, W, H, Y0, zbot=lambda x: zb(x) if a < x < b else 0.0)
     mp = mat_simple('plinth', srgb(240, 240, 238), rough=0.4)
     box('plinth_r', W - 0.013, W, 0, Y0 - 0.012, 0, 0.08, mp, bevel=0.002)
     box('plinth_r2', W - 0.013, W, Y0 + T, D2, 0, 0.08, mp, bevel=0.002)
@@ -911,7 +1076,7 @@ def scene_arch():
     load_asset('ceramic_vase_01', loc=(0.8, yb - 0.17, zs), rot=30)
     load_asset('potted_plant_02', loc=(3.5, Y0 - 0.5, 0), rot=120)
     # за аркой: кресло, столик с вазой, картина, подвес
-    load_asset('modern_arm_chair_01', loc=(3.15, Y0 + T + 2.2, 0), rot=float(A.get('chair_rot', 150)))
+    load_asset('modern_arm_chair_01', loc=(3.15, Y0 + T + 2.2, 0), rot=float(A.get('chair_rot', -25)))
     load_asset('side_table_tall_01', loc=(2.8, Y0 + T + 2.9, 0), rot=0)
     load_asset('ceramic_vase_04', loc=(2.8, Y0 + T + 2.9, 0.761), rot=40)
     load_asset('hanging_picture_frame_01', loc=(3.2, D2 - 0.012, 1.05), rot=float(A.get('pic_rot', 0)))
@@ -921,16 +1086,43 @@ def scene_arch():
     az, el = float(A.get('sun_az', 38)), float(A.get('sun_el', 32))
     sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
     world, sun = setup_world(sun_dir)
-    camera((1.5, 0.5, 1.25), (2.05, Y0, 1.08), lens=float(A.get('lens', 28)), fstop=float(A.get('fstop', 8)), focus=4.0)
-    return world, sun, sun_dir, lamps
+    cal = camera((1.5, 0.5, 1.25), (2.05, Y0, 1.08), lens=float(A.get('lens', 28)), fstop=float(A.get('fstop', 8)), focus=4.0)
+    return world, sun, sun_dir, lamps, cal
 
 
-SCENES = {'lounge': scene_lounge, 'arch': scene_arch}
+def scene_plinth():
+    """Плинтус A703: угол комнаты, низкая камера, отрезок с торцом на полу."""
+    global NEUTRAL
+    NEUTRAL = ('ceil',)
+    W, D, H = 4.0, 5.0, 2.7
+    m_wall = mat_pbr('wall_paint', 'beige_wall_001', 3.0, color=hexcol(A.get('paint', '5E7474')), rough=0.88, nstrength=0.6)
+    m_ceil = mat_simple('ceil_paint', srgb(244, 243, 240), rough=0.95)
+    m_floor = mat_pbr('floor', 'laminate_floor_02', 1.7, rough_add=-0.05, nstrength=0.8, rot=R(float(A.get('floor_rot', 90))),
+                      tint=srgb(232, 222, 210))
+    room(W, D, H, win=(2.0, 4.4, 0.06, 2.46), m_wall=m_wall, m_floor=m_floor, m_ceil=m_ceil, plinth=False)
+    mp = mat_simple('plinth_white', srgb(242, 242, 239), rough=0.38)
+    plinth_run('pl_back', (0.0, D), (W, D), (0, -1), mp, miter1=True)
+    plinth_run('pl_right', (W, 0.0), (W, D), (-1, 0), mp, miter1=True)
+    plinth_piece('pl_piece', (2.35, 3.72, 0.0), float(A.get('piece_rot', 28)), 0.55, mp)
+    curtain('sheer', 0.12, 1.8, 4.65, 0.012, 2.64, mat_sheer())
+    box('track', 0.07, 0.17, 1.7, 4.75, 2.64, 2.67, mat_simple('track', srgb(240, 240, 238), rough=0.4))
+    load_asset('potted_plant_02', loc=(3.45, D - 0.5, 0), rot=120)
+    load_asset('modern_arm_chair_01', loc=(1.55, D - 0.75, 0), rot=float(A.get('chair_rot', 20)))
+    az, el = float(A.get('sun_az', 40)), float(A.get('sun_el', 24))
+    sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
+    world, sun = setup_world(sun_dir)
+    cal = camera((2.0, 0.8, 1.25), (2.2, D, 1.1), lens=28)
+    camera((2.0, 2.75, float(A.get('cam_z', 0.34))), (3.25, D, 0.16), lens=float(A.get('lens', 35)), fstop=float(A.get('fstop', 5.6)),
+           focus=float(A.get('focus', 1.3)))
+    return world, sun, sun_dir, [], cal
+
+
+SCENES = {'lounge': scene_lounge, 'arch': scene_arch, 'plinth': scene_plinth}
 
 setup_render()
-world, sun, sun_dir, lamps = SCENES[SCENE]()
+world, sun, sun_dir, lamps, cal_cam = SCENES[SCENE]()
 bpy.context.view_layer.update()
 log('objects', len(scene.objects), 'scene built')
-calibrate(world, sun, sun_dir, lamps=lamps)
+calibrate(world, sun, sun_dir, neutral_prefixes=NEUTRAL, lamps=lamps, cal_cam=cal_cam)
 render_final()
 log('done')
