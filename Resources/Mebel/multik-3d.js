@@ -1312,7 +1312,8 @@ function propMesh(p) {
     case 'apple': { const c0 = cl || '#e23b3b'; const b = A(lathe([[0, .005], [.05, 0], [.1, .025], [.125, .075], [.122, .135], [.095, .19], [.05, .205], [.018, .19], [0, .175]], 36), P(null, 'gloss', appleT(c0)));
       const st = A(taperTube(new THREE.CatmullRomCurve3([new THREE.Vector3(0, .17, 0), new THREE.Vector3(.005, .22, 0), new THREE.Vector3(.02, .25, 0)]), 8, tt => .009 - tt * .003, 6), P('#5a3a22', 'wood'), g, 0);
       const lf = A(leafGeo(false), P('#5fbf4a', 'plastic'), g, 0); lf.scale.setScalar(.08); lf.position.set(.022, .235, 0); lf.rotation.set(.2, 0, -1.1); break; }
-    case 'fish': { const c0 = cl || '#ff8a3d'; const body = new THREE.Group(); body.position.y = .1; g.add(body);
+    case 'fish': { const c0 = cl || '#4fa3e0';   // голубая: оранжевая рыбка терялась в лапах рыжего Барсика
+    const body = new THREE.Group(); body.position.y = .1; g.add(body);
       const b = A(lathe([[0, -.16], [.03, -.14], [.06, -.08], [.07, 0], [.06, .07], [.035, .13], [0, .16]], 28), P(c0, 'gloss'), body); b.rotation.z = Math.PI / 2; b.scale.set(1, 1, .62);
       const tf = new THREE.Shape(); tf.moveTo(0, 0); tf.quadraticCurveTo(-.06, .07, -.1, .09); tf.quadraticCurveTo(-.08, 0, -.1, -.09); tf.quadraticCurveTo(-.06, -.07, 0, 0); const tl = A(ext(tf, .01, .003), P(shadeC(c0, .85), 'gloss'), body); tl.position.x = -.15;
       const df = new THREE.Shape(); df.moveTo(-.05, 0); df.quadraticCurveTo(0, .07, .06, 0); df.lineTo(-.05, 0); const d = A(ext(df, .008, .002), P(shadeC(c0, .85), 'gloss'), body); d.position.y = .055;
@@ -1574,7 +1575,7 @@ function propMesh(p) {
       A(taperTube(new THREE.CatmullRomCurve3([v3(0, 0), v3(.04, .4), v3(.13, .8), v3(.28, 1.1)]), 20, tt => .013 - tt * .009, 6), P(c0, 'gloss'), g, 0);
       const rl = A(G.cyl(.03, .03, .025, 20), P('#c9c9c9', 'metal'), g, 0); rl.rotation.x = Math.PI / 2; rl.position.set(.012, .15, .02);
       A(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([v3(.28, 1.1), v3(.31, .8), v3(.32, .5)]), 12, .002, 4), P('#eeeeee', 'plastic'), g, 0);
-      A(G.sph(.02, 12, 10), P('#e8344e', 'gloss'), g, 0).position.set(.32, .49, 0); A(G.cap(.006, .03, 4, 6), P('#ffffff', 'gloss'), g, 0).position.set(.32, .52, 0); break; }
+      A(G.sph(.02, 12, 10), P('#e8344e', 'gloss'), g, 0).position.set(.32, .49, 0); A(G.cap(.006, .03, 4, 6), P('#ffffff', 'gloss'), g, 0).position.set(.32, .52, 0); g.userData.heldRot = [.5, 0, -.25]; g.userData.overHead = true; break; }   // удочку держит наклонно вперёд, а не опускает в песок под мордочку
     case 'boat': { const c0 = cl || '#d8573c'; const hull = A(lathe([[0, 0], [.18, 0], [.3, .11], [.33, .2], [.31, .2], [.28, .12], [.16, .03], [0, .03]], 40), P(c0, 'wood')); hull.scale.set(1.9, 1, .85);
       const stp = A(G.cyl(.335, .335, .02, 40, true), P('#ffffff', 'wood'), g, 0); stp.scale.set(1.9, 1, .85); stp.position.y = .2;
       A(G.box(.08, .02, .5), P('#c8a46a', 'wood')).position.y = .16;
@@ -3129,7 +3130,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   }
   scene.updateMatrixWorld(true);
   for (const p of seg.props) { const m = propMesh(p); ensureIn(m); const fa = p._fxAge;
-    let sc = 1; if (!p._vis) { if (p._fx === 'vanish' && fa < .45) sc = 1 - ease(fa / .45); else { m.visible = false; poof(p, fa); continue; } } else if (p._fx === 'appear' && fa < .6) sc = ease(fa / .6) * (1 + Math.sin(Math.min(1, fa / .6) * Math.PI) * .25); else if (p._fx === 'quiet' && fa < .35) sc = ease(fa / .35);   // тихо: без звёздочек, просто «вот она»
+    let sc = 1; if (!p._vis) { if (p._fx === 'vanish' && fa < .45) sc = 1 - ease(fa / .45); else if (p._fx === 'quiet' && fa < .3) sc = 1 - ease(fa / .3); else { m.visible = false; poof(p, fa); continue; } } else if (p._fx === 'appear' && fa < .6) sc = ease(fa / .6) * (1 + Math.sin(Math.min(1, fa / .6) * Math.PI) * .25); else if (p._fx === 'quiet' && fa < .35) sc = ease(fa / .35);   // тихо: без звёздочек, просто «вот она»
     if (m.userData.fadeMats) { const k2 = p._vis && p._fx === 'appear' ? Math.min(1, fa / 1.8) : 1; for (const mm of m.userData.fadeMats) mm.opacity = .85 * k2 * k2 * (3 - 2 * k2); if (p._vis) sc = 1; }   // радуга не выпрыгивает, а проступает в воздухе
     if (m.userData.paintC) { const q = Math.round((p._paint || 0) * 48) / 48; if (q !== m.userData.paintQ) { m.userData.paintQ = q; drawPicture(m.userData.paintC, q); m.userData.paintTex.needsUpdate = true; } }
     m.visible = sc > .01; const big = p.big || 1;
