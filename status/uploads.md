@@ -25,3 +25,5 @@
 | shorts | 2026-11-09 | 3 | Indonesia vs Thailand vs Spain | https://youtube.com/shorts/4c2PskJ3TL4 | |
 | 20 | 2026-11-10 | 1 | S2 RACE 7/68 | https://youtu.be/3upV0M-9h1g | public |
 | shorts | 2026-11-10 | 1 | USA vs Korea vs Colombia | https://youtube.com/shorts/T8iLBd0E1Ag | |
+| 21 | 2026-11-10 | 2 | S2 RACE 8/68 | https://youtu.be/s2X14FRQ2X0 | public |
+| shorts | 2026-11-10 | 2 | Russia vs Türkiye vs France | https://youtube.com/shorts/iqgHBXZ6LQ0 | |
