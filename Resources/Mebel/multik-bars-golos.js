@@ -58,7 +58,7 @@
   // Раньше эмоция только сдвигала весь голос выше-ниже и быстрее-медленнее. Теперь у каждой эмоции свой рисунок:
   // высота (reg, полутоны) и размах мелодии (R), наклон фразы (decl), высокий вход (onset), удар на ударных слогах (acc, accDur) и на главном слове (key, keyDur),
   // конец фразы (fin), темп (T), паузы (pause), безударные слоги (unstr); тембр и подача (fx): светлее/глуше (tilt, дБ), дыхание (breath), дрожь голоса (vib),
-  // дрожание громкости (tremolo), надрыв (sat), шёпот (whisper), рот в улыбке (F), громкость относительно обычной реплики (level).
+  // дрожание громкости (tremolo), надрыв (sat), шёпот (whisper: 1 — полный, меньше — пополам с голосом; настройки w2), рот в улыбке (F), громкость относительно обычной реплики (level).
   // k — сила игры (1 — как записано, 0 — ровно). Числа подобраны по распознавателю эмоций, распознаванию слов и естественности — см. OZVUCHKA.md.
   G.ACT = {
     happy:     { reg: 2.5, R: 1.6, span: 10, acc: .5, key: 2.5, keyDur: 1.14, T: 1.07, pause: .88, fx: { tilt: 3, F: 1.03 } },   // F обязателен: без него модель поёт слишком высоко и смазывает слова («нашли клад» → «наш веклад»)
@@ -71,7 +71,10 @@
     love:      { reg: .5, R: .9, T: .9, pause: 1.15, fx: { tilt: -2, breath: .08 } },
     shy:       { reg: 1, R: .7, span: 4.5, T: .9, pause: 1.3, fx: { tilt: -3, breath: .1, level: .85 } },
     shout:     { reg: 3, R: 1.2, span: 8, accDur: 1.2, key: 1.5, T: .97, fx: { tilt: 3, level: 1.25 } },
-    whisper:   { reg: -6, R: .5, T: .88, pause: 1.2, fx: { whisper: 1, wde: .9, level: .7 } },   // исходник нарочно низкий: у высокого голоса «форма рта» снимается хуже
+    // «(шёпотом)»: пока Михаил не выбрал на слух — просто тихий мягкий голос (безопасно). Варианты настоящего шёпота — пробы Э8в–Э8д:
+    //   полушёпот { reg: -3, R: .6, T: .88, pause: 1.2, fx: { whisper: .65, tilt: -4 } }; шёпот { reg: -6, R: .5, T: .88, pause: 1.2, fx: { whisper: 1, w2: { gu: .55 } } };
+    //   шёпот глуше — w2: { tilt: 0, lp: 4500, gv: .4, gu: .55 }. Исходник для шёпота нарочно низкий (reg −6): у высокого голоса «форма рта» снимается хуже.
+    whisper:   { reg: -2.5, R: .55, T: .88, pause: 1.25, fx: { tilt: -7, level: .6 } },
     laugh:     { reg: 2.5, R: 1.4, span: 9, T: 1.06, fx: { tilt: 3, tremolo: .25, vib: .025 } },
   };
   const A_STOP = new Set('и а но да не ни же бы ли то вот ну это я ты он она оно мы вы они мне тебе его её ее их нас вас в во на с со к ко у о об по за из от до для под над при без про что как где когда там тут здесь уже ещё еще тоже только был была было были есть'.split(' '));
@@ -120,21 +123,42 @@
     const o = new Float32Array(y.length); let x1 = 0, x2 = 0, y1 = 0, y2 = 0; b0 /= a0; b1 /= a0; b2 /= a0; a1 /= a0; a2 /= a0;
     for (let i = 0; i < y.length; i++) { const x = y[i], v = b0 * x + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2; x2 = x1; x1 = x; y2 = y1; y1 = v; o[i] = v; } return o; };
   const envelope = (y, win) => { const o = new Float32Array(y.length); let acc = 0; for (let i = 0; i < y.length; i++) { acc += y[i] * y[i]; if (i >= win) acc -= y[i - win] * y[i - win]; o[i] = Math.sqrt(Math.max(0, acc) / win); } return o; };
-  /** Шёпот: голос без тона — шум, пропущенный через «форму рта» каждого звука (линейное предсказание, 16 кГц). Слова остаются разборчивыми. */
-  G.whisper = function (y, de, shelf, ord, bw) { de = de == null ? .82 : de; bw = bw || .975; const n = Math.floor(y.length / 3), pe = new Float32Array(n); let px = 0; for (let i = 0; i < n; i++) { const x = (y[i * 3] + y[i * 3 + 1] + y[i * 3 + 2]) / 3; pe[i] = x - .95 * px; px = x; }
-    const W = 400, H = 100, P = ord || 14, win = new Float64Array(W); for (let i = 0; i < W; i++) win[i] = .5 - .5 * Math.cos(2 * Math.PI * i / (W - 1));
-    const out = new Float64Array(n + W), nrm = new Float64Array(n + W), r = rnd(12345), fr = new Float64Array(W), Rr = new Float64Array(P + 1), a = new Float64Array(P + 1), tmp = new Float64Array(P + 1), sy = new Float64Array(W);
-    for (let s = 0; s + W <= n; s += H) { let e = 0; for (let i = 0; i < W; i++) { fr[i] = pe[s + i] * win[i]; e += fr[i] * fr[i]; } if (e < 1e-10) continue;
-      for (let k = 0; k <= P; k++) { let v = 0; for (let i = k; i < W; i++) v += fr[i] * fr[i - k]; Rr[k] = v; } Rr[0] *= 1.0005;
-      a.fill(0); a[0] = 1; let E = Rr[0]; for (let i = 1; i <= P; i++) { let acc = Rr[i]; for (let j = 1; j < i; j++) acc += a[j] * Rr[i - j]; const kk = -acc / E; tmp.set(a); for (let j = 1; j < i; j++) a[j] = tmp[j] + kk * tmp[i - j]; a[i] = kk; E *= 1 - kk * kk; if (E <= 1e-12) break; }
-      for (let j = 1; j <= P; j++) a[j] *= Math.pow(bw, j);                       // резонансы шире — без звона и «скрежета» на высоких голосах
-      let es = 0; for (let i = 0; i < W; i++) { let v = r(); for (let j = 1; j <= P && j <= i; j++) v -= a[j] * sy[i - j]; sy[i] = v; } for (let i = 0; i < W; i++) { sy[i] *= win[i]; es += sy[i] * sy[i]; }
-      const g = Math.sqrt(e / Math.max(es, 1e-12)); for (let i = 0; i < W; i++) { out[s + i] += sy[i] * g * win[i]; nrm[s + i] += win[i] * win[i]; } }
-    const z = new Float32Array(y.length); let pv = 0, v0 = 0; for (let i = 0; i < n; i++) { const v = out[i] / Math.max(nrm[i], .05) + de * pv; pv = v; z[i * 3] = v0 + (v - v0) / 3; z[i * 3 + 1] = v0 + (v - v0) * 2 / 3; z[i * 3 + 2] = v; v0 = v; }
-    const h = biq(z, 'hp', 250); return shelf ? biq(h, 'hs', 3000, shelf) : h; };
+  // --- Шёпот ---
+  // Первая версия (шум через фильтр линейного предсказания) Михаилу на слух — «ужасно»: гласные оставались громкими, как в речи, и всё шипело. Удалена 10.11.2026.
+  const fftMake = N => { const bits = Math.round(Math.log2(N)), rev = new Uint16Array(N), cs = new Float64Array(N / 2), sn = new Float64Array(N / 2);
+    for (let i = 0; i < N; i++) { let r = 0; for (let b = 0; b < bits; b++) r |= ((i >> b) & 1) << (bits - 1 - b); rev[i] = r; }
+    for (let i = 0; i < N / 2; i++) { cs[i] = Math.cos(2 * Math.PI * i / N); sn[i] = Math.sin(2 * Math.PI * i / N); }
+    return (re, im, inv) => { for (let i = 0; i < N; i++) { const j = rev[i]; if (j > i) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; } }
+      for (let len = 2; len <= N; len <<= 1) { const half = len >> 1, step = N / len; for (let s = 0; s < N; s += len) for (let k = 0; k < half; k++) { const c = cs[k * step], d = inv ? sn[k * step] : -sn[k * step], a = s + k, b = a + half, xr = re[b] * c - im[b] * d, xi = re[b] * d + im[b] * c; re[b] = re[a] - xr; im[b] = im[a] - xi; re[a] += xr; im[a] += xi; } }
+      if (inv) for (let i = 0; i < N; i++) { re[i] /= N; im[i] /= N; } }; };
+  /** Где в записи голос (гласные, звонкие), а где глухие согласные и тишина: волна повторяется с периодом 2,5–12,5 мс. → маска 0…1 по отсчётам, края плавные. */
+  G.voicedMask = function (y) { const D = 6, n8 = Math.floor(y.length / D), lo = new Float32Array(n8); for (let i = 0; i < n8; i++) { let a = 0; for (let j = 0; j < D; j++) a += y[i * D + j]; lo[i] = a / D; }
+    const FR = 240, HP = 80, nV = Math.max(1, Math.floor((n8 - FR) / HP) + 1), vo = new Uint8Array(nV); let emax = 0; const en = new Float32Array(nV);
+    for (let f = 0; f < nV; f++) { let e = 0; for (let i = 0; i < FR; i++) { const v = lo[f * HP + i] || 0; e += v * v; } en[f] = e; if (e > emax) emax = e; }
+    for (let f = 0; f < nV; f++) { if (en[f] < emax * .002) continue; const s = f * HP; let best = 0;
+      for (let L = 20; L <= 100; L += 2) { let c = 0, e1 = 0, e2 = 0; for (let i = 0; i + L < FR; i++) { const a = lo[s + i], b = lo[s + i + L]; c += a * b; e1 += a * a; e2 += b * b; } const r = c / Math.sqrt(e1 * e2 + 1e-12); if (r > best) best = r; }
+      vo[f] = best > .5 ? 1 : 0; }
+    const m = new Float32Array(y.length), step = HP * D, ramp = 480; for (let f = 0; f < nV; f++) if (vo[f]) { const a = f * step, b = Math.min(y.length, a + FR * D * .5 + step); for (let i = a; i < b; i++) m[i] = 1; }
+    const o = new Float32Array(y.length); let acc = 0; for (let i = 0; i < y.length + ramp; i++) { if (i < y.length) acc += m[i]; if (i - 2 * ramp - 1 >= 0) acc -= m[i - 2 * ramp - 1]; const c = i - ramp; if (c >= 0 && c < y.length) o[c] = acc / (2 * ramp + 1); } return o; };
+  /** Шёпот-2. Там, где звучал голос: спектр короткими окнами (короче периода голоса — тон в него не попадает, остаётся «форма рта»), сглаженный по времени, со случайной фазой.
+      Выходит мягкий шум с формантами — тихий, без верхнего шипения. Глухие согласные (с, ш, т, к…) остаются как были: они и так шёпот.
+      o: n — окно, smooth — сглаживание (с), shift — форманты выше, tilt (дБ/окт), lp/hp — полоса (Гц), gv — громкость бывших гласных, gu — согласных, keep — оставлять ли согласные. */
+  G.whisper2 = function (y, o) { o = o || {}; const N = o.n || 256, hop = N >> 3, H = N >> 1, W1 = H + 1, fft = fftMake(N), win = new Float64Array(N); for (let i = 0; i < N; i++) win[i] = .5 - .5 * Math.cos(2 * Math.PI * i / N);
+    if (y.length < N * 2) return y; const nF = Math.floor((y.length - N) / hop) + 1, mag = new Float32Array(nF * W1), re = new Float64Array(N), im = new Float64Array(N);
+    for (let f = 0; f < nF; f++) { const s = f * hop; for (let i = 0; i < N; i++) { re[i] = y[s + i] * win[i]; im[i] = 0; } fft(re, im, false); for (let k = 0; k <= H; k++) mag[f * W1 + k] = re[k] * re[k] + im[k] * im[k]; }
+    const sm = Math.max(1, Math.round((o.smooth || .016) * 48000 / hop / 2)), pw = new Float32Array(nF * W1);
+    for (let k = 0; k <= H; k++) { let acc = 0; for (let f = 0; f < nF + sm; f++) { if (f < nF) acc += mag[f * W1 + k]; if (f - 2 * sm - 1 >= 0) acc -= mag[(f - 2 * sm - 1) * W1 + k]; const c = f - sm; if (c >= 0 && c < nF) pw[c * W1 + k] = Math.max(0, acc) / (Math.min(nF - 1, c + sm) - Math.max(0, c - sm) + 1); } }
+    const sh = o.shift || 1.06, hpF = o.hp || 350, lpF = o.lp || 6000, tl = (o.tilt == null ? 3 : o.tilt) / 6.02, wgt = new Float64Array(W1), w = new Float32Array(y.length), nrm = new Float32Array(y.length), r = rnd(4242);
+    for (let k = 0; k <= H; k++) { const fz = k * 48000 / N; wgt[k] = fz * fz / (fz * fz + hpF * hpF) / Math.sqrt(1 + Math.pow(fz / lpF, 4)) * Math.pow(Math.max(fz, 300) / 1000, tl); }
+    for (let f = 0; f < nF; f++) { const s = f * hop, b0 = f * W1; for (let k = 0; k <= H; k++) { const x = k / sh, j = Math.floor(x), q = x - j, p = j >= H ? pw[b0 + H] : pw[b0 + j] * (1 - q) + pw[b0 + j + 1] * q, a = Math.sqrt(p) * wgt[k], ph = (r() + 1) * Math.PI; re[k] = a * Math.cos(ph); im[k] = a * Math.sin(ph); }
+      im[0] = 0; im[H] = 0; for (let k = 1; k < H; k++) { re[N - k] = re[k]; im[N - k] = -im[k]; } fft(re, im, true); for (let i = 0; i < N; i++) { w[s + i] += re[i] * win[i]; nrm[s + i] += win[i] * win[i]; } }
+    for (let i = 0; i < w.length; i++) w[i] /= Math.max(nrm[i], .1);
+    const m = o.keep === false ? null : G.voicedMask(y); let ey = 0, ew = 0; for (let i = 0; i < y.length; i++) { const q = m ? m[i] : 1; ey += y[i] * y[i] * q; ew += w[i] * w[i] * q; }
+    const g = Math.sqrt(ey / Math.max(ew, 1e-12)) * (o.gv == null ? .45 : o.gv), gu = o.gu == null ? .9 : o.gu, out = new Float32Array(y.length);
+    for (let i = 0; i < y.length; i++) { const q = m ? m[i] : 1; out[i] = w[i] * g * q + y[i] * gu * (1 - q); } return out; };
   /** Обработка по рисунку fx (из G.ACT), k — сила. Громкость level здесь не трогаем: её ставит сведение после выравнивания реплик. */
   G.fx = function (y, fx, k) { if (!fx) return y; const K = k == null ? 1 : k; let o = y;
-    if (fx.whisper && K > .5) { const w = G.whisper(o, fx.wde, fx.wsh, fx.wo, fx.wbw), m = Math.min(1, fx.whisper); if (m >= .99) o = w; else { const z = new Float32Array(o.length); for (let i = 0; i < o.length; i++) z[i] = o[i] * (1 - m) + w[i] * m * 1.6; o = z; } }   // whisper < 1 — полушёпот: голос пополам с шёпотом
+    if (fx.whisper && K > .5) { const w = G.whisper2(o, fx.w2), m = Math.min(1, fx.whisper); if (m >= .99) o = w; else { const z = new Float32Array(o.length); for (let i = 0; i < o.length; i++) z[i] = o[i] * (1 - m) + w[i] * m * 1.6; o = z; } }   // whisper < 1 — полушёпот: голос пополам с шёпотом
     if (fx.vib) { const dep = fx.vib * K, w = new Float32Array(o.length), k1 = dep * .7 / (2 * Math.PI * 6.3) * 48000, k2 = dep * .5 / (2 * Math.PI * 9.1) * 48000;
       for (let i = 0; i < o.length; i++) { const x = i + k1 * Math.sin(2 * Math.PI * 6.3 * i / 48000) + k2 * Math.sin(2 * Math.PI * 9.1 * i / 48000 + 1), j = Math.floor(x), f = x - j; w[i] = j >= 0 && j + 1 < o.length ? o[j] * (1 - f) + o[j + 1] * f : 0; } o = w; }
     if (fx.tilt) o = biq(o, 'hs', 2500, fx.tilt * K);
