@@ -1,0 +1,25 @@
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.0s] slat wall panels lamellas 110 faces 660
+[scene   0.1s] asset ceramic_vase_02 size 0.22 x 0.22 x 0.31 objs 1
+[scene   0.1s] asset ceramic_vase_04 size 0.18 x 0.18 x 0.34 objs 1
+[scene   0.2s] asset ceramic_vase_03 size 0.11 x 0.11 x 0.41 objs 1
+[scene   0.2s] asset standing_picture_frame_02 size 0.22 x 0.10 x 0.27 objs 1
+[scene   0.7s] asset potted_plant_01 size 0.59 x 0.63 x 1.35 objs 4
+[scene   0.9s] asset mid_century_lounge_chair size 1.01 x 1.19 x 1.17 objs 1
+[scene   0.9s] objects 64 scene built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/a37_close/_sky.exr'
+Time: 00:01.89 (Saving: 00:00.00)
+
+[scene   2.8s] sky irradiance [ 9.661 10.549 12.803] sun strength 43.136
+Saved: '/home/runner/work/Mikhail/Mikhail/out/a37_close/_pre.exr'
+Time: 00:06.81 (Saving: 00:00.00)
+
+[scene  10.2s] white pixels 5099 illuminant [1.313 0.945 0.624] wb gains [0.797 1.023 1.368] wall Y 0.4182 exposure 1.33
+Saved: '/home/runner/work/Mikhail/Mikhail/out/a37_close/a37_close.jpg'
+Time: 16:54.49 (Saving: 00:00.26)
+
+[scene 1024.7s] final render 1014.5s /home/runner/work/Mikhail/Mikhail/out/a37_close/a37_close.jpg
+[scene 1024.7s] done
+
+Blender quit
