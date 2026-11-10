@@ -31,6 +31,10 @@ TH = 6.0          # полутолщина стенок
 G = 1750.0
 Y0 = 700          # запас сверху в картинке трассы
 GATE_T = 1.2      # старт после отсчёта 3-2-1
+# Без отсчёта (10.11.2026): ролик начинается с этого момента заезда — шарики уже катятся, а не стоят под цифрами.
+# На «Kim yutadi?» (тот же движок) после переделки 8.11, куда входил и этот старт, досматривать стали вдвое чаще.
+# Вернуть отсчёт: T0 = 0.0
+T0 = GATE_T + 0.8
 POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
 FINALE_T = 7.5
 WIN_MIN, WIN_MAX = 42.0, 54.0   # победитель приходит за 42–54 с → ролик около минуты
@@ -1160,6 +1164,8 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     hand = Image.new("RGBA", (420, 50), (0, 0, 0, 0))
     ImageDraw.Draw(hand).text((0, 0), handle, font=font(26), fill=(255, 255, 255, 170))
 
+    skipped = [f for f in frames if f[3] < T0 - 1e-9]     # отсчёт и первые 0,8 с — за кадром
+    frames = [f for f in frames if f[3] >= T0 - 1e-9]
     race_n = len(frames)
     race_end = race_n / FPS
     total = race_end + FINALE_T
@@ -1176,6 +1182,11 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     log(f"Рисую кадры: заезд {race_end:.0f} с + финал {FINALE_T:.0f} с…")
     rng = np.random.default_rng(seed)
     cam = -380.0
+    for pos, racing, nfin, t in skipped:                  # камера проходит пропущенное начало, чтобы не дёрнуться
+        lead_y = pos[racing, 1].max() if racing.any() else c.finish_y
+        target = max(min(lead_y, c.finish_y + 120) - H * 0.46, -380.0)
+        cam += (target - cam) * (0.10 if t > GATE_T else 0.0)
+        cam = min(cam, c.end_y - H + 200)
     panel_cache = {}
     conf, win_shown_t = [], None
     winner_t = finish[0][1] if finish else None
@@ -1449,7 +1460,9 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     proc.wait()
 
     log("Свожу звук…")
-    sfx = make_sfx(total, sim.events, finish, race_end)
+    # звук считается по времени заезда; начало (сигналы отсчёта) отрезается вместе с пропущенными кадрами
+    cut = len(skipped) / FPS
+    sfx = make_sfx(total + cut, sim.events, finish, race_end + cut)[int(cut * 44100):]
     wav = str(out_path) + ".sfx.wav"
     a = sfx / max(1e-9, float(np.abs(sfx).max())) * 0.9
     with wave.open(wav, "wb") as wf:
