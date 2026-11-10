@@ -10,8 +10,14 @@ for n, u in enumerate(urls, 1):
     try:
         req = urllib.request.Request(u, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15', 'Accept-Language': 'ru'})
         r = urllib.request.urlopen(req, timeout=40, context=ctx)
-        raw = r.read(3_000_000); cs = r.headers.get_content_charset() or 'utf-8'
-        b = raw.decode(cs, 'replace'); code = r.status
+        raw = r.read(3_000_000); cs = r.headers.get_content_charset()
+        if not cs:
+            m = re.search(rb'charset=["\']?([A-Za-z0-9_-]+)', raw[:4000])
+            cs = m.group(1).decode() if m else 'utf-8'
+        b = raw.decode(cs, 'replace')
+        if b.count('\ufffd') > 50:
+            b = raw.decode('cp1251', 'replace')
+        code = r.status
     except urllib.error.HTTPError as e:
         b, code = e.read(200000).decode('utf-8', 'replace'), e.code
     except Exception as e:

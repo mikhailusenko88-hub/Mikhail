@@ -1,10 +1,8 @@
-https://ipl-spb.ru/
-https://78.mchs.gov.ru/glavnoe-upravlenie/sily-i-sredstva/ispytatelnaya-pozharnaya-laboratoriya
-https://78.mchs.gov.ru/glavnoe-upravlenie/sily-i-sredstva/ispytatelnaya-pozharnaya-laboratoriya/kontakty-i-rekvizity
+https://ipl-spb.ru/usl.html
+https://ipl-spb.ru/lab.html
+https://ipl-spb.ru/tech.html
+https://ipl-spb.ru/contact.html
+https://ipl-spb.ru/doc.html
+https://ipl-spb.ru/work.html
 https://czrc.ru/services/ispytaniya-na-goryuchest/
-https://czrc.ru/services/pozharnaya-ispytatelnaya-laboratoriya/
-https://czrc.ru/
-https://pskpb.ru/services/declaraciya/
 https://pskpb.ru/
-https://www.sertrb.ru/firecert/spb/
-https://ncl24.ru/sertifikaciya/deklaraciya-pozharnoj-bezopasnosti-produkcii/
