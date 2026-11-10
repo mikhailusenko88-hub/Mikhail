@@ -196,6 +196,10 @@ def build(cfg):
         if title != re.sub(r'\s+', ' ', src_title):
             shortened.append(f'{a}: «{src_title}» ({len(src_title)}) → «{title}» ({len(title)})')
         body = clean((t.get('description') or '').strip())
+        q_line = (cfg.get('quality_line') or '').strip()
+        if q_line and q_line not in body:          # про систему качества — перед строкой «Цена в объявлении…», если она есть
+            m = re.search(r'\n\n(Цена в объявлении[^\n]*)$', body)
+            body = f'{body[:m.start()]}\n\n{q_line}{body[m.start():]}' if m else f'{body}\n\n{q_line}'
 
         stocked = a in in_stock
         avail_line = (cfg['stock_line'].format(q=qty.get(a, '')) if stocked
