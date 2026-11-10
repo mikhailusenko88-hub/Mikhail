@@ -199,8 +199,40 @@ def ru_rows():
     return list(RU) + [r for r in EXTRA_RU if r[0] not in {x[0] for x in RU}]
 
 
+# «Неделя области» (kz_aimaq.py): какая область идёт сейчас — ставит race_bot через set_aimaq()
+AIMAQ_NOW = {"turn": 0, "row": None}
+
+
+def set_aimaq(turn=0, champ_ents=None):
+    """Выбрать область недели и подставить её в надписи лиги "aimaq". Возвращает номер недели (мог сдвинуться)."""
+    import kz_aimaq as KA
+    turn, row = KA.pick(turn, champ_ents)
+    key, kk, ru, full_kk, full_ru, tag, rows = row
+    AIMAQ_NOW.update(turn=turn, row=row)
+    nk, nr = KA.next_names(turn, champ_ents)
+    L = LEAGUES["aimaq"]
+    L["head"] = (f"{kk.upper()}: КІМ ЖЕҢЕДІ?", f"{ru.upper()}: КТО ПОБЕДИТ?")
+    L["title"] = kk + ": {top} Кім жеңеді? Кто победит? 🏁 №{no}"
+    L["q"] = f"{kk}: кім жеңеді? {ru}: кто победит?"
+    L["next_txt"] = (f"Келесі апта — {nk}!", f"Следующая неделя — {nr}!")
+    lst = ", ".join(r[0] for r in rows)
+    L["desc"] = (f"{full_kk}: қалалар мен ауылдар бір жарыста! Сен қай жерденсің? Пікірге жаз 👇\n"
+                 f"{full_ru}: города и сёла в одной гонке. Ты откуда? Пиши в комментариях!\n\n"
+                 f"Апта сайын — жаңа облыс. Каждую неделю — новая область, в воскресенье — финал.\n"
+                 f"Келесі апта — {nk}. Следующая неделя — {nr}.\n\n"
+                 f"{lst}\n\n"
+                 f"#{tag} #қазақстан #казахстан #жарыс #гонкашариков #shorts")
+    L["tags"] = ["қазақстан", "казахстан", "жарыс", "гонка шариков", "marble race", kk.lower(), ru.lower(),
+                 full_ru.lower(), "облыстар", "аулы и города"] + [r[1].lower() for r in rows[:6]]
+    return turn
+
+
 def entries(league, state=None, rnd=None):
     """Участники заезда. Для имён — 10 мальчиков + 10 девочек (сначала те, кого просили в комментариях)."""
+    if league == "aimaq":
+        if AIMAQ_NOW["row"] is None:
+            set_aimaq(0)
+        return [_e(kk, kk, ru, str(i + 1), lat=la, lon=lo) for i, (kk, ru, la, lo) in enumerate(AIMAQ_NOW["row"][6])]
     if league == "cities":
         rows = list(CITIES) + [r for r in EXTRA_CITIES if r[0] not in {c[0] for c in CITIES}]
         return [_e(kk, kk, ru, str(i + 1), lat=la, lon=lo) for i, (kk, ru, la, lo) in enumerate(rows)]
@@ -249,6 +281,19 @@ LEAGUES = {
                  "#қазақстан #казахстан #жарыс #алматы #астана #шымкент #гонкашариков #shorts"),
         "tags": ["қазақстан", "казахстан", "жарыс", "гонка шариков", "marble race", "алматы", "астана",
                  "шымкент", "города казахстана", "қалалар"],
+    },
+    "aimaq": {      # «Неделя области»: head / title / q / desc / tags / next_txt подставляет set_aimaq()
+        "name": "неделя области",
+        "head": ("ОБЛЫС: КІМ ЖЕҢЕДІ?", "ОБЛАСТЬ: КТО ПОБЕДИТ?"),
+        "map": True, "panel": "kk", "label": "kk", "rot": True,
+        "early": ("Кім жеңеді? Болжамыңды жаз!", "Кто победит? Пиши прогноз!"),
+        "cta": ("Сен қай жерденсің?", "А ты откуда?"),
+        "first_comment": "Сен қай жерденсің? Пікірге жаз 👇\nТы откуда? Пиши 👇",
+        "title": "{top} Кім жеңеді? Кто победит? 🏁 №{no}",
+        "q": "Кім жеңеді? Кто победит?",
+        "season": "week",
+        "desc": "",
+        "tags": ["қазақстан", "казахстан", "жарыс", "гонка шариков", "marble race"],
     },
     "regions": {
         "name": "регионы по номерам",
@@ -394,6 +439,8 @@ def stxt(league):
 
 def season_label(league, ch, n):
     """Подпись сезона в списке чемпионов: «3-апта · Неделя 3» или «Қараша · Ноябрь»."""
+    if (ch or {}).get("label"):          # неделя области: вместо «3-апта» — название области
+        return ch["label"]
     sid = (ch or {}).get("season", "")
     if LEAGUES[league].get("season") == "month" and len(sid) == 7 and sid[4] == "-":
         m = int(sid[5:]) - 1
@@ -407,7 +454,7 @@ def make_title(league, no, ent, final=False):
     t = LEAGUES[league]["title"]
     if "{top}" in t:
         top = ""
-        if t.startswith("{top}"):
+        if t.startswith("{top}") or LEAGUES[league].get("rot"):
             # города и клубы (10.11.2026: одинаковые названия «№20» перестали цеплять): в начале названия —
             # три участника, каждый заезд другие, по кругу — зритель видит в ленте свой город
             k = (no * 3) % max(1, len(ent))

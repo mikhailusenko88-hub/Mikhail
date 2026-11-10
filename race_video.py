@@ -1400,7 +1400,7 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     blocks.append((1.2, b2))
     b3 = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d3 = ImageDraw.Draw(b3)
-    s1, s2 = TX["next"] if final else LG["cta"]
+    s1, s2 = (LG.get("next_txt") or TX["next"]) if final else LG["cta"]
     s3 = "Пікірге жаз · Пиши в комментариях"
     qs = pair_size([s1, s2], 36 if not final else 32, 640)
     cy_ = 1196 if not final else 1236
@@ -1501,7 +1501,7 @@ if __name__ == "__main__":
     no = int(args[1]) if len(args) > 1 else 1
     sd = int(args[2]) if len(args) > 2 else None
     if "--check" in sys.argv:      # быстрая проверка на сервере: трасса и физика без рисования
-        for k_ in ("cities", "regions", "mushel", "names", "ru", "clubs"):
+        for k_ in ("cities", "aimaq", "regions", "mushel", "names", "ru", "clubs"):
             set_league(k_)
             rnd_ = random.Random(1)
             c_ = Course(rnd_, N)

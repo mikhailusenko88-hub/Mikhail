@@ -1,7 +1,8 @@
 """Гонки шариков для бота «Білесің бе?» — 3 ролика в день.
 
 Расписание по времени Астаны (config.json → "race_slots"):
-    12:00 — гонка городов «Қай қала жеңеді?»
+    12:00 — «Облыс апталығы / Неделя области» (лига aimaq, kz_aimaq.py): каждую неделю одна область,
+            её города и аулы; в воскресенье в 12:00 — финал области; с 10.11.2026 вместо первой гонки городов
     15:00 — тема дня по очереди (config "theme_leagues"): мүшел → регионы по номерам → имена
     18:00 — гонка городов
 Вручную:  run_daily.py --league names     (cities | regions | mushel | names | ru | clubs)
@@ -29,7 +30,7 @@ import time
 import traceback
 
 ASTANA = dt.timezone(dt.timedelta(hours=5))
-DEFAULT_SLOTS = {"12": "cities", "15": "theme", "18": "cities"}
+DEFAULT_SLOTS = {"12": "aimaq", "15": "theme", "18": "cities"}
 DEFAULT_THEMES = ["mushel", "regions", "names", "ru", "clubs"]
 
 
@@ -239,6 +240,12 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
             log(f"Ру из комментариев: ошибка {e}")
         RL.set_extra_ru(ls.get("extra", []))
     sid = season_id(league)
+    if league == "aimaq":          # неделя области: новая неделя — следующая область
+        if ls.get("reg_season") != sid:
+            ls["reg_turn"] = ls.get("reg_turn", -1) + 1
+            ls["reg_season"] = sid
+        ls["reg_turn"] = RL.set_aimaq(ls["reg_turn"], ls.get("champ_ents", []))
+        log(f"Неделя области: {RL.AIMAQ_NOW['row'][4]} ({len(RL.entries('aimaq'))} участников)")
     no = ls.get("no", 0) + 1
     ent = None
     if league == "names":
@@ -319,6 +326,13 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
             ls["champion"] = info["winner"]
             ls["final_season"] = sid
             ls.setdefault("champions", []).append({"season": sid, "champion": info["winner"], "link": link})
+            if league == "aimaq":      # чемпион области — в копилку для недели «чемпионы областей»
+                we = next((e for e in RL.entries("aimaq") if e["key"] == info["winner"]), None)
+                ls["champions"][-1]["label"] = f"{RL.AIMAQ_NOW['row'][1]} · {RL.AIMAQ_NOW['row'][2]}"
+                if we and RL.AIMAQ_NOW["row"][0] != "champions":
+                    ls.setdefault("champ_ents", []).append({"kk": we["kk"], "ru": we["ru"], "lat": we["lat"],
+                                                            "lon": we["lon"], "reg": RL.AIMAQ_NOW["row"][0]})
+                    ls["champ_ents"] = ls["champ_ents"][-40:]
         else:
             ls["points"] = info["points"]
         if not final:
