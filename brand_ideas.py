@@ -79,6 +79,37 @@ def calc(dst, art, width_mm, pack, title):
     im.resize((W, H), Image.LANCZOS).save(dst, quality=93, subsampling=0)
 
 
+def calc_plinth(dst, pack=28, length_m=2.0, title='Плинтус напольный A703'):
+    """Карточка «сколько планок нужно» для плинтуса: по периметру комнаты."""
+    im = Image.new('RGB', (W * S, H * S), GAL)
+    d = ImageDraw.Draw(im)
+    header(im, d, title, 'сколько планок нужно на комнату')
+    text(d, (110, 250), 'Считаем по периметру комнаты.', font(30, 'SemiBold'))
+    text(d, (110, 300), (f'Периметр без дверных проёмов ÷ {length_m:g} м, округлить вверх'), font(25), SUBL)
+    text(d, (110, 336), 'и добавить одну планку на подрезку углов.', font(25), SUBL)
+    rooms = [(2, 2), (2, 3), (3, 3), (3, 4), (4, 4), (4, 6)]
+    x0, x1, y = 110, 1490, 410
+    d.rounded_rectangle(P(x0, y, x1, y + 70), radius=14 * S, fill=ANTH)
+    text(d, (x0 + 40, y + 21), 'Комната', font(26, 'SemiBold'), GAL)
+    text(d, (560, y + 21), 'Периметр', font(26, 'SemiBold'), GAL)
+    text(d, (980, y + 21), 'Планок по 2 м', font(26, 'SemiBold'), GAL)
+    y += 82
+    for i, (a_, b_) in enumerate(rooms):
+        per = 2 * (a_ + b_)
+        net = per - 0.8                      # минус одна дверь 80 см
+        n = math.ceil(net / length_m - 1e-9) + 1
+        if i % 2 == 0:
+            d.rounded_rectangle(P(x0, y, x1, y + 78), radius=12 * S, fill=HAZE)
+        text(d, (x0 + 40, y + 20), f'{a_} × {b_} м', font(32, 'Medium'))
+        text(d, (560, y + 20), f'{per} м', font(32, 'Medium'), SUBL)
+        text(d, (980, y + 20), f'{n} шт.', font(32, 'SemiBold'))
+        y += 86
+    text(d, (110, y + 30), f'Расчёт для комнаты с одной дверью 80 см. В упаковке {pack} шт. — {pack * length_m:g} м.', font(25), SUBL)
+    text(d, (110, y + 68), 'Пришлите размеры комнат — посчитаем точно.', font(25), SUBL)
+    footer(d, 'Длина планки 2000 мм')
+    im.resize((W, H), Image.LANCZOS).save(dst, quality=93, subsampling=0)
+
+
 if __name__ == '__main__':
     F = '/home/claude/out_img/final/'
     logo_corner(F + '3-7 — 1 гостиная.jpg', f'{OUT}/идея 1 — логотип в уголке фото.jpg')

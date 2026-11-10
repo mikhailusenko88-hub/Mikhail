@@ -60,8 +60,15 @@ def dim_v(im, d, x, y0, y1, label, left=True, ext=13, f=None):
     im.paste(tmp, (int(x - (52 if left else -8) * S - (0 if left else 0)), int((y0 + y1) / 2 - tmp.height / 2)), tmp)
 
 
+NOLOGO = False                           # для Авито: без логотипа и названия магазина на картинке
+
+
 def header(im, d, title, sub):
     d.rectangle(P(0, 0, W, HEAD), fill=ANTH)
+    if NOLOGO:
+        text(d, (70, 52), title, font(50, 'SemiBold'), GAL)
+        text(d, (72, 120), sub, font(24), SUBD)
+        return
     lg = Image.open(LOGO)
     lg = lg.crop(lg.getbbox())
     lw = 430 * S
@@ -221,6 +228,9 @@ def a703(out, pack=28):
 
 
 if __name__ == '__main__':
+    if '--nologo' in sys.argv:
+        sys.argv.remove('--nologo')
+        NOLOGO = True
     art, out = sys.argv[1], sys.argv[2]
     tex = sys.argv[3] if len(sys.argv) > 3 else None
     subs = {'3-7': 'под дерево · дуб натуральный · 3 ламели на чёрной основе',
