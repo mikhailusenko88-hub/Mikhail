@@ -1,0 +1,21 @@
+{
+  "brand": "Наш декор",
+  "site": "https://nashdekor.ru",
+  "logo": "вариант 40 «Галерея», антрацит (утверждён 10.11.2026)",
+  "subline": "панели · плинтусы · молдинги",
+  "tagline": "Стена как галерея",
+  "colors": {
+    "anthracite": {"hex": "#26292E", "name": "Антрацит", "role": "основной: фон аватара, тёмные плашки, текст на светлом"},
+    "gallery":    {"hex": "#F8F8F6", "name": "Галерея", "role": "светлый фон, знак и слово на антраците"},
+    "blue_grey":  {"hex": "#7E97AD", "name": "Серо-голубой", "role": "акцент: внутренние рамки знака, цены, кнопки"},
+    "haze":       {"hex": "#D9DEE3", "name": "Дымка", "role": "второй светлый фон, подложки карточек"},
+    "stone":      {"hex": "#A89F91", "name": "Камень", "role": "редко: тонкие линии, мелкие пометки"},
+    "sub_on_dark":  {"hex": "#C3CAD2", "role": "подпись на тёмном"},
+    "sub_on_light": {"hex": "#585E66", "role": "подпись на светлом"}
+  },
+  "fonts": {
+    "word": "Noto Serif Display, 600 (SemiBold)",
+    "text": "Inter, 600 для подписи; 400–500 для обычного текста"
+  },
+  "files_base": "https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/brand/brand/files/"
+}
