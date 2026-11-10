@@ -1,0 +1,28 @@
+name: golos-url
+on:
+  push:
+    branches: [golos]
+    paths: [url_request.txt]
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check
+        run: |
+          : > url_result.txt
+          for u in $(grep -v '^#' url_request.txt); do
+            for i in 1 2 3 4 5 6; do
+              r=$(curl -sS -m 20 -o /tmp/body -w "%{http_code} %{size_download} %{content_type}" "$u" 2>&1 || true)
+              case "$r" in 200*) break;; esac; sleep 20
+            done
+            echo "$u -> $r" >> url_result.txt
+            case "$u" in */) grep -o '<title>[^<]*</title>' /tmp/body >> url_result.txt || true; grep -c 'data-src' /tmp/body >> url_result.txt || true;; esac
+          done
+          cat url_result.txt
+          git config user.name golos && git config user.email golos@users.noreply.github.com
+          git add url_result.txt && git commit -qm "golos-url: результат" || true
+          for i in 1 2 3; do git pull --rebase -q origin golos && git push -q origin HEAD:golos && break; sleep 5; done

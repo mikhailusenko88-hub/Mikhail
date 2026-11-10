@@ -1,0 +1,5 @@
+# проверка страницы с пробами
+http://89.126.192.214:8080/mebel/bz4aaoig/
+http://89.126.192.214:8080/mebel/bz4aaoig/c1.mp3
+http://89.126.192.214:8080/mebel/bz4aaoig/p1-stalo.mp3
+http://89.126.192.214:8080/mebel/bz4aaoig/g12-say.mp3
