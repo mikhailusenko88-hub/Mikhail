@@ -321,6 +321,54 @@ jobs:
           git add status; git commit -m "crm-test buh $(date -u +%F_%H:%M)" || exit 0
           git pull --rebase origin domain-check || true
           git push origin HEAD:domain-check || true
+      - name: Исходящие письма с zapros@ (шифр → сервер → почта)
+        if: always()
+        run: |
+          mkdir -p status; O=status/crm-outbox.md
+          {
+          echo "# Исходящие с zapros@ — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"
+          KEY=$(curl -sk $R https://$H/api/outbox/key); echo "ключ по адресу: ${#KEY} символов"
+          KEY2=$(sudo prostranstvo-crm outbox-key | tail -n1); [[ $KEY == "$KEY2" ]] && echo "ключ совпадает с командой — да" || echo "ключ НЕ совпадает"
+          echo "пересылка zapros@: $(grep -h '^zapros' /etc/prostranstvo/pochta-aliases.txt 2>&1)"
+          echo "в таблице Postfix: $(sudo postmap -q zapros@nashdekor.ru hash:/etc/postfix/pochta-aliases 2>&1)"
+          sudo install -d -o prostranstvo -g prostranstvo /tmp/ob
+          sudo -u prostranstvo git init -q --bare /tmp/ob/remote.git
+          sudo -u prostranstvo git init -q -b outbox /tmp/ob/work
+          ID=$(sudo -u prostranstvo env KEY="$KEY" python3 -I -c "
+          import json, sys, uuid, os; sys.path.insert(0, '/opt/prostranstvo-crm/src/crm')
+          import outbox
+          p = {'id': str(uuid.uuid4()), 'to': 'info@nashdekor.ru', 'subject': 'outbox-selftest', 'body': 'Проверка отправки с zapros@',
+               'attachments': [{'name': 'proba.txt', 'mime': 'text/plain', 'b64': 'cHJvYmE='}]}
+          os.makedirs('/tmp/ob/work/outbox', exist_ok=True)
+          json.dump(outbox.seal(os.environ['KEY'], p), open('/tmp/ob/work/outbox/' + p['id'] + '.json', 'w'))
+          print(p['id'])")
+          echo "письмо: $ID"
+          cd /tmp/ob/work
+          sudo -u prostranstvo git -c user.email=t@t -c user.name=t add -A
+          sudo -u prostranstvo git -c user.email=t@t -c user.name=t commit -q -m letter
+          sudo -u prostranstvo git push -q /tmp/ob/remote.git outbox
+          cd - >/dev/null
+          echo "отправка: $(sudo env OUTBOX_REPO=/tmp/ob/remote.git OUTBOX_DIR=/tmp/ob/clone prostranstvo-crm outbox 2>&1 | tr '\n' ' ')"
+          echo "повтор (не должен отправить второй раз): $(sudo env OUTBOX_REPO=/tmp/ob/remote.git OUTBOX_DIR=/tmp/ob/clone prostranstvo-crm outbox 2>&1 | tr '\n' ' ')"
+          echo "статус: $(curl -sk $R https://$H/api/outbox/status/$ID)"
+          sleep 8
+          F=$(sudo grep -rl 'outbox-selftest' /var/mail/vhosts/nashdekor.ru/info/ 2>/dev/null | head -n1)
+          echo "в ящике info@: ${F:+да}${F:-НЕТ}"
+          [[ -n $F ]] && sudo grep -E '^(From|Reply-To|Subject|DKIM-Signature):' "$F" | cut -c1-120
+          [[ -n $F ]] && echo "вложение: $(sudo grep -c 'proba.txt' "$F")"
+          echo "--- письмо на zapros@ (ответ поставщика) попадает в info@:"
+          printf 'From: lab@example.com\nTo: zapros@nashdekor.ru\nSubject: reply-to-zapros-test\n\nОтвет\n' | sudo sendmail -f lab@example.com zapros@nashdekor.ru
+          sleep 8
+          echo "в info@: $(sudo grep -rl 'reply-to-zapros-test' /var/mail/vhosts/nashdekor.ru/info/ 2>/dev/null | wc -l)"
+          echo "cron: $(grep -c 'prostranstvo-crm outbox' /etc/cron.d/prostranstvo-crm)"
+          echo '```'
+          } > "$O" 2>&1
+          cat "$O"
+          git config user.name crm-test; git config user.email crm-test@users.noreply.github.com
+          git add status; git commit -m "crm-test outbox $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
       - name: Страница CRM «Сервер»
         if: always()
         run: |
