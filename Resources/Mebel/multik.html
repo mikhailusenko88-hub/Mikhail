@@ -128,6 +128,8 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 <script src="multik-audio.js"></script>
 <script src="multik-laugh.js"></script>
 <script src="multik-voice.js"></script>
+<script src="multik-bars-rech.js"></script>
+<script src="multik-bars-golos.js"></script>
 <script>
 // Нейроголос (~0.5 ГБ: модели и память onnxruntime, которую onnxruntime сам не отдаёт) работает НЕ в этой странице:
 // 1) в телефоне — в отдельной скрытой странице voice.html со своим процессом iPhone (voiceSpeak / voiceUnload): после озвучки
@@ -157,6 +159,10 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
       try { const y = await M.speak(String(text || ''), JSON.parse(JSON.stringify(o || {}))); this.lastText = M.lastText || ''; this.loadMs = M.loadMs || 0; const c = new Float32Array(y.length); c.set(y); return c; }
       catch (e) { this.error = M.error || (e && e.message) || String(e); throw new Error(this.error); }
       finally { idle = setTimeout(close, 90000); } }, // минуту-полторы не нужен — выгружаем сами
+    /** Ударения для голосов iPhone: словарь пользователя, грамматика и омографы по смыслу («з+амок / зам+ок») — считаются там же, где нейроголос.
+        (С 3 ноября этой функции в странице не было — омографы у героев с голосом iPhone не работали.) */
+    async homoMarks(text, lex) { const t = String(text || ''); if (!t.trim()) return t; try { await this.speak(t, { marksOnly: 'homo', lex: lex || {} }); return this.lastText || t; } catch (e) { return t; } },
+    async marks(text, lex) { const t = String(text || ''); if (!t.trim()) return t; try { await this.speak(t, { marksOnly: 'all', lex: lex || {} }); return this.lastText || t; } catch (e) { return t; } },
     unload: close };
 })();
 </script>
@@ -405,9 +411,10 @@ const SrvVoice = {
   async local(ln) { // нейроголос прямо в телефоне (папка voice/ в приложении) → {buf}
     const mdl = ln.srv.model || ''; if ((mdl ? this.failM[mdl] : this.localFail) || !window.MKVoice || !MKVoice.available()) return null;
     if (mdl && !this.hasM[mdl]) { let ok = false; try { const r = await fetch('voice/' + mdl + '/tts.json'); ok = r.ok && !!(await r.json()).symbols; } catch (e) {} if (!ok) { this.failM[mdl] = true; return null; } this.hasM[mdl] = true; } // файлов голоса нет — голос iPhone, рассказчика не трогаем
-    try { let y = await MKVoice.speak(ln.srv.text, { speaker: ln.srv.speaker, rate: ln.srv.rate, pitch: ln.srv.pitch, model: mdl, lex: (Lib.data && Lib.data.lexicon) || {} });
+    try { const vo = { speaker: ln.srv.speaker, rate: ln.srv.rate, pitch: ln.srv.pitch, model: mdl, lex: (Lib.data && Lib.data.lexicon) || {} }; if (ln.srv.bars) vo.bars = ln.srv.bars; // БАРС-озвучка: смех, звуки, протяжные слова, паспорт голоса — всё считается в странице голоса
+      let y = await MKVoice.speak(ln.srv.text, vo);
       if (!y.length) return null;
-      if (ln.srv.shift && ln.srv.shift !== 1) y = shiftVoice(y, ln.srv.shift, ln.srv.tempo || 1);
+      if (!ln.srv.bars && ln.srv.shift && ln.srv.shift !== 1) y = shiftVoice(y, ln.srv.shift, ln.srv.tempo || 1);
       let buf; if (ln.srv.soft) buf = await MKVoice.soften(y); else { buf = new AudioBuffer({ length: y.length, numberOfChannels: 1, sampleRate: 48000 }); buf.getChannelData(0).set(y); }
       return { buf }; } catch (e) { console.log('нейроголос', mdl, e && e.message); if (mdl) this.failM[mdl] = true; else this.localFail = true; return null; } },
   async get(ln, timeout) { // → {buf} (в телефоне) или {wav} (с сервера) или null — тогда голос iPhone

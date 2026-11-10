@@ -679,6 +679,12 @@ MK.HERO_NEURAL_DEFAULT = { 'барсик': 'xenia' };
 MK.LAUGH_DEFAULT = { 'барсик': 'voice', 'пик': 'voice' };
 MK.laughPick = (lib, who) => { const c = lib && lib.characters && lib.characters[who]; if (!c) return ''; if (c.laughId) return c.laughId; return MK.LAUGH_DEFAULT[String((c.spec && c.spec.name) || '').trim().toLowerCase()] || ''; };
 const HERO_LAUGH = { full: ['Ха-ха-ха!', 'Ах-ха-ха-ха!', 'Ха-ха-ха-ха!'], short: ['Ха-ха!', 'Ах-ха-ха!', 'Ха-ха!'] };
+/** БАРС-озвучка (multik-bars-golos.js): управляемый нейроголос. Барсик и Пик говорят как раньше: у Барсика утверждённый голос (xenia), у Пика — голос iPhone.
+    Паспорт голоса героя: c.golos = { speaker, model, P — тон, F — тембр, T — темп, R — живость } (выбирается на пробах) или 'off'.
+    lib.settings.bars = { oldLaugh: true } — смеяться по-старому (нейроголос читает «ха-ха-ха» по слогам). c.laughTpl — какой настоящий смех берётся за образец ритма. */
+MK.barsOn = () => typeof BARSGolos !== 'undefined' && !!BARSGolos.render;
+MK.barsPassport = (lib, who) => { const c = lib && lib.characters && lib.characters[who]; if (!c || !MK.barsOn()) return null; const g = c.golos; return g && g !== 'off' && g.speaker ? g : null; };
+MK.barsLaugh = lib => MK.barsOn() && !(((lib && lib.settings) || {}).bars || {}).oldLaugh;
 MK.heroNeural = (lib, who) => { const c = lib && lib.characters && lib.characters[who]; if (!c) return null; const v = c.neural; if (v === 'off') return null; if (v && MK.HERO_NEURAL[v]) return MK.HERO_NEURAL[v];
   const nm = String((c.spec && c.spec.name) || '').trim().toLowerCase(); const d = MK.HERO_NEURAL_DEFAULT[nm]; return d && (!c.spec.kind || c.spec.kind === 'cat') ? MK.HERO_NEURAL[d] : null; };
 /** Настройки рассказчика: голос, темп, тон, мягкость. */
@@ -788,6 +794,14 @@ function lineFor(ep, lib, who, text, step, vi) {
   const nv = who === 'Р' && !synth ? MK.narratorVoice(lib) : null;
   const hn = who !== 'Р' && !synth ? MK.heroNeural(lib, who) : null;
   if (synth === 'laugh' && who !== 'Р' && !(lib.characters[who] || {}).laugh && MK.laughPick(lib, who) === 'voice') { const hl = MK.heroNeural(lib, who); // смех тем же нейроголосом, что и речь
+    const bp0 = MK.barsPassport(lib, who);
+    if ((hl || bp0) && MK.barsLaugh(lib)) { // БАРС-озвучка: тот же голос, но каждый «ха» ложится на ритм и мелодию настоящего смеха
+      const V = hl ? { speaker: hl.speaker, model: hl.model, F: hl.shift || 1, P: hl.shift || 1 } : bp0, c0 = lib.characters[who] || {}, big = (V.P || 1) < .9;
+      const tpl = c0.laughTpl || V.laugh || BARSGolos.laughFor(ch.name, big ? 'belly' : 'laugh'), n = BARSGolos.LAUGHS[tpl] ? BARSGolos.LAUGHS[tpl].t.length : 10;
+      const bars = { kind: 'laugh', tpl, F: V.F || 1, P: V.P || 1, seed: String(who) + variant }; if (short) bars.short = true; else bars.n = Math.max(5, Math.min(12, n) - [0, 2, 1][variant]); if (V.vow || big) bars.vow = V.vow || 'о';
+      const fb = { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + '|laugh' + age + variant + (short ? 's' : '')).toString(36), text: say, voice: v, fx, synth: 'laugh' };
+      return { key: hash32('bl1|' + (V.model || '') + '|' + V.speaker + '|' + JSON.stringify(bars)).toString(36), who, text: 'Ха-ха-ха!', voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant, short, seed,
+        srv: { text: 'ха-ха-ха', speaker: V.speaker, model: V.model || '', bars, local: true }, fb: { fx }, laughFb: fb, src: 'Ха-ха-ха!' }; }
     if (hl) { const lt = (short ? HERO_LAUGH.short : HERO_LAUGH.full)[variant] || 'Ха-ха-ха!', rate = 1.06, pitch = 1.06;
       const fb = { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + '|laugh' + age + variant + (short ? 's' : '')).toString(36), text: say, voice: v, fx, synth: 'laugh' };
       return { key: hash32('hl1|' + hl.model + '|' + hl.speaker + '|' + hl.shift + '|' + rate + '|' + pitch + '|' + lt).toString(36), who, text: lt, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant, short, seed,
@@ -795,8 +809,18 @@ function lineFor(ep, lib, who, text, step, vi) {
   if (hn && MK.prepSpeech) { // герой с нейроголосом (Барсик — xenia): считается в телефоне; не вышло — его голос iPhone (fb)
     const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
     const pe = step && step.say && PROSODY[step.emotion], rate = pe ? Math.round(clamp(pe[1], .88, 1.15) * 100) / 100 : 1, pitch = pe ? Math.round(clamp(pe[0], .92, 1.12) * 100) / 100 : 1;
+    if (MK.barsOn() && BARSGolos.needs(text)) { // «Ура-а-а!», «Мяу!» — тем же голосом, но через БАРС-озвучку (обычные реплики идут как раньше)
+      const bars = { F: hn.shift || 1, P: hn.shift || 1, T: Math.round((hn.shift || 1) * (hn.tempo || 1) * 1000) / 1000 };
+      return { key: hash32('hb1|' + hn.model + '|' + hn.speaker + '|' + JSON.stringify(bars) + '|' + rate + '|' + pitch + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
+        srv: { text: marked, speaker: hn.speaker, model: hn.model, bars, rate, pitch, local: true }, fb: { fx }, src: text }; }
     return { key: hash32('hn1|' + hn.model + '|' + hn.speaker + '|' + hn.shift + '|' + rate + '|' + pitch + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
       srv: { text: marked, speaker: hn.speaker, model: hn.model, shift: hn.shift, tempo: hn.tempo, rate, pitch, local: true }, fb: { fx }, src: text }; }
+  const bp = who !== 'Р' && !synth && !hn ? MK.barsPassport(lib, who) : null;
+  if (bp && MK.prepSpeech) { // БАРС-озвучка: герой с паспортом голоса — нейроголос в телефоне (тон и тембр раздельно, живость, эмоции); не вышло — его голос iPhone (fb)
+    const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
+    const bars = { P: bp.P || 1, F: bp.F || 1, T: bp.T || 1, R: bp.R || 1 }; if (step && step.say && step.emotion && BARSGolos.EMO[step.emotion]) bars.emo = step.emotion;
+    return { key: hash32('bg1|' + (bp.model || '') + '|' + bp.speaker + '|' + JSON.stringify(bars) + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
+      srv: { text: marked, speaker: bp.speaker, model: bp.model || '', bars, local: true }, fb: { fx }, src: text }; }
   if (nv && nv.server && MK.prepSpeech) { // рассказчик — нейроголос со своего сервера (Альбина); нет связи — голос iPhone (fb)
     const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
     return { key: hash32('nv2|' + nv.speaker + '|' + (nv.soft ? 's' : '') + nv.rate + '|' + nv.pitch + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
