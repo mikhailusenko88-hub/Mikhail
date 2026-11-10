@@ -557,7 +557,7 @@ MK.mixAudio = async function (tl, buffers) {
   const fx = ac.createGain(); fx.gain.value = .45; const fxlp = ac.createBiquadFilter(); fxlp.type = 'lowpass'; fxlp.frequency.value = 7000; fx.connect(fxlp); fxlp.connect(master);
   for (const s of tl.sfx) { const f = SFX2[s.n]; if (!f) continue; let o = fx; if (s.v != null) { o = ac.createGain(); o.gain.value = s.v; o.connect(fx); } for (let i = 0; i < (s.rep || 1); i++) f(ac, o, s.t + i * (s.gap || .22)); }
   const vo = ac.createGain(); vo.gain.value = 1.0; vo.connect(master);
-  for (const s of tl.speech) { const b = buffers && buffers[s.key]; if (!b) continue; const src = ac.createBufferSource(); src.buffer = b; if (s.soft) { const g = ac.createGain(); g.gain.value = .55; src.connect(g); g.connect(vo); } else src.connect(vo); src.start(s.t); }   // «(шёпотом)» — тише
+  for (const s of tl.speech) { const b = buffers && buffers[s.key]; if (!b) continue; const src = ac.createBufferSource(); src.buffer = b; if (s.soft) { const g = ac.createGain(); g.gain.value = .65; src.connect(g); g.connect(vo); } else src.connect(vo); src.start(s.t); }   // «(шёпотом)» — тише
   const out = await ac.startRendering(); const d = out.getChannelData(0); let pk = 0; for (let i = 0; i < d.length; i++) { const a = Math.abs(d[i]); if (a > pk) pk = a; }
   if (pk > 0) { const g = .89 / pk; for (let i = 0; i < d.length; i++) d[i] *= g; }
   return out;
