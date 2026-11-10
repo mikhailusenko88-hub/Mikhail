@@ -19336,5 +19336,2885 @@
   "rate": 4.7,
   "hf": -14.6,
   "dur": 1.48
+ },
+ {
+  "name": "w1_l1_A",
+  "text": "Тише! Он может нас услышать. Идите за мной.",
+  "hash": "99ae099775c0b84232d8327032143868",
+  "ser1": {
+   "neutral": 0.848,
+   "angry": 0.143,
+   "positive": 0.002,
+   "sad": 0.006,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.014,
+   "disgust": 0.0,
+   "enthusiasm": 0.036,
+   "fear": 0.358,
+   "happiness": 0.591,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.004,
+   "крик": 0.003,
+   "плач": 0.007,
+   "смех": 0.003,
+   "речь": 0.726,
+   "вздох": 0.027
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.73
+   ],
+   [
+    "Sound effect",
+    0.11
+   ],
+   [
+    "Male speech, man speaking",
+    0.1
+   ],
+   [
+    "Speech synthesizer",
+    0.07
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ]
+  ],
+  "utmos": 1.26,
+  "heard": "Тише. Он может нас услышать. Идите за мной.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 4.1,
+  "hf": 1.8,
+  "dur": 3.38
+ },
+ {
+  "name": "w1_l1_B",
+  "text": "Тише! Он может нас услышать. Идите за мной.",
+  "hash": "80b4d4a02926bdbfb35f408115101735",
+  "ser1": {
+   "neutral": 0.975,
+   "angry": 0.019,
+   "positive": 0.002,
+   "sad": 0.002,
+   "other": 0.002
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.001,
+   "fear": 0.997,
+   "happiness": 0.002,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.002,
+   "плач": 0.005,
+   "смех": 0.002,
+   "речь": 0.495,
+   "вздох": 0.021
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.49
+   ],
+   [
+    "Sound effect",
+    0.16
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ],
+   [
+    "Scrape",
+    0.03
+   ],
+   [
+    "Sigh",
+    0.02
+   ]
+  ],
+  "utmos": 1.24,
+  "heard": "Тише. Он может нас услышать. Идите за мной.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 4.1,
+  "hf": 0.8,
+  "dur": 3.38
+ },
+ {
+  "name": "w1_l1_C",
+  "text": "Тише! Он может нас услышать. Идите за мной.",
+  "hash": "e8d5c49a44f8fba8b2e4dc3cf50b7700",
+  "ser1": {
+   "neutral": 0.876,
+   "angry": 0.119,
+   "positive": 0.002,
+   "sad": 0.002,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.043,
+   "disgust": 0.141,
+   "enthusiasm": 0.361,
+   "fear": 0.003,
+   "happiness": 0.001,
+   "neutral": 0.452,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.004,
+   "крик": 0.004,
+   "плач": 0.008,
+   "смех": 0.003,
+   "речь": 0.802,
+   "вздох": 0.011
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.8
+   ],
+   [
+    "Speech synthesizer",
+    0.26
+   ],
+   [
+    "Male speech, man speaking",
+    0.16
+   ],
+   [
+    "Narration, monologue",
+    0.13
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 1.3,
+  "heard": "Тише. Он может нас услышать. Идите за мной.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 4.1,
+  "hf": 1.9,
+  "dur": 3.38
+ },
+ {
+  "name": "w1_l1_D",
+  "text": "Тише! Он может нас услышать. Идите за мной.",
+  "hash": "aebb5ae9332c47ca7412869a4deba586",
+  "ser1": {
+   "neutral": 0.912,
+   "angry": 0.081,
+   "positive": 0.002,
+   "sad": 0.004,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.003,
+   "disgust": 0.001,
+   "enthusiasm": 0.028,
+   "fear": 0.966,
+   "happiness": 0.003,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.005,
+   "крик": 0.002,
+   "плач": 0.012,
+   "смех": 0.003,
+   "речь": 0.458,
+   "вздох": 0.045
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.46
+   ],
+   [
+    "Sound effect",
+    0.18
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ],
+   [
+    "Gasp",
+    0.04
+   ],
+   [
+    "Sigh",
+    0.04
+   ]
+  ],
+  "utmos": 1.25,
+  "heard": "Тише. Он может нас услышать. Идите за мной.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 4.2,
+  "hf": 5.1,
+  "dur": 3.36
+ },
+ {
+  "name": "w1_l1_E",
+  "text": "Тише! Он может нас услышать. Идите за мной.",
+  "hash": "c3acd198b9b7ccf3cd288536afbde671",
+  "ser1": {
+   "neutral": 0.976,
+   "angry": 0.02,
+   "positive": 0.001,
+   "sad": 0.003,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.999,
+   "fear": 0.001,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.001,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.515,
+   "вздох": 0.018
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.51
+   ],
+   [
+    "Sound effect",
+    0.1
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ],
+   [
+    "Whoosh, swoosh, swish",
+    0.03
+   ],
+   [
+    "Sigh",
+    0.02
+   ]
+  ],
+  "utmos": 1.25,
+  "heard": "Тише. Он может нас услышать. Идите за мной.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 4.1,
+  "hf": -1.6,
+  "dur": 3.38
+ },
+ {
+  "name": "w1_l1_F",
+  "text": "Тише! Он может нас услышать. Идите за мной.",
+  "hash": "ebfa53b0674197d30bffb1d9acafc18b",
+  "ser1": {
+   "neutral": 0.808,
+   "angry": 0.176,
+   "positive": 0.003,
+   "sad": 0.012,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.001,
+   "fear": 0.998,
+   "happiness": 0.001,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.011,
+   "крик": 0.004,
+   "плач": 0.017,
+   "смех": 0.003,
+   "речь": 0.728,
+   "вздох": 0.033
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.73
+   ],
+   [
+    "Male speech, man speaking",
+    0.14
+   ],
+   [
+    "Sound effect",
+    0.09
+   ],
+   [
+    "Narration, monologue",
+    0.09
+   ],
+   [
+    "Speech synthesizer",
+    0.05
+   ]
+  ],
+  "utmos": 1.26,
+  "heard": "Тише, он может нас услышать. Идите за мной.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 4.1,
+  "hf": 7.1,
+  "dur": 3.38
+ },
+ {
+  "name": "w1_l1_G",
+  "text": "Тише! Он может нас услышать. Идите за мной.",
+  "hash": "a992b1410e984f279fbf5e5c06a615a4",
+  "ser1": {
+   "neutral": 0.863,
+   "angry": 0.127,
+   "positive": 0.002,
+   "sad": 0.006,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.007,
+   "disgust": 0.001,
+   "enthusiasm": 0.245,
+   "fear": 0.592,
+   "happiness": 0.154,
+   "neutral": 0.001,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.003,
+   "крик": 0.003,
+   "плач": 0.007,
+   "смех": 0.003,
+   "речь": 0.7,
+   "вздох": 0.029
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.7
+   ],
+   [
+    "Male speech, man speaking",
+    0.1
+   ],
+   [
+    "Sound effect",
+    0.1
+   ],
+   [
+    "Speech synthesizer",
+    0.07
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ]
+  ],
+  "utmos": 1.27,
+  "heard": "Тише. Он может нас услышать. Идите за мной.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 4.1,
+  "hf": 2.1,
+  "dur": 3.38
+ },
+ {
+  "name": "w1_l1_H",
+  "text": "Тише! Он может нас услышать. Идите за мной.",
+  "hash": "15f80e77c890c83f1ed51d6e0542cee2",
+  "ser1": {
+   "neutral": 0.728,
+   "angry": 0.264,
+   "positive": 0.004,
+   "sad": 0.005,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.967,
+   "fear": 0.001,
+   "happiness": 0.002,
+   "neutral": 0.03,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.002,
+   "плач": 0.018,
+   "смех": 0.003,
+   "речь": 0.716,
+   "вздох": 0.025
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.72
+   ],
+   [
+    "Speech synthesizer",
+    0.14
+   ],
+   [
+    "Sound effect",
+    0.06
+   ],
+   [
+    "Male speech, man speaking",
+    0.06
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ]
+  ],
+  "utmos": 1.31,
+  "heard": "Тише. Он может нас услышать. Идите за мной.",
+  "match": 1.0,
+  "f0": 195.0,
+  "range": 14.6,
+  "voiced": 0.26,
+  "rate": 4.1,
+  "hf": -3.7,
+  "dur": 3.38
+ },
+ {
+  "name": "w1_l1_I",
+  "text": "Тише! Он может нас услышать. Идите за мной.",
+  "hash": "7c2f9f07d07d7c613990c401e56d45cc",
+  "ser1": {
+   "neutral": 0.952,
+   "angry": 0.044,
+   "positive": 0.003,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 1.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.008,
+   "смех": 0.001,
+   "речь": 0.772,
+   "вздох": 0.023
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.77
+   ],
+   [
+    "Female speech, woman speaking",
+    0.1
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ],
+   [
+    "Conversation",
+    0.04
+   ],
+   [
+    "Gasp",
+    0.02
+   ]
+  ],
+  "utmos": 3.56,
+  "heard": "Тише. Он может нас услышать. Идите за мной.",
+  "match": 1.0,
+  "f0": 211.0,
+  "range": 3.3,
+  "voiced": 0.47,
+  "rate": 4.1,
+  "hf": -15.6,
+  "dur": 3.42
+ },
+ {
+  "name": "w1_l1_J",
+  "text": "Тише! Он может нас услышать. Идите за мной.",
+  "hash": "fced57bd14a51fe036959bb27ce6fa0d",
+  "ser1": {
+   "neutral": 0.968,
+   "angry": 0.022,
+   "positive": 0.002,
+   "sad": 0.007,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.002,
+   "disgust": 0.945,
+   "enthusiasm": 0.043,
+   "fear": 0.001,
+   "happiness": 0.0,
+   "neutral": 0.008,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.002,
+   "плач": 0.005,
+   "смех": 0.003,
+   "речь": 0.082,
+   "вздох": 0.015
+  },
+  "ast_top": [
+   [
+    "Sound effect",
+    0.12
+   ],
+   [
+    "Speech",
+    0.08
+   ],
+   [
+    "Zipper (clothing)",
+    0.03
+   ],
+   [
+    "Snort",
+    0.03
+   ],
+   [
+    "Male speech, man speaking",
+    0.02
+   ]
+  ],
+  "utmos": 1.24,
+  "heard": "Тише. Он может нас услышать. Идите за мной.",
+  "match": 1.0,
+  "f0": 301.0,
+  "range": 3.4,
+  "voiced": 0.02,
+  "rate": 4.1,
+  "hf": -5.6,
+  "dur": 3.38
+ },
+ {
+  "name": "w1_l1_K",
+  "text": "Тише! Он может нас услышать. Идите за мной.",
+  "hash": "24576592d6e2a49b683c0a0bedcf7107",
+  "ser1": {
+   "neutral": 0.845,
+   "angry": 0.145,
+   "positive": 0.002,
+   "sad": 0.007,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.019,
+   "disgust": 0.0,
+   "enthusiasm": 0.023,
+   "fear": 0.295,
+   "happiness": 0.662,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.004,
+   "крик": 0.004,
+   "плач": 0.007,
+   "смех": 0.004,
+   "речь": 0.727,
+   "вздох": 0.023
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.73
+   ],
+   [
+    "Sound effect",
+    0.13
+   ],
+   [
+    "Male speech, man speaking",
+    0.1
+   ],
+   [
+    "Speech synthesizer",
+    0.09
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ]
+  ],
+  "utmos": 1.26,
+  "heard": "Тише. Он может нас услышать. Идите за мной.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 4.1,
+  "hf": 0.4,
+  "dur": 3.38
+ },
+ {
+  "name": "w1_l1_L",
+  "text": "Тише! Он может нас услышать. Идите за мной.",
+  "hash": "4d4f834d36b0dca222e8770feb40d3b1",
+  "ser1": {
+   "neutral": 0.956,
+   "angry": 0.038,
+   "positive": 0.002,
+   "sad": 0.003,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.004,
+   "enthusiasm": 0.995,
+   "fear": 0.001,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.001,
+   "плач": 0.002,
+   "смех": 0.003,
+   "речь": 0.514,
+   "вздох": 0.02
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.51
+   ],
+   [
+    "Sound effect",
+    0.12
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ],
+   [
+    "Speech synthesizer",
+    0.03
+   ],
+   [
+    "Whoosh, swoosh, swish",
+    0.02
+   ]
+  ],
+  "utmos": 1.26,
+  "heard": "Тише. Он может нас услышать. Идите за мной.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 4.1,
+  "hf": -4.8,
+  "dur": 3.38
+ },
+ {
+  "name": "w1_l2_A",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "f8af31b44e6e9dd305305b4a40aac674",
+  "ser1": {
+   "neutral": 0.904,
+   "angry": 0.065,
+   "positive": 0.004,
+   "sad": 0.026,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.985,
+   "fear": 0.014,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.004,
+   "крик": 0.003,
+   "плач": 0.013,
+   "смех": 0.003,
+   "речь": 0.703,
+   "вздох": 0.055
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.7
+   ],
+   [
+    "Male speech, man speaking",
+    0.11
+   ],
+   [
+    "Gasp",
+    0.06
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 1.3,
+  "heard": "Тише. Там кто-то есть.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 3.1,
+  "hf": -9.6,
+  "dur": 1.94
+ },
+ {
+  "name": "w1_l2_B",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "389f25b44d09ea3f523565a40e4171cd",
+  "ser1": {
+   "neutral": 0.934,
+   "angry": 0.053,
+   "positive": 0.005,
+   "sad": 0.005,
+   "other": 0.003
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.999,
+   "fear": 0.001,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.002,
+   "плач": 0.01,
+   "смех": 0.002,
+   "речь": 0.572,
+   "вздох": 0.046
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.57
+   ],
+   [
+    "Sound effect",
+    0.06
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ],
+   [
+    "Gasp",
+    0.05
+   ],
+   [
+    "Sigh",
+    0.04
+   ]
+  ],
+  "utmos": 1.25,
+  "heard": "Тише! Там кто-то есть!",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 3.1,
+  "hf": -9.4,
+  "dur": 1.94
+ },
+ {
+  "name": "w1_l2_C",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "286f89747443de6a6c7ae8e6ded27969",
+  "ser1": {
+   "neutral": 0.759,
+   "angry": 0.224,
+   "positive": 0.003,
+   "sad": 0.013,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.995,
+   "fear": 0.003,
+   "happiness": 0.001,
+   "neutral": 0.001,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.005,
+   "плач": 0.009,
+   "смех": 0.003,
+   "речь": 0.82,
+   "вздох": 0.028
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.82
+   ],
+   [
+    "Male speech, man speaking",
+    0.15
+   ],
+   [
+    "Speech synthesizer",
+    0.09
+   ],
+   [
+    "Narration, monologue",
+    0.08
+   ],
+   [
+    "Gasp",
+    0.03
+   ]
+  ],
+  "utmos": 1.41,
+  "heard": "Тише. Там кто-то есть.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 3.1,
+  "hf": -9.1,
+  "dur": 1.94
+ },
+ {
+  "name": "w1_l2_D",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "16d9f7a5664bc6727d52e4611ce90cae",
+  "ser1": {
+   "neutral": 0.894,
+   "angry": 0.078,
+   "positive": 0.007,
+   "sad": 0.02,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.974,
+   "fear": 0.025,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.003,
+   "крик": 0.003,
+   "плач": 0.011,
+   "смех": 0.005,
+   "речь": 0.657,
+   "вздох": 0.087
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.66
+   ],
+   [
+    "Gasp",
+    0.09
+   ],
+   [
+    "Male speech, man speaking",
+    0.08
+   ],
+   [
+    "Sound effect",
+    0.07
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ]
+  ],
+  "utmos": 1.3,
+  "heard": "Тише. Там кто-то есть.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 3.1,
+  "hf": -6.7,
+  "dur": 1.94
+ },
+ {
+  "name": "w1_l2_E",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "c787b09e55ec8698e48c16aa4f087bc0",
+  "ser1": {
+   "neutral": 0.975,
+   "angry": 0.007,
+   "positive": 0.001,
+   "sad": 0.016,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.999,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.007,
+   "крик": 0.002,
+   "плач": 0.004,
+   "смех": 0.002,
+   "речь": 0.714,
+   "вздох": 0.046
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.71
+   ],
+   [
+    "Male speech, man speaking",
+    0.08
+   ],
+   [
+    "Gasp",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.03
+   ],
+   [
+    "Narration, monologue",
+    0.02
+   ]
+  ],
+  "utmos": 1.3,
+  "heard": "Тише. Там кто-то есть.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.01,
+  "rate": 3.1,
+  "hf": -12.6,
+  "dur": 1.94
+ },
+ {
+  "name": "w1_l2_F",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "c10e28ed7dbfe20d98b90ca796491e19",
+  "ser1": {
+   "neutral": 0.832,
+   "angry": 0.135,
+   "positive": 0.005,
+   "sad": 0.027,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.026,
+   "fear": 0.973,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.006,
+   "крик": 0.003,
+   "плач": 0.023,
+   "смех": 0.004,
+   "речь": 0.579,
+   "вздох": 0.047
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.58
+   ],
+   [
+    "Male speech, man speaking",
+    0.1
+   ],
+   [
+    "Throat clearing",
+    0.06
+   ],
+   [
+    "Gasp",
+    0.05
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ]
+  ],
+  "utmos": 1.3,
+  "heard": "Тише! Там кто-то есть!",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 3.1,
+  "hf": -2.5,
+  "dur": 1.94
+ },
+ {
+  "name": "w1_l2_G",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "d4278a601e335ff3e92874fd94ba9627",
+  "ser1": {
+   "neutral": 0.82,
+   "angry": 0.156,
+   "positive": 0.005,
+   "sad": 0.017,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.997,
+   "fear": 0.003,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.007,
+   "крик": 0.003,
+   "плач": 0.012,
+   "смех": 0.004,
+   "речь": 0.734,
+   "вздох": 0.048
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.73
+   ],
+   [
+    "Male speech, man speaking",
+    0.1
+   ],
+   [
+    "Gasp",
+    0.05
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Speech synthesizer",
+    0.04
+   ]
+  ],
+  "utmos": 1.31,
+  "heard": "Тише. Там кто-то есть.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 3.1,
+  "hf": -9.0,
+  "dur": 1.94
+ },
+ {
+  "name": "w1_l2_H",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "c5b383861643aa6878f46d0aa91eaaf1",
+  "ser1": {
+   "neutral": 0.919,
+   "angry": 0.068,
+   "positive": 0.011,
+   "sad": 0.002,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.999,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.002,
+   "плач": 0.011,
+   "смех": 0.003,
+   "речь": 0.646,
+   "вздох": 0.045
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.65
+   ],
+   [
+    "Speech synthesizer",
+    0.05
+   ],
+   [
+    "Gasp",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ]
+  ],
+  "utmos": 1.46,
+  "heard": "Тише. Там кто-то есть.",
+  "match": 1.0,
+  "f0": 191.0,
+  "range": 12.2,
+  "voiced": 0.24,
+  "rate": 3.1,
+  "hf": -14.5,
+  "dur": 1.94
+ },
+ {
+  "name": "w1_l2_I",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "0f1e0da6efcf9ceaf62ab2492509a2a6",
+  "ser1": {
+   "neutral": 0.985,
+   "angry": 0.011,
+   "positive": 0.004,
+   "sad": 0.0,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.044,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.955,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.002,
+   "плач": 0.006,
+   "смех": 0.001,
+   "речь": 0.742,
+   "вздох": 0.021
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.74
+   ],
+   [
+    "Speech synthesizer",
+    0.04
+   ],
+   [
+    "Female speech, woman speaking",
+    0.03
+   ],
+   [
+    "Narration, monologue",
+    0.03
+   ],
+   [
+    "Sound effect",
+    0.03
+   ]
+  ],
+  "utmos": 3.77,
+  "heard": "Тише. Там кто-то есть.",
+  "match": 1.0,
+  "f0": 206.0,
+  "range": 2.5,
+  "voiced": 0.36,
+  "rate": 3.3,
+  "hf": -25.3,
+  "dur": 1.8
+ },
+ {
+  "name": "w1_l2_J",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "2e391d337d9e5c4ad16373becc3051ad",
+  "ser1": {
+   "neutral": 0.897,
+   "angry": 0.088,
+   "positive": 0.002,
+   "sad": 0.012,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.078,
+   "fear": 0.803,
+   "happiness": 0.001,
+   "neutral": 0.069,
+   "sadness": 0.048
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.003,
+   "плач": 0.005,
+   "смех": 0.004,
+   "речь": 0.246,
+   "вздох": 0.027
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.25
+   ],
+   [
+    "Sound effect",
+    0.07
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ],
+   [
+    "Zipper (clothing)",
+    0.04
+   ],
+   [
+    "Snort",
+    0.03
+   ]
+  ],
+  "utmos": 1.27,
+  "heard": "Тише. Там кто-то есть.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 3.3,
+  "hf": -16.7,
+  "dur": 1.82
+ },
+ {
+  "name": "w1_l2_K",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "d8bacd188ff0186655f28477a30d2b33",
+  "ser1": {
+   "neutral": 0.867,
+   "angry": 0.102,
+   "positive": 0.005,
+   "sad": 0.026,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.993,
+   "fear": 0.006,
+   "happiness": 0.001,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.003,
+   "крик": 0.004,
+   "плач": 0.012,
+   "смех": 0.005,
+   "речь": 0.635,
+   "вздох": 0.042
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.64
+   ],
+   [
+    "Male speech, man speaking",
+    0.12
+   ],
+   [
+    "Narration, monologue",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Gasp",
+    0.04
+   ]
+  ],
+  "utmos": 1.29,
+  "heard": "Тише. Там кто-то есть.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 3.1,
+  "hf": -10.9,
+  "dur": 1.92
+ },
+ {
+  "name": "w1_l2_L",
+  "text": "Тише… Там кто-то есть.",
+  "hash": "4e4b743d87edd4c31af91057d5847792",
+  "ser1": {
+   "neutral": 0.972,
+   "angry": 0.012,
+   "positive": 0.002,
+   "sad": 0.015,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 1.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.005,
+   "крик": 0.002,
+   "плач": 0.004,
+   "смех": 0.003,
+   "речь": 0.689,
+   "вздох": 0.05
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.69
+   ],
+   [
+    "Male speech, man speaking",
+    0.08
+   ],
+   [
+    "Gasp",
+    0.05
+   ],
+   [
+    "Sound effect",
+    0.04
+   ],
+   [
+    "Narration, monologue",
+    0.02
+   ]
+  ],
+  "utmos": 1.3,
+  "heard": "Тише. Там кто-то есть.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.01,
+  "rate": 3.1,
+  "hf": -16.0,
+  "dur": 1.92
+ },
+ {
+  "name": "w1_s1_A",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "d03a102180372941628ac89718ccd87c",
+  "ser1": {
+   "neutral": 0.623,
+   "angry": 0.369,
+   "positive": 0.003,
+   "sad": 0.003,
+   "other": 0.002
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.126,
+   "happiness": 0.873,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.004,
+   "речь": 0.458,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.46
+   ],
+   [
+    "Sound effect",
+    0.14
+   ],
+   [
+    "Scratch",
+    0.08
+   ],
+   [
+    "Male speech, man speaking",
+    0.06
+   ],
+   [
+    "Speech synthesizer",
+    0.06
+   ]
+  ],
+  "utmos": 1.27,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.02,
+  "rate": 6.6,
+  "hf": -7.6,
+  "dur": 1.82
+ },
+ {
+  "name": "w1_s1_B",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "b110c485c2fd9453472144d4f3a75334",
+  "ser1": {
+   "neutral": 0.841,
+   "angry": 0.146,
+   "positive": 0.003,
+   "sad": 0.003,
+   "other": 0.006
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.999,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.001,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.246,
+   "вздох": 0.003
+  },
+  "ast_top": [
+   [
+    "Sound effect",
+    0.29
+   ],
+   [
+    "Speech",
+    0.25
+   ],
+   [
+    "Scratch",
+    0.12
+   ],
+   [
+    "Music",
+    0.04
+   ],
+   [
+    "Scratching (performance technique)",
+    0.03
+   ]
+  ],
+  "utmos": 1.28,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 6.6,
+  "hf": -8.0,
+  "dur": 1.82
+ },
+ {
+  "name": "w1_s1_C",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "ffa32a988ae922bf717602a78b316285",
+  "ser1": {
+   "neutral": 0.765,
+   "angry": 0.222,
+   "positive": 0.003,
+   "sad": 0.008,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.001,
+   "happiness": 0.999,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.005,
+   "плач": 0.002,
+   "смех": 0.004,
+   "речь": 0.73,
+   "вздох": 0.005
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.73
+   ],
+   [
+    "Speech synthesizer",
+    0.21
+   ],
+   [
+    "Male speech, man speaking",
+    0.14
+   ],
+   [
+    "Sound effect",
+    0.07
+   ],
+   [
+    "Narration, monologue",
+    0.06
+   ]
+  ],
+  "utmos": 1.28,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 6.5,
+  "hf": -7.5,
+  "dur": 1.84
+ },
+ {
+  "name": "w1_s1_D",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "8c64ffa958cf8e86785812f20bcd008f",
+  "ser1": {
+   "neutral": 0.793,
+   "angry": 0.198,
+   "positive": 0.003,
+   "sad": 0.004,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.41,
+   "happiness": 0.588,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.001,
+   "плач": 0.001,
+   "смех": 0.003,
+   "речь": 0.52,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.52
+   ],
+   [
+    "Sound effect",
+    0.12
+   ],
+   [
+    "Scratch",
+    0.12
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ],
+   [
+    "Speech synthesizer",
+    0.03
+   ]
+  ],
+  "utmos": 1.26,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.02,
+  "rate": 6.6,
+  "hf": -5.3,
+  "dur": 1.82
+ },
+ {
+  "name": "w1_s1_E",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "6f36c4a8640cbad5c3e5bb3236e1a86a",
+  "ser1": {
+   "neutral": 0.761,
+   "angry": 0.231,
+   "positive": 0.004,
+   "sad": 0.003,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.999,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.001,
+   "плач": 0.0,
+   "смех": 0.001,
+   "речь": 0.473,
+   "вздох": 0.003
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.47
+   ],
+   [
+    "Scratch",
+    0.12
+   ],
+   [
+    "Sound effect",
+    0.09
+   ],
+   [
+    "Whoosh, swoosh, swish",
+    0.04
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 1.26,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.02,
+  "rate": 6.6,
+  "hf": -10.5,
+  "dur": 1.82
+ },
+ {
+  "name": "w1_s1_F",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "e018e0b32cbef04434265736adccb08f",
+  "ser1": {
+   "neutral": 0.713,
+   "angry": 0.278,
+   "positive": 0.002,
+   "sad": 0.005,
+   "other": 0.002
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.991,
+   "happiness": 0.008,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.005,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.005,
+   "речь": 0.441,
+   "вздох": 0.007
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.44
+   ],
+   [
+    "Sound effect",
+    0.15
+   ],
+   [
+    "Male speech, man speaking",
+    0.07
+   ],
+   [
+    "Speech synthesizer",
+    0.06
+   ],
+   [
+    "Scrape",
+    0.03
+   ]
+  ],
+  "utmos": 1.27,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 6.5,
+  "hf": -0.1,
+  "dur": 1.84
+ },
+ {
+  "name": "w1_s1_G",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "ee21280ef3254fa3a30e7e5a76d58690",
+  "ser1": {
+   "neutral": 0.624,
+   "angry": 0.367,
+   "positive": 0.003,
+   "sad": 0.005,
+   "other": 0.002
+  },
+  "ser2": {
+   "anger": 0.002,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.812,
+   "happiness": 0.185,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.002,
+   "плач": 0.001,
+   "смех": 0.004,
+   "речь": 0.49,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.49
+   ],
+   [
+    "Sound effect",
+    0.15
+   ],
+   [
+    "Male speech, man speaking",
+    0.07
+   ],
+   [
+    "Speech synthesizer",
+    0.06
+   ],
+   [
+    "Scratch",
+    0.05
+   ]
+  ],
+  "utmos": 1.27,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.01,
+  "rate": 6.6,
+  "hf": -7.3,
+  "dur": 1.82
+ },
+ {
+  "name": "w1_s1_H",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "d30c2d5e19b3e3969ba45d4cee902817",
+  "ser1": {
+   "neutral": 0.954,
+   "angry": 0.04,
+   "positive": 0.001,
+   "sad": 0.005,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.001,
+   "fear": 0.001,
+   "happiness": 0.998,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.006,
+   "плач": 0.003,
+   "смех": 0.003,
+   "речь": 0.345,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.34
+   ],
+   [
+    "Sound effect",
+    0.27
+   ],
+   [
+    "Speech synthesizer",
+    0.08
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ],
+   [
+    "Grunt",
+    0.03
+   ]
+  ],
+  "utmos": 1.27,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 187.0,
+  "range": 13.8,
+  "voiced": 0.29,
+  "rate": 6.5,
+  "hf": -13.3,
+  "dur": 1.84
+ },
+ {
+  "name": "w1_s1_I",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "e152bd74c8c8d1eec9ecbe7e64a90365",
+  "ser1": {
+   "neutral": 0.947,
+   "angry": 0.047,
+   "positive": 0.003,
+   "sad": 0.003,
+   "other": 0.0
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.796,
+   "fear": 0.001,
+   "happiness": 0.0,
+   "neutral": 0.203,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.002,
+   "смех": 0.002,
+   "речь": 0.74,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.74
+   ],
+   [
+    "Narration, monologue",
+    0.07
+   ],
+   [
+    "Speech synthesizer",
+    0.06
+   ],
+   [
+    "Female speech, woman speaking",
+    0.05
+   ],
+   [
+    "Male speech, man speaking",
+    0.04
+   ]
+  ],
+  "utmos": 3.26,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": 205.0,
+  "range": 3.4,
+  "voiced": 0.7,
+  "rate": 6.6,
+  "hf": -23.6,
+  "dur": 1.82
+ },
+ {
+  "name": "w1_s1_J",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "fdc5a151e0cb0d0f0e87ab05a204200e",
+  "ser1": {
+   "neutral": 0.874,
+   "angry": 0.119,
+   "positive": 0.002,
+   "sad": 0.003,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.998,
+   "happiness": 0.001,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.001,
+   "плач": 0.0,
+   "смех": 0.001,
+   "речь": 0.157,
+   "вздох": 0.002
+  },
+  "ast_top": [
+   [
+    "Scratch",
+    0.19
+   ],
+   [
+    "Speech",
+    0.16
+   ],
+   [
+    "Sound effect",
+    0.14
+   ],
+   [
+    "Scratching (performance technique)",
+    0.04
+   ],
+   [
+    "Whoosh, swoosh, swish",
+    0.03
+   ]
+  ],
+  "utmos": 1.25,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 6.6,
+  "hf": -15.3,
+  "dur": 1.82
+ },
+ {
+  "name": "w1_s1_K",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "72efd3535e72126d5b1be7042047b0f7",
+  "ser1": {
+   "neutral": 0.548,
+   "angry": 0.443,
+   "positive": 0.003,
+   "sad": 0.004,
+   "other": 0.002
+  },
+  "ser2": {
+   "anger": 0.002,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.284,
+   "happiness": 0.714,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.003,
+   "плач": 0.001,
+   "смех": 0.005,
+   "речь": 0.317,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.32
+   ],
+   [
+    "Sound effect",
+    0.19
+   ],
+   [
+    "Scratch",
+    0.07
+   ],
+   [
+    "Male speech, man speaking",
+    0.06
+   ],
+   [
+    "Speech synthesizer",
+    0.06
+   ]
+  ],
+  "utmos": 1.27,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.02,
+  "rate": 6.6,
+  "hf": -9.0,
+  "dur": 1.82
+ },
+ {
+  "name": "w1_s1_L",
+  "text": "Я нашёл это возле старого дуба.",
+  "hash": "3db4a9175c1c2bc68bcb39ee5cf60cbf",
+  "ser1": {
+   "neutral": 0.706,
+   "angry": 0.285,
+   "positive": 0.004,
+   "sad": 0.003,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.001,
+   "happiness": 0.999,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.001,
+   "плач": 0.0,
+   "смех": 0.002,
+   "речь": 0.407,
+   "вздох": 0.003
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.41
+   ],
+   [
+    "Scratch",
+    0.13
+   ],
+   [
+    "Sound effect",
+    0.09
+   ],
+   [
+    "Whoosh, swoosh, swish",
+    0.04
+   ],
+   [
+    "Male speech, man speaking",
+    0.03
+   ]
+  ],
+  "utmos": 1.26,
+  "heard": "Я нашел это возле старого дуба.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.02,
+  "rate": 6.6,
+  "hf": -14.0,
+  "dur": 1.82
+ },
+ {
+  "name": "w1_s2_A",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "eab75551f3805314f890c04195f42cfe",
+  "ser1": {
+   "neutral": 0.963,
+   "angry": 0.03,
+   "positive": 0.005,
+   "sad": 0.002,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.04,
+   "fear": 0.955,
+   "happiness": 0.004,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.002,
+   "плач": 0.003,
+   "смех": 0.003,
+   "речь": 0.303,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.3
+   ],
+   [
+    "Zipper (clothing)",
+    0.22
+   ],
+   [
+    "Sound effect",
+    0.17
+   ],
+   [
+    "Scratch",
+    0.16
+   ],
+   [
+    "Scrape",
+    0.07
+   ]
+  ],
+  "utmos": 1.27,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.02,
+  "rate": 5.7,
+  "hf": -11.7,
+  "dur": 1.58
+ },
+ {
+  "name": "w1_s2_B",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "3cd25adc25f19b8cd3b6bda9d69584bc",
+  "ser1": {
+   "neutral": 0.991,
+   "angry": 0.005,
+   "positive": 0.001,
+   "sad": 0.001,
+   "other": 0.002
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.999,
+   "happiness": 0.001,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.001,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.039,
+   "вздох": 0.008
+  },
+  "ast_top": [
+   [
+    "Sound effect",
+    0.26
+   ],
+   [
+    "Scrape",
+    0.13
+   ],
+   [
+    "Scratch",
+    0.11
+   ],
+   [
+    "Whoosh, swoosh, swish",
+    0.08
+   ],
+   [
+    "Speech",
+    0.04
+   ]
+  ],
+  "utmos": 1.28,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 5.7,
+  "hf": -12.0,
+  "dur": 1.58
+ },
+ {
+  "name": "w1_s2_C",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "4bd27e753980a7beb0c330df51ffb79e",
+  "ser1": {
+   "neutral": 0.915,
+   "angry": 0.071,
+   "positive": 0.01,
+   "sad": 0.003,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.742,
+   "fear": 0.184,
+   "happiness": 0.073,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.005,
+   "крик": 0.005,
+   "плач": 0.005,
+   "смех": 0.004,
+   "речь": 0.718,
+   "вздох": 0.008
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.72
+   ],
+   [
+    "Sound effect",
+    0.15
+   ],
+   [
+    "Male speech, man speaking",
+    0.11
+   ],
+   [
+    "Zipper (clothing)",
+    0.05
+   ],
+   [
+    "Scrape",
+    0.05
+   ]
+  ],
+  "utmos": 1.27,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 5.7,
+  "hf": -11.8,
+  "dur": 1.58
+ },
+ {
+  "name": "w1_s2_D",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "d7ccb10bee95f47c6f015f1b96cf6dfb",
+  "ser1": {
+   "neutral": 0.945,
+   "angry": 0.047,
+   "positive": 0.004,
+   "sad": 0.003,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.017,
+   "fear": 0.973,
+   "happiness": 0.01,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.002,
+   "плач": 0.002,
+   "смех": 0.003,
+   "речь": 0.313,
+   "вздох": 0.007
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.31
+   ],
+   [
+    "Zipper (clothing)",
+    0.21
+   ],
+   [
+    "Sound effect",
+    0.16
+   ],
+   [
+    "Scratch",
+    0.15
+   ],
+   [
+    "Scrape",
+    0.07
+   ]
+  ],
+  "utmos": 1.26,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.02,
+  "rate": 5.7,
+  "hf": -10.1,
+  "dur": 1.58
+ },
+ {
+  "name": "w1_s2_E",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "64f228d759395a6fc431993807a23701",
+  "ser1": {
+   "neutral": 0.975,
+   "angry": 0.019,
+   "positive": 0.002,
+   "sad": 0.002,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.987,
+   "fear": 0.001,
+   "happiness": 0.012,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.001,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.091,
+   "вздох": 0.005
+  },
+  "ast_top": [
+   [
+    "Scratch",
+    0.26
+   ],
+   [
+    "Sound effect",
+    0.18
+   ],
+   [
+    "Speech",
+    0.09
+   ],
+   [
+    "Zipper (clothing)",
+    0.09
+   ],
+   [
+    "Whoosh, swoosh, swish",
+    0.04
+   ]
+  ],
+  "utmos": 1.26,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.02,
+  "rate": 5.6,
+  "hf": -19.0,
+  "dur": 1.6
+ },
+ {
+  "name": "w1_s2_F",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "31264977bbac9e161900c07ed8fc9971",
+  "ser1": {
+   "neutral": 0.958,
+   "angry": 0.034,
+   "positive": 0.005,
+   "sad": 0.002,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.999,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.009,
+   "крик": 0.003,
+   "плач": 0.007,
+   "смех": 0.004,
+   "речь": 0.492,
+   "вздох": 0.009
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.49
+   ],
+   [
+    "Sound effect",
+    0.16
+   ],
+   [
+    "Zipper (clothing)",
+    0.11
+   ],
+   [
+    "Scrape",
+    0.1
+   ],
+   [
+    "Male speech, man speaking",
+    0.05
+   ]
+  ],
+  "utmos": 1.28,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 5.8,
+  "hf": -3.0,
+  "dur": 1.56
+ },
+ {
+  "name": "w1_s2_G",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "c48d5d9b622bfa8b6686a23c5c8f4918",
+  "ser1": {
+   "neutral": 0.865,
+   "angry": 0.121,
+   "positive": 0.009,
+   "sad": 0.003,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.007,
+   "fear": 0.991,
+   "happiness": 0.001,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.003,
+   "крик": 0.002,
+   "плач": 0.003,
+   "смех": 0.004,
+   "речь": 0.39,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.39
+   ],
+   [
+    "Zipper (clothing)",
+    0.18
+   ],
+   [
+    "Sound effect",
+    0.15
+   ],
+   [
+    "Scratch",
+    0.13
+   ],
+   [
+    "Scrape",
+    0.06
+   ]
+  ],
+  "utmos": 1.27,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 5.7,
+  "hf": -10.4,
+  "dur": 1.58
+ },
+ {
+  "name": "w1_s2_H",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "dd834c720c7c4fd3cb0a10257770f654",
+  "ser1": {
+   "neutral": 0.946,
+   "angry": 0.047,
+   "positive": 0.005,
+   "sad": 0.002,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 1.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.001,
+   "плач": 0.003,
+   "смех": 0.003,
+   "речь": 0.385,
+   "вздох": 0.013
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.39
+   ],
+   [
+    "Zipper (clothing)",
+    0.21
+   ],
+   [
+    "Sound effect",
+    0.1
+   ],
+   [
+    "Scratch",
+    0.06
+   ],
+   [
+    "Music",
+    0.02
+   ]
+  ],
+  "utmos": 1.26,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 197.0,
+  "range": 15.1,
+  "voiced": 0.36,
+  "rate": 5.6,
+  "hf": -18.7,
+  "dur": 1.62
+ },
+ {
+  "name": "w1_s2_I",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "51dd0aae741007b2a50d74a9646d3a05",
+  "ser1": {
+   "neutral": 0.933,
+   "angry": 0.05,
+   "positive": 0.016,
+   "sad": 0.0,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.0,
+   "fear": 0.0,
+   "happiness": 0.0,
+   "neutral": 0.999,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.003,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.76,
+   "вздох": 0.006
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.76
+   ],
+   [
+    "Female speech, woman speaking",
+    0.07
+   ],
+   [
+    "Sound effect",
+    0.05
+   ],
+   [
+    "Narration, monologue",
+    0.04
+   ],
+   [
+    "Conversation",
+    0.02
+   ]
+  ],
+  "utmos": 3.39,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": 205.0,
+  "range": 2.9,
+  "voiced": 0.67,
+  "rate": 5.5,
+  "hf": -28.6,
+  "dur": 1.64
+ },
+ {
+  "name": "w1_s2_J",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "8fcc18de7a2ed21ebc3639d884ac019b",
+  "ser1": {
+   "neutral": 0.722,
+   "angry": 0.27,
+   "positive": 0.002,
+   "sad": 0.004,
+   "other": 0.002
+  },
+  "ser2": {
+   "anger": 0.007,
+   "disgust": 0.0,
+   "enthusiasm": 0.916,
+   "fear": 0.038,
+   "happiness": 0.028,
+   "neutral": 0.01,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.0,
+   "крик": 0.001,
+   "плач": 0.001,
+   "смех": 0.001,
+   "речь": 0.036,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Zipper (clothing)",
+    0.36
+   ],
+   [
+    "Scratch",
+    0.1
+   ],
+   [
+    "Sound effect",
+    0.1
+   ],
+   [
+    "Whoosh, swoosh, swish",
+    0.04
+   ],
+   [
+    "Scrape",
+    0.04
+   ]
+  ],
+  "utmos": 1.25,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.0,
+  "rate": 5.6,
+  "hf": -19.9,
+  "dur": 1.6
+ },
+ {
+  "name": "w1_s2_K",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "95720c7d8ef6192bc9d902ed44330fa2",
+  "ser1": {
+   "neutral": 0.968,
+   "angry": 0.025,
+   "positive": 0.005,
+   "sad": 0.002,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.001,
+   "disgust": 0.0,
+   "enthusiasm": 0.031,
+   "fear": 0.964,
+   "happiness": 0.004,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.002,
+   "крик": 0.002,
+   "плач": 0.003,
+   "смех": 0.003,
+   "речь": 0.293,
+   "вздох": 0.005
+  },
+  "ast_top": [
+   [
+    "Speech",
+    0.29
+   ],
+   [
+    "Zipper (clothing)",
+    0.18
+   ],
+   [
+    "Sound effect",
+    0.16
+   ],
+   [
+    "Scratch",
+    0.16
+   ],
+   [
+    "Scrape",
+    0.08
+   ]
+  ],
+  "utmos": 1.27,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.02,
+  "rate": 5.7,
+  "hf": -11.8,
+  "dur": 1.58
+ },
+ {
+  "name": "w1_s2_L",
+  "text": "Мы пойдём туда завтра утром.",
+  "hash": "1bd59b1da1a42be942a245e5f6ebfebe",
+  "ser1": {
+   "neutral": 0.961,
+   "angry": 0.033,
+   "positive": 0.003,
+   "sad": 0.002,
+   "other": 0.001
+  },
+  "ser2": {
+   "anger": 0.0,
+   "disgust": 0.0,
+   "enthusiasm": 0.948,
+   "fear": 0.002,
+   "happiness": 0.049,
+   "neutral": 0.0,
+   "sadness": 0.0
+  },
+  "ast": {
+   "шёпот": 0.001,
+   "крик": 0.001,
+   "плач": 0.001,
+   "смех": 0.002,
+   "речь": 0.092,
+   "вздох": 0.004
+  },
+  "ast_top": [
+   [
+    "Scratch",
+    0.34
+   ],
+   [
+    "Sound effect",
+    0.14
+   ],
+   [
+    "Zipper (clothing)",
+    0.09
+   ],
+   [
+    "Speech",
+    0.09
+   ],
+   [
+    "Scratching (performance technique)",
+    0.05
+   ]
+  ],
+  "utmos": 1.26,
+  "heard": "Мы пойдем туда завтра утром.",
+  "match": 1.0,
+  "f0": null,
+  "range": null,
+  "voiced": 0.02,
+  "rate": 5.6,
+  "hf": -20.2,
+  "dur": 1.6
  }
 ]
