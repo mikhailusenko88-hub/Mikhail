@@ -61,18 +61,18 @@
   // дрожание громкости (tremolo), надрыв (sat), шёпот (whisper), рот в улыбке (F), громкость относительно обычной реплики (level).
   // k — сила игры (1 — как записано, 0 — ровно). Числа подобраны по распознавателю эмоций, распознаванию слов и естественности — см. OZVUCHKA.md.
   G.ACT = {
-    happy:     { reg: 2, R: 1.35, acc: .6, key: 2, keyDur: 1.1, T: 1.05, pause: .9, fx: { tilt: 3, F: 1.02 } },
-    surprised: { reg: 2.5, R: 1.7, onset: 2.5, key: 3.5, keyDur: 1.3, fin: 1, T: .97, fx: { tilt: 2 } },
-    scared:    { reg: 3.5, R: .85, key: 1, T: 1.12, pause: .75, fx: { breath: .4, vib: .035, tremolo: .25, tilt: 1 } },
-    sad:       { reg: -2, R: .6, decl: 2, fin: -1.5, T: .85, pause: 1.4, unstr: 1.05, fx: { tilt: -5, level: .85 } },
-    cry:       { reg: 2, R: .8, decl: 1.5, T: .85, pause: 1.3, fx: { vib: .05, tremolo: .45, breath: .25, tilt: -1 } },
-    angry:     { reg: -1, R: 1.35, acc: 1.5, accDur: 1.15, unstr: .9, key: 2.5, keyDur: 1.15, decl: 2, T: 1.08, pause: .75, fx: { tilt: 6, sat: .3, level: 1.1 } },
-    sleepy:    { reg: -2.5, R: .55, decl: 2, T: .76, pause: 1.6, fx: { tilt: -6, breath: .15, level: .8 } },
-    love:      { reg: .5, R: .9, T: .9, pause: 1.15, fx: { tilt: -2, breath: .2 } },
-    shy:       { reg: 1, R: .7, T: .9, pause: 1.3, fx: { tilt: -3, breath: .3, level: .8 } },
-    shout:     { reg: 4.5, R: 1.25, accDur: 1.35, key: 2, T: .95, fx: { tilt: 7, sat: .4, level: 1.25 } },
-    whisper:   { R: .8, T: .88, pause: 1.2, fx: { whisper: 1, level: .7 } },
-    laugh:     { reg: 2, R: 1.3, T: 1.05, fx: { tilt: 2, tremolo: .3, vib: .03 } },
+    happy:     { reg: 2.5, R: 1.6, span: 10, acc: .5, key: 2.5, keyDur: 1.14, T: 1.07, pause: .88, fx: { tilt: 3, F: 1.03 } },
+    surprised: { reg: 2.5, R: 1.75, span: 12, onset: 2.5, key: 3, keyDur: 1.3, fin: 1, T: .97, fx: { tilt: 2 } },
+    scared:    { reg: 4.5, R: .75, span: 5, key: 1, T: 1.15, pause: .7, fx: { vib: .04, tremolo: .22, breath: .08 } },
+    sad:       { reg: -3, R: .5, span: 4, decl: 3, fin: -2, T: .8, pause: 1.6, unstr: 1.08, fx: { tilt: -7, level: .85 } },
+    cry:       { reg: 1.5, R: .65, span: 5, decl: 3, fin: -2, T: .8, pause: 1.6, fx: { vib: .055, tremolo: .4, tilt: -2 } },
+    angry:     { reg: -2, R: 1.2, span: 9, decl: 3, fin: -2.5, accDur: 1.2, unstr: .85, T: 1.1, pause: .7, fx: { tilt: 6, sat: .45, level: 1.1 } },
+    sleepy:    { reg: -2.5, R: .55, span: 4, decl: 2, T: .82, pause: 1.6, fx: { tilt: -5, level: .85 } },
+    love:      { reg: .5, R: .9, T: .9, pause: 1.15, fx: { tilt: -2, breath: .08 } },
+    shy:       { reg: 1, R: .7, span: 4.5, T: .9, pause: 1.3, fx: { tilt: -3, breath: .1, level: .85 } },
+    shout:     { reg: 3.5, R: 1.25, span: 8, accDur: 1.35, key: 2, T: .95, fx: { tilt: 4, sat: .12, level: 1.25 } },
+    whisper:   { reg: -6, R: .5, T: .88, pause: 1.2, fx: { whisper: 1, wde: .9, level: .7 } },   // исходник нарочно низкий: у высокого голоса «форма рта» снимается хуже
+    laugh:     { reg: 2.5, R: 1.4, span: 9, T: 1.06, fx: { tilt: 3, tremolo: .25, vib: .025 } },
   };
   const A_STOP = new Set('и а но да не ни же бы ли то вот ну это я ты он она оно мы вы они мне тебе его её ее их нас вас в во на с со к ко у о об по за из от до для под над при без про что как где когда там тут здесь уже ещё еще тоже только был была было были есть'.split(' '));
   const A_BOOST = new Set('очень совсем так такой такая такое такие какой какая какое какие самый самая самое самые никогда всегда ничего никто никого вообще совершенно ужасно страшно'.split(' '));
@@ -94,13 +94,19 @@
       if (!words.length) continue;
       const sv = w => { for (let i = w[0]; i < w[1] - 1; i++) if (toks[i] === '+') return i + 1; for (let i = w[0]; i < w[1]; i++) if (isV(i)) return i; return -1; };   // ударная гласная слова
       const ws = words.map(w => toks.slice(w[0], w[1]).join('').replace(/\+/g, '')), kw = G.keyWord(ws, end === '?'), kv = sv(words[kw]), lastV = sv(words[words.length - 1]);
-      let m = 0, n = 0; for (let i = sa; i < sb; i++) if (voiced(i)) { m += p2st(pitch[i], coef); n++; } if (!n) continue; m /= n;
-      const T0 = t[sa], T1 = Math.max(t[sb], T0 + .2), R = mul(a.R);
+      let m = 0, n = 0; const sts = []; for (let i = sa; i < sb; i++) if (voiced(i)) { const v = p2st(pitch[i], coef); sts.push(v); m += v; n++; } if (!n) continue; m /= n;
+      // Модель сама читает восклицания живее, чем ровный текст. Поэтому рисунок — это цель, а не прибавка: если фраза уже высокая и размашистая, почти не трогаем
+      // (иначе выходит переигрывание: размах 16 полутонов, голос ломается).
+      sts.sort((x, y) => x - y); const span = sts[Math.round((n - 1) * .95)] - sts[Math.round((n - 1) * .05)];
+      let Rr = a.R == null ? 1 : a.R; if (a.span && span > .5) Rr = Rr >= 1 ? clamp(a.span / span, 1, Rr) : clamp(a.span / span, Rr, 1);
+      const T0 = t[sa], T1 = Math.max(t[sb], T0 + .2), R = 1 + (Rr - 1) * K, shift = a.reg == null ? 0 : (a.reg - .7 * m) * K;
+      const kAdd = a.key && kv >= 0 ? Math.max(0, a.key - .6 * Math.max(0, (voiced(kv) ? p2st(pitch[kv], coef) : m) - m)) * K : 0;   // главное слово и так выделено — не добавляем
       for (let i = sa; i < sb; i++) { if (!voiced(i)) continue; const u = (t[i] - T0) / (T1 - T0);
-        let s = m + (p2st(pitch[i], coef) - m) * R + add(a.reg) + add(a.decl) * (.5 - u) + add(a.onset) * Math.exp(-(t[i] - T0) / .35);
+        let s = m + (p2st(pitch[i], coef) - m) * R + shift + add(a.decl) * (.5 - u) + add(a.onset) * Math.exp(-(t[i] - T0) / .35);
         if (toks[i - 1] === '+') s += add(a.acc);
-        if (kv >= 0 && i >= words[kw][0] && i < words[kw][1]) s += add(a.key) * (i === kv ? 1 : .5);
+        if (kAdd && i >= words[kw][0] && i < words[kw][1]) s += kAdd * (i === kv ? 1 : .5);
         if (lastV >= 0 && i >= lastV) s += add(a.fin);
+        s = s >= 0 ? 10 * Math.tanh(s / 10) : -8 * Math.tanh(-s / 8);                // мягкий предел: не выше +10 и не ниже −8 полутонов от обычной высоты голоса
         pitch[i] = st2p(s, coef); }
       for (let i = sa; i < sb; i++) if (isV(i)) { d[i] *= toks[i - 1] === '+' ? mul(a.accDur) : mul(a.unstr); if (i === kv) d[i] *= mul(a.keyDur); } }
     if (a.pause != null) { const pm = mul(a.pause); for (let i = 1; i < N - 2; i++) if (',;:–—.!?…'.includes(toks[i])) d[i] = Math.max(2, d[i] * pm); } };
@@ -115,25 +121,26 @@
     for (let i = 0; i < y.length; i++) { const x = y[i], v = b0 * x + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2; x2 = x1; x1 = x; y2 = y1; y1 = v; o[i] = v; } return o; };
   const envelope = (y, win) => { const o = new Float32Array(y.length); let acc = 0; for (let i = 0; i < y.length; i++) { acc += y[i] * y[i]; if (i >= win) acc -= y[i - win] * y[i - win]; o[i] = Math.sqrt(Math.max(0, acc) / win); } return o; };
   /** Шёпот: голос без тона — шум, пропущенный через «форму рта» каждого звука (линейное предсказание, 16 кГц). Слова остаются разборчивыми. */
-  G.whisper = function (y) { const n = Math.floor(y.length / 3), pe = new Float32Array(n); let px = 0; for (let i = 0; i < n; i++) { const x = (y[i * 3] + y[i * 3 + 1] + y[i * 3 + 2]) / 3; pe[i] = x - .95 * px; px = x; }
-    const W = 400, H = 100, P = 18, win = new Float64Array(W); for (let i = 0; i < W; i++) win[i] = .5 - .5 * Math.cos(2 * Math.PI * i / (W - 1));
+  G.whisper = function (y, de, shelf, ord, bw) { de = de == null ? .82 : de; bw = bw || .975; const n = Math.floor(y.length / 3), pe = new Float32Array(n); let px = 0; for (let i = 0; i < n; i++) { const x = (y[i * 3] + y[i * 3 + 1] + y[i * 3 + 2]) / 3; pe[i] = x - .95 * px; px = x; }
+    const W = 400, H = 100, P = ord || 14, win = new Float64Array(W); for (let i = 0; i < W; i++) win[i] = .5 - .5 * Math.cos(2 * Math.PI * i / (W - 1));
     const out = new Float64Array(n + W), nrm = new Float64Array(n + W), r = rnd(12345), fr = new Float64Array(W), Rr = new Float64Array(P + 1), a = new Float64Array(P + 1), tmp = new Float64Array(P + 1), sy = new Float64Array(W);
     for (let s = 0; s + W <= n; s += H) { let e = 0; for (let i = 0; i < W; i++) { fr[i] = pe[s + i] * win[i]; e += fr[i] * fr[i]; } if (e < 1e-10) continue;
       for (let k = 0; k <= P; k++) { let v = 0; for (let i = k; i < W; i++) v += fr[i] * fr[i - k]; Rr[k] = v; } Rr[0] *= 1.0005;
       a.fill(0); a[0] = 1; let E = Rr[0]; for (let i = 1; i <= P; i++) { let acc = Rr[i]; for (let j = 1; j < i; j++) acc += a[j] * Rr[i - j]; const kk = -acc / E; tmp.set(a); for (let j = 1; j < i; j++) a[j] = tmp[j] + kk * tmp[i - j]; a[i] = kk; E *= 1 - kk * kk; if (E <= 1e-12) break; }
-      for (let j = 1; j <= P; j++) a[j] *= Math.pow(.985, j);
+      for (let j = 1; j <= P; j++) a[j] *= Math.pow(bw, j);                       // резонансы шире — без звона и «скрежета» на высоких голосах
       let es = 0; for (let i = 0; i < W; i++) { let v = r(); for (let j = 1; j <= P && j <= i; j++) v -= a[j] * sy[i - j]; sy[i] = v; } for (let i = 0; i < W; i++) { sy[i] *= win[i]; es += sy[i] * sy[i]; }
       const g = Math.sqrt(e / Math.max(es, 1e-12)); for (let i = 0; i < W; i++) { out[s + i] += sy[i] * g * win[i]; nrm[s + i] += win[i] * win[i]; } }
-    const z = new Float32Array(y.length); let pv = 0, v0 = 0; for (let i = 0; i < n; i++) { const v = out[i] / Math.max(nrm[i], .05) + .7 * pv; pv = v; z[i * 3] = v0 + (v - v0) / 3; z[i * 3 + 1] = v0 + (v - v0) * 2 / 3; z[i * 3 + 2] = v; v0 = v; }
-    return biq(biq(z, 'hp', 250), 'hs', 3000, 4); };
+    const z = new Float32Array(y.length); let pv = 0, v0 = 0; for (let i = 0; i < n; i++) { const v = out[i] / Math.max(nrm[i], .05) + de * pv; pv = v; z[i * 3] = v0 + (v - v0) / 3; z[i * 3 + 1] = v0 + (v - v0) * 2 / 3; z[i * 3 + 2] = v; v0 = v; }
+    const h = biq(z, 'hp', 250); return shelf ? biq(h, 'hs', 3000, shelf) : h; };
   /** Обработка по рисунку fx (из G.ACT), k — сила. Громкость level здесь не трогаем: её ставит сведение после выравнивания реплик. */
   G.fx = function (y, fx, k) { if (!fx) return y; const K = k == null ? 1 : k; let o = y;
-    if (fx.whisper && K > .5) o = G.whisper(o);
+    if (fx.whisper && K > .5) { const w = G.whisper(o, fx.wde, fx.wsh, fx.wo, fx.wbw), m = Math.min(1, fx.whisper); if (m >= .99) o = w; else { const z = new Float32Array(o.length); for (let i = 0; i < o.length; i++) z[i] = o[i] * (1 - m) + w[i] * m * 1.6; o = z; } }   // whisper < 1 — полушёпот: голос пополам с шёпотом
     if (fx.vib) { const dep = fx.vib * K, w = new Float32Array(o.length), k1 = dep * .7 / (2 * Math.PI * 6.3) * 48000, k2 = dep * .5 / (2 * Math.PI * 9.1) * 48000;
       for (let i = 0; i < o.length; i++) { const x = i + k1 * Math.sin(2 * Math.PI * 6.3 * i / 48000) + k2 * Math.sin(2 * Math.PI * 9.1 * i / 48000 + 1), j = Math.floor(x), f = x - j; w[i] = j >= 0 && j + 1 < o.length ? o[j] * (1 - f) + o[j + 1] * f : 0; } o = w; }
     if (fx.tilt) o = biq(o, 'hs', 2500, fx.tilt * K);
     if (fx.breath) { const e = envelope(o, 480), r = rnd(777); let nz = new Float32Array(o.length); for (let i = 0; i < nz.length; i++) nz[i] = r(); nz = biq(nz, 'hp', 2500); const b = fx.breath * K * 1.5, w = new Float32Array(o.length); for (let i = 0; i < o.length; i++) w[i] = o[i] + nz[i] * e[i] * b; o = w; }
     if (fx.tremolo) { const dp = fx.tremolo * K, w = new Float32Array(o.length); for (let i = 0; i < o.length; i++) w[i] = o[i] * (1 - dp / 2 + dp / 2 * Math.sin(2 * Math.PI * 6 * i / 48000)); o = w; }
+    if (fx.rough) { const dp = fx.rough * K, w = new Float32Array(o.length); for (let i = 0; i < o.length; i++) w[i] = o[i] * (1 - dp / 2 + dp / 2 * Math.sin(2 * Math.PI * 38 * i / 48000)); o = w; }   // хрипотца: частая дрожь громкости
     if (fx.sat) { let pk = 0; for (let i = 0; i < o.length; i++) pk = Math.max(pk, Math.abs(o[i])); if (pk > 0) { const a = 1 + fx.sat * K * 6, th = Math.tanh(a), w = new Float32Array(o.length); for (let i = 0; i < o.length; i++) w[i] = Math.tanh(o[i] / pk * a) / th * pk; o = w; } }
     return o; };
 
@@ -239,7 +246,7 @@
   G.needs = text => { const t = String(text || ''); return /([аеёиоуыэюя])(?:-\1)+/i.test(t) || G.split(t).some(p => p.sound); };
   // ---------- сборка звука ----------
   const core = (text, o, extra) => MKVoice.speak(text, Object.assign({ model: o.model || '', speaker: o.speaker, lex: o.lex }, extra));
-  async function say(text, o, b) { const act = (b.emo && b.act !== false && G.ACT[b.emo]) || null, K = b.k == null ? 1 : b.k, mk = x => 1 + ((x == null ? 1 : x) - 1) * K;   // act — игра эмоции (БАРС-актёр); без неё — прежние G.EMO
+  async function say(text, o, b) { const act = b.actx || (b.emo && b.act !== false && G.ACT[b.emo]) || null, K = b.k == null ? 1 : b.k, mk = x => 1 + ((x == null ? 1 : x) - 1) * K;   // act — игра эмоции (БАРС-актёр); без неё — прежние G.EMO
     const fx = (act && act.fx) || null, e = act ? {} : ((b.emo && G.EMO[b.emo]) || {}), F = (b.F || 1) * (fx ? mk(fx.F) : 1), P = (b.P || 1) * (e.P || 1), T = (b.T || 1) * (act ? mk(act.T) : (e.T || 1)), R = (b.R || 1) * (e.R || 1);
     const s = G.stretch(text); let marked = o.accent === false ? s.text : await MKVoice.marks(s.text, o.lex); marked = G.applyStretch(marked, s.cues); MKVoice.lastText = marked;
     const shapes = []; if (R !== 1 || e.trem) shapes.push(G.liveShape(R, e.trem)); if (act) shapes.push(G.actShape(act, K)); if (s.cues.length) shapes.push(G.stretchShape(F)); if (b.pause) shapes.push(G.pauseShape(b.pause, F));
