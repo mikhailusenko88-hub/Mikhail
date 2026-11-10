@@ -279,8 +279,13 @@ jobs:
           echo "позиции из файла: $(sudo sqlite3 /var/lib/prostranstvo/crm.db "select group_concat(article||' '||qty||' шт '||price_kop||' коп '||weight_g||' г', '; ') from purchase_lines where purchase_id=2")"
           head -c 1100000 /dev/urandom > /tmp/big.bin
           echo "файл больше 1 МБ через nginx: $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' -F "csrf=$T" -F "file=@/tmp/big.bin;filename=big.xlsx" "$loc2/xlsx") (ждём 413)"
-          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "day=$(date +%F)" "$loc/receive"
-          echo "склад и партии:"; sudo sqlite3 /var/lib/prostranstvo/crm.db "select s.article, s.qty, l.qty_in, l.unit_kop from stock s join lots l on l.article=s.article"
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "day=$(date +%F)" --data-urlencode "made=$(date -d '-30 days' +%F)" "$loc/receive"
+          echo "склад и партии (артикул, остаток, приход, себестоимость, изготовлено):"; sudo sqlite3 /var/lib/prostranstvo/crm.db "select s.article, s.qty, l.qty_in, l.unit_kop, l.made_at from stock s join lots l on l.article=s.article"
+          LID=$(sudo sqlite3 /var/lib/prostranstvo/crm.db "select id from lots order by id limit 1")
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "made=$(date -d '-400 days' +%F)" --data-urlencode "back=/purchases#lots" https://$H/purchases/lots/$LID/made
+          echo "партия $LID после правки даты: $(sudo sqlite3 /var/lib/prostranstvo/crm.db "select made_at from lots where id=$LID")"
+          curl -sk $R -c $J -b $J https://$H/purchases | grep -o 'Срок годности подходит\|истёк [0-9.]*\|до [0-9][0-9].[0-9][0-9].[0-9]*' | sort -u | head -n 4
+          echo "в каталоге для сайта сроков нет: $(curl -sk $R https://$H/api/catalog -H 'Origin: https://nashdekor.ru' | grep -c 'made\|until') совпадений"
           curl -sk $R -c $J -b $J https://$H/taxes > /tmp/tax.html
           grep -o 'Фиксированные взносы ИП за 2026 год\|9 405,58 ₽\|Статформа в таможню — закупка № [0-9]*\|Декларация по косвенным налогам + заявление о ввозе, НДС — закупка № [0-9]*' /tmp/tax.html | sort -u
           echo "утренняя сводка: $(sudo prostranstvo-crm digest 2>&1 | head -n 2 | tr '\n' ' ')"
