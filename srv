@@ -2,7 +2,7 @@
 # srv — проверки сервера для «Команд» на iPhone (кнопки «Сервер»).
 #   srv status — сервер, память, диск, VPN
 #   srv bot    — последние заезды бота «Білесің бе?»
-#   srv race mushel — выложить гонку прямо сейчас (cities | regions | mushel | names | ru | clubs)
+#   srv race mushel — выложить гонку прямо сейчас (cities | aimaq — неделя области | regions | mushel | names | ru | clubs)
 #   srv name Айгерім — добавить имя в следующий заезд с именами
 #   srv city Степногорск — добавить город в гонку городов (из списка городов Казахстана)
 #   srv cities — какие города просили в комментариях и что бот с ними сделал
@@ -32,7 +32,7 @@ case "${1:-status}" in
     ;;
   race)
     L="${2:-cities}"
-    case "$L" in cities|regions|mushel|names|ru|clubs) ;; *) echo "Темы: cities | regions | mushel | names | ru | clubs"; exit 1;; esac
+    case "$L" in cities|aimaq|regions|mushel|names|ru|clubs) ;; *) echo "Темы: cities | aimaq | regions | mushel | names | ru | clubs"; exit 1;; esac
     if pgrep -f "run_daily.py" >/dev/null; then echo "Бот уже делает ролик — подожди пару минут"; exit 0; fi
     PY=python3; [ -x "$BOT/.venv/bin/python" ] && PY="$BOT/.venv/bin/python"
     cd "$BOT" && nohup "$PY" run_daily.py --league "$L" >> bot.log 2>&1 &
