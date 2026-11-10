@@ -159,7 +159,7 @@
   async function say(text, o, b) { const F = b.F || 1, e = (b.emo && G.EMO[b.emo]) || {}, P = (b.P || 1) * (e.P || 1), T = (b.T || 1) * (e.T || 1), R = (b.R || 1) * (e.R || 1);
     const s = G.stretch(text); let marked = o.accent === false ? s.text : await MKVoice.marks(s.text, o.lex); marked = G.applyStretch(marked, s.cues); MKVoice.lastText = marked;
     const shapes = []; if (R !== 1 || e.trem) shapes.push(G.liveShape(R, e.trem)); if (s.cues.length) shapes.push(G.stretchShape(F)); if (b.pause) shapes.push(G.pauseShape(b.pause, F));
-    const y = await core(marked, o, { rate: T / F * (o.rate || 1), pitch: P / F * (o.pitch || 1), accent: false, shape: shapes.length ? c => shapes.forEach(f => f(c)) : null });
+    const y = await core(marked, o, { rate: T / F * (o.rate || 1), pitch: P / F * (o.pitch || 1), accent: false, typeFix: !!b.typeFix, shape: shapes.length ? c => shapes.forEach(f => f(c)) : null });
     return G.resample(y, F); }
   async function sound(name, o, b) { const F = b.F || 1, mk = G.SOUNDS[name]; if (!mk) return new Float32Array(0); const sc = G.score(mk());
     const y = await core(sc.text, o, { rate: 1, pitch: 1, accent: false, shape: G.scoreShape(sc.plan, (b.lift || 0) + 12 * Math.log2((b.P || 1) / F), (b.speed || 1) / F) });

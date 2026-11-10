@@ -193,7 +193,7 @@
       const ort = global.ort, M = this.meta, S = this.S, ids = this.ids(text); if (!ids) return new Float32Array(0);
       const N = ids.length, spkId = M.speakers[o.speaker] != null ? M.speakers[o.speaker] : M.speakers.ru_albina != null ? M.speakers.ru_albina : Object.values(M.speakers)[0];
       const seq = new ort.Tensor('int64', BigInt64Array.from(ids.map(BigInt)), [1, N]), spk = new ort.Tensor('int64', BigInt64Array.from([BigInt(spkId)]), [1]);
-      const fin = { seq, spk }; if (this.typ) { fin.typ = new ort.Tensor('int64', BigInt64Array.from(typeIds(ids, M).map(BigInt)), [1, N]); fin.foc = new ort.Tensor('int64', new BigInt64Array(N), [1, N]); }
+      const fin = { seq, spk }; if (this.typ) { fin.typ = new ort.Tensor('int64', BigInt64Array.from(typeIds(ids, M, o.typeFix).map(BigInt)), [1, N]); fin.foc = new ort.Tensor('int64', new BigInt64Array(N), [1, N]); }
       const fo = await S.front.run(fin), ld = fo.logdur.data, pitch = new Float32Array(fo.pitch.data);
       // длительности — как в MultiTTSModel.forward
       const d = new Array(N); for (let i = 0; i < N; i++) d[i] = roundEven(Math.max(Math.exp(ld[i]) - 1, 0));
@@ -272,11 +272,21 @@
     if (tail.endsWith('?')) { const q = normClf(tail); if (TAG_RE.test(q)) return 'tag_q'; if (hasWh(q)) return 'wh_q'; if (/(^|[^а-яёa-z0-9_])или([^а-яёa-z0-9_]|$)/i.test(q)) return 'alternative_q'; return 'general_q'; }
     return sc.endsWith('!') ? 'exclam' : 'st'; }
   function charSentIds(text) { const ids = [], re = /(?<=[.!?])\s+/g; let pos = 0, si = 0, m; while ((m = re.exec(text))) { const end = m.index + m[0].length; for (let i = pos; i < end; i++) ids.push(si); pos = end; si++; } for (let i = pos; i < text.length; i++) ids.push(si); return ids; }
-  function typeIds(ids, M) { const toks = ids.map(i => M.symbols[i]), N = toks.length, body = toks.slice(1, -1).join(''), sid = charSentIds(body);
+  function typeIds(ids, M, fix) { const toks = ids.map(i => M.symbols[i]), N = toks.length, body = toks.slice(1, -1).join(''), sid = charSentIds(body);
     const nS = sid.length ? sid[sid.length - 1] + 1 : 0, tids = [];
     for (let k = 0; k < nS; k++) { let a = -1, b = -1; for (let i = 0; i < sid.length; i++) if (sid[i] === k) { if (a < 0) a = i + 1; b = i + 2; } while (b > a && toks[b - 1] === ' ') b--; tids.push(TYPE2ID[classifySentence(toks.slice(a, b).join('').replace(/\+/g, ''))] || 0); }
     const vals = sid.map(s => tids[Math.min(s, tids.length - 1)] || 0), out = new Array(N).fill(0); if (!vals.length) return out;
-    for (let i = 0; i < vals.length; i++) { const j = i + 1; if (j < N - 1) out[j] = vals[i]; } out[0] = vals[0]; out[N - 1] = vals[vals.length - 1]; return out; }
+    for (let i = 0; i < vals.length; i++) { const j = i + 1; if (j < N - 1) out[j] = vals[i]; } out[0] = vals[0]; out[N - 1] = vals[vals.length - 1];
+    if (fix) { // БАРС-озвучка: «…и шёпотом спросил: Пик, ты слышишь?» — рассказ до двоеточия остаётся рассказом, вопрос после двоеточия — вопросом
+      // (без этого вся фраза считалась вопросом «когда…?» по первому слову, и «ты слышишь?» звучало ровно)
+      for (let k = 0; k < nS; k++) { let a = -1, b = -1; for (let i = 0; i < sid.length; i++) if (sid[i] === k) { if (a < 0) a = i + 1; b = i + 2; } if (a < 0) continue;
+        while (b > a && toks[b - 1] === ' ') b--; let c = -1; for (let j = b - 1; j >= a; j--) if (toks[j] === ':') { c = j; break; } if (c < 0) continue;
+        const tail = toks.slice(c + 1, b).join('').replace(/\+/g, '').trim(), head = toks.slice(a, c).join('').replace(/\+/g, '');
+        if (!/[?!]$/.test(stripQ(tail)) || (head.match(/[а-яё]+/gi) || []).length < 3) continue;
+        const tt = /\?$/.test(stripQ(tail)) && /(^|[^а-яё])или([^а-яё]|$)/i.test(tail) ? TYPE2ID.alternative_q : (TYPE2ID[classifySentence(tail)] || 0);   // «кто это там — Рон или сова?» — выбор
+        for (let j = a; j <= c; j++) out[j] = 0; for (let j = c + 1; j < Math.min(b + 1, N - 1); j++) out[j] = tt; }
+      out[0] = out[1]; out[N - 1] = out[N - 2]; }
+    return out; }
   MKVoice._typeIds = typeIds; MKVoice._classify = classifySentence;
   global.MKVoice = MKVoice; global.MKStress = MKStress; global.MKHomo = MKHomo;
 })(typeof window !== 'undefined' ? window : globalThis);
