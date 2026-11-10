@@ -59,7 +59,34 @@ def ad_id(article):
     return re.sub(r'\s+', '', article.replace('/', '-'))
 
 
+def load_crm(cfg):
+    """Цены и свободные остатки из CRM: {"ok": true, "items": {"A902": {"p": 1780, "q": 0}, ...}}.
+    Источник — файл (--crm-json=путь) или адрес crm_catalog_url. Если CRM не ответила — фид НЕ собираем
+    (иначе на Авито уйдут неверные цены/наличие), старый фид остаётся как был."""
+    import urllib.request
+    src = cfg.get('crm_json') or cfg.get('crm_catalog_url')
+    if not src:
+        return None
+    try:
+        if os.path.exists(src):
+            data = json.load(open(src, encoding='utf-8'))
+        else:
+            req = urllib.request.Request(src, headers={'User-Agent': 'nashdekor-avito-feed/1.0'})
+            with urllib.request.urlopen(req, timeout=20) as r:
+                data = json.loads(r.read().decode('utf-8'))
+    except Exception as e:
+        sys.exit(f'CRM не ответила ({src}): {e} — фид не собран, старый остаётся')
+    items = data.get('items') if isinstance(data, dict) else None
+    if not items or (isinstance(data, dict) and data.get('ok') is False):
+        sys.exit(f'CRM вернула пустой каталог ({src}) — фид не собран, старый остаётся')
+    return {str(k).strip(): v for k, v in items.items()}
+
+
 def price_for(item, cfg):
+    crm = cfg.get('_crm') or {}
+    c = crm.get(item['a'])
+    if c and isinstance(c.get('p'), (int, float)) and c['p'] > 0:
+        return int(round(c['p']))
     prices = cfg.get('prices') or {}
     if item['a'] in prices:
         return int(prices[item['a']])
@@ -124,13 +151,26 @@ def is_placeholder(v):
 def build(cfg):
     cat, photo = load_catalog(cfg['catalog_html'])
     texts = load_texts(cfg.get('texts_json'))
+    crm = cfg.get('_crm')
     in_stock = {str(a).strip() for a in cfg.get('in_stock', [])}
     unknown_stock = in_stock - {x['a'] for x in cat}
+    qty = {}
+    if crm is not None:
+        qty = {a: int(v.get('q') or 0) for a, v in crm.items() if isinstance(v, dict)}
+        in_stock = {a for a, q in qty.items() if q > 0}
+        unknown_stock = set()
+        missing = sorted({x['a'] for x in cat} - set(crm))
+        if missing:
+            warnings_pre = f'в CRM нет артикулов (цена с сайта, «под заказ»): {missing}'
+        else:
+            warnings_pre = None
     extra = cfg.get('extra_photos') or {}
     img_dir = os.path.join(os.path.dirname(cfg['catalog_html']), 'img')
     base = cfg['photo_base'] if cfg['photo_base'].endswith('/') else cfg['photo_base'] + '/'
 
     warnings, no_photo, stubs, rows, shortened = [], [], [], [], []
+    if crm is not None and warnings_pre:
+        warnings.append(warnings_pre)
     if unknown_stock:
         warnings.append(f'in_stock: нет в каталоге артикулов {sorted(unknown_stock)}')
     if texts is None:
@@ -158,7 +198,8 @@ def build(cfg):
         body = clean((t.get('description') or '').strip())
 
         stocked = a in in_stock
-        avail_line = cfg['stock_line'] if stocked else cfg['order_line'].format(lead_time=cfg.get('lead_time', '[срок]'))
+        avail_line = (cfg['stock_line'].format(q=qty.get(a, '')) if stocked
+                      else cfg['order_line'].format(lead_time=cfg.get('lead_time', '[срок]')))
         body = f'{avail_line}\n\n{body}' if cfg.get('availability_line_position', 'start') == 'start' else f'{body}\n\n{avail_line}'
         desc = to_html(body) if cfg.get('description_html', True) else body
 
@@ -347,8 +388,19 @@ def check_photos_online(path):
 
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
+    opts = dict(a[2:].split('=', 1) for a in sys.argv[1:] if a.startswith('--') and '=' in a)
     cfg_path = args[0] if args else os.path.join(HERE, 'config.json')
     cfg = load_config(cfg_path)
+    # переопределения для запуска на GitHub: --catalog=…/index.html --out=…/avito.xml --crm-json=файл
+    if opts.get('catalog'):
+        cfg['catalog_html'] = os.path.abspath(opts['catalog'])
+    if opts.get('out'):
+        cfg['output_xml'] = os.path.abspath(opts['out'])
+    if opts.get('crm-json'):
+        cfg['crm_json'] = os.path.abspath(opts['crm-json'])
+    if '--no-crm' in sys.argv:
+        cfg['crm_catalog_url'] = cfg['crm_json'] = None
+    cfg['_crm'] = load_crm(cfg)
     root, rows, no_photo, stubs, warnings = build(cfg)
     out = cfg.get('output_xml') or os.path.join(HERE, 'avito.xml')
     serialize(root, out, cfg.get('description_html', True))
@@ -358,6 +410,7 @@ def main():
     tl = [len(r['title']) for r in rows]
     dl = [len(r['desc']) for r in rows]
     print(f'Файл: {out}  ({os.path.getsize(out) // 1024} КБ)')
+    print('Цены и наличие: ' + ('из CRM' if cfg.get('_crm') is not None else 'из каталога сайта и config.json'))
     print(f'Объявлений: {len(rows)} (в наличии {n_stock}, под заказ {len(rows) - n_stock})'
           + (f'; не выгружаем: {", ".join(cfg.get("skip", []))}' if cfg.get('skip') else ''))
     if cfg.get('avito_ids'):
