@@ -59,6 +59,10 @@ echo "--- CRM health: $(curl -s https://crm.nashdekor.ru/api/health)"
 echo "--- CRM страницы (пуши/PWA): login $(curl -s -o /tmp/crm-login.html -w '%{http_code} %{size_download}б' https://crm.nashdekor.ru/login), manifest $(curl -s -o /dev/null -w '%{http_code} %{content_type}' https://crm.nashdekor.ru/manifest.webmanifest), sw.js $(curl -s -o /dev/null -w '%{http_code} %{content_type}' https://crm.nashdekor.ru/sw.js), иконка $(curl -s -o /dev/null -w '%{http_code}' https://crm.nashdekor.ru/static/icon-192.png), корень $(curl -s -o /dev/null -w '%{http_code} → %{redirect_url}' https://crm.nashdekor.ru/)"
 echo "    вход: форма $(grep -c 'name="password"' /tmp/crm-login.html), манифест в странице $(grep -c 'manifest.webmanifest' /tmp/crm-login.html), crm.js $(grep -o 'crm.js?v=[0-9]*' /tmp/crm-login.html), CSP: $(curl -s -D - -o /dev/null https://crm.nashdekor.ru/login | grep -i '^content-security' | cut -c1-140)"
 echo "--- robots на crm/mail: crm $(curl -s -o /dev/null -w '%{http_code}' https://crm.nashdekor.ru/robots.txt), mail $(curl -s -o /dev/null -w '%{http_code}' https://mail.nashdekor.ru/robots.txt)"
+echo "--- ISO 9001 на странице товара: $(curl -s "$U/p/a907/" | grep -o 'Система качества производителя</td><td>[^<]*' | sed 's/<[^>]*>/ /g')"
+echo "    страниц товаров с ISO 9001 (выборка): $(for a in a902 a910 a703 3-7 a172; do curl -s "$U/p/$a/" | grep -c 'ISO 9001:2015'; done | paste -sd' ')"
+echo "    фид Авито: строк с ISO 9001 — $(curl -s "$U/avito.xml" | grep -c 'ISO 9001'), с брендом поставщика — $(curl -s "$U/avito.xml" | grep -ci 'artdec\|art dec')"
+echo "    сроки годности наружу не попали: $(curl -s "$U/p/a907/" "$U/avito.xml" "$U/" | grep -ci 'годен до\|срок годности\|изготовлен') совпадений"
 echo '```'
 } > "$O" 2>&1
 cat "$O"
