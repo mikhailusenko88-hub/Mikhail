@@ -1172,7 +1172,7 @@ def scene_plinth():
     plinth_run('pl_back', (0.0, D), (W, D), (0, -1), mp, miter1=True)
     plinth_run('pl_right', (W, 0.0), (W, D), (-1, 0), mp, miter1=True)
     if A.get('cam') != 'wide':
-        plinth_piece('pl_piece', (2.62, 4.42, 0.0), float(A.get('piece_rot', 73)), 0.40, mp)
+        plinth_piece('pl_piece', (2.88, 4.46, 0.0), float(A.get('piece_rot', 52)), 0.40, mp)
     curtain('sheer', 0.12, 1.8, 4.65, 0.012, 2.64, mat_sheer())
     box('track', 0.07, 0.17, 1.7, 4.75, 2.64, 2.67, mat_simple('track', srgb(240, 240, 238), rough=0.4))
     load_asset('potted_plant_02', loc=(3.66, D - 0.34, 0), rot=120)

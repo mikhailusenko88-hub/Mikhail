@@ -1,2 +1,3 @@
 # имя  аргументы для scene.py (или "py script.py")
-c39_tv scene=lounge decor=3-9 tv=1 chair=modern_arm_chair_01 chair_at=3.3,3.7 res=1600x1200 samples=200 noise=0.035
+e703_close scene=plinth decor=A703 ev=-0.6 res=1600x1200 samples=200 noise=0.035
+e703_light scene=plinth decor=A703 paint=CFC8BA ev=-0.6 res=1600x1200 samples=200 noise=0.035
