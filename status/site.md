@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-10 21:32 UTC
+# Сайт снаружи — 2026-11-10 23:18 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -29,11 +29,11 @@ ld+json: 1
 счётчик на главной: 1, в политике п. 3.4: 1, на документах: 1 1 1 
 
 --- страницы товаров и разделов (сборка nashdekor-build/build.py)
-/p/a907/                           200 text/html; charset=utf-8 32341
-/p/2-7/                            200 text/html; charset=utf-8 30619
-/p/a35/                            200 text/html; charset=utf-8 25312
-/p/a002-2/                         200 text/html; charset=utf-8 26964
-/p/gs1/                            200 text/html; charset=utf-8 32235
+/p/a907/                           200 text/html; charset=utf-8 32537
+/p/2-7/                            200 text/html; charset=utf-8 30815
+/p/a35/                            200 text/html; charset=utf-8 25508
+/p/a002-2/                         200 text/html; charset=utf-8 27160
+/p/gs1/                            200 text/html; charset=utf-8 32431
 /catalog/reechnye-paneli/          200 text/html; charset=utf-8 36193
 /catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 45849
 /catalog/plintusy/                 200 text/html; charset=utf-8 43673
@@ -75,6 +75,10 @@ Sitemap: https://nashdekor.ru/sitemap.xml
 HTTP/2 204 
 access-control-allow-origin: https://nashdekor.ru
 --- форма: проверочная отправка-ловушка (заявку НЕ создаёт)
+{"ok":true}
+  HTTP 200
+--- 3D-модели для дизайнеров (11.11): блок 1, форма 1, кнопка 2, функция 1, ссылка на A703: 1
+--- форма 3D: проверочная отправка-ловушка (заявку НЕ создаёт)
 {"ok":true}
   HTTP 200
 --- CRM health: {"ok":true}
