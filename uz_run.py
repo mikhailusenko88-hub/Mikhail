@@ -1,7 +1,7 @@
 """Один запуск на GitHub для канала «Kim yutadi?»: гонка → YouTube → таблица сохраняется в ветке uz-race.
 
 Расписание по Ташкенту (UTC+5), 3 ролика в день:
-  слот 1 — ~12:00 гонка городов   (Qaysi shahar yutadi?)
+  слот 1 — ~12:00 гонка городов   (Qaysi shahar yutadi?) — вт/чт/сб/вс; пн/ср/пт — вторая гонка машин
   слот 2 — ~16:00 гонка машин     (Qaysi mashina yutadi?)
   слот 3 — ~20:00 гонка футбольных клубов (Qaysi jamoa yutadi?)
 Сезон — неделя (пн–вс по Ташкенту): в воскресенье последний заезд темы — ФИНАЛ (топ-8 недели), с понедельника
@@ -37,6 +37,14 @@ LAST_SLOT = {"cities": 1, "cars": 2, "clubs": 3}           # в воскресе
 PLAYLIST = {"cities": "Qaysi shahar yutadi? · Гонка городов", "cars": "Qaysi mashina yutadi? · Гонка машин",
             "clubs": "Qaysi jamoa yutadi? · Гонка клубов"}
 HANDLE = "@kimyutadi_uz"
+
+
+def slot_league(d, slot):
+    """С 10.11.2026 (Studio: города берут 9–295 просмотров, машины и клубы ~1 тыс.): в полдень города идут
+    только вт/чт/сб/вс (в воскресенье — финал недели), в пн/ср/пт вместо них вторая гонка машин."""
+    if slot == 1 and d.weekday() in (0, 2, 4):
+        return "cars"
+    return SLOTS[slot][0]
 
 
 def log(*a):
@@ -287,7 +295,7 @@ def main():
         d = dt.date.fromisoformat(req["date"])
     if req["slot"] != "auto":
         slot = int(req["slot"])
-    league = SLOTS[slot][0] if req["league"] == "auto" else req["league"]
+    league = slot_league(d, slot) if req["league"] == "auto" else req["league"]
     day = dt.datetime(d.year, d.month, d.day, SLOTS[slot][1], tzinfo=TASH)
 
     state = json.loads(Path("state.json").read_text(encoding="utf-8"))

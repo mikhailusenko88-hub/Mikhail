@@ -43,6 +43,10 @@ T0 = GATE_T + 0.8               # с этого момента заезда на
 ZOOM = 1.5
 VW, VH = int(W / ZOOM), int(H / ZOOM)   # кусок трассы в кадре (720×1280)
 VX0 = OX - 40                   # левый край кадра на картинке трассы: трасса на экране 60…960
+# Крупный план в начале (10.11.2026, Studio: 74% пролистывали и после старта «с движения» — шарики мелкие, кадр пустой):
+# первые ZOOM_HOLD с камера в ZOOM_START раз ближе и держит лидеров — шарики и подписи крупные с первого кадра,
+# потом за ZOOM_EASE с плавно отъезжает до обычного ZOOM.
+ZOOM_START, ZOOM_HOLD, ZOOM_EASE = 2.5, 1.6, 2.2
 
 # текущая лига (ставится в build_race)
 LG = RL.LEAGUES["cities"]
@@ -1343,25 +1347,41 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
     conf, win_shown_t = [], None
     winner_t = finish[0][1] if finish else None
     last = None
-    BR = R * ZOOM
+    camx = None
+    zcache = {}
     for fi, (pos, racing, nfin, t) in enumerate(frames):
+        zk = min(1.0, max(0.0, (t - T0 - ZOOM_HOLD) / ZOOM_EASE))
+        zk = zk * zk * (3 - 2 * zk)
+        Z = ZOOM_START + (ZOOM - ZOOM_START) * zk
+        VWz, VHz = W / Z, H / Z
+        BR = R * Z
         ys = np.sort(pos[racing, 1])[::-1] if racing.any() else np.array([c.finish_y])
         lead_y = min(ys[0], c.finish_y + 120)
         y3 = min(ys[min(2, len(ys) - 1)], lead_y)
         # в кадре — борьба за тройку: середина между лидером и 3-м местом, но лидер всегда виден
-        target = (lead_y + y3) / 2 + Y0 - VH * 0.55
-        target = max(target, lead_y + Y0 - VH * 0.86)
-        target = min(target, lead_y + Y0 - VH * 0.30)
-        target = max(0.0, min(target, HC - VH, c.end_y + Y0 - VH + 120))
+        target = (lead_y + y3) / 2 + Y0 - VHz * 0.55
+        target = max(target, lead_y + Y0 - VHz * 0.86)
+        target = min(target, lead_y + Y0 - VHz * 0.30)
+        if zk < 1 and racing.any():      # крупный план: в кадре вся группа, ниже заголовка
+            close = float(np.median(pos[racing, 1])) + Y0 - VHz * 0.60
+            target = close + (target - close) * zk
+        target = max(0.0, min(target, HC - VHz, c.end_y + Y0 - VHz + 120))
         cam = target if cam is None else cam + (target - cam) * 0.12
         top = int(round(cam))
-        view = course_img.crop((VX0, top, VX0 + VW, top + VH))
+        # по горизонтали крупный план держит тройку лидеров (при обычном ZOOM кадр — вся ширина трассы)
+        lead3 = np.argsort(-pos[:, 1] + (~racing) * 1e9)[:3]
+        tx = float(np.mean(pos[lead3, 0])) + OX - VWz / 2
+        tx = max(VX0, min(tx, VX0 + VW - VWz))
+        camx = tx if camx is None else camx + (tx - camx) * 0.10
+        camx = max(VX0, min(camx, VX0 + VW - VWz))
+        vx = int(round(camx))
+        view = course_img.crop((vx, top, vx + int(round(VWz)), top + int(round(VHz))))
         dv = ImageDraw.Draw(view, "RGBA")
         oy = Y0 - top
-        ox = OX - VX0
+        ox = OX - vx
         for cx, cy, L, arms, om, ph, kind, amp, thk in c.spins:
             sy = cy + oy
-            if not (-260 < sy < VH + 260):
+            if not (-260 < sy < VHz + 260):
                 continue
             if kind == 0:
                 a0 = ph + om * t
@@ -1381,13 +1401,29 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
         img = view.resize((W, H), Image.BICUBIC)
         d = ImageDraw.Draw(img, "RGBA")
 
+        zq = round(Z / ZOOM, 2)
+        if zcache.get("q") != zq:
+            zcache.clear()
+            zcache["q"] = zq
+
+        def zsprite(kind, i):
+            """Шарик/подпись под текущее приближение (в обычном ZOOM — готовые спрайты без пересчёта)."""
+            src = balls_z[i] if kind == "b" else labels_z[i]
+            if zq == 1.0:
+                return src
+            if (kind, i) not in zcache:
+                k_ = zq if kind == "b" else 1 + (zq - 1) * 0.6      # подписи растут медленнее шариков
+                zcache[(kind, i)] = src.resize((max(1, int(src.size[0] * k_)), max(1, int(src.size[1] * k_))),
+                                               Image.LANCZOS)
+            return zcache[(kind, i)]
+
         def scr(x, y):
-            return (ox + x) * ZOOM, (y + oy) * ZOOM
+            return (ox + x) * Z, (y + oy) * Z
 
         for i in range(N):
             sx, sy = scr(*pos[i])
             if -80 < sy < H + 80:
-                paste(img, balls_z[i], sx - BR - 2, sy - BR - 2)
+                paste(img, zsprite("b", i), sx - BR - 2, sy - BR - 2)
         # подписи: лидеры — поверх остальных (рисуем последними)
         order = order_at(pos, racing, finish, nfin)
         boxes = []        # подписи не налезают друг на друга: сначала лидеры, кому не хватило места — без подписи
@@ -1396,7 +1432,7 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
                 continue
             sx, sy = scr(*pos[i])
             if -80 < sy < H + 80:
-                lb = labels_z[i]
+                lb = zsprite("l", i)
                 lx = min(max(sx - lb.size[0] / 2, 4), 950 - lb.size[0])
                 ly = sy - BR - 4 - lb.size[1]
                 bx = (lx, ly, lx + lb.size[0], ly + lb.size[1])
@@ -1417,9 +1453,12 @@ def build_race(out_path, race_no=1, points=None, seed=None, log=print, music_dir
             strip_cache.clear()
             strip_cache[skey] = top_strip(order, nfin, acc)
         st_ = strip_cache[skey]
-        paste(img, st_, W / 2 - 40 - st_.size[0] / 2, STRIP_Y[False] + (STRIP_Y[True] - STRIP_Y[False]) * hk)
-        if 0.6 < rt < 6.5:
-            paste(img, fade(pill, rt, 0.6, 6.5), OX, 1386)
+        if t - T0 >= ZOOM_HOLD:          # в крупном плане полоса «топ-3» не закрывает шарики — появляется при отъезде
+            paste(img, fade(st_, t - T0, ZOOM_HOLD, 1e9), W / 2 - 40 - st_.size[0] / 2,
+                  STRIP_Y[False] + (STRIP_Y[True] - STRIP_Y[False]) * hk)
+        p0 = T0 - GATE_T + ZOOM_HOLD          # призыв — после крупного плана, чтобы не закрывал шарики
+        if p0 < rt < 7.0:
+            paste(img, fade(pill, rt, p0, 7.0), OX, 1386)
         if pill_new is not None and 7 < rt < 12.5 and (winner_t is None or t < winner_t):
             paste(img, fade(pill_new, rt, 7, 12.5), OX, 1386)
         if pill2 is not None and 13 < rt < 18.5 and (winner_t is None or t < winner_t):
