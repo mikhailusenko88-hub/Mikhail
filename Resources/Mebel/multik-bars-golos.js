@@ -61,7 +61,7 @@
   // дрожание громкости (tremolo), надрыв (sat), шёпот (whisper), рот в улыбке (F), громкость относительно обычной реплики (level).
   // k — сила игры (1 — как записано, 0 — ровно). Числа подобраны по распознавателю эмоций, распознаванию слов и естественности — см. OZVUCHKA.md.
   G.ACT = {
-    happy:     { reg: 2.5, R: 1.6, span: 10, acc: .5, key: 2.5, keyDur: 1.14, T: 1.07, pause: .88, fx: { tilt: 3, F: 1.03 } },
+    happy:     { reg: 2.5, R: 1.6, span: 10, acc: .5, key: 2.5, keyDur: 1.14, T: 1.07, pause: .88, fx: { tilt: 3, F: 1.03 } },   // F обязателен: без него модель поёт слишком высоко и смазывает слова («нашли клад» → «наш веклад»)
     surprised: { reg: 2.5, R: 1.75, span: 12, onset: 2.5, key: 3, keyDur: 1.3, fin: 1, T: .97, fx: { tilt: 2 } },
     scared:    { reg: 4.5, R: .75, span: 5, key: 1, T: 1.15, pause: .7, fx: { vib: .04, tremolo: .22, breath: .08 } },
     sad:       { reg: -3, R: .5, span: 4, decl: 3, fin: -2, T: .8, pause: 1.6, unstr: 1.08, fx: { tilt: -7, level: .85 } },
@@ -70,7 +70,7 @@
     sleepy:    { reg: -2.5, R: .55, span: 4, decl: 2, T: .82, pause: 1.6, fx: { tilt: -5, level: .85 } },
     love:      { reg: .5, R: .9, T: .9, pause: 1.15, fx: { tilt: -2, breath: .08 } },
     shy:       { reg: 1, R: .7, span: 4.5, T: .9, pause: 1.3, fx: { tilt: -3, breath: .1, level: .85 } },
-    shout:     { reg: 3.5, R: 1.25, span: 8, accDur: 1.35, key: 2, T: .95, fx: { tilt: 4, sat: .12, level: 1.25 } },
+    shout:     { reg: 3, R: 1.2, span: 8, accDur: 1.2, key: 1.5, T: .97, fx: { tilt: 3, level: 1.25 } },
     whisper:   { reg: -6, R: .5, T: .88, pause: 1.2, fx: { whisper: 1, wde: .9, level: .7 } },   // исходник нарочно низкий: у высокого голоса «форма рта» снимается хуже
     laugh:     { reg: 2.5, R: 1.4, span: 9, T: 1.06, fx: { tilt: 3, tremolo: .25, vib: .025 } },
   };
