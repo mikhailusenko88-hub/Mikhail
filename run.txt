@@ -1,2 +1,2 @@
-# имя  команда: "py script.py" — обычный питон, иначе — аргументы для scene.py в Blender
-probe py probe.py
+# имя  аргументы для scene.py (или "py script.py")
+t1 scene=lounge decor=3-7 res=960x720 samples=96 noise=0.06 lab=1

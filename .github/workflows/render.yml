@@ -71,6 +71,8 @@ jobs:
             fi
             pip install -q numpy pillow opencv-python-headless
             python3 fetch_assets.py 2>&1 | tee "out/$NAME/assets_log.txt" | tail -40
+            LAB=""; if [[ "$CMD" == *lab=1* ]]; then LAB="lab=out/$NAME"; fi
+            python3 prep_textures.py $LAB 2>&1 | tee -a "out/$NAME/assets_log.txt" | tail -30
             ./blender/blender -b --factory-startup --python-exit-code 1 -P scene.py -- name=$NAME $CMD 2>&1 | grep --line-buffered -v "^Fra:\| Sample \|Rendered \|Updating \|Loading render kernels\|Path Tracing\|Denoising\|Synchronizing\|Waiting for" | tee "out/$NAME/log.txt" | tail -120
           fi
       - name: Commit result
@@ -80,4 +82,9 @@ jobs:
           git config user.email render-bot@users.noreply.github.com
           git add -A out
           git commit -q -m "render: $NAME" || echo nothing
-          for i in 1 2 3 4 5 6 7 8 9 10; do git pull -q --rebase --autostash && git push -q && break; sleep $((RANDOM % 12 + 3)); done
+          rm -f out/*/_*.exr
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            git fetch -q --depth=30 origin "$GITHUB_REF_NAME" && git rebase -q FETCH_HEAD && git push -q origin "HEAD:$GITHUB_REF_NAME" && break
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 8 + 2))
+          done

@@ -1,0 +1,12 @@
+{
+ "decors": {
+  "3-7":  {"src": "oak_veneer_05", "size_mm": 1000, "gain_l": 0.8},
+  "3-15": {"src": "oak_veneer_01", "size_mm": 1830, "gain_l": 0.9},
+  "3-9":  {"src": "smoked_walnut_veneer", "size_mm": 1000, "gain_l": 0.85}
+ },
+ "lab": {
+  "3-7":  [["oak_veneer_05", 1000], ["oak_veneer_04", 1000], ["oak_veneer_02", 1000], ["mocha_oak_veneer", 1000], ["european_walnut_veneer_04", 1000]],
+  "3-15": [["oak_veneer_01", 1830], ["ash_veneer", 1000], ["white_oak_veneer", 500], ["teak_veneer", 1000], ["olive_veneer", 1000]],
+  "3-9":  [["smoked_walnut_veneer", 1000], ["natural_walnut_veneer", 1000], ["walnut_veneer", 1800], ["american_walnut_veneer", 1000], ["walnut_veneer_02", 1000]]
+ }
+}
