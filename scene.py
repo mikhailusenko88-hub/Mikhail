@@ -1019,7 +1019,7 @@ def scene_lounge():
         top = credenza(1.2, 3.1, D - 0.012 - 0.015, color=hexcol(A['cabcol']) if 'cabcol' in A else None)
     if A.get('tv') == '1':
         # ТВ-зона: телевизор на стене, на тумбе минимум вещей
-        ms = mat_simple('tv_screen', (0.004, 0.004, 0.005, 1), rough=0.12)
+        ms = mat_simple('tv_screen', (0.006, 0.006, 0.007, 1), rough=0.42, **{'Specular IOR Level': 0.35})
         mb = mat_simple('tv_body', (0.01, 0.01, 0.011, 1), rough=0.4)
         tw, th, tz = 1.45, 0.83, 1.32
         box('tv_body', 2.15 - tw / 2, 2.15 + tw / 2, D - 0.012 - 0.045, D - 0.012 - 0.012, tz - th / 2, tz + th / 2, mb, bevel=0.002)

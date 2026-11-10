@@ -1,2 +1,2 @@
 # имя  аргументы для scene.py (или "py script.py")
-a37_lounge scene=lounge decor=3-7 res=1600x1200 samples=200 noise=0.035
+c39_tv scene=lounge decor=3-9 tv=1 chair=modern_arm_chair_01 chair_at=3.3,3.7 res=1600x1200 samples=200 noise=0.035

@@ -23,6 +23,8 @@ for name, (title, cap) in MAP.items():
     if only and name not in only:
         continue
     src = f'out/{name}/{name}.jpg'
+    if name == 'f1' and os.path.exists('out/a37_lounge/a37_lounge.jpg'):
+        src = 'out/a37_lounge/a37_lounge.jpg'
     if not os.path.exists(src):
         print('нет', name)
         continue
