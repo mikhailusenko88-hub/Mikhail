@@ -1,0 +1,33 @@
+name: keycheck
+on:
+  push:
+    branches: [domain-check]
+    paths: ['keycheck.txt']
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ключ IndexNow глазами разных роботов
+        run: |
+          K=1a06371a537e385ae6bb830b593a5315
+          {
+          echo "# keycheck $(date -u +%F_%H:%M) UTC"
+          for UA in "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)" "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)" "Mozilla/5.0" ; do
+            for U in "https://nashdekor.ru/$K.txt" "http://nashdekor.ru/$K.txt" "https://www.nashdekor.ru/$K.txt" "https://nashdekor.ru/robots.txt" "https://nashdekor.ru/"; do
+              echo "## $UA | $U"
+              curl -s -o /tmp/b -D - -m 20 -A "$UA" "$U" | grep -i -E '^(HTTP|location|content-type|content-length|server|x-)' | head -8
+              echo "body: $(head -c 120 /tmp/b | tr '\n' ' ')"
+            done
+          done
+          echo "## DNS"; dig +short nashdekor.ru A; dig +short www.nashdekor.ru A; dig +short nashdekor.ru AAAA
+          echo "## IndexNow Bing direct GET"
+          curl -s -m 20 -D - "https://www.bing.com/indexnow?url=https://nashdekor.ru/&key=$K" | head -20
+          } > status/keycheck.md 2>&1
+      - run: |
+          git config user.name keycheck; git config user.email keycheck@users.noreply.github.com
+          git add status/keycheck.md; git commit -m "keycheck" || exit 0
+          for i in 1 2 3; do git pull --rebase origin domain-check && git push origin HEAD:domain-check && break; sleep 5; done
