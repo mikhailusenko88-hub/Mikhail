@@ -32,3 +32,4 @@ model modern_arm_chair_01 2k
 model side_table_tall_01 1k
 model hanging_picture_frame_01 1k
 model modern_ceiling_lamp_01 1k
+model potted_plant_04 1k

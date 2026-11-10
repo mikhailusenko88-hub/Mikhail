@@ -1,9 +1,10 @@
 # имя  аргументы для scene.py (или "py script.py")
-p10 scene=arch decor=3-7 res=800x600 samples=48 noise=0.08 lab=1
-p11 scene=lounge decor=3-7 res=800x600 samples=64 noise=0.06 cam=macro
-p12 scene=lounge decor=3-7 res=800x600 samples=48 noise=0.08 cam=close
-p13 scene=lounge decor=3-7 res=800x600 samples=64 noise=0.06 cam=sample
-p14 scene=lounge decor=A910 paint=7F9080 res=800x600 samples=48 noise=0.08
-p15 scene=lounge decor=A910 cabcol=3B3F42 res=800x600 samples=48 noise=0.08
-p16 scene=plinth decor=A703 res=800x600 samples=64 noise=0.06
-p17 scene=lounge decor=A910 res=800x600 samples=64 noise=0.06 cam=macro
+q1 scene=lounge decor=3-7 res=800x600 samples=64 noise=0.06 cam=sample
+q2 scene=lounge decor=3-15 res=800x600 samples=48 noise=0.08 cam=diag
+q3 scene=lounge decor=3-9 res=800x600 samples=48 noise=0.08 tv=1 chair=modern_arm_chair_01 chair_at=3.3,3.7
+q4 scene=arch decor=3-9 res=800x600 samples=48 noise=0.08 cam=b
+q5 scene=lounge decor=A910 paint=5F7563 res=800x600 samples=48 noise=0.08 cam=mid sun_az=24 sun_el=22
+q6 scene=lounge decor=A910 res=800x600 samples=64 noise=0.06 cam=macro2 sun_az=24 sun_el=22
+q7 scene=plinth decor=A703 res=800x600 samples=64 noise=0.06
+q8 scene=plinth decor=A703 res=800x600 samples=64 noise=0.06 cam=wide
+q9 scene=arch decor=A910 paint=C9BBA8 res=800x600 samples=48 noise=0.08

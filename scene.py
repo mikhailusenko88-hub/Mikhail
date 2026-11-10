@@ -918,7 +918,7 @@ def panel_piece(name, loc, rot, length, step=0.040, lam_w=0.0248, total_t=0.012,
     face([(0, L, 0), (0, 0, 0), (0, 0, base_t), (0, L, base_t)], 1)
     face([(w, 0, 0), (w, L, 0), (w, L, base_t), (w, 0, base_t)], 1)
     for i in range(n):
-        xl = i * step + (step - lam_w) / 2
+        xl = i * step + (step - lam_w)
         xr = xl + lam_w
         u0, v0, j = random.random(), random.random(), random.random()
         uv = [(u0, v0), (u0 + lam_w, v0), (u0 + lam_w, v0 + L), (u0, v0 + L)]
@@ -981,15 +981,29 @@ def scene_lounge():
         top = 0.68
     else:
         top = credenza(1.2, 3.1, D - 0.012 - 0.015, color=hexcol(A['cabcol']) if 'cabcol' in A else None)
-    table_lamp(1.45, yc, top, lamps)
-    zz = books(2.25, yc - 0.02, top, 3, seed=4)
-    load_asset('ceramic_vase_02', loc=(2.25, yc - 0.02, zz), rot=20)
-    load_asset('ceramic_vase_04', loc=(2.82, yc + 0.03, top), rot=70)
-    load_asset('ceramic_vase_03', loc=(3.0, yc - 0.06, top), rot=10)
-    load_asset('standing_picture_frame_02', loc=(1.85, yc + 0.04, top), rot=float(A.get('pic_rot', 12)))
-    # растение у окна, кресло, столик, ковёр
+    if A.get('tv') == '1':
+        # ТВ-зона: телевизор на стене, на тумбе минимум вещей
+        ms = mat_simple('tv_screen', (0.004, 0.004, 0.005, 1), rough=0.12)
+        mb = mat_simple('tv_body', (0.01, 0.01, 0.011, 1), rough=0.4)
+        tw, th, tz = 1.45, 0.83, 1.32
+        box('tv_body', 2.15 - tw / 2, 2.15 + tw / 2, D - 0.012 - 0.045, D - 0.012 - 0.012, tz - th / 2, tz + th / 2, mb, bevel=0.002)
+        box('tv_screen', 2.15 - tw / 2 + 0.008, 2.15 + tw / 2 - 0.008, D - 0.012 - 0.0465, D - 0.012 - 0.045, tz - th / 2 + 0.008, tz + th / 2 - 0.012, ms)
+        zz = books(1.55, yc - 0.02, top, 3, seed=4)
+        load_asset('ceramic_vase_02', loc=(1.55, yc - 0.02, zz), rot=20)
+        load_asset('ceramic_vase_03', loc=(2.85, yc - 0.03, top), rot=10)
+        load_asset('potted_plant_04', loc=(2.62, yc + 0.02, top), rot=40)
+    else:
+        table_lamp(1.45, yc, top, lamps)
+        zz = books(2.25, yc - 0.02, top, 3, seed=4)
+        load_asset('ceramic_vase_02', loc=(2.25, yc - 0.02, zz), rot=20)
+        load_asset('ceramic_vase_04', loc=(2.82, yc + 0.03, top), rot=70)
+        load_asset('ceramic_vase_03', loc=(3.0, yc - 0.06, top), rot=10)
+        load_asset('standing_picture_frame_02', loc=(1.85, yc + 0.04, top), rot=float(A.get('pic_rot', 12)))
+    # растение у окна, кресло, ковёр
     load_asset('potted_plant_01', loc=(0.72, D - 0.55, 0), rot=35)
-    load_asset('mid_century_lounge_chair', loc=(3.22, 3.75, 0.012), rot=float(A.get('chair_rot', -35)))
+    chair = A.get('chair', 'mid_century_lounge_chair')
+    cx, cy = [float(v) for v in A.get('chair_at', '3.22,3.75').split(',')]
+    load_asset(chair, loc=(cx, cy, 0.012), rot=float(A.get('chair_rot', -35 if chair.startswith('mid') else 150)))
     m_rug = mat_pbr('rug', 'hessian_230', 0.55, tint=srgb(240, 232, 218), nstrength=1.5)
     box('rug', 1.5, 4.15, 2.6, 4.45, 0.0, 0.012, m_rug, bevel=0.004)
     # свет и камера
@@ -1003,6 +1017,12 @@ def scene_lounge():
         camera((1.85, 3.95, 1.12), (2.72, D, 0.95), lens=50, fstop=5.6, focus=1.55)
     elif cm == 'macro':
         camera((3.0, 4.55, 1.2), (3.75, D - 0.012, 1.15), lens=60, fstop=8.0, focus=0.98)
+    elif cm == 'macro2':        # участок в косом солнце над тумбой
+        camera((2.35, 4.62, 1.47), (1.75, D - 0.012, 1.42), lens=60, fstop=8.0, focus=0.83)
+    elif cm == 'mid':           # средний план: тумба с вещами, рельеф стены читается
+        camera((2.2, 2.6, 1.1), (2.1, D, 0.95), lens=35, fstop=5.6, focus=2.4)
+    elif cm == 'diag':          # по диагонали от правой стены: окно, растение, тумба, кресло
+        camera((3.95, 1.25, 1.2), (1.5, D, 1.0), lens=30, fstop=5.6, focus=4.2)
     elif cm == 'sample':
         # образец панели на светлом столике, стена с тумбой — фоном
         mt = mat_simple('tbl', srgb(236, 233, 226), rough=0.5, bump=0.01, bump_scale=700.0)
@@ -1014,7 +1034,8 @@ def scene_lounge():
         panel_piece('piece_a', (2.0, 2.95, 0.73), pr, 0.46)
         panel_piece('piece_b', (2.0 + 0.145 * math.cos(R(pr)) + 0.07 * math.sin(R(pr)), 2.95 + 0.145 * math.sin(R(pr)) - 0.07 * math.cos(R(pr)), 0.73),
                     pr, 0.38)
-        camera((2.02, 2.42, 1.02), (2.2, 3.03, 0.735), lens=50, fstop=float(A.get('fstop', 4.5)), focus=0.62, level=False)
+        load_asset('potted_plant_04', loc=(1.72, 3.3, 0.73), rot=20)
+        camera((2.04, 2.5, 0.95), (2.1, 3.02, 0.735), lens=50, fstop=float(A.get('fstop', 5.6)), focus=0.52, level=False)
     return world, sun, sun_dir, lamps, cal
 
 
@@ -1086,7 +1107,10 @@ def scene_arch():
     az, el = float(A.get('sun_az', 38)), float(A.get('sun_el', 32))
     sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
     world, sun = setup_world(sun_dir)
+    load_asset('potted_plant_01', loc=(1.7, D2 - 0.6, 0), rot=80)
     cal = camera((1.5, 0.5, 1.25), (2.05, Y0, 1.08), lens=float(A.get('lens', 28)), fstop=float(A.get('fstop', 8)), focus=4.0)
+    if A.get('cam') == 'b':     # с другой стороны: виден откос арки и дальняя комната с окном
+        camera((3.05, 0.6, 1.25), (1.9, Y0, 1.05), lens=28, fstop=8, focus=4.0)
     return world, sun, sun_dir, lamps, cal
 
 
@@ -1103,17 +1127,19 @@ def scene_plinth():
     mp = mat_simple('plinth_white', srgb(242, 242, 239), rough=0.38)
     plinth_run('pl_back', (0.0, D), (W, D), (0, -1), mp, miter1=True)
     plinth_run('pl_right', (W, 0.0), (W, D), (-1, 0), mp, miter1=True)
-    plinth_piece('pl_piece', (2.35, 3.72, 0.0), float(A.get('piece_rot', 28)), 0.55, mp)
+    plinth_piece('pl_piece', (2.7, 4.5, 0.0), float(A.get('piece_rot', 12)), 0.55, mp)
     curtain('sheer', 0.12, 1.8, 4.65, 0.012, 2.64, mat_sheer())
     box('track', 0.07, 0.17, 1.7, 4.75, 2.64, 2.67, mat_simple('track', srgb(240, 240, 238), rough=0.4))
-    load_asset('potted_plant_02', loc=(3.45, D - 0.5, 0), rot=120)
-    load_asset('modern_arm_chair_01', loc=(1.55, D - 0.75, 0), rot=float(A.get('chair_rot', 20)))
+    load_asset('potted_plant_02', loc=(3.62, D - 0.36, 0), rot=120)
     az, el = float(A.get('sun_az', 40)), float(A.get('sun_el', 24))
     sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
     world, sun = setup_world(sun_dir)
     cal = camera((2.0, 0.8, 1.25), (2.2, D, 1.1), lens=28)
-    camera((2.0, 2.75, float(A.get('cam_z', 0.34))), (3.25, D, 0.16), lens=float(A.get('lens', 35)), fstop=float(A.get('fstop', 5.6)),
-           focus=float(A.get('focus', 1.3)))
+    if A.get('cam') == 'wide':
+        camera((1.6, 2.2, 0.55), (3.2, D, 0.3), lens=30, fstop=8, focus=2.6)
+    else:
+        camera((2.55, 4.0, float(A.get('cam_z', 0.2))), (3.5, D, 0.06), lens=float(A.get('lens', 35)), fstop=float(A.get('fstop', 11)),
+               focus=float(A.get('focus', 0.8)))
     return world, sun, sun_dir, [], cal
 
 
