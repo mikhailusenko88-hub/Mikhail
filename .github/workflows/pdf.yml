@@ -2,7 +2,7 @@ name: brandbook-pdf
 on:
   push:
     branches: [brandbook]
-    paths: ['brandbook.html', 'make_pdf.py']
+    paths: ['brandbook.html', 'brandbook40.html', 'make_pdf.py']
 permissions:
   contents: write
 jobs:
