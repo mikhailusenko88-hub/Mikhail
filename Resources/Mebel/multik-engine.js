@@ -924,12 +924,12 @@ MK.compile = function (ep, lib, audio) {
     let PR = [];   // вещи на земле: герой не встаёт прямо на них (зонтик сквозь пса)
     const spaceX = (id, x, fromX, gap) => { gap = gap || GAP; x = clamp(x, .07, .93); const z = C[id] ? C[id].z : 0;
       const free = (xx, zz) => { if (!zz) for (const p of PR) { if (p.holder || !p.vis || p.tb || (p.big || 1) > 1.2) continue; if (Math.abs(p.x - xx) < wOf(id) / 2 + .035 * Math.min(1, p.big || 1)) return false; }
-        for (const o in C) { if (o === id || !C[o].vis) continue; const oz = C[o].z || 0, ww = (wOf(id) + wOf(o)) / 2, need = oz === zz ? Math.max(gap, ww + .025) : (zz > oz ? Math.max(gap * .5, ww * .85) : 0); if (need && Math.abs(C[o].x - xx) < need - 1e-6) return false; } return true; };
+        for (const o in C) { if (o === id || !C[o].vis) continue; const oz = C[o].z || 0, ww = (wOf(id) + wOf(o)) / 2, need = oz === zz ? Math.max(gap, ww + .025) : Math.max(gap * .5, ww * .85);   /* и сзади тоже: не прятаться целиком за спиной соседа — голова из-за его головы */ if (need && Math.abs(C[o].x - xx) < need - 1e-6) return false; } return true; };
       if (free(x, z)) return x; const pref = fromX != null && fromX > x ? 1 : -1;
       for (let k = 1; k < 40; k++) for (const sd of [-pref, pref]) { const xx = x + sd * k * .02; if (xx < .07 || xx > .93) continue; if (free(xx, z)) return xx; }
       if (C[id] && !z) { C[id].z = .6; return spaceX(id, x, fromX, gap); }
       // места нет совсем — встаём туда, где теснее всего меньше (наибольший запас до соседей)
-      let best = x, bestS = -9; for (let xx = .07; xx <= .93; xx += .01) { let sl = 9; for (const o in C) { if (o === id || !C[o].vis) continue; const oz = C[o].z || 0, ww = (wOf(id) + wOf(o)) / 2, need = oz === z ? Math.max(gap, ww + .025) : (z > oz ? Math.max(gap * .5, ww * .85) : 0); if (need) sl = Math.min(sl, Math.abs(C[o].x - xx) - need); } if (sl > bestS) { bestS = sl; best = xx; } }
+      let best = x, bestS = -9; for (let xx = .07; xx <= .93; xx += .01) { let sl = 9; for (const o in C) { if (o === id || !C[o].vis) continue; const oz = C[o].z || 0, ww = (wOf(id) + wOf(o)) / 2, need = oz === z ? Math.max(gap, ww + .025) : Math.max(gap * .5, ww * .85); if (need) sl = Math.min(sl, Math.abs(C[o].x - xx) - need); } if (sl > bestS) { bestS = sl; best = xx; } }
       return best; };
     // встать рядом с вещью (с той стороны, где свободно); если уже рядом — не идти
     const reachX = (id, px) => { const me = C[id].x; if (Math.abs(me - px) < .09) return null; for (const sd of me < px ? [-1, 1] : [1, -1]) { const x = px + sd * .065; if (x < .04 || x > .96) continue; if (!Object.keys(C).some(o => o !== id && C[o].vis && Math.abs(C[o].x - x) < (wOf(id) + wOf(o)) / 2 + .01)) return x; } return null; };

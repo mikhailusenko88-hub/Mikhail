@@ -3080,11 +3080,15 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
     const xa = X(A.x), xb = X(B.x), sg = xb >= xa ? 1 : -1, D = (ra.halfW || .4) + (rb.halfW || .4), mid = (xa + xb) / 2, lead = !(B.act && B.act.n === 'hug' && B.act.to === id && B.act.t > at);
     hugF[id] = { x: lerp(xa, mid - sg * D / 2, k), dir: sg, k, lead }; hugF[a.to] = { x: lerp(xb, mid + sg * D / 2, k), dir: -sg, k, lead: !lead };
     const z = ((A.z || 0) + (B.z || 0)) / 2; A.z = lerp(A.z || 0, z, k); B.z = lerp(B.z || 0, z, k); }
+  // где будет камера в этом кадре — чтобы герой, повернувшись к другу, не стоял к зрителю спиной (камера сбоку от него)
+  let camE = null; try { let ci0 = 0; const cs = seg.cam.filter(c => !c.shake); for (let i = 0; i < cs.length; i++) if (cs[i].t <= t) ci0 = i; if (cs.length) { const c1 = camFor(cs[ci0], S, seg, tl.lib), c0 = ci0 > 0 ? camFor(cs[ci0 - 1], S, seg, tl.lib) : c1, k0 = cs[ci0].cut ? 1 : ease((t - cs[ci0].t) / .9); camE = new THREE.Vector3().lerpVectors(c0.pos, c1.pos, k0); } } catch (e) { camE = null; }
   for (const id in S) {
     const st = S[id], lc = tl.lib.characters[id]; if (!lc || !st.vis) continue;
     const rig = rigFor(lc); ensureIn(rig.root); rig.root.visible = true; const hf = hugF[id]; st._hug = hf || null;
-    { const rx = hf ? hf.x : X(st.x), rz = -(st.z || 0) * 1.5; rig.root.position.set(rx, CF && CF.floor ? CF.floor(rx, rz) : 0, rz); }
-    rig.yaw.rotation.y = hf ? lerp(st.face * .72, hf.dir * .3, hf.k) : st.face * (st.walk && st.walk.on ? 1.35 : .72);
+    const rx = hf ? hf.x : X(st.x), rz = -(st.z || 0) * 1.5; rig.root.position.set(rx, CF && CF.floor ? CF.floor(rx, rz) : 0, rz);
+    let yw = hf ? lerp(st.face * .72, hf.dir * .3, hf.k) : st.face * (st.walk && st.walk.on ? 1.35 : .72);
+    if (!hf && camE && st.face) { const az = Math.atan2(camE.x - rx, camE.z - rz), lim = st.walk && st.walk.on ? 1.45 : .95; let d = yw - az; d = Math.atan2(Math.sin(d), Math.cos(d)); if (Math.abs(d) > lim) yw = az + Math.sign(d) * lim; }   // стоит — не больше ~55° от зрителя, идёт — не спиной
+    rig.yaw.rotation.y = yw;
     const held = seg.props.find(p => p._holder === id && p._vis !== false); st.prop = held || null;
     applyPose(rig, st, T); fxFor(rig, st, T); rig._held = held; rig._needFur = true;
   }
