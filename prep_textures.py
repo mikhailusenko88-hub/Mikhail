@@ -36,8 +36,8 @@ def load_src(aid):
 
 def transfer(im, ref, gain_l=1.0, max_l_gain=2.2, sat=1.0, dl=0.0):
     lab = cv2.cvtColor(im, cv2.COLOR_BGR2LAB).astype(np.float32)
-    m = lab.reshape(-1, 3).mean(0)
-    s = lab.reshape(-1, 3).std(0) + 1e-6
+    m = lab.reshape(-1, 3).mean(0, dtype=np.float64).astype(np.float32)      # float64: на 16 млн пикселей float32 даёт ошибку
+    s = lab.reshape(-1, 3).std(0, dtype=np.float64).astype(np.float32) + 1e-6
     rm, rs = np.array(ref['lab_mean'], np.float32), np.array(ref['lab_std'], np.float32)
     kl = min(rs[0] * gain_l / s[0], max_l_gain)
     out = np.empty_like(lab)
@@ -75,7 +75,7 @@ for decor, c in CFG['decors'].items():
     res, kl = transfer(im, REF[decor], c.get('gain_l', 0.8), c.get('max_l_gain', 2.2), c.get('sat', 1.0), c.get('dl', 0.0))
     cv2.imwrite(f'assets/decor/{decor}_diff.jpg', res, [cv2.IMWRITE_JPEG_QUALITY, 95])
     made[decor] = {'src': c['src'], 'size_mm': c.get('size_mm', 1000), 'l_gain': round(kl, 2), 'shape': list(res.shape[:2]),
-                   'mean_bgr': [round(float(v), 1) for v in res.reshape(-1, 3).mean(0)]}
+                   'mean_bgr': [round(float(v), 1) for v in res.reshape(-1, 3).mean(0, dtype=np.float64)]}
     print('decor', decor, made[decor])
 json.dump(made, open('assets/decor/made.json', 'w'), indent=1)
 

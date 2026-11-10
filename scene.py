@@ -12,7 +12,7 @@ def log(*a):
 
 
 argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
-A = dict(x.split('=', 1) for x in argv if '=' in x)
+A = {k: v.replace('_', ' ') if k in ('look', 'view') else v for k, v in (x.split('=', 1) for x in argv if '=' in x)}
 NAME = A.get('name', 'test')
 SCENE = A.get('scene', 'lounge')
 DECOR = A.get('decor', '3-7')
@@ -620,7 +620,7 @@ def calibrate(world, sun, sun_dir, neutral_prefixes=('wall', 'ceil'), lamps=()):
     c0 = np.array(sun.data.color[:]) * gains
     sun.data.energy = sun.data.energy * float(c0.max())
     sun.data.color = tuple(float(v) for v in c0 / c0.max())
-    key = float(A.get('key', 1.25))
+    key = float(A.get('key', 0.95))
     ev = math.log2(key / max(y_ref, 1e-6)) + EV
     scene.view_settings.exposure = ev
     log('white pixels', int(mask.sum()), 'illuminant', ill.round(3), 'wb gains', gains.round(3), 'wall Y', round(y_ref, 4), 'exposure', round(ev, 2))
@@ -716,16 +716,17 @@ def scene_lounge():
     W, D, H = 4.4, 5.2, 2.7
     m_wall = mat_pbr('wall_paint', 'beige_wall_001', 3.0, color=srgb(236, 232, 224), rough=0.9, nstrength=0.6)
     m_ceil = mat_simple('ceil_paint', srgb(244, 243, 240), rough=0.95)
-    m_floor = mat_pbr('floor', 'laminate_floor_02', 1.7, rough_add=-0.05, nstrength=0.8, rot=R(float(A.get('floor_rot', 90))))
+    m_floor = mat_pbr('floor', 'laminate_floor_02', 1.7, rough_add=-0.05, nstrength=0.8, rot=R(float(A.get('floor_rot', 90))),
+                      tint=srgb(232, 222, 210))
     room(W, D, H, win=(2.3, 4.7, 0.06, 2.46), m_wall=m_wall, m_floor=m_floor, m_ceil=m_ceil)
-    m_wood, m_black = mat_decor(DECOR), mat_simple('pan_black', (0.012, 0.012, 0.013, 1), rough=0.55)
+    m_wood, m_black = mat_decor(DECOR), mat_simple('pan_black', (0.007, 0.007, 0.008, 1), rough=0.8, **{'Specular IOR Level': 0.25})
     slat_wall('panels', 0.0, W, H, D, m_wood, m_black)
     # тюль и карниз
     curtain('sheer', 0.12, 2.1, 4.95, 0.012, 2.64, mat_sheer())
     box('track', 0.07, 0.17, 2.0, 5.05, 2.64, 2.67, mat_simple('track', srgb(240, 240, 238), rough=0.4))
     lamps = []
     # тумба у стены
-    cab = load_asset('modern_wooden_cabinet', loc=(2.15, D - 0.012 - 0.28, 0), rot=float(A.get('cab_rot', 0)))
+    cab = load_asset('modern_wooden_cabinet', loc=(2.15, D - 0.012 - 0.28, 0), rot=float(A.get('cab_rot', 180)))
     top = 0.68
     yc = D - 0.012 - 0.28
     if cab is None:
@@ -739,15 +740,15 @@ def scene_lounge():
     load_asset('standing_picture_frame_02', loc=(1.85, yc + 0.04, top), rot=float(A.get('pic_rot', 12)))
     # растение у окна, кресло, столик, ковёр
     load_asset('potted_plant_01', loc=(0.72, D - 0.55, 0), rot=35)
-    load_asset('mid_century_lounge_chair', loc=(3.4, 3.6, 0.012), rot=float(A.get('chair_rot', -35)))
-    m_rug = mat_pbr('rug', 'wool_boucle', 0.35, tint=srgb(236, 228, 212), nstrength=1.2)
+    load_asset('mid_century_lounge_chair', loc=(3.3, 3.75, 0.012), rot=float(A.get('chair_rot', -35)))
+    m_rug = mat_pbr('rug', 'hessian_230', 0.55, tint=srgb(240, 232, 218), nstrength=1.5)
     box('rug', 1.5, 4.15, 2.6, 4.45, 0.0, 0.012, m_rug, bevel=0.004)
     # свет и камера
     sun_dir = Vector((math.cos(R(30)) * math.cos(R(40)), math.cos(R(30)) * math.sin(R(40)), -math.sin(R(30))))
     az, el = float(A.get('sun_az', 40)), float(A.get('sun_el', 30))
     sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
     world, sun = setup_world(sun_dir)
-    camera((2.55, 0.75, 1.22), (2.15, D, 1.06), lens=float(A.get('lens', 30)), fstop=float(A.get('fstop', 5.6)), focus=4.3)
+    camera((2.55, 0.75, 1.22), (2.15, D, 1.02), lens=float(A.get('lens', 30)), fstop=float(A.get('fstop', 5.6)), focus=4.3)
     return world, sun, sun_dir, lamps
 
 

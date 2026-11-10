@@ -1,2 +1,4 @@
 # имя  аргументы для scene.py (или "py script.py")
-t1 scene=lounge decor=3-7 res=960x720 samples=96 noise=0.06 lab=1
+t2a scene=lounge decor=3-7 res=1200x900 samples=128 noise=0.05 lab=1
+t2b scene=lounge decor=3-7 res=1200x900 samples=128 noise=0.05 look=AgX_-_High_Contrast
+t2c scene=lounge decor=3-7 res=1200x900 samples=128 noise=0.05 view=Filmic look=Medium_High_Contrast
