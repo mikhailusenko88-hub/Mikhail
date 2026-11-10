@@ -1077,7 +1077,7 @@ def scene_lounge():
             panel_piece('piece_b', (2.0 + 0.145 * math.cos(R(pr)) + 0.07 * math.sin(R(pr)), 2.95 + 0.145 * math.sin(R(pr)) - 0.07 * math.cos(R(pr)), 0.73),
                         pr, 0.38)
         load_asset('potted_plant_04', loc=(1.72, 3.3, 0.73), rot=20)
-        camera((2.04, 2.5, 0.95), (2.1, 3.02, 0.735), lens=50, fstop=float(A.get('fstop', 5.6)), focus=0.52, level=False)
+        camera((1.92, 2.56, 0.95), (1.99, 3.1, 0.735), lens=50, fstop=float(A.get('fstop', 6.3)), focus=0.5, level=False)
     return world, sun, sun_dir, lamps, cal
 
 

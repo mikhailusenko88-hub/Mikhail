@@ -1,3 +1,5 @@
 # имя  аргументы для scene.py (или "py script.py")
-e703_close scene=plinth decor=A703 ev=-0.6 res=1600x1200 samples=200 noise=0.035
-e703_light scene=plinth decor=A703 paint=CFC8BA ev=-0.6 res=1600x1200 samples=200 noise=0.035
+a37_sample scene=lounge decor=3-7 cam=sample res=1600x1200 samples=200 noise=0.035
+b315_sample scene=lounge decor=3-15 cam=sample piece_rot=24 res=1600x1200 samples=200 noise=0.035
+c39_sample scene=lounge decor=3-9 cam=sample piece_rot=34 res=1600x1200 samples=200 noise=0.035
+d910_sample scene=lounge decor=A910 cam=sample tblcol=50545A res=1600x1200 samples=200 noise=0.035
