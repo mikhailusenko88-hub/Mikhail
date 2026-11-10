@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Генератор фида Авито Автозагрузки (XML) для магазина «Пространство» — ARTDEC.
+"""Генератор фида Авито Автозагрузки (XML) для магазина «Наш декор».
 
 Запуск:  python3 build_feed.py [путь/к/config.json] [--check-photos]
          --check-photos — дополнительно открыть каждую ссылку на фото и убедиться, что это картинка
@@ -16,13 +16,21 @@ import sys
 import xml.etree.ElementTree as ET
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-EXPECTED_ADS = 107
+sys.path.insert(0, HERE)
+from clean_texts import clean, problems  # noqa: E402  правила текстов магазина
+
+CATALOG_SIZE = 107          # артикулов в каталоге сайта
 
 
 def load_config(path):
     with open(path, encoding='utf-8') as f:
         cfg = json.load(f)
-    return {k: v for k, v in cfg.items() if not k.startswith('_')}
+    cfg = {k: v for k, v in cfg.items() if not k.startswith('_')}
+    base = os.path.dirname(os.path.abspath(path))
+    for k in ('catalog_html', 'texts_json', 'output_xml'):
+        if cfg.get(k) and not os.path.isabs(cfg[k]):
+            cfg[k] = os.path.join(base, cfg[k])
+    return cfg
 
 
 def load_catalog(index_html):
@@ -128,18 +136,26 @@ def build(cfg):
     if texts is None:
         warnings.append(f"Файл текстов не найден ({cfg.get('texts_json')}) — у всех объявлений заглушки из каталога")
 
+    skip = {str(a).strip() for a in cfg.get('skip', [])}
+    avito_ids = {str(k).strip(): int(v) for k, v in (cfg.get('avito_ids') or {}).items()}
+    unknown = (skip | set(avito_ids)) - {x['a'] for x in cat}
+    if unknown:
+        warnings.append(f'skip/avito_ids: нет в каталоге артикулов {sorted(unknown)}')
+
     root = ET.Element('Ads', formatVersion='3', target='Avito.ru')
     for item in cat:
         a = item['a']
+        if a in skip:
+            continue
         t = (texts or {}).get(a)
         if not t:
             t = stub_text(item)
             stubs.append(a)
-        src_title = (t.get('title') or item['n']).strip()
+        src_title = clean((t.get('title') or item['n']).strip())
         title = cut_title(src_title, a, int(cfg.get('title_max', 50)))
         if title != re.sub(r'\s+', ' ', src_title):
             shortened.append(f'{a}: «{src_title}» ({len(src_title)}) → «{title}» ({len(title)})')
-        body = (t.get('description') or '').strip()
+        body = clean((t.get('description') or '').strip())
 
         stocked = a in in_stock
         avail_line = cfg['stock_line'] if stocked else cfg['order_line'].format(lead_time=cfg.get('lead_time', '[срок]'))
@@ -166,6 +182,8 @@ def build(cfg):
         def add(tag, val):
             el = ET.SubElement(ad, tag); el.text = str(val); return el
         add('Id', ad_id(a))
+        if a in avito_ids:
+            add('AvitoId', avito_ids[a])
         add('Category', cfg['category'])
         add('GoodsType', cfg['goods_type'])
         for k, v in mapping.items():
@@ -247,8 +265,12 @@ def validate(path, rows, cfg, no_photo):
     except ET.ParseError as e:
         return [f'XML невалиден: {e}']
     ads = tree.getroot().findall('Ad')
-    if len(ads) != EXPECTED_ADS:
-        errors.append(f'объявлений {len(ads)}, ожидалось {EXPECTED_ADS}')
+    expected = CATALOG_SIZE - len(set(cfg.get('skip', [])))
+    if len(ads) != expected:
+        errors.append(f'объявлений {len(ads)}, ожидалось {expected} (каталог {CATALOG_SIZE} минус skip)')
+    aids = [ad.findtext('AvitoId') for ad in ads if ad.findtext('AvitoId')]
+    if len(aids) != len(set(aids)):
+        errors.append(f'AvitoId повторяется: {aids}')
     ids = [ad.findtext('Id') for ad in ads]
     dup = sorted({i for i in ids if ids.count(i) > 1})
     if dup:
@@ -273,6 +295,8 @@ def validate(path, rows, cfg, no_photo):
             errors.append(f'{i}: больше 10 фото')
         t = ad.findtext('Title') or ''
         d = ad.findtext('Description') or ''
+        for pr in problems(t + ' ' + d):
+            errors.append(f'{i}: в тексте {pr} — правило магазина')
         if not t or len(t) > tmax:
             errors.append(f'{i}: заголовок {len(t)} симв. (лимит {tmax})')
         if not d or len(d) > dmax:
@@ -334,7 +358,10 @@ def main():
     tl = [len(r['title']) for r in rows]
     dl = [len(r['desc']) for r in rows]
     print(f'Файл: {out}  ({os.path.getsize(out) // 1024} КБ)')
-    print(f'Объявлений: {len(rows)} (в наличии {n_stock}, под заказ {len(rows) - n_stock})')
+    print(f'Объявлений: {len(rows)} (в наличии {n_stock}, под заказ {len(rows) - n_stock})'
+          + (f'; не выгружаем: {", ".join(cfg.get("skip", []))}' if cfg.get('skip') else ''))
+    if cfg.get('avito_ids'):
+        print('Привязка к существующим объявлениям: ' + ', '.join(f'{k} → {v}' for k, v in cfg['avito_ids'].items()))
     print(f'Заголовки: {min(tl)}–{max(tl)} симв. (лимит {cfg.get("title_max", 50)}); '
           f'описания: {min(dl)}–{max(dl)} симв. с тегами (лимит {cfg.get("description_max", 7500)})')
     print(f'Тексты: {len(rows) - len(stubs)} из avito_texts.json, заглушек {len(stubs)}'
