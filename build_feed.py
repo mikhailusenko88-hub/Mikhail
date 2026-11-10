@@ -200,6 +200,10 @@ def build(cfg):
         if q_line and q_line not in body:          # про систему качества — перед строкой «Цена в объявлении…», если она есть
             m = re.search(r'\n\n(Цена в объявлении[^\n]*)$', body)
             body = f'{body[:m.start()]}\n\n{q_line}{body[m.start():]}' if m else f'{body}\n\n{q_line}'
+        d_line = (cfg.get('designer_line') or '').strip()
+        if d_line and d_line not in body:          # дизайнерам — 3D-модели (тоже перед «Цена в объявлении…»)
+            m = re.search(r'\n\n(Цена в объявлении[^\n]*)$', body)
+            body = f'{body[:m.start()]}\n\n{d_line}{body[m.start():]}' if m else f'{body}\n\n{d_line}'
 
         stocked = a in in_stock
         avail_line = (cfg['stock_line'].format(q=qty.get(a, '')) if stocked
