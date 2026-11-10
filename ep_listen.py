@@ -100,6 +100,12 @@ for i, w in enumerate(words):
     if re.search(r"[.!?…]$", w[2]) or gap > 0.5 or w[1] - cur[0][0] > 11:
         phr.append(cur); cur = []
 if cur: phr.append(cur)
+if title == "text":   # только расшифровка (быстро): текст серии по фразам, без разбора ударений
+    title = f"серия {n} (YouTube)"
+    rows = [{"i": i, "t0": round(p[0][0], 2), "t1": round(p[-1][1], 2), "text": " ".join(w[2] for w in p).strip()} for i, p in enumerate(phr)]
+    json.dump({"num": n, "title": title, "rows": rows, "bad": [], "text_only": True}, open(f"{D}/words.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    open(f"{D}/text.md", "w", encoding="utf-8").write("\n".join(f"{int(r['t0'] // 60)}:{int(r['t0'] % 60):02d}  {r['text']}" for r in rows) + "\n")
+    print("расшифровка готова", name, len(rows)); sys.exit(0)
 import voice_check as vc
 os.makedirs("in", exist_ok=True)
 rows, bad_words = [], []

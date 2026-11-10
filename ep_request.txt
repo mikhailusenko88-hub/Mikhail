@@ -1,2 +1,2 @@
-# 2026-11-10 18:58 МСК — серия 20 с YouTube
-episodes: file:audio/ep20.ogg|20
+# серия 19 с YouTube — только расшифровка текста
+episodes: file:audio/ep19.ogg|19|text
