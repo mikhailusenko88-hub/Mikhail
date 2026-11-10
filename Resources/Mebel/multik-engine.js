@@ -683,6 +683,8 @@ const HERO_LAUGH = { full: ['Ха-ха-ха!', 'Ах-ха-ха-ха!', 'Ха-х�
     Паспорт голоса героя: c.golos = { speaker, model, P — тон, F — тембр, T — темп, R — живость } (выбирается на пробах) или 'off'.
     lib.settings.bars = { oldLaugh: true } — смеяться по-старому (нейроголос читает «ха-ха-ха» по слогам). c.laughTpl — какой настоящий смех берётся за образец ритма. */
 MK.barsOn = () => typeof BARSGolos !== 'undefined' && !!BARSGolos.render;
+/** Ставит ли автор серии букву «ё» (три и больше на все реплики). Если да — слова через «е» читаются как написаны: «все» — это «все», а не «всё». */
+MK.usesYo = lines => { let n = 0; for (const l of lines || []) { const m = String((l && (l.src || l.text)) || '').match(/ё/gi); if (m) n += m.length; if (n >= 3) return true; } return false; };
 MK.barsPassport = (lib, who) => { const c = lib && lib.characters && lib.characters[who]; if (!c || !MK.barsOn()) return null; const g = c.golos; return g && g !== 'off' && g.speaker ? g : null; };
 MK.barsLaugh = lib => MK.barsOn() && !(((lib && lib.settings) || {}).bars || {}).oldLaugh;
 MK.heroNeural = (lib, who) => { const c = lib && lib.characters && lib.characters[who]; if (!c) return null; const v = c.neural; if (v === 'off') return null; if (v && MK.HERO_NEURAL[v]) return MK.HERO_NEURAL[v];

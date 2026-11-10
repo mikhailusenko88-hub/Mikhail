@@ -407,11 +407,12 @@ function shiftVoice(y, shift, tempo) { const n = Math.floor((y.length - 2) / shi
   return out; }
 // ---------- голос рассказчика со своего сервера (нейроголос «Альбина») ----------
 const SrvVoice = {
-  down: 0, warned: false, localFail: false, failM: {}, hasM: {},
+  down: 0, warned: false, localFail: false, failM: {}, hasM: {}, yo: false,
+  lex() { const l = (Lib.data && Lib.data.lexicon) || {}; return this.yo ? Object.assign({}, l, { yo: 1 }) : l; }, // словарь ударений + пометка «в серии пишут ё» (тогда «все» — это «все», а не «всё»)
   async local(ln) { // нейроголос прямо в телефоне (папка voice/ в приложении) → {buf}
     const mdl = ln.srv.model || ''; if ((mdl ? this.failM[mdl] : this.localFail) || !window.MKVoice || !MKVoice.available()) return null;
     if (mdl && !this.hasM[mdl]) { let ok = false; try { const r = await fetch('voice/' + mdl + '/tts.json'); ok = r.ok && !!(await r.json()).symbols; } catch (e) {} if (!ok) { this.failM[mdl] = true; return null; } this.hasM[mdl] = true; } // файлов голоса нет — голос iPhone, рассказчика не трогаем
-    try { const vo = { speaker: ln.srv.speaker, rate: ln.srv.rate, pitch: ln.srv.pitch, model: mdl, lex: (Lib.data && Lib.data.lexicon) || {} }; if (ln.srv.bars) vo.bars = ln.srv.bars; // БАРС-озвучка: смех, звуки, протяжные слова, паспорт голоса — всё считается в странице голоса
+    try { const vo = { speaker: ln.srv.speaker, rate: ln.srv.rate, pitch: ln.srv.pitch, model: mdl, lex: this.lex() }; if (ln.srv.bars) vo.bars = ln.srv.bars; // БАРС-озвучка: смех, звуки, протяжные слова, паспорт голоса — всё считается в странице голоса
       let y = await MKVoice.speak(ln.srv.text, vo);
       if (!y.length) return null;
       if (!ln.srv.bars && ln.srv.shift && ln.srv.shift !== 1) y = shiftVoice(y, ln.srv.shift, ln.srv.tempo || 1);
@@ -424,12 +425,12 @@ const SrvVoice = {
     if (r && r.wav) { this.down = 0; return r; }
     this.down = Date.now(); if (!this.warned) { this.warned = true; try { Build.toast('Нейроголос недоступен — рассказчик читает голосом iPhone'); } catch (e) {} }
     return null; },
-  async previewHero(lib, who, text) { audioPlayback(); const ln = MK.lineFor({}, lib, who, text, { say: text, who }, 0); if (!ln || !ln.srv) return false;
+  async previewHero(lib, who, text) { audioPlayback(); this.yo = false; const ln = MK.lineFor({}, lib, who, text, { say: text, who }, 0); if (!ln || !ln.srv) return false;
     try { Build.toast(window.MKVoice && !MKVoice.ready ? 'Загружаю голос (первый раз несколько секунд)…' : 'Озвучиваю…'); } catch (e) {}
     this.failM = {}; const r = await this.get(ln, 60); if (!r || !r.buf) return false;
     if (!pvCtx || pvCtx.state === 'closed') pvCtx = new (window.AudioContext || window.webkitAudioContext)(); try { pvCtx.resume(); } catch (e) {} if (pvSrc) { try { pvSrc.stop(); } catch (e) {} }
     const buf = await MK.voiceFx(r.buf, MK.VOICE_FX.natural); pvSrc = pvCtx.createBufferSource(); pvSrc.buffer = buf; pvSrc.connect(pvCtx.destination); pvSrc.start(); return true; },
-  async preview(text, show) { audioPlayback(); const lib = Lib.data, nv = MK.narratorVoice(lib);
+  async preview(text, show) { audioPlayback(); this.yo = false; const lib = Lib.data, nv = MK.narratorVoice(lib);
     if (!nv.server) { const fx = MK.fxFor(lib, 'Р'); return previewVoice(text, (lib.narrator || {}).voice || { base: 'male', pitch: 1, rate: .47 }, fx, (lib.narratorFx || {}).voiceId); }
     const ln = MK.lineFor ? MK.lineFor({}, lib, 'Р', text, { say: text }, 0) : null; if (!ln || !ln.srv) return 0;
     const box = show && document.getElementById(show); if (box) box.textContent = window.MKVoice && !MKVoice.ready ? 'Загружаю голос (первый раз несколько секунд)…' : 'Озвучиваю…';
@@ -443,6 +444,7 @@ const SrvVoice = {
 // ---------- озвучка + подготовка ----------
 async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уже в телефоне — нужны только длительности реплик
   const lib = Lib.data, ep = e.script; const lines = MK.collectLines(ep, lib);
+  SrvVoice.yo = !!(MK.usesYo && MK.usesYo(lines)); // БАРС-озвучка: автор серии ставит «ё» — слова через «е» читаем как написано
   const ac = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
   const audio = {}, bufs = {}; let i = 0;
   if (window.MK3D && !MK3D.THREE) await new Promise(res => { const t = setTimeout(res, 10000); window.addEventListener('mk3d', () => { clearTimeout(t); res(); }, { once: true }); }); // после перезапуска страницы 3D поднимается чуть позже — ждём, иначе герои были бы старые
@@ -466,7 +468,7 @@ async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уж�
     if (!r) { // голос iPhone: омографы по смыслу (з+амок/зам+ок) — как у рассказчика; свои «+» в реплике важнее
       let text = ln.text, voice = ln.voice, key = ln.key;
       if (ln.src && window.MKVoice && MKVoice.homoMarks) { try {
-        const plus = ln.src.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1'), hm = await MKVoice.homoMarks(plus, lib.lexicon || {});
+        const plus = ln.src.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1'), hm = await MKVoice.homoMarks(plus, SrvVoice.lex());
         if (hm !== plus) { const ps = MK.prepSpeech(hm, lib.lexicon || {}, (lib.settings && lib.settings.stressMode) || 'ipa'); text = ps.text; voice = Object.assign({}, ln.voice, ps.ipa.length ? { ipa: ps.ipa } : {}); key = ln.key + 'h' + MK.hash32(hm).toString(36); }
       } catch (err) { console.log('омографы', err); } }
       r = await Native.call('tts', { text, voice, key }); }

@@ -218,6 +218,7 @@
       return y; },
     /** Текст → текст с «+» у каждого слова: словарь пользователя → грамматика (БАРС) → омографы по смыслу → модель ударений. Один путь для всех нейроголосов. */
     async marks(text, lex) { await MKStress.load(); if (!MKHomo.ready && !MKHomo.dictReady) { try { await MKHomo.loadDict(); } catch (e) {} }
+      if (global.BARSRech) global.BARSRech.yo = !!(lex && lex.yo);   // в серии автор ставит «ё» — значит «все» это «все», а не «всё»
       let t = MKStress.userMarks(String(text || ''), lex); if (global.BARSRech) { try { t = global.BARSRech.pre(t); } catch (e) {} }
       if (MKHomo.ready || MKHomo.dictReady) { try { t = await MKHomo.solve(t); } catch (e) { console.log('омографы', e && e.message); } } return MKStress.accent(t, null); },
     /** Текст → голос. o: {speaker:'ru_albina', rate:1, pitch:1, lex, accent:true}. Возвращает Float32Array 48 кГц. */
@@ -238,6 +239,7 @@
       Свои «+» в тексте не трогаются. Нейросеть омографов подгружается только если словарь фраз не решил. */
   MKVoice.homoMarks = async function (text, lex) {
     let t = String(text || ''); if (!t.trim()) return t;
+    if (global.BARSRech) global.BARSRech.yo = !!(lex && lex.yo);
     t = MKStress.userMarks(t, lex); if (global.BARSRech) { try { t = global.BARSRech.pre(t); } catch (e) {} }
     if (!MKHomo.dictReady && !(global.MK && global.MK.isHomograph)) { try { await MKHomo.loadDict(); } catch (e) { return t; } }   // в странице голоса встроенного списка омографов нет — нужен словарь
     if (!MKHomo.has(t)) return t;
