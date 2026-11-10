@@ -1,7 +1,5 @@
 # имя  аргументы для scene.py (или "py script.py")
-p1 scene=lounge decor=3-7 res=800x600 samples=48 noise=0.08
-p2 scene=lounge decor=3-15 res=800x600 samples=48 noise=0.08
-p3 scene=lounge decor=3-9 res=800x600 samples=48 noise=0.08
-p4 scene=lounge decor=3-7 res=800x600 samples=48 noise=0.08 cam=close
-p5 scene=arch decor=3-7 res=800x600 samples=48 noise=0.08
-p6 scene=lounge decor=3-7 res=800x600 samples=48 noise=0.08 guide=0
+f1 scene=lounge decor=3-7 res=1600x1200 samples=256 noise=0.03
+p7 scene=arch decor=3-7 res=800x600 samples=48 noise=0.08
+p8 scene=lounge decor=3-7 res=800x600 samples=64 noise=0.06 cam=macro
+p9 scene=lounge decor=3-7 res=800x600 samples=48 noise=0.08 cam=close

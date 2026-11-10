@@ -20,7 +20,7 @@ W_PX, H_PX = [int(v) for v in A.get('res', '1200x900').split('x')]
 SAMPLES = int(A.get('samples', 160))
 SEED = int(A.get('seed', 7))
 EV = float(A.get('ev', 0))
-SUN_RATIO = float(A.get('sun', 1.3))
+SUN_RATIO = float(A.get('sun', 1.8))
 NOISE = float(A.get('noise', 0.03))
 ROOT = os.path.abspath('.')
 OUT = f'{ROOT}/out/{NAME}'
@@ -393,11 +393,20 @@ def load_asset(aid, loc=(0, 0, 0), rot=0.0, scale=1.0):
         log('ASSET MISSING', aid)
         return None
     before = {im.name for im in bpy.data.images}
-    with bpy.data.libraries.load(path, link=False) as (src, dst):
-        dst.objects = list(src.objects)
-    objs = [o for o in dst.objects if o is not None]
-    for o in objs:
-        col.objects.link(o)
+    try:
+        with bpy.data.libraries.load(path, link=False) as (src, dst):
+            dst.objects = list(src.objects)
+        objs = [o for o in dst.objects if o is not None]
+        for o in objs:
+            col.objects.link(o)
+    except Exception as e:  # noqa — файл сохранён более новым Blender: берём glTF
+        g = f'{ROOT}/assets/models/{aid}/{aid}.gltf'
+        log('blend failed for', aid, '-> gltf', os.path.exists(g), str(e)[:80])
+        if not os.path.exists(g):
+            return None
+        had = {o.name for o in bpy.data.objects}
+        bpy.ops.import_scene.gltf(filepath=g)
+        objs = [o for o in bpy.data.objects if o.name not in had]
     for im in bpy.data.images:
         if im.name in before or im.source != 'FILE':
             continue
@@ -633,7 +642,7 @@ def calibrate(world, sun, sun_dir, neutral_prefixes=('wall', 'ceil'), lamps=()):
     c0 = np.array(sun.data.color[:]) * gains
     sun.data.energy = sun.data.energy * float(c0.max())
     sun.data.color = tuple(float(v) for v in c0 / c0.max())
-    key = float(A.get('key', 0.95))
+    key = float(A.get('key', 1.05))
     ev = math.log2(key / max(y_ref, 1e-6)) + EV
     scene.view_settings.exposure = ev
     log('white pixels', int(mask.sum()), 'illuminant', ill.round(3), 'wb gains', gains.round(3), 'wall Y', round(y_ref, 4), 'exposure', round(ev, 2))
@@ -826,7 +835,7 @@ def scene_lounge():
     load_asset('standing_picture_frame_02', loc=(1.85, yc + 0.04, top), rot=float(A.get('pic_rot', 12)))
     # растение у окна, кресло, столик, ковёр
     load_asset('potted_plant_01', loc=(0.72, D - 0.55, 0), rot=35)
-    load_asset('mid_century_lounge_chair', loc=(3.3, 3.75, 0.012), rot=float(A.get('chair_rot', -35)))
+    load_asset('mid_century_lounge_chair', loc=(3.22, 3.75, 0.012), rot=float(A.get('chair_rot', -35)))
     m_rug = mat_pbr('rug', 'hessian_230', 0.55, tint=srgb(240, 232, 218), nstrength=1.5)
     box('rug', 1.5, 4.15, 2.6, 4.45, 0.0, 0.012, m_rug, bevel=0.004)
     # свет и камера
@@ -835,7 +844,9 @@ def scene_lounge():
     sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
     world, sun = setup_world(sun_dir)
     if A.get('cam', 'main') == 'close':
-        camera((1.05, 4.15, 1.10), (2.05, D, 0.98), lens=float(A.get('lens', 50)), fstop=float(A.get('fstop', 4.0)), focus=1.45)
+        camera((1.75, 4.15, 1.10), (2.75, D, 0.96), lens=float(A.get('lens', 50)), fstop=float(A.get('fstop', 5.6)), focus=1.35)
+    elif A.get('cam') == 'macro':
+        camera((2.35, 4.62, 1.32), (1.75, D - 0.012, 1.25), lens=float(A.get('lens', 60)), fstop=float(A.get('fstop', 8.0)), focus=0.83)
     else:
         camera((2.55, 0.75, 1.22), (2.15, D, 1.02), lens=float(A.get('lens', 30)), fstop=float(A.get('fstop', 5.6)), focus=4.3)
     return world, sun, sun_dir, lamps

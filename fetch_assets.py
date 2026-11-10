@@ -20,8 +20,9 @@ def get(url, tries=5):
 
 
 def dl(job):
-    url, dst = job
-    if os.path.exists(dst) and os.path.getsize(dst) > 0:
+    url, dst = job[0], job[1]
+    force = len(job) > 2 and job[2]
+    if os.path.exists(dst) and os.path.getsize(dst) > 0 and not force:
         return
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     data = get(url)
@@ -41,7 +42,7 @@ def pick(d, res):
 
 def plan(kind, aid, res, only=None):
     root = f'assets/{kind}s/{aid}'
-    mark = f'{root}/.done_{res}_{"-".join(sorted(only)) if only else "all"}'
+    mark = f'{root}/.done2_{res}_{"-".join(sorted(only)) if only else "all"}'
     if os.path.exists(mark):
         return [], mark
     fj = json.loads(get(f'https://api.polyhaven.com/files/{aid}'))
@@ -52,6 +53,12 @@ def plan(kind, aid, res, only=None):
         jobs.append((b['url'], f'{root}/{aid}.blend'))
         for rel, inf in (b.get('include') or {}).items():
             jobs.append((inf['url'], f'{root}/{rel}'))
+        if 'gltf' in fj:                       # запасной формат: новые .blend старый Blender не читает
+            r, e = pick(fj['gltf'], res)
+            g = e['gltf']
+            jobs.append((g['url'], f'{root}/{aid}.gltf'))
+            for rel, inf in (g.get('include') or {}).items():
+                jobs.append((inf['url'], f'{root}/{rel}'))
     elif kind == 'texture':
         for key, v in fj.items():
             if key in SKIP or not isinstance(v, dict):
@@ -62,7 +69,7 @@ def plan(kind, aid, res, only=None):
                 continue
             r, e = pick(v, res)
             fmt = 'jpg' if 'jpg' in e else ('png' if 'png' in e else sorted(e.keys())[0])
-            jobs.append((e[fmt]['url'], f'{root}/{name}.{fmt}'))
+            jobs.append((e[fmt]['url'], f'{root}/{name}.{fmt}', True))
     elif kind == 'hdri':
         r, e = pick(fj['hdri'], res)
         fmt = 'hdr' if 'hdr' in e else 'exr'
