@@ -1,10 +1,7 @@
 # Снятые страницы
 
-- 01 200 https://ipl-spb.ru/usl.html (2009 симв.)
-- 02 200 https://ipl-spb.ru/lab.html (720 симв.)
-- 03 200 https://ipl-spb.ru/tech.html (1836 симв.)
-- 04 200 https://ipl-spb.ru/contact.html (2085 симв.)
-- 05 200 https://ipl-spb.ru/doc.html (5433 симв.)
-- 06 200 https://ipl-spb.ru/work.html (952 симв.)
-- 07 200 https://czrc.ru/services/ispytaniya-na-goryuchest/ (6368 симв.)
-- 08 200 https://pskpb.ru/ (4434 симв.)
+- 01 200 http://ipl69.ru/uslugi-i-tseny/ (6447 симв.)
+- 02 200 https://ipl23.ru/ (1191 симв.)
+- 03 404 https://ipl23.ru/kontakty (29 симв.)
+- 04 200 https://czrc.ru/os/metodika-rascheta-stoimosti-rabot-po-podtverzhdeniyu-sootvetstviya/ (3720 симв.)
+- 05 ошибка: <urlopen error timed out> https://66.mchs.gov.ru/glavnoe-upravlenie/sily-i-sredstva/ispytatelnaya-pozharnaya-laboratoriya (0 симв.)
