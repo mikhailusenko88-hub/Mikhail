@@ -687,6 +687,10 @@ MK.barsOn = () => typeof BARSGolos !== 'undefined' && !!BARSGolos.render;
 MK.usesYo = lines => { let n = 0; for (const l of lines || []) { const m = String((l && (l.src || l.text)) || '').match(/ё/gi); if (m) n += m.length; if (n >= 3) return true; } return false; };
 MK.barsPassport = (lib, who) => { const c = lib && lib.characters && lib.characters[who]; if (!c || !MK.barsOn()) return null; const g = c.golos; return g && g !== 'off' && g.speaker ? g : null; };
 MK.barsLaugh = lib => MK.barsOn() && !(((lib && lib.settings) || {}).bars || {}).oldLaugh;
+/** БАРС-актёр: голос играет эмоцию реплики (испуг, радость, шёпот, крик…). Включается настройкой lib.settings.bars.act — пока Михаил не утвердил на слух, выключено.
+    → имя рисунка из BARSGolos.ACT или null. Подача из ремарки («шёпотом», «кричит») важнее эмоции. */
+MK.barsAct = (lib, step) => { if (!MK.barsOn() || !(((lib && lib.settings) || {}).bars || {}).act || !step || !step.say) return null; const n = step.manner || step.emotion; return n && BARSGolos.ACT[n] ? n : null; };
+const actFx = an => { const l = an && BARSGolos.ACT[an].fx && BARSGolos.ACT[an].fx.level; return Object.assign({ id: 'natural' }, MK.VOICE_FX.natural, l ? { level: l } : null); };
 MK.heroNeural = (lib, who) => { const c = lib && lib.characters && lib.characters[who]; if (!c) return null; const v = c.neural; if (v === 'off') return null; if (v && MK.HERO_NEURAL[v]) return MK.HERO_NEURAL[v];
   const nm = String((c.spec && c.spec.name) || '').trim().toLowerCase(); const d = MK.HERO_NEURAL_DEFAULT[nm]; return d && (!c.spec.kind || c.spec.kind === 'cat') ? MK.HERO_NEURAL[d] : null; };
 /** Настройки рассказчика: голос, темп, тон, мягкость. */
@@ -733,7 +737,7 @@ MK.voiceFx = async function (buf, fx) {
   const len = Math.min(d.length, end + Math.round(sr * .08));
   { // ровная громкость у всех героев: громкость по звучащим местам (не по паузам), без перегруза
     const w = Math.round(sr * .02); let se = 0, n = 0, pk = 0; for (let i = 0; i + w <= len; i += w) { let e = 0; for (let j = i; j < i + w; j++) e += d[j] * d[j]; e = Math.sqrt(e / w); if (e > .01) { se += e * e; n++; } }
-    for (let i = 0; i < len; i++) pk = Math.max(pk, Math.abs(d[i])); if (n > 3 && pk > 0) { const g = Math.min(.12 / Math.sqrt(se / n), .95 / pk, 4); for (let i = 0; i < len; i++) d[i] *= g; } }
+    for (let i = 0; i < len; i++) pk = Math.max(pk, Math.abs(d[i])); if (n > 3 && pk > 0) { const g = Math.min(Math.min(.12 / Math.sqrt(se / n), .95 / pk, 4) * (fx.level || 1), .98 / pk); for (let i = 0; i < len; i++) d[i] *= g; } }   // fx.level — шёпот тише, крик громче обычной реплики (БАРС-актёр)
   const res = new AudioBuffer({ length: Math.max(1, len), numberOfChannels: 1, sampleRate: sr }); res.copyToChannel(d.subarray(0, len), 0); return res;
 };
 function roomIR(ac, sec) { const n = Math.floor(ac.sampleRate * sec), b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0), r = rng(42); for (let i = 0; i < n; i++) d[i] = (r() * 2 - 1) * Math.pow(1 - i / n, 3) * .6; return b; }
@@ -811,17 +815,19 @@ function lineFor(ep, lib, who, text, step, vi) {
   if (hn && MK.prepSpeech) { // герой с нейроголосом (Барсик — xenia): считается в телефоне; не вышло — его голос iPhone (fb)
     const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
     const pe = step && step.say && PROSODY[step.emotion], rate = pe ? Math.round(clamp(pe[1], .88, 1.15) * 100) / 100 : 1, pitch = pe ? Math.round(clamp(pe[0], .92, 1.12) * 100) / 100 : 1;
-    if (MK.barsOn() && BARSGolos.needs(text)) { // «Ура-а-а!», «Мяу!» — тем же голосом, но через БАРС-озвучку (обычные реплики идут как раньше)
-      const bars = { F: hn.shift || 1, P: hn.shift || 1, T: Math.round((hn.shift || 1) * (hn.tempo || 1) * 1000) / 1000 };
-      return { key: hash32('hb1|' + hn.model + '|' + hn.speaker + '|' + JSON.stringify(bars) + '|' + rate + '|' + pitch + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
-        srv: { text: marked, speaker: hn.speaker, model: hn.model, bars, rate, pitch, local: true }, fb: { fx }, src: text }; }
+    const an = MK.barsAct(lib, step);
+    if (MK.barsOn() && (an || BARSGolos.needs(text))) { // «Ура-а-а!», «Мяу!» и реплики с игрой эмоции — тем же голосом, но через БАРС-озвучку (обычные реплики идут как раньше)
+      const bars = { F: hn.shift || 1, P: hn.shift || 1, T: Math.round((hn.shift || 1) * (hn.tempo || 1) * 1000) / 1000 }, r2 = an ? 1 : rate, p2 = an ? 1 : pitch; if (an) bars.emo = an;   // с игрой эмоции прежний сдвиг «выше-быстрее» не нужен
+      return { key: hash32('hb1|' + hn.model + '|' + hn.speaker + '|' + JSON.stringify(bars) + '|' + r2 + '|' + p2 + '|' + marked).toString(36), who, text: say, voice: v, fx: actFx(an), synth: null, age, variant: 0, short: false, seed,
+        srv: { text: marked, speaker: hn.speaker, model: hn.model, bars, rate: r2, pitch: p2, local: true }, fb: { fx }, src: text }; }
     return { key: hash32('hn1|' + hn.model + '|' + hn.speaker + '|' + hn.shift + '|' + rate + '|' + pitch + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
       srv: { text: marked, speaker: hn.speaker, model: hn.model, shift: hn.shift, tempo: hn.tempo, rate, pitch, local: true }, fb: { fx }, src: text }; }
   const bp = who !== 'Р' && !synth && !hn ? MK.barsPassport(lib, who) : null;
   if (bp && MK.prepSpeech) { // БАРС-озвучка: герой с паспортом голоса — нейроголос в телефоне (тон и тембр раздельно, живость, эмоции); не вышло — его голос iPhone (fb)
     const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
-    const bars = { P: bp.P || 1, F: bp.F || 1, T: bp.T || 1, R: bp.R || 1 }; if (bp.pause) bars.pause = bp.pause; if (step && step.say && step.emotion && BARSGolos.EMO[step.emotion]) bars.emo = step.emotion;
-    return { key: hash32('bg1|' + (bp.model || '') + '|' + bp.speaker + '|' + JSON.stringify(bars) + '|' + marked).toString(36), who, text: say, voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant: 0, short: false, seed,
+    const bars = { P: bp.P || 1, F: bp.F || 1, T: bp.T || 1, R: bp.R || 1 }, an = MK.barsAct(lib, step); if (bp.pause) bars.pause = bp.pause;
+    if (an) bars.emo = an; else if (step && step.say && step.emotion && BARSGolos.EMO[step.emotion]) { bars.emo = step.emotion; bars.act = false; }   // игра эмоции (если включена) или прежний сдвиг тона и темпа
+    return { key: hash32('bg1|' + (bp.model || '') + '|' + bp.speaker + '|' + JSON.stringify(bars) + '|' + marked).toString(36), who, text: say, voice: v, fx: actFx(an), synth: null, age, variant: 0, short: false, seed,
       srv: { text: marked, speaker: bp.speaker, model: bp.model || '', bars, local: true }, fb: { fx }, src: text }; }
   if (nv && nv.server && MK.prepSpeech) { // рассказчик — нейроголос со своего сервера (Альбина); нет связи — голос iPhone (fb)
     const marked = MK.prepSpeech(text, lex, 'acute').text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
