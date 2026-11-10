@@ -1,3 +1,32 @@
+# IndexNow — 2026-11-10 09:04 UTC, коммит ffec170
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: все адреса из sitemap.xml (129)
+  https://nashdekor.ru/
+  https://nashdekor.ru/catalog/ugolki/
+  https://nashdekor.ru/catalog/moldingi/
+  https://nashdekor.ru/catalog/karnizy/
+  https://nashdekor.ru/catalog/plintus-s-podsvetkoy/
+  https://nashdekor.ru/catalog/plintusy/
+  https://nashdekor.ru/catalog/paneli-pod-derevo/
+  https://nashdekor.ru/catalog/reechnye-paneli/
+  https://nashdekor.ru/catalog/stenovye-paneli/
+  https://nashdekor.ru/p/a902/
+  https://nashdekor.ru/p/a907/
+  https://nashdekor.ru/p/a910/
+  https://nashdekor.ru/p/a913/
+  https://nashdekor.ru/p/a920/
+  https://nashdekor.ru/p/a916/
+  … и ещё 114
+- https://www.bing.com/indexnow: HTTP 202 — принято, ключ ещё проверяется 
+- https://yandex.com/indexnow: HTTP 202 — принято, ключ ещё проверяется {
+  "success":true
+}
+- /google8ff025c950c4f362.html → 200
+- /yandex_9b48db37dadc94c9.html → 200
+- /robots.txt → 200
+
+---
+
 # IndexNow — 2026-11-09 22:22 UTC, коммит e8ca235
 - ключ на сайте: https://nashdekor.ru/1a06371a537e385ae6bb830b593a5315.txt → 200, совпадает
 - режим: изменённые страницы (125) из 126 изменённых файлов
@@ -310,6 +339,7 @@
 - /google8ff025c950c4f362.html → 200
 - /yandex_9b48db37dadc94c9.html → 200
 - /robots.txt → 200
+
 
 
 
