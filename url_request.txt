@@ -1,4 +1,4 @@
-# проверка страницы с разделом 8
+# проверка итоговой страницы (раздел 8)
 http://89.126.192.214:8080/mebel/bz4aaoig/
+http://89.126.192.214:8080/mebel/bz4aaoig/act-scene-k13.mp3
 http://89.126.192.214:8080/mebel/bz4aaoig/act-scene-new.mp3
-http://89.126.192.214:8080/mebel/bz4aaoig/a-whisper-new.mp3
