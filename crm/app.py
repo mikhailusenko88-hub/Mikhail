@@ -24,7 +24,7 @@ from datetime import datetime, timedelta
 from email.message import EmailMessage
 from typing import Any
 
-from flask import (Flask, Response, abort, flash, g, jsonify, redirect, render_template, request,
+from flask import (Flask, Request, Response, abort, current_app, flash, g, jsonify, redirect, render_template, request,
                    session, url_for)
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -76,6 +76,20 @@ def _secret(path: str) -> str:
     return os.environ.get("CRM_SECRET", "") or secrets.token_hex(32)
 
 
+class CrmRequest(Request):
+    """Загрузка Excel в закупку — до 1 МБ (как пропускает nginx); остальные запросы — общий лимит приложения."""
+
+    @property
+    def max_content_length(self) -> int | None:  # type: ignore[override]
+        if self.path.startswith("/purchases/") and self.path.endswith("/xlsx"):
+            return 1024 * 1024 + 64 * 1024
+        return current_app.config.get("MAX_CONTENT_LENGTH") if current_app else None
+
+    @max_content_length.setter
+    def max_content_length(self, value: int | None) -> None:
+        pass
+
+
 def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     cfg = dict(cfg or {})
     env = os.environ.get
@@ -90,6 +104,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         "SHOP_DOMAIN": cfg.get("SHOP_DOMAIN", env("SHOP_DOMAIN", "")),
     }
     app = Flask(__name__)
+    app.request_class = CrmRequest
     app.config.update(
         SECRET_KEY=cfg.get("SECRET_KEY") or _secret(env("CRM_SECRET_FILE", "")),
         SESSION_COOKIE_NAME="crm",

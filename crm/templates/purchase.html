@@ -50,10 +50,17 @@
   <button class="btn-s">Добавить</button>
 </form>
 <datalist id="cat">{% for c in catalog %}<option value="{{ c.article }}">{{ c.name }}</option>{% endfor %}</datalist>
+<form class="panel pad" method="post" enctype="multipart/form-data" action="{{ url_for('purchase_xlsx', pid=p['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <b>Загрузить из Excel</b>
+  <p class="d">Файл .xlsx или .csv: CRM сама найдёт лист и столбцы по заголовкам — «Артикул», «Количество» (или «Шт», «Штук»), «Цена, ₽» (или «Цена, ₸» — тогда пересчитает по курсу из этой закупки), по желанию «Вес» и «ТН ВЭД». Подойдёт наша спецификация и таблица поставщика.</p>
+  <div class="addline"><input type="file" name="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" required aria-label="Файл Excel"><button class="btn-p">Загрузить</button></div>
+  {% if lines %}<label class="inline"><input type="checkbox" name="replace" value="1" checked> заменить текущие позиции</label>{% endif %}
+</form>
 <details class="panel pad"><summary>Вставить списком</summary>
 <form method="post" action="{{ url_for('purchase_lines_add', pid=p['id']) }}">
   <input type="hidden" name="csrf" value="{{ csrf }}">
-  <p class="d">Каждая строка: артикул, количество штук, цена за штуку в рублях. Например: <span class="mono">A902 18 423,85</span></p>
+  <p class="d">Каждая строка: артикул, количество штук, цена за штуку в рублях. Например: <span class="mono">A902 18 423,85</span>. Можно скопировать три столбца прямо из Excel и вставить сюда.</p>
   <textarea class="paste" name="paste" aria-label="Позиции списком"></textarea>
   <p><button class="btn-s">Добавить все</button></p>
 </form></details>

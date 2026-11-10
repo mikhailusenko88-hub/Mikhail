@@ -1369,3 +1369,129 @@ class TestBuh(Base):
             r = self.c.get(url)
             self.assertEqual(r.status_code, 200, url)
             self.assertNotIn("style=\"", r.get_data(as_text=True).split("<main")[1], url)   # CSP: без встроенных стилей
+
+
+def make_xlsx(sheets) -> bytes:
+    """Минимальный .xlsx без сторонних библиотек: {имя листа: [[ячейки]]}; строки — через sharedStrings."""
+    import io
+    import zipfile
+    from xml.sax.saxutils import escape
+    strings: list[str] = []
+
+    def col(i: int) -> str:
+        s = ""
+        i += 1
+        while i:
+            i, r = divmod(i - 1, 26)
+            s = chr(65 + r) + s
+        return s
+    buf = io.BytesIO()
+    z = zipfile.ZipFile(buf, "w")
+    wb_sheets, rels = [], []
+    for n, (name, rows) in enumerate(sheets.items(), start=1):
+        xml_rows = []
+        for ri, row in enumerate(rows, start=1):
+            cells = []
+            for ci, v in enumerate(row):
+                ref = f"{col(ci)}{ri}"
+                if v is None:
+                    continue
+                if isinstance(v, str) and v.startswith("="):
+                    cells.append(f'<c r="{ref}"><f>{escape(v[1:])}</f></c>')
+                elif isinstance(v, str):
+                    strings.append(v)
+                    cells.append(f'<c r="{ref}" t="s"><v>{len(strings) - 1}</v></c>')
+                else:
+                    cells.append(f'<c r="{ref}"><v>{v}</v></c>')
+            xml_rows.append(f'<row r="{ri}">{"".join(cells)}</row>')
+        z.writestr(f"xl/worksheets/sheet{n}.xml", '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+                   f'<sheetData>{"".join(xml_rows)}</sheetData></worksheet>')
+        wb_sheets.append(f'<sheet name="{escape(name)}" sheetId="{n}" r:id="rId{n}"/>')
+        rels.append(f'<Relationship Id="rId{n}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet{n}.xml"/>')
+    z.writestr("xl/workbook.xml", '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+               'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'
+               + "".join(wb_sheets) + "</sheets></workbook>")
+    z.writestr("xl/_rels/workbook.xml.rels", '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+               + "".join(rels) + "</Relationships>")
+    z.writestr("xl/sharedStrings.xml", '<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+               + "".join(f"<si><t>{escape(s)}</t></si>" for s in strings) + "</sst>")
+    z.close()
+    return buf.getvalue()
+
+
+class TestPurchaseExcel(Base):
+    """Загрузка позиций закупки из Excel / CSV."""
+
+    def setUp(self) -> None:
+        Base.setUp(self)
+        self.egrul = FakeEgrul()
+        self.buh = self.app.extensions["buh"]
+        self.buh.egrul_http = self.egrul
+        self.login()
+
+    make_purchase = TestBuh.make_purchase
+
+    def upload(self, pid, data, name="spec.xlsx", replace=True):
+        import io
+        with self.c.session_transaction() as s:
+            tok = s["csrf"]
+        form = {"csrf": tok, "file": (io.BytesIO(data), name)}
+        if replace:
+            form["replace"] = "1"
+        return self.c.post(f"/purchases/{pid}/xlsx", data=form, content_type="multipart/form-data")
+
+    def test_spec_xlsx(self) -> None:
+        pid = self.make_purchase()
+        data = make_xlsx({
+            "Сравнение": [["Артикул", "Вариант 1, шт"], ["A912", 5]],
+            "Спецификация": [["Приложение № 1"], [], ["№", "Артикул", "Наименование", "ТН ВЭД", "Коробки", "Штуки", "Цена, ₽", "Сумма, ₽", "Вес, кг"],
+                             [1, "A912", "Рейка", "3925 90 800 9", 2, 24, 524.77, 12594.48, 36],
+                             [2, "А 116", "Уголок", "3916 90 500 0", 1, 72, "154,13", "", ""],
+                             [None, "Итого", None, None, 3, 96, None, 23691.84, 36]]})
+        r = self.upload(pid, data)
+        self.assertEqual(r.status_code, 302)
+        lines = {x["article"]: x for x in self.buh.purchase_lines(pid)}
+        self.assertEqual(set(lines), {"A912", "A116"})                      # «А 116» кириллицей → A116 каталога
+        self.assertEqual((lines["A912"]["qty"], lines["A912"]["price_kop"], lines["A912"]["weight_g"]), (24, 52477, 1500))
+        self.assertEqual(lines["A116"]["price_kop"], 15413)
+        self.assertEqual(self.buh.product_info("A912")["weight_g"], 1500)   # вес запомнился для следующих закупок
+        page = self.c.get(f"/purchases/{pid}").get_data(as_text=True)
+        self.assertIn("загружено позиций: 2", page); self.assertIn("лист «Спецификация»", page)
+        # повторная загрузка с «заменить» — без дублей; без галочки — добавляет
+        self.upload(pid, data)
+        self.assertEqual(len(self.buh.purchase_lines(pid)), 2)
+        self.upload(pid, data, replace=False)
+        self.assertEqual(len(self.buh.purchase_lines(pid)), 4)
+
+    def test_tenge_formulas_and_errors(self) -> None:
+        pid = self.make_purchase()
+        tg = make_xlsx({"опт прайс": [["Артикул", "Шт в коробке", "Цена за шт, ₸", "Цена за коробку, ₸", "Кол-во"],
+                                      ["А 912", 12, 2860, 34320, 24]]})
+        self.upload(pid, tg)
+        self.assertEqual(self.buh.purchase_lines(pid), [])
+        self.assertIn("впишите в закупке курс", self.c.get(f"/purchases/{pid}").get_data(as_text=True))
+        self.post(f"/purchases/{pid}", {"sec": "main", "rate": "5,45"})
+        self.upload(pid, tg)
+        ln = self.buh.purchase_lines(pid)[0]
+        self.assertEqual((ln["article"], ln["qty"], ln["price_kop"]), ("A912", 24, 52477))   # 2860 / 5,45
+        # формулы без сохранённых значений, прайс без количества, старый .xls, не Excel
+        for data, name, msg in ((make_xlsx({"Л": [["Артикул", "Шт", "Цена, ₽"], ["A912", "=2*12", "=2860/5.45"]]}), "f.xlsx", "формулы"),
+                                (make_xlsx({"Л": [["Артикул", "Шт в коробке", "Цена за шт, ₸"], ["A912", 12, 2860]]}), "p.xlsx", "Количество"),
+                                (b"\xd0\xcf\x11\xe0", "old.xls", ".xls"), (b"plain text", "x.xlsx", "не файл Excel")):
+            self.upload(pid, data, name)
+            self.assertIn(msg, self.c.get(f"/purchases/{pid}").get_data(as_text=True), name)
+        # CSV из Excel (Windows-1251, «;»)
+        self.upload(pid, "Артикул;Количество;Цена\nA116;10;150,5\n".encode("cp1251"), "spec.csv")
+        self.assertEqual([(x["article"], x["qty"], x["price_kop"]) for x in self.buh.purchase_lines(pid)], [("A116", 10, 15050)])
+        # после оприходования загрузить нельзя
+        self.post(f"/purchases/{pid}/receive", {"day": "2026-11-20"})
+        self.upload(pid, tg)
+        self.assertEqual(len(self.buh.purchase_lines(pid)), 1)
+
+    def test_big_file_limit(self) -> None:
+        pid = self.make_purchase()
+        r = self.upload(pid, b"x" * (1024 * 1024 + 10), "big.xlsx")
+        self.assertIn(r.status_code, (302, 413))
+        self.assertEqual(self.buh.purchase_lines(pid), [])
+        # обычные формы по-прежнему ограничены 256 КБ
+        self.assertEqual(self.c.post("/tasks", data={"csrf": "x", "title": "y" * 300_000}).status_code, 413)

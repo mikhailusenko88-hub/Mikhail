@@ -26,7 +26,7 @@ from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
 from typing import Any, Callable
 
-from store import Store, iso_now, today
+from store import _LOOKALIKE, Store, iso_now, today
 
 log = logging.getLogger("crm.buh")
 
@@ -803,3 +803,286 @@ class Buh:
         lim = (t + timedelta(days=days)).isoformat()
         return [x for x in self.calendar(day) if not x["done"] and (not x["due"] or x["due"] <= lim)
                 and (x["due"] or x["kind"] == "import")]
+
+
+# ------------------------------------------------------------------ загрузка позиций из Excel / CSV
+_NS = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+_RNS = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
+MAX_UNZIPPED = 40 * 1024 * 1024
+
+
+def _col_index(ref: str) -> int:
+    n = 0
+    for ch in ref:
+        if not ch.isalpha():
+            break
+        n = n * 26 + (ord(ch.upper()) - 64)
+    return n - 1
+
+
+def _xml(z: Any, name: str) -> Any:
+    import xml.etree.ElementTree as ET
+    raw = z.read(name)
+    if b"<!DOCTYPE" in raw[:2000] or b"<!ENTITY" in raw:
+        raise ValueError("файл повреждён или небезопасен")
+    return ET.fromstring(raw)
+
+
+def read_xlsx(data: bytes) -> list[tuple[str, list[list[Any]]]]:
+    """Листы .xlsx как таблицы значений (только стандартная библиотека). Ячейка с формулой без сохранённого
+    значения — объект FORMULA (Excel сохраняет значения сам; файлы, собранные программами, — не всегда)."""
+    import io
+    import zipfile
+    try:
+        z = zipfile.ZipFile(io.BytesIO(data))
+    except zipfile.BadZipFile:
+        raise ValueError("это не файл Excel .xlsx") from None
+    if sum(i.file_size for i in z.infolist()) > MAX_UNZIPPED:
+        raise ValueError("файл слишком большой")
+    names = set(z.namelist())
+    if "xl/workbook.xml" not in names:
+        raise ValueError("это не файл Excel .xlsx")
+    shared: list[str] = []
+    if "xl/sharedStrings.xml" in names:
+        for si in _xml(z, "xl/sharedStrings.xml").iter(_NS + "si"):
+            shared.append("".join(t.text or "" for t in si.iter(_NS + "t")))
+    rels = {}
+    if "xl/_rels/workbook.xml.rels" in names:
+        for r in _xml(z, "xl/_rels/workbook.xml.rels"):
+            t = r.get("Target") or ""
+            rels[r.get("Id")] = t.lstrip("/") if t.startswith("/") else "xl/" + t
+    out = []
+    for sh in _xml(z, "xl/workbook.xml").iter(_NS + "sheet"):
+        path = rels.get(sh.get(_RNS + "id") or "", "")
+        if path not in names:
+            continue
+        rows: list[list[Any]] = []
+        for row in _xml(z, path).iter(_NS + "row"):
+            vals: list[Any] = []
+            for cnum, c in enumerate(row.iter(_NS + "c")):
+                ref = c.get("r") or ""
+                idx = _col_index(ref) if ref else cnum
+                if idx < 0 or idx > 200:
+                    continue
+                t, v, f = c.get("t"), c.find(_NS + "v"), c.find(_NS + "f")
+                if t == "s" and v is not None and (v.text or "").isdigit() and int(v.text) < len(shared):
+                    val: Any = shared[int(v.text)]
+                elif t == "inlineStr":
+                    val = "".join(x.text or "" for x in c.iter(_NS + "t"))
+                elif v is not None and v.text is not None:
+                    val = v.text
+                    if t not in ("str", "e", "b"):
+                        try:
+                            val = float(v.text)
+                        except ValueError:
+                            pass
+                elif f is not None:
+                    val = FORMULA
+                else:
+                    val = None
+                while len(vals) <= idx:
+                    vals.append(None)
+                vals[idx] = val
+            rows.append(vals)
+            if len(rows) > 5000:
+                break
+        out.append((sh.get("name") or "Лист", rows))
+    return out
+
+
+class _Formula:
+    def __repr__(self) -> str:
+        return "FORMULA"
+
+
+FORMULA = _Formula()
+
+
+def read_csv(data: bytes) -> list[tuple[str, list[list[Any]]]]:
+    import csv
+    import io
+    for enc in ("utf-8-sig", "cp1251"):
+        try:
+            text = data.decode(enc)
+            break
+        except UnicodeDecodeError:
+            continue
+    else:
+        raise ValueError("не получилось прочитать CSV")
+    first = text.split("\n", 1)[0]
+    delim = max((";", "\t", ","), key=first.count)
+    return [("CSV", [list(r) for r in csv.reader(io.StringIO(text), delimiter=delim)][:5000])]
+
+
+def _h(v: Any) -> str:
+    return re.sub(r"\s+", " ", str(v or "").lower().replace("ё", "е")).strip()
+
+
+def find_columns(rows: list[list[Any]]) -> tuple[int, dict[str, int]] | None:
+    """Строка заголовков и номера столбцов: article, qty, price (₽), price_kzt (₸), weight, tnved."""
+    for i, row in enumerate(rows[:40]):
+        cols: dict[str, int] = {}
+        for j, v in enumerate(row):
+            h = _h(v)
+            if not h or v is FORMULA:
+                continue
+            if ("артикул" in h or h in ("арт", "арт.", "код", "код товара", "модель")) and "article" not in cols:
+                cols["article"] = j
+            elif any(x in h for x in ("короб", "упак", "в коробке", "цена", "сумм", "вес", "стоим")):
+                pass
+            elif ("кол" in h or "штук" in h or h in ("шт", "шт.", "qty")) and "qty" not in cols:
+                cols["qty"] = j
+            if "цена" in h and not any(x in h for x in ("короб", "упак", "сумм")):
+                if any(x in h for x in ("₸", "тенге", "kzt", "тг")):
+                    cols.setdefault("price_kzt", j)
+                elif any(x in h for x in ("₽", "руб", "rub")):
+                    cols["price"] = j
+                else:
+                    cols.setdefault("price_any", j)
+            if "вес" in h and "короб" not in h and "weight" not in cols:
+                cols["weight"] = j
+                cols["_w_piece"] = 1 if ("шт" in h or "ед" in h or "1 " in h) else 0
+                cols["_w_kg"] = 0 if (re.search(r"(^|[\s,(])г\b", h) and "кг" not in h) else 1
+            if ("тн вэд" in h or "тнвэд" in h) and "tnved" not in cols:
+                cols["tnved"] = j
+        if "article" in cols and "qty" in cols:
+            if "price" not in cols and "price_any" in cols:
+                cols["price"] = cols["price_any"]
+            return i, cols
+    return None
+
+
+def _num(v: Any) -> Decimal | None:
+    if v is None or v is FORMULA:
+        return None
+    if isinstance(v, (int, float)):
+        return Decimal(str(round(float(v), 4)))
+    s = re.sub(r"[\s ₽₸]|руб\.?|тг", "", str(v)).replace(",", ".")
+    try:
+        return Decimal(s) if s else None
+    except InvalidOperation:
+        return None
+
+
+class ImportResult:
+    def __init__(self) -> None:
+        self.added = 0
+        self.sheet = ""
+        self.notes: list[str] = []
+        self.errors: list[str] = []
+
+
+def _resolve(catalog: Any, text: str) -> tuple[str, bool]:
+    """Артикул из ячейки → артикул каталога сайта: «А 902», «A 172 галтель», «QZ3-7», «GS 1 ( лувер белый )»."""
+    t = re.sub(r"\(.*?\)", " ", str(text or "")).strip()
+    if not t:
+        return "", False
+    tokens = t.split()
+    for n in range(len(tokens), 0, -1):
+        cand = " ".join(tokens[:n])
+        for c in (cand, re.sub(r"^(?i:qz)\s*", "", cand)):
+            p = catalog.find(c)
+            if p:
+                return p.article, True
+    return re.sub(r"\s+", "", t.upper().translate(_LOOKALIKE))[:30], False
+
+
+def import_table(buh: "Buh", pid: int, user: str, filename: str, data: bytes, replace: bool) -> ImportResult:
+    res = ImportResult()
+    name = (filename or "").lower()
+    p = buh.purchase(pid)
+    if not p:
+        res.errors.append("нет такой закупки")
+        return res
+    if p["received_at"]:
+        res.errors.append("закупка оприходована — позиции не меняются")
+        return res
+    if name.endswith(".xls"):
+        res.errors.append("это старый формат .xls — откройте файл в Excel и сохраните как .xlsx")
+        return res
+    if name.endswith(".numbers"):
+        res.errors.append("файл Numbers — экспортируйте его в Excel (.xlsx): Файл → Экспортировать → Excel")
+        return res
+    try:
+        sheets = read_csv(data) if name.endswith((".csv", ".txt")) else read_xlsx(data)
+    except ValueError as e:
+        res.errors.append(str(e))
+        return res
+    found = [(sn, rows, find_columns(rows)) for sn, rows in sheets]
+    found = [x for x in found if x[2]]
+    if not found:
+        res.errors.append("не нашёл столбцы «Артикул» и «Количество» (или «Шт»). Если это прайс без количества — "
+                          "добавьте столбец с количеством штук")
+        return res
+    found.sort(key=lambda x: (0 if "спецификац" in x[0].lower() else 1))
+    sn, rows, (hi, cols) = found[0]
+    res.sheet = sn
+    if len(found) > 1:
+        res.notes.append(f"взят лист «{sn}» (подходящих листов: {len(found)})")
+    rate = None
+    if "price" not in cols:
+        if "price_kzt" not in cols:
+            res.errors.append(f"на листе «{sn}» нет столбца с ценой")
+            return res
+        rate = _num(p["rate"])
+        if not rate or rate <= 0:
+            res.errors.append("цены в файле в тенге — сначала впишите в закупке курс НБРК (тенге за рубль) и сохраните")
+            return res
+        res.notes.append(f"цены в тенге пересчитаны по курсу {p['rate']} ₸ за 1 ₽")
+    lines: list[tuple[str, int, int, str, int]] = []
+    formulas = unknown = 0
+    for row in rows[hi + 1:]:
+        def cell(key: str) -> Any:
+            j = cols.get(key)
+            return row[j] if j is not None and j < len(row) else None
+        a = cell("article")
+        if a is None or a is FORMULA or not str(a).strip():
+            continue
+        if _h(a).startswith(("итог", "всего")):
+            continue
+        q = _num(cell("qty"))
+        pr = _num(cell("price") if rate is None else cell("price_kzt"))
+        if cell("qty") is FORMULA or (cell("price") if rate is None else cell("price_kzt")) is FORMULA:
+            formulas += 1
+            continue
+        if q is None or q <= 0 or q != q.to_integral_value() or pr is None or pr <= 0:
+            continue
+        price_kop = int(((pr / rate) if rate else pr) * 100 + Decimal("0.5"))
+        art, known = _resolve(buh.s.catalog, str(a))
+        if not known:
+            unknown += 1
+            res.notes.append(f"{art}: нет в каталоге сайта — добавлен как есть")
+        w = _num(cell("weight"))
+        wg = 0
+        if w and w > 0:
+            per = w if cols.get("_w_piece") else w / q
+            wg = int(per * (1000 if cols.get("_w_kg", 1) else 1) + Decimal("0.5"))
+        tn = re.sub(r"\D", "", str(cell("tnved") or ""))
+        lines.append((art, int(q), price_kop, tn if len(tn) == 10 else "", wg))
+    if formulas and not lines:
+        res.errors.append("в файле формулы без сохранённых значений — откройте файл в Excel, сохраните и загрузите снова")
+        return res
+    if not lines:
+        res.errors.append(f"на листе «{sn}» нет строк с количеством и ценой")
+        return res
+    if formulas:
+        res.notes.append(f"пропущено строк с несохранёнными формулами: {formulas} — откройте и сохраните файл в Excel")
+    if rate is None:      # проверка здравого смысла: закупочная цена выше розничной — похоже на тенге
+        dear = [a for a, q, pk, tn, wg in lines if (buh.s.catalog.get(a) and pk > buh.s.catalog.get(a).price * 100)]
+        if dear and len(dear) * 2 >= len(lines):
+            res.notes.append("цены в файле выше розничных на сайте — если это тенге, впишите в закупке курс, подпишите столбец "
+                             "«Цена, ₸» и загрузите снова")
+    with buh.s.tx() as c:
+        if replace:
+            c.execute("DELETE FROM purchase_lines WHERE purchase_id=?", (pid,))
+        for art, q, pk, tn, wg in lines:
+            info = buh.product_info(art)
+            c.execute("INSERT INTO purchase_lines(purchase_id, article, qty, price_kop, tnved, weight_g) VALUES (?,?,?,?,?,?)",
+                      (pid, art, q, pk, tn or info["tnved"], wg or info["weight_g"]))
+            if wg and not info["weight_g"]:
+                c.execute("INSERT INTO product_info(article, weight_g, updated_at) VALUES (?,?,?) ON CONFLICT(article) DO UPDATE"
+                          " SET weight_g=excluded.weight_g, updated_at=excluded.updated_at", (art, wg, iso_now()))
+        c.execute("UPDATE purchases SET updated_at=? WHERE id=?", (iso_now(), pid))
+        buh.s.log(c, f"Закупка № {p['num']}: из файла «{filename[:60]}» загружено позиций {len(lines)}", user)
+    res.added = len(lines)
+    return res

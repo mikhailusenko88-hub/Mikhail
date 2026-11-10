@@ -11,9 +11,12 @@ from typing import Any
 
 from flask import Flask, Response, abort, flash, redirect, render_template, request, url_for
 
-from buh import (CONTRACT_LIMIT_KOP, DOPP_STATUS, EAEU, EAEU_FROM, TRANSPORTS, VAT_FREE_LIMIT_KOP, VAT_RATE, Buh, calendar_known, dmy,
+from buh import (CONTRACT_LIMIT_KOP, import_table, DOPP_STATUS, EAEU, EAEU_FROM, TRANSPORTS, VAT_FREE_LIMIT_KOP, VAT_RATE, Buh, calendar_known, dmy,
                  egrul_lookup, iso, kop_in)
 from store import TAX_STATUSES, Store, today
+
+
+XLSX_MAX = 1024 * 1024          # nginx пропускает до 1 МБ
 
 
 def register(app: Flask, store: Store, buh: Buh, h: dict[str, Any]) -> None:
@@ -126,6 +129,26 @@ def register(app: Flask, store: Store, buh: Buh, h: dict[str, Any]) -> None:
             err = buh.add_purchase_line(pid, who(), request.form.get("article", ""), request.form.get("qty", ""),
                                         request.form.get("price", ""))
             flash(err or "Позиция добавлена.", "err" if err else "ok")
+        return redirect(url_for("purchase_view", pid=pid) + "#lines")
+
+    @app.post("/purchases/<int:pid>/xlsx")
+    @admin_required
+    def purchase_xlsx(pid: int) -> Any:
+        f = request.files.get("file")
+        if not f or not f.filename:
+            flash("Выберите файл Excel (.xlsx) или CSV.", "err")
+            return redirect(url_for("purchase_view", pid=pid) + "#lines")
+        data = f.read(XLSX_MAX + 1)
+        if len(data) > XLSX_MAX:
+            flash("Файл больше 1 МБ — уберите из него картинки или оставьте один лист.", "err")
+            return redirect(url_for("purchase_view", pid=pid) + "#lines")
+        r = import_table(buh, pid, who(), f.filename, data, request.form.get("replace") == "1")
+        for e in r.errors:
+            flash("Не загрузилось: " + e + ".", "err")
+        if r.added:
+            flash(f"Из файла «{f.filename}» загружено позиций: {r.added} (лист «{r.sheet}»). Проверьте суммы и вес.", "ok")
+        for n in r.notes[:10]:
+            flash(n[:1].upper() + n[1:] + ".", "err" if "выше розничных" in n or "пропущено" in n else "ok")
         return redirect(url_for("purchase_view", pid=pid) + "#lines")
 
     @app.post("/purchases/<int:pid>/lines/<int:lid>/del")
