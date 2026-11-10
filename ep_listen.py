@@ -11,33 +11,63 @@ def get(u, t=60):
 def ep_num(t):
     t = (t or "").lower(); m = re.search(r"сери[яию]\s*№?\s*(\d+)", t) or re.search(r"(\d+)\s*[-–]?\s*(?:я\s+)?сери", t)
     return int(m.group(1)) if m else None
-rts = []
-for page in range(1, 9):
-    try:
-        j = json.loads(get(f"https://rutube.ru/api/video/person/{RT}/?page={page}")); rts += j.get("results") or []
-        if not j.get("has_next"): break
-    except Exception as ex:
-        print("rutube api", ex); break
-eps = {}
-for v in rts:
-    n = ep_num(v.get("title")); print("rt:", n, v.get("duration"), v.get("title"), flush=True)
-    if n and (v.get("duration") or 0) > 100 and n not in eps: eps[n] = v
-order = sorted(eps, reverse=True)
-if arg[0] == "r":
-    k = int(arg[1:]) - 1
-    if k >= len(order): print("нет такой серии"); sys.exit(0)
-    n = order[k]
+YT = os.environ.get("YT_CHANNEL", "https://www.youtube.com/@Cartoon_Friend3/videos")
+def sh(args, timeout=1800):
+    r = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
+    if r.returncode: print("rc", r.returncode, " ".join(args)[:160], "|", r.stderr[-300:].replace("\n", " "), flush=True)
+    return r
+def rutube_list():
+    rts = []
+    for page in range(1, 9):
+        try:
+            j = json.loads(get(f"https://rutube.ru/api/video/person/{RT}/?page={page}")); rts += j.get("results") or []
+            if not j.get("has_next"): break
+        except Exception as ex:
+            print("rutube api", ex); break
+    eps = {}
+    for v in rts:
+        n = ep_num(v.get("title")); print("rt:", n, v.get("duration"), v.get("title"), flush=True)
+        if n and (v.get("duration") or 0) > 100 and n not in eps: eps[n] = v
+    return eps
+mp4 = "/tmp/ep.mp4"; src = ""
+if arg.startswith("url:"):
+    # звук/видео по прямой ссылке (например, со своего сервера): url:<ссылка>|<номер серии>|<название>
+    u, n, title = (arg[4:].split("|") + ["0", ""])[:3]; n = int(n or 0); title = title or u
+    open(mp4, "wb").write(get(u, 600)); src = "ссылка"
+elif arg.startswith("yt"):
+    # YouTube: ytN — N-я по новизне серия канала (yt1 — самая новая)
+    r = sh(["yt-dlp", "--flat-playlist", "-J", "--playlist-end", "40", YT], 300)
+    try: ents = json.loads(r.stdout).get("entries") or []
+    except Exception: ents = []
+    ents = [e for e in ents if (e.get("duration") or 0) > 100]
+    for e in ents: print("yt:", e.get("id"), ep_num(e.get("title")), e.get("duration"), e.get("title"), flush=True)
+    k = int(arg[2:] or 1) - 1
+    if k >= len(ents): print("YouTube не отдал список серий"); sys.exit(3)
+    e = ents[k]; n = ep_num(e.get("title")) or 0; title = e.get("title")
+    for cl in ["", "youtube:player_client=web_embedded", "youtube:player_client=tv", "youtube:player_client=mweb", "youtube:player_client=ios", "youtube:player_client=web_safari", "youtube:player_client=tv_simply"]:
+        sh(["yt-dlp", "-q", "-f", "ba/b[height<=480]/b", "-o", mp4, "--force-overwrites", *(["--extractor-args", cl] if cl else []), "https://www.youtube.com/watch?v=" + e["id"]], 900)
+        if os.path.exists(mp4): src = "youtube " + (cl or "обычный"); break
+    if not os.path.exists(mp4):
+        eps = rutube_list()   # та же серия на Rutube (по номеру)
+        if n in eps:
+            sh(["yt-dlp", "-q", "-f", "wv*+wa/w", "-o", mp4, "--force-overwrites", eps[n].get("video_url")]); src = "rutube (YouTube не отдал)"
 else:
-    n = int(arg[1:])
-    if n not in eps: print("серии нет на Rutube:", n, "есть:", order); sys.exit(0)
-v = eps[n]; name = f"ep{n:02d}"; D = f"ep/{name}"; os.makedirs(D, exist_ok=True)
-print("серия", n, v.get("title"), v.get("video_url"), flush=True)
-mp4 = "/tmp/ep.mp4"
-for fmt in ["wv*+wa/w", "b"]:
-    r = subprocess.run(["yt-dlp", "-q", "-f", fmt, "-o", mp4, "--force-overwrites", v.get("video_url")], capture_output=True, text=True, timeout=1800)
-    if os.path.exists(mp4): break
-    print("yt-dlp", r.stderr[-500:])
-if not os.path.exists(mp4): print("не скачалась"); sys.exit(1)
+    eps = rutube_list(); order = sorted(eps, reverse=True)
+    if arg[0] == "r":
+        k = int(arg[1:]) - 1
+        if k >= len(order): print("нет такой серии"); sys.exit(0)
+        n = order[k]
+    else:
+        n = int(arg[1:])
+        if n not in eps: print("серии нет на Rutube:", n, "есть:", order); sys.exit(0)
+    title = eps[n].get("title")
+    for fmt in ["wv*+wa/w", "b"]:
+        sh(["yt-dlp", "-q", "-f", fmt, "-o", mp4, "--force-overwrites", eps[n].get("video_url")])
+        if os.path.exists(mp4): src = "rutube"; break
+if not os.path.exists(mp4): print("не скачалась", arg); sys.exit(1)
+name = f"ep{n:02d}" + ("yt" if arg.startswith(("yt", "url:")) else ""); D = f"ep/{name}"; os.makedirs(D, exist_ok=True)
+v = {"title": title}
+print("серия", n, title, "| источник:", src, flush=True)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", mp4, "-vn", "-ac", "1", "-ar", "16000", "/tmp/a16.wav"], check=True)
 from faster_whisper import WhisperModel
 m = WhisperModel(os.environ.get("FW", "medium"), device="cpu", compute_type="int8")
@@ -85,7 +115,7 @@ for i, p in enumerate(phr):
     if any(f["lvl"] == "ОШИБКА" for f in flags) and os.path.exists(f"out/{nm}.png"): shutil.copy(f"out/{nm}.png", f"{D}/{nm}.png")
     print(nm, f"{t0:6.1f}", text[:70], "|", "; ".join(f"{f['need']}→{f['got']} {f['lvl']}" for f in flags), flush=True)
 mmss = lambda t: f"{int(t // 60)}:{int(t % 60):02d}"
-L = [f"# Серия {n}: {v.get('title')}", "", f"Фраз проверено: {len(rows)} · слов с ударением не там: {sum(1 for b in bad_words if b['lvl'] == 'ОШИБКА')} (+{sum(1 for b in bad_words if b['lvl'] != 'ОШИБКА')} возможных)", "",
+L = [f"# Серия {n}: {v.get('title')}", "", f"Источник: {src}", "", f"Фраз проверено: {len(rows)} · слов с ударением не там: {sum(1 for b in bad_words if b['lvl'] == 'ОШИБКА')} (+{sum(1 for b in bad_words if b['lvl'] != 'ОШИБКА')} возможных)", "",
      "| время | высота, Гц | слово: нужно → звучит | уверенность | фраза |", "|---|---|---|---|---|"]
 for b in bad_words: L.append(f"| {mmss(b['t'])} | {b['f0']} | {b['need']} → {b['got']} | {b['lvl']} | {b['phrase'][:90]} |")
 L += ["", "## Слова, которые распознаватель услышал неуверенно (возможно смазаны)", ""]

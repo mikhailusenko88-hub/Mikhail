@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: p
         run: |
-          echo "eps=$(python3 -c "import re,json;print(json.dumps(re.findall(r'[re]\d+', next(l for l in open('ep_request.txt') if l.startswith('episodes:')))))")" >> "$GITHUB_OUTPUT"
+          echo "eps=$(python3 -c "import re,json;print(json.dumps(re.findall(r'(?:yt|[re])\d+|url:\S+', next(l for l in open('ep_request.txt') if l.startswith('episodes:')))))")" >> "$GITHUB_OUTPUT"
   listen:
     needs: plan
     strategy:
@@ -41,9 +41,10 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
           pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
-          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib faster-whisper yt-dlp
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib faster-whisper && pip install -q -U "yt-dlp[default]"
+          curl -fsSL https://deno.land/install.sh | sh -s -- -q > /dev/null 2>&1 && echo "$HOME/.deno/bin" >> "$GITHUB_PATH" || true
       - name: Listen
-        run: python ep_listen.py ${{ matrix.ep }}
+        run: python ep_listen.py "${{ matrix.ep }}"
       - name: Commit result
         if: always()
         run: |
