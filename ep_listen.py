@@ -32,8 +32,19 @@ def rutube_list():
 mp4 = "/tmp/ep.mp4"; src = ""
 if arg.startswith("url:"):
     # звук/видео по прямой ссылке (например, со своего сервера): url:<ссылка>|<номер серии>|<название>
-    u, n, title = (arg[4:].split("|") + ["0", ""])[:3]; n = int(n or 0); title = title or u
-    open(mp4, "wb").write(get(u, 600)); src = "ссылка"
+    u, n, title = (arg[4:].split("|") + ["0", ""])[:3]; n = int(n or 0); title = title or f"серия {n} (звук с YouTube через свой сервер)"
+    import time
+    ok = False; last = -1
+    for k in range(int(os.environ.get("WAIT_MIN", "100")) * 2):   # ждём, пока файл появится на сервере и перестанет расти
+        try:
+            rq = urllib.request.Request(u, method="HEAD"); sz = int(urllib.request.urlopen(rq, timeout=30).headers.get("Content-Length") or 0)
+            if sz > 200000 and sz == last: ok = True; break
+            last = sz
+        except Exception as ex:
+            if k % 10 == 0: print("жду файл", u, str(ex)[:80], flush=True)
+        time.sleep(30)
+    if not ok: print("файл так и не появился:", u); sys.exit(4)
+    open(mp4, "wb").write(get(u, 900)); src = "YouTube (через свой сервер)"
 elif arg.startswith("yt"):
     # YouTube: ytN — N-я по новизне серия канала (yt1 — самая новая)
     r = sh(["yt-dlp", "--flat-playlist", "-J", "--playlist-end", "40", YT], 300)
