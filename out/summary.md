@@ -69,6 +69,15 @@
 | pg_u2_stalo |  | 3.39 | 0.571 | 0 (+0) | 0/1 |
 | q1_dver_bylo | barsik_bylo | 3.26 | 1.0 | 0 (+0) | 0/1 |
 | q1_dver_stalo | barsik_stalo | 2.81 | 1.0 | 1 (+0) | 0/1 |
+| q2_d_b0 | barsik_seychas | 2.75 | 0.961 | 3 (+1) | 2/5 |
+| q2_d_b1 | barsik_bars | 2.9 | 0.978 | 1 (+0) | 2/5 |
+| q2_d_b2 | barsik_bars_R1.25 | 2.76 | 0.944 | 2 (+0) | 2/5 |
+| q2_d_n0 | albina_seychas | 2.95 | 0.978 | 2 (+5) | 3/5 |
+| q2_d_n1 | albina_bars | 2.87 | 1.0 | 4 (+3) | 3/5 |
+| q2_d_r1 | ron1_marat | 2.42 | 0.983 | 4 (+0) | 2/5 |
+| q2_d_r2 | ron2_miyau | 2.46 | 1.0 | 3 (+2) | 2/5 |
+| q2_d_r3 | ron3_alfia | 2.65 | 0.972 | 1 (+1) | 3/5 |
+| q2_d_r4 | ron4_kejilgan | 2.54 | 0.944 | 2 (+2) | 2/5 |
 | sv_ru_aigul | ru_aigul | 3.5 | 1.0 | 0 (+0) | 1/3 |
 | sv_ru_albina | ru_albina | 3.32 | 1.0 | 0 (+0) | 3/3 |
 | sv_ru_alexandr | ru_alexandr | 3.2 | 1.0 | 1 (+0) | 2/3 |
