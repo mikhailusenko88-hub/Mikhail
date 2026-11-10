@@ -1,0 +1,50 @@
+name: golos-emo
+on:
+  push:
+    branches: [golos]
+    paths: [emo_request.txt]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: golos-emo
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+          key: golos-emo-cache-v1
+          restore-keys: golos-check-cache-
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib
+      - name: Emotions (эмоции, шёпот, крик, слова, естественность)
+        run: python emo_check.py
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name golos
+          git config user.email golos@users.noreply.github.com
+          mkdir -p /tmp/res && cp -r emo_out /tmp/res/ 2>/dev/null || true
+          for i in 1 2 3 4 5 6; do
+            git fetch -q origin golos && git reset -q --hard origin/golos
+            mkdir -p emo_out && cp -r /tmp/res/emo_out/. emo_out/ 2>/dev/null || true
+            git add -A emo_out 2>/dev/null || true
+            git commit -qm "golos-emo: результат" || { echo nothing; break; }
+            git push -q origin HEAD:golos && break
+            sleep $((RANDOM % 15 + 5))
+          done
