@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "macros.html" import more_nav with context %}
+{% from "macros.html" import more_nav, lot_made, shelf_pill with context %}
 {% block title %}Закупка № {{ p['num'] }}{% endblock %}
 {% block main %}
 {{ more_nav('purchases') }}
@@ -101,8 +101,8 @@
   <div class="span2"><button class="btn-p">Сохранить</button></div>
 </form>
 {% if lines %}
-<div class="panel tbl"><table class="plain"><thead><tr><th>Артикул</th><th class="r">Шт</th><th class="r">Себестоимость шт</th><th class="r">{% if locked %}Осталось{% else %}Сумма{% endif %}</th></tr></thead><tbody>
-{% if locked %}{% for l in lots %}<tr><td class="mono">{{ l['article'] }}</td><td class="r">{{ l['qty_in'] }}</td><td class="r num">{{ rubk(l['unit_kop']) }}</td><td class="r">{{ l['qty_left'] }}</td></tr>{% endfor %}
+<div class="panel tbl"><table class="plain"><thead><tr><th>Артикул</th><th class="r">Шт</th><th class="r">Себестоимость шт</th><th class="r">{% if locked %}Осталось{% else %}Сумма{% endif %}</th>{% if locked %}<th>Изготовлено</th><th>Годен</th>{% endif %}</tr></thead><tbody>
+{% if locked %}{% for l in lots %}<tr id="lot-{{ l['id'] }}"><td class="mono">{{ l['article'] }}</td><td class="r">{{ l['qty_in'] }}</td><td class="r num">{{ rubk(l['unit_kop']) }}</td><td class="r">{{ l['qty_left'] }}</td><td>{{ lot_made(l, url_for('purchase_view', pid=p['id']) ~ '#lot-' ~ l['id']) }}</td><td>{{ shelf_pill(l) }}</td></tr>{% endfor %}
 {% else %}{% for l, u in costs %}<tr><td class="mono">{{ l['article'] }}</td><td class="r">{{ l['qty'] }}</td><td class="r num">{{ rubk(u) }}</td><td class="r num">{{ rubk(u * l['qty']) }}</td></tr>{% endfor %}{% endif %}
 </tbody></table></div>
 {% endif %}
@@ -110,9 +110,10 @@
 <form class="addline" method="post" action="{{ url_for('purchase_receive', pid=p['id']) }}">
   <input type="hidden" name="csrf" value="{{ csrf }}">
   <label class="inline">Дата принятия на учёт <input name="day" type="date" value="{{ p['import_date'] or today }}"></label>
+  <label class="inline">Дата изготовления (с этикетки) <input name="made" type="date" max="{{ p['import_date'] or today }}"></label>
   <button class="btn-p" {% if not lines %}disabled{% endif %}>Оприходовать на склад</button>
 </form>
-<p class="note">После оприходования остатки на «Складе» вырастут сами, а на сайте товар станет «В наличии». С даты принятия на учёт считаются сроки декларации по косвенным налогам.</p>
+<p class="note">После оприходования остатки на «Складе» вырастут сами, а на сайте товар станет «В наличии». С даты принятия на учёт считаются сроки декларации по косвенным налогам. Дата изготовления — для срока годности ({{ SHELF_MONTHS }} мес.), она только для себя; если у коробок разные даты — поправьте по каждой партии после оприходования.</p>
 {% else %}
 <form method="post" action="{{ url_for('purchase_unreceive', pid=p['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g crit sm">Отменить оприходование</button></form>
 {% endif %}

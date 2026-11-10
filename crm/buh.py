@@ -121,6 +121,29 @@ def dmy(s: str) -> str:
     return f"{s[8:10]}.{s[5:7]}.{s[:4]}" if iso(s[:10]) else ""
 
 
+SHELF_MONTHS = 12        # срок годности в упаковке изготовителя — 1 год со дня изготовления (ТУ ARTDEC, п. 8.2)
+SHELF_WARN_DAYS = 60     # за сколько дней предупреждать, что срок партии подходит
+# Какую партию отгружать первой: раньше изготовленную (срок кончается раньше), без даты — по дате прихода
+def lot_order(t: str = "") -> str:
+    p = f"{t}." if t else ""
+    return f"CASE WHEN {p}made_at!='' THEN {p}made_at ELSE {p}received_at END, {p}received_at, {p}id"
+
+
+def shelf_until(made: str) -> str:
+    """«Годен до» по дате изготовления: та же дата через SHELF_MONTHS месяцев (29.02 → 28.02)."""
+    if not iso(made):
+        return ""
+    d = date.fromisoformat(made)
+    y, m = divmod(d.month - 1 + SHELF_MONTHS, 12)
+    y, m = d.year + y, m + 1
+    for day in (d.day, 30, 29, 28):
+        try:
+            return date(y, m, min(d.day, day)).isoformat()
+        except ValueError:
+            continue
+    return ""
+
+
 def contrib_for_year(year: int, reg: date | None) -> int | None:
     """Фиксированные взносы за год в копейках, за неполный год — пропорционально (п. 3 ст. 430 НК)."""
     full = FIXED_CONTRIB.get(year)
@@ -432,8 +455,9 @@ class Buh:
             out.append((x, int((total / int(x["qty"])).quantize(Decimal("1")))))
         return out
 
-    def receive(self, pid: int, user: str, day: str = "") -> str:
-        """Оприходовать партию: остатки на склад, партии с себестоимостью. День — дата принятия на учёт."""
+    def receive(self, pid: int, user: str, day: str = "", made: str = "") -> str:
+        """Оприходовать партию: остатки на склад, партии с себестоимостью. День — дата принятия на учёт.
+        made — дата изготовления с этикеток (если у коробок разная — поправить по каждой партии потом)."""
         p = self.purchase(pid)
         if not p:
             return "нет такой закупки"
@@ -443,6 +467,9 @@ class Buh:
         if not lines:
             return "добавьте позиции спецификации"
         day = iso(day) or p["import_date"] or today()
+        made = iso(made)
+        if made and made > day:
+            return "дата изготовления позже даты принятия на учёт — проверьте этикетку"
         ts = iso_now()
         with self.s.tx() as c:
             parts = []
@@ -450,8 +477,8 @@ class Buh:
                 c.execute("INSERT INTO stock(article, qty, updated_at, updated_by) VALUES (?,0,?,?) ON CONFLICT(article) DO NOTHING",
                           (x["article"], ts, user))
                 c.execute("UPDATE stock SET qty=qty+?, updated_at=?, updated_by=? WHERE article=?", (int(x["qty"]), ts, user, x["article"]))
-                c.execute("INSERT INTO lots(purchase_id, article, qty_in, qty_left, unit_kop, received_at) VALUES (?,?,?,?,?,?)",
-                          (pid, x["article"], int(x["qty"]), int(x["qty"]), unit, day))
+                c.execute("INSERT INTO lots(purchase_id, article, qty_in, qty_left, unit_kop, received_at, made_at)"
+                          " VALUES (?,?,?,?,?,?,?)", (pid, x["article"], int(x["qty"]), int(x["qty"]), unit, day, made))
                 parts.append(f"{x['article']} +{x['qty']}")
             c.execute("UPDATE purchases SET received_at=?, import_date=CASE WHEN import_date='' THEN ? ELSE import_date END,"
                       " updated_at=? WHERE id=?", (day, day, ts, pid))
@@ -475,11 +502,45 @@ class Buh:
             self.s.log(c, f"Закупка № {p['num']}: оприходование отменено", user)
         return ""
 
-    def lots(self, pid: int | None = None) -> list[sqlite3.Row]:
+    @staticmethod
+    def _shelf(row: Any, day: str) -> dict[str, Any]:
+        """Партия + срок годности: until («годен до»), left (дней осталось), state: '' | soon | over | nodate."""
+        d = dict(row)
+        until = shelf_until(d.get("made_at") or "")
+        d["until"] = until
+        d["left"] = (date.fromisoformat(until) - date.fromisoformat(day)).days if until else None
+        d["state"] = ("nodate" if not until else "over" if d["left"] < 0 else "soon" if d["left"] <= SHELF_WARN_DAYS else "")
+        return d
+
+    def lots(self, pid: int | None = None, day: str | None = None) -> list[dict[str, Any]]:
+        day = day or today()
         if pid:
-            return self.c().execute("SELECT * FROM lots WHERE purchase_id=? ORDER BY id", (pid,)).fetchall()
-        return self.c().execute("SELECT l.*, p.num FROM lots l JOIN purchases p ON p.id=l.purchase_id WHERE l.qty_left>0"
-                                " ORDER BY l.article, l.received_at, l.id").fetchall()
+            rows = self.c().execute("SELECT * FROM lots WHERE purchase_id=? ORDER BY id", (pid,)).fetchall()
+        else:
+            rows = self.c().execute("SELECT l.*, p.num FROM lots l JOIN purchases p ON p.id=l.purchase_id WHERE l.qty_left>0"
+                                    " ORDER BY l.article, " + lot_order("l")).fetchall()
+        return [self._shelf(r, day) for r in rows]
+
+    def expiring(self, day: str | None = None, days: int = SHELF_WARN_DAYS) -> list[dict[str, Any]]:
+        """Партии с остатком, у которых срок годности прошёл или кончится в ближайшие days дней — для себя, не для клиентов."""
+        day = day or today()
+        out = [x for x in self.lots(day=day) if x["until"] and x["left"] <= days]
+        return sorted(out, key=lambda x: (x["until"], x["article"]))
+
+    def set_lot_made(self, lid: int, made: str, user: str) -> str:
+        lot = self.c().execute("SELECT l.*, p.num FROM lots l JOIN purchases p ON p.id=l.purchase_id WHERE l.id=?", (lid,)).fetchone()
+        if not lot:
+            return "нет такой партии"
+        m = iso(made)
+        if (made or "").strip() and not m:
+            return "дата изготовления — в формате дд.мм.гггг"
+        if m and m > lot["received_at"]:
+            return f"{lot['article']}: дата изготовления позже даты принятия на учёт — проверьте этикетку"
+        with self.s.tx() as c:
+            c.execute("UPDATE lots SET made_at=? WHERE id=?", (m, lid))
+            self.s.log(c, f"Партия {lot['article']} (спецификация № {lot['num']}): дата изготовления "
+                          + (f"{dmy(m)}, годна до {dmy(shelf_until(m))}" if m else "убрана"), user)
+        return ""
 
     def _lots_on_move(self, c: sqlite3.Connection, did: int, sign: int, user: str) -> None:
         if sign > 0:   # возврат на склад (сделка вернулась из «Отгружено» или удалена) — партии восстанавливаются
@@ -493,7 +554,7 @@ class Buh:
             need = int(r["q"] or 0)
             if need <= 0:
                 continue
-            for lot in c.execute("SELECT * FROM lots WHERE article=? AND qty_left>0 ORDER BY received_at, id", (r["article"],)).fetchall():
+            for lot in c.execute("SELECT * FROM lots WHERE article=? AND qty_left>0 ORDER BY " + lot_order(), (r["article"],)).fetchall():
                 take = min(need, int(lot["qty_left"]))
                 c.execute("UPDATE lots SET qty_left=qty_left-? WHERE id=?", (take, lot["id"]))
                 c.execute("INSERT INTO sale_costs(deal_id, lot_id, article, qty, unit_kop, day) VALUES (?,?,?,?,?,?)",

@@ -265,7 +265,8 @@ CREATE TABLE IF NOT EXISTS lots (                   -- партии на скл�
     qty_in      INTEGER NOT NULL,
     qty_left    INTEGER NOT NULL,
     unit_kop    INTEGER NOT NULL,
-    received_at TEXT NOT NULL
+    received_at TEXT NOT NULL,
+    made_at     TEXT NOT NULL DEFAULT ''             -- дата изготовления с этикетки коробки (только для себя: срок годности)
 );
 CREATE TABLE IF NOT EXISTS sale_costs (             -- списание партий при отгрузке (FIFO) — расход на товар для УСН
     id       INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -577,6 +578,9 @@ class Store:
             for col, typ in (("designer_id", "INTEGER"), ("designer_pct", "INTEGER NOT NULL DEFAULT 10")):
                 if col not in cols:
                     c.execute(f"ALTER TABLE deals ADD COLUMN {col} {typ}")
+            # 11.11.2026: дата изготовления партии — срок годности по ТУ ARTDEC (1 год), видно только в CRM
+            if "made_at" not in {r[1] for r in c.execute("PRAGMA table_info(lots)").fetchall()}:
+                c.execute("ALTER TABLE lots ADD COLUMN made_at TEXT NOT NULL DEFAULT ''")
             row = c.execute("SELECT value FROM settings WHERE key='schema_version'").fetchone()
             if row and int(row[0]) > SCHEMA_VERSION:
                 raise RuntimeError(f"база CRM версии {row[0]}, программа знает только {SCHEMA_VERSION}")

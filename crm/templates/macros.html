@@ -55,3 +55,13 @@
 {% macro due_pill(due, soon) -%}
 {% if not due %}<span class="pill warn">нет даты</span>{% elif due < today %}<span class="pill crit">{{ fmt_day(due) }}</span>{% elif due == today %}<span class="pill crit">сегодня</span>{% elif due <= soon %}<span class="pill warn">{{ fmt_day(due) }}</span>{% else %}<span class="pill">{{ dmy(due) }}</span>{% endif %}
 {%- endmacro %}
+
+
+{# Срок годности партии — только для себя: на сайт, Авито и в документы клиентам не выводится #}
+{% macro lot_made(l, back) -%}
+<form class="lotmade" method="post" action="{{ url_for('lot_made_set', lid=l['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="back" value="{{ back }}"><input name="made" type="date" value="{{ l['made_at'] }}" max="{{ l['received_at'] }}" aria-label="Дата изготовления {{ l['article'] }}"><button class="btn-g sm">OK</button></form>
+{%- endmacro %}
+
+{% macro shelf_pill(l) -%}
+{% if l['state'] == 'nodate' %}<span class="pill warn">нет даты</span>{% elif l['state'] == 'over' %}<span class="pill crit">истёк {{ dmy(l['until']) }}</span>{% elif l['state'] == 'soon' %}<span class="pill warn">до {{ dmy(l['until']) }} · {{ l['left'] }} дн.</span>{% else %}<span class="pill">до {{ dmy(l['until']) }}</span>{% endif %}
+{%- endmacro %}

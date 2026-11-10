@@ -245,3 +245,4 @@ input.ed.tn{width:120px;text-align:left}
 input.ed.wide-ed{width:100%;min-width:180px;text-align:left}
 h2.m0{margin:0}
 .taxrow .grow{flex:1 1 230px}
+.lotmade{display:flex;align-items:center;gap:4px;margin:0}.lotmade input[type=date]{width:auto;min-width:0;padding:4px 6px;font-size:13px}

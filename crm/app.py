@@ -353,7 +353,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     def morning_digest(day: str | None = None) -> str:
         s = store.digest(day or today())
         soon = buh.upcoming(7, day)
-        if not (s["new"] or s["today"] or s["overdue"] or s["paid"] or soon):
+        exp = buh.expiring(day or today())      # срок годности партий — только для своих, в пуше команде
+        if not (s["new"] or s["today"] or s["overdue"] or s["paid"] or soon or exp):
             return ""
         parts = []
         if s["overdue"]: parts.append(f"просрочено задач: {s['overdue']}")
@@ -364,9 +365,14 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             x = soon[0]
             when = ("срок прошёл " if x["due"] and x["due"] < (day or today()) else "до ") + fmt_day(x["due"]) if x["due"] else "дата не указана"
             parts.append(f"сроки отчётности на неделе: {len(soon)} — ближайший: {x['title']} ({when})")
+        if exp:
+            x = exp[0]
+            when = f"истёк {fmt_day(x['until'])}" if x["state"] == "over" else f"до {fmt_day(x['until'])}"
+            parts.append(f"срок годности подходит у партий: {len(exp)} — {x['article']}, {x['qty_left']} шт, {when}")
         text = "; ".join(parts)
         text = text[:1].upper() + text[1:] + "."
-        url = "/board?hot=1" if s["overdue"] else ("/taxes" if soon and not (s["new"] or s["today"] or s["paid"]) else "/")
+        url = "/board?hot=1" if s["overdue"] else ("/taxes" if soon and not (s["new"] or s["today"] or s["paid"]) else
+                                                   "/purchases#lots" if exp and not (s["new"] or s["today"] or s["paid"]) else "/")
         wp.notify("Наш декор — на сегодня", text, url, tag="digest")
         return text
     app.extensions["digest"] = morning_digest

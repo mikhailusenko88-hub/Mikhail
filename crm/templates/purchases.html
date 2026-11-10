@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "macros.html" import more_nav with context %}
+{% from "macros.html" import more_nav, lot_made, shelf_pill with context %}
 {% block title %}Закупки{% endblock %}
 {% block main %}
 {{ more_nav('purchases') }}
@@ -23,8 +23,10 @@
 </form>
 
 <h2 id="lots">Партии на складе</h2>
-<p class="d">Себестоимость штуки = цена по спецификации + НДС при ввозе {{ VAT_RATE }} % + комиссии банка + перевозка (по весу). При отгрузке товар списывается с самой старой партии.</p>
-<div class="panel tbl"><table class="plain"><thead><tr><th>Артикул</th><th>Спецификация</th><th class="r">Осталось</th><th class="r">Себестоимость шт</th></tr></thead><tbody>
-{% for l in lots %}<tr><td class="mono">{{ l['article'] }}</td><td>№ {{ l['num'] }} от {{ dmy(l['received_at']) }}</td><td class="r">{{ l['qty_left'] }} из {{ l['qty_in'] }}</td><td class="r num">{{ rubk(l['unit_kop']) }}</td></tr>{% else %}<tr><td colspan="4" class="d">Оприходованных партий нет</td></tr>{% endfor %}
+<p class="d">Себестоимость штуки = цена по спецификации + НДС при ввозе {{ VAT_RATE }} % + комиссии банка + перевозка (по весу). При отгрузке товар списывается сначала с партии, изготовленной раньше; если даты нет — с самой старой по приходу.</p>
+<p class="d">Срок годности в упаковке изготовителя — {{ SHELF_MONTHS }} мес. со дня изготовления (ТУ ARTDEC). Дату берите с этикетки коробки. Сроки видны только здесь: на сайт, Авито, в счета и письма клиентам они не попадают.</p>
+{% if exp %}<div class="panel warnbox" role="status"><b>Срок годности подходит:</b> {% for l in exp %}{{ l['article'] }} — {{ l['qty_left'] }} шт {% if l['state'] == 'over' %}истёк {{ dmy(l['until']) }}{% else %}до {{ dmy(l['until']) }} ({{ l['left'] }} дн.){% endif %}{% if not loop.last %}; {% endif %}{% endfor %}. Продайте эти партии в первую очередь.</div>{% endif %}
+<div class="panel tbl"><table class="plain"><thead><tr><th>Артикул</th><th>Спецификация</th><th class="r">Осталось</th><th class="r">Себестоимость шт</th><th>Изготовлено</th><th>Годен</th></tr></thead><tbody>
+{% for l in lots %}<tr id="lot-{{ l['id'] }}"><td class="mono">{{ l['article'] }}</td><td>№ {{ l['num'] }} от {{ dmy(l['received_at']) }}</td><td class="r">{{ l['qty_left'] }} из {{ l['qty_in'] }}</td><td class="r num">{{ rubk(l['unit_kop']) }}</td><td>{{ lot_made(l, url_for('purchases_view') ~ '#lot-' ~ l['id']) }}</td><td>{{ shelf_pill(l) }}</td></tr>{% else %}<tr><td colspan="6" class="d">Оприходованных партий нет</td></tr>{% endfor %}
 </tbody></table></div>
 {% endblock %}

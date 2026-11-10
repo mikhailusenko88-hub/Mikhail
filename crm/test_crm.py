@@ -1297,6 +1297,61 @@ class TestBuh(Base):
         self.assertEqual(self.buh.unreceive(pid, "t"), "")
         self.assertEqual(self.store.c().execute("SELECT qty FROM stock WHERE article='A912'").fetchone()[0], 0)
 
+    def test_lot_shelf_life_internal_only(self) -> None:
+        import buh
+        self.assertEqual(buh.shelf_until("2026-11-01"), "2027-11-01")
+        self.assertEqual(buh.shelf_until("2024-02-29"), "2025-02-28")
+        self.assertEqual(buh.shelf_until(""), "")
+        # партия 1: пришла 26.11.2026, изготовлена 01.11.2026 → годна до 01.11.2027
+        p1 = self.make_purchase("rail")
+        self.buh.paste_lines(p1, "t", "A912 10 400\nA116 4 100")
+        self.assertEqual(self.buh.receive(p1, "t", "2026-11-26", "2026-12-01"),
+                         "дата изготовления позже даты принятия на учёт — проверьте этикетку")
+        self.post(f"/purchases/{p1}/receive", {"day": "2026-11-26", "made": "2026-11-01"})
+        l1 = {x["article"]: x for x in self.buh.lots(p1, day="2026-11-27")}
+        self.assertEqual((l1["A912"]["made_at"], l1["A912"]["until"], l1["A912"]["state"]), ("2026-11-01", "2027-11-01", ""))
+        # партия 2 пришла позже, но изготовлена раньше (01.10.2025 — срок вышел 01.10.2026) → отгружается первой
+        p2 = self.make_purchase("rail")
+        self.buh.paste_lines(p2, "t", "A912 5 400")
+        self.post(f"/purchases/{p2}/receive", {"day": "2026-12-01"})
+        lot2 = self.buh.lots(p2)[0]
+        self.assertEqual(lot2["state"], "nodate")
+        r = self.post(f"/purchases/lots/{lot2['id']}/made", {"made": "2026-12-05", "back": "/purchases#lots"})
+        self.assertEqual(self.buh.lots(p2)[0]["made_at"], "")                    # позже прихода — не сохраняется
+        r = self.post(f"/purchases/lots/{lot2['id']}/made", {"made": "2025-10-01", "back": "/purchases#lots"})
+        self.assertEqual(r.headers["Location"], "/purchases#lots")
+        self.assertEqual(self.buh.lots(p2)[0]["until"], "2026-10-01")
+        exp = self.buh.expiring("2026-12-02")
+        self.assertEqual([(x["article"], x["state"]) for x in exp], [("A912", "over")])
+        later = self.buh.expiring("2027-09-10")                                     # партия 1: 52 дня — тоже в списке
+        self.assertEqual([(x["until"], x["state"]) for x in later],
+                         [("2026-10-01", "over"), ("2027-11-01", "soon"), ("2027-11-01", "soon")])
+        self.assertEqual(len(self.buh.expiring("2027-09-10", days=30)), 1)
+        page = self.c.get("/purchases").get_data(as_text=True)
+        self.assertIn("Срок годности подходит", page); self.assertIn("истёк 01.10.2026", page); self.assertIn("до 01.11.2027", page)
+        txt = self.app.extensions["digest"]("2026-12-02")
+        self.assertIn("рок годности подходит у партий: 1 — A912, 5 шт, истёк", txt)
+        did = self.store.create_deal("t", None, name="Покупатель", phone="+79990003333")
+        self.store.add_line(did, "A912", 7, "t")
+        self.store.set_stage(did, "shipped", "t")
+        self.assertEqual(self.buh.lots(p2)[0]["qty_left"], 0)                        # сначала старая по изготовлению
+        self.assertEqual({x["article"]: x["qty_left"] for x in self.buh.lots(p1)}["A912"], 8)
+        # наружу срок не уходит: каталог для сайта и Авито — только цена и остаток
+        api = self.c.get("/api/catalog").get_data(as_text=True)
+        self.assertNotIn("2027", api); self.assertNotIn("made", api); self.assertNotIn("until", api)
+
+    def test_lots_made_at_migration(self) -> None:
+        import store as st
+        path = os.path.join(self.tmp.name, "old.db")
+        con = sqlite3.connect(path)
+        con.execute("CREATE TABLE lots (id INTEGER PRIMARY KEY AUTOINCREMENT, purchase_id INTEGER NOT NULL, article TEXT NOT NULL,"
+                    " qty_in INTEGER NOT NULL, qty_left INTEGER NOT NULL, unit_kop INTEGER NOT NULL, received_at TEXT NOT NULL)")
+        con.execute("INSERT INTO lots(purchase_id, article, qty_in, qty_left, unit_kop, received_at) VALUES (1,'A912',1,1,1,'2026-11-01')")
+        con.commit(); con.close()
+        s2 = st.Store(path)
+        row = s2.c().execute("SELECT made_at FROM lots").fetchone()
+        self.assertEqual(row[0], "")
+
     def test_rail_no_dopp_and_contract_limit(self) -> None:
         pid = self.make_purchase("rail")
         self.assertFalse(self.buh.dopp_needed(self.buh.purchase(pid)))

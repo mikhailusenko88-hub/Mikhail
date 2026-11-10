@@ -11,8 +11,8 @@ from typing import Any
 
 from flask import Flask, Response, abort, flash, redirect, render_template, request, url_for
 
-from buh import (CONTRACT_LIMIT_KOP, import_table, DOPP_STATUS, EAEU, EAEU_FROM, TRANSPORTS, VAT_FREE_LIMIT_KOP, VAT_RATE, Buh, calendar_known, dmy,
-                 egrul_lookup, iso, kop_in)
+from buh import (CONTRACT_LIMIT_KOP, import_table, DOPP_STATUS, EAEU, EAEU_FROM, SHELF_MONTHS, TRANSPORTS, VAT_FREE_LIMIT_KOP, VAT_RATE, Buh,
+                 calendar_known, dmy, egrul_lookup, iso, kop_in)
 from invoice import Invoices, rub_s
 from store import TAX_STATUSES, Store, today
 
@@ -27,7 +27,7 @@ def register(app: Flask, store: Store, buh: Buh, h: dict[str, Any]) -> None:
     def buh_ctx() -> dict[str, Any]:
         return {"kop_in": kop_in, "dmy": dmy, "TRANSPORTS": TRANSPORTS, "TRANSPORT_NAMES": dict(TRANSPORTS), "EAEU": EAEU,
                 "DOPP_STATUS": DOPP_STATUS, "EAEU_FROM": EAEU_FROM, "TAX_STATUSES": TAX_STATUSES, "TAX_STATUS_NAMES": dict(TAX_STATUSES),
-                "VAT_RATE": VAT_RATE}
+                "VAT_RATE": VAT_RATE, "SHELF_MONTHS": SHELF_MONTHS}
 
     # ------------------------------------------------------------ реквизиты по ИНН
     @app.post("/clients/<int:cid>/egrul")
@@ -81,7 +81,7 @@ def register(app: Flask, store: Store, buh: Buh, h: dict[str, Any]) -> None:
     def purchases_view() -> Any:
         ps = buh.purchases()
         return render_template("purchases.html", ps=[(p, buh.status(p)) for p in ps], contracts=buh.contract_paid(),
-                               limit=CONTRACT_LIMIT_KOP, unk=store.setting("contract_unk", ""), lots=buh.lots())
+                               limit=CONTRACT_LIMIT_KOP, unk=store.setting("contract_unk", ""), lots=buh.lots(), exp=buh.expiring())
 
     @app.post("/purchases/new")
     @admin_required
@@ -163,9 +163,16 @@ def register(app: Flask, store: Store, buh: Buh, h: dict[str, Any]) -> None:
     @app.post("/purchases/<int:pid>/receive")
     @admin_required
     def purchase_receive(pid: int) -> Any:
-        err = buh.receive(pid, who(), request.form.get("day", ""))
+        err = buh.receive(pid, who(), request.form.get("day", ""), request.form.get("made", ""))
         flash(err or "Оприходовано: остатки на складе выросли, себестоимость партии записана.", "err" if err else "ok")
         return redirect(url_for("purchase_view", pid=pid) + "#stock")
+
+    @app.post("/purchases/lots/<int:lid>/made")
+    @admin_required
+    def lot_made_set(lid: int) -> Any:
+        err = buh.set_lot_made(lid, request.form.get("made", ""), who())
+        flash(err or "Дата изготовления сохранена.", "err" if err else "ok")
+        return redirect(safe_next(request.form.get("back") or url_for("purchases_view")))
 
     @app.post("/purchases/<int:pid>/unreceive")
     @admin_required
