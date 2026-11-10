@@ -55,6 +55,10 @@ curl -s -o /dev/null -D - -X OPTIONS https://crm.nashdekor.ru/api/lead -H 'Origi
 echo "--- форма: проверочная отправка-ловушка (заявку НЕ создаёт)"
 curl -s -w '  HTTP %{http_code}\n' -X POST https://crm.nashdekor.ru/api/lead -H 'Origin: https://nashdekor.ru' -H 'Content-Type: application/json' \
   -d '{"website":"проверка","name":"проверка","contact":"проверка","consent":true}'
+echo "--- 3D-модели для дизайнеров (11.11): блок $(grep -c 'id="models"' /tmp/i.html), форма $(grep -c 'id="mForm"' /tmp/i.html), кнопка $(grep -c 'Прислать 3D-модели' /tmp/i.html), функция $(grep -c 'function sendModels' /tmp/i.html), ссылка на A703: $(curl -s "$U/p/a703/" | grep -c 'class="fine m3d"')"
+echo "--- форма 3D: проверочная отправка-ловушка (заявку НЕ создаёт)"
+curl -s -w '  HTTP %{http_code}\n' -X POST https://crm.nashdekor.ru/api/lead -H 'Origin: https://nashdekor.ru' -H 'Content-Type: application/json' \
+  -d '{"website":"проверка","name":"проверка","contact":"+70000000000","email":"test@example.com","who":"designer","intent":"models","consent":true}'
 echo "--- CRM health: $(curl -s https://crm.nashdekor.ru/api/health)"
 echo "--- CRM страницы (пуши/PWA): login $(curl -s -o /tmp/crm-login.html -w '%{http_code} %{size_download}б' https://crm.nashdekor.ru/login), manifest $(curl -s -o /dev/null -w '%{http_code} %{content_type}' https://crm.nashdekor.ru/manifest.webmanifest), sw.js $(curl -s -o /dev/null -w '%{http_code} %{content_type}' https://crm.nashdekor.ru/sw.js), иконка $(curl -s -o /dev/null -w '%{http_code}' https://crm.nashdekor.ru/static/icon-192.png), корень $(curl -s -o /dev/null -w '%{http_code} → %{redirect_url}' https://crm.nashdekor.ru/)"
 echo "    вход: форма $(grep -c 'name="password"' /tmp/crm-login.html), манифест в странице $(grep -c 'manifest.webmanifest' /tmp/crm-login.html), crm.js $(grep -o 'crm.js?v=[0-9]*' /tmp/crm-login.html), CSP: $(curl -s -D - -o /dev/null https://crm.nashdekor.ru/login | grep -i '^content-security' | cut -c1-140)"
