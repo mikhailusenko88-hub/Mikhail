@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav, due_pill with context %}
+{% block title %}Налоги и отчётность{% endblock %}
+{% block main %}
+{{ more_nav('taxes') }}
+<h1>Налоги и отчётность</h1>
+<p class="sub">ИП на УСН «доходы минус расходы». Сроки считаются сами — из даты регистрации ИП и из закупок (ввоз из ЕАЭС). За неделю до срока и в день срока — в утренней сводке на телефон.</p>
+<div class="stats">
+  <div class="stat"><b>{{ rubk(inc['total']) }}</b><span>доход с начала года (ориентир)</span></div>
+  <div class="stat"><b>{{ inc['pct'] }} %</b><span>от порога НДС 20 млн ₽</span></div>
+</div>
+<p class="d">Доход — оплаты в CRM плюс непривязанные поступления на счёт. Точные цифры — по выписке банка в Saby. Если доход с начала года превысит 20 млн ₽, с 1-го числа следующего месяца нужно платить НДС.</p>
+
+<h2 id="cal">Сроки</h2>
+{% set open_items = cal|rejectattr('done')|list %}
+<div class="panel list">{% for x in open_items %}
+<div class="row wrap taxrow"><div class="grow"><div class="t">{{ x['title'] }}</div><div class="d">{{ x['how'] }}{% if x['amount'] %} · {{ rubk(x['amount']) }}{% endif %}{% if x['due'] and not x['exact'] %} · срок ориентировочный (календарь на этот год ещё не внесён){% endif %}</div></div>
+{{ due_pill(x['due'], soon) }}
+{% if x['kind'] == 'import' %}<a class="btn-s sm" href="{{ x['url'] }}">Открыть</a>{% else %}<form method="post" action="{{ url_for('taxes_done') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="key" value="{{ x['key'] }}"><input type="hidden" name="done" value="1"><button class="btn-s sm">Сделано</button></form>{% endif %}
+</div>{% else %}<div class="row"><span class="d">Ближайших сроков нет</span></div>{% endfor %}</div>
+{% set done_items = cal|selectattr('done')|list %}
+{% if done_items %}<details class="panel pad"><summary>Сделано за последние 2 месяца ({{ done_items|length }})</summary>
+<div class="list">{% for x in done_items %}<div class="row"><div class="grow"><div class="t done">{{ x['title'] }}</div><div class="d">срок {{ dmy(x['due']) }}</div></div>{% if x['kind'] != 'import' %}<form method="post" action="{{ url_for('taxes_done') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="key" value="{{ x['key'] }}"><input type="hidden" name="done" value="0"><button class="btn-g sm">Вернуть</button></form>{% endif %}</div>{% endfor %}</div>
+</details>{% endif %}
+
+<h2 id="cost">Расход на проданный товар · {{ y }}</h2>
+<p class="d">На УСН «доходы минус расходы» стоимость товара идёт в расходы, когда он и оплачен поставщику, и продан (отгружен). CRM списывает партии при отгрузке и считает это сама — для книги учёта доходов и расходов в Saby.</p>
+<div class="panel tbl"><table class="plain"><thead><tr><th>Квартал</th><th class="r">Продано, шт</th><th class="r">Расход на товар</th><th class="r">Не оплачено поставщику</th><th class="r">Без партии, шт</th></tr></thead><tbody>
+{% for q in cost %}<tr><td>{{ q['q'] }} кв.</td><td class="r">{{ q['pcs'] }}</td><td class="r num">{{ rubk(q['cost']) }}</td><td class="r num">{{ rubk(q['unpaid']) if q['unpaid'] else '—' }}</td><td class="r">{{ q['nolot'] or '—' }}</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="note">«Без партии» — товар, который лежал на складе до закупок в CRM: его себестоимость неизвестна, впишите расход по документам вручную. <a href="{{ url_for('taxes_sales_csv', y=y) }}">Скачать списание за {{ y }} (CSV для Saby и Excel)</a></p>
+
+<h2 id="eaeu">Ввоз из ЕАЭС — кто что сдаёт</h2>
+<div class="panel pad d">
+  <p><b>Мы (ИП):</b> ДОПП и обеспечительный платёж — до ввоза, если везут машиной; декларация по косвенным налогам + заявление о ввозе, НДС — до 20-го числа месяца после принятия товара на учёт; статформа в таможню — до 10-го рабочего дня месяца после ввоза; договор — на учёт в банке, когда оплаты дойдут до 3 млн ₽.</p>
+  <p><b>Поставщик в Казахстане:</b> выписывает ЭСФ и СНТ до отгрузки, показывает экспорт по ставке 0 % и подтверждает её нашим заявлением о ввозе: оно приходит в налоговую Казахстана электронно после того, как наша налоговая его примет. Не дошло за 180 дней с отгрузки — поставщик платит НДС Казахстана и выставит его нам.</p>
+</div>
+
+<h2 id="set">Настройки</h2>
+<form class="addline" method="post" action="{{ url_for('taxes_settings') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="inline">Дата регистрации ИП <input name="ip_reg_date" type="date" value="{{ reg }}"></label>
+  <button class="btn-s">Сохранить</button>
+</form>
+<p class="note">Взносы за неполный первый год считаются пропорционально с даты регистрации. Суммы взносов и праздничные дни внесены на 2026–2027 годы.</p>
+{% endblock %}

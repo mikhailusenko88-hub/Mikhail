@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Склад{% endblock %}
 {% block main %}
-<h1>Склад и цены</h1>
+<div class="bar"><h1>Склад и цены</h1><a class="btn-s sm" href="{{ url_for('stock_docs_view') }}">ТН ВЭД и вес для документов</a></div>
 <p class="sub">{{ rows|length }} позиций · на складе на {{ rub(value) }} по розничной цене. «Отложено» — товар в открытых заявках (в работе, расчёт, оплачено). При отгрузке остаток списывается сам. Цены и остатки сразу видны на сайте.</p>
 <div class="chips">
   <a class="chip" href="{{ url_for('stock_view', q=q, only=only) }}" {% if not kind %}aria-current="true"{% endif %}>Все</a>

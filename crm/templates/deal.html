@@ -140,7 +140,7 @@
   <label class="chk span2"><input type="checkbox" name="full" value="1" {% if tochka_method == 'full_payment' %}checked{% endif %}> Товар отдаём сразу после оплаты (клиент на складе) — чек «Полный расчёт». Без галочки — чек «Предоплата 100%», а после отгрузки CRM напомнит про второй чек.</label>
   {% if live %}<label class="chk span2"><input type="checkbox" name="again" value="1"> Новая ссылка вместо прежней (состав изменился) — предупредите клиента не платить по старой</label>{% endif %}
   <div class="span2"><button class="btn-p">Создать ссылку на оплату</button></div>
-  <div class="d span2">Оплата картой или через СБП на странице Точка Банка, ссылка действует 7 дней. Ссылка сама встанет в письмо-расчёт выше. Когда клиент оплатит, сделка станет «Оплачено», придёт пуш.</div>
+  <div class="d span2">Оплата через СБП (QR-код) на странице Точка Банка, ссылка действует 7 дней. Ссылка сама встанет в письмо-расчёт выше. Когда клиент оплатит, сделка станет «Оплачено», придёт пуш.</div>
 </form>
 {% elif lines and not tochka_on and not payments %}
 <div class="panel pad d">Ссылки на оплату с чеком появятся здесь после подключения Точки: Ещё → Настройки → «Точка Банк». До этого частным клиентам ссылки на оплату не отправляем.</div>
@@ -170,6 +170,27 @@
 </form>
 {% if d['calc'] %}<details class="panel pad src" {% if not lines %}open{% endif %}><summary>С чем обратился клиент — исходная заявка с сайта от {{ fmt_dt(d['created_at']) }}</summary>
 <pre class="calc">{{ d['calc'] }}</pre><div class="d">Это текст заявки на момент обращения, он не меняется. Актуальный расчёт — таблица «Расчёт» выше; в письмо клиенту уходит она.</div></details>{% endif %}
+
+{% if d['kind'] == 'c' and not (d['full_name'] and d['inn'] and d['legal_address']) %}<p class="alert warn">Покупатель — компания: для счёта и УПД заполните реквизиты в <a href="{{ url_for('client_view', cid=d['client_id']) }}#req">карточке клиента</a> (кнопка «Заполнить по ИНН»).</p>{% endif %}
+
+<h2 id="designer">Дизайнер</h2>
+{% if d['kind'] == 'd' %}<p class="d">Покупатель — дизайнер: ему скидка {{ d['discount'] }} %, вознаграждение не начисляется.</p>
+{% else %}
+<form class="addline" method="post" action="{{ url_for('deal_designer', did=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <select name="designer_id" aria-label="Кто привёл клиента"><option value="">клиент пришёл сам</option>{% for z in designers %}<option value="{{ z['id'] }}" {% if z['id'] == d['designer_id'] %}selected{% endif %}>{{ z['name'] }}</option>{% endfor %}</select>
+  <input name="pct" class="qty" inputmode="numeric" value="{{ d['designer_pct'] or 10 }}" aria-label="Вознаграждение, %"><span class="d">%</span>
+  <button class="btn-s">Сохранить</button>
+</form>
+{% if dz_base %}<p class="d">Вознаграждение: {{ d['designer_pct'] }} % от {{ rubk(dz_base[0]) }} ({{ dz_base[1] }}) = <b>{{ rubk((dz_base[0] * d['designer_pct'] / 100)|round|int) }}</b>{% if d['stage'] == 'shipped' %} — начислено{% else %} — начислится после отгрузки{% endif %}.</p>{% elif not designers %}<p class="d">Дизайнеров в базе пока нет — отметьте в карточке клиента «Кто это: Дизайнер».</p>{% endif %}
+{% endif %}
+
+{% if sale_costs %}
+<h2>Себестоимость (списано с партий)</h2>
+<div class="panel tbl"><table class="plain"><thead><tr><th>Артикул</th><th class="r">Шт</th><th>Партия</th><th class="r">Себестоимость</th></tr></thead><tbody>
+{% for x in sale_costs %}<tr><td class="mono">{{ x['article'] }}</td><td class="r">{{ x['qty'] }}</td><td>{{ ('спец. № ' ~ x['num']) if x['num'] else 'без партии' }}</td><td class="r num">{{ rubk(x['qty'] * x['unit_kop']) if x['lot_id'] else '—' }}</td></tr>{% endfor %}
+</tbody></table></div>
+{% endif %}
 
 <h2 id="tasks">Задачи</h2>
 <div class="panel list">{% for t in tasks %}{{ task_row(t, here + '#tasks') }}{% else %}<div class="row"><span class="d">Задач нет</span></div>{% endfor %}</div>

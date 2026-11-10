@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}Закупка № {{ p['num'] }}{% endblock %}
+{% block main %}
+{{ more_nav('purchases') }}
+{% set locked = p['received_at'] != '' %}
+<div class="bar" id="top"><h1>Спецификация № {{ p['num'] }} <span class="muted">{{ p['supplier'] }}</span></h1><a class="btn-g sm" href="{{ url_for('purchases_view') }}">← Все закупки</a></div>
+<p class="sub">Договор {{ p['contract'] }} · {{ p['pcs'] }} шт · {{ rubk(p['goods_kop']) }}{% if p['weight_total'] %} · ≈ {{ (p['weight_total'] / 1000)|round(0)|int }} кг{% endif %} · {{ EAEU.get(p['country'], p['country']) }} → Россия {{ TRANSPORT_NAMES.get(p['transport'], '') }}</p>
+
+{% if not unk and not p['paid_at'] and cpaid + (p['goods_kop'] or 0) >= limit %}
+<div class="alert">С этой оплатой платежи по договору дойдут до {{ rubk(cpaid + p['goods_kop']) }} — больше 3 млн ₽. До оплаты поставьте договор на учёт в Точке и впишите УНК в «Закупках».</div>
+{% elif not unk and cpaid >= limit * 0.8 %}
+<div class="alert warn">По договору уже оплачено {{ rubk(cpaid) }} из 3 000 000 ₽ — скоро нужна постановка договора на учёт в банке.</div>
+{% endif %}
+
+<h2>Что сделать</h2>
+<div class="panel list steps">{% for s in steps %}<div class="row"><span class="mark {{ 'on' if s['done'] }}">{{ '✓' if s['done'] else loop.index }}</span><div class="grow"><div class="t {{ 'done' if s['done'] }}">{{ s['title'] }}</div>{% if s['hint'] and not s['done'] %}<div class="d">{{ s['hint'] }}</div>{% endif %}</div>{% if s['due'] and not s['done'] %}{% if s['due'] < today %}<span class="pill crit">{{ fmt_day(s['due']) }}</span>{% else %}<span class="pill warn">до {{ fmt_day(s['due']) }}</span>{% endif %}{% endif %}</div>{% endfor %}</div>
+
+<h2 id="main" class="sec">Спецификация и оплата</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('purchase_view', pid=p['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="sec" value="main">
+  <label class="f">№ спецификации<input name="num" value="{{ p['num'] }}"></label>
+  <label class="f">Дата спецификации<input name="spec_date" type="date" value="{{ p['spec_date'] }}"></label>
+  <label class="f">Поставщик<input name="supplier" value="{{ p['supplier'] }}"></label>
+  <label class="f">БИН поставщика<input name="supplier_bin" inputmode="numeric" value="{{ p['supplier_bin'] }}"></label>
+  <label class="f">Договор<input name="contract" value="{{ p['contract'] }}"></label>
+  <label class="f">Страна отправки<select name="country">{% for k, n in EAEU.items() %}<option value="{{ k }}" {% if k==p['country'] %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
+  <label class="f">Как едет груз<select name="transport">{% for k, n in TRANSPORTS %}<option value="{{ k }}" {% if k==p['transport'] %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
+  <label class="f">Курс НБРК, тенге за рубль (справочно)<input name="rate" value="{{ p['rate'] }}" placeholder="5,45"></label>
+  <label class="f">Дата оплаты поставщику<input name="paid_at" type="date" value="{{ p['paid_at'] }}"></label>
+  <label class="f">Оплачено, ₽<input name="paid_kop" inputmode="decimal" value="{{ kop_in(p['paid_kop']) if p['paid_kop'] else '' }}" placeholder="{{ kop_in(p['goods_kop']) }}"></label>
+  <label class="f">Комиссия банка за перевод, ₽<input name="bank_fee_kop" inputmode="decimal" value="{{ kop_in(p['bank_fee_kop']) if p['bank_fee_kop'] else '' }}"></label>
+  <label class="f span2">Заметка<textarea name="note" rows="2">{{ p['note'] }}</textarea></label>
+  {% if p['paid_kop'] and p['goods_kop'] and (p['paid_kop'] - p['goods_kop'])|abs > 100 %}<div class="span2 alert warn">Оплачено {{ rubk(p['paid_kop']) }}, а по позициям {{ rubk(p['goods_kop']) }}. Цены в спецификации — в рублях на день оплаты: поправьте цены позиций, чтобы себестоимость была точной.</div>{% endif %}
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
+
+<h2 id="lines" class="sec">Позиции{% if locked %} <span class="pill good">оприходовано</span>{% endif %}</h2>
+<div class="panel tbl"><table class="plain"><thead><tr><th>Артикул</th><th class="r">Шт</th><th class="r">Цена, ₽</th><th class="r">Сумма</th><th>ТН ВЭД</th><th class="r">Вес шт</th><th></th></tr></thead><tbody>
+{% for l in lines %}<tr><td class="mono">{{ l['article'] }}</td><td class="r">{{ l['qty'] }}</td><td class="r num">{{ kop_in(l['price_kop']) }}</td><td class="r num">{{ rubk(l['qty'] * l['price_kop']) }}</td><td class="mono">{{ l['tnved'] }}</td><td class="r">{{ (l['weight_g'] ~ ' г') if l['weight_g'] else '—' }}</td>
+<td>{% if not locked %}<form method="post" action="{{ url_for('purchase_line_del', pid=p['id'], lid=l['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g crit sm" aria-label="Удалить {{ l['article'] }}">✕</button></form>{% endif %}</td></tr>
+{% else %}<tr><td colspan="7" class="d">Позиций пока нет</td></tr>{% endfor %}
+</tbody>{% if lines %}<tfoot><tr><td>Итого</td><td class="r">{{ p['pcs'] }}</td><td></td><td class="r num"><b>{{ rubk(p['goods_kop']) }}</b></td><td></td><td class="r">{% if p['weight_total'] %}{{ (p['weight_total'] / 1000)|round(1) }} кг{% endif %}</td><td></td></tr></tfoot>{% endif %}</table></div>
+{% if not locked %}
+<form class="addline" method="post" action="{{ url_for('purchase_lines_add', pid=p['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input name="article" list="cat" placeholder="Артикул" aria-label="Артикул" required>
+  <input name="qty" class="qty" inputmode="numeric" placeholder="Шт" aria-label="Количество, шт" required>
+  <input name="price" class="qty" inputmode="decimal" placeholder="₽/шт" aria-label="Цена за штуку, ₽" required>
+  <button class="btn-s">Добавить</button>
+</form>
+<datalist id="cat">{% for c in catalog %}<option value="{{ c.article }}">{{ c.name }}</option>{% endfor %}</datalist>
+<details class="panel pad"><summary>Вставить списком</summary>
+<form method="post" action="{{ url_for('purchase_lines_add', pid=p['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <p class="d">Каждая строка: артикул, количество штук, цена за штуку в рублях. Например: <span class="mono">A902 18 423,85</span></p>
+  <textarea class="paste" name="paste" aria-label="Позиции списком"></textarea>
+  <p><button class="btn-s">Добавить все</button></p>
+</form></details>
+<p class="note">ТН ВЭД и вес подставляются из «Склад → Товары для документов». Вес нужен, чтобы перевозка разложилась по товарам точно.</p>
+{% endif %}
+
+<h2 id="dopp" class="sec">Перевозка{% if need %} и ДОПП{% endif %}</h2>
+{% if need %}<div class="alert info">Нужен ДОПП: ввоз из {{ EAEU_FROM.get(p['country']) }} автомобилем (СПОТ). Подать через Saby не позднее чем за 2 дня до ввоза, уплатить обеспечительный платёж {{ VAT_RATE }} % на КБК 182 1 04 03000 01 1000 110 (не ЕНП), дождаться статуса «Обеспечен» и передать QR-код водителю.</div>
+{% else %}<div class="alert info">ДОПП не нужен: сейчас СПОТ — только для ввоза из ЕАЭС автомобилем. Если груз поедет фурой — поменяйте «Как едет груз».</div>{% endif %}
+<form class="panel pad grid2" method="post" action="{{ url_for('purchase_view', pid=p['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="sec" value="dopp">
+  <label class="f">Отгрузка у поставщика<input name="ship_date" type="date" value="{{ p['ship_date'] }}"></label>
+  <label class="f">Ввоз в Россию (предполагаемый)<input name="border_date" type="date" value="{{ p['border_date'] }}"></label>
+  <label class="f">Перевозчик<input name="carrier" value="{{ p['carrier'] }}"></label>
+  <label class="f">Госномер машины<input name="vehicle" value="{{ p['vehicle'] }}"></label>
+  <label class="f">ЭСФ поставщика (номер, дата)<input name="esf" value="{{ p['esf'] }}"></label>
+  <label class="f">СНТ (номер)<input name="snt" value="{{ p['snt'] }}"></label>
+  <label class="f span2">Транспортная накладная (CMR), номер и дата<input name="cmr" value="{{ p['cmr'] }}"></label>
+  {% if need %}
+  <label class="f">Номер ДОПП<input name="dopp_no" value="{{ p['dopp_no'] }}"></label>
+  <label class="f">ДОПП подан<input name="dopp_at" type="date" value="{{ p['dopp_at'] }}"></label>
+  <label class="f">Статус ДОПП<select name="dopp_status">{% for k, n in DOPP_STATUS.items() %}<option value="{{ k }}" {% if k==p['dopp_status'] %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
+  <label class="f">Обеспечительный платёж, ₽<input name="guarantee_kop" inputmode="decimal" value="{{ kop_in(p['guarantee_kop']) if p['guarantee_kop'] is not none else '' }}" placeholder="{{ kop_in(guar) }} ({{ VAT_RATE }} %)"></label>
+  <label class="f">Платёж уплачен<input name="guarantee_paid_at" type="date" value="{{ p['guarantee_paid_at'] }}"></label>
+  <label class="f inline"><input type="hidden" name="_qr" value="1"><input type="checkbox" name="qr_sent" value="1" {% if p['qr_sent'] %}checked{% endif %}> QR-код передан водителю</label>
+  {% endif %}
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
+
+<h2 id="stock" class="sec">Ввоз, склад и себестоимость</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('purchase_view', pid=p['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="sec" value="stock">
+  <label class="f">Фактический ввоз<input name="import_date" type="date" value="{{ p['import_date'] }}"></label>
+  <label class="f">Перевозка, ₽<input name="delivery_kop" inputmode="decimal" value="{{ kop_in(p['delivery_kop']) if p['delivery_kop'] else '' }}"></label>
+  <label class="f">Прочие расходы на партию, ₽<input name="other_kop" inputmode="decimal" value="{{ kop_in(p['other_kop']) if p['other_kop'] else '' }}" placeholder="погрузка, страховка"></label>
+  <label class="f">НДС при ввозе, ₽<input name="vat_kop" inputmode="decimal" value="{{ kop_in(p['vat_kop']) if p['vat_kop'] is not none else '' }}" placeholder="{{ kop_in(vat) }} ({{ VAT_RATE }} %)"></label>
+  {% if locked %}<p class="d span2">Партия уже на складе: себестоимость записана при оприходовании. Чтобы пересчитать — отмените оприходование (если из партии ещё не отгружали).</p>{% endif %}
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
+{% if lines %}
+<div class="panel tbl"><table class="plain"><thead><tr><th>Артикул</th><th class="r">Шт</th><th class="r">Себестоимость шт</th><th class="r">{% if locked %}Осталось{% else %}Сумма{% endif %}</th></tr></thead><tbody>
+{% if locked %}{% for l in lots %}<tr><td class="mono">{{ l['article'] }}</td><td class="r">{{ l['qty_in'] }}</td><td class="r num">{{ rubk(l['unit_kop']) }}</td><td class="r">{{ l['qty_left'] }}</td></tr>{% endfor %}
+{% else %}{% for l, u in costs %}<tr><td class="mono">{{ l['article'] }}</td><td class="r">{{ l['qty'] }}</td><td class="r num">{{ rubk(u) }}</td><td class="r num">{{ rubk(u * l['qty']) }}</td></tr>{% endfor %}{% endif %}
+</tbody></table></div>
+{% endif %}
+{% if not locked %}
+<form class="addline" method="post" action="{{ url_for('purchase_receive', pid=p['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="inline">Дата принятия на учёт <input name="day" type="date" value="{{ p['import_date'] or today }}"></label>
+  <button class="btn-p" {% if not lines %}disabled{% endif %}>Оприходовать на склад</button>
+</form>
+<p class="note">После оприходования остатки на «Складе» вырастут сами, а на сайте товар станет «В наличии». С даты принятия на учёт считаются сроки декларации по косвенным налогам.</p>
+{% else %}
+<form method="post" action="{{ url_for('purchase_unreceive', pid=p['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g crit sm">Отменить оприходование</button></form>
+{% endif %}
+
+<h2 id="rep" class="sec">Отчётность по ввозу</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('purchase_view', pid=p['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="sec" value="rep">
+  <label class="f">Декларация + заявление о ввозе поданы<input name="decl_at" type="date" value="{{ p['decl_at'] }}"></label>
+  <label class="f">НДС уплачен / зачтён<input name="vat_paid_at" type="date" value="{{ p['vat_paid_at'] }}"></label>
+  <label class="f">Статформа в таможню подана<input name="statform_at" type="date" value="{{ p['statform_at'] }}"></label>
+  <label class="f">Отметка налоговой на заявлении<input name="decl_mark_at" type="date" value="{{ p['decl_mark_at'] }}"></label>
+  <label class="f">Заявление отправлено поставщику<input name="supplier_sent_at" type="date" value="{{ p['supplier_sent_at'] }}"></label>
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
+<div class="panel pad d">
+  <p><b>Что сдаём мы:</b> ДОПП (если везут машиной) — до ввоза; декларацию по косвенным налогам и заявление о ввозе, НДС при ввозе — до 20-го числа месяца после принятия товара на учёт (через Saby); статформу в таможню — до 10-го рабочего дня месяца после ввоза (личный кабинет участника ВЭД на сайте ФТС). На УСН ввозной НДС к вычету не принимается — он в себестоимости.</p>
+  <p><b>Что нужно поставщику:</b> наше заявление о ввозе с отметкой налоговой — оно доходит до налоговой Казахстана электронно; поставщик подтверждает им НДС 0 % в течение 180 дней с отгрузки, иначе платит НДС Казахстана. Копию заявления отправьте ему сами.</p>
+  <p><b>Что взять у поставщика:</b> ЭСФ, СНТ (он оформляет её до отгрузки), транспортную накладную, подписанную спецификацию и счёт.</p>
+</div>
+
+{% if not locked and not p['paid_at'] %}
+<form class="danger" method="post" action="{{ url_for('purchase_delete', pid=p['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g crit sm">Удалить закупку</button></form>
+{% endif %}
+{% endblock %}

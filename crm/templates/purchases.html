@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}Закупки{% endblock %}
+{% block main %}
+{{ more_nav('purchases') }}
+<h1>Закупки</h1>
+<p class="sub">Одна закупка — одна спецификация к договору поставки и одна партия ввоза: оплата поставщику, ДОПП, ввоз, оприходование на склад с себестоимостью и отчётность по ввозу из ЕАЭС.</p>
+<form class="addline" method="post" action="{{ url_for('purchase_new') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input name="num" placeholder="№ спецификации (пусто — следующий по порядку)" aria-label="Номер спецификации">
+  <select name="transport" aria-label="Как едет груз">{% for k, n in TRANSPORTS %}<option value="{{ k }}">{{ n }}</option>{% endfor %}</select>
+  <button class="btn-p">+ Закупка</button>
+</form>
+<div class="panel list">{% for p, st in ps %}<a class="row btn" href="{{ url_for('purchase_view', pid=p['id']) }}"><div class="grow"><div class="t">Спецификация № {{ p['num'] }} · {{ p['supplier'] }}</div><div class="d">{{ p['pcs'] }} шт · {{ rubk(p['goods_kop']) }}{% if p['paid_at'] %} · оплачено {{ dmy(p['paid_at']) }}{% endif %} · {{ TRANSPORT_NAMES.get(p['transport'], p['transport']) }}{% if p['received_at'] %} · на складе с {{ dmy(p['received_at']) }}{% endif %}</div></div><span class="pill {{ st[1] }}">{{ st[0] }}</span></a>{% else %}<div class="row"><span class="d">Закупок пока нет. Создайте первую — например, спецификацию № 1 к договору с ARTDEC.</span></div>{% endfor %}</div>
+
+<h2 id="contract">Договор поставки: оплаты до 3 млн ₽</h2>
+<p class="d">Импортный договор без общей суммы ставится на учёт в банке, когда оплаты по нему дойдут до 3 000 000 ₽, — до платежа, который перейдёт эту сумму. Считаются все спецификации за всё время.</p>
+<div class="panel list">{% for c in contracts %}<div class="row"><div class="grow"><div class="t">{{ c['supplier'] }}, договор {{ c['contract'] }}</div><meter min="0" max="100" value="{{ c['pct'] }}"></meter><div class="d">оплачено {{ rubk(c['paid']) }} из {{ rubk(limit) }} · платежей: {{ c['n'] }}</div></div>{% if unk %}<span class="pill good">на учёте</span>{% elif c['paid'] >= limit * 0.8 %}<span class="pill crit">поставить на учёт</span>{% endif %}</div>{% else %}<div class="row"><span class="d">Оплат поставщикам ещё не было</span></div>{% endfor %}</div>
+<form class="addline" method="post" action="{{ url_for('purchases_contract') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input name="unk" value="{{ unk }}" placeholder="Уникальный номер контракта (УНК) — когда банк поставит договор на учёт" aria-label="УНК">
+  <button class="btn-s">Сохранить</button>
+</form>
+
+<h2 id="lots">Партии на складе</h2>
+<p class="d">Себестоимость штуки = цена по спецификации + НДС при ввозе {{ VAT_RATE }} % + комиссии банка + перевозка (по весу). При отгрузке товар списывается с самой старой партии.</p>
+<div class="panel tbl"><table class="plain"><thead><tr><th>Артикул</th><th>Спецификация</th><th class="r">Осталось</th><th class="r">Себестоимость шт</th></tr></thead><tbody>
+{% for l in lots %}<tr><td class="mono">{{ l['article'] }}</td><td>№ {{ l['num'] }} от {{ dmy(l['received_at']) }}</td><td class="r">{{ l['qty_left'] }} из {{ l['qty_in'] }}</td><td class="r num">{{ rubk(l['unit_kop']) }}</td></tr>{% else %}<tr><td colspan="4" class="d">Оприходованных партий нет</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

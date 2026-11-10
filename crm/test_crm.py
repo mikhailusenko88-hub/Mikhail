@@ -1014,7 +1014,7 @@ class TestTochka(Base):
         self.assertEqual(round(sum(i["amount"] * i["quantity"] for i in d["Items"]) * 100), (total + 500) * 100)
         self.assertEqual((d["customerCode"], d["merchantId"], d["taxSystemCode"], d["ttl"]), (FakeBank.CUST, FakeBank.MERCH, "usn_income_outcome", 10080))
         self.assertEqual(d["Client"]["email"], "anna@example.com"); self.assertEqual(d["Client"]["phone"], "+79990001122")
-        self.assertTrue(d["paymentLinkId"].startswith(f"ND{did}-1-")); self.assertEqual(set(d["paymentMode"]), {"card", "sbp"})
+        self.assertTrue(d["paymentLinkId"].startswith(f"ND{did}-1-")); self.assertEqual(d["paymentMode"], ["sbp"])  # частным — только СБП (10.11.2026)
         self.assertEqual({i["paymentMethod"] for i in d["Items"]}, {"full_prepayment"})
         pays = self.store.payments(did); self.assertEqual(len(pays), 1); self.assertEqual(pays[0]["status"], "CREATED")
         self.assertEqual(self.store.deal(did)["pay_link"], pays[0]["url"])
@@ -1152,3 +1152,220 @@ class TestTochka(Base):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FakeEgrul:
+    """Подставной сервис ФНС (egrul.nalog.ru): первый запрос — токен, второй — «ждите», третий — строка реестра."""
+
+    def __init__(self, rows=None, captcha=False):
+        self.rows = rows if rows is not None else [{
+            "n": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"РЕМОНТ ПЛЮС\"", "c": "ООО \"РЕМОНТ ПЛЮС\"", "i": "7801234567",
+            "o": "1127847000001", "p": "780101001", "a": "190000, Г.САНКТ-ПЕТЕРБУРГ, УЛ. ТЕСТОВАЯ, Д. 1",
+            "g": "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР: ИВАНОВ ИВАН ИВАНОВИЧ", "k": "ul"}]
+        self.captcha, self.calls, self.waited = captcha, [], False
+
+    def __call__(self, method, url, headers, body):
+        self.calls.append((method, url, body))
+        if method == "POST":
+            return 200, json.dumps({"t": "TOKEN1234567890abc", "captchaRequired": self.captcha}).encode()
+        if not self.waited:
+            self.waited = True
+            return 200, b'{"status":"wait"}'
+        return 200, json.dumps({"rows": self.rows}).encode()
+
+
+class TestBuh(Base):
+    """Учёт: реквизиты по ИНН, товары для документов, закупки с ДОПП и себестоимостью, дизайнеры, налоговый календарь."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.egrul = FakeEgrul()
+        self.app.extensions["buh"].egrul_http = self.egrul
+        self.buh = self.app.extensions["buh"]
+        self.login()
+
+    def make_purchase(self, transport="auto") -> int:
+        r = self.post("/purchases/new", {"num": "", "transport": transport})
+        self.assertEqual(r.status_code, 302)
+        return int(r.headers["Location"].rstrip("/").split("/")[-1])
+
+    def test_dates_and_money(self) -> None:
+        import buh
+        from datetime import date
+        # сроки статформ 2026 (10-й рабочий день) — сверены с графиком ФТС; 2027 — с переносами постановления № 1187
+        self.assertEqual(buh.nth_workday(2026, 2, 10).isoformat(), "2026-02-13")
+        self.assertEqual(buh.nth_workday(2026, 12, 10).isoformat(), "2026-12-14")
+        self.assertEqual(buh.nth_workday(2027, 1, 10).isoformat(), "2027-01-22")
+        self.assertTrue(buh.is_workday(date(2027, 2, 20)))            # рабочая суббота
+        self.assertFalse(buh.is_workday(date(2027, 11, 5)))
+        self.assertEqual(buh.shift_to_workday(date(2027, 4, 25)).isoformat(), "2027-04-26")
+        # взносы за неполный 2026 год при регистрации 02.11.2026: декабрь + 29/30 ноября
+        self.assertEqual(buh.contrib_for_year(2026, date(2026, 11, 2)), 940558)
+        self.assertEqual(buh.contrib_for_year(2027, date(2026, 11, 2)), 6115400)
+        self.assertEqual((buh.kop("423,85"), buh.kop("1 234"), buh.kop(""), buh.kop_in(42385)), (42385, 123400, None, "423,85"))
+
+    def test_egrul_fills_requisites(self) -> None:
+        did = self.store.create_deal("t", None, name="Бухгалтерия", phone="+79990001111", kind="c")
+        cid = self.store.deal(did)["client_id"]
+        self.post(f"/clients/{cid}/egrul", {"inn": "7801234567"})
+        cl = self.store.client(cid)
+        self.assertEqual((cl["inn"], cl["kpp"], cl["ogrn"]), ("7801234567", "780101001", "1127847000001"))
+        self.assertIn("РЕМОНТ ПЛЮС", cl["full_name"]); self.assertEqual(cl["company"], 'ООО "РЕМОНТ ПЛЮС"')
+        self.assertEqual(cl["signer"], "Генеральный директор Иванов Иван Иванович")
+        self.assertTrue(self.egrul.calls[0][2].decode().find("query=7801234567") >= 0)
+        # ИП (12 цифр): КПП нет, название «ИП Фамилия Имя Отчество»
+        self.egrul.rows, self.egrul.waited = [{"n": "ПЕТРОВА АННА СЕРГЕЕВНА", "i": "780512345678", "o": "321784700012345", "k": "fl"}], True
+        self.post(f"/clients/{cid}", {"name": "Анна", "company": "", "kind": "c"})
+        self.post(f"/clients/{cid}/egrul", {"inn": "780512345678"})
+        cl = self.store.client(cid)
+        self.assertEqual((cl["company"], cl["kpp"]), ("ИП Петрова Анна Сергеевна", "780101001"))   # КПП прежний не стирается
+        # ошибки: неверный ИНН и капча — понятное сообщение, данные не портятся
+        r = self.post(f"/clients/{cid}/egrul", {"inn": "123"})
+        self.assertEqual(r.status_code, 302)
+        page = self.c.get(f"/clients/{cid}").get_data(as_text=True)
+        self.assertIn("ИНН — 10 цифр", page)
+        self.app.extensions["buh"].egrul_http = FakeEgrul(captcha=True)
+        self.post(f"/clients/{cid}/egrul", {"inn": "7801234567"})
+        self.assertIn("капчу", self.c.get(f"/clients/{cid}").get_data(as_text=True))
+        # ручная правка реквизитов и ЭДО
+        self.post(f"/clients/{cid}", {"name": "Анна", "doc_email": "buh@remont.ru", "edo": "yes", "edo_operator": "Saby", "kpp": "78-01-01-001"})
+        cl = self.store.client(cid)
+        self.assertEqual((cl["doc_email"], cl["edo"], cl["kpp"]), ("buh@remont.ru", "yes", "780101001"))
+
+    def test_product_info(self) -> None:
+        self.assertEqual(self.buh.product_info("A912")["tnved"], "3925908009")   # панель
+        self.assertEqual(self.buh.product_info("A116")["tnved"], "3916905000")   # уголок — погонаж
+        self.post("/stock/docs/A912", {"tnved": "3925 90 800 9", "weight_g": "1450", "doc_name": "Рейка 912, арт. A912"})
+        info = self.buh.product_info("A912")
+        self.assertEqual((info["weight_g"], info["tnved_own"]), (1450, False))   # совпал с умолчанием — не «свой»
+        self.assertIn("A912", self.c.get("/stock/docs").get_data(as_text=True))
+
+    def test_purchase_dopp_receive_fifo(self) -> None:
+        self.post("/stock/docs/A912", {"tnved": "", "weight_g": "1000", "doc_name": ""})
+        self.post("/stock/docs/A116", {"tnved": "", "weight_g": "500", "doc_name": ""})
+        pid = self.make_purchase("auto")
+        p = self.buh.purchase(pid)
+        self.assertEqual((p["num"], p["supplier"], p["country"]), ("1", "ТОО «Art Dec»", "KZ"))
+        self.assertTrue(self.buh.dopp_needed(p))
+        n, errs = self.buh.paste_lines(pid, "t", "A912 10 400,00\nA116; 20; 100\nчто-то непонятное")
+        self.assertEqual((n, len(errs)), (2, 1))
+        p = self.buh.purchase(pid)
+        self.assertEqual((p["goods_kop"], p["pcs"]), (600000, 30))     # 4000 + 2000 ₽
+        page = self.c.get(f"/purchases/{pid}").get_data(as_text=True)
+        self.assertIn("Нужен ДОПП: ввоз из Казахстана", page); self.assertIn("1320 (22 %)", page)  # обеспечительный 22 % = 1 320 ₽
+        # оплата, документы, ДОПП с датой ввоза → в календаре срок ДОПП за 2 дня
+        self.post(f"/purchases/{pid}", {"sec": "main", "spec_date": "2026-11-10", "paid_at": "2026-11-11", "paid_kop": "6000",
+                                        "bank_fee_kop": "120"})
+        self.post(f"/purchases/{pid}", {"sec": "dopp", "ship_date": "2026-11-20", "border_date": "2026-11-25", "esf": "ЭСФ 1",
+                                        "snt": "СНТ 1", "cmr": "CMR 1", "delivery_kop": "3000"})
+        cal = {x["key"]: x for x in self.buh.calendar("2026-11-12")}
+        self.assertEqual(cal[f"p{pid}-dopp"]["due"], "2026-11-23")
+        self.assertFalse(cal[f"p{pid}-dopp"]["done"])
+        self.post(f"/purchases/{pid}", {"sec": "dopp", "dopp_status": "secured", "guarantee_paid_at": "2026-11-21", "_qr": "1", "qr_sent": "1"})
+        self.assertNotIn(f"p{pid}-dopp", {x["key"] for x in self.buh.calendar("2026-11-12") if not x["done"]})
+        # себестоимость: НДС 22 % и комиссия — по стоимости, перевозка 3000 ₽ — по весу (10 кг и 10 кг поровну)
+        self.post(f"/purchases/{pid}", {"sec": "stock", "delivery_kop": "3000"})
+        costs = {x["article"]: u for x, u in self.buh.cost_split(self.buh.purchase(pid), self.buh.purchase_lines(pid))}
+        # A912: 4000 + 880 (НДС) + 80 (комиссия) + 1500 (перевозка) = 6460 ₽ / 10 шт
+        self.assertEqual(costs["A912"], 64600)
+        # A116: 2000 + 440 + 40 + 1500 = 3980 ₽ / 20 шт
+        self.assertEqual(costs["A116"], 19900)
+        # оприходование → остатки и партии; сроки декларации (до 20 декабря) и статформы (10-й рабочий день декабря)
+        self.post(f"/purchases/{pid}/receive", {"day": "2026-11-26"})
+        self.assertEqual(self.store.c().execute("SELECT qty FROM stock WHERE article='A912'").fetchone()[0], 10)
+        self.assertEqual(self.buh.purchase(pid)["import_date"], "2026-11-26")
+        cal = {x["key"]: x for x in self.buh.calendar("2026-11-27")}
+        self.assertEqual(cal[f"p{pid}-decl"]["due"], "2026-12-21")      # 20.12.2026 — воскресенье → понедельник
+        self.assertEqual(cal[f"p{pid}-stat"]["due"], "2026-12-14")
+        self.assertEqual(cal[f"p{pid}-decl"]["amount"], 132000)
+        # позиции после оприходования не меняются
+        self.assertTrue(self.buh.add_purchase_line(pid, "t", "A912", 1, "1"))
+        # продажа 12 шт A912: 10 из партии + 2 без партии; возврат сделки восстанавливает партию
+        did = self.store.create_deal("t", None, name="Покупатель", phone="+79990002222")
+        self.store.add_line(did, "A912", 12, "t")
+        self.store.set_stage(did, "shipped", "t")
+        sc = self.buh.sale_costs(did)
+        self.assertEqual(sorted((x["qty"], bool(x["lot_id"])) for x in sc), [(2, False), (10, True)])
+        self.assertEqual(self.buh.lots(pid)[0]["qty_left"], 0)
+        q = self.buh.cost_by_quarter(int(self.store.c().execute("SELECT substr(day,1,4) FROM sale_costs LIMIT 1").fetchone()[0]))
+        self.assertEqual(sum(x["cost"] for x in q), 646000); self.assertEqual(sum(x["nolot"] for x in q), 2)
+        self.assertIn("Без партии".lower(), self.c.get("/taxes/sales.csv").get_data(as_text=True).lower().replace("без партии", "без партии"))
+        self.assertEqual(self.buh.unreceive(pid, "t"), "из этой партии уже отгружали — отменить оприходование нельзя")
+        self.store.set_stage(did, "paid", "t")
+        self.assertEqual(self.buh.lots(pid)[0]["qty_left"], 10)
+        self.assertEqual(self.buh.sale_costs(did), [])
+        self.assertEqual(self.buh.unreceive(pid, "t"), "")
+        self.assertEqual(self.store.c().execute("SELECT qty FROM stock WHERE article='A912'").fetchone()[0], 0)
+
+    def test_rail_no_dopp_and_contract_limit(self) -> None:
+        pid = self.make_purchase("rail")
+        self.assertFalse(self.buh.dopp_needed(self.buh.purchase(pid)))
+        self.assertIn("ДОПП не нужен", self.c.get(f"/purchases/{pid}").get_data(as_text=True))
+        self.buh.add_purchase_line(pid, "t", "A912", 1000, "3100")      # 3,1 млн ₽ — больше порога учёта договора
+        self.assertIn("поставьте договор на учёт", self.c.get(f"/purchases/{pid}").get_data(as_text=True))
+        self.post("/purchases/contract", {"unk": "26110001/0000/0001/2/1"})
+        self.assertNotIn("поставьте договор на учёт", self.c.get(f"/purchases/{pid}").get_data(as_text=True))
+        # оплаченную закупку удалить нельзя
+        self.post(f"/purchases/{pid}", {"sec": "main", "paid_at": "2026-11-11", "paid_kop": "3100000"})
+        self.assertEqual(self.buh.contract_paid()[0]["paid"], 310000000)
+        self.post(f"/purchases/{pid}/delete")
+        self.assertIsNotNone(self.buh.purchase(pid))
+
+    def test_tax_calendar_and_digest(self) -> None:
+        cal = {x["key"]: x for x in self.buh.calendar("2026-11-10")}
+        self.assertEqual(cal["vznosy-2026"]["due"], "2026-12-28"); self.assertEqual(cal["vznosy-2026"]["amount"], 940558)
+        self.assertNotIn("usn-avans-2026-1-u", cal)                      # ИП зарегистрировано в ноябре — авансов за 2026 нет
+        self.assertEqual(cal["usn-avans-2027-1-u"]["due"], "2027-04-26")
+        self.assertEqual(cal["usn-decl-2026"]["due"], "2027-04-26")
+        self.assertEqual(cal["usn-tax-2026"]["due"], "2027-04-28")
+        page = self.c.get("/taxes").get_data(as_text=True)
+        self.assertIn("Фиксированные взносы ИП за 2026 год", page); self.assertIn("9 405,58", page)
+        self.post("/taxes/done", {"key": "vznosy-2026", "done": "1"})
+        self.assertTrue({x["key"]: x for x in self.buh.calendar("2026-11-10")}["vznosy-2026"]["done"])
+        # утренняя сводка: срок в пределах недели
+        self.assertEqual(self.buh.upcoming(7, "2026-12-22"), [x for x in self.buh.upcoming(7, "2026-12-22")])
+        self.post("/taxes/done", {"key": "vznosy-2026", "done": "0"})
+        txt = self.app.extensions["digest"]("2026-12-22")
+        self.assertIn("сроки отчётности", txt.lower()); self.assertIn("Фиксированные взносы", txt)
+        # сотруднику налоги, закупки и дизайнеры недоступны
+        self.c.post("/logout", data={"csrf": self.csrf()})
+        self.login("mikhail", "Secret-pass-2")
+        for url in ("/taxes", "/purchases", "/designers"):
+            self.assertEqual(self.c.get(url).status_code, 403, url)
+
+    def test_designer_reward_and_payout(self) -> None:
+        dz = self.store.create_deal("t", None, name="Дизайнер Ольга", phone="+79990003333", kind="d")
+        dzid = self.store.deal(dz)["client_id"]
+        did = self.store.create_deal("t", None, name="Клиент Олега", phone="+79990004444")
+        self.store.add_line(did, "A912", 10, "t")                          # 10 × 990 = 9 900 ₽
+        self.post(f"/deals/{did}/designer", {"designer_id": str(dzid), "pct": "10"})
+        self.assertEqual(self.store.deal(did)["designer_id"], dzid)
+        page = self.c.get(f"/deals/{did}").get_data(as_text=True)
+        self.assertIn("990 ₽", page); self.assertIn("начислится после отгрузки", page)
+        # дизайнер не может быть «приведшим» сам себя
+        self.post(f"/deals/{dz}/designer", {"designer_id": str(dzid)})
+        self.assertIsNone(self.store.deal(dz)["designer_id"])
+        s = {x["id"]: x for x in self.buh.designer_summary()}[dzid]
+        self.assertEqual((s["expected"], s["accrued"]), (99000, 0))
+        self.store.set_stage(did, "shipped", "t")
+        s = {x["id"]: x for x in self.buh.designer_summary()}[dzid]
+        self.assertEqual((s["accrued"], s["due"]), (99000, 99000))
+        # без налогового статуса выплату не записать; с «самозанятый» — нужен номер чека
+        self.post(f"/designers/{dzid}/payout", {"amount": "990", "paid_at": "2026-11-30", "doc": "чек 1"})
+        self.assertEqual(self.buh.payouts(), [])
+        self.post(f"/clients/{dzid}", {"name": "Дизайнер Ольга", "tax_status": "npd"})
+        self.post(f"/designers/{dzid}/payout", {"amount": "990", "paid_at": "2026-11-30", "doc": ""})
+        self.assertEqual(self.buh.payouts(), [])
+        self.post(f"/designers/{dzid}/payout", {"amount": "990", "paid_at": "2026-11-30", "doc": "чек 20abc"})
+        s = {x["id"]: x for x in self.buh.designer_summary()}[dzid]
+        self.assertEqual((s["paid"], s["due"]), (99000, 0))
+        self.assertIn("Дизайнер Ольга", self.c.get("/designers").get_data(as_text=True))
+
+    def test_pages_render(self) -> None:
+        pid = self.make_purchase()
+        self.buh.add_purchase_line(pid, "t", "GS 1", 5, "700")
+        for url in ("/", "/purchases", f"/purchases/{pid}", "/taxes", "/designers", "/stock", "/stock/docs", "/tasks",
+                    "/reports", "/money", "/settings", "/server"):
+            r = self.c.get(url)
+            self.assertEqual(r.status_code, 200, url)
+            self.assertNotIn("style=\"", r.get_data(as_text=True).split("<main")[1], url)   # CSP: без встроенных стилей

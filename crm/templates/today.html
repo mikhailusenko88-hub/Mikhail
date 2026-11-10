@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "macros.html" import deal_row, task_row, push_box with context %}
+{% from "macros.html" import deal_row, task_row, push_box, due_pill with context %}
 {% block title %}Сегодня{% endblock %}
 {% block main %}
 <h1>Сегодня</h1>
@@ -14,6 +14,11 @@
   <a class="stat" href="{{ url_for('reports_view') }}"><b>{{ rub(s['paid_week']) }}</b><span>оплачено за 7 дней</span></a>
 </div>
 <div class="panel list site-today"><a class="row btn" href="{{ url_for('site_view', d=1) }}"><span class="ic ic-site"></span><div class="grow"><div class="t">На сайте сегодня: {{ vb['today'] }} {{ 'человек' if vb['today'] % 10 not in (2,3,4) or vb['today'] % 100 in (12,13,14) else 'человека' }}</div><div class="d">вчера {{ vb['yesterday'] }}{% if vb['leads'] %} · заявок с сайта сегодня: {{ vb['leads'] }}{% endif %}</div></div><span class="d">Подробно ›</span></a></div>
+
+{% if deadlines %}
+<h2>Сроки отчётности</h2>
+<div class="panel list">{% for x in deadlines %}<a class="row btn" href="{{ x['url'] }}"><div class="grow"><div class="t">{{ x['title'] }}</div>{% if x['amount'] %}<div class="d">{{ rubk(x['amount']) }}</div>{% endif %}</div>{{ due_pill(x['due'], x['due']) }}</a>{% endfor %}</div>
+{% endif %}
 
 <h2>Новые заявки</h2>
 <div class="panel list">{% for d in new %}{{ deal_row(d) }}{% else %}<div class="row"><span class="d">Новых заявок нет</span></div>{% endfor %}</div>

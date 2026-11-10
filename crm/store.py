@@ -51,6 +51,10 @@ SOURCES: list[tuple[str, str]] = [
 SOURCE_NAMES = dict(SOURCES)
 KINDS: list[tuple[str, str]] = [("p", "Частный"), ("d", "Дизайнер"), ("c", "Компания")]
 KIND_NAMES = dict(KINDS)
+# Реквизиты клиента-компании для счёта, УПД и ЭДО; tax_status — для дизайнеров (платим только ИП и самозанятым)
+CLIENT_DOC_FIELDS = ("full_name", "kpp", "ogrn", "legal_address", "signer", "doc_email", "edo", "edo_operator", "bank",
+                     "tax_status")
+TAX_STATUSES: list[tuple[str, str]] = [("", "не указан"), ("ip", "ИП"), ("npd", "самозанятый"), ("none", "ни то ни другое")]
 ROLES: list[tuple[str, str]] = [("admin", "Владелец"), ("staff", "Сотрудник")]
 ROLE_NAMES = dict(ROLES)
 DESIGNER_DISCOUNT = 10  # % для дизайнеров по умолчанию
@@ -197,6 +201,96 @@ CREATE TABLE IF NOT EXISTS payments (               -- деньги по сде�
 );
 CREATE INDEX IF NOT EXISTS payments_deal ON payments(deal_id);
 CREATE UNIQUE INDEX IF NOT EXISTS payments_op ON payments(operation_id) WHERE operation_id != '';
+CREATE TABLE IF NOT EXISTS product_info (           -- товар для документов (УПД, ДОПП, декларация): ТН ВЭД, вес, наименование
+    article    TEXT PRIMARY KEY,
+    tnved      TEXT NOT NULL DEFAULT '',
+    weight_g   INTEGER NOT NULL DEFAULT 0,             -- вес одной штуки, граммы
+    unit       TEXT NOT NULL DEFAULT 'шт',
+    doc_name   TEXT NOT NULL DEFAULT '',
+    updated_at TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS purchases (              -- закупка = одна спецификация к договору поставки = одна партия ввоза
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    num              TEXT NOT NULL DEFAULT '',          -- номер спецификации
+    supplier         TEXT NOT NULL DEFAULT '',
+    supplier_bin     TEXT NOT NULL DEFAULT '',
+    contract         TEXT NOT NULL DEFAULT '',
+    country          TEXT NOT NULL DEFAULT 'KZ',        -- страна отправки (ЕАЭС: KZ, BY, AM, KG)
+    transport        TEXT NOT NULL DEFAULT 'auto',      -- auto | rail | air | post | other
+    spec_date        TEXT NOT NULL DEFAULT '',
+    rate             TEXT NOT NULL DEFAULT '',          -- курс НБРК, справочно
+    paid_at          TEXT NOT NULL DEFAULT '',
+    paid_kop         INTEGER NOT NULL DEFAULT 0,        -- оплачено поставщику, копейки
+    bank_fee_kop     INTEGER NOT NULL DEFAULT 0,
+    ship_date        TEXT NOT NULL DEFAULT '',          -- отгрузка у поставщика (от неё 180 дней на подтверждение 0 % у ARTDEC)
+    carrier          TEXT NOT NULL DEFAULT '',
+    vehicle          TEXT NOT NULL DEFAULT '',          -- госномер
+    border_date      TEXT NOT NULL DEFAULT '',          -- предполагаемая дата ввоза в РФ
+    esf              TEXT NOT NULL DEFAULT '',          -- электронный счёт-фактура поставщика (номер, дата)
+    snt              TEXT NOT NULL DEFAULT '',          -- сопроводительная накладная на товары (Казахстан)
+    cmr              TEXT NOT NULL DEFAULT '',          -- транспортная накладная
+    dopp_no          TEXT NOT NULL DEFAULT '',
+    dopp_at          TEXT NOT NULL DEFAULT '',          -- ДОПП подан
+    dopp_status      TEXT NOT NULL DEFAULT '',          -- '' | sent | secured | refused
+    guarantee_kop    INTEGER,                           -- обеспечительный платёж (NULL — посчитать 22 %)
+    guarantee_paid_at TEXT NOT NULL DEFAULT '',
+    qr_sent          INTEGER NOT NULL DEFAULT 0,
+    import_date      TEXT NOT NULL DEFAULT '',          -- фактический ввоз
+    delivery_kop     INTEGER NOT NULL DEFAULT 0,        -- перевозка (в себестоимость, по весу)
+    other_kop        INTEGER NOT NULL DEFAULT 0,
+    received_at      TEXT NOT NULL DEFAULT '',          -- оприходовано на склад (принятие на учёт)
+    vat_kop          INTEGER,                           -- НДС при ввозе (NULL — 22 % от стоимости)
+    decl_at          TEXT NOT NULL DEFAULT '',          -- декларация по косвенным налогам + заявление о ввозе поданы
+    vat_paid_at      TEXT NOT NULL DEFAULT '',
+    statform_at      TEXT NOT NULL DEFAULT '',          -- статформа в ФТС подана
+    decl_mark_at     TEXT NOT NULL DEFAULT '',          -- отметка налоговой на заявлении
+    supplier_sent_at TEXT NOT NULL DEFAULT '',          -- заявление с отметкой отправлено поставщику
+    note             TEXT NOT NULL DEFAULT '',
+    created_at       TEXT NOT NULL,
+    updated_at       TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS purchase_lines (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    purchase_id INTEGER NOT NULL REFERENCES purchases(id) ON DELETE CASCADE,
+    article     TEXT NOT NULL,
+    qty         INTEGER NOT NULL DEFAULT 0,
+    price_kop   INTEGER NOT NULL DEFAULT 0,             -- ₽ за штуку по спецификации, копейки
+    tnved       TEXT NOT NULL DEFAULT '',
+    weight_g    INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS lots (                   -- партии на складе: себестоимость штуки (товар + НДС при ввозе + перевозка + комиссии)
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    purchase_id INTEGER NOT NULL,
+    article     TEXT NOT NULL,
+    qty_in      INTEGER NOT NULL,
+    qty_left    INTEGER NOT NULL,
+    unit_kop    INTEGER NOT NULL,
+    received_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS sale_costs (             -- списание партий при отгрузке (FIFO) — расход на товар для УСН
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    deal_id  INTEGER NOT NULL,
+    lot_id   INTEGER,                                   -- NULL — товара без партии (себестоимость неизвестна)
+    article  TEXT NOT NULL,
+    qty      INTEGER NOT NULL,
+    unit_kop INTEGER NOT NULL DEFAULT 0,
+    day      TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS designer_payouts (       -- выплаты вознаграждения дизайнерам (агентский договор, 10 %)
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    designer_id INTEGER NOT NULL,
+    amount_kop  INTEGER NOT NULL,
+    paid_at     TEXT NOT NULL,
+    doc         TEXT NOT NULL DEFAULT '',               -- акт ИП № … / чек самозанятого № …
+    note        TEXT NOT NULL DEFAULT '',
+    created_at  TEXT NOT NULL,
+    created_by  TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS tax_done (               -- отметки «сделано» в налоговом календаре
+    key     TEXT PRIMARY KEY,
+    done_at TEXT NOT NULL,
+    by_user TEXT NOT NULL DEFAULT ''
+);
 CREATE TABLE IF NOT EXISTS bank_events (            -- поступления на расчётный счёт из вебхука incomingPayment
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
     payment_id TEXT NOT NULL UNIQUE,              -- paymentId банка (повторная доставка — та же строка)
@@ -414,6 +508,8 @@ class Store:
         self._import_lock = threading.Lock()
         self._last_import = 0.0
         self.on_notify: Callable[[str, str, str], Any] | None = None   # пуш на телефоны команды (title, text, url) — ставит app.py
+        # кто ещё реагирует на списание/возврат товара по сделке (партии и себестоимость — buh.py): f(c, deal_id, sign, user)
+        self.stock_hooks: list[Callable[[sqlite3.Connection, int, int, str], Any]] = []
         self._init()
 
     # соединение на поток (gunicorn с потоками)
@@ -452,6 +548,14 @@ class Store:
                     c.execute(f"ALTER TABLE deals ADD COLUMN {col} TEXT NOT NULL DEFAULT ''")
             for col, typ in (("followups", "INTEGER NOT NULL DEFAULT 0"), ("followup_at", "TEXT NOT NULL DEFAULT ''"),
                              ("no_followup", "INTEGER NOT NULL DEFAULT 0")):   # 09.11.2026: автонапоминания клиенту о расчёте
+                if col not in cols:
+                    c.execute(f"ALTER TABLE deals ADD COLUMN {col} {typ}")
+            # 10.11.2026: реквизиты для счёта/УПД и ЭДО, налоговый статус дизайнера; дизайнер, который привёл клиента
+            ccols = {r[1] for r in c.execute("PRAGMA table_info(clients)").fetchall()}
+            for col in CLIENT_DOC_FIELDS:
+                if col not in ccols:
+                    c.execute(f"ALTER TABLE clients ADD COLUMN {col} TEXT NOT NULL DEFAULT ''")
+            for col, typ in (("designer_id", "INTEGER"), ("designer_pct", "INTEGER NOT NULL DEFAULT 10")):
                 if col not in cols:
                     c.execute(f"ALTER TABLE deals ADD COLUMN {col} {typ}")
             row = c.execute("SELECT value FROM settings WHERE key='schema_version'").fetchone()
@@ -555,12 +659,25 @@ class Store:
         return self.c().execute("SELECT * FROM clients WHERE id=?", (cid,)).fetchone()
 
     def update_client(self, cid: int, user: str, **f: str) -> None:
-        allowed = ("name", "phone", "email", "messenger", "kind", "company", "inn", "note")
+        allowed = ("name", "phone", "email", "messenger", "kind", "company", "inn", "note") + CLIENT_DOC_FIELDS
         sets = {k: (v or "").strip() for k, v in f.items() if k in allowed}
         if "phone" in sets and sets["phone"]:
             sets["phone"] = norm_phone(sets["phone"]) or sets["phone"]
         if "kind" in sets and sets["kind"] not in KIND_NAMES:
             sets.pop("kind")
+        if "edo" in sets and sets["edo"] not in ("", "yes", "no"):
+            sets.pop("edo")
+        if "tax_status" in sets and sets["tax_status"] not in dict(TAX_STATUSES):
+            sets.pop("tax_status")
+        if "inn" in sets:
+            sets["inn"] = re.sub(r"\D", "", sets["inn"])[:12]
+        if "kpp" in sets:
+            sets["kpp"] = re.sub(r"\D", "", sets["kpp"])[:9]
+        if "ogrn" in sets:
+            sets["ogrn"] = re.sub(r"\D", "", sets["ogrn"])[:15]
+        for k in CLIENT_DOC_FIELDS:
+            if k in sets:
+                sets[k] = sets[k][:500]
         if "name" in sets and not sets["name"]:
             sets.pop("name")
         if not sets:
@@ -578,7 +695,10 @@ class Store:
                           (DESIGNER_DISCOUNT, cid))
             if changed:
                 names = {"name": "имя", "phone": "телефон", "email": "почта", "messenger": "мессенджер", "kind": "тип",
-                         "company": "компания", "inn": "ИНН", "note": "заметка"}
+                         "company": "компания", "inn": "ИНН", "note": "заметка", "full_name": "полное название",
+                         "kpp": "КПП", "ogrn": "ОГРН", "legal_address": "юр. адрес", "signer": "подписант",
+                         "doc_email": "почта для документов", "edo": "ЭДО", "edo_operator": "оператор ЭДО", "bank": "банк",
+                         "tax_status": "налоговый статус"}
                 self.log(c, "Клиент: изменено " + ", ".join(names[k] for k in changed), user, client_id=cid)
 
     def clients(self, q: str = "", limit: int = 300) -> list[sqlite3.Row]:
@@ -644,7 +764,8 @@ class Store:
     def deal(self, did: int) -> sqlite3.Row | None:
         return self.c().execute(
             "SELECT d.*, cl.name AS client_name, cl.phone, cl.email, cl.messenger, cl.kind, cl.company, cl.inn,"
-            " cl.note AS client_note, cl.bot_client_id FROM deals d JOIN clients cl ON cl.id=d.client_id WHERE d.id=?",
+            " cl.note AS client_note, cl.bot_client_id, cl.full_name, cl.kpp, cl.ogrn, cl.legal_address, cl.doc_email, cl.edo"
+            " FROM deals d JOIN clients cl ON cl.id=d.client_id WHERE d.id=?",
             (did,)).fetchone()
 
     def deals(self, stage: str | None = None, q: str = "", client_id: int | None = None, limit: int = 500) -> list[sqlite3.Row]:
@@ -960,6 +1081,8 @@ class Store:
             parts.append(f"{r['article']} {sign * int(r['q']):+d}")
         if parts:
             self.log(c, ("Списано со склада: " if sign < 0 else "Возвращено на склад: ") + ", ".join(parts), user, deal_id=did)
+        for hook in self.stock_hooks:
+            hook(c, did, sign, user)
 
     def delete_deal(self, did: int, user: str) -> bool:
         with self.tx() as c:

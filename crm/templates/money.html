@@ -1,7 +1,8 @@
 {% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
 {% block title %}Деньги{% endblock %}
 {% block main %}
-<div class="subnav"><a href="{{ url_for('tasks_view') }}">Задачи</a><a href="{{ url_for('reports_view') }}">Отчёты</a><a href="{{ url_for('money_view') }}" aria-current="page">Деньги</a><a href="{{ url_for('settings_view') }}">Настройки</a><a href="{{ url_for('server_view') }}">Сервер</a></div>
+{{ more_nav('money') }}
 <h1>Деньги</h1>
 <div class="bar"><a class="btn-g sm" href="{{ url_for('money_view', m=prev) }}">←</a><b>{{ month_name }}</b><a class="btn-g sm" href="{{ url_for('money_view', m=nxt) }}">→</a></div>
 <div class="stats">

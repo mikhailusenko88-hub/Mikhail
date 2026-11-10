@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Товары для документов{% endblock %}
+{% block main %}
+<div class="bar"><h1>Товары для документов</h1><a class="btn-g sm" href="{{ url_for('stock_view') }}">← Склад и цены</a></div>
+<p class="sub">ТН ВЭД, вес и наименование нужны для УПД, ДОПП, декларации при ввозе и статформы. ТН ВЭД по умолчанию: панели — 3925 90 800 9, молдинги, плинтусы, карнизы и уголки — 3916 90 500 0.{% if no_w %} Без веса: {{ no_w }} артикулов — вес возьмите из упаковочного листа поставщика.{% endif %}</p>
+<form class="addline" method="get" action="{{ url_for('stock_docs_view') }}" role="search">
+  <input type="search" name="q" value="{{ q }}" placeholder="Артикул или название" aria-label="Поиск">
+  <button class="btn-s">Найти</button>
+</form>
+<div class="panel tbl"><table class="stock cards"><thead><tr><th>Артикул</th><th>ТН ВЭД</th><th class="r">Вес шт, г</th><th>Наименование в документах</th><th></th></tr></thead><tbody>
+{% for r in rows %}{% set fid = 'pd-' ~ loop.index %}
+<tr id="a-{{ r['article']|replace(' ','-')|replace('/','-') }}">
+  <td class="c-main"><span class="mono">{{ r['article'] }}</span><div class="d">{{ r['name'][:44] }}</div></td>
+  <td data-l="ТН ВЭД"><input class="ed tn" form="{{ fid }}" name="tnved" inputmode="numeric" value="{{ r['tnved'] }}" aria-label="ТН ВЭД {{ r['article'] }}"></td>
+  <td class="r" data-l="Вес, г"><input class="ed" form="{{ fid }}" name="weight_g" inputmode="numeric" value="{{ r['weight_g'] or '' }}" aria-label="Вес {{ r['article'] }}"></td>
+  <td data-l="Наименование"><input class="ed wide-ed" form="{{ fid }}" name="doc_name" value="{{ r['doc_name'] }}" aria-label="Наименование {{ r['article'] }}"></td>
+  <td class="c-act"><form id="{{ fid }}" method="post" action="{{ url_for('stock_docs_set', article=r['article']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="back" value="{{ request.full_path }}"><button class="btn-g sm">Сохранить</button></form></td>
+</tr>
+{% else %}<tr><td colspan="5" class="d">Ничего не найдено</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

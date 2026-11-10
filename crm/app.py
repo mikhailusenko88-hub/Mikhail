@@ -29,8 +29,10 @@ from flask import (Flask, Response, abort, flash, g, jsonify, redirect, render_t
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from store import (KIND_NAMES, KIND_TITLES, KINDS, OPEN_STAGES, ROLE_NAMES, ROLES, SOURCE_NAMES, SOURCES,
+from store import (CLIENT_DOC_FIELDS, KIND_NAMES, KIND_TITLES, KINDS, OPEN_STAGES, ROLE_NAMES, ROLES, SOURCE_NAMES, SOURCES,
                    STAGE_NAMES, STAGES, Catalog, Store, fmt_day, fmt_dt, now, rub, today, split_contact)
+from buh import Buh
+from buh_web import register as register_buh
 from push import WebPush
 from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, TochkaError, http_request, jwt_claims,
                     parse_jwk, receipt_items, verify_rs256)
@@ -109,6 +111,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     store.on_notify = lambda title, text, url: wp.notify(title, text, url, tag=url)
     app.extensions["tochka_http"] = cfg.get("TOCHKA_HTTP")      # в тестах — подставной банк; на сервере — None (urllib)
     app.extensions["visits"] = visits
+    buh = Buh(store, cfg.get("EGRUL_HTTP"))      # в тестах — подставной ЕГРЮЛ
+    app.extensions["buh"] = buh
     hits_by_ip: dict[str, deque[float]] = defaultdict(deque)
     fails: dict[str, deque[float]] = defaultdict(deque)
     leads_by_ip: dict[str, deque[float]] = defaultdict(deque)
@@ -223,6 +227,9 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             return url_for("today_view")
         return n.rstrip("?") or url_for("today_view")
 
+    register_buh(app, store, buh, {"login_required": login_required, "admin_required": admin_required, "who": who,
+                                   "safe_next": safe_next})
+
     @app.route("/login", methods=["GET", "POST"])
     def login() -> Any:
         if g.user:
@@ -328,15 +335,22 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
 
     def morning_digest(day: str | None = None) -> str:
         s = store.digest(day or today())
-        if not (s["new"] or s["today"] or s["overdue"] or s["paid"]):
+        soon = buh.upcoming(7, day)
+        if not (s["new"] or s["today"] or s["overdue"] or s["paid"] or soon):
             return ""
         parts = []
         if s["overdue"]: parts.append(f"просрочено задач: {s['overdue']}")
         if s["today"]: parts.append(f"задач на сегодня: {s['today']}")
         if s["new"]: parts.append(f"новых заявок: {s['new']}")
         if s["paid"]: parts.append(f"оплачено, ждут отгрузки: {s['paid']}")
-        text = "; ".join(parts).capitalize() + "."
-        wp.notify("Наш декор — на сегодня", text, "/board?hot=1" if s["overdue"] else "/", tag="digest")
+        if soon:
+            x = soon[0]
+            when = ("срок прошёл " if x["due"] and x["due"] < (day or today()) else "до ") + fmt_day(x["due"]) if x["due"] else "дата не указана"
+            parts.append(f"сроки отчётности на неделе: {len(soon)} — ближайший: {x['title']} ({when})")
+        text = "; ".join(parts)
+        text = text[:1].upper() + text[1:] + "."
+        url = "/board?hot=1" if s["overdue"] else ("/taxes" if soon and not (s["new"] or s["today"] or s["paid"]) else "/")
+        wp.notify("Наш декор — на сегодня", text, url, tag="digest")
         return text
     app.extensions["digest"] = morning_digest
 
@@ -354,7 +368,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         s = store.summary()
         return render_template("today.html", new=new, tasks=tasks, paid=paid, low=low[:20], short=short[:20], s=s,
                                chats_unread=[c for c in store.chats(limit=50) if c["unread"]],
-                               vb=visits.brief(t))
+                               vb=visits.brief(t), deadlines=buh.upcoming(14, t) if g.user["role"] == "admin" else [])
 
     # ------------------------------------------------------------ Воронка и сделки
     @app.route("/board")
@@ -412,7 +426,9 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                catalog=store.catalog.all(), other=store.deals(client_id=d["client_id"], limit=20),
                                chat=store.chat_of_deal(did), payments=store.payments(did), paid_kop=store.paid_kop(did),
                                tochka_on=tochka_on(), closing=store.closing_receipts_due(did),
-                               tochka_method=store.setting("tochka_method", "full_prepayment"))
+                               tochka_method=store.setting("tochka_method", "full_prepayment"),
+                               designers=buh.designers(), dz_base=buh.deal_base_kop(did) if d["designer_id"] else None,
+                               sale_costs=buh.sale_costs(did) if g.user["role"] == "admin" else [])
 
     def mail_contacts() -> str:
         """Строка контактов в письмах клиентам (Настройки → Письма клиентам)."""
@@ -442,7 +458,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if (d["address"] or "").strip():
             out += ["", f"Получение: {d['address'].strip()}"]
         if (d["pay_link"] or "").strip():
-            out += ["", f"Оплатить картой или через СБП: {d['pay_link'].strip()}",
+            out += ["", f"Оплатить через СБП (QR-код в приложении банка): {d['pay_link'].strip()}",
                     "Оплата проходит на защищённой странице банка, ссылка действует 7 дней. Электронный чек придёт на e-mail. После оплаты пришлём подтверждение и согласуем доставку."]
         out += ["",
                 "Цены без НДС. Доставка по Санкт-Петербургу и Ленобласти рассчитывается отдельно, самовывоз со склада — бесплатно.",
@@ -451,7 +467,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if (d["pay_link"] or "").strip():
             out += ["• Если всё верно — оплатите по ссылке выше, и мы начнём собирать заказ. Или просто ответьте «подтверждаю» — свяжемся и согласуем доставку."]
         else:
-            out += ["• Если расчёт подходит — ответьте на это письмо или напишите нам: пришлём ссылку на оплату картой или через СБП (компаниям — счёт) и согласуем доставку."]
+            out += ["• Если расчёт подходит — ответьте на это письмо или напишите нам: пришлём ссылку на оплату через СБП (компаниям — счёт) и согласуем доставку."]
         out += ["• Нужно изменить количество, цвет, добавить плинтус или карниз — напишите, пересчитаем.",
                 "• Если ответа не будет, через пару дней мы сами напишем или позвоним, чтобы узнать решение. Если планы изменились — просто скажите, беспокоить не будем."]
         out += mail_signature(manager)
@@ -470,7 +486,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             body = [f"Здравствуйте, {d['client_name']}!", "",
                     f"{sent} мы отправили вам расчёт №{d['id']} на {tot} ({items}).",
                     "Подскажите, пожалуйста, подходит ли он?", "",
-                    "• Если да — ответьте на это письмо или напишите нам, и мы пришлём ссылку на оплату картой или через СБП (компаниям — счёт) и согласуем доставку.",
+                    "• Если да — ответьте на это письмо или напишите нам, и мы пришлём ссылку на оплату через СБП (компаниям — счёт) и согласуем доставку.",
                     "• Если нужно что-то изменить — количество, цвет, добавить плинтус или карниз — напишите, пересчитаем.",
                     "• Если планы изменились — тоже напишите, мы не будем беспокоить."]
         else:
@@ -749,7 +765,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             flash("Сумма к оплате меньше 1 ₽.", "err")
             return money_back(did)
         dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
-        modes = [m for m in (tochka_info().get("retailer") or {}).get("paymentModes") or [] if m in ("card", "sbp")] or ["card", "sbp"]
+        modes = ["sbp"]          # частным покупателям — только СБП (QR-код); картой не принимаем (решение 10.11.2026)
         client: dict[str, str] = {"name": (d["client_name"] or "")[:100], "email": email}
         if re.fullmatch(r"\+7\d{10}", d["phone"] or ""):
             client["phone"] = d["phone"]
@@ -1162,10 +1178,12 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if request.method == "POST":
             store.update_client(cid, who(), **{k: request.form[k] for k in
                                                ("name", "phone", "email", "messenger", "kind", "company", "inn", "note")
-                                               if k in request.form})
+                                               + CLIENT_DOC_FIELDS if k in request.form})
             flash("Клиент сохранён.", "ok")
             return redirect(url_for("client_view", cid=cid))
-        return render_template("client.html", cl=cl, deals=store.deals(client_id=cid), events=store.events(client_id=cid, limit=30))
+        rw = [r for r in buh.rewards(cid)] if cl["kind"] == "d" else []
+        return render_template("client.html", cl=cl, deals=store.deals(client_id=cid), events=store.events(client_id=cid, limit=30),
+                               rewards=rw)
 
     # ------------------------------------------------------------ склад
     @app.route("/stock")

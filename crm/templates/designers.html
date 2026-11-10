@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav, stage_pill with context %}
+{% block title %}Дизайнеры{% endblock %}
+{% block main %}
+{{ more_nav('designers') }}
+<h1>Вознаграждения дизайнерам</h1>
+<p class="sub">Дизайнер, который привёл клиента, указывается в заявке (блок «Дизайнер»). Вознаграждение — процент от оплаченной суммы; начисляется, когда заказ отгружен. Платим только ИП (по акту) и самозанятым (по чеку из «Мой налог») — эти документы нужны для расходов на УСН.</p>
+{% for d in ds %}
+<div class="panel pad sec" id="d{{ d['id'] }}">
+  <div class="bar"><h2 class="m0"><a href="{{ url_for('client_view', cid=d['id']) }}">{{ d['name'] }}</a></h2>{% if d['tax_status'] in ('ip','npd') %}<span class="pill good">{{ TAX_STATUS_NAMES[d['tax_status']] }}</span>{% else %}<span class="pill crit">статус не указан — платить нельзя</span>{% endif %}</div>
+  <div class="stats">
+    <div class="stat"><b>{{ rubk(d['due']) }}</b><span>к выплате</span></div>
+    <div class="stat"><b>{{ rubk(d['accrued']) }}</b><span>начислено (отгружено)</span></div>
+    <div class="stat"><b>{{ rubk(d['paid']) }}</b><span>выплачено</span></div>
+    <div class="stat"><b>{{ rubk(d['expected']) }}</b><span>в работе</span></div>
+  </div>
+  <div class="list">{% for r in rewards if r['designer_id'] == d['id'] %}<a class="row btn" href="{{ url_for('deal_view', did=r['id']) }}"><div class="grow"><div class="t">№{{ r['id'] }} · {{ r['client_name'] }}</div><div class="d">{{ r['designer_pct'] }} % от {{ rubk(r['base']) }} ({{ r['how'] }})</div></div>{{ stage_pill(r['stage']) }}<b class="num">{{ rubk(r['reward']) }}</b></a>{% else %}<div class="row"><span class="d">Заявок с этим дизайнером пока нет</span></div>{% endfor %}</div>
+  {% if d['tax_status'] in ('ip','npd') %}
+  <form class="addline" method="post" action="{{ url_for('designer_payout', cid=d['id']) }}">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <input name="amount" class="qty" inputmode="decimal" placeholder="₽" value="{{ kop_in(d['due']) if d['due'] > 0 else '' }}" aria-label="Сумма выплаты">
+    <input name="paid_at" type="date" class="date" value="{{ today }}" aria-label="Дата выплаты">
+    <input name="doc" placeholder="{{ 'Чек самозанятого №' if d['tax_status']=='npd' else 'Акт ИП № и дата' }}" aria-label="Документ" required>
+    <button class="btn-s">Записать выплату</button>
+  </form>
+  {% endif %}
+</div>
+{% else %}
+<div class="panel pad d">Дизайнеров пока нет. Отметьте в карточке клиента «Кто это: Дизайнер» и укажите налоговый статус (ИП или самозанятый).</div>
+{% endfor %}
+
+{% if payouts %}
+<h2>Выплаты</h2>
+<div class="panel list">{% for x in payouts %}<div class="row"><div class="grow"><div class="t">{{ x['name'] }} · {{ rubk(x['amount_kop']) }}</div><div class="d">{{ dmy(x['paid_at']) }} · {{ x['doc'] }}{% if x['created_by'] %} · {{ x['created_by'] }}{% endif %}</div></div><form method="post" action="{{ url_for('designer_payout_del', pid=x['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g crit sm" aria-label="Удалить выплату">✕</button></form></div>{% endfor %}</div>
+{% endif %}
+{% endblock %}

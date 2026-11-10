@@ -38,3 +38,20 @@
   </div>
 </div>
 {% endmacro %}
+
+{% macro more_nav(cur) -%}
+<nav class="subnav" aria-label="Ещё">
+<a href="{{ url_for('tasks_view') }}" {% if cur=='tasks' %}aria-current="page"{% endif %}>Задачи</a>
+<a href="{{ url_for('reports_view') }}" {% if cur=='reports' %}aria-current="page"{% endif %}>Отчёты</a>
+{% if me and me['role']=='admin' %}<a href="{{ url_for('money_view') }}" {% if cur=='money' %}aria-current="page"{% endif %}>Деньги</a>
+<a href="{{ url_for('purchases_view') }}" {% if cur=='purchases' %}aria-current="page"{% endif %}>Закупки</a>
+<a href="{{ url_for('taxes_view') }}" {% if cur=='taxes' %}aria-current="page"{% endif %}>Налоги</a>
+<a href="{{ url_for('designers_view') }}" {% if cur=='designers' %}aria-current="page"{% endif %}>Дизайнеры</a>{% endif %}
+<a href="{{ url_for('settings_view') }}" {% if cur=='settings' %}aria-current="page"{% endif %}>Настройки</a>
+{% if me and me['role']=='admin' %}<a href="{{ url_for('server_view') }}" {% if cur=='server' %}aria-current="page"{% endif %}>Сервер</a>{% endif %}
+</nav>
+{%- endmacro %}
+
+{% macro due_pill(due, soon) -%}
+{% if not due %}<span class="pill warn">нет даты</span>{% elif due < today %}<span class="pill crit">{{ fmt_day(due) }}</span>{% elif due == today %}<span class="pill crit">сегодня</span>{% elif due <= soon %}<span class="pill warn">{{ fmt_day(due) }}</span>{% else %}<span class="pill">{{ dmy(due) }}</span>{% endif %}
+{%- endmacro %}

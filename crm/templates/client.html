@@ -19,9 +19,33 @@
   <label class="f">Мессенджер, Авито<input name="messenger" value="{{ cl['messenger'] }}"></label>
   <label class="f">Компания<input name="company" value="{{ cl['company'] }}"></label>
   <label class="f">ИНН<input name="inn" inputmode="numeric" value="{{ cl['inn'] }}"></label>
+  {% if cl['kind'] == 'd' %}<label class="f">Налоговый статус (для выплат)<select name="tax_status">{% for k, n in TAX_STATUSES %}<option value="{{ k }}" {% if k==cl['tax_status'] %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>{% endif %}
   <label class="f span2">Заметка<textarea name="note" rows="2">{{ cl['note'] }}</textarea></label>
+  <details class="span2" id="req" {% if cl['kind'] == 'c' or cl['full_name'] %}open{% endif %}><summary>Реквизиты для счёта и УПД</summary>
+  <div class="grid2 sec">
+  <label class="f span2">Полное название<input name="full_name" value="{{ cl['full_name'] }}" placeholder="Общество с ограниченной ответственностью «…»"></label>
+  <label class="f">КПП<input name="kpp" inputmode="numeric" value="{{ cl['kpp'] }}"></label>
+  <label class="f">ОГРН / ОГРНИП<input name="ogrn" inputmode="numeric" value="{{ cl['ogrn'] }}"></label>
+  <label class="f span2">Юридический адрес<input name="legal_address" value="{{ cl['legal_address'] }}"></label>
+  <label class="f">Подписант (должность, ФИО)<input name="signer" value="{{ cl['signer'] }}"></label>
+  <label class="f">Почта для документов<input name="doc_email" type="email" value="{{ cl['doc_email'] }}" placeholder="бухгалтерия"></label>
+  <label class="f">ЭДО<select name="edo"><option value="" {% if not cl['edo'] %}selected{% endif %}>не знаем</option><option value="yes" {% if cl['edo']=='yes' %}selected{% endif %}>есть — УПД через Saby</option><option value="no" {% if cl['edo']=='no' %}selected{% endif %}>нет — бумага / скан</option></select></label>
+  <label class="f">Оператор ЭДО<input name="edo_operator" value="{{ cl['edo_operator'] }}" placeholder="Saby, Контур.Диадок…"></label>
+  <label class="f span2">Банк (р/с, БИК) — для возврата денег<input name="bank" value="{{ cl['bank'] }}"></label>
+  </div></details>
   <div class="span2"><button class="btn-p">Сохранить</button></div>
 </form>
+<form class="addline" method="post" action="{{ url_for('client_egrul', cid=cl['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input name="inn" inputmode="numeric" value="{{ cl['inn'] }}" placeholder="ИНН компании или ИП" aria-label="ИНН для заполнения">
+  <button class="btn-s">Заполнить реквизиты по ИНН</button>
+</form>
+<p class="note">Реквизиты берутся из открытого реестра ФНС (ЕГРЮЛ/ЕГРИП). Почту для документов и ЭДО уточните у клиента.</p>
+{% if rewards %}
+<h2>Вознаграждения</h2>
+<div class="panel list">{% for r in rewards %}<a class="row btn" href="{{ url_for('deal_view', did=r['id']) }}"><div class="grow"><div class="t">№{{ r['id'] }} · {{ r['client_name'] }}</div><div class="d">{{ r['designer_pct'] }} % от {{ rubk(r['base']) }} · {{ 'начислено' if r['accrued'] else 'в работе' }}</div></div><b class="num">{{ rubk(r['reward']) }}</b></a>{% endfor %}</div>
+{% if me and me['role']=='admin' %}<p class="note"><a href="{{ url_for('designers_view') }}#d{{ cl['id'] }}">Выплаты дизайнеру →</a></p>{% endif %}
+{% endif %}
 {% if events %}<h2>История</h2><div class="panel list hist">{% for e in events %}<div class="row"><div class="grow"><div>{{ e['text'] }}</div><div class="d">{{ fmt_dt(e['at']) }}{% if e['user_name'] %} · {{ e['user_name'] }}{% endif %}</div></div></div>{% endfor %}</div>{% endif %}
 <p class="note">Клиент в базе с {{ fmt_day(cl['created_at']) }}.</p>
 {% endblock %}
