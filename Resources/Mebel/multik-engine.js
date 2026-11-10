@@ -797,8 +797,8 @@ function lineFor(ep, lib, who, text, step, vi) {
     const bp0 = MK.barsPassport(lib, who);
     if ((hl || bp0) && MK.barsLaugh(lib)) { // БАРС-озвучка: тот же голос, но каждый «ха» ложится на ритм и мелодию настоящего смеха
       const V = hl ? { speaker: hl.speaker, model: hl.model, F: hl.shift || 1, P: hl.shift || 1 } : bp0, c0 = lib.characters[who] || {}, big = (V.P || 1) < .9;
-      const tpl = c0.laughTpl || V.laugh || BARSGolos.laughFor(ch.name, big ? 'belly' : 'laugh'), n = BARSGolos.LAUGHS[tpl] ? BARSGolos.LAUGHS[tpl].t.length : 10;
-      const bars = { kind: 'laugh', tpl, F: V.F || 1, P: V.P || 1, seed: String(who) + variant }; if (short) bars.short = true; else bars.n = Math.max(5, Math.min(12, n) - [0, 2, 1][variant]); if (V.vow || big) bars.vow = V.vow || 'о';
+      const tpl = c0.laughTpl || V.laugh || BARSGolos.laughFor(ch.name, big ? 'belly' : (V.P || 1) > 1.3 ? 'giggle' : 'laugh', variant), n = BARSGolos.LAUGHS[tpl] ? BARSGolos.LAUGHS[tpl].t.length : 10;
+      const bars = { kind: 'laugh', tpl, F: V.F || 1, P: V.P || 1, seed: String(who) + variant }; if (short) bars.short = true; else bars.n = Math.min(12, n); if (V.vow) bars.vow = V.vow; if (big) bars.lift = 2;
       const fb = { key: hash32(canon(v) + '|' + fx.id + fx.k + '|' + say + '|laugh' + age + variant + (short ? 's' : '')).toString(36), text: say, voice: v, fx, synth: 'laugh' };
       return { key: hash32('bl1|' + (V.model || '') + '|' + V.speaker + '|' + JSON.stringify(bars)).toString(36), who, text: 'Ха-ха-ха!', voice: v, fx: Object.assign({ id: 'natural' }, MK.VOICE_FX.natural), synth: null, age, variant, short, seed,
         srv: { text: 'ха-ха-ха', speaker: V.speaker, model: V.model || '', bars, local: true }, fb: { fx }, laughFb: fb, src: 'Ха-ха-ха!' }; }

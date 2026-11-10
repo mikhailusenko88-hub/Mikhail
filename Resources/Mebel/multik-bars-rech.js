@@ -47,6 +47,25 @@
   // слова, которых нет в словаре омографов, но ударение у них тоже зависит от соседей
   const EXTRA = { лету: ['лет+у', 'л+ету'], мосту: ['мост+у', 'м+осту'], утра: ['утр+а', '+утра'], груди: ['груд+и', 'гр+уди'] };
 
+  // слова, где нейросеть омографов в сказках ошибается: редкий смысл выбираем не давать («начА́л» — род. мн. от «начало», «гости́» — «погости»)
+  const ALWAYS = { начал: 'н+ачал', здорово: 'зд+орово', гостя: 'г+остя', гости: 'г+ости', звонки: 'звонк+и' };
+  // слова, где ошибается модель ударений
+  const FIX = { ежа: 'еж+а', красивее: 'крас+ивее', красивей: 'крас+ивей', щавель: 'щав+ель', щавеля: 'щавел+я' };
+  const isInf = w => /(ть|ться|чь|чься|ти|тись)$/.test(w) && w.length > 3;
+
+  // ---------- числа словами: нейроголос цифры просто пропускал («У меня 3 монеты» → «У меня монеты») ----------
+  const ONES = 'ноль один два три четыре пять шесть семь восемь девять десять одиннадцать двенадцать тринадцать четырнадцать пятнадцать шестнадцать семнадцать восемнадцать девятнадцать'.split(' ');
+  const TENS = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
+  const HUND = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
+  const one = (k, g) => k === 1 ? (g === 'f' ? 'одна' : g === 'a' ? 'одну' : g === 'n' ? 'одно' : 'один') : k === 2 ? (g === 'f' || g === 'a' ? 'две' : 'два') : ONES[k];
+  const tri = (n, g) => { const o = []; if (n >= 100) o.push(HUND[Math.floor(n / 100)]); const r = n % 100; if (r >= 20) { o.push(TENS[Math.floor(r / 10)]); if (r % 10) o.push(one(r % 10, g)); } else if (r > 0) o.push(one(r, g)); return o; };
+  /** Число словами (до 999 999). g — род следующего слова: 'f' («две монеты»), 'n' («одно окно»), иначе мужской. */
+  R.num = function (n, g) { n = Math.floor(Math.abs(n)); if (n === 0) return 'ноль'; if (n > 999999) return String(n); const out = [], th = Math.floor(n / 1000), r = n % 1000;
+    if (th) { if (th !== 1) out.push(...tri(th, 'f')); const a = th % 100, b = th % 10; out.push(a >= 11 && a <= 19 ? 'тысяч' : b === 1 ? 'тысяча' : b >= 2 && b <= 4 ? 'тысячи' : 'тысяч'); }
+    if (r) out.push(...tri(r, g)); return out.join(' '); };
+  R.numbers = text => String(text).replace(/(^|[^\d.,:№#A-Za-zА-Яа-яЁё-])(\d{1,6})(?![\d]|[.,:]\d|-?[A-Za-zА-Яа-яЁё])(\s+([А-Яа-яЁё]+))?/g, (m, a, d, rest, w) => { const n = +d, k = n % 100 >= 11 && n % 100 <= 19 ? 0 : n % 10;
+    const wl = (w || '').toLowerCase(), g = k === 1 ? (/[ая]$/.test(wl) ? 'f' : /[ую]$/.test(wl) ? 'a' : /[оеё]$/.test(wl) ? 'n' : 'm') : k === 2 ? (/[ыи]$/.test(wl) ? 'f' : 'm') : 'm'; return a + R.num(n, g) + (rest || ''); });
+
   const endStem = vars => { let end = null, stem = null; for (const v of vars || []) { const i = v.indexOf('+'); if (i < 0) continue; const rest = v.slice(i + 2);
       if ([...rest].some(c => VOW.includes(c))) stem = v; else end = v; } return end && stem ? { end, stem } : null; };
   const isAdjPl = w => DET_PL.has(w) || /(ые|[кгхжшщч]ие|ьи)$/.test(w) && w.length > 3 || /[бвдзлмнпрсть]ние$/.test(w) || w === 'синие';
@@ -66,9 +85,13 @@
   /** Ударение по грамматике. sentence — фраза, pos — где слово, wl — слово строчными, vars — два варианта из словаря омографов.
       Возвращает вариант («рук+и») или null — тогда решает нейросеть. */
   R.rule = function (sentence, pos, wl, vars) {
-    const key = wl.replace(/ё/g, 'е'); vars = EXTRA[key] || vars; const es = endStem(vars); if (!es) return null;
+    const key = wl.replace(/ё/g, 'е'); if (ALWAYS[key]) return ALWAYS[key];
     const { ws, i } = clause(sentence, pos); if (i < 0) return null;
     const p1 = ws[i - 1] || '', p2 = ws[i - 2] || '', n1 = ws[i + 1] || '', n2 = ws[i + 2] || '';
+    if (key === 'уже') return ((i === ws.length - 1 || n1 === 'чем') && /^(стал|стала|стало|стали|становится|становятся|намного|гораздо|чуть|немного|ещё|еще)$/.test(p1)) ? '+уже' : 'уж+е';   // «под деревом уже́ темнее» / «тропинка стала у́же»
+    if (key === 'начала') return (PREP_GEN.has(p1) || isAdjGsM(p1)) ? 'нач+ала' : (isInf(n1) || PRON.has(p1)) ? 'начал+а' : null;   // «с самого нача́ла» / «она начала́ петь»
+    if (key === 'начало') return isInf(n1) ? 'н+ачало' : null;                                                                       // «солнце на́чало садиться» / «нача́ло сказки»
+    vars = EXTRA[key] || vars; const es = endStem(vars); if (!es) return null;
     const cls = FEM.has(key) ? 'F' : MASC.has(key) ? 'M' : NEUT.has(key) ? 'N' : LOC2.has(key) || key === 'мосту' ? 'L2' : LOC3[key] ? 'L3' : key === 'груди' ? 'G' : key === 'утра' ? 'U' : null;
     if (!cls) return null;
     if (cls === 'F' || cls === 'M' || cls === 'N') {
@@ -109,10 +132,10 @@
     return null;
   };
 
-  /** Слова, которых нет в словаре омографов (лету, мосту, утра, груди): поставить «+» по грамматике прямо в тексте. */
-  R.pre = function (sentence) { let out = '', last = 0; const re = /[А-Яа-яЁё+]+(?:-[А-Яа-яЁё+]+)*/g; let m;
-    while ((m = re.exec(sentence))) { const w = m[0], wl = w.toLowerCase(), key = wl.replace(/ё/g, 'е'); if (w.includes('+') || !EXTRA[key]) continue;
-      const v = R.rule(sentence, m.index, wl, EXTRA[key]); if (!v) continue; const si = v.indexOf('+'); let plain = v.replace('+', '');
+  /** До остального: числа словами; слова из словаря исправлений и слова, которых нет в словаре омографов (лету, мосту, утра, груди), — «+» прямо в тексте. */
+  R.pre = function (sentence) { sentence = R.numbers(sentence); let out = '', last = 0; const re = /[А-Яа-яЁё+]+(?:-[А-Яа-яЁё+]+)*/g; let m;
+    while ((m = re.exec(sentence))) { const w = m[0], wl = w.toLowerCase(), key = wl.replace(/ё/g, 'е'); if (w.includes('+') || !(EXTRA[key] || FIX[key] || ALWAYS[key])) continue;
+      const v = FIX[key] || ALWAYS[key] || R.rule(sentence, m.index, wl, EXTRA[key]); if (!v) continue; const si = v.indexOf('+'); let plain = v.replace('+', '');
       plain = [...w].map((c, k) => plain[k] == null ? '' : (c === c.toLowerCase() ? plain[k] : plain[k].toUpperCase())).join('');
       out += sentence.slice(last, m.index) + plain.slice(0, si) + '+' + plain.slice(si); last = m.index + w.length; }
     return out + sentence.slice(last); };
