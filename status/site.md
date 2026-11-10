@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-09 22:27 UTC
+# Сайт снаружи — 2026-11-10 21:32 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -29,20 +29,20 @@ ld+json: 1
 счётчик на главной: 1, в политике п. 3.4: 1, на документах: 1 1 1 
 
 --- страницы товаров и разделов (сборка nashdekor-build/build.py)
-/p/a907/                           200 text/html; charset=utf-8 32021
-/p/2-7/                            200 text/html; charset=utf-8 30299
-/p/a35/                            200 text/html; charset=utf-8 24992
-/p/a002-2/                         200 text/html; charset=utf-8 26644
-/p/gs1/                            200 text/html; charset=utf-8 31915
-/catalog/reechnye-paneli/          200 text/html; charset=utf-8 36041
-/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 45697
-/catalog/plintusy/                 200 text/html; charset=utf-8 43521
-/catalog/stenovye-paneli/          200 text/html; charset=utf-8 73727
-/catalog/plintus-s-podsvetkoy/     200 text/html; charset=utf-8 20095
-/stati/                            200 text/html; charset=utf-8 14277
-/stati/kak-otrezat-ugol-potolochnogo-plintusa/ 200 text/html; charset=utf-8 19814
-/dostavka/                         200 text/html; charset=utf-8 21713
-/oplata/                           200 text/html; charset=utf-8 20536
+/p/a907/                           200 text/html; charset=utf-8 32341
+/p/2-7/                            200 text/html; charset=utf-8 30619
+/p/a35/                            200 text/html; charset=utf-8 25312
+/p/a002-2/                         200 text/html; charset=utf-8 26964
+/p/gs1/                            200 text/html; charset=utf-8 32235
+/catalog/reechnye-paneli/          200 text/html; charset=utf-8 36193
+/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 45849
+/catalog/plintusy/                 200 text/html; charset=utf-8 43673
+/catalog/stenovye-paneli/          200 text/html; charset=utf-8 73879
+/catalog/plintus-s-podsvetkoy/     200 text/html; charset=utf-8 20247
+/stati/                            200 text/html; charset=utf-8 14429
+/stati/kak-otrezat-ugol-potolochnogo-plintusa/ 200 text/html; charset=utf-8 19966
+/dostavka/                         200 text/html; charset=utf-8 21865
+/oplata/                           200 text/html; charset=utf-8 20688
 /assets/p.js                       200 application/javascript; charset=utf-8 37076
 /assets/p.css                      200 text/css 23245
 /mebel/_lib/three.min.js           200 application/javascript; charset=utf-8 603445
@@ -81,4 +81,8 @@ access-control-allow-origin: https://nashdekor.ru
 --- CRM страницы (пуши/PWA): login 200 1421б, manifest 200 application/manifest+json, sw.js 200 application/javascript; charset=utf-8, иконка 200, корень 302 → https://crm.nashdekor.ru/login?next=/?
     вход: форма 1, манифест в странице 1, crm.js crm.js?v=4, CSP: content-security-policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; form-action 'self'; frame-ancestors 
 --- robots на crm/mail: crm 404, mail 404
+--- ISO 9001 на странице товара: Система качества производителя  сертифицирована по ISO 9001:2015
+    страниц товаров с ISO 9001 (выборка): 1 1 1 1 1
+    фид Авито: строк с ISO 9001 — 0, с брендом поставщика — 0
+    сроки годности наружу не попали: 0 совпадений
 ```
