@@ -16,3 +16,4 @@
 | 2026-11-10 | 2 | cars №6 | Tico | https://youtube.com/shorts/_5EqS-RCHKM | public |
 | 2026-11-10 | 3 | clubs №4 | Qoʻqon 1912 | https://youtube.com/shorts/WVoOKB-mmNU | public |
 | 2026-11-11 | 1 | cars №7 | Matiz | https://youtube.com/shorts/OsEnOlxc5ro | public |
+| 2026-11-11 | 2 | cars №8 | Tahoe | https://youtube.com/shorts/U_jnHzzCTiI | public |
