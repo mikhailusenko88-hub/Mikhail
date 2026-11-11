@@ -25,7 +25,7 @@ jobs:
         with: { python-version: "3.11" }
       - name: Библиотеки
         run: |
-          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q torch torchvision --index-url https://download.pytorch.org/whl/cpu
           pip install -q spandrel pillow numpy
       - name: Веса моделей
         run: |
