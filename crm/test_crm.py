@@ -1645,6 +1645,7 @@ class TestOutbox(Base):
         self.assertEqual(len(self.sent), 1)                                   # второй раз не уходит
         page = self.c.get("/outbox").get_data(as_text=True)
         self.assertIn("Запрос на испытания", page); self.assertIn("отправлено", page); self.assertIn("Добрый день!", page)
+        self.assertIn('class="mailtext"', page); self.assertNotIn('class="row src"', page)   # письмо на всю ширину, не в колонку
         row = self.ob._row(p["id"]); self.assertEqual(row["payload"], "")      # расшифровка после отправки не хранится
 
     def test_bad_letters_limits_and_switch(self) -> None:

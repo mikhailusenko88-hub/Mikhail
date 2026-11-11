@@ -246,3 +246,11 @@ input.ed.wide-ed{width:100%;min-width:180px;text-align:left}
 h2.m0{margin:0}
 .taxrow .grow{flex:1 1 230px}
 .lotmade{display:flex;align-items:center;gap:4px;margin:0}.lotmade input[type=date]{width:auto;min-width:0;padding:4px 6px;font-size:13px}
+/* письма (Исходящие, Почта): на всю ширину, длинные строки переносятся — читать без прокрутки вбок */
+details.mailrow{display:block;border-top:1px solid var(--line);min-width:0}
+details.mailrow:first-child{border-top:0}
+details.mailrow>summary{cursor:pointer;list-style:none;border-top:0}
+details.mailrow>summary::-webkit-details-marker{display:none}
+details.mailrow[open]>summary{background:var(--sunk)}
+.mailtext{display:block;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;font-size:15px;line-height:1.55;margin:0;padding:12px 14px 16px;max-width:100%}
+.panel.pad>.mailtext{padding:0}

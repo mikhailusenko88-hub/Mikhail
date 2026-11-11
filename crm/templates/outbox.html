@@ -18,8 +18,8 @@
 <div class="panel list">{% for e in shared %}<a class="row btn" href="{{ url_for('pochta_letter', mid=e['id']) }}"><span class="grow"><span class="t">{{ e['name'] or e['from'] }}</span><span class="d"> · {{ e['subject'] or '(без темы)' }} · {{ fmt_ts(e['ts']) }}</span></span></a>{% endfor %}</div>
 {% endif %}
 <h2>Письма</h2>
-<div class="panel list">{% for m in mails %}<details class="row src" id="m-{{ m['id'] }}"><summary><span class="grow">{{ m['to_addr'] or '—' }} · {{ m['subject'] or 'без темы' }}<span class="d"> · {{ fmt_dt(m['sent_at'] or m['received_at']) }}{% if m['att_names'] %} · вложения: {{ m['att_names'] }}{% endif %}</span></span> {% if m['status'] == 'sent' %}<span class="pill good">отправлено</span>{% elif m['status'] == 'error' %}<span class="pill crit">не отправлено</span>{% else %}<span class="pill warn">в очереди</span>{% endif %}</summary>
-{% if m['error'] %}<p class="d">{{ m['error'] }}</p>{% endif %}
-{% if m['body'] %}<div class="calc">{{ m['body'] }}</div>{% endif %}
+<div class="panel list">{% for m in mails %}<details class="mailrow" id="m-{{ m['id'] }}"><summary class="row"><span class="grow">{{ m['to_addr'] or '—' }} · {{ m['subject'] or 'без темы' }}<span class="d"> · {{ fmt_dt(m['sent_at'] or m['received_at']) }}{% if m['att_names'] %} · вложения: {{ m['att_names'] }}{% endif %}</span></span> {% if m['status'] == 'sent' %}<span class="pill good">отправлено</span>{% elif m['status'] == 'error' %}<span class="pill crit">не отправлено</span>{% else %}<span class="pill warn">в очереди</span>{% endif %}</summary>
+{% if m['error'] %}<p class="d mailtext">{{ m['error'] }}</p>{% endif %}
+{% if m['body'] %}<div class="mailtext">{{ m['body'] }}</div>{% endif %}
 </details>{% else %}<div class="row"><span class="d">Писем пока не было</span></div>{% endfor %}</div>
 {% endblock %}
