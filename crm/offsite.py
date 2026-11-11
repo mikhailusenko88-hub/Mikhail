@@ -92,19 +92,26 @@ class S3:
         self.ak, self.sk = c["key"], c["secret"]
         self.prefix = c["prefix"]
         self.ctx = ctx
+        # Selectel и другие облака — адрес бакета поддоменом (virtual-hosted); свой сервер/IP с портом (MinIO) — путём
+        host_only = self.host.split(":")[0]
+        self.vhost = (":" not in self.host and "." not in self.bucket and not re.match(r"^[0-9.]+$", host_only)
+                      and host_only != "localhost")
 
     def full_key(self, key: str) -> str:
         return f"{self.prefix}/{key}" if self.prefix else key
 
     def _req(self, method: str, key: str, body: Any = None, size: int = 0, payload_sha: str = EMPTY_SHA,
              headers: dict[str, str] | None = None) -> tuple[int, dict[str, str], bytes]:
-        path = f"{self.base}/{self.bucket}/{key}"   # path-style: работает у всех провайдеров
+        if self.vhost:
+            host, path = f"{self.bucket}.{self.host}", f"{self.base}/{key}"
+        else:
+            host, path = self.host, f"{self.base}/{self.bucket}/{key}"
         hdrs = dict(headers or {})
         if body is not None:
             hdrs["content-length"] = str(size)
-        signed = sign(method, self.host, path, None, hdrs, payload_sha, self.ak, self.sk, self.region,
+        signed = sign(method, host, path, None, hdrs, payload_sha, self.ak, self.sk, self.region,
                       _dt.datetime.now(_dt.timezone.utc))
-        url = f"{self.scheme}://{self.host}{_q(path, safe='/-_.~')}"
+        url = f"{self.scheme}://{host}{_q(path, safe='/-_.~')}"
         req = urllib.request.Request(url, data=body, method=method, headers=signed)
         try:
             with urllib.request.urlopen(req, timeout=TIMEOUT, context=self.ctx) as r:
