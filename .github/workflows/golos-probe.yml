@@ -46,12 +46,18 @@ jobs:
         run: |
           pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install -q transformers phonemizer praat-parselmouth ruaccent matplotlib faster-whisper numpy
-          python probe_check.py
+          TAG=${{ github.run_number }} python probe_check.py
       - name: Commit result
         if: always()
         run: |
           git config user.name golos
           git config user.email golos@users.noreply.github.com
-          git add -A probe_out 2>/dev/null || true
-          git commit -qm "пробы «Почему так?»: было → стало" || echo nothing
-          for i in 1 2 3 4 5 6 7 8; do git pull --rebase -q origin golos && git push -q origin HEAD:golos && break; sleep $((RANDOM % 20 + 5)); done
+          mkdir -p /tmp/res && cp -r probe_out /tmp/res/ 2>/dev/null || true
+          for i in 1 2 3 4 5 6; do
+            git fetch -q origin golos && git reset -q --hard origin/golos
+            mkdir -p probe_out && cp -r /tmp/res/probe_out/. probe_out/ 2>/dev/null || true
+            git add -A probe_out 2>/dev/null || true
+            git commit -qm "пробы «Почему так?»: было → стало" || { echo nothing; break; }
+            git push -q origin HEAD:golos && break
+            sleep $((RANDOM % 15 + 5))
+          done

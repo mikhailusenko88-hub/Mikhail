@@ -16,7 +16,8 @@ try:
 except Exception:
     traceback.print_exc()
 idx = json.load(open("part/index.json", encoding="utf-8"))
-json.dump(idx, open("probe_out/index.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+TAG = os.environ.get("TAG", "0")
+json.dump(idx, open(f"probe_out/index-{TAG}.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 rows = []
 for key, v in idx.items():
     mp3 = f"part/v/{key}.mp3"
@@ -31,5 +32,5 @@ for key, v in idx.items():
         rows.append(f"- {v['m']}\n  слышно: {r.get('heard')} | совпадение {r.get('match')} | UTMOS {r.get('utmos')} | не туда: {'; '.join(bad) or 'нет'}")
     except Exception:
         rows.append(f"- {v['m']} — сбой: {traceback.format_exc()[-200:]}")
-open("probe_out/report.md", "w", encoding="utf-8").write("\n".join(rows) + "\n")
+open(f"probe_out/report-{TAG}.md", "w", encoding="utf-8").write("\n".join(rows) + "\n")
 print("\n".join(rows))
