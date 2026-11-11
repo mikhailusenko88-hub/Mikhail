@@ -1,6 +1,0 @@
-URL: https://www.sert01.ru/uslugi/ispytaniya-stroitelnih-materialov-konstruktsiy/dymoobrazuyuschaya-sposobnost/
-КОД: ошибка: <urlopen error [Errno 101] Network is unreachable>
-
-
-
-ССЫЛКИ:
