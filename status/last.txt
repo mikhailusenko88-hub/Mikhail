@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-11 слот 2: cars №8 https://youtube.com/shorts/U_jnHzzCTiI, за 86 с
+ВЫЛОЖЕНО 2026-11-11 слот 3: clubs №5 https://youtube.com/shorts/poKpw02WkZg, за 70 с
 
 {
- "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №8 #shorts",
- "description": "🏆 Oʻtgan hafta chempioni: Kia K5 · Чемпион прошлой недели: Kia K5\n\n⏳ Finalgacha 4 kun · До финала 4 дня\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
+ "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №5 #shorts",
+ "description": "⏳ Finalgacha 4 kun · До финала 4 дня\n\nPaxtakor, Bunyodkor, Nasaf, Navbahor… qaysi jamoa tezroq? Izohlarda yoz 👇\n22 клубов Суперлиги Узбекистана в одной гонке: Пахтакор, Бунёдкор, Насаф, Навбахор и другие. Какой победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nJamoangiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего клуба? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #futbol #superliga #paxtakor #bunyodkor #nasaf #navbahor #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,40 +11,36 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "mashina",
-  "cobalt",
-  "gentra",
-  "nexia",
-  "damas",
-  "malibu",
-  "chevrolet",
-  "машины узбекистана"
+  "futbol",
+  "футбол",
+  "superliga",
+  "суперлига узбекистана",
+  "paxtakor",
+  "bunyodkor",
+  "nasaf",
+  "navbahor",
+  "neftchi",
+  "pfl uzbekistan"
  ]
 }
 
 --- журнал (время Ташкента) ---
-15:35:36 режим publish, событие workflow_dispatch
-15:35:36 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-15:35:49 комментарии: роликов просмотрено: 15, комментариев: 1
-15:35:49 Тема: гонка машин. Подбираю трассу и заезд…
-15:35:51   трасса 1: никто не доехал за 37 с — не подходит
-15:35:54   трасса 2: никто не доехал за 37 с — не подходит
-15:35:57   трасса 3 (hammers, split, bumpy, stairs): победа на 33.2 с, смен лидера 10, финишировали 5, расчёт 3 с — не подходит
-15:35:59   трасса 4 (stairs, tramps, hammers, tunnel): победа на 29.4 с, смен лидера 12, финишировали 6, расчёт 2 с
-15:36:01   трасса 5 (stairs, tunnel, bumpy, split): победа на 31.6 с, смен лидера 8, финишировали 1, расчёт 2 с — не подходит
-15:36:03   трасса 6: никто не доехал за 37 с — не подходит
-15:36:05   трасса 7 (stairs, bumpy, tramps, tunnel): победа на 31.4 с, смен лидера 17, финишировали 4, расчёт 2 с — не подходит
-15:36:08   трасса 8 (tramps, bumpy, split, spinners, stairs): победа на 31.3 с, смен лидера 10, финишировали 8, расчёт 3 с — не подходит
-15:36:10   трасса 9 (hammers, tramps, stairs, tunnel): победа на 28.4 с, смен лидера 22, финишировали 5, расчёт 2 с
-15:36:10 Рисую трассу…
-15:36:11 Рисую кадры: заезд 31 с + финал 6 с…
-15:36:11   кадр 0/933, 22 с
-15:36:24   кадр 300/933, 35 с
-15:36:37   кадр 600/933, 48 с
-15:36:50   кадр 900/933, 61 с
-15:36:57 Свожу звук…
-15:36:58 Готово за 69 с: победил Tahoe, ролик 37 с
-15:36:58 ролик готов: 37 с, 23 МБ, сборка 82 с; победил Tahoe, топ-3: Tahoe, BYD Song, Tracker
-15:37:01 YouTube: https://youtube.com/shorts/U_jnHzzCTiI
-15:37:01 в плейлисте
-15:37:01 статус: public uploaded
+23:02:04 режим publish, событие schedule
+23:02:04 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+23:02:17 комментарии: роликов просмотрено: 15, комментариев: 1
+23:02:17 Тема: гонка футбольных клубов. Подбираю трассу и заезд…
+23:02:19   трасса 1 (stairs, bumpy, tramps, funnel, split): победа на 32.4 с, смен лидера 18, финишировали 4, расчёт 2 с — не подходит
+23:02:21   трасса 2 (tramps, split, tunnel, bumpy): победа на 32.9 с, смен лидера 18, финишировали 4, расчёт 2 с — не подходит
+23:02:24   трасса 3 (tunnel, tramps, funnel, split, hammers): победа на 34.7 с, смен лидера 20, финишировали 5, расчёт 3 с — не подходит
+23:02:26   трасса 4 (tramps, bumpy, hammers, tunnel): победа на 26.5 с, смен лидера 20, финишировали 6, расчёт 2 с
+23:02:26 Рисую трассу…
+23:02:26 Рисую кадры: заезд 29 с + финал 6 с…
+23:02:26   кадр 0/876, 10 с
+23:02:40   кадр 300/876, 23 с
+23:02:53   кадр 600/876, 36 с
+23:03:10 Свожу звук…
+23:03:11 Готово за 54 с: победил Olimpik, ролик 35 с
+23:03:11 ролик готов: 35 с, 22 МБ, сборка 67 с; победил Olimpik, топ-3: Olimpik, Qizilqum, Andijon
+23:03:13 YouTube: https://youtube.com/shorts/poKpw02WkZg
+23:03:14 в плейлисте
+23:03:14 статус: public uploaded
