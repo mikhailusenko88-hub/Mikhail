@@ -1,0 +1,74 @@
+name: golos-bank
+on:
+  push:
+    branches: [golos]
+    paths: [bank_request.txt]
+permissions:
+  contents: write
+jobs:
+  listen:
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0, 1, 2, 3, 4, 5, 6, 7]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+          key: golos-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib faster-whisper
+      - name: Listen
+        run: python bank_listen.py ${{ matrix.part }} 8
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name golos
+          git config user.email golos@users.noreply.github.com
+          git add -A bank_out 2>/dev/null || true
+          git commit -qm "банк «Почему так?», часть ${{ matrix.part }}: разбор озвучки" || echo nothing
+          for i in 1 2 3 4 5 6 7 8; do git pull --rebase -q origin golos && git push -q origin HEAD:golos && break; sleep $((RANDOM % 20 + 5)); done
+  yt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Звук роликов с YouTube (только чтение своих открытых роликов)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          pip install -q -U "yt-dlp[default]"
+          curl -fsSL https://deno.land/install.sh | sh -s -- -q > /dev/null 2>&1 && export PATH="$HOME/.deno/bin:$PATH" || true
+          mkdir -p yt_out; : > yt_out/log.txt; : > /tmp/err.txt
+          for id in $(grep '^yt:' bank_request.txt | cut -d: -f2 | tr ',' ' '); do
+            ok="НЕ СКАЧАЛСЯ"
+            for cl in none web_embedded tv mweb ios web_safari android_vr tv_simply; do
+              rm -f /tmp/a.*
+              if [ "$cl" = none ]; then yt-dlp -q -f "ba/b" -o "/tmp/a.%(ext)s" "https://www.youtube.com/watch?v=$id" 2>>/tmp/err.txt || true
+              else yt-dlp -q -f "ba/b" -o "/tmp/a.%(ext)s" --extractor-args "youtube:player_client=$cl" "https://www.youtube.com/watch?v=$id" 2>>/tmp/err.txt || true; fi
+              f=$(ls /tmp/a.* 2>/dev/null | head -1)
+              if [ -n "$f" ] && ffmpeg -v error -y -i "$f" -vn -ac 1 -ar 44100 -b:a 96k "yt_out/$id.mp3"; then ok="клиент $cl"; break; fi
+            done
+            echo "$id: $ok | $(tail -c 240 /tmp/err.txt | tr '\n' ' ')" >> yt_out/log.txt; : > /tmp/err.txt
+          done
+          cat yt_out/log.txt
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name golos
+          git config user.email golos@users.noreply.github.com
+          git add -A yt_out 2>/dev/null || true
+          git commit -qm "звук роликов «Почему так?» с YouTube" || echo nothing
+          for i in 1 2 3 4 5 6 7 8; do git pull --rebase -q origin golos && git push -q origin HEAD:golos && break; sleep $((RANDOM % 20 + 5)); done
