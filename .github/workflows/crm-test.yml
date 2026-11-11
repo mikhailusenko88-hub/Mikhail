@@ -650,6 +650,41 @@ jobs:
           git add status; git commit -m "crm-test kopii $(date -u +%F_%H:%M)" || exit 0
           git pull --rebase origin domain-check || true
           git push origin HEAD:domain-check || true
+      - name: Редактор сайта (фото через nginx, правки, API для Actions)
+        if: always()
+        run: |
+          mkdir -p status; O=status/crm-site-editor.md
+          {
+          echo "# Редактор сайта — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/je
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          P=$(curl -sk $R -c $J -b $J https://$H/site/edit)
+          echo "страница: $(grep -c 'Редактор сайта' <<<"$P") · товаров в списке: $(grep -o 'site/edit/item?a=' <<<"$P" | wc -l)"
+          A=$(grep -o 'site/edit/item?a=[^"]*' <<<"$P" | head -n1 | sed 's/.*a=//'); echo "первый товар: $A"
+          python3 -c "from PIL import Image; import os; im=Image.frombytes('RGB',(2400,1500),os.urandom(2400*1500*3)); im.save('/tmp/big.png')" 2>/dev/null || head -c 5000000 /dev/urandom | (printf '\x89PNG\r\n\x1a\n'; cat) > /tmp/big.png
+          echo "фото: $(stat -c %s /tmp/big.png) байт"
+          T=$(curl -sk $R -c $J -b $J "https://$H/site/edit/item" | tok)
+          echo "новый товар с фото (через nginx): $(curl -sk $R -c $J -b $J -o /tmp/r.html -w '%{http_code}' -F "csrf=$T" -F old= -F a=TEST1 -F c=panel -F 'n=Стеновая реечная панель белая под покраску 160×12×3000 мм — TEST1' -F 'd=узкие рейки, полистирол высокой плотности (дюрополимер)' -F w=160 -F t=12 -F l=3000 -F b=10 -F r=2100 -F 'photo=@/tmp/big.png;type=image/png' https://$H/site/edit/item)"
+          head -c 20000000 /dev/urandom | (printf '\xff\xd8\xff'; cat) > /tmp/huge.jpg
+          echo "фото 20 МБ (больше 16): $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' -F "csrf=$T" -F a=TEST2 -F 'photo=@/tmp/huge.jpg' https://$H/site/edit/item)"
+          echo "в другой адрес 2 МБ (должно 413): $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' -F "csrf=$T" -F 'photo=@/tmp/big.png' https://$H/site/edit/shop)"
+          J2=$(curl -sk $R https://$H/api/site/edits); echo "API для Actions: $(python3 -c "import json,sys;e=json.loads(sys.argv[1])['edits'];print([(x['id'],x['kind'],x['article'],x['photo']) for x in e])" "$J2")"
+          F=$(python3 -c "import json,sys;print(json.loads(sys.argv[1])['edits'][0]['photo'])" "$J2")
+          echo "фото по API без входа: $(curl -sk $R -o /tmp/ph -w '%{http_code}' https://$H/api/site/photo/$F), совпадает: $(cmp -s /tmp/ph /tmp/big.png && echo да || echo НЕТ)"
+          sudo ls -l /var/lib/prostranstvo/site-uploads | tail -n +2 | awk '{print "на диске:", $1, $3":"$4, $5, $9}'
+          echo '{"last_id": 1, "edits": {"1": {"ok": true, "note": "добавлен, новое фото", "at": "тест"}}}' | sudo tee /var/www/prostranstvo/site-edits.json >/dev/null
+          P=$(curl -sk $R -c $J -b $J https://$H/site/edit); echo "после итога с сайта: $(grep -o 'на сайте' <<<"$P" | head -n1)"
+          echo "фото после публикации: $(curl -sk $R -o /dev/null -w '%{http_code}' https://$H/api/site/photo/$F) (должно 404)"
+          echo '```'
+          } > "$O" 2>&1
+          cat "$O"
+          git config user.name crm-test; git config user.email crm-test@users.noreply.github.com
+          git add status; git commit -m "crm-test site editor $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
       - name: Состояние
         if: always()
         run: |
