@@ -120,3 +120,19 @@ pt4_baya | silero:baya | Самому старому известному дер
 pt4_xenia | silero:xenia | Самому старому известному дереву почти пять тысяч лет. | 
 pt4_svetlana | edge:ru-RU-SvetlanaNeural | Самому старому известному дереву почти пять тысяч лет. | 
 pt4_dmitry | edge:ru-RU-DmitryNeural | Самому старому известному дереву почти пять тысяч лет. | 
+# 2026-11-11 22:20 МСК — проверка самого способа: фразы 1, 3, 5 (на них замечаний не было)
+pt1_kseniya | silero:kseniya | Никогда не плыви к тонущему с пустыми руками. | 
+pt1_baya | silero:baya | Никогда не плыви к тонущему с пустыми руками. | 
+pt1_xenia | silero:xenia | Никогда не плыви к тонущему с пустыми руками. | 
+pt1_svetlana | edge:ru-RU-SvetlanaNeural | Никогда не плыви к тонущему с пустыми руками. | 
+pt1_dmitry | edge:ru-RU-DmitryNeural | Никогда не плыви к тонущему с пустыми руками. | 
+pt3_kseniya | silero:kseniya | Строили дорогу четверть века. | 
+pt3_baya | silero:baya | Строили дорогу четверть века. | 
+pt3_xenia | silero:xenia | Строили дорогу четверть века. | 
+pt3_svetlana | edge:ru-RU-SvetlanaNeural | Строили дорогу четверть века. | 
+pt3_dmitry | edge:ru-RU-DmitryNeural | Строили дорогу четверть века. | 
+pt5_kseniya | silero:kseniya | Отмершие чешуйки оседают на полу и мебели. | 
+pt5_baya | silero:baya | Отмершие чешуйки оседают на полу и мебели. | 
+pt5_xenia | silero:xenia | Отмершие чешуйки оседают на полу и мебели. | 
+pt5_svetlana | edge:ru-RU-SvetlanaNeural | Отмершие чешуйки оседают на полу и мебели. | 
+pt5_dmitry | edge:ru-RU-DmitryNeural | Отмершие чешуйки оседают на полу и мебели. | 
