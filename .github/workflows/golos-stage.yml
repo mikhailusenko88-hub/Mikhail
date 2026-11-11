@@ -1,0 +1,101 @@
+name: golos-stage
+# Пробная озвучка всего банка «Почему так?» новыми правилами (папка stage/ поверх кода бота из ветки pochemu-albina).
+# Ветки бота не меняются: звук кладётся в отдельную ветку golos-stage-voice, цифры проверки — в stage_out/.
+on:
+  push:
+    branches: [golos]
+    paths: [stage_request.txt]
+permissions:
+  contents: write
+concurrency:
+  group: golos-stage
+  cancel-in-progress: true
+jobs:
+  farm:
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo mkdir -p /opt/multik-tts && sudo chown $USER /opt/multik-tts
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/torch
+            /opt/multik-tts/hf
+            /opt/multik-tts/v5_cis_base.pt
+          key: golos-probe-v1
+      - name: Озвучщик бота + пробные правила
+        timeout-minutes: 20
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng >/dev/null
+          git clone -q --depth 1 --branch pochemu-albina --single-branch https://github.com/mikhailusenko88-hub/Mikhail pa
+          cp stage/patch_server.py stage/albina.py stage/albina_fix.json pa/
+          python -m venv /opt/multik-tts/venv
+          timeout 900 /opt/multik-tts/venv/bin/pip install -q --timeout 30 --retries 5 torch --index-url https://download.pytorch.org/whl/cpu
+          timeout 600 /opt/multik-tts/venv/bin/pip install -q --timeout 30 --retries 5 numpy ruaccent praat-parselmouth
+          [ -s /opt/multik-tts/v5_cis_base.pt ] || curl -fsSL --retry 3 --connect-timeout 20 --max-time 900 -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
+          curl -fsSL --retry 3 --connect-timeout 20 --max-time 120 -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
+          python pa/patch_server.py /opt/multik-tts/server.py
+          cp pa/albina_worker.py /opt/multik-tts/
+      - name: Озвучка (часть ${{ matrix.shard }} из 8)
+        run: |
+          BANK=$(grep '^bank:' stage_request.txt | cut -d: -f2 | tr -d ' '); BANK=${BANK:-stage_bank.json}
+          cd pa && ALBINA_NO_GH=1 python farm.py ../$BANK ../part --shard ${{ matrix.shard }}/8 --max-minutes 40
+          ls ../part/v | wc -l
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: 'stage-${{ matrix.shard }}', path: part, retention-days: 2, if-no-files-found: ignore}
+      - name: Проверка
+        run: |
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth ruaccent matplotlib faster-whisper numpy
+          python stage_check.py part stage_out/part${{ matrix.shard }}.json
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name golos
+          git config user.email golos@users.noreply.github.com
+          mkdir -p /tmp/res && cp -r stage_out /tmp/res/ 2>/dev/null || true
+          for i in 1 2 3 4 5 6 7 8; do
+            git fetch -q origin golos && git reset -q --hard origin/golos
+            mkdir -p stage_out && cp -r /tmp/res/stage_out/. stage_out/ 2>/dev/null || true
+            git add -A stage_out 2>/dev/null || true
+            git commit -qm "пробная озвучка, часть ${{ matrix.shard }}: проверка" || { echo nothing; break; }
+            git push -q origin HEAD:golos && break
+            sleep $((RANDOM % 15 + 5))
+          done
+  publish:
+    needs: farm
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: {pattern: 'stage-*', path: parts}
+      - name: Собрать звук в ветку golos-stage-voice
+        run: |
+          mkdir -p voice/v
+          python3 - <<'PY'
+          import glob, json, shutil
+          idx = {}
+          for ip in glob.glob('parts/*/index.json'):
+              idx.update(json.load(open(ip, encoding='utf-8')))
+          n = 0
+          for f in glob.glob('parts/*/v/*.mp3'):
+              shutil.copyfile(f, 'voice/v/' + f.split('/')[-1]); n += 1
+          json.dump(idx, open('voice/index.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
+          print('фраз:', n, 'в индексе:', len(idx))
+          PY
+          cd voice && git init -q -b golos-stage-voice
+          git config user.name golos && git config user.email golos@users.noreply.github.com
+          printf '# Пробная озвучка «Почему так?» (проверка новых правил, не для бота)\n' > README.md
+          git add -A && git commit -qm "пробная озвучка $(date -u '+%F %T')"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:golos-stage-voice
