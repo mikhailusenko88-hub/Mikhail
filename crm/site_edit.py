@@ -100,14 +100,16 @@ def read_site(path: str) -> dict[str, Any]:
     d = os.path.dirname(os.path.abspath(path))
     content = _json_file(os.path.join(d, "site-content.json"))
     index = _json_file(os.path.join(d, "site-index.json"))
-    custom = content.get("kinds", {}) if isinstance(content.get("kinds"), dict) else {}
+    custom = {k: v for k, v in content["kinds"].items() if isinstance(v, dict)} if isinstance(content.get("kinds"), dict) else {}
     kinds = KINDS + [(k, v.get("menu") or v.get("label") or k) for k, v in custom.items()]
     try:
         src = Path(path).read_text(encoding="utf-8", errors="replace")
     except OSError:
-        return {"items": [], "photo": {}, "shop": {}, "home": {}, "content": content, "index": index, "kinds": kinds, "custom": custom}
-    items = _js_value(src, "CAT") or []
-    photo = _js_value(src, "PHOTO") or {}
+        return {"items": [], "photo": {}, "shop": {}, "home": {}, "hero": "", "content": content, "index": index, "kinds": kinds, "custom": custom}
+    items = _js_value(src, "CAT")
+    items = items if isinstance(items, list) else []
+    photo = _js_value(src, "PHOTO")
+    photo = photo if isinstance(photo, dict) else {}
     shop: dict[str, str] = {}
     m = re.search(r"const SHOP = \{(.*?)\};", src)
     if m:
