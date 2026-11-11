@@ -40,6 +40,15 @@ def js_assign(name):
             if depth == 0: return json.loads(src[i:j + 1])
 
 CAT = js_array("CAT"); PROF = js_array("PROF"); PHOTO = js_assign("PHOTO"); PAINT = js_assign("PAINT")
+# Правки из CRM («Редактор сайта»): новые разделы, тексты разделов, доп. фото, статьи, отзывы — 0f7s1eez/site-content.json
+# (пишет nashdekor-build/apply_edits.py; руками не править — CRM перезапишет). Нет файла — всё как раньше.
+try:
+    CONTENT = json.load(open(os.path.join(SITE, "site-content.json"), encoding="utf-8"))
+except (OSError, ValueError):
+    CONTENT = {}
+CUSTOM = CONTENT.get("kinds", {})          # новые разделы: код → {label, menu, slug, h1, intro, title, description, faq, about, material, maker}
+GALLERY = CONTENT.get("gallery", {})       # артикул → [доп. фото]
+REVIEWS = [r for r in CONTENT.get("reviews", []) if r.get("text")]
 # сечения молдингов, плинтусов, карнизов и уголков — сняты из PDF-каталога ARTDEC (extract_profiles.py)
 PROF2 = json.load(open(os.path.join(HERE, "profiles-mold.json"), encoding="utf-8"))
 shop_m = re.search(r"const SHOP = \{(.*?)\};", src)
@@ -51,6 +60,8 @@ m = re.search(r'<style>(:root\{color-scheme.*?)</style>', src, re.S)
 RESET_CSS = m.group(1)
 
 KIND = {"panel": "Стеновая реечная панель", "color": "Стеновая панель с декором", "mold": "Молдинг для стен", "plinth": "Плинтус напольный", "cornice": "Потолочный плинтус", "corner": "Уголок декоративный"}
+BUILTIN_KINDS = set(KIND)
+for _code, _k in CUSTOM.items(): KIND[_code] = _k.get("label") or _k.get("menu") or _code
 MATERIAL = "полистирол высокой плотности (дюрополимер)"   # так называют материал покупатели и продавцы плинтусов; класс горючести не указываем — протокола испытаний нет
 LED_ARTS = ("A11-80", "A11-100", "A12-100", "A503")        # страница «Плинтус с подсветкой»
 def cat_items(code):
@@ -168,6 +179,15 @@ FAQ = {
         ("Есть ли внутренние уголки и торцевые планки?", "Пока нет — торец панели на внутреннем углу закрывается подрезкой и шпаклёвкой. Планки для стеновых панелей планируем добавить."),
     ],
 }
+for _code, _k in CUSTOM.items():   # новые разделы из CRM
+    CATS.append((_code, _k["slug"], _k["menu"], _k.get("h1") or _k["menu"], _k.get("intro", ""),
+                 _k.get("title") or "%s — купить в СПб | Наш декор" % _k["menu"], _k.get("description") or _k.get("intro", "")[:200]))
+    FAQ[_code] = [tuple(q) for q in _k.get("faq", []) if len(q) == 2]
+for _code, _o in CONTENT.get("sections", {}).items():   # тексты существующих разделов, поправленные в CRM
+    for _i, _c in enumerate(CATS):
+        if _c[0] == _code:
+            CATS[_i] = (_c[0], _c[1], _o.get("menu") or _c[2], _o.get("h1") or _c[3], _o.get("intro") or _c[4], _o.get("title") or _c[5], _o.get("description") or _c[6])
+    if _o.get("faq"): FAQ[_code] = [tuple(q) for q in _o["faq"] if len(q) == 2]
 CAT_BY = {c[0]: c for c in CATS}
 WOOD_NAMES = {"2": "две широкие ламели", "3": "три ламели", "5": "пять узких ламелей"}
 
@@ -189,7 +209,8 @@ def m2(x): return x["r"] / (x["w"] / 1000.0 * x["l"] / 1000.0) if x.get("r") and
 def description(x):
     price = ("Цена %s ₽ за шт (≈ %s ₽/м²), %d шт в коробке." % (fmt(x["r"]), fmt(m2(x)), x["b"])) if m2(x) else ("Цена %s ₽ за шт, %d шт в коробке." % (fmt(x["r"]), x["b"]) if x.get("r") else "%d шт в коробке." % x["b"])
     return "%s: %s. %s Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. %s" % (
-        KIND[x["c"]], x["d"], price, "3D-просмотр, чертёж профиля и расчёт стены онлайн." if x["c"] in ("panel", "color") else "3D-просмотр, чертёж профиля и заявка на сайте.")
+        KIND[x["c"]], x["d"], price, "3D-просмотр, чертёж профиля и расчёт стены онлайн." if x["c"] in ("panel", "color") else
+        ("Фото, размеры и заявка на сайте." if x["c"] in CUSTOM else "3D-просмотр, чертёж профиля и заявка на сайте."))
 
 # ---------- чертёж профиля (сечение), мм ----------
 def prof_svg(x):
@@ -236,11 +257,12 @@ def header(root):
 def footer(root):
     cats = "".join('<a href="%scatalog/%s/" style="color:inherit">%s</a>' % (root, s, esc(menu)) for _, s, menu, _, _, _, _ in CATS)
     avito = (' · <a href="%s" target="_blank" rel="noopener" style="color:inherit">Мы на Авито</a>' % esc(SHOP["avito"])) if SHOP.get("avito") else ""
+    revlink = ('<a href="%sotzyvy/" style="color:inherit">Отзывы и наши работы</a>' % root) if REVIEWS else ""
     return ('<footer><div class="wrap"><span><b>Наш</b> декор · Санкт-Петербург' + avito + '</span><span>%s</span>'
-            '<nav aria-label="Разделы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px">%s<a href="%sstati/" style="color:inherit">Статьи</a><a href="%sdostavka/" style="color:inherit">Доставка в Москву и по России</a></nav>'
+            '<nav aria-label="Разделы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px">%s<a href="%sstati/" style="color:inherit">Статьи</a>%s<a href="%sdostavka/" style="color:inherit">Доставка в Москву и по России</a></nav>'
             '<nav aria-label="Документы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px"><a href="%soplata/" style="color:inherit">Оплата и возврат</a><a href="%soferta.html" style="color:inherit">Оферта</a>'
             '<a href="%sprivacy.html" style="color:inherit">Политика конфиденциальности</a><a href="%sconsent.html" style="color:inherit">Согласие на обработку данных</a></nav>'
-            '</div></footer><script src="%sassets/chat.js?v=%s" defer></script>' % (esc(SHOP["legal"]), cats, root, root, root, root, root, root, root, VER))
+            '</div></footer><script src="%sassets/chat.js?v=%s" defer></script>' % (esc(SHOP["legal"]), cats, root, revlink, root, root, root, root, root, root, VER))
 
 def sections_nav(cur_code, root):
     return '<nav class="sections" aria-label="Разделы каталога">' + "".join(
@@ -294,8 +316,16 @@ def card(x, root):
             % (root, slug(x["a"]), esc(x["a"]), x["c"], img, esc(KIND[x["c"]]), esc(x["a"]), esc(x["d"]), price, per))
 
 # ---------- тексты «о товаре» ----------
+def about_custom(x):
+    k = CUSTOM.get(x["c"], {})
+    out = ["<p>%s — %s, %s.%s</p>" % (esc(x["a"]), esc(KIND[x["c"]].lower()), dims(x), (" " + esc(x["d"])) if x.get("d") else "")]
+    out += ["<p>%s</p>" % esc(p.strip()) for p in re.split(r"\n\s*\n", k.get("about", "")) if p.strip()]
+    out.append("<p>В упаковке %d шт. Наличие в Санкт-Петербурге или под заказ; доставка по СПб и Ленобласти, в другие города — транспортной компанией.</p>" % x["b"])
+    return "".join(out)
+
 def about(x):
     c, a = x["c"], x["a"]
+    if c in CUSTOM: return about_custom(x)
     out = []
     if c == "panel":
         out.append("<p>%s — стеновая реечная панель ARTDEC (декоративные рейки для стен, ламели) из полистирола высокой плотности (дюрополимера), %s. Длина 3 м закрывает стену до потолка без горизонтального стыка; при большей высоте панели стыкуются по длине. Куда ставят: ТВ-зона, изголовье кровати, прихожая, стена за диваном, перегородки.</p>" % (esc(a), esc(x["d"].split(",")[0])))
@@ -331,11 +361,13 @@ def product_page(x):
     ph = photo(a); og_img = (BASE + "/" + photo2x(a)) if ph else BASE + "/og.jpg"
     is_wood = c == "color"; has3d = a in PROF or is_wood or a in PROF2; is_panel = c in ("panel", "color")
     crumb_items = [("Главная", ROOT), (catc[2], "%scatalog/%s/" % (ROOT, catc[1])), (a, "")]
-    ld_prod = {"@context": "https://schema.org", "@type": "Product", "name": x["n"], "sku": a, "mpn": a, "brand": {"@type": "Brand", "name": "ARTDEC"},
+    custom = c in CUSTOM; kc = CUSTOM.get(c, {})
+    maker = (x.get("mk") or kc.get("maker", "")) if custom else "ARTDEC"
+    ld_prod = {"@context": "https://schema.org", "@type": "Product", "name": x["n"], "sku": a, "mpn": a, "brand": {"@type": "Brand", "name": maker or "Наш декор"},
                "description": x["d"], "category": KIND[c], "url": url,
                "additionalProperty": [{"@type": "PropertyValue", "name": "Ширина", "value": x["w"], "unitText": "мм"}, {"@type": "PropertyValue", "name": "Толщина", "value": x["t"], "unitText": "мм"},
                                       {"@type": "PropertyValue", "name": "Длина", "value": x["l"], "unitText": "мм"}, {"@type": "PropertyValue", "name": "В коробке", "value": x["b"], "unitText": "шт"}]}
-    if ph: ld_prod["image"] = [og_img]
+    if ph: ld_prod["image"] = [og_img] + [BASE + "/img/2x/" + f for f in GALLERY.get(a, [])]
     if x.get("r"): ld_prod["offers"] = {"@type": "Offer", "url": url, "priceCurrency": "RUB", "price": x["r"], "availability": "https://schema.org/BackOrder",
                                         "itemCondition": "https://schema.org/NewCondition", "seller": {"@type": "Organization", "name": "Наш декор"},
                                         "hasMerchantReturnPolicy": RETURN_POLICY}
@@ -388,7 +420,12 @@ def product_page(x):
         ptxt = "Вид с торца в масштабе: ширина %d мм, толщина %d мм. %s" % (x["w"], x["t"], "Рельеф снят с каталога производителя." if a in PROF else "Схема: чёрная основа и ламели с декором.")
     prof_html = ('<div class="prof"><h2>Профиль (сечение)</h2><p>%s</p>%s</div>' % (ptxt, prof)) if prof else ""
 
-    specs = [("Артикул", a), ("Тип", KIND[c]), ("Ширина", "%d мм" % x["w"]), ("Толщина", "%d мм" % x["t"]), ("Длина", "%d мм" % x["l"]),
+    if custom:
+        specs = [(k_, v_) for k_, v_ in (("Артикул", a), ("Тип", KIND[c]), ("Ширина", "%d мм" % x["w"]), ("Толщина", "%d мм" % x["t"]),
+                 ("Длина", "%d мм" % x["l"]), ("В упаковке", "%d шт" % x["b"]), ("Материал", x.get("m") or kc.get("material", "")),
+                 ("Производитель", maker)) if v_]
+    else:
+      specs = [("Артикул", a), ("Тип", KIND[c]), ("Ширина", "%d мм" % x["w"]), ("Толщина", "%d мм" % x["t"]), ("Длина", "%d мм" % x["l"]),
              ("В коробке", "%d шт" % x["b"]), ("Материал", MATERIAL),
              ("Покрытие", "декор «%s», красить не нужно" % x["d"].split(",")[0] if is_wood else "белый грунт, под покраску"),
              ("Производитель", "ARTDEC (ТОО «Art Dec», Алматы, Казахстан)"),
@@ -396,7 +433,14 @@ def product_page(x):
     if "LED" in x["d"]: specs.append(("Подсветка", "паз под LED-ленту"))
     if "канал" in x["d"]: specs.append(("Кабель-канал", "есть, сзади"))
     specs_html = '<div class="specs"><h2>Характеристики</h2><table>%s</table></div>' % "".join("<tr><td>%s</td><td>%s</td></tr>" % (esc(k), esc(v)) for k, v in specs)
-    specs_html += ('<p class="fine m3d"><a href="%s#models">3D-модель этого профиля для 3ds Max, SketchUp, ArchiCAD и Revit — пришлём дизайнерам бесплатно</a></p>' % ROOT)
+    if not custom:
+        specs_html += ('<p class="fine m3d"><a href="%s#models">3D-модель этого профиля для 3ds Max, SketchUp, ArchiCAD и Revit — пришлём дизайнерам бесплатно</a></p>' % ROOT)
+    gal = GALLERY.get(a, [])
+    gal_html = ('<div class="gal"><h2>Фото</h2><div class="galgrid">%s</div></div>' % "".join(
+        '<a href="%simg/2x/%s" target="_blank" rel="noopener"><img src="%simg/%s" alt="%s %s — фото %d" loading="lazy" width="790" height="449"></a>'
+        % (ROOT, esc(f), ROOT, esc(f), esc(KIND[c]), esc(a), i + 2) for i, f in enumerate(gal))) if gal else ""
+    revs = [r for r in REVIEWS if r.get("article") == a]
+    revs_html = ('<div class="revs"><h2>Отзывы</h2>%s</div>' % "".join(review_html(r, ROOT) for r in revs)) if revs else ""
 
     price_b = ('<b class="num" id="price">%s ₽</b>' % fmt(x["r"])) if x.get("r") else '<b id="price">По запросу</b>'
     calc_btn = ('<a class="btn ghost" id="toCalc" href="%s?panel=%s#calc">Рассчитать на стену в 3D</a>' % (ROOT, esc(a))) if c in ("panel", "color") else ""
@@ -424,12 +468,34 @@ def product_page(x):
     if is_wood: data["wood"] = wood_parts(x); data["tex"] = "img/tex/" + PHOTO[a] + "?v=" + PHOTO_V if PHOTO.get(a) else ""
 
     body = (header(ROOT) + '<main><div class="wrap">' + crumbs(crumb_items) +
-            '<div class="ptop"><div><div class="ptitle"><h1>%s</h1><p class="lead">%s</p></div>' % (esc(x["n"]), esc(x["d"])) + tabs + stage + colors + prof_html + specs_html +
-            '<div class="about"><h2>О товаре</h2>%s</div></div>%s</div></div>' % (about(x), buy) +
+            '<div class="ptop"><div><div class="ptitle"><h1>%s</h1><p class="lead">%s</p></div>' % (esc(x["n"]), esc(x["d"])) + tabs + stage + colors + gal_html + prof_html + specs_html +
+            '<div class="about"><h2>О товаре</h2>%s</div>%s</div>%s</div></div>' % (about(x), revs_html, buy) +
             with_it + related + lead_form(x) + "</main>" + footer(ROOT) +
             ('<script src="/mebel/_lib/three.min.js"></script><script src="/mebel/_lib/OrbitControls.js"></script>' if has3d else "") +
             '<script>window.P=%s</script><script src="%sassets/p.js?v=%s"></script></body></html>' % (json.dumps(data, ensure_ascii=False), ROOT, VER))
     return head(title(x), description(x), url, og_img, ld, ROOT) + body
+
+def review_html(r, root):
+    pics = "".join('<a href="%simg/otzyvy/%s" target="_blank" rel="noopener"><img src="%simg/otzyvy/%s" alt="Фото работы — %s" loading="lazy"></a>'
+                   % (root, esc(f), root, esc(f), esc(r.get("name", ""))) for f in r.get("photos", []))
+    who = esc(r.get("name", "")) + ((", " + esc(r["place"])) if r.get("place") else "")
+    prod = by_art(r.get("article", "")) if r.get("article") else None
+    link = (' · <a href="%sp/%s/">%s</a>' % (root, slug(prod["a"]), esc(prod["a"]))) if prod else ""
+    when = (" · " + fmt_date(r["date"])) if r.get("date") and re.match(r"^\d{4}-\d{2}-\d{2}$", r["date"]) else ""
+    return ('<figure class="rev">%s<blockquote>%s</blockquote><figcaption><b>%s</b>%s%s</figcaption></figure>'
+            % (('<div class="revpics">%s</div>' % pics) if pics else "", "".join("<p>%s</p>" % esc(t) for t in r["text"].split("\n") if t.strip()), who, when, link))
+
+def reviews_page():
+    root = "../"; url = BASE + "/otzyvy/"
+    crumb_items = [("Главная", root), ("Отзывы и наши работы", "")]
+    body = (header(root) + '<main><div class="wrap">' + crumbs(crumb_items) +
+            '<div class="head" style="margin-top:6px"><div><h1 style="font-size:clamp(24px,4.2vw,38px)">Отзывы и наши работы</h1>'
+            '<p class="catintro">Стены, плинтусы и молдинги у наших покупателей — фото и отзывы.</p></div></div>'
+            '<div class="revlist">%s</div></div>' % "".join(review_html(r, root) for r in REVIEWS) + lead_form(None) + "</main>" + footer(root) +
+            '<script>window.P=%s</script><script src="%sassets/p.js?v=%s"></script></body></html>' % (json.dumps({"root": root, "list": True, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", "")}}, ensure_ascii=False), root, VER))
+    first = next((r["photos"][0] for r in REVIEWS if r.get("photos")), "")
+    return head("Отзывы покупателей и фото наших работ | Наш декор", "Отзывы покупателей магазина «Наш декор» в Санкт-Петербурге и фото стен с реечными панелями, плинтусами и молдингами.",
+                url, (BASE + "/img/otzyvy/" + first) if first else BASE + "/og.jpg", "", root) + body
 
 def by_art(a): return next((y for y in CAT if y["a"] == a), None)
 def buy_with(x):
@@ -517,6 +583,35 @@ def wall_hub_blocks():
 sys.path.insert(0, HERE)
 from articles import ARTICLES, SVG   # noqa: E402
 
+def text_to_html(t, pics):
+    """Текст статьи из CRM → HTML: «## заголовок», «- пункт», пустая строка — новый абзац, [фото 2] — фото на этом месте."""
+    out, ul, used = [], [], set()
+    def flush():
+        if ul: out.append("<ul>%s</ul>" % "".join("<li>%s</li>" % u for u in ul)); ul.clear()
+    for block in re.split(r"\n\s*\n", t.strip()):
+        for line in block.split("\n"):
+            line = line.strip()
+            if not line: continue
+            m = re.match(r"^\[фото\s*(\d+)\]$", line, re.I)
+            if m and 0 < int(m.group(1)) <= len(pics):
+                flush(); i = int(m.group(1)) - 1; used.add(i)
+                out.append("{pic:%s|%s}" % (pics[i]["f"], pics[i].get("cap", ""))); continue
+            if line.startswith("## "): flush(); out.append("<h2>%s</h2>" % esc(line[3:])); continue
+            if line.startswith(("- ", "• ")): ul.append(esc(line[2:])); continue
+            flush(); out.append("<p>%s</p>" % esc(line))
+        flush()
+    out += ["{pic:%s|%s}" % (p["f"], p.get("cap", "")) for i, p in enumerate(pics) if i not in used]
+    return "\n".join(out)
+
+_AO = CONTENT.get("article_over", {})
+_ALL_BUILTIN = [dict(a, **{k: v for k, v in _AO.get(a["slug"], {}).items() if k in ("title", "h1", "description", "lead") and v}) for a in ARTICLES]
+ARTICLES = [dict(a, **{k: v for k, v in _AO.get(a["slug"], {}).items() if k in ("title", "h1", "description", "lead") and v})
+            for a in ARTICLES if not _AO.get(a["slug"], {}).get("hidden")]
+for _a in CONTENT.get("articles", []):
+    if _a.get("hidden") or not _a.get("slug"): continue
+    ARTICLES.append({"slug": _a["slug"], "title": _a["title"], "h1": _a.get("h1") or _a["title"], "description": _a.get("description", ""),
+                     "date": _a.get("date") or TODAY, "lead": _a.get("lead", ""), "body": text_to_html(_a.get("body", ""), _a.get("photos", []))})
+
 def art_url(a): return "%s/stati/%s/" % (BASE, a["slug"])
 def fill_article(body):
     """{p:A907} → ссылка на товар, {c:plintusy} → раздел, {img:A907|подпись} → фото, {svg:corner} → схема."""
@@ -531,10 +626,14 @@ def fill_article(body):
     body = re.sub(r"\{c:([^}]+)\}", catl, body)
     body = re.sub(r"\{img:([^|}]+)\|([^}]+)\}", img, body)
     body = re.sub(r"\{svg:([^}]+)\}", lambda m: SVG.get(m.group(1), ""), body)
+    body = re.sub(r"\{pic:([^|}]+)\|([^}]*)\}", lambda m: '<figure><img src="%simg/stati/%s" alt="%s" loading="lazy">%s</figure>' % (
+        ROOT, esc(m.group(1)), esc(m.group(2) or "фото"), ("<figcaption>%s</figcaption>" % esc(m.group(2))) if m.group(2) else ""), body)
     return body
 
 def article_page(a, others):
     url = art_url(a); first_img = re.search(r"\{img:([^|}]+)", a["body"]); ph = photo(first_img.group(1)) if first_img else ""
+    first_pic = re.search(r"\{pic:([^|}]+)", a["body"])
+    if not ph and first_pic: ph = "img/stati/" + first_pic.group(1)
     og_img = (BASE + "/" + ph) if ph else BASE + "/og.jpg"
     crumb_items = [("Главная", ROOT), ("Статьи", ROOT + "stati/"), (a["title"], "")]
     ld = {"@context": "https://schema.org", "@type": "Article", "headline": a["title"], "description": a["description"], "datePublished": a["date"], "dateModified": a["date"],
@@ -697,6 +796,50 @@ for a in ARTICLES:
     d = os.path.join(adir, a["slug"]); os.makedirs(d)
     open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(article_page(a, ARTICLES))
     urls.append((art_url(a), "monthly", "0.6"))
+rdir = os.path.join(SITE, "otzyvy")
+if os.path.isdir(rdir): shutil.rmtree(rdir)
+if REVIEWS:
+    os.makedirs(rdir)
+    open(os.path.join(rdir, "index.html"), "w", encoding="utf-8").write(reviews_page())
+    urls.append(("%s/otzyvy/" % BASE, "weekly", "0.6"))
+
+# ---------- главная (index.html): новые разделы в фильтрах, ссылки на разделы, блок отзывов — из правок CRM ----------
+def home_sync():
+    path = os.path.join(SITE, "index.html"); h = open(path, encoding="utf-8").read(); h0 = h
+    m = re.search(r"const CATS = (\[.*?\]);", h)
+    if m:
+        base = [c for c in json.loads(m.group(1)) if c[0] == "all" or c[0] in BUILTIN_KINDS]
+        cats_js = base + [[code, k["menu"]] for code, k in CUSTOM.items()]
+        h = h[:m.start(1)] + json.dumps(cats_js, ensure_ascii=False, separators=(",", ":")) + h[m.end(1):]
+    m = re.search(r"const KIND = (\{.*?\});", h)
+    if m:
+        kinds = dict(re.findall(r'(\w+):"([^"]*)"', m.group(1)))
+        kinds = {k: v for k, v in kinds.items() if k in BUILTIN_KINDS}
+        kinds.update({code: KIND[code] for code in CUSTOM})
+        h = h[:m.start(1)] + "{" + ",".join('%s:%s' % (k, json.dumps(v, ensure_ascii=False)) for k, v in kinds.items()) + "}" + h[m.end(1):]
+    nav = "".join(' <a href="catalog/%s/">%s</a>' % (k["slug"], esc(k["menu"])) for k in CUSTOM.values())
+    if REVIEWS: nav += ' <a href="otzyvy/">Отзывы и наши работы</a>'
+    h = re.sub(r"<!--ed:navx-->.*?<!--/ed:navx-->", lambda _: "<!--ed:navx-->%s<!--/ed:navx-->" % nav, h, flags=re.S)
+    block = ""
+    if REVIEWS:
+        block = ('<section id="otzyvy"><div class="wrap"><div class="head"><div><h2>Отзывы и наши работы</h2><p>Стены наших покупателей — фото и отзывы.</p></div></div>'
+                 '<div class="revlist">%s</div><p class="more"><a class="btn ghost" href="otzyvy/">Все отзывы</a></p></div></section>' % "".join(review_html(r, "") for r in REVIEWS[-6:][::-1]))
+    h = re.sub(r"<!--ed:reviews-->.*?<!--/ed:reviews-->", lambda _: "<!--ed:reviews-->%s<!--/ed:reviews-->" % block, h, flags=re.S)
+    if h != h0: open(path, "w", encoding="utf-8").write(h)
+home_sync()
+
+# сводка для CRM («Редактор сайта» читает её с сервера): разделы, статьи, отзывы — как сейчас на сайте
+open(os.path.join(SITE, "site-index.json"), "w", encoding="utf-8").write(json.dumps({
+    "built": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+    "kinds": KIND, "builtin_kinds": sorted(BUILTIN_KINDS),
+    "sections": [{"code": c[0], "slug": c[1], "menu": c[2], "h1": c[3], "intro": c[4], "title": c[5], "description": c[6],
+                  "faq": FAQ.get(c[0], []), "custom": c[0] in CUSTOM} for c in CATS],
+    "articles": [{"slug": a["slug"], "title": a["title"], "h1": a.get("h1", ""), "description": a.get("description", ""), "lead": a.get("lead", ""),
+                  "date": a.get("date", ""), "custom": False, "hidden": bool(_AO.get(a["slug"], {}).get("hidden"))} for a in _ALL_BUILTIN]
+                + [{"slug": a["slug"], "title": a.get("title", ""), "h1": a.get("h1", ""), "description": a.get("description", ""), "lead": a.get("lead", ""),
+                    "date": a.get("date", ""), "custom": True, "hidden": bool(a.get("hidden"))} for a in CONTENT.get("articles", []) if a.get("slug")],
+    "hidden_articles": [k for k, v in _AO.items() if v.get("hidden")] + [x["slug"] for x in CONTENT.get("articles", []) if x.get("hidden")],
+}, ensure_ascii=False, indent=1))
 sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
       '  <url><loc>%s/</loc><lastmod>%s</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>' % (BASE, TODAY)]
 sm += ['  <url><loc>%s</loc><lastmod>%s</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>' % (u, TODAY, f, p) for u, f, p in urls]
@@ -710,9 +853,13 @@ open(os.path.join(SITE, "sitemap.xml"), "w", encoding="utf-8").write("\n".join(s
 YML_CATS = [(1, None, "Стеновые панели"), (11, 1, "Реечные панели под покраску"), (12, 1, "Реечные панели под дерево и бетон"),
             (2, None, "Плинтусы напольные"), (3, None, "Потолочные плинтусы"), (4, None, "Молдинги"), (5, None, "Уголки декоративные")]
 YML_CAT_OF = {"panel": 11, "color": 12, "plinth": 2, "cornice": 3, "mold": 4, "corner": 5}
+for _i, (_code, _k) in enumerate(CUSTOM.items()):
+    YML_CATS.append((100 + _i, None, _k["menu"])); YML_CAT_OF[_code] = 100 + _i
 def yml_id(a): return re.sub(r"[^A-Za-z0-9-]", "", a.replace("/", "-").replace(" ", ""))
 def yml_offer(x):
-    p = [("Материал", "", "полистирол высокой плотности (дюрополимер)"), ("Ширина", "мм", x["w"]), ("Толщина", "мм", x["t"]),
+    mat = (x.get("m") or CUSTOM[x["c"]].get("material", "")) if x["c"] in CUSTOM else "полистирол высокой плотности (дюрополимер)"
+    p = [("Материал", "", mat)] if mat else []
+    p += [("Ширина", "мм", x["w"]), ("Толщина", "мм", x["t"]),
          ("Длина", "мм", x["l"]), ("В коробке", "шт", x["b"])]
     return ('    <offer id="%s" available="false">\n      <url>%s/p/%s/</url>\n      <price>%d</price>\n      <currencyId>RUR</currencyId>\n'
             '      <categoryId>%d</categoryId>\n      <picture>%s/%s</picture>\n      <name>%s</name>\n      <vendorCode>%s</vendorCode>\n'

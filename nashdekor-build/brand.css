@@ -68,3 +68,22 @@ a{text-decoration-color:var(--mark)}
 
 /* Подвал: тонкая линия «Камень», как на картинках брендбука */
 footer{border-top-color:var(--stone)}
+
+/* ===== Правки из CRM («Редактор сайта», 11.11.2026): доп. фото товара, отзывы и фото работ ===== */
+.gal{margin:22px 0 6px}
+.gal h2{font-size:20px;margin:0 0 10px}
+.galgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.galgrid a{display:block;border-radius:10px;overflow:hidden;background:#26292E;aspect-ratio:16/9}
+.galgrid img{width:100%;height:100%;object-fit:cover;display:block}
+.revs{margin:26px 0 0}
+.revs h2{font-size:20px;margin:0 0 10px}
+.revlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin:8px 0 6px}
+.rev{margin:0 0 14px;padding:16px;border:1px solid #D9DEE3;border-radius:14px;background:#fff}
+.rev blockquote{margin:0}
+.rev blockquote p{margin:0 0 8px;font-size:15px;line-height:1.5}
+.rev figcaption{font-size:13px;color:#4F6A82}
+.revpics{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin:0 0 10px}
+.revpics a{display:block;border-radius:8px;overflow:hidden;aspect-ratio:4/3;background:#26292E}
+.revpics img{width:100%;height:100%;object-fit:cover;display:block}
+#otzyvy{padding:40px 0 10px}
+@media (prefers-color-scheme: dark){.rev{background:#2f3339;border-color:#3b4048}.rev figcaption{color:#9fb3c6}}

@@ -134,7 +134,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 @media (prefers-reduced-motion:no-preference){.card{transition:transform .15s}.card:hover{transform:translateY(-2px)}}
 </style>
-<link rel="stylesheet" href="assets/brand.css?v=202611111131">
+<link rel="stylesheet" href="assets/brand.css?v=20261111e">
 
 <header class="top"><div class="wrap bar">
   <a class="logo" href="#catalog" aria-label="Наш декор"><svg viewBox="0 0 724 120" width="169" height="28" aria-hidden="true" focusable="false"><use href="assets/logo.svg#logo"/></svg></a>
@@ -147,8 +147,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   <div class="hero">
     <div>
       <div class="eyebrow">Санкт-Петербург и Ленинградская область</div>
-      <h1>Стеновые панели, плинтусы и молдинги под покраску</h1>
-      <p>Стеновые панели для внутренней отделки — реечные под покраску и под дерево, напольные и потолочные плинтусы, молдинги и уголки из полистирола высокой плотности (дюрополимера): ударопрочные, влагостойкие, под покраску. Панели 3 м — без стыков до потолка. Считаем количество по размерам стены в 3D, привозим по Санкт-Петербургу и Ленобласти, в другие города отправляем транспортной компанией.</p>
+      <h1><!--ed:home_h1-->Стеновые панели, плинтусы и молдинги под покраску<!--/ed:home_h1--></h1>
+      <p><!--ed:home_lead-->Стеновые панели для внутренней отделки — реечные под покраску и под дерево, напольные и потолочные плинтусы, молдинги и уголки из полистирола высокой плотности (дюрополимера): ударопрочные, влагостойкие, под покраску. Панели 3 м — без стыков до потолка. Считаем количество по размерам стены в 3D, привозим по Санкт-Петербургу и Ленобласти, в другие города отправляем транспортной компанией.<!--/ed:home_lead--></p>
       <div class="cta"><a class="btn" href="#calc">Рассчитать стену</a><a class="btn ghost" href="#catalog">Смотреть каталог</a></div>
     </div>
     <div class="wall"><img src="img/hero.jpg" srcset="img/hero.jpg 1006w, img/2x/hero.jpg 2012w" sizes="(max-width: 720px) 100vw, 840px" alt="Реечные панели для стен в гостиной — декоративные рейки под покраску" width="1006" height="689"><span>Реечные панели 3 м, под покраску</span></div>
@@ -163,11 +163,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 <section id="catalog"><div class="wrap">
   <div class="head">
-    <div><h2>Каталог</h2><p>Стеновые панели (реечные под покраску, под дерево и бетон), плинтусы напольные и потолочные, молдинги, уголки. Цены предварительные, за штуку (у панелей — и за м²). Точную стоимость и наличие подтвердим в ответ на заявку.</p></div>
+    <div><h2>Каталог</h2><p><!--ed:catalog_intro-->Стеновые панели (реечные под покраску, под дерево и бетон), плинтусы напольные и потолочные, молдинги, уголки. Цены предварительные, за штуку (у панелей — и за м²). Точную стоимость и наличие подтвердим в ответ на заявку.<!--/ed:catalog_intro--></p></div>
     <input type="search" id="q" class="search" placeholder="Артикул или вид, например A905" aria-label="Поиск по каталогу">
   </div>
   <div class="tabs" id="tabs"></div>
-  <nav class="sections" aria-label="Страницы разделов"><span class="note">Разделы:</span> <a href="catalog/stenovye-paneli/"><b>Стеновые панели</b></a> <a href="catalog/reechnye-paneli/">Реечные панели под покраску</a> <a href="catalog/paneli-pod-derevo/">Под дерево и бетон</a> <a href="catalog/plintusy/">Плинтус напольный</a> <a href="catalog/plintus-s-podsvetkoy/">Плинтус с подсветкой</a> <a href="catalog/karnizy/">Потолочный плинтус</a> <a href="catalog/moldingi/">Молдинги для стен</a> <a href="catalog/ugolki/">Уголки</a> <a href="stati/">Статьи</a></nav>
+  <nav class="sections" aria-label="Страницы разделов"><span class="note">Разделы:</span> <a href="catalog/stenovye-paneli/"><b>Стеновые панели</b></a> <a href="catalog/reechnye-paneli/">Реечные панели под покраску</a> <a href="catalog/paneli-pod-derevo/">Под дерево и бетон</a> <a href="catalog/plintusy/">Плинтус напольный</a> <a href="catalog/plintus-s-podsvetkoy/">Плинтус с подсветкой</a> <a href="catalog/karnizy/">Потолочный плинтус</a> <a href="catalog/moldingi/">Молдинги для стен</a> <a href="catalog/ugolki/">Уголки</a><!--ed:navx--><!--/ed:navx--> <a href="stati/">Статьи</a></nav>
   <div class="grid" id="grid"></div>
   <div class="more"><button class="btn ghost" id="moreBtn" hidden>Показать ещё</button></div>
 </div></section>
@@ -205,12 +205,13 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   </div>
 </div></section>
 
+<!--ed:reviews--><!--/ed:reviews-->
 <section id="pro"><div class="wrap">
-  <div class="head"><div><h2>Дизайнерам и бригадам</h2><p>Подберём профили под проект и привезём на объект к нужному этапу ремонта.</p></div></div>
+  <div class="head"><div><h2>Дизайнерам и бригадам</h2><p><!--ed:pro_intro-->Подберём профили под проект и привезём на объект к нужному этапу ремонта.<!--/ed:pro_intro--></p></div></div>
   <div class="pro">
-    <div><h3>Работаем с дизайнерами</h3><p>Ведём объекты дизайнеров и бригад: держим нужные профили и привозим к сроку.</p></div>
-    <div><h3>Расчёт по проекту</h3><p>Пришлите развёртку стены — вернём спецификацию по артикулам и смету.</p></div>
-    <div><h3>Документы для объекта</h3><p>Счёт, накладная и закрывающие документы для компаний и ИП, по ЭДО или на бумаге.</p></div>
+    <div><h3><!--ed:pro1_h-->Работаем с дизайнерами<!--/ed:pro1_h--></h3><p><!--ed:pro1_t-->Ведём объекты дизайнеров и бригад: держим нужные профили и привозим к сроку.<!--/ed:pro1_t--></p></div>
+    <div><h3><!--ed:pro2_h-->Расчёт по проекту<!--/ed:pro2_h--></h3><p><!--ed:pro2_t-->Пришлите развёртку стены — вернём спецификацию по артикулам и смету.<!--/ed:pro2_t--></p></div>
+    <div><h3><!--ed:pro3_h-->Документы для объекта<!--/ed:pro3_h--></h3><p><!--ed:pro3_t-->Счёт, накладная и закрывающие документы для компаний и ИП, по ЭДО или на бумаге.<!--/ed:pro3_t--></p></div>
   </div>
   <div class="form" id="models" style="margin-top:28px">
     <div>
@@ -259,11 +260,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   </div>
 </div></section>
 <section id="terms"><div class="wrap">
-  <div class="head"><div><h2>Доставка по СПб и Ленобласти, оплата и возврат</h2><p>Стоимость доставки называем до оплаты. Цены без НДС: продавец на упрощённой системе.</p></div></div>
+  <div class="head"><div><h2>Доставка по СПб и Ленобласти, оплата и возврат</h2><p><!--ed:terms_intro-->Стоимость доставки называем до оплаты. Цены без НДС: продавец на упрощённой системе.<!--/ed:terms_intro--></p></div></div>
   <div class="pro">
     <div><h3>Доставка</h3><p>Самовывоз со склада — бесплатно. По Петербургу — 1–2 дня, по Ленобласти — 1–3 дня после оплаты, по тарифу перевозчика. Отправляем в Москву и любой регион транспортной компанией, доставку получатель оплачивает перевозчику по его тарифу — <a href="dostavka/" style="color:var(--ink)">сроки, упаковка, как получить</a>. Панели 3 м едут в машине с кузовом от 3 м.</p></div>
     <div><h3>Оплата</h3><p>Частным покупателям — картой или через СБП по ссылке после подтверждения заказа, электронный чек на e-mail. Компаниям и ИП — по счёту, закрывающие документы по ЭДО или на бумаге. <a href="oplata/" style="color:var(--ink)">Об оплате и возврате</a></p></div>
-    <div><h3>Возврат</h3><p>Неподошедший товар — в течение 7 дней после получения, если он не распилен, не окрашен и не монтировался. Деньги возвращаем в течение 10 дней. Брак меняем или возвращаем деньги.</p></div>
+    <div><h3>Возврат</h3><p><!--ed:return_t-->Неподошедший товар — в течение 7 дней после получения, если он не распилен, не окрашен и не монтировался. Деньги возвращаем в течение 10 дней. Брак меняем или возвращаем деньги.<!--/ed:return_t--></p></div>
   </div>
 </div></section>
 </main>
