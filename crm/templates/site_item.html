@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}{{ 'Новый товар' if new else x['a'] }} — редактор сайта{% endblock %}
+{% block main %}
+{{ more_nav('site_edit') }}
+<p><a href="{{ url_for('site_edit_view') }}">← Все товары</a></p>
+<h1>{{ 'Новый товар' if new else 'Товар ' ~ x['a'] }}</h1>
+{% if errors %}<div class="alert err"><b>Не сохранено:</b><ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>{% endif %}
+{% if pend %}<div class="alert warn">Есть правка, которая ещё не на сайте (№{{ pend['id'] }}, {{ fmt_dt(pend['created_at']) }}){% if pend['kind'] == 'delete' %} — товар уберётся с сайта{% else %} — ниже показана она{% endif %}. Новое сохранение её заменит.</div>{% endif %}
+{% if not new %}
+<div class="panel pad siteprevbox">
+  {% if photo %}<img class="siteprev" src="{{ url_for('site_img', name=photo) }}" alt="Фото {{ x['a'] }} на сайте">{% endif %}
+  {% if pend and pend['photo'] %}<p class="d">Новое фото (ещё не на сайте):</p><img class="siteprev" src="{{ url_for('site_edit_photo', eid=pend['id']) }}" alt="Новое фото">{% endif %}
+  <p class="d">Страница на сайте: <a href="https://{{ SHOP_DOMAIN }}/p/{{ x['a']|lower|replace('/', '-')|replace(' ', '') }}/" target="_blank" rel="noopener">{{ SHOP_DOMAIN }}/p/{{ x['a']|lower|replace('/', '-')|replace(' ', '') }}/</a></p>
+</div>
+{% endif %}
+<form class="panel pad grid2" method="post" enctype="multipart/form-data" action="{{ url_for('site_item_save') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="hidden" name="old" value="{{ x['a'] if x else '' }}">
+  {% if new %}<label class="f">Артикул<input name="a" value="{{ cur.get('a', '') }}" maxlength="20" required placeholder="например, A921" spellcheck="false"></label>
+  {% else %}<div class="f"><span>Артикул</span><b>{{ x['a'] }}</b><span class="d">не меняется — по нему адрес страницы</span></div>{% endif %}
+  <label class="f">Раздел<select name="c">{% for key, name in KINDS %}<option value="{{ key }}" {% if cur.get('c') == key %}selected{% endif %}>{{ name }}</option>{% endfor %}</select></label>
+  <label class="f span2">Название (как в поиске: тип, цвет, «под покраску», свойства, размеры, артикул)<input name="n" value="{{ cur.get('n', '') }}" maxlength="160" required placeholder="Стеновая реечная панель белая под покраску, ударопрочная, 180×10×3000 мм — A921"></label>
+  <label class="f span2">Описание (коротко: какой профиль, для чего)<textarea name="d" rows="4" maxlength="600" placeholder="широкие ламели с тонкими швами, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску">{{ cur.get('d', '') }}</textarea></label>
+  <label class="f">Ширина, мм<input name="w" inputmode="numeric" value="{{ cur.get('w', '') }}" required></label>
+  <label class="f">Толщина, мм<input name="t" inputmode="numeric" value="{{ cur.get('t', '') }}" required></label>
+  <label class="f">Длина, мм<input name="l" inputmode="numeric" value="{{ cur.get('l', '') }}" required placeholder="3000"></label>
+  <label class="f">Штук в коробке<input name="b" inputmode="numeric" value="{{ cur.get('b', '') }}" required></label>
+  <label class="f">Цена на сайте, ₽ за шт<input name="r" inputmode="numeric" value="{{ cur.get('r', '') }}" required><span class="d">если в «Склад и цены» своя цена — показывается она</span></label>
+  <label class="f span2">{{ 'Фото товара (JPG или PNG, до ' ~ PHOTO_MB ~ ' МБ)' if new else 'Новое фото — только если меняете (JPG или PNG, до ' ~ PHOTO_MB ~ ' МБ)' }}<input type="file" name="photo" accept="image/jpeg,image/png" {% if new %}required{% endif %}></label>
+  <p class="d span2">Нельзя писать: МДФ, ПВХ, пенопласт, «вспененный», алюминий, класс горючести (Г1–Г4), «рамки», бренд поставщика. Материал — «полистирол высокой плотности (дюрополимер)». Фото — товар крупно, лучше на тёмном фоне; сайт сам уменьшит его и сделает крупную версию.</p>
+  <div class="span2"><button class="btn-p">{{ 'Добавить на сайт' if new else 'Сохранить' }}</button></div>
+</form>
+{% if not new %}
+<h2>Убрать с сайта</h2>
+<form class="panel pad" method="post" action="{{ url_for('site_item_delete') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="a" value="{{ x['a'] }}">
+  <label class="chk"><input type="checkbox" name="confirm" value="1" required> Да, убрать {{ x['a'] }} с сайта и из фида Авито</label>
+  <p class="d">Страница товара пропадёт, из каталога и расчёта он исчезнет. Вернуть можно — «Добавить товар» с тем же артикулом.</p>
+  <button class="btn-g">Убрать с сайта</button>
+</form>
+{% endif %}
+{% endblock %}

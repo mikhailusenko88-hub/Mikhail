@@ -33,6 +33,8 @@ from store import (CLIENT_DOC_FIELDS, KIND_NAMES, KIND_TITLES, KINDS, OPEN_STAGE
                    STAGE_NAMES, STAGES, Catalog, Store, fmt_day, fmt_dt, now, rub, today, split_contact)
 from buh import Buh
 from buh_web import register as register_buh
+from site_edit import SiteEdits
+from site_web import register as register_site
 from outbox import Outbox
 from pochta import INLINE_OK, Pochta, fmt_ts, size_h
 from docs import MAX_FILE as DOC_MAX, Docs, clean_folder, fmt_date
@@ -90,6 +92,8 @@ class CrmRequest(Request):
             return 1024 * 1024 + 64 * 1024
         if self.path == "/docs/upload":                  # «Документы»: файлы до 25 МБ (nginx пропускает 30 МБ только сюда)
             return 30 * 1024 * 1024
+        if self.path == "/site/edit/item":               # «Редактор сайта»: фото товара до 15 МБ (nginx — 16 МБ только сюда)
+            return 16 * 1024 * 1024
         return current_app.config.get("MAX_CONTENT_LENGTH") if current_app else None
 
     @max_content_length.setter
@@ -497,6 +501,10 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         return ["", f"Ответить на это письмо или написать: zakaz@{dom}" + (f" · {mail_contacts()}" if mail_contacts() else ""),
                 f"Сайт: https://{dom}", "", "С уважением, " + (f"{manager}, " if manager else "") + "«Наш декор»"]
 
+    site_edits = SiteEdits(store, cfg.get("SITE_UPLOADS") or os.path.join(os.path.dirname(os.path.abspath(conf["CRM_DB"])), "site-uploads"),
+                           conf["CATALOG_FILE"])
+    app.extensions["site_edits"] = site_edits
+    register_site(app, store, site_edits, conf["CATALOG_FILE"], {"admin_required": admin_required, "who": who})
     register_buh(app, store, buh, {"login_required": login_required, "admin_required": admin_required, "who": who,
                                    "safe_next": safe_next, "send_mail": lambda *a, **k: send_mail(*a, **k),
                                    "mail_signature": mail_signature, "shop_domain": conf["SHOP_DOMAIN"] or "nashdekor.ru"})

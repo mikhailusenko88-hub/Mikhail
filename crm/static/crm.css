@@ -258,3 +258,8 @@ details.mailrow[open]>summary{background:var(--sunk)}
 .docfolder{background:var(--sunk);padding:7px 14px}
 .docfolder .t{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 a.docopen{text-decoration:none;color:inherit;min-width:0}
+/* Редактор сайта */
+.sitethumb{width:64px;height:40px;object-fit:cover;border-radius:6px;flex:none;background:#26292E}
+.sitethumb.nophoto{display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#c9ced4}
+.sitemeta{display:block}
+.siteprev{display:block;max-width:100%;max-height:320px;border-radius:8px;margin:0 0 8px}

@@ -2205,3 +2205,92 @@ class TestBackupCopies(Base):
         self.c.post("/logout", data={"csrf": self.csrf()})
         self.login("mikhail", "Secret-pass-2")
         self.assertEqual(self.c.get(f"/server/export/{good}").status_code, 403)
+
+
+class TestSiteEditor(Base):
+    """«Редактор сайта»: правки товаров, фото, контакты, отмена, API для GitHub Actions, итог с сайта."""
+
+    PNG = b"\x89PNG\r\n\x1a\n" + b"\x00" * 600_000            # больше общего лимита запроса (256 КБ)
+
+    def item(self, **kw):
+        d = {"c": "panel", "n": "Стеновая реечная панель белая под покраску 120×12×2700 мм — A912",
+             "d": "узкие рейки, полистирол высокой плотности (дюрополимер)", "w": "120", "t": "12", "l": "2700", "b": "6", "r": "990"}
+        d.update(kw)
+        return d
+
+    def save(self, data, photo=None):
+        with self.c.session_transaction() as s:
+            tok = s.get("csrf", "")
+        d = dict(data, csrf=tok)
+        if photo is not None:
+            import io as _io
+            d["photo"] = (_io.BytesIO(photo), "p.png")
+        return self.c.post("/site/edit/item", data=d, content_type="multipart/form-data")
+
+    def test_edit_flow(self) -> None:
+        self.login()
+        page = self.c.get("/site/edit").get_data(as_text=True)
+        self.assertIn("Редактор сайта", page)
+        self.assertIn("A912", page)
+        self.assertIn("Рейка 912", self.c.get("/site/edit/item?a=A912").get_data(as_text=True))
+        self.assertEqual(self.c.get("/site/edit/item?a=NOPE").status_code, 404)
+        # правка существующего товара (артикул из формы не меняется)
+        r = self.save(self.item(old="A912", a="HACK"))
+        self.assertEqual(r.status_code, 302)
+        ed = self.app.extensions["site_edits"]
+        api = self.c.get("/api/site/edits").get_json()["edits"]
+        self.assertEqual([(e["kind"], e["article"]) for e in api], [("product", "A912")])
+        self.assertEqual(api[0]["data"]["d"], "узкие рейки, полистирол высокой плотности (дюрополимер)")
+        self.assertIn("правка ждёт", self.c.get("/site/edit").get_data(as_text=True))
+        # запрещённые слова и пустые поля
+        r = self.save(self.item(old="A912", d="панель из МДФ, класс Г1"))
+        self.assertEqual(r.status_code, 400)
+        body = r.get_data(as_text=True)
+        self.assertIn("МДФ", body)
+        self.assertIn("класс горючести", body)
+        # новый товар: без фото нельзя, дубль артикула нельзя, с фото (больше общего лимита) — можно
+        self.assertIn("нужно фото", self.save(self.item(old="", a="A930")).get_data(as_text=True))
+        self.assertIn("уже есть", self.save(self.item(old="", a="a 912"), self.PNG).get_data(as_text=True))
+        self.assertIn("JPG или PNG", self.save(self.item(old="", a="A930"), b"GIF89a" + b"0" * 100).get_data(as_text=True))
+        r = self.save(self.item(old="", a="A930", n="Стеновая реечная панель белая под покраску 160×12×3000 мм — A930"), self.PNG)
+        self.assertEqual(r.status_code, 302)
+        new = [e for e in self.c.get("/api/site/edits").get_json()["edits"] if e["article"] == "A930"][0]
+        self.assertTrue(new["photo"].endswith(".png"))
+        self.assertEqual(self.c.get(f"/api/site/photo/{new['photo']}").data, self.PNG)
+        self.assertEqual(self.c.get("/api/site/photo/..%2Fcrm.db").status_code, 404)
+        # контакты
+        self.post("/site/edit/shop", {"max": "javascript:alert(1)"})
+        self.assertFalse(any(e["kind"] == "shop" for e in self.c.get("/api/site/edits").get_json()["edits"]))
+        self.post("/site/edit/shop", {"max": "https://max.ru/id1_bot", "avito": "https://www.avito.ru/brands/x"})
+        shop = [e for e in self.c.get("/api/site/edits").get_json()["edits"] if e["kind"] == "shop"][0]
+        self.assertEqual(shop["data"]["max"], "https://max.ru/id1_bot")
+        # убрать товар: без галочки — нет
+        self.post("/site/edit/delete", {"a": "A116"})
+        self.assertFalse(any(e["kind"] == "delete" for e in self.c.get("/api/site/edits").get_json()["edits"]))
+        self.post("/site/edit/delete", {"a": "A116", "confirm": "1"})
+        dl = [e for e in self.c.get("/api/site/edits").get_json()["edits"] if e["kind"] == "delete"][0]
+        # отмена
+        self.post(f"/site/edit/{dl['id']}/cancel")
+        self.assertFalse(any(e["kind"] == "delete" for e in self.c.get("/api/site/edits").get_json()["edits"]))
+        # новая правка того же товара заменяет старую
+        self.save(self.item(old="A912", d="другое описание, полистирол высокой плотности (дюрополимер)"))
+        a912 = [e for e in self.c.get("/api/site/edits").get_json()["edits"] if e["article"] == "A912"]
+        self.assertEqual(len(a912), 1)
+        self.assertTrue(a912[0]["data"]["d"].startswith("другое"))
+        # итог от GitHub: файл site-edits.json рядом с сайтом
+        with open(os.path.join(self.tmp.name, "site-edits.json"), "w", encoding="utf-8") as f:
+            json.dump({"last_id": 99, "edits": {str(new["id"]): {"ok": True, "note": "добавлен, новое фото", "at": "2026-11-11 19:00"},
+                                                str(a912[0]["id"]): {"ok": False, "note": "ошибка: тест", "at": "2026-11-11 19:00"}}}, f)
+        page = self.c.get("/site/edit").get_data(as_text=True)
+        self.assertIn("на сайте", page)
+        self.assertIn("ошибка: тест", page)
+        self.assertNotIn(new["id"], [e["id"] for e in self.c.get("/api/site/edits").get_json()["edits"]])
+        self.assertFalse(os.path.exists(os.path.join(ed.dir, new["photo"])))   # фото опубликованной правки удалено
+        self.assertEqual(self.c.get(f"/api/site/photo/{new['photo']}").status_code, 404)
+
+    def test_only_owners(self) -> None:
+        self.login("mikhail", "Secret-pass-2")
+        self.assertEqual(self.c.get("/site/edit").status_code, 403)
+        self.assertEqual(self.save(self.item(old="A912")).status_code, 403)
+        self.c.post("/logout", data={"csrf": self.csrf()})
+        self.assertEqual(self.c.get("/site/edit").status_code, 302)

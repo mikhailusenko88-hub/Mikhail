@@ -47,6 +47,7 @@
 <a href="{{ url_for('purchases_view') }}" {% if cur=='purchases' %}aria-current="page"{% endif %}>Закупки</a>
 <a href="{{ url_for('pochta_view') }}" {% if cur=='pochta' %}aria-current="page"{% endif %}>Почта</a>
 <a href="{{ url_for('docs_view') }}" {% if cur=='docs' %}aria-current="page"{% endif %}>Документы</a>
+<a href="{{ url_for('site_edit_view') }}" {% if cur=='site_edit' %}aria-current="page"{% endif %}>Редактор сайта</a>
 <a href="{{ url_for('outbox_view') }}" {% if cur=='outbox' %}aria-current="page"{% endif %}>Исходящие</a>
 <a href="{{ url_for('taxes_view') }}" {% if cur=='taxes' %}aria-current="page"{% endif %}>Налоги</a>
 <a href="{{ url_for('designers_view') }}" {% if cur=='designers' %}aria-current="page"{% endif %}>Дизайнеры</a>{% endif %}
