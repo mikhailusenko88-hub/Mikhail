@@ -698,6 +698,41 @@ jobs:
           git add status; git commit -m "crm-test site editor $(date -u +%F_%H:%M)" || exit 0
           git pull --rebase origin domain-check || true
           git push origin HEAD:domain-check || true
+      - name: Конструктор CRM (свои поля, интеграции, приём заявок, Excel)
+        if: always()
+        run: |
+          mkdir -p status; O=status/crm-konstruktor.md
+          {
+          echo "# Конструктор CRM — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/jk
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          for i in $(seq 1 30); do [ "$(curl -sk $R -o /dev/null -w '%{http_code}' https://$H/login)" = 200 ] && break; sleep 2; done
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          for u in /k /k/integrations /k/templates /k/templates/calc /k/rules /k/excel; do printf '%s ' "$u=$(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' https://$H$u)"; done; echo
+          T=$(curl -sk $R -c $J -b $J https://$H/k | tok)
+          echo "своё поле: $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' --data-urlencode "csrf=$T" --data-urlencode entity=deal --data-urlencode 'label=Откуда узнал' --data-urlencode type=select --data-urlencode $'options=Авито\nЯндекс' https://$H/k/fields/add)"
+          echo "ссылка для заявок: $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' --data-urlencode "csrf=$T" --data-urlencode action=add --data-urlencode 'name=Квиз' https://$H/k/inbound)"
+          K=$(curl -sk $R -c $J -b $J https://$H/k/integrations | grep -o '/api/in/[A-Za-z0-9_-]*' | head -n1)
+          echo "заявка снаружи через nginx: $(curl -sk $R -H 'Content-Type: application/json' -d '{"имя":"Тест Квиз","телефон":"+79990001234","комментарий":"стена 3 м"}' https://$H$K)"
+          echo "чужой ключ: $(curl -sk $R -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' -d '{"name":"x","phone":"1"}' https://$H/api/in/wrong-token-1234567890)"
+          echo "интеграция в Telegram (выдуманный токен): $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' --data-urlencode "csrf=$T" --data-urlencode name=TG --data-urlencode kind=telegram --data-urlencode url=123456789:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA --data-urlencode chat=-1001 --data-urlencode events=deal.created https://$H/k/hooks/save)"
+          curl -sk $R -H 'Content-Type: application/json' -d '{"name":"Вторая","phone":"+79990001235"}' https://$H$K >/dev/null
+          echo "в очереди: $(sudo sqlite3 /var/lib/prostranstvo/crm.db 'select count(*) from k_queue')"
+          sudo prostranstvo-crm hooks | tail -n 3
+          echo "после отправки — попыток: $(sudo sqlite3 /var/lib/prostranstvo/crm.db 'select group_concat(tries) from k_queue')"
+          echo "cron: $(grep -c 'prostranstvo-crm hooks' /etc/cron.d/prostranstvo-crm 2>/dev/null || sudo grep -rc 'prostranstvo-crm hooks' /etc/cron.d | head -n 3)"
+          curl -sk $R -c $J -b $J -o /tmp/all.xlsx -w 'Excel: %{http_code} %{content_type} %{size_download} байт\n' https://$H/k/export/all.xlsx
+          python3 -c "import zipfile;z=zipfile.ZipFile('/tmp/all.xlsx');print('листы:', [n for n in z.namelist() if 'worksheets/sheet' in n])"
+          sudo journalctl -u prostranstvo-crm --since "-10 min" --no-pager 2>/dev/null | grep -A12 Traceback | head -n 40 || true
+          echo '```'
+          } > "$O" 2>&1
+          cat "$O"
+          git config user.name crm-test; git config user.email crm-test@users.noreply.github.com
+          git add status; git commit -m "crm-test konstruktor $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
       - name: Состояние
         if: always()
         run: |
