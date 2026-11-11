@@ -1,4 +1,4 @@
-# Документы в CRM — 2026-11-11 09:59 UTC
+# Документы в CRM — 2026-11-11 10:07 UTC
 
 ```
 загрузка 2 МБ: 302 → https://crm.nashdekor.ru/docs?f=%D0%A1%D0%B5%D1%80%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%82%D1%8B+%D0%B8+%D0%A2%D0%A3
@@ -8,6 +8,7 @@
 файл совпадает: да
 без входа: 302
 на диске: -rw------- prostranstvo:prostranstvo 2000000
-ls: cannot access '/var/backups/prostranstvo/20*': No such file or directory
-в копии: 0 файл(ов)
+копия: /var/backups/prostranstvo/2026-11-11
+total 1956
+9446355 -rw------- 1 prostranstvo prostranstvo 2000000 Nov 11 13:07 9751c2165aa04ff2b775337a56ce8f4a
 ```
