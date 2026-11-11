@@ -12,7 +12,9 @@ import urllib.request
 
 def load(tmp):
     os.environ.update(CRM_BASE=os.path.join(tmp, "crm"), STATE_DIR=os.path.join(tmp, "state"), SITE_CRON=os.path.join(tmp, "cron"),
-                      SITE_SRC=os.path.join(tmp, "site"), CRM_PORT="1", RESCUE_PORT="0", DOMAIN="")
+                      SITE_SRC=os.path.join(tmp, "site"), CRM_PORT="1", RESCUE_PORT="0", DOMAIN="",
+                      RESCUE_PASS_FILE=os.path.join(tmp, "rescue-pass"))
+    open(os.path.join(tmp, "rescue-pass"), "w").write("Secret-Pass-1\n")
     spec = importlib.util.spec_from_file_location("rescue_t", os.path.join(os.path.dirname(__file__), "rescue.py"))
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
@@ -75,30 +77,56 @@ class T(unittest.TestCase):
         self.assertFalse(ok)
         self.assertTrue(self.m.site_auto())                                                    # ничего не тронули
 
-    def test_http_token_and_origin(self):
+    def test_http_login_token_and_origin(self):
         srv = self.m.ThreadingHTTPServer(("127.0.0.1", 0), self.m.H)
         threading.Thread(target=srv.serve_forever, daemon=True).start()
         port = srv.server_address[1]
+        base = f"http://127.0.0.1:{port}"
         self.m.status = lambda: {k: "работает" for k in ("crm", "site", "auto")} | {"crm_service": "active", "crm_ver": "x", "crm_prev": "y",
                                                                                      "site_ver": "z", "site_auto": "да", "disk": "1G", "services": "веб"}
-        page = urllib.request.urlopen(f"http://127.0.0.1:{port}/rescue/").read().decode()
-        self.assertIn("Аварийная панель", page)
 
-        def post(data, origin):
-            req = urllib.request.Request(f"http://127.0.0.1:{port}/rescue/act", data=urllib.parse.urlencode(data).encode(),
-                                         headers={"Origin": origin, "Host": "crm.test"})
+        class NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, *a, **k):
+                return None
+        op = urllib.request.build_opener(NoRedirect)
+
+        def req(path, data=None, origin="https://crm.test", cookie=""):
+            h = {"Host": "crm.test", "X-Real-IP": "10.0.0.5"}
+            if origin:
+                h["Origin"] = origin
+            if cookie:
+                h["Cookie"] = cookie
+            r = urllib.request.Request(base + path, data=urllib.parse.urlencode(data).encode() if data is not None else None, headers=h)
             try:
-                return urllib.request.urlopen(req).status
+                resp = op.open(r)
             except urllib.error.HTTPError as e:
-                return e.code
+                resp = e
+            return resp.status if hasattr(resp, "status") else resp.code, resp.headers, resp.read().decode()
+
+        code, _, body = req("/rescue/")
+        self.assertEqual(code, 200); self.assertIn('name="pw"', body); self.assertNotIn("crm_restart", body)   # без входа — только форма
+        code, _, body = req("/rescue/login", {"pw": "wrong"})
+        self.assertEqual(code, 403); self.assertIn("Неверный пароль", body)
+        code, _, body = req("/rescue/act", {"t": self.m.TOKEN, "act": "auto_off"})                       # без входа — нельзя
+        self.assertEqual(code, 403)
+        code, hdr, _ = req("/rescue/login", {"pw": "Secret-Pass-1"})
+        self.assertEqual(code, 303)
+        ck = hdr["Set-Cookie"].split(";")[0]
+        self.assertIn("HttpOnly", hdr["Set-Cookie"]); self.assertIn("Secure", hdr["Set-Cookie"])
+        code, _, body = req("/rescue/", cookie=ck)
+        self.assertIn("Аварийная панель", body); self.assertIn("crm_restart", body)
         flag = os.path.join(self.tmp.name, "state/pause-auto")
-        self.assertEqual(post({"t": "wrong", "act": "auto_off"}, "https://crm.test"), 400)
-        self.assertEqual(post({"t": self.m.TOKEN, "act": "auto_off"}, "https://evil.example"), 400)
+        self.assertEqual(req("/rescue/act", {"t": "wrong", "act": "auto_off"}, cookie=ck)[0], 400)
+        self.assertEqual(req("/rescue/act", {"t": self.m.TOKEN, "act": "auto_off"}, origin="https://evil.example", cookie=ck)[0], 400)
         self.assertFalse(os.path.exists(flag))
-        post({"t": self.m.TOKEN, "act": "auto_off"}, "https://crm.test")
+        self.assertEqual(req("/rescue/act", {"t": self.m.TOKEN, "act": "auto_off"}, cookie=ck)[0], 303)
         self.assertTrue(os.path.exists(flag))
-        post({"t": self.m.TOKEN, "act": "crm_stop"}, "https://crm.test")                       # без галочки — нет
+        req("/rescue/act", {"t": self.m.TOKEN, "act": "crm_stop"}, cookie=ck)                             # без галочки — нет
         self.assertIn("галочку", self.m.LAST["msg"])
+        for i in range(10):
+            req("/rescue/login", {"pw": "bad"})
+        code, _, body = req("/rescue/login", {"pw": "Secret-Pass-1"})                                   # подбор — пауза
+        self.assertEqual(code, 429)
         srv.shutdown()
 
 

@@ -45,7 +45,6 @@ RESCUE_LIB="/usr/local/lib/prostranstvo/rescue.py"
 RESCUE_SHARE="/usr/local/share/prostranstvo-rescue"
 RESCUE_PASS_FILE="/etc/prostranstvo/rescue-pass"
 RESCUE_HTPASSWD="/etc/nginx/prostranstvo-rescue.htpasswd"
-RESCUE_LOGIN="nashdekor"
 PAUSE_FLAG="/var/lib/prostranstvo/pause-auto"      # «Автоматика — пауза» в аварийной панели
 SITE_PIN="/var/lib/prostranstvo/site-pin"          # сайт закреплён на версии из аварийной панели
 HAD_PREV=no
@@ -273,7 +272,6 @@ BACKUP_DIR=/var/backups/prostranstvo
 BACKUP_PASS_FILE=/etc/prostranstvo/backup-pass
 EXPORT_DIR=/var/lib/prostranstvo/export
 RESCUE_PASS_FILE=/etc/prostranstvo/rescue-pass
-RESCUE_LOGIN=nashdekor
 PAUSE_FLAG=/var/lib/prostranstvo/pause-auto
 SITE_PIN=/var/lib/prostranstvo/site-pin
 paused() { if [[ -e $PAUSE_FLAG ]]; then echo "автоматика на паузе (аварийная панель) — пропускаю"; return 0; fi; return 1; }
@@ -362,7 +360,7 @@ cmd_passwords() {
   fi
   if [[ -s $RESCUE_PASS_FILE ]]; then
     echo "------------------------------------------------------------------"
-    echo " Аварийная панель https://$CRM_HOST/rescue/ — логин $RESCUE_LOGIN, пароль:"
+    echo " Аварийная панель https://$CRM_HOST/rescue/ — только пароль (логин не нужен):"
     echo "  $(head -n1 "$RESCUE_PASS_FILE")"
   fi
 }
@@ -741,9 +739,7 @@ step_rescue() {
     gen_pw | tr -d '\n' >"$RESCUE_PASS_FILE"; echo >>"$RESCUE_PASS_FILE"
   fi
   chown root:"$APP_USER" "$RESCUE_PASS_FILE"; chmod 640 "$RESCUE_PASS_FILE"
-  pw=$(head -n1 "$RESCUE_PASS_FILE")
-  printf '%s:%s\n' "$RESCUE_LOGIN" "$(openssl passwd -apr1 "$pw")" >"$RESCUE_HTPASSWD.tmp"
-  chown root:www-data "$RESCUE_HTPASSWD.tmp"; chmod 640 "$RESCUE_HTPASSWD.tmp"; mv -f "$RESCUE_HTPASSWD.tmp" "$RESCUE_HTPASSWD"
+  rm -f "$RESCUE_HTPASSWD"     # раньше был вход через nginx (auth_basic); теперь своя страница входа — работает и в иконке на экране «Домой»
   put_file "$RESCUE_SHARE/rescue-down.html" 644 <<'RESCUE_DOWN'
 <!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>CRM не отвечает · Наш декор</title><style>body{font:17px/1.5 -apple-system,system-ui,sans-serif;background:#F8F8F6;color:#26292E;margin:0}
@@ -761,7 +757,7 @@ Description=Аварийная панель «Наш декор»
 After=network.target
 
 [Service]
-Environment=RESCUE_PORT=$RESCUE_PORT CRM_PORT=$PORT CRM_HOST=$CRM_HOST DOMAIN=$DOMAIN CRM_BASE=$BASE STATE_DIR=$STATE_DIR PYTHONDONTWRITEBYTECODE=1
+Environment=RESCUE_PORT=$RESCUE_PORT CRM_PORT=$PORT CRM_HOST=$CRM_HOST DOMAIN=$DOMAIN CRM_BASE=$BASE STATE_DIR=$STATE_DIR RESCUE_PASS_FILE=$RESCUE_PASS_FILE PYTHONDONTWRITEBYTECODE=1
 ExecStart=/usr/bin/python3 $RESCUE_LIB
 Restart=always
 RestartSec=2
@@ -775,7 +771,7 @@ RESCUE_UNIT
   run systemctl enable prostranstvo-rescue
   run systemctl restart prostranstvo-rescue || warn "аварийная панель не запустилась — journalctl -u prostranstvo-rescue"
   for n in $(seq 1 10); do curl -fs -o /dev/null --max-time 3 "http://127.0.0.1:$RESCUE_PORT/rescue/health" && break; sleep 1; done
-  if curl -fs -o /dev/null --max-time 3 "http://127.0.0.1:$RESCUE_PORT/rescue/health"; then ok "панель работает (логин $RESCUE_LOGIN, пароль — prostranstvo-crm passwords)"
+  if curl -fs -o /dev/null --max-time 3 "http://127.0.0.1:$RESCUE_PORT/rescue/health"; then ok "панель работает (вход по паролю на её странице; пароль — prostranstvo-crm passwords)"
   else warn "аварийная панель не отвечает — journalctl -u prostranstvo-rescue -n 30"; fi
 }
 
@@ -832,13 +828,12 @@ step_nginx() {
     echo "        proxy_set_header X-Forwarded-Host \$host;"
     echo "        proxy_read_timeout 120s;"
     echo "    }"
-    if [[ -s $RESCUE_HTPASSWD && -f $RESCUE_LIB ]]; then
-      echo "    location ^~ /rescue/ {   # аварийная панель — отдельная служба, свой пароль"
-      echo "        auth_basic \"nashdekor rescue\";"
-      echo "        auth_basic_user_file $RESCUE_HTPASSWD;"
+    if [[ -f $RESCUE_LIB ]]; then
+      echo "    location ^~ /rescue/ {   # аварийная панель — отдельная служба, свой пароль (своя страница входа)"
       echo "        client_max_body_size 64k;"
       echo "        proxy_pass http://127.0.0.1:$RESCUE_PORT;"
       echo "        proxy_set_header Host \$host;"
+      echo "        proxy_set_header X-Real-IP \$remote_addr;"
       echo "        proxy_read_timeout 300s;"
       echo "    }"
       echo "    location = /rescue { return 301 https://$CRM_HOST/rescue/; }"

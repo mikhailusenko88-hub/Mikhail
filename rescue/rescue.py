@@ -3,7 +3,8 @@
 
 Отдельная от CRM маленькая программа (только стандартная библиотека Python). Работает, даже если CRM сломалась,
 зависла или новая версия всё испортила: свой процесс (служба prostranstvo-rescue, root, 127.0.0.1:8099), своя копия
-кода вне папки CRM (/usr/local/lib/prostranstvo/rescue.py), свой пароль (вход через nginx, auth_basic).
+кода вне папки CRM (/usr/local/lib/prostranstvo/rescue.py), свой пароль (/etc/prostranstvo/rescue-pass) — своя страница
+входа с cookie (системное окно логина iPhone не показывает в приложении с экрана «Домой»).
 Ставит и обновляет setup-crm.sh — новая версия панели ставится, только если прошла самопроверку (--selftest).
 
 Кнопки (только перечисленные — произвольных команд нет):
@@ -15,6 +16,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import html
 import json
 import os
@@ -40,6 +43,11 @@ SITE_BRANCH, SITE_SUBDIR = os.environ.get("SITE_BRANCH", "mebel"), os.environ.ge
 SITE_CRON = os.environ.get("SITE_CRON", "/etc/cron.d/prostranstvo")
 STATE = os.environ.get("STATE_DIR", "/var/lib/prostranstvo")
 PAUSE_FLAG = os.path.join(STATE, "pause-auto")
+PASS_FILE = os.environ.get("RESCUE_PASS_FILE", "/etc/prostranstvo/rescue-pass")
+COOKIE = "rescue"
+SESSION_DAYS = 30
+KEY = secrets.token_bytes(32)              # подпись входа; после перезапуска панели — войти заново
+FAILS: dict[str, list[float]] = {}         # неверные пароли по адресам: 10 за 10 минут — пауза 15 минут
 SITE_PIN = os.path.join(STATE, "site-pin")
 TOKEN = secrets.token_urlsafe(24)          # защита кнопок от чужих сайтов: токен есть только на странице панели
 LOCK = threading.Lock()
@@ -274,7 +282,7 @@ def page(s: dict[str, str]) -> str:
     vers = "".join(f'<div class="v"><b>{e(d)}</b> <span class="d">{e(m)}</span>{btn("site_pin", "Вернуть эту версию сайта", "b2", sha, "Да, вернуть эту версию")}</div>'
                    for sha, d, m in VERSIONS[:20])
     return f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow"><title>Аварийная панель · Наш декор</title><meta name="apple-mobile-web-app-title" content="Аварийная">
+<meta name="robots" content="noindex,nofollow"><title>Аварийная панель · Наш декор</title><meta name="apple-mobile-web-app-title" content="Аварийная"><meta name="apple-mobile-web-app-capable" content="yes">
 <style>{CSS}</style></head><body><main>
 <h1>🛟 Аварийная панель</h1>
 <p class="d">Работает отдельно от CRM. Если что-то сломалось или зависло — здесь можно вернуть как было. Ничего не удаляется: любое действие можно отменить.</p>
@@ -311,7 +319,51 @@ def page(s: dict[str, str]) -> str:
 {btn("reboot", "Перезагрузить сервер", "b3", "", "Да, перезагрузить (1–2 минуты ничего не работает)")}
 <p class="d">Если и эта панель не открывается — кабинет FirstVDS → сервер → «Перезагрузить».</p>
 <p class="d"><a href="/">Открыть CRM</a></p>
+<form method="post" action="/rescue/logout"><button class="b2">Выйти из панели</button></form>
 </main></body></html>"""
+
+
+def make_session() -> str:
+    exp = str(int(time.time()) + SESSION_DAYS * 86400)
+    return exp + "." + hmac.new(KEY, exp.encode(), hashlib.sha256).hexdigest()
+
+
+def session_ok(cookie_header: str) -> bool:
+    for part in (cookie_header or "").split(";"):
+        k, _, v = part.strip().partition("=")
+        if k == COOKIE and "." in v:
+            exp, sig = v.split(".", 1)
+            if exp.isdigit() and int(exp) > time.time() and hmac.compare_digest(sig, hmac.new(KEY, exp.encode(), hashlib.sha256).hexdigest()):
+                return True
+    return False
+
+
+def password_ok(pw: str) -> bool:
+    try:
+        with open(PASS_FILE, encoding="utf-8") as f:
+            real = f.readline().strip()
+    except OSError:
+        return False
+    return bool(real) and hmac.compare_digest(pw.strip().encode(), real.encode())
+
+
+def too_many(ip: str) -> bool:
+    now = time.time()
+    FAILS[ip] = [t for t in FAILS.get(ip, []) if now - t < 900]
+    return len(FAILS[ip]) >= 10
+
+
+def login_page(err: str = "") -> str:
+    e = html.escape
+    return f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Аварийная">
+<title>Аварийная панель · вход</title><style>{CSS}input{{font:inherit;width:100%;box-sizing:border-box;padding:12px;border:1px solid #C9CDD2;border-radius:10px;margin:6px 0}}</style></head>
+<body><main><h1>🛟 Аварийная панель</h1>
+<p class="d">Работает отдельно от CRM. Пароль — CRM → Ещё → Сервер → «показать пароль» (или в «Паролях» iPhone).</p>
+{f'<div class="msg err">{e(err)}</div>' if err else ''}
+<form method="post" action="/rescue/login"><input type="hidden" name="username" value="nashdekor" autocomplete="username">
+<label class="d" for="pw">Пароль панели</label><input id="pw" type="password" name="pw" autocomplete="current-password" required autofocus>
+<button class="b1">Войти</button></form></main></body></html>"""
 
 
 class H(BaseHTTPRequestHandler):
@@ -335,9 +387,26 @@ class H(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def client_ip(self) -> str:
+        return (self.headers.get("X-Real-IP") or self.client_address[0] or "?").strip()[:64]
+
+    def authed(self) -> bool:
+        return session_ok(self.headers.get("Cookie", ""))
+
+    def redirect(self, cookie: str = "") -> None:
+        self.send_response(303)
+        self.send_header("Location", "/rescue/")
+        self.send_header("Cache-Control", "no-store")
+        if cookie:
+            self.send_header("Set-Cookie", cookie)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
     def do_GET(self) -> None:
         path = urlparse(self.path).path
         if path in ("/rescue", "/rescue/"):
+            if not self.authed():
+                return self.send(200, login_page())
             with LOCK:
                 self.send(200, page(status()))
         elif path == "/rescue/health":
@@ -346,7 +415,8 @@ class H(BaseHTTPRequestHandler):
             self.send(404, "нет такой страницы", "text/plain; charset=utf-8")
 
     def do_POST(self) -> None:
-        if urlparse(self.path).path != "/rescue/act":
+        path = urlparse(self.path).path
+        if path not in ("/rescue/act", "/rescue/login", "/rescue/logout"):
             return self.send(404, "нет", "text/plain; charset=utf-8")
         n = int(self.headers.get("Content-Length") or 0)
         if n > 4096:
@@ -354,6 +424,22 @@ class H(BaseHTTPRequestHandler):
         f = {k: v[0] for k, v in parse_qs(self.rfile.read(n).decode("utf-8", "replace")).items()}
         origin = self.headers.get("Origin") or self.headers.get("Referer") or ""
         host = self.headers.get("Host") or ""
+        if origin and origin != "null" and not origin.startswith(f"https://{host}"):
+            return self.send(400, page_redirect("Запрос не с этой страницы."))
+        if path == "/rescue/login":
+            ip = self.client_ip()
+            if too_many(ip):
+                return self.send(429, login_page("Много неверных паролей — подождите 15 минут."))
+            if not password_ok(f.get("pw", "")):
+                FAILS.setdefault(ip, []).append(time.time())
+                sh(["logger", "-t", "prostranstvo-rescue", f"неверный пароль панели с {ip}"], 5)
+                return self.send(403, login_page("Неверный пароль. Скопируйте его со страницы CRM «Сервер» → «показать пароль»."))
+            FAILS.pop(ip, None)
+            return self.redirect(f"{COOKIE}={make_session()}; Path=/rescue/; Max-Age={SESSION_DAYS * 86400}; HttpOnly; Secure; SameSite=Strict")
+        if path == "/rescue/logout":
+            return self.redirect(f"{COOKIE}=; Path=/rescue/; Max-Age=0; HttpOnly; Secure; SameSite=Strict")
+        if not self.authed():
+            return self.send(403, login_page("Войдите заново."))
         if f.get("t") != TOKEN or not origin.startswith(f"https://{host}"):
             return self.send(400, page_redirect("Страница устарела — откройте панель заново."), extra=None)
         act = f.get("act", "")
@@ -386,6 +472,9 @@ def selftest() -> int:
                                                              "site_auto": "да", "disk": "1G 5%", "services": "веб: active"}
     p = page(s)
     need = ["crm_restart", "crm_rollback", "auto_off", "site_list", "reboot", TOKEN]
+    if 'name="pw"' not in login_page() or not session_ok(f"{COOKIE}={make_session()}") or session_ok(f"{COOKIE}=1.bad"):
+        print("вход не работает")
+        return 1
     missing = [x for x in need if x not in p]
     if missing:
         print("нет в странице:", missing)
