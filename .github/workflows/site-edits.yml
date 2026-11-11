@@ -1,0 +1,64 @@
+name: Сайт — правки из CRM
+
+# «Редактор сайта» в CRM (Ещё → Редактор сайта): владелец меняет товары, фото, контакты.
+# Раз в 10 минут забираем новые правки с https://crm.nashdekor.ru/api/site/edits,
+# вносим в каталог сайта (ветка mebel, 0f7s1eez/index.html), уменьшаем фото, пересобираем страницы
+# (nashdekor-build/apply_edits.py → build.py) и кладём итог в 0f7s1eez/site-edits.json —
+# сервер забирает ветку mebel раз в минуту, CRM показывает у правки «на сайте» или «ошибка».
+# Паролей и токенов нет: правки — то, что и так появится на публичном сайте.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  push:
+    branches: [main]
+    paths: [".github/workflows/site-edits.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: site-edits
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Сайт (ветка mebel)
+        uses: actions/checkout@v4
+        with:
+          ref: mebel
+          fetch-depth: 1
+
+      - name: Есть ли новые правки
+        id: fetch
+        run: |
+          last=$(python3 -c "import json;print(json.load(open('0f7s1eez/site-edits.json')).get('last_id',0))" 2>/dev/null || echo 0)
+          if ! curl -fsS --max-time 40 "https://crm.nashdekor.ru/api/site/edits?after=$last" -o /tmp/edits.json; then
+            echo "CRM не ответила (или «Редактор сайта» ещё не установлен) — в следующий раз"; echo "n=0" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          n=$(python3 -c "import json;print(len(json.load(open('/tmp/edits.json')).get('edits',[])))" 2>/dev/null || echo 0)
+          echo "последняя обработанная: $last, новых правок: $n"; echo "n=$n" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-python@v5
+        if: steps.fetch.outputs.n != '0'
+        with:
+          python-version: "3.12"
+
+      - name: Внести правки и пересобрать сайт
+        if: steps.fetch.outputs.n != '0'
+        run: |
+          pip install -q pillow
+          python3 nashdekor-build/apply_edits.py /tmp/edits.json https://crm.nashdekor.ru | tee /tmp/log.txt
+          { echo "### Правки сайта из CRM"; echo '```'; cat /tmp/log.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          find . -name '__pycache__' -prune -exec rm -rf {} +
+          git config user.name "site-edits"; git config user.email "site-edits@users.noreply.github.com"
+          git add -A 0f7s1eez
+          git commit -q -m "Сайт: правки из CRM ($(python3 -c "import json;print(json.load(open('0f7s1eez/site-edits.json'))['last_id'])"))" || exit 0
+          for i in 1 2 3; do
+            git pull -q --rebase origin mebel && git push -q origin HEAD:mebel && break
+            sleep 5
+          done
