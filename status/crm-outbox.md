@@ -1,25 +1,18 @@
-# Исходящие с zapros@ — 2026-11-11 18:14 UTC
+# Исходящие с zapros@ — 2026-11-11 20:33 UTC
 
 ```
 ключ по адресу: 44 символов
 ключ совпадает с командой — да
-пересылка zapros@: zapros info
-в таблице Postfix: info@nashdekor.ru
-письмо: 6c876c7c-2c60-475b-b140-fdee47135ad7
+пересылка zapros@: grep: /etc/prostranstvo/pochta-aliases.txt: No such file or directory
+в таблице Postfix: sudo: postmap: command not found
+письмо: 20afbff8-bc4e-4d33-9ca4-945abb20296e
 warning: unable to access '/home/runner/.config/git/ignore': Permission denied
 warning: unable to access '/home/runner/.config/git/attributes': Permission denied
 warning: unable to access '/home/runner/.config/git/attributes': Permission denied
 warning: unable to access '/home/runner/.config/git/attributes': Permission denied
-отправка: 6c876c7c-2c60-475b-b140-fdee47135ad7: отправлено → info@nashdekor.ru ok 
-повтор (не должен отправить второй раз): ok 
-статус: {"error":"","sent_at":"2026-11-11T21:14:46+03:00","status":"sent"}
-в ящике info@: да/var/mail/vhosts/nashdekor.ru/info/Maildir/new/1794420886.M634053P23004.runnervm7aw5e,S=3062,W=3127
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nashdekor.ru;
-From: =?utf-8?b?0J3QsNGIINC00LXQutC+0YA=?= <zapros@nashdekor.ru>
-Reply-To: info@nashdekor.ru
-Subject: outbox-selftest
-вложение: 1
+отправка: WARNING crm: не удалось отправить письмо 20afbff8-bc4e-4d33-9ca4-945abb20296e: не принято, попытка 1 ok 
+повтор (не должен отправить второй раз): WARNING crm: не удалось отправить письмо 20afbff8-bc4e-4d33-9ca4-945abb20296e: не принято, попытка 2 ok 
+статус: {"error":"\u043f\u043e\u0447\u0442\u043e\u0432\u044b\u0439 \u0441\u0435\u0440\u0432\u0435\u0440 \u043d\u0435 \u043f\u0440\u0438\u043d\u044f\u043b, \u043f\u043e\u0432\u0442\u043e\u0440\u044e","sent_at":"","status":"retry"}
+в ящике info@: НЕТ
 --- письмо на zapros@ (ответ поставщика) попадает в info@:
-в info@: 2
-cron: 1
-```
+sudo: sendmail: command not found
