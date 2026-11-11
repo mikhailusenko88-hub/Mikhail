@@ -246,6 +246,7 @@ const App = {
   tab: 'series', openSeries: null,
   async init() {
     await Lib.load();
+    { const q = (Lib.data.settings || {}).quality || 'hq'; const ap = () => { try { if (window.MK3D && MK3D.setQuality) MK3D.setQuality(q); } catch (e) {} }; ap(); window.addEventListener('mk3d', ap, { once: true }); }   // качество из настроек и после перезапуска страницы (3D мог подняться раньше библиотеки и взять «как в кино»)
     setTimeout(() => Build.resumeCheck(), 400);
     document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { this.tab = b.dataset.t; this.openSeries = null; document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b)); this.render(); });
     this.render();
@@ -443,17 +444,26 @@ const SrvVoice = {
     pvSrc = pvCtx.createBufferSource(); pvSrc.buffer = buf; pvSrc.connect(pvCtx.destination); pvSrc.start(); return buf.duration; },
 };
 // ---------- озвучка + подготовка ----------
-async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уже в телефоне — нужны только длительности реплик
-  const lib = Lib.data, ep = e.script; const lines = MK.collectLines(ep, lib);
-  SrvVoice.yo = !!(MK.usesYo && MK.usesYo(lines)); // БАРС-озвучка: автор серии ставит «ё» — слова через «е» читаем как написано
-  const ac = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
-  const audio = {}, bufs = {}; let i = 0;
-  if (window.MK3D && !MK3D.THREE) await new Promise(res => { const t = setTimeout(res, 10000); window.addEventListener('mk3d', () => { clearTimeout(t); res(); }, { once: true }); }); // после перезапуска страницы 3D поднимается чуть позже — ждём, иначе герои были бы старые
+// героям «как в кино» (шерсть, запечённый свет) — память нужна только под картинку: строим их ПОСЛЕ озвучки и сведения звука,
+// иначе голос (отдельный процесс), все реплики, дорожка и герои сидели в памяти одновременно — на длинных сериях телефон закрывал страницу
+async function prepHeroes(lib, onStep) {
+  if (window.MK3D && !MK3D.THREE) await new Promise(res => { const t = setTimeout(res, 10000); window.addEventListener('mk3d', () => { clearTimeout(t); res(); }, { once: true }); });
   if (window.MKBarsik && window.MK3D && MK3D.hq) { try { await MKBarsik.load(); } catch (err) {} }
   if (window.BARSHeroes && window.MK3D && MK3D.hq && MK3D.THREE) { try { const want = BARSHeroes.wantFor(lib); /* БАРС: шерсть и свет Пика и Рона — один раз */
     if (want.length) { BARSHeroes.onProgress = (n, k) => onStep && onStep('Герои «как в кино»', k, n === 'pik' ? 'Пик: свет' : 'Рон: свет'); onStep && onStep('Герои «как в кино»', 0, 'шерсть растёт'); const list = [...new Set(want)]; let ok = await BARSHeroes.prepare(MK3D.THREE, MK3D.renderer(), list);
       if (!ok) { await new Promise(r => setTimeout(r, 1500)); ok = await BARSHeroes.prepare(MK3D.THREE, MK3D.renderer(), list); } } } catch (err) { console.log('БАРС:', err && err.message); } } // не вышло (память) — ещё раз
-  const pre = {}; { const grp = {}; for (const ln of lines) if (ln.srv && !ln.synth) (grp[ln.srv.model || ''] = grp[ln.srv.model || ''] || []).push(ln);
+}
+// длительности и «громкость по времени» (для рта) всех реплик — коротко, чтобы после перезапуска страницы не озвучивать серию заново
+function packAud(audio) { const o = {}; for (const k in audio) { const a = audio[k]; if (!a) continue; o[k] = { d: Math.round(a.dur * 1000), e: a.env ? Array.from(a.env, v => Math.min(999, Math.round(v * 1000))) : null }; } return o; }
+function unpackAud(o) { const r = {}; for (const k in o || {}) { const a = o[k]; r[k] = { dur: a.d / 1000, env: a.e ? Float32Array.from(a.e, v => v / 1000) : null }; } return r; }
+async function prepare(e, onStep, isCancelled, noMix, opt) { // noMix: звук уже в телефоне — нужны только длительности реплик
+  opt = opt || {};   // opt.noHeroes — героев построит сборка сама, после звука; opt.aud — длительности реплик уже известны (перезапуск страницы после звука)
+  const lib = Lib.data, ep = e.script; const lines = MK.collectLines(ep, lib);
+  SrvVoice.yo = !!(MK.usesYo && MK.usesYo(lines)); // БАРС-озвучка: автор серии ставит «ё» — слова через «е» читаем как написано
+  const ac = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
+  const audio = noMix && opt.aud ? Object.assign({}, opt.aud) : {}, bufs = {}; let i = 0;   // известные длительности — без озвучки
+  if (window.MK3D && !MK3D.THREE) await new Promise(res => { const t = setTimeout(res, 10000); window.addEventListener('mk3d', () => { clearTimeout(t); res(); }, { once: true }); }); // после перезапуска страницы 3D поднимается чуть позже — ждём, иначе герои были бы старые
+  const pre = {}; { const grp = {}; for (const ln of lines) if (ln.srv && !ln.synth && !audio[ln.key]) (grp[ln.srv.model || ''] = grp[ln.srv.model || ''] || []).push(ln);
     const order = Object.keys(grp).sort(); let j = 0, tot = order.reduce((a, k) => a + grp[k].length, 0);
     for (const m of order) for (const ln of grp[m]) { if (isCancelled && isCancelled()) throw new Error('cancel'); if (ln.key in pre) continue;
       onStep && onStep('Озвучка реплик', j++ / Math.max(1, tot), `${j} из ${tot}: ${ln.text.slice(0, 40)}`); pre[ln.key] = await SrvVoice.get(ln); } }
@@ -476,11 +486,12 @@ async function prepare(e, onStep, isCancelled, noMix) { // noMix: звук уж�
     if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
   }
   if (window.MKVoice) { try { await MKVoice.unload(); } catch (err) {} } // память — под картинку (рамка с голосом убрана целиком)
+  if (!opt.noHeroes) await prepHeroes(lib, onStep);   // герои — после озвучки: голос уже выгружен
   const tl = MK.compile(ep, lib, audio); tl.style = (window.MK3D && MK3D.ready) ? '3d' : '2d';
-  if (noMix) return { tl, mix: null };
+  if (noMix) return { tl, mix: null, audio };
   onStep && onStep('Музыка и звуки', 1, 'Свожу звуковую дорожку…');
   const mix = await MK.mixAudio(tl, bufs);
-  return { tl, mix };
+  return { tl, mix, audio };
 }
 
 // ---------- что сейчас делается: если iPhone выгрузит страницу из памяти, после перезапуска покажем, на чём оборвалось ----------
@@ -544,7 +555,7 @@ const Build = {
     if (this.busy) { alert('Сейчас собирается серия — обновить звук можно после сборки.'); return; }
     this.busy = true; Prog.show(`Серия ${e.episode}: обновляю звук`); if (Lib.data.settings.buildJob) delete Lib.data.settings.buildJob.audio; // файл звука в телефоне сейчас перезапишется
     try {
-      let { mix } = await prepare(e, (a, pr, t) => Prog.set(a, pr * .85, t));
+      let { mix } = await prepare(e, (a, pr, t) => Prog.set(a, pr * .85, t), null, false, { noHeroes: true });   // только звук — героям «как в кино» тут делать нечего
       if (!audible(mix)) throw new Error('звук получился пустым');
       let wav = MK.wav(mix); mix = null; const CH = 1 << 20;
       for (let i = 0; i < wav.length; i += CH) { Prog.set('Передаю звук', .85 + .1 * i / wav.length, ''); await Native.call('audioChunk', { first: i === 0, d: b64(wav.subarray(i, i + CH)) }); }
@@ -601,7 +612,7 @@ const Build = {
     const id = { series: p.series, episode: e.episode, hash: e.hash || MK.hash32(MK.canon(e.script)), w, h, fps, q: s.quality || 'hq', style: (window.MK3D && MK3D.ready) ? '3d' : '2d' };
     const old = s.buildJob, resume = !!old && Object.keys(id).every(k => old[k] === id[k]);
     const audioOk = resume && old.audio === 1; // звук этой серии уже лежит в телефоне (страницу перезапускали)
-    s.buildJob = Object.assign(id, audioOk ? { audio: 1 } : {}); await Lib.save();
+    s.buildJob = Object.assign(id, audioOk ? Object.assign({ audio: 1 }, old.aud ? { aud: old.aud } : {}) : {}); await Lib.save();
     const sleep = ms => new Promise(r => setTimeout(r, ms)), inflight = [];
     // кадры идут «конвейером» (2 в пути): пока телефон кодирует один кадр, следующий уже рисуется.
     // Ответ телефона: 1…4 — записан + нагрев; отрицательный — «продолжай с кадра N» (после паузы); 0 — не записан.
@@ -612,7 +623,9 @@ const Build = {
       bad = 0; if (typeof r === 'number') heat = r; };
     const drain = async () => { while (inflight.length) await take(); };
     try {
-      let { tl, mix } = await prepare(e, (a, pr, t) => this.set(title, pr * .08, a + (t ? ' · ' + t : '')), () => this.stop, audioOk);
+      // звук ещё не готов — озвучка и сведение БЕЗ героев «как в кино» (они строятся уже после звука, на чистой странице);
+      // звук готов (страницу перезапустили) — длительности реплик берём сохранённые, серию заново не озвучиваем
+      let { tl, mix, audio } = await prepare(e, (a, pr, t) => this.set(title, pr * .08, a + (t ? ' · ' + t : '')), () => this.stop, audioOk, audioOk ? { aud: old && old.aud ? unpackAud(old.aud) : null } : { noHeroes: true });
       const name = `${p.series} - ${String(e.episode).padStart(2, '0')}. ${e.title || ''}`.replace(/[\/\\:?*"<>|]/g, '').trim();
       if (!audioOk) {
         // звук — отдельным файлом: телефон приклеит его к видео в самом конце
@@ -621,9 +634,11 @@ const Build = {
         for (let i = 0; i < wav.length; i += CH) { if (this.stop) throw new Error('cancel'); await Native.call('audioChunk', { first: i === 0, d: b64(wav.subarray(i, i + CH)) }); }
         // звук ушёл в телефон — отпускаем его из памяти страницы, чтобы на тяжёлых сценах её хватало кадрам
         wav = null; if (MK.freeAudio) MK.freeAudio();
-        if (tl.dur > 300) { // длинная серия: звук занимал сотни МБ — рисуем кадры на свежей странице, иначе iPhone закрывает её на первом кадре
-          s.buildJob.audio = 1; s.autoResume = 1; await Lib.save(); this.set(title, .08, 'Звук готов — освобождаю память…');
+        s.buildJob.audio = 1; s.buildJob.aud = packAud(audio); audio = null; await Lib.save();   // звук в телефоне, длительности реплик запомнены — после обрыва не озвучиваем заново
+        if (tl.style === '3d' && tl.dur > 40) { // звук, голос и сведение оставляли в странице сотни МБ — кадры рисуем на свежей странице (перезапуск теперь быстрый: озвучивать заново не нужно)
+          s.autoResume = 1; await Lib.save(); this.set(title, .08, 'Звук готов — освобождаю память…');
           location.reload(); await sleep(60000); throw new Error('страница не перезапустилась'); }
+        await prepHeroes(Lib.data, (a, pr, t) => this.set(title, .08, a + (t ? ' · ' + t : '')));   // короткая серия — без перезапуска: герои строятся уже после звука
         await sleep(1200);
       } else await sleep(300);
       const safe = !!(s.buildCrash && s.buildCrash.safe && s.buildCrash.ep === e.episode); if (window.MK3D && MK3D.lowMem) MK3D.lowMem(safe);
