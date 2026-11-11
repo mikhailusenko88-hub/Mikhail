@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}Документы{% endblock %}
+{% block main %}
+{{ more_nav('docs') }}
+<h1>Документы</h1>
+<p class="sub">Важные документы ИП и магазина: регистрация, договоры, ТУ, сертификаты, протоколы. Хранятся на сервере магазина, видят только админы, каждый день попадают в резервную копию.</p>
+<div class="chips">
+  <a class="chip" href="{{ url_for('docs_view', q=q) }}" {% if not f %}aria-current="true"{% endif %}>Все</a>
+  {% for name, n in folders %}<a class="chip" href="{{ url_for('docs_view', f=name, q=q) }}" {% if f==name %}aria-current="true"{% endif %}>{{ name }}{% if n %} · {{ n }}{% endif %}</a>{% endfor %}
+</div>
+<form class="addline" method="get" action="{{ url_for('docs_view') }}" role="search">
+  <input type="hidden" name="f" value="{{ f }}">
+  <input type="search" name="q" value="{{ q }}" placeholder="Название, файл или заметка" aria-label="Поиск по документам">
+</form>
+<div class="panel list">{% set ns = namespace(cur='') %}{% for d in rows %}
+{% if not f and d['folder'] != ns.cur %}{% set ns.cur = d['folder'] %}<div class="row docfolder"><span class="t">{{ d['folder'] }}</span></div>{% endif %}
+<div class="row">
+  <a class="grow docopen" href="{{ url_for('docs_file', did=d['id']) }}"><span class="t">{{ d['title'] }}</span>
+  <span class="d" style="display:block">{{ d['filename'] }} · {{ size_h(d['size']) }} · добавлен {{ fmt_dt(d['created_at']) }}{% if d['created_by'] %} ({{ d['created_by'] }}){% endif %}{% if d['note'] %} · {{ d['note'] }}{% endif %}</span></a>
+  {% set st = state(d['until']) %}{% if d['until'] %}<span class="pill {{ 'crit' if st == 'over' else ('warn' if st == 'soon' else 'good') }}">{{ 'истёк' if st == 'over' else 'до' }} {{ fmt_date(d['until']) }}</span>{% endif %}
+  <a class="btn-s sm" href="{{ url_for('docs_edit', did=d['id']) }}" aria-label="Изменить {{ d['title'] }}">Изменить</a>
+</div>{% else %}<div class="row"><span class="d">{% if q %}Ничего не нашлось.{% else %}Документов пока нет — добавьте ниже.{% endif %}</span></div>{% endfor %}</div>
+
+<h2>Добавить</h2>
+<form class="panel pad grid2" method="post" enctype="multipart/form-data" action="{{ url_for('docs_upload') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f span2">Файлы (PDF, фото, Word, Excel — до {{ max_mb }} МБ каждый)<input type="file" name="file" multiple required></label>
+  <label class="f">Раздел<select name="folder">{% for name, n in folders %}<option {% if (f or 'ИП') == name %}selected{% endif %}>{{ name }}</option>{% endfor %}</select></label>
+  <label class="f">или новый раздел<input name="new_folder" maxlength="60" placeholder="например, Поставщик ARTDEC"></label>
+  <label class="f">Название (если файл один)<input name="title" maxlength="200" placeholder="например, Свидетельство ИНН"></label>
+  <label class="f">Действует до (если есть срок)<input type="date" name="until"></label>
+  <label class="f span2">Заметка<input name="note" maxlength="1000" placeholder="откуда, номер, кем выдан"></label>
+  <div class="span2"><button class="btn-p">Загрузить</button></div>
+</form>
+{% endblock %}

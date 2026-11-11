@@ -38,6 +38,7 @@ EMAIL_RE = re.compile(r"^[A-Za-z0-9._%+'-]{1,64}@[A-Za-z0-9-]{1,63}(\.[A-Za-z0-9
 MAX_RCPT = 5
 MAX_BODY = 100_000
 MAX_ATTACH = 7 * 1024 * 1024
+MAX_DOCS = 30 * 1024 * 1024                # документы через канал (docs/*.json) — всего в одном конверте
 DEFAULT_DAILY = 30
 REPLY_MAX = 40                             # и отдаём не больше стольких писем
 REPLY_ATT_TOTAL = 20 * 1024 * 1024         # вложений всего (больше — только названия)
@@ -129,6 +130,7 @@ class Outbox:
         self.notify = notify
         self.repo_url = repo_url or os.environ.get("OUTBOX_REPO", REPO_URL)
         self.workdir = Path(workdir or os.environ.get("OUTBOX_DIR", "/var/lib/prostranstvo/outbox-git"))
+        self.save_doc: Callable[..., tuple[str, bool]] | None = None   # ставит app.py — раздел «Документы»
         c = self.s.c()
         c.execute(SCHEMA)
 
@@ -365,6 +367,42 @@ class Outbox:
         self._record(mid, status="retry", attempts=attempts, error="почтовый сервер не принял, повторю")
         return f"{mid}: не принято, попытка {attempts}"
 
+    def _save_docs(self, sk: X25519PrivateKey, mid: str, f: Path) -> str:
+        """Конверт из docs/ — не письмо, а файлы в раздел «Документы» (кладёт Claude)."""
+        try:
+            env = json.loads(f.read_text(encoding="utf-8"))
+            if env.get("v") != 1 or env.get("id") != mid:
+                raise ValueError("не тот формат")
+            p = unseal(sk, env)
+        except Exception:  # noqa: BLE001
+            self._record(mid, status="error", to_addr="Документы", error="не расшифровалось (чужой ключ или повреждённый файл)")
+            return f"{mid}: документ не расшифровался"
+        folder = re.sub(r"\s+", " ", str(p.get("folder") or "")).strip()[:60] or "Прочее"
+        atts = p.get("attachments") or []
+        if p.get("id") != mid or p.get("kind") != "doc" or not atts or not self.save_doc:
+            self._record(mid, status="error", to_addr="Документы: " + folder, error="нет файла или не тот формат")
+            return f"{mid}: документ — нет файла"
+        names, total, err = [], 0, ""
+        for a in atts[:10]:
+            name = str(a.get("name") or "документ")[:150]
+            try:
+                data = _ub64(str(a.get("b64") or ""))
+                total += len(data)
+                if total > MAX_DOCS:
+                    raise ValueError("больше 30 МБ")
+                self.save_doc(data, name, folder=folder, title=str(p.get("title") or "") if len(atts) == 1 else "",
+                              until=str(p.get("until") or ""), note=str(p.get("note") or ""), by="Claude", source="Claude",
+                              mime=str(a.get("mime") or ""))
+                names.append(name)
+            except Exception as e:  # noqa: BLE001
+                err = f"{name}: {e}"[:200]
+        title = str(p.get("title") or "") or ", ".join(names)
+        self._record(mid, status="saved" if names else "error", to_addr="Документы: " + folder, subject=title[:200],
+                     att_names=", ".join(names), body=str(p.get("note") or "")[:2000], error=err)
+        if names:
+            self.notify("Claude добавил в «Документы»", f"{folder}: {', '.join(names)}"[:180], "/docs")
+        return f"{mid}: в документы «{folder}» — {len(names)} файл(ов)" + (f"; ошибка {err}" if err else "")
+
     def run(self) -> list[str]:
         """Одна проходка cron: новые письма из ветки outbox и повторы неотправленных."""
         send_on = self.enabled()
@@ -387,6 +425,10 @@ class Outbox:
         self._check_reader()
         if not send_on:
             return out + ["отправка выключена в CRM"]
+        ddir = self.workdir / "docs"                                          # документы от Claude → «Документы»
+        for f in sorted(ddir.glob("*.json")) if ddir.is_dir() else []:
+            if ID_RE.match(f.stem) and not self._row(f.stem):
+                out.append(self._save_docs(sk, f.stem, f))
         todo = []
         for f in files:
             mid = f.stem

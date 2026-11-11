@@ -1832,6 +1832,105 @@ class TestPochta(TestOutbox):
         self.assertTrue(x["off"]); self.assertEqual(x["items"], [])
 
 
+class TestDocs(TestPochta):
+    """Раздел «Документы»: загрузка, разделы, срок действия, из письма, через канал Claude."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        from pathlib import Path
+        self.docs = self.app.extensions["docs"]
+        self.docs.dir = Path(self.tmp.name) / "docs"
+
+    def upload(self, files, **form):
+        import io
+        data = {"csrf": self.csrf(), **form}
+        data["file"] = [(io.BytesIO(b), n) for n, b in files]
+        return self.c.post("/docs/upload", data=data, content_type="multipart/form-data")
+
+    def test_upload_folders_edit_delete(self) -> None:
+        self.assertIn("Документов пока нет", self.c.get("/docs").get_data(as_text=True))
+        r = self.upload([("ТУ ARTDEC.pdf", b"%PDF-1.4 tu")], folder="Сертификаты и ТУ", title="ТУ СТ ТОО 200540013338-001-2024",
+                        until="2030-01-03", note="разрешили использовать")
+        self.assertEqual(r.status_code, 302)
+        self.upload([("ИНН.jpg", b"\xff\xd8jpg"), ("УСН.pdf", b"%PDF usn")], folder="ИП")
+        self.upload([("ТУ ARTDEC.pdf", b"%PDF-1.4 tu")], folder="Сертификаты и ТУ")                  # тот же файл — не дублируем
+        self.upload([("договор.docx", b"PK\x03\x04docx")], new_folder="Поставщик ARTDEC")           # новый раздел
+        page = self.c.get("/docs").get_data(as_text=True)
+        for w in ("ТУ СТ ТОО 200540013338-001-2024", "ИНН", "УСН", "договор", "Поставщик ARTDEC", "до 03.01.2030"):
+            self.assertIn(w, page)
+        self.assertEqual(len(self.docs.list()), 4)
+        self.assertEqual(dict(self.docs.folders())["ИП"], 2)
+        self.assertNotIn("УСН", self.c.get("/docs?f=" + "Сертификаты и ТУ").get_data(as_text=True))
+        self.assertIn("ТУ СТ", self.c.get("/docs?q=разрешили").get_data(as_text=True))
+        tu = [d for d in self.docs.list() if d["filename"] == "ТУ ARTDEC.pdf"][0]
+        r = self.c.get(f"/docs/{tu['id']}")
+        self.assertEqual(r.data, b"%PDF-1.4 tu"); self.assertEqual(r.headers["Content-Security-Policy"], "sandbox")
+        dx = [d for d in self.docs.list() if d["filename"] == "договор.docx"][0]
+        r = self.c.get(f"/docs/{dx['id']}")
+        self.assertIn("attachment", r.headers["Content-Disposition"]); self.assertEqual(r.mimetype, "application/octet-stream")
+        self.assertTrue(os.path.isfile(os.path.join(self.tmp.name, "docs", tu["id"])))
+        # изменить: раздел, название, срок
+        self.post(f"/docs/{dx['id']}/edit", {"title": "Договор поставки № 1", "folder": "Договоры", "until": "", "note": ""})
+        self.assertEqual(self.docs.get(dx["id"])["folder"], "Договоры"); self.assertEqual(self.docs.get(dx["id"])["title"], "Договор поставки № 1")
+        # удалить — только с галочкой
+        self.post(f"/docs/{dx['id']}/edit", {"delete": "1"})
+        self.assertIsNotNone(self.docs.get(dx["id"]))
+        self.post(f"/docs/{dx['id']}/edit", {"delete": "1", "confirm": "1"})
+        self.assertIsNone(self.docs.get(dx["id"])); self.assertFalse(os.path.exists(os.path.join(self.tmp.name, "docs", dx["id"])))
+        self.assertEqual(self.c.get("/docs/../crm.db").status_code, 404)
+        self.assertEqual(self.c.get("/docs/" + "0" * 32).status_code, 404)
+        c2 = self.app.test_client(); self.login("mikhail", "Secret-pass-2", client=c2)              # не админ — не видит
+        self.assertEqual(c2.get("/docs").status_code, 403); self.assertEqual(c2.get(f"/docs/{tu['id']}").status_code, 403)
+        # срок действия — в утренней сводке
+        self.upload([("ISO.pdf", b"%PDF iso")], folder="Сертификаты и ТУ", title="Сертификат ISO 9001", until="2027-02-23")
+        self.assertIn("Сертификат ISO 9001 (до 23.02.2027)", self.app.extensions["digest"]("2027-02-01"))
+        self.assertIn("истёк", self.app.extensions["digest"]("2027-03-01"))
+        from docs import Docs
+        self.assertEqual([Docs.state("2027-02-23", d) for d in ("2026-11-11", "2027-01-01", "2027-03-01")], ["", "soon", "over"])
+
+    def test_big_file_and_mail_attachment(self) -> None:
+        import docs as docs_mod
+        old, docs_mod.MAX_FILE = docs_mod.MAX_FILE, 10
+        try:
+            with self.assertRaises(ValueError):
+                self.docs.add(b"x" * 11, "big.pdf")
+        finally:
+            docs_mod.MAX_FILE = old
+        mid, _ = self.deliver(self.msg("Путрова <putrova@lab.example>", "КП на испытания", atts=[("КП.pdf", b"%PDF kp", "application/pdf")]))
+        self.export()
+        self.assertIn("В документы", self.c.get(f"/pochta/{mid}").get_data(as_text=True))
+        r = self.post(f"/pochta/{mid}/a/1/save", {})
+        self.assertIn("/docs/", r.headers["Location"]); self.assertIn("/edit", r.headers["Location"])
+        d = self.docs.list("Из почты")[0]
+        self.assertEqual(d["filename"], "КП.pdf"); self.assertIn("putrova@lab.example", d["note"])
+        self.post(f"/pochta/{mid}/a/1/save", {})
+        self.assertEqual(len(self.docs.list()), 1)                                                  # второй раз не дублирует
+
+    def test_docs_from_claude_channel(self) -> None:
+        import json as _j
+        import uuid
+        import outbox
+        key = self.c.get("/api/outbox/key").get_data(as_text=True).strip()
+        mid = str(uuid.uuid4())
+        p = {"id": mid, "kind": "doc", "folder": "Сертификаты и ТУ", "title": "Сертификат ISO 9001 ARTDEC", "until": "2027-02-23",
+             "note": "№ KZ.Q.02.0467.C23.04998", "attachments": [{"name": "ISO.pdf", "mime": "application/pdf", "b64": "JVBERi0="}]}
+        env = outbox.seal(key, p)
+        os.makedirs(os.path.join(self.work, "docs"), exist_ok=True)
+        with open(os.path.join(self.work, "docs", mid + ".json"), "w", encoding="utf-8") as f:
+            _j.dump(env, f)
+        self.git("-C", self.work, "add", "-A"); self.git("-C", self.work, "commit", "-q", "-m", "d"); self.git("-C", self.work, "push", "-q", "origin", "outbox")
+        out = self.ob.run()
+        self.assertTrue(any("в документы" in x for x in out), out)
+        self.assertEqual(self.sent, [])                                                              # не письмо
+        d = self.docs.list("Сертификаты и ТУ")[0]
+        self.assertEqual((d["title"], d["until"], d["created_by"]), ("Сертификат ISO 9001 ARTDEC", "2027-02-23", "Claude"))
+        self.assertEqual(self.ob.status(mid)["status"], "saved")
+        self.assertTrue(any("Документы" in x[0] for x in self.pushes))
+        self.ob.run()
+        self.assertEqual(len(self.docs.list()), 1)                                                  # один раз
+        self.assertIn("в документах", self.c.get("/outbox").get_data(as_text=True))
+
+
 class TestInvoices(Base):
     """Счёт компании: реквизиты продавца, PDF с QR, письмо, автопривязка оплаты по номеру счёта."""
 

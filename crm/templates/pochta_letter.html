@@ -12,7 +12,7 @@
   <p class="d" style="margin:0">{{ fmt_ts(m['ts']) }} · ящик {{ m['box'] }}@{% if m['spam'] %} · <span class="pill crit">в спаме</span>{% endif %}{% if shared %} · <span class="pill warn">видит Claude</span>{% endif %}</p>
 </div>
 {% if m['atts'] %}<h2>Вложения</h2>
-<div class="panel list">{% for a in m['atts'] %}{% if a['saved'] %}<a class="row btn" href="{{ url_for('pochta_att', mid=m['id'], n=a['n']) }}"><span class="grow t">{{ a['name'] }}</span><span class="d">{{ size_h(a['size']) }}</span></a>{% else %}<div class="row"><span class="grow">{{ a['name'] }}</span><span class="d">{{ size_h(a['size']) }} — слишком большое, только в почтовой программе</span></div>{% endif %}{% endfor %}</div>{% endif %}
+<div class="panel list">{% for a in m['atts'] %}{% if a['saved'] %}<div class="row"><a class="grow t" href="{{ url_for('pochta_att', mid=m['id'], n=a['n']) }}">{{ a['name'] }}</a><span class="d">{{ size_h(a['size']) }}</span><form method="post" action="{{ url_for('pochta_att_save', mid=m['id'], n=a['n']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-s sm">В документы</button></form></div>{% else %}<div class="row"><span class="grow">{{ a['name'] }}</span><span class="d">{{ size_h(a['size']) }} — слишком большое, только в почтовой программе</span></div>{% endif %}{% endfor %}</div>{% endif %}
 <h2>Текст</h2>
 <div class="panel pad"><div class="mailtext">{{ m['text'] or '(текста нет — смотрите вложения)' }}</div>{% if m['cut'] %}<p class="d">Письмо длинное — показано начало.</p>{% endif %}{% if m['html_only'] %}<p class="d">Письмо было оформлено как веб-страница — показан только текст.</p>{% endif %}</div>
 {% endblock %}

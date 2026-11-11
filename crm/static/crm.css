@@ -254,3 +254,7 @@ details.mailrow>summary::-webkit-details-marker{display:none}
 details.mailrow[open]>summary{background:var(--sunk)}
 .mailtext{display:block;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;font-size:15px;line-height:1.55;margin:0;padding:12px 14px 16px;max-width:100%}
 .panel.pad>.mailtext{padding:0}
+/* документы */
+.docfolder{background:var(--sunk);padding:7px 14px}
+.docfolder .t{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+a.docopen{text-decoration:none;color:inherit;min-width:0}

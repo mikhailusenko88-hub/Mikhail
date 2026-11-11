@@ -35,6 +35,7 @@ from buh import Buh
 from buh_web import register as register_buh
 from outbox import Outbox
 from pochta import INLINE_OK, Pochta, fmt_ts, size_h
+from docs import MAX_FILE as DOC_MAX, Docs, clean_folder, fmt_date
 from invoice import Invoices
 from push import WebPush
 from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, TochkaError, http_request, jwt_claims,
@@ -86,6 +87,8 @@ class CrmRequest(Request):
     def max_content_length(self) -> int | None:  # type: ignore[override]
         if self.path.startswith("/purchases/") and self.path.endswith("/xlsx"):
             return 1024 * 1024 + 64 * 1024
+        if self.path == "/docs/upload":                  # «Документы»: файлы до 25 МБ (nginx пропускает 30 МБ только сюда)
+            return 30 * 1024 * 1024
         return current_app.config.get("MAX_CONTENT_LENGTH") if current_app else None
 
     @max_content_length.setter
@@ -357,7 +360,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         s = store.digest(day or today())
         soon = buh.upcoming(7, day)
         exp = buh.expiring(day or today())      # срок годности партий — только для своих, в пуше команде
-        if not (s["new"] or s["today"] or s["overdue"] or s["paid"] or soon or exp):
+        dexp = docs.expiring(day or today(), 30)  # документы, у которых кончается срок действия (сертификаты и т. п.)
+        if not (s["new"] or s["today"] or s["overdue"] or s["paid"] or soon or exp or dexp):
             return ""
         parts = []
         if s["overdue"]: parts.append(f"просрочено задач: {s['overdue']}")
@@ -372,10 +376,15 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             x = exp[0]
             when = f"истёк {fmt_day(x['until'])}" if x["state"] == "over" else f"до {fmt_day(x['until'])}"
             parts.append(f"срок годности подходит у партий: {len(exp)} — {x['article']}, {x['qty_left']} шт, {when}")
+        if dexp:
+            x = dexp[0]
+            when = f"истёк {fmt_date(x['until'])}" if x["until"] < (day or today()) else f"до {fmt_date(x['until'])}"
+            parts.append(f"срок действия документов подходит: {len(dexp)} — {x['title']} ({when})")
         text = "; ".join(parts)
         text = text[:1].upper() + text[1:] + "."
         url = "/board?hot=1" if s["overdue"] else ("/taxes" if soon and not (s["new"] or s["today"] or s["paid"]) else
-                                                   "/purchases#lots" if exp and not (s["new"] or s["today"] or s["paid"]) else "/")
+                                                   "/purchases#lots" if exp and not (s["new"] or s["today"] or s["paid"]) else
+                                                   "/docs" if dexp and not (s["new"] or s["today"] or s["paid"]) else "/")
         wp.notify("Наш декор — на сегодня", text, url, tag="digest")
         return text
     app.extensions["digest"] = morning_digest
@@ -555,6 +564,103 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if inline:
             resp.headers["Content-Security-Policy"] = "sandbox"
         return resp
+
+    # ------------------------------------------------------------ документы ИП и магазина (файлы на сервере, видят админы)
+    docs = Docs(store, cfg.get("DOCS_DIR") or os.environ.get("DOCS_DIR") or
+                os.path.join(os.path.dirname(os.path.abspath(conf["CRM_DB"])), "docs"))
+    app.extensions["docs"] = docs
+    ob.save_doc = docs.add                       # Claude кладёт документы через ветку outbox (docs/*.json, шифр)
+
+    def folder_from_form() -> str:
+        return clean_folder((request.form.get("new_folder") or "").strip() or request.form.get("folder", ""))
+
+    @app.route("/docs")
+    @admin_required
+    def docs_view() -> Any:
+        f = request.args.get("f", "")[:60]
+        q = request.args.get("q", "")[:100]
+        day = today()
+        return render_template("docs.html", rows=docs.list(f, q), f=f, q=q, folders=docs.folders(), day=day,
+                               state=lambda u: Docs.state(u, day), size_h=size_h, max_mb=DOC_MAX // 1024 // 1024,
+                               fmt_date=fmt_date)
+
+    @app.post("/docs/upload")
+    @admin_required
+    def docs_upload() -> Any:
+        files = [x for x in request.files.getlist("file") if x and x.filename]
+        folder = folder_from_form()
+        if not files:
+            flash("Выберите файл.", "err")
+            return redirect(url_for("docs_view", f=folder))
+        added = same = 0
+        for x in files:
+            name = re.split(r"[\\/]", x.filename or "")[-1]
+            try:
+                _, new = docs.add(x.read(DOC_MAX + 1), name, folder, title=request.form.get("title", "") if len(files) == 1 else "",
+                                  until=request.form.get("until", ""), note=request.form.get("note", ""), by=who(),
+                                  source="загрузка", mime=x.mimetype or "")
+            except ValueError as e:
+                flash(f"{name}: {e}", "err")
+                continue
+            added += new
+            same += not new
+        if added:
+            flash(f"Сохранено в «{folder}»: {added}." + (f" Уже были: {same}." if same else ""), "ok")
+        elif same:
+            flash("Такой файл в этом разделе уже есть.", "ok")
+        return redirect(url_for("docs_view", f=folder))
+
+    @app.route("/docs/<did>")
+    @admin_required
+    def docs_file(did: str) -> Any:
+        r, path = docs.get(did), docs.path(did)
+        if not r or not path:
+            abort(404, "Документа нет.")
+        inline = r["mime"] in INLINE_OK
+        resp = send_file(str(path), mimetype=r["mime"] if inline else "application/octet-stream",
+                         as_attachment=not inline, download_name=r["filename"], max_age=0)
+        resp.headers["X-Content-Type-Options"] = "nosniff"
+        resp.headers["Cache-Control"] = "private, no-store"
+        if inline:
+            resp.headers["Content-Security-Policy"] = "sandbox"
+        return resp
+
+    @app.route("/docs/<did>/edit", methods=["GET", "POST"])
+    @admin_required
+    def docs_edit(did: str) -> Any:
+        r = docs.get(did)
+        if not r:
+            abort(404, "Документа нет.")
+        if request.method == "POST":
+            if request.form.get("delete") == "1":
+                if request.form.get("confirm") != "1":
+                    flash("Чтобы удалить, отметьте «Да, удалить».", "err")
+                    return redirect(url_for("docs_edit", did=did))
+                docs.delete(did)
+                flash(f"Документ «{r['title']}» удалён.", "ok")
+                return redirect(url_for("docs_view", f=r["folder"]))
+            folder = folder_from_form()
+            docs.update(did, folder, request.form.get("title", ""), request.form.get("until", ""), request.form.get("note", ""))
+            flash("Сохранено.", "ok")
+            return redirect(url_for("docs_view", f=folder))
+        return render_template("doc_edit.html", d=r, folders=docs.folders(), size_h=size_h)
+
+    @app.post("/pochta/<mid>/a/<int:n>/save")
+    @admin_required
+    def pochta_att_save(mid: str, n: int) -> Any:
+        m, data = pochta.get(mid), pochta.read_bytes(mid, n)
+        att = pochta.attachment(mid, n)
+        if not m or data is None or not att:
+            abort(404, "Вложения нет.")
+        try:
+            did, new = docs.add(data, att[1].get("name", ""), "Из почты", by=who(), source="письмо", mime=att[1].get("mime", ""),
+                                note=f"Вложение письма от {m.get('name') or m.get('from')} <{m.get('from')}>, "
+                                     f"{fmt_ts(m.get('ts'))}: {m.get('subject') or '(без темы)'}")
+        except ValueError as e:
+            flash(str(e), "err")
+            return redirect(url_for("pochta_letter", mid=mid))
+        flash("Сохранено в «Документы». Выберите раздел и название." if new else "Этот файл уже есть в документах.", "ok")
+        return redirect(url_for("docs_edit", did=did))
 
     def calc_text(d: Any, lines: list[Any], manager: str = "") -> str:
         """Расчёт для клиента: позиции, суммы, итог, что дальше, контакты — в письмо или в мессенджер."""

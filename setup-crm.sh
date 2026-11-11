@@ -384,6 +384,19 @@ cmd_backup() {
     sqlite3 "$BOT_DB" ".backup '$d/bot.db'" 2>/dev/null || cp -a "$BOT_DB" "$d/bot.db" || ok=no
   fi
   for f in /etc/prostranstvo/*.env /etc/prostranstvo/*.conf; do [[ -f $f ]] && cp -a "$f" "$d/"; done
+  # раздел «Документы»: файлы не меняются (имя — id), поэтому из прошлой копии — жёсткие ссылки, место не тратится
+  local src=/var/lib/prostranstvo/docs prev="" b
+  if [[ -d $src ]]; then
+    prev=$(find "$BACKUP_DIR" -mindepth 2 -maxdepth 2 -type d -name docs ! -path "$d/*" 2>/dev/null | sort | tail -n1)
+    install -d -m 700 "$d/docs"
+    for f in "$src"/*; do
+      [[ -f $f ]] || continue
+      b=${f##*/}
+      [[ -f $d/docs/$b ]] && continue
+      if [[ -n $prev && -f $prev/$b ]] && cmp -s "$prev/$b" "$f"; then ln "$prev/$b" "$d/docs/$b" 2>/dev/null || cp -a "$f" "$d/docs/"
+      else cp -a "$f" "$d/docs/" || ok=no; fi
+    done
+  fi
   chmod -R go-rwx "$d"
   find "$BACKUP_DIR" -mindepth 1 -maxdepth 1 -type d -name '20*' -mtime +$keep -exec rm -rf {} + 2>/dev/null || true
   logger -t prostranstvo-backup "копия баз: $d ($ok)" 2>/dev/null || true
@@ -617,6 +630,15 @@ step_nginx() {
     echo "    client_max_body_size 1m;"
     echo "    add_header Strict-Transport-Security \"max-age=15552000\" always;"
     echo "    add_header X-Robots-Tag \"noindex, nofollow\" always;"
+    echo "    location = /docs/upload {   # раздел «Документы»: файлы до 25 МБ"
+    echo "        client_max_body_size 30m;"
+    echo "        proxy_pass http://127.0.0.1:$PORT;"
+    echo "        proxy_set_header Host \$host;"
+    echo "        proxy_set_header X-Forwarded-For \$remote_addr;"
+    echo "        proxy_set_header X-Forwarded-Proto \$scheme;"
+    echo "        proxy_set_header X-Forwarded-Host \$host;"
+    echo "        proxy_read_timeout 120s;"
+    echo "    }"
     echo "    location / {"
     echo "        proxy_pass http://127.0.0.1:$PORT;"
     echo "        proxy_set_header Host \$host;"

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}{{ d['title'] }}{% endblock %}
+{% block main %}
+{{ more_nav('docs') }}
+<p><a href="{{ url_for('docs_view', f=d['folder']) }}">← Документы · {{ d['folder'] }}</a></p>
+<h1>{{ d['title'] }}</h1>
+<p class="sub"><a href="{{ url_for('docs_file', did=d['id']) }}">Открыть «{{ d['filename'] }}»</a> · {{ size_h(d['size']) }} · добавлен {{ fmt_dt(d['created_at']) }}{% if d['created_by'] %} ({{ d['created_by'] }}){% endif %}{% if d['source'] %} · {{ d['source'] }}{% endif %}</p>
+<form class="panel pad grid2" method="post" action="{{ url_for('docs_edit', did=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f span2">Название<input name="title" maxlength="200" value="{{ d['title'] }}" required></label>
+  <label class="f">Раздел<select name="folder">{% for name, n in folders %}<option {% if d['folder'] == name %}selected{% endif %}>{{ name }}</option>{% endfor %}</select></label>
+  <label class="f">или новый раздел<input name="new_folder" maxlength="60"></label>
+  <label class="f">Действует до<input type="date" name="until" value="{{ d['until'] }}"></label>
+  <label class="f span2">Заметка<input name="note" maxlength="1000" value="{{ d['note'] }}"></label>
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
+<form class="panel pad" method="post" action="{{ url_for('docs_edit', did=d['id']) }}" style="margin-top:14px">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="delete" value="1">
+  <label class="f inline"><input type="checkbox" name="confirm" value="1"> Да, удалить документ</label>
+  <button class="btn-s sm">Удалить</button>
+</form>
+{% endblock %}
