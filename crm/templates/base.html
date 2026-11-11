@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#1d5e57">
 <title>{% block title %}CRM{% endblock %} · Наш декор</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='crm.css') }}?v=14">
+<link rel="stylesheet" href="{{ url_for('static', filename='crm.css') }}?v=15">
 <link rel="icon" href="{{ url_for('static', filename='icon.svg') }}" type="image/svg+xml">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
@@ -34,7 +34,7 @@
   <a href="{{ url_for('stock_view') }}" {% if ep in ('stock_view','stock_docs_view') %}aria-current="page"{% endif %}><span class="ic ic-stock"></span>Склад</a>
   <a href="{{ url_for('chats_view') }}" {% if ep in ('chats_view','chat_view') %}aria-current="page"{% endif %}><span class="ic ic-chat"></span>Чат{% if nav_chat %}<span class="badge">{{ nav_chat }}</span>{% endif %}</a>
   <a href="{{ url_for('site_view') }}" {% if ep=='site_view' %}aria-current="page"{% endif %}><span class="ic ic-site"></span>Сайт</a>
-  <a href="{{ url_for('tasks_view') }}" {% if ep in ('tasks_view','reports_view','settings_view','server_view','money_view','purchases_view','purchase_view','taxes_view','designers_view') %}aria-current="page"{% endif %}><span class="ic ic-more"></span>Ещё</a>
+  <a href="{{ url_for('tasks_view') }}" {% if ep in ('tasks_view','reports_view','settings_view','server_view','money_view','purchases_view','purchase_view','taxes_view','designers_view') or (ep.startswith('site_') and ep != 'site_view') %}aria-current="page"{% endif %}><span class="ic ic-more"></span>Ещё</a>
 </nav>
 <main id="top">
   {% with msgs = get_flashed_messages(with_categories=true) %}{% for cat, m in msgs %}<div class="flash {{ cat }}" role="status">{{ m }}</div>{% endfor %}{% endwith %}

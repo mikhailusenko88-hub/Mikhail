@@ -1,20 +1,19 @@
 {% extends "base.html" %}
-{% from "macros.html" import more_nav with context %}
-{% block title %}Редактор сайта{% endblock %}
+{% from "site_macros.html" import site_head, when_note with context %}
+{% block title %}Редактор сайта — товары{% endblock %}
 {% block main %}
-{{ more_nav('site_edit') }}
-<h1>Редактор сайта</h1>
-<p class="sub">Товары, фото и контакты на nashdekor.ru — без кода. Правка попадает на сайт через 10–20 минут: её забирает GitHub, пересобирает страницы, сервер обновляется сам. Цены и остатки по-прежнему ведутся в «Склад и цены».</p>
+{{ site_head('items', 'Редактор сайта') }}
+<p class="sub">Всё, что видно на nashdekor.ru, меняется здесь кнопками, без кода: товары и фото, разделы каталога, тексты главной, статьи, отзывы. Цены и остатки по-прежнему ведутся в «Склад и цены».</p>
+{{ when_note() }}
 
 <div class="row wrap">
   <a class="btn-p" href="{{ url_for('site_item_view', k=k or 'panel') }}">+ Добавить товар</a>
-  <a class="btn-s" href="#shop">Контакты на сайте</a>
-  <a class="btn-s" href="#recent">Последние правки</a>
+  {% if hidden %}<a class="btn-s" href="#hidden">Скрытые товары · {{ hidden|length }}</a>{% endif %}
 </div>
 
 <div class="chips">
   <a class="chip" href="{{ url_for('site_edit_view', q=q) }}" {% if not k %}aria-current="true"{% endif %}>Все · {{ total }}</a>
-  {% for key, name in KINDS %}<a class="chip" href="{{ url_for('site_edit_view', k=key, q=q) }}" {% if k==key %}aria-current="true"{% endif %}>{{ name }}</a>{% endfor %}
+  {% for key, name in kinds %}<a class="chip" href="{{ url_for('site_edit_view', k=key, q=q) }}" {% if k==key %}aria-current="true"{% endif %}>{{ name }}</a>{% endfor %}
 </div>
 <form class="addline" method="get" action="{{ url_for('site_edit_view') }}" role="search">
   <input type="hidden" name="k" value="{{ k }}">
@@ -22,39 +21,31 @@
 </form>
 <div class="panel list">
 {% for x in items %}
+  {% set p = pend.get(x['a']|upper|replace(' ', '')) %}
   <a class="row linkrow" href="{{ url_for('site_item_view', a=x['a']) }}">
     {% if photo.get(x['a']) %}<img class="sitethumb" src="{{ url_for('site_img', name=photo[x['a']]) }}" alt="" loading="lazy">{% else %}<span class="sitethumb nophoto">нет фото</span>{% endif %}
     <span class="grow"><span class="t">{{ x['a'] }}</span><span class="d"> · {{ x['n'] }}</span>
-      <span class="d sitemeta">{{ KIND_NAMES.get(x['c'], x['c']) }} · {{ x['w'] }}×{{ x['t'] }}×{{ x['l'] }} мм · {{ x['b'] }} шт в коробке{% if x['r'] %} · {{ x['r'] }} ₽{% endif %}</span></span>
-    {% if pend.get(x['a']) %}<span class="pill warn">{{ 'уберётся' if pend[x['a']]['kind'] == 'delete' else 'правка ждёт' }}</span>{% endif %}
+      <span class="d sitemeta">{{ kind_names.get(x['c'], x['c']) }} · {{ x['w'] }}×{{ x['t'] }}×{{ x['l'] }} мм · {{ x['b'] }} шт в коробке{% if x['r'] %} · {{ x['r'] }} ₽{% endif %}{% if gallery.get(x['a']) %} · ещё фото: {{ gallery[x['a']]|length }}{% endif %}</span></span>
+    {% if p %}<span class="pill warn">{{ PILL.get(p['kind'], 'правка ждёт') }}</span>{% endif %}
   </a>
 {% else %}
   <div class="row"><span class="d">Ничего не нашлось.</span></div>
 {% endfor %}
 </div>
 
-<h2 id="shop">Контакты на сайте</h2>
-<form class="panel pad grid2" method="post" action="{{ url_for('site_shop_save') }}">
-  <input type="hidden" name="csrf" value="{{ csrf }}">
-  {% for key, title, ph in SHOP_FIELDS %}
-  <label class="f span2">{{ title }} {% if not shop.get(key) %}<span class="d">(сейчас не показывается)</span>{% endif %}<input name="{{ key }}" value="{{ shop.get(key, '') }}" placeholder="{{ ph }}" spellcheck="false"></label>
-  {% endfor %}
-  <p class="d span2">Пустое поле — строка на сайте не показывается. Телефон на сайте не публикуем — вместо него «Заказать звонок».</p>
-  <div class="span2"><button class="btn-p">Сохранить контакты</button></div>
-</form>
-
-<h2 id="recent">Последние правки</h2>
+{% if hidden %}
+<h2 id="hidden">Скрытые товары</h2>
+<p class="d">Их нет на сайте и в фиде Авито, но всё сохранено: фото, текст, размеры. «Вернуть» — и через 10–20 минут товар снова на сайте.</p>
 <div class="panel list">
-{% for e in recent %}
+{% for a, h in hidden.items() %}
+  {% set p = pend.get(a|upper|replace(' ', '')) %}
   <div class="row">
-    <span class="grow"><span class="t">№{{ e['id'] }} · {% if e['kind'] == 'shop' %}контакты{% elif e['kind'] == 'delete' %}убрать {{ e['article'] }}{% else %}{{ e['article'] }}{% endif %}</span>
-      <span class="d sitemeta">{{ fmt_dt(e['created_at']) }}{% if e['created_by'] %} · {{ e['created_by'] }}{% endif %}{% if e['photo'] %} · с фото{% endif %}{% if e['note'] %} · {{ e['note'] }}{% endif %}</span></span>
-    <span class="pill {{ {'applied': 'good', 'error': 'crit', 'new': 'warn'}.get(e['status'], '') }}">{{ e['status_name'] }}</span>
-    {% if e['status'] == 'new' %}<form method="post" action="{{ url_for('site_edit_cancel', eid=e['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g sm">Отменить</button></form>{% endif %}
+    {% if h.get('photo') %}<img class="sitethumb" src="{{ url_for('site_img', name=h['photo']) }}" alt="" loading="lazy">{% else %}<span class="sitethumb nophoto">нет фото</span>{% endif %}
+    <span class="grow"><span class="t">{{ a }}</span><span class="d"> · {{ h['item'].get('n', '') }}</span><span class="d sitemeta">скрыт {{ h.get('at', '') }}</span></span>
+    {% if p and p['kind'] == 'unhide' %}<span class="pill warn">вернётся</span>{% else %}
+    <form method="post" action="{{ url_for('site_item_unhide') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="a" value="{{ a }}"><button class="btn-s sm">Вернуть на сайт</button></form>{% endif %}
   </div>
-{% else %}
-  <div class="row"><span class="d">Правок ещё не было.</span></div>
 {% endfor %}
 </div>
-<p class="d">«Ждёт публикации» дольше получаса — значит, GitHub ещё не забрал правку (бывает задержка) или сайт не обновился. «Ошибка» — причина написана рядом; исправьте и сохраните ещё раз.</p>
+{% endif %}
 {% endblock %}

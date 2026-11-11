@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "site_macros.html" import site_head, errors_box, words_rule, when_note with context %}
+{% block title %}Редактор сайта — главная{% endblock %}
+{% block main %}
+{{ site_head('home', 'Главная страница') }}
+<p class="sub">Тексты главной nashdekor.ru и большая картинка вверху. Меняйте только то, что нужно — остальное останется как есть.</p>
+{{ errors_box(errors) }}
+{% for e in pend %}<div class="alert warn">Ждёт публикации (№{{ e['id'] }}, {{ fmt_dt(e['created_at']) }}): {{ e['data'].get('texts', {})|length }} текст(ов){% if e['photos'] %} и новая картинка{% endif %}. В форме уже учтено.</div>{% endfor %}
+<form class="panel pad grid2" method="post" enctype="multipart/form-data" action="{{ url_for('site_home_view') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  {% if hero %}<div class="span2"><p class="d">Картинка вверху сейчас:</p><img class="siteprev" src="{{ url_for('site_img', name=hero) }}" alt="Главная картинка сайта"></div>{% endif %}
+  <label class="f span2">Новая картинка вверху — только если меняете (широкое фото интерьера, от 1000 точек в ширину)<input type="file" name="hero" accept="image/jpeg,image/png"></label>
+  {% for k, name, lim in blocks %}
+  <label class="f span2">{{ name }}{% if lim > 130 %}<textarea name="{{ k }}" rows="{{ 3 if lim < 400 else 5 }}" maxlength="{{ lim }}">{{ cur.get(k, '') }}</textarea>{% else %}<input name="{{ k }}" value="{{ cur.get(k, '') }}" maxlength="{{ lim }}">{% endif %}</label>
+  {% endfor %}
+  {{ words_rule() }}
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
+{{ when_note() }}
+{% endblock %}

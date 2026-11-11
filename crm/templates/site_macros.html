@@ -1,0 +1,34 @@
+{% macro site_head(tab, title) -%}
+{% from "macros.html" import more_nav with context %}
+{{ more_nav('site_edit') }}
+<h1>{{ title }}</h1>
+<nav class="chips" aria-label="Редактор сайта">
+  <a class="chip" href="{{ url_for('site_edit_view') }}" {% if tab=='items' %}aria-current="true"{% endif %}>Товары</a>
+  <a class="chip" href="{{ url_for('site_sections_view') }}" {% if tab=='sections' %}aria-current="true"{% endif %}>Разделы</a>
+  <a class="chip" href="{{ url_for('site_home_view') }}" {% if tab=='home' %}aria-current="true"{% endif %}>Главная</a>
+  <a class="chip" href="{{ url_for('site_articles_view') }}" {% if tab=='articles' %}aria-current="true"{% endif %}>Статьи</a>
+  <a class="chip" href="{{ url_for('site_reviews_view') }}" {% if tab=='reviews' %}aria-current="true"{% endif %}>Отзывы и фото работ</a>
+  <a class="chip" href="{{ url_for('site_recent_view') }}" {% if tab=='recent' %}aria-current="true"{% endif %}>Контакты и правки</a>
+</nav>
+{%- endmacro %}
+
+{% macro errors_box(errors) -%}
+{% if errors %}<div class="alert err" role="alert"><b>Не сохранено:</b><ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>{% endif %}
+{%- endmacro %}
+
+{% macro pending_box(pend, what='правка') -%}
+{% if pend %}<div class="alert warn">Есть {{ what }}, которая ещё не на сайте (№{{ pend['id'] }}, {{ fmt_dt(pend['created_at']) }}) — ниже показана она. Новое сохранение добавит ещё одну правку поверх.
+  <form method="post" action="{{ url_for('site_edit_cancel', eid=pend['id']) }}" class="inline"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="back" value="{{ request.full_path }}"><button class="btn-g sm">Отменить её</button></form></div>{% endif %}
+{%- endmacro %}
+
+{% macro words_rule() -%}
+<p class="d span2">Нельзя писать: МДФ, ПВХ, пенопласт, «вспененный», алюминий, класс горючести (Г1–Г4), «рамки», бренд поставщика. Материал — «полистирол высокой плотности (дюрополимер)».</p>
+{%- endmacro %}
+
+{% macro when_note() -%}
+<p class="d">После «Сохранить» правка попадает на сайт через 10–20 минут: её забирает GitHub, пересобирает страницы, сервер обновляется сам. Статус — во вкладке «Контакты и правки».</p>
+{%- endmacro %}
+
+{% macro drop_photos(files, folder, name='drop') -%}
+{% if files %}<div class="sitegal">{% for f in files %}<label class="sitegalitem"><img src="{{ url_for('site_img', name=folder ~ f) }}" alt="" loading="lazy"><span class="chk"><input type="checkbox" name="{{ name }}" value="{{ f }}"> убрать</span></label>{% endfor %}</div>{% endif %}
+{%- endmacro %}

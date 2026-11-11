@@ -2281,16 +2281,157 @@ class TestSiteEditor(Base):
         with open(os.path.join(self.tmp.name, "site-edits.json"), "w", encoding="utf-8") as f:
             json.dump({"last_id": 99, "edits": {str(new["id"]): {"ok": True, "note": "добавлен, новое фото", "at": "2026-11-11 19:00"},
                                                 str(a912[0]["id"]): {"ok": False, "note": "ошибка: тест", "at": "2026-11-11 19:00"}}}, f)
-        page = self.c.get("/site/edit").get_data(as_text=True)
+        page = self.c.get("/site/edit/recent").get_data(as_text=True)
         self.assertIn("на сайте", page)
         self.assertIn("ошибка: тест", page)
         self.assertNotIn(new["id"], [e["id"] for e in self.c.get("/api/site/edits").get_json()["edits"]])
         self.assertFalse(os.path.exists(os.path.join(ed.dir, new["photo"])))   # фото опубликованной правки удалено
         self.assertEqual(self.c.get(f"/api/site/photo/{new['photo']}").status_code, 404)
 
+    @staticmethod
+    def png(w: int, h: int) -> bytes:
+        return b"\x89PNG\r\n\x1a\n" + b"\x00\x00\x00\x0dIHDR" + w.to_bytes(4, "big") + h.to_bytes(4, "big") + b"\x00" * 2000
+
+    def site_v2(self) -> None:
+        d = os.path.dirname(self.cat)
+        with open(self.cat, "w", encoding="utf-8") as f:
+            f.write(CAT_HTML.replace("<html>", '<html><h1><!--ed:home_h1-->Стеновые панели<!--/ed:home_h1--></h1><p><!--ed:home_lead-->'
+                                     'Текст &amp; ещё<!--/ed:home_lead--></p><!--ed:navx--><!--/ed:navx-->'
+                                     '<div class="wall"><img src="img/hero.jpg" srcset="img/hero.jpg 1006w, img/2x/hero.jpg 2012w"></div>'))
+        content = {"kinds": {"k_bamb": {"label": "Бамбуковая панель", "menu": "Бамбуковые панели", "intro": "Бамбуковые панели для стен — натуральный материал.",
+                                        "slug": "bambukovye-paneli", "faq": [["Можно красить?", "Да."]], "material": "бамбук", "avito": ""}},
+                   "hidden": {"A1": {"item": {"a": "A1", "c": "panel", "n": "Скрытая рейка"}, "photo": "A1.jpg", "at": "2026-11-11 10:00"}},
+                   "gallery": {"A912": ["A912-g1-1.jpg", "A912-g1-2.jpg"]},
+                   "articles": [{"slug": "moya", "title": "Моя статья про рейки", "description": "Описание статьи для поиска", "body": "Текст " * 30,
+                                 "photos": [{"f": "moya-1-1.jpg", "cap": ""}]}],
+                   "reviews": [{"id": 5, "name": "Анна", "place": "Купчино", "text": "Всё отлично, спасибо!", "date": "2026-11-01", "photos": ["r5-1.jpg"]}]}
+        index = {"sections": [{"code": "panel", "slug": "reechnye-paneli", "menu": "Реечные панели", "h1": "Реечные панели", "intro": "Вводный текст раздела",
+                               "title": "", "description": "", "faq": [["Вопрос?", "Ответ."]], "custom": False},
+                              {"code": "k_bamb", "slug": "bambukovye-paneli", "menu": "Бамбуковые панели", "h1": "", "intro": "Бамбуковые панели для стен",
+                               "title": "", "description": "", "faq": [], "custom": True}],
+                 "articles": [{"slug": "duro", "title": "Дюрополимер — что это", "description": "Про материал", "custom": False, "hidden": False},
+                              {"slug": "moya", "title": "Моя статья про рейки", "description": "Описание статьи для поиска", "custom": True, "hidden": False}]}
+        for name, obj in (("site-content.json", content), ("site-index.json", index)):
+            with open(os.path.join(d, name), "w", encoding="utf-8") as f:
+                json.dump(obj, f, ensure_ascii=False)
+
+    def form(self, url, data, files=None):
+        import io as _io
+        with self.c.session_transaction() as s:
+            tok = s.get("csrf", "")
+        d = dict(data, csrf=tok)
+        for k, v in (files or {}).items():
+            d[k] = [(_io.BytesIO(x), f"p{i}.png") for i, x in enumerate(v)]
+        return self.c.post(url, data=d, content_type="multipart/form-data")
+
+    def last(self, kind):
+        return [e for e in self.c.get("/api/site/edits").get_json()["edits"] if e["kind"] == kind][-1]
+
+    def test_v2_pages_and_edits(self) -> None:
+        self.site_v2()
+        self.login()
+        for url, text in (("/site/edit", "Скрытая рейка"), ("/site/edit/item?a=A912", "Ещё фото товара · 2"),
+                          ("/site/edit/sections", "Бамбуковые панели"), ("/site/edit/section?code=panel", "Вопрос?"),
+                          ("/site/edit/section?code=k_bamb", "Бамбуковая панель"), ("/site/edit/section", "Создать раздел"),
+                          ("/site/edit/home", "Текст &amp; ещё"), ("/site/edit/articles", "Дюрополимер"),
+                          ("/site/edit/article?slug=duro", "готовой вёрсткой"), ("/site/edit/article?slug=moya", "Текст Текст"),
+                          ("/site/edit/article", "Новая статья"), ("/site/edit/reviews", "Купчино"), ("/site/edit/review?id=5", "Всё отлично"),
+                          ("/site/edit/review", "Новый отзыв"), ("/site/edit/recent", "Контакты на сайте"), ("/site/edit/item?k=k_bamb", "Производитель")):
+            r = self.c.get(url)
+            self.assertEqual(r.status_code, 200, url)
+            self.assertIn(text, r.get_data(as_text=True), url)
+        for url in ("/site/edit/section?code=nope", "/site/edit/article?slug=nope", "/site/edit/review?id=77"):
+            self.assertEqual(self.c.get(url).status_code, 404, url)
+        self.assertEqual(self.c.get("/site/img/otzyvy/../../crm.db").status_code, 404)
+        # скрыть / вернуть
+        self.form("/site/edit/hide", {"a": "a912"})
+        self.assertEqual(self.last("hide")["data"], {"a": "A912"})
+        self.assertIn("скроется", self.c.get("/site/edit").get_data(as_text=True))
+        self.form("/site/edit/unhide", {"a": "A1"})
+        self.assertEqual(self.last("unhide")["article"], "A1")
+        # доп. фото: несколько сразу; маленькое — нельзя
+        r = self.form("/site/edit/gallery", {"a": "A912", "action": "add"}, {"more": [self.png(300, 200)]})
+        self.assertFalse(any(e["kind"] == "gallery_add" for e in self.c.get("/api/site/edits").get_json()["edits"]))
+        self.form("/site/edit/gallery", {"a": "A912", "action": "add"}, {"more": [self.png(1600, 1200), self.png(1200, 1600)]})
+        g = self.last("gallery_add")
+        self.assertEqual(g["photos"], [f"{g['id']}-1.png", f"{g['id']}-2.png"])
+        self.assertTrue(self.c.get(f"/api/site/photo/{g['id']}-2.png").data.startswith(b"\x89PNG"))
+        self.assertEqual(self.c.get(f"/site/edit/photo/{g['id']}/1").status_code, 200)
+        self.form("/site/edit/gallery", {"a": "A912", "action": "del", "f": ["A912-g1-2.jpg", "evil.jpg"]})
+        self.assertEqual(self.last("gallery_del")["data"]["files"], ["A912-g1-2.jpg"])
+        # разделы: старый — строгие слова; новый — мягкие, с вопросами-ответами
+        r = self.form("/site/edit/section", {"code": "panel", "menu": "Реечные панели", "intro": "Панели из МДФ для стен и потолков"})
+        self.assertEqual(r.status_code, 400)
+        self.form("/site/edit/section", {"code": "panel", "menu": "Реечные панели", "intro": "Реечные панели под покраску для стен",
+                                          "faq_text": "Можно красить?\nДа, любой краской.\n\nЧем клеить?\nМонтажным клеем."})
+        sec = self.last("section")["data"]
+        self.assertEqual((sec["code"], sec["faq"][1]), ("panel", ["Чем клеить?", "Монтажным клеем."]))
+        self.form("/site/edit/section", {"code": "", "label": "Пробковая панель", "menu": "Пробковые панели", "avito": "panel",
+                                          "intro": "Пробковые панели — тёплые и тихие стены, рамки не нужны."})
+        self.assertFalse(any(e["kind"] == "kind" for e in self.c.get("/api/site/edits").get_json()["edits"]))   # «рамки» — нигде
+        self.form("/site/edit/section", {"code": "", "label": "Пробковая панель", "menu": "Пробковые панели", "avito": "panel",
+                                          "intro": "Пробковые панели из МДФ с пробкой — тёплые и тихие стены."})
+        k = self.last("kind")["data"]
+        self.assertEqual((k["code"], k["menu"], k["avito"]), ("", "Пробковые панели", "panel"))
+        self.form("/site/edit/section/delete", {"code": "k_bamb", "confirm": "1"})
+        self.assertEqual(self.last("kind_del")["data"]["code"], "k_bamb")
+        self.form("/site/edit/section/delete", {"code": "panel", "confirm": "1"})
+        self.assertEqual(self.last("kind_del")["data"]["code"], "k_bamb")      # старые разделы не удаляются
+        # товар нового раздела: материал и производитель, МДФ можно (это не ARTDEC)
+        r = self.form("/site/edit/item", {"old": "", "a": "BP-01", "c": "k_bamb", "n": "Бамбуковая панель натуральная 300×5×2400 мм — BP-01",
+                                         "d": "натуральный бамбук на основе из МДФ, для стен", "w": "300", "t": "5", "l": "2400", "b": "4", "r": "2500",
+                                         "m": "бамбук", "mk": "Фабрика"}, {"photo": [self.png(1200, 900)], "more": [self.png(900, 900)]})
+        self.assertEqual(r.status_code, 302)
+        p = self.last("product")
+        self.assertEqual((p["data"]["m"], p["data"]["mk"], p["data"]["c"]), ("бамбук", "Фабрика", "k_bamb"))
+        self.assertEqual(self.last("gallery_add")["article"], "BP-01")
+        self.assertIn("сейчас скрыт", self.form("/site/edit/item", {"old": "", "a": "A1", "c": "panel", "n": "Рейка снова на сайте 1 2 3",
+                                                                    "d": "текст", "w": "1", "t": "1", "l": "100", "b": "1", "r": "1"},
+                                                {"photo": [self.png(1200, 900)]}).get_data(as_text=True))
+        # главная: только изменённые тексты; картинка — от 1000 точек
+        self.assertIn("Ничего не изменилось", self.form("/site/edit/home", {"home_h1": "Стеновые панели", "home_lead": "Текст & ещё"},
+                                                        ).get_data(as_text=True) + self.c.get("/site/edit/home").get_data(as_text=True))
+        r = self.form("/site/edit/home", {"home_h1": "Стеновые панели", "home_lead": "Текст & ещё"}, {"hero": [self.png(800, 600)]})
+        self.assertEqual(r.status_code, 400)
+        self.form("/site/edit/home", {"home_h1": "Панели и плинтусы в СПб", "home_lead": "Текст & ещё"})
+        self.assertEqual(self.last("home")["data"], {"texts": {"home_h1": "Панели и плинтусы в СПб"}})
+        self.assertIn("Панели и плинтусы в СПб", self.c.get("/site/edit/home").get_data(as_text=True))   # ждущая правка видна в форме
+        # статьи
+        self.assertEqual(self.form("/site/edit/article", {"slug": "", "title": "Как выбрать рейки", "description": "Коротко"}).status_code, 400)
+        self.form("/site/edit/article", {"slug": "", "title": "Как выбрать рейки для гостиной", "description": "Какие рейки взять для стены в гостиной",
+                                         "body": "## Размер\n" + "Широкие рейки — для больших стен. " * 5 + "\n\n[фото 1]", "caps": "Гостиная\nСпальня"},
+                  {"photos": [self.png(1200, 800), self.png(1200, 800)]})
+        a = self.last("article")
+        self.assertEqual((a["data"]["slug"], a["data"]["caps"], len(a["photos"])), ("", ["Гостиная", "Спальня"], 2))
+        self.form("/site/edit/article", {"slug": "duro", "title": "Дюрополимер: что это за материал", "description": "Про материал плинтусов и панелей",
+                                         "body": "не должно попасть", "hidden": "1"})
+        a = self.last("article")["data"]
+        self.assertTrue(a["builtin"] and a["hidden"] and "body" not in a)
+        self.form("/site/edit/article", {"slug": "moya", "title": "Моя статья про рейки", "description": "Описание статьи для поиска",
+                                         "body": "Текст " * 30, "drop": ["moya-1-1.jpg", "chuzhoe.jpg"]})
+        self.assertEqual(self.last("article")["data"]["drop_photos"], ["moya-1-1.jpg"])
+        self.form("/site/edit/article/delete", {"slug": "moya", "confirm": "1"})
+        self.assertEqual(self.last("article_del")["data"], {"slug": "moya", "builtin": False, "title": "Моя статья про рейки"})
+        # отзывы
+        self.assertIn("нет на сайте", self.form("/site/edit/review", {"id": "", "name": "Ольга", "text": "Красивые панели, всё быстро", "article": "NOPE"}
+                                                 ).get_data(as_text=True))
+        self.form("/site/edit/review", {"id": "", "name": "Ольга", "place": "Мурино", "text": "Красивые панели, всё быстро", "article": "A912",
+                                        "date": "2026-11-10"}, {"photos": [self.png(800, 600)]})
+        rv = self.last("review")
+        self.assertEqual((rv["data"]["name"], rv["data"]["article"], len(rv["photos"])), ("Ольга", "A912", 1))
+        self.form("/site/edit/review", {"id": "5", "name": "Анна", "text": "Всё отлично, спасибо!", "drop": ["r5-1.jpg"]})
+        self.assertEqual(self.last("review")["data"]["drop_photos"], ["r5-1.jpg"])
+        self.form("/site/edit/review/delete", {"id": "5", "confirm": "1"})
+        self.assertEqual(self.last("review_del")["data"]["id"], "5")
+        page = self.c.get("/site/edit/recent").get_data(as_text=True)
+        for t in ("скрыть товар A912", "новый раздел Пробковые панели", "главная страница", "новая статья", "новый отзыв Ольга"):
+            self.assertIn(t, page)
+
     def test_only_owners(self) -> None:
         self.login("mikhail", "Secret-pass-2")
         self.assertEqual(self.c.get("/site/edit").status_code, 403)
+        for url in ("/site/edit/sections", "/site/edit/home", "/site/edit/articles", "/site/edit/reviews", "/site/edit/recent"):
+            self.assertEqual(self.c.get(url).status_code, 403, url)
         self.assertEqual(self.save(self.item(old="A912")).status_code, 403)
         self.c.post("/logout", data={"csrf": self.csrf()})
         self.assertEqual(self.c.get("/site/edit").status_code, 302)

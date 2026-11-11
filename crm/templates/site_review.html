@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "site_macros.html" import site_head, errors_box, pending_box, words_rule, drop_photos with context %}
+{% block title %}{{ 'Отзыв' if rv else 'Новый отзыв' }} — редактор сайта{% endblock %}
+{% block main %}
+{{ site_head('reviews', 'Отзыв' if rv else 'Новый отзыв') }}
+<p><a href="{{ url_for('site_reviews_view') }}">← Все отзывы</a></p>
+{{ errors_box(errors) }}
+{{ pending_box(pend) }}
+<form class="panel pad grid2" method="post" enctype="multipart/form-data" action="{{ url_for('site_review_save') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ rid }}">
+  <label class="f">Имя покупателя<input name="name" value="{{ cur.get('name', '') }}" maxlength="60" required placeholder="Анна"></label>
+  <label class="f">Район или город <span class="d">(можно пусто)</span><input name="place" value="{{ cur.get('place', '') }}" maxlength="80" placeholder="Купчино"></label>
+  <label class="f">Дата<input type="date" name="date" value="{{ cur.get('date', '') }}"></label>
+  <label class="f">Товар <span class="d">(можно пусто)</span><select name="article"><option value="">— не указывать —</option>{% for x in items %}<option value="{{ x['a'] }}" {% if (cur.get('article') or '')|upper == x['a']|upper %}selected{% endif %}>{{ x['a'] }} · {{ x['n'][:60] }}</option>{% endfor %}</select></label>
+  <label class="f span2">Текст отзыва (как написал покупатель; можно поправить опечатки)<textarea name="text" rows="6" maxlength="2000" required>{{ cur.get('text', '') }}</textarea></label>
+  {% if rv and rv.get('photos') %}<div class="span2"><p class="d">Фото (отметьте, какие убрать):</p>{{ drop_photos(rv['photos'], 'otzyvy/') }}</div>{% endif %}
+  <label class="f span2">Добавить фото стены (до 8 у отзыва; можно несколько сразу)<input type="file" name="photos" accept="image/jpeg,image/png" multiple></label>
+  {{ words_rule() }}
+  <div class="span2"><button class="btn-p">{{ 'Сохранить' if rv else 'Опубликовать' }}</button></div>
+</form>
+{% if rv %}
+<h2>Удалить отзыв</h2>
+<form class="panel pad" method="post" action="{{ url_for('site_review_delete') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ rid }}">
+  <label class="chk"><input type="checkbox" name="confirm" value="1" required> Да, удалить отзыв</label>
+  <button class="btn-g">Удалить</button>
+</form>
+{% endif %}
+{% endblock %}

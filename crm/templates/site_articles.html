@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "site_macros.html" import site_head, when_note with context %}
+{% block title %}Редактор сайта — статьи{% endblock %}
+{% block main %}
+{{ site_head('articles', 'Статьи') }}
+<p class="sub">Статьи помогают сайту находиться в поиске: «как клеить плинтус», «рейки в гостиной» и т. п. Новые можно писать здесь — с подзаголовками, списками и фото. У старых статей (их писал Claude) меняются заголовки и вступление, или статью можно скрыть.</p>
+{{ when_note() }}
+<div class="row wrap"><a class="btn-p" href="{{ url_for('site_article_view') }}">+ Новая статья</a></div>
+{% for e in new_pending %}<div class="alert warn">Новая статья «{{ e['data'].get('title', '') }}» ждёт публикации (№{{ e['id'] }}).</div>{% endfor %}
+<div class="panel list">
+{% for a in arts %}
+  {% set p = pend.get(a['slug']) %}
+  <a class="row linkrow" href="{{ url_for('site_article_view', slug=a['slug']) }}">
+    <span class="grow"><span class="t">{{ a['title'] }}</span><span class="d sitemeta">{{ SHOP_DOMAIN }}/stati/{{ a['slug'] }}/{% if a.get('date') %} · {{ a['date'] }}{% endif %}</span></span>
+    {% if a.get('hidden') %}<span class="pill">скрыта</span>{% endif %}
+    {% if a.get('custom') %}<span class="pill">своя</span>{% endif %}
+    {% if p %}<span class="pill warn">{{ 'уберётся' if p['kind'] == 'article_del' else 'правка ждёт' }}</span>{% endif %}
+  </a>
+{% else %}
+  <div class="row"><span class="d">Список статей появится после ближайшего обновления сайта.</span></div>
+{% endfor %}
+</div>
+{% endblock %}

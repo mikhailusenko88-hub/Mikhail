@@ -92,8 +92,8 @@ class CrmRequest(Request):
             return 1024 * 1024 + 64 * 1024
         if self.path == "/docs/upload":                  # «Документы»: файлы до 25 МБ (nginx пропускает 30 МБ только сюда)
             return 30 * 1024 * 1024
-        if self.path == "/site/edit/item":               # «Редактор сайта»: фото товара до 15 МБ (nginx — 16 МБ только сюда)
-            return 16 * 1024 * 1024
+        if self.path.startswith("/site/edit/"):          # «Редактор сайта»: до 12 фото за раз (nginx — 100 МБ только сюда)
+            return 100 * 1024 * 1024
         return current_app.config.get("MAX_CONTENT_LENGTH") if current_app else None
 
     @max_content_length.setter

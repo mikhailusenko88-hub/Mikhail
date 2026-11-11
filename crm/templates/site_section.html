@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% from "site_macros.html" import site_head, errors_box, pending_box, words_rule with context %}
+{% block title %}{{ sec['menu'] if sec else 'Новый раздел' }} — редактор сайта{% endblock %}
+{% block main %}
+{{ site_head('sections', ('Раздел «' ~ sec['menu'] ~ '»') if sec else 'Новый раздел') }}
+<p><a href="{{ url_for('site_sections_view') }}">← Все разделы</a>{% if sec and sec.get('slug') %} · <a href="https://{{ SHOP_DOMAIN }}/catalog/{{ sec['slug'] }}/" target="_blank" rel="noopener">открыть на сайте</a>{% endif %}</p>
+{{ errors_box(errors) }}
+{{ pending_box(pend) }}
+<form class="panel pad grid2" method="post" action="{{ url_for('site_section_save') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="code" value="{{ code }}">
+  {% if custom %}
+  <label class="f">Название раздела в меню<input name="menu" value="{{ cur.get('menu', '') }}" maxlength="40" required placeholder="Бамбуковые панели"></label>
+  <label class="f">Как называется один товар<input name="label" value="{{ cur.get('label', '') }}" maxlength="60" required placeholder="Бамбуковая панель"><span class="d">так подписывается карточка товара</span></label>
+  {% else %}
+  <label class="f span2">Название раздела в меню<input name="menu" value="{{ cur.get('menu', '') }}" maxlength="40" required></label>
+  {% endif %}
+  <label class="f span2">Заголовок страницы раздела<input name="h1" value="{{ cur.get('h1', '') }}" maxlength="120" placeholder="Бамбуковые стеновые панели в Санкт-Петербурге"></label>
+  <label class="f span2">Вводный текст (что это, для чего, чем хороши)<textarea name="intro" rows="5" maxlength="1500" required>{{ cur.get('intro', '') }}</textarea></label>
+  {% if custom %}
+  <label class="f span2">О товарах раздела — для каждой карточки (материал, уход, монтаж; можно пусто)<textarea name="about" rows="4" maxlength="1500">{{ cur.get('about', '') }}</textarea></label>
+  <label class="f">Материал (по умолчанию для всех товаров раздела)<input name="material" value="{{ cur.get('material', '') }}" maxlength="120" placeholder="натуральный бамбук"></label>
+  <label class="f">Производитель<input name="maker" value="{{ cur.get('maker', '') }}" maxlength="120"></label>
+  <label class="f span2">Авито<select name="avito">{% for k, name in AVITO_KINDS %}<option value="{{ k }}" {% if cur.get('avito', '') == k %}selected{% endif %}>{{ name }}</option>{% endfor %}</select>
+    <span class="d">в какую категорию Авито выкладывать товары раздела; «не выкладывать» — только на сайте</span></label>
+  {% endif %}
+  <label class="f span2">Заголовок для поиска (title) <span class="d">— можно пусто, сайт составит сам</span><input name="title" value="{{ cur.get('title', '') }}" maxlength="120"></label>
+  <label class="f span2">Описание для поиска (description) <span class="d">— 1–2 предложения, до 250 знаков</span><textarea name="description" rows="2" maxlength="250">{{ cur.get('description', '') }}</textarea></label>
+  <label class="f span2">Вопросы и ответы <span class="d">— вопрос на первой строке, ответ на следующей; между парами пустая строка</span><textarea name="faq_text" rows="8" placeholder="Можно ли красить?&#10;Да, любой краской для стен.&#10;&#10;Чем клеить?&#10;Монтажным клеем.">{{ cur.get('faq_text', '') }}</textarea></label>
+  {{ words_rule() }}
+  <div class="span2"><button class="btn-p">{{ 'Создать раздел' if not code else 'Сохранить' }}</button></div>
+</form>
+{% if code and custom %}
+<h2>Удалить раздел</h2>
+<form class="panel pad" method="post" action="{{ url_for('site_section_delete') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="code" value="{{ code }}">
+  {% if n_items %}<p class="d">В разделе {{ n_items }} товаров — сначала уберите их или перенесите в другой раздел (в карточке товара поле «Раздел»).</p>
+  {% else %}<label class="chk"><input type="checkbox" name="confirm" value="1" required> Да, удалить раздел «{{ sec['menu'] }}»</label>
+  <button class="btn-g">Удалить раздел</button>{% endif %}
+</form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "site_macros.html" import site_head, when_note with context %}
+{% block title %}Редактор сайта — разделы{% endblock %}
+{% block main %}
+{{ site_head('sections', 'Разделы каталога') }}
+<p class="sub">У каждого раздела своя страница на сайте: название в меню, заголовок, вводный текст, вопросы и ответы. Новые разделы — для товаров не ARTDEC (например, другие панели): у них свой материал и производитель.</p>
+{{ when_note() }}
+<div class="row wrap"><a class="btn-p" href="{{ url_for('site_section_view') }}">+ Новый раздел</a></div>
+{% for e in new_pending %}<div class="alert warn">Новый раздел «{{ e['data'].get('menu', '') }}» ждёт публикации (№{{ e['id'] }}).</div>{% endfor %}
+<div class="panel list">
+{% for s in sections %}
+  {% set p = pend.get(s['code']) %}
+  <a class="row linkrow" href="{{ url_for('site_section_view', code=s['code']) }}">
+    <span class="grow"><span class="t">{{ s['menu'] }}</span>
+      <span class="d sitemeta">{% if s.get('slug') %}{{ SHOP_DOMAIN }}/catalog/{{ s['slug'] }}/{% endif %}{% if counts.get(s['code']) %} · товаров: {{ counts[s['code']] }}{% elif s['code'] in ('wall', 'led') %} · общая страница{% endif %}</span></span>
+    {% if s.get('custom') %}<span class="pill">новый</span>{% endif %}
+    {% if p %}<span class="pill warn">{{ 'удалится' if p['kind'] == 'kind_del' else 'правка ждёт' }}</span>{% endif %}
+  </a>
+{% endfor %}
+</div>
+{% endblock %}

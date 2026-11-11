@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "site_macros.html" import site_head, errors_box, pending_box, words_rule, drop_photos with context %}
+{% block title %}{{ info['title'] if info else 'Новая статья' }} — редактор сайта{% endblock %}
+{% block main %}
+{{ site_head('articles', 'Статья' if info else 'Новая статья') }}
+<p><a href="{{ url_for('site_articles_view') }}">← Все статьи</a>{% if info and not info.get('hidden') %} · <a href="https://{{ SHOP_DOMAIN }}/stati/{{ slug }}/" target="_blank" rel="noopener">открыть на сайте</a>{% endif %}</p>
+{{ errors_box(errors) }}
+{{ pending_box(pend) }}
+<form class="panel pad grid2" method="post" enctype="multipart/form-data" action="{{ url_for('site_article_save') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="slug" value="{{ slug }}">
+  <label class="f span2">Заголовок (как ищут: «Как покрасить плинтус из дюрополимера»)<input name="title" value="{{ cur.get('title', '') }}" maxlength="120" required></label>
+  <label class="f span2">Заголовок на странице <span class="d">— можно пусто, тогда как выше</span><input name="h1" value="{{ cur.get('h1', '') }}" maxlength="160"></label>
+  <label class="f span2">Описание для поиска (1–2 предложения)<textarea name="description" rows="2" maxlength="250" required>{{ cur.get('description', '') }}</textarea></label>
+  <label class="f span2">Вступление (первый абзац крупным шрифтом; можно пусто)<textarea name="lead" rows="3" maxlength="600">{{ cur.get('lead', '') }}</textarea></label>
+  {% if builtin %}
+  <p class="d span2">Это статья с готовой вёрсткой: схемы, ссылки на товары. Её основной текст здесь не меняется — только заголовки, описание и вступление. Нужна другая статья — создайте новую.</p>
+  {% else %}
+  <label class="f span2">Текст статьи<textarea name="body" rows="18" maxlength="30000" required placeholder="## Что понадобится&#10;- плинтус&#10;- клей&#10;&#10;Обычный абзац текста.&#10;&#10;[фото 1]">{{ cur.get('body', '') }}</textarea>
+    <span class="d">Пустая строка — новый абзац. «## » в начале строки — подзаголовок. «- » — пункт списка. [фото 1], [фото 2]… на отдельной строке — фото в этом месте (по порядку: сначала уже загруженные, потом новые); фото без такой метки встанут в конце.</span></label>
+  {% if photos %}<div class="span2"><p class="d">Фото в статье (отметьте, какие убрать):</p>{{ drop_photos(photos|map(attribute='f')|list, 'stati/') }}</div>{% endif %}
+  <label class="f span2">Добавить фото (можно несколько; от 600 точек в ширину)<input type="file" name="photos" accept="image/jpeg,image/png" multiple></label>
+  <label class="f span2">Подписи к новым фото — по одной строке на фото, по порядку (можно пусто)<textarea name="caps" rows="3"></textarea></label>
+  {% endif %}
+  <label class="chk span2"><input type="checkbox" name="hidden" value="1" {% if cur.get('hidden') %}checked{% endif %}> Скрыть статью с сайта (останется здесь, можно вернуть)</label>
+  {{ words_rule() }}
+  <div class="span2"><button class="btn-p">{{ 'Опубликовать' if not info else 'Сохранить' }}</button></div>
+</form>
+{% if info and info.get('custom') %}
+<h2>Удалить статью</h2>
+<form class="panel pad" method="post" action="{{ url_for('site_article_delete') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="slug" value="{{ slug }}">
+  <label class="chk"><input type="checkbox" name="confirm" value="1" required> Да, удалить статью насовсем</label>
+  <p class="d">Если статья ещё пригодится — лучше «Скрыть статью с сайта» в форме выше.</p>
+  <button class="btn-g">Удалить</button>
+</form>
+{% endif %}
+{% endblock %}

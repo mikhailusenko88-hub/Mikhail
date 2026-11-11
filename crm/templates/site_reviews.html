@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "site_macros.html" import site_head, when_note with context %}
+{% block title %}Редактор сайта — отзывы{% endblock %}
+{% block main %}
+{{ site_head('reviews', 'Отзывы и фото работ') }}
+<p class="sub">Отзывы покупателей и фото их стен. Последние 6 показываются на главной, все — на странице «Отзывы и наши работы»; если в отзыве указан товар — ещё и на странице товара. Публикуйте только настоящие отзывы — с согласия покупателя (имя можно сократить: «Анна, Купчино»).</p>
+{{ when_note() }}
+<div class="row wrap"><a class="btn-p" href="{{ url_for('site_review_view') }}">+ Новый отзыв</a></div>
+{% for e in new_pending %}<div class="alert warn">Новый отзыв «{{ e['data'].get('name', '') }}» ждёт публикации (№{{ e['id'] }}).</div>{% endfor %}
+<div class="panel list">
+{% for r in reviews %}
+  {% set p = pend.get(r.get('id')|string) %}
+  <a class="row linkrow" href="{{ url_for('site_review_view', id=r.get('id')) }}">
+    {% if r.get('photos') %}<img class="sitethumb" src="{{ url_for('site_img', name='otzyvy/' ~ r['photos'][0]) }}" alt="" loading="lazy">{% else %}<span class="sitethumb nophoto">без фото</span>{% endif %}
+    <span class="grow"><span class="t">{{ r.get('name', '') }}</span>{% if r.get('place') %}<span class="d"> · {{ r['place'] }}</span>{% endif %}
+      <span class="d sitemeta">{{ r.get('date', '') }}{% if r.get('article') %} · {{ r['article'] }}{% endif %} · {{ (r.get('text') or '')[:90] }}</span></span>
+    {% if p %}<span class="pill warn">{{ 'удалится' if p['kind'] == 'review_del' else 'правка ждёт' }}</span>{% endif %}
+  </a>
+{% else %}
+  <div class="row"><span class="d">Отзывов пока нет. Попросите первых покупателей прислать пару слов и фото стены.</span></div>
+{% endfor %}
+</div>
+{% endblock %}

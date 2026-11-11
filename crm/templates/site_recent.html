@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "site_macros.html" import site_head with context %}
+{% block title %}Редактор сайта — контакты и правки{% endblock %}
+{% block main %}
+{{ site_head('recent', 'Контакты и правки') }}
+<h2 id="shop">Контакты на сайте</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('site_shop_save') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  {% for key, title, ph in SHOP_FIELDS %}
+  <label class="f span2">{{ title }} {% if not shop.get(key) %}<span class="d">(сейчас не показывается)</span>{% endif %}<input name="{{ key }}" value="{{ shop.get(key, '') }}" placeholder="{{ ph }}" spellcheck="false"></label>
+  {% endfor %}
+  <p class="d span2">Пустое поле — строка на сайте не показывается. Телефон на сайте не публикуем — вместо него «Заказать звонок».</p>
+  <div class="span2"><button class="btn-p">Сохранить контакты</button></div>
+</form>
+
+<h2 id="recent">Последние правки</h2>
+<div class="panel list">
+{% for e in recent %}
+  <div class="row">
+    <span class="grow"><span class="t">№{{ e['id'] }} · {{ e['title'] }}</span>
+      <span class="d sitemeta">{{ fmt_dt(e['created_at']) }}{% if e['created_by'] %} · {{ e['created_by'] }}{% endif %}{% if e['photos'] %} · фото: {{ e['photos']|length }}{% endif %}{% if e['note'] %} · {{ e['note'] }}{% endif %}</span></span>
+    <span class="pill {{ {'applied': 'good', 'error': 'crit', 'new': 'warn'}.get(e['status'], '') }}">{{ e['status_name'] }}</span>
+    {% if e['status'] == 'new' %}<form method="post" action="{{ url_for('site_edit_cancel', eid=e['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g sm">Отменить</button></form>{% endif %}
+  </div>
+{% else %}
+  <div class="row"><span class="d">Правок ещё не было.</span></div>
+{% endfor %}
+</div>
+<p class="d">«Ждёт публикации» дольше получаса — значит, GitHub ещё не забрал правку (бывает задержка) или сайт не обновился. «Ошибка» — причина написана рядом; исправьте и сохраните ещё раз.</p>
+{% endblock %}
