@@ -134,7 +134,7 @@ function paintPhoto(){
   let cv = img.parentElement.querySelector("canvas.pc");
   if (cur.name === "Белый") { if (cv) cv.hidden = true; return; }
   if (!img.complete || !img.naturalWidth) { img.addEventListener("load", paintPhoto, { once: true }); return; }
-  if (P.mask && !MIMG) { if (!maskLoading) { maskLoading = true; const mi = new Image(); mi.onload = () => { MIMG = mi; PX.clear(); paintPhoto(); }; mi.onerror = () => { P.mask = false; paintPhoto(); }; mi.src = ROOT + "img/mask/" + P.photo.split("/").pop().replace(".jpg", ".png"); } return; }
+  if (P.mask && !MIMG) { if (!maskLoading) { maskLoading = true; const mi = new Image(); mi.onload = () => { MIMG = mi; PX.clear(); paintPhoto(); }; mi.onerror = () => { P.mask = false; paintPhoto(); }; mi.src = ROOT + "img/mask/" + P.photo.split("/").pop().split("?")[0].replace(".jpg", ".png"); } return; }
   let D; try { D = prep(img); } catch (e) { return; }
   const hex = cur.hex, cr = parseInt(hex.slice(1,3),16), cg = parseInt(hex.slice(3,5),16), cb = parseInt(hex.slice(5,7),16);
   if (!cv) { cv = document.createElement("canvas"); cv.className = "pc"; img.parentElement.appendChild(cv); }

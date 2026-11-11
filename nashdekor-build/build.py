@@ -174,7 +174,8 @@ WOOD_NAMES = {"2": "две широкие ламели", "3": "три ламел
 def slug(a): return a.lower().replace("/", "-").replace(" ", "")
 def esc(s): return html.escape(str(s), quote=True)
 def fmt(n): return "{:,}".format(int(round(n))).replace(",", " ")
-def photo(a): return "img/" + PHOTO[a] if PHOTO.get(a) else ""
+PHOTO_V = "2"   # версия фото товаров: менять, когда фото перерисованы (11.11.2026 — фон «Антрацит»); то же — PHOTO_V в index.html
+def photo(a): return "img/" + PHOTO[a] + "?v=" + PHOTO_V if PHOTO.get(a) else ""
 def series(x): return x["a"].split("-")[0] if x["c"] == "color" else None
 def wood_parts(x):
     n = {"2": 2, "3": 3, "5": 5}.get(series(x), 3); base = max(2, x["t"] * 0.35); step = x["w"] / n; slat = step * (0.62 if n < 5 else 0.55)
