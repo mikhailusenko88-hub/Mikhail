@@ -22,12 +22,18 @@ for tab, vid, dur, title in [(x + ["", "", "", ""])[:4] for x in ids]:
                 r'"originalAudioAttribution".{0,300}?"text":"([^"]+)"', r'"soundMetadata".{0,300}?"text":"([^"]+)"']:
         for mm in re.finditer(pat, h):
             snd.add(" · ".join(g for g in mm.groups() if g))
-    rec["sound"] = sorted(snd)[:8]
+    for key in ("videoDescriptionMusicSectionRenderer", "musicAttribution", "soundAttribution", "reelSound", "carouselLockupRenderer", "infoRowRenderer"):
+        for mm in re.finditer(key, h):
+            chunk = h[mm.start(): mm.start() + 2500]
+            for c in re.findall(r'"(?:content|simpleText|text)":"([^"]{2,100})"', chunk)[:10]:
+                snd.add(key[:12] + ": " + c)
+    rec["sound"] = sorted(snd)[:20]
     m = re.search(r'"location":\{[^}]*?"text":"([^"]+)"', h) or re.search(r'"locationText":"([^"]+)"', h)
     rec["loc"] = m.group(1) if m else None
     rec["milan"] = bool(re.search(r"milan|милан|duomo|milano", h, re.I))
-    i = h.lower().find("milan")
-    rec["milan_ctx"] = html.unescape(h[max(0, i - 150): i + 150]) if i >= 0 else None
+    mm = re.search(r"milan|милан|duomo|milano", h, re.I)
+    i = mm.start() if mm else -1
+    rec["milan_ctx"] = html.unescape(h[max(0, i - 300): i + 300]) if i >= 0 else None
     out.append(rec)
     print(json.dumps(rec, ensure_ascii=False)[:600], flush=True)
 open("status/pages.json", "w", encoding="utf-8").write(json.dumps(out, ensure_ascii=False, indent=1))
