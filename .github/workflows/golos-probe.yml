@@ -36,6 +36,7 @@ jobs:
           timeout 600 /opt/multik-tts/venv/bin/pip install -q --timeout 30 --retries 5 numpy ruaccent praat-parselmouth
           [ -s /opt/multik-tts/v5_cis_base.pt ] || curl -fsSL --retry 3 --connect-timeout 20 --max-time 900 -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
           curl -fsSL --retry 3 --connect-timeout 20 --max-time 120 -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
+          if grep -q '^mono' probe_request.txt; then python mono_patch.py pa/patch_server.py; fi
           python pa/patch_server.py /opt/multik-tts/server.py
           cp pa/albina_worker.py /opt/multik-tts/
       - name: Озвучка проб
