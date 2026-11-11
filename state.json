@@ -166,21 +166,25 @@
    ]
   },
   "cars": {
-   "no": 6,
+   "no": 7,
    "points": {
     "Epica": 25,
-    "Tracker": 18,
-    "Onix": 15,
-    "Matiz": 16,
-    "Malibu": 25,
+    "Tracker": 33,
+    "Onix": 17,
+    "Matiz": 41,
+    "Malibu": 29,
     "Chery Tiggo": 10,
     "Jiguli": 14,
     "Gentra": 16,
     "Captiva": 3,
-    "Labo": 7,
-    "Tico": 25,
+    "Labo": 25,
+    "Tico": 26,
     "Cobalt": 18,
-    "Nexia": 10
+    "Nexia": 10,
+    "BYD Song": 12,
+    "Equinox": 10,
+    "Spark": 8,
+    "Lacetti": 6
    },
    "results": [
     {
@@ -260,10 +264,23 @@
      ],
      "link": "https://youtube.com/shorts/_5EqS-RCHKM",
      "final": false
+    },
+    {
+     "no": 7,
+     "date": "2026-11-11",
+     "slot": 1,
+     "winner": "Matiz",
+     "top3": [
+      "Matiz",
+      "Labo",
+      "Tracker"
+     ],
+     "link": "https://youtube.com/shorts/OsEnOlxc5ro",
+     "final": false
     }
    ],
    "champion": null,
-   "season_races": 2,
+   "season_races": 3,
    "season": "2026-W46",
    "new_pending": [],
    "final_season": "2026-W45",
@@ -605,7 +622,19 @@
    "link": "https://youtube.com/shorts/WVoOKB-mmNU",
    "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №4 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-11",
+   "slot": 1,
+   "league": "cars",
+   "no": 7,
+   "final": false,
+   "link": "https://youtube.com/shorts/OsEnOlxc5ro",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №7 #shorts",
+   "pl": true
   }
  ],
- "seen_comments": []
+ "seen_comments": [
+  "UgwixsBTAlCJfIcyTtB4AaABAg"
+ ]
 }

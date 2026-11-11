@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-10 слот 3: clubs №4 https://youtube.com/shorts/WVoOKB-mmNU, за 56 с
+ВЫЛОЖЕНО 2026-11-11 слот 1: cars №7 https://youtube.com/shorts/OsEnOlxc5ro, за 72 с
 
 {
- "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №4 #shorts",
- "description": "⏳ Finalgacha 5 kun · До финала 5 дней\n\nPaxtakor, Bunyodkor, Nasaf, Navbahor… qaysi jamoa tezroq? Izohlarda yoz 👇\n22 клубов Суперлиги Узбекистана в одной гонке: Пахтакор, Бунёдкор, Насаф, Навбахор и другие. Какой победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nJamoangiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего клуба? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #futbol #superliga #paxtakor #bunyodkor #nasaf #navbahor #гонкашариков #shorts",
+ "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №7 #shorts",
+ "description": "🏆 Oʻtgan hafta chempioni: Kia K5 · Чемпион прошлой недели: Kia K5\n\n⏳ Finalgacha 4 kun · До финала 4 дня\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,36 +11,35 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "futbol",
-  "футбол",
-  "superliga",
-  "суперлига узбекистана",
-  "paxtakor",
-  "bunyodkor",
-  "nasaf",
-  "navbahor",
-  "neftchi",
-  "pfl uzbekistan"
+  "mashina",
+  "cobalt",
+  "gentra",
+  "nexia",
+  "damas",
+  "malibu",
+  "chevrolet",
+  "машины узбекистана"
  ]
 }
 
 --- журнал (время Ташкента) ---
-19:35:34 режим publish, событие workflow_dispatch
-19:35:34 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-19:35:45 комментарии: роликов просмотрено: 15, комментариев: 0
-19:35:46 Тема: гонка футбольных клубов. Подбираю трассу и заезд…
-19:35:47   трасса 1 (split, stairs, tramps, tunnel): победа на 23.8 с, смен лидера 21, финишировали 14, расчёт 1 с
-19:35:48   трасса 2 (tramps, stairs, tunnel, bumpy): победа на 28.4 с, смен лидера 21, финишировали 4, расчёт 1 с
-19:35:50   трасса 3: никто не доехал за 37 с — не подходит
-19:35:51   трасса 4 (bumpy, stairs, hammers, tramps): победа на 19.0 с, смен лидера 10, финишировали 2, расчёт 1 с — не подходит
-19:35:51 Рисую трассу…
-19:35:51 Рисую кадры: заезд 27 с + финал 6 с…
-19:35:51   кадр 0/797, 6 с
-19:36:02   кадр 300/797, 16 с
-19:36:13   кадр 600/797, 27 с
-19:36:25 Свожу звук…
-19:36:25 Готово за 40 с: победил Qoʻqon 1912, ролик 33 с
-19:36:25 ролик готов: 33 с, 21 МБ, сборка 52 с; победил Qoʻqon 1912, топ-3: Qoʻqon 1912, Aral, Olmaliq
-19:36:29 YouTube: https://youtube.com/shorts/WVoOKB-mmNU
-19:36:29 в плейлисте
-19:36:30 статус: public uploaded
+11:35:37 режим publish, событие workflow_dispatch
+11:35:38 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+11:35:50 комментарии: роликов просмотрено: 15, комментариев: 1
+11:35:50 комментариев новых: 1, просьб: 1
+11:35:50 Тема: гонка машин. Подбираю трассу и заезд…
+11:35:52   трасса 1 (tramps, bumpy, hammers, split): победа на 25.6 с, смен лидера 8, финишировали 4, расчёт 2 с
+11:35:54   трасса 2 (tunnel, split, tramps, bumpy): победа на 31.4 с, смен лидера 13, финишировали 6, расчёт 2 с — не подходит
+11:35:57   трасса 3: никто не доехал за 37 с — не подходит
+11:35:59   трасса 4 (bumpy, tramps, stairs, split): победа на 27.0 с, смен лидера 16, финишировали 5, расчёт 2 с
+11:35:59 Рисую трассу…
+11:35:59 Рисую кадры: заезд 30 с + финал 6 с…
+11:36:00   кадр 0/891, 9 с
+11:36:13   кадр 300/891, 23 с
+11:36:26   кадр 600/891, 36 с
+11:36:44 Свожу звук…
+11:36:45 Готово за 55 с: победил Matiz, ролик 36 с
+11:36:45 ролик готов: 36 с, 23 МБ, сборка 68 с; победил Matiz, топ-3: Matiz, Labo, Tracker
+11:36:48 YouTube: https://youtube.com/shorts/OsEnOlxc5ro
+11:36:49 в плейлисте
+11:36:49 статус: public uploaded
