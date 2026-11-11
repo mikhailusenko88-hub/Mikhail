@@ -1,4 +1,4 @@
-# Страница CRM «Сервер» — 2026-11-11 17:30 UTC
+# Страница CRM «Сервер» — 2026-11-11 17:38 UTC
 
 ```
 cron: 1 строк
@@ -10,11 +10,11 @@ cron: 1 строк
 после cron просьба: ls: cannot access '/var/lib/prostranstvo/server-request': No
 
 --- отчёт (начало) ---
-Обновлено: 11.11.2026 20:30
+Обновлено: 11.11.2026 20:38
 
-=== Сервер «Наш декор», 11.11.2026 20:30 ===
+=== Сервер «Наш декор», 11.11.2026 20:38 ===
 Сайт:   http://nashdekor.ru/  (HTTPS пока нет — команда: prostranstvo-cert)
-IP:     134.33.77.209
+IP:     20.106.23.230
 nginx:  active
 Обновление из GitHub: работает (последняя проверка 0 мин назад)
 Версия сайта: 02b30eb от 11.11.2026 19:27 — Редактор сайта v2: новые разделы, доп. фото, скрыть товар, тексты главной и разделов, статьи, отзывы
@@ -24,7 +24,7 @@ fail2ban SSH:  active, сейчас заблокировано адресов: 0
 Диск:   86G свободно из 145G
 
 === Почта ===
-Почта nashdekor.ru — проверка (11.11.2026 20:30)
+Почта nashdekor.ru — проверка (11.11.2026 20:38)
  Службы:
    [да]  postfix работает
    [да]  dovecot работает
@@ -38,18 +38,18 @@ fail2ban SSH:  active, сейчас заблокировано адресов: 0
  Ящики: info@nashdekor.ru zakaz@nashdekor.ru yulia@nashdekor.ru mikhail@nashdekor.ru
    [НЕТ] сертификат mail.nashdekor.ru (Let's Encrypt) — пока временный; сервер получит сам, когда домен заработает
  DNS (как видит интернет):
-   [НЕТ] A mail.nashdekor.ru → 134.33.77.209 — сейчас: 185.60.134.150
+   [НЕТ] A mail.nashdekor.ru → 20.106.23.230 — сейчас: 185.60.134.150
    [да]  MX nashdekor.ru → mail.nashdekor.ru
-   [НЕТ] SPF (TXT v=spf1 … 134.33.77.209) — сейчас: v=spf1 ip4:185.60.134.150 mx ~all
+   [НЕТ] SPF (TXT v=spf1 … 20.106.23.230) — сейчас: v=spf1 ip4:185.60.134.150 mx ~all
    [НЕТ] DKIM (mail._domainkey) — не совпадает с ключом сервераv=DKIM1;k=rsa;p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuC+8OpsxmU1z9Y+RCCdRjWVGxyPL+Auk6tZX4O8hTQ9Iq4iXnfwBsGKQkWlOU8ebXCUHwN2OuvGWzyELIIrF9iu95JK/TX6jFEK+Hrs3qVpJwvEboMEWcBulsFmn3rWelAyEq2teZOQYdD+iPYhh77kLZDaZqZAyVcRq/n53Al/1abYMsqA+thc3iRT0UcqLc4XdR8fLg4NfjFqB4bnQ500ncSR0O10IAvze3Wzmz2uPjXPJPMf/Xfl+bI2zfZIk/HInMhMRZlWu+kuboOvbRYH3+0DyBZjcWmk4fOCKISM1P0nPdVbOvLYuwDcYHJmK2WTl9C0mnvgxdzmJx6gDqwIDAQAB
    [да]  DMARC
-   [НЕТ] PTR 134.33.77.209 → mail.nashdekor.ru — сейчас: нет (меняется в кабинете FirstVDS)
+   [НЕТ] PTR 20.106.23.230 → mail.nashdekor.ru — сейчас: нет (меняется в кабинете FirstVDS)
  Отправка наружу (порт 25 у хостинга):
    [да]  соединение с почтовыми серверами (mxs.mail.ru:25)
    очередь писем пуста
 
 === CRM ===
-CRM nashdekor.ru — проверка (11.11.2026 20:30)
+CRM nashdekor.ru — проверка (11.11.2026 20:38)
    [да]  служба prostranstvo-crm работает
    [да]  приложение отвечает
    [да]  https://crm.nashdekor.ru/login через nginx
@@ -59,7 +59,7 @@ CRM nashdekor.ru — проверка (11.11.2026 20:30)
    последняя копия: /var/backups/prostranstvo/2026-11-11
 
 === Нагрузка ===
- 20:30:42 up 5 min,  0 user,  load average: 0.60, 0.65, 0.33
+ 20:38:39 up 5 min,  0 user,  load average: 0.53, 0.50, 0.24
                total        used        free      shared  buff/cache   available
 Mem:            15Gi       1.2Gi        12Gi        51Mi       1.9Gi        14Gi
 Swap:          3.0Gi          0B       3.0Gi
