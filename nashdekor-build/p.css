@@ -8,7 +8,7 @@
 @media (max-width:860px){.ptop{grid-template-columns:1fr;gap:18px}}
 .ptitle h1{font-size:clamp(24px,4.2vw,38px);line-height:1.1}
 .ptitle .lead{color:var(--muted);margin:8px 0 0;font-size:15px;max-width:60ch}
-.pview{position:relative;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#16233F;aspect-ratio:4/3;max-height:min(70vh,620px)}
+.pview{position:relative;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#26292E;aspect-ratio:4/3;max-height:min(70vh,620px)}
 .pview.is3d{background:radial-gradient(ellipse at 50% 35%,#F7F5F0 0%,#E6E1D8 60%,#D8D2C7 100%)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pview.is3d{background:radial-gradient(ellipse at 50% 35%,#3a3733 0%,#2a2825 60%,#201f1c 100%)}}
 .pview canvas,.pview img{display:block;width:100%;height:100%}

@@ -49,5 +49,9 @@ a{text-decoration-color:var(--mark)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pview.is3d{background:radial-gradient(ellipse at 50% 35%,#40454D 0%,#2E3238 60%,#26292E 100%)}}
 :root[data-theme="dark"] .pview.is3d{background:radial-gradient(ellipse at 50% 35%,#40454D 0%,#2E3238 60%,#26292E 100%)}
 
+/* Фон фото товаров — «Антрацит» (фото перекрашены 11.11.2026, раньше тёмно-синий #16233F) */
+.sw,.pview{background:#26292E}
+.pview.is3d{background:radial-gradient(ellipse at 50% 35%,#FFFFFF 0%,#ECEFF2 60%,#D9DEE3 100%)}
+
 /* Подвал: тонкая линия «Камень», как на картинках брендбука */
 footer{border-top-color:var(--stone)}

@@ -118,7 +118,7 @@ function prep(img){
   for (let i = 0, p = 0; i < n; i++, p += 4) {
     const r = d[p], gg = d[p+1], b = d[p+2], mx = Math.max(r, gg, b), mn = Math.min(r, gg, b);
     const s = mx ? (mx - mn) / mx : 0, v = mx / 255;
-    const wgt = (1 - ss(0.16, 0.30, s)) * ss(0.10, 0.24, v) * (1 - ss(6, 16, r - b));
+    const wgt = (1 - ss(0.16, 0.30, s)) * ss(0.22, 0.34, v) * (1 - ss(6, 16, r - b));
     m[i] = wgt; L[i] = 0.299 * r + 0.587 * gg + 0.114 * b;
     if (wgt > 0.6) hist[L[i] | 0]++;
   }
