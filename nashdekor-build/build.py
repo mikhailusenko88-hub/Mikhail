@@ -174,8 +174,10 @@ WOOD_NAMES = {"2": "две широкие ламели", "3": "три ламел
 def slug(a): return a.lower().replace("/", "-").replace(" ", "")
 def esc(s): return html.escape(str(s), quote=True)
 def fmt(n): return "{:,}".format(int(round(n))).replace(",", " ")
-PHOTO_V = "2"   # версия фото товаров: менять, когда фото перерисованы (11.11.2026 — фон «Антрацит»); то же — PHOTO_V в index.html
+PHOTO_V = "3"   # версия фото товаров: менять, когда фото перерисованы (11.11.2026 — фон «Антрацит»); то же — PHOTO_V в index.html
 def photo(a): return "img/" + PHOTO[a] + "?v=" + PHOTO_V if PHOTO.get(a) else ""
+# фото в 2 раза крупнее (нейросеть Real-ESRGAN, ветка img-upscale, 11.11.2026) — для чётких экранов, og:image, Яндекс Товаров
+def photo2x(a): return ("img/2x/" + PHOTO[a] + "?v=" + PHOTO_V) if PHOTO.get(a) and os.path.exists(os.path.join(SITE, "img", "2x", PHOTO[a])) else photo(a)
 def series(x): return x["a"].split("-")[0] if x["c"] == "color" else None
 def wood_parts(x):
     n = {"2": 2, "3": 3, "5": 5}.get(series(x), 3); base = max(2, x["t"] * 0.35); step = x["w"] / n; slat = step * (0.62 if n < 5 else 0.55)
@@ -326,7 +328,7 @@ def about(x):
 def product_page(x):
     a, c = x["a"], x["c"]
     sl = slug(a); url = "%s/p/%s/" % (BASE, sl); catc = CAT_BY[c]
-    ph = photo(a); og_img = (BASE + "/" + ph) if ph else BASE + "/og.jpg"
+    ph = photo(a); og_img = (BASE + "/" + photo2x(a)) if ph else BASE + "/og.jpg"
     is_wood = c == "color"; has3d = a in PROF or is_wood or a in PROF2; is_panel = c in ("panel", "color")
     crumb_items = [("Главная", ROOT), (catc[2], "%scatalog/%s/" % (ROOT, catc[1])), (a, "")]
     ld_prod = {"@context": "https://schema.org", "@type": "Product", "name": x["n"], "sku": a, "mpn": a, "brand": {"@type": "Brand", "name": "ARTDEC"},
@@ -351,7 +353,9 @@ def product_page(x):
                 % ("панель" if is_panel else "фрагмент", second, '<button type="button" data-v="photo" aria-pressed="false">Фото</button>' if ph else "", cnt))
     stage = '<div class="pview%s" id="pview">' % (" is3d" if has3d else " photoonly")
     if has3d: stage += '<canvas id="c3" aria-label="%s %s в 3D"></canvas><div class="nogl" id="nogl" hidden>3D не запускается в этом браузере — посмотрите фото.</div>' % (esc(KIND[c]), esc(a))
-    if ph: stage += '<img id="photo" src="%s%s" alt="%s %s — %s" width="790" height="449"%s>' % (ROOT, ph, esc(KIND[c]), esc(a), esc(x["d"]), " hidden" if has3d else "")
+    if ph:
+        p2 = photo2x(a); srcset = (' srcset="%s%s 790w, %s%s 1580w" sizes="(max-width: 860px) 100vw, 640px"' % (ROOT, ph, ROOT, p2)) if p2 != ph else ""
+        stage += '<img id="photo" src="%s%s"%s alt="%s %s — %s" width="790" height="449"%s>' % (ROOT, ph, srcset, esc(KIND[c]), esc(a), esc(x["d"]), " hidden" if has3d else "")
     elif not has3d: stage += '<div class="nogl">Фото скоро. Размеры и цена — ниже.</div>'
     stage += '<div class="hint" id="hint"></div></div>'
     if is_panel:
@@ -417,7 +421,7 @@ def product_page(x):
             "paint": PAINT, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", "")}}
     if a in PROF: data["prof"] = PROF[a]
     elif a in PROF2: data["poly"] = PROF2[a]
-    if is_wood: data["wood"] = wood_parts(x); data["tex"] = "img/tex/" + PHOTO[a] if PHOTO.get(a) else ""
+    if is_wood: data["wood"] = wood_parts(x); data["tex"] = "img/tex/" + PHOTO[a] + "?v=" + PHOTO_V if PHOTO.get(a) else ""
 
     body = (header(ROOT) + '<main><div class="wrap">' + crumbs(crumb_items) +
             '<div class="ptop"><div><div class="ptitle"><h1>%s</h1><p class="lead">%s</p></div>' % (esc(x["n"]), esc(x["d"])) + tabs + stage + colors + prof_html + specs_html +
@@ -714,7 +718,7 @@ def yml_offer(x):
             '      <categoryId>%d</categoryId>\n      <picture>%s/%s</picture>\n      <name>%s</name>\n      <vendorCode>%s</vendorCode>\n'
             '      <description><![CDATA[%s]]></description>\n      <sales_notes>Поштучно и коробками, предоплата</sales_notes>\n'
             '      <pickup>true</pickup>\n      <delivery>true</delivery>\n%s\n    </offer>') % (
-        yml_id(x["a"]), BASE, slug(x["a"]), int(round(x["r"])), YML_CAT_OF[x["c"]], BASE, photo(x["a"]), esc(x["n"]), esc(x["a"]),
+        yml_id(x["a"]), BASE, slug(x["a"]), int(round(x["r"])), YML_CAT_OF[x["c"]], BASE, photo2x(x["a"]), esc(x["n"]), esc(x["a"]),
         description(x).replace("]]>", ""), "\n".join('      <param name="%s"%s>%s</param>' % (n, (' unit="%s"' % u) if u else "", esc(v)) for n, u, v in p))
 yml_items = [x for x in CAT if x.get("r") and photo(x["a"]) and x["c"] in YML_CAT_OF]
 YML = ['<?xml version="1.0" encoding="UTF-8"?>', '<yml_catalog date="%s">' % datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S+03:00"), '  <shop>',
