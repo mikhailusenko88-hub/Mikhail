@@ -29,3 +29,5 @@
 | shorts | 2026-11-10 | 2 | Russia vs Türkiye vs France | https://youtube.com/shorts/iqgHBXZ6LQ0 | |
 | 22 | 2026-11-10 | 3 | S2 RACE 9/68 | https://youtu.be/YVtSvMTiR-Y | public |
 | shorts | 2026-11-10 | 3 | UK vs Germany vs Italy | https://youtube.com/shorts/WIWliSCdx6o | |
+| 23 | 2026-11-11 | 1 | S2 RACE 10/68 | https://youtu.be/n-1K-JsMI_E | public |
+| shorts | 2026-11-11 | 1 | Japan vs Russia vs Philippines | https://youtube.com/shorts/TYy0vqt5uT0 | |
