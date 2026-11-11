@@ -714,7 +714,7 @@ step_nginx() {
     echo "        proxy_set_header X-Forwarded-Host \$host;"
     echo "        proxy_read_timeout 120s;"
     echo "    }"
-    echo "    location ^~ /site/edit/ {   # «Редактор сайта»: до 12 фото за раз"
+    echo "    location ^~ /site/edit {   # «Редактор сайта»: до 12 фото за раз (без / в конце — иначе nginx шлёт 301 на /site/edit/)"
     echo "        client_max_body_size 100m;"
     echo "        proxy_pass http://127.0.0.1:$PORT;"
     echo "        proxy_set_header Host \$host;"
