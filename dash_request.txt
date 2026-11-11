@@ -1,0 +1,7 @@
+# 2026-11-11 23:40 MSK — пауза на тире: какой способ звучит живее
+bank: dash_bank.json
+mode: none none 0
+mode: comma comma 0
+mode: cb150 commabreak 150
+mode: cb300 commabreak 300
+mode: br220 break 220

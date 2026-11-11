@@ -49,7 +49,8 @@ def _guess_stress(w):
 # Поэтому ударение ставим и на них, кроме служебных слов, которые в речи и правда безударны.
 _CLIT = {"в", "во", "к", "ко", "с", "со", "у", "о", "об", "от", "до", "по", "за", "на", "над", "под", "из", "при", "про",
          "для", "без", "не", "ни", "же", "бы", "ли", "ль", "и", "а", "да"}
-BOT_DASH_MS = 220                          # тире модель не слышит совсем — ставим на его месте короткую паузу
+BOT_DASH_MODE = os.environ.get("BOT_DASH_MODE", "break")   # что ставить на месте тире: break | comma | commabreak | none
+BOT_DASH_MS = int(os.environ.get("BOT_DASH_MS", "220"))    # тире модель не слышит совсем — ставим на его месте короткую паузу
 
 
 def _bot_part(w, first=True, lead=True):
@@ -82,8 +83,16 @@ def _bot_word(m):
 
 
 def _dash(s):
-    """Тире -> короткая пауза (в SSML). Модель знак тире пропускает: «Самое холодное место во Вселенной — на Земле» читалось без остановки."""
-    return re.sub(r"\s+[—–]\s+", f' <break time="{BOT_DASH_MS}ms"/> ', s) if BOT_DASH_MS else s
+    """Тире -> пауза. comma: запятая (голос не опускается, как перед точкой), commabreak: запятая и пауза, break: только пауза."""
+    if BOT_DASH_MODE == "comma":
+        rep = ", "
+    elif BOT_DASH_MODE == "commabreak":
+        rep = f', <break time="{BOT_DASH_MS}ms"/> '
+    elif BOT_DASH_MODE == "break" and BOT_DASH_MS:
+        rep = f' <break time="{BOT_DASH_MS}ms"/> '
+    else:
+        return s
+    return re.sub(r"\s*,?\s+[—–]\s+", rep, s)
 
 
 def bot_marks(marked):
