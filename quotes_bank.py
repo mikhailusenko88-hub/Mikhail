@@ -93,7 +93,8 @@ from quotes_bank3 import QUOTES3  # noqa: E402
 from quotes_bank4 import QUOTES4  # noqa: E402
 from quotes_bank5 import QUOTES5  # noqa: E402  (второй месяц)
 from quotes_bank6 import QUOTES6  # noqa: E402
-for _d in (QUOTES2, QUOTES3, QUOTES4, QUOTES5, QUOTES6):
+from quotes_bank7 import QUOTES7  # noqa: E402  (третий месяц)
+for _d in (QUOTES2, QUOTES3, QUOTES4, QUOTES5, QUOTES6, QUOTES7):
     for _k in _d:
         assert _k not in QUOTES, _k
     QUOTES.update(_d)
