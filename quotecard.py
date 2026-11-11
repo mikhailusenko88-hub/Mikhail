@@ -1930,3 +1930,4 @@ SCENES.update({"rain_window": (scene_rain_window, 0.55), "windmill": (scene_wind
 
 # новые сцены второго месяца (Казахстан, зима, Новый год…)
 import scenes2  # noqa: E402,F401
+import scenes3  # noqa: E402,F401

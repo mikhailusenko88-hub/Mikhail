@@ -32,7 +32,7 @@ def first_line(d):
 def make_title(qids, k, limit=100):
     d = QUOTES[qids[0]]
     a = author_key(d)
-    a_short = a.split()[-1] if len(a) > 16 and " " in a else a
+    a_short = a.split()[-1] if len(a) > 16 and " " in a and not a.endswith("proverb") else a
     suffixes = [f" ✨ {a} + 2 more #shorts", f" 🤍 Три мысли на сегодня | {a_short} #shorts", f" ✨ Words to keep | {a} #shorts"]
     suf = suffixes[k % 3]
     s = d["ru"] if isinstance(d["ru"], str) else " ".join(d["ru"])
