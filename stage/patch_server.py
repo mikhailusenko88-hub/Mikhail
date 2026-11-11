@@ -49,14 +49,20 @@ def _guess_stress(w):
 # Поэтому ударение ставим и на них, кроме служебных слов, которые в речи и правда безударны.
 _CLIT = {"в", "во", "к", "ко", "с", "со", "у", "о", "об", "от", "до", "по", "за", "на", "над", "под", "из", "при", "про",
          "для", "без", "не", "ни", "же", "бы", "ли", "ль", "и", "а", "да"}
-BOT_DASH_MODE = os.environ.get("BOT_DASH_MODE", "break")   # что ставить на месте тире: break | comma | commabreak | none
-BOT_DASH_MS = int(os.environ.get("BOT_DASH_MS", "220"))    # тире модель не слышит совсем — ставим на его месте короткую паузу
+# Тире модель не слышит совсем: «Самое холодное место во Вселенной — на Земле» читалось без остановки.
+# Одна пауза (<break>) на его месте не годится: голос перед ней падает, как перед точкой («Длина. До тридцати метров»),
+# и ударение съезжает на первый слог. Запятая + пауза: голос остаётся «на весу», пауза ровно та, что задана (проба 12.11.2026).
+BOT_DASH_MODE = os.environ.get("BOT_DASH_MODE", "commabreak")   # commabreak | comma | break | none
+BOT_DASH_MS = int(os.environ.get("BOT_DASH_MS", "200"))         # пауза на тире, мс; двойное тире «——» — в полтора раза дольше
+BOT_ASSIM = os.environ.get("BOT_ASSIM", "1") == "1"             # звонкость на стыке: «сбит» -> «збит», «с головы» -> «зголовы»
 
 
 def _bot_part(w, first=True, lead=True):
     if sum(c in VOW for c in w) <= 1:
         low = w.replace("+", "").lower()
         clit = low in _CLIT or not first or not any(c in VOW for c in w)   # «-то», «-ка», «из-под» — вторая часть без ударения
+        if len(low) == 1 and low in VOW and w.replace("+", "").isupper() and not lead:
+            clit = False                   # «Витамин А»: заглавная буква посреди фразы — это название, а не союз
         if low == "что":
             clit = not lead                # «Что это?» — с ударением; «…, что он» (союз) — без
         if clit:
@@ -83,24 +89,40 @@ def _bot_word(m):
 
 
 def _dash(s):
-    """Тире -> пауза. comma: запятая (голос не опускается, как перед точкой), commabreak: запятая и пауза, break: только пауза."""
-    if BOT_DASH_MODE == "comma":
-        rep = ", "
-    elif BOT_DASH_MODE == "commabreak":
-        rep = f', <break time="{BOT_DASH_MS}ms"/> '
-    elif BOT_DASH_MODE == "break" and BOT_DASH_MS:
-        rep = f' <break time="{BOT_DASH_MS}ms"/> '
-    elif BOT_DASH_MODE == "dashbreak":
-        rep = f' — <break time="{BOT_DASH_MS}ms"/> '
-    elif BOT_DASH_MODE == "commadash":
-        rep = ", — "
-    else:
+    """Тире -> пауза (см. BOT_DASH_MODE). «——» — пауза подольше: «В ней —— яд»."""
+    def rep(m):
+        ms = int(BOT_DASH_MS * (1.6 if len(m.group(1)) > 1 else 1))
+        if BOT_DASH_MODE == "comma":
+            return ", "
+        if BOT_DASH_MODE == "commabreak":
+            return f', <break time="{ms}ms"/> '
+        if BOT_DASH_MODE == "break":
+            return f' <break time="{ms}ms"/> '
+        return m.group(0)
+    return re.sub(r"\s*,?\s+([—–]{1,2})\s+", rep, s)
+
+
+# Звонкость на стыке (12.11.2026). После глухого согласного Альбина оглушает и следующий звонкий: «был сбит» звучало «спит»,
+# «с головы» — «с коловы», «сгорит» — «скорит», «растут гуще» — «растут куще» (по спектру: 12 из 32 таких стыков глухие,
+# после гласных и звонких — ни одного). В живой речи наоборот: первый согласный озвончается. Пишем так, как звучит.
+_VOICE = {"т": "д", "к": "г", "с": "з", "п": "б", "ш": "ж", "ф": "в", "х": "г"}
+_NL = r"(?<![А-Яа-яЁё+\-])"          # не внутри слова
+
+
+def _assim(s):
+    if not BOT_ASSIM:
         return s
-    return re.sub(r"\s*,?\s+[—–]\s+", rep, s)
+    s = re.sub(_NL + r"([сС])(?=[бгдз])", lambda m: "з" if m.group(1) == "с" else "З", s)              # сбит -> збит
+    s = re.sub(_NL + r"([сС]) ([бгджзБГДЖЗ])",                                                          # с головы -> зголовы
+               lambda m: ("з" if m.group(1) == "с" else "З") + m.group(2).lower(), s)
+    s = re.sub(_NL + r"([вВ])(?= [птксшфхцчщПТКСШФХЦЧЩ])", lambda m: "ф" if m.group(1) == "в" else "Ф", s)   # в тебе -> ф тебе
+    s = re.sub(r"(?<=[аеёиоуыэюя])([ткспшфх])(?= [бгджзБГДЖЗ])", lambda m: _VOICE[m.group(1)], s)       # как бетон -> каг бетон
+    return s
+
 
 
 def bot_marks(marked):
-    return WORD.sub(_bot_word, marked)
+    return _assim(WORD.sub(_bot_word, marked))
 
 
 def is_yesno(s0):

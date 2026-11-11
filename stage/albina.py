@@ -367,6 +367,16 @@ def fix_sam(text):
     return re.sub(r"(?<![А-Яа-яЁё+])([Сс]ам(?:ому|ого|ой|ом))(\s+)([А-Яа-яЁё]+)", one, text)
 
 
+_LETTER = {"А": "+А", "A": "+А", "В": "б+э", "B": "б+э", "С": "ц+э", "C": "ц+э", "Д": "д+э", "D": "д+э",
+           "Е": "+Е", "E": "+Е", "К": "к+а", "K": "к+а"}
+_LETTER_RE = re.compile(r"\b([Вв]итамин[а-яё]*)\s+([АВСДЕКABCDEK])(?![А-Яа-яЁёA-Za-z0-9])")
+
+
+def fix_letters(t):
+    """«Витамин А», «витамина С»: буква — название, читается с ударением («а», «цэ»), а не как союз или предлог."""
+    return _LETTER_RE.sub(lambda m: m.group(1) + " " + _LETTER[m.group(2)], t)
+
+
 def prep(text):
     t = str(text or "")
     t = _phrases().get(re.sub(r"\s+", " ", t).strip(), t)
@@ -376,6 +386,7 @@ def prep(text):
     t = numbers(t)
     t = fix_vse(t)
     t = fix_sam(t)
+    t = fix_letters(t)
     t = apply_fix(t)
     return re.sub(r"\s+", " ", t).strip()
 
