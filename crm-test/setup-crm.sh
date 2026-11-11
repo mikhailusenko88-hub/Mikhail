@@ -36,6 +36,7 @@ CATALOG_FILE="/var/www/prostranstvo/index.html"
 TLS_DIR="/etc/prostranstvo/crm-tls"
 CRM_STATE="/var/lib/prostranstvo-crm"
 BACKUP_DIR="/var/backups/prostranstvo"
+BACKUP_PASS_FILE="/etc/prostranstvo/backup-pass"
 HELPER="/usr/local/sbin/prostranstvo-crm"
 PORT=8081
 SETUP_LOG="/var/log/prostranstvo-crm-setup.log"
@@ -192,8 +193,14 @@ SITE_LEADS=$leads
 NOTIFY_EMAIL=$notify
 COOKIE_SECURE=1
 SHOP_DOMAIN=$DOMAIN
+BACKUP_PASS_FILE=$BACKUP_PASS_FILE
 PYTHONDONTWRITEBYTECODE=1
 EOF
+  if [[ ! -s $BACKUP_PASS_FILE ]]; then   # пароль шифрования копий баз (для скачивания и облака); CRM показывает его владельцам
+    gen_pw >"$BACKUP_PASS_FILE.tmp"; gen_pw | head -c 6 >>"$BACKUP_PASS_FILE.tmp"; tr -d '\n' <"$BACKUP_PASS_FILE.tmp" >"$BACKUP_PASS_FILE"; rm -f "$BACKUP_PASS_FILE.tmp"
+    echo >>"$BACKUP_PASS_FILE"
+  fi
+  chown "root:$APP_USER" "$BACKUP_PASS_FILE"; chmod 640 "$BACKUP_PASS_FILE"
   manage init >>"$DETAIL_LOG" 2>&1 || die "не удалось создать базу CRM — см. $DETAIL_LOG"
   touch "$PASS_FILE"; chmod 600 "$PASS_FILE"
   local u login name role pw res created=()
@@ -228,6 +235,8 @@ STATE=/var/lib/prostranstvo-crm
 TLS_DIR=/etc/prostranstvo/crm-tls
 CERT_LOG=/var/log/prostranstvo-crm-cert.log
 BACKUP_DIR=/var/backups/prostranstvo
+BACKUP_PASS_FILE=/etc/prostranstvo/backup-pass
+EXPORT_DIR=/var/lib/prostranstvo/export
 # shellcheck source=/dev/null
 set -a; . "$ENV_FILE"; set +a
 
@@ -306,6 +315,11 @@ cmd_passwords() {
   echo " Вход: https://$CRM_HOST . Пароль можно сменить в CRM: Ещё → Настройки."
   echo "=================================================================="
   awk '{printf "  %-12s %s\n", $1, $2}' "$PASS_FILE"
+  if [[ -s $BACKUP_PASS_FILE ]]; then
+    echo "------------------------------------------------------------------"
+    echo " Пароль от копий баз (скачанных из CRM и в облаке) — храните ВНЕ сервера:"
+    echo "  $(head -n1 "$BACKUP_PASS_FILE")"
+  fi
 }
 
 cmd_passwd() {
@@ -404,6 +418,61 @@ cmd_backup() {
   [[ $ok == yes ]]
 }
 
+make_archive() {  # $1 — куда положить зашифрованный архив: последняя копия баз + почта + настройки сервера
+  local out=$1 latest list=() p
+  [[ -s $BACKUP_PASS_FILE ]] || { echo "нет пароля копий ($BACKUP_PASS_FILE) — запустите обновление CRM"; return 1; }
+  latest=$(ls -1d "$BACKUP_DIR"/20* 2>/dev/null | tail -n1 || true)
+  [[ -n $latest ]] || { echo "копий баз ещё нет"; return 1; }
+  list=("${latest#/}")
+  for p in /var/mail/vhosts /etc/prostranstvo /var/lib/rspamd/dkim /etc/dovecot/pochta-users /etc/postfix/vmailbox /etc/postfix/virtual; do
+    [[ -e $p ]] && list+=("${p#/}")
+  done
+  umask 077
+  # tar отвечает 1, если файл менялся во время чтения (пришло письмо) — это не ошибка
+  if { tar -C / --warning=no-file-changed -czf - "${list[@]}" 2>/dev/null || [[ $? -eq 1 ]]; } |
+       openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -md sha256 -salt -pass "file:$BACKUP_PASS_FILE" -out "$out.part"; then
+    mv -f -- "$out.part" "$out"
+  else
+    rm -f -- "$out.part"; echo "архив не получился"; return 1
+  fi
+}
+
+cmd_export() {  # копия для скачивания из CRM («Сервер» → «Копия баз — скачать»)
+  local out
+  cmd_backup || echo "свежая копия баз сделалась не полностью — архив из последней удачной"
+  install -d -m 750 -o root -g prostranstvo "$EXPORT_DIR"
+  find "$EXPORT_DIR" -maxdepth 1 -name 'nashdekor-kopiya-*' -mmin +4320 -delete 2>/dev/null || true
+  out="$EXPORT_DIR/nashdekor-kopiya-$(date +%F-%H%M).tar.gz.enc"
+  make_archive "$out" || return 1
+  chown root:prostranstvo "$out"; chmod 640 "$out"
+  echo "Готово: $(basename "$out"), $(du -h "$out" | cut -f1). Скачать — CRM → Ещё → Сервер, ниже «Копии баз для скачивания»."
+}
+
+cmd_offsite() {  # ночная копия к другому провайдеру (S3, Selectel): cron 03:40, после локальной копии в 03:15
+  local conf out key res rc=0
+  conf=$(manage offsite-config 2>/dev/null) || conf=""
+  if [[ -z $conf ]]; then [[ -t 1 ]] && echo "Копии в облако выключены (CRM → Ещё → Настройки → «Копии баз в облако»)."; return 0; fi
+  install -d -m 750 -o root -g prostranstvo "$EXPORT_DIR"
+  out="$EXPORT_DIR/.offsite-$(date +%F).tar.gz.enc"
+  if ! make_archive "$out"; then
+    manage offsite-result error "архив не получился" >/dev/null 2>&1 || true
+    manage push "Наш декор" "Копия баз в облако не сделана: архив не получился" >/dev/null 2>&1 || true
+    return 1
+  fi
+  chown root:prostranstvo "$out"; chmod 640 "$out"
+  key="$(date +%Y)/$(date +%m)/nashdekor-kopiya-$(date +%F).tar.gz.enc"
+  res=$(printf '%s' "$conf" | runuser -u prostranstvo -- python3 -I "$APP/offsite.py" put "$out" "$key" 2>&1) || rc=$?
+  rm -f -- "$out"
+  if [[ $rc == 0 ]]; then
+    manage offsite-result ok "$key — $res" >/dev/null
+    echo "копия в облако: $key — $res"
+  else
+    manage offsite-result error "$res" >/dev/null 2>&1 || true
+    manage push "Наш декор" "Копия баз в облако не сделана: ${res:0:120}" >/dev/null 2>&1 || true
+    echo "копия в облако НЕ сделана: $res"; return 1
+  fi
+}
+
 write_action() {  # заголовок кто состояние [вывод] → /var/lib/prostranstvo/server-action.txt (читает CRM)
   local dir=/var/lib/prostranstvo tmp
   tmp=$(mktemp "$dir/.server-action.XXXXXX")
@@ -426,6 +495,7 @@ server_action() {
     restart-mail) title="Перезапустить почту" ;;
     reload-web) title="Перезапустить веб-сервер (nginx)" ;;
     backup) title="Сделать копию баз" ;;
+    export) title="Копия баз для скачивания" ;;
     leads-on) title="Заявки с сайта — включить" ;;
     leads-off) title="Заявки с сайта — выключить" ;;
     unban) title="Снять блокировки fail2ban" ;;
@@ -446,6 +516,7 @@ server_action() {
     restart-mail) systemctl restart postfix dovecot rspamd && sleep 3 && systemctl is-active postfix dovecot rspamd ;;
     reload-web) nginx -t && systemctl reload nginx && systemctl is-active nginx ;;
     backup) cmd_backup && ls -la "$BACKUP_DIR/$(date +%F)" ;;
+    export) timeout 900 "$0" export ;;
     leads-on) cmd_site_leads on ;;
     leads-off) cmd_site_leads off ;;
     unban) fail2ban-client unban --all ;;
@@ -510,6 +581,8 @@ prostranstvo-crm — CRM https://$CRM_HOST
   prostranstvo-crm add-user ЛОГИН "Имя" [admin|staff]
   prostranstvo-crm site-leads on|off    — заявки с формы сайта (включать после уведомления РКН)
   prostranstvo-crm backup               — копия баз сейчас (ночью делается сама)
+  prostranstvo-crm export               — зашифрованный архив баз для скачивания из CRM («Сервер»)
+  prostranstvo-crm offsite              — копия в облако (Selectel/S3) сейчас (ночью в 03:40 — сама, если включена в CRM)
   prostranstvo-crm update               — обновить CRM из GitHub
   prostranstvo-crm server-page --now   — обновить отчёт для страницы CRM «Сервер» (там же кнопки действий)
   prostranstvo-crm followups           — разослать напоминания клиентам, не ответившим на расчёт (cron, раз в день в 11:25)
@@ -531,6 +604,8 @@ case ${1:-status} in
   add-user) shift; cmd_add_user "$@" || rc=$? ;;
   site-leads) shift; cmd_site_leads "$@" || rc=$? ;;
   backup) cmd_backup || rc=$? ;;
+  export) cmd_export || rc=$? ;;
+  offsite) cmd_offsite || rc=$? ;;
   update) cmd_update ;;
   server-page) shift; cmd_server_page "$@" || rc=$? ;;
   followups) manage followups || rc=$? ;;
@@ -671,6 +746,7 @@ SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 7,22,37,52 * * * *  root  /usr/local/sbin/prostranstvo-crm cert --auto 2>&1 | logger -t prostranstvo-crm
 15 3 * * *          root  /usr/local/sbin/prostranstvo-crm backup 2>&1 | logger -t prostranstvo-backup
+40 3 * * *          root  /usr/local/sbin/prostranstvo-crm offsite 2>&1 | logger -t prostranstvo-offsite
 * * * * *           root  flock -n /run/prostranstvo-server-page.lock /usr/local/sbin/prostranstvo-crm server-page 2>&1 | logger -t prostranstvo-server
 25 11 * * *         root  /usr/local/sbin/prostranstvo-crm followups 2>&1 | logger -t prostranstvo-followups
 * * * * *           root  flock -n /run/prostranstvo-mailwatch.lock /usr/local/sbin/prostranstvo-crm mail-watch 2>&1 | logger -t prostranstvo-mailwatch

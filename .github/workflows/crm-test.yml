@@ -596,6 +596,60 @@ jobs:
           git add status; git commit -m "crm-test server actions $(date -u +%F_%H:%M)" || exit 0
           git pull --rebase origin domain-check || true
           git push origin HEAD:domain-check || true
+      - name: Копии баз — архив для скачивания и копия в облако (S3, MinIO)
+        if: always()
+        run: |
+          mkdir -p status; O=status/crm-kopii.md
+          {
+          echo "# Копии баз — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/jk
+          echo "пароль копий: $(sudo stat -c '%U:%G %a' /etc/prostranstvo/backup-pass), длина $(sudo head -n1 /etc/prostranstvo/backup-pass | tr -d '\n' | wc -c)"
+          sudo prostranstvo-crm passwords | grep -c 'Пароль от копий' | xargs echo "строка в passwords:"
+          echo "cron: $(grep -c 'prostranstvo-crm offsite' /etc/cron.d/prostranstvo-crm)"
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          T=$(curl -sk $R -c $J -b $J https://$H/server | tok)
+          echo "кнопка «Копия баз — скачать»: $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' --data-urlencode "csrf=$T" --data-urlencode "action=export" https://$H/server/run)"
+          sudo prostranstvo-crm server-page; sleep 1
+          sudo head -n 6 /var/lib/prostranstvo/server-action.txt
+          P=$(curl -sk $R -c $J -b $J https://$H/server)
+          F=$(grep -o 'nashdekor-kopiya-[0-9-]*\.tar\.gz\.enc' <<<"$P" | head -n1); echo "в CRM ссылка: $F"
+          curl -sk $R -c $J -b $J -o /tmp/k.enc https://$H/server/export/$F; echo "скачано: $(stat -c %s /tmp/k.enc) байт, начало: $(head -c 8 /tmp/k.enc)"
+          echo "без входа: $(curl -sk $R -o /dev/null -w '%{http_code}' https://$H/server/export/$F)"
+          sudo head -n1 /etc/prostranstvo/backup-pass | tr -d '\n' > /tmp/pass
+          echo "пароль на странице — только по кнопке: $(grep -c "$(cat /tmp/pass)" <<<"$P") / $(curl -sk $R -c $J -b $J "https://$H/server?pass=1" | grep -c "$(cat /tmp/pass)")"
+          echo "--- содержимое архива (расшифровка openssl тем же паролем):"
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -md sha256 -pass file:/tmp/pass -in /tmp/k.enc | tar tzf - > /tmp/list
+          wc -l < /tmp/list | xargs echo "файлов:"
+          grep -E '/crm\.db$|/bot\.db$|backup-pass$|crm-paroli|dkim/|vhosts/[^/]+/[^/]+/$' /tmp/list | head -n 12
+          echo "--- облако (MinIO как Selectel)"
+          docker run -d --name minio -p 9000:9000 -e MINIO_ROOT_USER=testkey -e MINIO_ROOT_PASSWORD=testsecret123 minio/minio server /data >/dev/null
+          sleep 10
+          docker run --rm --network host --entrypoint sh minio/mc -c 'mc alias set m http://127.0.0.1:9000 testkey testsecret123 >/dev/null && mc mb m/nashdekor-backup'
+          T=$(curl -sk $R -c $J -b $J https://$H/settings | tok)
+          echo "сохранение настроек: $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' --data-urlencode "csrf=$T" --data-urlencode act=save --data-urlencode endpoint=https://s3.ru-3.storage.selcloud.ru --data-urlencode region=us-east-1 --data-urlencode bucket=nashdekor-backup --data-urlencode key=testkey --data-urlencode secret=testsecret123 --data-urlencode on=1 https://$H/settings/offsite)"
+          sudo sqlite3 /var/lib/prostranstvo/crm.db "update settings set value='http://127.0.0.1:9000' where key='offsite_endpoint';"
+          T=$(curl -sk $R -c $J -b $J https://$H/settings | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode act=check https://$H/settings/offsite
+          curl -sk $R -c $J -b $J https://$H/settings | grep -o 'Проверка связи: [^<]*' | head -n1
+          sudo prostranstvo-crm offsite
+          docker run --rm --network host --entrypoint sh minio/mc -c 'mc alias set m http://127.0.0.1:9000 testkey testsecret123 >/dev/null && mc ls -r m/nashdekor-backup'
+          curl -sk $R -c $J -b $J https://$H/settings | grep -o 'Последняя копия<span class="d"> · [^<]*' | sed 's/<span class="d">//'
+          docker run --rm --network host -v /tmp:/t --entrypoint sh minio/mc -c 'mc alias set m http://127.0.0.1:9000 testkey testsecret123 >/dev/null && mc cp -r m/nashdekor-backup/nashdekor/2 /t/cloud/ >/dev/null && ls -R /t/cloud | tail -n 2'
+          C=$(sudo find /tmp/cloud -name '*.enc' | head -n1)
+          echo "копия из облака открывается: $(sudo openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -md sha256 -pass file:/tmp/pass -in "$C" | tar tzf - | grep -c '/crm\.db$') crm.db"
+          sudo sqlite3 /var/lib/prostranstvo/crm.db "update settings set value='wrong' where key='offsite_secret';"
+          sudo prostranstvo-crm offsite || echo "неверный ключ — ошибка поймана (код $?)"
+          curl -sk $R -c $J -b $J https://$H/settings | grep -o 'Последняя копия<span class="d"> · [^<]*' | sed 's/<span class="d">//'
+          echo '```'
+          } > "$O" 2>&1
+          cat "$O"
+          git config user.name crm-test; git config user.email crm-test@users.noreply.github.com
+          git add status; git commit -m "crm-test kopii $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
       - name: Состояние
         if: always()
         run: |
