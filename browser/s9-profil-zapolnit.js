@@ -1,5 +1,5 @@
 // Оформление профиля (решения Михаила 11.11.2026): контактное лицо «Юлия», звонки 10:00–20:00,
-// телефон Юлии в профиль, 8 фото 3D-интерьеров в «Фотографии», удалить сохранённый адрес «Московский пр-т».
+// телефон Юлии в профиль, 8 фото 3D-интерьеров в «Фотографии», удалить сохранённый адрес с улицей.
 // Всё во фрейме за пределами экрана; журнал — sessionStorage.nd_prof3. Запуск + чтение = 2 подтверждения.
 const NAME = 'Юлия', FROM = '10:00', TO = '20:00', PHONE = '204-10-47';
 const PHOTOS = ['3-7/1', 'A910/1', '3-9/1', '3-15/1', 'A910/2', '3-7/2', '3-15/3', 'A703/2'];
@@ -92,9 +92,9 @@ async function pickTime(marker, val) {
         if (ok) { ok.click(); await sleep(4000); L('фото: нажал', norm(ok.innerText)); } else L('фото: в окне нет активной кнопки сохранения');
       } else { await sleep(8000); L('фото: окна нет; картинок стало', qa('img').filter(i => vis(i) && i.naturalWidth > 100).length, '| рядом с галереей:', ctl(q('[data-marker="gallery-title"]')?.parentElement?.parentElement || d().body).slice(0, 500)); }
     }
-    // 5. Адреса: удалить «Московский пр-т»
+    // 5. Адреса: удалить сохранённый адрес с улицей (первый в списке)
     await open('/profile/address', /Адреса/);
-    const item = qa('[data-marker^="address-list"]').find(e => /Московский/.test(e.innerText));
+    const item = qa('[data-marker^="address-list"]').find(e => /,/.test(e.innerText));
     if (item) {
       const del = q('[data-marker="address-list-item/delete/0"]');
       let b = del; while (b && !/BUTTON|A/.test(b.tagName) && b.parentElement && b.parentElement !== item) b = b.parentElement;

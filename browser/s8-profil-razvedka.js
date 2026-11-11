@@ -49,7 +49,7 @@ const closeDlg = async (d) => { const x = [...d.querySelectorAll('[role=dialog] 
     L('поля: ' + desc(d).filter(s => /INPUT|SELECT|TEXTAREA|switch|checkbox|Сохранить|Изменить|звон|Звон|контакт|Контакт/i.test(s)).slice(0, 40).join(' ; '));
     d = await open('/profile/address', /Адреса/);
     L('\n=== Адреса: ' + desc(d).slice(0, 30).join(' ; '));
-    const a = [...d.querySelectorAll('body *')].find(e => e.children.length === 0 && /Московский/.test(e.textContent));
+    const a = [...d.querySelectorAll('body *')].find(e => e.children.length === 0 && /,/.test(e.textContent));
     if (a) { let c = a; for (let k2 = 0; k2 < 5; k2++) c = c.parentElement; L('у адреса: ' + c.outerHTML.replace(/\s+/g, ' ').slice(0, 1200)); }
     fr.remove();
     L('\nВСЁ');
