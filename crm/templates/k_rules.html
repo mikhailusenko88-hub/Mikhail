@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "k_macros.html" import k_head with context %}
+{% block title %}Конструктор — автоправила и ссылки{% endblock %}
+{% block main %}
+{{ k_head('rules', 'Автоправила и ссылки') }}
+<h2>Автоправила</h2>
+<p class="d">Когда заявка попадает на этап — CRM сама ставит задачу. Работает вместе со встроенными задачами воронки (их не заменяет). Одинаковую открытую задачу дважды не ставит.</p>
+<div class="panel list">
+{% for r in rules %}
+  <div class="row"><span class="grow"><span class="t">«{{ STAGE_NAMES.get(r['stage'], r['stage']) }}» → {{ r['title'] }}</span>
+    <span class="d"> · {{ 'в тот же день' if r['days'] == 0 else 'через ' ~ r['days'] ~ ' дн.' }}{% if not r['active'] %} · выключено{% endif %}</span></span>
+    <form method="post" action="{{ url_for('k_rules_act') }}" class="row wrap"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ r['id'] }}">
+      <button class="btn-g sm" name="action" value="{{ 'off' if r['active'] else 'on' }}">{{ 'Выключить' if r['active'] else 'Включить' }}</button>
+      <button class="btn-g sm" name="action" value="delete">Удалить</button></form></div>
+{% else %}
+  <div class="row"><span class="d">Своих правил пока нет. Например: «Отгружено» → «Позвонить через месяц: всё ли понравилось, нужен ли ещё декор» через 30 дней.</span></div>
+{% endfor %}
+</div>
+<form class="panel pad grid2" method="post" action="{{ url_for('k_rules_act') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="add">
+  <label class="f">Когда заявка на этапе<select name="stage">{% for k, n in STAGES %}<option value="{{ k }}">{{ n }}</option>{% endfor %}</select></label>
+  <label class="f">Через сколько дней<input name="days" inputmode="numeric" value="0"></label>
+  <label class="f span2">Поставить задачу<input name="title" maxlength="120" required placeholder="Например: «Позвонить: всё ли понравилось»"></label>
+  <div class="span2"><button class="btn-p">+ Добавить правило</button></div>
+</form>
+
+<h2 id="links">Свои ссылки в меню «Ещё»</h2>
+<p class="d">Быстрый переход в кабинеты, которыми пользуетесь каждый день: Saby, Точка, Авито, Яндекс Вебмастер, FirstVDS.</p>
+<div class="panel list">
+{% for l in links %}
+  <div class="row"><span class="grow"><a href="{{ l['url'] }}" target="_blank" rel="noopener noreferrer">{{ l['title'] }}</a> <span class="d">· {{ l['url'][:70] }}</span></span>
+    <form method="post" action="{{ url_for('k_links_act') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ l['id'] }}"><button class="btn-g sm" name="action" value="delete">Убрать</button></form></div>
+{% else %}
+  <div class="row"><span class="d">Ссылок пока нет.</span></div>
+{% endfor %}
+</div>
+<form class="panel pad grid2" method="post" action="{{ url_for('k_links_act') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="add">
+  <label class="f">Подпись<input name="title" maxlength="30" required placeholder="Saby"></label>
+  <label class="f">Ссылка<input name="url" type="url" required placeholder="https://online.saby.ru" spellcheck="false"></label>
+  <div class="span2"><button class="btn-p">+ Добавить в меню</button></div>
+</form>
+{% endblock %}

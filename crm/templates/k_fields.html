@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "k_macros.html" import k_head with context %}
+{% block title %}Конструктор — свои поля{% endblock %}
+{% block main %}
+{{ k_head('fields', 'Конструктор CRM') }}
+<p class="sub">Здесь вы сами расширяете CRM кнопками. Свои поля появляются в карточке заявки или клиента в блоке «Дополнительно», уходят в Excel и в интеграции.</p>
+{% for ent, ent_name in ENTITIES %}
+<h2>{{ 'В заявке' if ent == 'deal' else 'У клиента' }}</h2>
+<div class="panel list">
+{% for f in fields if f['entity'] == ent %}
+  <details class="row kfield">
+    <summary class="grow"><span class="t">{{ f['label'] }}</span> <span class="d">· {{ TYPE_NAMES.get(f['type'], f['type']) }}{% if not f['active'] %} · скрыто{% endif %}</span></summary>
+    <form class="grid2" method="post" action="{{ url_for('k_field_edit', fid=f['id']) }}">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <label class="f span2">Название<input name="label" value="{{ f['label'] }}" maxlength="60" required></label>
+      {% if f['type'] == 'select' %}<label class="f span2">Варианты — каждый с новой строки<textarea name="options" rows="4">{{ f['options'] }}</textarea></label>{% endif %}
+      <label class="chk span2"><input type="checkbox" name="active" value="1" {% if f['active'] %}checked{% endif %}> Показывать в карточках</label>
+      <div class="row wrap span2"><button class="btn-p" name="action" value="save">Сохранить</button><button class="btn-g sm" name="action" value="up">↑ выше</button><button class="btn-g sm" name="action" value="down">↓ ниже</button></div>
+      <div class="span2 d"><label class="chk"><input type="checkbox" name="confirm" value="1"> Да, удалить поле и все его значения</label> <button class="btn-g sm" name="action" value="delete">Удалить</button></div>
+    </form>
+  </details>
+{% else %}
+  <div class="row"><span class="d">Своих полей пока нет.</span></div>
+{% endfor %}
+</div>
+{% endfor %}
+
+<h2>Добавить поле</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('k_field_add') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f">Где<select name="entity">{% for k, n in ENTITIES %}<option value="{{ k }}">{{ 'В заявке' if k == 'deal' else 'У клиента' }}</option>{% endfor %}</select></label>
+  <label class="f">Тип<select name="type">{% for k, n in FIELD_TYPES %}<option value="{{ k }}">{{ n }}</option>{% endfor %}</select></label>
+  <label class="f span2">Название<input name="label" maxlength="60" required placeholder="Например, «Объект» или «Откуда узнал»"></label>
+  <label class="f span2">Варианты для списка — каждый с новой строки <span class="d">(только для типа «Список»)</span><textarea name="options" rows="3" placeholder="Авито&#10;Яндекс&#10;Советовали знакомые"></textarea></label>
+  <div class="span2"><button class="btn-p">+ Добавить поле</button></div>
+</form>
+
+{% if presets %}
+<h2>Готовые поля — отметьте нужные</h2>
+<form class="panel pad kblock" method="post" action="{{ url_for('k_field_presets') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  {% for ent, label, t, opts in presets %}<label class="chk"><input type="checkbox" name="p" value="{{ ent }}:{{ label }}"> {{ label }} <span class="d">· {{ 'заявка' if ent == 'deal' else 'клиент' }} · {{ TYPE_NAMES[t] }}</span></label>{% endfor %}
+  <p><button class="btn-s">Добавить отмеченные</button></p>
+</form>
+{% endif %}
+{% endblock %}

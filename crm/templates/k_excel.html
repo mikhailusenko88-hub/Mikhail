@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "k_macros.html" import k_head with context %}
+{% block title %}Конструктор — Excel{% endblock %}
+{% block main %}
+{{ k_head('excel', 'Excel') }}
+{% if preview %}
+<h2>Проверка перед загрузкой</h2>
+{% if preview.errs %}<div class="alert warn"><b>Эти строки пропущены:</b><ul>{% for e in preview.errs %}<li>{{ e }}</li>{% endfor %}</ul></div>{% endif %}
+{% if preview.recs %}
+<div class="panel list">
+{% for r in preview.recs[:300] %}
+  <div class="row"><span class="grow">
+    {% if preview.kind == 'stock' %}<span class="t">{{ r.article }}</span><span class="d"> · {{ r.name[:60] }}</span><span class="d sitemeta">{% if r.qty is not none %}остаток → {{ r.qty }} шт{% endif %}{% if r.price is not none %}{% if r.qty is not none %} · {% endif %}своя цена → {{ r.price }} ₽{% endif %}</span>
+    {% else %}<span class="t">{{ r.name or r.match_name }}</span><span class="d"> · {{ r.phone }} {{ r.email }}</span><span class="d sitemeta">строка {{ r.row }} · {{ 'обновить клиента «' ~ r.match_name ~ '»' if r.match else 'новый клиент' }}{% if r.custom %} · своих полей: {{ r.custom|length }}{% endif %}</span>{% endif %}
+  </span>{% if preview.kind == 'clients' %}<span class="pill {{ '' if r.match else 'good' }}">{{ 'обновить' if r.match else 'новый' }}</span>{% endif %}</div>
+{% endfor %}
+</div>
+{% if preview.recs|length > 300 %}<p class="d">…и ещё {{ preview.recs|length - 300 }}.</p>{% endif %}
+<form class="panel pad row wrap" method="post" action="{{ url_for('k_import_apply') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="token" value="{{ preview.token }}">
+  <button class="btn-p">Да, загрузить ({{ preview.recs|length }})</button><a class="btn-g" href="{{ url_for('k_excel_view') }}">Отмена</a></form>
+{% else %}<div class="alert err">Нечего загружать — проверьте заголовки в первой строке.</div>{% endif %}
+{% endif %}
+
+<h2>Выгрузить</h2>
+<p class="d">Файл .xlsx открывается в Excel, Numbers и Google Таблицах. В выгрузке — и ваши свои поля.</p>
+<div class="row wrap">
+  <a class="btn-p" href="{{ url_for('k_export', what='all') }}">Всё одним файлом</a>
+  {% for key, v in EXPORTS.items() %}<a class="btn-s" href="{{ url_for('k_export', what=key) }}">{{ v[0] }}</a>{% endfor %}
+</div>
+<p class="d">В файлах — персональные данные клиентов: храните у себя, никуда не выкладывайте.</p>
+
+<h2>Загрузить</h2>
+<form class="panel pad grid2" method="post" enctype="multipart/form-data" action="{{ url_for('k_import') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f">Что загружаем<select name="kind"><option value="clients">Клиенты</option><option value="stock">Склад: остатки и свои цены</option></select></label>
+  <label class="f">Файл .xlsx (до 2 МБ)<input type="file" name="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required></label>
+  <div class="span2 d">
+    <p><b>Клиенты:</b> первая строка — заголовки: Имя, Телефон, E-mail, Мессенджер, Тип (Частный / Дизайнер / Компания), Компания, ИНН, Заметка{% if client_fields %}, а также ваши поля: {{ client_fields|join(', ') }}{% endif %}. Если клиент с таким телефоном или e-mail (или ID из выгрузки) уже есть — заполненные ячейки обновят его, пустые ничего не сотрут.</p>
+    <p><b>Склад:</b> Артикул, Остаток и/или Своя цена. Удобнее всего — выгрузить «Склад», поправить числа и загрузить этот же файл.</p>
+    <p>Перед записью CRM покажет, что именно изменится.</p></div>
+  <div class="span2"><button class="btn-p">Проверить файл</button></div>
+</form>
+{% endblock %}

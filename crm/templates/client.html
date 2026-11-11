@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "macros.html" import stage_pill with context %}
+{% from "k_macros.html" import k_values_block with context %}
 {% block title %}{{ cl['name'] }}{% endblock %}
 {% block main %}
 <div class="bar"><h1>{{ cl['name'] }}</h1><a class="btn-p" href="{{ url_for('deal_new', client=cl['id']) }}">Новая заявка</a></div>
@@ -41,6 +42,7 @@
   <button class="btn-s">Заполнить реквизиты по ИНН</button>
 </form>
 <p class="note">Реквизиты берутся из открытого реестра ФНС (ЕГРЮЛ/ЕГРИП). Почту для документов и ЭДО уточните у клиента.</p>
+{{ k_values_block("client", cl["id"]) }}
 {% if rewards %}
 <h2>Вознаграждения</h2>
 <div class="panel list">{% for r in rewards %}<a class="row btn" href="{{ url_for('deal_view', did=r['id']) }}"><div class="grow"><div class="t">№{{ r['id'] }} · {{ r['client_name'] }}</div><div class="d">{{ r['designer_pct'] }} % от {{ rubk(r['base']) }} · {{ 'начислено' if r['accrued'] else 'в работе' }}</div></div><b class="num">{{ rubk(r['reward']) }}</b></a>{% endfor %}</div>

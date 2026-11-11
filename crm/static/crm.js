@@ -144,3 +144,12 @@ document.addEventListener("click", async e => {
     } finally { btn.disabled = false; ta.focus(); }
   });
 })();
+
+// Кнопки «Скопировать» (data-copy="#id"): текст поля или блока — в буфер обмена
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-copy]"); if (!b) return;
+  const el = document.querySelector(b.dataset.copy); if (!el) return;
+  const txt = "value" in el ? el.value : el.textContent;
+  try { await navigator.clipboard.writeText(txt); b.textContent = "Скопировано ✓"; }
+  catch (_) { if (el.select) { el.focus(); el.select(); } b.textContent = "Выделено — нажмите «Копировать»"; }
+});

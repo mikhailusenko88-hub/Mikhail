@@ -267,3 +267,11 @@ a.docopen{text-decoration:none;color:inherit;min-width:0}
 .sitegalitem{display:flex;flex-direction:column;gap:4px;font-size:13px}
 .sitegalitem img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;background:#26292E}
 form.inline{display:inline}
+.kfield summary{cursor:pointer;list-style:none}
+.kfield[open]{flex-direction:column;align-items:stretch}
+.kfield form{margin-top:8px}
+pre.code{white-space:pre-wrap;font-size:12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px;overflow:auto}
+code.sel,pre.sel{user-select:all;-webkit-user-select:all;word-break:break-all}
+.kph{columns:2;margin:6px 0;padding-left:18px}
+@media (max-width:600px){.kph{columns:1}}
+.kblock .chk{display:flex;margin:6px 0}

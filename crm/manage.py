@@ -8,6 +8,7 @@
   python3 manage.py backup ФАЙЛ                — копия базы (sqlite backup)
   python3 manage.py stats                      — сколько клиентов и заявок
   python3 manage.py followups                  — разослать напоминания клиентам, не ответившим на расчёт (cron, раз в день)
+  python3 manage.py hooks                      — «Конструктор»: отправить события в Telegram и по ссылкам (cron, раз в минуту)
   python3 manage.py mail-in                    — новые письма (JSON-строки из mailwatch.py на stdin) → пуши и сделки
   python3 manage.py digest                     — утренняя сводка пушем (cron, раз в день)
   python3 manage.py push "Заголовок" "Текст"   — пуш всем сотрудникам с включёнными уведомлениями
@@ -104,6 +105,13 @@ def main(argv: list[str]) -> int:
             for line in app.extensions["outbox_run"]():
                 print(line)
             print("ok")
+    elif cmd == "hooks":
+        # «Конструктор»: отправить события в Telegram и по ссылкам (cron раз в минуту)
+        from app import create_app
+        dom = os.environ.get("SHOP_DOMAIN") or "nashdekor.ru"
+        for line in create_app().extensions["k"].run_queue(f"https://crm.{dom}"):
+            print(line)
+        print("ok")
     elif cmd == "followups":
         from app import create_app
         for line in create_app().extensions["run_followups"]():

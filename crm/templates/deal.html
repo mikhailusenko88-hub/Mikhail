@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "macros.html" import stage_pill, task_row with context %}
+{% from "k_macros.html" import k_values_block with context %}
 {% block title %}№{{ d['id'] }} {{ d['client_name'] }}{% endblock %}
 {% block main %}
 {% set here = url_for('deal_view', did=d['id']) %}
@@ -96,6 +97,10 @@
 </form>
 
 
+{% set kq = k_quick() %}{% if kq %}
+<h2 id="quick">Быстрые ответы</h2>
+<div class="row wrap">{% for t in kq %}<a class="btn-g sm" href="{{ url_for('k_quick', did=d['id'], t=t['key']) }}">{{ t['title'] }}</a>{% endfor %}</div>
+{% endif %}
 <h2 id="invoice">Счёт на оплату</h2>
 {% if invoices %}<div class="panel list">{% for i in invoices %}<div class="row wrap"><div class="grow"><div class="t">№ {{ inv_number(i) }} от {{ dmy(i['day']) }} · {{ rubk(i['amount']) }}{% if i['pct'] < 100 %} <span class="d">(предоплата {{ i['pct'] }} % от {{ rubk(i['total']) }})</span>{% endif %}</div><div class="d">{% if i['status'] == 'paid' %}оплачен {{ fmt_dt(i['paid_at']) }}{% elif i['status'] == 'cancelled' %}отменён{% else %}ждёт оплаты{% endif %}{% if i['emailed_at'] %} · отправлен на почту {{ dmy(i['emailed_at']) }}{% endif %}</div></div>
 <span class="pill {{ 'good' if i['status'] == 'paid' else ('' if i['status'] == 'cancelled' else 'warn') }}">{{ {'paid': 'оплачен', 'cancelled': 'отменён'}.get(i['status'], 'выставлен') }}</span>
@@ -194,6 +199,7 @@
 
 {% if d['kind'] == 'c' and not (d['full_name'] and d['inn'] and d['legal_address']) %}<p class="alert warn">Покупатель — компания: для счёта и УПД заполните реквизиты в <a href="{{ url_for('client_view', cid=d['client_id']) }}#req">карточке клиента</a> (кнопка «Заполнить по ИНН»).</p>{% endif %}
 
+{{ k_values_block("deal", d["id"]) }}
 <h2 id="designer">Дизайнер</h2>
 {% if d['kind'] == 'd' %}<p class="d">Покупатель — дизайнер: ему скидка {{ d['discount'] }} %, вознаграждение не начисляется.</p>
 {% else %}

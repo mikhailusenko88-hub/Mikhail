@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% from "k_macros.html" import k_head with context %}
+{% block title %}Конструктор — интеграции{% endblock %}
+{% block main %}
+{{ k_head('integrations', 'Интеграции') }}
+<p class="sub">CRM сама сообщает другим сервисам о событиях: новая заявка, смена этапа, оплата, сообщение в чате. Отправка — раз в минуту; если сервис не ответил, CRM повторит до 5 раз.{% if queued %} Сейчас в очереди: {{ queued }}.{% endif %}</p>
+
+<h2>Куда отправлять</h2>
+<div class="panel list">
+{% for x in hooks %}
+  <div class="row">
+    <span class="grow"><span class="t">{{ x['name'] }}</span> <span class="d">· {{ 'Telegram' if x['kind'] == 'telegram' else 'по ссылке' }}{% if not x['active'] %} · выключено{% endif %}</span>
+      <span class="d sitemeta">{% for e in x['events'].split(',') %}{{ EVENT_NAMES.get(e, e) }}{% if not loop.last %}, {% endif %}{% endfor %}{% if x['pd'] %} · с контактами клиента{% endif %}{% if x['last_status'] %} · {{ fmt_dt(x['last_at']) }}: {{ x['last_status'] }}{% endif %}</span></span>
+    <form method="post" action="{{ url_for('k_hook_act', hid=x['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-s sm" name="action" value="test">Проверить</button></form>
+    <a class="btn-g sm" href="{{ url_for('k_integrations_view', edit=x['id']) }}#new">Изменить</a>
+  </div>
+{% else %}
+  <div class="row"><span class="d">Пока никуда. Самое простое — уведомления в Telegram или заявки в Google Таблицу (инструкции ниже).</span></div>
+{% endfor %}
+</div>
+
+<h2 id="new">{{ 'Изменить: ' ~ edit['name'] if edit else 'Добавить' }}</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('k_hook_save') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ edit['id'] if edit else '' }}">
+  <label class="f">Название<input name="name" value="{{ edit['name'] if edit else '' }}" maxlength="60" required placeholder="Telegram Юлии / Google Таблица"></label>
+  <label class="f">Куда<select name="kind"><option value="telegram" {% if edit and edit['kind'] == 'telegram' %}selected{% endif %}>Telegram</option><option value="url" {% if edit and edit['kind'] == 'url' %}selected{% endif %}>По ссылке (вебхук)</option></select></label>
+  <label class="f span2">Для Telegram — токен бота; для вебхука — адрес https://…{% if edit and edit['kind'] == 'telegram' %} <span class="d">(токен сохранён — пустое поле оставит его)</span>{% endif %}<input name="url" value="{{ edit['url'] if edit and edit['kind'] == 'url' else '' }}" spellcheck="false" autocomplete="off" placeholder="123456789:AAE…  или  https://script.google.com/macros/s/…/exec"></label>
+  <label class="f span2">Только для Telegram — номер чата <span class="d">(как узнать — ниже)</span><input name="chat" value="{{ edit['secret'] if edit and edit['kind'] == 'telegram' else '' }}" inputmode="numeric" placeholder="123456789 или -100…"></label>
+  <fieldset class="f span2 kblock"><legend>Какие события</legend>
+    {% for e, n in EVENTS %}<label class="chk"><input type="checkbox" name="events" value="{{ e }}" {% if (edit and e in edit['events'].split(',')) or (not edit and e in ('deal.created', 'payment.paid')) %}checked{% endif %}> {{ n }}</label>{% endfor %}
+  </fieldset>
+  <label class="chk span2"><input type="checkbox" name="pd" value="1" {% if edit and edit['pd'] %}checked{% endif %}> Передавать контакты клиента (телефон, e-mail, текст из чата)</label>
+  <p class="d span2">Контакты — это персональные данные: включайте только для своих сервисов (свой Telegram, своя таблица). Без галочки уходят имя, номер заявки, этап и сумма.</p>
+  <label class="chk span2"><input type="checkbox" name="active" value="1" {% if not edit or edit['active'] %}checked{% endif %}> Включено</label>
+  <div class="row wrap span2"><button class="btn-p">Сохранить</button>{% if edit %}<a class="btn-g" href="{{ url_for('k_integrations_view') }}">Отмена</a>{% endif %}</div>
+</form>
+{% if edit %}
+<form class="panel pad" method="post" action="{{ url_for('k_hook_act', hid=edit['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g" name="action" value="delete">Удалить эту интеграцию</button></form>
+{% if edit['kind'] == 'url' %}<p class="d">Подпись запросов (для программиста): заголовок X-Nashdekor-Signature = sha256=HMAC-SHA256(ключ, тело), ключ: <code>{{ edit['secret'] }}</code></p>{% endif %}
+{% endif %}
+
+<h2 id="inbound">Приём заявок из других мест</h2>
+<p class="d">Квиз, Яндекс Формы, Тильда, другой сайт — отправляют заявку по секретной ссылке, в CRM появляется новая заявка (источник «Другое», в тексте — название). Поля: name, phone, email, messenger, text (или по-русски: имя, телефон, почта, комментарий); остальные поля попадут в текст заявки. Не больше 60 заявок в час с одной ссылки.</p>
+<div class="panel list">
+{% for x in inbound %}
+  <div class="row">
+    <span class="grow"><span class="t">{{ x['name'] }}</span>{% if not x['active'] %} <span class="d">· выключено</span>{% endif %}
+      <span class="d sitemeta"><code class="sel">{{ base }}/api/in/{{ x['token'] }}</code> · заявок: {{ x['count'] }}{% if x['last_at'] %}, последняя {{ fmt_dt(x['last_at']) }}{% endif %}</span></span>
+    <form method="post" action="{{ url_for('k_inbound_act') }}" class="row wrap"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ x['id'] }}">
+      <button class="btn-g sm" name="action" value="{{ 'off' if x['active'] else 'on' }}">{{ 'Выключить' if x['active'] else 'Включить' }}</button>
+      <button class="btn-g sm" name="action" value="token">Новая ссылка</button>
+      <label class="chk d"><input type="checkbox" name="confirm" value="1"> удалить</label><button class="btn-g sm" name="action" value="delete">Удалить</button></form>
+  </div>
+{% else %}
+  <div class="row"><span class="d">Ссылок пока нет.</span></div>
+{% endfor %}
+</div>
+<form class="panel pad row wrap" method="post" action="{{ url_for('k_inbound_act') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="add">
+  <input name="name" maxlength="60" required placeholder="Откуда заявки, например «Квиз»" aria-label="Название"><button class="btn-p">+ Создать ссылку</button></form>
+
+<h2>Как подключить</h2>
+<details class="panel pad"><summary><b>Уведомления в Telegram</b> — 3 минуты</summary>
+<ol>
+  <li>В Telegram откройте <b>@BotFather</b> → /newbot → придумайте имя → он пришлёт токен вида <code>123456789:AAE…</code>.</li>
+  <li>Напишите своему новому боту любое сообщение (иначе он не сможет писать вам).</li>
+  <li>Узнайте номер чата: напишите боту <b>@userinfobot</b> — он ответит вашим Id (цифры). Для группы: добавьте бота в группу, номер группы начинается с «-100».</li>
+  <li>Здесь: «Куда» — Telegram, вставьте токен и номер чата, отметьте события → «Сохранить» → «Проверить».</li>
+</ol></details>
+<details class="panel pad"><summary><b>Заявки в Google Таблицу</b> — 5 минут</summary>
+<ol>
+  <li>Создайте Google Таблицу → меню «Расширения» → «Apps Script».</li>
+  <li>Удалите всё в окне и вставьте код ниже → «Сохранить».</li>
+  <li>«Начать развёртывание» → «Новое развёртывание» → тип «Веб-приложение» → «У кого есть доступ»: «Все» → «Начать развёртывание» → разрешить доступ → скопируйте ссылку «URL веб-приложения».</li>
+  <li>Здесь: «Куда» — по ссылке, вставьте ссылку, отметьте события (и «Передавать контакты», если нужны телефоны в таблице) → «Сохранить» → «Проверить» — в таблице появится строка.</li>
+</ol>
+<pre class="code sel">{{ GSHEET_SCRIPT }}</pre></details>
+<details class="panel pad"><summary><b>Make, Zapier, n8n, Albato и другие</b></summary>
+<p>Создайте в сервисе сценарий с приёмом вебхука (Webhook / Custom webhook), скопируйте его адрес https://… и добавьте здесь как «по ссылке». CRM шлёт JSON: event, event_name, deal (id, stage_name, total_rub, want, url, custom), client (name, company, custom; с галочкой — phone, email), payment, chat. Дальше в сервисе — куда угодно: таблица, почта, amoCRM, 1С.</p>
+<p>Обратно — из сервиса в CRM: шаг «HTTP-запрос», метод POST, адрес из блока «Приём заявок», тело JSON: <code>{"name": "…", "phone": "…", "text": "…"}</code>.</p></details>
+{% endblock %}

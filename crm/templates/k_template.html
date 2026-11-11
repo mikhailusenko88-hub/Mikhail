@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "k_macros.html" import k_head with context %}
+{% block title %}{{ title }} — шаблон{% endblock %}
+{% block main %}
+{{ k_head('templates', title) }}
+<p><a href="{{ url_for('k_templates_view') }}">← Все шаблоны</a></p>
+{% if is_mail and not saved %}<div class="alert warn">Сейчас письмо уходит стандартным текстом. Ниже — он же в виде шаблона: поправьте и сохраните.</div>{% endif %}
+<form class="panel pad grid2" method="post" action="{{ url_for('k_template_edit', key=key) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  {% if is_mail %}<label class="f span2">Тема письма<input name="subject" value="{{ cur['subject'] }}" maxlength="200" required></label>
+  {% else %}<label class="f span2">Название (видно только вам)<input name="title" value="{{ cur['title'] }}" maxlength="80" required></label>{% endif %}
+  <label class="f span2">Текст<textarea name="body" rows="16" maxlength="8000" required>{{ cur['body'] }}</textarea></label>
+  <div class="span2 d"><b>Подстановки</b> — пишите в фигурных скобках, CRM заменит:
+    <ul class="kph">{% for p, d in PLACEHOLDERS %}<li><code>{{ p }}</code> — {{ d }}</li>{% endfor %}</ul>
+    Пустая подстановка (например, нет ссылки на оплату) просто исчезнет вместе с лишними пустыми строками.</div>
+  <div class="row wrap span2"><button class="btn-p">Сохранить</button>
+    {% if saved or (not is_mail and key != 'new') %}<button class="btn-g" name="action" value="reset" formnovalidate>{{ 'Вернуть как было' if is_mail else 'Удалить' }}</button>{% endif %}</div>
+</form>
+{% endblock %}

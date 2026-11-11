@@ -35,6 +35,8 @@ from buh import Buh
 from buh_web import register as register_buh
 from site_edit import SiteEdits
 from site_web import register as register_site
+from konstruktor import Konstruktor
+from konstruktor_web import register as register_k
 from outbox import Outbox
 from pochta import INLINE_OK, Pochta, fmt_ts, size_h
 from docs import MAX_FILE as DOC_MAX, Docs, clean_folder, fmt_date
@@ -501,6 +503,10 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         return ["", f"Ответить на это письмо или написать: zakaz@{dom}" + (f" · {mail_contacts()}" if mail_contacts() else ""),
                 f"Сайт: https://{dom}", "", "С уважением, " + (f"{manager}, " if manager else "") + "«Наш декор»"]
 
+    k = Konstruktor(store)
+    app.extensions["k"] = k
+    register_k(app, store, k, {"admin_required": admin_required, "login_required": login_required, "who": who,
+                               "send_mail": lambda *a, **kw: send_mail(*a, **kw), "letter_ctx": lambda *a, **kw: letter_ctx(*a, **kw), "conf": conf, "fmt_day": fmt_day})
     site_edits = SiteEdits(store, cfg.get("SITE_UPLOADS") or os.path.join(os.path.dirname(os.path.abspath(conf["CRM_DB"])), "site-uploads"),
                            conf["CATALOG_FILE"])
     app.extensions["site_edits"] = site_edits
@@ -692,8 +698,33 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         flash("Сохранено в «Документы». Выберите раздел и название." if new else "Этот файл уже есть в документах.", "ok")
         return redirect(url_for("docs_edit", did=did))
 
+    def letter_ctx(d: Any, lines: list[Any], manager: str = "") -> dict[str, str]:
+        """Подстановки для шаблонов «Конструктора»: {имя}, {номер}, {состав}…"""
+        gross = sum(int(ln["qty"]) * int(ln["price"]) for ln in lines)
+        total = Store.total(gross, d["discount"])
+        sostav = []
+        for ln in lines:
+            p = store.catalog.get(ln["article"])
+            nm = p.name if p and ln["article"] in p.name else (f"{ln['article']} {p.name}" if p else ln["article"])
+            sostav.append(f"• {nm} — {ln['qty']} шт × {int(ln['price']):,} ₽ = {int(ln['qty']) * int(ln['price']):,} ₽".replace(",", " "))
+        if d["discount"]:
+            sostav += ["", f"Без скидки: {gross:,} ₽".replace(",", " "), f"Скидка {d['discount']}%"]
+        sostav += ["", f"Итого: {total:,} ₽".replace(",", " ")]
+        until = (datetime.fromisoformat(d["stage_at"][:19]) + timedelta(days=7)).date().isoformat() if d["stage_at"] else ""
+        link = (d["pay_link"] or "").strip()
+        return {"имя": d["client_name"] or "", "номер": str(d["id"]), "итого": f"{total:,} ₽".replace(",", " "), "состав": "\n".join(sostav),
+                "позиции": "; ".join(f"{ln['article']} — {ln['qty']} шт" for ln in lines[:6]) + (" …" if len(lines) > 6 else ""),
+                "получение": f"Получение: {d['address'].strip()}" if (d["address"] or "").strip() else "",
+                "ссылка_на_оплату": (f"Оплатить через СБП (QR-код в приложении банка): {link}\nОплата проходит на защищённой странице банка, "
+                                     "ссылка действует 7 дней. Электронный чек придёт на e-mail.") if link else "",
+                "дата_расчёта": fmt_day(d["stage_at"][:10]) if d["stage_at"] else "", "действует_до": fmt_day(until) if until else "конца недели",
+                "заметка": (d["client_note"] or "").strip(), "менеджер": manager or "", "подпись": "\n".join(mail_signature(manager)).strip()}
+
     def calc_text(d: Any, lines: list[Any], manager: str = "") -> str:
         """Расчёт для клиента: позиции, суммы, итог, что дальше, контакты — в письмо или в мессенджер."""
+        t = k.template("calc")
+        if t:                                   # свой текст из «Конструктора»
+            return k.render(t["body"], letter_ctx(d, lines, manager))
         gross = sum(int(ln["qty"]) * int(ln["price"]) for ln in lines)
         total = Store.total(gross, d["discount"])
         is_order = (d["want"] or "").startswith("ЗАКАЗ.")
@@ -728,6 +759,10 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
 
     def followup_text(d: Any, lines: list[Any], n: int) -> tuple[str, str]:
         """Вежливое напоминание №n (1 или 2) клиенту, который не ответил на расчёт."""
+        t = k.template(f"followup{1 if n == 1 else 2}")
+        if t:
+            ctx = letter_ctx(d, lines)
+            return k.render(t["subject"], ctx), k.render(t["body"], ctx)
         gross = sum(int(ln["qty"]) * int(ln["price"]) for ln in lines)
         total = Store.total(gross, d["discount"])
         sent = fmt_day(d["stage_at"][:10]) if d["stage_at"] else ""
@@ -787,7 +822,9 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             store.update_client(int(d["client_id"]), who(), email=email)
         dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
         is_order = (d["want"] or "").startswith("ЗАКАЗ.")
-        ok = send_mail(email, (f"Заказ №{did} — состав и сумма к оплате, «Наш декор»" if is_order else f"Расчёт №{did} — реечные панели и декор, «Наш декор»"),
+        tpl = k.template("calc")
+        ok = send_mail(email, k.render(tpl["subject"], letter_ctx(d, lines, who())) if tpl else
+                       (f"Заказ №{did} — состав и сумма к оплате, «Наш декор»" if is_order else f"Расчёт №{did} — реечные панели и декор, «Наш декор»"),
                        calc_text(d, lines, who()), sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}")
         c = store.c()
         if ok:

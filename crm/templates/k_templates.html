@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "k_macros.html" import k_head with context %}
+{% block title %}Конструктор — шаблоны писем{% endblock %}
+{% block main %}
+{{ k_head('templates', 'Шаблоны писем и быстрые ответы') }}
+<h2>Письма клиентам</h2>
+<p class="d">Пока шаблон не сохранён, CRM пишет своим стандартным текстом. Сохранили — новые письма идут с вашим. «Вернуть как было» — снова стандартный.</p>
+<div class="panel list">
+{% for key, title, t in mails %}
+  <a class="row linkrow" href="{{ url_for('k_template_edit', key=key) }}"><span class="grow"><span class="t">{{ title }}</span>
+    <span class="d sitemeta">{% if t %}свой текст · изменён {{ fmt_dt(t['updated_at']) }}{% if t['updated_by'] %} · {{ t['updated_by'] }}{% endif %}{% else %}стандартный текст{% endif %}</span></span>
+    {% if t %}<span class="pill good">свой</span>{% endif %}</a>
+{% endfor %}
+</div>
+
+<h2>Быстрые ответы</h2>
+<p class="d">Готовые сообщения клиенту: в карточке заявки — блок «Быстрые ответы» → текст с подставленным именем, номером и суммой → скопировать в мессенджер или отправить на e-mail.</p>
+<div class="panel list">
+{% for t in quick %}
+  <a class="row linkrow" href="{{ url_for('k_template_edit', key=t['key']) }}"><span class="grow"><span class="t">{{ t['title'] }}</span><span class="d sitemeta">{{ t['body'][:100] }}</span></span></a>
+{% else %}
+  <div class="row"><span class="d">Быстрых ответов пока нет.</span></div>
+{% endfor %}
+</div>
+<div class="row wrap"><a class="btn-p" href="{{ url_for('k_template_edit', key='new') }}">+ Быстрый ответ</a>
+  {% for title, body in QUICK_EXAMPLES %}<a class="btn-g sm" href="{{ url_for('k_template_edit', key='new', ex=loop.index0) }}">+ {{ title }}</a>{% endfor %}</div>
+{% endblock %}

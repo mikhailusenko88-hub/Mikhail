@@ -1,0 +1,32 @@
+{% macro k_head(tab, title) -%}
+{% from "macros.html" import more_nav with context %}
+{{ more_nav('k') }}
+<h1>{{ title }}</h1>
+<nav class="chips" aria-label="Конструктор">
+  <a class="chip" href="{{ url_for('k_fields_view') }}" {% if tab=='fields' %}aria-current="true"{% endif %}>Свои поля</a>
+  <a class="chip" href="{{ url_for('k_integrations_view') }}" {% if tab=='integrations' %}aria-current="true"{% endif %}>Интеграции</a>
+  <a class="chip" href="{{ url_for('k_templates_view') }}" {% if tab=='templates' %}aria-current="true"{% endif %}>Шаблоны писем</a>
+  <a class="chip" href="{{ url_for('k_rules_view') }}" {% if tab=='rules' %}aria-current="true"{% endif %}>Автоправила и ссылки</a>
+  <a class="chip" href="{{ url_for('k_excel_view') }}" {% if tab=='excel' %}aria-current="true"{% endif %}>Excel</a>
+</nav>
+{%- endmacro %}
+
+{% macro k_values_block(entity, eid) -%}
+{% set rows = k_form(entity, eid) %}
+{% if rows %}
+<h2 id="kfields">Дополнительно</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('k_values_save', entity=entity, eid=eid) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  {% for r in rows %}{% set f = r.f %}{% set n = 'k' ~ f['id'] %}
+  {% if f['type'] == 'check' %}<label class="chk"><input type="checkbox" name="{{ n }}" value="1" {% if r.value %}checked{% endif %}> {{ f['label'] }}</label>
+  {% elif f['type'] == 'long' %}<label class="f span2">{{ f['label'] }}<textarea name="{{ n }}" rows="3" maxlength="4000">{{ r.value }}</textarea></label>
+  {% elif f['type'] == 'select' %}<label class="f">{{ f['label'] }}<select name="{{ n }}"><option value="">—</option>{% for o in r.options %}<option {% if o == r.value %}selected{% endif %}>{{ o }}</option>{% endfor %}</select></label>
+  {% elif f['type'] == 'date' %}<label class="f">{{ f['label'] }}<input type="date" name="{{ n }}" value="{{ r.value }}"></label>
+  {% elif f['type'] == 'number' %}<label class="f">{{ f['label'] }}<input name="{{ n }}" inputmode="decimal" value="{{ r.value }}"></label>
+  {% elif f['type'] == 'link' %}<label class="f">{{ f['label'] }}{% if r.value %} <a href="{{ r.value }}" target="_blank" rel="noopener noreferrer">открыть</a>{% endif %}<input name="{{ n }}" type="url" value="{{ r.value }}" placeholder="https://…" spellcheck="false"></label>
+  {% else %}<label class="f">{{ f['label'] }}<input name="{{ n }}" value="{{ r.value }}" maxlength="300"></label>{% endif %}
+  {% endfor %}
+  <div class="span2"><button class="btn-s">Сохранить</button></div>
+</form>
+{% endif %}
+{%- endmacro %}

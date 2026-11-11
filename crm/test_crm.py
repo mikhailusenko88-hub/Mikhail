@@ -2435,3 +2435,213 @@ class TestSiteEditor(Base):
         self.assertEqual(self.save(self.item(old="A912")).status_code, 403)
         self.c.post("/logout", data={"csrf": self.csrf()})
         self.assertEqual(self.c.get("/site/edit").status_code, 302)
+
+
+class TestKonstruktor(Base):
+    """«Конструктор»: свои поля, автоправила, интеграции (очередь, подпись, Telegram), приём заявок, шаблоны, Excel, ссылки."""
+
+    def k(self):
+        return self.app.extensions["k"]
+
+    def form(self, url, data, files=None):
+        import io as _io
+        with self.c.session_transaction() as s:
+            tok = s.get("csrf", "")
+        d = dict(data, csrf=tok)
+        for key, v in (files or {}).items():
+            d[key] = (_io.BytesIO(v), "f.xlsx")
+        return self.c.post(url, data=d, content_type="multipart/form-data")
+
+    def test_fields_values_and_rules(self) -> None:
+        self.login()
+        self.assertIn("Свои поля", self.c.get("/k").get_data(as_text=True))
+        self.assertIn("для списка напишите варианты", self.form("/k/fields/add", {"entity": "deal", "label": "Откуда", "type": "select",
+                                                                                 "options": "Авито"}).get_data(as_text=True) + self.c.get("/k").get_data(as_text=True))
+        self.form("/k/fields/add", {"entity": "deal", "label": "Откуда", "type": "select", "options": "Авито\nЯндекс\nАвито"})
+        self.form("/k/fields/add", {"entity": "deal", "label": "Площадь, м²", "type": "number"})
+        self.form("/k/fields/add", {"entity": "deal", "label": "Дата монтажа", "type": "date"})
+        self.form("/k/fields/add", {"entity": "client", "label": "Постоянный", "type": "check"})
+        self.form("/k/fields/presets", {"p": ["deal:Цвет покраски", "client:День рождения"]})
+        self.assertEqual([f["label"] for f in self.k().fields("deal")], ["Откуда", "Площадь, м²", "Дата монтажа", "Цвет покраски"])
+        self.assertEqual([f["label"] for f in self.k().fields("client")], ["Постоянный", "День рождения"])
+        f = {x["label"]: x for x in self.k().fields()}
+        self.assertEqual(f["Откуда"]["options"], "Авито\nЯндекс")
+        did = self.store.create_deal("t", None, name="Пётр", phone="+79991230000")
+        page = self.c.get(f"/deals/{did}").get_data(as_text=True)
+        self.assertIn("Дополнительно", page); self.assertIn("Площадь, м²", page)
+        self.form(f"/k/values/deal/{did}", {f"k{f['Откуда']['id']}": "Почта", f"k{f['Площадь, м²']['id']}": "12,5",
+                                            f"k{f['Дата монтажа']['id']}": "05.12.2026"})
+        v = self.k().values("deal", did)
+        self.assertEqual((v.get(f["Площадь, м²"]["id"]), v.get(f["Дата монтажа"]["id"]), v.get(f["Откуда"]["id"])), ("12,5", "2026-12-05", None))
+        self.form(f"/k/values/deal/{did}", {f"k{f['Откуда']['id']}": "Яндекс"})
+        self.assertEqual(self.k().labeled("deal", did)["Откуда"], "Яндекс")
+        cid = self.store.deal(did)["client_id"]
+        self.form(f"/k/values/client/{cid}", {f"k{f['Постоянный']['id']}": "1"})
+        self.assertEqual(self.k().labeled("client", cid), {"Постоянный": "да"})
+        self.form(f"/k/values/client/{cid}", {})                       # галочку сняли
+        self.assertEqual(self.k().labeled("client", cid), {})
+        self.form(f"/k/fields/{f['Площадь, м²']['id']}", {"action": "up"})
+        self.assertEqual([x["label"] for x in self.k().fields("deal")][:2], ["Площадь, м²", "Откуда"])
+        self.form(f"/k/fields/{f['Откуда']['id']}", {"action": "delete"})            # без галочки — нет
+        self.assertIn("Откуда", [x["label"] for x in self.k().fields()])
+        self.form(f"/k/fields/{f['Откуда']['id']}", {"action": "delete", "confirm": "1"})
+        self.assertNotIn("Откуда", [x["label"] for x in self.k().fields()])
+        # автоправила
+        self.form("/k/rules", {"action": "add", "stage": "shipped", "title": "Позвонить: всё ли понравилось", "days": "30"})
+        self.form("/k/rules", {"action": "add", "stage": "new", "title": "Проверить, есть ли товар", "days": "0"})
+        self.assertIn("выберите этап", self.form("/k/rules", {"action": "add", "stage": "lost", "title": "xxx"}).get_data(as_text=True)
+                      + self.c.get("/k/rules").get_data(as_text=True))
+        d2 = self.store.create_deal("t", None, name="Ольга", phone="+79990000002")
+        self.store.set_stage(d2, "shipped", "t")
+        titles = [t["title"] for t in self.store.c().execute("SELECT title FROM tasks WHERE deal_id=? AND done_at IS NULL", (d2,))]
+        self.assertIn("Позвонить: всё ли понравилось", titles)
+        self.assertTrue(self.store.c().execute("SELECT 1 FROM tasks WHERE deal_id=? AND title='Проверить, есть ли товар'", (d2,)).fetchone())
+        # сотрудник: свои поля в заявке — да, настройки конструктора — нет
+        self.c.post("/logout", data={"csrf": self.csrf()})
+        self.login("mikhail", "Secret-pass-2")
+        self.assertEqual(self.c.get("/k").status_code, 403)
+        self.assertEqual(self.form(f"/k/values/deal/{did}", {f"k{f['Цвет покраски']['id']}": "RAL 9010"}).status_code, 302)
+        self.assertEqual(self.k().labeled("deal", did)["Цвет покраски"], "RAL 9010")
+
+    def test_hooks_queue_and_inbound(self) -> None:
+        import hashlib, hmac as _hmac
+        self.login()
+        self.assertIn("токен Telegram", self.form("/k/hooks/save", {"name": "TG", "kind": "telegram", "url": "bad", "chat": "1",
+                                                                     "events": ["deal.created"]}).get_data(as_text=True)
+                      + self.c.get("/k/integrations").get_data(as_text=True))
+        self.form("/k/hooks/save", {"name": "Таблица", "kind": "url", "url": "https://hooks.example.com/a", "events": ["deal.created", "deal.stage"]})
+        self.form("/k/hooks/save", {"name": "TG", "kind": "telegram", "url": "123456789:" + "A" * 35, "chat": "-1001234",
+                                    "events": ["deal.created", "payment.paid"], "pd": "1"})
+        hooks = {h["name"]: h for h in self.k().hooks()}
+        self.assertEqual(len(hooks), 2)
+        page = self.c.get("/k/integrations").get_data(as_text=True)
+        self.assertNotIn("A" * 35, page)                                 # токен Telegram на страницу не выводится
+        did = self.store.create_deal("t", None, name="Пётр", phone="+79991112233", email="p@example.com", want="панели на стену")
+        self.store.set_stage(did, "work", "t")
+        q = self.store.c().execute("SELECT event, targets FROM k_queue ORDER BY id").fetchall()
+        self.assertEqual([(r["event"], r["targets"]) for r in q],
+                         [("deal.created", f"{hooks['Таблица']['id']},{hooks['TG']['id']}"), ("deal.stage", str(hooks["Таблица"]["id"]))])
+        sent = []
+
+        class R:
+            status = 200
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+
+        def opener(req, timeout=0):
+            sent.append(req)
+            if "fail" in req.full_url:
+                raise OSError("нет сети")
+            return R()
+        out = self.k().run_queue("https://crm.nashdekor.ru", opener)
+        self.assertEqual(len(sent), 3); self.assertEqual(len(out), 3)
+        self.assertFalse(self.store.c().execute("SELECT 1 FROM k_queue").fetchone())
+        web = [r for r in sent if r.full_url == "https://hooks.example.com/a"]
+        body = web[0].data
+        p = json.loads(body)
+        self.assertEqual((p["event"], p["deal"]["id"], p["client"]["name"]), ("deal.created", did, "Пётр"))
+        self.assertNotIn("phone", p["client"])                           # без галочки контакты не уходят
+        sig = _hmac.new(hooks["Таблица"]["secret"].encode(), body, hashlib.sha256).hexdigest()
+        self.assertEqual(web[0].get_header("X-nashdekor-signature"), "sha256=" + sig)
+        self.assertEqual(json.loads(web[1].data)["to_stage"], "В работе")
+        tg = [r for r in sent if "api.telegram.org" in r.full_url][0]
+        tgb = json.loads(tg.data)
+        self.assertEqual(tgb["chat_id"], "-1001234"); self.assertIn("+79991112233", tgb["text"]); self.assertIn(f"№{did}", tgb["text"])
+        # повторы при ошибке и отказ после 5 попыток
+        self.form("/k/hooks/save", {"id": str(hooks["Таблица"]["id"]), "name": "Таблица", "kind": "url", "url": "https://fail.example.com/x",
+                                    "events": ["deal.stage"]})
+        self.store.set_stage(did, "quote", "t")
+        for i in range(5):
+            self.k().run_queue("https://crm.nashdekor.ru", opener)
+        self.assertFalse(self.store.c().execute("SELECT 1 FROM k_queue").fetchone())
+        self.assertIn("ошибка", self.store.c().execute("SELECT last_status FROM k_hooks WHERE name='Таблица'").fetchone()[0])
+        # приём заявок
+        self.form("/k/inbound", {"action": "add", "name": "Квиз"})
+        tok = self.k().inbound()[0]["token"]
+        self.assertEqual(self.c.post("/api/in/wrong-token-1234567", json={"name": "x", "phone": "1"}).status_code, 404)
+        self.assertEqual(self.c.post(f"/api/in/{tok}", json={"name": "Без контакта"}).status_code, 400)
+        r = self.c.post(f"/api/in/{tok}", json={"имя": "Анна", "телефон": "8 999 555-44-33", "комментарий": "нужна стена 3 м", "площадь": "9"})
+        self.assertEqual(r.status_code, 200)
+        nd = self.store.deal(r.get_json()["deal"])
+        self.assertEqual((nd["client_name"], nd["phone"], nd["source"]), ("Анна", "+79995554433", "other"))
+        self.assertIn("[Квиз] нужна стена 3 м", nd["want"]); self.assertIn("площадь: 9", nd["want"])
+        self.assertEqual(self.c.post(f"/api/in/{tok}", data={"name": "Форма", "email": "f@example.com"}).status_code, 200)
+        self.form("/k/inbound", {"action": "off", "id": str(self.k().inbound()[0]["id"])})
+        self.assertEqual(self.c.post(f"/api/in/{tok}", json={"name": "x", "phone": "+79990000000"}).status_code, 404)
+
+    def test_templates_quick_links(self) -> None:
+        self.login()
+        did = self.store.create_deal("t", None, name="Мария", phone="+79990001122", email="m@example.com")
+        self.post(f"/deals/{did}/lines", {"article": "A912", "qty": "4"})
+        self.assertIn("Расчёт №{номер}", self.c.get("/k/templates/calc").get_data(as_text=True))   # стандартный текст как шаблон
+        r = self.form("/k/templates/calc", {"subject": "Ваш расчёт {номер}", "body": "Привет, {имя}! {непонятно}"})
+        self.assertIn("неизвестные подстановки: {непонятно}", r.get_data(as_text=True))
+        self.form("/k/templates/calc", {"subject": "Ваш расчёт №{номер}", "body": "Привет, {имя}!\n\n{состав}\n\n{ссылка_на_оплату}\n\nЖдём ответа."})
+        sent = {}
+        def fake_mail(to, subject, body, sender="", reply_to=""):
+            sent.update(to=to, subject=subject, body=body); return True
+        orig = crm_app.send_mail; crm_app.send_mail = fake_mail
+        try:
+            self.post(f"/deals/{did}/send-calc", {"email": "m@example.com"})
+            self.assertEqual(sent["subject"], f"Ваш расчёт №{did}")
+            self.assertTrue(sent["body"].startswith("Привет, Мария!")); self.assertIn("A912", sent["body"]); self.assertIn("Итого", sent["body"])
+            self.assertNotIn("\n\n\n", sent["body"])                 # пустая {ссылка_на_оплату} не оставила дыр
+            self.form("/k/templates/calc", {"action": "reset"})
+            self.post(f"/deals/{did}/send-calc", {"email": "m@example.com"})
+            self.assertTrue(sent["subject"].startswith(f"Расчёт №{did}"))
+            # быстрые ответы
+            self.form("/k/templates/new", {"title": "Товар пришёл", "body": "Здравствуйте, {имя}! Заказ №{номер} на {итого} пришёл на склад."})
+            q = self.k().templates("quick")[0]
+            self.assertIn("Товар пришёл", self.c.get(f"/deals/{did}").get_data(as_text=True))
+            page = self.c.get(f"/k/quick/{did}?t={q['key']}").get_data(as_text=True)
+            self.assertIn(f"Здравствуйте, Мария! Заказ №{did}", page)
+            self.form(f"/k/quick/{did}", {"t": q["key"], "body": "Свой текст"})
+            self.assertEqual((sent["to"], sent["body"]), ("m@example.com", "Свой текст"))
+        finally:
+            crm_app.send_mail = orig
+        # свои ссылки в меню
+        self.assertIn("начинаться с https", self.form("/k/links", {"action": "add", "title": "X", "url": "javascript:1"}).get_data(as_text=True)
+                      + self.c.get("/k/rules").get_data(as_text=True))
+        self.form("/k/links", {"action": "add", "title": "Saby", "url": "https://online.saby.ru"})
+        self.assertIn("https://online.saby.ru", self.c.get("/tasks").get_data(as_text=True))
+
+    def test_excel_export_import(self) -> None:
+        import zipfile as _zip, io as _io
+        from buh import read_xlsx
+        from konstruktor import xlsx
+        self.login()
+        self.form("/k/fields/add", {"entity": "client", "label": "Район", "type": "text"})
+        did = self.store.create_deal("t", None, name="Игорь", phone="+79990003344", email="i@example.com")
+        self.post(f"/deals/{did}/lines", {"article": "A912", "qty": "2"})
+        r = self.c.get("/k/export/all.xlsx")
+        self.assertEqual(r.status_code, 200)
+        sheets = dict(read_xlsx(r.data))
+        self.assertEqual(sorted(sheets), sorted(["Клиенты", "Заявки", "Склад", "Оплаты"]))
+        self.assertIn("Район", sheets["Клиенты"][0])
+        self.assertIn("Игорь", [row[1] for row in sheets["Клиенты"][1:]])
+        self.assertIn("A912 × 2", [row[9] for row in sheets["Заявки"][1:]][0])
+        self.assertEqual(self.c.get("/k/export/nope.xlsx").status_code, 404)
+        # загрузка клиентов: один новый, один обновить по телефону; ошибочная строка пропускается
+        book = xlsx([("Клиенты", [["Имя", "Телефон", "E-mail", "Тип", "Район"],
+                                  ["Новый Клиент", "8 (999) 777-66-55", "", "Дизайнер", "Купчино"],
+                                  ["", "+7 999 000-33-44", "", "", "Невский"],
+                                  ["Без контактов", "", "", "", ""]])])
+        page = self.form("/k/import", {"kind": "clients"}, {"file": book}).get_data(as_text=True)
+        self.assertIn("новый клиент", page); self.assertIn("обновить клиента «Игорь»", page); self.assertIn("строка 4", page)
+        tok = re.search(r'name="token" value="([^"]+)"', page).group(1)
+        self.form("/k/import/apply", {"token": tok})
+        nc = self.store.c().execute("SELECT * FROM clients WHERE phone='+79997776655'").fetchone()
+        self.assertEqual((nc["name"], nc["kind"]), ("Новый Клиент", "d"))
+        self.assertEqual(self.app.extensions["k"].labeled("client", int(nc["id"])), {"Район": "Купчино"})
+        old = self.store.c().execute("SELECT * FROM clients WHERE phone='+79990003344'").fetchone()
+        self.assertEqual((old["name"], self.app.extensions["k"].labeled("client", int(old["id"]))), ("Игорь", {"Район": "Невский"}))
+        self.assertIn("устарела", self.form("/k/import/apply", {"token": tok}).get_data(as_text=True)
+                      + self.c.get("/k/excel").get_data(as_text=True))
+        # склад
+        book = xlsx([("Склад", [["Артикул", "Остаток, шт", "Своя цена, ₽"], ["A912", 25, 1000], ["NOPE", 1, 1]])])
+        page = self.form("/k/import", {"kind": "stock"}, {"file": book}).get_data(as_text=True)
+        self.assertIn("артикула NOPE нет", page)
+        self.form("/k/import/apply", {"token": re.search(r'name="token" value="([^"]+)"', page).group(1)})
+        row = [x for x in self.store.stock_rows() if x["article"] == "A912"][0]
+        self.assertEqual((row["qty"], row["price"]), (25, 1000))
+        self.assertTrue(_zip.is_zipfile(_io.BytesIO(book)))

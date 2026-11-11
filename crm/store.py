@@ -530,7 +530,18 @@ class Store:
         self.on_notify: Callable[[str, str, str], Any] | None = None   # пуш на телефоны команды (title, text, url) — ставит app.py
         # кто ещё реагирует на списание/возврат товара по сделке (партии и себестоимость — buh.py): f(c, deal_id, sign, user)
         self.stock_hooks: list[Callable[[sqlite3.Connection, int, int, str], Any]] = []
+        self.k: Any = None          # «Конструктор» (konstruktor.py): автоправила и интеграции по событиям — ставит app.py
         self._init()
+
+    def _k(self, c: sqlite3.Connection, event: str, **kw: Any) -> None:
+        """Событие для «Конструктора» в той же транзакции. Ошибка конструктора не должна ломать заявку или оплату."""
+        if self.k is None:
+            return
+        try:
+            self.k.on_event(c, event, **kw)
+        except Exception:  # noqa: BLE001
+            import logging
+            logging.getLogger("crm").exception("konstruktor: %s", event)
 
     # соединение на поток (gunicorn с потоками)
     def c(self) -> sqlite3.Connection:
@@ -777,6 +788,7 @@ class Store:
             did = int(cur.lastrowid)
             self.log(c, f"Создана заявка ({SOURCE_NAMES[source]})", user, deal_id=did, client_id=cid)
             self.auto_task(c, did, "Связаться с клиентом", 0, user)
+            self._k(c, "deal.created", deal_id=did, client_id=cid, user=user, to=stage if stage in STAGE_NAMES else "new")
             return did
 
         if c is not None:
@@ -898,6 +910,7 @@ class Store:
             elif stage != "shipped" and d["stock_written"]:
                 self._move_stock(c, did, +1, user)
                 c.execute("UPDATE deals SET stock_written=0 WHERE id=?", (did,))
+            self._k(c, "deal.stage", deal_id=did, client_id=d["client_id"], user=user, **{"from": d["stage"], "to": stage})
             return d["stage"]
 
     def followup_candidates(self, day: str) -> list[sqlite3.Row]:
@@ -963,6 +976,7 @@ class Store:
                 mid = int(c.execute("SELECT last_insert_rowid()").fetchone()[0])
                 if who == "client":
                     c.execute("UPDATE chats SET unread=unread+1 WHERE id=?", (cid,))
+                    self._k(c, "chat.message", chat_id=cid, text=text[:1000])
                 elif who == "staff":
                     c.execute("UPDATE chats SET unread=0 WHERE id=?", (cid,))
         return cid, mid, new
@@ -1477,6 +1491,9 @@ class Store:
                     "invoice": f"Оплата по счёту {rub(amount_kop // 100)}" + (f" ({note})" if note else ""),
                     "manual": f"Отмечена оплата {rub(amount_kop // 100)} вручную" + (f" ({note})" if note else "")}.get(kind, kind)
             self.log(c, what, user, deal_id=did, client_id=d["client_id"] if d else None)
+            if paid:
+                self._k(c, "payment.paid", deal_id=did, client_id=d["client_id"] if d else None, user=user,
+                        amount_rub=int(amount_kop) // 100, method={"invoice": "по счёту", "manual": "вручную"}.get(kind, kind))
             return int(cur.lastrowid)
 
     def payment_update(self, pid: int, user: str, *, status: str, pay_type: str = "", refunded_kop: int | None = None) -> bool:
@@ -1502,6 +1519,9 @@ class Store:
                 self.log(c, f"Ссылка на оплату {rub(int(p['amount']) // 100)}: {names.get(status, status)}"
                             + (f" ({ {'card': 'картой', 'sbp': 'через СБП'}.get(pay_type, pay_type) })" if newly and pay_type else ""),
                          user, deal_id=p["deal_id"], client_id=d["client_id"] if d else None)
+            if newly:
+                self._k(c, "payment.paid", deal_id=p["deal_id"], client_id=d["client_id"] if d else None, user=user,
+                        amount_rub=int(p["amount"]) // 100, method={"card": "картой", "sbp": "через СБП"}.get(pay_type, "по ссылке"))
             return newly
 
     def open_payments(self, days: int = 9) -> list[sqlite3.Row]:

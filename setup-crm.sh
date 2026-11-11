@@ -586,6 +586,7 @@ prostranstvo-crm — CRM https://$CRM_HOST
   prostranstvo-crm update               — обновить CRM из GitHub
   prostranstvo-crm server-page --now   — обновить отчёт для страницы CRM «Сервер» (там же кнопки действий)
   prostranstvo-crm followups           — разослать напоминания клиентам, не ответившим на расчёт (cron, раз в день в 11:25)
+  prostranstvo-crm hooks               — «Конструктор»: отправить события в Telegram и по ссылкам (cron, раз в минуту)
   prostranstvo-crm mail-watch          — новые письма в zakaz@ и info@ → пуш на телефоны (cron, раз в минуту)
   prostranstvo-crm digest              — утренняя сводка пушем (cron, 9:35)
   prostranstvo-crm tochka-poll         — спросить Точку об открытых ссылках на оплату (cron, раз в 5 минут)
@@ -609,6 +610,7 @@ case ${1:-status} in
   update) cmd_update ;;
   server-page) shift; cmd_server_page "$@" || rc=$? ;;
   followups) manage followups || rc=$? ;;
+  hooks) manage hooks || rc=$? ;;
   mail-watch) cmd_mail_watch || rc=$? ;;
   digest) manage digest || rc=$? ;;
   outbox) manage outbox || rc=$? ;;
@@ -758,6 +760,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 40 3 * * *          root  /usr/local/sbin/prostranstvo-crm offsite 2>&1 | logger -t prostranstvo-offsite
 * * * * *           root  flock -n /run/prostranstvo-server-page.lock /usr/local/sbin/prostranstvo-crm server-page 2>&1 | logger -t prostranstvo-server
 25 11 * * *         root  /usr/local/sbin/prostranstvo-crm followups 2>&1 | logger -t prostranstvo-followups
+* * * * *           root  flock -n /run/prostranstvo-hooks.lock /usr/local/sbin/prostranstvo-crm hooks 2>&1 | grep -v '^ok$' | logger -t prostranstvo-hooks
 * * * * *           root  flock -n /run/prostranstvo-mailwatch.lock /usr/local/sbin/prostranstvo-crm mail-watch 2>&1 | logger -t prostranstvo-mailwatch
 35 9 * * *          root  /usr/local/sbin/prostranstvo-crm digest 2>&1 | logger -t prostranstvo-digest
 */5 * * * *         root  flock -n /run/prostranstvo-tochka.lock /usr/local/sbin/prostranstvo-crm tochka-poll 2>&1 | grep -v '^ok$\|не подключена' | logger -t prostranstvo-tochka
