@@ -740,8 +740,10 @@ jobs:
           {
           echo "# Аварийная панель — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
           H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; U="https://$H/rescue/"
-          P=$(sudo head -n1 /etc/prostranstvo/rescue-pass); A="-u nashdekor:$P"
-          echo "служба: $(systemctl is-active prostranstvo-rescue) · без пароля: $(curl -sk $R -o /dev/null -w '%{http_code}' $U) · с паролем: $(curl -sk $R $A -o /tmp/r.html -w '%{http_code}' $U)"
+          P=$(sudo head -n1 /etc/prostranstvo/rescue-pass); RJ=/tmp/rescue.jar; rm -f $RJ; A="-c $RJ -b $RJ"
+          echo "служба: $(systemctl is-active prostranstvo-rescue) · без входа: $(curl -sk $R -o /tmp/r0.html -w '%{http_code}' $U) $(grep -c 'name="pw"' /tmp/r0.html) форма · кнопок без входа: $(grep -c 'crm_restart' /tmp/r0.html)"
+          echo "неверный пароль: $(curl -sk $R -o /dev/null -w '%{http_code}' -H "Origin: https://$H" --data-urlencode 'pw=wrong' ${U}login) · верный: $(curl -sk $R $A -o /dev/null -w '%{http_code}' -H "Origin: https://$H" --data-urlencode "pw=$P" ${U}login) · куки: $(grep -c rescue $RJ)"
+          echo "панель после входа: $(curl -sk $R $A -o /tmp/r.html -w '%{http_code}' $U) · nginx без auth_basic: $(sudo grep -c auth_basic /etc/nginx/sites-available/*crm* 2>/dev/null | tail -n1)"
           grep -o 'Аварийная панель\|Откатить CRM на прошлую версию\|Прошлой версии CRM пока нет' /tmp/r.html | sort -u | tr '\n' ';'; echo
           act() { T=$(curl -sk $R $A $U | grep -o 'name="t" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'); curl -sk $R $A -o /dev/null -w '%{http_code}' -H "Origin: https://$H" --data-urlencode "t=$T" --data-urlencode "act=$1" --data-urlencode "arg=${2:-}" --data-urlencode "yes=1" "${U}act"; }
           echo "чужой сайт (без токена): $(curl -sk $R $A -o /dev/null -w '%{http_code}' -H 'Origin: https://evil.example' -d 'act=auto_off' ${U}act)"
