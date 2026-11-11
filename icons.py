@@ -9,6 +9,9 @@ from PIL import Image, ImageDraw, ImageFilter
 KEYS = [
     ("car", "машин автомобил мотор двигател бензин тормоз водител радиатор гараж шина= шины= шин= руль= руля= рулём= рулем="),
     ("pill", "таблет лекарств аптек пилюл антибиотик"),
+    ("mushroom", "гриб поганк опят опёнок опенок мухомор"),
+    ("bird", "птиц птенц кукушк куриц петух утк утят колибри гнезд воробь голуб"),
+    ("bug", "насеком муравь пчел пчёл оса= осы= осу= ос= тарака богомол гусениц жук"),
     ("planet", "планет венер меркур сатурн юпитер марс космос орбит галакт"),
     ("sun", "солнц звезд светил"),
     ("moon", "луна= луны= луне= луну= лунн месяц"),
@@ -235,6 +238,29 @@ def draw_icon(name, size, col, line=None):
         x0, y0, rr = 0.72 * s, 0.74 * s, 0.14 * s
         d.ellipse([x0 - rr, y0 - rr, x0 + rr, y0 + rr], fill=F, outline=C, width=lw)
         d.line([(x0 - rr * 0.62, y0 + rr * 0.62), (x0 + rr * 0.62, y0 - rr * 0.62)], fill=C, width=max(4, lw // 2))
+    elif name == "mushroom":
+        d.chord([c - s * 0.4, c - s * 0.36, c + s * 0.4, c + s * 0.26], 180, 360, fill=F, outline=C, width=lw)
+        d.line([(c - s * 0.4, c - s * 0.05), (c + s * 0.4, c - s * 0.05)], fill=C, width=lw)
+        d.rounded_rectangle([c - s * 0.12, c - s * 0.05, c + s * 0.12, c + s * 0.4], radius=s * 0.06, fill=F, outline=C, width=lw)
+        for x, y, r in ((-0.2, -0.18, 0.055), (0.04, -0.26, 0.06), (0.22, -0.14, 0.045)):
+            d.ellipse([c + s * x - s * r, c + s * y - s * r, c + s * x + s * r, c + s * y + s * r], fill=C)
+    elif name == "bird":
+        d.ellipse([c - s * 0.3, c - s * 0.12, c + s * 0.2, c + s * 0.26], fill=F, outline=C, width=lw)
+        d.ellipse([c + s * 0.06, c - s * 0.32, c + s * 0.3, c - s * 0.08], fill=F, outline=C, width=lw)
+        d.polygon([(c + s * 0.29, c - s * 0.24), (c + s * 0.44, c - s * 0.19), (c + s * 0.29, c - s * 0.14)], fill=C)
+        d.ellipse([c + s * 0.17, c - s * 0.25, c + s * 0.23, c - s * 0.19], fill=C)
+        d.polygon([(c - s * 0.27, c + s * 0.02), (c - s * 0.46, c - s * 0.12), (c - s * 0.42, c + s * 0.12)], fill=C)
+        d.arc([c - s * 0.2, c - s * 0.06, c + s * 0.12, c + s * 0.2], 200, 340, fill=C, width=lw)
+        d.line([(c - s * 0.06, c + s * 0.25), (c - s * 0.08, c + s * 0.4)], fill=C, width=max(4, lw // 2))
+        d.line([(c + s * 0.06, c + s * 0.25), (c + s * 0.08, c + s * 0.4)], fill=C, width=max(4, lw // 2))
+    elif name == "bug":
+        for k in (-1, 1):
+            for y, dx, dy in ((-0.06, 0.34, -0.16), (0.08, 0.38, 0.06), (0.22, 0.34, 0.3)):
+                d.line([(c + k * s * 0.12, c + s * y), (c + k * s * dx, c + s * dy)], fill=C, width=max(4, lw // 2))
+            d.line([(c + k * s * 0.05, c - s * 0.28), (c + k * s * 0.18, c - s * 0.44)], fill=C, width=max(4, lw // 2))
+        d.ellipse([c - s * 0.2, c - s * 0.16, c + s * 0.2, c + s * 0.38], fill=F, outline=C, width=lw)
+        d.ellipse([c - s * 0.1, c - s * 0.32, c + s * 0.1, c - s * 0.12], fill=C)
+        d.line([(c, c - s * 0.14), (c, c + s * 0.36)], fill=C, width=max(4, lw // 2))
     else:  # question
         d.arc([c - s * 0.22, c - s * 0.4, c + s * 0.22, c + s * 0.02], 180, 400, fill=C, width=lw * 2)
         d.line([(c + s * 0.16, c - s * 0.08), (c, c + s * 0.1), (c, c + s * 0.22)], fill=C, width=lw * 2, joint="curve")
