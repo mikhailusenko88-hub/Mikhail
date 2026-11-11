@@ -47,7 +47,7 @@ jobs:
           mkdir -p dash_out
           grep '^mode:' dash_request.txt | while read -r _ TAG MODE MS; do
             echo "=== $TAG: $MODE $MS"
-            rm -rf pa/albina_cache part_$TAG
+            rm -rf pa/albina_cache part_$TAG /opt/multik-tts/cache-bot*   # кэш озвучщика — по тексту, без него все способы совпадут
             ( cd pa && BOT_DASH_MODE=$MODE BOT_DASH_MS=${MS:-220} ALBINA_NO_GH=1 python farm.py ../$BANK ../part_$TAG ) || continue
             python stage_check.py part_$TAG dash_out/$TAG.json || true
             mkdir -p dash_out/$TAG && cp part_$TAG/v/*.mp3 dash_out/$TAG/ && cp part_$TAG/index.json dash_out/$TAG/

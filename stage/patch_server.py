@@ -90,6 +90,10 @@ def _dash(s):
         rep = f', <break time="{BOT_DASH_MS}ms"/> '
     elif BOT_DASH_MODE == "break" and BOT_DASH_MS:
         rep = f' <break time="{BOT_DASH_MS}ms"/> '
+    elif BOT_DASH_MODE == "dashbreak":
+        rep = f' — <break time="{BOT_DASH_MS}ms"/> '
+    elif BOT_DASH_MODE == "commadash":
+        rep = ", — "
     else:
         return s
     return re.sub(r"\s*,?\s+[—–]\s+", rep, s)
