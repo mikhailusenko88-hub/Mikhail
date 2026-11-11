@@ -1,0 +1,53 @@
+/* Фирменный стиль «Наш декор» — по брендбуку (GitHub, ветка brand, brand/README.md), с 11.11.2026.
+   Подключается ПОСЛЕДНИМ на всех страницах (главная, товары, разделы, статьи, доставка, оплата, оферта, политика, согласие)
+   и переопределяет общие переменные. Цвета: Антрацит #26292E, Галерея #F8F8F6, Серо-голубой #7E97AD, Дымка #D9DEE3,
+   Камень #A89F91, подпись на светлом #585E66, на тёмном #C3CAD2. Шрифт — Inter (свои файлы, без внешних сервисов). */
+@font-face{font-family:"Inter";src:url(fonts/inter-400.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Inter";src:url(fonts/inter-500.woff) format("woff");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Inter";src:url(fonts/inter-600.woff) format("woff");font-weight:600 700;font-style:normal;font-display:swap}
+
+:root{
+  --bg:#F8F8F6; --paper:#FFFFFF; --sunk:#ECEFF2; --line:#D9DEE3; --ink:#26292E; --muted:#585E66;
+  --accent:#26292E; --accent-ink:#F8F8F6; --mark:#7E97AD; --mark-text:#4F6A82; --stone:#A89F91;
+  --good:#2F6B47; --warn:#9A6212;
+  --f-display:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#26292E; --paper:#2E3238; --sunk:#353A41; --line:#40454D; --ink:#F8F8F6; --muted:#C3CAD2;
+  --accent:#F8F8F6; --accent-ink:#26292E; --mark:#7E97AD; --mark-text:#9DB2C4; --stone:#A89F91;
+  --good:#7CC497; --warn:#E2AC57; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#26292E; --paper:#2E3238; --sunk:#353A41; --line:#40454D; --ink:#F8F8F6; --muted:#C3CAD2;
+  --accent:#F8F8F6; --accent-ink:#26292E; --mark:#7E97AD; --mark-text:#9DB2C4; --stone:#A89F91;
+  --good:#7CC497; --warn:#E2AC57; color-scheme:dark}
+
+body{font-family:var(--f-body);-webkit-font-smoothing:antialiased;font-feature-settings:"calt" 1}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:-.018em}
+::selection{background:#D9DEE3;color:#26292E}
+
+/* Логотип в шапке: знак + «Наш декор» (кривые из брендбука), внутренние рамки — серо-голубые */
+.logo{display:inline-flex;align-items:center;color:var(--ink);line-height:0;flex:none}
+.logo svg{display:block;height:28px;width:auto;aspect-ratio:724/120}
+@media (max-width:720px){.logo svg{height:24px}}
+
+/* Акценты брендбука */
+.eyebrow{color:var(--mark-text)}
+.card .lnk,.doc a,.crumbs a:hover{color:var(--mark-text)}
+a{text-decoration-color:var(--mark)}
+:focus-visible{outline-color:var(--mark)}
+.pro div{border-top-color:var(--mark)}
+.btn{border-radius:6px;letter-spacing:.005em}
+.btn.ghost{border-color:var(--line);color:var(--ink)}
+.btn.ghost:hover{border-color:var(--ink)}
+.tabs button[aria-pressed="true"],.views button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.facts b,.res .big,.price b{font-weight:600}
+.wall span,.hint{background:var(--paper);color:var(--muted)}
+
+/* 3D на страницах товаров — фон в тонах «Галерея» / «Дымка» */
+.pview.is3d{background:radial-gradient(ellipse at 50% 35%,#FFFFFF 0%,#ECEFF2 60%,#D9DEE3 100%)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pview.is3d{background:radial-gradient(ellipse at 50% 35%,#40454D 0%,#2E3238 60%,#26292E 100%)}}
+:root[data-theme="dark"] .pview.is3d{background:radial-gradient(ellipse at 50% 35%,#40454D 0%,#2E3238 60%,#26292E 100%)}
+
+/* Подвал: тонкая линия «Камень», как на картинках брендбука */
+footer{border-top-color:var(--stone)}

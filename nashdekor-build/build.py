@@ -222,13 +222,13 @@ def head(t, desc, canon, og_img, extra_ld, root):
             '<meta property="og:type" content="%s"><meta property="og:site_name" content="Наш декор"><meta property="og:locale" content="ru_RU"><meta property="og:title" content="%s">'
             '<meta property="og:description" content="%s"><meta property="og:url" content="%s"><meta property="og:image" content="%s"><meta name="twitter:card" content="summary_large_image">'
             '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">%s'
-            '<style>%s</style><link rel="stylesheet" href="%sassets/p.css?v=%s"></head><body>' % (
-                esc(t), esc(desc), canon, root, root, root, "product" if "/p/" in canon else "website", esc(t), esc(desc), canon, og_img, extra_ld, RESET_CSS, root, VER))
+            '<style>%s</style><link rel="stylesheet" href="%sassets/p.css?v=%s"><link rel="stylesheet" href="%sassets/brand.css?v=%s"><meta name="theme-color" content="#F8F8F6" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#26292E" media="(prefers-color-scheme: dark)"><link rel="preload" href="%sassets/fonts/inter-400.woff" as="font" type="font/woff" crossorigin></head><body>' % (
+                esc(t), esc(desc), canon, root, root, root, "product" if "/p/" in canon else "website", esc(t), esc(desc), canon, og_img, extra_ld, RESET_CSS, root, VER, root, VER, root))
 
 def header(root):
-    return ('<header class="top"><div class="wrap bar"><a class="logo" href="%s"><b>Наш</b> декор</a>'
+    return ('<header class="top"><div class="wrap bar"><a class="logo" href="%s" aria-label="Наш декор — на главную"><svg viewBox="0 0 724 120" width="169" height="28" aria-hidden="true" focusable="false"><use href="%sassets/logo.svg#logo"/></svg></a>'
             '<nav class="links"><a href="%scatalog/stenovye-paneli/">Стеновые панели</a><a href="%scatalog/plintusy/">Плинтусы</a><a href="%s#calc">Расчёт стены</a><a href="%sstati/">Статьи</a><a href="%sdostavka/">Доставка</a><a href="#order">Заявка</a></nav>'
-            '<a class="btn sm" href="#order">Заказать</a></div></header>' % (root, root, root, root, root, root))
+            '<a class="btn sm" href="#order">Заказать</a></div></header>' % (root, root, root, root, root, root, root))
 
 def footer(root):
     cats = "".join('<a href="%scatalog/%s/" style="color:inherit">%s</a>' % (root, s, esc(menu)) for _, s, menu, _, _, _, _ in CATS)
@@ -246,9 +246,15 @@ def sections_nav(cur_code, root):
 def crumbs(items):
     return '<nav class="crumbs" aria-label="Вы здесь">' + "".join('<span>%s</span>' % ('<a href="%s">%s</a>' % (h, esc(t)) if h else esc(t)) for t, h in items) + "</nav>"
 
+# Условия возврата для разметки товаров — как на странице /oplata/ и в оферте: 7 дней, обратную доставку оплачивает покупатель
+RETURN_POLICY = {"@type": "MerchantReturnPolicy", "applicableCountry": "RU",
+                 "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow", "merchantReturnDays": 7,
+                 "returnFees": "https://schema.org/ReturnFeesCustomerResponsibility",
+                 "merchantReturnLink": BASE + "/oplata/#vozvrat"}
+
 def crumbs_ld(items, url_of):
     return {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
-        {"@type": "ListItem", "position": i + 1, "name": t, "item": url_of(h)} for i, (t, h) in enumerate(items) if h]}
+        dict({"@type": "ListItem", "position": i + 1, "name": t}, **({"item": url_of(h)} if h else {})) for i, (t, h) in enumerate(items)]}
 
 def lead_form(x=None):
     prod = ('<div class="prodline"><b>%s %s</b>Количество: <span id="oQty">1</span> шт · <span id="oSum">—</span> · цвет и количество подставятся автоматически</div>' % (esc(KIND[x["c"]]), esc(x["a"]))) if x else ""
@@ -328,7 +334,8 @@ def product_page(x):
                                       {"@type": "PropertyValue", "name": "Длина", "value": x["l"], "unitText": "мм"}, {"@type": "PropertyValue", "name": "В коробке", "value": x["b"], "unitText": "шт"}]}
     if ph: ld_prod["image"] = [og_img]
     if x.get("r"): ld_prod["offers"] = {"@type": "Offer", "url": url, "priceCurrency": "RUB", "price": x["r"], "availability": "https://schema.org/BackOrder",
-                                        "itemCondition": "https://schema.org/NewCondition", "seller": {"@type": "Organization", "name": "Наш декор"}}
+                                        "itemCondition": "https://schema.org/NewCondition", "seller": {"@type": "Organization", "name": "Наш декор"},
+                                        "hasMerchantReturnPolicy": RETURN_POLICY}
     ld = '<script type="application/ld+json">%s</script><script type="application/ld+json">%s</script>' % (
         json.dumps(ld_prod, ensure_ascii=False), json.dumps(crumbs_ld(crumb_items, lambda h: BASE + "/" + h.replace(ROOT, "", 1) if h != ROOT else BASE + "/"), ensure_ascii=False))
 
@@ -634,7 +641,7 @@ def payment_page():
             '<p>Выставим счёт на реквизиты вашей организации — пришлите ИНН или карточку предприятия. Оплата безналичным переводом с расчётного счёта. Закрывающие документы — УПД по ЭДО (Saby; с другими операторами работаем через роуминг) или на бумаге. По просьбе заключим договор поставки.</p>'
             '<h2>Кассовый чек</h2>'
             '<p>По закону 54-ФЗ на каждую оплату картой или через СБП формируется электронный кассовый чек — он приходит на e-mail, указанный в заказе. Сохраните его: он подтверждает покупку и пригодится при возврате. При оплате по счёту организации кассовый чек не нужен — документом служит УПД.</p>'
-            '<h2>Возврат и обмен</h2><ul>'
+            '<h2 id="vozvrat">Возврат и обмен</h2><ul>'
             '<li><b>До получения</b> от заказа можно отказаться в любое время — вернём деньги полностью в течение 10 дней.</li>'
             '<li><b>Товар не подошёл</b> — вернуть можно в течение 7 дней после получения, если он не распилен, не окрашен, не монтировался, без следов клея и сохранил товарный вид. Деньги возвращаем в течение 10 дней со дня требования, за вычетом наших расходов на доставку возвращённого товара.</li>'
             '<li><b>Брак или повреждение при доставке</b> — на ваш выбор: замена, снижение цены или возврат денег.</li>'
@@ -657,6 +664,8 @@ os.makedirs(os.path.join(SITE, "assets"), exist_ok=True)
 open(os.path.join(SITE, "assets", "p.css"), "w", encoding="utf-8").write(BASE_CSS + "\n" + open(os.path.join(HERE, "p.css"), encoding="utf-8").read())
 shutil.copy(os.path.join(HERE, "p.js"), os.path.join(SITE, "assets", "p.js"))
 shutil.copy(os.path.join(HERE, "chat.js"), os.path.join(SITE, "assets", "chat.js"))
+shutil.copy(os.path.join(HERE, "brand.css"), os.path.join(SITE, "assets", "brand.css"))  # фирменный стиль (брендбук)
+shutil.copy(os.path.join(HERE, "logo.svg"), os.path.join(SITE, "assets", "logo.svg"))    # логотип для шапки (symbol #logo)
 
 pdir = os.path.join(SITE, "p"); cdir = os.path.join(SITE, "catalog"); adir = os.path.join(SITE, "stati"); ddir = os.path.join(SITE, "dostavka"); odir = os.path.join(SITE, "oplata")
 for d in (pdir, cdir, adir, ddir, odir):
@@ -689,4 +698,29 @@ sm += ['  <url><loc>%s</loc><lastmod>%s</lastmod><changefreq>%s</changefreq><pri
 sm += ['  <url><loc>%s/%s</loc><lastmod>2026-11-10</lastmod><changefreq>yearly</changefreq><priority>%s</priority></url>' % (BASE, f, p) for f, p in (("oferta.html", "0.3"), ("privacy.html", "0.2"), ("consent.html", "0.2"))]
 sm.append("</urlset>")
 open(os.path.join(SITE, "sitemap.xml"), "w", encoding="utf-8").write("\n".join(sm) + "\n")
+
+# ---------- товарный фид YML для Яндекс Товаров: https://nashdekor.ru/yml.xml (с 11.11.2026) ----------
+# Цены — как на сайте (index.html CAT); раз в час их и наличие обновляет из CRM GitHub Actions «Авито — фид из CRM» (yml_prices.py).
+# available="false" — «под заказ, 3–4 недели» (свободного остатка нет), "true" — есть на складе. Бренд поставщика в фид не пишем.
+YML_CATS = [(1, None, "Стеновые панели"), (11, 1, "Реечные панели под покраску"), (12, 1, "Реечные панели под дерево и бетон"),
+            (2, None, "Плинтусы напольные"), (3, None, "Потолочные плинтусы"), (4, None, "Молдинги"), (5, None, "Уголки декоративные")]
+YML_CAT_OF = {"panel": 11, "color": 12, "plinth": 2, "cornice": 3, "mold": 4, "corner": 5}
+def yml_id(a): return re.sub(r"[^A-Za-z0-9-]", "", a.replace("/", "-").replace(" ", ""))
+def yml_offer(x):
+    p = [("Материал", "", "полистирол высокой плотности (дюрополимер)"), ("Ширина", "мм", x["w"]), ("Толщина", "мм", x["t"]),
+         ("Длина", "мм", x["l"]), ("В коробке", "шт", x["b"])]
+    return ('    <offer id="%s" available="false">\n      <url>%s/p/%s/</url>\n      <price>%d</price>\n      <currencyId>RUR</currencyId>\n'
+            '      <categoryId>%d</categoryId>\n      <picture>%s/%s</picture>\n      <name>%s</name>\n      <vendorCode>%s</vendorCode>\n'
+            '      <description><![CDATA[%s]]></description>\n      <sales_notes>Поштучно и коробками, предоплата</sales_notes>\n'
+            '      <pickup>true</pickup>\n      <delivery>true</delivery>\n%s\n    </offer>') % (
+        yml_id(x["a"]), BASE, slug(x["a"]), int(round(x["r"])), YML_CAT_OF[x["c"]], BASE, photo(x["a"]), esc(x["n"]), esc(x["a"]),
+        description(x).replace("]]>", ""), "\n".join('      <param name="%s"%s>%s</param>' % (n, (' unit="%s"' % u) if u else "", esc(v)) for n, u, v in p))
+yml_items = [x for x in CAT if x.get("r") and photo(x["a"]) and x["c"] in YML_CAT_OF]
+YML = ['<?xml version="1.0" encoding="UTF-8"?>', '<yml_catalog date="%s">' % datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S+03:00"), '  <shop>',
+       '    <name>Наш декор</name>', '    <company>%s</company>' % esc(SHOP["legal"].split(" · ")[0]), '    <url>%s/</url>' % BASE,
+       '    <currencies><currency id="RUR" rate="1"/></currencies>', '    <categories>']
+YML += ['      <category id="%d"%s>%s</category>' % (i, (' parentId="%d"' % par) if par else "", esc(n)) for i, par, n in YML_CATS]
+YML += ['    </categories>', '    <offers>'] + [yml_offer(x) for x in yml_items] + ['    </offers>', '  </shop>', '</yml_catalog>']
+open(os.path.join(SITE, "yml.xml"), "w", encoding="utf-8").write("\n".join(YML) + "\n")
+print("фид Яндекс Товаров yml.xml: %d предложений" % len(yml_items))
 print("товаров: %d, разделов: %d, статей: %d, в sitemap: %d адресов, версия ассетов %s" % (len(CAT), len(CATS), len(ARTICLES), len(urls) + 4, VER))
