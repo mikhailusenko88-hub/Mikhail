@@ -51,9 +51,22 @@ jobs:
           BANK=$(grep '^bank:' stage_request.txt | cut -d: -f2 | tr -d ' '); BANK=${BANK:-stage_bank.json}
           cd pa && ALBINA_NO_GH=1 python farm.py ../$BANK ../part --shard ${{ matrix.shard }}/8 --max-minutes 40
           ls ../part/v | wc -l
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with: {name: 'stage-${{ matrix.shard }}', path: part, retention-days: 2, if-no-files-found: ignore}
+      - name: Звук в ветку golos-stage-voice
+        run: |
+          git config --global user.name golos
+          git config --global user.email golos@users.noreply.github.com
+          URL="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}"
+          for i in 1 2 3 4 5 6 7 8; do
+            rm -rf /tmp/gsv
+            if git clone -q --depth 1 --branch golos-stage-voice --single-branch "$URL" /tmp/gsv 2>/dev/null; then :; else
+              mkdir -p /tmp/gsv && git -C /tmp/gsv init -q -b golos-stage-voice
+              printf '# Пробная озвучка «Почему так?» (проверка новых правил, не для бота)\n' > /tmp/gsv/README.md
+            fi
+            mkdir -p /tmp/gsv/v && cp part/v/*.mp3 /tmp/gsv/v/ && cp part/index.json /tmp/gsv/index-${{ matrix.shard }}.json
+            git -C /tmp/gsv add -A && git -C /tmp/gsv commit -qm "пробная озвучка, часть ${{ matrix.shard }}" || { echo nothing; break; }
+            git -C /tmp/gsv push -q "$URL" HEAD:golos-stage-voice && break
+            sleep $((RANDOM % 20 + 5))
+          done
       - name: Проверка
         run: |
           pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
@@ -73,29 +86,3 @@ jobs:
             git push -q origin HEAD:golos && break
             sleep $((RANDOM % 15 + 5))
           done
-  publish:
-    needs: farm
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with: {pattern: 'stage-*', path: parts}
-      - name: Собрать звук в ветку golos-stage-voice
-        run: |
-          mkdir -p voice/v
-          python3 - <<'PY'
-          import glob, json, shutil
-          idx = {}
-          for ip in glob.glob('parts/*/index.json'):
-              idx.update(json.load(open(ip, encoding='utf-8')))
-          n = 0
-          for f in glob.glob('parts/*/v/*.mp3'):
-              shutil.copyfile(f, 'voice/v/' + f.split('/')[-1]); n += 1
-          json.dump(idx, open('voice/index.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
-          print('фраз:', n, 'в индексе:', len(idx))
-          PY
-          cd voice && git init -q -b golos-stage-voice
-          git config user.name golos && git config user.email golos@users.noreply.github.com
-          printf '# Пробная озвучка «Почему так?» (проверка новых правил, не для бота)\n' > README.md
-          git add -A && git commit -qm "пробная озвучка $(date -u '+%F %T')"
-          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:golos-stage-voice
