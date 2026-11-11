@@ -1,0 +1,10 @@
+shorts 84
+videos 7
+streams ошибка: ERROR: [youtube:tab] @Beautiful_shorts-s6u: This channel does not have a streams tab
+
+streams 0
+Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/ref.py", line 47, in <module>
+    info = dict(date=d.get("upload_date"), dur=d.get("duration"), track=d.get("track"), artist=d.get("artist") or d.get("creator"), album=d.get("album"),
+                     ^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
