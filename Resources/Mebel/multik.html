@@ -921,11 +921,12 @@ const Wr = {
   open() {
     const d = Lib.data; d.draftText = ''; document.getElementById('wrText').value = ''; document.getElementById('wrTeach').innerHTML = ''; // каждый раз — чистый лист
     document.getElementById('wrLen').value = String(d.epLen != null ? d.epLen : 600);
-    document.getElementById('wrSeries').value = d.draftSeries || (d.projects[0] && d.projects[0].series) || '';
+    { const el = document.getElementById('wrSeries'); el.value = ''; el.placeholder = this.lastSeries() || 'Кот Барсик'; }   // поле «Сериал» каждый раз пустое: вставляй сразу; пустое — значит прежний сериал (он виден серым)
     document.getElementById('wrSeriesList').innerHTML = d.projects.map(p => `<option value="${esc(p.series)}">`).join('');
     document.getElementById('wrOut').innerHTML = ''; document.getElementById('writer').style.display = 'flex';
   },
-  saveDraft() { Lib.data.draftText = document.getElementById('wrText').value; Lib.data.draftSeries = document.getElementById('wrSeries').value; Lib.data.epLen = +document.getElementById('wrLen').value; Lib.save(); },
+  lastSeries() { const d = Lib.data; return d.draftSeries || (d.projects[0] && d.projects[0].series) || ''; },
+  saveDraft() { Lib.data.draftText = document.getElementById('wrText').value; const sv = document.getElementById('wrSeries').value.trim(); if (sv) Lib.data.draftSeries = sv; Lib.data.epLen = +document.getElementById('wrLen').value; Lib.save(); },
   close() { if (this.listening) this.mic(); this.saveDraft(); document.getElementById('writer').style.display = 'none'; App.render(); },
   example() { const t = document.getElementById('wrText'); if (t.value.trim() && !confirm('Заменить текст примером?')) return; t.value = MKScript.EXAMPLE; },
   async paste() { const t = await Native.call('paste'); if (!t) { alert('В буфере нет текста. Скопируй сценарий и нажми ещё раз.'); return; } const el = document.getElementById('wrText'); if (el.value.includes(t.trim())) { this.check(); return; } el.value = el.value.trim() && confirm('Добавить к уже написанному? (Отмена — заменить)') ? el.value.replace(/\s*$/, '') + '\n' + t : t; this.saveDraft(); this.check(); },
@@ -950,7 +951,7 @@ const Wr = {
     await Lib.save(); if (!n) { alert('Ничего не выбрано.'); return; } this.check();
   },
   parse() {
-    const text = document.getElementById('wrText').value, series = document.getElementById('wrSeries').value.trim() || 'Мой мультик';
+    const text = document.getElementById('wrText').value, series = document.getElementById('wrSeries').value.trim() || this.lastSeries() || 'Мой мультик';
     const p = Lib.data.projects.find(p => p.series === series); const next = p && p.episodes.length ? Math.max(...p.episodes.map(e => e.episode)) + 1 : 1;
     const r = MKScript.parse(/^\s*(сериал|мультик)\s*:/im.test(text) ? text : 'СЕРИАЛ: ' + series + '\n' + text, Lib.data, { series, nextEpisode: next, lexicon: Lib.data.lexicon || {} });
     const ign = (Lib.data.lexicon || {}).ignore || {}; r.unknownWords = (r.unknownWords || []).filter(w => !ign[w.word]); const igo = (Lib.data.lexicon || {}).ignoreObj || {}; r.unknownObjects = (r.unknownObjects || []).filter(w => !igo[w.word]);
