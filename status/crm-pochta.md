@@ -1,4 +1,4 @@
-# Почта в CRM и ответы для Claude — 2026-11-11 17:08 UTC
+# Почта в CRM и ответы для Claude — 2026-11-11 17:30 UTC
 
 ```
 до ключа Claude: {"items":[],"nokey":true,"v":1}
@@ -7,19 +7,19 @@ warning: unable to access '/home/runner/.config/git/attributes': Permission deni
 warning: unable to access '/home/runner/.config/git/attributes': Permission denied
 warning: unable to access '/home/runner/.config/git/ignore': Permission denied
 warning: unable to access '/home/runner/.config/git/attributes': Permission denied
-отправка в лабораторию: 14070530-40d7-475d-be24-7cdf09add7d9: отправлено → lab@labtest.example ok 
-статус: {"error":"","sent_at":"2026-11-11T20:08:29+03:00","status":"sent"}
-Message-ID в очереди Postfix: 
-ответ лаборатории в info@: new/1794416910.M309722P22677.runnervm7aw5e,S=1311,W=1348 dovecot.index.cache 
-Nov 11 20:08:29 runnervm7aw5e postfix/smtp[22872]: A671A902E2E: to=<lab@labtest.example>, relay=none, delay=0.88, delays=0.83/0/0.05/0, dsn=5.4.4, status=bounced (Host or domain name not found. Name service error for nam
-Nov 11 20:08:29 runnervm7aw5e sudo[23549]:   runner : PWD=/home/runner/work/Mikhail/Mikhail ; USER=root ; COMMAND=/usr/sbin/sendmail -f ivanova@labtest.example zapros@nashdekor.ru
-Nov 11 20:08:29 runnervm7aw5e postfix/pickup[22503]: 9A82E902E30: uid=0 from=<ivanova@labtest.example>
-Nov 11 20:08:30 runnervm7aw5e postfix/qmgr[22505]: 9A82E902E30: from=<ivanova@labtest.example>, size=1044, nrcpt=1 (queue active)
-Nov 11 20:08:34 runnervm7aw5e sudo[23562]:   runner : PWD=/home/runner/work/Mikhail/Mikhail ; USER=root ; COMMAND=/usr/bin/grep -rlq ivanova@labtest.example /var/mail/vhosts/nashdekor.ru/info/Maildir
-Nov 11 20:08:34 runnervm7aw5e sudo[23565]:   runner : PWD=/home/runner/work/Mikhail/Mikhail ; USER=root ; COMMAND=/usr/bin/grep -rl ivanova@labtest.example /var/mail/vhosts/nashdekor.ru/info/Maildir
+отправка в лабораторию: d1627721-e8cf-4880-beeb-1886b5f9a9eb: отправлено → lab@labtest.example ok 
+статус: {"error":"","sent_at":"2026-11-11T20:30:29+03:00","status":"sent"}
+Message-ID в очереди Postfix: Message-ID: <d1627721-e8cf-4880-beeb-1886b5f9a9eb@nashdekor.ru>
+ответ лаборатории в info@: new/1794418229.M817862P18239.runnervm7aw5e,S=1311,W=1348 dovecot.index.cache 
+Nov 11 20:30:29 runnervm7aw5e sudo[23259]:   runner : PWD=/home/runner/work/Mikhail/Mikhail ; USER=root ; COMMAND=/usr/sbin/sendmail -f ivanova@labtest.example zapros@nashdekor.ru
+Nov 11 20:30:29 runnervm7aw5e postfix/pickup[22264]: A0D929025B5: uid=0 from=<ivanova@labtest.example>
+Nov 11 20:30:29 runnervm7aw5e postfix/smtp[22529]: 0DA049025B3: to=<lab@labtest.example>, relay=none, delay=0.61, delays=0.47/0/0.13/0, dsn=5.4.4, status=bounced (Host or domain name not found. Name service error for nam
+Nov 11 20:30:29 runnervm7aw5e postfix/qmgr[22267]: A0D929025B5: from=<ivanova@labtest.example>, size=1044, nrcpt=1 (queue active)
+Nov 11 20:30:34 runnervm7aw5e sudo[23278]:   runner : PWD=/home/runner/work/Mikhail/Mikhail ; USER=root ; COMMAND=/usr/bin/grep -rlq ivanova@labtest.example /var/mail/vhosts/nashdekor.ru/info/Maildir
+Nov 11 20:30:34 runnervm7aw5e sudo[23281]:   runner : PWD=/home/runner/work/Mikhail/Mikhail ; USER=root ; COMMAND=/usr/bin/grep -rl ivanova@labtest.example /var/mail/vhosts/nashdekor.ru/info/Maildir
 наш Message-ID встречается в info@ (возврат/ответ): 2
 --- выгрузка (cron mail-watch):
-info: other@other.example → без сделки
+info: zapros@nashdekor.ru → без сделки
 info: ivanova@labtest.example → без сделки
 ok
 папка: drwxr-x--- root:prostranstvo
@@ -35,12 +35,12 @@ CRM читает — да
 в списке «zakaz-from-client»: 1
 в списке «info-unrelated»: 1
 в списке «видит Claude»: 1
-письмо /pochta/27a2616eeaf4efec76ce: Undelivered Mail Returned to Sender;Undelivered Mail Returned to Sender · Наш декор;
-письмо /pochta/5d9feb0839a527c5ac10: 
-письмо /pochta/7cb2583f1b74bf1669f3: КП.pdf;Стоимость Г1 — 25 000 руб.;
-письмо /pochta/cedfe049795fa745e4ee: 
-письмо /pochta/8e3169640f1eae339f75: 
-письмо /pochta/d7476c09e9371d6f5b21: outbox-selftest;
+письмо /pochta/4d7c82d8adc1c3527a63: 
+письмо /pochta/60bd12e917aa4f270aee: Undelivered Mail Returned to Sender;Undelivered Mail Returned to Sender · Наш декор;
+письмо /pochta/76b39ae5f20e5783eb3c: 
+письмо /pochta/89ed7b14ceef3c498471: КП.pdf;Стоимость Г1 — 25 000 руб.;
+письмо /pochta/e110e091bcb76b7d5012: 
+письмо /pochta/e42b83e6300f0b3e5523: outbox-selftest;
 спам: 
 «Исходящие»: Ответы, которые видит Claude;ключ подключён;
 без входа: 302
