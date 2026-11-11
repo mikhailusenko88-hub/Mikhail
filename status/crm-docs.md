@@ -1,0 +1,13 @@
+# Документы в CRM — 2026-11-11 09:59 UTC
+
+```
+загрузка 2 МБ: 302 → https://crm.nashdekor.ru/docs?f=%D0%A1%D0%B5%D1%80%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%82%D1%8B+%D0%B8+%D0%A2%D0%A3
+загрузка 27 МБ (больше 25): 302
+в другой адрес 2 МБ (должно не пустить, 413): 413
+на странице: Сертификаты и ТУ · 1;ТУ ARTDEC;до 03.01.2030;
+файл совпадает: да
+без входа: 302
+на диске: -rw------- prostranstvo:prostranstvo 2000000
+ls: cannot access '/var/backups/prostranstvo/20*': No such file or directory
+в копии: 0 файл(ов)
+```
