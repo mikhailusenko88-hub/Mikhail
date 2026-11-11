@@ -1,0 +1,35 @@
+name: replies-fetch
+# Ответы на письма с zapros@ — шифр для ключа Claude (READER.pub в ветке outbox), прочитать может только он.
+# Запуск: изменить pages/replies.txt (ветка domain-check). Результат — ветка replies, файл replies.json (одна правка, без истории).
+on:
+  push:
+    branches: [domain-check]
+    paths: ['pages/replies.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: replies-fetch
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Забрать шифр ответов
+        run: |
+          mkdir -p /tmp/r && cd /tmp/r
+          code=$(curl -sS -o replies.json -w '%{http_code}' --max-time 180 https://crm.nashdekor.ru/api/outbox/replies || echo 000)
+          echo "HTTP $code, $(wc -c < replies.json 2>/dev/null || echo 0) байт"
+          python3 -c "
+          import json
+          try:
+              d = json.load(open('replies.json'))
+              print('писем:', len(d.get('items', [])), '| ключ:', d.get('key', '-'), '| выключено' if d.get('off') else '', '| сервер не видит ключ' if d.get('nokey') else '')
+          except Exception as e:
+              print('не JSON:', e)" || true
+          printf '%s\nHTTP %s\n' "$(date -u +%FT%TZ)" "$code" > fetched.txt
+          git init -q -b replies .
+          git add -A
+          git -c user.name=replies-fetch -c user.email=replies-fetch@users.noreply.github.com commit -qm "replies $(date -u +%F_%H:%M)"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:replies
