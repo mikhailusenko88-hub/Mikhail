@@ -218,12 +218,12 @@ def prof_svg(x):
 # ---------- общие куски страницы ----------
 def head(t, desc, canon, og_img, extra_ld, root):
     return ('<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>%s</title><meta name="description" content="%s">'
-            '<link rel="canonical" href="%s"><link rel="icon" href="%sfavicon.ico" sizes="any"><link rel="apple-touch-icon" href="%sapple-touch-icon.png">'
+            '<link rel="canonical" href="%s"><link rel="icon" href="%sfavicon.ico" sizes="48x48"><link rel="icon" href="%sicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="%sapple-touch-icon.png">'
             '<meta property="og:type" content="%s"><meta property="og:site_name" content="Наш декор"><meta property="og:locale" content="ru_RU"><meta property="og:title" content="%s">'
             '<meta property="og:description" content="%s"><meta property="og:url" content="%s"><meta property="og:image" content="%s"><meta name="twitter:card" content="summary_large_image">'
             '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">%s'
             '<style>%s</style><link rel="stylesheet" href="%sassets/p.css?v=%s"></head><body>' % (
-                esc(t), esc(desc), canon, root, root, "product" if "/p/" in canon else "website", esc(t), esc(desc), canon, og_img, extra_ld, RESET_CSS, root, VER))
+                esc(t), esc(desc), canon, root, root, root, "product" if "/p/" in canon else "website", esc(t), esc(desc), canon, og_img, extra_ld, RESET_CSS, root, VER))
 
 def header(root):
     return ('<header class="top"><div class="wrap bar"><a class="logo" href="%s"><b>Наш</b> декор</a>'
