@@ -1,0 +1,2487 @@
+{
+"0266c28d1505e6cc097de88f": {
+"dur": 5.12,
+"heard": "У медоносной пчелы жалость с зазубринами. В коже человека оно застревает.",
+"match": 0.909,
+"diff": [
+[
+"жало",
+"жалость"
+]
+],
+"utmos": 3.51,
+"f0_range": 8.9,
+"f0_median_hz": 170,
+"rate": 6.5,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "у медоносной пчелы жало с зазубринами в коже человека оно застревает.",
+"type": ".",
+"final": -3.9,
+"peak": 3.9,
+"peak_word": "медоносной",
+"end": -4.5,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"05124eb76fdf15c14503e724": {
+"dur": 2.71,
+"heard": "так он и стоит в Кремле с отколотым краем.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.13,
+"f0_range": 8.7,
+"f0_median_hz": 166,
+"rate": 5.9,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "так он и стоит в кремле с отколотым краем.",
+"type": ".",
+"final": -3.3,
+"peak": 4.2,
+"peak_word": "в",
+"end": -4.6,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [
+"после «кремле—» нет паузы (0.02 с)"
+],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"07b2002214fe30396d81b7da": {
+"dur": 2.69,
+"heard": "Никогда не подходи к оборванному проводу.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.04,
+"f0_range": 7.0,
+"f0_median_hz": 168,
+"rate": 6.7,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "никогда не подходи к оборванному проводу.",
+"type": ".",
+"final": -3.1,
+"peak": 2.1,
+"peak_word": "никогда",
+"end": -3.9,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"0c153c51c74f39e776cabf4b": {
+"dur": 2.71,
+"heard": "гусеница живет, пока они не вырастут.",
+"match": 1.0,
+"diff": [],
+"utmos": 2.7,
+"f0_range": 7.1,
+"f0_median_hz": 165,
+"rate": 6.1,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "гусеница живёт пока они не вырастут.",
+"type": ".",
+"final": -1.1,
+"peak": 3.7,
+"peak_word": "гусеница",
+"end": -0.7,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"0f4f93fef540a13bd03f37f6": {
+"dur": 4.25,
+"heard": "Снег схватывается, как бетон выбраться самому почти невозможно.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.06,
+"f0_range": 6.8,
+"f0_median_hz": 167,
+"rate": 5.3,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "снег схватывается как бетон выбраться самому почти невозможно.",
+"type": ".",
+"final": -3.1,
+"peak": 2.8,
+"peak_word": "бетон",
+"end": -4.1,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"119bdca720ca99ea6ee24d4d": {
+"dur": 2.53,
+"heard": "Медведь зимой в берлоге сосет лапу.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.23,
+"f0_range": 6.5,
+"f0_median_hz": 177,
+"rate": 5.4,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "медведь зимой в берлоге сосёт лапу?",
+"type": "?",
+"final": -1.5,
+"peak": 3.8,
+"peak_word": "зимой",
+"end": 2.5,
+"ok": true,
+"focus": "зимой",
+"rise": -1.5,
+"note": "вопросительный подъём на слове «зимой»"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"15782bb6efa7b7948936c5b6": {
+"dur": 3.74,
+"heard": "Дуга дает сильный ультрафиолет, она обжигает роговицу.",
+"match": 0.857,
+"diff": [
+[
+"он",
+"она"
+]
+],
+"utmos": 3.29,
+"f0_range": 5.9,
+"f0_median_hz": 163,
+"rate": 5.8,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "дуга даёт сильный ультрафиолет он обжигает роговицу.",
+"type": ".",
+"final": -2.8,
+"peak": 2.7,
+"peak_word": "ультрафиолет",
+"end": -12.8,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"182c5351664cd6f23a916044": {
+"dur": 3.25,
+"heard": "Плоды похожи на яблоки и смертельно ядовиты.",
+"match": 1.0,
+"diff": [],
+"utmos": 2.74,
+"f0_range": 6.1,
+"f0_median_hz": 169,
+"rate": 5.6,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "плоды похожи на яблоки и смертельно ядовиты.",
+"type": ".",
+"final": 0.4,
+"peak": 4.3,
+"peak_word": "похожи",
+"end": -3.5,
+"ok": false,
+"note": "конец фразы не понижается — звучит незаконченно / как перечисление"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"1b3dc63a777307879d708921": {
+"dur": 3.64,
+"heard": "Самое громкое животное на планете живет в океане.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.4,
+"f0_range": 7.6,
+"f0_median_hz": 161,
+"rate": 6.3,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "самое громкое животное на планете живёт в океане.",
+"type": ".",
+"final": -3.4,
+"peak": 3.4,
+"peak_word": "животное",
+"end": -3.8,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"1fc7ee2537b55c2d872cc81b": {
+"dur": 4.11,
+"heard": "Лось весит до полутонны и больше, а ноги у него длинные.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.22,
+"f0_range": 8.2,
+"f0_median_hz": 162,
+"rate": 6.0,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "лось весит до полутонны и больше а ноги у него длинные.",
+"type": ".",
+"final": -1.6,
+"peak": 3.9,
+"peak_word": "полутонны",
+"end": -4.1,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"236611a7d885fb78e3515e25": {
+"dur": 4.34,
+"heard": "Октановое число не сила топлива, а стойкость к детонации.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.49,
+"f0_range": 8.3,
+"f0_median_hz": 168,
+"rate": 6.1,
+"stress_errors": 0,
+"stress_maybe": 1,
+"intonation": [
+{
+"text": "октановое число не сила топлива а стойкость к детонации.",
+"type": ".",
+"final": -3.5,
+"peak": 4.8,
+"peak_word": "стойкость",
+"end": -2.2,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"октановое",
+1,
+2,
+0.98
+]
+]
+},
+"26362634667cc36f6117a4ab": {
+"dur": 3.5,
+"heard": "и зажми мягкую часть носа пальцами на 10 минут.",
+"match": 0.889,
+"diff": [
+[
+"десять",
+"10"
+]
+],
+"utmos": 3.48,
+"f0_range": 6.4,
+"f0_median_hz": 167,
+"rate": 4.9,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "и зажми мягкую часть носа пальцами на десять минут.",
+"type": ".",
+"final": -3.9,
+"peak": 3.5,
+"peak_word": "зажми",
+"end": -4.4,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"290ca651ffdb2260f235efc0": {
+"dur": 2.05,
+"heard": "Может ли курица жить без головы?",
+"match": 1.0,
+"diff": [],
+"utmos": 3.11,
+"f0_range": 6.6,
+"f0_median_hz": 178,
+"rate": 6.4,
+"stress_errors": 0,
+"stress_maybe": 1,
+"intonation": [
+{
+"text": "может ли курица жить без головы?",
+"type": "?",
+"final": -2.8,
+"peak": 4.6,
+"peak_word": "курица",
+"end": -2.5,
+"ok": true,
+"focus": "курица",
+"rise": 1.6,
+"note": "вопросительный подъём на слове «курица»"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"курица",
+0,
+1,
+0.54
+]
+]
+},
+"2c4763cade9ea1eb919935e7": {
+"dur": 1.7,
+"heard": "Жуткий факт о космосе.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.38,
+"f0_range": 10.3,
+"f0_median_hz": 190,
+"rate": 5.1,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "жуткий факт о космосе.",
+"type": ".",
+"final": -3.2,
+"peak": 3.6,
+"peak_word": "жуткий",
+"end": -6.6,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"2fdd875c3d9614abbfe652e4": {
+"dur": 2.24,
+"heard": "Человек даже не знает, что он был.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.71,
+"f0_range": 5.5,
+"f0_median_hz": 167,
+"rate": 5.4,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "человек даже не знает что он был.",
+"type": ".",
+"final": -3.4,
+"peak": 2.0,
+"peak_word": "человек",
+"end": -3.3,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"342bd4481e0f16ff0a0d1835": {
+"dur": 3.69,
+"heard": "Майк прожил ещё полтора года, его корнили из пипетки.",
+"match": 0.889,
+"diff": [
+[
+"кормили",
+"корнили"
+]
+],
+"utmos": 3.11,
+"f0_range": 5.7,
+"f0_median_hz": 161,
+"rate": 5.6,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "майк прожил ещё полтора года его кормили из пипетки.",
+"type": ".",
+"final": -3.2,
+"peak": 3.8,
+"peak_word": "прожил",
+"end": -3.1,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [
+"после «года—» нет паузы (0.04 с)"
+],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"37867fb4459ab1e20486ec6c": {
+"dur": 3.95,
+"heard": "их суд в 20-х годах изменил правила охраны труда.",
+"match": 0.889,
+"diff": [
+[
+"двадцатых",
+"20-х"
+]
+],
+"utmos": 2.9,
+"f0_range": 4.9,
+"f0_median_hz": 163,
+"rate": 5.2,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "их суд в двадцатых годах изменил правила охраны труда.",
+"type": ".",
+"final": -3.0,
+"peak": 2.8,
+"peak_word": "суд",
+"end": -1.6,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"3963175491990e9302d749ef": {
+"dur": 3.7,
+"heard": "около 10 тысяч детей родились с тяжелыми пороками.",
+"match": 0.875,
+"diff": [
+[
+"десяти",
+"10"
+]
+],
+"utmos": 3.37,
+"f0_range": 7.0,
+"f0_median_hz": 162,
+"rate": 6.4,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "около десяти тысяч детей родились с тяжёлыми пороками.",
+"type": ".",
+"final": -2.3,
+"peak": 4.1,
+"peak_word": "тысяч",
+"end": -3.8,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"3c78eb95d637ca6b28f87b1e": {
+"dur": 3.33,
+"heard": "мочевонный эффект слабее, чем объём выпитого.",
+"match": 0.833,
+"diff": [
+[
+"мочегонный",
+"мочевонный"
+]
+],
+"utmos": 3.44,
+"f0_range": 7.4,
+"f0_median_hz": 164,
+"rate": 5.9,
+"stress_errors": 2,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "мочегонный эффект слабее чем объём выпитого.",
+"type": ".",
+"final": -1.0,
+"peak": 3.8,
+"peak_word": "мочегонный",
+"end": -3.4,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"эффект",
+1,
+0,
+2.53
+],
+[
+"слабее",
+1,
+2,
+2.99
+]
+]
+},
+"3ed523a1a758e87a179cd264": {
+"dur": 1.98,
+"heard": "Верблюд хранит воду в горбу.",
+"match": 1.0,
+"diff": [],
+"utmos": 2.6,
+"f0_range": 8.3,
+"f0_median_hz": 174,
+"rate": 5.5,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "верблюд хранит воду в горбу?",
+"type": "?",
+"final": 5.0,
+"peak": 5.0,
+"peak_word": "горбу",
+"end": 3.1,
+"ok": true,
+"focus": "горбу",
+"rise": 5.0,
+"note": "вопросительный подъём на слове «горбу»"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"41a9f40f94e18d3bb858e42b": {
+"dur": 4.3,
+"heard": "Если выпиваешь часто, спроси врача даже о привычной дозе.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.37,
+"f0_range": 5.6,
+"f0_median_hz": 165,
+"rate": 5.4,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "если выпиваешь часто спроси врача даже о привычной дозе.",
+"type": ".",
+"final": -3.3,
+"peak": 2.4,
+"peak_word": "врача",
+"end": -3.5,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"444404889b31a838cc1fb2db": {
+"dur": 3.93,
+"heard": "116 из них над землёй, а рядом жили люди.",
+"match": 0.842,
+"diff": [
+[
+"сто шестнадцать",
+"116"
+]
+],
+"utmos": 3.46,
+"f0_range": 6.8,
+"f0_median_hz": 166,
+"rate": 5.2,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "сто шестнадцать из них над землёй а рядом жили люди.",
+"type": ".",
+"final": -3.3,
+"peak": 2.1,
+"peak_word": "шестнадцать",
+"end": -3.8,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"4831375ee413d5bcec4afa85": {
+"dur": 3.34,
+"heard": "Никогда не выходи на лед тоньше 7 сантиметров.",
+"match": 0.875,
+"diff": [
+[
+"семи",
+"7"
+]
+],
+"utmos": 3.29,
+"f0_range": 7.7,
+"f0_median_hz": 169,
+"rate": 5.4,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "никогда не выходи на лёд тоньше семи сантиметров.",
+"type": ".",
+"final": -3.4,
+"peak": 3.1,
+"peak_word": "тоньше",
+"end": -3.8,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"4aafa3948e2f6ccf98325c22": {
+"dur": 2.39,
+"heard": "Его провел школьник Рэнди Гарднер.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.18,
+"f0_range": 6.1,
+"f0_median_hz": 168,
+"rate": 4.7,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "его провёл школьник рэнди гарднер.",
+"type": ".",
+"final": -2.8,
+"peak": 2.0,
+"peak_word": "его",
+"end": -4.0,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"4d28e9c9493a586a6b62845a": {
+"dur": 5.69,
+"heard": "спасает металлический кузов, так стекает по нему в землю, обходя салон.",
+"match": 0.909,
+"diff": [
+[
+"ток",
+"так"
+]
+],
+"utmos": 3.62,
+"f0_range": 9.2,
+"f0_median_hz": 165,
+"rate": 5.9,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "спасает металлический кузов ток стекает по нему в землю обходя салон.",
+"type": ".",
+"final": -3.7,
+"peak": 4.0,
+"peak_word": "спасает",
+"end": -4.0,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"5137830ddb5b641c5a6d0315": {
+"dur": 2.94,
+"heard": "Узнать можно только одним способом измерить.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.82,
+"f0_range": 7.7,
+"f0_median_hz": 172,
+"rate": 5.1,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "узнать можно только одним способом измерить.",
+"type": ".",
+"final": -3.4,
+"peak": 2.8,
+"peak_word": "только",
+"end": -3.9,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [
+"после «способом—» нет паузы (0.04 с)"
+],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"548b59fde53d082228dfe41b": {
+"dur": 3.09,
+"heard": "так он становится пищей для будущего потомства.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.2,
+"f0_range": 7.0,
+"f0_median_hz": 171,
+"rate": 5.6,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "так он становится пищей для будущего потомства.",
+"type": ".",
+"final": -4.2,
+"peak": 1.6,
+"peak_word": "он",
+"end": null,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"56055f02eaa3f1931bebd440": {
+"dur": 3.37,
+"heard": "а одну лодку перенесло через косу, рыбаки выжили.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.75,
+"f0_range": 7.2,
+"f0_median_hz": 163,
+"rate": 6.1,
+"stress_errors": 1,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "а одну лодку перенесло через косу рыбаки выжили.",
+"type": ".",
+"final": -1.7,
+"peak": 4.1,
+"peak_word": "косу",
+"end": -4.9,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [
+"после «косу—» нет паузы (0.04 с)"
+],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"рыбаки",
+2,
+1,
+1.15
+]
+]
+},
+"58d939208de150a9f64a8daa": {
+"dur": 4.1,
+"heard": "За это время часы приходится перевести на 7 часов вперёд.",
+"match": 0.9,
+"diff": [
+[
+"семь",
+"7"
+]
+],
+"utmos": 3.08,
+"f0_range": 6.6,
+"f0_median_hz": 171,
+"rate": 5.5,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "за это время часы приходится перевести на семь часов вперёд.",
+"type": ".",
+"final": -4.4,
+"peak": 3.1,
+"peak_word": "перевести",
+"end": -4.6,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"5c2579ad745fa2d22c0b76b6": {
+"dur": 4.42,
+"heard": "вещество, которого боятся, есть и в кофе, и в хлебной корке.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.52,
+"f0_range": 5.9,
+"f0_median_hz": 170,
+"rate": 6.0,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "вещество которого боятся есть и в кофе и в хлебной корке.",
+"type": ".",
+"final": -2.8,
+"peak": 3.6,
+"peak_word": "вещество",
+"end": null,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"5fd05514fa9294914959cb5b": {
+"dur": 5.11,
+"heard": "Зеркало показывает тебя зеркально, а фото через искажение объектива.",
+"match": 0.889,
+"diff": [
+[
+"искажения",
+"искажение"
+]
+],
+"utmos": 3.67,
+"f0_range": 8.1,
+"f0_median_hz": 164,
+"rate": 6.0,
+"stress_errors": 1,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "зеркало показывает тебя зеркально а фото через искажения объектива.",
+"type": ".",
+"final": -2.5,
+"peak": 3.8,
+"peak_word": "зеркало",
+"end": -3.9,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"объектива",
+2,
+1,
+1.59
+]
+]
+},
+"637f5c58d1cd195859418913": {
+"dur": 3.41,
+"heard": "Под конец Аннимак сосредоточился и забывал слова.",
+"match": 0.625,
+"diff": [
+[
+"он не мог сосредоточиться",
+"аннимак сосредоточился"
+]
+],
+"utmos": 3.74,
+"f0_range": 8.1,
+"f0_median_hz": 163,
+"rate": 5.7,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "под конец он не мог сосредоточиться и забывал слова.",
+"type": ".",
+"final": -2.6,
+"peak": 5.6,
+"peak_word": "конец",
+"end": -2.4,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"68424e5c4fb5ca0ce10b988b": {
+"dur": 1.82,
+"heard": "если мерить от подножия.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.99,
+"f0_range": 8.9,
+"f0_median_hz": 168,
+"rate": 5.5,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "если мерить от подножия.",
+"type": ".",
+"final": -2.9,
+"peak": 1.1,
+"peak_word": "от",
+"end": -4.0,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"698c9c20624dfea92aca4e56": {
+"dur": 2.63,
+"heard": "а сердце около 200 кг.",
+"match": 0.6,
+"diff": [
+[
+"двухсот килограммов",
+"200 кг"
+]
+],
+"utmos": 3.47,
+"f0_range": 9.7,
+"f0_median_hz": 167,
+"rate": 5.6,
+"stress_errors": 1,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "а сердце около двухсот килограммов.",
+"type": ".",
+"final": -2.5,
+"peak": 5.3,
+"peak_word": "сердце",
+"end": -4.0,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"килограммов",
+2,
+3,
+2.45
+]
+]
+},
+"6d252435d9d7c3f4e85dab14": {
+"dur": 1.41,
+"heard": "будет огненный шар.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.32,
+"f0_range": 8.5,
+"f0_median_hz": 168,
+"rate": 5.4,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "будет огненный шар.",
+"type": ".",
+"final": -3.9,
+"peak": 1.1,
+"peak_word": "будет",
+"end": -3.9,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"74866867c8481d17edfd7e9c": {
+"dur": 3.04,
+"heard": "ты никогда не видел своё лицо по-настоящему.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.3,
+"f0_range": 6.5,
+"f0_median_hz": 164,
+"rate": 5.7,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "ты никогда не видел своё лицо по-настоящему.",
+"type": ".",
+"final": -3.6,
+"peak": 1.9,
+"peak_word": "никогда",
+"end": -3.9,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"7809d473064f97acd4eda261": {
+"dur": 3.93,
+"heard": "В Австралии вода в раковине закручивается в другую сторону.",
+"match": 1.0,
+"diff": [],
+"utmos": 2.88,
+"f0_range": 6.4,
+"f0_median_hz": 164,
+"rate": 6.6,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "в австралии вода в раковине закручивается в другую сторону?",
+"type": "?",
+"final": -1.5,
+"peak": 4.5,
+"peak_word": "австралии",
+"end": 4.9,
+"ok": false,
+"focus": "австралии",
+"rise": -1.5,
+"note": "нет вопросительного подъёма (самое высокое место — «австралии», в начале) — звучит как утверждение"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"7b9fcc62cda6a548a83152ed": {
+"dur": 3.73,
+"heard": "самому старому известному дереву почти 5000 лет.",
+"match": 0.8,
+"diff": [
+[
+"пять тысяч",
+"5000"
+]
+],
+"utmos": 3.04,
+"f0_range": 6.9,
+"f0_median_hz": 169,
+"rate": 5.4,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "самому старому известному дереву почти пять тысяч лет.",
+"type": ".",
+"final": -4.2,
+"peak": 2.3,
+"peak_word": "почти",
+"end": -4.2,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"7e5af9674c83273269ba4514": {
+"dur": 4.37,
+"heard": "Если откопать за это время, выживают почти 9 из 10.",
+"match": 0.8,
+"diff": [
+[
+"девять",
+"9"
+],
+[
+"десяти",
+"10"
+]
+],
+"utmos": 3.39,
+"f0_range": 5.9,
+"f0_median_hz": 164,
+"rate": 5.8,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "если откопать за это время выживают почти девять из десяти.",
+"type": ".",
+"final": -3.7,
+"peak": 2.7,
+"peak_word": "откопать",
+"end": -0.7,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"819181549c031594b83a27c9": {
+"dur": 3.32,
+"heard": "Кукушка подкладывает свое яйцо в чужое гнездо.",
+"match": 1.0,
+"diff": [],
+"utmos": 2.94,
+"f0_range": 7.9,
+"f0_median_hz": 156,
+"rate": 5.6,
+"stress_errors": 1,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "кукушка подкладывает своё яйцо в чужое гнездо.",
+"type": ".",
+"final": -2.5,
+"peak": 8.5,
+"peak_word": "кукушка",
+"end": -1.6,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"8385ce120fcc2e30061443c5": {
+"dur": 4.74,
+"heard": "У бегунова любителей артроз был втрое реже, чем у тех, кто не бегает.",
+"match": 0.88,
+"diff": [
+[
+"бегунов-любителей",
+"бегунова любителей"
+]
+],
+"utmos": 2.9,
+"f0_range": 7.2,
+"f0_median_hz": 169,
+"rate": 5.6,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "у бегунов-любителей артроз был втрое реже чем у тех кто не бегает.",
+"type": ".",
+"final": -2.6,
+"peak": 2.3,
+"peak_word": "бегунов-любителей",
+"end": -4.6,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"86cd9cb72a4bea252f17d618": {
+"dur": 1.71,
+"heard": "он превращает их в зомби.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.27,
+"f0_range": 8.5,
+"f0_median_hz": 164,
+"rate": 6.3,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "он превращает их в зомби.",
+"type": ".",
+"final": -3.0,
+"peak": 1.2,
+"peak_word": "превращает",
+"end": -4.5,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"88ea76c2e56fd7a4ba732eb2": {
+"dur": 2.22,
+"heard": "Это француженка Жанна Кальман.",
+"match": 1.0,
+"diff": [],
+"utmos": 2.78,
+"f0_range": 7.8,
+"f0_median_hz": 167,
+"rate": 5.1,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "это француженка жанна кальман.",
+"type": ".",
+"final": -4.0,
+"peak": 3.6,
+"peak_word": "француженка",
+"end": -4.5,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"8b09f66aea6d76e85675fbe5": {
+"dur": 2.72,
+"heard": "Акула растет примерно на сантиметр в год.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.2,
+"f0_range": 8.7,
+"f0_median_hz": 168,
+"rate": 5.5,
+"stress_errors": 1,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "акула растёт примерно на сантиметр в год.",
+"type": ".",
+"final": -3.6,
+"peak": 4.3,
+"peak_word": "акула",
+"end": -3.6,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"растёт",
+1,
+0,
+2.0
+]
+]
+},
+"8e2951503f5bbaa655b4e9c4": {
+"dur": 2.62,
+"heard": "Число волосяных луковиц не меняется.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.13,
+"f0_range": 8.6,
+"f0_median_hz": 175,
+"rate": 5.9,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "число волосяных луковиц не меняется.",
+"type": ".",
+"final": -4.1,
+"peak": 1.5,
+"peak_word": "число",
+"end": null,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"90d7f2ec3c6fdc90c282ce83": {
+"dur": 4.04,
+"heard": "Аккумулятор садится от холода и времени, а не от пола.",
+"match": 1.0,
+"diff": [],
+"utmos": 2.98,
+"f0_range": 8.4,
+"f0_median_hz": 174,
+"rate": 6.2,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "аккумулятор садится от холода и времени а не от пола.",
+"type": ".",
+"final": -3.4,
+"peak": 2.3,
+"peak_word": "аккумулятор",
+"end": -5.1,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"92b7e34b8b148a28a67b7e97": {
+"dur": 1.04,
+"heard": "А ты это знал?",
+"match": 1.0,
+"diff": [],
+"utmos": 2.88,
+"f0_range": 8.6,
+"f0_median_hz": 185,
+"rate": 6.3,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "а ты это знал?",
+"type": "?",
+"final": 0.0,
+"peak": 0.9,
+"peak_word": "это",
+"end": 1.7,
+"ok": false,
+"focus": "это",
+"rise": 0.9,
+"note": "нет вопросительного подъёма (самое высокое место — «это», в начале) — звучит как утверждение"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"95e07230c82774d0246803d0": {
+"dur": 4.17,
+"heard": "Жуткий факт. Этот яд нельзя не увидеть, не учуять.",
+"match": 0.778,
+"diff": [
+[
+"ни",
+"не"
+],
+[
+"ни",
+"не"
+]
+],
+"utmos": 2.92,
+"f0_range": 8.3,
+"f0_median_hz": 173,
+"rate": 5.0,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "жуткий факт этот яд нельзя ни увидеть ни учуять.",
+"type": ".",
+"final": -3.8,
+"peak": 3.0,
+"peak_word": "жуткий",
+"end": -5.4,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"9a804caaeda92b52aa92872c": {
+"dur": 2.03,
+"heard": "самый жуткий факт о солнце.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.07,
+"f0_range": 7.9,
+"f0_median_hz": 178,
+"rate": 5.0,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "самый жуткий факт о солнце.",
+"type": ".",
+"final": -4.3,
+"peak": 2.6,
+"peak_word": "жуткий",
+"end": -4.8,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"9f83b5b8ffbb1dc367fc2962": {
+"dur": 3.52,
+"heard": "Самка может съесть самца прямо во время спаривания.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.11,
+"f0_range": 10.2,
+"f0_median_hz": 168,
+"rate": 5.4,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "самка может съесть самца прямо во время спаривания.",
+"type": ".",
+"final": -2.5,
+"peak": 4.0,
+"peak_word": "самка",
+"end": -4.5,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"a1bd402de97d96a2f23ec45d": {
+"dur": 4.72,
+"heard": "известны случаи разрыва горла и повреждения барабанной перепонки.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.33,
+"f0_range": 7.9,
+"f0_median_hz": 163,
+"rate": 5.8,
+"stress_errors": 0,
+"stress_maybe": 1,
+"intonation": [
+{
+"text": "известны случаи разрыва горла и повреждения барабанной перепонки.",
+"type": ".",
+"final": -3.3,
+"peak": 4.5,
+"peak_word": "случаи",
+"end": -3.7,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"разрыва",
+1,
+2,
+0.53
+]
+]
+},
+"a2e0934cae2d0ae637b168ac": {
+"dur": 1.75,
+"heard": "Акулы старше деревьев.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.73,
+"f0_range": 9.6,
+"f0_median_hz": 165,
+"rate": 5.2,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "акулы старше деревьев.",
+"type": ".",
+"final": -3.3,
+"peak": 4.5,
+"peak_word": "акулы",
+"end": -3.7,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"a6d22b6271275d35f88c07fd": {
+"dur": 2.89,
+"heard": "Через голову уходит половина тепла тела.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.21,
+"f0_range": 8.3,
+"f0_median_hz": 175,
+"rate": 6.5,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "через голову уходит половина тепла тела?",
+"type": "?",
+"final": 1.5,
+"peak": 2.6,
+"peak_word": "голову",
+"end": 3.5,
+"ok": false,
+"focus": "голову",
+"rise": 1.5,
+"note": "нет вопросительного подъёма (самое высокое место — «голову», в начале) — звучит как утверждение"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"a945531dad51ba9b43afdb79": {
+"dur": 3.57,
+"heard": "в полтора раза быстрее, пусть больше, чем вдвое длиннее.",
+"match": 0.889,
+"diff": [
+[
+"путь",
+"пусть"
+]
+],
+"utmos": 3.24,
+"f0_range": 8.3,
+"f0_median_hz": 164,
+"rate": 5.6,
+"stress_errors": 1,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "в полтора раза быстрее путь больше чем вдвое длиннее.",
+"type": ".",
+"final": -2.7,
+"peak": 2.1,
+"peak_word": "быстрее",
+"end": -2.7,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"длиннее",
+1,
+2,
+1.31
+]
+]
+},
+"aba311f6a0cb391f5d071127": {
+"dur": 3.7,
+"heard": "В панике человек хватается за спасателя и топит его.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.28,
+"f0_range": 7.5,
+"f0_median_hz": 164,
+"rate": 6.5,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "в панике человек хватается за спасателя и топит его.",
+"type": ".",
+"final": -3.7,
+"peak": 3.7,
+"peak_word": "панике",
+"end": -2.4,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"af13d857bc60ece1cc6105b7": {
+"dur": 1.96,
+"heard": "Это взрыв вулкана Крокотау.",
+"match": 0.75,
+"diff": [
+[
+"кракатау",
+"крокотау"
+]
+],
+"utmos": 3.35,
+"f0_range": 7.5,
+"f0_median_hz": 166,
+"rate": 5.8,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "это взрыв вулкана кракатау.",
+"type": ".",
+"final": -3.3,
+"peak": 2.9,
+"peak_word": "это",
+"end": -3.7,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"b1f0aa2a657d2db06ab2ca2e": {
+"dur": 4.76,
+"heard": "Жуткий факт. Почти половина инфарктов проходит незаметно.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.23,
+"f0_range": 9.2,
+"f0_median_hz": 169,
+"rate": 5.3,
+"stress_errors": 1,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "жуткий факт почти половина инфарктов проходит незаметно.",
+"type": ".",
+"final": -4.1,
+"peak": 5.5,
+"peak_word": "почти",
+"end": -4.3,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"незаметно",
+2,
+1,
+1.13
+]
+]
+},
+"b6abff798863f10f7c7d17eb": {
+"dur": 3.86,
+"heard": "Султан отказался, и корабли открыли огонь по дворцу.",
+"match": 1.0,
+"diff": [],
+"utmos": 2.97,
+"f0_range": 5.8,
+"f0_median_hz": 166,
+"rate": 5.3,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "султан отказался и корабли открыли огонь по дворцу.",
+"type": ".",
+"final": -2.6,
+"peak": 3.2,
+"peak_word": "султан",
+"end": -1.7,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"ba16eba411f78e7aee5246e6": {
+"dur": 2.57,
+"heard": "Укус не смертелен, просто невыносим.",
+"match": 1.0,
+"diff": [],
+"utmos": 2.69,
+"f0_range": 9.2,
+"f0_median_hz": 171,
+"rate": 5.2,
+"stress_errors": 1,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "укус не смертелен просто невыносим.",
+"type": ".",
+"final": -5.2,
+"peak": 4.2,
+"peak_word": "укус",
+"end": -5.2,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"невыносим",
+3,
+1,
+1.02
+]
+]
+},
+"be9e135175a170c1663cc492": {
+"dur": 4.39,
+"heard": "Никогда не оставляй ребёнка или собаку в машине на солнце.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.6,
+"f0_range": 6.6,
+"f0_median_hz": 168,
+"rate": 6.2,
+"stress_errors": 1,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "никогда не оставляй ребёнка или собаку в машине на солнце.",
+"type": ".",
+"final": -3.5,
+"peak": 2.5,
+"peak_word": "машине",
+"end": -3.9,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [
+"лишняя пауза 0.38 с между «ребёнка» и «или»"
+],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"машине",
+1,
+2,
+1.48
+]
+]
+},
+"c14eb2e3c974d5c9c0285b9a": {
+"dur": 3.61,
+"heard": "Никогда не смотри на Солнце в бинокль или телескоп.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.4,
+"f0_range": 6.2,
+"f0_median_hz": 174,
+"rate": 5.6,
+"stress_errors": 0,
+"stress_maybe": 1,
+"intonation": [
+{
+"text": "никогда не смотри на солнце в бинокль или телескоп.",
+"type": ".",
+"final": -4.6,
+"peak": 1.8,
+"peak_word": "солнце",
+"end": -4.2,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"или",
+0,
+1,
+0.76
+]
+]
+},
+"c4fc2fff5b5158c23b469470": {
+"dur": 2.24,
+"heard": "самый жуткий факт о сне за рулем.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.44,
+"f0_range": 8.8,
+"f0_median_hz": 177,
+"rate": 5.1,
+"stress_errors": 0,
+"stress_maybe": 1,
+"intonation": [
+{
+"text": "самый жуткий факт о сне за рулём.",
+"type": ".",
+"final": -5.0,
+"peak": 3.0,
+"peak_word": "жуткий",
+"end": -5.2,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"рулём",
+1,
+0,
+0.99
+]
+]
+},
+"c91172eef89c21ba32963b1a": {
+"dur": 3.11,
+"heard": "Тормозной путь растёт быстрее, чем она сама.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.46,
+"f0_range": 9.1,
+"f0_median_hz": 167,
+"rate": 5.6,
+"stress_errors": 2,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "тормозной путь растёт быстрее чем она сама.",
+"type": ".",
+"final": -3.6,
+"peak": 3.5,
+"peak_word": "тормозной",
+"end": -1.9,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"растёт",
+1,
+0,
+1.74
+],
+[
+"быстрее",
+1,
+2,
+1.28
+]
+]
+},
+"cce5b068e4696c14916e57a6": {
+"dur": 2.66,
+"heard": "кофе на 98% вода.",
+"match": 0.6,
+"diff": [
+[
+"девяносто восемь процентов",
+"98"
+]
+],
+"utmos": 3.74,
+"f0_range": 8.8,
+"f0_median_hz": 163,
+"rate": 5.8,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "кофе на девяносто восемь процентов вода.",
+"type": ".",
+"final": -3.4,
+"peak": 5.5,
+"peak_word": "кофе",
+"end": -2.3,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"cf5f1b7069652185da2d441c": {
+"dur": 3.68,
+"heard": "Грибы впитывают из почвы свинец, кадмий и ртуть.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.26,
+"f0_range": 7.3,
+"f0_median_hz": 167,
+"rate": 4.5,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "грибы впитывают из почвы свинец кадмий и ртуть.",
+"type": ".",
+"final": -3.3,
+"peak": 10.6,
+"peak_word": "из",
+"end": -3.3,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"d2325fe04c065da76a98034d": {
+"dur": 3.1,
+"heard": "Вот почему нельзя смотреть на сварку без маски.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.42,
+"f0_range": 8.7,
+"f0_median_hz": 169,
+"rate": 5.0,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "вот почему нельзя смотреть на сварку без маски.",
+"type": ".",
+"final": -3.5,
+"peak": 6.0,
+"peak_word": "почему",
+"end": null,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"d580db859a63e7b19e7d4cf5": {
+"dur": 4.48,
+"heard": "самый высокий человек в истории 2,72 метра.",
+"match": 0.667,
+"diff": [
+[
+"два",
+"2 72"
+],
+[
+"семьдесят два сантиметра",
+""
+]
+],
+"utmos": 3.71,
+"f0_range": 5.6,
+"f0_median_hz": 169,
+"rate": 6.0,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "самый высокий человек в истории два метра семьдесят два сантиметра.",
+"type": ".",
+"final": -3.7,
+"peak": 3.1,
+"peak_word": "семьдесят",
+"end": -4.4,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"da2f05adfb73d1316bfb4942": {
+"dur": 4.3,
+"heard": "Никогда не грей в микроволновке, фольгу и посуду с золотой каймой.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.06,
+"f0_range": 7.3,
+"f0_median_hz": 162,
+"rate": 6.1,
+"stress_errors": 1,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "никогда не грей в микроволновке фольгу и посуду с золотой каймой.",
+"type": ".",
+"final": -3.8,
+"peak": 5.6,
+"peak_word": "посуду",
+"end": -3.7,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"каймой",
+1,
+0,
+1.8
+]
+]
+},
+"db9068a214bbacaceb4c922e": {
+"dur": 4.63,
+"heard": "Улетая, пчела отрывает его вместе с частью брюшка и погибает.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.28,
+"f0_range": 7.1,
+"f0_median_hz": 168,
+"rate": 5.5,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "улетая пчела отрывает его вместе с частью брюшка и погибает.",
+"type": ".",
+"final": -3.8,
+"peak": 2.1,
+"peak_word": "улетая",
+"end": -4.0,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"e05ccaa6ce9924ac5242abf6": {
+"dur": 1.43,
+"heard": "Это Оральское море.",
+"match": 0.667,
+"diff": [
+[
+"аральское",
+"оральское"
+]
+],
+"utmos": 3.5,
+"f0_range": 7.9,
+"f0_median_hz": 165,
+"rate": 7.0,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "это аральское море.",
+"type": ".",
+"final": -3.1,
+"peak": 2.9,
+"peak_word": "это",
+"end": -3.4,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"e27f3f59551da7f1546b869e": {
+"dur": 3.02,
+"heard": "Его щелчки громче взлетающего самолёта.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.51,
+"f0_range": 8.9,
+"f0_median_hz": 165,
+"rate": 5.5,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "его щелчки громче взлетающего самолёта.",
+"type": ".",
+"final": -4.1,
+"peak": 2.6,
+"peak_word": "громче",
+"end": -4.3,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"e516eb1ea152721a89293e8a": {
+"dur": 4.55,
+"heard": "В 65-м скафандр Алексей Леонова раздулся в вакууме.",
+"match": 0.706,
+"diff": [
+[
+"шестьдесят пятом",
+"65-м"
+],
+[
+"алексея",
+"алексей"
+]
+],
+"utmos": 3.15,
+"f0_range": 7.7,
+"f0_median_hz": 163,
+"rate": 5.6,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "в шестьдесят пятом скафандр алексея леонова раздулся в вакууме.",
+"type": ".",
+"final": -2.3,
+"peak": 2.7,
+"peak_word": "шестьдесят",
+"end": -3.7,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"e88c171cafc81db6bb6b8d76": {
+"dur": 2.04,
+"heard": "Без них ты бы не переварил обед.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.51,
+"f0_range": 6.4,
+"f0_median_hz": 165,
+"rate": 6.1,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "без них ты бы не переварил обед.",
+"type": ".",
+"final": -4.2,
+"peak": 1.8,
+"peak_word": "не",
+"end": -4.2,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"eaf003ddf89542880d596cbe": {
+"dur": 4.64,
+"heard": "Снаружи стекло резко нагревается, а внутри остается холодным.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.38,
+"f0_range": 7.8,
+"f0_median_hz": 163,
+"rate": 5.5,
+"stress_errors": 1,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "снаружи стекло резко нагревается а внутри остаётся холодным.",
+"type": ".",
+"final": -3.0,
+"peak": 5.2,
+"peak_word": "снаружи",
+"end": -3.7,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"остаётся",
+2,
+3,
+1.16
+]
+]
+},
+"ef6e5f4d321490db04938683": {
+"dur": 2.92,
+"heard": "Проверки находили в них кишечные бактерии.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.14,
+"f0_range": 8.9,
+"f0_median_hz": 166,
+"rate": 6.4,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "проверки находили в них кишечные бактерии.",
+"type": ".",
+"final": -3.0,
+"peak": 2.7,
+"peak_word": "проверки",
+"end": -4.4,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"f30426d07365c94e1ff57554": {
+"dur": 4.32,
+"heard": "Заболев, он придумал себе подъемник из веревок и погиб в нем.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.39,
+"f0_range": 7.0,
+"f0_median_hz": 164,
+"rate": 5.6,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "заболев он придумал себе подъёмник из верёвок и погиб в нём.",
+"type": ".",
+"final": -3.9,
+"peak": 3.0,
+"peak_word": "придумал",
+"end": -3.5,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+},
+"f8a5a4dd86e9f0649a990f6f": {
+"dur": 1.62,
+"heard": "Это правда наполовину.",
+"match": 1.0,
+"diff": [],
+"utmos": 3.29,
+"f0_range": 7.6,
+"f0_median_hz": 176,
+"rate": 6.6,
+"stress_errors": 1,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "это правда наполовину.",
+"type": ".",
+"final": -4.0,
+"peak": 0.3,
+"peak_word": "правда",
+"end": -5.1,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": [
+[
+"наполовину",
+3,
+1,
+1.96
+]
+]
+},
+"fdca976396553eb3483b2d3f": {
+"dur": 1.95,
+"heard": "Никогда не машажок маслом.",
+"match": 0.667,
+"diff": [
+[
+"мажь ожог",
+"машажок"
+]
+],
+"utmos": 3.61,
+"f0_range": 9.6,
+"f0_median_hz": 164,
+"rate": 5.3,
+"stress_errors": 0,
+"stress_maybe": 0,
+"intonation": [
+{
+"text": "никогда не мажь ожог маслом.",
+"type": ".",
+"final": -2.2,
+"peak": 4.0,
+"peak_word": "не",
+"end": -3.8,
+"ok": true,
+"note": "конец фразы понижается — звучит законченно"
+}
+],
+"pauses": [],
+"align_error": null,
+"accent_source": "дано в тексте",
+"bad": []
+}
+}
