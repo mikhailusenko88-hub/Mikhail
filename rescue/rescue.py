@@ -46,7 +46,7 @@ PAUSE_FLAG = os.path.join(STATE, "pause-auto")
 PASS_FILE = os.environ.get("RESCUE_PASS_FILE", "/etc/prostranstvo/rescue-pass")
 COOKIE = "rescue"
 SESSION_DAYS = 30
-KEY = secrets.token_bytes(32)              # подпись входа; после перезапуска панели — войти заново
+KEY = secrets.token_bytes(32)              # запасная подпись, если файла с паролем нет
 FAILS: dict[str, list[float]] = {}         # неверные пароли по адресам: 10 за 10 минут — пауза 15 минут
 SITE_PIN = os.path.join(STATE, "site-pin")
 TOKEN = secrets.token_urlsafe(24)          # защита кнопок от чужих сайтов: токен есть только на странице панели
@@ -323,9 +323,19 @@ def page(s: dict[str, str]) -> str:
 </main></body></html>"""
 
 
+def sign_key() -> bytes:
+    """Подпись входа из пароля: вход переживает перезапуск панели и сервера, а смена пароля выкидывает всех."""
+    try:
+        with open(PASS_FILE, "rb") as f:
+            real = f.readline().strip()
+    except OSError:
+        real = b""
+    return hashlib.sha256(b"rescue-session:" + real).digest() if real else KEY
+
+
 def make_session() -> str:
     exp = str(int(time.time()) + SESSION_DAYS * 86400)
-    return exp + "." + hmac.new(KEY, exp.encode(), hashlib.sha256).hexdigest()
+    return exp + "." + hmac.new(sign_key(), exp.encode(), hashlib.sha256).hexdigest()
 
 
 def session_ok(cookie_header: str) -> bool:
@@ -333,7 +343,7 @@ def session_ok(cookie_header: str) -> bool:
         k, _, v = part.strip().partition("=")
         if k == COOKIE and "." in v:
             exp, sig = v.split(".", 1)
-            if exp.isdigit() and int(exp) > time.time() and hmac.compare_digest(sig, hmac.new(KEY, exp.encode(), hashlib.sha256).hexdigest()):
+            if exp.isdigit() and int(exp) > time.time() and hmac.compare_digest(sig, hmac.new(sign_key(), exp.encode(), hashlib.sha256).hexdigest()):
                 return True
     return False
 

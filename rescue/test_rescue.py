@@ -115,6 +115,8 @@ class T(unittest.TestCase):
         self.assertIn("HttpOnly", hdr["Set-Cookie"]); self.assertIn("Secure", hdr["Set-Cookie"])
         code, _, body = req("/rescue/", cookie=ck)
         self.assertIn("Аварийная панель", body); self.assertIn("crm_restart", body)
+        self.m.KEY = b"x" * 32                                                                            # перезапуск панели — вход сохраняется
+        self.assertIn("crm_restart", req("/rescue/", cookie=ck)[2])
         flag = os.path.join(self.tmp.name, "state/pause-auto")
         self.assertEqual(req("/rescue/act", {"t": "wrong", "act": "auto_off"}, cookie=ck)[0], 400)
         self.assertEqual(req("/rescue/act", {"t": self.m.TOKEN, "act": "auto_off"}, origin="https://evil.example", cookie=ck)[0], 400)
