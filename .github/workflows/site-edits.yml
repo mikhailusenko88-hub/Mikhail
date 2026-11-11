@@ -6,6 +6,8 @@ name: Сайт — правки из CRM
 # (nashdekor-build/apply_edits.py → build.py) и кладём итог в 0f7s1eez/site-edits.json —
 # сервер забирает ветку mebel раз в минуту, CRM показывает у правки «на сайте» или «ошибка».
 # Паролей и токенов нет: правки — то, что и так появится на публичном сайте.
+# После публикации сразу запускаем «Авито — фид из CRM»: новые/скрытые товары и доп. фото попадают в фид Авито,
+# а цены из CRM — обратно в фид Яндекс Товаров (build.py собирает его с ценами сайта).
 
 on:
   schedule:
@@ -17,6 +19,7 @@ on:
 
 permissions:
   contents: write
+  actions: write       # запустить «Авито — фид из CRM» после правок
 
 concurrency:
   group: site-edits
@@ -49,6 +52,7 @@ jobs:
           python-version: "3.12"
 
       - name: Внести правки и пересобрать сайт
+        id: apply
         if: steps.fetch.outputs.n != '0'
         run: |
           pip install -q pillow
@@ -59,6 +63,12 @@ jobs:
           git add -A 0f7s1eez
           git commit -q -m "Сайт: правки из CRM ($(python3 -c "import json;print(json.load(open('0f7s1eez/site-edits.json'))['last_id'])"))" || exit 0
           for i in 1 2 3; do
-            git pull -q --rebase origin mebel && git push -q origin HEAD:mebel && break
+            if git pull -q --rebase origin mebel && git push -q origin HEAD:mebel; then echo "pushed=1" >> "$GITHUB_OUTPUT"; break; fi
             sleep 5
           done
+
+      - name: Обновить фиды Авито и Яндекс Товаров
+        if: steps.apply.outputs.pushed == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run avito-feed.yml --repo "$GITHUB_REPOSITORY" --ref main || echo "не запустился — фиды обновятся по расписанию (раз в час)"
