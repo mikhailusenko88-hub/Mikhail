@@ -2645,3 +2645,32 @@ class TestKonstruktor(Base):
         row = [x for x in self.store.stock_rows() if x["article"] == "A912"][0]
         self.assertEqual((row["qty"], row["price"]), (25, 1000))
         self.assertTrue(_zip.is_zipfile(_io.BytesIO(book)))
+
+
+class TestRescueHooks(Base):
+    """Связь CRM с аварийной панелью: пауза автоматики, кнопка 🛟 только владельцам."""
+
+    def test_pause_and_button(self) -> None:
+        flag = os.path.join(self.tmp.name, "pause-auto")
+        self.app = crm_app.create_app({"CRM_DB": os.path.join(self.tmp.name, "crm.db"), "BOT_DB": self.botdb, "CATALOG_FILE": self.cat,
+                                       "SECRET_KEY": "x" * 40, "COOKIE_SECURE": "0", "SITE_ORIGINS": "https://nashdekor.ru", "TESTING": True,
+                                       "SHOP_DOMAIN": "nashdekor.ru", "NOTIFY_EMAIL": "", "PAUSE_FLAG": flag,
+                                       "RESCUE_PASS_FILE": os.path.join(self.tmp.name, "rescue-pass")})
+        self.c = self.app.test_client()
+        ed = self.app.extensions["site_edits"]
+        ed.add("shop", "", {"max": ""}, "t")
+        self.assertEqual(len(self.c.get("/api/site/edits").get_json()["edits"]), 1)
+        open(flag, "w").write("x")
+        js = self.c.get("/api/site/edits").get_json()
+        self.assertEqual((js["edits"], js["paused"]), ([], True))
+        self.login()
+        page = self.c.get("/").get_data(as_text=True)
+        self.assertIn("Автоматика на паузе", page); self.assertIn('class="sos"', page)
+        open(os.path.join(self.tmp.name, "rescue-pass"), "w").write("Pa55word\n")
+        self.assertNotIn("Pa55word", self.c.get("/server").get_data(as_text=True))
+        self.assertIn("Pa55word", self.c.get("/server?rpass=1").get_data(as_text=True))
+        os.remove(flag)
+        self.assertNotIn("Автоматика на паузе", self.c.get("/").get_data(as_text=True))
+        self.c.post("/logout", data={"csrf": self.csrf()})
+        self.login("mikhail", "Secret-pass-2")
+        self.assertNotIn('class="sos"', self.c.get("/").get_data(as_text=True))

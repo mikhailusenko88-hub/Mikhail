@@ -116,6 +116,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         "COOKIE_SECURE": str(cfg.get("COOKIE_SECURE", env("COOKIE_SECURE", "1"))) == "1",
         "SHOP_DOMAIN": cfg.get("SHOP_DOMAIN", env("SHOP_DOMAIN", "")),
         "BACKUP_PASS_FILE": cfg.get("BACKUP_PASS_FILE") or env("BACKUP_PASS_FILE", "/etc/prostranstvo/backup-pass"),
+        "RESCUE_PASS_FILE": cfg.get("RESCUE_PASS_FILE") or env("RESCUE_PASS_FILE", "/etc/prostranstvo/rescue-pass"),
+        "PAUSE_FLAG": cfg.get("PAUSE_FLAG") or env("PAUSE_FLAG", "/var/lib/prostranstvo/pause-auto"),
     }
     app = Flask(__name__)
     app.request_class = CrmRequest
@@ -185,6 +187,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 "KINDS": KINDS, "KIND_NAMES": KIND_NAMES, "ROLES": ROLES, "ROLE_NAMES": ROLE_NAMES,
                 "KIND_TITLES": KIND_TITLES, "rub": rub, "fmt_dt": fmt_dt, "fmt_day": fmt_day, "today": today(),
                 "me": getattr(g, "user", None), "csrf": session.get("csrf", ""), "total": Store.total,
+                "auto_paused": os.path.exists(conf["PAUSE_FLAG"]),
                 "nav_new": getattr(g, "nav_new", 0), "nav_chat": getattr(g, "nav_chat", 0), "SHOP_DOMAIN": conf["SHOP_DOMAIN"] or "nashdekor.ru",
                 "PUSH_KEY": wp.public_key() if getattr(g, "user", None) and wp.enabled else "",
                 "rubk": rubk, "PAY_STATUS": STATUS_NAMES, "PAY_TYPES": PAY_TYPES}
@@ -510,7 +513,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     site_edits = SiteEdits(store, cfg.get("SITE_UPLOADS") or os.path.join(os.path.dirname(os.path.abspath(conf["CRM_DB"])), "site-uploads"),
                            conf["CATALOG_FILE"])
     app.extensions["site_edits"] = site_edits
-    register_site(app, store, site_edits, conf["CATALOG_FILE"], {"admin_required": admin_required, "who": who})
+    register_site(app, store, site_edits, conf["CATALOG_FILE"], {"admin_required": admin_required, "who": who,
+                                                                  "pause_flag": conf["PAUSE_FLAG"]})
     register_buh(app, store, buh, {"login_required": login_required, "admin_required": admin_required, "who": who,
                                    "safe_next": safe_next, "send_mail": lambda *a, **k: send_mail(*a, **k),
                                    "mail_signature": mail_signature, "shop_domain": conf["SHOP_DOMAIN"] or "nashdekor.ru"})
@@ -1718,7 +1722,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         return render_template("server.html", text=text, age=age, pending=os.path.exists(request_file) or running,
                                act=act, running=running, actions=actions, exports=export_files(),
                                backup_pass=backup_pass() if request.args.get("pass") == "1" else None,
-                               has_pass=bool(backup_pass()))
+                               has_pass=bool(backup_pass()), rescue_pass=read_secret(conf["RESCUE_PASS_FILE"]) if request.args.get("rpass") == "1" else None,
+                               has_rescue=bool(read_secret(conf["RESCUE_PASS_FILE"])))
 
     export_dir = cfg.get("EXPORT_DIR") or os.path.join(os.path.dirname(status_file), "export")
     EXPORT_RE = re.compile(r"^nashdekor-kopiya-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}\.tar\.gz\.enc$")
@@ -1738,12 +1743,15 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 out.append({"name": n, "size": size_h(st.st_size), "when": datetime.fromtimestamp(st.st_mtime).strftime("%d.%m.%Y %H:%M")})
         return out
 
-    def backup_pass() -> str:
+    def read_secret(path: str) -> str:
         try:
-            with open(conf["BACKUP_PASS_FILE"], encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 return f.read(200).strip()
         except OSError:
             return ""
+
+    def backup_pass() -> str:
+        return read_secret(conf["BACKUP_PASS_FILE"])
 
     @app.route("/server/export/<name>")
     @admin_required

@@ -54,7 +54,8 @@
 <a href="{{ url_for('designers_view') }}" {% if cur=='designers' %}aria-current="page"{% endif %}>Дизайнеры</a>{% endif %}
 <a href="{{ url_for('settings_view') }}" {% if cur=='settings' %}aria-current="page"{% endif %}>Настройки</a>
 {% for l in k_links() %}<a href="{{ l['url'] }}" target="_blank" rel="noopener noreferrer">{{ l['title'] }} ↗</a>{% endfor %}
-{% if me and me['role']=='admin' %}<a href="{{ url_for('server_view') }}" {% if cur=='server' %}aria-current="page"{% endif %}>Сервер</a>{% endif %}
+{% if me and me['role']=='admin' %}<a href="{{ url_for('server_view') }}" {% if cur=='server' %}aria-current="page"{% endif %}>Сервер</a>
+<a href="/rescue/">🛟 Аварийная панель</a>{% endif %}
 </nav>
 {%- endmacro %}
 

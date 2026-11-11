@@ -275,3 +275,5 @@ code.sel,pre.sel{user-select:all;-webkit-user-select:all;word-break:break-all}
 .kph{columns:2;margin:6px 0;padding-left:18px}
 @media (max-width:600px){.kph{columns:1}}
 .kblock .chk{display:flex;margin:6px 0}
+.sos{position:fixed;right:14px;bottom:calc(76px + env(safe-area-inset-bottom));width:46px;height:46px;border-radius:50%;background:#26292E;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,.25);z-index:30}
+@media (min-width:900px){.sos{bottom:20px}}

@@ -567,7 +567,8 @@ def register(app: Flask, store: Any, edits: SiteEdits, site_index: str, h: dict[
             after = int(request.args.get("after", "0"))
         except ValueError:
             after = 0
-        resp = jsonify({"edits": edits.api_list(after)})
+        paused = os.path.exists(h.get("pause_flag") or "/nonexistent")     # «Автоматика — пауза» в аварийной панели
+        resp = jsonify({"edits": [] if paused else edits.api_list(after), "paused": paused})
         resp.headers["Cache-Control"] = "no-store"
         return resp
 
