@@ -39,9 +39,19 @@ BACKUP_DIR="/var/backups/prostranstvo"
 BACKUP_PASS_FILE="/etc/prostranstvo/backup-pass"
 HELPER="/usr/local/sbin/prostranstvo-crm"
 PORT=8081
+PREV="$BASE/prev"                                  # прошлая рабочая версия CRM — для отката (сам или кнопкой аварийной панели)
+RESCUE_PORT=8099                                   # аварийная панель https://crm.ДОМЕН/rescue/ — отдельная служба
+RESCUE_LIB="/usr/local/lib/prostranstvo/rescue.py"
+RESCUE_SHARE="/usr/local/share/prostranstvo-rescue"
+RESCUE_PASS_FILE="/etc/prostranstvo/rescue-pass"
+RESCUE_HTPASSWD="/etc/nginx/prostranstvo-rescue.htpasswd"
+RESCUE_LOGIN="nashdekor"
+PAUSE_FLAG="/var/lib/prostranstvo/pause-auto"      # «Автоматика — пауза» в аварийной панели
+SITE_PIN="/var/lib/prostranstvo/site-pin"          # сайт закреплён на версии из аварийной панели
+HAD_PREV=no
 SETUP_LOG="/var/log/prostranstvo-crm-setup.log"
 DETAIL_LOG="/var/log/prostranstvo-crm-setup-details.log"
-TOTAL_STEPS=7
+TOTAL_STEPS=8
 DEFAULT_USERS=("yulia|Юлия|admin" "mikhail|Михаил|admin")
 
 STEP=0
@@ -147,9 +157,29 @@ step_packages() {
   ok "Flask $(python3 -c 'import importlib.metadata as m; print(m.version("flask"))' 2>/dev/null), gunicorn $(gunicorn --version 2>/dev/null | awk '{print $NF}' | tr -d '()')"
 }
 
+crm_alive() { [[ $(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:$PORT/api/health" 2>/dev/null) == 200 ]]; }
+
+restore_prev() {
+  # вернуть прошлую рабочую версию кода CRM (база и настройки не трогаются)
+  [[ $HAD_PREV == yes && -d $PREV/crm ]] || return 1
+  rm -rf "$SRC.bad"; mv "$SRC" "$SRC.bad" 2>/dev/null || true
+  cp -a "$PREV" "$SRC" || { mv "$SRC.bad" "$SRC"; return 1; }
+  rm -rf "$SRC.bad"
+  find "$APP" -name '__pycache__' -prune -exec rm -rf {} + 2>/dev/null || true
+  systemctl restart prostranstvo-crm >/dev/null 2>&1 || true
+  return 0
+}
+
 step_code() {
   step "Код CRM из GitHub (ветка $REPO_BRANCH)"
   install -d -m 755 "$BASE"
+  if [[ -d $SRC/crm ]] && crm_alive; then
+    # сейчас CRM работает — сохраняю эту версию как «прошлую рабочую»: если новая не пройдёт проверки, вернётся она
+    rm -rf "$PREV.tmp" && cp -a "$SRC" "$PREV.tmp" && rm -rf "$PREV" && mv "$PREV.tmp" "$PREV" && HAD_PREV=yes
+    [[ $HAD_PREV == yes ]] && ok "рабочая версия $(git -C "$PREV" rev-parse --short HEAD 2>/dev/null) сохранена для отката"
+  elif [[ -d $PREV/crm ]]; then
+    HAD_PREV=yes                                   # CRM сейчас не отвечает — откатываться будем на прошлую сохранённую
+  fi
   if [[ -d $SRC/.git ]]; then
     run git -C "$SRC" fetch --depth 1 origin "$REPO_BRANCH" || die "не удалось скачать код CRM из GitHub"
     run git -C "$SRC" reset --hard FETCH_HEAD
@@ -164,8 +194,11 @@ step_code() {
   ok "версия $(git -C "$SRC" rev-parse --short HEAD) → $APP"
   if (cd "$APP" && runuser -u "$APP_USER" -- env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin HOME=/tmp LANG=C.UTF-8 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -q test_crm >>"$DETAIL_LOG" 2>&1); then
     ok "проверки кода прошли (тесты CRM)"
+  elif restore_prev; then
+    # правило: новое, которое не прошло проверки, не ставим — работает прежняя версия
+    die "новая версия CRM не прошла проверки — оставлена прежняя рабочая ($(git -C "$SRC" rev-parse --short HEAD 2>/dev/null)). Подробности: $DETAIL_LOG"
   else
-    warn "тесты CRM не прошли — подробности в $DETAIL_LOG (CRM всё равно ставлю)"
+    warn "тесты CRM не прошли — подробности в $DETAIL_LOG (прошлой версии для отката нет — ставлю)"
   fi
 }
 
@@ -194,6 +227,8 @@ NOTIFY_EMAIL=$notify
 COOKIE_SECURE=1
 SHOP_DOMAIN=$DOMAIN
 BACKUP_PASS_FILE=$BACKUP_PASS_FILE
+RESCUE_PASS_FILE=$RESCUE_PASS_FILE
+PAUSE_FLAG=$PAUSE_FLAG
 PYTHONDONTWRITEBYTECODE=1
 EOF
   if [[ ! -s $BACKUP_PASS_FILE ]]; then   # пароль шифрования копий баз (для скачивания и облака); CRM показывает его владельцам
@@ -237,6 +272,11 @@ CERT_LOG=/var/log/prostranstvo-crm-cert.log
 BACKUP_DIR=/var/backups/prostranstvo
 BACKUP_PASS_FILE=/etc/prostranstvo/backup-pass
 EXPORT_DIR=/var/lib/prostranstvo/export
+RESCUE_PASS_FILE=/etc/prostranstvo/rescue-pass
+RESCUE_LOGIN=nashdekor
+PAUSE_FLAG=/var/lib/prostranstvo/pause-auto
+SITE_PIN=/var/lib/prostranstvo/site-pin
+paused() { if [[ -e $PAUSE_FLAG ]]; then echo "автоматика на паузе (аварийная панель) — пропускаю"; return 0; fi; return 1; }
 # shellcheck source=/dev/null
 set -a; . "$ENV_FILE"; set +a
 
@@ -319,6 +359,11 @@ cmd_passwords() {
     echo "------------------------------------------------------------------"
     echo " Пароль от копий баз (скачанных из CRM и в облаке) — храните ВНЕ сервера:"
     echo "  $(head -n1 "$BACKUP_PASS_FILE")"
+  fi
+  if [[ -s $RESCUE_PASS_FILE ]]; then
+    echo "------------------------------------------------------------------"
+    echo " Аварийная панель https://$CRM_HOST/rescue/ — логин $RESCUE_LOGIN, пароль:"
+    echo "  $(head -n1 "$RESCUE_PASS_FILE")"
   fi
 }
 
@@ -511,7 +556,8 @@ server_action() {
   log=$(mktemp /run/prostranstvo-action.XXXXXX)
   case $act in
     update) timeout 1500 /usr/local/sbin/prostranstvo-crm update ;;
-    sync) if [[ -x /usr/local/sbin/prostranstvo-sync ]]; then timeout 300 /usr/local/sbin/prostranstvo-sync; else echo "prostranstvo-sync не найден"; false; fi ;;
+    sync) if [[ -e $SITE_PIN ]]; then echo "сайт закреплён на прошлой версии в аварийной панели — сначала там «Снова обновлять сайт автоматически»"; false
+          elif [[ -x /usr/local/sbin/prostranstvo-sync ]]; then timeout 300 /usr/local/sbin/prostranstvo-sync; else echo "prostranstvo-sync не найден"; false; fi ;;
     restart-crm) systemctl restart prostranstvo-crm && sleep 3 && systemctl is-active prostranstvo-crm ;;
     restart-mail) systemctl restart postfix dovecot rspamd && sleep 3 && systemctl is-active postfix dovecot rspamd ;;
     reload-web) nginx -t && systemctl reload nginx && systemctl is-active nginx ;;
@@ -609,11 +655,11 @@ case ${1:-status} in
   offsite) cmd_offsite || rc=$? ;;
   update) cmd_update ;;
   server-page) shift; cmd_server_page "$@" || rc=$? ;;
-  followups) manage followups || rc=$? ;;
-  hooks) manage hooks || rc=$? ;;
+  followups) paused || manage followups || rc=$? ;;
+  hooks) paused || manage hooks || rc=$? ;;
   mail-watch) cmd_mail_watch || rc=$? ;;
   digest) manage digest || rc=$? ;;
-  outbox) manage outbox || rc=$? ;;
+  outbox) paused || manage outbox || rc=$? ;;
   outbox-key) manage outbox-key || rc=$? ;;
   tochka-poll) manage tochka-poll || rc=$? ;;
   push) shift; manage push "Наш декор" "${1:-Проверка уведомлений}" || rc=$? ;;
@@ -668,8 +714,69 @@ EOF
     [[ $code == 200 ]] && break
     sleep 1
   done
-  [[ $code == 200 ]] || { journalctl -u prostranstvo-crm -n 30 --no-pager >>"$DETAIL_LOG" 2>&1 || true; die "CRM не отвечает (код $code) — см. $DETAIL_LOG"; }
+  if [[ $code != 200 ]]; then
+    journalctl -u prostranstvo-crm -n 30 --no-pager >>"$DETAIL_LOG" 2>&1 || true
+    if restore_prev; then
+      for n in $(seq 1 20); do crm_alive && break; sleep 1; done
+      die "новая версия CRM не запустилась (код $code) — вернул прежнюю рабочую$(crm_alive && echo ', она работает' || echo ', но и она не отвечает — откройте аварийную панель /rescue/'). Подробности: $DETAIL_LOG"
+    fi
+    die "CRM не отвечает (код $code) — см. $DETAIL_LOG"
+  fi
   ok "CRM работает на 127.0.0.1:$PORT (gunicorn, пользователь $APP_USER)"
+}
+
+step_rescue() {
+  step "Аварийная панель https://$CRM_HOST/rescue/ (отдельно от CRM)"
+  local new="$SRC/rescue/rescue.py" pw n
+  install -d -m 755 /usr/local/lib/prostranstvo "$RESCUE_SHARE"
+  if [[ -f $new ]] && python3 -m py_compile "$new" 2>>"$DETAIL_LOG" && \
+     (cd /tmp && env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin LANG=C.UTF-8 PYTHONDONTWRITEBYTECODE=1 python3 "$new" --selftest >>"$DETAIL_LOG" 2>&1); then
+    if ! cmp -s "$new" "$RESCUE_LIB"; then install -m 755 "$new" "$RESCUE_LIB"; ok "панель установлена/обновлена"; fi
+  elif [[ -f $RESCUE_LIB ]]; then
+    warn "новая версия аварийной панели не прошла самопроверку — оставлена прежняя"
+  else
+    warn "аварийная панель не установлена: нет $new или она не прошла самопроверку"; return 0
+  fi
+  if [[ ! -s $RESCUE_PASS_FILE ]]; then
+    gen_pw | tr -d '\n' >"$RESCUE_PASS_FILE"; echo >>"$RESCUE_PASS_FILE"
+  fi
+  chown root:"$APP_USER" "$RESCUE_PASS_FILE"; chmod 640 "$RESCUE_PASS_FILE"
+  pw=$(head -n1 "$RESCUE_PASS_FILE")
+  printf '%s:%s\n' "$RESCUE_LOGIN" "$(openssl passwd -apr1 "$pw")" >"$RESCUE_HTPASSWD.tmp"
+  chown root:www-data "$RESCUE_HTPASSWD.tmp"; chmod 640 "$RESCUE_HTPASSWD.tmp"; mv -f "$RESCUE_HTPASSWD.tmp" "$RESCUE_HTPASSWD"
+  put_file "$RESCUE_SHARE/rescue-down.html" 644 <<'RESCUE_DOWN'
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>CRM не отвечает · Наш декор</title><style>body{font:17px/1.5 -apple-system,system-ui,sans-serif;background:#F8F8F6;color:#26292E;margin:0}
+main{max-width:520px;margin:0 auto;padding:28px 18px}a.b{display:block;text-align:center;background:#26292E;color:#fff;text-decoration:none;font-weight:600;padding:16px;border-radius:12px;margin:18px 0}
+.d{color:#6B7178;font-size:15px}</style></head><body><main><h1>CRM сейчас не отвечает</h1>
+<p>Возможно, она перезапускается (подождите минуту и обновите страницу) или что-то сломалось после обновления.</p>
+<a class="b" href="/rescue/">🛟 Открыть аварийную панель</a>
+<p class="d">В панели: перезапустить CRM, откатить на прошлую версию, включить/выключить, вернуть прошлую версию сайта. Вход — логин и пароль панели (команда prostranstvo-crm passwords).</p>
+<p class="d">Если и панель не открывается — кабинет FirstVDS → сервер → «Перезагрузить».</p></main></body></html>
+RESCUE_DOWN
+  put_file /etc/systemd/system/prostranstvo-rescue.service 644 <<RESCUE_UNIT
+# Создано setup-crm.sh — аварийная панель «Наш декор» (отдельно от CRM)
+[Unit]
+Description=Аварийная панель «Наш декор»
+After=network.target
+
+[Service]
+Environment=RESCUE_PORT=$RESCUE_PORT CRM_PORT=$PORT CRM_HOST=$CRM_HOST DOMAIN=$DOMAIN CRM_BASE=$BASE STATE_DIR=$STATE_DIR PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 $RESCUE_LIB
+Restart=always
+RestartSec=2
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target
+RESCUE_UNIT
+  run systemctl daemon-reload
+  run systemctl enable prostranstvo-rescue
+  run systemctl restart prostranstvo-rescue || warn "аварийная панель не запустилась — journalctl -u prostranstvo-rescue"
+  for n in $(seq 1 10); do curl -fs -o /dev/null --max-time 3 "http://127.0.0.1:$RESCUE_PORT/rescue/health" && break; sleep 1; done
+  if curl -fs -o /dev/null --max-time 3 "http://127.0.0.1:$RESCUE_PORT/rescue/health"; then ok "панель работает (логин $RESCUE_LOGIN, пароль — prostranstvo-crm passwords)"
+  else warn "аварийная панель не отвечает — journalctl -u prostranstvo-rescue -n 30"; fi
 }
 
 step_nginx() {
@@ -725,6 +832,19 @@ step_nginx() {
     echo "        proxy_set_header X-Forwarded-Host \$host;"
     echo "        proxy_read_timeout 120s;"
     echo "    }"
+    if [[ -s $RESCUE_HTPASSWD && -f $RESCUE_LIB ]]; then
+      echo "    location ^~ /rescue/ {   # аварийная панель — отдельная служба, свой пароль"
+      echo "        auth_basic \"nashdekor rescue\";"
+      echo "        auth_basic_user_file $RESCUE_HTPASSWD;"
+      echo "        client_max_body_size 64k;"
+      echo "        proxy_pass http://127.0.0.1:$RESCUE_PORT;"
+      echo "        proxy_set_header Host \$host;"
+      echo "        proxy_read_timeout 300s;"
+      echo "    }"
+      echo "    location = /rescue { return 301 https://$CRM_HOST/rescue/; }"
+      echo "    error_page 502 503 504 /rescue-down.html;   # CRM упала — страница с кнопкой аварийной панели"
+      echo "    location = /rescue-down.html { root $RESCUE_SHARE; internal; }"
+    fi
     echo "    location / {"
     echo "        proxy_pass http://127.0.0.1:$PORT;"
     echo "        proxy_set_header Host \$host;"
@@ -878,6 +998,7 @@ main() {
   step_config
   write_helper
   step_service
+  step_rescue
   step_nginx
   step_protect
   step_selftest

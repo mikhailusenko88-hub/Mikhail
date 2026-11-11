@@ -733,6 +733,39 @@ jobs:
           git add status; git commit -m "crm-test konstruktor $(date -u +%F_%H:%M)" || exit 0
           git pull --rebase origin domain-check || true
           git push origin HEAD:domain-check || true
+      - name: Аварийная панель (отдельно от CRM) и откат
+        if: always()
+        run: |
+          mkdir -p status; O=status/crm-rescue.md
+          {
+          echo "# Аварийная панель — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; U="https://$H/rescue/"
+          P=$(sudo head -n1 /etc/prostranstvo/rescue-pass); A="-u nashdekor:$P"
+          echo "служба: $(systemctl is-active prostranstvo-rescue) · без пароля: $(curl -sk $R -o /dev/null -w '%{http_code}' $U) · с паролем: $(curl -sk $R $A -o /tmp/r.html -w '%{http_code}' $U)"
+          grep -o 'Аварийная панель\|Откатить CRM на прошлую версию\|Прошлой версии CRM пока нет' /tmp/r.html | sort -u | tr '\n' ';'; echo
+          act() { T=$(curl -sk $R $A $U | grep -o 'name="t" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'); curl -sk $R $A -o /dev/null -w '%{http_code}' -H "Origin: https://$H" --data-urlencode "t=$T" --data-urlencode "act=$1" --data-urlencode "arg=${2:-}" --data-urlencode "yes=1" "${U}act"; }
+          echo "чужой сайт (без токена): $(curl -sk $R $A -o /dev/null -w '%{http_code}' -H 'Origin: https://evil.example' -d 'act=auto_off' ${U}act)"
+          echo "автоматика пауза: $(act auto_off) · флаг: $(test -e /var/lib/prostranstvo/pause-auto && echo есть || echo нет) · отправка писем: $(sudo prostranstvo-crm followups | tail -n1)"
+          echo "автоматика снова: $(act auto_on) · флаг: $(test -e /var/lib/prostranstvo/pause-auto && echo есть || echo нет)"
+          echo "выключить CRM: $(act crm_stop) · CRM: $(curl -sk $R -o /tmp/d.html -w '%{http_code}' https://$H/login) · страница: $(grep -o 'CRM сейчас не отвечает' /tmp/d.html | head -n1) · панель: $(curl -sk $R $A -o /dev/null -w '%{http_code}' $U)"
+          echo "включить CRM: $(act crm_start) · CRM: $(curl -sk $R -o /dev/null -w '%{http_code}' https://$H/login)"
+          echo "версии: сейчас $(sudo git -C /opt/prostranstvo-crm/src rev-parse --short HEAD), прошлая $(sudo git -C /opt/prostranstvo-crm/prev rev-parse --short HEAD 2>/dev/null || echo нет)"
+          echo "откат CRM: $(act crm_rollback) · CRM: $(curl -sk $R -o /dev/null -w '%{http_code}' https://$H/login) · вернуть обратно: $(act crm_rollback) · CRM: $(curl -sk $R -o /dev/null -w '%{http_code}' https://$H/login)"
+          echo "версии сайта: $(act site_list) · в списке: $(curl -sk $R $A $U | grep -c 'Вернуть эту версию сайта')"
+          S=$(curl -sk $R $A $U | grep -o 'name="arg" value="[0-9a-f]\{40\}"' | sed -n 2p | sed 's/.*value="//;s/"$//')
+          echo "вернуть прошлую версию сайта ${S:0:7}: $(act site_pin "$S") · cron: $(grep -c '^#RESCUE#' /etc/cron.d/prostranstvo) · на сайте: $(sudo -u prostranstvo git -C /opt/prostranstvo-src rev-parse --short HEAD)"
+          echo "кнопка «Обновить сайт» в CRM при закреплённой версии: $(sudo bash -c 'source /dev/null; ls /var/lib/prostranstvo/site-pin')"
+          echo "снова автообновление: $(act site_resume) · cron: $(grep -c '^#RESCUE#' /etc/cron.d/prostranstvo) · на сайте: $(sudo -u prostranstvo git -C /opt/prostranstvo-src rev-parse --short HEAD)"
+          curl -sk $R $A $U | grep -o 'class="msg [a-z]*">[^<]*' | head -n1
+          echo "CRM 502 → своя страница: $(sudo grep -c 'rescue-down' /etc/nginx/sites-available/*crm* 2>/dev/null | tail -n1)"
+          sudo journalctl -u prostranstvo-rescue --since "-10 min" --no-pager 2>/dev/null | grep -i -A8 'Traceback' | head -n 30 || true
+          echo '```'
+          } > "$O" 2>&1
+          cat "$O"
+          git config user.name crm-test; git config user.email crm-test@users.noreply.github.com
+          git add status; git commit -m "crm-test rescue $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
       - name: Состояние
         if: always()
         run: |
