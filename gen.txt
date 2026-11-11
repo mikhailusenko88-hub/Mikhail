@@ -109,3 +109,14 @@ qm4_vrise_slow | silero_cis:ru_albina@ssml,soft,vrise | <speak>А ты +это <
 qm5_verblyud | silero_cis:ru_albina@ssml,soft,vrisew380 | <speak>Вербл+юд хран+ит в+оду в горб+у?</speak> | Верблюд хранит воду в горбу?
 qm6_pauki | silero_cis:ru_albina@ssml,soft,vrisew450 | <speak>Ты глот+аешь паук+ов во сне?</speak> | Ты глотаешь пауков во сне?
 qm7_myshi | silero_cis:ru_albina@ssml,soft,vrisew420 | <speak>Лет+учие м+ыши совс+ем слеп+ые?</speak> | Летучие мыши совсем слепые?
+# 2026-11-11 21:40 МСК — сверка с эталонными голосами: фразы 2 и 4 бота «Почему так?» (что не так слышит Михаил)
+pt2_kseniya | silero:kseniya | Он ещё стоял в литейной яме, когда в Кремле начался пожар. | 
+pt2_baya | silero:baya | Он ещё стоял в литейной яме, когда в Кремле начался пожар. | 
+pt2_xenia | silero:xenia | Он ещё стоял в литейной яме, когда в Кремле начался пожар. | 
+pt2_svetlana | edge:ru-RU-SvetlanaNeural | Он ещё стоял в литейной яме, когда в Кремле начался пожар. | 
+pt2_dmitry | edge:ru-RU-DmitryNeural | Он ещё стоял в литейной яме, когда в Кремле начался пожар. | 
+pt4_kseniya | silero:kseniya | Самому старому известному дереву почти пять тысяч лет. | 
+pt4_baya | silero:baya | Самому старому известному дереву почти пять тысяч лет. | 
+pt4_xenia | silero:xenia | Самому старому известному дереву почти пять тысяч лет. | 
+pt4_svetlana | edge:ru-RU-SvetlanaNeural | Самому старому известному дереву почти пять тысяч лет. | 
+pt4_dmitry | edge:ru-RU-DmitryNeural | Самому старому известному дереву почти пять тысяч лет. | 
