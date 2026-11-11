@@ -55,5 +55,16 @@ a{text-decoration-color:var(--mark)}
 .sw,.pview{background:#26292E}
 .pview.is3d{background:radial-gradient(ellipse at 50% 35%,#FFFFFF 0%,#ECEFF2 60%,#D9DEE3 100%)}
 
+/* Кадр фото в карточке 16:9 — по месту изделия на фото: плинтус внизу кадра, карниз вверху, панели чуть ниже центра */
+.sw[data-c="plinth"] img{object-position:50% 78%}
+.sw[data-c="cornice"] img{object-position:50% 22%}
+.sw[data-c="panel"] img,.sw[data-c="color"] img{object-position:50% 58%}
+
+/* Чертежи профиля и схемы в статьях — как схемы брендбука: размерные линии серо-голубые, скругление 6 px */
+.prof .dimline{stroke:var(--mark)}
+.prof .dim{fill:var(--mark-text)}
+.article .scheme{border-radius:6px;border-color:var(--line)}
+.article figure img{border-radius:6px}
+
 /* Подвал: тонкая линия «Камень», как на картинках брендбука */
 footer{border-top-color:var(--stone)}

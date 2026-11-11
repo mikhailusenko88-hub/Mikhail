@@ -337,7 +337,7 @@ ARTICLES = [
 # Схема запила угла потолочного плинтуса (вид сверху): внутренний и внешний угол
 SVG = {
     "corner": """<figure class="scheme"><svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Схема: внутренний и внешний угол потолочного плинтуса, вид сверху">
-<style>.w{fill:#e9e6df;stroke:#8a877f;stroke-width:2}.p{fill:#fff;stroke:#1f2a2a;stroke-width:2.5}.cut{stroke:#b4694b;stroke-width:3;stroke-dasharray:6 5}.t{font:15px system-ui,sans-serif;fill:#1f2a2a}.s{font:13px system-ui,sans-serif;fill:#6b7280}</style>
+<style>.w{fill:#D9DEE3;stroke:#A89F91;stroke-width:1.5}.p{fill:#fff;stroke:#26292E;stroke-width:2.5}.cut{stroke:#4F6A82;stroke-width:3;stroke-dasharray:7 5}.t{font:600 15px Inter,system-ui,sans-serif;fill:#26292E}.s{font:13px Inter,system-ui,sans-serif;fill:#585E66}</style>
 <text class="t" x="20" y="26" font-weight="600">Внутренний угол</text>
 <path class="w" d="M20 60 H190 V240 H160 V90 H20 Z"/>
 <path class="p" d="M20 90 H130 L160 120 V240 H130 V120 H20 Z"/>

@@ -287,9 +287,9 @@ def card(x, root):
     img = ('<img src="%s%s" alt="%s %s" loading="lazy" width="790" height="449">' % (root, ph, esc(KIND[x["c"]]), esc(x["a"]))) if ph else ""
     price = ('<b class="num">%s ₽</b>' % fmt(x["r"])) if x.get("r") else "<b>По запросу</b>"
     per = ("за шт · ≈ <span class=\"m2\">%s</span> ₽/м² · %d шт в коробке" % (fmt(m2(x)), x["b"])) if m2(x) else "за шт · %d шт в коробке" % x["b"]
-    return ('<a class="card" href="%sp/%s/" data-p="%s"><div class="sw">%s</div><div class="in"><div class="eyebrow">%s</div><div class="art">%s</div><div class="d">%s</div>'
+    return ('<a class="card" href="%sp/%s/" data-p="%s"><div class="sw" data-c="%s">%s</div><div class="in"><div class="eyebrow">%s</div><div class="art">%s</div><div class="d">%s</div>'
             '<div class="price">%s<small>%s</small><small class="stock">Под заказ, 3–4 недели</small></div></div></a>'
-            % (root, slug(x["a"]), esc(x["a"]), img, esc(KIND[x["c"]]), esc(x["a"]), esc(x["d"]), price, per))
+            % (root, slug(x["a"]), esc(x["a"]), x["c"], img, esc(KIND[x["c"]]), esc(x["a"]), esc(x["d"]), price, per))
 
 # ---------- тексты «о товаре» ----------
 def about(x):

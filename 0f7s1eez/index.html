@@ -134,7 +134,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--mute
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 @media (prefers-reduced-motion:no-preference){.card{transition:transform .15s}.card:hover{transform:translateY(-2px)}}
 </style>
-<link rel="stylesheet" href="assets/brand.css?v=202611111054">
+<link rel="stylesheet" href="assets/brand.css?v=202611111102">
 
 <header class="top"><div class="wrap bar">
   <a class="logo" href="#catalog" aria-label="Наш декор"><svg viewBox="0 0 724 120" width="169" height="28" aria-hidden="true" focusable="false"><use href="assets/logo.svg#logo"/></svg></a>
@@ -403,7 +403,7 @@ function renderGrid(){
     const href = `p/${slug(a)}/`;
     return `
     <article class="card">
-      <a class="cover" href="${href}" aria-label="${KIND[x.c]} ${a}: подробнее"><div class="sw"${PHOTO[a] ? "" : ` style="${swatch(x)}"`}>${PHOTO[a] ? `<img src="${photoUrl(a)}" alt="${KIND[x.c]} ${a}" loading="lazy" width="790" height="449"${hex ? ` data-paintsrc="1" data-hex="${hex}"` : ""}>` : ""}${chip}</div></a>
+      <a class="cover" href="${href}" aria-label="${KIND[x.c]} ${a}: подробнее"><div class="sw" data-c="${x.c}"${PHOTO[a] ? "" : ` style="${swatch(x)}"`}>${PHOTO[a] ? `<img src="${photoUrl(a)}" alt="${KIND[x.c]} ${a}" loading="lazy" width="790" height="449"${hex ? ` data-paintsrc="1" data-hex="${hex}"` : ""}>` : ""}${chip}</div></a>
       <div class="in">
         <div class="eyebrow">${KIND[x.c]}</div>
         <div class="art"><a href="${href}" style="color:inherit;text-decoration:none">${a}</a></div>
