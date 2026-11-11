@@ -1,10 +1,27 @@
-shorts 84
+shorts 129
 videos 7
 streams ошибка: ERROR: [youtube:tab] @Beautiful_shorts-s6u: This channel does not have a streams tab
 
 streams 0
-Traceback (most recent call last):
-  File "/home/runner/work/Mikhail/Mikhail/ref.py", line 47, in <module>
-    info = dict(date=d.get("upload_date"), dur=d.get("duration"), track=d.get("track"), artist=d.get("artist") or d.get("creator"), album=d.get("album"),
-                     ^^^^^
-AttributeError: 'NoneType' object has no attribute 'get'
+с метаданными — совпадений: [('TKkd16DFUMU', '27 октября 2026\u202fг.'), ('JsycXIxtM8M', '27 октября 2026\u202fг.')]
+совпадений: 2 ['27 октября 2026\u202fг.', '27 октября 2026\u202fг.']
+не скачалось через default -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через android_vr -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через ios -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через tv -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через mweb -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через web_safari -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через tv_embedded -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через default -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через android_vr -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через ios -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через tv -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через mweb -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через web_safari -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+не скачалось через tv_embedded -do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies 
+## 27 октября 2026 г. (https://www.youtube.com/watch?v=TKkd16DFUMU)
+Скачать не удалось.
+
+## 27 октября 2026 г. (https://www.youtube.com/watch?v=JsycXIxtM8M)
+Скачать не удалось.
+
