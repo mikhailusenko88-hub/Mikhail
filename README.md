@@ -13,3 +13,13 @@
     git add outbox && git commit -m "письмо" && git push origin outbox
 
 Паролей и открытого текста писем в этой ветке нет и быть не должно.
+
+## Ответы на письма — Claude читает сам
+
+`READER.pub` — открытый ключ Claude для чтения ответов (меняется с каждым его сеансом: `python3 tools/replies.py key --new`).
+Сервер отдаёт по адресу https://crm.nashdekor.ru/api/outbox/replies только письма в info@, которые пришли в ответ
+на письма с zapros@ (ссылаются на них, с тех же адресов или доменов, кроме бесплатных почт, с той же темой) —
+и только шифром для этого ключа. Письма клиентов и zakaz@ — никогда. Выключается в CRM → Ещё → Исходящие.
+Из облака шифр снимает workflow `replies-fetch` (ветка domain-check, файл pages/replies.txt) → ветка `replies`.
+
+    python3 tools/replies.py read replies.json --out ответы/
