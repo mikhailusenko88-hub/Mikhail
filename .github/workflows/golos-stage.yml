@@ -77,7 +77,7 @@ jobs:
         run: |
           git config user.name golos
           git config user.email golos@users.noreply.github.com
-          mkdir -p /tmp/res && cp -r stage_out /tmp/res/ 2>/dev/null || true
+          mkdir -p /tmp/res/stage_out && cp stage_out/part${{ matrix.shard }}.json /tmp/res/stage_out/ 2>/dev/null || true   # только свою часть: иначе затрёт свежие чужие
           for i in 1 2 3 4 5 6 7 8; do
             git fetch -q origin golos && git reset -q --hard origin/golos
             mkdir -p stage_out && cp -r /tmp/res/stage_out/. stage_out/ 2>/dev/null || true
