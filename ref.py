@@ -28,6 +28,12 @@ else:
         for e in ents:
             items.append(dict(id=e.get("id"), title=e.get("title") or "", tab=tab, dur=e.get("duration")))
         P(tab, len(ents))
+if os.path.exists("prev_list.txt"):
+    have = {it["id"] for it in items}
+    for ln in open("prev_list.txt", encoding="utf-8"):
+        tab, vid, dur, title = (ln.rstrip("\n").split("\t") + ["", "", "", ""])[:4]
+        if vid and vid not in have:
+            items.append(dict(id=vid, title=title, tab=tab, dur=dur))
 with open("status/list.txt", "w", encoding="utf-8") as f:
     for it in items:
         f.write(f"{it.get('tab','')}\t{it['id']}\t{it.get('dur')}\t{it['title']}\n")
@@ -42,6 +48,8 @@ for it in scan:
     try:
         d = json.loads(p.stdout)
     except Exception:
+        d = None
+    if not isinstance(d, dict):
         meta_lines.append(f"{it['id']}\t{it['title']}\tМЕТА НЕ ПОЛУЧЕНА: {(p.stderr or '')[-160:]}")
         continue
     info = dict(date=d.get("upload_date"), dur=d.get("duration"), track=d.get("track"), artist=d.get("artist") or d.get("creator"), album=d.get("album"),
