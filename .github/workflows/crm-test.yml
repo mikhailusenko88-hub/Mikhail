@@ -369,6 +369,88 @@ jobs:
           git add status; git commit -m "crm-test outbox $(date -u +%F_%H:%M)" || exit 0
           git pull --rebase origin domain-check || true
           git push origin HEAD:domain-check || true
+      - name: Почта в CRM и ответы на запросы для Claude
+        if: always()
+        run: |
+          mkdir -p status; O=status/crm-pochta.md
+          {
+          echo "# Почта в CRM и ответы для Claude — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/jp
+          # cron «outbox» в раннере тянет настоящую ветку с GitHub — на время проверки выключаем и берём тестовую
+          sudo sed -i '/prostranstvo-crm outbox/s/^/#/' /etc/cron.d/prostranstvo-crm; sleep 3
+          sudo flock /run/prostranstvo-outbox.lock rm -rf /var/lib/prostranstvo/outbox-git
+          KEY=$(curl -sk $R https://$H/api/outbox/key)
+          echo "до ключа Claude: $(curl -sk $R https://$H/api/outbox/replies | head -c 120)"
+          # письмо «лаборатории» с zapros@ (наружу из раннера не уйдёт, но Postfix примет — статус sent)
+          ID=$(sudo -u prostranstvo env KEY="$KEY" python3 -I -c "
+          import json, sys, uuid, os; sys.path.insert(0, '/opt/prostranstvo-crm/src/crm')
+          import outbox
+          p = {'id': str(uuid.uuid4()), 'to': 'lab@labtest.example', 'subject': 'Запрос на испытания панелей', 'body': 'Добрый день!'}
+          json.dump(outbox.seal(os.environ['KEY'], p), open('/tmp/ob/work/outbox/' + p['id'] + '.json', 'w'))
+          print(p['id'])")
+          # ключ Claude для чтения — READER.pub в ветке
+          python3 -I -c "
+          from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
+          from cryptography.hazmat.primitives import serialization as s
+          import base64
+          k = X25519PrivateKey.generate()
+          open('/tmp/reader.sk', 'wb').write(k.private_bytes(s.Encoding.Raw, s.PrivateFormat.Raw, s.NoEncryption()))
+          open('/tmp/reader.pub', 'w').write(base64.b64encode(k.public_key().public_bytes(s.Encoding.Raw, s.PublicFormat.Raw)).decode() + '\n')"
+          sudo cp /tmp/reader.pub /tmp/ob/work/READER.pub; sudo chown prostranstvo /tmp/ob/work/READER.pub
+          cd /tmp/ob/work
+          sudo -u prostranstvo -H git -c user.email=t@t -c user.name=t add -A
+          sudo -u prostranstvo -H git -c user.email=t@t -c user.name=t commit -q -m "letter+reader"
+          sudo -u prostranstvo -H git push -q /tmp/ob/remote.git outbox
+          cd - >/dev/null
+          echo "отправка в лабораторию: $(sudo env OUTBOX_REPO=/tmp/ob/remote.git prostranstvo-crm outbox 2>&1 | tr '\n' ' ')"
+          echo "статус: $(curl -sk $R https://$H/api/outbox/status/$ID)"
+          echo "Message-ID в очереди Postfix: $(sudo grep -rh "^Message-ID: <$ID@nashdekor.ru>" /var/spool/postfix/ 2>/dev/null | head -n1)$(sudo postcat -q $(sudo mailq | awk '/lab@labtest.example/{print prev} {prev=$1}' | head -n1 | tr -d '*!') 2>/dev/null | grep -m1 '^Message-ID')"
+          # ответы: лаборатория (другой сотрудник, тот же домен) на zapros@, клиент на zakaz@, посторонний на info@
+          printf "From: Иванова <ivanova@labtest.example>\nTo: zapros@nashdekor.ru\nSubject: Re: Запрос на испытания панелей\nIn-Reply-To: <$ID@nashdekor.ru>\nContent-Type: text/plain; charset=utf-8\n\nСтоимость Г1 — 25 000 руб.\n" | sudo sendmail -f ivanova@labtest.example zapros@nashdekor.ru
+          printf 'From: client@client.example\nTo: zakaz@nashdekor.ru\nSubject: zakaz-from-client\n\nХочу панели\n' | sudo sendmail -f client@client.example zakaz@nashdekor.ru
+          printf 'From: other@other.example\nTo: info@nashdekor.ru\nSubject: info-unrelated\n\nНе ответ\n' | sudo sendmail -f other@other.example info@nashdekor.ru
+          sleep 10
+          echo "--- выгрузка (cron mail-watch):"
+          sudo prostranstvo-crm mail-watch 2>&1 | tail -n 3
+          sudo ls -ld /var/lib/prostranstvo-pochta | awk '{print "папка:", $1, $3":"$4}'
+          echo "писем в index.json: $(sudo python3 -c "import json;print(len(json.load(open('/var/lib/prostranstvo-pochta/index.json'))['letters']))")"
+          sudo -u prostranstvo touch /var/lib/prostranstvo-pochta/x 2>/dev/null && echo "CRM МОЖЕТ писать в папку — плохо" || echo "CRM писать в папку не может — хорошо"
+          sudo -u prostranstvo cat /var/lib/prostranstvo-pochta/index.json >/dev/null && echo "CRM читает — да"
+          echo "--- ответы для Claude:"
+          curl -sk $R https://$H/api/outbox/replies -o /tmp/replies.json
+          echo "снаружи видно текст ответа: $(grep -c '25 000' /tmp/replies.json)"
+          python3 -I -c "
+          import json, base64
+          from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey, X25519PublicKey
+          from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
+          from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+          from cryptography.hazmat.primitives import hashes, serialization as s
+          I = b'nashdekor-replies-v1'
+          sk = X25519PrivateKey.from_private_bytes(open('/tmp/reader.sk', 'rb').read())
+          pk = sk.public_key().public_bytes(s.Encoding.Raw, s.PublicFormat.Raw)
+          d = json.load(open('/tmp/replies.json')); print('писем для Claude:', len(d['items']))
+          for e in d['items']:
+              epk = base64.b64decode(e['epk'])
+              key = HKDF(algorithm=hashes.SHA256(), length=32, salt=None, info=I + epk + pk).derive(sk.exchange(X25519PublicKey.from_public_bytes(epk)))
+              x = json.loads(ChaCha20Poly1305(key).decrypt(base64.b64decode(e['nonce']), base64.b64decode(e['ct']), I))
+              print(' -', x['from'], '|', x['subject'], '|', x['text'][:60])"
+          echo "--- раздел «Почта» (вход Юлии):"
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          T=$(curl -sk $R -c $J -b $J https://$H/login | grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//')
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          P=$(curl -sk $R -c $J -b $J https://$H/pochta)
+          for w in 'Запрос на испытания панелей' zakaz-from-client info-unrelated 'видит Claude'; do echo "в списке «$w»: $(grep -c "$w" <<<"$P")"; done
+          L=$(grep -o 'href="/pochta/[0-9a-f]\{20\}"' <<<"$P" | head -n1 | cut -d'"' -f2)
+          echo "письмо $L: $(curl -sk $R -c $J -b $J https://$H$L | grep -o 'Стоимость Г1[^<]*\|Хочу панели\|Не ответ' | head -n1)"
+          echo "«Исходящие»: $(curl -sk $R -c $J -b $J https://$H/outbox | grep -o 'Ответы, которые видит Claude\|ключ подключён' | sort -u | tr '\n' ';')"
+          echo "без входа: $(curl -sk $R -o /dev/null -w '%{http_code}' https://$H/pochta)"
+          echo '```'
+          } > "$O" 2>&1
+          cat "$O"
+          git config user.name crm-test; git config user.email crm-test@users.noreply.github.com
+          git add status; git commit -m "crm-test pochta $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
       - name: Страница CRM «Сервер»
         if: always()
         run: |
