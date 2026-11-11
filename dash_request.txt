@@ -1,8 +1,3 @@
-# 2026-11-12 00:05 MSK — пауза на тире: какой способ звучит живее (кэш озвучщика чистится между способами)
-bank: dash_bank.json
-mode: none none 0
-mode: comma comma 0
-mode: cb150 commabreak 150
-mode: br220 break 220
-mode: db200 dashbreak 200
-mode: cd commadash 0
+# 2026-11-12 00:30 MSK — звонкость после глухого (сбит → спит, с головы → с коловы): варианты написания
+bank: zv_bank.json
+mode: zv none 0
