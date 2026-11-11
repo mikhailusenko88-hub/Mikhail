@@ -1,0 +1,9 @@
+# имя | адрес | desktop|mobile | js
+home-d | https://nashdekor.ru/?s=1 | desktop
+home-m | https://nashdekor.ru/?s=1 | mobile
+a907-3d-m | https://nashdekor.ru/p/a907/?s=1 | mobile
+a907-photo-d | https://nashdekor.ru/p/a907/?s=1 | desktop | document.querySelector('[data-v=photo]').click()
+37-3d-d | https://nashdekor.ru/p/3-7/?s=1 | desktop | document.querySelector('[data-v=frag]')?.click(); window.scrollTo(0,200)
+37-photo-m | https://nashdekor.ru/p/3-7/?s=1 | mobile | document.querySelector('[data-v=photo]').click(); window.scrollTo(0,380)
+plinth-cat-d | https://nashdekor.ru/catalog/plintusy/?s=1 | desktop | window.scrollTo(0,420)
+a503-d | https://nashdekor.ru/p/a503/?s=1 | desktop
