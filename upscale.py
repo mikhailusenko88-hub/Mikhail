@@ -10,7 +10,7 @@ spec, src, wdir = sys.argv[1], sys.argv[2], sys.argv[3]
 parts = spec.split(); name = parts[0]; opt = dict(p.split('=', 1) for p in parts[1:])
 models = ['general', 'x4plus'] if opt.get('model', 'general') == 'both' else [opt.get('model', 'general')]
 scale = float(opt.get('scale', 2))
-files = sorted(f for f in os.listdir(src) if f.endswith('.jpg') and f != 'hero.jpg') if opt.get('files', 'all') == 'all' else opt['files'].split(',')
+files = sorted(f for f in os.listdir(src) if f.endswith('.jpg')) if opt.get('files', 'all') == 'all' else opt['files'].split(',')
 torch.set_num_threads(os.cpu_count() or 4)
 out = os.path.join('out', name); os.makedirs(out, exist_ok=True)
 
