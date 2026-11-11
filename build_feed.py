@@ -6,6 +6,8 @@
          (запускать там, где есть доступ к photo_base, например на сервере).
 Берёт каталог из index.html (const CAT / const PHOTO), тексты из avito_texts.json
 (если файла нет — заглушки из названия и описания каталога), пишет avito.xml и проверяет его.
+Из site-content.json рядом с index.html («Редактор сайта» в CRM): доп. фото товаров (gallery) и новые разделы
+(kinds: у каждого avito = panel | mold | plinth — в какую категорию Авито; пусто — раздел на Авито не выкладываем).
 """
 import html
 import json
@@ -19,7 +21,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from clean_texts import clean, problems  # noqa: E402  правила текстов магазина
 
-CATALOG_SIZE = 107          # артикулов в каталоге сайта
+CATALOG_MIN = 30            # меньше товаров в каталоге — значит, index.html прочитан неправильно: фид не трогаем
 
 
 def load_config(path):
@@ -42,6 +44,18 @@ def load_catalog(index_html):
     m = re.search(r'const PHOTO\s*=\s*(\{.*?\});', s, re.S)
     photo = json.loads(m.group(1)) if m else {}
     return cat, photo
+
+
+def load_content(index_html):
+    """site-content.json («Редактор сайта»): новые разделы и доп. фото; нет файла — пусто."""
+    try:
+        with open(os.path.join(os.path.dirname(index_html), 'site-content.json'), encoding='utf-8') as f:
+            c = json.load(f)
+    except (OSError, ValueError):
+        return {}, {}
+    kinds = c.get('kinds') if isinstance(c.get('kinds'), dict) else {}
+    gallery = c.get('gallery') if isinstance(c.get('gallery'), dict) else {}
+    return kinds, gallery
 
 
 def load_texts(path):
@@ -115,8 +129,19 @@ KIND_WORD = {'panel': 'панели', 'color': 'панели', 'mold': 'молд
              'cornice': 'карниза', 'corner': 'уголка'}
 
 
-def stub_text(item):
-    """Заглушка, пока исполнитель не прислал avito_texts.json."""
+def stub_text(item, kind=None):
+    """Заглушка, пока исполнитель не прислал avito_texts.json. kind — новый раздел из CRM (не ARTDEC)."""
+    if kind is not None:
+        mat = (item.get('m') or kind.get('material') or '').strip()
+        lines = [f"{item['n']}.", f"{item['d'][:1].upper()}{item['d'][1:]}.", '']
+        if mat:
+            lines.append(f'Материал — {mat}.')
+        if (kind.get('about') or '').strip():
+            lines.append(kind['about'].strip())
+        lines += [f"Длина {item['l']} мм, ширина {item['w']} мм, толщина {item['t']} мм.",
+                  f"В коробке {item['b']} шт. Цена указана за 1 шт.", '',
+                  'Продаём поштучно и коробками. Поможем рассчитать количество на вашу стену — напишите размеры.']
+        return {'title': item['n'], 'description': '\n'.join(lines), 'kind': item['c'], 'stub': True}
     lines = [f"{item['n']} — ARTDEC (Казахстан).",
              f"{item['d'][:1].upper()}{item['d'][1:]}.",
              '',
@@ -150,6 +175,7 @@ def is_placeholder(v):
 
 def build(cfg):
     cat, photo = load_catalog(cfg['catalog_html'])
+    kinds, gallery = load_content(cfg['catalog_html'])
     texts = load_texts(cfg.get('texts_json'))
     crm = cfg.get('_crm')
     in_stock = {str(a).strip() for a in cfg.get('in_stock', [])}
@@ -183,24 +209,35 @@ def build(cfg):
         warnings.append(f'skip/avito_ids: нет в каталоге артикулов {sorted(unknown)}')
 
     root = ET.Element('Ads', formatVersion='3', target='Avito.ru')
+    not_on_avito = []
     for item in cat:
         a = item['a']
         if a in skip:
             continue
-        t = (texts or {}).get(a)
+        kind = kinds.get(item['c'])                 # новый раздел из CRM (не ARTDEC)
+        if kind is not None:
+            mapping = cfg['category_map'].get(kind.get('avito') or '')
+            if not mapping:
+                not_on_avito.append(a)
+                continue
+        else:
+            mapping = cfg['category_map'].get(item['c'])
+            if not mapping:
+                sys.exit(f'Нет category_map для вида «{item["c"]}» (артикул {a})')
+        t = (texts or {}).get(a) if kind is None else None
         if not t:
-            t = stub_text(item)
+            t = stub_text(item, kind)
             stubs.append(a)
         src_title = clean((t.get('title') or item['n']).strip())
         title = cut_title(src_title, a, int(cfg.get('title_max', 50)))
         if title != re.sub(r'\s+', ' ', src_title):
             shortened.append(f'{a}: «{src_title}» ({len(src_title)}) → «{title}» ({len(title)})')
         body = clean((t.get('description') or '').strip())
-        q_line = (cfg.get('quality_line') or '').strip()
+        q_line = (cfg.get('quality_line') or '').strip() if kind is None else ''   # завод и 3D-модели — только про товары ARTDEC
         if q_line and q_line not in body:          # про систему качества — перед строкой «Цена в объявлении…», если она есть
             m = re.search(r'\n\n(Цена в объявлении[^\n]*)$', body)
             body = f'{body[:m.start()]}\n\n{q_line}{body[m.start():]}' if m else f'{body}\n\n{q_line}'
-        d_line = (cfg.get('designer_line') or '').strip()
+        d_line = (cfg.get('designer_line') or '').strip() if kind is None else ''
         if d_line and d_line not in body:          # дизайнерам — 3D-модели (тоже перед «Цена в объявлении…»)
             m = re.search(r'\n\n(Цена в объявлении[^\n]*)$', body)
             body = f'{body[:m.start()]}\n\n{d_line}{body[m.start():]}' if m else f'{body}\n\n{d_line}'
@@ -211,16 +248,12 @@ def build(cfg):
         body = f'{avail_line}\n\n{body}' if cfg.get('availability_line_position', 'start') == 'start' else f'{body}\n\n{avail_line}'
         desc = to_html(body) if cfg.get('description_html', True) else body
 
-        mapping = cfg['category_map'].get(item['c'])
-        if not mapping:
-            sys.exit(f'Нет category_map для вида «{item["c"]}» (артикул {a})')
-
         imgs = []
         if photo.get(a):
             imgs.append(photo[a])
         else:
             no_photo.append(a)
-        for fn in list(extra.get(a, [])) + list(extra.get(item['c'], [])):
+        for fn in list(extra.get(a, [])) + list(gallery.get(a, [])) + list(extra.get(item['c'], [])):
             if fn not in imgs:
                 imgs.append(fn)
         for fn in imgs:
@@ -270,6 +303,10 @@ def build(cfg):
     if shortened:
         warnings.append(f'заголовки длиннее {cfg.get("title_max", 50)} симв. укорочены автоматически ({len(shortened)}):\n    '
                         + '\n    '.join(shortened))
+    if not_on_avito:
+        warnings.append(f'не выкладываем на Авито (раздел без категории Авито в CRM): {", ".join(not_on_avito)}')
+    cfg['_expected'] = len(cat) - len(skip & {x['a'] for x in cat}) - len(not_on_avito)
+    cfg['_catalog_size'] = len(cat)
     if is_placeholder(cfg.get('contact_phone')):
         warnings.append('contact_phone — заглушка: тег ContactPhone не записан (Авито возьмёт телефон из профиля)')
     if is_placeholder(cfg.get('manager_name')):
@@ -314,9 +351,12 @@ def validate(path, rows, cfg, no_photo):
     except ET.ParseError as e:
         return [f'XML невалиден: {e}']
     ads = tree.getroot().findall('Ad')
-    expected = CATALOG_SIZE - len(set(cfg.get('skip', [])))
+    size = cfg.get('_catalog_size', 0)
+    if size < CATALOG_MIN:
+        errors.append(f'в каталоге сайта всего {size} товаров (ожидается от {CATALOG_MIN}) — похоже, index.html прочитан неправильно')
+    expected = cfg.get('_expected', len(ads))
     if len(ads) != expected:
-        errors.append(f'объявлений {len(ads)}, ожидалось {expected} (каталог {CATALOG_SIZE} минус skip)')
+        errors.append(f'объявлений {len(ads)}, ожидалось {expected} (каталог {size} минус skip и разделы без Авито)')
     aids = [ad.findtext('AvitoId') for ad in ads if ad.findtext('AvitoId')]
     if len(aids) != len(set(aids)):
         errors.append(f'AvitoId повторяется: {aids}')

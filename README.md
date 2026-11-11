@@ -1,6 +1,6 @@
 # Авито: автозагрузка «Наш декор»
 
-build_feed.py + config.json → avito.xml (105 объявлений: каталог 107 минус skip). Тексты — avito_texts.json.
+build_feed.py + config.json → avito.xml (все товары сайта минус skip; новые разделы из «Редактора сайта» — в категорию Авито, выбранную в CRM, или не выкладываются). Тексты — avito_texts.json; доп. фото товаров — из 0f7s1eez/site-content.json.
 Готовый фид публикуется в ветке mebel: 0f7s1eez/avito.xml (на сайте — https://nashdekor.ru/avito.xml).
 
 - clean_texts.py — правила текстов магазина: без бренда поставщика, без класса горючести, без слова «рамки».
