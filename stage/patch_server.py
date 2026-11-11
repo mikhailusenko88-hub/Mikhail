@@ -113,16 +113,42 @@ def _assim(s):
     if not BOT_ASSIM:
         return s
     s = re.sub(_NL + r"([сС])(?=[бгдз])", lambda m: "з" if m.group(1) == "с" else "З", s)              # сбит -> збит
-    s = re.sub(_NL + r"([сС]) ([бгджзБГДЖЗ])",                                                          # с головы -> зголовы
+    s = re.sub(_NL + r"([сС]) ([бгдзБГДЗ])",                                                          # с головы -> зголовы
                lambda m: ("з" if m.group(1) == "с" else "З") + m.group(2).lower(), s)
     s = re.sub(_NL + r"([вВ])(?= [птксшфхцчщПТКСШФХЦЧЩ])", lambda m: "ф" if m.group(1) == "в" else "Ф", s)   # в тебе -> ф тебе
-    s = re.sub(r"(?<=[аеёиоуыэюя])([ткспшфх])(?= [бгджзБГДЖЗ])", lambda m: _VOICE[m.group(1)], s)       # как бетон -> каг бетон
+    s = re.sub(r"(?<=[аеёиоуыэюя])([ткспшфх])(?= [бгдзБГДЗ])", lambda m: _VOICE[m.group(1)], s)       # как бетон -> каг бетон
     return s
 
 
 
+# Что подобрано на слух и не меняется (Михаил, 08.11.2026): концовка роликов и хвост вопроса, по которому идёт мелодия.
+BOT_KEEP = {"а ты это знал"}
+
+
+def _old_word(m):
+    """Прежняя разметка: слова из одного слога — без ударения."""
+    w = m.group(0)
+    if "-" in w and "+" in w:
+        return w
+    return "-".join(x.replace("+", "") if sum(c in VOW for c in x) <= 1 else _bot_part(x) for x in w.split("-"))
+
+
+def _bot_sent(m):
+    s = m.group(0)
+    ms = list(WORD.finditer(s))
+    if " ".join(w.group(0).replace("+", "").lower() for w in ms) in BOT_KEEP:
+        return WORD.sub(_old_word, s)
+    cut = len(s) + 1
+    if ms and is_yesno(s) and sum(c in VOW for c in ms[-1].group(0)) <= 1:
+        k = len(ms) - 1                      # «…во сне?», «…в день?»: взлёт идёт по коротким словам в конце — их не трогаем
+        while k >= 1 and len(ms) - k < 3 and sum(c in VOW for c in ms[k].group(0)) <= 1:
+            k -= 1
+        cut = ms[k].start()
+    return _assim(WORD.sub(lambda w: _old_word(w) if w.start() >= cut else _bot_word(w), s))
+
+
 def bot_marks(marked):
-    return _assim(WORD.sub(_bot_word, marked))
+    return _SENT.sub(_bot_sent, marked)
 
 
 def is_yesno(s0):
