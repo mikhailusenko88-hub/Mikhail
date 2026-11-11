@@ -663,9 +663,11 @@ jobs:
           H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/je
           PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
           tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          for i in $(seq 1 30); do [ "$(curl -sk $R -o /dev/null -w '%{http_code}' https://$H/login)" = 200 ] && break; sleep 2; done   # CRM мог перезапускаться кнопкой с прошлого шага
           T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
           curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
-          P=$(curl -sk $R -c $J -b $J https://$H/site/edit)
+          P=$(curl -sk $R -c $J -b $J -w '\nHTTP %{http_code}' https://$H/site/edit)
+          echo "ответ /site/edit: $(tail -n1 <<<"$P")"
           echo "страница: $(grep -c 'Редактор сайта' <<<"$P") · товаров в списке: $(grep -o 'site/edit/item?a=' <<<"$P" | wc -l)"
           A=$(grep -o 'site/edit/item?a=[^"]*' <<<"$P" | head -n1 | sed 's/.*a=//'); echo "первый товар: $A"
           python3 -c "from PIL import Image; import os; im=Image.frombytes('RGB',(2400,1500),os.urandom(2400*1500*3)); im.save('/tmp/big.png')" 2>/dev/null || head -c 5000000 /dev/urandom | (printf '\x89PNG\r\n\x1a\n'; cat) > /tmp/big.png
@@ -688,6 +690,7 @@ jobs:
           echo '{"last_id": 1, "edits": {"1": {"ok": true, "note": "добавлен, новое фото", "at": "тест"}}}' | sudo tee /var/www/prostranstvo/site-edits.json >/dev/null
           P=$(curl -sk $R -c $J -b $J https://$H/site/edit/recent); echo "после итога с сайта: $(grep -o 'на сайте' <<<"$P" | head -n1)"
           echo "фото после публикации: $(curl -sk $R -o /dev/null -w '%{http_code}' https://$H/api/site/photo/$F) (должно 404)"
+          sudo journalctl -u prostranstvo-crm --since "-15 min" --no-pager 2>/dev/null | grep -A12 Traceback | head -n 40 || true
           echo '```'
           } > "$O" 2>&1
           cat "$O"
