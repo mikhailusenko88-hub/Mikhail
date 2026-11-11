@@ -14,6 +14,8 @@
   python3 manage.py tochka-poll                — спросить Точку об открытых ссылках на оплату (cron, раз в 5 минут)
   python3 manage.py outbox                     — отправить новые письма с zapros@ из ветки outbox (cron, раз в минуту)
   python3 manage.py outbox-key                 — открытый ключ для шифрования писем
+  python3 manage.py offsite-config             — настройки копий в облако (JSON; пусто, если выключены)
+  python3 manage.py offsite-result ok|error ТЕКСТ — записать итог ночной копии в облако
 """
 
 from __future__ import annotations
@@ -106,6 +108,26 @@ def main(argv: list[str]) -> int:
         from app import create_app
         for line in create_app().extensions["run_followups"]():
             print(line)
+        print("ok")
+    elif cmd == "offsite-config":
+        import json as _json
+        if s.setting("offsite_on", "0") == "1":
+            conf = {k: s.setting("offsite_" + k, "") for k in ("endpoint", "region", "bucket", "key", "secret", "prefix")}
+            if all(conf[k] for k in ("endpoint", "bucket", "key", "secret")):
+                print(_json.dumps(conf))
+    elif cmd == "offsite-result" and len(args) >= 1:
+        import json as _json
+        from datetime import datetime as _dt
+        try:
+            last = _json.loads(s.setting("offsite_last", "") or "{}")
+        except ValueError:
+            last = {}
+        now = _dt.now().strftime("%Y-%m-%d %H:%M")
+        text = " ".join(args[1:])[:300]
+        last.update({"at": now, "status": "ok" if args[0] == "ok" else "error", "text": text})
+        if args[0] == "ok":
+            last["ok_at"] = now
+        s.set_setting("offsite_last", _json.dumps(last, ensure_ascii=False))
         print("ok")
     elif cmd == "stats":
         c = s.c()

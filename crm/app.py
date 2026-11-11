@@ -59,6 +59,7 @@ SERVER_ACTIONS: list[tuple[str, str, str]] = [
     ("update", "Обновить CRM", "свежая версия из GitHub, 1–3 минуты; пароли не меняются"),
     ("sync", "Обновить сайт", "сразу забрать сайт из GitHub (сам обновляется раз в минуту)"),
     ("backup", "Копия баз", "копия CRM и бота сейчас (ночью делается сама)"),
+    ("export", "Копия баз — скачать", "зашифрованный архив: CRM, бот, документы, почта и настройки; ссылка появится ниже через 1–2 минуты"),
     ("restart-crm", "Перезапустить CRM", "если CRM тормозит или выдаёт ошибку"),
     ("restart-mail", "Перезапустить почту", "если письма не уходят или не приходят"),
     ("reload-web", "Перезапустить веб-сервер", "если сайт не открывается"),
@@ -108,6 +109,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         "NOTIFY_EMAIL": cfg.get("NOTIFY_EMAIL", env("NOTIFY_EMAIL", "")),
         "COOKIE_SECURE": str(cfg.get("COOKIE_SECURE", env("COOKIE_SECURE", "1"))) == "1",
         "SHOP_DOMAIN": cfg.get("SHOP_DOMAIN", env("SHOP_DOMAIN", "")),
+        "BACKUP_PASS_FILE": cfg.get("BACKUP_PASS_FILE") or env("BACKUP_PASS_FILE", "/etc/prostranstvo/backup-pass"),
     }
     app = Flask(__name__)
     app.request_class = CrmRequest
@@ -361,7 +363,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         soon = buh.upcoming(7, day)
         exp = buh.expiring(day or today())      # срок годности партий — только для своих, в пуше команде
         dexp = docs.expiring(day or today(), 30)  # документы, у которых кончается срок действия (сертификаты и т. п.)
-        if not (s["new"] or s["today"] or s["overdue"] or s["paid"] or soon or exp or dexp):
+        offsite_bad = offsite_stale()
+        if not (s["new"] or s["today"] or s["overdue"] or s["paid"] or soon or exp or dexp or offsite_bad):
             return ""
         parts = []
         if s["overdue"]: parts.append(f"просрочено задач: {s['overdue']}")
@@ -380,6 +383,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             x = dexp[0]
             when = f"истёк {fmt_date(x['until'])}" if x["until"] < (day or today()) else f"до {fmt_date(x['until'])}"
             parts.append(f"срок действия документов подходит: {len(dexp)} — {x['title']} ({when})")
+        if offsite_bad:
+            parts.append(offsite_bad)
         text = "; ".join(parts)
         text = text[:1].upper() + text[1:] + "."
         url = "/board?hot=1" if s["overdue"] else ("/taxes" if soon and not (s["new"] or s["today"] or s["paid"]) else
@@ -388,6 +393,23 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         wp.notify("Наш декор — на сегодня", text, url, tag="digest")
         return text
     app.extensions["digest"] = morning_digest
+
+    def offsite_stale() -> str:
+        """Копии в облако включены, а удачной копии больше 2 суток — сказать в утренней сводке."""
+        if store.setting("offsite_on", "0") != "1":
+            return ""
+        try:
+            last = json.loads(store.setting("offsite_last", "") or "{}")
+        except ValueError:
+            last = {}
+        ok_at = last.get("ok_at", "")
+        try:
+            age = (datetime.now() - datetime.strptime(ok_at, "%Y-%m-%d %H:%M")).total_seconds() / 86400 if ok_at else 99
+        except ValueError:
+            age = 99
+        if age <= 2:
+            return ""
+        return "копия баз в облако не делалась больше 2 суток" + (f" ({last.get('text', '')[:80]})" if last.get("text") else "")
 
     # ------------------------------------------------------------ Сегодня
     @app.route("/")
@@ -1477,7 +1499,64 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                            client_id=store.setting("tochka_client_id", ""), tax=store.setting("tochka_tax", "usn_income_outcome"),
                                            method=store.setting("tochka_method", "full_prepayment"), webhook=store.setting("tochka_webhook", ""),
                                            unlinked=len(store.bank_events(200, unlinked=True))),
-                               TAX_SYSTEMS=TAX_SYSTEMS, inv=invoices.seller(), inv_probs=invoices.seller_problems())
+                               TAX_SYSTEMS=TAX_SYSTEMS, inv=invoices.seller(), inv_probs=invoices.seller_problems(),
+                               offsite=offsite_view())
+
+    def offsite_conf() -> dict[str, str]:
+        return {k: store.setting("offsite_" + k, "") for k in ("endpoint", "region", "bucket", "key", "secret", "prefix")}
+
+    def offsite_view() -> dict[str, Any]:
+        c = offsite_conf()
+        try:
+            last = json.loads(store.setting("offsite_last", "") or "{}")
+        except ValueError:
+            last = {}
+        return {"on": store.setting("offsite_on", "0") == "1", "endpoint": c["endpoint"], "region": c["region"],
+                "bucket": c["bucket"], "key": c["key"], "has_secret": bool(c["secret"]), "prefix": c["prefix"] or "nashdekor",
+                "last": last, "check": store.setting("offsite_check", "")}
+
+    @app.post("/settings/offsite")
+    @admin_required
+    def settings_offsite() -> Any:
+        """Копии баз к другому провайдеру (S3, Selectel): адрес, бакет, ключи, проверка связи, вкл/выкл."""
+        from offsite import OffsiteError, check as s3_check
+        act = request.form.get("act", "save")
+        back = redirect(url_for("settings_view") + "#offsite")
+        if act == "forget":
+            for k in ("key", "secret"):
+                store.set_setting("offsite_" + k, "")
+            store.set_setting("offsite_on", "0")
+            c = store.c(); store.log(c, "Копии в облако: ключи удалены", who()); c.commit()
+            flash("Ключи хранилища удалены из CRM, копии в облако выключены.", "ok")
+            return back
+        if act == "save":
+            f = request.form
+            ep = (f.get("endpoint") or "").strip().rstrip("/")
+            if ep and not re.match(r"^https://[A-Za-z0-9.-]+(:[0-9]{2,5})?$", ep):
+                flash("Адрес хранилища — вида https://s3.ru-3.storage.selcloud.ru (без бакета и пути).", "err")
+                return back
+            store.set_setting("offsite_endpoint", ep)
+            store.set_setting("offsite_region", re.sub(r"[^a-z0-9-]", "", (f.get("region") or "").lower())[:32])
+            store.set_setting("offsite_bucket", re.sub(r"[^a-z0-9.-]", "", (f.get("bucket") or "").lower())[:63])
+            store.set_setting("offsite_prefix", re.sub(r"[^A-Za-z0-9._/-]", "", f.get("prefix") or "nashdekor").strip("/")[:60])
+            if (f.get("key") or "").strip():
+                store.set_setting("offsite_key", re.sub(r"\s+", "", f.get("key", ""))[:200])
+            if (f.get("secret") or "").strip():
+                store.set_setting("offsite_secret", re.sub(r"\s+", "", f.get("secret", ""))[:200])
+            store.set_setting("offsite_on", "1" if f.get("on") else "0")
+            c = store.c(); store.log(c, "Копии в облако: настройки сохранены" + (" (включены)" if f.get("on") else " (выключены)"), who()); c.commit()
+            flash("Сохранено. Нажмите «Проверить связь».", "ok")
+            return back
+        if act == "check":
+            try:
+                msg = s3_check(offsite_conf())
+                store.set_setting("offsite_check", f"{datetime.now().strftime('%d.%m.%Y %H:%M')} — {msg}")
+                flash("Хранилище отвечает: " + msg, "ok")
+            except OffsiteError as e:
+                store.set_setting("offsite_check", f"{datetime.now().strftime('%d.%m.%Y %H:%M')} — ошибка: {e}")
+                flash(f"Не получилось: {e}", "err")
+            return back
+        abort(400)
 
     @app.post("/settings/hit-ips")
     @admin_required
@@ -1592,7 +1671,47 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         act, running = last_action()
         actions = [a for a in SERVER_ACTIONS if a[0] != ("leads-off" if not conf["SITE_LEADS"] else "leads-on")]
         return render_template("server.html", text=text, age=age, pending=os.path.exists(request_file) or running,
-                               act=act, running=running, actions=actions)
+                               act=act, running=running, actions=actions, exports=export_files(),
+                               backup_pass=backup_pass() if request.args.get("pass") == "1" else None,
+                               has_pass=bool(backup_pass()))
+
+    export_dir = cfg.get("EXPORT_DIR") or os.path.join(os.path.dirname(status_file), "export")
+    EXPORT_RE = re.compile(r"^nashdekor-kopiya-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}\.tar\.gz\.enc$")
+
+    def export_files() -> list[dict[str, Any]]:
+        out = []
+        try:
+            names = os.listdir(export_dir)
+        except OSError:
+            return out
+        for n in sorted(names, reverse=True):
+            if EXPORT_RE.match(n):
+                try:
+                    st = os.stat(os.path.join(export_dir, n))
+                except OSError:
+                    continue
+                out.append({"name": n, "size": size_h(st.st_size), "when": datetime.fromtimestamp(st.st_mtime).strftime("%d.%m.%Y %H:%M")})
+        return out
+
+    def backup_pass() -> str:
+        try:
+            with open(conf["BACKUP_PASS_FILE"], encoding="utf-8") as f:
+                return f.read(200).strip()
+        except OSError:
+            return ""
+
+    @app.route("/server/export/<name>")
+    @admin_required
+    def server_export(name: str) -> Any:
+        if not EXPORT_RE.match(name):
+            abort(404)
+        path = os.path.join(export_dir, name)
+        if not os.path.isfile(path):
+            abort(404)
+        c = store.c(); store.log(c, f"Скачана копия баз {name}", who()); c.commit()
+        resp = send_file(path, mimetype="application/octet-stream", as_attachment=True, download_name=name, max_age=0)
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
 
     @app.post("/server/run")
     @admin_required

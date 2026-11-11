@@ -25,6 +25,18 @@
 </div>
 <p class="d">Выполняются только эти действия — набрать свою команду отсюда нельзя: если кто-то узнает пароль от CRM, он не получит управление сервером. Команда начинается в течение минуты, результат появится выше.</p>
 
+<h2 id="kopii">Копии баз для скачивания</h2>
+<div class="panel list">
+{% for e in exports %}
+  <a class="row linkrow" href="{{ url_for('server_export', name=e['name']) }}"><span class="grow">{{ e['name'] }}<span class="d"> · {{ e['when'] }} · {{ e['size'] }}</span></span><span class="pill good">скачать</span></a>
+{% else %}
+  <div class="row"><span class="grow d">Пока нет. Нажмите «Копия баз — скачать» выше — через 1–2 минуты здесь появится файл.</span></div>
+{% endfor %}
+</div>
+<p class="d">В архиве — базы CRM и бота, документы, почта и настройки сервера. Он зашифрован паролем. Сохраняйте файл в папку на Маке «Резервная копия — Михаил Усенко → 01 Магазин → 08 Базы клиентов и заказов». Файлы здесь хранятся 3 дня.
+{% if backup_pass %}<br><b>Пароль от копий: <code class="pw">{{ backup_pass }}</code></b> — сохраните его в «Паролях» iPhone; без него копию не открыть.{% elif has_pass %}<br><a href="{{ url_for('server_view', pass=1) }}#kopii">Показать пароль от копий</a>{% endif %}
+<br>Открыть копию (программисту, в Терминале Мака или Linux): <code>openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -md sha256 -in ФАЙЛ -out kopiya.tar.gz</code>, затем <code>tar xzf kopiya.tar.gz</code>.</p>
+
 <h2>Отчёт</h2>
 <div class="row wrap srv-head">
   <span class="d grow">{% if pending and not running %}Обновляю — страница обновится сама…{% elif age is none %}Отчёта ещё нет — нажмите «Обновить отчёт».{% elif age == 0 %}Обновлено только что{% else %}Обновлено {{ age }} мин назад{% endif %}</span>

@@ -2032,3 +2032,176 @@ class TestInvoices(Base):
         did = self.store.create_deal("t", None, name="Анна", phone="+79990006666")
         self.store.add_line(did, "A912", 1, "t")
         self.assertIn("при оплате по счёту тоже нужен кассовый чек", self.c.get(f"/deals/{did}").get_data(as_text=True))
+
+
+class FakeS3:
+    """Мини-хранилище S3 для тестов: PUT/HEAD с проверкой подписи SigV4 и содержимого."""
+
+    def __init__(self, key="AK", secret="SK", region="ru-3") -> None:
+        import http.server
+        import threading
+        self.objects: dict[str, bytes] = {}
+        self.key, self.secret, self.region = key, secret, region
+        fake = self
+
+        class H(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *a): pass
+
+            def _auth_ok(self, body: bytes) -> bool:
+                import hashlib as _h
+                import offsite
+                from datetime import datetime as _d, timezone as _tz
+                auth = self.headers.get("Authorization", "")
+                m = re.search(r"Credential=([^/]+)/(\d{8})/([^/]+)/s3/aws4_request, SignedHeaders=([^,]+), Signature=(\w+)", auth)
+                if not m or m.group(1) != fake.key:
+                    return False
+                if self.headers.get("x-amz-content-sha256") != _h.sha256(body).hexdigest():
+                    return False
+                names = m.group(4).split(";")
+                hdrs = {n: self.headers.get(n, "") for n in names if n not in ("host", "x-amz-date", "x-amz-content-sha256")}
+                now = _d.strptime(self.headers["x-amz-date"], "%Y%m%dT%H%M%SZ").replace(tzinfo=_tz.utc)
+                again = offsite.sign(self.command, self.headers["Host"], self.path, None, hdrs, _h.sha256(body).hexdigest(),
+                                     fake.key, fake.secret, m.group(3), now)
+                return again["authorization"] == auth
+
+            def do_PUT(self):
+                body = self.rfile.read(int(self.headers.get("Content-Length", "0")))
+                if not self._auth_ok(body):
+                    self.send_response(403); self.end_headers(); self.wfile.write(b"<Error><Code>SignatureDoesNotMatch</Code></Error>"); return
+                fake.objects[self.path] = body
+                self.send_response(200); self.send_header("Content-Length", "0"); self.end_headers()
+
+            def do_HEAD(self):
+                if not self._auth_ok(b""):
+                    self.send_response(403); self.end_headers(); return
+                if self.path not in fake.objects:
+                    self.send_response(404); self.end_headers(); return
+                self.send_response(200); self.send_header("Content-Length", str(len(fake.objects[self.path]))); self.end_headers()
+
+        self.srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), H)
+        self.url = f"http://127.0.0.1:{self.srv.server_address[1]}"
+        threading.Thread(target=self.srv.serve_forever, daemon=True).start()
+
+    def close(self) -> None:
+        self.srv.shutdown()
+
+
+class TestBackupCopies(Base):
+    """Копии баз: подпись S3, загрузка в облако, скачивание архива из CRM, настройки, утренняя сводка."""
+
+    def test_sigv4_matches_aws_example(self) -> None:
+        import offsite
+        from datetime import datetime as _d, timezone as _tz
+        h = offsite.sign("GET", "examplebucket.s3.amazonaws.com", "/test.txt", None, {"range": "bytes=0-9"},
+                         offsite.EMPTY_SHA, "AKIAIOSFODNN7EXAMPLE", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+                         "us-east-1", _d(2013, 5, 24, tzinfo=_tz.utc))
+        self.assertTrue(h["authorization"].endswith("Signature=f0e8bdb87c964420e857bd35b5d6ed310bd44f0170aba48dd91039c6036bdb41"))
+
+    def test_upload_and_check(self) -> None:
+        import offsite
+        s3 = FakeS3()
+        try:
+            conf = {"endpoint": s3.url, "region": "ru-3", "bucket": "nashdekor-backup", "key": "AK", "secret": "SK", "prefix": "nashdekor"}
+            p = os.path.join(self.tmp.name, "a.bin")
+            with open(p, "wb") as f:
+                f.write(os.urandom(300_000))
+            self.assertEqual(offsite.S3(conf).put_file(p, "2026/11/kopiya.tar.gz.enc"), 300_000)
+            self.assertIn("/nashdekor-backup/nashdekor/2026/11/kopiya.tar.gz.enc", s3.objects)
+            self.assertIn("связь есть", offsite.check(conf))
+            with self.assertRaises(offsite.OffsiteError) as e:
+                offsite.check(dict(conf, secret="wrong"))
+            self.assertIn("403", str(e.exception))
+            with self.assertRaises(offsite.OffsiteError):
+                offsite.check(dict(conf, endpoint="ftp://x"))
+        finally:
+            s3.close()
+
+    def test_settings_offsite(self) -> None:
+        self.login()
+        r = self.post("/settings/offsite", {"act": "save", "endpoint": "https://s3.ru-3.storage.selcloud.ru/", "region": "RU-3",
+                                            "bucket": "NashDekor-Backup", "key": " AK123 ", "secret": "S3cr3t", "prefix": "/nashdekor/", "on": "1"})
+        self.assertEqual(r.status_code, 302)
+        st = self.store
+        self.assertEqual(st.setting("offsite_endpoint"), "https://s3.ru-3.storage.selcloud.ru")
+        self.assertEqual((st.setting("offsite_region"), st.setting("offsite_bucket"), st.setting("offsite_key")), ("ru-3", "nashdekor-backup", "AK123"))
+        self.assertEqual(st.setting("offsite_on"), "1")
+        page = self.c.get("/settings").get_data(as_text=True)
+        self.assertIn("Копии баз в облако", page)
+        self.assertNotIn("S3cr3t", page)                         # секрет на страницу не выводится
+        self.post("/settings/offsite", {"act": "save", "endpoint": "https://s3.ru-3.storage.selcloud.ru", "bucket": "b", "secret": "", "on": ""})
+        self.assertEqual(st.setting("offsite_secret"), "S3cr3t")  # пустое поле секрета — старый остаётся
+        self.assertEqual(st.setting("offsite_on"), "0")
+        self.post("/settings/offsite", {"act": "save", "endpoint": "http://evil/x"})
+        self.assertEqual(st.setting("offsite_endpoint"), "https://s3.ru-3.storage.selcloud.ru")  # чужой адрес не принят
+        self.post("/settings/offsite", {"act": "forget"})
+        self.assertEqual((st.setting("offsite_key"), st.setting("offsite_secret")), ("", ""))
+        self.c.post("/logout", data={"csrf": self.csrf()})
+        self.login("mikhail", "Secret-pass-2")                   # не владелец — нельзя
+        self.assertEqual(self.post("/settings/offsite", {"act": "save", "endpoint": "https://a.b"}).status_code, 403)
+
+    def test_manage_offsite_and_digest(self) -> None:
+        import manage
+        os.environ["CRM_DB"] = self.store.path
+        os.environ["BOT_DB"] = self.botdb
+        os.environ["CATALOG_FILE"] = self.cat
+        try:
+            import io
+            import contextlib
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                manage.main(["offsite-config"])
+            self.assertEqual(out.getvalue().strip(), "")         # выключено — пусто
+            for k, v in (("on", "1"), ("endpoint", "https://e"), ("bucket", "b"), ("key", "k"), ("secret", "s")):
+                self.store.set_setting("offsite_" + k, v)
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                manage.main(["offsite-config"])
+            self.assertEqual(json.loads(out.getvalue())["bucket"], "b")
+            self.assertIn("копия баз в облако не делалась", self.app.extensions["digest"]().lower())
+            with contextlib.redirect_stdout(io.StringIO()):
+                manage.main(["offsite-result", "ok", "2026/11/x — загружено 10 байт"])
+            last = json.loads(self.store.setting("offsite_last"))
+            self.assertEqual(last["status"], "ok")
+            self.assertNotIn("облако", self.app.extensions["digest"]() or "")
+            with contextlib.redirect_stdout(io.StringIO()):
+                manage.main(["offsite-result", "error", "ошибка 403"])
+            page = (self.login(), self.c.get("/settings").get_data(as_text=True))[1]
+            self.assertIn("ошибка 403", page)
+        finally:
+            for k in ("CRM_DB", "BOT_DB", "CATALOG_FILE"):
+                os.environ.pop(k, None)
+
+    def test_export_download(self) -> None:
+        d = self.tmp.name
+        pw = os.path.join(d, "backup-pass")
+        with open(pw, "w") as f:
+            f.write("Kopii-Parol-123\n")
+        app = crm_app.create_app({"CRM_DB": self.store.path, "BOT_DB": self.botdb, "CATALOG_FILE": self.cat,
+                                  "SECRET_KEY": "x" * 40, "COOKIE_SECURE": "0", "TESTING": True, "BACKUP_PASS_FILE": pw})
+        self.c = app.test_client()
+        os.makedirs(os.path.join(d, "export"))
+        good = "nashdekor-kopiya-2026-11-11-1930.tar.gz.enc"
+        with open(os.path.join(d, "export", good), "wb") as f:
+            f.write(b"Salted__" + os.urandom(64))
+        with open(os.path.join(d, "export", "secret.txt"), "w") as f:
+            f.write("x")
+        self.assertEqual(self.c.get(f"/server/export/{good}").status_code, 302)   # без входа — на вход
+        self.login()
+        page = self.c.get("/server").get_data(as_text=True)
+        self.assertIn("Копия баз — скачать", page)
+        self.assertIn(good, page)
+        self.assertNotIn("secret.txt", page)
+        self.assertNotIn("Kopii-Parol-123", page)                 # пароль — только по кнопке
+        self.assertIn("Kopii-Parol-123", self.c.get("/server?pass=1").get_data(as_text=True))
+        r = self.c.get(f"/server/export/{good}")
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(r.data.startswith(b"Salted__"))
+        self.assertIn("attachment", r.headers["Content-Disposition"])
+        self.assertEqual(self.c.get("/server/export/secret.txt").status_code, 404)
+        self.assertEqual(self.c.get("/server/export/..%2Fcrm.db").status_code, 404)
+        self.assertEqual(self.post("/server/run", {"action": "export"}).status_code, 302)
+        with open(os.path.join(d, "server-request"), encoding="utf-8") as f:
+            self.assertEqual(f.read(), "export yulia\n")
+        self.c.post("/logout", data={"csrf": self.csrf()})
+        self.login("mikhail", "Secret-pass-2")
+        self.assertEqual(self.c.get(f"/server/export/{good}").status_code, 403)
