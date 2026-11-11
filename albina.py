@@ -337,13 +337,56 @@ def fix_vse(text):
     return re.sub(r"(?<![А-Яа-яЁё+])([Вв]се)(\s+)([А-Яа-яЁё]+)", one, text)
 
 
+def _phrases():
+    """Свои поправки для целых фраз: «_фразы» в albina_fix.json — {фраза как в сценарии: как её прочитать}.
+    Ключ озвучки считается по исходной фразе, поэтому бот находит её как обычно, а на экране текст прежний."""
+    if _st.get("phr") is None:
+        try:
+            d = json.loads(FIX_FILE.read_text(encoding="utf-8")).get("_фразы") or {}
+            _st["phr"] = {re.sub(r"\s+", " ", k).strip(): v for k, v in d.items()}
+        except Exception:
+            _st["phr"] = {}
+    return _st["phr"]
+
+
+# «Самому старому дереву» — са́мому (самый старый), «выбраться самому» — самому́ (сам). Словарь ударений их не различает
+# (11.11.2026 читал наоборот). Правило: дальше идёт прилагательное в том же падеже — значит «самый».
+# «с+амаму» — запись по звучанию: с обычным «с+амому» Альбина тянула второе «о», выходило «са́мо́му» (Михаил выбрал на слух).
+_SAM = {"самому": ("с+амаму", "самом+у", ("ому", "ему")), "самого": ("с+амого", "самог+о", ("ого", "его")),
+        "самой": ("с+амой", "сам+ой", ("ой", "ей")), "самом": ("с+амом", "сам+ом", ("ом", "ем", "деле"))}
+
+
+def fix_sam(text):
+    def one(m):
+        w, sp, nxt = m.group(1), m.group(2), m.group(3)
+        sup, self_, ends = _SAM[w.lower()]
+        v = sup if nxt.lower().endswith(ends) and len(nxt) > 4 or nxt.lower() == "деле" else self_
+        if w[:1].isupper():
+            v = v[:1].upper() + v[1:]
+        return v + sp + nxt
+    return re.sub(r"(?<![А-Яа-яЁё+])([Сс]ам(?:ому|ого|ой|ом))(\s+)([А-Яа-яЁё]+)", one, text)
+
+
+_LETTER = {"А": "+А", "A": "+А", "В": "б+э", "B": "б+э", "С": "ц+э", "C": "ц+э", "Д": "д+э", "D": "д+э",
+           "Е": "+Е", "E": "+Е", "К": "к+а", "K": "к+а"}
+_LETTER_RE = re.compile(r"\b([Вв]итамин[а-яё]*)\s+([АВСДЕКABCDEK])(?![А-Яа-яЁёA-Za-z0-9])")
+
+
+def fix_letters(t):
+    """«Витамин А», «витамина С»: буква — название, читается с ударением («а», «цэ»), а не как союз или предлог."""
+    return _LETTER_RE.sub(lambda m: m.group(1) + " " + _LETTER[m.group(2)], t)
+
+
 def prep(text):
     t = str(text or "")
+    t = _phrases().get(re.sub(r"\s+", " ", t).strip(), t)
     t = re.sub(r"([" + VOW + r"])́", r"+\1", t)        # знак ударения -> «+»
     t = t.replace("«", "").replace("»", "").replace("„", "").replace("“", "").replace("”", "")
     t = t.replace("…", "...").replace(" ", " ")
     t = numbers(t)
     t = fix_vse(t)
+    t = fix_sam(t)
+    t = fix_letters(t)
     t = apply_fix(t)
     return re.sub(r"\s+", " ", t).strip()
 
