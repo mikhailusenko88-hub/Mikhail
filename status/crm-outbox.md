@@ -1,19 +1,19 @@
-# Исходящие с zapros@ — 2026-11-11 17:58 UTC
+# Исходящие с zapros@ — 2026-11-11 18:14 UTC
 
 ```
 ключ по адресу: 44 символов
 ключ совпадает с командой — да
 пересылка zapros@: zapros info
 в таблице Postfix: info@nashdekor.ru
-письмо: b160d229-e3da-4d26-87ac-711ccbfdbf53
+письмо: 6c876c7c-2c60-475b-b140-fdee47135ad7
 warning: unable to access '/home/runner/.config/git/ignore': Permission denied
 warning: unable to access '/home/runner/.config/git/attributes': Permission denied
 warning: unable to access '/home/runner/.config/git/attributes': Permission denied
 warning: unable to access '/home/runner/.config/git/attributes': Permission denied
-отправка: b160d229-e3da-4d26-87ac-711ccbfdbf53: отправлено → info@nashdekor.ru ok 
+отправка: 6c876c7c-2c60-475b-b140-fdee47135ad7: отправлено → info@nashdekor.ru ok 
 повтор (не должен отправить второй раз): ok 
-статус: {"error":"","sent_at":"2026-11-11T20:58:16+03:00","status":"sent"}
-в ящике info@: да/var/mail/vhosts/nashdekor.ru/info/Maildir/new/1794419896.M308508P22644.runnervm7aw5e,S=3062,W=3127
+статус: {"error":"","sent_at":"2026-11-11T21:14:46+03:00","status":"sent"}
+в ящике info@: да/var/mail/vhosts/nashdekor.ru/info/Maildir/new/1794420886.M634053P23004.runnervm7aw5e,S=3062,W=3127
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nashdekor.ru;
 From: =?utf-8?b?0J3QsNGIINC00LXQutC+0YA=?= <zapros@nashdekor.ru>
 Reply-To: info@nashdekor.ru
