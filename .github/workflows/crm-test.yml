@@ -406,10 +406,21 @@ jobs:
           echo "статус: $(curl -sk $R https://$H/api/outbox/status/$ID)"
           echo "Message-ID в очереди Postfix: $(sudo grep -rh "^Message-ID: <$ID@nashdekor.ru>" /var/spool/postfix/ 2>/dev/null | head -n1)$(sudo postcat -q $(sudo mailq | awk '/lab@labtest.example/{print prev} {prev=$1}' | head -n1 | tr -d '*!') 2>/dev/null | grep -m1 '^Message-ID')"
           # ответы: лаборатория (другой сотрудник, тот же домен) на zapros@, клиент на zakaz@, посторонний на info@
-          printf "From: Иванова <ivanova@labtest.example>\nTo: zapros@nashdekor.ru\nSubject: Re: Запрос на испытания панелей\nIn-Reply-To: <$ID@nashdekor.ru>\nContent-Type: text/plain; charset=utf-8\n\nСтоимость Г1 — 25 000 руб.\n" | sudo sendmail -f ivanova@labtest.example zapros@nashdekor.ru
+          ID="$ID" python3 -I -c "
+          import os
+          from email.message import EmailMessage
+          m = EmailMessage(); m['From'] = 'Иванова <ivanova@labtest.example>'; m['To'] = 'zapros@nashdekor.ru'
+          m['Subject'] = 'Re: Запрос на испытания панелей'; m['In-Reply-To'] = '<' + os.environ['ID'] + '@nashdekor.ru>'
+          m.set_content('Стоимость Г1 — 25 000 руб.')
+          m.add_attachment(b'%PDF-1.4 test', maintype='application', subtype='pdf', filename='КП.pdf')
+          open('/tmp/lab-reply.eml', 'wb').write(bytes(m))"
+          sudo sendmail -f ivanova@labtest.example zapros@nashdekor.ru < /tmp/lab-reply.eml
           printf 'From: client@client.example\nTo: zakaz@nashdekor.ru\nSubject: zakaz-from-client\n\nХочу панели\n' | sudo sendmail -f client@client.example zakaz@nashdekor.ru
           printf 'From: other@other.example\nTo: info@nashdekor.ru\nSubject: info-unrelated\n\nНе ответ\n' | sudo sendmail -f other@other.example info@nashdekor.ru
-          sleep 10
+          for i in $(seq 1 12); do sleep 5; sudo grep -rlq 'ivanova@labtest.example' /var/mail/vhosts/nashdekor.ru/info/Maildir 2>/dev/null && break; done
+          echo "ответ лаборатории в info@: $(sudo grep -rl 'ivanova@labtest.example' /var/mail/vhosts/nashdekor.ru/info/Maildir 2>/dev/null | sed 's#.*/Maildir/##' | head -n2 | tr '\n' ' ')"
+          sudo journalctl --since '-3 min' --no-pager 2>/dev/null | grep -i 'ivanova\|labtest' | tail -n 6 | cut -c1-220
+          B=$(sudo grep -rl "$ID@nashdekor.ru" /var/mail/vhosts/nashdekor.ru/info/Maildir 2>/dev/null | head -n3 | wc -l); echo "наш Message-ID встречается в info@ (возврат/ответ): $B"
           echo "--- выгрузка (cron mail-watch):"
           sudo prostranstvo-crm mail-watch 2>&1 | tail -n 3
           sudo ls -ld /var/lib/prostranstvo-pochta | awk '{print "папка:", $1, $3":"$4}'
@@ -440,8 +451,10 @@ jobs:
           curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
           P=$(curl -sk $R -c $J -b $J https://$H/pochta)
           for w in 'Запрос на испытания панелей' zakaz-from-client info-unrelated 'видит Claude'; do echo "в списке «$w»: $(grep -c "$w" <<<"$P")"; done
-          L=$(grep -o 'href="/pochta/[0-9a-f]\{20\}"' <<<"$P" | head -n1 | cut -d'"' -f2)
-          echo "письмо $L: $(curl -sk $R -c $J -b $J https://$H$L | grep -o 'Стоимость Г1[^<]*\|Хочу панели\|Не ответ' | head -n1)"
+          for L in $(grep -o 'href="/pochta/[0-9a-f]\{20\}"' <<<"$P" | cut -d'"' -f2 | head -n 6); do
+            echo "письмо $L: $(curl -sk $R -c $J -b $J https://$H$L | grep -o 'Стоимость Г1[^<]*\|Хочу панели\|Не ответ\|КП.pdf\|Undelivered[^<]*\|outbox-selftest' | sort -u | tr '\n' ';')"
+          done
+          echo "спам: $(curl -sk $R -c $J -b $J 'https://'$H'/pochta?box=spam' | grep -o 'class="t">[^<]*' | head -n5 | tr '\n' ';')"
           echo "«Исходящие»: $(curl -sk $R -c $J -b $J https://$H/outbox | grep -o 'Ответы, которые видит Claude\|ключ подключён' | sort -u | tr '\n' ';')"
           echo "без входа: $(curl -sk $R -o /dev/null -w '%{http_code}' https://$H/pochta)"
           echo '```'
