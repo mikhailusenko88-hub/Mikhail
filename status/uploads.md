@@ -33,3 +33,5 @@
 | shorts | 2026-11-11 | 1 | Japan vs Russia vs Philippines | https://youtube.com/shorts/TYy0vqt5uT0 | |
 | 24 | 2026-11-11 | 2 | S2 RACE 11/68 | https://youtu.be/gt1LyxrEzU4 | public |
 | shorts | 2026-11-11 | 2 | USA vs Brazil vs Mexico | https://youtube.com/shorts/G4JTcsB0KOA | |
+| 25 | 2026-11-11 | 3 | S2 RACE 12/68 | https://youtu.be/1Z4x46_9ImE | public |
+| shorts | 2026-11-11 | 3 | France vs Canada vs Guatemala | https://youtube.com/shorts/GyJkhqnBm0k | |
