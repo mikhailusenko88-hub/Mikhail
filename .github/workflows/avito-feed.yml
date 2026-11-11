@@ -3,6 +3,8 @@ name: Авито — фид из CRM
 # Раз в час берёт цены и свободные остатки из CRM (https://crm.nashdekor.ru/api/catalog),
 # собирает фид Авито генератором из ветки avito и, если что-то поменялось,
 # кладёт его в ветку mebel: 0f7s1eez/avito.xml → https://nashdekor.ru/avito.xml.
+# Тем же разом ставит цены и наличие из CRM в товарный фид Яндекс Товаров 0f7s1eez/yml.xml
+# (его собирает сайт, nashdekor-build/build.py) → https://nashdekor.ru/yml.xml (с 11.11.2026).
 # Если CRM не ответила, фид не собирается и на сайте остаётся прежний.
 
 on:
@@ -54,25 +56,34 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Цены и наличие из CRM в фид Яндекс Товаров
+        run: |
+          if [ -f mebel/0f7s1eez/yml.xml ]; then
+            python3 avito/yml_prices.py mebel/0f7s1eez/yml.xml | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Опубликовать, если изменился
         run: |
-          if cmp -s new_avito.xml mebel/0f7s1eez/avito.xml; then
-            echo "Фид не изменился — публиковать нечего." | tee -a "$GITHUB_STEP_SUMMARY"
+          if ! cmp -s new_avito.xml mebel/0f7s1eez/avito.xml; then
+            cp new_avito.xml mebel/0f7s1eez/avito.xml
+          fi
+          cd mebel
+          if git diff --quiet -- 0f7s1eez/avito.xml 0f7s1eez/yml.xml; then
+            echo "Фиды не изменились — публиковать нечего." | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          cp new_avito.xml mebel/0f7s1eez/avito.xml
-          cd mebel
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add 0f7s1eez/avito.xml
-          git commit -q -m "Фид Авито: цены и наличие из CRM ($(date -u +'%Y-%m-%d %H:%M') UTC)"
+          [ -f 0f7s1eez/yml.xml ] && git add 0f7s1eez/yml.xml
+          git commit -q -m "Фиды Авито и Яндекс Товаров: цены и наличие из CRM ($(date -u +'%Y-%m-%d %H:%M') UTC)"
           for i in 1 2 3; do
             if git push -q origin HEAD:mebel; then
-              echo "Фид обновлён и опубликован." | tee -a "$GITHUB_STEP_SUMMARY"
+              echo "Фиды обновлены и опубликованы." | tee -a "$GITHUB_STEP_SUMMARY"
               exit 0
             fi
             git pull -q --rebase --depth 50 origin mebel || true
             sleep 5
           done
-          echo "Не удалось отправить фид в ветку mebel." | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "Не удалось отправить фиды в ветку mebel." | tee -a "$GITHUB_STEP_SUMMARY"
           exit 1
