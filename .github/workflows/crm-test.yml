@@ -20,8 +20,12 @@ jobs:
           sudo apt-get purge -y -q 'apache2*' >/dev/null 2>&1 || true
           shellcheck -S warning -e SC2034,SC1090,SC1091 setup-crm.sh || true
       - name: Сайт и почта
+        timeout-minutes: 25
         run: |
-          sudo bash setup-prostranstvo.sh nashdekor.ru test@example.com --force 2>&1 | tail -n 5
+          set -o pipefail
+          # зеркало Ubuntu иногда не отдаёт пакеты (11.11.2026 apt висел 28 минут) — вторая попытка
+          sudo timeout 900 bash setup-prostranstvo.sh nashdekor.ru test@example.com --force 2>&1 | tail -n 5 \
+            || { sudo apt-get update -q >/dev/null; sudo timeout 600 bash setup-prostranstvo.sh nashdekor.ru test@example.com --force 2>&1 | tail -n 5; }
           sudo bash setup-pochta.sh 2>&1 | grep -E 'ПОЧТА|НЕТ|ВНИМАНИЕ' || true
       - name: CRM — установка
         run: sudo bash setup-crm.sh 2>&1
@@ -669,14 +673,20 @@ jobs:
           T=$(curl -sk $R -c $J -b $J "https://$H/site/edit/item" | tok)
           echo "новый товар с фото (через nginx): $(curl -sk $R -c $J -b $J -o /tmp/r.html -w '%{http_code}' -F "csrf=$T" -F old= -F a=TEST1 -F c=panel -F 'n=Стеновая реечная панель белая под покраску 160×12×3000 мм — TEST1' -F 'd=узкие рейки, полистирол высокой плотности (дюрополимер)' -F w=160 -F t=12 -F l=3000 -F b=10 -F r=2100 -F 'photo=@/tmp/big.png;type=image/png' https://$H/site/edit/item)"
           head -c 20000000 /dev/urandom | (printf '\xff\xd8\xff'; cat) > /tmp/huge.jpg
-          echo "фото 20 МБ (больше 16): $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' -F "csrf=$T" -F a=TEST2 -F 'photo=@/tmp/huge.jpg' https://$H/site/edit/item)"
-          echo "в другой адрес 2 МБ (должно 413): $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' -F "csrf=$T" -F 'photo=@/tmp/big.png' https://$H/site/edit/shop)"
-          J2=$(curl -sk $R https://$H/api/site/edits); echo "API для Actions: $(python3 -c "import json,sys;e=json.loads(sys.argv[1])['edits'];print([(x['id'],x['kind'],x['article'],x['photo']) for x in e])" "$J2")"
+          echo "фото 20 МБ (больше 15 — CRM откажет, должно 400): $(curl -sk $R -c $J -b $J -o /tmp/r2.html -w '%{http_code}' -F "csrf=$T" -F old= -F a=TEST2 -F c=panel -F 'photo=@/tmp/huge.jpg' https://$H/site/edit/item) · $(grep -o 'больше 15 МБ' /tmp/r2.html | head -n1)"
+          echo "в другой адрес 2 МБ (должно 413): $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' -F "csrf=$T" -F 'photo=@/tmp/big.png' https://$H/settings/offsite)"
+          for i in 1 2 3; do cp /tmp/big.png /tmp/g$i.png; done
+          T=$(curl -sk $R -c $J -b $J "https://$H/site/edit/item?a=$A" | tok)
+          echo "3 доп. фото сразу (через nginx): $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' -F "csrf=$T" -F "a=$A" -F action=add -F 'more=@/tmp/g1.png' -F 'more=@/tmp/g2.png' -F 'more=@/tmp/g3.png' https://$H/site/edit/gallery)"
+          T=$(curl -sk $R -c $J -b $J "https://$H/site/edit/home" | tok)
+          echo "скрыть товар: $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' --data-urlencode "csrf=$T" --data-urlencode "a=$A" https://$H/site/edit/hide)"
+          for u in sections section home articles article reviews review recent; do printf '%s ' "/site/edit/$u=$(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' https://$H/site/edit/$u)"; done; echo
+          J2=$(curl -sk $R https://$H/api/site/edits); echo "API для Actions: $(python3 -c "import json,sys;e=json.loads(sys.argv[1])['edits'];print([(x['id'],x['kind'],x['article'],x['photos']) for x in e])" "$J2")"
           F=$(python3 -c "import json,sys;print(json.loads(sys.argv[1])['edits'][0]['photo'])" "$J2")
           echo "фото по API без входа: $(curl -sk $R -o /tmp/ph -w '%{http_code}' https://$H/api/site/photo/$F), совпадает: $(cmp -s /tmp/ph /tmp/big.png && echo да || echo НЕТ)"
           sudo ls -l /var/lib/prostranstvo/site-uploads | tail -n +2 | awk '{print "на диске:", $1, $3":"$4, $5, $9}'
           echo '{"last_id": 1, "edits": {"1": {"ok": true, "note": "добавлен, новое фото", "at": "тест"}}}' | sudo tee /var/www/prostranstvo/site-edits.json >/dev/null
-          P=$(curl -sk $R -c $J -b $J https://$H/site/edit); echo "после итога с сайта: $(grep -o 'на сайте' <<<"$P" | head -n1)"
+          P=$(curl -sk $R -c $J -b $J https://$H/site/edit/recent); echo "после итога с сайта: $(grep -o 'на сайте' <<<"$P" | head -n1)"
           echo "фото после публикации: $(curl -sk $R -o /dev/null -w '%{http_code}' https://$H/api/site/photo/$F) (должно 404)"
           echo '```'
           } > "$O" 2>&1
