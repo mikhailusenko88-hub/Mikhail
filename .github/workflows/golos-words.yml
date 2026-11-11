@@ -1,0 +1,40 @@
+name: golos-words
+on:
+  push:
+    branches: [golos]
+    paths: [words_request.txt]
+permissions:
+  contents: write
+jobs:
+  words:
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0, 1, 2, 3, 4, 5, 6, 7]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+          key: golos-words-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          pip install -q faster-whisper numpy
+      - name: Words
+        run: python bank_words.py ${{ matrix.part }} 8
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name golos
+          git config user.email golos@users.noreply.github.com
+          git add -A bank_out 2>/dev/null || true
+          git commit -qm "банк «Почему так?», часть ${{ matrix.part }}: слова" || echo nothing
+          for i in 1 2 3 4 5 6 7 8; do git pull --rebase -q origin golos && git push -q origin HEAD:golos && break; sleep $((RANDOM % 20 + 5)); done

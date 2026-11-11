@@ -10,7 +10,7 @@ try:
         def __init__(self):
             self.m = WhisperModel(os.environ.get("FW", "medium"), device="cpu", compute_type="int8")
         def transcribe(self, path, language="ru", fp16=False):
-            segs, _ = self.m.transcribe(path, language=language, beam_size=5, vad_filter=False, condition_on_previous_text=False)
+            segs, _ = self.m.transcribe(vc.load16(path), language=language, beam_size=5, vad_filter=False, condition_on_previous_text=False)   # звук читаем сами: новый PyAV ломает чтение файла
             return {"text": " ".join(s.text.strip() for s in segs)}
     vc._m["wh"] = FW()
 except Exception:
