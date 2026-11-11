@@ -66,13 +66,16 @@ jobs:
       - uses: actions/download-artifact@v4
         with: {name: bank}
       - name: Озвучщик
+        timeout-minutes: 20
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+          set -x
+          # 11.11.2026: шаг дважды завис почти на час без вывода — теперь у каждой загрузки свой предел времени
+          command -v ffmpeg >/dev/null || { timeout 600 sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update -qq && timeout 600 sudo apt-get install -y -qq ffmpeg >/dev/null; }
           python -m venv /opt/multik-tts/venv
-          /opt/multik-tts/venv/bin/pip install -q torch --index-url https://download.pytorch.org/whl/cpu
-          /opt/multik-tts/venv/bin/pip install -q numpy ruaccent praat-parselmouth
-          [ -s /opt/multik-tts/v5_cis_base.pt ] || curl -fsSL -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
-          curl -fsSL -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
+          timeout 900 /opt/multik-tts/venv/bin/pip install -q --timeout 30 --retries 5 torch --index-url https://download.pytorch.org/whl/cpu
+          timeout 600 /opt/multik-tts/venv/bin/pip install -q --timeout 30 --retries 5 numpy ruaccent praat-parselmouth
+          [ -s /opt/multik-tts/v5_cis_base.pt ] || curl -fsSL --retry 3 --connect-timeout 20 --max-time 900 -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
+          curl -fsSL --retry 3 --connect-timeout 20 --max-time 120 -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
           python patch_server.py /opt/multik-tts/server.py
           cp albina_worker.py /opt/multik-tts/
       - name: Прежняя озвучка
