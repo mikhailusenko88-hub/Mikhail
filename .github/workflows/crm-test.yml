@@ -487,8 +487,7 @@ jobs:
           echo "без входа: $(curl -sk $R -o /dev/null -w '%{http_code}' https://$H$L)"
           sudo ls -l /var/lib/prostranstvo/docs | tail -n +2 | awk '{print "на диске:", $1, $3":"$4, $5}'
           sudo prostranstvo-crm backup >/dev/null 2>&1; sudo prostranstvo-crm backup >/dev/null 2>&1
-          B=$(sudo ls -1d /var/backups/prostranstvo/20* | tail -n1)
-          echo "в копии: $(sudo ls $B/docs 2>/dev/null | wc -l) файл(ов)"
+          sudo sh -c 'B=$(ls -1d /var/backups/prostranstvo/20* | tail -n1); echo "копия: $B"; ls -li "$B/docs"' 2>&1 | tail -n 4
           echo '```'
           } > "$O" 2>&1
           cat "$O"
