@@ -3,3 +3,4 @@ s2 model=both files=A907.jpg,3-7.jpg,A005.jpg,A35.jpg,2-12.jpg,A503.jpg,5-8.jpg,
 s3 model=both files=A907.jpg,3-7.jpg,A005.jpg,A35.jpg,2-12.jpg,A503.jpg,5-8.jpg,A902.jpg scale=2
 g1 model=general files=A907.jpg,3-7.jpg,A005.jpg,A35.jpg,2-12.jpg,A503.jpg,5-8.jpg,A902.jpg,hero.jpg scale=2
 all1 model=general files=all scale=2
+c28 model=general files=2-10.jpg,2-11.jpg,2-12.jpg,2-13.jpg,2-14.jpg,2-3.jpg,2-4.jpg,2-5.jpg,2-7.jpg,2-8.jpg,2-9.jpg,3-11.jpg,3-12.jpg,3-15.jpg,3-3.jpg,3-4.jpg,3-5.jpg,3-7.jpg,3-8.jpg,3-9.jpg,5-10.jpg,5-11.jpg,5-12.jpg,5-15.jpg,5-5.jpg,5-6.jpg,5-8.jpg,5-9.jpg scale=2
