@@ -1,4 +1,5 @@
 # Снятые страницы
 
-- 01 200 https://crm.nashdekor.ru/api/outbox/key (44 симв.)
-- 02 200 https://crm.nashdekor.ru/api/health (11 симв.)
+- 01 200 https://crm.nashdekor.ru/api/outbox/status/214f1e11-c11f-430f-a035-e4b6a9941416 (66 симв.)
+- 02 200 https://crm.nashdekor.ru/api/outbox/status/5f0ade72-7471-4598-8fa0-ec08030abbea (66 симв.)
+- 03 200 https://crm.nashdekor.ru/api/outbox/status/f02078cb-fbe6-4652-8040-b73d8f0f7c7a (66 симв.)
