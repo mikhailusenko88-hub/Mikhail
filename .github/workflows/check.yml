@@ -8,5 +8,6 @@ jobs:
       - run: |
           mkdir out
           curl -s -m 30 http://89.126.192.214:8080/mebel/s9kbars-v/feed.json -o out/feed.json || echo fail > out/feed.json
+          curl -s -m 30 "http://89.126.192.214:8080/mebel/s9kbars/?t=$RANDOM" -o out/page.html || echo fail > out/page.html
           cd out && git init -q && git checkout -q -b shorts-check-out && git add . && git -c user.name=bot -c user.email=bot@x commit -qm out
           git push -qf https://x-access-token:${{ github.token }}@github.com/${{ github.repository }} shorts-check-out
