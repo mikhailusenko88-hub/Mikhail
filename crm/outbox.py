@@ -30,6 +30,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 log = logging.getLogger("crm.outbox")
 
 INFO = b"nashdekor-outbox-v1"
+INFO_REPLIES = b"nashdekor-replies-v1"     # ответы на запросы → Claude (ключ READER.pub в ветке outbox)
 REPO_URL = "https://github.com/mikhailusenko88-hub/Mikhail.git"
 BRANCH = "outbox"
 ID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
@@ -38,6 +39,12 @@ MAX_RCPT = 5
 MAX_BODY = 100_000
 MAX_ATTACH = 7 * 1024 * 1024
 DEFAULT_DAILY = 30
+REPLY_MAX = 40                             # и отдаём не больше стольких писем
+REPLY_ATT_TOTAL = 20 * 1024 * 1024         # вложений всего (больше — только названия)
+PUBLIC_MAIL = {"gmail.com", "googlemail.com", "mail.ru", "bk.ru", "inbox.ru", "list.ru", "internet.ru", "yandex.ru",
+               "ya.ru", "yandex.com", "yandex.by", "yandex.kz", "rambler.ru", "outlook.com", "hotmail.com", "live.com",
+               "icloud.com", "me.com", "yahoo.com", "proton.me", "protonmail.com", "gmx.com", "aol.com"}
+SUBJ_PREFIX = re.compile(r"^\s*(re|fw|fwd|ответ|отв|пересл|aw|wg|tr)\s*(\[\d+\]|\(\d+\))?\s*:\s*", re.I)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS outbox_mail (
@@ -65,31 +72,48 @@ def _ub64(s: str) -> bytes:
     return base64.b64decode(s.encode(), validate=True)
 
 
-def _key(shared: bytes, epk: bytes, pk: bytes) -> bytes:
-    return HKDF(algorithm=hashes.SHA256(), length=32, salt=None, info=INFO + epk + pk).derive(shared)
+def _key(shared: bytes, epk: bytes, pk: bytes, info: bytes = INFO) -> bytes:
+    return HKDF(algorithm=hashes.SHA256(), length=32, salt=None, info=info + epk + pk).derive(shared)
 
 
 def _raw_pub(k: X25519PrivateKey) -> bytes:
     return k.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
 
 
-def seal(pk_b64: str, payload: dict[str, Any]) -> dict[str, Any]:
+def seal(pk_b64: str, payload: dict[str, Any], info: bytes = INFO) -> dict[str, Any]:
     """Зашифровать письмо открытым ключом сервера. Конверт: {v, id, ts, epk, nonce, ct}."""
     pk = _ub64(pk_b64)
     eph = X25519PrivateKey.generate()
     epk = _raw_pub(eph)
-    key = _key(eph.exchange(X25519PublicKey.from_public_bytes(pk)), epk, pk)
+    key = _key(eph.exchange(X25519PublicKey.from_public_bytes(pk)), epk, pk, info)
     nonce = os.urandom(12)
-    ct = ChaCha20Poly1305(key).encrypt(nonce, json.dumps(payload, ensure_ascii=False).encode(), INFO)
+    ct = ChaCha20Poly1305(key).encrypt(nonce, json.dumps(payload, ensure_ascii=False).encode(), info)
     ts = datetime.now().astimezone().isoformat(timespec="microseconds")     # порядок отправки (не секрет)
     return {"v": 1, "id": payload["id"], "ts": ts, "epk": _b64(epk), "nonce": _b64(nonce), "ct": _b64(ct)}
 
 
-def unseal(sk: X25519PrivateKey, env: dict[str, Any]) -> dict[str, Any]:
+def unseal(sk: X25519PrivateKey, env: dict[str, Any], info: bytes = INFO) -> dict[str, Any]:
     pk = _raw_pub(sk)
     epk = _ub64(env["epk"])
-    key = _key(sk.exchange(X25519PublicKey.from_public_bytes(epk)), epk, pk)
-    return json.loads(ChaCha20Poly1305(key).decrypt(_ub64(env["nonce"]), _ub64(env["ct"]), INFO).decode())
+    key = _key(sk.exchange(X25519PublicKey.from_public_bytes(epk)), epk, pk, info)
+    return json.loads(ChaCha20Poly1305(key).decrypt(_ub64(env["nonce"]), _ub64(env["ct"]), info).decode())
+
+
+def norm_subject(s: str) -> str:
+    s = str(s or "")
+    while True:
+        t = SUBJ_PREFIX.sub("", s, count=1)
+        if t == s:
+            break
+        s = t
+    return re.sub(r"\s+", " ", s).strip().lower()
+
+
+def _ts(iso: str) -> float:
+    try:
+        return datetime.fromisoformat(iso).timestamp()
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def _now() -> str:
@@ -142,6 +166,104 @@ class Outbox:
 
     def sender(self) -> str:
         return f"Наш декор <zapros@{self.domain}>"
+
+    def msgid(self, mid: str) -> str:
+        return f"<{mid}@{self.domain}>"
+
+    # ------------------------------------------------------------------ ответы на запросы → Claude
+    def read_enabled(self) -> bool:
+        return self.s.setting("outbox_read", "1") == "1"
+
+    def set_read(self, on: bool) -> None:
+        self.s.set_setting("outbox_read", "1" if on else "0")
+
+    def reader_key(self) -> str:
+        """Открытый ключ Claude для чтения ответов — файл READER.pub в ветке outbox (меняется с каждым его сеансом)."""
+        try:
+            k = (self.workdir / "READER.pub").read_text(encoding="utf-8").strip()
+            return k if len(_ub64(k)) == 32 else ""
+        except Exception:  # noqa: BLE001
+            return ""
+
+    def _check_reader(self) -> None:
+        k = self.reader_key()
+        if k != self.s.setting("outbox_reader", ""):
+            self.s.set_setting("outbox_reader", k)
+            if k and self.read_enabled():
+                self.notify("Claude подключился к ответам на запросы",
+                            "Он видит только ответы на свои письма с zapros@. Выключить — CRM → Ещё → Исходящие.", "/outbox")
+
+    def _correspondents(self) -> dict[str, Any]:
+        rows = self.s.c().execute("SELECT id, to_addr, subject, sent_at FROM outbox_mail WHERE status='sent' AND sent_at<>''").fetchall()
+        addrs, doms, subj, ids, since = set(), set(), set(), set(), 0.0
+        for r in rows:
+            t = _ts(r["sent_at"])
+            if not t:
+                continue
+            since = t if not since else min(since, t)
+            ids.add(self.msgid(r["id"]).lower())
+            ns = norm_subject(r["subject"])
+            if len(ns) >= 8:
+                subj.add(ns)
+            for a in str(r["to_addr"] or "").split(","):
+                a = a.strip().lower()
+                if "@" in a:
+                    addrs.add(a)
+                    d = a.rsplit("@", 1)[1]
+                    if d not in PUBLIC_MAIL and d != self.domain:
+                        doms.add(d)
+        return {"addrs": addrs, "doms": doms, "subj": subj, "ids": ids, "since": since}
+
+    def matched(self, letters: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Какие письма в info@ — ответы на наши запросы: ссылаются на наше письмо, пришли с адреса или
+        домена, куда писали (кроме бесплатных почт), или та же тема. Письма клиентов (zakaz@) — никогда."""
+        c = self._correspondents()
+        if not c["since"]:
+            return []
+        out = []
+        for e in letters:
+            if e.get("box") != "info":
+                continue
+            ts = float(e.get("ts") or 0)
+            if ts < c["since"] - 3600:                    # раньше первого запроса — не ответ
+                continue
+            frm = str(e.get("from") or "").lower()
+            dom = frm.rsplit("@", 1)[1] if "@" in frm else ""
+            if dom == self.domain:
+                continue
+            refs = {str(r).lower() for r in e.get("refs") or []}
+            if (refs & c["ids"]) or frm in c["addrs"] or dom in c["doms"] or norm_subject(e.get("subject", "")) in c["subj"]:
+                out.append(e)
+            if len(out) >= REPLY_MAX:
+                break
+        return out
+
+    def replies(self, pochta: Any) -> dict[str, Any]:
+        """Ответы на запросы, зашифрованные ключом Claude. Без ключа их никто не прочитает (в т.ч. по дороге)."""
+        if not self.read_enabled():
+            return {"v": 1, "off": True, "items": []}
+        k = self.reader_key()
+        if not k:
+            return {"v": 1, "nokey": True, "items": []}
+        items, total = [], 0
+        for e in self.matched(pochta.index()):
+            m = pochta.get(e["id"])
+            if not m:
+                continue
+            atts = []
+            for a in m.get("atts") or []:
+                x = {"name": a.get("name", ""), "mime": a.get("mime", ""), "size": a.get("size", 0)}
+                data = pochta.read_bytes(e["id"], a.get("n")) if a.get("saved") and total + int(a.get("size") or 0) <= REPLY_ATT_TOTAL else None
+                if data is not None:
+                    x["b64"] = _b64(data)
+                    total += len(data)
+                else:
+                    x["skipped"] = True
+                atts.append(x)
+            payload = {k2: m.get(k2) for k2 in ("id", "box", "spam", "ts", "from", "name", "to", "cc", "subject", "text", "cut")}
+            payload["atts"] = atts
+            items.append(seal(k, payload, INFO_REPLIES))
+        return {"v": 1, "key": k[:8], "items": items}
 
     # ------------------------------------------------------------------ git
     def _git(self, *args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
@@ -229,7 +351,7 @@ class Outbox:
 
     def _deliver(self, mid: str, m: dict[str, Any]) -> str:
         ok = self.send(m["to"], m["subject"], m["body"], sender=self.sender(), reply_to=m["reply_to"],
-                       attachments=m["attachments"])
+                       attachments=m["attachments"], msgid=self.msgid(mid))
         row = self._row(mid)
         attempts = int(row["attempts"]) + 1 if row else 1
         if ok:
@@ -245,13 +367,15 @@ class Outbox:
 
     def run(self) -> list[str]:
         """Одна проходка cron: новые письма из ветки outbox и повторы неотправленных."""
-        if not self.enabled():
+        send_on = self.enabled()
+        if not send_on and not self.read_enabled():
             return ["отправка выключена в CRM"]
         out: list[str] = []
         sk = self._sk()
         limit = self.daily_limit()
         # повторы (почтовый сервер не принял в прошлый раз)
-        for row in self.s.c().execute("SELECT * FROM outbox_mail WHERE status='retry' ORDER BY received_at").fetchall():
+        for row in (self.s.c().execute("SELECT * FROM outbox_mail WHERE status='retry' ORDER BY received_at").fetchall()
+                    if send_on else []):
             if self.sent_today() >= limit:
                 return out + [f"лимит {limit} писем в сутки — остальное завтра"]
             m, err = self._validate(json.loads(row["payload"] or "{}"), row["id"])
@@ -260,6 +384,9 @@ class Outbox:
             files = self.fetch()
         except Exception as e:  # noqa: BLE001
             return out + [str(e)]
+        self._check_reader()
+        if not send_on:
+            return out + ["отправка выключена в CRM"]
         todo = []
         for f in files:
             mid = f.stem

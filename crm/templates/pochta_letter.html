@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}{{ m['subject'] or 'Письмо' }}{% endblock %}
+{% block main %}
+{{ more_nav('pochta') }}
+<p><a href="{{ url_for('pochta_view', box=m['box']) }}">← Почта</a></p>
+<h1>{{ m['subject'] or '(без темы)' }}</h1>
+<div class="panel pad">
+  <p class="d" style="margin:0 0 4px">От: <b>{{ m['name'] }}</b>{% if m['from'] %} &lt;<a href="mailto:{{ m['from'] }}">{{ m['from'] }}</a>&gt;{% endif %}</p>
+  <p class="d" style="margin:0 0 4px">Кому: {{ m['to'] or (m['box'] ~ '@' ~ dom) }}{% if m['cc'] %} · копия: {{ m['cc'] }}{% endif %}</p>
+  {% if m['reply_to'] and m['reply_to'] != m['from'] %}<p class="d" style="margin:0 0 4px">Ответ на: {{ m['reply_to'] }}</p>{% endif %}
+  <p class="d" style="margin:0">{{ fmt_ts(m['ts']) }} · ящик {{ m['box'] }}@{% if m['spam'] %} · <span class="pill crit">в спаме</span>{% endif %}{% if shared %} · <span class="pill warn">видит Claude</span>{% endif %}</p>
+</div>
+{% if m['atts'] %}<h2>Вложения</h2>
+<div class="panel list">{% for a in m['atts'] %}{% if a['saved'] %}<a class="row btn" href="{{ url_for('pochta_att', mid=m['id'], n=a['n']) }}"><span class="grow t">{{ a['name'] }}</span><span class="d">{{ size_h(a['size']) }}</span></a>{% else %}<div class="row"><span class="grow">{{ a['name'] }}</span><span class="d">{{ size_h(a['size']) }} — слишком большое, только в почтовой программе</span></div>{% endif %}{% endfor %}</div>{% endif %}
+<h2>Текст</h2>
+<div class="panel pad"><pre class="calc">{{ m['text'] or '(текста нет — смотрите вложения)' }}</pre>{% if m['cut'] %}<p class="d">Письмо длинное — показано начало.</p>{% endif %}{% if m['html_only'] %}<p class="d">Письмо было оформлено как веб-страница — показан только текст.</p>{% endif %}</div>
+{% endblock %}

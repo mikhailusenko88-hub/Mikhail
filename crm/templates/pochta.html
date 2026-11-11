@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}Почта{% endblock %}
+{% block main %}
+{{ more_nav('pochta') }}
+<h1>Почта info@ и zakaz@</h1>
+<p class="sub">Письма на ящики магазина за 120 дней — текст и вложения. Новые появляются в течение минуты. Ответить можно со своей почты на адрес отправителя.</p>
+<div class="chips">
+  <a class="chip" href="{{ url_for('pochta_view', q=q) }}" {% if not box %}aria-current="true"{% endif %}>Все</a>
+  <a class="chip" href="{{ url_for('pochta_view', box='info', q=q) }}" {% if box=='info' %}aria-current="true"{% endif %}>info@</a>
+  <a class="chip" href="{{ url_for('pochta_view', box='zakaz', q=q) }}" {% if box=='zakaz' %}aria-current="true"{% endif %}>zakaz@</a>
+  <a class="chip" href="{{ url_for('pochta_view', box='spam', q=q) }}" {% if box=='spam' %}aria-current="true"{% endif %}>Спам</a>
+</div>
+<form class="addline" method="get" action="{{ url_for('pochta_view') }}" role="search">
+  <input type="hidden" name="box" value="{{ box }}">
+  <input type="search" name="q" value="{{ q }}" placeholder="Отправитель или тема" aria-label="Поиск по почте">
+</form>
+<div class="panel list">{% for e in letters %}<a class="row btn" href="{{ url_for('pochta_letter', mid=e['id']) }}">
+  <span class="grow"><span class="t">{{ e['name'] or e['from'] or 'без отправителя' }}</span>
+  <span class="d"> · {{ e['subject'] or '(без темы)' }}</span>
+  <span class="d" style="display:block">{{ fmt_ts(e['ts']) }} · {{ e['box'] }}@{% if e['natt'] %} · вложений: {{ e['natt'] }}{% endif %}{% if e['id'] in shared %} · видит Claude{% endif %}</span></span>
+  {% if e['spam'] %}<span class="pill crit">спам</span>{% elif e['ts']|int > seen %}<span class="pill good">новое</span>{% endif %}
+</a>{% else %}<div class="row"><span class="d">{% if not ready %}Почта ещё не выгружена: нажмите «Ещё → Сервер → Обновить CRM» и подождите минуту.{% elif q %}Ничего не нашлось.{% else %}Писем нет.{% endif %}</span></div>{% endfor %}</div>
+{% endblock %}

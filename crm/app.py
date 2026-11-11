@@ -25,7 +25,7 @@ from email.message import EmailMessage
 from typing import Any
 
 from flask import (Flask, Request, Response, abort, current_app, flash, g, jsonify, redirect, render_template, request,
-                   session, url_for)
+                   send_file, session, url_for)
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -34,6 +34,7 @@ from store import (CLIENT_DOC_FIELDS, KIND_NAMES, KIND_TITLES, KINDS, OPEN_STAGE
 from buh import Buh
 from buh_web import register as register_buh
 from outbox import Outbox
+from pochta import INLINE_OK, Pochta, fmt_ts, size_h
 from invoice import Invoices
 from push import WebPush
 from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, TochkaError, http_request, jwt_claims,
@@ -341,10 +342,11 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         for it in items[:30]:
             frm, name, subj, box = str(it.get("from") or ""), str(it.get("name") or ""), str(it.get("subject") or "(без темы)"), str(it.get("box") or "zakaz")
             did, cname = store.mail_in(frm, subj)
+            key = str(it.get("key") or "")
             if did:
                 title, url = f"Письмо от клиента: {cname} · №{did}", f"/deals/{did}"
             else:
-                title, url = f"Новое письмо на {box}@", "/"
+                title, url = f"Новое письмо на {box}@", (f"/pochta/{key}" if re.match(r"^[0-9a-f]{20}$", key) else "/pochta")
             body = subj[:150] + (f" — {name or frm}" if not did else "")
             wp.notify(title, body, url, tag=f"mail-{did or box}")
             out.append(f"{box}: {frm} → " + (f"сделка №{did}" if did else "без сделки"))
@@ -490,10 +492,69 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     def outbox_view() -> Any:
         if request.method == "POST":
             ob.set_options(request.form.get("on") == "1", request.form.get("daily", ""))
+            ob.set_read(request.form.get("read") == "1")
             flash("Сохранено.", "ok")
             return redirect(url_for("outbox_view"))
         return render_template("outbox.html", mails=ob.recent(), on=ob.enabled(), daily=ob.daily_limit(),
-                               today_sent=ob.sent_today(), sender=ob.sender(), dom=conf["SHOP_DOMAIN"] or "nashdekor.ru")
+                               today_sent=ob.sent_today(), sender=ob.sender(), dom=conf["SHOP_DOMAIN"] or "nashdekor.ru",
+                               read_on=ob.read_enabled(), reader=bool(ob.reader_key()), shared=ob.matched(pochta.index()),
+                               fmt_ts=fmt_ts)
+
+    # ------------------------------------------------------------ почта info@ и zakaz@ (выгружает root, CRM только читает)
+    pochta = Pochta(cfg.get("MAIL_DIR", ""))
+    app.extensions["pochta"] = pochta
+
+    @app.route("/api/outbox/replies")
+    def outbox_replies() -> Any:
+        """Ответы на письма Claude с zapros@ — только шифром для его ключа (READER.pub в ветке outbox)."""
+        resp = jsonify(ob.replies(pochta))
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
+
+    @app.route("/pochta")
+    @admin_required
+    def pochta_view() -> Any:
+        box = request.args.get("box", "")
+        box = box if box in ("info", "zakaz", "spam") else ""
+        q = request.args.get("q", "")[:100]
+        key = f"pochta_seen_{g.user['login']}"
+        try:
+            seen = int(store.setting(key, "0") or 0)
+        except ValueError:
+            seen = 0
+        letters = pochta.letters(box, q)
+        top = max([int(e.get("ts") or 0) for e in pochta.index()] or [0])
+        if top > seen and not q:
+            store.set_setting(key, str(top))
+        return render_template("pochta.html", letters=letters, box=box, q=q, seen=seen, ready=pochta.ready(),
+                               fmt_ts=fmt_ts, dom=conf["SHOP_DOMAIN"] or "nashdekor.ru",
+                               shared={e["id"] for e in ob.matched(pochta.index())} if ob.read_enabled() and ob.reader_key() else set())
+
+    @app.route("/pochta/<mid>")
+    @admin_required
+    def pochta_letter(mid: str) -> Any:
+        m = pochta.get(mid)
+        if not m:
+            abort(404, "Письма нет — возможно, его удалили из ящика или ему больше 120 дней.")
+        shared = ob.read_enabled() and bool(ob.reader_key()) and any(e["id"] == mid for e in ob.matched(pochta.index()))
+        return render_template("pochta_letter.html", m=m, fmt_ts=fmt_ts, size_h=size_h, shared=shared,
+                               dom=conf["SHOP_DOMAIN"] or "nashdekor.ru")
+
+    @app.route("/pochta/<mid>/a/<int:n>")
+    @admin_required
+    def pochta_att(mid: str, n: int) -> Any:
+        r = pochta.attachment(mid, n)
+        if not r:
+            abort(404, "Вложения нет — оно было слишком большим или письмо удалили.")
+        path, a = r
+        inline = a.get("mime") in INLINE_OK
+        resp = send_file(str(path), mimetype=a["mime"] if inline else "application/octet-stream",
+                         as_attachment=not inline, download_name=a.get("name") or f"file-{n}", max_age=0)
+        resp.headers["X-Content-Type-Options"] = "nosniff"
+        resp.headers["Cache-Control"] = "private, no-store"
+        if inline:
+            resp.headers["Content-Security-Policy"] = "sandbox"
+        return resp
 
     def calc_text(d: Any, lines: list[Any], manager: str = "") -> str:
         """Расчёт для клиента: позиции, суммы, итог, что дальше, контакты — в письмо или в мессенджер."""
@@ -1773,7 +1834,7 @@ self.addEventListener("notificationclick", e => {
 
 
 def send_mail(to: str, subject: str, body: str, sender: str = "", reply_to: str = "",
-              attachments: list[tuple[str, bytes, str]] | None = None) -> bool:
+              attachments: list[tuple[str, bytes, str]] | None = None, msgid: str = "") -> bool:
     """Письмо через почту своего сервера (Postfix на 127.0.0.1:25). Нет почты — тихо пропускаем.
     sender — адрес нашего домена (для писем клиентам); по умолчанию noreply@ домена получателя (свои уведомления)."""
     if not to:
@@ -1785,6 +1846,8 @@ def send_mail(to: str, subject: str, body: str, sender: str = "", reply_to: str 
     if reply_to:
         m["Reply-To"] = reply_to
     m["Subject"] = subject
+    if msgid:                                     # свой Message-ID — по нему узнаём ответы на это письмо
+        m["Message-ID"] = msgid
     m.set_content(body)
     for fname, data, mime in attachments or []:
         maintype, _, subtype = mime.partition("/")

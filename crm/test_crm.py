@@ -752,7 +752,10 @@ class TestApi(Base):
         put("3.n", "new", "Наш декор <noreply@nashdekor.ru>", "Заявка с сайта №5")
         put("4.n", "new", "spam@example.com", "SALE", "X-Spam-Flag: YES\n")
         out = run()
-        self.assertEqual(out, [{"box": "zakaz", "from": "client@example.com", "name": "Елена", "subject": "Расчёт"}])
+        import mailwatch
+        self.assertEqual(out, [{"box": "zakaz", "from": "client@example.com", "name": "Елена", "subject": "Расчёт",
+                                "key": mailwatch.mail_key("zakaz", "2.new:2,")}])        # key — id письма в разделе «Почта»
+        self.assertEqual(mailwatch.mail_key("zakaz", "2.new:2,"), mailwatch.mail_key("zakaz", "2.new:2,S"))
         os.rename(os.path.join(md, "new", "3.n"), os.path.join(md, "cur", "3.n:2,S"))   # телефон прочитал — уже не новое
         self.assertEqual(run(), [])
 
@@ -1686,6 +1689,146 @@ class TestOutbox(Base):
         self.assertEqual(self.ob.status(p2["id"])["status"], "error")
         self.ob.repo_url = os.path.join(self.tmp.name, "нет-такого.git")
         self.assertTrue(any("GitHub не ответил" in x for x in self.ob.run()))
+
+
+class TestPochta(TestOutbox):
+    """Раздел «Почта» (письма info@/zakaz@, выгруженные root'ом) и ответы на запросы — шифром для Claude."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        from pathlib import Path
+        import mailwatch
+        self.mw = mailwatch
+        self.vm = os.path.join(self.tmp.name, "vmail")
+        self.out = os.path.join(self.tmp.name, "pochta")
+        self.app.extensions["pochta"].dir = Path(self.out)
+        self.n = 0
+        self.pushes = []
+        wp = self.app.extensions["push"]
+        self.orig_notify = wp.notify
+        wp.notify = lambda title, body="", url="/", **kw: self.pushes.append((title, body, url)) or (0, 0)
+
+    def tearDown(self) -> None:
+        self.app.extensions["push"].notify = self.orig_notify
+        super().tearDown()
+
+    def msg(self, frm, subject, text="Добрый день!", box="info", date="", html="", atts=(), **hdr):
+        from email.message import EmailMessage
+        from email.utils import formatdate
+        m = EmailMessage()
+        m["From"], m["To"], m["Subject"] = frm, f"{box}@nashdekor.ru", subject
+        m["Date"] = date or formatdate(localtime=True)
+        for k, v in hdr.items():
+            m[k.replace("_", "-")] = v
+        if html and not text:
+            m.set_content(html, subtype="html")
+        else:
+            m.set_content(text)
+            if html:
+                m.add_alternative(html, subtype="html")
+        for name, data, mime in atts:
+            mt, st = mime.split("/")
+            m.add_attachment(data, maintype=mt, subtype=st, filename=name)
+        return m
+
+    def deliver(self, m, box="info", spam=False):
+        import time
+        d = os.path.join(self.vm, "nashdekor.ru", box, "Maildir", ".Junk" if spam else "", "new")
+        os.makedirs(d, exist_ok=True)
+        self.n += 1
+        fn = f"{int(time.time())}.M{self.n}P1.test"
+        with open(os.path.join(d, fn), "wb") as f:
+            f.write(bytes(m))
+        return self.mw.mail_key(box, fn), os.path.join(d, fn)
+
+    def export(self):
+        import grp
+        old, self.mw.VMAIL = self.mw.VMAIL, self.vm
+        try:
+            self.assertEqual(self.mw.export(self.out, grp.getgrgid(os.getgid()).gr_name, "nashdekor.ru", ["zakaz", "info"]), 0)
+        finally:
+            self.mw.VMAIL = old
+
+    def test_mail_page_letter_and_attachments(self) -> None:
+        self.assertIn("Почта ещё не выгружена", self.c.get("/pochta").get_data(as_text=True))
+        mid, path = self.deliver(self.msg("ИПЛ Тверь <ipl@lab.example>", "Ответ по испытаниям", text="",
+                                          html="<html><head><style>p{}</style></head><p>Цена <b>25 000</b> руб.<br>Звоните</p><script>alert(1)</script>",
+                                          atts=[("КП.pdf", b"%PDF-1.4 t", "application/pdf"), ("x.html", b"<script>alert(2)</script>", "text/html")]))
+        zid, _ = self.deliver(self.msg("Клиент <client@mail.example>", "Заказ панелей", box="zakaz"), box="zakaz")
+        sid, _ = self.deliver(self.msg("spam@spam.example", "Выигрыш"), spam=True)
+        self.export()
+        page = self.c.get("/pochta").get_data(as_text=True)
+        self.assertIn("ИПЛ Тверь", page); self.assertIn("Заказ панелей", page); self.assertNotIn("Выигрыш", page)
+        self.assertIn("новое", page)
+        self.assertNotIn("новое", self.c.get("/pochta").get_data(as_text=True))          # открыл список — уже не новое
+        self.assertNotIn("Ответ по испытаниям", self.c.get("/pochta?box=zakaz").get_data(as_text=True))
+        self.assertIn("Выигрыш", self.c.get("/pochta?box=spam").get_data(as_text=True))
+        self.assertIn("Заказ панелей", self.c.get("/pochta?q=заказ").get_data(as_text=True))
+        lt = self.c.get(f"/pochta/{mid}").get_data(as_text=True)
+        self.assertIn("Цена 25 000 руб.", lt); self.assertIn("Звоните", lt); self.assertNotIn("alert(1)", lt)
+        self.assertIn("КП.pdf", lt); self.assertIn("ipl@lab.example", lt)
+        r = self.c.get(f"/pochta/{mid}/a/1")
+        self.assertEqual(r.data, b"%PDF-1.4 t"); self.assertEqual(r.mimetype, "application/pdf")
+        self.assertEqual(r.headers["Content-Security-Policy"], "sandbox"); self.assertNotIn("attachment", r.headers.get("Content-Disposition", ""))
+        r = self.c.get(f"/pochta/{mid}/a/2")                                            # html-вложение — только скачать
+        self.assertEqual(r.mimetype, "application/octet-stream"); self.assertIn("attachment", r.headers["Content-Disposition"])
+        self.assertEqual(self.c.get(f"/pochta/{mid}/a/9").status_code, 404)
+        self.assertEqual(self.c.get("/pochta/../crm.db").status_code, 404)
+        self.assertEqual(self.c.get("/pochta/0123456789abcdef0123").status_code, 404)
+        os.unlink(path); self.export()                                                   # удалили из ящика — пропало и в CRM
+        self.assertEqual(self.c.get(f"/pochta/{mid}").status_code, 404)
+        self.assertFalse(os.path.exists(os.path.join(self.out, mid)))
+        # пуш о новом письме ведёт прямо на письмо
+        self.app.extensions["mail_in"]([{"box": "zakaz", "from": "x@other.example", "name": "", "subject": "Вопрос", "key": zid}])
+        self.assertEqual(self.pushes[-1][2], f"/pochta/{zid}")
+        c2 = self.app.test_client(); self.login("mikhail", "Secret-pass-2", client=c2)    # не админ — почту не видит
+        self.assertEqual(c2.get("/pochta").status_code, 403)
+
+    def test_replies_for_claude(self) -> None:
+        import outbox
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
+        self.assertEqual(self.c.get("/api/outbox/replies").get_json()["items"], [])
+        p, env = self.letter(to="lab@69.mchs.example"); self.put(env)
+        self.ob.run()
+        self.assertEqual(self.sent[0][3]["msgid"], f"<{p['id']}@nashdekor.ru>")             # свой Message-ID — по нему узнаём ответ
+        self.assertTrue(self.c.get("/api/outbox/replies").get_json()["nokey"])
+        sk = X25519PrivateKey.generate()
+        pub = outbox._b64(sk.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw))
+        with open(os.path.join(self.work, "READER.pub"), "w") as f:
+            f.write(pub + "\n")
+        self.git("-C", self.work, "add", "-A"); self.git("-C", self.work, "commit", "-q", "-m", "k"); self.git("-C", self.work, "push", "-q", "origin", "outbox")
+        self.ob.run()
+        self.assertTrue(any("Claude подключился" in x[0] for x in self.pushes))
+        a, _ = self.deliver(self.msg("Иванова <ivanova@69.mchs.example>", "Стоимость испытаний", text="Г1 — 25 000 руб.",
+                                     atts=[("КП.pdf", b"%PDF-1.4 kp", "application/pdf")]))
+        b, _ = self.deliver(self.msg("boss@gmail.com", "Без темы", In_Reply_To=f"<{p['id']}@nashdekor.ru>"))
+        c, _ = self.deliver(self.msg("someone@gmail.com", "RE: Fwd: Запрос на испытания"))
+        d, _ = self.deliver(self.msg("client@gmail.com", "Хочу панели"))
+        e, _ = self.deliver(self.msg("lab@69.mchs.example", "Заказ", box="zakaz"), box="zakaz")
+        f_, _ = self.deliver(self.msg("lab@69.mchs.example", "Старое", date="Mon, 01 Jun 2020 10:00:00 +0300"))
+        self.export()
+        r = self.c.get("/api/outbox/replies")
+        self.assertEqual(r.headers["Cache-Control"], "no-store")
+        data = r.get_json()
+        raw = r.get_data(as_text=True)
+        self.assertNotIn("25 000", raw); self.assertNotIn("ivanova", raw); self.assertNotIn("Стоимость", raw)   # снаружи — только шифр
+        got = {}
+        for env_ in data["items"]:
+            x = outbox.unseal(sk, env_, outbox.INFO_REPLIES)
+            got[x["id"]] = x
+        self.assertEqual(set(got), {a, b, c})
+        self.assertEqual(got[a]["text"], "Г1 — 25 000 руб."); self.assertEqual(got[a]["atts"][0]["name"], "КП.pdf")
+        self.assertEqual(outbox._ub64(got[a]["atts"][0]["b64"]), b"%PDF-1.4 kp")
+        with self.assertRaises(Exception):
+            outbox.unseal(sk, data["items"][0])                                           # ключом исходящих не открыть
+        page = self.c.get("/outbox").get_data(as_text=True)
+        self.assertIn("Ответы, которые видит Claude", page); self.assertIn("Стоимость испытаний", page); self.assertNotIn("Хочу панели", page)
+        self.assertIn("видит Claude", self.c.get(f"/pochta/{a}").get_data(as_text=True))
+        self.assertNotIn("видит Claude", self.c.get(f"/pochta/{d}").get_data(as_text=True))
+        self.post("/outbox", {"on": "1", "daily": "30"})                                  # галочку «видит ответы» сняли
+        x = self.c.get("/api/outbox/replies").get_json()
+        self.assertTrue(x["off"]); self.assertEqual(x["items"], [])
 
 
 class TestInvoices(Base):

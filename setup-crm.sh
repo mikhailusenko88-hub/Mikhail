@@ -357,10 +357,13 @@ ignoreip = 127.0.0.1/8 ::1${ips:+ $ips}"
   fi
 }
 
-cmd_mail_watch() {   # новые письма в ящиках магазина → CRM (пуш; письмо клиента — в его сделку)
+cmd_mail_watch() {   # новые письма в ящиках магазина → CRM (раздел «Почта», пуш; письмо клиента — в его сделку)
   local out boxes=() b
   for b in zakaz info; do [[ -d /var/mail/vhosts/$SHOP_DOMAIN/$b/Maildir ]] && boxes+=("$b"); done
   ((${#boxes[@]})) || return 0
+  # текст и вложения — в папку, которую CRM только читает (root:prostranstvo 750)
+  python3 -I "$APP/mailwatch.py" --export /var/lib/prostranstvo-pochta prostranstvo "$SHOP_DOMAIN" "${boxes[@]}" ||
+    echo "выгрузка писем для раздела «Почта» не удалась"
   out=$(python3 -I "$APP/mailwatch.py" "$SHOP_DOMAIN" "${boxes[@]}") || return 1
   [[ -n $out ]] && printf '%s\n' "$out" | manage mail-in
   return 0
