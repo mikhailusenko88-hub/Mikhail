@@ -39,6 +39,10 @@ for i, key in enumerate(keys):
                                    "stress_maybe", "intonation", "pauses", "align_error", "accent_source")}
         o["bad"] = [[w["w"], w.get("exp"), w.get("det"), round(float(w.get("margin") or 0), 2)] for w in r.get("words", [])
                     if w.get("exp") is not None and w.get("det") is not None and w["exp"] != w["det"] and (w.get("margin") or 0) >= 0.5]
+        o["t"] = idx[key]["t"]; o["m"] = idx[key]["m"]
+        o["words"] = [[w["w"], w.get("exp"), w.get("det"), (round(float(w["margin"]), 2) if w.get("margin") is not None else None), w.get("ph"),
+                       (round(w["t0"], 2) if w.get("t0") is not None else None), (round(w["t1"], 2) if w.get("t1") is not None else None), w.get("map_ok")] for w in r.get("words", [])]
+        o["vowels"] = [[x["w"], x["k"], round(float(x["c"]), 3), x.get("L", "")] for x in r.get("vowels", [])]
         out[key] = o
     except Exception:
         out[key] = {"err": traceback.format_exc()[-400:]}
