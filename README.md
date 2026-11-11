@@ -23,3 +23,8 @@
 Из облака шифр снимает workflow `replies-fetch` (ветка domain-check, файл pages/replies.txt) → ветка `replies`.
 
     python3 tools/replies.py read replies.json --out ответы/
+
+## Документы в CRM
+
+`python3 tools/doc.py --folder "Сертификаты и ТУ" --title "Название" [--until ГГГГ-ММ-ДД] [--note "…"] файл` →
+`docs/<id>.json` (шифр). Сервер кладёт файл в CRM → Ещё → Документы (один раз), статус по id — saved.
