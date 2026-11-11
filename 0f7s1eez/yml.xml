@@ -1,0 +1,1910 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yml_catalog date="2026-11-11T10:30:43+03:00">
+  <shop>
+    <name>Наш декор</name>
+    <company>ИП Усенко Юлия Валерьевна</company>
+    <url>https://nashdekor.ru/</url>
+    <currencies><currency id="RUR" rate="1"/></currencies>
+    <categories>
+      <category id="1">Стеновые панели</category>
+      <category id="11" parentId="1">Реечные панели под покраску</category>
+      <category id="12" parentId="1">Реечные панели под дерево и бетон</category>
+      <category id="2">Плинтусы напольные</category>
+      <category id="3">Потолочные плинтусы</category>
+      <category id="4">Молдинги</category>
+      <category id="5">Уголки декоративные</category>
+    </categories>
+    <offers>
+    <offer id="A902" available="false">
+      <url>https://nashdekor.ru/p/a902/</url>
+      <price>1780</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A902.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 130×10×3000 мм — A902</name>
+      <vendorCode>A902</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: полукруглые рейки (каннелюры), 130×10×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 780 ₽ за шт (≈ 4 564 ₽/м²), 11 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">130</param>
+      <param name="Толщина" unit="мм">10</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">11</param>
+    </offer>
+    <offer id="A907" available="false">
+      <url>https://nashdekor.ru/p/a907/</url>
+      <price>1950</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A907.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 180×10×3000 мм — A907</name>
+      <vendorCode>A907</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: широкие ламели с тонкими швами, 180×10×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 950 ₽ за шт (≈ 3 611 ₽/м²), 12 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">180</param>
+      <param name="Толщина" unit="мм">10</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">12</param>
+    </offer>
+    <offer id="A910" available="false">
+      <url>https://nashdekor.ru/p/a910/</url>
+      <price>1950</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A910.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 180×12×3000 мм — A910</name>
+      <vendorCode>A910</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: частые полукруглые рейки, 180×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 950 ₽ за шт (≈ 3 611 ₽/м²), 10 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">180</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">10</param>
+    </offer>
+    <offer id="A913" available="false">
+      <url>https://nashdekor.ru/p/a913/</url>
+      <price>1950</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A913.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 180×12×3000 мм — A913</name>
+      <vendorCode>A913</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: ступенчатая, 180×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 950 ₽ за шт (≈ 3 611 ₽/м²), 10 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">180</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">10</param>
+    </offer>
+    <offer id="A920" available="false">
+      <url>https://nashdekor.ru/p/a920/</url>
+      <price>1950</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A920.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 180×20×3000 мм — A920</name>
+      <vendorCode>A920</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: прямоугольные рейки с глубокими пазами, 180×20×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 950 ₽ за шт (≈ 3 611 ₽/м²), 9 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">180</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">9</param>
+    </offer>
+    <offer id="A916" available="false">
+      <url>https://nashdekor.ru/p/a916/</url>
+      <price>1950</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A916.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 180×12×3000 мм — A916</name>
+      <vendorCode>A916</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: прямоугольные рейки, 180×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 950 ₽ за шт (≈ 3 611 ₽/м²), 10 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">180</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">10</param>
+    </offer>
+    <offer id="GS1" available="false">
+      <url>https://nashdekor.ru/p/gs1/</url>
+      <price>1425</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/GS1.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 120×13×3000 мм — GS 1</name>
+      <vendorCode>GS 1</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: узкие прямоугольные рейки, 120×13×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 425 ₽ за шт (≈ 3 958 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">13</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="GS2" available="false">
+      <url>https://nashdekor.ru/p/gs2/</url>
+      <price>1425</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/GS2.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 120×20×3000 мм — GS 2</name>
+      <vendorCode>GS 2</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: 2 широкие рейки с глубоким пазом, 120×20×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 425 ₽ за шт (≈ 3 958 ₽/м²), 13 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">13</param>
+    </offer>
+    <offer id="GS3" available="false">
+      <url>https://nashdekor.ru/p/gs3/</url>
+      <price>1425</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/GS3.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 120×13×3000 мм — GS 3</name>
+      <vendorCode>GS 3</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: прямоугольные рейки, 120×13×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 425 ₽ за шт (≈ 3 958 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">13</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="A903" available="false">
+      <url>https://nashdekor.ru/p/a903/</url>
+      <price>1950</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A903.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 180×10×3000 мм — A903</name>
+      <vendorCode>A903</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: треугольные грани (призма), 180×10×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 950 ₽ за шт (≈ 3 611 ₽/м²), 12 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">180</param>
+      <param name="Толщина" unit="мм">10</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">12</param>
+    </offer>
+    <offer id="A904" available="false">
+      <url>https://nashdekor.ru/p/a904/</url>
+      <price>1780</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A904.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 150×10×3000 мм — A904</name>
+      <vendorCode>A904</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: плоская с прямоугольными выступами, 150×10×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 780 ₽ за шт (≈ 3 956 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">150</param>
+      <param name="Толщина" unit="мм">10</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="A905" available="false">
+      <url>https://nashdekor.ru/p/a905/</url>
+      <price>1950</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A905.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 200×14×3000 мм — A905</name>
+      <vendorCode>A905</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: вогнутые волны, 200×14×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 950 ₽ за шт (≈ 3 250 ₽/м²), 10 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">200</param>
+      <param name="Толщина" unit="мм">14</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">10</param>
+    </offer>
+    <offer id="A908" available="false">
+      <url>https://nashdekor.ru/p/a908/</url>
+      <price>1950</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A908.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 180×14×3000 мм — A908</name>
+      <vendorCode>A908</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: вогнутые волны, 180×14×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 950 ₽ за шт (≈ 3 611 ₽/м²), 9 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">180</param>
+      <param name="Толщина" unit="мм">14</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">9</param>
+    </offer>
+    <offer id="A915" available="false">
+      <url>https://nashdekor.ru/p/a915/</url>
+      <price>1950</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A915.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 150×9×3000 мм — A915</name>
+      <vendorCode>A915</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: частые узкие рейки, 150×9×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 950 ₽ за шт (≈ 4 333 ₽/м²), 17 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">150</param>
+      <param name="Толщина" unit="мм">9</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">17</param>
+    </offer>
+    <offer id="A906" available="false">
+      <url>https://nashdekor.ru/p/a906/</url>
+      <price>1825</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A906.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 180×10×3000 мм — A906</name>
+      <vendorCode>A906</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: скошенные грани (пила), 180×10×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 825 ₽ за шт (≈ 3 380 ₽/м²), 12 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">180</param>
+      <param name="Толщина" unit="мм">10</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">12</param>
+    </offer>
+    <offer id="A912" available="false">
+      <url>https://nashdekor.ru/p/a912/</url>
+      <price>1980</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A912.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 180×12×3000 мм — A912</name>
+      <vendorCode>A912</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: частые полукруглые рейки (каннелюры), 180×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 980 ₽ за шт (≈ 3 667 ₽/м²), 12 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">180</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">12</param>
+    </offer>
+    <offer id="A201" available="false">
+      <url>https://nashdekor.ru/p/a201/</url>
+      <price>1525</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A201.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 100×11×2000 мм — A201</name>
+      <vendorCode>A201</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: плоская с полукруглыми валиками, 100×11×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 525 ₽ за шт (≈ 7 625 ₽/м²), 21 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">100</param>
+      <param name="Толщина" unit="мм">11</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">21</param>
+    </offer>
+    <offer id="2-3" available="false">
+      <url>https://nashdekor.ru/p/2-3/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/2-3.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево медовое (тик)», готовый декор, 120×12×3000 мм — 2-3</name>
+      <vendorCode>2-3</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево медовое (тик)» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="2-4" available="false">
+      <url>https://nashdekor.ru/p/2-4/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/2-4.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дуб светлый», готовый декор, 120×12×3000 мм — 2-4</name>
+      <vendorCode>2-4</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дуб светлый» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="2-5" available="false">
+      <url>https://nashdekor.ru/p/2-5/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/2-5.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево светлое бежевое», готовый декор, 120×12×3000 мм — 2-5</name>
+      <vendorCode>2-5</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево светлое бежевое» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="2-7" available="false">
+      <url>https://nashdekor.ru/p/2-7/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/2-7.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дуб натуральный», готовый декор, 120×12×3000 мм — 2-7</name>
+      <vendorCode>2-7</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дуб натуральный» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="2-8" available="false">
+      <url>https://nashdekor.ru/p/2-8/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/2-8.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево медовое», готовый декор, 120×12×3000 мм — 2-8</name>
+      <vendorCode>2-8</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево медовое» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="2-9" available="false">
+      <url>https://nashdekor.ru/p/2-9/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/2-9.jpg</picture>
+      <name>Стеновая реечная панель под дерево «орех тёмный», готовый декор, 120×12×3000 мм — 2-9</name>
+      <vendorCode>2-9</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «орех тёмный» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="2-10" available="false">
+      <url>https://nashdekor.ru/p/2-10/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/2-10.jpg</picture>
+      <name>Стеновая реечная панель под дерево «орех», готовый декор, 120×12×3000 мм — 2-10</name>
+      <vendorCode>2-10</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «орех» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="2-11" available="false">
+      <url>https://nashdekor.ru/p/2-11/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/2-11.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево полосатое тёмное», готовый декор, 120×12×3000 мм — 2-11</name>
+      <vendorCode>2-11</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево полосатое тёмное» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="2-12" available="false">
+      <url>https://nashdekor.ru/p/2-12/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/2-12.jpg</picture>
+      <name>Стеновая реечная панель под бетон «бетон серый», готовый декор, 120×12×3000 мм — 2-12</name>
+      <vendorCode>2-12</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «бетон серый» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="2-13" available="false">
+      <url>https://nashdekor.ru/p/2-13/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/2-13.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево коричневое», готовый декор, 120×12×3000 мм — 2-13</name>
+      <vendorCode>2-13</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево коричневое» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="2-14" available="false">
+      <url>https://nashdekor.ru/p/2-14/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/2-14.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дуб серо-коричневый», готовый декор, 120×12×3000 мм — 2-14</name>
+      <vendorCode>2-14</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дуб серо-коричневый» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="3-3" available="false">
+      <url>https://nashdekor.ru/p/3-3/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/3-3.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево медовое (тик)», готовый декор, 120×12×3000 мм — 3-3</name>
+      <vendorCode>3-3</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево медовое (тик)» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 19 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">19</param>
+    </offer>
+    <offer id="3-4" available="false">
+      <url>https://nashdekor.ru/p/3-4/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/3-4.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дуб светлый», готовый декор, 120×12×3000 мм — 3-4</name>
+      <vendorCode>3-4</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дуб светлый» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 19 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">19</param>
+    </offer>
+    <offer id="3-5" available="false">
+      <url>https://nashdekor.ru/p/3-5/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/3-5.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево светлое бежевое», готовый декор, 120×12×3000 мм — 3-5</name>
+      <vendorCode>3-5</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево светлое бежевое» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 19 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">19</param>
+    </offer>
+    <offer id="3-7" available="false">
+      <url>https://nashdekor.ru/p/3-7/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/3-7.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дуб натуральный», готовый декор, 120×12×3000 мм — 3-7</name>
+      <vendorCode>3-7</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дуб натуральный» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 19 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">19</param>
+    </offer>
+    <offer id="3-8" available="false">
+      <url>https://nashdekor.ru/p/3-8/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/3-8.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево медовое», готовый декор, 120×12×3000 мм — 3-8</name>
+      <vendorCode>3-8</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево медовое» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 19 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">19</param>
+    </offer>
+    <offer id="3-9" available="false">
+      <url>https://nashdekor.ru/p/3-9/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/3-9.jpg</picture>
+      <name>Стеновая реечная панель под дерево «орех тёмный», готовый декор, 120×12×3000 мм — 3-9</name>
+      <vendorCode>3-9</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «орех тёмный» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 19 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">19</param>
+    </offer>
+    <offer id="3-11" available="false">
+      <url>https://nashdekor.ru/p/3-11/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/3-11.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево полосатое тёмное», готовый декор, 120×12×3000 мм — 3-11</name>
+      <vendorCode>3-11</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево полосатое тёмное» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 19 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">19</param>
+    </offer>
+    <offer id="3-12" available="false">
+      <url>https://nashdekor.ru/p/3-12/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/3-12.jpg</picture>
+      <name>Стеновая реечная панель под бетон «бетон серый», готовый декор, 120×12×3000 мм — 3-12</name>
+      <vendorCode>3-12</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «бетон серый» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 19 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">19</param>
+    </offer>
+    <offer id="3-15" available="false">
+      <url>https://nashdekor.ru/p/3-15/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/3-15.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево светлое натуральное», готовый декор, 120×12×3000 мм — 3-15</name>
+      <vendorCode>3-15</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево светлое натуральное» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 19 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">19</param>
+    </offer>
+    <offer id="5-5" available="false">
+      <url>https://nashdekor.ru/p/5-5/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/5-5.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево светлое бежевое», готовый декор, 120×12×3000 мм — 5-5</name>
+      <vendorCode>5-5</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево светлое бежевое» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 15 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">15</param>
+    </offer>
+    <offer id="5-6" available="false">
+      <url>https://nashdekor.ru/p/5-6/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/5-6.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дуб светлый», готовый декор, 120×12×3000 мм — 5-6</name>
+      <vendorCode>5-6</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дуб светлый» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 15 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">15</param>
+    </offer>
+    <offer id="5-8" available="false">
+      <url>https://nashdekor.ru/p/5-8/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/5-8.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево медовое», готовый декор, 120×12×3000 мм — 5-8</name>
+      <vendorCode>5-8</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево медовое» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 15 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">15</param>
+    </offer>
+    <offer id="5-9" available="false">
+      <url>https://nashdekor.ru/p/5-9/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/5-9.jpg</picture>
+      <name>Стеновая реечная панель под дерево «орех тёмный», готовый декор, 120×12×3000 мм — 5-9</name>
+      <vendorCode>5-9</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «орех тёмный» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 15 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">15</param>
+    </offer>
+    <offer id="5-10" available="false">
+      <url>https://nashdekor.ru/p/5-10/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/5-10.jpg</picture>
+      <name>Стеновая реечная панель под дерево «орех», готовый декор, 120×12×3000 мм — 5-10</name>
+      <vendorCode>5-10</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «орех» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 15 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">15</param>
+    </offer>
+    <offer id="5-11" available="false">
+      <url>https://nashdekor.ru/p/5-11/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/5-11.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево полосатое тёмное», готовый декор, 120×12×3000 мм — 5-11</name>
+      <vendorCode>5-11</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево полосатое тёмное» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 15 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">15</param>
+    </offer>
+    <offer id="5-12" available="false">
+      <url>https://nashdekor.ru/p/5-12/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/5-12.jpg</picture>
+      <name>Стеновая реечная панель под бетон «бетон серый», готовый декор, 120×12×3000 мм — 5-12</name>
+      <vendorCode>5-12</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «бетон серый» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 15 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">15</param>
+    </offer>
+    <offer id="5-15" available="false">
+      <url>https://nashdekor.ru/p/5-15/</url>
+      <price>1045</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>12</categoryId>
+      <picture>https://nashdekor.ru/img/5-15.jpg</picture>
+      <name>Стеновая реечная панель под дерево «дерево светлое натуральное», готовый декор, 120×12×3000 мм — 5-15</name>
+      <vendorCode>5-15</vendorCode>
+      <description><![CDATA[Стеновая панель с декором: декор «дерево светлое натуральное» на чёрной основе, 120×12×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая — красить не нужно. Цена 1 045 ₽ за шт (≈ 2 903 ₽/м²), 15 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">120</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">15</param>
+    </offer>
+    <offer id="A002" available="false">
+      <url>https://nashdekor.ru/p/a002/</url>
+      <price>360</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A002.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 40×19×2000 мм — A002</name>
+      <vendorCode>A002</vendorCode>
+      <description><![CDATA[Молдинг для стен: 40×19×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 360 ₽ за шт, 48 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">40</param>
+      <param name="Толщина" unit="мм">19</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">48</param>
+    </offer>
+    <offer id="A002-2" available="false">
+      <url>https://nashdekor.ru/p/a002-2/</url>
+      <price>410</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A002-2.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 40×19×2000 мм — A002/2</name>
+      <vendorCode>A002/2</vendorCode>
+      <description><![CDATA[Молдинг для стен: 40×19×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 410 ₽ за шт, 48 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">40</param>
+      <param name="Толщина" unit="мм">19</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">48</param>
+    </offer>
+    <offer id="A35" available="false">
+      <url>https://nashdekor.ru/p/a35/</url>
+      <price>210</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A35.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 25×12×2000 мм — A35</name>
+      <vendorCode>A35</vendorCode>
+      <description><![CDATA[Молдинг для стен: 25×12×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 210 ₽ за шт, 120 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">25</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">120</param>
+    </offer>
+    <offer id="A35-2" available="false">
+      <url>https://nashdekor.ru/p/a35-2/</url>
+      <price>290</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A35-2.jpg</picture>
+      <name>Молдинг для стен белый под покраску с кабель-каналом, ударопрочный, 25×12×2000 мм — A35/2</name>
+      <vendorCode>A35/2</vendorCode>
+      <description><![CDATA[Молдинг для стен: 25×12×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый, сзади канал под кабель. Цена 290 ₽ за шт, 120 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">25</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">120</param>
+    </offer>
+    <offer id="A10" available="false">
+      <url>https://nashdekor.ru/p/a10/</url>
+      <price>275</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A10.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 26×12×2000 мм — A10</name>
+      <vendorCode>A10</vendorCode>
+      <description><![CDATA[Молдинг для стен: 26×12×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 275 ₽ за шт, 134 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">26</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">134</param>
+    </offer>
+    <offer id="A23" available="false">
+      <url>https://nashdekor.ru/p/a23/</url>
+      <price>490</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A23.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 38×15×2000 мм — A23</name>
+      <vendorCode>A23</vendorCode>
+      <description><![CDATA[Молдинг для стен: 38×15×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 490 ₽ за шт, 60 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">38</param>
+      <param name="Толщина" unit="мм">15</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">60</param>
+    </offer>
+    <offer id="A25" available="false">
+      <url>https://nashdekor.ru/p/a25/</url>
+      <price>260</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A25.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 19×9×2000 мм — A25</name>
+      <vendorCode>A25</vendorCode>
+      <description><![CDATA[Молдинг для стен: 19×9×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 260 ₽ за шт, 80 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">19</param>
+      <param name="Толщина" unit="мм">9</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">80</param>
+    </offer>
+    <offer id="A302" available="false">
+      <url>https://nashdekor.ru/p/a302/</url>
+      <price>595</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A302.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 60×25×2000 мм — A302</name>
+      <vendorCode>A302</vendorCode>
+      <description><![CDATA[Молдинг для стен: 60×25×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 595 ₽ за шт, 26 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">60</param>
+      <param name="Толщина" unit="мм">25</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">26</param>
+    </offer>
+    <offer id="A151" available="false">
+      <url>https://nashdekor.ru/p/a151/</url>
+      <price>540</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A151.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 50×22×2000 мм — A151</name>
+      <vendorCode>A151</vendorCode>
+      <description><![CDATA[Молдинг для стен: 50×22×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 540 ₽ за шт, 35 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">50</param>
+      <param name="Толщина" unit="мм">22</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">35</param>
+    </offer>
+    <offer id="A152" available="false">
+      <url>https://nashdekor.ru/p/a152/</url>
+      <price>1295</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A152.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 85×25×2000 мм — A152</name>
+      <vendorCode>A152</vendorCode>
+      <description><![CDATA[Молдинг для стен: 85×25×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 1 295 ₽ за шт, 21 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">85</param>
+      <param name="Толщина" unit="мм">25</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">21</param>
+    </offer>
+    <offer id="A161" available="false">
+      <url>https://nashdekor.ru/p/a161/</url>
+      <price>580</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A161.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 59×21×2000 мм — A161</name>
+      <vendorCode>A161</vendorCode>
+      <description><![CDATA[Молдинг для стен: 59×21×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 580 ₽ за шт, 27 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">59</param>
+      <param name="Толщина" unit="мм">21</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">27</param>
+    </offer>
+    <offer id="A400" available="false">
+      <url>https://nashdekor.ru/p/a400/</url>
+      <price>340</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A400.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 44×16×2000 мм — A400</name>
+      <vendorCode>A400</vendorCode>
+      <description><![CDATA[Молдинг для стен: 44×16×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 340 ₽ за шт, 51 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">44</param>
+      <param name="Толщина" unit="мм">16</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">51</param>
+    </offer>
+    <offer id="A157" available="false">
+      <url>https://nashdekor.ru/p/a157/</url>
+      <price>345</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A157.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 30×13×2000 мм — A157</name>
+      <vendorCode>A157</vendorCode>
+      <description><![CDATA[Молдинг для стен: 30×13×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 345 ₽ за шт, 85 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">30</param>
+      <param name="Толщина" unit="мм">13</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">85</param>
+    </offer>
+    <offer id="A157-2" available="false">
+      <url>https://nashdekor.ru/p/a157-2/</url>
+      <price>375</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A157-2.jpg</picture>
+      <name>Молдинг для стен белый под покраску с кабель-каналом, ударопрочный, 30×13×2000 мм — A157/2</name>
+      <vendorCode>A157/2</vendorCode>
+      <description><![CDATA[Молдинг для стен: 30×13×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый, сзади канал под кабель. Цена 375 ₽ за шт, 85 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">30</param>
+      <param name="Толщина" unit="мм">13</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">85</param>
+    </offer>
+    <offer id="A156" available="false">
+      <url>https://nashdekor.ru/p/a156/</url>
+      <price>575</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A156.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 50×10×2000 мм — A156</name>
+      <vendorCode>A156</vendorCode>
+      <description><![CDATA[Молдинг для стен: 50×10×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 575 ₽ за шт, 54 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">50</param>
+      <param name="Толщина" unit="мм">10</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">54</param>
+    </offer>
+    <offer id="A602" available="false">
+      <url>https://nashdekor.ru/p/a602/</url>
+      <price>260</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A602.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 20×10×2000 мм — A602</name>
+      <vendorCode>A602</vendorCode>
+      <description><![CDATA[Молдинг для стен: 20×10×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 260 ₽ за шт, 70 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">20</param>
+      <param name="Толщина" unit="мм">10</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">70</param>
+    </offer>
+    <offer id="A611" available="false">
+      <url>https://nashdekor.ru/p/a611/</url>
+      <price>560</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A611.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 30×20×2000 мм — A611</name>
+      <vendorCode>A611</vendorCode>
+      <description><![CDATA[Молдинг для стен: 30×20×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 560 ₽ за шт, 44 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">30</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">44</param>
+    </offer>
+    <offer id="A611-2" available="false">
+      <url>https://nashdekor.ru/p/a611-2/</url>
+      <price>375</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A611-2.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 30×20×2000 мм — A611/2</name>
+      <vendorCode>A611/2</vendorCode>
+      <description><![CDATA[Молдинг для стен: 30×20×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 375 ₽ за шт, 44 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">30</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">44</param>
+    </offer>
+    <offer id="A301" available="false">
+      <url>https://nashdekor.ru/p/a301/</url>
+      <price>345</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A301.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 42×16×2000 мм — A301</name>
+      <vendorCode>A301</vendorCode>
+      <description><![CDATA[Молдинг для стен: 42×16×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 345 ₽ за шт, 62 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">42</param>
+      <param name="Толщина" unit="мм">16</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">62</param>
+    </offer>
+    <offer id="A150" available="false">
+      <url>https://nashdekor.ru/p/a150/</url>
+      <price>805</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A150.jpg</picture>
+      <name>Молдинг для стен белый под покраску универсальный, ударопрочный, 79×12×2000 мм — A150</name>
+      <vendorCode>A150</vendorCode>
+      <description><![CDATA[Молдинг для стен: 79×12×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый, подходит как молдинг, плинтус или наличник. Цена 805 ₽ за шт, 27 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">79</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">27</param>
+    </offer>
+    <offer id="A601" available="false">
+      <url>https://nashdekor.ru/p/a601/</url>
+      <price>945</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A601.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 96×25×2000 мм — A601</name>
+      <vendorCode>A601</vendorCode>
+      <description><![CDATA[Молдинг для стен: 96×25×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 945 ₽ за шт, 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">96</param>
+      <param name="Толщина" unit="мм">25</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="A605" available="false">
+      <url>https://nashdekor.ru/p/a605/</url>
+      <price>260</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A605.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 22×12×2000 мм — A605</name>
+      <vendorCode>A605</vendorCode>
+      <description><![CDATA[Молдинг для стен: 22×12×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 260 ₽ за шт, 60 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">22</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">60</param>
+    </offer>
+    <offer id="A130" available="false">
+      <url>https://nashdekor.ru/p/a130/</url>
+      <price>310</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A130.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 15×8×2000 мм — A130</name>
+      <vendorCode>A130</vendorCode>
+      <description><![CDATA[Молдинг для стен: 15×8×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 310 ₽ за шт, 100 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">15</param>
+      <param name="Толщина" unit="мм">8</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">100</param>
+    </offer>
+    <offer id="A354" available="false">
+      <url>https://nashdekor.ru/p/a354/</url>
+      <price>1200</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A354.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 67×26×2000 мм — A354</name>
+      <vendorCode>A354</vendorCode>
+      <description><![CDATA[Молдинг для стен: 67×26×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 1 200 ₽ за шт, 18 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">67</param>
+      <param name="Толщина" unit="мм">26</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">18</param>
+    </offer>
+    <offer id="A165" available="false">
+      <url>https://nashdekor.ru/p/a165/</url>
+      <price>425</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A165.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 30×10×2000 мм — A165</name>
+      <vendorCode>A165</vendorCode>
+      <description><![CDATA[Молдинг для стен: 30×10×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 425 ₽ за шт, 100 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">30</param>
+      <param name="Толщина" unit="мм">10</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">100</param>
+    </offer>
+    <offer id="A608" available="false">
+      <url>https://nashdekor.ru/p/a608/</url>
+      <price>590</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A608.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 22×11×2000 мм — A608</name>
+      <vendorCode>A608</vendorCode>
+      <description><![CDATA[Молдинг для стен: 22×11×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 590 ₽ за шт, 46 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">22</param>
+      <param name="Толщина" unit="мм">11</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">46</param>
+    </offer>
+    <offer id="A004" available="false">
+      <url>https://nashdekor.ru/p/a004/</url>
+      <price>780</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A004.jpg</picture>
+      <name>Плинтус напольный белый под покраску 119 мм, ударопрочный влагостойкий, 119×14×2000 мм — A004</name>
+      <vendorCode>A004</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 119 мм, 119×14×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 780 ₽ за шт, 19 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">119</param>
+      <param name="Толщина" unit="мм">14</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">19</param>
+    </offer>
+    <offer id="A005" available="false">
+      <url>https://nashdekor.ru/p/a005/</url>
+      <price>525</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A005.jpg</picture>
+      <name>Плинтус напольный белый под покраску 80 мм, ударопрочный влагостойкий, 80×14×2000 мм — A005</name>
+      <vendorCode>A005</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 80 мм, 80×14×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 525 ₽ за шт, 26 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">80</param>
+      <param name="Толщина" unit="мм">14</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">26</param>
+    </offer>
+    <offer id="A15" available="false">
+      <url>https://nashdekor.ru/p/a15/</url>
+      <price>610</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A15.jpg</picture>
+      <name>Плинтус напольный белый под покраску 99 мм, ударопрочный влагостойкий, 99×14×2000 мм — A15</name>
+      <vendorCode>A15</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 99 мм, 99×14×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 610 ₽ за шт, 22 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">99</param>
+      <param name="Толщина" unit="мм">14</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">22</param>
+    </offer>
+    <offer id="A122" available="false">
+      <url>https://nashdekor.ru/p/a122/</url>
+      <price>685</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A122.jpg</picture>
+      <name>Плинтус напольный белый под покраску 78 мм, ударопрочный влагостойкий, 78×21×2000 мм — A122</name>
+      <vendorCode>A122</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 78 мм, 78×21×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 685 ₽ за шт, 22 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">78</param>
+      <param name="Толщина" unit="мм">21</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">22</param>
+    </offer>
+    <offer id="A701" available="false">
+      <url>https://nashdekor.ru/p/a701/</url>
+      <price>625</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A701.jpg</picture>
+      <name>Плинтус напольный белый под покраску 100 мм, ударопрочный влагостойкий, 100×14×2000 мм — A701</name>
+      <vendorCode>A701</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 100 мм, 100×14×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 625 ₽ за шт, 22 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">100</param>
+      <param name="Толщина" unit="мм">14</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">22</param>
+    </offer>
+    <offer id="A702" available="false">
+      <url>https://nashdekor.ru/p/a702/</url>
+      <price>1170</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A702.jpg</picture>
+      <name>Плинтус напольный белый под покраску 150 мм, ударопрочный влагостойкий, 150×22×2000 мм — A702</name>
+      <vendorCode>A702</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 150 мм, 150×22×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 1 170 ₽ за шт, 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">150</param>
+      <param name="Толщина" unit="мм">22</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="A50" available="false">
+      <url>https://nashdekor.ru/p/a50/</url>
+      <price>1175</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A50.jpg</picture>
+      <name>Плинтус напольный белый под покраску 126 мм, ударопрочный влагостойкий, 126×16×2000 мм — A50</name>
+      <vendorCode>A50</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 126 мм, 126×16×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 1 175 ₽ за шт, 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">126</param>
+      <param name="Толщина" unit="мм">16</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="A33" available="false">
+      <url>https://nashdekor.ru/p/a33/</url>
+      <price>655</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A33.jpg</picture>
+      <name>Плинтус напольный белый под покраску 65 мм, ударопрочный влагостойкий, 65×20×2000 мм — A33</name>
+      <vendorCode>A33</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 65 мм, 65×20×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 655 ₽ за шт, 24 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">65</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">24</param>
+    </offer>
+    <offer id="A55" available="false">
+      <url>https://nashdekor.ru/p/a55/</url>
+      <price>645</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A55.jpg</picture>
+      <name>Плинтус напольный белый под покраску 80 мм, ударопрочный влагостойкий, 80×18×2000 мм — A55</name>
+      <vendorCode>A55</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 80 мм, 80×18×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 645 ₽ за шт, 18 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">80</param>
+      <param name="Толщина" unit="мм">18</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">18</param>
+    </offer>
+    <offer id="A88" available="false">
+      <url>https://nashdekor.ru/p/a88/</url>
+      <price>655</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A88.jpg</picture>
+      <name>Плинтус напольный белый под покраску 100 мм, ударопрочный влагостойкий, 100×12×2000 мм — A88</name>
+      <vendorCode>A88</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 100 мм, 100×12×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 655 ₽ за шт, 23 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">100</param>
+      <param name="Толщина" unit="мм">12</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">23</param>
+    </offer>
+    <offer id="A703" available="false">
+      <url>https://nashdekor.ru/p/a703/</url>
+      <price>475</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A703.jpg</picture>
+      <name>Плинтус напольный белый под покраску 80 мм, ударопрочный влагостойкий, 80×15×2000 мм — A703</name>
+      <vendorCode>A703</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 80 мм, 80×15×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 475 ₽ за шт, 28 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">80</param>
+      <param name="Толщина" unit="мм">15</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">28</param>
+    </offer>
+    <offer id="A704" available="false">
+      <url>https://nashdekor.ru/p/a704/</url>
+      <price>570</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A704.jpg</picture>
+      <name>Плинтус напольный белый под покраску 100 мм, ударопрочный влагостойкий, 100×15×2000 мм — A704</name>
+      <vendorCode>A704</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 100 мм, 100×15×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 570 ₽ за шт, 22 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">100</param>
+      <param name="Толщина" unit="мм">15</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">22</param>
+    </offer>
+    <offer id="A705" available="false">
+      <url>https://nashdekor.ru/p/a705/</url>
+      <price>400</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A705.jpg</picture>
+      <name>Плинтус напольный белый под покраску 80 мм, ударопрочный влагостойкий, 80×14×2000 мм — A705</name>
+      <vendorCode>A705</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 80 мм, 80×14×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 400 ₽ за шт, 32 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">80</param>
+      <param name="Толщина" unit="мм">14</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">32</param>
+    </offer>
+    <offer id="A707" available="false">
+      <url>https://nashdekor.ru/p/a707/</url>
+      <price>630</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A707.jpg</picture>
+      <name>Плинтус напольный белый под покраску 100 мм, ударопрочный влагостойкий, 100×15×2000 мм — A707</name>
+      <vendorCode>A707</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 100 мм, 100×15×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 630 ₽ за шт, 20 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">100</param>
+      <param name="Толщина" unit="мм">15</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">20</param>
+    </offer>
+    <offer id="A11-80" available="false">
+      <url>https://nashdekor.ru/p/a11-80/</url>
+      <price>1040</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A11-80.jpg</picture>
+      <name>Плинтус напольный с подсветкой белый под покраску 80 мм, ударопрочный влагостойкий, 80×20×2000 мм — A11-80</name>
+      <vendorCode>A11-80</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 80 мм, 80×20×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый, паз под LED-ленту. Цена 1 040 ₽ за шт, 20 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">80</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">20</param>
+    </offer>
+    <offer id="AP70" available="false">
+      <url>https://nashdekor.ru/p/ap70/</url>
+      <price>400</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/AP70.jpg</picture>
+      <name>Плинтус напольный белый под покраску 70 мм, ударопрочный влагостойкий, 70×14×2000 мм — AP70</name>
+      <vendorCode>AP70</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 70 мм, 70×14×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 400 ₽ за шт, 34 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">70</param>
+      <param name="Толщина" unit="мм">14</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">34</param>
+    </offer>
+    <offer id="A11-100" available="false">
+      <url>https://nashdekor.ru/p/a11-100/</url>
+      <price>1175</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A11-100.jpg</picture>
+      <name>Плинтус напольный с подсветкой белый под покраску 100 мм, ударопрочный влагостойкий, 100×20×2000 мм — A11-100</name>
+      <vendorCode>A11-100</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 100 мм, 100×20×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый, паз под LED-ленту. Цена 1 175 ₽ за шт, 17 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">100</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">17</param>
+    </offer>
+    <offer id="AP1-100" available="false">
+      <url>https://nashdekor.ru/p/ap1-100/</url>
+      <price>660</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/AP1-100.jpg</picture>
+      <name>Плинтус напольный белый под покраску 100 мм, ударопрочный влагостойкий, 100×17×2000 мм — AP1-100</name>
+      <vendorCode>AP1-100</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 100 мм, 100×17×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 660 ₽ за шт, 17 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">100</param>
+      <param name="Толщина" unit="мм">17</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">17</param>
+    </offer>
+    <offer id="A12-100" available="false">
+      <url>https://nashdekor.ru/p/a12-100/</url>
+      <price>1160</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A12-100.jpg</picture>
+      <name>Плинтус напольный с подсветкой белый под покраску 100 мм, ударопрочный влагостойкий, 100×18×2000 мм — A12-100</name>
+      <vendorCode>A12-100</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 100 мм, 100×18×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый, паз под LED-ленту. Цена 1 160 ₽ за шт, 20 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">100</param>
+      <param name="Толщина" unit="мм">18</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">20</param>
+    </offer>
+    <offer id="A31" available="false">
+      <url>https://nashdekor.ru/p/a31/</url>
+      <price>1225</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A31.jpg</picture>
+      <name>Плинтус напольный белый под покраску 138 мм, ударопрочный влагостойкий, 138×20×2000 мм — A31</name>
+      <vendorCode>A31</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 138 мм, 138×20×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 1 225 ₽ за шт, 10 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">138</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">10</param>
+    </offer>
+    <offer id="A49" available="false">
+      <url>https://nashdekor.ru/p/a49/</url>
+      <price>960</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A49.jpg</picture>
+      <name>Плинтус напольный белый под покраску 80 мм, ударопрочный влагостойкий, 80×13×2000 мм — A49</name>
+      <vendorCode>A49</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 80 мм, 80×13×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 960 ₽ за шт, 24 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">80</param>
+      <param name="Толщина" unit="мм">13</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">24</param>
+    </offer>
+    <offer id="A137" available="false">
+      <url>https://nashdekor.ru/p/a137/</url>
+      <price>965</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A137.jpg</picture>
+      <name>Плинтус напольный белый под покраску 100 мм, ударопрочный влагостойкий, 100×20×2000 мм — A137</name>
+      <vendorCode>A137</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 100 мм, 100×20×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 965 ₽ за шт, 14 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">100</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">14</param>
+    </offer>
+    <offer id="A153" available="false">
+      <url>https://nashdekor.ru/p/a153/</url>
+      <price>1085</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A153.jpg</picture>
+      <name>Плинтус напольный белый под покраску 95 мм, ударопрочный влагостойкий, 95×14×2000 мм — A153</name>
+      <vendorCode>A153</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 95 мм, 95×14×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 1 085 ₽ за шт, 22 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">95</param>
+      <param name="Толщина" unit="мм">14</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">22</param>
+    </offer>
+    <offer id="A706" available="false">
+      <url>https://nashdekor.ru/p/a706/</url>
+      <price>585</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A706.jpg</picture>
+      <name>Плинтус напольный белый под покраску 80 мм, ударопрочный влагостойкий, 80×13×2000 мм — A706</name>
+      <vendorCode>A706</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 80 мм, 80×13×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 585 ₽ за шт, 26 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">80</param>
+      <param name="Толщина" unit="мм">13</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">26</param>
+    </offer>
+    <offer id="A105" available="false">
+      <url>https://nashdekor.ru/p/a105/</url>
+      <price>1090</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>2</categoryId>
+      <picture>https://nashdekor.ru/img/A105.jpg</picture>
+      <name>Плинтус напольный белый под покраску 108 мм, ударопрочный влагостойкий, 108×20×2000 мм — A105</name>
+      <vendorCode>A105</vendorCode>
+      <description><![CDATA[Плинтус напольный: высота 108 мм, 108×20×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 1 090 ₽ за шт, 12 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">108</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">12</param>
+    </offer>
+    <offer id="A116" available="false">
+      <url>https://nashdekor.ru/p/a116/</url>
+      <price>460</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>5</categoryId>
+      <picture>https://nashdekor.ru/img/A116.jpg</picture>
+      <name>Уголок декоративный белый под покраску, ударопрочный, 22×22×2000 мм — A116</name>
+      <vendorCode>A116</vendorCode>
+      <description><![CDATA[Уголок декоративный: 22×22×2000 мм, для внешних углов и торцов стеновых панелей, полистирол высокой плотности (дюрополимер), под покраску — белый. Цена 460 ₽ за шт, 72 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">22</param>
+      <param name="Толщина" unit="мм">22</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">72</param>
+    </offer>
+    <offer id="A06" available="false">
+      <url>https://nashdekor.ru/p/a06/</url>
+      <price>460</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>5</categoryId>
+      <picture>https://nashdekor.ru/img/A06.jpg</picture>
+      <name>Уголок декоративный белый под покраску, ударопрочный, 30×30×2000 мм — A06</name>
+      <vendorCode>A06</vendorCode>
+      <description><![CDATA[Уголок декоративный: 30×30×2000 мм, для внешних углов и торцов стеновых панелей, полистирол высокой плотности (дюрополимер), под покраску — белый. Цена 460 ₽ за шт, 60 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">30</param>
+      <param name="Толщина" unit="мм">30</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">60</param>
+    </offer>
+    <offer id="A38" available="false">
+      <url>https://nashdekor.ru/p/a38/</url>
+      <price>400</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>3</categoryId>
+      <picture>https://nashdekor.ru/img/A38.jpg</picture>
+      <name>Потолочный плинтус белый под покраску, ударопрочный, 20×20×2000 мм — A38</name>
+      <vendorCode>A38</vendorCode>
+      <description><![CDATA[Потолочный плинтус: 20×20×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 400 ₽ за шт, 110 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">20</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">110</param>
+    </offer>
+    <offer id="A503" available="false">
+      <url>https://nashdekor.ru/p/a503/</url>
+      <price>1590</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>3</categoryId>
+      <picture>https://nashdekor.ru/img/A503.jpg</picture>
+      <name>Потолочный плинтус с подсветкой белый под покраску, ударопрочный, 100×50×2000 мм — A503</name>
+      <vendorCode>A503</vendorCode>
+      <description><![CDATA[Потолочный плинтус: 100×50×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый, ниша под LED-ленту — парящий потолок. Цена 1 590 ₽ за шт, 10 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">100</param>
+      <param name="Толщина" unit="мм">50</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">10</param>
+    </offer>
+    <offer id="A172" available="false">
+      <url>https://nashdekor.ru/p/a172/</url>
+      <price>1095</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>3</categoryId>
+      <picture>https://nashdekor.ru/img/A172.jpg</picture>
+      <name>Потолочный плинтус белый под покраску, ударопрочный, 71×71×2000 мм — A172</name>
+      <vendorCode>A172</vendorCode>
+      <description><![CDATA[Потолочный плинтус: 71×71×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 1 095 ₽ за шт, 16 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">71</param>
+      <param name="Толщина" unit="мм">71</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">16</param>
+    </offer>
+    <offer id="A504" available="false">
+      <url>https://nashdekor.ru/p/a504/</url>
+      <price>1645</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>3</categoryId>
+      <picture>https://nashdekor.ru/img/A504.jpg</picture>
+      <name>Потолочный плинтус белый под покраску, ударопрочный, 180×20×2000 мм — A504</name>
+      <vendorCode>A504</vendorCode>
+      <description><![CDATA[Потолочный плинтус: 180×20×2000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 1 645 ₽ за шт, 8 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">180</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">2000</param>
+      <param name="В коробке" unit="шт">8</param>
+    </offer>
+    <offer id="A611-3" available="false">
+      <url>https://nashdekor.ru/p/a611-3/</url>
+      <price>840</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A611.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 30×20×3000 мм — A611/3</name>
+      <vendorCode>A611/3</vendorCode>
+      <description><![CDATA[Молдинг для стен: 30×20×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 840 ₽ за шт, 25 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">30</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">25</param>
+    </offer>
+    <offer id="A611-4" available="false">
+      <url>https://nashdekor.ru/p/a611-4/</url>
+      <price>435</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>4</categoryId>
+      <picture>https://nashdekor.ru/img/A611-2.jpg</picture>
+      <name>Молдинг для стен белый под покраску, ударопрочный, 30×20×3000 мм — A611/4</name>
+      <vendorCode>A611/4</vendorCode>
+      <description><![CDATA[Молдинг для стен: 30×20×3000 мм, полистирол высокой плотности (дюрополимер), ударопрочный, влагостойкий, под покраску — белый. Цена 435 ₽ за шт, 25 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и заявка на сайте.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">30</param>
+      <param name="Толщина" unit="мм">20</param>
+      <param name="Длина" unit="мм">3000</param>
+      <param name="В коробке" unit="шт">25</param>
+    </offer>
+    <offer id="A201-2" available="false">
+      <url>https://nashdekor.ru/p/a201-2/</url>
+      <price>1125</price>
+      <currencyId>RUR</currencyId>
+      <categoryId>11</categoryId>
+      <picture>https://nashdekor.ru/img/A201.jpg</picture>
+      <name>Стеновая реечная панель белая под покраску, ударопрочная, 100×11×2400 мм — A201/2</name>
+      <vendorCode>A201/2</vendorCode>
+      <description><![CDATA[Стеновая реечная панель: плоская с полукруглыми валиками, 100×11×2400 мм, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску — белая, красится в любой цвет. Цена 1 125 ₽ за шт (≈ 4 688 ₽/м²), 18 шт в коробке. Наличие в Санкт-Петербурге или под заказ 3–4 недели, доставка по СПб и ЛО. 3D-просмотр, чертёж профиля и расчёт стены онлайн.]]></description>
+      <sales_notes>Поштучно и коробками, предоплата</sales_notes>
+      <pickup>true</pickup>
+      <delivery>true</delivery>
+      <param name="Материал">полистирол высокой плотности (дюрополимер)</param>
+      <param name="Ширина" unit="мм">100</param>
+      <param name="Толщина" unit="мм">11</param>
+      <param name="Длина" unit="мм">2400</param>
+      <param name="В коробке" unit="шт">18</param>
+    </offer>
+    </offers>
+  </shop>
+</yml_catalog>
