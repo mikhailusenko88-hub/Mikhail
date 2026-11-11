@@ -32,9 +32,32 @@ with open("status/list.txt", "w", encoding="utf-8") as f:
     for it in items:
         f.write(f"{it.get('tab','')}\t{it['id']}\t{it.get('dur')}\t{it['title']}\n")
 hits = [it for it in items if (pat.search(it["title"]) if pat else True)] if pat else items[:1]
+# метаданные (описание, место, музыка из ролика) — для роликов, снятых вживую (не сгенерированных)
+GEN = re.compile(r"ring|ball|vs |who wins|grows|bounce|glass|trend|watercolor|escape|country", re.I)
+meta_lines = []
+only = [x.strip() for x in (req[2].split(",") if len(req) > 2 else []) if x.strip()]
+scan = [it for it in items if not GEN.search(it["title"])]
+for it in scan:
+    p = run(["yt-dlp", "--skip-download", "-J", "--extractor-args", "youtube:player_client=default,web_safari,ios,tv,mweb", f"https://www.youtube.com/watch?v={it['id']}"], 120)
+    try:
+        d = json.loads(p.stdout)
+    except Exception:
+        meta_lines.append(f"{it['id']}\t{it['title']}\tМЕТА НЕ ПОЛУЧЕНА: {(p.stderr or '')[-160:]}")
+        continue
+    info = dict(date=d.get("upload_date"), dur=d.get("duration"), track=d.get("track"), artist=d.get("artist") or d.get("creator"), album=d.get("album"),
+                loc=d.get("location"), desc=(d.get("description") or "")[:300].replace("\n", " "), tags=",".join(d.get("tags") or [])[:200])
+    it.update(info)
+    meta_lines.append(f"{it['id']}\t{it['title']}\t" + json.dumps(info, ensure_ascii=False))
+    blob = " ".join(str(v) for v in info.values()) + " " + it["title"]
+    if pat and pat.search(blob) and it not in hits:
+        hits.append(it)
+open("status/meta.txt", "w", encoding="utf-8").write("\n".join(meta_lines))
+for x in only:
+    hits.append(dict(id=x, title=next((i["title"] for i in items if i["id"] == x), x)))
+P("с метаданными — совпадений:", [(h["id"], h["title"]) for h in hits])
 P("совпадений:", len(hits), [h["title"] for h in hits])
 report = []
-for h in hits[:4]:
+for h in hits[:6]:
     url = h["id"] if h["id"].startswith("http") else f"https://www.youtube.com/watch?v={h['id']}"
     base = f"out/{re.sub(r'[^A-Za-z0-9_-]', '_', h['id'])[-11:]}"
     got = None

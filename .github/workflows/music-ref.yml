@@ -21,7 +21,7 @@ jobs:
           sudo apt-get -qq update && sudo apt-get -qq install -y ffmpeg > /dev/null
       - name: разбор
         timeout-minutes: 20
-        run: python3 ref.py 2>&1 | tee status/log.txt
+        run: mkdir -p status && python3 ref.py 2>&1 | tee status/log.txt
       - name: сохранить
         if: always()
         run: |
