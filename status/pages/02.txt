@@ -1,0 +1,6 @@
+URL: https://crm.nashdekor.ru/api/outbox/status/cdc96f4b-0a97-4540-96d3-dee9883cd65f
+КОД: 200
+
+{"status":"unknown"}
+
+ССЫЛКИ:
