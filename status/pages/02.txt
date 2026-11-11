@@ -1,6 +1,14 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/cdc96f4b-0a97-4540-96d3-dee9883cd65f
+URL: https://crm.nashdekor.ru/login
 КОД: 200
 
-{"error":"","sent_at":"","status":"saved"}
+Вход · Наш декор 
+ Наш декор CRM 
+ Логин 
+ Пароль 
+ Войти
 
 ССЫЛКИ:
+/manifest.webmanifest
+/static/apple-touch-icon.png
+/static/crm.css?v=17
+/static/icon.svg
