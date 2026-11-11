@@ -28,8 +28,10 @@ h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:-.018em}
 
 /* Логотип в шапке: знак + «Наш декор» (кривые из брендбука), внутренние рамки — серо-голубые */
 .logo{display:inline-flex;align-items:center;color:var(--ink);line-height:0;flex:none}
-.logo svg{display:block;height:28px;width:auto;aspect-ratio:724/120}
-@media (max-width:720px){.logo svg{height:24px}}
+.logo svg{display:block;height:40px;width:auto;aspect-ratio:724/120}
+.bar{padding-block:10px}
+@media (max-width:720px){.logo svg{height:30px}}
+@media (max-width:360px){.logo svg{height:26px}}
 
 /* Акценты брендбука */
 .eyebrow{color:var(--mark-text)}

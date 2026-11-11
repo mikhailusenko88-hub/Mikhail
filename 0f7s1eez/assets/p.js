@@ -179,7 +179,11 @@ function renderWall(){
 }
 let view = has3d && !(isWood && P.photo) ? "frag" : "photo";   // под дерево — сначала фото, 3D по кнопке
 const W3 = (() => {
-  let R, S, cam, ctl, grp, mat, ready = false, inited = false, tex = null;
+  let R, S, cam, ctl, grp, mat, ready = false, inited = false, tex = null, backM = null;
+  /* Фон за изделием (11.11.2026): светлое изделие — на тёмной стене «Антрацит», как на фото каталога; тёмное — на светлой («Дымка»).
+     Раньше белая панель стояла на светлой стене и почти не читалась. */
+  const lum = h => { const c = new THREE.Color(h); return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b; };
+  const backHex = h => P.wood ? 0xe4e7ea : (lum(h) > 0.45 ? 0x34383e : 0xe4e7ea);
   const stage = $("pview"), cv = $("c3");
   function init(){
     if (inited) return; inited = true;
@@ -229,7 +233,7 @@ const W3 = (() => {
       mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(cur.hex).convertSRGBToLinear(), roughness: .6 });
       const me = new THREE.Mesh(polyGeo(len), mat); me.castShadow = me.receiveShadow = true; grp.add(me);
     } else if (P.wood) {
-      if (!tex && P.tex) { tex = new THREE.TextureLoader().load(ROOT + P.tex); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.encoding = THREE.sRGBEncoding; }
+      if (!tex && P.tex) { tex = new THREE.TextureLoader().load(ROOT + P.tex); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.encoding = THREE.sRGBEncoding; tex.anisotropy = R.capabilities.getMaxAnisotropy(); }
       if (tex) tex.repeat.set(1, Math.max(1, len / 400));
       const blackM = new THREE.MeshStandardMaterial({ color: 0x141415, roughness: .7 });
       const woodM = new THREE.MeshStandardMaterial({ color: tex ? 0xffffff : 0x9a6a40, map: tex, roughness: .55 });
@@ -246,7 +250,7 @@ const W3 = (() => {
     // габарит сцены: панели стоят (ширина по X, длина по Y), погонаж лежит (длина по X, высота по Y)
     const bw = P.poly ? len : n * W, bh = P.poly ? W : len, big = Math.max(bw, bh) * 8 + 6000;
     // стена за изделием — принимает тень
-    const wallM = new THREE.MeshStandardMaterial({ color: 0xe9e4db, roughness: .95 });
+    const wallM = backM = new THREE.MeshStandardMaterial({ color: new THREE.Color(backHex(cur.hex)), roughness: .95 });
     const wall = new THREE.Mesh(new THREE.PlaneGeometry(big, big), wallM);
     wall.position.set(bw / 2, bh / 2, -1.5); wall.receiveShadow = true; grp.add(wall);
     if (view === "full" && isPanel || X.c === "plinth") {   // пол: под панелью 3 м и под плинтусом
@@ -277,7 +281,7 @@ const W3 = (() => {
     ceil.rotation.x = Math.PI / 2; ceil.position.set(Wmm / 2 + 3000, Hmm, 7000); grp.add(ceil);
     const put = (me, c, r) => { me.rotation.x = Math.PI / 2; me.position.set(c * W, (r + 1) * X.l, 0); me.castShadow = me.receiveShadow = true; grp.add(me); };
     if (P.wood) {
-      if (!tex && P.tex) { tex = new THREE.TextureLoader().load(ROOT + P.tex); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.encoding = THREE.sRGBEncoding; }
+      if (!tex && P.tex) { tex = new THREE.TextureLoader().load(ROOT + P.tex); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.encoding = THREE.sRGBEncoding; tex.anisotropy = R.capabilities.getMaxAnisotropy(); }
       if (tex) tex.repeat.set(1, X.l / 400);
       const blackM = new THREE.MeshStandardMaterial({ color: 0x141415, roughness: .7, clippingPlanes: clip });
       const woodM = new THREE.MeshStandardMaterial({ color: tex ? 0xffffff : 0x9a6a40, map: tex, roughness: .55, clippingPlanes: clip });
@@ -314,7 +318,7 @@ const W3 = (() => {
     dir.normalize(); cam.position.copy(dir.multiplyScalar(d)).add(new THREE.Vector3(cx, cy, 0));
     ctl.target.set(cx, cy, 0); ctl.minDistance = r * 0.3; ctl.maxDistance = d * 3; ctl.update();
   }
-  function setColor(hex){ if (mat) mat.color.set(hex).convertSRGBToLinear(); }
+  function setColor(hex){ if (mat) mat.color.set(hex).convertSRGBToLinear(); if (backM && view !== "wall") backM.color.set(backHex(hex)); }
   return { init, rebuild: build, setColor: has3d && !P.wood ? setColor : null };
 })();
 
