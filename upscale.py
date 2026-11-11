@@ -14,15 +14,15 @@ files = sorted(f for f in os.listdir(src) if f.endswith('.jpg') and f != 'hero.j
 torch.set_num_threads(os.cpu_count() or 4)
 out = os.path.join('out', name); os.makedirs(out, exist_ok=True)
 
-def run(model, im):
+def run(desc, im):
     x = torch.from_numpy(np.asarray(im).astype(np.float32) / 255).permute(2, 0, 1)[None]
-    tile, pad, sc = 256, 16, model.scale
+    tile, pad, sc = 256, 16, desc.scale
     _, _, H, W = x.shape; y = torch.zeros(1, 3, H * sc, W * sc)
     with torch.no_grad():
         for t in range(0, H, tile):
             for l in range(0, W, tile):
                 t0, l0 = max(t - pad, 0), max(l - pad, 0); t1, l1 = min(t + tile + pad, H), min(l + tile + pad, W)
-                o = model(x[:, :, t0:t1, l0:l1]).clamp(0, 1)
+                o = desc.model(x[:, :, t0:t1, l0:l1]).clamp(0, 1)
                 y[:, :, t * sc:min(t + tile, H) * sc, l * sc:min(l + tile, W) * sc] = o[:, :, (t - t0) * sc:(t - t0 + min(tile, H - t)) * sc, (l - l0) * sc:(l - l0 + min(tile, W - l)) * sc]
     return Image.fromarray((y[0].permute(1, 2, 0).numpy() * 255).round().astype(np.uint8))
 
@@ -31,7 +31,7 @@ for m in models:
     os.makedirs(os.path.join(out, m), exist_ok=True)
     for f in files:
         t = time.time(); im = Image.open(os.path.join(src, f)).convert('RGB')
-        big = run(model.model, im)
+        big = run(model, im)
         W, H = round(im.width * scale), round(im.height * scale)
         res = big.resize((W, H), Image.LANCZOS)
         res.save(os.path.join(out, m, f), quality=88, optimize=True, progressive=True, subsampling=0)

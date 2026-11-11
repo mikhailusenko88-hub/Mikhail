@@ -1,2 +1,3 @@
 s1 model=both files=A907.jpg,3-7.jpg,A005.jpg,A35.jpg,2-12.jpg,A503.jpg,5-8.jpg,A902.jpg scale=2
 s2 model=both files=A907.jpg,3-7.jpg,A005.jpg,A35.jpg,2-12.jpg,A503.jpg,5-8.jpg,A902.jpg scale=2
+s3 model=both files=A907.jpg,3-7.jpg,A005.jpg,A35.jpg,2-12.jpg,A503.jpg,5-8.jpg,A902.jpg scale=2
