@@ -143,7 +143,7 @@ with sync_playwright() as p:
 import shutil
 from PIL import Image
 sq = lambda px: f"{OUT}/png/icon-square-anthracite-{px}.png"
-Image.open(sq(48)).save(f"{OUT}/site/favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)], append_images=[Image.open(sq(32)), Image.open(sq(16))])
 shutil.copy(sq(512), f"{OUT}/site/icon-512.png"); shutil.copy(sq(192), f"{OUT}/site/icon-192.png"); shutil.copy(sq(180), f"{OUT}/site/apple-touch-icon.png")
-shutil.copy(f"{OUT}/svg/icon-square-anthracite.svg", f"{OUT}/site/icon.svg")
+# favicon.ico и icon.svg — знак для мелких размеров (с 11.11.2026), см. favicon.py
+import favicon; favicon.main()
 print("готово:", sorted(os.listdir(OUT + "/png")))
