@@ -23,7 +23,7 @@ jobs:
         timeout-minutes: 20
         run: |
           mkdir -p status
-          if grep -q '^pages' request.txt; then python3 pages.py 2>&1 | tee status/log.txt; else python3 ref.py 2>&1 | tee status/log.txt; fi
+          if grep -q '^sound' request.txt; then python3 sound.py 2>&1 | tee status/log.txt; elif grep -q '^pages' request.txt; then python3 pages.py 2>&1 | tee status/log.txt; else python3 ref.py 2>&1 | tee status/log.txt; fi
       - name: сохранить
         if: always()
         run: |
