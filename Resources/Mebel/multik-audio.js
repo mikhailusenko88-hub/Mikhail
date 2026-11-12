@@ -65,48 +65,34 @@ function ruIPA(word, si) {
   return out.map(o => o.p).join('');
 }
 MK.ruIPA = ruIPA;
-/** Ударение для голоса Apple (Пик, Рон, iPhone) без поломки мелодии — SSML. 12.11.2026, голос Milena на Mac, 71 реплика серий:
-    - слово целиком транскрипцией (IPA) голос читает ровно, с подъёмом в конце («Смотрите↗», «за-мак») — звучит не по-русски;
-    - знаки ɐ ɡ ɫ ʂ ʐ ʊ ɛ и одиночный ɕ голос не знает и проглатывает звук («уже» → «и», «глаза» → «за») — заменяем; ɪ ə tɕ знает;
-    - работает: ударная гласная — отдельным <phoneme> внутри <prosody pitch> чуть выше (×1,095 ≈ +1,6 полутона) — подъём на ударном
-      слоге и спад к концу, как у живой речи; кусок слова без гласной голос читает плохо — он приклеивается к ударной;
-    - шипящие на стыке кусков голос портит: «ч» (tɕ) теряет шипение («печи» → «пети»), «щ» укорачивается, после «ж» лишнее «и»;
-      поэтому «ч» в конце куска = tʃ, иначе tʃʲ; «ж/щ» перед ударной гласной в конце слова («уже», «ищи») — слово целиком без деления;
-      «уже́» голос и сам читает верно (10 из 11) — его не трогаем; безударное «ə» в конце слова = «a» (иначе «дома» → «доме»);
-    - часть слова после ударного слога — чуть ниже голоса (×0,95): спад после ударения («за́мок» ↘), конец «Смотрите,» не задирается;
-    - при SSML голос не слушает pitchMultiplier/rate — тон и темп пишутся в SSML: тон = (p−1)·100 %, темп по замерам (Mac, шаг 0,01):
-      r < 0,5 → 100 − 183·(0,5 − r) %, r ≥ 0,5 → 100 + 590·(r − 0,5) % (вниз до целого; 1,207 → +20 %, 0,379 → 77 % — побитно голос Пика).
-    → строка SSML или null (нет подсказок). */
-const APPLE_V = 'aeiouɨəɪʊɐɛ', RU_V = 'аеёиоуыэюяАЕЁИОУЫЭЮЯ', APPLE_OK = { 'уже': 'ʊˈʐɛ' }; // так голос Apple читает и сам
-const appleCh = x => x.replace(/tɕ$/, 'tʃ').replace(/tɕ/g, 'tʃʲ');
-function appleSym(p) { return p.replace(/ɕː/g, 'ʃʲː').replace(/(^|[^t])ɕ/g, '$1ʃʲ').replace(/ɐ/g, 'a').replace(/ɡ/g, 'g').replace(/ɫ/g, 'l').replace(/ʂ/g, 'ʃ').replace(/ʐ/g, 'ʒ').replace(/ʊ/g, 'u').replace(/ɛ/g, 'e'); }
-function appleSplit(word, ipa) { const s = ipa.indexOf('ˈ'); if (s < 0) return [[word, ipa]];
-  let k = s + 1; while (k < ipa.length && !APPLE_V.includes(ipa[k])) k++; if (k >= ipa.length) return [[word, ipa]];
-  const ve = k + 1 + (ipa[k + 1] === 'ː' ? 1 : 0), nPre = [...ipa.slice(0, k)].filter(c => APPLE_V.includes(c)).length;
-  const vi = [...word].map((c, j) => RU_V.includes(c) ? j : -1).filter(j => j >= 0), sv = vi[nPre]; if (sv === undefined) return [[word, ipa]];
-  const hasV = x => [...x].some(c => APPLE_V.includes(c));
-  let P = [word.slice(0, sv), ipa.slice(0, s) + ipa.slice(s + 1, k)], S = [word.slice(sv, sv + 1), ipa.slice(k, ve)], Q = [word.slice(sv + 1), ipa.slice(ve)];
-  if (!hasV(P[1])) { S = [P[0] + S[0], P[1] + S[1]]; P = ['', '']; }
-  if (!hasV(Q[1])) { S = [S[0] + Q[0], S[1] + Q[1]]; Q = ['', '']; }
-  return [P, [S[0], 'ˈ' + S[1]], Q]; }
-MK.applePct = { pitch: p => Math.floor(((+p || 1) - 1) * 100 + 1e-4), rate: r => { r = +r || .5; return Math.max(50, Math.floor(r < .5 ? 100 - 183 * (.5 - r) : 100 + 590 * (r - .5))); } };
-MK.appleSSML = function (text, ipa, pitch, rate, o) {
-  if (!ipa || !ipa.length) return null; o = o || {};
-  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  const pc = n => (n >= 0 ? '+' : '') + n + '%', P = MK.applePct.pitch(pitch), A = Math.round(((+pitch || 1) * (o.accent || 1.095) - 1) * 100), R = MK.applePct.rate(rate) + '%';
-  const Q = o.post === 0 ? null : Math.round(((+pitch || 1) * (o.post || .95) - 1) * 100); // после ударного слога чуть ниже (×0,95) — спад, как в живой речи
-  let ss = '', last = 0;
-  for (const [a, b, c0] of ipa.slice().sort((x, y) => x[0] - y[0])) { if (a < last) continue;
-    const w = text.slice(a, a + b); ss += esc(text.slice(last, a)); last = a + b;
-    if (APPLE_OK[w.toLowerCase()] === c0) { ss += esc(w); continue; }
-    let c = appleSym(c0); if (o.fin !== false) c = c.replace(/ə$/, 'a'); let parts = appleSplit(w, c);
-    const ph = (tw, tp) => '<phoneme alphabet="ipa" ph="' + esc(appleCh(tp)) + '">' + esc(tw) + '</phoneme>';
-    let lift = parts.length > 1 && !!(parts[0][1] || parts[2][1]); // односложное слово не поднимаем
-    if (lift && !parts[2][1] && /(ʒ|ʃʲː?)$/.test(parts[0][1]) && !/[^aeiouɨəɪ]/.test(parts[1][1].slice(1))) lift = false, parts = [[w, c]]; // «уже», «ищи»
-    if (!lift) { ss += ph(w, c); continue; }
-    parts.forEach(([tw, tp], j) => { if (!tw && !tp) return; ss += j === 1 ? '<prosody pitch="' + pc(A) + '" rate="' + R + '">' + ph(tw, tp) + '</prosody>'
-      : j === 2 && Q !== null ? '<prosody pitch="' + pc(Q) + '" rate="' + R + '">' + ph(tw, tp) + '</prosody>' : ph(tw, tp); }); }
-  return '<speak><prosody pitch="' + pc(P) + '" rate="' + R + '">' + ss + esc(text.slice(last)) + '</prosody></speak>';
+/** Голос Apple (Пик, Рон, любой голос iPhone): как поправить ударение, не сломав живое чтение. 12.11.2026, Mac (голос Milena),
+    71 реплика серий и 6 проб (всё перебранное — в tools/multik/OZVUCHKA.md):
+    - слово целиком транскрипцией (IPA) голос читает ровной чужой мелодией; по кускам через SSML — каждый кусок как отдельное слово,
+      «замок» тянется. Михаил на слух оба раза: плохо. Знак ударения, заглавные буквы, contour/range в SSML голос не замечает.
+    - сам голос читает верно почти всё и ошибается в отдельных словах: «старый замо́к» (надо «за́мок»), «из леса́», «ключ от дома́?».
+    - мягкий перенос (U+00AD) внутри слова — как и знак «+» — заставляет голос прочитать слово «по правилам»: ударение на
+      ПРЕДПОСЛЕДНИЙ слог, а длина и мелодия остаются как у обычного слова («за́мок» звучит как «за́пад»). Выбрать слог так нельзя,
+      поставить ударение на последний слог — тоже («глаз+а» превратилось бы в «гла́за»).
+    Поэтому трогаем только слова из списка APPLE_RULES (для каждого записью проверено: сам голос ошибается, «по правилам» читает
+    верно) и только когда нужное ударение — на предпоследнем слоге. Всё остальное голос читает сам, как раньше. */
+const APPLE_RULES = new Set(['замок', 'леса', 'дома']), APPLE_V = 'аеёиоуыэюя';
+MK.appleRulesHas = text => (String(text || '').toLowerCase().replace(/[+́]/g, '').match(/[а-яё]+/g) || []).some(w => APPLE_RULES.has(w));
+/** marked — реплика с «+» перед ударными гласными (ударения по смыслу); text — то, что идёт голосу (без «+»); ipa — транскрипции слов.
+    → { text, ipa, n }: в словах из списка с ударением на предпоследнем слоге — мягкий перенос после первой буквы, их транскрипция убрана. */
+MK.appleRules = function (marked, text, ipa) {
+  text = String(text || ''); const want = {}, seen = {};
+  for (const tok of (String(marked || '').match(/[А-Яа-яЁё+]+/g) || [])) { const c = tok.replace(/\+/g, '').toLowerCase(); if (!c) continue;
+    const occ = seen[c] = (seen[c] || 0) + 1, p = tok.indexOf('+'); if (p < 0 || !APPLE_RULES.has(c)) continue;
+    const vi = [...c].map((ch, j) => APPLE_V.includes(ch) ? j : -1).filter(j => j >= 0), k = vi.findIndex(j => j >= p);
+    if (vi.length >= 2 && k === vi.length - 2) want[c + '|' + occ] = 1; }
+  if (!Object.keys(want).length) return { text, ipa: ipa || null, n: 0 };
+  let out = '', last = 0, n = 0; const cnt = {}, spans = (ipa || []).map(x => x.slice()), re = /[А-Яа-яЁё]+/g; let m;
+  while ((m = re.exec(text))) { const c = m[0].toLowerCase(), occ = cnt[c] = (cnt[c] || 0) + 1; if (!want[c + '|' + occ]) continue;
+    const a = m.index, b = a + m[0].length, at = a + 1;                                  // перенос — после первой буквы слова
+    for (let i = spans.length - 1; i >= 0; i--) if (spans[i][0] < b && spans[i][0] + spans[i][1] > a) spans.splice(i, 1); // свою транскрипцию этого слова убрать
+    out += text.slice(last, at) + '­'; last = at; n++;
+    const shift = out.length - at; for (const sp of spans) if (sp._o === undefined) sp._o = sp[0]; for (const sp of spans) if (sp._o >= b) sp[0] = sp._o + shift; }
+  return { text: out + text.slice(last), ipa: spans.length ? spans.map(x => [x[0], x[1], x[2]]) : null, n };
 };
 /** Готовит реплику к озвучке: «+» и заглавная гласная → ударение, словарь ударений, «ё». → {text, ipa:[[начало, длина, ipa]]}
     byMeaning (для нейроголосов с БАРС-речью): «все/всё» и пары-омографы «е/ё» («пчелы/пчёлы», «поешь/поёшь») здесь не трогаем — их решает
