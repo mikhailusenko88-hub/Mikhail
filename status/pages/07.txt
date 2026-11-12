@@ -1,0 +1,11 @@
+URL: https://modulbank.ru/acquiring/internet
+КОД: 403
+
+Forbidden
+ Datetime: 2026-11-12 13:54:29 +0000
+ IP: 4.229.37.12
+ ID: TsZWNGCGNiE1
+ If you are not a bot, please copy the report and send it to our support team.
+ Copy
+
+ССЫЛКИ:
