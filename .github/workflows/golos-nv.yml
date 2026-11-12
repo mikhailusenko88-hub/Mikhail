@@ -7,7 +7,7 @@ on:
 permissions:
   contents: write
 env:
-  P: nw
+  P: nash
 jobs:
   check:
     strategy:
