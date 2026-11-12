@@ -1,20 +1,2 @@
-https://tochka.com/rko/oblachnaya-kassa/
-https://tochka.com/rko/acquiring/check/
-https://tochka.com/rko/internet/acquiring/
-https://tochka.com/acquiring/ip/
-https://tochka.com/acquiring/
-https://tochka.com/sbp/
-https://tochka.com/kkt/
-https://tochka.com/questions/kakie-kassy-podojdut-dlya-raboty-s-internet-ehkvajringom-tochki/
-https://tochka.com/questions/kakuju-kassu-vybrat-dlja-internet-ehkvajjringa/
-https://tochka.com/knowledge/acquiring/kak-vybrat-i-podklyuchit-oblachnuyu-kassu-dlya-ip-i-ooo/
-https://digitalkassa.ru/
-https://online.atol.ru/
-https://orangedata.ru/
-https://kassa.komtet.ru/
-https://cloudkassir.ru/
-https://modulkassa.ru/
-https://ecomkassa.ru/
-https://yookassa.ru/fees/
-https://robokassa.com/content/tarify.html
-# касса 12.11 page 1
+https://crm.nashdekor.ru/api/outbox/status/b8544ec6-288d-4709-ad3d-433f884584cc
+# 12:37:32
