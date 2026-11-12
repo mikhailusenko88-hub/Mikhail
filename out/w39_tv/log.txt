@@ -1,0 +1,24 @@
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.1s] slat wall panels lamellas 110 faces 660
+[scene   0.1s] asset ceramic_vase_02 size 0.22 x 0.22 x 0.31 objs 1
+[scene   0.2s] asset ceramic_vase_03 size 0.11 x 0.11 x 0.41 objs 1
+[scene   0.2s] asset potted_plant_04 size 0.17 x 0.18 x 0.27 objs 4
+[scene   0.9s] asset potted_plant_01 size 0.59 x 0.63 x 1.35 objs 4
+[scene   1.1s] asset modern_arm_chair_01 size 0.82 x 0.99 x 1.02 objs 1
+[scene   1.1s] objects 61 scene built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/w39_tv/_sky.exr'
+Time: 00:03.41 (Saving: 00:00.00)
+
+[scene   4.5s] sky irradiance [ 9.661 10.549 12.803] sun strength 43.136
+Saved: '/home/runner/work/Mikhail/Mikhail/out/w39_tv/_pre.exr'
+Time: 00:07.05 (Saving: 00:00.00)
+
+[scene  12.3s] white pixels 5089 illuminant [1.272 0.954 0.65 ] wb gains [0.822 1.02  1.329] wall Y 0.4225 exposure 1.31
+Saved: '/home/runner/work/Mikhail/Mikhail/out/w39_tv/w39_tv.jpg'
+Time: 18:58.22 (Saving: 00:00.35)
+
+[scene 1150.5s] final render 1138.2s /home/runner/work/Mikhail/Mikhail/out/w39_tv/w39_tv.jpg
+[scene 1150.5s] done
+
+Blender quit
