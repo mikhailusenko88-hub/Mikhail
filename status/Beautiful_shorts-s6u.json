@@ -5,28 +5,46 @@
  "title": "Beautiful_shorts",
  "description": "",
  "header": [
-  "223 подписчика",
-  "133 видео"
+  "226 подписчиков",
+  "136 видео"
  ],
  "alerts": [],
  "images": {
   "avatar": "https://yt3.googleusercontent.com/3SkKQKzbtqBO-oV1lqFtoaDen4tgg8hlao1TVZcMdY9LUtqppGJBftTFyKYp3H1P5pTekG9tog=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/6_IYCMEMtoe0Q__Y2_zj7OKcLMKAO9UGQ8aCjGFh5-3XlnsPQBUApKWlK2iCM9InaG-mlW-rq7A=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-08 12:00 UTC",
+ "checked": "2026-11-12 10:58 UTC",
  "shorts_status": 200,
  "shorts": [
   {
+   "id": "irOtTngZbls",
+   "title": "Last country standing WINS! 🌍 Who are you rooting for? #shorts",
+   "views": "119 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Last country standing WINS! 🌍 Who are you rooting for? #shorts, 119 просмотров\""
+  },
+  {
+   "id": "viBQgmzXg88",
+   "title": "1 bullet vs 5 objects — how far does it go? 😳 #shorts",
+   "views": "720 просмотров",
+   "a11y": "Воспроизвести короткое видео \"1 bullet vs 5 objects — how far does it go? 😳 #shorts, 720 просмотров\""
+  },
+  {
+   "id": "98lnRofeeH8",
+   "title": "Every bounce = BIGGER ball 🎵 …but the music speeds up 😱 #shorts",
+   "views": "2,4 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Every bounce = BIGGER ball 🎵 …but the music speeds up 😱 #shorts, 2,4 тысячи просмотров\""
+  },
+  {
    "id": "dEGnQFq6GCU",
    "title": "Spiked Bat vs Katana ⚔️ Who wins? #shorts",
-   "views": "1 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Spiked Bat vs Katana ⚔️ Who wins? #shorts, 1 тысяча просмотров\""
+   "views": "1,1 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Spiked Bat vs Katana ⚔️ Who wins? #shorts, 1,1 тысячи просмотров\""
   },
   {
    "id": "wrH8FbgHvC0",
    "title": "Scythe vs Dagger 💀 Who wins? #shorts",
-   "views": "2,1 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Scythe vs Dagger 💀 Who wins? #shorts, 2,1 тысячи просмотров\""
+   "views": "2,2 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Scythe vs Dagger 💀 Who wins? #shorts, 2,2 тысячи просмотров\""
   },
   {
    "id": "5kPEHExdRks",
@@ -49,8 +67,8 @@
   {
    "id": "yHSe_VfF-0E",
    "title": "Part 2: it was STUCK by 3 px… can it break free? 😱 #shorts",
-   "views": "957 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Part 2: it was STUCK by 3 px… can it break free? 😱 #shorts, 957 просмотров\""
+   "views": "958 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Part 2: it was STUCK by 3 px… can it break free? 😱 #shorts, 958 просмотров\""
   },
   {
    "id": "NxErJ5KTOos",
@@ -121,8 +139,8 @@
   {
    "id": "TKkd16DFUMU",
    "title": "27 октября 2026 г.",
-   "views": "194 просмотра",
-   "a11y": "Воспроизвести короткое видео \"27 октября 2026 г., 194 просмотра\""
+   "views": "195 просмотров",
+   "a11y": "Воспроизвести короткое видео \"27 октября 2026 г., 195 просмотров\""
   },
   {
    "id": "JsycXIxtM8M",
@@ -285,39 +303,39 @@
    "title": "8K video",
    "views": "23 просмотра",
    "a11y": "Воспроизвести короткое видео \"8K video, 23 просмотра\""
-  },
-  {
-   "id": "7kBGLRXwNLM",
-   "title": "Rolls Royce Cullinan",
-   "views": "109 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Rolls Royce Cullinan, 109 просмотров\""
-  },
-  {
-   "id": "urBgORZXHso",
-   "title": "Bugatti",
-   "views": "1,3 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Bugatti, 1,3 тысячи просмотров\""
-  },
-  {
-   "id": "im9L9dzy_xU",
-   "title": "Xmas",
-   "views": "13 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Xmas, 13 просмотров\""
   }
  ],
  "rss_status": 200,
  "rss": [
   {
+   "id": "irOtTngZbls",
+   "published": "2026-11-09T21:09:02+00:00",
+   "title": "Last country standing WINS! 🌍 Who are you rooting for? #shorts",
+   "views": 119
+  },
+  {
+   "id": "viBQgmzXg88",
+   "published": "2026-11-08T17:06:20+00:00",
+   "title": "1 bullet vs 5 objects — how far does it go? 😳 #shorts",
+   "views": 720
+  },
+  {
+   "id": "98lnRofeeH8",
+   "published": "2026-11-08T12:43:05+00:00",
+   "title": "Every bounce = BIGGER ball 🎵 …but the music speeds up 😱 #shorts",
+   "views": 2437
+  },
+  {
    "id": "dEGnQFq6GCU",
    "published": "2026-11-07T09:44:15+00:00",
    "title": "Spiked Bat vs Katana ⚔️ Who wins? #shorts",
-   "views": 1090
+   "views": 1111
   },
   {
    "id": "wrH8FbgHvC0",
    "published": "2026-11-06T12:17:07+00:00",
    "title": "Scythe vs Dagger 💀 Who wins? #shorts",
-   "views": 2194
+   "views": 2219
   },
   {
    "id": "5kPEHExdRks",
@@ -329,43 +347,43 @@
    "id": "g8oBMJL95Ys",
    "published": "2026-11-05T20:00:21+00:00",
    "title": "Can a steel ball break 50 layers of glass? 😳 #shorts",
-   "views": 1125
+   "views": 1186
   },
   {
    "id": "C7rhH0Fvmtg",
    "published": "2026-11-05T17:26:30+00:00",
    "title": "Every hit: SWORD gets LONGER, DAGGERS spin FASTER… who wins? 😱 #shorts",
-   "views": 1331
+   "views": 1338
   },
   {
    "id": "yHSe_VfF-0E",
    "published": "2026-11-05T09:14:41+00:00",
    "title": "Part 2: it was STUCK by 3 px… can it break free? 😱 #shorts",
-   "views": 957
+   "views": 958
   },
   {
    "id": "NxErJ5KTOos",
    "published": "2026-11-04T15:47:13+00:00",
    "title": "Every bounce = BIGGER ball… this time it was SO close 😭 #shorts",
-   "views": 2709
+   "views": 2713
   },
   {
    "id": "GQSZJ4qQ5so",
    "published": "2026-11-04T09:33:50+00:00",
    "title": "Every bounce = BIGGER ball… can it still escape 5 rings? 😱 #shorts",
-   "views": 1306
+   "views": 1311
   },
   {
    "id": "7YIpYrIIfCA",
    "published": "2026-11-03T19:28:07+00:00",
    "title": "Can it break out of 5 RINGS? 😱 #shorts",
-   "views": 1596
+   "views": 1594
   },
   {
    "id": "dxhgeNxbpPE",
    "published": "2026-11-02T16:29:05+00:00",
    "title": "Every bounce = +1 ball… how many to break 8 rings? 😱 #shorts",
-   "views": 1926
+   "views": 1921
   },
   {
    "id": "TDj4LWSysdk",
@@ -377,25 +395,7 @@
    "id": "PiIV46k2M8A",
    "published": "2026-11-01T12:45:44+00:00",
    "title": "Can it break out of 7 rings? 😱 #shorts",
-   "views": 1274
-  },
-  {
-   "id": "uZwE4HiXpxE",
-   "published": "2026-10-31T14:37:06+00:00",
-   "title": "Can it break out of 7 rings? 😱 #shorts",
-   "views": 1089
-  },
-  {
-   "id": "xWbt7K7oJhw",
-   "published": "2026-10-30T08:47:17+00:00",
-   "title": "It grows every bounce… will it fit? 😱 #shorts",
-   "views": 1287
-  },
-  {
-   "id": "4pYf0Jb6waA",
-   "published": "2026-10-29T20:14:23+00:00",
-   "title": "Can 1 ball escape 10 rings? 😱 #shorts",
-   "views": 1136
+   "views": 1275
   }
  ]
 }
