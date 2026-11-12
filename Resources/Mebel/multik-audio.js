@@ -91,7 +91,7 @@ MK.prepSpeech = function (text, lex, mode, byMeaning) {
     if (ai > 0) { const plain = w.replace(/́/g, ''), si = ai - 1;
       if (mode === 'acute') { out += w; continue; }
       if (mode === 'respell') { out += [...plain].map((c, j) => j !== si && (c === 'о' || c === 'О') ? (c === 'о' ? 'а' : 'А') : c).join(''); continue; }
-      const p = ruIPA(plain, si); if (p) ipa.push([out.length, plain.length, appleIPA(p)]); out += plain; continue; }
+      const p = ruIPA(plain, si); if (p) ipa.push([out.length, plain.length, p]); out += plain; continue; }
     out += w;
   }
   return { text: out, ipa };
