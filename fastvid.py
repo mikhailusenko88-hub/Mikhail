@@ -38,6 +38,8 @@ class Writer:
         if audio is None:
             subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", self.tmp, "-c", "copy",
                             "-movflags", "+faststart", str(self.path)], check=True)
+        elif getattr(audio, "ndim", 1) == 2:
+            mux_stereo(self.tmp, audio, self.path, sr)
         else:
             wav = str(self.path) + ".wav"
             a = audio / max(1e-9, float(np.max(np.abs(audio)))) * peak
@@ -51,6 +53,30 @@ class Writer:
             if os.path.exists(f):
                 os.remove(f)
         print(f"готово: {self.n} кадров за {time.time() - self.t0:.0f} с")
+
+
+def write_wav24(path, audio, sr=44100):
+    """audio (n, 2) float -> WAV 24 бита стерео"""
+    a = np.round(np.clip(np.asarray(audio, np.float64), -1, 1) * 8388607).astype("<i4").reshape(-1)
+    with wave.open(str(path), "wb") as wf:
+        wf.setnchannels(2); wf.setsampwidth(3); wf.setframerate(sr)
+        wf.writeframes(a.view(np.uint8).reshape(-1, 4)[:, :3].tobytes())
+
+
+def mux_stereo(video, audio, out, sr=44100):
+    """Готовый стереозвук (n, 2) как есть (уже сведён по громкости) к видео без перекодирования картинки."""
+    wav = str(out) + ".wav"
+    tmp = str(out) + ".mux.mp4"
+    write_wav24(wav, audio, sr)
+    try:
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(video), "-i", wav, "-map", "0:v:0", "-map", "1:a:0",
+                        "-c:v", "copy", "-c:a", "aac", "-b:a", "320k", "-aac_pns", "0", "-shortest",
+                        "-movflags", "+faststart", tmp], check=True)
+        os.replace(tmp, str(out))
+    finally:
+        for f in (wav, tmp):
+            if os.path.exists(f):
+                os.remove(f)
 
 
 def paste(img, sprite, x, y):

@@ -1,0 +1,76 @@
+name: quotes-remusic
+# Замена звука в уже готовых роликах-цитатах (картинка не перерисовывается).
+# Ролики, которым в schedule_30d.json назначен стиль golos_* (свои мелодии с низким голосом), получают новый звук,
+# остальные файлы дня остаются как были. Дни задаются строкой «days: 9-90» (или «days: 9, 12, 20-25») в remusic.txt.
+on:
+  push:
+    branches: [quotes]
+    paths: ['remusic.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      days: ${{ steps.d.outputs.days }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: d
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, re
+          days = []
+          for line in open("remusic.txt", encoding="utf-8"):
+              m = re.match(r"\s*days:\s*(.+)", line)
+              if not m:
+                  continue
+              for part in m.group(1).split(","):
+                  part = part.strip()
+                  if "-" in part:
+                      a, b = part.split("-")
+                      days += list(range(int(a), int(b) + 1))
+                  elif part:
+                      days.append(int(part))
+          print("days=" + json.dumps(sorted(set(days))))
+          PY
+          cat "$GITHUB_OUTPUT"
+  remusic:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        day: ${{ fromJson(needs.plan.outputs.days) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: ffmpeg и библиотеки
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
+          pip install -q numpy scipy pillow
+          ffmpeg -version | head -1
+      - name: Готовые ролики дня
+        run: |
+          D=$(printf "%02d" ${{ matrix.day }})
+          git clone -q --depth 1 --branch quotes-out-d$D --single-branch "https://github.com/${{ github.repository }}.git" /tmp/src
+          ls -la /tmp/src
+      - name: Новый звук
+        run: |
+          python3 remusic_day.py ${{ matrix.day }} /tmp/src
+          ls -la out
+          for f in out/*.mp4; do
+            ffprobe -v error -show_entries format=duration,size:stream=codec_name,channels -of csv=p=0 "$f" | tr '\n' ' '; echo
+          done
+          test "$(ls out/*.mp4 | wc -l)" = "$(ls /tmp/src/*.mp4 | wc -l)"
+      - name: Сохранить в ветку quotes-out-dXX
+        run: |
+          D=$(printf "%02d" ${{ matrix.day }})
+          mkdir /tmp/pub && cp out/* /tmp/pub/
+          cd /tmp/pub
+          git init -q -b quotes-out-d$D
+          git config user.name "quotes-render"
+          git config user.email "quotes-render@users.noreply.github.com"
+          git add . && git commit -q -m "день $D: свои мелодии с голосом через один ролик"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:quotes-out-d$D
