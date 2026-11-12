@@ -108,6 +108,9 @@ final class LlamaEngine {
 
     func unload() { queue.sync { unloadSync() } }
 
+    /// Освободить память, не дожидаясь на главном потоке (экран не подвисает).
+    func unloadLater() { queue.async { self.unloadSync() } }
+
     private func unloadSync() {
         if let c = ctx { llama_free(c) }
         if let m = model { llama_model_free(m) }
@@ -335,7 +338,13 @@ final class LlamaEngine {
                 out = String(out[..<hit.1.upperBound])
                 break
             }
-            if Date().timeIntervalSince(lastShown) > 0.08 {
+            // телефон перегрелся — даём видеокарте передышку между словами
+            switch ProcessInfo.processInfo.thermalState {
+            case .critical: usleep(40_000)
+            case .serious: usleep(15_000)
+            default: break
+            }
+            if Date().timeIntervalSince(lastShown) > 0.2 {   // экран обновляем 5 раз в секунду, не чаще
                 lastShown = Date()
                 let snap = out
                 DispatchQueue.main.async { MainActor.assumeIsolated { onText(snap) } }

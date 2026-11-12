@@ -480,6 +480,16 @@ enum Eyes {
 
     static func load(_ name: String) -> UIImage? { UIImage(contentsOfFile: url(name).path) }
 
+    /// Маленькая копия для чата — грузится с диска один раз.
+    private static let thumbs = NSCache<NSString, UIImage>()
+    static func thumb(_ name: String) -> UIImage? {
+        if let t = thumbs.object(forKey: name as NSString) { return t }
+        guard let im = load(name) else { return nil }
+        let t = scaled(im, maxSide: 440)
+        thumbs.setObject(t, forKey: name as NSString)
+        return t
+    }
+
     static func scaled(_ img: UIImage, maxSide: CGFloat) -> UIImage {
         let s = img.size
         let k = min(1, maxSide / max(s.width, s.height, 1))

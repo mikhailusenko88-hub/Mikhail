@@ -6,6 +6,7 @@ import PhotosUI
 /// Раздел «Помощник»: своя нейросеть в телефоне, голос, интернет, CRM, база знаний.
 struct AssistantScreen: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var brain = AssistantBrain.shared
     @StateObject private var store = ModelStore.shared
     @StateObject private var ears = AssistantEars.shared
@@ -21,6 +22,7 @@ struct AssistantScreen: View {
     @State private var showFiles = false
     @State private var photoItem: PhotosPickerItem?
     @State private var attachError = ""
+    @State private var lastScroll = Date.distantPast
 
     var body: some View {
         NavigationView {
@@ -76,11 +78,13 @@ struct AssistantScreen: View {
         .onChange(of: brain.incoming) { _ in takeIncoming() }
         .task { await brain.refreshCRM(); brain.reviewPending(); brain.warmUp() }
         .onDisappear {
-            // нейросеть занимает ~3 ГБ памяти — отдаём её сканеру и мультикам
-            brain.stop()
+            // нейросеть занимает ~3 ГБ памяти — отдаём её телефону, сканеру и мультикам
             _ = ears.finish()
             Speaker.shared.stop()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { LlamaEngine.shared.unload() }
+            brain.sleep()
+        }
+        .onChange(of: scenePhase) { p in
+            if p == .active && store.readyModel != nil { brain.warmUp() }
         }
     }
 
@@ -109,9 +113,16 @@ struct AssistantScreen: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 10) {
                     if brain.messages.isEmpty { hello }
-                    ForEach(brain.messages.filter { $0.tool != "hint" }) { m in row(m).id(m.id) }
+                    ForEach(brain.messages.filter { $0.tool != "hint" }) { m in
+                        // строка перерисовывается, только если поменялось само сообщение (а не каждое новое слово ответа)
+                        ChatRow(m: m, open: openTool.contains(m.id)) {
+                            if openTool.contains(m.id) { openTool.remove(m.id) } else { openTool.insert(m.id) }
+                        }
+                        .equatable()
+                        .id(m.id)
+                    }
                     if brain.busy {
-                        if !brain.live.isEmpty { bubble(brain.live, mine: false) }
+                        if !brain.live.isEmpty { ChatRow.bubble(brain.live, mine: false, plain: true) }
                         if !brain.stage.isEmpty {
                             HStack(spacing: 8) { ProgressView(); Text(brain.stage).font(.footnote).foregroundColor(.secondary) }
                                 .padding(.horizontal, 4)
@@ -121,8 +132,12 @@ struct AssistantScreen: View {
                 }
                 .padding(12)
             }
-            .onChange(of: brain.messages.count) { _ in withAnimation { proxy.scrollTo("end", anchor: .bottom) } }
-            .onChange(of: brain.live) { _ in proxy.scrollTo("end", anchor: .bottom) }
+            .defaultScrollAnchor(.bottom)
+            .onChange(of: brain.messages.count) { _ in proxy.scrollTo("end", anchor: .bottom) }
+            .onChange(of: brain.live) { _ in
+                // не дёргаем прокрутку на каждое слово — экран не трясётся
+                if Date().timeIntervalSince(lastScroll) > 0.6 { lastScroll = Date(); proxy.scrollTo("end", anchor: .bottom) }
+            }
             .onAppear { proxy.scrollTo("end", anchor: .bottom) }
             .onTapGesture { typing = false }
         }
@@ -144,53 +159,6 @@ struct AssistantScreen: View {
         .padding(.top, 8)
     }
 
-    @ViewBuilder private func row(_ m: ChatMsg) -> some View {
-        switch m.role {
-        case .user:
-            VStack(alignment: .trailing, spacing: 4) {
-                if let f = m.file {
-                    HStack {
-                        Spacer(minLength: 40)
-                        ShareLink(item: Files.url(f)) {
-                            Label(Files.name(f), systemImage: "doc.fill").font(.caption).lineLimit(1)
-                                .padding(.horizontal, 10).padding(.vertical, 7)
-                                .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
-                        }
-                    }
-                }
-                if let img = m.image, let ui = Eyes.load(img) {
-                    HStack {
-                        Spacer(minLength: 40)
-                        Image(uiImage: ui).resizable().scaledToFit().frame(maxWidth: 220, maxHeight: 220)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                }
-                bubble(m.text, mine: true)
-            }
-        case .assistant:
-            if !m.text.isEmpty { bubble(m.text, mine: false) }
-        case .tool:
-            let open = openTool.contains(m.id)
-            VStack(alignment: .leading, spacing: 4) {
-                Button { if open { openTool.remove(m.id) } else { openTool.insert(m.id) } } label: {
-                    Label(Self.toolTitle(m.tool ?? ""), systemImage: "wrench.and.screwdriver")
-                        .font(.caption).foregroundColor(.secondary)
-                }.buttonStyle(.plain)
-                Text(open ? m.text : String(m.text.prefix(140)) + (m.text.count > 140 ? " …" : ""))
-                    .font(.caption2).foregroundColor(.secondary).textSelection(.enabled)
-            }
-            .padding(8)
-            .background(Color(.tertiarySystemBackground), in: RoundedRectangle(cornerRadius: 10))
-        case .note:
-            Text(m.text).font(.footnote).foregroundColor(.orange).padding(.horizontal, 4)
-        }
-    }
-
-    /// **жирный**, `код`, ссылки — как в чате, а не звёздочками.
-    static func rich(_ t: String) -> AttributedString {
-        (try? AttributedString(markdown: t, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace))) ?? AttributedString(t)
-    }
-
     static func toolTitle(_ n: String) -> String {
         switch n {
         case "web_search": return "Поиск в интернете"
@@ -205,18 +173,6 @@ struct AssistantScreen: View {
         case "open_link": return "Ссылка"
         case "file_read": return "Файл"
         default: return n.hasPrefix("crm") ? "CRM" : n
-        }
-    }
-
-    private func bubble(_ t: String, mine: Bool) -> some View {
-        HStack {
-            if mine { Spacer(minLength: 40) }
-            Text(Self.rich(t))
-                .textSelection(.enabled)
-                .padding(10)
-                .foregroundColor(mine ? .white : .primary)
-                .background(mine ? Color.blue : Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 16))
-            if !mine { Spacer(minLength: 40) }
         }
     }
 
@@ -606,5 +562,73 @@ struct CameraPicker: UIViewControllerRepresentable {
             parent.dismiss()
         }
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) { parent.dismiss() }
+    }
+}
+
+/// Одно сообщение чата. Сравнивается по содержимому — SwiftUI не перерисовывает его, пока идёт ответ.
+struct ChatRow: View, Equatable {
+    let m: ChatMsg
+    let open: Bool
+    var toggle: () -> Void = {}
+
+    static func == (a: ChatRow, b: ChatRow) -> Bool { a.m == b.m && a.open == b.open }
+
+    var body: some View {
+        switch m.role {
+        case .user:
+            VStack(alignment: .trailing, spacing: 4) {
+                if let f = m.file {
+                    HStack {
+                        Spacer(minLength: 40)
+                        ShareLink(item: Files.url(f)) {
+                            Label(Files.name(f), systemImage: "doc.fill").font(.caption).lineLimit(1)
+                                .padding(.horizontal, 10).padding(.vertical, 7)
+                                .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
+                        }
+                    }
+                }
+                if let img = m.image, let ui = Eyes.thumb(img) {
+                    HStack {
+                        Spacer(minLength: 40)
+                        Image(uiImage: ui).resizable().scaledToFit().frame(maxWidth: 220, maxHeight: 220)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                }
+                Self.bubble(m.text, mine: true)
+            }
+        case .assistant:
+            if !m.text.isEmpty { Self.bubble(m.text, mine: false) }
+        case .tool:
+            VStack(alignment: .leading, spacing: 4) {
+                Button(action: toggle) {
+                    Label(AssistantScreen.toolTitle(m.tool ?? ""), systemImage: "wrench.and.screwdriver")
+                        .font(.caption).foregroundColor(.secondary)
+                }.buttonStyle(.plain)
+                Text(open ? m.text : String(m.text.prefix(140)) + (m.text.count > 140 ? " …" : ""))
+                    .font(.caption2).foregroundColor(.secondary).textSelection(.enabled)
+            }
+            .padding(8)
+            .background(Color(.tertiarySystemBackground), in: RoundedRectangle(cornerRadius: 10))
+        case .note:
+            Text(m.text).font(.footnote).foregroundColor(.orange).padding(.horizontal, 4)
+        }
+    }
+
+    /// **жирный**, `код`, ссылки — как в чате, а не звёздочками.
+    static func rich(_ t: String) -> AttributedString {
+        (try? AttributedString(markdown: t, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace))) ?? AttributedString(t)
+    }
+
+    /// plain — для ответа, который ещё пишется: без разбора разметки на каждое слово.
+    static func bubble(_ t: String, mine: Bool, plain: Bool = false) -> some View {
+        HStack {
+            if mine { Spacer(minLength: 40) }
+            Group { if plain { Text(t) } else { Text(rich(t)) } }
+                .textSelection(.enabled)
+                .padding(10)
+                .foregroundColor(mine ? .white : .primary)
+                .background(mine ? Color.blue : Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 16))
+            if !mine { Spacer(minLength: 40) }
+        }
     }
 }

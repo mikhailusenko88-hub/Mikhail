@@ -55,7 +55,11 @@ final class AssistantBrain: ObservableObject {
             messages = (try? dec.decode([ChatMsg].self, from: d)) ?? []
         }
         NotificationCenter.default.addObserver(forName: UIApplication.didReceiveMemoryWarningNotification, object: nil, queue: .main) { [weak self] _ in
-            Task { @MainActor in if self?.busy == false { LlamaEngine.shared.unload() } }
+            Task { @MainActor in if self?.busy == false { self?.sleep() } }
+        }
+        // ушли из приложения — сразу отдаём память и видеокарту телефону (в фоне iPhone всё равно не даёт считать)
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.sleep(note: true) }
         }
     }
 
@@ -122,6 +126,16 @@ final class AssistantBrain: ObservableObject {
             self.stage = ""
             self.warmUp()
         }
+    }
+
+    /// Выгрузить нейросеть из памяти (≈3 ГБ): при выходе из Помощника и когда приложение уходит в фон.
+    func sleep(note: Bool = false) {
+        let was = busy
+        stop()
+        warming?.cancel()
+        warming = nil
+        if was && note { messages.append(ChatMsg(role: .note, text: "Остановилась: приложение ушло в фон. Спросите ещё раз.")) }
+        engine.unloadLater()
     }
 
     func stop() {
