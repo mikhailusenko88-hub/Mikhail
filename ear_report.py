@@ -229,6 +229,24 @@ def abs_noise(path, x, sr=44100):
     return out
 
 
+def purity(x, sr=44100):
+    """чистота тембров: «плотность» спектра 1–8 кГц (0 = редкие чистые линии; больше 0,0005 = каша из призвуков
+    расстроенных голосов — слышна как треск и шипение), доли энергии ниже 60 Гц и в полосах 4–8 и 8–16 кГц"""
+    mono = x.mean(1)
+    n = 8192
+    fr = np.lib.stride_tricks.sliding_window_view(mono, n)[::4096] * np.hanning(n)
+    S = np.abs(np.fft.rfft(fr, axis=1)) ** 2
+    f = np.fft.rfftfreq(n, 1 / sr)
+    P = S.mean(0)
+    tot = P.sum() + 1e-30
+    db = lambda lo, hi: round(float(10 * np.log10(P[(f >= lo) & (f < hi)].sum() / tot + 1e-20)), 1)  # noqa: E731
+    b = (f >= 1000) & (f < 8000)
+    act = S.sum(1) > 0.01 * S.sum(1).max()
+    p = S[act][:, b] + 1e-20
+    dens = float(np.median(np.exp(np.log(p).mean(1)) / p.mean(1)))
+    return {"density": round(dens, 5), "sub60": db(20, 60), "b60_120": db(60, 120), "b4_8k": db(4000, 8000), "b8_16k": db(8000, 16000)}
+
+
 def merge_chords(ch, hop):
     seq = []
     for i, c in enumerate(ch):
@@ -312,6 +330,7 @@ def report(path):
     snd, S, f, cen = sound_stats(x)
     nz = noise_stats(x)
     an = abs_noise(path, x)
+    pu = purity(x)
     mel = melody_stats(ml["melody_hz"], ml["melody_hop_s"]) if "melody_hz" in ml else {}
     chords = ml.get("chords", [])
     mshare = minor_share(chords)
@@ -395,6 +414,9 @@ def report(path):
     L.append(f"- **шипение** (пол шума между гармониками, 6–16 кГц): {nz['floor_6_16k']} дБ, в громких местах до {nz['floor_6_16k_p90']} дБ; "
              f"3–6 кГц: {nz['floor_3_6k']} дБ · **треск**: {nz['ticks_per_s']} в секунду. Ориентир: Михаил услышал «шум как от пластинки» "
              f"при −53 дБ / до −29 дБ (шейкер, шум смычка, щелчки спиккато); чистый звук — ниже −60 дБ и до −45 дБ, треск < 0,05/с")
+    L.append(f"- **чистота тембров**: плотность спектра 1–8 кГц {pu['density']:.5f}; ниже 60 Гц {pu['sub60']} дБ, 60–120 Гц {pu['b60_120']} дБ, "
+             f"4–8 кГц {pu['b4_8k']} дБ, 8–16 кГц {pu['b8_16k']} дБ. Ориентир: Михаил слышал «треск» при плотности 0,0016–0,0024 и при 4–8 кГц −29 дБ "
+             f"(яркий орган); чисто — плотность ≤ 0,0001, ниже 60 Гц ≤ −17 дБ, 4–8 кГц ≤ −33 дБ")
     L.append(f"- **шум на слух** (абсолютный): «пол» 4–8 кГц {an['floor4_8_intro']} дБFS во вступлении / {an['floor4_8_all']} весь трек; "
              f"8–16 кГц {an['floor8_16_intro']} / {an['floor8_16_all']}; доля верхов 5–16 кГц {an['hf_intro']} дБ во вступлении / {an['hf_all']} весь; "
              f"кодек {an['codec']}. Ориентир: при −65/−58 (4–8к) и −76/−79 (8–16к) Михаил слышал шипение на большой громкости; "
@@ -447,15 +469,15 @@ def report(path):
     plt.tight_layout()
     plt.savefig(f"out/{name}.png", dpi=70)
     plt.close(fig)
-    J = {"cry_index": ci, "light_index": li, "noise": nz, "abs_noise": an, "melody": {k: v for k, v in mel.items() if not k.startswith("_")},
+    J = {"cry_index": ci, "light_index": li, "noise": nz, "abs_noise": an, "purity": pu, "melody": {k: v for k, v in mel.items() if not k.startswith("_")},
          "sound": snd, "minor_share": mshare}
     json.dump(J, open(f"out/{name}.sum.json", "w"), ensure_ascii=False)
     return J
 
 
 def summary():
-    rows = ["| файл | с | лад | темп | LUFS | грусть | радость | валентн. | CLAP главное | плач | свет | подъезды | вибрато | шипение | треск/с |",
-            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    rows = ["| файл | с | лад | темп | LUFS | грусть | радость | валентн. | CLAP главное | плач | свет | подъезды | вибрато | шипение | треск/с | плотность | <60 Гц |",
+            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for p in sorted(glob.glob("out/*.ml.json")):
         name = os.path.basename(p)[:-8]
         ml = json.load(open(p))
@@ -473,7 +495,8 @@ def summary():
         rows.append(f"| {name} | {ml.get('duration')} | {key[0]} {key[1]} | {ml.get('bpm')} | {ml.get('lufs')} | "
                     f"{fmt(pick(heads, 'mood_sad', 'sad'))} | {fmt(pick(heads, 'mood_happy', 'happy'))} | {fmt(val)} | {cm} | "
                     f"{sm.get('cry_index')} | {sm.get('light_index')} | {fmt(mel.get('scoop_share'))} | {fmt(mel.get('vibrato_st'))} | "
-                    f"{sm.get('noise', {}).get('floor_6_16k', '')} | {sm.get('noise', {}).get('ticks_per_s', '')} |")
+                    f"{sm.get('noise', {}).get('floor_6_16k', '')} | {sm.get('noise', {}).get('ticks_per_s', '')} | "
+                    f"{sm.get('purity', {}).get('density', '')} | {sm.get('purity', {}).get('sub60', '')} |")
     open("out/summary.md", "w").write("# Слух: сводка\n\n" + "\n".join(rows) + "\n")
 
 

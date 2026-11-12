@@ -9,9 +9,10 @@ import sys
 import numpy as np
 
 import theme as th
-from theme import SR, m, hz, legato_line, horn, timp, piano
-from rassvet4 import voice, harp, celesta, fdrum, taiko, kick, sub, pluck, spad, short, master, write24, lufs
-from cathedral import line as cline, VOWEL_A, VOWEL_U, organ
+from theme import SR, m, hz, horn, timp, piano
+from rassvet4 import voice, celesta, fdrum, kick, sub, pluck, spad, write24, lufs
+from cathedral import VOWEL_A, VOWEL_U
+from chisto import clean_line, sp_strings, sp_bass, sp_choir, organ_soft, taiko, master_clean, harp, low_swell
 
 rng = np.random.default_rng(2026)
 NAMES = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
@@ -157,6 +158,31 @@ SONGS["gimn"] = dict(
 )
 
 
+# ---------------------------------------------------------------- «Рассвет»: фа мажор — мелодия из rassvet4 на чистых инструментах
+_RV = [
+    [(0, 1, "C4", "o"), (1, 1, "F4", "a"), (2, 2, "A4", "o")],
+    [(0, 1.5, "G4", "a"), (1.5, .5, "A4", "a"), (2, 1, "G4", "o"), (3, 1, "E4", "u")],
+    [(0, 1, "F4", "o"), (1, 1, "A4", "a"), (2, 2, "D5", "o")],
+    [(0, 1.5, "D5", "a"), (1.5, .5, "C5", "a"), (2, 2, "Bb4", "o")],
+    [(0, 1.5, "A4", "o"), (1.5, .5, "Bb4", "a"), (2, 2, "C5", "a")],
+    [(0, 2, "F5", "o"), (2, 1, "D5", "a"), (3, 1, "Bb4", "o")],
+    [(0, 1.5, "C5", "a"), (1.5, .5, "Bb4", "a"), (2, 2, "G4", "o")],
+    [(0, 1, "G4", "a"), (1, .5, "A4", "a"), (1.5, .5, "Bb4", "a"), (2, 2, "C5", "o")],
+]
+_RP = ["F", "C/E", "Dm", "Bb", "F/A", "Bb", "Gm7", "C7"]
+SONGS["rassvet"] = dict(
+    title="Рассвет", bpm=76, bpb=4, tr=0, tonic="F", hold=1.15,
+    H={"F": ("F2", ["F3", "A3", "C4"]), "Bb/F": ("F2", ["F3", "Bb3", "D4"]), "C/E": ("E2", ["E3", "G3", "C4"]),
+       "Dm": ("D2", ["D3", "F3", "A3"]), "Bb": ("Bb1", ["D3", "F3", "Bb3"]), "F/A": ("A1", ["F3", "A3", "C4"]),
+       "Gm7": ("G1", ["F3", "Bb3", "D4"]), "C7": ("C2", ["E3", "Bb3", "C4"])},
+    bars=[bar("F", None, "intro"), bar("Bb/F", None, "intro")]
+    + [bar(_RP[i], _RV[i], "verse", i in (3, 7)) for i in range(8)]
+    + [bar(_RP[i], _RV[i], "climax", i in (3, 7)) for i in range(8)]
+    + [bar("F", [(0, 4, "A4", "a")], "end")],
+    style=style(pad="str", pv=(0.07, 0.09, 0.14, 0.11), arp="harp", intro_arp="piano", drums="frame", horns=0.07, viol=0.18, fin="piano"),
+)
+
+
 # ================================================================ движок
 def vlead(prev, pcs, lo, hi):
     """голосоведение подложки: каждый голос идёт к ближайшему звуку аккорда; аккорд всегда полный (с терцией)"""
@@ -283,18 +309,16 @@ def compose(song, over=None):
         bus.add(sig, ts + 0.01, pan=0.22, send=0.42, gain=0.75)
     vc = [(a, e, mi - 12, 0.09) for a, e, mi, vw, b, sec, c in lead if sec == "verse"]
     if vc and St["cello"]:
-        sig, ts = legato_line(vc, voices=3, att=0.4, rel=1.0, bright=0.55, vib=0.004, glide=0.03, noise=0)
+        sig, ts = clean_line(vc, sp_strings(1500, 1.3), voices=2, att=0.4, rel=1.0, vib=0.004, glide=0.03, fmax=2500)
         bus.add(sig, ts, pan=0.25, send=0.3)
     # ---------- кульминация: скрипки октавой выше, валторны, челеста
     vn = [(a, e, mi + 12, St["viol"]) for a, e, mi, vw, b, sec, c in lead if sec == "climax"]
     if vn and St["viol"]:
-        sig, ts = legato_line(vn, voices=8, att=0.3, rel=2.0, bright=0.62, vib=0.0038, glide=0.022, noise=0)
+        sig, ts = clean_line(vn, sp_strings(3500, 1.1), voices=4, att=0.3, rel=2.0, vib=0.0038, glide=0.022, fmax=6500)
         bus.add(sig, ts, pan=-0.3, send=0.34)
     for a, e, mi, vw, b, sec, c in lead:
         if sec == "climax" and St["horns"]:
             bus.add(horn(mi, e - a + 0.05, St["horns"]), a + 0.01, pan=0.25, send=0.45)
-            if St["drums"] == "taiko":
-                bus.add(horn(mi - 12, e - a + 0.05, St["horns"] * 0.7), a + 0.01, pan=0.3, send=0.45)
         if St["cel_mel"] and sec in ("climax", "end"):
             bus.add(celesta(mi + 24, St["cel_mel"]), a + 0.02, pan=0.3, send=0.5)
     # ---------- гармония: бас
@@ -307,19 +331,14 @@ def compose(song, over=None):
     if St["pad"] == "synth":
         for a, e, c, sec, b, x in segs:
             p = Hc[c][0]
-            bus.add(sub(p + (12 if p < 36 else 0), e - a, bv[LV[sec]] * 1.1), a, pan=0.0, send=0.05)
+            bus.add(sub(p + (12 if p < 36 else 0), e - a, bv[LV[sec]] * 0.75), a, pan=0.0, send=0.05)
     elif St["pad"] == "organ":
         for a, e, c, sec, b, x in segs:
-            bus.add(organ(Hc[c][0] + 12, e - a + 0.1, bv[LV[sec]] * 0.55, stops=("16", "8"), rel=0.6), a, pan=0.0, send=0.5)
+            bus.add(organ_soft(Hc[c][0] + 12, e - a + 0.1, bv[LV[sec]] * 0.5, rel=0.6, deep=True), a, pan=0.0, send=0.4)
     else:
-        bl = [(a, e, Hc[c][0] + 12, bv[LV[sec]]) for a, e, c, sec, b, x in segs]
-        sig, ts = legato_line(bl, voices=5, att=0.9, rel=2.5, bright=0.42, vib=0.003, glide=0.05, noise=0)
-        bus.add(sig, ts, pan=0.25, send=0.3)
-        deep = 1.0 if St["drums"] == "taiko" else 0.8
-        bl2 = [(a, e, mi - 12, v * deep) for (a, e, mi, v), sg in zip(bl, segs) if sg[3] in ("climax", "end") and mi - 12 >= 31]
-        if bl2 and St["drums"]:
-            sig, ts = legato_line(bl2, voices=4, att=0.8, rel=2.5, bright=0.4, vib=0.002, glide=0.05, noise=0)
-            bus.add(sig, ts, pan=0.2, send=0.25)
+        bl = [(a, e, Hc[c][0] + 12, bv[LV[sec]] * 0.75) for a, e, c, sec, b, x in segs]
+        sig, ts = clean_line(bl, sp_bass(), voices=1, att=0.9, rel=2.5, vib=0.0, glide=0.05, fmax=420, lo_hz=55)
+        bus.add(sig, ts, pan=0.15, send=0.25)
     # ---------- гармония: три голоса подложки с голосоведением
     voicing = [t4 - 8, t4 - 5, t4]
     lines = [[], [], []]
@@ -329,22 +348,21 @@ def compose(song, over=None):
             lines[k].append((a, e, voicing[k], St["pv"][LV[sec]]))
     for k in range(3):
         if St["pad"] == "str":
-            sig, ts = legato_line(lines[k], voices=5, att=1.3, rel=2.5, bright=0.32, vib=0.004, glide=0.07, noise=0)
+            sig, ts = clean_line(lines[k], sp_strings(1800, 1.3), voices=3, att=1.3, rel=2.5, vib=0.004, glide=0.07, fmax=2600)
             bus.add(sig, ts + 0.04 * k, pan=-0.35 + 0.3 * k, send=0.34)
         elif St["pad"] == "organ":
             for (a, e, mi, v), sg in zip(lines[k], segs):
-                stops = ("8", "fl", "4") if sg[3] in ("climax", "end") else ("8", "fl")
-                bus.add(organ(mi, e - a + 0.1, v * 1.5, stops=stops, rel=0.7), a, pan=-0.3 + 0.3 * k, send=0.6)
+                bus.add(organ_soft(mi, e - a + 0.1, v * 1.8, rel=0.7, bright=sg[3] in ("climax", "end")), a, pan=-0.3 + 0.3 * k, send=0.6)
         else:
             for a, e, mi, v in lines[k]:
                 bus.add(spad(mi, e - a, v * 1.3), a - 0.1, pan=-0.4 + 0.4 * k, send=0.4)
                 if k == 2:
                     bus.add(spad(mi + 12, e - a, v * 0.5), a - 0.1, pan=0.3, send=0.45)
     if St["pad"] == "str":
-        sig, ts = legato_line([(bt(fin_b), end_t, t4 + 2, 0.06)], voices=5, att=1.5, rel=2.5, bright=0.35, vib=0.004, noise=0)
+        sig, ts = clean_line([(bt(fin_b), end_t, t4 + 2, 0.06)], sp_strings(1800, 1.3), voices=3, att=1.5, rel=2.5, vib=0.004, fmax=2600)
         bus.add(sig, ts, pan=-0.2, send=0.5)
     if St["drone"]:                                       # тихая квинта на весь трек — «воздух» простора
-        sig, ts = legato_line([(bt(0), end_t, t4 - 17, St["drone"])], voices=4, att=2.0, rel=3.0, bright=0.35, vib=0.002, noise=0)
+        sig, ts = clean_line([(bt(0), end_t, t4 - 17, St["drone"])], sp_bass(500), voices=1, att=2.0, rel=3.0, vib=0.0, fmax=700)
         bus.add(sig, ts, pan=0.0, send=0.4)
     # ---------- перебор восьмыми
     for a, e, c, sec, b, x in segs:
@@ -408,7 +426,7 @@ def compose(song, over=None):
     if St["choir"]:
         ch = [(a, e, Hc[c][1][2] + 12, 0.24) for a, e, c, sec, b, x in segs if sec == "climax"]
         if ch:
-            sig, ts = cline(ch, "choir", voices=10, att=1.2, rel=2.0, vowel=VOWEL_U if St["choir_v"] == "u" else VOWEL_A)
+            sig, ts = clean_line(ch, sp_choir(VOWEL_U if St["choir_v"] == "u" else VOWEL_A), voices=6, att=1.2, rel=2.0, vib=0.0035, glide=0.06, fmax=4000, det=10)
             bus.add(sig, ts, pan=0.0, send=0.55, gain=St["choir"])
     # ---------- колокол: начало раздела, середина раздела, финал
     if St["bells"]:
@@ -472,8 +490,7 @@ def compose(song, over=None):
             if big:
                 bus.add(shimmer(BAR * 0.95, 0.10, t4), bt(b - 1) + BAR * 0.05, pan=0.0, send=0.4)
             if D in ("frame", "taiko", "timp"):
-                for k in range(12):
-                    bus.add(timp(tfit(root_of(b - 1, True)), 0.02 + 0.05 * k / 11, 0.6), bt(b - 1, bpb - 2) + k * BEAT * 2 / 12, pan=0.0, send=0.4)
+                bus.add(low_swell(tfit(root_of(b - 1, True)), 2 * BEAT, 0.07), bt(b - 1, bpb - 2), pan=0.0, send=0.4)
             bus.add(timp(tfit(root_of(b)), 0.15 if big else 0.07, 4.0), bt(b), pan=0.0, send=0.4)
     cb = [b for b in range(nb) if secs[b] == "climax"]
     if len(cb) >= 5 and big:
@@ -539,7 +556,7 @@ if __name__ == "__main__":
     name, out = sys.argv[1], sys.argv[2]
     t = time.time()
     bus, end_t = compose(SONGS[name])
-    L, R = master(bus, 0.3)
+    L, R = master_clean(bus, 0.3)
     cut = int((end_t + 4.5) * SR)
     L, R = L[:cut].copy(), R[:cut].copy()
     fo = int(1.5 * SR)
