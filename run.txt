@@ -1,12 +1,20 @@
 # имя  аргументы для scene.py (или "py script.py")
-r37_top_linen scene=plinth cam=top item=panel decor=3-7 surf=linen ev=-0.35 res=800x600 samples=48 noise=0.08
-r37_top_plaster scene=plinth cam=top item=panel decor=3-7 surf=plaster ev=-0.35 res=800x600 samples=48 noise=0.08
-r37_cut scene=plinth cam=cut item=panel decor=3-7 surf=plaster ev=-0.35 res=800x600 samples=48 noise=0.08
-r39_top scene=plinth cam=top item=panel decor=3-9 surf=plaster ev=-0.35 res=800x600 samples=48 noise=0.08
-r315_top scene=plinth cam=top item=panel decor=3-15 surf=plaster surfcol=B9B3A9 ev=-0.35 res=800x600 samples=48 noise=0.08
-r910_top scene=plinth cam=top item=a910 cy=2.8 ev=-0.35 res=800x600 samples=48 noise=0.08
-r910_cut scene=plinth cam=cut item=a910 cy=2.8 ev=-0.35 res=800x600 samples=48 noise=0.08
-r703_cut scene=plinth cam=cut item=plinth ev=-0.35 res=800x600 samples=48 noise=0.08
-rgreen_wall scene=plinth cam=wall paint=6F7F76 plcol=6F7F76 plrough=0.6 nstr=0.1 ev=-0.1 res=800x600 samples=48 noise=0.08
-rgreen_wall_b scene=plinth cam=wall paint=6F7F76 plcol=6F7F76 plrough=0.6 nstr=0.1 basket=1 ev=-0.1 res=800x600 samples=48 noise=0.08
-r37_macro scene=lounge decor=3-7 cam=macro fs=0 res=800x600 samples=48 noise=0.08
+s37_stack scene=plinth cam=top item=panel decor=3-7 surf=plaster zoom=0.85 ev=-0.35 res=800x600 samples=48 noise=0.08
+s910_stack scene=plinth cam=top item=a910 cy=2.8 zoom=0.9 ev=-0.1 res=800x600 samples=48 noise=0.08
+sgreen_f100 scene=plinth cam=corner paint=6F7F76 plcol=6F7F76 cdx=0.40 cdy=0.58 nstr=0 fstop=0 fill=100 reexp=0.25 ev=-0.2 res=800x600 samples=48 noise=0.08
+sgreen_f400 scene=plinth cam=corner paint=6F7F76 plcol=6F7F76 cdx=0.40 cdy=0.58 nstr=0 fstop=0 fill=400 reexp=0.25 ev=-0.2 res=800x600 samples=48 noise=0.08
+sgreen_f1500 scene=plinth cam=corner paint=6F7F76 plcol=6F7F76 cdx=0.40 cdy=0.58 nstr=0 fstop=0 fill=1500 reexp=0.25 ev=-0.2 res=800x600 samples=48 noise=0.08
+scorner_f400 scene=plinth cam=corner paint=4F5B5E nstr=0.12 fstop=0 fill=400 reexp=0.16 res=800x600 samples=48 noise=0.08
+f37_cut scene=plinth cam=cut item=panel decor=3-7 surf=plaster ev=-0.35 res=1600x1200 samples=260 noise=0.025
+f39_cut scene=plinth cam=cut item=panel decor=3-9 surf=plaster ev=-0.35 res=1600x1200 samples=260 noise=0.025
+f315_cut scene=plinth cam=cut item=panel decor=3-15 surf=plaster surfcol=C4BEB4 ev=-0.35 res=1600x1200 samples=260 noise=0.025
+f910_cut scene=plinth cam=cut item=a910 cy=2.8 ev=-0.1 res=1600x1200 samples=260 noise=0.025
+f703_cut scene=plinth cam=cut item=plinth zoom=1.12 ev=-0.25 res=1600x1200 samples=260 noise=0.025
+n37_macro scene=lounge decor=3-7 cam=macro fs=0 res=1600x1200 samples=220 noise=0.03
+n315_macro scene=lounge decor=3-15 cam=macro fs=0 res=1600x1200 samples=220 noise=0.03
+n39_macro scene=lounge decor=3-9 cam=macro fs=0 res=1600x1200 samples=220 noise=0.03
+n910_macro scene=lounge decor=A910 cam=macro2 sun_az=24 sun_el=22 ev=-1.0 fs=0 res=1600x1200 samples=220 noise=0.03
+n37_close scene=lounge decor=3-7 cam=close fs=0 res=1600x1200 samples=220 noise=0.03
+n315_mid scene=lounge decor=3-15 cam=mid fs=0 res=1600x1200 samples=220 noise=0.03
+n39_close scene=lounge decor=3-9 cam=close fs=0 res=1600x1200 samples=220 noise=0.03
+n910_mid scene=lounge decor=A910 paint=5F7563 cam=mid sun_az=24 sun_el=22 fs=0 res=1600x1200 samples=220 noise=0.03

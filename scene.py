@@ -741,6 +741,11 @@ def calibrate(world, sun, sun_dir, neutral_prefixes=('wall', 'ceil'), lamps=(), 
     for ld, k in lamps:
         ld.energy = k * y_ref
     scene.camera = final_cam
+    if 'reexp' in A:      # экспозиция по медиане итогового кадра: нужно, когда свой свет сильнее оконного
+        y2 = float(np.median(lum(render_linear(pw, ph, 48, 'pre2'))))
+        ev = math.log2(float(A['reexp']) / max(y2, 1e-6)) + EV
+        scene.view_settings.exposure = ev
+        log('re-exposure: frame median', round(y2, 4), 'exposure', round(ev, 2))
     return y_ref
 
 
@@ -1218,11 +1223,14 @@ def scene_plinth():
             LA, LB = 0.42, 0.34
             piece('pc_a', oA, ra, LA)
             pts = [oA, oA + dA * LA, oA + wA * wd, oA + dA * LA + wA * wd]
-            if cm == 'top' and st == 'two':        # второй отрезок — тыльной стороной вверх
+            if cm == 'top' and st == 'two':        # второй отрезок — крест-накрест поверх первого, тоже лицом вверх
+                rb = float(A.get('rot_b', 30))
+                dB, wB = Vector((-math.sin(R(rb)), math.cos(R(rb)), 0)), Vector((math.cos(R(rb)), math.sin(R(rb)), 0))
+                LB = 0.36 if item != 'a910' else 0.40
+                oB = oA + dA * (LA * 0.64) + wA * (wd / 2) - dB * (LB / 2) - wB * (wd / 2)
                 b = piece('pc_b', oB, rb, LB)
-                b.rotation_euler = (0, math.pi, R(rb))
                 b.location = (oB.x, oB.y, 0.012)
-                pts += [oB, oB + dB * LB, oB - wB * wd, oB + dB * LB - wB * wd]
+                pts += [oB, oB + dB * LB, oB + wB * wd, oB + dB * LB + wB * wd]
             xs, ys = [q.x for q in pts], [q.y for q in pts]
             grp = ((min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2, max(max(xs) - min(xs), (max(ys) - min(ys)) * 1.1) + 0.06)
     elif cm not in ('wide', 'corner', 'run', 'wall') and A.get('piece', '1') == '1':
@@ -1236,6 +1244,21 @@ def scene_plinth():
     az, el = float(A.get('sun_az', 40)), float(A.get('sun_el', 24))
     sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
     world, sun = setup_world(sun_dir)
+    lamps = []
+    if 'fill' in A:
+        ld = bpy.data.lights.new('fill', 'AREA')
+        ld.shape, ld.size, ld.energy = 'SQUARE', float(A.get('fill_size', 1.4)), 0.0
+        ld.color = (1.0, 0.966, 0.899)
+        lo = bpy.data.objects.new('fill', ld)
+        col.objects.link(lo)
+        fd, fz = float(A.get('fill_d', 1.7)), float(A.get('fill_z', 1.5))
+        lo.location = (W - fd, D - fd, fz)
+        lo.rotation_euler = (Vector((W - 0.1, D - 0.1, 0.25)) - Vector(lo.location)).to_track_quat('-Z', 'Y').to_euler()
+        try:
+            lo.visible_camera = False
+        except Exception:
+            pass
+        lamps.append((ld, float(A['fill'])))
     cal = camera((2.0, 0.8, 1.25), (2.2, D, 1.1), lens=28)
     cz = float(A.get('cam_z', 0.15))
     if cm == 'wide':
@@ -1276,7 +1299,7 @@ def scene_plinth():
     else:
         camera((2.55, 4.0, float(A.get('cam_z', 0.2))), (3.5, D, 0.06), lens=float(A.get('lens', 35)), fstop=float(A.get('fstop', 16)),
                focus=float(A.get('focus', 0.65)))
-    return world, sun, sun_dir, [], cal
+    return world, sun, sun_dir, lamps, cal
 
 
 SCENES = {'lounge': scene_lounge, 'arch': scene_arch, 'plinth': scene_plinth}
