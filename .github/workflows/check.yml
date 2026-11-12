@@ -1,0 +1,20 @@
+name: s9check
+on: push
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          B=http://89.126.192.214:8080/mebel
+          curl -s -o feed.json -w "feed %{http_code} %{size_download}\n" "$B/s9kbars-v/feed.json"
+          python3 - <<'PY'
+          import json,subprocess
+          f=json.load(open('feed.json')); print('updated',f.get('updated'),'items',len(f['items']))
+          for it in f['items']:
+              u='http://89.126.192.214:8080/mebel/s9kbars-v/'+it['file']
+              r=subprocess.run(['curl','-sI','--max-time','20',u],capture_output=True,text=True).stdout
+              st=r.split('\n')[0].strip(); ct=[l for l in r.split('\n') if l.lower().startswith(('content-type','content-length','content-disposition','accept-ranges'))]
+              print(it['date'],it['file'],it.get('size'),'|',st,'|',' ; '.join(x.strip() for x in ct))
+          PY
+          echo "--- index"; curl -s -o /dev/null -w "%{http_code} %{size_download}\n" "$B/s9kbars/"; curl -s "$B/s9kbars/" | grep -o 'class="btn dl"[^>]*>' | head -2; curl -s "$B/s9kbars/" | grep -c "target=\"_blank\""
+          echo "--- server dir listing"; curl -s "$B/s9kbars-v/" | head -c 1500
