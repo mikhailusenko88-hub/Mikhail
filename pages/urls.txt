@@ -1,13 +1,6 @@
-https://www.tbank.ru/kassa/solution/check/
-https://yookassa.ru/54fz/
-https://robokassa.com/payments/tarify/
-https://robokassa.com/online-check/robocheck/
-https://cloudpayments.ru/
-https://cloudpayments.ru/pricing
-https://modulbank.ru/acquiring/internet
-https://modulbank.ru/
-https://tochka.com/rko/acquiring/check/
-https://prodamus.ru/
-https://paymaster.ru/
-https://digitalkassa.ru/elektronnye-cheki-dlya-internet-magazina/
-# чеки без кассы у других 12.11
+https://cdn.tbank.ru/static/documents/43d45d85-75f9-4b72-9e53-e976b765be7f.pdf
+https://cdn.tbank.ru/static/documents/e4f5df1b-5401-4091-b6ca-8af82e27ed4b.pdf
+https://www.tbank.ru/business/online-payments/internet-acquiring/
+https://www.tbank.ru/kassa/
+https://www.tbank.ru/business/acquiring/sbp/
+# Т-Банк: акция 0,99 % и условия Чеков 12.11
