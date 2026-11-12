@@ -52,7 +52,7 @@
   <small id="upd"></small>
 </header>
 <div class="wrap">
-  <p class="hint">Каждое утро в 07:00 тут появляются новые ролики (хранятся 2 недели). «Скачать» откроет ролик в отдельном окне: там «Поделиться» → «Сохранить видео» (или скачать), потом закрой это окно («Готово», крестик или стрелка назад) — вернёшься сюда к списку и возьмёшь следующий. Дальше в Rutube или YouTube: «+» → загрузить → вставить название и описание кнопками ниже (для каждой площадки своё описание и ссылки). Галочка «выложено» запоминается на этом телефоне.</p>
+  <p class="hint">Каждое утро в 07:00 тут появляются новые ролики (хранятся 2 недели). <b>«Скачать»</b> — iPhone спросит «Загрузить», ролик ляжет в Файлы → Загрузки (значок ⬇︎ в строке адреса), страница остаётся на месте. <b>«Открыть»</b> — ролик в отдельном окне, оттуда «Поделиться»; потом закрой окно, и вернёшься к этому же ролику в списке (он отмечен красной рамкой).</p>
   <div id="list"><div class="empty">Загружаю…</div></div>
 </div>
 <div class="toast" id="toast">Скопировано</div>
@@ -88,7 +88,7 @@
           '<div class="top"><video playsinline preload="metadata" controls poster="'+esc(loc(it.file.replace('.mp4','.jpg')))+'" src="'+esc(loc(it.file))+'"></video>'+
           '<div class="meta"><div class="ep">'+(it.ep_num?it.ep_num+' серия · ':'')+'момент '+Math.floor(it.start/60)+':'+String(it.start%60).padStart(2,'0')+' · '+mb+' МБ</div>'+
           '<div class="t">'+esc(it.title)+'</div>'+
-          '<div class="btns"><a class="btn dl" href="'+esc(loc(it.file))+'" target="_blank">⬇︎ Скачать / сохранить</a></div>'+
+          '<div class="btns"><a class="btn dl" href="'+esc(loc(it.file))+'" download="'+esc(it.file)+'">⬇︎ Скачать</a><a class="btn op" href="'+esc(loc(it.file))+'" target="_blank">▶︎ Открыть</a></div>'+
           '</div></div>'+
           '<div class="plat"><div class="ph">RUTUBE</div><div class="btns"><button class="btn" data-copy="title">Название</button><button class="btn" data-copy="desc_rt">Описание</button><button class="btn all" data-copy="full_rt">Всё сразу</button></div>'+
           '<div class="field"><label>Описание для Rutube</label><pre>'+esc(it.desc_rt||it.desc)+'</pre></div></div>'+
@@ -98,10 +98,11 @@
         c.querySelectorAll('[data-copy]').forEach(function(b){b.addEventListener('click',function(){var k=b.getAttribute('data-copy');copy(M[k]||'',b)})});
         c.querySelector('.chk input').addEventListener('change',function(e){if(e.target.checked)done[it.file]=1;else delete done[it.file];save();c.classList.toggle('done',!!e.target.checked)});
         c.id='c_'+String(it.file).replace(/\W/g,'_');
-        c.querySelector('.btn.dl').addEventListener('click',function(){
+        c.querySelectorAll('.btn.dl,.btn.op').forEach(function(x){x.addEventListener('click',function(){
           try{localStorage.setItem(LS+'_last',c.id)}catch(e){}
           var p=document.querySelector('.card.last');if(p)p.classList.remove('last');c.classList.add('last');
-        });
+          if(x.classList.contains('dl'))toast('Загрузка — смотри ⬇︎ в строке адреса');
+        })});
         list.appendChild(c);
       });
     });
