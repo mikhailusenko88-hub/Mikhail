@@ -174,6 +174,32 @@ def sound_stats(x, sr=44100):
     return out, S, f, cen
 
 
+def noise_stats(x, sr=44100):
+    """шипение: «пол» спектра между гармониками (20-й перцентиль по частотам) в 6–16 кГц относительно всей энергии кадра;
+    треск: короткие (≤3 мс) всплески высоких частот в 6+ раз выше местного фона"""
+    mono = x.mean(1)
+    n, hop = 2048, 1024
+    fr = np.lib.stride_tricks.sliding_window_view(mono, n)[::hop] * np.hanning(n)
+    S = np.abs(np.fft.rfft(fr, axis=1)) ** 2
+    f = np.fft.rfftfreq(n, 1 / sr)
+    tot = S.sum(1) + 1e-15
+    loud = 10 * np.log10(tot) > 10 * np.log10(tot.max()) - 35
+    out = {}
+    for lo, hi in ((3000, 6000), (6000, 16000)):
+        b = (f >= lo) & (f < hi)
+        fl = np.percentile(S[:, b], 20, axis=1) * b.sum()
+        db = 10 * np.log10(fl / tot + 1e-15)
+        out[f"floor_{lo // 1000}_{hi // 1000}k"] = round(float(np.median(db[loud])), 1)
+        out[f"floor_{lo // 1000}_{hi // 1000}k_p90"] = round(float(np.percentile(db[loud], 90)), 1)
+    hp = np.diff(mono, 2)
+    e = uniform_filter1d(hp ** 2, 44)[::44]
+    base = median_filter(e, 101) + 1e-15
+    r = e / base
+    tick = (r[1:-3] > 6) & (r[:-4] < 2.5) & (r[4:] < 2.5) & (e[1:-3] > 1e-9)
+    out["ticks_per_s"] = round(float(tick.sum() / (len(mono) / sr)), 2)
+    return out
+
+
 def merge_chords(ch, hop):
     seq = []
     for i, c in enumerate(ch):
@@ -255,6 +281,7 @@ def report(path):
     cl = json.load(open(f"out/{name}.clap.json")) if os.path.exists(f"out/{name}.clap.json") else None
     x = load(path)
     snd, S, f, cen = sound_stats(x)
+    nz = noise_stats(x)
     mel = melody_stats(ml["melody_hz"], ml["melody_hop_s"]) if "melody_hz" in ml else {}
     chords = ml.get("chords", [])
     mshare = minor_share(chords)
@@ -335,6 +362,9 @@ def report(path):
     L.append("- полосы (дБ от общей энергии): " + ", ".join(f"{k} {v}" for k, v in snd["bands_db"].items()))
     L.append(f"- яркость (центроид): {snd['centroid_hz']} Гц · стерео-корреляция {snd['stereo_corr']} · "
              f"щелчков {snd['clicks']} · перегруз {snd['clip_samples']} сэмплов")
+    L.append(f"- **шипение** (пол шума между гармониками, 6–16 кГц): {nz['floor_6_16k']} дБ, в громких местах до {nz['floor_6_16k_p90']} дБ; "
+             f"3–6 кГц: {nz['floor_3_6k']} дБ · **треск**: {nz['ticks_per_s']} в секунду. Ориентир: Михаил услышал «шум как от пластинки» "
+             f"при −53 дБ / до −29 дБ (шейкер, шум смычка, щелчки спиккато); чистый звук — ниже −60 дБ и до −45 дБ, треск < 0,05/с")
     open(f"out/{name}.md", "w").write("\n".join(L) + "\n")
     # ------------------------------------------------------------ картинка
     dur = len(x) / 44100
@@ -383,15 +413,15 @@ def report(path):
     plt.tight_layout()
     plt.savefig(f"out/{name}.png", dpi=70)
     plt.close(fig)
-    J = {"cry_index": ci, "light_index": li, "melody": {k: v for k, v in mel.items() if not k.startswith("_")},
+    J = {"cry_index": ci, "light_index": li, "noise": nz, "melody": {k: v for k, v in mel.items() if not k.startswith("_")},
          "sound": snd, "minor_share": mshare}
     json.dump(J, open(f"out/{name}.sum.json", "w"), ensure_ascii=False)
     return J
 
 
 def summary():
-    rows = ["| файл | с | лад | темп | LUFS | грусть | радость | валентн. | CLAP главное | плач | свет | подъезды | вибрато |",
-            "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    rows = ["| файл | с | лад | темп | LUFS | грусть | радость | валентн. | CLAP главное | плач | свет | подъезды | вибрато | шипение | треск/с |",
+            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for p in sorted(glob.glob("out/*.ml.json")):
         name = os.path.basename(p)[:-8]
         ml = json.load(open(p))
@@ -408,7 +438,8 @@ def summary():
         fmt = lambda v: "" if v is None else (f"{v:.2f}" if isinstance(v, float) else str(v))  # noqa: E731
         rows.append(f"| {name} | {ml.get('duration')} | {key[0]} {key[1]} | {ml.get('bpm')} | {ml.get('lufs')} | "
                     f"{fmt(pick(heads, 'mood_sad', 'sad'))} | {fmt(pick(heads, 'mood_happy', 'happy'))} | {fmt(val)} | {cm} | "
-                    f"{sm.get('cry_index')} | {sm.get('light_index')} | {fmt(mel.get('scoop_share'))} | {fmt(mel.get('vibrato_st'))} |")
+                    f"{sm.get('cry_index')} | {sm.get('light_index')} | {fmt(mel.get('scoop_share'))} | {fmt(mel.get('vibrato_st'))} | "
+                    f"{sm.get('noise', {}).get('floor_6_16k', '')} | {sm.get('noise', {}).get('ticks_per_s', '')} |")
     open("out/summary.md", "w").write("# Слух: сводка\n\n" + "\n".join(rows) + "\n")
 
 

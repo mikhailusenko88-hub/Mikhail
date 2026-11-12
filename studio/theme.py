@@ -58,6 +58,12 @@ class Bus:
             sig = sig[-s:]
             s = 0
         sig = sig[:len(self.L) - s] * gain
+        # страховка от щелчков: 1 мс на вход, 8 мс на выход каждого звука
+        ki, ko = min(len(sig), int(0.001 * SR)), min(len(sig), int(0.008 * SR))
+        if ki > 1 and ko > 1:
+            sig = sig.copy()
+            sig[:ki] *= np.linspace(0, 1, ki)
+            sig[-ko:] *= np.linspace(1, 0, ko)
         a = (pan + 1) * math.pi / 4
         gl, gr = math.cos(a), math.sin(a)
         d = int(abs(haas) * SR)
@@ -70,6 +76,10 @@ class Bus:
             self.R[s:e] += sig * gr
         self.sL[s:e] += sig * gl * send
         self.sR[s:e] += sig * gr * send
+
+
+NOISE = 1.0   # общий множитель шумов (смычок, молоточки, дыхание хора); 0 — чистый звук
+AIR = 0.7     # подъём «воздуха» выше 4,5 кГц в мастеринге
 
 
 def env_ar(n, att, rel, curve=1.5):
@@ -130,12 +140,14 @@ def strings(midi, dur, vel, voices=6, att=0.35, rel=0.6, bright=1.0, vib=0.0045,
         lag = int(rng.uniform(0, 0.035) * SR)
         sig = np.roll(sig, lag)
         sig[:lag] = 0
+        kf = min(len(sig) - lag, int(0.006 * SR))   # вход голоса без щелчка
+        sig[lag:lag + kf] *= np.linspace(0, 1, kf)
         out += sig
     # смычок: шум в верхней середине, сильнее на атаке
     nz = rng.normal(0, 1, n)
     nz = gaussian_filter1d(nz, 1.2) - gaussian_filter1d(nz, 6)
     e = env_ar(n, att * 0.7, rel, 1.2)
-    bow = nz * (0.012 + 0.07 * np.exp(-t / 0.15))
+    bow = nz * (0.012 + 0.07 * np.exp(-t / 0.15)) * NOISE
     swell = 0.85 + 0.15 * np.sin(np.pi * np.clip(t / max(dur, 0.1), 0, 1))
     return vel * e * swell * (out / voices * 0.9 + bow * 0.25)
 
@@ -180,10 +192,12 @@ def legato_line(notes, voices=6, att=0.3, rel=0.7, bright=1.0, vib=0.005, glide=
         lag = int(rng.uniform(0, 0.025) * SR)
         sig = np.roll(sig, lag)
         sig[:lag] = 0
+        kf = min(len(sig) - lag, int(0.006 * SR))   # вход голоса без щелчка
+        sig[lag:lag + kf] *= np.linspace(0, 1, kf)
         out += sig
     nz = rng.normal(0, 1, n)
     nz = gaussian_filter1d(nz, 1.2) - gaussian_filter1d(nz, 6)
-    bow = nz * (0.01 + 0.05 * np.exp(-since_a / 0.12)) * noise
+    bow = nz * (0.01 + 0.05 * np.exp(-since_a / 0.12)) * noise * NOISE
     return up(amp) * env * (out / voices * 0.9 + bow * 0.25), t0
 
 
@@ -209,7 +223,7 @@ def choir(midi, dur, vel, voices=8):
         vibr = 0.004 * np.sin(2 * np.pi * rng.uniform(4.6, 5.6) * t + rng.uniform(0, 6.28)) * np.clip((t - 0.6) / 0.8, 0, 1)
         out += play(tab, f0 * det * np.exp(vibr + drift(n, 6)))
     nz = rng.normal(0, 1, n)
-    br = (gaussian_filter1d(nz, 2) - gaussian_filter1d(nz, 10)) * 0.04
+    br = (gaussian_filter1d(nz, 2) - gaussian_filter1d(nz, 10)) * 0.04 * NOISE
     return vel * env_ar(n, 0.9, 1.2, 1.6) * (out / voices + br)
 
 
@@ -250,7 +264,7 @@ def piano(midi, dur, vel, rel=0.35):
     k = min(n, int(0.02 * SR))
     th = np.zeros(n)
     th[:k] = (gaussian_filter1d(rng.normal(0, 1, k), 5) * np.exp(-np.arange(k) / (0.004 * SR))) * 0.5
-    return vel * (s * att * off + th * vel)
+    return vel * (s * att * off + th * vel * NOISE)
 
 
 def harp(midi, vel):
@@ -516,7 +530,7 @@ def master(bus):
         band = gaussian_filter1d(ch, SR / (2 * math.pi * 450)) - gaussian_filter1d(ch, SR / (2 * math.pi * 150))
         ch = ch - 0.22 * band
         air = ch - gaussian_filter1d(ch, SR / (2 * math.pi * 4500))
-        out.append(ch + 0.7 * air)
+        out.append(ch + AIR * air)
     L, R = out
     peak = max(np.max(np.abs(L)), np.max(np.abs(R)))
     L, R = L / peak, R / peak

@@ -93,9 +93,11 @@ def line(notes, kind="choir", voices=8, att=0.5, rel=1.2, glide=0.06, vib=0.004,
         lag = int(rng.uniform(0, 0.04) * SR)
         sig = np.roll(sig, lag)
         sig[:lag] = 0
+        kf = min(len(sig) - lag, int(0.006 * SR))   # вход голоса без щелчка
+        sig[lag:lag + kf] *= np.linspace(0, 1, kf)
         out += sig
     nz = rng.normal(0, 1, n)
-    br = (gaussian_filter1d(nz, 2) - gaussian_filter1d(nz, 10)) * (0.03 if kind == "choir" else 0.015)
+    br = (gaussian_filter1d(nz, 2) - gaussian_filter1d(nz, 10)) * (0.03 if kind == "choir" else 0.015) * th.NOISE
     return up(amp) * env * (out / voices + br), t0
 
 

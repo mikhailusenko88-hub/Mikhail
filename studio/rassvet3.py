@@ -9,12 +9,14 @@ import numpy as np
 from scipy.ndimage import gaussian_filter1d
 
 import theme as th
-from theme import SR, m, legato_line, voice_lead, horn, timp, master, piano, harp, celesta, cymbal_swell
+from theme import SR, m, legato_line, voice_lead, horn, timp, master, piano, harp, celesta
 from cathedral import line as cline, VOWEL_A
 from quartet import short
 from svoboda import VOW, frame_drum, shaker
+from theme import cymbal_swell as _swell
 
 rng = np.random.default_rng(76)
+CLEAN = False          # чистый звук: без шейкера, почти без шумов дыхания и смычка, мягче «воздух»
 BEAT = 60 / 76
 BAR = 4 * BEAT
 
@@ -129,7 +131,7 @@ def voice(notes, vowels, vib=0.0055, vib_rate=5.0, vib_delay=0.45, glide=0.022, 
             out += up(a_h / P * 0.6) * np.sin(h * ph + 0.5 * h + r.uniform(0, 0.3))
     nz = r.normal(0, 1, n)
     br = gaussian_filter1d(nz, 1.5) - gaussian_filter1d(nz, 5)
-    sig = up(amp) * (out / 2.2 + br * breath)
+    sig = up(amp) * (out / 2.2 + br * (breath * 0.12 if CLEAN else breath))
     # вдохи в паузах
     for i in range(len(notes) - 1):
         gap = notes[i + 1][0] - notes[i][1]
@@ -141,8 +143,12 @@ def voice(notes, vowels, vib=0.0055, vib_rate=5.0, vib_delay=0.45, glide=0.022, 
                 z = r.normal(0, 1, L)
                 z = gaussian_filter1d(z, 1.2) - gaussian_filter1d(z, 9)
                 e = np.sin(np.pi * np.linspace(0, 1, L)) ** 1.5
-                sig[k0:k1] += 0.05 * notes[i + 1][3] * z * e
+                sig[k0:k1] += (0.012 if CLEAN else 0.05) * notes[i + 1][3] * gaussian_filter1d(z, 2 if CLEAN else 0.01) * e
     return sig, t0
+
+
+def cymbal_swell(dur, vel):
+    return _swell(dur, vel * (0.55 if CLEAN else 1.0))
 
 
 def taiko(vel):
@@ -306,7 +312,7 @@ def compose(style, plan_name):
         elif style == "epik" and sec == "verse":
             bus.add(taiko(0.14), bt(b, 0), pan=0.0, send=0.35)
             bus.add(taiko(0.10), bt(b, 2), pan=0.0, send=0.35)
-        if sec != "intro":
+        if sec != "intro" and not CLEAN:
             for j in range(8):
                 bus.add(shaker(0.046 if j % 2 == 0 else 0.032), bt(b, j / 2 + 0.02), pan=0.35, send=0.15)
     # подводки и удары
@@ -341,6 +347,10 @@ def compose(style, plan_name):
 if __name__ == "__main__":
     import time
     style, pl, out = sys.argv[1], sys.argv[2], sys.argv[3]
+    if len(sys.argv) > 4 and sys.argv[4] == "clean":
+        CLEAN = True
+        th.NOISE = 0.12
+        th.AIR = 0.35
     t = time.time()
     bus, end_t = compose(style, pl)
     L, R = master(bus)
