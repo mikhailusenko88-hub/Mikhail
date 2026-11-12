@@ -1,0 +1,28 @@
+name: rt-look
+on: push
+jobs:
+  a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - run: |
+          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y ffmpeg >/dev/null; pip -q install yt-dlp
+          mkdir -p out
+          yt-dlp --flat-playlist -J "https://rutube.ru/channel/82826859/videos/" > list.json
+          python3 -c "
+          import json; es=json.load(open('list.json'))['entries']
+          for e in es[:20]: print(e['id'], '|', e.get('title'), '|', e.get('duration'))
+          open('ids.txt','w').write('\n'.join(e['id'] for e in es[:2]))"
+          for id in $(cat ids.txt); do
+            echo "=== $id"; yt-dlp -F "https://rutube.ru/video/$id/" 2>&1 | tail -15
+            yt-dlp -f "bv*+ba/b" -o "v_$id.%(ext)s" "https://rutube.ru/video/$id/" >/dev/null 2>&1 || yt-dlp -o "v_$id.%(ext)s" "https://rutube.ru/video/$id/"
+            f=$(ls v_$id.* | head -1); ffprobe -v error -show_entries stream=codec_name,profile,width,height,r_frame_rate,avg_frame_rate,bit_rate,pix_fmt,color_space,color_transfer,color_primaries,field_order -show_entries format=bit_rate,duration -of compact "$f"
+            for t in 20 60 120 200; do ffmpeg -v error -y -ss $t -i "$f" -frames:v 1 out/${id:0:8}_$t.png; done
+            # 12 кадров подряд в 60 с — видно ли мерцание
+            ffmpeg -v error -y -ss 60 -i "$f" -frames:v 12 out/${id:0:8}_seq_%02d.png
+            # мерцание: средняя разница соседних кадров
+            ffmpeg -v error -ss 30 -t 20 -i "$f" -vf "tblend=all_mode=difference,signalstats,metadata=print:key=lavfi.signalstats.YAVG:file=out/${id:0:8}_diff.txt" -f null - 
+          done
+          ls -la out | head -40
+      - uses: actions/upload-artifact@v4
+        with: { name: rt, path: "out/" }
