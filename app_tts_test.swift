@@ -25,14 +25,6 @@ final class MultikTTS: NSObject {
     }
 
     static func utterance(_ text: String, _ v: [String: Any]) -> AVSpeechUtterance {
-        // ударения через SSML (страница собирает MK.appleSSML): ударная гласная — отдельной транскрипцией чуть выше по тону,
-        // мелодия фразы живая. Тон и темп голоса уже записаны в SSML (свойства pitchMultiplier/rate при SSML система не слушает).
-        if let ssml = v["ssml"] as? String, !ssml.isEmpty, let x = AVSpeechUtterance(ssmlRepresentation: ssml) {
-            x.voice = pickVoice(v)
-            x.preUtteranceDelay = 0
-            x.postUtteranceDelay = 0
-            return x
-        }
         // ударения: для слов с известным ударением передаём произношение (IPA) — iPhone читает именно так
         let u: AVSpeechUtterance
         if let spans = v["ipa"] as? [[Any]], !spans.isEmpty {
@@ -106,7 +98,6 @@ final class MultikTTS: NSObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + limit) { finish() }
     }
 }
-
 // Проверка класса из приложения: те же реплики через MultikTTS.synthesize (как в «Мультиках»)
 setvbuf(stdout, nil, _IOLBF, 0)
 let jobs = try! JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[1]))) as! [[String: Any]]

@@ -8,7 +8,7 @@ permissions:
   contents: write
 jobs:
   swift:
-    runs-on: macos-15
+    runs-on: macos-15-intel
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -17,7 +17,7 @@ jobs:
           swiftc -O app_tts_test.swift -o /tmp/apptts 2>&1 | tee /tmp/build.txt | tail -20
           mkdir -p /tmp/o && perl -e 'alarm 400; exec @ARGV' /tmp/apptts app_jobs.json /tmp/o 2>&1 | tee /tmp/run.txt | tail -30 || true
           mkdir -p /tmp/sv/v && for f in /tmp/o/*.caf; do n=$(basename "$f" .caf); afconvert -f WAVE -d LEI16@24000 -c 1 "$f" /tmp/sv/v/$n.wav 2>/dev/null || echo "не читается: $n"; done
-          cp /tmp/build.txt /tmp/run.txt app_jobs.json /tmp/sv/
+          cp /tmp/build.txt /tmp/run.txt app_jobs.json /tmp/sv/; cp app_index.json /tmp/sv/index.json
       - name: В ветку golos-swift-out
         if: always()
         run: |
