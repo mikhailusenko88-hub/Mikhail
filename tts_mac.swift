@@ -4,7 +4,9 @@ import Foundation
 import AVFoundation
 
 let args = CommandLine.arguments
-let jobs = try! JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: args[1]))) as! [[String: Any]]
+let allJobs = try! JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: args[1]))) as! [[String: Any]]
+let jobs = args.count > 3 ? [allJobs[Int(args[3])!]] : allJobs   // один номер — по одному процессу на фразу (падение одной не губит остальные)
+setvbuf(stdout, nil, _IOLBF, 0)
 let out = URL(fileURLWithPath: args[2]); try? FileManager.default.createDirectory(at: out, withIntermediateDirectories: true)
 let ru = AVSpeechSynthesisVoice.speechVoices().filter { $0.language.hasPrefix("ru") }.sorted { $0.quality.rawValue > $1.quality.rawValue }
 print("русские голоса:", ru.map { "\($0.name) [\($0.identifier)] q=\($0.quality.rawValue) g=\($0.gender.rawValue)" })
@@ -45,4 +47,4 @@ for j in jobs {
     log.append(["name": name, "frames": Int(frames), "voice": v?.name ?? "-"])
     print(name, frames, v?.name ?? "-")
 }
-try! JSONSerialization.data(withJSONObject: log).write(to: out.appendingPathComponent("_log.json"))
+if args.count <= 3 { try! JSONSerialization.data(withJSONObject: log).write(to: out.appendingPathComponent("_log.json")) }
