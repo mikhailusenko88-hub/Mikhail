@@ -20,6 +20,7 @@ import re
 import subprocess
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import quote
 from typing import Any, Callable
 
 from cryptography.hazmat.primitives import hashes, serialization
@@ -400,7 +401,7 @@ class Outbox:
         self._record(mid, status="saved" if names else "error", to_addr="Документы: " + folder, subject=title[:200],
                      att_names=", ".join(names), body=str(p.get("note") or "")[:2000], error=err)
         if names:
-            self.notify("Claude добавил в «Документы»", f"{folder}: {', '.join(names)}"[:180], "/docs")
+            self._docs_saved.append((folder, names))
         return f"{mid}: в документы «{folder}» — {len(names)} файл(ов)" + (f"; ошибка {err}" if err else "")
 
     def run(self) -> list[str]:
@@ -426,9 +427,15 @@ class Outbox:
         if not send_on:
             return out + ["отправка выключена в CRM"]
         ddir = self.workdir / "docs"                                          # документы от Claude → «Документы»
+        self._docs_saved = []
         for f in sorted(ddir.glob("*.json")) if ddir.is_dir() else []:
             if ID_RE.match(f.stem) and not self._row(f.stem):
                 out.append(self._save_docs(sk, f.stem, f))
+        if self._docs_saved:                                                  # один пуш на всю пачку, а не на каждый файл
+            dnames = [n for _, ns in self._docs_saved for n in ns]
+            folders = sorted({fo for fo, _ in self._docs_saved})
+            text = f"{', '.join(folders)}: " + (", ".join(dnames) if len(dnames) <= 3 else f"{len(dnames)} файлов — {', '.join(dnames[:2])} и др.")
+            self.notify("Claude добавил в «Документы»", text[:180], "/docs" if len(folders) > 1 else "/docs?f=" + quote(folders[0]))
         todo = []
         for f in files:
             mid = f.stem

@@ -1926,8 +1926,17 @@ class TestDocs(TestPochta):
         self.assertEqual((d["title"], d["until"], d["created_by"]), ("Сертификат ISO 9001 ARTDEC", "2027-02-23", "Claude"))
         self.assertEqual(self.ob.status(mid)["status"], "saved")
         self.assertTrue(any("Документы" in x[0] for x in self.pushes))
+        n_push = len(self.pushes)
+        for k in range(4):                                                                          # пачка — один пуш
+            m2 = str(uuid.uuid4())
+            p2 = dict(p, id=m2, title="", attachments=[{"name": f"f{k}.png", "mime": "image/png", "b64": outbox._b64(bytes([k]) * 9)}])
+            with open(os.path.join(self.work, "docs", m2 + ".json"), "w", encoding="utf-8") as f:
+                _j.dump(outbox.seal(key, p2), f)
+        self.git("-C", self.work, "add", "-A"); self.git("-C", self.work, "commit", "-q", "-m", "d4"); self.git("-C", self.work, "push", "-q", "origin", "outbox")
         self.ob.run()
-        self.assertEqual(len(self.docs.list()), 1)                                                  # один раз
+        self.assertEqual(len(self.pushes), n_push + 1); self.assertIn("4 файлов", self.pushes[-1][1])
+        self.ob.run()
+        self.assertEqual(len(self.docs.list()), 5)                                                  # каждый один раз
         self.assertIn("в документах", self.c.get("/outbox").get_data(as_text=True))
 
 
