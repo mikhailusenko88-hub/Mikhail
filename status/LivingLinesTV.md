@@ -1,39 +1,41 @@
 # Живые строки  (@LivingLinesTV)
-Проверено: 2026-11-11 18:53 UTC
+Проверено: 2026-11-12 11:34 UTC
 
 - Страница канала: HTTP 200; ID: UCuufuU5RCswqp9N1HE0NZlw
-- Шапка: 23 подписчика · 21 видео
+- Шапка: 25 подписчиков · 23 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-11 16:00 · 209 просм. · Капля долбит камень не силой, а частым падением ✨ Ovid + 2 more #shorts · BWxPufCq48s
-- 2026-11-11 11:00 · 220 просм. · Весь мир — театр, и люди в нём — актёры ✨ Words to keep | William Shakespeare #shorts · ZAEMivmyKFA
-- 2026-11-11 06:00 · 582 просм. · Главное — самому себе не лгите 🤍 Три мысли на сегодня | Dostoevsky #shorts · SbvPblinoUQ
-- 2026-11-10 16:00 · 674 просм. · Мысль изречённая есть ложь ✨ Fyodor Tyutchev + 2 more #shorts · mfFP9C-DDO4
-- 2026-11-10 11:00 · 957 просм. · Имей мужество пользоваться собственным умом ✨ Words to keep | Immanuel Kant #shorts · X8JceTEeoBI
-- 2026-11-10 06:00 · 321 просм. · Воля и труд человека дивные дивы творят 🤍 Три мысли на сегодня | Nikolai Nekrasov #shorts · eESLxbg3h24
-- 2026-11-09 16:00 · 977 просм. · Пусть в вашей близости останется простор ✨ Kahlil Gibran + 2 more #shorts · vRSX5w0n1i8
+- 2026-11-12 11:00 · 24 просм. · Сам погибай, а товарища выручай ✨ Words to keep | Alexander Suvorov #shorts · FX7fBPFEP7Y
+- 2026-11-12 06:00 · 127 просм. · Одни рождаются великими, другие достигают величия, а… 🤍 Три мысли на сегодня | Shakespeare #shorts · oiwYhZO3u24
+- 2026-11-11 16:00 · 485 просм. · Капля долбит камень не силой, а частым падением ✨ Ovid + 2 more #shorts · BWxPufCq48s
+- 2026-11-11 11:00 · 295 просм. · Весь мир — театр, и люди в нём — актёры ✨ Words to keep | William Shakespeare #shorts · ZAEMivmyKFA
+- 2026-11-11 06:00 · 655 просм. · Главное — самому себе не лгите 🤍 Три мысли на сегодня | Dostoevsky #shorts · SbvPblinoUQ
+- 2026-11-10 16:00 · 691 просм. · Мысль изречённая есть ложь ✨ Fyodor Tyutchev + 2 more #shorts · mfFP9C-DDO4
+- 2026-11-10 11:00 · 961 просм. · Имей мужество пользоваться собственным умом ✨ Words to keep | Immanuel Kant #shorts · X8JceTEeoBI
+- 2026-11-10 06:00 · 341 просм. · Воля и труд человека дивные дивы творят 🤍 Три мысли на сегодня | Nikolai Nekrasov #shorts · eESLxbg3h24
+- 2026-11-09 16:00 · 1005 просм. · Пусть в вашей близости останется простор ✨ Kahlil Gibran + 2 more #shorts · vRSX5w0n1i8
 - 2026-11-09 11:00 · 836 просм. · Не откладывай на завтра то, что можно сделать сегодня ✨ Words to keep | Russian proverb #shorts · mnkKhyizaTU
 - 2026-11-09 06:00 · 458 просм. · Кроткий ответ отвращает гнев 🤍 Три мысли на сегодня | Book of Proverbs #shorts · GNmfdx_2vxg
 - 2026-11-08 16:00 · 1213 просм. · Разве не радость, когда друг приезжает издалека? ✨ Confucius + 2 more #shorts · 1rDtW-0GvQs
-- 2026-11-08 11:01 · 942 просм. · Нельзя дважды войти в одну и ту же реку ✨ Words to keep | Heraclitus #shorts · lPsFFMkR1Y8
-- 2026-11-08 06:00 · 801 просм. · Я всё ещё учусь 🤍 Три мысли на сегодня | Michelangelo #shorts · guBgC043Ck4
+- 2026-11-08 11:01 · 943 просм. · Нельзя дважды войти в одну и ту же реку ✨ Words to keep | Heraclitus #shorts · lPsFFMkR1Y8
+- 2026-11-08 06:00 · 805 просм. · Я всё ещё учусь 🤍 Три мысли на сегодня | Michelangelo #shorts · guBgC043Ck4
 - 2026-11-07 16:00 · 751 просм. · Благодарность — признак благородной души ✨ Aesop + 2 more #shorts · kpPXw7k9dv0
-- 2026-11-07 11:00 · 141 просм. · Разумное и нравственное всегда совпадают ✨ Words to keep | Leo Tolstoy #shorts · w5OPmmBXil0
-- 2026-11-07 06:00 · 114 просм. · Но не хочу, о други, умирать; я жить хочу, чтоб мыслить и… 🤍 Три мысли на сегодня | Pushkin #shorts · JDuYvNO7e-U
 
-## Вкладка Shorts (видно всем) — 21 шт. на первой странице
-- 209 просмотров · Капля долбит камень не силой, а частым падением ✨ Ovid + 2 more #shorts · BWxPufCq48s
-- 222 просмотра · Весь мир — театр, и люди в нём — актёры ✨ Words to keep | William Shakespeare #shorts · ZAEMivmyKFA
-- 581 просмотр · Главное — самому себе не лгите 🤍 Три мысли на сегодня | Dostoevsky #shorts · SbvPblinoUQ
-- 677 просмотров · Мысль изречённая есть ложь ✨ Fyodor Tyutchev + 2 more #shorts · mfFP9C-DDO4
-- 957 просмотров · Имей мужество пользоваться собственным умом ✨ Words to keep | Immanuel Kant #shorts · X8JceTEeoBI
-- 321 просмотр · Воля и труд человека дивные дивы творят 🤍 Три мысли на сегодня | Nikolai Nekrasov #shorts · eESLxbg3h24
-- 986 просмотров · Пусть в вашей близости останется простор ✨ Kahlil Gibran + 2 more #shorts · vRSX5w0n1i8
+## Вкладка Shorts (видно всем) — 23 шт. на первой странице
+- 24 просмотра · Сам погибай, а товарища выручай ✨ Words to keep | Alexander Suvorov #shorts · FX7fBPFEP7Y
+- 127 просмотров · Одни рождаются великими, другие достигают величия, а… 🤍 Три мысли на сегодня | Shakespeare #shorts · oiwYhZO3u24
+- 485 просмотров · Капля долбит камень не силой, а частым падением ✨ Ovid + 2 more #shorts · BWxPufCq48s
+- 295 просмотров · Весь мир — театр, и люди в нём — актёры ✨ Words to keep | William Shakespeare #shorts · ZAEMivmyKFA
+- 655 просмотров · Главное — самому себе не лгите 🤍 Три мысли на сегодня | Dostoevsky #shorts · SbvPblinoUQ
+- 691 просмотр · Мысль изречённая есть ложь ✨ Fyodor Tyutchev + 2 more #shorts · mfFP9C-DDO4
+- 961 просмотр · Имей мужество пользоваться собственным умом ✨ Words to keep | Immanuel Kant #shorts · X8JceTEeoBI
+- 343 просмотра · Воля и труд человека дивные дивы творят 🤍 Три мысли на сегодня | Nikolai Nekrasov #shorts · eESLxbg3h24
+- 1 тыс. просмотров · Пусть в вашей близости останется простор ✨ Kahlil Gibran + 2 more #shorts · vRSX5w0n1i8
 - 836 просмотров · Не откладывай на завтра то, что можно сделать сегодня ✨ Words to keep | Russian proverb #shorts · mnkKhyizaTU
 - 458 просмотров · Кроткий ответ отвращает гнев 🤍 Три мысли на сегодня | Book of Proverbs #shorts · GNmfdx_2vxg
 - 1,2 тыс. просмотров · Разве не радость, когда друг приезжает издалека? ✨ Confucius + 2 more #shorts · 1rDtW-0GvQs
-- 942 просмотра · Нельзя дважды войти в одну и ту же реку ✨ Words to keep | Heraclitus #shorts · lPsFFMkR1Y8
-- 801 просмотр · Я всё ещё учусь 🤍 Три мысли на сегодня | Michelangelo #shorts · guBgC043Ck4
+- 943 просмотра · Нельзя дважды войти в одну и ту же реку ✨ Words to keep | Heraclitus #shorts · lPsFFMkR1Y8
+- 805 просмотров · Я всё ещё учусь 🤍 Три мысли на сегодня | Michelangelo #shorts · guBgC043Ck4
 - 751 просмотр · Благодарность — признак благородной души ✨ Aesop + 2 more #shorts · kpPXw7k9dv0
 - 141 просмотр · Разумное и нравственное всегда совпадают ✨ Words to keep | Leo Tolstoy #shorts · w5OPmmBXil0
 - 114 просмотров · Но не хочу, о други, умирать; я жить хочу, чтоб мыслить и… 🤍 Три мысли на сегодня | Pushkin #shorts · JDuYvNO7e-U

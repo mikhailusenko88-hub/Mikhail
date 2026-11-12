@@ -1,7 +1,6 @@
-2026-11-12 10:58 UTC
-200 https://www.youtube.com/@Beautiful_shorts-s6u
-200 avatar Beautiful_shorts-s6u
-200 banner Beautiful_shorts-s6u
-200 https://www.youtube.com/@Beautiful_shorts-s6u/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
-200 https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=_IT_CPQ6Ysk&format=json
+2026-11-12 11:34 UTC
+200 https://www.youtube.com/@LivingLinesTV
+200 avatar LivingLinesTV
+200 banner LivingLinesTV
+200 https://www.youtube.com/@LivingLinesTV/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCuufuU5RCswqp9N1HE0NZlw
