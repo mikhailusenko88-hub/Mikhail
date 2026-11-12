@@ -25,7 +25,10 @@ jobs:
           R=$(curl -fsSL https://api.github.com/repos/ggml-org/llama.cpp/releases/latest || curl -fsSL -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/ggml-org/llama.cpp/releases/latest); echo "ответ API: ${#R} байт"
           TAG=$(jq -r .tag_name <<<"$R"); echo "llama.cpp: $TAG ($(jq -r .published_at <<<"$R"))"
           jq -r '.assets[]|select(.name|test("xcframework"))|.name+" "+(.size|tostring)+" "+.browser_download_url' <<<"$R"
-          U=$(jq -r '[.assets[]|select(.name|test("xcframework.zip$"))][0].browser_download_url' <<<"$R")
+          echo "--- все файлы выпуска:"; jq -r '.assets[]|.name+" "+(.size|tostring)' <<<"$R" | head -40
+          RL=$(curl -fsSL "https://api.github.com/repos/ggml-org/llama.cpp/releases?per_page=30")
+          echo "--- последние выпуски с xcframework:"; jq -r '.[]|.tag_name as $t|.published_at as $d|.assets[]|select(.name|test("(?i)xcframework|apple|ios"))|$t+" "+$d+" "+.name+" "+(.size|tostring)' <<<"$RL" | head -20
+          U=$(jq -r '[.[]|.assets[]|select(.name|test("(?i)xcframework.*zip$"))][0].browser_download_url' <<<"$RL")
           curl -fsSL -o /tmp/x.zip "$U" && echo "sha256: $(sha256sum /tmp/x.zip | cut -d' ' -f1)" && echo "url: $U"
           mkdir -p /tmp/x && (cd /tmp/x && unzip -q /tmp/x.zip); echo "распаковано: $(find /tmp/x -type f | wc -l) файлов"
           find /tmp/x -maxdepth 4 -type d | sed 's|/tmp/x/||' | head -40
