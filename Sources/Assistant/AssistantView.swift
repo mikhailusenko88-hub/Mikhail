@@ -59,7 +59,7 @@ struct AssistantScreen: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 10) {
                     if brain.messages.isEmpty { hello }
-                    ForEach(brain.messages) { m in row(m).id(m.id) }
+                    ForEach(brain.messages.filter { $0.tool != "hint" }) { m in row(m).id(m.id) }
                     if brain.busy {
                         if !brain.live.isEmpty { bubble(brain.live, mine: false) }
                         if !brain.stage.isEmpty {

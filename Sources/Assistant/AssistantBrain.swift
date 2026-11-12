@@ -98,7 +98,8 @@ final class AssistantBrain: ObservableObject {
     - Открой 1–2 лучших ссылки через open_page. Сначала официальные источники: сайт производителя, магазина, госоргана, банка; форумы — в последнюю очередь.
     - Важную цифру подтверждай вторым источником. Смотри дату: старше года — предупреди. Источники расходятся — назови оба значения.
     - В ответе называй источник (сайт).
-    - Любые расчёты денег, площадей, количества — только через calc.
+    - Любые расчёты денег, площадей, количества — только через calc, в уме не считай.
+    - Никогда не пиши, что искала, открывала или считала, если не вызывала для этого действие.
 
     Как выполнять задания:
     - Сначала пойми цель. Неясно и от ответа зависит результат — задай один короткий вопрос.
@@ -111,6 +112,12 @@ final class AssistantBrain: ObservableObject {
     - Проверенный полезный факт из интернета — сохрани через remember с источником и датой. Мелочи не сохраняй.
     - Раздел «Из базы знаний» ниже — твои знания по теме вопроса. Правила хозяина из основы выполняй всегда.
     - Заявки, клиенты, склад, оплаты, почта — смотри в CRM (действия crm_…), а не по памяти.
+
+    Примеры правильного первого шага:
+    Хозяин: стена 3,2 на 2,7 минус дверь 0,9 на 2,1, сколько по 1290 за метр?
+    Ты: <tool_call>{"name": "calc", "arguments": {"expr": "(3.2*2.7-0.9*2.1)*1290"}}</tool_call>
+    Хозяин: найди, сколько стоит доставка ПЭК 300 кг Москва — Петербург
+    Ты: <tool_call>{"name": "web_search", "arguments": {"query": "ПЭК стоимость доставки Москва Санкт-Петербург 300 кг"}}</tool_call>
     """
 
     private static func dateLine() -> String {
@@ -214,6 +221,23 @@ final class AssistantBrain: ObservableObject {
         return (before, Call(name: name, args: args, raw: raw))
     }
 
+    /// Маленькая нейросеть иногда отвечает по памяти там, где нужно поискать или посчитать — один раз подсказываем.
+    static func needTool(_ q: String, used: Set<String>) -> String? {
+        let t = q.lowercased().replacingOccurrences(of: "ё", with: "е")
+        let crm = ["заявк", "клиент", "склад", "остат", "задач", "crm", "срм", "оплат", "почт", "письм"].contains { t.contains($0) }
+        let search = ["найди", "поищи", "узнай", "в интернете", "сколько стоит", "какая цена", "цена на", "цены на", "где купить",
+                      "курс ", "погод", "новост", "проверь компан", "кто такой", "что такое", "расписани", "адрес "].contains { t.contains($0) }
+        if search && !crm && !used.contains("web_search") {
+            return "Подсказка: это нужно искать в интернете. Сначала вызови web_search коротким запросом, потом открой лучшую ссылку через open_page. По памяти цифры не называй."
+        }
+        let nums = Web.matches(#"\d+(?:[.,]\d+)?"#, t).count
+        let calcWords = ["посчитай", "сколько будет", "рассчитай", "расчитай", "площад", "умнож", "сумм", "итого", "квадрат", "по ", "×", "*"]
+        if nums >= 2 && calcWords.contains(where: { t.contains($0) }) && !used.contains("calc") && !crm {
+            return "Подсказка: здесь нужен расчёт. Вызови calc с одной формулой, в уме не считай."
+        }
+        return nil
+    }
+
     private func describe(_ c: Call, _ spec: ToolSpec?) -> String {
         let a = c.args.map { "\($0.key): \($0.value)" }.sorted().joined(separator: "\n")
         return (spec?.desc ?? c.name) + (a.isEmpty ? "" : "\n\n" + a)
@@ -261,6 +285,7 @@ final class AssistantBrain: ObservableObject {
         work = Task { [weak self] in
             await self?.loop(question: q, flag: flag)
             await MainActor.run {
+                self?.messages.removeAll { $0.tool == "hint" }
                 self?.busy = false
                 self?.live = ""
                 self?.stage = ""
@@ -282,6 +307,8 @@ final class AssistantBrain: ObservableObject {
             }
             if crmTools.isEmpty && CRMClient.connected { await refreshCRM() }
             var badFormat = 0
+            var used = Set<String>()
+            var nudged = false
             for step in 0..<maxSteps {
                 if flag.value { break }
                 stage = step == 0 ? "Думаю…" : "Думаю дальше…"
@@ -297,6 +324,11 @@ final class AssistantBrain: ObservableObject {
                 let (text, call) = Self.parse(out)
                 live = ""
                 guard let call else {
+                    if !nudged, let hint = Self.needTool(question, used: used) {
+                        nudged = true
+                        messages.append(ChatMsg(role: .tool, text: hint, tool: "hint"))   // на экране не видно, после ответа убирается
+                        continue
+                    }
                     let final = text.isEmpty ? "…" : text
                     messages.append(ChatMsg(role: .assistant, text: final))
                     if speak { Speaker.shared.say(final) }
@@ -310,6 +342,7 @@ final class AssistantBrain: ObservableObject {
                     if badFormat > 2 { break }
                     continue
                 }
+                used.insert(call.name)
                 var confirmed = false
                 if spec.danger {
                     stage = "Жду вашего ответа…"
