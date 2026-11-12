@@ -1,22 +1,18 @@
 name: rt-look
 on: push
-permissions: { contents: write }
 jobs:
   a:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
       - run: |
+          echo "== YouTube 12 серия: какие кадры/с у исходника"
+          curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36" -H "Accept-Language: ru" -b "CONSENT=YES+1" "https://www.youtube.com/watch?v=2HP0pF8_ZfU" -o yt.html; wc -c yt.html
+          grep -o '"qualityLabel":"[^"]*"' yt.html | sort | uniq -c | head; grep -o '"fps":[0-9]*' yt.html | sort | uniq -c
           sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y ffmpeg >/dev/null; pip -q install yt-dlp
-          mkdir -p rt
-          for id in 165c1e364bcabea15f0d083e8ce2c2a7; do
-            yt-dlp -f "bv*[height=1080]+ba/b" -o "v.%(ext)s" "https://rutube.ru/video/$id/" >/dev/null 2>&1
-            f=$(ls v.* | head -1); s=${id:0:6}
-            for t in 15 75 150 240 320; do ffmpeg -v error -y -ss $t -i "$f" -frames:v 1 -q:v 2 rt/${s}_$t.jpg; done
-            ffmpeg -v error -y -ss 75 -i "$f" -frames:v 6 -vf "crop=960:540:480:270" -q:v 2 rt/${s}_seq75_%02d.jpg
-            echo "== разница соседних кадров (YAVG), 75–79 с"; ffmpeg -hide_banner -ss 75 -t 4 -i "$f" -vf "tblend=all_mode=difference,signalstats,metadata=print:key=lavfi.signalstats.YAVG" -f null - 2>&1 | grep -o "YAVG=[0-9.]*" | tr '\n' ' '; echo
-            echo "== по всему ролику: средняя разница кадров по секундам (первые 60 с)"; ffmpeg -hide_banner -t 60 -i "$f" -vf "tblend=all_mode=difference,signalstats,metadata=print:key=lavfi.signalstats.YAVG" -f null - 2>&1 | grep -o "YAVG=[0-9.]*" | cut -d= -f2 | awk '{a[int((NR-1)/25)]+=$1; c[int((NR-1)/25)]++} END{for(i=0;i<60;i++) if(c[i]) printf "%.1f ", a[i]/c[i]; print ""}'
-            echo "== ключевые кадры и типы кадров (первые 120)"; ffprobe -v error -select_streams v -show_entries frame=pict_type,key_frame,pkt_size -read_intervals "%+5" -of csv "$f" | head -130 | awk -F, '{printf "%s%s ", $3, ($2==1?"*":"")} END{print ""}'
-          done
-          git config user.name ci; git config user.email ci@local; git add rt; git commit -q -m "rt frames"; git push -q
+          yt-dlp -f "bv*[height=1080]" -o "v.%(ext)s" "https://rutube.ru/video/165c1e364bcabea15f0d083e8ce2c2a7/" >/dev/null 2>&1; f=$(ls v.* | head -1)
+          ffmpeg -hide_banner -ss 60 -t 30 -i "$f" -vf "tblend=all_mode=difference,signalstats,metadata=print:key=lavfi.signalstats.YAVG" -f null - 2>&1 | grep -o "YAVG=[0-9.]*" | cut -d= -f2 > d.txt
+          echo "== повторы кадров (номер кадра, где картинка не сменилась), 60–90 с:"; awk '$1<0.08{printf "%d ", NR}' d.txt; echo
+          echo "== расстояния между повторами:"; awk '$1<0.08{if(p) printf "%d ", NR-p; p=NR}' d.txt; echo
+          echo "== кадров: $(wc -l < d.txt), повторов: $(awk '$1<0.08' d.txt | wc -l)"
+          echo "== длительности кадров (pts) в потоке Rutube, первые 40:"; ffprobe -v error -select_streams v -show_entries packet=pts_time,duration_time -read_intervals "60%+2" -of csv=p=0 "$f" | head -40 | tr '\n' ' '
