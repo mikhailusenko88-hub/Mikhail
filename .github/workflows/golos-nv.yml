@@ -6,6 +6,8 @@ on:
     paths: [nv_request.txt]
 permissions:
   contents: write
+env:
+  P: nw
 jobs:
   check:
     strategy:
@@ -35,7 +37,7 @@ jobs:
           mkdir -p mk_out
           if [ "${{ matrix.part }}" = "s" ]; then
             pip install -q speechbrain
-            python spk_sim.py /tmp/nv mk_out/nvs.json
+            python spk_sim.py /tmp/nv mk_out/${{ env.P }}s.json
           else
             pip install -q transformers phonemizer praat-parselmouth ruaccent matplotlib faster-whisper numpy
             python3 - ${{ matrix.part }} <<'PY'
@@ -45,13 +47,13 @@ jobs:
           for k in keys: shutil.copy(f"/tmp/nv/v/{k}.mp3", f"/tmp/np/v/{k}.mp3")
           json.dump({k: idx[k] for k in keys}, open("/tmp/np/index.json", "w", encoding="utf-8"), ensure_ascii=False)
           PY
-            python stage_check.py /tmp/np mk_out/nv_${{ matrix.part }}.json
+            python stage_check.py /tmp/np mk_out/${{ env.P }}_${{ matrix.part }}.json
           fi
       - name: Commit result
         if: always()
         run: |
           git config user.name golos && git config user.email golos@users.noreply.github.com
-          F=mk_out/nv_${{ matrix.part }}.json; [ "${{ matrix.part }}" = "s" ] && F=mk_out/nvs.json
+          F=mk_out/${{ env.P }}_${{ matrix.part }}.json; [ "${{ matrix.part }}" = "s" ] && F=mk_out/${{ env.P }}s.json
           cp $F /tmp/r.json 2>/dev/null || true
           for i in 1 2 3 4 5 6 7 8; do
             git fetch -q origin golos && git reset -q --hard origin/golos
