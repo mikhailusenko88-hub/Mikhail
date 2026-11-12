@@ -1,0 +1,25 @@
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.1s] reeded wall panels ribs 220 faces 4400
+[scene   0.1s] asset ceramic_vase_02 size 0.22 x 0.22 x 0.31 objs 1
+[scene   0.2s] asset ceramic_vase_04 size 0.18 x 0.18 x 0.34 objs 1
+[scene   0.2s] asset ceramic_vase_03 size 0.11 x 0.11 x 0.41 objs 1
+[scene   0.2s] asset standing_picture_frame_02 size 0.22 x 0.10 x 0.27 objs 1
+[scene   0.9s] asset potted_plant_01 size 0.59 x 0.63 x 1.35 objs 4
+[scene   1.1s] asset mid_century_lounge_chair size 1.01 x 1.19 x 1.17 objs 1
+[scene   1.1s] objects 64 scene built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/u910_macro/_sky.exr'
+Time: 00:02.90 (Saving: 00:00.00)
+
+[scene   4.0s] sky irradiance [ 8.553  9.364 11.147] sun strength 50.994
+Saved: '/home/runner/work/Mikhail/Mikhail/out/u910_macro/_pre.exr'
+Time: 00:11.89 (Saving: 00:00.00)
+
+[scene  16.7s] white pixels 5098 illuminant [1.281 0.956 0.604] wb gains [0.814 1.014 1.408] wall Y 0.9982 exposure -0.93
+Saved: '/home/runner/work/Mikhail/Mikhail/out/u910_macro/u910_macro.jpg'
+Time: 02:01.39 (Saving: 00:00.17)
+
+[scene 138.0s] final render 121.4s /home/runner/work/Mikhail/Mikhail/out/u910_macro/u910_macro.jpg
+[scene 138.0s] done
+
+Blender quit
