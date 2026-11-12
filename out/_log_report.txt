@@ -1,2 +1,5 @@
-== in/rassvet2_A_violonchel.m4a
-== in/rassvet2_B_golos.m4a
+== in/r3_epik_full.m4a
+== in/r3_main_full.m4a
+== in/r3_main_kuplet.m4a
+== in/r3_main_raspev.m4a
+== in/r3_tihiy_full.m4a
