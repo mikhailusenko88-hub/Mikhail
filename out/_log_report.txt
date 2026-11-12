@@ -1,3 +1,2 @@
-== in/rassvet_A_violonchel.m4a
-== in/rassvet_B_golos.m4a
-== in/svoboda_v1_plachet.m4a
+== in/rassvet2_A_violonchel.m4a
+== in/rassvet2_B_golos.m4a
