@@ -366,23 +366,26 @@ def slat_wall(name, x0, x1, z_top, y_wall, m_wood, m_black, zbot=None, step=0.04
     return ob
 
 
-def reeded_wall(name, x0, x1, z_top, y_wall, mat, zbot=None, pitch=0.020, t_min=0.00822, t_max=0.012, seg=16):
-    """Панель A910 «волна»: полукруглые валики шагом 20 мм (9 на панели 180 мм), толщина 8,2…12 мм. Лицом к −Y."""
+def reeded_wall(name, x0, x1, z_top, y_wall, mat, zbot=None, pitch=0.020, seg=18):
+    """Панель A910 «волна» по живому образцу: почти полукруглые валики шагом 20 мм (9 на панели 180 мм), толщина 6,5…12 мм,
+    между валиками узкая ровная полоска. Лицом к −Y."""
+    if ROOT not in sys.path:
+        sys.path.insert(0, ROOT)
+    import a910_profile as AP
     zb = zbot or (lambda x: 0.0)
-    h = t_max - t_min
-    rr = ((pitch / 2) ** 2 + h * h) / (2 * h)
+    us = [u / 1000.0 for u in AP.rib_samples(seg)]
     n = int(math.ceil((x1 - x0) / pitch - 1e-6))
-    V, F = [], []
+    V, F, SM = [], [], []
     for i in range(n):
         xa = x0 + i * pitch
         xb = min(xa + pitch, x1)
         base = len(V)
         cnt = 0
-        for k in range(seg + 1):
-            x = xa + pitch * k / seg
+        for u in us:
+            x = xa + u
             if x > xb + 1e-9:
                 break
-            t = t_min + math.sqrt(max(0.0, rr * rr - (x - xa - pitch / 2) ** 2)) - (rr - h)
+            t = AP.t_at(u * 1000.0) / 1000.0
             z0 = zb(min(max(x, xa + 1e-6), xb - 1e-6))
             if z0 >= z_top - 1e-4:
                 z0 = z_top
@@ -393,7 +396,8 @@ def reeded_wall(name, x0, x1, z_top, y_wall, mat, zbot=None, pitch=0.020, t_min=
             if V[base + 2 * k][2] >= z_top - 1e-4 and V[base + 2 * k + 2][2] >= z_top - 1e-4:
                 continue
             F.append((base + 2 * k, base + 2 * k + 2, base + 2 * k + 3, base + 2 * k + 1))
-    ob = make_obj(name, V, F, [mat], smooth=[True] * len(F))
+            SM.append(0 < k < len(us) - 2)
+    ob = make_obj(name, V, F, [mat], smooth=SM)
     log('reeded wall', name, 'ribs', n, 'faces', len(F))
     return ob
 
@@ -990,39 +994,69 @@ def panel_piece(name, loc, rot, length, mode='face', n=3):
     return ob
 
 
-def reeded_piece(name, loc, rot, length, mat, pitch=0.020, t_min=0.00822, t_max=0.012, n=9, seg=12):
-    """Отрезок панели A910 лежит лицом вверх: виден торец с валиками."""
-    h = t_max - t_min
-    rr = ((pitch / 2) ** 2 + h * h) / (2 * h)
-    w, L = n * pitch, length
-    V, F, SM = [], [], []
-    prof = []
-    for i in range(n):
-        base = len(V)
-        for k in range(seg + 1):
-            x = i * pitch + pitch * k / seg
-            t = t_min + math.sqrt(max(0.0, rr * rr - (x - i * pitch - pitch / 2) ** 2)) - (rr - h)
-            V.append((x, 0.0, t))
-            V.append((x, L, t))
-            prof.append((x, t))
-        for k in range(seg):
-            F.append((base + 2 * k, base + 2 * k + 2, base + 2 * k + 3, base + 2 * k + 1))
-            SM.append(True)
+def mat_foam_white():
+    """Срез белой панели: мелкозернистая плотная пена, чуть серее лица."""
+    m = bpy.data.materials.get('foam_white')
+    if m:
+        return m
+    m, nt, out = new_mat('foam_white')
+    b = principled(nt, out, Roughness=0.95, **{'Base Color': (0.72, 0.71, 0.68, 1.0), 'Specular IOR Level': 0.2})
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    vo = nt.nodes.new('ShaderNodeTexVoronoi')
+    vo.inputs['Scale'].default_value = float(A.get('foamw_scale', 2600.0))
+    nt.links.new(tc.outputs['Object'], vo.inputs['Vector'])
+    nz = nt.nodes.new('ShaderNodeTexNoise')
+    nz.inputs['Scale'].default_value = 900.0
+    nz.inputs['Detail'].default_value = 6.0
+    nt.links.new(tc.outputs['Object'], nz.inputs['Vector'])
+    ad = nt.nodes.new('ShaderNodeMath')
+    ad.operation = 'ADD'
+    nt.links.new(vo.outputs['Distance'], ad.inputs[0])
+    nt.links.new(nz.outputs['Fac'], ad.inputs[1])
+    bp = nt.nodes.new('ShaderNodeBump')
+    bp.inputs['Strength'].default_value = 0.9
+    bp.inputs['Distance'].default_value = 0.0004
+    nt.links.new(ad.outputs[0], bp.inputs['Height'])
+    nt.links.new(bp.outputs['Normal'], b.inputs['Normal'])
+    return m
 
-    def flat(pts):
-        k = len(V)
-        V.extend(pts)
-        F.append(tuple(range(k, k + len(pts))))
+
+def reeded_piece(name, loc, rot, length, mat, mode='face', **_old):
+    """Отрезок панели A910 по живому образцу: валики, канавки на тыльной стороне, белый зернистый срез.
+    mode: face — лицом вверх, back — тыльной стороной вверх."""
+    if ROOT not in sys.path:
+        sys.path.insert(0, ROOT)
+    import a910_profile as AP
+    prof = AP.outline()
+    m_back = bpy.data.materials.get('a910_back') or mat_simple('a910_back', srgb(236, 235, 231), rough=0.5)
+    N, L = len(prof), length
+    V = [(x / 1000.0, 0.0, z / 1000.0) for x, z, _ in prof] + [(x / 1000.0, L, z / 1000.0) for x, z, _ in prof]
+    F, FM, SM = [], [], []
+    for k in range(N):
+        j = (k + 1) % N
+        F.append((k, N + k, N + j, j))
+        FM.append(0 if prof[k][2] == 'f' else 1)
+        SM.append(abs(prof[k][0] - prof[j][0]) < 1.4 and abs(prof[k][1] - prof[j][1]) < 2.5)   # дуги — гладко, плоскости — нет
+    for cap in (tuple(range(N)), tuple(reversed(range(N, 2 * N)))):
+        F.append(cap)
+        FM.append(2)
         SM.append(False)
-
-    flat([(0, 0, 0), (0, L, 0), (w, L, 0), (w, 0, 0)])
-    flat([(0, L, 0), (0, 0, 0), (0, 0, t_min), (0, L, t_min)])
-    flat([(w, 0, 0), (w, L, 0), (w, L, t_min), (w, 0, t_min)])
-    flat([(0, 0, 0), (w, 0, 0)] + [(x, 0.0, t) for x, t in reversed(prof)])
-    flat([(w, L, 0), (0, L, 0)] + [(x, L, t) for x, t in prof])
-    ob = make_obj(name, V, F, [mat], smooth=SM)
+    ob = make_obj(name, V, F, [mat, m_back, mat_foam_white()], face_mats=FM, smooth=SM)
+    try:
+        ob.data.validate()
+        import bmesh
+        bm = bmesh.new()
+        bm.from_mesh(ob.data)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(ob.data)
+        bm.free()
+    except Exception as e:  # noqa
+        log('reeded piece normals', e)
     ob.location = loc
     ob.rotation_euler = (0, 0, R(rot))
+    if mode == 'back':
+        ob.rotation_euler = (0, math.pi, R(rot))
+        ob.location = (loc[0], loc[1], loc[2] + 0.012)
     return ob
 
 
@@ -1253,14 +1287,12 @@ def scene_plinth():
                 if item == 'a910':
                     mpc = bpy.data.materials.get('a910_paint') or mat_simple('a910_paint', hexcol(A.get('paint910', 'EFEEEA')), rough=0.55,
                                                                              bump=0.02, bump_scale=1500.0)
-                    return reeded_piece(nm, (o.x, o.y, 0.0), r, L, mpc)
+                    return reeded_piece(nm, (o.x, o.y, 0.0), r, L, mpc, mode='back' if back else 'face')
                 return panel_piece(nm, (o.x, o.y, 0.0), r, L, mode='back' if back else 'face')
 
             LA, LB = 0.42, 0.34
             piece('pc_a', oA, ra, LA)
             pts = [oA, oA + dA * LA, oA + wA * wd, oA + dA * LA + wA * wd]
-            if item == 'a910' and 'set' not in A:
-                st = 'stack'                       # тыльная сторона A910 не проверена — показываем только лицо
             if cm == 'top' and st == 'two':        # второй отрезок рядом, тыльной стороной вверх
                 oB = oA + wA * (wd + 0.05) + wB * wd + dA * 0.08
                 piece('pc_b', oB, rb, LB, back=True)

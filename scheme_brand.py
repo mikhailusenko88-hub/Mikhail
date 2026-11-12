@@ -161,21 +161,14 @@ def a910(out, pack=10):
     header(im, d, 'Реечная панель «волна» A910', 'белая, под покраску · полукруглые валики')
     k, sx, sy = 7.4, 135, 380
     text(d, (sx, 262), 'Сечение панели', font(30, 'SemiBold'))
-    h, p = 3.78, 20.0
-    rr = ((p / 2) ** 2 + h * h) / (2 * h)
-    top = []
-    for i in range(9):
-        for j in range(41):
-            x = i * p + p * j / 40
-            t = 8.22 + math.sqrt(max(0, rr * rr - (x - i * p - p / 2) ** 2)) - (rr - h)
-            top.append(((sx + x * k) * S, (sy + (12 - t) * k) * S))
-    bot = [((sx + 180 * k) * S, (sy + 12 * k) * S), (sx * S, (sy + 12 * k) * S)]
-    d.polygon(top + bot, fill=(255, 255, 255))
-    d.line(top + bot + [top[0]], fill=ANTH, width=2 * S, joint='curve')
+    import a910_profile as AP                      # настоящий профиль по живому образцу: валики и канавки с тыльной стороны
+    pts = [((sx + x * k) * S, (sy + (12 - z) * k) * S) for x, z, _ in AP.outline()]
+    d.polygon(pts, fill=(255, 255, 255))
+    d.line(pts + [pts[0]], fill=ANTH, width=2 * S, joint='curve')
     dim_h(d, sx + 20 * k, sx + 40 * k, sy - 30, '20 мм')
     dim_h(d, sx, sx + 180 * k, sy + 12 * k + 46, '180 мм', up=False)
     dim_v(im, d, sx + 180 * k + 42, sy, sy + 12 * k, '12 мм', left=False)
-    text(d, (sx, sy + 12 * k + 104), '9 валиков на панели · поставляется белой, красится в любой цвет', font(22), SUBL)
+    text(d, (sx, sy + 12 * k + 104), '9 валиков на панели · сзади продольные канавки · поставляется белой', font(22), SUBL)
     area = 0.18 * 3.0
     card(d, 135, 640, 655, 780, '180 × 3000 × 12 мм', 'ширина × длина × толщина')
     card(d, 675, 640, 1045, 780, f'{area:.2f}'.replace('.', ',') + ' м²', 'закрывает одна панель')
