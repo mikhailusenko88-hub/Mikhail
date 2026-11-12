@@ -386,11 +386,15 @@ struct HomeView: View {
     @State private var showFitting = false
     @State private var showObject = false
     @State private var showMultik = false
+    @State private var showAssistant = false
 
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 14) {
+                    HomeCard(title: "Помощник",
+                             text: "Своя нейросеть в телефоне: голос, интернет, CRM, напоминания, база знаний",
+                             icon: "brain.head.profile", color: .teal) { showAssistant = true }
                     HomeCard(title: "Замер помещения",
                              text: "LiDAR-скан: стены, окна, двери, углы, неровности, метки коммуникаций",
                              icon: "camera.viewfinder", color: .green) { showScan = true }
@@ -417,6 +421,7 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showFitting) { FittingView() }
         .fullScreenCover(isPresented: $showObject) { ObjectScanScreen() }
         .fullScreenCover(isPresented: $showMultik) { MultikScreen() }
+        .fullScreenCover(isPresented: $showAssistant) { AssistantScreen() }
     }
 }
 

@@ -1,0 +1,313 @@
+import Foundation
+import SwiftUI
+import UIKit
+
+struct ChatMsg: Identifiable, Codable, Equatable {
+    enum Role: String, Codable { case user, assistant, tool, note }
+    var id = UUID().uuidString
+    var role: Role
+    var text: String
+    var call: String? = nil      // вызов действия (как его написала нейросеть)
+    var tool: String? = nil      // имя действия — у результата
+    var date = Date()
+}
+
+struct PendingConfirm: Identifiable {
+    let id = UUID()
+    let title: String
+    let detail: String
+    let answer: (Bool) -> Void
+}
+
+/// «Голова» помощника: собирает основу, знания, разговор и действия, гоняет нейросеть по шагам.
+@MainActor
+final class AssistantBrain: ObservableObject {
+    static let shared = AssistantBrain()
+
+    @Published var messages: [ChatMsg] = []
+    @Published var busy = false
+    @Published var live = ""
+    @Published var stage = ""
+    @Published var pending: PendingConfirm?
+    @Published var crmTools: [ToolSpec] = CRMClient.cachedTools
+    @Published var speak = UserDefaults.standard.bool(forKey: "assistant.speak") {
+        didSet { UserDefaults.standard.set(speak, forKey: "assistant.speak") }
+    }
+
+    private let engine = LlamaEngine.shared
+    private var stopFlag = LlamaEngine.Stop()
+    private var work: Task<Void, Never>?
+    private let maxSteps = 8
+
+    private var chatFile: URL { KnowledgeBase.folder.appendingPathComponent("chat.json") }
+
+    init() {
+        if let d = try? Data(contentsOf: chatFile) {
+            let dec = JSONDecoder(); dec.dateDecodingStrategy = .iso8601
+            messages = (try? dec.decode([ChatMsg].self, from: d)) ?? []
+        }
+        NotificationCenter.default.addObserver(forName: UIApplication.didReceiveMemoryWarningNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in if self?.busy == false { LlamaEngine.shared.unload() } }
+        }
+    }
+
+    func saveChat() {
+        let enc = JSONEncoder(); enc.dateEncodingStrategy = .iso8601
+        if let d = try? enc.encode(Array(messages.suffix(300))) { try? d.write(to: chatFile, options: .atomic) }
+    }
+
+    func newChat() {
+        stop()
+        messages = []
+        saveChat()
+    }
+
+    func stop() {
+        stopFlag.value = true
+        work?.cancel()
+        if let p = pending { pending = nil; p.answer(false) }
+    }
+
+    func refreshCRM() async {
+        guard CRMClient.connected else { crmTools = []; return }
+        if let t = await CRMClient.fetchTools() { crmTools = t }
+    }
+
+    var allTools: [ToolSpec] { LocalTools.specs + crmTools }
+
+    // MARK: основа (общая часть — без сведений о магазине; их даёт пакет знаний)
+
+    static let core = """
+    Ты — «Помощник», личный помощник хозяина. Ты работаешь внутри его iPhone, твоя память и база знаний хранятся только здесь.
+    Отвечай по-русски, коротко и по делу: обычно 1–5 предложений; шаги — коротким списком. Без таблиц и без украшений.
+
+    Честность:
+    - Не выдумывай цифры, цены, имена, телефоны, ссылки, даты и сроки. Не знаешь — так и скажи и предложи найти.
+    - Отделяй проверенное («на сайте X написано…») от догадок («думаю…», «скорее всего…»).
+    - Ошиблась — признай и исправь.
+
+    Как искать и проверять (делай сама, не спрашивая):
+    - Всё, что меняется (цены, наличие, законы, правила, контакты, новости, курсы, расписания), ищи через web_search, а не по памяти.
+    - Запрос короткий, 2–6 слов, по-русски; для местных дел добавляй город. Не нашлось — другие слова, а не тот же запрос.
+    - Открой 1–2 лучших ссылки через open_page. Сначала официальные источники: сайт производителя, магазина, госоргана, банка; форумы — в последнюю очередь.
+    - Важную цифру подтверждай вторым источником. Смотри дату: старше года — предупреди. Источники расходятся — назови оба значения.
+    - В ответе называй источник (сайт).
+    - Любые расчёты денег, площадей, количества — только через calc.
+
+    Как выполнять задания:
+    - Сначала пойми цель. Неясно и от ответа зависит результат — задай один короткий вопрос.
+    - Разбей на шаги, делай по одному действию, после каждого проверь результат. Ошибка — попробуй иначе один раз, потом честно скажи, что не вышло.
+    - Опасные действия (отправка клиенту, изменения на сервере, удаление) телефон сам покажет хозяину на подтверждение — не переспрашивай текстом.
+    - В конце коротко: что сделано и что осталось.
+
+    Память:
+    - «Запомни», новое правило, решение или предпочтение хозяина — сохрани через remember.
+    - Проверенный полезный факт из интернета — сохрани через remember с источником и датой. Мелочи не сохраняй.
+    - Раздел «Из базы знаний» ниже — твои знания по теме вопроса. Правила хозяина из основы выполняй всегда.
+    - Заявки, клиенты, склад, оплаты, почта — смотри в CRM (действия crm_…), а не по памяти.
+    """
+
+    private static func dateLine() -> String {
+        let f = DateFormatter(); f.locale = Locale(identifier: "ru_RU"); f.dateFormat = "EEEE, d MMMM yyyy, HH:mm"
+        return "Сейчас: \(f.string(from: Date())) (время телефона)."
+    }
+
+    private func systemPrompt(for question: String) -> String {
+        var s = Self.core + "\n" + Self.dateLine()
+        let kb = KnowledgeBase.shared
+        let pin = kb.pinnedText
+        if !pin.isEmpty { s += "\n\n# Основа (правила и сведения хозяина)\n" + String(pin.prefix(3500)) }
+        let found = kb.search(question, limit: 3)
+        if !found.isEmpty {
+            s += "\n\n# Из базы знаний (по теме)\n" + found.map { "## \($0.title) [\($0.source)]\n\(String($0.text.prefix(900)))" }.joined(separator: "\n\n")
+        }
+        s += "\n\n# Tools\n\nYou may call one or more functions to assist with the user query.\n\nYou are provided with function signatures within <tools></tools> XML tags:\n<tools>\n"
+        s += allTools.map(\.json).joined(separator: "\n")
+        s += "\n</tools>\n\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\n<tool_call>\n{\"name\": <function-name>, \"arguments\": <args-json-object>}\n</tool_call>"
+        return s
+    }
+
+    private func render(_ msgs: [ChatMsg]) -> String {
+        var out = ""
+        for m in msgs {
+            switch m.role {
+            case .user: out += "<|im_start|>user\n\(m.text)<|im_end|>\n"
+            case .assistant:
+                var body = m.text
+                if let c = m.call { body += (body.isEmpty ? "" : "\n") + "<tool_call>\n\(c)\n</tool_call>" }
+                out += "<|im_start|>assistant\n\(body)<|im_end|>\n"
+            case .tool: out += "<|im_start|>user\n<tool_response>\n\(m.text)\n</tool_response><|im_end|>\n"
+            case .note: break
+            }
+        }
+        return out
+    }
+
+    private func prompt(question: String, kind: BrainModel.Kind) async -> String {
+        let sys = "<|im_start|>system\n\(systemPrompt(for: question))<|im_end|>\n"
+        let tail = "<|im_start|>assistant\n" + (kind == .qwen35 ? "<think>\n\n</think>\n\n" : "")
+        var hist = messages.filter { $0.role != .note }
+        // старые результаты действий укорачиваем — в голову влезает немного
+        if let lastUser = hist.lastIndex(where: { $0.role == .user }) {
+            for i in hist.indices where i < lastUser && hist[i].role == .tool && hist[i].text.count > 400 {
+                hist[i].text = String(hist[i].text.prefix(400)) + " …"
+            }
+        }
+        let budget = max(1500, engine.nCtx - 900)
+        while true {
+            let p = sys + render(hist) + tail
+            if hist.count <= 1 { return p }
+            if await engine.count(p) <= budget { return p }
+            hist.removeFirst()
+            while let f = hist.first, f.role != .user { hist.removeFirst() }   // разговор начинается с вопроса
+        }
+    }
+
+    // MARK: разбор ответа нейросети
+
+    private static func stripThink(_ s: String) -> String {
+        var t = s
+        while let a = t.range(of: "<think>") {
+            if let b = t.range(of: "</think>", range: a.upperBound..<t.endIndex) { t.removeSubrange(a.lowerBound..<b.upperBound) } else { t.removeSubrange(a.lowerBound..<t.endIndex) }
+        }
+        return t
+    }
+
+    struct Call { var name: String; var args: [String: Any]; var raw: String }
+
+    private static func parse(_ out: String) -> (text: String, call: Call?) {
+        let t = stripThink(out).replacingOccurrences(of: "<|im_end|>", with: "")
+        guard let a = t.range(of: "<tool_call>") else { return (t.trimmingCharacters(in: .whitespacesAndNewlines), nil) }
+        let before = String(t[..<a.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
+        var rest = String(t[a.upperBound...])
+        if let b = rest.range(of: "</tool_call>") { rest = String(rest[..<b.lowerBound]) }
+        guard let o = rest.firstIndex(of: "{"), let c = rest.lastIndex(of: "}") else { return (before, nil) }
+        let raw = String(rest[o...c])
+        guard let obj = try? JSONSerialization.jsonObject(with: Data(raw.utf8)) as? [String: Any],
+              let name = obj["name"] as? String else { return (before, Call(name: "", args: [:], raw: raw)) }
+        var args = obj["arguments"] as? [String: Any] ?? [:]
+        if args.isEmpty, let s = obj["arguments"] as? String,
+           let o2 = try? JSONSerialization.jsonObject(with: Data(s.utf8)) as? [String: Any] { args = o2 }
+        return (before, Call(name: name, args: args, raw: raw))
+    }
+
+    private func describe(_ c: Call, _ spec: ToolSpec?) -> String {
+        let a = c.args.map { "\($0.key): \($0.value)" }.sorted().joined(separator: "\n")
+        return (spec?.desc ?? c.name) + (a.isEmpty ? "" : "\n\n" + a)
+    }
+
+    private func stageText(_ name: String, _ args: [String: Any]) -> String {
+        switch name {
+        case "web_search": return "Ищу в интернете: \(args["query"] as? String ?? "")"
+        case "open_page": return "Читаю страницу: \(URL(string: args["url"] as? String ?? "")?.host ?? "")"
+        case "remember": return "Запоминаю…"
+        case "recall": return "Вспоминаю…"
+        case "calc": return "Считаю…"
+        case "reminder": return "Ставлю напоминание…"
+        default: return name.hasPrefix("crm") ? "Работаю с CRM…" : "Выполняю: \(name)"
+        }
+    }
+
+    private func confirm(_ title: String, _ detail: String) async -> Bool {
+        await withCheckedContinuation { (c: CheckedContinuation<Bool, Never>) in
+            var done = false
+            pending = PendingConfirm(title: title, detail: detail) { ok in
+                if done { return }
+                done = true
+                c.resume(returning: ok)
+            }
+        }
+    }
+
+    func answer(_ ok: Bool) {
+        guard let p = pending else { return }
+        pending = nil
+        p.answer(ok)
+    }
+
+    // MARK: главный цикл
+
+    func send(_ text: String) {
+        let q = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !q.isEmpty, !busy else { return }
+        messages.append(ChatMsg(role: .user, text: q))
+        saveChat()
+        busy = true
+        stopFlag = LlamaEngine.Stop()
+        let flag = stopFlag
+        work = Task { [weak self] in
+            await self?.loop(question: q, flag: flag)
+            await MainActor.run {
+                self?.busy = false
+                self?.live = ""
+                self?.stage = ""
+                self?.saveChat()
+            }
+        }
+    }
+
+    private func loop(question: String, flag: LlamaEngine.Stop) async {
+        let store = ModelStore.shared
+        guard let model = store.readyModel else {
+            messages.append(ChatMsg(role: .note, text: "Нейросеть ещё не в телефоне. Откройте ⚙︎ и нажмите «Скачать»."))
+            return
+        }
+        do {
+            if engine.loadedPath != store.fileURL(model).path {
+                stage = "Загружаю нейросеть в память (10–30 секунд)…"
+                try await engine.load(path: store.fileURL(model).path)
+            }
+            if crmTools.isEmpty && CRMClient.connected { await refreshCRM() }
+            var badFormat = 0
+            for step in 0..<maxSteps {
+                if flag.value { break }
+                stage = step == 0 ? "Думаю…" : "Думаю дальше…"
+                let p = await prompt(question: question, kind: model.kind)
+                live = ""
+                let out = try await engine.generate(prompt: p, maxTokens: 700, temperature: 0.4, stops: ["</tool_call>", "<|im_end|>"], stop: flag) { [weak self] t in
+                    guard let self else { return }
+                    let visible = Self.stripThink(t).components(separatedBy: "<tool_call>").first ?? ""
+                    self.live = visible.trimmingCharacters(in: .whitespacesAndNewlines)
+                    if !visible.isEmpty { self.stage = "" }
+                }
+                if flag.value { break }
+                let (text, call) = Self.parse(out)
+                live = ""
+                guard let call else {
+                    let final = text.isEmpty ? "…" : text
+                    messages.append(ChatMsg(role: .assistant, text: final))
+                    if speak { Speaker.shared.say(final) }
+                    return
+                }
+                let spec = allTools.first { $0.name == call.name }
+                messages.append(ChatMsg(role: .assistant, text: text, call: call.raw))
+                guard let spec else {
+                    badFormat += 1
+                    messages.append(ChatMsg(role: .tool, text: "Ошибка: нет действия «\(call.name)». Доступны: \(allTools.map(\.name).joined(separator: ", ")).", tool: call.name))
+                    if badFormat > 2 { break }
+                    continue
+                }
+                var confirmed = false
+                if spec.danger {
+                    stage = "Жду вашего ответа…"
+                    confirmed = await confirm(spec.remote ? "CRM: сделать?" : "Сделать?", describe(call, spec))
+                    if !confirmed {
+                        messages.append(ChatMsg(role: .tool, text: "Хозяин отказался. Не делай этого и спроси, как поступить.", tool: call.name))
+                        continue
+                    }
+                }
+                stage = stageText(call.name, call.args)
+                let result = spec.remote ? await CRMClient.call(call.name, call.args, confirmed: confirmed)
+                                         : await LocalTools.run(call.name, call.args)
+                messages.append(ChatMsg(role: .tool, text: String(result.prefix(3000)), tool: call.name))
+                saveChat()
+            }
+            if !flag.value {
+                messages.append(ChatMsg(role: .note, text: "Остановилась после \(maxSteps) шагов. Напишите «продолжай», если нужно."))
+            }
+        } catch {
+            messages.append(ChatMsg(role: .note, text: "⚠️ " + error.localizedDescription))
+            if let f = error as? LlamaEngine.Failure, case .tooLong = f { messages.append(ChatMsg(role: .note, text: "Нажмите «Новый разговор» ↻.")) }
+        }
+    }
+}

@@ -3,12 +3,17 @@ options:
   bundleIdPrefix: ru.usenko
   deploymentTarget:
     iOS: "17.0"
+packages:
+  LlamaKit:
+    path: Sources/LlamaKit
 targets:
   Zamer3D:
     type: application
     platform: iOS
     sources:
-      - Sources
+      - path: Sources
+        excludes:
+          - "LlamaKit/**"
       - path: Resources/Mebel
         type: folder
         buildPhase: resources
@@ -16,11 +21,11 @@ targets:
       path: Sources/Info.plist
       properties:
         CFBundleDisplayName: "Замер 3D"
-        CFBundleShortVersionString: "2.2"
-        CFBundleVersion: "51"
+        CFBundleShortVersionString: "2.3"
+        CFBundleVersion: "52"
         NSCameraUsageDescription: "Камера и LiDAR нужны для 3D-скана помещения."
         NSMicrophoneUsageDescription: "Микрофон нужен, чтобы описывать персонажей мультиков голосом."
-        NSSpeechRecognitionUsageDescription: "Распознавание речи превращает голосовое описание персонажа в текст."
+        NSSpeechRecognitionUsageDescription: "Распознавание речи превращает голосовое описание персонажа и задания помощнику в текст."
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: true
         UIRequiredDeviceCapabilities: [arkit]
@@ -45,6 +50,9 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
+    dependencies:
+      - package: LlamaKit
+        product: LlamaKit
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ru.usenko.zamer3d
