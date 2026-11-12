@@ -1,8 +1,6 @@
-URL: https://crm.nashdekor.ru/rescue/
-КОД: 401
+URL: https://crm.nashdekor.ru/api/outbox/status/8e99db1e-23ed-437b-a3f1-005427b282eb
+КОД: 200
 
-401 Authorization Required 
- 401 Authorization Required
- nginx
+{"error":"","sent_at":"","status":"saved"}
 
 ССЫЛКИ:

@@ -1,6 +1,6 @@
-URL: https://crm.nashdekor.ru/api/health
+URL: https://crm.nashdekor.ru/api/outbox/status/845ee3a9-5988-411c-b506-844d1eb03836
 КОД: 200
 
-{"ok":true}
+{"error":"","sent_at":"","status":"saved"}
 
 ССЫЛКИ:
