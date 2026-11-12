@@ -65,6 +65,35 @@ function ruIPA(word, si) {
   return out.map(o => o.p).join('');
 }
 MK.ruIPA = ruIPA;
+/** Голос Apple (Пик, Рон, любой голос iPhone): как поправить ударение, не сломав живое чтение. 12.11.2026, Mac (голос Milena),
+    71 реплика серий и 6 проб (всё перебранное — в tools/multik/OZVUCHKA.md):
+    - слово целиком транскрипцией (IPA) голос читает ровной чужой мелодией; по кускам через SSML — каждый кусок как отдельное слово,
+      «замок» тянется. Михаил на слух оба раза: плохо. Знак ударения, заглавные буквы, contour/range в SSML голос не замечает.
+    - сам голос читает верно почти всё и ошибается в отдельных словах: «старый замо́к» (надо «за́мок»), «из леса́», «ключ от дома́?».
+    - мягкий перенос (U+00AD) внутри слова — как и знак «+» — заставляет голос прочитать слово «по правилам»: ударение на
+      ПРЕДПОСЛЕДНИЙ слог, а длина и мелодия остаются как у обычного слова («за́мок» звучит как «за́пад»). Выбрать слог так нельзя,
+      поставить ударение на последний слог — тоже («глаз+а» превратилось бы в «гла́за»).
+    Поэтому трогаем только слова из списка APPLE_RULES (для каждого записью проверено: сам голос ошибается, «по правилам» читает
+    верно) и только когда нужное ударение — на предпоследнем слоге. Всё остальное голос читает сам, как раньше. */
+const APPLE_RULES = new Set(['замок', 'леса', 'дома']), APPLE_V = 'аеёиоуыэюя';
+MK.appleRulesHas = text => (String(text || '').toLowerCase().replace(/[+́]/g, '').match(/[а-яё]+/g) || []).some(w => APPLE_RULES.has(w));
+/** marked — реплика с «+» перед ударными гласными (ударения по смыслу); text — то, что идёт голосу (без «+»); ipa — транскрипции слов.
+    → { text, ipa, n }: в словах из списка с ударением на предпоследнем слоге — мягкий перенос после первой буквы, их транскрипция убрана. */
+MK.appleRules = function (marked, text, ipa) {
+  text = String(text || ''); const want = {}, seen = {};
+  for (const tok of (String(marked || '').match(/[А-Яа-яЁё+]+/g) || [])) { const c = tok.replace(/\+/g, '').toLowerCase(); if (!c) continue;
+    const occ = seen[c] = (seen[c] || 0) + 1, p = tok.indexOf('+'); if (p < 0 || !APPLE_RULES.has(c)) continue;
+    const vi = [...c].map((ch, j) => APPLE_V.includes(ch) ? j : -1).filter(j => j >= 0), k = vi.findIndex(j => j >= p);
+    if (vi.length >= 2 && k === vi.length - 2) want[c + '|' + occ] = 1; }
+  if (!Object.keys(want).length) return { text, ipa: ipa || null, n: 0 };
+  let out = '', last = 0, n = 0; const cnt = {}, spans = (ipa || []).map(x => x.slice()), re = /[А-Яа-яЁё]+/g; let m;
+  while ((m = re.exec(text))) { const c = m[0].toLowerCase(), occ = cnt[c] = (cnt[c] || 0) + 1; if (!want[c + '|' + occ]) continue;
+    const a = m.index, b = a + m[0].length, at = a + 1;                                  // перенос — после первой буквы слова
+    for (let i = spans.length - 1; i >= 0; i--) if (spans[i][0] < b && spans[i][0] + spans[i][1] > a) spans.splice(i, 1); // свою транскрипцию этого слова убрать
+    out += text.slice(last, at) + '­'; last = at; n++;
+    const shift = out.length - at; for (const sp of spans) if (sp._o === undefined) sp._o = sp[0]; for (const sp of spans) if (sp._o >= b) sp[0] = sp._o + shift; }
+  return { text: out + text.slice(last), ipa: spans.length ? spans.map(x => [x[0], x[1], x[2]]) : null, n };
+};
 /** Готовит реплику к озвучке: «+» и заглавная гласная → ударение, словарь ударений, «ё». → {text, ipa:[[начало, длина, ipa]]}
     byMeaning (для нейроголосов с БАРС-речью): «все/всё» и пары-омографы «е/ё» («пчелы/пчёлы», «поешь/поёшь») здесь не трогаем — их решает
     грамматика в странице голоса по смыслу («все вместе», «от пчелы́»). Для голосов iPhone (без byMeaning) всё как раньше. */

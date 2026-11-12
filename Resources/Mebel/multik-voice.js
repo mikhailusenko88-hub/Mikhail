@@ -231,6 +231,7 @@
       let t = String(text || '').replace(/[«»"“”]/g, '').replace(/\s+/g, ' ').trim(); if (!t) return new Float32Array(0);
       if (o.accent !== false) t = await this.marks(t, o.lex);
       this.lastText = t;
+      if (o.post !== false && global.BARSRech && global.BARSRech.post) { try { t = global.BARSRech.post(t); } catch (e) {} }   // как прочтёт голос: служебные слова, тире, звонкость
       const parts = [], cur = []; for (const s of t.split(/(?<=[.!?…])\s+/)) { if (cur.join(' ').length + s.length > 700 && cur.length) { parts.push(cur.join(' ')); cur.length = 0; } cur.push(s); } if (cur.length) parts.push(cur.join(' '));
       const bufs = []; for (const p of parts) { bufs.push(await this.chunk(p, o)); bufs.push(new Float32Array(Math.round(48000 * .22))); } bufs.pop();
       const n = bufs.reduce((a, b) => a + b.length, 0), y = new Float32Array(n); let k = 0; for (const b of bufs) { y.set(b, k); k += b.length; } return y; },

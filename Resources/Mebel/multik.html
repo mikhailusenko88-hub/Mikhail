@@ -494,9 +494,9 @@ async function prepare(e, onStep, isCancelled, noMix, opt) { // noMix: звук 
     if (r && r.buf) { try { const buf = await MK.voiceFx(r.buf, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('нейроголос', err); } continue; }
     if (!r) { // голос iPhone: омографы по смыслу (з+амок/зам+ок) — как у рассказчика; свои «+» в реплике важнее
       let text = ln.text, voice = ln.voice, key = ln.key;
-      if (ln.src && window.MKVoice && MKVoice.homoMarks && ((lib.settings || {}).bars || {}).iphoneHomo) { try {   // омографы для голосов iPhone — по настройке bars.iphoneHomo: на слух ещё не проверено, Пик и Рон пока читают как раньше
-        const plus = ln.src.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1'), hm = await MKVoice.homoMarks(plus, SrvVoice.lex(ln));
-        if (hm !== plus) { const ps = MK.prepSpeech(hm, lib.lexicon || {}, (lib.settings && lib.settings.stressMode) || 'ipa'); text = ps.text; voice = Object.assign({}, ln.voice, ps.ipa.length ? { ipa: ps.ipa } : {}); key = ln.key + 'h' + MK.hash32(hm).toString(36); }
+      if (ln.src && MK.appleRules && MK.appleRulesHas(ln.src) && window.MKVoice && MKVoice.homoMarks && ((lib.settings || {}).bars || {}).iphoneHomo !== false) { try {   // голоса iPhone (Пик, Рон). 12.11.2026: голос читает сам; правим только слова из короткого списка (MK.appleRules: «замок», «леса», «дома»), где он ошибается, и только на предпоследний слог — мягким переносом, без транскрипции: слово звучит как обычное. Выключить — settings.bars.iphoneHomo = false
+        const plus = ln.src.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1'), hm = await MKVoice.homoMarks(plus, SrvVoice.lex(ln)), ar = MK.appleRules(hm, ln.text, ln.voice && ln.voice.ipa);
+        if (ar.n) { text = ar.text; voice = Object.assign({}, ln.voice); if (ar.ipa) voice.ipa = ar.ipa; else delete voice.ipa; key = ln.key + 'r' + MK.hash32(text).toString(36); }
       } catch (err) { console.log('омографы', err); } }
       r = await Native.call('tts', { text, voice, key }); }
     if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
