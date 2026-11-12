@@ -1,6 +1,4 @@
 name: golos-probe
-# Пробы «было → стало» для бота «Почему так?»: озвучить фразы из probe_bank.json тем же способом, что бот
-# (код из ветки pochemu-albina, только чтение), и проверить, куда встало ударение. Ветки бота не меняются.
 on:
   push:
     branches: [golos]
@@ -9,56 +7,19 @@ permissions:
   contents: write
 jobs:
   probe:
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
+    runs-on: macos-15-intel
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: sudo mkdir -p /opt/multik-tts && sudo chown $USER /opt/multik-tts
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/pip
-            ~/.cache/huggingface
-            ~/.cache/torch
-            /opt/multik-tts/hf
-            /opt/multik-tts/v5_cis_base.pt
-          key: golos-probe-v1
-      - name: Озвучщик бота
-        timeout-minutes: 20
+      - name: Проба
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng >/dev/null
-          git clone -q --depth 1 --branch pochemu-albina --single-branch https://github.com/mikhailusenko88-hub/Mikhail pa
-          python -m venv /opt/multik-tts/venv
-          timeout 900 /opt/multik-tts/venv/bin/pip install -q --timeout 30 --retries 5 torch --index-url https://download.pytorch.org/whl/cpu
-          timeout 600 /opt/multik-tts/venv/bin/pip install -q --timeout 30 --retries 5 numpy ruaccent praat-parselmouth
-          [ -s /opt/multik-tts/v5_cis_base.pt ] || curl -fsSL --retry 3 --connect-timeout 20 --max-time 900 -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
-          curl -fsSL --retry 3 --connect-timeout 20 --max-time 120 -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
-          if grep -q '^mono' probe_request.txt; then python mono_patch.py pa/patch_server.py; fi
-          python pa/patch_server.py /opt/multik-tts/server.py
-          cp pa/albina_worker.py /opt/multik-tts/
-      - name: Озвучка проб
+          swiftc -O tts_probe.swift -o /tmp/pr 2>&1 | tail -5
+          N=$(python3 -c "import json;print(len(json.load(open('probe_jobs.json'))))"); mkdir -p /tmp/po
+          for i in $(seq 0 $((N-1))); do perl -e 'alarm 90; exec @ARGV' /tmp/pr probe_jobs.json /tmp/po $i 2>&1 | tail -1 || echo "СБОЙ $i"; done
+          mkdir -p /tmp/pv/v && for f in /tmp/po/*.caf; do n=$(basename "$f" .caf); afconvert -f WAVE -d LEI16@24000 -c 1 "$f" /tmp/pv/v/$n.wav 2>/dev/null || echo "не читается: $n"; done
+          cp probe_jobs.json /tmp/pv/
+      - name: В ветку
         run: |
-          cd pa && ALBINA_NO_GH=1 python farm.py ../probe_bank.json ../part
-          ls -la ../part/v | head -40
-      - name: Проверка проб
-        run: |
-          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
-          pip install -q transformers phonemizer praat-parselmouth ruaccent matplotlib faster-whisper numpy
-          TAG=${{ github.run_number }} python probe_check.py
-      - name: Commit result
-        if: always()
-        run: |
-          git config user.name golos
-          git config user.email golos@users.noreply.github.com
-          mkdir -p /tmp/res && cp -r probe_out /tmp/res/ 2>/dev/null || true
-          for i in 1 2 3 4 5 6; do
-            git fetch -q origin golos && git reset -q --hard origin/golos
-            mkdir -p probe_out && cp -r /tmp/res/probe_out/. probe_out/ 2>/dev/null || true
-            git add -A probe_out 2>/dev/null || true
-            git commit -qm "пробы «Почему так?»: было → стало" || { echo nothing; break; }
-            git push -q origin HEAD:golos && break
-            sleep $((RANDOM % 15 + 5))
-          done
+          cd /tmp/pv && git init -q -b golos-probe-out && git config user.name golos && git config user.email golos@users.noreply.github.com
+          git add -A && git commit -qm "проба: от чего зависит чтение"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:golos-probe-out
