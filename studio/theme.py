@@ -298,7 +298,7 @@ def timp(midi, vel, dur=3.0):
     k = int(0.03 * SR)
     nz = np.zeros(n)
     nz[:k] = gaussian_filter1d(rng.normal(0, 1, k), 3) * np.exp(-np.arange(k) / (0.008 * SR))
-    return vel * (s * np.minimum(1, t / 0.004) + 0.4 * nz)
+    return vel * (s * np.minimum(1, t / 0.004) + 0.4 * nz * NOISE)
 
 
 def cymbal_swell(dur, vel):

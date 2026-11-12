@@ -35,7 +35,7 @@ def organ(midi, dur, vel, stops=("8", "4"), rel=0.25):
     chiff = np.zeros(n)
     nz = rng.normal(0, 1, k)
     chiff[:k] = (gaussian_filter1d(nz, 2) - gaussian_filter1d(nz, 8)) * np.exp(-np.arange(k) / (0.015 * SR)) * 0.25
-    return vel * (out / max(1, len(stops)) * att * r + chiff)
+    return vel * (out / max(1, len(stops)) * att * r + chiff * th.NOISE)
 
 
 def bell(midi, vel, dur=7.0):
