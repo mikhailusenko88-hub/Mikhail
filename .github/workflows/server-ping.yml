@@ -1,0 +1,45 @@
+name: server-ping
+# Жив ли сервер снаружи: отвечает ли на ping, открыты ли порты SSH и веб. Запуск — изменение server-ping.txt
+# в ветке domain-check или вручную. Результат — status/server.md. Ничего на сервере не меняет и не входит на него.
+on:
+  push:
+    branches: [domain-check]
+    paths: ['server-ping.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: server-ping
+  cancel-in-progress: false
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Проверить
+        run: |
+          H=89.126.192.214
+          mkdir -p status
+          {
+            echo "# Сервер $H снаружи"
+            echo "Проверено: $(date -u '+%F %T') UTC ($(TZ=Europe/Moscow date '+%H:%M') МСК)"
+            echo
+            for round in 1 2 3; do
+              echo "## Попытка $round — $(TZ=Europe/Moscow date '+%H:%M:%S') МСК"
+              for p in 22 80 443; do
+                if timeout 8 bash -c "exec 3<>/dev/tcp/$H/$p" 2>/dev/null; then echo "- порт $p: ОТКРЫТ"; else echo "- порт $p: нет ответа"; fi
+              done
+              B=$(timeout 8 bash -c "exec 3<>/dev/tcp/$H/22; head -c 60 <&3" 2>/dev/null | tr -d '\r\n')
+              echo "- приветствие SSH: ${B:-нет}"
+              C=$(curl -s -o /dev/null -m 8 -w '%{http_code} за %{time_total} с' "http://$H/" || true)
+              echo "- веб http://$H/: ${C:-нет ответа}"
+              sleep 12
+            done
+          } > status/server.md
+          cat status/server.md
+      - name: Сохранить
+        run: |
+          git config user.name server-ping; git config user.email server-ping@users.noreply.github.com
+          git add status/server.md; git commit -q -m "server-ping $(date -u +%F_%H:%M)" || exit 0
+          for i in 1 2 3; do git pull -q --rebase origin domain-check && git push -q origin HEAD:domain-check && break; sleep 5; done
