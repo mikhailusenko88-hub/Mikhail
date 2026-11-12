@@ -12,6 +12,7 @@ struct ChatMsg: Identifiable, Codable, Equatable {
     var date = Date()
     var image: String? = nil     // фото к вопросу (файл в Assistant/img)
     var file: String? = nil      // присланный файл («номер/имя» в Assistant/files)
+    var ctx: String? = nil       // справка к вопросу: дата и знания из базы (сохраняется, чтобы не перечитывать разговор)
     var extra: String? = nil     // что на фото — для нейросети, на экране не показывается
 }
 
@@ -32,6 +33,8 @@ final class AssistantBrain: ObservableObject {
     @Published var live = ""
     /// Файл, присланный в «Замер 3D» из другого приложения («Поделиться» → «Замер 3D») — ждёт вопроса в чате.
     @Published var incoming: String?
+    private var warming: Task<Void, Never>?
+    private var warmStop = LlamaEngine.Stop()
     @Published var stage = ""
     @Published var pending: PendingConfirm?
     @Published var crmTools: [ToolSpec] = CRMClient.cachedTools
@@ -100,7 +103,7 @@ final class AssistantBrain: ObservableObject {
             guard let self else { return }
             let p = "<|im_start|>system\nТы — «Помощник», учишься на своих разговорах. Отвечай по-русски, только по формату.<|im_end|>\n"
                 + "<|im_start|>user\n\(ask)<|im_end|>\n<|im_start|>assistant\n" + (model.kind == .qwen35 ? "<think>\n\n</think>\n\n" : "")
-            let out = (try? await self.engine.generate(prompt: p, maxTokens: 220, temperature: 0.2, stops: ["<|im_end|>"], stop: flag) { _ in }) ?? ""
+            let out = (try? await self.engine.generate(prompt: p, maxTokens: 220, temperature: 0.2, stops: ["<|im_end|>"], stop: flag, keepSnap: false) { _ in }) ?? ""
             var learned: [String] = []
             for line in Self.stripThink(out).components(separatedBy: "\n") {
                 guard let r = line.range(of: "УРОК:") else { continue }
@@ -117,11 +120,13 @@ final class AssistantBrain: ObservableObject {
             }
             self.busy = false
             self.stage = ""
+            self.warmUp()
         }
     }
 
     func stop() {
         stopFlag.value = true
+        warmStop.value = true
         work?.cancel()
         if let p = pending { pending = nil; p.answer(false) }
     }
@@ -197,36 +202,48 @@ final class AssistantBrain: ObservableObject {
         return "Сейчас: \(f.string(from: Date())) (время телефона)."
     }
 
-    /// level 0 — всё; 1 — меньше знаний по теме; 2 — без знаний по теме (когда разговор длинный).
-    private func systemPrompt(for question: String, level: Int) -> String {
-        var s = Self.core + "\n" + Self.dateLine()
+    /// Постоянная часть: правила, основа хозяина, действия. Она одинакова для всех вопросов —
+    /// нейросеть читает её один раз (и хранит прочитанное на диске), поэтому ответы начинаются быстро.
+    private func systemPrompt(level: Int = 0) -> String {
+        var s = Self.core
         if crmTools.isEmpty { s += "\nCRM сейчас не подключена — действий crm_… нет." }
-        let kb = KnowledgeBase.shared
-        let pin = kb.pinnedText
+        let pin = KnowledgeBase.shared.pinnedText
         if !pin.isEmpty { s += "\n\n# Основа (правила и сведения хозяина)\n" + String(pin.prefix(level >= 2 ? 1500 : 2500)) }
-        let found = level >= 2 ? [] : kb.search(question, limit: level == 0 ? 3 : 1)
-        if !found.isEmpty {
-            s += "\n\n# Из базы знаний (по теме)\n" + found.enumerated().map { i, it in
-                let head = it.isSkill ? "## Навык «\(it.title)» (версия \(it.version))" : "## \(it.title) [\(it.source)]"
-                let size = it.isSkill && i == 0 ? (level == 0 ? 1400 : 900) : (level == 0 ? 700 : 500)
-                return head + "\n" + String(it.text.prefix(size))
-            }.joined(separator: "\n\n")
-        }
         s += "\n\n# Tools\n\nYou may call one or more functions to assist with the user query.\n\nYou are provided with function signatures within <tools></tools> XML tags:\n<tools>\n"
         s += allTools.map(\.json).joined(separator: "\n")
         s += "\n</tools>\n\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\n<tool_call>\n{\"name\": <function-name>, \"arguments\": <args-json-object>}\n</tool_call>"
         return s
     }
 
-    private func render(_ msgs: [ChatMsg]) -> String {
+    private func systemBlock(level: Int = 0) -> String { "<|im_start|>system\n\(systemPrompt(level: level))<|im_end|>\n" }
+
+    /// Справка к вопросу: дата и знания из базы по теме. level 1 — короче, 2 — только дата.
+    private func context(for question: String, level: Int) -> String {
+        var s = Self.dateLine()
+        let found = level >= 2 ? [] : KnowledgeBase.shared.search(question, limit: level == 0 ? 3 : 1)
+        if !found.isEmpty {
+            s += "\n# Из базы знаний (по теме)\n" + found.enumerated().map { i, it in
+                let head = it.isSkill ? "## Навык «\(it.title)» (версия \(it.version))" : "## \(it.title) [\(it.source)]"
+                let size = it.isSkill && i == 0 ? (level == 0 ? 1300 : 800) : (level == 0 ? 600 : 400)
+                return head + "\n" + String(it.text.prefix(size))
+            }.joined(separator: "\n\n")
+        }
+        return s
+    }
+
+    private func render(_ msgs: [ChatMsg], kind: BrainModel.Kind) -> String {
         var out = ""
+        let think = kind == .qwen35 ? "<think>\n\n</think>\n\n" : ""
         for m in msgs {
             switch m.role {
-            case .user: out += "<|im_start|>user\n\(m.text)\(m.extra.map { "\n\n" + $0 } ?? "")<|im_end|>\n"
+            case .user:
+                out += "<|im_start|>user\n"
+                if let c = m.ctx, !c.isEmpty { out += "[Справка для тебя — не от хозяина]\n\(c)\n\n[Сообщение хозяина]\n" }
+                out += m.text + (m.extra.map { "\n\n" + $0 } ?? "") + "<|im_end|>\n"
             case .assistant:
                 var body = m.text
                 if let c = m.call { body += (body.isEmpty ? "" : "\n") + "<tool_call>\n\(c)\n</tool_call>" }
-                out += "<|im_start|>assistant\n\(body)<|im_end|>\n"
+                out += "<|im_start|>assistant\n\(think)\(body)<|im_end|>\n"
             case .tool: out += "<|im_start|>user\n<tool_response>\n\(m.text)\n</tool_response><|im_end|>\n"
             case .note: break
             }
@@ -236,37 +253,63 @@ final class AssistantBrain: ObservableObject {
 
     private func prompt(question: String, kind: BrainModel.Kind) async -> String {
         var level = 0
-        var sys = "<|im_start|>system\n\(systemPrompt(for: question, level: level))<|im_end|>\n"
+        var sys = systemBlock()
         let tail = "<|im_start|>assistant\n" + (kind == .qwen35 ? "<think>\n\n</think>\n\n" : "")
         var hist = messages.filter { $0.role != .note }
-        // старые результаты действий укорачиваем — в голову влезает немного
-        if let lastUser = hist.lastIndex(where: { $0.role == .user }) {
-            for i in hist.indices where i < lastUser && hist[i].role == .tool && hist[i].text.count > 400 {
-                hist[i].text = String(hist[i].text.prefix(400)) + " …"
-            }
-        }
+        let lastUser = hist.lastIndex(where: { $0.role == .user })
+        if let lu = lastUser, hist[lu].ctx == nil { hist[lu].ctx = context(for: question, level: 0) }
         let budget = max(1500, engine.nCtx - 800)
-        var squeezed = false
+        var stage = 0
         while true {
-            let p = sys + render(hist) + tail
+            let p = sys + render(hist, kind: kind) + tail
             if await engine.count(p) <= budget { return p }
-            let lastUser = hist.lastIndex(where: { $0.role == .user }) ?? 0
-            if lastUser > 0 {
+            let lu = hist.lastIndex(where: { $0.role == .user }) ?? 0
+            switch stage {
+            case 0:
+                // справки к старым вопросам больше не нужны
+                for i in hist.indices where i < lu { hist[i].ctx = nil }
+                stage = 1
+            case 1:
+                // старые результаты действий укорачиваем
+                for i in hist.indices where i < lu && hist[i].role == .tool && hist[i].text.count > 400 {
+                    hist[i].text = String(hist[i].text.prefix(400)) + " …"
+                }
+                stage = 2
+            case 2 where lu > 0:
                 // убираем самый старый вопрос с ответами; текущий вопрос не трогаем
                 hist.removeFirst()
                 while let f = hist.first, f.role != .user { hist.removeFirst() }
-            } else if !squeezed {
+            case 2:
                 // остался только текущий вопрос: укорачиваем результаты действий в нём
-                squeezed = true
                 for i in hist.indices where hist[i].role == .tool && hist[i].text.count > 700 {
                     hist[i].text = String(hist[i].text.prefix(700)) + " …"
                 }
-            } else if level < 2 {
+                stage = 3
+            default:
+                guard level < 2 else { return p }
                 level += 1
-                sys = "<|im_start|>system\n\(systemPrompt(for: question, level: level))<|im_end|>\n"
-            } else {
-                return p
+                hist[lu].ctx = context(for: question, level: level)
+                if level == 2 { sys = systemBlock(level: 2) }
             }
+        }
+    }
+
+    /// Пока хозяин печатает или говорит — нейросеть уже загружена и прочитала правила и разговор.
+    func warmUp() {
+        guard !busy, warming == nil, let model = ModelStore.shared.readyModel else { return }
+        let store = ModelStore.shared
+        warming = Task { [weak self] in
+            guard let self else { return }
+            defer { self.warming = nil }
+            if self.engine.loadedPath != store.fileURL(model).path {
+                do { try await self.engine.load(path: store.fileURL(model).path) } catch { return }
+            }
+            let base = self.systemBlock()
+            let hist = self.messages.filter { $0.role != .note }
+            let full = base + self.render(hist, kind: model.kind)
+            let file = ModelStore.folder.appendingPathComponent(".\(model.id)-\(self.engine.nCtx).state")
+            self.warmStop = LlamaEngine.Stop()
+            await self.engine.warmUp(base: base, full: full, file: file, stop: self.warmStop)
         }
     }
 
@@ -474,7 +517,7 @@ final class AssistantBrain: ObservableObject {
                     let p = "<|im_start|>system\nТы — «Помощник», личный помощник хозяина в его iPhone. Отвечай по-русски, коротко, без выдумок.<|im_end|>\n"
                         + "<|im_start|>user\n\(ask)<|im_end|>\n<|im_start|>assistant\n" + (model.kind == .qwen35 ? "<think>\n\n</think>\n\n" : "")
                     self.live = ""
-                    let out = try await self.engine.generate(prompt: p, maxTokens: 260, temperature: 0.3, stops: ["<|im_end|>"], stop: flag) { [weak self] t in
+                    let out = try await self.engine.generate(prompt: p, maxTokens: 260, temperature: 0.3, stops: ["<|im_end|>"], stop: flag, keepSnap: false) { [weak self] t in
                         self?.live = Self.stripThink(t).trimmingCharacters(in: .whitespacesAndNewlines)
                     }
                     let text = Self.stripThink(out).replacingOccurrences(of: "<|im_end|>", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
@@ -492,6 +535,7 @@ final class AssistantBrain: ObservableObject {
             self.busy = false
             self.stage = ""
             self.saveChat()
+            self.warmUp()
         }
     }
 
@@ -516,6 +560,7 @@ final class AssistantBrain: ObservableObject {
                 self?.live = ""
                 self?.stage = ""
                 self?.saveChat()
+                self?.warmUp()      // пока хозяин читает ответ — готовимся к следующему вопросу
             }
         }
     }
@@ -549,6 +594,9 @@ final class AssistantBrain: ObservableObject {
                 }
                 messages[i].extra = parts.joined(separator: "\n\n")
                 saveChat()
+            }
+            if let i = messages.lastIndex(where: { $0.role == .user }), messages[i].ctx == nil {
+                messages[i].ctx = context(for: question, level: 0)
             }
             var badFormat = 0
             var used = Set<String>()

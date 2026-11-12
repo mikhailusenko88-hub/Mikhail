@@ -74,7 +74,7 @@ struct AssistantScreen: View {
         }
         .onAppear { takeIncoming() }
         .onChange(of: brain.incoming) { _ in takeIncoming() }
-        .task { await brain.refreshCRM(); brain.reviewPending() }
+        .task { await brain.refreshCRM(); brain.reviewPending(); brain.warmUp() }
         .onDisappear {
             // нейросеть занимает ~3 ГБ памяти — отдаём её сканеру и мультикам
             brain.stop()
