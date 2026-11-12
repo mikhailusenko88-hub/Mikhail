@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-11 слот 3: clubs №5 https://youtube.com/shorts/poKpw02WkZg, за 70 с
+ВЫЛОЖЕНО 2026-11-12 слот 1: cities №8 https://youtube.com/shorts/DOAakgYql4w, за 62 с
 
 {
- "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №5 #shorts",
- "description": "⏳ Finalgacha 4 kun · До финала 4 дня\n\nPaxtakor, Bunyodkor, Nasaf, Navbahor… qaysi jamoa tezroq? Izohlarda yoz 👇\n22 клубов Суперлиги Узбекистана в одной гонке: Пахтакор, Бунёдкор, Насаф, Навбахор и другие. Какой победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nJamoangiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего клуба? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #futbol #superliga #paxtakor #bunyodkor #nasaf #navbahor #гонкашариков #shorts",
+ "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №8 #shorts",
+ "description": "🏆 Oʻtgan hafta chempioni: Xiva · Чемпион прошлой недели: Хива\n\n⏳ Finalgacha 3 kun · До финала 3 дня\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,36 +11,35 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "futbol",
-  "футбол",
-  "superliga",
-  "суперлига узбекистана",
-  "paxtakor",
-  "bunyodkor",
-  "nasaf",
-  "navbahor",
-  "neftchi",
-  "pfl uzbekistan"
+  "toshkent",
+  "samarqand",
+  "buxoro",
+  "namangan",
+  "andijon",
+  "fargʻona",
+  "города узбекистана",
+  "shaharlar"
  ]
 }
 
 --- журнал (время Ташкента) ---
-23:02:04 режим publish, событие schedule
-23:02:04 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-23:02:17 комментарии: роликов просмотрено: 15, комментариев: 1
-23:02:17 Тема: гонка футбольных клубов. Подбираю трассу и заезд…
-23:02:19   трасса 1 (stairs, bumpy, tramps, funnel, split): победа на 32.4 с, смен лидера 18, финишировали 4, расчёт 2 с — не подходит
-23:02:21   трасса 2 (tramps, split, tunnel, bumpy): победа на 32.9 с, смен лидера 18, финишировали 4, расчёт 2 с — не подходит
-23:02:24   трасса 3 (tunnel, tramps, funnel, split, hammers): победа на 34.7 с, смен лидера 20, финишировали 5, расчёт 3 с — не подходит
-23:02:26   трасса 4 (tramps, bumpy, hammers, tunnel): победа на 26.5 с, смен лидера 20, финишировали 6, расчёт 2 с
-23:02:26 Рисую трассу…
-23:02:26 Рисую кадры: заезд 29 с + финал 6 с…
-23:02:26   кадр 0/876, 10 с
-23:02:40   кадр 300/876, 23 с
-23:02:53   кадр 600/876, 36 с
-23:03:10 Свожу звук…
-23:03:11 Готово за 54 с: победил Olimpik, ролик 35 с
-23:03:11 ролик готов: 35 с, 22 МБ, сборка 67 с; победил Olimpik, топ-3: Olimpik, Qizilqum, Andijon
-23:03:13 YouTube: https://youtube.com/shorts/poKpw02WkZg
-23:03:14 в плейлисте
-23:03:14 статус: public uploaded
+11:35:31 режим publish, событие workflow_dispatch
+11:35:31 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+11:35:42 комментарии: роликов просмотрено: 15, комментариев: 2
+11:35:42 комментариев новых: 1, просьб: 0
+11:35:43 Тема: гонка городов. Подбираю трассу и заезд…
+11:35:44   трасса 1 (tramps, split, bumpy, tunnel): победа на 29.5 с, смен лидера 14, финишировали 4, расчёт 1 с
+11:35:45   трасса 2 (tunnel, funnel, tramps, split, stairs): победа на 28.0 с, смен лидера 10, финишировали 10, расчёт 1 с
+11:35:47   трасса 3 (bumpy, tramps, split, funnel, tunnel): победа на 35.3 с, смен лидера 11, финишировали 2, расчёт 2 с — не подходит
+11:35:47 Рисую трассу…
+11:35:48 Рисую кадры: заезд 31 с + финал 6 с…
+11:35:48   кадр 0/923, 5 с
+11:36:00   кадр 300/923, 17 с
+11:36:11   кадр 600/923, 29 с
+11:36:23   кадр 900/923, 41 с
+11:36:29 Свожу звук…
+11:36:30 Готово за 47 с: победил Qarshi, ролик 37 с
+11:36:30 ролик готов: 37 с, 24 МБ, сборка 59 с; победил Qarshi, топ-3: Qarshi, Urganch, Asaka
+11:36:32 YouTube: https://youtube.com/shorts/DOAakgYql4w
+11:36:33 в плейлисте
+11:36:33 статус: public uploaded

@@ -18,3 +18,4 @@
 | 2026-11-11 | 1 | cars №7 | Matiz | https://youtube.com/shorts/OsEnOlxc5ro | public |
 | 2026-11-11 | 2 | cars №8 | Tahoe | https://youtube.com/shorts/U_jnHzzCTiI | public |
 | 2026-11-11 | 3 | clubs №5 | Olimpik | https://youtube.com/shorts/poKpw02WkZg | public |
+| 2026-11-12 | 1 | cities №8 | Qarshi | https://youtube.com/shorts/DOAakgYql4w | public |
