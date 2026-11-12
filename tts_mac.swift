@@ -18,8 +18,9 @@ let synth = AVSpeechSynthesizer()
 var log: [[String: Any]] = []
 for j in jobs {
     let name = j["name"] as! String, text = j["text"] as! String
-    let u: AVSpeechUtterance
-    if let spans = j["ipa"] as? [[Any]], !spans.isEmpty {
+    var u: AVSpeechUtterance
+    if let ssml = j["ssml"] as? String, let x = AVSpeechUtterance(ssmlRepresentation: ssml) { u = x }
+    else if let spans = j["ipa"] as? [[Any]], !spans.isEmpty {
         let a = NSMutableAttributedString(string: text); let len = (text as NSString).length
         for s in spans where s.count == 3 {
             guard let st = (s[0] as? NSNumber)?.intValue, let ln = (s[1] as? NSNumber)?.intValue, let ipa = s[2] as? String, st >= 0, ln > 0, st + ln <= len else { continue }
