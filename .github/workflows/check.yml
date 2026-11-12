@@ -6,7 +6,7 @@ jobs:
     steps:
       - run: |
           for i in $(seq 1 16); do
-            n=$(curl -s "http://89.126.192.214:8080/mebel/s9kbars/?t=$RANDOM" | grep -c 'btn op')
+            n=$(curl -s "http://89.126.192.214:8080/mebel/s9kbars/?t=$RANDOM" | grep -c 'btn op' || true)
             echo "try $i: new page = $n"; [ "$n" -gt 0 ] && break; sleep 30
           done
           curl -s "http://89.126.192.214:8080/mebel/s9kbars/" | grep -o 'class="btn dl"[^>]*>' | head -1
