@@ -1,0 +1,22 @@
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.1s] objects 24 scene built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/k703_green/_sky.exr'
+Time: 00:01.73 (Saving: 00:00.00)
+
+[scene   1.8s] sky irradiance [ 8.89   9.723 11.642] sun strength 48.803
+Saved: '/home/runner/work/Mikhail/Mikhail/out/k703_green/_pre.exr'
+Time: 00:05.95 (Saving: 00:00.00)
+
+[scene   8.1s] white pixels 3734 illuminant [1.182 0.981 0.657] wb gains [0.881 1.003 1.325] wall Y 0.4455 exposure 1.04
+Saved: '/home/runner/work/Mikhail/Mikhail/out/k703_green/_pre2.exr'
+Time: 00:05.28 (Saving: 00:00.00)
+
+[scene  13.4s] re-exposure: frame median 1.461 exposure -2.75
+Saved: '/home/runner/work/Mikhail/Mikhail/out/k703_green/k703_green.jpg'
+Time: 07:44.13 (Saving: 00:00.50)
+
+[scene 477.5s] final render 464.1s /home/runner/work/Mikhail/Mikhail/out/k703_green/k703_green.jpg
+[scene 477.5s] done
+
+Blender quit
