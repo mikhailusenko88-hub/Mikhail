@@ -1,0 +1,18 @@
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.1s] objects 25 scene built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/r37_top_plaster/_sky.exr'
+Time: 00:01.13 (Saving: 00:00.00)
+
+[scene   1.2s] sky irradiance [ 8.89   9.723 11.642] sun strength 48.803
+Saved: '/home/runner/work/Mikhail/Mikhail/out/r37_top_plaster/_pre.exr'
+Time: 00:06.89 (Saving: 00:00.00)
+
+[scene   8.5s] white pixels 3734 illuminant [1.088 0.999 0.748] wb gains [0.952 0.994 1.196] wall Y 0.7286 exposure 0.18
+Saved: '/home/runner/work/Mikhail/Mikhail/out/r37_top_plaster/r37_top_plaster.jpg'
+Time: 01:20.51 (Saving: 00:00.17)
+
+[scene  89.0s] final render 80.5s /home/runner/work/Mikhail/Mikhail/out/r37_top_plaster/r37_top_plaster.jpg
+[scene  89.0s] done
+
+Blender quit
