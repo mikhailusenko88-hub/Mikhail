@@ -621,6 +621,18 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
                 if err == nil { try? FileManager.default.removeItem(at: src); do { try FileManager.default.moveItem(at: tmp, to: src) } catch { err = error.localizedDescription } }
                 DispatchQueue.main.async { if let e = err { replyHandler(["error": e], nil) } else { replyHandler(["path": rel], nil) } }
             }
+        case "rutubeCopy":   // копия серии для Rutube: H.264 без перестановки кадров, время кадров ровно по сетке — Rutube перекодирует без «квадратиков»
+            let rel = body["path"] as? String ?? ""
+            let src = root.appendingPathComponent(rel)
+            guard FileManager.default.fileExists(atPath: src.path) else { replyHandler(["error": "нет файла серии"], nil); return }
+            let dir = root.appendingPathComponent("tmp"), name = "rutube-" + src.deletingPathExtension().lastPathComponent + ".mp4"
+            queue.async {
+                try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+                // прежние копии для Rutube больше не нужны — место на телефоне
+                if let fs = try? FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil) { for f in fs where f.lastPathComponent.hasPrefix("rutube-") { try? FileManager.default.removeItem(at: f) } }
+                let err = MultikWriter.transcodeH264(src: src, out: dir.appendingPathComponent(name))
+                DispatchQueue.main.async { if let e = err { replyHandler(["error": e], nil) } else { replyHandler(["path": "tmp/" + name], nil) } }
+            }
         case "thermal":
             replyHandler(ProcessInfo.processInfo.thermalState.rawValue, nil)
         case "videoEnd":
@@ -942,9 +954,9 @@ final class MultikWriter {
         guard !done.isEmpty else { error = error ?? "нет кадров"; return nil }
         let parts = (0..<done.count).map { segURL($0) }, total = CMTime(value: doneFrames, timescale: fps)
         let tmp = dir.appendingPathComponent("final.mp4")
-        if let e = MultikWriter.mux(parts: parts, total: total, audio: audio, out: tmp) {
+        if let e = MultikWriter.mux(parts: parts, total: total, audio: audio, out: tmp, frames: done) {
             // со звуком не вышло — пробуем без него
-            guard MultikWriter.mux(parts: parts, total: total, audio: nil, out: tmp) == nil else { error = e; return nil }
+            guard MultikWriter.mux(parts: parts, total: total, audio: nil, out: tmp, frames: done) == nil else { error = e; return nil }
             warn = e
         }
         try? FileManager.default.removeItem(at: out)
@@ -955,7 +967,8 @@ final class MultikWriter {
 
     /// Склейка mp4: видеокадры копируются как есть (куски один за другим), звук кодируется из wav в AAC 160 кбит/с.
     /// Возвращает текст ошибки или nil.
-    static func mux(parts: [URL], total: CMTime, audio: URL?, out: URL) -> String? {
+    /// frames — сколько кадров в каждом куске: следующий кусок встаёт ровно на свой кадр (n / fps), без сдвига на доли кадра.
+    static func mux(parts: [URL], total: CMTime, audio: URL?, out: URL, frames: [Int64]? = nil) -> String? {
         let fm = FileManager.default
         try? fm.removeItem(at: out)
         guard let first = parts.first, let fv = AVURLAsset(url: first).tracks(withMediaType: .video).first,
@@ -994,7 +1007,10 @@ final class MultikWriter {
                     let o = AVAssetReaderTrackOutput(track: t, outputSettings: nil); o.alwaysCopiesSampleData = false; rd.add(o)
                     guard rd.startReading() else { k += 1; continue }
                     vRd = rd; vOut = o
-                    if k > 0 { offset = CMTimeAdd(offset, CMTimeMinimum(AVURLAsset(url: parts[k - 1]).duration, total)) }
+                    if k > 0 {
+                        if let fr = frames, fr.count >= k { offset = CMTime(value: fr[0..<k].reduce(0, +), timescale: total.timescale) }
+                        else { offset = CMTimeAdd(offset, CMTimeMinimum(AVURLAsset(url: parts[k - 1]).duration, total)) }
+                    }
                     k += 1
                 }
                 guard let sb = vOut?.copyNextSampleBuffer() else { vRd?.cancelReading(); vRd = nil; vOut = nil; continue }
@@ -1015,6 +1031,77 @@ final class MultikWriter {
         wr.finishWriting { sem.signal() }
         sem.wait()
         return wr.status == .completed ? nil : (wr.error?.localizedDescription ?? "склейка не удалась")
+    }
+
+    /// Перекодировать готовую серию в H.264 для Rutube: каждый кадр заново, без B-кадров, время кадра — ровно по сетке fps
+    /// (повтор на ту же клетку пропускается), звук копируется как есть. Возвращает текст ошибки или nil.
+    static func transcodeH264(src: URL, out: URL) -> String? {
+        try? FileManager.default.removeItem(at: out)
+        let asset = AVURLAsset(url: src)
+        guard let vt = asset.tracks(withMediaType: .video).first else { return "в серии нет видео" }
+        let at = asset.tracks(withMediaType: .audio).first
+        guard let rd = try? AVAssetReader(asset: asset) else { return "серия не читается" }
+        let vo = AVAssetReaderTrackOutput(track: vt, outputSettings: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange])
+        vo.alwaysCopiesSampleData = false; rd.add(vo)
+        var ao: AVAssetReaderTrackOutput?
+        if let a = at { let o = AVAssetReaderTrackOutput(track: a, outputSettings: nil); o.alwaysCopiesSampleData = false; rd.add(o); ao = o }
+        let wr: AVAssetWriter
+        do { wr = try AVAssetWriter(outputURL: out, fileType: .mp4) } catch { return error.localizedDescription }
+        let sz = vt.naturalSize, w = Int(sz.width), h = Int(sz.height)
+        let fps = Int32(max(1, Int(vt.nominalFrameRate.rounded()) > 0 ? Int(vt.nominalFrameRate.rounded()) : 25))
+        let vIn = AVAssetWriterInput(mediaType: .video, outputSettings: [
+            AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: w, AVVideoHeightKey: h,
+            AVVideoColorPropertiesKey: [
+                AVVideoColorPrimariesKey: AVVideoColorPrimaries_ITU_R_709_2,
+                AVVideoTransferFunctionKey: AVVideoTransferFunction_ITU_R_709_2,
+                AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2,
+            ],
+            AVVideoCompressionPropertiesKey: [
+                AVVideoAverageBitRateKey: w >= 1920 ? 12_000_000 : 6_000_000,
+                AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
+                AVVideoMaxKeyFrameIntervalKey: Int(fps) * 2,
+                AVVideoAllowFrameReorderingKey: false,
+                AVVideoExpectedSourceFrameRateKey: Int(fps),
+            ],
+        ])
+        vIn.expectsMediaDataInRealTime = false
+        wr.add(vIn)
+        var aIn: AVAssetWriterInput?
+        if at != nil, let fd = at?.formatDescriptions.first {
+            let i = AVAssetWriterInput(mediaType: .audio, outputSettings: nil, sourceFormatHint: (fd as! CMFormatDescription))
+            i.expectsMediaDataInRealTime = false; wr.add(i); aIn = i
+        }
+        guard rd.startReading() else { return rd.error?.localizedDescription ?? "серия не читается" }
+        guard wr.startWriting() else { return wr.error?.localizedDescription ?? "запись не началась" }
+        wr.startSession(atSourceTime: .zero)
+        var vDone = false, aDone = aIn == nil, idle = 0, lastSlot: Int64 = -1
+        while !(vDone && aDone) {
+            var moved = false
+            while !vDone && vIn.isReadyForMoreMediaData {
+                guard let sb = vo.copyNextSampleBuffer() else { vDone = true; vIn.markAsFinished(); break }
+                // время кадра — на ближайшую клетку сетки fps; второй кадр в ту же клетку пропускаем
+                let pts = CMSampleBufferGetPresentationTimeStamp(sb)
+                let slot = Int64((CMTimeGetSeconds(pts) * Double(fps)).rounded())
+                if slot <= lastSlot { continue }
+                lastSlot = slot
+                var info = CMSampleTimingInfo(duration: CMTime(value: 1, timescale: fps), presentationTimeStamp: CMTime(value: slot, timescale: fps), decodeTimeStamp: .invalid)
+                var rs: CMSampleBuffer?
+                CMSampleBufferCreateCopyWithNewTiming(allocator: nil, sampleBuffer: sb, sampleTimingEntryCount: 1, sampleTimingArray: &info, sampleBufferOut: &rs)
+                guard let r = rs else { continue }
+                if !vIn.append(r) { rd.cancelReading(); return wr.error?.localizedDescription ?? "видео не записалось" }
+                moved = true
+            }
+            while !aDone, let a = aIn, a.isReadyForMoreMediaData {
+                guard let sb = ao?.copyNextSampleBuffer() else { aDone = true; a.markAsFinished(); break }
+                if !a.append(sb) { rd.cancelReading(); return wr.error?.localizedDescription ?? "звук не записался" }
+                moved = true
+            }
+            if moved { idle = 0 } else { usleep(2000); idle += 1; if idle > 15000 { rd.cancelReading(); wr.cancelWriting(); return "перекодирование зависло" } }
+        }
+        let sem = DispatchSemaphore(value: 0)
+        wr.finishWriting { sem.signal() }
+        sem.wait()
+        return wr.status == .completed ? nil : (wr.error?.localizedDescription ?? "копия не записалась")
     }
 
     private static func retimed(_ sb: CMSampleBuffer, by off: CMTime) -> CMSampleBuffer? {
@@ -1066,8 +1153,10 @@ final class MultikSegment {
             let hevc: [String: Any] = [
                 AVVideoCodecKey: AVVideoCodecType.hevc, AVVideoWidthKey: w, AVVideoHeightKey: h, AVVideoColorPropertiesKey: color,
                 AVVideoCompressionPropertiesKey: [
-                    AVVideoAverageBitRateKey: w >= 1920 ? 10_500_000 : 5_500_000,
+                    AVVideoAverageBitRateKey: w >= 1920 ? 11_500_000 : 6_000_000,
                     AVVideoMaxKeyFrameIntervalKey: Int(fps) * 2,
+                    // без перестановки кадров (B-кадров): Rutube перекодирует такие серии без «квадратиков» на движущихся героях
+                    AVVideoAllowFrameReorderingKey: false,
                 ],
             ]
             let h264: [String: Any] = [
@@ -1076,6 +1165,7 @@ final class MultikSegment {
                     AVVideoAverageBitRateKey: w >= 1920 ? 16_000_000 : 8_000_000,
                     AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
                     AVVideoMaxKeyFrameIntervalKey: Int(fps) * 2,
+                    AVVideoAllowFrameReorderingKey: false,
                 ],
             ]
             let vs = wr.canApply(outputSettings: hevc, forMediaType: .video) ? hevc : h264

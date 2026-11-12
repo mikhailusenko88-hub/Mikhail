@@ -273,8 +273,8 @@ const App = {
         const bb = bs === 'run' ? `<button class="btn" disabled>⏳ Собирается</button>` : bs === 'wait' ? `<button class="btn" data-a="unqueue">⏳ В очереди ✕</button>` : bs === 'held' ? `<button class="btn acc" data-a="build">🎬 Продолжить сборку</button>` : `<button class="btn ${e.status === 'built' ? '' : 'acc'}" data-a="build">🎬 ${e.status === 'built' ? 'Пересобрать' : 'Собрать видео'}</button>`;
         d.innerHTML = `<div class="row"><div style="flex:1"><b>Серия ${e.episode}${e.title ? '. ' + esc(e.title) : ''}</b><div class="mut">${(e.script.scenes || []).length} сцен · ${st}</div></div></div>
           <div class="btns"><button class="btn" data-a="play">▶ Просмотр</button>${bb}
-          ${e.video ? '<button class="btn ok" data-a="share">⤴ Отправить / YouTube</button><button class="btn" data-a="dub">🔊 Обновить звук</button>' : ''}<button class="btn" data-a="yt">📝 Текст для YouTube</button><button class="btn" data-a="rt">📝 Текст для Rutube</button><button class="btn" data-a="del">🗑 Удалить</button></div>`;
-        d.querySelectorAll('button').forEach(b => b.onclick = () => App.epAction(p, e, b.dataset.a));
+          ${e.video ? '<button class="btn ok" data-a="share">⤴ Отправить / YouTube</button><button class="btn" data-a="rutube">📤 Для Rutube</button><button class="btn" data-a="dub">🔊 Обновить звук</button>' : ''}<button class="btn" data-a="yt">📝 Текст для YouTube</button><button class="btn" data-a="rt">📝 Текст для Rutube</button><button class="btn" data-a="del">🗑 Удалить</button></div>`;
+        d.querySelectorAll('button').forEach(b => b.onclick = () => App.epAction(p, e, b.dataset.a, b));
         card.appendChild(d);
       }
       m.appendChild(card);
@@ -396,12 +396,18 @@ const App = {
     this.render();
     this.msg(`<div style="color:var(--ok);margin-top:8px">${added ? 'Загружено серий: ' + added : 'Новых серий нет.'}${newC.length ? '<br>Новые персонажи: ' + newC.map(c => esc(c.name) + ' <span class="code">' + esc(c._code) + '</span>').join(', ') : ''}</div>${errs.length ? '<div class="err">' + errs.map(esc).join('\n') + '</div>' : ''}`);
   },
-  async epAction(p, e, a) {
+  async epAction(p, e, a, btn) {
     if (a === 'play') return Player.open(e);
     if (a === 'build') return Build.run(p, e);
     if (a === 'unqueue') return Build.unqueue(p, e);
     if (a === 'dub') return Build.dub(p, e);
     if (a === 'share') return Native.call('share', { path: e.video });
+    if (a === 'rutube') { // Rutube портит движение в нашем HEVC («квадратики» на героях) — отдаём ему копию в H.264 без перестановки кадров
+      const bt = btn || null, was = bt ? bt.textContent : '';
+      if (bt) { bt.disabled = true; bt.textContent = '⏳ Готовлю для Rutube… (1–3 мин)'; }
+      try { const r = await Native.call('rutubeCopy', { path: e.video }); if (r && r.path) await Native.call('share', { path: r.path }); else alert('Не получилось сделать копию для Rutube: ' + ((r && r.error) || 'ошибка')); }
+      finally { if (bt) { bt.disabled = false; bt.textContent = was; } }
+      return; }
     if (a === 'del') { // удалить серию (и её видео)
       if (Build.state(p, e) === 'run') { alert('Эта серия сейчас собирается. Дождись конца сборки, потом удаляй.'); return; }
       if (!confirm(`Удалить «Серия ${e.episode}${e.title ? '. ' + e.title : ''}»?${e.video ? '\nГотовое видео тоже удалится.' : ''}`)) return;
