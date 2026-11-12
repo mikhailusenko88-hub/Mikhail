@@ -32,6 +32,12 @@ targets:
         UIFileSharingEnabled: true
         LSSupportsOpeningDocumentsInPlace: true
         UILaunchScreen: {}
+        UTExportedTypeDeclarations:
+          - UTTypeIdentifier: ru.usenko.zamer3d.navyk
+            UTTypeDescription: "Навыки Помощника"
+            UTTypeConformsTo: [public.plain-text]
+            UTTypeTagSpecification:
+              public.filename-extension: [navyk, NAVYK]
         UTImportedTypeDeclarations:
           - UTTypeIdentifier: ru.usenko.zamer3d.bazis
             UTTypeDescription: "Базис-Мебельщик"
@@ -39,6 +45,10 @@ targets:
             UTTypeTagSpecification:
               public.filename-extension: [b3d, fr3d, B3D, FR3D]
         CFBundleDocumentTypes:
+          - CFBundleTypeName: "Навыки Помощника"
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Owner
+            LSItemContentTypes: [ru.usenko.zamer3d.navyk]
           - CFBundleTypeName: "Базис-Мебельщик"
             CFBundleTypeRole: Viewer
             LSHandlerRank: Owner
@@ -59,3 +69,4 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
         SWIFT_VERSION: "5.0"
         CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 623245T255

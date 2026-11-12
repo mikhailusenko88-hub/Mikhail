@@ -44,7 +44,7 @@ struct AssistantScreen: View {
             }
         }
         .navigationViewStyle(.stack)
-        .task { await brain.refreshCRM() }
+        .task { await brain.refreshCRM(); brain.reviewPending() }
         .onDisappear {
             // нейросеть занимает ~3 ГБ памяти — отдаём её сканеру и мультикам
             brain.stop()

@@ -312,6 +312,40 @@ final class AssistantBrain: ObservableObject {
         return true
     }
 
+    /// Файл навыков (.navyk), открытый из чата, почты или «Файлов»: сначала спросить хозяина, потом сохранить и прочитать.
+    func offerSkillFile(_ url: URL) {
+        let ok = url.startAccessingSecurityScopedResource()
+        defer { if ok { url.stopAccessingSecurityScopedResource() } }
+        guard let data = try? Data(contentsOf: url) else {
+            messages.append(ChatMsg(role: .note, text: "Не открылся файл навыков \(url.lastPathComponent)."))
+            return
+        }
+        let text = String(decoding: data, as: UTF8.self)
+        let blocks = KnowledgeBase.skillBlocks(text)
+        guard !blocks.isEmpty else {
+            messages.append(ChatMsg(role: .note, text: "В файле \(url.lastPathComponent) нет блоков «#НАВЫК Название»."))
+            return
+        }
+        let kb = KnowledgeBase.shared
+        let list = blocks.map { b -> String in
+            let cur = kb.skills.first { $0.title.lowercased() == b.0.lowercased() }
+            return "• \(b.0) — " + (cur == nil ? "новый" : (cur!.text == b.1.trimmingCharacters(in: .whitespacesAndNewlines) ? "без изменений" : "обновление, сейчас версия \(cur!.version)"))
+        }.joined(separator: "\n")
+        pending = PendingConfirm(title: "Обновить навыки из файла?", detail: "\(url.lastPathComponent)\n\n\(list)\n\nПринимайте файлы навыков только от себя или от Claude.") { [weak self] yes in
+            guard let self else { return }
+            self.pending = nil
+            guard yes else {
+                self.messages.append(ChatMsg(role: .note, text: "Навыки из файла не приняты."))
+                return
+            }
+            var n = 0
+            for (t, b) in blocks { if let u = kb.saveSkill(title: t, text: b, source: "файл") { kb.pendingUpdates.append(u); n += 1 } }
+            self.messages.append(ChatMsg(role: .note, text: n > 0 ? "Принято навыков: \(n). Читаю…" : "Все навыки из файла уже такие же."))
+            self.saveChat()
+            self.reviewPending()
+        }
+    }
+
     /// Прочитать новые и изменённые навыки и коротко сказать хозяину, что поняла.
     func reviewPending() {
         let kb = KnowledgeBase.shared
