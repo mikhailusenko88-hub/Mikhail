@@ -1,7 +1,4 @@
 # имя  аргументы для scene.py (или "py script.py")
-x910_angle scene=lounge decor=A910 paint=5F7563 cam=angle chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 res=1600x1200 samples=220 noise=0.03
-x910_white scene=lounge decor=A910 cabcol=3B3F42 sun_az=24 sun_el=22 ev=-0.35 fstop=0 res=1600x1200 samples=220 noise=0.03
-x910_arch scene=arch decor=A910 paint=C9BBA8 res=1600x1200 samples=220 noise=0.03
-x910_macro scene=lounge decor=A910 cam=macro2 sun_az=24 sun_el=22 ev=-1.0 fs=0 res=1600x1200 samples=220 noise=0.03
-x910_two scene=plinth cam=top item=a910 cy=2.8 zoom=0.85 ev=-0.1 res=1600x1200 samples=260 noise=0.025
-x910_cut scene=plinth cam=cut item=a910 cy=2.8 up=0.28 side=0.10 ev=-0.1 res=1600x1200 samples=260 noise=0.025
+m703_cutp scene=plinth cam=cut item=plinth zoom=1.12 ev=-0.25 res=800x600 samples=64 noise=0.06
+m703_cut scene=plinth cam=cut item=plinth zoom=1.12 ev=-0.25 res=1600x1200 samples=260 noise=0.025
+m703_top scene=plinth cam=top set=two ev=-0.35 res=1600x1200 samples=260 noise=0.025

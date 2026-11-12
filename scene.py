@@ -435,7 +435,8 @@ def plinth_piece(name, loc, rot, length, mat, mode='face'):
     for k in range(n):
         j = (k + 1) % n
         F.append((k, n + k, n + j, j))
-    ob = make_obj(name, V, F, [mat])
+    # срез — белый зернистый, как у живого образца A910 (тот же материал): замечание Михаила 12.11 «гладкий край — переделай»
+    ob = make_obj(name, V, F, [mat, mat_foam_white()], face_mats=[1, 1] + [0] * n)
     try:
         ob.data.validate()
         import bmesh
