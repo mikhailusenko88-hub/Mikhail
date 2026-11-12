@@ -1,4 +1,2 @@
-https://cloudpayments.ru/cloudkassir/check
-https://cloudpayments.ru/tariffs
-https://prodamus.ru/tariffs
-# Cloud-чеки, Prodamus тарифы 12.11
+https://crm.nashdekor.ru/api/outbox/status/42fef27d-71aa-4bdb-8560-b84c885f6386
+# 01:53:16
