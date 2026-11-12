@@ -16,7 +16,7 @@ final class KnowledgeBase: ObservableObject {
     static let shared = KnowledgeBase()
     @Published private(set) var items: [KnowledgeItem] = []
 
-    static var folder: URL {
+    nonisolated static var folder: URL {
         let d = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Assistant", isDirectory: true)
         try? FileManager.default.createDirectory(at: d, withIntermediateDirectories: true)
@@ -62,7 +62,7 @@ final class KnowledgeBase: ObservableObject {
 
     // MARK: поиск по смыслу слов (основа слова — первые 5 букв)
 
-    static func stems(_ s: String) -> [String] {
+    nonisolated static func stems(_ s: String) -> [String] {
         let low = s.lowercased().replacingOccurrences(of: "ё", with: "е")
         var out: [String] = []
         var cur = ""

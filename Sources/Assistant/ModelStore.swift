@@ -61,7 +61,7 @@ final class ModelStore: NSObject, ObservableObject, URLSessionDownloadDelegate {
         session = URLSession(configuration: cfg, delegate: self, delegateQueue: .main)
     }
 
-    static var folder: URL {
+    nonisolated static var folder: URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Brain", isDirectory: true)
         try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
