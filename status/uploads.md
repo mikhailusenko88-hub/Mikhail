@@ -39,3 +39,5 @@
 | shorts | 2026-11-12 | 1 | India vs Spain vs Colombia | https://youtube.com/shorts/BD1Uu9Hmq00 | |
 | 27 | 2026-11-12 | 2 | S2 RACE 14/68 | https://youtu.be/wBim2xVGDhw | public |
 | shorts | 2026-11-12 | 2 | Thailand vs Korea vs Algeria | https://youtube.com/shorts/WhcJp-CrgPQ | |
+| 28 | 2026-11-12 | 3 | S2 RACE 15/68 | https://youtu.be/gLHFY4oVj9s | public |
+| shorts | 2026-11-12 | 3 | Indonesia vs Türkiye vs Saudi Arabia | https://youtube.com/shorts/m5DXL2pUtB4 | |

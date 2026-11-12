@@ -1,96 +1,96 @@
-ВЫЛОЖЕНО #27 2026-11-12 слот 2: https://youtu.be/wBim2xVGDhw (public) + Shorts https://youtube.com/shorts/WhcJp-CrgPQ, за 502 с
+ВЫЛОЖЕНО #28 2026-11-12 слот 3: https://youtu.be/gLHFY4oVj9s (public) + Shorts https://youtube.com/shorts/m5DXL2pUtB4, за 444 с
 
 {
- "title": "Thailand vs Korea vs Algeria ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #14",
- "description": "Flagball Arena · Season 2, Race 14 of 68: 24 countries, 3 stages — the last 7 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Algeria ❤❤, Bulgaria ❤❤, Burundi ❤❤, Dominica ❤❤❤, El Salvador ❤❤❤, Ghana ❤❤, Israel ❤❤, Lebanon ❤❤, Malawi ❤❤❤, Maldives ❤❤, Malta ❤❤, North Macedonia ❤❤❤, Oman ❤❤, Panama ❤❤❤, Rwanda ❤❤, Senegal ❤❤, Seychelles ❤❤❤, South Korea ❤❤❤, Syria ❤❤❤, Tajikistan ❤❤, Thailand ❤❤, Uganda ❤❤❤, Uruguay ❤❤❤, Zambia ❤❤❤.\n\nCountries still in the game before this race: 193 of 193.\nNext race: Race 15/68. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
- "race_no": 27,
+ "title": "Indonesia vs Türkiye vs Saudi Arabia… Who Survives? 💔 7 of 24 Lose a Life | Marble Race #15",
+ "description": "Flagball Arena · Season 2, Race 15 of 68: 24 countries, 3 stages — the last 7 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Andorra ❤❤❤, Angola ❤❤, Bahrain ❤❤❤, Barbados ❤❤, Bosnia and Herzegovina ❤❤❤, Burkina Faso ❤❤❤, Cape Verde ❤❤❤, Dominican Republic ❤❤❤, Guinea-Bissau ❤❤, Indonesia ❤❤❤, Kyrgyzstan ❤❤❤, Mauritania ❤❤, Moldova ❤❤, Monaco ❤❤❤, Netherlands ❤❤❤, Nigeria ❤❤, Sao Tome and Principe ❤❤, Saudi Arabia ❤❤, Serbia ❤❤❤, Sri Lanka ❤❤, Turkmenistan ❤❤❤, Tuvalu ❤❤❤, Türkiye ❤❤❤, Zimbabwe ❤❤❤.\n\nCountries still in the game before this race: 193 of 193.\nNext race: Race 16/68. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "race_no": 28,
  "date": "2026-11-12",
- "slot": 2,
+ "slot": 3,
  "season": 2,
  "round": 1,
- "heat": 14,
+ "heat": 15,
  "heats": 68,
  "survive": 17,
  "final": false,
  "kind": "heat",
- "label": "RACE 14/68",
+ "label": "RACE 15/68",
  "n": 24,
  "lives_mode": true,
  "losers": 7,
  "mega": false,
  "codes": [
-  "mv",
-  "lb",
-  "ug",
-  "th",
-  "tj",
-  "bg",
-  "sn",
-  "sv",
-  "il",
-  "sc",
-  "bi",
-  "kr",
-  "gh",
-  "mw",
-  "dm",
-  "om",
-  "sy",
-  "mt",
-  "dz",
-  "uy",
-  "mk",
-  "zm",
-  "pa",
-  "rw"
+  "ng",
+  "mr",
+  "rs",
+  "tr",
+  "ad",
+  "gw",
+  "sa",
+  "do",
+  "cv",
+  "nl",
+  "bb",
+  "bf",
+  "kg",
+  "lk",
+  "tm",
+  "bh",
+  "id",
+  "ao",
+  "st",
+  "ba",
+  "tv",
+  "mc",
+  "zw",
+  "md"
  ],
  "spans": [
   [
    7.800000000000001,
-   71.23333333333333,
-   74.83333333333333
+   68.36666666666667,
+   71.96666666666667
   ],
   [
-   78.43333333333332,
-   146.73333333333332,
-   150.33333333333331
+   75.56666666666666,
+   143.36666666666667,
+   146.96666666666667
   ],
   [
-   153.9333333333333,
-   214.99999999999997,
-   218.59999999999997
+   150.56666666666666,
+   214.76666666666665,
+   218.36666666666665
   ]
  ],
- "duration": 243.6,
+ "duration": 243.36666666666667,
  "heats_in_video": 1,
  "races": [
-  27
+  28
  ],
  "featured": [
-  "th",
-  "kr",
-  "dz"
+  "id",
+  "tr",
+  "sa"
  ],
- "video_id": "wBim2xVGDhw",
+ "video_id": "gLHFY4oVj9s",
  "privacy": "public"
 }
 
 --- журнал ---
-14:31:12 режим publish, гонка #27, 2026-11-12 слот 2, событие workflow_dispatch
-14:31:12 по плану: S2 RACE 14/68
-14:31:12 канал: Flagball Arena
-14:31:12 в этом видео заездов: 1 (раунд 1, осталось в раунде 55)
-гонка #27 2026-11-12 слот 2: S2 RACE 14/68, 24→17, участники: MDV LBN UGA THA TJK BGR SEN SLV ISR SYC BDI KOR GHA MWI DMA OMN SYR MLT DZA URY MKD ZMB PAN RWA
-  этап 1: 24→22, блоков 12 ['bumpers', 'twin_rings', 'tunnels', 'stairs', 'pendulums', 'glass', 'pegs', 'rotor', 'ring_gate', 'windmills', 'trapdoors', 'comb'], Q-финиш 60.9 c, кадров 1903
-  этап 2: 22→19, блоков 14 ['rotor', 'twin_rings', 'pegs', 'tunnels', 'comb', 'sliders', 'windmills', 'ring_gate', 'bumpers', 'stairs', 'pendulums', 'glass', 'split', 'zigzag'], Q-финиш 65.8 c, кадров 2049
-  этап 3: 19→17, блоков 13 ['drum', 'comb', 'trapdoors', 'ring_gate', 'pendulums', 'split', 'zigzag', 'sliders', 'glass', 'windmills', 'bumpers', 'pushers', 'tunnels'], Q-финиш 58.5 c, кадров 1832
+22:30:44 режим publish, гонка #28, 2026-11-12 слот 3, событие workflow_dispatch
+22:30:44 по плану: S2 RACE 15/68
+22:30:45 канал: Flagball Arena
+22:30:45 в этом видео заездов: 1 (раунд 1, осталось в раунде 54)
+гонка #28 2026-11-12 слот 3: S2 RACE 15/68, 24→17, участники: NGA MRT SRB TUR AND GNB SAU DOM CPV NLD BRB BFA KGZ LKA TKM BHR IDN AGO STP BIH TUV MCO ZWE MDA
+  этап 1: 24→22, блоков 13 ['rotor', 'windmills', 'stairs', 'pegs', 'trapdoors', 'glass', 'split', 'zigzag', 'drum', 'pushers', 'pendulums', 'comb', 'tunnels'], Q-финиш 58.0 c, кадров 1817
+  этап 2: 22→19, блоков 11 ['twin_rings', 'rotor', 'stairs', 'comb', 'drum', 'split', 'bumpers', 'pegs', 'trapdoors', 'zigzag', 'sliders'], Q-финиш 65.2 c, кадров 2034
+  этап 3: 19→17, блоков 11 ['trapdoors', 'windmills', 'comb', 'glass', 'pegs', 'rotor', 'pushers', 'twin_rings', 'pendulums', 'zigzag', 'ring_gate'], Q-финиш 61.7 c, кадров 1926
 длительность ролика ≈ 4.1 мин
-готово: 7308 кадров за 461 с
-кадров 7308, 4.06 мин, рендер 463 с
-выжили: BGR SYR BDI SEN SYC MLT MKD MWI DZA KOR URY SLV TJK RWA THA ISR UGA
-14:38:56 заезд 1/1 готов: 130 МБ, 464 с
-14:38:57 видео готово: 130 МБ, 4.1 мин, 465 с с начала; название: Thailand vs Korea vs Algeria ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #14
-14:39:23 Shorts готов: 26 с — Thailand vs Korea vs Algeria 😱 Who Survives? Country Marble Race #shorts
-14:39:31 обложка: 200 
-14:39:32 в плейлисте
-14:39:32 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}
+готово: 7301 кадров за 406 с
+кадров 7301, 4.06 мин, рендер 408 с
+выжили: BFA BRB AND LKA MRT SAU SRB TUR CPV TUV BHR ZWE BIH AGO MDA GNB NLD
+22:37:33 заезд 1/1 готов: 130 МБ, 409 с
+22:37:33 видео готово: 130 МБ, 4.1 мин, 409 с с начала; название: Indonesia vs Türkiye vs Saudi Arabia… Who Survives? 💔 7 of 24 Lose a Life | Marble Race #15
+22:37:58 Shorts готов: 26 с — Indonesia vs Türkiye vs Saudi Arabia 😱 Who Survives? Country Marble Race #shorts
+22:38:05 обложка: 200 
+22:38:06 в плейлисте
+22:38:06 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'madeForKids': False, 'selfDeclaredMadeForKids': False}
