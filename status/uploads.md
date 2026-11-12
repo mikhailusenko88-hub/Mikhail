@@ -35,3 +35,5 @@
 | shorts | 2026-11-11 | 2 | USA vs Brazil vs Mexico | https://youtube.com/shorts/G4JTcsB0KOA | |
 | 25 | 2026-11-11 | 3 | S2 RACE 12/68 | https://youtu.be/1Z4x46_9ImE | public |
 | shorts | 2026-11-11 | 3 | France vs Canada vs Guatemala | https://youtube.com/shorts/GyJkhqnBm0k | |
+| 26 | 2026-11-12 | 1 | S2 RACE 13/68 | https://youtu.be/xs-nnApDH_U | public |
+| shorts | 2026-11-12 | 1 | India vs Spain vs Colombia | https://youtube.com/shorts/BD1Uu9Hmq00 | |
