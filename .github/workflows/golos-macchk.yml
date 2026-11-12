@@ -34,26 +34,26 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng >/dev/null
           pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install -q transformers phonemizer praat-parselmouth ruaccent matplotlib faster-whisper numpy
-          git clone -q --depth 1 --branch golos-mac-voice20 --single-branch https://github.com/mikhailusenko88-hub/Mikhail /tmp/mv
+          git clone -q --depth 1 --branch golos-mac-voice21 --single-branch https://github.com/mikhailusenko88-hub/Mikhail /tmp/mv
           python3 - ${{ matrix.shard }} <<'PY'
           import json, sys, os, subprocess
           sh = int(sys.argv[1]); idx = json.load(open("/tmp/mv/index.json", encoding="utf-8"))
-          base = sorted(k for k in idx if k[0] in "UVFTN")[sh::4]
+          base = sorted(idx)[sh::4]
           os.makedirs("/tmp/mp/v", exist_ok=True); out = {}
           for b in base:
               for p in ("",):
                   k = p + b; subprocess.run(["ffmpeg", "-v", "error", "-i", f"/tmp/mv/v/{k}.wav", "-b:a", "48k", f"/tmp/mp/v/{k}.mp3"], check=True); out[k] = idx[k]
           json.dump(out, open("/tmp/mp/index.json", "w", encoding="utf-8"), ensure_ascii=False)
           PY
-          mkdir -p mk_out && python stage_check.py /tmp/mp mk_out/mac15_${{ matrix.shard }}.json
+          mkdir -p mk_out && python stage_check.py /tmp/mp mk_out/mac16_${{ matrix.shard }}.json
       - name: Commit result
         if: always()
         run: |
           git config user.name golos && git config user.email golos@users.noreply.github.com
-          cp mk_out/mac15_${{ matrix.shard }}.json /tmp/r.json 2>/dev/null || true
+          cp mk_out/mac16_${{ matrix.shard }}.json /tmp/r.json 2>/dev/null || true
           for i in 1 2 3 4 5 6 7 8; do
             git fetch -q origin golos && git reset -q --hard origin/golos
-            mkdir -p mk_out && cp /tmp/r.json mk_out/mac15_${{ matrix.shard }}.json 2>/dev/null || true
+            mkdir -p mk_out && cp /tmp/r.json mk_out/mac16_${{ matrix.shard }}.json 2>/dev/null || true
             git add -A mk_out; git commit -qm "голос iPhone: проверка, часть ${{ matrix.shard }}" || break
             git push -q origin HEAD:golos && break; sleep $((RANDOM % 15 + 5))
           done
