@@ -27,15 +27,15 @@ def run(args, timeout=1800):
     if r.returncode: P('rc', r.returncode, ' '.join(str(a) for a in args)[:80], '|', (r.stderr or '')[-300:].replace('\n', ' '))
     return r
 
-cfg = {'count': 2, 'length': 32, 'skip_start': 12, 'skip_end': 25, 'episode': '', 'per_episode': 2, 'start_from': 5}
+cfg = {'count': 2, 'length': 32, 'skip_start': 12, 'skip_end': 25, 'episode': '', 'per_episode': 2, 'start_from': 5, 'subscribe': 1}
 cfg_p = os.path.join(WORK, 'config.txt')
 if not os.path.exists(cfg_p):
-    open(cfg_p, 'w', encoding='utf-8').write('# Настройки нарезки Shorts\ncount: 2          # роликов в день\nper_episode: 2    # всего роликов с одной серии\nlength: 32        # длина ролика, сек\nskip_start: 12    # пропустить начало серии, сек\nskip_end: 25      # пропустить конец серии, сек\nepisode:          # пусто = по очереди; или номер/часть названия\n')
+    open(cfg_p, 'w', encoding='utf-8').write('# Настройки нарезки Shorts\ncount: 2          # роликов в день\nper_episode: 2    # всего роликов с одной серии\nlength: 32        # длина ролика, сек\nskip_start: 12    # пропустить начало серии, сек\nskip_end: 25      # пропустить конец серии, сек\nepisode:          # пусто = по очереди; или номер/часть названия\nsubscribe: 1      # кнопка «Подписаться» в ролике (0 — без неё)\n')
 for l in open(cfg_p, encoding='utf-8'):
     l = l.strip()
     if l and not l.startswith('#') and ':' in l:
         k, v = l.split(':', 1); k = k.strip().lower(); v = v.split('#', 1)[0].strip()
-        if k in ('count', 'length', 'skip_start', 'skip_end', 'per_episode', 'start_from'):
+        if k in ('count', 'length', 'skip_start', 'skip_end', 'per_episode', 'start_from', 'subscribe'):
             try: cfg[k] = int(v)
             except Exception: pass
         elif k == 'episode': cfg[k] = v
@@ -221,6 +221,32 @@ def wrap(s, n=20):
     if line: out.append(line)
     return out[:3]
 
+# ---------- кнопка «ПОДПИСАТЬСЯ» под картинкой: та же, что в мультике (лапка нажимает → «✓ ВЫ ПОДПИСАНЫ») ----------
+SUB_RAW = 'https://raw.githubusercontent.com/mikhailusenko88-hub/mikhail/shorts/server/'
+SUB_FILES = ['sub1_red.png', 'sub1_done.png', 'sub1_paw.png']   # картинки рисует tools/multik/test/subpng.js (ветка mebel-3d); новые картинки — новое имя (sub2_…)
+def sub_assets():
+    d = os.path.join(WORK, 'sub'); os.makedirs(d, exist_ok=True); out = []
+    for n in SUB_FILES:
+        f = os.path.join(d, n)
+        if not (os.path.exists(f) and os.path.getsize(f) > 1000):
+            run(['curl', '-sL', '--max-time', '30', SUB_RAW + n, '-o', f + '.part'], timeout=60)
+            try:
+                if open(f + '.part', 'rb').read(8) == b'\x89PNG\r\n\x1a\n': os.replace(f + '.part', f)
+            except Exception: pass
+        if not (os.path.exists(f) and os.path.getsize(f) > 1000): P('нет картинки кнопки', n, '— ролики без неё'); return None
+        out.append(f)
+    return out
+SUB = sub_assets() if cfg.get('subscribe', 1) else None
+def sub_graph(src, dur):
+    """Кнопка с 1,5 с до конца; за 3 с до конца лапка из-за правого края жмёт её, кнопка становится «✓ ВЫ ПОДПИСАНЫ». Входы 1–3 — картинки."""
+    tt = round(dur - 3.0, 2); a0, a1 = round(tt - .9, 2), round(tt + .35, 2)
+    bx, by = 240, 1342 - 88                     # картинка 600×190, центр кнопки (300,88) → (540,1342): между картинкой и «ПОЛНАЯ СЕРИЯ — НА КАНАЛЕ»
+    px, py = 540 + 150 - 70, 1342 + 10 - 120    # лапка жмёт в точке (70,120) своей картинки → правая часть кнопки
+    off = f"((1-clip((t-{a0})/0.75,0,1))+clip((t-{a1})/0.6,0,1))"
+    return (f"[1:v]format=rgba,fade=t=in:st=1.5:d=0.3:alpha=1[sr];[2:v]format=rgba[sd];[3:v]format=rgba[sp];"
+            f"{src}[sr]overlay={bx}:{by}:enable='between(t,1.5,{tt})'[s1];[s1][sd]overlay={bx}:{by}:enable='gte(t,{tt})'[s2];"
+            f"[s2][sp]overlay=x='{px}+500*{off}':y='{py}+70*{off}+8*between(t,{tt - .1:.2f},{tt + .12:.2f})':enable='between(t,{a0},{round(tt + .95, 2)})'")
+
 new_items = []
 for i, (a, b) in enumerate(chosen):
     k = k0 + i + 1
@@ -236,11 +262,15 @@ for i, (a, b) in enumerate(chosen):
         for li, ln in enumerate(wrap(hook.upper())):
             parts.append(f"drawtext=fontfile={font}:textfile={tf(f'top{li}.txt', ln)}:fontsize=72:fontcolor=white:borderw=5:bordercolor=black@0.85:x=(w-tw)/2:y={360 + li*88}")
         parts.append(f"drawtext=fontfile={font}:textfile={tf('bot.txt', 'ПОЛНАЯ СЕРИЯ — НА КАНАЛЕ')}:fontsize=46:fontcolor=0xFFE14D:borderw=4:bordercolor=black@0.85:x=(w-tw)/2:y=1440")
-        parts.append(f"fade=t=in:st=0:d=0.4,fade=t=out:st={dur-0.5}:d=0.5[v]")
     else:
-        parts.append(f"[v1]fade=t=in:st=0:d=0.4,fade=t=out:st={dur-0.5}:d=0.5[v]")
+        parts.append('[v1]null')
+    fade = f"fade=t=in:st=0:d=0.4,fade=t=out:st={dur-0.5}:d=0.5"
+    sub = SUB if SUB and dur >= 12 else None
+    if sub: parts[-1] += '[vt];' + sub_graph('[vt]', dur) + ',' + fade + '[v]'
+    else: parts.append(fade + '[v]')
+    sub_in = [x for f in sub for x in ('-loop', '1', '-framerate', '30', '-t', dur, '-i', f)] if sub else []
     af = f"[0:a]afade=t=in:st=0:d=0.3,afade=t=out:st={dur-0.5}:d=0.5[a]"
-    run(['nice', '-n', '10', 'ffmpeg', '-y', '-v', 'error', '-ss', a, '-t', dur, '-i', mp4, '-filter_complex', vf + ','.join(parts) + ';' + af,
+    run(['nice', '-n', '10', 'ffmpeg', '-y', '-v', 'error', '-ss', a, '-t', dur, '-i', mp4] + sub_in + ['-filter_complex', vf + ','.join(parts) + ';' + af,
          '-map', '[v]', '-map', '[a]', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '21', '-threads', '2', '-pix_fmt', 'yuv420p', '-r', '30',
          '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', outp], timeout=2400)
     if not os.path.exists(outp): P('не собрался', name); continue
@@ -249,10 +279,11 @@ for i, (a, b) in enumerate(chosen):
     title = f'{hook} 🐱 Кот Барсик' + (f' | {num} серия' if num else '') + ' #shorts'
     if len(title) > 100: title = f'{hook[:55]} 🐱 Кот Барсик' + (f' | {num} серия' if num else '') + ' #shorts'
     head = f'{h2} 😺 Отрывок из мультика «Кот Барсик»' + (f', {num} серия' if num else '') + '.\n\n'
-    body = 'Котёнок Барсик, мышонок Пик и щенок Рон — добрые и смешные истории о дружбе для детей.\n❤️ Подписывайтесь, чтобы не пропустить новые серии!\n\n'
+    body = 'Котёнок Барсик, мышонок Пик и щенок Рон — добрые и смешные истории о дружбе для детей.\n\n'
+    subl = '❤️ Подписывайтесь на канал, чтобы не пропустить новые серии!\n'   # сразу под первой строкой — видно без «ещё»
     rt_ep = cand.get('rutube'); yt_ep = cand['url'] if cand['src'] == 'youtube' else None
-    desc_rt = head + (f'🎬 Полная серия: {rt_ep}\n' if rt_ep else '') + f'📺 Все серии на канале: {CHANNEL_URL}\n\n' + body + TAGS
-    desc_yt = head + (f'🎬 Полная серия: {yt_ep}\n' if yt_ep else '') + f'📺 Все серии на канале: {YT_CHANNEL_URL}\n\n' + body + TAGS_YT
+    desc_rt = head + subl + (f'🎬 Полная серия: {rt_ep}\n' if rt_ep else '') + f'📺 Все серии на канале: {CHANNEL_URL}\n\n' + body + TAGS
+    desc_yt = head + subl + (f'🎬 Полная серия: {yt_ep}\n' if yt_ep else '') + f'📺 Подписаться на канал: {YT_CHANNEL_URL}?sub_confirmation=1\n\n' + body + TAGS_YT
     item = {'date': today, 'file': name, 'url': '../s9kbars-v/' + name, 'thumb': '../s9kbars-v/' + name[:-4] + '.jpg', 'local': True,
             'title': title, 'desc': desc_rt, 'desc_rt': desc_rt, 'desc_yt': desc_yt, 'tags': TAGS,
             'ep': key(cand), 'ep_num': num, 'ep_title': cand['title'], 'ep_url': rt_ep or cand['url'], 'yt_url': yt_ep,
