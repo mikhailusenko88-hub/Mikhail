@@ -1,0 +1,10 @@
+URL: https://tochka.com/sbp/
+КОД: 404
+
+Страница не существует - Банк Точка
+
+ССЫЛКИ:
+/_next/static/chunks/24xuy8-6xlsxj.js?dpl=205d5bb1
+/images/favicon/favicon.ico
+/images/favicon/favicon.png
+/images/favicon/favicon.svg
