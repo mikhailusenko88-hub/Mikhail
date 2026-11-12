@@ -320,9 +320,25 @@ struct AssistantSettings: View {
                     NavigationLink("Что я знаю (\(kb.items.count))") { KnowledgeList(kb: kb) }
                     Button("Загрузить пакет знаний (.json или .md)") { pickPack = true }
                     ShareLink(item: kb.exportURL()) { Label("Сохранить копию базы знаний", systemImage: "square.and.arrow.up") }
+                    if CRMClient.connected {
+                        Button("Обновить знания из CRM") {
+                            packMsg = "Обновляю…"
+                            Task { await brain.refreshCRM(); packMsg = brain.knowledgeNote.isEmpty ? "CRM не ответила." : brain.knowledgeNote }
+                        }
+                        Button("Копию своей базы — на сервер") {
+                            packMsg = "Сохраняю…"
+                            Task { packMsg = await CRMClient.backupKnowledge(kb.ownForBackup) }
+                        }
+                        Button("Вернуть базу с сервера (новый телефон)") {
+                            packMsg = "Забираю…"
+                            Task {
+                                if let l = await CRMClient.restoreKnowledge() { packMsg = "Вернула записей: \(kb.restore(l))." } else { packMsg = "Сервер не ответил." }
+                            }
+                        }
+                    }
                     if !packMsg.isEmpty { Text(packMsg).font(.caption) }
                 } header: { Text("Знания") } footer: {
-                    Text("База лежит в «Файлы» → На iPhone → Замер 3D → Assistant. Разделы с пометкой «основа» помощник помнит всегда, остальные — подтягивает по теме вопроса.")
+                    Text("База лежит в «Файлы» → На iPhone → Замер 3D → Assistant. Разделы с пометкой «основа» помощник помнит всегда, остальные — подтягивает по теме вопроса. Знания о магазине приходят из CRM (Ещё → Помощник) — в GitHub их нет.")
                 }
             }
             .navigationTitle("Помощник — настройки")

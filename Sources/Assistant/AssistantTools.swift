@@ -110,6 +110,27 @@ enum CRMClient {
         return (try? JSONDecoder().decode([ToolSpec].self, from: d)) ?? []
     }
 
+    /// Знания о магазине из базы CRM (в GitHub их нет).
+    static func fetchKnowledge() async -> [[String: Any]]? {
+        guard let o = try? await request("/api/ai/knowledge") else { return nil }
+        return o["items"] as? [[String: Any]]
+    }
+
+    /// Копия своей базы знаний на ваш сервер (на случай потери телефона).
+    static func backupKnowledge(_ items: [[String: Any]]) async -> String {
+        do {
+            let o = try await request("/api/ai/knowledge", body: ["items": items], timeout: 60)
+            return "Копия на сервере: записей \(o["saved"] as? Int ?? 0)."
+        } catch {
+            return "Не сохранилось: \(error.localizedDescription)"
+        }
+    }
+
+    static func restoreKnowledge() async -> [[String: Any]]? {
+        guard let o = try? await request("/api/ai/knowledge?backup=1") else { return nil }
+        return o["backup"] as? [[String: Any]]
+    }
+
     static func call(_ name: String, _ args: [String: Any], confirmed: Bool) async -> String {
         do {
             let o = try await request("/api/ai/call", body: ["name": name, "args": args, "confirmed": confirmed], timeout: 60)

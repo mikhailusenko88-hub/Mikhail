@@ -150,6 +150,39 @@ final class KnowledgeBase: ObservableObject {
         return n
     }
 
+    /// Знания из CRM: добавить/обновить, а удалённые в CRM — убрать из телефона.
+    func syncFromCRM(_ list: [[String: Any]]) -> Int {
+        var titles = Set<String>()
+        for it in list {
+            guard let t = it["title"] as? String, let x = it["text"] as? String else { continue }
+            titles.insert(t.lowercased())
+            add(title: t, text: x, source: "CRM", pinned: it["pinned"] as? Bool ?? false)
+        }
+        let before = items.count
+        items.removeAll { $0.source == "CRM" && !titles.contains($0.title.lowercased()) }
+        if items.count != before { save() }
+        return titles.count
+    }
+
+    /// Своё (не из CRM) — для копии на сервер.
+    var ownForBackup: [[String: Any]] {
+        let f = ISO8601DateFormatter()
+        return items.filter { $0.source != "CRM" }.map {
+            ["title": $0.title, "text": $0.text, "source": $0.source, "pinned": $0.pinned, "date": f.string(from: $0.date)] as [String: Any]
+        }
+    }
+
+    func restore(_ list: [[String: Any]]) -> Int {
+        var n = 0
+        for it in list {
+            guard let t = it["title"] as? String, let x = it["text"] as? String else { continue }
+            if items.contains(where: { $0.title.lowercased() == t.lowercased() && $0.text == x }) { continue }
+            add(title: t, text: x, source: it["source"] as? String ?? "вы", pinned: it["pinned"] as? Bool ?? false)
+            n += 1
+        }
+        return n
+    }
+
     func exportURL() -> URL {
         save()
         return file

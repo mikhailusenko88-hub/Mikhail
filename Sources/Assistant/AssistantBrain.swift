@@ -68,9 +68,15 @@ final class AssistantBrain: ObservableObject {
         if let p = pending { pending = nil; p.answer(false) }
     }
 
+    @Published var knowledgeNote = ""
+
     func refreshCRM() async {
         guard CRMClient.connected else { crmTools = []; return }
         if let t = await CRMClient.fetchTools() { crmTools = t }
+        if let k = await CRMClient.fetchKnowledge() {
+            let n = KnowledgeBase.shared.syncFromCRM(k)
+            knowledgeNote = "Знаний из CRM: \(n)."
+        }
     }
 
     var allTools: [ToolSpec] { LocalTools.specs + crmTools }
