@@ -1,0 +1,31 @@
+name: avito-check
+# Авито снаружи настоящим Chrome (когда Мак не на связи): наши объявления, страница компании, конкуренты по запросам в СПб.
+# Список — avito/list.txt (ветка domain-check). Результат — status/avito.md, status/avito.json, status/avito/*.jpg.
+on:
+  push:
+    branches: [domain-check]
+    paths: ['avito/**', '.github/workflows/avito-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: avito-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Playwright
+        run: pip install -q playwright && (google-chrome --version || npx -y playwright install --with-deps chrome)
+      - name: Проверить
+        run: python avito/check.py
+      - name: Сохранить
+        if: always()
+        run: |
+          git config user.name avito-check; git config user.email avito-check@users.noreply.github.com
+          git add status; git commit -q -m "avito-check $(date -u +%F_%H:%M)" || exit 0
+          for i in 1 2 3; do git pull -q --rebase origin domain-check && git push -q origin HEAD:domain-check && break; sleep 5; done
