@@ -18,10 +18,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set +e
           mkdir -p status/llm; O=status/llm.md
           {
           echo "# Нейросеть для телефона — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
-          R=$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/ggml-org/llama.cpp/releases/latest)
+          R=$(curl -fsSL https://api.github.com/repos/ggml-org/llama.cpp/releases/latest || curl -fsSL -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/ggml-org/llama.cpp/releases/latest); echo "ответ API: ${#R} байт"
           TAG=$(jq -r .tag_name <<<"$R"); echo "llama.cpp: $TAG ($(jq -r .published_at <<<"$R"))"
           jq -r '.assets[]|select(.name|test("xcframework"))|.name+" "+(.size|tostring)+" "+.browser_download_url' <<<"$R"
           U=$(jq -r '[.assets[]|select(.name|test("xcframework.zip$"))][0].browser_download_url' <<<"$R")
