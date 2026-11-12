@@ -478,9 +478,9 @@ async function prepare(e, onStep, isCancelled, noMix, opt) { // noMix: звук 
     if (r && r.buf) { try { const buf = await MK.voiceFx(r.buf, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('нейроголос', err); } continue; }
     if (!r) { // голос iPhone: омографы по смыслу (з+амок/зам+ок) — как у рассказчика; свои «+» в реплике важнее
       let text = ln.text, voice = ln.voice, key = ln.key;
-      if (ln.src && window.MKVoice && MKVoice.homoMarks && (((lib.settings || {}).bars || {}).iphoneHomo !== false)) { try {   // голоса iPhone (Пик, Рон): ударения по смыслу (з+амок/зам+ок). 12.11.2026: подсказка идёт через SSML (MK.appleSSML) — поднимается только ударная гласная, мелодия фразы живая; 71 реплика серий на Mac: ударение верно 69 из 74 (без подсказок 52), слова не портятся (распознано не так 5, без подсказок 4). Выключить — settings.bars.iphoneHomo = false
+      if (ln.src && window.MKVoice && MKVoice.homoMarks && ((lib.settings || {}).bars || {}).iphoneHomo) { try {   // голоса iPhone (Пик, Рон): ударения по смыслу — только по настройке bars.iphoneHomo (выключено). 12.11.2026: IPA целиком — ровная чужая мелодия; SSML по кускам (MK.appleSSML) — слово тянется. Михаил на слух оба раза: плохо. Пик и Рон читают как в сборке 52
         const plus = ln.src.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1'), hm = await MKVoice.homoMarks(plus, SrvVoice.lex(ln));
-        if (hm !== plus) { const ps = MK.prepSpeech(hm, lib.lexicon || {}, (lib.settings && lib.settings.stressMode) || 'ipa'); text = ps.text; voice = Object.assign({}, ln.voice, ps.ipa.length ? { ipa: ps.ipa } : {}); delete voice.ssml; if (ps.ipa.length && MK.appleSSML && (lib.settings || {}).appleSSML !== false) { const x = MK.appleSSML(ps.text, ps.ipa, voice.pitch, voice.rate); if (x) voice.ssml = x; } key = ln.key + (voice.ssml ? 'hs' : 'h') + MK.hash32(hm).toString(36); }
+        if (hm !== plus) { const ps = MK.prepSpeech(hm, lib.lexicon || {}, (lib.settings && lib.settings.stressMode) || 'ipa'); text = ps.text; voice = Object.assign({}, ln.voice, ps.ipa.length ? { ipa: ps.ipa } : {}); delete voice.ssml; if (ps.ipa.length && MK.appleSSML && (lib.settings || {}).appleSSML === true) { const x = MK.appleSSML(ps.text, ps.ipa, voice.pitch, voice.rate); if (x) voice.ssml = x; } key = ln.key + (voice.ssml ? 'hs' : 'h') + MK.hash32(hm).toString(36); }
       } catch (err) { console.log('омографы', err); } }
       r = await Native.call('tts', { text, voice, key }); }
     if (r && r.wav) { try { const raw = await ac.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('decode', err); } }
@@ -833,7 +833,7 @@ async function previewVoice(text, voice, fx, voiceId) {
   if (pvSrc) { try { pvSrc.stop(); } catch (e) {} }
   const v = MK.synthVoice(voice, fx, voiceId);
   if (MK.prepSpeech) { const ps = MK.prepSpeech(text, (Lib.data && Lib.data.lexicon) || {}, arguments[4] || (Lib.data && Lib.data.settings && Lib.data.settings.stressMode) || 'ipa'); text = ps.text; if (ps.ipa.length) v.ipa = ps.ipa; const sm = arguments[4] || (Lib.data && Lib.data.settings && Lib.data.settings.stressMode) || 'ipa';
-    if (ps.ipa.length && sm === 'ipa' && MK.appleSSML && ((Lib.data && Lib.data.settings) || {}).appleSSML !== false) { const x = MK.appleSSML(ps.text, ps.ipa, v.pitch, v.rate); if (x) v.ssml = x; } }
+    if (ps.ipa.length && sm === 'ipa' && MK.appleSSML && ((Lib.data && Lib.data.settings) || {}).appleSSML === true) { const x = MK.appleSSML(ps.text, ps.ipa, v.pitch, v.rate); if (x) v.ssml = x; } }
   const r = await Native.call('tts', { text, voice: v, key: 'pv-' + MK.hash32(MK.canon(v) + text).toString(36) });
   if (!r || !r.wav) { Native.call('speak', { text, voice: Object.assign({}, voice, voiceId ? { id: voiceId } : {}) }); return 0; }
   const raw = await pvCtx.decodeAudioData(unb64(r.wav).buffer); const buf = await MK.voiceFx(raw, fx);

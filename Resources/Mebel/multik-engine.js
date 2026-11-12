@@ -796,8 +796,8 @@ function lineFor(ep, lib, who, text, step, vi) {
   const pr = step && step.say && PROSODY[step.emotion]; if (pr) { v.pitch = Math.round(clamp(v.pitch * pr[0], .5, 2) * 1000) / 1000; v.rate = Math.round(clamp(v.rate * pr[1], .3, .62) * 1000) / 1000; }
   const lex = lib.lexicon || {}, mode = (lib.settings && lib.settings.stressMode) || 'ipa';
   let say = text; if (!synth && MK.prepSpeech) { const ps = MK.prepSpeech(text, lex, mode); say = ps.text; if (ps.ipa.length) v.ipa = ps.ipa;
-    // голос Apple: подсказка ударения через SSML (ударная гласная чуть выше) — мелодия живая, не «Смотрите↗» (12.11.2026); старый способ — settings.appleSSML = false
-    if (ps.ipa.length && mode === 'ipa' && MK.appleSSML && (lib.settings || {}).appleSSML !== false) { const x = MK.appleSSML(say, ps.ipa, v.pitch, v.rate); if (x) v.ssml = x; } }
+    // голос Apple: подсказка ударения через SSML — ВЫКЛЮЧЕНО (12.11.2026 Михаил на слух: слово тянется, куски читаются как отдельные слова); проба — settings.appleSSML = true
+    if (ps.ipa.length && mode === 'ipa' && MK.appleSSML && (lib.settings || {}).appleSSML === true) { const x = MK.appleSSML(say, ps.ipa, v.pitch, v.rate); if (x) v.ssml = x; } }
   const age = ch.age || (who === 'Р' ? 'adult' : 'kid');
   const variant = synth ? (vi || 0) % 3 : 0;
   const short = !!(synth && step && step.short);
