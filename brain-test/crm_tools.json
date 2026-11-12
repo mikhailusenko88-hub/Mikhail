@@ -1,0 +1,261 @@
+[
+ {
+  "name": "crm_today",
+  "desc": "Сводка CRM на сегодня: новые заявки, задачи на сегодня и просроченные, ждут оплаты/отгрузки, непрочитанные чаты.",
+  "params": []
+ },
+ {
+  "name": "crm_find",
+  "desc": "Найти клиентов и заявки по имени, телефону, e-mail, тексту заявки или номеру заявки.",
+  "params": [
+   {
+    "name": "q",
+    "desc": "что искать",
+    "type": "string",
+    "required": true
+   }
+  ]
+ },
+ {
+  "name": "crm_deal",
+  "desc": "Заявка целиком: клиент и контакты, этап, позиции и сумма, оплаты, задачи, последние события.",
+  "params": [
+   {
+    "name": "id",
+    "desc": "номер заявки",
+    "type": "integer",
+    "required": true
+   }
+  ]
+ },
+ {
+  "name": "crm_new_deal",
+  "desc": "Создать заявку (клиент найдётся по телефону/e-mail или будет создан).",
+  "danger": true,
+  "params": [
+   {
+    "name": "name",
+    "desc": "имя клиента",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "text",
+    "desc": "что хочет клиент",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "phone",
+    "desc": "телефон",
+    "type": "string",
+    "required": false
+   },
+   {
+    "name": "email",
+    "desc": "e-mail",
+    "type": "string",
+    "required": false
+   },
+   {
+    "name": "source",
+    "desc": "откуда: звонок, авито, почта, сайт, telegram, max, другое",
+    "type": "string",
+    "required": false
+   }
+  ]
+ },
+ {
+  "name": "crm_stage",
+  "desc": "Сменить этап заявки: новая, в работе, расчёт отправлен, оплачено, отгружено, отказ.",
+  "danger": true,
+  "params": [
+   {
+    "name": "id",
+    "desc": "номер заявки",
+    "type": "integer",
+    "required": true
+   },
+   {
+    "name": "stage",
+    "desc": "новый этап",
+    "type": "string",
+    "required": true
+   }
+  ]
+ },
+ {
+  "name": "crm_note",
+  "desc": "Записать заметку в историю заявки.",
+  "params": [
+   {
+    "name": "id",
+    "desc": "номер заявки",
+    "type": "integer",
+    "required": true
+   },
+   {
+    "name": "text",
+    "desc": "текст заметки",
+    "type": "string",
+    "required": true
+   }
+  ]
+ },
+ {
+  "name": "crm_task",
+  "desc": "Поставить задачу (к заявке или общую).",
+  "params": [
+   {
+    "name": "text",
+    "desc": "что сделать",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "due",
+    "desc": "срок ГГГГ-ММ-ДД",
+    "type": "string",
+    "required": false
+   },
+   {
+    "name": "id",
+    "desc": "номер заявки",
+    "type": "integer",
+    "required": false
+   }
+  ]
+ },
+ {
+  "name": "crm_task_done",
+  "desc": "Отметить задачу выполненной.",
+  "params": [
+   {
+    "name": "task_id",
+    "desc": "номер задачи",
+    "type": "integer",
+    "required": true
+   }
+  ]
+ },
+ {
+  "name": "crm_stock",
+  "desc": "Склад: остатки, отложено под заявки и цены. Без q — что заканчивается.",
+  "params": [
+   {
+    "name": "q",
+    "desc": "название или артикул товара",
+    "type": "string",
+    "required": false
+   }
+  ]
+ },
+ {
+  "name": "crm_add_item",
+  "desc": "Добавить товар в расчёт заявки (артикул и количество штук).",
+  "danger": true,
+  "params": [
+   {
+    "name": "id",
+    "desc": "номер заявки",
+    "type": "integer",
+    "required": true
+   },
+   {
+    "name": "article",
+    "desc": "артикул",
+    "type": "string",
+    "required": true
+   },
+   {
+    "name": "qty",
+    "desc": "штук",
+    "type": "integer",
+    "required": true
+   }
+  ]
+ },
+ {
+  "name": "crm_send_calc",
+  "desc": "Отправить клиенту письмо-расчёт по заявке.",
+  "danger": true,
+  "params": [
+   {
+    "name": "id",
+    "desc": "номер заявки",
+    "type": "integer",
+    "required": true
+   },
+   {
+    "name": "email",
+    "desc": "e-mail, если у клиента не указан",
+    "type": "string",
+    "required": false
+   }
+  ]
+ },
+ {
+  "name": "crm_chats",
+  "desc": "Последние переписки из чата на сайте (непрочитанные сверху).",
+  "params": []
+ },
+ {
+  "name": "crm_mail",
+  "desc": "Последние письма в ящиках info@ и zakaz@ (поиск по отправителю или теме).",
+  "admin": true,
+  "params": [
+   {
+    "name": "q",
+    "desc": "что искать",
+    "type": "string",
+    "required": false
+   }
+  ]
+ },
+ {
+  "name": "crm_letter",
+  "desc": "Прочитать письмо из почты по его номеру из crm_mail.",
+  "admin": true,
+  "params": [
+   {
+    "name": "letter_id",
+    "desc": "номер письма",
+    "type": "string",
+    "required": true
+   }
+  ]
+ },
+ {
+  "name": "crm_money",
+  "desc": "Деньги за месяц: поступления, ждут оплаты по ссылкам, итог за год.",
+  "admin": true,
+  "params": [
+   {
+    "name": "month",
+    "desc": "ГГГГ-ММ, по умолчанию текущий",
+    "type": "string",
+    "required": false
+   }
+  ]
+ },
+ {
+  "name": "crm_server",
+  "desc": "Кнопки страницы «Сервер»: update (обновить CRM), sync (обновить сайт), backup (копия баз), restart-crm, restart-mail, reload-web, unban (снять блокировки), reboot (перезагрузить сервер).",
+  "danger": true,
+  "admin": true,
+  "params": [
+   {
+    "name": "action",
+    "desc": "какая кнопка",
+    "type": "string",
+    "required": true
+   }
+  ]
+ },
+ {
+  "name": "crm_server_status",
+  "desc": "Чем закончилась последняя команда сервера.",
+  "admin": true,
+  "params": []
+ }
+]

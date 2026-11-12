@@ -1,0 +1,51 @@
+name: brain-test
+# «Голова» Помощника на настоящей нейросети: тот же формат подсказки и действий, что в iPhone.
+on:
+  push:
+    branches: [domain-check]
+    paths: ["brain-test/**"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  brain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - model: qwen3
+            url: https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF/resolve/main/Qwen3-4B-Instruct-2507-Q4_K_M.gguf
+          - model: qwen35
+            url: https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/resolve/main/Qwen3.5-4B-Q4_K_M.gguf
+    steps:
+      - uses: actions/checkout@v4
+      - name: llama.cpp и нейросеть
+        run: |
+          set -e
+          R=$(curl -fsSL "https://api.github.com/repos/ggml-org/llama.cpp/releases/tags/b12317")
+          U=$(jq -r '[.assets[]|select(.name|test("bin-ubuntu-x64\\.(zip|tar\\.gz)$"))][0].browser_download_url' <<<"$R")
+          echo "llama.cpp: $U"
+          mkdir -p /tmp/ll && cd /tmp/ll
+          curl -fsSL -o pkg "$U"
+          case "$U" in *.zip) unzip -q pkg ;; *) tar xzf pkg ;; esac
+          S=$(find /tmp/ll -name llama-server -type f | head -n1); echo "server: $S"; echo "S=$S" >> $GITHUB_ENV
+          curl -fsSL -o /tmp/model.gguf "${{ matrix.url }}"
+          ls -la /tmp/model.gguf
+      - name: Разговоры
+        run: |
+          cd "$(dirname "$S")"
+          LD_LIBRARY_PATH=. nohup "$S" -m /tmp/model.gguf -c 8192 --port 8080 -t 4 --no-webui > /tmp/server.log 2>&1 &
+          for i in $(seq 1 120); do curl -fs http://127.0.0.1:8080/health >/dev/null && break; sleep 2; done
+          tail -n 5 /tmp/server.log
+          cd $GITHUB_WORKSPACE
+          mkdir -p status
+          python3 brain-test/run.py ${{ matrix.model }} status/brain-test-${{ matrix.model }}.md || tail -n 40 /tmp/server.log
+      - name: Сохранить
+        if: always()
+        run: |
+          git config user.name brain-test; git config user.email brain-test@users.noreply.github.com
+          git add status/brain-test-${{ matrix.model }}.md 2>/dev/null || exit 0
+          git commit -m "brain-test ${{ matrix.model }} $(date -u +%F_%H:%M)" || exit 0
+          for i in 1 2 3 4 5; do git pull --rebase origin domain-check && git push origin HEAD:domain-check && break; sleep 5; done
