@@ -6,7 +6,7 @@ from playwright.sync_api import sync_playwright
 
 OUT = 'status/avito'; os.makedirs(OUT, exist_ok=True)
 for f in os.listdir(OUT): os.remove(os.path.join(OUT, f))
-ours, brand, queries, comp_n = [], None, [], 10
+ours, brand, queries, comp_n, PAUSE, mine = [], None, [], 10, 2, set()
 for l in open('avito/list.txt', encoding='utf-8'):
     if '|' not in l or l.startswith('#'): continue
     c = [x.strip() for x in l.split('|')]
@@ -14,6 +14,8 @@ for l in open('avito/list.txt', encoding='utf-8'):
     elif c[0] == 'brand': brand = c[1]
     elif c[0] == 'q': queries.append({'q': c[1], 'pages': int(c[2]) if len(c) > 2 else 1})
     elif c[0] == 'comp': comp_n = int(c[1])
+    elif c[0] == 'pause': PAUSE = float(c[1])
+    elif c[0] == 'mine': mine.add(c[1])
 
 UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 log = []
@@ -34,7 +36,7 @@ def goto(pg, url, wait_sel=None, shot=None):
             if wait_sel:
                 try: pg.wait_for_selector(wait_sel, timeout=12000)
                 except Exception: pass
-            time.sleep(random.uniform(1.2, 2.2))
+            time.sleep(random.uniform(PAUSE, PAUSE * 1.5))
             b = blocked(pg)
             if b:
                 L(f'  блок ({st}) на {url}: {b}')
@@ -154,14 +156,7 @@ with sync_playwright() as p:
     try:
         st, b = goto(pg, 'https://www.avito.ru/sankt-peterburg', 'body', 'home.jpg')
         L(f'Главная СПб: {st} {b or "ок"}; IP-проверка пропущена')
-        for o in ours:
-            L(f'Наше {o["art"]} {o["id"]}')
-            d = item_page(pg, f'https://www.avito.ru/{o["id"]}', f'our-{o["art"].replace("/", "-").replace(" ", "_")}.jpg')
-            d.update(o); data['ours'].append(d)
-            L(f'  → {d.get("title","")[:50]} | {d.get("price","")} | {d.get("views","")} {d.get("today","")} | {d.get("date","")} | {d.get("closed","")} {d.get("status_text","")}')
-        if brand:
-            L('Страница компании'); data['brand'] = brand_page(pg, brand); L(f'  → {json.dumps(data["brand"], ensure_ascii=False)[:300]}')
-        our_ids = {o['id'] for o in ours}
+        our_ids = {o['id'] for o in ours} | mine
         seen = {}
         for i, qq in enumerate(queries):
             L(f'Поиск «{qq["q"]}»')
@@ -171,6 +166,13 @@ with sync_playwright() as p:
             for it in r['items']:
                 if it.get('id') and it['id'] not in our_ids and it.get('href') and it['id'] not in seen:
                     seen[it['id']] = {'id': it['id'], 'href': it['href'], 'first_q': qq['q'], 'pos': it['pos'], 'title': it['title'], 'price': it['price']}
+        for o in ours:
+            L(f'Наше {o["art"]} {o["id"]}')
+            d = item_page(pg, f'https://www.avito.ru/{o["id"]}', f'our-{o["art"].replace("/", "-").replace(" ", "_")}.jpg')
+            d.update(o); data['ours'].append(d)
+            L(f'  → {d.get("title","")[:50]} | {d.get("price","")} | {d.get("views","")} {d.get("today","")} | {d.get("date","")} | {d.get("closed","")} {d.get("status_text","")}')
+        if brand:
+            L('Страница компании'); data['brand'] = brand_page(pg, brand); L(f'  → {json.dumps(data["brand"], ensure_ascii=False)[:300]}')
         # чужие объявления: первые из выдачи по порядку запросов, не дубли, не промо-«за просмотры» — открыть и снять просмотры
         comp = list(seen.values())[:comp_n]
         for c in comp:
@@ -208,7 +210,7 @@ for r in data['search']:
     md.append(f'### «{r["q"]}» — {r.get("count") or r.get("blocked") or "?"}; наши в выдаче: {r.get("ours_positions") or "нет"}')
     for it in r['items'][:25]:
         if 'err' in it: continue
-        flag = ' **НАШЕ**' if it['id'] in {o['id'] for o in ours} else ''
+        flag = ' **НАШЕ**' if it['id'] in ({o['id'] for o in ours} | mine) else ''
         md.append(f'{it["pos"]}. {it["title"][:70]} — {it["price"]} ₽{flag} — {it["text"][len(it["title"]):][:120].strip()}')
     md.append('')
 md += ['## Чужие объявления: просмотры', '', '| Поз. (запрос) | Заголовок | Цена | Просмотров | Сегодня | Дата | Продавец | Фото |', '|---|---|---|---|---|---|---|---|']
