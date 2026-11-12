@@ -1,0 +1,18 @@
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.0s] objects 25 scene built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/f315_stack/_sky.exr'
+Time: 00:00.64 (Saving: 00:00.00)
+
+[scene   0.7s] sky irradiance [ 8.89   9.723 11.642] sun strength 48.803
+Saved: '/home/runner/work/Mikhail/Mikhail/out/f315_stack/_pre.exr'
+Time: 00:02.68 (Saving: 00:00.00)
+
+[scene   3.6s] white pixels 3734 illuminant [1.098 0.998 0.734] wb gains [0.944 0.995 1.214] wall Y 0.6324 exposure 0.38
+Saved: '/home/runner/work/Mikhail/Mikhail/out/f315_stack/f315_stack.jpg'
+Time: 13:05.38 (Saving: 00:00.22)
+
+[scene 789.0s] final render 785.4s /home/runner/work/Mikhail/Mikhail/out/f315_stack/f315_stack.jpg
+[scene 789.0s] done
+
+Blender quit
