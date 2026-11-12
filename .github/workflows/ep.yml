@@ -1,0 +1,33 @@
+name: ep-laugh
+on: push
+jobs:
+  a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y ffmpeg >/dev/null
+          pip -q install yt-dlp faster-whisper transformers torch torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+      - name: find episode
+        run: |
+          yt-dlp --flat-playlist -J "https://rutube.ru/channel/82826859/videos/" > list.json || true
+          python3 - <<'PY'
+          import json,re
+          d=json.load(open('list.json')); es=d.get('entries') or []
+          print('всего', len(es))
+          for e in es: print(e.get('id'), '|', e.get('title'), '|', e.get('duration'))
+          hit=[e for e in es if re.search(r'(^|\D)23(\D|$)', e.get('title') or '') and re.search(r'сери', (e.get('title') or '').lower())]
+          open('url.txt','w').write((hit[0].get('url') or ('https://rutube.ru/video/%s/'%hit[0]['id'])) if hit else '')
+          print('ВЫБРАН', hit[0].get('title') if hit else None)
+          PY
+      - name: audio
+        run: |
+          U=$(cat url.txt); test -n "$U"
+          yt-dlp -f "bestaudio/best" -o "ep.%(ext)s" "$U" || yt-dlp -f "worst" -o "ep.%(ext)s" "$U"
+          f=$(ls ep.* | head -1); ffmpeg -v error -y -i "$f" -ac 1 -ar 16000 ep16.wav; ffmpeg -v error -y -i "$f" -vn -ac 1 -b:a 64k ep.mp3
+          ffprobe -v error -show_entries format=duration -of csv=p=0 ep16.wav
+      - name: analyse
+        run: python3 tools/an.py
+      - uses: actions/upload-artifact@v4
+        with: { name: ep23, path: "out/" }
