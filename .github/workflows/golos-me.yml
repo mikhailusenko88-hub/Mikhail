@@ -32,7 +32,7 @@ jobs:
           pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install -q chatterbox-tts 2>&1 | tail -3
           pip install -q speechbrain resemblyzer faster-whisper 2>&1 | tail -3
-          python -c "from chatterbox.mtl_tts import ChatterboxMultilingualTTS; print('ok')"
+          python -c "from chatterbox.mtl_tts import ChatterboxMultilingualTTS; import soundfile, speechbrain, resemblyzer, faster_whisper; print('ok')"
       - name: Ждать запись (зашифрованную)
         run: |
           for i in $(seq 1 90); do
@@ -44,7 +44,7 @@ jobs:
           openssl enc -d -aes-256-cbc -pbkdf2 -pass file:/tmp/k/aes.key -in /tmp/xx/ref.enc -out /tmp/k/in.tgz
           tar xzf /tmp/k/in.tgz -C /tmp/k && ls -la /tmp/k | grep wav
       - name: Пробы
-        run: python myvoice/clone2.py /tmp/k/me2.wav /tmp/k/ref.wav /tmp/k/out 2>&1 | grep -v -i warn | tail -40
+        run: set -o pipefail; python myvoice/clone2.py /tmp/k/me2.wav /tmp/k/ref.wav /tmp/k/out 2>&1 | grep -v -i warn | tail -40
       - name: Зашифровать и выложить
         if: always()
         run: |

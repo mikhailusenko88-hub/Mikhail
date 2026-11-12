@@ -1,11 +1,11 @@
 # Голос Михаила, круг 2: образцы по 10 с из его минутной записи × настройки модели → выбор по программам распознавания говорящего.
 #   python clone2.py <вся запись.wav> <старая запись 9 с.wav> <папка>
-import sys, os, json, time, subprocess, numpy as np, torch, torchaudio as ta
+import sys, os, json, time, subprocess, numpy as np, torch, soundfile as sf
 full, old, out = sys.argv[1], sys.argv[2], sys.argv[3]; os.makedirs(out, exist_ok=True)
 torch.set_num_threads(os.cpu_count() or 4)
-W, SR = ta.load(full); W = W.mean(0, keepdim=True)
+W, SR = sf.read(full, dtype='float32', always_2d=True); W = W.mean(1)
 def cut(a, b, name):
-    p = f"/tmp/k/{name}.wav"; ta.save(p, W[:, int(a * SR):int(b * SR)], SR); return p
+    p = f"/tmp/k/{name}.wav"; sf.write(p, W[int(a * SR):int(b * SR)], SR); return p
 REFS = {"r0": old, "r1": cut(8.3, 18.3, "r1"), "r2": cut(14.6, 24.6, "r2"), "r3": cut(25.0, 35.0, "r3"),
         "r4": cut(36.6, 46.6, "r4"), "r5": cut(41.8, 51.8, "r5")}
 PARTS = [cut(0, 7.9, "p0"), cut(8.3, 24.6, "p1"), cut(25.0, 36.3, "p2"), cut(36.6, 51.8, "p3")]   # его речь для сравнения
@@ -20,14 +20,14 @@ for r, rp in REFS.items():
         t1 = time.time()
         for n, t in T:
             torch.manual_seed(7)
-            w = m.generate(t, language_id="ru", audio_prompt_path=rp, **kw); ta.save(f"{out}/A_{r}_{c}_{n}.wav", w, m.sr)
+            w = m.generate(t, language_id="ru", audio_prompt_path=rp, **kw); sf.write(f"{out}/A_{r}_{c}_{n}.wav", w.squeeze().cpu().numpy(), m.sr)
         print("A", r, c, round(time.time() - t1), "с", flush=True)
 del m
 from chatterbox.vc import ChatterboxVC
 vc = ChatterboxVC.from_pretrained(device="cpu")
 for r, rp in REFS.items():
     for n in ("a", "b", "z"):
-        w = vc.generate(audio=f"myvoice/src_{n}.mp3", target_voice_path=rp); ta.save(f"{out}/B_{r}_{n}.wav", w, vc.sr)
+        w = vc.generate(audio=f"myvoice/src_{n}.mp3", target_voice_path=rp); sf.write(f"{out}/B_{r}_{n}.wav", w.squeeze().cpu().numpy(), vc.sr)
     print("B", r, flush=True)
 del vc
 # --- программы распознавания говорящего ---
