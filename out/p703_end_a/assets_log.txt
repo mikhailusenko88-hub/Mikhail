@@ -1,0 +1,41 @@
+fetched texture oak_veneer_05 4k 1 files
+fetched texture oak_veneer_04 2k 1 files
+fetched texture oak_veneer_02 2k 1 files
+fetched texture mocha_oak_veneer 4k 1 files
+fetched texture european_walnut_veneer_04 2k 1 files
+fetched texture oak_veneer_01 4k 1 files
+fetched texture ash_veneer 2k 1 files
+fetched texture white_oak_veneer 2k 1 files
+fetched texture teak_veneer 2k 1 files
+fetched texture olive_veneer 2k 1 files
+fetched texture smoked_walnut_veneer 4k 1 files
+fetched texture natural_walnut_veneer 2k 1 files
+fetched texture walnut_veneer 2k 1 files
+fetched texture american_walnut_veneer 2k 1 files
+fetched texture walnut_veneer_02 4k 1 files
+fetched texture laminate_floor_02 4k 3 files
+fetched texture beige_wall_001 2k 2 files
+fetched texture hessian_230 2k 3 files
+fetched texture rough_linen 2k 3 files
+fetched model mid_century_lounge_chair 2k 10 files
+fetched model modern_wooden_cabinet 2k 9 files
+fetched model potted_plant_01 2k 16 files
+FAILED model ceramic_vase_04 1k FileNotFoundError(2, 'No such file or directory')
+fetched model ceramic_vase_02 1k 9 files
+fetched model ceramic_vase_03 1k 9 files
+fetched model standing_picture_frame_02 1k 14 files
+fetched model wicker_basket_02 1k 9 files
+fetched model ceramic_vase_01 1k 10 files
+fetched model potted_plant_02 2k 16 files
+fetched model modern_arm_chair_01 2k 17 files
+fetched model side_table_tall_01 1k 10 files
+fetched model hanging_picture_frame_01 1k 17 files
+fetched model modern_ceiling_lamp_01 1k 10 files
+fetched model potted_plant_04 1k 9 files
+assets ready: 33 of 34
+src mocha_oak_veneer (4096, 4096, 3) gx/gy 1.61 4.27 rotated
+decor 3-7 {'src': 'mocha_oak_veneer', 'size_mm': 1000, 'l_gain': 2.2, 'shape': [4096, 4096], 'mean_bgr': [89.4, 121.9, 167.8]}
+src oak_veneer_01 (4096, 4096, 3) gx/gy 7.83 1.93 
+decor 3-15 {'src': 'oak_veneer_01', 'size_mm': 1830, 'l_gain': 1.14, 'shape': [4096, 4096], 'mean_bgr': [105.4, 160.9, 208.4]}
+src walnut_veneer_02 (4096, 4096, 3) gx/gy 1.63 6.45 rotated
+decor 3-9 {'src': 'walnut_veneer_02', 'size_mm': 1000, 'l_gain': 1.8, 'shape': [4096, 4096], 'mean_bgr': [69.2, 93.2, 130.6]}
