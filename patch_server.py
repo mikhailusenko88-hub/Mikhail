@@ -28,6 +28,9 @@ BOT_Q_BASE = "low"
 # затем взлетает до BOT_Q_HIGH к самому концу, без спада. Делается в Praat (PSOLA), тембр не меняется.
 BOT_Q_MELODY = True
 BOT_Q_LOW, BOT_Q_HIGH, BOT_Q_PRE = -3.0, 6.5, 0.14
+# свои голоса (12.11.2026) живее Альбины: начало вопроса само поднимается на 5–7 полутонов, и подъём в конце теряется на его фоне.
+# Для них в вопросе без вопросительного слова всё, что выше BOT_Q_HEAD полутонов над серединой, сжимается вчетверо. Альбину не трогает.
+BOT_Q_HEAD = {"ru_nash1": 2.5, "ru_nash2": 2.5, "ru_nash3": 2.5}
 
 
 def _guess_stress(w):
@@ -184,7 +187,7 @@ def q_ssml(s0, rate="medium", pitch="medium"):
     return "<speak>" + body + "</speak>"
 
 
-def q_melody(x, sr, win, low=None, high=None, pre=None):
+def q_melody(x, sr, win, low=None, high=None, pre=None, head=None):
     """Мелодия вопроса на готовом звуке (numpy float32): провал перед последним словом и взлёт до конца."""
     import numpy as np
     low = BOT_Q_LOW if low is None else low
@@ -216,6 +219,10 @@ def q_melody(x, sr, win, low=None, high=None, pre=None):
     for i in range(1, call(tier, "Get number of points") + 1):
         t = call(tier, "Get time from index", i)
         v = call(tier, "Get value at index", i)
+        if head is not None and t < a - pre:
+            cur = 12 * np.log2(max(v, 1.0) / base)
+            if cur > head:
+                v = base * 2 ** ((head + (cur - head) * 0.25) / 12)
         if t >= a - pre:
             if t < a:
                 cur = 12 * np.log2(max(v, 1.0) / base)
@@ -286,7 +293,7 @@ def synth_bot(text, speaker, rate, pitch):
                 pieces.append(np.zeros(int(SR_SYN * .28), dtype="float32"))
                 buf = []
             if x is not None:
-                pieces.append(q_melody(tts(q_ssml(x, rate, pitch)), SR_SYN, q_win(x)))
+                pieces.append(q_melody(tts(q_ssml(x, rate, pitch)), SR_SYN, q_win(x), head=BOT_Q_HEAD.get(speaker)))
                 pieces.append(np.zeros(int(SR_SYN * .28), dtype="float32"))
         pieces[-1] = np.zeros(int(SR_SYN * .22), dtype="float32")
     x = np.concatenate(pieces[:-1]) if pieces else np.zeros(SR_SYN // 4, dtype="float32")
@@ -306,6 +313,16 @@ def marked_for(text, style=""):
 '''
 
 REPL = [
+    # свои голоса «ничьи» (12.11.2026): ru_nash1/2/3 — смесь мужских дикторов той же модели (nash_voices.py + voices.json рядом)
+    ('RATES = {"x-slow", "slow", "medium", "fast", "x-fast"}',
+     'SPEAKERS |= {"ru_nash1", "ru_nash2", "ru_nash3"}\nRATES = {"x-slow", "slow", "medium", "fast", "x-fast"}'),
+    ('        m.to("cpu")\n',
+     '        m.to("cpu")\n'
+     '        try:\n'
+     '            import nash_voices\n'
+     '            nash_voices.apply(m, os.path.join(ROOT, "voices.json"))\n'
+     '        except Exception as e:\n'
+     '            print("свои голоса не подключились:", e, flush=True)\n'),
     ('def make(text, speaker="ru_albina", soft=True, rate="medium", pitch="medium"):',
      'def make(text, speaker="ru_albina", soft=True, rate="medium", pitch="medium", style=""):'),
     ('    key = hashlib.sha1(f"v1|{speaker}|{soft}|{rate}|{pitch}|{text}".encode()).hexdigest()',

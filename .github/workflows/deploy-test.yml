@@ -53,7 +53,7 @@ jobs:
           /opt/multik-tts/venv/bin/pip install -q numpy ruaccent
           curl -fsSL -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
           curl -fsSL -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
-          python3 patch_server.py /opt/multik-tts/server.py && cp albina_worker.py /opt/multik-tts/
+          python3 patch_server.py /opt/multik-tts/server.py && cp albina_worker.py nash_voices.py voices.json /opt/multik-tts/
           ALBINA_NO_GH=1 python3 farm.py /tmp/www/albina/bank.json /tmp/voice | tee /tmp/farm.log
           ALBINA_NO_GH=1 python3 farm.py /tmp/www/albina/bank.json /tmp/voice | grep "новых"
       - name: Пробный ролик с готовой озвучкой, back, on

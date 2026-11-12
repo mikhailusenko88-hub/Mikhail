@@ -39,7 +39,7 @@ jobs:
           /opt/multik-tts/venv/bin/pip install -q numpy ruaccent praat-parselmouth
           [ -s /opt/multik-tts/v5_cis_base.pt ] || curl -fsSL -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
           curl -fsSL -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
-          cp albina_worker.py /opt/multik-tts/
+          cp albina_worker.py nash_voices.py voices.json /opt/multik-tts/
           python patch_server.py /opt/multik-tts/server.py && python patch_server.py /opt/multik-tts/server.py
           du -sh /opt/multik-tts/venv /opt/multik-tts/v5_cis_base.pt
       - name: Бот (тот же код, что у ботов на сервере)

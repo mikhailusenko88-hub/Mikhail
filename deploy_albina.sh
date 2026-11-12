@@ -7,6 +7,7 @@
 # Посмотреть, как идёт:   tail -n 25 /root/albina.log
 # Вернуть Дмитрия:        bash /root/albina.sh back
 # Снова Альбину:          bash /root/albina.sh on
+# Свой мужской голос:     bash /root/albina.sh nash   (= nash3, «моложе, светлее»; есть ещё nash1 — спокойный, nash2 — живее)
 # Пробный ролик:          bash /root/albina.sh test
 # На сервере меньше 3,5 ГБ памяти — голос здесь не запускается: тексты будущих роликов выкладываются
 # в /albina/bank.json, GitHub озвучивает их заранее (farm.py), бот скачивает готовые фразы.
@@ -50,10 +51,10 @@ import json, sys
 p, want = sys.argv[1], sys.argv[2]
 cfg = json.load(open(p, encoding="utf-8"))
 cur = cfg.get("voices") or ["ru-RU-DmitryNeural"]
-if want == "albina":
+if want == "albina" or want.startswith("albina:"):
     if not any(str(v).startswith("albina") for v in cur):
         cfg["voices_old"] = cur
-    cfg["voices"] = ["albina"]
+    cfg["voices"] = [want]
 else:
     cfg["voices"] = cfg.get("voices_old") or ["ru-RU-DmitryNeural"]
 tmp = p + ".tmp"
@@ -103,12 +104,14 @@ if [ "$MODE" = test ]; then
   exit 0
 fi
 
-if [ "$MODE" = back ] || [ "$MODE" = on ]; then
+case "$MODE" in nash) MODE=nash3;; esac
+if [ "$MODE" = back ] || [ "$MODE" = on ] || [ "$MODE" = nash1 ] || [ "$MODE" = nash2 ] || [ "$MODE" = nash3 ]; then
   for D in "${BOTS[@]}"; do
     cp -p "$D/config.json" "$D/config.json.bak-$STAMP"
-    if [ "$MODE" = back ]; then set_voice "$D" old; else set_voice "$D" albina; fi
+    case "$MODE" in back) set_voice "$D" old;; on) set_voice "$D" albina;; *) set_voice "$D" "albina:ru_$MODE";; esac
   done
-  echo "== Готово: следующий ролик выйдет $([ "$MODE" = back ] && echo 'прежним голосом' || echo 'голосом Альбины')."
+  case "$MODE" in back) W='прежним голосом';; on) W='голосом Альбины';; *) W="своим мужским голосом ($MODE)";; esac
+  echo "== Готово: следующий ролик выйдет $W. Если для какой-то фразы озвучки ещё нет — этот ролик выйдет прежним голосом, следующий уже новым."
   exit 0
 fi
 
