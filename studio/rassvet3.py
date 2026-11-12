@@ -148,7 +148,18 @@ def voice(notes, vowels, vib=0.0055, vib_rate=5.0, vib_delay=0.45, glide=0.022, 
 
 
 def cymbal_swell(dur, vel):
-    return _swell(dur, vel * (0.55 if CLEAN else 1.0))
+    if not CLEAN:
+        return _swell(dur, vel)
+    # чистый «взлёт» без шума: высокие ноты фа-мажора нарастают и гаснут
+    n = int((dur + 1.2) * SR)
+    t = np.arange(n) / SR
+    s = np.zeros(n)
+    for k, nt in enumerate(("F5", "C6", "F6", "A6", "C7")):
+        f = 440 * 2 ** ((m(nt) - 69) / 12)
+        for det in (-4, 4):
+            s += np.sin(2 * np.pi * f * 2 ** (det / 1200) * t + k) / (1 + 0.4 * k)
+    e = np.where(t < dur, (t / dur) ** 3, np.exp(-(t - dur) / 0.35))
+    return vel * 0.35 * s * e
 
 
 def wood(vel, f=1150.0):
