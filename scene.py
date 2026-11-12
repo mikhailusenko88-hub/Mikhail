@@ -422,8 +422,8 @@ def plinth_run(name, p0, p1, normal, mat, miter0=False, miter1=False):
     return make_obj(name, V, F, [mat])
 
 
-def plinth_piece(name, loc, rot, length, mat):
-    """Отрезок плинтуса лежит лицом вверх, виден торец с кабель-каналом."""
+def plinth_piece(name, loc, rot, length, mat, mode='face'):
+    """Отрезок плинтуса: face — лежит лицом вверх (виден торец с кабель-каналом), back — тыльной стороной вверх, stand — стоит как на стене."""
     pts = [(p[0] / 1000.0, p[1] / 1000.0) for p in A703]
     n = len(pts)
     V = [(0.0, u, t) for (u, t) in pts] + [(length, u, t) for (u, t) in pts]
@@ -444,6 +444,12 @@ def plinth_piece(name, loc, rot, length, mat):
         log('plinth piece normals', e)
     ob.location = loc
     ob.rotation_euler = (0, 0, R(rot))
+    if mode == 'back':
+        ob.rotation_euler = (math.pi, 0, R(rot))
+        ob.location = (loc[0], loc[1], loc[2] + 0.015)
+    elif mode == 'stand':
+        ob.rotation_euler = (-math.pi / 2, 0, R(rot))
+        ob.location = (loc[0], loc[1], loc[2] + 0.080)
     return ob
 
 
@@ -1162,7 +1168,7 @@ def scene_plinth():
     global NEUTRAL
     NEUTRAL = ('ceil',)
     W, D, H = 4.0, 5.0, 2.7
-    m_wall = mat_pbr('wall_paint', 'beige_wall_001', 3.0, color=hexcol(A.get('paint', '5E7474')), rough=0.88, nstrength=0.6)
+    m_wall = mat_pbr('wall_paint', 'beige_wall_001', 3.0, color=hexcol(A.get('paint', '5E7474')), rough=0.88, nstrength=float(A.get('nstr', 0.6)))
     m_ceil = mat_simple('ceil_paint', srgb(244, 243, 240), rough=0.95)
     m_floor = mat_pbr('floor', 'laminate_floor_02', 1.7, rough_add=-0.05, nstrength=0.8, rot=R(float(A.get('floor_rot', 90))),
                       tint=srgb(232, 222, 210))
@@ -1175,11 +1181,18 @@ def scene_plinth():
     pl, pr = (float(A.get('px', 3.0)), float(A.get('py', 4.50))), float(A.get('piece_rot', 68))
     if cm == 'end':
         plinth_piece('pl_piece', (pl[0], pl[1], 0.0), pr, 0.40, mp)
+    elif cm == 'top':      # отрезки отдельно на полу, вид сверху-спереди: в кадре только пол
+        tcx, tcy, st = float(A.get('cx', 2.55)), float(A.get('cy', 3.0)), A.get('set', 'two')
+        plinth_piece('pl_a', (tcx + 0.02, tcy, 0.0), float(A.get('rot_a', 66)), 0.40, mp)
+        if st == 'two':
+            plinth_piece('pl_b', (tcx + 0.10, tcy + 0.03, 0.0), float(A.get('rot_b', 58)), 0.34, mp, mode='back')
+        elif st == 'stand':
+            plinth_piece('pl_c', (tcx + 0.24, tcy + 0.50, 0.0), 200, 0.35, mp, mode='stand')
     elif cm not in ('wide', 'corner', 'run') and A.get('piece', '1') == '1':
         plinth_piece('pl_piece', (2.88, 4.46, 0.0), float(A.get('piece_rot', 52)), 0.40, mp)
     curtain('sheer', 0.12, 1.8, 4.65, 0.012, 2.64, mat_sheer())
     box('track', 0.07, 0.17, 1.7, 4.75, 2.64, 2.67, mat_simple('track', srgb(240, 240, 238), rough=0.4))
-    if A.get('pot', '0' if cm in ('corner', 'run', 'end') else '1') == '1':
+    if A.get('pot', '0' if cm in ('corner', 'run', 'end', 'top') else '1') == '1':
         load_asset('potted_plant_02', loc=(float(A.get('potx', 3.66)), D - 0.34, 0), rot=120)
     az, el = float(A.get('sun_az', 40)), float(A.get('sun_el', 24))
     sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
@@ -1191,7 +1204,10 @@ def scene_plinth():
     elif cm == 'corner':   # внутренний угол крупно: плинтус занимает низ кадра, виден запил 45°
         cx, cy = float(A.get('cdx', 0.52)), float(A.get('cdy', 0.40))
         camera((W - cx, D - cy, cz), (W - 0.03, D - 0.03, float(A.get('look_z', 0.04))), lens=float(A.get('lens', 40)),
-               fstop=float(A.get('fstop', 11)), focus=float(A.get('focus', math.hypot(cx, cy))))
+               fstop=float(A.get('fstop', 11)) or None, focus=float(A.get('focus', math.hypot(cx, cy))))
+    elif cm == 'top':
+        camera((tcx - 0.02, tcy - float(A.get('back', 0.42)), float(A.get('cam_z', 0.36))), (tcx + 0.08, tcy + 0.17, 0.0),
+               lens=float(A.get('lens', 50)), fstop=float(A.get('fstop', 0)) or None, focus=float(A.get('focus', 0.65)), level=False)
     elif cm == 'run':      # вдоль стены у самого пола: линия плинтуса уходит в угол
         camera((W - float(A.get('off', 0.17)), D - float(A.get('back', 2.4)), float(A.get('cam_z', 0.09))), (W - 0.03, D - 0.02, 0.05),
                lens=float(A.get('lens', 50)), fstop=float(A.get('fstop', 5.6)), focus=float(A.get('focus', 0.95)))

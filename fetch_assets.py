@@ -32,7 +32,7 @@ def dl(job):
 
 
 def pick(d, res):
-    order = [res, '2k', '1k', '4k', '8k']
+    order = [res, '4k', '2k', '1k', '8k'] if res == '8k' else [res, '2k', '1k', '4k', '8k']
     for r in order:
         if r in d:
             return r, d[r]

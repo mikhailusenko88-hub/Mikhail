@@ -14,7 +14,7 @@ texture natural_walnut_veneer 2k diff
 texture walnut_veneer 2k diff
 texture american_walnut_veneer 2k diff
 texture walnut_veneer_02 4k diff
-texture laminate_floor_02 4k diff,rough,nor_gl
+texture laminate_floor_02 8k diff,rough,nor_gl
 texture beige_wall_001 2k nor_gl,rough
 texture hessian_230 2k diff,rough,nor_gl
 texture rough_linen 2k diff,rough,nor_gl

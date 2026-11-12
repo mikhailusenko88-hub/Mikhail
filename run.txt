@@ -1,7 +1,8 @@
 # имя  аргументы для scene.py (или "py script.py")
-g703_corner scene=plinth cam=corner paint=4F5B5E ev=-0.6 res=1600x1200 samples=200 noise=0.035
-g703_corner_sun scene=plinth cam=corner paint=4F5B5E sun_az=22 sun_el=16 ev=-0.9 cam_z=0.13 res=1600x1200 samples=200 noise=0.035
-g703_beige scene=plinth cam=corner paint=A89A88 cdx=0.45 cdy=0.55 cam_z=0.18 ev=-0.7 res=1600x1200 samples=200 noise=0.035
-g703_paint scene=plinth cam=corner paint=6F7F76 plcol=6F7F76 ev=-0.3 cdx=0.40 cdy=0.58 res=1600x1200 samples=200 noise=0.035
-g703_end scene=plinth cam=end paint=4F5B5E side=-0.10 back=0.36 cam_z=0.10 ev=-0.6 res=1600x1200 samples=200 noise=0.035
-g703_end_close scene=plinth cam=end paint=4F5B5E side=-0.08 back=0.24 cam_z=0.06 lens=55 fstop=13 focus=0.27 ev=-0.6 res=1600x1200 samples=200 noise=0.035
+q703_top_a scene=plinth cam=top set=two ev=-0.5 res=800x600 samples=48 noise=0.08
+q703_top_sun scene=plinth cam=top set=two cy=3.4 sun_az=12 ev=-0.9 res=800x600 samples=48 noise=0.08
+q703_top_stand scene=plinth cam=top set=stand ev=-0.5 res=800x600 samples=48 noise=0.08
+q703_top_one scene=plinth cam=top set=one back=0.34 cam_z=0.30 ev=-0.5 res=800x600 samples=48 noise=0.08
+q703_paint scene=plinth cam=corner paint=6F7F76 plcol=6F7F76 ev=-0.2 cdx=0.40 cdy=0.58 nstr=0.12 fstop=0 res=800x600 samples=48 noise=0.08
+q703_paint2 scene=plinth cam=corner paint=6F7F76 plcol=6F7F76 ev=-0.2 nstr=0.12 fstop=0 res=800x600 samples=48 noise=0.08
+q703_corner scene=plinth cam=corner paint=4F5B5E ev=-0.6 nstr=0.12 fstop=0 res=800x600 samples=48 noise=0.08
