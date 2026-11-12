@@ -1,0 +1,65 @@
+name: muzyka-sluh
+on:
+  push:
+    branches: [muzyka-sluh]
+    paths: ["in/**", "request.txt", "*.py", ".github/workflows/muzyka-sluh.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: muzyka-sluh
+  cancel-in-progress: false
+jobs:
+  ear:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/models
+            ~/.cache/huggingface
+          key: ear-models-v1
+      - name: ffmpeg
+        run: which ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+      - name: todo
+        id: todo
+        run: |
+          python3 list_todo.py > todo.txt
+          cat todo.txt
+          echo "n=$(wc -l < todo.txt)" >> "$GITHUB_OUTPUT"
+      - name: essentia
+        if: steps.todo.outputs.n != '0'
+        continue-on-error: true
+        run: |
+          python -m venv /tmp/ea
+          /tmp/ea/bin/pip install -q --upgrade pip
+          /tmp/ea/bin/pip install -q essentia-tensorflow
+          /tmp/ea/bin/python ear_ml.py todo.txt 2>&1 | tee out/_log_ml.txt
+      - name: clap
+        if: steps.todo.outputs.n != '0'
+        continue-on-error: true
+        run: |
+          python -m venv /tmp/cl
+          /tmp/cl/bin/pip install -q --upgrade pip
+          /tmp/cl/bin/pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          /tmp/cl/bin/pip install -q "transformers==4.46.3" scipy matplotlib numpy
+          /tmp/cl/bin/python ear_clap.py todo.txt 2>&1 | tee out/_log_clap.txt
+      - name: report
+        if: steps.todo.outputs.n != '0'
+        run: |
+          python -m venv /tmp/rp
+          /tmp/rp/bin/pip install -q scipy matplotlib numpy
+          /tmp/rp/bin/python ear_report.py todo.txt 2>&1 | tee out/_log_report.txt
+      - name: commit
+        if: always()
+        run: |
+          git config user.name "Claude"
+          git config user.email "noreply@anthropic.com"
+          git add out
+          git commit -q -m "muzyka-sluh result" || echo "нечего коммитить"
+          for i in 1 2 3; do git pull -q --rebase origin muzyka-sluh && git push -q origin HEAD:muzyka-sluh && break; sleep 5; done
