@@ -1,5 +1,5 @@
 """Свои мелодии с низким голосом для роликов (чистый движок из studio/): стили golos_*.
-Звук стерео, −14 LUFS, без лимитера. Под длину ролика выбирается вариант мелодии (с вступлением или без), темп слегка
+Звук стерео, −18 LUFS (как у остальной музыки канала), без лимитера. Под длину ролика выбирается вариант мелодии (с вступлением или без), темп слегка
 подгоняется, чтобы финальный аккорд и хвост зала легли точно в ролик."""
 import sys
 from pathlib import Path
@@ -15,6 +15,7 @@ STYLES = {
     "golos_kolybelnaya": "kolybelnaya",    # «Колыбельная»: ре мажор, 3/4, арфа и челеста
 }
 ORDER = list(STYLES)
+LUFS = -18.0          # громкость как у прежней оркестровой музыки канала (−17…−19 LUFS); при −14 ролики казались громкими
 
 
 def make_music(style, total, seed=0, line_times=()):
@@ -23,6 +24,6 @@ def make_music(style, total, seed=0, line_times=()):
         sys.path.insert(0, STUDIO)
     import golos
     name = golos.best_variant(STYLES[style], float(total))   # вариант (с вступлением или без), чей темп ближе к родному
-    L, R, bpm = golos.render(name, float(total))
+    L, R, bpm = golos.render(name, float(total), target=LUFS)
     print(f"музыка {style} ({name}): {total:.2f} с, {bpm:.1f} уд/мин (родной темп {golos.SONGS[name]['bpm']})", flush=True)
     return np.stack([L, R], axis=1)
