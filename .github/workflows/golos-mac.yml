@@ -16,7 +16,7 @@ jobs:
         run: |
           swiftc -O tts_mac.swift -o /tmp/tts 2>&1 | tail -5
           N=$(python3 -c "import json;print(len(json.load(open('mac_jobs.json'))))"); mkdir -p /tmp/mac_out
-          for i in $(seq 0 $((N-1))); do timeout 60 /tmp/tts mac_jobs.json /tmp/mac_out $i 2>&1 | tail -2 || echo "СБОЙ $i"; done
+          for i in $(seq 0 $((N-1))); do perl -e 'alarm 60; exec @ARGV' /tmp/tts mac_jobs.json /tmp/mac_out $i 2>&1 | tail -2 || echo "СБОЙ $i"; done
           mkdir -p /tmp/mv/v && for f in /tmp/mac_out/*.caf; do n=$(basename "$f" .caf); afconvert -f WAVE -d LEI16@24000 -c 1 "$f" /tmp/mv/v/$n.wav 2>/dev/null || echo "не читается: $n"; done
           cp mac_index.json /tmp/mv/index.json
           ls /tmp/mv/v | wc -l
