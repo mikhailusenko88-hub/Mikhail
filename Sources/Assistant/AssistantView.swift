@@ -82,7 +82,8 @@ struct AssistantScreen: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Чем помочь?").font(.title3.bold())
             Text("Скажите или напишите задание. Например:").foregroundColor(.secondary)
-            ForEach(["Что у нас сегодня по заявкам?", "Найди, сколько стоит доставка ПЭК из Москвы в Петербург 300 кг",
+            ForEach([CRMClient.connected ? "Что у нас сегодня по заявкам?" : "Сколько будет 3,2 × 2,7 минус дверь 0,9 × 2,1, по 1290 ₽ за м²?",
+                     "Найди, сколько стоит доставка ПЭК из Москвы в Петербург 300 кг",
                      "Запомни: поставщик отгружает по вторникам", "Напомни завтра в 10:00 позвонить клиенту"], id: \.self) { ex in
                 Button { input = ex; typing = true } label: {
                     Text(ex).font(.subheadline).padding(10).frame(maxWidth: .infinity, alignment: .leading)
@@ -300,7 +301,7 @@ struct AssistantSettings: View {
                     }
                     Text(crmStatus).font(.caption).foregroundColor(.secondary)
                 } header: { Text("CRM") } footer: {
-                    Text("Ключ создаётся в CRM → Ещё → Помощник. Хранится в связке ключей телефона. Команды CRM выполняет ваш сервер с правами вашего пользователя.")
+                    Text("Необязательно: без CRM помощник работает сам по себе. Когда решите подключить — ключ создаётся в CRM → Ещё → Помощник, хранится в связке ключей телефона.")
                 }
 
                 Section {
