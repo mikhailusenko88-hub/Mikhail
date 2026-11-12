@@ -11,7 +11,7 @@ import numpy as np
 import theme as th
 from theme import SR, m, hz, legato_line, horn, timp, piano
 from rassvet4 import voice, harp, celesta, fdrum, taiko, kick, sub, pluck, spad, short, master, write24, lufs
-from cathedral import line as cline, VOWEL_A, VOWEL_U, organ, bell
+from cathedral import line as cline, VOWEL_A, VOWEL_U, organ
 
 rng = np.random.default_rng(2026)
 NAMES = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
@@ -176,6 +176,18 @@ def shimmer(dur, vel, t4):
             s += np.sin(2 * np.pi * hz(t4 + d) * 2 ** (det / 1200) * t + k) / (1 + 0.4 * k)
     e = np.where(t < dur, (t / dur) ** 3, np.exp(-(t - dur) / 0.35))
     return vel * 0.35 * s * e
+
+
+def bell_major(midi, vel, dur=7.0):
+    """колокол с БОЛЬШОЙ терцией в призвуках: у обычного колокола терция малая, и над мажорным аккордом она звучит минором"""
+    f0 = hz(midi)
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    s = np.zeros(n)
+    for r, a, d in ((0.5, 0.35, 0.35), (1.0, 1.0, 0.6), (1.25, 0.3, 0.9), (1.5, 0.35, 1.1), (2.0, 0.4, 1.4), (2.5, 0.2, 2.0),
+                    (3.0, 0.15, 2.8), (4.0, 0.08, 3.6)):
+        s += a * np.sin(2 * np.pi * f0 * r * t + rng.uniform(0, 6.28)) * np.exp(-t * d)
+    return vel * s / 2.5 * (0.5 - 0.5 * np.cos(np.pi * np.clip(t / 0.004, 0, 1))) * np.clip((dur - t) / 0.5, 0, 1)
 
 
 def tfit(p, lo=38, hi=50):
@@ -395,11 +407,12 @@ def compose(song, over=None):
             if secs[b] == "intro":
                 continue
             if k_in % 4 == 0:
-                root = Hc[split(P[b][0])[0][0]][0]
-                p = root
-                while p < 60:
+                c0 = split(P[b][0])[0][0]
+                pcs0 = {Hc[c0][0] % 12} | {x % 12 for x in Hc[c0][1]}
+                p = t4 if (t4 % 12 in pcs0 or secs[b] == "end") else t4 + 7      # тоника лада, а над доминантой — квинта
+                if p < 62:
                     p += 12
-                bus.add(bell(p if secs[b] != "end" else t4, 0.16 if secs[b] != "verse" else 0.11), bt(b), pan=0.15, send=0.6)
+                bus.add(bell_major(p, 0.16 if secs[b] != "verse" else 0.11), bt(b), pan=0.15, send=0.6)
     # ---------- ударные
     for b, (ch, mel, sec, br) in enumerate(P):
         if sec == "end":
