@@ -1,3 +1,1 @@
-== in/kino_orbita.m4a
-== in/kino_polyot.m4a
-== in/kino_vremya.m4a
+== in/kino_orbita2.m4a
