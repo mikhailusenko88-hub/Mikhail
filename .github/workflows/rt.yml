@@ -1,19 +1,13 @@
 name: rt-look
 on: push
-permissions: { contents: write }
 jobs:
   a:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
       - run: |
           sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y ffmpeg >/dev/null; pip -q install yt-dlp
-          mkdir -p rt2; U=https://rutube.ru/video/165c1e364bcabea15f0d083e8ce2c2a7/
-          for h in 1080 720 476; do
-            yt-dlp -f "bv*[height=$h]" -o "v$h.%(ext)s" "$U" >/dev/null 2>&1; f=$(ls v$h.* | head -1)
-            ffmpeg -v error -y -ss 150 -i "$f" -frames:v 1 -vf "scale=1920:1080:flags=bicubic,crop=960:540:480:440" -q:v 2 rt2/q${h}_150.jpg
-            ffmpeg -v error -y -ss 75 -i "$f" -frames:v 1 -vf "scale=1920:1080:flags=bicubic" -q:v 3 rt2/q${h}_75.jpg
-            echo "$h: $(ffprobe -v error -show_entries format=bit_rate -of csv=p=0 "$f")"
-          done
-          git config user.name ci; git config user.email ci@local; git add rt2; git commit -q -m "rt2"; git push -q
+          an() { ffmpeg -hide_banner -ss 60 -t 40 -i "$1" -vf "tblend=all_mode=difference,signalstats,metadata=print:key=lavfi.signalstats.YAVG" -f null - 2>&1 | grep -o "YAVG=[0-9.]*" | cut -d= -f2 > d.txt; echo "кадров $(wc -l < d.txt), повторов $(awk '$1<0.08' d.txt | wc -l), тихих(<0.3) $(awk '$1<0.3' d.txt | wc -l)"; }
+          for id in 27fc243ecd58bf78de1d3e02af67e40f afdd98ae45c0e0e83fb7e2d0046602be d21d392698c06f82fcc6cdd1965b4ffc ffee88438eea759d5b5eb4524c0435e2 165c1e364bcabea15f0d083e8ce2c2a7; do
+            for h in 1080 720; do rm -f v.*; yt-dlp -f "bv*[height=$h]" -o "v.%(ext)s" "https://rutube.ru/video/$id/" >/dev/null 2>&1; f=$(ls v.* 2>/dev/null | head -1); [ -n "$f" ] || continue
+              echo "== ${id:0:6} ${h}p: $(an "$f")"; done; done
