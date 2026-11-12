@@ -166,11 +166,24 @@ final class ModelStore: NSObject, ObservableObject, URLSessionDownloadDelegate {
     /// Файл нейросети, принесённый вручную (через «Файлы»).
     func importFile(_ url: URL) -> String {
         let name = url.lastPathComponent
+        let ok = url.startAccessingSecurityScopedResource()
+        defer { if ok { url.stopAccessingSecurityScopedResource() } }
+        // «зрение» (mmproj) — к выбранной нейросети или по имени файла
+        if let m = BrainModel.all.first(where: { $0.eyeFile == name })
+            ?? (name.lowercased().contains("mmproj") ? (selected.eyeFile != nil ? selected : nil) : nil),
+           let dest = eyeURL(m) {
+            do {
+                try? FileManager.default.removeItem(at: dest)
+                try FileManager.default.copyItem(at: url, to: dest)
+                objectWillChange.send()
+                return "Готово: «зрение» для \(m.title)"
+            } catch {
+                return "Не удалось скопировать: \(error.localizedDescription)"
+            }
+        }
         guard let m = BrainModel.all.first(where: { $0.file == name }) else {
             return "Не знаю такой файл: \(name). Нужен один из: " + BrainModel.all.map(\.file).joined(separator: ", ")
         }
-        let ok = url.startAccessingSecurityScopedResource()
-        defer { if ok { url.stopAccessingSecurityScopedResource() } }
         do {
             try? FileManager.default.removeItem(at: fileURL(m))
             try FileManager.default.copyItem(at: url, to: fileURL(m))

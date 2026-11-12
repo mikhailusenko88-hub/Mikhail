@@ -330,10 +330,13 @@ struct ModelList: View {
     @ObservedObject var store: ModelStore
     @State private var pick = false
     @State private var msg = ""
+    @State private var askDelete: BrainModel?
+    // Внимание: список стоит внутри Form — все кнопки .borderless, иначе iPhone считает строку одной кнопкой
+    // и нажатие срабатывает не там (или сразу на нескольких кнопках).
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             ForEach(BrainModel.all) { m in
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Image(systemName: store.selectedID == m.id ? "checkmark.circle.fill" : "circle")
                             .foregroundColor(store.selectedID == m.id ? .green : .secondary)
@@ -346,42 +349,67 @@ struct ModelList: View {
                     Text(m.note).font(.caption).foregroundColor(.secondary)
                     if store.downloading == m.id {
                         ProgressView(value: store.progress)
-                        HStack { Text(store.status).font(.caption2); Spacer(); Button("Стоп") { store.cancel() }.font(.caption) }
+                        HStack {
+                            Text(store.status).font(.caption2)
+                            Spacer()
+                            Button("Стоп") { store.cancel() }.font(.caption).buttonStyle(.borderless)
+                        }
                     } else if store.isReady(m) {
                         HStack {
-                            Button("Выбрать") { store.selectedID = m.id }.disabled(store.selectedID == m.id)
-                            Spacer()
-                            Button("Удалить", role: .destructive) { store.delete(m) }
-                        }.font(.callout)
-                        if m.eyeFile != nil {
-                            if store.downloading == m.id + "#eye" {
-                                ProgressView(value: store.progress)
-                                HStack { Text(store.status).font(.caption2); Spacer(); Button("Стоп") { store.cancel() }.font(.caption) }
-                            } else if store.isEyeReady(m) {
-                                Label("«Зрение» для фото — в телефоне", systemImage: "eye").font(.caption).foregroundColor(.green)
+                            if store.selectedID == m.id {
+                                Text("Работает эта").font(.callout).foregroundColor(.secondary)
                             } else {
-                                Button { store.downloadEye(m) } label: { Label("Скачать «зрение» для фото — \(m.eyeMB) МБ", systemImage: "eye") }
-                                    .font(.callout).disabled(store.downloading != nil)
-                                Text("Без него нейросеть читает только текст на фото и в файлах; с ним — понимает, что изображено.")
-                                    .font(.caption2).foregroundColor(.secondary)
+                                Button("Выбрать") { store.selectedID = m.id }.buttonStyle(.borderless)
                             }
-                        }
+                            Spacer()
+                            Button("Удалить", role: .destructive) { askDelete = m }.buttonStyle(.borderless)
+                        }.font(.callout)
                     } else {
-                        Button { store.download(m) } label: { Label("Скачать", systemImage: "arrow.down.circle") }
+                        Button { store.download(m) } label: { Label("Скачать нейросеть", systemImage: "arrow.down.circle") }
+                            .buttonStyle(.borderless)
                             .disabled(store.downloading != nil)
+                    }
+                    if m.eyeFile != nil && (store.isReady(m) || store.downloading == m.id + "#eye" || store.isEyeReady(m)) {
+                        Divider()
+                        if store.downloading == m.id + "#eye" {
+                            Label("«Зрение» для фото — скачивается", systemImage: "eye").font(.caption)
+                            ProgressView(value: store.progress)
+                            HStack {
+                                Text(store.status).font(.caption2)
+                                Spacer()
+                                Button("Стоп") { store.cancel() }.font(.caption).buttonStyle(.borderless)
+                            }
+                        } else if store.isEyeReady(m) {
+                            Label("«Зрение» для фото — в телефоне", systemImage: "eye").font(.caption).foregroundColor(.green)
+                        } else {
+                            Button { store.downloadEye(m) } label: {
+                                Label("Скачать «зрение» для фото — \(m.eyeMB) МБ", systemImage: "eye")
+                            }
+                            .buttonStyle(.borderless)
+                            .font(.callout)
+                            .disabled(store.downloading != nil)
+                            Text("Без него нейросеть читает только текст на фото и в файлах; с ним — понимает, что изображено.")
+                                .font(.caption2).foregroundColor(.secondary)
+                        }
                     }
                 }
                 .padding(12)
                 .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 14))
-                .onTapGesture { if store.isReady(m) { store.selectedID = m.id } }
             }
             if store.downloading == nil && !store.status.isEmpty { Text(store.status).font(.caption).foregroundColor(.secondary) }
             Button { pick = true } label: { Label("Файл нейросети уже есть (.gguf) — выбрать в «Файлах»", systemImage: "folder") }
+                .buttonStyle(.borderless)
                 .font(.caption)
             if !msg.isEmpty { Text(msg).font(.caption) }
         }
         .fileImporter(isPresented: $pick, allowedContentTypes: [.data]) { r in
             if case .success(let u) = r { msg = store.importFile(u) }
+        }
+        .confirmationDialog("Удалить нейросеть «\(askDelete?.title ?? "")» из телефона?", isPresented: Binding(get: { askDelete != nil }, set: { if !$0 { askDelete = nil } }), titleVisibility: .visible) {
+            Button("Удалить", role: .destructive) { if let m = askDelete { store.delete(m) }; askDelete = nil }
+            Button("Отмена", role: .cancel) { askDelete = nil }
+        } message: {
+            Text("Чтобы вернуть, её придётся скачивать заново (несколько гигабайт).")
         }
     }
 }
