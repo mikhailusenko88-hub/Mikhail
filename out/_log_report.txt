@@ -1,2 +1,5 @@
-== in/chisto_air07.m4a
-== in/chisto_air10.m4a
+== in/final_chisto_epik.m4a
+== in/final_chisto_kuplet.m4a
+== in/final_chisto_main.m4a
+== in/final_chisto_raspev.m4a
+== in/final_chisto_tihiy.m4a
