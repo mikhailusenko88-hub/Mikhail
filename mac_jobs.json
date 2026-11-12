@@ -1,1 +1,606 @@
-[{"name":"Ff006","text":"Сейчас узнаем, кто там!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Сейчас <phoneme alphabet=\"ipa\" ph=\"uz\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈna\">зна</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"jɪm\">ем</phoneme>, кто там!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y006_0_0","text":"Сейчас узнаем, кто там!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Сейчас <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">у</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"znəjɪm\">знаем</phoneme>, кто там!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y006_0_1","text":"Сейчас узнаем, кто там!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Сейчас <phoneme alphabet=\"ipa\" ph=\"uz\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈna\">зна</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"jɪm\">ем</phoneme>, кто там!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y006_0_2","text":"Сейчас узнаем, кто там!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Сейчас <phoneme alphabet=\"ipa\" ph=\"uzna\">узна</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈje\">е</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"m\">м</phoneme>, кто там!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff011","text":"Может, это ключ от дома?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Может, это ключ от <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdo\">до</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"mə\">ма</phoneme>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y011_0_0","text":"Может, это ключ от дома?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Может, это ключ от <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdo\">до</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"mə\">ма</phoneme>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y011_0_1","text":"Может, это ключ от дома?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Может, это ключ от <phoneme alphabet=\"ipa\" ph=\"da\">до</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈma\">ма</phoneme></prosody>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff012","text":"Смотрите! Волшебная дверь!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>! Волшебная дверь!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y012_0_0","text":"Смотрите! Волшебная дверь!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsmo\">Смо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"trʲɪtʲɪ\">трите</phoneme>! Волшебная дверь!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y012_0_1","text":"Смотрите! Волшебная дверь!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>! Волшебная дверь!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y012_0_2","text":"Смотрите! Волшебная дверь!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"smətrʲɪ\">Смотри</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody>! Волшебная дверь!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff019","text":"Рон! Мы уже на земле!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Рон! Мы <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> на земле!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y019_0_0","text":"Рон! Мы уже на земле!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Рон! Мы <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">у</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"ʒɨ\">же</phoneme> на земле!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y019_0_1","text":"Рон! Мы уже на земле!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Рон! Мы <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> на земле!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff027","text":"Странно! В лесу никого!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Странно! В <phoneme alphabet=\"ipa\" ph=\"lʲɪ\">ле</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsu\">су</phoneme></prosody> никого!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y027_0_0","text":"Странно! В лесу никого!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Странно! В <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈlʲe\">ле</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"su\">су</phoneme> никого!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y027_0_1","text":"Странно! В лесу никого!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Странно! В <phoneme alphabet=\"ipa\" ph=\"lʲɪ\">ле</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsu\">су</phoneme></prosody> никого!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff032","text":"Смотрите! Какие необычные украшения!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>! Какие необычные украшения!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y032_0_0","text":"Смотрите! Какие необычные украшения!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsmo\">Смо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"trʲɪtʲɪ\">трите</phoneme>! Какие необычные украшения!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y032_0_1","text":"Смотрите! Какие необычные украшения!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>! Какие необычные украшения!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y032_0_2","text":"Смотрите! Какие необычные украшения!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"smətrʲɪ\">Смотри</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody>! Какие необычные украшения!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff033","text":"А почему везде страшные лица?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А почему везде страшные <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈlʲi\">ли</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tsə\">ца</phoneme>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y033_0_0","text":"А почему везде страшные лица?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А почему везде страшные <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈlʲi\">ли</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tsə\">ца</phoneme>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y033_0_1","text":"А почему везде страшные лица?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А почему везде страшные <phoneme alphabet=\"ipa\" ph=\"lʲɪ\">ли</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtsa\">ца</phoneme></prosody>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff043","text":"А из них делают пироги?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А из них делают <phoneme alphabet=\"ipa\" ph=\"pʲɪra\">пиро</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgʲi\">ги</phoneme></prosody>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y043_0_0","text":"А из них делают пироги?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А из них делают <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈpʲi\">пи</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"rəgʲɪ\">роги</phoneme>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y043_0_1","text":"А из них делают пироги?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А из них делают <phoneme alphabet=\"ipa\" ph=\"pʲɪ\">пи</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈro\">ро</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"gʲɪ\">ги</phoneme>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y043_0_2","text":"А из них делают пироги?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А из них делают <phoneme alphabet=\"ipa\" ph=\"pʲɪra\">пиро</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgʲi\">ги</phoneme></prosody>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff046","text":"А вот это уже не пирог!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А вот это <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> не пирог!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y046_0_0","text":"А вот это уже не пирог!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А вот это <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">у</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"ʒɨ\">же</phoneme> не пирог!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y046_0_1","text":"А вот это уже не пирог!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А вот это <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> не пирог!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff049","text":"Смотрите! Огромная тыква!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>! Огромная тыква!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y049_0_0","text":"Смотрите! Огромная тыква!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsmo\">Смо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"trʲɪtʲɪ\">трите</phoneme>! Огромная тыква!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y049_0_1","text":"Смотрите! Огромная тыква!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>! Огромная тыква!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y049_0_2","text":"Смотрите! Огромная тыква!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"smətrʲɪ\">Смотри</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody>! Огромная тыква!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff050","text":"У неё светятся глаза!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">У неё светятся <phoneme alphabet=\"ipa\" ph=\"gla\">гла</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈza\">за</phoneme></prosody>!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y050_0_0","text":"У неё светятся глаза!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">У неё светятся <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgla\">гла</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"zə\">за</phoneme>!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y050_0_1","text":"У неё светятся глаза!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">У неё светятся <phoneme alphabet=\"ipa\" ph=\"gla\">гла</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈza\">за</phoneme></prosody>!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff055","text":"А я уже хотел убежать!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А я <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> хотел убежать!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y055_0_0","text":"А я уже хотел убежать!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А я <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">у</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"ʒɨ\">же</phoneme> хотел убежать!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y055_0_1","text":"А я уже хотел убежать!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А я <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> хотел убежать!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff082","text":"Я готов!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Я <phoneme alphabet=\"ipa\" ph=\"ga\">го</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈto\">то</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"f\">в</phoneme>!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y082_0_0","text":"Я готов!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Я <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgo\">го</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"təf\">тов</phoneme>!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y082_0_1","text":"Я готов!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Я <phoneme alphabet=\"ipa\" ph=\"ga\">го</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈto\">то</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"f\">в</phoneme>!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff088","text":"Смотрите! Ещё одна тыква!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>! Ещё одна тыква!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y088_0_0","text":"Смотрите! Ещё одна тыква!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsmo\">Смо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"trʲɪtʲɪ\">трите</phoneme>! Ещё одна тыква!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y088_0_1","text":"Смотрите! Ещё одна тыква!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>! Ещё одна тыква!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y088_0_2","text":"Смотрите! Ещё одна тыква!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"smətrʲɪ\">Смотри</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody>! Ещё одна тыква!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff121","text":"Смотрите! Впереди появилась дверь!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>! Впереди появилась дверь!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y121_0_0","text":"Смотрите! Впереди появилась дверь!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsmo\">Смо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"trʲɪtʲɪ\">трите</phoneme>! Впереди появилась дверь!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y121_0_1","text":"Смотрите! Впереди появилась дверь!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>! Впереди появилась дверь!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y121_0_2","text":"Смотрите! Впереди появилась дверь!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"smətrʲɪ\">Смотри</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody>! Впереди появилась дверь!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff124","text":"А кто стучит с другой стороны?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А кто стучит с другой <phoneme alphabet=\"ipa\" ph=\"stəra\">сторо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈnɨ\">ны</phoneme></prosody>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y124_0_0","text":"А кто стучит с другой стороны?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А кто стучит с другой <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsto\">сто</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"rənɨ\">роны</phoneme>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y124_0_1","text":"А кто стучит с другой стороны?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А кто стучит с другой <phoneme alphabet=\"ipa\" ph=\"sta\">сто</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈro\">ро</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"nɨ\">ны</phoneme>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y124_0_2","text":"А кто стучит с другой стороны?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А кто стучит с другой <phoneme alphabet=\"ipa\" ph=\"stəra\">сторо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈnɨ\">ны</phoneme></prosody>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff127","text":"В лесу было тихо и тепло. Барсик гулял по поляне и смотрел на высокие деревья.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">В <phoneme alphabet=\"ipa\" ph=\"lʲɪ\">ле</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsu\">су</phoneme></prosody> было тихо и тепло. Барсик гулял по поляне и смотрел на высокие деревья.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y127_0_0","text":"В лесу было тихо и тепло. Барсик гулял по поляне и смотрел на высокие деревья.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">В <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈlʲe\">ле</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"su\">су</phoneme> было тихо и тепло. Барсик гулял по поляне и смотрел на высокие деревья.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y127_0_1","text":"В лесу было тихо и тепло. Барсик гулял по поляне и смотрел на высокие деревья.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">В <phoneme alphabet=\"ipa\" ph=\"lʲɪ\">ле</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsu\">су</phoneme></prosody> было тихо и тепло. Барсик гулял по поляне и смотрел на высокие деревья.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff129","text":"Смотрите, какой старый замок на двери!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, <phoneme alphabet=\"ipa\" ph=\"ka\">ка</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈko\">ко</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"j\">й</phoneme> старый <phoneme alphabet=\"ipa\" ph=\"za\">за</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈmo\">мо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"k\">к</phoneme> на <phoneme alphabet=\"ipa\" ph=\"dvʲɪ\">две</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈrʲi\">ри</phoneme></prosody>!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y129_0_0","text":"Смотрите, какой старый замок на двери!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsmo\">Смо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"trʲɪtʲɪ\">трите</phoneme>, какой старый замок на двери!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y129_0_1","text":"Смотрите, какой старый замок на двери!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, какой старый замок на двери!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y129_0_2","text":"Смотрите, какой старый замок на двери!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"smətrʲɪ\">Смотри</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody>, какой старый замок на двери!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y129_1_0","text":"Смотрите, какой старый замок на двери!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Смотрите, <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈka\">ка</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"kəj\">кой</phoneme> старый замок на двери!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y129_1_1","text":"Смотрите, какой старый замок на двери!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Смотрите, <phoneme alphabet=\"ipa\" ph=\"ka\">ка</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈko\">ко</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"j\">й</phoneme> старый замок на двери!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y129_2_0","text":"Смотрите, какой старый замок на двери!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Смотрите, какой старый <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈza\">за</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"mək\">мок</phoneme> на двери!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y129_2_1","text":"Смотрите, какой старый замок на двери!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Смотрите, какой старый <phoneme alphabet=\"ipa\" ph=\"za\">за</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈmo\">мо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"k\">к</phoneme> на двери!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y129_3_0","text":"Смотрите, какой старый замок на двери!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Смотрите, какой старый замок на <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdvʲe\">две</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"rʲɪ\">ри</phoneme>!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y129_3_1","text":"Смотрите, какой старый замок на двери!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Смотрите, какой старый замок на <phoneme alphabet=\"ipa\" ph=\"dvʲɪ\">две</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈrʲi\">ри</phoneme></prosody>!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff133","text":"Вечером друзья вернулись домой. Пик уже спал, а Рон снял кепку и почесал за ухом.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Вечером друзья вернулись домой. Пик <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> спал, а Рон снял кепку и почесал за ухом.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y133_0_0","text":"Вечером друзья вернулись домой. Пик уже спал, а Рон снял кепку и почесал за ухом.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Вечером друзья вернулись домой. Пик <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">у</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"ʒɨ\">же</phoneme> спал, а Рон снял кепку и почесал за ухом.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y133_0_1","text":"Вечером друзья вернулись домой. Пик уже спал, а Рон снял кепку и почесал за ухом.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Вечером друзья вернулись домой. Пик <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> спал, а Рон снял кепку и почесал за ухом.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff134","text":"Какой чудесный был день!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ka\">Ка</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈko\">ко</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"j\">й</phoneme> чудесный был день!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y134_0_0","text":"Какой чудесный был день!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈka\">Ка</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"kəj\">кой</phoneme> чудесный был день!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y134_0_1","text":"Какой чудесный был день!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ka\">Ка</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈko\">ко</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"j\">й</phoneme> чудесный был день!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff135","text":"А Барсик закрыл глаза и улыбнулся: он знал, что тайна совсем рядом.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А Барсик закрыл <phoneme alphabet=\"ipa\" ph=\"gla\">гла</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈza\">за</phoneme></prosody> и улыбнулся: он знал, что тайна совсем рядом.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y135_0_0","text":"А Барсик закрыл глаза и улыбнулся: он знал, что тайна совсем рядом.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А Барсик закрыл <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgla\">гла</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"zə\">за</phoneme> и улыбнулся: он знал, что тайна совсем рядом.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y135_0_1","text":"А Барсик закрыл глаза и улыбнулся: он знал, что тайна совсем рядом.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А Барсик закрыл <phoneme alphabet=\"ipa\" ph=\"gla\">гла</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈza\">за</phoneme></prosody> и улыбнулся: он знал, что тайна совсем рядом.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff137","text":"У реки стоял старый замок.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">У <phoneme alphabet=\"ipa\" ph=\"rʲɪ\">ре</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈkʲi\">ки</phoneme></prosody> стоял старый <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈza\">за</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"mək\">мок</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y137_0_0","text":"У реки стоял старый замок.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">У <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈrʲe\">ре</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"kʲɪ\">ки</phoneme> стоял старый замок.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y137_0_1","text":"У реки стоял старый замок.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">У <phoneme alphabet=\"ipa\" ph=\"rʲɪ\">ре</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈkʲi\">ки</phoneme></prosody> стоял старый замок.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y137_1_0","text":"У реки стоял старый замок.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">У реки стоял старый <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈza\">за</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"mək\">мок</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y137_1_1","text":"У реки стоял старый замок.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">У реки стоял старый <phoneme alphabet=\"ipa\" ph=\"za\">за</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈmo\">мо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"k\">к</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff138","text":"Смотрите, возле двери лежит золотой ключ!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, возле <phoneme alphabet=\"ipa\" ph=\"dvʲɪ\">две</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈrʲi\">ри</phoneme></prosody> лежит золотой ключ!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y138_0_0","text":"Смотрите, возле двери лежит золотой ключ!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsmo\">Смо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"trʲɪtʲɪ\">трите</phoneme>, возле двери лежит золотой ключ!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y138_0_1","text":"Смотрите, возле двери лежит золотой ключ!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, возле двери лежит золотой ключ!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y138_0_2","text":"Смотрите, возле двери лежит золотой ключ!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"smətrʲɪ\">Смотри</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody>, возле двери лежит золотой ключ!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y138_1_0","text":"Смотрите, возле двери лежит золотой ключ!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Смотрите, возле <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdvʲe\">две</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"rʲɪ\">ри</phoneme> лежит золотой ключ!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y138_1_1","text":"Смотрите, возле двери лежит золотой ключ!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Смотрите, возле <phoneme alphabet=\"ipa\" ph=\"dvʲɪ\">две</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈrʲi\">ри</phoneme></prosody> лежит золотой ключ!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff139","text":"Мы весь день сидели дома, а у печи грелся кот.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы весь день сидели <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdo\">до</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"mə\">ма</phoneme>, а у <phoneme alphabet=\"ipa\" ph=\"pʲɪ\">пе</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtɕi\">чи</phoneme></prosody> грелся кот.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y139_0_0","text":"Мы весь день сидели дома, а у печи грелся кот.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы весь день сидели <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdo\">до</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"mə\">ма</phoneme>, а у печи грелся кот.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y139_0_1","text":"Мы весь день сидели дома, а у печи грелся кот.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы весь день сидели <phoneme alphabet=\"ipa\" ph=\"da\">до</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈma\">ма</phoneme></prosody>, а у печи грелся кот.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y139_1_0","text":"Мы весь день сидели дома, а у печи грелся кот.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы весь день сидели дома, а у <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈpʲe\">пе</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tɕɪ\">чи</phoneme> грелся кот.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y139_1_1","text":"Мы весь день сидели дома, а у печи грелся кот.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы весь день сидели дома, а у <phoneme alphabet=\"ipa\" ph=\"pʲɪ\">пе</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtɕi\">чи</phoneme></prosody> грелся кот.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff142","text":"Рон! Ты даже не спросил, какой торт!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Рон! Ты даже не спросил, <phoneme alphabet=\"ipa\" ph=\"ka\">ка</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈko\">ко</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"j\">й</phoneme> торт!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y142_0_0","text":"Рон! Ты даже не спросил, какой торт!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Рон! Ты даже не спросил, <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈka\">ка</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"kəj\">кой</phoneme> торт!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y142_0_1","text":"Рон! Ты даже не спросил, какой торт!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Рон! Ты даже не спросил, <phoneme alphabet=\"ipa\" ph=\"ka\">ка</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈko\">ко</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"j\">й</phoneme> торт!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff147","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мои <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈru\">ру</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"kʲɪ\">ки</phoneme> <phoneme alphabet=\"ipa\" ph=\"us\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈta\">ста</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"lʲɪ\">ли</phoneme>, а до <phoneme alphabet=\"ipa\" ph=\"ga\">го</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈrɨ\">ры</phoneme></prosody> ещё далеко.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y147_0_0","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мои <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈru\">ру</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"kʲɪ\">ки</phoneme> устали, а до горы ещё далеко.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y147_0_1","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мои <phoneme alphabet=\"ipa\" ph=\"ru\">ру</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈkʲi\">ки</phoneme></prosody> устали, а до горы ещё далеко.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y147_1_0","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мои руки <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">у</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"stəlʲɪ\">стали</phoneme>, а до горы ещё далеко.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y147_1_1","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мои руки <phoneme alphabet=\"ipa\" ph=\"us\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈta\">ста</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"lʲɪ\">ли</phoneme>, а до горы ещё далеко.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y147_1_2","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мои руки <phoneme alphabet=\"ipa\" ph=\"usta\">уста</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈlʲi\">ли</phoneme></prosody>, а до горы ещё далеко.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y147_2_0","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мои руки устали, а до <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgo\">го</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"rɨ\">ры</phoneme> ещё далеко.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y147_2_1","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мои руки устали, а до <phoneme alphabet=\"ipa\" ph=\"ga\">го</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈrɨ\">ры</phoneme></prosody> ещё далеко.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff150","text":"Ой, там кто-то шевелится в кустах!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ой, там кто-то <phoneme alphabet=\"ipa\" ph=\"ʃɨ\">ше</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈvʲe\">ве</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"lʲɪtsə\">лится</phoneme> в кустах!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y150_0_0","text":"Ой, там кто-то шевелится в кустах!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ой, там кто-то <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʃe\">ше</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"vʲɪlʲɪtsə\">велится</phoneme> в кустах!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y150_0_1","text":"Ой, там кто-то шевелится в кустах!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ой, там кто-то <phoneme alphabet=\"ipa\" ph=\"ʃɨ\">ше</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈvʲe\">ве</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"lʲɪtsə\">лится</phoneme> в кустах!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y150_0_2","text":"Ой, там кто-то шевелится в кустах!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ой, там кто-то <phoneme alphabet=\"ipa\" ph=\"ʃɨvʲɪ\">шеве</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈlʲi\">ли</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tsə\">тся</phoneme> в кустах!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y150_0_3","text":"Ой, там кто-то шевелится в кустах!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ой, там кто-то <phoneme alphabet=\"ipa\" ph=\"ʃɨvʲɪlʲɪt\">шевели</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsʲa\">тся</phoneme></prosody> в кустах!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff162","text":"Этот подарок самому лучшему другу.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Этот подарок <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsa\">са</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"məmu\">мому</phoneme> лучшему другу.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y162_0_0","text":"Этот подарок самому лучшему другу.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Этот подарок <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsa\">са</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"məmu\">мому</phoneme> лучшему другу.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y162_0_1","text":"Этот подарок самому лучшему другу.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Этот подарок <phoneme alphabet=\"ipa\" ph=\"sa\">са</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈmo\">мо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"mu\">му</phoneme> лучшему другу.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y162_0_2","text":"Этот подарок самому лучшему другу.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Этот подарок <phoneme alphabet=\"ipa\" ph=\"səma\">само</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈmu\">му</phoneme></prosody> лучшему другу.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff165","text":"Кто -то мог слушать из леса.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Кто -то мог слушать из <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈlʲe\">ле</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"sə\">са</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y165_0_0","text":"Кто -то мог слушать из леса.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Кто -то мог слушать из <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈlʲe\">ле</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"sə\">са</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y165_0_1","text":"Кто -то мог слушать из леса.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Кто -то мог слушать из <phoneme alphabet=\"ipa\" ph=\"lʲɪ\">ле</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsa\">са</phoneme></prosody>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff210","text":"Ну, потом.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ну, <phoneme alphabet=\"ipa\" ph=\"pa\">по</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈto\">то</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"m\">м</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y210_0_0","text":"Ну, потом.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ну, <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈpo\">по</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"təm\">том</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y210_0_1","text":"Ну, потом.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ну, <phoneme alphabet=\"ipa\" ph=\"pa\">по</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈto\">то</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"m\">м</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff223","text":"Пронул леса.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Пронул <phoneme alphabet=\"ipa\" ph=\"lʲɪ\">ле</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsa\">са</phoneme></prosody>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y223_0_0","text":"Пронул леса.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Пронул <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈlʲe\">ле</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"sə\">са</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y223_0_1","text":"Пронул леса.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Пронул <phoneme alphabet=\"ipa\" ph=\"lʲɪ\">ле</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsa\">са</phoneme></prosody>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff236","text":"Помнишь, какого цвета мяч в силе?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Помнишь, какого <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtsvʲe\">цве</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tə\">та</phoneme> мяч в силе?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y236_0_0","text":"Помнишь, какого цвета мяч в силе?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Помнишь, какого <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtsvʲe\">цве</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tə\">та</phoneme> мяч в силе?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y236_0_1","text":"Помнишь, какого цвета мяч в силе?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Помнишь, какого <phoneme alphabet=\"ipa\" ph=\"tsvʲɪ\">цве</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈta\">та</phoneme></prosody> мяч в силе?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff251","text":"Смотрите, красный мяч возле грёзы.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, красный мяч возле грёзы.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y251_0_0","text":"Смотрите, красный мяч возле грёзы.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsmo\">Смо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"trʲɪtʲɪ\">трите</phoneme>, красный мяч возле грёзы.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y251_0_1","text":"Смотрите, красный мяч возле грёзы.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, красный мяч возле грёзы.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y251_0_2","text":"Смотрите, красный мяч возле грёзы.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"smətrʲɪ\">Смотри</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody>, красный мяч возле грёзы.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff272","text":"А потом подумал, что сначала сам должен стать самым лучшим.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А <phoneme alphabet=\"ipa\" ph=\"pa\">по</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈto\">то</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"m\">м</phoneme> подумал, что сначала сам должен стать самым лучшим.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y272_0_0","text":"А потом подумал, что сначала сам должен стать самым лучшим.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈpo\">по</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"təm\">том</phoneme> подумал, что сначала сам должен стать самым лучшим.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y272_0_1","text":"А потом подумал, что сначала сам должен стать самым лучшим.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А <phoneme alphabet=\"ipa\" ph=\"pa\">по</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈto\">то</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"m\">м</phoneme> подумал, что сначала сам должен стать самым лучшим.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff283","text":"Мы ведь уже играли вместе.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы ведь <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> играли вместе.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y283_0_0","text":"Мы ведь уже играли вместе.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы ведь <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">у</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"ʒɨ\">же</phoneme> играли вместе.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y283_0_1","text":"Мы ведь уже играли вместе.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы ведь <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> играли вместе.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff289","text":"Я готов удивляться.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Я <phoneme alphabet=\"ipa\" ph=\"ga\">го</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈto\">то</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"f\">в</phoneme> удивляться.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y289_0_0","text":"Я готов удивляться.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Я <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgo\">го</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"təf\">тов</phoneme> удивляться.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y289_0_1","text":"Я готов удивляться.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Я <phoneme alphabet=\"ipa\" ph=\"ga\">го</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈto\">то</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"f\">в</phoneme> удивляться.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff290","text":"Ты уже удивляешься.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ты <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> удивляешься.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y290_0_0","text":"Ты уже удивляешься.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ты <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">у</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"ʒɨ\">же</phoneme> удивляешься.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y290_0_1","text":"Ты уже удивляешься.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ты <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> удивляешься.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff318","text":"Теперь будет моя загадка.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Теперь будет <phoneme alphabet=\"ipa\" ph=\"ma\">мо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈja\">я</phoneme></prosody> загадка.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y318_0_0","text":"Теперь будет моя загадка.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Теперь будет <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈmo\">мо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"jə\">я</phoneme> загадка.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y318_0_1","text":"Теперь будет моя загадка.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Теперь будет <phoneme alphabet=\"ipa\" ph=\"ma\">мо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈja\">я</phoneme></prosody> загадка.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff321","text":"Уже угадали?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"u\">У</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> угадали?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y321_0_0","text":"Уже угадали?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">У</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"ʒɨ\">же</phoneme> угадали?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y321_0_1","text":"Уже угадали?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"u\">У</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> угадали?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff329","text":"Мы уже дружим, нам больше никто не нужен.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> дружим, нам больше никто не нужен.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y329_0_0","text":"Мы уже дружим, нам больше никто не нужен.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">у</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"ʒɨ\">же</phoneme> дружим, нам больше никто не нужен.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y329_0_1","text":"Мы уже дружим, нам больше никто не нужен.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> дружим, нам больше никто не нужен.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff330","text":"Хорошо, что ты всё -таки пришёл?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Хорошо, что ты <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈfsʲo\">всё</phoneme></prosody> -таки пришёл?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff341","text":"Мы же ещё не все игры попробовали.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы же ещё не <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈfsʲe\">все</phoneme></prosody> <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈi\">и</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"grɨ\">гры</phoneme> попробовали.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y341_1_0","text":"Мы же ещё не все игры попробовали.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы же ещё не все <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈi\">и</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"grɨ\">гры</phoneme> попробовали.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y341_1_1","text":"Мы же ещё не все игры попробовали.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Мы же ещё не все <phoneme alphabet=\"ipa\" ph=\"ɪ\">и</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgrɨ\">гры</phoneme></prosody> попробовали.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff351","text":"Приходите утром, солнечный луч покажет дорогу.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"prʲɪxa\">Прихо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdʲi\">ди</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme> утром, солнечный луч покажет дорогу.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y351_0_0","text":"Приходите утром, солнечный луч покажет дорогу.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈprʲi\">При</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"xədʲɪtʲɪ\">ходите</phoneme> утром, солнечный луч покажет дорогу.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y351_0_1","text":"Приходите утром, солнечный луч покажет дорогу.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"prʲɪ\">При</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈxo\">хо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"dʲɪtʲɪ\">дите</phoneme> утром, солнечный луч покажет дорогу.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y351_0_2","text":"Приходите утром, солнечный луч покажет дорогу.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"prʲɪxa\">Прихо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdʲi\">ди</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme> утром, солнечный луч покажет дорогу.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y351_0_3","text":"Приходите утром, солнечный луч покажет дорогу.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"prʲɪxədʲɪ\">Приходи</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody> утром, солнечный луч покажет дорогу.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff354","text":"Все вместе?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈfsʲe\">Все</phoneme></prosody> вместе?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff355","text":"Все вместе.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈfsʲe\">Все</phoneme></prosody> вместе.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff359","text":"Узнаем в следующей серии.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"uz\">У</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈna\">зна</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"jɪm\">ем</phoneme> в следующей серии.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y359_0_0","text":"Узнаем в следующей серии.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">У</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"znəjɪm\">знаем</phoneme> в следующей серии.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y359_0_1","text":"Узнаем в следующей серии.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"uz\">У</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈna\">зна</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"jɪm\">ем</phoneme> в следующей серии.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y359_0_2","text":"Узнаем в следующей серии.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"uzna\">Узна</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈje\">е</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"m\">м</phoneme> в следующей серии.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff376","text":"Начало помнишь?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"na\">На</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtɕa\">ча</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"lə\">ло</phoneme> помнишь?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y376_0_0","text":"Начало помнишь?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈna\">На</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tɕɪlə\">чало</phoneme> помнишь?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y376_0_1","text":"Начало помнишь?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"na\">На</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtɕa\">ча</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"lə\">ло</phoneme> помнишь?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y376_0_2","text":"Начало помнишь?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"nətɕɪ\">Нача</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈlo\">ло</phoneme></prosody> помнишь?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff381","text":"А зонтик подождет команду дома.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А зонтик подождет команду <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdo\">до</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"mə\">ма</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y381_0_0","text":"А зонтик подождет команду дома.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А зонтик подождет команду <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdo\">до</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"mə\">ма</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y381_0_1","text":"А зонтик подождет команду дома.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А зонтик подождет команду <phoneme alphabet=\"ipa\" ph=\"da\">до</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈma\">ма</phoneme></prosody>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff382","text":"Нужно повернуть у большого дерева.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Нужно повернуть у большого <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdʲe\">де</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"rʲɪvə\">рева</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y382_0_0","text":"Нужно повернуть у большого дерева.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Нужно повернуть у большого <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdʲe\">де</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"rʲɪvə\">рева</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y382_0_1","text":"Нужно повернуть у большого дерева.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Нужно повернуть у большого <phoneme alphabet=\"ipa\" ph=\"dʲɪ\">де</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈrʲe\">ре</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"və\">ва</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y382_0_2","text":"Нужно повернуть у большого дерева.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Нужно повернуть у большого <phoneme alphabet=\"ipa\" ph=\"dʲɪrʲɪ\">дере</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈva\">ва</phoneme></prosody>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff383","text":"Больших деревьев целый лес.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"balʲ\">Бо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʃɨ\">льши</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"x\">х</phoneme> деревьев целый лес.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y383_0_0","text":"Больших деревьев целый лес.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈbo\">Бо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"lʲʃɨx\">льших</phoneme> деревьев целый лес.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y383_0_1","text":"Больших деревьев целый лес.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"balʲ\">Бо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʃɨ\">льши</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"x\">х</phoneme> деревьев целый лес.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff397","text":"Смотрите, большая греза.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, <phoneme alphabet=\"ipa\" ph=\"balʲ\">бо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʃa\">льша</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"jə\">я</phoneme> греза.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y397_0_0","text":"Смотрите, большая греза.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsmo\">Смо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"trʲɪtʲɪ\">трите</phoneme>, большая греза.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y397_0_1","text":"Смотрите, большая греза.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, большая греза.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y397_0_2","text":"Смотрите, большая греза.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"smətrʲɪ\">Смотри</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody>, большая греза.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y397_1_0","text":"Смотрите, большая греза.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Смотрите, <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈbo\">бо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"lʲʃəjə\">льшая</phoneme> греза.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y397_1_1","text":"Смотрите, большая греза.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Смотрите, <phoneme alphabet=\"ipa\" ph=\"balʲ\">бо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʃa\">льша</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"jə\">я</phoneme> греза.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y397_1_2","text":"Смотрите, большая греза.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Смотрите, <phoneme alphabet=\"ipa\" ph=\"bəlʲʃa\">больша</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈja\">я</phoneme></prosody> греза.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff402","text":"Веди нас, Филя.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"vʲɪ\">Ве</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdʲi\">ди</phoneme></prosody> нас, Филя.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y402_0_0","text":"Веди нас, Филя.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈvʲe\">Ве</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"dʲɪ\">ди</phoneme> нас, Филя.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y402_0_1","text":"Веди нас, Филя.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"vʲɪ\">Ве</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdʲi\">ди</phoneme></prosody> нас, Филя.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff405","text":"Замечайте цвета вокруг, они помогут разбудить радугу.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Замечайте <phoneme alphabet=\"ipa\" ph=\"tsvʲɪ\">цве</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈta\">та</phoneme></prosody> вокруг, они помогут разбудить радугу.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y405_0_0","text":"Замечайте цвета вокруг, они помогут разбудить радугу.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Замечайте <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtsvʲe\">цве</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tə\">та</phoneme> вокруг, они помогут разбудить радугу.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y405_0_1","text":"Замечайте цвета вокруг, они помогут разбудить радугу.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Замечайте <phoneme alphabet=\"ipa\" ph=\"tsvʲɪ\">цве</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈta\">та</phoneme></prosody> вокруг, они помогут разбудить радугу.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff407","text":"Ты тоже иногда спишь во время игры?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ты тоже иногда спишь во время <phoneme alphabet=\"ipa\" ph=\"ɪ\">и</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgrɨ\">гры</phoneme></prosody>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y407_0_0","text":"Ты тоже иногда спишь во время игры?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ты тоже иногда спишь во время <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈi\">и</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"grɨ\">гры</phoneme>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y407_0_1","text":"Ты тоже иногда спишь во время игры?","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ты тоже иногда спишь во время <phoneme alphabet=\"ipa\" ph=\"ɪ\">и</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgrɨ\">гры</phoneme></prosody>?</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff409","text":"Начнём искать цвета.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Начнём искать <phoneme alphabet=\"ipa\" ph=\"tsvʲɪ\">цве</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈta\">та</phoneme></prosody>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y409_0_0","text":"Начнём искать цвета.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Начнём искать <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtsvʲe\">цве</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tə\">та</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y409_0_1","text":"Начнём искать цвета.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Начнём искать <phoneme alphabet=\"ipa\" ph=\"tsvʲɪ\">цве</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈta\">та</phoneme></prosody>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff411","text":"А вот жёлтый Трава зелёная Моя шерсть оранжевая Мой шар голубой А у барсика синий Ого!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А вот жёлтый Трава зелёная <phoneme alphabet=\"ipa\" ph=\"ma\">Мо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈja\">я</phoneme></prosody> шерсть оранжевая Мой шар голубой А у барсика синий Ого!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y411_0_0","text":"А вот жёлтый Трава зелёная Моя шерсть оранжевая Мой шар голубой А у барсика синий Ого!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А вот жёлтый Трава зелёная <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈmo\">Мо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"jə\">я</phoneme> шерсть оранжевая Мой шар голубой А у барсика синий Ого!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y411_0_1","text":"А вот жёлтый Трава зелёная Моя шерсть оранжевая Мой шар голубой А у барсика синий Ого!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А вот жёлтый Трава зелёная <phoneme alphabet=\"ipa\" ph=\"ma\">Мо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈja\">я</phoneme></prosody> шерсть оранжевая Мой шар голубой А у барсика синий Ого!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff415","text":"Пойдём дальше Может он встретится в саду Мы ведь не обязаны всё найти в одном месте!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Пойдём дальше Может он встретится в <phoneme alphabet=\"ipa\" ph=\"sa\">са</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdu\">ду</phoneme></prosody> Мы ведь не обязаны всё найти в одном месте!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y415_0_0","text":"Пойдём дальше Может он встретится в саду Мы ведь не обязаны всё найти в одном месте!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Пойдём дальше Может он встретится в <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsa\">са</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"du\">ду</phoneme> Мы ведь не обязаны всё найти в одном месте!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y415_0_1","text":"Пойдём дальше Может он встретится в саду Мы ведь не обязаны всё найти в одном месте!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Пойдём дальше Может он встретится в <phoneme alphabet=\"ipa\" ph=\"sa\">са</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdu\">ду</phoneme></prosody> Мы ведь не обязаны всё найти в одном месте!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff417","text":"Сад уже близко!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Сад <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> близко!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y417_0_0","text":"Сад уже близко!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Сад <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">у</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"ʒɨ\">же</phoneme> близко!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y417_0_1","text":"Сад уже близко!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Сад <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> близко!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff418","text":"Смотрите, жёлтая дверь!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, жёлтая дверь!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y418_0_0","text":"Смотрите, жёлтая дверь!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsmo\">Смо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"trʲɪtʲɪ\">трите</phoneme>, жёлтая дверь!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y418_0_1","text":"Смотрите, жёлтая дверь!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, жёлтая дверь!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y418_0_2","text":"Смотрите, жёлтая дверь!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"smətrʲɪ\">Смотри</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody>, жёлтая дверь!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff435","text":"Всё получается.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈfsʲo\">Всё</phoneme></prosody> получается.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff438","text":"Смотрите, краски.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, краски.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y438_0_0","text":"Смотрите, краски.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsmo\">Смо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"trʲɪtʲɪ\">трите</phoneme>, краски.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y438_0_1","text":"Смотрите, краски.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, краски.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y438_0_2","text":"Смотрите, краски.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"smətrʲɪ\">Смотри</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody>, краски.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff470","text":"Здесь будет место, где можно играть всем вместе.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Здесь будет место, где можно играть <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈfsʲe\">все</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"m\">м</phoneme> вместе.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff471","text":"Отдыхать после игры.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Отдыхать после <phoneme alphabet=\"ipa\" ph=\"ɪ\">и</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgrɨ\">гры</phoneme></prosody>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y471_0_0","text":"Отдыхать после игры.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Отдыхать после <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈi\">и</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"grɨ\">гры</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y471_0_1","text":"Отдыхать после игры.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Отдыхать после <phoneme alphabet=\"ipa\" ph=\"ɪ\">и</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgrɨ\">гры</phoneme></prosody>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff479","text":"Можно начать и потом решить.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Можно начать и <phoneme alphabet=\"ipa\" ph=\"pa\">по</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈto\">то</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"m\">м</phoneme> решить.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y479_0_0","text":"Можно начать и потом решить.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Можно начать и <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈpo\">по</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"təm\">том</phoneme> решить.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y479_0_1","text":"Можно начать и потом решить.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Можно начать и <phoneme alphabet=\"ipa\" ph=\"pa\">по</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈto\">то</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"m\">м</phoneme> решить.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff486","text":"Смотрите, радуга!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, радуга!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y486_0_0","text":"Смотрите, радуга!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsmo\">Смо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"trʲɪtʲɪ\">трите</phoneme>, радуга!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y486_0_1","text":"Смотрите, радуга!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"sma\">Смо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtrʲi\">три</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tʲɪ\">те</phoneme>, радуга!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y486_0_2","text":"Смотрите, радуга!","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"smətrʲɪ\">Смотри</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtʲe\">те</phoneme></prosody>, радуга!</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff487","text":"В комнате появилась большая радуга.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">В комнате появилась <phoneme alphabet=\"ipa\" ph=\"balʲ\">бо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʃa\">льша</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"jə\">я</phoneme> радуга.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y487_0_0","text":"В комнате появилась большая радуга.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">В комнате появилась <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈbo\">бо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"lʲʃəjə\">льшая</phoneme> радуга.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y487_0_1","text":"В комнате появилась большая радуга.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">В комнате появилась <phoneme alphabet=\"ipa\" ph=\"balʲ\">бо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʃa\">льша</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"jə\">я</phoneme> радуга.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y487_0_2","text":"В комнате появилась большая радуга.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">В комнате появилась <phoneme alphabet=\"ipa\" ph=\"bəlʲʃa\">больша</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈja\">я</phoneme></prosody> радуга.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff500","text":"Ты уже пришёл.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ты <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> пришёл.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y500_0_0","text":"Ты уже пришёл.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ты <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">у</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"ʒɨ\">же</phoneme> пришёл.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y500_0_1","text":"Ты уже пришёл.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Ты <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> пришёл.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff509","text":"Он самого у краснания.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Он <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsa\">са</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"məvə\">мого</phoneme> у краснания.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y509_0_0","text":"Он самого у краснания.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Он <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈsa\">са</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"məvə\">мого</phoneme> у краснания.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y509_0_1","text":"Он самого у краснания.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Он <phoneme alphabet=\"ipa\" ph=\"sa\">са</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈmo\">мо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"və\">го</phoneme> у краснания.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y509_0_2","text":"Он самого у краснания.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Он <phoneme alphabet=\"ipa\" ph=\"səma\">само</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈgo\">го</phoneme></prosody> у краснания.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff514","text":"В природе солнечный свет проходит через капельки воды и разделяется на цвета.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">В природе солнечный свет проходит через капельки <phoneme alphabet=\"ipa\" ph=\"va\">во</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdɨ\">ды</phoneme></prosody> и разделяется на <phoneme alphabet=\"ipa\" ph=\"tsvʲɪ\">цве</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈta\">та</phoneme></prosody>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y514_0_0","text":"В природе солнечный свет проходит через капельки воды и разделяется на цвета.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">В природе солнечный свет проходит через капельки <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈvo\">во</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"dɨ\">ды</phoneme> и разделяется на цвета.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y514_0_1","text":"В природе солнечный свет проходит через капельки воды и разделяется на цвета.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">В природе солнечный свет проходит через капельки <phoneme alphabet=\"ipa\" ph=\"va\">во</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈdɨ\">ды</phoneme></prosody> и разделяется на цвета.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y514_1_0","text":"В природе солнечный свет проходит через капельки воды и разделяется на цвета.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">В природе солнечный свет проходит через капельки воды и разделяется на <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈtsvʲe\">цве</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"tə\">та</phoneme>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y514_1_1","text":"В природе солнечный свет проходит через капельки воды и разделяется на цвета.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">В природе солнечный свет проходит через капельки воды и разделяется на <phoneme alphabet=\"ipa\" ph=\"tsvʲɪ\">цве</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈta\">та</phoneme></prosody>.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff519","text":"Давай я попробую ещё раз, уже без волшебных красок.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Давай я попробую ещё раз, <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> без волшебных красок.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y519_0_0","text":"Давай я попробую ещё раз, уже без волшебных красок.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Давай я попробую ещё раз, <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈu\">у</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"ʒɨ\">же</phoneme> без волшебных красок.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y519_0_1","text":"Давай я попробую ещё раз, уже без волшебных красок.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">Давай я попробую ещё раз, <phoneme alphabet=\"ipa\" ph=\"u\">у</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʒe\">же</phoneme></prosody> без волшебных красок.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"Ff538","text":"А завтра друзей ждёт загадка о молчаливом спутнике, который умеет становиться то большим, то маленьким.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А завтра друзей ждёт загадка о молчаливом спутнике, который умеет становиться то <phoneme alphabet=\"ipa\" ph=\"balʲ\">бо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʃɨ\">льши</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"m\">м</phoneme>, то маленьким.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y538_0_0","text":"А завтра друзей ждёт загадка о молчаливом спутнике, который умеет становиться то большим, то маленьким.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А завтра друзей ждёт загадка о молчаливом спутнике, который умеет становиться то <prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈbo\">бо</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"lʲʃɨm\">льшим</phoneme>, то маленьким.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379},{"name":"y538_0_1","text":"А завтра друзей ждёт загадка о молчаливом спутнике, который умеет становиться то большим, то маленьким.","ipa":[],"ssml":"<speak><prosody pitch=\"+20%\" rate=\"75%\">А завтра друзей ждёт загадка о молчаливом спутнике, который умеет становиться то <phoneme alphabet=\"ipa\" ph=\"balʲ\">бо</phoneme><prosody pitch=\"+32%\" rate=\"75%\"><phoneme alphabet=\"ipa\" ph=\"ˈʃɨ\">льши</phoneme></prosody><phoneme alphabet=\"ipa\" ph=\"m\">м</phoneme>, то маленьким.</prosody></speak>","base":"female","pitch":1.207,"rate":0.379}]
+[
+{
+"name": "cRf30",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.3
+},
+{
+"name": "cRf35",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.35
+},
+{
+"name": "cRf40",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.4
+},
+{
+"name": "cRf45",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.45
+},
+{
+"name": "cRf50",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5
+},
+{
+"name": "cRf55",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.55
+},
+{
+"name": "cRf62",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.62
+},
+{
+"name": "cPf60",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 0.6,
+"rate": 0.45
+},
+{
+"name": "cPf80",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 0.8,
+"rate": 0.45
+},
+{
+"name": "cPf100",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.45
+},
+{
+"name": "cPf120",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.2,
+"rate": 0.45
+},
+{
+"name": "cPf140",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.4,
+"rate": 0.45
+},
+{
+"name": "cPf170",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.7,
+"rate": 0.45
+},
+{
+"name": "sRf50",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"50%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRf60",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"60%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRf70",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"70%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRf75",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"75%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRf80",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"80%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRf90",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRf100",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"100%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRf110",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"110%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRf120",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"120%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRf140",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"140%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sPf60",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"-40%\" rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sPf80",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"-20%\" rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sPf100",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+0%\" rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sPf120",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+20%\" rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sPf140",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+40%\" rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sPf170",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+70%\" rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sIgf",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.5,
+"rate": 0.3,
+"ssml": "<speak>Смотрите, какой большой замок стоит на берегу широкой реки.</speak>"
+},
+{
+"name": "sIhf",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak>Смотрите, какой большой замок стоит на берегу широкой реки.</speak>"
+},
+{
+"name": "cRm30",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.3
+},
+{
+"name": "cRm35",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.35
+},
+{
+"name": "cRm40",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.4
+},
+{
+"name": "cRm45",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.45
+},
+{
+"name": "cRm50",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5
+},
+{
+"name": "cRm55",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.55
+},
+{
+"name": "cRm62",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.62
+},
+{
+"name": "cPm60",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 0.6,
+"rate": 0.45
+},
+{
+"name": "cPm80",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 0.8,
+"rate": 0.45
+},
+{
+"name": "cPm100",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.45
+},
+{
+"name": "cPm120",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.2,
+"rate": 0.45
+},
+{
+"name": "cPm140",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.4,
+"rate": 0.45
+},
+{
+"name": "cPm170",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.7,
+"rate": 0.45
+},
+{
+"name": "sRm50",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"50%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRm60",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"60%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRm70",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"70%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRm75",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"75%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRm80",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"80%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRm90",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRm100",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"100%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRm110",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"110%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRm120",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"120%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sRm140",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody rate=\"140%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sPm60",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"-40%\" rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sPm80",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"-20%\" rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sPm100",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+0%\" rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sPm120",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+20%\" rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sPm140",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+40%\" rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sPm170",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+70%\" rate=\"90%\">Смотрите, какой большой замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "sIgm",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.5,
+"rate": 0.3,
+"ssml": "<speak>Смотрите, какой большой замок стоит на берегу широкой реки.</speak>"
+},
+{
+"name": "sIhm",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "male",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak>Смотрите, какой большой замок стоит на берегу широкой реки.</speak>"
+},
+{
+"name": "nAf",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+0%\" rate=\"100%\">Смотрите, какой <prosody pitch=\"+0%\" rate=\"100%\">большой</prosody> замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "nBf",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+0%\" rate=\"100%\">Смотрите, какой <prosody pitch=\"+20%\" rate=\"100%\">большой</prosody> замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "nCf",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+20%\" rate=\"100%\">Смотрите, какой <prosody pitch=\"+20%\" rate=\"100%\">большой</prosody> замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "nDf",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+20%\" rate=\"100%\">Смотрите, какой <prosody pitch=\"+40%\" rate=\"100%\">большой</prosody> замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "nEf",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+0%\" rate=\"75%\">Смотрите, какой <prosody pitch=\"+0%\" rate=\"75%\">большой</prosody> замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "nFf",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+0%\" rate=\"75%\">Смотрите, какой <prosody pitch=\"+0%\" rate=\"100%\">большой</prosody> замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "nGf",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"+0%\" rate=\"100%\">Смотрите, какой <prosody pitch=\"+0%\" rate=\"75%\">большой</prosody> замок стоит на берегу широкой реки.</prosody></speak>"
+},
+{
+"name": "nHf",
+"text": "Смотрите, какой большой замок стоит на берегу широкой реки.",
+"ipa": [],
+"base": "female",
+"pitch": 1.0,
+"rate": 0.5,
+"ssml": "<speak><prosody pitch=\"-20%\" rate=\"100%\">Смотрите, какой <prosody pitch=\"+0%\" rate=\"100%\">большой</prosody> замок стоит на берегу широкой реки.</prosody></speak>"
+}
+]
