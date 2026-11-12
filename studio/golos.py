@@ -159,10 +159,21 @@ SONGS["gimn"] = dict(
 
 # ================================================================ движок
 def vlead(prev, pcs, lo, hi):
+    """голосоведение подложки: каждый голос идёт к ближайшему звуку аккорда; аккорд всегда полный (с терцией)"""
     cands = [x for x in range(lo, hi + 1) if x % 12 in pcs]
     out = []
     for p in prev:
         out.append(min((c for c in cands if c not in out), key=lambda c: abs(c - p), default=p))
+    for p in [q for q in pcs if q not in {x % 12 for x in out}]:
+        cnt = {}
+        for i, x in enumerate(out):
+            cnt.setdefault(x % 12, []).append(i)
+        dup = [i for ix in cnt.values() if len(ix) > 1 for i in ix]
+        tgt = [c for c in cands if c % 12 == p and c not in out]
+        if not dup or not tgt:
+            break
+        i, c = min(((i, c) for i in dup for c in tgt), key=lambda ic: abs(ic[1] - out[ic[0]]))
+        out[i] = c
     return out
 
 
