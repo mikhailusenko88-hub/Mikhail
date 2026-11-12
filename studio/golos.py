@@ -206,23 +206,43 @@ def _sec(bars, sec, breaks=()):
 
 
 SONGS["rassvet_s"] = dict(SONGS["rassvet35"], title="Рассвет (короткая)", tail=2.65)
+SONGS["rassvet_l"] = dict(SONGS["rassvet_s"], title="Рассвет (короткая, два такта вступления)",
+                          bars=_pick("rassvet", [0, 1]) + SONGS["rassvet_s"]["bars"][1:])
 # «Дорога»: такт вступления, первая фраза куплета, первая и последняя фразы припева
 SONGS["doroga_s"] = dict(
     SONGS["doroga"], title="Дорога (короткая)", tail=2.8,
     bars=_pick("doroga", [0]) + _pick("doroga", [2, 3, 4, 5]) + _pick("doroga", [10, 11, 12, 13, 18, 19, 20, 21]))
+SONGS["doroga_l"] = dict(SONGS["doroga_s"], title="Дорога (короткая, два такта вступления)",
+                         bars=_pick("doroga", [0, 1]) + SONGS["doroga_s"]["bars"][1:])
 # «Простор»: без вступления — первая фраза куплета и припев
 SONGS["prostor_s"] = dict(
-    SONGS["prostor"], title="Простор (короткая)", tail=2.8,
+    SONGS["prostor"], title="Простор (короткая)", hold=1.0, tail=2.4,
     bars=_pick("prostor", [2, 3, 4, 5, 10, 11, 12, 13, 14]))
+SONGS["prostor_l"] = dict(SONGS["prostor_s"], title="Простор (короткая, с тактом вступления)",
+                          bars=_pick("prostor", [0]) + SONGS["prostor_s"]["bars"])
 # «Гимн»: первая фраза куплета, начало и конец припева
 SONGS["gimn_s"] = dict(
     SONGS["gimn"], title="Гимн (короткая)", tail=2.8,
     bars=_pick("gimn", [2, 3, 4, 5, 10, 11, 14, 15, 16]))
+SONGS["gimn_l"] = dict(SONGS["gimn_s"], title="Гимн (короткая, с тактом вступления)",
+                       bars=_pick("gimn", [0]) + SONGS["gimn_s"]["bars"])
 # «Колыбельная»: такт вступления, первая фраза куплета, припев целиком
 SONGS["kolybelnaya_s"] = dict(
     SONGS["kolybelnaya"], title="Колыбельная (короткая)", tail=2.8,
     bars=_pick("kolybelnaya", [0, 2, 3, 4, 5]) + _pick("kolybelnaya", list(range(18, 27))))
-SHORTS = ["rassvet_s", "doroga_s", "prostor_s", "gimn_s", "kolybelnaya_s"]
+SONGS["kolybelnaya_m"] = dict(SONGS["kolybelnaya_s"], title="Колыбельная (короткая, два такта вступления)",
+                              bars=_pick("kolybelnaya", [0, 1]) + SONGS["kolybelnaya_s"]["bars"][1:])
+# для самых длинных роликов: вторая половина куплета (8 тактов) и припев целиком
+SONGS["kolybelnaya_l"] = dict(SONGS["kolybelnaya_s"], title="Колыбельная (короткая, куплет 8 тактов)",
+                              bars=_pick("kolybelnaya", [0]) + _pick("kolybelnaya", list(range(10, 27))))
+# варианты одной мелодии под разную длину ролика: берётся тот, чей темп ближе всего к родному
+SHORTS = {"rassvet": ["rassvet_s", "rassvet_l"], "doroga": ["doroga_s", "doroga_l"], "prostor": ["prostor_s", "prostor_l"],
+          "gimn": ["gimn_s", "gimn_l"], "kolybelnaya": ["kolybelnaya_s", "kolybelnaya_m", "kolybelnaya_l"]}
+
+
+def best_variant(melody, total):
+    """вариант мелодии, который ложится в ролик длиной total с темпом, ближайшим к родному"""
+    return min(SHORTS[melody], key=lambda nm: abs(math.log(fit_bpm(SONGS[nm], total) / SONGS[nm]["bpm"])))
 
 
 def fit_bpm(song, total):
