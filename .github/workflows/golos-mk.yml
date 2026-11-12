@@ -1,0 +1,70 @@
+name: golos-mk
+# «Слух» для мультика «Кот Барсик»: реплики серий, озвученные голосом телефона (рассказчик — Альбина, Барсик — Ксения),
+# в нескольких вариантах правил. Звук лежит в ветке golos-mk-voice (<вариант>/v/*.mp3 + index.json), цифры — в mk_out/.
+on:
+  push:
+    branches: [golos]
+    paths: [mk_request.txt]
+permissions:
+  contents: write
+concurrency:
+  group: golos-mk
+  cancel-in-progress: true
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/torch
+          key: golos-mk-v1
+      - name: Анализатор
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng >/dev/null
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth ruaccent matplotlib faster-whisper numpy
+          git clone -q --depth 1 --branch golos-mk-voice --single-branch https://github.com/mikhailusenko88-hub/Mikhail /tmp/mkv
+      - name: Проверка (часть ${{ matrix.shard }} из 10)
+        run: |
+          mkdir -p mk_out
+          for SET in $(grep '^sets:' mk_request.txt | cut -d: -f2); do
+            python3 - "$SET" ${{ matrix.shard }} <<'PY'
+          import json, sys, os, shutil
+          s, sh = sys.argv[1], int(sys.argv[2])
+          idx = json.load(open(f"/tmp/mkv/{s}/index.json", encoding="utf-8"))
+          keys = sorted(idx)[sh::10]
+          os.makedirs(f"/tmp/part_{s}/v", exist_ok=True)
+          for k in keys: shutil.copy(f"/tmp/mkv/{s}/v/{k}.mp3", f"/tmp/part_{s}/v/{k}.mp3")
+          json.dump({k: idx[k] for k in keys}, open(f"/tmp/part_{s}/index.json", "w", encoding="utf-8"), ensure_ascii=False)
+          PY
+            python stage_check.py /tmp/part_$SET mk_out/${SET}_${{ matrix.shard }}.json
+          done
+          if [ "${{ matrix.shard }}" = "0" ] && grep -q '^accent' mk_request.txt; then
+            S0=$(grep '^sets:' mk_request.txt | cut -d: -f2 | awk '{print $1}'); python mk_accent.py /tmp/mkv/$S0/index.json mk_out/accent.json
+          fi
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name golos
+          git config user.email golos@users.noreply.github.com
+          mkdir -p /tmp/res && cp mk_out/*.json /tmp/res/ 2>/dev/null || true
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            git fetch -q origin golos && git reset -q --hard origin/golos
+            mkdir -p mk_out && cp /tmp/res/*.json mk_out/ 2>/dev/null || true
+            git add -A mk_out 2>/dev/null || true
+            git commit -qm "мультик: проверка, часть ${{ matrix.shard }}" || { echo nothing; break; }
+            git push -q origin HEAD:golos && break
+            sleep $((RANDOM % 20 + 5))
+          done
