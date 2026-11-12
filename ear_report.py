@@ -224,7 +224,7 @@ def indices(ml, cl, mel, mshare):
         val = em["mean"][0]
         light.append(("валентность (1–9)", clip01((val - 3.5) / 3)))
         cry.append(("низкая валентность", clip01((5.5 - val) / 3)))
-    if cl:
+    if cl and cl["sets"]["настроение"].get("logit_spread", 1) > 0.05:
         mood = cl["sets"]["настроение"]
         d = dict(zip(mood["labels"], mood["mean"]))
         cry.append(("CLAP плач+меланхолия", clip01((d["плач, скорбь"] + d["меланхолия"]) / 0.45)))

@@ -55,13 +55,6 @@ def main():
     torch.set_num_threads(4)
     model = ClapModel.from_pretrained(M).eval()
     proc = ClapProcessor.from_pretrained(M)
-    scale = float(model.logit_scale_t.exp())
-    temb = {}
-    with torch.no_grad():
-        for sname, d in SETS.items():
-            tok = proc.tokenizer(list(d.values()), padding=True, return_tensors="pt")
-            e = model.get_text_features(**tok)
-            temb[sname] = torch.nn.functional.normalize(e, dim=-1)
     os.makedirs("out", exist_ok=True)
     for line in open(sys.argv[1]):
         path = line.strip()
@@ -70,19 +63,19 @@ def main():
         name = os.path.splitext(os.path.basename(path))[0]
         print("==", name, flush=True)
         x = load48(path)
-        W, H = 10 * 48000, 5 * 48000
-        starts = list(range(0, max(1, len(x) - W + H), H)) or [0]
+        print("   звук:", len(x) / 48000, "с, макс", float(np.abs(x).max()), flush=True)
+        W, Hs = 10 * 48000, 5 * 48000
+        starts = [s for s in range(0, max(1, len(x) - 3 * 48000), Hs)]
         chunks = [x[s:s + W] for s in starts]
-        chunks = [c for c in chunks if len(c) > 3 * 48000]
-        with torch.no_grad():
-            feats = proc.feature_extractor(chunks, sampling_rate=48000, return_tensors="pt")
-            ae = model.get_audio_features(**feats)
-            ae = torch.nn.functional.normalize(ae, dim=-1)
-        R = {"file": os.path.basename(path), "win_start_s": [s / 48000 for s in starts[:len(chunks)]], "win_s": 10, "sets": {}}
+        R = {"file": os.path.basename(path), "win_start_s": [s / 48000 for s in starts], "win_s": 10, "sets": {}}
         for sname, d in SETS.items():
-            logits = scale * ae @ temb[sname].T
-            p = torch.softmax(logits, dim=-1).numpy()
-            R["sets"][sname] = {"labels": list(d), "mean": p.mean(0).round(4).tolist(), "series": p.round(3).tolist()}
+            with torch.no_grad():
+                inp = proc(text=list(d.values()), audios=chunks, sampling_rate=48000, return_tensors="pt", padding=True)
+                lg = model(**inp).logits_per_audio
+            print("  ", sname, "логиты от", float(lg.min()), "до", float(lg.max()), flush=True)
+            p = torch.softmax(lg, dim=-1).numpy()
+            R["sets"][sname] = {"labels": list(d), "mean": p.mean(0).round(4).tolist(), "series": p.round(3).tolist(),
+                                "logit_spread": round(float((lg.max(-1).values - lg.min(-1).values).mean()), 3)}
         json.dump(R, open(f"out/{name}.clap.json", "w"), ensure_ascii=False)
 
 
