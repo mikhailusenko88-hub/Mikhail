@@ -375,8 +375,8 @@ if __name__ == "__main__":
     if len(sys.argv) > 4 and sys.argv[4] == "clean":
         CLEAN = True
         th.NOISE = 0.12
-        th.AIR = 0.35
         PULSE = sys.argv[5] if len(sys.argv) > 5 else "wood"
+        th.AIR = float(sys.argv[6]) if len(sys.argv) > 6 else 0.7
     t = time.time()
     bus, end_t = compose(style, pl)
     L, R = master(bus)
