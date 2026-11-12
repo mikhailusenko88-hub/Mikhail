@@ -14,9 +14,19 @@ for n, u in enumerate(urls, 1):
         if not cs:
             m = re.search(rb'charset=["\']?([A-Za-z0-9_-]+)', raw[:4000])
             cs = m.group(1).decode() if m else 'utf-8'
-        b = raw.decode(cs, 'replace')
-        if b.count('\ufffd') > 50:
-            b = raw.decode('cp1251', 'replace')
+        if raw[:5] == b'%PDF-':   # PDF: текст через pdftotext (ставится в workflow)
+            import subprocess, tempfile
+            with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tf:
+                tf.write(raw)
+            try:
+                b = subprocess.run(['pdftotext', '-layout', tf.name, '-'], capture_output=True, timeout=60).stdout.decode('utf-8', 'replace')
+            except Exception as e:
+                b = f'PDF не прочитан: {e}'
+            b = html.escape(b).replace('\n', '<br>')
+        else:
+            b = raw.decode(cs, 'replace')
+            if b.count('\ufffd') > 50:
+                b = raw.decode('cp1251', 'replace')
         code = r.status
     except urllib.error.HTTPError as e:
         b, code = e.read(200000).decode('utf-8', 'replace'), e.code

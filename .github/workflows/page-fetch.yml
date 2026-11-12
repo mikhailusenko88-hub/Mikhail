@@ -17,6 +17,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - name: pdftotext (для PDF в списке)
+        run: grep -qi '\.pdf' pages/urls.txt && sudo apt-get install -y -qq poppler-utils || true
       - name: Снять страницы
         run: python3 pages/fetch.py
       - name: Сохранить
