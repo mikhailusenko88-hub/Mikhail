@@ -200,6 +200,35 @@ def noise_stats(x, sr=44100):
     return out
 
 
+def abs_noise(path, x, sr=44100):
+    """шум, как его слышит человек на большой громкости: доля верхов 5–16 кГц (вступление и весь трек),
+    абсолютный «пол» между гармониками 4–8 и 8–16 кГц в дБFS, тишина в начале, кодек файла"""
+    db = lambda v: 10 * np.log10(v + 1e-20)  # noqa: E731
+    mono = x.mean(1)
+    on = np.where(np.abs(mono) > 1e-4)[0]
+    s0 = int(on[0]) if len(on) else 0
+    n, hop = 4096, 2048
+    fr = np.lib.stride_tricks.sliding_window_view(mono[s0:], n)[::hop] * np.hanning(n)
+    S = np.abs(np.fft.rfft(fr, axis=1)) ** 2 / (n * n / 4) * 2 / 1.5
+    f = np.fft.rfftfreq(n, 1 / sr)
+    tot = S.sum(1)
+    hf = S[:, (f >= 5000) & (f < 16000)].sum(1)
+    k6 = max(2, int(6 * sr / hop))
+    loud = db(tot) > db(tot.max()) - 40
+    out = {"hf_intro": round(float(db(hf[:k6].sum() / tot[:k6].sum())), 1), "hf_all": round(float(db(hf[loud].sum() / tot[loud].sum())), 1)}
+    for lo, hi in ((4000, 8000), (8000, 16000)):
+        b = (f >= lo) & (f < hi)
+        fl = db(np.percentile(S[:, b], 20, axis=1) * b.sum())
+        out[f"floor{lo // 1000}_{hi // 1000}_intro"] = round(float(np.median(fl[:k6])), 1)
+        out[f"floor{lo // 1000}_{hi // 1000}_all"] = round(float(np.median(fl[loud])), 1)
+    try:
+        out["codec"] = subprocess.run(["ffprobe", "-v", "quiet", "-select_streams", "a:0", "-show_entries", "stream=codec_name,bits_per_raw_sample",
+                                       "-of", "csv=p=0", path], capture_output=True, text=True).stdout.strip()
+    except Exception:  # noqa: BLE001
+        out["codec"] = "?"
+    return out
+
+
 def merge_chords(ch, hop):
     seq = []
     for i, c in enumerate(ch):
@@ -282,6 +311,7 @@ def report(path):
     x = load(path)
     snd, S, f, cen = sound_stats(x)
     nz = noise_stats(x)
+    an = abs_noise(path, x)
     mel = melody_stats(ml["melody_hz"], ml["melody_hop_s"]) if "melody_hz" in ml else {}
     chords = ml.get("chords", [])
     mshare = minor_share(chords)
@@ -365,6 +395,10 @@ def report(path):
     L.append(f"- **шипение** (пол шума между гармониками, 6–16 кГц): {nz['floor_6_16k']} дБ, в громких местах до {nz['floor_6_16k_p90']} дБ; "
              f"3–6 кГц: {nz['floor_3_6k']} дБ · **треск**: {nz['ticks_per_s']} в секунду. Ориентир: Михаил услышал «шум как от пластинки» "
              f"при −53 дБ / до −29 дБ (шейкер, шум смычка, щелчки спиккато); чистый звук — ниже −60 дБ и до −45 дБ, треск < 0,05/с")
+    L.append(f"- **шум на слух** (абсолютный): «пол» 4–8 кГц {an['floor4_8_intro']} дБFS во вступлении / {an['floor4_8_all']} весь трек; "
+             f"8–16 кГц {an['floor8_16_intro']} / {an['floor8_16_all']}; доля верхов 5–16 кГц {an['hf_intro']} дБ во вступлении / {an['hf_all']} весь; "
+             f"кодек {an['codec']}. Ориентир: при −65/−58 (4–8к) и −76/−79 (8–16к) Михаил слышал шипение на большой громкости; "
+             f"чистый движок даёт −83/−77 и −116/−120. AAC сам добавляет шум около −65 дБFS — отдавать без потерь (ALAC)")
     open(f"out/{name}.md", "w").write("\n".join(L) + "\n")
     # ------------------------------------------------------------ картинка
     dur = len(x) / 44100
@@ -413,7 +447,7 @@ def report(path):
     plt.tight_layout()
     plt.savefig(f"out/{name}.png", dpi=70)
     plt.close(fig)
-    J = {"cry_index": ci, "light_index": li, "noise": nz, "melody": {k: v for k, v in mel.items() if not k.startswith("_")},
+    J = {"cry_index": ci, "light_index": li, "noise": nz, "abs_noise": an, "melody": {k: v for k, v in mel.items() if not k.startswith("_")},
          "sound": snd, "minor_share": mshare}
     json.dump(J, open(f"out/{name}.sum.json", "w"), ensure_ascii=False)
     return J
