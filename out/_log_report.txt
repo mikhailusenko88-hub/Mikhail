@@ -1,5 +1,3 @@
-== in/ll_doroga_34.m4a
-== in/ll_gimn_34.m4a
-== in/ll_kolybelnaya_34.m4a
-== in/ll_prostor_34.m4a
-== in/ll_rassvet_34.m4a
+== in/kino_orbita.m4a
+== in/kino_polyot.m4a
+== in/kino_vremya.m4a
