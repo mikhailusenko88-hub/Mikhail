@@ -521,11 +521,12 @@
    "wheat",
    "windmill"
   ],
-  "music": "orch_night",
+  "music": "golos_kolybelnaya",
   "seed": 1024,
   "title": "Кто везде — тот нигде ✨ Seneca + 2 more #shorts",
   "description": "Три мысли классиков на акварели: Сенека · Цицерон · Роберт Браунинг.\nThree timeless thoughts on watercolor: Seneca · Cicero · Robert Browning.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d08_3"
+  "name": "d08_3",
+  "music_was": "orch_night"
  },
  {
   "n": 25,
