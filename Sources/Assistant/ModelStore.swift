@@ -12,8 +12,14 @@ struct BrainModel: Identifiable, Equatable {
     let path: String          // путь на Hugging Face: <репозиторий>/resolve/main/<файл>
     let sizeMB: Int
     let kind: Kind
+    var eyeFile: String? = nil      // «глаз» — понимание фото (mmproj), отдельный файл
+    var eyePath: String? = nil
+    var eyeMB: Int = 0
 
-    var urls: [URL] {
+    var urls: [URL] { Self.urls(path) }
+    var eyeURLs: [URL] { eyePath.map(Self.urls) ?? [] }
+
+    static func urls(_ path: String) -> [URL] {
         ["https://huggingface.co/", "https://hf-mirror.com/"].compactMap { URL(string: $0 + path) }
     }
 
@@ -23,7 +29,8 @@ struct BrainModel: Identifiable, Equatable {
                    note: "Лучше всех ищет, проверяет и выполняет задания. 2,6 ГБ.",
                    file: "Qwen3.5-4B-Q4_K_M.gguf",
                    path: "unsloth/Qwen3.5-4B-GGUF/resolve/main/Qwen3.5-4B-Q4_K_M.gguf",
-                   sizeMB: 2613, kind: .qwen35),
+                   sizeMB: 2613, kind: .qwen35,
+                   eyeFile: "Qwen3.5-4B-mmproj-F16.gguf", eyePath: "unsloth/Qwen3.5-4B-GGUF/resolve/main/mmproj-F16.gguf", eyeMB: 641),
         BrainModel(id: "qwen3-4b", title: "Qwen3 4B — запасная",
                    note: "Прошлое поколение, чуть меньше. 2,4 ГБ.",
                    file: "Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
@@ -33,7 +40,8 @@ struct BrainModel: Identifiable, Equatable {
                    note: "Вдвое быстрее и легче, но проще. 1,2 ГБ.",
                    file: "Qwen3.5-2B-Q4_K_M.gguf",
                    path: "unsloth/Qwen3.5-2B-GGUF/resolve/main/Qwen3.5-2B-Q4_K_M.gguf",
-                   sizeMB: 1221, kind: .qwen35),
+                   sizeMB: 1221, kind: .qwen35,
+                   eyeFile: "Qwen3.5-2B-mmproj-F16.gguf", eyePath: "unsloth/Qwen3.5-2B-GGUF/resolve/main/mmproj-F16.gguf", eyeMB: 637),
     ]
 }
 
@@ -75,6 +83,33 @@ final class ModelStore: NSObject, ObservableObject, URLSessionDownloadDelegate {
     var selected: BrainModel { BrainModel.all.first { $0.id == selectedID } ?? BrainModel.all[0] }
 
     func fileURL(_ m: BrainModel) -> URL { Self.folder.appendingPathComponent(m.file) }
+    func eyeURL(_ m: BrainModel) -> URL? { m.eyeFile.map { Self.folder.appendingPathComponent($0) } }
+
+    func isEyeReady(_ m: BrainModel) -> Bool {
+        guard let u = eyeURL(m), let a = try? FileManager.default.attributesOfItem(atPath: u.path),
+              let n = a[.size] as? NSNumber else { return false }
+        return n.int64Value > Int64(m.eyeMB) * 900_000
+    }
+
+    /// Задача скачивания: «id» — нейросеть, «id#eye» — её «глаз».
+    private func spec(_ tid: String) -> (m: BrainModel, eye: Bool)? {
+        let eye = tid.hasSuffix("#eye")
+        let id = eye ? String(tid.dropLast(4)) : tid
+        guard let m = BrainModel.all.first(where: { $0.id == id }) else { return nil }
+        return (m, eye)
+    }
+
+    func downloadEye(_ m: BrainModel) {
+        guard downloading == nil, m.eyePath != nil else { return }
+        downloading = m.id + "#eye"
+        progress = 0
+        tryIndex = 0
+        attempts = 0
+        resume = nil
+        status = "Скачиваю «зрение» для \(m.title)…"
+        UIApplication.shared.isIdleTimerDisabled = true
+        start(m, eye: true)
+    }
 
     func isReady(_ m: BrainModel) -> Bool {
         guard let a = try? FileManager.default.attributesOfItem(atPath: fileURL(m).path),
@@ -96,17 +131,18 @@ final class ModelStore: NSObject, ObservableObject, URLSessionDownloadDelegate {
         attempts = 0
         status = "Скачиваю \(m.title)…"
         UIApplication.shared.isIdleTimerDisabled = true
-        start(m)
+        start(m, eye: false)
     }
 
-    private func start(_ m: BrainModel) {
+    private func start(_ m: BrainModel, eye: Bool) {
+        let list = eye ? m.eyeURLs : m.urls
         if let r = resume {
             task = session.downloadTask(withResumeData: r)
             resume = nil
         } else {
-            task = session.downloadTask(with: m.urls[min(tryIndex, m.urls.count - 1)])
+            task = session.downloadTask(with: list[min(tryIndex, list.count - 1)])
         }
-        task?.taskDescription = m.id
+        task?.taskDescription = eye ? m.id + "#eye" : m.id
         task?.resume()
     }
 
@@ -123,6 +159,7 @@ final class ModelStore: NSObject, ObservableObject, URLSessionDownloadDelegate {
     func delete(_ m: BrainModel) {
         if LlamaEngine.shared.loadedPath == fileURL(m).path { LlamaEngine.shared.unload() }
         try? FileManager.default.removeItem(at: fileURL(m))
+        if let e = eyeURL(m) { try? FileManager.default.removeItem(at: e) }
         objectWillChange.send()
     }
 
@@ -150,9 +187,9 @@ final class ModelStore: NSObject, ObservableObject, URLSessionDownloadDelegate {
     nonisolated func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64,
                                 totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         MainActor.assumeIsolated {
-            let id = downloadTask.taskDescription ?? ""
-            let total = totalBytesExpectedToWrite > 0 ? Double(totalBytesExpectedToWrite)
-                : Double((BrainModel.all.first { $0.id == id }?.sizeMB ?? 2400) * 1_048_576)
+            let sp = spec(downloadTask.taskDescription ?? "")
+            let mb = sp.map { $0.eye ? $0.m.eyeMB : $0.m.sizeMB } ?? 2400
+            let total = totalBytesExpectedToWrite > 0 ? Double(totalBytesExpectedToWrite) : Double(mb * 1_048_576)
             progress = min(1, Double(totalBytesWritten) / total)
             status = String(format: "Скачано %.0f из %.0f МБ", Double(totalBytesWritten) / 1_048_576, total / 1_048_576)
         }
@@ -160,10 +197,12 @@ final class ModelStore: NSObject, ObservableObject, URLSessionDownloadDelegate {
 
     nonisolated func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         // файл нужно забрать сразу, до выхода из функции
-        let id = downloadTask.taskDescription ?? ""
+        let tid = downloadTask.taskDescription ?? ""
+        let eye = tid.hasSuffix("#eye")
+        let id = eye ? String(tid.dropLast(4)) : tid
         guard let m = BrainModel.all.first(where: { $0.id == id }) else { return }
         let code = (downloadTask.response as? HTTPURLResponse)?.statusCode ?? 0
-        let dest = ModelStore.folder.appendingPathComponent(m.file)
+        let dest = ModelStore.folder.appendingPathComponent(eye ? (m.eyeFile ?? "eye.gguf") : m.file)
         var err: String?
         if code == 200 || code == 206 {
             try? FileManager.default.removeItem(at: dest)
@@ -176,13 +215,16 @@ final class ModelStore: NSObject, ObservableObject, URLSessionDownloadDelegate {
                 tryIndex += 1
                 resume = nil
                 status = "Пробую другой адрес…"
-                start(m)
+                start(m, eye: eye)
                 return
             }
             UIApplication.shared.isIdleTimerDisabled = false
             downloading = nil
             if let err {
                 status = "Не скачалось: \(err)"
+            } else if eye {
+                status = isEyeReady(m) ? "«Зрение» в телефоне — можно присылать фото." : "Файл пришёл не целиком — нажмите ещё раз."
+                progress = 1
             } else if isReady(m) {
                 status = "Нейросеть в телефоне: \(m.title)"
                 selectedID = m.id
@@ -198,10 +240,11 @@ final class ModelStore: NSObject, ObservableObject, URLSessionDownloadDelegate {
         guard let error else { return }
         let ns = error as NSError
         let data = ns.userInfo[NSURLSessionDownloadTaskResumeData] as? Data
-        let id = task.taskDescription ?? ""
+        let tid = task.taskDescription ?? ""
         MainActor.assumeIsolated {
             if ns.code == NSURLErrorCancelled { return }
-            guard let m = BrainModel.all.first(where: { $0.id == id }) else { return }
+            guard let sp = spec(tid) else { return }
+            let m = sp.m
             if let data {
                 resume = data
             } else {
@@ -211,8 +254,8 @@ final class ModelStore: NSObject, ObservableObject, URLSessionDownloadDelegate {
             if attempts < 30 && tryIndex < m.urls.count && downloading != nil {
                 status = "Связь прервалась, продолжаю…"
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
-                    guard let self, self.downloading == m.id else { return }
-                    self.start(m)
+                    guard let self, self.downloading == tid else { return }
+                    self.start(m, eye: sp.eye)
                 }
             } else {
                 downloading = nil

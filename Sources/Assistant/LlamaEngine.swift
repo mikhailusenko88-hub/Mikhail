@@ -154,7 +154,7 @@ final class LlamaEngine {
 
     private func generateSync(prompt: String, maxTokens: Int, temperature: Float, stops: [String], stop: Stop,
                               onText: @escaping @MainActor (String) -> Void) throws -> String {
-        guard let ctx, let vocab else { throw Failure.noModel }
+        guard let ctx, vocab != nil else { throw Failure.noModel }
         let toks = tokenize(prompt)
         if toks.isEmpty { return "" }
         if toks.count + min(maxTokens, 256) >= nCtx { throw Failure.tooLong(toks.count) }
@@ -187,6 +187,12 @@ final class LlamaEngine {
             i = end
         }
 
+        return sampleLoop(maxTokens: maxTokens, temperature: temperature, stops: stops, stop: stop, onText: onText)
+    }
+
+    private func sampleLoop(maxTokens: Int, temperature: Float, stops: [String], stop: Stop,
+                            onText: @escaping @MainActor (String) -> Void) -> String {
+        guard let ctx, let vocab else { return "" }
         let chain = llama_sampler_chain_init(llama_sampler_chain_default_params())!
         defer { llama_sampler_free(chain) }
         llama_sampler_chain_add(chain, llama_sampler_init_penalties(llama_vocab_n_tokens(vocab), 64, 1.05, 0, 0))
@@ -227,5 +233,50 @@ final class LlamaEngine {
         let fin = out
         DispatchQueue.main.async { MainActor.assumeIsolated { onText(fin) } }
         return out
+    }
+
+    // MARK: зрение — фото через «глаз» нейросети (mmproj), всё в телефоне
+
+    /// Описать фото: картинка (JPEG/PNG) + вопрос. После ответа память разговора очищается (следующий шаг пересчитает текст).
+    func describeImage(_ image: Data, prompt: String, eyePath: String, maxTokens: Int, stop: Stop,
+                       onText: @escaping @MainActor (String) -> Void) async throws -> String {
+        try await run { try self.describeSync(image, prompt: prompt, eyePath: eyePath, maxTokens: maxTokens, stop: stop, onText: onText) }
+    }
+
+    private func describeSync(_ image: Data, prompt: String, eyePath: String, maxTokens: Int, stop: Stop,
+                              onText: @escaping @MainActor (String) -> Void) throws -> String {
+        guard let ctx, let model else { throw Failure.noModel }
+        var mp = mtmd_context_params_default()
+        mp.use_gpu = true
+        mp.print_timings = false
+        mp.warmup = false
+        mp.n_threads = Int32(max(2, min(6, ProcessInfo.processInfo.activeProcessorCount - 2)))
+        guard let mctx = mtmd_init_from_file(eyePath, model, mp) else { throw Failure.loadFailed(eyePath) }
+        defer { mtmd_free(mctx) }
+        let mem = llama_get_memory(ctx)
+        llama_memory_clear(mem, true)
+        cached = []
+        defer { llama_memory_clear(mem, true); cached = [] }
+
+        let wrap = image.withUnsafeBytes { raw -> mtmd_helper_bitmap_wrapper in
+            let p = raw.bindMemory(to: UInt8.self).baseAddress
+            return mtmd_helper_bitmap_init_from_buf(mctx, p, raw.count, false, mtmd_helper_init_opt_default())
+        }
+        guard let bitmap = wrap.bitmap else { throw Failure.loadFailed("фото") }
+        defer { mtmd_bitmap_free(bitmap) }
+        let marker = String(cString: mtmd_default_marker())
+        let text = prompt.replacingOccurrences(of: "<__media__>", with: marker)
+        let chunks = mtmd_input_chunks_init()!
+        defer { mtmd_input_chunks_free(chunks) }
+        let rc: Int32 = text.withCString { cs in
+            var it = mtmd_input_text(text: cs, text_len: strlen(cs), add_special: false, parse_special: true)
+            var bm: OpaquePointer? = bitmap
+            return withUnsafePointer(to: &bm) { bp in mtmd_tokenize(mctx, chunks, &it, bp, 1) }
+        }
+        if rc != 0 { throw Failure.decodeFailed(rc) }
+        var newPast: llama_pos = 0
+        let ev = mtmd_helper_eval_chunks(mctx, ctx, chunks, 0, 0, 512, true, &newPast)
+        if ev != 0 { throw Failure.decodeFailed(ev) }
+        return sampleLoop(maxTokens: maxTokens, temperature: 0.2, stops: ["<|im_end|>"], stop: stop, onText: onText)
     }
 }

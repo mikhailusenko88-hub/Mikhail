@@ -1,6 +1,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 import AVFoundation
+import PhotosUI
 
 /// Раздел «Помощник»: своя нейросеть в телефоне, голос, интернет, CRM, база знаний.
 struct AssistantScreen: View {
@@ -12,6 +13,14 @@ struct AssistantScreen: View {
     @State private var showSettings = false
     @State private var openTool: Set<String> = []
     @FocusState private var typing: Bool
+    // вложение к следующему сообщению: фото или файл
+    enum Attach { case photo(UIImage), file(String) }
+    @State private var attach: Attach?
+    @State private var showPhotos = false
+    @State private var showCamera = false
+    @State private var showFiles = false
+    @State private var photoItem: PhotosPickerItem?
+    @State private var attachError = ""
 
     var body: some View {
         NavigationView {
@@ -44,6 +53,27 @@ struct AssistantScreen: View {
             }
         }
         .navigationViewStyle(.stack)
+        .photosPicker(isPresented: $showPhotos, selection: $photoItem, matching: .images)
+        .onChange(of: photoItem) { item in
+            guard let item else { return }
+            Task {
+                if let d = try? await item.loadTransferable(type: Data.self), let im = UIImage(data: d) { attach = .photo(im); attachError = "" }
+                else { attachError = "Фото не загрузилось — попробуйте ещё раз." }
+                photoItem = nil
+            }
+        }
+        .fileImporter(isPresented: $showFiles, allowedContentTypes: [.item]) { r in
+            switch r {
+            case .success(let u):
+                if let ref = Files.importCopy(u) { attach = .file(ref); attachError = "" } else { attachError = "Файл не открылся." }
+            case .failure(let e): attachError = e.localizedDescription
+            }
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraPicker { im in attach = .photo(im) }.ignoresSafeArea()
+        }
+        .onAppear { takeIncoming() }
+        .onChange(of: brain.incoming) { _ in takeIncoming() }
         .task { await brain.refreshCRM(); brain.reviewPending() }
         .onDisappear {
             // нейросеть занимает ~3 ГБ памяти — отдаём её сканеру и мультикам
@@ -52,6 +82,26 @@ struct AssistantScreen: View {
             Speaker.shared.stop()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { LlamaEngine.shared.unload() }
         }
+    }
+
+    /// Файл пришёл через «Поделиться» → «Замер 3D»: прикрепляем и ждём вопроса.
+    private func takeIncoming() {
+        guard let ref = brain.incoming else { return }
+        brain.incoming = nil
+        if Files.isImage(ref), let im = UIImage(contentsOfFile: Files.url(ref).path) { attach = .photo(im) } else { attach = .file(ref) }
+        attachError = ""
+    }
+
+    private func sendNow(_ text: String) {
+        var img: UIImage?, file: String?
+        switch attach {
+        case .photo(let im): img = im
+        case .file(let ref): file = ref
+        case nil: break
+        }
+        brain.send(text, image: img, file: file)
+        attach = nil
+        input = ""
     }
 
     private var chat: some View {
@@ -96,7 +146,27 @@ struct AssistantScreen: View {
 
     @ViewBuilder private func row(_ m: ChatMsg) -> some View {
         switch m.role {
-        case .user: bubble(m.text, mine: true)
+        case .user:
+            VStack(alignment: .trailing, spacing: 4) {
+                if let f = m.file {
+                    HStack {
+                        Spacer(minLength: 40)
+                        ShareLink(item: Files.url(f)) {
+                            Label(Files.name(f), systemImage: "doc.fill").font(.caption).lineLimit(1)
+                                .padding(.horizontal, 10).padding(.vertical, 7)
+                                .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
+                        }
+                    }
+                }
+                if let img = m.image, let ui = Eyes.load(img) {
+                    HStack {
+                        Spacer(minLength: 40)
+                        Image(uiImage: ui).resizable().scaledToFit().frame(maxWidth: 220, maxHeight: 220)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                }
+                bubble(m.text, mine: true)
+            }
         case .assistant:
             if !m.text.isEmpty { bubble(m.text, mine: false) }
         case .tool:
@@ -116,6 +186,11 @@ struct AssistantScreen: View {
         }
     }
 
+    /// **жирный**, `код`, ссылки — как в чате, а не звёздочками.
+    static func rich(_ t: String) -> AttributedString {
+        (try? AttributedString(markdown: t, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace))) ?? AttributedString(t)
+    }
+
     static func toolTitle(_ n: String) -> String {
         switch n {
         case "web_search": return "Поиск в интернете"
@@ -124,8 +199,11 @@ struct AssistantScreen: View {
         case "recall": return "Из памяти"
         case "forget": return "Удалено из памяти"
         case "calc": return "Расчёт"
+        case "skill_improve": return "Улучшила навык"
+        case "skill_rollback": return "Вернула версию навыка"
         case "reminder": return "Напоминание"
         case "open_link": return "Ссылка"
+        case "file_read": return "Файл"
         default: return n.hasPrefix("crm") ? "CRM" : n
         }
     }
@@ -133,7 +211,7 @@ struct AssistantScreen: View {
     private func bubble(_ t: String, mine: Bool) -> some View {
         HStack {
             if mine { Spacer(minLength: 40) }
-            Text(t)
+            Text(Self.rich(t))
                 .textSelection(.enabled)
                 .padding(10)
                 .foregroundColor(mine ? .white : .primary)
@@ -147,11 +225,40 @@ struct AssistantScreen: View {
             if !ears.problem.isEmpty {
                 Text(ears.problem).font(.caption).foregroundColor(.orange).frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 12)
             }
-            HStack(alignment: .bottom, spacing: 8) {
+            if !attachError.isEmpty {
+                Text(attachError).font(.caption).foregroundColor(.orange).frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 12)
+            }
+            if let a = attach {
+                HStack(spacing: 8) {
+                    switch a {
+                    case .photo(let im):
+                        Image(uiImage: im).resizable().scaledToFill().frame(width: 52, height: 52).clipShape(RoundedRectangle(cornerRadius: 8))
+                        Text("Фото — спросите, что нужно").font(.caption).foregroundColor(.secondary)
+                    case .file(let ref):
+                        Image(systemName: "doc.fill").font(.system(size: 26)).foregroundColor(.blue).frame(width: 52, height: 52)
+                        Text(Files.name(ref)).font(.caption).lineLimit(2)
+                    }
+                    Spacer()
+                    Button { attach = nil } label: { Image(systemName: "xmark.circle.fill").font(.system(size: 22)).foregroundColor(.secondary) }
+                }
+                .padding(.horizontal, 12).padding(.top, 6)
+            }
+            HStack(alignment: .bottom, spacing: 6) {
+                Menu {
+                    Button { showPhotos = true } label: { Label("Фото из галереи", systemImage: "photo") }
+                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                        Button { showCamera = true } label: { Label("Снять фото", systemImage: "camera") }
+                    }
+                    Button { showFiles = true } label: { Label("Файл", systemImage: "doc") }
+                } label: {
+                    Image(systemName: "paperclip").font(.system(size: 21)).foregroundColor(.blue).frame(width: 34, height: 40)
+                }
+                .disabled(brain.busy || store.readyModel == nil)
+
                 Button {
                     if ears.listening {
                         let t = ears.finish().trimmingCharacters(in: .whitespacesAndNewlines)
-                        if !t.isEmpty { brain.send(t); input = "" }
+                        if !t.isEmpty || attach != nil { sendNow(t) }
                     } else {
                         typing = false
                         ears.start()
@@ -159,7 +266,7 @@ struct AssistantScreen: View {
                 } label: {
                     Image(systemName: ears.listening ? "stop.circle.fill" : "mic.fill")
                         .font(.system(size: 22)).foregroundColor(ears.listening ? .red : .blue)
-                        .frame(width: 40, height: 40)
+                        .frame(width: 34, height: 40)
                 }
                 .disabled(brain.busy || store.readyModel == nil)
 
@@ -175,11 +282,11 @@ struct AssistantScreen: View {
                             .frame(width: 40, height: 40).background(Color.red, in: Circle())
                     }
                 } else {
-                    Button { brain.send(input); input = "" } label: {
+                    Button { sendNow(input) } label: {
                         Image(systemName: "arrow.up").font(.system(size: 18, weight: .bold)).foregroundColor(.white)
                             .frame(width: 40, height: 40).background(Color.blue, in: Circle())
                     }
-                    .disabled(input.trimmingCharacters(in: .whitespaces).isEmpty || store.readyModel == nil)
+                    .disabled((input.trimmingCharacters(in: .whitespaces).isEmpty && attach == nil) || store.readyModel == nil)
                 }
             }
             .padding(.horizontal, 10).padding(.vertical, 8)
@@ -246,6 +353,19 @@ struct ModelList: View {
                             Spacer()
                             Button("Удалить", role: .destructive) { store.delete(m) }
                         }.font(.callout)
+                        if m.eyeFile != nil {
+                            if store.downloading == m.id + "#eye" {
+                                ProgressView(value: store.progress)
+                                HStack { Text(store.status).font(.caption2); Spacer(); Button("Стоп") { store.cancel() }.font(.caption) }
+                            } else if store.isEyeReady(m) {
+                                Label("«Зрение» для фото — в телефоне", systemImage: "eye").font(.caption).foregroundColor(.green)
+                            } else {
+                                Button { store.downloadEye(m) } label: { Label("Скачать «зрение» для фото — \(m.eyeMB) МБ", systemImage: "eye") }
+                                    .font(.callout).disabled(store.downloading != nil)
+                                Text("Без него нейросеть читает только текст на фото и в файлах; с ним — понимает, что изображено.")
+                                    .font(.caption2).foregroundColor(.secondary)
+                            }
+                        }
                     } else {
                         Button { store.download(m) } label: { Label("Скачать", systemImage: "arrow.down.circle") }
                             .disabled(store.downloading != nil)
@@ -431,5 +551,32 @@ struct KnowledgeEdit: View {
                 }.disabled(item.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
         }
+    }
+}
+
+/// Камера для фото в чат Помощника.
+struct CameraPicker: UIViewControllerRepresentable {
+    let done: (UIImage) -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let p = UIImagePickerController()
+        p.sourceType = .camera
+        p.delegate = context.coordinator
+        return p
+    }
+
+    func updateUIViewController(_ vc: UIImagePickerController, context: Context) {}
+
+    final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: CameraPicker
+        init(_ p: CameraPicker) { parent = p }
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+            if let im = info[.originalImage] as? UIImage { parent.done(im) }
+            parent.dismiss()
+        }
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) { parent.dismiss() }
     }
 }

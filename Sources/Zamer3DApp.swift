@@ -3,23 +3,28 @@ import SwiftUI
 @main
 struct Zamer3DApp: App {
     @State private var bazis: BazisFile?
-    @State private var skills = false
+    @State private var assistant = false
 
     var body: some Scene {
         WindowGroup {
             HomeView()
-                // .b3d / .fr3d / .zip из Telegram, «Файлов», почты → «Поделиться» → «Замер 3D»
+                // .b3d / .fr3d / .zip с Базисом из Telegram, «Файлов», почты → «Поделиться» → «Замер 3D» — раздел «Мебель»
                 // .navyk — обновление навыков Помощника: спросит «Обновить?», прочитает и скажет, что понял
+                // любой другой файл — Помощнику: откроет и ответит, что в нём
                 .onOpenURL { url in
-                    if url.pathExtension.lowercased() == "navyk" {
+                    let ext = url.pathExtension.lowercased()
+                    if ext == "navyk" {
                         AssistantBrain.shared.offerSkillFile(url)
-                        skills = true
-                    } else {
+                        assistant = true
+                    } else if ["b3d", "fr3d"].contains(ext) || (ext == "zip" && Files.isBazisZip(url)) {
                         bazis = BazisFile.load(url)
+                    } else if let ref = Files.importCopy(url) {
+                        AssistantBrain.shared.incoming = ref
+                        assistant = true
                     }
                 }
                 .fullScreenCover(item: $bazis) { BazisScreen(file: $0) }
-                .fullScreenCover(isPresented: $skills) { AssistantScreen() }
+                .fullScreenCover(isPresented: $assistant) { AssistantScreen() }
         }
     }
 }
