@@ -1,11 +1,21 @@
 # имя  аргументы для scene.py (или "py script.py")
-t37_two scene=plinth cam=top item=panel decor=3-7 surf=plaster zoom=0.85 ev=-0.35 res=800x600 samples=48 noise=0.08
-t37_stack scene=plinth cam=top item=panel decor=3-7 surf=plaster set=stack zoom=0.85 ev=-0.35 res=800x600 samples=48 noise=0.08
-t37_cut_a scene=plinth cam=cut item=panel decor=3-7 surf=plaster up=0.30 side=0.10 ev=-0.35 res=800x600 samples=48 noise=0.08
-t37_cut_b scene=plinth cam=cut item=panel decor=3-7 surf=plaster up=0.34 side=0.45 zoom=1.05 ev=-0.35 res=800x600 samples=48 noise=0.08
-t37_cut_c scene=plinth cam=cut item=panel decor=3-7 surf=plaster up=0.22 side=0.30 zoom=0.9 ev=-0.35 res=800x600 samples=48 noise=0.08
-t37_macro scene=lounge decor=3-7 cam=macro fs=0 res=800x600 samples=48 noise=0.08
-t37_main scene=lounge decor=3-7 res=800x600 samples=48 noise=0.08
-t910_angle_a scene=lounge decor=A910 paint=5F7563 cam=angle chair_at=3.9,0.6 cabcol=3B3F42 ev=-0.3 res=800x600 samples=48 noise=0.08
-t910_angle_b scene=lounge decor=A910 paint=5F7563 cam=angle chair_at=3.9,0.6 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.3 res=800x600 samples=48 noise=0.08
-t910_angle_c scene=lounge decor=A910 paint=5F7563 cam=angle chair_at=3.9,0.6 cabcol=3B3F42 ax=3.6 ay=3.65 lens=45 sun_az=32 sun_el=52 ev=-0.3 res=800x600 samples=48 noise=0.08
+w37_main scene=lounge decor=3-7 fstop=0 res=1600x1200 samples=220 noise=0.03
+w37_arch scene=arch decor=3-7 res=1600x1200 samples=220 noise=0.03
+w37_close scene=lounge decor=3-7 cam=close fs=0 res=1600x1200 samples=220 noise=0.03
+w37_macro scene=lounge decor=3-7 cam=macro fs=0 res=1600x1200 samples=220 noise=0.03
+w37_two scene=plinth item=panel surf=plaster paint=CFCBC4 ev=-0.35 cam=top decor=3-7 zoom=0.8 res=1600x1200 samples=260 noise=0.025
+w37_cut scene=plinth item=panel surf=plaster paint=CFCBC4 ev=-0.35 cam=cut decor=3-7 up=0.28 side=0.10 res=1600x1200 samples=260 noise=0.025
+w315_diag scene=lounge decor=3-15 cam=diag fs=0 res=1600x1200 samples=220 noise=0.03
+w315_arch scene=arch decor=3-15 cam=c res=1600x1200 samples=220 noise=0.03
+w315_mid scene=lounge decor=3-15 cam=mid fs=0 res=1600x1200 samples=220 noise=0.03
+w315_macro scene=lounge decor=3-15 cam=macro fs=0 res=1600x1200 samples=220 noise=0.03
+w315_two scene=plinth item=panel surf=plaster paint=CFCBC4 ev=-0.35 cam=top decor=3-15 surfcol=C4BEB4 zoom=0.8 res=1600x1200 samples=260 noise=0.025
+w315_cut scene=plinth item=panel surf=plaster paint=CFCBC4 ev=-0.35 cam=cut decor=3-15 surfcol=C4BEB4 up=0.28 side=0.10 res=1600x1200 samples=260 noise=0.025
+w39_tv scene=lounge decor=3-9 tv=1 chair=modern_arm_chair_01 chair_at=3.3,3.7 fstop=0 res=1600x1200 samples=220 noise=0.03
+w39_arch scene=arch decor=3-9 cam=b res=1600x1200 samples=220 noise=0.03
+w39_close scene=lounge decor=3-9 cam=close fs=0 res=1600x1200 samples=220 noise=0.03
+w39_macro scene=lounge decor=3-9 cam=macro fs=0 res=1600x1200 samples=220 noise=0.03
+w39_two scene=plinth item=panel surf=plaster paint=CFCBC4 ev=-0.35 cam=top decor=3-9 zoom=0.8 res=1600x1200 samples=260 noise=0.025
+w39_cut scene=plinth item=panel surf=plaster paint=CFCBC4 ev=-0.35 cam=cut decor=3-9 up=0.28 side=0.10 res=1600x1200 samples=260 noise=0.025
+t910_angle_d scene=lounge decor=A910 paint=5F7563 cam=angle chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.3 res=800x600 samples=48 noise=0.08
+t910_angle_e scene=lounge decor=A910 paint=5F7563 cam=angle chair_at=3.9,0.6 cabcol=3B3F42 ax=4.0 ay=2.7 lx=1.6 lens=32 ev=-0.3 res=800x600 samples=48 noise=0.08
