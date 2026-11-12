@@ -2,13 +2,14 @@
   vremya  — «Время»:  медленный круг из четырёх аккордов, слой за слоем от фортепиано до полного оркестра и тихая кода
   orbita  — «Орбита»: орган и неизменная звенящая фигура фортепиано над плавно сходящим басом, размер 3/4
   polyot  — «Полёт»:  бегущий перебор фортепиано по кругу аккордов, струнные волнами, низкий голос в кульминации
-python3 kino.py <пьеса> <файл.wav> [LUFS]     — рендер (24 бита, по умолчанию −18 LUFS, без лимитера)"""
+python3 kino.py <пьеса> <файл.wav> [LUFS]     — рендер (24 бита, по умолчанию −20 LUFS, без лимитера)"""
 import math
 import os
 import sys
 import time
 
 import numpy as np
+from scipy.ndimage import gaussian_filter1d
 
 import theme as th
 from theme import SR, m, horn, timp, piano
@@ -297,8 +298,8 @@ def orbita():
         for j, nt in enumerate(FIG[FOF[c]]):
             tt = a + j * g.BEAT / 2 + rng.uniform(0, 0.005)
             bus.add(piano(g.n(nt), g.BEAT * 1.4, pv[k] * acc[j] * fade), tt, pan=-0.2 + 0.08 * (j % 3), send=0.4)
-            if 1 <= k <= 3 and j in (0, 2, 3):
-                bus.add(celesta(g.n(nt) + 12, (0.032, 0.032, 0.036)[k - 1] * (1.0 if j != 2 else 0.8)), tt + 0.004, pan=0.3, send=0.5)
+            if k == 3 and j in (0, 3):                        # челеста только в кульминации и редко: без «шкатулки»
+                bus.add(celesta(g.n(nt) + 12, 0.03), tt + 0.004, pan=0.3, send=0.5)
     # ---- орган: педаль с самого начала (еле слышно), аккорды — со второго проведения
     ov = [0.17, 0.19, 0.17, 0.21, 0.12]
     for a, e, c, b in segs:
@@ -450,14 +451,28 @@ def polyot():
 PIECES = {"vremya": ("Время", vremya), "orbita": ("Орбита", orbita), "polyot": ("Полёт", polyot)}
 
 
-def render(name, target=-18.0, tmp_dir="/tmp"):
+def leveler(L, R, k=0.32, win=3.0, up=5.0, down=3.0):
+    """плавный выравниватель громкости для телефона: тихие разделы приподнимаются, громкие чуть опускаются.
+    Усиление меняется медленно (окно 3 с), поэтому искажений нет; разбег между вступлением и кульминацией сужается на треть."""
+    hop = SR // 20
+    e = np.array([np.mean(L[i:i + hop] ** 2 + R[i:i + hop] ** 2) for i in range(0, len(L), hop)]) + 1e-12
+    lev = 10 * np.log10(gaussian_filter1d(e, win * 20 / 2.355))
+    loud = lev > lev.max() - 30
+    ref = np.percentile(lev[loud], 75)
+    gdb = np.clip(k * (ref - lev), -down, up)
+    gdb = gaussian_filter1d(gdb, 20)                          # ещё секунда сглаживания
+    gain = 10 ** (np.interp(np.arange(len(L)), np.arange(len(gdb)) * hop + hop / 2, gdb) / 20)
+    return L * gain, R * gain
+
+
+def render(name, target=-20.0, tmp_dir="/tmp"):
     global rng
     rng = np.random.default_rng(77)
     G.rng = np.random.default_rng(2026)
     bus, end_t, tail = PIECES[name][1]()
     L, R = master_clean(bus, 0.3)
     cut = int(round((end_t + tail) * SR))
-    L, R = L[:cut].copy(), R[:cut].copy()
+    L, R = leveler(L[:cut].copy(), R[:cut].copy())
     fo = int(2.0 * SR)
     w = 0.5 + 0.5 * np.cos(np.linspace(0, np.pi, fo))
     L[-fo:] *= w
@@ -473,7 +488,7 @@ def render(name, target=-18.0, tmp_dir="/tmp"):
 
 if __name__ == "__main__":
     name, out = sys.argv[1], sys.argv[2]
-    tgt = float(sys.argv[3]) if len(sys.argv) > 3 else -18.0
+    tgt = float(sys.argv[3]) if len(sys.argv) > 3 else -20.0
     t0 = time.time()
     L, R = render(name, tgt)
     write24(out, L, R)
