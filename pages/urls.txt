@@ -1,5 +1,4 @@
-https://cdn.tbank.ru/static/documents/promo-0-99-acquiring-card-payments-1-million-turnover-forever.pdf
-https://cdn.tbank.ru/static/documents/755ce9b9-4bb8-4b05-8f1b-a92e693fa291.pdf
-https://cdn.tbank.ru/static/documents/bc8d874b-99d0-436c-b556-9d6b313110b8.pdf
-https://cdn.tbank.ru/static/documents/business-tariffs-all.pdf
-# Т-Банк: условия акции 0,99 %, условия «Чеки Т-Бизнеса», тарифы 12.11
+https://cloudpayments.ru/cloudkassir/check
+https://cloudpayments.ru/tariffs
+https://prodamus.ru/tariffs
+# Cloud-чеки, Prodamus тарифы 12.11
