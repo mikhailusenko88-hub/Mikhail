@@ -1,0 +1,157 @@
+URL: https://platformaofd.ru/tariffs/
+КОД: 404
+
+Страница не найдена - Платформа ОФД — Оператор фискальных данных, фискальный оператор (Эвотор ОФД) 
+ Сервисы Кассы, чеки, ОФД 
+ Транспортные документы (ЭПД) 
+ Документооборот (ЭДО) 
+ Отчётность в госорганы 
+ Книга учета (КУДиР) 
+ Контроль нарушений 
+ Интеграция ОФД в 1С 
+ Доверенности (МЧД) 
+ Мониторинг оборотов для ТЦ 
+ Фискальные накопители 
+ Интернет магазинам 
+ Электронная подпись 
+ Электронные чеки 
+ Тарифы 
+ База знаний Инструкции 
+ Блог 
+ Партнёрам 
+ О нас О компании 
+ Контакты 
+ Новости 
+ Исследования 
+ Проверить чек 
+ Войти 
+ Кабинет клиента
+ Кассы, чеки, ОФД
+ Документы ЭДО
+ Транспортные документы ЭПД
+ Отчётность
+ Сервисным партнёрам
+ Проверить чек 
+ Сервисы Кассы, чеки, ОФД 
+ Транспортные документы (ЭПД) 
+ Документооборот (ЭДО) 
+ Отчётность в госорганы 
+ Книга учета (КУДиР) 
+ Контроль нарушений 
+ Интеграция ОФД в 1С 
+ Доверенности (МЧД) 
+ Мониторинг оборотов для ТЦ 
+ Фискальные накопители 
+ Интернет магазинам 
+ Электронная подпись 
+ Электронные чеки 
+ Тарифы 
+ База знаний Инструкции 
+ Блог 
+ Партнёрам 
+ О нас О компании 
+ Контакты 
+ Новости 
+ Исследования 
+ Страница не найдена
+ Ссылка, по которой вы перешли, могла быть повреждена, либо страница могла быть удалена.
+ info@platformaofd.ru 
+ Москва, ул. Усачёва, д. 33, стр. 1 
+ ИНН 9715260691
+ОГРН 1167746512856
+ Мы в социальных сетях 
+ Установите приложение 
+ Тарифы 
+ Сервисы 
+ Платформа ОФД 
+ Платформа ЭДО 
+ Платформа Госотчёт 
+ Платформа ЭПД 
+ Платформа МЧД 
+ Мониторинг оборотов 
+ КУДиР 
+ Маркировка товаров 
+ Интеграция ОФД в 1С 
+ Электронная подпись 
+ Фискальные накопители 
+ Электронные чеки 
+ Мобильное приложение 
+ ЧекИндекс 
+ Подарочек 
+ База знаний 
+ Партнёрство 
+ О компании 
+ Новости 
+ Контакты 
+ Параметры подключения кассы 
+ Данные для регистрации ККТ и отправки чеков:
+ URL: ofdp.platformaofd.ru
+ IP: 185.170.204.91
+ Порт: 21101
+ Данные для работы с ГИС по маркировке (по ФФД 1.2):
+ URL: ofdp.platformaofd.ru
+ IP: 185.170.204.91
+ Порт: 21102
+ Оферта на оказание услуг Платформа ОФД (Эвотор ОФД) 
+ Политика обработки персональных данных 
+ Обязательно с 01.09.2026 
+Федеральный закон № 140-ФЗ
+ Электронные перевозочные документы теперь обязательны 
+ Вам нужен сервис ЭПД, если вы отправляете, получаете или перевозите товары и грузы
+ Подключение за 5 минут, от 1000Р в год
+(+20% документов в подарок)
+ Подключить со скидкой 
+ Меню 
+ Этот сайт использует куки для улучшения вашего опыта. Если вы продолжите использовать этот сайт, вы соглашаетесь с этим. Политика обработки персональных данных 
+ Хорошо
+
+ССЫЛКИ:
+/
+/policy-personal-data/
+https://apps.apple.com/ru/app/платформа-ofd/id1468888464
+https://checkindex.ru/
+https://checkindex.ru/news-research/
+https://edo.platformaofd.ru/
+https://epd.platformaofd.ru/
+https://go.platformaofd.ru/
+https://lk.platformaofd.ru/web/login
+https://lk.platformaofd.ru/web/noauth/cheque/search
+https://max.ru/platformaofd
+https://ok.ru/platformaofd
+https://pk.platformaofd.ru/auth/login
+https://platformaofd.ru/about/
+https://platformaofd.ru/articles/
+https://platformaofd.ru/baza-znaniy/
+https://platformaofd.ru/comments/feed/
+https://platformaofd.ru/contacts/
+https://platformaofd.ru/feed/
+https://platformaofd.ru/news/
+https://platformaofd.ru/partners/
+https://platformaofd.ru/pdf/oferta-platformaofd.pdf
+https://platformaofd.ru/policy-personal-data/
+https://platformaofd.ru/services/
+https://platformaofd.ru/services/arenda/
+https://platformaofd.ru/services/elektronnyy-chek/
+https://platformaofd.ru/services/integraciya-ofd-1c/
+https://platformaofd.ru/services/kep/
+https://platformaofd.ru/services/kontrol-narushenii/
+https://platformaofd.ru/services/kudir/
+https://platformaofd.ru/services/markirovka-tovarov/
+https://platformaofd.ru/services/mobilnoe-prilojenie/
+https://platformaofd.ru/services/ofd/
+https://platformaofd.ru/services/platforma-edo/
+https://platformaofd.ru/services/platforma-epd/
+https://platformaofd.ru/services/platforma-epd/?utm_source=ofdpromo&amp;utm_medium=site&amp;utm_campaign=epd&amp;utm_content=pop_up
+https://platformaofd.ru/services/platforma-gosotchet/
+https://platformaofd.ru/services/platforma-mchd/
+https://platformaofd.ru/services/specialnoe-predlozhenie-dlya-internet-magazinov/
+https://platformaofd.ru/tarify/
+https://platformaofd.ru/wp-content/uploads/2026/09/favicon-512.svg
+https://platformaofd.ru/xmlrpc.php?rsd
+https://platformatd.ru/
+https://play.google.com/store/apps/details?id=platformaofd.ru
+https://podarocheck.ru/
+https://t.me/platformaofd
+https://vk.com/platformaofd
+https://www.rustore.ru/catalog/developer/6rknkpfw
+mailto:info@platformaofd.ru

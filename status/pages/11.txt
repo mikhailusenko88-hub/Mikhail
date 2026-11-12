@@ -1,0 +1,206 @@
+URL: https://ofd.yandex.ru/
+КОД: 200
+
+Яндекс ОФД – оператор фискальных данных 
+ Личный кабинет 
+ Клиентам
+ Партнёрам
+ Тарифы
+ Проверка чеков
+ Новости
+ Личный кабинет 
+ Войти 
+ Войти 
+ Войти 
+ Клиентам
+ Партнёрам
+ Тарифы
+ Проверка чеков
+ Новости
+ Личный кабинет 
+ Яндекс ОФД
+ Надёжный оператор фискальных данных от технологического лидера*
+ Подключить 
+ Наш приоритет — конфиденциальность ваших данных
+ Хорошо, когда о ваших продажах знаете только вы
+ Быстрая и гарантированная доставка чеков
+ Используем собственные инновационные технологии
+ Тарифы
+ 6 месяцев
+ 1780 ₽
+ Подключить
+297 ₽/мес 
+ 14 дней за 0 ₽
+ Попробуйте бесплатно
+ Подробнее 
+ 15 месяцев
+ 3780 ₽
+ Подключить
+252 ₽/мес 
+ 24 месяца
+ 5400 ₽
+ Подключить
+225 ₽/мес 
+ 36 месяцев
+ 7880 ₽
+ Подключить
+219 ₽/мес 
+ 1 месяц
+ 350 ₽
+ Подключить
+350 ₽/мес 
+ 3 месяца
+ 980 ₽
+ Подключить
+327 ₽/мес 
+ 9 месяцев
+ 2480 ₽
+ Подключить
+276 ₽/мес 
+ 12 месяцев
+ 3300 ₽
+ Подключить
+275 ₽/мес 
+ Будет полезно
+ База знаний
+ Посмотрите, как всё это отлично работает
+ Перейти 
+ Настройка связи
+ Наладьте взаимодействие контрольно-кассовой техники с Яндекс ОФД
+ Открыть 
+ Быстрое 
+ продление
+ Продлить подписку кассы
+ Перейти 
+ Новое в личном кабинете
+ Гибкое управление кассами
+ Создавайте собственную структуру папок с кассами внутри
+ Подробнее 
+ Аналитика продаж в режиме реального времени
+ Собирайте данные по кассам в отчёты, чтобы всегда знать свои продажи
+ Подробнее 
+ Техподдержка везде на связи
+ Свяжитесь с нами удобным
+для вас способом
+ @yandexofd_bot
+ +7 (495) 221-70-23
+ askofd@support.yandex.ru
+ Форма обратной связи
+ Новости
+1 июня 2026
+ От хаоса к структуре: Папки в кабинете Яндекс ОФД
+ Собирайте и группируйте кассы и точки продаж по нужному вам признаку — с новой функцией
+18 мая 2025
+ Глубоко анализируйте продажи с Отчётами 2.0
+ Собирайте данные по кассам и продажам в формате отчётов, чтобы сразу видеть ваши продажи
+ К другим новостям 
+ Стать партнёром Яндекс ОФД
+ Если вы профессионал автоматизации торговли, можно зарабатывать вместе
+ Отправить заявку 
+ © 2026 ООО «Яндекс.ОФД»
+ Контактный центр: +7 495 230-05-41
+ 119021, г. Москва, ул. Тимура Фрунзе, д. 11, стр. 4
+Разрешение на обработку фискальных данных
+Публичная оферта о заключении договора на обработку фискальных данных
+ *В соответствии с исследованиями Института статистических исследований и экономики знаний НИУ ВШЭ, опубликованными 07.06.2023
+Обратная связь
+Проект компании
+ Связь ККТ
+ Настройка оборудования
+ Сервер ОФД
+ kkt.ofd.yandex.net 
+ или 185.32.186.252
+ DNS
+ 0.0.0.0
+ Порт
+ 12345
+ Таймаут
+ 10000 мс
+ Таймер соединения с ОФД
+ 30 мс
+ Таймер опроса ФН
+ 30 мс
+ ИНН ОФД
+ 7704358518
+ Имя ОФД
+ ООО «Яндекс.ОФД»
+ URL ОФД
+ ofd.yandex.ru
+ URL сервиса проверки чека
+ ofd.yandex.ru/check
+ Электронный адрес 
+ отправителя чеков
+ no-reply@ofd.yandex.ru
+ При работе с маркировкой
+ Сервер ОФД
+ kkt.ofd.yandex.net 
+ или 185.32.186.252
+ Порт
+ 54321
+ Скачать настройки 
+ Пробный период
+ Для новых касс
+ Зарегистрируйтесь в Яндекс ОФД и выберите оплату по счёту.
+ Мы выставим счёт на 3300 ₽ за годовое обслуживание, но это ни к чему вас не обяжет. Зато так вы сможете бесплатно пользоваться нашим сервисом первые 14 дней.
+ Если вам понравится, просто оплатите счёт — и мы продлим подписку на 12 месяцев. Если нет — можете ничего не делать. Через две недели мы отключим приём чеков.
+ Попробовать
+
+ССЫЛКИ:
+//yastatic.net/s3/lpc/renderer/_/1689/1689.efba2ac94a71c0fefaf0.mjs
+//yastatic.net/s3/lpc/renderer/_/2026/2026.eafdaf527048df37802b.mjs
+//yastatic.net/s3/lpc/renderer/_/2161/2161.bc1883a7832382dd3048.mjs
+//yastatic.net/s3/lpc/renderer/_/4295/4295.276a066b08e2f93c3996.mjs
+//yastatic.net/s3/lpc/renderer/_/4438/4438.241709966cd082128576.mjs
+//yastatic.net/s3/lpc/renderer/_/4872/4872.0b4db90fe6323b28401a.mjs
+//yastatic.net/s3/lpc/renderer/_/8160/8160.cb5e64c36d1fe12e74d2.mjs
+//yastatic.net/s3/lpc/renderer/_/8604/8604.98565abb3f921bcfcefc.mjs
+//yastatic.net/s3/lpc/renderer/_/9450/9450.e942370911b2442b3cf3.mjs
+//yastatic.net/s3/lpc/renderer/_/LcBorders/LcBorders.9d44a6aa304601ba7018.mjs
+//yastatic.net/s3/lpc/renderer/_/LcButtonComponent/LcButtonComponent.176b0b7b740efbf968a1.mjs
+//yastatic.net/s3/lpc/renderer/_/LcCarousel/LcCarousel.b7d974239bdf50a4ad4d.mjs
+//yastatic.net/s3/lpc/renderer/_/LcCustomHtml/LcCustomHtml.9bdfd282a2150cefc004.mjs
+//yastatic.net/s3/lpc/renderer/_/LcFeatures/LcFeatures.78d511d268f8a4bd984d.mjs
+//yastatic.net/s3/lpc/renderer/_/LcGrid2/LcGrid2.1ae205839bf5047c930e.mjs
+//yastatic.net/s3/lpc/renderer/_/LcGroup/LcGroup.5d1e5481509b2bbb8a99.mjs
+//yastatic.net/s3/lpc/renderer/_/LcHeaderLpc/LcHeaderLpc.c760ca6c000132af0d33.mjs
+//yastatic.net/s3/lpc/renderer/_/LcImageLpc/LcImageLpc.3aa3e7ec8a9846d8a8b9.mjs
+//yastatic.net/s3/lpc/renderer/_/LcLogoBlock/LcLogoBlock.31a2b90a1d92c72ee9cd.mjs
+//yastatic.net/s3/lpc/renderer/_/LcMessenger/LcMessenger.bfff5fb451fa29429366.mjs
+//yastatic.net/s3/lpc/renderer/_/LcModal/LcModal.2e49b68c857a47e11e7f.mjs
+//yastatic.net/s3/lpc/renderer/_/LcModerationJs/LcModerationJs.4fbea1195110e01c70ff.mjs
+//yastatic.net/s3/lpc/renderer/_/LcMultiBackground/LcMultiBackground.07c0912ac71f1bdf517c.mjs
+//yastatic.net/s3/lpc/renderer/_/LcText/LcText.3ca597c5cce7cacaa722.mjs
+//yastatic.net/s3/lpc/renderer/_/LcTextComponent/LcTextComponent.f4cbb759e844bcf09650.mjs
+//yastatic.net/s3/lpc/renderer/_/css-desktop-desktop-block-css/css-desktop-desktop-block-css.76dd79ce371e208204a0.mjs
+//yastatic.net/s3/lpc/renderer/_/index/index.818a43c26713e4c46d04.mjs
+//yastatic.net/s3/lpc/renderer/_/init-bundle/init-bundle.76502c68eecf8c27e803.mjs
+/client/register
+/v3
+https://avatars.mds.yandex.net/
+https://avatars.mds.yandex.net/get-lpc/1635340/e4968897-89e3-4c9f-8ef2-4133099e1854/orig
+https://clck.ru/3GCqot
+https://forms.yandex.ru/surveys/6127/?utm_source=ofdmain
+https://lpc-ext.s3.yandex.net/static/_lib/swiper/11.0.6/swiper-bundle.min.css
+https://mc.yandex.ru/
+https://ofd.yandex.ru/
+https://ofd.yandex.ru/check
+https://ofd.yandex.ru/folders?utm_source=landing&amp;utm_campaign=main_page&amp;utm_content=feature_updates_block
+https://ofd.yandex.ru/news
+https://ofd.yandex.ru/news-folders
+https://ofd.yandex.ru/news-otchety
+https://ofd.yandex.ru/partners
+https://ofd.yandex.ru/reports-v2?utm_source=landing&amp;utm_campaign=main_page&amp;utm_content=feature_updates_block
+https://ofd.yandex.ru/tariffs
+https://ofd.yandex.ru/v3/cashboxes/prolongation
+https://ofd.yandex.ru/v3/client/register?utm_source=landing&amp;utm_medium=organic&amp;utm_campaign=main_page&amp;utm_content=hero
+https://ofd.yandex.ru/v3/partner/register?utm_source=landing&amp;utm_campaign=main_page&amp;utm_content=partner_block
+https://t.me/yandexofd_bot
+https://yandex.ru/legal/oferta_ofd/
+https://yandex.ru/support/ofd-client/ru/
+https://yastatic.net/
+https://yastatic.net/react/17.0.2/react-with-dom.min.js
+https://yastatic.net/s3/home/fonts/ys/4/text-regular.woff2
+https://yastatic.net/s3/lpc/custom-js/21686.js
+https://yastatic.net/s3/ofd/tech-docs/Настройки%20связи%20ККТ%20с%20Яндекс%20ОФД.pdf
+mailto:askofd@support.yandex.ru
+tel:+74952217023

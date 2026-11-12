@@ -1,0 +1,91 @@
+URL: https://www.1-ofd.ru/tariffs/
+КОД: 404
+
+Ошибка 404 
+ Продукты 
+ Маркетплейс 
+ Партнёрам 
+ Помощь 
+ О компании 
+ Личный кабинет 
+ ОФД 
+ Облачная касса 
+ ЭДО 
+ ЭПД 
+ ОФД 
+ Синхронизация ОФД с 1С 
+ Контроль выручки 
+ Поток чеков 
+ Облачная касса 
+ Драйвер 1С 
+ Кто мы 
+ Контакты 
+ Cтраница не найдена
+ Вернуться на главную 
+ Правила использования cookie файлов 
+ Политика конфиденциальности 
+ Предоставляем электронные сервисы для бизнеса: ОФД, облачные кассы, ЭДО, аналитику продаж и многое другое
+ 8 495 221 08 40 
+ info@1-ofd.ru 
+ Драйвер 1С 
+ Облачная касса для туризма 
+ Облачная касса 
+ Синхронизация ОФД с 1С 
+ Контроль выручки 
+ Поток чеков 
+ ОФД 
+ ЭПД 
+ ЭДО 
+ Маркетплейс 
+ Маркировка 
+ ЭЦП 
+ Документы 
+ Помощь 
+ Новости 
+ Проверить чек 
+ Отрасли 
+ <div class='t396__elem tn-elem link1 tn-elem__23350580211774940692491000005' data-elem-id='1774940692491000005' data-elem-type='text' data-field-top-value="243" data-field-left-value="899" data-field-height-value="19" data-field-width-value="93" data-field-axisy-value="top" data-field-axisx-value="left" data-field-container-value="grid" data-field-topunits-value="px" data-field-leftunits-value="px" data-field-heightunits-value="px" data-field-widthunits-value="px" data-field-textfit-value="autowidth" data-field-fontsize-value="14" data-field-top-res-360-value="1181" data-field-left-res-360-value="34" data-field-height-res-360-value="22" data-field-width-res-360-value="107" data-field-container-res-360-value="grid" data-field-heightunits-res-360-value="px" data-field-widthunits-res-360-value="px" data-field-textfit-res-360-value="autowidth" data-field-fontsize-res-360-value="16" data-field-top-res-640-value="257" data-field-left-res-640-value="477" data-field-height-res-640-value="16" data-field-width-res-640-value="93" data-field-container-res-640-value="grid" data-field-heightunits-res-640-value="px" data-field-widthunits-res-640-value="px" data-field-textfit-res-640-value="autowidth" data-field-top-res-960-value="256" data-field-left-res-960-value="750" data-field-height-res-960-value="16" data-field-width-res-960-value="93" data-field-container-res-960-value="grid" data-field-heightunits-res-960-value="px" data-field-widthunits
+
+ССЫЛКИ:
+/
+/contacts
+/docs
+/driver-1c
+/ecp/
+/edo
+/epd
+/kontrol
+/markirovka
+/news
+/o-kompanii
+/partneram
+/potok
+/rent-cloud-box
+/rent-cloud-box/ok_turism
+/synch-1c
+/tarify
+http://shop.1-ofd.ru/
+https://1-ofd.ru/error_page
+https://consumer.1-ofd.ru/landing/receipt
+https://fonts.tildacdn.com
+https://help.1-ofd.ru/
+https://help.1-ofd.ru/upload/medialibrary/docs/Politika_AO_ESK_v_oblasti_obrabotki_i_zaschite_pers_dannih.pdf
+https://help.1-ofd.ru/upload/medialibrary/docs/pravila-ispolzovaniya-cookie.pdf
+https://ok.ru/pervyofd
+https://org.1-ofd.ru/registration/login-mail
+https://shop.1-ofd.ru/
+https://static.tildacdn.com
+https://static.tildacdn.com/css/tilda-animation-2.0.min.css
+https://static.tildacdn.com/css/tilda-forms-1.0.min.css
+https://static.tildacdn.com/css/tilda-grid-3.0.min.css
+https://static.tildacdn.com/css/tilda-menu-burger-1.0.min.css
+https://static.tildacdn.com/css/tilda-menu-widgeticons-1.0.min.css
+https://static.tildacdn.com/css/tilda-menusub-1.0.min.css
+https://static.tildacdn.com/css/tilda-menusub-1.1.min.css
+https://static.tildacdn.com/tild3265-3736-4438-a634-383339663539/favico.svg
+https://static.tildacdn.com/ws/project14161357/tilda-blocks-page82652296.min.css?t=1793713274
+https://ttttt.me/FIRSTOFD
+https://vk.com/1ofdru
+https://ws.tildacdn.com
+mailto:info@1-ofd.ru
+tel:8 495 221 08 40

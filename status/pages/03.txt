@@ -1,0 +1,7 @@
+URL: https://api.digitalkassa.ru/v2.1/doc
+КОД: 200
+
+API v2.1
+
+ССЫЛКИ:
+https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700
