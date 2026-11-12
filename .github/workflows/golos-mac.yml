@@ -20,41 +20,6 @@ jobs:
           ls /tmp/mv/v | wc -l
       - name: Звук в ветку golos-mac-voice
         run: |
-          cd /tmp/mv && git init -q -b golos-mac-voice && git config user.name golos && git config user.email golos@users.noreply.github.com
+          cd /tmp/mv && git init -q -b golos-mac-voice2 && git config user.name golos && git config user.email golos@users.noreply.github.com
           git add -A && git commit -qm "голос iPhone: реплики без подсказок (a) и с подсказками ударений (b)"
-          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:golos-mac-voice
-  check:
-    needs: voice
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/pip
-            ~/.cache/huggingface
-            ~/.cache/torch
-          key: golos-mk-v1
-      - name: Проверка
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng >/dev/null
-          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
-          pip install -q transformers phonemizer praat-parselmouth ruaccent matplotlib faster-whisper numpy
-          git clone -q --depth 1 --branch golos-mac-voice --single-branch https://github.com/mikhailusenko88-hub/Mikhail /tmp/mv
-          mkdir -p /tmp/mp/v && for f in /tmp/mv/v/*.wav; do ffmpeg -v error -i "$f" -b:a 48k /tmp/mp/v/$(basename "$f" .wav).mp3; done
-          cp /tmp/mv/index.json /tmp/mp/ && mkdir -p mk_out && python stage_check.py /tmp/mp mk_out/mac.json
-      - name: Commit result
-        if: always()
-        run: |
-          git config user.name golos && git config user.email golos@users.noreply.github.com
-          cp mk_out/mac.json /tmp/mac.json 2>/dev/null || true
-          for i in 1 2 3 4 5 6; do
-            git fetch -q origin golos && git reset -q --hard origin/golos
-            mkdir -p mk_out && cp /tmp/mac.json mk_out/ 2>/dev/null || true
-            git add -A mk_out; git commit -qm "голос iPhone: проверка" || break
-            git push -q origin HEAD:golos && break; sleep 7
-          done
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:golos-mac-voice2
