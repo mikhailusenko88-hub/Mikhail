@@ -9,7 +9,7 @@ const JOBS = [
   ['A910', '8523521242', 'Белые стеновые панели под покраску: декоративные рейки на стену с рельефом «волна», реечные панели из дюрополимера.'],
   ['A703', '8495178294', 'Белый высокий плинтус 80 мм из дюрополимера под покраску — напольный, с каналом для кабеля.'],
 ];
-const READ = ['8068817087'];
+const READ = [];   // номера только для чтения, например ['8068817087']
 const SS = sessionStorage;
 const L = (...a) => { const s = new Date().toTimeString().slice(0, 8) + ' ' + a.join(' '); SS.setItem('nd_log11', (SS.getItem('nd_log11') || '') + s + '\n'); };
 const done = () => (SS.getItem('nd_done11') || '').split(',').filter(Boolean);
@@ -55,9 +55,17 @@ async function job(art, id, sent) {
   if (nPh(d) !== ph0 || (titleInp(d) || {}).value !== ti0) { L('СТОП', art, 'изменились фото или заголовок — не сохраняю'); return false; }
   const btn = d.querySelector('[data-marker="item-edit/button-next"]');
   if (!btn) { L('СТОП', art, 'нет кнопки «Сохранить»'); return false; }
-  btn.click();
+  // После правки описания первый клик только пересчитывает форму (layout + estimate), сохраняет второй клик (проверено 12.11.2026).
   let path = '';
-  await until(() => { try { path = w.location.pathname; } catch (e) { path = '?'; } return !/\/items\/edit/.test(path); }, 60000, 300);
+  const gone = () => { try { path = w.location.pathname; } catch (e) { path = '?'; } return !/\/items\/edit/.test(path); };
+  btn.click();
+  if (!(await until(gone, 5000, 300))) {
+    const b2 = d.querySelector('[data-marker="item-edit/button-next"]') || btn, r = b2.getBoundingClientRect(), o = { bubbles: true, cancelable: true, view: w, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, button: 0 };
+    ['pointerdown', 'mousedown', 'pointerup', 'mouseup'].forEach(e => b2.dispatchEvent(new (e.startsWith('pointer') ? w.PointerEvent : w.MouseEvent)(e, o)));
+    b2.click();
+    L(art, 'второй клик по «Сохранить»');
+    await until(gone, 30000, 300);
+  }
   if (/\/items\/edit/.test(path)) {
     const errs = [...d.querySelectorAll('[class*=error],[data-marker*=error],[role=dialog],[aria-modal=true]')].map(e => (e.innerText || '').trim().replace(/\s+/g, ' ').slice(0, 140)).filter(Boolean).slice(0, 6);
     L('СТОП', art, 'страница не ушла после «Сохранить»', JSON.stringify(errs)); return false;
