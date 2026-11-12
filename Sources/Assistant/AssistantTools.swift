@@ -160,8 +160,8 @@ enum LocalTools {
         ToolSpec(name: "reminder", desc: "Напоминание на телефоне в нужное время.",
                  params: [ToolParam(name: "text", desc: "о чём напомнить"),
                           ToolParam(name: "when", desc: "ГГГГ-ММ-ДД ЧЧ:ММ или «через 30 минут», «через 2 часа»")]),
-        ToolSpec(name: "calc", desc: "Точный расчёт по формуле: + - * / ^ ( ) %. Все расчёты денег и площадей делай только им.",
-                 params: [ToolParam(name: "expr", desc: "например (2.8*3.1-1.2)*1.1")]),
+        ToolSpec(name: "calc", desc: "Точный расчёт: + - * / ^ ( ) %. Несколько формул — через «;». Все расчёты денег и площадей делай только им.",
+                 params: [ToolParam(name: "expr", desc: "например 2.8*3.1-1.2; (2.8*3.1-1.2)*1290")]),
         ToolSpec(name: "open_link", desc: "Открыть на телефоне ссылку: сайт, карта, звонок tel:+7…, письмо mailto:…",
                  params: [ToolParam(name: "url", desc: "ссылка")], danger: true),
     ]
@@ -196,8 +196,8 @@ enum LocalTools {
             return "Навык «\(u.title)» возвращён к версии \(u.version)."
         case "reminder": return await Reminders.add(text: s("text"), when: s("when"))
         case "calc":
-            if let v = Calc.eval(s("expr")) { return "\(s("expr")) = \(Calc.format(v))" }
-            return "Не поняла формулу: \(s("expr"))"
+            let parts = s("expr").split(separator: ";").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+            return parts.map { e in Calc.eval(e).map { "\(e) = \(Calc.format($0))" } ?? "Не поняла формулу: \(e)" }.joined(separator: "\n")
         case "open_link":
             guard let u = URL(string: s("url")) else { return "Плохая ссылка." }
             let ok = await MainActor.run { () -> Bool in UIApplication.shared.open(u); return true }

@@ -211,7 +211,7 @@ struct FirstRunCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Своя нейросеть в телефоне").font(.title2.bold())
-            Text("Один раз скачайте файл нейросети (около 2,4 ГБ, лучше по Wi-Fi). Дальше она работает прямо в iPhone, без интернета и без оплаты. Разговоры и база знаний остаются в телефоне.")
+            Text("Один раз скачайте файл нейросети (около 2,6 ГБ, лучше по Wi-Fi). Дальше она работает прямо в iPhone, без интернета и без оплаты. Разговоры и база знаний остаются в телефоне.")
                 .foregroundColor(.secondary)
             ModelList(store: store)
         }

@@ -17,17 +17,18 @@ struct BrainModel: Identifiable, Equatable {
         ["https://huggingface.co/", "https://hf-mirror.com/"].compactMap { URL(string: $0 + path) }
     }
 
+    // проверено 12.11.2026 на одинаковых заданиях: Qwen3.5 4B сама ищет, открывает источники и считает через calc
     static let all: [BrainModel] = [
-        BrainModel(id: "qwen3-4b", title: "Qwen3 4B — основная",
-                   note: "Лучше всех держит команды и правила. 2,4 ГБ.",
-                   file: "Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
-                   path: "unsloth/Qwen3-4B-Instruct-2507-GGUF/resolve/main/Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
-                   sizeMB: 2381, kind: .qwen3),
-        BrainModel(id: "qwen35-4b", title: "Qwen3.5 4B — новее",
-                   note: "Свежее поколение, умнее в рассуждениях. 2,6 ГБ.",
+        BrainModel(id: "qwen35-4b", title: "Qwen3.5 4B — основная",
+                   note: "Лучше всех ищет, проверяет и выполняет задания. 2,6 ГБ.",
                    file: "Qwen3.5-4B-Q4_K_M.gguf",
                    path: "unsloth/Qwen3.5-4B-GGUF/resolve/main/Qwen3.5-4B-Q4_K_M.gguf",
                    sizeMB: 2613, kind: .qwen35),
+        BrainModel(id: "qwen3-4b", title: "Qwen3 4B — запасная",
+                   note: "Прошлое поколение, чуть меньше. 2,4 ГБ.",
+                   file: "Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+                   path: "unsloth/Qwen3-4B-Instruct-2507-GGUF/resolve/main/Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+                   sizeMB: 2381, kind: .qwen3),
         BrainModel(id: "qwen35-2b", title: "Qwen3.5 2B — быстрая",
                    note: "Вдвое быстрее и легче, но проще. 1,2 ГБ.",
                    file: "Qwen3.5-2B-Q4_K_M.gguf",
@@ -40,7 +41,7 @@ struct BrainModel: Identifiable, Equatable {
 final class ModelStore: NSObject, ObservableObject, URLSessionDownloadDelegate {
     static let shared = ModelStore()
 
-    @Published var selectedID: String = UserDefaults.standard.string(forKey: "brain.model") ?? "qwen3-4b" {
+    @Published var selectedID: String = UserDefaults.standard.string(forKey: "brain.model") ?? "qwen35-4b" {
         didSet { UserDefaults.standard.set(selectedID, forKey: "brain.model") }
     }
     @Published var downloading: String?
