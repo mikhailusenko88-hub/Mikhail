@@ -151,6 +151,25 @@ def cymbal_swell(dur, vel):
     return _swell(dur, vel * (0.55 if CLEAN else 1.0))
 
 
+def wood(vel, f=1150.0):
+    """мягкий деревянный «тик» без шума: две затухающие синусоиды"""
+    n = int(0.09 * SR)
+    t = np.arange(n) / SR
+    s = np.sin(2 * np.pi * f * t) * np.exp(-t / 0.018) + 0.45 * np.sin(2 * np.pi * f * 1.71 * t) * np.exp(-t / 0.010)
+    return vel * s * np.minimum(1, t / 0.0015)
+
+
+def dark_shaker(vel):
+    n = int(0.12 * SR)
+    t = np.arange(n) / SR
+    nz = rng.normal(0, 1, n)
+    b = gaussian_filter1d(nz, 2.2) - gaussian_filter1d(nz, 5.5)          # полоса ~1,3–3,5 кГц, без «шипа»
+    return vel * b * np.minimum(1, t / 0.015) * np.exp(-t / 0.04)
+
+
+PULSE = ""     # "" — как было; "wood" — чистый пульс; "wood+dark" — плюс тёмный шейкер
+
+
 def taiko(vel):
     n = int(1.4 * SR)
     t = np.arange(n) / SR
@@ -275,7 +294,7 @@ def compose(style, plan_name):
     for a, e, c, sec, b, x in segs:
         if sec in ("intro", "end") or style == "tihiy":
             continue
-        if style == "main" and sec == "verse" and P[b][1] in (0, 1, 2, 3):
+        if style == "main" and sec == "verse" and P[b][1] in (0, 1, 2, 3) and "wood" not in PULSE:
             continue
         r_ = m(H[c][0]) + 12
         sub = 4 if (style == "epik" and sec == "climax") else 2
@@ -312,6 +331,12 @@ def compose(style, plan_name):
         elif style == "epik" and sec == "verse":
             bus.add(taiko(0.14), bt(b, 0), pan=0.0, send=0.35)
             bus.add(taiko(0.10), bt(b, 2), pan=0.0, send=0.35)
+        if sec != "intro" and "wood" in PULSE:
+            for j in range(8):
+                bus.add(wood((0.05 if j % 2 == 0 else 0.032) * (1.15 if sec == "climax" else 1.0), 1150 if j % 4 else 1240),
+                        bt(b, j / 2 + 0.01), pan=0.3, send=0.18)
+                if "dark" in PULSE:
+                    bus.add(dark_shaker(0.05 if j % 2 == 0 else 0.035), bt(b, j / 2 + 0.02), pan=-0.3, send=0.12)
         if sec != "intro" and not CLEAN:
             for j in range(8):
                 bus.add(shaker(0.046 if j % 2 == 0 else 0.032), bt(b, j / 2 + 0.02), pan=0.35, send=0.15)
@@ -351,6 +376,7 @@ if __name__ == "__main__":
         CLEAN = True
         th.NOISE = 0.12
         th.AIR = 0.35
+        PULSE = sys.argv[5] if len(sys.argv) > 5 else "wood"
     t = time.time()
     bus, end_t = compose(style, pl)
     L, R = master(bus)
