@@ -1,0 +1,45 @@
+name: golos-nash
+# Свои голоса ru_nash1/2/3 в модели бота «Почему так?» (torch): тот же ли это голос, что в телефоне (ONNX), и как звучит.
+on:
+  push:
+    branches: [golos]
+    paths: [nash_request.txt]
+permissions:
+  contents: write
+jobs:
+  nash:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: sudo mkdir -p /opt/multik-tts && sudo chown $USER /opt/multik-tts
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            /opt/multik-tts/hf
+            /opt/multik-tts/v5_cis_base.pt
+          key: pochemu-albina-v1
+      - name: Озвучщик, как в ферме
+        run: |
+          command -v ffmpeg >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null; }
+          python -m venv /opt/multik-tts/venv
+          /opt/multik-tts/venv/bin/pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          /opt/multik-tts/venv/bin/pip install -q numpy ruaccent praat-parselmouth
+          [ -s /opt/multik-tts/v5_cis_base.pt ] || curl -fsSL -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
+          curl -fsSL -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
+          python nashtest/patch_server.py /opt/multik-tts/server.py
+          cp nashtest/nash_voices.py nashtest/voices.json /opt/multik-tts/
+          /opt/multik-tts/venv/bin/python nashtest/run.py 2>&1 | tail -30
+      - name: В ветку golos-nash-voice (+ телефонные пробы для сравнения)
+        run: |
+          mkdir -p /tmp/out/v
+          for b in golos-nv-voice golos-nw-voice; do git clone -q --depth 1 --branch $b --single-branch https://github.com/${{ github.repository }} /tmp/$b; done
+          for n in nv4_a nv4_b nv4_c; do cp /tmp/golos-nv-voice/v/$n.mp3 /tmp/out/v/onnx_$n.mp3; done
+          for n in nw1_a nw1_b nw1_c nx6_a nx6_b nx6_c; do cp /tmp/golos-nw-voice/v/$n.mp3 /tmp/out/v/onnx_$n.mp3; done
+          for f in /tmp/golos-nv-voice/v/spk_*.mp3; do cp $f /tmp/out/v/; done
+          rm -f /tmp/out/*.wav
+          cd /tmp/out && git init -q -b golos-nash-voice && git config user.name golos && git config user.email golos@users.noreply.github.com
+          git add -A && git commit -qm "свои голоса в модели бота" && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:golos-nash-voice
