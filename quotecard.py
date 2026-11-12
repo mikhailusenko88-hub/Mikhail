@@ -14,6 +14,7 @@ sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent))
 import fastvid as fv  # noqa: E402
 import music as music_mod  # noqa: E402
 import orchestra as orchestra_mod  # noqa: E402
+import voice_music as voice_mod  # noqa: E402
 
 W, H = 1080, 1920
 FPS = 30
@@ -1546,8 +1547,11 @@ def render_multi(cfg, out_path, preview=None, log=print):
     line_times = []
     for S, off in zip(segs, offsets):
         line_times += [off + tt for tt in S["T_RU"] + [S["T_EN"][0], S["T_AUTHOR"]]]
-    mm = orchestra_mod if cfg["music"] in orchestra_mod.STYLES else music_mod
-    audio = mm.make_music(cfg["music"], TOTAL, seed + 100, line_times)
+    if cfg["music"] in voice_mod.STYLES:                    # свои мелодии с голосом: стерео, уже сведены
+        audio = voice_mod.make_music(cfg["music"], nfr_total / FPS, seed + 100, line_times)
+    else:
+        mm = orchestra_mod if cfg["music"] in orchestra_mod.STYLES else music_mod
+        audio = mm.make_music(cfg["music"], TOTAL, seed + 100, line_times)
     writer.close(audio, peak=0.7)
     log(f"готово {out_path}: {time.time() - t_start:.0f} с")
     return TOTAL
