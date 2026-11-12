@@ -15,8 +15,8 @@ jobs:
             f=$(ls v.* | head -1); s=${id:0:6}
             for t in 15 75 150 240 320; do ffmpeg -v error -y -ss $t -i "$f" -frames:v 1 -q:v 2 rt/${s}_$t.jpg; done
             ffmpeg -v error -y -ss 75 -i "$f" -frames:v 6 -vf "crop=960:540:480:270" -q:v 2 rt/${s}_seq75_%02d.jpg
-            echo "== разница соседних кадров (YAVG), 75–79 с"; ffmpeg -v error -ss 75 -t 4 -i "$f" -vf "tblend=all_mode=difference,signalstats,metadata=print:key=lavfi.signalstats.YAVG" -f null - 2>&1 | grep -o "YAVG=[0-9.]*" | tr '\n' ' '; echo
-            echo "== по всему ролику: средняя разница кадров по секундам (первые 60 с)"; ffmpeg -v error -t 60 -i "$f" -vf "tblend=all_mode=difference,signalstats,metadata=print:key=lavfi.signalstats.YAVG" -f null - 2>&1 | grep -o "YAVG=[0-9.]*" | cut -d= -f2 | awk '{a[int((NR-1)/25)]+=$1; c[int((NR-1)/25)]++} END{for(i=0;i<60;i++) printf "%.1f ", a[i]/c[i]; print ""}'
+            echo "== разница соседних кадров (YAVG), 75–79 с"; ffmpeg -hide_banner -ss 75 -t 4 -i "$f" -vf "tblend=all_mode=difference,signalstats,metadata=print:key=lavfi.signalstats.YAVG" -f null - 2>&1 | grep -o "YAVG=[0-9.]*" | tr '\n' ' '; echo
+            echo "== по всему ролику: средняя разница кадров по секундам (первые 60 с)"; ffmpeg -hide_banner -t 60 -i "$f" -vf "tblend=all_mode=difference,signalstats,metadata=print:key=lavfi.signalstats.YAVG" -f null - 2>&1 | grep -o "YAVG=[0-9.]*" | cut -d= -f2 | awk '{a[int((NR-1)/25)]+=$1; c[int((NR-1)/25)]++} END{for(i=0;i<60;i++) if(c[i]) printf "%.1f ", a[i]/c[i]; print ""}'
             echo "== ключевые кадры и типы кадров (первые 120)"; ffprobe -v error -select_streams v -show_entries frame=pict_type,key_frame,pkt_size -read_intervals "%+5" -of csv "$f" | head -130 | awk -F, '{printf "%s%s ", $3, ($2==1?"*":"")} END{print ""}'
           done
           git config user.name ci; git config user.email ci@local; git add rt; git commit -q -m "rt frames"; git push -q
