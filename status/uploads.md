@@ -37,3 +37,5 @@
 | shorts | 2026-11-11 | 3 | France vs Canada vs Guatemala | https://youtube.com/shorts/GyJkhqnBm0k | |
 | 26 | 2026-11-12 | 1 | S2 RACE 13/68 | https://youtu.be/xs-nnApDH_U | public |
 | shorts | 2026-11-12 | 1 | India vs Spain vs Colombia | https://youtube.com/shorts/BD1Uu9Hmq00 | |
+| 27 | 2026-11-12 | 2 | S2 RACE 14/68 | https://youtu.be/wBim2xVGDhw | public |
+| shorts | 2026-11-12 | 2 | Thailand vs Korea vs Algeria | https://youtube.com/shorts/WhcJp-CrgPQ | |
