@@ -1,0 +1,31 @@
+name: z3-pack
+# Последняя удачная сборка «Замер 3D» (проект для Xcode) — в ветку builds, чтобы забрать её через git.
+on:
+  push:
+    branches: [domain-check]
+    paths: ["z3-pack/**"]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Забрать и выложить
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -e
+          RID=$(gh run list -R "$REPO" --branch mebel-3d --workflow "Build IPA" --status success -L 1 --json databaseId,headSha -q '.[0].databaseId')
+          SHA=$(gh run view "$RID" -R "$REPO" --json headSha -q .headSha)
+          echo "сборка $RID из $SHA"
+          mkdir -p /tmp/b && cd /tmp/b
+          gh run download "$RID" -R "$REPO" -n Zamer3D-Xcode
+          ls -la
+          git init -q -b builds .
+          git config user.name z3-pack; git config user.email z3-pack@users.noreply.github.com
+          git add Zamer3D-Xcode.zip
+          git commit -qm "Zamer3D-Xcode из ${SHA:0:7}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" HEAD:builds
