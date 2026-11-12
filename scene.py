@@ -302,9 +302,9 @@ def cyl(name, x, y, z0, z1, r0, r1, mat, n=48, caps=True, smooth=True):
     return make_obj(name, v, f, [mat], smooth=sm)
 
 
-def slat_wall(name, x0, x1, z_top, y_wall, m_wood, m_black, zbot=None, step=0.040, lam_w=0.0248, total_t=0.012, base_t=0.0042,
-              tex_m=1.0, cham=0.0007):
-    """Реечные панели 120×12 мм: 3 ламели на чёрной основе, шаг 40 мм, ламель 24,8 мм. Лицом к −Y.
+def slat_wall(name, x0, x1, z_top, y_wall, m_wood, m_black, zbot=None, step=0.040, lam_w=0.0295, total_t=0.012, base_t=0.006,
+              tex_m=1.0, cham=0.0008):
+    """Реечные панели 120×12 мм: 3 рейки, шаг 40 мм, рейка 29,5 мм, паз 10,5 мм глубиной 6 мм (по живому образцу). Лицом к −Y.
     zbot(x) — высота низа (для арок/проёмов), по умолчанию от пола."""
     zb = zbot or (lambda x: 0.0)
     yb, yf = y_wall - base_t, y_wall - total_t
@@ -904,56 +904,89 @@ def table_lamp(x, y, z, lamps):
     lamps.append((ld, float(A.get('lamp', 5.0))))
 
 
-def panel_piece(name, loc, rot, length, step=0.040, lam_w=0.0248, total_t=0.012, base_t=0.0042, n=3):
-    """Отрезок реечной панели (3 ламели на чёрной основе) лежит лицом вверх: виден торец."""
+def mat_foam():
+    """Срез вспененного полистирола: тёмный графит, поры и светлые крупинки."""
+    m = bpy.data.materials.get('pan_foam')
+    if m:
+        return m
+    m, nt, out = new_mat('pan_foam')
+    b = principled(nt, out, Roughness=0.6, **{'Specular IOR Level': 0.5})
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    vo = nt.nodes.new('ShaderNodeTexVoronoi')
+    vo.inputs['Scale'].default_value = float(A.get('foam_scale', 1900.0))
+    nt.links.new(tc.outputs['Object'], vo.inputs['Vector'])
+    nz = nt.nodes.new('ShaderNodeTexNoise')
+    nz.inputs['Scale'].default_value = 700.0
+    nz.inputs['Detail'].default_value = 6.0
+    nt.links.new(tc.outputs['Object'], nz.inputs['Vector'])
+    cr = nt.nodes.new('ShaderNodeValToRGB')
+    cr.color_ramp.elements[0].position = 0.40
+    cr.color_ramp.elements[0].color = (0.006, 0.006, 0.007, 1)
+    cr.color_ramp.elements[1].position = 0.78
+    cr.color_ramp.elements[1].color = (0.085, 0.085, 0.09, 1)
+    nt.links.new(nz.outputs['Fac'], cr.inputs['Fac'])
+    nt.links.new(cr.outputs['Color'], b.inputs['Base Color'])
+    ad = nt.nodes.new('ShaderNodeMath')
+    ad.operation = 'ADD'
+    nt.links.new(vo.outputs['Distance'], ad.inputs[0])
+    nt.links.new(nz.outputs['Fac'], ad.inputs[1])
+    bp = nt.nodes.new('ShaderNodeBump')
+    bp.inputs['Strength'].default_value = 1.0
+    bp.inputs['Distance'].default_value = 0.0005
+    nt.links.new(ad.outputs[0], bp.inputs['Height'])
+    nt.links.new(bp.outputs['Normal'], b.inputs['Normal'])
+    return m
+
+
+def panel_piece(name, loc, rot, length, mode='face', n=3):
+    """Отрезок реечной панели по живому образцу: профиль «змейкой» с пустотами под рейками, срез вспененный,
+    тыльная сторона глянцевая. mode: face — лицом вверх, back — тыльной стороной вверх."""
+    if ROOT not in sys.path:
+        sys.path.insert(0, ROOT)
+    import slat_profile as SP
+    prof = SP.rounded(SP.outline(n))
     m_wood = bpy.data.materials.get('decor_' + DECOR) or mat_decor(DECOR)
-    m_black = bpy.data.materials.get('pan_black') or mat_simple('pan_black', (0.007, 0.007, 0.008, 1), rough=0.8,
-                                                                **{'Specular IOR Level': 0.25})
-    w = n * step
-    V, F, FM, UV, JIT = [], [], [], [], []
-
-    def face(pts, mat, uv=None, j=0.5):
-        k = len(V)
-        V.extend(pts)
-        F.append(tuple(range(k, k + len(pts))))
-        FM.append(mat)
-        UV.append(uv or [(0, 0)] * len(pts))
-        JIT.append(j)
-
-    L = length
-    # основа: коробка 0..w × 0..L × 0..base_t (ось X — поперёк, Y — вдоль)
-    face([(0, 0, 0), (0, L, 0), (w, L, 0), (w, 0, 0)], 1)
-    face([(0, 0, base_t), (w, 0, base_t), (w, L, base_t), (0, L, base_t)], 1)
-    face([(0, 0, 0), (w, 0, 0), (w, 0, base_t), (0, 0, base_t)], 1)
-    face([(w, L, 0), (0, L, 0), (0, L, base_t), (w, L, base_t)], 1)
-    face([(0, L, 0), (0, 0, 0), (0, 0, base_t), (0, L, base_t)], 1)
-    face([(w, 0, 0), (w, L, 0), (w, L, base_t), (w, 0, base_t)], 1)
-    for i in range(n):
-        xl = i * step + (step - lam_w)
-        xr = xl + lam_w
-        u0, v0, j = random.random(), random.random(), random.random()
-        uv = [(u0, v0), (u0 + lam_w, v0), (u0 + lam_w, v0 + L), (u0, v0 + L)]
-        face([(xl, 0, total_t), (xr, 0, total_t), (xr, L, total_t), (xl, L, total_t)], 0, uv, j)
-        face([(xl, 0, base_t), (xr, 0, base_t), (xr, 0, total_t), (xl, 0, total_t)], 1)
-        face([(xr, L, base_t), (xl, L, base_t), (xl, L, total_t), (xr, L, total_t)], 1)
-        face([(xl, L, base_t), (xl, 0, base_t), (xl, 0, total_t), (xl, L, total_t)], 1)
-        face([(xr, 0, base_t), (xr, L, base_t), (xr, L, total_t), (xr, 0, total_t)], 1)
-    ob = make_obj(name, V, F, [m_wood, m_black], face_mats=FM, uvs=UV, jit=JIT)
+    m_skin = bpy.data.materials.get('pan_skin') or mat_simple('pan_skin', (0.007, 0.007, 0.008, 1), rough=0.42, **{'Specular IOR Level': 0.4})
+    m_back = bpy.data.materials.get('pan_back') or mat_simple('pan_back', (0.006, 0.006, 0.007, 1), rough=0.2)
+    N, L = len(prof), length
+    V = [(x / 1000.0, 0.0, z / 1000.0) for x, z, _ in prof] + [(x / 1000.0, L, z / 1000.0) for x, z, _ in prof]
+    F, FM, UV, JIT = [], [], [], []
+    offs = [(random.random(), random.random(), random.random()) for _ in range(n)]
+    for k in range(N):
+        j = (k + 1) % N
+        tag = prof[k][2]
+        F.append((k, N + k, N + j, j))
+        if tag == 'w':
+            u0, v0, jt = offs[min(n - 1, int(((prof[k][0] + prof[j][0]) / 2) // SP.STEP))]
+            ua, ub = u0 + prof[k][0] / 1000.0, u0 + prof[j][0] / 1000.0
+            UV.append([(ua, v0), (ua, v0 + L), (ub, v0 + L), (ub, v0)])
+            FM.append(0)
+            JIT.append(jt)
+        else:
+            UV.append([(0, 0)] * 4)
+            FM.append(1 if tag == 's' else 2)
+            JIT.append(0.5)
+    for cap in (tuple(range(N)), tuple(reversed(range(N, 2 * N)))):
+        F.append(cap)
+        FM.append(3)
+        UV.append([(0, 0)] * N)
+        JIT.append(0.5)
+    ob = make_obj(name, V, F, [m_wood, m_skin, m_back, mat_foam()], face_mats=FM, uvs=UV, jit=JIT)
     try:
+        ob.data.validate()
         import bmesh
         bm = bmesh.new()
         bm.from_mesh(ob.data)
-        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-6)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         bm.to_mesh(ob.data)
         bm.free()
     except Exception as e:  # noqa
-        log('piece weld', e)
-    md = ob.modifiers.new('bev', 'BEVEL')
-    md.width = 0.0005
-    md.segments = 2
-    md.limit_method = 'ANGLE'
+        log('panel piece normals', e)
     ob.location = loc
     ob.rotation_euler = (0, 0, R(rot))
+    if mode == 'back':
+        ob.rotation_euler = (0, math.pi, R(rot))
+        ob.location = (loc[0], loc[1], loc[2] + 0.012)
     return ob
 
 
@@ -1069,6 +1102,9 @@ def scene_lounge():
         camera((2.35, 4.62, 1.47), (1.75, D - 0.012, 1.42), lens=60, fstop=FS(8.0), focus=0.83)
     elif cm == 'mid':           # средний план: тумба с вещами, рельеф стены читается
         camera((2.2, 2.6, 1.1), (2.1, D, 0.95), lens=35, fstop=FS(5.6), focus=2.4)
+    elif cm == 'angle':         # три четверти от правой стены: стена уходит в перспективу, слева вдали окно
+        camera((float(A.get('ax', 3.85)), float(A.get('ay', 3.2)), float(A.get('az', 1.2))), (float(A.get('lx', 1.75)), D, 0.95),
+               lens=float(A.get('lens', 38)), fstop=FS(None))
     elif cm == 'diag':          # по диагонали от правой стены: окно, растение, тумба, кресло
         camera((3.95, 1.25, 1.2), (1.5, D, 1.0), lens=30, fstop=FS(5.6), focus=4.2)
     elif cm == 'sample':
@@ -1213,24 +1249,30 @@ def scene_plinth():
             oA = Vector((tcx - 0.07, tcy + 0.02, 0))
             oB = oA + wA * (wd + 0.05) + wB * wd + dA * 0.08
 
-            def piece(nm, o, r, L):
+            def piece(nm, o, r, L, back=False):
                 if item == 'a910':
                     mpc = bpy.data.materials.get('a910_paint') or mat_simple('a910_paint', hexcol(A.get('paint910', 'EFEEEA')), rough=0.55,
                                                                              bump=0.02, bump_scale=1500.0)
                     return reeded_piece(nm, (o.x, o.y, 0.0), r, L, mpc)
-                return panel_piece(nm, (o.x, o.y, 0.0), r, L)
+                return panel_piece(nm, (o.x, o.y, 0.0), r, L, mode='back' if back else 'face')
 
             LA, LB = 0.42, 0.34
             piece('pc_a', oA, ra, LA)
             pts = [oA, oA + dA * LA, oA + wA * wd, oA + dA * LA + wA * wd]
-            if cm == 'top' and st == 'two':        # второй отрезок — крест-накрест поверх первого, тоже лицом вверх
-                rb = float(A.get('rot_b', 30))
-                dB, wB = Vector((-math.sin(R(rb)), math.cos(R(rb)), 0)), Vector((math.cos(R(rb)), math.sin(R(rb)), 0))
+            if item == 'a910' and 'set' not in A:
+                st = 'stack'                       # тыльная сторона A910 не проверена — показываем только лицо
+            if cm == 'top' and st == 'two':        # второй отрезок рядом, тыльной стороной вверх
+                oB = oA + wA * (wd + 0.05) + wB * wd + dA * 0.08
+                piece('pc_b', oB, rb, LB, back=True)
+                pts += [oB, oB + dB * LB, oB - wB * wd, oB + dB * LB - wB * wd]
+            elif cm == 'top' and st == 'stack':    # второй отрезок крест-накрест поверх первого, лицом вверх
+                rs = float(A.get('rot_s', 30))
+                dS, wS = Vector((-math.sin(R(rs)), math.cos(R(rs)), 0)), Vector((math.cos(R(rs)), math.sin(R(rs)), 0))
                 LB = 0.36 if item != 'a910' else 0.40
-                oB = oA + dA * (LA * 0.64) + wA * (wd / 2) - dB * (LB / 2) - wB * (wd / 2)
-                b = piece('pc_b', oB, rb, LB)
-                b.location = (oB.x, oB.y, 0.012)
-                pts += [oB, oB + dB * LB, oB + wB * wd, oB + dB * LB + wB * wd]
+                oS = oA + dA * (LA * 0.64) + wA * (wd / 2) - dS * (LB / 2) - wS * (wd / 2)
+                bobj = piece('pc_b', oS, rs, LB)
+                bobj.location = (oS.x, oS.y, 0.012)
+                pts += [oS, oS + dS * LB, oS + wS * wd, oS + dS * LB + wS * wd]
             xs, ys = [q.x for q in pts], [q.y for q in pts]
             grp = ((min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2, max(max(xs) - min(xs), (max(ys) - min(ys)) * 1.1) + 0.06)
     elif cm not in ('wide', 'corner', 'run', 'wall') and A.get('piece', '1') == '1':

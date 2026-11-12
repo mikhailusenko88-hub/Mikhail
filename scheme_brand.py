@@ -116,9 +116,9 @@ def slat(art, title, sub, tex_path, out, pack=19):
     rnd = random.Random(5)
     d.rectangle(P(px, py, px + pw, py + ph), fill=BLACK)
     for i in range(3):
-        xl, lw = px + (i * 40 + 15.2) * k, 24.8 * k
+        xl, lw = px + (i * 40) * k, 29.5 * k
         if tex:
-            tw = max(8, int(tex.width * 24.8 / size_mm))
+            tw = max(8, int(tex.width * 29.5 / size_mm))
             th = min(tex.height - 1, int(tw * ph / lw))
             x0, y0 = rnd.randint(0, tex.width - tw - 1), rnd.randint(0, tex.height - th - 1)
             im.paste(tex.crop((x0, y0, x0 + tw, y0 + th)).resize((int(lw * S), int(ph * S)), Image.LANCZOS), (int(xl * S), int(py * S)))
@@ -135,16 +135,17 @@ def slat(art, title, sub, tex_path, out, pack=19):
     k2, sx, sy = 6.3, 700, 400
     text(d, (sx, 262), 'Сечение панели', font(30, 'SemiBold'))
     wood = tex.resize((1, 1), Image.BOX).getpixel((0, 0)) if tex else (188, 146, 119)
-    d.rectangle(P(sx, sy + 7.8 * k2, sx + 120 * k2, sy + 12 * k2), fill=BLACK)
+    import slat_profile as SP                      # настоящий профиль по живому образцу: «змейка» с пустотами под рейками
+    prof = SP.rounded(SP.outline(3))
+    d.polygon([((sx + x * k2) * S, (sy + (12 - z) * k2) * S) for x, z, _ in prof], fill=BLACK)
     for i in range(3):
-        xl = sx + (i * 40 + 15.2) * k2
-        d.rectangle(P(xl, sy, xl + 24.8 * k2, sy + 7.8 * k2 + 1), fill=BLACK)
-        d.rectangle(P(xl, sy - 3, xl + 24.8 * k2, sy + 3), fill=wood)
-    dim_h(d, sx + (40 + 15.2) * k2, sx + 80 * k2, sy - 32, 'ламель ≈25')
-    dim_h(d, sx + 80 * k2, sx + (80 + 15.2) * k2, sy - 32, '≈15')
+        xl = sx + (i * 40) * k2
+        d.rectangle(P(xl + 0.6 * k2, sy - 3, xl + 28.9 * k2, sy + 3), fill=wood)
+    dim_h(d, sx + 40 * k2, sx + 69.5 * k2, sy - 32, 'рейка ≈30')
+    dim_h(d, sx + 69.5 * k2, sx + 80 * k2, sy - 32, '≈10')
     dim_h(d, sx, sx + 120 * k2, sy + 12 * k2 + 44, '120 мм', up=False)
     dim_v(im, d, sx + 120 * k2 + 40, sy, sy + 12 * k2, '12 мм', left=False)
-    text(d, (sx, sy + 12 * k2 + 102), 'основа чёрная · лицевая сторона ламелей — «под дерево»', font(22), SUBL)
+    text(d, (sx, sy + 12 * k2 + 102), 'профиль полый, чёрный · лицевая сторона реек — «под дерево»', font(22), SUBL)
     # ---- цифры
     area = 0.12 * 3.0
     card(d, 700, 690, 1500, 830, '120 × 3000 × 12 мм', 'ширина × длина × толщина')
@@ -233,9 +234,9 @@ if __name__ == '__main__':
         NOLOGO = True
     art, out = sys.argv[1], sys.argv[2]
     tex = sys.argv[3] if len(sys.argv) > 3 else None
-    subs = {'3-7': 'под дерево · дуб натуральный · 3 ламели на чёрной основе',
-            '3-15': 'под дерево · светлое натуральное дерево · 3 ламели на чёрной основе',
-            '3-9': 'под дерево · орех тёмный · 3 ламели на чёрной основе'}
+    subs = {'3-7': 'под дерево · дуб натуральный · 3 рейки, чёрные пазы',
+            '3-15': 'под дерево · светлое натуральное дерево · 3 рейки, чёрные пазы',
+            '3-9': 'под дерево · орех тёмный · 3 рейки, чёрные пазы'}
     if art in subs:
         slat(art, f'Реечная панель {art}', subs[art], tex, out)
     elif art == 'A910':

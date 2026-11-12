@@ -1,8 +1,11 @@
 # имя  аргументы для scene.py (или "py script.py")
-f37_stack scene=plinth cam=top item=panel decor=3-7 surf=plaster zoom=0.8 ev=-0.35 res=1600x1200 samples=260 noise=0.025
-f39_stack scene=plinth cam=top item=panel decor=3-9 surf=plaster zoom=0.8 ev=-0.35 res=1600x1200 samples=260 noise=0.025
-f315_stack scene=plinth cam=top item=panel decor=3-15 surf=plaster surfcol=C4BEB4 zoom=0.8 ev=-0.35 res=1600x1200 samples=260 noise=0.025
-f910_stack scene=plinth cam=top item=a910 cy=2.8 zoom=0.85 ev=-0.1 res=1600x1200 samples=260 noise=0.025
-k703_green scene=plinth cam=corner paint=6F7F76 plcol=6F7F76 cdx=0.40 cdy=0.58 nstr=0 fstop=0 fill=1500 reexp=0.25 ev=-0.2 res=1600x1200 samples=260 noise=0.025
-k703_corner scene=plinth cam=corner paint=4F5B5E nstr=0.12 fstop=0 fill=1500 reexp=0.16 res=1600x1200 samples=260 noise=0.025
-k703_beige scene=plinth cam=corner paint=A89A88 cdx=0.45 cdy=0.55 cam_z=0.18 nstr=0.12 fstop=0 fill=1500 reexp=0.34 res=1600x1200 samples=260 noise=0.025
+t37_two scene=plinth cam=top item=panel decor=3-7 surf=plaster zoom=0.85 ev=-0.35 res=800x600 samples=48 noise=0.08
+t37_stack scene=plinth cam=top item=panel decor=3-7 surf=plaster set=stack zoom=0.85 ev=-0.35 res=800x600 samples=48 noise=0.08
+t37_cut_a scene=plinth cam=cut item=panel decor=3-7 surf=plaster up=0.30 side=0.10 ev=-0.35 res=800x600 samples=48 noise=0.08
+t37_cut_b scene=plinth cam=cut item=panel decor=3-7 surf=plaster up=0.34 side=0.45 zoom=1.05 ev=-0.35 res=800x600 samples=48 noise=0.08
+t37_cut_c scene=plinth cam=cut item=panel decor=3-7 surf=plaster up=0.22 side=0.30 zoom=0.9 ev=-0.35 res=800x600 samples=48 noise=0.08
+t37_macro scene=lounge decor=3-7 cam=macro fs=0 res=800x600 samples=48 noise=0.08
+t37_main scene=lounge decor=3-7 res=800x600 samples=48 noise=0.08
+t910_angle_a scene=lounge decor=A910 paint=5F7563 cam=angle chair_at=3.9,0.6 cabcol=3B3F42 ev=-0.3 res=800x600 samples=48 noise=0.08
+t910_angle_b scene=lounge decor=A910 paint=5F7563 cam=angle chair_at=3.9,0.6 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.3 res=800x600 samples=48 noise=0.08
+t910_angle_c scene=lounge decor=A910 paint=5F7563 cam=angle chair_at=3.9,0.6 cabcol=3B3F42 ax=3.6 ay=3.65 lens=45 sun_az=32 sun_el=52 ev=-0.3 res=800x600 samples=48 noise=0.08
