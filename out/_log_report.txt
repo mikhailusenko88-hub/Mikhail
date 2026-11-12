@@ -1,5 +1,8 @@
-== in/final_chisto_epik.m4a
-== in/final_chisto_kuplet.m4a
-== in/final_chisto_main.m4a
-== in/final_chisto_raspev.m4a
-== in/final_chisto_tihiy.m4a
+== in/r4_epik.m4a
+== in/r4_kuplet.m4a
+== in/r4_main.m4a
+== in/r4_raspev.m4a
+== in/r4_shkatulka.m4a
+== in/r4_sobor.m4a
+== in/r4_sovr.m4a
+== in/r4_tihiy.m4a
