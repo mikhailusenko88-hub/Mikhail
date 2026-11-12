@@ -11,7 +11,8 @@ const PLACES = [[/(двор|у дома|возле дома|около дома|
   [/(двор|у дома|возле дома|крыльц|сад)/, 'yard'], [/(луг|пол[ея]|поляна|полянк)/, 'meadow'], [/(лес|роща|чащ)/, 'forest']];
 const TIMES = [[/(ночь|ночью|ночн|темно)/, 'night'], [/(вечер|закат)/, 'evening'], [/(утро|утром|день|дн[её]м)/, 'day']];
 const MUSIC = [[/(смешн|забавн|шутлив|комичн|дурашл|озорн)/, 'funny'], [/(таинств|загадоч|жутк|хэллоуин|хеллоуин|страшилк|мистич|призрач)/, 'spooky'], [/(груст|печал)/, 'sad'], [/(тревож|страшн|напряж|погон)/, 'tense'], [/(приключ|бодр)/, 'adventure'], [/(волшеб|сказоч|чудес)/, 'magic'], [/(ночн|колыбел|тих)/, 'night'], [/(спокойн|нежн|мягк)/, 'calm'], [/(весел|радост)/, 'happy'], [/(без музыки|нет|тишин)/, 'none']];
-const SFX = [[/(бум|удар|бах|грох)/, 'thud'], [/(дзынь|динь)/, 'ding'], [/(волшеб|магия|чудо)/, 'magic'], [/(искр|блеск)/, 'sparkle'], [/(стук)/, 'knock'], [/(звонок|колокол)/, 'bell'],
+const OFF_LAUGH = /(за кадром|чей-?то|кто-?то|незнаком|таинств|загадоч|издалека|вдалеке|вдали|голос|эхо)/;
+const SFX = [[/(злове|жутк|страшн|ведьм|злодейск|коварн)[а-яё]*\s+(смех|хохот|хихик)|(смех|хохот|хихик)[а-яё]*\s+(злове|жутк|страшн|ведьм|злодея|коварн)/, 'laughEvil'], [/(бум|удар|бах|грох)/, 'thud'], [/(дзынь|динь)/, 'ding'], [/(волшеб|магия|чудо)/, 'magic'], [/(искр|блеск)/, 'sparkle'], [/(стук)/, 'knock'], [/(звонок|колокол)/, 'bell'],
   [/(мяу)/, 'meow'], [/(гав)/, 'bark'], [/(смех|хаха)/, 'laugh'], [/(всплеск|плюх)/, 'splash'], [/(хлоп)/, 'clap'], [/(вжух|свист|ух)/, 'whoosh'], [/(барабан)/, 'drum'], [/(прыг|боинг)/, 'boing'], [/(шаг)/, 'step'], [/(хлопок|чпок|поп)/, 'pop']];
 const PROPS = [[/^тыкв/, 'pumpkin'], [/^(гриб|грибок)/, 'mushroom'], [/^зонт/, 'umbrella'], [/^(конфет|карамел)/, 'candy'], [/^морожен/, 'icecream'], [/^леденец|^леденц/, 'lollipop'],
   [/^банан/, 'banana'], [/^груш/, 'pear'], [/^арбуз/, 'watermelon'], [/^(мед$|мёд|меда|мёда|медом|мёдом|бочонок|бочонк)/, 'honey'], [/^(лейк|лейч)/, 'wateringcan'], [/^(ведр|ведёр|ведер)/, 'bucket'], [/^(лопат|совок|совоч)/, 'shovel'],
@@ -248,13 +249,17 @@ S.parse = function (text, lib, opts) {
   for (const raw0 of lines) {
     applyTheme(); lineNo++;
     let raw = raw0.trim(); if (!raw || /^(персонаж|герой|новый персонаж)\s*[:\-—]/i.test(raw) || /^\/\//.test(raw)) continue;
-    const L = low(raw);
+    let L = low(raw);
     let m;
     if ((m = raw.match(/^(?:сериал|мультик|мультфильм)\s*[:\-—]\s*(.+)$/i))) { series = m[1].trim(); if (ep) ep.series = series; continue; }
     if ((m = raw.match(/^серия\s*[:\-—]?\s*(\d+)?\s*[.:\-—]?\s*(.*)$/i))) { theme = null; newEp(m[1] ? +m[1] : (eps.length ? eps[eps.length - 1].episode + 1 : (opts.nextEpisode || 1)), m[2].trim()); continue; }
     if ((m = raw.match(/^(?:сцена|место|локация)\s*\d*\s*[:.\-—]?\s*(.*)$/i))) { if (!ep) newEp(opts.nextEpisode || 1, ''); newScene(m[1] || ''); continue; }
     if ((m = raw.match(/^музыка\s*[:\-—]\s*(.+)$/i))) { const mu = pick(MUSIC, low(m[1])) || 'happy'; if (sc) sc.steps.push({ music: mu }); else music = mu; continue; }
-    if ((m = raw.match(/^(?:звук|шум)\s*[:\-—]\s*(.+)$/i))) { ensureScene(); const s = pick(SFX, low(m[1])); if (s) sc.steps.push({ sfx: s }); else warnings.push(`Строка ${lineNo}: не знаю звук «${m[1]}»`); continue; }
+    if ((m = raw.match(/^(?:звук|шум)\s*[:\-—]\s*(.+)$/i))) { ensureScene(); const sl = low(m[1]), s = pick(SFX, sl);
+      // «ЗВУК: смех», а герои в сцене — смеются они сами, каждый своим смехом (как «Все смеются.»), а не запись «никого» за кадром;
+      // «смех за кадром / чей-то / загадочный» — смех за кадром, «зловещий / жуткий смех» — жуткий (только для страшилок)
+      if (s === 'laugh' && !OFF_LAUGH.test(sl) && Object.keys(sc._cast).some(x => x !== 'Р' && !(sc._out || {})[x] && (!sc._cast[x].hidden || (sc._on || {})[x]))) { raw = 'Все смеются.'; L = low(raw); }
+      else { if (s) sc.steps.push({ sfx: s }); else warnings.push(`Строка ${lineNo}: не знаю звук «${m[1]}»`); continue; } }
     if ((m = L.match(/^пауза\s*(\d+(?:[.,]\d+)?)?/))) { ensureScene(); sc.steps.push({ wait: m[1] ? +m[1].replace(',', '.') : 1 }); continue; }
     if ((m = raw.match(/^(?:камера|план)\s*[:\-—]\s*(.+)$/i)) || /^\(?\s*(крупн|общий план|средний план|оба в кадре)/.test(L)) { ensureScene(); camera(m ? m[1] : raw); continue; }
     if (!ep) newEp(opts.nextEpisode || 1, '');

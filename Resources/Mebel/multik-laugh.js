@@ -27,14 +27,15 @@
   /** Какой смех у героя: выбранный в настройках (c.laughId) или автоматически — ближайший по высоте к его голосу,
       хихиканье для писклявых, басистый для великанов; всегда один и тот же для героя (по имени). */
   L.idFor = function (ln, lib) {
-    const list = L.list().filter(x => !/\+$/.test(x.id)); if (!list.length) return null;
+    const list = L.list().filter(x => !/\+$/.test(x.id) && !x.horror); if (!list.length) return null;   // жуткие смехи (horror) сами не выбираются — только «ЗВУК: зловещий смех» или если выбрать вручную
+    if (ln.horror) { const h = L.list().find(x => x.horror); if (h) return h.id; }
     const c = (lib.characters || {})[ln.who] || {};
     const pk = typeof MK !== 'undefined' && MK.laughPick ? MK.laughPick(lib, ln.who) : c.laughId; // 'voice' — своим голосом (Барсик, Пик по умолчанию)
     if (pk === 'voice') return 'voice'; if (pk && L.byId(pk)) return pk;
     const nm = String((c.spec && c.spec.name) || '').trim().toLowerCase(), hd = (L.bank && L.bank.heroes) || {}; // выбранные на пробах (Барсик — F9, Рон — M4)
     if (nm && hd[nm] && L.byId(hd[nm])) return hd[nm];
     { const kd = c.spec && c.spec.kind, fav = kd ? list.filter(x => (x.for || []).includes(kd)) : []; if (fav.length) return fav[hash32(String(ln.who) + ((c.spec && c.spec.name) || '')) % fav.length].id; }   // смех, подобранный под вид героя (медвежонку — тёплое низкое «хо-хо-хо», а не женское)
-    if (ln.who === '?') { const K = list.filter(x => x.group === 'K' && x.style === 'giggle'); return (K[0] || list[0]).id; }
+    if (ln.who === '?') { const d = L.bank && L.bank.offscreen; if (d && L.byId(d)) return d; const K = list.filter(x => x.group === 'K' && x.style === 'giggle'); return (K[0] || list[0]).id; }   // смех за кадром — bank.offscreen
     const fx = ln.fx || {}, id = fx.id, t = L.targetF0(c.spec);
     const want = id === 'squeaky' || id === 'chipmunk' || id === 'baby' ? 'giggle' : (id === 'giant' || id === 'monster' || id === 'dragon' || id === 'deep') ? 'belly' : null;
     const sc = list.map(x => { let d = Math.abs(Math.log((x.f0 || t) / t)); if (want && x.style !== want) d += .25; if (!want && x.style === 'belly' && t > 150) d += .3; if (x.dur < 1.2) d += .1; return [d, x]; }).sort((a, b) => a[0] - b[0]);

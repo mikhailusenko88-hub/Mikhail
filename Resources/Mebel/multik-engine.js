@@ -787,8 +787,9 @@ MK.stepVocalKind = stepVocalKind;
 const PROSODY = { happy: [1.08, 1.05], laugh: [1.1, 1.06], sad: [.91, .88], cry: [.95, .86], angry: [.95, 1.08], surprised: [1.14, 1], scared: [1.1, 1.12], sleepy: [.9, .8], love: [1.04, .92], shy: [1.03, .88] };
 // смех героя перед/после реплики и «ЗВУК: смех» — настоящий смех голосом (не синтезатор)
 const MYSTERY = { base: 'female', pitch: 1.28, rate: .5 };
-function laughLine(ep, lib, who, vi, short) { if (who === '?') { const fx = Object.assign({ id: 'fairy' }, MK.VOICE_FX.fairy), v = MK.synthVoice(MYSTERY, fx); const variant = vi % 3;
-    return { key: hash32(canon(v) + '|fairy|laugh-mystery' + variant).toString(36), who: '?', text: 'Хи-хи-хи!', voice: v, fx, synth: 'laugh', age: 'kid', variant, seed: 3 }; }
+function laughLine(ep, lib, who, vi, short, evil) { if (who === '?') { const fx = Object.assign({ id: 'fairy' }, MK.VOICE_FX.fairy), v = MK.synthVoice(MYSTERY, fx); const variant = vi % 3;
+    // смех за кадром («ЗВУК: смех за кадром», «Слышен смех»): живой смех из банка (MKLaugh.idFor), жуткое хихиканье — только «ЗВУК: зловещий смех» (evil)
+    return { key: hash32(canon(v) + '|fairy|laugh-' + (evil ? 'evil' : 'off2') + variant).toString(36), who: '?', text: evil ? 'Хи-хи-хи!' : 'Ха-ха-ха!', voice: v, fx, synth: 'laugh', age: 'kid', variant, seed: 3, horror: !!evil }; }
   return lineFor(ep, lib, who, VOCAL.laugh, { who, do: 'laugh', short }, vi); }
 MK.laughLine = laughLine; MK.lineFor = (...a) => lineFor(...a);
 function lineFor(ep, lib, who, text, step, vi) {
@@ -849,7 +850,7 @@ MK.collectLines = function (ep, lib) {
   const out = [];
   let vi = 0;
   for (const sc of ep.scenes || []) for (const st of sc.steps || []) {
-    if (st.sfx === 'laugh') out.push(laughLine(ep, lib, '?', vi++));
+    if (st.sfx === 'laugh' || st.sfx === 'laughEvil') out.push(laughLine(ep, lib, '?', vi++, false, st.sfx === 'laughEvil'));
     const lp = laughParts(st), hasT = !!stepVoiceText(st); if (lp.pre) { const l = laughLine(ep, lib, st.who, vi++, hasT); if (l) out.push(l); }
     const text = stepVoiceText(st); if (text) { const ln = lineFor(ep, lib, st.who || 'Р', text, st, stepVocalKind(st) ? vi++ : 0); if (ln) out.push(ln); }
     if (lp.post) { const l = laughLine(ep, lib, st.who, vi++, true); if (l) out.push(l); }
@@ -1016,7 +1017,9 @@ MK.compile = function (ep, lib, audio) {
         g.trail = !ss.slice(j).some(x => x.say || (x.do && x.do !== 'exit') || x.wait); i = j; } }
     let exitPrev = null, prevAct = null; const arriveAt = {};   // «Барсик танцует. Пик танцует. Рон танцует.» — танцуют вместе, вступая по очереди, а не по три секунды каждый по одному
     const CHORUS = new Set(['dance', 'jump', 'clap', 'wave', 'nod', 'shake', 'spin', 'bow', 'laugh', 'cry', 'scared', 'surprise', 'sit', 'stand', 'sleep', 'wake', 'think']);   // входят компанией — первый, кто дошёл, уже может говорить: не ждём, пока дойдёт последний
+    let laughGrp = 0;   // «Все смеются» / «ЗВУК: смех» при героях: смех вразнобой (каждый следующий на 0,22 с позже и тише), а не все разом
     for (const step of sc.steps || []) {
+      laughGrp = step.do === 'laugh' && !step.say ? (step.with ? laughGrp + 1 : 0) : step.with ? laughGrp : 0;
       const fastIn = chainN >= 3 && step.do === 'enter' && enterI < chainN; if (step.do === 'enter') enterI++;
       const xg = step.do === 'exit' ? XC.get(step) : null, xGroup = xg && xg.n >= 2;
       const start = step.with ? prevStart + (xGroup ? .2 : 0) : xGroup && exitPrev && exitPrev.g === xg && !step.after ? exitPrev.t + .4 : step.do === 'enter' && prevEnter && !step.after ? prevStart + (fastIn ? .35 : .5) : step.do && CHORUS.has(step.do) && !step.after && !step.say && prevAct && prevAct.d === step.do && prevAct.who !== step.who && prevAct.n < 6 ? prevAct.t + .5 : Math.max(cur + (step.after || 0), step.who && arriveAt[step.who] ? arriveAt[step.who] + .15 : 0); let dur = 0; prevEnter = step.do === 'enter'; let emoEv = null;
@@ -1027,7 +1030,7 @@ MK.compile = function (ep, lib, audio) {
       if (step.camera) { cam.push({ t: start, mode: step.camera, on: step.on || null, zoom: step.zoom, auto: !!step.auto, cut: true }); }
       if (step.shake) cam.push({ t: start, shake: step.shake === true ? .6 : step.shake });
       if (step.wait) dur = Math.max(dur, +step.wait);
-      if (step.sfx === 'laugh') { const ll = laughLine(ep, lib, '?', tl_vi++), a = audio[ll.key]; if (a) { speech.push({ t: st0 + start, dur: a.dur, key: ll.key, who: '?', text: ll.text, vocal: true }); if (!step.with) dur = Math.max(dur, a.dur * .85); } else sfx.push({ t: st0 + start, n: 'laugh' }); }
+      if (step.sfx === 'laugh' || step.sfx === 'laughEvil') { const ll = laughLine(ep, lib, '?', tl_vi++, false, step.sfx === 'laughEvil'), a = audio[ll.key]; if (a) { speech.push({ t: st0 + start, dur: a.dur, key: ll.key, who: '?', text: ll.text, vocal: true }); if (!step.with) dur = Math.max(dur, a.dur * .85); } else sfx.push({ t: st0 + start, n: 'laugh' }); }
       else if (step.sfx) sfx.push({ t: st0 + start, n: step.sfx });
       if (step.music) music.push({ t0: st0 + start, mood: step.music });
       if (step.weather) (lspec.wxAt = lspec.wxAt || []).push({ t: +(start + .3).toFixed(2), v: step.weather });   // «Пошёл дождь» — дождь начинается посреди сцены
@@ -1117,8 +1120,8 @@ MK.compile = function (ep, lib, audio) {
       if (lp.pre) { pre = laughAt(start, !!vtext) + .12; dur = Math.max(dur, pre); }
       if (vtext) {
         const ln = lineFor(ep, lib, who || 'Р', vtext, step, stepVocalKind(step) ? tl_vi++ : 0); const a = ln && audio[ln.key]; const sd = a ? a.dur : estSpeech(vtext);
-        const vt = step.say ? start + pre : start + (dur > 1.5 ? .15 : .05);
-        speech.push(Object.assign({ t: st0 + vt, dur: sd, key: ln && ln.key, who: who || 'Р', text: vtext, vocal: !step.say }, step.whisper && step.say ? { soft: true } : {}));
+        const lg = step.do === 'laugh' && !step.say ? Math.min(laughGrp, 4) : 0, vt = step.say ? start + pre : start + (dur > 1.5 ? .15 : .05) + lg * .22;
+        speech.push(Object.assign({ t: st0 + vt, dur: sd, key: ln && ln.key, who: who || 'Р', text: vtext, vocal: !step.say }, (step.whisper && step.say) || lg ? { soft: true } : {}));
         beats.push({ t: vt, t1: vt + sd, k: 'say', who: who || 'Р', emo: step.emotion, to: step.to, text: vtext, vocal: !step.say });
         if (ch) ch.ev.push({ t: vt, k: 'say', t1: vt + sd, key: ln && ln.key, text: vtext, vocal: !step.say });
         dur = Math.max(dur, (vt - start) + sd + (step.say ? (step.pause != null ? step.pause : .3) : .1));
