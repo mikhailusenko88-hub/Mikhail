@@ -1,0 +1,61 @@
+name: golos-nv
+# Новый голос (смесь дикторов): естественность, разборчивость, ударения (stage_check.py) и на кого похож (spk_sim.py, ECAPA).
+on:
+  push:
+    branches: [golos]
+    paths: [nv_request.txt]
+permissions:
+  contents: write
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [q0, q1, q2, s]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/torch
+          key: golos-mk-v1
+      - name: Проверка
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng >/dev/null
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          BR=$(head -1 nv_request.txt | awk '{print $1}')
+          git clone -q --depth 1 --branch $BR --single-branch https://github.com/mikhailusenko88-hub/Mikhail /tmp/nv
+          mkdir -p mk_out
+          if [ "${{ matrix.part }}" = "s" ]; then
+            pip install -q speechbrain
+            python spk_sim.py /tmp/nv mk_out/nvs.json
+          else
+            pip install -q transformers phonemizer praat-parselmouth ruaccent matplotlib faster-whisper numpy
+            python3 - ${{ matrix.part }} <<'PY'
+          import json, sys, os, shutil
+          sh = int(sys.argv[1][1:]); idx = json.load(open("/tmp/nv/index.json", encoding="utf-8"))
+          keys = sorted(idx)[sh::3]; os.makedirs("/tmp/np/v", exist_ok=True)
+          for k in keys: shutil.copy(f"/tmp/nv/v/{k}.mp3", f"/tmp/np/v/{k}.mp3")
+          json.dump({k: idx[k] for k in keys}, open("/tmp/np/index.json", "w", encoding="utf-8"), ensure_ascii=False)
+          PY
+            python stage_check.py /tmp/np mk_out/nv_${{ matrix.part }}.json
+          fi
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name golos && git config user.email golos@users.noreply.github.com
+          F=mk_out/nv_${{ matrix.part }}.json; [ "${{ matrix.part }}" = "s" ] && F=mk_out/nvs.json
+          cp $F /tmp/r.json 2>/dev/null || true
+          for i in 1 2 3 4 5 6 7 8; do
+            git fetch -q origin golos && git reset -q --hard origin/golos
+            mkdir -p mk_out && cp /tmp/r.json $F 2>/dev/null || true
+            git add -A mk_out; git commit -qm "новый голос: проверка ${{ matrix.part }}" || break
+            git push -q origin HEAD:golos && break; sleep $((RANDOM % 15 + 5))
+          done
