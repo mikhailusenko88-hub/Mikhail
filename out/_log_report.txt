@@ -1,7 +1,2 @@
-== in/chisto_epik_full.m4a
-== in/chisto_main_full.m4a
-== in/chisto_main_kuplet.m4a
-== in/chisto_main_raspev.m4a
-== in/chisto_tihiy_full.m4a
-== in/r3_main_full.m4a
-== in/r3_main_raspev.m4a
+== in/chisto_main_puls_dark.m4a
+== in/chisto_main_puls_wood.m4a
