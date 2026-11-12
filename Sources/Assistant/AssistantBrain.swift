@@ -118,14 +118,15 @@ final class AssistantBrain: ObservableObject {
         return "Сейчас: \(f.string(from: Date())) (время телефона)."
     }
 
-    private func systemPrompt(for question: String) -> String {
+    /// level 0 — всё; 1 — меньше знаний по теме; 2 — без знаний по теме (когда разговор длинный).
+    private func systemPrompt(for question: String, level: Int) -> String {
         var s = Self.core + "\n" + Self.dateLine()
         let kb = KnowledgeBase.shared
         let pin = kb.pinnedText
-        if !pin.isEmpty { s += "\n\n# Основа (правила и сведения хозяина)\n" + String(pin.prefix(3500)) }
-        let found = kb.search(question, limit: 3)
+        if !pin.isEmpty { s += "\n\n# Основа (правила и сведения хозяина)\n" + String(pin.prefix(level >= 2 ? 1500 : 2500)) }
+        let found = level >= 2 ? [] : kb.search(question, limit: level == 0 ? 3 : 1)
         if !found.isEmpty {
-            s += "\n\n# Из базы знаний (по теме)\n" + found.map { "## \($0.title) [\($0.source)]\n\(String($0.text.prefix(900)))" }.joined(separator: "\n\n")
+            s += "\n\n# Из базы знаний (по теме)\n" + found.map { "## \($0.title) [\($0.source)]\n\(String($0.text.prefix(level == 0 ? 800 : 600)))" }.joined(separator: "\n\n")
         }
         s += "\n\n# Tools\n\nYou may call one or more functions to assist with the user query.\n\nYou are provided with function signatures within <tools></tools> XML tags:\n<tools>\n"
         s += allTools.map(\.json).joined(separator: "\n")
@@ -150,7 +151,8 @@ final class AssistantBrain: ObservableObject {
     }
 
     private func prompt(question: String, kind: BrainModel.Kind) async -> String {
-        let sys = "<|im_start|>system\n\(systemPrompt(for: question))<|im_end|>\n"
+        var level = 0
+        var sys = "<|im_start|>system\n\(systemPrompt(for: question, level: level))<|im_end|>\n"
         let tail = "<|im_start|>assistant\n" + (kind == .qwen35 ? "<think>\n\n</think>\n\n" : "")
         var hist = messages.filter { $0.role != .note }
         // старые результаты действий укорачиваем — в голову влезает немного
@@ -159,13 +161,28 @@ final class AssistantBrain: ObservableObject {
                 hist[i].text = String(hist[i].text.prefix(400)) + " …"
             }
         }
-        let budget = max(1500, engine.nCtx - 900)
+        let budget = max(1500, engine.nCtx - 800)
+        var squeezed = false
         while true {
             let p = sys + render(hist) + tail
-            if hist.count <= 1 { return p }
             if await engine.count(p) <= budget { return p }
-            hist.removeFirst()
-            while let f = hist.first, f.role != .user { hist.removeFirst() }   // разговор начинается с вопроса
+            let lastUser = hist.lastIndex(where: { $0.role == .user }) ?? 0
+            if lastUser > 0 {
+                // убираем самый старый вопрос с ответами; текущий вопрос не трогаем
+                hist.removeFirst()
+                while let f = hist.first, f.role != .user { hist.removeFirst() }
+            } else if !squeezed {
+                // остался только текущий вопрос: укорачиваем результаты действий в нём
+                squeezed = true
+                for i in hist.indices where hist[i].role == .tool && hist[i].text.count > 700 {
+                    hist[i].text = String(hist[i].text.prefix(700)) + " …"
+                }
+            } else if level < 2 {
+                level += 1
+                sys = "<|im_start|>system\n\(systemPrompt(for: question, level: level))<|im_end|>\n"
+            } else {
+                return p
+            }
         }
     }
 

@@ -67,7 +67,7 @@ final class LlamaEngine {
         let threads = Int32(max(2, min(6, ProcessInfo.processInfo.activeProcessorCount - 2)))
         var made: OpaquePointer?
         var size = 0
-        for (n, q8) in [(6144, true), (4096, false), (2048, false)] {
+        for (n, q8) in [(8192, true), (6144, true), (4096, false), (3072, false)] {
             var cp = llama_context_default_params()
             cp.n_ctx = UInt32(n)
             cp.n_batch = 512
