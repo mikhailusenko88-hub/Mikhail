@@ -1,206 +1,24 @@
-URL: https://cloudpayments.ru/
-КОД: 200
+URL: https://www.tbank.ru/business/acquiring/sbp/
+КОД: 404
 
-Cloud — сервисы для бизнеса: платежи, чеки, подписки и донаты 
- Пропустить навигацию 
- Сервисы 
- Приём платежей 
- Возможности 
- СБП 
- Долями 
- Сервис подписок 
- Способы интеграции 
- Тарифы 
- Выплаты 
- Мультирасчёты 
- Касса и чеки 
- Облачная онлайн-касса 
- Облачные чеки 
- Способы интеграции 
- Как подключить 
- Чаевые и донаты 
- Чаевые для бизнеса 
- Чаевые для получателей 
- Донаты 
- Отраслевые решения 
- Отраслевые решения 
- Цифровые товары и услуги 
- Онлайн-образование 
- Фитнес и спорт 
- Интернет-магазины 
- Рестораны и фастфуд 
- Агентам 
- Блог 
- База знаний 
- Ещё 
- Ещё 
- Разработчикам 
- О нас 
- Контакты 
- Мобильное приложение 
- Личный кабинет 
- CloudPayments 
- CloudTips Получателям 
- CloudTips Владельцам бизнеса 
- Сервисы для реализации бизнес-идей от Cloud
- Платежи, подписки, чеки и донаты — в одной экосистеме. Подключение онлайн от 1 дня
- Подключить 
- Приём платежей
- Касса и чеки
- Чаевые и донаты
- Партнёрская программа
- Полезные статьи
- Разработчикам
- Вход в ЛК
- Начните принимать платежи за 1 день
- Без долгой разработки и сложных интеграций — на сайте, в приложении или по ссылке
- Автоматизируйте продажи и процессы
- Подписки, автосписания, работа с маркировкой и отправка чеков по 54-ФЗ без ручной работы
- Масштабируйте бизнес без ограничений
- Добавляйте способы оплаты, повышайте конверсию и получайте новую аудиторию
- Подключить 
- CloudPayments теперь в приложении
- Следите за платежами, смотрите статистику и обращайтесь в поддержку — всё в удобном мобильном формате
- Подробнее 
- Сервисы Cloud
- CloudPayments Приём платежей
- Интернет-эквайринг с высокой платёжной конверсией
- Подробнее 
- CloudKassir Касса и чеки
- Автоматическая отправка чеков по 54-ФЗ без покупки кассового аппарата
- Подробнее 
- CloudTips Чаевые и донаты
- Сервис для приёма безвозмездных чаевых и донатов, не облагается налогом
- Подробнее 
- CloudSoft и Т-Софт Программное обеспечение
- Разрабатываем ИТ-решения для задач бизнеса совместно с Т-Банком 
- Подробнее 
- Соберите решение под ваш бизнес
- Цифровые товары и услуги
- Принимайте оплату за игры и цифровой контент с максимальной конверсией
- Подробнее 
- Онлайн-образование
- Зарабатывайте на обучении с удобными сценариями оплаты, подключайте рассрочки и сервис Долями для роста продаж
- Подробнее 
- Фитнес и спорт
- Автоматизируйте абонементы и подписки — регулярные списания и удобная оплата для ваших клиентов
- Подробнее 
- Показать больше 
- Как подключить сервисы Cloud
- Оставьте заявку
- Мы быстро свяжемся с вами
- Зарегистрируйте Личный кабинет
- Удобная работа с документами, транзакциями и чеками
- Начните принимать платежи и пробивать чеки
- С готовым решением или кастомизацией под ваш бизнес
- Заявка на подключение интернет-эквайринга Cloud
- Телефон 
- Отправить 
- Нажимая «Отправить», вы предоставляете Согласие на обработку персональных данных в соответствии с Политикой в отношении обработки персональных данных 
- Если бизнес за границей или нет российского номера, оставьте заявку здесь 
- Партнёрская программа CloudPayments
- Рекомендуйте сервисы Cloud и зарабатывайте вместе с нами
- Подробнее 
- Сервисы Приём платежей Возможности 
- СБП 
- Долями 
- Сервис подписок 
- Способы интеграции 
- Тарифы 
- Выплаты 
- Мультирасчёты 
- Мобильное приложение 
- Касса и чеки Облачная онлайн-касса 
- Облачные чеки 
- Способы интеграции 
- Как подключить 
- Чаевые и донаты Чаевые для бизнеса 
- Чаевые для получателей 
- Донаты 
- Решения Отраслевые решения Цифровые товары и услуги 
- Онлайн-образование 
- Фитнес и спорт 
- Интернет-магазины 
- Рестораны и фастфуд 
- О нас 
- Контакты 
- Юридическая информация 
- Сведения о ПО 
- Оферты 
- +7 495 374-78-60 
- Для звонков по России 
- На сайте Cloud могут собираться Cookies, необходимые для сохранения установок пользователя. Если вы не хотите использовать файлы Cookies, измените настройки браузера. Отключение Cookies может повлечь невозможность доступа к некоторым разделам сайта.
- Политика конфиденциальности 
- © 2014—2026, ООО «КЛАУДПЭЙМЕНТС», официальный сайт.
+404 | Страница не найдена | Т-Банк 
+ Такой страницы нет
+ Но есть много других полезных страниц
+ Кредитные карты 
+ Дебетовые карты 
+ Вклады 
+ Сим‑карта 
+ tbank.ru 
+ Мобильное приложение Т‑Банка
+ Проверяйте баланс, оплачивайте услуги, получайте помощь в чате
+ 24/7 
+ Подробнее
 
 ССЫЛКИ:
-/
-/about/
-/app/
-/blog/
-/cloudkassir/
-/cloudkassir/cashreg
-/cloudkassir/check
-/contacts/
-/documentation/
-/help/
-/industries/e-commerce/
-/industries/edtech/
-/industries/entertainment/
-/industries/fitness-sport/
-/industries/food-service/
-/legal-information/
-/manifest.webmanifest
-/offer/
-/partnership/
-/payments/
-/payments/dolyame/
-/payments/multi-calculation-service/
-/payments/payouts/
-/payments/sbp/
-/payments/subscriptions/
-/software/
-/tips/
-/tips/business/
-/tips/donations/
-/tips/recipient/
-http://merchant.cloudpayments.ru/
-https://cdn.t-static.ru
-https://cdn.t-static.ru/frontend-libraries/nojswarning/index.html
-https://cdn.t-static.ru/params/common_front/resourses/cloudpayments/css/fonts.css
-https://cdn.t-static.ru/params/common_front/resourses/cloudpayments/fonts/Stolzl-Book.woff2
-https://cdn.t-static.ru/params/common_front/resourses/cloudpayments/fonts/Stolzl-Medium.woff2
-https://cdn.t-static.ru/params/common_front/resourses/cloudpayments/fonts/Stolzl-Regular.woff2
-https://cdn.t-static.ru/params/common_front/resourses/icons/cloudpayments.ru/apple-touch-icon-180x180.png
-https://cdn.t-static.ru/params/common_front/resourses/icons/cloudpayments.ru/favicon-32x32.png
-https://cdn.t-static.ru/s3aas/apps/pwaplatform/prod/compiled/platform.ab3c617a8cabf81c.css
-https://cdn.t-static.ru/s3aas/boxy/mm/desktop-icon-list-panel/0.107.4/desktop-icon-list-panel.css
-https://cdn.t-static.ru/s3aas/boxy/mm/independent-anchor/2.60.2/independent-anchor.css
-https://cdn.t-static.ru/s3aas/boxy/mm/independent-expander/0.84.10/independent-expander.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/desktop-cp-container/1.0.5/desktop-cp-container.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/desktop-cp-footer-top-menu/1.1.14/desktop-cp-footer-top-menu.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/desktop-cp-footer/1.1.21/desktop-cp-footer.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/desktop-cp-heading/1.0.11/desktop-cp-heading.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/desktop-cp-hero-banner/1.1.20/desktop-cp-hero-banner.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/desktop-cp-icon-panels/1.1.19/desktop-cp-icon-panels.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/desktop-cp-icon-steps/1.1.16/desktop-cp-icon-steps.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/desktop-cp-icons-horizontal/1.1.16/desktop-cp-icons-horizontal.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/desktop-cp-navigation/1.1.22/desktop-cp-navigation.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/desktop-cp-panel-right-image/1.1.20/desktop-cp-panel-right-image.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/desktop-cp-tiles-one-in-row/1.1.20/desktop-cp-tiles-one-in-row.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/form-cp-internet-acquiring-application/1.1.1/form-cp-internet-acquiring-application.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/independent-cp-desktop-button/1.0.13/independent-cp-desktop-button.css
-https://cdn.t-static.ru/s3aas/ib/cp-blocks/mm/independent-cp-padding/1.0.5/independent-cp-padding.css
-https://cdn.t-static.ru/tui-css-variables/variables/latest/desktop.min.css
-https://cloudpayments.ru/
-https://dashboard.cloudtips.ru/reports
-https://developers.cloudpayments.ru/
-https://id.cloudpayments.ru/login
-https://lk.cloudtips.ru/sign-in
-https://static.cloudpayments.ru/docs/agreement-cloudpayments.pdf
-https://static.cloudpayments.ru/docs/policy-cloudpayments.pdf
-https://t.me/+OVmOijc1jHUwNjgy
-https://unic-cdn-prod.cdn-tinkoff.ru
-https://vk.ru/cloudpayments
-https://www.cdn-tinkoff.ru
-tel:+74953747860
+/system/favicon.png
+https://www.tbank.ru/
+https://www.tbank.ru/apps/?internal_source=page404
+https://www.tbank.ru/cards/credit-cards/
+https://www.tbank.ru/cards/debit-cards/
+https://www.tbank.ru/mobile-operator/
+https://www.tbank.ru/savings/
