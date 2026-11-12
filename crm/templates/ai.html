@@ -22,15 +22,15 @@
 </form>
 
 {% if me['role']=='admin' %}
-<h2 id="know">Знания о магазине</h2>
-<p class="d">Хранятся только в базе CRM (не в GitHub). Телефон забирает их кнопкой «Обновить знания из CRM». Разделы «основа» помощник помнит всегда, остальные подтягивает по теме вопроса.</p>
+<h2 id="know">Знания и навыки</h2>
+<p class="d">Хранятся только в базе CRM (не в GitHub). Телефон забирает их, когда открываете «Помощника». Разделы «основа» помощник помнит всегда, остальные подтягивает по теме вопроса. <b>Навык</b> — как делать задачу; при изменении у него растёт версия, и помощник в чате пишет, что понял. Пакет — файл .json или .md; навыки в .md — блоками «#НАВЫК Название», ниже текст.</p>
 <form class="panel pad row wrap" method="post" action="{{ url_for('ai_knowledge_edit') }}" enctype="multipart/form-data">
   <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="import">
   <input type="file" name="file" accept=".md,.json,.txt"> <button class="btn-s">Загрузить пакет знаний</button>
 </form>
 <div class="panel list">
 {% for r in know %}
-  <details class="row"><summary><span class="t">{% if r['pinned'] %}📌 {% endif %}{{ r['title'] }}</span> <span class="d">· {{ r['source'] }} · {{ r['text']|length }} знаков</span></summary>
+  <details class="row"><summary><span class="t">{% if r['pinned'] %}📌 {% endif %}{% if r['kind'] == 'навык' %}🛠 {% endif %}{{ r['title'] }}</span> <span class="d">· {% if r['kind'] == 'навык' %}навык v{{ r['version'] }} · {% endif %}{{ r['source'] }} · {{ r['text']|length }} знаков</span></summary>
     <form class="grid2" method="post" action="{{ url_for('ai_knowledge_edit') }}">
       <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ r['id'] }}">
       <label class="f span2">Тема<input name="title" value="{{ r['title'] }}" maxlength="120"></label>
@@ -46,6 +46,7 @@
   <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="save">
   <label class="f span2">Тема<input name="title" maxlength="120" required></label>
   <label class="f span2">Текст<textarea name="text" rows="5" required></textarea></label>
+  <label class="f">Что это<select name="kind"><option value="знание">Знание</option><option value="навык">Навык (как делать)</option></select></label>
   <label class="chk"><input type="checkbox" name="pinned" value="1"> Основа — помнить всегда</label>
   <div class="span2"><button class="btn-p">+ Добавить</button></div>
 </form>

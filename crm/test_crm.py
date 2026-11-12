@@ -2728,6 +2728,19 @@ class TestAssistant(Base):
         self.assertEqual(r.get_json()["saved"], 1)
         back = self.api("/api/ai/knowledge?backup=1", t).get_json()["backup"]
         self.assertEqual(back[0]["title"], "Запомни")
+        # навыки: блоки «#НАВЫК», версия растёт только при изменении текста
+        sk = "#НАВЫК Ответ клиенту\nВежливо, на «Вы».\n#НАВЫК Расчёт стены\nПлощадь минус проёмы, через calc.\n".encode()
+        self.c.post("/ai/knowledge", data={"csrf": tok, "action": "import", "file": (_io.BytesIO(sk), "skills.md")},
+                    content_type="multipart/form-data")
+        items = {i["title"]: i for i in self.api("/api/ai/knowledge", t).get_json()["items"]}
+        self.assertEqual((items["Ответ клиенту"]["kind"], items["Ответ клиенту"]["version"]), ("навык", 1))
+        sk2 = "#НАВЫК Ответ клиенту\nВежливо, на «Вы», в конце — следующий шаг.\n#НАВЫК Расчёт стены\nПлощадь минус проёмы, через calc.\n".encode()
+        self.c.post("/ai/knowledge", data={"csrf": tok, "action": "import", "file": (_io.BytesIO(sk2), "skills.md")},
+                    content_type="multipart/form-data")
+        items = {i["title"]: i for i in self.api("/api/ai/knowledge", t).get_json()["items"]}
+        self.assertEqual(items["Ответ клиенту"]["version"], 2)
+        self.assertEqual(items["Расчёт стены"]["version"], 1)
+        self.assertEqual(items["Доставка"]["kind"], "знание")
 
 
 class TestRescueHooks(Base):

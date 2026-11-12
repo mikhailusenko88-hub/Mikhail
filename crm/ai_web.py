@@ -71,7 +71,14 @@ class AI:
 
     def __init__(self, store: Any) -> None:
         self.s = store
-        self.s.c().executescript(SCHEMA)
+        c = self.s.c()
+        c.executescript(SCHEMA)
+        cols = {r[1] for r in c.execute("PRAGMA table_info(ai_knowledge)").fetchall()}
+        if "kind" not in cols:          # 12.11.2026: навыки (как делать) с версиями
+            c.execute("ALTER TABLE ai_knowledge ADD COLUMN kind TEXT NOT NULL DEFAULT 'знание'")
+        if "version" not in cols:
+            c.execute("ALTER TABLE ai_knowledge ADD COLUMN version INTEGER NOT NULL DEFAULT 1")
+        c.commit()
         self._hits: dict[int, list[float]] = {}
         self._lock = threading.Lock()
 
@@ -129,24 +136,26 @@ class AI:
 
     # ---------------------------------------------------------------- знания (только в базе CRM)
     def knowledge(self) -> list[Any]:
-        return self.s.c().execute("SELECT * FROM ai_knowledge ORDER BY pinned DESC, title").fetchall()
+        return self.s.c().execute("SELECT * FROM ai_knowledge ORDER BY kind='навык' DESC, pinned DESC, title").fetchall()
 
-    def k_save(self, title: str, text: str, pinned: bool, who: str, kid: int | None = None, source: str = "CRM") -> None:
+    def k_save(self, title: str, text: str, pinned: bool, who: str, kid: int | None = None, source: str = "CRM",
+               kind: str | None = None) -> None:
+        """Сохранить знание или навык. У навыка при изменении текста растёт версия — телефон покажет «что поняла»."""
         title, text = title.strip()[:120], text.strip()[:20000]
         if not title or not text:
             return
         c = self.s.c()
-        if kid:
-            c.execute("UPDATE ai_knowledge SET title=?, text=?, pinned=?, updated_at=?, updated_by=? WHERE id=?",
-                      (title, text, int(pinned), iso_now(), who, kid))
+        row = (c.execute("SELECT * FROM ai_knowledge WHERE id=?", (kid,)).fetchone() if kid else
+               c.execute("SELECT * FROM ai_knowledge WHERE lower(title)=lower(?)", (title,)).fetchone())
+        if row:
+            k = kind or row["kind"]
+            ver = int(row["version"]) + (1 if row["text"] != text else 0)
+            c.execute("UPDATE ai_knowledge SET title=?, text=?, pinned=?, source=?, kind=?, version=?, updated_at=?, updated_by=? WHERE id=?",
+                      (title, text, int(pinned and k != "навык"), source if not kid else row["source"], k, ver, iso_now(), who, row["id"]))
         else:
-            row = c.execute("SELECT id FROM ai_knowledge WHERE lower(title)=lower(?)", (title,)).fetchone()
-            if row:
-                c.execute("UPDATE ai_knowledge SET text=?, pinned=?, source=?, updated_at=?, updated_by=? WHERE id=?",
-                          (text, int(pinned), source, iso_now(), who, row["id"]))
-            else:
-                c.execute("INSERT INTO ai_knowledge(title, text, source, pinned, updated_at, updated_by) VALUES (?,?,?,?,?,?)",
-                          (title, text, source, int(pinned), iso_now(), who))
+            k = kind or "знание"
+            c.execute("INSERT INTO ai_knowledge(title, text, source, pinned, kind, version, updated_at, updated_by) VALUES (?,?,?,?,?,1,?,?)",
+                      (title, text, source, int(pinned and k != "навык"), k, iso_now(), who))
         c.commit()
 
     def k_delete(self, kid: int) -> None:
@@ -165,21 +174,33 @@ class AI:
                 return 0
             for it in items if isinstance(items, list) else []:
                 if isinstance(it, dict) and it.get("title") and it.get("text"):
-                    self.k_save(str(it["title"]), str(it["text"]), bool(it.get("pinned")), who, source=str(it.get("source") or "пакет"))
+                    self.k_save(str(it["title"]), str(it["text"]), bool(it.get("pinned")), who, source=str(it.get("source") or "пакет"),
+                                kind="навык" if it.get("kind") == "навык" else "знание")
                     n += 1
             return n
-        pinned, title, body = False, None, []
+        # «#НАВЫК Название» … — блоки навыков (как их присылает Claude)
+        blocks = re.split(r"(?m)^\s*#\s*НАВЫК[:\s]*", text, flags=re.I)
+        if len(blocks) > 1:
+            for b in blocks[1:]:
+                head, _, body = b.partition("\n")
+                t = head.strip(" :—-«»\"")
+                if t and body.strip():
+                    self.k_save(t, body.strip(), False, who, source="пакет", kind="навык")
+                    n += 1
+            return n
+        pinned, skills, title, body = False, False, None, []
 
         def flush() -> None:
             nonlocal n
             if title and "".join(body).strip():
-                self.k_save(title, "\n".join(body).strip(), pinned, who, source="пакет")
+                self.k_save(title, "\n".join(body).strip(), pinned, who, source="пакет", kind="навык" if skills else "знание")
                 n += 1
 
         for line in text.splitlines():
             if line.startswith("# "):
                 flush(); title, body = None, []
                 pinned = "ОСНОВА" in line.upper()
+                skills = "НАВЫК" in line.upper()
             elif line.startswith("## "):
                 flush(); body = []
                 title = line[3:].strip()
@@ -308,7 +329,8 @@ def register(app: Flask, store: Any, ai: AI, h: dict[str, Any]) -> None:
             data = request.get_json(silent=True) or {}
             n = ai.backup_save(int(u["id"]), data.get("items"))
             return jsonify({"ok": True, "saved": n})
-        items = [{"title": r["title"], "text": r["text"], "pinned": bool(r["pinned"]), "source": r["source"] or "CRM"} for r in ai.knowledge()]
+        items = [{"title": r["title"], "text": r["text"], "pinned": bool(r["pinned"]), "source": r["source"] or "CRM",
+                  "kind": r["kind"], "version": int(r["version"])} for r in ai.knowledge()]
         resp = jsonify({"items": items, "backup": ai.backup_get(int(u["id"])) if request.args.get("backup") == "1" else []})
         resp.headers["Cache-Control"] = "no-store"
         return resp
@@ -580,7 +602,8 @@ def register(app: Flask, store: Any, ai: AI, h: dict[str, Any]) -> None:
         act = request.form.get("action", "")
         if act == "save":
             ai.k_save(request.form.get("title", ""), request.form.get("text", ""), request.form.get("pinned") == "1", who(),
-                      int(request.form.get("id") or 0) or None)
+                      int(request.form.get("id") or 0) or None,
+                      kind=("навык" if request.form.get("kind") == "навык" else "знание") if request.form.get("kind") else None)
             flash("Сохранено. Телефон заберёт при следующем обновлении знаний.", "ok")
         elif act == "delete":
             ai.k_delete(int(request.form.get("id", "0") or 0))
