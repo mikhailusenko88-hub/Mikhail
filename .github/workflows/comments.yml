@@ -1,0 +1,18 @@
+name: comments-check
+on: push
+permissions: { contents: write }
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -q youtube-comment-downloader requests
+      - run: python comments_all.py 2>&1 | tee out_log.txt
+      - if: always()
+        run: |
+          mkdir -p out; cp out_log.txt out/ 2>/dev/null || true
+          cd out && git init -q && git checkout -q -b comments-check-out && git add . && git -c user.name=bot -c user.email=bot@x commit -qm out
+          git push -qf https://x-access-token:${{ github.token }}@github.com/${{ github.repository }} comments-check-out
