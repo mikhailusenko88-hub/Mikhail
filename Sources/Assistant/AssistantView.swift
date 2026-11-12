@@ -38,7 +38,7 @@ struct AssistantScreen: View {
                     Button { showSettings = true } label: { Image(systemName: "gearshape") }
                 }
             }
-            .sheet(isPresented: $showSettings) { AssistantSettings(brain: brain, store: store, ears: ears) }
+            .sheet(isPresented: $showSettings, onDismiss: { brain.reviewPending() }) { AssistantSettings(brain: brain, store: store, ears: ears) }
             .overlay(alignment: .bottom) {
                 if let p = brain.pending { ConfirmCard(p: p) { brain.answer($0) }.padding(12).padding(.bottom, 70) }
             }
@@ -317,6 +317,7 @@ struct AssistantSettings: View {
                 }
 
                 Section {
+                    NavigationLink("Навыки (\(kb.skills.count))") { KnowledgeList(kb: kb, onlySkills: true) }
                     NavigationLink("Что я знаю (\(kb.items.count))") { KnowledgeList(kb: kb) }
                     Button("Загрузить пакет знаний (.json или .md)") { pickPack = true }
                     ShareLink(item: kb.exportURL()) { Label("Сохранить копию базы знаний", systemImage: "square.and.arrow.up") }
@@ -345,7 +346,10 @@ struct AssistantSettings: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Готово") { dismiss() } } }
             .fileImporter(isPresented: $pickPack, allowedContentTypes: [.json, .plainText, .data]) { r in
-                if case .success(let u) = r { packMsg = kb.importPack(u) }
+                if case .success(let u) = r {
+                    packMsg = kb.importPack(u)
+                    if !kb.pendingUpdates.isEmpty { packMsg += " Навыков обновлено: \(kb.pendingUpdates.count) — помощник прочитает и ответит в чате."; brain.reviewPending() }
+                }
             }
         }
     }
@@ -359,10 +363,12 @@ enum AVSpeechVoices {
 
 struct KnowledgeList: View {
     @ObservedObject var kb: KnowledgeBase
+    var onlySkills = false
     @State private var q = ""
     var list: [KnowledgeItem] {
-        let all = kb.items.sorted { ($0.pinned ? 0 : 1, $1.date) < ($1.pinned ? 0 : 1, $0.date) }
-        return q.isEmpty ? all : kb.search(q, limit: 50, excludePinned: false)
+        let pool = onlySkills ? kb.skills : kb.items
+        let all = pool.sorted { ($0.pinned ? 0 : 1, $1.date) < ($1.pinned ? 0 : 1, $0.date) }
+        return q.isEmpty ? all : kb.search(q, limit: 50, excludePinned: false).filter { !onlySkills || $0.isSkill }
     }
     var body: some View {
         List {
@@ -371,6 +377,7 @@ struct KnowledgeList: View {
                     VStack(alignment: .leading, spacing: 3) {
                         HStack {
                             if it.pinned { Image(systemName: "pin.fill").font(.caption).foregroundColor(.orange) }
+                            if it.isSkill { Text("🛠 v\(it.version)").font(.caption2).foregroundColor(.teal) }
                             Text(it.title).font(.subheadline.bold())
                         }
                         Text(it.text).font(.caption).foregroundColor(.secondary).lineLimit(2)
@@ -381,10 +388,10 @@ struct KnowledgeList: View {
             .onDelete { idx in idx.map { list[$0].id }.forEach(kb.remove) }
         }
         .searchable(text: $q, prompt: "Найти в знаниях")
-        .navigationTitle("Что я знаю")
+        .navigationTitle(onlySkills ? "Навыки" : "Что я знаю")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                NavigationLink { KnowledgeEdit(kb: kb, item: KnowledgeItem(title: "", text: "")) } label: { Image(systemName: "plus") }
+                NavigationLink { KnowledgeEdit(kb: kb, item: KnowledgeItem(title: "", text: "", kind: onlySkills ? "навык" : "знание")) } label: { Image(systemName: "plus") }
             }
         }
     }
@@ -396,15 +403,28 @@ struct KnowledgeEdit: View {
     @Environment(\.dismiss) private var dismiss
     var body: some View {
         Form {
-            TextField("Тема", text: $item.title)
-            Toggle("Основа — помнить всегда", isOn: $item.pinned)
+            TextField(item.isSkill ? "Название навыка" : "Тема", text: $item.title)
+            if item.isSkill {
+                Text("Версия \(item.version) · \(item.source)" + (item.history.isEmpty ? "" : " · прошлых версий: \(item.history.count)"))
+                    .font(.caption).foregroundColor(.secondary)
+                if !item.history.isEmpty {
+                    Button("Вернуть прошлую версию") {
+                        _ = kb.rollback(skill: item.title)
+                        if let fresh = kb.items.first(where: { $0.id == item.id }) { item = fresh }
+                    }
+                }
+            } else {
+                Toggle("Основа — помнить всегда", isOn: $item.pinned)
+            }
             TextEditor(text: $item.text).frame(minHeight: 260)
         }
         .navigationTitle(item.title.isEmpty ? "Новая запись" : item.title)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Сохранить") {
-                    if kb.items.contains(where: { $0.id == item.id }) { kb.update(item) }
+                    if item.isSkill {
+                        if let u = kb.saveSkill(title: item.title, text: item.text, source: "вы") { kb.pendingUpdates.append(u) }
+                    } else if kb.items.contains(where: { $0.id == item.id }) { kb.update(item) }
                     else { kb.add(title: item.title, text: item.text, source: "вы", pinned: item.pinned) }
                     dismiss()
                 }.disabled(item.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)

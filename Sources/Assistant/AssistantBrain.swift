@@ -75,7 +75,9 @@ final class AssistantBrain: ObservableObject {
         if let t = await CRMClient.fetchTools() { crmTools = t }
         if let k = await CRMClient.fetchKnowledge() {
             let n = KnowledgeBase.shared.syncFromCRM(k)
-            knowledgeNote = "Знаний из CRM: \(n)."
+            let up = KnowledgeBase.shared.pendingUpdates.count
+            knowledgeNote = "Знаний и навыков из CRM: \(n)" + (up > 0 ? ", обновлено навыков: \(up)." : ".")
+            if up > 0 { reviewPending() }
         }
     }
 
@@ -111,6 +113,7 @@ final class AssistantBrain: ObservableObject {
     - «Запомни», новое правило, решение или предпочтение хозяина — сохрани через remember.
     - Проверенный полезный факт из интернета — сохрани через remember с источником и датой. Мелочи не сохраняй.
     - Раздел «Из базы знаний» ниже — твои знания по теме вопроса. Правила хозяина из основы выполняй всегда.
+    - «Навык» ниже — как делать такую задачу: следуй ему. Хозяин поправил тебя или нашёлся способ лучше — допиши урок через skill_improve (одна строка: что делать в следующий раз).
     - Заявки, клиенты, склад, оплаты, почта — смотри в CRM (действия crm_…), а не по памяти.
 
     Примеры правильного первого шага:
@@ -133,7 +136,11 @@ final class AssistantBrain: ObservableObject {
         if !pin.isEmpty { s += "\n\n# Основа (правила и сведения хозяина)\n" + String(pin.prefix(level >= 2 ? 1500 : 2500)) }
         let found = level >= 2 ? [] : kb.search(question, limit: level == 0 ? 3 : 1)
         if !found.isEmpty {
-            s += "\n\n# Из базы знаний (по теме)\n" + found.map { "## \($0.title) [\($0.source)]\n\(String($0.text.prefix(level == 0 ? 800 : 600)))" }.joined(separator: "\n\n")
+            s += "\n\n# Из базы знаний (по теме)\n" + found.enumerated().map { i, it in
+                let head = it.isSkill ? "## Навык «\(it.title)» (версия \(it.version))" : "## \(it.title) [\(it.source)]"
+                let size = it.isSkill && i == 0 ? (level == 0 ? 1400 : 900) : (level == 0 ? 700 : 500)
+                return head + "\n" + String(it.text.prefix(size))
+            }.joined(separator: "\n\n")
         }
         s += "\n\n# Tools\n\nYou may call one or more functions to assist with the user query.\n\nYou are provided with function signatures within <tools></tools> XML tags:\n<tools>\n"
         s += allTools.map(\.json).joined(separator: "\n")
@@ -274,9 +281,71 @@ final class AssistantBrain: ObservableObject {
 
     // MARK: главный цикл
 
+    /// «#НАВЫК Название …» в сообщении — сохраняем сами, без пересказа нейросетью, и она читает и отвечает, что поняла.
+    private func takeSkills(_ q: String) -> Bool {
+        let blocks = KnowledgeBase.skillBlocks(q)
+        guard !blocks.isEmpty else { return false }
+        let kb = KnowledgeBase.shared
+        messages.append(ChatMsg(role: .user, text: blocks.count == 1 ? "#НАВЫК \(blocks[0].0)\n" + String(blocks[0].1.prefix(400)) + (blocks[0].1.count > 400 ? " …" : "")
+                                                                     : "Навыки: " + blocks.map(\.0).joined(separator: ", ")))
+        var n = 0
+        for (t, b) in blocks { if let u = kb.saveSkill(title: t, text: b, source: "вы") { kb.pendingUpdates.append(u); n += 1 } }
+        if n == 0 { messages.append(ChatMsg(role: .note, text: "Эти навыки у меня уже такие же — ничего не изменилось.")) }
+        saveChat()
+        return true
+    }
+
+    /// Прочитать новые и изменённые навыки и коротко сказать хозяину, что поняла.
+    func reviewPending() {
+        let kb = KnowledgeBase.shared
+        guard !busy, !kb.pendingUpdates.isEmpty, let model = ModelStore.shared.readyModel else { return }
+        let list = kb.pendingUpdates
+        kb.pendingUpdates = []
+        busy = true
+        stopFlag = LlamaEngine.Stop()
+        let flag = stopFlag
+        work = Task { [weak self] in
+            guard let self else { return }
+            do {
+                if self.engine.loadedPath != ModelStore.shared.fileURL(model).path {
+                    self.stage = "Загружаю нейросеть в память (10–30 секунд)…"
+                    try await self.engine.load(path: ModelStore.shared.fileURL(model).path)
+                }
+                for u in list.prefix(5) {
+                    if flag.value { break }
+                    self.stage = "Читаю навык «\(u.title)»…"
+                    var ask = "Тебе \(u.old == nil ? "добавили новый навык" : "обновили навык") «\(u.title)», версия \(u.version).\n"
+                    if let o = u.old { ask += "Было:\n\(String(o.prefix(700)))\n\n" }
+                    ask += "Стало:\n\(String(u.new.prefix(1500)))\n\nПрочитай внимательно и ответь хозяину 2–4 предложениями: что поняла и что теперь будешь делать "
+                    ask += u.old == nil ? "(когда будешь пользоваться этим навыком)." : "иначе, чем раньше."
+                    let p = "<|im_start|>system\nТы — «Помощник», личный помощник хозяина в его iPhone. Отвечай по-русски, коротко, без выдумок.<|im_end|>\n"
+                        + "<|im_start|>user\n\(ask)<|im_end|>\n<|im_start|>assistant\n" + (model.kind == .qwen35 ? "<think>\n\n</think>\n\n" : "")
+                    self.live = ""
+                    let out = try await self.engine.generate(prompt: p, maxTokens: 260, temperature: 0.3, stops: ["<|im_end|>"], stop: flag) { [weak self] t in
+                        self?.live = Self.stripThink(t).trimmingCharacters(in: .whitespacesAndNewlines)
+                    }
+                    let text = Self.stripThink(out).replacingOccurrences(of: "<|im_end|>", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+                    self.live = ""
+                    self.messages.append(ChatMsg(role: .assistant, text: "📘 Навык «\(u.title)», версия \(u.version)\n\(text)"))
+                    if self.speak { Speaker.shared.say("Навык \(u.title). \(text)") }
+                    self.saveChat()
+                }
+                if list.count > 5 {
+                    self.messages.append(ChatMsg(role: .note, text: "Ещё обновлены: " + list.dropFirst(5).map { "«\($0.title)» v\($0.version)" }.joined(separator: ", ")))
+                }
+            } catch {
+                self.messages.append(ChatMsg(role: .note, text: "⚠️ " + error.localizedDescription))
+            }
+            self.busy = false
+            self.stage = ""
+            self.saveChat()
+        }
+    }
+
     func send(_ text: String) {
         let q = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !q.isEmpty, !busy else { return }
+        if takeSkills(q) { reviewPending(); return }
         messages.append(ChatMsg(role: .user, text: q))
         saveChat()
         busy = true

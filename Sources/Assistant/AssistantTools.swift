@@ -154,6 +154,9 @@ enum LocalTools {
                  params: [ToolParam(name: "title", desc: "короткая тема"), ToolParam(name: "text", desc: "что запомнить")]),
         ToolSpec(name: "recall", desc: "Найти в своей базе знаний.", params: [ToolParam(name: "query", desc: "о чём")]),
         ToolSpec(name: "forget", desc: "Удалить из базы знаний запись по теме.", params: [ToolParam(name: "title", desc: "тема записи")], danger: true),
+        ToolSpec(name: "skill_improve", desc: "Улучшить навык: дописать урок «в следующий раз делать так» (после поправки хозяина или удачного нового способа).",
+                 params: [ToolParam(name: "skill", desc: "название навыка"), ToolParam(name: "lesson", desc: "урок одной строкой")]),
+        ToolSpec(name: "skill_rollback", desc: "Вернуть прошлую версию навыка.", params: [ToolParam(name: "skill", desc: "название навыка")], danger: true),
         ToolSpec(name: "reminder", desc: "Напоминание на телефоне в нужное время.",
                  params: [ToolParam(name: "text", desc: "о чём напомнить"),
                           ToolParam(name: "when", desc: "ГГГГ-ММ-ДД ЧЧ:ММ или «через 30 минут», «через 2 часа»")]),
@@ -183,6 +186,14 @@ enum LocalTools {
                 return hit.count
             }
             return n > 0 ? "Удалено записей: \(n)." : "Не нашла такой записи (основу так не удалить — только вручную)."
+        case "skill_improve":
+            let u = await MainActor.run { KnowledgeBase.shared.addLesson(skill: s("skill"), lesson: s("lesson")) }
+            guard let u else { return "Урок пустой — не записала." }
+            return "Навык «\(u.title)» улучшен, теперь версия \(u.version). Записан урок: \(s("lesson"))"
+        case "skill_rollback":
+            let u = await MainActor.run { KnowledgeBase.shared.rollback(skill: s("skill")) }
+            guard let u else { return "У навыка «\(s("skill"))» нет прошлых версий." }
+            return "Навык «\(u.title)» возвращён к версии \(u.version)."
         case "reminder": return await Reminders.add(text: s("text"), when: s("when"))
         case "calc":
             if let v = Calc.eval(s("expr")) { return "\(s("expr")) = \(Calc.format(v))" }
