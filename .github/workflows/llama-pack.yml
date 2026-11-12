@@ -1,0 +1,27 @@
+name: llama-pack
+# Готовая сборка llama.cpp для iPhone — в ветку llama-ios (Мак иногда не может скачать её с GitHub сам).
+on:
+  push:
+    branches: [domain-check]
+    paths: ["llama-pack/**"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Скачать и выложить
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -e
+          mkdir -p /tmp/l && cd /tmp/l
+          curl -fsSL -o llama-b12317-xcframework.zip https://github.com/ggml-org/llama.cpp/releases/download/b12317/llama-b12317-xcframework.zip
+          sha256sum llama-b12317-xcframework.zip
+          git init -q -b llama-ios .
+          git config user.name llama-pack; git config user.email llama-pack@users.noreply.github.com
+          git add llama-b12317-xcframework.zip
+          git commit -qm "llama.cpp b12317 xcframework (MIT)"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" HEAD:llama-ios
