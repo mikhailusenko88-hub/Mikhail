@@ -1,7 +1,12 @@
 # имя  аргументы для scene.py (или "py script.py")
-h703_top scene=plinth cam=top set=two ev=-0.35 res=1600x1200 samples=260 noise=0.025
-h703_paint scene=plinth cam=corner paint=6F7F76 plcol=6F7F76 ev=-0.2 cdx=0.40 cdy=0.58 nstr=0.12 fstop=0 res=1600x1200 samples=260 noise=0.025
-h703_corner scene=plinth cam=corner paint=4F5B5E ev=-0.6 nstr=0.12 fstop=0 res=1600x1200 samples=260 noise=0.025
-h703_beige scene=plinth cam=corner paint=A89A88 cdx=0.45 cdy=0.55 cam_z=0.18 ev=-0.7 nstr=0.12 fstop=0 res=1600x1200 samples=260 noise=0.025
-h703_end_a scene=plinth cam=top set=one back=0.26 cam_z=0.16 lens=55 look_dx=0.01 look_dy=0.04 ev=-0.35 res=1600x1200 samples=260 noise=0.025
-h703_end_b scene=plinth cam=top set=one back=0.30 cam_z=0.13 lens=50 look_dx=0.02 look_dy=0.06 ev=-0.35 res=1600x1200 samples=260 noise=0.025
+r37_top_linen scene=plinth cam=top item=panel decor=3-7 surf=linen ev=-0.35 res=800x600 samples=48 noise=0.08
+r37_top_plaster scene=plinth cam=top item=panel decor=3-7 surf=plaster ev=-0.35 res=800x600 samples=48 noise=0.08
+r37_cut scene=plinth cam=cut item=panel decor=3-7 surf=plaster ev=-0.35 res=800x600 samples=48 noise=0.08
+r39_top scene=plinth cam=top item=panel decor=3-9 surf=plaster ev=-0.35 res=800x600 samples=48 noise=0.08
+r315_top scene=plinth cam=top item=panel decor=3-15 surf=plaster surfcol=B9B3A9 ev=-0.35 res=800x600 samples=48 noise=0.08
+r910_top scene=plinth cam=top item=a910 cy=2.8 ev=-0.35 res=800x600 samples=48 noise=0.08
+r910_cut scene=plinth cam=cut item=a910 cy=2.8 ev=-0.35 res=800x600 samples=48 noise=0.08
+r703_cut scene=plinth cam=cut item=plinth ev=-0.35 res=800x600 samples=48 noise=0.08
+rgreen_wall scene=plinth cam=wall paint=6F7F76 plcol=6F7F76 plrough=0.6 nstr=0.1 ev=-0.1 res=800x600 samples=48 noise=0.08
+rgreen_wall_b scene=plinth cam=wall paint=6F7F76 plcol=6F7F76 plrough=0.6 nstr=0.1 basket=1 ev=-0.1 res=800x600 samples=48 noise=0.08
+r37_macro scene=lounge decor=3-7 cam=macro fs=0 res=800x600 samples=48 noise=0.08
