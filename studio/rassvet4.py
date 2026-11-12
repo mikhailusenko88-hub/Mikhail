@@ -20,6 +20,8 @@ from svoboda import VOW
 
 th.NOISE = 0.0          # смычок, молоточки, дыхание хора, «чифф» органа, шум литавр — выключены
 rng = np.random.default_rng(76)
+VT = 1.25      # наклон спектра голоса: меньше — ярче
+VB = 0.62      # яркость скрипок в кульминации
 BEAT = 60 / 76
 BAR = 4 * BEAT
 
@@ -134,7 +136,7 @@ def voice(notes, vowels, vib=0.0055, vib_rate=5.0, vib_delay=0.45, glide=0.022, 
         g = np.zeros(nc)
         for k, nm in enumerate(names):
             g += W[k] * (0.03 + sum(a * np.exp(-((fh - c) / w) ** 2) for c, a, w in VOW[nm]))
-        tilt = 1.25 + 0.6 * np.clip((f0c - 500) / 300, 0, 1)
+        tilt = VT + 0.6 * np.clip((f0c - 500) / 300, 0, 1)
         AH.append(g * (1.0 / h ** tilt) * np.exp(-fh / 6000) * np.clip((9000 - fh) / 1500, 0, 1))
     P = gaussian_filter1d(np.sqrt(sum(a * a for a in AH)) + 1e-9, 0.05 * CR)
     out = np.zeros(n)
@@ -350,7 +352,7 @@ def compose(style, plan_name):
     # ---------- кульминация: скрипки октавой выше, валторны, челеста в «Шкатулке»
     vn = [(a, e, mi + 12, S["viol"]) for a, e, mi, vw, b, sec in lead if sec == "climax"]
     if vn and S["viol"]:
-        sig, ts = legato_line(vn, voices=8, att=0.3, rel=2.0, bright=0.62, vib=0.0038, glide=0.022, noise=0)
+        sig, ts = legato_line(vn, voices=8, att=0.3, rel=2.0, bright=VB, vib=0.0038, glide=0.022, noise=0)
         bus.add(sig, ts, pan=-0.3, send=0.34)
     for a, e, mi, vw, b, sec in lead:
         if sec == "climax" and S["horns"]:
@@ -545,6 +547,10 @@ if __name__ == "__main__":
     import time
     style, pl, out = sys.argv[1], sys.argv[2], sys.argv[3]
     air = float(sys.argv[4]) if len(sys.argv) > 4 else 0.3
+    if len(sys.argv) > 5:
+        VT = float(sys.argv[5])
+    if len(sys.argv) > 6:
+        VB = float(sys.argv[6])
     t = time.time()
     bus, end_t = compose(style, pl)
     L, R = master(bus, air)
