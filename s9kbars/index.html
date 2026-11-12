@@ -42,6 +42,9 @@
   .chk input{width:20px;height:20px}
   .empty{color:var(--mut);text-align:center;padding:40px 0}
   .hint{font-size:13px;color:var(--mut);margin:6px 0 0}
+  .sa{background:#3a2f0b;border:1px solid #ffe14d;color:#ffe9a0;border-radius:12px;padding:12px;margin:10px 0;font-size:14px}
+  .sa b{color:#fff}
+  .sa .btn{margin-top:8px;background:#ffe14d;color:#1a1a1a}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ok);color:#fff;padding:10px 18px;border-radius:12px;font-weight:600;opacity:0;transition:.2s;pointer-events:none}
   .toast.show{opacity:1}
 </style>
@@ -69,6 +72,21 @@
   function fallback(txt){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity=0;document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta)}
   function loc(n){return '../s9kbars-v/'+n}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  // Со значка «Домой» (iOS 26 открывает его как веб-приложение) iPhone не скачивает файлы — ролик просто играет. Скачивать — в Safari.
+  var SA=(navigator.standalone===true)||!!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+  function pageUrl(id){return location.origin+location.pathname+(id?'#'+id:'')}
+  function toSafari(id){
+    var u=pageUrl(id);fallback(u);   // ссылку копируем сразу, пока палец на кнопке
+    var gone=false;function h(){if(document.hidden)gone=true}document.addEventListener('visibilitychange',h);
+    location.href='x-safari-'+u;
+    setTimeout(function(){document.removeEventListener('visibilitychange',h);if(!gone)alert('Safari сам не открылся.\n\nСсылка уже скопирована: откройте Safari и вставьте её в строку адреса — там «Скачать» работает, и этот ролик будет отмечен.')},1600);
+  }
+  function saNote(){
+    var d=document.createElement('div');d.className='sa';
+    d.innerHTML='📱 Страница открыта со значка на экране «Домой» — в таком режиме iPhone <b>не скачивает</b> ролики, только проигрывает. «Скачать» откроет этот же ролик в Safari, там скачивание работает.<br>Насовсем: удалите значок и добавьте заново через Safari → «Поделиться» → «На экран Домой», <b>выключив «Открыть как веб-приложение»</b>.<br><button class="btn">Открыть страницу в Safari</button>';
+    d.querySelector('button').addEventListener('click',function(){toSafari('')});
+    var w=document.querySelector('.wrap');w.insertBefore(d,w.querySelector('#list'));
+  }
   function fmtDate(d){var p=d.split('-');return p[2]+'.'+p[1]+'.'+p[0]}
   function render(feed){
     var list=document.getElementById('list');list.innerHTML='';
@@ -98,18 +116,20 @@
         c.querySelectorAll('[data-copy]').forEach(function(b){b.addEventListener('click',function(){var k=b.getAttribute('data-copy');copy(M[k]||'',b)})});
         c.querySelector('.chk input').addEventListener('change',function(e){if(e.target.checked)done[it.file]=1;else delete done[it.file];save();c.classList.toggle('done',!!e.target.checked)});
         c.id='c_'+String(it.file).replace(/\W/g,'_');
-        c.querySelectorAll('.btn.dl,.btn.op').forEach(function(x){x.addEventListener('click',function(){
+        c.querySelectorAll('.btn.dl,.btn.op').forEach(function(x){x.addEventListener('click',function(ev){
           try{localStorage.setItem(LS+'_last',c.id)}catch(e){}
           var p=document.querySelector('.card.last');if(p)p.classList.remove('last');c.classList.add('last');
-          if(x.classList.contains('dl'))toast('Загрузка — смотри ⬇︎ в строке адреса');
+          if(x.classList.contains('dl')){if(SA){ev.preventDefault();toSafari(c.id);return}toast('Загрузка — смотри ⬇︎ в строке адреса')}
         })});
         list.appendChild(c);
       });
     });
     var last=null;try{last=localStorage.getItem(LS+'_last')}catch(e){}
+    if(location.hash.length>1&&document.getElementById(location.hash.slice(1))){last=location.hash.slice(1);try{localStorage.setItem(LS+'_last',last)}catch(e){}}   // пришли со значка «Домой» — тот же ролик
     var lc=last&&document.getElementById(last);
     if(lc){lc.classList.add('last');setTimeout(function(){lc.scrollIntoView({block:'center'})},50)}
   }
+  if(SA)saNote();
   fetch('../s9kbars-v/feed.json?t='+Date.now()).then(function(r){return r.json()}).then(render).catch(function(){document.getElementById('list').innerHTML='<div class="empty">Пока пусто — первые ролики появятся после первого запуска.</div>'});
 })();
 </script>
