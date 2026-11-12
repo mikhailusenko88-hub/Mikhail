@@ -19,7 +19,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set +e
-          mkdir -p status/llm; O=status/llm.md
+          W=$PWD; mkdir -p status/llm; O=$W/status/llm.md
           {
           echo "# Нейросеть для телефона — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
           R=$(curl -fsSL https://api.github.com/repos/ggml-org/llama.cpp/releases/latest || curl -fsSL -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/ggml-org/llama.cpp/releases/latest); echo "ответ API: ${#R} байт"
@@ -27,12 +27,12 @@ jobs:
           jq -r '.assets[]|select(.name|test("xcframework"))|.name+" "+(.size|tostring)+" "+.browser_download_url' <<<"$R"
           U=$(jq -r '[.assets[]|select(.name|test("xcframework.zip$"))][0].browser_download_url' <<<"$R")
           curl -fsSL -o /tmp/x.zip "$U" && echo "sha256: $(sha256sum /tmp/x.zip | cut -d' ' -f1)" && echo "url: $U"
-          mkdir -p /tmp/x && cd /tmp/x && unzip -q /tmp/x.zip && cd - >/dev/null
+          mkdir -p /tmp/x && (cd /tmp/x && unzip -q /tmp/x.zip); echo "распаковано: $(find /tmp/x -type f | wc -l) файлов"
           find /tmp/x -maxdepth 4 -type d | sed 's|/tmp/x/||' | head -40
           du -sh /tmp/x/*/*/* 2>/dev/null | head -20
           F=$(find /tmp/x -path '*ios-arm64/*' -name llama.h | head -n1); echo "llama.h: $F"
-          cp "$F" status/llm/llama.h 2>/dev/null || true
-          for h in ggml.h ggml-backend.h ggml-cpu.h ggml-metal.h gguf.h; do G=$(find /tmp/x -path '*ios-arm64/*' -name $h | head -n1); [ -n "$G" ] && cp "$G" status/llm/; done
+          cp "$F" $W/status/llm/llama.h 2>/dev/null || true
+          for h in ggml.h ggml-backend.h ggml-cpu.h ggml-metal.h gguf.h; do G=$(find /tmp/x -path '*ios-arm64/*' -name $h | head -n1); [ -n "$G" ] && cp "$G" $W/status/llm/; done
           M=$(find /tmp/x -path '*ios-arm64/*' -name module.modulemap | head -n1); echo "--- module.modulemap"; cat "$M" 2>/dev/null
           P=$(find /tmp/x -maxdepth 2 -name Info.plist | head -n1); echo "--- Info.plist (xcframework)"; cat "$P" 2>/dev/null | head -80
           B=$(find /tmp/x -path '*ios-arm64/*' -type f -perm -u+x | head -n3); echo "--- бинарники ios-arm64:"; for b in $B; do ls -la "$b"; file "$b"; done
@@ -48,7 +48,7 @@ jobs:
           done
           echo '```'
           } > "$O" 2>&1
-          cat "$O"
+          cd $W; cat "$O"
           git config user.name llm-probe; git config user.email llm-probe@users.noreply.github.com
           git add status; git commit -m "llm-probe $(date -u +%F_%H:%M)" || exit 0
           git pull --rebase origin domain-check || true
