@@ -43,7 +43,8 @@ jobs:
           for id in Qwen/Qwen3.5-4B-GGUF unsloth/Qwen3.5-4B-GGUF Qwen/Qwen3.5-2B-GGUF unsloth/Qwen3.5-2B-GGUF unsloth/Qwen3-4B-Instruct-2507-GGUF Qwen/Qwen3-4B-Instruct-2507-GGUF bartowski/Qwen_Qwen3.5-4B-GGUF; do
             T=$(curl -fsS "https://huggingface.co/api/models/$id/tree/main" 2>/dev/null) || { echo "$id: нет"; continue; }
             echo "$id:"; jq -r '.[]|select(.path|test("(?i)(q4_k_m|q4_0|q5_k_m|q8_0).*gguf$"))|"  "+.path+" "+((.size//0)/1048576|floor|tostring)+" МБ"' <<<"$T" | head -8
-            jq -r '.[]|select(.path|test("(?i)mmproj"))|"  (картинки) "+.path' <<<"$T" | head -2
+            jq -r '.[]|select(.path|test("(?i)mmproj"))|"  (картинки) "+.path+" "+((.size//0)/1048576|floor|tostring)+" МБ sha256="+(.lfs.oid//"")' <<<"$T" | head -4
+            jq -r '.[]|select(.path|test("(?i)q4_k_m.*gguf$"))|"  sha256 "+.path+" "+(.lfs.oid//"")' <<<"$T" | head -2
           done
           echo; echo "=== проверка скачивания (первые 4 МБ) Qwen3.5-4B"
           for u in https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/resolve/main/Qwen3.5-4B-Q4_K_M.gguf https://huggingface.co/Qwen/Qwen3.5-4B-GGUF/resolve/main/Qwen3.5-4B-Q4_K_M.gguf; do
