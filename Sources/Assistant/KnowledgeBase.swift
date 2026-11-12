@@ -159,6 +159,9 @@ final class KnowledgeBase: ObservableObject {
     func add(title: String, text: String, source: String, pinned: Bool = false) -> KnowledgeItem {
         let t = title.trimmingCharacters(in: .whitespacesAndNewlines)
         // та же тема от того же источника — обновляем, а не плодим копии
+        if let i = items.firstIndex(where: { $0.isSkill && $0.title.lowercased() == t.lowercased() && $0.source == source }) {
+            items[i].kind = "знание"; items[i].history = []; items[i].version = 1
+        }
         if let i = items.firstIndex(where: { !$0.isSkill && $0.title.lowercased() == t.lowercased() && $0.source == source }) {
             items[i].text = text
             items[i].date = Date()
@@ -235,7 +238,7 @@ final class KnowledgeBase: ObservableObject {
             guard let list = try? JSONDecoder().decode([P].self, from: data) else { return "Файл не похож на пакет знаний." }
             for p in list {
                 if p.kind == "навык" {
-                    if let u = saveSkill(title: p.title, text: p.text, source: p.source ?? "пакет") { pendingUpdates.append(u) }
+                    if let u = saveSkill(title: p.title, text: p.text, source: p.source ?? "пакет"), u.old != nil || list.count <= 3 { pendingUpdates.append(u) }
                 } else {
                     add(title: p.title, text: p.text, source: p.source ?? "пакет", pinned: p.pinned ?? false)
                 }

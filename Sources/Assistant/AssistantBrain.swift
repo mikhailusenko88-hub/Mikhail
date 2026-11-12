@@ -348,7 +348,7 @@ final class AssistantBrain: ObservableObject {
                     self.saveChat()
                 }
                 if list.count > 5 {
-                    self.messages.append(ChatMsg(role: .note, text: "Ещё обновлены: " + list.dropFirst(5).map { "«\($0.title)» v\($0.version)" }.joined(separator: ", ")))
+                    self.messages.append(ChatMsg(role: .note, text: "Ещё обновлено навыков: \(list.count - 5). Список — ⚙︎ → «Навыки»."))
                 }
             } catch {
                 self.messages.append(ChatMsg(role: .note, text: "⚠️ " + error.localizedDescription))
