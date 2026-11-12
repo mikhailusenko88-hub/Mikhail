@@ -478,7 +478,7 @@ async function prepare(e, onStep, isCancelled, noMix, opt) { // noMix: звук 
     if (r && r.buf) { try { const buf = await MK.voiceFx(r.buf, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('нейроголос', err); } continue; }
     if (!r) { // голос iPhone: омографы по смыслу (з+амок/зам+ок) — как у рассказчика; свои «+» в реплике важнее
       let text = ln.text, voice = ln.voice, key = ln.key;
-      if (ln.src && window.MKVoice && MKVoice.homoMarks && ((lib.settings || {}).bars || {}).iphoneHomo) { try {   // омографы для голосов iPhone — по настройке bars.iphoneHomo: на слух ещё не проверено, Пик и Рон пока читают как раньше
+      if (ln.src && window.MKVoice && MKVoice.homoMarks && ((lib.settings || {}).bars || {}).iphoneHomo !== false) { try {   // голоса iPhone (Пик, Рон): ударения по смыслу — глаза́, з+амок/зам+ок, уже́, все/всё. С 12.11.2026 включено (транскрипция — MK.appleIPA, проверено голосом Apple на Mac); выключить — bars.iphoneHomo: false
         const plus = ln.src.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1'), hm = await MKVoice.homoMarks(plus, SrvVoice.lex(ln));
         if (hm !== plus) { const ps = MK.prepSpeech(hm, lib.lexicon || {}, (lib.settings && lib.settings.stressMode) || 'ipa'); text = ps.text; voice = Object.assign({}, ln.voice, ps.ipa.length ? { ipa: ps.ipa } : {}); key = ln.key + 'h' + MK.hash32(hm).toString(36); }
       } catch (err) { console.log('омографы', err); } }

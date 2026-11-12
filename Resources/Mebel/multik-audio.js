@@ -65,6 +65,12 @@ function ruIPA(word, si) {
   return out.map(o => o.p).join('');
 }
 MK.ruIPA = ruIPA;
+/** Транскрипция для голоса Apple (Пик, Рон, iPhone). 12.11.2026 проверено голосом Milena на Mac (71 реплика серий, распознаватель):
+    знаки ɡ ɫ ʂ ʐ ɕ и безударные ɐ ɪ ʊ ə голос не знает и проглатывает звук — «уже» → «и», «глаза» → «за», «большая» → «бля»
+    (распознано не так 44 реплики из 71, без подсказок 4). Обычными знаками: 7 из 71, ударение верно у 66 слов из 74 (без подсказок 52). */
+function appleIPA(p) { return p.replace(/tɕ/g, 'tʃʲ').replace(/ɕː/g, 'ʃʲː').replace(/ɕ/g, 'ʃʲ').replace(/ɡ/g, 'g').replace(/ɫ/g, 'l').replace(/ʂ/g, 'ʃ').replace(/ʐ/g, 'ʒ')
+  .replace(/ɐ/g, 'a').replace(/ʊ/g, 'u').replace(/ɪ/g, 'i').replace(/ə/g, 'a').replace(/ɛ/g, 'e'); }
+MK.appleIPA = appleIPA;
 /** Готовит реплику к озвучке: «+» и заглавная гласная → ударение, словарь ударений, «ё». → {text, ipa:[[начало, длина, ipa]]}
     byMeaning (для нейроголосов с БАРС-речью): «все/всё» и пары-омографы «е/ё» («пчелы/пчёлы», «поешь/поёшь») здесь не трогаем — их решает
     грамматика в странице голоса по смыслу («все вместе», «от пчелы́»). Для голосов iPhone (без byMeaning) всё как раньше. */
@@ -85,7 +91,7 @@ MK.prepSpeech = function (text, lex, mode, byMeaning) {
     if (ai > 0) { const plain = w.replace(/́/g, ''), si = ai - 1;
       if (mode === 'acute') { out += w; continue; }
       if (mode === 'respell') { out += [...plain].map((c, j) => j !== si && (c === 'о' || c === 'О') ? (c === 'о' ? 'а' : 'А') : c).join(''); continue; }
-      const p = ruIPA(plain, si); if (p) ipa.push([out.length, plain.length, p]); out += plain; continue; }
+      const p = ruIPA(plain, si); if (p) ipa.push([out.length, plain.length, appleIPA(p)]); out += plain; continue; }
     out += w;
   }
   return { text: out, ipa };
