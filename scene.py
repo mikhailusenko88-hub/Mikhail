@@ -1206,7 +1206,7 @@ def scene_plinth():
         camera((W - cx, D - cy, cz), (W - 0.03, D - 0.03, float(A.get('look_z', 0.04))), lens=float(A.get('lens', 40)),
                fstop=float(A.get('fstop', 11)) or None, focus=float(A.get('focus', math.hypot(cx, cy))))
     elif cm == 'top':
-        camera((tcx - 0.02, tcy - float(A.get('back', 0.42)), float(A.get('cam_z', 0.36))), (tcx + 0.08, tcy + 0.17, 0.0),
+        camera((tcx - 0.02, tcy - float(A.get('back', 0.42)), float(A.get('cam_z', 0.36))), (tcx + float(A.get('look_dx', 0.08)), tcy + float(A.get('look_dy', 0.17)), 0.0),
                lens=float(A.get('lens', 50)), fstop=float(A.get('fstop', 0)) or None, focus=float(A.get('focus', 0.65)), level=False)
     elif cm == 'run':      # вдоль стены у самого пола: линия плинтуса уходит в угол
         camera((W - float(A.get('off', 0.17)), D - float(A.get('back', 2.4)), float(A.get('cam_z', 0.09))), (W - 0.03, D - 0.02, 0.05),
