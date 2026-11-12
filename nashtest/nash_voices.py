@@ -45,10 +45,16 @@ def apply(model, path, log=print):
                     coef[sid] = v["coef"]
                 except Exception as e:      # высота «high/low» в SSML без поправки — почти так же
                     log(f"свои голоса: высоту для {name} не поправил ({e})")
-            ids[name] = sid
-            for lst in (getattr(model, "speakers", None), getattr(pack, "speakers", None)):
-                if isinstance(lst, list) and name not in lst:
-                    lst.append(name)
-            names.append(name)
-    log("свои голоса подключены: " + ", ".join(names))
-    return names
+            names.append((name, slot))
+    # модель сверяет имя диктора со своим списком — своё имя подменяем на место, куда вписан голос
+    alias = dict(names)
+    orig = model.apply_tts
+    if not getattr(orig, "_nash", False):
+        def apply_tts(*a, **k):
+            if k.get("speaker") in alias:
+                k["speaker"] = alias[k["speaker"]]
+            return orig(*a, **k)
+        apply_tts._nash = True
+        model.apply_tts = apply_tts
+    log("свои голоса подключены: " + ", ".join(f"{n} (на месте {s})" for n, s in names))
+    return [n for n, _ in names]
