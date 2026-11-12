@@ -1,0 +1,10 @@
+[
+ {"name":"nv1","w":{"ru_alexandr":1,"ru_bogdan":1,"ru_dmitriy":1,"ru_roman":1}},
+ {"name":"nv2","w":{"ru_alexandr":1,"ru_bogdan":1,"ru_dmitriy":1,"ru_eduard":1,"ru_igor":1,"ru_roman":1}},
+ {"name":"nv3","w":{"ru_alexandr":1,"ru_roman":1}},
+ {"name":"nv4","w":{"ru_bogdan":1,"ru_eduard":1,"ru_igor":1}},
+ {"name":"nv5","w":{"ru_alexandr":1,"ru_bogdan":1,"ru_dmitriy":1,"ru_eduard":1,"ru_igor":1,"ru_roman":1,"ru_marat":1,"ru_gamat":1,"ru_safarhuja":1,"ru_kejilgan":1,"ru_miyau":1}},
+ {"name":"nv6","w":{"ru_alexandr":1,"ru_bogdan":1,"ru_dmitriy":1,"ru_eduard":1,"ru_igor":1,"ru_roman":1},"push":0.15},
+ {"name":"nv7","w":{"ru_alexandr":1,"ru_bogdan":1,"ru_dmitriy":1,"ru_eduard":1,"ru_igor":1,"ru_roman":1},"renorm":false},
+ {"name":"nv8","w":{"ru_dmitriy":1,"ru_eduard":1}}
+]

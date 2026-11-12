@@ -1,0 +1,130 @@
+[
+{
+"name": "nw1",
+"w": {
+"ru_alexandr": 0.8,
+"ru_bogdan": 0.6,
+"ru_dmitriy": 1.3,
+"ru_eduard": 1.2,
+"ru_igor": 1.2,
+"ru_roman": 0.6
+}
+},
+{
+"name": "nw2",
+"w": {
+"ru_alexandr": 0.7,
+"ru_bogdan": 0.5,
+"ru_dmitriy": 1.2,
+"ru_eduard": 1.2,
+"ru_igor": 1.0,
+"ru_roman": 0.5,
+"ru_marat": 0.8,
+"ru_gamat": 0.6
+}
+},
+{
+"name": "nw3",
+"w": {
+"ru_alexandr": 1,
+"ru_bogdan": 1,
+"ru_dmitriy": 1,
+"ru_eduard": 1,
+"ru_igor": 1,
+"ru_roman": 1,
+"ru_marat": 1,
+"ru_gamat": 1,
+"ru_kejilgan": 1
+}
+},
+{
+"name": "nx1",
+"w": {
+"ru_alexandr": 1,
+"ru_bogdan": 1,
+"ru_dmitriy": 1,
+"ru_eduard": 1,
+"ru_igor": 1,
+"ru_roman": 1
+},
+"noise": {
+"seed": 1,
+"beta": 0.5
+}
+},
+{
+"name": "nx2",
+"w": {
+"ru_alexandr": 1,
+"ru_bogdan": 1,
+"ru_dmitriy": 1,
+"ru_eduard": 1,
+"ru_igor": 1,
+"ru_roman": 1
+},
+"noise": {
+"seed": 2,
+"beta": 0.5
+}
+},
+{
+"name": "nx3",
+"w": {
+"ru_alexandr": 1,
+"ru_bogdan": 1,
+"ru_dmitriy": 1,
+"ru_eduard": 1,
+"ru_igor": 1,
+"ru_roman": 1
+},
+"noise": {
+"seed": 3,
+"beta": 0.8
+}
+},
+{
+"name": "nx4",
+"w": {
+"ru_alexandr": 1,
+"ru_bogdan": 1,
+"ru_dmitriy": 1,
+"ru_eduard": 1,
+"ru_igor": 1,
+"ru_roman": 1
+},
+"noise": {
+"seed": 4,
+"beta": 0.8
+}
+},
+{
+"name": "nx5",
+"w": {
+"ru_alexandr": 1,
+"ru_bogdan": 1,
+"ru_dmitriy": 1,
+"ru_eduard": 1,
+"ru_igor": 1,
+"ru_roman": 1
+},
+"noise": {
+"seed": 5,
+"beta": 1.0
+}
+},
+{
+"name": "nx6",
+"w": {
+"ru_alexandr": 1,
+"ru_bogdan": 1,
+"ru_dmitriy": 1,
+"ru_eduard": 1,
+"ru_igor": 1,
+"ru_roman": 1
+},
+"noise": {
+"seed": 6,
+"beta": 1.0
+}
+}
+]
