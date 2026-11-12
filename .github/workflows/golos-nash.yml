@@ -32,14 +32,16 @@ jobs:
           curl -fsSL -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
           python nashtest/patch_server.py /opt/multik-tts/server.py
           cp nashtest/nash_voices.py nashtest/voices.json /opt/multik-tts/
-          /opt/multik-tts/venv/bin/python nashtest/run.py 2>&1 | tail -30
+          git clone -q --depth 1 --branch pochemu-albina-voice --single-branch https://github.com/${{ github.repository }} /tmp/pav
+          if grep -q phrases nash_request.txt; then /opt/multik-tts/venv/bin/python nashtest/run2.py 2>&1 | tail -30; mkdir -p /tmp/out; cp -r /tmp/o2/* /tmp/out/; else /opt/multik-tts/venv/bin/python nashtest/run.py 2>&1 | tail -30; fi
       - name: В ветку golos-nash-voice (+ телефонные пробы для сравнения)
         run: |
           mkdir -p /tmp/out/v
-          for b in golos-nv-voice golos-nw-voice; do git clone -q --depth 1 --branch $b --single-branch https://github.com/${{ github.repository }} /tmp/$b; done
-          for n in nv4_a nv4_b nv4_c; do cp /tmp/golos-nv-voice/v/$n.mp3 /tmp/out/v/onnx_$n.mp3; done
-          for n in nw1_a nw1_b nw1_c nx6_a nx6_b nx6_c; do cp /tmp/golos-nw-voice/v/$n.mp3 /tmp/out/v/onnx_$n.mp3; done
-          for f in /tmp/golos-nv-voice/v/spk_*.mp3; do cp $f /tmp/out/v/; done
+          if grep -q phrases nash_request.txt; then BR=golos-nash-phr; else BR=golos-nash-voice; fi; echo "BR=$BR" >> $GITHUB_ENV
+          grep -q phrases nash_request.txt || for b in golos-nv-voice golos-nw-voice; do git clone -q --depth 1 --branch $b --single-branch https://github.com/${{ github.repository }} /tmp/$b; done
+          grep -q phrases nash_request.txt || for n in nv4_a nv4_b nv4_c; do cp /tmp/golos-nv-voice/v/$n.mp3 /tmp/out/v/onnx_$n.mp3; done
+          grep -q phrases nash_request.txt || for n in nw1_a nw1_b nw1_c nx6_a nx6_b nx6_c; do cp /tmp/golos-nw-voice/v/$n.mp3 /tmp/out/v/onnx_$n.mp3; done
+          grep -q phrases nash_request.txt || for f in /tmp/golos-nv-voice/v/spk_*.mp3; do cp $f /tmp/out/v/; done
           rm -f /tmp/out/*.wav
-          cd /tmp/out && git init -q -b golos-nash-voice && git config user.name golos && git config user.email golos@users.noreply.github.com
-          git add -A && git commit -qm "свои голоса в модели бота" && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:golos-nash-voice
+          cd /tmp/out && git init -q -b $BR && git config user.name golos && git config user.email golos@users.noreply.github.com
+          git add -A && git commit -qm "свои голоса в модели бота" && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:$BR
