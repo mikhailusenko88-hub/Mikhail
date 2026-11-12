@@ -37,6 +37,7 @@ from site_edit import SiteEdits
 from site_web import register as register_site
 from konstruktor import Konstruktor
 from konstruktor_web import register as register_k
+from ai_web import AI, register as register_ai
 from outbox import Outbox
 from pochta import INLINE_OK, Pochta, fmt_ts, size_h
 from docs import MAX_FILE as DOC_MAX, Docs, clean_folder, fmt_date
@@ -2069,6 +2070,13 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         code = getattr(e, "code", 500)
         text = {403: "Нет доступа.", 404: "Не найдено."}.get(code) or getattr(e, "description", "") or "Ошибка."
         return render_template("error.html", code=code, text=text), code
+
+    # ------------------------------------------------------------ «Помощник»: своя нейросеть в телефоне работает с CRM по ключу
+    ai = AI(store)
+    app.extensions["ai"] = ai
+    register_ai(app, store, ai, {"admin_required": admin_required, "login_required": login_required, "who": who,
+                                 "send_calc_to": send_calc_to, "pochta": pochta,
+                                 "server": {"keys": SERVER_ACTION_KEYS, "request": request_file, "last": last_action}})
 
     return app
 

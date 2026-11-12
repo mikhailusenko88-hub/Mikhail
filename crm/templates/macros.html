@@ -52,6 +52,7 @@
 <a href="{{ url_for('outbox_view') }}" {% if cur=='outbox' %}aria-current="page"{% endif %}>Исходящие</a>
 <a href="{{ url_for('taxes_view') }}" {% if cur=='taxes' %}aria-current="page"{% endif %}>Налоги</a>
 <a href="{{ url_for('designers_view') }}" {% if cur=='designers' %}aria-current="page"{% endif %}>Дизайнеры</a>{% endif %}
+<a href="{{ url_for('ai_view') }}" {% if cur=='ai' %}aria-current="page"{% endif %}>Помощник</a>
 <a href="{{ url_for('settings_view') }}" {% if cur=='settings' %}aria-current="page"{% endif %}>Настройки</a>
 {% for l in k_links() %}<a href="{{ l['url'] }}" target="_blank" rel="noopener noreferrer">{{ l['title'] }} ↗</a>{% endfor %}
 {% if me and me['role']=='admin' %}<a href="{{ url_for('server_view') }}" {% if cur=='server' %}aria-current="page"{% endif %}>Сервер</a>

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Ключ помощника{% endblock %}
+{% block main %}
+<h1>Ключ для телефона</h1>
+<p class="d">Скопируйте и вставьте в «Замер 3D» → Помощник → ⚙︎ → CRM → «Ключ». Больше он не покажется. Потеряли телефон — отключите ключ на странице «Помощник».</p>
+<div class="panel pad"><code class="pw">{{ token }}</code></div>
+<p><a class="btn-s" href="{{ url_for('ai_view') }}">Готово</a></p>
+{% endblock %}

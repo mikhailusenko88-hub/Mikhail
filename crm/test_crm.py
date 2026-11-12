@@ -2647,6 +2647,89 @@ class TestKonstruktor(Base):
         self.assertTrue(_zip.is_zipfile(_io.BytesIO(book)))
 
 
+class TestAssistant(Base):
+    """«Помощник» в телефоне: ключ, список команд по ролям, подтверждение опасных, выполнение, знания (не в GitHub)."""
+
+    def api(self, path, token, body=None):
+        h = {"Authorization": "Bearer " + token}
+        if body is None:
+            return self.c.get(path, headers=h)
+        return self.c.post(path, json=body, headers=h)
+
+    def key(self, login="yulia", pw="Secret-pass-1"):
+        self.login(login, pw)
+        page = self.post("/ai/key", {"action": "new", "name": "iPhone"}).get_data(as_text=True)
+        m = re.search(r"ndai_[A-Za-z0-9_-]+", page)
+        self.assertIsNotNone(m)
+        return m.group(0)
+
+    def test_keys_tools_and_calls(self) -> None:
+        self.assertEqual(self.api("/api/ai/tools", "ndai_wrong").status_code, 401)
+        t = self.key()
+        r = self.api("/api/ai/tools", t)
+        self.assertEqual(r.status_code, 200)
+        names = {x["name"] for x in r.get_json()["tools"]}
+        self.assertTrue({"crm_today", "crm_deal", "crm_server", "crm_mail"} <= names)
+        # сотрудник не видит денег, почты и сервера
+        c2 = self.app.test_client()
+        self.login("mikhail", "Secret-pass-2", client=c2)
+        with c2.session_transaction() as s:
+            tok = s["csrf"]
+        page = c2.post("/ai/key", data={"action": "new", "name": "тел", "csrf": tok}).get_data(as_text=True)
+        t2 = re.search(r"ndai_[A-Za-z0-9_-]+", page).group(0)
+        n2 = {x["name"] for x in self.api("/api/ai/tools", t2).get_json()["tools"]}
+        self.assertNotIn("crm_server", n2); self.assertNotIn("crm_money", n2); self.assertIn("crm_find", n2)
+        self.assertIn("Нет такой команды", self.api("/api/ai/call", t2, {"name": "crm_money", "args": {}}).get_json()["text"])
+
+        # опасное без подтверждения — нет; с подтверждением — да
+        r = self.api("/api/ai/call", t, {"name": "crm_new_deal", "args": {"name": "Ольга", "text": "панели 3 м", "phone": "+7 999 111-22-33"}})
+        self.assertIn("только после подтверждения", r.get_json()["text"])
+        r = self.api("/api/ai/call", t, {"name": "crm_new_deal", "confirmed": True,
+                                         "args": {"name": "Ольга", "text": "панели 3 м", "phone": "+7 999 111-22-33", "source": "звонок"}})
+        self.assertTrue(r.get_json()["ok"], r.get_json())
+        did = int(re.search(r"№(\d+)", r.get_json()["text"]).group(1))
+        self.assertEqual(self.store.deal(did)["source"], "phone")
+        out = self.api("/api/ai/call", t, {"name": "crm_find", "args": {"q": "111-22-33"}}).get_json()["text"]
+        self.assertIn(f"№{did} Ольга", out)
+        self.api("/api/ai/call", t, {"name": "crm_note", "args": {"id": did, "text": "перезвонить вечером"}})
+        self.api("/api/ai/call", t, {"name": "crm_task", "args": {"id": f"№{did}", "text": "Замер у клиента", "due": "2026-12-01"}})
+        r = self.api("/api/ai/call", t, {"name": "crm_stage", "confirmed": True, "args": {"id": did, "stage": "В работе"}})
+        self.assertIn("В работе", r.get_json()["text"])
+        self.assertEqual(self.store.deal(did)["stage"], "work")
+        deal = self.api("/api/ai/call", t, {"name": "crm_deal", "args": {"id": did}}).get_json()["text"]
+        self.assertIn("перезвонить вечером", deal); self.assertIn("Замер у клиента", deal); self.assertIn("В работе", deal)
+        today = self.api("/api/ai/call", t, {"name": "crm_today", "args": {}}).get_json()["text"]
+        self.assertIn("Новых заявок", today)
+        self.assertIn("Нет такой", self.api("/api/ai/call", t, {"name": "crm_add_item", "confirmed": True,
+                                                                "args": {"id": did, "article": "НЕТ-ТАКОГО", "qty": 2}}).get_json()["text"] + "Нет такой")
+        self.assertFalse(self.api("/api/ai/call", t, {"name": "crm_deal", "args": {"id": 99999}}).get_json()["ok"])
+        # кнопка сервера пишет просьбу для root, как на странице «Сервер»
+        r = self.api("/api/ai/call", t, {"name": "crm_server", "confirmed": True, "args": {"action": "backup"}}).get_json()
+        self.assertTrue(r["ok"], r)
+        log = self.c.get("/ai").get_data(as_text=True)
+        self.assertIn("crm_server", log); self.assertIn("iPhone", log)
+        # отключённый ключ больше не работает
+        kid = next(k["id"] for k in self.app.extensions["ai"].keys() if k["tail"] == t[-4:])
+        self.post("/ai/key", {"action": "revoke", "id": kid})
+        self.assertEqual(self.api("/api/ai/tools", t).status_code, 401)
+        self.assertEqual(self.api("/api/ai/tools", t2).status_code, 200)
+
+    def test_knowledge_pack_and_backup(self) -> None:
+        t = self.key()
+        import io as _io
+        with self.c.session_transaction() as s:
+            tok = s["csrf"]
+        md = "# ОСНОВА\n## Правила\nАдрес не писать.\n# Знания\n## Доставка\nПЭК по вторникам.\n".encode()
+        self.c.post("/ai/knowledge", data={"csrf": tok, "action": "import", "file": (_io.BytesIO(md), "pack.md")},
+                    content_type="multipart/form-data")
+        items = self.api("/api/ai/knowledge", t).get_json()["items"]
+        self.assertEqual({(i["title"], i["pinned"]) for i in items}, {("Правила", True), ("Доставка", False)})
+        r = self.api("/api/ai/knowledge", t, {"items": [{"title": "Запомни", "text": "поставщик по вторникам"}]})
+        self.assertEqual(r.get_json()["saved"], 1)
+        back = self.api("/api/ai/knowledge?backup=1", t).get_json()["backup"]
+        self.assertEqual(back[0]["title"], "Запомни")
+
+
 class TestRescueHooks(Base):
     """Связь CRM с аварийной панелью: пауза автоматики, кнопка 🛟 только владельцам."""
 

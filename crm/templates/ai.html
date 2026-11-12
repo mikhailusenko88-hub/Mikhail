@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}Помощник в телефоне{% endblock %}
+{% block main %}
+{{ more_nav('ai') }}
+<h1>Помощник в телефоне</h1>
+<p class="d">Своя нейросеть в приложении «Замер 3D» (раздел «Помощник»). Она считает прямо в iPhone; сюда, в CRM, телефон обращается только за командами: заявки, клиенты, склад, задачи{% if me['role']=='admin' %}, почта, деньги, кнопки сервера{% endif %}. Всё делается с правами того, чей ключ. Отправка клиенту, смена этапа и кнопки сервера — только после «Да» на телефоне.</p>
+
+<h2>Ключи телефонов</h2>
+<div class="panel list">
+{% for k in keys %}
+  <div class="row"><span class="grow"><span class="t">{{ k['name'] }}</span> <span class="d">· {{ k['user_name'] }} · …{{ k['tail'] }} · выдан {{ fmt_day(k['created_at'][:10]) }}{% if k['used_at'] %} · работал {{ fmt_day(k['used_at'][:10]) }}{% endif %}</span></span>
+    <form method="post" action="{{ url_for('ai_key') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ k['id'] }}"><button class="btn-g sm" name="action" value="revoke">Отключить</button></form></div>
+{% else %}
+  <div class="row"><span class="d">Ключей пока нет.</span></div>
+{% endfor %}
+</div>
+<form class="panel pad grid2" method="post" action="{{ url_for('ai_key') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="new">
+  <label class="f">Чей телефон<input name="name" maxlength="40" placeholder="iPhone Михаила"></label>
+  <div class="span2"><button class="btn-p">+ Выдать ключ</button> <span class="d">Ключ покажется один раз — вставьте его в «Замер 3D» → Помощник → ⚙︎ → CRM.</span></div>
+</form>
+
+{% if me['role']=='admin' %}
+<h2 id="know">Знания о магазине</h2>
+<p class="d">Хранятся только в базе CRM (не в GitHub). Телефон забирает их кнопкой «Обновить знания из CRM». Разделы «основа» помощник помнит всегда, остальные подтягивает по теме вопроса.</p>
+<form class="panel pad row wrap" method="post" action="{{ url_for('ai_knowledge_edit') }}" enctype="multipart/form-data">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="import">
+  <input type="file" name="file" accept=".md,.json,.txt"> <button class="btn-s">Загрузить пакет знаний</button>
+</form>
+<div class="panel list">
+{% for r in know %}
+  <details class="row"><summary><span class="t">{% if r['pinned'] %}📌 {% endif %}{{ r['title'] }}</span> <span class="d">· {{ r['source'] }} · {{ r['text']|length }} знаков</span></summary>
+    <form class="grid2" method="post" action="{{ url_for('ai_knowledge_edit') }}">
+      <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ r['id'] }}">
+      <label class="f span2">Тема<input name="title" value="{{ r['title'] }}" maxlength="120"></label>
+      <label class="f span2">Текст<textarea name="text" rows="8">{{ r['text'] }}</textarea></label>
+      <label class="chk"><input type="checkbox" name="pinned" value="1" {% if r['pinned'] %}checked{% endif %}> Основа — помнить всегда</label>
+      <div class="span2"><button class="btn-s" name="action" value="save">Сохранить</button> <button class="btn-g sm" name="action" value="delete">Удалить</button></div>
+    </form></details>
+{% else %}
+  <div class="row"><span class="d">Знаний пока нет — загрузите пакет.</span></div>
+{% endfor %}
+</div>
+<form class="panel pad grid2" method="post" action="{{ url_for('ai_knowledge_edit') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="save">
+  <label class="f span2">Тема<input name="title" maxlength="120" required></label>
+  <label class="f span2">Текст<textarea name="text" rows="5" required></textarea></label>
+  <label class="chk"><input type="checkbox" name="pinned" value="1"> Основа — помнить всегда</label>
+  <div class="span2"><button class="btn-p">+ Добавить</button></div>
+</form>
+
+<h2>Что помощник делал в CRM</h2>
+<div class="panel list">
+{% for l in log %}
+  <div class="row"><span class="grow"><span class="t">{{ l['tool'] }}</span> <span class="d">· {{ l['user_name'] }} · {{ l['at'][:16].replace('T', ' ') }}{% if not l['ok'] %} · не вышло{% endif %}</span><br><span class="d">{{ l['args'][:160] }} → {{ l['result'][:160] }}</span></span></div>
+{% else %}
+  <div class="row"><span class="d">Пока ничего.</span></div>
+{% endfor %}
+</div>
+{% endif %}
+
+<h2>Что умеет в CRM ({{ tools|length }} команд)</h2>
+<div class="panel list">{% for t in tools %}<div class="row"><span class="grow"><span class="t">{{ t['desc'] }}</span>{% if t.get('danger') %} <span class="pill warn">с подтверждением</span>{% endif %}</span></div>{% endfor %}</div>
+{% endblock %}
