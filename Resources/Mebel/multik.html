@@ -273,7 +273,7 @@ const App = {
         const bb = bs === 'run' ? `<button class="btn" disabled>⏳ Собирается</button>` : bs === 'wait' ? `<button class="btn" data-a="unqueue">⏳ В очереди ✕</button>` : bs === 'held' ? `<button class="btn acc" data-a="build">🎬 Продолжить сборку</button>` : `<button class="btn ${e.status === 'built' ? '' : 'acc'}" data-a="build">🎬 ${e.status === 'built' ? 'Пересобрать' : 'Собрать видео'}</button>`;
         d.innerHTML = `<div class="row"><div style="flex:1"><b>Серия ${e.episode}${e.title ? '. ' + esc(e.title) : ''}</b><div class="mut">${(e.script.scenes || []).length} сцен · ${st}</div></div></div>
           <div class="btns"><button class="btn" data-a="play">▶ Просмотр</button>${bb}
-          ${e.video ? '<button class="btn ok" data-a="share">⤴ Отправить / YouTube</button><button class="btn" data-a="dub">🔊 Обновить звук</button>' : ''}<button class="btn" data-a="yt">📝 Текст для YouTube</button><button class="btn" data-a="del">🗑 Удалить</button></div>`;
+          ${e.video ? '<button class="btn ok" data-a="share">⤴ Отправить / YouTube</button><button class="btn" data-a="dub">🔊 Обновить звук</button>' : ''}<button class="btn" data-a="yt">📝 Текст для YouTube</button><button class="btn" data-a="rt">📝 Текст для Rutube</button><button class="btn" data-a="del">🗑 Удалить</button></div>`;
         d.querySelectorAll('button').forEach(b => b.onclick = () => App.epAction(p, e, b.dataset.a));
         card.appendChild(d);
       }
@@ -317,6 +317,14 @@ const App = {
       <select id="sres"><option value="1080">1920×1080 (YouTube, лучше)</option><option value="720">1280×720 (в 2 раза быстрее)</option></select>
       <select id="sfps"><option value="25">25 кадров/с</option><option value="30">30 кадров/с</option></select>
       <select id="squal"><option value="hq">Качество: как в кино (шерсть, мягкий свет)</option><option value="std">Качество: быстрое (без шерсти)</option></select></div></div>
+      <div class="card"><b>Подписка на канал</b><div class="mut" style="margin:4px 0 8px">У роликов «для детей» YouTube сам убирает конечные заставки, подсказки и значок канала — поэтому зовём подписаться прямо в мультике: кнопка «Подписаться» в углу посреди серии (лапка нажимает её) и на последней заставке, а главный герой говорит фразу ниже. Действует на серии, собранные после изменения.</div>
+        <label class="row" style="margin:6px 0"><input type="checkbox" id="subOn"> <span style="flex:1">Звать подписаться в мультике</span></label>
+        <label class="row" style="margin:6px 0"><input type="checkbox" id="subBadge"> <span style="flex:1">Кнопка «Подписаться» в кадре</span></label>
+        <div class="row" style="margin:6px 0"><span class="mut" style="flex:1">Кто говорит в конце:</span><select id="subWho"><option value="hero">Главный герой серии</option><option value="narrator">Рассказчик</option><option value="off">Никто</option></select></div>
+        <textarea id="subLine" rows="3" style="width:100%;box-sizing:border-box"></textarea>
+        <div class="row" style="margin:6px 0"><span class="mut" style="flex:1">Ссылка YouTube:</span><input id="subYt" style="flex:2"></div>
+        <div class="row" style="margin:6px 0"><span class="mut" style="flex:1">Ссылка Rutube:</span><input id="subRt" style="flex:2"></div>
+        <label class="row" style="margin:6px 0"><input type="checkbox" id="subDesc"> <span style="flex:1">Ссылка «Подписывайтесь…» в «Тексте для YouTube / Rutube»</span></label></div>
       <div class="card"><b>Голоса iPhone</b><div class="mut" style="margin:4px 0 8px">Чтобы голоса звучали лучше, скачай улучшенные русские голоса: Настройки → Универсальный доступ → Устный контент → Голоса → Русский → Milena и Yuri «улучшенный». Делать это лучше до создания персонажей: голос записывается в код персонажа.</div><div id="vlist" class="mut">…</div></div>
       <div class="card"><b>Рассказчик</b><div class="row" style="margin:6px 0"><span class="mut" style="flex:1">Голос:</span><select id="narV">${Object.entries(MK.NARRATOR_VOICES).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join('')}</select></div>
         ${MK.narratorVoice(Lib.data).server ? `<div class="row" style="margin:6px 0"><span class="mut" style="flex:1">Кто читает:</span><select id="narS">${Object.entries(MK.NEURAL_SPEAKERS).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('')}</select></div>
@@ -341,6 +349,13 @@ const App = {
       if ($('narS')) { const sp = $('narS'), R = $('narR'), Pp = $('narP'), so = $('narSoft'), lab = () => { $('narRv').textContent = Math.round(R.value) + '%'; $('narPv').textContent = Math.round(Pp.value) + '%'; };
         sp.value = cfg.speaker; R.value = Math.round(cfg.rate * 100); Pp.value = Math.round(cfg.pitch * 100); so.checked = cfg.soft; lab();
         sp.onchange = () => put('speaker', sp.value); R.oninput = lab; Pp.oninput = lab; R.onchange = () => put('rate', +R.value / 100); Pp.onchange = () => put('pitch', +Pp.value / 100); so.onchange = () => put('soft', so.checked); } }
+    { const st = Lib.data.settings = Lib.data.settings || {}, sb = () => st.sub || (st.sub = {}), $ = id => document.getElementById(id), cur = st.sub || {};
+      const put = (k, v) => { sb()[k] = v; Lib.save(); };
+      $('subOn').checked = cur.on !== false; $('subBadge').checked = cur.badge !== false; $('subWho').value = cur.who || 'hero'; $('subDesc').checked = cur.desc !== false;
+      $('subLine').value = cur.line != null ? cur.line : MK.SUB_LINE; $('subLine').placeholder = MK.SUB_LINE; $('subYt').value = cur.yt || MK.SUB_YT; $('subRt').value = cur.rt || MK.SUB_RT;
+      $('subOn').onchange = () => put('on', $('subOn').checked); $('subBadge').onchange = () => put('badge', $('subBadge').checked); $('subWho').onchange = () => put('who', $('subWho').value); $('subDesc').onchange = () => put('desc', $('subDesc').checked);
+      $('subLine').onchange = () => { const v = $('subLine').value.trim(); if (v && v !== MK.SUB_LINE) put('line', v); else { delete sb().line; $('subLine').value = MK.SUB_LINE; Lib.save(); } };   // пусто — снова фраза по умолчанию
+      $('subYt').onchange = () => put('yt', $('subYt').value.trim()); $('subRt').onchange = () => put('rt', $('subRt').value.trim()); }
     const sr = document.getElementById('sres'), sf = document.getElementById('sfps'), sq = document.getElementById('squal'); sr.value = s.res; sf.value = s.fps; sq.value = s.quality || 'hq'; sq.onchange = () => { if (Build.busy) { alert('Качество можно поменять, когда сборка закончится.'); sq.value = s.quality || 'hq'; return; } s.quality = sq.value; Lib.save(); if (window.MK3D) MK3D.setQuality(s.quality); };
     sr.onchange = () => { s.res = +sr.value; Lib.save(); }; sf.onchange = () => { s.fps = +sf.value; Lib.save(); };
     const lex = Lib.data.lexicon || {}, rows = [];
@@ -396,7 +411,8 @@ const App = {
       if (e.video) { try { await Native.call('removeFile', { path: e.video }); } catch (er) {} }
       p.episodes = p.episodes.filter(x => x !== e); if (!p.episodes.length) Lib.data.projects = Lib.data.projects.filter(x => x !== p);
       await Lib.save(); App.render(true); return; }
-    if (a === 'yt') { const y = e.script.youtube || {}; const text = `${y.title || (p.series + ' — Серия ' + e.episode + '. ' + (e.title || ''))}\n\n${y.description || ''}\n\n${(y.tags || []).map(t => '#' + t.replace(/\s+/g, '')).join(' ')}`; await Native.call('copy', { text }); alert('Название, описание и теги скопированы:\n\n' + text); }
+    if (a === 'yt' || a === 'rt') { const y = e.script.youtube || {}, sub = MK.subDescLine ? MK.subDescLine(Lib.data, a) : '';   // в конце описания — строка «Подписывайтесь на канал…» со ссылкой (своя для YouTube и Rutube)
+      const text = `${y.title || (p.series + ' — Серия ' + e.episode + '. ' + (e.title || ''))}\n\n${y.description || ''}${sub ? '\n\n' + sub : ''}\n\n${(y.tags || []).map(t => '#' + t.replace(/\s+/g, '')).join(' ')}`; await Native.call('copy', { text }); alert('Название, описание и теги скопированы:\n\n' + text); }
   },
 };
 

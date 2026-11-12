@@ -69,6 +69,9 @@ function normChar(spec) {
     pattern: spec.pattern || [], acc: spec.acc || [], hair: spec.hair || { style: 'short' }, outfit: spec.outfit || {},
     size: (spec.height || 1), seed: hash32(spec.id + (spec.kind || '')), ol: c.outline || '#2b1d16' };
 }
+MK._cardTalk = function (tl, seg, id, t) { const s = seg && seg.say; if (!s || s.who !== id || t < s.t - .05 || t >= s.t + s.dur + .1) return null; const a = tl.audio && tl.audio[s.key], k = t - s.t; let talk = 0;
+  if (k >= 0 && k < s.dur) { if (a && a.env) talk = clamp((a.env[Math.floor(k * 50)] || 0) * 3.2, 0, 1); else talk = (Math.sin(k * 21) * .5 + .5) * (Math.sin(k * 5.3) * .3 + .7) * (k > s.dur - .15 ? 0 : 1); }
+  return { talk, vz: MK.viseme(s.text, Math.max(0, k), s.dur) }; };
 MK.normChar = normChar; MK._cardCast = (tl) => (tl.ep.cardCast || Object.keys(tl.lib.characters).filter(id => (tl.ep.scenes || []).some(s => (s.cast || []).some(c => c.who === id)))).slice(0, 5);
 MK.drawCharPublic = (ctx, spec, st, T) => drawChar(ctx, normChar(spec), st, T);
 
@@ -851,8 +854,29 @@ MK.collectLines = function (ep, lib) {
     const text = stepVoiceText(st); if (text) { const ln = lineFor(ep, lib, st.who || 'Р', text, st, stepVocalKind(st) ? vi++ : 0); if (ln) out.push(ln); }
     if (lp.post) { const l = laughLine(ep, lib, st.who, vi++, true); if (l) out.push(l); }
   }
+  const sl = subLine(ep, lib); if (sl) out.push(sl);   // «Понравился мультик? …» на последней заставке
   return out;
 };
+
+/** Подписка на канал (Настройки → «Подписка на канал»). У роликов «для детей» YouTube выключает конечные заставки, подсказки, значок канала и колокольчик —
+ *  поэтому зовём подписаться в самом мультике: плашка в углу посреди серии (без звука), кнопка на последней заставке и фраза главного героя к ребёнку и родителям. */
+MK.SUB_LINE = 'Понравился мультик? Попроси маму или папу подписаться на канал. До встречи в новой серии!';
+MK.SUB_YT = 'https://www.youtube.com/@Cartoon_Friend3'; MK.SUB_RT = 'https://rutube.ru/channel/82826859/';
+/** Строка про подписку в конце описания ролика: YouTube — ссылка сразу с окном «Подписаться» (?sub_confirmation=1), Rutube — ссылка на канал. */
+MK.subDescLine = function (lib, where) { const s = ((lib && lib.settings) || {}).sub || {}; if (s.on === false || s.desc === false) return '';
+  let u = String((where === 'rt' ? s.rt : s.yt) || (where === 'rt' ? MK.SUB_RT : MK.SUB_YT)).trim(); if (!u) return '';
+  if (where !== 'rt' && /youtube\.com\//.test(u) && !/sub_confirmation/.test(u)) u = u.replace(/\/+$/, '') + (u.includes('?') ? '&' : '?') + 'sub_confirmation=1';
+  return '⭐ Подписывайтесь на канал, чтобы не пропустить новые серии: ' + u; };
+MK.subCfg = function (lib, ep) { const s = ((lib && lib.settings) || {}).sub || {}; if (s.on === false || (ep && ep.subscribe === false)) return null;
+  return { badge: s.badge !== false, who: s.who || 'hero', line: s.line != null ? String(s.line).trim() : MK.SUB_LINE }; };
+function subSpeaker(ep, lib) { // главный герой серии — у кого больше всего реплик; героев нет — рассказчик
+  const cast = (ep.cardCast || Object.keys(lib.characters || {}).filter(id => (ep.scenes || []).some(s => (s.cast || []).some(c => c.who === id)))).slice(0, 5), cnt = {};
+  for (const sc of ep.scenes || []) for (const st of sc.steps || []) if (st.say && st.who && cast.includes(st.who)) cnt[st.who] = (cnt[st.who] || 0) + 1;
+  let best = null; for (const id of cast) if (cnt[id] && (!best || cnt[id] > cnt[best])) best = id; return best || cast[0] || 'Р'; }
+function subLine(ep, lib) { const c = MK.subCfg(lib, ep); if (!c || !c.line || c.who === 'off' || ep.endCard === false) return null;
+  const who = c.who === 'narrator' ? 'Р' : subSpeaker(ep, lib), ln = lineFor(ep, lib, who, c.line, who === 'Р' ? null : { who, say: c.line, emotion: 'happy' }, 0);
+  return ln ? Object.assign(ln, { subText: c.line }) : null; }
+MK.subLine = subLine;
 
 /** Проверка сценария против замороженной библиотеки. Возвращает {errors, warnings, newChars, newLocs} */
 MK.validate = function (ep, lib) {
@@ -1116,10 +1140,17 @@ MK.compile = function (ep, lib, audio) {
     music.push({ t0: t, t1: t + sdur, mood: sc.music || ep.music || 'happy' });
     t += sdur;
   }
-  if (END) { segs.push({ kind: 'end', t0: t, t1: t + END }); music.push({ t0: t, t1: t + END, mood: 'happy' }); t += END; }
+  const sub = MK.subCfg(lib, ep), sl = END ? subLine(ep, lib) : null; let subMarks = [];
+  if (sub && sub.badge) { const L = t - TITLE, fr = L >= 90 ? [.3, .7] : L >= 30 ? [.5] : []; subMarks = fr.map(f => Math.round((TITLE + L * f) * 10) / 10).filter(m => m + SUB_BADGE <= t); }   // плашка в углу: длинная серия — дважды, короткая — раз
+  if (END) { let say = null, end = END; if (sl) { const a = audio[sl.key], d = a ? a.dur : estSpeech(sl.subText); say = { who: sl.who, t: .8, dur: d, key: sl.key, text: sl.subText }; end = Math.max(END, say.t + d + 1.6); }
+    const tap = sub && sub.badge ? (say ? say.t + say.dur * .55 : 2) : null;   // лапка жмёт «Подписаться» на словах «подписаться на канал»
+    segs.push({ kind: 'end', t0: t, t1: t + end, say, tap }); music.push({ t0: t, t1: t + end, mood: 'happy' });
+    if (say) speech.push({ t: t + say.t, dur: say.dur, key: say.key, who: say.who, text: say.text, vocal: false });
+    if (tap != null) sfx.push({ t: t + tap, n: 'pop' });
+    t += end; }
   // музыка: склеиваем подряд одинаковые
   const mus = []; for (const m of music) { if (m.t1 == null) { const s = segs.find(s => s.t0 <= m.t0 && s.t1 > m.t0); m.t1 = s ? s.t1 : t; } const last = mus[mus.length - 1]; if (last && last.mood === m.mood && Math.abs(last.t1 - m.t0) < .01) last.t1 = m.t1; else mus.push(Object.assign({}, m)); }
-  return { ep, lib, segs, dur: t, sfx, speech, music: mus, audio };
+  return { ep, lib, segs, dur: t, sfx, speech, music: mus, audio, sub: sub ? { marks: subMarks } : null };
 };
 /** Где предмет в момент t: {holder, x, air} */
 MK.propAt = function (p, t) { let holder = p.h0 || null, x = p.x0 != null ? p.x0 : p.x, air = 0, vis = p.vis0 !== false, glow = !!p.glow0, fx = null, fxT = 0, glowT = -9, tb = !!p.tb0, open = false, openT = -9, pa0 = 0, pa1 = 0, paT = -9; if (p.x0 == null) p.x0 = p.x;
@@ -1204,10 +1235,56 @@ MK.render = function (ctx, tl, T) {
   const si = tl.segs.indexOf(seg), sameP = tl.segs[si - 1], sameN = tl.segs[si + 1], same = o => o && o.kind === 'scene' && seg.kind === 'scene' && o.lkey === seg.lkey;
   const fin = same(sameP) ? 1 : clamp(t / .4, 0, 1), fout = same(sameN) ? 1 : clamp((seg.t1 - T) / .4, 0, 1), a = 1 - Math.min(fin, fout);
   if (a > 0 && !(seg === tl.segs[0] && t < .4 && seg.kind === 'title')) { ctx.fillStyle = `rgba(0,0,0,${a})`; ctx.fillRect(0, 0, W, H); }
+  if (tl.sub) drawSub(ctx, tl, seg, t, T, use3d);   // «Подписаться на канал»
   // субтитры
   if (tl.ep.subtitles) { const sp = tl.speech.find(s => T >= s.t && T < s.t + s.dur); if (sp) drawSubtitle(ctx, sp, tl.lib); }
   ctx.restore();
 };
+const SUB_BADGE = 7, SUB_TAP = 2.6, SUB_FONT = '-apple-system, "SF Pro Rounded", "Arial Rounded MT Bold", "DejaVu Sans", sans-serif';
+function subRR(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+/** Кнопка «ПОДПИСАТЬСЯ» (центр cx,cy): до щелчка красная и чуть дышит, в момент щелчка вдавливается, после — серая «✓ ВЫ ПОДПИСАНЫ» и сердечки. */
+function subButton(ctx, cx, cy, sc, k, tap) {
+  const done = k >= tap, press = k > tap - .1 && k < tap + .12 ? .9 : 1, pulse = done ? 1 : 1 + Math.sin(k * 5.5) * .035, w = 440, h = 106;
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(sc * press * pulse, sc * press * pulse);
+  ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = 7; subRR(ctx, -w / 2, -h / 2, w, h, h / 2); ctx.fillStyle = done ? '#ececf1' : '#ff2a2a'; ctx.fill();
+  ctx.shadowColor = 'transparent'; ctx.lineWidth = 6; ctx.strokeStyle = done ? '#c3c3cc' : '#b30d0d'; ctx.stroke();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  if (!done) { ctx.font = `900 48px ${SUB_FONT}`; ctx.fillStyle = '#fff'; ctx.fillText('ПОДПИСАТЬСЯ', 0, 3); }
+  else { ctx.font = `900 40px ${SUB_FONT}`; const tw = ctx.measureText('ВЫ ПОДПИСАНЫ').width, x0 = -(tw + 52) / 2; ctx.fillStyle = '#4a4a58'; ctx.fillText('ВЫ ПОДПИСАНЫ', x0 + 52 + tw / 2, 3);
+    ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#2fb14a'; ctx.beginPath(); ctx.moveTo(x0 + 4, 2); ctx.lineTo(x0 + 16, 15); ctx.lineTo(x0 + 38, -14); ctx.stroke(); }
+  ctx.restore();
+  if (done && k - tap < 1.3) { const q = (k - tap) / 1.3, r = rng(7); for (let i = 0; i < 9; i++) { const an = -Math.PI * (.08 + .84 * i / 8) + (r() - .5) * .3, d = (90 + r() * 70) * sc * ease(q * 1.6) + 40 * sc, s2 = (14 + r() * 10) * sc * (1 - q * .5);
+    ctx.save(); ctx.globalAlpha = clamp((1 - q) * 1.6, 0, 1); ctx.translate(cx + Math.cos(an) * d * 1.9, cy + Math.sin(an) * d); ctx.rotate((r() - .5) * .8); ctx.fillStyle = ['#ff4d6d', '#ff8fab', '#ffd23f'][i % 3];
+      ctx.beginPath(); ctx.moveTo(0, s2 * .35); ctx.bezierCurveTo(-s2 * 1.1, -s2 * .45, -s2 * .45, -s2 * 1.2, 0, -s2 * .45); ctx.bezierCurveTo(s2 * .45, -s2 * 1.2, s2 * 1.1, -s2 * .45, 0, s2 * .35); ctx.fill(); ctx.restore(); } }
+}
+/** Лапка-«палец»: подушечки сверху, (x,y) — куда жмёт. */
+function subPaw(ctx, x, y, sc, rot, arm) { arm = arm || 150;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sc, sc); ctx.lineWidth = 5; ctx.strokeStyle = '#5a2e12';
+  ctx.fillStyle = '#f5a54a'; ctx.beginPath(); ctx.moveTo(-34, 60); ctx.lineTo(-30, arm); ctx.lineTo(30, arm); ctx.lineTo(34, 60); ctx.fill(); ctx.stroke();   // лапа уходит за край
+  ctx.beginPath(); ctx.ellipse(0, 52, 48, 42, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  const toes = [[-36, 10], [-13, -2], [13, -2], [36, 10]]; for (const [tx, ty] of toes) { ctx.beginPath(); ctx.ellipse(tx, ty + 6, 15, 19, tx * .008, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+  ctx.fillStyle = '#ff9fb2'; ctx.beginPath(); ctx.ellipse(0, 60, 24, 18, 0, 0, Math.PI * 2); ctx.fill(); for (const [tx, ty] of toes) { ctx.beginPath(); ctx.ellipse(tx, ty + 8, 8, 10, 0, 0, Math.PI * 2); ctx.fill(); }
+  ctx.restore();
+}
+/** Лапка подходит к кнопке, жмёт в tap и уходит. bx,by — точка нажатия; side: 'down' — снизу, 'right' — из-за правого края (плашка в углу не залезает лапой в кадр). */
+function subPawAt(ctx, bx, by, sc, k, tap, side) {
+  const inK = ease((k - (tap - .9)) / .75), outK = ease((k - (tap + .35)) / .6); if (inK <= 0 || outK >= 1) return;
+  const far = 330 * sc, p = inK * (1 - outK), dip = k > tap - .1 && k < tap + .12 ? 8 * sc : 0, R = side === 'right';
+  subPaw(ctx, bx + (1 - p) * far * (R ? 1.2 : .8) + (R ? dip * .6 : 0), by + (1 - p) * far * (R ? .2 : 1) + dip, sc * .9, R ? -1.15 : -.45);
+}
+MK._sub = { button: subButton, paw: subPaw };   // та же кнопка и лапка — картинками для Shorts (tools/multik/test/subpng.js)
+function drawSub(ctx, tl, seg, t, T, use3d) {
+  ctx.save();
+  if (seg.kind === 'end') { if (seg.tap != null) { const k = t, a = ease((k - .5) / .45), bounce = 1 + Math.sin(clamp((k - .5) / .45, 0, 1) * Math.PI) * .12; if (a > 0) {
+      const cx = W / 2, cy = H * (use3d ? .875 : .5), sc = 1.12 * a * bounce;   /* в 3D — на сцене под ногами героев, на плоской заставке — между надписью и героями */ subButton(ctx, cx, cy, sc, k, seg.tap); subPawAt(ctx, cx + 120, cy + 18, 1.05, k, seg.tap); } }
+    ctx.restore(); return; }
+  if (seg.kind === 'scene') for (const m of tl.sub.marks) { const k = T - m; if (k < 0 || k >= SUB_BADGE) continue;
+    const a = Math.min(ease(k / .45), ease((SUB_BADGE - k) / .45)), Z = .88, pw = 500, ph = 222, x = W - 40 - pw * Z / 2 + (1 - a) * (pw * Z + 80), y = 40 + ph * Z / 2;
+    ctx.save(); ctx.translate(x, y); ctx.scale(Z, Z); ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8; subRR(ctx, -pw / 2, -ph / 2, pw, ph, 40); ctx.fillStyle = 'rgba(255,255,255,.95)'; ctx.fill(); ctx.shadowColor = 'transparent';
+    ctx.lineWidth = 5; ctx.strokeStyle = '#ffd23f'; ctx.stroke(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 44px ${SUB_FONT}`; ctx.fillStyle = '#3a1d10'; ctx.fillText('Нравится мультик?', 0, -ph / 2 + 56);
+    subButton(ctx, 0, 34, .95, k, SUB_TAP); subPawAt(ctx, 150, 40, .85, k, SUB_TAP, 'right'); ctx.restore(); }
+  ctx.restore();
+}
 function drawSubtitle(ctx, sp, lib) { sp = Object.assign({}, sp, { text: String(sp.text || '').replace(/\u0301/g, '') });
   ctx.font = '700 46px -apple-system, "SF Pro Rounded", "DejaVu Sans", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
   const words = sp.text.split(' '), lines = []; let ln = ''; for (const w of words) { if (ctx.measureText(ln + ' ' + w).width > W * .7 && ln) { lines.push(ln); ln = w; } else ln = ln ? ln + ' ' + w : w; } lines.push(ln);
@@ -1243,7 +1320,8 @@ function drawCard(ctx, tl, seg, t, T, textOnly) {
   // персонажи серии машут
   const ids = (ep.cardCast || Object.keys(tl.lib.characters).filter(id => (ep.scenes || []).some(s => (s.cast || []).some(c => c.who === id)))).slice(0, 5);
   ids.forEach((id, i) => { const lc = tl.lib.characters[id]; if (!lc) return; const ch = lc._n || (lc._n = normChar(lc.spec)); const x = W / 2 + (i - (ids.length - 1) / 2) * 330, appear = ease((t - .4 - i * .15) / .5);
-    drawChar(ctx, ch, { x, y: H + 40 - appear * (H * .02 + 40) + (1 - appear) * 300, s: 1.05, face: 0, emo: 'happy', act: { n: i % 2 ? 'wave' : 'jump', p: ((t * .7 + i * .3) % 1), t: t + i }, walk: {}, talk: 0, persist: 'none' }, T); });
+    const sp = MK._cardTalk(tl, seg, id, t);
+    drawChar(ctx, ch, { x, y: H + 40 - appear * (H * .02 + 40) + (1 - appear) * 300, s: 1.05, face: 0, emo: 'happy', act: sp ? null : { n: i % 2 || (seg.say && seg.say.who === id) ? 'wave' : 'jump', p: ((t * .7 + i * .3) % 1), t: t + i }, walk: {}, talk: sp ? sp.talk : 0, vz: sp ? sp.vz : null, persist: 'none' }, T); });
 }
 function drawScene(ctx, tl, seg, t, T) {
   const B = ctx.getTransform();

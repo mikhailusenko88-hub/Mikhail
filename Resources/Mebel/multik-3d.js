@@ -3190,7 +3190,8 @@ function drawCard3D(ctx, tl, seg, t, T) { MK3D._T = t + 1000;
   const ids = global.MK._cardCast(tl);
   ids.forEach((id, i) => { const lc = tl.lib.characters[id]; if (!lc) return; const rig = rigFor(lc); ensureIn(rig.root); rig.root.visible = true; const x = (i - (ids.length - 1) / 2) * 1.25, appear = ease((t - .4 - i * .15) / .5);
     rig.root.position.set(x, -(1 - appear) * 3, 0); rig.yaw.rotation.y = 0;
-    applyPose(rig, { x: 0, face: 0, emo: 'happy', act: { n: i % 2 ? 'wave' : 'jump', p: ((t * .7 + i * .3) % 1), t: t + i }, walk: {}, talk: 0, persist: 'none' }, T); });
+    const sp = global.MK._cardTalk ? global.MK._cardTalk(tl, seg, id, t) : null, said = seg.say && seg.say.who === id;   // говорит «Понравился мультик?…» — стоит и говорит, потом машет
+    applyPose(rig, { x: 0, face: 0, emo: 'happy', act: sp ? null : { n: i % 2 || said ? 'wave' : 'jump', p: ((t * .7 + i * .3) % 1), t: t + i }, walk: {}, talk: sp ? sp.talk : 0, vz: sp ? sp.vz : null, persist: 'none' }, T); });
   cam.fov = 40; cam.position.set(0, 1.25, 6.2); cam.updateProjectionMatrix(); cam.lookAt(0, 1.55, 0); sun.position.set(4, 8, 6); sun.target.position.set(0, 0, 0);
   render(ctx);
 }
