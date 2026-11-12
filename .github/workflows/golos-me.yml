@@ -1,0 +1,57 @@
+name: golos-me
+# Голос Михаила: его запись приходит сюда только зашифрованной (ключ этой машины виден лишь ей), пробы уходят зашифрованными ключом Claude.
+on:
+  push:
+    branches: [golos]
+    paths: [me_request.txt]
+permissions:
+  contents: write
+jobs:
+  me:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Ключ этой машины — в ветку golos-me-x
+        run: |
+          umask 077; mkdir -p /tmp/k && openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out /tmp/k/priv.pem 2>/dev/null
+          mkdir -p /tmp/x && cd /tmp/x && openssl pkey -in /tmp/k/priv.pem -pubout -out runner_pub.pem
+          git init -q -b golos-me-x && git config user.name golos && git config user.email golos@users.noreply.github.com
+          git add -A && git commit -qm "ключ машины" && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:golos-me-x
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+          key: golos-me-v1
+      - name: Chatterbox
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q chatterbox-tts 2>&1 | tail -3
+          python -c "from chatterbox.mtl_tts import ChatterboxMultilingualTTS; print('ok')"
+      - name: Ждать запись (зашифрованную)
+        run: |
+          for i in $(seq 1 90); do
+            rm -rf /tmp/xx; git clone -q --depth 1 --branch golos-me-x --single-branch https://github.com/${{ github.repository }} /tmp/xx 2>/dev/null || true
+            [ -s /tmp/xx/ref.enc ] && [ -s /tmp/xx/key.enc ] && break; sleep 10
+          done
+          [ -s /tmp/xx/ref.enc ] || { echo "записи нет"; exit 1; }
+          umask 077; openssl pkeyutl -decrypt -inkey /tmp/k/priv.pem -in /tmp/xx/key.enc -out /tmp/k/aes.key
+          openssl enc -d -aes-256-cbc -pbkdf2 -pass file:/tmp/k/aes.key -in /tmp/xx/ref.enc -out /tmp/k/ref.wav
+          echo "запись получена: $(stat -c %s /tmp/k/ref.wav) байт"
+      - name: Пробы
+        run: python myvoice/clone.py /tmp/k/ref.wav /tmp/k/out 2>&1 | grep -v Warning | tail -25
+      - name: Зашифровать и выложить
+        if: always()
+        run: |
+          umask 077; cd /tmp/k
+          [ -d out ] || { echo "проб нет"; exit 0; }
+          tar czf out.tgz out && openssl rand -hex 32 > ok.key
+          openssl enc -aes-256-cbc -pbkdf2 -pass file:ok.key -in out.tgz -out /tmp/xx/out.enc
+          openssl pkeyutl -encrypt -pubin -inkey $GITHUB_WORKSPACE/myvoice/me_pub.pem -in ok.key -out /tmp/xx/outkey.enc
+          cd /tmp/xx && rm -f ref.enc key.enc && git config user.name golos && git config user.email golos@users.noreply.github.com
+          git add -A && git commit -qm "пробы (зашифровано)" && git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:golos-me-x
+          rm -rf /tmp/k
