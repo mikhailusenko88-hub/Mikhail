@@ -45,7 +45,8 @@ def plan(name):
         return ([("F", None, "intro"), ("Bb/F", None, "intro")] + [(PH[i], i, "verse") for i in range(8)]
                 + [(PH[i], i, "climax") for i in range(8)] + [("F", "fin", "end")])
     if name == "kuplet":
-        return [(PH[i], i, "verse") for i in range(4)] + [(("Gm7", "C7"), "cad", "verse"), ("F", "fin", "end")]
+        return ([(PH[i], i, "verse") for i in range(3)] + [(PH[4], 4, "climax"), (PH[5], 5, "climax"),
+                (("Gm7", "C7"), "cad", "climax"), ("F", "fin", "end")])
     if name == "raspev":
         return [(PH[i], i, "climax") for i in range(6)] + [(("Gm7", "C7"), "cad", "climax"), ("F", "fin", "end")]
     raise ValueError(name)
@@ -177,7 +178,8 @@ def compose(style, plan_name):
             e = end_t if mk == "fin" else bt(b, x + d)
             lead.append([a, e, m(nt), vw, b, sec])
     for i in range(len(lead) - 1):                       # вдох в конце фразы
-        if P[lead[i][4]][1] in PHRASE_END and lead[i + 1][4] != lead[i][4]:
+        b0, b1 = lead[i][4], lead[i + 1][4]
+        if b1 != b0 and (P[b0][1] in PHRASE_END or P[b0][2] != P[b1][2]):
             lead[i][1] -= 0.30
     lead_vel = {"verse": 0.42, "climax": 0.58, "end": 0.48}
     if style == "tihiy":
