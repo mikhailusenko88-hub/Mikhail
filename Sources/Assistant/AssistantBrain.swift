@@ -229,6 +229,22 @@ final class AssistantBrain: ObservableObject {
         return (before, Call(name: name, args: args, raw: raw))
     }
 
+    static func normURL(_ s: String) -> String {
+        var t = s.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let h = t.firstIndex(of: "#") { t = String(t[..<h]) }
+        while t.hasSuffix("/") { t.removeLast() }
+        if t.hasPrefix("http://") { t = "https://" + t.dropFirst(7) }
+        return t.lowercased()
+    }
+
+    static func urls(in text: String) -> Set<String> {
+        Set(Web.matches(#"https?://[^\s<>"'«»]+"#, text).map { normURL($0[0]) })
+    }
+
+    static func allowedURL(_ u: String, known: Set<String>) -> Bool {
+        known.contains(normURL(u))
+    }
+
     /// Маленькая нейросеть иногда отвечает по памяти там, где нужно поискать или посчитать — один раз подсказываем.
     static func needTool(_ q: String, used: Set<String>) -> String? {
         let t = q.lowercased().replacingOccurrences(of: "ё", with: "е")
@@ -379,6 +395,7 @@ final class AssistantBrain: ObservableObject {
             var badFormat = 0
             var used = Set<String>()
             var nudged = false
+            var known = Self.urls(in: question)      // адреса, которые можно открывать без вопроса
             for step in 0..<maxSteps {
                 if flag.value { break }
                 stage = step == 0 ? "Думаю…" : "Думаю дальше…"
@@ -414,6 +431,15 @@ final class AssistantBrain: ObservableObject {
                 }
                 used.insert(call.name)
                 var confirmed = false
+                // защита от «подсказок» на чужих страницах: сама открывает только ссылки из поиска или из вашего сообщения
+                if call.name == "open_page", let u = call.args["url"] as? String, !Self.allowedURL(u, known: known) {
+                    stage = "Жду вашего ответа…"
+                    let ok = await confirm("Открыть страницу не из поиска?", "Адрес: \(u)\n\nЕго нет ни в результатах поиска, ни в вашем сообщении. Если адрес подозрительный или в нём видны ваши данные — нажмите «Нет».")
+                    if !ok {
+                        messages.append(ChatMsg(role: .tool, text: "Хозяин не разрешил открывать этот адрес. Открывай только ссылки из результатов поиска.", tool: call.name))
+                        continue
+                    }
+                }
                 if spec.danger {
                     stage = "Жду вашего ответа…"
                     confirmed = await confirm(spec.remote ? "CRM: сделать?" : "Сделать?", describe(call, spec))
@@ -425,6 +451,7 @@ final class AssistantBrain: ObservableObject {
                 stage = stageText(call.name, call.args)
                 let result = spec.remote ? await CRMClient.call(call.name, call.args, confirmed: confirmed)
                                          : await LocalTools.run(call.name, call.args)
+                if call.name == "web_search" { known.formUnion(Self.urls(in: result)) }
                 messages.append(ChatMsg(role: .tool, text: String(result.prefix(3000)), tool: call.name))
                 saveChat()
             }
