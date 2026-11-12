@@ -27,6 +27,9 @@ LOCAL = [
      "params": [{"name": "title", "type": "string", "desc": "короткая тема", "required": True}, {"name": "text", "type": "string", "desc": "что запомнить", "required": True}]},
     {"name": "recall", "desc": "Найти в своей базе знаний.", "params": [{"name": "query", "type": "string", "desc": "о чём", "required": True}]},
     {"name": "forget", "desc": "Удалить из базы знаний запись по теме.", "params": [{"name": "title", "type": "string", "desc": "тема записи", "required": True}], "danger": True},
+    {"name": "skill_improve", "desc": "Улучшить навык: дописать урок «в следующий раз делать так» (после поправки хозяина или удачного нового способа).",
+     "params": [{"name": "skill", "type": "string", "desc": "название навыка", "required": True}, {"name": "lesson", "type": "string", "desc": "урок одной строкой", "required": True}]},
+    {"name": "skill_rollback", "desc": "Вернуть прошлую версию навыка.", "params": [{"name": "skill", "type": "string", "desc": "название навыка", "required": True}], "danger": True},
     {"name": "reminder", "desc": "Напоминание на телефоне в нужное время.",
      "params": [{"name": "text", "type": "string", "desc": "о чём напомнить", "required": True},
                 {"name": "when", "type": "string", "desc": "ГГГГ-ММ-ДД ЧЧ:ММ или «через 30 минут», «через 2 часа»", "required": True}]},
@@ -216,6 +219,8 @@ def run_tool(name, args):
         return f"Запомнила: «{args.get('title', '')}»."
     if name == "reminder":
         return f"Напомню {args.get('when', '')}: {args.get('text', '')}"
+    if name == "skill_improve":
+        return f"Навык «{args.get('skill', '')}» улучшен, теперь версия 3. Записан урок: {args.get('lesson', '')}"
     if name == "recall":
         return "В базе ничего нет по этой теме."
     if name.startswith("crm_"):
@@ -223,6 +228,20 @@ def run_tool(name, args):
             return f"Создана заявка №43 ({args.get('name', '')}). Задача «Связаться с клиентом» поставлена."
         return CRM_FAKE.get(name, f"(CRM, тест) выполнено {name}")
     return f"Нет такого действия: {name}"
+
+
+def need_tool(q, used):
+    t = q.lower().replace("ё", "е")
+    crm = any(w in t for w in ["заявк", "клиент", "склад", "остат", "задач", "crm", "срм", "оплат", "почт", "письм"])
+    search = any(w in t for w in ["найди", "поищи", "узнай", "в интернете", "сколько стоит", "какая цена", "цена на", "цены на", "где купить",
+                                  "курс ", "погод", "новост", "проверь компан", "кто такой", "что такое", "расписани", "адрес "])
+    if search and not crm and "web_search" not in used:
+        return "Подсказка: это нужно искать в интернете. Сначала вызови web_search коротким запросом, потом открой лучшую ссылку через open_page. По памяти цифры не называй."
+    nums = len(re.findall(r"\d+(?:[.,]\d+)?", t))
+    words = ["посчитай", "сколько будет", "рассчитай", "расчитай", "площад", "умнож", "сумм", "итого", "квадрат", "по ", "×", "*"]
+    if nums >= 2 and any(w in t for w in words) and "calc" not in used and not crm:
+        return "Подсказка: здесь нужен расчёт. Вызови calc с одной формулой, в уме не считай."
+    return None
 
 
 QUESTIONS = [
@@ -233,6 +252,9 @@ QUESTIONS = [
     "Запомни: поставщик отгружает по вторникам.",
     "Найди, сколько стоит доставка ПЭК 300 кг из Москвы в Санкт-Петербург.",
     "Напомни завтра в 10 утра позвонить Анне про расчёт.",
+    "Узнай, какой сейчас курс доллара к рублю по ЦБ.",
+    "Проверь компанию ООО «Яндекс», ИНН 7736207543: действует ли?",
+    "Нет, клиенту так не пиши: всегда в конце предлагай прислать размеры стены. Запомни это для ответов клиентам.",
 ]
 
 log = [f"# Проверка «головы» Помощника — {MODEL} — {datetime.now():%Y-%m-%d %H:%M} UTC\n"]
@@ -241,17 +263,25 @@ for q in QUESTIONS:
     msgs = [{"role": "user", "text": q}]
     log.append(f"\n## Вопрос: {q}\n")
     final = None
-    for step in range(6):
+    used, nudged = set(), False
+    for step in range(7):
         prompt = f"<|im_start|>system\n{system(q)}<|im_end|>\n" + render(msgs) + "<|im_start|>assistant\n" + ("<think>\n\n</think>\n\n" if MODEL == "qwen35" else "")
         out, secs, tm = complete(prompt)
         text, call = parse(out)
         log.append(f"- шаг {step + 1} ({secs:.0f} с, подсказка {tm.get('prompt_n', '?')} частей, ответ {tm.get('predicted_n', '?')}, "
                    f"{tm.get('predicted_per_second', 0):.1f} част/с)")
         if not call:
+            hint = None if nudged else need_tool(q, used)
+            if hint:
+                nudged = True
+                log.append(f"  - (ответила без действия: {text[:200]}) → подсказка")
+                msgs.append({"role": "tool", "text": hint})
+                continue
             final = text
             log.append(f"  - **ответ:** {text}")
             break
         name, args, raw = call
+        used.add(name)
         msgs.append({"role": "assistant", "text": text, "call": raw})
         res = run_tool(name, args) if name else "Ошибка: неверный формат вызова."
         log.append(f"  - действие `{name}` {json.dumps(args, ensure_ascii=False)}" + (f" (сначала сказала: {text})" if text else ""))
@@ -261,6 +291,15 @@ for q in QUESTIONS:
         total_ok += 1
     else:
         log.append("  - **без ответа за 6 шагов**")
+
+# «прочитай навык и скажи, что поняла» — как в телефоне после обновления
+old = "Вежливо, на «Вы», коротко. Цены — из CRM."
+new = "Вежливо, на «Вы», коротко. Цены — только из CRM (crm_stock) или с сайта. В конце всегда следующий шаг: попросить размеры стены или предложить оформить заказ. Сроки доставки не обещать, пока не проверила склад."
+ask = f"Тебе обновили навык «Как отвечать клиенту», версия 2.\nБыло:\n{old}\n\nСтало:\n{new}\n\nПрочитай внимательно и ответь хозяину 2–4 предложениями: что поняла и что теперь будешь делать иначе, чем раньше."
+p = ("<|im_start|>system\nТы — «Помощник», личный помощник хозяина в его iPhone. Отвечай по-русски, коротко, без выдумок.<|im_end|>\n"
+     f"<|im_start|>user\n{ask}<|im_end|>\n<|im_start|>assistant\n" + ("<think>\n\n</think>\n\n" if MODEL == "qwen35" else ""))
+out, secs, _ = complete(p)
+log.append(f"\n## Обновление навыка — что поняла ({secs:.0f} с)\n\n{strip_think(out).strip()}")
 
 log.append(f"\nИтог: ответила на {total_ok} из {len(QUESTIONS)}.")
 open(OUT, "w", encoding="utf-8").write("\n".join(log) + "\n")
