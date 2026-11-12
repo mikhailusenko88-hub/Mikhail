@@ -183,6 +183,84 @@ SONGS["rassvet"] = dict(
 )
 
 
+# «Рассвет» на 35 секунд для Shorts: такт вступления, куплет (4 такта), кульминация (4 такта), финальный аккорд на 28,7 с
+SONGS["rassvet35"] = dict(
+    title="Рассвет (Shorts 35 с)", bpm=76, bpb=4, tr=0, tonic="F", hold=1.15, tail=2.65,
+    H=SONGS["rassvet"]["H"],
+    bars=[bar("F", None, "intro")]
+    + [bar(_RP[i], _RV[i], "verse", i == 3) for i in range(4)]
+    + [bar(_RP[i], _RV[i], "climax") for i in range(4, 8)]
+    + [bar("F", [(0, 4, "A4", "a")], "end")],
+    style=SONGS["rassvet"]["style"],
+)
+
+
+# ================================================================ КОРОТКИЕ ВЕРСИИ ДЛЯ РОЛИКОВ (≈34 с)
+# Темп подгоняется под длину ролика (render(name, total)): финальный аккорд, выдержка и хвост зала укладываются точно в ролик.
+def _pick(name, idx):
+    return [SONGS[name]["bars"][i] for i in idx]
+
+
+def _sec(bars, sec, breaks=()):
+    return [bar(ch, mel, sec, i in breaks) for i, (ch, mel, _s, _b) in enumerate(bars)]
+
+
+SONGS["rassvet_s"] = dict(SONGS["rassvet35"], title="Рассвет (короткая)", tail=2.65)
+# «Дорога»: такт вступления, первая фраза куплета, первая и последняя фразы припева
+SONGS["doroga_s"] = dict(
+    SONGS["doroga"], title="Дорога (короткая)", tail=2.8,
+    bars=_pick("doroga", [0]) + _pick("doroga", [2, 3, 4, 5]) + _pick("doroga", [10, 11, 12, 13, 18, 19, 20, 21]))
+# «Простор»: без вступления — первая фраза куплета и припев
+SONGS["prostor_s"] = dict(
+    SONGS["prostor"], title="Простор (короткая)", tail=2.8,
+    bars=_pick("prostor", [2, 3, 4, 5, 10, 11, 12, 13, 14]))
+# «Гимн»: первая фраза куплета, начало и конец припева
+SONGS["gimn_s"] = dict(
+    SONGS["gimn"], title="Гимн (короткая)", tail=2.8,
+    bars=_pick("gimn", [2, 3, 4, 5, 10, 11, 14, 15, 16]))
+# «Колыбельная»: такт вступления, первая фраза куплета, припев целиком
+SONGS["kolybelnaya_s"] = dict(
+    SONGS["kolybelnaya"], title="Колыбельная (короткая)", tail=2.8,
+    bars=_pick("kolybelnaya", [0, 2, 3, 4, 5]) + _pick("kolybelnaya", list(range(18, 27))))
+SHORTS = ["rassvet_s", "doroga_s", "prostor_s", "gimn_s", "kolybelnaya_s"]
+
+
+def fit_bpm(song, total):
+    """темп, при котором песня с хвостом занимает ровно total секунд"""
+    nb = len(song["bars"]) - 1
+    pre = 0.8 if song["bars"][0][2] == "climax" else 0.3
+    bar_len = (total - pre - song.get("tail", 4.5)) / (nb + song.get("hold", 1.2))
+    return 60 * song["bpb"] / bar_len
+
+
+def render(name, total=None, target=-14.0, tmp_dir="/tmp"):
+    """готовый стереозвук (L, R): −14 LUFS, без лимитера; total — точная длина в секундах (темп подгоняется)"""
+    global rng
+    rng = np.random.default_rng(2026)
+    song = dict(SONGS[name])
+    if total is not None:
+        song["bpm"] = fit_bpm(song, total)
+    bus, end_t = compose(song)
+    L, R = master_clean(bus, 0.3)
+    cut = int(round((total if total is not None else end_t + song.get("tail", 4.5)) * SR))
+    L, R = L[:cut].copy(), R[:cut].copy()
+    if len(L) < cut:
+        L, R = np.pad(L, (0, cut - len(L))), np.pad(R, (0, cut - len(R)))
+    fo = int(1.5 * SR)
+    w = 0.5 + 0.5 * np.cos(np.linspace(0, np.pi, fo))
+    L[-fo:] *= w
+    R[-fo:] *= w
+    pk = max(np.abs(L).max(), np.abs(R).max())
+    L, R = L / pk * 0.5, R / pk * 0.5
+    tmp = os.path.join(tmp_dir, f"golos_{os.getpid()}_{name}.wav")
+    write24(tmp, L, R)
+    g = min(10 ** ((target - lufs(tmp)) / 20), 0.89 / 0.5)
+    os.remove(tmp)
+    return L * g, R * g, song["bpm"]
+
+
+
+
 # ================================================================ движок
 def vlead(prev, pcs, lo, hi):
     """голосоведение подложки: каждый голос идёт к ближайшему звуку аккорда; аккорд всегда полный (с терцией)"""
@@ -554,20 +632,9 @@ if __name__ == "__main__":
             check(nm)
         sys.exit()
     name, out = sys.argv[1], sys.argv[2]
+    total = float(sys.argv[3]) if len(sys.argv) > 3 else None
     t = time.time()
-    bus, end_t = compose(SONGS[name])
-    L, R = master_clean(bus, 0.3)
-    cut = int((end_t + 4.5) * SR)
-    L, R = L[:cut].copy(), R[:cut].copy()
-    fo = int(1.5 * SR)
-    w = 0.5 + 0.5 * np.cos(np.linspace(0, np.pi, fo))
-    L[-fo:] *= w
-    R[-fo:] *= w
+    L, R, bpm = render(name, total)
+    write24(out, L, R)
     pk = max(np.abs(L).max(), np.abs(R).max())
-    L, R = L / pk * 0.5, R / pk * 0.5
-    tmp = out + ".tmp.wav"
-    write24(tmp, L, R)
-    g = min(10 ** ((-14.0 - lufs(tmp)) / 20), 0.89 / 0.5)
-    write24(out, L * g, R * g)
-    os.remove(tmp)
-    print(out, "готово", round(len(L) / SR, 1), "с; пик", round(20 * math.log10(0.5 * g), 1), "дБFS;", f"{time.time() - t:.0f} с")
+    print(out, "готово", round(len(L) / SR, 2), "с;", f"{bpm:.1f} уд/мин; пик", round(20 * math.log10(pk), 1), "дБFS;", f"{time.time() - t:.0f} с")
