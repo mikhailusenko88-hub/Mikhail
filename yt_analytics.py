@@ -295,6 +295,12 @@ def run_scan(spec, get, initial_data, headers, log, now, details_top=15, max_cha
     st, html = get(scan_url(kind, q))
     d = initial_data(html) if html else {}
     items = parse_items(d)
+    if not items:  # отладка: что пришло вместо выдачи
+        keys = Counter(k for n in _walk(d) if isinstance(n, dict) for k in n if k.endswith(("Renderer", "ViewModel")))
+        SCANS.mkdir(parents=True, exist_ok=True)
+        (SCANS / f"_debug_{slugify(spec)}.txt").write_text(
+            f"HTTP {st} len {len(html or '')} ytInitialData keys {list(d)[:20]}\n{keys.most_common(40)}\n\n{(html or '')[:3000]}",
+            encoding="utf-8")
     header = ""
     if kind == "hashtag":
         for node in _walk(d.get("header", {})):

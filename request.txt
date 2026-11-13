@@ -1,3 +1,4 @@
-# проверка 2026-11-13 21:05 MSK — новый скан (RSS соседей, хэштеги)
+# отладка search-week 2026-11-13 21:35 MSK
 scan:search-week:цитаты
-scan:hashtag:цитаты
+scan:search-month:цитаты
+scan:search-views:цитаты
