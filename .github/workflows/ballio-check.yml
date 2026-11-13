@@ -1,0 +1,33 @@
+name: ballio-check
+# Проверка онлайн-игры «Шарики.io»: страница на :8080 и игровой сервер на :8091 (заход как игрок).
+# Срабатывает при изменениях в ip52gz08/online/ (ждёт ~1,5 мин, пока сервер заберёт файлы).
+on:
+  push:
+    branches: [mebel]
+    paths: ['ip52gz08/online/**', '.github/workflows/ballio-check.yml']
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Подождать синхронизацию
+        run: sleep 90
+      - name: Страница игры
+        run: curl -s -o /dev/null -w "page %{http_code}\n" --max-time 10 http://89.126.192.214:8080/mebel/ip52gz08/online/ || true
+      - name: Игровой сервер
+        run: curl -s --max-time 8 http://89.126.192.214:8091/health || echo "server: no answer"
+      - name: Заход как игрок
+        run: |
+          cat > t.mjs <<'JS'
+          const t0 = Date.now(); let got = { w: 0, s: 0 };
+          const ws = new WebSocket('ws://89.126.192.214:8091/ws');
+          const end = (msg) => { console.log(msg, JSON.stringify(got), (Date.now() - t0) + 'ms'); try { ws.close(); } catch (e) {} process.exit(0); };
+          setTimeout(() => end('timeout'), 12000);
+          ws.onopen = () => ws.send(JSON.stringify({ t: 'hello', name: 'check', skin: 'TH', room: 'gh-check' }));
+          ws.onmessage = (e) => { const m = JSON.parse(e.data); if (m.t === 'w') { got.w = 1; got.balls = m.mt.length; got.dots = m.dots.length; } if (m.t === 's') { got.s++; if (got.s >= 5) end('OK'); } };
+          ws.onerror = () => end('ws error');
+          JS
+          node t.mjs
