@@ -1,0 +1,38 @@
+name: yt-daily
+# Ежедневный сбор аналитики YouTube: свои каналы 4 раза в сутки, полный обход (соседи + сканы ниш) в 06:xx UTC.
+# Код и данные — в ветке yt-status (yt_check.py --daily, channels.txt, scans.txt, history/).
+on:
+  schedule:
+    - cron: "23 0,6,12,18 * * *"
+  workflow_dispatch:
+    inputs:
+      full:
+        description: "Полный обход (соседи и сканы)"
+        default: "1"
+permissions:
+  contents: write
+concurrency:
+  group: yt-check
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: yt-status
+          fetch-depth: 1
+      - name: Собрать данные
+        run: |
+          H=$(date -u +%H)
+          if [ "$H" = "06" ] || [ "${{ github.event.inputs.full }}" = "1" ]; then export YT_FULL=1; fi
+          python3 yt_check.py --daily
+          [ -f tools/yt_report.py ] && python3 tools/yt_report.py || true
+      - name: Сохранить
+        run: |
+          git config user.name "yt-check"; git config user.email "yt-check@users.noreply.github.com"
+          git add status history
+          git commit -m "daily $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin yt-status || true
+          git push origin HEAD:yt-status

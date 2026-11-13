@@ -151,7 +151,11 @@ def parse_items(d):
                     vid = n["reelWatchEndpoint"].get("videoId")
                     break
             om = v.get("overlayMetadata", {})
-            items.append({"id": vid, "kind": "short", "title": _text(om.get("primaryText", {})),
+            title = _text(om.get("primaryText", {}))
+            if not title:
+                m = re.search(r'"(.*),\s*[\d\s.,]+\s*\S*\s*(просмотр|view)', v.get("accessibilityText", ""), re.S)
+                title = m.group(1) if m else ""
+            items.append({"id": vid, "kind": "short", "title": title,
                           "views": num(_text(om.get("secondaryText", {}))), "views_txt": _text(om.get("secondaryText", {})),
                           "age": "", "length": "", "channel": "", "handle": "", "channel_id": "", "snippet": ""})
         elif "reelItemRenderer" in node and isinstance(node["reelItemRenderer"], dict):
@@ -208,9 +212,68 @@ def oembed(vid, headers, log):
         return {}
 
 
+# ---------- канал коротко (для соседей из сканов) ----------
+
+_CH_CACHE = {}
+
+
+def channel_lite(handle, get, initial_data, now):
+    """Подписчики, id и последние 15 роликов (RSS: даты и точные просмотры). Пишет историю."""
+    if handle in _CH_CACHE:
+        return _CH_CACHE[handle]
+    out = {"handle": handle}
+    st, html = get(f"https://www.youtube.com/@{urllib.parse.quote(handle)}")
+    if html:
+        m = re.search(r'"externalId":"(UC[\w-]{22})"', html) or re.search(r'"channelId":"(UC[\w-]{22})"', html)
+        out["channel_id"] = m.group(1) if m else None
+        d = initial_data(html)
+        out["title"] = ((d.get("metadata") or {}).get("channelMetadataRenderer") or {}).get("title")
+        for node in _walk(d.get("header", {})):
+            for k in ("content", "simpleText"):
+                v = node.get(k) if isinstance(node, dict) else None
+                if isinstance(v, str) and re.search(r"\d", v):
+                    if re.search(r"подпис|subscri", v, re.I):
+                        out["subs"] = num(v)
+                    elif re.search(r"видео|video", v, re.I):
+                        out["videos"] = num(v)
+    if out.get("channel_id"):
+        time.sleep(0.5)
+        st2, xml = get(f"https://www.youtube.com/feeds/videos.xml?channel_id={out['channel_id']}")
+        out["rss"] = parse_rss(xml)
+    stamp = now.strftime("%Y-%m-%d %H:%M")
+    hist_append("channels", ["checked_utc", "handle", "channel_id", "subs", "videos", "page_status"],
+                [[stamp, handle, out.get("channel_id"), out.get("subs"), out.get("videos"), st]], now)
+    hist_append("videos", ["checked_utc", "handle", "video_id", "published_utc", "views", "src", "title"],
+                [[stamp, handle, r["id"], r["published"][:16], r.get("views"), "rss", r["title"][:150]]
+                 for r in out.get("rss", [])], now)
+    _CH_CACHE[handle] = out
+    time.sleep(0.5)
+    return out
+
+
+def parse_rss(xml):
+    import xml.etree.ElementTree as ET
+    rows = []
+    if not xml:
+        return rows
+    ns = {"a": "http://www.w3.org/2005/Atom", "m": "http://search.yahoo.com/mrss/",
+          "yt": "http://www.youtube.com/xml/schemas/2015"}
+    try:
+        root = ET.fromstring(xml)
+    except ET.ParseError:
+        return rows
+    for e in root.findall("a:entry", ns):
+        stat = e.find("m:group/m:community/m:statistics", ns)
+        vid = e.find("yt:videoId", ns)
+        rows.append({"id": vid.text if vid is not None else "", "published": e.find("a:published", ns).text,
+                     "title": e.find("a:title", ns).text or "",
+                     "views": int(stat.get("views")) if stat is not None and stat.get("views") else None})
+    return rows
+
+
 # ---------- скан ниши ----------
 
-SEARCH_SP = {"": "", "week": "EgIIAw%253D%253D", "shorts": "EgIQCQ%253D%253D", "views": "CAM%253D"}
+SEARCH_SP = {"": "", "week": "EgIIAw%3D%3D", "shorts": "EgIQCQ%3D%3D", "views": "CAM%3D", "month": "EgIIBA%3D%3D"}
 
 
 def scan_url(kind, q):
@@ -225,7 +288,7 @@ def slugify(s):
     return re.sub(r"[^\w]+", "_", s, flags=re.U).strip("_")[:60] or "scan"
 
 
-def run_scan(spec, get, initial_data, headers, log, now, details_top=12):
+def run_scan(spec, get, initial_data, headers, log, now, details_top=15, max_channels=8):
     """spec: 'search:цитаты' | 'search-week:цитаты' | 'search-shorts:...' | 'hashtag:цитаты'."""
     kind, q = spec.split(":", 1)
     kind, q = kind.strip(), q.strip()
@@ -239,50 +302,64 @@ def run_scan(spec, get, initial_data, headers, log, now, details_top=12):
                 v = node.get(k) if isinstance(node, dict) else None
                 if isinstance(v, str) and re.search(r"\d", v) and re.search(r"видео|канал|video|channel", v, re.I):
                     header += v + " · "
-    # кто автор и какие теги — у первых роликов
+    # кто автор — у первых роликов (oEmbed), даты и точные просмотры — из RSS их каналов
     for it in items[:details_top]:
         if not it["handle"]:
             it.update({k: v for k, v in oembed(it["id"], headers, log).items() if v})
-        det = player(it["id"], headers, log)
-        if det:
-            it["det"] = det
-            if not it.get("views") and det.get("views"):
-                it["views"] = det["views"]
-        time.sleep(0.7)
+            time.sleep(0.3)
+        it["handle"] = urllib.parse.unquote(it.get("handle") or "")
+    chans = []
+    for it in items[:details_top]:
+        h = it["handle"].lstrip("@")
+        if h and h not in chans:
+            chans.append(h)
+    for h in chans[:max_channels]:
+        c = channel_lite(h, get, initial_data, now)
+        for r in c.get("rss", []):
+            for it in items:
+                if it["id"] == r["id"]:
+                    it["published"] = r["published"]
+                    if r.get("views"):
+                        it["views"] = r["views"]
+                    it["channel_subs"] = c.get("subs")
+        for it in items:
+            if it["handle"].lstrip("@") == h:
+                it["channel_subs"] = c.get("subs")
     for it in items:
         it["age_h"] = age_hours(it.get("age"))
-        if not it["age_h"] and (it.get("det") or {}).get("publish"):
+        if not it["age_h"] and it.get("published"):
             try:
-                p = datetime.fromisoformat(it["det"]["publish"].replace("Z", "+00:00"))
+                p = datetime.fromisoformat(it["published"].replace("Z", "+00:00"))
                 if p.tzinfo is None:
                     p = p.replace(tzinfo=timezone.utc)
                 it["age_h"] = max(1.0, (now - p).total_seconds() / 3600)
             except Exception:  # noqa: BLE001
                 pass
         it["per_day"] = int(it["views"] / max(it["age_h"], 1) * 24) if it.get("views") and it.get("age_h") else None
-        it["tags"] = sorted(set(hashtags(it.get("title"), (it.get("det") or {}).get("description"))))
+        it["tags"] = sorted(set(hashtags(it.get("title"))))
     res = {"spec": spec, "url": scan_url(kind, q), "status": st, "checked": now.strftime("%Y-%m-%d %H:%M UTC"),
            "header": header.strip(" ·"), "items": items}
     SCANS.mkdir(parents=True, exist_ok=True)
     slug = slugify(spec)
     (SCANS / f"{slug}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
     stamp = now.strftime("%Y-%m-%d %H:%M")
-    hist_append("scans", ["checked_utc", "scan", "rank", "video_id", "kind", "handle", "channel", "views", "age_h",
-                          "length_s", "title", "tags"],
-                [[stamp, spec, i + 1, it["id"], it["kind"], it.get("handle", ""), it.get("channel", ""), it.get("views"),
-                  round(it["age_h"], 1) if it.get("age_h") else "", (it.get("det") or {}).get("length_s") or "",
-                  (it.get("title") or "")[:150], " ".join(it["tags"])] for i, it in enumerate(items[:40])], now)
+    hist_append("scans", ["checked_utc", "scan", "rank", "video_id", "kind", "handle", "channel", "channel_subs", "views",
+                          "age_h", "length", "title", "tags"],
+                [[stamp, spec, i + 1, it["id"], it["kind"], it.get("handle", ""), it.get("channel", ""),
+                  it.get("channel_subs") or "", it.get("views"), round(it["age_h"], 1) if it.get("age_h") else "",
+                  it.get("length") or "", (it.get("title") or "")[:150], " ".join(it["tags"])]
+                 for i, it in enumerate(items[:40])], now)
     # короткая сводка
     md = [f"# Скан: {spec}", f"Проверено: {res['checked']} · HTTP {st} · найдено {len(items)}",
           f"Ссылка: {res['url']}", ""]
     if res["header"]:
         md.append(f"Хэштег: {res['header']}\n")
-    md.append("| # | просм. | возраст | в сутки | канал | длит. | название |")
+    md.append("| # | просм. | возраст | в сутки | канал (подписчики) | длит. | название |")
     md.append("|---|---|---|---|---|---|---|")
     for i, it in enumerate(items[:30]):
         age = f"{it['age_h']:.0f} ч" if it.get("age_h") and it["age_h"] < 72 else (f"{it['age_h'] / 24:.0f} дн" if it.get("age_h") else "?")
         md.append(f"| {i + 1} | {it.get('views') or '?'} | {age} | {it.get('per_day') or '?'} | {it.get('channel') or '?'} "
-                  f"(@{it.get('handle', '').lstrip('@') or '?'}) | {(it.get('det') or {}).get('length_s') or it.get('length') or '?'} | "
+                  f"(@{it.get('handle', '').lstrip('@') or '?'}, {it.get('channel_subs') or '?'}) | {it.get('length') or '?'} | "
                   f"{(it.get('title') or '').replace('|', '/')[:90]} |")
     tags = Counter()
     for it in items[:30]:
