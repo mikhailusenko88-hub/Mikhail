@@ -1,87 +1,9 @@
-2026-11-13 17:56 UTC
-200 https://www.youtube.com/@TheHandwriting_of_Silence
-200 avatar TheHandwriting_of_Silence
-200 banner TheHandwriting_of_Silence
-200 https://www.youtube.com/@TheHandwriting_of_Silence/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
-200 https://www.youtube.com/results?search_query=%D1%86%D0%B8%D1%82%D0%B0%D1%82%D1%8B&sp=EgIIAw%253D%253D
+2026-11-13 17:59 UTC
+200 https://www.youtube.com/results?search_query=%D1%86%D0%B8%D1%82%D0%B0%D1%82%D1%8B&sp=EgIIAw%3D%3D
 200 https://www.youtube.com/hashtag/%D1%86%D0%B8%D1%82%D0%B0%D1%82%D1%8B/shorts
-200 player WEB tn-fxqqtUe8
-ERR player ANDROID tn-fxqqtUe8 HTTP Error 400: Bad Request
-200 player WEB _KCkjiRmsvY
-ERR player ANDROID _KCkjiRmsvY HTTP Error 400: Bad Request
-200 player WEB hD1z6Wf0IGY
-ERR player ANDROID hD1z6Wf0IGY HTTP Error 400: Bad Request
-200 player WEB rB1bMWkop4o
-ERR player ANDROID rB1bMWkop4o HTTP Error 400: Bad Request
-200 player WEB cIbaZJvDwmU
-ERR player ANDROID cIbaZJvDwmU HTTP Error 400: Bad Request
-200 player WEB -DZFbASSvNo
-ERR player ANDROID -DZFbASSvNo HTTP Error 400: Bad Request
-200 player WEB Xkl66w1_bT0
-ERR player ANDROID Xkl66w1_bT0 HTTP Error 400: Bad Request
-200 player WEB gsc1K909I3g
-ERR player ANDROID gsc1K909I3g HTTP Error 400: Bad Request
-200 player WEB 6vzDa7gbNNQ
-ERR player ANDROID 6vzDa7gbNNQ HTTP Error 400: Bad Request
-200 player WEB 4iB1RytMghU
-ERR player ANDROID 4iB1RytMghU HTTP Error 400: Bad Request
-200 player WEB AetkV2kCqBU
-ERR player ANDROID AetkV2kCqBU HTTP Error 400: Bad Request
-200 player WEB Vm84E3W-Bko
-ERR player ANDROID Vm84E3W-Bko HTTP Error 400: Bad Request
-200 https://www.youtube.com/results?search_query=%D1%86%D0%B8%D1%82%D0%B0%D1%82%D1%8B%20shorts
-200 player WEB n5XmVEDNrTI
-ERR player ANDROID n5XmVEDNrTI HTTP Error 400: Bad Request
-200 player WEB 54ovBczZW7c
-ERR player ANDROID 54ovBczZW7c HTTP Error 400: Bad Request
-200 player WEB 2e89teaBZzA
-ERR player ANDROID 2e89teaBZzA HTTP Error 400: Bad Request
-200 player WEB XOAjA17ItAo
-ERR player ANDROID XOAjA17ItAo HTTP Error 400: Bad Request
-200 player WEB WTy3W87ShwQ
-ERR player ANDROID WTy3W87ShwQ HTTP Error 400: Bad Request
-200 player WEB WYvqEzAbh4o
-ERR player ANDROID WYvqEzAbh4o HTTP Error 400: Bad Request
-200 player WEB 6NvIQH-ieLE
-ERR player ANDROID 6NvIQH-ieLE HTTP Error 400: Bad Request
-200 player WEB x7hEGLWaYGo
-ERR player ANDROID x7hEGLWaYGo HTTP Error 400: Bad Request
-200 player WEB Wr1UWkJ1HdQ
-ERR player ANDROID Wr1UWkJ1HdQ HTTP Error 400: Bad Request
-200 player WEB aOCFWJ45li0
-ERR player ANDROID aOCFWJ45li0 HTTP Error 400: Bad Request
-200 player WEB 7h9il7nF01Q
-ERR player ANDROID 7h9il7nF01Q HTTP Error 400: Bad Request
-200 player WEB C5UqBl-U8H8
-ERR player ANDROID C5UqBl-U8H8 HTTP Error 400: Bad Request
-200 https://www.youtube.com/results?search_query=Cartoon%20Friend%203
-200 player WEB BLSM4gckqw0
-ERR player ANDROID BLSM4gckqw0 HTTP Error 400: Bad Request
-200 player WEB 10t-FGfPsqo
-ERR player ANDROID 10t-FGfPsqo HTTP Error 400: Bad Request
-200 player WEB 6cbCAbnpHNA
-ERR player ANDROID 6cbCAbnpHNA HTTP Error 400: Bad Request
-200 player WEB dfTPlsIq7d0
-ERR player ANDROID dfTPlsIq7d0 HTTP Error 400: Bad Request
-200 player WEB RO7Q1tMGE7g
-ERR player ANDROID RO7Q1tMGE7g HTTP Error 400: Bad Request
-200 player WEB FnTS2mz0SsQ
-ERR player ANDROID FnTS2mz0SsQ HTTP Error 400: Bad Request
-200 player WEB 7AFawTBn7MY
-ERR player ANDROID 7AFawTBn7MY HTTP Error 400: Bad Request
-200 player WEB Zv1aZgxPKYM
-ERR player ANDROID Zv1aZgxPKYM HTTP Error 400: Bad Request
-200 player WEB ai-QYjceo2Q
-ERR player ANDROID ai-QYjceo2Q HTTP Error 400: Bad Request
-200 player WEB XkwVWv6WPOY
-ERR player ANDROID XkwVWv6WPOY HTTP Error 400: Bad Request
-200 player WEB 0xt9VrgDKso
-ERR player ANDROID 0xt9VrgDKso HTTP Error 400: Bad Request
-200 player WEB yIFWecPEX5g
-ERR player ANDROID yIFWecPEX5g HTTP Error 400: Bad Request
-429 https://www.youtube.com/watch?v=47Zecy9YXfA&hl=ru
-200 player WEB 47Zecy9YXfA
-ERR player ANDROID 47Zecy9YXfA HTTP Error 400: Bad Request
-200 thumb 47Zecy9YXfA/oar2.jpg 198015 B
-200 thumb 47Zecy9YXfA/hqdefault.jpg 12529 B
+200 https://www.youtube.com/@%D0%9A%D0%B0%D0%BA%D0%B1%D1%8B%D0%AE%D0%BC%D0%BE%D1%80
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC7Mx5B9dPGQnX4fCtVQ02kg
+200 https://www.youtube.com/@roblorebbid
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCWe-FXVA4wbaGipDea236pA
+200 https://www.youtube.com/@YumorLife
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCNNPe5-MDJrmkitkT2iUomw
