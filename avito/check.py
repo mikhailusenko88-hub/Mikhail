@@ -7,6 +7,7 @@ from playwright.sync_api import sync_playwright
 OUT = 'status/avito'; os.makedirs(OUT, exist_ok=True)
 for f in os.listdir(OUT): os.remove(os.path.join(OUT, f))
 ours, brand, queries, comp_n, PAUSE, mine = [], None, [], 10, 2, set()
+sellerof, NOHOME = [], False
 for l in open('avito/list.txt', encoding='utf-8'):
     if '|' not in l or l.startswith('#'): continue
     c = [x.strip() for x in l.split('|')]
@@ -16,6 +17,8 @@ for l in open('avito/list.txt', encoding='utf-8'):
     elif c[0] == 'comp': comp_n = int(c[1])
     elif c[0] == 'pause': PAUSE = float(c[1])
     elif c[0] == 'mine': mine.add(c[1])
+    elif c[0] == 'sellerof': sellerof.append(c[1])  # регулярка по заголовку: открыть объявление и страницу продавца
+    elif c[0] == 'nohome': NOHOME = True
 
 UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 log = []
@@ -154,8 +157,9 @@ with sync_playwright() as p:
     ctx.add_init_script("Object.defineProperty(navigator,'webdriver',{get:()=>undefined});")
     pg = ctx.new_page()
     try:
-        st, b = goto(pg, 'https://www.avito.ru/sankt-peterburg', 'body', 'home.jpg')
-        L(f'Главная СПб: {st} {b or "ок"}; IP-проверка пропущена')
+        if not NOHOME:
+            st, b = goto(pg, 'https://www.avito.ru/sankt-peterburg', 'body', 'home.jpg')
+            L(f'Главная СПб: {st} {b or "ок"}; IP-проверка пропущена')
         our_ids = {o['id'] for o in ours} | mine
         seen = {}
         for i, qq in enumerate(queries):
@@ -173,6 +177,35 @@ with sync_playwright() as p:
             L(f'  → {d.get("title","")[:50]} | {d.get("price","")} | {d.get("views","")} {d.get("today","")} | {d.get("date","")} | {d.get("closed","")} {d.get("status_text","")}')
         if brand:
             L('Страница компании'); data['brand'] = brand_page(pg, brand); L(f'  → {json.dumps(data["brand"], ensure_ascii=False)[:300]}')
+        # продавец конкретного объявления (sellerof): карточка + страница продавца целиком
+        data['sellers'] = []
+        for rx in sellerof:
+            hit = None
+            for r in data['search']:
+                for it in r['items']:
+                    if it.get('title') and re.search(rx, it['title'], re.I) and it.get('href'): hit = it; break
+                if hit: break
+            if not hit: L(f'Продавец «{rx}»: в выдаче не нашёл'); continue
+            L(f'Продавец «{rx}»: объявление {hit["id"]} {hit["title"][:60]}')
+            d = item_page(pg, hit['href'].split('?')[0], 'seller-item.jpg')
+            d['search_price'] = hit.get('price'); d['search_text'] = hit.get('text')
+            d['desc_full'] = re.sub(r'\s+', ' ', txt(pg, '[data-marker="item-view/item-description"]'))[:2500]
+            surl = ''
+            for sel in ('[data-marker="seller-link/link"]', '[data-marker="seller-info/name"] a', 'a[href*="/brands/"]', 'a[href*="/user/"]'):
+                surl = attr(pg, sel, 'href')
+                if surl: break
+            d['seller_url'] = ('https://www.avito.ru' + surl) if surl.startswith('/') else surl
+            d['seller_box'] = re.sub(r'\s+', ' ', txt(pg, '[data-marker="seller-info"], [data-marker="item-view/seller-info"]'))[:800]
+            L(f'  → {d.get("title","")[:50]} | {d.get("views","")} {d.get("today","")} | {d.get("date","")} | продавец {d.get("seller","")} {d["seller_url"]}')
+            if d['seller_url'] and not d.get('blocked'):
+                sp = brand_page(pg, d['seller_url'].split('?')[0])
+                body = ''
+                try: body = pg.inner_text('body')
+                except Exception: pass
+                sp['body_long'] = re.sub(r'\s+', ' ', body)[:5000]
+                d['seller_page'] = sp
+                L(f'  страница продавца: {json.dumps({k: sp.get(k) for k in ("http","blocked","title","items_on_page","facts","rating_text")}, ensure_ascii=False)[:400]}')
+            data['sellers'].append(d)
         # чужие объявления: первые из выдачи по порядку запросов, не дубли, не промо-«за просмотры» — открыть и снять просмотры
         comp = list(seen.values())[:comp_n]
         for c in comp:
