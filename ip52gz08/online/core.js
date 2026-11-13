@@ -340,7 +340,13 @@
   let activePointer = null; let gameCapture = false;
   cv.addEventListener('pointerdown', (e) => {
     e.preventDefault(); A.init();
-    if (activePointer !== null) return; activePointer = e.pointerId;
+    if (activePointer !== null) {
+      // прежнее касание «потерялось» (телефон не прислал отпускание) — новое касание забирает управление, кнопки снова жмутся
+      if (!e.isPrimary && e.pointerType !== 'mouse') return;
+      if (gameCapture) { gameCapture = false; if (C.game && C.game.onUp) C.game.onUp(UI.downX, UI.downY); }
+      UI.pressId = null; UI.scroll = null;
+    }
+    activePointer = e.pointerId;
     try { cv.setPointerCapture(e.pointerId); } catch (er) { /* */ }
     const p = toV(e); UI.downX = p.x; UI.downY = p.y;
     const r = UI.hit(p.x, p.y);
@@ -378,6 +384,7 @@
     if (gameCapture) { gameCapture = false; if (C.game && C.game.onUp) C.game.onUp(p.x, p.y); }
   };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  window.addEventListener('blur', () => { activePointer = null; UI.pressId = null; UI.scroll = null; if (gameCapture) { gameCapture = false; if (C.game && C.game.onUp) C.game.onUp(UI.downX, UI.downY); } });
   cv.addEventListener('contextmenu', (e) => e.preventDefault());
 
   // ---------- флаги и скины ----------
