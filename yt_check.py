@@ -3,6 +3,9 @@
 Читает request.txt:
   @handle        — канал: подписчики, число роликов, последние Shorts и ролики с просмотрами
   video:ID       — отдельный ролик: открыт ли он (oEmbed: 200 = открыт, 401/403 = закрыт, 404 = удалён)
+  info:ID        — подробности ролика: длина, теги, описание, дата, обложки
+  scan:search:запрос | scan:search-week:запрос | scan:hashtag:тег — что YouTube выдаёт в нише (топы, соседи)
+  all            — обход всех каналов из channels.txt и сканов из scans.txt (так же работает ежедневный запуск)
   # ...          — комментарий (меняй его, чтобы перезапустить проверку)
 Пишет status/<handle>.md, status/<handle>.json, status/videos.md, status/_log.txt.
 """
@@ -12,9 +15,12 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import os
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
+
+import yt_analytics as YA
 
 H = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -220,6 +226,14 @@ def video_info(vid):
         m = re.search(r'"keywords":\[(.*?)\]', html)
         if m:
             out["keywords"] = m.group(1)[:600]
+    det = YA.player(vid, H, LOG)
+    if det:
+        out["det"] = det
+        out.setdefault("lengthSeconds", det.get("length_s"))
+        out.setdefault("shortDescription", det.get("description"))
+        out.setdefault("publishDate", det.get("publish"))
+        if det.get("keywords") and "keywords" not in out:
+            out["keywords"] = ", ".join(det["keywords"])[:600]
     thumbs = OUT / "thumbs"
     thumbs.mkdir(exist_ok=True)
     for name in ("oar2.jpg", "hqdefault.jpg"):
@@ -236,18 +250,42 @@ def video_info(vid):
 
 
 def main():
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    lines = [l.strip() for l in Path("request.txt").read_text(encoding="utf-8").splitlines()]
+    now_dt = datetime.now(timezone.utc)
+    now = now_dt.strftime("%Y-%m-%d %H:%M UTC")
+    daily = "--daily" in sys.argv
+    lines = [] if daily else [l.strip() for l in Path("request.txt").read_text(encoding="utf-8").splitlines()]
+    full = os.environ.get("YT_FULL") == "1" or not daily
+    if daily or "all" in lines:
+        # channels.txt: '@handle группа своя|сосед'
+        lines = [l for l in lines if l != "all"]
+        for row in YA.read_list("channels.txt"):
+            parts = row.split()
+            if daily and not full and (len(parts) < 3 or parts[2] != "своя"):
+                continue  # в промежуточных запусках — только свои каналы
+            lines.append(parts[0])
+        if full:
+            lines += ["scan:" + x for x in YA.read_list("scans.txt")]
+    rivals = {r.split()[0].lstrip("@") for r in YA.read_list("channels.txt") if len(r.split()) >= 3 and r.split()[2] != "своя"}
     handles = [l.lstrip("@") for l in lines
-               if l and not l.startswith("#") and not l.startswith("video:") and not l.startswith("info:")]
+               if l and not l.startswith("#") and not l.startswith(("video:", "info:", "scan:"))]
     videos = [l.split(":", 1)[1].strip() for l in lines if l.startswith("video:")]
     infos = [l.split(":", 1)[1].strip() for l in lines if l.startswith("info:")]
+    scans = [l.split(":", 1)[1].strip() for l in lines if l.startswith("scan:")]
 
-    for h in handles:
+    for h in dict.fromkeys(handles):
         info = channel_info(h)
         sst, shorts = shorts_tab(h)
         rst, feed = rss(info["channel_id"]) if info.get("channel_id") else (0, [])
         info.update({"checked": now, "shorts_status": sst, "shorts": shorts, "rss_status": rst, "rss": feed})
+        try:
+            YA.record_channel(info, now_dt, tab_rows=full, tab_limit=24 if h in rivals else 60)
+        except Exception as e:  # noqa: BLE001
+            LOG.append(f"ERR history {h} {e}")
+        if h in rivals:
+            (OUT / "rivals").mkdir(exist_ok=True)
+            (OUT / "rivals" / f"{h}.json").write_text(json.dumps(info, ensure_ascii=False, indent=1), encoding="utf-8")
+            time.sleep(1)
+            continue
         (OUT / f"{h}.json").write_text(json.dumps(info, ensure_ascii=False, indent=1), encoding="utf-8")
 
         md = [f"# {info.get('title') or h}  (@{h})", f"Проверено: {now}", ""]
@@ -265,6 +303,13 @@ def main():
         for s in shorts[:30]:
             md.append(f"- {s['views'] or '?'} · {s['title']} · {s['id']}")
         (OUT / f"{h}.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+        time.sleep(1)
+
+    for sc in scans:
+        try:
+            YA.run_scan(sc, get, initial_data, H, LOG, now_dt)
+        except Exception as e:  # noqa: BLE001
+            LOG.append(f"ERR scan {sc} {e}")
         time.sleep(1)
 
     if videos:
