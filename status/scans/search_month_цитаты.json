@@ -2,7 +2,7 @@
  "spec": "search-month:цитаты",
  "url": "https://www.youtube.com/results?search_query=%D1%86%D0%B8%D1%82%D0%B0%D1%82%D1%8B&sp=EgIIBA%3D%3D",
  "status": 200,
- "checked": "2026-11-13 18:23 UTC",
+ "checked": "2026-11-13 18:25 UTC",
  "header": "",
  "items": [
   {
@@ -63,7 +63,7 @@
    "snippet": "",
    "published": "2026-11-04T04:31:48+00:00",
    "channel_subs": 590,
-   "age_h": 229.86909399027778,
+   "age_h": 229.88755790916667,
    "per_day": 7355,
    "tags": [
     "#люди",
