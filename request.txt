@@ -1,4 +1,2 @@
-# отладка search-week 2026-11-13 21:35 MSK
-scan:search-week:цитаты
-scan:search-month:цитаты
-scan:search-views:цитаты
+# полный обход 2026-11-13 21:45 MSK — проверка ежедневного сбора
+all
