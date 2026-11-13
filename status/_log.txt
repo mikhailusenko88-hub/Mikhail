@@ -1,6 +1,46 @@
-2026-11-13 15:11 UTC
-200 https://www.youtube.com/@TheHandwriting_of_Silence
-200 avatar TheHandwriting_of_Silence
-200 banner TheHandwriting_of_Silence
-200 https://www.youtube.com/@TheHandwriting_of_Silence/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
+2026-11-13 15:12 UTC
+200 https://www.youtube.com/watch?v=bcYOE9wQB98&hl=ru
+200 thumb bcYOE9wQB98/oar2.jpg 101700 B
+200 thumb bcYOE9wQB98/hqdefault.jpg 12020 B
+200 https://www.youtube.com/watch?v=po6QNLEC7KU&hl=ru
+200 thumb po6QNLEC7KU/oar2.jpg 250521 B
+200 thumb po6QNLEC7KU/hqdefault.jpg 14325 B
+200 https://www.youtube.com/watch?v=oKNfPCbvbmA&hl=ru
+200 thumb oKNfPCbvbmA/oar2.jpg 214120 B
+200 thumb oKNfPCbvbmA/hqdefault.jpg 17110 B
+200 https://www.youtube.com/watch?v=91biqNQE694&hl=ru
+200 thumb 91biqNQE694/oar2.jpg 176206 B
+200 thumb 91biqNQE694/hqdefault.jpg 14349 B
+200 https://www.youtube.com/watch?v=0jMCN3KrTL0&hl=ru
+200 thumb 0jMCN3KrTL0/oar2.jpg 129900 B
+200 thumb 0jMCN3KrTL0/hqdefault.jpg 10206 B
+200 https://www.youtube.com/watch?v=gdl1_OUj1mE&hl=ru
+200 thumb gdl1_OUj1mE/oar2.jpg 135529 B
+200 thumb gdl1_OUj1mE/hqdefault.jpg 8822 B
+200 https://www.youtube.com/watch?v=rR49kQ2K8cI&hl=ru
+200 thumb rR49kQ2K8cI/oar2.jpg 101252 B
+200 thumb rR49kQ2K8cI/hqdefault.jpg 13851 B
+200 https://www.youtube.com/watch?v=_pnd2wLVIcI&hl=ru
+200 thumb _pnd2wLVIcI/oar2.jpg 119295 B
+200 thumb _pnd2wLVIcI/hqdefault.jpg 15819 B
+200 https://www.youtube.com/watch?v=df_9iWMHP-k&hl=ru
+200 thumb df_9iWMHP-k/oar2.jpg 83328 B
+200 thumb df_9iWMHP-k/hqdefault.jpg 13767 B
+200 https://www.youtube.com/watch?v=yrgvKL_AtNU&hl=ru
+200 thumb yrgvKL_AtNU/oar2.jpg 126429 B
+200 thumb yrgvKL_AtNU/hqdefault.jpg 15181 B
+200 https://www.youtube.com/watch?v=r7CyQZLAJwc&hl=ru
+200 thumb r7CyQZLAJwc/oar2.jpg 55086 B
+200 thumb r7CyQZLAJwc/hqdefault.jpg 12545 B
+200 https://www.youtube.com/watch?v=H64N8iB3EJo&hl=ru
+200 thumb H64N8iB3EJo/oar2.jpg 128272 B
+200 thumb H64N8iB3EJo/hqdefault.jpg 12677 B
+200 https://www.youtube.com/watch?v=wAn-iA2ChZg&hl=ru
+200 thumb wAn-iA2ChZg/oar2.jpg 201247 B
+200 thumb wAn-iA2ChZg/hqdefault.jpg 10315 B
+200 https://www.youtube.com/watch?v=brYOnzI7ifM&hl=ru
+200 thumb brYOnzI7ifM/oar2.jpg 82326 B
+200 thumb brYOnzI7ifM/hqdefault.jpg 9676 B
+200 https://www.youtube.com/watch?v=NuIGuiJcsRY&hl=ru
+200 thumb NuIGuiJcsRY/oar2.jpg 99495 B
+200 thumb NuIGuiJcsRY/hqdefault.jpg 13354 B
