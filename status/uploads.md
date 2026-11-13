@@ -21,3 +21,4 @@
 | 2026-11-12 | 1 | cities №8 | Qarshi | https://youtube.com/shorts/DOAakgYql4w | public |
 | 2026-11-12 | 2 | cars №9 | Gentra | https://youtube.com/shorts/Zzd0-R9Pq6I | public |
 | 2026-11-12 | 3 | clubs №6 | Turon | https://youtube.com/shorts/yf_qOpqsar8 | public |
+| 2026-11-13 | 1 | cars №10 | Tico | https://youtube.com/shorts/E-q512-ocQ0 | public |
