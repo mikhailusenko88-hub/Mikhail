@@ -1,0 +1,15 @@
+# Каналы для ежедневного обхода: @handle  ниша  своя|сосед
+# Свои — проверяются 4 раза в сутки, соседи — раз в сутки (полный обход).
+@TheHandwriting_of_Silence  цитаты  своя
+@LivingLinesTV              цитаты  своя
+@bilesin_be_kz              kz-гонки  своя
+@pochemu_tak_fakty          факты  своя
+@Beautiful_shorts-s6u       шарики  своя
+@FlagballArenaTV            гонки  своя
+@kimyutadi_uz               uz-гонки  своя
+# соседи по цитатам (из скана 13.11.2026; дополнять по сканам)
+@INSTARDING                 цитаты  сосед
+@vybirisebya                цитаты  сосед
+@zdoroviedushi              цитаты  сосед
+@FutureNow-SA               цитаты  сосед
+@stopdumai                  цитаты  сосед

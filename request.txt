@@ -1,7 +1,3 @@
-# проба аналитики 2026-11-13 21:20 MSK
-@TheHandwriting_of_Silence
-info:47Zecy9YXfA
+# проверка 2026-11-13 21:05 MSK — новый скан (RSS соседей, хэштеги)
 scan:search-week:цитаты
 scan:hashtag:цитаты
-scan:search:цитаты shorts
-scan:search:Cartoon Friend 3
