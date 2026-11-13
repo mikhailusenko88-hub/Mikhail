@@ -402,28 +402,28 @@
    ]
   },
   "clubs": {
-   "no": 6,
+   "no": 7,
    "points": {
     "Paxtakor": 43,
-    "Navbahor": 36,
+    "Navbahor": 48,
     "Olmaliq": 32,
-    "Xorazm": 12,
-    "Aral": 28,
+    "Xorazm": 22,
+    "Aral": 34,
     "Buxoro": 24,
     "Qizilqum": 26,
-    "Metallurg": 12,
+    "Metallurg": 13,
     "Sementchi": 2,
-    "Shoʻrtan": 7,
+    "Shoʻrtan": 32,
     "Qoʻqon 1912": 36,
-    "Dinamo": 27,
-    "Turon": 33,
+    "Dinamo": 29,
+    "Turon": 41,
     "Soʻgʻdiyona": 8,
     "Lokomotiv": 2,
-    "Bunyodkor": 10,
+    "Bunyodkor": 14,
     "Olimpik": 25,
     "Andijon": 15,
-    "Nasaf": 16,
-    "Neftchi": 10
+    "Nasaf": 34,
+    "Neftchi": 25
    },
    "results": [
     {
@@ -503,10 +503,23 @@
      ],
      "link": "https://youtube.com/shorts/yf_qOpqsar8",
      "final": false
+    },
+    {
+     "no": 7,
+     "date": "2026-11-13",
+     "slot": 3,
+     "winner": "Shoʻrtan",
+     "top3": [
+      "Shoʻrtan",
+      "Nasaf",
+      "Neftchi"
+     ],
+     "link": "https://youtube.com/shorts/Li1n6czv9gI",
+     "final": false
     }
    ],
    "champion": null,
-   "season_races": 4,
+   "season_races": 5,
    "season": "2026-W46",
    "new_pending": [],
    "seasons": [
@@ -800,6 +813,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/r5e1gfw-jlY",
    "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №11 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-13",
+   "slot": 3,
+   "league": "clubs",
+   "no": 7,
+   "final": false,
+   "link": "https://youtube.com/shorts/Li1n6czv9gI",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №7 #shorts",
    "pl": true
   }
  ],

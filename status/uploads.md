@@ -23,3 +23,4 @@
 | 2026-11-12 | 3 | clubs №6 | Turon | https://youtube.com/shorts/yf_qOpqsar8 | public |
 | 2026-11-13 | 1 | cars №10 | Tico | https://youtube.com/shorts/E-q512-ocQ0 | public |
 | 2026-11-13 | 2 | cars №11 | Nexia | https://youtube.com/shorts/r5e1gfw-jlY | public |
+| 2026-11-13 | 3 | clubs №7 | Shoʻrtan | https://youtube.com/shorts/Li1n6czv9gI | public |
