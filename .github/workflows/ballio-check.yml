@@ -16,9 +16,11 @@ jobs:
       - name: Подождать синхронизацию
         run: sleep 90
       - name: Страница игры
-        run: curl -s -o /dev/null -w "page %{http_code}\n" --max-time 10 http://89.126.192.214:8080/mebel/ip52gz08/online/ || true
+        run: |
+          curl -s -o /dev/null -w "page %{http_code}\n" --max-time 10 http://89.126.192.214:8080/mebel/ip52gz08/online/ || true
       - name: Игровой сервер
-        run: curl -s --max-time 8 http://89.126.192.214:8091/health || echo "server: no answer"
+        run: |
+          curl -s --max-time 8 http://89.126.192.214:8091/health || echo "server - no answer"
       - name: Заход как игрок
         run: |
           cat > t.mjs <<'JS'
