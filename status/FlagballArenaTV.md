@@ -1,5 +1,5 @@
 # Flagball Arena  (@FlagballArenaTV)
-Проверено: 2026-11-13 22:28 UTC
+Проверено: 2026-11-13 23:37 UTC
 
 - Страница канала: HTTP 200; ID: UCUKgRxWtL1kPWr9hdfL8qQw
 - Шапка: 11 подписчиков · 47 видео
@@ -8,7 +8,7 @@
 - (пусто или лента недоступна, HTTP 404)
 
 ## Вкладка Shorts (видно всем) — 20 шт. на первой странице
-- 287 просмотров · Vietnam vs Spain vs Argentina 😱 Who Survives? Country Marble Race #shorts · qWd1NlVnmWg
+- 329 просмотров · Vietnam vs Spain vs Argentina 😱 Who Survives? Country Marble Race #shorts · qWd1NlVnmWg
 - 702 просмотра · Brazil vs Ukraine vs Myanmar 😱 Who Survives? Country Marble Race #shorts · NwgWwRcEqDM
 - 205 просмотров · Thailand vs Poland vs Malaysia 😱 Who Survives? Country Marble Race #shorts · 6ICunM7HC-I
 - 954 просмотра · Indonesia vs Türkiye vs Saudi Arabia 😱 Who Survives? Country Marble Race #shorts · m5DXL2pUtB4
