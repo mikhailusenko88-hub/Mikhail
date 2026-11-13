@@ -43,3 +43,5 @@
 | shorts | 2026-11-12 | 3 | Indonesia vs Türkiye vs Saudi Arabia | https://youtube.com/shorts/m5DXL2pUtB4 | |
 | 29 | 2026-11-13 | 1 | S2 RACE 16/68 | https://youtu.be/y48he5TuhAA | public |
 | shorts | 2026-11-13 | 1 | Thailand vs Poland vs Malaysia | https://youtube.com/shorts/6ICunM7HC-I | |
+| 30 | 2026-11-13 | 2 | S2 RACE 17/68 | https://youtu.be/4Gd_lxP6x0U | public |
+| shorts | 2026-11-13 | 2 | Brazil vs Ukraine vs Myanmar | https://youtube.com/shorts/NwgWwRcEqDM | |
