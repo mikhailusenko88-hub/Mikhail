@@ -1,14 +1,15 @@
 search:цитаты shorts
-search-week:цитаты
+search-month:цитаты
+search:цитаты
 hashtag:цитаты
 hashtag:цитатыосмысле
-search-week:мудрые слова о жизни
-search-week:marble race countries
+search:мудрые слова о жизни
+search:marble race countries
 hashtag:marblerace
-search-week:гонка шариков
-search-week:қай қала жеңеді
+search:гонка шариков
+search:қай қала жеңеді
 hashtag:қазақша
-search-week:интересные факты
+search:интересные факты
 hashtag:факты
-search-week:ball escape rings satisfying
-search-week:мультик про кота
+search:ball escape rings satisfying
+search:мультик про кота
