@@ -1,5 +1,5 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-13 22:28 UTC
+Проверено: 2026-11-13 23:37 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
 - Шапка: 226 подписчиков · 138 видео
@@ -9,7 +9,7 @@
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
 - 218 просмотров · Can it break out of 6 rings? 🚀 Space edition #shorts · Dw-O_K8qMds
-- 706 просмотров · Sunrise watercolor 🌅 wait for the tape peel! #shorts · YGXQpqT2ur0
+- 717 просмотров · Sunrise watercolor 🌅 wait for the tape peel! #shorts · YGXQpqT2ur0
 - 120 просмотров · Last country standing WINS! 🌍 Who are you rooting for? #shorts · irOtTngZbls
 - 720 просмотров · 1 bullet vs 5 objects — how far does it go? 😳 #shorts · viBQgmzXg88
 - 2,4 тыс. просмотров · Every bounce = BIGGER ball 🎵 …but the music speeds up 😱 #shorts · 98lnRofeeH8
