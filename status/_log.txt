@@ -1,46 +1,87 @@
-2026-11-13 15:12 UTC
-200 https://www.youtube.com/watch?v=bcYOE9wQB98&hl=ru
-200 thumb bcYOE9wQB98/oar2.jpg 101700 B
-200 thumb bcYOE9wQB98/hqdefault.jpg 12020 B
-200 https://www.youtube.com/watch?v=po6QNLEC7KU&hl=ru
-200 thumb po6QNLEC7KU/oar2.jpg 250521 B
-200 thumb po6QNLEC7KU/hqdefault.jpg 14325 B
-200 https://www.youtube.com/watch?v=oKNfPCbvbmA&hl=ru
-200 thumb oKNfPCbvbmA/oar2.jpg 214120 B
-200 thumb oKNfPCbvbmA/hqdefault.jpg 17110 B
-200 https://www.youtube.com/watch?v=91biqNQE694&hl=ru
-200 thumb 91biqNQE694/oar2.jpg 176206 B
-200 thumb 91biqNQE694/hqdefault.jpg 14349 B
-200 https://www.youtube.com/watch?v=0jMCN3KrTL0&hl=ru
-200 thumb 0jMCN3KrTL0/oar2.jpg 129900 B
-200 thumb 0jMCN3KrTL0/hqdefault.jpg 10206 B
-200 https://www.youtube.com/watch?v=gdl1_OUj1mE&hl=ru
-200 thumb gdl1_OUj1mE/oar2.jpg 135529 B
-200 thumb gdl1_OUj1mE/hqdefault.jpg 8822 B
-200 https://www.youtube.com/watch?v=rR49kQ2K8cI&hl=ru
-200 thumb rR49kQ2K8cI/oar2.jpg 101252 B
-200 thumb rR49kQ2K8cI/hqdefault.jpg 13851 B
-200 https://www.youtube.com/watch?v=_pnd2wLVIcI&hl=ru
-200 thumb _pnd2wLVIcI/oar2.jpg 119295 B
-200 thumb _pnd2wLVIcI/hqdefault.jpg 15819 B
-200 https://www.youtube.com/watch?v=df_9iWMHP-k&hl=ru
-200 thumb df_9iWMHP-k/oar2.jpg 83328 B
-200 thumb df_9iWMHP-k/hqdefault.jpg 13767 B
-200 https://www.youtube.com/watch?v=yrgvKL_AtNU&hl=ru
-200 thumb yrgvKL_AtNU/oar2.jpg 126429 B
-200 thumb yrgvKL_AtNU/hqdefault.jpg 15181 B
-200 https://www.youtube.com/watch?v=r7CyQZLAJwc&hl=ru
-200 thumb r7CyQZLAJwc/oar2.jpg 55086 B
-200 thumb r7CyQZLAJwc/hqdefault.jpg 12545 B
-200 https://www.youtube.com/watch?v=H64N8iB3EJo&hl=ru
-200 thumb H64N8iB3EJo/oar2.jpg 128272 B
-200 thumb H64N8iB3EJo/hqdefault.jpg 12677 B
-200 https://www.youtube.com/watch?v=wAn-iA2ChZg&hl=ru
-200 thumb wAn-iA2ChZg/oar2.jpg 201247 B
-200 thumb wAn-iA2ChZg/hqdefault.jpg 10315 B
-200 https://www.youtube.com/watch?v=brYOnzI7ifM&hl=ru
-200 thumb brYOnzI7ifM/oar2.jpg 82326 B
-200 thumb brYOnzI7ifM/hqdefault.jpg 9676 B
-200 https://www.youtube.com/watch?v=NuIGuiJcsRY&hl=ru
-200 thumb NuIGuiJcsRY/oar2.jpg 99495 B
-200 thumb NuIGuiJcsRY/hqdefault.jpg 13354 B
+2026-11-13 17:56 UTC
+200 https://www.youtube.com/@TheHandwriting_of_Silence
+200 avatar TheHandwriting_of_Silence
+200 banner TheHandwriting_of_Silence
+200 https://www.youtube.com/@TheHandwriting_of_Silence/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
+200 https://www.youtube.com/results?search_query=%D1%86%D0%B8%D1%82%D0%B0%D1%82%D1%8B&sp=EgIIAw%253D%253D
+200 https://www.youtube.com/hashtag/%D1%86%D0%B8%D1%82%D0%B0%D1%82%D1%8B/shorts
+200 player WEB tn-fxqqtUe8
+ERR player ANDROID tn-fxqqtUe8 HTTP Error 400: Bad Request
+200 player WEB _KCkjiRmsvY
+ERR player ANDROID _KCkjiRmsvY HTTP Error 400: Bad Request
+200 player WEB hD1z6Wf0IGY
+ERR player ANDROID hD1z6Wf0IGY HTTP Error 400: Bad Request
+200 player WEB rB1bMWkop4o
+ERR player ANDROID rB1bMWkop4o HTTP Error 400: Bad Request
+200 player WEB cIbaZJvDwmU
+ERR player ANDROID cIbaZJvDwmU HTTP Error 400: Bad Request
+200 player WEB -DZFbASSvNo
+ERR player ANDROID -DZFbASSvNo HTTP Error 400: Bad Request
+200 player WEB Xkl66w1_bT0
+ERR player ANDROID Xkl66w1_bT0 HTTP Error 400: Bad Request
+200 player WEB gsc1K909I3g
+ERR player ANDROID gsc1K909I3g HTTP Error 400: Bad Request
+200 player WEB 6vzDa7gbNNQ
+ERR player ANDROID 6vzDa7gbNNQ HTTP Error 400: Bad Request
+200 player WEB 4iB1RytMghU
+ERR player ANDROID 4iB1RytMghU HTTP Error 400: Bad Request
+200 player WEB AetkV2kCqBU
+ERR player ANDROID AetkV2kCqBU HTTP Error 400: Bad Request
+200 player WEB Vm84E3W-Bko
+ERR player ANDROID Vm84E3W-Bko HTTP Error 400: Bad Request
+200 https://www.youtube.com/results?search_query=%D1%86%D0%B8%D1%82%D0%B0%D1%82%D1%8B%20shorts
+200 player WEB n5XmVEDNrTI
+ERR player ANDROID n5XmVEDNrTI HTTP Error 400: Bad Request
+200 player WEB 54ovBczZW7c
+ERR player ANDROID 54ovBczZW7c HTTP Error 400: Bad Request
+200 player WEB 2e89teaBZzA
+ERR player ANDROID 2e89teaBZzA HTTP Error 400: Bad Request
+200 player WEB XOAjA17ItAo
+ERR player ANDROID XOAjA17ItAo HTTP Error 400: Bad Request
+200 player WEB WTy3W87ShwQ
+ERR player ANDROID WTy3W87ShwQ HTTP Error 400: Bad Request
+200 player WEB WYvqEzAbh4o
+ERR player ANDROID WYvqEzAbh4o HTTP Error 400: Bad Request
+200 player WEB 6NvIQH-ieLE
+ERR player ANDROID 6NvIQH-ieLE HTTP Error 400: Bad Request
+200 player WEB x7hEGLWaYGo
+ERR player ANDROID x7hEGLWaYGo HTTP Error 400: Bad Request
+200 player WEB Wr1UWkJ1HdQ
+ERR player ANDROID Wr1UWkJ1HdQ HTTP Error 400: Bad Request
+200 player WEB aOCFWJ45li0
+ERR player ANDROID aOCFWJ45li0 HTTP Error 400: Bad Request
+200 player WEB 7h9il7nF01Q
+ERR player ANDROID 7h9il7nF01Q HTTP Error 400: Bad Request
+200 player WEB C5UqBl-U8H8
+ERR player ANDROID C5UqBl-U8H8 HTTP Error 400: Bad Request
+200 https://www.youtube.com/results?search_query=Cartoon%20Friend%203
+200 player WEB BLSM4gckqw0
+ERR player ANDROID BLSM4gckqw0 HTTP Error 400: Bad Request
+200 player WEB 10t-FGfPsqo
+ERR player ANDROID 10t-FGfPsqo HTTP Error 400: Bad Request
+200 player WEB 6cbCAbnpHNA
+ERR player ANDROID 6cbCAbnpHNA HTTP Error 400: Bad Request
+200 player WEB dfTPlsIq7d0
+ERR player ANDROID dfTPlsIq7d0 HTTP Error 400: Bad Request
+200 player WEB RO7Q1tMGE7g
+ERR player ANDROID RO7Q1tMGE7g HTTP Error 400: Bad Request
+200 player WEB FnTS2mz0SsQ
+ERR player ANDROID FnTS2mz0SsQ HTTP Error 400: Bad Request
+200 player WEB 7AFawTBn7MY
+ERR player ANDROID 7AFawTBn7MY HTTP Error 400: Bad Request
+200 player WEB Zv1aZgxPKYM
+ERR player ANDROID Zv1aZgxPKYM HTTP Error 400: Bad Request
+200 player WEB ai-QYjceo2Q
+ERR player ANDROID ai-QYjceo2Q HTTP Error 400: Bad Request
+200 player WEB XkwVWv6WPOY
+ERR player ANDROID XkwVWv6WPOY HTTP Error 400: Bad Request
+200 player WEB 0xt9VrgDKso
+ERR player ANDROID 0xt9VrgDKso HTTP Error 400: Bad Request
+200 player WEB yIFWecPEX5g
+ERR player ANDROID yIFWecPEX5g HTTP Error 400: Bad Request
+429 https://www.youtube.com/watch?v=47Zecy9YXfA&hl=ru
+200 player WEB 47Zecy9YXfA
+ERR player ANDROID 47Zecy9YXfA HTTP Error 400: Bad Request
+200 thumb 47Zecy9YXfA/oar2.jpg 198015 B
+200 thumb 47Zecy9YXfA/hqdefault.jpg 12529 B
