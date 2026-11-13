@@ -1,2 +1,2 @@
-https://crm.nashdekor.ru/api/outbox/status/46e2af4e-4e39-452f-b217-40fcdf86700e
-# 14:26:24
+https://crm.nashdekor.ru/api/outbox/status/76745f61-3146-486a-b30a-d7164dd84f1a
+# 11:43:15
