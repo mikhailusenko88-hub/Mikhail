@@ -275,7 +275,13 @@ def crumbs(items):
 RETURN_POLICY = {"@type": "MerchantReturnPolicy", "applicableCountry": "RU",
                  "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow", "merchantReturnDays": 7,
                  "returnFees": "https://schema.org/ReturnFeesCustomerResponsibility",
+                 "returnMethod": "https://schema.org/ReturnInStore",   # оферта: привезти на склад в СПб (или заберём сами)
                  "merchantReturnLink": BASE + "/oplata/#vozvrat"}
+# Категория товара для Google — код Google Product Taxonomy (текстовую «Стеновая реечная панель» Search Console
+# 13.11.2026 отметил как Invalid value in field "category"). Новые разделы из CRM — без категории.
+GPC_SET = "https://www.google.com/basepages/producttype/taxonomy-with-ids.en-US.txt"
+GPC = {"panel": "7053", "color": "7053",                                    # Hardware > Building Materials > Wall Paneling
+       "mold": "7112", "plinth": "7112", "cornice": "7112", "corner": "7112"}  # Hardware > Building Materials > Molding
 
 def crumbs_ld(items, url_of):
     return {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
@@ -364,9 +370,10 @@ def product_page(x):
     custom = c in CUSTOM; kc = CUSTOM.get(c, {})
     maker = (x.get("mk") or kc.get("maker", "")) if custom else "ARTDEC"
     ld_prod = {"@context": "https://schema.org", "@type": "Product", "name": x["n"], "sku": a, "mpn": a, "brand": {"@type": "Brand", "name": maker or "Наш декор"},
-               "description": x["d"], "category": KIND[c], "url": url,
+               "description": x["d"], "url": url,
                "additionalProperty": [{"@type": "PropertyValue", "name": "Ширина", "value": x["w"], "unitText": "мм"}, {"@type": "PropertyValue", "name": "Толщина", "value": x["t"], "unitText": "мм"},
                                       {"@type": "PropertyValue", "name": "Длина", "value": x["l"], "unitText": "мм"}, {"@type": "PropertyValue", "name": "В коробке", "value": x["b"], "unitText": "шт"}]}
+    if c in GPC: ld_prod["category"] = {"@type": "CategoryCode", "codeValue": GPC[c], "inCodeSet": GPC_SET}
     if ph: ld_prod["image"] = [og_img] + [BASE + "/img/2x/" + f for f in GALLERY.get(a, [])]
     if x.get("r"): ld_prod["offers"] = {"@type": "Offer", "url": url, "priceCurrency": "RUB", "price": x["r"], "availability": "https://schema.org/BackOrder",
                                         "itemCondition": "https://schema.org/NewCondition", "seller": {"@type": "Organization", "name": "Наш декор"},
