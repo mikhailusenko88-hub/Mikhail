@@ -45,3 +45,5 @@
 | shorts | 2026-11-13 | 1 | Thailand vs Poland vs Malaysia | https://youtube.com/shorts/6ICunM7HC-I | |
 | 30 | 2026-11-13 | 2 | S2 RACE 17/68 | https://youtu.be/4Gd_lxP6x0U | public |
 | shorts | 2026-11-13 | 2 | Brazil vs Ukraine vs Myanmar | https://youtube.com/shorts/NwgWwRcEqDM | |
+| 31 | 2026-11-13 | 3 | S2 RACE 18/68 | https://youtu.be/D2uhvl_bFqg | public |
+| shorts | 2026-11-13 | 3 | Vietnam vs Spain vs Argentina | https://youtube.com/shorts/qWd1NlVnmWg | |
