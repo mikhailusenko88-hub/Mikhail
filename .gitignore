@@ -1,0 +1,7 @@
+dist/
+dist-web/
+zips/
+tests/shots/
+tests/out/
+node_modules/
+*.log

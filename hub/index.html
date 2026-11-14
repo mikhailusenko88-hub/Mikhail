@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>5 прототипов игр — проверка на телефоне</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#14112b;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .wrap{max-width:560px;margin:0 auto;padding:18px 14px 40px}
+  h1{font-size:22px;margin:6px 0 4px}
+  .sub{color:#b9b4d6;font-size:14px;margin:0 0 16px;line-height:1.4}
+  .card{display:flex;gap:14px;align-items:center;background:#221d45;border-radius:18px;padding:14px;margin-bottom:12px;cursor:pointer;border:2px solid transparent;transition:transform .1s}
+  .card:active{transform:scale(.98);border-color:#7c4dff}
+  .ic{flex:0 0 64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:34px}
+  .t{font-weight:800;font-size:17px;margin-bottom:3px}
+  .d{color:#c9c4e6;font-size:13.5px;line-height:1.35}
+  .ad{color:#7ee2a8;font-size:12.5px;margin-top:5px;line-height:1.35}
+  .note{color:#9a94bf;font-size:12.5px;line-height:1.45;margin-top:18px}
+  #player{position:fixed;inset:0;background:#000;display:none;flex-direction:column;z-index:10}
+  #bar{height:44px;flex:0 0 44px;display:flex;align-items:center;gap:10px;padding:0 10px;background:#221d45}
+  #back{background:#7c4dff;color:#fff;border:0;border-radius:12px;padding:8px 14px;font-weight:700;font-size:15px}
+  #name{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #reset{margin-left:auto;background:transparent;color:#b9b4d6;border:1px solid #4a4380;border-radius:10px;padding:6px 10px;font-size:13px}
+  iframe{flex:1;border:0;width:100%;background:#000}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>5 прототипов для YouTube Playables</h1>
+  <p class="sub">Нажми на игру — она откроется на весь экран. Реклама здесь тестовая: вместо ролика 2 секунды крутится значок, награда выдаётся как настоящая. На ПК можно играть клавишами: стрелки или A/D, пробел — старт и газ, Esc — пауза.</p>
+
+  <div class="card" data-src="g1-draw/index.html" data-name="1. Нарисуй путь">
+    <div class="ic" style="background:#6ec6ff">✏️</div>
+    <div><div class="t">1. Нарисуй путь — гонка стран</div>
+    <div class="d">Рисуешь пальцем линию, твой шарик катится к кубку быстрее соперников, которые летят через штырьки. Пунктир показывает, куда шарик упадёт без линии. 4 уровня, потом зеркально и меньше чернил.</div>
+    <div class="ad">Реклама: подсказка (1-я бесплатно), ещё чернил, ×3 монет, пропуск уровня</div></div>
+  </div>
+
+  <div class="card" data-src="g2-descent/index.html" data-name="2. Спуск шариков">
+    <div class="ic" style="background:#3b1b6e">🔻</div>
+    <div><div class="t">2. Спуск шариков</div>
+    <div class="d">Гонка вниз по трассе: ведёшь шарик пальцем влево-вправо через проходы, мимо шипов и вертушек. Справа видно, кто впереди.</div>
+    <div class="ad">Реклама: щит на старте, оживление после шипов, ×3 монет</div></div>
+  </div>
+
+  <div class="card" data-src="g3-cars/index.html" data-name="3. Машины и аварии">
+    <div class="ic" style="background:#4fc3f7">🚗</div>
+    <div><div class="t">3. Машины и аварии</div>
+    <div class="d">Держишь палец — газ. Холмы, трамплины, ящики вдребезги, топливо. Водитель — шарик твоей страны. После каждого заезда — гараж: мотор, шины, бак.</div>
+    <div class="ad">Реклама: оживление после переворота, улучшение, когда чуть не хватает монет, ×3</div></div>
+  </div>
+
+  <div class="card" data-src="g4-runner/index.html" data-name="4. Растущий шарик 3D">
+    <div class="ic" style="background:#5b9bff">🔢</div>
+    <div><div class="t">4. Растущий шарик 3D</div>
+    <div class="d">Настоящее 3D: шарик с флагом катится по дороге над морем, ворота +10, ×2, −15, ÷2, пилы и молоты. В финале кирпичные стены разлетаются, множитель до ×10.</div>
+    <div class="ad">Реклама: +30 на старте, оживление, ×3 монет</div></div>
+  </div>
+
+  <div class="card" data-src="g5-io/index.html" data-name="5. Шарики.io — битва стран">
+    <div class="ic" style="background:#7c4dff">🌍</div>
+    <div><div class="t">5. Шарики.io — битва стран</div>
+    <div class="d">Ты — шарик своей страны на арене. Ешь цветные точки и шарики меньше себя, убегай от больших, не врезайся в зелёные шипы. Палец — как джойстик. В конце раунда — таблица стран.</div>
+    <div class="ad">Реклама: старт ×3 размер, оживление, +20 секунд, ×3 монет</div></div>
+  </div>
+
+  <p class="note">Во всех играх: монеты, магазин шариков-стран (особые — за 3 просмотра рекламы), подарок дня ×2, сундук раз в 8 минут. Кнопка «Сбросить прогресс» вверху начинает игру с 1-го уровня. Межстраничная реклама — только между уровнями, с 3-го уровня и не чаще раза в минуту. Без слов: только значки и цифры, подойдёт любой стране.</p>
+</div>
+
+<div id="player">
+  <div id="bar"><button id="back">← Меню</button><div id="name"></div><button id="reset">Сбросить прогресс</button></div>
+  <iframe id="frame" allow="autoplay"></iframe>
+</div>
+
+<script>
+  const player = document.getElementById('player'), frame = document.getElementById('frame'), nameEl = document.getElementById('name');
+  let current = '';
+  document.querySelectorAll('.card').forEach((c) => c.addEventListener('click', () => {
+    current = c.dataset.src; nameEl.textContent = c.dataset.name; frame.src = current; player.style.display = 'flex';
+  }));
+  document.getElementById('back').addEventListener('click', () => { player.style.display = 'none'; frame.src = 'about:blank'; });
+  document.getElementById('reset').addEventListener('click', () => {
+    const keys = { 'g1-draw/index.html': 'pg_drawrace', 'g2-descent/index.html': 'pg_descent', 'g3-cars/index.html': 'pg_cars', 'g4-runner/index.html': 'pg_runner', 'g5-io/index.html': 'pg_ballio' };
+    try { localStorage.removeItem(keys[current]); } catch (e) {}
+    frame.src = 'about:blank'; setTimeout(() => { frame.src = current; }, 60);
+  });
+</script>
+</body>
+</html>

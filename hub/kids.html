@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>5 игр — поиграй и оцени</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;background:#14112b;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .wrap{max-width:560px;margin:0 auto;padding:18px 14px 60px}
+  h1{font-size:24px;margin:6px 0 6px}
+  h2{font-size:19px;margin:26px 0 10px}
+  .sub{color:#c9c4e6;font-size:15px;margin:0 0 16px;line-height:1.45}
+  .card{display:flex;gap:14px;align-items:center;background:#221d45;border-radius:18px;padding:14px 40px 14px 14px;margin-bottom:12px;cursor:pointer;border:2px solid transparent;transition:transform .1s;position:relative}
+  .card:active{transform:scale(.98);border-color:#7c4dff}
+  .ic{flex:0 0 64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:34px}
+  .t{font-weight:800;font-size:17px;margin-bottom:3px}
+  .d{color:#d6d2ee;font-size:14px;line-height:1.38}
+  .mark{position:absolute;top:8px;right:10px;font-size:26px}
+  .row{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{background:#2c2658;border:2px solid #3d3578;color:#fff;border-radius:14px;padding:10px 12px;font-size:15px;font-weight:700;cursor:pointer}
+  .chip.on{background:#7c4dff;border-color:#b39dff}
+  input[type=text],textarea{width:100%;background:#221d45;border:2px solid #3d3578;color:#fff;border-radius:14px;padding:12px;font-size:16px;font-family:inherit}
+  textarea{min-height:84px;resize:vertical}
+  .send{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .btn{flex:1 1 140px;border:0;border-radius:16px;padding:15px 12px;font-size:17px;font-weight:800;color:#fff;cursor:pointer;text-align:center;text-decoration:none}
+  .wa{background:#25d366}.tg{background:#2aabee}.cp{background:#5c55a0}
+  .hint{color:#9a94bf;font-size:13px;line-height:1.45;margin-top:10px}
+  #player{position:fixed;inset:0;background:#000;display:none;flex-direction:column;z-index:10}
+  #bar{height:46px;flex:0 0 46px;display:flex;align-items:center;gap:10px;padding:0 10px;background:#221d45}
+  #back{background:#7c4dff;color:#fff;border:0;border-radius:12px;padding:9px 14px;font-weight:800;font-size:15px}
+  #name{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #reset{margin-left:auto;background:transparent;color:#b9b4d6;border:1px solid #4a4380;border-radius:10px;padding:6px 10px;font-size:12.5px}
+  iframe{flex:1;border:0;width:100%;background:#000}
+  #rate{position:fixed;inset:0;background:rgba(10,8,30,.82);display:none;align-items:flex-end;justify-content:center;z-index:20}
+  .sheet{background:#221d45;border-radius:24px 24px 0 0;width:100%;max-width:560px;padding:20px 16px 26px}
+  .sheet h3{margin:0 0 14px;font-size:20px}
+  .faces{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+  .face{background:#2c2658;border:2px solid #3d3578;border-radius:16px;padding:10px 4px;text-align:center;cursor:pointer;color:#fff;font-size:13px;font-weight:700}
+  .face b{display:block;font-size:34px;margin-bottom:4px}
+  .face.on{background:#7c4dff;border-color:#b39dff}
+  .sheet .send .btn{flex:1 1 100px}
+  #copied{display:none;color:#7ee2a8;font-weight:700;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>5 игр — поиграй и оцени!</h1>
+  <p class="sub">Поиграй в каждую хотя бы пару минут. Когда нажмёшь «← Меню», поставь игре оценку и напиши, что неудобно или непонятно. В конце нажми «Отправить». Реклама тут ненастоящая: 2 секунды крутится значок, а награду дают по-честному.</p>
+
+  <div class="card" data-id="g1" data-src="g1-draw/index.html" data-name="Нарисуй путь">
+    <div class="ic" style="background:#6ec6ff">✏️</div>
+    <div><div class="t">1. Нарисуй путь</div><div class="d">Нарисуй пальцем дорожку, чтобы твой шарик первым докатился до кубка.</div></div>
+    <div class="mark"></div>
+  </div>
+  <div class="card" data-id="g2" data-src="g2-descent/index.html" data-name="Спуск шариков">
+    <div class="ic" style="background:#3b1b6e">🔻</div>
+    <div><div class="t">2. Спуск шариков</div><div class="d">Веди шарик пальцем вниз через проходы, мимо шипов. Обгони всех!</div></div>
+    <div class="mark"></div>
+  </div>
+  <div class="card" data-id="g3" data-src="g3-cars/index.html" data-name="Машины и аварии">
+    <div class="ic" style="background:#4fc3f7">🚗</div>
+    <div><div class="t">3. Машины и аварии</div><div class="d">Держи палец на экране — это газ. Не перевернись на холмах, собирай монеты, улучшай машину.</div></div>
+    <div class="mark"></div>
+  </div>
+  <div class="card" data-id="g4" data-src="g4-runner/index.html" data-name="Растущий шарик 3D">
+    <div class="ic" style="background:#5b9bff">🔢</div>
+    <div><div class="t">4. Растущий шарик 3D</div><div class="d">Проезжай через ворота с плюсами и умножением, расти и пробивай стены в конце.</div></div>
+    <div class="mark"></div>
+  </div>
+  <div class="card" data-id="g5" data-src="g5-io/index.html" data-name="Шарики.io">
+    <div class="ic" style="background:#7c4dff">🌍</div>
+    <div><div class="t">5. Шарики.io — битва стран</div><div class="d">Ешь точки и шарики меньше тебя, убегай от больших. Будь в топ-3!</div></div>
+    <div class="mark"></div>
+  </div>
+
+  <div class="card" data-id="g6" data-src="online/index.html" data-name="Шарики.io онлайн">
+    <div class="ic" style="background:#00897b">🌐</div>
+    <div><div class="t">6. Шарики.io — онлайн</div><div class="d">Вся семья на одной арене! Откройте на всех телефонах, впишите имена и ешьте друг друга.</div></div>
+    <div class="mark"></div>
+  </div>
+
+  <h2>Какая игра понравилась больше всех?</h2>
+  <div class="row" id="best"></div>
+
+  <h2>Как тебя зовут?</h2>
+  <input type="text" id="who" placeholder="Имя" maxlength="40">
+
+  <h2>Что ещё хочешь сказать?</h2>
+  <textarea id="more" placeholder="Что добавить, что убрать, во что бы ты играл дальше…"></textarea>
+
+  <div class="send">
+    <a class="btn wa" id="sWa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="btn tg" id="sTg" href="#" target="_blank" rel="noopener">Telegram</a>
+    <button class="btn cp" id="sCp">Скопировать</button>
+  </div>
+  <div id="copied">Скопировано — вставь в сообщение папе</div>
+  <p class="hint">Оценки сохраняются на этом телефоне, можно возвращаться и менять. Кнопка «Заново» в игре начинает её с первого уровня.</p>
+</div>
+
+<div id="player">
+  <div id="bar"><button id="back">← Меню</button><div id="name"></div><button id="reset">Заново</button></div>
+  <iframe id="frame" allow="autoplay"></iframe>
+</div>
+
+<div id="rate">
+  <div class="sheet">
+    <h3 id="rq">Как тебе игра?</h3>
+    <div class="faces" id="faces"></div>
+    <textarea id="rc" placeholder="Что неудобно или непонятно? Где скучно? Что понравилось?"></textarea>
+    <div class="send"><button class="btn cp" id="rLater">Потом</button><button class="btn" style="background:#7c4dff" id="rOk">Готово</button></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const FACES = [['😍', 'Супер'], ['🙂', 'Норм'], ['😐', 'Скучно'], ['😡', 'Плохо']];
+  const KEYS = { g1: 'pg_drawrace', g2: 'pg_descent', g3: 'pg_cars', g4: 'pg_runner', g5: 'pg_ballio' };
+  const cards = [...document.querySelectorAll('.card')];
+  const games = cards.map((c) => ({ id: c.dataset.id, src: c.dataset.src, name: c.dataset.name, el: c }));
+  let fb = {};
+  try { fb = JSON.parse(localStorage.getItem('kids_fb') || '{}') || {}; } catch (e) { fb = {}; }
+  fb.g = fb.g || {};
+  const save = () => { try { localStorage.setItem('kids_fb', JSON.stringify(fb)); } catch (e) {} refresh(); };
+  const $ = (id) => document.getElementById(id);
+  const player = $('player'), frame = $('frame');
+  let cur = null, pick = -1;
+
+  function refresh() {
+    games.forEach((g) => { const r = fb.g[g.id]; g.el.querySelector('.mark').textContent = r && r.r >= 0 ? FACES[r.r][0] : ''; });
+    $('best').innerHTML = '';
+    games.forEach((g, i) => { const b = document.createElement('button'); b.className = 'chip' + (fb.best === g.id ? ' on' : ''); b.textContent = (i + 1) + '. ' + g.name; b.onclick = () => { fb.best = g.id; save(); }; $('best').appendChild(b); });
+    const t = text(); $('sWa').href = 'https://wa.me/?text=' + encodeURIComponent(t);
+    $('sTg').href = 'https://t.me/share/url?url=' + encodeURIComponent(location.href) + '&text=' + encodeURIComponent(t);
+  }
+  function device() { const u = navigator.userAgent; return /iPhone|iPad/.test(u) ? 'iPhone/iPad' : /Android/.test(u) ? 'Android' : 'компьютер'; }
+  function text() {
+    const lines = ['Отзыв об играх' + (fb.who ? ' от ' + fb.who : '') + ':'];
+    games.forEach((g, i) => {
+      const r = fb.g[g.id];
+      if (!r || (r.r < 0 && !r.c)) { lines.push((i + 1) + '. ' + g.name + ' — не играл(а)'); return; }
+      lines.push((i + 1) + '. ' + g.name + ' — ' + (r.r >= 0 ? FACES[r.r][0] + ' ' + FACES[r.r][1] : 'без оценки') + (r.c ? '. ' + r.c : ''));
+    });
+    const best = games.find((g) => g.id === fb.best); if (best) lines.push('Лучшая: ' + best.name);
+    if (fb.more) lines.push('Ещё: ' + fb.more);
+    lines.push('Играл(а) на: ' + device());
+    return lines.join('\n');
+  }
+  cards.forEach((c, i) => c.addEventListener('click', () => {
+    cur = games[i]; $('name').textContent = cur.name; frame.src = cur.src; player.style.display = 'flex';
+  }));
+  $('back').addEventListener('click', () => {
+    player.style.display = 'none'; frame.src = 'about:blank'; if (!cur) return;
+    const r = fb.g[cur.id] || { r: -1, c: '' }; pick = r.r; $('rc').value = r.c || '';
+    $('rq').textContent = 'Как тебе «' + cur.name + '»?'; drawFaces(); $('rate').style.display = 'flex';
+  });
+  $('reset').addEventListener('click', () => { try { localStorage.removeItem(KEYS[cur.id]); } catch (e) {} frame.src = 'about:blank'; setTimeout(() => { frame.src = cur.src; }, 60); });
+  function drawFaces() {
+    $('faces').innerHTML = '';
+    FACES.forEach((f, k) => { const d = document.createElement('div'); d.className = 'face' + (pick === k ? ' on' : ''); d.innerHTML = '<b>' + f[0] + '</b>' + f[1]; d.onclick = () => { pick = k; drawFaces(); }; $('faces').appendChild(d); });
+  }
+  $('rOk').addEventListener('click', () => { fb.g[cur.id] = { r: pick, c: $('rc').value.trim() }; save(); $('rate').style.display = 'none'; });
+  $('rLater').addEventListener('click', () => { $('rate').style.display = 'none'; });
+  $('who').value = fb.who || ''; $('more').value = fb.more || '';
+  $('who').addEventListener('input', () => { fb.who = $('who').value.trim(); save(); });
+  $('more').addEventListener('input', () => { fb.more = $('more').value.trim(); save(); });
+  $('sCp').addEventListener('click', () => {
+    const ta = document.createElement('textarea'); ta.value = text(); ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.top = '-1000px'; document.body.appendChild(ta);
+    ta.select(); ta.setSelectionRange(0, 99999); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta);
+    if (ok) { $('copied').style.display = 'block'; setTimeout(() => { $('copied').style.display = 'none'; }, 2500); } else { window.prompt('Скопируй текст:', text()); }
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>

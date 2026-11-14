@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Шарики.io — онлайн</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#2b2d6e;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  canvas{display:block;width:100vw;height:100vh;touch-action:none}
+  #join{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(20,17,60,.92);z-index:5;touch-action:auto}
+  .box{width:min(92vw,440px);background:#221d45;border-radius:24px;padding:22px 18px;color:#fff;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+  h1{margin:0 0 6px;font-size:26px}
+  p{margin:0 0 16px;color:#cfc9ee;font-size:15px;line-height:1.4}
+  input{width:100%;box-sizing:border-box;background:#14112b;border:2px solid #4a4380;color:#fff;border-radius:14px;padding:14px;font-size:20px;text-align:center;font-family:inherit;user-select:text;-webkit-user-select:text}
+  #flags{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:16px 0}
+  #flags img{width:100%;aspect-ratio:3/2;border-radius:6px;border:3px solid transparent;cursor:pointer;box-sizing:border-box}
+  #flags img.on{border-color:#ffeb3b;transform:scale(1.08)}
+  button{width:100%;border:0;border-radius:16px;padding:16px;font-size:22px;font-weight:800;color:#fff;background:#43a047;cursor:pointer;font-family:inherit}
+  .hint{font-size:13px;color:#9a94bf;margin-top:12px}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="join"><div class="box">
+  <h1>Шарики.io — онлайн</h1>
+  <p>Играйте вместе: откройте эту ссылку на всех телефонах. Ешь точки и шарики меньше себя, убегай от больших.</p>
+  <input id="nick" maxlength="12" placeholder="Твоё имя" autocomplete="off">
+  <div id="flags"></div>
+  <button id="go">Играть</button>
+  <div class="hint">Зелёное кольцо — можно съесть, красное — беги. Жёлтое имя — живой игрок.<br>⚡ ускорение · 🧲 магнит для точек · 🛡 щит · пилы режут больших, маленьким не страшны. Чем больше игроков — тем больше арена.</div>
+</div></div>
+<script src="core.js"></script>
+<script src="game.js"></script>
+<script>
+(function () {
+  const C = window.Core, ids = ['RU', 'KZ', 'UZ', 'KG', 'UA', 'BY', 'TR', 'US', 'GB', 'DE', 'FR', 'IT', 'ES', 'BR', 'MX', 'CN', 'JP', 'KR'];
+  let pick = 'RU', nick = '';
+  try { pick = localStorage.getItem('ballio_skin') || C.homeCountry() || 'RU'; nick = localStorage.getItem('ballio_nick') || ''; } catch (e) { /* */ }
+  if (ids.indexOf(pick) < 0) pick = 'RU';
+  const box = document.getElementById('flags');
+  ids.forEach((id) => { const im = document.createElement('img'); try { im.src = C.flagTex(id).toDataURL(); } catch (e) { /* */ } im.alt = id; if (id === pick) im.className = 'on'; im.onclick = () => { pick = id; box.querySelectorAll('img').forEach((x) => x.className = x === im ? 'on' : ''); }; box.appendChild(im); });
+  const inp = document.getElementById('nick'); inp.value = nick;
+  const go = () => { const n = inp.value.trim() || 'Игрок'; document.getElementById('join').style.display = 'none'; window.__join(n, pick); };
+  document.getElementById('go').onclick = go;
+  inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+})();
+</script>
+</body>
+</html>
