@@ -51,3 +51,5 @@
 | shorts | 2026-11-14 | 1 | Mexico vs UK vs Nigeria | https://youtube.com/shorts/054ZfXvp4Js | |
 | 33 | 2026-11-14 | 2 | S2 RACE 20/68 | https://youtu.be/OHjscgPCoE0 | public |
 | shorts | 2026-11-14 | 2 | France vs Pakistan vs Italy | https://youtube.com/shorts/s1zP7FYOv88 | |
+| 34 | 2026-11-14 | 3 | S2 RACE 21/68 | https://youtu.be/z25qiEHcZEo | public |
+| shorts | 2026-11-14 | 3 | India vs Saudi Arabia vs Guatemala | https://youtube.com/shorts/-pNQcA0OLfY | |
