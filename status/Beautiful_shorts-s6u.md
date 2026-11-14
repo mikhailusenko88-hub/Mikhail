@@ -1,17 +1,17 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-14 18:11 UTC
+Проверено: 2026-11-14 22:30 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
 - Шапка: 226 подписчиков · 138 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
 - 2026-11-12 15:26 · 229 просм. · Can it break out of 6 rings? 🚀 Space edition #shorts · Dw-O_K8qMds
-- 2026-11-12 11:29 · 1100 просм. · Sunrise watercolor 🌅 wait for the tape peel! #shorts · YGXQpqT2ur0
+- 2026-11-12 11:29 · 1101 просм. · Sunrise watercolor 🌅 wait for the tape peel! #shorts · YGXQpqT2ur0
 - 2026-11-09 21:09 · 120 просм. · Last country standing WINS! 🌍 Who are you rooting for? #shorts · irOtTngZbls
 - 2026-11-08 17:06 · 720 просм. · 1 bullet vs 5 objects — how far does it go? 😳 #shorts · viBQgmzXg88
 - 2026-11-08 12:43 · 2464 просм. · Every bounce = BIGGER ball 🎵 …but the music speeds up 😱 #shorts · 98lnRofeeH8
 - 2026-11-07 09:44 · 1113 просм. · Spiked Bat vs Katana ⚔️ Who wins? #shorts · dEGnQFq6GCU
-- 2026-11-06 12:17 · 2219 просм. · Scythe vs Dagger 💀 Who wins? #shorts · wrH8FbgHvC0
+- 2026-11-06 12:17 · 2220 просм. · Scythe vs Dagger 💀 Who wins? #shorts · wrH8FbgHvC0
 - 2026-11-05 23:15 · 523 просм. · Katana vs Sword ⚔️ Who wins? #shorts · 5kPEHExdRks
 - 2026-11-05 20:00 · 1187 просм. · Can a steel ball break 50 layers of glass? 😳 #shorts · g8oBMJL95Ys
 - 2026-11-05 17:26 · 1339 просм. · Every hit: SWORD gets LONGER, DAGGERS spin FASTER… who wins? 😱 #shorts · C7rhH0Fvmtg
