@@ -23,8 +23,12 @@ echo built: $(ls dist)
 # ---- онлайн «Flagball Arena» для площадок (CrazyGames и др.): SDK внутри, сервер — защищённое подключение ----
 FB_WSS="${FB_WSS:-wss://89.126.192.214/ws}"  # порт 443 (8443 на сервере занят VPN)
 rm -rf dist/flagball; mkdir -p dist/flagball zips
-cp online/game.js core/core.js vendor/playgama-bridge.js dist/flagball/
+FB_ADS="${FB_ADS:-false}"  # пробный запуск CrazyGames: реклама отключена площадкой → кнопок «за рекламу» нет; на полном запуске FB_ADS=true
+cp online/game.js core/core.js dist/flagball/
+# мост: у гостя CrazyGames (не вошёл в аккаунт) он оставлял «Uncaught (in promise)» в консоли — гасим это ожидание
+sed 's/Promise.all(\[e\]).finally(/Promise.allSettled([e]).finally(/' vendor/playgama-bridge.js > dist/flagball/playgama-bridge.js
+grep -q 'Promise.allSettled(\[e\]).finally(' dist/flagball/playgama-bridge.js || { echo 'bridge patch failed'; exit 1; }
 echo '{}' > dist/flagball/playgama-bridge-config.json
-grep -v 'name="robots"' online/index.html | sed "s#<script src=\"core.js\"></script>#<script src=\"playgama-bridge.js\"></script>\n<script>window.FB_SERVER='$FB_WSS';</script>\n<script src=\"core.js\"></script>#" > dist/flagball/index.html
+grep -v 'name="robots"' online/index.html | sed "s#<script src=\"core.js\"></script>#<script src=\"playgama-bridge.js\"></script>\n<script>window.FB_SERVER='$FB_WSS'; window.GAME_ADS=$FB_ADS;</script>\n<script src=\"core.js\"></script>#" > dist/flagball/index.html
 (cd dist/flagball && rm -f ../../zips/flagball-arena-crazygames.zip && zip -qr ../../zips/flagball-arena-crazygames.zip .)
 echo flagball: $(du -sh zips/flagball-arena-crazygames.zip | cut -f1)

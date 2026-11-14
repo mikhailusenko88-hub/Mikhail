@@ -28,6 +28,19 @@
   C.today = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
 
   // ---------- размер экрана ----------
+  // поля под вырез/полосы телефона, в CSS-пикселях; в приложении CrazyGames — запас, даже если браузер их не сообщает
+  let probe = null;
+  function safeInsets(w, h) {
+    const o = { t: 0, r: 0, b: 0, l: 0 };
+    try {
+      if (!probe && document.body) { probe = document.createElement('div'); probe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)'; document.body.appendChild(probe); }
+      if (probe) { const cs = getComputedStyle(probe); o.t = parseFloat(cs.paddingTop) || 0; o.r = parseFloat(cs.paddingRight) || 0; o.b = parseFloat(cs.paddingBottom) || 0; o.l = parseFloat(cs.paddingLeft) || 0; }
+    } catch (e) { /* */ }
+    if (C.inApp && !(o.t || o.r || o.b || o.l)) { if (h >= w) { o.t = 34; o.b = 16; } else { o.l = 34; o.r = 34; o.b = 10; } }
+    return o;
+  }
+  C.safe = { t: 0, r: 0, b: 0, l: 0 };
+  C.safeU = () => ({ t: C.safe.t / C.scale, r: C.safe.r / C.scale, b: C.safe.b / C.scale, l: C.safe.l / C.scale });
   function resize() {
     const w = window.innerWidth || 360, h = window.innerHeight || 640;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -35,6 +48,7 @@
     const b = (C.game && C.game.landscapeBase && w > h) ? { w: 1280, h: 720 } : C.BASE;
     if (w / h >= b.w / b.h) { C.H = b.h; C.W = (b.h * w) / h; } else { C.W = b.w; C.H = (b.w * h) / w; }
     C.scale = w / C.W; C.dpr = dpr;
+    C.safe = safeInsets(w, h);
     if (C.game && C.game.resize) C.game.resize();
   }
   window.addEventListener('resize', resize);
@@ -75,6 +89,15 @@
       C.bridgeOk = true;
       C.platform = window.bridge.platform.id || 'unknown';
       try { if (window.bridge.platform.language) C.lang = String(window.bridge.platform.language).toLowerCase() + '-' + (navigator.language || '').split('-')[1]; } catch (e) { /* */ }
+      // CrazyGames: язык — из их systemInfo.locale (мост подставляет код СТРАНЫ, это неверно), страна — countryCode
+      if (C.platform === 'crazy_games') {
+        try {
+          const si = (window.CrazyGames && window.CrazyGames.SDK && window.CrazyGames.SDK.user && window.CrazyGames.SDK.user.systemInfo) || {};
+          C.lang = si.locale ? String(si.locale).replace('_', '-').toLowerCase() : 'en';
+          if (si.countryCode) C.country = String(si.countryCode).toUpperCase();
+          C.inApp = /google_play_store|apple_store/.test(String(si.applicationType || ''));
+        } catch (e) { C.lang = 'en'; }
+      }
       C.mockAds = C.platform === 'mock' || C.platform === 'unknown';
       if (!C.mockAds) {
         C.rewardedSupported = !!window.bridge.advertisement.isRewardedSupported;
@@ -90,6 +113,9 @@
     } catch (e) {
       C.bridgeOk = false; C.mockAds = true;
     }
+    // реклама выключена сборкой (пробный запуск CrazyGames: там она отключена, а пустых кнопок «за рекламу» быть не должно)
+    if (window.GAME_ADS === false) { C.rewardedSupported = false; C.interSupported = false; }
+    resize();
   }
   C.msg = (name, data) => { if (!C.bridgeOk) return; try { window.bridge.platform.sendMessage(name, data); } catch (e) { /* */ } };
 
@@ -399,6 +425,8 @@
     g.fillStyle = col; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
     g.strokeStyle = col; g.lineWidth = r * 0.18; for (let i = 0; i < rays; i++) { const a = (i / rays) * Math.PI * 2; g.beginPath(); g.moveTo(x + Math.cos(a) * r * 1.25, y + Math.sin(a) * r * 1.25); g.lineTo(x + Math.cos(a) * r * 1.7, y + Math.sin(a) * r * 1.7); g.stroke(); }
   };
+  const star7 = (g, x, y, r) => { g.beginPath(); for (let i = 0; i < 14; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 7, rr = i % 2 ? r * 0.45 : r; g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } g.closePath(); g.fill(); };
+  const ukCanton = (g, w, h) => { g.save(); g.beginPath(); g.rect(0, 0, w / 2, h / 2); g.clip(); C.FLAGS.find((f) => f.id === 'GB').d(g, w / 2, h / 2); g.restore(); };
   const nordic = (bg, cross, inner) => (g, w, h) => {
     g.fillStyle = bg; g.fillRect(0, 0, w, h); g.fillStyle = cross; g.fillRect(w * 0.3, 0, w * 0.16, h); g.fillRect(0, h * 0.42, w, h * 0.16);
     if (inner) { g.fillStyle = inner; g.fillRect(w * 0.34, 0, w * 0.08, h); g.fillRect(0, h * 0.46, w, h * 0.08); }
@@ -443,6 +471,49 @@
     { id: 'AM', d: H3('#d90012', '#0033a0', '#f2a800') },
     { id: 'TJ', d: (g, w, h) => { g.fillStyle = '#cc0000'; g.fillRect(0, 0, w, h * 0.28); g.fillStyle = '#fff'; g.fillRect(0, h * 0.28, w, h * 0.44); g.fillStyle = '#006600'; g.fillRect(0, h * 0.72, w, h); g.fillStyle = '#f8c300'; g.beginPath(); g.arc(w / 2, h * 0.5, h * 0.09, Math.PI, 0); g.fill(); for (let i = 0; i < 7; i++) { const a = Math.PI + (i / 6) * Math.PI; star5(g, w / 2 + Math.cos(a) * h * 0.17, h * 0.52 + Math.sin(a) * h * 0.15, h * 0.03); } } },
     { id: 'MN', d: (g, w, h) => { V3('#c4272f', '#015197', '#c4272f')(g, w, h); g.fillStyle = '#f9cf02'; g.beginPath(); g.arc(w / 6, h * 0.3, h * 0.06, 0, 7); g.fill(); g.fillRect(w / 6 - w * 0.04, h * 0.4, w * 0.08, h * 0.35); } },
+    // ---- ещё 33 страны (частые гости CrazyGames): рисуем упрощённо, но узнаваемо ----
+    { id: 'CO', x: 1, d: (g, w, h) => { g.fillStyle = '#fcd116'; g.fillRect(0, 0, w, h / 2 + 1); g.fillStyle = '#003893'; g.fillRect(0, h / 2, w, h / 4 + 1); g.fillStyle = '#ce1126'; g.fillRect(0, h * 0.75, w, h / 4); } },
+    { id: 'PH', x: 1, d: (g, w, h) => { H2('#0038a8', '#ce1126')(g, w, h); g.fillStyle = '#fff'; g.beginPath(); g.moveTo(0, 0); g.lineTo(w * 0.43, h / 2); g.lineTo(0, h); g.closePath(); g.fill(); sun(g, w * 0.15, h / 2, h * 0.07, '#fcd116', 8); } },
+    { id: 'RO', x: 1, d: V3('#002b7f', '#fcd116', '#ce1126') },
+    { id: 'HU', x: 1, d: H3('#ce2939', '#ffffff', '#477050') },
+    { id: 'CZ', x: 1, d: (g, w, h) => { H2('#ffffff', '#d7141a')(g, w, h); g.fillStyle = '#11457e'; g.beginPath(); g.moveTo(0, 0); g.lineTo(w * 0.5, h / 2); g.lineTo(0, h); g.closePath(); g.fill(); } },
+    { id: 'AT', x: 1, d: H3('#ed2939', '#ffffff', '#ed2939') },
+    { id: 'BE', x: 1, d: V3('#000000', '#fdda24', '#ef3340') },
+    { id: 'CH', x: 1, d: (g, w, h) => { g.fillStyle = '#da291c'; g.fillRect(0, 0, w, h); g.fillStyle = '#fff'; const a = h * 0.12, b = h * 0.38; g.fillRect(w / 2 - a, h / 2 - b, a * 2, b * 2); g.fillRect(w / 2 - b, h / 2 - a, b * 2, a * 2); } },
+    { id: 'DK', x: 1, d: nordic('#c8102e', '#ffffff') },
+    { id: 'IE', x: 1, d: V3('#169b62', '#ffffff', '#ff883e') },
+    { id: 'GR', x: 1, d: (g, w, h) => { for (let i = 0; i < 9; i++) { g.fillStyle = i % 2 ? '#fff' : '#0d5eaf'; g.fillRect(0, (i * h) / 9, w, h / 9 + 1); } const c = (h * 5) / 9; g.fillStyle = '#0d5eaf'; g.fillRect(0, 0, c, c); g.fillStyle = '#fff'; g.fillRect(c * 0.4, 0, c * 0.2, c); g.fillRect(0, c * 0.4, c, c * 0.2); } },
+    { id: 'PE', x: 1, d: V3('#d91023', '#ffffff', '#d91023') },
+    { id: 'CL', x: 1, d: (g, w, h) => { H2('#ffffff', '#d52b1e')(g, w, h); g.fillStyle = '#0039a6'; g.fillRect(0, 0, w / 3, h / 2); g.fillStyle = '#fff'; star5(g, w / 6, h / 4, h * 0.13); } },
+    { id: 'VE', x: 1, d: (g, w, h) => { H3('#ffcc00', '#00247d', '#cf142b')(g, w, h); g.fillStyle = '#fff'; for (let i = 0; i < 8; i++) { const a = Math.PI * (1.15 + (i / 7) * 0.7); star5(g, w / 2 + Math.cos(a) * h * 0.3, h * 0.62 + Math.sin(a) * h * 0.3, h * 0.045); } } },
+    { id: 'EC', x: 1, d: (g, w, h) => { g.fillStyle = '#ffdd00'; g.fillRect(0, 0, w, h / 2 + 1); g.fillStyle = '#034ea2'; g.fillRect(0, h / 2, w, h / 4 + 1); g.fillStyle = '#ed1c24'; g.fillRect(0, h * 0.75, w, h / 4); g.fillStyle = '#7b5a2a'; g.beginPath(); g.ellipse(w / 2, h / 2, w * 0.07, h * 0.15, 0, 0, 7); g.fill(); g.fillStyle = '#57a0d3'; g.beginPath(); g.ellipse(w / 2, h / 2, w * 0.045, h * 0.1, 0, 0, 7); g.fill(); } },
+    { id: 'UY', x: 1, d: (g, w, h) => { for (let i = 0; i < 9; i++) { g.fillStyle = i % 2 ? '#0038a8' : '#fff'; g.fillRect(0, (i * h) / 9, w, h / 9 + 1); } g.fillStyle = '#fff'; g.fillRect(0, 0, w * 0.37, (h * 5) / 9); sun(g, w * 0.185, h * 0.27, h * 0.09, '#fcd116', 16); } },
+    { id: 'AU', x: 1, d: (g, w, h) => { g.fillStyle = '#012169'; g.fillRect(0, 0, w, h); ukCanton(g, w, h); g.fillStyle = '#fff'; star7(g, w * 0.25, h * 0.75, h * 0.12); [[0.75, 0.8, 0.07], [0.62, 0.42, 0.06], [0.75, 0.2, 0.06], [0.87, 0.38, 0.06], [0.8, 0.53, 0.035]].forEach(([x, y, r]) => star7(g, w * x, h * y, h * r)); } },
+    { id: 'NZ', x: 1, d: (g, w, h) => { g.fillStyle = '#012169'; g.fillRect(0, 0, w, h); ukCanton(g, w, h); [[0.75, 0.78, 0.075], [0.66, 0.43, 0.065], [0.75, 0.2, 0.065], [0.86, 0.37, 0.06]].forEach(([x, y, r]) => { g.fillStyle = '#fff'; star5(g, w * x, h * y, h * r * 1.35); g.fillStyle = '#c8102e'; star5(g, w * x, h * y, h * r); }); } },
+    { id: 'MY', x: 1, d: (g, w, h) => { for (let i = 0; i < 14; i++) { g.fillStyle = i % 2 ? '#fff' : '#cc0001'; g.fillRect(0, (i * h) / 14, w, h / 14 + 1); } g.fillStyle = '#010066'; g.fillRect(0, 0, w / 2, (h * 8) / 14); crescent(g, w * 0.2, h * 0.28, h * 0.18, '#010066', '#ffcc00', 0.3); g.fillStyle = '#ffcc00'; star5(g, w * 0.36, h * 0.28, h * 0.1); } },
+    { id: 'SG', x: 1, d: (g, w, h) => { H2('#ef3340', '#ffffff')(g, w, h); crescent(g, w * 0.2, h * 0.25, h * 0.15, '#ef3340', '#fff', 0.3); g.fillStyle = '#fff'; for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + (i / 5) * Math.PI * 2; star5(g, w * 0.3 + Math.cos(a) * h * 0.08, h * 0.25 + Math.sin(a) * h * 0.08, h * 0.03); } } },
+    { id: 'BD', x: 1, d: (g, w, h) => { g.fillStyle = '#006a4e'; g.fillRect(0, 0, w, h); g.fillStyle = '#f42a41'; g.beginPath(); g.arc(w * 0.45, h / 2, h * 0.3, 0, 7); g.fill(); } },
+    { id: 'SA', x: 1, d: (g, w, h) => { g.fillStyle = '#006c35'; g.fillRect(0, 0, w, h); g.fillStyle = '#fff'; g.fillRect(w * 0.22, h * 0.3, w * 0.56, h * 0.16); g.fillRect(w * 0.22, h * 0.62, w * 0.5, h * 0.05); g.beginPath(); g.moveTo(w * 0.72, h * 0.6); g.lineTo(w * 0.8, h * 0.645); g.lineTo(w * 0.72, h * 0.69); g.fill(); } },
+    { id: 'IR', x: 1, d: (g, w, h) => { H3('#239f40', '#ffffff', '#da0000')(g, w, h); g.strokeStyle = '#da0000'; g.lineWidth = h * 0.04; g.beginPath(); g.arc(w / 2, h / 2, h * 0.1, 0.3, Math.PI - 0.3); g.stroke(); g.fillStyle = '#da0000'; g.fillRect(w / 2 - h * 0.02, h * 0.38, h * 0.04, h * 0.24); } },
+    { id: 'MA', x: 1, d: (g, w, h) => { g.fillStyle = '#c1272d'; g.fillRect(0, 0, w, h); g.strokeStyle = '#006233'; g.lineWidth = h * 0.045; g.beginPath(); for (let i = 0; i <= 5; i++) { const a = -Math.PI / 2 + (i * 4 * Math.PI) / 5; g.lineTo(w / 2 + Math.cos(a) * h * 0.25, h / 2 + Math.sin(a) * h * 0.25); } g.stroke(); } },
+    { id: 'DZ', x: 1, d: (g, w, h) => { g.fillStyle = '#006233'; g.fillRect(0, 0, w / 2, h); g.fillStyle = '#fff'; g.fillRect(w / 2, 0, w / 2, h); crescent(g, w * 0.5, h / 2, h * 0.25, '#fff', '#d21034', 0.3); g.fillStyle = '#006233'; g.fillRect(0, 0, w * 0.5 - h * 0.25 - 1, h); g.fillStyle = '#d21034'; star5(g, w * 0.58, h / 2, h * 0.11, -0.3); } },
+    { id: 'TN', x: 1, d: (g, w, h) => { g.fillStyle = '#e70013'; g.fillRect(0, 0, w, h); g.fillStyle = '#fff'; g.beginPath(); g.arc(w / 2, h / 2, h * 0.27, 0, 7); g.fill(); crescent(g, w * 0.48, h / 2, h * 0.2, '#fff', '#e70013', 0.3); g.fillStyle = '#e70013'; star5(g, w * 0.54, h / 2, h * 0.1, -0.3); } },
+    { id: 'ZA', x: 1, d: (g, w, h) => {
+      g.fillStyle = '#e03c31'; g.fillRect(0, 0, w, h / 2); g.fillStyle = '#001489'; g.fillRect(0, h / 2, w, h / 2);
+      const Y = (lw, col) => { g.strokeStyle = col; g.lineWidth = lw; g.beginPath(); g.moveTo(0, 0); g.lineTo(w * 0.42, h / 2); g.lineTo(0, h); g.moveTo(w * 0.42, h / 2); g.lineTo(w, h / 2); g.stroke(); };
+      Y(h * 0.34, '#fff'); Y(h * 0.2, '#007749');
+      g.fillStyle = '#ffb81c'; g.beginPath(); g.moveTo(0, h * 0.2); g.lineTo(w * 0.27, h / 2); g.lineTo(0, h * 0.8); g.fill(); g.fillStyle = '#000'; g.beginPath(); g.moveTo(0, h * 0.28); g.lineTo(w * 0.21, h / 2); g.lineTo(0, h * 0.72); g.fill();
+    } },
+    { id: 'KE', x: 1, d: (g, w, h) => { H3('#000000', '#bb0000', '#006600')(g, w, h); g.fillStyle = '#fff'; g.fillRect(0, h / 3 - h * 0.04, w, h * 0.07); g.fillRect(0, (2 * h) / 3 - h * 0.03, w, h * 0.07); g.fillStyle = '#bb0000'; g.fillRect(0, h / 3 + h * 0.03, w, h / 3 - h * 0.06); g.fillStyle = '#000'; g.beginPath(); g.ellipse(w / 2, h / 2, w * 0.07, h * 0.3, 0, 0, 7); g.fill(); g.fillStyle = '#bb0000'; g.beginPath(); g.ellipse(w / 2, h / 2, w * 0.04, h * 0.27, 0, 0, 7); g.fill(); } },
+    { id: 'LT', x: 1, d: H3('#fdb913', '#006a44', '#c1272d') },
+    { id: 'LV', x: 1, d: (g, w, h) => { g.fillStyle = '#9e3039'; g.fillRect(0, 0, w, h); g.fillStyle = '#fff'; g.fillRect(0, h * 0.4, w, h * 0.2); } },
+    { id: 'EE', x: 1, d: H3('#0072ce', '#000000', '#ffffff') },
+    { id: 'BG', x: 1, d: H3('#ffffff', '#00966e', '#d62612') },
+    { id: 'RS', x: 1, d: (g, w, h) => { H3('#c6363c', '#0c4076', '#ffffff')(g, w, h); g.fillStyle = '#c6363c'; g.fillRect(w * 0.26, h * 0.22, w * 0.12, h * 0.4); g.fillStyle = '#fff'; g.fillRect(w * 0.3, h * 0.28, w * 0.04, h * 0.28); g.fillStyle = '#edb92e'; g.fillRect(w * 0.25, h * 0.17, w * 0.14, h * 0.06); } },
+    { id: 'HR', x: 1, d: (g, w, h) => { H3('#ff0000', '#ffffff', '#171796')(g, w, h); const s = h * 0.075, x0 = w / 2 - s * 2.5, y0 = h * 0.3; for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) { g.fillStyle = (r + c) % 2 ? '#fff' : '#ff0000'; g.fillRect(x0 + c * s, y0 + r * s, s + 0.5, s + 0.5); } } },
+    { id: 'SK', x: 1, d: (g, w, h) => { H3('#ffffff', '#0b4ea2', '#ee1c25')(g, w, h); g.fillStyle = '#fff'; g.fillRect(w * 0.18, h * 0.2, w * 0.2, h * 0.58); g.fillStyle = '#ee1c25'; g.fillRect(w * 0.195, h * 0.22, w * 0.17, h * 0.5); g.fillStyle = '#fff'; g.fillRect(w * 0.27, h * 0.26, w * 0.025, h * 0.36); g.fillRect(w * 0.22, h * 0.34, w * 0.12, h * 0.04); g.fillRect(w * 0.235, h * 0.44, w * 0.09, h * 0.035); } },
+    { id: 'MD', x: 1, d: (g, w, h) => { V3('#0046ae', '#ffd200', '#cc092f')(g, w, h); g.fillStyle = '#b07e09'; g.beginPath(); g.ellipse(w / 2, h / 2, w * 0.07, h * 0.18, 0, 0, 7); g.fill(); g.fillStyle = '#cc092f'; g.fillRect(w / 2 - w * 0.04, h * 0.42, w * 0.08, h * 0.16); } },
+    { id: 'TM', x: 1, d: (g, w, h) => { g.fillStyle = '#00843d'; g.fillRect(0, 0, w, h); g.fillStyle = '#d22630'; g.fillRect(w * 0.12, 0, w * 0.16, h); g.fillStyle = '#ffb81c'; for (let i = 0; i < 5; i++) g.fillRect(w * 0.15, h * (0.1 + i * 0.18), w * 0.1, h * 0.06); crescent(g, w * 0.42, h * 0.27, h * 0.15, '#00843d', '#fff', 0.35); g.fillStyle = '#fff'; [[0.5, 0.15], [0.54, 0.25], [0.5, 0.35]].forEach(([x, y]) => star5(g, w * x, h * y, h * 0.035)); } },
   ];
   const SPECIAL = [
     { id: 'gold', ads: 3, coins: 2000, d: (g, w, h) => { const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, '#fff3b0'); gr.addColorStop(0.4, '#ffcf2e'); gr.addColorStop(0.7, '#e09b00'); gr.addColorStop(1, '#fff0a0'); g.fillStyle = gr; g.fillRect(0, 0, w, h); g.fillStyle = 'rgba(255,255,255,0.8)'; star5(g, w * 0.3, h * 0.3, h * 0.1); } },
@@ -452,8 +523,16 @@
     { id: 'neon', ads: 3, coins: 2000, d: (g, w, h) => { g.fillStyle = '#12002b'; g.fillRect(0, 0, w, h); g.strokeStyle = '#00f5ff'; g.lineWidth = 6; for (let i = 0; i < 4; i++) { g.beginPath(); g.arc(w / 2, h / 2, 14 + i * 18, 0, 7); g.stroke(); } g.strokeStyle = '#ff2bd6'; g.lineWidth = 4; g.beginPath(); g.moveTo(0, h / 2); g.lineTo(w, h / 2); g.stroke(); } },
     { id: 'galaxy', ads: 3, coins: 2000, d: (g, w, h) => { const gr = g.createRadialGradient(w * 0.4, h * 0.4, 5, w / 2, h / 2, w * 0.7); gr.addColorStop(0, '#ff7ad9'); gr.addColorStop(0.4, '#5b2bd9'); gr.addColorStop(1, '#0b0630'); g.fillStyle = gr; g.fillRect(0, 0, w, h); g.fillStyle = '#fff'; const r = C.seeded(9); for (let i = 0; i < 40; i++) { g.globalAlpha = 0.4 + r() * 0.6; g.fillRect(r() * w, r() * h, 2 + r() * 2, 2 + r() * 2); } g.globalAlpha = 1; } },
   ];
-  C.SKINS = C.FLAGS.map((f) => ({ id: f.id, d: f.d, price: 300 })).concat(SPECIAL.map((s) => ({ id: s.id, d: s.d, special: true, ads: s.ads, coins: s.coins })));
-  C.skinById = (id) => C.SKINS.find((s) => s.id === id) || C.SKINS[0];
+  // флаги с x:1 — только для Flagball (рисовать/выбирать); в магазины других игр не попадают
+  C.SKINS = C.FLAGS.filter((f) => !f.x).map((f) => ({ id: f.id, d: f.d, price: 300 })).concat(SPECIAL.map((s) => ({ id: s.id, d: s.d, special: true, ads: s.ads, coins: s.coins })));
+  // нейтральная команда ботов в зачёте стран: серый шарик-робот
+  const BOTSKIN = { id: 'BOT', d: (g, w, h) => {
+    g.fillStyle = '#90a4ae'; g.fillRect(0, 0, w, h); g.fillStyle = '#b0bec5'; g.fillRect(0, 0, w, h * 0.42);
+    g.fillStyle = '#263238'; g.fillRect(w * 0.26, h * 0.38, w * 0.48, h * 0.26);
+    g.fillStyle = '#4dd0e1'; g.beginPath(); g.arc(w * 0.38, h * 0.51, h * 0.07, 0, 7); g.arc(w * 0.62, h * 0.51, h * 0.07, 0, 7); g.fill();
+    g.fillStyle = '#546e7a'; g.fillRect(w * 0.47, h * 0.12, w * 0.06, h * 0.18); g.fillStyle = '#ff7043'; g.beginPath(); g.arc(w * 0.5, h * 0.12, h * 0.06, 0, 7); g.fill();
+  } };
+  C.skinById = (id) => (id === 'BOT' ? BOTSKIN : C.SKINS.find((s) => s.id === id) || C.FLAGS.find((f) => f.id === id) || C.SKINS[0]);
   const texCache = {};
   C.skinTex = (id) => {
     if (texCache[id]) return texCache[id];
@@ -481,6 +560,7 @@
   // Страна игрока — по языку/региону
   const LANG2C = { ru: 'RU', kk: 'KZ', uz: 'UZ', ky: 'KG', uk: 'UA', be: 'BY', tr: 'TR', en: 'US', de: 'DE', fr: 'FR', it: 'IT', es: 'ES', pt: 'BR', zh: 'CN', ja: 'JP', ko: 'KR', hi: 'IN', id: 'ID', in: 'ID', vi: 'VN', th: 'TH', pl: 'PL', nl: 'NL', sv: 'SE', no: 'NO', nb: 'NO', fi: 'FI', ar: 'EG', az: 'AZ', ka: 'GE', hy: 'AM', tg: 'TJ', mn: 'MN', ur: 'PK' };
   C.homeCountry = () => {
+    if (C.country && C.FLAGS.some((f) => f.id === C.country)) return C.country;
     const parts = (C.lang || 'en').replace('_', '-').split('-');
     const region = (parts[1] || '').toUpperCase();
     if (region && C.FLAGS.some((f) => f.id === region)) return region;
@@ -541,7 +621,7 @@
 
   // ---------- HUD монет ----------
   C.drawCoinsHud = () => {
-    const x = 22, y = 30, w = 210, h = 64;
+    const sf = C.safeU(), x = 22 + sf.l, y = 30 + sf.t, w = 210, h = 64;
     ctx.fillStyle = 'rgba(0,0,0,0.35)'; C.rr(ctx, x, y, w, h, 32); ctx.fill();
     C.icon('coin', x + 34, y + h / 2, 52);
     C.text(String(Math.floor(C.coinsShown)), x + 70, y + h / 2 + 2, 38, '#fff', 'left');
@@ -553,7 +633,7 @@
   C.giftReady = () => C.save.day.last !== C.today();
   const CHEST_EVERY = 8 * 60;
   C.chestLeft = () => Math.max(0, CHEST_EVERY - (Date.now() / 1000 - (C.save.chestAt || 0)));
-  C.unownedFlags = () => C.FLAGS.map((f) => f.id).filter((id) => !C.save.owned[id] && id !== C.homeCountry());
+  C.unownedFlags = () => C.FLAGS.filter((f) => !f.x).map((f) => f.id).filter((id) => !C.save.owned[id] && id !== C.homeCountry());
   C.grantSkin = (id) => { C.save.owned[id] = true; C.save.skin = id; C.persist(); C.sfx('buy'); C.confetti(C.W / 2, C.H * 0.45, 60); };
 
   C.popupPush = (p) => { C.popup = p; };
@@ -825,13 +905,17 @@
 
   // ---------- клавиатура (для ПК) ----------
   C.keys = {};
+  const typing = (e) => { const t = e.target; return !!(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)); };
   window.addEventListener('keydown', (e) => {
+    if (typing(e)) return;
     const k = e.code; C.keys[k] = true; A.init();
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space'].includes(k)) e.preventDefault();
     if ((k === 'Escape' || k === 'KeyP') && C.state === 'play' && !C.game.noPauseBtn) { C.userPause = !C.userPause; C.audio.update(); }
     if ((k === 'Space' || k === 'Enter') && C.state === 'home' && !C.popup && !C.userPause) C.startLevel();
     if (C.game.onKey) C.game.onKey(k, true);
   });
+  window.addEventListener('blur', () => { C.keys = {}; });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) C.keys = {}; });
   window.addEventListener('keyup', (e) => { C.keys[e.code] = false; if (C.game && C.game.onKey) C.game.onKey(e.code, false); });
   C.keyDir = () => ((C.keys.ArrowRight || C.keys.KeyD ? 1 : 0) - (C.keys.ArrowLeft || C.keys.KeyA ? 1 : 0));
   C.keyDirY = () => ((C.keys.ArrowDown || C.keys.KeyS ? 1 : 0) - (C.keys.ArrowUp || C.keys.KeyW ? 1 : 0));

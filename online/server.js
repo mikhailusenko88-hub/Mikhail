@@ -14,13 +14,15 @@ const os = require('os');
 const path = require('path');
 
 const PORT = +process.env.PORT || 8091;
-const VERSION = '1.2.1';
+const VERSION = '1.2.2';
 const ROUND_LEN = +process.env.ROUND_LEN || 180; // раунд стран, секунд
 const MAX_ACC = 12;                               // номера украшений (шапки, очки…)
 const STATE_FILE = process.env.STATE_FILE || path.join(os.tmpdir(), 'ballio-day.json');
 // грубые слова в никах заменяем на «Player» (ник видят все игроки)
 const BAD = /(fuck|shit|bitch|cunt|nigg|fag|dick|porn|hitler|nazi|хуй|хуе|хуё|пизд|ебл|ебa|еба|ёба|бляд|блят|сука|мудак|пидор|пидр|залуп|гандон|шлюх|чмо)/i;
-const FLAGS = ['RU', 'KZ', 'UZ', 'KG', 'UA', 'BY', 'TR', 'US', 'GB', 'DE', 'FR', 'IT', 'ES', 'PT', 'BR', 'AR', 'MX', 'CN', 'JP', 'KR', 'IN', 'ID', 'VN', 'TH'];
+const FLAGS = ['RU', 'KZ', 'UZ', 'KG', 'UA', 'BY', 'TR', 'US', 'GB', 'DE', 'FR', 'IT', 'ES', 'PT', 'BR', 'AR', 'MX', 'CN', 'JP', 'KR', 'IN', 'ID', 'VN', 'TH',
+  'PL', 'NL', 'SE', 'NO', 'FI', 'CA', 'EG', 'AE', 'NG', 'PK', 'AZ', 'GE', 'AM', 'TJ', 'MN',
+  'CO', 'PH', 'RO', 'HU', 'CZ', 'AT', 'BE', 'CH', 'DK', 'IE', 'GR', 'PE', 'CL', 'VE', 'EC', 'UY', 'AU', 'NZ', 'MY', 'SG', 'BD', 'SA', 'IR', 'MA', 'DZ', 'TN', 'ZA', 'KE', 'LT', 'LV', 'EE', 'BG', 'RS', 'HR', 'SK', 'MD', 'TM'];
 const SAW_R = 50;
 const rOf = (m) => 20 + 5 * Math.sqrt(m);
 const speedOf = (r) => 440 * Math.pow(40 / r, 0.32);
@@ -64,7 +66,7 @@ function wsAccept(req, socket) {
       ws.buf = ws.buf.slice(off + len);
       if (op === 8) { close(); return; }
       if (op === 9 && payload.length < 126) { try { socket.write(Buffer.concat([Buffer.from([0x8a, payload.length]), payload])); } catch (e) { /* */ } continue; }
-      if (op === 1 && ws.onmsg) { let m = null; try { m = JSON.parse(payload.toString('utf8')); } catch (e) { continue; } if (m && typeof m === 'object') ws.onmsg(m); }
+      if (op === 1 && ws.onmsg) { let m = null; try { m = JSON.parse(payload.toString('utf8')); } catch (e) { continue; } if (m && typeof m === 'object' && !Array.isArray(m)) { try { ws.onmsg(m); } catch (e) { logErr('msg', e); } } }
     }
   });
   socket.on('close', close); socket.on('error', close);
@@ -84,7 +86,7 @@ setInterval(saveDay, 60000);
 const rooms = new Map();
 function getRoom(name) {
   let r = rooms.get(name);
-  if (!r) { r = { name, R: 1180, balls: new Map(), dots: new Map(), powers: new Map(), saws: [], clients: new Set(), nid: 1, did: 1, pid: 1, powT: 0, dAdd: [], dDel: [], ev: [], meta: [], tickN: 0, emptyT: 0, rT: ROUND_LEN, sc: {} }; rooms.set(name, r); }
+  if (!r) { r = { name, R: 1180, balls: new Map(), dots: new Map(), powers: new Map(), saws: [], clients: new Set(), nid: 1, did: 1, pid: 1, powT: 0, dAdd: [], dDel: [], ev: [], meta: [], tickN: 0, emptyT: 0, rT: ROUND_LEN, sc: {}, scAll: {} }; rooms.set(name, r); }
   return r;
 }
 function humans(r) { let n = 0; for (const b of r.balls.values()) if (b.human) n++; return n; }
@@ -97,19 +99,26 @@ function newBall(r, o) {
 // масса, набранная шариком, идёт в зачёт его стране: живым игрокам целиком, ботам — меньше
 function gain(r, b, amt) {
   b.m += amt; b.r = rOf(b.m);
-  r.sc[b.skin] = (r.sc[b.skin] || 0) + amt * (b.human ? 1 : 0.4);
+  // зачёт стран — только живые игроки; все боты вместе — одна нейтральная команда «Боты» (BOT),
+  // чтобы раунд не выигрывала «Испания», за которую играл бот. Для камеры роликов — отдельный счёт по флагам с ботами.
+  const team = b.human ? b.skin : 'BOT';
+  r.sc[team] = (r.sc[team] || 0) + amt * (b.human ? 1 : BOT_K);
+  r.scAll[b.skin] = (r.scAll[b.skin] || 0) + amt * (b.human ? 1 : 0.4);
   if (b.human) { checkDay(); day.pts[b.skin] = (day.pts[b.skin] || 0) + amt; }
 }
-const roundTop = (r, n) => Object.entries(r.sc).sort((a, b) => b[1] - a[1]).slice(0, n).map(([f, p]) => [f, Math.round(p)]);
+const BOT_K = 0.12; // вес очков ботов в их общей команде: команда из ~10 ботов ≈ 1,5 среднего игрока — одиночке есть кого обгонять
+const roundTop = (r, n, all) => Object.entries(all ? r.scAll : r.sc).sort((a, b) => b[1] - a[1]).slice(0, n).map(([f, p]) => [f, Math.round(p)]);
 function endRound(r) {
-  const top = roundTop(r, 5);
-  if (top.length) { checkDay(); day.wins[top[0][0]] = (day.wins[top[0][0]] || 0) + 1; }
-  const msg = JSON.stringify({ t: 'rw', win: top.length ? top[0][0] : '', top, day: dayTop(10) });
-  for (const ws of r.clients) ws.send(msg);
-  r.sc = {}; r.rT = ROUND_LEN; saveDay();
+  const top = roundTop(r, 5), topAll = roundTop(r, 5, true);
+  if (top.length && top[0][0] !== 'BOT') { checkDay(); day.wins[top[0][0]] = (day.wins[top[0][0]] || 0) + 1; }
+  const dt10 = dayTop(10);
+  const msg = JSON.stringify({ t: 'rw', win: top.length ? top[0][0] : '', top, day: dt10 });
+  const msgSpec = JSON.stringify({ t: 'rw', win: topAll.length ? topAll[0][0] : '', top: topAll, day: dt10 });
+  for (const ws of r.clients) ws.send(ws.spec ? msgSpec : msg);
+  r.sc = {}; r.scAll = {}; r.rT = ROUND_LEN; saveDay();
 }
 function cleanName(s, fallback) {
-  let n = String(s || '').replace(/[<>&"'`\u0000-\u001f]/g, '').trim().slice(0, 14);
+  let n = Array.from(String(s || '').replace(/[<>&"'`\u0000-\u001f\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g, '').trim()).slice(0, 14).join('').trim(); // по символам, не режем эмодзи пополам; без невидимых и «переворачивающих» знаков
   if (!n || BAD.test(n.replace(/[\s._\-*0-9]/g, ''))) n = fallback;
   return n;
 }
@@ -122,7 +131,7 @@ function safeSpot(r) {
     for (const s of r.saws) md = Math.min(md, Math.hypot(s.x - q.x, s.y - q.y) - SAW_R);
     if (md > bd) { bd = md; best = q; }
   }
-  return best;
+  return best || randIn(r.R * 0.5); // на всякий случай: никогда не возвращаем пустое место
 }
 function freeSkin(r) { const used = new Set(); for (const b of r.balls.values()) used.add(b.skin); const free = FLAGS.filter((f) => !used.has(f)); const pool = free.length ? free : FLAGS; return pool[(Math.random() * pool.length) | 0]; }
 
@@ -147,10 +156,16 @@ function think(r, b) {
   if (best) { b.tx = best.x; b.ty = best.y; }
 }
 
+function arenaR(nh) {
+  const n = Math.max(1, nh);
+  if (n <= 3) return 900 + 280 * n;
+  return Math.sqrt(0.8e6 * (n + Math.max(6, 12 - n)) / Math.PI); // ~0,8 млн кв. единиц на шарик (как при 3 игроках)
+}
 function step(r, dt) {
   const nh = humans(r);
-  // каждый новый живой игрок — арена заметно больше; ботов меньше, но не меньше 6
-  r.R += (900 + 280 * Math.max(1, nh) - r.R) * Math.min(1, dt * 0.5);
+  // до 3 живых игроков арена заметно растёт с каждым; дальше — по числу шариков, чтобы на 20 игроков не было пусто
+  // (раньше росла на 280 за каждого: при 20 игроках радиус 6500 — в 5,5 раза шире, и игроки почти не встречались)
+  r.R += (arenaR(nh) - r.R) * Math.min(1, dt * 0.5);
   const wantBots = Math.max(6, 12 - nh);
   const bots = []; for (const b of r.balls.values()) if (!b.human) bots.push(b);
   if (bots.length < wantBots) { const q = safeSpot(r); newBall(r, { x: q.x, y: q.y, m: rnd(4, 18), skin: freeSkin(r), acc: Math.random() < 0.3 ? 1 + ((Math.random() * 11) | 0) : 0 }); }
@@ -165,7 +180,7 @@ function step(r, dt) {
   // бонусы: 0 — ускорение, 1 — магнит, 2 — щит
   r.powT -= dt;
   r.rT -= dt; if (r.rT <= 0) endRound(r);
-  if (r.powT <= 0 && r.powers.size < 4 + 2 * nh) { r.powT = 2.5; const q = randIn(r.R * 0.85), p = { id: r.pid++, x: Math.round(q.x), y: Math.round(q.y), k: (Math.random() * 3) | 0 }; r.powers.set(p.id, p); }
+  if (r.powT <= 0 && r.powers.size < 4 + 2 * Math.min(nh, 10)) { r.powT = 2.5; const q = randIn(r.R * 0.85), p = { id: r.pid++, x: Math.round(q.x), y: Math.round(q.y), k: (Math.random() * 3) | 0 }; r.powers.set(p.id, p); }
 
   for (const b of r.balls.values()) {
     if (!b.alive) {
@@ -231,10 +246,15 @@ function broadcast(r) {
   const pw = []; for (const p of r.powers.values()) pw.push([p.id, p.x, p.y, p.k]);
   const sw = r.saws.map((s) => [Math.round(s.x), Math.round(s.y)]);
   const o = { t: 's', R: Math.round(r.R), b, da: r.dAdd, dd: r.dDel, ev: r.ev, mt: r.meta, pw, sw };
-  if (r.tickN % 30 === 0) { o.cs = roundTop(r, 5); o.rt = Math.ceil(r.rT); }
+  let msgSpec = null;
+  if (r.tickN % 30 === 0) {
+    o.rt = Math.ceil(r.rT);
+    o.cs = roundTop(r, 5, true); msgSpec = JSON.stringify(o); // зрителю (ролики) — битва флагов вместе с ботами
+    o.cs = roundTop(r, 5);
+  }
   const msg = JSON.stringify(o);
   r.dAdd = []; r.dDel = []; r.ev = []; r.meta = [];
-  for (const ws of r.clients) ws.send(msg);
+  for (const ws of r.clients) ws.send(ws.spec && msgSpec ? msgSpec : msg);
 }
 
 function join(ws, m) {
@@ -250,7 +270,7 @@ function join(ws, m) {
     ws.room = r; ws.spec = true; r.clients.add(ws);
     const meta = []; for (const x of r.balls.values()) meta.push(metaOf(x));
     const dots = []; for (const d of r.dots.values()) dots.push([d.id, d.x, d.y, d.c]);
-    ws.send({ t: 'w', id: 0, spec: 1, x: 0, y: 0, R: Math.round(r.R), mt: meta, dots, v: VERSION, cs: roundTop(r, 5), rt: Math.ceil(r.rT), rl: ROUND_LEN, day: dayTop(10) });
+    ws.send({ t: 'w', id: 0, spec: 1, x: 0, y: 0, R: Math.round(r.R), mt: meta, dots, v: VERSION, cs: roundTop(r, 5, true), rt: Math.ceil(r.rT), rl: ROUND_LEN, day: dayTop(10) });
     return;
   }
   const name = cleanName(m.name, 'Player');
@@ -288,7 +308,7 @@ function onMsg(ws, m) {
   const b = ws.ball; if (!b) return;
   if (m.t === 'p') { const x = +m.x, y = +m.y; if (isFinite(x) && isFinite(y)) { b.cx = x; b.cy = y; } return; }
   if (m.t === 're') return respawn(ws, m);
-  if (m.t === 'dbg' && process.env.TEST === '1' && ws.ball) { const b = ws.ball; if (m.m) { b.m = +m.m; b.r = rOf(b.m); } if (m.x !== undefined) { b.x = b.cx = +m.x; b.y = b.cy = +m.y; ws.send({ t: 'fix', x: b.x, y: b.y }); } return; }
+  if (m.t === 'dbg' && process.env.TEST === '1' && ws.ball) { const b = ws.ball; if (m.m) { b.m = Math.max(5, Math.min(3000, +m.m || 18)); b.r = rOf(b.m); } if (m.x !== undefined) { b.x = b.cx = +m.x; b.y = b.cy = +m.y; ws.send({ t: 'fix', x: b.x, y: b.y }); } return; }
 }
 function onClose(ws) {
   const r = ws.room; if (!r) return;
@@ -413,14 +433,24 @@ if (TLS_CERT && TLS_KEY) {
 }
 
 // ---------------- Игровой цикл ----------------
+// ошибка в одном сообщении или комнате не должна ронять весь сервер (раньше падал целиком — у всех обрыв)
+const errAt = new Map();
+function logErr(where, e) { const now = Date.now(); if (now - (errAt.get(where) || 0) < 60000) return; errAt.set(where, now); console.error(new Date().toISOString(), where, e && e.stack ? e.stack.split('\n').slice(0, 3).join(' | ') : e); }
+// шарик с испорченными числами (NaN/бесконечность) — возвращаем на арену
+function heal(r) {
+  for (const b of r.balls.values()) {
+    if (![b.x, b.y, b.m, b.r, b.vx, b.vy].every(Number.isFinite)) {
+      const q = randIn(r.R * 0.5); Object.assign(b, { x: q.x, y: q.y, cx: q.x, cy: q.y, vx: 0, vy: 0, m: 18 }); b.r = rOf(b.m);
+    }
+  }
+}
 let last = Date.now();
 setInterval(() => {
   const now = Date.now(), dt = Math.min(0.1, (now - last) / 1000); last = now;
   for (const r of rooms.values()) {
     if (!r.clients.size) { r.emptyT += dt; if (r.emptyT > 120) rooms.delete(r.name); continue; }
     r.emptyT = 0;
-    step(r, dt);
-    if (++r.tickN % 2 === 0) broadcast(r);
+    try { step(r, dt); if (++r.tickN % 2 === 0) broadcast(r); if (r.tickN % 30 === 0) heal(r); } catch (e) { logErr('tick ' + r.name, e); heal(r); }
   }
 }, 1000 / 30);
 // «зависшие» подключения (телефон уснул, связь пропала) закрываем через 12 с тишины — место освобождается

@@ -29,6 +29,7 @@
       openNow: 'Open now', noCoins: 'Not enough coins', tomorrow: 'More coins tomorrow', close: 'Close', pick: 'Pick your country',
       name: 'Your name', play: 'Play', hint: 'Green ring — you can eat it, red — run! Yellow name — a real player. Every point you grow counts for your country.',
       adsOff: 'Ads are blocked — coin options still work', title: 'Flagball Arena', team: 'for', change: 'Country', invite: 'Invite', copied: 'Invite link copied — send it to a friend', room: 'Private room',
+      noAd: 'No ad available right now — try again later', copyHint: 'Copy this link and send it to a friend:', search: 'Search country', botsWon: 'Bots won the round — beat them!',
     },
     ru: {
       conn: 'Подключаюсь к арене…', att: 'попытка', slow: 'Долго? Проверь интернет или переключись Wi-Fi ↔ мобильный',
@@ -39,16 +40,25 @@
       openNow: 'Открыть сейчас', noCoins: 'Не хватает монет', tomorrow: 'Ещё монеты — завтра', close: 'Закрыть', pick: 'Выбери страну',
       name: 'Твоё имя', play: 'Играть', hint: 'Зелёное кольцо — можно съесть, красное — беги. Жёлтое имя — живой игрок. Всё, что ты наберёшь, идёт в зачёт твоей стране.',
       adsOff: 'Реклама недоступна — за монеты всё работает', title: 'Flagball Arena', team: 'за', change: 'Страна', invite: 'Позвать', copied: 'Ссылка скопирована — отправь другу', room: 'Своя комната',
+      noAd: 'Рекламы сейчас нет — попробуй чуть позже', copyHint: 'Скопируй ссылку и отправь другу:', search: 'Поиск страны', botsWon: 'Раунд за ботами — обгони их!',
     },
   };
-  const LANG = (C.lang || 'en').slice(0, 2) === 'ru' ? 'ru' : 'en';
+  let LANG = (C.lang || 'en').slice(0, 2) === 'ru' ? 'ru' : 'en';
   let T = TX[LANG];
   const CN = {
-    en: { RU: 'Russia', KZ: 'Kazakhstan', UZ: 'Uzbekistan', KG: 'Kyrgyzstan', UA: 'Ukraine', BY: 'Belarus', TR: 'Turkey', US: 'USA', GB: 'UK', DE: 'Germany', FR: 'France', IT: 'Italy', ES: 'Spain', PT: 'Portugal', BR: 'Brazil', AR: 'Argentina', MX: 'Mexico', CN: 'China', JP: 'Japan', KR: 'Korea', IN: 'India', ID: 'Indonesia', VN: 'Vietnam', TH: 'Thailand' },
-    ru: { RU: 'Россия', KZ: 'Казахстан', UZ: 'Узбекистан', KG: 'Киргизия', UA: 'Украина', BY: 'Беларусь', TR: 'Турция', US: 'США', GB: 'Британия', DE: 'Германия', FR: 'Франция', IT: 'Италия', ES: 'Испания', PT: 'Португалия', BR: 'Бразилия', AR: 'Аргентина', MX: 'Мексика', CN: 'Китай', JP: 'Япония', KR: 'Корея', IN: 'Индия', ID: 'Индонезия', VN: 'Вьетнам', TH: 'Таиланд' },
+    en: { RU: 'Russia', KZ: 'Kazakhstan', UZ: 'Uzbekistan', KG: 'Kyrgyzstan', UA: 'Ukraine', BY: 'Belarus', TR: 'Turkey', US: 'USA', GB: 'UK', DE: 'Germany', FR: 'France', IT: 'Italy', ES: 'Spain', PT: 'Portugal', BR: 'Brazil', AR: 'Argentina', MX: 'Mexico', CN: 'China', JP: 'Japan', KR: 'Korea', IN: 'India', ID: 'Indonesia', VN: 'Vietnam', TH: 'Thailand',
+      PL: 'Poland', NL: 'Netherlands', SE: 'Sweden', NO: 'Norway', FI: 'Finland', CA: 'Canada', EG: 'Egypt', AE: 'UAE', NG: 'Nigeria', PK: 'Pakistan', AZ: 'Azerbaijan', GE: 'Georgia', AM: 'Armenia', TJ: 'Tajikistan', MN: 'Mongolia',
+      CO: 'Colombia', PH: 'Philippines', RO: 'Romania', HU: 'Hungary', CZ: 'Czechia', AT: 'Austria', BE: 'Belgium', CH: 'Switzerland', DK: 'Denmark', IE: 'Ireland', GR: 'Greece', PE: 'Peru', CL: 'Chile', VE: 'Venezuela', EC: 'Ecuador', UY: 'Uruguay',
+      AU: 'Australia', NZ: 'New Zealand', MY: 'Malaysia', SG: 'Singapore', BD: 'Bangladesh', SA: 'Saudi Arabia', IR: 'Iran', MA: 'Morocco', DZ: 'Algeria', TN: 'Tunisia', ZA: 'South Africa', KE: 'Kenya',
+      LT: 'Lithuania', LV: 'Latvia', EE: 'Estonia', BG: 'Bulgaria', RS: 'Serbia', HR: 'Croatia', SK: 'Slovakia', MD: 'Moldova', TM: 'Turkmenistan', BOT: 'Bots' },
+    ru: { RU: 'Россия', KZ: 'Казахстан', UZ: 'Узбекистан', KG: 'Киргизия', UA: 'Украина', BY: 'Беларусь', TR: 'Турция', US: 'США', GB: 'Британия', DE: 'Германия', FR: 'Франция', IT: 'Италия', ES: 'Испания', PT: 'Португалия', BR: 'Бразилия', AR: 'Аргентина', MX: 'Мексика', CN: 'Китай', JP: 'Япония', KR: 'Корея', IN: 'Индия', ID: 'Индонезия', VN: 'Вьетнам', TH: 'Таиланд',
+      PL: 'Польша', NL: 'Нидерланды', SE: 'Швеция', NO: 'Норвегия', FI: 'Финляндия', CA: 'Канада', EG: 'Египет', AE: 'ОАЭ', NG: 'Нигерия', PK: 'Пакистан', AZ: 'Азербайджан', GE: 'Грузия', AM: 'Армения', TJ: 'Таджикистан', MN: 'Монголия',
+      CO: 'Колумбия', PH: 'Филиппины', RO: 'Румыния', HU: 'Венгрия', CZ: 'Чехия', AT: 'Австрия', BE: 'Бельгия', CH: 'Швейцария', DK: 'Дания', IE: 'Ирландия', GR: 'Греция', PE: 'Перу', CL: 'Чили', VE: 'Венесуэла', EC: 'Эквадор', UY: 'Уругвай',
+      AU: 'Австралия', NZ: 'Новая Зеландия', MY: 'Малайзия', SG: 'Сингапур', BD: 'Бангладеш', SA: 'Саудовская Аравия', IR: 'Иран', MA: 'Марокко', DZ: 'Алжир', TN: 'Тунис', ZA: 'ЮАР', KE: 'Кения',
+      LT: 'Литва', LV: 'Латвия', EE: 'Эстония', BG: 'Болгария', RS: 'Сербия', HR: 'Хорватия', SK: 'Словакия', MD: 'Молдова', TM: 'Туркменистан', BOT: 'Боты' },
   };
   const cname = (f) => (CN[LANG][f] || f);
-  const PICK_FLAGS = ['US', 'GB', 'DE', 'FR', 'IT', 'ES', 'PT', 'BR', 'AR', 'MX', 'TR', 'RU', 'KZ', 'UZ', 'KG', 'UA', 'BY', 'CN', 'JP', 'KR', 'IN', 'ID', 'VN', 'TH'];
+  const PICK_FLAGS = C.FLAGS.map((f) => f.id); // все 76 стран; в окне выбора — поиск по названию
 
   // ---------- украшения: цены в монетах, рисуются поверх шарика ----------
   const ACC = [
@@ -124,7 +134,8 @@
   let cam = { x: 0, y: 0, z: 1 }, joy = null, feed = [], floats = [], toasts = [], dead = null, sendT = 0, pingMs = 0, best = 10, growFx = 0, reT = 0;
   let cs = [], rt = 180, rl = 180, dayTopL = [], banner = null, lifeEats = 0, shop = null, adFails = 0, busy = false;
   let lastReviveAt = -1e9, lastDoubleAt = -1e9, pending = null;
-  const adsOk = () => C.rewardedSupported && adFails < 2;
+  let adFailAt = -1e9;
+  const adsOk = () => C.rewardedSupported && nowS() - adFailAt > 180;
 
   function connect() {
     if (ws) { const o = ws; ws = null; o.onclose = null; o.onmessage = null; try { o.close(); } catch (e) { /* */ } }
@@ -148,9 +159,12 @@
     const sdk = CG(); if (!sdk) return;
     try {
       const ip = sdk.game.inviteParams;
-      if (ip && cleanRoom(ip.room)) { ROOM = cleanRoom(ip.room); return; }      // пришёл по приглашению
-      if (sdk.game.isInstantMultiplayer) ROOM = randRoom();                     // «играть с друзьями»: своя комната
-      sdk.game.addJoinRoomListener && sdk.game.addJoinRoomListener((p) => { const r = cleanRoom(p && p.room); if (r && r !== ROOM) { ROOM = r; connect(); } });
+      if (ip && cleanRoom(ip.room)) ROOM = cleanRoom(ip.room);                  // пришёл по приглашению
+      else if (sdk.game.isInstantMultiplayer) ROOM = randRoom();                // «играть с друзьями»: своя комната
+      // друг позвал, когда игра уже открыта — переходим к нему без перезагрузки
+      if (sdk.game.addJoinRoomListener) sdk.game.addJoinRoomListener((p) => { const r = cleanRoom(p && p.room); if (r && r !== ROOM) { ROOM = r; if (joined) connect(); } });
+      // вошёл в аккаунт CrazyGames во время игры — дальше играем под его ником
+      if (sdk.user && sdk.user.addAuthListener) sdk.user.addAuthListener((u) => { if (u && u.username) { nick = String(u.username).slice(0, 14); const x = X(); x.nick = nick; C.persist(); } });
     } catch (e) { /* */ }
   }
   function reportRoom(joinable) {
@@ -165,17 +179,37 @@
     try { if (sdk) return sdk.game.inviteLink({ room: ROOM }); } catch (e) { /* */ }
     return location.origin + location.pathname + '?room=' + encodeURIComponent(ROOM);
   }
+  async function copyText(t) {
+    try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(t); return true; } } catch (e) { /* */ }
+    try {
+      const a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0';
+      document.body.appendChild(a); a.select(); const ok = document.execCommand('copy'); a.remove(); return !!ok;
+    } catch (e) { return false; }
+  }
+  // скопировать не дали (браузер запретил) — показываем ссылку в поле, чтобы скопировать руками
+  function showLinkBox(link) {
+    let el = document.getElementById('lnk');
+    if (!el) {
+      el = document.createElement('div'); el.id = 'lnk';
+      el.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,10,40,.75);z-index:6;touch-action:auto';
+      el.innerHTML = '<div style="width:min(92vw,520px);background:#221d45;border-radius:20px;padding:18px;color:#fff;text-align:center;font:600 17px system-ui,Arial,sans-serif"><div id="lnkT" style="margin-bottom:10px"></div><input id="lnkI" readonly style="width:100%;box-sizing:border-box;background:#14112b;border:2px solid #4a4380;color:#fff;border-radius:12px;padding:10px;font-size:15px;user-select:text;-webkit-user-select:text"><button id="lnkB" style="margin-top:12px;width:100%;border:0;border-radius:14px;padding:12px;font-size:20px;font-weight:800;color:#fff;background:#1e88e5">OK</button></div>';
+      document.body.appendChild(el);
+      el.querySelector('#lnkB').onclick = () => { el.style.display = 'none'; };
+    }
+    el.querySelector('#lnkT').textContent = T.copyHint; const i = el.querySelector('#lnkI'); i.value = link; el.style.display = 'flex';
+    setTimeout(() => { try { i.focus(); i.select(); } catch (e) { /* */ } }, 50);
+  }
   async function shareInvite() {
     const link = inviteLink();
-    try { await navigator.clipboard.writeText(link); toasts.push({ text: T.copied, t: 0, col: '#69f0ae' }); }
-    catch (e) { toasts.push({ text: link, t: 0, col: '#fff' }); }
+    if (await copyText(link)) toasts.push({ text: T.copied, t: 0, col: '#69f0ae' });
+    else showLinkBox(link);
   }
 
   function setMeta(list) {
     for (const [id, name, sk, hum, acc] of list) {
       let b = balls.get(id); if (!b) { b = mkB(id); balls.set(id, b); }
       b.name = name; b.skin = sk; b.human = !!hum; b.acc = acc | 0;
-      if (hum && !knownHumans.has(id)) { knownHumans.add(id); if (id !== myId && myId) toasts.push({ text: name + ' ' + T.joined + ' · ' + T.grow, t: 0, col: '#69f0ae' }); }
+      if (hum && !knownHumans.has(id)) { knownHumans.add(id); if (id !== myId && myId) toasts.push({ text: name + ' ' + T.joined, t: 0, col: '#69f0ae' }); }
     }
   }
   function mkB(id) { return { id, x: 0, y: 0, sx: 0, sy: 0, pvx: 0, pvy: 0, st: 0, m: 10, r: rOf(10), alive: false, fl: 0, name: '', skin: 'US', human: false, ang: 0, fresh: true, acc: 0 }; }
@@ -256,7 +290,7 @@
     const coins = Math.max(1, Math.floor(best / 10) + lifeEats * 3);
     const t = nowS();
     let offer = null;
-    if (adsOk() && best >= 40 && t - lastReviveAt > 240) offer = 'revive';
+    if (best >= 40 && t - lastReviveAt > 240 && (adsOk() || C.save.coins + coins >= 150)) offer = 'revive';
     else if (adsOk() && coins >= 6 && t - lastDoubleAt > 120) offer = 'double';
     dead = { by: k ? (k.human ? k.name : cname(k.skin)) : '', skin: k ? k.skin : 'US', acc: k ? k.acc : 0, human: k && k.human, t: 0, killer: m.by, best: Math.round(best), eats: lifeEats, coins, offer, revived: false, doubled: false };
     C.addCoins(coins);
@@ -272,7 +306,7 @@
   }
   async function rewarded(pl) {
     busy = true; const ok = await C.ads.rewarded(pl); busy = false;
-    if (ok) adFails = 0; else adFails++;
+    if (ok) adFails = 0; else { adFails++; adFailAt = nowS(); toasts.push({ text: T.noAd, t: 0, col: '#ffd54f' }); }
     return ok;
   }
 
@@ -296,7 +330,7 @@
   };
   function guestName() { return (LANG === 'ru' ? 'Гость' : 'Guest') + (100 + ((Math.random() * 900) | 0)); }
   function platformName() { try { const p = window.bridge && window.bridge.player; if (p && p.isAuthorized && p.name) return String(p.name).slice(0, 14); } catch (e) { /* */ } return ''; }
-  function showJoin(first) { if (window.__showJoin) window.__showJoin({ first, nick: nick || X().nick || '', skin: skin || X().skin || C.homeCountry(), T, flags: PICK_FLAGS, names: CN[LANG] }); }
+  function showJoin(first) { if (window.__showJoin) window.__showJoin({ first, nick: nick || X().nick || '', skin: skin || X().skin || C.homeCountry(), home: C.homeCountry(), T, flags: PICK_FLAGS, names: CN[LANG], names2: CN[LANG === 'ru' ? 'en' : 'ru'] }); }
 
   function drawSaw(ctx, x, y, r, spin, danger) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(spin);
@@ -326,7 +360,7 @@
     startLevel() {}, toHome() {}, revive() {},
     canInter(sess, sinceInter, sinceReward) { return ((C.bridgeOk && !C.mockAds) || q.has('inter')) && sess > 60 && sinceReward > 30; },
     init() {
-      T = TX[(C.lang || 'en').slice(0, 2) === 'ru' ? 'ru' : 'en'];
+      LANG = (C.lang || 'en').slice(0, 2) === 'ru' ? 'ru' : 'en'; T = TX[LANG];
       if (SPEC) { skin = ''; joined = true; connect(); return; }
       const f = X();
       let n = '', s = '';
@@ -477,7 +511,11 @@
       const L = C.H < 1000; // альбомный экран: всё плотнее
       let nh = 0; for (const b of balls.values()) if (b.human) nh++;
       const showPlay = me.alive || !dead || status !== 'ok';
-      if (showPlay) drawPlayHud(ctx, L, nh);
+      if (showPlay) {
+        const sf = C.safeU ? C.safeU() : { t: 0, r: 0, b: 0, l: 0 };
+        if (sf.t || sf.l || sf.r || sf.b) { const W0 = C.W, H0 = C.H; ctx.save(); ctx.translate(sf.l, sf.t); C.W = W0 - sf.l - sf.r; C.H = H0 - sf.t - sf.b; try { drawPlayHud(ctx, L, nh); } finally { ctx.restore(); C.W = W0; C.H = H0; } }
+        else drawPlayHud(ctx, L, nh);
+      }
       if (status === 'conn' || status === 'lost') {
         ctx.fillStyle = 'rgba(10,10,40,0.6)'; ctx.fillRect(0, 0, C.W, C.H);
         C.text(T.conn, C.W / 2, C.H * 0.42, 40, '#fff');
@@ -496,24 +534,32 @@
       const mine = balls.get(myId);
       // таблица шариков — справа сверху
       const rows = all.slice(0, L ? 5 : 6); if (mine && mine.alive && !rows.includes(mine)) rows.push(mine);
-      const bx = C.W - 250, by = 24;
-      ctx.fillStyle = 'rgba(0,0,0,0.38)'; C.rr(ctx, bx, by, 232, rows.length * 44 + 60, 20); ctx.fill();
-      C.text(T.players + ': ' + nh, bx + 116, by + 28, 23, '#b9f6ca', 'center', null);
+      const TW = L ? 296 : 232, bx = C.W - TW - 18, by = 24; // в альбоме шире — ники видно целиком
+      ctx.fillStyle = 'rgba(0,0,0,0.38)'; C.rr(ctx, bx, by, TW, rows.length * 44 + 60, 20); ctx.fill();
+      C.text(T.players + ': ' + nh, bx + TW / 2, by + 28, 23, '#b9f6ca', 'center', null);
       rows.forEach((b, i) => {
         const y = by + 74 + i * 44, rank = all.indexOf(b) + 1;
-        if (b.id === myId) { ctx.fillStyle = 'rgba(255,235,59,0.35)'; C.rr(ctx, bx + 6, y - 20, 220, 40, 14); ctx.fill(); }
+        if (b.id === myId) { ctx.fillStyle = 'rgba(255,235,59,0.35)'; C.rr(ctx, bx + 6, y - 20, TW - 12, 40, 14); ctx.fill(); }
         C.text(String(rank), bx + 22, y, 24, rank === 1 ? '#ffc107' : '#fff', 'center', null);
         C.drawBall(bx + 56, y, 16, b.skin, 0, ctx);
-        C.text(fit(b.human ? b.name : cname(b.skin), 84, 21), bx + 80, y, 21, b.human ? '#ffeb3b' : '#e0e0e0', 'left', null);
-        C.text(String(Math.round(b.m)), bx + 212, y, 23, '#fff', 'right', null);
+        C.text(fit(b.human ? b.name : cname(b.skin), TW - 148, 21), bx + 80, y, 21, b.human ? '#ffeb3b' : '#e0e0e0', 'left', null);
+        C.text(String(Math.round(b.m)), bx + TW - 20, y, 23, '#fff', 'right', null);
       });
       // зачёт стран — слева сверху: таймер раунда и тройка лидеров
-      const cx0 = 18, cy0 = 24, cw = 270, myRow = cs.findIndex((c) => c[0] === skin);
+      const cx0 = 18, cy0 = 24, cw = L ? 312 : 270, myRow = cs.findIndex((c) => c[0] === skin);
       const crow = cs.slice(0, 3); const extra = myRow >= 3 ? 1 : 0; const ch = 54 + Math.max(1, crow.length + extra) * 40;
       ctx.fillStyle = 'rgba(0,0,0,0.42)'; C.rr(ctx, cx0, cy0, cw, ch, 20); ctx.fill();
       C.icon('trophy', cx0 + 28, cy0 + 27, 30, '#ffd54f'); C.text(T.countries, cx0 + 50, cy0 + 28, 24, '#fff', 'left', null);
       C.text(fmtT(rt), cx0 + cw - 16, cy0 + 28, 24, rt < 20 ? '#ff8a80' : '#b9f6ca', 'right', null);
-      const crowRow = (c, i, y) => { const isMe = c[0] === skin; if (isMe) { ctx.fillStyle = 'rgba(255,235,59,0.3)'; C.rr(ctx, cx0 + 6, y - 18, cw - 12, 36, 12); ctx.fill(); } C.text(String(i + 1), cx0 + 22, y, 22, i === 0 ? '#ffc107' : '#fff', 'center', null); C.drawBall(cx0 + 52, y, 14, c[0], 0, ctx); C.text(fit(cname(c[0]), 130, 21), cx0 + 74, y, 21, isMe ? '#ffeb3b' : '#fff', 'left', null); C.text(String(c[1]), cx0 + cw - 16, y, 21, '#fff', 'right', null); };
+      const team = {}; for (const b of balls.values()) if (b.human) team[b.skin] = (team[b.skin] || 0) + 1;
+      const crowRow = (c, i, y) => {
+        const isMe = c[0] === skin, n = team[c[0]] || 0, bot = c[0] === 'BOT';
+        if (isMe) { ctx.fillStyle = 'rgba(255,235,59,0.3)'; C.rr(ctx, cx0 + 6, y - 18, cw - 12, 36, 12); ctx.fill(); }
+        C.text(String(i + 1), cx0 + 22, y, 22, i === 0 ? '#ffc107' : '#fff', 'center', null); C.drawBall(cx0 + 52, y, 14, c[0], 0, ctx);
+        const tail = n > 1 ? ' ×' + n : '';
+        C.text(fit(cname(c[0]), cw - 140 - (tail ? 30 : 0), 21) + tail, cx0 + 74, y, 21, isMe ? '#ffeb3b' : bot ? '#b0bec5' : '#fff', 'left', null);
+        C.text(String(c[1]), cx0 + cw - 16, y, 21, bot ? '#b0bec5' : '#fff', 'right', null);
+      };
       crow.forEach((c, i) => crowRow(c, i, cy0 + 72 + i * 40));
       if (extra) crowRow(cs[myRow], myRow, cy0 + 72 + crow.length * 40);
       if (!crow.length) C.text('…', cx0 + cw / 2, cy0 + 72, 24, '#cfd8dc');
@@ -523,7 +569,8 @@
         ctx.fillStyle = top ? 'rgba(255,179,0,0.92)' : 'rgba(0,0,0,0.45)'; C.rr(ctx, C.W / 2 - 70, py, 140, 50, 25); ctx.fill();
         C.icon('trophy', C.W / 2 - 34, py + 25, 30, top ? '#fff' : '#ffd54f'); C.text('#' + myRank, C.W / 2 + 24, py + 26, 32, '#fff');
       }
-      if (ROOM !== 'main') C.text(T.room + ': ' + ROOM.toUpperCase(), C.W / 2, 92, 20, '#b9f6ca', 'center', 'rgba(0,0,0,0.6)');
+      // своя комната — внизу по центру (сверху на узком телефоне налезало на таблицы)
+      if (ROOM !== 'main') C.text(fit(T.room + ': ' + ROOM.toUpperCase(), C.W - 2 * (L ? 260 : 200), 20), C.W / 2, C.H - 28, 20, '#b9f6ca', 'center', 'rgba(0,0,0,0.6)');
       let ix = C.W / 2 - 56; for (const [on, P] of [[me.boost, POW[0]], [me.magnet, POW[1]], [me.shield, POW[2]]]) { if (!on || !me.alive) continue; ctx.fillStyle = P.col; ctx.beginPath(); ctx.arc(ix, 110, 24, 0, 7); ctx.fill(); C.icon(P.icon, ix, 110, 28, '#fff'); ix += 56; }
       const fy0 = cy0 + ch + 30;
       feed.forEach((f, i) => {
@@ -650,8 +697,8 @@
     const b = banner, a = Math.min(1, b.t * 4, (4.5 - b.t) * 2), y = L ? C.H * 0.3 : hudBottom + 80, w = Math.min(560, C.W - 40);
     ctx.globalAlpha = Math.max(0, a);
     ctx.fillStyle = b.mine ? 'rgba(255,160,0,0.92)' : 'rgba(20,20,60,0.82)'; C.rr(ctx, C.W / 2 - w / 2, y - 70, w, b.mine ? 160 : 130, 26); ctx.fill();
-    C.text(T.roundWon, C.W / 2, y - 38, 28, '#fff');
-    C.drawBall(C.W / 2 - 120, y + 12, 32, b.win, 0, ctx); C.text(cname(b.win), C.W / 2 - 74, y + 14, 38, '#fff', 'left');
+    C.text(b.win === 'BOT' ? T.botsWon : T.roundWon, C.W / 2, y - 38, 28, '#fff');
+    C.drawBall(C.W / 2 - 120, y + 12, 32, b.win, 0, ctx); C.text(fit(cname(b.win), w / 2 + 40, 38), C.W / 2 - 74, y + 14, 38, '#fff', 'left');
     if (b.mine) { C.text(T.yourTeam + '  +25', C.W / 2 - 16, y + 62, 28, '#fff'); C.icon('coin', C.W / 2 + 150, y + 60, 34); }
     ctx.globalAlpha = 1;
   }
@@ -659,12 +706,12 @@
   // ---------- окно смерти ----------
   function drawDeath(ctx, L) {
     const d = dead;
-    ctx.fillStyle = 'rgba(10,10,40,' + Math.min(0.62, d.t * 2) + ')'; ctx.fillRect(0, 0, C.W, C.H);
+    ctx.fillStyle = 'rgba(10,10,40,' + Math.min(0.74, d.t * 2) + ')'; ctx.fillRect(0, 0, C.W, C.H);
     if (d.t < 0.25) return;
     UI.block();
     C.drawCoinsHud();
     const BW = Math.min(480, C.W - 60), BH = L ? 80 : 100, GAP = L ? 12 : 16, bx = C.W / 2 - BW / 2;
-    let y = L ? 46 : C.H * 0.12;
+    let y = (L ? 46 : C.H * 0.12) + (C.safeU ? C.safeU().t : 0);
     C.text(T.ateBy, C.W / 2, y, L ? 30 : 38, '#fff');
     const kr = L ? 34 : 46; C.drawBall(C.W / 2, y + kr + 22, kr, d.skin, 0, ctx); drawAcc(ctx, d.acc, C.W / 2, y + kr + 22, kr);
     y += kr * 2 + 50;
@@ -684,28 +731,35 @@
     if (myD >= 0) C.text(T.yourCountry + ' #' + (myD + 1), C.W / 2 + 230, y, 22, '#ffeb3b', 'right', null);
     y += L ? 34 : 46;
     }
-    // кнопки: предложение за рекламу (если есть) и «Заново» того же размера
-    const off = d.offer;
+    // кнопки: предложение за рекламу (если есть) и «Заново» — того же размера и цвета (правило CrazyGames: отказ не прячем)
+    const off = d.offer, GREEN = '#43a047';
+    let adShown = false;
     if (off === 'revive' && !d.revived) {
       const left = Math.max(0, 5 - (d.t - 0.25));
       if (left > 0) {
-        if (C.button('revAd', bx, y, BW, BH, { color: '#43a047', pulse: true, draw: () => { C.icon('ad', -BW / 2 + 54, 0, BH * 0.52); C.text(T.revive, -BW / 2 + 96, -BH * 0.14, BH * 0.32, '#fff', 'left'); C.text(T.half, -BW / 2 + 96, BH * 0.2, BH * 0.22, '#e8f5e9', 'left', null); ringT(BW / 2 - 50, 0, BH * 0.32, left / 5); } }) && !busy) {
-          rewarded('revive').then((ok) => { if (ok) { d.revived = true; lastReviveAt = nowS(); C.sfx('buy'); doRespawn(true); } });
+        if (adsOk()) {
+          adShown = true;
+          if (C.button('revAd', bx, y, BW, BH, { color: GREEN, draw: () => { C.icon('ad', -BW / 2 + 54, 0, BH * 0.52); C.text(T.revive, -BW / 2 + 96, -BH * 0.14, BH * 0.32, '#fff', 'left'); C.text(T.half, -BW / 2 + 96, BH * 0.2, BH * 0.22, '#e8f5e9', 'left', null); ringT(BW / 2 - 50, 0, BH * 0.32, left / 5); } }) && !busy) {
+            rewarded('revive').then((ok) => { if (ok) { d.revived = true; lastReviveAt = nowS(); C.sfx('buy'); doRespawn(true); } });
+          }
+          y += BH + GAP;
         }
-        y += BH + GAP;
-        const price = 150, can = C.save.coins >= price;
-        if (C.button('revCoin', bx, y, BW, BH, { color: can ? '#fb8c00' : '#8d6e63', draw: () => { C.icon('coin', -BW / 2 + 54, 0, BH * 0.5); C.text(String(price), -BW / 2 + 86, 0, BH * 0.34, '#fff', 'left'); C.text(T.revive, BW / 2 - 30, 0, BH * 0.3, '#fff', 'right'); } }) && !busy) {
-          if (C.spend(price)) { d.revived = true; lastReviveAt = nowS(); C.sfx('buy'); doRespawn(true); } else { C.sfx('hit'); C.toast('coin', String(price - C.save.coins)); }
+        const price = 150, can = C.save.coins >= price, ring = !adShown;
+        if (can || adShown) {
+          if (C.button('revCoin', bx, y, BW, BH, { color: can ? '#fb8c00' : '#8d6e63', draw: () => { C.icon('coin', -BW / 2 + 54, 0, BH * 0.5); C.text(String(price), -BW / 2 + 86, 0, BH * 0.34, '#fff', 'left'); C.text(T.revive, ring ? BW / 2 - 110 : BW / 2 - 30, 0, BH * 0.3, '#fff', 'right'); if (ring) ringT(BW / 2 - 50, 0, BH * 0.32, left / 5); } }) && !busy) {
+            if (C.spend(price)) { d.revived = true; lastReviveAt = nowS(); C.sfx('buy'); doRespawn(true); } else { C.sfx('hit'); C.toast('coin', String(price - C.save.coins)); }
+          }
+          y += BH + GAP;
         }
-        y += BH + GAP;
       }
-    } else if (off === 'double' && !d.doubled) {
-      if (C.button('dblAd', bx, y, BW, BH, { color: '#43a047', pulse: true, draw: () => { C.icon('ad', -BW / 2 + 54, 0, BH * 0.52); C.text(T.x2, 6, 0, BH * 0.34, '#fff'); C.icon('coin', BW / 2 - 92, 0, BH * 0.44); C.text('+' + d.coins, BW / 2 - 66, 0, BH * 0.3, '#fff', 'left'); } }) && !busy) {
+    } else if (off === 'double' && !d.doubled && adsOk()) {
+      adShown = true;
+      if (C.button('dblAd', bx, y, BW, BH, { color: GREEN, draw: () => { C.icon('ad', -BW / 2 + 54, 0, BH * 0.52); C.text(T.x2, 6, 0, BH * 0.34, '#fff'); C.icon('coin', BW / 2 - 92, 0, BH * 0.44); C.text('+' + d.coins, BW / 2 - 66, 0, BH * 0.3, '#fff', 'left'); } }) && !busy) {
         rewarded('double').then((ok) => { if (ok) { d.doubled = true; lastDoubleAt = nowS(); C.addCoins(d.coins, C.W / 2, C.H / 2); C.sfx('win'); } });
       }
       y += BH + GAP;
     }
-    if (C.button('again', bx, y, BW, BH, { color: '#1e88e5', label: T.again, pulse: !off || d.revived || d.doubled })) playAgain();
+    if (C.button('again', bx, y, BW, BH, { color: adShown ? GREEN : '#1e88e5', label: T.again, pulse: !adShown && (!off || d.revived || d.doubled) })) playAgain();
     y += BH + GAP + 6;
     // магазин · страна · подарок
     const s = L ? 84 : 100, gx = C.W / 2 - (s * 4 + 60) / 2;
@@ -717,7 +771,6 @@
       if (gReady) claimGift(C.W / 2, y);
       else if (gAd) rewarded('gift').then((ok) => { if (ok) { claimGift(C.W / 2, y); X().giftAd = 1; X().giftAt = Date.now() / 1000; C.persist(); } });
     }
-    if (C.rewardedSupported && adFails >= 2) C.text(T.adsOff, C.W / 2, Math.min(C.H - 26, y + s + 30), 20, '#cfd8dc');
     toasts.slice(-1).forEach((t) => { const ty = Math.min(C.H - 40, y + s + 70); ctx.globalAlpha = Math.max(0, Math.min(1, (3 - t.t) * 2)); ctx.fillStyle = 'rgba(0,0,0,0.6)'; C.rr(ctx, C.W / 2 - 320, ty - 24, 640, 48, 24); ctx.fill(); C.text(fit(t.text, 600, 24), C.W / 2, ty, 24, t.col); ctx.globalAlpha = 1; });
     function ringT(x, yy, r, k) { ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 7; ctx.beginPath(); ctx.arc(x, yy, r, 0, 7); ctx.stroke(); ctx.strokeStyle = '#fff'; ctx.beginPath(); ctx.arc(x, yy, r, -Math.PI / 2, -Math.PI / 2 + k * Math.PI * 2); ctx.stroke(); C.text(String(Math.ceil(k * 5)), x, yy + 1, r * 1.1, '#fff', 'center', null); }
   }
