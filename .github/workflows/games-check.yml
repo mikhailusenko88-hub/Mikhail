@@ -22,7 +22,8 @@ jobs:
             echo "page: $(curl -s -m 15 -o /tmp/p.html -w '%{http_code} %{size_download}' http://89.126.192.214:8080/mebel/ip52gz08/online/)"
             echo "title: $(grep -o '<title>[^<]*' /tmp/p.html | head -1)"
             echo "game.js: $(curl -s -m 15 http://89.126.192.214:8080/mebel/ip52gz08/online/game.js | grep -c 'Flagball')"
-            echo "wss8443: $(curl -s -m 8 -k https://89.126.192.214:8443/health || echo 'нет')"
+            echo "https443 (проверка сертификата): $(curl -s -m 10 https://89.126.192.214/health || echo нет)"
+            echo "cert: $(echo | timeout 10 openssl s_client -connect 89.126.192.214:443 2>/dev/null | openssl x509 -noout -issuer -enddate 2>/dev/null | tr "\n" " ")"
           } > out/result.md
           cat out/result.md
           git config user.name games-check; git config user.email games-check@users.noreply.github.com
