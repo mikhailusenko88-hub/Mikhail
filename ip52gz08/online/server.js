@@ -10,9 +10,16 @@
 const http = require('http');
 const crypto = require('crypto');
 const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 const PORT = +process.env.PORT || 8091;
-const VERSION = '1.1';
+const VERSION = '1.2';
+const ROUND_LEN = +process.env.ROUND_LEN || 180; // раунд стран, секунд
+const MAX_ACC = 12;                               // номера украшений (шапки, очки…)
+const STATE_FILE = process.env.STATE_FILE || path.join(os.tmpdir(), 'ballio-day.json');
+// грубые слова в никах заменяем на «Player» (ник видят все игроки)
+const BAD = /(fuck|shit|bitch|cunt|nigg|fag|dick|porn|hitler|nazi|хуй|хуе|хуё|пизд|ебл|ебa|еба|ёба|бляд|блят|сука|мудак|пидор|пидр|залуп|гандон|шлюх|чмо)/i;
 const FLAGS = ['RU', 'KZ', 'UZ', 'KG', 'UA', 'BY', 'TR', 'US', 'GB', 'DE', 'FR', 'IT', 'ES', 'PT', 'BR', 'AR', 'MX', 'CN', 'JP', 'KR', 'IN', 'ID', 'VN', 'TH'];
 const SAW_R = 50;
 const rOf = (m) => 20 + 5 * Math.sqrt(m);
@@ -64,18 +71,47 @@ function wsAccept(req, socket) {
   return ws;
 }
 
+// ---------------- Зачёт стран за день (переживает перезапуск: лежит в файле) ----------------
+const dayKey = () => new Date().toISOString().slice(0, 10);
+let day = { d: dayKey(), pts: {}, wins: {} };
+try { const s = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8')); if (s && s.d === dayKey() && s.pts) day = s; } catch (e) { /* нет файла — новый день */ }
+function checkDay() { const k = dayKey(); if (day.d !== k) day = { d: k, pts: {}, wins: {} }; }
+function saveDay() { try { fs.writeFileSync(STATE_FILE, JSON.stringify(day)); } catch (e) { /* нет прав — живём в памяти */ } }
+function dayTop(n) { checkDay(); return Object.entries(day.pts).sort((a, b) => b[1] - a[1]).slice(0, n).map(([f, p]) => [f, Math.round(p), day.wins[f] || 0]); }
+setInterval(saveDay, 60000);
+
 // ---------------- Комнаты ----------------
 const rooms = new Map();
 function getRoom(name) {
   let r = rooms.get(name);
-  if (!r) { r = { name, R: 1180, balls: new Map(), dots: new Map(), powers: new Map(), saws: [], clients: new Set(), nid: 1, did: 1, pid: 1, powT: 0, dAdd: [], dDel: [], ev: [], meta: [], tickN: 0, emptyT: 0 }; rooms.set(name, r); }
+  if (!r) { r = { name, R: 1180, balls: new Map(), dots: new Map(), powers: new Map(), saws: [], clients: new Set(), nid: 1, did: 1, pid: 1, powT: 0, dAdd: [], dDel: [], ev: [], meta: [], tickN: 0, emptyT: 0, rT: ROUND_LEN, sc: {} }; rooms.set(name, r); }
   return r;
 }
 function humans(r) { let n = 0; for (const b of r.balls.values()) if (b.human) n++; return n; }
 function addDot(r, x, y) { if (x === undefined) { const p = randIn(r.R * 0.97); x = p.x; y = p.y; } const d = { id: r.did++, x: Math.round(x), y: Math.round(y), c: (Math.random() * 8) | 0 }; r.dots.set(d.id, d); r.dAdd.push([d.id, d.x, d.y, d.c]); }
+const metaOf = (b) => [b.id, b.name, b.skin, b.human ? 1 : 0, b.acc | 0];
 function newBall(r, o) {
-  const b = Object.assign({ id: r.nid++, x: 0, y: 0, vx: 0, vy: 0, m: 10, alive: true, shield: 0, boost: 0, magnet: 0, sawCD: 0, tx: 0, ty: 0, aiT: 0, flee: false, respawnT: 0, human: false, name: '', skin: 'US', ws: null, cx: 0, cy: 0 }, o);
-  b.r = rOf(b.m); b.cx = b.x; b.cy = b.y; r.balls.set(b.id, b); r.meta.push([b.id, b.name, b.skin, b.human ? 1 : 0]); return b;
+  const b = Object.assign({ id: r.nid++, x: 0, y: 0, vx: 0, vy: 0, m: 10, alive: true, shield: 0, boost: 0, magnet: 0, sawCD: 0, tx: 0, ty: 0, aiT: 0, flee: false, respawnT: 0, human: false, name: '', skin: 'US', acc: 0, ws: null, cx: 0, cy: 0, lastM: 0, diedAt: 0, reviveAt: -1e12 }, o);
+  b.r = rOf(b.m); b.cx = b.x; b.cy = b.y; r.balls.set(b.id, b); r.meta.push(metaOf(b)); return b;
+}
+// масса, набранная шариком, идёт в зачёт его стране: живым игрокам целиком, ботам — меньше
+function gain(r, b, amt) {
+  b.m += amt; b.r = rOf(b.m);
+  r.sc[b.skin] = (r.sc[b.skin] || 0) + amt * (b.human ? 1 : 0.4);
+  if (b.human) { checkDay(); day.pts[b.skin] = (day.pts[b.skin] || 0) + amt; }
+}
+const roundTop = (r, n) => Object.entries(r.sc).sort((a, b) => b[1] - a[1]).slice(0, n).map(([f, p]) => [f, Math.round(p)]);
+function endRound(r) {
+  const top = roundTop(r, 5);
+  if (top.length) { checkDay(); day.wins[top[0][0]] = (day.wins[top[0][0]] || 0) + 1; }
+  const msg = JSON.stringify({ t: 'rw', win: top.length ? top[0][0] : '', top, day: dayTop(10) });
+  for (const ws of r.clients) ws.send(msg);
+  r.sc = {}; r.rT = ROUND_LEN; saveDay();
+}
+function cleanName(s, fallback) {
+  let n = String(s || '').replace(/[<>&"'`\u0000-\u001f]/g, '').trim().slice(0, 14);
+  if (!n || BAD.test(n.replace(/[\s._\-*0-9]/g, ''))) n = fallback;
+  return n;
 }
 function newSaw(r) { const or = rnd(0.25, 0.82) * r.R, a = rnd(0, 6.283); return { or, a, w: rnd(0.05, 0.11) * (Math.random() < 0.5 ? -1 : 1), x: Math.cos(a) * or, y: Math.sin(a) * or }; }
 function safeSpot(r) {
@@ -117,7 +153,7 @@ function step(r, dt) {
   r.R += (900 + 280 * Math.max(1, nh) - r.R) * Math.min(1, dt * 0.5);
   const wantBots = Math.max(6, 12 - nh);
   const bots = []; for (const b of r.balls.values()) if (!b.human) bots.push(b);
-  if (bots.length < wantBots) { const q = safeSpot(r); newBall(r, { x: q.x, y: q.y, m: rnd(4, 18), skin: freeSkin(r) }); }
+  if (bots.length < wantBots) { const q = safeSpot(r); newBall(r, { x: q.x, y: q.y, m: rnd(4, 18), skin: freeSkin(r), acc: Math.random() < 0.3 ? 1 + ((Math.random() * 11) | 0) : 0 }); }
   else if (bots.length > wantBots) { bots.sort((a, c) => (a.alive - c.alive) || (a.m - c.m)); const b = bots[0]; r.balls.delete(b.id); r.ev.push([0, b.id, 2]); }
   const wantDots = Math.round(r.R * r.R * 0.00024);
   for (let i = 0; i < 12 && r.dots.size < wantDots; i++) addDot(r);
@@ -128,6 +164,7 @@ function step(r, dt) {
   for (const s of r.saws) { s.a += s.w * dt; s.x = Math.cos(s.a) * s.or; s.y = Math.sin(s.a) * s.or; }
   // бонусы: 0 — ускорение, 1 — магнит, 2 — щит
   r.powT -= dt;
+  r.rT -= dt; if (r.rT <= 0) endRound(r);
   if (r.powT <= 0 && r.powers.size < 4 + 2 * nh) { r.powT = 2.5; const q = randIn(r.R * 0.85), p = { id: r.pid++, x: Math.round(q.x), y: Math.round(q.y), k: (Math.random() * 3) | 0 }; r.powers.set(p.id, p); }
 
   for (const b of r.balls.values()) {
@@ -164,7 +201,7 @@ function step(r, dt) {
   for (const b of r.balls.values()) {
     if (!b.alive) continue;
     const pr = b.magnet > 0 ? b.r + 170 : b.r, rr = pr * pr;
-    for (const d of r.dots.values()) { const dx = d.x - b.x, dy = d.y - b.y; if (dx * dx + dy * dy < rr) { r.dots.delete(d.id); r.dDel.push(d.id); b.m += 1; b.r = rOf(b.m); } }
+    for (const d of r.dots.values()) { const dx = d.x - b.x, dy = d.y - b.y; if (dx * dx + dy * dy < rr) { r.dots.delete(d.id); r.dDel.push(d.id); gain(r, b, 1); } }
   }
   // пилы режут большие шарики: минус 30% массы, кусочки рассыпаются точками. Маленьким пилы не страшны.
   for (const s of r.saws) for (const b of r.balls.values()) {
@@ -181,8 +218,8 @@ function step(r, dt) {
   for (const a of arr) for (const b of arr) {
     if (a === b || !a.alive || !b.alive || b.shield > 0) continue;
     if (a.r > b.r * 1.12 && Math.hypot(a.x - b.x, a.y - b.y) < a.r - b.r * 0.15) {
-      b.alive = false; a.m += b.m * 0.85; a.r = rOf(a.m); r.ev.push([a.id, b.id, 1]);
-      if (b.human) { if (b.ws) b.ws.send({ t: 'dead', by: a.id, m: Math.round(b.m) }); }
+      b.alive = false; b.lastM = b.m; b.diedAt = Date.now(); gain(r, a, b.m * 0.85); r.ev.push([a.id, b.id, 1]);
+      if (b.human) { if (b.ws) b.ws.send({ t: 'dead', by: a.id, m: Math.round(b.m), day: dayTop(10) }); }
       else b.respawnT = rnd(3, 6);
     }
   }
@@ -193,7 +230,9 @@ function broadcast(r) {
   for (const x of r.balls.values()) b.push([x.id, Math.round(x.x), Math.round(x.y), Math.round(x.m * 10), x.alive ? 1 : 0, (x.shield > 0 ? 1 : 0) | (x.boost > 0 ? 2 : 0) | (x.magnet > 0 ? 4 : 0)]);
   const pw = []; for (const p of r.powers.values()) pw.push([p.id, p.x, p.y, p.k]);
   const sw = r.saws.map((s) => [Math.round(s.x), Math.round(s.y)]);
-  const msg = JSON.stringify({ t: 's', R: Math.round(r.R), b, da: r.dAdd, dd: r.dDel, ev: r.ev, mt: r.meta, pw, sw });
+  const o = { t: 's', R: Math.round(r.R), b, da: r.dAdd, dd: r.dDel, ev: r.ev, mt: r.meta, pw, sw };
+  if (r.tickN % 30 === 0) { o.cs = roundTop(r, 5); o.rt = Math.ceil(r.rT); }
+  const msg = JSON.stringify(o);
   r.dAdd = []; r.dDel = []; r.ev = []; r.meta = [];
   for (const ws of r.clients) ws.send(msg);
 }
@@ -203,30 +242,42 @@ function join(ws, m) {
   const roomName = String(m.room || 'main').replace(/[^a-z0-9_-]/gi, '').slice(0, 24) || 'main';
   const r = getRoom(roomName);
   if (r.clients.size >= 40) { ws.send({ t: 'full' }); ws.close(); return; }
-  const name = String(m.name || '').replace(/[<>&"'`]/g, '').trim().slice(0, 14) || 'Игрок';
-  const skin = FLAGS.indexOf(m.skin) >= 0 ? m.skin : 'RU';
+  const name = cleanName(m.name, 'Player');
+  const skin = FLAGS.indexOf(m.skin) >= 0 ? m.skin : 'US';
+  const acc = Math.max(0, Math.min(MAX_ACC, m.acc | 0));
   // у ботов не должно быть того же флага, что у живого игрока
-  for (const o of r.balls.values()) if (!o.human && o.skin === skin) { o.skin = freeSkin(r); if (o.skin === skin) o.skin = FLAGS[(FLAGS.indexOf(skin) + 7) % FLAGS.length]; r.meta.push([o.id, o.name, o.skin, 0]); }
+  for (const o of r.balls.values()) if (!o.human && o.skin === skin) { o.skin = freeSkin(r); if (o.skin === skin) o.skin = FLAGS[(FLAGS.indexOf(skin) + 7) % FLAGS.length]; r.meta.push(metaOf(o)); }
   if (!r.dots.size) for (let i = 0; i < 300; i++) addDot(r);
   const q = safeSpot(r);
-  const b = newBall(r, { x: q.x, y: q.y, m: 18, human: true, name, skin, ws, shield: 4 });
+  const b = newBall(r, { x: q.x, y: q.y, m: 18, human: true, name, skin, acc, ws, shield: 4 });
   ws.room = r; ws.ball = b; r.clients.add(ws);
-  const meta = []; for (const x of r.balls.values()) meta.push([x.id, x.name, x.skin, x.human ? 1 : 0]);
+  const meta = []; for (const x of r.balls.values()) meta.push(metaOf(x));
   const dots = []; for (const d of r.dots.values()) dots.push([d.id, d.x, d.y, d.c]);
-  ws.send({ t: 'w', id: b.id, x: Math.round(b.x), y: Math.round(b.y), R: Math.round(r.R), mt: meta, dots, v: VERSION });
+  ws.send({ t: 'w', id: b.id, x: Math.round(b.x), y: Math.round(b.y), R: Math.round(r.R), mt: meta, dots, v: VERSION, cs: roundTop(r, 5), rt: Math.ceil(r.rT), rl: ROUND_LEN, day: dayTop(10) });
 }
 
-function respawn(ws) {
+function respawn(ws, m) {
   const b = ws.ball, r = ws.room; if (!b || !r) return;
-  if (!b.alive) { const q = safeSpot(r); Object.assign(b, { x: q.x, y: q.y, cx: q.x, cy: q.y, vx: 0, vy: 0, m: 18, alive: true, shield: 4, boost: 0, magnet: 0 }); b.r = rOf(b.m); }
-  ws.send({ t: 'fix', x: Math.round(b.x), y: Math.round(b.y), re: 1 });
+  if (!b.alive) {
+    // смена страны / ника / украшения — между жизнями
+    if (m && FLAGS.indexOf(m.skin) >= 0) b.skin = m.skin;
+    if (m && m.name) b.name = cleanName(m.name, b.name);
+    if (m && m.acc !== undefined) b.acc = Math.max(0, Math.min(MAX_ACC, m.acc | 0));
+    r.meta.push(metaOf(b));
+    // возрождение за рекламу или монеты: половина массы, не чаще раза в 200 с и только сразу после смерти
+    let mass = 18; const now = Date.now();
+    if (m && m.keep && b.lastM > 36 && now - b.diedAt < 120000 && now - b.reviveAt > 200000) { mass = Math.min(400, b.lastM * 0.5); b.reviveAt = now; }
+    const q = safeSpot(r); Object.assign(b, { x: q.x, y: q.y, cx: q.x, cy: q.y, vx: 0, vy: 0, m: mass, alive: true, shield: 4, boost: 0, magnet: 0 }); b.r = rOf(b.m);
+  }
+  ws.send({ t: 'fix', x: Math.round(b.x), y: Math.round(b.y), re: 1, m: Math.round(b.m * 10) / 10 });
 }
 
 function onMsg(ws, m) {
   if (m.t === 'hello') return join(ws, m);
   const b = ws.ball; if (!b) return;
   if (m.t === 'p') { const x = +m.x, y = +m.y; if (isFinite(x) && isFinite(y)) { b.cx = x; b.cy = y; } return; }
-  if (m.t === 're') return respawn(ws);
+  if (m.t === 're') return respawn(ws, m);
+  if (m.t === 'dbg' && process.env.TEST === '1' && ws.ball) { const b = ws.ball; if (m.m) { b.m = +m.m; b.r = rOf(b.m); } if (m.x !== undefined) { b.x = b.cx = +m.x; b.y = b.cy = +m.y; ws.send({ t: 'fix', x: b.x, y: b.y }); } return; }
   if (m.t === 'ping') ws.send({ t: 'pong', c: m.c });
 }
 function onClose(ws) {
@@ -238,7 +289,7 @@ function onClose(ws) {
 // ---------------- HTTP ----------------
 const perIp = new Map();
 const allWs = new Set();
-const server = http.createServer((req, res) => {
+function httpHandler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.url.indexOf('/health') === 0) {
     let h = 0; for (const r of rooms.values()) h += r.clients.size;
@@ -246,9 +297,14 @@ const server = http.createServer((req, res) => {
     res.end(JSON.stringify({ ok: 1, v: VERSION, rooms: rooms.size, players: h, sockets: allWs.size }));
     return;
   }
+  if (req.url.indexOf('/day') === 0) {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.end(JSON.stringify({ d: day.d, top: dayTop(40) }));
+    return;
+  }
   res.statusCode = 404; res.end('ballio');
-});
-server.on('upgrade', (req, socket) => {
+}
+function onUpgrade(req, socket) {
   if (req.url.indexOf('/ws') !== 0) { socket.destroy(); return; }
   const ip = req.socket.remoteAddress || '';
   const n = perIp.get(ip) || 0; if (n >= 40) { socket.destroy(); return; }
@@ -256,8 +312,26 @@ server.on('upgrade', (req, socket) => {
   perIp.set(ip, n + 1); allWs.add(ws);
   ws.onmsg = (m) => onMsg(ws, m);
   ws.onclose = () => { allWs.delete(ws); perIp.set(ip, Math.max(0, (perIp.get(ip) || 1) - 1)); onClose(ws); };
-});
+}
+const server = http.createServer(httpHandler);
+server.on('upgrade', onUpgrade);
 server.listen(PORT, () => console.log('ballio ' + VERSION + ' on :' + PORT));
+
+// защищённое подключение (wss) — нужно площадкам на https (CrazyGames и др.).
+// Включается, только если есть сертификат: TLS_CERT / TLS_KEY. Сертификат на IP живёт ~6 дней,
+// поэтому файл перечитываем каждые 6 часов без перезапуска.
+const TLS_CERT = process.env.TLS_CERT || '', TLS_KEY = process.env.TLS_KEY || '', TLS_PORT = +process.env.TLS_PORT || 8443;
+if (TLS_CERT && TLS_KEY) {
+  try {
+    const https = require('https');
+    const opts = () => ({ cert: fs.readFileSync(TLS_CERT), key: fs.readFileSync(TLS_KEY) });
+    const tlsServer = https.createServer(opts(), httpHandler);
+    tlsServer.on('upgrade', onUpgrade);
+    tlsServer.on('tlsClientError', () => { /* сканеры и обрывы — не шумим */ });
+    tlsServer.listen(TLS_PORT, () => console.log('ballio wss on :' + TLS_PORT));
+    setInterval(() => { try { tlsServer.setSecureContext(opts()); } catch (e) { console.log('tls reload failed', e.message); } }, 6 * 3600 * 1000);
+  } catch (e) { console.log('tls off:', e.message); }
+}
 
 // ---------------- Игровой цикл ----------------
 let last = Date.now();
@@ -276,4 +350,6 @@ setInterval(() => { const now = Date.now(); for (const ws of allWs) if (now - ws
 // обновился файл — перезапускаемся (systemd поднимет новую версию)
 const WATCH = process.env.WATCH || __filename;
 let myMtime = 0; try { myMtime = fs.statSync(WATCH).mtimeMs; } catch (e) { /* */ }
-setInterval(() => { try { const t = fs.statSync(WATCH).mtimeMs; if (myMtime && t !== myMtime) { console.log('code updated, restarting'); process.exit(0); } } catch (e) { /* */ } }, 5000);
+setInterval(() => { try { const t = fs.statSync(WATCH).mtimeMs; if (myMtime && t !== myMtime) { console.log('code updated, restarting'); saveDay(); process.exit(0); } } catch (e) { /* */ } }, 5000);
+
+process.on('SIGTERM', () => { saveDay(); process.exit(0); });
