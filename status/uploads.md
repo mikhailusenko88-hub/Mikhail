@@ -49,3 +49,5 @@
 | shorts | 2026-11-13 | 3 | Vietnam vs Spain vs Argentina | https://youtube.com/shorts/qWd1NlVnmWg | |
 | 32 | 2026-11-14 | 1 | S2 RACE 19/68 | https://youtu.be/Irmkldu-qyI | public |
 | shorts | 2026-11-14 | 1 | Mexico vs UK vs Nigeria | https://youtube.com/shorts/054ZfXvp4Js | |
+| 33 | 2026-11-14 | 2 | S2 RACE 20/68 | https://youtu.be/OHjscgPCoE0 | public |
+| shorts | 2026-11-14 | 2 | France vs Pakistan vs Italy | https://youtube.com/shorts/s1zP7FYOv88 | |
