@@ -197,9 +197,11 @@
     const sdk = CG(); if (!sdk) return;
     try {
       if (sdk.game.updateRoom) sdk.game.updateRoom(joinable ? { roomId: ROOM, isJoinable: true, inviteParams: { room: ROOM } } : { roomId: ROOM, isJoinable: false });
+      if (joinable && sdk.game.inviteLink) cachedLink = sdk.game.inviteLink({ room: ROOM }); // ссылка-приглашение готова заранее (кнопка «Позвать»)
       else if (joinable && sdk.game.showInviteButton) sdk.game.showInviteButton({ room: ROOM });
     } catch (e) { /* */ }
   }
+  let cachedLink = '';
   function inviteLink() {
     const sdk = CG();
     try { if (sdk) return sdk.game.inviteLink({ room: ROOM }); } catch (e) { /* */ }
