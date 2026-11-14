@@ -147,6 +147,32 @@
     sock.onclose = () => { if (ws !== sock) return; status = 'lost'; lostT = 0; };
     sock.onerror = () => { /* onclose сработает */ };
   }
+  // ---------- плавность чужих шариков ----------
+  // раньше скорость считалась по времени ПРИХОДА пакетов; на телефоне пакеты приходят пачками → «перебежки».
+  // Теперь сервер ставит на снимок свои часы (T, мс), а мы проигрываем снимки с задержкой ~110 мс и плавно ведём между ними.
+  // задержка подстраивается под сеть: ровная — ~90 мс, рваная (телефон) — до ~220 мс, чтобы пакет успевал прийти
+  const clk = { off: null, jit: 40, delay: 110 };
+  function clkSample(T) {
+    const sm = T - performance.now();
+    if (clk.off === null) { clk.off = sm; return; }
+    clk.off += (sm - clk.off) * (sm > clk.off ? 0.25 : 0.02);
+    const late = Math.max(0, clk.off - sm); clk.jit = Math.max(late, clk.jit * 0.997);
+    const want = C.clamp(clk.jit * 1.15 + 45, 90, 230); clk.delay += (want - clk.delay) * 0.05;
+  }
+  const renderT = () => performance.now() + clk.off - clk.delay;
+  function snapPush(o, T, x, y, reset) { if (reset || !o.sn) o.sn = []; o.sn.push({ t: T, x, y }); if (o.sn.length > 8) o.sn.shift(); }
+  function snapAt(o, t) {
+    const sn = o.sn; if (!sn || !sn.length) return null;
+    if (sn.length === 1 || t <= sn[0].t) return [sn[0].x, sn[0].y, 0, 0];
+    for (let i = sn.length - 1; i > 0; i--) {
+      const a = sn[i - 1], b = sn[i];
+      if (t < a.t) continue;
+      const span = Math.max(1, b.t - a.t), vx = (b.x - a.x) / span, vy = (b.y - a.y) / span;
+      if (t <= b.t) { const k = (t - a.t) / span; return [a.x + (b.x - a.x) * k, a.y + (b.y - a.y) * k, vx * 1000, vy * 1000]; }
+      const ex = Math.min(t - b.t, 120); return [b.x + vx * ex, b.y + vy * ex, vx * 1000, vy * 1000]; // пакет запоздал — чуть-чуть продолжаем движение
+    }
+    return [sn[0].x, sn[0].y, 0, 0];
+  }
   function send(o) { if (ws && ws.readyState === 1) { try { ws.send(JSON.stringify(o)); } catch (e) { /* */ } } }
   document.addEventListener('visibilitychange', () => { if (!document.hidden && joined && nowS() - lastMsgT > 2) connect(); });
   // связь держим и во время рекламы (игра в это время на паузе, а сервер закрывает «молчащих» через 12 с)
@@ -217,7 +243,7 @@
   function onMsg(m) {
     const now = nowS();
     if (m.t === 'w') {
-      status = 'ok'; attempt = 0; myId = m.id; R = m.R; Rshow = m.R; balls.clear(); dots.clear(); knownHumans.clear();
+      status = 'ok'; attempt = 0; myId = m.id; R = m.R; Rshow = m.R; balls.clear(); dots.clear(); knownHumans.clear(); clk.off = null; saws = [];
       setMeta(m.mt);
       for (const [id, x, y, c] of m.dots) dots.set(id, { x, y, c: PCOL[c], r: 9 + (id % 5) });
       me = { x: m.x, y: m.y, vx: 0, vy: 0, r: rOf(18), m: 18, alive: !m.spec, shield: 4, boost: 0, magnet: 0, ang: 0 }; dead = null; best = 18; reT = 0; lifeEats = 0;
@@ -227,6 +253,7 @@
       return;
     }
     if (m.t === 's') {
+      const ST = m.T; if (ST !== undefined) clkSample(ST);
       if (m.R > R + 30) growFx = 2.2;
       R = m.R;
       if (m.mt && m.mt.length) setMeta(m.mt);
@@ -235,8 +262,9 @@
       for (const [id, x, y, m10, al, fl] of m.b) {
         seen.add(id);
         let b = balls.get(id); if (!b) { b = mkB(id); balls.set(id, b); }
-        const dts = Math.max(0.03, now - b.st);
-        if (al && b.alive && !b.fresh) { b.pvx = C.clamp((x - b.sx) / dts, -1400, 1400); b.pvy = C.clamp((y - b.sy) / dts, -1400, 1400); }
+        const dts = Math.max(0.03, now - b.st), cont = al && b.alive && !b.fresh;
+        if (ST !== undefined) { snapPush(b, ST, x, y, !cont); if (!cont) { b.x = x; b.y = y; b.pvx = 0; b.pvy = 0; } }
+        else if (cont) { b.pvx = C.clamp((x - b.sx) / dts, -1400, 1400); b.pvy = C.clamp((y - b.sy) / dts, -1400, 1400); }
         else { b.x = x; b.y = y; b.pvx = 0; b.pvy = 0; }
         b.fresh = false; b.sx = x; b.sy = y; b.st = now; b.m = m10 / 10; b.r = rOf(b.m); b.alive = !!al; b.fl = fl;
         if (id === myId) { me.m = b.m; me.r = b.r; me.shield = fl & 1; me.boost = fl & 2; me.magnet = fl & 4; if (al && me.alive) best = Math.max(best, me.m); }
@@ -245,7 +273,10 @@
       for (const [id, x, y, c] of m.da) dots.set(id, { x, y, c: PCOL[c], r: 9 + (id % 5) });
       for (const id of m.dd) dots.delete(id);
       if (m.pw) { const old = new Map(powers.map((p) => [p.id, p])); powers = m.pw.map(([id, x, y, k]) => ({ id, x, y, k, a: old.has(id) ? old.get(id).a : 0 })); }
-      if (m.sw) { const prev = saws; saws = m.sw.map(([x, y], i) => ({ tx: x, ty: y, x: prev[i] ? prev[i].x : x, y: prev[i] ? prev[i].y : y })); }
+      if (m.sw) {
+        if (saws.length !== m.sw.length) { const prev = saws; saws = m.sw.map(([x, y], i) => ({ tx: x, ty: y, x: prev[i] ? prev[i].x : x, y: prev[i] ? prev[i].y : y, sn: prev[i] && prev[i].sn })); }
+        m.sw.forEach(([x, y], i) => { const sw = saws[i]; sw.tx = x; sw.ty = y; if (ST !== undefined) snapPush(sw, ST, x, y, false); });
+      }
       for (const [a, b, k] of m.ev) {
         if (k === 1) {
           const A = balls.get(a), B = balls.get(b);
@@ -405,7 +436,8 @@
       rt = Math.max(0, rt - dt);
       growFx = Math.max(0, growFx - dt); Rshow += (R - Rshow) * Math.min(1, dt * 2);
       sawSpin += dt * 7; for (const p of powers) p.a += dt;
-      for (const s of saws) { s.x += (s.tx - s.x) * Math.min(1, dt * 8); s.y += (s.ty - s.y) * Math.min(1, dt * 8); }
+      const rT = clk.off !== null ? renderT() : 0;
+      for (const s of saws) { const p = rT && snapAt(s, rT); if (p) { s.x = p[0]; s.y = p[1]; } else { s.x += (s.tx - s.x) * Math.min(1, dt * 8); s.y += (s.ty - s.y) * Math.min(1, dt * 8); } }
       if (dead) dead.t += dt;
       if (joined) {
         if (status === 'conn') { connT += dt; if (connT > 6) connect(); }
@@ -429,8 +461,9 @@
       }
       for (const b of balls.values()) {
         if (b.id === myId) { b.x = me.x; b.y = me.y; continue; }
-        const age = Math.min(0.12, now - b.st), tx = b.sx + b.pvx * age, ty = b.sy + b.pvy * age, k = Math.min(1, dt * 14);
-        b.x += (tx - b.x) * k; b.y += (ty - b.y) * k;
+        const p = rT && b.sn && snapAt(b, rT);
+        if (p) { const k = Math.min(1, dt * 30); b.x += (p[0] - b.x) * k; b.y += (p[1] - b.y) * k; b.pvx = p[2]; b.pvy = p[3]; }
+        else { const age = Math.min(0.12, now - b.st), tx = b.sx + b.pvx * age, ty = b.sy + b.pvy * age, k = Math.min(1, dt * 14); b.x += (tx - b.x) * k; b.y += (ty - b.y) * k; }
         b.ang += (Math.hypot(b.pvx, b.pvy) / b.r) * dt * (b.pvx >= 0 ? 1 : -1);
         if (!b.alive && b.eatenBy) b.eatK = Math.min(1, (b.eatK || 0) + dt * 5);
       }
@@ -814,6 +847,7 @@
   window.__objs = () => ({ saws, powers, dots });
   window.__send = (o) => send(o);
   window.__respawn = () => playAgain();
+  window.__balls = () => Array.from(balls.values());
   window.__dir = () => { let h = 0; for (const b of balls.values()) if (b.human && b.alive) h++; dir.humansMax = Math.max(dir.humansMax || 0, h); return { id: dir.id, log: dir.log, rt, cs, humans: h, humansMax: dir.humansMax, banner: banner && { win: banner.win, top: banner.top } }; };
   window.__dbgOnline = () => ({ status, myId, me, R, balls: balls.size, dots: dots.size, powers: powers.length, saws: saws.length, pingMs, dead, attempt, cs, rt, dayTopL, banner: !!banner, coins: C.save.coins, fb: X(), shop: !!shop });
   window.FBArt = { drawAcc };

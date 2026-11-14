@@ -5,7 +5,7 @@ const { chromium } = require('/opt/npm-tools/node_modules/playwright');
 const fs = require('fs');
 const path = require('path');
 
-const DIST = path.join(__dirname, '../../dist/flagball');
+const DIST = process.env.DIST || path.join(__dirname, '../../dist/flagball');
 const WSS = process.env.WSS || 'wss://localhost:8443/ws';
 const GAME_URL = 'https://games.crazygames.com/en_US/flagball-arena/index.html';
 
@@ -96,7 +96,7 @@ async function player(browser, opts = {}) {
     if (u.hostname === 'www.crazygames.com') return route.fulfill({ contentType: 'text/html', body: OUTER(fw, fh, mobile || opts.full) });
     if (u.hostname === 'sdk.crazygames.com') return route.fulfill({ contentType: 'application/javascript', body: mockSdk(opts) });
     if (u.hostname === 'games.crazygames.com') {
-      const f = path.join(DIST, path.basename(u.pathname));
+      const f = path.join(opts.dist || DIST, path.basename(u.pathname));
       if (!fs.existsSync(f)) return route.fulfill({ status: 404, body: 'nf' });
       const ct = f.endsWith('.html') ? 'text/html' : f.endsWith('.json') ? 'application/json' : 'application/javascript';
       let body = fs.readFileSync(f);
@@ -106,6 +106,7 @@ async function player(browser, opts = {}) {
     if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') return route.continue();
     ext.push(u.href); return route.abort();
   });
+  if (opts.initScript) await ctx.addInitScript(opts.initScript);
   const page = await ctx.newPage();
   page.on('pageerror', (e) => errs.push('PAGEERR ' + e.message + ' ' + String(e.stack || e).slice(0, 300) + ' ' + (typeof e === 'object' ? JSON.stringify(e).slice(0, 200) : '')));
   page.on('console', (m) => { if (m.type() === 'error' && !/favicon|ERR_FAILED|net::/.test(m.text())) errs.push(m.text()); });
