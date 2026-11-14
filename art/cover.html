@@ -8,7 +8,7 @@
 // Обложки Flagball: ?w=1920&h=1080 (+ &title=0 — без надписи)
 (function () {
   const C = window.Core, A = window.FBArt; C.TEX = 1024;
-  const q = new URLSearchParams(location.search), W = +q.get('w') || 1920, H = +q.get('h') || 1080, withTitle = q.get('title') !== '0';
+  const q = new URLSearchParams(location.search), W = +q.get('w') || 1920, H = +q.get('h') || 1080, withTitle = q.get('title') !== '0' && q.get('icon') !== '1', ICON = q.get('icon') === '1';
   const cv = document.getElementById('out'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
   const S = Math.min(W, H) / 1080; // общий масштаб
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -45,16 +45,20 @@
     saw: [0.9, 0.47], BR: [0.15, 0.5, 0.42], JP: [0.86, 0.17, 0.36], DE: [0.11, 0.9, 0.3], KZ: [0.9, 0.9, 0.26],
     title: [0.5, 0.75], fs: 0.15 * W
   };
+  // иконка (?icon=1): только герой с короной и маленький шарик, без надписи — читается и в 64 px
+  if (ICON) { P.big = 0.3 * W; P.bx = 0.56 * W; P.by = 0.6 * H; }
   const big = P.big, bx = P.bx, by = P.by;
-  saw(W * P.saw[0], H * P.saw[1], 70 * S);
-  ball(W * P.BR[0], H * P.BR[1], big * P.BR[2], 'BR', 5, '#ff1744');
-  ball(W * P.JP[0], H * P.JP[1], big * P.JP[2], 'JP', 8, '#00e676');
-  ball(W * P.DE[0], H * P.DE[1], big * P.DE[2], 'DE', 1, '#00e676');
-  ball(W * P.KZ[0], H * P.KZ[1], big * P.KZ[2], 'KZ', 3, '#00e676');
+  if (!ICON) {
+    saw(W * P.saw[0], H * P.saw[1], 70 * S);
+    ball(W * P.BR[0], H * P.BR[1], big * P.BR[2], 'BR', 5, '#ff1744');
+    ball(W * P.JP[0], H * P.JP[1], big * P.JP[2], 'JP', 8, '#00e676');
+    ball(W * P.DE[0], H * P.DE[1], big * P.DE[2], 'DE', 1, '#00e676');
+    ball(W * P.KZ[0], H * P.KZ[1], big * P.KZ[2], 'KZ', 3, '#00e676');
+  }
   // большой шарик-герой с короной, съедает маленький
   ball(bx, by, big, 'US', 11, null);
   ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = 10 * S; ctx.beginPath(); ctx.arc(bx, by, big + 6 * S, 0, 7); ctx.stroke();
-  const sx = bx - big * 1.08, sy = by - big * (land ? 0.02 : 0.25); ball(sx, sy, big * 0.2, 'FR', 7, '#00e676');
+  const sx = bx - big * (ICON ? 1.02 : 1.08), sy = by - big * (land ? 0.02 : ICON ? 0.1 : 0.25); ball(sx, sy, big * (ICON ? 0.26 : 0.2), 'FR', 7, '#00e676');
   // искры
   for (let i = 0; i < 14; i++) { const a = rnd() * 6.28, d = big * 0.25 + rnd() * big * 0.15; ctx.fillStyle = ['#ffd54f', '#fff59d', '#ffffff'][i % 3]; ctx.beginPath(); ctx.arc(sx + Math.cos(a) * d, sy + Math.sin(a) * d, (4 + rnd() * 6) * S, 0, 7); ctx.fill(); }
   if (withTitle) {
