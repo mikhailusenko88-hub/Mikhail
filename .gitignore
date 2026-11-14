@@ -5,3 +5,4 @@ tests/shots/
 tests/out/
 node_modules/
 *.log
+art/out/*.mp4

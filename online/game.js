@@ -367,7 +367,7 @@
       let tgt = me;
       if (!me.alive && dead) { const k = balls.get(dead.killer); if (k && k.alive) tgt = k; }
       cam.x += (tgt.x - cam.x) * Math.min(1, dt * 12); cam.y += (tgt.y - cam.y) * Math.min(1, dt * 12);
-      const base = C.H < 1000 ? 0.85 : 1.25;
+      const base = C.H < 1000 ? 1.1 : 1.25; // в альбоме и на телефоне видно примерно одинаковую площадь арены — честно для всех
       const z = C.clamp(base * Math.pow(40 / Math.max(40, me.r), 0.55), 0.24, base); cam.z += (z - cam.z) * Math.min(1, dt * 2);
     },
 
@@ -616,9 +616,11 @@
   }
 
   const UI = C.UI;
-  window.__objs = () => ({ saws, powers });
+  window.__objs = () => ({ saws, powers, dots });
   window.__send = (o) => send(o);
   window.__respawn = () => playAgain();
   window.__dbgOnline = () => ({ status, myId, me, R, balls: balls.size, dots: dots.size, powers: powers.length, saws: saws.length, pingMs, dead, attempt, cs, rt, dayTopL, banner: !!banner, coins: C.save.coins, fb: X(), shop: !!shop });
+  window.FBArt = { drawAcc };
+  if (q.has('art')) return; // страница обложек: только рисунки, без игры
   C.run(game);
 })();

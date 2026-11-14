@@ -456,8 +456,9 @@
   const texCache = {};
   C.skinTex = (id) => {
     if (texCache[id]) return texCache[id];
-    const t = document.createElement('canvas'); t.width = t.height = 128; const g = t.getContext('2d');
-    if (id === 'white') { g.fillStyle = '#eceff1'; g.fillRect(0, 0, 128, 128); g.fillStyle = '#cfd8dc'; g.fillRect(0, 60, 128, 8); } else C.skinById(id).d(g, 128, 128);
+    const S = C.TEX || 256; // размер текстуры шарика (крупные шарики не мылятся)
+    const t = document.createElement('canvas'); t.width = t.height = S; const g = t.getContext('2d');
+    if (id === 'white') { g.fillStyle = '#eceff1'; g.fillRect(0, 0, S, S); g.fillStyle = '#cfd8dc'; g.fillRect(0, S * 0.47, S, S / 16); } else C.skinById(id).d(g, S, S);
     texCache[id] = t; return t;
   };
   C.flagTex = (id) => { // прямоугольный флаг 3:2 для подписей

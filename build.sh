@@ -19,3 +19,12 @@ done
 rm -f dist/*/*.bak dist-web/*/*.bak
 [ -f hub/index.html ] && cp hub/index.html dist/index.html && cp hub/index.html dist-web/index.html
 echo built: $(ls dist)
+
+# ---- онлайн «Флагбол» для площадок (CrazyGames и др.): SDK внутри, сервер — защищённое подключение ----
+FB_WSS="${FB_WSS:-wss://89.126.192.214:8443/ws}"
+rm -rf dist/flagball; mkdir -p dist/flagball zips
+cp online/game.js core/core.js vendor/playgama-bridge.js dist/flagball/
+echo '{}' > dist/flagball/playgama-bridge-config.json
+grep -v 'name="robots"' online/index.html | sed "s#<script src=\"core.js\"></script>#<script src=\"playgama-bridge.js\"></script>\n<script>window.FB_SERVER='$FB_WSS';</script>\n<script src=\"core.js\"></script>#" > dist/flagball/index.html
+(cd dist/flagball && rm -f ../../zips/flagball-crazygames.zip && zip -qr ../../zips/flagball-crazygames.zip .)
+echo flagball: $(du -sh zips/flagball-crazygames.zip | cut -f1)

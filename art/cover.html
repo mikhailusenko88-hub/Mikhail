@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>cover</title>
+<style>html,body{margin:0;background:#000}#c{display:none}#out{display:block}</style></head>
+<body><canvas id="c"></canvas><canvas id="out"></canvas>
+<script src="core.js"></script>
+<script src="game.js"></script>
+<script>
+// Обложки Flagball: ?w=1920&h=1080 (+ &title=0 — без надписи)
+(function () {
+  const C = window.Core, A = window.FBArt; C.TEX = 1024;
+  const q = new URLSearchParams(location.search), W = +q.get('w') || 1920, H = +q.get('h') || 1080, withTitle = q.get('title') !== '0';
+  const cv = document.getElementById('out'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
+  const S = Math.min(W, H) / 1080; // общий масштаб
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  // поле
+  const g = ctx.createRadialGradient(W * 0.5, H * 0.55, 50, W * 0.5, H * 0.55, Math.max(W, H) * 0.75); g.addColorStop(0, '#effdff'); g.addColorStop(1, '#bfe6ff');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(41,121,255,0.16)'; ctx.lineWidth = 4 * S; const gs = 90 * S; ctx.beginPath();
+  for (let x = 0; x < W; x += gs) { ctx.moveTo(x, 0); ctx.lineTo(x, H); } for (let y = 0; y < H; y += gs) { ctx.moveTo(0, y); ctx.lineTo(W, y); } ctx.stroke();
+  // край арены
+  ctx.strokeStyle = '#7c4dff'; ctx.lineWidth = 34 * S; ctx.beginPath(); ctx.arc(-W * 0.35, H * 1.25, Math.max(W, H) * 0.62, 0, 7); ctx.stroke();
+  ctx.strokeStyle = '#b388ff'; ctx.lineWidth = 10 * S; ctx.stroke();
+  // точки
+  const PC = ['#ff5252', '#ffca28', '#69f0ae', '#40c4ff', '#e040fb', '#ff9100', '#b2ff59', '#18ffff'];
+  for (let i = 0; i < 160 * (W * H) / (1920 * 1080); i++) { const x = rnd() * W, y = rnd() * H, r = (8 + rnd() * 6) * S; ctx.fillStyle = PC[(rnd() * 8) | 0]; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.beginPath(); ctx.arc(x - r * 0.3, y - r * 0.3, r * 0.35, 0, 7); ctx.fill(); }
+  function saw(x, y, r) { ctx.save(); ctx.translate(x, y); ctx.rotate(0.3); ctx.fillStyle = '#90a4ae'; ctx.strokeStyle = '#37474f'; ctx.lineWidth = 3 * S; ctx.beginPath(); for (let i = 0; i < 16; i++) { const a0 = (i / 16) * 6.283, a1 = ((i + 0.6) / 16) * 6.283; ctx.lineTo(Math.cos(a0) * r * 0.82, Math.sin(a0) * r * 0.82); ctx.lineTo(Math.cos(a1) * r * 1.08, Math.sin(a1) * r * 1.08); } ctx.closePath(); ctx.fill(); ctx.stroke(); const gg = ctx.createRadialGradient(-r * 0.2, -r * 0.2, 2, 0, 0, r * 0.8); gg.addColorStop(0, '#eceff1'); gg.addColorStop(1, '#78909c'); ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(0, 0, r * 0.74, 0, 7); ctx.fill(); ctx.fillStyle = '#455a64'; ctx.beginPath(); ctx.arc(0, 0, r * 0.2, 0, 7); ctx.fill(); ctx.restore(); }
+  function ball(x, y, r, flag, acc, ring) {
+    ctx.fillStyle = 'rgba(30,40,80,0.18)'; ctx.beginPath(); ctx.ellipse(x + r * 0.12, y + r * 0.2, r, r * 0.95, 0, 0, 7); ctx.fill();
+    C.drawBall(x, y, r, flag, 0, ctx, null); A.drawAcc(ctx, acc, x, y, r);
+    if (ring) { ctx.strokeStyle = ring; ctx.lineWidth = Math.max(5, r * 0.06); ctx.beginPath(); ctx.arc(x, y, r + ctx.lineWidth * 0.7, 0, 7); ctx.stroke(); }
+  }
+  // композиция в долях кадра (подстраивается под 16:9, 2:3, 1:1)
+  const land = W / H > 1.2, port = W / H < 0.9;
+  const big = land ? 0.3 * H : port ? 0.3 * W : 0.25 * W;
+  const bx = land ? W * 0.62 : W * 0.56, by = land ? H * 0.6 : port ? H * 0.58 : H * 0.62;
+  saw(land ? W * 0.08 : W * 0.1, land ? H * 0.86 : H * 0.6, 70 * S);
+  ball(land ? W * 0.18 : W * 0.17, land ? H * 0.5 : port ? H * 0.33 : H * 0.36, big * 0.42, 'BR', 5, '#ff1744');
+  ball(land ? W * 0.9 : W * 0.86, land ? H * 0.28 : port ? H * 0.27 : H * 0.29, big * 0.36, 'JP', 8, '#00e676');
+  ball(land ? W * 0.36 : W * 0.2, land ? H * 0.8 : port ? H * 0.84 : H * 0.85, big * 0.3, 'DE', 1, '#00e676');
+  ball(land ? W * 0.88 : W * 0.86, land ? H * 0.82 : port ? H * 0.86 : H * 0.88, big * 0.26, 'KZ', 3, '#00e676');
+  // большой шарик-герой с короной, съедает маленький
+  ball(bx, by, big, 'US', 11, null);
+  ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = 10 * S; ctx.beginPath(); ctx.arc(bx, by, big + 6 * S, 0, 7); ctx.stroke();
+  const sx = bx - big * 1.08, sy = by - big * 0.25; ball(sx, sy, big * 0.2, 'FR', 7, '#00e676');
+  // искры
+  for (let i = 0; i < 14; i++) { const a = rnd() * 6.28, d = big * 0.25 + rnd() * big * 0.15; ctx.fillStyle = ['#ffd54f', '#fff59d', '#ffffff'][i % 3]; ctx.beginPath(); ctx.arc(sx + Math.cos(a) * d, sy + Math.sin(a) * d, (4 + rnd() * 6) * S, 0, 7); ctx.fill(); }
+  if (withTitle) {
+    const fs = land ? 190 * S : W * 0.155;
+    const tx = land ? W * 0.31 : W * 0.5, ty = land ? H * 0.2 : port ? H * 0.11 : H * 0.12;
+    ctx.save(); ctx.font = C.font(fs); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+    ctx.lineWidth = fs * 0.2; ctx.strokeStyle = '#2b2d6e'; ctx.strokeText('FLAGBALL', tx, ty + fs * 0.06);
+    const tg = ctx.createLinearGradient(0, ty - fs * 0.5, 0, ty + fs * 0.5); tg.addColorStop(0, '#fff59d'); tg.addColorStop(0.55, '#ffca28'); tg.addColorStop(1, '#ff8f00');
+    ctx.fillStyle = tg; ctx.fillText('FLAGBALL', tx, ty);
+    ctx.restore();
+  }
+  window.__done = true;
+})();
+</script>
+</body></html>
