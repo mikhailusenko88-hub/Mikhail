@@ -9,14 +9,21 @@ const [n, from, to, step] = [+process.argv[2], +process.argv[3], +process.argv[4
   await p.goto('file://' + DIR + '/index.html'); await p.waitForTimeout(600);
   await p.evaluate((n) => window.__lvl(n), n); await p.waitForTimeout(200);
   if (n === 5) await p.evaluate(() => { window.__waitX = 600; });
-  await p.evaluate(() => setInterval(() => {
-    const t = __truck(); let g = true, br = false;
-    if (!t.grounded) { g = t.a > 0.12; br = t.a < -0.35; }
-    else if (t.vx > 700 && t.a > 0.25) { g = false; br = true; }
-    if (window.__waitX && t.x > window.__waitX - 700 && t.x < window.__waitX - 120 && !(t.mov[0] < window.__waitX + 25)) { g = false; br = true; }
-    if (window.__waitX && t.x >= window.__waitX && t.x < window.__waitX + 700 && t.mov[0] + 330 < window.__waitX + 700 - 30) { g = false; br = true; }
-    window.__autoGas = g; window.__autoBrk = br;
-  }, 40));
+  await p.evaluate(() => {
+      setInterval(() => {
+        const t = __truck(); let g = true, br = false; const stop = () => { g = false; br = t.vx > 25; };
+        window.__commit = window.__commit || {};
+        if (!t.grounded) { g = t.a > 0.12; br = t.a < -0.35; }
+        else if (t.vx > 700 && t.a > 0.25) { g = false; br = true; }
+        for (const m of t.movs) {
+          const near = m.x0 - m.len / 2, far = m.lift ? near + m.len : m.x1 + m.len / 2;
+          if (t.x > near - 520 && t.x < near - 150 && m.s > 0.02) stop();
+          if (t.x >= near - 150 && t.x < far - 60 && t.x > near + 40 && m.s < 0.985) stop();
+        }
+        for (const c of t.crs) { if (t.x > c.x - 700 && t.x < c.x - 160) { if (c.u < 0.3) window.__commit[c.x] = 1; if (!window.__commit[c.x]) stop(); } if (t.x > c.x + 150) window.__commit[c.x] = 0; }
+        window.__autoGas = g; window.__autoBrk = br;
+      }, 30);
+  });
   const t0 = Date.now(); const frames = [];
   while ((Date.now() - t0) / 1000 < to) {
     const t = (Date.now() - t0) / 1000;

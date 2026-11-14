@@ -18,6 +18,20 @@ const pilot = process.argv[5] || 'gas';
       window.__autoGas = mode === 'gas';
       // «умный» пилот: на земле газ (на крутом спуске притормаживает), в воздухе выравнивает нос;
       // перед ямой с платформой ждёт, пока платформа подъедет к краю
+      // пилот для всех препятствий: ждёт платформы и лифты, проскакивает под прессами, в воздухе выравнивается
+      if (mode === 'smart2') setInterval(() => {
+        const t = __truck(); let g = true, br = false; const stop = () => { g = false; br = t.vx > 25; };
+        window.__commit = window.__commit || {};
+        if (!t.grounded) { g = t.a > 0.12; br = t.a < -0.35; }
+        else if (t.vx > 700 && t.a > 0.25) { g = false; br = true; }
+        for (const m of t.movs) {
+          const near = m.x0 - m.len / 2, far = m.lift ? near + m.len : m.x1 + m.len / 2;
+          if (t.x > near - 520 && t.x < near - 150 && m.s > 0.02) stop();
+          if (t.x >= near - 150 && t.x < far - 60 && t.x > near + 40 && m.s < 0.985) stop();
+        }
+        for (const c of t.crs) { if (t.x > c.x - 700 && t.x < c.x - 160) { if (c.u < 0.3) window.__commit[c.x] = 1; if (!window.__commit[c.x]) stop(); } if (t.x > c.x + 150) window.__commit[c.x] = 0; }
+        window.__autoGas = g; window.__autoBrk = br;
+      }, 30);
       if (mode === 'smart') setInterval(() => {
         const t = __truck(); let g = true, br = false;
         if (!t.grounded) { g = t.a > 0.12; br = t.a < -0.35; }
