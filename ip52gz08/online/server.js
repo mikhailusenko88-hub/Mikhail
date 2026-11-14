@@ -14,7 +14,7 @@ const os = require('os');
 const path = require('path');
 
 const PORT = +process.env.PORT || 8091;
-const VERSION = '1.2';
+const VERSION = '1.2.1';
 const ROUND_LEN = +process.env.ROUND_LEN || 180; // раунд стран, секунд
 const MAX_ACC = 12;                               // номера украшений (шапки, очки…)
 const STATE_FILE = process.env.STATE_FILE || path.join(os.tmpdir(), 'ballio-day.json');
@@ -294,7 +294,7 @@ function httpHandler(req, res) {
   if (req.url.indexOf('/health') === 0) {
     let h = 0; for (const r of rooms.values()) h += r.clients.size;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.end(JSON.stringify({ ok: 1, v: VERSION, rooms: rooms.size, players: h, sockets: allWs.size }));
+    res.end(JSON.stringify({ ok: 1, v: VERSION, rooms: rooms.size, players: h, sockets: allWs.size, tls: tlsUntil || undefined }));
     return;
   }
   if (req.url.indexOf('/day') === 0) {
@@ -318,18 +318,87 @@ server.on('upgrade', onUpgrade);
 server.listen(PORT, () => console.log('ballio ' + VERSION + ' on :' + PORT));
 
 // защищённое подключение (wss) — нужно площадкам на https (CrazyGames и др.).
-// Включается, только если есть сертификат: TLS_CERT / TLS_KEY. Сертификат на IP живёт ~6 дней,
-// поэтому файл перечитываем каждые 6 часов без перезапуска.
+// Включается, только если есть сертификат: TLS_CERT / TLS_KEY (порт TLS_PORT, на сервере — 443).
+// Сертификат на IP живёт ~6 дней: продлевает lego, файл перечитываем без перезапуска.
+// ACME_ALPN_PORT: проверочные подключения Let's Encrypt (ALPN «acme-tls/1») передаём lego на этот порт,
+// чтобы продление шло, пока игра работает на 443.
 const TLS_CERT = process.env.TLS_CERT || '', TLS_KEY = process.env.TLS_KEY || '', TLS_PORT = +process.env.TLS_PORT || 8443;
+const ACME_PORT = +process.env.ACME_ALPN_PORT || 0;
+let tlsUntil = '';
+// есть ли в первом пакете TLS (ClientHello) протокол acme-tls/1
+function isAcmeHello(b) {
+  try {
+    if (b[0] !== 0x16 || b[5] !== 0x01) return false;
+    let p = 43; p += 1 + b[p];               // session id
+    p += 2 + b.readUInt16BE(p);              // шифры
+    p += 1 + b[p];                           // сжатие
+    const end = Math.min(b.length, p + 2 + b.readUInt16BE(p)); p += 2;
+    while (p + 4 <= end) {
+      const type = b.readUInt16BE(p), len = b.readUInt16BE(p + 2); p += 4;
+      if (type === 16) { // ALPN
+        let q = p + 2; const qe = Math.min(end, p + 2 + b.readUInt16BE(p));
+        while (q < qe) { const l = b[q]; if (b.toString('latin1', q + 1, q + 1 + l) === 'acme-tls/1') return true; q += 1 + l; }
+        return false;
+      }
+      p += len;
+    }
+  } catch (e) { /* битый пакет — обычное подключение */ }
+  return false;
+}
 if (TLS_CERT && TLS_KEY) {
   try {
-    const https = require('https');
+    const tls = require('tls'), net = require('net'), { Duplex } = require('stream');
     const opts = () => ({ cert: fs.readFileSync(TLS_CERT), key: fs.readFileSync(TLS_KEY) });
-    const tlsServer = https.createServer(opts(), httpHandler);
-    tlsServer.on('upgrade', onUpgrade);
-    tlsServer.on('tlsClientError', () => { /* сканеры и обрывы — не шумим */ });
-    tlsServer.listen(TLS_PORT, () => console.log('ballio wss on :' + TLS_PORT));
-    setInterval(() => { try { tlsServer.setSecureContext(opts()); } catch (e) { console.log('tls reload failed', e.message); } }, 6 * 3600 * 1000);
+    const readUntil = () => { try { tlsUntil = new crypto.X509Certificate(fs.readFileSync(TLS_CERT)).validTo; } catch (e) { tlsUntil = '?'; } };
+    let secureContext = tls.createSecureContext(opts()); readUntil();
+    // http-сервер без своего порта: в него отдаём уже расшифрованные подключения
+    const inner = http.createServer(httpHandler); inner.on('upgrade', onUpgrade);
+    const serveTls = (sock, first) => {
+      // обёртка над сокетом: возвращаем прочитанный первый пакет и дальше передаём всё как есть
+      const d = new Duplex({
+        read() { sock.resume(); },
+        write(c, e, cb) { if (sock.destroyed) return cb(); sock.write(c, e, cb); },
+        final(cb) { sock.end(); cb(); },
+        destroy(err, cb) { sock.destroy(); cb(err); },
+      });
+      sock.on('data', (c) => { if (!d.push(c)) sock.pause(); });
+      sock.on('end', () => d.push(null));
+      sock.on('close', () => d.destroy());
+      d.push(first);
+      const ts = new tls.TLSSocket(d, { isServer: true, secureContext, ALPNProtocols: ['http/1.1'] });
+      Object.defineProperty(ts, 'remoteAddress', { value: sock.remoteAddress });
+      ts.on('error', () => ts.destroy());
+      inner.emit('connection', ts);
+      sock.resume();
+    };
+    // перед TLS смотрим первый пакет: проверку Let's Encrypt — в lego, всё остальное — в игру
+    const front = net.createServer((sock) => {
+      let buf = Buffer.alloc(0), done = false;
+      sock.on('error', () => { /* */ });
+      const route = (acme) => {
+        if (done) return; done = true; clearTimeout(timer); sock.removeListener('data', onData); sock.pause();
+        if (acme && ACME_PORT) {
+          const up = net.connect(ACME_PORT, '127.0.0.1', () => { up.write(buf); sock.pipe(up); up.pipe(sock); sock.resume(); });
+          up.on('error', () => sock.destroy()); sock.on('close', () => up.destroy());
+          return;
+        }
+        serveTls(sock, buf);
+      };
+      const onData = (d) => {
+        buf = Buffer.concat([buf, d]);
+        if (buf.length < 5) return;
+        if (buf[0] !== 0x16) return route(false);
+        if (buf.length >= 5 + buf.readUInt16BE(3) || buf.length > 16384) route(isAcmeHello(buf));
+      };
+      const timer = setTimeout(() => route(false), 4000);
+      sock.on('data', onData);
+    });
+    front.on('error', (e) => console.log('wss port error:', e.message));
+    front.listen(TLS_PORT, () => console.log('ballio wss on :' + TLS_PORT + (ACME_PORT ? ' (acme → ' + ACME_PORT + ')' : '')));
+    let certM = 0; try { certM = fs.statSync(TLS_CERT).mtimeMs; } catch (e) { /* */ }
+    setInterval(() => {
+      try { const m = fs.statSync(TLS_CERT).mtimeMs; if (m !== certM) { certM = m; secureContext = tls.createSecureContext(opts()); readUntil(); console.log('tls cert reloaded, until', tlsUntil); } } catch (e) { console.log('tls reload failed', e.message); }
+    }, 5 * 60 * 1000);
   } catch (e) { console.log('tls off:', e.message); }
 }
 
