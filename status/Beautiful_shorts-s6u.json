@@ -13,20 +13,20 @@
   "avatar": "https://yt3.googleusercontent.com/3SkKQKzbtqBO-oV1lqFtoaDen4tgg8hlao1TVZcMdY9LUtqppGJBftTFyKYp3H1P5pTekG9tog=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/6_IYCMEMtoe0Q__Y2_zj7OKcLMKAO9UGQ8aCjGFh5-3XlnsPQBUApKWlK2iCM9InaG-mlW-rq7A=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-14 06:34 UTC",
+ "checked": "2026-11-14 18:11 UTC",
  "shorts_status": 200,
  "shorts": [
   {
    "id": "Dw-O_K8qMds",
    "title": "Can it break out of 6 rings? 🚀 Space edition #shorts",
-   "views": "221 просмотр",
-   "a11y": "Воспроизвести короткое видео \"Can it break out of 6 rings? 🚀 Space edition #shorts, 221 просмотр\""
+   "views": "229 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Can it break out of 6 rings? 🚀 Space edition #shorts, 229 просмотров\""
   },
   {
    "id": "YGXQpqT2ur0",
    "title": "Sunrise watercolor 🌅 wait for the tape peel! #shorts",
-   "views": "955 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Sunrise watercolor 🌅 wait for the tape peel! #shorts, 955 просмотров\""
+   "views": "1,1 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Sunrise watercolor 🌅 wait for the tape peel! #shorts, 1,1 тысячи просмотров\""
   },
   {
    "id": "irOtTngZbls",
@@ -305,6 +305,97 @@
    "a11y": "Воспроизвести короткое видео \"Incredible sky, 605 просмотров\""
   }
  ],
- "rss_status": 404,
- "rss": []
+ "rss_status": 200,
+ "rss": [
+  {
+   "id": "Dw-O_K8qMds",
+   "published": "2026-11-12T15:26:32+00:00",
+   "title": "Can it break out of 6 rings? 🚀 Space edition #shorts",
+   "views": 229
+  },
+  {
+   "id": "YGXQpqT2ur0",
+   "published": "2026-11-12T11:29:06+00:00",
+   "title": "Sunrise watercolor 🌅 wait for the tape peel! #shorts",
+   "views": 1100
+  },
+  {
+   "id": "irOtTngZbls",
+   "published": "2026-11-09T21:09:02+00:00",
+   "title": "Last country standing WINS! 🌍 Who are you rooting for? #shorts",
+   "views": 120
+  },
+  {
+   "id": "viBQgmzXg88",
+   "published": "2026-11-08T17:06:20+00:00",
+   "title": "1 bullet vs 5 objects — how far does it go? 😳 #shorts",
+   "views": 720
+  },
+  {
+   "id": "98lnRofeeH8",
+   "published": "2026-11-08T12:43:05+00:00",
+   "title": "Every bounce = BIGGER ball 🎵 …but the music speeds up 😱 #shorts",
+   "views": 2464
+  },
+  {
+   "id": "dEGnQFq6GCU",
+   "published": "2026-11-07T09:44:15+00:00",
+   "title": "Spiked Bat vs Katana ⚔️ Who wins? #shorts",
+   "views": 1113
+  },
+  {
+   "id": "wrH8FbgHvC0",
+   "published": "2026-11-06T12:17:07+00:00",
+   "title": "Scythe vs Dagger 💀 Who wins? #shorts",
+   "views": 2219
+  },
+  {
+   "id": "5kPEHExdRks",
+   "published": "2026-11-05T23:15:41+00:00",
+   "title": "Katana vs Sword ⚔️ Who wins? #shorts",
+   "views": 523
+  },
+  {
+   "id": "g8oBMJL95Ys",
+   "published": "2026-11-05T20:00:21+00:00",
+   "title": "Can a steel ball break 50 layers of glass? 😳 #shorts",
+   "views": 1187
+  },
+  {
+   "id": "C7rhH0Fvmtg",
+   "published": "2026-11-05T17:26:30+00:00",
+   "title": "Every hit: SWORD gets LONGER, DAGGERS spin FASTER… who wins? 😱 #shorts",
+   "views": 1339
+  },
+  {
+   "id": "yHSe_VfF-0E",
+   "published": "2026-11-05T09:14:41+00:00",
+   "title": "Part 2: it was STUCK by 3 px… can it break free? 😱 #shorts",
+   "views": 959
+  },
+  {
+   "id": "NxErJ5KTOos",
+   "published": "2026-11-04T15:47:13+00:00",
+   "title": "Every bounce = BIGGER ball… this time it was SO close 😭 #shorts",
+   "views": 2716
+  },
+  {
+   "id": "GQSZJ4qQ5so",
+   "published": "2026-11-04T09:33:50+00:00",
+   "title": "Every bounce = BIGGER ball… can it still escape 5 rings? 😱 #shorts",
+   "views": 1311
+  },
+  {
+   "id": "7YIpYrIIfCA",
+   "published": "2026-11-03T19:28:07+00:00",
+   "title": "Can it break out of 5 RINGS? 😱 #shorts",
+   "views": 1595
+  },
+  {
+   "id": "dxhgeNxbpPE",
+   "published": "2026-11-02T16:29:05+00:00",
+   "title": "Every bounce = +1 ball… how many to break 8 rings? 😱 #shorts",
+   "views": 1921
+  }
+ ]
 }
