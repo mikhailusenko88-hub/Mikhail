@@ -39,3 +39,10 @@ fb_build() {
 fb_build flagball flagball-arena-crazygames.zip "${FB_ADS:-false}"
 # Playgama и другие площадки через мост: реклама за награду работает сразу; друзья — комната по коду
 fb_build flagball-pg flagball-arena-playgama.zip true
+
+# ---- Ball Truck для заявки в Poki: без моста и без рекламы (их SDK встраивается после одобрения) ----
+rm -rf dist/ball-truck-poki; mkdir -p dist/ball-truck-poki
+cp core/core.js g6-truck/physics.js g6-truck/game.js dist/ball-truck-poki/
+grep -v 'playgama-bridge.js' g6-truck/index.html | sed 's#<script src="core.js"></script>#<script>window.GAME_ADS=false;</script>\n<script src="core.js"></script>#' > dist/ball-truck-poki/index.html
+(cd dist/ball-truck-poki && rm -f ../../zips/ball-truck-poki.zip && zip -qr ../../zips/ball-truck-poki.zip .)
+echo ball-truck-poki: $(du -sh zips/ball-truck-poki.zip | cut -f1)

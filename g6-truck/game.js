@@ -41,7 +41,7 @@
       // лифт: платформа в шахте ездит вверх-вниз (stay — где стоит в начале: 0 низ, 1 верх)
       lift(rise, len = 360) { const ex = x, ey = y; S.movers.push({ len, x0: ex + 8 + len / 2, y0: ey, x1: ex + 8 + len / 2, y1: ey - rise, lift: 1, move: 2.2, dwell: 1.6 }); B.gap(len + 16, -rise); return B; },
       // пресс над дорогой: падает и поднимается
-      crusher(dx, o = {}) { S.crushers.push(Object.assign({ x: x + dx, gy: y, up: 420, down: 120, w: 170, h: 260, off: 0 }, o)); return B; },
+      crusher(dx, o = {}) { S.crushers.push(Object.assign({ x: x + dx, gy: y, up: 330, down: 120, w: 170, h: 260, off: 0 }, o)); return B; },
       // рушащийся мост из досок над ямой
       fallBridge(w, k = 5) { const ex = x, ey = y, pw = (w - 16) / k; for (let i = 0; i < k; i++) S.fallers.push({ x: ex + 8 + pw * i + pw / 2, y: ey, w: pw - 6, dir: i % 2 ? 1 : -1 }); B.gap(w, 0); return B; },
       boost(dx, len = 260) { S.boosts.push({ x0: x + dx, x1: x + dx + len }); return B; },
@@ -362,7 +362,7 @@
   const sx = (x) => (x - camX) * Z + C.W * (C.W > C.H ? 0.4 : 0.36), sy = (y) => (y - camY) * Z + C.H * (C.W > C.H ? 0.56 : 0.5);
 
   function drawSky(ctx) {
-    const g = ctx.createLinearGradient(0, 0, 0, C.H); g.addColorStop(0, '#5ec2ff'); g.addColorStop(0.7, '#c8eeff'); g.addColorStop(1, '#e8f8ff');
+    const g = ctx.createLinearGradient(0, 0, 0, C.H); g.addColorStop(0, window.__thumbSky ? '#1f7ff0' : '#5ec2ff'); g.addColorStop(0.7, window.__thumbSky ? '#8fd3ff' : '#c8eeff'); g.addColorStop(1, '#e8f8ff');
     ctx.fillStyle = g; ctx.fillRect(0, 0, C.W, C.H);
     // солнце
     ctx.fillStyle = 'rgba(255,245,180,0.9)'; ctx.beginPath(); ctx.arc(C.W * 0.82, C.H * 0.16, 54, 0, 7); ctx.fill();
@@ -374,7 +374,7 @@
       for (const [dx, dy, r] of [[0, 0, 34], [36, -14, 42], [76, 0, 32], [38, 10, 30]]) { ctx.beginPath(); ctx.arc(cx + dx, cy + dy, r, 0, 7); ctx.fill(); }
     }
     // горы: два слоя с параллаксом
-    for (const [k, col, base, amp] of [[0.15, '#9fd3c7', 0.62, 90], [0.3, '#7cc4a4', 0.72, 70]]) {
+    for (const [k, col, base, amp] of (window.__thumbSky ? [[0.15, '#6fa8dc', 0.62, 90], [0.3, '#4f9d6a', 0.72, 70]] : [[0.15, '#9fd3c7', 0.62, 90], [0.3, '#7cc4a4', 0.72, 70]])) {
       ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(0, C.H);
       for (let x = 0; x <= C.W + 20; x += 20) { const wx = x / Z + camX * k; ctx.lineTo(x, C.H * base - amp * (0.6 * Math.sin(wx * 0.0021) + 0.4 * Math.sin(wx * 0.0057 + 1.3)) + (camY - 500) * k * Z * 0.3); }
       ctx.lineTo(C.W, C.H); ctx.closePath(); ctx.fill();
@@ -644,9 +644,10 @@
   }
 
   const game = {
+    get noPauseBtn() { return !!window.__noHud; },
     id: 'g6truck', landscapeBase: true, startState: 'home', hasSkip: true, reviveIcon: 'play', manualGameplay: false,
     init() { const lg = (C.lang || 'en').slice(0, 2); T = L10N[lg] || L10N.en; build(C.save.level || 1); },
-    resize() { Z = C.W > C.H ? C.H / 760 : C.W / 800; },
+    resize() { Z = (C.W > C.H ? C.H / 760 : C.W / 800) * (window.__zoomK || 1); },
     startLevel(n) { build(n); hintT = n === 1 ? 6 : n === 2 ? 3 : 0; toastL = []; partsFx = []; touch = null; },
     drawHome(ctx) {
       const land = C.W > C.H, sf = C.safeU();
@@ -671,6 +672,7 @@
     update(dt) {
       if (!W) return;
       // фиксированный шаг 1/120 с накоплением — одинаковая физика на 60, 144 и 165 Гц
+      if (window.__freeze) dt = 0;
       simAcc = Math.min(simAcc + dt, 1 / 15);
       while (simAcc >= P.DT) {
         P.step(W, (d) => control(d)); afterStep(); simAcc -= P.DT;
@@ -682,7 +684,7 @@
       let look = C.clamp(truck.vx * 0.35, -150, 380);
       for (const m of movers) { const a = m.m0.x0 - m.m0.len / 2, b = m.m0.x1 + m.m0.len / 2; if (truck.x > a - 900 && truck.x < b) look = Math.max(look, Math.min(320, (b - a) / 2)); }
       for (const q of seesaws) { const h = q.segs[0][2]; if (truck.x > q.x - h - 800 && truck.x < q.x + h) look = Math.max(look, 260); }
-      camX += (truck.x + look - camX) * Math.min(1, dt * 3); camY += (truck.y - 40 - camY) * Math.min(1, dt * 3);
+      if (!window.__freeze) { camX += (truck.x + look - camX) * Math.min(1, dt * 3); camY += (truck.y - 40 - camY) * Math.min(1, dt * 3); }
       shake = Math.max(0, shake - dt);
       for (const p of partsFx) { p.t += dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 900 * dt; }
       partsFx = partsFx.filter((p) => p.t < 1.2);
@@ -696,13 +698,16 @@
       ctx.save();
       if (shake > 0) ctx.translate((Math.random() - 0.5) * 18 * shake, (Math.random() - 0.5) * 18 * shake);
       drawSky(ctx); drawGround(ctx); drawObjects(ctx);
+      if (window.__speedLines) { ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineCap = 'round'; for (const [dy, len, w] of [[-60, 260, 10], [-10, 340, 12], [40, 220, 9], [-110, 180, 7], [90, 160, 7]]) { ctx.lineWidth = w; const X = sx(truck.x - 140) - 10 * Z, Y = sy(truck.y) + dy * Z; ctx.beginPath(); ctx.moveTo(X - len * Z * 0.6, Y + 28 * Z); ctx.lineTo(X, Y); ctx.stroke(); } }
       drawTruckBack(ctx); drawBall(ctx); drawTruckFront(ctx);
       for (const w of wheels) drawWheel(ctx, w);
       for (const p of partsFx) { ctx.globalAlpha = Math.max(0, 1 - p.t / 1.2); ctx.fillStyle = p.col; ctx.beginPath(); ctx.arc(sx(p.x), sy(p.y), p.r * Z, 0, 7); ctx.fill(); }
       ctx.globalAlpha = 1;
       ctx.restore();
+      if (window.__thumbTitle) { let big = C.W * 0.135; ctx.save(); ctx.translate(C.W / 2, C.H * 0.1); ctx.rotate(-0.04); C.text('BALL TRUCK', 0, 0, big, '#ffca28', 'center', '#7a2e0e'); ctx.restore(); }
     },
     hud(ctx) {
+      if (window.__noHud) return;
       const sf = C.safeU();
       // уровень, время, звезда
       ctx.fillStyle = 'rgba(0,0,0,0.3)'; C.rr(ctx, 20 + sf.l, 22 + sf.t, 210, 64, 32); ctx.fill();
@@ -734,5 +739,15 @@
     crs: crushers.map((m) => { const c = m.c0, T = (c.stay || 2.1) + 0.28 + 0.55 + 0.9; return { x: c.x, u: +((((simT + (c.off || 0)) % T) + T) % T).toFixed(2) }; }) });
   window.__lvl = (n) => { C.save.level = n; C.startLevel(); };
   window.__levels = () => LEVELS.length;
+  window.__pose = (o) => { // поза для обложки
+    if (o.zoom) { window.__zoomK = o.zoom; game.resize(); }
+    const dx = (o.x !== undefined ? o.x : truck.x) - truck.x, dy = (o.y !== undefined ? o.y : truck.y) - truck.y, da = (o.a !== undefined ? o.a : truck.a) - truck.a;
+    for (const b of [truck, ...wheels, ball]) { const rx = b.x - truck.x, ry = b.y - truck.y, c = Math.cos(da), s2 = Math.sin(da); b.x = truck.x + dx + c * rx - s2 * ry; b.y = truck.y + dy + s2 * rx + c * ry; if (b !== ball) b.a += da; }
+    if (o.ballUp) { ball.y -= o.ballUp; ball.vy = -600; }
+    if (o.scared) inBed = false;
+    if (o.ballA !== undefined) ball.a = o.ballA;
+    partsFx = []; toastL = [];
+    camX = truck.x + (o.camDx || 0); camY = truck.y + (o.camDy || 0);
+  };
   C.run(game);
 })();
