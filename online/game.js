@@ -7,7 +7,8 @@
   const q = new URLSearchParams(location.search);
   const SERVER = q.get('server') || window.FB_SERVER || ((location.protocol === 'https:' ? 'wss://' : 'ws://') + (location.hostname || 'localhost') + ':8091/ws');
   const SPEC = q.has('spec'); // камера для роликов: смотрит арену без своего шарика
-  const ROOM = (q.get('room') || 'main').replace(/[^a-z0-9_-]/gi, '').slice(0, 24) || 'main';
+  const cleanRoom = (r) => String(r || '').replace(/[^a-z0-9_-]/gi, '').slice(0, 24).toLowerCase();
+  let ROOM = cleanRoom(q.get('room')) || 'main';
   const steer = { x: 0, y: 0, on: false };
   const LEASH = 26, DEAD = 7, TURN = 10, SAW_R = 50;
   const PCOL = ['#ff5252', '#ffca28', '#69f0ae', '#40c4ff', '#e040fb', '#ff9100', '#b2ff59', '#18ffff'];
@@ -27,7 +28,7 @@
       half: '50% size', x2: 'Coins x2', shop: 'Shop', free: 'Free', owned: 'Owned', on: 'On', gift: 'Free gift!', giftIn: 'Gift in',
       openNow: 'Open now', noCoins: 'Not enough coins', tomorrow: 'More coins tomorrow', close: 'Close', pick: 'Pick your country',
       name: 'Your name', play: 'Play', hint: 'Green ring — you can eat it, red — run! Yellow name — a real player. Every point you grow counts for your country.',
-      adsOff: 'Ads are blocked — coin options still work', title: 'Flagball Arena', team: 'for', change: 'Country',
+      adsOff: 'Ads are blocked — coin options still work', title: 'Flagball Arena', team: 'for', change: 'Country', invite: 'Invite', copied: 'Invite link copied — send it to a friend', room: 'Private room',
     },
     ru: {
       conn: 'Подключаюсь к арене…', att: 'попытка', slow: 'Долго? Проверь интернет или переключись Wi-Fi ↔ мобильный',
@@ -37,7 +38,7 @@
       half: 'с половиной массы', x2: 'Монеты x2', shop: 'Магазин', free: 'Даром', owned: 'Есть', on: 'Надето', gift: 'Подарок!', giftIn: 'Подарок через',
       openNow: 'Открыть сейчас', noCoins: 'Не хватает монет', tomorrow: 'Ещё монеты — завтра', close: 'Закрыть', pick: 'Выбери страну',
       name: 'Твоё имя', play: 'Играть', hint: 'Зелёное кольцо — можно съесть, красное — беги. Жёлтое имя — живой игрок. Всё, что ты наберёшь, идёт в зачёт твоей стране.',
-      adsOff: 'Реклама недоступна — за монеты всё работает', title: 'Flagball Arena', team: 'за', change: 'Страна',
+      adsOff: 'Реклама недоступна — за монеты всё работает', title: 'Flagball Arena', team: 'за', change: 'Страна', invite: 'Позвать', copied: 'Ссылка скопирована — отправь другу', room: 'Своя комната',
     },
   };
   const LANG = (C.lang || 'en').slice(0, 2) === 'ru' ? 'ru' : 'en';
@@ -140,6 +141,36 @@
   // связь держим и во время рекламы (игра в это время на паузе, а сервер закрывает «молчащих» через 12 с)
   setInterval(() => { if (status === 'ok') send({ t: 'ping', c: performance.now() }); }, 2000);
 
+  // ---------- CrazyGames: комнаты, приглашения, «сразу в мультиплеер» ----------
+  const CG = () => { try { const sdk = window.CrazyGames && window.CrazyGames.SDK; return sdk && sdk.game && (sdk.environment === 'crazygames' || sdk.environment === 'local') ? sdk : null; } catch (e) { return null; } };
+  const randRoom = () => 'p' + Math.random().toString(36).slice(2, 9);
+  function pickRoomOnPlatform() {
+    const sdk = CG(); if (!sdk) return;
+    try {
+      const ip = sdk.game.inviteParams;
+      if (ip && cleanRoom(ip.room)) { ROOM = cleanRoom(ip.room); return; }      // пришёл по приглашению
+      if (sdk.game.isInstantMultiplayer) ROOM = randRoom();                     // «играть с друзьями»: своя комната
+      sdk.game.addJoinRoomListener && sdk.game.addJoinRoomListener((p) => { const r = cleanRoom(p && p.room); if (r && r !== ROOM) { ROOM = r; connect(); } });
+    } catch (e) { /* */ }
+  }
+  function reportRoom(joinable) {
+    const sdk = CG(); if (!sdk) return;
+    try {
+      if (sdk.game.updateRoom) sdk.game.updateRoom(joinable ? { roomId: ROOM, isJoinable: true, inviteParams: { room: ROOM } } : { roomId: ROOM, isJoinable: false });
+      else if (joinable && sdk.game.showInviteButton) sdk.game.showInviteButton({ room: ROOM });
+    } catch (e) { /* */ }
+  }
+  function inviteLink() {
+    const sdk = CG();
+    try { if (sdk) return sdk.game.inviteLink({ room: ROOM }); } catch (e) { /* */ }
+    return location.origin + location.pathname + '?room=' + encodeURIComponent(ROOM);
+  }
+  async function shareInvite() {
+    const link = inviteLink();
+    try { await navigator.clipboard.writeText(link); toasts.push({ text: T.copied, t: 0, col: '#69f0ae' }); }
+    catch (e) { toasts.push({ text: link, t: 0, col: '#fff' }); }
+  }
+
   function setMeta(list) {
     for (const [id, name, sk, hum, acc] of list) {
       let b = balls.get(id); if (!b) { b = mkB(id); balls.set(id, b); }
@@ -158,7 +189,7 @@
       me = { x: m.x, y: m.y, vx: 0, vy: 0, r: rOf(18), m: 18, alive: !m.spec, shield: 4, boost: 0, magnet: 0, ang: 0 }; dead = null; best = 18; reT = 0; lifeEats = 0;
       cam.x = me.x; cam.y = me.y; steer.on = false;
       if (m.cs) cs = m.cs; if (m.rt) rt = m.rt; if (m.rl) rl = m.rl; if (m.day) dayTopL = m.day;
-      if (!m.spec) C.msg('gameplay_started');
+      if (!m.spec) { C.msg('gameplay_started'); reportRoom(true); }
       return;
     }
     if (m.t === 's') {
@@ -215,7 +246,7 @@
     }
     if (m.t === 'dead') { if (m.day) dayTopL = m.day; onDeath(m); return; }
     if (m.t === 'pong') { pingMs = Math.round(performance.now() - m.c); return; }
-    if (m.t === 'full') { status = 'lost'; lostT = 0; return; }
+    if (m.t === 'full') { reportRoom(false); if (ROOM !== 'main' && !SPEC) ROOM = 'main'; status = 'lost'; lostT = 0; return; }
   }
 
   // ---------- смерть: монеты за жизнь и предложение (возрождение / x2 / ничего — тогда межстраничная) ----------
@@ -305,6 +336,7 @@
       if (!s || PICK_FLAGS.indexOf(s) < 0) s = PICK_FLAGS.indexOf(C.homeCountry()) >= 0 ? C.homeCountry() : 'US';
       nick = n; skin = s;
       // на площадке (CrazyGames, Playgama…) — сразу в игру, без окна; на своём сайте — окно только в первый раз
+      pickRoomOnPlatform();
       if (C.bridgeOk || n || q.has('auto')) startJoin(n || guestName(), s);
       else showJoin(true);
     },
@@ -491,6 +523,7 @@
         ctx.fillStyle = top ? 'rgba(255,179,0,0.92)' : 'rgba(0,0,0,0.45)'; C.rr(ctx, C.W / 2 - 70, py, 140, 50, 25); ctx.fill();
         C.icon('trophy', C.W / 2 - 34, py + 25, 30, top ? '#fff' : '#ffd54f'); C.text('#' + myRank, C.W / 2 + 24, py + 26, 32, '#fff');
       }
+      if (ROOM !== 'main') C.text(T.room + ': ' + ROOM.toUpperCase(), C.W / 2, 92, 20, '#b9f6ca', 'center', 'rgba(0,0,0,0.6)');
       let ix = C.W / 2 - 56; for (const [on, P] of [[me.boost, POW[0]], [me.magnet, POW[1]], [me.shield, POW[2]]]) { if (!on || !me.alive) continue; ctx.fillStyle = P.col; ctx.beginPath(); ctx.arc(ix, 110, 24, 0, 7); ctx.fill(); C.icon(P.icon, ix, 110, 28, '#fff'); ix += 56; }
       const fy0 = cy0 + ch + 30;
       feed.forEach((f, i) => {
@@ -675,7 +708,8 @@
     if (C.button('again', bx, y, BW, BH, { color: '#1e88e5', label: T.again, pulse: !off || d.revived || d.doubled })) playAgain();
     y += BH + GAP + 6;
     // магазин · страна · подарок
-    const s = L ? 84 : 100, gx = C.W / 2 - (s * 3 + 40) / 2;
+    const s = L ? 84 : 100, gx = C.W / 2 - (s * 4 + 60) / 2;
+    if (C.button('invBtn', gx + 3 * (s + 20), y, s, s, { color: '#1e88e5', draw: () => { C.icon('plus', 0, -s * 0.12, s * 0.42, '#fff'); C.text(T.invite, 0, s * 0.27, s * 0.19, '#fff', 'center', null); } })) { C.sfx('tap'); shareInvite(); }
     if (C.button('shopBtn', gx, y, s, s, { color: '#7c4dff', draw: () => { C.drawBall(0, 4, s * 0.3, skin, 0, ctx); drawAcc(ctx, 11, 0, 4, s * 0.3); } })) { shop = { t: 0 }; C.sfx('tap'); }
     if (C.button('flagBtn', gx + s + 20, y, s, s, { color: '#00897b', draw: () => C.drawBall(0, 0, s * 0.32, skin, 0, ctx) })) showJoin(false);
     const gl = giftLeft(), gReady = gl <= 0, gAd = !gReady && adsOk() && !X().giftAd;
@@ -684,6 +718,7 @@
       else if (gAd) rewarded('gift').then((ok) => { if (ok) { claimGift(C.W / 2, y); X().giftAd = 1; X().giftAt = Date.now() / 1000; C.persist(); } });
     }
     if (C.rewardedSupported && adFails >= 2) C.text(T.adsOff, C.W / 2, Math.min(C.H - 26, y + s + 30), 20, '#cfd8dc');
+    toasts.slice(-1).forEach((t) => { const ty = Math.min(C.H - 40, y + s + 70); ctx.globalAlpha = Math.max(0, Math.min(1, (3 - t.t) * 2)); ctx.fillStyle = 'rgba(0,0,0,0.6)'; C.rr(ctx, C.W / 2 - 320, ty - 24, 640, 48, 24); ctx.fill(); C.text(fit(t.text, 600, 24), C.W / 2, ty, 24, t.col); ctx.globalAlpha = 1; });
     function ringT(x, yy, r, k) { ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 7; ctx.beginPath(); ctx.arc(x, yy, r, 0, 7); ctx.stroke(); ctx.strokeStyle = '#fff'; ctx.beginPath(); ctx.arc(x, yy, r, -Math.PI / 2, -Math.PI / 2 + k * Math.PI * 2); ctx.stroke(); C.text(String(Math.ceil(k * 5)), x, yy + 1, r * 1.1, '#fff', 'center', null); }
   }
 
