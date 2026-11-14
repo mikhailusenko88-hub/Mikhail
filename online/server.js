@@ -135,13 +135,15 @@ function safeSpot(r) {
 }
 function freeSkin(r) { const used = new Set(); for (const b of r.balls.values()) used.add(b.skin); const free = FLAGS.filter((f) => !used.has(f)); const pool = free.length ? free : FLAGS; return pool[(Math.random() * pool.length) | 0]; }
 
+// новичка первые 12 с после появления боты не преследуют (первые секунды решают, останется ли игрок)
+const FRESH_MS = 12000;
 function think(r, b) {
-  let threat = null, td = 1e9, prey = null, pd = 1e9;
+  let threat = null, td = 1e9, prey = null, pd = 1e9; const now = Date.now();
   for (const o of r.balls.values()) {
     if (o === b || !o.alive) continue;
     const d = Math.hypot(o.x - b.x, o.y - b.y) - o.r - b.r;
     if (o.r > b.r * 1.12 && d < 260 + o.r && d < td) { threat = o; td = d; }
-    if (b.r > o.r * 1.3 && d < (o.human ? 240 : 380) && d < pd && o.shield <= 0 && !(o.human && b.lazyHuman)) { prey = o; pd = d; }
+    if (b.r > o.r * 1.3 && d < (o.human ? 240 : 380) && d < pd && o.shield <= 0 && !(o.human && b.lazyHuman) && !(o.human && now - (o.spawnAt || 0) < FRESH_MS)) { prey = o; pd = d; }
   }
   // большим ботам пилы опасны — объезжают
   if (b.r > SAW_R * 1.15) for (const s of r.saws) { const d = Math.hypot(s.x - b.x, s.y - b.y) - SAW_R - b.r; if (d < 120 && d < td) { threat = s; td = d; } }
@@ -279,7 +281,7 @@ function join(ws, m) {
   // у ботов не должно быть того же флага, что у живого игрока
   for (const o of r.balls.values()) if (!o.human && o.skin === skin) { o.skin = freeSkin(r); if (o.skin === skin) o.skin = FLAGS[(FLAGS.indexOf(skin) + 7) % FLAGS.length]; r.meta.push(metaOf(o)); }
   const q = safeSpot(r);
-  const b = newBall(r, { x: q.x, y: q.y, m: 18, human: true, name, skin, acc, ws, shield: 4 });
+  const b = newBall(r, { x: q.x, y: q.y, m: 18, human: true, name, skin, acc, ws, shield: 4 }); b.spawnAt = Date.now();
   ws.room = r; ws.ball = b; r.clients.add(ws);
   const meta = []; for (const x of r.balls.values()) meta.push(metaOf(x));
   const dots = []; for (const d of r.dots.values()) dots.push([d.id, d.x, d.y, d.c]);
@@ -297,7 +299,7 @@ function respawn(ws, m) {
     // возрождение за рекламу или монеты: половина массы, не чаще раза в 200 с и только сразу после смерти
     let mass = 18; const now = Date.now();
     if (m && m.keep && b.lastM > 36 && now - b.diedAt < 120000 && now - b.reviveAt > 200000) { mass = Math.min(400, b.lastM * 0.5); b.reviveAt = now; }
-    const q = safeSpot(r); Object.assign(b, { x: q.x, y: q.y, cx: q.x, cy: q.y, vx: 0, vy: 0, m: mass, alive: true, shield: 4, boost: 0, magnet: 0 }); b.r = rOf(b.m);
+    const q = safeSpot(r); Object.assign(b, { x: q.x, y: q.y, cx: q.x, cy: q.y, vx: 0, vy: 0, m: mass, alive: true, shield: 4, boost: 0, magnet: 0, spawnAt: Date.now() }); b.r = rOf(b.m);
   }
   ws.send({ t: 'fix', x: Math.round(b.x), y: Math.round(b.y), re: 1, m: Math.round(b.m * 10) / 10 });
 }
