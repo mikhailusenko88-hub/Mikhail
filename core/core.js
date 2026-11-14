@@ -32,7 +32,7 @@
     const w = window.innerWidth || 360, h = window.innerHeight || 640;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-    const b = C.BASE;
+    const b = (C.game && C.game.landscapeBase && w > h) ? { w: 1280, h: 720 } : C.BASE;
     if (w / h >= b.w / b.h) { C.H = b.h; C.W = (b.h * w) / h; } else { C.W = b.w; C.H = (b.w * h) / w; }
     C.scale = w / C.W; C.dpr = dpr;
     if (C.game && C.game.resize) C.game.resize();
@@ -96,6 +96,7 @@
   const ads = (C.ads = { lastInter: -1e9, lastRewardEnd: -1e9, _pending: null, _rewarded: false, count: 0 });
   ads.canInter = () => {
     const t = now();
+    if (C.game && C.game.canInter) return C.interSupported && C.game.canInter(t - sessionStart, t - ads.lastInter, t - ads.lastRewardEnd);
     return C.interSupported && C.save.level >= 3 && t - sessionStart > 60 && t - ads.lastInter > 60 && t - ads.lastRewardEnd > 90;
   };
   ads._finish = (val) => {
@@ -740,7 +741,8 @@
       C.icon('ad', C.W / 2, C.H / 2 - 40, 200, p.rewarded ? '#ffffff' : '#90a4ae');
       ctx.strokeStyle = '#43a047'; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(C.W / 2, C.H / 2 - 40, 150, -Math.PI / 2, -Math.PI / 2 + k * Math.PI * 2); ctx.stroke();
       ctx.font = C.font(30); ctx.fillStyle = '#9e9e9e'; ctx.textAlign = 'center';
-      ctx.fillText(p.rewarded ? 'реклама за награду (тест)' : 'межстраничная реклама (тест)', C.W / 2, C.H / 2 + 170);
+      const ru = (C.lang || '').slice(0, 2) === 'ru';
+      ctx.fillText(p.rewarded ? (ru ? 'реклама за награду (тест)' : 'rewarded ad (test)') : (ru ? 'межстраничная реклама (тест)' : 'midgame ad (test)'), C.W / 2, C.H / 2 + 170);
       if (t >= p.dur) { C.popup = null; if (p.rewarded) { ads._rewarded = true; ads.lastRewardEnd = now(); } ads._finish(p.rewarded ? true : true); }
       return;
     }
@@ -874,6 +876,6 @@
     if (C.state === 'play') { if (game.startLevel) game.startLevel(C.save.level); }
     requestAnimationFrame(frame);
     setTimeout(() => { C.msg('game_ready'); if (C.state === 'play') C.msg('gameplay_started'); }, 50);
-    if (C.giftReady() && C.save.plays > 0) setTimeout(() => { if (!C.popup && (C.state === 'home' || game.noLevels)) C.openGift(); }, 800);
+    if (!game.noGift && C.giftReady() && C.save.plays > 0) setTimeout(() => { if (!C.popup && (C.state === 'home' || game.noLevels)) C.openGift(); }, 800);
   };
 })();
