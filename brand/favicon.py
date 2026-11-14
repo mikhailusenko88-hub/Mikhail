@@ -6,8 +6,10 @@
 - линии привязаны к пиксельной сетке: 32 px — рамки 2 px, внутренние 1 px; 16 px — отдельная попиксельная версия;
 - фон «Антрацит» со скруглением 1/8 стороны.
 
-Пишет: files/site/favicon.ico (16/32/48), files/site/icon.svg, files/svg/favicon-small.svg,
-files/svg/favicon-16.svg, files/png/favicon-small-{16,32,48,96,120,192}.png.
+Пишет: files/site/favicon.ico (16/32/48/96/144), files/site/icon.svg, files/svg/favicon-small.svg,
+files/svg/favicon-16.svg, files/png/favicon-small-{16,32,48,96,120,144,192}.png.
+Слои 96 и 144 в favicon.ico (с 14.11.2026) — для Google: он просит значок крупнее 48×48 и сам уменьшает его
+до 16–28 px в выдаче; браузеры во вкладке по-прежнему берут 16/32 (или icon.svg).
 Нужен rsvg-convert (пакет librsvg2-bin) и Pillow. Запуск: python3 brand/favicon.py
 Иконки «на экран Домой» (apple-touch-icon, icon-192/512) остаются из build.py — знак там с полями, как в логотипе."""
 import os, subprocess
@@ -45,10 +47,11 @@ def main():
     open(f"{OUT}/site/icon.svg", "w").write(SVG32)
     png = lambda px: f"{OUT}/png/favicon-small-{px}.png"
     render(s16, 16, png(16))
-    for px in (32, 48, 96, 120, 192):
+    for px in (32, 48, 96, 120, 144, 192):
         render(s32, px, png(px))
-    ims = [Image.open(png(px)).convert("RGBA") for px in (48, 32, 16)]
-    ims[0].save(f"{OUT}/site/favicon.ico", format="ICO", sizes=[(16, 16), (32, 32), (48, 48)], append_images=ims[1:])
+    ico = (144, 96, 48, 32, 16)  # первый — самый крупный (Pillow не увеличивает)
+    ims = [Image.open(png(px)).convert("RGBA") for px in ico]
+    ims[0].save(f"{OUT}/site/favicon.ico", format="ICO", sizes=[(px, px) for px in ico], append_images=ims[1:])
     print("favicon: готово")
 
 
