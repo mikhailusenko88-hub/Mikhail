@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-14 слот 1: cities №9 https://youtube.com/shorts/TXfltN8hkJ4, за 47 с
+ВЫЛОЖЕНО 2026-11-14 слот 2: cars №12 https://youtube.com/shorts/ZFZ8yENudj4, за 65 с
 
 {
- "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №9 #shorts",
- "description": "🏆 Oʻtgan hafta chempioni: Xiva · Чемпион прошлой недели: Хива\n\n⏳ Final — ertaga! · Финал — завтра!\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
+ "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №12 #shorts",
+ "description": "🏆 Oʻtgan hafta chempioni: Kia K5 · Чемпион прошлой недели: Kia K5\n\n⏳ Final — ertaga! · Финал — завтра!\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,34 +11,39 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "toshkent",
-  "samarqand",
-  "buxoro",
-  "namangan",
-  "andijon",
-  "fargʻona",
-  "города узбекистана",
-  "shaharlar"
+  "mashina",
+  "cobalt",
+  "gentra",
+  "nexia",
+  "damas",
+  "malibu",
+  "chevrolet",
+  "машины узбекистана"
  ]
 }
 
 --- журнал (время Ташкента) ---
-11:35:27 режим publish, событие workflow_dispatch
-11:35:27 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-11:35:41 комментарии: роликов просмотрено: 15, комментариев: 2
-11:35:41 Тема: гонка городов. Подбираю трассу и заезд…
-11:35:42   трасса 1 (split, tramps, bumpy, stairs): победа на 28.0 с, смен лидера 17, финишировали 7, расчёт 1 с
-11:35:43   трасса 2 (tramps, bumpy, hammers, stairs): победа на 29.9 с, смен лидера 11, финишировали 3, расчёт 1 с
-11:35:44   трасса 3 (hammers, stairs, bumpy, tramps): победа на 22.3 с, смен лидера 13, финишировали 2, расчёт 1 с
-11:35:44 Рисую трассу…
-11:35:44 Рисую кадры: заезд 31 с + финал 6 с…
-11:35:44   кадр 0/923, 4 с
-11:35:52   кадр 300/923, 11 с
-11:35:59   кадр 600/923, 18 с
-11:36:07   кадр 900/923, 26 с
-11:36:10 Свожу звук…
-11:36:11 Готово за 30 с: победил Chirchiq, ролик 37 с
-11:36:11 ролик готов: 37 с, 24 МБ, сборка 44 с; победил Chirchiq, топ-3: Chirchiq, Olmaliq, Guliston
-11:36:13 YouTube: https://youtube.com/shorts/TXfltN8hkJ4
-11:36:14 в плейлисте
-11:36:14 статус: public uploaded
+15:35:40 режим publish, событие workflow_dispatch
+15:35:41 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+15:35:54 комментарии: роликов просмотрено: 15, комментариев: 2
+15:35:54 Тема: гонка машин. Подбираю трассу и заезд…
+15:35:56   трасса 1 (hammers, split, tunnel, tramps): победа на 25.3 с, смен лидера 4, финишировали 5, расчёт 1 с
+15:35:57   трасса 2 (hammers, tunnel, tramps, stairs): победа на 24.3 с, смен лидера 4, финишировали 6, расчёт 1 с
+15:35:58   трасса 3 (bumpy, split, tramps, stairs): победа на 31.3 с, смен лидера 14, финишировали 10, расчёт 1 с — не подходит
+15:36:00   трасса 4 (stairs, split, bumpy, hammers): победа на 33.9 с, смен лидера 22, финишировали 5, расчёт 2 с — не подходит
+15:36:02   трасса 5 (tramps, bumpy, hammers, stairs): победа на 34.4 с, смен лидера 14, финишировали 3, расчёт 2 с — не подходит
+15:36:04   трасса 6: никто не доехал за 37 с — не подходит
+15:36:05   трасса 7 (stairs, bumpy, pegs, tramps, tunnel): победа на 35.4 с, смен лидера 12, финишировали 3, расчёт 2 с — не подходит
+15:36:07   трасса 8 (tunnel, stairs, hammers, split): победа на 31.5 с, смен лидера 8, финишировали 7, расчёт 1 с — не подходит
+15:36:08   трасса 9 (tramps, stairs, split, hammers): победа на 24.9 с, смен лидера 15, финишировали 9, расчёт 1 с
+15:36:08 Рисую трассу…
+15:36:08 Рисую кадры: заезд 28 с + финал 6 с…
+15:36:08   кадр 0/830, 14 с
+15:36:19   кадр 300/830, 25 с
+15:36:29   кадр 600/830, 35 с
+15:36:42 Свожу звук…
+15:36:43 Готово за 49 с: победил Damas, ролик 34 с
+15:36:43 ролик готов: 34 с, 21 МБ, сборка 63 с; победил Damas, топ-3: Damas, Equinox, Malibu
+15:36:45 YouTube: https://youtube.com/shorts/ZFZ8yENudj4
+15:36:46 в плейлисте
+15:36:46 статус: public uploaded

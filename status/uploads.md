@@ -25,3 +25,4 @@
 | 2026-11-13 | 2 | cars №11 | Nexia | https://youtube.com/shorts/r5e1gfw-jlY | public |
 | 2026-11-13 | 3 | clubs №7 | Shoʻrtan | https://youtube.com/shorts/Li1n6czv9gI | public |
 | 2026-11-14 | 1 | cities №9 | Chirchiq | https://youtube.com/shorts/TXfltN8hkJ4 | public |
+| 2026-11-14 | 2 | cars №12 | Damas | https://youtube.com/shorts/ZFZ8yENudj4 | public |

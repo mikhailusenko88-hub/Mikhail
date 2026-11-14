@@ -196,27 +196,28 @@
    ]
   },
   "cars": {
-   "no": 11,
+   "no": 12,
    "points": {
     "Epica": 26,
-    "Tracker": 63,
+    "Tracker": 67,
     "Onix": 29,
-    "Matiz": 70,
-    "Malibu": 35,
+    "Matiz": 78,
+    "Malibu": 50,
     "Chery Tiggo": 30,
     "Jiguli": 48,
     "Gentra": 47,
-    "Captiva": 9,
-    "Labo": 30,
+    "Captiva": 11,
+    "Labo": 42,
     "Tico": 51,
-    "Cobalt": 34,
-    "Nexia": 37,
+    "Cobalt": 35,
+    "Nexia": 43,
     "BYD Song": 45,
-    "Equinox": 28,
+    "Equinox": 46,
     "Spark": 40,
     "Lacetti": 22,
     "Tahoe": 61,
-    "Kia K5": 2
+    "Kia K5": 12,
+    "Damas": 25
    },
    "results": [
     {
@@ -361,10 +362,23 @@
      ],
      "link": "https://youtube.com/shorts/r5e1gfw-jlY",
      "final": false
+    },
+    {
+     "no": 12,
+     "date": "2026-11-14",
+     "slot": 2,
+     "winner": "Damas",
+     "top3": [
+      "Damas",
+      "Equinox",
+      "Malibu"
+     ],
+     "link": "https://youtube.com/shorts/ZFZ8yENudj4",
+     "final": false
     }
    ],
    "champion": null,
-   "season_races": 7,
+   "season_races": 8,
    "season": "2026-W46",
    "new_pending": [],
    "final_season": "2026-W45",
@@ -848,6 +862,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/TXfltN8hkJ4",
    "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №9 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-14",
+   "slot": 2,
+   "league": "cars",
+   "no": 12,
+   "final": false,
+   "link": "https://youtube.com/shorts/ZFZ8yENudj4",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №12 #shorts",
    "pl": true
   }
  ],
