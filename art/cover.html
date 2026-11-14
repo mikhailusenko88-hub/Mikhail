@@ -31,8 +31,8 @@
   }
   // композиция в долях кадра (подстраивается под 16:9, 2:3, 1:1)
   const land = W / H > 1.2, port = W / H < 0.9;
-  const big = land ? 0.3 * H : port ? 0.3 * W : 0.25 * W;
-  const bx = land ? W * 0.62 : W * 0.56, by = land ? H * 0.6 : port ? H * 0.58 : H * 0.62;
+  const big = land ? 0.3 * H : port ? 0.3 * W : 0.235 * W;
+  const bx = land ? W * 0.62 : W * 0.56, by = land ? H * 0.6 : port ? H * 0.6 : H * 0.67;
   saw(land ? W * 0.08 : W * 0.1, land ? H * 0.86 : H * 0.6, 70 * S);
   ball(land ? W * 0.18 : W * 0.17, land ? H * 0.5 : port ? H * 0.33 : H * 0.36, big * 0.42, 'BR', 5, '#ff1744');
   ball(land ? W * 0.9 : W * 0.86, land ? H * 0.28 : port ? H * 0.27 : H * 0.29, big * 0.36, 'JP', 8, '#00e676');
@@ -45,12 +45,17 @@
   // искры
   for (let i = 0; i < 14; i++) { const a = rnd() * 6.28, d = big * 0.25 + rnd() * big * 0.15; ctx.fillStyle = ['#ffd54f', '#fff59d', '#ffffff'][i % 3]; ctx.beginPath(); ctx.arc(sx + Math.cos(a) * d, sy + Math.sin(a) * d, (4 + rnd() * 6) * S, 0, 7); ctx.fill(); }
   if (withTitle) {
-    const fs = land ? 190 * S : W * 0.155;
-    const tx = land ? W * 0.31 : W * 0.5, ty = land ? H * 0.2 : port ? H * 0.11 : H * 0.12;
-    ctx.save(); ctx.font = C.font(fs); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
-    ctx.lineWidth = fs * 0.2; ctx.strokeStyle = '#2b2d6e'; ctx.strokeText('FLAGBALL', tx, ty + fs * 0.06);
-    const tg = ctx.createLinearGradient(0, ty - fs * 0.5, 0, ty + fs * 0.5); tg.addColorStop(0, '#fff59d'); tg.addColorStop(0.55, '#ffca28'); tg.addColorStop(1, '#ff8f00');
-    ctx.fillStyle = tg; ctx.fillText('FLAGBALL', tx, ty);
+    const fs = land ? 180 * S : W * 0.15;
+    const tx = land ? W * 0.3 : W * 0.5, ty = land ? H * 0.17 : port ? H * 0.09 : H * 0.1;
+    const word = (txt, x, y, f, g0, g1) => {
+      ctx.font = C.font(f); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+      ctx.lineWidth = f * 0.2; ctx.strokeStyle = '#2b2d6e'; ctx.strokeText(txt, x, y + f * 0.06);
+      const tg = ctx.createLinearGradient(0, y - f * 0.5, 0, y + f * 0.5); tg.addColorStop(0, g0); tg.addColorStop(1, g1);
+      ctx.fillStyle = tg; ctx.fillText(txt, x, y);
+    };
+    ctx.save();
+    word('FLAGBALL', tx, ty, fs, '#fff59d', '#ff8f00');
+    word('ARENA', tx, ty + fs * 0.92, fs * 0.62, '#ffffff', '#b3e5fc');
     ctx.restore();
   }
   window.__done = true;

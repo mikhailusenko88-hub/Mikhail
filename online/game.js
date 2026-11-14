@@ -1,5 +1,5 @@
 'use strict';
-/* Flagball — онлайн-«Шарики»: живые игроки + боты, страны соревнуются в раундах.
+/* Flagball Arena — онлайн-«Шарики»: живые игроки + боты, страны соревнуются в раундах.
    Свой шарик двигается сразу (без задержки), сервер только проверяет его.
    Монеты, украшения, подарок по таймеру, возрождение и «x2» за рекламу — по правилам CrazyGames. */
 (function () {
@@ -26,7 +26,7 @@
       half: '50% size', x2: 'Coins x2', shop: 'Shop', free: 'Free', owned: 'Owned', on: 'On', gift: 'Free gift!', giftIn: 'Gift in',
       openNow: 'Open now', noCoins: 'Not enough coins', tomorrow: 'More coins tomorrow', close: 'Close', pick: 'Pick your country',
       name: 'Your name', play: 'Play', hint: 'Green ring — you can eat it, red — run! Yellow name — a real player. Every point you grow counts for your country.',
-      adsOff: 'Ads are blocked — coin options still work', title: 'Flagball', team: 'for', change: 'Country',
+      adsOff: 'Ads are blocked — coin options still work', title: 'Flagball Arena', team: 'for', change: 'Country',
     },
     ru: {
       conn: 'Подключаюсь к арене…', att: 'попытка', slow: 'Долго? Проверь интернет или переключись Wi-Fi ↔ мобильный',
@@ -36,7 +36,7 @@
       half: 'с половиной массы', x2: 'Монеты x2', shop: 'Магазин', free: 'Даром', owned: 'Есть', on: 'Надето', gift: 'Подарок!', giftIn: 'Подарок через',
       openNow: 'Открыть сейчас', noCoins: 'Не хватает монет', tomorrow: 'Ещё монеты — завтра', close: 'Закрыть', pick: 'Выбери страну',
       name: 'Твоё имя', play: 'Играть', hint: 'Зелёное кольцо — можно съесть, красное — беги. Жёлтое имя — живой игрок. Всё, что ты наберёшь, идёт в зачёт твоей стране.',
-      adsOff: 'Реклама недоступна — за монеты всё работает', title: 'Флагбол', team: 'за', change: 'Страна',
+      adsOff: 'Реклама недоступна — за монеты всё работает', title: 'Flagball Arena', team: 'за', change: 'Страна',
     },
   };
   const LANG = (C.lang || 'en').slice(0, 2) === 'ru' ? 'ru' : 'en';

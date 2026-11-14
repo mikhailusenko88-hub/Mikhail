@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="robots" content="noindex, nofollow">
-<title>Flagball</title>
+<title>Flagball Arena</title>
 <style>
   html,body{margin:0;height:100%;overflow:hidden;background:#2b2d6e;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
   canvas{display:block;width:100vw;height:100vh;touch-action:none}
@@ -24,7 +24,7 @@
 <body>
 <canvas id="c"></canvas>
 <div id="join"><div class="box">
-  <h1 id="jt">Flagball</h1>
+  <h1 id="jt">Flagball Arena</h1>
   <input id="nick" maxlength="14" autocomplete="off">
   <div id="flags"></div>
   <div id="cn"></div>
@@ -46,7 +46,7 @@
     if (!built) {
       built = true;
       o.flags.forEach((id) => { const im = document.createElement('img'); try { im.src = C.flagTex(id).toDataURL(); } catch (e) { /* */ } im.alt = id; im.onclick = () => { pick = id; mark(); }; box.appendChild(im); });
-      const go = () => { const n = el('nick').value.trim().slice(0, 14) || o.nick || ''; el('join').style.display = 'none'; window.__join(n || ((T === undefined) ? 'Player' : (T.title === 'Флагбол' ? 'Игрок' : 'Player')), pick); };
+      const go = () => { const n = el('nick').value.trim().slice(0, 14) || o.nick || ''; el('join').style.display = 'none'; window.__join(n || ((T === undefined) ? 'Player' : (T.change === 'Страна' ? 'Игрок' : 'Player')), pick); };
       el('go').onclick = go;
       el('nick').addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
     }
