@@ -44,7 +44,7 @@ const NAMES = { RU: 'Russia', KZ: 'Kazakhstan', UZ: 'Uzbekistan', KG: 'Kyrgyzsta
     window.__capT = setInterval(() => {
       const t = (performance.now() - t0) / 1000, d = __dir();
       if (d.banner) window.__cap = { top: '', bottom: 'PLAY FREE: FLAGBALL ARENA', bottomA: 1, bottomSize: 44 };
-      else window.__cap = t < 2.8 ? { top: 'IS YOUR COUNTRY HERE?', topSize: 54 } : { top: 'WHICH COUNTRY WINS?', topSize: 58 };
+      else window.__cap = t < 2.8 ? { top: 'IS YOUR COUNTRY HERE?', topSize: 44 } : { top: 'WHICH COUNTRY WINS?', topSize: 44 };
     }, 30);
   });
   // запись кадров
@@ -100,15 +100,16 @@ const NAMES = { RU: 'Russia', KZ: 'Kazakhstan', UZ: 'Uzbekistan', KG: 'Kyrgyzsta
   const mp4 = path.join(OUT, `arena_${stamp}.mp4`);
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', path.join(OUT, 'list.txt'), '-i', wav,
     '-vf', 'scale=1080:1920:flags=lanczos,fps=30,format=yuv420p', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20',
-    '-c:a', 'aac', '-b:a', '160k', '-shortest', '-movflags', '+faststart', mp4]);
+    '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11', '-c:a', 'aac', '-b:a', '160k', '-ar', '44100', '-shortest', '-movflags', '+faststart', mp4]);
   // название и описание
   const vs = top.slice(0, 3).map((c) => flagEmoji(c[0]) + ' ' + (NAMES[c[0]] || c[0])).join(' vs ');
   const meta = {
     file: path.basename(mp4), duration, winner: win, top,
-    title: (vs ? `Which country wins? ${vs}` : 'Which country wins this round?') + ' #shorts',
+    title: (info.humansMax ? 'Real players! ' : '') + (vs ? `Which country wins? ${vs}` : 'Which country wins this round?') + ' #shorts',
+    players: info.humansMax || 0,
     description: [
       win ? `Round won by ${flagEmoji(win)} ${NAMES[win] || win}!` : '',
-      'Real online battle from Flagball Arena: every ball is a country. Eat smaller balls, run from bigger ones, win the round for your flag.',
+      'Online battle from Flagball Arena: every ball is a country. Eat smaller balls, run from bigger ones, win the round for your flag.',
       'Is your country here? Write it in the comments!',
       '#flagball #countryballs #io #shorts',
     ].filter(Boolean).join('\n\n'),
