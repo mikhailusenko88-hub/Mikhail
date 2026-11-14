@@ -106,7 +106,7 @@ function gain(r, b, amt) {
   r.scAll[b.skin] = (r.scAll[b.skin] || 0) + amt * (b.human ? 1 : 0.4);
   if (b.human) { checkDay(); day.pts[b.skin] = (day.pts[b.skin] || 0) + amt; }
 }
-const BOT_K = 0.12; // вес очков ботов в их общей команде: команда из ~10 ботов ≈ 1,5 среднего игрока — одиночке есть кого обгонять
+const BOT_K = 0.25; // вес очков ботов в их общей команде: умелый одиночка обгоняет (проверено: ~1760 против ~760 за 90 с), неопытный — нет
 const roundTop = (r, n, all) => Object.entries(all ? r.scAll : r.sc).sort((a, b) => b[1] - a[1]).slice(0, n).map(([f, p]) => [f, Math.round(p)]);
 function endRound(r) {
   const top = roundTop(r, 5), topAll = roundTop(r, 5, true);
