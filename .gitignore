@@ -8,3 +8,4 @@ node_modules/
 art/out/*.mp4
 tests/cg/shots/
 tests/pg/shots/
+tests/g6/shots/

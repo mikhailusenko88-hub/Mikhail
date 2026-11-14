@@ -2,7 +2,7 @@
 # Сборка: dist/<игра>/ — для Playgama (SDK и three.js внутри); dist-web/ — для страницы проверки (без SDK, three.js с cdnjs)
 set -e
 cd /home/claude/games
-GAMES="g1-draw g2-descent g3-cars g4-runner g5-io"
+GAMES="g1-draw g2-descent g3-cars g4-runner g5-io g6-truck"
 rm -rf dist dist-web; mkdir -p dist dist-web
 for g in $GAMES; do
   [ -d "$g" ] || continue
