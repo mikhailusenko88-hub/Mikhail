@@ -422,7 +422,9 @@
         if (sx < -120 || sx > C.W + 120 || sy < -120 || sy > C.H + 120) continue;
         const rl2 = mine ? 2 : relOf(b), col = rl2 === 2 ? '#ffeb3b' : rl2 > 0 ? '#69f0ae' : rl2 < 0 ? '#ff5252' : '#ffffff';
         C.text(String(Math.round(b.m)), sx, sy + sr + 20, C.clamp(sr * 0.5, 24, 42), col, 'center', 'rgba(0,0,0,0.8)');
-        if (b.human) C.text(b.name, sx, sy - sr - (b.acc >= 6 || (mine && X().on >= 6) ? sr * 0.55 + 26 : 22), C.clamp(sr * 0.42, 24, 38), mine ? '#ffeb3b' : '#fff', 'center', 'rgba(0,0,0,0.85)');
+        // в роликах ники живых игроков не показываем (это их личные данные): пишем «PLAYER · страна»
+        if (b.human && SPEC) C.text('PLAYER · ' + cname(b.skin), sx, sy - sr - (b.acc >= 6 ? sr * 0.55 + 24 : 20), C.clamp(sr * 0.36, 22, 40), '#ffeb3b', 'center', 'rgba(0,0,0,0.85)');
+        else if (b.human) C.text(b.name, sx, sy - sr - (b.acc >= 6 || (mine && X().on >= 6) ? sr * 0.55 + 26 : 22), C.clamp(sr * 0.42, 24, 38), mine ? '#ffeb3b' : '#fff', 'center', 'rgba(0,0,0,0.85)');
         else if (SPEC && sr > 30) C.text(cname(b.skin), sx, sy - sr - (b.acc >= 6 ? sr * 0.55 + 24 : 20), C.clamp(sr * 0.36, 22, 40), b.id === dir.id ? '#ffeb3b' : '#fff', 'center', 'rgba(0,0,0,0.85)');
       }
       if (me.alive && (steer.on || C.keyDir() || C.keyDirY()) && Math.hypot(me.vx, me.vy) > 40) {
@@ -552,10 +554,10 @@
     if (p) { fx = (t.x + p.x) / 2; fy = (t.y + p.y) / 2; span = Math.max(span, Math.hypot(p.x - t.x, p.y - t.y) + (p.r + t.r) * 1.3 + 120); }
     dir.partner = p ? p.id : 0;
     const k = Math.min(1, dt * 2.6); dir.x += (fx - dir.x) * k; dir.y += (fy - dir.y) * k;
-    const zz = C.clamp(Math.min(C.W * 1.05, C.H * 0.55) / span, 0.3, 1.3);
+    const zz = C.clamp(Math.min(C.W * 1.05, C.H * 0.6) / span, 0.3, 1.3);
     dir.z += (zz - dir.z) * Math.min(1, dt * 1.2);
     // сверху кадра — таблица, снизу — подписи YouTube: героя держим чуть ниже середины
-    cam.x = dir.x; cam.y = dir.y - (C.H * 0.1) / dir.z; cam.z = dir.z;
+    cam.x = dir.x; cam.y = dir.y - (C.H * 0.03) / dir.z; cam.z = dir.z;
   }
   // подписи для ролика: window.__cap = { top: 'WHICH COUNTRY WINS?', bottom: '…' }
   function drawSpecHud(ctx) {
@@ -563,30 +565,30 @@
     // кольцо вокруг главного героя кадра
     const t = balls.get(dir.id);
     if (t && t.alive) { const [sx, sy] = toScr(t.x, t.y); ctx.strokeStyle = 'rgba(255,235,59,0.85)'; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(sx, sy, t.r * cam.z + 10, 0, 7); ctx.stroke(); }
-    const capSize = (txt, want) => { ctx.save(); ctx.font = C.font(want); const w = ctx.measureText(txt).width; ctx.restore(); return w > C.W - 50 ? want * (C.W - 50) / w : want; };
-    if (cap.top) { ctx.save(); ctx.globalAlpha = cap.topA === undefined ? 1 : cap.topA; C.text(cap.top, C.W / 2, 92, capSize(cap.top, cap.topSize || 56), '#ffeb3b', 'center', 'rgba(20,20,70,0.95)'); ctx.restore(); }
+    const capSize = (txt, want) => { ctx.save(); ctx.font = C.font(want); const w = ctx.measureText(txt).width; ctx.restore(); return w > C.W - 40 ? want * (C.W - 40) / w : want; };
+    // подпись — узкой строкой по самому верху
+    if (cap.top) { ctx.save(); ctx.globalAlpha = cap.topA === undefined ? 1 : cap.topA; C.text(cap.top, C.W / 2, 54, capSize(cap.top, cap.topSize || 44), '#ffeb3b', 'center', 'rgba(20,20,70,0.95)'); ctx.restore(); }
     if (banner) { drawSpecFinal(ctx, cap, capSize); return; }
-    // таймер раунда
-    const tw = 230, ty = 150;
-    ctx.fillStyle = rt <= 10 ? 'rgba(229,57,53,0.92)' : 'rgba(20,20,70,0.78)'; C.rr(ctx, C.W / 2 - tw / 2, ty, tw, 70, 35); ctx.fill();
-    C.icon('clock', C.W / 2 - 70, ty + 35, 40, '#fff'); C.text(fmtT(rt), C.W / 2 + 22, ty + 37, 44, '#fff', 'center', null);
-    // зачёт стран
-    const rows = cs.slice(0, 5), pw = 470, px = C.W / 2 - pw / 2, py = ty + 90;
-    ctx.fillStyle = 'rgba(20,20,70,0.72)'; C.rr(ctx, px, py, pw, 20 + Math.max(1, rows.length) * 54, 24); ctx.fill();
+    // таймер раунда — слева сверху
+    const ty = 96;
+    ctx.fillStyle = rt <= 10 ? 'rgba(229,57,53,0.9)' : 'rgba(20,20,70,0.6)'; C.rr(ctx, 18, ty, 156, 52, 26); ctx.fill();
+    C.icon('clock', 48, ty + 26, 30, '#fff'); C.text(fmtT(rt), 108, ty + 28, 32, '#fff', 'center', null);
+    // зачёт стран — компактно справа сверху, как таблица в игре
+    const rows = cs.slice(0, 5), pw = 252, px = C.W - pw - 14, py = ty, rh = 38;
+    ctx.fillStyle = 'rgba(20,20,70,0.55)'; C.rr(ctx, px, py, pw, 12 + Math.max(1, rows.length) * rh, 18); ctx.fill();
     rows.forEach((c, i) => {
-      const y = py + 37 + i * 54;
-      C.text(String(i + 1), px + 34, y, 32, i === 0 ? '#ffc107' : '#fff', 'center', null);
-      C.drawBall(px + 84, y, 22, c[0], 0, ctx);
-      C.text(fit(cname(c[0]), 240, 32), px + 120, y, 32, i === 0 ? '#ffeb3b' : '#fff', 'left', null);
-      C.text(String(c[1]), px + pw - 24, y, 32, '#fff', 'right', null);
+      const y = py + 6 + rh / 2 + i * rh;
+      C.text(String(i + 1), px + 20, y, 22, i === 0 ? '#ffc107' : '#fff', 'center', null);
+      C.drawBall(px + 52, y, 14, c[0], 0, ctx);
+      C.text(fit(cname(c[0]), 112, 22), px + 74, y, 22, i === 0 ? '#ffeb3b' : '#fff', 'left', null);
+      C.text(String(c[1]), px + pw - 14, y, 22, '#fff', 'right', null);
     });
-    if (!rows.length) C.text('…', C.W / 2, py + 37, 32, '#cfd8dc');
-    // поедания — строкой под таблицей
-    const fy0 = py + 40 + Math.max(1, rows.length) * 54;
+    if (!rows.length) C.text('…', px + pw / 2, py + 6 + rh / 2, 22, '#cfd8dc');
+    // кто кого съел — маленькой строкой слева под таймером
     feed.slice(0, 2).forEach((f, i) => {
-      const y = fy0 + i * 50; ctx.globalAlpha = Math.min(1, (3.5 - f.t) * 2);
-      ctx.fillStyle = 'rgba(0,0,0,0.4)'; C.rr(ctx, C.W / 2 - 150, y - 21, 300, 42, 21); ctx.fill();
-      C.drawBall(C.W / 2 - 100, y, 17, f.a, 0, ctx); C.icon('next', C.W / 2, y, 26, '#ffeb3b'); C.drawBall(C.W / 2 + 100, y, 15, f.b, 0, ctx);
+      const y = ty + 86 + i * 42; ctx.globalAlpha = Math.max(0, Math.min(1, (3.5 - f.t) * 2));
+      ctx.fillStyle = 'rgba(0,0,0,0.32)'; C.rr(ctx, 18, y - 17, 156, 34, 17); ctx.fill();
+      C.drawBall(46, y, 13, f.a, 0, ctx); C.icon('next', 96, y, 20, '#ffeb3b'); C.drawBall(146, y, 11, f.b, 0, ctx);
       ctx.globalAlpha = 1;
     });
   }
@@ -724,7 +726,7 @@
   window.__objs = () => ({ saws, powers, dots });
   window.__send = (o) => send(o);
   window.__respawn = () => playAgain();
-  window.__dir = () => ({ id: dir.id, log: dir.log, rt, cs, banner: banner && { win: banner.win, top: banner.top } });
+  window.__dir = () => { let h = 0; for (const b of balls.values()) if (b.human && b.alive) h++; dir.humansMax = Math.max(dir.humansMax || 0, h); return { id: dir.id, log: dir.log, rt, cs, humans: h, humansMax: dir.humansMax, banner: banner && { win: banner.win, top: banner.top } }; };
   window.__dbgOnline = () => ({ status, myId, me, R, balls: balls.size, dots: dots.size, powers: powers.length, saws: saws.length, pingMs, dead, attempt, cs, rt, dayTopL, banner: !!banner, coins: C.save.coins, fb: X(), shop: !!shop });
   window.FBArt = { drawAcc };
   if (q.has('art')) return; // страница обложек: только рисунки, без игры
