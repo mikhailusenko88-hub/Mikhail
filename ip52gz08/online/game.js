@@ -6,6 +6,7 @@
   const C = window.Core;
   const q = new URLSearchParams(location.search);
   const SERVER = q.get('server') || window.FB_SERVER || ((location.protocol === 'https:' ? 'wss://' : 'ws://') + (location.hostname || 'localhost') + ':8091/ws');
+  const SPEC = q.has('spec'); // камера для роликов: смотрит арену без своего шарика
   const ROOM = (q.get('room') || 'main').replace(/[^a-z0-9_-]/gi, '').slice(0, 24) || 'main';
   const steer = { x: 0, y: 0, on: false };
   const LEASH = 26, DEAD = 7, TURN = 10, SAW_R = 50;
@@ -129,7 +130,7 @@
     status = 'conn'; connT = 0; attempt++;
     let sock; try { sock = new WebSocket(SERVER); } catch (e) { status = 'lost'; lostT = 0; return; }
     ws = sock;
-    sock.onopen = () => { if (ws === sock) sock.send(JSON.stringify({ t: 'hello', name: nick, skin, room: ROOM, acc: X().on })); };
+    sock.onopen = () => { if (ws === sock) sock.send(JSON.stringify(SPEC ? { t: 'hello', spec: 1, room: ROOM } : { t: 'hello', name: nick, skin, room: ROOM, acc: X().on })); };
     sock.onmessage = (e) => { if (ws !== sock) return; lastMsgT = nowS(); let m; try { m = JSON.parse(e.data); } catch (er) { return; } onMsg(m); };
     sock.onclose = () => { if (ws !== sock) return; status = 'lost'; lostT = 0; };
     sock.onerror = () => { /* onclose сработает */ };
@@ -154,10 +155,10 @@
       status = 'ok'; attempt = 0; myId = m.id; R = m.R; Rshow = m.R; balls.clear(); dots.clear(); knownHumans.clear();
       setMeta(m.mt);
       for (const [id, x, y, c] of m.dots) dots.set(id, { x, y, c: PCOL[c], r: 9 + (id % 5) });
-      me = { x: m.x, y: m.y, vx: 0, vy: 0, r: rOf(18), m: 18, alive: true, shield: 4, boost: 0, magnet: 0, ang: 0 }; dead = null; best = 18; reT = 0; lifeEats = 0;
+      me = { x: m.x, y: m.y, vx: 0, vy: 0, r: rOf(18), m: 18, alive: !m.spec, shield: 4, boost: 0, magnet: 0, ang: 0 }; dead = null; best = 18; reT = 0; lifeEats = 0;
       cam.x = me.x; cam.y = me.y; steer.on = false;
       if (m.cs) cs = m.cs; if (m.rt) rt = m.rt; if (m.rl) rl = m.rl; if (m.day) dayTopL = m.day;
-      C.msg('gameplay_started');
+      if (!m.spec) C.msg('gameplay_started');
       return;
     }
     if (m.t === 's') {
@@ -186,6 +187,7 @@
           feed.unshift({ a: A ? A.skin : 'US', b: B ? B.skin : 'US', an: A && A.human ? A.name : '', bn: B && B.human ? B.name : '', t: 0, me: a === myId || b === myId }); feed.length = Math.min(feed.length, 4);
           if (a === myId && B) { lifeEats++; C.sfx('pop'); floats.push({ x: me.x, y: me.y - me.r, text: '+' + Math.round(B.m * 0.85), t: 0, col: '#ffeb3b' }); C.burst(...toScr(B.x, B.y), '#ffd54f', 16, 380); }
           if (B && !B.alive) { B.eatenBy = a; B.eatK = 0; }
+          if (SPEC) { dir.lastEat.set(a, nowS()); if (B) dir.log.push({ t: nowS(), k: 'eat', m: Math.round(B.m), a: A ? A.skin : '', b: B.skin }); }
         } else if (k === 3) {
           const A = balls.get(a);
           if (a === myId) { C.sfx('crash', 0.6); floats.push({ x: me.x, y: me.y - me.r, text: '−' + b, t: 0, col: '#ff5252' }); C.burst(...toScr(me.x, me.y), '#b0bec5', 24, 520); }
@@ -198,8 +200,9 @@
     }
     if (m.t === 'rw') { // раунд стран окончен
       cs = []; rt = rl; if (m.day) dayTopL = m.day;
+      if (SPEC) dir.log.push({ t: nowS(), k: 'round', win: m.win, top: m.top });
       if (m.win) {
-        const mine = m.win === skin && joined;
+        const mine = !SPEC && m.win === skin && joined;
         banner = { win: m.win, top: m.top || [], t: 0, mine };
         if (mine) { C.sfx('win'); C.confetti(C.W / 2, C.H * 0.25, 70); C.addCoins(25); }
       }
@@ -293,6 +296,7 @@
     canInter(sess, sinceInter, sinceReward) { return ((C.bridgeOk && !C.mockAds) || q.has('inter')) && sess > 60 && sinceReward > 30; },
     init() {
       T = TX[(C.lang || 'en').slice(0, 2) === 'ru' ? 'ru' : 'en'];
+      if (SPEC) { skin = ''; joined = true; connect(); return; }
       const f = X();
       let n = '', s = '';
       try { n = localStorage.getItem('ballio_nick') || ''; s = localStorage.getItem('ballio_skin') || ''; } catch (e) { /* */ }
@@ -331,7 +335,7 @@
       for (const f of feed) f.t += dt; feed = feed.filter((f) => f.t < 3.5);
       for (const f of floats) f.t += dt; floats = floats.filter((f) => f.t < 1.1);
       for (const f of toasts) f.t += dt; toasts = toasts.filter((f) => f.t < 3); if (toasts.length > 3) toasts.splice(0, toasts.length - 3);
-      if (banner) { banner.t += dt; if (banner.t > 4.5) banner = null; }
+      if (banner) { banner.t += dt; if (banner.t > (SPEC ? 8 : 4.5)) banner = null; }
       rt = Math.max(0, rt - dt);
       growFx = Math.max(0, growFx - dt); Rshow += (R - Rshow) * Math.min(1, dt * 2);
       sawSpin += dt * 7; for (const p of powers) p.a += dt;
@@ -364,6 +368,7 @@
         b.ang += (Math.hypot(b.pvx, b.pvy) / b.r) * dt * (b.pvx >= 0 ? 1 : -1);
         if (!b.alive && b.eatenBy) b.eatK = Math.min(1, (b.eatK || 0) + dt * 5);
       }
+      if (SPEC) { directorUpdate(dt); return; }
       let tgt = me;
       if (!me.alive && dead) { const k = balls.get(dead.killer); if (k && k.alive) tgt = k; }
       cam.x += (tgt.x - cam.x) * Math.min(1, dt * 12); cam.y += (tgt.y - cam.y) * Math.min(1, dt * 12);
@@ -418,6 +423,7 @@
         const rl2 = mine ? 2 : relOf(b), col = rl2 === 2 ? '#ffeb3b' : rl2 > 0 ? '#69f0ae' : rl2 < 0 ? '#ff5252' : '#ffffff';
         C.text(String(Math.round(b.m)), sx, sy + sr + 20, C.clamp(sr * 0.5, 24, 42), col, 'center', 'rgba(0,0,0,0.8)');
         if (b.human) C.text(b.name, sx, sy - sr - (b.acc >= 6 || (mine && X().on >= 6) ? sr * 0.55 + 26 : 22), C.clamp(sr * 0.42, 24, 38), mine ? '#ffeb3b' : '#fff', 'center', 'rgba(0,0,0,0.85)');
+        else if (SPEC && sr > 30) C.text(cname(b.skin), sx, sy - sr - (b.acc >= 6 ? sr * 0.55 + 24 : 20), C.clamp(sr * 0.36, 22, 40), b.id === dir.id ? '#ffeb3b' : '#fff', 'center', 'rgba(0,0,0,0.85)');
       }
       if (me.alive && (steer.on || C.keyDir() || C.keyDirY()) && Math.hypot(me.vx, me.vy) > 40) {
         const a = Math.atan2(me.vy, me.vx), [sx, sy] = toScr(me.x, me.y), rr = me.r * cam.z + 22;
@@ -433,6 +439,7 @@
 
     hud(ctx) {
       if (!joined) return;
+      if (SPEC) { drawSpecHud(ctx); return; }
       const L = C.H < 1000; // альбомный экран: всё плотнее
       let nh = 0; for (const b of balls.values()) if (b.human) nh++;
       const showPlay = me.alive || !dead || status !== 'ok';
@@ -504,6 +511,104 @@
       if (pingMs) C.text(pingMs + ' ms', C.W - 24, C.H - 26, 22, 'rgba(255,255,255,0.6)', 'right', null);
       // итог раунда стран
       if (banner && me.alive) drawBanner(ctx, L);
+  }
+
+  // ---------- режиссёр камеры (зритель): следит за самым интересным шариком ----------
+  const dir = { id: 0, held: 0, evalT: 0, x: 0, y: 0, z: 0.7, lastEat: new Map(), log: [], partner: 0 };
+  function pairOf(t) {
+    let best = null, bd = 1e9;
+    for (const o of balls.values()) {
+      if (!o.alive || o === t) continue;
+      const d = Math.hypot(o.x - t.x, o.y - t.y) - o.r - t.r;
+      if (d < 340 && (t.r > o.r * 1.12 || o.r > t.r * 1.12) && d < bd) { bd = d; best = o; }
+    }
+    return best;
+  }
+  function directorUpdate(dt) {
+    dir.held += dt; dir.evalT -= dt;
+    let cur = balls.get(dir.id);
+    if (cur && !cur.alive) { // съели — камера переходит на того, кто съел
+      const k = cur.eatenBy && balls.get(cur.eatenBy);
+      if (k && k.alive) { dir.id = k.id; dir.held = 0; cur = k; } else cur = null;
+    }
+    if (dir.evalT <= 0 || !cur) {
+      dir.evalT = 0.5;
+      const now = nowS(); let best = null, bs = 0, curS = 0;
+      for (const b of balls.values()) {
+        if (!b.alive) continue;
+        const p = pairOf(b);
+        const action = p ? Math.min(p.m, b.m) * 2.5 : 0;
+        const hot = now - (dir.lastEat.get(b.id) || -99) < 5 ? 1.5 : 1;
+        const sc = (b.m + action) * hot * (b.human ? 1.3 : 1);
+        if (b.id === dir.id) curS = sc;
+        if (sc > bs) { bs = sc; best = b; }
+      }
+      if (best && (!cur || (best.id !== dir.id && dir.held > 6 && bs > curS * 1.4))) { dir.id = best.id; dir.held = 0; }
+    }
+    const t = balls.get(dir.id);
+    if (!t) return;
+    let fx = t.x, fy = t.y, span = t.r * 2.6 + 260;
+    const p = pairOf(t);
+    if (p) { fx = (t.x + p.x) / 2; fy = (t.y + p.y) / 2; span = Math.max(span, Math.hypot(p.x - t.x, p.y - t.y) + (p.r + t.r) * 1.3 + 120); }
+    dir.partner = p ? p.id : 0;
+    const k = Math.min(1, dt * 2.6); dir.x += (fx - dir.x) * k; dir.y += (fy - dir.y) * k;
+    const zz = C.clamp(Math.min(C.W * 1.05, C.H * 0.55) / span, 0.3, 1.3);
+    dir.z += (zz - dir.z) * Math.min(1, dt * 1.2);
+    // сверху кадра — таблица, снизу — подписи YouTube: героя держим чуть ниже середины
+    cam.x = dir.x; cam.y = dir.y - (C.H * 0.1) / dir.z; cam.z = dir.z;
+  }
+  // подписи для ролика: window.__cap = { top: 'WHICH COUNTRY WINS?', bottom: '…' }
+  function drawSpecHud(ctx) {
+    const cap = window.__cap || {};
+    // кольцо вокруг главного героя кадра
+    const t = balls.get(dir.id);
+    if (t && t.alive) { const [sx, sy] = toScr(t.x, t.y); ctx.strokeStyle = 'rgba(255,235,59,0.85)'; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(sx, sy, t.r * cam.z + 10, 0, 7); ctx.stroke(); }
+    const capSize = (txt, want) => { ctx.save(); ctx.font = C.font(want); const w = ctx.measureText(txt).width; ctx.restore(); return w > C.W - 50 ? want * (C.W - 50) / w : want; };
+    if (cap.top) { ctx.save(); ctx.globalAlpha = cap.topA === undefined ? 1 : cap.topA; C.text(cap.top, C.W / 2, 92, capSize(cap.top, cap.topSize || 56), '#ffeb3b', 'center', 'rgba(20,20,70,0.95)'); ctx.restore(); }
+    if (banner) { drawSpecFinal(ctx, cap, capSize); return; }
+    // таймер раунда
+    const tw = 230, ty = 150;
+    ctx.fillStyle = rt <= 10 ? 'rgba(229,57,53,0.92)' : 'rgba(20,20,70,0.78)'; C.rr(ctx, C.W / 2 - tw / 2, ty, tw, 70, 35); ctx.fill();
+    C.icon('clock', C.W / 2 - 70, ty + 35, 40, '#fff'); C.text(fmtT(rt), C.W / 2 + 22, ty + 37, 44, '#fff', 'center', null);
+    // зачёт стран
+    const rows = cs.slice(0, 5), pw = 470, px = C.W / 2 - pw / 2, py = ty + 90;
+    ctx.fillStyle = 'rgba(20,20,70,0.72)'; C.rr(ctx, px, py, pw, 20 + Math.max(1, rows.length) * 54, 24); ctx.fill();
+    rows.forEach((c, i) => {
+      const y = py + 37 + i * 54;
+      C.text(String(i + 1), px + 34, y, 32, i === 0 ? '#ffc107' : '#fff', 'center', null);
+      C.drawBall(px + 84, y, 22, c[0], 0, ctx);
+      C.text(fit(cname(c[0]), 240, 32), px + 120, y, 32, i === 0 ? '#ffeb3b' : '#fff', 'left', null);
+      C.text(String(c[1]), px + pw - 24, y, 32, '#fff', 'right', null);
+    });
+    if (!rows.length) C.text('…', C.W / 2, py + 37, 32, '#cfd8dc');
+    // поедания — строкой под таблицей
+    const fy0 = py + 40 + Math.max(1, rows.length) * 54;
+    feed.slice(0, 2).forEach((f, i) => {
+      const y = fy0 + i * 50; ctx.globalAlpha = Math.min(1, (3.5 - f.t) * 2);
+      ctx.fillStyle = 'rgba(0,0,0,0.4)'; C.rr(ctx, C.W / 2 - 150, y - 21, 300, 42, 21); ctx.fill();
+      C.drawBall(C.W / 2 - 100, y, 17, f.a, 0, ctx); C.icon('next', C.W / 2, y, 26, '#ffeb3b'); C.drawBall(C.W / 2 + 100, y, 15, f.b, 0, ctx);
+      ctx.globalAlpha = 1;
+    });
+  }
+  // итог раунда: победитель крупно и места 2–3
+  function drawSpecFinal(ctx, cap, capSize) {
+    const b = banner, a = Math.max(0, Math.min(1, b.t * 4)), w = Math.min(660, C.W - 30), y = 170;
+    ctx.globalAlpha = a;
+    ctx.fillStyle = 'rgba(255,160,0,0.96)'; C.rr(ctx, C.W / 2 - w / 2, y, w, 250, 34); ctx.fill();
+    C.text(T.roundWon.toUpperCase(), C.W / 2, y + 48, 40, '#fff', 'center', 'rgba(0,0,0,0.35)');
+    C.drawBall(C.W / 2 - 170, y + 150, 66, b.win, 0, ctx); C.text(fit(cname(b.win), 340, 68), C.W / 2 - 84, y + 152, 68, '#fff', 'left', 'rgba(0,0,0,0.45)');
+    const rest = (b.top || []).slice(1, 3);
+    rest.forEach((c, i) => {
+      const yy = y + 290 + i * 70;
+      ctx.fillStyle = 'rgba(20,20,70,0.8)'; C.rr(ctx, C.W / 2 - w / 2 + 40, yy - 30, w - 80, 60, 30); ctx.fill();
+      C.text(String(i + 2), C.W / 2 - w / 2 + 80, yy, 36, '#fff', 'center', null);
+      C.drawBall(C.W / 2 - w / 2 + 140, yy, 24, c[0], 0, ctx);
+      C.text(fit(cname(c[0]), 300, 36), C.W / 2 - w / 2 + 180, yy, 36, '#fff', 'left', null);
+      C.text(String(c[1]), C.W / 2 + w / 2 - 70, yy, 36, '#fff', 'right', null);
+    });
+    ctx.globalAlpha = 1;
+    if (!b.conf) { b.conf = 1; C.confetti(C.W / 2, y + 100, 140); }
+    if (cap.bottom) { ctx.save(); ctx.globalAlpha = cap.bottomA === undefined ? 1 : cap.bottomA; C.text(cap.bottom, C.W / 2, C.H * 0.7, capSize(cap.bottom, cap.bottomSize || 46), '#fff', 'center', 'rgba(20,20,70,0.95)'); ctx.restore(); }
   }
 
   function drawBanner(ctx, L) {
@@ -619,6 +724,7 @@
   window.__objs = () => ({ saws, powers, dots });
   window.__send = (o) => send(o);
   window.__respawn = () => playAgain();
+  window.__dir = () => ({ id: dir.id, log: dir.log, rt, cs, banner: banner && { win: banner.win, top: banner.top } });
   window.__dbgOnline = () => ({ status, myId, me, R, balls: balls.size, dots: dots.size, powers: powers.length, saws: saws.length, pingMs, dead, attempt, cs, rt, dayTopL, banner: !!banner, coins: C.save.coins, fb: X(), shop: !!shop });
   window.FBArt = { drawAcc };
   if (q.has('art')) return; // страница обложек: только рисунки, без игры
