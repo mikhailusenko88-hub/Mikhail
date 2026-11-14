@@ -1,25 +1,27 @@
 {
  "leagues": {
   "cities": {
-   "no": 8,
+   "no": 9,
    "points": {
     "Angren": 25,
-    "Chirchiq": 18,
+    "Chirchiq": 43,
     "Shahrisabz": 29,
     "Navoiy": 12,
-    "Jizzax": 16,
-    "Olmaliq": 14,
+    "Jizzax": 18,
+    "Olmaliq": 32,
     "Nukus": 14,
     "Asaka": 23,
-    "Namangan": 14,
+    "Namangan": 18,
     "Buxoro": 2,
     "Samarqand": 25,
-    "Toshkent": 19,
-    "Termiz": 17,
-    "Urganch": 30,
+    "Toshkent": 20,
+    "Termiz": 25,
+    "Urganch": 40,
     "Qarshi": 27,
-    "Xiva": 10,
-    "Qoʻqon": 8
+    "Xiva": 16,
+    "Qoʻqon": 8,
+    "Guliston": 15,
+    "Margʻilon": 12
    },
    "results": [
     {
@@ -125,10 +127,23 @@
      ],
      "link": "https://youtube.com/shorts/DOAakgYql4w",
      "final": false
+    },
+    {
+     "no": 9,
+     "date": "2026-11-14",
+     "slot": 1,
+     "winner": "Chirchiq",
+     "top3": [
+      "Chirchiq",
+      "Olmaliq",
+      "Guliston"
+     ],
+     "link": "https://youtube.com/shorts/TXfltN8hkJ4",
+     "final": false
     }
    ],
    "champion": null,
-   "season_races": 3,
+   "season_races": 4,
    "season": "2026-W46",
    "new_pending": [],
    "final_season": "2026-W45",
@@ -823,6 +838,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/Li1n6czv9gI",
    "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №7 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-14",
+   "slot": 1,
+   "league": "cities",
+   "no": 9,
+   "final": false,
+   "link": "https://youtube.com/shorts/TXfltN8hkJ4",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №9 #shorts",
    "pl": true
   }
  ],
