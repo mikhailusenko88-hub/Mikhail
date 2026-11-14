@@ -1,19 +1,20 @@
 # Flagball Arena  (@FlagballArenaTV)
-Проверено: 2026-11-13 23:37 UTC
+Проверено: 2026-11-14 06:34 UTC
 
 - Страница канала: HTTP 200; ID: UCUKgRxWtL1kPWr9hdfL8qQw
-- Шапка: 11 подписчиков · 47 видео
+- Шапка: 11 подписчиков · 49 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 0 шт.
 - (пусто или лента недоступна, HTTP 404)
 
-## Вкладка Shorts (видно всем) — 20 шт. на первой странице
-- 329 просмотров · Vietnam vs Spain vs Argentina 😱 Who Survives? Country Marble Race #shorts · qWd1NlVnmWg
-- 702 просмотра · Brazil vs Ukraine vs Myanmar 😱 Who Survives? Country Marble Race #shorts · NwgWwRcEqDM
-- 205 просмотров · Thailand vs Poland vs Malaysia 😱 Who Survives? Country Marble Race #shorts · 6ICunM7HC-I
-- 954 просмотра · Indonesia vs Türkiye vs Saudi Arabia 😱 Who Survives? Country Marble Race #shorts · m5DXL2pUtB4
-- 212 просмотров · Thailand vs Korea vs Algeria 😱 Who Survives? Country Marble Race #shorts · WhcJp-CrgPQ
-- 83 просмотра · India vs Spain vs Colombia 😱 Who Survives? Country Marble Race #shorts · BD1Uu9Hmq00
+## Вкладка Shorts (видно всем) — 21 шт. на первой странице
+- 519 просмотров · Mexico vs UK vs Nigeria 😱 Who Survives? Country Marble Race #shorts · 054ZfXvp4Js
+- 573 просмотра · Vietnam vs Spain vs Argentina 😱 Who Survives? Country Marble Race #shorts · qWd1NlVnmWg
+- 736 просмотров · Brazil vs Ukraine vs Myanmar 😱 Who Survives? Country Marble Race #shorts · NwgWwRcEqDM
+- 227 просмотров · Thailand vs Poland vs Malaysia 😱 Who Survives? Country Marble Race #shorts · 6ICunM7HC-I
+- 955 просмотров · Indonesia vs Türkiye vs Saudi Arabia 😱 Who Survives? Country Marble Race #shorts · m5DXL2pUtB4
+- 222 просмотра · Thailand vs Korea vs Algeria 😱 Who Survives? Country Marble Race #shorts · WhcJp-CrgPQ
+- 87 просмотров · India vs Spain vs Colombia 😱 Who Survives? Country Marble Race #shorts · BD1Uu9Hmq00
 - 624 просмотра · France vs Canada vs Guatemala 😱 Who Survives? Country Marble Race #shorts · GyJkhqnBm0k
 - 397 просмотров · USA vs Brazil vs Mexico 😱 Who Survives? Country Marble Race #shorts · G4JTcsB0KOA
 - 437 просмотров · Japan vs Russia vs Philippines 😱 Who Survives? Country Marble Race #shorts · TYy0vqt5uT0

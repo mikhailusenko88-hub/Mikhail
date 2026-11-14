@@ -2,15 +2,15 @@
  "spec": "search:қай қала жеңеді",
  "url": "https://www.youtube.com/results?search_query=%D2%9B%D0%B0%D0%B9%20%D2%9B%D0%B0%D0%BB%D0%B0%20%D0%B6%D0%B5%D2%A3%D0%B5%D0%B4%D1%96",
  "status": 200,
- "checked": "2026-11-13 18:25 UTC",
+ "checked": "2026-11-14 06:34 UTC",
  "header": "",
  "items": [
   {
-   "id": "4UfUjoFOwb0",
+   "id": "kglKqAr-7t0",
    "kind": "short",
-   "title": "Қай қала жеңеді? Какой город победит? 🏁 №5 #shorts",
-   "views": 798,
-   "views_txt": "798 просмотров",
+   "title": "Қай қала жеңеді? Какой город победит? 🏁 №11 #shorts",
+   "views": 781,
+   "views_txt": "781 просмотр",
    "age": "",
    "length": "",
    "channel": "Білесің бе?",
@@ -104,8 +104,8 @@
    "id": "4q8QRKJFi4M",
    "kind": "video",
    "title": "Nursultan Nazirbaev - Қай қала? (премьера песни) 2024",
-   "views": 12256902,
-   "views_txt": "12 256 902 просмотра",
+   "views": 12258414,
+   "views_txt": "12 258 414 просмотров",
    "age": "2 г. назад",
    "length": "2:33",
    "channel": "Nursultan Nazirbaev",
@@ -116,6 +116,25 @@
    "age_h": null,
    "per_day": null,
    "tags": []
+  },
+  {
+   "id": "qTlWo0OFuxA",
+   "kind": "video",
+   "title": "Есен Жүсіпов - Қай қалада? #есенжүсіпов",
+   "views": 570468,
+   "views_txt": "570 468 просмотров",
+   "age": "3 г. назад",
+   "length": "2:35",
+   "channel": "ЕСЕН ЖҮСІПОВ",
+   "handle": "channel/UCIvxKkBT9selHmtlQFjgsjQ",
+   "channel_id": "UCIvxKkBT9selHmtlQFjgsjQ",
+   "snippet": "әні : Есен Жүсіпов Сөзі: Қайнар Алагөзов ✓ Официальный инстаграм ✔️ Instagram: ...",
+   "channel_subs": null,
+   "age_h": null,
+   "per_day": null,
+   "tags": [
+    "#есенжүсіпов"
+   ]
   },
   {
    "id": "BQGjLDI6Fuk",
@@ -173,39 +192,70 @@
    "tags": []
   },
   {
-   "id": "-7SZXt2gsaA",
-   "kind": "short",
-   "title": "ҚАЙ ҚАЛА? #2026 #рек  #trendingshorts #trending #food #beshbarmak #kazakhstan #dance #dancevideo #my",
-   "views": 1500,
-   "views_txt": "1,5 тыс. просмотров",
-   "age": "",
-   "length": "",
-   "channel": "Қуандық Ұлбосын ",
-   "handle": "@Kuandyk.Ulbosyn",
-   "channel_id": "",
-   "snippet": "",
-   "channel_subs": 1660,
-   "age_h": null,
-   "per_day": null,
-   "tags": [
-    "#2026",
-    "#beshbarmak",
-    "#dance",
-    "#dancevideo",
-    "#food",
-    "#kazakhstan",
-    "#my",
-    "#trending",
-    "#trendingshorts",
-    "#рек"
-   ]
-  },
-  {
    "id": "bjKsVijtu4A",
    "kind": "short",
    "title": "Қай қала жеңеді? Какой город победит? 🏁 №14 #shorts",
    "views": 941,
    "views_txt": "941 просмотр",
+   "age": "",
+   "length": "",
+   "channel": "Білесің бе?",
+   "handle": "@bilesin_be_kz",
+   "channel_id": "",
+   "snippet": "",
+   "channel_subs": 25,
+   "age_h": null,
+   "per_day": null,
+   "tags": [
+    "#shorts"
+   ]
+  },
+  {
+   "id": "cl4QJO8w1G0",
+   "kind": "short",
+   "title": "Қай қала?🎼🪽#nazirbaevnursultan #toida #2025",
+   "views": 11000,
+   "views_txt": "11 тыс. просмотров",
+   "age": "",
+   "length": "",
+   "channel": "Nursultan Nazirbaev",
+   "handle": "@NursultanNazirbaev",
+   "channel_id": "",
+   "snippet": "",
+   "channel_subs": 111000,
+   "age_h": null,
+   "per_day": null,
+   "tags": [
+    "#2025",
+    "#nazirbaevnursultan",
+    "#toida"
+   ]
+  },
+  {
+   "id": "4UfUjoFOwb0",
+   "kind": "short",
+   "title": "Қай қала жеңеді? Какой город победит? 🏁 №5 #shorts",
+   "views": 798,
+   "views_txt": "798 просмотров",
+   "age": "",
+   "length": "",
+   "channel": "Білесің бе?",
+   "handle": "@bilesin_be_kz",
+   "channel_id": "",
+   "snippet": "",
+   "channel_subs": 25,
+   "age_h": null,
+   "per_day": null,
+   "tags": [
+    "#shorts"
+   ]
+  },
+  {
+   "id": "XUnw1q0g-80",
+   "kind": "short",
+   "title": "Қай қала жеңеді? Какой город победит? 🏁 №20 #shorts",
+   "views": 469,
+   "views_txt": "469 просмотров",
    "age": "",
    "length": "",
    "channel": "Білесің бе?",
@@ -237,46 +287,6 @@
    "tags": []
   },
   {
-   "id": "cl4QJO8w1G0",
-   "kind": "short",
-   "title": "Қай қала?🎼🪽#nazirbaevnursultan #toida #2025",
-   "views": 11000,
-   "views_txt": "11 тыс. просмотров",
-   "age": "",
-   "length": "",
-   "channel": "Nursultan Nazirbaev",
-   "handle": "@NursultanNazirbaev",
-   "channel_id": "",
-   "snippet": "",
-   "channel_subs": 111000,
-   "age_h": null,
-   "per_day": null,
-   "tags": [
-    "#2025",
-    "#nazirbaevnursultan",
-    "#toida"
-   ]
-  },
-  {
-   "id": "kglKqAr-7t0",
-   "kind": "short",
-   "title": "Қай қала жеңеді? Какой город победит? 🏁 №11 #shorts",
-   "views": 781,
-   "views_txt": "781 просмотр",
-   "age": "",
-   "length": "",
-   "channel": "Білесің бе?",
-   "handle": "@bilesin_be_kz",
-   "channel_id": "",
-   "snippet": "",
-   "channel_subs": 25,
-   "age_h": null,
-   "per_day": null,
-   "tags": [
-    "#shorts"
-   ]
-  },
-  {
    "id": "byZDsvyqHgM",
    "kind": "short",
    "title": "Қай қала жеңеді? Какой город победит? 🏁 №13 #shorts",
@@ -284,53 +294,12 @@
    "views_txt": "1 тыс. просмотров",
    "age": "",
    "length": "",
-   "channel": "Білесің бе?",
-   "handle": "@bilesin_be_kz",
+   "channel": "",
+   "handle": "",
    "channel_id": "",
    "snippet": "",
-   "channel_subs": 25,
    "age_h": null,
    "per_day": null,
-   "tags": [
-    "#shorts"
-   ]
-  },
-  {
-   "id": "9n_7vJ4weqo",
-   "kind": "short",
-   "title": "Қай қала жеңеді? Какой город победит? 🏁 №19 #shorts",
-   "views": 258,
-   "views_txt": "258 просмотров",
-   "age": "",
-   "length": "",
-   "channel": "",
-   "handle": "",
-   "channel_id": "",
-   "snippet": "",
-   "published": "2026-11-10T07:05:03+00:00",
-   "channel_subs": 25,
-   "age_h": 83.3333912425,
-   "per_day": 74,
-   "tags": [
-    "#shorts"
-   ]
-  },
-  {
-   "id": "XUnw1q0g-80",
-   "kind": "short",
-   "title": "Қай қала жеңеді? Какой город победит? 🏁 №20 #shorts",
-   "views": 469,
-   "views_txt": "469 просмотров",
-   "age": "",
-   "length": "",
-   "channel": "",
-   "handle": "",
-   "channel_id": "",
-   "snippet": "",
-   "published": "2026-11-10T13:05:28+00:00",
-   "channel_subs": 25,
-   "age_h": 77.32644679805554,
-   "per_day": 145,
    "tags": [
     "#shorts"
    ]
@@ -341,80 +310,6 @@
    "title": "Қай қала жеңеді? Какой город победит? 🏆 Апта финалы · Финал недели #shorts",
    "views": 114,
    "views_txt": "114 просмотров",
-   "age": "",
-   "length": "",
-   "channel": "",
-   "handle": "",
-   "channel_id": "",
-   "snippet": "",
-   "age_h": null,
-   "per_day": null,
-   "tags": [
-    "#shorts"
-   ]
-  },
-  {
-   "id": "mmqU1Vwnnus",
-   "kind": "short",
-   "title": "Қай қала жеңеді? Какой город победит? 🏁 №10 #shorts",
-   "views": 957,
-   "views_txt": "957 просмотров",
-   "age": "",
-   "length": "",
-   "channel": "",
-   "handle": "",
-   "channel_id": "",
-   "snippet": "",
-   "age_h": null,
-   "per_day": null,
-   "tags": [
-    "#shorts"
-   ]
-  },
-  {
-   "id": "je5mS00qzRE",
-   "kind": "short",
-   "title": "Қай қала жеңеді? Какой город победит? 🏁 №18 #shorts",
-   "views": 667,
-   "views_txt": "667 просмотров",
-   "age": "",
-   "length": "",
-   "channel": "",
-   "handle": "",
-   "channel_id": "",
-   "snippet": "",
-   "published": "2026-11-09T13:05:12+00:00",
-   "channel_subs": 25,
-   "age_h": 101.33089124249999,
-   "per_day": 157,
-   "tags": [
-    "#shorts"
-   ]
-  },
-  {
-   "id": "BzF_6X1Zs3s",
-   "kind": "short",
-   "title": "Қай қала жеңеді? Какой город победит? 🏁 №6 #shorts",
-   "views": 1200,
-   "views_txt": "1,2 тыс. просмотров",
-   "age": "",
-   "length": "",
-   "channel": "",
-   "handle": "",
-   "channel_id": "",
-   "snippet": "",
-   "age_h": null,
-   "per_day": null,
-   "tags": [
-    "#shorts"
-   ]
-  },
-  {
-   "id": "y2lr3_SSOmk",
-   "kind": "short",
-   "title": "Қай қала жеңеді? Какой город победит? 🏁 №17 #shorts",
-   "views": 378,
-   "views_txt": "378 просмотров",
    "age": "",
    "length": "",
    "channel": "",
@@ -446,11 +341,29 @@
    ]
   },
   {
-   "id": "tJTxK3oLLN8",
+   "id": "mmqU1Vwnnus",
    "kind": "short",
-   "title": "Қай қала жеңеді? Какой город победит? 🏁 №9 #shorts",
-   "views": 1100,
-   "views_txt": "1,1 тыс. просмотров",
+   "title": "Қай қала жеңеді? Какой город победит? 🏁 №10 #shorts",
+   "views": 957,
+   "views_txt": "957 просмотров",
+   "age": "",
+   "length": "",
+   "channel": "",
+   "handle": "",
+   "channel_id": "",
+   "snippet": "",
+   "age_h": null,
+   "per_day": null,
+   "tags": [
+    "#shorts"
+   ]
+  },
+  {
+   "id": "BzF_6X1Zs3s",
+   "kind": "short",
+   "title": "Қай қала жеңеді? Какой город победит? 🏁 №6 #shorts",
+   "views": 1200,
+   "views_txt": "1,2 тыс. просмотров",
    "age": "",
    "length": "",
    "channel": "",
@@ -482,21 +395,109 @@
    ]
   },
   {
-   "id": "cBcop7XcVng",
+   "id": "9n_7vJ4weqo",
    "kind": "short",
-   "title": "Талдықорған, Жезқазған, Қонаев… Қай қала жеңеді? Какой город победит? 🏁 №23 #shorts",
-   "views": 407,
-   "views_txt": "407 просмотров",
+   "title": "Қай қала жеңеді? Какой город победит? 🏁 №19 #shorts",
+   "views": 258,
+   "views_txt": "258 просмотров",
    "age": "",
    "length": "",
    "channel": "",
    "handle": "",
    "channel_id": "",
    "snippet": "",
-   "published": "2026-11-13T13:04:26+00:00",
-   "channel_subs": 25,
-   "age_h": 5.343669020277777,
-   "per_day": 1827,
+   "age_h": null,
+   "per_day": null,
+   "tags": [
+    "#shorts"
+   ]
+  },
+  {
+   "id": "je5mS00qzRE",
+   "kind": "short",
+   "title": "Қай қала жеңеді? Какой город победит? 🏁 №18 #shorts",
+   "views": 667,
+   "views_txt": "667 просмотров",
+   "age": "",
+   "length": "",
+   "channel": "",
+   "handle": "",
+   "channel_id": "",
+   "snippet": "",
+   "age_h": null,
+   "per_day": null,
+   "tags": [
+    "#shorts"
+   ]
+  },
+  {
+   "id": "tJTxK3oLLN8",
+   "kind": "short",
+   "title": "Қай қала жеңеді? Какой город победит? 🏁 №9 #shorts",
+   "views": 1100,
+   "views_txt": "1,1 тыс. просмотров",
+   "age": "",
+   "length": "",
+   "channel": "",
+   "handle": "",
+   "channel_id": "",
+   "snippet": "",
+   "age_h": null,
+   "per_day": null,
+   "tags": [
+    "#shorts"
+   ]
+  },
+  {
+   "id": "cBcop7XcVng",
+   "kind": "short",
+   "title": "Талдықорған, Жезқазған, Қонаев… Қай қала жеңеді? Какой город победит? 🏁 №23 #shorts",
+   "views": 468,
+   "views_txt": "468 просмотров",
+   "age": "",
+   "length": "",
+   "channel": "",
+   "handle": "",
+   "channel_id": "",
+   "snippet": "",
+   "age_h": null,
+   "per_day": null,
+   "tags": [
+    "#shorts"
+   ]
+  },
+  {
+   "id": "y2lr3_SSOmk",
+   "kind": "short",
+   "title": "Қай қала жеңеді? Какой город победит? 🏁 №17 #shorts",
+   "views": 378,
+   "views_txt": "378 просмотров",
+   "age": "",
+   "length": "",
+   "channel": "",
+   "handle": "",
+   "channel_id": "",
+   "snippet": "",
+   "age_h": null,
+   "per_day": null,
+   "tags": [
+    "#shorts"
+   ]
+  },
+  {
+   "id": "vyo_8BZmY6I",
+   "kind": "short",
+   "title": "Қызылорда, Орал, Петропавл… Қай қала жеңеді? Какой город победит? 🏁 №21 #shorts",
+   "views": 9,
+   "views_txt": "9 просмотров",
+   "age": "",
+   "length": "",
+   "channel": "",
+   "handle": "",
+   "channel_id": "",
+   "snippet": "",
+   "age_h": null,
+   "per_day": null,
    "tags": [
     "#shorts"
    ]
