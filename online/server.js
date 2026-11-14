@@ -14,7 +14,7 @@ const os = require('os');
 const path = require('path');
 
 const PORT = +process.env.PORT || 8091;
-const VERSION = '1.2.2';
+const VERSION = '1.2.3';
 const ROUND_LEN = +process.env.ROUND_LEN || 180; // раунд стран, секунд
 const MAX_ACC = 12;                               // номера украшений (шапки, очки…)
 const STATE_FILE = process.env.STATE_FILE || path.join(os.tmpdir(), 'ballio-day.json');
