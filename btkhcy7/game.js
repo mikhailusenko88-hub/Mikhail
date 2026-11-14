@@ -471,15 +471,17 @@
     drawHome(ctx) {
       const land = C.W > C.H, sf = C.safeU();
       ctx.fillStyle = 'rgba(10,20,40,0.12)'; ctx.fillRect(0, 0, C.W, C.H);
-      C.drawCoinsHud(); C.sideButtons(); C.soundButton(C.W - 106 - sf.r, 30 + sf.t);
+      C.drawCoinsHud(); if (land) C.sideButtons(); else C.sideButtons(22 + sf.l, 110 + sf.t, true); C.soundButton(C.W - 106 - sf.r, 30 + sf.t);
       // название и уровень
-      const ty = (land ? 118 : 340) + sf.t, big = Math.min(land ? 104 : 116, C.W / 6.6);
+      // название не шире 88% экрана
+      let big = land ? 104 : 116; ctx.font = C.font(big); const tw = ctx.measureText('BALL TRUCK').width; if (tw > C.W * 0.84) big *= (C.W * 0.84) / tw;
+      const ty = (land ? 118 : 360) + sf.t;
       ctx.save(); ctx.translate(C.W / 2, ty + Math.sin(C.realT * 2) * 4); ctx.rotate(-0.035);
       C.text('BALL TRUCK', 0, 0, big, '#ffca28', 'center', '#7a2e0e');
       ctx.restore();
       ctx.fillStyle = 'rgba(0,0,0,0.32)'; C.rr(ctx, C.W / 2 - 120, ty + big * 0.62, 240, 58, 29); ctx.fill();
       C.text(T.lv + ' ' + (C.save.level || 1), C.W / 2, ty + big * 0.62 + 30, 32, '#fff');
-      const bw = 320, bh = 132, by = land ? C.H * 0.72 - sf.b : C.H * 0.74 - sf.b;
+      const bw = 320, bh = 132, by = land ? C.H * 0.72 - sf.b : C.H * 0.68 - sf.b;
       if (C.button('playBtn', C.W / 2 - bw / 2, by, bw, bh, { color: '#43a047', icon: 'play', iconSize: 76, pulse: true })) C.startLevel();
     },
     revive() { const p = cpReached || { x: startX, y: startY }; L.star && (L.star.got = L.star.got); spawn(p.x, groundAt(p.x)); },
