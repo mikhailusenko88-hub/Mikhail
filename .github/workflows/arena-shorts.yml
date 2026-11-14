@@ -1,0 +1,41 @@
+name: arena-shorts
+# Shorts с живой арены Flagball Arena: камера-зритель снимает конец раунда стран на боевом сервере.
+# Запуск: изменить shorts/request.txt в ветке games. Результат — ветка arena-shorts (последний ролик + meta.json).
+on:
+  push:
+    branches: [games]
+    paths: ['shorts/request.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: arena-shorts
+  cancel-in-progress: false
+jobs:
+  shoot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Подготовка
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-noto-color-emoji >/dev/null
+          pip install -q numpy
+          npm i --silent --no-save playwright-core@1
+          mkdir -p web && cp online/game.js online/index.html core/core.js web/
+          (cd web && python3 -m http.server 8770 >/dev/null 2>&1 &)
+      - name: Съёмка
+        env:
+          PLAYWRIGHT: ${{ github.workspace }}/node_modules/playwright-core
+          GAME_URL: http://localhost:8770/index.html
+          SERVER: wss://89.126.192.214/ws
+          ROOM: main
+          CLIP: '45'
+        run: node shorts/record.js out
+      - name: Сохранить
+        run: |
+          cd out && rm -f list.txt sound.wav
+          git init -q && git checkout -q -b arena-shorts
+          git config user.name arena-shorts; git config user.email arena-shorts@users.noreply.github.com
+          git add -A && git commit -q -m "arena short $(date -u +%F_%H:%M)"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:arena-shorts

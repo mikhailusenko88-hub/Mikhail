@@ -242,12 +242,22 @@ function join(ws, m) {
   const roomName = String(m.room || 'main').replace(/[^a-z0-9_-]/gi, '').slice(0, 24) || 'main';
   const r = getRoom(roomName);
   if (r.clients.size >= 40) { ws.send({ t: 'full' }); ws.close(); return; }
+  if (!r.dots.size) for (let i = 0; i < 300; i++) addDot(r);
+  if (m.spec) {
+    // зритель (камера для роликов): без своего шарика, в игроки не считается, не больше 3 на комнату
+    let n = 0; for (const c of r.clients) if (c.spec) n++;
+    if (n >= 3) { ws.send({ t: 'full' }); ws.close(); return; }
+    ws.room = r; ws.spec = true; r.clients.add(ws);
+    const meta = []; for (const x of r.balls.values()) meta.push(metaOf(x));
+    const dots = []; for (const d of r.dots.values()) dots.push([d.id, d.x, d.y, d.c]);
+    ws.send({ t: 'w', id: 0, spec: 1, x: 0, y: 0, R: Math.round(r.R), mt: meta, dots, v: VERSION, cs: roundTop(r, 5), rt: Math.ceil(r.rT), rl: ROUND_LEN, day: dayTop(10) });
+    return;
+  }
   const name = cleanName(m.name, 'Player');
   const skin = FLAGS.indexOf(m.skin) >= 0 ? m.skin : 'US';
   const acc = Math.max(0, Math.min(MAX_ACC, m.acc | 0));
   // у ботов не должно быть того же флага, что у живого игрока
   for (const o of r.balls.values()) if (!o.human && o.skin === skin) { o.skin = freeSkin(r); if (o.skin === skin) o.skin = FLAGS[(FLAGS.indexOf(skin) + 7) % FLAGS.length]; r.meta.push(metaOf(o)); }
-  if (!r.dots.size) for (let i = 0; i < 300; i++) addDot(r);
   const q = safeSpot(r);
   const b = newBall(r, { x: q.x, y: q.y, m: 18, human: true, name, skin, acc, ws, shield: 4 });
   ws.room = r; ws.ball = b; r.clients.add(ws);
@@ -274,11 +284,11 @@ function respawn(ws, m) {
 
 function onMsg(ws, m) {
   if (m.t === 'hello') return join(ws, m);
+  if (m.t === 'ping') { ws.send({ t: 'pong', c: m.c }); return; }
   const b = ws.ball; if (!b) return;
   if (m.t === 'p') { const x = +m.x, y = +m.y; if (isFinite(x) && isFinite(y)) { b.cx = x; b.cy = y; } return; }
   if (m.t === 're') return respawn(ws, m);
   if (m.t === 'dbg' && process.env.TEST === '1' && ws.ball) { const b = ws.ball; if (m.m) { b.m = +m.m; b.r = rOf(b.m); } if (m.x !== undefined) { b.x = b.cx = +m.x; b.y = b.cy = +m.y; ws.send({ t: 'fix', x: b.x, y: b.y }); } return; }
-  if (m.t === 'ping') ws.send({ t: 'pong', c: m.c });
 }
 function onClose(ws) {
   const r = ws.room; if (!r) return;
