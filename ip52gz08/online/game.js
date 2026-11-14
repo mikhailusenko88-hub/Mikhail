@@ -29,7 +29,7 @@
       openNow: 'Open now', noCoins: 'Not enough coins', tomorrow: 'More coins tomorrow', close: 'Close', pick: 'Pick your country',
       name: 'Your name', play: 'Play', hint: 'Green ring — you can eat it, red — run! Yellow name — a real player. Every point you grow counts for your country.',
       adsOff: 'Ads are blocked — coin options still work', title: 'Flagball Arena', team: 'for', change: 'Country', invite: 'Invite', copied: 'Invite link copied — send it to a friend', room: 'Private room',
-      noAd: 'No ad available right now — try again later', copyHint: 'Copy this link and send it to a friend:', search: 'Search country', botsWon: 'Bots won the round — beat them!',
+      noAd: 'No ad available right now — try again later', copyHint: 'Copy this link and send it to a friend:', search: 'Search country', friends: 'Play with friends', mkRoom: 'Create a room', roomCode: 'Room code', codeHint: 'Friends press «Invite» → enter this code', enterCode: 'Friend\'s code', go: 'Join', toMain: 'Back to the public arena', copy: 'Copy', badCode: 'Enter the 5-letter code', botsWon: 'Bots won the round — beat them!',
     },
     ru: {
       conn: 'Подключаюсь к арене…', att: 'попытка', slow: 'Долго? Проверь интернет или переключись Wi-Fi ↔ мобильный',
@@ -40,7 +40,7 @@
       openNow: 'Открыть сейчас', noCoins: 'Не хватает монет', tomorrow: 'Ещё монеты — завтра', close: 'Закрыть', pick: 'Выбери страну',
       name: 'Твоё имя', play: 'Играть', hint: 'Зелёное кольцо — можно съесть, красное — беги. Жёлтое имя — живой игрок. Всё, что ты наберёшь, идёт в зачёт твоей стране.',
       adsOff: 'Реклама недоступна — за монеты всё работает', title: 'Flagball Arena', team: 'за', change: 'Страна', invite: 'Позвать', copied: 'Ссылка скопирована — отправь другу', room: 'Своя комната',
-      noAd: 'Рекламы сейчас нет — попробуй чуть позже', copyHint: 'Скопируй ссылку и отправь другу:', search: 'Поиск страны', botsWon: 'Раунд за ботами — обгони их!',
+      noAd: 'Рекламы сейчас нет — попробуй чуть позже', copyHint: 'Скопируй ссылку и отправь другу:', search: 'Поиск страны', friends: 'Играть с друзьями', mkRoom: 'Создать комнату', roomCode: 'Код комнаты', codeHint: 'Друзья жмут «Позвать» → вводят этот код', enterCode: 'Код друга', go: 'Войти', toMain: 'Вернуться в общую арену', copy: 'Скопировать', badCode: 'Введи код из 5 букв', botsWon: 'Раунд за ботами — обгони их!',
     },
   };
   let LANG = (C.lang || 'en').slice(0, 2) === 'ru' ? 'ru' : 'en';
@@ -227,7 +227,53 @@
     el.querySelector('#lnkT').textContent = T.copyHint; const i = el.querySelector('#lnkI'); i.value = link; el.style.display = 'flex';
     setTimeout(() => { try { i.focus(); i.select(); } catch (e) { /* */ } }, 50);
   }
+  // ---------- комната по коду (площадки без своих приглашений: Playgama, Яндекс и др.) ----------
+  // ссылки наружу там нельзя, поэтому «Позвать» даёт код из 5 знаков: друзья вводят его и попадают в ту же арену
+  const CODE_ABC = 'abcdefghjkmnpqrstuvwxyz23456789';
+  const newCode = () => { let c = ''; for (let i = 0; i < 5; i++) c += CODE_ABC[(Math.random() * CODE_ABC.length) | 0]; return c; };
+  const isCode = (r) => /^[a-z0-9]{5}$/.test(r);
+  function goRoom(r) { r = cleanRoom(r) || 'main'; if (r === ROOM) return; ROOM = r; if (joined) connect(); roomBox(); }
+  function roomBox() {
+    let el = document.getElementById('rbox');
+    const css = 'border:0;border-radius:14px;padding:12px 16px;font:700 18px system-ui,Arial,sans-serif;color:#fff;cursor:pointer;width:100%;margin-top:10px';
+    if (!el) {
+      el = document.createElement('div'); el.id = 'rbox';
+      el.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,10,40,.78);z-index:6;touch-action:auto';
+      el.innerHTML = '<div style="width:min(92vw,440px);background:#221d45;border-radius:22px;padding:20px;color:#fff;text-align:center;font:600 17px system-ui,Arial,sans-serif;position:relative">' +
+        '<div id="rbX" style="position:absolute;right:14px;top:8px;font-size:30px;cursor:pointer;opacity:.8">×</div>' +
+        '<div id="rbT" style="font-size:22px;font-weight:800;margin-bottom:6px"></div>' +
+        '<div id="rbMine"></div>' +
+        '<div style="display:flex;gap:8px;margin-top:16px"><input id="rbI" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" style="flex:1;min-width:0;border:0;border-radius:14px;padding:12px;font:800 22px system-ui,Arial,sans-serif;text-align:center;letter-spacing:4px;text-transform:uppercase;background:#fff;color:#221d45">' +
+        '<button id="rbGo" style="' + css.replace('width:100%;margin-top:10px', 'width:auto;margin:0') + ';background:#43a047"></button></div>' +
+        '<div id="rbE" style="color:#ffd54f;font-size:15px;min-height:20px;margin-top:6px"></div></div>';
+      document.body.appendChild(el);
+      el.querySelector('#rbX').onclick = () => { el.style.display = 'none'; };
+      el.addEventListener('pointerdown', (e) => { if (e.target === el) el.style.display = 'none'; });
+      const inp = el.querySelector('#rbI'), err = el.querySelector('#rbE');
+      const go = () => { const v = cleanRoom(inp.value); if (!isCode(v)) { err.textContent = T.badCode; return; } inp.value = ''; err.textContent = ''; C.sfx('tap'); goRoom(v); };
+      el.querySelector('#rbGo').onclick = go;
+      inp.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') go(); });
+    }
+    el.querySelector('#rbT').textContent = T.friends;
+    el.querySelector('#rbGo').textContent = T.go;
+    el.querySelector('#rbI').placeholder = T.enterCode;
+    el.querySelector('#rbE').textContent = '';
+    const mine = el.querySelector('#rbMine'); mine.innerHTML = '';
+    const btn = (txt, bg, fn) => { const b = document.createElement('button'); b.textContent = txt; b.style.cssText = css + ';background:' + bg; b.onclick = fn; mine.appendChild(b); return b; };
+    if (ROOM === 'main') btn(T.mkRoom, '#1e88e5', () => { C.sfx('tap'); goRoom(newCode()); });
+    else {
+      const c = document.createElement('div'); c.innerHTML = '<div style="opacity:.8;margin-top:6px">' + T.roomCode + '</div><div style="font:900 46px system-ui,Arial,sans-serif;letter-spacing:8px;margin:4px 0 2px;color:#b9f6ca">' + ROOM.toUpperCase() + '</div><div style="opacity:.75;font-size:15px">' + T.codeHint + '</div>';
+      mine.appendChild(c);
+      const cb = btn(T.copy, '#1e88e5', async () => { if (await copyText(ROOM.toUpperCase())) { cb.textContent = '✓'; setTimeout(() => { cb.textContent = T.copy; }, 1200); } });
+      btn(T.toMain, '#5c6bc0', () => { C.sfx('tap'); goRoom('main'); });
+      // ещё не в игре (окно страны) — сразу «Играть» в этой комнате
+      if (!joined) btn(T.play, '#43a047', () => { el.style.display = 'none'; const g = document.getElementById('go'); if (g) g.click(); });
+    }
+    el.style.display = 'flex';
+  }
+  window.__roomBox = roomBox;
   async function shareInvite() {
+    if (!CG()) { roomBox(); return; }
     const link = inviteLink();
     if (await copyText(link)) toasts.push({ text: T.copied, t: 0, col: '#69f0ae' });
     else showLinkBox(link);
@@ -363,7 +409,7 @@
   };
   function guestName() { return (LANG === 'ru' ? 'Гость' : 'Guest') + (100 + ((Math.random() * 900) | 0)); }
   function platformName() { try { const p = window.bridge && window.bridge.player; if (p && p.isAuthorized && p.name) return String(p.name).slice(0, 14); } catch (e) { /* */ } return ''; }
-  function showJoin(first) { if (window.__showJoin) window.__showJoin({ first, nick: nick || X().nick || '', skin: skin || X().skin || C.homeCountry(), home: C.homeCountry(), T, flags: PICK_FLAGS, names: CN[LANG], names2: CN[LANG === 'ru' ? 'en' : 'ru'] }); }
+  function showJoin(first) { if (window.__showJoin) window.__showJoin({ first, nick: nick || X().nick || '', skin: skin || X().skin || C.homeCountry(), home: C.homeCountry(), T, flags: PICK_FLAGS, names: CN[LANG], names2: CN[LANG === 'ru' ? 'en' : 'ru'], friends: !CG() }); }
 
   function drawSaw(ctx, x, y, r, spin, danger) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(spin);
@@ -550,6 +596,11 @@
         const sf = C.safeU ? C.safeU() : { t: 0, r: 0, b: 0, l: 0 };
         if (sf.t || sf.l || sf.r || sf.b) { const W0 = C.W, H0 = C.H; ctx.save(); ctx.translate(sf.l, sf.t); C.W = W0 - sf.l - sf.r; C.H = H0 - sf.t - sf.b; try { drawPlayHud(ctx, L, nh); } finally { ctx.restore(); C.W = W0; C.H = H0; } }
         else drawPlayHud(ctx, L, nh);
+        // площадки без своих приглашений: кнопка «Позвать» во время игры (комната по коду), над пингом справа внизу
+        if (!CG() && me.alive && status === 'ok') {
+          const S = L ? 72 : 86, bx = C.W - sf.r - 20 - S, by = C.H - sf.b - 58 - S;
+          if (C.button('frBtn', bx, by, S, S, { color: '#1e88e5', alpha: 0.88, draw: () => { C.icon('plus', 0, -S * 0.12, S * 0.4, '#fff'); C.text(T.invite, 0, S * 0.27, S * 0.19, '#fff', 'center', null); } })) { C.sfx('tap'); roomBox(); }
+        }
       }
       if (status === 'conn' || status === 'lost') {
         ctx.fillStyle = 'rgba(10,10,40,0.6)'; ctx.fillRect(0, 0, C.W, C.H);
