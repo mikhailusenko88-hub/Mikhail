@@ -1,7 +1,8 @@
 // Ежедневный обход Авито за 2 подтверждения (запуск + чтение): кабинет, места по основным запросам,
 // широкие запросы «как ищут люди» (по кругу, 8 в день), продавцы-соседи и профили новых соседей. Навык avito-poisk-rost.
 // Идёт 3,5–4 минуты; вызов сразу возвращает «запущено». Журнал — sessionStorage.nd_log15, обзор — sessionStorage.nd_day15.
-// Собран 13.11.2026 из проверенных в тот день кусков (s12, s13 и широкий проход); после первого запуска сверить журнал.
+// Первый полный запуск 14.11.2026: 19 запросов и 4 профиля за 2 мин 53 с, без блокировки, 3 подтверждения (открыть вкладку, запуск, чтение).
+// 14.11 добавлено и ещё не проверено запуском: вторая страница для основных запросов, где нас нет на первой.
 (() => {
 const IDS = { '8402676722': '3-7', '8530976650': '3-15', '8546190071': '3-9', '8523521242': 'A910', '8495178294': 'A703', '8068817087': 'старое' };
 // основные запросы — каждый день, набор не менять без причины (иначе не с чем сравнивать)
@@ -9,7 +10,7 @@ const CORE = ['реечные панели под дерево', 'плинтус
   'декоративные рейки на стену', 'панели дюрополимер', 'стеновые панели', 'плинтус дюрополимер', 'реечные панели', 'реечные панели для стен', 'плинтус напольный'];
 // широкие запросы: как это называют люди (Вордстат по СПб из claude/artdec-semantika-nazvaniya.md); три группы по кругу
 const WIDE = [
-  ['декоративные рейки', 'рейки на стену', 'стеновые панели под дерево', 'панели для стен', 'плинтус напольный белый', 'панели на стену', 'ламели на стену', 'декоративные рейки мдф'],
+  ['декоративные рейки', 'рейки на стену', 'стеновые панели под дерево', 'панели для стен', 'плинтус напольный белый', 'панели на стену', 'стеновые панели под покраску', 'декоративные рейки мдф'],   // «ламели на стену» убрали 14.11: в выдаче одни жалюзи
   ['рейки для стен', 'стеновые панели для внутренней отделки', 'реечные панели мдф', 'белые реечные панели', '3d панели для стен', 'плинтус под покраску', 'плинтус 80 мм', 'плинтус широкий'],
   ['акустические панели', 'стеновые панели мдф', 'декоративные панели для стен', 'молдинги на стену', 'молдинги для стен', 'потолочный плинтус', 'плинтус с кабель-каналом', 'скрытый плинтус'],
 ];
@@ -18,8 +19,9 @@ const GROUP = ((DAY % 3) + 3) % 3;          // 14.11 — группа 0, 15.11 �
 const NPROF = 4;                             // сколько профилей новых соседей открыть за день
 const SEEN = ['/brands/i189669386', '/brands/9b74c0149fa35c68ab3583d2482cccd3', '/brands/e6722563236e2eed0c7215d87dd4b379', '/brands/plintusy', '/brands/i35021401',
   '/brands/i303422686', '/brands/544ffd9a46ae4cb7b0de074a6ec6d7e3', '/brands/arhidea', '/brands/90967ed0df52f22382beaf3e0f587006',
-  '/brands/i188920544', '/brands/i122608885', '/brands/i72526920', '/brands/akupanel.ru', '/brands/i200336086', '/brands/6fce8c6bbc94076bfb4ce1c8c3d3fd4e'];   // профили уже разобраны (13.11) — дописывать сюда после каждого дня
-const SKIP = /монтаж|установка|поклейка|покраска|ремонт|остеклен|лестниц/i;   // услуги и чужие товары в профили не ходим
+  '/brands/i188920544', '/brands/i122608885', '/brands/i72526920', '/brands/akupanel.ru', '/brands/i200336086', '/brands/6fce8c6bbc94076bfb4ce1c8c3d3fd4e',
+  '/brands/i223454591', '/brands/i350145740', '/brands/4e13e6a698f4de9a0380a6a3c5aa2ed6', '/brands/i365350883'];   // профили уже разобраны (13–14.11: последние четыре — MORUS, «Высота», «Обои панели плинтусы», СТРОЙ-МИКС) — дописывать сюда после каждого дня
+const SKIP = /монтаж|установка|поклейка|покраска|ремонт|остеклен|лестниц|жалюзи|забор|фасад|террас|дпк|кирпич|утеплител|сайдинг|мрамор/i;   // услуги и чужие товары в профили не ходим
 const SS = sessionStorage; SS.setItem('nd_log15', ''); SS.setItem('nd_day15', '');
 const L = (...a) => { SS.setItem('nd_log15', (SS.getItem('nd_log15') || '') + new Date().toTimeString().slice(0, 8) + ' ' + a.join(' ') + '\n'); };
 const S = s => SS.setItem('nd_day15', (SS.getItem('nd_day15') || '') + s + '\n');
@@ -55,14 +57,15 @@ async function cabinet() {
     S(IDS[id] + ' | ' + txt.replace(/\s+/g, ' ').replace(/−70% на продвижение.*$/, '').slice(0, 260));   // числа: просмотры[+сегодня] контакты избранное
   }
 }
-async function serp(q, wide) {
-  const fr = mk('/sankt-peterburg?q=' + encodeURIComponent(q));
+async function serp(q, wide, p) {
+  const fr = mk('/sankt-peterburg?q=' + encodeURIComponent(q) + (p > 1 ? '&p=' + p : ''));
   await until(() => { const dd = fr.contentDocument; return dd && (dd.querySelectorAll('[data-marker="item"]').length >= 30 || blocked(dd)); }, 20000);
   await sleep(900);
   const d = fr.contentDocument;
   if (blocked(d)) { L('БЛОК на поиске', q); S('!! блок на «' + q + '»'); return false; }
   const cards = [...d.querySelectorAll('[data-marker="item"]')];   // все 50 карточек страницы, не блок catalog-serp
-  const ours = cards.map((c, i) => [idOf(c), i + 1]).filter(x => IDS[x[0]]).map(x => IDS[x[0]] + ' №' + x[1]);
+  const ours = cards.map((c, i) => [idOf(c), i + 1]).filter(x => IDS[x[0]]).map(x => IDS[x[0]] + ' №' + ((p > 1 ? (p - 1) * 50 : 0) + x[1]));
+  if (p > 1) { S('  · стр. ' + p + ': ' + (ours.join(', ') || 'нас нет и в первых ' + p * 50)); return true; }
   const top = cards.slice(0, 15).map(c => {
     const full = (c.innerText || '').replace(/\s+/g, ' ');
     const t = ((c.querySelector('[itemprop="name"],[data-marker="item-title"]') || {}).innerText || '').trim();
@@ -79,7 +82,7 @@ async function serp(q, wide) {
   const cnt = ((d.querySelector('[data-marker="page-title/count"]') || {}).innerText || '').trim();
   S((wide ? '## ' : '- ') + q + ' | всего ' + cnt + ' | НАШИ: ' + (ours.join(', ') || 'нет на 1-й стр.') + ' | продвинуто в десятке: ' + top.slice(0, 10).filter(x => x.promo).length +
     (wide ? '\n   ' + top.slice(0, 6).map((x, i) => (i + 1) + ') ' + x.t.slice(0, 44) + ' ' + x.pr + (x.promo ? ' П' : '')).join(' ; ') : ''));
-  return true;
+  return ours.length ? true : 'none';
 }
 async function profile(href, s) {
   const fr = mk(href, 2400);
@@ -111,7 +114,7 @@ async function profile(href, s) {
     await cabinet(); await pause();
     S('\n# ОСНОВНЫЕ ЗАПРОСЫ');
     let ok = true;
-    for (const q of CORE) { ok = await serp(q, false); if (!ok) break; await pause(); }
+    for (const q of CORE) { ok = await serp(q, false); if (!ok) break; await pause(); if (ok === 'none') { ok = await serp(q, false, 2); if (!ok) break; await pause(); } }
     if (ok) {
       S('\n# ШИРОКИЕ ЗАПРОСЫ, группа ' + GROUP + ' (П = продвинуто)');
       for (const q of WIDE[GROUP]) { ok = await serp(q, true); if (!ok) break; await pause(); }
