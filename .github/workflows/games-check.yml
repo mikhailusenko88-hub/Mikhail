@@ -1,0 +1,30 @@
+name: games-check
+# Проверка тестового сервера онлайн-игры (из облака Claude он не открывается)
+on:
+  push:
+    branches: [games-check]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Проверить
+        run: |
+          mkdir -p out
+          {
+            echo "## $(date -u +%F_%H:%M:%S) UTC"
+            echo "health: $(curl -s -m 15 http://89.126.192.214:8091/health)"
+            echo "day: $(curl -s -m 15 http://89.126.192.214:8091/day | head -c 400)"
+            echo "page: $(curl -s -m 15 -o /tmp/p.html -w '%{http_code} %{size_download}' http://89.126.192.214:8080/mebel/ip52gz08/online/)"
+            echo "title: $(grep -o '<title>[^<]*' /tmp/p.html | head -1)"
+            echo "game.js: $(curl -s -m 15 http://89.126.192.214:8080/mebel/ip52gz08/online/game.js | grep -c 'Flagball')"
+            echo "wss8443: $(curl -s -m 8 -k https://89.126.192.214:8443/health || echo 'нет')"
+          } > out/result.md
+          cat out/result.md
+          git config user.name games-check; git config user.email games-check@users.noreply.github.com
+          git add out; git commit -m "games-check $(date -u +%F_%H:%M)" || exit 0
+          git push origin HEAD:games-check
