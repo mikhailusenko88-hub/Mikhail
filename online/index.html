@@ -32,6 +32,7 @@
   <div id="flags"></div>
   <div id="cn"></div>
   <button id="go">Play</button>
+  <button id="fr" style="display:none;background:#1e88e5;font-size:18px;padding:11px;margin-top:10px"></button>
   <div class="hint" id="hint"></div>
 </div></div>
 <script>
@@ -45,6 +46,9 @@
     el('nick').placeholder = T.name; el('nick').value = o.nick || '';
     el('q').placeholder = '🔎 ' + (T.search || 'Search'); el('q').value = '';
     el('go').textContent = T.play; el('hint').textContent = o.first ? T.hint : '';
+    // площадки без своих приглашений: «Играть с друзьями» — комната по коду
+    el('fr').style.display = o.friends ? 'block' : 'none'; el('fr').textContent = '👥 ' + (T.friends || 'Play with friends');
+    el('fr').onclick = () => { if (window.__roomBox) window.__roomBox(); };
     names = o.names || {}; names2 = o.names2 || {};
     const box = el('flags');
     const mark = () => { box.querySelectorAll('img').forEach((x) => { x.classList.toggle('on', x.alt === pick); }); el('cn').textContent = names[pick] || pick; };

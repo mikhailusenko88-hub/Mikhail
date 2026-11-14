@@ -22,13 +22,20 @@ echo built: $(ls dist)
 
 # ---- онлайн «Flagball Arena» для площадок (CrazyGames и др.): SDK внутри, сервер — защищённое подключение ----
 FB_WSS="${FB_WSS:-wss://89.126.192.214/ws}"  # порт 443 (8443 на сервере занят VPN)
-rm -rf dist/flagball; mkdir -p dist/flagball zips
-FB_ADS="${FB_ADS:-false}"  # пробный запуск CrazyGames: реклама отключена площадкой → кнопок «за рекламу» нет; на полном запуске FB_ADS=true
-cp online/game.js core/core.js dist/flagball/
-# мост: у гостя CrazyGames (не вошёл в аккаунт) он оставлял «Uncaught (in promise)» в консоли — гасим это ожидание
-sed 's/Promise.all(\[e\]).finally(/Promise.allSettled([e]).finally(/' vendor/playgama-bridge.js > dist/flagball/playgama-bridge.js
-grep -q 'Promise.allSettled(\[e\]).finally(' dist/flagball/playgama-bridge.js || { echo 'bridge patch failed'; exit 1; }
-echo '{}' > dist/flagball/playgama-bridge-config.json
-grep -v 'name="robots"' online/index.html | sed "s#<script src=\"core.js\"></script>#<script src=\"playgama-bridge.js\"></script>\n<script>window.FB_SERVER='$FB_WSS'; window.GAME_ADS=$FB_ADS;</script>\n<script src=\"core.js\"></script>#" > dist/flagball/index.html
-(cd dist/flagball && rm -f ../../zips/flagball-arena-crazygames.zip && zip -qr ../../zips/flagball-arena-crazygames.zip .)
-echo flagball: $(du -sh zips/flagball-arena-crazygames.zip | cut -f1)
+# fb_build <папка> <zip> <реклама true|false>
+fb_build() {
+  local D=dist/$1 Z=zips/$2 ADS=$3
+  rm -rf $D; mkdir -p $D zips
+  cp online/game.js core/core.js $D/
+  # мост: у гостя CrazyGames (не вошёл в аккаунт) он оставлял «Uncaught (in promise)» в консоли — гасим это ожидание
+  sed 's/Promise.all(\[e\]).finally(/Promise.allSettled([e]).finally(/' vendor/playgama-bridge.js > $D/playgama-bridge.js
+  grep -q 'Promise.allSettled(\[e\]).finally(' $D/playgama-bridge.js || { echo 'bridge patch failed'; exit 1; }
+  echo '{}' > $D/playgama-bridge-config.json
+  grep -v 'name="robots"' online/index.html | sed "s#<script src=\"core.js\"></script>#<script src=\"playgama-bridge.js\"></script>\n<script>window.FB_SERVER='$FB_WSS'; window.GAME_ADS=$ADS;</script>\n<script src=\"core.js\"></script>#" > $D/index.html
+  (cd $D && rm -f ../../$Z && zip -qr ../../$Z .)
+  echo $1: $(du -sh $Z | cut -f1) "(реклама: $ADS)"
+}
+# CrazyGames: на пробном запуске реклама отключена площадкой → кнопок «за рекламу» нет; на полном запуске FB_ADS=true
+fb_build flagball flagball-arena-crazygames.zip "${FB_ADS:-false}"
+# Playgama и другие площадки через мост: реклама за награду работает сразу; друзья — комната по коду
+fb_build flagball-pg flagball-arena-playgama.zip true

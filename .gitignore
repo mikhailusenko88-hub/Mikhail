@@ -7,3 +7,4 @@ node_modules/
 *.log
 art/out/*.mp4
 tests/cg/shots/
+tests/pg/shots/
