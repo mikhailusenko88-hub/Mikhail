@@ -47,3 +47,5 @@
 | shorts | 2026-11-13 | 2 | Brazil vs Ukraine vs Myanmar | https://youtube.com/shorts/NwgWwRcEqDM | |
 | 31 | 2026-11-13 | 3 | S2 RACE 18/68 | https://youtu.be/D2uhvl_bFqg | public |
 | shorts | 2026-11-13 | 3 | Vietnam vs Spain vs Argentina | https://youtube.com/shorts/qWd1NlVnmWg | |
+| 32 | 2026-11-14 | 1 | S2 RACE 19/68 | https://youtu.be/Irmkldu-qyI | public |
+| shorts | 2026-11-14 | 1 | Mexico vs UK vs Nigeria | https://youtube.com/shorts/054ZfXvp4Js | |
