@@ -247,7 +247,7 @@ function broadcast(r) {
   for (const x of r.balls.values()) b.push([x.id, Math.round(x.x), Math.round(x.y), Math.round(x.m * 10), x.alive ? 1 : 0, (x.shield > 0 ? 1 : 0) | (x.boost > 0 ? 2 : 0) | (x.magnet > 0 ? 4 : 0)]);
   const pw = []; for (const p of r.powers.values()) pw.push([p.id, p.x, p.y, p.k]);
   const sw = r.saws.map((s) => [Math.round(s.x), Math.round(s.y)]);
-  const o = { t: 's', R: Math.round(r.R), b, da: r.dAdd, dd: r.dDel, ev: r.ev, mt: r.meta, pw, sw };
+  const o = { t: 's', T: Math.round(performance.now()), R: Math.round(r.R), b, da: r.dAdd, dd: r.dDel, ev: r.ev, mt: r.meta, pw, sw }; // T — часы сервера: клиент плавно проигрывает снимки
   let msgSpec = null;
   if (r.tickN % 30 === 0) {
     o.rt = Math.ceil(r.rT);
