@@ -81,7 +81,8 @@
         C.interSupported = !!window.bridge.advertisement.isInterstitialSupported;
       }
       const P = window.bridge.platform;
-      P.on('pause_state_changed', (p) => { C.paused = !!p; C.audio.update(); });
+      // онлайн-игре нельзя замирать, когда окно просто потеряло фокус (сервер-то идёт дальше): звук глушим, игру не морозим
+      P.on('pause_state_changed', (p) => { C.platformPaused = !!p; C.paused = C.platformPaused && !(C.game && C.game.noPlatformPause); C.audio.update(); });
       P.on('audio_state_changed', (on) => { C.platformMuted = !on; C.audio.update(); });
       try { C.platformMuted = P.isAudioEnabled === false; } catch (e) { /* */ }
       window.bridge.advertisement.on('rewarded_state_changed', (s) => C.ads._onRewarded(s));
@@ -143,7 +144,7 @@
   };
   A.update = () => {
     if (!A.ctx) return;
-    const on = C.save.sound && !C.platformMuted && !C.adPlaying && !C.hidden && !C.paused;
+    const on = C.save.sound && !C.platformMuted && !C.adPlaying && !C.hidden && !C.paused && !C.platformPaused;
     A.master.gain.setTargetAtTime(on ? 0.7 : 0, A.ctx.currentTime, 0.03);
   };
   A.tone = (f, dur, type = 'square', vol = 0.15, slide = 0, delay = 0, dest) => {
@@ -876,7 +877,7 @@
     C.state = game.startState || 'home';
     if (C.state === 'play') { if (game.startLevel) game.startLevel(C.save.level); }
     requestAnimationFrame(frame);
-    setTimeout(() => { C.msg('game_ready'); if (C.state === 'play') C.msg('gameplay_started'); }, 50);
+    setTimeout(() => { C.msg('game_ready'); if (C.state === 'play' && !game.manualGameplay) C.msg('gameplay_started'); }, 50);
     if (!game.noGift && C.giftReady() && C.save.plays > 0) setTimeout(() => { if (!C.popup && (C.state === 'home' || game.noLevels)) C.openGift(); }, 800);
   };
 })();

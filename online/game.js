@@ -322,7 +322,7 @@
   function adCoinsState() { const f = X(); const d = C.today(); if (f.adc.d !== d) f.adc = { d, n: 0, t: 0 }; return f.adc; }
 
   const game = {
-    id: 'ballio_online', startState: 'play', noLevels: true, hasSkip: false, reviveIcon: null, noPauseBtn: true, noGift: true, landscapeBase: true,
+    id: 'ballio_online', startState: 'play', noLevels: true, hasSkip: false, reviveIcon: null, noPauseBtn: true, noGift: true, landscapeBase: true, noPlatformPause: true, manualGameplay: true,
     startLevel() {}, toHome() {}, revive() {},
     canInter(sess, sinceInter, sinceReward) { return ((C.bridgeOk && !C.mockAds) || q.has('inter')) && sess > 60 && sinceReward > 30; },
     init() {
