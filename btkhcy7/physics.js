@@ -157,7 +157,9 @@
       if (maxT > 0) {
         const target = j.brake ? 0 : j.speed;
         const cdw = Wh.w - C.w;
-        let dl = (target - cdw) * j.mm; const o = j.lm; j.lm = Math.max(-maxT, Math.min(maxT, o + dl)); dl = j.lm - o;
+        // газ только разгоняет (быстрее нормы — катится сам, например после ускорителя); тормоз держит в обе стороны
+        const lo = j.brake ? -maxT : j.speed > 0 ? 0 : -maxT, hi = j.brake ? maxT : j.speed < 0 ? 0 : maxT;
+        let dl = (target - cdw) * j.mm; const o = j.lm; j.lm = Math.max(lo, Math.min(hi, o + dl)); dl = j.lm - o;
         Wh.w += Wh.iI * dl; C.w -= C.iI * dl;
       }
     } else if (j.t === 'pin') {

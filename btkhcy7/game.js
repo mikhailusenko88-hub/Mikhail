@@ -15,9 +15,9 @@
 
   // ---------- трассы ----------
   function Track() {
-    const S = { polys: [], planks: [], movers: [], seesaws: [], star: null, cp: null, fin: 0, minY: 1e9, maxY: -1e9 };
+    const S = { polys: [], planks: [], movers: [], seesaws: [], crushers: [], fallers: [], boosts: [], springs: [], star: null, cp: null, fin: 0, minY: 1e9, maxY: -1e9 };
     let x = 0, y = 600, cur = null;
-    const push = (px, py) => { cur.push([px, py]); S.minY = Math.min(S.minY, py); S.maxY = Math.max(S.maxY, py); };
+    const push = (px, py, f) => { cur.push(f ? [px, py, f] : [px, py]); S.minY = Math.min(S.minY, py); S.maxY = Math.max(S.maxY, py); };
     const B = {
       S,
       get x() { return x; }, get y() { return y; },
@@ -36,6 +36,16 @@
       mover(o) { S.movers.push(o); return B; },
       seesaw(o) { S.seesaws.push(o); return B; },
       fin(dx = 150) { S.fin = x + dx; return B; },
+      // лёд: скользко, газ буксует
+      ice(len, up = 0, n = 8) { const x0 = x, y0 = y; for (let i = 1; i <= n; i++) { const t = i / n, s2 = t * t * (3 - 2 * t); push(x0 + len * t, y0 - up * s2, 'ice'); } x = x0 + len; y = y0 - up; return B; },
+      // лифт: платформа в шахте ездит вверх-вниз (stay — где стоит в начале: 0 низ, 1 верх)
+      lift(rise, len = 360) { const ex = x, ey = y; S.movers.push({ len, x0: ex + 8 + len / 2, y0: ey, x1: ex + 8 + len / 2, y1: ey - rise, lift: 1, move: 2.2, dwell: 1.6 }); B.gap(len + 16, -rise); return B; },
+      // пресс над дорогой: падает и поднимается
+      crusher(dx, o = {}) { S.crushers.push(Object.assign({ x: x + dx, gy: y, up: 330, down: 120, w: 170, h: 260, off: 0 }, o)); return B; },
+      // рушащийся мост из досок над ямой
+      fallBridge(w, k = 5) { const ex = x, ey = y, pw = (w - 16) / k; for (let i = 0; i < k; i++) S.fallers.push({ x: ex + 8 + pw * i + pw / 2, y: ey, w: pw - 6, dir: i % 2 ? 1 : -1 }); B.gap(w, 0); return B; },
+      boost(dx, len = 260) { S.boosts.push({ x0: x + dx, x1: x + dx + len }); return B; },
+      spring(dx, len = 140) { S.springs.push({ x0: x + dx, x1: x + dx + len }); return B; },
       end(len = 1700) { B.flat(len); S.polys.push(cur); cur = null; return B; },
     };
     return B;
@@ -53,9 +63,9 @@
     // 5 — платформа над ямой
     () => {
       const b = Track().start(-300, 600).flat(900); const ex = b.x, ey = b.y;
-      b.gap(700, 0).cp(80).flat(500).star(200, -170).hill(480, 70).flat(300).fin().end();
-      b.mover({ len: 330, x0: ex + 10 + 165, y0: ey, x1: ex + 700 - 10 - 165, y1: ey, T: 4.2 });
-      b.S.star.x = ex + 350; b.S.star.y = ey - 200;
+      b.gap(600, 0).cp(80).flat(500).star(200, -170).hill(480, 70).flat(300).fin().end();
+      b.mover({ len: 360, x0: ex + 8 + 180, y0: ey, x1: ex + 600 - 8 - 180, y1: ey });
+      b.S.star.x = ex + 300; b.S.star.y = ey - 210;
       return b.S;
     },
     // 6 — качели
@@ -80,22 +90,67 @@
       b.star(220, -200).gap(380, 90).slope(600, -160).flat(300).cp(0).hill(520, 80).flat(300).fin().end();
       return b.S;
     },
+
+    // 9 — лифт вверх
+    () => { const b = Track().start(-300, 600).flat(900).lift(260).flat(250).cp(0).star(-200, -150).flat(300).hill(500, 60).flat(250).fin().end(); return b.S; },
+    // 10 — прессы над дорогой
+    () => { const b = Track().start(-300, 600).flat(900).crusher(300).flat(700).crusher(300, { off: 1.3 }).flat(700).cp(-200).star(200, -170).hill(500, 70).flat(250).fin().end(); return b.S; },
+    // 11 — рушащийся мост: не останавливайся
+    () => { const b = Track().start(-300, 600).flat(900).slope(300, 40).flat(150); const ex = b.x, ey = b.y; b.fallBridge(820, 6).cp(0).flat(400).hill(450, 60).flat(250).fin().end(); b.S.star = { x: ex + 410, y: ey - 170, got: false }; return b.S; },
+    // 12 — батут через стену
+    () => { const b = Track().start(-300, 600).flat(800).spring(0, 140).flat(640).line(0, -230).flat(500).cp(0).star(200, -180).slope(700, -230).flat(300).fin().end(); return b.S; },
+    // 13 — ускоритель и длинный прыжок
+    () => { const b = Track().start(-300, 600).flat(500).boost(150, 320).flat(650).ramp(240, 50); b.star(250, -220).gap(560, 60).slope(500, -120).cp(0).flat(300).hill(400, 60).flat(250).fin().end(); return b.S; },
+    // 14 — лёд: разгонись заранее
+    () => { const b = Track().start(-300, 600).flat(1000).ice(900, 150).flat(220).cp(0).star(120, -160).ice(800, -230).flat(350).hill(450, 50).flat(250).fin().end(); return b.S; },
+    // 15 — двое качелей
+    () => {
+      const b = Track().start(-300, 600).flat(800).slope(300, 60).flat(200); const e1 = b.x, y1 = b.y;
+      b.gap(620, 0).flat(380); const e2 = b.x, y2 = b.y;
+      b.gap(620, 0).cp(60).flat(400).star(200, -160).flat(300).fin().end();
+      b.seesaw({ x: e1 + 310, lip: y1, len: 740, tilt: 0.2 }); b.seesaw({ x: e2 + 310, lip: y2, len: 740, tilt: 0.2 });
+      return b.S;
+    },
+    // 16 — лифт вниз, потом платформа
+    () => {
+      const b = Track().start(-300, 400).flat(900).lift(-240).flat(500).cp(0); const ex = b.x, ey = b.y;
+      b.gap(600, 0).flat(400).star(150, -170).flat(300).fin().end();
+      b.mover({ len: 360, x0: ex + 8 + 180, y0: ey, x1: ex + 600 - 8 - 180, y1: ey });
+      return b.S;
+    },
+    // 17 — кочки под прессами
+    () => { const b = Track().start(-300, 600).flat(800).crusher(260).bumps(700, 4, 26).crusher(-200, { off: 0.9 }).flat(300).cp(0).bumps(600, 3, 40).crusher(-300, { off: 2.0 }).flat(300).star(100, -170).flat(200).fin().end(); return b.S; },
+    // 18 — мост рушится, потом трамплин
+    () => { const b = Track().start(-300, 600).flat(900); const ex = b.x, ey = b.y; b.fallBridge(700, 5).flat(300).ramp(220, 45); b.gap(360, 70).slope(450, -110).cp(0).flat(300).fin().end(); b.S.star = { x: ex + 350, y: ey - 170, got: false }; return b.S; },
+    // 19 — лёд и батут
+    () => { const b = Track().start(-300, 600).flat(700).ice(400, 0).spring(0, 140).ice(520, 0).line(0, -230).flat(500).cp(0).star(250, -170).ice(600, -230).flat(400).fin().end(); return b.S; },
+    // 20 — финал: всё вместе
+    () => {
+      const b = Track().start(-300, 600).flat(500).boost(80, 300).flat(500).ramp(240, 50); b.gap(480, 60).slope(450, -110).flat(700).crusher(150).flat(500).cp(0).lift(250).flat(300).star(-150, -170).bumps(500, 3, 28).flat(300).fin().end();
+      return b.S;
+    },
   ];
   // уровни после ручных: собираются из кусков, сложность растёт
   function procLevel(n) {
-    const r = C.seeded(1000 + n * 77), d = Math.min(1, (n - 8) / 22);
+    const r = C.seeded(1000 + n * 77), d = Math.min(1, (n - 20) / 30);
     const b = Track().start(-300, 600).flat(800);
     const parts = 5 + Math.floor(r() * 3) + Math.floor(d * 3);
+    let last = -1;
     for (let i = 0; i < parts; i++) {
-      const k = Math.floor(r() * 7);
+      let k = Math.floor(r() * 12); if (k === last) k = (k + 1) % 12; last = k;
       if (i === Math.floor(parts / 2)) b.cp(0);
       if (k === 0) b.hill(450 + r() * 300, 50 + r() * (60 + 80 * d));
       else if (k === 1) b.bumps(600 + r() * 500, 3 + Math.floor(r() * 4), 20 + r() * (20 + 30 * d));
       else if (k === 2) b.slope(500 + r() * 300, 120 + r() * 160 * (0.5 + d)).flat(150);
       else if (k === 3) b.slope(600 + r() * 300, -(150 + r() * 200 * (0.5 + d))).flat(200);
-      else if (k === 4) { b.flat(200).ramp(240, 50 + r() * 30); const w = 260 + r() * 200 * (0.4 + d); if (i === 1 && !b.S.star) b.star(w / 2, -220); b.gap(w, 40 + r() * 40).slope(400, -90).flat(200); }
-      else if (k === 5) { const ex = b.x, ey = b.y, w = 600 + r() * 200; b.gap(w, 0).flat(250); b.mover({ len: 320, x0: ex + 170, y0: ey, x1: ex + w - 170, y1: ey, T: 3.6 + r() * 1.5 }); }
-      else { const ex = b.x, ey = b.y, w = 560 + r() * 120; b.gap(w, 0).flat(250); b.seesaw({ x: ex + w / 2, lip: ey, len: w + 120, tilt: 0.2 }); }
+      else if (k === 4) { b.flat(200).ramp(240, 50 + r() * 30); const w = 260 + r() * 180 * (0.4 + d); if (!b.S.star) b.star(w / 2, -220); b.gap(w, 40 + r() * 40).slope(400, -90).flat(200); }
+      else if (k === 5) { const ex = b.x, ey = b.y, w = 560 + r() * 140; b.gap(w, 0).flat(250); b.mover({ len: 360, x0: ex + 188, y0: ey, x1: ex + w - 188, y1: ey, move: 1.6 + r() * 0.8 }); }
+      else if (k === 6) { const ex = b.x, ey = b.y, w = 560 + r() * 120; b.gap(w, 0).flat(250); b.seesaw({ x: ex + w / 2, lip: ey, len: w + 120, tilt: 0.2 }); }
+      else if (k === 7) b.flat(200).crusher(250, { off: r() * 3 }).flat(550);
+      else if (k === 8) b.flat(200).fallBridge(600 + r() * 300, 5 + Math.floor(r() * 2)).flat(250);
+      else if (k === 9) b.flat(300).spring(0, 140).flat(600).line(0, -(150 + r() * 90)).flat(400);
+      else if (k === 10) b.ice(600 + r() * 400, r() < 0.5 ? 0 : 100 + r() * 60).flat(200);
+      else { b.lift(r() < 0.5 ? 200 + r() * 80 : -(180 + r() * 80)).flat(300); }
       b.flat(150);
     }
     if (!b.S.star) b.star(-300, -200);
@@ -104,17 +159,17 @@
   }
 
   // ---------- мир уровня ----------
-  let W = null, L = null, truck = null, ball = null, wheels = [], wj = [], movers = [], seesaws = [];
+  let W = null, L = null, truck = null, ball = null, wheels = [], wj = [], movers = [], seesaws = [], crushers = [], fallers = [], springCD = 0;
   let tm = 0, state = 'play', failT = 0, failWhy = '', crashT = 0, flipT = 0, outT = 0, inBed = true, grounded = false, wonT = 0;
   let gasIn = false, brkIn = false, touch = null, camX = 0, camY = 0, Z = 0.8, shake = 0, toastL = [], hintT = 0, cpReached = null, startX = 0, startY = 0, partsFx = [];
-  let lastLevel = 1, parT = 30, simAcc = 0;
+  let lastLevel = 1, parT = 30, simAcc = 0, simT = 0;
 
   function build(n) {
     lastLevel = n;
     L = (n <= LEVELS.length ? LEVELS[n - 1] : () => procLevel(n))();
-    W = P.world(); movers = []; seesaws = [];
+    W = P.world(); movers = []; seesaws = []; crushers = []; fallers = [];
     for (const poly of L.polys) {
-      for (let i = 1; i < poly.length; i++) P.addStatic(W, poly[i - 1][0], poly[i - 1][1], poly[i][0], poly[i][1]);
+      for (let i = 1; i < poly.length; i++) P.addStatic(W, poly[i - 1][0], poly[i - 1][1], poly[i][0], poly[i][1], poly[i][2] === 'ice' ? 0.07 : 0.9);
       // стенки ям: край обрыва — твёрдый
       const a = poly[0], z = poly[poly.length - 1];
       P.addStatic(W, a[0], a[1], a[0], a[1] + 1600); P.addStatic(W, z[0], z[1], z[0], z[1] + 1600);
@@ -124,7 +179,7 @@
     for (const p of L.planks) { P.addStatic(W, p[0], p[1], p[2], p[3], 0.95); P.addStatic(W, p[0], p[1] + 20, p[2], p[3] + 20); P.addStatic(W, p[0], p[1], p[0], p[1] + 20); P.addStatic(W, p[2], p[3], p[2], p[3] + 20); }
     for (const m of L.movers) {
       const b = P.addBody(W, P.body({ dyn: false, x: m.x0, y: m.y0, segs: [[-m.len / 2, 0, m.len / 2, 0], [-m.len / 2, 22, m.len / 2, 22], [-m.len / 2, 0, -m.len / 2, 22], [m.len / 2, 0, m.len / 2, 22]], rad: m.len / 2 + 40, mu: 0.95, group: 'obj', kind: 'mover' }));
-      b.m0 = m; movers.push(b);
+      b.m0 = m; b.st = 'wait'; b.u = 0; b.base = b.segs.slice(); b.gL = [-m.len / 2, 0, -m.len / 2, -38]; b.gR = [m.len / 2, 0, m.len / 2, -38]; movers.push(b);
     }
     for (const s of L.seesaws) {
       // ось над ямой; в начале доска лежит левым концом на краю ямы (наклон tilt), правый конец поднят
@@ -133,9 +188,17 @@
       P.pinJoint(W, b, 0, 0, s.x, py); b.pivotY = py;
       seesaws.push(b);
     }
+    for (const c of L.crushers) {
+      const hw = c.w / 2, b = P.addBody(W, P.body({ dyn: false, x: c.x, y: c.gy - c.up, segs: [[-hw, -c.h, hw, -c.h], [hw, -c.h, hw, 0], [hw, 0, -hw, 0], [-hw, 0, -hw, -c.h]], rad: c.h + 60, mu: 0.6, group: 'obj', kind: 'crusher' }));
+      b.c0 = c; crushers.push(b);
+    }
+    for (const f of L.fallers) {
+      const hw = f.w / 2, b = P.addBody(W, P.body({ dyn: false, x: f.x, y: f.y, segs: [[-hw, 0, hw, 0], [-hw, 20, hw, 20], [-hw, 0, -hw, 20], [hw, 0, hw, 20]], rad: hw + 40, mu: 0.95, group: 'obj', kind: 'faller' }));
+      b.f0 = f; b.trig = 0; fallers.push(b);
+    }
     parT = Math.round(L.fin / 520 + 4);
     const sp = L.polys[0][0]; startX = sp[0] + 300; startY = sp[1];
-    cpReached = null; tm = 0;
+    cpReached = null; tm = 0; simT = 0;
     spawn(startX, startY);
   }
 
@@ -147,7 +210,9 @@
 
   function spawn(x, gy) {
     // убрать старые тела грузовика и шарика
-    W.bodies = W.bodies.filter((b) => b.kind === 'mover' || b.kind === 'seesaw');
+    W.bodies = W.bodies.filter((b) => b.kind === 'mover' || b.kind === 'seesaw' || b.kind === 'crusher' || b.kind === 'faller');
+    for (const f of fallers) { f.x = f.f0.x; f.y = f.f0.y; f.vx = f.vy = 0; f.a = 0; f.w = 0; f.trig = 0; }
+    for (const m of movers) { m.st = 'wait'; m.u = 0; m.x = m.m0.x0; m.y = m.m0.y0; m.vx = m.vy = 0; }
     W.joints = W.joints.filter((j) => j.t === 'pin');
     const y = gy - 82;
     truck = P.addBody(W, P.body({
@@ -192,17 +257,61 @@
       if (k) { truck.w += k * 4.2 * dt; truck.w = C.clamp(truck.w, -3.2, 3.2); }
       else truck.w *= 1 - 2.2 * dt; // отпустил — вращение гаснет: прощает новичку
     }
-    // кинематические платформы
+    // платформы и лифты ждут грузовик: заехал целиком — везут; съехал на другом краю — возвращаются
     for (const m of movers) {
-      const o = m.m0, ph = (tm % o.T) / o.T, s = 0.5 - 0.5 * Math.cos(ph * Math.PI * 2);
+      const o = m.m0, h = o.len / 2, mv = o.move || 2.0;
+      const onW = wheels.filter((w) => w.x > m.x - h + 24 && w.x < m.x + h - 24 && Math.abs(w.y - (m.y - 27)) < 45).length;
+      const near = wheels.some((w) => w.x > m.x - h - 30 && w.x < m.x + h + 30 && Math.abs(w.y - (m.y - 27)) < 60);
+      if (m.st === 'wait') { if (onW === 2 && state === 'play') { m.st = 'go'; m.hold = 0.35; C.sfx('tap'); } }
+      else if (m.st === 'go') { if (m.hold > 0) m.hold -= dt; else m.u = Math.min(1, m.u + dt / mv); if (m.u >= 1) { m.st = 'arrived'; m.leaveT = 0; C.sfx('coin', 0.6); } }
+      else if (m.st === 'arrived') { if (near) m.leaveT = 0; else if ((m.leaveT += dt) > 1.2) m.st = 'back'; }
+      else if (m.st === 'back') { m.u = Math.max(0, m.u - dt / mv); if (m.u <= 0) m.st = 'wait'; }
+      const sm = (u) => u * u * (3 - 2 * u), s = sm(m.u), s2 = sm(m.st === 'go' && !(m.hold > 0) ? Math.min(1, m.u + dt / mv) : m.st === 'back' ? Math.max(0, m.u - dt / mv) : m.u);
       const nx = o.x0 + (o.x1 - o.x0) * s, ny = o.y0 + (o.y1 - o.y0) * s;
-      const ph2 = ((tm + dt) % o.T) / o.T, s2 = 0.5 - 0.5 * Math.cos(ph2 * Math.PI * 2);
       const tx = o.x0 + (o.x1 - o.x0) * s2, ty = o.y0 + (o.y1 - o.y0) * s2;
       m.x = nx; m.y = ny; m.vx = (tx - nx) / dt; m.vy = (ty - ny) / dt;
+      // шлагбаумы: въезд открыт, пока платформа у начала, выезд — когда приехала; на ходу закрыты оба
+      m.openL = m.st === 'wait'; m.openR = m.st === 'arrived';
+      m.segs = m.base.concat(m.openL ? [] : [m.gL], m.openR ? [] : [m.gR]);
     }
+    for (const m of crushers) {
+      if (state === 'dead') { m.vy = 0; continue; }
+      const c = m.c0, s1 = crushS(c, simT), s2 = crushS(c, simT + dt);
+      const y1 = c.gy - c.up + (c.up - c.down) * s1, y2 = c.gy - c.up + (c.up - c.down) * s2;
+      m.y = y1; m.vy = (y2 - y1) / dt; m.vx = 0;
+      if (s1 < 0.9 && s2 >= 0.9 && Math.abs(truck.x - c.x) < 900) { shake = Math.max(shake, 0.12); C.sfx('crash', 0.35); }
+    }
+    for (const f of fallers) if (f.trig) { f.trig += dt; if (f.trig > 0.45) { f.vy += P.G * dt * 0.9; f.w += (f.f0.dir || 1) * 0.7 * dt; } }
+    if (state === 'play' && grounded) {
+      const [fx, fy] = P.wvec(truck, 1, 0);
+      for (const z of L.boosts) if (truck.x > z.x0 && truck.x < z.x1) {
+        const sp = truck.vx * fx + truck.vy * fy;
+        if (sp < 1350) for (const b of [truck, ...wheels, ball]) { b.vx += fx * 2600 * dt; b.vy += fy * 2600 * dt; }
+      }
+      springCD -= dt;
+      for (const z of L.springs) if (springCD <= 0 && truck.x > z.x0 && truck.x < z.x1) {
+        for (const b of [truck, ...wheels, ball]) b.vy = Math.min(b.vy, -1250);
+        springCD = 0.8; z.t = simT; C.sfx('bounce'); shake = Math.max(shake, 0.1);
+      }
+    }
+    simT += dt;
   }
 
   let bumpCD = 0;
+  function crushS(c, t) {
+    const up = c.stay || 2.1, fall = 0.28, low = 0.55, rise = 0.9, T = up + fall + low + rise; let u = (((t + (c.off || 0)) % T) + T) % T;
+    if (u < up) return 0; u -= up;
+    if (u < fall) { const k = u / fall; return k * k; } u -= fall;
+    if (u < low) return 1; u -= low;
+    const k = u / rise; return 1 - k * k * (3 - 2 * k);
+  }
+  function moverS(o, t) {
+    const m = o.move || 2.0, d = o.dwell || 1.4, T = 2 * (m + d); let u = ((t % T) + T) % T;
+    if (u < d) return 0; u -= d;
+    if (u < m) { const k = u / m; return k * k * (3 - 2 * k); } u -= m;
+    if (u < d) return 1; u -= d;
+    const k = u / m; return 1 - k * k * (3 - 2 * k);
+  }
   function afterStep() {
     bumpCD -= P.DT;
     if (bumpCD <= 0) for (const k of W.touch) {
@@ -213,7 +322,8 @@
     grounded = false; let roof = false;
     for (const k of W.touch) {
       if (k.A.kind === 'wheel') grounded = true;
-      if (k.A === truck && k.tagA && k.tagA.crash) roof = true;
+      if (k.B && k.B.kind === 'faller' && !k.B.trig && (k.A.kind === 'wheel' || k.A === truck)) { k.B.trig = 1e-3; C.sfx('hit', 0.4); }
+      if (k.A === truck && k.tagA && k.tagA.crash) { roof = true; if (k.B && k.B.kind === 'crusher') crashT = 1; }
     }
     if (state !== 'play') return;
     crashT = roof ? crashT + P.DT : 0;
@@ -252,7 +362,7 @@
   const sx = (x) => (x - camX) * Z + C.W * (C.W > C.H ? 0.4 : 0.36), sy = (y) => (y - camY) * Z + C.H * (C.W > C.H ? 0.56 : 0.5);
 
   function drawSky(ctx) {
-    const g = ctx.createLinearGradient(0, 0, 0, C.H); g.addColorStop(0, '#5ec2ff'); g.addColorStop(0.7, '#c8eeff'); g.addColorStop(1, '#e8f8ff');
+    const g = ctx.createLinearGradient(0, 0, 0, C.H); g.addColorStop(0, window.__thumbSky ? '#1f7ff0' : '#5ec2ff'); g.addColorStop(0.7, window.__thumbSky ? '#8fd3ff' : '#c8eeff'); g.addColorStop(1, '#e8f8ff');
     ctx.fillStyle = g; ctx.fillRect(0, 0, C.W, C.H);
     // солнце
     ctx.fillStyle = 'rgba(255,245,180,0.9)'; ctx.beginPath(); ctx.arc(C.W * 0.82, C.H * 0.16, 54, 0, 7); ctx.fill();
@@ -264,7 +374,7 @@
       for (const [dx, dy, r] of [[0, 0, 34], [36, -14, 42], [76, 0, 32], [38, 10, 30]]) { ctx.beginPath(); ctx.arc(cx + dx, cy + dy, r, 0, 7); ctx.fill(); }
     }
     // горы: два слоя с параллаксом
-    for (const [k, col, base, amp] of [[0.15, '#9fd3c7', 0.62, 90], [0.3, '#7cc4a4', 0.72, 70]]) {
+    for (const [k, col, base, amp] of (window.__thumbSky ? [[0.15, '#6fa8dc', 0.62, 90], [0.3, '#4f9d6a', 0.72, 70]] : [[0.15, '#9fd3c7', 0.62, 90], [0.3, '#7cc4a4', 0.72, 70]])) {
       ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(0, C.H);
       for (let x = 0; x <= C.W + 20; x += 20) { const wx = x / Z + camX * k; ctx.lineTo(x, C.H * base - amp * (0.6 * Math.sin(wx * 0.0021) + 0.4 * Math.sin(wx * 0.0057 + 1.3)) + (camY - 500) * k * Z * 0.3); }
       ctx.lineTo(C.W, C.H); ctx.closePath(); ctx.fill();
@@ -291,6 +401,33 @@
       ctx.strokeStyle = '#8bc34a'; ctx.lineWidth = 8 * Z; ctx.beginPath(); poly.forEach((p, i) => (i ? ctx.lineTo(sx(p[0]), sy(p[1])) : ctx.moveTo(sx(p[0]), sy(p[1])))); ctx.stroke();
     }
     for (const p of L.planks) plank(ctx, p[0], p[1], p[2], p[3], 20, '#c58b4f', '#8d5a2b');
+    // лёд
+    for (const poly of L.polys) for (let i = 1; i < poly.length; i++) if (poly[i][2] === 'ice') {
+      const a = poly[i - 1], b = poly[i]; if (b[0] < vx0 || a[0] > vx1) continue;
+      ctx.lineCap = 'round'; ctx.strokeStyle = '#b3e5fc'; ctx.lineWidth = 24 * Z; ctx.beginPath(); ctx.moveTo(sx(a[0]), sy(a[1]) + 5 * Z); ctx.lineTo(sx(b[0]), sy(b[1]) + 5 * Z); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 6 * Z; ctx.beginPath(); ctx.moveTo(sx(a[0]), sy(a[1]) - 2 * Z); ctx.lineTo(sx(b[0]), sy(b[1]) - 2 * Z); ctx.stroke();
+    }
+    // ускорители: оранжевые стрелки на дороге
+    for (const z of L.boosts) {
+      if (z.x1 < vx0 || z.x0 > vx1) continue;
+      const ph = (C.realT * 2) % 1;
+      for (let x = z.x0; x < z.x1 - 30; x += 60) {
+        const gy = groundAt(x + 20), k = ((x - z.x0) / 60 + ph) % 3 < 1 ? 1 : 0.55;
+        ctx.fillStyle = `rgba(255,${k > 0.9 ? 160 : 112},0,${k})`; ctx.beginPath();
+        ctx.moveTo(sx(x), sy(gy - 4)); ctx.lineTo(sx(x + 22), sy(gy - 4)); ctx.lineTo(sx(x + 46), sy(gy - 22)); ctx.lineTo(sx(x + 22), sy(gy - 40)); ctx.lineTo(sx(x), sy(gy - 40)); ctx.lineTo(sx(x + 24), sy(gy - 22)); ctx.closePath(); ctx.fill();
+      }
+    }
+    // батуты
+    for (const z of L.springs) {
+      if (z.x1 < vx0 || z.x0 > vx1) continue;
+      const gy = groundAt((z.x0 + z.x1) / 2), squash = z.t !== undefined && simT - z.t < 0.25 ? 1 - (simT - z.t) / 0.25 : 0, top = gy - 30 + squash * 14;
+      ctx.fillStyle = '#c62828'; ctx.fillRect(sx(z.x0), sy(gy - 8), (z.x1 - z.x0) * Z, 10 * Z);
+      ctx.strokeStyle = '#90a4ae'; ctx.lineWidth = 5 * Z; ctx.beginPath();
+      for (let x = z.x0 + 14; x < z.x1 - 10; x += 36) { ctx.moveTo(sx(x), sy(gy - 8)); for (let k = 1; k <= 4; k++) ctx.lineTo(sx(x + (k % 2 ? 12 : 0)), sy(gy - 8 - (gy - 8 - top) * (k / 4))); }
+      ctx.stroke();
+      ctx.fillStyle = '#ffca28'; C.rr(ctx, sx(z.x0 - 6), sy(top - 12), (z.x1 - z.x0 + 12) * Z, 14 * Z, 6 * Z); ctx.fill();
+      ctx.fillStyle = '#e53935'; ctx.fillRect(sx(z.x0 - 6), sy(top - 12), (z.x1 - z.x0 + 12) * Z, 4 * Z);
+    }
   }
   function plank(ctx, x0, y0, x1, y1, th, col, edge) {
     const a = Math.atan2(y1 - y0, x1 - x0), len = Math.hypot(x1 - x0, y1 - y0);
@@ -303,11 +440,54 @@
   }
   function drawObjects(ctx) {
     for (const m of movers) {
-      const h = m.m0.len / 2;
+      const o = m.m0, h = o.len / 2, ry = o.y0 + 46, ra = o.x0 - h, rb = o.x1 + h;
+      if (o.lift) {
+        // лифт: две направляющие от низа до верха шахты и стрелки вверх-вниз
+        ctx.strokeStyle = '#546e7a'; ctx.lineWidth = 8 * Z;
+        for (const dx of [-h + 30, h - 30]) { ctx.beginPath(); ctx.moveTo(sx(o.x0 + dx), sy(o.y1 - 40)); ctx.lineTo(sx(o.x0 + dx), sy(o.y0 + 60)); ctx.stroke(); }
+        ctx.fillStyle = 'rgba(255,255,255,0.85)'; const my = (o.y0 + o.y1) / 2;
+        for (const d of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sx(o.x0), sy(my + d * 70)); ctx.lineTo(sx(o.x0 - 16), sy(my + d * 40)); ctx.lineTo(sx(o.x0 + 16), sy(my + d * 40)); ctx.closePath(); ctx.fill(); }
+        ctx.fillRect(sx(o.x0) - 4 * Z, sy(my - 40), 8 * Z, 80 * Z);
+      } else {
+      // рельс от края до края: видно, куда ездит платформа
+      ctx.strokeStyle = '#546e7a'; ctx.lineWidth = 8 * Z; ctx.beginPath(); ctx.moveTo(sx(ra), sy(ry)); ctx.lineTo(sx(rb), sy(ry)); ctx.stroke();
+      ctx.fillStyle = '#546e7a'; for (const x of [ra, rb]) { ctx.beginPath(); ctx.arc(sx(x), sy(ry), 10 * Z, 0, 7); ctx.fill(); }
+      ctx.fillStyle = 'rgba(255,255,255,0.85)'; const mid = (ra + rb) / 2;
+      for (const d of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sx(mid + d * 70), sy(ry + 30)); ctx.lineTo(sx(mid + d * 40), sy(ry + 16)); ctx.lineTo(sx(mid + d * 40), sy(ry + 44)); ctx.closePath(); ctx.fill(); }
+      ctx.fillRect(sx(mid - 40), sy(ry + 26), 80 * Z, 8 * Z);
+      }
+
       ctx.save(); ctx.translate(sx(m.x), sy(m.y)); ctx.scale(Z, Z);
+      for (const [gx, open] of [[-h + 6, m.openL], [h - 6, m.openR]]) {
+        ctx.fillStyle = '#37474f'; ctx.fillRect(gx - 5, -16, 10, 16);
+        ctx.save(); ctx.translate(gx, -12); ctx.rotate(open ? (gx < 0 ? -1.35 : 1.35) : 0);
+        ctx.fillStyle = '#fff'; C.rr(ctx, -7, -42, 14, 44, 5); ctx.fill(); ctx.fillStyle = '#e53935'; for (let k = 0; k < 3; k++) ctx.fillRect(-7, -40 + k * 14, 14, 7);
+        ctx.restore();
+      }
       ctx.fillStyle = '#455a64'; C.rr(ctx, -h - 2, -2, h * 2 + 4, 26, 8); ctx.fill();
       ctx.fillStyle = '#90a4ae'; C.rr(ctx, -h, 0, h * 2, 22, 7); ctx.fill();
       ctx.save(); C.rr(ctx, -h, 12, h * 2, 10, 4); ctx.clip(); ctx.fillStyle = '#ffca28'; ctx.fillRect(-h, 12, h * 2, 10); ctx.fillStyle = '#263238'; for (let x = -h; x < h; x += 28) { ctx.beginPath(); ctx.moveTo(x, 22); ctx.lineTo(x + 12, 12); ctx.lineTo(x + 24, 12); ctx.lineTo(x + 12, 22); ctx.fill(); } ctx.restore();
+      ctx.restore();
+    }
+    for (const m of crushers) {
+      const c = m.c0, hw = c.w / 2, X = sx(m.x), Y = sy(m.y);
+      // шток сверху
+      ctx.fillStyle = '#78909c'; ctx.fillRect(X - 14 * Z, sy(m.y - c.h - 900), 28 * Z, (900) * Z);
+      ctx.save(); ctx.translate(X, Y); ctx.scale(Z, Z);
+      const g = ctx.createLinearGradient(-hw, 0, hw, 0); g.addColorStop(0, '#607d8b'); g.addColorStop(0.5, '#b0bec5'); g.addColorStop(1, '#546e7a');
+      ctx.fillStyle = '#37474f'; C.rr(ctx, -hw - 4, -c.h - 4, c.w + 8, c.h + 8, 14); ctx.fill();
+      ctx.fillStyle = g; C.rr(ctx, -hw, -c.h, c.w, c.h, 12); ctx.fill();
+      ctx.save(); C.rr(ctx, -hw, -34, c.w, 34, 8); ctx.clip(); ctx.fillStyle = '#ffca28'; ctx.fillRect(-hw, -34, c.w, 34); ctx.fillStyle = '#263238'; for (let x = -hw - 30; x < hw; x += 34) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + 17, -34); ctx.lineTo(x + 34, -34); ctx.lineTo(x + 17, 0); ctx.fill(); } ctx.restore();
+      // сердитые глаза
+      for (const d of [-1, 1]) { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(d * 30, -c.h * 0.55, 18, 20, 0, 0, 7); ctx.fill(); ctx.fillStyle = '#212121'; ctx.beginPath(); ctx.arc(d * 30 + 4, -c.h * 0.52, 8, 0, 7); ctx.fill(); ctx.strokeStyle = '#263238'; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(d * 52, -c.h * 0.55 - 30); ctx.lineTo(d * 12, -c.h * 0.55 - 18); ctx.stroke(); }
+      ctx.restore();
+    }
+    for (const f of fallers) {
+      const hw = f.f0.w / 2, sh = f.trig && f.trig < 0.45 ? Math.sin(C.realT * 70) * 2.5 : 0;
+      ctx.save(); ctx.translate(sx(f.x) + sh * Z, sy(f.y)); ctx.rotate(f.a); ctx.scale(Z, Z);
+      ctx.fillStyle = '#6d4c2f'; C.rr(ctx, -hw - 2, -2, hw * 2 + 4, 24, 6); ctx.fill();
+      ctx.fillStyle = f.trig ? '#b07a45' : '#c99559'; C.rr(ctx, -hw, 0, hw * 2, 20, 5); ctx.fill();
+      ctx.strokeStyle = 'rgba(60,30,10,0.7)'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(-hw * 0.4, 2); ctx.lineTo(-hw * 0.1, 10); ctx.lineTo(-hw * 0.3, 18); ctx.moveTo(hw * 0.3, 2); ctx.lineTo(hw * 0.5, 12); ctx.stroke();
       ctx.restore();
     }
     for (const s of seesaws) {
@@ -464,9 +644,10 @@
   }
 
   const game = {
+    get noPauseBtn() { return !!window.__noHud; },
     id: 'g6truck', landscapeBase: true, startState: 'home', hasSkip: true, reviveIcon: 'play', manualGameplay: false,
     init() { const lg = (C.lang || 'en').slice(0, 2); T = L10N[lg] || L10N.en; build(C.save.level || 1); },
-    resize() { Z = C.W > C.H ? C.H / 760 : C.W / 800; },
+    resize() { Z = (C.W > C.H ? C.H / 760 : C.W / 800) * (window.__zoomK || 1); },
     startLevel(n) { build(n); hintT = n === 1 ? 6 : n === 2 ? 3 : 0; toastL = []; partsFx = []; touch = null; },
     drawHome(ctx) {
       const land = C.W > C.H, sf = C.safeU();
@@ -491,6 +672,7 @@
     update(dt) {
       if (!W) return;
       // фиксированный шаг 1/120 с накоплением — одинаковая физика на 60, 144 и 165 Гц
+      if (window.__freeze) dt = 0;
       simAcc = Math.min(simAcc + dt, 1 / 15);
       while (simAcc >= P.DT) {
         P.step(W, (d) => control(d)); afterStep(); simAcc -= P.DT;
@@ -499,8 +681,10 @@
       if (state === 'dead') { failT += dt; if (failT > 0.9 && C.state === 'play') C.fail({ revive: !!cpReached }); }
       if (state === 'win') wonT += dt;
       // камера: впереди по ходу
-      const [fx] = P.wvec(truck, 1, 0), look = C.clamp(truck.vx * 0.35, -150, 380);
-      camX += (truck.x + look - camX) * Math.min(1, dt * 3); camY += (truck.y - 40 - camY) * Math.min(1, dt * 3);
+      let look = C.clamp(truck.vx * 0.35, -150, 380);
+      for (const m of movers) { const a = m.m0.x0 - m.m0.len / 2, b = m.m0.x1 + m.m0.len / 2; if (truck.x > a - 900 && truck.x < b) look = Math.max(look, Math.min(320, (b - a) / 2)); }
+      for (const q of seesaws) { const h = q.segs[0][2]; if (truck.x > q.x - h - 800 && truck.x < q.x + h) look = Math.max(look, 260); }
+      if (!window.__freeze) { camX += (truck.x + look - camX) * Math.min(1, dt * 3); camY += (truck.y - 40 - camY) * Math.min(1, dt * 3); }
       shake = Math.max(0, shake - dt);
       for (const p of partsFx) { p.t += dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 900 * dt; }
       partsFx = partsFx.filter((p) => p.t < 1.2);
@@ -514,13 +698,16 @@
       ctx.save();
       if (shake > 0) ctx.translate((Math.random() - 0.5) * 18 * shake, (Math.random() - 0.5) * 18 * shake);
       drawSky(ctx); drawGround(ctx); drawObjects(ctx);
+      if (window.__speedLines) { ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineCap = 'round'; for (const [dy, len, w] of [[-60, 260, 10], [-10, 340, 12], [40, 220, 9], [-110, 180, 7], [90, 160, 7]]) { ctx.lineWidth = w; const X = sx(truck.x - 140) - 10 * Z, Y = sy(truck.y) + dy * Z; ctx.beginPath(); ctx.moveTo(X - len * Z * 0.6, Y + 28 * Z); ctx.lineTo(X, Y); ctx.stroke(); } }
       drawTruckBack(ctx); drawBall(ctx); drawTruckFront(ctx);
       for (const w of wheels) drawWheel(ctx, w);
       for (const p of partsFx) { ctx.globalAlpha = Math.max(0, 1 - p.t / 1.2); ctx.fillStyle = p.col; ctx.beginPath(); ctx.arc(sx(p.x), sy(p.y), p.r * Z, 0, 7); ctx.fill(); }
       ctx.globalAlpha = 1;
       ctx.restore();
+      if (window.__thumbTitle) { let big = C.W * 0.135; ctx.save(); ctx.translate(C.W / 2, C.H * 0.1); ctx.rotate(-0.04); C.text('BALL TRUCK', 0, 0, big, '#ffca28', 'center', '#7a2e0e'); ctx.restore(); }
     },
     hud(ctx) {
+      if (window.__noHud) return;
       const sf = C.safeU();
       // уровень, время, звезда
       ctx.fillStyle = 'rgba(0,0,0,0.3)'; C.rr(ctx, 20 + sf.l, 22 + sf.t, 210, 64, 32); ctx.fill();
@@ -547,8 +734,20 @@
     },
   };
   // тестовые крючки
-  window.__truck = () => ({ x: Math.round(truck.x), y: Math.round(truck.y), a: +truck.a.toFixed(2), vx: Math.round(truck.vx), ball: [Math.round(ball.x), Math.round(ball.y)], inBed, grounded, state, tm: +tm.toFixed(2), fin: L.fin, star: L.star && L.star.got, cp: !!cpReached, lvl: lastLevel, cs: C.state, mov: movers.map((m) => Math.round(m.x - m.m0.len / 2)), see: seesaws.map((q) => +q.a.toFixed(2)) });
+  window.__truck = () => ({ x: Math.round(truck.x), y: Math.round(truck.y), a: +truck.a.toFixed(2), vx: Math.round(truck.vx), ball: [Math.round(ball.x), Math.round(ball.y)], inBed, grounded, state, tm: +tm.toFixed(2), fin: L.fin, star: L.star && L.star.got, cp: !!cpReached, lvl: lastLevel, cs: C.state, mov: movers.map((m) => Math.round(m.x - m.m0.len / 2)), see: seesaws.map((q) => +q.a.toFixed(2)),
+    movs: movers.map((m) => { const o = m.m0; return { lift: !!o.lift, x0: o.x0, x1: o.x1, y0: o.y0, y1: o.y1, len: o.len, s: +(m.u * m.u * (3 - 2 * m.u)).toFixed(3), st: m.st }; }),
+    crs: crushers.map((m) => { const c = m.c0, T = (c.stay || 2.1) + 0.28 + 0.55 + 0.9; return { x: c.x, u: +((((simT + (c.off || 0)) % T) + T) % T).toFixed(2) }; }) });
   window.__lvl = (n) => { C.save.level = n; C.startLevel(); };
   window.__levels = () => LEVELS.length;
+  window.__pose = (o) => { // поза для обложки
+    if (o.zoom) { window.__zoomK = o.zoom; game.resize(); }
+    const dx = (o.x !== undefined ? o.x : truck.x) - truck.x, dy = (o.y !== undefined ? o.y : truck.y) - truck.y, da = (o.a !== undefined ? o.a : truck.a) - truck.a;
+    for (const b of [truck, ...wheels, ball]) { const rx = b.x - truck.x, ry = b.y - truck.y, c = Math.cos(da), s2 = Math.sin(da); b.x = truck.x + dx + c * rx - s2 * ry; b.y = truck.y + dy + s2 * rx + c * ry; if (b !== ball) b.a += da; }
+    if (o.ballUp) { ball.y -= o.ballUp; ball.vy = -600; }
+    if (o.scared) inBed = false;
+    if (o.ballA !== undefined) ball.a = o.ballA;
+    partsFx = []; toastL = [];
+    camX = truck.x + (o.camDx || 0); camY = truck.y + (o.camDy || 0);
+  };
   C.run(game);
 })();
