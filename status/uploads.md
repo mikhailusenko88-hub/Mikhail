@@ -29,3 +29,4 @@
 | 2026-11-14 | 3 | clubs №8 | Olmaliq | https://youtube.com/shorts/di_e6dCzP-M | public |
 | 2026-11-15 | 1 | cities №10 ФИНАЛ | Olmaliq | https://youtube.com/shorts/OoAUlWBsWDo | public |
 | 2026-11-15 | 2 | cars №13 ФИНАЛ | Tahoe | https://youtube.com/shorts/qHSr0v1Qqfk | public |
+| 2026-11-15 | 3 | clubs №9 ФИНАЛ | Paxtakor | https://youtube.com/shorts/9MPeFq6stkI | public |

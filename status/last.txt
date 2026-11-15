@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-15 слот 2: cars №13 ФИНАЛ https://youtube.com/shorts/qHSr0v1Qqfk, за 75 с
+ВЫЛОЖЕНО 2026-11-15 слот 3: clubs №9 ФИНАЛ https://youtube.com/shorts/9MPeFq6stkI, за 83 с
 
 {
- "title": "Qaysi mashina yutadi? Какая машина победит? 🏆 Hafta finali · Финал недели #shorts",
- "description": "🏆 Hafta finali: haftaning eng yaxshilari bitta poygada! Kim chempion boʻladi?\nФинал недели: лучшие участники недели в одной гонке. Кто станет чемпионом?\nDushanbadan — yangi hafta, jadval noldan boshlanadi. С понедельника — новая неделя.\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
+ "title": "Qaysi jamoa yutadi? Какой клуб победит? 🏆 Hafta finali · Финал недели #shorts",
+ "description": "🏆 Hafta finali: haftaning eng yaxshilari bitta poygada! Kim chempion boʻladi?\nФинал недели: лучшие участники недели в одной гонке. Кто станет чемпионом?\nDushanbadan — yangi hafta, jadval noldan boshlanadi. С понедельника — новая неделя.\n\nPaxtakor, Bunyodkor, Nasaf, Navbahor… qaysi jamoa tezroq? Izohlarda yoz 👇\n22 клубов Суперлиги Узбекистана в одной гонке: Пахтакор, Бунёдкор, Насаф, Навбахор и другие. Какой победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nJamoangiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего клуба? Напиши — добавим!\n\n#uzbekistan #futbol #superliga #paxtakor #bunyodkor #nasaf #navbahor #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,40 +11,44 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "mashina",
-  "cobalt",
-  "gentra",
-  "nexia",
-  "damas",
-  "malibu",
-  "chevrolet",
-  "машины узбекистана"
+  "futbol",
+  "футбол",
+  "superliga",
+  "суперлига узбекистана",
+  "paxtakor",
+  "bunyodkor",
+  "nasaf",
+  "navbahor",
+  "neftchi",
+  "pfl uzbekistan"
  ]
 }
 
 --- журнал (время Ташкента) ---
-15:35:30 режим publish, событие workflow_dispatch
-15:35:30 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-15:35:45 комментарии: роликов просмотрено: 15, комментариев: 2
-15:35:45 ФИНАЛ НЕДЕЛИ (cars, 2026-W46): Matiz, Tracker, Tahoe, Tico, Malibu, Jiguli, Gentra, Equinox
-15:35:45 Тема: гонка машин. Подбираю трассу и заезд…
-15:35:46   трасса 1 (tramps, split, tunnel, hammers): победа на 34.2 с, смен лидера 12, финишировали 4, расчёт 1 с — не подходит
-15:35:48   трасса 2: никто не доехал за 37 с — не подходит
-15:35:49   трасса 3: никто не доехал за 37 с — не подходит
-15:35:51   трасса 4 (bumpy, tramps, split, hammers): победа на 33.6 с, смен лидера 9, финишировали 1, расчёт 1 с — не подходит
-15:35:52   трасса 5 (tramps, tunnel, bumpy, hammers): победа на 31.9 с, смен лидера 14, финишировали 4, расчёт 1 с — не подходит
-15:35:53   трасса 6 (tunnel, bumpy, split, tramps): победа на 33.5 с, смен лидера 18, финишировали 4, расчёт 1 с — не подходит
-15:35:55   трасса 7 (split, tunnel, hammers, tramps): победа на 35.8 с, смен лидера 4, финишировали 2, расчёт 2 с — не подходит
-15:35:56   трасса 8 (stairs, tramps, hammers, tunnel): победа на 27.6 с, смен лидера 14, финишировали 4, расчёт 1 с
-15:35:56 Рисую трассу…
-15:35:56 Рисую кадры: заезд 30 с + финал 6 с…
-15:35:57   кадр 0/908, 12 с
-15:36:08   кадр 300/908, 24 с
-15:36:20   кадр 600/908, 35 с
-15:36:32   кадр 900/908, 47 с
-15:36:39 Свожу звук…
-15:36:40 Готово за 55 с: победил Tahoe, ролик 36 с
-15:36:40 ролик готов: 36 с, 24 МБ, сборка 70 с; победил Tahoe, топ-3: Tahoe, Jiguli, Matiz
-15:36:44 YouTube: https://youtube.com/shorts/qHSr0v1Qqfk
-15:36:45 в плейлисте
-15:36:45 статус: public uploaded
+19:35:35 режим publish, событие workflow_dispatch
+19:35:36 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+19:35:51 комментарии: роликов просмотрено: 15, комментариев: 2
+19:35:51 ФИНАЛ НЕДЕЛИ (clubs, 2026-W46): Olmaliq, Navbahor, Paxtakor, Turon, Qoʻqon 1912, Dinamo, Aral, Nasaf
+19:35:51 Тема: гонка футбольных клубов. Подбираю трассу и заезд…
+19:35:52   трасса 1 (spinners, hammers, tunnel, split, tramps): победа на 30.6 с, смен лидера 7, финишировали 5, расчёт 1 с
+19:35:54   трасса 2: никто не доехал за 37 с — не подходит
+19:35:55   трасса 3: никто не доехал за 37 с — не подходит
+19:35:56   трасса 4 (tramps, bumpy, hammers, tunnel): победа на 23.2 с, смен лидера 10, финишировали 2, расчёт 1 с
+19:35:58   трасса 5 (stairs, tunnel, tramps, hammers): победа на 31.0 с, смен лидера 11, финишировали 3, расчёт 1 с — не подходит
+19:35:59   трасса 6 (tunnel, stairs, split, bumpy): победа на 27.4 с, смен лидера 6, финишировали 2, расчёт 1 с
+19:36:00   трасса 7 (tramps, funnel, hammers, tunnel, split): победа на 33.0 с, смен лидера 4, финишировали 5, расчёт 1 с — не подходит
+19:36:01   трасса 8 (bumpy, tunnel, hammers, split): победа на 29.5 с, смен лидера 1, финишировали 4, расчёт 1 с
+19:36:02   трасса 9 (tramps, split, stairs, tunnel): победа на 32.6 с, смен лидера 8, финишировали 5, расчёт 1 с — не подходит
+19:36:04   трасса 10 (hammers, stairs, tunnel, split): победа на 28.4 с, смен лидера 1, финишировали 1, расчёт 1 с
+19:36:04 Рисую трассу…
+19:36:04 Рисую кадры: заезд 33 с + финал 6 с…
+19:36:05   кадр 0/999, 14 с
+19:36:18   кадр 300/999, 27 с
+19:36:30   кадр 600/999, 40 с
+19:36:43   кадр 900/999, 52 с
+19:36:53 Свожу звук…
+19:36:54 Готово за 64 с: победил Paxtakor, ролик 39 с
+19:36:54 ролик готов: 39 с, 26 МБ, сборка 79 с; победил Paxtakor, топ-3: Paxtakor, Olmaliq, Navbahor
+19:36:57 YouTube: https://youtube.com/shorts/9MPeFq6stkI
+19:36:58 в плейлисте
+19:36:58 статус: public uploaded

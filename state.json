@@ -467,7 +467,7 @@
    ]
   },
   "clubs": {
-   "no": 8,
+   "no": 9,
    "points": {
     "Paxtakor": 44,
     "Navbahor": 52,
@@ -595,9 +595,22 @@
      ],
      "link": "https://youtube.com/shorts/di_e6dCzP-M",
      "final": false
+    },
+    {
+     "no": 9,
+     "date": "2026-11-15",
+     "slot": 3,
+     "winner": "Paxtakor",
+     "top3": [
+      "Paxtakor",
+      "Olmaliq",
+      "Navbahor"
+     ],
+     "link": "https://youtube.com/shorts/9MPeFq6stkI",
+     "final": true
     }
    ],
-   "champion": null,
+   "champion": "Paxtakor",
    "season_races": 6,
    "season": "2026-W46",
    "new_pending": [],
@@ -639,6 +652,14 @@
       ]
      ],
      "champion": null
+    }
+   ],
+   "final_season": "2026-W46",
+   "champions": [
+    {
+     "season": "2026-W46",
+     "champion": "Paxtakor",
+     "link": "https://youtube.com/shorts/9MPeFq6stkI"
     }
    ]
   }
@@ -952,6 +973,16 @@
    "final": true,
    "link": "https://youtube.com/shorts/qHSr0v1Qqfk",
    "title": "Qaysi mashina yutadi? Какая машина победит? 🏆 Hafta finali · Финал недели #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-15",
+   "slot": 3,
+   "league": "clubs",
+   "no": 9,
+   "final": true,
+   "link": "https://youtube.com/shorts/9MPeFq6stkI",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? 🏆 Hafta finali · Финал недели #shorts",
    "pl": true
   }
  ],
