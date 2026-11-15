@@ -4,7 +4,7 @@ const {chromium}=require('playwright');const fs=require('fs');
 (async()=>{const b=await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--allow-file-access-from-files']});const p=await b.newPage({viewport:{width:430,height:900}});
 const errs=[];p.on('pageerror',e=>errs.push(e.message));const dialogs=[];p.on('dialog',d=>{dialogs.push(d.type()+': '+d.message().slice(0,90).replace(/\n/g,' | '));d.type()==='confirm'?d.dismiss():d.accept();});
 await p.goto('file://'+require('path').resolve(__dirname,'../../../Resources/Mebel/multik.html'));await p.waitForFunction(()=>window.MK3D&&MK3D.ready,{timeout:60000});
-const res=await p.evaluate(async(txt)=>{MK3D.setQuality('std');
+const res=await p.evaluate(async(txt)=>{MK3D.setQuality('std');VoiceCheck.st=true;   // тут проверяем очередь, не голос: со страницы file:// файлов голоса не видно
  const add=async(n)=>{const r=MKScript.parse(txt.replace('СЕРИЯ: 1.','СЕРИЯ: '+n+'.'),Lib.data);const ep=r.episodes[0];const v=await Lib.importText(JSON.stringify(ep));return v.errors&&v.errors.length?v.errors:null;};
  const e1=await add(1),e2=await add(2),e3=await add(3);
  Lib.data.settings=Object.assign(Lib.data.settings||{},{res:720,fps:6});

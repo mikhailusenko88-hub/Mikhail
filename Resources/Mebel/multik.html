@@ -248,6 +248,7 @@ const App = {
     await Lib.load();
     { const q = (Lib.data.settings || {}).quality || 'hq'; const ap = () => { try { if (window.MK3D && MK3D.setQuality) MK3D.setQuality(q); } catch (e) {} }; ap(); window.addEventListener('mk3d', ap, { once: true }); }   // качество из настроек и после перезапуска страницы (3D мог подняться раньше библиотеки и взять «как в кино»)
     setTimeout(() => Build.resumeCheck(), 400);
+    VoiceCheck.ok().then(() => { if (this.tab === 'series') this.render(true); });   // есть ли нейроголос в этой сборке — плашки в «Сериях»
     document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { this.tab = b.dataset.t; this.openSeries = null; document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b)); this.render(); });
     this.render();
   },
@@ -260,6 +261,8 @@ const App = {
     const P = Lib.data.projects;
     m.insertAdjacentHTML('beforeend', `<div class="card"><b>Новые сценарии</b><div class="mut" style="margin-top:4px">Пиши сценарий прямо здесь — как пьесу или обычным рассказом или загрузи серии, написанные в чате. Персонажи из сценария запоминаются навсегда, со своим кодом.</div>
       <div class="btns"><button class="btn acc" onclick="Wr.open()">✍️ Мой сценарий</button><button class="btn acc" onclick="App.syncScripts()">⟳ Загрузить новые серии</button><button class="btn" onclick="App.paste()">📋 Вставить</button><button class="btn" onclick="App.pickFile()">📁 Файл</button></div><div id="imsg"></div></div>`);
+    if (VoiceCheck.missing()) m.insertAdjacentHTML('beforeend', `<div class="card" id="novoice" style="border:2px solid #e8344e"><b style="color:#ff6b6b">⚠️ В этой сборке приложения нет нейроголоса</b><div class="mut" style="margin-top:4px">${esc(VoiceCheck.MSG)}<br>Серии пока не собирай — напиши Claude: в папке сборки на Маке нет файлов голоса (Resources/Mebel/voice и ort).</div></div>`);
+    else if (VoiceCheck.st) Revoice.card(m);
     if (!P.length) { m.insertAdjacentHTML('beforeend', `<div class="card mut">Пока нет ни одного сериала.</div>`); return; }
     for (const p of P) {
       const built = p.episodes.filter(e => e.status === 'built').length;
@@ -269,7 +272,7 @@ const App = {
       for (const e of p.episodes) {
         const d = document.createElement('div'); d.className = 'ep';
         const bs = Build.state(p, e);
-        const st = bs === 'run' ? `<span class="tag" style="color:var(--acc)">собирается…</span>` : bs === 'wait' ? `<span class="tag">в очереди</span>` : bs === 'held' ? `<span class="tag" style="color:var(--acc)">сборка прервана</span>` : e.status === 'built' ? `<span class="tag ok">собрана ${e.dur ? fmt(e.dur) : ''}</span>` : `<span class="tag">не собрана</span>`;
+        const st = bs === 'run' ? `<span class="tag" style="color:var(--acc)">собирается…</span>` : bs === 'wait' ? `<span class="tag">в очереди</span>` : bs === 'held' ? `<span class="tag" style="color:var(--acc)">сборка прервана</span>` : e.status === 'built' ? `<span class="tag ok">собрана ${e.dur ? fmt(e.dur) : ''}</span>${Revoice.bad(e) ? ' <span class="tag" style="color:#ff6b6b">без нейроголоса</span>' : ''}` : `<span class="tag">не собрана</span>`;
         const bb = bs === 'run' ? `<button class="btn" disabled>⏳ Собирается</button>` : bs === 'wait' ? `<button class="btn" data-a="unqueue">⏳ В очереди ✕</button>` : bs === 'held' ? `<button class="btn acc" data-a="build">🎬 Продолжить сборку</button>` : `<button class="btn ${e.status === 'built' ? '' : 'acc'}" data-a="build">🎬 ${e.status === 'built' ? 'Пересобрать' : 'Собрать видео'}</button>`;
         d.innerHTML = `<div class="row"><div style="flex:1"><b>Серия ${e.episode}${e.title ? '. ' + esc(e.title) : ''}</b><div class="mut">${(e.script.scenes || []).length} сцен · ${st}</div></div></div>
           <div class="btns"><button class="btn" data-a="play">▶ Просмотр</button>${bb}
@@ -428,6 +431,39 @@ function shiftVoice(y, shift, tempo) { const n = Math.floor((y.length - 2) / shi
     out[i] = b + 0.5 * f * (c - a + f * (2 * a - 5 * b + 4 * c - d + f * (3 * (b - c) + d - a))); }
   if (tempo && tempo !== 1 && window.MKLaugh && MKLaugh.wsola) return Float32Array.from(MKLaugh.wsola(out, 48000, 1 / tempo));
   return out; }
+// ---------- есть ли нейроголос в самой сборке приложения ----------
+// Файлы голоса (voice/, voice/xenia/, ort/ — 230 МБ) в git не лежат и живут только в папке сборки на Маке. В сборках 55–57 (новая папка Zamer3D-2.3)
+// их не было — и страница молча читала рассказчика («Альбина»), Барсика (xenia) и медведей («Александр») голосом iPhone. Теперь это видно сразу.
+const VoiceCheck = {
+  st: null, MSG: 'Рассказчик, Барсик и медведи будут читать голосом iPhone, а не своими нейроголосами.',
+  async ok() { if (this.st !== null) return this.st; let ok = false;
+    try { const get = u => fetch(u).then(r => r.ok ? (u.endsWith('.json') ? r.json() : r.text()) : null).catch(() => null);
+      const [a, b, c] = await Promise.all([get('voice/tts.json'), get('voice/xenia/tts.json'), get('ort/ort.wasm.min.js')]);
+      ok = !!(a && a.symbols && b && b.symbols && c && c.length > 1000); } catch (e) {}
+    return (this.st = ok); },
+  missing() { return this.st === false; },
+};
+// ---------- серии, собранные без нейроголоса: одной кнопкой — заново в очередь ----------
+// Только «Пересобрать»: «🔊 Обновить звук» тут не годится — нейроголос читает другой длины, и звук разошёлся бы с картинкой и губами.
+const Revoice = {
+  CUT: Date.parse('2026-11-12T00:00:00+03:00'), // с этого дня на телефоны ставились сборки 55–57 без нейроголоса; серии до 58-й сборки не помнят, чем озвучены
+  bad(e) { if (!e || e.status !== 'built' || !e.video || e.voiceOk) return false;
+    if (typeof e.voiceFb === 'number') return e.voiceFb > 0;
+    const t = Date.parse(e.built || ''); return t >= this.CUT; },
+  list() { const out = []; for (const p of (Lib.data.projects || [])) for (const e of p.episodes || []) if (this.bad(e)) out.push({ p, e }); return out; },
+  card(m) { const L = this.list(); if (!L.length) return;
+    const busy = L.filter(x => { const b = Build.state(x.p, x.e); return b === 'run' || b === 'wait'; }).length;
+    const day = s => { const d = new Date(s || ''); return isNaN(d) ? '' : ` · собрана ${d.getDate()}.${String(d.getMonth() + 1).padStart(2, '0')}`; };
+    m.insertAdjacentHTML('beforeend', `<div class="card" id="revoice" style="border:2px solid #ffd23f"><b>🔊 Серии, собранные без нейроголоса</b>
+      <div class="mut" style="margin-top:4px">В них рассказчик, Барсик и медведи говорят голосом iPhone (сборки 55–57). Нейроголос снова на месте — пересобери их: встанут в очередь и соберутся по одной. Старое видео заменится новым.</div>
+      <div style="margin:6px 2px">${L.map(x => `• ${esc(x.p.series)} — серия ${x.e.episode}${x.e.title ? '. ' + esc(x.e.title) : ''}${day(x.e.built)}`).join('<br>')}</div>
+      <div class="btns">${busy === L.length ? '<button class="btn" disabled>⏳ Уже в очереди</button>' : `<button class="btn acc" data-rv="all">🎬 Пересобрать ${L.length > 1 ? 'все (' + L.length + ')' : ''}</button>`}<button class="btn" data-rv="ok">Эти в порядке — скрыть</button></div></div>`);
+    const c = m.lastElementChild; c.querySelector('[data-rv="ok"]').onclick = () => this.hide(); const b = c.querySelector('[data-rv="all"]'); if (b) b.onclick = () => this.all(); },
+  async all() { const q = Build.jobs(); let n = 0;
+    for (const { p, e } of this.list()) if (!q.some(j => j.series === p.series && j.episode === e.episode)) { q.push({ series: p.series, episode: e.episode }); n++; }
+    await Lib.save(); if (!Build.busy) Build.loop(); else { Build.toast(`В очереди +${n}: соберу следом`); Build.refresh(); } },
+  async hide() { if (!confirm('Скрыть плашку? Эти серии останутся как есть (с голосом iPhone).')) return; for (const { e } of this.list()) e.voiceOk = 1; await Lib.save(); App.render(true); },
+};
 // ---------- голос рассказчика со своего сервера (нейроголос «Альбина») ----------
 const SrvVoice = {
   down: 0, warned: false, localFail: false, failM: {}, hasM: {}, yo: false,
@@ -480,7 +516,7 @@ function packAud(audio) { const o = {}; for (const k in audio) { const a = audio
 function unpackAud(o) { const r = {}; for (const k in o || {}) { const a = o[k]; r[k] = { dur: a.d / 1000, env: a.e ? Float32Array.from(a.e, v => v / 1000) : null }; } return r; }
 async function prepare(e, onStep, isCancelled, noMix, opt) { // noMix: звук уже в телефоне — нужны только длительности реплик
   opt = opt || {};   // opt.noHeroes — героев построит сборка сама, после звука; opt.aud — длительности реплик уже известны (перезапуск страницы после звука)
-  const lib = Lib.data, ep = e.script; const lines = MK.collectLines(ep, lib);
+  const lib = Lib.data, ep = e.script; const lines = MK.collectLines(ep, lib); let nFb = 0;   // nFb — сколько реплик нейроголоса прочитал голос iPhone (нейроголос не запустился)
   SrvVoice.yo = !!(MK.usesYo && MK.usesYo(lines)); // БАРС-озвучка: автор серии ставит «ё» — слова через «е» читаем как написано
   const ac = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
   const audio = noMix && opt.aud ? Object.assign({}, opt.aud) : {}, bufs = {}; let i = 0;   // известные длительности — без озвучки
@@ -495,7 +531,7 @@ async function prepare(e, onStep, isCancelled, noMix, opt) { // noMix: звук 
     if (audio[ln.key]) continue;
     if (ln.synth && MK.makeVocal) { try { const buf = await MK.makeVocal(ln, lib, (c, b) => Native.call(c, b), async w => ac.decodeAudioData(unb64(w).buffer)); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('vocal', err); } continue; }
     let r = null, fx = ln.fx || MK.VOICE_FX.natural;
-    if (ln.srv) { r = ln.key in pre ? pre[ln.key] : await SrvVoice.get(ln); if (!r) fx = ln.fb.fx; } // рассказчик и Барсик — нейроголос (в телефоне); не вышло — голос iPhone
+    if (ln.srv) { r = ln.key in pre ? pre[ln.key] : await SrvVoice.get(ln); if (!r) { fx = ln.fb.fx; nFb++; } } // рассказчик и Барсик — нейроголос (в телефоне); не вышло — голос iPhone
     if (!r && ln.laughFb && MK.makeVocal) { try { const buf = await MK.makeVocal(Object.assign({}, ln, ln.laughFb, { srv: null }), lib, (c, b) => Native.call(c, b), async w => ac.decodeAudioData(unb64(w).buffer)); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('vocal', err); } continue; } // смех нейроголосом не вышел — смех из голоса iPhone
     if (r && r.buf) { try { const buf = await MK.voiceFx(r.buf, fx); if (!noMix) bufs[ln.key] = buf; audio[ln.key] = { dur: buf.duration, env: MK.envelope(buf) }; } catch (err) { console.log('нейроголос', err); } continue; }
     if (!r) { // голос iPhone: омографы по смыслу (з+амок/зам+ок) — как у рассказчика; свои «+» в реплике важнее
@@ -510,10 +546,10 @@ async function prepare(e, onStep, isCancelled, noMix, opt) { // noMix: звук 
   if (window.MKVoice) { try { await MKVoice.unload(); } catch (err) {} } // память — под картинку (рамка с голосом убрана целиком)
   if (!opt.noHeroes) await prepHeroes(lib, onStep);   // герои — после озвучки: голос уже выгружен
   const tl = MK.compile(ep, lib, audio); tl.style = (window.MK3D && MK3D.ready) ? '3d' : '2d';
-  if (noMix) return { tl, mix: null, audio };
+  if (noMix) return { tl, mix: null, audio, fb: nFb };
   onStep && onStep('Музыка и звуки', 1, 'Свожу звуковую дорожку…');
   const mix = await MK.mixAudio(tl, bufs);
-  return { tl, mix, audio };
+  return { tl, mix, audio, fb: nFb };
 }
 
 // ---------- что сейчас делается: если iPhone выгрузит страницу из памяти, после перезапуска покажем, на чём оборвалось ----------
@@ -577,7 +613,7 @@ const Build = {
     if (this.busy) { alert('Сейчас собирается серия — обновить звук можно после сборки.'); return; }
     this.busy = true; Prog.show(`Серия ${e.episode}: обновляю звук`); if (Lib.data.settings.buildJob) delete Lib.data.settings.buildJob.audio; // файл звука в телефоне сейчас перезапишется
     try {
-      let { mix } = await prepare(e, (a, pr, t) => Prog.set(a, pr * .85, t), null, false, { noHeroes: true });   // только звук — героям «как в кино» тут делать нечего
+      let { mix, fb } = await prepare(e, (a, pr, t) => Prog.set(a, pr * .85, t), null, false, { noHeroes: true });   // только звук — героям «как в кино» тут делать нечего
       if (!audible(mix)) throw new Error('звук получился пустым');
       let wav = MK.wav(mix); mix = null; const CH = 1 << 20;
       for (let i = 0; i < wav.length; i += CH) { Prog.set('Передаю звук', .85 + .1 * i / wav.length, ''); await Native.call('audioChunk', { first: i === 0, d: b64(wav.subarray(i, i + CH)) }); }
@@ -586,11 +622,12 @@ const Build = {
       const r = await Native.call('remuxAudio', { path: e.video });
       Prog.hide();
       if (!r || r.error) throw new Error((r && r.error) || 'не получилось');
-      this.toast(`✓ Звук серии ${e.episode} обновлён`, e.video);
+      this.toast(`✓ Звук серии ${e.episode} обновлён${fb ? ` — но ${fb} реплик голосом iPhone (нейроголос не запустился)` : ''}`, e.video);
     } catch (err) { Prog.hide(); alert('Звук не обновился: ' + err.message); }
     this.busy = false;
   },
   async run(p, e) { // кнопка «Собрать видео»: серия встаёт в очередь, полоска внизу — и можно заниматься другим
+    if (VoiceCheck.st !== true && !(await VoiceCheck.ok()) && !confirm(VoiceCheck.MSG + '\n\nВсё равно собрать?')) return;   // нейроголос есть — без ожидания, очередь как раньше
     const q = this.jobs();
     if (!q.some(j => j.series === p.series && j.episode === e.episode)) { q.push({ series: p.series, episode: e.episode }); await Lib.save(); if (this.busy) this.toast(`Серия ${e.episode} — в очереди, соберу следом`); }
     if (!this.busy) return this.loop();
@@ -634,7 +671,7 @@ const Build = {
     const id = { series: p.series, episode: e.episode, hash: e.hash || MK.hash32(MK.canon(e.script)), w, h, fps, q: s.quality || 'hq', style: (window.MK3D && MK3D.ready) ? '3d' : '2d' };
     const old = s.buildJob, resume = !!old && Object.keys(id).every(k => old[k] === id[k]);
     const audioOk = resume && old.audio === 1; // звук этой серии уже лежит в телефоне (страницу перезапускали)
-    s.buildJob = Object.assign(id, audioOk ? Object.assign({ audio: 1 }, old.aud ? { aud: old.aud } : {}) : {}); await Lib.save();
+    s.buildJob = Object.assign(id, audioOk ? Object.assign({ audio: 1 }, old.aud ? { aud: old.aud } : {}, old.fb ? { fb: old.fb } : {}) : {}); await Lib.save();
     const sleep = ms => new Promise(r => setTimeout(r, ms)), inflight = [];
     // кадры идут «конвейером» (2 в пути): пока телефон кодирует один кадр, следующий уже рисуется.
     // Ответ телефона: 1…4 — записан + нагрев; отрицательный — «продолжай с кадра N» (после паузы); 0 — не записан.
@@ -644,10 +681,12 @@ const Build = {
       if (!r) { bad++; if (bad > 20) throw new Error('кадры не записываются'); await sleep(500); return; }
       bad = 0; if (typeof r === 'number') heat = r; };
     const drain = async () => { while (inflight.length) await take(); };
+    let fbN = 0;   // реплики голосом iPhone вместо нейроголоса (после перезапуска страницы — из buildJob)
     try {
       // звук ещё не готов — озвучка и сведение БЕЗ героев «как в кино» (они строятся уже после звука, на чистой странице);
       // звук готов (страницу перезапустили) — длительности реплик берём сохранённые, серию заново не озвучиваем
-      let { tl, mix, audio } = await prepare(e, (a, pr, t) => this.set(title, pr * .08, a + (t ? ' · ' + t : '')), () => this.stop, audioOk, audioOk ? { aud: old && old.aud ? unpackAud(old.aud) : null } : { noHeroes: true });
+      let { tl, mix, audio, fb } = await prepare(e, (a, pr, t) => this.set(title, pr * .08, a + (t ? ' · ' + t : '')), () => this.stop, audioOk, audioOk ? { aud: old && old.aud ? unpackAud(old.aud) : null } : { noHeroes: true });
+      fbN = audioOk ? ((old && old.fb) | 0) : (fb | 0);
       const name = `${p.series} - ${String(e.episode).padStart(2, '0')}. ${e.title || ''}`.replace(/[\/\\:?*"<>|]/g, '').trim();
       if (!audioOk) {
         // звук — отдельным файлом: телефон приклеит его к видео в самом конце
@@ -656,7 +695,7 @@ const Build = {
         for (let i = 0; i < wav.length; i += CH) { if (this.stop) throw new Error('cancel'); await Native.call('audioChunk', { first: i === 0, d: b64(wav.subarray(i, i + CH)) }); }
         // звук ушёл в телефон — отпускаем его из памяти страницы, чтобы на тяжёлых сценах её хватало кадрам
         wav = null; if (MK.freeAudio) MK.freeAudio();
-        s.buildJob.audio = 1; s.buildJob.aud = packAud(audio); audio = null; await Lib.save();   // звук в телефоне, длительности реплик запомнены — после обрыва не озвучиваем заново
+        s.buildJob.audio = 1; s.buildJob.aud = packAud(audio); s.buildJob.fb = fbN; audio = null; await Lib.save();   // звук в телефоне, длительности реплик запомнены — после обрыва не озвучиваем заново
         if (tl.style === '3d' && tl.dur > 40) { // звук, голос и сведение оставляли в странице сотни МБ — кадры рисуем на свежей странице (перезапуск теперь быстрый: озвучивать заново не нужно)
           s.autoResume = 1; await Lib.save(); this.set(title, .08, 'Звук готов — освобождаю память…');
           location.reload(); await sleep(60000); throw new Error('страница не перезапустилась'); }
@@ -713,7 +752,7 @@ const Build = {
       if (!r || !r.path) throw new Error((r && r.error) || 'Файл не записался');
       delete s.buildJob; delete s.buildCrash; if (window.MK3D && MK3D.lowMem) MK3D.lowMem(false);
       const f = this.find({ series: p.series, episode: e.episode }), ee = f ? f.e : e; // серию могли обновить, пока собиралась
-      ee.status = 'built'; ee.video = r.path; ee.dur = tl.dur; ee.built = new Date().toISOString(); await Lib.save();
+      ee.status = 'built'; ee.video = r.path; ee.dur = tl.dur; ee.built = new Date().toISOString(); ee.voiceFb = fbN; delete ee.voiceOk; await Lib.save();   // voiceFb: 0 — все голоса свои; больше 0 — серия попадёт в плашку «собраны без нейроголоса»
       if (r.warn) alert(`Серия ${ee.episode} собрана, но звук не приклеился (${r.warn}).\nНажми у серии «🔊 Обновить звук» — картинку пересобирать не нужно.`);
       return { e: ee, path: r.path, dur: tl.dur };
     } catch (err) {

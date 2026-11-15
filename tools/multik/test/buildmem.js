@@ -63,5 +63,6 @@ const procs = () => { try { return execSync("ps -eo pid,rss,args | grep -- '--ty
   chk(st.voiceAfterReload === 0, `после перезапуска серия заново НЕ озвучивалась (реплик: ${st.voiceAfterReload})`);
   chk(!!st.ended && st.ended.frames > 0, `видео дописано: ${st.ended ? st.ended.frames : 0} кадров`);
   chk(!job, 'задание сборки закрыто');
+  { const E = (lib.projects || []).flatMap(x => x.episodes || []).filter(x => x.status === 'built').pop() || {}; chk(E.voiceFb === 0, `серия помнит, что все голоса свои (voiceFb = ${E.voiceFb}) — в плашку «собраны без нейроголоса» не попадёт`); }
   console.log(ok.every(Boolean) ? 'ИТОГ: сборка проходит' : 'ИТОГ: сборка НЕ проходит'); process.exit(ok.every(Boolean) ? 0 : 1);
 })().catch(e => { console.error(e); process.exit(1); });
