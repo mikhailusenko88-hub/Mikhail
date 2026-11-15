@@ -4,23 +4,25 @@
   const P = window.TPhys, H = window.HookSim;
   const RU = /^(ru|uk|be|kk)/i.test(navigator.language || '');
   const T = RU ? {
-    title: 'HOOK TRUCK', sub: 'Пробный уровень · средний', solo: '1 игрок', duo: '2 игрока',
+    title: 'HOOK TRUCK', sub: 'Барсик и грузовик на тросе', solo: '1 игрок', duo: '2 игрока',
+    touchSolo: 'Правый палец: газ и тормоз · Левый палец: держи КРЮК', touchDuo: 'Игрок 1 — газ справа · Игрок 2 — крюк слева',
     soloTxt: ['Правая рука: → газ, ← тормоз', 'Левая рука: Пробел или W — крюк (держать)', 'S — лебёдка тянет быстрее'],
     duoTxt: ['Игрок 1 (справа): → газ, ← тормоз', 'Игрок 2 (слева): W или Пробел — крюк', 'Игрок 2: S — лебёдка тянет'],
     phone: 'На телефоне: справа газ и тормоз, слева крюк (вся левая половина экрана)',
     legend: '→ газ   ← тормоз   ·   Пробел / W — крюк   ·   S — тянуть', start: 'Играть', p1: 'ИГРОК 1', p2: 'ИГРОК 2',
     hook: 'КРЮК', pull: 'ТЯНИ', fell: 'Упал!', crash: 'Авария!', cp: 'Чекпоинт!', star: 'Звезда!',
     win: 'Уровень пройден!', time: 'Время', sec: 'с', tries: 'Попыток', again: 'Ещё раз', menu: 'Меню', got: 'Звезда собрана', nostar: 'Звезда — выше между кольцами',
-    h1: 'Держи КРЮК у ямы — повиснешь. Отпусти на взлёте!', h2: 'Обрыв: зацепись — лебёдка затянет наверх', h3: 'Два кольца: отпусти первое — хватай второе',
+    levels: 'Уровни', next: 'Дальше', retry: 'Ещё раз', lvl: 'Уровень', fin: 'Финиш', starW: 'Звезда', play: 'Играть', mode: 'Режим', snap: 'Хрусь!',
   } : {
-    title: 'HOOK TRUCK', sub: 'Test level · medium', solo: '1 player', duo: '2 players',
+    title: 'HOOK TRUCK', sub: 'A truck, a rope and a cat', solo: '1 player', duo: '2 players',
+    touchSolo: 'Right thumb: gas & brake · Left thumb: hold HOOK', touchDuo: 'Player 1: gas on the right · Player 2: hook on the left',
     soloTxt: ['Right hand: → gas, ← brake', 'Left hand: hold Space or W to hook', 'S — the winch pulls faster'],
     duoTxt: ['Player 1 (right): → gas, ← brake', 'Player 2 (left): W or Space — hook', 'Player 2: S — winch pull'],
     phone: 'On phones: gas and brake on the right, hook on the left (whole left half)',
     legend: '→ gas   ← brake   ·   Space / W — hook   ·   S — pull', start: 'Play', p1: 'PLAYER 1', p2: 'PLAYER 2',
     hook: 'HOOK', pull: 'PULL', fell: 'Fell down!', crash: 'Crash!', cp: 'Checkpoint!', star: 'Star!',
     win: 'Level complete!', time: 'Time', sec: 's', tries: 'Tries', again: 'Play again', menu: 'Menu', got: 'Star collected', nostar: 'The star is high between the rings',
-    h1: 'Hold HOOK at the pit to swing. Let go on the way up!', h2: 'Cliff: hook on — the winch pulls you up', h3: 'Two rings: let go of the first, grab the second',
+    levels: 'Levels', next: 'Next', retry: 'Retry', lvl: 'Level', fin: 'Finish', starW: 'Star', play: 'Play', mode: 'Mode', snap: 'Snap!',
   };
 
   const cv = document.getElementById('c'), ctx = cv.getContext('2d');
@@ -56,6 +58,7 @@
     crash: () => { noise(0.5, 0.45, 700); tone(120, 0.4, 'sawtooth', 0.12, 50); },
     cp: () => { tone(660, 0.12, 'triangle', 0.15); setTimeout(() => tone(990, 0.18, 'triangle', 0.15), 110); },
     star: () => { [880, 1175, 1568].forEach((f, i) => setTimeout(() => tone(f, 0.2, 'triangle', 0.16), i * 90)); },
+    snap: () => { noise(0.18, 0.4, 3000); tone(220, 0.25, 'square', 0.08, 90); },
     win: () => { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, 0.28, 'triangle', 0.18), i * 130)); },
   };
   function engineSound(S, gas) {
@@ -67,9 +70,14 @@
   }
 
   // ---------- состояние ----------
-  let mode = 'menu', duo = false, S = null, acc = 0, last = performance.now(), Z = 0.6, camX = 0, camY = 0, toasts = [], parts = [], shake = 0, realT = 0, hintShown = {};
+  const LANG = RU ? 1 : 0, NL = H.levels.length;
+  let save = { stars: [], best: [], duo: false };
+  try { const q = JSON.parse(localStorage.getItem('hooktruck_v1') || 'null'); if (q && Array.isArray(q.stars)) save = Object.assign(save, q); } catch (e) { /* без сохранения */ }
+  const store = () => { try { localStorage.setItem('hooktruck_v1', JSON.stringify(save)); } catch (e) { /* без сохранения */ } };
+  let lvl = 0, res = null;
+  let mode = 'menu', duo = !!save.duo, S = null, acc = 0, last = performance.now(), Z = 0.6, camX = 0, camY = 0, toasts = [], parts = [], shake = 0, realT = 0, hintShown = {};
   const keys = {};
-  addEventListener('keydown', (e) => { keys[e.code] = true; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (mode !== 'play' && (e.code === 'Enter' || e.code === 'Space')) startGame(duo); });
+  addEventListener('keydown', (e) => { keys[e.code] = true; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (e.code === 'Enter' && mode === 'win') startGame(duo, Math.min(NL - 1, lvl + 1)); else if (e.code === 'KeyR' && mode === 'play') restart(); });
   addEventListener('keyup', (e) => { keys[e.code] = false; });
   addEventListener('blur', () => { for (const k in keys) keys[k] = false; ptrs.clear(); });
 
@@ -96,7 +104,7 @@
     const x = e.clientX, y = e.clientY;
     if (mode !== 'play') { menuClick(x, y); return; }
     const b = hit(x, y);
-    if (b && b.ui) { if (b.id === 'restart') restart(); else if (b.id === 'menu') mode = 'menu'; else if (b.id === 'mute') muted = !muted; return; }
+    if (b && b.ui) { if (b.id === 'restart') restart(); else if (b.id === 'menu') { mode = 'menu'; } else if (b.id === 'mute') muted = !muted; return; }
     ptrs.set(e.pointerId, { x, y, btn: b ? b.id : e.pointerType !== 'mouse' && x < W / 2 ? 'hook' : null });
   });
   const up = (e) => ptrs.delete(e.pointerId);
@@ -112,12 +120,23 @@
     return { gas, brake, hook, pull };
   }
 
-  function startGame(d) { duo = d; S = H.create(); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
-  function restart() { startGame(duo); }
+  function startGame(d, li) { duo = d; if (li !== undefined) lvl = li; S = H.create(lvl); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
+  function restart() { startGame(duo, lvl); }
+  function finish() {
+    const l = H.levels[lvl], got = !!S.L.star.got, fast = S.wonAt <= l.par, n = 1 + (got ? 1 : 0) + (fast ? 1 : 0);
+    res = { n, got, fast, t: S.wonAt, tries: S.attempts, par: l.par, newBest: !(save.best[lvl] <= S.wonAt) };
+    save.stars[lvl] = Math.max(save.stars[lvl] || 0, n); if (!(save.best[lvl] <= S.wonAt)) save.best[lvl] = +S.wonAt.toFixed(2); store();
+  }
 
   // ---------- меню ----------
   let menuBtns = [];
-  function menuClick(x, y) { const b = menuBtns.find((q) => x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h); if (!b) return; if (b.id === 'solo') startGame(false); else if (b.id === 'duo') startGame(true); else if (b.id === 'again') restart(); else if (b.id === 'menu') { mode = 'menu'; } }
+  function menuClick(x, y) {
+    const b = menuBtns.find((q) => x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h); if (!b) return;
+    if (b.id === 'solo' || b.id === 'duo') { duo = b.id === 'duo'; save.duo = duo; store(); }
+    else if (b.id[0] === 'L') startGame(duo, +b.id.slice(1));
+    else if (b.id === 'play') { let k = save.stars.findIndex((q, i) => !q && i < NL); if (k < 0) k = save.stars.length < NL ? save.stars.length : 0; startGame(duo, k); }
+    else if (b.id === 'again') restart(); else if (b.id === 'next') startGame(duo, Math.min(NL - 1, lvl + 1)); else if (b.id === 'menu') mode = 'menu';
+  }
 
   // ---------- камера ----------
   const sx = (x) => (x - camX) * Z + W * 0.42, sy = (y) => (y - camY) * Z + H2 * 0.55;
@@ -126,6 +145,7 @@
     const zt = port ? W / 1050 : Math.min(W / 1650, H2 / 980);
     Z += (zt - Z) * Math.min(1, dt * 3);
     const T = S.truck, look = clamp(T.vx * 0.35, -250, 420);
+    if (S.state === 'dead') return;
     camX += (T.x + look - camX) * Math.min(1, dt * 4);
     let ty = T.y - 60; if (S.rope) ty = (T.y + S.rope.py) / 2 + 40;
     camY += (ty - camY) * Math.min(1, dt * 3.2);
@@ -151,15 +171,6 @@
   function drawGround() {
     const L = S.L;
     { const y0 = sy(L.maxY + 300); if (y0 < H2) { const g = ctx.createLinearGradient(0, y0, 0, y0 + 500 * Z); g.addColorStop(0, 'rgba(40,24,16,0)'); g.addColorStop(1, 'rgba(40,24,16,0.92)'); ctx.fillStyle = g; ctx.fillRect(0, y0, W, H2 - y0); } }
-    // шипы на дне ям
-    for (const z of L.spikes) {
-      const X0 = sx(z.x0), X1 = sx(z.x1); if (X1 < -50 || X0 > W + 50) continue;
-      ctx.fillStyle = '#5d4037'; ctx.fillRect(X0, sy(z.y), X1 - X0, 400 * Z);
-      ctx.fillStyle = '#b0bec5';
-      for (let x = z.x0; x < z.x1 - 20; x += 46) { ctx.beginPath(); ctx.moveTo(sx(x), sy(z.y)); ctx.lineTo(sx(x + 23), sy(z.y - 60)); ctx.lineTo(sx(x + 46), sy(z.y)); ctx.closePath(); ctx.fill(); }
-      ctx.fillStyle = 'rgba(255,255,255,0.5)';
-      for (let x = z.x0; x < z.x1 - 20; x += 46) { ctx.beginPath(); ctx.moveTo(sx(x + 23), sy(z.y - 60)); ctx.lineTo(sx(x + 30), sy(z.y - 20)); ctx.lineTo(sx(x + 23), sy(z.y - 10)); ctx.closePath(); ctx.fill(); }
-    }
     const vx0 = camX - (W * 0.42) / Z - 50, vx1 = camX + (W * 0.6) / Z + 50, bottom = H2 + 50;
     for (const poly of L.polys) {
       if (poly[poly.length - 1][0] < vx0 || poly[0][0] > vx1) continue;
@@ -174,6 +185,34 @@
       ctx.lineJoin = 'round'; ctx.lineCap = 'round';
       ctx.strokeStyle = '#4caf50'; ctx.lineWidth = 22 * Z; ctx.beginPath(); poly.forEach((p, i) => (i ? ctx.lineTo(sx(p[0]), sy(p[1]) + 6 * Z) : ctx.moveTo(sx(p[0]), sy(p[1]) + 6 * Z))); ctx.stroke();
       ctx.strokeStyle = '#8bc34a'; ctx.lineWidth = 8 * Z; ctx.beginPath(); poly.forEach((p, i) => (i ? ctx.lineTo(sx(p[0]), sy(p[1])) : ctx.moveTo(sx(p[0]), sy(p[1])))); ctx.stroke();
+    }
+    // потолок пещеры: скала сверху с сосульками-сталактитами
+    for (const c of L.ceils) {
+      if (c.x1 < vx0 || c.x0 > vx1) continue;
+      const g = ctx.createLinearGradient(0, sy(c.y - 600), 0, sy(c.y)); g.addColorStop(0, '#4e342e'); g.addColorStop(1, '#8d6e63');
+      ctx.fillStyle = g; ctx.fillRect(sx(c.x0), -10, (c.x1 - c.x0) * Z, sy(c.y) + 10);
+      ctx.fillStyle = '#795548';
+      for (let x = c.x0 + 30; x < c.x1 - 30; x += 90) { const h = 26 + 22 * Math.abs(Math.sin(x * 0.013)); ctx.beginPath(); ctx.moveTo(sx(x - 18), sy(c.y)); ctx.lineTo(sx(x), sy(c.y + h)); ctx.lineTo(sx(x + 18), sy(c.y)); ctx.closePath(); ctx.fill(); }
+      ctx.strokeStyle = '#3e2723'; ctx.lineWidth = 6 * Z; ctx.beginPath(); ctx.moveTo(sx(c.x0), sy(c.y)); ctx.lineTo(sx(c.x1), sy(c.y)); ctx.stroke();
+    }
+    // ускорители: бегущие оранжевые стрелки
+    for (const z of L.boosts) {
+      if (z.x1 < vx0 || z.x0 > vx1) continue;
+      const ph = (realT * 2) % 1;
+      for (let x = z.x0; x < z.x1 - 30; x += 60) {
+        const gy = S.groundAt(x + 20), k = ((x - z.x0) / 60 + ph) % 3 < 1 ? 1 : 0.55;
+        ctx.fillStyle = `rgba(255,${k > 0.9 ? 160 : 112},0,${k})`; ctx.beginPath();
+        ctx.moveTo(sx(x), sy(gy - 4)); ctx.lineTo(sx(x + 22), sy(gy - 4)); ctx.lineTo(sx(x + 46), sy(gy - 22)); ctx.lineTo(sx(x + 22), sy(gy - 40)); ctx.lineTo(sx(x), sy(gy - 40)); ctx.lineTo(sx(x + 24), sy(gy - 22)); ctx.closePath(); ctx.fill();
+      }
+    }
+  }
+  // пропасть: книзу темнеет до черноты — упавший грузовик исчезает в темноте
+  function drawPits() {
+    for (const z of S.L.pits) {
+      const X0 = sx(z.x0), X1 = sx(z.x1); if (X1 < -20 || X0 > W + 20) continue;
+      const y0 = sy(z.y + 30), y1 = sy(z.y + 420);
+      const g = ctx.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, 'rgba(20,12,8,0)'); g.addColorStop(0.55, 'rgba(20,12,8,0.75)'); g.addColorStop(1, 'rgba(10,6,4,1)');
+      ctx.fillStyle = g; ctx.fillRect(X0, y0, X1 - X0, y1 - y0); ctx.fillStyle = 'rgb(10,6,4)'; if (y1 < H2) ctx.fillRect(X0, y1, X1 - X0, H2 - y1 + 10);
     }
   }
   function flagPole(x, gy, col, checker) {
@@ -196,14 +235,30 @@
     if (st && !st.got) { const bob = Math.sin(realT * 3) * 8; ctx.save(); ctx.translate(sx(st.x), sy(st.y + bob)); ctx.rotate(Math.sin(realT * 2) * 0.15); star5(0, 0, 46 * Z, '#ffd54f'); ctx.restore(); }
     // кольца для крюка
     for (const a of L.anchors) {
+      if (a.broken) continue;
       const X = sx(a.x), Y = sy(a.y), r = 30 * Z, tgt = S.target === a, on = S.ropeA === a;
-      // крепление: трос вверх за край экрана (кольцо висит на тросе к облаку-дирижаблю)
-      ctx.strokeStyle = 'rgba(55,71,79,0.55)'; ctx.lineWidth = 3 * Z; ctx.beginPath(); ctx.moveTo(X, Y - r); ctx.lineTo(X, Y - 300 * Z); ctx.stroke();
-      ctx.fillStyle = '#ffffff'; for (const [dx, dy, rr2] of [[-40, -300, 34], [0, -318, 44], [42, -300, 34]]) { ctx.beginPath(); ctx.arc(X + dx * Z, Y + dy * Z, rr2 * Z, 0, 7); ctx.fill(); }
+      if (a.mv) { // путь ездящего кольца
+        ctx.setLineDash([6 * Z, 10 * Z]); ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 4 * Z; ctx.beginPath();
+        ctx.moveTo(sx(a.x0 - (a.mv.dx || 0)), sy(a.y0 - (a.mv.dy || 0))); ctx.lineTo(sx(a.x0 + (a.mv.dx || 0)), sy(a.y0 + (a.mv.dy || 0))); ctx.stroke(); ctx.setLineDash([]);
+      }
+      const cave = L.ceils.find((c) => a.x > c.x0 && a.x < c.x1 && c.y < a.y);
+      const sh = on && a.snap ? Math.sin(realT * 60) * 3 * Z * Math.min(1, a.hang / a.snap) : 0;
+      if (cave) { ctx.strokeStyle = '#90a4ae'; ctx.lineWidth = 4 * Z; ctx.setLineDash([8 * Z, 5 * Z]); ctx.beginPath(); ctx.moveTo(X, Y - r); ctx.lineTo(X, sy(cave.y)); ctx.stroke(); ctx.setLineDash([]); }
+      else {
+        ctx.strokeStyle = 'rgba(55,71,79,0.55)'; ctx.lineWidth = 3 * Z; ctx.beginPath(); ctx.moveTo(X, Y - r); ctx.lineTo(X, Y - 300 * Z); ctx.stroke();
+        ctx.fillStyle = '#ffffff'; for (const [dx, dy, rr2] of [[-40, -300, 34], [0, -318, 44], [42, -300, 34]]) { ctx.beginPath(); ctx.arc(X + dx * Z, Y + dy * Z, rr2 * Z, 0, 7); ctx.fill(); }
+      }
       if (tgt) { const p = 1 + 0.18 * Math.sin(realT * 10); ctx.strokeStyle = 'rgba(255,235,59,0.9)'; ctx.lineWidth = 6 * Z; ctx.beginPath(); ctx.arc(X, Y, r * 1.9 * p, 0, 7); ctx.stroke(); }
-      ctx.lineWidth = 12 * Z; ctx.strokeStyle = '#263238'; ctx.beginPath(); ctx.arc(X, Y, r, 0, 7); ctx.stroke();
-      ctx.lineWidth = 8 * Z; ctx.strokeStyle = on ? '#ff7043' : tgt ? '#ffeb3b' : '#ffc107'; ctx.beginPath(); ctx.arc(X, Y, r, 0, 7); ctx.stroke();
-      ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 3 * Z; ctx.beginPath(); ctx.arc(X, Y, r, -2.6, -1.6); ctx.stroke();
+      ctx.save(); ctx.translate(X + sh, Y);
+      ctx.lineWidth = 12 * Z; ctx.strokeStyle = '#263238'; ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.stroke();
+      ctx.lineWidth = 8 * Z; ctx.strokeStyle = a.snap ? (on ? '#ff5252' : '#ff8a65') : on ? '#ff7043' : tgt ? '#ffeb3b' : '#ffc107'; ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 3 * Z; ctx.beginPath(); ctx.arc(0, 0, r, -2.6, -1.6); ctx.stroke();
+      if (a.snap) { // трещины
+        ctx.strokeStyle = '#3e2723'; ctx.lineWidth = 3 * Z; ctx.beginPath();
+        ctx.moveTo(r * 0.75, -r * 0.65); ctx.lineTo(r * 1.0, -r * 0.2); ctx.lineTo(r * 0.8, r * 0.1);
+        ctx.moveTo(-r * 0.9, r * 0.4); ctx.lineTo(-r * 0.6, r * 0.75); ctx.stroke();
+      }
+      ctx.restore();
     }
     // куда зацепится крюк
     if (S.target && !S.rope && S.state === 'play') {
@@ -349,72 +404,93 @@
     ctx.fillStyle = '#ffca28'; rr(bx, by, Math.max(12, bw * k), 12, 6); ctx.fill();
     for (const c of L.cps) { const q = (c.x - x0) / (x1 - x0); ctx.fillStyle = S.cp && S.cp.x >= c.x ? '#00e676' : '#fff'; ctx.beginPath(); ctx.arc(bx + bw * q, by + 6, 6, 0, 7); ctx.fill(); }
     ctx.fillStyle = '#fff'; ctx.font = '800 15px system-ui, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-    ctx.fillText(W < 600 ? `⏱ ${S.t.toFixed(1)}   ${L.star.got ? '★' : '☆'}${duo ? '   👥' : ''}` : `${T.title}${duo ? ' · ' + T.duo : ''}   ⏱ ${S.t.toFixed(1)}   ${L.star.got ? '★' : '☆'}`, bx, by + 20);
-    // подсказки по ходу уровня
-    const a = L.anchors, tx = S.truck.x;
-    let hint = null;
-    if (tx > a[0].x - 900 && tx < a[0].x + 300) hint = T.h1; else if (tx > a[1].x - 700 && tx < a[1].x + 100) hint = T.h2; else if (tx > a[2].x - 900 && tx < a[2].x - 100) hint = T.h3;
-    // подсказка висит 6 с после появления, потом тает (чтобы не закрывала кольца); после возрождения — снова
-    if (hint) { if (!(hint in hintShown) || hintShown._att !== S.attempts) { if (hintShown._att !== S.attempts) { for (const k in hintShown) delete hintShown[k]; hintShown._att = S.attempts; } if (!(hint in hintShown)) hintShown[hint] = realT; } }
-    const hAl = hint ? clamp(6.5 - (realT - hintShown[hint]), 0, 1) : 0;
-    if (hint && hAl > 0 && S.state === 'play') {
+    ctx.fillText(W < 600 ? `${lvl + 1}   ⏱ ${S.t.toFixed(1)} / ${H.levels[lvl].par}   ${L.star.got ? '★' : '☆'}${duo ? '   👥' : ''}` : `${T.lvl} ${lvl + 1}${duo ? ' · ' + T.duo : ''}   ⏱ ${S.t.toFixed(1)} / ${H.levels[lvl].par} ${T.sec}   ${L.star.got ? '★' : '☆'}`, bx, by + 20);
+    // название уровня и подсказка уровня — первые секунды; после возрождения подсказка снова
+    const l = H.levels[lvl], hint = l.hint[LANG];
+    if (S.t < 2.5) {
+      ctx.globalAlpha = clamp(2.5 - S.t, 0, 1); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 ${W < 600 ? 30 : 40}px system-ui, sans-serif`;
+      const ty = H2 * 0.3; ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(0,0,0,0.45)'; const tt = `${T.lvl} ${lvl + 1} · ${l.name[LANG]}`; ctx.strokeText(tt, W / 2, ty); ctx.fillStyle = '#fff'; ctx.fillText(tt, W / 2, ty); ctx.globalAlpha = 1;
+    }
+    if (hintShown._att !== S.attempts) { hintShown._att = S.attempts; hintShown.t0 = realT; }
+    const hAl = hint ? clamp(8 - (realT - hintShown.t0), 0, 1) : 0;
+    if (hint && hAl > 0 && S.state === 'play' && S.t > 0.4) {
       ctx.globalAlpha = hAl;
       const fs = W < 600 ? 17 : 22; ctx.font = `900 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center';
-      const ls = lines(hint, W - 60), tw = Math.max(...ls.map((l) => ctx.measureText(l).width)) + 36, lh = fs * 1.3, hh = ls.length * lh + 18, hx = W / 2 - tw / 2, hy = W < H2 ? 96 : 70;
+      const ls = lines(hint, W - 60), tw = Math.max(...ls.map((q) => ctx.measureText(q).width)) + 36, lh = fs * 1.3, hh = ls.length * lh + 18, hx = W / 2 - tw / 2, hy = W < H2 ? 96 : 70;
       ctx.fillStyle = 'rgba(0,0,0,0.45)'; rr(hx, hy, tw, hh, 20); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle';
-      ls.forEach((l, i) => ctx.fillText(l, W / 2, hy + 9 + lh * (i + 0.5)));
+      ls.forEach((q, i) => ctx.fillText(q, W / 2, hy + 9 + lh * (i + 0.5)));
       ctx.globalAlpha = 1;
     }
     // всплывающие надписи
-    for (const t of toasts) {
-      t.t += 1 / 60; const al = clamp(1.6 - t.t, 0, 1);
+    toasts.forEach((t, i) => {
+      if (t.s === undefined) t.s = realT; t.t = realT - t.s; const al = clamp(1.6 - t.t, 0, 1), ty = H2 * 0.36 - t.t * 30 + i * 54;
       ctx.globalAlpha = al; ctx.font = '900 44px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.strokeText(t.text, W / 2, H2 * 0.36 - t.t * 30); ctx.fillStyle = t.col; ctx.fillText(t.text, W / 2, H2 * 0.36 - t.t * 30); ctx.globalAlpha = 1;
-    }
+      ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.strokeText(t.text, W / 2, ty); ctx.fillStyle = t.col; ctx.fillText(t.text, W / 2, ty); ctx.globalAlpha = 1;
+    });
     toasts = toasts.filter((t) => t.t < 1.6);
   }
   function panel(x, y, w, h) { ctx.fillStyle = 'rgba(0,0,0,0.25)'; rr(x, y + 8, w, h, 26); ctx.fill(); ctx.fillStyle = '#fffdf7'; rr(x, y, w, h, 26); ctx.fill(); }
   function bigBtn(id, x, y, w, h, label, col) { menuBtns.push({ id, x, y, w, h }); ctx.fillStyle = 'rgba(0,0,0,0.2)'; rr(x, y + 5, w, h, 18); ctx.fill(); ctx.fillStyle = col; rr(x, y, w, h, 18); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = `900 ${Math.round(h * 0.4)}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, x + w / 2, y + h / 2 + 1); }
   function drawMenu() {
     menuBtns = [];
-    ctx.fillStyle = 'rgba(10,40,70,0.45)'; ctx.fillRect(0, 0, W, H2);
-    const port = W < H2, cw = port ? Math.min(W - 32, 420) : Math.min(380, (W - 80) / 2), ch = port ? 250 : 300;
-    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.font = `900 ${port ? 46 : 64}px system-ui, sans-serif`; ctx.lineWidth = 10; ctx.strokeStyle = '#bf360c';
-    const ty = port ? 70 : Math.max(70, H2 * 0.14); ctx.strokeText(T.title, W / 2, ty); ctx.fillStyle = '#ffca28'; ctx.fillText(T.title, W / 2, ty);
-    ctx.font = '800 18px system-ui, sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText(T.sub, W / 2, ty + (port ? 40 : 50));
-    const cards = [['solo', T.solo, T.soloTxt, '#43a047'], ['duo', T.duo, T.duoTxt, '#1e88e5']];
-    cards.forEach(([id, name, lines, col], i) => {
-      const x = port ? W / 2 - cw / 2 : W / 2 - cw - 20 + i * (cw + 40), y = port ? ty + 70 + i * (ch + 18) : ty + 90;
-      panel(x, y, cw, ch);
-      ctx.fillStyle = '#263238'; ctx.font = '900 30px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillText((i ? '👥 ' : '👤 ') + name, x + cw / 2, y + 40);
-      ctx.font = '700 16px system-ui, sans-serif'; ctx.fillStyle = '#455a64';
-      lines.forEach((l, k) => ctx.fillText(l, x + cw / 2, y + 84 + k * 28));
-      bigBtn(id, x + 30, y + ch - 78, cw - 60, 56, T.start, col);
+    ctx.fillStyle = 'rgba(10,40,70,0.5)'; ctx.fillRect(0, 0, W, H2);
+    const port = W < H2, sm = H2 < 520;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const ty = sm ? 40 : port ? 64 : Math.max(60, H2 * 0.1);
+    ctx.font = `900 ${sm ? 38 : port ? 46 : 64}px system-ui, sans-serif`; ctx.lineWidth = 10; ctx.strokeStyle = '#bf360c';
+    ctx.strokeText(T.title, W / 2, ty); ctx.fillStyle = '#ffca28'; ctx.fillText(T.title, W / 2, ty);
+    ctx.font = '800 17px system-ui, sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText(T.sub, W / 2, ty + (sm ? 30 : 40));
+    // режим: 1 игрок / 2 игрока
+    const mw = Math.min(W - 40, 440), mx = W / 2 - mw / 2, my = ty + (sm ? 52 : 66), mh = 46;
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; rr(mx, my, mw, mh, 23); ctx.fill();
+    [['solo', '👤 ' + T.solo, false], ['duo', '👥 ' + T.duo, true]].forEach(([id, lab, d], i) => {
+      const x = mx + 4 + i * (mw / 2 - 4), w = mw / 2 - 4; menuBtns.push({ id, x, y: my, w, h: mh });
+      if (duo === d) { ctx.fillStyle = d ? '#1e88e5' : '#43a047'; rr(x, my + 4, w, mh - 8, 19); ctx.fill(); }
+      ctx.fillStyle = '#fff'; ctx.font = '900 18px system-ui, sans-serif'; ctx.fillText(lab, x + w / 2, my + mh / 2 + 1);
     });
-    ctx.font = '700 15px system-ui, sans-serif'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
-    const fy = port ? Math.min(H2 - 40, ty + 70 + 2 * (ch + 18) + 10) : ty + 90 + ch + 40;
-    lines(T.phone, W - 40).forEach((l, i) => ctx.fillText(l, W / 2, fy + i * 20));
+    ctx.font = '700 14px system-ui, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    const ctl = matchMedia('(pointer: coarse)').matches ? (duo ? T.touchDuo : T.touchSolo) : (duo ? T.duoTxt : T.soloTxt).slice(0, 2).join('   ·   ');
+    const cl = lines(ctl, W - 40); cl.forEach((q, i) => ctx.fillText(q, W / 2, my + mh + 18 + i * 18));
+    // сетка уровней
+    const cols = port ? 3 : 6, rows = Math.ceil(NL / cols), gy0 = my + mh + 22 + cl.length * 18 + 8;
+    const footer = 70, cell = Math.min((Math.min(W, 900) - 40) / cols, (H2 - gy0 - footer) / rows, 130), gw = cell * cols, gx0 = W / 2 - gw / 2;
+    for (let i = 0; i < NL; i++) {
+      const c = i % cols, r = Math.floor(i / cols), x = gx0 + c * cell + 6, y = gy0 + r * cell + 6, w = cell - 12, st = save.stars[i] || 0;
+      menuBtns.push({ id: 'L' + i, x, y, w, h: w });
+      ctx.fillStyle = 'rgba(0,0,0,0.25)'; rr(x, y + 5, w, w, 16); ctx.fill();
+      ctx.fillStyle = st ? '#fffdf7' : '#e3f2fd'; rr(x, y, w, w, 16); ctx.fill();
+      ctx.fillStyle = '#263238'; ctx.font = `900 ${Math.round(w * 0.34)}px system-ui, sans-serif`; ctx.fillText(String(i + 1), x + w / 2, y + w * 0.38);
+      for (let k = 0; k < 3; k++) star5(x + w / 2 + (k - 1) * w * 0.24, y + w * 0.76, w * 0.1, k < st ? '#ffd54f' : '#cfd8dc');
+    }
+    const by = Math.min(H2 - 60, gy0 + rows * cell + 10);
+    bigBtn('play', W / 2 - 110, by, 220, 50, '▶ ' + T.play, '#43a047');
   }
   function drawWin() {
     menuBtns = [];
     ctx.fillStyle = 'rgba(10,40,70,0.4)'; ctx.fillRect(0, 0, W, H2);
-    const w = Math.min(W - 32, 420), h = 330, x = W / 2 - w / 2, y = H2 / 2 - h / 2;
+    const w = Math.min(W - 32, 460), h = Math.min(H2 - 24, 340), x = W / 2 - w / 2, y = H2 / 2 - h / 2;
     panel(x, y, w, h);
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#2e7d32'; ctx.font = '900 32px system-ui, sans-serif'; ctx.fillText(T.win, W / 2, y + 46);
-    star5(W / 2, y + 108, 34, S.L.star.got ? '#ffd54f' : '#cfd8dc');
-    ctx.fillStyle = '#37474f'; ctx.font = '800 19px system-ui, sans-serif';
-    ctx.fillText(`${T.time}: ${S.wonAt.toFixed(1)} ${T.sec}   ·   ${T.tries}: ${S.attempts}`, W / 2, y + 162);
-    ctx.font = '700 15px system-ui, sans-serif'; ctx.fillStyle = '#607d8b'; ctx.fillText(S.L.star.got ? T.got : T.nostar, W / 2, y + 192);
-    bigBtn('again', x + 24, y + h - 92, w / 2 - 34, 56, T.again, '#43a047');
-    bigBtn('menu', x + w / 2 + 10, y + h - 92, w / 2 - 34, 56, T.menu, '#1e88e5');
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#2e7d32'; ctx.font = '900 28px system-ui, sans-serif';
+    ctx.fillText(T.win, W / 2, y + 40); ctx.fillStyle = '#78909c'; ctx.font = '800 16px system-ui, sans-serif'; ctx.fillText(`${T.lvl} ${lvl + 1} · ${H.levels[lvl].name[LANG]}`, W / 2, y + 70);
+    const labs = [T.fin, T.starW, `≤ ${res.par} ${T.sec}`], on = [true, res.got, res.fast];
+    for (let k = 0; k < 3; k++) {
+      const cx = W / 2 + (k - 1) * Math.min(120, w * 0.28), cy = y + 132, big = k === 1 ? 38 : 32, pop = clamp((realT - (res.t0 || (res.t0 = realT)) - k * 0.25) * 4, 0, 1);
+      star5(cx, cy, big * (on[k] ? 0.6 + 0.4 * pop : 1), on[k] && pop > 0 ? '#ffd54f' : '#cfd8dc');
+      ctx.fillStyle = on[k] ? '#37474f' : '#90a4ae'; ctx.font = '800 15px system-ui, sans-serif'; ctx.fillText(labs[k], cx, cy + 52);
+    }
+    ctx.fillStyle = '#37474f'; ctx.font = '800 18px system-ui, sans-serif';
+    ctx.fillText(`${T.time}: ${res.t.toFixed(1)} ${T.sec}   ·   ${T.tries}: ${res.tries}`, W / 2, y + 226);
+    const bh = 54, bw = (w - 48 - 20) / 3, b0 = x + 24, byy = y + h - bh - 22;
+    bigBtn('menu', b0, byy, bw, bh, '☰', '#78909c');
+    bigBtn('again', b0 + bw + 10, byy, bw, bh, '↻', '#fb8c00');
+    if (lvl < NL - 1) bigBtn('next', b0 + 2 * (bw + 10), byy, bw, bh, T.next + ' ▶', '#43a047'); else bigBtn('menu', b0 + 2 * (bw + 10), byy, bw, bh, T.levels, '#43a047');
   }
 
   // ---------- главный цикл ----------
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now; realT += dt;
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    if (!S) { S = H.create(); camX = S.truck.x + 300; camY = S.truck.y; }
+    if (!S) { S = H.create(0); camX = S.truck.x + 300; camY = S.truck.y; }
     let inp = { gas: false, brake: false, hook: false, pull: false };
     if (mode === 'play') {
       inp = input();
@@ -427,21 +503,22 @@
           else if (e.e === 'cp') { sfx.cp(); toasts.push({ t: 0, text: T.cp, col: '#69f0ae' }); }
           else if (e.e === 'star') { sfx.star(); toasts.push({ t: 0, text: T.star, col: '#ffd54f' }); }
           else if (e.e === 'win') { sfx.win(); S.wonAt = S.t; }
+          else if (e.e === 'snap') { sfx.snap(); shake = 0.25; toasts.push({ t: 0, text: T.snap, col: '#ffab91' }); }
         }
         S.events.length = 0;
       }
-      if (S.state === 'win' && S.wonT > 0.9) mode = 'win';
+      if (S.state === 'win' && S.wonT > 0.9) { finish(); mode = 'win'; }
     }
     engineSound(S, inp.gas);
     camera(dt);
     shake = Math.max(0, shake - dt);
     ctx.save(); if (shake > 0) ctx.translate((Math.random() - 0.5) * shake * 30, (Math.random() - 0.5) * shake * 30);
-    drawSky(); drawGround(); drawObjects(); drawRope(); drawTruck();
+    drawSky(); drawGround(); drawObjects(); drawRope(); drawTruck(); drawPits();
     ctx.restore();
     if (mode === 'play' || mode === 'win') drawHud(inp);
     if (mode === 'menu') drawMenu(); else if (mode === 'win') drawWin();
     requestAnimationFrame(frame);
   }
-  window.__hook = { start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
+  window.__hook = { get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
   requestAnimationFrame(frame);
 })();
