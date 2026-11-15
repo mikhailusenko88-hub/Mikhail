@@ -5,28 +5,34 @@
  "title": "User-map-world ",
  "description": "Всё что хочется услышать «Everything You Want to Hear»",
  "header": [
-  "37 подписчиков",
-  "61 видео"
+  "38 подписчиков",
+  "62 видео"
  ],
  "alerts": [],
  "images": {
   "avatar": "https://yt3.googleusercontent.com/UtCp7ixk74NISIjixeGp5oPwRp3pxMDlGo5PsTFpAV4wqnspdRjsJYNm3h-0raq1DCRavPgvzw=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/5VT-xJ6_tn05sBBpgHimbrnctQXI0-H3guZELd6g4eDNbowlv3j-h_ezGHC8i7mOxDcyAAEv5g=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-15 06:41 UTC",
+ "checked": "2026-11-15 18:54 UTC",
  "shorts_status": 200,
  "shorts": [
   {
+   "id": "UXPbaSdMoFU",
+   "title": "Когда жизнь бьёт ключом | Джек Лондон",
+   "views": "152 просмотра",
+   "a11y": "Воспроизвести короткое видео \"Когда жизнь бьёт ключом | Джек Лондон, 152 просмотра\""
+  },
+  {
    "id": "m0OAs9apqa4",
    "title": "Ты уверен, что видишь мир таким, какой он есть? ✨ | Марк Твен #Shorts",
-   "views": "404 просмотра",
-   "a11y": "Воспроизвести короткое видео \"Ты уверен, что видишь мир таким, какой он есть? ✨ | Марк Твен #Shorts, 404 просмотра\""
+   "views": "676 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Ты уверен, что видишь мир таким, какой он есть? ✨ | Марк Твен #Shorts, 676 просмотров\""
   },
   {
    "id": "47Zecy9YXfA",
    "title": "Для чего мы живём? | Достоевский «Братья Карамазовы» #Shorts",
-   "views": "67 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Для чего мы живём? | Достоевский «Братья Карамазовы» #Shorts, 67 просмотров\""
+   "views": "75 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Для чего мы живём? | Достоевский «Братья Карамазовы» #Shorts, 75 просмотров\""
   },
   {
    "id": "H64N8iB3EJo",
@@ -61,8 +67,8 @@
   {
    "id": "WZMuTqPiQIc",
    "title": "❤️ У счастья нет завтрашнего дня… | Иван Тургенев «Ася» #Shorts",
-   "views": "49 просмотров",
-   "a11y": "Воспроизвести короткое видео \"❤️ У счастья нет завтрашнего дня… | Иван Тургенев «Ася» #Shorts, 49 просмотров\""
+   "views": "50 просмотров",
+   "a11y": "Воспроизвести короткое видео \"❤️ У счастья нет завтрашнего дня… | Иван Тургенев «Ася» #Shorts, 50 просмотров\""
   },
   {
    "id": "bkvBk3kZOWw",
@@ -297,14 +303,114 @@
    "title": "Когда любовь сильнее любых слов… 🤍 | Джейн Остин «Эмма» #Shorts",
    "views": "706 просмотров",
    "a11y": "Воспроизвести короткое видео \"Когда любовь сильнее любых слов… 🤍 | Джейн Остин «Эмма» #Shorts, 706 просмотров\""
-  },
-  {
-   "id": "po6QNLEC7KU",
-   "title": "Не бойся бурь — ты учишься управлять своей судьбой ⛵🤍 | Луиза Мэй Олкотт #Shorts",
-   "views": "1 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Не бойся бурь — ты учишься управлять своей судьбой ⛵🤍 | Луиза Мэй Олкотт #Shorts, 1 тысяча просмотров\""
   }
  ],
- "rss_status": 404,
- "rss": []
+ "rss_status": 200,
+ "rss": [
+  {
+   "id": "UXPbaSdMoFU",
+   "published": "2026-11-15T10:43:27+00:00",
+   "title": "Когда жизнь бьёт ключом | Джек Лондон",
+   "views": 152,
+   "desc": "Бывает, так увлечёшься мгновением, что забываешь обо всём. Джек Лондон поймал это чувство в одной фразе.\n\nДжек Лондон · «Зов предков»\nJack London · The Call of the Wild\nМузыка / Music: Magnetic Lullaby — Amulets\n\n#Shorts #ПочеркТишины #ДжекЛондон #ЗовПредков #ЦитатыИзКниг #JackLondon #TheCallOfTheWild #BookQuotes"
+  },
+  {
+   "id": "m0OAs9apqa4",
+   "published": "2026-11-14T15:00:36+00:00",
+   "title": "Ты уверен, что видишь мир таким, какой он есть? ✨ | Марк Твен #Shorts",
+   "views": 674,
+   "desc": "✨ А что, если наши глаза показывают нам не всю правду?\n\nИногда мы смотрим на мир, но не замечаем самого главного. Ведь то, как мы воспринимаем жизнь, зависит не только от того, что находится перед нами, но и от того, что происходит внутри нас.\n\n«Когда воображение теряет ясность, нельзя полагаться на собственные глаза».\n\n— Марк Твен\n\n🌙 Эти слова напоминают: настоящее видение начинается не с глаз, а с способности мыслить, чувствовать и представлять.\n\n✨ What if our eyes don’t show us the whole truth?\n\nSometimes we look at the world without truly seeing it. Our imagination shapes how we understand reality, discover meaning, and recognize what others may overlook.\n\n“You can’t depend on your eyes when your imagination is out of focus.”\n\n— Mark Twain\n\n🤍 The Handwriting of Silence — timeless words that make us see life differently.\n\nА ты считаешь, что воображение помогает нам видеть больше, чем глаза?\n\nDo you believe imagination helps us see beyond what our eyes can show?\n\n#ПочеркТишины #МаркТвен #ЦитатыСоСмыслом #МудрыеМысли #ФилософияЖизни #Воображение #ЦитатыИзКниг #Shorts #MarkTwain #MarkTwainQuotes #Imagination #DeepQuotes #LifeWisdom #BookQuotes #Philosophy #TheHandwritingOfSilence"
+  },
+  {
+   "id": "47Zecy9YXfA",
+   "published": "2026-11-13T15:00:37+00:00",
+   "title": "Для чего мы живём? | Достоевский «Братья Карамазовы» #Shorts",
+   "views": 72,
+   "desc": "Для чего мы живём? Иногда один вопрос оказывается важнее тысячи ответов.\n\n«Ибо тайна бытия человеческого не в том, чтобы только жить, а в том, для чего жить».\n\nФёдор Михайлович Достоевский — «Братья Карамазовы», глава «Великий инквизитор».\n\nWhat gives life its meaning? Sometimes a single question stays with us longer than a thousand answers.\n\nFyodor Dostoevsky — The Brothers Karamazov, “The Grand Inquisitor”.\n\n«Почерк тишины» / The Handwriting of Silence — слова, которые остаются с нами.\n\nА ради чего живёте вы?\n\n#ПочеркТишины #Достоевский #БратьяКарамазовы #СмыслЖизни #ЦитатыИзКниг #Shorts #Dostoevsky #TheBrothersKaramazov #Literature #BookQuotes #Philosophy"
+  },
+  {
+   "id": "H64N8iB3EJo",
+   "published": "2026-11-12T13:10:25+00:00",
+   "title": "Ты ещё не знаешь, что уже меняется внутри… ✨ | Райнер Мария Рильке #Shorts",
+   "views": 46,
+   "desc": "Иногда нам кажется, что в жизни ничего не меняется…\n\nНо самые важные перемены происходят незаметно. Пока мы ждём подходящего момента, внутри нас уже рождается что-то новое. Будущее начинается гораздо раньше, чем мы способны его увидеть. ✨\n\n«Будущее входит в нас, чтобы преобразиться в нас, задолго до того, как случится».\n\n— Райнер Мария Рильке, «Письма к молодому поэту».\n\n🤍 Возможно, именно сейчас в твоей жизни начинается новая прекрасная глава.\n\n✨ Sometimes the most important changes happen quietly.\n\nWhile we wait for something new, the future is already taking shape within us. Long before we see it, something beautiful may already be beginning.\n\n— Rainer Maria Rilke, Letters to a Young Poet.\n\n🌿 The Handwriting of Silence — words that stay with your heart.\n\nА ты веришь, что самые важные перемены начинаются внутри нас?\n\nDo you believe that the greatest changes begin within us?\n\n#ПочеркТишины #ЦитатыСоСмыслом #МудрыеМысли #Рильке #Перемены #Вдохновение #Shorts #BookQuotes #Rilke #LifeQuotes #InnerGrowth #InspirationalQuotes #TheHandwritingOfSilence"
+  },
+  {
+   "id": "r7CyQZLAJwc",
+   "published": "2026-11-11T19:52:31+00:00",
+   "title": "Самое большое счастье — знать, что тебя любят… ❤️ | Виктор Гюго #Shorts",
+   "views": 36,
+   "desc": "❤️ Иногда для счастья не нужно ничего особенного…\n\nДостаточно знать, что где-то есть человек, для которого ты — целый мир.\n\n«Высшее счастье жизни — это уверенность в том, что тебя любят».\n\nВиктор Гюго — «Отверженные»\n\n✨ The greatest happiness in life is knowing that you are loved.\n\n🤍 Почерк тишины | The Handwriting of Silence\n\nА что для вас важнее — любить или быть любимым?\n\n#ПочеркТишины #Любовь #ВикторГюго #LoveQuotes #Shorts"
+  },
+  {
+   "id": "wAn-iA2ChZg",
+   "published": "2026-11-11T15:33:47+00:00",
+   "title": "Тебе не нужно быть идеальной | Джон Стейнбек",
+   "views": 93,
+   "desc": "Над долиной медленно рассеивается утренний туман. Пусть вместе с ним уйдёт и привычка судить себя за каждую ошибку. К себе тоже можно относиться с той же добротой, с какой мы относимся к тем, кого любим.\n\n«И теперь, когда тебе не нужно быть безупречной, ты можешь быть хорошим человеком».\n\n“And now that you don’t have to be perfect, you can be good.”\n\nДжон Стейнбек · «К востоку от Эдема»\nJohn Steinbeck · East of Eden\nРусский текст — наш перевод.\n\nAs the morning mist lifts, give yourself the same kindness you offer the people you love.\n\n#Shorts #ПочеркТишины #ДжонСтейнбек #КВостокуОтЭдема #ЦитатыИзКниг #ПринятиеСебя #МироваяЛитература #JohnSteinbeck #EastOfEden #BookQuotes #SelfCompassion"
+  },
+  {
+   "id": "yrgvKL_AtNU",
+   "published": "2026-11-11T15:13:46+00:00",
+   "title": "Есть то, что время не стирает… ❤️ | Иван Бунин #Shorts",
+   "views": 35,
+   "desc": "Иногда проходят годы, меняются люди, исчезают чувства… Но некоторые воспоминания остаются с нами навсегда. ❤️\n\n«Всё проходит, да не всё забывается».\n\nИван Бунин — «Тёмные аллеи»\n\nSome moments fade. Others stay in our hearts forever. ✨\n\n🤍 Почерк тишины | The Handwriting of Silence\n\nА у вас есть человек, которого вы так и не смогли забыть?\n\n#ПочеркТишины #Бунин #ЦитатыОЛюбви #Memories #Shorts"
+  },
+  {
+   "id": "NuIGuiJcsRY",
+   "published": "2026-11-10T16:54:49+00:00",
+   "title": "Иногда одна улыбка меняет всё… ❤️ | Мудрость пророка Мухаммада ﷺ",
+   "views": 179,
+   "desc": "✨ Иногда самое большое добро начинается с маленького поступка…\n\n«Не пренебрегай ничем из добрых дел, даже если это всего лишь встреча брата с приветливым лицом».\n\nПророк Мухаммад ﷺ\nСахих Муслим, хадис 2626\n\n❤️ Улыбка, доброе слово, искреннее внимание — иногда именно этого человеку не хватает больше всего.\n\nНе упускайте возможности подарить кому-то немного тепла.\n\n✨ Even the smallest act of kindness can change someone’s day.\n\n🤍 Почерк тишины | The Handwriting of Silence\n\n#ПочеркТишины #Мудрость #Доброта #Kindness #Shorts"
+  },
+  {
+   "id": "WZMuTqPiQIc",
+   "published": "2026-11-10T15:37:59+00:00",
+   "title": "❤️ У счастья нет завтрашнего дня… | Иван Тургенев «Ася» #Shorts",
+   "views": 51,
+   "desc": "✨ А вдруг самое счастливое мгновение твоей жизни происходит прямо сейчас?\n\n«У счастья нет завтрашнего дня; у него нет и вчерашнего; оно не помнит прошедшего, не думает о будущем; у него есть настоящее — и то не день, а мгновенье».\n\n❤️ Иван Тургенев — «Ася»\n\nМы часто ждём счастья завтра.\nВспоминаем, как были счастливы вчера.\nИ иногда не замечаем, что самое прекрасное происходит именно сейчас…\n\n🌅 Один взгляд.\n❤️ Одна встреча.\n✨ Одно мгновение, которое остаётся в сердце навсегда.\n\nНе откладывай счастье на потом.\n\n━━━━━━━━━━━━━━\n\n✨ HAPPINESS EXISTS IN A MOMENT.\n\n“Happiness has no tomorrow, nor a yesterday; it does not remember the past, nor think of the future; it has only the present — and not even a day, but a moment.”\n\n❤️ Ivan Turgenev — Asya\n\nSometimes the most beautiful moments are the ones we almost miss.\n\nDon’t wait for tomorrow to be happy. Cherish the moment you’re living now.\n\n🤍 ПОЧЕРК ТИШИНЫ\nTHE HANDWRITING OF SILENCE\n\nЛитература, которая касается души.\nTimeless words. Beautiful thoughts. Moments that stay with us.\n\n💬 А какое мгновение своей жизни ты хотел бы пережить ещё раз?\n\nWhat is one beautiful moment you wish you could relive?\n\n#ПочеркТишины #ИванТургенев #Ася #ЦитатыСоСмыслом #МудрыеМысли #КрасивыеЦитаты #Счастье #МгновенияСчастья #СмыслЖизни #РусскаяЛитература #КлассическаяЛитература #ЦитатыОЛюбви #ДушевныеЦитаты #Вдохновение #Turgenev #IvanTurgenev #Happiness #LifeQuotes #InspirationalQuotes #MeaningfulQuotes #RussianLiterature #BeautifulWords #Shorts #YouTubeShorts"
+  },
+  {
+   "id": "bkvBk3kZOWw",
+   "published": "2026-11-09T21:49:12+00:00",
+   "title": "✨ Чудеса случаются, когда мы создаём их сами ❤️ | Александр Грин #Shorts",
+   "views": 58,
+   "desc": "✨ А что, если чудеса не нужно ждать?\n\n«Я понял одну нехитрую истину. Она в том, чтобы делать так называемые чудеса своими руками».\n\n❤️ Александр Грин — «Алые паруса»\n\nИногда для настоящего чуда достаточно одного человека, который не перестал верить в мечту.\n\nАлые паруса — это история о надежде, любви и о том, что самые прекрасные события могут начинаться с наших собственных поступков.\n\n🌅 Не переставай мечтать.\n✨ Не бойся делать первый шаг.\n❤️ И помни: иногда чудо начинается именно с тебя.\n\n💬 А ты веришь, что человек способен сам создавать чудеса?\n\n━━━━━━━━━━━━━━\n\n✨ WHAT IF MIRACLES ARE MADE, NOT FOUND?\n\n“I have understood one simple truth: it lies in making so-called miracles with your own hands.”\n\n❤️ Alexander Grin — Scarlet Sails\n\nSometimes the most beautiful miracles begin with a simple act of kindness, courage, or love.\n\nBelieve in your dreams. Make something beautiful happen.\n\n🤍 THE HANDWRITING OF SILENCE\nПОЧЕРК ТИШИНЫ\n\nBeautiful words. Deep thoughts. Moments of silence.\n\n💬 Do you believe we can create our own miracles?\n\n#ПочеркТишины #АлыеПаруса #АлександрГрин #ЦитатыСоСмыслом #МудрыеМысли #КрасивыеЦитаты #МечтыСбываются #ВерьВСебя #Вдохновение #Литература #РусскаяКлассика #ScarletSails #AlexanderGrin #InspirationalQuotes #LifeQuotes #DreamBig #BelieveInYourDreams #Wisdom #Motivation #Shorts #YouTubeShorts"
+  },
+  {
+   "id": "df_9iWMHP-k",
+   "published": "2026-11-09T21:27:40+00:00",
+   "title": "✨ Почему мы видим мир по-разному? | Мудрость, которая заставляет задуматься #Shorts",
+   "views": 49,
+   "desc": "✨ А ты когда-нибудь замечал, что два человека могут смотреть на одно и то же, но видеть совершенно разное?\n\n«Мы видим вещи не такими, какие они есть, а такими, какие мы есть».\n\nИногда мир отражает не только то, что происходит вокруг нас, но и то, что живёт внутри нашего сердца. 🤍\n\nНаши чувства, воспоминания, мечты и переживания меняют то, как мы воспринимаем жизнь.\n\nВозможно, чтобы увидеть мир иначе, нужно сначала изменить что-то в себе…\n\n💬 А ты согласен с этой мыслью?\n\n━━━━━━━━━━━━━━\n\n✨ WE DON’T SEE THINGS AS THEY ARE…\n\n“We don’t see things as they are, we see them as we are.”\n\nSometimes the world reflects not only what surrounds us, but also what lives within us.\n\nOur memories, emotions, and experiences shape the way we see life.\n\n🤍 Maybe changing our perspective is the beginning of changing our world.\n\n💬 Do you agree?\n\n━━━━━━━━━━━━━━\n\n🤍 ПОЧЕРК ТИШИНЫ\nThe Handwriting of Silence\n\nКрасивые слова. Глубокие мысли. Мгновения тишины.\n\nBeautiful words. Deep thoughts. Moments of silence.\n\n✨ Подписывайтесь, чтобы находить вдохновение каждый день.\n\n#ПочеркТишины #ЦитатыСоСмыслом #МудрыеМысли #ФилософияЖизни #КрасивыеЦитаты #МыслиВслух #Самопознание #ПсихологияЖизни #Вдохновение #Цитаты #АнаисНин #DeepQuotes #LifeQuotes #Wisdom #SelfReflection #Mindset #InspirationalQuotes #MeaningfulQuotes #YouTubeShorts #Shorts"
+  },
+  {
+   "id": "FaEmgy2ny_M",
+   "published": "2026-11-09T18:43:54+00:00",
+   "title": "✨ Всё придёт к тому, кто умеет ждать… | Граф Монте-Кристо #Shorts",
+   "views": 74,
+   "desc": "✨ А вдруг то, чего ты так долго ждёшь, уже совсем близко?\n\n«Нет ничего невозможного для того, кто умеет ждать».\n\n— Александр Дюма, «Граф Монте-Кристо»\n\nИногда жизнь испытывает наше терпение.\nМечты кажутся далёкими.\nОтветы не приходят.\nА то, чего мы желаем всем сердцем, заставляет ждать…\n\nНо ожидание — не всегда потерянное время. Иногда именно оно учит нас быть сильнее, мудрее и верить в себя. 🤍\n\n✨ Возможно, эти слова сегодня нужны именно тебе.\n\n💬 А ты веришь, что всё приходит в своё время?\n\n━━━━━━━━━━━━━━\n\n✨ WHAT IF WHAT YOU’RE WAITING FOR IS CLOSER THAN YOU THINK?\n\n“Nothing is impossible to the man who knows how to wait.”\n\n— Alexandre Dumas, The Count of Monte Cristo\n\nSometimes life tests our patience. Dreams feel distant, and answers take time.\n\nBut waiting can teach us strength, hope, and perseverance.\n\n🤍 Maybe these are the words you needed to hear today.\n\n💬 Do you believe everything happens at the right time?\n\n━━━━━━━━━━━━━━\n\n🤍 ПОЧЕРК ТИШИНЫ\nThe Handwriting of Silence\n\nСлова, которые остаются в сердце.\nWords that stay with you.\n\nПодписывайтесь, если любите красивые цитаты со смыслом. ❤️\n\n#ПочеркТишины #ГрафМонтеКристо #АлександрДюма #Цитаты #МудрыеМысли #Мотивация #Терпение #Надежда #ВераВСебя #СловаСоСмыслом #TheCountOfMonteCristo #AlexandreDumas #InspirationalQuotes #Wisdom #Patience #Hope #Shorts #YouTubeShorts"
+  },
+  {
+   "id": "brYOnzI7ifM",
+   "published": "2026-11-09T16:28:35+00:00",
+   "title": "❤️ А вы знаете, что такое настоящая любовь? | Сент-Экзюпери #Shorts",
+   "views": 134,
+   "desc": "❤️ А вдруг настоящая любовь — совсем не то, что мы привыкли думать?\n\n«Любить — это не значит смотреть друг на друга, любить — значит вместе смотреть в одном направлении».\n\n— Антуан де Сент-Экзюпери, «Планета людей»\n\n✨ Любовь — это не только красивые слова, романтика и признания.\n\nЭто когда два человека выбирают друг друга.\nКогда мечтают вместе.\nКогда поддерживают друг друга даже в самые трудные моменты.\nКогда смотрят не только друг на друга, но и в одно будущее. ❤️\n\nИногда одна фраза способна изменить наше представление о любви…\n\n💬 А вы согласны с этими словами? Или настоящая любовь для вас — нечто другое?\n\nНапишите в комментариях. Возможно, именно ваш ответ тронет чьё-то сердце. 🤍\n\n━━━━━━━━━━━━━━\n\n❤️ WHAT IS TRUE LOVE?\n\n“Love does not consist in gazing at each other, but in looking outward together in the same direction.”\n\n— Antoine de Saint-Exupéry, Wind, Sand and Stars\n\n✨ True love is more than romance. It’s choosing each other, sharing dreams, and walking through life together.\n\nSometimes a single quote can change the way we see love.\n\n💬 Do you agree? What does true love mean to you?\n\n━━━━━━━━━━━━━━\n\n🤍 ПОЧЕРК ТИШИНЫ\nThe Handwriting of Silence\n\nСлова, которые хочется перечитывать.\nЦитаты, которые остаются в сердце.\n\nWords worth remembering.\nFeelings worth sharing.\n\n❤️ Подписывайтесь, если любите красивые слова со смыслом.\n\n#ПочеркТишины #Любовь #НастоящаяЛюбовь #ЦитатыПроЛюбовь #СентЭкзюпери #МудрыеМысли #КрасивыеСлова #Отношения #Чувства #СловаСоСмыслом #Цитаты #ФилософияЛюбви #Love #TrueLove #LoveQuotes #RelationshipQuotes #DeepQuotes #MeaningfulQuotes #SaintExupery #Shorts #YouTubeShorts"
+  },
+  {
+   "id": "EjD1vCqLghY",
+   "published": "2026-11-08T19:46:37+00:00",
+   "title": "❤️ У сердца есть свои тайны… | Блез Паскаль | Мудрые слова #Shorts",
+   "views": 72,
+   "desc": "❤️ Почему сердце иногда знает то, чего не может объяснить разум?\n\n«У сердца есть свои доводы, которых разум не знает».\n— Блез Паскаль, «Мысли»\n\n✨ Иногда чувства оказываются сильнее логики. Мы не всегда можем объяснить, почему любим, скучаем или чувствуем особенную связь с человеком.\n\nЭти слова Блеза Паскаля напоминают: не всё самое важное в жизни можно понять одним лишь разумом.\n\n💭 А вы чаще слушаете своё сердце или разум? Напишите в комментариях!\n\n❤️ The heart has its reasons which reason knows nothing of.\n— Blaise Pascal, Pensées\n\n✨ Some feelings cannot be explained by logic. Sometimes the heart understands what words cannot express.\n\n💭 Do you follow your heart or your mind?\n\n🤍 «Почерк тишины» | The Handwriting of Silence\n\nКрасивые цитаты, мудрые мысли и слова, которые остаются в сердце.\n\nПодписывайтесь, чтобы каждый день находить немного вдохновения.\n\n#ПочеркТишины #БлезПаскаль #Цитаты #МудрыеМысли #КрасивыеЦитаты #ЦитатыПроЛюбовь #Любовь #Чувства #Сердце #Душа #Философия #Мудрость #СмыслЖизни #СловаСоСмыслом #ГлубокиеМысли #Вдохновение #Pascal #BlaisePascal #LoveQuotes #DeepQuotes #Wisdom #Philosophy #HeartAndMind #InspirationalQuotes #MeaningfulQuotes #Shorts #YouTubeShorts"
+  },
+  {
+   "id": "_pnd2wLVIcI",
+   "published": "2026-11-08T19:28:21+00:00",
+   "title": "Настоящая любовь — видеть сердцем ❤️ | Почерк тишины #Shorts",
+   "views": 24,
+   "desc": "❤️ Настоящая любовь — это не поиск идеального человека. Это умение видеть прекрасное даже в несовершенстве.\n\nИногда одна фраза способна сказать о чувствах больше, чем тысяча слов…\n\n✨ А что для вас означает настоящая любовь? Напишите в комментариях.\n\n❤️ True love isn’t about finding someone perfect. It’s about learning to see beauty in imperfection.\n\nSometimes a few words can express what the heart has been feeling all along.\n\n✨ What does true love mean to you?\n\n«Почерк тишины» | The Handwriting of Silence\n\nЦитата приписывается Сэму Кину.\n\n#ПочеркТишины #Любовь #НастоящаяЛюбовь #Цитаты #ЦитатыПроЛюбовь #КрасивыеСлова #МудрыеМысли #Чувства #Отношения #ЛюбовьИСчастье #ДушевныеСлова #Shorts #YouTubeShorts #Love #TrueLove #LoveQuotes #DeepQuotes #MeaningfulQuotes #Relationships #Wisdom #HeartTouching"
+  }
+ ]
 }

@@ -5,22 +5,28 @@
  "title": "Beautiful_shorts",
  "description": "",
  "header": [
-  "227 подписчиков",
-  "139 видео"
+  "229 подписчиков",
+  "140 видео"
  ],
  "alerts": [],
  "images": {
   "avatar": "https://yt3.googleusercontent.com/3SkKQKzbtqBO-oV1lqFtoaDen4tgg8hlao1TVZcMdY9LUtqppGJBftTFyKYp3H1P5pTekG9tog=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/6_IYCMEMtoe0Q__Y2_zj7OKcLMKAO9UGQ8aCjGFh5-3XlnsPQBUApKWlK2iCM9InaG-mlW-rq7A=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-15 16:34 UTC",
+ "checked": "2026-11-15 18:54 UTC",
  "shorts_status": 200,
  "shorts": [
   {
+   "id": "a9xDYsPrIa4",
+   "title": "Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts",
+   "views": "897 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts, 897 просмотров\""
+  },
+  {
    "id": "p46Y16_FUkM",
    "title": "What are 1,189 balls drawing? 🤔 Guess before the end! #shorts",
-   "views": "1,1 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"What are 1,189 balls drawing? 🤔 Guess before the end! #shorts, 1,1 тысячи просмотров\""
+   "views": "1,2 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"What are 1,189 balls drawing? 🤔 Guess before the end! #shorts, 1,2 тысячи просмотров\""
   },
   {
    "id": "Dw-O_K8qMds",
@@ -297,21 +303,22 @@
    "title": "animals chiropractic",
    "views": "2,5 тыс. просмотров",
    "a11y": "Воспроизвести короткое видео \"animals chiropractic, 2,5 тысячи просмотров\""
-  },
-  {
-   "id": "lw8I8cxeH_Q",
-   "title": "China auto",
-   "views": "45 просмотров",
-   "a11y": "Воспроизвести короткое видео \"China auto, 45 просмотров\""
   }
  ],
  "rss_status": 200,
  "rss": [
   {
+   "id": "a9xDYsPrIa4",
+   "published": "2026-11-15T17:03:00+00:00",
+   "title": "Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts",
+   "views": 897,
+   "desc": "1 ball. Every bounce = a new ball. Can they fill every corner of the cat — even the ears? 👀 Wait for 100%… something happens 😳\nWhich animal should we fill next? Comment below! 👇\n\n#satisfying #oddlysatisfying #physics #simulation #asmr #cat #shorts"
+  },
+  {
    "id": "p46Y16_FUkM",
    "published": "2026-11-15T10:28:50+00:00",
    "title": "What are 1,189 balls drawing? 🤔 Guess before the end! #shorts",
-   "views": 1183,
+   "views": 1246,
    "desc": "Every ball has its own spot. They bounce until they find it 👀 At what number did you guess the picture? Comment below 👇\n\n#satisfying #oddlysatisfying #physics #simulation #asmr #shorts"
   },
   {
@@ -404,13 +411,6 @@
    "title": "Every bounce = BIGGER ball… can it still escape 5 rings? 😱 #shorts",
    "views": 1312,
    "desc": "The ball grows with every bounce. Too big = stuck forever. It escaped the last ring at 99% size — I still can't believe it 👀 Did you think it would make it? Comment below!\n\n#satisfying #oddlysatisfying #physics #simulation #ball #asmr #shorts"
-  },
-  {
-   "id": "7YIpYrIIfCA",
-   "published": "2026-11-03T19:28:07+00:00",
-   "title": "Can it break out of 5 RINGS? 😱 #shorts",
-   "views": 1596,
-   "desc": "5 neon rings, one tiny ball that grows with every escape. Will it break free or stay trapped forever? 👀 Watch the slow-motion ending and comment how many bounces you guessed!\n\n#satisfying #oddlysatisfying #physics #simulation #asmr #neon #shorts"
   }
  ]
 }
