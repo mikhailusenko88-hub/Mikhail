@@ -1,6 +1,5 @@
-# 18:30:18 s9kbars серии
+# 18:31:45 s9kbars серии 2
 http://89.126.192.214:8080/mebel/s9kbars/
 http://89.126.192.214:8080/mebel/s9kbars/serii.json
 http://89.126.192.214:8080/mebel/s9kbars/serii/27/cover.jpg
 http://89.126.192.214:8080/mebel/s9kbars/serii/30/scenario.txt
-http://89.126.192.214:8080/mebel/s9kbars-v/feed.json
