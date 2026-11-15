@@ -1,4 +1,5 @@
-# 18:59:44 s9kbars 31-33
+# 19:37:29 обложки 31-33
+http://89.126.192.214:8080/mebel/s9kbars/serii/31/cover.jpg
+http://89.126.192.214:8080/mebel/s9kbars/serii/32/cover.jpg
+http://89.126.192.214:8080/mebel/s9kbars/serii/33/cover.jpg
 http://89.126.192.214:8080/mebel/s9kbars/serii.json
-http://89.126.192.214:8080/mebel/s9kbars/serii/31/scenario.txt
-http://89.126.192.214:8080/mebel/s9kbars/serii/33/scenario.txt
