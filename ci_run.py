@@ -23,7 +23,10 @@ LOG = []
 HEATS_PER_VIDEO = {1: 2, 2: 3, 3: 2, 4: 1}     # заездов в одном видео по раундам
 # С 15.11.2026 длинное видео — раз в неделю (воскресенье, вечерний слот = мега-трасса) и в гранд-финал.
 # В остальные слоты на канал идёт только Shorts: длинные набирали 13–180 просмотров, Shorts — сотни и тысячи.
-LONG_SLOTS = {(6, 3)}                           # (день недели: 0 = понедельник … 6 = воскресенье, слот)
+LONG_SLOTS = {(6, 2)}                           # (день недели: 0 = понедельник … 6 = воскресенье, слот)
+ARENA_SLOT = 3      # с 15.11.2026: слот 3 — ролик из игры Flagball Arena (проверка H14), гонки — в слотах 1 и 2
+GAMES_REPO = "https://github.com/mikhailusenko88-hub/Mikhail"
+ARENA_SERVER = "wss://89.126.192.214/ws"
 
 
 def long_due(d, slot, final, req):
@@ -58,7 +61,7 @@ SLOT_HOURS = {1: 7, 2: 15, 3: 23}                  # по Москве; запу
 def due_slot(now, history):
     """Догонялка: самый ранний слот, время которого уже наступило, а ролика ещё нет.
     GitHub иногда пропускает запуск по расписанию — тогда следующий запуск выложит пропущенный."""
-    done = {(h.get("date"), h.get("slot")) for h in history}
+    done = {(h.get("date"), h.get("slot")) for h in history} | arena_done()
     cands = []
     if now.hour < 5:                                   # вечерний слот вчера (запуск ушёл за полночь)
         cands.append((now.date() - dt.timedelta(days=1), 3))
@@ -90,6 +93,83 @@ def write_status(head, extra=""):
         f.write(head + "\n\n" + extra + "\n\n--- журнал ---\n" + "\n".join(LOG[-80:]) + "\n")
 
 
+def arena_done():
+    """Слоты, где ролик из игры уже был (или пытались — чтобы неудача не блокировала гонки)."""
+    out = set()
+    if os.path.exists("status/arena_done.txt"):
+        for line in open("status/arena_done.txt", encoding="utf-8"):
+            p = line.split()
+            if len(p) >= 2:
+                out.add((p[0], int(p[1])))
+    return out
+
+
+def arena_slot(d, slot, mode, t0):
+    """Слот 3: Shorts с арены игры Flagball Arena (камера-зритель, широкий план, ~25 с) → YouTube."""
+    G = "/tmp/games"
+    shutil.rmtree(G, ignore_errors=True)
+    run = lambda *a, **k: subprocess.run(*a, check=True, **k)  # noqa: E731
+    try:
+        run(["git", "clone", "-q", "--depth", "1", "--branch", "games", "--single-branch", "--filter=blob:none",
+             "--sparse", GAMES_REPO, G])
+        run(["git", "-C", G, "sparse-checkout", "set", "online", "core", "shorts"])
+        subprocess.run("sudo apt-get install -y -qq fonts-noto-color-emoji >/dev/null 2>&1", shell=True)
+        run(["npm", "i", "--silent", "--no-save", "--prefix", G, "playwright-core@1"])
+        web = f"{G}/web"
+        os.makedirs(web, exist_ok=True)
+        for f in ("online/game.js", "online/index.html", "core/core.js"):
+            shutil.copy(f"{G}/{f}", web)
+        srv = subprocess.Popen([sys.executable, "-m", "http.server", "8770"], cwd=web, stdout=subprocess.DEVNULL,
+                               stderr=subprocess.DEVNULL)
+        time.sleep(1.5)
+        env = dict(os.environ, PLAYWRIGHT=f"{G}/node_modules/playwright-core", GAME_URL="http://localhost:8770/index.html",
+                   SERVER=ARENA_SERVER, ROOM="main", CLIP="19", WIDE="2.2", CHROME="/usr/bin/google-chrome")
+        out = f"{WORK}/arena"
+        try:
+            p = subprocess.run(["node", "shorts/record.js", out], cwd=G, env=env, capture_output=True, text=True,
+                               timeout=900)
+        finally:
+            srv.terminate()
+        for line in (p.stdout + p.stderr).splitlines()[-15:]:
+            LOG.append(line)
+        if p.returncode:
+            raise RuntimeError(f"съёмка арены упала (код {p.returncode})")
+        meta = json.load(open(f"{out}/meta.json"))
+        mp4 = f"{out}/{meta['file']}"
+        log(f"ролик с арены: {meta['duration']} с, победа {meta.get('winner')}, людей {meta.get('players')}")
+        desc = meta["description"].replace("#flagball #countryballs #io #shorts", "").rstrip()
+        desc += ("\n\nFlagball Arena — the online game is coming soon. Daily country marble races on this channel."
+                 "\n\n#shorts #flagball #countryballs #iogame #flags #countries")
+        title = meta["title"][:100]
+        if mode != "publish":
+            os.makedirs("status", exist_ok=True)
+            for tt in (0.3, 3, 10, 20):
+                subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", str(tt), "-i", mp4, "-frames:v", "1",
+                                "-vf", "scale=360:-2", f"status/test_arena_{tt:04.1f}.jpg"])
+            with open("status/test_arena.txt", "w", encoding="utf-8") as f:
+                f.write(title + "\n\n" + desc + "\n")
+            write_status(f"ТЕСТ АРЕНЫ ОК: {meta['duration']} с за {time.time() - t0:.0f} с (не выложено)", title)
+            return
+        import yt as ytmod
+        yt = ytmod.YT()
+        svid = yt.upload(mp4, {"title": title, "description": desc})
+        sst = yt.status(svid)
+        with open("status/uploads.md", "a", encoding="utf-8") as f:
+            f.write(f"| arena | {d} | {slot} | {meta.get('winner')} | https://youtube.com/shorts/{svid} | "
+                    f"{sst.get('privacyStatus')} (игра) |\n")
+        with open("status/arena_done.txt", "a", encoding="utf-8") as f:
+            f.write(f"{d.isoformat()} {slot} {svid} {meta['duration']}\n")
+        warn = "" if sst.get("privacyStatus") == "public" else "  ⚠️ НЕ ОТКРЫТ"
+        write_status(f"ВЫЛОЖЕНО АРЕНА {d} слот {slot}: Shorts https://youtube.com/shorts/{svid} "
+                     f"({sst.get('privacyStatus')}){warn}, за {time.time() - t0:.0f} с", json.dumps(meta, ensure_ascii=False))
+    except BaseException as e:  # noqa: BLE001
+        if mode == "publish":       # неудача не должна блокировать следующие гонки
+            with open("status/arena_done.txt", "a", encoding="utf-8") as f:
+                f.write(f"{d.isoformat()} {slot} FAILED\n")
+        LOG.append(traceback.format_exc()[-1500:])
+        write_status(f"ОШИБКА АРЕНЫ {d} слот {slot}: {e}")
+
+
 def main():
     t0 = time.time()
     req = read_request()
@@ -112,6 +192,13 @@ def main():
         if due != (d, slot):
             log(f"догоняю пропущенный слот: {due[0]} слот {due[1]}")
         d, slot = due
+    if slot == ARENA_SLOT and req.get("arena", "auto").lower() not in ("no", "нет", "0"):
+        log(f"режим {mode}, {d} слот {slot}: ролик из игры Flagball Arena")
+        if mode == "publish" and not os.environ.get("FLAGBALL_YT", "").strip():
+            write_status(f"ЖДУ ВХОД: нет секрета FLAGBALL_YT ({d} слот {slot} пропущен)")
+            return
+        arena_slot(d, slot, mode, t0)
+        return
     n = state["race_no"] + 1
     log(f"режим {mode}, гонка #{n}, {d} слот {slot}, событие {os.environ.get('EVENT')}")
     import season

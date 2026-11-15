@@ -279,10 +279,15 @@ def remaining_to_final(state_after):
     return n + 1
 
 
+RACE_SLOTS = (1, 2)   # с 15.11.2026: гонки в слотах 1 и 2; слот 3 — ролик из игры Flagball Arena (ci_run.arena_slot)
+
+
 def slot_after(d, slot, n):
-    """Дата и слот через n гонок (3 в день)."""
-    k = (slot - 1) + n
-    return d + dt.timedelta(days=k // 3), k % 3 + 1
+    """Дата и слот через n гонок (гонки только в RACE_SLOTS)."""
+    per = len(RACE_SLOTS)
+    i = RACE_SLOTS.index(slot) if slot in RACE_SLOTS else per - 1
+    k = i + n
+    return d + dt.timedelta(days=k // per), RACE_SLOTS[k % per]
 
 
 def init_from_league(league_path, out_path):

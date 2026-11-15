@@ -47,7 +47,7 @@ def overlay(codes, survive, n, out_png, lives=False):
     d.rectangle([0, H - 220, W, H], fill=(0, 0, 0, 120))
     text_center(d, W / 2, H - 200, f"{n - survive} OF {n} LOSE A LIFE" if lives else f"ONLY {survive} OF {n} SURVIVE",
                 font(54), GREEN, 5)
-    text_center(d, W / 2, H - 120, "FLAGBALL ARENA · new race 3× a day", font(34), WHITE, 4)
+    text_center(d, W / 2, H - 120, "FLAGBALL ARENA · new races every day", font(34), WHITE, 4)
     img.save(out_png)
 
 
@@ -101,7 +101,7 @@ def description(meta, full_link=""):
             if meta.get("lives_mode") else f"{meta['n']} countries, only {meta['survive']} survive.")
     return (f"{head}\n"
             + (f"▶ Full race on @FlagballArenaTV — {full_link}\n\n" if full_link else
-               "▶ New race 3× a day on @FlagballArenaTV · full Sunday Mega Track race every week\n\n")
+               "▶ New races every day on @FlagballArenaTV · full Sunday Mega Track race every week\n\n")
             + f"Countries: {names}.\n\nLike 👍 if your country survived! Comment who you're cheering for.\n\n"
             f"#shorts #marblerace #countryballs #marblerun #survival #countries")
 
@@ -189,7 +189,7 @@ def story_description(meta, pre, full_link=""):
         except ValueError:
             pass
     lines.append(f"▶ Full race on @FlagballArenaTV — {full_link}" if full_link else
-                 "▶ New race 3× a day on @FlagballArenaTV · full Sunday Mega Track race every week")
+                 "▶ New races every day on @FlagballArenaTV · full Sunday Mega Track race every week")
     names = ", ".join(sorted(race.NAMES[c] for c in meta["codes"]))
     lines += ["", f"Countries in this race: {names}.", "",
               "Comment your country 👇 — is it still alive?"]
