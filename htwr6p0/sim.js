@@ -12,7 +12,7 @@
 
   // ---------- построитель трассы (как в Ball Truck) ----------
   function Track() {
-    const S = { polys: [], anchors: [], spikes: [], star: null, cps: [], fin: 0, minY: 1e9, maxY: -1e9 };
+    const S = { polys: [], anchors: [], pits: [], ceils: [], boosts: [], star: null, cps: [], fin: 0, minY: 1e9, maxY: -1e9 };
     let x = 0, y = 600, cur = null;
     const push = (px, py) => { cur.push([px, py]); S.minY = Math.min(S.minY, py); S.maxY = Math.max(S.maxY, py); };
     const B = {
@@ -22,10 +22,16 @@
       flat(len) { x += len; push(x, y); return B; },
       slope(len, up, n = 12) { const x0 = x, y0 = y; for (let i = 1; i <= n; i++) { const t = i / n, s = t * t * (3 - 2 * t); push(x0 + len * t, y0 - up * s); } x = x0 + len; y = y0 - up; return B; },
       hill(len, h, n = 14) { const x0 = x; for (let i = 1; i <= n; i++) { const t = i / n; push(x0 + len * t, y - h * (0.5 - 0.5 * Math.cos(t * Math.PI * 2))); } x = x0 + len; return B; },
-      // яма (dx — ширина, dy — насколько выше/ниже другой край); на дне шипы
-      gap(dx, dy = 0, spikes = true) { S.polys.push(cur); if (spikes && dx > 60) S.spikes.push({ x0: x + 10, x1: x + dx - 10, y: Math.max(y, y + dy) + 340 }); x += dx; y += dy; cur = []; push(x, y); return B; },
-      // кольцо для крюка: dx от текущей точки, h — высота над дорогой
-      ring(dx, h) { S.anchors.push({ x: x + dx, y: y - h }); return B; },
+      // яма (dx — ширина, dy — насколько выше/ниже другой край): бездонная тёмная пропасть, упал — возврат на чекпоинт
+      gap(dx, dy = 0) { S.polys.push(cur); if (dx > 60) S.pits.push({ x0: x, x1: x + dx, y: Math.max(y, y + dy) }); x += dx; y += dy; cur = []; push(x, y); return B; },
+      // трамплин: изгиб, потом прямой край по касательной
+      ramp(len, h, n = 10) { const x0 = x, y0 = y; for (let i = 1; i <= n; i++) { const t = i / n; push(x0 + len * t, y0 - h * t * t); } const k = (2 * h) / len, L = 80; x = x0 + len + L; y = y0 - h - k * L; push(x, y); return B; },
+      // кольцо для крюка: dx от текущей точки, h — высота над дорогой.
+      // o.mv = {dx, dy, T, ph} — ездит туда-сюда; o.snap = секунды — рвётся, если висеть дольше; o.climb — для автопилота: «затянуть на обрыв»
+      ring(dx, h, o = {}) { const a = Object.assign({ x0: x + dx, y0: y - h }, o); a.x = a.x0; a.y = a.y0; S.anchors.push(a); return B; },
+      // потолок пещеры от dx0 до dx1 на высоте h над текущей дорогой
+      ceil(dx0, dx1, h) { S.ceils.push({ x0: x + dx0, x1: x + dx1, y: y - h }); S.minY = Math.min(S.minY, y - h - 200); return B; },
+      boost(dx, len = 300) { S.boosts.push({ x0: x + dx, x1: x + dx + len }); return B; },
       star(dx, h) { S.star = { x: x + dx, y: y - h, got: false }; return B; },
       cp(dx = 0) { S.cps.push({ x: x + dx, y }); return B; },
       fin(dx = 150) { S.fin = x + dx; return B; },
@@ -39,7 +45,7 @@
     const b = Track().start(-300, 600).flat(1000).hill(520, 46).flat(420);
     b.ring(300, 430).gap(600);                 // яма 1: одно кольцо над серединой
     b.flat(260).cp(-80).flat(420);
-    b.gap(0, -380, false).ring(130, 300);       // обрыв вверх на 380: кольцо над кромкой
+    b.gap(0, -380).ring(130, 300);       // обрыв вверх на 380: кольцо над кромкой
     b.flat(80).cp(0).flat(820);                  // разгон перед пропастью
     b.ring(300, 450).ring(700, 450).star(740, 360).gap(1000); // пропасть: два кольца подряд; звезда — если отпустить второе поздно
     b.flat(700).slope(700, -160).flat(200).fin(100).end();
@@ -52,7 +58,7 @@
       state: 'play', t: 0, deadT: 0, why: '', grounded: false, wallTouch: false, crashT: 0, flipT: 0,
       cp: null, attempts: 1, hooks: 0, events: [], wonT: 0, pullOn: false,
     };
-    S.L = (levelFn || level1)();
+    S.L = (typeof levelFn === 'number' ? root.HookSim.levels[levelFn].build : levelFn || level1)();
     const L = S.L;
 
     function buildWorld() {
@@ -64,7 +70,14 @@
       }
       const a = L.polys[0][0], lp = L.polys[L.polys.length - 1], z = lp[lp.length - 1];
       P.addStatic(W, a[0], a[1], a[0], a[1] - 3000); P.addStatic(W, z[0], z[1], z[0], z[1] - 3000);
+      for (const c of L.ceils) { P.addStatic(W, c.x0, c.y, c.x1, c.y, 0.8); P.addStatic(W, c.x0, c.y, c.x0, c.y - 400); P.addStatic(W, c.x1, c.y, c.x1, c.y - 400); }
     }
+    // кольца: где они сейчас (ездящие — по синусу от времени), сброс рваных при возрождении
+    function moveAnchors() {
+      for (const a of L.anchors) if (a.mv) { const k = Math.sin((S.t * 2 * Math.PI) / (a.mv.T || 3) + (a.mv.ph || 0)); a.x = a.x0 + (a.mv.dx || 0) * k; a.y = a.y0 + (a.mv.dy || 0) * k; }
+      if (S.rope && S.ropeA) { S.rope.px = S.ropeA.x; S.rope.py = S.ropeA.y; }
+    }
+    function resetAnchors() { for (const a of L.anchors) { a.broken = false; a.hang = 0; } }
 
     S.groundAt = (x) => {
       let best = null;
@@ -89,6 +102,7 @@
         S.wj.push(P.wheelJoint(W, S.truck, w, { lx, ly: 18, rest: 34, k: 1150, c: 70, lo: 10, hi: 44 }));
       }
       S.rope = null; S.ropeA = null; S.state = 'play'; S.deadT = 0; S.crashT = 0; S.flipT = 0; S.wonT = 0; S.grounded = false;
+      resetAnchors();
     };
     S.respawn = () => {
       const p = S.cp || { x: L.polys[0][0][0] + 320, y: L.polys[0][0][1] };
@@ -101,9 +115,10 @@
     S.findTarget = () => {
       const [mx, my] = S.mast(); let best = null, bs = 1e9;
       for (const a of L.anchors) {
+        if (a.broken) continue;
         const dx = a.x - mx, dy = a.y - my, d = Math.hypot(dx, dy);
         if (d > RANGE || dy > -60) continue;
-        const s = d - (dx > -120 ? 160 : 0);
+        const s = d + (dx < -60 ? 500 : 0) - (dx > 0 ? 100 : 0); // кольца впереди важнее: назад цепляемся, только если впереди ничего нет
         if (s < bs) { bs = s; best = a; }
       }
       return best;
@@ -112,7 +127,7 @@
     function hookOn(a) {
       const [mx, my] = S.mast(), d = Math.hypot(a.x - mx, a.y - my);
       S.rope = P.ropeJoint(S.W, S.truck, MAST[0], MAST[1], a.x, a.y, Math.max(MIN_ROPE, d));
-      S.ropeA = a; S.hooks++; S.events.push({ e: 'hook' });
+      S.ropeA = a; a.hang = 0; S.hooks++; S.events.push({ e: 'hook' });
     }
     function hookOff() {
       if (!S.rope) return;
@@ -125,10 +140,14 @@
       const dt = P.DT, T = S.truck;
       if (S.state === 'dead') { S.deadT += dt; if (S.deadT > 1.1) S.respawn(); }
       const play = S.state === 'play';
+      moveAnchors();
+      // ломкое кольцо: повисел дольше snap секунд — рвётся
+      if (S.rope && S.ropeA && S.ropeA.snap) { S.ropeA.hang += dt; if (S.ropeA.hang > S.ropeA.snap) { const a = S.ropeA; a.broken = true; hookOff(); S.needRelease = true; S.events.push({ e: 'snap', a }); } }
       // крюк: держишь — висишь; отпустил — летишь
       S.target = play && !S.rope ? S.findTarget() : null;
-      if (play && inp.hook && !S.rope && S.target) hookOn(S.target);
+      if (play && inp.hook && !S.rope && S.target && !S.needRelease) hookOn(S.target);
       if (S.rope && (!inp.hook || !play)) hookOff();
+      S.needRelease = S.needRelease && inp.hook; // после разрыва кольца надо отпустить кнопку, чтобы цепляться снова
       S.pullOn = false;
       if (S.rope) {
         // катушка выбирает слабину: трос не провисает, пока едешь к кольцу
@@ -150,9 +169,12 @@
         else if (br) { if (fwd > 70) { j.brake = 230000; j.maxT = 0; } else { j.speed = -16; j.maxT = 110000; } }
         else { j.speed = 0; j.maxT = 3500; }
       }
+      // ускорители на дороге
+      if (play && S.grounded) for (const z of L.boosts) if (T.x > z.x0 && T.x < z.x1) { const sp = T.vx * fx + T.vy * fy; if (sp < 1400) for (const b of [T, ...S.wheels]) { b.vx += fx * 2600 * dt; b.vy += fy * 2600 * dt; } }
       if (!S.grounded && play && !S.rope) {
         const k = g ? -1 : br ? 1 : 0;
-        if (k) { T.w += k * 4.2 * dt; T.w = Math.max(-3.2, Math.min(3.2, T.w)); } else T.w *= 1 - 2.2 * dt;
+        if (k) { T.w += k * 4.2 * dt; T.w = Math.max(-3.2, Math.min(3.2, T.w)); }
+        else { const an = Math.atan2(Math.sin(T.a), Math.cos(T.a)); T.w *= 1 - 2.2 * dt; T.w -= an * 2.4 * dt; } // без кнопок в воздухе грузовик сам понемногу выравнивается — легче приземлиться
       }
       P.step(S.W);
       after();
@@ -170,7 +192,7 @@
       S.crashT = roof && !S.rope ? S.crashT + P.DT : 0; // на тросе можно чиркнуть крышей о стену
       const up = Math.cos(T.a);
       S.flipT = up < 0 && !S.rope ? S.flipT + P.DT : 0;
-      const sp = S.L.spikes.find((z) => T.x > z.x0 - 60 && T.x < z.x1 + 60 && T.y > z.y - 120);
+      const sp = S.L.pits.find((z) => T.x > z.x0 - 80 && T.x < z.x1 + 80 && T.y > z.y + 430);
       if (S.crashT > 0.12 || S.flipT > 1.6) die('crash');
       else if (sp || T.y > S.L.maxY + 700) die('fell');
       const st = S.L.star;
@@ -186,5 +208,5 @@
     return S;
   }
 
-  root.HookSim = { create, level1, RANGE, MAST };
+  root.HookSim = { create, level1, Track, RANGE, MAST, levels: [] };
 })(typeof window !== 'undefined' ? window : globalThis);
