@@ -3159,8 +3159,8 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
     const st = S[id], lc = tl.lib.characters[id]; if (!lc || !st.vis) continue;
     const rig = rigFor(lc); ensureIn(rig.root); rig.root.visible = true; const hf = hugF[id]; st._hug = hf || null;
     const rx = hf ? hf.x : X(st.x), rz = -(st.z || 0) * 1.5 + (hf ? 0 : arcDz(ARC, st)); rig.root.position.set(rx, CF && CF.floor ? CF.floor(rx, rz) : 0, rz);
-    let yw = hf ? lerp(st.face * .72, hf.dir * .3, hf.k) : st.face * (st.walk && st.walk.on ? 1.35 : .72);
-    if (!hf && camE && st.face) { const az = Math.atan2(camE.x - rx, camE.z - rz), lim = st.walk && st.walk.on ? 1.45 : .95; let d = yw - az; d = Math.atan2(Math.sin(d), Math.cos(d)); if (Math.abs(d) > lim) yw = az + Math.sign(d) * lim; }   // стоит — не больше ~55° от зрителя, идёт — не спиной
+    let yw = hf ? lerp(st.face * .5, hf.dir * .3, hf.k) : st.face * (st.walk && st.walk.on ? 1.35 : .5);   // стоит и смотрит на друга — вполоборота (~30°), лицо к зрителю; боком — только когда идёт
+    if (!hf && camE && st.face) { const az = Math.atan2(camE.x - rx, camE.z - rz), lim = st.walk && st.walk.on ? 1.45 : .6; let d = yw - az; d = Math.atan2(Math.sin(d), Math.cos(d)); if (Math.abs(d) > lim) yw = az + Math.sign(d) * lim; }   // стоит — не больше ~35° от зрителя, идёт — не спиной
     rig.yaw.rotation.y = yw;
     const held = seg.props.find(p => p._holder === id && p._vis !== false); st.prop = held || null;
     applyPose(rig, st, T); fxFor(rig, st, T); rig._held = held; rig._needFur = true;
