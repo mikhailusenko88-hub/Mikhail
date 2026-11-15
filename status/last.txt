@@ -1,96 +1,91 @@
-ВЫЛОЖЕНО #35 2026-11-15 слот 1: https://youtu.be/0OizaWNrguU (public) + Shorts https://youtube.com/shorts/8GyXq2dRNLo, за 623 с
+ТЕСТ ОК: видео #36 (1 заезд.) собрано за 368 с, 131 МБ (не выложено)
 
 {
- "title": "MEGA TRACK 🔥 Russia vs Türkiye vs Poland… 7 of 24 Lose a Life | Country Marble Race #22",
- "description": "🔥 SUNDAY MEGA TRACK — longer stages, the craziest obstacles of the week.\n\nFlagball Arena · Season 2, Race 22 of 68: 24 countries, 3 stages — the last 7 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Albania ❤, Antigua and Barbuda ❤, Bahrain ❤❤❤, Bangladesh ❤❤, China ❤❤❤, Eritrea ❤❤❤, Ethiopia ❤❤❤, Georgia ❤❤❤, Hungary ❤❤❤, Lesotho ❤❤❤, Malawi ❤❤❤, Moldova ❤❤, Namibia ❤❤, Niger ❤❤❤, Oman ❤, Poland ❤❤❤, Russia ❤❤, Senegal ❤❤, Serbia ❤❤❤, South Sudan ❤, Sweden ❤❤❤, Tonga ❤❤❤, Türkiye ❤❤❤, Zimbabwe ❤❤❤.\n\nCountries still in the game before this race: 189 of 193.\nNext race: Race 23/68. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
- "race_no": 35,
- "date": "2026-11-15",
+ "title": "USA vs Indonesia vs Germany ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #23",
+ "description": "Flagball Arena · Season 2, Race 23 of 68: 24 countries, 3 stages — the last 8 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Angola ❤❤, Austria ❤❤❤, Bahamas ❤❤❤, Barbados ❤❤, Belarus ❤❤❤, Brunei ❤❤❤, Cyprus ❤❤❤, Dominican Republic ❤❤, Estonia ❤, Germany ❤❤, Grenada ❤❤, Indonesia ❤❤, Israel ❤❤, Kazakhstan ❤❤, Madagascar ❤❤❤, Malaysia ❤, Mali ❤❤, Nauru ❤❤, New Zealand ❤❤❤, Panama ❤❤, Paraguay ❤❤❤, South Korea ❤❤❤, USA ❤❤, Yemen ❤❤.\n\nCountries still in the game before this race: 187 of 193.\nNext race: Race 24/68. Grand Final: Dec 1.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Dec 1 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "race_no": 36,
+ "date": "2026-11-16",
  "slot": 1,
  "season": 2,
  "round": 1,
- "heat": 22,
+ "heat": 23,
  "heats": 68,
- "survive": 17,
+ "survive": 16,
  "final": false,
  "kind": "heat",
- "label": "RACE 22/68",
+ "label": "RACE 23/68",
  "n": 24,
  "lives_mode": true,
- "losers": 7,
- "mega": true,
+ "losers": 8,
+ "mega": false,
  "codes": [
-  "ag",
-  "tr",
-  "ls",
-  "ss",
-  "md",
-  "om",
-  "se",
-  "bh",
-  "ge",
-  "to",
-  "rs",
-  "ne",
-  "cn",
-  "zw",
-  "mw",
-  "et",
-  "ru",
-  "bd",
-  "er",
-  "sn",
-  "al",
-  "na",
-  "pl",
-  "hu"
+  "nz",
+  "by",
+  "pa",
+  "nr",
+  "ao",
+  "ye",
+  "gd",
+  "ee",
+  "us",
+  "kz",
+  "cy",
+  "ml",
+  "kr",
+  "mg",
+  "il",
+  "bn",
+  "py",
+  "de",
+  "bs",
+  "bb",
+  "do",
+  "id",
+  "my",
+  "at"
  ],
  "spans": [
   [
    7.800000000000001,
-   92.26666666666667,
-   95.86666666666666
+   71.66666666666667,
+   75.26666666666667
   ],
   [
-   99.46666666666665,
-   185.16666666666666,
-   188.76666666666665
+   78.86666666666666,
+   144.86666666666667,
+   148.46666666666667
   ],
   [
-   192.36666666666665,
-   273.59999999999997,
-   277.2
+   152.06666666666666,
+   214.36666666666667,
+   217.96666666666667
   ]
  ],
- "duration": 302.2,
+ "duration": 242.96666666666667,
  "heats_in_video": 1,
  "races": [
-  35
+  36
  ],
  "featured": [
-  "ru",
-  "tr",
-  "pl"
- ],
- "video_id": "0OizaWNrguU",
- "privacy": "public"
+  "us",
+  "id",
+  "de"
+ ]
 }
 
 --- журнал ---
-06:30:44 режим publish, гонка #35, 2026-11-15 слот 1, событие workflow_dispatch
-06:30:44 по плану: S2 RACE 22/68
-06:30:44 канал: Flagball Arena
-06:30:44 в этом видео заездов: 1 (раунд 1, осталось в раунде 47)
-гонка #35 2026-11-15 слот 1: S2 RACE 22/68, 24→17, участники: ATG TUR LSO SSD MDA OMN SWE BHR GEO TON SRB NER CHN ZWE MWI ETH RUS BGD ERI SEN ALB NAM POL HUN
-  этап 1: 24→22, блоков 20 ['pendulums', 'pushers', 'glass', 'tunnels', 'drum', 'trapdoors', 'split', 'sliders', 'ring_gate', 'rotor', 'comb', 'split', 'tunnels', 'pushers', 'pendulums', 'sliders', 'trapdoors', 'rotor', 'glass', 'drum'], Q-финиш 81.9 c, кадров 2534
-  этап 2: 22→19, блоков 18 ['pushers', 'split', 'drum', 'glass', 'ring_gate', 'sliders', 'rotor', 'trapdoors', 'tunnels', 'comb', 'pendulums', 'drum', 'ring_gate', 'tunnels', 'pushers', 'split', 'comb', 'trapdoors'], Q-финиш 83.2 c, кадров 2571
-  этап 3: 19→17, блоков 17 ['rotor', 'split', 'pushers', 'pendulums', 'drum', 'comb', 'ring_gate', 'sliders', 'glass', 'tunnels', 'trapdoors', 'sliders', 'trapdoors', 'pushers', 'ring_gate', 'drum', 'rotor'], Q-финиш 78.7 c, кадров 2437
-длительность ролика ≈ 5.0 мин
-готово: 9066 кадров за 582 с
-кадров 9066, 5.04 мин, рендер 586 с
-выжили: ZWE OMN RUS SRB ETH ERI SEN GEO HUN SWE TON NAM ALB MDA LSO BHR BGD
-06:40:30 заезд 1/1 готов: 166 МБ, 587 с
-06:40:31 видео готово: 166 МБ, 5.0 мин, 587 с с начала; название: MEGA TRACK 🔥 Russia vs Türkiye vs Poland… 7 of 24 Lose a Life | Country Marble Race #22
-06:40:57 Shorts готов: 26 с — Russia vs Türkiye vs Poland 😱 Who Survives? Country Marble Race #shorts
-06:41:04 обложка: 200 
-06:41:04 в плейлисте
-06:41:05 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}
+12:12:06 режим test, гонка #36, 2026-11-16 слот 1, событие push
+12:12:06 по плану: S2 RACE 23/68
+12:12:06 в этом видео заездов: 1 (раунд 1, осталось в раунде 46)
+гонка #36 2026-11-16 слот 1: S2 RACE 23/68, 24→16, участники: NZL BLR PAN NRU AGO YEM GRD EST USA KAZ CYP MLI KOR MDG ISR BRN PRY DEU BHS BRB DOM IDN MYS AUT
+  этап 1: 24→21, блоков 10 ['twin_rings', 'drum', 'ring_gate', 'trapdoors', 'stairs', 'pushers', 'tunnels', 'sliders', 'zigzag', 'pendulums'], Q-финиш 61.3 c, кадров 1916
+  этап 2: 21→19, блоков 13 ['pegs', 'glass', 'rotor', 'windmills', 'tunnels', 'drum', 'sliders', 'split', 'bumpers', 'ring_gate', 'zigzag', 'trapdoors', 'twin_rings'], Q-финиш 63.4 c, кадров 1980
+  этап 3: 19→16, блоков 12 ['pushers', 'glass', 'trapdoors', 'windmills', 'comb', 'tunnels', 'split', 'ring_gate', 'pegs', 'stairs', 'bumpers', 'twin_rings'], Q-финиш 59.7 c, кадров 1869
+длительность ролика ≈ 4.0 мин
+готово: 7289 кадров за 349 с
+кадров 7289, 4.05 мин, рендер 351 с
+выжили: BRN CYP YEM KAZ MDG NZL BRB PAN MYS GRD ISR BLR PRY IDN USA MLI
+12:17:57 заезд 1/1 готов: 131 МБ, 351 с
+12:17:58 видео готово: 131 МБ, 4.0 мин, 352 с с начала; название: USA vs Indonesia vs Germany ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #23
+12:18:13 Shorts готов: 26 с — USA vs Indonesia vs Germany 😱 Who Survives? Country Marble Race #shorts
+12:18:13 длинное видео в этом слоте: нет (только Shorts)
