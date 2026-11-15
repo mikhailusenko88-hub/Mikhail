@@ -112,8 +112,9 @@
   function accSprite(id) {
     if (!R3.drawAcc) return null;
     if (!accTex[id]) {
-      const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
-      R3.drawAcc(g, id, 128, 150, 64);
+      const Sz = R3.accRes || 256; // обложкам — чётче
+      const c = document.createElement('canvas'); c.width = c.height = Sz; const g = c.getContext('2d');
+      R3.drawAcc(g, id, Sz / 2, Sz * 0.586, Sz / 4);
       const t = new TH.CanvasTexture(c); t.encoding = TH.sRGBEncoding; accTex[id] = new TH.SpriteMaterial({ map: t, transparent: true });
     }
     const sp = new TH.Sprite(accTex[id]); return sp;
@@ -182,7 +183,10 @@
     if (!R3.ok) return;
     frames++;
     const t = v.t;
-    placeCam(v.cam.x, v.cam.y, v.cam.z);
+    if (v.pose) { // обложки и ролики: камера задана явно
+      const P = v.pose; cam.fov = P.fov || FOV; cam.position.set(P.pos[0], P.pos[1], P.pos[2]); cam.lookAt(P.look[0], P.look[1], P.look[2]);
+      cam.near = 10; cam.far = 40000; cam.updateProjectionMatrix(); camUp.set(0, 1, 0).applyQuaternion(cam.quaternion);
+    } else placeCam(v.cam.x, v.cam.y, v.cam.z);
     const RR = v.R;
     field.scale.set(RR, RR, 1); grass.repeat.set(RR / 360, RR / 360);
     halfLine.scale.set(1, RR - 30, 1);
@@ -193,8 +197,9 @@
     outer.scale.set(RR + 10, RR + 10, 1);
 
     // что видно: прямоугольник вокруг камеры (дальний край экрана шире из-за перспективы)
-    const vw = (C.W / v.cam.z) * 0.75 + 260, vhN = (C.H / v.cam.z) * 0.6 + 200, vhF = (C.H / v.cam.z) * 1.1 + 400;
-    const x0 = v.cam.x - vw, x1 = v.cam.x + vw, y0 = v.cam.y - vhF, y1 = v.cam.y + vhN;
+    let x0, x1, y0, y1;
+    if (v.pose) { x0 = y0 = -1e9; x1 = y1 = 1e9; }
+    else { const vw = (C.W / v.cam.z) * 0.75 + 260, vhN = (C.H / v.cam.z) * 0.6 + 200, vhF = (C.H / v.cam.z) * 1.1 + 400; x0 = v.cam.x - vw; x1 = v.cam.x + vw; y0 = v.cam.y - vhF; y1 = v.cam.y + vhN; }
 
     // кристаллы
     let n = 0;
@@ -222,7 +227,7 @@
       // наклон по ходу движения и взгляд туда, куда едет
       const lx = C.clamp((b.vx || 0) / 900, -0.3, 0.3), ly = C.clamp((b.vy || 0) / 900, -0.3, 0.3);
       o.body.rotation.set(ly * 0.6, 0, -lx * 0.6);
-      o.eyes.rotation.set(-0.72 - ly * 0.6, lx * 1.3, 0); // глаза — на видной камере стороне, чуть смотрят по ходу
+      o.eyes.rotation.set(-0.72 - ly * 0.6 + (b.eyeX || 0), lx * 1.3 + (b.eyeY || 0), 0); // глаза — на видной камере стороне, чуть смотрят по ходу
       o.eyes.visible = !EYE_ACC[b.acc];
       o.shadow.position.set(b.x + r * 0.22, 0.4, b.y + r * 0.12); o.shadow.scale.set(r * 2.5, r * 2.3, 1);
       if (b.ring) { o.ring.position.set(b.x, 0.8, b.y); o.ring.scale.set(r, r, 1); o.ring.material.color.copy(colOf(b.ring)); o.ring.material.opacity = b.rk || 0.9; }
@@ -262,5 +267,10 @@
     // слабое устройство: если долго медленно — рисуем в меньшем разрешении
     if (!R3.lowRes && v.dt > 0) { slowT = v.dt > 0.028 ? slowT + v.dt : Math.max(0, slowT - v.dt * 0.5); if (slowT > 3 && frames > 120) { R3.lowRes = true; R3.resize(); } }
   };
+  R3.setPose = (P) => { cam.fov = P.fov || FOV; cam.position.set(P.pos[0], P.pos[1], P.pos[2]); cam.lookAt(P.look[0], P.look[1], P.look[2]); cam.updateProjectionMatrix(); cam.updateMatrixWorld(); };
+  // экран (логические единицы) → точка на земле (x, y мира); для обложек и мыши
+  const ray = new TH.Raycaster(), ndc = new TH.Vector2(), plane = new TH.Plane(new TH.Vector3(0, 1, 0), 0);
+  R3.ground = (sx, sy) => { ndc.set((sx / C.W) * 2 - 1, -(sy / C.H) * 2 + 1); ray.setFromCamera(ndc, cam); const hit = ray.ray.intersectPlane(plane, v3b); return hit ? [hit.x, hit.z] : [0, 0]; };
+  R3.camAt = (cx, cy, z) => placeCam(cx, cy, z);
   R3.info = () => ({ ok: R3.ok, lowRes: !!R3.lowRes, pr, calls: R ? R.info.render.calls : 0, tris: R ? R.info.render.triangles : 0, balls: balls.size, gems: gems ? gems.count : 0 });
 })();

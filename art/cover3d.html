@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>cover3d</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}#c{display:none}canvas{position:fixed;left:0;top:0}#gl{width:100%;height:100%}#top{width:100%;height:100%}</style></head>
+<body><canvas id="c"></canvas><canvas id="gl"></canvas><canvas id="top"></canvas>
+<script src="core.js"></script>
+<script src="three.min.js"></script>
+<script src="r3d.js"></script>
+<script>window.__artMode = 1;</script>
+<script src="game.js"></script>
+<script>
+// 3D-обложки Flagball: окно браузера = размер обложки (1920×1080, 800×1200, 800×800); &lz=1 — показать зону ярлыка; &icon=1 — иконка без надписи
+(function () {
+  const C = window.Core, A = window.FBArt, R3 = window.FB3D; C.TEX = 1024;
+  const q = new URLSearchParams(location.search), W = innerWidth, H = innerHeight, ICON = q.get('icon') === '1', withTitle = !ICON && q.get('title') !== '0';
+  R3.init(document.getElementById('gl')); R3.drawAcc = A.drawAcc;
+  const top = document.getElementById('top'); top.width = W; top.height = H; const ctx = top.getContext('2d');
+  const k2 = W / C.W; // логические единицы ядра → пиксели обложки
+  const land = W / H > 1.2, port = W / H < 0.9;
+  // та же композиция, что у прошлых обложек: верхний левый угол — зона ярлыка CrazyGames (16:9 — 40%×20%, 2:3 — 40%×10%, 1:1 — 35%×30%)
+  const P = land ? { big: 0.3 * H, bx: 0.67, by: 0.6, saw: [0.4, 0.86], BR: [0.49, 0.2, 0.42], JP: [0.91, 0.26, 0.36], DE: [0.12, 0.82, 0.3], KZ: [0.9, 0.86, 0.26], title: [0.26, 0.44], fs: 0.09 * W }
+    : port ? { big: 0.3 * W, bx: 0.56, by: 0.6, saw: [0.12, 0.64], BR: [0.18, 0.4, 0.42], JP: [0.86, 0.37, 0.36], DE: [0.2, 0.86, 0.3], KZ: [0.86, 0.87, 0.26], title: [0.5, 0.165], fs: 0.15 * W }
+    : { big: 0.22 * W, bx: 0.56, by: 0.42, saw: [0.9, 0.47], BR: [0.15, 0.52, 0.42], JP: [0.86, 0.17, 0.36], DE: [0.11, 0.9, 0.3], KZ: [0.9, 0.9, 0.26], title: [0.5, 0.75], fs: 0.15 * W };
+  if (ICON) { P.big = 0.3 * W; P.bx = 0.56; P.by = 0.6; }
+  const Z = 1.15, cam = { x: 0, y: 0, z: Z };
+  R3.camAt(0, 0, Z);
+  // мячик в нужной точке экрана (px) с нужным экранным радиусом (px) → координаты мира
+  function place(fx, fy, rpx) {
+    const sx = fx * W / k2, sy = fy * H / k2, rs = rpx / k2;
+    let [x, y] = R3.ground(sx, sy), r = 40;
+    for (let i = 0; i < 6; i++) { const p = R3.project(x, r, y); r = rs / p[2]; x += (sx - p[0]) / p[2]; y += (sy - p[1]) / (p[2] * 0.84); }
+    return { x, y, r };
+  }
+  const balls = [], add = (id, skin, acc, f, ring) => { const o = place(f[0], f[1], f[2]); balls.push({ id, skin, acc, x: o.x, y: o.y, r: o.r, vx: 0, vy: 0, fl: 0, ring, rk: 0.95 }); return o; };
+  const big = P.big;
+  if (!ICON) {
+    add(2, 'BR', 5, [P.BR[0], P.BR[1], big * P.BR[2]], '#ff1744');
+    add(3, 'JP', 8, [P.JP[0], P.JP[1], big * P.JP[2]], '#00e676');
+    add(4, 'DE', 0, [P.DE[0], P.DE[1], big * P.DE[2]], '#00e676');
+    add(5, 'KZ', 3, [P.KZ[0], P.KZ[1], big * P.KZ[2]], '#00e676');
+  }
+  const hero = add(1, 'US', 11, [P.bx, P.by, big], '#ffffff');
+  const sfx = P.bx - (big * (ICON ? 1.02 : 1.08)) / W, sfy = P.by - (big * (land ? 0.02 : ICON ? 0.1 : 0.25)) / H;
+  const prey = add(6, 'FR', 0, [sfx, sfy, big * (ICON ? 0.26 : 0.2)], '#00e676');
+  balls[balls.length - 1].vx = -400; // смотрит в сторону
+  balls.find((b) => b.id === 1).vx = -500; balls.find((b) => b.id === 1).vy = -200; // герой смотрит на добычу
+  // кристаллы по всему полю
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const PC = ['#ff5252', '#ffca28', '#69f0ae', '#40c4ff', '#e040fb', '#ff9100', '#b2ff59', '#18ffff'];
+  const dots = new Map(); for (let i = 0; i < 700; i++) { const g = R3.ground(rnd() * C.W, rnd() * C.H * 1.05 - C.H * 0.02); dots.set(i, { x: g[0], y: g[1], c: PC[(rnd() * 8) | 0], r: 10 + rnd() * 5 }); }
+  for (const [i, d] of dots) for (const b of balls) if (Math.hypot(d.x - b.x, d.y - b.y) < b.r * 1.15) dots.delete(i);
+  const saws = ICON ? [] : [(() => { const o = place(P.saw[0], P.saw[1], 70 * Math.min(W, H) / 1080); return { x: o.x, y: o.y }; })()];
+  const powers = ICON ? [] : [(() => { const o = place(land ? 0.79 : port ? 0.82 : 0.66, land ? 0.5 : port ? 0.55 : 0.62, 30); return { x: o.x, y: o.y, k: 0, a: 0 }; })()];
+  let n = 0;
+  function frame() {
+    R3.render({ cam, R: 5200, grow: 0, balls, dots, powers, saws, sawSpin: 0.4, sawR: 50, sawDanger: false, t: 1.3, dt: 0 });
+    if (n++ === 2) overlay();
+    if (n < 40) requestAnimationFrame(frame); else window.__done = true;
+  }
+  function overlay() {
+    ctx.clearRect(0, 0, W, H);
+    // искры вокруг добычи
+    const pp = R3.project(prey.x, prey.r, prey.y), pr = prey.r * pp[2] * k2, px = pp[0] * k2, py = pp[1] * k2;
+    for (let i = 0; i < 16; i++) { const a = rnd() * 6.28, d = pr * 1.3 + rnd() * pr * 0.9; ctx.fillStyle = ['#ffd54f', '#fff59d', '#ffffff'][i % 3]; ctx.beginPath(); ctx.arc(px + Math.cos(a) * d, py + Math.sin(a) * d, (4 + rnd() * 6) * Math.min(W, H) / 1080, 0, 7); ctx.fill(); }
+    if (powers.length) { const p = powers[0], s = R3.project(p.x, 62, p.y), c2 = C.ctx; c2.setTransform(C.cv.width / C.W, 0, 0, C.cv.height / C.H, 0, 0); c2.clearRect(0, 0, C.W, C.H); C.icon('bolt', s[0], s[1], 46 * s[2], '#fff'); ctx.drawImage(C.cv, 0, 0, W, H); }
+    if (withTitle) {
+      const fs = P.fs, tx = W * P.title[0], ty = H * P.title[1];
+      const word = (txt, x, y, f, g0, g1) => {
+        ctx.font = C.font(f); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+        ctx.lineWidth = f * 0.2; ctx.strokeStyle = '#1f2a66'; ctx.strokeText(txt, x, y + f * 0.06);
+        const tg = ctx.createLinearGradient(0, y - f * 0.5, 0, y + f * 0.5); tg.addColorStop(0, g0); tg.addColorStop(1, g1);
+        ctx.fillStyle = tg; ctx.fillText(txt, x, y);
+      };
+      word('FLAGBALL', tx, ty, fs, '#fff59d', '#ff8f00');
+      word('ARENA', tx, ty + fs * 0.92, fs * 0.62, '#ffffff', '#b3e5fc');
+    }
+    if (q.get('lz') === '1') { const z = land ? [0.4, 0.2] : port ? [0.4, 0.1] : [0.35, 0.3]; ctx.fillStyle = 'rgba(104,66,255,0.5)'; ctx.fillRect(0, 0, W * z[0], H * z[1]); }
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body></html>

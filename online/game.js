@@ -33,7 +33,7 @@
       name: 'Your name', play: 'Play', hint: 'Green ring — you can eat it, red — run! Yellow name — a real player. Every point you grow counts for your country.',
       adsOff: 'Ads are blocked — coin options still work', title: 'Flagball Arena', team: 'for', change: 'Country', invite: 'Invite', copied: 'Invite link copied — send it to a friend', room: 'Private room',
       noAd: 'No ad available right now — try again later', copyHint: 'Copy this link and send it to a friend:', search: 'Search country', friends: 'Play with friends', mkRoom: 'Create a room', roomCode: 'Room code', codeHint: 'Friends press «Invite» → enter this code', enterCode: 'Friend\'s code', go: 'Join', toMain: 'Back to the public arena', copy: 'Copy', badCode: 'Enter the 5-letter code', botsWon: 'Bots won the round — beat them!',
-      settings: 'Room settings', mode: 'Mode', ffa: 'Everyone', teams: '2 teams', coop: 'Friends vs bots', myTeam: 'Your team', blue: 'Blue', red: 'Orange', bots: 'Bots', none: 'None', few: 'Few', normal: 'Normal', many: 'Many', diff: 'Bot skill', easy: 'Easy', hard: 'Strong', speed: 'Speed', saws: 'Saws', some: 'Some', rnd: 'Round', min: 'min', hostOnly: 'Only the room host can change these', cfgChanged: 'Room settings changed', teamWon: 'won the round!', ourTeam: 'Your team won!', friendsT: 'Friends', botsT: 'Bots', draw: 'Draw!', tmHint: 'Teammates can\'t eat each other',
+      settings: 'Room settings', mode: 'Mode', ffa: 'Everyone', teams: '2 teams', coop: 'Friends vs bots', myTeam: 'Your team', blue: 'Blue', red: 'Orange', bots: 'Bots', none: 'None', few: 'Few', normal: 'Normal', normal2: 'Normal', many: 'Many', diff: 'Bot skill', easy: 'Easy', hard: 'Strong', speed: 'Speed', saws: 'Saws', some: 'Some', rnd: 'Round', min: 'min', hostOnly: 'Only the room host can change these', cfgChanged: 'Room settings changed', teamWon: 'won the round!', ourTeam: 'Your team won!', friendsT: 'Friends', botsT: 'Bots', draw: 'Draw!', tmHint: 'Teammates can\'t eat each other',
     },
     ru: {
       conn: 'Подключаюсь к арене…', att: 'попытка', slow: 'Долго? Проверь интернет или переключись Wi-Fi ↔ мобильный',
@@ -45,7 +45,7 @@
       name: 'Твоё имя', play: 'Играть', hint: 'Зелёное кольцо — можно съесть, красное — беги. Жёлтое имя — живой игрок. Всё, что ты наберёшь, идёт в зачёт твоей стране.',
       adsOff: 'Реклама недоступна — за монеты всё работает', title: 'Flagball Arena', team: 'за', change: 'Страна', invite: 'Позвать', copied: 'Ссылка скопирована — отправь другу', room: 'Своя комната',
       noAd: 'Рекламы сейчас нет — попробуй чуть позже', copyHint: 'Скопируй ссылку и отправь другу:', search: 'Поиск страны', friends: 'Играть с друзьями', mkRoom: 'Создать комнату', roomCode: 'Код комнаты', codeHint: 'Друзья жмут «Позвать» → вводят этот код', enterCode: 'Код друга', go: 'Войти', toMain: 'Вернуться в общую арену', copy: 'Скопировать', badCode: 'Введи код из 5 букв', botsWon: 'Раунд за ботами — обгони их!',
-      settings: 'Настройки комнаты', mode: 'Режим', ffa: 'Каждый сам', teams: '2 команды', coop: 'Друзья против ботов', myTeam: 'Твоя команда', blue: 'Синие', red: 'Оранжевые', bots: 'Боты', none: 'Нет', few: 'Мало', normal: 'Обычно', many: 'Много', diff: 'Сила ботов', easy: 'Лёгкие', hard: 'Сильные', speed: 'Скорость', saws: 'Пилы', some: 'Есть', rnd: 'Раунд', min: 'мин', hostOnly: 'Менять может только хозяин комнаты', cfgChanged: 'Правила комнаты изменились', teamWon: 'выиграли раунд!', ourTeam: 'Твоя команда победила!', friendsT: 'Друзья', botsT: 'Боты', draw: 'Ничья!', tmHint: 'Свои друг друга не едят',
+      settings: 'Настройки комнаты', mode: 'Режим', ffa: 'Каждый сам', teams: '2 команды', coop: 'Друзья против ботов', myTeam: 'Твоя команда', blue: 'Синие', red: 'Оранжевые', bots: 'Боты', none: 'Нет', few: 'Мало', normal: 'Обычно', normal2: 'Обычные', many: 'Много', diff: 'Сила ботов', easy: 'Лёгкие', hard: 'Сильные', speed: 'Скорость', saws: 'Пилы', some: 'Есть', rnd: 'Раунд', min: 'мин', hostOnly: 'Менять может только хозяин комнаты', cfgChanged: 'Правила комнаты изменились', teamWon: 'выиграли раунд!', ourTeam: 'Твоя команда победила!', friendsT: 'Друзья', botsT: 'Боты', draw: 'Ничья!', tmHint: 'Свои друг друга не едят',
     },
   };
   let LANG = (C.lang || 'en').slice(0, 2) === 'ru' ? 'ru' : 'en';
@@ -319,7 +319,7 @@
     row(T.mode, 'mode', [[0, T.ffa], [1, T.teams], [2, T.coop]], rcfg.mode, set('mode'), host);
     if (rcfg.mode === 1) row(T.myTeam, 'team', [[1, T.blue, '#2979ff'], [2, T.red, '#ff9100']], myTeam, (v) => { send({ t: 'team', team: v }); myTeam = v; cfgBox(true); }, true);
     row(T.bots, 'bots', [[0, T.none], [1, T.few], [2, T.normal], [3, T.many]], rcfg.bots, set('bots'), host);
-    row(T.diff, 'diff', [[0, T.easy], [1, T.normal], [2, T.hard, '#e53935']], rcfg.diff, set('diff'), host);
+    row(T.diff, 'diff', [[0, T.easy], [1, T.normal2], [2, T.hard, '#e53935']], rcfg.diff, set('diff'), host);
     row(T.speed, 'sp', [[1, '×1'], [1.5, '×1.5'], [2, '×2']], rcfg.sp, set('sp'), host);
     row(T.saws, 'saws', [[0, T.none], [1, T.some], [2, T.many]], rcfg.saws, set('saws'), host);
     row(T.rnd, 'rl', [[120, '2 ' + T.min], [180, '3 ' + T.min], [300, '5 ' + T.min]], rcfg.rl, set('rl'), host);
