@@ -13,7 +13,7 @@
 <script type="module">
 import * as THREE from '../../../Resources/Mebel/three.module.min.js';
 if(location.hash=="#hq")MK3D.hq=true;window.ok3d=MK3D.init(THREE);
-window.setup=function(ep){const lib={characters:{},locations:{}};
+window.setup=function(ep){const lib={characters:{},locations:{},settings:window.SETTINGS||{}};   /* SET='{"intro":"start","opening":"old"}' — как было */
  const v=MK.validate(ep,lib); for(const c of v.newChars) lib.characters[c.id]={spec:c,code:c._code}; for(const l of v.newLocs) lib.locations[l.id]={spec:l,code:l._code};
  window.TL=MK.compile(ep,lib,{});TL.style='3d'; return {dur:TL.dur, errors:v.errors};}
 window.setupText=function(txt){const r=MKScript.parse(txt,{characters:{},locations:{}});const ep=(r.episodes||[])[0];if(!ep)return {err:'нет серий',r};return Object.assign(setup(ep),{errors2:r.errors,unknownNames:r.unknownNames,unknownWords:r.unknownWords,unknownObjects:r.unknownObjects,episodes:r.episodes.length});}

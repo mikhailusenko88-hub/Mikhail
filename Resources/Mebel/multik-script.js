@@ -30,12 +30,15 @@ const PROPS = [[/^тыкв/, 'pumpkin'], [/^(гриб|грибок)/, 'mushroom'
   [/^(самолет|самолетик)/, 'plane'], [/^(подушк)/, 'pillow'], [/^(бабочк|бабочек)/, 'butterfly'], [/^(сачок|сачк)/, 'net'], [/^(дудочк|дудк|флейт|свирел)/, 'flute'],
   [/^торт/, 'cake'], [/^кост/, 'bone'], [/^морков/, 'carrot'], [/^сыр/, 'cheese'], [/^(шарик|шар$|шара|шаром)/, 'balloon'], [/^ключ/, 'key'], [/^(чашк|кружк)/, 'cup']];
 // Крупные вещи «в мире сцены»: появляются, когда о них говорят
-const DECOR = [[/^двер/, 'door'], [/^(лун[аыеу]$|луной|месяц)/, 'moon'], [/^(привидени|призрак|приведени)/, 'ghost'], [/^(летуч)/, 'bat'],
+const DECOR = [[/^двер/, 'door'], [/^(лун[аыеу]$|луной|месяц|полумесяц)/, 'moon'], [/^(привидени|призрак|приведени)/, 'ghost'], [/^(летуч)/, 'bat'],
   [/^(гирлянд|огоньк|фонарики$)/, 'garland'], [/^(украшени)/, 'decor'], [/^(лиц[аоу]?$|рожиц|рож[иа]$)/, 'faces'], [/^(дерев|ёлк|елк|ел[иь]$|елочк|дуб$|дуба$|дубу$|дубом$|дубе$|дубок|дубочек|сосн|берез|берёз|клен|клён|осин|рябин|яблон|ив[аыуе]$|пальм)/, 'tree'], [/^(портал)/, 'door'],
   [/^(сугроб|снегови)/, 'snowman'], [/^(костер|костёр|костр)/, 'fire'], [/^(шатер|шатёр|палатк)/, 'tent'], [/^(замок|замк)$/, 'castle'], [/^(радуг)/, 'rainbow'], [/^(мольберт)/, 'easel']];
 const CLOSE_DO = new Set(['read', 'peer', 'write', 'paint', 'play', 'drink', 'sniff']);
 const KEY_PROPS = new Set(['map', 'letter', 'compass', 'key', 'book', 'magnifier', 'crown', 'gift', 'mirror', 'jar', 'feather', 'flower', 'acorn', 'butterfly']);
-const EVENT_DECOR = new Set(['rainbow']);   // не стоят с начала сцены: появляются в тот момент, когда их увидели
+const EVENT_DECOR = new Set(['rainbow']);
+const SKY = new Set(['moon', 'rainbow']), SKY_ABOUT = /(\s[—–-]\s|потому|почему|зачем|спутник|освеща|вращ|вокруг|земл|бывает|меня(ет|ют)ся|называ|фаз|планет|солнц|(^|[^а-я])про(?![а-я])|читал|книг|рассказ)/;   // разговор «про» луну, а не «вот она»
+const SKY_CUE = /((^|[^а-я])(смотри|смотрите|гляди|глядите|глянь|вот|вон|ого|ух ты)(?![а-я])|появил|взошл|выглянул|засия)/;   // «выглядит» — не «гляди»
+const TREE_CUE = /(смотри|гляди|глянь|(^|[^а-я])вот(?![а-я])|(^|[^а-я])это(?![а-я])|(^|[^а-я])там(?![а-я]))/;   // не стоят с начала сцены: появляются в тот момент, когда их увидели
 const NOW_CUE = /(смотри|гляди|глянь|(^|[^а-я])вот(?![а-я])|(^|[^а-я])ого(?![а-я])|(^|[^а-я])ух ты|появил|появля|возник|засия|вспыхн|загорел|зажгл|выросл|раскинул|(^|[^а-я])над (нами|домом|поляной|лесом))/;
 const FUTURE = /(появится|появятся|(^|[^а-я])(будет|будут|будем|станет|когда|пойд[её]м|поед[её]м|завтра|скоро|потом|позже|когда-нибудь)(?![а-я])|получится|купл[юя]|купим|купишь|принесу|принес[её]м|возьму|возьм[её]м|приготовлю|приготовим|испеку|испеч[её]м|сделаю|сделаем|подарю|подарим|угощу|угостим)/;   // «На пляже будет мороженое», «Завтра принесу торт» — этого здесь пока нет
 // «там, на пляже…», «в лесу растут…» — речь о другом месте, а не о том, где сейчас герои
@@ -122,6 +125,11 @@ function findNameAt(text, idx) { // имя в начале строки
 function namePat(n) { const e = n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); return /[аяйь]$/.test(n) && n.length >= 4 && !/\s/.test(n) ? e.slice(0, -1) + '(?:а|я|у|ю|е|и|ы|ой|ей|ою|ею|ь|й|ем|ём)' : e + '[а-я]{0,3}'; }
 function namesIn(text, idx) { const out = []; const t = low(text); for (const [n, id] of idx) { const re = new RegExp('(^|[^а-яa-z])' + namePat(n) + '(?=$|[^а-яa-z])', 'g'); if (re.test(t) && !out.includes(id)) out.push(id); } return out; }
 function pick(list, t) { for (const [re, v] of list) if (re.test(t)) return v; return null; }
+/** «Главный предмет» серии по словам: «Радуга без дождя» → радуга. Первое существительное, которое движок умеет показать. */
+const bigOf = type => BIG_DEFAULT.has(type) ? (type === 'moon' || MID_DEFAULT.has(type) ? 1 : 2.4) : MID_DEFAULT.has(type) ? .62 : 1;
+function mainOf(text, lex) { const uo = Object.entries((lex && lex.objects) || {});
+  for (const w of low(text).split(/[^а-яa-z]+/).filter(x => x.length >= 3)) { const u = uo.find(([k]) => w === k || (k.length > 4 && w.startsWith(k.slice(0, -1)))); const t = u ? u[1] : pick(DECOR, w) || pick(PROPS, w); if (t) return { type: t, big: bigOf(t), word: w }; }
+  return null; }
 
 /** Разобрать текст. lib — библиотека (characters, locations). opts: {series}. → {episodes:[ep], errors, warnings, newChars} */
 S.parse = function (text, lib, opts) {
@@ -139,7 +147,7 @@ S.parse = function (text, lib, opts) {
   const nameIndexL = () => { const i = nameIndex(chars); for (const [a, id] of Object.entries(lex.names || {})) if (chars[id] || id === 'Р') i.push([low(a), id]); for (const [a, id] of Object.entries(aliasMap)) i.push([a, id]); return i.sort((a, b) => b[0].length - a[0].length); };
   let idx = nameIndexL();
   const unknownNames = new Set(), unknownWords = new Map();
-  let series = opts.series || 'Мой мультик', music = 'happy';
+  let series = opts.series || 'Мой мультик', music = 'happy', pendMain = null;   // ГЛАВНОЕ: до строки СЕРИЯ:
   const eps = []; let ep = null, sc = null, lastSpeaker = null, sceneSpeakers = [];
   const newEp = (num, title) => { ep = { format: 'multik/1', series, episode: num, title: title || '', music, scenes: [], characters: [], locations: [] }; eps.push(ep); sc = null; };
   const ensureScene = () => { if (!sc) newScene('двор, день'); };
@@ -168,7 +176,7 @@ S.parse = function (text, lib, opts) {
     let lid = Object.keys(locs).find(id => { const s = locs[id].spec; return s.type === type && (s.time || 'day') === time && (s.weather || 'none') === weather && (s.variant || null) === variant; });
     if (!lid) { lid = 'Л' + (++nextL); const spec = { id: lid, name: desc.trim().slice(0, 40) || type, type, time, weather, seed: nextL }; if (variant) spec.variant = variant; locs[lid] = { spec }; newLocs[lid] = spec; }
     const carry = {}; if (sc && ep.scenes.includes(sc)) { Object.assign(carry, sc._carry || {}); for (const p of sc.props) if (p._held && !p._gone) carry[p._held] = { type: p.type, color: p.color }; }   // что у героя осталось в лапах — несёт дальше
-    sc = { id: 'С' + (ep.scenes.length + 1), location: lid, cast: [], props: [], steps: [], _cast: {}, _x: {}, _type: type, _variant: variant, _carry: carry, _out: {}, _wx: weather !== 'none' ? weather : type === 'winter' ? 'snow' : 'none' };
+    sc = { id: 'С' + (ep.scenes.length + 1), location: lid, cast: [], props: [], steps: [], _cast: {}, _x: {}, _type: type, _time: time, _variant: variant, _carry: carry, _out: {}, _wx: weather !== 'none' ? weather : type === 'winter' ? 'snow' : 'none' };
     { const th = themeWord(d); if (th) theme = th; } if (theme && type !== 'space') sc.theme = theme;
     const mu = pick(MUSIC, d); if (mu) sc.music = mu;
     { const prev = ep.scenes.slice().reverse().find(s => s._type === type && (s._variant || null) === variant); if (prev) for (const p of prev.props) if (!p._gone && !p._held && !p.holder && !p.decor && !p.hidden && p._used) sc.props.push({ id: 'П' + (sc.props.length + 1), type: p.type, x: p.x, color: p.color, _used: true, _carried: true }); }
@@ -202,11 +210,17 @@ S.parse = function (text, lib, opts) {
         const vanish0 = /(исчез|пропал|растаял|улетел|нет больше)/.test(d);
         if (!absent) { sc._said = sc._said || {}; if (!sc._said[type]) sc._said[type] = { at: sc.steps.length, who: who && who !== 'Р' ? who : null }; }
         // «Где наш торт?» — если торт тут лежал, он пропадает (на звук «вжух», если он был только что)
+        if ((absent && !vanish0) || ((isQ || maybe) && !ep.scenes.some(x => x.props.some(q => q.type === type && (!q.hidden || q._shown))))) (ep._absent = ep._absent || new Set()).add(type);   // «ищем клад», «где радуга?» — вещи по сюжету ещё нет: в начале серии её не показываем
         if (absent && !vanish0) { if (/(^|[^а-я])где(?![а-я])/.test(d)) { const ex = sc.props.find(x => x.type === type && !x._gone && !x._held && !x.holder && !x.hidden); if (ex) vanishNow(ex); } return; }
         if (isQ || maybe || !cue) return; if (wi > 0 && words[wi - 1] === 'не') return;
         if (!SEE.test(d)) { let j = wi - 1; if (j >= 0 && /^(мо[йяеёю]|мое[йм]|моего|моему|мои[хм]?|тво|сво|наш|ваш|его|е[её]|их|эт|т[оае][йм]?$|больш|маленьк|стар|нов|друг)/.test(words[j])) j--; if (j >= 0 && /^(в|во|на|под|из|у|с|со|за|над|о|об|по|при|к|ко|от|до|без|про|через|около|возле|внутри)$/.test(words[j])) return; }   // «И в моей чашке» — где-то там, не здесь
         if (wi > 0 && objOf(words[wi - 1])) return;   // «карта клада», «коробка конфет» — вторая вещь только уточняет первую
-        if (EVENT_DECOR.has(type) && (isQ || !NOW_CUE.test(d))) return;   // «Дедушка держит там радугу», «радуга ждёт» — не значит, что она уже тут
+        if (EVENT_DECOR.has(type) && (isQ || !NOW_CUE.test(d))) { (ep._absent = ep._absent || new Set()).add(type); return; }
+        // небесное (луна, радуга) — только снаружи; луна — вечером и ночью, днём — только «смотрите, луна!»; разговор «про» луну («Луна — спутник Земли») её не ставит
+        if (SKY.has(type)) { const strong = SKY_CUE.test(d) || /^\s*(как(ая|ой|ие|ое)|это)\s+(луна|месяц|радуга|полумесяц)/.test(d),   /* «Это луна!», «Какая луна!» — показывает */ about = SKY_ABOUT.test(d);
+          if (/^(room|kitchen)$/.test(sc._type)) return; if (type === 'moon' && !/^(evening|night)$/.test(sc._time || 'day') && sc._type !== 'space' && !strong) return; if (about && !strong) return; }
+        // дерево из разговора героев — только со словами показа (смотри / вот / это / там), а не по одному упоминанию дуба
+        if (type === 'tree' && who && who !== 'Р' && !TREE_CUE.test(d)) return;   // «Дедушка держит там радугу», «радуга ждёт» — не значит, что она уже тут
         const tkind = type === 'tree' ? pick(TREE_KIND, w) : null;
         if (type === 'tree' && sc._type === 'forest' && !/^(birch|palm|apple)$/.test(tkind || '')) return;   // в лесу и так деревья: показываем только особенное (берёзу)
         if (type === 'decor' || type === 'faces') { if (type === 'faces') { theme = theme || 'halloween'; type = 'jack'; } else { if (!theme) theme = null; return; } }
@@ -228,6 +242,7 @@ S.parse = function (text, lib, opts) {
           if (glowStatic && !pr.hidden) pr.glow = true; if (mine) { pr.holder = who; castOf(who); delete pr.decor; } if (morph && sc._vanishHeld && !big) { pr.holder = sc._vanishHeld; delete pr.decor; } sc.props.push(pr);
           shown.push({ pr, type, scene: sc.id, how: [pr.kind ? ({ birch: 'берёза', fir: 'ёлка', xmas: 'новогодняя ёлка', apple: 'яблоня', palm: 'пальма', leafy: 'лиственное' })[pr.kind] || '' : '', pr.big > 1 ? 'большая' : '', glow || glowNow ? 'светится' : '', pr.hidden ? 'появляется' : '', vanish ? 'исчезает' : '', mine ? 'у героя в руках' : ''].filter(Boolean).join(', ') }); }
         if (pr.type === 'pumpkin' && type === 'jack') pr.type = 'jack';
+        if (type === 'moon' && (!pr._ph0 || SKY_CUE.test(d))) { pr._ph0 = true; const ph = /^полумесяц/.test(w) ? 'crescent' : /^месяц/.test(w) ? (/(тонк|узк|молод)/.test(near) ? 'thin' : 'crescent') : /(полн|кругл)/.test(near + ' ' + d) ? 'full' : null; if (ph) pr.phase = ph; }   // месяц / тонкий месяц / полумесяц — освещена часть; полная, круглая — шар
         if (pr.hidden && !pr._shown) { const ap = { prop: pr.id, state: 'appear', with: true }; if (pr._quiet) ap.quiet = true; if (who && who !== 'Р') ap.who = who; sc.steps.push(ap); pr._shown = true; if (glow || glowNow) { sc.steps.push({ prop: pr.id, state: 'glow', with: true }); pr._glow = true; } }
         else if (vanish && !pr._gone) { sc.steps.push(Object.assign({ prop: pr.id, state: 'vanish', with: true }, who && who !== 'Р' ? { who } : {})); pr._gone = true; sc._vanishLn = sc._ln; sc._vanishHeld = pr._held || pr.holder || null; }
         else if ((glowNow || glowAdj) && !pr.glow && !pr._glow) { sc.steps.push({ prop: pr.id, state: 'glow', with: true }); pr._glow = true; }
@@ -252,7 +267,8 @@ S.parse = function (text, lib, opts) {
     let L = low(raw);
     let m;
     if ((m = raw.match(/^(?:сериал|мультик|мультфильм)\s*[:\-—]\s*(.+)$/i))) { series = m[1].trim(); if (ep) ep.series = series; continue; }
-    if ((m = raw.match(/^серия\s*[:\-—]?\s*(\d+)?\s*[.:\-—]?\s*(.*)$/i))) { theme = null; newEp(m[1] ? +m[1] : (eps.length ? eps[eps.length - 1].episode + 1 : (opts.nextEpisode || 1)), m[2].trim()); continue; }
+    if ((m = raw.match(/^серия\s*[:\-—]?\s*(\d+)?\s*[.:\-—]?\s*(.*)$/i))) { theme = null; newEp(m[1] ? +m[1] : (eps.length ? eps[eps.length - 1].episode + 1 : (opts.nextEpisode || 1)), m[2].trim()); if (pendMain) { ep.main = pendMain.type; ep.mainBig = pendMain.big; ep.mainSet = true; pendMain = null; } continue; }
+    if ((m = raw.match(/^(?:главное|главный предмет|главная вещь)\s*[:\-—]\s*(.+)$/i))) { const mo = mainOf(m[1], lex); if (!mo) warnings.push(`Строка ${lineNo}: «${m[1].trim()}» — не знаю такую вещь, главный предмет не покажу`); else if (ep) { ep.main = mo.type; ep.mainBig = mo.big; ep.mainSet = true; } else pendMain = mo; continue; }
     if ((m = raw.match(/^(?:сцена|место|локация)\s*\d*\s*[:.\-—]?\s*(.*)$/i))) { if (!ep) newEp(opts.nextEpisode || 1, ''); newScene(m[1] || ''); continue; }
     if ((m = raw.match(/^музыка\s*[:\-—]\s*(.+)$/i))) { const mu = pick(MUSIC, low(m[1])) || 'happy'; if (sc) sc.steps.push({ music: mu }); else music = mu; continue; }
     if ((m = raw.match(/^(?:звук|шум)\s*[:\-—]\s*(.+)$/i))) { ensureScene(); const sl = low(m[1]), s = pick(SFX, sl);
@@ -500,9 +516,11 @@ S.parse = function (text, lib, opts) {
   // чистка служебных полей, персонажи/локации в серии, автоделение длинных серий
   const out = [];
   for (const e of eps) {
+    if (!e.main) { const mo = mainOf(e.title, lex); if (mo) { e.main = mo.type; e.mainBig = mo.big; } }   // главный предмет — из названия серии
+    e.absent = e._absent ? [...e._absent] : []; delete e._absent;   // вещи, которых по сюжету сначала нет (ищут, спрашивают «где?») — не показывать их заранее
     if (e.scenes.length > 1) e.scenes = e.scenes.filter(x => x.steps.length || x === e.scenes[e.scenes.length - 1]); e.scenes.forEach((x, i) => x.id = 'С' + (i + 1));
     if (!e.scenes.length) continue;
-    for (const s of e.scenes) { delete s._cast; delete s._x; delete s._type; delete s._cam; delete s._wx; delete s._xs; s.props.forEach(p => { delete p._used; delete p._holder; delete p._held; delete p._gone; delete p._shown; delete p._glow; }); delete s._ln; delete s._vanishLn; delete s._lastObj; delete s._vanishHeld; if (!s.props.length) delete s.props; }
+    for (const s of e.scenes) { delete s._cast; delete s._x; delete s._type; delete s._time; delete s._cam; delete s._wx; delete s._xs; s.props.forEach(p => { delete p._ph0; delete p._used; delete p._holder; delete p._held; delete p._gone; delete p._shown; delete p._glow; }); delete s._ln; delete s._vanishLn; delete s._lastObj; delete s._vanishHeld; if (!s.props.length) delete s.props; }
     const usedC = new Set(), usedL = new Set(); e.scenes.forEach(s => { usedL.add(s.location); s.cast.forEach(c => usedC.add(c.who)); s.steps.forEach(st => st.who && usedC.add(st.who)); });
     e.characters = [...usedC].filter(id => newChars[id]).map(id => newChars[id]);
     e.locations = [...usedL].filter(id => newLocs[id]).map(id => newLocs[id]);
@@ -580,5 +598,6 @@ S.storyboard = function (ep, lib, extraChars, extraLocs) {
 S.ACTIONS = { water: 'поливает из лейки', read: 'читает / разглядывает', peer: 'смотрит в бинокль', dig: 'копает', knock: 'стучит', push: 'толкает', pull: 'тянет', drink: 'пьёт', paint: 'рисует', write: 'пишет', play: 'играет на инструменте', sniff: 'нюхает', listen: 'прислушивается', cheer: 'ликует', lookaround: 'оглядывается, ищет', shrug: 'пожимает плечами', roll: 'катается по земле', somersault: 'кувыркается', crawl: 'ползёт', sneak: 'крадётся', lie: 'ложится', hug: 'обнимает', scratch: 'чешет голову', yawn: 'зевает', stretch: 'потягивается', sneeze: 'чихает', eat: 'ест', stomp: 'топает', crouch: 'приседает', hide: 'прячется', sing: 'поёт', kick: 'пинает', throw: 'бросает', shout: 'кричит', enter: 'входит', exit: 'уходит', walk: 'идёт', run: 'бежит', jump: 'прыгает', wave: 'машет', dance: 'танцует', spin: 'кружится', nod: 'кивает', shake: 'качает головой',
   clap: 'хлопает', point: 'показывает', think: 'думает', laugh: 'смеётся', scared: 'пугается', cry: 'плачет', bow: 'кланяется', surprise: 'удивляется', fall: 'падает', sit: 'садится',
   sleep: 'засыпает', stand: 'встаёт', turn: 'поворачивается', take: 'берёт', give: 'отдаёт', drop: 'кладёт', none: '— ничего, пусть читает рассказчик' };
+S.mainOf = mainOf; S.bigOf = bigOf;
 global.MKScript = S;
 })(typeof window !== 'undefined' ? window : globalThis);

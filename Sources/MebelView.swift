@@ -563,11 +563,20 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
                 let text = ok ? data.flatMap { String(data: $0, encoding: .utf8) } : nil
                 DispatchQueue.main.async { replyHandler(text ?? NSNull(), nil) }
             }.resume()
+        case "writeFile":   // картинка от страницы (обложка серии) — base64 в файл внутри папки мультиков
+            let rel = body["path"] as? String ?? "", url = root.appendingPathComponent(rel)
+            guard !rel.isEmpty, !rel.contains(".."), let d = Data(base64Encoded: body["d"] as? String ?? "") else { replyHandler(false, "нет данных"); return }
+            queue.async {
+                try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+                let ok = (try? d.write(to: url)) != nil
+                DispatchQueue.main.async { if ok { replyHandler(["path": rel], nil) } else { replyHandler(false, "не записалось") } }
+            }
         case "share":
-            guard let p = body["path"] as? String else { replyHandler(false, nil); return }
-            let url = p.hasPrefix("/") ? URL(fileURLWithPath: p) : root.appendingPathComponent(p)
-            guard FileManager.default.fileExists(atPath: url.path) else { replyHandler(false, "Файл не найден"); return }
-            let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+            let ps = (body["paths"] as? [String]) ?? [body["path"] as? String].compactMap { $0 }   // несколько файлов сразу (обложка с надписью и без)
+            guard !ps.isEmpty else { replyHandler(false, nil); return }
+            let urls = ps.map { $0.hasPrefix("/") ? URL(fileURLWithPath: $0) : root.appendingPathComponent($0) }.filter { FileManager.default.fileExists(atPath: $0.path) }
+            guard !urls.isEmpty else { replyHandler(false, "Файл не найден"); return }
+            let vc = UIActivityViewController(activityItems: urls, applicationActivities: nil)
             if let top = Self.top() {
                 vc.popoverPresentationController?.sourceView = top.view
                 vc.popoverPresentationController?.sourceRect = CGRect(x: top.view.bounds.midX, y: top.view.bounds.midY, width: 1, height: 1)
@@ -586,12 +595,16 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
             let w = body["w"] as? Int ?? 1920, h = body["h"] as? Int ?? 1080, fps = body["fps"] as? Int ?? 25
             let name = (body["name"] as? String ?? "Серия").replacingOccurrences(of: "/", with: "-")
             let out = root.appendingPathComponent("video/\(name).mp4")
-            let audio = root.appendingPathComponent("tmp/audio.wav")
+            // Shorts из готовой серии: звук берём прямо из mp4 серии с нужной секунды, куски — в своей папке (прерванная сборка серии не трогается)
+            let audioSrc = body["audioSrc"] as? String, audioFrom = (body["audioFrom"] as? NSNumber)?.doubleValue ?? 0
+            let audio = audioSrc.map { root.appendingPathComponent($0) } ?? root.appendingPathComponent("tmp/audio.wav")
+            let segDir = (body["dir"] as? String).flatMap { $0.hasPrefix("tmp/") && !$0.contains("..") ? $0 : nil } ?? "tmp/build"
             let resume = body["resume"] as? Bool ?? false
             UIApplication.shared.isIdleTimerDisabled = true
             if let old = writer { writer = nil; queue.async { old.pause() } }
             queue.async {
-                let wr = MultikWriter(out: out, dir: root.appendingPathComponent("tmp/build"), w: w, h: h, fps: Int32(fps), audio: audio)
+                let wr = MultikWriter(out: out, dir: root.appendingPathComponent(segDir), w: w, h: h, fps: Int32(fps), audio: audio)
+                wr.audioStart = audioFrom
                 let ok = wr.start(resume: resume)
                 let done = Int(wr.frames)
                 DispatchQueue.main.async {
@@ -615,9 +628,10 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
         case "remuxAudio":   // готовая серия: заменить звук (картинка копируется как есть, за секунды)
             let rel = body["path"] as? String ?? ""
             let src = root.appendingPathComponent(rel), audio = root.appendingPathComponent("tmp/audio.wav"), tmp = root.appendingPathComponent("tmp/remux.mp4")
+            let cmt = Self.buildComment(body["comment"] as? String)
             queue.async {
                 var err: String? = FileManager.default.fileExists(atPath: src.path) ? nil : "нет файла серии"
-                if err == nil { err = MultikWriter.mux(parts: [src], total: AVURLAsset(url: src).duration, audio: audio, out: tmp) }
+                if err == nil { err = MultikWriter.mux(parts: [src], total: AVURLAsset(url: src).duration, audio: audio, out: tmp, comment: cmt) }
                 if err == nil { try? FileManager.default.removeItem(at: src); do { try FileManager.default.moveItem(at: tmp, to: src) } catch { err = error.localizedDescription } }
                 DispatchQueue.main.async { if let e = err { replyHandler(["error": e], nil) } else { replyHandler(["path": rel], nil) } }
             }
@@ -635,9 +649,13 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
             }
         case "thermal":
             replyHandler(ProcessInfo.processInfo.thermalState.rawValue, nil)
+        case "appInfo":   // номер сборки приложения — в карточку серии и в mp4
+            let inf = Bundle.main.infoDictionary ?? [:]
+            replyHandler(["version": inf["CFBundleShortVersionString"] as? String ?? "", "build": inf["CFBundleVersion"] as? String ?? ""], nil)
         case "videoEnd":
             guard let wr = writer else { replyHandler(["error": "нет записи"], nil); return }
             writer = nil
+            wr.comment = Self.buildComment(body["comment"] as? String)
             queue.async {
                 let path = wr.finish()
                 DispatchQueue.main.async {
@@ -744,6 +762,13 @@ final class MultikBridge: NSObject, WKScriptMessageHandlerWithReply, UIDocumentP
     }
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) { pickReply?("", nil); pickReply = nil }
 
+    /// «Замер 3D 2.3 (59)» + то, что прислала страница (заставка, качество…)
+    static func buildComment(_ extra: String?) -> String {
+        let inf = Bundle.main.infoDictionary ?? [:]
+        let app = "Замер 3D \(inf["CFBundleShortVersionString"] as? String ?? "?") (\(inf["CFBundleVersion"] as? String ?? "?"))"
+        if let e = extra, !e.isEmpty { return app + " · " + e }
+        return app
+    }
     static func top() -> UIViewController? {
         let scene = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first
         var vc = scene?.windows.first(where: { $0.isKeyWindow })?.rootViewController ?? scene?.windows.first?.rootViewController
@@ -949,14 +974,16 @@ final class MultikWriter {
     /// Готовое видео: куски подряд (без перекодирования) + звук из wav (AAC). Звук не записался — видео всё равно
     /// отдаём, но с предупреждением (warn), чтобы не потерять сборку; звук потом можно наложить заново.
     var warn: String?
+    var comment: String?   // номер сборки «Замер 3D» и настройки серии — в поле comment mp4 (для аналитики канала)
+    var audioStart: Double = 0   // Shorts: звук из готовой серии начиная с этой секунды
     func finish() -> URL? {
         pause()
         guard !done.isEmpty else { error = error ?? "нет кадров"; return nil }
         let parts = (0..<done.count).map { segURL($0) }, total = CMTime(value: doneFrames, timescale: fps)
         let tmp = dir.appendingPathComponent("final.mp4")
-        if let e = MultikWriter.mux(parts: parts, total: total, audio: audio, out: tmp, frames: done) {
+        if let e = MultikWriter.mux(parts: parts, total: total, audio: audio, out: tmp, frames: done, comment: comment, audioStart: CMTime(seconds: audioStart, preferredTimescale: 600)) {
             // со звуком не вышло — пробуем без него
-            guard MultikWriter.mux(parts: parts, total: total, audio: nil, out: tmp, frames: done) == nil else { error = e; return nil }
+            guard MultikWriter.mux(parts: parts, total: total, audio: nil, out: tmp, frames: done, comment: comment) == nil else { error = e; return nil }
             warn = e
         }
         try? FileManager.default.removeItem(at: out)
@@ -968,7 +995,7 @@ final class MultikWriter {
     /// Склейка mp4: видеокадры копируются как есть (куски один за другим), звук кодируется из wav в AAC 160 кбит/с.
     /// Возвращает текст ошибки или nil.
     /// frames — сколько кадров в каждом куске: следующий кусок встаёт ровно на свой кадр (n / fps), без сдвига на доли кадра.
-    static func mux(parts: [URL], total: CMTime, audio: URL?, out: URL, frames: [Int64]? = nil) -> String? {
+    static func mux(parts: [URL], total: CMTime, audio: URL?, out: URL, frames: [Int64]? = nil, comment: String? = nil, audioStart: CMTime = .zero) -> String? {
         let fm = FileManager.default
         try? fm.removeItem(at: out)
         guard let first = parts.first, let fv = AVURLAsset(url: first).tracks(withMediaType: .video).first,
@@ -985,6 +1012,7 @@ final class MultikWriter {
             guard let track = asset.tracks(withMediaType: .audio).first, let rd = try? AVAssetReader(asset: asset) else { return "файл звука не читается" }
             let o = AVAssetReaderTrackOutput(track: track, outputSettings: [AVFormatIDKey: kAudioFormatLinearPCM])
             rd.add(o)
+            if CMTimeCompare(audioStart, .zero) > 0 { rd.timeRange = CMTimeRange(start: audioStart, duration: total) }   // кусок звука готовой серии
             let a = AVAssetWriterInput(mediaType: .audio, outputSettings: [
                 AVFormatIDKey: kAudioFormatMPEG4AAC, AVSampleRateKey: 44100, AVNumberOfChannelsKey: 1, AVEncoderBitRateKey: 160_000,
             ])
@@ -992,6 +1020,10 @@ final class MultikWriter {
             wr.add(a)
             guard rd.startReading() else { return rd.error?.localizedDescription ?? "звук не читается" }
             aIn = a; aOut = o; aRd = rd
+        }
+        if let c = comment, !c.isEmpty {   // «Замер 3D 2.3 (59) · заставка: после завязки · …» — ffprobe показывает как comment
+            let m = AVMutableMetadataItem(); m.identifier = .iTunesMetadataUserComment; m.value = c as NSString; m.extendedLanguageTag = "und"
+            wr.metadata = [m]
         }
         guard wr.startWriting() else { return wr.error?.localizedDescription ?? "запись не началась" }
         wr.startSession(atSourceTime: .zero)
@@ -1020,7 +1052,8 @@ final class MultikWriter {
             }
             // звук: до конца видео
             while !aDone, let a = aIn, a.isReadyForMoreMediaData {
-                guard let sb = aOut?.copyNextSampleBuffer() else { aDone = true; a.markAsFinished(); break }
+                guard let sb0 = aOut?.copyNextSampleBuffer() else { aDone = true; a.markAsFinished(); break }
+                guard let sb = CMTimeCompare(audioStart, .zero) > 0 ? retimed(sb0, by: CMTimeSubtract(.zero, audioStart)) : sb0 else { continue }
                 if CMTimeCompare(CMSampleBufferGetPresentationTimeStamp(sb), total) >= 0 { aDone = true; a.markAsFinished(); aRd?.cancelReading(); break }
                 if !a.append(sb) { return wr.error?.localizedDescription ?? "звук не записался" }
                 moved = true
