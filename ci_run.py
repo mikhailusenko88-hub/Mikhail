@@ -236,7 +236,7 @@ def main():
     if mode != "publish":
         shutil.copy(name + ".jpg", "status/test_thumb.jpg")
         if short:
-            for t in (0, 0.5, 1.5, 4, 10, max(0.1, short["duration"] - 3)):
+            for t in (0, 0.5, 1.5, 3, 5.5, 6.5, 10, max(0.1, short["duration"] - 3)):
                 subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{t:.2f}", "-i", name + "_short.mp4",
                                 "-frames:v", "1", "-vf", "scale=540:-2", f"status/test_short_{t:04.1f}.jpg"])
             with open("status/test_short.txt", "w", encoding="utf-8") as f:

@@ -17,7 +17,9 @@ W, H = 1080, 1920
 VIEW_W = 1440
 SRC_H = 1080
 CROP_W = 608            # 608/1080 ≈ 9/16 → scale ×1.777 = 1080×1920
-TAIL = 22.0             # секунд финального этапа до финиша
+TAIL = 22.0             # секунд финального этапа до финиша (если старт не берём)
+HEAD = 6.0              # с 15.11.2026: первые секунды — старт этапа, все шары-флаги вместе (с первого кадра действие)
+TAIL2 = 16.0            # …потом склейка на последние секунды до финиша и вылет
 GOLD = (255, 214, 64)
 GREEN = (70, 235, 130)
 WHITE = (255, 255, 255)
@@ -57,19 +59,34 @@ def make(part_mp4, part_json, out_mp4):
     s0, s1, s2 = spans[-1]                     # финальный этап: старт гонки, финиш, конец «вылетевших»
     total = meta.get("duration", s2)
     s1, s2 = min(s1, total), min(s2, total)
-    start = max(s0, s1 - TAIL)
-    dur = s2 - start
+    if s1 - TAIL2 > s0 + HEAD + 2:              # два куска: старт этапа (все флаги вместе) + концовка
+        segs = [(s0, HEAD), (s1 - TAIL2, s2 - (s1 - TAIL2))]
+    else:
+        start = max(s0, s1 - TAIL)
+        segs = [(start, s2 - start)]
+    dur = sum(t for _, t in segs)
     if dur < 8:
         raise SystemExit("слишком короткий кусок для Shorts")
     ov = out_mp4 + ".png"
     overlay(meta["codes"], meta["survive"], meta["n"], ov, lives=meta.get("lives_mode", False))
     x0 = int(VIEW_W / 2 - CROP_W / 2)
-    filt = (f"[0:v]crop={CROP_W}:{SRC_H}:{x0}:0,scale={W}:{H}:flags=lanczos,setsar=1[v0];"
-            f"[1:v]format=rgba[ov];[v0][ov]overlay=0:0,fade=t=out:st={dur - 0.5:.2f}:d=0.5[v]")
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{start:.2f}", "-t", f"{dur:.2f}", "-i", part_mp4,
-                    "-loop", "1", "-i", ov, "-filter_complex", filt, "-map", "[v]", "-map", "0:a?",
-                    "-c:v", "libx264", "-preset", "veryfast", "-b:v", "6000k", "-pix_fmt", "yuv420p", "-r", "30",
-                    "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", out_mp4], check=True)
+    has_a = bool(subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries", "stream=index",
+                                 "-of", "csv=p=0", part_mp4], capture_output=True, text=True).stdout.strip())
+    cmd = ["ffmpeg", "-y", "-loglevel", "error"]
+    for a, t in segs:
+        cmd += ["-ss", f"{a:.2f}", "-t", f"{t:.2f}", "-i", part_mp4]
+    cmd += ["-loop", "1", "-i", ov]
+    n = len(segs)
+    if has_a:
+        cat = "".join(f"[{i}:v][{i}:a]" for i in range(n)) + f"concat=n={n}:v=1:a=1[cv][ca];"
+    else:
+        cat = "".join(f"[{i}:v]" for i in range(n)) + f"concat=n={n}:v=1:a=0[cv];"
+    filt = (cat + f"[cv]crop={CROP_W}:{SRC_H}:{x0}:0,scale={W}:{H}:flags=lanczos,setsar=1[v0];"
+            f"[{n}:v]format=rgba[ov];[v0][ov]overlay=0:0:shortest=1,fade=t=out:st={dur - 0.5:.2f}:d=0.5[v]")
+    cmd += ["-filter_complex", filt, "-map", "[v]"] + (["-map", "[ca]", "-c:a", "aac", "-b:a", "160k"] if has_a else [])
+    cmd += ["-c:v", "libx264", "-preset", "veryfast", "-b:v", "6000k", "-pix_fmt", "yuv420p", "-r", "30",
+            "-t", f"{dur:.2f}", "-movflags", "+faststart", out_mp4]
+    subprocess.run(cmd, check=True)
     vs = race.vs_line(meta["codes"], 3)
     title = f"{vs} 😱 Who Survives? Country Marble Race #shorts"[:100]
     return {"title": title, "duration": dur, "vs": vs}
