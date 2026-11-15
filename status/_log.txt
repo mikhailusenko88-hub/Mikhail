@@ -1,5 +1,17 @@
-2026-11-15 14:03 UTC
-200 https://www.youtube.com/@cartoon_friend3
-200 avatar cartoon_friend3
-200 https://www.youtube.com/@cartoon_friend3/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
+2026-11-15 14:04 UTC
+200 https://www.youtube.com/watch?v=8Gyke-2WIyw&hl=ru
+200 player WEB 8Gyke-2WIyw
+ERR player ANDROID 8Gyke-2WIyw HTTP Error 400: Bad Request
+ERR thumb 8Gyke-2WIyw/oar2.jpg HTTP Error 404: Not Found
+200 thumb 8Gyke-2WIyw/hqdefault.jpg 31314 B
+200 thumb 8Gyke-2WIyw/hq1.jpg 11744 B
+200 thumb 8Gyke-2WIyw/hq2.jpg 17600 B
+200 thumb 8Gyke-2WIyw/hq3.jpg 13293 B
+200 https://www.youtube.com/watch?v=WPyuyfNH1dQ&hl=ru
+200 player WEB WPyuyfNH1dQ
+ERR player ANDROID WPyuyfNH1dQ HTTP Error 400: Bad Request
+ERR thumb WPyuyfNH1dQ/oar2.jpg HTTP Error 404: Not Found
+200 thumb WPyuyfNH1dQ/hqdefault.jpg 28466 B
+200 thumb WPyuyfNH1dQ/hq1.jpg 18693 B
+200 thumb WPyuyfNH1dQ/hq2.jpg 17600 B
+200 thumb WPyuyfNH1dQ/hq3.jpg 13929 B
