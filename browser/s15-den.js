@@ -6,6 +6,10 @@
 // а места были сняты без входа (со вчерашними, снятыми со входом, напрямую не сравнивать). Теперь скрипт сам пишет «ВХОД: да/нет»,
 // просмотры (всего и за сегодня) берёт ещё и со страниц объявлений — они видны без входа, — и не ходит в профили продавцов из других городов.
 // Разовые добавки: EXTRA — запросы, которые надо снять как основные (со второй страницей); WIDE_ON / PROF_ON — выключить широкие запросы и профили.
+// 15.11, перемер со входом через 15 минут после замера без входа: по редким запросам места те же (±5), а по частым со входом мы видим себя
+// намного выше — «плинтус напольный» №2 со входом и №20 без входа, «плинтус дюрополимер» №7 и №16. Поэтому ANON: те же запросы ещё раз во фрейме
+// без куки (credentialless) — «как посторонний». Запуском ещё не проверено; если фрейм не читается, скрипт это напишет и пойдёт дальше.
+// Страницы своих объявлений со входом открываются в виде для владельца, счётчиков просмотров там нет — pages() зовём, только когда входа нет.
 (() => {
 const IDS = { '8402676722': '3-7', '8530976650': '3-15', '8546190071': '3-9', '8523521242': 'A910', '8495178294': 'A703', '8068817087': 'старое' };
 // основные запросы — каждый день, набор не менять без причины (иначе не с чем сравнивать)
@@ -22,6 +26,7 @@ const GROUP = ((DAY % 3) + 3) % 3;          // 14.11 — группа 0, 15.11 �
 const NPROF = 4;                             // сколько профилей новых соседей открыть за день
 const EXTRA = [];                            // разовые запросы «как основные» (со второй страницей), например после смены заголовка
 const WIDE_ON = true, PROF_ON = true;        // false — короткий перемер: только кабинет и основные запросы
+const ANON = ['плинтус напольный', 'плинтус дюрополимер', 'реечные панели для стен'];   // эти запросы снять ещё и «как посторонний» (фрейм без куки)
 const SEEN = ['/brands/i189669386', '/brands/9b74c0149fa35c68ab3583d2482cccd3', '/brands/e6722563236e2eed0c7215d87dd4b379', '/brands/plintusy', '/brands/i35021401',
   '/brands/i303422686', '/brands/544ffd9a46ae4cb7b0de074a6ec6d7e3', '/brands/arhidea', '/brands/90967ed0df52f22382beaf3e0f587006',
   '/brands/i188920544', '/brands/i122608885', '/brands/i72526920', '/brands/akupanel.ru', '/brands/i200336086', '/brands/6fce8c6bbc94076bfb4ce1c8c3d3fd4e',
@@ -38,9 +43,10 @@ const tick = () => new Promise(r => { wake = r; mc.port2.postMessage(0); });
 const sleep = async ms => { const t = Date.now() + ms; while (Date.now() < t) await tick(); };
 const until = async (cond, ms, step = 300) => { const t = Date.now() + ms; while (Date.now() < t) { let ok = false; try { ok = cond(); } catch (e) {} if (ok) return true; await sleep(step); } return false; };
 const pause = () => sleep(1600 + Math.random() * 1000);
-function mk(url, h) {
+function mk(url, h, anon) {
   let fr = document.getElementById('nd_fr'); if (fr) fr.remove();
   fr = document.createElement('iframe'); fr.id = 'nd_fr';
+  if (anon) { fr.credentialless = true; fr.setAttribute('credentialless', ''); }   // без куки: Авито видит постороннего
   fr.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-modals');
   fr.style.cssText = 'position:fixed;left:0;top:0;width:1366px;height:' + (h || 900) + 'px;z-index:2147483647;background:#fff;border:0;opacity:0.02;pointer-events:none';
   fr.src = url; document.body.appendChild(fr); return fr;
@@ -70,7 +76,7 @@ async function cabinet() {
   let href = ''; try { href = fr.contentWindow.location.href; } catch (e) {}
   if (/#login/.test(href) || /Вход и регистрация/.test(((d.body && d.body.innerText) || '').slice(0, 1500))) {
     L('НЕ ВОШЛИ'); S('# ВХОД: НЕТ — браузер разлогинен (' + href.replace(/^https:\/\/www\.avito\.ru/, '') + '). Контакты, избранное, кошелёк и сроки не видны; места сняты БЕЗ входа — с замерами со входом напрямую не сравнивать. Войти должен Михаил.');
-    return;
+    return false;
   }
   S('# ВХОД: да');
   S('# КАБИНЕТ (загружен: ' + ok + ') | вкладки: ' + [...d.querySelectorAll('[data-marker*="tab"],[role=tab]')].map(e => (e.innerText || '').trim().replace(/\s+/g, ' ')).filter(x => x && x.length < 40).slice(0, 6).join(' · ') + ' | ' + ((((d.body.innerText || '').match(/Кошел[её]к[^₽]{0,60}₽/) || [''])[0].replace(/\s+/g, ' ')) || 'кошелёк не виден'));
@@ -79,8 +85,24 @@ async function cabinet() {
     if (!a) { S(IDS[id] + ' — в списке нет'); continue; }
     let e = a, txt = '';
     for (let i = 0; i < 10 && e.parentElement; i++) { e = e.parentElement; txt = (e.innerText || '').trim(); if (txt.length > 160) break; }
-    S(IDS[id] + ' | ' + txt.replace(/\s+/g, ' ').replace(/−70% на продвижение.*$/, '').slice(0, 260));   // числа: просмотры[+сегодня] контакты избранное
+    S(IDS[id] + ' | ' + txt.replace(/\s+/g, ' ').replace(/−70% на продвижение.*$/, '').slice(0, 260));   // числа: просмотры всего[+из них сегодня] контакты избранное
   }
+  return true;
+}
+async function serpAnon(q) {   // тот же запрос «как посторонний»: насколько наш аккаунт завышает наши места
+  if (!('credentialless' in HTMLIFrameElement.prototype)) { S('  · как посторонний: браузер не умеет фрейм без куки'); return false; }
+  const fr = mk('/sankt-peterburg?q=' + encodeURIComponent(q), 900, true), t0 = Date.now();
+  let dead = false;
+  await until(() => { let dd = null; try { dd = fr.contentDocument; } catch (e) { dead = true; return true; } if (!dd) { if (Date.now() - t0 > 7000) { dead = true; return true; } return false; } return dd.querySelectorAll('[data-marker="item"]').length >= 30 || !!blocked(dd); }, 20000);
+  await sleep(900);
+  let d = null; try { d = fr.contentDocument; } catch (e) {}
+  if (dead || !d) { S('  · как посторонний «' + q + '»: фрейм без куки не читается'); return false; }
+  if (blocked(d)) { L('БЛОК на поиске без куки', q); S('  · как посторонний «' + q + '»: блок'); return false; }
+  const cards = [...d.querySelectorAll('[data-marker="item"]')];
+  const ours = cards.map((c, i) => [idOf(c), i + 1]).filter(x => IDS[x[0]]).map(x => IDS[x[0]] + ' №' + x[1]);
+  const guest = /Вход и регистрация/.test(((d.body && d.body.innerText) || '').slice(0, 1500));
+  S('  · как посторонний' + (guest ? '' : ' (ВХОД ОСТАЛСЯ — не считать)') + ' «' + q + '»: ' + (ours.join(', ') || 'нет на 1-й стр.') + ' | карточек ' + cards.length + ' | продвинуто в десятке: ' + cards.slice(0, 10).filter(c => /Продвинуто/.test(c.innerText || '')).length);
+  return true;
 }
 async function serp(q, wide, p) {
   const fr = mk('/sankt-peterburg?q=' + encodeURIComponent(q) + (p > 1 ? '&p=' + p : ''));
@@ -136,11 +158,15 @@ async function profile(href, s) {
 (async () => {
   try {
     L('старт, группа широких запросов', GROUP);
-    await cabinet(); await pause();
-    await pages();
+    const logged = await cabinet(); await pause();
+    if (!logged) await pages();
     S('\n# ОСНОВНЫЕ ЗАПРОСЫ');
     let ok = true;
     for (const q of CORE.concat(EXTRA)) { ok = await serp(q, false); if (!ok) break; await pause(); if (ok === 'none') { ok = await serp(q, false, 2); if (!ok) break; await pause(); } }
+    if (ok && logged && ANON.length) {
+      S('\n# КАК ПОСТОРОННИЙ (фрейм без куки)');
+      for (const q of ANON) { if (!(await serpAnon(q))) break; await pause(); }
+    }
     if (ok && WIDE_ON) {
       S('\n# ШИРОКИЕ ЗАПРОСЫ, группа ' + GROUP + ' (П = продвинуто)');
       for (const q of WIDE[GROUP]) { ok = await serp(q, true); if (!ok) break; await pause(); }
