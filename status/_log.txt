@@ -1,13 +1,6 @@
-2026-11-15 11:42 UTC
-200 https://www.youtube.com/@FlagballArenaTV
-200 avatar FlagballArenaTV
-200 banner FlagballArenaTV
-200 https://www.youtube.com/@FlagballArenaTV/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCUKgRxWtL1kPWr9hdfL8qQw
-200 https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=EVCXBjTSO-k&format=json
-200 https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=cK3k5givA2c&format=json
-200 https://www.youtube.com/watch?v=EVCXBjTSO-k&hl=ru
-200 player WEB EVCXBjTSO-k
-ERR player ANDROID EVCXBjTSO-k HTTP Error 400: Bad Request
-ERR thumb EVCXBjTSO-k/oar2.jpg HTTP Error 404: Not Found
-200 thumb EVCXBjTSO-k/hqdefault.jpg 18698 B
+2026-11-15 12:27 UTC
+200 https://www.youtube.com/@Beautiful_shorts-s6u
+200 avatar Beautiful_shorts-s6u
+200 banner Beautiful_shorts-s6u
+200 https://www.youtube.com/@Beautiful_shorts-s6u/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
