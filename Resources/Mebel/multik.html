@@ -173,6 +173,7 @@ select{max-width:100%;background:var(--card2);color:var(--tx);border:0;border-ra
 <script src="multik-barsik.js"></script>
 <script src="multik-bars-heroes.js"></script>
 <script src="multik-bars-soty.js"></script>
+<script src="multik-poster.js"></script>
 <script type="module">
 import * as THREE from './three.module.min.js';
 // по умолчанию — «как в кино» (шерсть, мягкий свет)
@@ -475,6 +476,15 @@ const Cover = {
     try { await Build.wait3d(); const lib = Lib.data, ep = e.script, ce = this.episode(ep, lib);
       if (!ce.hs.length) throw new Error('в серии нет героев');
       await prepHeroes(lib, null);
+      // постер (с 15.11.2026): все герои серии крупно, каждый снят отдельно, главный предмет по своему правилу, надпись маленькая.
+      // Старая обложка «одним кадром» — настройка cover: 'scene' или если постер не получился.
+      if (window.MKPoster && window.MK3D && MK3D.ready && (lib.settings || {}).cover !== 'scene') {
+        let res = null; try { res = await MKPoster.make(ep, lib, (t, k) => { if (btn) btn.textContent = '⏳ Обложка: ' + t.toLowerCase() + '…'; }); } catch (er) { console.log('постер не вышел', er); }
+        if (res) { const jpgC = (cv, q) => cv.toDataURL('image/jpeg', q).split(',')[1], fitC = cv => { for (const q of [.92, .86, .8, .72]) { const d = jpgC(cv, q); if (d.length * .75 <= 2e6) return d; } return jpgC(cv, .65); };
+          const base = (e.video ? e.video.replace(/\.mp4$/i, '') : 'video/' + (`${p.series} - ${String(e.episode).padStart(2, '0')}`).replace(/\//g, '-')) + ' - обложка';
+          const a = await Native.call('writeFile', { path: base + '.jpg', d: fitC(res.full) }), b = await Native.call('writeFile', { path: base + ' (без надписей).jpg', d: fitC(res.clean) });
+          if (!a || !a.path) throw new Error('файл не записался');
+          e.cover = a.path; await Lib.save(); await Native.call('share', { paths: [a.path].concat(b && b.path ? [b.path] : []) }); return; } }
       const tl = MK.compile(ce.ep, Object.assign({}, lib, { settings: Object.assign({}, lib.settings, { opening: 'new' }) }), {}); tl.style = (window.MK3D && MK3D.ready) ? '3d' : '2d'; const sg = tl.segs.find(x => x.kind === 'scene');
       if (sg) sg.cam = [ce.hold && ce.hs.length > 1 ? { t: 0, mode: 'two', on: ce.hs.slice(0, 2), cut: true } : { t: 0, mode: 'group', ids: ce.hs.slice(), px: ce.M && !ce.hold ? [.5] : undefined, cut: true }];   // двое близко (вещь в лапах) или группа с вещью в центре
       const cv = document.createElement('canvas'); cv.width = this.W; cv.height = this.H; const c = cv.getContext('2d');

@@ -1219,6 +1219,7 @@ function fitAbove(hp, s, dx, dy, size) {   // над головой не вле�
   for (const [ax, ay] of cand) if (ok(hp.x + ax * s, hp.y + ay * s)) return [hp.x + ax * s, hp.y + ay * s];
   return [hp.x + dx * 1.35 * s, hp.y + dy * .2 * s]; }
 function fxFor(rig, st, T) {
+  if (MK3D._studio) return;   // обложка: героя снимаем отдельно на ровном фоне — без «!», сердечек и капель над головой
   const hp = new THREE.Vector3(); rig.head.getWorldPosition(hp); const s = rig.scale, an = (st.act || {}).n, at = (st.act || {}).t || 0, emo = st.emo;
   if (st.persist === 'sleep') for (let i = 0; i < 3; i++) { const p = (T * .45 + i / 3) % 1; sprite(glyphTex('Z', '#ffffff', '#2b3a6a'), hp.x + .3 + p * .3, hp.y + .3 + p * .7, hp.z, .25 * s, Math.sin(p * Math.PI)); }
   if (st.persist === 'fallen' && (st.pt || 0) < 3.5) for (let i = 0; i < 4; i++) { const a = T * 4 + i * Math.PI / 2; sprite(glyphTex('★', '#ffd23f', '#2b1d16'), hp.x + Math.cos(a) * .35, hp.y + .25, hp.z + Math.sin(a) * .35, .18 * s); }
@@ -1590,10 +1591,22 @@ function propMesh(p) {
       const rl = A(G.cyl(.03, .03, .025, 20), P('#c9c9c9', 'metal'), g, 0); rl.rotation.x = Math.PI / 2; rl.position.set(.012, .15, .02);
       A(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([v3(.28, 1.1), v3(.31, .8), v3(.32, .5)]), 12, .002, 4), P('#eeeeee', 'plastic'), g, 0);
       A(G.sph(.02, 12, 10), P('#e8344e', 'gloss'), g, 0).position.set(.32, .49, 0); A(G.cap(.006, .03, 4, 6), P('#ffffff', 'gloss'), g, 0).position.set(.32, .52, 0); g.userData.heldRot = [.5, 0, -.25]; g.userData.overHead = true; break; }   // удочку держит наклонно вперёд, а не опускает в песок под мордочку
-    case 'boat': { const c0 = cl || '#d8573c'; const hull = A(lathe([[0, 0], [.18, 0], [.3, .11], [.33, .2], [.31, .2], [.28, .12], [.16, .03], [0, .03]], 40), P(c0, 'wood')); hull.scale.set(1.9, 1, .85);
-      const stp = A(G.cyl(.335, .335, .02, 40, true), P('#ffffff', 'wood'), g, 0); stp.scale.set(1.9, 1, .85); stp.position.y = .2;
-      A(G.box(.08, .02, .5), P('#c8a46a', 'wood')).position.y = .16;
-      for (const s of [-1, 1]) { const oar = new THREE.Group(); oar.position.set(-.05, .2, s * .3); oar.rotation.set(s * .5, .3, 0); g.add(oar); A(G.cyl(.012, .012, .7, 8), P('#c8a46a', 'wood'), oar).rotation.z = Math.PI / 2; const bl = A(G.box(.16, .006, .07), P('#c8a46a', 'wood'), oar); bl.position.x = .38; } break; }
+    case 'boat': { // лодочка (15.11): острый нос, круглая корма, светлое дерево внутри, скамейка, мачта с парусом и флажком — узнаётся с первого взгляда (раньше была «миска»)
+      const c0 = cl || '#e0533d', L = .62, Wd = .27, D = .2;
+      const shell = (k) => { const gm = new THREE.SphereGeometry(1, 40, 14, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), pa = gm.attributes.position;
+        for (let i2 = 0; i2 < pa.count; i2++) { const x = pa.getX(i2), y = pa.getY(i2), z = pa.getZ(i2), f = x > 0 ? Math.max(.03, 1 - Math.pow(x, 1.5) * .97) : 1 - Math.pow(-x, 4) * .3;
+          pa.setXYZ(i2, x * L * k, (y * D + (x > 0 ? .07 * x * x : .02 * x * x)) * k, z * Wd * f * k); }
+        gm.computeVertexNormals(); return gm; };
+      const out = A(shell(1), P(c0, 'gloss')); out.position.y = D;
+      const inM = P('#e9cf9c', 'wood').clone(); inM.side = THREE.BackSide; const inn = A(shell(.93), inM, g, 0); inn.position.y = D + .012;
+      const rimP = []; for (let i2 = 0; i2 <= 64; i2++) { const a2 = i2 / 64 * Math.PI * 2, x = Math.cos(a2), z = Math.sin(a2), f = x > 0 ? Math.max(.03, 1 - Math.pow(x, 1.5) * .97) : 1 - Math.pow(-x, 4) * .3; rimP.push(new THREE.Vector3(x * L, D + (x > 0 ? .07 * x * x : .02 * x * x), z * Wd * f)); }
+      A(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rimP, true), 96, .016, 8, true), P('#ffffff', 'gloss'), g, 0);   // белый бортик по краю
+      A(G.box(.06, .025, Wd * 1.7), P('#c8a46a', 'wood'), g).position.set(-.08, D - .02, 0);   // скамейка
+      const mast = A(G.cyl(.014, .016, .78, 10), P('#b98a52', 'wood'), g); mast.position.set(.06, D + .37, 0);
+      const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(0, .62); sh.lineTo(-.4, .04); sh.lineTo(0, 0);
+      const sm = P('#fffaf0', 'paper').clone(); sm.side = THREE.DoubleSide; const sail = A(new THREE.ShapeGeometry(sh), sm, g, 0); sail.position.set(.05, D + .1, 0);
+      const fm = P('#ff3b3b', 'paper').clone(); fm.side = THREE.DoubleSide; const fs = new THREE.Shape(); fs.moveTo(0, 0); fs.lineTo(.13, -.04); fs.lineTo(0, -.08); fs.lineTo(0, 0);
+      const flag = A(new THREE.ShapeGeometry(fs), fm, g, 0); flag.position.set(.07, D + .76, 0); break; }
     case 'bike': { const c0 = cl || '#2f7de1'; const b = new THREE.Group(); g.add(b); const v = (x, y) => new THREE.Vector3(x, y, 0);
       for (const x of [-.32, .32]) { A(G.tor(.17, .022, 12, 40), P('#222222', 'plastic'), b).position.set(x, .19, 0); const hub = A(G.cyl(.02, .02, .05, 12), P('#bbbbbb', 'metal'), b, 0); hub.rotation.x = Math.PI / 2; hub.position.set(x, .19, 0);
         for (let k = 0; k < 8; k++) { const sp = A(G.cyl(.003, .003, .33, 4), P('#cccccc', 'metal'), b, 0); sp.position.set(x, .19, 0); sp.rotation.z = k / 8 * Math.PI; } }
@@ -3202,6 +3215,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
     MK3D._grade = CF ? CF.grade : ['room', 'kitchen'].includes(L.type) ? 'indoor' : L.type === 'space' ? 'space' : cineF && L.time === 'night' ? 'forestNight' : cineF && L.time !== 'evening' ? 'forest' : (L.time || 'day');
     if (CF) { MK3D._rays = L.weather === 'rain' ? 0 : CF.rays; MK3D._rayCol = CF.rayCol; let src = new THREE.Vector2(.5, 1.28); if (CF.sunDir) { cam.updateMatrixWorld(); const v = cam.position.clone().addScaledVector(CF.sunDir, 120).project(cam); if (v.z < 1) src = new THREE.Vector2(clamp((v.x + 1) / 2, -.6, 1.6), clamp((v.y + 1) / 2, -.6, 1.8)); } MK3D._raySrc = src; }
     else { const tm = L.time || 'day', ty = L.type || 'yard'; MK3D._rays = tm === 'night' || ['space', 'room', 'kitchen'].includes(ty) || L.weather === 'rain' ? 0 : (ty === 'forest' ? .7 : .3) * (tm === 'evening' ? 1.25 : 1); MK3D._rayCol = tm === 'evening' ? new THREE.Vector3(1, .78, .55) : new THREE.Vector3(1, .95, .82); MK3D._raySrc = new THREE.Vector2(.5 + Math.sin((L.seed || 3) * 1.7) * .25, 1.28); } if (g.userData.wxK) MK3D._rays *= 1 - g.userData.wxK.rain; }
+  if (MK3D._studio) { if (curLoc) curLoc.visible = false; scene.background = new THREE.Color(MK3D._studio); scene.fog = null; }   // обложка: герои без места, на ровном фоне (вырезка героев)
   sun.target.position.copy(look); sun.position.add(look); MK3D._T = t; if (rim) { rim.target.position.copy(look); const rp = CF && CF.light.rp; if (rp) rim.position.set(look.x + rp[0], rp[1], look.z + rp[2]); else rim.position.set(look.x - 3, 4, look.z - 6); }
   render(ctx);
 };
@@ -3257,13 +3271,13 @@ MK3D.locPreview = function (canvas, spec, T) {
   render(canvas.getContext('2d')); return true;
 };
 MK3D.propSheet = function (canvas, types, cols) { // лист предметов для проверки: каждый в своей клетке
-  if (!MK3D.ready) return false; hideAllRigs(); if (curLoc) curLoc.visible = false; scene.fog = null; scene.background = col('#e9eef3'); lightFor('meadow', 'day');
+  if (!MK3D.ready) return false; hideAllRigs(); if (curLoc) curLoc.visible = false; scene.fog = null; scene.background = col(MK3D._studio || '#e9eef3'); lightFor('meadow', 'day');   // _studio — ровный фон для вырезки (обложка)
   const ctx = canvas.getContext('2d'), rows = Math.ceil(types.length / cols), tw = canvas.width / cols, th = canvas.height / rows; const tc = document.createElement('canvas'); tc.width = Math.round(tw); tc.height = Math.round(th); const tctx = tc.getContext('2d');
-  let st0 = envC.__floor; if (!st0) { st0 = new THREE.Mesh(new THREE.CircleGeometry(3, 48), new THREE.MeshStandardMaterial({ color: '#f4f1ec', roughness: .9 })); st0.rotation.x = -Math.PI / 2; st0.receiveShadow = true; envC.__floor = st0; scene.add(st0); } st0.visible = true;
+  let st0 = envC.__floor; if (!st0) { st0 = new THREE.Mesh(new THREE.CircleGeometry(3, 48), new THREE.MeshStandardMaterial({ color: '#f4f1ec', roughness: .9 })); st0.rotation.x = -Math.PI / 2; st0.receiveShadow = true; envC.__floor = st0; scene.add(st0); } st0.visible = !MK3D._studio;
   types.forEach((ty, i) => { const pm = propMesh({ id: 'sheet' + i, type: ty }); ensureIn(pm); pm.visible = true; pm.position.set(0, 0, 0); pm.scale.setScalar(1); pm.rotation.set(0, -.5, 0); scene.updateMatrixWorld(true);
     const bb = new THREE.Box3().setFromObject(pm), c = bb.getCenter(new THREE.Vector3()), sz = bb.getSize(new THREE.Vector3()), R0 = Math.max(sz.x, sz.y, sz.z) * .5 + .02;
     cam.fov = 30; cam.aspect = tw / th; cam.position.set(c.x + R0 * 1.6, c.y + R0 * 1.5, c.z + R0 * 3.4); cam.updateProjectionMatrix(); cam.lookAt(c); sun.position.set(c.x + 3, c.y + 6, c.z + 5); sun.target.position.copy(c);
-    render(tctx); ctx.drawImage(tc, (i % cols) * tw, Math.floor(i / cols) * th, tw, th); ctx.fillStyle = '#333'; ctx.font = '14px sans-serif'; ctx.fillText(ty, (i % cols) * tw + 6, Math.floor(i / cols) * th + 16); pm.visible = false; });
+    render(tctx); ctx.drawImage(tc, (i % cols) * tw, Math.floor(i / cols) * th, tw, th); if (!MK3D._studio) { ctx.fillStyle = '#333'; ctx.font = '14px sans-serif'; ctx.fillText(ty, (i % cols) * tw + 6, Math.floor(i / cols) * th + 16); } pm.visible = false; });
   st0.visible = false; return true;
 };
 MK3D.propPreview = function (canvas, types) {
