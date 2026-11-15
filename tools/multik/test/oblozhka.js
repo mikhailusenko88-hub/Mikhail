@@ -17,14 +17,14 @@ let bad = 0; const ok = (c, m) => { console.log((c ? '✔ ' : '✘ ') + m); if (
     const ep = r.episodes[0]; const P = { series: ep.series, episodes: [{ episode: ep.episode, title: ep.title, script: ep, status: 'built', video: 'video/' + ep.series + ' - ' + ep.episode + '.mp4', made: { app: '59', intro: 'after', open: 'new' }, aud2: {} }] }; Lib.data.projects = [P];
     window.__frames = []; window.__share = []; let n = 0;
     Object.assign(Mock, { writeFile: a => { window.__save(a.path.split('/').pop(), a.d); return { path: a.path }; }, share: a => { window.__share.push(a.paths || [a.path]); return true; }, keepAwake: () => true,
-      videoBegin: a => { window.__vb = a; n = 0; return { ok: true, frames: 0 }; }, videoFrame: a => { n++; if (a.i === 0 || a.i === 20) window.__save('shorts_' + a.i + '.jpg', a.d); return 1; }, videoEnd: a => { window.__ve = a; return { path: 'video/x - Shorts.mp4', n }; } });
+      videoBegin: a => { window.__vb = a; n = 0; return { ok: true, frames: 0 }; }, videoFrame: a => { n++; if (a.i === 0 || a.i === window.__mid) window.__save('shorts_' + a.i + '.jpg', a.d); return 1; }, videoEnd: a => { window.__ve = a; return { path: 'video/x - Shorts.mp4', n }; } });
     return { errors: r.errors.length, ep: ep.episode, title: ep.title, main: ep.main }; }, { txt: fs.readFileSync(scn, 'utf8'), hq: HQ });
   console.log('серия', info.ep, info.title, '· главное:', info.main || '—', '· ошибок разбора', info.errors);
   const t0 = Date.now(); await p.evaluate(async () => { const P = Lib.data.projects[0]; await Cover.make(P, P.episodes[0], null); }); console.log('обложка за', ((Date.now() - t0) / 1000).toFixed(0), 'с');
   const cov = Object.keys(files).filter(f => /обложка/.test(f));
   ok(cov.length === 2 && cov.every(f => files[f] > 30000 && files[f] <= 2e6), `обложка: ${cov.map(f => f + ' ' + (files[f] / 1024).toFixed(0) + ' КБ').join(', ')}`);
   ok((await p.evaluate(() => (window.__share[0] || []).length)) === 2, 'обложка уходит в «Поделиться» двумя файлами');
-  const t1 = Date.now(); await p.evaluate(async () => { Shorts.FPS = 2; const P = Lib.data.projects[0]; await Shorts.make(P, P.episodes[0], null); });
+  const t1 = Date.now(); await p.evaluate(async fps => { Shorts.FPS = fps; window.__mid = Math.round(12 * fps); const P = Lib.data.projects[0]; await Shorts.make(P, P.episodes[0], null); }, +(process.env.SFPS || 2));   // SFPS=0.4 — 10 кадров (для «как в кино»)
   const sh = await p.evaluate(() => ({ vb: window.__vb, ve: window.__ve, path: Lib.data.projects[0].episodes[0].shorts })); console.log('Shorts за', ((Date.now() - t1) / 1000).toFixed(0), 'с');
   ok(sh.vb && sh.vb.w === 1080 && sh.vb.h === 1920 && sh.vb.dir === 'tmp/shorts' && sh.vb.audioSrc && sh.vb.audioFrom >= 0, `Shorts: ${sh.vb ? sh.vb.w + '×' + sh.vb.h : '—'}, звук из серии с ${sh.vb ? sh.vb.audioFrom.toFixed(1) : '?'} с, куски в tmp/shorts`);
   ok(sh.ve && /Shorts из серии/.test(sh.ve.comment || '') && !!sh.path, `Shorts записан: ${sh.ve ? sh.ve.comment : '—'}`);

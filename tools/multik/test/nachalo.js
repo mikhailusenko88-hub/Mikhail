@@ -36,7 +36,7 @@ for (const f of files) { const txt = withHeroes(fs.readFileSync(f, 'utf8')); con
     ok(early.every(x => st(x.who).vis), `входы до первой реплики (${[...new Set(early.map(x => nm(x.who)))].join(', ') || '—'}) — уже на местах с кадра 0`);
     ok(late.every(x => s0.C[x.who].ev.some(e => e.k === 'move' && (e.x0 < 0 || e.x0 > 1))), `входы по сюжету позже (${[...new Set(late.map(x => nm(x.who)))].join(', ') || '—'}) — идут, как раньше`);
     const vis0 = Object.keys(s0.C).filter(id => st(id).vis), c0 = s0.cam.filter(c => c.t <= .01).pop();
-    ok(!vis0.length || c0.mode !== 'wide', `первый план — ${c0.mode}${vis0.length ? '' : ' (героев в начале нет)'}, не общий план места`);
+    const c1 = s0.cam.find(c => c.mode !== 'wide'); ok(!vis0.length || c0.mode !== 'wide' || (c1 && c1.t <= 1.7), `первый план — ${c0.mode}${c0.mode === 'wide' && c1 ? ` до ${c1.t.toFixed(1)} с (луна/радуга в небе), потом ${c1.mode}` : ''}${vis0.length ? '' : ' (героев в начале нет)'}; общий план места — не дольше 1,5 с`);
     const sp = tl.speech[0], act0 = sc0.steps.slice(0, sc0.steps.findIndex(x => x.say || x.vocal) < 0 ? 0 : sc0.steps.findIndex(x => x.say || x.vocal)).some(x => (x.do && x.do !== 'enter') || x.sfx || (x.prop && x.state));
     ok(!sp || sp.t <= 1.5 || (act0 && sp.t <= 5), `первая речь на ${sp ? sp.t.toFixed(2) : '—'} с (≤ 1,5${act0 ? '; до неё действие — порядок не ломаем, ≤ 5' : ''})`);
     const T = tl.segs.find(x => x.kind === 'title'); ok(tl.intro.mode !== 'after' || (T && T.t0 >= 12 && T.t1 - T.t0 === 3 && T.t0 === tl.segs[1].t0), `заставка: ${tl.intro.mode}${T ? ` ${T.t0.toFixed(1)}–${T.t1.toFixed(1)} с` : ''}`);

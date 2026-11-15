@@ -1308,7 +1308,7 @@ function cheeseT() { return ctex('cheese', 256, 128, (g) => { g.fillStyle = '#ff
 function stoneT() { return ctex('stone', 256, 256, (g) => { g.fillStyle = '#b8b2a8'; g.fillRect(0, 0, 256, 256); g.strokeStyle = 'rgba(80,70,60,.45)'; g.lineWidth = 3; for (let y = 0; y < 256; y += 32) { g.beginPath(); g.moveTo(0, y); g.lineTo(256, y); g.stroke(); for (let x = ((y / 32) % 2) * 32; x < 256; x += 64) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 32); g.stroke(); } } const r = rng(6); for (let i = 0; i < 300; i++) { g.fillStyle = 'rgba(' + (r() < .5 ? '255,255,255' : '60,50,40') + ',.08)'; g.fillRect(r() * 256, r() * 256, 4, 4); } }, [2, 2]); }
 function fabricT(a, b) { return ctex('fab' + a + b, 128, 128, (g) => { g.fillStyle = a; g.fillRect(0, 0, 128, 128); g.fillStyle = b; for (let i = 0; i < 4; i++) g.fillRect(i * 32, 0, 16, 128); }); }
 function propMesh(p) {
-  const key = p.id + p.type + (p.color || '') + (p.phase || ''); if (propCache[key]) return propCache[key];
+  const key = p.id + p.type + (p.color || '') + (p.phase || '') + (p.low ? 'L' : ''); if (propCache[key]) return propCache[key];
   const g = new THREE.Group(), t = p.type, cl = p.color;
   const A = (geo, mat, par, ol) => mesh(geo, mat, ol == null ? .04 : ol, par || g); // деталь
   const P = (c, k, map) => pmat(c, k, map);
@@ -1504,9 +1504,9 @@ function propMesh(p) {
       const light = new THREE.Mesh(new THREE.ShapeGeometry(ds, 24), new THREE.MeshBasicMaterial({ color: '#fff1b8', toneMapped: false, transparent: true, opacity: 0 })); light.position.z = .012; g.add(light); g.userData.leaf = leaf; g.userData.doorLight = light;
       const st = A(G.box(.8, .04, .18), P(null, 'wood', stoneT()), g, 0); st.position.y = .02; g.userData.glowY = .6; g.userData.glowS = 1.6; g.userData.glowC = '#ffe08a'; break; }
     case 'moon': { if (p.phase === 'thin' || p.phase === 'crescent') {   // месяц: светится только серп (картинка всегда лицом к камере)
-        const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: crescentT(p.phase), transparent: true, toneMapped: false, depthWrite: false, color: cl || '#ffffff' })); sp.scale.set(1.2, 1.2, 1); sp.position.y = 4.2; g.add(sp);
-        g.userData.glowY = 4.2; g.userData.glowS = p.phase === 'thin' ? 1.5 : 1.9; g.userData.glowC = '#fff3c4'; g.userData.alwaysGlow = true; break; }
-      const mo = A(G.sph(.5, 40, 28), MK3D.hq ? new THREE.MeshBasicMaterial({ map: craterT(), toneMapped: false }) : basic(cl || '#fff3c4'), g, 0); mo.position.y = 4.2; mo.castShadow = false; g.userData.glowY = 4.2; g.userData.glowS = 2.6; g.userData.glowC = '#fff3c4'; g.userData.alwaysGlow = true; break; }
+        const my = p.low ? 1.75 : 4.2, sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: crescentT(p.phase), transparent: true, toneMapped: false, depthWrite: false, color: cl || '#ffffff' })); sp.scale.set(1.2, 1.2, 1); sp.position.y = my; g.add(sp);
+        g.userData.glowY = my; g.userData.glowS = p.phase === 'thin' ? 1.5 : 1.9; g.userData.glowC = '#fff3c4'; g.userData.alwaysGlow = true; break; }
+      const mo = A(G.sph(.5, 40, 28), MK3D.hq ? new THREE.MeshBasicMaterial({ map: craterT(), toneMapped: false }) : basic(cl || '#fff3c4'), g, 0); mo.position.y = p.low ? 1.75 : 4.2; mo.castShadow = false; g.userData.glowY = mo.position.y; g.userData.glowS = 2.6; g.userData.glowC = '#fff3c4'; g.userData.alwaysGlow = true; break; }   // low — луна на обложке: между героями, а не высоко в небе
     case 'ghost': { const pts = [[.34, 0], [.32, .12], [.29, .3], [.275, .45]]; for (let i = 1; i <= 16; i++) { const a = i / 16 * Math.PI / 2; pts.push([Math.cos(a) * .275, .45 + Math.sin(a) * .3]); } pts.push([0, .75]);
       const geo = lathe(pts, 56); const pp = geo.attributes.position; for (let i = 0; i < pp.count; i++) { if (pp.getY(i) < .01) { const a = Math.atan2(pp.getZ(i), pp.getX(i)); pp.setY(i, pp.getY(i) + Math.sin(a * 7) * .035 + .035); } } geo.computeVertexNormals();
       const gm = MK3D.hq ? new THREE.MeshPhysicalMaterial({ color: '#ffffff', roughness: .6, transparent: true, opacity: .88, side: THREE.DoubleSide, sheen: .6, emissive: '#cfe0ff', emissiveIntensity: .25 }) : toon('#ffffff'); const b = A(geo, gm, g, .03); b.position.y = .25;

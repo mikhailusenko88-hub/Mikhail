@@ -935,11 +935,12 @@ function directScene(beats, C, inits, manual, opt) { opt = opt || {};
     return vis(t).length >= 4 ? { mode: 'medium', on: a } : group(t); };
   // «холодный старт» первой сцены серии: с первого кадра — не общий план места, а герои поближе:
   // вещь (главный предмет / важная вещь) и кто рядом с ней, или «двое» — первый говорящий и кто ему ответит, или средний на первого говорящего
-  if (opt.cold) { const t0 = .15, v0 = vis(t0); if (v0.length) { let sh; const px = opt.cold.px;
+  if (opt.cold) { const t0 = .15, v0 = vis(t0); if (v0.length) { let sh; const px = opt.cold.sky ? null : opt.cold.px;
       if (px != null) { const b0 = B.find(b => b.who && v0.includes(b.who) && b.t < 6 && (b.k === 'act' || b.k === 'say' || b.k === 'look')), nr = b0 ? b0.who : v0.slice().sort((a, c) => Math.abs(xOf(a, t0) - px) - Math.abs(xOf(c, t0) - px))[0]; sh = local(t0, nr, px); }   // вещь и тот, кто первым с ней что-то делает / о ней говорит
       else { const s1 = says.find(b => b.t < 12 && v0.includes(b.who)), s2 = s1 && says.find(b => b.t > s1.t && b.t < s1.t + 8 && b.who !== s1.who && v0.includes(b.who));
         sh = s1 ? (s2 ? pair(s1.who, s2.who, t0) : v0.length <= 2 ? group(t0) : { mode: 'medium', on: s1.who }) : v0.length <= 3 ? group(t0) : { mode: 'medium', on: v0[0] }; }
-      sh.t = 0; sh.cut = true; sh.auto = true; sh.cold = true; out.push(sh); cur = sh; firstSay = false; } }
+      if (opt.cold.sky) { out.push({ mode: 'wide', t: 0, cut: true, auto: true, cold: true }); sh.t = 1.5; sh.cut = true; sh.auto = true; out.push(sh); cur = sh; firstSay = false; }   // луна/радуга высоко в небе: 1,5 с общий план (её видно), потом герои поближе
+      else { sh.t = 0; sh.cut = true; sh.auto = true; sh.cold = true; out.push(sh); cur = sh; firstSay = false; } } }
   for (const b of B) {
     if (b.k === 'prop' || (b.k === 'act' && BIGACT.has(b.d)) || (b.k === 'move' && (b.d === 'enter' || b.d === 'exit'))) lastEvt = b.t;
     const quiet = !!opt.tempo && b.t - lastEvt > 45;   // долго одни разговоры — планы меняем чаще, есть крупные и реакция слушающего
@@ -1036,7 +1037,7 @@ MK.compile = function (ep, lib, audio) {
       const over = vis.length ? C[vis[vis.length - 1]].x - .93 : 0; if (over > 0) vis.forEach(id => C[id].x = Math.max(.07, C[id].x - over));
       if (vis.length > 6) vis.forEach((id, i) => { if (i % 2) C[id].z = .6; }); }
     for (const cs of sc.cast || []) if (C[cs.who]) cs._x = C[cs.who].x, cs._z = C[cs.who].z;
-    const props = (sc.props || []).map(p => ({ id: p.id, type: p.type, color: p.color, kind: p.kind || null, phase: p.phase || null, x: p.x != null ? p.x : .5, x0: p.x != null ? p.x : .5, holder: p.holder && C[p.holder] ? p.holder : null, h0: p.holder && C[p.holder] ? p.holder : null, decor: !!p.decor, big: p.big || 1, vis0: !p.hidden, glow0: !!p.glow, vis: !p.hidden, ev: [] }));
+    const props = (sc.props || []).map(p => ({ id: p.id, type: p.type, color: p.color, kind: p.kind || null, phase: p.phase || null, low: !!p.low, x: p.x != null ? p.x : .5, x0: p.x != null ? p.x : .5, holder: p.holder && C[p.holder] ? p.holder : null, h0: p.holder && C[p.holder] ? p.holder : null, decor: !!p.decor, big: p.big || 1, vis0: !p.hidden, glow0: !!p.glow, vis: !p.hidden, ev: [] }));
     PR = props;
     const TB = TABLE_X[lspec.type]; if (TB != null) { let k = 0; for (const p of props) if (!p.holder && FOOD.has(p.type) && !(p.big > 1)) { p.x = p.x0 = TB + (k++ % 3) * .025; p.tb0 = p.tb = true; } }
     const beats = [];
@@ -1185,10 +1186,10 @@ MK.compile = function (ep, lib, audio) {
     const sdur = Math.max(1.5, cur + (sc.tail != null ? sc.tail : .8));
     const inits = {}; for (const cs of sc.cast || []) if (C[cs.who]) inits[cs.who] = { x0: cs._x != null ? cs._x : cs.x != null ? cs.x : .5, face0: cs.face === 'left' ? -1 : cs.face === 'camera' ? 0 : 1, vis0: !cs.hidden };
     // главный предмет серии (ГЛАВНОЕ: …) — в кадре в первые 10 с: уже стоит / появляется сам — камера его покажет; нет — мелькнёт волшебством (крупнее обычного)
-    let coldPx = null, mainAt = null; const at0 = id => { if (!inits[id]) return null; const st = evalChar(inits[id], C[id].ev.slice().sort((a, b) => a.t - b.t), .15, {}, 0); return st.vis ? st.x : null; };   // где герой на первом кадре (null — его ещё нет)
+    let coldPx = null, mainAt = null, coldSky = false; const at0 = id => { if (!inits[id]) return null; const st = evalChar(inits[id], C[id].ev.slice().sort((a, b) => a.t - b.t), .15, {}, 0); return st.vis ? st.x : null; };   // где герой на первом кадре (null — его ещё нет)
     if (cold && MAIN) { const mt = MAIN.type, ex = props.filter(p => p.type === mt), visAt = p => p.vis0 ? 0 : (p.ev.find(e => e.vis === true) || { t: 99 }).t;
       const early = ex.filter(p => visAt(p) <= 10).sort((a, b) => visAt(a) - visAt(b))[0];
-      if (early) { mainAt = visAt(early); if (mainAt < 1) coldPx = early.h0 && C[early.h0] ? at0(early.h0) : early.x0; }
+      if (early) { mainAt = visAt(early); if (mainAt < 1) { coldPx = early.h0 && C[early.h0] ? at0(early.h0) : early.x0; coldSky = mt === 'moon' || mt === 'rainbow'; } }
       else if (Array.isArray(ep.absent) && (!ep.absent.includes(mt) || ep.mainSet) && skyOk(mt, lspec)) {   // «ГЛАВНОЕ: …» написано явно — показываем, даже если по сюжету его ищут const xs = Object.keys(C).filter(id => evalChar(inits[id], C[id].ev.slice().sort((a, b) => a.t - b.t), 1, {}, 0).vis).map(id => evalChar(inits[id], C[id].ev.slice().sort((a, b) => a.t - b.t), 1, {}, 0).x);
         const big0 = ex[0] ? ex[0].big : MAIN.big || 1, need = big0 > 1.2 ? .16 : .1; let x = .5, best = -1;
         for (const cx of [.5, .42, .58, .34, .66, .26, .74, .18, .82]) { const m = xs.length ? Math.min(...xs.map(v => Math.abs(v - cx))) : 1; if (m >= need) { x = cx; best = m; break; } if (m > best) { best = m; x = cx; } }
@@ -1196,10 +1197,10 @@ MK.compile = function (ep, lib, audio) {
         props.push({ id: '__main', type: mt, color: ex[0] ? ex[0].color : ep.mainColor || null, kind: ex[0] ? ex[0].kind : null, phase: ex[0] ? ex[0].phase : null, x, x0: x, holder: null, h0: null, decor: big0 > 1.2, big: big0 * 1.3, vis0: false, glow0: false, vis: false, teaser: true,
           ev: [{ t: T1, vis: true, fx: 'appear' }, { t: tOff, vis: false, fx: 'quiet' }] });
         sfx.push({ t: st0 + T1, n: 'magic' }); sfx.push({ t: st0 + T1 + .05, n: 'sparkle' }); evts.push({ t: st0 + T1, k: 'prop', type: mt, state: 'appear', teaser: true });
-        coldPx = x; mainAt = T1; } }
+        coldPx = x; mainAt = T1; coldSky = mt === 'moon' || mt === 'rainbow'; } }
     if (cold && coldPx == null) { const kp = props.find(p => KEY_PROP.has(p.type) && (p.vis0 ? true : (p.ev.find(e => e.vis === true) || { t: 99 }).t < 1) && !p.decor && (!p.h0 || at0(p.h0) != null)); if (kp) coldPx = kp.h0 && C[kp.h0] ? at0(kp.h0) : kp.x0; }   // важная вещь с первых строк — «вещь + кто на неё смотрит»
     if (ep.autoCam !== false) {
-      const manual = cam.slice(1).filter(c => !c.auto && !c.shake); const auto = directScene(beats, C, inits, manual, { cold: cold && !(sc.camera && sc.camera !== 'wide') ? { px: coldPx } : null, capWide: coldOn && !sc.camera, tempo: coldOn });   // всё новое в режиссуре — только при «Начало серии: новое»; «как было» — кадр в кадр как раньше
+      const manual = cam.slice(1).filter(c => !c.auto && !c.shake); const auto = directScene(beats, C, inits, manual, { cold: cold && !(sc.camera && sc.camera !== 'wide') ? { px: coldPx, sky: coldSky } : null, capWide: coldOn && !sc.camera, tempo: coldOn });   // всё новое в режиссуре — только при «Начало серии: новое»; «как было» — кадр в кадр как раньше
       if (auto[0] && auto[0].cold) { const c0 = auto.shift(); if (sc.camera === 'wide') { c0.t = 1.5; auto.unshift(c0); } else Object.assign(cam[0], c0, { t: 0 }); }   // «КАМЕРА: общий план» в начале — не дольше 1,5 с
       const keep = cam.slice(1).filter(c => !c.auto); cam.length = 1; cam.push(...auto, ...keep); cam.sort((a, b) => a.t - b.t); }
     segs.push({ kind: 'scene', t0: t, t1: t + sdur, sc, loc: buildLocation(lspec), lspec, lkey: canon(lspec), C, props, cam, idx: si, theme: sc.theme || ep.theme || null, cold: cold || undefined, mainAt: mainAt != null ? t + mainAt : undefined });
