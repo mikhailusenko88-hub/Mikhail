@@ -1,4 +1,4 @@
-ТЕСТ ОК: видео #36 (1 заезд.) собрано за 472 с, 131 МБ (не выложено)
+ТЕСТ ОК: видео #36 (1 заезд.) собрано за 439 с, 131 МБ (не выложено)
 
 {
  "title": "USA vs Indonesia vs Germany ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #23",
@@ -74,18 +74,18 @@
 }
 
 --- журнал ---
-12:20:31 режим test, гонка #36, 2026-11-16 слот 1, событие push
-12:20:31 по плану: S2 RACE 23/68
-12:20:31 в этом видео заездов: 1 (раунд 1, осталось в раунде 46)
+12:36:39 режим test, гонка #36, 2026-11-16 слот 1, событие push
+12:36:39 по плану: S2 RACE 23/68
+12:36:39 в этом видео заездов: 1 (раунд 1, осталось в раунде 46)
 гонка #36 2026-11-16 слот 1: S2 RACE 23/68, 24→16, участники: NZL BLR PAN NRU AGO YEM GRD EST USA KAZ CYP MLI KOR MDG ISR BRN PRY DEU BHS BRB DOM IDN MYS AUT
   этап 1: 24→21, блоков 10 ['twin_rings', 'drum', 'ring_gate', 'trapdoors', 'stairs', 'pushers', 'tunnels', 'sliders', 'zigzag', 'pendulums'], Q-финиш 61.3 c, кадров 1916
   этап 2: 21→19, блоков 13 ['pegs', 'glass', 'rotor', 'windmills', 'tunnels', 'drum', 'sliders', 'split', 'bumpers', 'ring_gate', 'zigzag', 'trapdoors', 'twin_rings'], Q-финиш 63.4 c, кадров 1980
   этап 3: 19→16, блоков 12 ['pushers', 'glass', 'trapdoors', 'windmills', 'comb', 'tunnels', 'split', 'ring_gate', 'pegs', 'stairs', 'bumpers', 'twin_rings'], Q-финиш 59.7 c, кадров 1869
 длительность ролика ≈ 4.0 мин
-готово: 7289 кадров за 446 с
-кадров 7289, 4.05 мин, рендер 448 с
+готово: 7289 кадров за 414 с
+кадров 7289, 4.05 мин, рендер 417 с
 выжили: BRN CYP YEM KAZ MDG NZL BRB PAN MYS GRD ISR BLR PRY IDN USA MLI
-12:28:00 заезд 1/1 готов: 131 МБ, 449 с
-12:28:00 видео готово: 131 МБ, 4.0 мин, 449 с с начала; название: USA vs Indonesia vs Germany ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #23
-12:28:20 Shorts готов: 26 с — USA vs Indonesia vs Germany 😱 Who Survives? Country Marble Race #shorts
-12:28:20 длинное видео в этом слоте: нет (только Shorts)
+12:43:36 заезд 1/1 готов: 131 МБ, 417 с
+12:43:37 видео готово: 131 МБ, 4.0 мин, 417 с с начала; название: USA vs Indonesia vs Germany ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #23
+12:43:56 Shorts готов: 26 с — USA ❤️❤️ vs Indonesia ❤️❤️ vs Germany ❤️❤️ — Who Survives? #shorts
+12:43:56 длинное видео в этом слоте: нет (только Shorts)
