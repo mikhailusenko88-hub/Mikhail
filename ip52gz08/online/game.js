@@ -33,7 +33,7 @@
       name: 'Your name', play: 'Play', hint: 'Green ring — you can eat it, red — run! Yellow name — a real player. Every point you grow counts for your country.',
       adsOff: 'Ads are blocked — coin options still work', title: 'Flagball Arena', team: 'for', change: 'Country', invite: 'Invite', copied: 'Invite link copied — send it to a friend', room: 'Private room',
       noAd: 'No ad available right now — try again later', copyHint: 'Copy this link and send it to a friend:', search: 'Search country', friends: 'Play with friends', mkRoom: 'Create a room', roomCode: 'Room code', codeHint: 'Friends press «Invite» → enter this code', enterCode: 'Friend\'s code', go: 'Join', toMain: 'Back to the public arena', copy: 'Copy', badCode: 'Enter the 5-letter code', botsWon: 'Bots won the round — beat them!',
-      settings: 'Room settings', mode: 'Mode', ffa: 'Everyone', teams: '2 teams', coop: 'Friends vs bots', myTeam: 'Your team', blue: 'Blue', red: 'Orange', bots: 'Bots', none: 'None', few: 'Few', normal: 'Normal', normal2: 'Normal', many: 'Many', diff: 'Bot skill', easy: 'Easy', hard: 'Strong', speed: 'Speed', saws: 'Saws', some: 'Some', rnd: 'Round', min: 'min', hostOnly: 'Only the room host can change these', cfgChanged: 'Room settings changed', teamWon: 'won the round!', ourTeam: 'Your team won!', friendsT: 'Friends', botsT: 'Bots', draw: 'Draw!', tmHint: 'Teammates can\'t eat each other',
+      settings: 'Room settings', mode: 'Mode', ffa: 'Everyone', teams: '2 teams', coop: 'Friends vs bots', myTeam: 'Your team', blue: 'Blue', red: 'Orange', bots: 'Bots', none: 'None', few: 'Few', normal: 'Normal', normal2: 'Normal', many: 'Many', diff: 'Bot skill', easy: 'Easy', hard: 'Strong', speed: 'Speed', saws: 'Saws', some: 'Some', rnd: 'Round', min: 'min', hostOnly: 'Only the room host can change these', cfgChanged: 'Room settings changed', teamWon: 'won the round!', ourTeam: 'Your team won!', friendsT: 'Friends', botsT: 'Bots', draw: 'Draw!', tmHint: 'Teammates can\'t eat each other', tut1: 'Collect gems to grow', tut2: 'Eat smaller balls', tut3: 'Run from bigger ones',
     },
     ru: {
       conn: 'Подключаюсь к арене…', att: 'попытка', slow: 'Долго? Проверь интернет или переключись Wi-Fi ↔ мобильный',
@@ -45,7 +45,7 @@
       name: 'Твоё имя', play: 'Играть', hint: 'Зелёное кольцо — можно съесть, красное — беги. Жёлтое имя — живой игрок. Всё, что ты наберёшь, идёт в зачёт твоей стране.',
       adsOff: 'Реклама недоступна — за монеты всё работает', title: 'Flagball Arena', team: 'за', change: 'Страна', invite: 'Позвать', copied: 'Ссылка скопирована — отправь другу', room: 'Своя комната',
       noAd: 'Рекламы сейчас нет — попробуй чуть позже', copyHint: 'Скопируй ссылку и отправь другу:', search: 'Поиск страны', friends: 'Играть с друзьями', mkRoom: 'Создать комнату', roomCode: 'Код комнаты', codeHint: 'Друзья жмут «Позвать» → вводят этот код', enterCode: 'Код друга', go: 'Войти', toMain: 'Вернуться в общую арену', copy: 'Скопировать', badCode: 'Введи код из 5 букв', botsWon: 'Раунд за ботами — обгони их!',
-      settings: 'Настройки комнаты', mode: 'Режим', ffa: 'Каждый сам', teams: '2 команды', coop: 'Друзья против ботов', myTeam: 'Твоя команда', blue: 'Синие', red: 'Оранжевые', bots: 'Боты', none: 'Нет', few: 'Мало', normal: 'Обычно', normal2: 'Обычные', many: 'Много', diff: 'Сила ботов', easy: 'Лёгкие', hard: 'Сильные', speed: 'Скорость', saws: 'Пилы', some: 'Есть', rnd: 'Раунд', min: 'мин', hostOnly: 'Менять может только хозяин комнаты', cfgChanged: 'Правила комнаты изменились', teamWon: 'выиграли раунд!', ourTeam: 'Твоя команда победила!', friendsT: 'Друзья', botsT: 'Боты', draw: 'Ничья!', tmHint: 'Свои друг друга не едят',
+      settings: 'Настройки комнаты', mode: 'Режим', ffa: 'Каждый сам', teams: '2 команды', coop: 'Друзья против ботов', myTeam: 'Твоя команда', blue: 'Синие', red: 'Оранжевые', bots: 'Боты', none: 'Нет', few: 'Мало', normal: 'Обычно', normal2: 'Обычные', many: 'Много', diff: 'Сила ботов', easy: 'Лёгкие', hard: 'Сильные', speed: 'Скорость', saws: 'Пилы', some: 'Есть', rnd: 'Раунд', min: 'мин', hostOnly: 'Менять может только хозяин комнаты', cfgChanged: 'Правила комнаты изменились', teamWon: 'выиграли раунд!', ourTeam: 'Твоя команда победила!', friendsT: 'Друзья', botsT: 'Боты', draw: 'Ничья!', tmHint: 'Свои друг друга не едят', tut1: 'Собирай кристаллы — растёшь', tut2: 'Ешь тех, кто меньше', tut3: 'Беги от больших',
     },
   };
   let LANG = (C.lang || 'en').slice(0, 2) === 'ru' ? 'ru' : 'en';
@@ -810,6 +810,8 @@
       ctx.fillStyle = '#90a4ae'; for (const s of saws) { ctx.beginPath(); ctx.arc(mx + s.x * k, my + s.y * k, 4, 0, 7); ctx.fill(); }
       for (const b of balls.values()) { if (!b.alive || b.id === myId) continue; ctx.fillStyle = b.team && rcfg.mode ? TEAMC[b.team] : b.human ? '#ffffff' : 'rgba(255,255,255,0.35)'; ctx.beginPath(); ctx.arc(mx + b.x * k, my + b.y * k, b.human ? 5 : 3, 0, 7); ctx.fill(); }
       if (me.alive) { ctx.fillStyle = '#ffeb3b'; ctx.beginPath(); ctx.arc(mx + me.x * k, my + me.y * k, 7, 0, 7); ctx.fill(); ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke(); }
+      // первая минута: три подсказки картинкой (кристалл / зелёное кольцо / красное кольцо), пока игрок не освоился
+      const fx = X(); if (me.alive && (fx.tut || 0) < 2) { tutT += C.dt || 0; if (tutT > 14 || lifeEats >= 2) { fx.tut = (fx.tut || 0) + 1; tutT = 0; C.persist(); } else drawTut(ctx, L, Math.min(1, tutT * 2, (14 - tutT) * 2)); }
       toasts.forEach((t, i) => { const y = C.H * 0.74 - i * 54; ctx.globalAlpha = Math.max(0, Math.min(1, (3 - t.t) * 2, t.t * 6)); ctx.fillStyle = 'rgba(0,0,0,0.55)'; C.rr(ctx, C.W / 2 - 310, y - 24, 620, 48, 24); ctx.fill(); C.text(t.text, C.W / 2, y, 28, t.col); ctx.globalAlpha = 1; });
       if (growFx > 0 && !toasts.length && me.alive) { ctx.globalAlpha = Math.min(1, growFx); C.text(T.grow, C.W / 2, C.H * 0.74, 40, '#69f0ae', 'center', 'rgba(0,0,0,0.8)'); ctx.globalAlpha = 1; }
       // итог раунда стран
@@ -914,6 +916,19 @@
     if (cap.bottom) { ctx.save(); ctx.globalAlpha = cap.bottomA === undefined ? 1 : cap.bottomA; C.text(cap.bottom, C.W / 2, C.H * 0.7, capSize(cap.bottom, cap.bottomSize || 46), '#fff', 'center', 'rgba(20,20,70,0.95)'); ctx.restore(); }
   }
 
+  let tutT = 0;
+  function drawTut(ctx, L, a) {
+    const items = [['gem', T.tut1, '#40c4ff'], ['ring', T.tut2, PREY], ['ring', T.tut3, DANGER]];
+    const w = Math.min(C.W - 40, L ? 1060 : 660), h = L ? 64 : 150, x0 = C.W / 2 - w / 2, y0 = C.H - (L ? 300 : 440); // выше мини-карты и кнопок
+    ctx.globalAlpha = Math.max(0, a); ctx.fillStyle = 'rgba(10,14,50,0.72)'; C.rr(ctx, x0, y0, w, h, 22); ctx.fill();
+    items.forEach(([k, txt, col], i) => {
+      const cx = L ? x0 + (w / 3) * i + 34 : x0 + 40, cy = L ? y0 + h / 2 : y0 + 28 + i * 47;
+      if (k === 'gem') { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(cx, cy - 14); ctx.lineTo(cx + 11, cy); ctx.lineTo(cx, cy + 14); ctx.lineTo(cx - 11, cy); ctx.closePath(); ctx.fill(); }
+      else { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx, cy, 11, 0, 7); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(cx, cy, 15, 0, 7); ctx.stroke(); }
+      C.text(fit(txt, (L ? w / 3 : w) - 64, 21), cx + 26, cy + 1, 21, '#fff', 'left', null);
+    });
+    ctx.globalAlpha = 1;
+  }
   // счёт команд — слева сверху: синие против красных (или друзья против ботов) и таймер раунда
   function drawTeams(ctx, x0, y0, w) {
     const h = 132;
