@@ -4,6 +4,7 @@
 (function (global) {
 'use strict';
 const MKB = global.MKBarsik = { ready: false, error: null, base: 'barsik/', D: null, shellK: 1, shellU: { value: 1 }, desatU: { value: 0.22 }, tintU: { value: null }, trimU: { value: .82 }, softU: { value: .6 }, glossU: { value: 1 }, tailU: { value: 1.1 }, /* tailU — хвост опущен назад дугой, а не стоит «обручем» до плеча (0 — как в данных) */ /* вариант «Б»: подстрижен, гладкий блеск (просьба Михаила 4.11) */ K: { key: 1.4, expo: 0.74 } };   // сверено с кадром Blender: лоб (152,126,84)   // shellU — сила налёта (0 — выключен)
+MKB.BROW = { happy: [-.010, .012, .009, .1], smile: [-.008, .010, .007, .09], love: [-.008, .010, .007, .09], laugh: [-.008, .010, .007, .1], surprised: [.008, .028, .008, .22] };   // брови по эмоции, метры модели: [у переносицы, у виска, дуга посередине (вниз — только надбровье); тень века на глазу выше]
 MKB.isBarsik = spec => !!spec && spec.kind === 'cat' && /^\s*барсик(?![а-яё])/i.test(String(spec.name || ''));
 
 // ---------- константы модели (метры, z вверх, мордочка к −y) ----------
@@ -92,7 +93,7 @@ function decode(H, ab) {
 // ---------- шейдеры (как в пробной сцене, свет — от места мультика) ----------
 const COMMON = `precision highp float; precision highp int; precision highp sampler2D;
 uniform mat4 modelMatrix, viewMatrix, projectionMatrix; uniform vec3 cameraPosition;
-uniform mat3 uHead, uEar0, uEar1, uLeg0, uLeg1, uArm0, uArm1, uFore0, uFore1, uJawM; uniform float uSmile; uniform vec4 uArmQ0, uArmQ1; uniform vec2 uLift; uniform float uTailU, uTailA, uTailPh, uBreath, uScale, uPix, uExpo, uDesat, uTrim, uSoft, uGloss; uniform vec3 uTint;
+uniform mat3 uHead, uEar0, uEar1, uLeg0, uLeg1, uArm0, uArm1, uFore0, uFore1, uJawM; uniform float uSmile; uniform vec4 uBrow; uniform vec4 uArmQ0, uArmQ1; uniform vec2 uLift; uniform float uTailU, uTailA, uTailPh, uBreath, uScale, uPix, uExpo, uDesat, uTrim, uSoft, uGloss; uniform vec3 uTint;
 uniform vec3 uSunDir, uSunCol, uRimDir, uRimCol, uFillDir, uFillCol, uSky, uGnd, uUp, uFogCol; uniform vec2 uFog;
 const float PI = 3.14159265;
 vec3 sane(vec3 c) { bvec3 bad = equal(floatBitsToUint(c) & uvec3(0x7f800000u), uvec3(0x7f800000u)); vec3 r = min(max(c, vec3(0.0)), vec3(300.0)); return any(bad) ? vec3(0.0) : r; }
@@ -101,6 +102,13 @@ const vec3 PH = vec3(0.0, -0.01, 0.6), EARB0 = vec3(-0.122, 0.012, 0.893), EARB1
 const vec3 HIP0 = vec3(-0.088, -0.005, 0.17), HIP1 = vec3(0.088, -0.005, 0.17), SH0 = vec3(-0.128, -0.035, 0.5), SH1 = vec3(0.128, -0.035, 0.5), ELB0 = vec3(-0.156, -0.064, 0.428), ELB1 = vec3(0.156, -0.064, 0.428), JAWP = vec3(0.0, -0.1, 0.675);
 mat3 rotAxis(vec3 a, float g) { a = normalize(a); float c = cos(g), s = sin(g), t = 1.0 - c;
   return mat3(t*a.x*a.x+c, t*a.x*a.y+s*a.z, t*a.x*a.z-s*a.y, t*a.x*a.y-s*a.z, t*a.y*a.y+c, t*a.y*a.z+s*a.x, t*a.x*a.z+s*a.y, t*a.y*a.z-s*a.x, t*a.z*a.z+c); }
+vec3 browD(vec3 p, float wh) {   // мимика: надбровье и край века над каждым глазом поднимаются (x — у переносицы, y — у виска, z — дугой посередине)
+  if (wh <= 0.0 || (uBrow.x == 0.0 && uBrow.y == 0.0 && uBrow.z == 0.0)) return p;
+  float u = (abs(p.x) - 0.081) / 0.061, v = (p.z - 0.768) / 0.061;   // u: −1 у переносицы … +1 у виска; v: 0 — центр глаза, 1 — его верх
+  float w = (1.0 - smoothstep(-0.12, -0.07, p.y)) * (1.0 - smoothstep(1.15, 1.75, abs(u))) * smoothstep(0.3, 0.75, v) * (1.0 - smoothstep(1.4, 2.6, v));
+  if (w <= 0.0) return p;
+  float l = mix(uBrow.x, uBrow.y, smoothstep(-1.0, 1.0, u)) + uBrow.z * max(0.0, 1.0 - u * u); if (l < 0.0) l *= smoothstep(0.75, 1.05, v);   // вниз — только надбровье, край века над глазом не опускается
+  p.z += l * w * min(wh, 1.0); return p; }
 vec3 poseP(vec3 p, float wh, float ts, float we, float wb, vec4 wx) {
   vec3 q = p;
   if (wb > 0.01) { float b = uBreath * wb; q.x *= 1.0 + b; q.y = (q.y + 0.02) * (1.0 + b * 0.9) - 0.02; }
@@ -153,6 +161,7 @@ void main() {
   int ka = max(k - 1, 0), kb = min(k + 1, 4); float tr = (kind == 0 || kind == 5 || kind == 6 || kind == 7) ? uTrim : 1.0;   // «подстричь» тело, лапы, хвост
   vec3 q0 = r0.xyz + (texelFetch(uPos, ti(s * 5 + k), 0).xyz - r0.xyz) * tr, qa = r0.xyz + (texelFetch(uPos, ti(s * 5 + ka), 0).xyz - r0.xyz) * tr, qb = r0.xyz + (texelFetch(uPos, ti(s * 5 + kb), 0).xyz - r0.xyz) * tr;
   if (kind == 201 && uSmile != 0.0) { q0.z += uSmile * 0.012 * smoothstep(0.006, 0.033, abs(q0.x)); qa.z += uSmile * 0.012 * smoothstep(0.006, 0.033, abs(qa.x)); qb.z += uSmile * 0.012 * smoothstep(0.006, 0.033, abs(qb.x)); }   // улыбка — уголки «ω» вверх, грусть — вниз
+  q0 = browD(q0, wh); qa = browD(qa, wh); qb = browD(qb, wh);
   vec3 p = toW(poseP(q0, wh, ts, we, wb, wx));
   vec3 pa = toW(poseP(qa, wh, ts, we, wb, wx)), pb = toW(poseP(qb, wh, ts, we, wb, wx));
   vec3 T = normalize(pb - pa + 1e-7); float t = float(k) / 4.0;
@@ -183,14 +192,14 @@ void main() {
 const VS_SKIN = COMMON + `
 in vec3 position; in vec3 aN; in vec3 aA; in vec3 aB0; in vec3 aB1; in vec4 aW; in vec4 aX; in float aM;
 out vec3 vP; out vec3 vN; out vec3 vA; out vec3 vB0; out vec3 vB1; out float vZ; out vec3 vQ; flat out int vM;
-void main() { vec3 p = position; vec3 P = toW(poseP(p, aW.x, aW.y, aW.z, aW.w, aX)); vN = toWN(tailN(poseN(aN, aW.x, aX), aW.y)); vP = P; vA = aA; vB0 = aB0; vB1 = aB1; if (aW.y >= 0.0) { vB0 = max(aB0, vec3(0.10, 0.086, 0.106)); vB1 = max(aB1, vec3(0.114, 0.082, 0.075)); vA = mix(aA, vec3(0.50, 0.19, 0.054), 0.35); } vZ = p.z; vQ = p; vM = int(aM + 0.5);
+void main() { vec3 p = position; vec3 P = toW(poseP(browD(p, aW.x), aW.x, aW.y, aW.z, aW.w, aX)); vN = toWN(tailN(poseN(aN, aW.x, aX), aW.y)); vP = P; vA = aA; vB0 = aB0; vB1 = aB1; if (aW.y >= 0.0) { vB0 = max(aB0, vec3(0.10, 0.086, 0.106)); vB1 = max(aB1, vec3(0.114, 0.082, 0.075)); vA = mix(aA, vec3(0.50, 0.19, 0.054), 0.35); } vZ = p.z; vQ = p; vM = int(aM + 0.5);
   gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`;
 // БАРС · налёт (из «неона» v4): кожа ещё 6 раз прозрачными слоями внутри шерсти — «молекулы» загораются, когда сквозь них идёт свет
 const VS_SHELL = COMMON + `
 in vec3 position; in vec3 aN; in vec3 aA; in vec3 aB0; in vec3 aB1; in vec4 aW; in vec4 aX; in float aM; uniform float uShellH;
 out vec3 vP; out vec3 vN; out vec3 vA; out vec3 vB0; out vec3 vB1; out vec3 vQ; out float vF;
 void main() { int m = int(aM + 0.5); float fr = (m != 2 && m != 8 && m < 10 && dot(aA, vec3(0.33)) > 0.06) ? 1.0 : 0.0; vec3 p = position + aN * (uShellH * fr);
-  vec3 P = toW(poseP(p, aW.x, aW.y, aW.z, aW.w, aX)); vN = toWN(tailN(poseN(aN, aW.x, aX), aW.y)); vP = P; vA = aA; vB0 = aB0; vB1 = aB1; if (aW.y >= 0.0) { vB0 = max(aB0, vec3(0.10, 0.086, 0.106)); vB1 = max(aB1, vec3(0.114, 0.082, 0.075)); } vQ = position; vF = fr;
+  vec3 P = toW(poseP(browD(p, aW.x), aW.x, aW.y, aW.z, aW.w, aX)); vN = toWN(tailN(poseN(aN, aW.x, aX), aW.y)); vP = P; vA = aA; vB0 = aB0; vB1 = aB1; if (aW.y >= 0.0) { vB0 = max(aB0, vec3(0.10, 0.086, 0.106)); vB1 = max(aB1, vec3(0.114, 0.082, 0.075)); } vQ = position; vF = fr;
   gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`;
 const FS_SHELL = COMMON + `
 in vec3 vP; in vec3 vN; in vec3 vA; in vec3 vB0; in vec3 vB1; in vec3 vQ; in float vF; uniform float uT, uShellK; out vec4 o;
@@ -259,7 +268,7 @@ const VS_EYE = COMMON + `
 in vec3 position; uniform vec3 uE; uniform float uR; out vec3 vP; out vec3 vU;
 void main() { vU = position; vec3 P = uE + position * uR; vP = P; gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`;
 const FS_EYE = COMMON + `
-in vec3 vP; in vec3 vU; uniform vec3 uE; uniform float uR; uniform vec3 uF; uniform vec3 uLidN; uniform vec3 uEyeL; uniform vec3 uEyeLC; uniform int uSide; out vec4 o;
+in vec3 vP; in vec3 vU; uniform vec3 uE; uniform float uR; uniform vec3 uF; uniform vec3 uLidN; uniform vec3 uEyeL; uniform vec3 uEyeLC; uniform int uSide; uniform float uUnd; out vec4 o;
 vec3 envRefl(vec3 d) { float u = dot(d, uUp); return mix(uGnd * 2.2, uSky * 2.6, smoothstep(-0.25, 0.45, u)); }
 void main() {
   vec3 n = normalize(vP - uE), f = uF; float c = dot(n, f); vec3 ax1 = normalize(cross(f, uUp) + vec3(1e-5, 0.0, 0.0)), ax2 = cross(ax1, f); float ang = atan(dot(n, ax2), dot(n, ax1)); float rr = acos(clamp(c, -1.0, 1.0));
@@ -268,7 +277,7 @@ void main() {
   vec3 ic = k < 0.55 ? mix(vec3(0.06, 0.2, 0.05), vec3(0.16, 0.42, 0.08), smoothstep(0.3, 0.55, k)) : mix(vec3(0.16, 0.42, 0.08), vec3(0.35, 0.62, 0.12), smoothstep(0.55, 0.75, k));
   ic = mix(ic * vec3(0.2, 0.25, 0.16), ic, ring); ic *= 0.85 + 0.5 * smoothstep(0.75, 0.95, c) * (0.6 + 0.4 * smoothstep(0.2, -0.6, dot(n, uUp) - 0.3));
   vec3 alb = mix(mix(vec3(0.9, 0.88, 0.86), ic, iris), vec3(0.004, 0.003, 0.003), pup);
-  float under = smoothstep(0.8, 0.35, dot(n, uLidN)); float cl[6] = float[6](under, 0.6 * under + 0.1, under, under, 0.25 + 0.6 * under, 0.6);
+  float under = smoothstep(0.8 + uUnd, 0.35 + uUnd, dot(n, uLidN));   /* uUnd: брови подняты — тень века на глазу выше */ float cl[6] = float[6](under, 0.6 * under + 0.1, under, under, 0.25 + 0.6 * under, 0.6);
   vec3 col = vec3(0.0); for (int i = 0; i < 3; i++) { vec3 L, E; lightAt(i, vP, L, E); col += E * (cl[i] * max(0.0, dot(n, L) * 0.8 + 0.2)); }
   col += uSky * (PI * cl[4] * 0.8) + uGnd * (PI * cl[5] * 0.5);
   vec3 outc = alb * col / PI;
@@ -348,7 +357,7 @@ const M3 = () => new THREE.Matrix3();
 function uniformsNew() {
   const v3 = (x, y, z) => ({ value: new THREE.Vector3(x || 0, y || 0, z || 0) });
   return { uHead: { value: M3() }, uEar0: { value: M3() }, uEar1: { value: M3() }, uLeg0: { value: M3() }, uLeg1: { value: M3() }, uArm0: { value: M3() }, uArm1: { value: M3() }, uArmQ0: { value: new THREE.Vector4(1, 0, 0, 0) }, uArmQ1: { value: new THREE.Vector4(1, 0, 0, 0) }, uFore0: { value: M3() }, uFore1: { value: M3() }, uJawM: { value: M3() },
-    uLift: { value: new THREE.Vector2() }, uSmile: { value: 0 }, uDecC: { value: 1 }, uTailU: MKB.tailU, uTailA: { value: 0.25 }, uTailPh: { value: 0 }, uBreath: { value: 0 }, uScale: { value: 1 }, uPix: { value: 0.001 }, uExpo: { value: 1 }, uDesat: MKB.desatU, uTint: MKB.tintU, uTrim: MKB.trimU, uSoft: MKB.softU, uGloss: MKB.glossU,
+    uLift: { value: new THREE.Vector2() }, uSmile: { value: 0 }, uBrow: { value: new THREE.Vector4() }, uDecC: { value: 1 }, uTailU: MKB.tailU, uTailA: { value: 0.25 }, uTailPh: { value: 0 }, uBreath: { value: 0 }, uScale: { value: 1 }, uPix: { value: 0.001 }, uExpo: { value: 1 }, uDesat: MKB.desatU, uTint: MKB.tintU, uTrim: MKB.trimU, uSoft: MKB.softU, uGloss: MKB.glossU,
     uSunDir: v3(0, 1, 0), uSunCol: v3(2, 2, 2), uRimDir: v3(0, 0.5, -1), uRimCol: v3(0, 0, 0), uFillDir: v3(0, 0.3, 1), uFillCol: v3(0.2, 0.2, 0.2), uSky: v3(0.4, 0.45, 0.5), uGnd: v3(0.15, 0.15, 0.12), uUp: v3(0, 1, 0), uFogCol: v3(1, 1, 1), uFog: { value: new THREE.Vector2(0, 0) },
     uPos: { value: null }, uBake: { value: null }, uAttr: { value: null } };
 }
@@ -366,7 +375,7 @@ MKB.attach = function (T, rig) {
   const mouth = add(s.mouthGeo, mat(U, VS_MOUTH, FS_MOUTH, { uOpen: { value: 0 } }, { polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }));
   const eyes = [], lids = [];
   for (let i = 0; i < 2; i++) {
-    const eu = { uE: { value: new THREE.Vector3() }, uR: { value: D.RE }, uF: { value: new THREE.Vector3(0, 0, 1) }, uLidN: { value: new THREE.Vector3(0, 1, 0) }, uEyeL: { value: new THREE.Vector3() }, uEyeLC: { value: new THREE.Vector3() }, uSide: { value: i } };
+    const eu = { uE: { value: new THREE.Vector3() }, uR: { value: D.RE }, uF: { value: new THREE.Vector3(0, 0, 1) }, uLidN: { value: new THREE.Vector3(0, 1, 0) }, uEyeL: { value: new THREE.Vector3() }, uEyeLC: { value: new THREE.Vector3() }, uSide: { value: i }, uUnd: { value: 0 } };
     const em = add(s.eyeGeo, mat(U, VS_EYE, FS_EYE, eu)); eyes.push(em);
     const lu = { uE: eu.uE, uR: { value: D.RE + 0.0045 }, uLidN: eu.uLidN, uHeadF: { value: new THREE.Vector3(0, 0, 1) }, uOffL: { value: 0 }, uRE: { value: D.RE }, uLidCol: { value: new THREE.Vector3(...D.LIDCOL) }, uSide: { value: i } };
     const lm = add(s.eyeGeo, mat(U, VS_EYE, FS_LID, lu)); lids.push(lm);
@@ -421,10 +430,11 @@ MKB.frame = function (rig, st, T, L) {
   const e0 = rig.eyes && rig.eyes[0]; let lid = 1; if (e0 && e0.g) { const sx = e0.g.scale.x || 1, sy = e0.g.scale.y; const cl = Math.min(1, Math.max(0, (1 - sy / sx) / 0.92)); lid = 1 - cl; }
   const emo = st.emo || 'neutral', ek = st.emoK != null ? st.emoK : 1; if (emo === 'sleepy') lid *= 0.45; else if (emo === 'angry' || emo === 'cry') lid *= 0.78; else if (emo === 'sad') lid *= 0.88; else if (emo === 'frown') lid *= 0.86; else if (emo === 'shy') lid *= 0.9;
   { const sm = { smile: 1, happy: 1, love: 1, laugh: 1, shy: .6, sad: -1, cry: -1, scared: -.6, frown: -.3, angry: -.5 }[emo] || 0; U.uSmile.value = sm * ek;   // мимика: рот и наклон век (брови у Барсика — край века)
-    const tl = ({ sad: -.24, cry: -.3, shy: -.12, frown: .3, angry: .3 }[emo] || 0) * ek; if (B._tl !== tl) { B._tl = tl; const LF = B.lidFur.material.uniforms; B.lidN = [];
+    const bw = MKB.BROW[emo], bk = ek * (0.25 + 0.75 * Math.max(0, Math.min(1, lid))); U.uBrow.value.set(bw ? bw[0] * bk : 0, bw ? bw[1] * bk : 0, bw ? bw[2] * bk : 0, 0); B.eyes.forEach(m => m.material.uniforms.uUnd.value = bw ? bw[3] * bk : 0);   /* моргает — брови опускаются, иначе над закрытым веком щель */   // радуется — брови ровно, удивляется — подняты целиком (у модели край века у виска ниже — без этого лицо «озабоченное»)
+    const tl = ({ sad: -.24, cry: -.3, shy: -.12, frown: .3, angry: .3, happy: .1, smile: .08, love: .08, laugh: .1, surprised: .1 }[emo] || 0) * ek; if (B._tl !== tl) { B._tl = tl; const LF = B.lidFur.material.uniforms; B.lidN = [];
       for (let i = 0; i < 2; i++) { const n0 = new THREE.Vector3(...D.LIDN0[i]), inn = new THREE.Vector3(-Math.sign(D.E0[i][0]) || 1, 0, 0), n1 = n0.clone().addScaledVector(inn, tl).normalize(), q = new THREE.Quaternion().setFromUnitVectors(n0, n1);
         B.lidN.push([n1.x, n1.y, n1.z]); LF.uLA.value[i].copy(n1); LF.uLB1.value[i].set(...D.LB1[i]).applyQuaternion(q); LF.uLB2.value[i].set(...D.LB2[i]).applyQuaternion(q); } }   // хмурится — веко ниже у переносицы, грустит — у виска
-    if (tl && lid > .9) lid = .9; }
+    if (tl && !bw && lid > .9) lid = .9; }
   B.lid = lid; B.lidFur.material.uniforms.uLid.value.set(lid, lid); B.lidFur.visible = lid < 0.999; B.lids.forEach(l => l.visible = lid < 0.999);
   B.gx = (Math.abs(st.face || 0) > 0.1 ? 0.25 : 0); B.T = T;
   // свет места
