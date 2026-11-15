@@ -1,5 +1,5 @@
 {
- "updated": "15.11 18:45",
+ "updated": "15.11 19:36",
  "items": [
   {
    "num": 27,
@@ -88,7 +88,8 @@
    "author": "Claude",
    "build": "60",
    "status": "new",
-   "v": 1
+   "v": 1,
+   "cover": "serii/31/cover.jpg"
   },
   {
    "num": 32,
@@ -105,7 +106,8 @@
    "author": "Claude",
    "build": "59",
    "status": "new",
-   "v": 1
+   "v": 1,
+   "cover": "serii/32/cover.jpg"
   },
   {
    "num": 33,
@@ -122,7 +124,8 @@
    "author": "Claude",
    "build": "59",
    "status": "new",
-   "v": 1
+   "v": 1,
+   "cover": "serii/33/cover.jpg"
   }
  ]
 }
