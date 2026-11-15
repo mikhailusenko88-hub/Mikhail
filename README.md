@@ -9,3 +9,7 @@
     python3 render.py out.mp4                                      # ролик ~19 с, рендер ~25 с
 
 Новый зверь: силуэт — shape.py и та же SDF в sim2.c; мордочка — picture.py (состояния center/left/right/closed).
+
+## Неоновый вид (H23, 16.11.2026) — как у соседей: чёрный фон, радужные шарики, без текста в кадре
+    ./sim2 sim_neon.bin events_neon.txt 3 0.9 900 0 11 40 1300 10.5 2.0 0.8   # шарики крупнее: R=11, 1 300 шт.
+    python3 render_neon.py out.mp4
