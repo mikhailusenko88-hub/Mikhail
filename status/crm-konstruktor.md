@@ -1,4 +1,4 @@
-# Конструктор CRM — 2026-11-11 20:34 UTC
+# Конструктор CRM — 2026-11-15 21:35 UTC
 
 ```
 /k=200 /k/integrations=200 /k/templates=200 /k/templates/calc=200 /k/rules=200 /k/excel=200 
@@ -12,6 +12,6 @@ TG: Новая заявка — ответ 401
 ok
 после отправки — попыток: 1
 cron: 1
-Excel: 200 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet 10058 байт
+Excel: 200 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet 10060 байт
 листы: ['xl/worksheets/sheet1.xml', 'xl/worksheets/sheet2.xml', 'xl/worksheets/sheet3.xml', 'xl/worksheets/sheet4.xml']
 ```
