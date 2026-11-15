@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Shorts — Кот Барсик</title>
+<title>Кот Барсик — серии и Shorts</title>
 <style>
   :root{--bg:#0f1115;--card:#181b22;--line:#2a2f3a;--txt:#eef1f5;--mut:#9aa3b2;--acc:#e8452c;--ok:#36c26a;--yel:#ffe14d}
   *{box-sizing:border-box}
@@ -45,20 +45,93 @@
   .sa{background:#3a2f0b;border:1px solid #ffe14d;color:#ffe9a0;border-radius:12px;padding:12px;margin:10px 0;font-size:14px}
   .sa b{color:#fff}
   .sa .btn{margin-top:8px;background:#ffe14d;color:#1a1a1a}
+  .tabs{display:flex;gap:8px;max-width:720px;margin:0 auto;padding:10px 12px 0}
+  .tab{flex:1;border:1px solid var(--line);background:var(--card);color:var(--txt);border-radius:12px;padding:11px 8px;font-size:15px;font-weight:700;cursor:pointer}
+  .tab.on{background:var(--acc);border-color:var(--acc)}
+  .tab .n{display:inline-block;min-width:20px;padding:0 6px;margin-left:4px;border-radius:10px;background:#ffffff33;font-size:13px}
+  .sc .head{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--mut)}
+  .sc .head b{color:var(--yel)}
+  .sc .t{font-weight:700;font-size:17px;margin:6px 0 2px;word-break:break-word}
+  .sc .note{font-size:12px;color:var(--mut)}
+  .sc img.cov{width:100%;border-radius:10px;margin-top:10px;display:block;background:#000}
+  .sc .scn{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+  .sc .scn .ph{color:var(--yel)}
+  .sc details{margin-top:8px}
+  .sc details summary{cursor:pointer;color:#8ab4ff;font-size:14px}
+  .sc details pre{max-height:360px}
+  .sc .btn.big{background:#3a6ff2;font-size:16px;padding:12px 16px}
+  .sc .how{font-size:12px;color:var(--mut);margin-top:6px}
+  .sc .row{display:flex;gap:16px;flex-wrap:wrap}
+  .sc.past{opacity:.6}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ok);color:#fff;padding:10px 18px;border-radius:12px;font-weight:600;opacity:0;transition:.2s;pointer-events:none}
   .toast.show{opacity:1}
 </style>
 </head>
 <body>
 <header>
-  <h1>Shorts — Кот Барсик</h1>
+  <h1>Кот Барсик</h1>
   <small id="upd"></small>
 </header>
+<div class="tabs"><button class="tab" data-tab="shorts">✂️ Shorts</button><button class="tab" data-tab="serii">🎬 Новые серии<span class="n" id="nSerii"></span></button></div>
+<div id="paneShorts">
 <div class="wrap">
   <p class="hint">Каждое утро в 07:00 тут появляются новые ролики (хранятся 2 недели). <b>«Скачать»</b> — iPhone спросит «Загрузить», ролик ляжет в Файлы → Загрузки (значок ⬇︎ в строке адреса), страница остаётся на месте. <b>«Открыть»</b> — ролик в отдельном окне, оттуда «Поделиться»; потом закрой окно, и вернёшься к этому же ролику в списке (он отмечен красной рамкой).</p>
   <div id="list"><div class="empty">Загружаю…</div></div>
 </div>
+</div>
+<div id="paneSerii" hidden>
+<div class="wrap">
+  <p class="hint">Здесь — готовые серии вперёд: сценарий, название и описание для YouTube и Rutube, обложка. <b>«Скопировать сценарий»</b> → в приложении «Мультики» → «✍️ Мой сценарий» → «📋 Вставить» → «Проверить» → «🎬 Создать серии». Обложку и Shorts приложение делает само после сборки (🖼 и 📱), картинка здесь — образец.</p>
+  <div id="serii"><div class="empty">Загружаю…</div></div>
+</div>
+</div>
 <div class="toast" id="toast">Скопировано</div>
+<script>
+(function(){
+  var TL='barsik_tab';
+  function show(t){document.getElementById('paneShorts').hidden=(t!=='shorts');document.getElementById('paneSerii').hidden=(t!=='serii');
+    document.querySelectorAll('.tab').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===t)});try{localStorage.setItem(TL,t)}catch(e){}}
+  document.querySelectorAll('.tab').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-tab'));window.scrollTo(0,0)})});
+  var t0='shorts';try{t0=localStorage.getItem(TL)||'shorts'}catch(e){} if(/^#s\d+/.test(location.hash))t0='serii'; show(t0);
+  var LS='barsik_serii'; var st={}; try{st=JSON.parse(localStorage.getItem(LS)||'{}')}catch(e){}
+  function save(){try{localStorage.setItem(LS,JSON.stringify(st))}catch(e){}}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function toast(t){var el=document.getElementById('toast');el.textContent=t||'Скопировано';el.classList.add('show');setTimeout(function(){el.classList.remove('show')},1200)}
+  function fallback(txt){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity=0;document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta)}
+  function copy(txt,btn){var ok=function(){toast();if(btn){btn.classList.add('copied');setTimeout(function(){btn.classList.remove('copied')},1200)}};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,function(){fallback(txt);ok()})}else{fallback(txt);ok()}}
+  function plat(name,cls,k1,k2,k3,text){return '<div class="plat '+cls+'"><div class="ph">'+name+'</div><div class="btns"><button class="btn" data-copy="title">Название</button><button class="btn" data-copy="'+k1+'">Описание</button><button class="btn all" data-copy="'+k2+'">Всё сразу</button></div><div class="field"><label>Описание для '+(cls==='yt'?'YouTube':'Rutube')+'</label><pre>'+esc(text)+'</pre></div></div>'}
+  function render(d){
+    var box=document.getElementById('serii');box.innerHTML='';
+    var today=new Date(Date.now()+3*3600e3).toISOString().slice(0,10);
+    var items=(d.items||[]).slice().sort(function(a,b){return a.num-b.num});
+    var left=items.filter(function(it){return it.date>=today&&!(st[it.num]&&st[it.num].pub)}).length;
+    document.getElementById('nSerii').textContent=left||'';
+    if(!items.length){box.innerHTML='<div class="empty">Пока пусто.</div>';return}
+    items.forEach(function(it){
+      var s=st[it.num]||{}; var past=it.date<today;
+      var c=document.createElement('div');c.className='card sc'+((s.pub||past)?' past':'');c.id='s'+it.num;
+      var M={title:it.title,yt:it.yt_desc,rt:it.rt_desc,fyt:it.title+'\n\n'+it.yt_desc,frt:it.title+'\n\n'+it.rt_desc,scn:it.scenario};
+      c.innerHTML='<div class="head"><span>Серия '+it.num+' · выход <b>'+esc(it.when)+'</b>'+(it.date===today?' — СЕГОДНЯ':'')+'</span><span>'+(it.build?'сборка '+esc(it.build)+'+':'')+'</span></div>'+
+        '<div class="t">'+esc(it.title)+'</div><div class="note">'+esc(it.note||'')+(it.v>1?' · версия '+it.v:'')+'</div>'+
+        (it.cover?'<img class="cov" loading="lazy" src="'+esc(it.cover)+'?v='+it.v+'" alt=""><div class="btns"><a class="btn" href="'+esc(it.cover)+'" download="Обложка_Серия_'+it.num+'.jpg">⬇︎ Обложка</a></div>':'')+
+        '<div class="scn"><div class="ph">СЦЕНАРИЙ</div><div class="btns"><button class="btn big" data-copy="scn">📋 Скопировать сценарий</button><a class="btn" href="'+esc(it.scenario_file)+'" download="Серия_'+it.num+'_сценарий.txt">⬇︎ .txt</a></div>'+
+        '<div class="how">Вставить в «✍️ Мой сценарий» целиком. В сборке 59 и новее: «Начало серии — новое».</div>'+
+        '<details><summary>Показать сценарий</summary><div class="field"><pre>'+esc(it.scenario)+'</pre></div></details></div>'+
+        plat('RUTUBE','rt','rt','frt',0,it.rt_desc)+plat('YOUTUBE','yt','yt','fyt',0,it.yt_desc)+
+        (it.shorts?'<div class="hint2">✂️ Shorts: '+esc(it.shorts)+'</div>':'')+
+        '<div class="row"><label class="chk"><input type="checkbox" data-k="built" '+(s.built?'checked':'')+'> собрано</label><label class="chk"><input type="checkbox" data-k="pub" '+(s.pub?'checked':'')+'> выложено</label></div>';
+      c.querySelectorAll('[data-copy]').forEach(function(b){b.addEventListener('click',function(){copy(M[b.getAttribute('data-copy')]||'',b)})});
+      c.querySelectorAll('.chk input').forEach(function(x){x.addEventListener('change',function(){var o=st[it.num]||(st[it.num]={});o[x.getAttribute('data-k')]=x.checked?1:0;save();c.classList.toggle('past',!!o.pub||past)})});
+      box.appendChild(c);
+    });
+    var first=items.find(function(it){return it.date>=today&&!(st[it.num]&&st[it.num].pub)});
+    if(/^#s\d+/.test(location.hash)&&document.getElementById(location.hash.slice(1)))first={num:+location.hash.slice(2)};
+    if(first&&!document.getElementById('paneSerii').hidden){var el=document.getElementById('s'+first.num);if(el)setTimeout(function(){el.scrollIntoView({block:'start'})},50)}
+  }
+  fetch('serii.json?t='+Date.now()).then(function(r){return r.json()}).then(render).catch(function(){document.getElementById('serii').innerHTML='<div class="empty">Пока пусто.</div>'});
+})();
+</script>
 <script>
 (function(){
   var LS='barsik_shorts_done'; var done={};
