@@ -1,25 +1,5 @@
-2026-11-15 13:26 UTC
-200 https://www.youtube.com/watch?v=Zd2QhucOkRI&hl=ru
-200 player WEB Zd2QhucOkRI
-ERR player ANDROID Zd2QhucOkRI HTTP Error 400: Bad Request
-ERR thumb Zd2QhucOkRI/oar2.jpg HTTP Error 404: Not Found
-200 thumb Zd2QhucOkRI/hqdefault.jpg 27631 B
-200 thumb Zd2QhucOkRI/hq1.jpg 13181 B
-200 thumb Zd2QhucOkRI/hq2.jpg 12392 B
-200 thumb Zd2QhucOkRI/hq3.jpg 15004 B
-200 https://www.youtube.com/watch?v=387leh86WGU&hl=ru
-200 player WEB 387leh86WGU
-ERR player ANDROID 387leh86WGU HTTP Error 400: Bad Request
-ERR thumb 387leh86WGU/oar2.jpg HTTP Error 404: Not Found
-200 thumb 387leh86WGU/hqdefault.jpg 27719 B
-200 thumb 387leh86WGU/hq1.jpg 13078 B
-200 thumb 387leh86WGU/hq2.jpg 16349 B
-200 thumb 387leh86WGU/hq3.jpg 15652 B
-200 https://www.youtube.com/watch?v=Rdq6oW2p8MA&hl=ru
-200 player WEB Rdq6oW2p8MA
-ERR player ANDROID Rdq6oW2p8MA HTTP Error 400: Bad Request
-ERR thumb Rdq6oW2p8MA/oar2.jpg HTTP Error 404: Not Found
-200 thumb Rdq6oW2p8MA/hqdefault.jpg 49228 B
-200 thumb Rdq6oW2p8MA/hq1.jpg 18870 B
-200 thumb Rdq6oW2p8MA/hq2.jpg 20207 B
-200 thumb Rdq6oW2p8MA/hq3.jpg 15603 B
+2026-11-15 14:03 UTC
+200 https://www.youtube.com/@cartoon_friend3
+200 avatar cartoon_friend3
+200 https://www.youtube.com/@cartoon_friend3/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
