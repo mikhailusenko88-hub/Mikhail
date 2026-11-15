@@ -36,9 +36,13 @@ GATE_T = 1.2      # старт после отсчёта 3-2-1
 # Вернуть отсчёт: T0 = 0.0
 T0 = GATE_T + 0.8
 POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
-FINALE_T = 7.5
-WIN_MIN, WIN_MAX = 42.0, 54.0   # победитель приходит за 42–54 с → ролик около минуты
-MAX_RACE = 64.0
+FINALE_T = 5.5
+# 15.11.2026: ролик ~28–36 с вместо минуты. По Studio: гонку смотрели в среднем 25–30 с из ~60 и уходили до развязки;
+# на «Kim yutadi?» (тот же движок) короткие гонки набирали больше. Было: 7–9 участков, победа на 42–54 с, финал 7,5 с.
+WIN_MIN, WIN_MAX = 21.0, 30.0   # победитель приходит за 21–30 с (короче трасса не даёт: проверено прогоном)
+MAX_RACE = 36.0
+SECTIONS = [3, 4, 4]            # участков трассы
+POST_WIN = 3.0                  # сколько заезда показывать после победителя
 
 # текущая лига (ставится в build_race)
 LG = RL.LEAGUES["cities"]
@@ -579,10 +583,10 @@ def pick_race(seed, tries=10, log=print):
     for k in range(tries):
         s = seed + k * 7919
         rnd = random.Random(s)
-        c = Course(rnd, N, sections=rnd.choice([7, 8, 8, 9]))
+        c = Course(rnd, N, sections=rnd.choice(SECTIONS))
         sim = Sim(c, s)
         t0 = time.time()
-        frames = sim.run(give_up=(WIN_MIN - 6, WIN_MAX + 6))
+        frames = sim.run(post=POST_WIN, give_up=(WIN_MIN - 6, WIN_MAX + 6))
         if not sim.finish:
             log(f"  трасса {k + 1}: никто не доехал за {WIN_MAX + 6:.0f} с — не подходит")
             continue

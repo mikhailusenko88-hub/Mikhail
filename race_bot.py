@@ -76,6 +76,7 @@ def new_season(ls, league, log):
     arch.append({"season": ls["season"], "top": top, "teams": ls.get("teams"), "champion": ls.get("champion")})
     ls["seasons"] = arch[-60:]
     ls["points"], ls["teams"], ls["champion"], ls["season_races"] = {}, {}, None, 0
+    ls["week_cnt"] = {}
     ls["season"] = sid
     log(f"Новый сезон ({sid}): таблица «{league}» начата заново")
 
@@ -215,6 +216,29 @@ def comment_last(BASE, log=print):
     return 1
 
 
+CITY_RACE_N = 12     # 15.11.2026: в гонке городов 12 участников (было все 22–30 — свой город не найти)
+
+
+def city_subset(ls, n=CITY_RACE_N, must=()):
+    """12 городов на заезд: сначала те, что просили в комментариях, потом кто реже бежал на этой неделе."""
+    import race_leagues as RL
+    allx = RL.entries("cities")
+    if len(allx) <= n:
+        return None
+    cnt = ls.setdefault("week_cnt", {})
+    keys = [e["key"] for e in allx]
+    random.Random().shuffle(keys)
+    keys.sort(key=lambda k: (k not in must, cnt.get(k, 0)))
+    by = {e["key"]: e for e in allx}
+    out = []
+    for i, k in enumerate(keys[:n]):
+        e = dict(by[k])
+        e["num"] = str(i + 1)
+        out.append(e)
+        cnt[k] = cnt.get(k, 0) + 1
+    return out
+
+
 def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, no_youtube, last_slot=False):
     import race_video as rv
     import race_leagues as RL
@@ -268,6 +292,10 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
             ent = [by_key[k] for k in best]
             final = True
             log(f"ФИНАЛ ({league}, {sid}): {', '.join(best)}")
+    if league == "cities" and not final and ent is None:
+        ent = city_subset(ls, must=tuple(new_cities))
+        if ent:
+            log(f"Заезд городов: {len(ent)} из {len(RL.entries('cities'))} — {', '.join(e['key'] for e in ent)}")
     out_dir = BASE / "out"
     out_dir.mkdir(exist_ok=True)
     out = out_dir / f"{dt.datetime.now():%Y-%m-%d_%H%M%S}_{league}{no}.mp4"
@@ -280,7 +308,7 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
     if league == "cities":
         try:
             import kz_places as KP
-            info["description"] = KP.note(new_cities) + KP.fix_desc(info["description"], len(RL.entries("cities")))
+            info["description"] = KP.note(new_cities) + KP.fix_desc(info["description"], len(ent) if ent else len(RL.entries("cities")))
         except Exception as e:
             log(f"Описание: {e}")
     if league == "ru" and new_ru:
