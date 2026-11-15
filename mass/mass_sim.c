@@ -28,7 +28,9 @@ static void seg_collide(int i, float ax, float ay, float bx, float by, float svx
   if (vn < 0) {
     float tx = -ny, ty = nx, vt = rvx * tx + rvy * ty;
     rvx -= (1 + e) * vn * nx; rvy -= (1 + e) * vn * ny;
-    rvx -= mu * vt * tx; rvy -= mu * vt * ty;
+    float fr = mu * (1 + e) * (-vn);               /* трение Кулона: не больше mu·удар */
+    float dvt = fabsf(vt) < fr ? vt : (vt > 0 ? fr : -fr);
+    rvx -= dvt * tx; rvy -= dvt * ty;
     vx[i] = rvx + svx; vy[i] = rvy + svy;
     if (hits && vn < -120) (*hits)++;
   }
@@ -90,12 +92,12 @@ int main(void) {
             float vn = vx[i] * nx + vy[i] * ny;
             if (vn < 0) { vx[i] -= 1.45f * vn * nx; vy[i] -= 1.45f * vn * ny; if (vn < -150) hits++; }
           }
-          for (int k = 0; k < S; k++) seg_collide(i, sg[k].x1, sg[k].y1, sg[k].x2, sg[k].y2, 0, 0, 0.3f, 0.02f, &hits);
+          for (int k = 0; k < S; k++) seg_collide(i, sg[k].x1, sg[k].y1, sg[k].x2, sg[k].y2, 0, 0, 0.3f, 0.15f, &hits);
           for (int k = 0; k < K; k++) {
             float c = cosf(sp[k].a), sn = sinf(sp[k].a), h = sp[k].len / 2;
             float ax = sp[k].cx - c * h, ay = sp[k].cy - sn * h, bx = sp[k].cx + c * h, by = sp[k].cy + sn * h;
             float qx = x[i] - sp[k].cx, qy = y[i] - sp[k].cy; /* скорость точки вертушки рядом с шаром */
-            seg_collide(i, ax, ay, bx, by, -sp[k].w * qy, sp[k].w * qx, 0.4f, 0.05f, &hits);
+            seg_collide(i, ax, ay, bx, by, -sp[k].w * qy, sp[k].w * qx, 0.4f, 0.3f, &hits);
           }
         }
       }

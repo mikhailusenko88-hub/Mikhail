@@ -18,12 +18,13 @@ import sim_run
 BASE = Path(__file__).resolve().parent
 KZ = BASE.parent
 W, H, FPS = 1080, 1920, 30
-CITIES = [("Алматы", "Алматы", (240, 60, 60)), ("Астана", "Астана", (40, 190, 255)),
-          ("Шымкент", "Шымкент", (255, 150, 30)), ("Қарағанды", "Караганда", (165, 95, 255)),
-          ("Ақтөбе", "Актобе", (60, 200, 90)), ("Тараз", "Тараз", (255, 225, 40)),
-          ("Павлодар", "Павлодар", (255, 95, 185)), ("Өскемен", "Усть-Каменогорск", (245, 245, 245)),
-          ("Семей", "Семей", (170, 240, 60)), ("Атырау", "Атырау", (60, 100, 255))]
-BG0, BG1, NEON, GOLD = (6, 16, 38), (10, 44, 76), (0, 200, 220), (255, 200, 40)
+PALETTE = [(240, 60, 60), (40, 190, 255), (255, 150, 30), (165, 95, 255), (60, 200, 90),
+           (255, 225, 40), (255, 95, 185), (245, 245, 245), (170, 240, 60), (60, 100, 255)]
+DEFAULT = [("Алматы", "Алматы"), ("Астана", "Астана"), ("Шымкент", "Шымкент"), ("Қарағанды", "Караганда"),
+           ("Ақтөбе", "Актобе"), ("Тараз", "Тараз"), ("Павлодар", "Павлодар"), ("Өскемен", "Усть-Каменогорск"),
+           ("Семей", "Семей"), ("Атырау", "Атырау")]
+CITIES = [(k, r, c) for (k, r), c in zip(DEFAULT, PALETTE)]
+BG0, BG1, GOLD = (6, 16, 38), (10, 44, 76), (255, 200, 40)
 _F = {}
 
 
@@ -59,30 +60,32 @@ def ball_sprite(col, r):
     return im.resize((s, s), Image.LANCZOS)
 
 
-def static_layer():
+def static_layer(sc):
+    NEON = sc.neon
     g = np.linspace(0, 1, H)[:, None, None]
     arr = np.array(BG0, np.float32) + (np.array(BG1, np.float32) - np.array(BG0, np.float32)) * g
     img = Image.fromarray(np.repeat(arr, W, 1).astype(np.uint8)).convert("RGBA")
     glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     dg = ImageDraw.Draw(glow)
-    for x1, y1, x2, y2 in L.segs():
+    for x1, y1, x2, y2 in sc.segs():
         dg.line([x1, y1, x2, y2], fill=NEON + (255,), width=14)
-    x0, x1, yt, yb = L.CUP
+    x0, x1, yt, yb = sc.cup
     dg.rectangle([x0 - 8, yt - 8, x1 + 8, yb + 8], outline=GOLD + (255,), width=16)
-    for x, y, r in L.pegs():
+    for x, y, r in sc.pegs():
         dg.ellipse([x - r - 6, y - r - 6, x + r + 6, y + r + 6], fill=NEON + (200,))
     img = Image.alpha_composite(img, glow.filter(ImageFilter.GaussianBlur(9)))
     d = ImageDraw.Draw(img)
-    for xa, ya, xb, yb2 in L.segs():
-        d.line([xa, ya, xb, yb2], fill=(170, 250, 255), width=5)
+    for xa, ya, xb, yb2 in sc.segs():
+        d.line([xa, ya, xb, yb2], fill=tuple(min(255, int(v * 0.4 + 160)) for v in NEON), width=5)
     tint = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     ImageDraw.Draw(tint).rectangle([x0 + 3, yt + 4, x1 - 3, yb - 3], fill=(255, 200, 40, 34))
     img = Image.alpha_composite(img, tint)
     d = ImageDraw.Draw(img)
     d.rectangle([x0 - 2, yt, x1 + 2, yb + 3], outline=GOLD, width=6)
-    for x, y, r in L.pegs():
-        d.ellipse([x - r, y - r, x + r, y + r], fill=(200, 255, 255))
-    ctext(d, W / 2, yb + 14, "ҚАЗАН · КУБОК", 34, GOLD, 4)
+    lite = tuple(min(255, int(v * 0.4 + 160)) for v in NEON)
+    for x, y, r in sc.pegs():
+        d.ellipse([x - r, y - r, x + r, y + r], fill=lite)
+    ctext(d, (x0 + x1) / 2, yb + 14, "КУБОК", 34, GOLD, 4)
     ctext(d, W / 2, 14, "1000 ШАРИК · ҚАЙ ҚАЛА ЖЕҢЕДІ?", 50, (255, 255, 255), 6)
     ctext(d, W / 2, 74, "1000 ШАРИКОВ · КАКОЙ ГОРОД ПОБЕДИТ?", 36, GOLD, 5)
     return img
@@ -105,37 +108,52 @@ def chips(d, counts, leader):
         d.text((x + 38, y + 28), str(counts[i]), font=font(26), fill=GOLD if i == leader else (230, 230, 230))
 
 
-def render(out, seed=1, n=1000):
-    rnd = random.Random(seed)
-    colors = [i % len(CITIES) for i in range(n)]
-    rnd.shuffle(colors)
-    colors = np.array(colors)
-    pos, hits = sim_run.run(n=n, T=24.0, seed=seed)
-    x0, x1, yt, yb = L.CUP
-    al = pos[:, :, 0] > -500
-    incup = al & (pos[:, :, 0] > x0) & (pos[:, :, 0] < x1) & (pos[:, :, 1] > yt - 4) & (pos[:, :, 1] < yb)
-    # конец действия: воронка пуста и кубок 2 с не меняется
-    cnt_t = incup.sum(1)
-    hop_t = (al & (pos[:, :, 1] < 690)).sum(1)
-    end = len(pos) - 1
-    for f in range(60, len(pos)):
-        if hop_t[f] <= 30 and cnt_t[f] == cnt_t[f - 60]:
-            end = f
-            break
+def render(out, seed=1, n=1000, cities=None, no=None, log=print):
+    """cities — список (kk, ru) из 10 городов (цвета по PALETTE). Подбирает вариант трассы, где всё досыпается за 16–27 с."""
+    global CITIES
+    CITIES = [(k, r, c) for (k, r), c in zip(cities or DEFAULT, PALETTE)]
+    for tr in range(8):
+        s2 = seed + tr * 7919
+        rnd = random.Random(s2)
+        sc = L.Scene(rnd)
+        colors = [i % len(CITIES) for i in range(n)]
+        rnd.shuffle(colors)
+        colors = np.array(colors)
+        pos, hits = sim_run.run(sc, n=n, T=30.0, seed=s2)
+        x0, x1, yt, yb = sc.cup
+        al = pos[:, :, 0] > -500
+        incup = al & (pos[:, :, 0] > x0) & (pos[:, :, 0] < x1) & (pos[:, :, 1] > yt - 4) & (pos[:, :, 1] < yb)
+        cnt_t = incup.sum(1)
+        hop_t = (al & (pos[:, :, 1] < 690)).sum(1)
+        end = None
+        for f in range(60, len(pos)):
+            if hop_t[f] <= 30 and cnt_t[f] == cnt_t[f - 60]:
+                end = f
+                break
+        if end is None or not (16 * FPS <= end <= 27 * FPS) or cnt_t[end] < 150:
+            log(f"трасса {tr}: не подошла (конец {None if end is None else round(end / FPS, 1)} с, в кубке {cnt_t[-1]})")
+            continue
+        fin = sorted(((colors == i) & incup[min(len(pos) - 1, end + 15)]).sum() for i in range(len(CITIES)))
+        if fin[-1] == fin[-2]:
+            log(f"трасса {tr}: ничья за первое место — другая")
+            continue
+        break
+    else:
+        raise RuntimeError("не нашлась трасса для «1000 шарик»")
     end = min(len(pos) - 1, end + 15)
     final = [int(((colors == i) & incup[end]).sum()) for i in range(len(CITIES))]
     win = int(np.argmax(final))
     CARD = 4.5
     total_f = end + 1 + int(CARD * FPS)
-    print(f"действие {end / FPS:.1f} с, ролик {total_f / FPS:.1f} с; в кубке {sum(final)}; победа {CITIES[win][0]} {final[win]}")
+    log(f"«1000 шарик»: действие {end / FPS:.1f} с, ролик {total_f / FPS:.1f} с; в кубке {sum(final)}; победа {CITIES[win][0]} {final[win]}")
 
-    base = static_layer()
+    base = static_layer(sc)
     sprites = [ball_sprite(c, L.R) for _, _, c in CITIES]
     so = int(L.R + 2)
     ff = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
                            "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
                            "-pix_fmt", "yuv420p", str(out) + ".v.mp4"], stdin=subprocess.PIPE)
-    spin = L.spinners()
+    spin = sc.spinners()
     for f in range(total_f):
         fi = min(f, end)
         img = base.copy()
@@ -162,7 +180,7 @@ def render(out, seed=1, n=1000):
             ctext(d, W / 2, 520, "ЖЕҢІМПАЗ · ПОБЕДИТЕЛЬ", 52, GOLD, 6)
             d.ellipse([W / 2 - 70, 610, W / 2 + 70, 750], fill=c, outline=(255, 255, 255), width=6)
             ctext(d, W / 2, 770, kk.upper(), 96, (255, 255, 255), 8)
-            ctext(d, W / 2, 890, f"{final[win]} шарик · {final[win]} шариков в кубке", 40, GOLD, 5)
+            ctext(d, W / 2, 890, f"Кубокта {final[win]} шарик · в кубке {final[win]}", 40, GOLD, 5)
             top = sorted(range(len(CITIES)), key=lambda i: -final[i])[:5]
             for j, i in enumerate(top):
                 yy = 990 + j * 62
@@ -174,7 +192,7 @@ def render(out, seed=1, n=1000):
             ctext(d, W / 2, 1392, "А ты за какой город болеешь? Пиши!", 38, GOLD, 5)
         ff.stdin.write(img.convert("RGB").tobytes())
         if f % 150 == 0:
-            print("кадр", f, "/", total_f, flush=True)
+            log(f"кадр {f} / {total_f}")
     ff.stdin.close()
     ff.wait()
     # звук: музыка + «дождь» стуков по штырькам
@@ -214,7 +232,9 @@ def render(out, seed=1, n=1000):
     subprocess.run(cmd, check=True)
     Path(str(out) + ".v.mp4").unlink()
     Path(wav).unlink()
-    return {"winner": CITIES[win][0], "counts": dict(zip([c[0] for c in CITIES], final)), "duration": dur}
+    order = sorted(range(len(CITIES)), key=lambda i: -final[i])
+    return {"winner": CITIES[win][0], "ranking": [CITIES[i][0] for i in order],
+            "counts": dict(zip([c[0] for c in CITIES], final)), "duration": dur, "in_cup": sum(final)}
 
 
 if __name__ == "__main__":

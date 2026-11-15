@@ -5,6 +5,9 @@
             её города и аулы; в воскресенье в 12:00 — финал области; с 10.11.2026 вместо первой гонки городов
     15:00 — тема дня по очереди (config "theme_leagues"): мүшел → регионы по номерам → имена
     18:00 — гонка городов
+С 16.11.2026 слот "mass" — «1000 шарик: қай қала жеңеді?» (папка mass/, run_mass ниже):
+            1000 шариков 10 городов сыплются в кубок, чьих больше — победил; каждый день свои города и трасса.
+            Если не собрался — вместо него выходит гонка городов.
 Вручную:  run_daily.py --league names     (cities | regions | mushel | names | ru | clubs)
 Проба без выкладки:  run_daily.py --test --league mushel
 Если тема почему-то не собралась — вместо неё выходит гонка городов (слот не пропадает).
@@ -381,13 +384,96 @@ def run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, n
     return 0 if (link or not want_yt) else 1
 
 
+MASS_BIG = ("Алматы", "Астана", "Шымкент")      # в каждом «1000 шарик» (там больше всего зрителей)
+
+
+def mass_cities(ms, rnd):
+    """10 городов: три больших всегда, остальные 7 — кто реже был в «1000 шарик»."""
+    import race_leagues as RL
+    allx = RL.entries("cities")
+    by = {e["key"]: e for e in allx}
+    cnt = ms.setdefault("cnt", {})
+    rest = [k for k in by if k not in MASS_BIG]
+    rnd.shuffle(rest)
+    rest.sort(key=lambda k: cnt.get(k, 0))
+    keys = [k for k in MASS_BIG if k in by] + rest
+    keys = keys[:10]
+    rnd.shuffle(keys)
+    return [(by[k]["kk"], by[k]["ru"]) for k in keys]
+
+
+def run_mass(BASE, cfg, log, notify, state, state_f, test, no_youtube):
+    """«1000 шарик: қай қала жеңеді?» — один ролик, без таблицы и сезонов."""
+    import race_leagues as RL
+    sys.path.insert(0, str(BASE / "mass"))
+    import mass_video
+    ms = state.setdefault("mass", {})
+    no = ms.get("no", 0) + 1
+    rnd = random.Random()
+    cities = mass_cities(ms, rnd)
+    out_dir = BASE / "out"
+    out_dir.mkdir(exist_ok=True)
+    out = out_dir / f"{dt.datetime.now():%Y-%m-%d_%H%M%S}_mass{no}.mp4"
+    log(f"«1000 шарик» №{no}: {', '.join(k for k, _ in cities)}")
+    info = mass_video.render(out, seed=rnd.randrange(1, 10 ** 9), cities=cities, no=no, log=log)
+    named = rnd.sample([k for k, _ in cities], 3)
+    title = f"1000 шарик! {', '.join(named)}… Қай қала жеңеді? Какой город победит? №{no}"
+    if len(title) > 90:
+        title = f"1000 шарик! Қай қала жеңеді? 1000 шариков — какой город победит? №{no}"
+    city_line = ", ".join(k for k, _ in cities)
+    desc = ("1000 шарик — 10 қала. Қай қаланың шариктері кубокқа көбірек түседі?\n"
+            "1000 шариков — 10 городов. Чьих шариков в кубке окажется больше?\n\n"
+            f"Қатысушылар / Участники: {city_line}\n\n"
+            "Сен қай қалаға жанкүйерсің? Пікірге жаз 👇\n"
+            "За какой город болеешь? Пиши в комментариях 👇\n\n"
+            "#қайқалажеңеді #қазақстан #казахстан #гонкашариков #1000шариков")
+    tags = ["1000 шарик", "1000 шариков", "қай қала жеңеді", "какой город победит", "гонка шариков",
+            "marble race", "1000 marbles"] + [k for k, _ in cities][:4]
+    out.with_suffix(".txt").write_text(title + "\n\n" + desc, encoding="utf-8")
+    log(f"«1000 шарик» №{no}: победил {info['winner']}, топ-3: {', '.join(info['ranking'][:3])}, "
+        f"в кубке {info['in_cup']}, ролик {info['duration']:.0f} с")
+    if test:
+        log(f"Тестовый режим: ничего не выкладываю. Ролик: {out}")
+        return 0
+    link = None
+    want_yt = cfg.get("post_to_youtube") and (BASE / "yt_token.json").exists() and not no_youtube
+    if want_yt:
+        try:
+            import yt_upload
+            link = yt_upload.upload(out, title, desc, tags, cfg)
+            log(f"YouTube: {link}")
+        except Exception as e:
+            log(f"YouTube: ошибка {e}")
+            notify(f"«1000 шарик» №{no} собран, но не выложен: {e}")
+    if link or not want_yt:
+        ms["no"] = no
+        cnt = ms.setdefault("cnt", {})
+        for k, _ in cities:
+            cnt[k] = cnt.get(k, 0) + 1
+        ms.setdefault("results", []).append({"no": no, "date": f"{dt.datetime.now(ASTANA).date()}",
+                                             "winner": info["winner"], "top3": info["ranking"][:3],
+                                             "in_cup": info["in_cup"], "link": link})
+        ms["results"] = ms["results"][-300:]
+        state["n_done"] = state.get("n_done", 0) + 1
+        state.setdefault("history", []).append({"date": f"{dt.date.today()}", "title": title,
+                                                "links": [link] if link else ["вручную"]})
+        state["history"] = state["history"][-200:]
+        state_f.write_text(json.dumps(state, ensure_ascii=False, indent=1), encoding="utf-8")
+    if link and cfg.get("first_comment", True):
+        post_first_comment(link, RL.LEAGUES["cities"]["first_comment"], log)
+    return 0 if (link or not want_yt) else 1
+
+
 def run(BASE, cfg, log, notify, test=False, no_youtube=False):
     state_f = BASE / "state.json"
     state = json.loads(state_f.read_text(encoding="utf-8")) if state_f.exists() else \
         {"used_titles": [], "n_done": 0, "history": []}
     league, is_theme, last_slot = pick_league(cfg, state, sys.argv)
     try:
-        rc = run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, no_youtube, last_slot)
+        if league == "mass":
+            rc = run_mass(BASE, cfg, log, notify, state, state_f, test, no_youtube)
+        else:
+            rc = run_league(BASE, cfg, log, notify, state, state_f, league, is_theme, test, no_youtube, last_slot)
     except Exception as e:
         if league == "cities":
             raise
