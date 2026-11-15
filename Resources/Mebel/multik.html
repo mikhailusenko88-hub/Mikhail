@@ -448,14 +448,15 @@ const Cover = {
   heroes(ep, lib) { const cnt = {}, first = {}; let k = 0; for (const sc of ep.scenes || []) for (const st of sc.steps || []) if (st.who && st.who !== 'Р' && lib.characters[st.who]) { if (first[st.who] == null) first[st.who] = k++; if (st.say) cnt[st.who] = (cnt[st.who] || 0) + 1; }
     return Object.keys(first).sort((a, b) => (cnt[b] || 0) - (cnt[a] || 0) || first[a] - first[b]); },
   episode(ep, lib) { const sc0 = (ep.scenes || [])[0] || {}, M = MK.mainOf(ep, lib), hs = this.heroes(ep, lib).slice(0, M ? 2 : 3);
-    const xs = M ? (hs.length === 1 ? [.34] : [.31, .69]) : hs.length === 3 ? [.3, .5, .7] : hs.length === 2 ? [.38, .62] : [.5];
-    const sc = { id: 'С1', location: sc0.location, cast: hs.map((id, i) => ({ who: id, x: xs[i], face: 'camera' })), props: M ? [{ id: 'М', type: M.type, x: .5, big: M.type === 'moon' ? 1 : Math.max(1.35, (M.big || 1) * 1.45), low: M.type === 'moon' }] : [],   /* луна на обложке — между героями, иначе её не видно */
+    const hold = !!(M && (M.big || 1) <= 1 && !/^(moon|rainbow)$/.test(M.type) && hs.length);   // маленькую вещь (жёлудь, ключ) держит главный герой — крупно, у лица; большую (луна, лодка) — в центре
+    const xs = hold ? (hs.length === 1 ? [.5] : [.42, .58]) : M ? (hs.length === 1 ? [.34] : [.31, .69]) : hs.length === 3 ? [.3, .5, .7] : hs.length === 2 ? [.38, .62] : [.5];
+    const sc = { id: 'С1', location: sc0.location, cast: hs.map((id, i) => ({ who: id, x: xs[i], face: 'camera' })), props: M ? [hold ? { id: 'М', type: M.type, x: xs[0], holder: hs[0] } : { id: 'М', type: M.type, x: .5, big: M.type === 'moon' ? 1 : Math.max(1.35, (M.big || 1) * 1.45), low: M.type === 'moon' }] : [],   /* луна на обложке — между героями, иначе её не видно */
       steps: hs.map((id, i) => Object.assign({ who: id, emotion: 'surprised' }, i ? { with: true } : {})).concat([{ wait: 3 }]), tail: 0 };
-    return { ep: Object.assign({}, ep, { scenes: [sc], titleCard: false, endCard: false, subscribe: false, autoCam: false, main: false, subtitles: false }), hs, M }; },
+    return { ep: Object.assign({}, ep, { scenes: [sc], titleCard: false, endCard: false, subscribe: false, autoCam: false, main: hold ? M.type : false, mainSet: hold, subtitles: false }), hs, M, hold }; },
   rr(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); },
   /** надписи поверх кадра: свиток с вопросом, логотип, номер серии */
   decorate(c, ep) { const W = this.W, H = this.H, F = this.FONT, q = this.question(ep); c.save(); c.lineJoin = 'round'; c.textAlign = 'center'; c.textBaseline = 'middle';
-    if (q) { const maxW = W * .74; let sz = 104, lines = [];
+    if (q) { const maxW = W * .74; let sz = 92, lines = [];
       for (; sz >= 54; sz -= 6) { c.font = `900 ${sz}px ${F}`; lines = []; let cur = ''; for (const w of q.split(/\s+/)) { const t2 = cur ? cur + ' ' + w : w; if (c.measureText(t2).width <= maxW || !cur) cur = t2; else { lines.push(cur); cur = w; } } if (cur) lines.push(cur); if (lines.length <= 2 && lines.every(l => c.measureText(l).width <= maxW)) break; }
       const lh = sz * 1.06, ph = lines.length * lh + 44, pw = Math.min(W - 150, Math.max(...lines.map(l => c.measureText(l).width)) + 120), px = (W - pw) / 2, py = H - ph - 26;
       c.shadowColor = 'rgba(0,0,0,.35)'; c.shadowBlur = 22; c.shadowOffsetY = 8; const g = c.createLinearGradient(0, py, 0, py + ph); g.addColorStop(0, '#fff6dc'); g.addColorStop(1, '#f1d394'); c.fillStyle = g; this.rr(c, px, py, pw, ph, 18); c.fill(); c.shadowColor = 'transparent';
@@ -464,7 +465,7 @@ const Cover = {
       c.font = `900 ${sz}px ${F}`; lines.forEach((l, i) => { const y = py + 22 + lh * (i + .5) + 2; c.lineWidth = Math.max(8, sz * .14); c.strokeStyle = '#fff8e6'; c.strokeText(l, W / 2, y); c.fillStyle = '#3a1d10'; c.fillText(l, W / 2, y); }); }
     const badge = (text, x, y, rot, bg1, bg2, fg, sz, alignR) => { c.save(); c.font = `900 ${sz}px ${F}`; const tw = c.measureText(text).width, bw = tw + sz * 1.1, bh = sz * 1.55; c.translate(alignR ? x - bw / 2 : x + bw / 2, y + bh / 2); c.rotate(rot);
       c.shadowColor = 'rgba(0,0,0,.35)'; c.shadowBlur = 16; c.shadowOffsetY = 6; const g = c.createLinearGradient(0, -bh / 2, 0, bh / 2); g.addColorStop(0, bg1); g.addColorStop(1, bg2); c.fillStyle = g; this.rr(c, -bw / 2, -bh / 2, bw, bh, bh / 2); c.fill(); c.shadowColor = 'transparent';
-      c.lineWidth = 5; c.strokeStyle = '#ffffff'; c.stroke(); c.lineWidth = sz * .2; c.strokeStyle = '#3a1d10'; c.strokeText(text, 0, 3); c.fillStyle = fg; c.fillText(text, 0, 3); c.restore(); };
+      c.lineWidth = 5; c.strokeStyle = '#ffffff'; c.stroke(); if (fg === '#ffffff') { c.lineWidth = sz * .16; c.strokeStyle = '#3a1d10'; c.strokeText(text, 0, 3); } c.fillStyle = fg; c.fillText(text, 0, 3); c.restore(); };   // тёмные буквы — без обводки (иначе слипаются)
     badge(ep.series || 'Мультик', 26, 22, -.05, '#ffae4a', '#ff6a3d', '#ffffff', 46, false);
     if (ep.episode) badge('СЕРИЯ ' + ep.episode, W - 26, 26, .05, '#fff06a', '#ffc21f', '#3a1d10', 40, true);
     c.restore(); },
@@ -474,8 +475,8 @@ const Cover = {
     try { await Build.wait3d(); const lib = Lib.data, ep = e.script, ce = this.episode(ep, lib);
       if (!ce.hs.length) throw new Error('в серии нет героев');
       await prepHeroes(lib, null);
-      const tl = MK.compile(ce.ep, lib, {}); tl.style = (window.MK3D && MK3D.ready) ? '3d' : '2d'; const sg = tl.segs.find(x => x.kind === 'scene');
-      if (sg) sg.cam = [{ t: 0, mode: 'group', ids: ce.hs.slice(), px: ce.M ? [.5] : undefined, cut: true }];   // группа близко: герои и вещь
+      const tl = MK.compile(ce.ep, Object.assign({}, lib, { settings: Object.assign({}, lib.settings, { opening: 'new' }) }), {}); tl.style = (window.MK3D && MK3D.ready) ? '3d' : '2d'; const sg = tl.segs.find(x => x.kind === 'scene');
+      if (sg) sg.cam = [ce.hold && ce.hs.length > 1 ? { t: 0, mode: 'two', on: ce.hs.slice(0, 2), cut: true } : { t: 0, mode: 'group', ids: ce.hs.slice(), px: ce.M && !ce.hold ? [.5] : undefined, cut: true }];   // двое близко (вещь в лапах) или группа с вещью в центре
       const cv = document.createElement('canvas'); cv.width = this.W; cv.height = this.H; const c = cv.getContext('2d');
       c.setTransform(this.W / 1920, 0, 0, this.H / 1080, 0, 0); MK.render(c, tl, 1.1); MK.render(c, tl, 1.2); c.setTransform(1, 0, 0, 1, 0, 0);   // второй кадр — шерсть и свет уже устоялись
       const jpg = q => cv.toDataURL('image/jpeg', q).split(',')[1], fit = () => { for (const q of [.92, .86, .8, .72]) { const d = jpg(q); if (d.length * .75 <= 2e6) return d; } return jpg(.65); };
@@ -514,7 +515,7 @@ const Shorts = {
       for (const sp of tl.speech) if (sp.who && sg.C[sp.who] && sp.t >= sg.t0 && sp.t < sg.t1) marks.push({ t: sp.t - sg.t0 - .1, sh: { mode: sp.vocal ? 'close' : 'medium', on: sp.who } });
       for (const id of ids) for (const e of sg.C[id].ev) if (e.k === 'act' && BIG_SH.has(e.n) && !tl.speech.some(sp => sp.who === id && sp.t - sg.t0 <= e.t + .3 && sp.t + sp.dur - sg.t0 >= e.t)) marks.push({ t: e.t - .1, sh: { mode: 'medium', on: id } });
       marks.sort((a, b) => a.t - b.t); const first = marks.find(m => m.t + sg.t0 >= t0 - .5) || marks[0];
-      put(0, first ? first.sh : { mode: 'medium', on: ids[0] }); for (const m of marks) put(m.t, m.sh); sg.cam = list; } },
+      put(0, first ? first.sh : { mode: 'medium', on: ids[0] }); for (const m of marks) put(m.t, m.sh); list.forEach(c => c.vert = true); sg.cam = list; } },   // vert — герой по центру вертикального кадра
   header(c, ep) { const q = Cover.question(ep) || ep.title || ''; if (!q) return; const W = this.W, F = Cover.FONT; c.save(); c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';
     let sz = 92, lines = []; for (; sz >= 52; sz -= 6) { c.font = `900 ${sz}px ${F}`; lines = []; let cur = ''; for (const w of q.split(/\s+/)) { const t2 = cur ? cur + ' ' + w : w; if (c.measureText(t2).width <= W * .86 || !cur) cur = t2; else { lines.push(cur); cur = w; } } if (cur) lines.push(cur); if (lines.length <= 3 && lines.every(l => c.measureText(l).width <= W * .86)) break; }
     const lh = sz * 1.1, bh = lines.length * lh + 50, y0 = 120; c.fillStyle = 'rgba(20,10,5,.42)'; Cover.rr(c, 30, y0, W - 60, bh, 36); c.fill();

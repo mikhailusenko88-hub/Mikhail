@@ -3011,10 +3011,10 @@ function camFor(c, S, seg, lib) {
       const opts = ox < cx ? [ox + ow - L, -(L - (ox - ow))] : [-(R - (ox - ow)), (ox + ow) - R];   // [убрать соседа, взять целиком] — сдвиг центра кадра
       const ok = opts.filter(d => Math.abs(d) <= half * .4 && Math.abs(hx - (cx + d)) <= half * .55).sort((a, b) => Math.abs(a) - Math.abs(b)); if (ok.length && Math.abs(ok[0]) > Math.abs(need)) need = ok[0]; }
     if (need) { v.pos.x += need; v.look.x += need; } return v; };
-  if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close', side = S[id] && S[id].face < 0 ? -1 : 1;
+  if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close', side = c.vert ? 0 : S[id] && S[id].face < 0 ? -1 : 1;   /* vert — Shorts 9:16: герой по центру кадра */
     const lc = lib.characters[id], rg = lc && rigFor(lc); if (rg && rg.headH) { const hy = rg.headH, hr = rg.headR, zk = c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1; // кадр по голове героя: крупно — лицо и плечи, средний — во весь рост
       return close ? { pos: new THREE.Vector3(x + side * hr * .9, hy - hr * .05, z + hr * 6.4 / zk), look: new THREE.Vector3(x + side * hr * .2, hy - hr * .32, z) }
-        : edgeFit({ pos: new THREE.Vector3(x + side * hr * 1.6, hy * .78, z + Math.max(hr * 11.5, hy * 1.9) / zk), look: new THREE.Vector3(x + side * hr * .4, hy * .6, z) }, id); }
+        : (c.vert ? (v0 => v0) : v0 => edgeFit(v0, id))({ pos: new THREE.Vector3(x + side * hr * 1.6, hy * .78, z + Math.max(hr * 11.5, hy * 1.9) / zk), look: new THREE.Vector3(x + side * hr * .4, hy * .6, z) }); }
     return { pos: new THREE.Vector3(x + side * (close ? .13 : .3), (close ? .78 : .8) * hh + (close ? .02 : .06), z + (close ? 1.15 : 2.15) * Math.max(.8, hh) / (c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1)), look: new THREE.Vector3(x + side * (close ? .03 : .08), (close ? .7 : .56) * hh, z) }; }
   if (c.mode === 'group') { const list = (c.ids || ids).filter(id => S[id] && S[id].vis !== false); let lo = 1e9, hi = -1e9, hh = .9;
     for (const id of list) { const x = px(id), w = .5 * h(id); lo = Math.min(lo, x - w); hi = Math.max(hi, x + w); hh = Math.max(hh, h(id)); } for (const q of c.px || []) { lo = Math.min(lo, X(q) - .45); hi = Math.max(hi, X(q) + .45); }
