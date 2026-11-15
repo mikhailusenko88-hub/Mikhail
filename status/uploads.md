@@ -56,3 +56,5 @@
 | 35 | 2026-11-15 | 1 | S2 RACE 22/68 | https://youtu.be/0OizaWNrguU | public |
 | shorts | 2026-11-15 | 1 | Russia vs Türkiye vs Poland | https://youtube.com/shorts/8GyXq2dRNLo | |
 | arena | 2026-11-15 | 3 | BD | https://youtube.com/shorts/iGHcGEJ6Mho | public (игра) |
+| 36 | 2026-11-15 | 2 | S2 RACE 23/52 | https://youtu.be/EVCXBjTSO-k | public |
+| shorts | 2026-11-15 | 2 | USA vs Indonesia vs Germany | https://youtube.com/shorts/cK3k5givA2c | |
