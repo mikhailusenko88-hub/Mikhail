@@ -1309,7 +1309,7 @@ function cheeseT() { return ctex('cheese', 256, 128, (g) => { g.fillStyle = '#ff
 function stoneT() { return ctex('stone', 256, 256, (g) => { g.fillStyle = '#b8b2a8'; g.fillRect(0, 0, 256, 256); g.strokeStyle = 'rgba(80,70,60,.45)'; g.lineWidth = 3; for (let y = 0; y < 256; y += 32) { g.beginPath(); g.moveTo(0, y); g.lineTo(256, y); g.stroke(); for (let x = ((y / 32) % 2) * 32; x < 256; x += 64) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 32); g.stroke(); } } const r = rng(6); for (let i = 0; i < 300; i++) { g.fillStyle = 'rgba(' + (r() < .5 ? '255,255,255' : '60,50,40') + ',.08)'; g.fillRect(r() * 256, r() * 256, 4, 4); } }, [2, 2]); }
 function fabricT(a, b) { return ctex('fab' + a + b, 128, 128, (g) => { g.fillStyle = a; g.fillRect(0, 0, 128, 128); g.fillStyle = b; for (let i = 0; i < 4; i++) g.fillRect(i * 32, 0, 16, 128); }); }
 function propMesh(p) {
-  const key = p.id + p.type + (p.color || '') + (p.phase || '') + (p.low ? 'L' : ''); if (propCache[key]) return propCache[key];
+  const key = p.id + p.type + (p.color || '') + (p.phase || '') + (p.low ? 'L' : '') + (p.skyMoon ? 'S' : '') + (p.main ? 'M' : ''); if (propCache[key]) return propCache[key];
   const g = new THREE.Group(), t = p.type, cl = p.color;
   const A = (geo, mat, par, ol) => mesh(geo, mat, ol == null ? .04 : ol, par || g); // деталь
   const P = (c, k, map) => pmat(c, k, map);
@@ -1505,9 +1505,9 @@ function propMesh(p) {
       const light = new THREE.Mesh(new THREE.ShapeGeometry(ds, 24), new THREE.MeshBasicMaterial({ color: '#fff1b8', toneMapped: false, transparent: true, opacity: 0 })); light.position.z = .012; g.add(light); g.userData.leaf = leaf; g.userData.doorLight = light;
       const st = A(G.box(.8, .04, .18), P(null, 'wood', stoneT()), g, 0); st.position.y = .02; g.userData.glowY = .6; g.userData.glowS = 1.6; g.userData.glowC = '#ffe08a'; break; }
     case 'moon': { if (p.phase === 'thin' || p.phase === 'crescent') {   // месяц: светится только серп (картинка всегда лицом к камере)
-        const my = p.low ? 1.75 : 4.2, sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: crescentT(p.phase), transparent: true, toneMapped: false, depthWrite: false, color: cl || '#ffffff' })); sp.scale.set(1.2, 1.2, 1); sp.position.y = my; g.add(sp);
-        g.userData.glowY = my; g.userData.glowS = p.phase === 'thin' ? 1.5 : 1.9; g.userData.glowC = '#fff3c4'; g.userData.alwaysGlow = true; break; }
-      const mo = A(G.sph(.5, 40, 28), MK3D.hq ? new THREE.MeshBasicMaterial({ map: craterT(), toneMapped: false }) : basic(cl || '#fff3c4'), g, 0); mo.position.y = p.low ? 1.75 : 4.2; mo.castShadow = false; g.userData.glowY = mo.position.y; g.userData.glowS = 2.6; g.userData.glowC = '#fff3c4'; g.userData.alwaysGlow = true; break; }   // low — луна на обложке: между героями, а не высоко в небе
+        const my = p.low ? 1.75 : p.skyMoon ? 5 : 4.2, ms = p.skyMoon ? 3 : 1.2, sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: crescentT(p.phase), transparent: true, toneMapped: false, depthWrite: false, fog: false, color: cl || '#ffffff' })); sp.scale.set(ms, ms, 1); sp.position.y = my; g.add(sp);
+        g.userData.glowY = my; g.userData.glowS = (p.phase === 'thin' ? 1.5 : 1.9) * (p.skyMoon ? 2.4 : 1); g.userData.glowC = '#fff3c4'; g.userData.alwaysGlow = true; break; }
+      const mo = A(G.sph(p.skyMoon ? 1.25 : .5, 48, 32), MK3D.hq || p.skyMoon ? new THREE.MeshBasicMaterial({ map: craterT(), toneMapped: false, fog: false }) : basic(cl || '#fff3c4'), g, 0); mo.position.y = p.low ? 1.75 : p.skyMoon ? 5 : 4.2; mo.castShadow = false; g.userData.glowY = mo.position.y; g.userData.glowS = p.skyMoon ? 6.5 : 2.6; /* skyMoon — ночная луна, о которой говорят: крупная и яркая, далеко в небе */ g.userData.glowC = '#fff3c4'; g.userData.alwaysGlow = true; break; }   // low — луна на обложке: между героями, а не высоко в небе
     case 'ghost': { const pts = [[.34, 0], [.32, .12], [.29, .3], [.275, .45]]; for (let i = 1; i <= 16; i++) { const a = i / 16 * Math.PI / 2; pts.push([Math.cos(a) * .275, .45 + Math.sin(a) * .3]); } pts.push([0, .75]);
       const geo = lathe(pts, 56); const pp = geo.attributes.position; for (let i = 0; i < pp.count; i++) { if (pp.getY(i) < .01) { const a = Math.atan2(pp.getZ(i), pp.getX(i)); pp.setY(i, pp.getY(i) + Math.sin(a * 7) * .035 + .035); } } geo.computeVertexNormals();
       const gm = MK3D.hq ? new THREE.MeshPhysicalMaterial({ color: '#ffffff', roughness: .6, transparent: true, opacity: .88, side: THREE.DoubleSide, sheen: .6, emissive: '#cfe0ff', emissiveIntensity: .25 }) : toon('#ffffff'); const b = A(geo, gm, g, .03); b.position.y = .25;
@@ -1668,7 +1668,7 @@ function propMesh(p) {
     case 'bell': { const c0 = cl || '#ffd23f'; A(lathe([[0, .01], [.085, .01], [.09, .015], [.08, .03], [.055, .08], [.045, .17], [.03, .2], [0, .2]], 32), P(c0, 'metal')).position.y = 0;
       A(G.sph(.018, 12, 10), P('#888888', 'metal'), g, 0).position.y = .015; const rb = A(G.tor(.02, .007, 8, 16), P('#d8213a', 'cloth'), g, 0); rb.position.y = .22; break; }
     case 'mirror': { const c0 = cl || '#ff8fb1'; const mg = new THREE.Group(); mg.position.y = .02; mg.rotation.x = -Math.PI / 2 + .2; g.add(mg);
-      A(G.tor(.08, .014, 12, 40), P(c0, 'gloss'), mg); const gl = A(G.cyl(.078, .078, .006, 32), P('#e8f2ff', 'metal'), mg, 0); gl.rotation.x = Math.PI / 2;
+      A(G.tor(.08, .014, 12, 40), P(c0, 'gloss'), mg); const gl = A(G.cyl(.078, .078, .006, 32), P('#e8f2ff', 'metal'), mg, 0); gl.rotation.x = Math.PI / 2; g.userData.glass = gl;
       const h = A(G.cap(.014, .1, 6, 12), P(c0, 'gloss'), mg); h.position.y = -.15; g.userData.heldRot = [Math.PI / 2 - .2, 0, 0]; g.userData.heldS = 1; break; }
     case 'jar': { const c0 = cl || '#d8213a'; A(lathe([[0, 0], [.07, 0], [.075, .01], [.075, .15], [.06, .16], [.06, .17], [0, .17]], 32), P('#ffffff', 'glass'));
       const jm = A(lathe([[0, .005], [.07, .005], [.07, .13], [0, .13]], 32), P(c0, 'gloss'), g, 0); const ld = A(lathe([[0, .17], [.068, .165], [.075, .19], [.06, .2], [0, .2]], 32), P(null, 'cloth', giftT('#e8344e')), g, 0);
@@ -1689,7 +1689,9 @@ function propMesh(p) {
       for (let k = 0; k < 5; k++) { const h = A(G.cyl(.005, .005, .004, 10), P('#3a2a20', 'plastic'), fl, 0); h.position.set(0, -.08 + k * .04, .014); h.rotation.x = Math.PI / 2; } break; }
     default: A(G.sph(.12), P(cl || '#cccccc', 'plastic')).position.y = .12;
   }
-  g.traverse(o => { if (o.isMesh && o.castShadow !== false && !(o.material && o.material.isMeshBasicMaterial)) o.castShadow = true; }); propCache[key] = g; return g;
+  g.traverse(o => { if (o.isMesh && o.castShadow !== false && !(o.material && o.material.isMeshBasicMaterial)) o.castShadow = true; });
+  if (p.main) { g.updateMatrixWorld(true); const v = new THREE.Box3().setFromObject(g).getSize(new THREE.Vector3()); g.userData.sz = Math.max(v.x, v.y, v.z) || .2; }   // главный предмет в лапах — крупнее (см. рисование)
+  propCache[key] = g; return g;
 }
 
 
@@ -3027,6 +3029,9 @@ function camFor(c, S, seg, lib) {
         if (x + w > mid - hw && x - w < mid + hw && (x - w < mid - hw || x + w > mid + hw)) { lo = Math.min(lo, x - .5 * h(id)); hi = Math.max(hi, x + .5 * h(id)); inc.push(id); ch = true; } }
       if (!ch) break; mid = (lo + hi) / 2; d = clamp((hi - lo + .9) / 2 / .612, 2.9, 8.4); }
     const tp = Math.max(...inc.map(topOf)), ly = Math.max(.55 * hh + d * .03, tp - .28 * d); return { pos: new THREE.Vector3(mid, ly + .05 * hh + d * .09, d), look: new THREE.Vector3(mid, ly, 0) }; }
+  if (c.mode === 'sky') { // герой смотрит на луну: камера ниже героя, смотрит вверх — в кадре его голова и луна
+    const id = c.on || ids[0], x = px(id), z = pz(id), mp = (seg.props || []).find(q => q.type === 'moon'), mx = mp ? X(mp._x != null ? mp._x : mp.x0) : x + 1.5, cx = x * .62 + mx * .38;
+    return { pos: new THREE.Vector3(cx, .55, z + 4.3), look: new THREE.Vector3(cx, 2.2, z - 2) }; }
   if (c.mode === 'pan') { const x = X(c.on != null ? +c.on : .5); return { pos: new THREE.Vector3(x, 1.5, 6 / (c.zoom || 1.3) * 1.3), look: new THREE.Vector3(x, .8, 0) }; }
   return { pos: new THREE.Vector3(0, 1.75, 8.4), look: new THREE.Vector3(0, .85, 0) };
 }
@@ -3112,6 +3117,7 @@ function render(ctx) {
 MK3D.draw = function (ctx, tl, seg, t, T) {
   hideAllRigs();
   if (seg.kind === 'title' || seg.kind === 'end') return drawCard3D(ctx, tl, seg, t, T);
+  for (const p of seg.props || []) if (p.type === 'mirror') for (const h of new Set([p.h0].concat(p.ev.map(e => e.holder)).filter(Boolean))) { const lc = tl.lib.characters[h]; if (lc) headTex(lc); }   // лицо для зеркальца — до кадра (своя отрисовка)
   const L = seg.lspec || {}; const g = showLoc(seg.lkey, L); g.userData.wxK = wxNow(L, t); animateLoc(g, T);
   const cineF = MK3D.hq && L.type === 'forest', CF = MK3D.hq ? g.userData.cine : null;
   if (CF) { scene.background = CF.bg; scene.fog = CF.fog; lightFor(L.type, L.time || 'day'); lightCine(CF.light); scene.environment = CF.env; }
@@ -3153,7 +3159,11 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
     if (m.userData.paintC) { const q = Math.round((p._paint || 0) * 48) / 48; if (q !== m.userData.paintQ) { m.userData.paintQ = q; drawPicture(m.userData.paintC, q); m.userData.paintTex.needsUpdate = true; } }
     m.visible = sc > .01; const big = p.big || 1;
     if (p._holder && S[p._holder] && S[p._holder].vis) { const lc = tl.lib.characters[p._holder]; const rig = rigFor(lc); const v = new THREE.Vector3(); const A = rig.h6 && global.BARSHeroes && BARSHeroes.anchors ? BARSHeroes.anchors(rig) : rig.bars && global.MKBarsik && MKBarsik.anchors ? MKBarsik.anchors(rig) : null; // герой образца: его настоящие лапки, глаза и рот (Барсик — только рот)
-      if (A && A.handR) v.copy(A.handR); else rig.hand.getWorldPosition(v); m.position.set(v.x, v.y - .12 * rig.scale, v.z); m.scale.setScalar((m.userData.heldS || .7) * rig.scale * sc); const hr = m.userData.heldRot; m.rotation.set(hr ? hr[0] : 0, hr ? hr[1] : 0, hr ? hr[2] : 0);
+      if (A && A.handR) v.copy(A.handR); else rig.hand.getWorldPosition(v); m.position.set(v.x, v.y - .12 * rig.scale, v.z); m.scale.setScalar((m.userData.heldS || .7) * rig.scale * sc);
+      if (p.main && m.userData.sz) { const need = 1.1 * (rig.headR || .22 * rig.scale) / m.userData.sz * sc; if (m.scale.x < need) m.scale.setScalar(need); }   // главный предмет серии в лапах — не меньше половины головы героя
+      if (p.type === 'mirror' && m.userData.glass) { const ht = headTexC['hd:' + global.MK.canon(lc.spec)]; if (ht && m.userData.glass.material.map !== ht) m.userData.glass.material = new THREE.MeshBasicMaterial({ map: ht, color: '#e6eef8' });   // в зеркальце — отражение того, кто держит
+        if (rig.headH) { const hr = rig.headR || .2, hp = new THREE.Vector3(rig.root.position.x, rig.headH, rig.root.position.z), sd = v.x >= hp.x ? 1 : -1;   // держит у лица, стеклом к зрителю — видно и героя, и отражение
+          m.position.set(hp.x + sd * hr * 1.55, hp.y - hr * .45, hp.z + hr * .85); m.scale.setScalar(Math.max(m.scale.x, hr * .9 / .085 * sc)); } } const hr = m.userData.heldRot; m.rotation.set(hr ? hr[0] : 0, hr ? hr[1] : 0, hr ? hr[2] : 0);
       const ha = S[p._holder].act || {}, hk = ha.n === 'read' && READ_FLAT.has(p.type) && rig.handL ? 1 : ha.n === 'peer' && EYE_HELD.has(p.type) ? 2 : 0;
       if (p.type === 'wateringcan') { const w = ha.n === 'water' ? Math.max(0, Math.min(1, (ha.t || 0) / .45, (1 - (ha.p || 0)) / .15)) : 0; m.rotation.set(0, rig.yaw.rotation.y - Math.PI / 2, 0); m.rotateZ(-.1 - w * .7);   // носик туда, куда смотрит герой; поливает — наклоняет, из носика капает
         if (w > .4) { m.updateMatrixWorld(true); const tip = m.localToWorld(m.userData.spout.clone()); for (let i = 0; i < 10; i++) { const ph = (T * 1.7 + i / 10) % 1; sprite(haloTex('#9fd8ff'), tip.x + Math.sin(i * 2.3) * .025, tip.y - ph * .6, tip.z + Math.cos(i * 1.7) * .025, .06, .9 * (1 - ph) * w); } } }
@@ -3167,6 +3177,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
       if (A && A.mouthY != null && hk !== 2 && ha.n !== 'eat' && ha.n !== 'drink' && !m.userData.overHead) { m.updateMatrixWorld(true); const bb = new THREE.Box3().setFromObject(m), lim = A.mouthY - .02 * A.sc; if (bb.max.y > lim) m.position.y -= bb.max.y - lim; } } // книга, письмо, вещь в лапках — ниже рта, мордочку не закрывают
     else if (p._holder && S[p._holder] && !S[p._holder].vis) { m.visible = false; continue; } // вещь у героя, которого ещё нет в кадре
     else if (p._tb && L.type === 'kitchen') { m.position.set(clamp(X(p._x), 3.35, 4.45), .83, -.95); m.scale.setScalar(1.15 * sc); m.rotation.set(0, 0, 0); }
+    else if (p.skyMoon) { m.position.set(X(p._x), 0, -7); m.scale.setScalar(sc); m.rotation.set(0, 0, 0); }   // ночная луна — далеко в небе, крупная (размер — в самой луне)
     else { const zz = p.decor && big > 1.5 ? -1.9 : p.decor ? -.5 : .35; m.position.set(X(p._x), (CF && CF.floor ? CF.floor(X(p._x), zz) : 0) + (p._air || 0) * 1.2 + (m.userData.float ? Math.sin(T * 2 + p._x * 9) * .08 : 0), zz); m.scale.setScalar(big * (p.decor && big < 1.5 ? 1.6 : 1) * sc); m.rotation.set(0, 0, -(p._air || 0) * 3); }
     if (m.userData.lid) { const ok = p._open || 0; m.userData.lid.rotation.x = -ok * m.userData.lidOpen; if (ok > .05 && ok < .999 && m.visible) for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2 + T, r = .08 + ok * .25; sprite(glyphTex('★', '#ffd23f', '#ffffff'), m.position.x + Math.cos(a) * r * m.scale.x, m.position.y + (.3 + ok * .45) * m.scale.y, m.position.z + Math.sin(a) * r * .5, .09 * m.scale.x, 1 - ok * .7); } }
     if (m.userData.leaf) { const ok = p._open || 0; m.userData.leaf.rotation.y = -ok * 1.75; m.userData.doorLight.material.opacity = Math.min(1, ok * 1.6); if (ok > .05 && m.visible) sprite(haloTex('#ffe6a0'), m.position.x, m.position.y + .55 * m.scale.x, m.position.z + .1, 1.6 * m.scale.x * (.6 + ok * .4), .7 * ok); }
@@ -3208,6 +3219,17 @@ function drawCard3D(ctx, tl, seg, t, T) { MK3D._T = t + 1000;
   cam.fov = 40; cam.position.set(0, 1.25, 6.2); cam.updateProjectionMatrix(); cam.lookAt(0, 1.55, 0); sun.position.set(4, 8, 6); sun.target.position.set(0, 0, 0);
   render(ctx);
 }
+/** Голова героя для зеркальца: один раз рисуем её крупно отдельным кадром и отражаем по горизонтали. */
+const headTexC = {};
+function headTex(lc) { const key = 'hd:' + global.MK.canon(lc.spec); if (key in headTexC) return headTexC[key]; headTexC[key] = null;
+  const rig = rigFor(lc); if (!rig || !rig.headH) return null; hideAllRigs(); if (curLoc) curLoc.visible = false;
+  scene.background = canvasTex(4, 64, (g) => { const gr = g.createLinearGradient(0, 0, 0, 64); gr.addColorStop(0, '#dcecff'); gr.addColorStop(1, '#b9d4ee'); g.fillStyle = gr; g.fillRect(0, 0, 4, 64); }); scene.fog = null; lightFor('meadow', 'day');
+  ensureIn(rig.root); rig.root.visible = true; rig.root.position.set(0, 0, 0); rig.yaw.rotation.y = 0;
+  applyPose(rig, { x: 0, face: 0, emo: 'happy', act: null, walk: {}, talk: 0, vz: null, persist: 'none' }, 1.2);
+  const hy = rig.headH, hr = rig.headR || .2; cam.fov = 30; cam.position.set(0, hy, hr * 5); cam.updateProjectionMatrix(); cam.lookAt(0, hy, 0); sun.position.set(2, 6, 6); sun.target.position.set(0, 0, 0);
+  const cv = document.createElement('canvas'); cv.width = cv.height = 256; const d0 = MK3D._defer; MK3D._defer = false; try { render(cv.getContext('2d')); } catch (e) { console.log('зеркальце:', e && e.message); } finally { MK3D._defer = d0; }
+  rig.root.visible = false; const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; tx.wrapS = THREE.RepeatWrapping; tx.repeat.x = -1; tx.offset.x = 1;   // зеркально
+  return (headTexC[key] = tx); }
 MK3D.portrait = function (canvas, spec, T, opts) {
   if (!MK3D.ready) return false; hideAllRigs();
   if (curLoc) curLoc.visible = false;
