@@ -331,7 +331,7 @@ function broadcast(r) {
   for (const x of r.balls.values()) b.push([x.id, Math.round(x.x), Math.round(x.y), Math.round(x.m * 10), x.alive ? 1 : 0, (x.shield > 0 ? 1 : 0) | (x.boost > 0 ? 2 : 0) | (x.magnet > 0 ? 4 : 0)]);
   const pw = []; for (const p of r.powers.values()) pw.push([p.id, p.x, p.y, p.k]);
   const sw = r.saws.map((s) => [Math.round(s.x), Math.round(s.y)]);
-  const o = { t: 's', T: Math.round(performance.now()), R: Math.round(r.R), b, da: r.dAdd, dd: r.dDel, ev: r.ev, mt: r.meta, pw, sw }; // T — часы сервера: клиент плавно проигрывает снимки
+  const o = { t: 's', T: Math.round(TS === 1 ? performance.now() : simMs), R: Math.round(r.R), b, da: r.dAdd, dd: r.dDel, ev: r.ev, mt: r.meta, pw, sw }; // T — часы сервера: клиент плавно проигрывает снимки
   let msgSpec = null;
   if (r.tickN % 30 === 0) {
     o.rt = Math.ceil(r.rT);
@@ -557,8 +557,10 @@ function heal(r) {
   }
 }
 let last = Date.now();
+// TIME_SCALE < 1 — замедленный мир (только для записи роликов-превью: потом ускоряем видео). Обычно 1.
+const TS = +process.env.TIME_SCALE || 1; let simMs = 0;
 setInterval(() => {
-  const now = Date.now(), dt = Math.min(0.1, (now - last) / 1000); last = now;
+  const now = Date.now(), dt = Math.min(0.1, (now - last) / 1000) * TS; last = now; simMs += dt * 1000;
   for (const r of rooms.values()) {
     if (!r.clients.size) { r.emptyT += dt; if (r.emptyT > 120) rooms.delete(r.name); continue; }
     r.emptyT = 0;
