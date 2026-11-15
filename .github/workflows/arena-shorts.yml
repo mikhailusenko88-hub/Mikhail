@@ -30,7 +30,8 @@ jobs:
           GAME_URL: http://localhost:8770/index.html
           SERVER: wss://89.126.192.214/ws
           ROOM: main
-          CLIP: '45'
+          CLIP: '19'
+          WIDE: '2.2'
         run: node shorts/record.js out
       - name: Сохранить
         run: |

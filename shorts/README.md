@@ -10,4 +10,6 @@
 - Запуск в GitHub: изменить `request.txt` → workflow `arena-shorts` → ветка `arena-shorts`.
 - Локально: сервер `TEST=1 ROUND_LEN=40 node online/server.js`, страница на :8770, `CLIP=25 node shorts/record.js out`.
 
-Выкладка на YouTube пока выключена: сначала Михаил смотрит формат.
+15.11.2026: камера шире (`&wide=2.2`, переменная WIDE — видно соседние шарики, пилы, кто кого ест), ролик ~25 с
+(CLIP=19), без заставки «IS YOUR COUNTRY HERE?». Выкладка — третьим роликом дня на канал Flagball Arena: бот ветки
+`flagball` (слот 3, ~23:00 МСК) сам берёт эту папку из ветки games, снимает и выкладывает (проверка H14 в журнале yt-status).

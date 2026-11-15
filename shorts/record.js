@@ -14,6 +14,7 @@ const GAME_URL = process.env.GAME_URL || 'http://localhost:8770/index.html';
 const SERVER = process.env.SERVER || '';
 const ROOM = process.env.ROOM || 'main';
 const CLIP = +process.env.CLIP || 45;
+const WIDE = process.env.WIDE || ''; // камера шире: видно соседние шарики (15.11.2026)
 const AFTER = 6.5; // секунд после итога раунда
 const CHROME = process.env.CHROME || '/usr/bin/google-chrome';
 const flagEmoji = (c) => (c && c.length === 2 ? String.fromCodePoint(...[...c.toUpperCase()].map((ch) => 0x1f1e6 + ch.charCodeAt(0) - 65)) : '');
@@ -26,7 +27,7 @@ const NAMES = { RU: 'Russia', KZ: 'Kazakhstan', UZ: 'Uzbekistan', KG: 'Kyrgyzsta
   const ctx = await b.newContext({ viewport: { width: 540, height: 960 }, deviceScaleFactor: 2, locale: 'en-US', ignoreHTTPSErrors: true });
   const p = await ctx.newPage();
   p.on('pageerror', (e) => console.log('PAGEERR', e.message));
-  const url = GAME_URL + '?spec&room=' + encodeURIComponent(ROOM) + (SERVER ? '&server=' + encodeURIComponent(SERVER) : '');
+  const url = GAME_URL + '?spec&room=' + encodeURIComponent(ROOM) + (SERVER ? '&server=' + encodeURIComponent(SERVER) : '') + (WIDE ? '&wide=' + WIDE : '');
   await p.goto(url);
   // ждём подключения и нужного момента раунда
   let st = null;
@@ -44,7 +45,7 @@ const NAMES = { RU: 'Russia', KZ: 'Kazakhstan', UZ: 'Uzbekistan', KG: 'Kyrgyzsta
     window.__capT = setInterval(() => {
       const t = (performance.now() - t0) / 1000, d = __dir();
       if (d.banner) window.__cap = { top: '', bottom: 'PLAY FREE: FLAGBALL ARENA', bottomA: 1, bottomSize: 44 };
-      else window.__cap = t < 2.8 ? { top: 'IS YOUR COUNTRY HERE?', topSize: 44 } : { top: 'WHICH COUNTRY WINS?', topSize: 44 };
+      else window.__cap = { top: 'WHICH COUNTRY WINS?', topSize: 44 }; // без заставки-вопроса: с первого кадра игра (15.11.2026)
     }, 30);
   });
   // запись кадров
@@ -109,7 +110,7 @@ const NAMES = { RU: 'Russia', KZ: 'Kazakhstan', UZ: 'Uzbekistan', KG: 'Kyrgyzsta
     players: info.humansMax || 0,
     description: [
       win ? `Round won by ${flagEmoji(win)} ${NAMES[win] || win}!` : '',
-      'Online battle from Flagball Arena: every ball is a country. Eat smaller balls, run from bigger ones, win the round for your flag.',
+      (info.humansMax ? 'Online battle from Flagball Arena' : 'Gameplay from Flagball Arena') + ': every ball is a country. Eat smaller balls, run from bigger ones, win the round for your flag.',
       'Is your country here? Write it in the comments!',
       '#flagball #countryballs #io #shorts',
     ].filter(Boolean).join('\n\n'),
