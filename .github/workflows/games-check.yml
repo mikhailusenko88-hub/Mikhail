@@ -24,6 +24,7 @@ jobs:
             echo "game.js: $(curl -s -m 15 http://89.126.192.214:8080/mebel/ip52gz08/online/game.js | grep -c 'Flagball')"
             echo "3d: r3d.js=$(curl -s -m 15 -o /dev/null -w '%{http_code} %{size_download}' http://89.126.192.214:8080/mebel/ip52gz08/online/r3d.js) three=$(curl -s -m 15 -o /dev/null -w '%{http_code} %{size_download}' http://89.126.192.214:8080/mebel/ip52gz08/online/three.min.js) index-gl=$(grep -c 'id=\"gl\"' /tmp/p.html)"
             echo "ball-truck: $(curl -s -m 15 -o /tmp/bt.html -w '%{http_code} %{size_download}' http://89.126.192.214:8080/mebel/btkhcy7/) $(grep -o '<title>[^<]*' /tmp/bt.html | head -1) physics.js=$(curl -s -m 15 -o /dev/null -w '%{http_code}' http://89.126.192.214:8080/mebel/btkhcy7/physics.js)"
+            echo "hook-truck: $(curl -s -m 15 -o /tmp/ht.html -w '%{http_code} %{size_download}' http://89.126.192.214.nip.io:8080/mebel/htwr6p0/) $(grep -o '<title>[^<]*' /tmp/ht.html | head -1) $(grep -o 'levels.js?v=[0-9]*' /tmp/ht.html) levels.js=$(curl -s -m 15 -o /dev/null -w '%{http_code} %{size_download}' http://89.126.192.214.nip.io:8080/mebel/htwr6p0/levels.js) view-save=$(curl -s -m 15 http://89.126.192.214.nip.io:8080/mebel/htwr6p0/view.js | grep -c hooktruck_v1)"
             echo "https443 (проверка сертификата): $(curl -s -m 10 https://89.126.192.214/health || echo нет)"
             echo "cert: $(echo | timeout 10 openssl s_client -connect 89.126.192.214:443 2>/dev/null | openssl x509 -noout -issuer -enddate 2>/dev/null | tr "\n" " ")"
           } > out/result.md
