@@ -28,3 +28,4 @@
 | 2026-11-14 | 2 | cars №12 | Damas | https://youtube.com/shorts/ZFZ8yENudj4 | public |
 | 2026-11-14 | 3 | clubs №8 | Olmaliq | https://youtube.com/shorts/di_e6dCzP-M | public |
 | 2026-11-15 | 1 | cities №10 ФИНАЛ | Olmaliq | https://youtube.com/shorts/OoAUlWBsWDo | public |
+| 2026-11-15 | 2 | cars №13 ФИНАЛ | Tahoe | https://youtube.com/shorts/qHSr0v1Qqfk | public |

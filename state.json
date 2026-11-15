@@ -214,7 +214,7 @@
    ]
   },
   "cars": {
-   "no": 12,
+   "no": 13,
    "points": {
     "Epica": 26,
     "Tracker": 67,
@@ -393,18 +393,36 @@
      ],
      "link": "https://youtube.com/shorts/ZFZ8yENudj4",
      "final": false
+    },
+    {
+     "no": 13,
+     "date": "2026-11-15",
+     "slot": 2,
+     "winner": "Tahoe",
+     "top3": [
+      "Tahoe",
+      "Jiguli",
+      "Matiz"
+     ],
+     "link": "https://youtube.com/shorts/qHSr0v1Qqfk",
+     "final": true
     }
    ],
-   "champion": null,
+   "champion": "Tahoe",
    "season_races": 8,
    "season": "2026-W46",
    "new_pending": [],
-   "final_season": "2026-W45",
+   "final_season": "2026-W46",
    "champions": [
     {
      "season": "2026-W45",
      "champion": "Kia K5",
      "link": "https://youtube.com/shorts/5sIu0BCsPB4"
+    },
+    {
+     "season": "2026-W46",
+     "champion": "Tahoe",
+     "link": "https://youtube.com/shorts/qHSr0v1Qqfk"
     }
    ],
    "seasons": [
@@ -924,6 +942,16 @@
    "final": true,
    "link": "https://youtube.com/shorts/OoAUlWBsWDo",
    "title": "Qaysi shahar yutadi? Какой город победит? 🏆 Hafta finali · Финал недели #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-15",
+   "slot": 2,
+   "league": "cars",
+   "no": 13,
+   "final": true,
+   "link": "https://youtube.com/shorts/qHSr0v1Qqfk",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🏆 Hafta finali · Финал недели #shorts",
    "pl": true
   }
  ],
