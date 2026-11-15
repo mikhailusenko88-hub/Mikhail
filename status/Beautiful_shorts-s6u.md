@@ -1,17 +1,17 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-15 18:54 UTC
+Проверено: 2026-11-15 21:05 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
-- Шапка: 229 подписчиков · 140 видео
+- Шапка: 228 подписчиков · 140 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-15 17:03 · 897 просм. · Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts · a9xDYsPrIa4
+- 2026-11-15 17:03 · 1199 просм. · Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts · a9xDYsPrIa4
 - 2026-11-15 10:28 · 1246 просм. · What are 1,189 balls drawing? 🤔 Guess before the end! #shorts · p46Y16_FUkM
-- 2026-11-12 15:26 · 233 просм. · Can it break out of 6 rings? 🚀 Space edition #shorts · Dw-O_K8qMds
-- 2026-11-12 11:29 · 1105 просм. · Sunrise watercolor 🌅 wait for the tape peel! #shorts · YGXQpqT2ur0
-- 2026-11-09 21:09 · 125 просм. · Last country standing WINS! 🌍 Who are you rooting for? #shorts · irOtTngZbls
-- 2026-11-08 17:06 · 728 просм. · 1 bullet vs 5 objects — how far does it go? 😳 #shorts · viBQgmzXg88
-- 2026-11-08 12:43 · 2466 просм. · Every bounce = BIGGER ball 🎵 …but the music speeds up 😱 #shorts · 98lnRofeeH8
+- 2026-11-12 15:26 · 235 просм. · Can it break out of 6 rings? 🚀 Space edition #shorts · Dw-O_K8qMds
+- 2026-11-12 11:29 · 1107 просм. · Sunrise watercolor 🌅 wait for the tape peel! #shorts · YGXQpqT2ur0
+- 2026-11-09 21:09 · 127 просм. · Last country standing WINS! 🌍 Who are you rooting for? #shorts · irOtTngZbls
+- 2026-11-08 17:06 · 729 просм. · 1 bullet vs 5 objects — how far does it go? 😳 #shorts · viBQgmzXg88
+- 2026-11-08 12:43 · 2467 просм. · Every bounce = BIGGER ball 🎵 …but the music speeds up 😱 #shorts · 98lnRofeeH8
 - 2026-11-07 09:44 · 1117 просм. · Spiked Bat vs Katana ⚔️ Who wins? #shorts · dEGnQFq6GCU
 - 2026-11-06 12:17 · 2225 просм. · Scythe vs Dagger 💀 Who wins? #shorts · wrH8FbgHvC0
 - 2026-11-05 23:15 · 527 просм. · Katana vs Sword ⚔️ Who wins? #shorts · 5kPEHExdRks
@@ -22,12 +22,12 @@
 - 2026-11-04 09:33 · 1312 просм. · Every bounce = BIGGER ball… can it still escape 5 rings? 😱 #shorts · GQSZJ4qQ5so
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
-- 897 просмотров · Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts · a9xDYsPrIa4
+- 1,1 тыс. просмотров · Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts · a9xDYsPrIa4
 - 1,2 тыс. просмотров · What are 1,189 balls drawing? 🤔 Guess before the end! #shorts · p46Y16_FUkM
-- 233 просмотра · Can it break out of 6 rings? 🚀 Space edition #shorts · Dw-O_K8qMds
+- 235 просмотров · Can it break out of 6 rings? 🚀 Space edition #shorts · Dw-O_K8qMds
 - 1,1 тыс. просмотров · Sunrise watercolor 🌅 wait for the tape peel! #shorts · YGXQpqT2ur0
-- 125 просмотров · Last country standing WINS! 🌍 Who are you rooting for? #shorts · irOtTngZbls
-- 728 просмотров · 1 bullet vs 5 objects — how far does it go? 😳 #shorts · viBQgmzXg88
+- 127 просмотров · Last country standing WINS! 🌍 Who are you rooting for? #shorts · irOtTngZbls
+- 729 просмотров · 1 bullet vs 5 objects — how far does it go? 😳 #shorts · viBQgmzXg88
 - 2,4 тыс. просмотров · Every bounce = BIGGER ball 🎵 …but the music speeds up 😱 #shorts · 98lnRofeeH8
 - 1,1 тыс. просмотров · Spiked Bat vs Katana ⚔️ Who wins? #shorts · dEGnQFq6GCU
 - 2,2 тыс. просмотров · Scythe vs Dagger 💀 Who wins? #shorts · wrH8FbgHvC0
