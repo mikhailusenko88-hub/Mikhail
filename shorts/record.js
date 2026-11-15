@@ -15,6 +15,7 @@ const SERVER = process.env.SERVER || '';
 const ROOM = process.env.ROOM || 'main';
 const CLIP = +process.env.CLIP || 45;
 const WIDE = process.env.WIDE || ''; // камера шире: видно соседние шарики (15.11.2026)
+const END_CAP = process.env.END_CAP || 'PLAY FREE: FLAGBALL ARENA'; // пока игру не одобрили — «COMING SOON»
 const AFTER = 6.5; // секунд после итога раунда
 const CHROME = process.env.CHROME || '/usr/bin/google-chrome';
 const flagEmoji = (c) => (c && c.length === 2 ? String.fromCodePoint(...[...c.toUpperCase()].map((ch) => 0x1f1e6 + ch.charCodeAt(0) - 65)) : '');
@@ -40,14 +41,14 @@ const NAMES = { RU: 'Russia', KZ: 'Kazakhstan', UZ: 'Uzbekistan', KG: 'Kyrgyzsta
     await p.waitForTimeout(rt > CLIP + 8 ? 3000 : 150);
   }
   // подписи меняет сама страница — точно по кадрам
-  await p.evaluate(() => {
+  await p.evaluate((END_CAP_TXT) => {
     const t0 = performance.now();
     window.__capT = setInterval(() => {
       const t = (performance.now() - t0) / 1000, d = __dir();
-      if (d.banner) window.__cap = { top: '', bottom: 'PLAY FREE: FLAGBALL ARENA', bottomA: 1, bottomSize: 44 };
+      if (d.banner) window.__cap = { top: '', bottom: END_CAP_TXT, bottomA: 1, bottomSize: 44 };
       else window.__cap = { top: 'WHICH COUNTRY WINS?', topSize: 44 }; // без заставки-вопроса: с первого кадра игра (15.11.2026)
     }, 30);
-  });
+  }, END_CAP);
   // запись кадров
   const cdp = await ctx.newCDPSession(p);
   const list = [];
