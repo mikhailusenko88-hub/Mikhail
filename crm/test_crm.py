@@ -1648,6 +1648,19 @@ class TestOutbox(Base):
         self.assertIn('class="mailtext"', page); self.assertNotIn('class="row src"', page)   # письмо на всю ширину, не в колонку
         row = self.ob._row(p["id"]); self.assertEqual(row["payload"], "")      # расшифровка после отправки не хранится
 
+    def test_sender_mikhail_and_only_allowed(self) -> None:
+        p, env = self.letter(subject="Дизайнерам", **{"from": "mikhail"}); self.put(env)
+        p2, env2 = self.letter(subject="Чужой", **{"from": "boss@nashdekor.ru"}); self.put(env2)
+        p3, env3 = self.letter(subject="Полный адрес", **{"from": "Mikhail@nashdekor.ru"}); self.put(env3)
+        self.ob.run()
+        got = {x[1]: x[3] for x in self.sent}
+        self.assertEqual(got["Дизайнерам"]["sender"], "Михаил — Наш декор <mikhail@nashdekor.ru>")
+        self.assertEqual(got["Дизайнерам"]["reply_to"], "info@nashdekor.ru")      # ответы — по-прежнему в info@
+        self.assertEqual(got["Полный адрес"]["sender"], "Михаил — Наш декор <mikhail@nashdekor.ru>")
+        self.assertNotIn("Чужой", got)
+        self.assertIn("отправлять можно только от", self.ob.status(p2["id"])["error"])
+        self.assertEqual(self.ob.status(p["id"])["status"], "sent")
+
     def test_bad_letters_limits_and_switch(self) -> None:
         import uuid
         import outbox

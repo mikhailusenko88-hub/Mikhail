@@ -46,6 +46,8 @@ REPLY_ATT_TOTAL = 20 * 1024 * 1024         # вложений всего (бол
 PUBLIC_MAIL = {"gmail.com", "googlemail.com", "mail.ru", "bk.ru", "inbox.ru", "list.ru", "internet.ru", "yandex.ru",
                "ya.ru", "yandex.com", "yandex.by", "yandex.kz", "rambler.ru", "outlook.com", "hotmail.com", "live.com",
                "icloud.com", "me.com", "yahoo.com", "proton.me", "protonmail.com", "gmx.com", "aol.com"}
+# от кого Claude может отправлять (поле "from" письма): ящик → имя в «От кого»; по умолчанию — zapros
+SENDERS = {"zapros": "Наш декор", "mikhail": "Михаил — Наш декор"}
 SUBJ_PREFIX = re.compile(r"^\s*(re|fw|fwd|ответ|отв|пересл|aw|wg|tr)\s*(\[\d+\]|\(\d+\))?\s*:\s*", re.I)
 
 SCHEMA = """
@@ -167,8 +169,8 @@ class Outbox:
         except ValueError:
             pass
 
-    def sender(self) -> str:
-        return f"Наш декор <zapros@{self.domain}>"
+    def sender(self, box: str = "zapros") -> str:
+        return f"{SENDERS.get(box, SENDERS['zapros'])} <{box if box in SENDERS else 'zapros'}@{self.domain}>"
 
     def msgid(self, mid: str) -> str:
         return f"<{mid}@{self.domain}>"
@@ -324,6 +326,11 @@ class Outbox:
         reply = str(p.get("reply_to") or f"info@{self.domain}").strip()
         if not EMAIL_RE.match(reply):
             return None, "непонятный адрес для ответа"
+        box = str(p.get("from") or "zapros").strip().lower()
+        if box.endswith("@" + self.domain.lower()):
+            box = box.rsplit("@", 1)[0]
+        if box not in SENDERS:
+            return None, "отправлять можно только от: " + ", ".join(f"{b}@{self.domain}" for b in SENDERS)
         atts, total = [], 0
         for a in p.get("attachments") or []:
             try:
@@ -338,7 +345,8 @@ class Outbox:
             atts.append((name, data, mime))
         if total > MAX_ATTACH:
             return None, "вложения больше 7 МБ"
-        return {"to": ", ".join(to_list), "subject": subject, "body": body, "reply_to": reply, "attachments": atts}, ""
+        return {"to": ", ".join(to_list), "subject": subject, "body": body, "reply_to": reply, "attachments": atts,
+                "sender": self.sender(box), "box": box}, ""
 
     def sent_today(self) -> int:
         day = datetime.now().astimezone().date().isoformat()
@@ -353,13 +361,13 @@ class Outbox:
                 c.execute("UPDATE outbox_mail SET " + ", ".join(f"{k}=?" for k in f) + " WHERE id=?", (*f.values(), mid))
 
     def _deliver(self, mid: str, m: dict[str, Any]) -> str:
-        ok = self.send(m["to"], m["subject"], m["body"], sender=self.sender(), reply_to=m["reply_to"],
+        ok = self.send(m["to"], m["subject"], m["body"], sender=m.get("sender") or self.sender(), reply_to=m["reply_to"],
                        attachments=m["attachments"], msgid=self.msgid(mid))
         row = self._row(mid)
         attempts = int(row["attempts"]) + 1 if row else 1
         if ok:
             self._record(mid, status="sent", sent_at=_now(), attempts=attempts, error="", payload="")
-            self.notify("Письмо отправлено с zapros@", f"{m['to']}: {m['subject']}"[:180], "/outbox")
+            self.notify(f"Письмо отправлено с {m.get('box') or 'zapros'}@", f"{m['to']}: {m['subject']}"[:180], "/outbox")
             return f"{mid}: отправлено → {m['to']}"
         if attempts >= 3:
             self._record(mid, status="error", attempts=attempts, error="почтовый сервер не принял письмо", payload="")
