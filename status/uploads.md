@@ -27,3 +27,4 @@
 | 2026-11-14 | 1 | cities №9 | Chirchiq | https://youtube.com/shorts/TXfltN8hkJ4 | public |
 | 2026-11-14 | 2 | cars №12 | Damas | https://youtube.com/shorts/ZFZ8yENudj4 | public |
 | 2026-11-14 | 3 | clubs №8 | Olmaliq | https://youtube.com/shorts/di_e6dCzP-M | public |
+| 2026-11-15 | 1 | cities №10 ФИНАЛ | Olmaliq | https://youtube.com/shorts/OoAUlWBsWDo | public |

@@ -1,7 +1,7 @@
 {
  "leagues": {
   "cities": {
-   "no": 9,
+   "no": 10,
    "points": {
     "Angren": 25,
     "Chirchiq": 43,
@@ -140,18 +140,36 @@
      ],
      "link": "https://youtube.com/shorts/TXfltN8hkJ4",
      "final": false
+    },
+    {
+     "no": 10,
+     "date": "2026-11-15",
+     "slot": 1,
+     "winner": "Olmaliq",
+     "top3": [
+      "Olmaliq",
+      "Qarshi",
+      "Shahrisabz"
+     ],
+     "link": "https://youtube.com/shorts/OoAUlWBsWDo",
+     "final": true
     }
    ],
-   "champion": null,
+   "champion": "Olmaliq",
    "season_races": 4,
    "season": "2026-W46",
    "new_pending": [],
-   "final_season": "2026-W45",
+   "final_season": "2026-W46",
    "champions": [
     {
      "season": "2026-W45",
      "champion": "Xiva",
      "link": "https://youtube.com/shorts/Z_9cGwbFfE0"
+    },
+    {
+     "season": "2026-W46",
+     "champion": "Olmaliq",
+     "link": "https://youtube.com/shorts/OoAUlWBsWDo"
     }
    ],
    "seasons": [
@@ -896,6 +914,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/di_e6dCzP-M",
    "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №8 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-15",
+   "slot": 1,
+   "league": "cities",
+   "no": 10,
+   "final": true,
+   "link": "https://youtube.com/shorts/OoAUlWBsWDo",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏆 Hafta finali · Финал недели #shorts",
    "pl": true
   }
  ],
