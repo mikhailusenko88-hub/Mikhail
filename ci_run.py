@@ -138,7 +138,20 @@ def arena_slot(d, slot, mode, t0):
         meta = json.load(open(f"{out}/meta.json"))
         mp4 = f"{out}/{meta['file']}"
         log(f"ролик с арены: {meta['duration']} с, победа {meta.get('winner')}, людей {meta.get('players')}")
-        desc = meta["description"].replace("#flagball #countryballs #io #shorts", "").rstrip()
+        # названия стран полностью (в record.js короткий словарь → «BD», «SA»)
+        NM = json.load(open("names.json"))
+        SHORTN = {"us": "USA", "gb": "UK", "ae": "UAE", "kr": "Korea", "ru": "Russia", "cz": "Czechia"}
+        nm = lambda c: SHORTN.get(c.lower(), NM.get(c.lower(), c.upper()))  # noqa: E731
+        flag = lambda c: "".join(chr(0x1F1E6 + ord(ch) - 65) for ch in c.upper()) if len(c) == 2 else ""  # noqa: E731
+        top = meta.get("top") or []
+        vs = " vs ".join(f"{flag(c)} {nm(c)}" for c, _ in top[:3])
+        meta["title"] = (("Real players! " if meta.get("players") else "") +
+                         (f"Which country wins? {vs}" if vs else "Which country wins this round?") + " #shorts")
+        win = meta.get("winner")
+        desc = (f"Round won by {flag(win)} {nm(win)}!\n\n" if win else "") + (
+            ("Online battle" if meta.get("players") else "Gameplay") + " from Flagball Arena: every ball is a country. "
+            "Eat smaller balls, run from bigger ones, win the round for your flag.\n\n"
+            "Is your country here? Write it in the comments!")
         desc += ("\n\nFlagball Arena — the online game is coming soon. Daily country marble races on this channel."
                  "\n\n#shorts #flagball #countryballs #iogame #flags #countries")
         title = meta["title"][:100]
