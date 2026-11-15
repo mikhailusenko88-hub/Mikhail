@@ -27,7 +27,7 @@ const PROPS = [[/^тыкв/, 'pumpkin'], [/^(гриб|грибок)/, 'mushroom'
   [/^(кастрюл|котел|котелок|котелк)/, 'pot'], [/^(тарелк|тарелоч|блюдц|миск)/, 'plate'], [/^(ложк|ложечк)/, 'spoon'], [/^чайник/, 'teapot'], [/^(бутерброд|сэндвич|сендвич)/, 'sandwich'], [/^пицц/, 'pizza'],
   [/^(клубник|земляник|ягод|малин|черник)/, 'strawberry'], [/^виноград/, 'grapes'], [/^(вишн|вишен|черешн)/, 'cherry'], [/^(желуд|орех|орешек|орешк)/, 'acorn'], [/^(шишк|шишек)/, 'pinecone'], [/^(снежок|снежк|снежки)/, 'snowball'],
   [/^(санк|сани$|санях$|салазк)/, 'sled'], [/^(колокольчик|колокол)/, 'bell'], [/^(зеркал)/, 'mirror'], [/^(банк[аиуе]$|банкой$|баночк|варень|джем)/, 'jar'], [/^(перо$|пера$|пером$|перышк)/, 'feather'],
-  [/^(самолет|самолетик)/, 'plane'], [/^(подушк)/, 'pillow'], [/^(бабочк|бабочек)/, 'butterfly'], [/^(сачок|сачк)/, 'net'], [/^(дудочк|дудк|флейт|свирел)/, 'flute'],
+  [/^(самолет|самолетик)/, 'plane'], [/^(подушк)/, 'pillow'], [/^(бабочк|бабочек)/, 'butterfly'], [/^(сачок|сачк)/, 'net'], [/^луж(?!айк)/, 'puddle'], [/^(дудочк|дудк|флейт|свирел)/, 'flute'],
   [/^торт/, 'cake'], [/^кост/, 'bone'], [/^морков/, 'carrot'], [/^сыр/, 'cheese'], [/^(шарик|шар$|шара|шаром)/, 'balloon'], [/^ключ/, 'key'], [/^(чашк|кружк)/, 'cup']];
 // Крупные вещи «в мире сцены»: появляются, когда о них говорят
 const DECOR = [[/^двер/, 'door'], [/^(лун[аыеу]$|луной|месяц|полумесяц)/, 'moon'], [/^(привидени|призрак|приведени)/, 'ghost'], [/^(летуч)/, 'bat'],
@@ -207,7 +207,7 @@ S.parse = function (text, lib, opts) {
       words.forEach((w, wi) => {
         let type = objOf(w);
         if (!type) { if (cue && wi > 0 && /^(огромн|больш|волшебн|страшн|светящ|чудесн|странн|необычн)/.test(words[wi - 1]) && w.length > 3 && !/^(одн|свет|цвет|друг|сам|так|очен|как|кто|что|след|потол|небо|неб|ж[её]лт|красн|зел[её]н|син|рыж|бел|ч[её]рн|сер|розов|голуб|оранж|фиолет|коричн)/.test(w) && !GENERIC.has(w) && !idx.some(([n]) => w.startsWith(n.slice(0, 4)))) unknownObj.set(w, text.trim()); return; }
-        const vanish0 = /(исчез|пропал|растаял|улетел|нет больше)/.test(d);
+        const vanish0 = /(исчез|пропал|растаял|улетел|нет больше|высох|испарил)/.test(d);
         if (!absent) { sc._said = sc._said || {}; if (!sc._said[type]) sc._said[type] = { at: sc.steps.length, who: who && who !== 'Р' ? who : null }; }
         // «Где наш торт?» — если торт тут лежал, он пропадает (на звук «вжух», если он был только что)
         if ((absent && !vanish0) || ((isQ || maybe) && !ep.scenes.some(x => x.props.some(q => q.type === type && (!q.hidden || q._shown))))) (ep._absent = ep._absent || new Set()).add(type);   // «ищем клад», «где радуга?» — вещи по сюжету ещё нет: в начале серии её не показываем
@@ -230,7 +230,7 @@ S.parse = function (text, lib, opts) {
         const big = /(огромн|громадн|гигантск|больш)/.test(near) || BIG_DEFAULT.has(type), small = /(маленьк|крошечн|малюс)/.test(near);
         let color = null; for (const ww of words.slice(Math.max(0, wi - 2), wi)) { const c = global.MKMaker && global.MKMaker.colorOf(ww); if (c) color = c.hex; }
         const glow = (glowAdj && !glowNow) || type === 'garland', glowStatic = type === 'garland';
-        const vanish = /(исчез|пропал|растаял|улетел|нет больше)/.test(d);
+        const vanish = /(исчез|пропал|растаял|улетел|нет больше|высох|испарил)/.test(d);
         const morph = !!(sc._vanishLn && sc._ln - sc._vanishLn <= 2 && !vanish); const appear = /(появил|возник|вырос|(^|[^а-я])вдруг)/.test(d) || (type === 'door' && /волшебн/.test(d)) || morph;
         const fresh = /(ещ[её] одн|друг[аоу]я|нов[аоы][яйе])/.test(d);
         const mine = /((^|[^а-я])наш(а|е|и|у)?|(^|[^а-я])мо[йяеё]|у меня|у нас)(?![а-я])/.test(near) && who && who !== 'Р' && !big;
@@ -583,7 +583,7 @@ S.OBJECTS = { pumpkin: 'тыква', jack: 'тыква-фонарь (свети�
   telescope: 'телескоп', rocket: 'ракета', crown: 'корона', flag: 'флаг', paints: 'краски с кисточкой', pencil: 'карандаш', pot: 'кастрюля', plate: 'тарелка', spoon: 'ложка', teapot: 'чайник', sandwich: 'бутерброд', pizza: 'пицца',
   strawberry: 'клубника', grapes: 'виноград', cherry: 'вишня', acorn: 'жёлудь', pinecone: 'шишка', snowball: 'снежок', sled: 'санки', bell: 'колокольчик', mirror: 'зеркальце', jar: 'банка варенья', feather: 'пёрышко',
   plane: 'самолётик', pillow: 'подушка', butterfly: 'бабочка', net: 'сачок', flute: 'дудочка',
-  umbrella: 'зонтик', wateringcan: 'лейка', bucket: 'ведро', shovel: 'лопатка', basket: 'корзинка', bag: 'сумка', phone: 'телефон', car: 'машинка', teddy: 'мишка-игрушка', drum: 'барабан', guitar: 'гитара', kite: 'воздушный змей' };
+  umbrella: 'зонтик', wateringcan: 'лейка', bucket: 'ведро', puddle: 'лужа (на улице/площадке; «высохла» — исчезает)', shovel: 'лопатка', basket: 'корзинка', bag: 'сумка', phone: 'телефон', car: 'машинка', teddy: 'мишка-игрушка', drum: 'барабан', guitar: 'гитара', kite: 'воздушный змей' };
 /** Раскадровка простыми словами: что программа поняла из текста. */
 S.storyboard = function (ep, lib, extraChars, extraLocs) {
   const nm = id => id === 'Р' ? 'Рассказчик' : ((extraChars || []).find(c => c.id === id) || (lib.characters[id] || {}).spec || {}).name || id;

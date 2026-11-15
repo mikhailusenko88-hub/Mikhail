@@ -1254,6 +1254,7 @@ function pmat(c, kind, map) { // материал предмета; в обыч�
   let m;
   switch (kind) {
     case 'gloss': m = new THREE.MeshPhysicalMaterial(Object.assign(o, { roughness: .32, clearcoat: 1, clearcoatRoughness: .08, envMapIntensity: .9 })); break;
+    case 'water': m = new THREE.MeshPhysicalMaterial(Object.assign(o, { roughness: .03, metalness: 0, clearcoat: 1, clearcoatRoughness: .02, envMapIntensity: 1.6, ior: 1.33, specularIntensity: 1 })); break;   // лужа: гладкая вода, отражает небо
     case 'plastic': m = new THREE.MeshPhysicalMaterial(Object.assign(o, { roughness: .42, clearcoat: .6, clearcoatRoughness: .2 })); break;
     case 'metal': m = new THREE.MeshStandardMaterial(Object.assign(o, { metalness: 1, roughness: .3, envMapIntensity: 1.3 })); break;
     case 'wood': m = new THREE.MeshStandardMaterial(Object.assign(o, { roughness: .72 })); break;
@@ -1630,6 +1631,10 @@ function propMesh(p) {
     case 'pot': { const c0 = cl || '#9aa3ad'; A(lathe([[0, 0], [.15, 0], [.16, .01], [.16, .17], [.152, .17], [.152, .015], [0, .015]], 40), P(c0, 'metal'));
       const ld = A(lathe([[0, .19], [.165, .17], [.168, .175], [0, .2]], 40), P(c0, 'metal'), g, 0); A(G.sph(.02, 12, 10), P('#222222', 'plastic'), g, 0).position.y = .205;
       for (const s of [-1, 1]) { const h = A(G.tor(.028, .008, 8, 16, Math.PI), P('#222222', 'plastic'), g, 0); h.position.set(s * .17, .13, 0); h.rotation.set(0, s > 0 ? 0 : Math.PI, -Math.PI / 2); } break; }
+    case 'puddle': { // лужа (15.11, для серии 31): плоская вода с неровным краем и тёмным мокрым ободком — лежит на земле/асфальте
+      const blob = (rx, rz, seed) => { const sh = new THREE.Shape(), N = 64; for (let i = 0; i <= N; i++) { const a = i / N * Math.PI * 2, k = 1 + .12 * Math.sin(a * 3 + seed) + .07 * Math.sin(a * 5 + seed * 2.3) + .04 * Math.sin(a * 9 + seed * .7); const x = Math.cos(a) * rx * k, z = Math.sin(a) * rz * k; if (i) sh.lineTo(x, z); else sh.moveTo(x, z); } return new THREE.ShapeGeometry(sh, 2); };
+      const rim = A(blob(.92, .6, 1.3), P(cl ? shadeC(cl, .45) : '#3c3f44', 'paper'), g, 0); rim.rotation.x = -Math.PI / 2; rim.position.y = .004; rim.material = rim.material.clone(); rim.material.transparent = true; rim.material.opacity = .55; rim.material.depthWrite = false;
+      const w = A(blob(.8, .52, 1.3), P(cl || '#5f7488', 'water'), g, 0); w.rotation.x = -Math.PI / 2; w.position.y = .008; w.renderOrder = 1; break; }
     case 'plate': { const c0 = cl || '#ffffff'; A(lathe([[0, 0], [.07, 0], [.08, .006], [.14, .022], [.15, .03], [.145, .032], [.08, .012], [0, .012]], 40), P(c0, 'ceramic'));
       const rm = A(G.tor(.135, .004, 8, 48), P('#3d8fe0', 'ceramic'), g, 0); rm.rotation.x = Math.PI / 2; rm.position.y = .027; break; }
     case 'spoon': { const c0 = cl || '#c9c9c9'; const sp = new THREE.Group(); sp.position.y = .012; g.add(sp); const bw = A(G.sph(.03, 20, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), P(c0, 'metal'), sp, 0); bw.scale.set(1, .35, 1.4); bw.position.x = .08; bw.material = bw.material; bw.rotation.x = Math.PI;
