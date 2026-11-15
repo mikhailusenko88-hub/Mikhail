@@ -14,7 +14,7 @@ const os = require('os');
 const path = require('path');
 
 const PORT = +process.env.PORT || 8091;
-const VERSION = '1.2.3';
+const VERSION = '1.3.0';
 const ROUND_LEN = +process.env.ROUND_LEN || 180; // раунд стран, секунд
 const MAX_ACC = 12;                               // номера украшений (шапки, очки…)
 const STATE_FILE = process.env.STATE_FILE || path.join(os.tmpdir(), 'ballio-day.json');
@@ -83,39 +83,75 @@ function dayTop(n) { checkDay(); return Object.entries(day.pts).sort((a, b) => b
 setInterval(saveDay, 60000);
 
 // ---------------- Комнаты ----------------
+// Настройки своей комнаты (меняет хозяин — первый вошедший живой игрок). В общей арене main — всегда по умолчанию.
+//   mode: 0 — каждый сам за себя, 1 — две команды (синие/красные), 2 — друзья против ботов
+//   sp: скорость ×1 / ×1,5 / ×2;  bots: 0 — нет, 1 — мало, 2 — обычно, 3 — много;  diff: 0 — лёгкие, 1 — обычные, 2 — сильные
+//   saws: 0 — нет, 1 — обычно, 2 — много;  rl: длина раунда, с
+const CFG0 = { mode: 0, sp: 1, bots: 2, diff: 1, saws: 1, rl: ROUND_LEN };
+function cleanCfg(o, old) {
+  const c = Object.assign({}, old || CFG0), pick = (v, list) => (list.indexOf(+v) >= 0 ? +v : undefined);
+  if (o && typeof o === 'object') {
+    const m = pick(o.mode, [0, 1, 2]); if (m !== undefined) c.mode = m;
+    const sp = pick(o.sp, [1, 1.5, 2]); if (sp !== undefined) c.sp = sp;
+    const b = pick(o.bots, [0, 1, 2, 3]); if (b !== undefined) c.bots = b;
+    const d = pick(o.diff, [0, 1, 2]); if (d !== undefined) c.diff = d;
+    const w = pick(o.saws, [0, 1, 2]); if (w !== undefined) c.saws = w;
+    const rl = pick(o.rl, [120, 180, 300]); if (rl !== undefined) c.rl = rl;
+  }
+  return c;
+}
 const rooms = new Map();
 function getRoom(name) {
   let r = rooms.get(name);
-  if (!r) { r = { name, R: 1180, balls: new Map(), dots: new Map(), powers: new Map(), saws: [], clients: new Set(), nid: 1, did: 1, pid: 1, powT: 0, dAdd: [], dDel: [], ev: [], meta: [], tickN: 0, emptyT: 0, rT: ROUND_LEN, sc: {}, scAll: {} }; rooms.set(name, r); }
+  if (!r) { r = { name, R: 1180, balls: new Map(), dots: new Map(), powers: new Map(), saws: [], clients: new Set(), nid: 1, did: 1, pid: 1, powT: 0, dAdd: [], dDel: [], ev: [], meta: [], tickN: 0, emptyT: 0, rT: ROUND_LEN, sc: {}, scAll: {}, ts: [0, 0, 0], cfg: Object.assign({}, CFG0), host: 0 }; rooms.set(name, r); }
   return r;
 }
+const sameTeam = (a, b) => a.team > 0 && a.team === b.team;
+const plainRoom = (r) => { const c = r.cfg; return c.mode === 0 && c.sp === 1 && c.bots >= 2 && c.diff >= 1 && c.saws >= 1; };
+// в какую команду поставить новенького: где меньше живых игроков (а при равенстве — где меньше шариков)
+function balanceTeam(r, human) {
+  const n = [0, 0, 0], all = [0, 0, 0];
+  for (const b of r.balls.values()) if (b.team) { all[b.team]++; if (b.human) n[b.team]++; }
+  if (human) return n[1] < n[2] ? 1 : n[2] < n[1] ? 2 : all[1] <= all[2] ? 1 : 2;
+  return all[1] <= all[2] ? 1 : 2;
+}
+function teamFor(r, b) { const m = r.cfg.mode; if (m === 2) return b.human ? 1 : 2; if (m === 1) return b.wantTeam === 1 || b.wantTeam === 2 ? b.wantTeam : balanceTeam(r, b.human); return 0; }
+function retag(r) { // режим сменился — заново раздаём команды
+  for (const b of r.balls.values()) b.team = 0;
+  const list = Array.from(r.balls.values()).sort((a, c) => (c.human - a.human));
+  for (const b of list) { b.team = teamFor(r, b); r.meta.push(metaOf(b)); }
+}
+function sendCfg(r) { const msg = JSON.stringify({ t: 'cfg', cfg: r.cfg, host: r.host }); for (const ws of r.clients) ws.send(msg); }
 function humans(r) { let n = 0; for (const b of r.balls.values()) if (b.human) n++; return n; }
 function addDot(r, x, y) { if (x === undefined) { const p = randIn(r.R * 0.97); x = p.x; y = p.y; } const d = { id: r.did++, x: Math.round(x), y: Math.round(y), c: (Math.random() * 8) | 0 }; r.dots.set(d.id, d); r.dAdd.push([d.id, d.x, d.y, d.c]); }
-const metaOf = (b) => [b.id, b.name, b.skin, b.human ? 1 : 0, b.acc | 0];
+const metaOf = (b) => [b.id, b.name, b.skin, b.human ? 1 : 0, b.acc | 0, b.team | 0];
 function newBall(r, o) {
-  const b = Object.assign({ id: r.nid++, x: 0, y: 0, vx: 0, vy: 0, m: 10, alive: true, shield: 0, boost: 0, magnet: 0, sawCD: 0, tx: 0, ty: 0, aiT: 0, flee: false, respawnT: 0, human: false, name: '', skin: 'US', acc: 0, ws: null, cx: 0, cy: 0, lastM: 0, diedAt: 0, reviveAt: -1e12 }, o);
-  b.r = rOf(b.m); b.cx = b.x; b.cy = b.y; r.balls.set(b.id, b); r.meta.push(metaOf(b)); return b;
+  const b = Object.assign({ id: r.nid++, x: 0, y: 0, vx: 0, vy: 0, m: 10, alive: true, shield: 0, boost: 0, magnet: 0, sawCD: 0, tx: 0, ty: 0, aiT: 0, flee: false, respawnT: 0, human: false, name: '', skin: 'US', acc: 0, ws: null, cx: 0, cy: 0, lastM: 0, diedAt: 0, reviveAt: -1e12, team: 0, wantTeam: 0, preyId: 0 }, o);
+  b.team = teamFor(r, b); b.r = rOf(b.m); b.cx = b.x; b.cy = b.y; r.balls.set(b.id, b); r.meta.push(metaOf(b)); return b;
 }
 // масса, набранная шариком, идёт в зачёт его стране: живым игрокам целиком, ботам — меньше
 function gain(r, b, amt) {
   b.m += amt; b.r = rOf(b.m);
-  // зачёт стран — только живые игроки; все боты вместе — одна нейтральная команда «Боты» (BOT),
-  // чтобы раунд не выигрывала «Испания», за которую играл бот. Для камеры роликов — отдельный счёт по флагам с ботами.
-  const team = b.human ? b.skin : 'BOT';
-  r.sc[team] = (r.sc[team] || 0) + amt * (b.human ? 1 : BOT_K);
+  // зачёт стран — только живые игроки (боты в таблицу стран не попадают: раньше там первым шёл «Bots», выглядело странно).
+  // Для камеры роликов — отдельный счёт по флагам вместе с ботами. В командах — счёт команд.
+  if (b.human) r.sc[b.skin] = (r.sc[b.skin] || 0) + amt;
+  if (b.team) r.ts[b.team] += amt * (b.human ? 1 : r.cfg.mode === 2 ? BOT_COOP : BOT_TEAM);
   r.scAll[b.skin] = (r.scAll[b.skin] || 0) + amt * (b.human ? 1 : 0.4);
-  if (b.human) { checkDay(); day.pts[b.skin] = (day.pts[b.skin] || 0) + amt; }
+  if (b.human && plainRoom(r)) { checkDay(); day.pts[b.skin] = (day.pts[b.skin] || 0) + amt; } // в комнатах со своими правилами (скорость ×2, без ботов…) очки дня не копим
 }
-const BOT_K = 0.15; // вес очков ботов в их общей команде: на боевом сервере при 0,25 боты набирали ~1160 за 90 с — обычный одиночка почти не выигрывал; 0,15 — средний игрок выигрывает примерно половину раундов, сильный — почти все
+const BOT_TEAM = 0.5;  // в двух командах боты есть у обеих сторон — их очки идут в зачёт наполовину (решают живые)
+const BOT_COOP = 0.25; // «друзья против ботов»: у ботов шариков больше, поэтому их очки весят меньше
 const roundTop = (r, n, all) => Object.entries(all ? r.scAll : r.sc).sort((a, b) => b[1] - a[1]).slice(0, n).map(([f, p]) => [f, Math.round(p)]);
 function endRound(r) {
   const top = roundTop(r, 5), topAll = roundTop(r, 5, true);
-  if (top.length && top[0][0] !== 'BOT') { checkDay(); day.wins[top[0][0]] = (day.wins[top[0][0]] || 0) + 1; }
+  if (top.length && r.name === 'main') { checkDay(); day.wins[top[0][0]] = (day.wins[top[0][0]] || 0) + 1; }
   const dt10 = dayTop(10);
-  const msg = JSON.stringify({ t: 'rw', win: top.length ? top[0][0] : '', top, day: dt10 });
+  const o = { t: 'rw', win: top.length ? top[0][0] : '', top, day: dt10 };
+  if (r.cfg.mode) { o.ts = [Math.round(r.ts[1]), Math.round(r.ts[2])]; o.tw = r.ts[1] > r.ts[2] ? 1 : r.ts[2] > r.ts[1] ? 2 : 0; }
+  const msg = JSON.stringify(o);
   const msgSpec = JSON.stringify({ t: 'rw', win: topAll.length ? topAll[0][0] : '', top: topAll, day: dt10 });
   for (const ws of r.clients) ws.send(ws.spec ? msgSpec : msg);
-  r.sc = {}; r.scAll = {}; r.rT = ROUND_LEN; saveDay();
+  r.sc = {}; r.scAll = {}; r.ts = [0, 0, 0]; r.rT = r.cfg.rl; saveDay();
 }
 function cleanName(s, fallback) {
   let n = Array.from(String(s || '').replace(/[<>&"'`\u0000-\u001f\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g, '').trim()).slice(0, 14).join('').trim(); // по символам, не режем эмодзи пополам; без невидимых и «переворачивающих» знаков
@@ -135,28 +171,69 @@ function safeSpot(r) {
 }
 function freeSkin(r) { const used = new Set(); for (const b of r.balls.values()) used.add(b.skin); const free = FLAGS.filter((f) => !used.has(f)); const pool = free.length ? free : FLAGS; return pool[(Math.random() * pool.length) | 0]; }
 
-// новичка первые 12 с после появления боты не преследуют (первые секунды решают, останется ли игрок)
-const FRESH_MS = 12000;
+// новичка первые секунды после появления боты не преследуют (первые секунды решают, останется ли игрок)
+const FRESH_MS = [15000, 12000, 6000];
+// сложность ботов: [лёгкие, обычные, сильные]
+const AI = {
+  react: [[0.5, 0.35], [0.25, 0.2], [0.12, 0.08]],   // как часто думают: база + случайная добавка, с
+  lazy: [0.7, 0.45, 0.12],                            // доля «раздумий», когда бот не трогает живого игрока
+  huntH: [180, 240, 420], huntB: [300, 380, 520],     // с какого расстояния охотится на игрока / на бота
+  lead: [0, 0.3, 1],                                  // упреждение: 0 — едет в шарик, 1 — считает точку встречи
+  speed: [0.78, 0.85, 0.93],                          // доля от максимальной скорости
+  turn: [3.2, 5, 7.5],                                // как быстро поворачивает, рад/с (плавно, без рывков)
+  sawSee: [70, 120, 220],                             // за сколько видит пилу
+};
+// точка встречи с целью: где цель будет через t, если бот поедет туда со своей скоростью
+function intercept(b, o, sp, k) {
+  if (!k) return [o.x, o.y];
+  let t = Math.hypot(o.x - b.x, o.y - b.y) / Math.max(60, sp);
+  for (let i = 0; i < 3; i++) { const px = o.x + o.vx * t, py = o.y + o.vy * t; t = Math.hypot(px - b.x, py - b.y) / Math.max(60, sp); }
+  t = Math.min(1.4, t) * k;
+  return [o.x + o.vx * t, o.y + o.vy * t];
+}
 function think(r, b) {
-  let threat = null, td = 1e9, prey = null, pd = 1e9; const now = Date.now();
+  const D = r.cfg.diff, now = Date.now();
+  let threat = null, td = 1e9, prey = null, pd = 1e9;
   for (const o of r.balls.values()) {
-    if (o === b || !o.alive) continue;
+    if (o === b || !o.alive || sameTeam(o, b)) continue;
     const d = Math.hypot(o.x - b.x, o.y - b.y) - o.r - b.r;
     if (o.r > b.r * 1.12 && d < 260 + o.r && d < td) { threat = o; td = d; }
-    if (b.r > o.r * 1.3 && d < (o.human ? 240 : 380) && d < pd && o.shield <= 0 && !(o.human && b.lazyHuman) && !(o.human && now - (o.spawnAt || 0) < FRESH_MS)) { prey = o; pd = d; }
+    if (b.r > o.r * 1.3 && d < (o.human ? AI.huntH[D] : AI.huntB[D]) && d < pd && o.shield <= 0 && !(o.human && b.lazyHuman) && !(o.human && now - (o.spawnAt || 0) < FRESH_MS[D])) { prey = o; pd = d; }
   }
-  // большим ботам пилы опасны — объезжают
-  if (b.r > SAW_R * 1.15) for (const s of r.saws) { const d = Math.hypot(s.x - b.x, s.y - b.y) - SAW_R - b.r; if (d < 120 && d < td) { threat = s; td = d; } }
-  b.flee = false;
-  if (threat && (!prey || td < pd * 0.7)) { const a = Math.atan2(b.y - threat.y, b.x - threat.x) + (Math.random() - 0.5) * 0.6; b.tx = b.x + Math.cos(a) * 400; b.ty = b.y + Math.sin(a) * 400; b.flee = true; return; }
-  if (prey && Math.random() > 0.12) { b.tx = prey.x + prey.vx * 0.3; b.ty = prey.y + prey.vy * 0.3; return; }
+  // большим ботам пилы опасны — объезжают (сильные видят пилу раньше и учитывают, куда она едет)
+  if (b.r > SAW_R * 1.15) for (const s of r.saws) {
+    const ahead = D === 2 ? 0.5 : 0, sx = s.x - Math.sin(s.a) * s.or * s.w * ahead, sy = s.y + Math.cos(s.a) * s.or * s.w * ahead;
+    const d = Math.min(Math.hypot(s.x - b.x, s.y - b.y), Math.hypot(sx - b.x, sy - b.y)) - SAW_R - b.r;
+    if (d < AI.sawSee[D] && d < td) { threat = { x: s.x, y: s.y }; td = d; }
+  }
+  b.flee = false; b.preyId = 0;
+  if (threat && (!prey || td < pd * 0.7)) {
+    // убегает от угрозы; сильные — не строго назад, а вбок от её хода и подальше от края арены
+    let a = Math.atan2(b.y - threat.y, b.x - threat.x);
+    if (D === 2 && threat.vx !== undefined) { const ta = Math.atan2(threat.vy, threat.vx); const side = Math.sin(a - ta) >= 0 ? 1 : -1; a += side * 0.5; }
+    else a += (Math.random() - 0.5) * 0.6;
+    let tx = b.x + Math.cos(a) * 400, ty = b.y + Math.sin(a) * 400;
+    const dd = Math.hypot(tx, ty); if (dd > r.R * 0.85) { tx *= (r.R * 0.85) / dd; ty *= (r.R * 0.85) / dd; }
+    b.tx = tx; b.ty = ty; b.flee = true; return;
+  }
+  if (prey && Math.random() > (D === 2 ? 0.03 : 0.12)) {
+    const sp = speedOf(b.r) * r.cfg.sp * AI.speed[D];
+    let [tx, ty] = intercept(b, prey, sp, AI.lead[D]);
+    // сильные заходят вдвоём с разных сторон: второй охотник целится наперерез сбоку
+    if (D === 2) {
+      let mates = 0; for (const o of r.balls.values()) if (o !== b && !o.human && o.alive && o.preyId === prey.id && sameTeamOrFfa(o, b)) mates++;
+      if (mates % 2 === 1) { const pa = Math.atan2(prey.vy, prey.vx) + (b.id % 2 ? 1.2 : -1.2), off = prey.r + b.r + 120; tx += Math.cos(pa) * off; ty += Math.sin(pa) * off; }
+    }
+    b.tx = tx; b.ty = ty; b.preyId = prey.id; return;
+  }
   // бонус рядом — заберёт
-  for (const p of r.powers.values()) if (Math.hypot(p.x - b.x, p.y - b.y) < 350 && Math.random() < 0.6) { b.tx = p.x; b.ty = p.y; return; }
-  if (Math.random() < 0.15) { const q = randIn(r.R * 0.8); b.tx = q.x; b.ty = q.y; return; }
+  for (const p of r.powers.values()) if (Math.hypot(p.x - b.x, p.y - b.y) < (D === 2 ? 500 : 350) && Math.random() < 0.6) { b.tx = p.x; b.ty = p.y; return; }
+  if (Math.random() < (D === 0 ? 0.25 : 0.15)) { const q = randIn(r.R * 0.8); b.tx = q.x; b.ty = q.y; return; }
   let best = null, bd = 1e9; const n = r.dots.size;
-  if (n) { const arr = Array.from(r.dots.values()); for (let i = 0; i < 40; i++) { const p = arr[(Math.random() * n) | 0]; const d = Math.hypot(p.x - b.x, p.y - b.y); if (d < bd) { bd = d; best = p; } } }
+  if (n) { const arr = Array.from(r.dots.values()); for (let i = 0; i < (D === 2 ? 60 : 40); i++) { const p = arr[(Math.random() * n) | 0]; const d = Math.hypot(p.x - b.x, p.y - b.y); if (d < bd) { bd = d; best = p; } } }
   if (best) { b.tx = best.x; b.ty = best.y; }
 }
+const sameTeamOrFfa = (a, b) => !a.team || a.team === b.team;
 
 function arenaR(nh) {
   const n = Math.max(1, nh);
@@ -168,14 +245,14 @@ function step(r, dt) {
   // до 3 живых игроков арена заметно растёт с каждым; дальше — по числу шариков, чтобы на 20 игроков не было пусто
   // (раньше росла на 280 за каждого: при 20 игроках радиус 6500 — в 5,5 раза шире, и игроки почти не встречались)
   r.R += (arenaR(nh) - r.R) * Math.min(1, dt * 0.5);
-  const wantBots = Math.max(6, 12 - nh);
+  const bc = r.cfg.bots, wantBots = bc === 0 ? 0 : bc === 1 ? 4 : bc === 3 ? Math.max(14, 20 - nh) : Math.max(6, 12 - nh);
   const bots = []; for (const b of r.balls.values()) if (!b.human) bots.push(b);
-  if (bots.length < wantBots) { const q = safeSpot(r); newBall(r, { x: q.x, y: q.y, m: rnd(4, 18), skin: freeSkin(r), acc: Math.random() < 0.3 ? 1 + ((Math.random() * 11) | 0) : 0 }); }
+  if (bots.length < wantBots) { const q = safeSpot(r); newBall(r, { x: q.x, y: q.y, m: rnd(4, 18), skin: freeSkin(r), acc: Math.random() < 0.3 ? 2 + ((Math.random() * 10) | 0) : 0 }); }
   else if (bots.length > wantBots) { bots.sort((a, c) => (a.alive - c.alive) || (a.m - c.m)); const b = bots[0]; r.balls.delete(b.id); r.ev.push([0, b.id, 2]); }
   const wantDots = Math.round(r.R * r.R * 0.00024);
   for (let i = 0; i < 12 && r.dots.size < wantDots; i++) addDot(r);
   // пилы ездят по кругам; их больше, когда игроков больше
-  const wantSaws = 3 + nh;
+  const wantSaws = r.cfg.saws === 0 ? 0 : r.cfg.saws === 2 ? 6 + 2 * nh : 3 + nh;
   while (r.saws.length < wantSaws) r.saws.push(newSaw(r));
   if (r.saws.length > wantSaws) r.saws.length = wantSaws;
   for (const s of r.saws) { s.a += s.w * dt; s.x = Math.cos(s.a) * s.or; s.y = Math.sin(s.a) * s.or; }
@@ -186,11 +263,11 @@ function step(r, dt) {
 
   for (const b of r.balls.values()) {
     if (!b.alive) {
-      if (!b.human) { b.respawnT -= dt; if (b.respawnT <= 0) { const q = safeSpot(r); Object.assign(b, { x: q.x, y: q.y, vx: 0, vy: 0, m: rnd(4, 16), alive: true, shield: 0, boost: 0, magnet: 0 }); b.r = rOf(b.m); } }
+      if (!b.human) { b.respawnT -= dt; if (b.respawnT <= 0) { const q = safeSpot(r); Object.assign(b, { x: q.x, y: q.y, vx: 0, vy: 0, m: rnd(4, 16), alive: true, shield: 0, boost: 0, magnet: 0 }); b.r = rOf(b.m); if (r.cfg.mode === 1) { b.team = 0; b.team = balanceTeam(r, false); r.meta.push(metaOf(b)); } } }
       continue;
     }
     b.shield = Math.max(0, b.shield - dt); b.boost = Math.max(0, b.boost - dt); b.magnet = Math.max(0, b.magnet - dt); b.sawCD = Math.max(0, b.sawCD - dt);
-    const bk = b.boost > 0 ? 1.6 : 1;
+    const bk = (b.boost > 0 ? 1.6 : 1) * r.cfg.sp;
     if (b.human) {
       // положение присылает игрок; сервер подтягивается к нему, но не быстрее, чем шарик может катиться
       let dx = b.cx - b.x, dy = b.cy - b.y; const d = Math.hypot(dx, dy), max = speedOf(b.r) * bk * 1.7 * dt + 3;
@@ -198,10 +275,17 @@ function step(r, dt) {
       else if (d > max) { dx *= max / d; dy *= max / d; }
       b.vx = dx / dt; b.vy = dy / dt; b.x += dx; b.y += dy;
     } else {
-      b.aiT -= dt; if (b.aiT <= 0) { b.aiT = 0.25 + Math.random() * 0.2; b.lazyHuman = Math.random() < 0.45; think(r, b); }
+      const D = r.cfg.diff;
+      b.aiT -= dt; if (b.aiT <= 0) { b.aiT = AI.react[D][0] + Math.random() * AI.react[D][1]; b.lazyHuman = Math.random() < AI.lazy[D]; think(r, b); }
       const vx = b.tx - b.x, vy = b.ty - b.y, d = Math.hypot(vx, vy) || 1, pw = d > 20 ? 1 : 0.3;
-      const sp = speedOf(b.r) * (b.flee ? 0.76 : 0.85) * bk, k = Math.min(1, dt * 10);
-      b.vx += ((vx / d) * sp * pw - b.vx) * k; b.vy += ((vy / d) * sp * pw - b.vy) * k;
+      const sp = speedOf(b.r) * (b.flee ? AI.speed[D] - 0.08 : AI.speed[D]) * bk * pw;
+      // плавный поворот: направление скорости поворачивается к цели не быстрее turn рад/с, скорость меняется мягко
+      const cur = Math.hypot(b.vx, b.vy), want = Math.atan2(vy, vx);
+      let ang = cur > 5 ? Math.atan2(b.vy, b.vx) : want, da = want - ang;
+      while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
+      const mt = AI.turn[D] * dt; ang += Math.max(-mt, Math.min(mt, da));
+      const ns = cur + (sp * (Math.abs(da) > 2.2 ? 0.6 : 1) - cur) * Math.min(1, dt * 4);
+      b.vx = Math.cos(ang) * ns; b.vy = Math.sin(ang) * ns;
       b.x += b.vx * dt; b.y += b.vy * dt;
     }
     const dd = Math.hypot(b.x, b.y), lim = r.R - b.r * 0.6; if (dd > lim) { b.x *= lim / dd; b.y *= lim / dd; }
@@ -233,7 +317,7 @@ function step(r, dt) {
   // кто кого съел
   const arr = []; for (const b of r.balls.values()) if (b.alive) arr.push(b);
   for (const a of arr) for (const b of arr) {
-    if (a === b || !a.alive || !b.alive || b.shield > 0) continue;
+    if (a === b || !a.alive || !b.alive || b.shield > 0 || sameTeam(a, b)) continue;
     if (a.r > b.r * 1.12 && Math.hypot(a.x - b.x, a.y - b.y) < a.r - b.r * 0.15) {
       b.alive = false; b.lastM = b.m; b.diedAt = Date.now(); gain(r, a, b.m * 0.85); r.ev.push([a.id, b.id, 1]);
       if (b.human) { if (b.ws) b.ws.send({ t: 'dead', by: a.id, m: Math.round(b.m), day: dayTop(10) }); }
@@ -253,6 +337,7 @@ function broadcast(r) {
     o.rt = Math.ceil(r.rT);
     o.cs = roundTop(r, 5, true); msgSpec = JSON.stringify(o); // зрителю (ролики) — битва флагов вместе с ботами
     o.cs = roundTop(r, 5);
+    if (r.cfg.mode) o.ts = [Math.round(r.ts[1]), Math.round(r.ts[2])];
   }
   const msg = JSON.stringify(o);
   r.dAdd = []; r.dDel = []; r.ev = []; r.meta = [];
@@ -272,7 +357,7 @@ function join(ws, m) {
     ws.room = r; ws.spec = true; r.clients.add(ws);
     const meta = []; for (const x of r.balls.values()) meta.push(metaOf(x));
     const dots = []; for (const d of r.dots.values()) dots.push([d.id, d.x, d.y, d.c]);
-    ws.send({ t: 'w', id: 0, spec: 1, x: 0, y: 0, R: Math.round(r.R), mt: meta, dots, v: VERSION, cs: roundTop(r, 5, true), rt: Math.ceil(r.rT), rl: ROUND_LEN, day: dayTop(10) });
+    ws.send({ t: 'w', id: 0, spec: 1, x: 0, y: 0, R: Math.round(r.R), mt: meta, dots, v: VERSION, cs: roundTop(r, 5, true), rt: Math.ceil(r.rT), rl: r.cfg.rl, day: dayTop(10), cfg: r.cfg, host: r.host });
     return;
   }
   const name = cleanName(m.name, 'Player');
@@ -281,16 +366,25 @@ function join(ws, m) {
   // у ботов не должно быть того же флага, что у живого игрока
   for (const o of r.balls.values()) if (!o.human && o.skin === skin) { o.skin = freeSkin(r); if (o.skin === skin) o.skin = FLAGS[(FLAGS.indexOf(skin) + 7) % FLAGS.length]; r.meta.push(metaOf(o)); }
   const q = safeSpot(r);
-  const b = newBall(r, { x: q.x, y: q.y, m: 18, human: true, name, skin, acc, ws, shield: 4 }); b.spawnAt = Date.now();
+  const wt = m.team === 1 || m.team === 2 ? m.team : 0;
+  const b = newBall(r, { x: q.x, y: q.y, m: 18, human: true, name, skin, acc, ws, shield: 4, wantTeam: wt }); b.spawnAt = Date.now();
   ws.room = r; ws.ball = b; r.clients.add(ws);
+  // хозяин своей комнаты — первый вошедший; в общей арене хозяина нет
+  let newHost = false;
+  if (r.name !== 'main' && !hostAlive(r)) { r.host = b.id; newHost = true; }
   const meta = []; for (const x of r.balls.values()) meta.push(metaOf(x));
   const dots = []; for (const d of r.dots.values()) dots.push([d.id, d.x, d.y, d.c]);
-  ws.send({ t: 'w', id: b.id, x: Math.round(b.x), y: Math.round(b.y), R: Math.round(r.R), mt: meta, dots, v: VERSION, cs: roundTop(r, 5), rt: Math.ceil(r.rT), rl: ROUND_LEN, day: dayTop(10) });
+  const o = { t: 'w', id: b.id, x: Math.round(b.x), y: Math.round(b.y), R: Math.round(r.R), mt: meta, dots, v: VERSION, cs: roundTop(r, 5), rt: Math.ceil(r.rT), rl: r.cfg.rl, day: dayTop(10), cfg: r.cfg, host: r.host };
+  if (r.cfg.mode) o.ts = [Math.round(r.ts[1]), Math.round(r.ts[2])];
+  ws.send(o);
+  if (newHost) sendCfg(r);
 }
 
+function hostAlive(r) { if (!r.host) return false; const h = r.balls.get(r.host); return !!(h && h.human); }
 function respawn(ws, m) {
   const b = ws.ball, r = ws.room; if (!b || !r) return;
   if (!b.alive) {
+    if (r.cfg.mode === 1 && b.wantTeam && b.wantTeam !== b.team) b.team = b.wantTeam;
     // смена страны / ника / украшения — между жизнями
     if (m && FLAGS.indexOf(m.skin) >= 0) b.skin = m.skin;
     if (m && m.name) b.name = cleanName(m.name, b.name);
@@ -310,12 +404,28 @@ function onMsg(ws, m) {
   const b = ws.ball; if (!b) return;
   if (m.t === 'p') { const x = +m.x, y = +m.y; if (isFinite(x) && isFinite(y)) { b.cx = x; b.cy = y; } return; }
   if (m.t === 're') return respawn(ws, m);
+  if (m.t === 'cfg') { // хозяин меняет правила своей комнаты
+    const r = ws.room; if (!r || r.name === 'main' || r.host !== b.id) return;
+    const old = r.cfg, c = cleanCfg(m.cfg, old); r.cfg = c;
+    if (c.mode !== old.mode) { retag(r); r.sc = {}; r.ts = [0, 0, 0]; r.rT = c.rl; }
+    else if (c.rl !== old.rl) r.rT = Math.min(r.rT, c.rl);
+    sendCfg(r); return;
+  }
+  if (m.t === 'team') { // игрок выбрал команду (в режиме двух команд)
+    const r = ws.room; if (!r || r.cfg.mode !== 1 || (m.team !== 1 && m.team !== 2)) return;
+    b.wantTeam = m.team;
+    if (!b.alive || b.m <= 40 || Date.now() - (b.spawnAt || 0) < 5000) { b.team = m.team; r.meta.push(metaOf(b)); }
+    return;
+  }
   if (m.t === 'dbg' && process.env.TEST === '1' && ws.ball) { const b = ws.ball; if (m.m) { b.m = Math.max(5, Math.min(3000, +m.m || 18)); b.r = rOf(b.m); } if (m.x !== undefined) { b.x = b.cx = +m.x; b.y = b.cy = +m.y; ws.send({ t: 'fix', x: b.x, y: b.y }); } return; }
 }
 function onClose(ws) {
   const r = ws.room; if (!r) return;
   r.clients.delete(ws);
-  if (ws.ball) { r.balls.delete(ws.ball.id); r.ev.push([0, ws.ball.id, 2]); }
+  if (ws.ball) {
+    r.balls.delete(ws.ball.id); r.ev.push([0, ws.ball.id, 2]);
+    if (r.host === ws.ball.id) { r.host = 0; for (const c of r.clients) if (c.ball) { r.host = c.ball.id; break; } sendCfg(r); }
+  }
 }
 
 // ---------------- HTTP ----------------

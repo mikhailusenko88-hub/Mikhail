@@ -18,6 +18,8 @@
   const rOf = (m) => 20 + 5 * Math.sqrt(m);
   const speedOf = (r) => 440 * Math.pow(40 / r, 0.32);
   const nowS = () => performance.now() / 1000;
+  let R3D = null; // 3D-картинка (online/r3d.js); нет WebGL — рисуем по-старому в 2D
+  const TILT_K = Math.cos((33 * Math.PI) / 180); // в 3D земля под наклоном: движение «вверх по экрану» короче на экране
 
   // ---------- тексты (английский — основной, CrazyGames требует) ----------
   const TX = {
@@ -31,6 +33,7 @@
       name: 'Your name', play: 'Play', hint: 'Green ring — you can eat it, red — run! Yellow name — a real player. Every point you grow counts for your country.',
       adsOff: 'Ads are blocked — coin options still work', title: 'Flagball Arena', team: 'for', change: 'Country', invite: 'Invite', copied: 'Invite link copied — send it to a friend', room: 'Private room',
       noAd: 'No ad available right now — try again later', copyHint: 'Copy this link and send it to a friend:', search: 'Search country', friends: 'Play with friends', mkRoom: 'Create a room', roomCode: 'Room code', codeHint: 'Friends press «Invite» → enter this code', enterCode: 'Friend\'s code', go: 'Join', toMain: 'Back to the public arena', copy: 'Copy', badCode: 'Enter the 5-letter code', botsWon: 'Bots won the round — beat them!',
+      settings: 'Room settings', mode: 'Mode', ffa: 'Everyone', teams: '2 teams', coop: 'Friends vs bots', myTeam: 'Your team', blue: 'Blue', red: 'Orange', bots: 'Bots', none: 'None', few: 'Few', normal: 'Normal', many: 'Many', diff: 'Bot skill', easy: 'Easy', hard: 'Strong', speed: 'Speed', saws: 'Saws', some: 'Some', rnd: 'Round', min: 'min', hostOnly: 'Only the room host can change these', cfgChanged: 'Room settings changed', teamWon: 'won the round!', ourTeam: 'Your team won!', friendsT: 'Friends', botsT: 'Bots', draw: 'Draw!', tmHint: 'Teammates can\'t eat each other',
     },
     ru: {
       conn: 'Подключаюсь к арене…', att: 'попытка', slow: 'Долго? Проверь интернет или переключись Wi-Fi ↔ мобильный',
@@ -42,6 +45,7 @@
       name: 'Твоё имя', play: 'Играть', hint: 'Зелёное кольцо — можно съесть, красное — беги. Жёлтое имя — живой игрок. Всё, что ты наберёшь, идёт в зачёт твоей стране.',
       adsOff: 'Реклама недоступна — за монеты всё работает', title: 'Flagball Arena', team: 'за', change: 'Страна', invite: 'Позвать', copied: 'Ссылка скопирована — отправь другу', room: 'Своя комната',
       noAd: 'Рекламы сейчас нет — попробуй чуть позже', copyHint: 'Скопируй ссылку и отправь другу:', search: 'Поиск страны', friends: 'Играть с друзьями', mkRoom: 'Создать комнату', roomCode: 'Код комнаты', codeHint: 'Друзья жмут «Позвать» → вводят этот код', enterCode: 'Код друга', go: 'Войти', toMain: 'Вернуться в общую арену', copy: 'Скопировать', badCode: 'Введи код из 5 букв', botsWon: 'Раунд за ботами — обгони их!',
+      settings: 'Настройки комнаты', mode: 'Режим', ffa: 'Каждый сам', teams: '2 команды', coop: 'Друзья против ботов', myTeam: 'Твоя команда', blue: 'Синие', red: 'Оранжевые', bots: 'Боты', none: 'Нет', few: 'Мало', normal: 'Обычно', many: 'Много', diff: 'Сила ботов', easy: 'Лёгкие', hard: 'Сильные', speed: 'Скорость', saws: 'Пилы', some: 'Есть', rnd: 'Раунд', min: 'мин', hostOnly: 'Менять может только хозяин комнаты', cfgChanged: 'Правила комнаты изменились', teamWon: 'выиграли раунд!', ourTeam: 'Твоя команда победила!', friendsT: 'Друзья', botsT: 'Боты', draw: 'Ничья!', tmHint: 'Свои друг друга не едят',
     },
   };
   let LANG = (C.lang || 'en').slice(0, 2) === 'ru' ? 'ru' : 'en';
@@ -136,6 +140,11 @@
   let cs = [], rt = 180, rl = 180, dayTopL = [], banner = null, lifeEats = 0, shop = null, adFails = 0, busy = false;
   let lastReviveAt = -1e9, lastDoubleAt = -1e9, pending = null;
   let adFailAt = -1e9;
+  // правила комнаты (меняет хозяин своей комнаты) и счёт команд
+  let rcfg = { mode: 0, sp: 1, bots: 2, diff: 1, saws: 1, rl: 180 }, hostId = 0, ts = [0, 0], myTeam = 0;
+  // синие и оранжевые: красный и зелёный уже заняты кольцами «беги» / «можно съесть»
+  const TEAMC = ['#ffffff', '#2979ff', '#ff9100'], TEAML = ['#ffffff', '#82b1ff', '#ffb74d'];
+  const teamName = (k) => (rcfg.mode === 2 ? (k === 1 ? T.friendsT : T.botsT) : k === 1 ? T.blue : T.red);
   const adsOk = () => C.rewardedSupported && nowS() - adFailAt > 180;
 
   function connect() {
@@ -266,6 +275,7 @@
       const c = document.createElement('div'); c.innerHTML = '<div style="opacity:.8;margin-top:6px">' + T.roomCode + '</div><div style="font:900 46px system-ui,Arial,sans-serif;letter-spacing:8px;margin:4px 0 2px;color:#b9f6ca">' + ROOM.toUpperCase() + '</div><div style="opacity:.75;font-size:15px">' + T.codeHint + '</div>';
       mine.appendChild(c);
       const cb = btn(T.copy, '#1e88e5', async () => { if (await copyText(ROOM.toUpperCase())) { cb.textContent = '✓'; setTimeout(() => { cb.textContent = T.copy; }, 1200); } });
+      btn('⚙ ' + T.settings, '#7c4dff', () => { C.sfx('tap'); el.style.display = 'none'; cfgBox(); });
       btn(T.toMain, '#5c6bc0', () => { C.sfx('tap'); goRoom('main'); });
       // ещё не в игре (окно страны) — сразу «Играть» в этой комнате
       if (!joined) btn(T.play, '#43a047', () => { el.style.display = 'none'; const g = document.getElementById('go'); if (g) g.click(); });
@@ -273,6 +283,50 @@
     el.style.display = 'flex';
   }
   window.__roomBox = roomBox;
+  // ---------- правила своей комнаты: режим, команды, боты, скорость, пилы, длина раунда ----------
+  // меняет хозяин (первый вошедший); остальные видят правила и выбирают себе команду
+  function cfgBox(refresh) {
+    let el = document.getElementById('cbox');
+    if (refresh && (!el || el.style.display === 'none')) return;
+    if (!el) {
+      el = document.createElement('div'); el.id = 'cbox';
+      el.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,10,40,.78);z-index:6;touch-action:auto';
+      el.innerHTML = '<div style="width:min(94vw,520px);max-height:94vh;overflow:auto;box-sizing:border-box;background:#221d45;border-radius:22px;padding:16px 16px 18px;color:#fff;text-align:center;font:600 16px system-ui,Arial,sans-serif;position:relative">' +
+        '<div id="cbX" style="position:absolute;right:14px;top:6px;font-size:30px;cursor:pointer;opacity:.8">×</div><div id="cbT" style="font-size:21px;font-weight:800;margin-bottom:4px"></div><div id="cbN" style="font-size:14px;color:#ffd54f;min-height:18px"></div><div id="cbR"></div></div>';
+      document.body.appendChild(el);
+      el.querySelector('#cbX').onclick = () => { el.style.display = 'none'; };
+      el.addEventListener('pointerdown', (e) => { if (e.target === el) el.style.display = 'none'; });
+    }
+    const host = hostId === myId && ROOM !== 'main';
+    el.querySelector('#cbT').textContent = '⚙ ' + T.settings;
+    const hb = balls.get(hostId);
+    el.querySelector('#cbN').textContent = host ? '' : T.hostOnly + (hb && hb.name ? ': ' + hb.name : '');
+    const box = el.querySelector('#cbR'); box.innerHTML = '';
+    const row = (title, key, opts, cur, onPick, can) => {
+      const r = document.createElement('div'); r.style.cssText = 'margin-top:12px;text-align:left';
+      r.innerHTML = '<div style="font-size:14px;opacity:.75;margin:0 0 6px 4px">' + title + '</div>';
+      const g = document.createElement('div'); g.style.cssText = 'display:flex;gap:6px';
+      for (const [val, label, col] of opts) {
+        const b = document.createElement('button'); const on = val === cur;
+        b.textContent = label;
+        b.style.cssText = 'flex:1;min-width:0;border:0;border-radius:12px;padding:10px 4px;font:800 15px system-ui,Arial,sans-serif;color:#fff;cursor:' + (can ? 'pointer' : 'default') + ';background:' + (on ? (col || '#43a047') : '#3a3470') + ';opacity:' + (can || on ? 1 : 0.55) + (on ? ';box-shadow:0 0 0 3px #fff inset' : '');
+        if (can) b.onclick = () => { C.sfx('tap'); onPick(val); };
+        g.appendChild(b);
+      }
+      r.appendChild(g); box.appendChild(r);
+    };
+    const set = (k) => (v) => { const o = {}; o[k] = v; send({ t: 'cfg', cfg: o }); };
+    row(T.mode, 'mode', [[0, T.ffa], [1, T.teams], [2, T.coop]], rcfg.mode, set('mode'), host);
+    if (rcfg.mode === 1) row(T.myTeam, 'team', [[1, T.blue, '#2979ff'], [2, T.red, '#ff9100']], myTeam, (v) => { send({ t: 'team', team: v }); myTeam = v; cfgBox(true); }, true);
+    row(T.bots, 'bots', [[0, T.none], [1, T.few], [2, T.normal], [3, T.many]], rcfg.bots, set('bots'), host);
+    row(T.diff, 'diff', [[0, T.easy], [1, T.normal], [2, T.hard, '#e53935']], rcfg.diff, set('diff'), host);
+    row(T.speed, 'sp', [[1, '×1'], [1.5, '×1.5'], [2, '×2']], rcfg.sp, set('sp'), host);
+    row(T.saws, 'saws', [[0, T.none], [1, T.some], [2, T.many]], rcfg.saws, set('saws'), host);
+    row(T.rnd, 'rl', [[120, '2 ' + T.min], [180, '3 ' + T.min], [300, '5 ' + T.min]], rcfg.rl, set('rl'), host);
+    if (rcfg.mode) { const h = document.createElement('div'); h.style.cssText = 'margin-top:12px;font-size:14px;opacity:.8'; h.textContent = T.tmHint; box.appendChild(h); }
+    el.style.display = 'flex';
+  }
+  window.__cfgBox = cfgBox;
   async function shareInvite() {
     if (!CG()) { roomBox(); return; }
     const link = inviteLink();
@@ -281,18 +335,20 @@
   }
 
   function setMeta(list) {
-    for (const [id, name, sk, hum, acc] of list) {
+    for (const [id, name, sk, hum, acc, tm] of list) {
       let b = balls.get(id); if (!b) { b = mkB(id); balls.set(id, b); }
-      b.name = name; b.skin = sk; b.human = !!hum; b.acc = acc | 0;
+      b.name = name; b.skin = sk; b.human = !!hum; b.acc = acc | 0; b.team = tm | 0;
+      if (id === myId) myTeam = b.team;
       if (hum && !knownHumans.has(id)) { knownHumans.add(id); if (id !== myId && myId) toasts.push({ text: name + ' ' + T.joined, t: 0, col: '#69f0ae' }); }
     }
   }
-  function mkB(id) { return { id, x: 0, y: 0, sx: 0, sy: 0, pvx: 0, pvy: 0, st: 0, m: 10, r: rOf(10), alive: false, fl: 0, name: '', skin: 'US', human: false, ang: 0, fresh: true, acc: 0 }; }
+  function mkB(id) { return { id, x: 0, y: 0, sx: 0, sy: 0, pvx: 0, pvy: 0, st: 0, m: 10, r: rOf(10), alive: false, fl: 0, name: '', skin: 'US', human: false, ang: 0, fresh: true, acc: 0, team: 0 }; }
 
   function onMsg(m) {
     const now = nowS();
     if (m.t === 'w') {
       status = 'ok'; attempt = 0; myId = m.id; R = m.R; Rshow = m.R; balls.clear(); dots.clear(); knownHumans.clear(); clk.off = null; saws = [];
+      if (m.cfg) rcfg = m.cfg; hostId = m.host || 0; ts = m.ts || [0, 0]; myTeam = 0;
       setMeta(m.mt);
       for (const [id, x, y, c] of m.dots) dots.set(id, { x, y, c: PCOL[c], r: 9 + (id % 5) });
       me = { x: m.x, y: m.y, vx: 0, vy: 0, r: rOf(18), m: 18, alive: !m.spec, shield: 4, boost: 0, magnet: 0, ang: 0 }; dead = null; best = 18; reT = 0; lifeEats = 0;
@@ -306,7 +362,7 @@
       if (m.R > R + 30) growFx = 2.2;
       R = m.R;
       if (m.mt && m.mt.length) setMeta(m.mt);
-      if (m.cs) cs = m.cs; if (m.rt) rt = m.rt;
+      if (m.cs) cs = m.cs; if (m.rt) rt = m.rt; if (m.ts) ts = m.ts;
       const seen = new Set();
       for (const [id, x, y, m10, al, fl] of m.b) {
         seen.add(id);
@@ -343,8 +399,22 @@
       }
       return;
     }
+    if (m.t === 'cfg') { // хозяин поменял правила комнаты
+      const was = rcfg.mode; rcfg = m.cfg || rcfg; hostId = m.host || 0; rl = rcfg.rl;
+      if (rcfg.mode !== was) { ts = [0, 0]; rt = rl; }
+      if (joined && !SPEC) toasts.push({ text: T.cfgChanged, t: 0, col: '#b9f6ca' });
+      cfgBox(true);
+      return;
+    }
     if (m.t === 'rw') { // раунд стран окончен
       cs = []; rt = rl; if (m.day) dayTopL = m.day;
+      if (m.ts && rcfg.mode && !SPEC) { // раунд команд
+        const mine = joined && m.tw && m.tw === myTeam;
+        banner = { team: m.tw || 0, ts: m.ts, t: 0, mine };
+        if (mine) { C.sfx('win'); C.confetti(C.W / 2, C.H * 0.25, 70); C.addCoins(25); }
+        ts = [0, 0];
+        return;
+      }
       if (SPEC) dir.log.push({ t: nowS(), k: 'round', win: m.win, top: m.top });
       if (m.win) {
         const mine = !SPEC && m.win === skin && joined;
@@ -390,8 +460,9 @@
     return ok;
   }
 
-  function toScr(x, y) { return [(x - cam.x) * cam.z + C.W / 2, (y - cam.y) * cam.z + C.H / 2]; }
-  const relOf = (b) => (!me.alive ? 0 : me.r > b.r * 1.12 ? 1 : b.r > me.r * 1.12 ? -1 : 0);
+  function toScr(x, y, h) { if (R3D) { const p = R3D.project(x, h || 0, y); return [p[0], p[1]]; } return [(x - cam.x) * cam.z + C.W / 2, (y - cam.y) * cam.z + C.H / 2]; }
+  const mate = (b) => myTeam > 0 && b.team === myTeam;
+  const relOf = (b) => (!me.alive || mate(b) ? 0 : me.r > b.r * 1.12 ? 1 : b.r > me.r * 1.12 ? -1 : 0);
 
   // ---------- вход: на площадках — сразу в игру; на своём сайте в первый раз — имя и страна ----------
   function startJoin(n, s) {
@@ -435,12 +506,65 @@
   const AD_COINS = [60, 40, 25];
   function adCoinsState() { const f = X(); const d = C.today(); if (f.adc.d !== d) f.adc = { d, n: 0, t: 0 }; return f.adc; }
 
+  // ---------- 3D: сцену рисует r3d.js, а подписи, иконки бонусов, стрелку и джойстик — 2D поверх ----------
+  function draw3d(ctx) {
+    const list = [];
+    for (const b of balls.values()) {
+      if (!(b.alive || (b.eatenBy && b.eatK < 1))) continue;
+      const mine = b.id === myId;
+      let x = b.x, y = b.y, r = b.r;
+      if (!b.alive && b.eatenBy) { const k = balls.get(b.eatenBy); if (k) { x = C.lerp(b.x, k.x, b.eatK); y = C.lerp(b.y, k.y, b.eatK); } r = b.r * (1 - b.eatK); }
+      if (mine && me.alive) { x = me.x; y = me.y; r = me.r; }
+      const fl = mine ? (me.shield ? 1 : 0) | (me.boost ? 2 : 0) | (me.magnet ? 4 : 0) : b.fl;
+      let ring = null, rk = 0.9;
+      if (b.alive && !mine) {
+        const rl2 = relOf(b);
+        if (rl2 > 0) ring = PREY; else if (rl2 < 0) ring = DANGER;
+        else if (b.team && rcfg.mode) { ring = TEAMC[b.team]; rk = mate(b) ? 0.95 : 0.55; }
+      } else if (mine && myTeam && rcfg.mode) { ring = TEAMC[myTeam]; rk = 0.95; }
+      list.push({ id: b.id, x, y, r, skin: b.skin, acc: mine ? X().on : b.acc, vx: mine ? me.vx : b.pvx, vy: mine ? me.vy : b.pvy, fl, ring, rk });
+    }
+    R3D.render({ cam, R: Rshow, grow: growFx, balls: list, dots, powers, saws, sawSpin, sawR: SAW_R, sawDanger: me.alive && me.r >= SAW_R * 1.15, t: C.realT, dt: C.dt });
+    ctx.clearRect(0, 0, C.W, C.H);
+    // иконки бонусов поверх пузырей
+    for (const p of powers) { const [sx, sy, k, ok] = R3D.project(p.x, 62 + Math.sin(p.a * 3) * 8, p.y); if (!ok || sx < -60 || sx > C.W + 60 || sy < -60 || sy > C.H + 60) continue; const P = POW[p.k] || POW[0]; C.icon(P.icon, sx, sy, Math.max(14, 44 * k), '#fff'); }
+    // подписи: ник (живой игрок) или страна (бот), под шариком — масса
+    for (const b of balls.values()) {
+      if (!b.alive) continue;
+      const mine = b.id === myId, x = mine ? me.x : b.x, y = mine ? me.y : b.y, r = mine ? me.r : b.r;
+      const [sx, sy, k, ok] = R3D.project(x, r, y), sr = r * k;
+      if (!ok || sx < -120 || sx > C.W + 120 || sy < -120 || sy > C.H + 120) continue;
+      const rl2 = mine ? 2 : relOf(b), tcol = b.team && rcfg.mode ? TEAML[b.team] : null;
+      const col = rl2 === 2 ? '#ffeb3b' : rl2 > 0 ? '#69f0ae' : rl2 < 0 ? '#ff5252' : tcol || '#ffffff';
+      C.text(String(Math.round(b.m)), sx, sy + sr + 20, C.clamp(sr * 0.5, 22, 40), col, 'center', 'rgba(0,0,0,0.8)');
+      const up = (b.acc >= 6 || (mine && X().on >= 6) ? sr * 0.55 : 0) + 22;
+      if (b.human && SPEC) C.text('PLAYER · ' + cname(b.skin), sx, sy - sr - up, C.clamp(sr * 0.36, 22, 40), '#ffeb3b', 'center', 'rgba(0,0,0,0.85)');
+      else if (b.human) C.text(b.name, sx, sy - sr - up, C.clamp(sr * 0.42, 24, 38), mine ? '#ffeb3b' : tcol || '#fff', 'center', 'rgba(0,0,0,0.85)');
+      else if (sr > 26) C.text(cname(b.skin), sx, sy - sr - up + 4, C.clamp(sr * 0.3, 18, 30), SPEC && b.id === dir.id ? '#ffeb3b' : tcol || 'rgba(255,255,255,0.92)', 'center', 'rgba(0,0,0,0.7)');
+    }
+    for (const f of floats) { const [sx, sy] = toScr(f.x, f.y, 0); ctx.globalAlpha = Math.max(0, 1 - f.t); C.text(f.text, sx, sy - 40 - f.t * 80, 34, f.col || '#ffeb3b', 'center', 'rgba(0,0,0,0.6)'); ctx.globalAlpha = 1; }
+    if (me.alive && (steer.on || C.keyDir() || C.keyDirY()) && Math.hypot(me.vx, me.vy) > 40) {
+      const [sx, sy, k] = R3D.project(me.x, me.r, me.y), [ax, ay] = toScr(me.x + me.vx * 0.2, me.y + me.vy * 0.2, me.r);
+      const a = Math.atan2(ay - sy, ax - sx), rr = me.r * k + 22;
+      ctx.save(); ctx.translate(sx + Math.cos(a) * rr, sy + Math.sin(a) * rr); ctx.rotate(a);
+      ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.strokeStyle = 'rgba(40,40,90,0.6)'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(16, 0); ctx.lineTo(-8, -13); ctx.lineTo(-3, 0); ctx.lineTo(-8, 13); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+    }
+    if (joy) {
+      ctx.fillStyle = 'rgba(40,40,110,0.16)'; ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(joy.ax, joy.ay, 62, 0, 7); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.strokeStyle = 'rgba(40,40,110,0.5)'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(joy.x, joy.y, 30, 0, 7); ctx.fill(); ctx.stroke();
+    }
+  }
+
   const game = {
     id: 'ballio_online', startState: 'play', noLevels: true, hasSkip: false, reviveIcon: null, noPauseBtn: true, noGift: true, landscapeBase: true, noPlatformPause: true, manualGameplay: true,
     startLevel() {}, toHome() {}, revive() {},
     canInter(sess, sinceInter, sinceReward) { return ((C.bridgeOk && !C.mockAds) || q.has('inter')) && sess > 60 && sinceReward > 30; },
     init() {
       LANG = (C.lang || 'en').slice(0, 2) === 'ru' ? 'ru' : 'en'; T = TX[LANG];
+      const glc = document.getElementById('gl');
+      if (glc && !q.has('flat') && window.FB3D && window.FB3D.init && window.FB3D.init(glc)) { R3D = window.FB3D; R3D.drawAcc = drawAcc; }
+      else if (glc) glc.style.display = 'none';
       if (SPEC) { skin = ''; joined = true; connect(); return; }
       const f = X();
       let n = '', s = '';
@@ -466,13 +590,14 @@
       }
       const vx = x - joy.ax, vy = y - joy.ay; let d = Math.hypot(vx, vy);
       if (d > LEASH) { joy.ax = x - (vx / d) * LEASH; joy.ay = y - (vy / d) * LEASH; d = LEASH; }
-      if (d > DEAD) { const l = Math.hypot(vx, vy); steer.x = vx / l; steer.y = vy / l; steer.on = true; }
+      if (d > DEAD) { const l = Math.hypot(vx, vy); steer.x = vx / l; steer.y = vy / l; steer.on = true; steer.world = false; }
     },
     onUp() { joy = null; },
     onHover(x, y) {
       if (!me.alive) return;
-      const [sx, sy] = toScr(me.x, me.y), vx = x - sx, vy = y - sy, d = Math.hypot(vx, vy);
-      if (d > Math.max(16, me.r * cam.z * 0.4)) { steer.x = vx / d; steer.y = vy / d; steer.on = true; }
+      const [sx, sy] = toScr(me.x, me.y, me.r); let vx = x - sx, vy = y - sy; const d = Math.hypot(vx, vy);
+      if (R3D) vy /= TILT_K; // экран → земля (под наклоном)
+      if (d > Math.max(16, me.r * cam.z * 0.4)) { const l = Math.hypot(vx, vy); steer.x = vx / l; steer.y = vy / l; steer.on = true; steer.world = true; }
     },
     onKey(k, down) { if (down && (k === 'Space' || k === 'Enter') && dead && !me.alive && dead.t > 0.4 && !shop) playAgain(); },
 
@@ -496,10 +621,10 @@
       if (reT > 0) { reT -= dt; if (reT <= 0 && !me.alive) connect(); }
       if (me.alive && status === 'ok') {
         let dx = 0, dy = 0, pw = 0;
-        if (steer.on) { dx = steer.x; dy = steer.y; pw = 1; }
-        const kx = C.keyDir(), ky = C.keyDirY(); if (kx || ky) { const d = Math.hypot(kx, ky); dx = kx / d; dy = ky / d; pw = 1; }
+        if (steer.on) { dx = steer.x; dy = steer.y; pw = 1; if (R3D && !steer.world) { dy /= TILT_K; const l = Math.hypot(dx, dy); dx /= l; dy /= l; } }
+        const kx = C.keyDir(), ky = C.keyDirY(); if (kx || ky) { let ky2 = ky; if (R3D) ky2 /= TILT_K; const d = Math.hypot(kx, ky2); dx = kx / d; dy = ky2 / d; pw = 1; }
         if (window.__bot) { const t = window.__bot(me, balls); dx = t[0]; dy = t[1]; pw = 1; }
-        const sp = speedOf(me.r) * (me.boost ? 1.6 : 1), k = Math.min(1, dt * 30);
+        const sp = speedOf(me.r) * (me.boost ? 1.6 : 1) * (rcfg.sp || 1), k = Math.min(1, dt * 30);
         me.vx += (dx * sp * pw - me.vx) * k; me.vy += (dy * sp * pw - me.vy) * k;
         me.x += me.vx * dt; me.y += me.vy * dt;
         const d = Math.hypot(me.x, me.y), lim = R - me.r * 0.6; if (d > lim) { me.x *= lim / d; me.y *= lim / d; }
@@ -525,6 +650,7 @@
     },
 
     draw(ctx) {
+      if (R3D) { draw3d(ctx); return; }
       ctx.fillStyle = '#2b2d6e'; ctx.fillRect(0, 0, C.W, C.H);
       ctx.save(); ctx.translate(C.W / 2, C.H / 2); ctx.scale(cam.z, cam.z); ctx.translate(-cam.x, -cam.y);
       const vw = C.W / cam.z / 2 + 120, vh = C.H / cam.z / 2 + 120, x0 = cam.x - vw, x1 = cam.x + vw, y0 = cam.y - vh, y1 = cam.y + vh;
@@ -602,6 +728,11 @@
           const S = L ? 72 : 86, bx = C.W - sf.r - 20 - S, by = C.H - sf.b - 58 - S;
           if (C.button('frBtn', bx, by, S, S, { color: '#1e88e5', alpha: 0.88, draw: () => { C.icon('plus', 0, -S * 0.12, S * 0.4, '#fff'); C.text(T.invite, 0, S * 0.27, S * 0.19, '#fff', 'center', null); } })) { C.sfx('tap'); roomBox(); }
         }
+        // своя комната: правила (хозяин меняет, остальные смотрят и выбирают команду)
+        if (ROOM !== 'main' && me.alive && status === 'ok') {
+          const S = L ? 72 : 86, bx = C.W - sf.r - 20 - S, by = C.H - sf.b - 58 - S - (CG() ? 0 : S + 14);
+          if (C.button('cfgBtn', bx, by, S, S, { color: '#7c4dff', alpha: 0.88, draw: () => { C.text('⚙', 0, -S * 0.08, S * 0.46, '#fff', 'center', null); C.text(T.rnd === 'Раунд' ? 'Правила' : 'Rules', 0, S * 0.28, S * 0.17, '#fff', 'center', null); } })) { C.sfx('tap'); cfgBox(); }
+        }
       }
       if (status === 'conn' || status === 'lost') {
         ctx.fillStyle = 'rgba(10,10,40,0.6)'; ctx.fillRect(0, 0, C.W, C.H);
@@ -629,27 +760,31 @@
         if (b.id === myId) { ctx.fillStyle = 'rgba(255,235,59,0.35)'; C.rr(ctx, bx + 6, y - 20, TW - 12, 40, 14); ctx.fill(); }
         C.text(String(rank), bx + 22, y, 24, rank === 1 ? '#ffc107' : '#fff', 'center', null);
         C.drawBall(bx + 56, y, 16, b.skin, 0, ctx);
-        C.text(fit(b.human ? b.name : cname(b.skin), TW - 148, 21), bx + 80, y, 21, b.human ? '#ffeb3b' : '#e0e0e0', 'left', null);
+        C.text(fit(b.human ? b.name : cname(b.skin), TW - 148, 21), bx + 80, y, 21, b.team && rcfg.mode ? TEAML[b.team] : b.human ? '#ffeb3b' : '#e0e0e0', 'left', null);
         C.text(String(Math.round(b.m)), bx + TW - 20, y, 23, '#fff', 'right', null);
       });
-      // зачёт стран — слева сверху: таймер раунда и тройка лидеров
+      // зачёт стран — слева сверху: таймер раунда и тройка лидеров (в командах — счёт команд)
       const cx0 = 18, cy0 = 24, cw = L ? 312 : 270, myRow = cs.findIndex((c) => c[0] === skin);
-      const crow = cs.slice(0, 3); const extra = myRow >= 3 ? 1 : 0; const ch = 54 + Math.max(1, crow.length + extra) * 40;
-      ctx.fillStyle = 'rgba(0,0,0,0.42)'; C.rr(ctx, cx0, cy0, cw, ch, 20); ctx.fill();
-      C.icon('trophy', cx0 + 28, cy0 + 27, 30, '#ffd54f'); C.text(T.countries, cx0 + 50, cy0 + 28, 24, '#fff', 'left', null);
-      C.text(fmtT(rt), cx0 + cw - 16, cy0 + 28, 24, rt < 20 ? '#ff8a80' : '#b9f6ca', 'right', null);
-      const team = {}; for (const b of balls.values()) if (b.human) team[b.skin] = (team[b.skin] || 0) + 1;
-      const crowRow = (c, i, y) => {
-        const isMe = c[0] === skin, n = team[c[0]] || 0, bot = c[0] === 'BOT';
-        if (isMe) { ctx.fillStyle = 'rgba(255,235,59,0.3)'; C.rr(ctx, cx0 + 6, y - 18, cw - 12, 36, 12); ctx.fill(); }
-        C.text(String(i + 1), cx0 + 22, y, 22, i === 0 ? '#ffc107' : '#fff', 'center', null); C.drawBall(cx0 + 52, y, 14, c[0], 0, ctx);
-        const tail = n > 1 ? ' ×' + n : '';
-        C.text(fit(cname(c[0]), cw - 140 - (tail ? 30 : 0), 21) + tail, cx0 + 74, y, 21, isMe ? '#ffeb3b' : bot ? '#b0bec5' : '#fff', 'left', null);
-        C.text(String(c[1]), cx0 + cw - 16, y, 21, bot ? '#b0bec5' : '#fff', 'right', null);
-      };
-      crow.forEach((c, i) => crowRow(c, i, cy0 + 72 + i * 40));
-      if (extra) crowRow(cs[myRow], myRow, cy0 + 72 + crow.length * 40);
-      if (!crow.length) C.text('…', cx0 + cw / 2, cy0 + 72, 24, '#cfd8dc');
+      let ch;
+      if (rcfg.mode) ch = drawTeams(ctx, cx0, cy0, cw);
+      else {
+        const crow = cs.slice(0, 3); const extra = myRow >= 3 ? 1 : 0; ch = 54 + Math.max(1, crow.length + extra) * 40;
+        ctx.fillStyle = 'rgba(0,0,0,0.42)'; C.rr(ctx, cx0, cy0, cw, ch, 20); ctx.fill();
+        C.icon('trophy', cx0 + 28, cy0 + 27, 30, '#ffd54f'); C.text(T.countries, cx0 + 50, cy0 + 28, 24, '#fff', 'left', null);
+        C.text(fmtT(rt), cx0 + cw - 16, cy0 + 28, 24, rt < 20 ? '#ff8a80' : '#b9f6ca', 'right', null);
+        const team = {}; for (const b of balls.values()) if (b.human) team[b.skin] = (team[b.skin] || 0) + 1;
+        const crowRow = (c, i, y) => {
+          const isMe = c[0] === skin, n = team[c[0]] || 0, bot = c[0] === 'BOT';
+          if (isMe) { ctx.fillStyle = 'rgba(255,235,59,0.3)'; C.rr(ctx, cx0 + 6, y - 18, cw - 12, 36, 12); ctx.fill(); }
+          C.text(String(i + 1), cx0 + 22, y, 22, i === 0 ? '#ffc107' : '#fff', 'center', null); C.drawBall(cx0 + 52, y, 14, c[0], 0, ctx);
+          const tail = n > 1 ? ' ×' + n : '';
+          C.text(fit(cname(c[0]), cw - 140 - (tail ? 30 : 0), 21) + tail, cx0 + 74, y, 21, isMe ? '#ffeb3b' : bot ? '#b0bec5' : '#fff', 'left', null);
+          C.text(String(c[1]), cx0 + cw - 16, y, 21, bot ? '#b0bec5' : '#fff', 'right', null);
+        };
+        crow.forEach((c, i) => crowRow(c, i, cy0 + 72 + i * 40));
+        if (extra) crowRow(cs[myRow], myRow, cy0 + 72 + crow.length * 40);
+        if (!crow.length) C.text('…', cx0 + cw / 2, cy0 + 72, 24, '#cfd8dc');
+      }
       hudBottom = Math.max(by + rows.length * 44 + 60, cy0 + ch) + 20;
       if (mine && mine.alive) {
         const myRank = all.indexOf(mine) + 1, top = myRank <= 3, py = 24;
@@ -670,14 +805,13 @@
       // мини-карта
       const mR = C.clamp(95 * (Rshow / 2000), 50, L ? 90 : 120), mx = 26 + mR, my = C.H - 30 - mR, k = mR / Rshow;
       ctx.fillStyle = 'rgba(10,12,50,0.55)'; ctx.beginPath(); ctx.arc(mx, my, mR + 8, 0, 7); ctx.fill();
-      ctx.fillStyle = 'rgba(201,236,255,0.35)'; ctx.beginPath(); ctx.arc(mx, my, mR, 0, 7); ctx.fill();
+      ctx.fillStyle = R3D ? 'rgba(76,184,63,0.55)' : 'rgba(201,236,255,0.35)'; ctx.beginPath(); ctx.arc(mx, my, mR, 0, 7); ctx.fill();
       ctx.strokeStyle = growFx > 0 ? '#00e676' : '#b388ff'; ctx.lineWidth = growFx > 0 ? 5 : 3; ctx.stroke();
       ctx.fillStyle = '#90a4ae'; for (const s of saws) { ctx.beginPath(); ctx.arc(mx + s.x * k, my + s.y * k, 4, 0, 7); ctx.fill(); }
-      for (const b of balls.values()) { if (!b.alive || b.id === myId) continue; ctx.fillStyle = b.human ? '#ffffff' : 'rgba(255,255,255,0.35)'; ctx.beginPath(); ctx.arc(mx + b.x * k, my + b.y * k, b.human ? 5 : 3, 0, 7); ctx.fill(); }
+      for (const b of balls.values()) { if (!b.alive || b.id === myId) continue; ctx.fillStyle = b.team && rcfg.mode ? TEAMC[b.team] : b.human ? '#ffffff' : 'rgba(255,255,255,0.35)'; ctx.beginPath(); ctx.arc(mx + b.x * k, my + b.y * k, b.human ? 5 : 3, 0, 7); ctx.fill(); }
       if (me.alive) { ctx.fillStyle = '#ffeb3b'; ctx.beginPath(); ctx.arc(mx + me.x * k, my + me.y * k, 7, 0, 7); ctx.fill(); ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke(); }
       toasts.forEach((t, i) => { const y = C.H * 0.74 - i * 54; ctx.globalAlpha = Math.max(0, Math.min(1, (3 - t.t) * 2, t.t * 6)); ctx.fillStyle = 'rgba(0,0,0,0.55)'; C.rr(ctx, C.W / 2 - 310, y - 24, 620, 48, 24); ctx.fill(); C.text(t.text, C.W / 2, y, 28, t.col); ctx.globalAlpha = 1; });
       if (growFx > 0 && !toasts.length && me.alive) { ctx.globalAlpha = Math.min(1, growFx); C.text(T.grow, C.W / 2, C.H * 0.74, 40, '#69f0ae', 'center', 'rgba(0,0,0,0.8)'); ctx.globalAlpha = 1; }
-      if (pingMs) C.text(pingMs + ' ms', C.W - 24, C.H - 26, 22, 'rgba(255,255,255,0.6)', 'right', null);
       // итог раунда стран
       if (banner && me.alive) drawBanner(ctx, L);
   }
@@ -780,13 +914,44 @@
     if (cap.bottom) { ctx.save(); ctx.globalAlpha = cap.bottomA === undefined ? 1 : cap.bottomA; C.text(cap.bottom, C.W / 2, C.H * 0.7, capSize(cap.bottom, cap.bottomSize || 46), '#fff', 'center', 'rgba(20,20,70,0.95)'); ctx.restore(); }
   }
 
+  // счёт команд — слева сверху: синие против красных (или друзья против ботов) и таймер раунда
+  function drawTeams(ctx, x0, y0, w) {
+    const h = 132;
+    ctx.fillStyle = 'rgba(0,0,0,0.42)'; C.rr(ctx, x0, y0, w, h, 20); ctx.fill();
+    C.icon('trophy', x0 + 28, y0 + 27, 30, '#ffd54f'); C.text(T.rnd, x0 + 50, y0 + 28, 24, '#fff', 'left', null);
+    C.text(fmtT(rt), x0 + w - 16, y0 + 28, 24, rt < 20 ? '#ff8a80' : '#b9f6ca', 'right', null);
+    const tot = Math.max(1, ts[0] + ts[1]);
+    [1, 2].forEach((k, i) => {
+      const y = y0 + 70 + i * 40, mine = k === myTeam;
+      if (mine) { ctx.fillStyle = 'rgba(255,255,255,0.18)'; C.rr(ctx, x0 + 6, y - 18, w - 12, 36, 12); ctx.fill(); }
+      ctx.fillStyle = TEAMC[k]; ctx.beginPath(); ctx.arc(x0 + 26, y, 11, 0, 7); ctx.fill();
+      const nw = Math.min(132, w * 0.43), bx0 = x0 + 46 + nw, bw = Math.max(30, w - nw - 46 - 66);
+      C.text(fit(teamName(k), nw, 18), x0 + 44, y, 18, mine ? '#ffeb3b' : '#fff', 'left', null);
+      ctx.fillStyle = 'rgba(255,255,255,0.15)'; C.rr(ctx, bx0, y - 7, bw, 14, 7); ctx.fill();
+      ctx.fillStyle = TEAMC[k]; C.rr(ctx, bx0, y - 7, Math.max(14, bw * (ts[i] / tot)), 14, 7); ctx.fill();
+      C.text(String(ts[i]), x0 + w - 16, y, 20, '#fff', 'right', null);
+    });
+    return h;
+  }
   function drawBanner(ctx, L) {
+    if (banner.ts) { drawTeamBanner(ctx, L); return; }
     const b = banner, a = Math.min(1, b.t * 4, (4.5 - b.t) * 2), y = L ? C.H * 0.3 : hudBottom + 80, w = Math.min(560, C.W - 40);
     ctx.globalAlpha = Math.max(0, a);
     ctx.fillStyle = b.mine ? 'rgba(255,160,0,0.92)' : 'rgba(20,20,60,0.82)'; C.rr(ctx, C.W / 2 - w / 2, y - 70, w, b.mine ? 160 : 130, 26); ctx.fill();
     C.text(b.win === 'BOT' ? T.botsWon : T.roundWon, C.W / 2, y - 38, 28, '#fff');
     C.drawBall(C.W / 2 - 120, y + 12, 32, b.win, 0, ctx); C.text(fit(cname(b.win), w / 2 + 40, 38), C.W / 2 - 74, y + 14, 38, '#fff', 'left');
     if (b.mine) { C.text(T.yourTeam + '  +25', C.W / 2 - 16, y + 62, 28, '#fff'); C.icon('coin', C.W / 2 + 150, y + 60, 34); }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawTeamBanner(ctx, L) {
+    const b = banner, a = Math.min(1, b.t * 4, (4.5 - b.t) * 2), y = L ? C.H * 0.3 : hudBottom + 80, w = Math.min(560, C.W - 40);
+    ctx.globalAlpha = Math.max(0, a);
+    ctx.fillStyle = b.mine ? 'rgba(255,160,0,0.92)' : 'rgba(20,20,60,0.82)'; C.rr(ctx, C.W / 2 - w / 2, y - 70, w, b.mine ? 160 : 130, 26); ctx.fill();
+    if (b.team) { ctx.fillStyle = TEAMC[b.team]; ctx.beginPath(); ctx.arc(C.W / 2 - w / 2 + 50, y - 20, 22, 0, 7); ctx.fill(); C.text(teamName(b.team) + ' ' + T.teamWon, C.W / 2 + 20, y - 20, 30, '#fff'); }
+    else C.text(T.draw, C.W / 2, y - 20, 34, '#fff');
+    C.text(b.ts[0] + ' : ' + b.ts[1], C.W / 2, y + 26, 34, '#fff');
+    if (b.mine) { C.text(T.ourTeam + '  +25', C.W / 2 - 16, y + 66, 28, '#fff'); C.icon('coin', C.W / 2 + 170, y + 64, 34); }
     ctx.globalAlpha = 1;
   }
 

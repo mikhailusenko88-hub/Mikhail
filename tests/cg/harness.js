@@ -76,7 +76,7 @@ const OUTER = (w, h, full) => `<!DOCTYPE html><html><head><meta name="viewport" 
 </style></head><body class="${full ? 'full' : ''}">
 <div id="hdr">CrazyGames <input id="search" placeholder="Search games"></div>
 <div id="wrap"><iframe id="game" allow="autoplay; fullscreen; clipboard-write; clipboard-read" style="width:${w}px;height:${h}px"></iframe><div id="side"><button id="like">Like</button><button id="other">Other</button></div></div>
-<script>document.getElementById('game').src = ${JSON.stringify(GAME_URL)} + location.search;</script>
+<script>document.getElementById('game').src = ${JSON.stringify(GAME_URL)} + (location.search || '?') + ${JSON.stringify(process.env.FLAT ? '&flat=1' : '')};</script>
 </body></html>`;
 
 async function launch() {

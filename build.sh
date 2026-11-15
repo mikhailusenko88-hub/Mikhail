@@ -26,7 +26,7 @@ FB_WSS="${FB_WSS:-wss://89.126.192.214/ws}"  # порт 443 (8443 на серв�
 fb_build() {
   local D=dist/$1 Z=zips/$2 ADS=$3
   rm -rf $D; mkdir -p $D zips
-  cp online/game.js core/core.js $D/
+  cp online/game.js online/r3d.js core/core.js vendor/three.min.js $D/
   # мост: у гостя CrazyGames (не вошёл в аккаунт) он оставлял «Uncaught (in promise)» в консоли — гасим это ожидание
   sed 's/Promise.all(\[e\]).finally(/Promise.allSettled([e]).finally(/' vendor/playgama-bridge.js > $D/playgama-bridge.js
   grep -q 'Promise.allSettled(\[e\]).finally(' $D/playgama-bridge.js || { echo 'bridge patch failed'; exit 1; }
