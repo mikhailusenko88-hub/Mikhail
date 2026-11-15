@@ -1,1 +1,7 @@
-# 2026-11-15 20:00 (запрос выполнен, ждёт следующего)
+# 2026-11-15 19:50 формат «силуэт заполняется шариками → картинка»
+scan:search:balls fill the shape satisfying
+scan:search-month:balls fill the shape
+scan:search-views:balls fill shape reveal
+scan:search:fill the cat with balls
+scan:search-month:balls fill silhouette picture
+scan:hashtag:ballfill
