@@ -1,4 +1,1 @@
-# 2026-11-15 19:55 соседи формата «multiplying balls fill the …»
-@ballssimulator
-@SatisfyingPhysicsSimulation
-scan:search-month:can multiplying balls fill
+# 2026-11-15 20:00 (запрос выполнен, ждёт следующего)
