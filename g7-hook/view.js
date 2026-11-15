@@ -5,17 +5,19 @@
   const RU = /^(ru|uk|be|kk)/i.test(navigator.language || '');
   const T = RU ? {
     title: 'HOOK TRUCK', sub: 'Пробный уровень · средний', solo: '1 игрок', duo: '2 игрока',
-    soloTxt: ['Газ и тормоз — ← →  (A / D)', 'Крюк — держи Пробел или мышь', 'Отпусти — грузовик летит'],
-    duoTxt: ['Игрок 1 — водитель: A / D', 'Игрок 2 — крюк: ↑ (держать)', 'Игрок 2 — лебёдка: ↓ (тянуть)'],
-    phone: 'На телефоне: слева газ и тормоз, справа крюк', start: 'Играть', p1: 'ИГРОК 1', p2: 'ИГРОК 2',
+    soloTxt: ['Правая рука: → газ, ← тормоз', 'Левая рука: Пробел или W — крюк (держать)', 'S — лебёдка тянет быстрее'],
+    duoTxt: ['Игрок 1 (справа): → газ, ← тормоз', 'Игрок 2 (слева): W или Пробел — крюк', 'Игрок 2: S — лебёдка тянет'],
+    phone: 'На телефоне: справа газ и тормоз, слева крюк (вся левая половина экрана)',
+    legend: '→ газ   ← тормоз   ·   Пробел / W — крюк   ·   S — тянуть', start: 'Играть', p1: 'ИГРОК 1', p2: 'ИГРОК 2',
     hook: 'КРЮК', pull: 'ТЯНИ', fell: 'Упал!', crash: 'Авария!', cp: 'Чекпоинт!', star: 'Звезда!',
     win: 'Уровень пройден!', time: 'Время', sec: 'с', tries: 'Попыток', again: 'Ещё раз', menu: 'Меню', got: 'Звезда собрана', nostar: 'Звезда — выше между кольцами',
     h1: 'Держи КРЮК у ямы — повиснешь. Отпусти на взлёте!', h2: 'Обрыв: зацепись — лебёдка затянет наверх', h3: 'Два кольца: отпусти первое — хватай второе',
   } : {
     title: 'HOOK TRUCK', sub: 'Test level · medium', solo: '1 player', duo: '2 players',
-    soloTxt: ['Gas and brake — ← →  (A / D)', 'Hook — hold Space or mouse', 'Let go — the truck flies'],
-    duoTxt: ['Player 1 drives: A / D', 'Player 2 hooks: hold ↑', 'Player 2 winch: ↓ to pull'],
-    phone: 'On phones: gas and brake on the left, hook on the right', start: 'Play', p1: 'PLAYER 1', p2: 'PLAYER 2',
+    soloTxt: ['Right hand: → gas, ← brake', 'Left hand: hold Space or W to hook', 'S — the winch pulls faster'],
+    duoTxt: ['Player 1 (right): → gas, ← brake', 'Player 2 (left): W or Space — hook', 'Player 2: S — winch pull'],
+    phone: 'On phones: gas and brake on the right, hook on the left (whole left half)',
+    legend: '→ gas   ← brake   ·   Space / W — hook   ·   S — pull', start: 'Play', p1: 'PLAYER 1', p2: 'PLAYER 2',
     hook: 'HOOK', pull: 'PULL', fell: 'Fell down!', crash: 'Crash!', cp: 'Checkpoint!', star: 'Star!',
     win: 'Level complete!', time: 'Time', sec: 's', tries: 'Tries', again: 'Play again', menu: 'Menu', got: 'Star collected', nostar: 'The star is high between the rings',
     h1: 'Hold HOOK at the pit to swing. Let go on the way up!', h2: 'Cliff: hook on — the winch pulls you up', h3: 'Two rings: let go of the first, grab the second',
@@ -76,11 +78,12 @@
   let buttons = [];
   function layout() {
     const s = Math.min(W, H2), b = clamp(s * 0.2, 74, 120), m = clamp(s * 0.04, 14, 30), y = H2 - b - m - (W < H2 ? 10 : 0);
+    const gw = b * 1.15;
     buttons = [
-      { id: 'brake', x: m, y, w: b, h: b },
-      { id: 'gas', x: m + b + m * 0.6, y, w: b, h: b },
-      { id: 'hook', x: W - b * 1.35 - m, y: y - b * 0.35, w: b * 1.35, h: b * 1.35 },
-      { id: 'pull', x: W - b * 1.35 - m - b * 0.85 - m * 0.6, y: y + b * 0.25, w: b * 0.85, h: b * 0.75 },
+      { id: 'gas', x: W - gw - m, y: y - b * 0.15, w: gw, h: b * 1.15 },
+      { id: 'brake', x: W - gw - m - b - m * 0.6, y: y + b * 0.05, w: b * 0.95, h: b * 0.95 },
+      { id: 'hook', x: m, y: y - b * 0.35, w: b * 1.35, h: b * 1.35 },
+      { id: 'pull', x: m + b * 0.25, y: y - b * 0.35 - b * 0.75 - m * 0.6, w: b * 0.85, h: b * 0.75 }, // «тяни» — над крюком
       { id: 'restart', x: W - 58, y: 12, w: 46, h: 46, ui: 1 },
       { id: 'menu', x: W - 112, y: 12, w: 46, h: 46, ui: 1 },
       { id: 'mute', x: W - 166, y: 12, w: 46, h: 46, ui: 1 },
@@ -89,12 +92,12 @@
   const hit = (x, y) => buttons.find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
   const held = (id) => { for (const p of ptrs.values()) if (p.btn === id) return true; return false; };
   cv.addEventListener('pointerdown', (e) => {
-    audio(); cv.setPointerCapture && cv.setPointerCapture(e.pointerId);
+    audio(); try { cv.setPointerCapture(e.pointerId); } catch (er) { /* синтетические касания */ }
     const x = e.clientX, y = e.clientY;
     if (mode !== 'play') { menuClick(x, y); return; }
     const b = hit(x, y);
     if (b && b.ui) { if (b.id === 'restart') restart(); else if (b.id === 'menu') mode = 'menu'; else if (b.id === 'mute') muted = !muted; return; }
-    ptrs.set(e.pointerId, { x, y, btn: b ? b.id : e.pointerType === 'mouse' ? 'hook' : null });
+    ptrs.set(e.pointerId, { x, y, btn: b ? b.id : e.pointerType !== 'mouse' && x < W / 2 ? 'hook' : null });
   });
   const up = (e) => ptrs.delete(e.pointerId);
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
@@ -102,10 +105,10 @@
 
   function input() {
     const k = keys;
-    const gas = !!(k.ArrowRight || k.KeyD) || held('gas');
-    const brake = !!(k.ArrowLeft || k.KeyA) || held('brake');
-    const hook = !!(k.Space || k.ArrowUp || k.KeyW) || held('hook');
-    const pull = !!(k.ArrowDown || k.KeyS) || held('pull');
+    const gas = !!(k.ArrowRight || k.ArrowUp) || held('gas');
+    const brake = !!(k.ArrowLeft || k.ArrowDown) || held('brake');
+    const hook = !!(k.Space || k.KeyW || k.ShiftLeft) || held('hook');
+    const pull = !!k.KeyS || held('pull');
     return { gas, brake, hook, pull };
   }
 
@@ -325,14 +328,19 @@
       button(B.hook, '⚓', S.target || S.rope ? '#ff9800' : '#8d6e63', inp.hook, T.hook);
       button(B.pull, '⇡', '#5c6bc0', inp.pull, T.pull);
       if (duo) {
-        ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.font = '900 15px system-ui, sans-serif'; ctx.textAlign = 'left'; ctx.fillText(T.p1, B.brake.x, B.brake.y - 14);
-        ctx.textAlign = 'right'; ctx.fillText(T.p2, B.hook.x + B.hook.w, B.hook.y - 14);
+        ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.font = '900 15px system-ui, sans-serif'; ctx.textAlign = 'right'; ctx.fillText(T.p1, B.gas.x + B.gas.w, B.gas.y - 14);
+        ctx.textAlign = 'left'; ctx.fillText(T.p2, B.hook.x, B.hook.y - 14);
       }
     }
     for (const id of ['restart', 'menu', 'mute']) {
       const b = B[id]; ctx.fillStyle = 'rgba(0,0,0,0.28)'; rr(b.x, b.y, b.w, b.h, 12); ctx.fill();
       ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '900 24px system-ui, sans-serif';
       ctx.fillText(id === 'restart' ? '↻' : id === 'menu' ? '☰' : muted ? '🔇' : '🔊', b.x + b.w / 2, b.y + b.h / 2 + 1);
+    }
+    if (!(touchy || ptrs.size) && S.t < 12) {
+      ctx.globalAlpha = clamp(12 - S.t, 0, 1); ctx.font = '800 17px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const tw = ctx.measureText(T.legend).width + 40; ctx.fillStyle = 'rgba(0,0,0,0.45)'; rr(W / 2 - tw / 2, H2 - 58, tw, 40, 20); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillText(T.legend, W / 2, H2 - 38); ctx.globalAlpha = 1;
     }
     // полоса пути: старт → финиш, чекпоинты
     const L = S.L, x0 = L.polys[0][0][0] + 320, x1 = L.fin, bw = Math.min(W - 200, 360), bx = 16, by = 22;
@@ -434,6 +442,6 @@
     if (mode === 'menu') drawMenu(); else if (mode === 'win') drawWin();
     requestAnimationFrame(frame);
   }
-  window.__hook = { start: startGame, get S() { return S; }, keys };
+  window.__hook = { start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
   requestAnimationFrame(frame);
 })();
