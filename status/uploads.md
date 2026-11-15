@@ -55,3 +55,4 @@
 | shorts | 2026-11-14 | 3 | India vs Saudi Arabia vs Guatemala | https://youtube.com/shorts/-pNQcA0OLfY | |
 | 35 | 2026-11-15 | 1 | S2 RACE 22/68 | https://youtu.be/0OizaWNrguU | public |
 | shorts | 2026-11-15 | 1 | Russia vs Türkiye vs Poland | https://youtube.com/shorts/8GyXq2dRNLo | |
+| arena | 2026-11-15 | 3 | BD | https://youtube.com/shorts/iGHcGEJ6Mho | public (игра) |

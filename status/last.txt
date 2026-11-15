@@ -1,9 +1,9 @@
-ТЕСТ АРЕНЫ ОК: 26 с за 216 с (не выложено)
+ВЫЛОЖЕНО АРЕНА 2026-11-15 слот 3: Shorts https://youtube.com/shorts/iGHcGEJ6Mho (public), за 206 с
 
-Which country wins? 🇵🇱 PL vs 🇲🇳 MN vs 🇭🇺 HU #shorts
+{"file": "arena_202611151007.mp4", "duration": 26.05, "winner": "BD", "top": [["BD", 654], ["GB", 432], ["SA", 347], ["MA", 326], ["UA", 315]], "title": "Which country wins? 🇧🇩 BD vs 🇬🇧 UK vs 🇸🇦 SA #shorts", "players": 0, "description": "Round won by 🇧🇩 BD!\n\nGameplay from Flagball Arena: every ball is a country. Eat smaller balls, run from bigger ones, win the round for your flag.\n\nIs your country here? Write it in the comments!\n\n#flagball #countryballs #io #shorts"}
 
 --- журнал ---
-12:58:30 режим test, 2026-11-15 слот 3: ролик из игры Flagball Arena
+13:04:29 режим publish, 2026-11-15 слот 3: ролик из игры Flagball Arena
 на арене, ждём 19 с до конца раунда
-готово: /tmp/fb/arena/arena_202611151001.mp4 26 с | победа: PL | поеданий: 10
-13:02:06 ролик с арены: 26 с, победа PL, людей 0
+готово: /tmp/fb/arena/arena_202611151007.mp4 26.05 с | победа: BD | поеданий: 10
+13:07:51 ролик с арены: 26.05 с, победа BD, людей 0
