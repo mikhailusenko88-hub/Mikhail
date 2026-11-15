@@ -83,7 +83,7 @@
   C.bridgeOk = false; C.platform = 'none'; C.lang = (navigator.language || 'en').toLowerCase();
   C.rewardedSupported = true; C.interSupported = true; C.mockAds = true;
   async function initBridge() {
-    if (!window.bridge) return;
+    if (!window.bridge) { if (window.GAME_ADS === false) { C.rewardedSupported = false; C.interSupported = false; } return; }
     try {
       await Promise.race([window.bridge.initialize(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000))]);
       C.bridgeOk = true;
@@ -732,10 +732,10 @@
     const r = C.result, t = now() - r.t0;
     ctx.fillStyle = 'rgba(0,0,0,' + Math.min(0.45, t) + ')'; ctx.fillRect(0, 0, C.W, C.H); UI.block();
     const k = C.easeOutBack(Math.min(1, t / 0.4));
-    const pw = 600, ph = 700, px = C.W / 2 - pw / 2, py = C.H * 0.5 - ph / 2;
+    const pw = 600, ph = Math.min(700, C.H - 40), px = C.W / 2 - pw / 2, py = C.H * 0.5 - ph / 2;
     ctx.save(); ctx.translate(C.W / 2, C.H / 2); ctx.scale(k, k); ctx.translate(-C.W / 2, -C.H / 2);
     C.panel(px, py, pw, ph, '#fffaf0');
-    C.icon('trophy', C.W / 2, py - 10, 150);
+    C.icon('trophy', C.W / 2, Math.max(py - 10, 66), C.H < 800 ? 96 : 150); // в альбоме кубок меньше и внутри экрана
     for (let i = 0; i < 3; i++) {
       const st = Math.min(1, Math.max(0, (t - 0.4 - i * 0.2) / 0.3));
       const got = i < r.stars;
