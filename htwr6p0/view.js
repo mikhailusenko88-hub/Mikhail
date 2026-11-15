@@ -74,7 +74,7 @@
   let save = { stars: [], best: [], duo: false };
   try { const q = JSON.parse(localStorage.getItem('hooktruck_v1') || 'null'); if (q && Array.isArray(q.stars)) save = Object.assign(save, q); } catch (e) { /* без сохранения */ }
   const store = () => { try { localStorage.setItem('hooktruck_v1', JSON.stringify(save)); } catch (e) { /* без сохранения */ } };
-  let lvl = 0, res = null;
+  let lvl = 0, res = null; const dbg = { freeze: false, clean: false };
   let mode = 'menu', duo = !!save.duo, S = null, acc = 0, last = performance.now(), Z = 0.6, camX = 0, camY = 0, toasts = [], parts = [], shake = 0, realT = 0, hintShown = {};
   const keys = {};
   addEventListener('keydown', (e) => { keys[e.code] = true; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (e.code === 'Enter' && mode === 'win') startGame(duo, Math.min(NL - 1, lvl + 1)); else if (e.code === 'KeyR' && mode === 'play') restart(); });
@@ -142,9 +142,10 @@
   const sx = (x) => (x - camX) * Z + W * 0.42, sy = (y) => (y - camY) * Z + H2 * 0.55;
   function camera(dt) {
     const port = W < H2;
-    const zt = port ? W / 1050 : Math.min(W / 1650, H2 / 980);
+    const zt = dbg.zoom || (port ? W / 1050 : Math.min(W / 1650, H2 / 980));
     Z += (zt - Z) * Math.min(1, dt * 3);
     const T = S.truck, look = clamp(T.vx * 0.35, -250, 420);
+    if (dbg.zoom) { camX = T.x + dbg.cx; camY = (T.y + (S.rope ? S.rope.py : T.y - 300)) / 2 + dbg.cy; return; }
     if (S.state === 'dead') return;
     camX += (T.x + look - camX) * Math.min(1, dt * 4);
     let ty = T.y - 60; if (S.rope) ty = (T.y + S.rope.py) / 2 + 40;
@@ -492,7 +493,7 @@
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     if (!S) { S = H.create(0); camX = S.truck.x + 300; camY = S.truck.y; }
     let inp = { gas: false, brake: false, hook: false, pull: false };
-    if (mode === 'play') {
+    if (mode === 'play' && !dbg.freeze) {
       inp = input();
       acc += dt; let n = 0;
       while (acc >= P.DT && n < 10) {
@@ -515,10 +516,9 @@
     ctx.save(); if (shake > 0) ctx.translate((Math.random() - 0.5) * shake * 30, (Math.random() - 0.5) * shake * 30);
     drawSky(); drawGround(); drawObjects(); drawRope(); drawTruck(); drawPits();
     ctx.restore();
-    if (mode === 'play' || mode === 'win') drawHud(inp);
-    if (mode === 'menu') drawMenu(); else if (mode === 'win') drawWin();
+    if (!dbg.clean) { if (mode === 'play' || mode === 'win') drawHud(inp); if (mode === 'menu') drawMenu(); else if (mode === 'win') drawWin(); }
     requestAnimationFrame(frame);
   }
-  window.__hook = { get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
+  window.__hook = { dbg, get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
   requestAnimationFrame(frame);
 })();
