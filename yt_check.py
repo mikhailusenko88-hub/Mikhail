@@ -183,6 +183,7 @@ def rss(cid):
             "published": e.find("a:published", ns).text,
             "title": e.find("a:title", ns).text,
             "views": int(stat.get("views")) if stat is not None and stat.get("views") else None,
+            "desc": ((e.find("m:group/m:description", ns).text or "") if e.find("m:group/m:description", ns) is not None else "")[:5000],
         })
     return st, rows
 
