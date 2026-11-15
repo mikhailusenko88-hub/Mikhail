@@ -233,7 +233,7 @@ S.parse = function (text, lib, opts) {
         const vanish = /(исчез|пропал|растаял|улетел|нет больше|высох|испарил)/.test(d);
         const morph = !!(sc._vanishLn && sc._ln - sc._vanishLn <= 2 && !vanish); const appear = /(появил|возник|вырос|(^|[^а-я])вдруг)/.test(d) || (type === 'door' && /волшебн/.test(d)) || morph;
         const fresh = /(ещ[её] одн|друг[аоу]я|нов[аоы][яйе])/.test(d);
-        const mine = /((^|[^а-я])наш(а|е|и|у)?|(^|[^а-я])мо[йяеё]|у меня|у нас)(?![а-я])/.test(near) && who && who !== 'Р' && !big;
+        const mine = /((^|[^а-я])наш(а|е|и|у)?|(^|[^а-я])мо[йяеё]|у меня|у нас)(?![а-я])/.test(near) && who && who !== 'Р' && !big && type !== 'puddle';   // «моя лужа» — лужа на земле, не в лапах
         let pr = fresh ? null : sc.props.find(x => x.type === type && !x._gone && (type !== 'tree' || (x.kind || null) === (tkind || null))) || (vanish ? sc.props.find(x => x.type === type) : null);
         if (!pr && type === 'jack') pr = sc.props.find(x => x.type === 'pumpkin' && !x._gone);
         if (!pr) { pr = { id: 'П' + (sc.props.length + 1), type, x: freeSpot(big), decor: true }; if (tkind) pr.kind = tkind === 'fir' && theme === 'newyear' ? 'xmas' : tkind; if (EVENT_DECOR.has(type) && sc._ln > 1) pr.hidden = true; if (big && !small) pr.big = type === 'moon' ? 1 : MID_DEFAULT.has(type) ? 1 : 2.4; else if (MID_DEFAULT.has(type)) pr.big = .62; if (small) pr.big = .7; if (color) pr.color = color;
