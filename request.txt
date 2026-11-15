@@ -1,5 +1,7 @@
-# 2026-11-15 13:20 МСК — (выложено) полные названия стран в роликах из игры
-mode: test
-date: 2026-11-16
-slot: 3
-arena: no
+# 2026-11-15 13:25 МСК — поправить название первого ролика из игры (коды стран → названия), по просьбе Михаила
+mode: retitle
+video: iGHcGEJ6Mho
+title: Which country wins? 🇧🇩 Bangladesh vs 🇬🇧 UK vs 🇸🇦 Saudi Arabia
+add_shorts: yes
+desc_from: Round won by 🇧🇩 BD!
+desc_to: Round won by 🇧🇩 Bangladesh!

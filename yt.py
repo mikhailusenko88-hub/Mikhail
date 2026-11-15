@@ -161,3 +161,19 @@ class YT:
         r = requests.get(f"{API}/videos", params={"part": "status", "id": vid}, headers=self.h(), timeout=30)
         items = r.json().get("items", []) if r.status_code == 200 else []
         return items[0]["status"] if items else {}
+
+    def retitle(self, vid, title=None, description=None):
+        """Поменять название/описание уже выложенного ролика (snippet целиком: categoryId обязателен)."""
+        r = requests.get(f"{API}/videos", params={"part": "snippet", "id": vid}, headers=self.h(), timeout=30)
+        items = r.json().get("items", []) if r.status_code == 200 else []
+        if not items:
+            return r.status_code, "ролик не найден"
+        sn = items[0]["snippet"]
+        body = {"id": vid, "snippet": {"title": (title or sn["title"])[:100],
+                                         "description": description if description is not None else sn.get("description", ""),
+                                         "categoryId": sn.get("categoryId", "20"), "tags": sn.get("tags", []),
+                                         "defaultLanguage": sn.get("defaultLanguage", "en")}}
+        r = requests.put(f"{API}/videos", params={"part": "snippet"}, headers=self.h({"Content-Type": "application/json"}),
+                         data=json.dumps(body), timeout=30)
+        return r.status_code, (r.json().get("snippet", {}).get("title") if r.status_code == 200 else r.text[:300])
+

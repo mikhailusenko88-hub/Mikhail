@@ -206,6 +206,20 @@ def main():
         if due != (d, slot):
             log(f"догоняю пропущенный слот: {due[0]} слот {due[1]}")
         d, slot = due
+    if mode == "retitle":            # поправить название/описание ролика: video, title, desc_from, desc_to
+        import yt as ytmod
+        yt = ytmod.YT()
+        desc = None
+        if req.get("desc_from"):
+            r = __import__("requests").get(f"{ytmod.API}/videos", params={"part": "snippet", "id": req["video"]},
+                                           headers=yt.h(), timeout=30).json().get("items", [{}])[0]
+            desc = r.get("snippet", {}).get("description", "").replace(req["desc_from"], req.get("desc_to", ""))
+        title = req.get("title")
+        if title and req.get("add_shorts", "").lower() in ("yes", "да", "1"):   # «#» в request.txt — комментарий
+            title += " #shorts"
+        st = yt.retitle(req["video"], title, desc)
+        write_status(f"ПЕРЕИМЕНОВАНО {req['video']}: {st[0]} {st[1]}")
+        return
     if slot == ARENA_SLOT and req.get("arena", "auto").lower() not in ("no", "нет", "0"):
         log(f"режим {mode}, {d} слот {slot}: ролик из игры Flagball Arena")
         if mode == "publish" and not os.environ.get("FLAGBALL_YT", "").strip():
