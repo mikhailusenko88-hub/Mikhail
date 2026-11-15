@@ -123,7 +123,8 @@ def arena_slot(d, slot, mode, t0):
                                stderr=subprocess.DEVNULL)
         time.sleep(1.5)
         env = dict(os.environ, PLAYWRIGHT=f"{G}/node_modules/playwright-core", GAME_URL="http://localhost:8770/index.html",
-                   SERVER=ARENA_SERVER, ROOM="main", CLIP="19", WIDE="2.2", CHROME="/usr/bin/google-chrome")
+                   SERVER=ARENA_SERVER, ROOM="main", CLIP="19", WIDE="2.2", CHROME="/usr/bin/google-chrome",
+                   END_CAP="FLAGBALL ARENA · COMING SOON")
         out = f"{WORK}/arena"
         try:
             p = subprocess.run(["node", "shorts/record.js", out], cwd=G, env=env, capture_output=True, text=True,
