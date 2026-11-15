@@ -279,7 +279,10 @@ def remaining_to_final(state_after):
     return n + 1
 
 
-RACE_SLOTS = (1, 2)   # с 15.11.2026: гонки в слотах 1 и 2; слот 3 — ролик из игры Flagball Arena (ci_run.arena_slot)
+ARENA_ON = False      # ролики из игры Flagball Arena в слоте 3. 15.11.2026 14:30 выключены (игру не приняли на CrazyGames),
+                      # слот 3 снова гонка. Когда игру одобрят: True — слот 3 станет роликом из игры (ci_run.arena_slot),
+                      # и пересчитать life_total в season_state.json под 2 гонки в день.
+RACE_SLOTS = (1, 2) if ARENA_ON else (1, 2, 3)
 
 
 def slot_after(d, slot, n):

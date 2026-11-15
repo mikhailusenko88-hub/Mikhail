@@ -25,8 +25,7 @@ HEATS_PER_VIDEO = {1: 2, 2: 3, 3: 2, 4: 1}     # заездов в одном в
 # В остальные слоты на канал идёт только Shorts: длинные набирали 13–180 просмотров, Shorts — сотни и тысячи.
 LONG_SLOTS = {(6, 2)}                           # (день недели: 0 = понедельник … 6 = воскресенье, слот)
 ARENA_SLOT = 3      # с 15.11.2026: слот 3 — ролик из игры Flagball Arena (проверка H14), гонки — в слотах 1 и 2
-ARENA_ON = False    # 15.11.2026 14:30: игру не приняли на CrazyGames — ролики из игры выключены до одобрения
-                    # (Михаил). Вернуть: True. Без них слот 3 пустой, вечерний запуск только догоняет пропущенные гонки.
+from season import ARENA_ON   # 15.11.2026: ролики из игры выключены, слот 3 — снова гонка (season.py)
 GAMES_REPO = "https://github.com/mikhailusenko88-hub/Mikhail"
 ARENA_SERVER = "wss://89.126.192.214/ws"
 
@@ -57,7 +56,7 @@ def read_request():
     return req
 
 
-SLOT_HOURS = {1: 7, 2: 15, 3: 23} if ARENA_ON else {1: 7, 2: 15}   # по Москве; запуск ~за 30 мин до выхода
+SLOT_HOURS = {1: 7, 2: 15, 3: 23}                  # по Москве; запуск ~за 30 мин до выхода
 
 
 def due_slot(now, history):
@@ -65,7 +64,7 @@ def due_slot(now, history):
     GitHub иногда пропускает запуск по расписанию — тогда следующий запуск выложит пропущенный."""
     done = {(h.get("date"), h.get("slot")) for h in history} | arena_done()
     cands = []
-    if now.hour < 5 and 3 in SLOT_HOURS:               # вечерний слот вчера (запуск ушёл за полночь)
+    if now.hour < 5:                                   # вечерний слот вчера (запуск ушёл за полночь)
         cands.append((now.date() - dt.timedelta(days=1), 3))
     for s, hr in sorted(SLOT_HOURS.items()):
         start = dt.datetime(now.year, now.month, now.day, hr, tzinfo=MSK) - dt.timedelta(minutes=45)
@@ -222,11 +221,7 @@ def main():
         st = yt.retitle(req["video"], title, desc)
         write_status(f"ПЕРЕИМЕНОВАНО {req['video']}: {st[0]} {st[1]}")
         return
-    if slot == ARENA_SLOT and not ARENA_ON:
-        log(f"{d} слот {slot}: ролики из игры выключены (игра не одобрена) — ничего не выкладываю")
-        write_status(f"ПРОПУСК {d} слот {slot}: ролики из игры Flagball Arena выключены")
-        return
-    if slot == ARENA_SLOT and req.get("arena", "auto").lower() not in ("no", "нет", "0"):
+    if slot == ARENA_SLOT and ARENA_ON and req.get("arena", "auto").lower() not in ("no", "нет", "0"):
         log(f"режим {mode}, {d} слот {slot}: ролик из игры Flagball Arena")
         if mode == "publish" and not os.environ.get("FLAGBALL_YT", "").strip():
             write_status(f"ЖДУ ВХОД: нет секрета FLAGBALL_YT ({d} слот {slot} пропущен)")
