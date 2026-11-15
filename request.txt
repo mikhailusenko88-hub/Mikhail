@@ -1,7 +1,1 @@
-# 2026-11-15 19:58 ниша «картина из шариков» — волна 2
-@mikan2d
-scan:search-views:marble art what picture will appear
-scan:search-views:what picture will appear balls
-scan:search:marble art shorts
-scan:search-month:marble art picture
-scan:search-views:balls simulation image reveal
+# 2026-11-15 20:00 (запрос выполнен, ждёт следующего)
