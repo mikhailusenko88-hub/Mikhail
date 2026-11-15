@@ -21,6 +21,18 @@ MSK = dt.timezone(dt.timedelta(hours=3))
 WORK = "/tmp/fb"
 LOG = []
 HEATS_PER_VIDEO = {1: 2, 2: 3, 3: 2, 4: 1}     # заездов в одном видео по раундам
+# С 15.11.2026 длинное видео — раз в неделю (воскресенье, вечерний слот = мега-трасса) и в гранд-финал.
+# В остальные слоты на канал идёт только Shorts: длинные набирали 13–180 просмотров, Shorts — сотни и тысячи.
+LONG_SLOTS = {(6, 3)}                           # (день недели: 0 = понедельник … 6 = воскресенье, слот)
+
+
+def long_due(d, slot, final, req):
+    v = (req.get("long") or "auto").lower()
+    if v in ("yes", "да", "1"):
+        return True
+    if v in ("no", "нет", "0"):
+        return False
+    return final or (d.weekday(), slot) in LONG_SLOTS
 
 
 def log(*a):
@@ -215,9 +227,42 @@ def main():
     except Exception as e:  # noqa: BLE001 — Shorts не должен ломать выкладку
         log(f"Shorts не собрался: {e}")
 
+    long_video = long_due(d, slot, bool(m0.get("final")), req)
+    log("длинное видео в этом слоте:", "да" if long_video else "нет (только Shorts)")
+    if short is None and not long_video:
+        long_video = True
+        log("Shorts не собрался — выкладываю длинное видео, чтобы слот не пропал")
+
     if mode != "publish":
         shutil.copy(name + ".jpg", "status/test_thumb.jpg")
+        if short:
+            for t in (0, 0.5, 1.5, 4, 10, max(0.1, short["duration"] - 3)):
+                subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{t:.2f}", "-i", name + "_short.mp4",
+                                "-frames:v", "1", "-vf", "scale=540:-2", f"status/test_short_{t:04.1f}.jpg"])
+            with open("status/test_short.txt", "w", encoding="utf-8") as f:
+                f.write(f"{short['title']}\n{short['duration']:.1f} с\nдлинное видео в слоте: {long_video}\n\n"
+                        + shorts.description(short["meta"], "" if not long_video else "https://youtu.be/XXXX"))
         write_status(f"ТЕСТ ОК: видео #{n} ({k} заезд.) собрано за {time.time() - t0:.0f} с, {size:.0f} МБ (не выложено)",
+                     json.dumps({kk: v for kk, v in meta.items() if kk != "ranking"}, ensure_ascii=False, indent=1))
+        return
+
+    if not long_video:
+        # ---- только Shorts: сезон двигается после удачной выкладки Shorts
+        smeta = {"title": short["title"], "description": shorts.description(short["meta"])}
+        svid = yt.upload(name + "_short.mp4", smeta)
+        sst = yt.status(svid)
+        log("Shorts на YouTube:", sst)
+        shutil.copy(tmp_state, "season_state.json")
+        for m in metas:
+            m["video_id"] = None
+            m["short_id"] = svid
+            json.dump(m, open(f"races/race_{m['race_no']:03d}.json", "w"), ensure_ascii=False, indent=1)
+        with open("status/uploads.md", "a", encoding="utf-8") as f:
+            f.write(f"| shorts | {d} | {slot} | {short['vs']} | https://youtube.com/shorts/{svid} | "
+                    f"{sst.get('privacyStatus')} (только Shorts) |\n")
+        warn = "" if sst.get("privacyStatus") == "public" else "  ⚠️ НЕ ОТКРЫТ"
+        write_status(f"ВЫЛОЖЕНО #{n} {d} слот {slot}: Shorts https://youtube.com/shorts/{svid} "
+                     f"({sst.get('privacyStatus')}, без длинного){warn}, за {time.time() - t0:.0f} с",
                      json.dumps({kk: v for kk, v in meta.items() if kk != "ranking"}, ensure_ascii=False, indent=1))
         return
 
