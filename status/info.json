@@ -10,57 +10,12 @@
    "\"Нравится\\\"",
    "\"Нравится\""
   ],
-  "html_len": 1296559,
+  "html_len": 1308030,
   "thumbs": [
-   "hqdefault.jpg"
-  ]
- },
- {
-  "id": "Rdq6oW2p8MA",
-  "status": 200,
-  "title": "2",
-  "viewCount": "57",
-  "like_snips": [
-   "\"Не нравится\"",
-   "\"Нравится\"",
-   "\"Нравится\\\"",
-   "\"Нравится\""
-  ],
-  "html_len": 1286758,
-  "thumbs": [
-   "hqdefault.jpg"
-  ]
- },
- {
-  "id": "Mk8UGv07r5o",
-  "status": 200,
-  "title": "2",
-  "viewCount": "46",
-  "like_snips": [
-   "\"Не нравится\"",
-   "\"Нравится\"",
-   "\"Нравится\\\"",
-   "\"Нравится\""
-  ],
-  "html_len": 1289736,
-  "thumbs": [
-   "hqdefault.jpg"
-  ]
- },
- {
-  "id": "L-F99tVc0xY",
-  "status": 200,
-  "title": "1",
-  "viewCount": "91",
-  "like_snips": [
-   "\"Не нравится\"",
-   "\"Нравится\"",
-   "\"Нравится\\\"",
-   "\"Нравится\""
-  ],
-  "html_len": 1265028,
-  "thumbs": [
-   "hqdefault.jpg"
+   "hqdefault.jpg",
+   "hq1.jpg",
+   "hq2.jpg",
+   "hq3.jpg"
   ]
  },
  {
@@ -74,57 +29,31 @@
    "\"Нравится\\\"",
    "\"Нравится\""
   ],
-  "html_len": 1348319,
+  "html_len": 1211112,
   "thumbs": [
-   "hqdefault.jpg"
+   "hqdefault.jpg",
+   "hq1.jpg",
+   "hq2.jpg",
+   "hq3.jpg"
   ]
  },
  {
-  "id": "l61AzijCVZA",
-  "status": 200,
-  "title": "1",
-  "viewCount": "19",
-  "like_snips": [
-   "\"Не нравится\"",
-   "\"Нравится\"",
-   "\"Нравится\\\"",
-   "\"Нравится\""
-  ],
-  "html_len": 1327970,
-  "thumbs": [
-   "hqdefault.jpg"
-  ]
- },
- {
-  "id": "c-0t9Xs25_o",
+  "id": "Rdq6oW2p8MA",
   "status": 200,
   "title": "2",
-  "viewCount": "29",
+  "viewCount": "57",
   "like_snips": [
    "\"Не нравится\"",
    "\"Нравится\"",
    "\"Нравится\\\"",
    "\"Нравится\""
   ],
-  "html_len": 1295154,
+  "html_len": 1284154,
   "thumbs": [
-   "hqdefault.jpg"
-  ]
- },
- {
-  "id": "cO5kakdyw7U",
-  "status": 200,
-  "title": "1",
-  "viewCount": "20",
-  "like_snips": [
-   "\"Не нравится\"",
-   "\"Нравится\"",
-   "\"Нравится\\\"",
-   "\"Нравится\""
-  ],
-  "html_len": 1276840,
-  "thumbs": [
-   "hqdefault.jpg"
+   "hqdefault.jpg",
+   "hq1.jpg",
+   "hq2.jpg",
+   "hq3.jpg"
   ]
  }
 ]

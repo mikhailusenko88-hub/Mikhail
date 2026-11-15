@@ -1,41 +1,25 @@
-2026-11-15 13:24 UTC
+2026-11-15 13:26 UTC
 200 https://www.youtube.com/watch?v=Zd2QhucOkRI&hl=ru
 200 player WEB Zd2QhucOkRI
 ERR player ANDROID Zd2QhucOkRI HTTP Error 400: Bad Request
 ERR thumb Zd2QhucOkRI/oar2.jpg HTTP Error 404: Not Found
 200 thumb Zd2QhucOkRI/hqdefault.jpg 27631 B
-200 https://www.youtube.com/watch?v=Rdq6oW2p8MA&hl=ru
-200 player WEB Rdq6oW2p8MA
-ERR player ANDROID Rdq6oW2p8MA HTTP Error 400: Bad Request
-ERR thumb Rdq6oW2p8MA/oar2.jpg HTTP Error 404: Not Found
-200 thumb Rdq6oW2p8MA/hqdefault.jpg 49228 B
-200 https://www.youtube.com/watch?v=Mk8UGv07r5o&hl=ru
-200 player WEB Mk8UGv07r5o
-ERR player ANDROID Mk8UGv07r5o HTTP Error 400: Bad Request
-ERR thumb Mk8UGv07r5o/oar2.jpg HTTP Error 404: Not Found
-200 thumb Mk8UGv07r5o/hqdefault.jpg 27333 B
-200 https://www.youtube.com/watch?v=L-F99tVc0xY&hl=ru
-200 player WEB L-F99tVc0xY
-ERR player ANDROID L-F99tVc0xY HTTP Error 400: Bad Request
-ERR thumb L-F99tVc0xY/oar2.jpg HTTP Error 404: Not Found
-200 thumb L-F99tVc0xY/hqdefault.jpg 32329 B
+200 thumb Zd2QhucOkRI/hq1.jpg 13181 B
+200 thumb Zd2QhucOkRI/hq2.jpg 12392 B
+200 thumb Zd2QhucOkRI/hq3.jpg 15004 B
 200 https://www.youtube.com/watch?v=387leh86WGU&hl=ru
 200 player WEB 387leh86WGU
 ERR player ANDROID 387leh86WGU HTTP Error 400: Bad Request
 ERR thumb 387leh86WGU/oar2.jpg HTTP Error 404: Not Found
 200 thumb 387leh86WGU/hqdefault.jpg 27719 B
-200 https://www.youtube.com/watch?v=l61AzijCVZA&hl=ru
-200 player WEB l61AzijCVZA
-ERR player ANDROID l61AzijCVZA HTTP Error 400: Bad Request
-ERR thumb l61AzijCVZA/oar2.jpg HTTP Error 404: Not Found
-200 thumb l61AzijCVZA/hqdefault.jpg 26626 B
-200 https://www.youtube.com/watch?v=c-0t9Xs25_o&hl=ru
-200 player WEB c-0t9Xs25_o
-ERR player ANDROID c-0t9Xs25_o HTTP Error 400: Bad Request
-ERR thumb c-0t9Xs25_o/oar2.jpg HTTP Error 404: Not Found
-200 thumb c-0t9Xs25_o/hqdefault.jpg 41213 B
-200 https://www.youtube.com/watch?v=cO5kakdyw7U&hl=ru
-200 player WEB cO5kakdyw7U
-ERR player ANDROID cO5kakdyw7U HTTP Error 400: Bad Request
-ERR thumb cO5kakdyw7U/oar2.jpg HTTP Error 404: Not Found
-200 thumb cO5kakdyw7U/hqdefault.jpg 33088 B
+200 thumb 387leh86WGU/hq1.jpg 13078 B
+200 thumb 387leh86WGU/hq2.jpg 16349 B
+200 thumb 387leh86WGU/hq3.jpg 15652 B
+200 https://www.youtube.com/watch?v=Rdq6oW2p8MA&hl=ru
+200 player WEB Rdq6oW2p8MA
+ERR player ANDROID Rdq6oW2p8MA HTTP Error 400: Bad Request
+ERR thumb Rdq6oW2p8MA/oar2.jpg HTTP Error 404: Not Found
+200 thumb Rdq6oW2p8MA/hqdefault.jpg 49228 B
+200 thumb Rdq6oW2p8MA/hq1.jpg 18870 B
+200 thumb Rdq6oW2p8MA/hq2.jpg 20207 B
+200 thumb Rdq6oW2p8MA/hq3.jpg 15603 B
