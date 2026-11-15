@@ -7,6 +7,7 @@
   const q = new URLSearchParams(location.search);
   const SERVER = q.get('server') || window.FB_SERVER || ((location.protocol === 'https:' ? 'wss://' : 'ws://') + (location.hostname || 'localhost') + ':8091/ws');
   const SPEC = q.has('spec'); // камера для роликов: смотрит арену без своего шарика
+  const WIDE = SPEC ? C.clamp(+q.get('wide') || 1, 1, 4) : 1; // ролики: камера шире (видно соседей), 15.11.2026
   const cleanRoom = (r) => String(r || '').replace(/[^a-z0-9_-]/gi, '').slice(0, 24).toLowerCase();
   let ROOM = cleanRoom(q.get('room')) || 'main';
   const steer = { x: 0, y: 0, on: false };
@@ -854,7 +855,7 @@
     if (p) { fx = (t.x + p.x) / 2; fy = (t.y + p.y) / 2; span = Math.max(span, Math.hypot(p.x - t.x, p.y - t.y) + (p.r + t.r) * 1.3 + 120); }
     dir.partner = p ? p.id : 0;
     const k = Math.min(1, dt * 2.6); dir.x += (fx - dir.x) * k; dir.y += (fy - dir.y) * k;
-    const zz = C.clamp(Math.min(C.W * 1.05, C.H * 0.6) / span, 0.3, 1.3);
+    const zz = C.clamp(Math.min(C.W * 1.05, C.H * 0.6) / (span * WIDE), 0.3 / WIDE, 1.3 / WIDE);
     dir.z += (zz - dir.z) * Math.min(1, dt * 1.2);
     // сверху кадра — таблица, снизу — подписи YouTube: героя держим чуть ниже середины
     cam.x = dir.x; cam.y = dir.y - (C.H * 0.03) / dir.z; cam.z = dir.z;
