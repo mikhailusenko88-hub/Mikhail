@@ -1,24 +1,2 @@
-2026-11-15 16:45 UTC
-200 https://www.youtube.com/@ballssimulator
-200 avatar ballssimulator
-200 banner ballssimulator
-200 https://www.youtube.com/@ballssimulator/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCWBjsYKhCg4vmdzieRFTQCw
-200 https://www.youtube.com/@SatisfyingPhysicsSimulation
-200 avatar SatisfyingPhysicsSimulation
-200 banner SatisfyingPhysicsSimulation
-200 https://www.youtube.com/@SatisfyingPhysicsSimulation/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCotJqOQEwG9OgDL2coBl9UA
-200 https://www.youtube.com/results?search_query=can%20multiplying%20balls%20fill&sp=EgIIBA%3D%3D
-200 https://www.youtube.com/@getitstudy
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCBSk9yDpeO_dsGpx52Iy7yQ
-200 https://www.youtube.com/@ballssimulator
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCWBjsYKhCg4vmdzieRFTQCw
-200 https://www.youtube.com/@BouncyOrbitSim
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCwrdynjo2pH3c2daGCypUxg
-200 https://www.youtube.com/@SatisfyingPhysicsSimulation
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCotJqOQEwG9OgDL2coBl9UA
-200 https://www.youtube.com/@mesmerphysics
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCjyEAVpnv-TzoCPu4fH9F-g
-200 https://www.youtube.com/@ASMRBallSimulations
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCh8le9YlApJANKACtLsR16w
+2026-11-15 16:46 UTC
+
