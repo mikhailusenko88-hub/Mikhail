@@ -1,7 +1,4 @@
-# 2026-11-15 13:25 МСК — поправить название первого ролика из игры (коды стран → названия), по просьбе Михаила
-mode: retitle
-video: iGHcGEJ6Mho
-title: Which country wins? 🇧🇩 Bangladesh vs 🇬🇧 UK vs 🇸🇦 Saudi Arabia
-add_shorts: yes
-desc_from: Round won by 🇧🇩 BD!
-desc_to: Round won by 🇧🇩 Bangladesh!
+# 2026-11-15 14:45 МСК — проверка: слот 3 снова гонка (тест, без выкладки)
+mode: test
+date: 2026-11-16
+slot: 3
