@@ -2,7 +2,10 @@
 """Зашифровать письмо для отправки сервером «Наш декор» с zapros@ → outbox/<id>.json (см. README.md).
 
   python3 tools/send.py --to a@b.ru [--to c@d.ru] --subject "Тема" (--body "текст" | --body-file f.txt)
-                        [--attach файл ...] [--reply-to info@nashdekor.ru] [--key KEY.pub]
+                        [--attach файл ...] [--reply-to info@nashdekor.ru] [--from zapros|mikhail] [--key KEY.pub]
+
+  --from mikhail — письмо уйдёт от «Михаил — Наш декор <mikhail@nashdekor.ru>» (письма дизайнерам);
+  по умолчанию — от «Наш декор <zapros@nashdekor.ru>». Ответы в обоих случаях — в info@.
 """
 import argparse
 import base64
@@ -43,6 +46,7 @@ def main():
     a.add_argument("--body-file")
     a.add_argument("--attach", action="append", default=[])
     a.add_argument("--reply-to", default="")
+    a.add_argument("--from", dest="sender", choices=["zapros", "mikhail"], default="zapros")
     a.add_argument("--key", default=os.path.join(HERE, "KEY.pub"))
     o = a.parse_args()
     body = o.body if o.body is not None else open(o.body_file, encoding="utf-8").read()
@@ -56,6 +60,8 @@ def main():
     p = {"id": str(uuid.uuid4()), "to": o.to, "subject": o.subject, "body": body, "attachments": atts}
     if o.reply_to:
         p["reply_to"] = o.reply_to
+    if o.sender != "zapros":
+        p["from"] = o.sender
     os.makedirs(os.path.join(HERE, "outbox"), exist_ok=True)
     with open(os.path.join(HERE, "outbox", p["id"] + ".json"), "w", encoding="utf-8") as f:
         json.dump(seal(key, p), f)
