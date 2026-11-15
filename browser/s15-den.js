@@ -2,7 +2,10 @@
 // широкие запросы «как ищут люди» (по кругу, 8 в день), продавцы-соседи и профили новых соседей. Навык avito-poisk-rost.
 // Идёт 3,5–4 минуты; вызов сразу возвращает «запущено». Журнал — sessionStorage.nd_log15, обзор — sessionStorage.nd_day15.
 // Первый полный запуск 14.11.2026: 19 запросов и 4 профиля за 2 мин 53 с, без блокировки, 3 подтверждения (открыть вкладку, запуск, чтение).
-// 14.11 добавлено и ещё не проверено запуском: вторая страница для основных запросов, где нас нет на первой.
+// 15.11: вторая страница для основных запросов проверена. Браузер оказался разлогинен: /profile во фрейме ушёл на /#login, кабинет не прочитался,
+// а места были сняты без входа (со вчерашними, снятыми со входом, напрямую не сравнивать). Теперь скрипт сам пишет «ВХОД: да/нет»,
+// просмотры (всего и за сегодня) берёт ещё и со страниц объявлений — они видны без входа, — и не ходит в профили продавцов из других городов.
+// Разовые добавки: EXTRA — запросы, которые надо снять как основные (со второй страницей); WIDE_ON / PROF_ON — выключить широкие запросы и профили.
 (() => {
 const IDS = { '8402676722': '3-7', '8530976650': '3-15', '8546190071': '3-9', '8523521242': 'A910', '8495178294': 'A703', '8068817087': 'старое' };
 // основные запросы — каждый день, набор не менять без причины (иначе не с чем сравнивать)
@@ -17,11 +20,15 @@ const WIDE = [
 const DAY = Math.floor((Date.now() - Date.parse('2026-11-14T00:00:00+03:00')) / 86400000);
 const GROUP = ((DAY % 3) + 3) % 3;          // 14.11 — группа 0, 15.11 — группа 1, 16.11 — группа 2, дальше по кругу; можно задать числом
 const NPROF = 4;                             // сколько профилей новых соседей открыть за день
+const EXTRA = [];                            // разовые запросы «как основные» (со второй страницей), например после смены заголовка
+const WIDE_ON = true, PROF_ON = true;        // false — короткий перемер: только кабинет и основные запросы
 const SEEN = ['/brands/i189669386', '/brands/9b74c0149fa35c68ab3583d2482cccd3', '/brands/e6722563236e2eed0c7215d87dd4b379', '/brands/plintusy', '/brands/i35021401',
   '/brands/i303422686', '/brands/544ffd9a46ae4cb7b0de074a6ec6d7e3', '/brands/arhidea', '/brands/90967ed0df52f22382beaf3e0f587006',
   '/brands/i188920544', '/brands/i122608885', '/brands/i72526920', '/brands/akupanel.ru', '/brands/i200336086', '/brands/6fce8c6bbc94076bfb4ce1c8c3d3fd4e',
-  '/brands/i223454591', '/brands/i350145740', '/brands/4e13e6a698f4de9a0380a6a3c5aa2ed6', '/brands/i365350883'];   // профили уже разобраны (13–14.11: последние четыре — MORUS, «Высота», «Обои панели плинтусы», СТРОЙ-МИКС) — дописывать сюда после каждого дня
+  '/brands/i223454591', '/brands/i350145740', '/brands/4e13e6a698f4de9a0380a6a3c5aa2ed6', '/brands/i365350883',
+  '/brands/22b0cbf19d8679a2fca050974ba7bbe4', '/brands/2dfafb93c25eb5d799945de7a940e663', '/brands/i260900186', '/brands/comiron'];   // профили уже разобраны (13–14.11: MORUS, «Высота», «Обои панели плинтусы», СТРОЙ-МИКС; 15.11: DKSPROFILE, Panelio, «Интересный выбор», COMIRON) — дописывать сюда после каждого дня
 const SKIP = /монтаж|установка|поклейка|покраска|ремонт|остеклен|лестниц|жалюзи|забор|фасад|террас|дпк|кирпич|утеплител|сайдинг|мрамор/i;   // услуги и чужие товары в профили не ходим
+const CITY = / в (Екатеринбург|Челябинск|Оренбург|Москв|Казан|Новосибирск|Краснодар|Нижнем|Самар|Ростов|Уф[еы]|Перм|Воронеж|Тюмен|Омск|Красноярск)/i;   // продавцы из других городов, купившие показ в СПб
 const SS = sessionStorage; SS.setItem('nd_log15', ''); SS.setItem('nd_day15', '');
 const L = (...a) => { SS.setItem('nd_log15', (SS.getItem('nd_log15') || '') + new Date().toTimeString().slice(0, 8) + ' ' + a.join(' ') + '\n'); };
 const S = s => SS.setItem('nd_day15', (SS.getItem('nd_day15') || '') + s + '\n');
@@ -42,12 +49,30 @@ const blocked = d => { try { const t = (d.title || '') + ' ' + ((d.body && d.bod
 const idOf = c => (c.getAttribute('data-item-id') || c.id || '').replace(/\D/g, '');
 const itemLinks = d => [...d.querySelectorAll('a[href]')].filter(a => /_\d{9,11}(\?|$)/.test(a.getAttribute('href') || ''));
 const sellers = {};
+async function pages() {   // просмотры со страниц объявлений: видны и без входа; заодно — что объявление живо и какой у него заголовок
+  S('# СТРАНИЦЫ ОБЪЯВЛЕНИЙ (заголовок | просмотры всего | сегодня | дата)');
+  for (const id of Object.keys(IDS)) {
+    try {
+      const r = await fetch('/' + id, { credentials: 'include' }), h = await r.text();
+      const d = new DOMParser().parseFromString(h, 'text/html');
+      const g = m => ((d.querySelector('[data-marker="' + m + '"]') || {}).textContent || '').replace(/\s+/g, ' ').trim();
+      S(IDS[id] + ' | http ' + r.status + ' | ' + (((d.querySelector('h1') || {}).textContent || d.title || '').replace(/\s+/g, ' ').trim().slice(0, 60)) + ' | ' + g('item-view/total-views') + ' | ' + g('item-view/today-views') + ' | ' + g('item-view/item-date') + (/Доступ ограничен|проблема с IP/i.test(h.slice(0, 4000)) ? ' | БЛОК' : ''));
+    } catch (e) { S(IDS[id] + ' | ошибка ' + String(e).slice(0, 80)); }
+    await sleep(600);
+  }
+}
 async function cabinet() {
   const fr = mk('/profile');
-  const ok = await until(() => fr.contentDocument && Object.keys(IDS).filter(id => fr.contentDocument.querySelector('a[href*="' + id + '"]')).length >= 4, 30000);
+  const ok = await until(() => { const dd = fr.contentDocument; if (!dd) return false; let h = ''; try { h = fr.contentWindow.location.href; } catch (e) {} return /#login/.test(h) || Object.keys(IDS).filter(id => dd.querySelector('a[href*="' + id + '"]')).length >= 4; }, 30000);
   await sleep(2500);
   const d = fr.contentDocument;
   if (blocked(d)) { S('кабинет: блок'); return; }
+  let href = ''; try { href = fr.contentWindow.location.href; } catch (e) {}
+  if (/#login/.test(href) || /Вход и регистрация/.test(((d.body && d.body.innerText) || '').slice(0, 1500))) {
+    L('НЕ ВОШЛИ'); S('# ВХОД: НЕТ — браузер разлогинен (' + href.replace(/^https:\/\/www\.avito\.ru/, '') + '). Контакты, избранное, кошелёк и сроки не видны; места сняты БЕЗ входа — с замерами со входом напрямую не сравнивать. Войти должен Михаил.');
+    return;
+  }
+  S('# ВХОД: да');
   S('# КАБИНЕТ (загружен: ' + ok + ') | вкладки: ' + [...d.querySelectorAll('[data-marker*="tab"],[role=tab]')].map(e => (e.innerText || '').trim().replace(/\s+/g, ' ')).filter(x => x && x.length < 40).slice(0, 6).join(' · ') + ' | ' + ((((d.body.innerText || '').match(/Кошел[её]к[^₽]{0,60}₽/) || [''])[0].replace(/\s+/g, ' ')) || 'кошелёк не виден'));
   for (const id of Object.keys(IDS)) {
     const a = d.querySelector('a[href*="' + id + '"]');
@@ -74,7 +99,7 @@ async function serp(q, wide, p) {
     const a = [...c.querySelectorAll('a[href]')].find(x => /\/(brands|user)\//.test(x.getAttribute('href') || ''));
     if (a && !IDS[idOf(c)]) {
       const href = (a.getAttribute('href') || '').split('?')[0], rt = (full.match(/\d,\d · \d+ отзыв\S*/) || [''])[0];
-      const s = sellers[href] || (sellers[href] = { name: (a.innerText || '').trim().replace(/\s+/g, ' ').replace(/ \d,\d · .*$/, '').slice(0, 32), rt: '', n: 0, promo: 0, qs: new Set(), ex: t.slice(0, 36) + ' ' + pr });
+      const s = sellers[href] || (sellers[href] = { name: (a.innerText || '').trim().replace(/\s+/g, ' ').replace(/ \d,\d · .*$/, '').slice(0, 32), rt: '', n: 0, promo: 0, qs: new Set(), ex: t.slice(0, 36) + ' ' + pr, full: t });
       s.n++; if (promo) s.promo++; if (rt) s.rt = rt; s.qs.add(q);
     }
     return { t, pr, promo };
@@ -112,18 +137,19 @@ async function profile(href, s) {
   try {
     L('старт, группа широких запросов', GROUP);
     await cabinet(); await pause();
+    await pages();
     S('\n# ОСНОВНЫЕ ЗАПРОСЫ');
     let ok = true;
-    for (const q of CORE) { ok = await serp(q, false); if (!ok) break; await pause(); if (ok === 'none') { ok = await serp(q, false, 2); if (!ok) break; await pause(); } }
-    if (ok) {
+    for (const q of CORE.concat(EXTRA)) { ok = await serp(q, false); if (!ok) break; await pause(); if (ok === 'none') { ok = await serp(q, false, 2); if (!ok) break; await pause(); } }
+    if (ok && WIDE_ON) {
       S('\n# ШИРОКИЕ ЗАПРОСЫ, группа ' + GROUP + ' (П = продвинуто)');
       for (const q of WIDE[GROUP]) { ok = await serp(q, true); if (!ok) break; await pause(); }
     }
     const list = Object.entries(sellers).map(([h, s]) => ({ h, ...s })).sort((a, b) => b.n - a.n);
     S('\n# ПРОДАВЦЫ в первых 15 (мест / продвинуто / запросов), всего ' + list.length);
     list.filter(s => s.n >= 2).slice(0, 24).forEach(s => S('- ' + s.name + ' | ' + s.rt + ' | ' + s.n + ' / ' + s.promo + ' / ' + s.qs.size + ' | ' + s.ex + ' | ' + s.h + (SEEN.includes(s.h) ? '' : ' | НОВЫЙ')));
-    if (ok) {
-      const fresh = list.filter(s => !SEEN.includes(s.h) && !SKIP.test(s.ex) && !SKIP.test(s.name)).slice(0, NPROF);
+    if (ok && PROF_ON) {
+      const fresh = list.filter(s => !SEEN.includes(s.h) && !SKIP.test(s.full) && !SKIP.test(s.name) && !CITY.test(s.full)).slice(0, NPROF);
       if (fresh.length) S('\n# ПРОФИЛИ НОВЫХ СОСЕДЕЙ');
       for (const s of fresh) { if (!(await profile(s.h, s))) break; await pause(); }
     }
