@@ -51,7 +51,7 @@ def overlay(codes, survive, n, out_png, lives=False):
     img.save(out_png)
 
 
-def make(part_mp4, part_json, out_mp4):
+def make(part_mp4, part_json, out_mp4, pre=None):
     meta = json.load(open(part_json))
     spans = meta.get("spans") or []
     if not spans:
@@ -88,8 +88,11 @@ def make(part_mp4, part_json, out_mp4):
             "-t", f"{dur:.2f}", "-movflags", "+faststart", out_mp4]
     subprocess.run(cmd, check=True)
     vs = race.vs_line(meta["codes"], 3)
-    title = f"{vs} 😱 Who Survives? Country Marble Race #shorts"[:100]
-    return {"title": title, "duration": dur, "vs": vs}
+    try:
+        title = story_title(meta, pre)
+    except Exception:  # noqa: BLE001 — название не должно ломать выкладку
+        title = f"{vs} 😱 Who Survives? Country Marble Race #shorts"[:100]
+    return {"title": title, "duration": dur, "vs": vs, "pre": pre}
 
 
 def description(meta, full_link=""):
@@ -101,6 +104,100 @@ def description(meta, full_link=""):
                "▶ New race 3× a day on @FlagballArenaTV · full Sunday Mega Track race every week\n\n")
             + f"Countries: {names}.\n\nLike 👍 if your country survived! Comment who you're cheering for.\n\n"
             f"#shorts #marblerace #countryballs #marblerun #survival #countries")
+
+
+# ---------- название и описание из сюжета сезона (15.11.2026) ----------
+# Чтобы ролики не выглядели «по одному шаблону» (правило YouTube о неоригинальном контенте для монетизации)
+# и зритель видел историю: у кого сколько жизней, сколько стран ещё в игре, сколько до финала.
+
+import datetime as _dt
+
+HEARTS = {3: "❤️❤️❤️", 2: "❤️❤️", 1: "❤️"}
+TAG_POOL = ["#countryballs", "#marblerun", "#survival", "#countries", "#simulation", "#satisfying", "#race",
+            "#worldcup", "#flags", "#whowillwin"]
+
+
+def _hashtag(c):
+    return "#" + "".join(ch for ch in race.cname(c) if ch.isalnum())
+
+
+def story_title(meta, pre):
+    """Одна из нескольких формул — по сюжету гонки; без спойлеров (кто потеряет жизнь — не пишем)."""
+    pre = pre or {}
+    feat = popular.featured(meta["codes"], 3)
+    a, b, c = (race.cname(x) for x in (feat + feat[:1] * 3)[:3])
+    vs = " vs ".join(race.cname(x) for x in feat)
+    lives = pre.get("lives") or {}
+    n, lose = meta["n"], meta["n"] - meta["survive"]
+    rno = meta.get("race_no", 0)
+    opts = []
+    last = [x for x in feat if lives.get(x) == 1]
+    if last:
+        opts += [f"{race.cname(last[0])} on its LAST life ❤️ {vs} — Who Survives? #shorts",
+                 f"Last chance for {race.cname(last[0])} 😱 {vs} | Country Marble Race #shorts"]
+    if lives and all(lives.get(x) == 3 for x in feat):
+        opts.append(f"{a}, {b} or {c}: who loses the first life? 💔 Marble Race #shorts")
+    if lives:
+        opts.append(" vs ".join(f"{race.cname(x)} {HEARTS.get(lives.get(x), '')}".strip() for x in feat)
+                    + " — Who Survives? #shorts")
+    if meta.get("mega"):
+        opts.append(f"SUNDAY MEGA TRACK 🔥 {vs} — who loses a life? #shorts")
+    heat, total = pre.get("heat"), pre.get("heats")
+    if heat and total:
+        opts.append(f"Race {heat}/{total}: {lose} of {n} lose a life 😱 {vs} #shorts")
+    if pre.get("alive") and pre["alive"] <= 120:
+        opts.append(f"Only {pre['alive']} countries still alive 🌍 {vs} — who drops out? #shorts")
+    fd = pre.get("final_date")
+    if fd and meta.get("date"):
+        try:
+            days = (_dt.date.fromisoformat(fd) - _dt.date.fromisoformat(meta["date"])).days
+            if days > 0:
+                opts.append(f"{days} days to the Grand Final ⏳ {vs} — Who Survives? #shorts")
+        except ValueError:
+            pass
+    opts.append(f"{vs} 😱 Who Survives? Country Marble Race #shorts")
+    # «последняя жизнь» — самая сильная история, но не в каждом ролике, иначе снова одна формула
+    t = opts[(rno // 2) % 2] if last and rno % 2 == 0 else opts[rno % len(opts)]
+    return t if len(t) <= 100 else f"{vs} 😱 Who Survives? #shorts"[:100]
+
+
+def story_description(meta, pre, full_link=""):
+    pre = pre or {}
+    feat = popular.featured(meta["codes"], 3)
+    lives = pre.get("lives") or {}
+    lines = []
+    if meta.get("lives_mode"):
+        lines.append(f"{meta['n']} countries, 3 lives each ❤️ — the last {meta['n'] - meta['survive']} lose a life.")
+    else:
+        lines.append(f"{meta['n']} countries, only {meta['survive']} survive.")
+    if pre.get("heat") and pre.get("heats"):
+        part = f"Season {meta.get('season', '')} · race {pre['heat']} of {pre['heats']}"
+        if pre.get("alive"):
+            part += f" · {pre['alive']} countries still alive"
+        if pre.get("eliminated"):
+            part += f" · {len(pre['eliminated'])} out"
+        lines.append(part + ".")
+    if lives:
+        lines.append("Lives before this race: " + ", ".join(f"{race.NAMES[x]} {HEARTS.get(lives.get(x), '💀')}"
+                                                             for x in feat) + ".")
+    if pre.get("eliminated"):
+        lines.append("Already out: " + ", ".join(race.NAMES[x] for x in pre["eliminated"][-4:]) + ".")
+    if pre.get("final_date"):
+        try:
+            fd = _dt.date.fromisoformat(pre["final_date"])
+            lines.append(f"Grand Final: {fd.strftime('%B')} {fd.day} — the 32 countries with the most lives.")
+        except ValueError:
+            pass
+    lines.append(f"▶ Full race on @FlagballArenaTV — {full_link}" if full_link else
+                 "▶ New race 3× a day on @FlagballArenaTV · full Sunday Mega Track race every week")
+    names = ", ".join(sorted(race.NAMES[c] for c in meta["codes"]))
+    lines += ["", f"Countries in this race: {names}.", "",
+              "Comment your country 👇 — is it still alive?"]
+    rno = meta.get("race_no", 0)
+    extra = [TAG_POOL[(rno + k * 3) % len(TAG_POOL)] for k in range(3)]
+    tags = ["#shorts", "#marblerace"] + [_hashtag(x) for x in feat] + extra
+    lines += ["", " ".join(dict.fromkeys(tags))]
+    return "\n".join(lines)
 
 
 if __name__ == "__main__":

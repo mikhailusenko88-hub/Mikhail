@@ -221,7 +221,10 @@ def main():
     short = None
     try:
         import shorts
-        short = shorts.make(best[0], best[0][:-4] + ".json", name + "_short.mp4")
+        pre = {"lives": cur.get("lives") or {}, "alive": cur.get("alive"), "heat": cur.get("heat"),
+               "heats": cur.get("heats"), "eliminated": state.get("eliminated") or [],
+               "final_date": state.get("final_date")}
+        short = shorts.make(best[0], best[0][:-4] + ".json", name + "_short.mp4", pre=pre)
         short["meta"] = best[1]
         log(f"Shorts готов: {short['duration']:.0f} с — {short['title']}")
     except Exception as e:  # noqa: BLE001 — Shorts не должен ломать выкладку
@@ -241,14 +244,15 @@ def main():
                                 "-frames:v", "1", "-vf", "scale=540:-2", f"status/test_short_{t:04.1f}.jpg"])
             with open("status/test_short.txt", "w", encoding="utf-8") as f:
                 f.write(f"{short['title']}\n{short['duration']:.1f} с\nдлинное видео в слоте: {long_video}\n\n"
-                        + shorts.description(short["meta"], "" if not long_video else "https://youtu.be/XXXX"))
+                        + shorts.story_description(short["meta"], short.get("pre"),
+                                                   "" if not long_video else "https://youtu.be/XXXX"))
         write_status(f"ТЕСТ ОК: видео #{n} ({k} заезд.) собрано за {time.time() - t0:.0f} с, {size:.0f} МБ (не выложено)",
                      json.dumps({kk: v for kk, v in meta.items() if kk != "ranking"}, ensure_ascii=False, indent=1))
         return
 
     if not long_video:
         # ---- только Shorts: сезон двигается после удачной выкладки Shorts
-        smeta = {"title": short["title"], "description": shorts.description(short["meta"])}
+        smeta = {"title": short["title"], "description": shorts.story_description(short["meta"], short.get("pre"))}
         svid = yt.upload(name + "_short.mp4", smeta)
         sst = yt.status(svid)
         log("Shorts на YouTube:", sst)
@@ -285,7 +289,8 @@ def main():
     short_link = ""
     if short:
         try:
-            smeta = {"title": short["title"], "description": shorts.description(short["meta"], f"https://youtu.be/{vid}")}
+            smeta = {"title": short["title"],
+                     "description": shorts.story_description(short["meta"], short.get("pre"), f"https://youtu.be/{vid}")}
             svid = yt.upload(name + "_short.mp4", smeta)
             short_link = f" + Shorts https://youtube.com/shorts/{svid}"
             with open("status/uploads.md", "a", encoding="utf-8") as f:
