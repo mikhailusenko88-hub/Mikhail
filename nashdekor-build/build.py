@@ -273,6 +273,7 @@ def header(root):
 def footer(root):
     cats = "".join('<a href="%scatalog/%s/" style="color:inherit">%s</a>' % (root, s, esc(menu)) for _, s, menu, _, _, _, _ in CATS)
     avito = (' · <a href="%s" target="_blank" rel="noopener" style="color:inherit">Мы на Авито</a>' % esc(SHOP["avito"])) if SHOP.get("avito") else ""
+    avito += (' · <a href="%s" target="_blank" rel="noopener" style="color:inherit">Канал в MAX</a>' % esc(SHOP["channel"])) if SHOP.get("channel") else ""
     revlink = ('<a href="%sotzyvy/" style="color:inherit">Отзывы и наши работы</a>' % root) if REVIEWS else ""
     return ('<footer><div class="wrap"><span><b>Наш</b> декор · Санкт-Петербург' + avito + '</span><span>%s</span>'
             '<nav aria-label="Разделы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px">%s<a href="%sstati/" style="color:inherit">Статьи</a>%s<a href="%sdostavka/" style="color:inherit">Доставка в Москву и по России</a></nav>'
