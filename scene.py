@@ -1514,8 +1514,9 @@ def scene_sample():
     cam_loc = (float(A.get('camx', 0.0)), -d, zc)
     look = (0.0, 0.0, L * 0.5)
     # свет как на фото у окна: большой мягкий сверху-слева-спереди, слабая заливка справа, контровой сзади-сверху
-    area_light('key', (-0.45, -0.55, L + 0.55), (0.0, -0.01, L * 0.55), 0.7, 0.7, float(A.get('key', 55)),
-               (1.0, 0.98, 0.95), spread=120)
+    kx, ky, kz = (float(v) for v in A.get('keypos', '-0.45,-0.55,0.7').split(','))
+    area_light('key', (kx, ky, L * 0.5 + kz), (0.0, -0.01, L * 0.5), float(A.get('ksize', 0.7)), float(A.get('ksize', 0.7)),
+               float(A.get('key', 55)), (1.0, 0.98, 0.95), spread=float(A.get('kspread', 120)))
     area_light('fill', (0.55, -0.6, L * 0.6), (0.0, 0.0, L * 0.5), 0.9, 0.9, float(A.get('fill', 14)),
                (0.95, 0.97, 1.0), spread=120)
     area_light('top', (0.0, 0.05, L + 0.5), (0.0, -0.02, L), 0.5, 0.3, float(A.get('top', 20)), spread=90)

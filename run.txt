@@ -1,5 +1,8 @@
 # имя  аргументы для scene.py (или "py script.py")
-# 16.11.2026 — образец стоя (scene=sample) вместо кривых фото «стоя»: проба
-q902 scene=sample item=a902 res=1400x880 samples=80 noise=0.04
-q913 scene=sample item=a913 res=1400x880 samples=80 noise=0.04
-q903 scene=sample item=a903 res=1400x880 samples=80 noise=0.04
+# 16.11.2026 — образец стоя (scene=sample): подбор света, чтобы рельеф читался как на фото
+r902a scene=sample item=a902 res=1400x880 samples=80 noise=0.04 keypos=-0.7,-0.22,0.25 ksize=0.35 key=60 fill=4 top=6
+r902b scene=sample item=a902 res=1400x880 samples=80 noise=0.04 keypos=-0.5,-0.35,0.55 ksize=0.5 key=60 fill=6 top=10
+r902c scene=sample item=a902 res=1400x880 samples=80 noise=0.04 keypos=-0.25,-0.4,0.75 ksize=0.4 key=60 fill=3 top=4 amb=0.03
+r913a scene=sample item=a913 res=1400x880 samples=80 noise=0.04 keypos=-0.7,-0.22,0.25 ksize=0.35 key=60 fill=4 top=6
+r903a scene=sample item=a903 res=1400x880 samples=80 noise=0.04 keypos=-0.7,-0.22,0.25 ksize=0.35 key=60 fill=4 top=6
+r910b scene=sample item=a910 res=1400x880 samples=80 noise=0.04 keypos=-0.5,-0.35,0.55 ksize=0.5 key=60 fill=6 top=10
