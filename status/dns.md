@@ -1,4 +1,4 @@
-# Проверка DNS — 2026-11-06 05:31 UTC
+# Проверка DNS — 2026-11-16 18:17 UTC
 
 ## nashdekor.ru
 ```
@@ -10,9 +10,9 @@ state:         REGISTERED, DELEGATED, UNVERIFIED
 registrar:     REGTIME-RU
 created:       2026-11-05T21:35:46Z
 paid-till:     2027-11-05T21:35:46Z
-Last updated on 2026-11-06T05:28:01Z
+Last updated on 2026-11-16T18:13:02Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 48220
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 28434
 NASHDEKOR.ru.		345600	IN	NS	ns2.firstvds.ru.
 NASHDEKOR.ru.		345600	IN	NS	ns1.firstvds.ru.
 --- ns1.firstvds.ru: A nashdekor.ru / A www.nashdekor.ru
@@ -26,5 +26,27 @@ NASHDEKOR.ru.		345600	IN	NS	ns1.firstvds.ru.
 --- https://nashdekor.ru/ -> 200 185.60.134.150
 --- http://www.nashdekor.ru/ -> 301 185.60.134.150
 --- напрямую по IP с именем nashdekor.ru (http://185.60.134.150/)
+  <title>301 Moved Permanently
+```
+
+## crm.nashdekor.ru
+```
+--- whois (реестр)
+Last updated on 2026-11-16T18:13:02Z
+--- зона .ru (a.dns.ripn.net), NS
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 38922
+NASHDEKOR.ru.		345600	IN	NS	ns2.firstvds.ru.
+NASHDEKOR.ru.		345600	IN	NS	ns1.firstvds.ru.
+--- ns1.firstvds.ru: A crm.nashdekor.ru / A www.crm.nashdekor.ru
+  185.60.134.150  / 185.60.134.150 
+--- ns2.firstvds.ru: A crm.nashdekor.ru / A www.crm.nashdekor.ru
+  185.60.134.150  / 185.60.134.150 
+--- публичный DNS 8.8.8.8: A crm.nashdekor.ru -> 185.60.134.150 
+--- публичный DNS 1.1.1.1: A crm.nashdekor.ru -> 185.60.134.150 
+--- публичный DNS 77.88.8.8: A crm.nashdekor.ru -> 185.60.134.150 
+--- http://crm.nashdekor.ru/ -> 301 185.60.134.150
+--- https://crm.nashdekor.ru/ -> 302 185.60.134.150
+--- http://www.crm.nashdekor.ru/ -> 301 185.60.134.150
+--- напрямую по IP с именем crm.nashdekor.ru (http://185.60.134.150/)
   <title>301 Moved Permanently
 ```
