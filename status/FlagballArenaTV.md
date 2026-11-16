@@ -1,5 +1,5 @@
 # Flagball Arena  (@FlagballArenaTV)
-Проверено: 2026-11-16 06:39 UTC
+Проверено: 2026-11-16 06:57 UTC
 
 - Страница канала: HTTP 200; ID: UCUKgRxWtL1kPWr9hdfL8qQw
 - Шапка: 12 подписчиков · 59 видео
@@ -8,11 +8,11 @@
 - (пусто или лента недоступна, HTTP 404)
 
 ## Вкладка Shorts (видно всем) — 27 шт. на первой странице
-- 350 просмотров · Last chance for Brazil 😱 Brazil vs Mexico vs Japan | Country Marble Race #shorts · AWf2qlc50Ns
-- 980 просмотров · SUNDAY MEGA TRACK 🔥 USA vs Indonesia vs Germany — who loses a life? #shorts · cK3k5givA2c
-- 721 просмотр · Which country wins? 🇧🇩 Bangladesh vs 🇬🇧 UK vs 🇸🇦 Saudi Arabia #shorts · iGHcGEJ6Mho
-- 444 просмотра · Russia vs Türkiye vs Poland 😱 Who Survives? Country Marble Race #shorts · 8GyXq2dRNLo
-- 760 просмотров · India vs Saudi Arabia vs Guatemala 😱 Who Survives? Country Marble Race #shorts · -pNQcA0OLfY
+- 597 просмотров · Last chance for Brazil 😱 Brazil vs Mexico vs Japan | Country Marble Race #shorts · AWf2qlc50Ns
+- 985 просмотров · SUNDAY MEGA TRACK 🔥 USA vs Indonesia vs Germany — who loses a life? #shorts · cK3k5givA2c
+- 722 просмотра · Which country wins? 🇧🇩 Bangladesh vs 🇬🇧 UK vs 🇸🇦 Saudi Arabia #shorts · iGHcGEJ6Mho
+- 442 просмотра · Russia vs Türkiye vs Poland 😱 Who Survives? Country Marble Race #shorts · 8GyXq2dRNLo
+- 758 просмотров · India vs Saudi Arabia vs Guatemala 😱 Who Survives? Country Marble Race #shorts · -pNQcA0OLfY
 - 1 тыс. просмотров · France vs Pakistan vs Italy 😱 Who Survives? Country Marble Race #shorts · s1zP7FYOv88
 - 1 тыс. просмотров · Mexico vs UK vs Nigeria 😱 Who Survives? Country Marble Race #shorts · 054ZfXvp4Js
 - 744 просмотра · Vietnam vs Spain vs Argentina 😱 Who Survives? Country Marble Race #shorts · qWd1NlVnmWg

@@ -1,5 +1,5 @@
 # Живые строки  (@LivingLinesTV)
-Проверено: 2026-11-16 06:39 UTC
+Проверено: 2026-11-16 06:57 UTC
 
 - Страница канала: HTTP 200; ID: UCuufuU5RCswqp9N1HE0NZlw
 - Шапка: 38 подписчиков · 34 видео
@@ -8,10 +8,10 @@
 - (пусто или лента недоступна, HTTP 404)
 
 ## Вкладка Shorts (видно всем) — 34 шт. на первой странице
-- 1 просмотр · Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts · XOC7rxj2ntQ
-- 8 просмотров · Бабочка считает не месяцы, а мгновения — и у неё довольно… ✨ Rabindranath Tagore + 2 more #shorts · NNRpfSGgsOw
-- 694 просмотра · Я пришёл к тебе с приветом, рассказать, что солнце встало ✨ Words to keep | Afanasy Fet #shorts · yT5ZmByY1eo
-- 514 просмотров · Если пришла Зима, разве Весна далеко? 🤍 Три мысли на сегодня | Percy Shelley #shorts · Nfl9ieBdJPQ
+- 2 просмотра · Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts · XOC7rxj2ntQ
+- 67 просмотров · Бабочка считает не месяцы, а мгновения — и у неё довольно… ✨ Rabindranath Tagore + 2 more #shorts · NNRpfSGgsOw
+- 687 просмотров · Я пришёл к тебе с приветом, рассказать, что солнце встало ✨ Words to keep | Afanasy Fet #shorts · yT5ZmByY1eo
+- 521 просмотр · Если пришла Зима, разве Весна далеко? 🤍 Три мысли на сегодня | Percy Shelley #shorts · Nfl9ieBdJPQ
 - 386 просмотров · Всё течёт, всё меняется ✨ Heraclitus + 2 more #shorts · kRPxg2ieLto
 - 920 просмотров · Учение никогда не истощает ум ✨ Words to keep | Leonardo da Vinci #shorts · UGhGJt9HX8k
 - 938 просмотров · Пока дышу — надеюсь 🤍 Три мысли на сегодня | Cicero #shorts · kp4nk3--p_k
