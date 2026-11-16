@@ -1,0 +1,14 @@
+URL: https://crm.nashdekor.ru/login
+КОД: 200
+
+Вход · Наш декор 
+ Наш декор CRM 
+ Логин 
+ Пароль 
+ Войти
+
+ССЫЛКИ:
+/manifest.webmanifest
+/static/apple-touch-icon.png
+/static/crm.css?v=19
+/static/icon.svg
