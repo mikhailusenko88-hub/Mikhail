@@ -39,7 +39,7 @@ def js_assign(name):
             depth -= 1
             if depth == 0: return json.loads(src[i:j + 1])
 
-CAT = js_array("CAT"); PROF = js_array("PROF"); PHOTO = js_assign("PHOTO"); PAINT = js_assign("PAINT")
+CAT = js_array("CAT"); PROF = js_array("PROF"); PHOTO = js_assign("PHOTO"); PHOTOS = js_assign("PHOTOS"); PAINT = js_assign("PAINT")
 # Правки из CRM («Редактор сайта»): новые разделы, тексты разделов, доп. фото, статьи, отзывы — 0f7s1eez/site-content.json
 # (пишет nashdekor-build/apply_edits.py; руками не править — CRM перезапишет). Нет файла — всё как раньше.
 try:
@@ -48,6 +48,8 @@ except (OSError, ValueError):
     CONTENT = {}
 CUSTOM = CONTENT.get("kinds", {})          # новые разделы: код → {label, menu, slug, h1, intro, title, description, faq, about, material, maker}
 GALLERY = CONTENT.get("gallery", {})       # артикул → [доп. фото]
+for _a, _fs in PHOTOS.items():               # фото живых образцов (карусель главной): 2-е, 3-е… идут в галерею товара первыми
+    GALLERY[_a] = [f for f in _fs[1:] if f not in GALLERY.get(_a, [])] + GALLERY.get(_a, [])
 REVIEWS = [r for r in CONTENT.get("reviews", []) if r.get("text")]
 # сечения молдингов, плинтусов, карнизов и уголков — сняты из PDF-каталога ARTDEC (extract_profiles.py)
 PROF2 = json.load(open(os.path.join(HERE, "profiles-mold.json"), encoding="utf-8"))
@@ -194,7 +196,7 @@ WOOD_NAMES = {"2": "две широкие ламели", "3": "три ламел
 def slug(a): return a.lower().replace("/", "-").replace(" ", "")
 def esc(s): return html.escape(str(s), quote=True)
 def fmt(n): return "{:,}".format(int(round(n))).replace(",", " ")
-PHOTO_V = "3"   # версия фото товаров: менять, когда фото перерисованы (11.11.2026 — фон «Антрацит»); то же — PHOTO_V в index.html
+PHOTO_V = "4"   # версия фото товаров (16.11.2026 — фото живых образцов, карусель): менять, когда фото перерисованы (11.11.2026 — фон «Антрацит»); то же — PHOTO_V в index.html
 def photo(a): return "img/" + PHOTO[a] + "?v=" + PHOTO_V if PHOTO.get(a) else ""
 # фото в 2 раза крупнее (нейросеть Real-ESRGAN, ветка img-upscale, 11.11.2026) — для чётких экранов, og:image, Яндекс Товаров
 def photo2x(a): return ("img/2x/" + PHOTO[a] + "?v=" + PHOTO_V) if PHOTO.get(a) and os.path.exists(os.path.join(SITE, "img", "2x", PHOTO[a])) else photo(a)
