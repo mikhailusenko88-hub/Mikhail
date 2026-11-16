@@ -1,6 +1,8 @@
 # имя | адрес | desktop|mobile | js
-# 16.11.2026 — 3D-модели: срез-пена, серия 3 и A910 по живым образцам
-3d-a902-m | https://nashdekor.ru/p/a902/?s=8 | mobile
-3d-37-d | https://nashdekor.ru/p/3-7/?s=8 | desktop
-3d-a157-d | https://nashdekor.ru/p/a157/?s=8 | desktop
-3d-a910-paint-m | https://nashdekor.ru/p/a910/?s=8 | mobile | document.querySelectorAll('.dot')[7]?.click()
+# 16.11.2026 — рейки под дерево: единый стиль фото, сечение по образцу, 3D-стена, блок «в интерьере»
+wood-sec-m | https://nashdekor.ru/catalog/paneli-pod-derevo/?s=9 | mobile
+wood-37-m | https://nashdekor.ru/p/3-7/?s=9 | mobile
+wood-510-3d-d | https://nashdekor.ru/p/5-10/?s=9 | desktop | document.querySelector('[data-v="frag"]').click()
+wood-39-wall-d | https://nashdekor.ru/p/3-9/?s=9 | desktop | document.querySelector('[data-v="wall"]').click()
+wood-27-prof-m | https://nashdekor.ru/p/2-7/?s=9 | mobile | document.querySelector('.prof').scrollIntoView()
+live-m | https://nashdekor.ru/?s=9 | mobile | document.getElementById('live').scrollIntoView()
