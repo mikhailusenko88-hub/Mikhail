@@ -1,135 +1,127 @@
-URL: https://nashdekor.ru/assets/max.js?v=2
+URL: https://nashdekor.ru/
 КОД: 200
 ЗАГОЛОВКИ:
 Server: nginx
-Date: Mon, 16 Nov 2026 20:12:53 GMT
-Content-Type: application/javascript; charset=utf-8
-Content-Length: 6113
+Date: Mon, 16 Nov 2026 20:28:50 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 182002
 Last-Modified: Mon, 16 Nov 2026 20:09:02 GMT
 Connection: close
 Vary: Accept-Encoding
-ETag: "6afb62de-17e1"
-Expires: Mon, 23 Nov 2026 20:12:53 GMT
-Cache-Control: max-age=604800
+ETag: "6afb62de-2c6f2"
+Expires: Thu, 01 Jan 1970 00:00:01 GMT
+Cache-Control: no-cache
 Strict-Transport-Security: max-age=15552000
 X-Content-Type-Options: nosniff
-X-Frame-Options: SAMEORIGIN
+Content-Security-Policy: frame-ancestors 'self' https://max.ru https://*.max.ru https://*.oneme.ru
 Referrer-Policy: strict-origin-when-cross-origin
 Accept-Ranges: bytes
 
-/* Сайт внутри MAX (мини-приложение бота «Наш декор»).
-   Подключается только когда сайт открыт из MAX: в адресе есть #WebAppData=… (первый экран)
-   или эти данные уже сохранены в sessionStorage (переходы по сайту). В обычном браузере не грузится.
-   Делает: стрелка «Назад» MAX, раздел по параметру запуска (startapp), внешние ссылки — через MAX,
-   метка источника «max» для счётчика посещений. */
-(function () {
-  "use strict";
-  var W = window.WebApp;
-  if (!W) return;
-  var S = window.sessionStorage;
-  function get(k) { try { return S.getItem(k); } catch (e) { return null; } }
-  function set(k, v) { try { S.setItem(k, v); } catch (e) {} }
-  function mobile() { return W.platform === "ios" || W.platform === "android"; }
+Стеновые панели, плинтусы и молдинги под покраску — купить в СПб | Наш декор 
+ Стеновые панели Плинтусы Расчёт стены Статьи Доставка Заявка 
+ Получить расчёт 
+ Санкт-Петербург и Ленинградская область
+ Стеновые панели, плинтусы и молдинги под покраску 
+ Стеновые панели для внутренней отделки — реечные под покраску и под дерево, напольные и потолочные плинтусы, молдинги и уголки из полистирола высокой плотности (дюрополимера): ударопрочные, влагостойкие, под покраску. Панели 3 м — без стыков до потолка. Считаем количество по размерам стены в 3D, привозим по Санкт-Петербургу и Ленобласти, в другие города отправляем транспортной компанией. 
+ Рассчитать стену Смотреть каталог 
+ Реечные панели 3 м, под покраску 
+ Под покраску любой цвет — вместе со стеной 
+ 108 артикулов в каталоге 
+ 3 м длина панели — стена без стыков 
+ Поштучно и коробками со склада 
+ Каталог
+ Стеновые панели (реечные под покраску, под дерево и бетон), плинтусы напольные и потолочные, молдинги, уголки. Цены предварительные, за штуку (у панелей — и за м²). Точную стоимость и наличие подтвердим в ответ на заявку. 
+ Разделы: Стеновые панели Реечные панели под покраску Под дерево и бетон Плинтус напольный Плинтус с подсветкой Потолочный плинтус Молдинги для стен Уголки Статьи 
+ Показать ещё 
+ Расчёт реечных панелей на стену в 3D
+ Калькулятор: укажите размеры стены, выберите панель и цвет — стена перестроится, а ниже посчитаются штуки, коробки и сумма. Можно добавить плинтус и потолочный плинтус. Расчёт уйдёт вместе с заявкой.
+ Вся стена Сбоку Вблизи Мебель 
+ + − 
+ Ведите в сторону — поворот · два пальца — масштаб Тяните — поворот · + − или колесо после щелчка — масштаб 
+ 3D не запускается в этом браузере. Расчёт ниже работает как обычно.
+ Панель 
+ Цвет 
+ Ширина стены, см 
+ Высота стены, см 
+ Окна и двери на этой стене, м² (если есть) 
+ Запас 10% на подрезку 
+ Добавить плинтус по ширине стены 
+ Плинтус 
+ Добавить потолочный плинтус (карниз) 
+ Потолочный плинтус 
+ Итого по стене
+ —
+ Отправить расчёт 
+ Покраска и монтаж не входят. Клей и шпаклёвку для швов подберём под панель.
+ Наши панели в интерьере
+ Живые фото из квартиры: реечные панели под покраску на стенах, выступах и в нишах, окрашены в цвет стен.
+ Дизайнерам и бригадам
+ Подберём профили под проект и привезём на объект к нужному этапу ремонта. 
+ Работаем с дизайнерами 
+ Ведём объекты дизайнеров и бригад: держим нужные профили и привозим к сроку. 
+ Расчёт по проекту 
+ Пришлите развёртку стены — вернём спецификацию по артикулам и смету. 
+ Документы для объекта 
+ Счёт, накладная и закрывающие документы для компаний и ИП, по ЭДО или на бумаге. 
+ 3D-модели всех профилей — бесплатно
+ 105 моделей в натуральную величину: белые панели под покраску, панели с декором под дерево и бетон, плинтусы, потолочные плинтусы, молдинги и уголки. Точные сечения, длина как у товара, материалы и текстуры декоров.
+ Форматы: FBX и OBJ — 3ds Max, Corona, V-Ray; DAE — SketchUp; GLB — Blender; сечения в DXF — AutoCAD. Оставьте e-mail и телефон — пришлём архив на почту.
+ Имя 
+ Телефон 
+ E-mail — пришлём архив сюда 
+ В какой программе работаете 3ds Max SketchUp ArchiCAD Revit Blender Другая 
+ Я даю согласие на обработку персональных данных и ознакомлен с Политикой обработки персональных данных 
+ Прислать 3D-модели 
+ Заявка
+ Ответим с ценой и наличием в рабочее время. Быстрее всего — написать в чат (кнопка «Чат» внизу справа) или заказать обратный звонок — перезвоним сами.
+ Имя 
+ Телефон или мессенджер 
+ E-mail — пришлём расчёт письмом (необязательно) 
+ Кто вы Делаю ремонт у себя Дизайнер Ремонтная бригада Компания, объект 
+ Комментарий 
+ Приложить расчёт стены 
+ Я даю согласие на обработку персональных данных и ознакомлен с Политикой обработки персональных данных 
+ Отправить заявку 
+ Доставка по СПб и Ленобласти, оплата и возврат
+ Стоимость доставки называем до оплаты. Цены без НДС: продавец на упрощённой системе. 
+ Доставка
+ Самовывоз со склада — бесплатно. По Петербургу — 1–2 дня, по Ленобласти — 1–3 дня после оплаты, по тарифу перевозчика. Отправляем в Москву и любой регион транспортной компанией, доставку получатель оплачивает перевозчику по его тарифу — сроки, упаковка, как получить . Панели 3 м едут в машине с кузовом от 3 м.
+ Оплата
+ Частным покупателям — картой или через СБП по ссылке после подтверждения заказа, электронный чек на e-mail. Компаниям и ИП — по счёту, закрывающие документы по ЭДО или на бумаге. Об оплате и возврате 
+ Возврат
+ Неподошедший товар — в течение 7 дней после получения, если он не распилен, не окрашен и не монтировался. Деньги возвращаем в течение 10 дней. Брак меняем или возвращаем деньги. 
+ Наш декор · Санкт-Петербург · Мы на Авито 
+ Стеновые панели Реечные панели Под дерево и бетон Плинтусы Плинтус с подсветкой Потолочный плинтус Молдинги Уголки Статьи Доставка в Москву и по России 
+ Оплата и возврат Оферта Политика конфиденциальности Согласие на обработку данных
 
-  var launch = /(^#|&)WebAppData=/.test(location.hash);
-  var param = "";
-  try {
-    param = (W.initDataUnsafe && W.initDataUnsafe.start_param) || new URLSearchParams(location.search).get("WebAppStartParam") || "";
-  } catch (e) {}
-
-  // Куда открыть по параметру запуска: https://max.ru/<бот>?startapp=calc
-  //   calc, catalog, models, order, contacts, live, pro — блоки главной; calc-<артикул> — расчёт с этой панелью (calc-3-7);
-  //   dostavka, oplata, stati — страницы; c-<раздел> — раздел каталога; p-<артикул> — товар (p-a907, p-3-7);
-  //   s-<статья> — статья. Те же правила — в bot/channel.py (app_payload) для кнопок постов канала.
-  var BLOCKS = { calc: 1, catalog: 1, models: 1, order: 1, contacts: 1, live: 1, pro: 1 };
-  var PAGES = { dostavka: "/dostavka/", oplata: "/oplata/", stati: "/stati/" };
-  function target(p) {
-    p = String(p || "").toLowerCase();
-    if (!/^[a-z0-9_-]{1,60}$/.test(p)) return "";
-    if (BLOCKS[p]) return "/#" + p;
-    if (PAGES[p]) return PAGES[p];
-    var m = /^calc-([a-z0-9-]+)$/.exec(p);
-    if (m) return "/?panel=" + m[1].toUpperCase() + "#calc";
-    m = /^c-([a-z0-9-]+)$/.exec(p);
-    if (m) return "/catalog/" + m[1] + "/";
-    m = /^p-([a-z0-9-]+)$/.exec(p);
-    if (m) return "/p/" + m[1] + "/";
-    m = /^s-([a-z0-9-]+)$/.exec(p);
-    if (m) return "/stati/" + m[1] + "/";
-    return "";
-  }
-
-  if (launch) {
-    set("mxStart", location.pathname);
-    // убрать служебные данные запуска из адреса (их уже сохранила библиотека MAX)
-    try { history.replaceState(history.state, "", location.pathname + location.search.replace(/([?&])WebAppStartParam=[^&]*&?/, "$1").replace(/[?&]$/, "")); } catch (e) {}
-    var to = target(param);
-    if (to) {
-      var path = to.split("#")[0];
-      if (path === location.pathname) {
-        var id = to.split("#")[1];
-        if (id) {
-          var go = function () { var el = document.getElementById(id); if (el) el.scrollIntoView(); };
-          if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { setTimeout(go, 50); });
-          else setTimeout(go, 50);
-        }
-      } else {
-        set("mxStart", path.split("?")[0]);   // перешли сразу на нужную страницу — «Назад» с неё не нужен
-        location.replace(to);
-        return;
-      }
-    }
-  }
-
-  // Стрелка «Назад» в шапке MAX: на первом экране скрыта, дальше — шаг назад по сайту
-  function sync() {
-    var start = get("mxStart");
-    try { if (!start || location.pathname === start) W.BackButton.hide(); else W.BackButton.show(); } catch (e) {}
-  }
-  try { W.BackButton.onClick(function () { history.back(); }); } catch (e) {}
-  sync();
-  window.addEventListener("pageshow", sync);
-  window.addEventListener("popstate", sync);
-
-  // Ссылки: max.ru — внутри MAX, другие сайты — во внешнем браузере (иначе мини-приложение уходит со страницы
-  // магазина и вернуться нельзя); свои страницы — здесь же, без новых вкладок; tel: и mailto: — как есть.
-  function outside(u) {
-    if (/(^|\.)max\.ru$/.test(u.hostname)) W.openMaxLink(u.href); else W.openLink(u.href);
-  }
-  document.addEventListener("click", function (e) {
-    if (e.defaultPrevented || e.button) return;
-    var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
-    if (!a) return;
-    var u;
-    try { u = new URL(a.getAttribute("href"), location.href); } catch (x) { return; }
-    if (u.protocol !== "http:" && u.protocol !== "https:") return;
-    if (u.origin === location.origin) {
-      if (a.hasAttribute("download") && mobile() && W.downloadFile) {
-        e.preventDefault();
-        var name = a.getAttribute("download") || decodeURIComponent(u.pathname.split("/").pop() || "file");
-        W.downloadFile(u.href, name).catch(function () { location.href = u.href; });
-      } else if (a.target === "_blank") {
-        e.preventDefault();
-        location.href = u.href;
-      }
-      return;
-    }
-    e.preventDefault();
-    outside(u);
-  }, true);
-  var open0 = window.open;
-  window.open = function (url) {
-    try {
-      var u = new URL(url, location.href);
-      if (u.protocol === "http:" || u.protocol === "https:") {
-        if (u.origin === location.origin) location.href = u.href; else outside(u);
-        return null;
-      }
-    } catch (e) {}
-    return open0.apply(window, arguments);
-  };
-
-  // Свайп вниз на телефоне не закрывает приложение (иначе мешает листать и крутить 3D-стену)
-  if (mobile() && W.disableVerticalSwipes) { try { W.disableVerticalSwipes().catch(function () {}); } catch (e) {} }
-  try { W.ready(); } catch (e) {}
-})();
+ССЫЛКИ:
+${SHOP.max}
+${href}
+${v}
+/apple-touch-icon.png
+/favicon.ico
+/icon.svg
+assets/brand.css?v=20261111e
+assets/fonts/inter-400.woff
+catalog/karnizy/
+catalog/moldingi/
+catalog/paneli-pod-derevo/
+catalog/plintus-s-podsvetkoy/
+catalog/plintusy/
+catalog/reechnye-paneli/
+catalog/stenovye-paneli/
+catalog/ugolki/
+consent.html
+dostavka/
+https://nashdekor.ru/
+https://www.avito.ru/brands/41c3cda03dbcc4779122153b28a75b36
+img/live/2x/1.jpg
+img/live/2x/2.jpg
+img/live/2x/3.jpg
+img/live/2x/4.jpg
+img/live/2x/5.jpg
+img/live/2x/6.jpg
+oferta.html
+oplata/
+privacy.html
+stati/
