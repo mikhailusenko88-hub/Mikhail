@@ -1,3 +1,4 @@
 # Снятые страницы
 
-- 01 200 https://crm.nashdekor.ru/api/outbox/status/ef336796-23ba-4bf4-88f1-62a7a8c792c3 (66 симв.)
+- 01 200 https://nashdekor.ru/assets/chat.js?v=202611162013 (18308 симв.)
+- 02 200 https://nashdekor.ru/ (4776 симв.)
