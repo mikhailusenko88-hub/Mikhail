@@ -3,16 +3,22 @@
 // Паузы — через MessageChannel (таймеры страницы при скрытой панели браузера срабатывают раз в минуту).
 // Порядок на объявление: скачать новые фото → удалить старые → загрузить новые → заголовок → сохранить. Любое расхождение — СТОП без сохранения.
 // JOBS: [артикул, номер, папка фото в avito_foto/ или '', число фото, новый заголовок или '']
+// 16.11.2026: первые два фото во всех пяти заменены на фото с сайта (наборы 3-7v5, 3-15v5, 3-9v5, A910v6, A703v5; assemble_v7.py в ветке
+// paneli-render): 5 объявлений с проверкой за 1 мин 48 с, 2 подтверждения. Добавлено: сброс прежних отметок «сохранено» в начале пакета;
+// проверка порядка по яркости первых трёх превью (DARK2 — первые два фото тёмные, третье светлое; картинки img.avito.st читаются в canvas);
+// стоп, если заголовок или описание изменились сами. Загрузка восьми фото идёт ~2 секунды, порядок файлов сохраняется.
 (() => {
 const JOBS = [
-  ['A703', '8495178294', 'A703v4', 8, 'Плинтус напольный дюрополимер под покраску 80 мм'],
-  ['3-7', '8402676722', '3-7v4', 8, 'Декоративные рейки на стену под дерево, дуб 3 м'],
-  ['3-15', '8530976650', '3-15v4', 8, 'Стеновые панели рейки под светлое дерево, 3 м'],
-  ['A910', '8523521242', 'A910v5', 8, 'Реечные панели из дюрополимера под покраску'],
-  ['3-9', '8546190071', '3-9v4', 8, ''],
+  ['3-7', '8402676722', '3-7v5', 8, ''],
+  ['3-15', '8530976650', '3-15v5', 8, ''],
+  ['3-9', '8546190071', '3-9v5', 8, ''],
+  ['A910', '8523521242', 'A910v6', 8, ''],
+  ['A703', '8495178294', 'A703v5', 8, ''],
 ];
+const DARK2 = true;   // первые два фото — с сайта на тёмном фоне: проверять порядок по яркости превью; для других наборов поставить false
 const RAW = 'https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/paneli-render/avito_foto/';
 const SS = sessionStorage;
+SS.setItem('nd_log10', ''); SS.removeItem('nd_done10');   // новый пакет: прежние отметки «сохранено» не действуют (при повторе после сбоя эту строку убрать)
 document.getElementById('nd_ov')?.remove();
 const L = (...a) => { const s = new Date().toTimeString().slice(0, 8) + ' ' + a.join(' '); SS.setItem('nd_log10', (SS.getItem('nd_log10') || '') + s + '\n'); };
 const done = () => (SS.getItem('nd_done10') || '').split(',').filter(Boolean);
@@ -28,16 +34,31 @@ async function frame(url) {
   fr.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:2147483647;background:#fff;border:0';
   fr.src = url; document.body.appendChild(fr);
   const ok = await until(() => fr.contentDocument && fr.contentDocument.querySelector('textarea[name=description]') && fr.contentDocument.readyState === 'complete', 60000);
-  if (!ok) { let t = ''; try { t = (fr.contentDocument.title || '') + ' | ' + (fr.contentDocument.body.innerText || '').slice(0, 160).replace(/\s+/g, ' '); } catch (e) { t = e.message; } L('фрейм: форма не появилась:', t); return null; }
+  if (!ok) { let t = ''; try { t = fr.contentWindow.location.href.replace(/^https:\/\/www\.avito\.ru/, '') + ' | ' + (fr.contentDocument.title || '') + ' | ' + (fr.contentDocument.body.innerText || '').slice(0, 160).replace(/\s+/g, ' '); } catch (e) { t = e.message; } L('фрейм: форма не появилась (если адрес с #login — браузер разлогинен):', t); return null; }
   await sleep(2000);
   return fr;
 }
 const pv = d => [...d.querySelectorAll('[data-marker^="preview("][data-marker$="/image"]')];
+const srcOf = e => e.src || (e.querySelector('img') || {}).src || '';
 const ids = d => pv(d).map(e => (e.getAttribute('data-marker').match(/preview\(([^)]+)\)/) || [])[1]).filter(Boolean);
-const loadedN = d => pv(d).filter(e => /img\.avito\.st/.test(e.src || (e.querySelector('img') || {}).src || '')).length;
+const loadedN = d => pv(d).filter(e => /img\.avito\.st/.test(srcOf(e))).length;
 const titleInp = d => d.querySelector('input[name=title]') || d.querySelector('[data-marker*="title"] input') ||
   [...d.querySelectorAll('input[type=text],input:not([type])')].find(i => i.value && i.value.length > 15 && /панел|плинтус|рейк/i.test(i.value));
 const checks = d => [...d.querySelectorAll('input[type=checkbox]')].filter(c => c.checked).map(c => c.name || c.getAttribute('data-marker') || '?').join(',');
+// средняя яркость картинки (0–255): фото сайта на тёмном фоне дают 50–95, интерьеры и схемы — 140–190
+async function lum(src) {
+  try {
+    if (!src) return 'нет';
+    const im = new Image(); im.crossOrigin = 'anonymous';
+    let res = null; im.onload = () => { res = true; }; im.onerror = () => { res = false; };
+    im.src = src + (src.includes('?') ? '&' : '?') + 'nd=' + Date.now();
+    await until(() => res !== null, 8000, 200);
+    if (!res) return 'н/д';
+    const c = document.createElement('canvas'); c.width = 32; c.height = 24; const g = c.getContext('2d'); g.drawImage(im, 0, 0, 32, 24);
+    const px = g.getImageData(0, 0, 32, 24).data; let s = 0; for (let i = 0; i < px.length; i += 4) s += 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+    return Math.round(s / (px.length / 4));
+  } catch (e) { return 'н/д'; }
+}
 async function job(art, id, folder, N, title) {
   if (done().includes(art)) { L('—', art, 'уже сохранено раньше, пропускаю'); return true; }
   L('—', art, id);
@@ -47,7 +68,7 @@ async function job(art, id, folder, N, title) {
   d.querySelectorAll('form').forEach(f => f.addEventListener('submit', e => e.preventDefault(), true));
   const ti = titleInp(d);
   if (!ti) { L('СТОП', art, 'поле заголовка не найдено'); return false; }
-  const old = ids(d);
+  const old = ids(d), title0 = ti.value, desc0 = d.querySelector('textarea[name=description]').value;
   L('было: заголовок «' + ti.value + '» | фото', old.length, '| адрес:', (d.querySelector('input[name=address]') || {}).value || '?', '| отмечено:', checks(d));
   if (folder) {
     const files = [];
@@ -78,6 +99,9 @@ async function job(art, id, folder, N, title) {
     const left = ids(d), stale = left.filter(x => old.includes(x)).length;
     L('фото загружены за', Math.round((Date.now() - t0) / 1000), 'с: всего', left.length, 'старых', stale);
     if (left.length !== N || stale) { L('СТОП', art, 'фото не сходятся — не сохраняю'); return false; }
+    const lm = []; for (const s of pv(d).slice(0, 3).map(srcOf)) lm.push(await lum(s));
+    L('яркость первых трёх превью:', lm.join(', '));
+    if (DARK2 && lm.every(x => typeof x === 'number') && !(lm[0] < 115 && lm[1] < 115 && lm[2] > lm[0] + 15)) { L('СТОП', art, 'порядок фото не тот — не сохраняю'); return false; }
   }
   if (title) {
     const t2 = titleInp(d);
@@ -86,6 +110,8 @@ async function job(art, id, folder, N, title) {
     await sleep(1000);
     if (titleInp(d).value !== title) { L('СТОП', art, 'заголовок не встал:', titleInp(d).value, '— не сохраняю'); return false; }
   }
+  if (!title && titleInp(d).value !== title0) { L('СТОП', art, 'заголовок изменился сам — не сохраняю'); return false; }
+  if (d.querySelector('textarea[name=description]').value !== desc0) { L('СТОП', art, 'описание изменилось — не сохраняю'); return false; }
   const btn = d.querySelector('[data-marker="item-edit/button-next"]');
   if (!btn) { L('СТОП', art, 'нет кнопки «Сохранить»'); return false; }
   L('жму:', (btn.innerText || '').trim().replace(/\s+/g, ' '));
@@ -110,7 +136,8 @@ async function job(art, id, folder, N, title) {
       const fr = await frame('/items/edit/' + id);
       if (!fr) { L(a, 'проверка: не открылось'); continue; }
       const d = fr.contentDocument, tv = (titleInp(d) || {}).value;
-      L(a, id, '| заголовок: «' + tv + '»', title ? (tv === title ? 'ОК' : 'НЕ ТОТ') : '(не меняли)', '| фото', ids(d).length, ids(d).length === n ? 'ОК' : 'НЕ ' + n, '| адрес:', (d.querySelector('input[name=address]') || {}).value || '?', '| отмечено:', checks(d));
+      const lm = []; for (const s of pv(d).slice(0, 3).map(srcOf)) lm.push(await lum(s));
+      L(a, id, '| заголовок: «' + tv + '»', title ? (tv === title ? 'ОК' : 'НЕ ТОТ') : '(не меняли)', '| фото', ids(d).length, ids(d).length === n ? 'ОК' : 'НЕ ' + n, '| яркость первых трёх:', lm.join(', '), '| описание', d.querySelector('textarea[name=description]').value.length, 'зн. | адрес:', (d.querySelector('input[name=address]') || {}).value || '?', '| отмечено:', checks(d));
     }
     const fr = document.getElementById('nd_fr'); if (fr) fr.remove();
     L('ВСЁ');
