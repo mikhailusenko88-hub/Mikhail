@@ -175,7 +175,8 @@ def test_article_in_free_text_in_max(tmp_path):
         await h.send(CLIENT, "А907")  # русская «А»
         card = f.last_body(CLIENT)
         assert "<b>A907</b> — Реечная панель A907" in card["text"] and "ширину стены" in card["text"]
-        assert {"type": "link", "text": "Фото и 3D на сайте", "url": "https://nashdekor.ru/p/a907/"} in kb_rows(card)[0]
+        assert {"type": "open_app", "text": "Фото и 3D на сайте", "web_app": "id000000000000_bot",
+                "payload": "p-a907"} in kb_rows(card)[0]          # сайт открывается внутри MAX (мини-приложение)
         assert payloads(card) == ["cn"]
         assert len(f.sent(MANAGER)) == n_mgr  # просто артикул — менеджера не дёргаем
         await h.send(CLIENT, "3,2 на 2,7")
