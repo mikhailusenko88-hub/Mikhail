@@ -81,6 +81,7 @@ BTN_NEXT = "Далее ›"
 BTN_CALC_GROUP = "Рассчитать"
 BTN_OTHER_GROUPS = "Другие группы"
 BTN_SITE = "Открыть сайт"
+CHANNEL_URL = "https://max.ru/id470331302505_biz"   # канал «Наш декор» в MAX (создан 16.11.2026)
 BTN_DELETE_YES = "Да, удалить"
 BTN_LEAD_SITE = "Заявка на сайте"
 BTN_OPEN_MAX = "Открыть бота в MAX"
@@ -109,6 +110,7 @@ def welcome(site_url: str, collect: bool = True) -> str:
     )
     if site_url:
         text += f"\nСайт: {esc(site_url)}"
+    text += f"\nНаш канал в MAX — панели и молдинги в интерьере: {CHANNEL_URL}"
     return text
 
 
