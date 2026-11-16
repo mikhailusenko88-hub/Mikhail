@@ -1952,6 +1952,47 @@ class TestDocs(TestPochta):
         self.assertEqual(len(self.docs.list()), 5)                                                  # каждый один раз
         self.assertIn("в документах", self.c.get("/outbox").get_data(as_text=True))
 
+    def test_docs_new_version_keeps_links(self) -> None:
+        """Новая версия файла (docs2/, replace): файл меняется, ссылки дизайнерам остаются, дубля нет."""
+        import json as _j
+        import uuid
+        import outbox
+        key = self.c.get("/api/outbox/key").get_data(as_text=True).strip()
+
+        def put(sub: str, body: bytes, **kw: object) -> str:
+            mid = str(uuid.uuid4())
+            p = dict({"id": mid, "kind": "doc", "folder": "Дизайнерам", "title": "Каталог с ценами", "note": "цены на 16.11",
+                      "attachments": [{"name": "katalog.pdf", "mime": "application/pdf", "b64": outbox._b64(body)}]}, **kw)
+            os.makedirs(os.path.join(self.work, sub), exist_ok=True)
+            with open(os.path.join(self.work, sub, mid + ".json"), "w", encoding="utf-8") as f:
+                _j.dump(outbox.seal(key, p), f)
+            self.git("-C", self.work, "add", "-A"); self.git("-C", self.work, "commit", "-q", "-m", sub)
+            self.git("-C", self.work, "push", "-q", "origin", "outbox")
+            self.ob.run()
+            return mid
+
+        put("docs", b"%PDF-1.4 old")
+        d1 = self.docs.list("Дизайнерам")[0]
+        tok = self.docs.share(d1["id"], "тест")
+        personal = self.docs.new_link(d1["id"], "тест", sent_to="d@studio.ru")
+        mid = put("docs2", b"%PDF-1.4 new prices", replace=True, note="цены на 01.12")
+        self.assertEqual(self.ob.status(mid)["status"], "saved")
+        rows = self.docs.list("Дизайнерам")
+        self.assertEqual(len(rows), 1)                                                              # прежняя версия убрана
+        d2 = rows[0]
+        self.assertNotEqual(d2["id"], d1["id"])
+        self.assertEqual((d2["title"], d2["note"], d2["filename"]), ("Каталог с ценами", "цены на 01.12", "katalog.pdf"))
+        self.assertFalse((self.docs.dir / d1["id"]).exists())
+        self.assertEqual((self.docs.dir / d2["id"]).read_bytes(), b"%PDF-1.4 new prices")
+        for t in (tok, personal):                                                                   # ссылки ведут на новую версию
+            self.assertEqual(self.docs.link(t)["id"], d2["id"])
+        self.assertEqual(self.docs.share(d2["id"], "тест"), tok)
+        put("docs2", b"%PDF-1.4 new prices", replace=True)                                          # тот же файл ещё раз
+        self.assertEqual([r["id"] for r in self.docs.list("Дизайнерам")], [d2["id"]])
+        put("docs2", b"%PDF-1.4 other", replace=True, attachments=[{"name": "drugoe.pdf", "mime": "application/pdf",
+                                                                    "b64": outbox._b64(b"%PDF-1.4 other")}])
+        self.assertEqual(len(self.docs.list("Дизайнерам")), 2)                                      # другого имени — просто добавляет
+
 
 class TestDesignerDocs(Base):
     """«Дизайнеры → Документы для дизайнеров»: файлы раздела «Дизайнерам», ссылки без входа, письмо со ссылками."""

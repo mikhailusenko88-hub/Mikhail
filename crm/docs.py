@@ -1,7 +1,7 @@
 """Раздел CRM «Документы»: важные документы ИП и магазина (регистрация, договоры, ТУ, сертификаты, протоколы).
 
 Файлы лежат на сервере магазина в папке DOCS_DIR (рядом с базой CRM), сведения о них — в таблице docs.
-Файл никогда не меняется (имя на диске — id), поэтому ежедневная копия может ставить жёсткие ссылки.
+Файл никогда не меняется (имя на диске — id; новая версия — новый файл), поэтому ежедневная копия может ставить жёсткие ссылки.
 Добавить можно: загрузкой в CRM, кнопкой «В документы» у вложения письма и через канал Claude (ветка outbox, docs/*.json).
 """
 from __future__ import annotations
@@ -127,6 +127,27 @@ class Docs:
                       (did, folder, title, name, mime, len(data), sha, clean_date(until), str(note or "").strip()[:1000],
                        str(source or "")[:100], self._now(), str(by or "")[:60]))
         return did, True
+
+    def replace(self, data: bytes, filename: str, folder: str = "", title: str = "", until: str = "", note: str = "",
+                by: str = "", source: str = "", mime: str = "") -> tuple[str, bool]:
+        """Новая версия файла: то же имя в том же разделе. Файл на диске не переписываем (копия ставит жёсткие
+        ссылки) — кладём новый, переводим на него ссылки на скачивание и убираем прежний. Разосланные ссылки живут."""
+        name, fo = clean_name(filename), clean_folder(folder)
+        prev = self.s.c().execute("SELECT * FROM docs WHERE folder=? AND filename=? ORDER BY created_at", (fo, name)).fetchall()
+        last = prev[-1] if prev else None
+        did, fresh = self.add(data, filename, folder=folder, title=title or (last["title"] if last else ""),
+                              until=until or (last["until"] if last else ""), note=note or (last["note"] if last else ""),
+                              by=by, source=source, mime=mime)
+        ids = [r["id"] for r in prev]
+        if not fresh and did not in ids:           # такой же файл уже лежит под другим именем — ничего не трогаем
+            return did, False
+        for old_id in ids:
+            if old_id == did:
+                continue
+            with self.s.tx() as c:
+                c.execute("UPDATE doc_links SET doc_id=? WHERE doc_id=?", (did, old_id))
+            self.delete(old_id)
+        return did, fresh
 
     def get(self, did: str) -> Any:
         if not ID_RE.match(did or ""):

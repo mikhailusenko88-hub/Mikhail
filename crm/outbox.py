@@ -134,6 +134,7 @@ class Outbox:
         self.repo_url = repo_url or os.environ.get("OUTBOX_REPO", REPO_URL)
         self.workdir = Path(workdir or os.environ.get("OUTBOX_DIR", "/var/lib/prostranstvo/outbox-git"))
         self.save_doc: Callable[..., tuple[str, bool]] | None = None   # ставит app.py — раздел «Документы»
+        self.replace_doc: Callable[..., tuple[str, bool]] | None = None   # новая версия файла (ссылки сохраняются)
         c = self.s.c()
         c.execute(SCHEMA)
 
@@ -399,9 +400,10 @@ class Outbox:
                 total += len(data)
                 if total > MAX_DOCS:
                     raise ValueError("больше 30 МБ")
-                self.save_doc(data, name, folder=folder, title=str(p.get("title") or "") if len(atts) == 1 else "",
-                              until=str(p.get("until") or ""), note=str(p.get("note") or ""), by="Claude", source="Claude",
-                              mime=str(a.get("mime") or ""))
+                put = self.replace_doc if (p.get("replace") and self.replace_doc) else self.save_doc
+                put(data, name, folder=folder, title=str(p.get("title") or "") if len(atts) == 1 else "",
+                    until=str(p.get("until") or ""), note=str(p.get("note") or ""), by="Claude", source="Claude",
+                    mime=str(a.get("mime") or ""))
                 names.append(name)
             except Exception as e:  # noqa: BLE001
                 err = f"{name}: {e}"[:200]
@@ -434,11 +436,12 @@ class Outbox:
         self._check_reader()
         if not send_on:
             return out + ["отправка выключена в CRM"]
-        ddir = self.workdir / "docs"                                          # документы от Claude → «Документы»
-        self._docs_saved = []
-        for f in sorted(ddir.glob("*.json")) if ddir.is_dir() else []:
-            if ID_RE.match(f.stem) and not self._row(f.stem):
-                out.append(self._save_docs(sk, f.stem, f))
+        self._docs_saved = []                                                 # документы от Claude → «Документы»
+        for sub in ("docs", "docs2"):                                         # docs2 — новые версии файлов («replace»): прежние
+            ddir = self.workdir / sub                                         # версии CRM эту папку не читают и дубль не создадут
+            for f in sorted(ddir.glob("*.json")) if ddir.is_dir() else []:
+                if ID_RE.match(f.stem) and not self._row(f.stem):
+                    out.append(self._save_docs(sk, f.stem, f))
         if self._docs_saved:                                                  # один пуш на всю пачку, а не на каждый файл
             dnames = [n for _, ns in self._docs_saved for n in ns]
             folders = sorted({fo for fo, _ in self._docs_saved})

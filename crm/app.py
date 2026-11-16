@@ -612,6 +612,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 os.path.join(os.path.dirname(os.path.abspath(conf["CRM_DB"])), "docs"))
     app.extensions["docs"] = docs
     ob.save_doc = docs.add                       # Claude кладёт документы через ветку outbox (docs/*.json, шифр)
+    ob.replace_doc = docs.replace                # новая версия файла (docs2/*.json): ссылки дизайнерам сохраняются
     register_designer_docs(app, store, docs, {"admin_required": admin_required, "who": who,
                                               "send_mail": lambda *a, **k: send_mail(*a, **k),
                                               "shop_domain": conf["SHOP_DOMAIN"] or "nashdekor.ru"})
