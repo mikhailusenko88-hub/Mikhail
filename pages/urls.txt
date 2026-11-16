@@ -1,2 +1,4 @@
-# 19:12:05 каталог 22:10 — статус
-https://crm.nashdekor.ru/api/outbox/status/f0cbe50f-81a5-456d-9f63-ce5eec063bbc
+# 23:05 мини-приложение MAX: код MAX Bridge и заголовки сайта (можно ли открыть во фрейме)
+https://st.max.ru/js/max-web-app.js
+https://nashdekor.ru/
+https://nashdekor.ru/katalog/

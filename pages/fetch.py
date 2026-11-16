@@ -28,17 +28,24 @@ for n, u in enumerate(urls, 1):
             if b.count('\ufffd') > 50:
                 b = raw.decode('cp1251', 'replace')
         code = r.status
+        hdrs = ''.join(f'{k}: {v}\n' for k, v in r.headers.items())
     except urllib.error.HTTPError as e:
         b, code = e.read(200000).decode('utf-8', 'replace'), e.code
+        hdrs = ''.join(f'{k}: {v}\n' for k, v in e.headers.items())
     except Exception as e:
-        b, code = '', f'ошибка: {e}'
+        b, code, hdrs = '', f'ошибка: {e}', ''
+    if u.split('?')[0].endswith(('.js', '.json', '.css')):   # код — как есть, без чистки тегов
+        with open(f'status/pages/{n:02d}.txt', 'w', encoding='utf-8') as f:
+            f.write(f'URL: {u}\nКОД: {code}\nЗАГОЛОВКИ:\n{hdrs}\n{b[:400000]}')
+        index.append(f'- {n:02d} {code} {u} ({len(b)} симв., как есть)')
+        continue
     links = sorted(set(re.findall(r'href="([^"#]+)"', b)))
     t = re.sub(r'(?is)<(script|style|noscript|svg)[^>]*>.*?</\1>', ' ', b)
     t = re.sub(r'(?i)<br\s*/?>|</(p|div|li|tr|h\d|td|th)>', '\n', t)
     t = html.unescape(re.sub(r'<[^>]+>', ' ', t))
     t = re.sub(r'[ \t\xa0]+', ' ', t); t = re.sub(r'\n\s*\n+', '\n', t).strip()
     with open(f'status/pages/{n:02d}.txt', 'w', encoding='utf-8') as f:
-        f.write(f'URL: {u}\nКОД: {code}\n\n{t[:60000]}\n\nССЫЛКИ:\n' + '\n'.join(links[:400]))
+        f.write(f'URL: {u}\nКОД: {code}\nЗАГОЛОВКИ:\n{hdrs}\n{t[:60000]}\n\nССЫЛКИ:\n' + '\n'.join(links[:400]))
     index.append(f'- {n:02d} {code} {u} ({len(t)} симв.)')
 open('status/pages.md', 'w', encoding='utf-8').write('\n'.join(index) + '\n')
 print('\n'.join(index))
