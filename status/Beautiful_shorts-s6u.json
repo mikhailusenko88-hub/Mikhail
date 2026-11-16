@@ -5,22 +5,28 @@
  "title": "Beautiful_shorts",
  "description": "",
  "header": [
-  "230 подписчиков",
-  "141 видео"
+  "231 подписчик",
+  "142 видео"
  ],
  "alerts": [],
  "images": {
   "avatar": "https://yt3.googleusercontent.com/3SkKQKzbtqBO-oV1lqFtoaDen4tgg8hlao1TVZcMdY9LUtqppGJBftTFyKYp3H1P5pTekG9tog=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/6_IYCMEMtoe0Q__Y2_zj7OKcLMKAO9UGQ8aCjGFh5-3XlnsPQBUApKWlK2iCM9InaG-mlW-rq7A=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-16 18:52 UTC",
+ "checked": "2026-11-16 22:12 UTC",
  "shorts_status": 200,
  "shorts": [
   {
+   "id": "7h5ICq0Civ8",
+   "title": "Every bounce = +1 ball 🐸 Can they fill the frog? #satisfying #physics #simulation",
+   "views": "950 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Every bounce = +1 ball 🐸 Can they fill the frog? #satisfying #physics #simulation, 950 просмотров\""
+  },
+  {
    "id": "4ejtez9n18c",
    "title": "Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation",
-   "views": "1,5 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation, 1,5 тысячи просмотров\""
+   "views": "1,6 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation, 1,6 тысячи просмотров\""
   },
   {
    "id": "a9xDYsPrIa4",
@@ -31,8 +37,8 @@
   {
    "id": "p46Y16_FUkM",
    "title": "What are 1,189 balls drawing? 🤔 Guess before the end! #shorts",
-   "views": "1,4 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"What are 1,189 balls drawing? 🤔 Guess before the end! #shorts, 1,4 тысячи просмотров\""
+   "views": "1,5 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"What are 1,189 balls drawing? 🤔 Guess before the end! #shorts, 1,5 тысячи просмотров\""
   },
   {
    "id": "Dw-O_K8qMds",
@@ -97,8 +103,8 @@
   {
    "id": "yHSe_VfF-0E",
    "title": "Part 2: it was STUCK by 3 px… can it break free? 😱 #shorts",
-   "views": "961 просмотр",
-   "a11y": "Воспроизвести короткое видео \"Part 2: it was STUCK by 3 px… can it break free? 😱 #shorts, 961 просмотр\""
+   "views": "962 просмотра",
+   "a11y": "Воспроизвести короткое видео \"Part 2: it was STUCK by 3 px… can it break free? 😱 #shorts, 962 просмотра\""
   },
   {
    "id": "NxErJ5KTOos",
@@ -127,8 +133,8 @@
   {
    "id": "TDj4LWSysdk",
    "title": "Which TREND wins? 6-7 vs Rizz vs Aura 😱 #shorts",
-   "views": "916 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Which TREND wins? 6-7 vs Rizz vs Aura 😱 #shorts, 916 просмотров\""
+   "views": "921 просмотр",
+   "a11y": "Воспроизвести короткое видео \"Which TREND wins? 6-7 vs Rizz vs Aura 😱 #shorts, 921 просмотр\""
   },
   {
    "id": "PiIV46k2M8A",
@@ -169,8 +175,8 @@
   {
    "id": "TKkd16DFUMU",
    "title": "27 октября 2026 г.",
-   "views": "198 просмотров",
-   "a11y": "Воспроизвести короткое видео \"27 октября 2026 г., 198 просмотров\""
+   "views": "199 просмотров",
+   "a11y": "Воспроизвести короткое видео \"27 октября 2026 г., 199 просмотров\""
   },
   {
    "id": "JsycXIxtM8M",
@@ -297,35 +303,36 @@
    "title": "Parrot and dog song",
    "views": "216 просмотров",
    "a11y": "Воспроизвести короткое видео \"Parrot and dog song, 216 просмотров\""
-  },
-  {
-   "id": "zh1y3socG0w",
-   "title": "Dog and cat",
-   "views": "3 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Dog and cat, 3 тысячи просмотров\""
   }
  ],
  "rss_status": 200,
  "rss": [
   {
+   "id": "7h5ICq0Civ8",
+   "published": "2026-11-16T19:02:11+00:00",
+   "title": "Every bounce = +1 ball 🐸 Can they fill the frog? #satisfying #physics #simulation",
+   "views": 950,
+   "desc": "Every bounce = a new ball. At 100% something happens 😳\nWhich animal should we fill next? 👇"
+  },
+  {
    "id": "4ejtez9n18c",
    "published": "2026-11-15T21:20:49+00:00",
    "title": "Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation",
-   "views": 1575,
+   "views": 1621,
    "desc": "Every bounce = a new ball. At 100% something happens 😳\nWhich animal should we fill next? 👇"
   },
   {
    "id": "a9xDYsPrIa4",
    "published": "2026-11-15T17:03:00+00:00",
    "title": "Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts",
-   "views": 1591,
+   "views": 1635,
    "desc": "1 ball. Every bounce = a new ball. Can they fill every corner of the cat — even the ears? 👀 Wait for 100%… something happens 😳\nWhich animal should we fill next? Comment below! 👇\n\n#satisfying #oddlysatisfying #physics #simulation #asmr #cat #shorts"
   },
   {
    "id": "p46Y16_FUkM",
    "published": "2026-11-15T10:28:50+00:00",
    "title": "What are 1,189 balls drawing? 🤔 Guess before the end! #shorts",
-   "views": 1502,
+   "views": 1517,
    "desc": "Every ball has its own spot. They bounce until they find it 👀 At what number did you guess the picture? Comment below 👇\n\n#satisfying #oddlysatisfying #physics #simulation #asmr #shorts"
   },
   {
@@ -367,7 +374,7 @@
    "id": "dEGnQFq6GCU",
    "published": "2026-11-07T09:44:15+00:00",
    "title": "Spiked Bat vs Katana ⚔️ Who wins? #shorts",
-   "views": 1121,
+   "views": 1124,
    "desc": "Every hit the bat grows a new SPIKE… every hit the katana gets more CRIT chance. 8 lead changes — who did you pick? 👇 Idea by @Minebloxatoring\n\n#satisfying #simulation #battle #weapons #whowins #shorts"
   },
   {
@@ -395,7 +402,7 @@
    "id": "C7rhH0Fvmtg",
    "published": "2026-11-05T17:26:30+00:00",
    "title": "Every hit: SWORD gets LONGER, DAGGERS spin FASTER… who wins? 😱 #shorts",
-   "views": 1340,
+   "views": 1341,
    "desc": "Sword grows longer with every hit. Daggers spin faster with every hit. 100 HP each — only one survives 👀 Comment BLUE or RED before the end! Who should fight next?\n\n#satisfying #simulation #physics #weaponball #battle #oddlysatisfying #shorts"
   },
   {
@@ -404,13 +411,6 @@
    "title": "Part 2: it was STUCK by 3 px… can it break free? 😱 #shorts",
    "views": 961,
    "desc": "Part 2! The ball got stuck by just 3 pixels — so it starts pushing. Every push = more pressure… and then THIS happened 😱 But wait… there's ONE MORE RING. Should it escape or get stuck in Part 3? Comment below!\n\n#satisfying #oddlysatisfying #physics #simulation #ball #asmr #shorts"
-  },
-  {
-   "id": "NxErJ5KTOos",
-   "published": "2026-11-04T15:47:13+00:00",
-   "title": "Every bounce = BIGGER ball… this time it was SO close 😭 #shorts",
-   "views": 2719,
-   "desc": "The ball grows with every bounce — too big and it's stuck forever. It broke 4 rings… and then THIS happened. Too big by 3 pixels 😭 Should I set it free in Part 2? Comment below!\n\n#satisfying #oddlysatisfying #physics #simulation #ball #asmr #shorts"
   }
  ],
  "rss_tries": 1
