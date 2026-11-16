@@ -1536,6 +1536,8 @@ def scene_piece():
     from mathutils import Matrix
     item = A.get('item', 'A157')
     view = A.get('view', 'a')
+    if item[:1] in '235' and item[1:2] == '-':
+        return scene_slat_piece(item, view)
     P = json.load(open(f'{ROOT}/profiles_mold.json', encoding='utf-8'))[item]
     W, T = float(P['w']) / 1000.0, float(P['t']) / 1000.0
     L = float(A.get('len', 0.10))
@@ -1573,6 +1575,10 @@ def scene_piece():
         log('sharp', e)
     ob = bpy.data.objects.new('piece', me)
     col.objects.link(ob)
+    _piece_stage(ob, W, T, L, view)
+
+def _piece_stage(ob, W, T, L, view):
+    """Постановка отрезка: положение, камера и свет трёх видов (a, b — лёжа, c — стоя)."""
     scene.render.film_transparent = True
     big = max(W, L)
     if view == 'c':                      # стоит на торце, лицом к камере
@@ -1599,6 +1605,69 @@ def scene_piece():
     g = float(A.get('amb', 0.25))
     wo.node_tree.nodes['Background'].inputs['Color'].default_value = (g, g, g, 1)
     camera(cam_loc, look, lens=lens, level=level)
+
+
+
+def scene_slat_piece(item, view):
+    """Отрезок реечной панели «под дерево» (серии 2, 3, 5; 120×12 мм): полый профиль «змейкой» (slat_profile.py),
+    плёнка-декор только на лице реек (текстура tex_decor/<артикул>.jpg — ламель с фото каталога), бока и пазы чёрные,
+    срез — тёмная пена. Серия 3: рейка 29,5 / шаг 40 (живой образец 12.11); серия 5: рейка 10,5 / шаг 24
+    (измерено по фото образца 16.11); серия 2: 37 / 60 — по каталогу, с образцом не сверена."""
+    from mathutils import Matrix
+    if ROOT not in sys.path:
+        sys.path.insert(0, ROOT)
+    import slat_profile as SP
+    n = int(item[0])
+    SP.STEP, SP.LAM = {2: (60.0, 37.0), 3: (40.0, 29.5), 5: (24.0, 10.5)}[n]
+    pts = [(x, z) for x, z, _ in SP.outline(n)]
+    W, T, L = 0.12, 0.012, float(A.get('len', 0.10))
+    cu = bpy.data.curves.new('slat', 'CURVE')
+    cu.dimensions = '2D'
+    cu.fill_mode = 'BOTH'
+    sp = cu.splines.new('POLY')
+    sp.points.add(len(pts) - 1)
+    for pt, (x, y) in zip(sp.points, pts):
+        pt.co = (x / 1000.0, y / 1000.0, 0.0, 1.0)
+    sp.use_cyclic_u = True
+    cu.extrude = L / 2.0
+    tmp = bpy.data.objects.new('slat_c', cu)
+    col.objects.link(tmp)
+    bpy.context.view_layer.update()
+    me = bpy.data.meshes.new_from_object(tmp.evaluated_get(bpy.context.evaluated_depsgraph_get()))
+    bpy.data.objects.remove(tmp)
+    me.transform(Matrix.Translation((-W / 2.0, 0.0, 0.0)))
+    m_black = mat_simple('pan_black_piece', (0.012, 0.012, 0.013, 1), rough=0.55)
+    m_wood, nt, out = new_mat('wood_piece')
+    bs = principled(nt, out, Roughness=0.5)
+    tx = nt.nodes.new('ShaderNodeTexImage')
+    tx.image = bpy.data.images.load(f'{ROOT}/tex_decor/{item}.jpg')
+    try:
+        tx.extension = 'MIRROR'
+    except Exception as e:  # noqa
+        log('mirror', e)
+    uvn = nt.nodes.new('ShaderNodeUVMap')
+    nt.links.new(uvn.outputs['UV'], tx.inputs['Vector'])
+    nt.links.new(tx.outputs['Color'], bs.inputs['Base Color'])
+    for m in (m_black, m_wood, mat_foam()):
+        me.materials.append(m)
+    ratio = json.load(open(f'{ROOT}/tex_decor/index.json', encoding='utf-8'))[item]['ratio']
+    step, lam = SP.STEP / 1000.0, SP.LAM / 1000.0
+    uv = me.uv_layers.new(name='UVMap')
+    for poly in me.polygons:
+        if abs(poly.normal.z) > 0.9:
+            poly.material_index = 2
+        elif poly.normal.y > 0.9 and poly.center.y > T - 0.0006:
+            poly.material_index = 1
+            for li in poly.loop_indices:
+                co = me.vertices[me.loops[li].vertex_index].co
+                x = co.x + W / 2.0
+                i = int((x + 1e-6) // step)
+                uv.data[li].uv = ((x - i * step) / lam, co.z / (lam * ratio) + 0.31 * i)
+        else:
+            poly.material_index = 0
+    ob = bpy.data.objects.new('piece', me)
+    col.objects.link(ob)
+    _piece_stage(ob, W, T, L, view)
 
 
 def auto_expose():
