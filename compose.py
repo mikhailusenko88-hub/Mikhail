@@ -49,6 +49,60 @@ def fix_hollows(rgb, alpha):
     return rgb, int(fix.sum())
 
 
+def drop_table(rgb, alpha):
+    """Сквозь пустоты профиля виден стол. Ищем «цвет стола» только в узкой полосе у нижнего края
+    силуэта (там, где срез), по образцу стола вокруг низа образца, и делаем такие места прозрачными —
+    сквозь пустоту будет виден фон. Лицо изделия выше полосы не трогаем."""
+    m = alpha > 0.5
+    ys, xs = np.where(m)
+    y0, y1 = ys.min(), ys.max()
+    H = y1 - y0
+    u8 = np.clip(rgb, 0, 255).astype(np.uint8)
+    lab = cv2.cvtColor(u8, cv2.COLOR_RGB2LAB).astype(np.float64)
+    mu8 = m.astype(np.uint8)
+    ring = cv2.dilate(mu8, np.ones((61, 61), np.uint8)).astype(bool) & ~cv2.dilate(mu8, np.ones((15, 15), np.uint8)).astype(bool)
+    ring[: y0 + H // 2] = False
+    if ring.sum() < 500:
+        return alpha, 0
+    mu, sd = lab[ring].mean(0), lab[ring].std(0) + np.array([6.0, 3.0, 3.0])
+    hb = max(6, int(0.075 * H))
+    cols = np.where(m.any(0))[0]
+    yb = np.full(m.shape[1], -10 ** 6)
+    yb[cols] = m.shape[0] - 1 - np.argmax(m[::-1, cols], axis=0)
+    yy = np.arange(m.shape[0])[:, None]
+    band = (yy <= yb[None, :]) & (yy >= yb[None, :] - hb)
+    d = np.sqrt((((lab - mu) / sd) ** 2).sum(-1))
+    dark = (m & band & (lab[..., 0] < 50)).astype(np.uint8)   # чёрная основа/пена
+    dark = cv2.morphologyEx(dark, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7)))  # тонкие тёмные волокна декора — не пена
+    below = np.cumsum(dark, axis=0) > 0              # только ниже начала чёрного торца — лицо рейки не трогаем
+    chroma = np.hypot(lab[..., 1] - 128, lab[..., 2] - 128)
+    table = band & m & below & (((d < 3.4) & (lab[..., 0] > 80)) | ((chroma > 7) & (lab[..., 0] > 30)))
+    t8 = cv2.morphologyEx(table.astype(np.uint8), cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+    t8 = cv2.dilate(t8, np.ones((3, 3), np.uint8))
+    tb = cv2.GaussianBlur(t8.astype(np.float64), (0, 0), 1.0)
+    return alpha * (1 - np.clip(tb, 0, 1)), int(t8.sum())
+
+
+def deskew(rgb, alpha, lim=9.0):
+    """Выравниваем ближний (нижний) край образца по горизонтали — все карточки стоят одинаково."""
+    m = alpha > 0.5
+    ys, xs = np.where(m)
+    x0, x1 = xs.min(), xs.max()
+    cols = np.arange(x0 + int(0.12 * (x1 - x0)), x1 - int(0.12 * (x1 - x0)))
+    yb = (m.shape[0] - 1 - np.argmax(m[::-1, cols], axis=0)).astype(np.float64)
+    k, b = np.polyfit(cols, yb, 1)
+    for _ in range(2):
+        res = np.abs(yb - (k * cols + b))
+        keep = res <= np.percentile(res, 60)
+        k, b = np.polyfit(cols[keep], yb[keep], 1)
+    ang = float(np.degrees(np.arctan(k)))
+    if abs(ang) < 0.6 or abs(ang) > lim:
+        return rgb, alpha, 0.0
+    R = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8)).rotate(ang, Image.BICUBIC, expand=True)
+    A = Image.fromarray((alpha * 255).astype(np.uint8)).rotate(ang, Image.BICUBIC, expand=True)
+    return np.asarray(R, dtype=np.float64), np.asarray(A, dtype=np.float64) / 255, ang
+
+
 def main():
     cut, src, out2, out1 = sys.argv[1:5]
     wb = [1.0, 1.0, 1.0]
@@ -57,6 +111,12 @@ def main():
         wb = [float(x) for x in sys.argv[sys.argv.index('--wb') + 1].split(',')]
     rgb, alpha = load(cut, src)
     alpha = clean_alpha(alpha)
+    if '--table' in sys.argv:          # стол сквозь пустоты (реечные на чёрной основе)
+        alpha, ntab = drop_table(rgb, alpha)
+        print('table pixels removed', ntab)
+    if '--nodeskew' not in sys.argv:
+        rgb, alpha, ang = deskew(rgb, alpha)
+        print('deskew %.1f' % ang)
     rgb = rgb * np.array(wb)
     if white and '--autowb' in sys.argv:   # белое изделие: нейтрализуем по нему самому
         mm = alpha > 0.9
@@ -71,7 +131,11 @@ def main():
     lumv = (0.2126 * rgb[..., 0] + 0.7152 * rgb[..., 1] + 0.0722 * rgb[..., 2])[m]
     if white:
         hi = np.percentile(lumv, 97)
-        rgb = rgb * (246.0 / max(hi, 1))
+        rgb = np.clip(rgb * (246.0 / max(hi, 1)), 0, 255)
+        lum2 = (0.2126 * rgb[..., 0] + 0.7152 * rgb[..., 1] + 0.0722 * rgb[..., 2])
+        med = np.median(lum2[m & (lum2 > 120)])
+        g = np.log(232.0 / 246) / np.log(max(min(med, 245), 150) / 246)   # медиана белых -> 232, верх остаётся 246
+        rgb = 246.0 * (rgb / 246.0) ** g
     else:
         hi = np.percentile(lumv, 99.5)
         if hi > 250:
