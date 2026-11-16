@@ -554,6 +554,23 @@ step_config() {
   fi
   if [[ -z $(get_env "$ENV_FILE" CONSENT_VERSION) ]]; then set_env "$ENV_FILE" CONSENT_VERSION 1; fi
   write_max_app_key
+  write_channel_cron
+}
+
+# Автопостинг в канал MAX: раз в час channel.py смотрит очередь (bot/channel_queue.json в GitHub) и выкладывает
+# одобренный пост, если подошло его время. Пустая очередь — ничего не делает.
+write_channel_cron() {
+  local f=/etc/cron.d/prostranstvo-channel tmp
+  tmp=$(mktemp)
+  cat >"$tmp" <<EOF
+# Автопостинг в канал «Наш декор» в MAX (создано install-bot.sh). Очередь: bot/channel_queue.json, ветка server.
+# Посмотреть очередь: python3 $APP_DIR/channel.py queue --list
+SHELL=/bin/bash
+7 * * * * root flock -n /run/prostranstvo-channel.lock /usr/bin/python3 $APP_DIR/channel.py queue >>/var/log/prostranstvo-channel.log 2>&1
+EOF
+  install -m 644 "$tmp" "$f"
+  rm -f "$tmp"
+  ok "автопостинг в канал MAX: раз в час по очереди (журнал /var/log/prostranstvo-channel.log)"
 }
 
 # Ключ проверки подписей мини-приложения MAX для CRM (номер телефона и данные запуска из MAX подписаны токеном бота).

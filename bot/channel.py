@@ -9,7 +9,10 @@
     python3 channel.py publish    — стартовые посты (каждый один раз) и закреп
     python3 channel.py update     — поправить текст и кнопки уже опубликованных постов
     python3 channel.py all        — check + setup + publish
-Ключи: --chat ID (если каналов несколько), --dry (только показать), --posts ФАЙЛ,
+    python3 channel.py queue      — автопостинг: выложить очередной пост из очереди, если подошло его время
+                                    (cron раз в час; очередь — channel_queue.json в GitHub, ветка server)
+    python3 channel.py queue --list — что в очереди и что уже вышло
+Ключи: --chat ID (если каналов несколько), --dry (только показать), --posts ФАЙЛ, --queue ФАЙЛ|ССЫЛКА,
 --links (кнопки — обычные ссылки в браузер, без мини-приложения).
 
 Кнопки на наш сайт открывают сайт внутри MAX (мини-приложение бота): параметр запуска — как в assets/max.js сайта.
@@ -21,6 +24,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 import os
 import re
@@ -46,6 +50,9 @@ CHATS_KEY = "max_chats"                    # пишет max_api.py, когда �
 NEED = {"write": "публиковать посты", "pin_message": "закреплять", "change_chat_info": "менять аватар и описание",
         "edit": "редактировать посты"}
 PAUSE = 1.2                                # между постами, чтобы не упереться в ограничение частоты
+QUEUE_URL = "https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/server/bot/channel_queue.json"
+MSK = dt.timezone(dt.timedelta(hours=3))   # Москва, без перехода на летнее время
+LATE = dt.timedelta(days=3)                # пост опоздал больше чем на 3 дня (сервер был выключен) — пропустить
 
 
 class ApiError(Exception):
@@ -124,6 +131,25 @@ def load_posts(path: str) -> dict[str, Any]:
     if path.startswith("http"):
         return json.loads(fetch(path))
     return json.load(open(path, encoding="utf-8"))
+
+
+def load_queue(src: str) -> dict[str, Any]:
+    """Очередь автопостинга: по ссылке (GitHub), если не открылась — копия рядом со скриптом."""
+    try:
+        return load_posts(src)
+    except (OSError, ValueError):
+        local = os.path.join(HERE, "channel_queue.json")
+        if src != local and os.path.exists(local):
+            return load_posts(local)
+        raise
+
+
+def post_time(post: dict[str, Any]) -> dt.datetime | None:
+    """Время поста «ГГГГ-ММ-ДД ЧЧ:ММ» по Москве."""
+    try:
+        return dt.datetime.strptime(str(post.get("at") or ""), "%Y-%m-%d %H:%M").replace(tzinfo=MSK)
+    except ValueError:
+        return None
 
 
 def img_url(cfg: dict[str, Any], name: str) -> str:
@@ -310,6 +336,43 @@ class Channel:
             self.out(f"  закреплён «{pin['id']}»")
         return n
 
+    def queue(self, chat_id: str, now: dt.datetime | None = None) -> int:
+        """Автопостинг: один пост за запуск — самый ранний одобренный, чьё время подошло. Возвращает 1 или 0."""
+        now = now or dt.datetime.now(MSK)
+        st = load_state(self.state_file)
+        done = st.setdefault(chat_id, {})
+        due = sorted((p for p in self.cfg.get("posts") or [] if p.get("approved") and p.get("id") and p["id"] not in done
+                      and post_time(p) and post_time(p) <= now), key=lambda p: post_time(p))
+        for post in due:
+            if now - post_time(post) > LATE:
+                done[post["id"]] = "пропущен"
+                save_state(self.state_file, st)
+                self.out(f"  «{post['id']}» — пропущен: опоздал больше чем на 3 дня")
+                continue
+            if self.dry:
+                self.out(f"[проверка] вышел бы пост «{post['id']}» ({post['at']})")
+                return 0
+            mid = self._send(chat_id, post)
+            done[post["id"]] = mid
+            save_state(self.state_file, st)
+            self.out(f"{now:%d.%m %H:%M} опубликован «{post['id']}» (по плану {post['at']})")
+            if post.get("pin") and mid:
+                self.api.call("PUT", f"/chats/{chat_id}/pin", body={"message_id": mid})
+            return 1
+        return 0
+
+    def queue_list(self, chat_id: str) -> None:
+        done = load_state(self.state_file).get(chat_id, {})
+        posts = sorted(self.cfg.get("posts") or [], key=lambda p: str(p.get("at") or ""))
+        if not posts:
+            self.out("Очередь пуста.")
+        for p in posts:
+            pid = p.get("id", "")
+            mark = ("пропущен" if done[pid] == "пропущен" else "вышел") if pid in done else \
+                ("ждёт времени" if p.get("approved") else "ждёт «да»")
+            first = (p.get("text") or "").split("\n", 1)[0].replace("<b>", "").replace("</b>", "")[:60]
+            self.out(f"  {p.get('at', '—')}  {mark:13}  {p.get('id', '—')}: {first}")
+
     def update(self, chat_id: str) -> int:
         st = load_state(self.state_file)
         done = st.get(chat_id, {})
@@ -335,7 +398,7 @@ class Channel:
 
 def main(argv: list[str] | None = None) -> int:
     a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    a.add_argument("cmd", choices=["check", "setup", "publish", "update", "all"])
+    a.add_argument("cmd", choices=["check", "setup", "publish", "update", "all", "queue"])
     a.add_argument("--chat", default="")
     a.add_argument("--dry", action="store_true")
     a.add_argument("--posts", default=os.path.join(HERE, "channel_posts.json"))
@@ -343,6 +406,8 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--db", default=DB_FILE)
     a.add_argument("--state", default=STATE_FILE)
     a.add_argument("--links", action="store_true", help="кнопки — обычные ссылки, без мини-приложения")
+    a.add_argument("--queue", default=QUEUE_URL, help="очередь автопостинга (файл или ссылка)")
+    a.add_argument("--list", action="store_true", help="queue: показать очередь")
     o = a.parse_args(argv)
     env = read_env(o.env)
     token = env.get("MAX_TOKEN") or os.environ.get("MAX_TOKEN", "")
@@ -350,9 +415,20 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Нет токена MAX (MAX_TOKEN в {o.env}).")
         return 2
     api = Api(token, env.get("MAX_API_URL") or DEFAULT_API, env.get("MAX_CA_FILE") or CA_FILE)
-    ch = Channel(api, load_posts(o.posts), o.state, o.dry, app=not o.links)
+    try:
+        cfg = load_queue(o.queue) if o.cmd == "queue" else load_posts(o.posts)
+    except (OSError, ValueError) as e:
+        print(f"Не открылся файл постов: {e}")
+        return 1
+    ch = Channel(api, cfg, o.state, o.dry, app=not o.links)
     try:
         chat_id = ch.pick(known_chats(o.db), o.chat)
+        if o.cmd == "queue":
+            if o.list:
+                ch.queue_list(chat_id)
+            else:
+                ch.queue(chat_id)
+            return 0
         if o.cmd in ("check", "all"):
             missing = ch.check(chat_id)
             if o.cmd == "all" and missing and not o.dry:

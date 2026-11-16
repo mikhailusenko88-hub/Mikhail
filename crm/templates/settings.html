@@ -64,6 +64,7 @@
   <input type="hidden" name="csrf" value="{{ csrf }}">
   <label class="chk span2"><input type="checkbox" name="followup_auto" value="1" {% if followup_auto %}checked{% endif %}> Автонапоминания о расчёте: если клиент не ответил и задача «Узнать решение по расчёту» не закрыта к сроку — раз в несколько дней уходит вежливое письмо (не больше двух на сделку). Выключить для одной сделки можно в её карточке.</label>
   <label class="f span2">Контакты в подписи писем (мессенджер, без телефона)<input name="mail_contacts" value="{{ mail_contacts }}" placeholder="Telegram @…, MAX …"></label>
+  <label class="f span2">Канал в подписи писем (ссылка; пусто — строки нет)<input name="mail_channel" value="{{ mail_channel }}" placeholder="https://max.ru/…"></label>
   <div class="span2"><button class="btn-p">Сохранить</button></div>
 </form>
 {% if me['role'] == 'admin' %}

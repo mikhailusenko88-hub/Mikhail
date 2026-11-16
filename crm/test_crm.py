@@ -519,6 +519,7 @@ class TestApi(Base):
         self.assertEqual(sent["to"], "new@example.com")
         self.assertIn("A912", sent["body"]); self.assertIn("10 шт", sent["body"]); self.assertIn("Итого", sent["body"])
         self.assertIn("noreply@nashdekor.ru", sent["sender"]); self.assertEqual(sent["reply_to"], "zakaz@nashdekor.ru")
+        self.assertIn("Наш канал в MAX — новинки и фото в интерьере: https://max.ru/id470331302505_biz", sent["body"])
         d = self.store.deal(did)
         self.assertEqual((d["stage"], d["email"]), ("quote", "new@example.com"))
         page = self.c.get(f"/deals/{did}").get_data(as_text=True)
@@ -1222,6 +1223,22 @@ class TestMaxMiniApp(Base):
         os.remove(os.path.join(self.tmp.name, "max-app.key"))
         r = self.lead(max={"init": self.init_data(), "contact": self.contact()})
         self.assertEqual(self.store.deal(r.get_json()["id"])["source"], "site")
+
+
+
+
+class TestMailChannel(Base):
+    def test_channel_line_setting(self) -> None:
+        self.login()
+        page = self.c.get("/settings").get_data(as_text=True)
+        self.assertIn('name="mail_channel"', page)
+        self.assertIn("https://max.ru/id470331302505_biz", page)
+        self.post("/settings/mail", {"mail_contacts": "чат на сайте", "mail_channel": ""})
+        self.assertEqual(self.app.extensions["mail_channel"](), "")
+        self.post("/settings/mail", {"mail_contacts": "чат на сайте", "mail_channel": "javascript:alert(1)"})
+        self.assertEqual(self.app.extensions["mail_channel"](), "")
+        self.post("/settings/mail", {"mail_contacts": "чат на сайте", "mail_channel": "https://max.ru/id470331302505_biz"})
+        self.assertEqual(self.app.extensions["mail_channel"](), "https://max.ru/id470331302505_biz")
 
 
 if __name__ == "__main__":

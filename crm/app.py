@@ -76,6 +76,7 @@ SERVER_ACTIONS: list[tuple[str, str, str]] = [
     ("reboot", "Перезагрузить сервер", "сайт, почта и CRM недоступны 1–2 минуты"),
 ]
 SERVER_ACTION_KEYS = {k for k, _, _ in SERVER_ACTIONS}
+MAX_CHANNEL_URL = "https://max.ru/id470331302505_biz"   # канал «Наш декор» в MAX (создан 16.11.2026) — в подписи писем
 HIT_MAX = 150
 
 
@@ -505,10 +506,18 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         """Строка контактов в письмах клиентам (Настройки → Письма клиентам)."""
         return store.setting("mail_contacts", "чат на сайте nashdekor.ru")
 
+    def mail_channel() -> str:
+        """Канал «Наш декор» в MAX для подписи писем; пустая настройка mail_channel — строки нет."""
+        return store.setting("mail_channel", MAX_CHANNEL_URL)
+
+    app.extensions["mail_channel"] = mail_channel
+
     def mail_signature(manager: str = "") -> list[str]:
         dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
+        ch = mail_channel()
         return ["", f"Ответить на это письмо или написать: zakaz@{dom}" + (f" · {mail_contacts()}" if mail_contacts() else ""),
-                f"Сайт: https://{dom}", "", "С уважением, " + (f"{manager}, " if manager else "") + "«Наш декор»"]
+                f"Сайт: https://{dom}"] + ([f"Наш канал в MAX — новинки и фото в интерьере: {ch}"] if ch else []) + [
+                "", "С уважением, " + (f"{manager}, " if manager else "") + "«Наш декор»"]
 
     k = Konstruktor(store)
     app.extensions["k"] = k
@@ -1551,7 +1560,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         return render_template("settings.html", users=store.users() if g.user["role"] == "admin" else [],
                                conf=conf, bot=bool(store._bot()), hit_ips="\n".join(own_ips()), my_ip=ip(),
                                my_ip_own=ip_is_own(ip()), visits_total=visits.count(),
-                               followup_auto=store.setting("followup_auto", "1") == "1", mail_contacts=mail_contacts(),
+                               followup_auto=store.setting("followup_auto", "1") == "1", mail_contacts=mail_contacts(), mail_channel=mail_channel(),
                                push_devices=store.push_subs_all() if g.user["role"] == "admin" else [],
                                chat_stats=store.chat_stats(), push_total=len(store.push_subs_all()),
                                tochka=dict(has_key=bool(store.setting("tochka_jwt", "")), on=tochka_on(), info=tochka_info(),
@@ -1649,6 +1658,9 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         """Письма клиентам: автонапоминания вкл/выкл и строка контактов в подписи."""
         store.set_setting("followup_auto", "1" if request.form.get("followup_auto") else "0")
         store.set_setting("mail_contacts", (request.form.get("mail_contacts") or "").strip()[:200])
+        if "mail_channel" in request.form:
+            ch = (request.form.get("mail_channel") or "").strip()[:200]
+            store.set_setting("mail_channel", ch if not ch or ch.startswith("https://") else "")
         flash("Настройки писем сохранены.", "ok")
         return redirect(url_for("settings_view"))
 

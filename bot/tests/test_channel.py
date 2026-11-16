@@ -259,3 +259,60 @@ def test_links_flag_skips_mini_app(tmp_path, monkeypatch):
     kinds = {x["type"] for b in fake.calls("POST", "/messages") for a in b["attachments"] if a["type"] == "inline_keyboard"
              for r in a["payload"]["buttons"] for x in r}
     assert kinds == {"link"}
+
+
+def queue_file(tmp_path, fake, posts):
+    q = {"img": fake.url() + "/img/max/", "v": "1", "posts": posts}
+    f = tmp_path / "queue.json"
+    f.write_text(json.dumps(q, ensure_ascii=False), encoding="utf-8")
+    return str(f)
+
+
+def test_queue_posts_one_due_approved_post_per_run(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(channel.time, "sleep", lambda s: None)
+    fake = Fake()
+    fake.not_ready_once = False
+    args, _ = setup_files(tmp_path, fake, {CHAT: {"active": True, "channel": True}})
+    now = channel.dt.datetime.now(channel.MSK)
+    at = lambda h: (now + channel.dt.timedelta(hours=h)).strftime("%Y-%m-%d %H:%M")
+    btn = [[{"text": "Расчёт стены", "url": "https://nashdekor.ru/?utm_source=max#calc"}]]
+    q = queue_file(tmp_path, fake, [
+        {"id": "late", "at": at(-24 * 5), "approved": True, "text": "давний", "images": ["a.jpg"], "buttons": btn},
+        {"id": "p2", "at": at(-1), "approved": True, "text": "<b>Второй</b>", "images": ["b.jpg"], "buttons": btn},
+        {"id": "p1", "at": at(-2), "approved": True, "text": "<b>Первый</b>", "images": ["a.jpg"], "buttons": btn},
+        {"id": "draft", "at": at(-3), "text": "черновик без «да»", "images": []},
+        {"id": "future", "at": at(5), "approved": True, "text": "завтра", "images": []},
+    ])
+    assert channel.main(["queue", *args, "--queue", q]) == 0
+    sent = fake.calls("POST", "/messages")
+    assert len(sent) == 1 and sent[0]["text"] == "<b>Первый</b>"            # самый ранний из подошедших, по одному
+    assert sent[0]["attachments"][-1]["payload"]["buttons"][0][0]["type"] == "open_app"
+    out = capsys.readouterr().out
+    assert "«late» — пропущен" in out and "опубликован «p1»" in out
+    assert channel.main(["queue", *args, "--queue", q]) == 0
+    assert channel.main(["queue", *args, "--queue", q]) == 0               # больше подошедших нет — тишина
+    sent = fake.calls("POST", "/messages")
+    assert [b["text"] for b in sent] == ["<b>Первый</b>", "<b>Второй</b>"]
+    capsys.readouterr()
+    assert channel.main(["queue", *args, "--queue", q, "--list"]) == 0
+    out = capsys.readouterr().out
+    assert "вышел" in out and "ждёт «да»" in out and "ждёт времени" in out and "пропущен" in out
+
+
+def test_queue_file_in_repo_is_clean():
+    """Очередь в репозитории: даты по Москве, без бренда поставщика и запретных слов, кнопки — https."""
+    path = channel.os.path.join(channel.HERE, "channel_queue.json")
+    if not channel.os.path.exists(path):
+        return
+    d = json.load(open(path, encoding="utf-8"))
+    ids = [p["id"] for p in d["posts"]]
+    assert len(ids) == len(set(ids))
+    for p in d["posts"]:
+        assert channel.post_time(p), p["id"]
+        t = p["text"].lower()
+        assert len(p["text"]) <= 4000 and len(p.get("images") or []) <= 10, p["id"]
+        for bad in ("artdec", "арт дек", "рамк", "картой", "горюч", "бесплатно", "лучшие цены", "%"):
+            assert bad not in t, (p["id"], bad)
+        for row in p.get("buttons") or []:
+            assert 1 <= len(row) <= 3 and all(b["url"].startswith("https://") for b in row)
+
