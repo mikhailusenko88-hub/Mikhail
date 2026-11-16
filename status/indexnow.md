@@ -1,3 +1,14 @@
+# IndexNow — 2026-11-16 15:01 UTC, коммит b3c0a26
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: изменённые страницы (1) из 231 изменённых файлов; без изменений по сути (только ?v=): 125
+  https://nashdekor.ru/
+- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
+- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
+  "success":true
+}
+
+---
+
 # IndexNow — 2026-11-16 14:44 UTC, коммит 9cac8ba
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (1) из 129 изменённых файлов; без изменений по сути (только ?v=): 125
@@ -522,32 +533,6 @@
   https://nashdekor.ru/p/2-14/
   https://nashdekor.ru/p/2-3/
   … и ещё 109
-- https://www.bing.com/indexnow: HTTP 403 — ключ не подошёл {"errorCode":"UserForbiddedToAccessSite","message":"User is unauthorized to access the site. Please verify the site using the key and try again","details":null}
-- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
-  "success":true
-}
-
----
-
-# IndexNow — 2026-11-09 19:45 UTC, коммит 5563eef
-- ключ на сайте: https://nashdekor.ru/1a06371a537e385ae6bb830b593a5315.txt → 200, совпадает
-- режим: изменённые страницы (128) из 133 изменённых файлов
-  https://nashdekor.ru/
-  https://nashdekor.ru/catalog/karnizy/
-  https://nashdekor.ru/catalog/moldingi/
-  https://nashdekor.ru/catalog/paneli-pod-derevo/
-  https://nashdekor.ru/catalog/plintus-s-podsvetkoy/
-  https://nashdekor.ru/catalog/plintusy/
-  https://nashdekor.ru/catalog/reechnye-paneli/
-  https://nashdekor.ru/catalog/stenovye-paneli/
-  https://nashdekor.ru/catalog/ugolki/
-  https://nashdekor.ru/consent.html
-  https://nashdekor.ru/dostavka/
-  https://nashdekor.ru/oferta.html
-  https://nashdekor.ru/p/2-10/
-  https://nashdekor.ru/p/2-11/
-  https://nashdekor.ru/p/2-12/
-  … и ещё 113
 - https://www.bing.com/indexnow: HTTP 403 — ключ не подошёл {"errorCode":"UserForbiddedToAccessSite","message":"User is unauthorized to access the site. Please verify the site using the key and try again","details":null}
 - https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
   "success":true
