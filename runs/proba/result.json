@@ -1,0 +1,64 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 99,
+  "title": "Проба студии?!",
+  "scenes": 2,
+  "errors": [],
+  "unknownWords": [],
+  "unknownObjects": [],
+  "unknownNames": []
+ },
+ "video": {
+  "name": "Кот Барсик - 99. Проба студии!",
+  "path": "video/Кот Барсик - 99. Проба студии!.mp4",
+  "frames": 1025,
+  "sec": 139,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 40.997,
+  "video": "video/Кот Барсик - 99. Проба студии!.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "6f535e7",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 17.7,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 18,
+   "e": 109,
+   "b": 7,
+   "w": 1,
+   "n": 1020,
+   "at": 1020,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 5,
+  "ttsFail": 0,
+  "voice": 6,
+  "voiceFail": 0,
+  "voiceSec": 8,
+  "ttsSec": 6,
+  "frames": 1025,
+  "dialogs": [],
+  "errors": [],
+  "stages": []
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 177,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
