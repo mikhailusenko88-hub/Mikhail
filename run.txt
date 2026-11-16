@@ -1,8 +1,5 @@
 # имя  аргументы для scene.py (или "py script.py")
-# 16.11.2026 — студийные фото каталога (scene=studio), превью 3: участок стены на «Антраците» с полом + крупно
-s903w scene=studio item=a903 view=wall res=800x500 samples=48 noise=0.06
-s907w scene=studio item=a907 view=wall res=800x500 samples=48 noise=0.06
-s37w scene=studio item=slat decor=3-7 view=wall res=800x500 samples=48 noise=0.06
-s903c scene=studio item=a903 view=close res=800x500 samples=48 noise=0.06
-s907c scene=studio item=a907 view=close res=800x500 samples=48 noise=0.06
-s37c scene=studio item=slat decor=3-7 view=close res=800x500 samples=48 noise=0.06
+# 16.11.2026 — образец стоя (scene=sample) вместо кривых фото «стоя»: проба
+q902 scene=sample item=a902 res=1400x880 samples=80 noise=0.04
+q913 scene=sample item=a913 res=1400x880 samples=80 noise=0.04
+q903 scene=sample item=a903 res=1400x880 samples=80 noise=0.04

@@ -756,10 +756,15 @@ def calibrate(world, sun, sun_dir, neutral_prefixes=('wall', 'ceil'), lamps=(), 
 
 def render_final():
     r = scene.render
-    r.image_settings.file_format = 'JPEG'
-    r.image_settings.color_mode = 'RGB'
-    r.image_settings.quality = 97
-    r.filepath = f'{OUT}/{NAME}.jpg'
+    if r.film_transparent:            # образец на прозрачном фоне — PNG с альфой
+        r.image_settings.file_format = 'PNG'
+        r.image_settings.color_mode = 'RGBA'
+        r.filepath = f'{OUT}/{NAME}.png'
+    else:
+        r.image_settings.file_format = 'JPEG'
+        r.image_settings.color_mode = 'RGB'
+        r.image_settings.quality = 97
+        r.filepath = f'{OUT}/{NAME}.jpg'
     t = time.time()
     bpy.ops.render.render(write_still=True)
     log('final render %.1fs' % (time.time() - t), r.filepath)
@@ -1477,6 +1482,51 @@ def scene_studio():
     camera(cam_loc, look, lens=lens, fstop=float(A.get('fstop', 0)) or None, level=True)
 
 
+def scene_sample():
+    """Образец-отрезок стоя, лицом к камере, на прозрачном фоне (фон и тень добавляет compose.py, как у фото).
+    Нужен вместо фото «стоя» с телефона: там отрезок выходит трапецией и края кривые. Профиль — по чертежу (PROF),
+    длина отрезка как у живых образцов ≈ 148 мм. Камера по горизонту: вертикали строго вертикальны."""
+    item = A.get('item', 'a902').replace('gs', 'GS ').upper().replace('GS  ', 'GS ')
+    if item == 'A910':              # A910 — по живому образцу (валик 6,5…12 мм), каталог врёт
+        if ROOT not in sys.path:
+            sys.path.insert(0, ROOT)
+        import a910_profile as AP
+        pts = sorted({(round(x, 3), round(z, 3)) for x, z, t in AP.outline() if t == 'f' and z > 0.01})
+    elif item == 'A903':
+        pts = prof_points('a903')
+    else:
+        pts = [(float(x), float(h)) for x, h in json.load(open(f'{ROOT}/profiles_site.json', encoding='utf-8'))[item]]
+    W = max(x for x, _ in pts)
+    L = float(A.get('len', 0.148))
+    mp = mat_simple('white_paint', hexcol(A.get('paint', 'EFEEEA')), rough=float(A.get('paint_rough', 0.6)),
+                    bump=0.015, bump_scale=1800.0)
+    ob = profile_panel('sample', pts, -W / 2000.0, L, mp)
+    try:
+        bv = ob.modifiers.new('bevel', 'BEVEL')
+        bv.width, bv.segments, bv.limit_method = 0.0004, 2, 'ANGLE'
+        bv.angle_limit = R(30)
+        bv.harden_normals = False
+    except Exception as e:  # noqa
+        log('bevel', e)
+    scene.render.film_transparent = True
+    zc = L * float(A.get('camz', 0.97))
+    d = float(A.get('dist', 0.62))
+    cam_loc = (float(A.get('camx', 0.0)), -d, zc)
+    look = (0.0, 0.0, L * 0.5)
+    # свет как на фото у окна: большой мягкий сверху-слева-спереди, слабая заливка справа, контровой сзади-сверху
+    area_light('key', (-0.45, -0.55, L + 0.55), (0.0, -0.01, L * 0.55), 0.7, 0.7, float(A.get('key', 55)),
+               (1.0, 0.98, 0.95), spread=120)
+    area_light('fill', (0.55, -0.6, L * 0.6), (0.0, 0.0, L * 0.5), 0.9, 0.9, float(A.get('fill', 14)),
+               (0.95, 0.97, 1.0), spread=120)
+    area_light('top', (0.0, 0.05, L + 0.5), (0.0, -0.02, L), 0.5, 0.3, float(A.get('top', 20)), spread=90)
+    wo = bpy.data.worlds.new('W')
+    scene.world = wo
+    wo.use_nodes = True
+    g = float(A.get('amb', 0.06))
+    wo.node_tree.nodes['Background'].inputs['Color'].default_value = (g, g, g, 1)
+    camera(cam_loc, look, lens=float(A.get('lens', 60)), level=True)
+
+
 def auto_expose():
     """Экспозиция по самому светлому месту кадра (белое изделие не выгорает, фон остаётся тёмным)."""
     rw = 240
@@ -1489,11 +1539,11 @@ def auto_expose():
     log('auto exposure: p%.1f=%.4f -> exposure %.2f' % (float(A.get('pct', 99.3)), hi, ev))
 
 
-SCENES = {'lounge': scene_lounge, 'arch': scene_arch, 'plinth': scene_plinth, 'studio': scene_studio}
+SCENES = {'lounge': scene_lounge, 'arch': scene_arch, 'plinth': scene_plinth, 'studio': scene_studio, 'sample': scene_sample}
 
 setup_render()
-if SCENE == 'studio':
-    scene_studio()
+if SCENE in ('studio', 'sample'):
+    SCENES[SCENE]()
     bpy.context.view_layer.update()
     log('objects', len(scene.objects), 'studio built')
     auto_expose()
