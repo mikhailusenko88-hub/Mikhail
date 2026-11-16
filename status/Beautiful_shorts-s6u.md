@@ -1,11 +1,20 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-16 06:57 UTC
+Проверено: 2026-11-16 07:01 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
 - Шапка: 230 подписчиков · 141 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 0 шт.
 - (пусто или лента недоступна, HTTP 404)
+
+## Вкладка «Видео» (RSS не ответил; просмотры округлены) — 7 шт., HTTP 200
+- 2 г. назад · ? ·  · Adriatic sea, Montenegro in November · x8It0M2pmyE
+- 3 г. назад · ? ·  · Cave in Montenegro · w9I_XUoY1Eg
+- 3 г. назад · ? ·  · Adriatic sea in November · v-8XCPhGEGQ
+- 3 г. назад · ? ·  · Tesla taxi · 8AqVgTrLp0o
+- 3 г. назад · ? ·  · halloween shop · fRw7-hBIWO8
+- 3 г. назад · ? ·  · Halloween artchallenge · vedKr4Y5jZg
+- 4 г. назад · ? ·  · #beershop #beer #saintpetersburg · 3nO_EcRwQa4
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
 - 1,3 тыс. просмотров · Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation · 4ejtez9n18c
