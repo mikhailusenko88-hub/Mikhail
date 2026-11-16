@@ -265,7 +265,7 @@ def _lines(n):
     return out
 
 
-def clean_white(rgb, alpha, speck=15, smooth=1.0, chroma=0.12):
+def clean_white(rgb, alpha, speck=15, smooth=1.0, chroma=0.0, level=1.0):
     """«Чистый» белый (замечание Михаила 16.11: «фото как будто грязные»).
     Грязь давали: 1) локальный контраст (CLAHE/--lc) — вытягивал пятна и разводы; 2) пылинки и крошки пены;
     3) цветные отсветы стола (бежевый торец, желтизна снизу, синева сверху).
@@ -294,6 +294,22 @@ def clean_white(rgb, alpha, speck=15, smooth=1.0, chroma=0.12):
         w = np.clip((e - 3.0) / 9.0, 0, 1)
         w = cv2.GaussianBlur(w, (0, 0), 1.0)
         L2 = w * L2 + (1 - w) * Ls
+    if level > 0:
+        # общий перепад света по образцу (один край серее другого) — убираем: подгоняем плоскость по яркости
+        # лицевых пикселей (без торца и теней в пазах) и вычитаем её наклон. Светотень граней остаётся.
+        face = cv2.erode((alpha > 0.95).astype(np.uint8), np.ones((9, 9), np.uint8)).astype(bool)
+        if face.sum() > 5000:
+            ys_, xs_ = np.where(face)
+            v = L2[face]
+            sel = v > np.percentile(v, 35)
+            X = np.c_[np.ones(sel.sum()), xs_[sel], ys_[sel]].astype(np.float64); y_ = v[sel].astype(np.float64)
+            for _ in range(3):
+                co, *_r = np.linalg.lstsq(X, y_, rcond=None)
+                r = y_ - X @ co; ok = np.abs(r) < 1.5 * r.std() + 1e-6
+                X, y_ = X[ok], y_[ok]
+            yy, xx = np.mgrid[0:L2.shape[0], 0:L2.shape[1]]
+            plane = co[1] * (xx - xs_.mean()) + co[2] * (yy - ys_.mean())
+            L2 = L2 - level * np.clip(plane, -16, 16).astype(np.float32)
     lab2 = lab.astype(np.float32)
     lab2[..., 0] = L2
     lab2[..., 1] = 128 + chroma * (lab2[..., 1] - 128)
@@ -381,8 +397,14 @@ def main():
         if '--clean' in sys.argv:
             rgb = clean_white(rgb, alpha)
             kc = float(sys.argv[sys.argv.index('--contrast') + 1]) if '--contrast' in sys.argv else 1.0
-            if kc != 1.0:                   # общий (не локальный) контраст вокруг середины — без пятен
-                rgb = np.clip(232.0 + kc * (rgb - 232.0), 60, 250)
+            lum4 = 0.2126 * rgb[..., 0] + 0.7152 * rgb[..., 1] + 0.0722 * rgb[..., 2]
+            mo = alpha > 0.9
+            med4 = float(np.median(lum4[mo & (lum4 > np.percentile(lum4[mo], 25))]))
+            rgb = rgb * (236.0 / max(med4, 1.0))        # у всех карточек (лёжа и стоя) белый одного тона
+            rgb = 236.0 + kc * (rgb - 236.0)            # общий (не локальный) контраст — без пятен
+            hi4 = rgb > 244.0                           # мягкое «плечо»: света не выбиваются в чистый 255
+            rgb = np.where(hi4, 244.0 + (rgb - 244.0) * 0.45, rgb)
+            rgb = np.clip(rgb, 60, 251)
         if '--relief' in sys.argv:
             rgb = relief(rgb, alpha)
         if '--lc' in sys.argv:              # мягко усилить светотень (грани) без пятен: крупный радиус, только по изделию
