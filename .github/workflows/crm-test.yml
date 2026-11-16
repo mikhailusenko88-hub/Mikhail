@@ -632,9 +632,9 @@ jobs:
           wc -l < /tmp/list | xargs echo "файлов:"
           grep -E '/crm\.db$|/bot\.db$|backup-pass$|crm-paroli|dkim/|vhosts/[^/]+/[^/]+/$' /tmp/list | head -n 12
           echo "--- облако (MinIO как Selectel)"
-          docker run -d --name minio -p 9000:9000 -e MINIO_ROOT_USER=testkey -e MINIO_ROOT_PASSWORD=testsecret123 minio/minio server /data >/dev/null
+          docker run -d --name minio -p 9000:9000 -e MINIO_ROOT_USER=testkey -e MINIO_ROOT_PASSWORD=testsecret123 quay.io/minio/minio server /data >/dev/null
           sleep 10
-          docker run --rm --network host --entrypoint sh minio/mc -c 'mc alias set m http://127.0.0.1:9000 testkey testsecret123 >/dev/null && mc mb m/nashdekor-backup'
+          docker run --rm --network host --entrypoint sh quay.io/minio/mc -c 'mc alias set m http://127.0.0.1:9000 testkey testsecret123 >/dev/null && mc mb m/nashdekor-backup'
           T=$(curl -sk $R -c $J -b $J https://$H/settings | tok)
           echo "сохранение настроек: $(curl -sk $R -c $J -b $J -o /dev/null -w '%{http_code}' --data-urlencode "csrf=$T" --data-urlencode act=save --data-urlencode endpoint=https://s3.ru-3.storage.selcloud.ru --data-urlencode region=us-east-1 --data-urlencode bucket=nashdekor-backup --data-urlencode key=testkey --data-urlencode secret=testsecret123 --data-urlencode on=1 https://$H/settings/offsite)"
           sudo sqlite3 /var/lib/prostranstvo/crm.db "update settings set value='http://127.0.0.1:9000' where key='offsite_endpoint';"
@@ -642,9 +642,9 @@ jobs:
           curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode act=check https://$H/settings/offsite
           curl -sk $R -c $J -b $J https://$H/settings | grep -o 'Проверка связи: [^<]*' | head -n1
           sudo prostranstvo-crm offsite
-          docker run --rm --network host --entrypoint sh minio/mc -c 'mc alias set m http://127.0.0.1:9000 testkey testsecret123 >/dev/null && mc ls -r m/nashdekor-backup'
+          docker run --rm --network host --entrypoint sh quay.io/minio/mc -c 'mc alias set m http://127.0.0.1:9000 testkey testsecret123 >/dev/null && mc ls -r m/nashdekor-backup'
           curl -sk $R -c $J -b $J https://$H/settings | grep -o 'Последняя копия<span class="d"> · [^<]*' | sed 's/<span class="d">//'
-          docker run --rm --network host -v /tmp:/t --entrypoint sh minio/mc -c 'mc alias set m http://127.0.0.1:9000 testkey testsecret123 >/dev/null && mc cp -r m/nashdekor-backup/nashdekor/2 /t/cloud/ >/dev/null && ls -R /t/cloud | tail -n 2'
+          docker run --rm --network host -v /tmp:/t --entrypoint sh quay.io/minio/mc -c 'mc alias set m http://127.0.0.1:9000 testkey testsecret123 >/dev/null && mc cp -r m/nashdekor-backup/nashdekor/2 /t/cloud/ >/dev/null && ls -R /t/cloud | tail -n 2'
           C=$(sudo find /tmp/cloud -name '*.enc' | head -n1)
           echo "копия из облака открывается: $(sudo openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -md sha256 -pass file:/tmp/pass -in "$C" | tar tzf - | grep -c '/crm\.db$') crm.db"
           sudo sqlite3 /var/lib/prostranstvo/crm.db "update settings set value='wrong' where key='offsite_secret';"
