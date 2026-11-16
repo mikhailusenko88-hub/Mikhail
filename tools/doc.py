@@ -5,7 +5,10 @@
 
 Сервер раз в минуту забирает ветку, расшифровывает и кладёт файлы в «Документы» (один раз, пуш «Claude добавил в
 «Документы»»). Статус: https://crm.nashdekor.ru/api/outbox/status/<id> → saved. Всего до 30 МБ в одном конверте.
-Разделы по умолчанию: ИП, Договоры, Сертификаты и ТУ, Налоги и отчётность, Банк, Из почты, Прочее (можно новый).
+Разделы по умолчанию: ИП, Договоры, Сертификаты и ТУ, Налоги и отчётность, Банк, Дизайнерам, Из почты, Прочее (можно новый).
+
+  --replace — новая версия файла: то же имя файла в том же разделе. Прежний файл убирается, ссылки на скачивание
+  (раздел «Дизайнерам») переходят на новый. Конверт кладётся в docs2/<id>.json (нужна CRM от 16.11.2026).
 """
 import argparse
 import base64
@@ -27,6 +30,7 @@ def main():
     a.add_argument("--until", default="")
     a.add_argument("--note", default="")
     a.add_argument("--name", default="", help="имя файла в CRM (если один файл)")
+    a.add_argument("--replace", action="store_true", help="новая версия файла с тем же именем (ссылки сохраняются)")
     a.add_argument("--key", default=os.path.join(HERE, "KEY.pub"))
     o = a.parse_args()
     key = open(o.key, encoding="utf-8").read().strip()
@@ -37,8 +41,12 @@ def main():
                      "b64": base64.b64encode(open(path, "rb").read()).decode()})
     p = {"id": str(uuid.uuid4()), "kind": "doc", "folder": o.folder, "title": o.title, "until": o.until, "note": o.note,
          "attachments": atts}
-    os.makedirs(os.path.join(HERE, "docs"), exist_ok=True)
-    with open(os.path.join(HERE, "docs", p["id"] + ".json"), "w", encoding="utf-8") as f:
+    sub = "docs"
+    if o.replace:
+        p["replace"] = True
+        sub = "docs2"
+    os.makedirs(os.path.join(HERE, sub), exist_ok=True)
+    with open(os.path.join(HERE, sub, p["id"] + ".json"), "w", encoding="utf-8") as f:
         json.dump(seal(key, p), f)
     print(p["id"])
 
