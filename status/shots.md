@@ -1,8 +1,11 @@
-# Скриншоты сайта — 2026-11-16 17:01 UTC
+# Скриншоты сайта — 2026-11-16 17:54 UTC
 
-- **wood-sec-m** mobile https://nashdekor.ru/catalog/paneli-pod-derevo/?s=9 — ok
-- **wood-37-m** mobile https://nashdekor.ru/p/3-7/?s=9 — ok
-- **wood-510-3d-d** desktop https://nashdekor.ru/p/5-10/?s=9 — ok
-- **wood-39-wall-d** desktop https://nashdekor.ru/p/3-9/?s=9 — ok
-- **wood-27-prof-m** mobile https://nashdekor.ru/p/2-7/?s=9 — ok
-- **live-m** mobile https://nashdekor.ru/?s=9 — ok
+- **a701-m** mobile https://nashdekor.ru/p/a701/?s=10 — ok
+- **ap1-m** mobile https://nashdekor.ru/p/ap1-100/?s=10 — ok
+- **a25-m** mobile https://nashdekor.ru/p/a25/?s=10 — ok
+- **a605-m** mobile https://nashdekor.ru/p/a605/?s=10 — ok
+- **a608-d** desktop https://nashdekor.ru/p/a608/?s=10 — ОШИБКА Page.goto: Timeout 45000ms exceeded.
+Call log:
+  - navigating to "https://nashdekor.ru/p/a608/?s=10", waiting until "networkidle"
+
+- **mold-sec-d** desktop https://nashdekor.ru/catalog/moldingi/?s=10 — ok
