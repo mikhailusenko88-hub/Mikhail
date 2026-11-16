@@ -382,7 +382,7 @@ document.querySelectorAll("#oMode [data-m]").forEach(b => b.addEventListener("cl
 document.querySelectorAll('input[name="ship"]').forEach(r => r.addEventListener("change", shipUI));
 const WHO = {"Дизайнер": "designer", "Компания, объект": "company", "Ремонтная бригада": "company"};
 const SHOP = P.shop || {};
-const MSG = () => SHOP.max ? `MAX ${SHOP.max}` : "чат на сайте";   // личный Telegram с сайта убран
+const MSG = () => SHOP.max ? `<a href="${SHOP.max}" target="_blank" rel="noopener">MAX</a>` : "чат на сайте";   // личный Telegram с сайта убран
 function orderText(){
   const sum = qty * price();
   const w = wall.used && wall.pcs === qty && wall.W && wall.H ? `\nСтена ${wall.W}×${wall.H} см${wall.open ? ", проёмы " + wall.open + " м²" : ""}${wall.reserve ? ", запас 10%" : ""}` : "";

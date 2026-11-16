@@ -6,7 +6,7 @@
   "use strict";
   if (window.NDChat) return;
   var API = "https://crm.nashdekor.ru/api/chat";
-  var BOTS = { max: "", tg: "" };                       // например {max: "https://max.ru/…_bot", tg: "https://t.me/…_bot"}
+  var BOTS = { max: "https://max.ru/id470331302505_bot", tg: "" };                       // например {max: "https://max.ru/…_bot", tg: "https://t.me/…_bot"}
   var ON_SITE = /(^|\.)nashdekor\.ru$/.test(location.hostname);
   var me = document.currentScript && document.currentScript.src;
   var ROOT = me ? new URL("../", me).href : "/";
