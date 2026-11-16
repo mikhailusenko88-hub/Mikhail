@@ -83,6 +83,40 @@ def drop_table(rgb, alpha):
     return alpha * (1 - np.clip(tb, 0, 1)), int(t8.sum())
 
 
+def fill_white(rgb, alpha):
+    """Белое изделие: нейросеть иногда «выедает» низ торца (белая пена похожа на светлый фон).
+    Возвращаем в маску светлые нейтральные пиксели, связанные с изделием, у его нижнего края.
+    Стол (бежевый, цветной) и тени в пустотах профиля не трогаем."""
+    m = alpha > 0.5
+    ys, xs = np.where(m)
+    y0, y1 = ys.min(), ys.max()
+    H = y1 - y0
+    lab = cv2.cvtColor(np.clip(rgb, 0, 255).astype(np.uint8), cv2.COLOR_RGB2LAB).astype(np.float64)
+    L = lab[..., 0]
+    chroma = np.hypot(lab[..., 1] - 128, lab[..., 2] - 128)
+    # нейтральность считаем относительно самого изделия (баланс белого снимка может быть тёплым)
+    ref = lab[m & (L > np.percentile(L[m], 50))]
+    a0, b0 = np.median(ref[:, 1]), np.median(ref[:, 2])
+    dch = np.hypot(lab[..., 1] - a0, lab[..., 2] - b0)
+    cand = (~m) & (L > 130) & (dch < 14)          # стол даёт dch ≈ 25+, торец с тёплым отсветом ≈ 8
+    cand[: y0 + int(0.5 * H)] = False
+    cand[min(m.shape[0], y1 + int(0.03 * H)):] = False
+    # растим маску только через кандидатов (геодезическое расширение)
+    grown = m.copy()
+    k = np.ones((3, 3), np.uint8)
+    for _ in range(200):
+        nxt = cv2.dilate(grown.astype(np.uint8), k).astype(bool) & (cand | m)
+        if (nxt == grown).all():
+            break
+        grown = nxt
+    add = grown & ~m
+    add8 = cv2.morphologyEx(add.astype(np.uint8), cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8)).astype(bool) & (cand | add)
+    # перекрываем старую мягкую кромку маски, иначе на шве остаётся тёмная нитка
+    reg = cv2.dilate(add8.astype(np.uint8), np.ones((7, 7), np.uint8)).astype(bool) & (cand | (alpha > 0.02))
+    fill = cv2.GaussianBlur(reg.astype(np.float64), (0, 0), 0.8)
+    return np.maximum(alpha, np.clip(fill * 1.2, 0, 1)), int(add8.sum())
+
+
 def deskew(rgb, alpha, lim=9.0):
     """Выравниваем ближний (нижний) край образца по горизонтали — все карточки стоят одинаково."""
     m = alpha > 0.5
@@ -114,6 +148,9 @@ def main():
     if '--table' in sys.argv:          # стол сквозь пустоты (реечные на чёрной основе)
         alpha, ntab = drop_table(rgb, alpha)
         print('table pixels removed', ntab)
+    if white and '--nofill' not in sys.argv:
+        alpha, nfill = fill_white(rgb, alpha)
+        print('white fill', nfill)
     if '--nodeskew' not in sys.argv:
         rgb, alpha, ang = deskew(rgb, alpha)
         print('deskew %.1f' % ang)
