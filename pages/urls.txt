@@ -1,4 +1,5 @@
-# 18:12:20 сайт не открывается у Михаила
-https://nashdekor.ru/
-https://nashdekor.ru/p/a913/
-https://crm.nashdekor.ru/login
+# 19:09:10 документы для дизайнеров — версия 21:00 и каталог 22:10
+https://crm.nashdekor.ru/api/outbox/status/a4a51cba-9108-4713-b346-03afa545259b
+https://crm.nashdekor.ru/api/outbox/status/43e41c49-31b3-486b-912c-7af6941dfe71
+https://crm.nashdekor.ru/api/outbox/status/dfbb026c-a1a7-42fd-9170-9272b43eb8aa
+https://crm.nashdekor.ru/api/outbox/status/f0cbe50f-81a5-456d-9f63-ce5eec063bbc
