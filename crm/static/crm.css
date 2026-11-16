@@ -281,8 +281,9 @@ code.sel,pre.sel{user-select:all;-webkit-user-select:all;word-break:break-all}
 .dzsub{display:block}
 .dzrow{flex-wrap:wrap;gap:8px 10px}
 .dzrow .docopen{flex:1 1 100%}
+.dzbtns{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 100%}
 .row input.dzlink{flex:1 1 100%;min-width:0;font-size:13px;color:var(--muted)}
-@media (min-width:860px){.dzrow .docopen{flex:1 1 300px}.row input.dzlink{flex:1 1 260px}}
+@media (min-width:860px){.dzrow .docopen{flex:1 1 300px}.dzbtns{flex:0 0 auto}.row input.dzlink{flex:1 1 260px}}
 .dzpick{display:grid;gap:8px}
 .dzchk{display:flex;gap:8px;align-items:baseline;font-weight:600}
 .dzchk input{flex:none;width:18px;height:18px}

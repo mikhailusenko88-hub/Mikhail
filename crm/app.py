@@ -665,7 +665,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         r, path = docs.get(did), docs.path(did)
         if not r or not path:
             abort(404, "Документа нет.")
-        inline = r["mime"] in INLINE_OK
+        inline = r["mime"] in INLINE_OK and request.args.get("dl") != "1"      # ?dl=1 — «Скачать»: всегда файлом, не просмотр
         resp = send_file(str(path), mimetype=r["mime"] if inline else "application/octet-stream",
                          as_attachment=not inline, download_name=r["filename"], max_age=0)
         resp.headers["X-Content-Type-Options"] = "nosniff"

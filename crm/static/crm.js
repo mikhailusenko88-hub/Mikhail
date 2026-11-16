@@ -153,3 +153,32 @@ document.addEventListener("click", async e => {
   try { await navigator.clipboard.writeText(txt); b.textContent = "Скопировано ✓"; }
   catch (_) { if (el.select) { el.focus(); el.select(); } b.textContent = "Выделено — нажмите «Копировать»"; }
 });
+
+// Кнопки «Поделиться файлом» (data-share="адрес файла"): системное меню «Поделиться» — сам файл уходит в мессенджер
+// или в «Файлы». Кнопка видна только там, где телефон умеет делиться таким файлом; иначе остаётся «Скачать».
+(() => {
+  const btns = [...document.querySelectorAll("[data-share]")];
+  if (!btns.length || !navigator.canShare || !navigator.share) return;
+  const can = (name, mime) => { try { return navigator.canShare({ files: [new File(["x"], name, { type: mime })] }); } catch (_) { return false; } };
+  btns.forEach(b => { if (can(b.dataset.name, b.dataset.mime)) b.hidden = false; });
+  const ready = new Map();                                   // адрес → готовый File (второе нажатие отправляет сразу)
+  const share = async (b, f) => {
+    try { await navigator.share({ files: [f], title: b.dataset.title || f.name }); b.textContent = b.dataset.label; return true; }
+    catch (err) { if (err && err.name === "AbortError") { b.textContent = b.dataset.label; return true; } return false; }
+  };
+  document.addEventListener("click", async e => {
+    const b = e.target.closest("[data-share]"); if (!b || b.hidden) return;
+    if (!b.dataset.label) b.dataset.label = b.textContent;
+    let f = ready.get(b.dataset.share);
+    if (f) { if (!(await share(b, f))) b.textContent = "Не получилось — нажмите «Скачать»"; return; }
+    b.disabled = true; b.textContent = "Готовлю файл…";
+    try {
+      const r = await fetch(b.dataset.share, { credentials: "same-origin" });
+      if (!r.ok) throw new Error(String(r.status));
+      f = new File([await r.blob()], b.dataset.name, { type: b.dataset.mime || "application/octet-stream" });
+      ready.set(b.dataset.share, f);
+    } catch (_) { b.disabled = false; b.textContent = "Не получилось — нажмите «Скачать»"; return; }
+    b.disabled = false;
+    if (!(await share(b, f))) b.textContent = "Готово — нажмите ещё раз";   // пока файл качался, телефон «забыл» нажатие
+  });
+})();

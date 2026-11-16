@@ -6,11 +6,13 @@
 <h1>Дизайнеры</h1>
 {% set dzd = dz_docs() %}
 <h2 id="docs">Документы для дизайнеров</h2>
-<p class="sub">3D-модели по программам, каталог и другие файлы. Скачайте файл себе, скопируйте ссылку для мессенджера или отправьте письмо со ссылками — будет видно, скачал ли дизайнер. По ссылке файл открывается без входа в CRM.</p>
+<p class="sub">«Скачать» — файл себе. «Поделиться файлом» — сразу в мессенджер или в «Файлы». «Скопировать ссылку» — ссылка, по которой файл открывается без входа в CRM; видно, скачал ли дизайнер.</p>
 <div class="panel list">{% for d in dzd %}
 <div class="row dzrow">
   <a class="docopen" href="{{ url_for('docs_file', did=d['id']) }}"><span class="t">{{ d['title'] }}</span>
   <span class="d dzsub">{{ d['filename'] }} · {{ d['size_h'] }}{% if d['note'] %} · {{ d['note'] }}{% endif %}{% if d['hits'] %} · скачали по ссылкам: {{ d['hits'] }}{% endif %}</span></a>
+  <div class="dzbtns"><a class="btn-p sm" href="{{ url_for('docs_file', did=d['id'], dl=1) }}" download="{{ d['filename'] }}">Скачать</a>
+  <button class="btn-s sm" type="button" hidden data-share="{{ url_for('docs_file', did=d['id'], dl=1) }}" data-name="{{ d['filename'] }}" data-mime="{{ d['mime'] }}" data-title="{{ d['title'] }}">Поделиться файлом</button></div>
   <input class="dzlink" readonly id="dzl{{ loop.index }}" value="{{ d['url'] }}" aria-label="Ссылка на «{{ d['title'] }}»">
   <button class="btn-s sm" type="button" data-copy="#dzl{{ loop.index }}">Скопировать ссылку</button>
   <form method="post" action="{{ url_for('designer_doc_relink', did=d['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g sm" title="Прежняя ссылка перестанет работать">Новая ссылка</button></form>

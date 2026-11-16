@@ -2034,6 +2034,13 @@ class TestDesignerDocs(Base):
         r = guest.get(pdf_url)
         self.assertEqual(r.mimetype, "application/pdf"); self.assertEqual(r.headers["Content-Security-Policy"], "sandbox")
         self.assertEqual(guest.get(zip_url.rsplit("/", 1)[0]).status_code, 200)                     # имя файла в ссылке не обязательно
+        self.assertIn(">Скачать</a>", page); self.assertIn("Поделиться файлом", page)               # файл себе — кнопкой, не только ссылка
+        pdf = [d for d in self.docs.list("Дизайнерам") if d["filename"] == "katalog.pdf"][0]
+        self.assertIn(f'/docs/{pdf["id"]}?dl=1', page)
+        r = self.c.get(f'/docs/{pdf["id"]}?dl=1')                                                   # «Скачать» — всегда файлом, PDF не открывается в окне
+        self.assertIn("attachment", r.headers["Content-Disposition"]); self.assertEqual(r.data, b"%PDF-1.4 katalog")
+        self.assertNotIn("attachment", self.c.get(f'/docs/{pdf["id"]}').headers.get("Content-Disposition", ""))
+        self.assertEqual(guest.get(f'/docs/{pdf["id"]}?dl=1').status_code, 302)                     # без входа — только по ссылке для дизайнера
         self.assertEqual(guest.head(zip_url).status_code, 200)
         self.assertIn("скачали по ссылкам: 2", self.c.get("/designers").get_data(as_text=True))     # HEAD не считается
         self.assertEqual(guest.get("/api/f/" + "x" * 24).status_code, 404)
