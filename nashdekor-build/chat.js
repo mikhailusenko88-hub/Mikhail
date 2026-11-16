@@ -2,6 +2,55 @@
    Сообщения уходят в CRM магазина (crm.nashdekor.ru/api/chat), сотрудникам приходит пуш, ответ появляется здесь же.
    Переписку узнаём по случайному ключу в localStorage этого браузера — без cookies и входа.
    Ссылки на ботов в MAX и Telegram появятся, когда боты будут запущены (BOTS ниже). */
+
+/* Кнопка «Назад» в шапке — только когда сайт открыт со значка на экране «Домой» (веб-приложение iPhone, iOS 26
+   так открывает любой сайт): там нет панели Safari и её стрелки. В обычном браузере кнопки нет.
+   Пришли с нашего сайта — шаг назад по истории; открыли страницу прямо со значка — на главную; на главной без
+   истории кнопку не показываем. Отдельно от чата и в try — если что-то сломается, сайт и чат работают как раньше. */
+(function () {
+  try {
+    var nav = window.navigator;
+    var app = nav.standalone === true || (window.matchMedia &&
+      (matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches));
+    if (!app || document.querySelector(".nd-back")) return;
+    var bar = document.querySelector("header.top .bar");
+    if (!bar) return;
+    var me = document.currentScript && document.currentScript.src;
+    var root = me ? new URL("../", me).href : location.origin + "/";
+    var here = location.href.split("#")[0].split("?")[0];
+    var home = here === root || here === root + "index.html";
+    var ref = "";
+    try { ref = document.referrer ? new URL(document.referrer).origin : ""; } catch (e) {}
+    var fromSite = ref === location.origin && history.length > 1;
+    if (home && !fromSite) return;
+
+    var st = document.createElement("style");
+    st.textContent = ".nd-back{flex:none;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;margin:0 -8px 0 -6px;"
+      + "border-radius:50%;color:var(--ink,#26292E);text-decoration:none;-webkit-tap-highlight-color:transparent}"
+      + ".nd-back svg{width:26px;height:26px;display:block}.nd-back:active{background:var(--line,#D9DEE3)}"
+      + "header.top .bar .btn.sm{white-space:nowrap}"
+      + "@media (max-width:420px){header.top .bar .btn.sm{padding:8px 10px;font-size:13px}header.top .bar .logo svg{height:27px}}"
+      + "@media (max-width:370px){.nd-back{width:34px;margin-right:-10px}header.top .bar .logo svg{height:23px}}"
+      + "@media (max-width:340px){header.top .bar .btn.sm{padding:7px 8px;font-size:12px}header.top .bar .logo svg{height:20px}}";
+    document.head.appendChild(st);
+
+    var a = document.createElement("a");
+    a.className = "nd-back";
+    a.href = root;
+    a.setAttribute("aria-label", fromSite ? "Назад" : "На главную");
+    a.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    a.addEventListener("click", function (e) {
+      if (!fromSite) return;                                  // открыли со значка не главную — просто идём на главную
+      e.preventDefault();
+      var start = location.href, left = false;
+      window.addEventListener("pagehide", function () { left = true; }, { once: true });
+      history.back();
+      setTimeout(function () { if (!left && location.href === start) location.href = root; }, 700);   // назад некуда — на главную
+    });
+    bar.insertBefore(a, bar.firstChild);
+  } catch (e) {}
+})();
+
 (function () {
   "use strict";
   if (window.NDChat) return;
