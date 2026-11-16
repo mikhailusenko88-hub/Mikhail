@@ -9,7 +9,9 @@ for m in models:
     t = time.time()
     s = new_session(m)
     os.makedirs(f'cut/{m}', exist_ok=True)
-    for f in sorted(glob.glob('in/*.jpg')):
+    files = sorted(glob.glob('in/*.jpg'))
+    k, n = int(os.environ.get('SHARD', 0)), int(os.environ.get('NSHARD', 1))
+    for f in files[k::n]:
         name = os.path.splitext(os.path.basename(f))[0]
         out = f'cut/{m}/{name}.png'
         if os.path.exists(out):
