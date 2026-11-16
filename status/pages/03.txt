@@ -1,6 +1,0 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/1bf9ef34-4661-438c-af83-c02ecf35bf6b
-КОД: 200
-
-{"error":"","sent_at":"","status":"saved"}
-
-ССЫЛКИ:
