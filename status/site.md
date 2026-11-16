@@ -1,4 +1,4 @@
-# Сайт снаружи — 2026-11-10 23:18 UTC
+# Сайт снаружи — 2026-11-16 09:50 UTC
 
 ```
 /                                  200 text/html; charset=utf-8
@@ -22,36 +22,37 @@ og:image: og:image" content="https://nashdekor.ru/og.jpg"
 ld+json: 1
 адрес формы в сайте: https://crm.nashdekor.ru/api/lead
 форма — ответ «Спасибо… Заявка отправлена» и кнопка «ещё одна»: 1, версия сайта: 3
-чат: скрипт на главной 1, на A907 1, файл 200 20273б, личный Telegram (0): 0 0 0 0
+чат: скрипт на главной 1, на A907 1, файл 200 20309б, личный Telegram (0): 0 0 0 0
 строка разделов «едет»: главная 1, p.css 1
 телефон на сайте (должно быть 0): 0, класс Г2 (должно быть 0): 0, кнопка «Заказать звонок»: 1
 контакты: MAX в списке: 1, подсказка «позвонить или написать в MAX»: 0, WhatsApp: 0; боты в политике: 1, в согласии: 1, в оферте: 0
+бот MAX (id470331302505_bot): на главной 1, в chat.js 1, на A907 1, в оферте 1; chat.js на главной: assets/chat.js?v=202611161247
 счётчик на главной: 1, в политике п. 3.4: 1, на документах: 1 1 1 
 
 --- страницы товаров и разделов (сборка nashdekor-build/build.py)
-/p/a907/                           200 text/html; charset=utf-8 32537
-/p/2-7/                            200 text/html; charset=utf-8 30815
-/p/a35/                            200 text/html; charset=utf-8 25508
-/p/a002-2/                         200 text/html; charset=utf-8 27160
-/p/gs1/                            200 text/html; charset=utf-8 32431
-/catalog/reechnye-paneli/          200 text/html; charset=utf-8 36193
-/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 45849
-/catalog/plintusy/                 200 text/html; charset=utf-8 43673
-/catalog/stenovye-paneli/          200 text/html; charset=utf-8 73879
-/catalog/plintus-s-podsvetkoy/     200 text/html; charset=utf-8 20247
-/stati/                            200 text/html; charset=utf-8 14429
-/stati/kak-otrezat-ugol-potolochnogo-plintusa/ 200 text/html; charset=utf-8 19966
-/dostavka/                         200 text/html; charset=utf-8 21865
-/oplata/                           200 text/html; charset=utf-8 20688
-/assets/p.js                       200 application/javascript; charset=utf-8 37076
+/p/a907/                           200 text/html; charset=utf-8 33972
+/p/2-7/                            200 text/html; charset=utf-8 32228
+/p/a35/                            200 text/html; charset=utf-8 26926
+/p/a002-2/                         200 text/html; charset=utf-8 28587
+/p/gs1/                            200 text/html; charset=utf-8 33864
+/catalog/reechnye-paneli/          200 text/html; charset=utf-8 37128
+/catalog/paneli-pod-derevo/        200 text/html; charset=utf-8 46974
+/catalog/plintusy/                 200 text/html; charset=utf-8 44798
+/catalog/stenovye-paneli/          200 text/html; charset=utf-8 75346
+/catalog/plintus-s-podsvetkoy/     200 text/html; charset=utf-8 20921
+/stati/                            200 text/html; charset=utf-8 15006
+/stati/kak-otrezat-ugol-potolochnogo-plintusa/ 200 text/html; charset=utf-8 20747
+/dostavka/                         200 text/html; charset=utf-8 22545
+/oplata/                           200 text/html; charset=utf-8 21358
+/assets/p.js                       200 application/javascript; charset=utf-8 37887
 /assets/p.css                      200 text/css 23245
 /mebel/_lib/three.min.js           200 application/javascript; charset=utf-8 603445
 /mebel/_lib/OrbitControls.js       200 application/javascript; charset=utf-8 26375
-/img/A907.jpg                      200 image/jpeg 22169
+/img/A907.jpg                      200 image/jpeg 21661
 товар A907: title: <title>Стеновая реечная панель белая под покраску, ударопрочная, 180×10×3000 мм — A907 | Наш декор</title>
   canonical: rel="canonical" href="https://nashdekor.ru/p/a907/", ld+json: 1, Product: 1, 3D canvas: 1, профиль svg: 1, window.P: 1
   форма A907: «Купить»: 1, режимы Заявка/Купить/Звонок: data-m="buy" data-m="call" data-m="lead" , адрес доставки: 1, телефон (0): 0, Г2 (0): 0
-SEO 09.11: главная title: Стеновые панели, плинтусы и молдинги под покраску — купить в СПб | Наш декор, H1: Стеновые панели, плинтусы и молдинги под покраску
+SEO 09.11: главная title: Стеновые панели, плинтусы и молдинги под покраску — купить в СПб | Наш декор, H1: 
   A907 title: Стеновая реечная панель белая под покраску, ударопрочная, 180×10×3000 мм — A907 | Наш декор, «С этим берут»: 1, отправка ТК: 1
   хаб: H1 Стеновые панели для стен, карточек: 1, FAQ: 1, запрещённые слова (0): 0
   плинтусы: групп по высоте: 1, title: Плинтус напольный белый под покраску — купить в СПб, ударопрочный, из дюрополимера | Наш декор
@@ -83,10 +84,10 @@ access-control-allow-origin: https://nashdekor.ru
   HTTP 200
 --- CRM health: {"ok":true}
 --- CRM страницы (пуши/PWA): login 200 1421б, manifest 200 application/manifest+json, sw.js 200 application/javascript; charset=utf-8, иконка 200, корень 302 → https://crm.nashdekor.ru/login?next=/?
-    вход: форма 1, манифест в странице 1, crm.js crm.js?v=4, CSP: content-security-policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; form-action 'self'; frame-ancestors 
+    вход: форма 1, манифест в странице 1, crm.js crm.js?v=5, CSP: content-security-policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; form-action 'self'; frame-ancestors 
 --- robots на crm/mail: crm 404, mail 404
 --- ISO 9001 на странице товара: Система качества производителя  сертифицирована по ISO 9001:2015
     страниц товаров с ISO 9001 (выборка): 1 1 1 1 1
-    фид Авито: строк с ISO 9001 — 0, с брендом поставщика — 0
+    фид Авито: строк с ISO 9001 — 105, с брендом поставщика — 0
     сроки годности наружу не попали: 0 совпадений
 ```
