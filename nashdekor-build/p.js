@@ -424,7 +424,7 @@ async function sendLead(lead){
         message: [lead.who && lead.who !== "Делаю ремонт у себя" ? "Кто: " + lead.who : "", lead.message].filter(Boolean).join("\n"),
         calc: lead.calc, total: lead.total, consent: true, consentAt: lead.consentAt, consentVersion: lead.consentVersion,
         intent: lead.intent || "lead", address: lead.address || "",
-        website: ($("lHp") || {}).value || "" }) });
+        website: ($("lHp") || {}).value || "", max: window.NDMax ? NDMax.lead() : undefined }) });
     const j = await r.json().catch(() => ({}));
     return r.ok && j.ok === true;
   } finally { clearTimeout(timer); }
