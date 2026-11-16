@@ -19,6 +19,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: foto-obrazcy
       - uses: actions/cache@v4
         with:
           path: ~/.u2net
