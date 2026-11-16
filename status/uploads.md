@@ -58,3 +58,4 @@
 | arena | 2026-11-15 | 3 | BD | https://youtube.com/shorts/iGHcGEJ6Mho | public (игра) |
 | 36 | 2026-11-15 | 2 | S2 RACE 23/52 | https://youtu.be/EVCXBjTSO-k | public |
 | shorts | 2026-11-15 | 2 | USA vs Indonesia vs Germany | https://youtube.com/shorts/cK3k5givA2c | |
+| shorts | 2026-11-16 | 1 | Brazil vs Mexico vs Japan | https://youtube.com/shorts/AWf2qlc50Ns | public (только Shorts) |
