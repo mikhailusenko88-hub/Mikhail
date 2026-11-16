@@ -49,11 +49,14 @@ class Base(unittest.TestCase):
         self.app = crm_app.create_app({"CRM_DB": os.path.join(d, "crm.db"), "BOT_DB": self.botdb,
                                        "CATALOG_FILE": self.cat, "SECRET_KEY": "x" * 40, "COOKIE_SECURE": "0",
                                        "SITE_ORIGINS": "https://nashdekor.ru", "SITE_LEADS": "1", "TESTING": True,
-                                       "SHOP_DOMAIN": "nashdekor.ru", "NOTIFY_EMAIL": ""})
+                                       "SHOP_DOMAIN": "nashdekor.ru", "NOTIFY_EMAIL": "", **self.extra_conf(d)})
         self.store = self.app.extensions["store"]
         self.store.add_user("yulia", "Юлия", "admin", generate_password_hash("Secret-pass-1"))
         self.store.add_user("mikhail", "Михаил", "staff", generate_password_hash("Secret-pass-2"))
         self.c = self.app.test_client()
+
+    def extra_conf(self, d: str) -> dict:
+        return {}
 
     def tearDown(self) -> None:
         self.tmp.cleanup()
@@ -1151,6 +1154,74 @@ class TestTochka(Base):
         self.assertEqual(self.app.extensions["tochka_poll"](), ["Точка не подключена"])
         self.post(f"/deals/{did}/delete", {"confirm": "1"})                       # с платежами не удаляется
         self.assertIsNotNone(self.store.deal(did))
+
+
+
+class TestMaxMiniApp(Base):
+    """Заявка из сайта, открытого как мини-приложение MAX: подписи MAX проверяются токеном бота."""
+    TOKEN = "max-bot-token-for-tests-0123456789"
+
+    def extra_conf(self, d: str) -> dict:
+        key = os.path.join(d, "max-app.key")
+        with open(key, "w", encoding="utf-8") as f:
+            f.write(self.TOKEN + "\n")
+        return {"MAX_APP_KEY_FILE": key}
+
+    def init_data(self, uid=777, **over) -> str:
+        import hashlib, hmac, urllib.parse
+        d = {"query_id": "q1", "auth_date": str(int(time.time()) - 60),
+             "user": json.dumps({"id": uid, "first_name": "Анна", "last_name": "К."}, ensure_ascii=False), "start_param": "calc"}
+        d.update(over)
+        secret = hmac.new(b"WebAppData", self.TOKEN.encode(), hashlib.sha256).digest()
+        d["hash"] = hmac.new(secret, "\n".join(f"{k}={d[k]}" for k in sorted(d)).encode(), hashlib.sha256).hexdigest()
+        return urllib.parse.urlencode(d)
+
+    def contact(self, phone="79991112233", uid=777, key=None) -> dict:
+        import hashlib, hmac
+        auth = str(int(time.time()) - 10)
+        msg = f"authDate={auth}\nphone={phone}\nuserId={uid}".encode()
+        h = hmac.new((key or self.TOKEN).encode(), msg, hashlib.sha256).hexdigest()
+        return {"phone": "+" + phone, "authDate": auth, "hash": h}
+
+    def lead(self, **kw):
+        body = {"name": "Анна", "contact": "+7 999 111-22-33", "consent": True, "message": "A907", "who": "private"}
+        body.update(kw)
+        return self.c.post("/api/lead", data=json.dumps(body), content_type="application/json",
+                           headers={"Origin": "https://nashdekor.ru"})
+
+    def test_verified_launch_and_phone(self) -> None:
+        r = self.lead(max={"init": self.init_data(), "contact": self.contact()})
+        self.assertEqual(r.status_code, 200, r.get_data(as_text=True))
+        d = self.store.deal(r.get_json()["id"])
+        self.assertEqual((d["source"], d["messenger"], d["phone"]), ("max", "MAX", "+79991112233"))
+        self.assertIn("телефон подтверждён MAX", d["want"])
+        self.assertIn("id в MAX 777", d["want"])
+
+    def test_double_encoded_init_is_accepted(self) -> None:
+        import urllib.parse
+        r = self.lead(max={"init": urllib.parse.quote(self.init_data()), "contact": self.contact()})
+        self.assertEqual(self.store.deal(r.get_json()["id"])["source"], "max")
+
+    def test_forged_data_is_not_trusted(self) -> None:
+        init = self.init_data()
+        bad_init = init.replace("777", "778")                       # подменили пользователя — подпись не сойдётся
+        r = self.lead(max={"init": bad_init, "contact": self.contact()})
+        d = self.store.deal(r.get_json()["id"])
+        self.assertEqual(d["source"], "site")
+        self.assertNotIn("MAX", d["want"])
+        r = self.lead(max={"init": init, "contact": self.contact(key="чужой-токен")})   # номер подписан не нашим ботом
+        d = self.store.deal(r.get_json()["id"])
+        self.assertEqual(d["source"], "max")
+        self.assertNotIn("телефон подтверждён", d["want"])
+        r = self.lead(contact="+7 911 000-00-00", max={"init": init, "contact": self.contact()})   # номер в форме сменили
+        self.assertNotIn("телефон подтверждён", self.store.deal(r.get_json()["id"])["want"])
+        r = self.lead(max={"init": self.init_data(auth_date=str(int(time.time()) - 30 * 24 * 3600))})  # старые данные
+        self.assertEqual(self.store.deal(r.get_json()["id"])["source"], "site")
+
+    def test_without_key_file_nothing_is_verified(self) -> None:
+        os.remove(os.path.join(self.tmp.name, "max-app.key"))
+        r = self.lead(max={"init": self.init_data(), "contact": self.contact()})
+        self.assertEqual(self.store.deal(r.get_json()["id"])["source"], "site")
 
 
 if __name__ == "__main__":

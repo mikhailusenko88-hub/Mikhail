@@ -219,6 +219,7 @@ def test_app_payload_matches_site_routes():
     assert P("https://nashdekor.ru/?utm_source=max#calc") == "calc"
     assert P("https://nashdekor.ru/?utm_source=max&panel=3-7#calc") == "calc-3-7"
     assert P("https://nashdekor.ru/?panel=A907#calc") == "calc-a907"
+    assert P("https://nashdekor.ru/?panel=A907&w=320&h=270#calc") == "calc-a907_320_270"
     assert P("https://nashdekor.ru/?utm_source=max#pro") == "pro"
     assert P("https://nashdekor.ru/catalog/plintusy/?utm_source=max") == "c-plintusy"
     assert P("https://nashdekor.ru/p/a907/") == "p-a907"

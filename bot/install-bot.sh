@@ -553,6 +553,21 @@ step_config() {
     ok "создан новый одноразовый код для /owner"
   fi
   if [[ -z $(get_env "$ENV_FILE" CONSENT_VERSION) ]]; then set_env "$ENV_FILE" CONSENT_VERSION 1; fi
+  write_max_app_key
+}
+
+# Ключ проверки подписей мини-приложения MAX для CRM (номер телефона и данные запуска из MAX подписаны токеном бота).
+# Это тот же токен MAX, отдельным файлом: читает только root и пользователь магазина (под ним работает CRM).
+write_max_app_key() {
+  local key=$CONF_DIR/max-app.key tok tmp
+  tok=$(get_env "$ENV_FILE" MAX_TOKEN)
+  if [[ -z $tok ]]; then rm -f "$key"; return 0; fi
+  tmp=$(mktemp "$CONF_DIR/.max-app.XXXXXX")
+  printf '%s' "$tok" >"$tmp"
+  chown "root:$BOT_USER" "$tmp"
+  chmod 640 "$tmp"
+  mv -f "$tmp" "$key"
+  ok "ключ проверки мини-приложения MAX для CRM: $key"
 }
 
 # start_service СЛУЖБА СЛОВО_В_ЖУРНАЛЕ — перезапустить и дождаться строки «…запущен»

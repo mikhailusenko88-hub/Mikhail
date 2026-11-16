@@ -335,3 +335,46 @@ def test_russian_ca_bundle():
     names = [dict(x[0] for x in c["subject"]).get("commonName") for c in ctx.get_ca_certs()]
     assert "Russian Trusted Root CA" in names and "Russian Trusted Sub CA" in names
     assert ctx.verify_mode == ssl.CERT_REQUIRED and ctx.check_hostname  # проверка не отключена
+
+
+def test_site_links_open_mini_app():
+    """Ссылки на наш сайт в кнопках бота открывают сайт внутри MAX (мини-приложение), остальные — обычные ссылки."""
+    from core import Btn, ikb
+
+    kb = ikb([Btn("Фото и 3D", url="https://nashdekor.ru/p/a907/")], [Btn("Заявка", url="https://nashdekor.ru/#order")],
+             [Btn("Сайт", url="https://nashdekor.ru/")], [Btn("Авито", url="https://www.avito.ru/x")])
+    rows = max_api.render(kb, "id1_bot")[0]["payload"]["buttons"]
+    assert rows[0] == [{"type": "open_app", "text": "Фото и 3D", "web_app": "id1_bot", "payload": "p-a907"}]
+    assert rows[1][0]["payload"] == "order" and rows[2] == [{"type": "open_app", "text": "Сайт", "web_app": "id1_bot"}]
+    assert rows[3][0]["type"] == "link"
+    assert max_api.render(kb)[0]["payload"]["buttons"][0][0]["type"] == "link"      # без имени бота — ссылки
+
+    async def scenario():
+        from fakes import MAX_BOT
+        fake = FakeMax()
+        url = await fake.start()
+        client = max_api.MaxClient(fake.token, url, "")
+        try:
+            tr = max_api.MaxTransport(client, send_interval=0)
+            await tr.send(CLIENT, "товар", kb)
+            sent = [b for m, p, q, b in fake.requests if m == "POST" and p == "/messages"]
+            first = sent[-1]["attachments"][0]["payload"]["buttons"][0][0]
+            assert first == {"type": "open_app", "text": "Фото и 3D", "web_app": MAX_BOT["username"], "payload": "p-a907"}
+            # мини-приложение не подключено → MAX отвечает 400 → то же сообщение со ссылками, дальше сразу ссылки
+            fake.reject_open_app = True
+            n0 = len(sent)
+            await tr.send(CLIENT, "товар", kb)
+            sent = [b for m, p, q, b in fake.requests if m == "POST" and p == "/messages"]
+            assert len(sent) == n0 + 2 and sent[-1]["attachments"][0]["payload"]["buttons"][0][0]["type"] == "link"
+            await tr.send(CLIENT, "ещё", kb)
+            sent2 = [b for m, p, q, b in fake.requests if m == "POST" and p == "/messages"]
+            assert len(sent2) == len(sent) + 1 and sent2[-1]["attachments"][0]["payload"]["buttons"][0][0]["type"] == "link"
+            # MAX_MINIAPP=0 — сразу ссылки, без запроса /me
+            off = max_api.MaxTransport(client, send_interval=0, miniapp=False)
+            assert await off.app() == ""
+        finally:
+            await client.close()
+            await fake.stop()
+
+    run(scenario())
+

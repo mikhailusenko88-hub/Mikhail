@@ -102,6 +102,8 @@ class Config:
     max_bot_url: str = ""                               # https://max.ru/<ник бота>
     max_api_url: str = DEFAULT_MAX_API_URL
     max_ca_file: str = DEFAULT_MAX_CA_FILE
+    # Ссылки на сайт в кнопках бота MAX открывают сайт внутри MAX (мини-приложение бота). MAX_MINIAPP=0 — в браузере.
+    max_miniapp: bool = True
     # Заготовка (выключена): подсказки ответов через YandexGPT.
     yandexgpt_enabled: bool = False
     yandexgpt_api_key: str = field(default="", repr=False)
@@ -151,6 +153,7 @@ def load_config(channel: str | None = None) -> Config:
         max_bot_url=_url(_env("MAX_BOT_URL")),
         max_api_url=_url(_env("MAX_API_URL", DEFAULT_MAX_API_URL)) or DEFAULT_MAX_API_URL,
         max_ca_file=_env("MAX_CA_FILE", DEFAULT_MAX_CA_FILE) or DEFAULT_MAX_CA_FILE,
+        max_miniapp=_env("MAX_MINIAPP", "1") != "0",
         yandexgpt_enabled=_env_bool("YANDEXGPT_ENABLED"),
         yandexgpt_api_key=_env("YANDEXGPT_API_KEY"),
         yandexgpt_folder_id=_env("YANDEXGPT_FOLDER_ID"),

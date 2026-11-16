@@ -47,6 +47,7 @@ from push import WebPush
 from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, TochkaError, http_request, jwt_claims,
                     parse_jwk, receipt_items, verify_rs256)
 from visits import Visits, is_bot, parse_body
+import maxapp
 
 log = logging.getLogger("crm")
 
@@ -119,6 +120,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         "SHOP_DOMAIN": cfg.get("SHOP_DOMAIN", env("SHOP_DOMAIN", "")),
         "BACKUP_PASS_FILE": cfg.get("BACKUP_PASS_FILE") or env("BACKUP_PASS_FILE", "/etc/prostranstvo/backup-pass"),
         "RESCUE_PASS_FILE": cfg.get("RESCUE_PASS_FILE") or env("RESCUE_PASS_FILE", "/etc/prostranstvo/rescue-pass"),
+        "MAX_APP_KEY_FILE": cfg.get("MAX_APP_KEY_FILE") or env("MAX_APP_KEY_FILE", "/etc/prostranstvo/max-app.key"),
         "PAUSE_FLAG": cfg.get("PAUSE_FLAG") or env("PAUSE_FLAG", "/var/lib/prostranstvo/pause-auto"),
     }
     app = Flask(__name__)
@@ -1871,8 +1873,18 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         elif is_call:
             msg = ("ПЕРЕЗВОНИТЬ. " + msg).strip()
         phone, cemail, messenger = split_contact(contact)
+        # Сайт открыт как мини-приложение MAX: данные запуска и номер «из MAX» подписаны токеном бота — проверяем.
+        mx = maxapp.lead_info(data.get("max"), conf["MAX_APP_KEY_FILE"]) if isinstance(data.get("max"), dict) else None
+        source, via = "site", "с сайта"
+        if mx and mx["user"]:
+            source, via, messenger = "max", "из MAX", "MAX"
+            same = bool(mx["phone"]) and "".join(ch for ch in contact if ch.isdigit())[-10:] == mx["phone"][-10:]
+            mark = "Из мини-приложения MAX" + (", телефон подтверждён MAX" if same else "") + f" (id в MAX {mx['user']['id']})."
+            if same:
+                phone = mx["phone"]
+            msg = (mark + (" " + msg if msg else ""))[:2200]
         did = store.create_deal("сайт", None, name=name, contact=contact, phone=phone, email=email or cemail, messenger=messenger,
-                                kind=who_kind, want=msg, source="site",
+                                kind=who_kind, want=msg, source=source,
                                 calc=calc, consent_at=str(data.get("consentAt") or "")[:40] or store_now(),
                                 consent_version=str(data.get("consentVersion") or "")[:40])
         if calc:
@@ -1881,7 +1893,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             store.update_deal(did, "сайт", address=address)
         if is_call:
             store.rename_open_task(did, "Связаться с клиентом", "Перезвонить клиенту", "сайт")
-        head = f"Новый ЗАКАЗ с сайта №{did}" if is_order else f"Просьба ПЕРЕЗВОНИТЬ с сайта №{did}" if is_call else f"Новая заявка с сайта №{did}"
+        head = f"Новый ЗАКАЗ {via} №{did}" if is_order else f"Просьба ПЕРЕЗВОНИТЬ {via} №{did}" if is_call else f"Новая заявка {via} №{did}"
         txt = head + f": {name}, {contact}" + (f", {email}" if email else "") + (f"\n{msg}" if msg else "")
         store.notify_team(txt, title=head, url=f"/deals/{did}")
         send_mail(conf["NOTIFY_EMAIL"], head, txt + f"\n\nCRM: https://crm.{conf['SHOP_DOMAIN']}/deals/{did}"

@@ -34,6 +34,8 @@ import urllib.request
 import uuid
 from typing import Any
 
+from miniapp import app_payload, open_app  # noqa: F401 — app_payload нужен тестам и для проверки ссылок
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ENV_FILE = "/etc/prostranstvo/bot.env"
 DB_FILE = "/var/lib/prostranstvo/bot.db"
@@ -44,10 +46,6 @@ CHATS_KEY = "max_chats"                    # пишет max_api.py, когда �
 NEED = {"write": "публиковать посты", "pin_message": "закреплять", "change_chat_info": "менять аватар и описание",
         "edit": "редактировать посты"}
 PAUSE = 1.2                                # между постами, чтобы не упереться в ограничение частоты
-SITE_HOSTS = {"nashdekor.ru", "www.nashdekor.ru"}
-APP_BLOCKS = {"calc", "catalog", "models", "order", "contacts", "live", "pro"}   # блоки главной (id на странице)
-APP_PAGES = {"/dostavka/": "dostavka", "/oplata/": "oplata", "/stati/": "stati"}
-APP_DIRS = {"catalog": "c-", "p": "p-", "stati": "s-"}
 
 
 class ApiError(Exception):
@@ -133,39 +131,13 @@ def img_url(cfg: dict[str, Any], name: str) -> str:
     return url + ("&" if "?" in url else "?") + "v=" + str(cfg.get("v", "1"))
 
 
-def app_payload(url: str) -> str | None:
-    """Ссылка на наш сайт → параметр запуска мини-приложения (его разбирает assets/max.js на сайте).
-    "" — главная без параметра; None — ссылка не на сайт или такой раздел не открывается (останется ссылкой)."""
-    u = urllib.parse.urlsplit(url)
-    if u.scheme != "https" or (u.hostname or "") not in SITE_HOSTS:
-        return None
-    path, frag = u.path or "/", u.fragment
-    if path == "/":
-        if not frag:
-            return ""
-        if frag not in APP_BLOCKS:
-            return None
-        panel = (urllib.parse.parse_qs(u.query).get("panel") or [""])[0].lower()
-        return f"calc-{panel}" if frag == "calc" and re.fullmatch(r"[a-z0-9-]{1,40}", panel) else frag
-    if frag:
-        return None
-    if path in APP_PAGES:
-        return APP_PAGES[path]
-    m = re.fullmatch(r"/(catalog|p|stati)/([a-z0-9-]{1,60})/", path)
-    return APP_DIRS[m.group(1)] + m.group(2) if m else None
-
-
 def keyboard(rows: list[list[dict[str, str]]], app: str = "") -> list[dict[str, Any]]:
     """Кнопки поста. app — публичное имя бота с мини-приложением: тогда ссылки на сайт открываются внутри MAX."""
     btns = []
     for row in rows or []:
         out = []
         for b in row:
-            pl = app_payload(b["url"]) if app else None
-            if pl is None:
-                out.append({"type": "link", "text": b["text"], "url": b["url"]})
-            else:
-                out.append({"type": "open_app", "text": b["text"], "web_app": app, **({"payload": pl} if pl else {})})
+            out.append(open_app(b["text"], b["url"], app) or {"type": "link", "text": b["text"], "url": b["url"]})
         if out:
             btns.append(out)
     return [{"type": "inline_keyboard", "payload": {"buttons": btns}}] if btns else []

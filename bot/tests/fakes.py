@@ -195,6 +195,7 @@ class FakeMax:
         self._mid = itertools.count(1)
         self.server: TestServer | None = None
         self.unauthorized = 0
+        self.reject_open_app = False      # как MAX без подключённого мини-приложения
 
     async def start(self) -> str:
         app = web.Application()
@@ -233,6 +234,9 @@ class FakeMax:
             mid = f"mid.{next(self._mid):04d}"  # номер = порядковый номер запроса (см. mid_of)
             if uid in self.blocked:
                 return web.json_response({"code": "chat.denied", "message": "dialog.suspended"}, status=403)
+            if self.reject_open_app and any(b.get("type") == "open_app" for a in body.get("attachments") or []
+                                            if a.get("type") == "inline_keyboard" for r in a["payload"]["buttons"] for b in r):
+                return web.json_response({"code": "proto.payload", "message": "button.open_app.invalid"}, status=400)
             return web.json_response({"message": {
                 "sender": MAX_BOT, "recipient": {"chat_id": uid + 10_000_000, "chat_type": "dialog", "user_id": uid},
                 "timestamp": int(time.time() * 1000), "body": {"mid": mid, "seq": 1, "text": body.get("text")}}})

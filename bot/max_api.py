@@ -32,6 +32,7 @@ from catalog import CatalogStore
 from config import CH_MAX, Config
 from core import Blocked, Engine, Incoming, Kb, Temporary
 from db import Database
+from miniapp import open_app
 
 log = logging.getLogger("prostranstvo.max")
 
@@ -146,9 +147,10 @@ class MaxClient:
 
 
 # =========================================================================== кнопки и вложения
-def render(kb: Kb | None) -> list[dict[str, Any]]:
+def render(kb: Kb | None, app: str = "") -> list[dict[str, Any]]:
     """Кнопки ядра → вложение inline_keyboard. В MAX все кнопки — под сообщением;
-    кнопка-ответ (как клавиатура внизу в Telegram) — тип «message»: её текст приходит как сообщение."""
+    кнопка-ответ (как клавиатура внизу в Telegram) — тип «message»: её текст приходит как сообщение.
+    app — публичное имя бота: ссылки на наш сайт открываются внутри MAX (мини-приложение), а не в браузере."""
     if kb is None or not kb.rows:
         return []
     rows = []
@@ -156,7 +158,7 @@ def render(kb: Kb | None) -> list[dict[str, Any]]:
         out = []
         for b in row:
             if b.url:
-                out.append({"type": "link", "text": b.text, "url": b.url})
+                out.append(open_app(b.text, b.url, app) or {"type": "link", "text": b.text, "url": b.url})
             elif b.contact:
                 out.append({"type": "request_contact", "text": b.text})
             elif b.data and kb.inline:
@@ -165,6 +167,16 @@ def render(kb: Kb | None) -> list[dict[str, Any]]:
                 out.append({"type": "message", "text": b.text})
         rows.append(out)
     return [{"type": "inline_keyboard", "payload": {"buttons": rows}}]
+
+
+def _has_app(body: dict[str, Any]) -> bool:
+    return any(b.get("type") == "open_app" for a in body.get("attachments") or [] if a.get("type") == "inline_keyboard"
+               for row in (a.get("payload") or {}).get("buttons") or [] for b in row)
+
+
+def _with_links(body: dict[str, Any], kb: Kb | None) -> dict[str, Any]:
+    atts = [a for a in body.get("attachments") or [] if a.get("type") != "inline_keyboard"] + render(kb)
+    return {**body, "attachments": atts}
 
 
 def copy_attachments(atts: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -247,9 +259,10 @@ def from_update(update: dict[str, Any]) -> Incoming | None:
 class MaxTransport:
     channel = CH_MAX
 
-    def __init__(self, client: MaxClient, send_interval: float = SEND_INTERVAL_SEC) -> None:
+    def __init__(self, client: MaxClient, send_interval: float = SEND_INTERVAL_SEC, miniapp: bool = True) -> None:
         self.client = client
         self.send_interval = send_interval
+        self._app: str | None = None if miniapp else ""   # имя бота для кнопок мини-приложения; "" — обычные ссылки
         self._last: dict[int, float] = {}
         self._locks: dict[int, asyncio.Lock] = {}
         self._texts: OrderedDict[str, str] = OrderedDict()  # mid → текст (чтобы убрать кнопки, не трогая текст)
@@ -273,20 +286,42 @@ class MaxTransport:
                 return Temporary(str(exc.status))
         return exc
 
-    async def _post(self, user_id: int, body: dict[str, Any]) -> str:
+    async def app(self) -> str:
+        """Публичное имя бота для кнопок мини-приложения (один запрос /me); "" — кнопки обычными ссылками."""
+        if self._app is None:
+            try:
+                self._app = str((await self.client.me()).get("username") or "")
+            except (MaxApiError, MaxNetworkError):
+                return ""     # спросим в следующий раз
+        return self._app
+
+    def _app_refused(self, exc: MaxApiError) -> None:
+        if self._app:
+            log.warning("MAX не принял кнопки мини-приложения (%s) — дальше ссылки на сайт открываются в браузере. "
+                        "Проверьте ссылку мини-приложения в настройках бота.", exc)
+        self._app = ""
+
+    async def _post(self, user_id: int, body: dict[str, Any], kb: Kb | None = None) -> str:
         lock = self._locks.setdefault(user_id, asyncio.Lock())
         async with lock:
             wait = self._last.get(user_id, 0) + self.send_interval - time.monotonic()
             if wait > 0:
                 await asyncio.sleep(wait)
             try:
-                try:
-                    res = await self.client.send_message(user_id, body)
-                except MaxApiError as exc:
-                    if exc.status != 400 or not body.get("link"):
-                        raise
-                    # сообщение, на которое отвечаем, удалено — отправить без ответа
-                    res = await self.client.send_message(user_id, {k: v for k, v in body.items() if k != "link"})
+                for attempt in range(3):
+                    try:
+                        res = await self.client.send_message(user_id, body)
+                        break
+                    except MaxApiError as exc:
+                        if exc.status != 400 or attempt == 2:
+                            raise
+                        if body.get("link"):      # сообщение, на которое отвечаем, удалено — отправить без ответа
+                            body = {k: v for k, v in body.items() if k != "link"}
+                        elif _has_app(body):      # мини-приложение не подключено — кнопки обычными ссылками
+                            self._app_refused(exc)
+                            body = _with_links(body, kb)
+                        else:
+                            raise
             except (MaxApiError, MaxNetworkError) as exc:
                 raise self._errors(exc) from exc
             finally:
@@ -295,19 +330,26 @@ class MaxTransport:
 
     async def send(self, user_id: int, text: str, kb: Kb | None = None, reply_to: str = "") -> str:
         body: dict[str, Any] = {"text": text[:TEXT_LIMIT], "format": "html"}
-        atts = render(kb)
+        atts = render(kb, await self.app())
         if atts:
             body["attachments"] = atts
         if reply_to:
             body["link"] = {"type": "reply", "mid": reply_to}
-        mid = await self._post(user_id, body)
+        mid = await self._post(user_id, body, kb)
         self._remember(mid, body["text"])
         return mid
 
     async def edit(self, user_id: int, message_id: str, text: str, kb: Kb | None = None) -> bool:
-        body = {"text": text[:TEXT_LIMIT], "format": "html", "attachments": render(kb)}
+        body = {"text": text[:TEXT_LIMIT], "format": "html", "attachments": render(kb, await self.app())}
         try:
-            await self.client.edit_message(message_id, body)
+            try:
+                await self.client.edit_message(message_id, body)
+            except MaxApiError as exc:
+                if exc.status != 400 or not _has_app(body):
+                    raise
+                self._app_refused(exc)
+                body = _with_links(body, kb)
+                await self.client.edit_message(message_id, body)
         except (MaxApiError, MaxNetworkError):
             return False
         self._remember(message_id, body["text"])
@@ -326,12 +368,12 @@ class MaxTransport:
 
     async def copy(self, user_id: int, media: Any, kb: Kb | None = None) -> str:
         media = media or {}
-        body: dict[str, Any] = {"attachments": list(media.get("attachments") or []) + render(kb)}
+        body: dict[str, Any] = {"attachments": list(media.get("attachments") or []) + render(kb, await self.app())}
         if media.get("text"):
             body["text"] = str(media["text"])[:TEXT_LIMIT]
         if not body["attachments"] and "text" not in body:
             body["text"] = "(вложение)"
-        return await self._post(user_id, body)
+        return await self._post(user_id, body, kb)
 
     async def link(self) -> str:
         if not self._link:
@@ -411,7 +453,7 @@ async def poll(client: MaxClient, engine: Engine, db: Database, *, once: bool = 
 
 async def run(cfg: Config, db: Database, store: CatalogStore) -> int:
     client = MaxClient(cfg.max_token, cfg.max_api_url, cfg.max_ca_file)
-    engine = Engine(cfg, db, store, MaxTransport(client))
+    engine = Engine(cfg, db, store, MaxTransport(client, miniapp=cfg.max_miniapp))
     tasks: list[asyncio.Task] = []
     try:
         try:
