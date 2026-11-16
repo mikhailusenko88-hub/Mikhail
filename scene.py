@@ -1625,7 +1625,8 @@ def scene_slat_piece(item, view):
     import slat_profile as SP
     n = int(item[0])
     SP.STEP, SP.LAM = {2: (60.0, 30.0), 3: (40.0, 29.5), 5: (24.0, 10.5)}[n]
-    mirror = view in ('a', 'c')          # полка: на виде «а» — слева у зрителя, стоя — справа (как на фото образцов)
+    mirror = True                        # полка: лёжа «а» — слева у зрителя (срез справа), стоя — справа, как на фото образцов;
+    A.setdefault('yaw', '36' if view == 'a' else '-36')   # вид «б» — с другой стороны: у зрителя край первой рейки с ножкой
     W, T, L = 0.12, 0.012, float(A.get('len', 0.10))
     pts = [(x, z) for x, z, _ in SP.rounded(SP.outline(n), r_top=0.7, r=0.4, seg=3)]
     if mirror:
@@ -1648,7 +1649,8 @@ def scene_slat_piece(item, view):
     while me.uv_layers:
         me.uv_layers.remove(me.uv_layers[0])
     uv = me.uv_layers.new(name='decor')
-    m_black = mat_simple('pan_black_piece', (0.012, 0.012, 0.013, 1), rough=float(A.get('brough', 0.5)))
+    bk = float(A.get('black', 0.005))
+    m_black = mat_simple('pan_black_piece', (bk, bk, bk * 1.08, 1), rough=float(A.get('brough', 0.38)))
     me.materials.append(m_black)
     me.materials.append(mat_foam())
     info = json.load(open(f'{ROOT}/tex_decor/index.json', encoding='utf-8'))[item]
