@@ -1,6 +1,6 @@
 # имя | адрес | desktop|mobile | js
-# 16.11.2026 — единый стиль фото (версия 7): молдинги, потолочные, уголки, карточка A608
-mold7-d | https://nashdekor.ru/?s=7 | desktop | document.querySelector('[data-cat=mold]')?.click(); document.querySelector('#grid').scrollIntoView(); window.scrollBy(0,-40)
-corn7-m | https://nashdekor.ru/?s=7 | mobile | document.querySelector('[data-cat=cornice]')?.click(); document.querySelector('#grid').scrollIntoView(); window.scrollBy(0,-60)
-a608-m | https://nashdekor.ru/p/a608/?s=7 | mobile | document.querySelector('[data-v=photo]')?.click(); window.scrollTo(0,200)
-a503-paint-d | https://nashdekor.ru/p/a503/?s=7 | desktop | document.querySelector('[data-v=photo]')?.click(); document.querySelectorAll('.dot')[4]?.click()
+# 16.11.2026 — 3D-модели: срез-пена, серия 3 и A910 по живым образцам
+3d-a902-m | https://nashdekor.ru/p/a902/?s=8 | mobile
+3d-37-d | https://nashdekor.ru/p/3-7/?s=8 | desktop
+3d-a157-d | https://nashdekor.ru/p/a157/?s=8 | desktop
+3d-a910-paint-m | https://nashdekor.ru/p/a910/?s=8 | mobile | document.querySelectorAll('.dot')[7]?.click()
