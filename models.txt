@@ -1,0 +1,2 @@
+isnet-general-use
+birefnet-general-lite
