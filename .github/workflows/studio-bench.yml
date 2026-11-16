@@ -1,0 +1,45 @@
+name: studio-bench
+on:
+  push:
+    branches: [studio-bench]
+    paths: [request.txt]
+permissions:
+  contents: write
+jobs:
+  bench:
+    runs-on: macos-15
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - name: Машина
+        run: |
+          mkdir -p status
+          { sw_vers; sysctl -n machdep.cpu.brand_string; sysctl -n hw.ncpu; sysctl -n hw.memsize;
+            system_profiler SPDisplaysDataType 2>/dev/null | head -30;
+            echo "== русские голоса"; say -v '?' | grep -i "ru_RU" || echo "нет";
+            echo "== ffmpeg"; which ffmpeg || echo "нет"; node -v; } > status/sys.txt 2>&1 || true
+          : > status/result.txt
+      - name: Движок
+        run: |
+          git clone -q --depth 1 --filter=blob:none --sparse -b mebel-3d https://github.com/${{ github.repository }} eng
+          cd eng && git sparse-checkout set Resources/Mebel tools/multik/test
+          git log -1 --format='движок: %h %ad %s' --date=short >> ../status/sys.txt
+          git fetch -q --depth 1 origin bars-install
+          mkdir -p Resources/Mebel/barsik Resources/Mebel/heroes6
+          git show FETCH_HEAD:Resources/Mebel/barsik/barsik_data.js > Resources/Mebel/barsik/barsik_data.js
+          for f in $(git ls-tree --name-only FETCH_HEAD Resources/Mebel/heroes6/); do git show "FETCH_HEAD:$f" > "$f"; done
+          curl -fsSL https://raw.githubusercontent.com/mrdoob/three.js/r169/build/three.module.min.js -o Resources/Mebel/three.module.min.js
+          ls -la Resources/Mebel/heroes6 | head -12 >> ../status/sys.txt
+      - name: Браузер
+        run: |
+          npm init -y >/dev/null && npm i playwright >/dev/null 2>&1
+          npx playwright install chromium
+      - name: Замер
+        env:
+          ENG: ${{ github.workspace }}/eng
+        run: node bench.js s27.txt 2> status/log.txt || true
+      - name: Итог
+        if: always()
+        run: |
+          git config user.name "studio-bench"; git config user.email "actions@users.noreply.github.com"
+          git add status && git commit -qm "result $(date -u +%F_%H:%M)" && git push -q || true
