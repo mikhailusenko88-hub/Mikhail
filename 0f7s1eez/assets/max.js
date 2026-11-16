@@ -19,19 +19,24 @@
   } catch (e) {}
 
   // Куда открыть по параметру запуска: https://max.ru/<бот>?startapp=calc
-  //   calc, catalog, models, order, contacts, live — блоки главной;
-  //   dostavka, oplata, stati — страницы; c-<раздел> — раздел каталога; p-<артикул> — товар (p-a907, p-3-7).
-  var BLOCKS = { calc: 1, catalog: 1, models: 1, order: 1, contacts: 1, live: 1 };
+  //   calc, catalog, models, order, contacts, live, pro — блоки главной; calc-<артикул> — расчёт с этой панелью (calc-3-7);
+  //   dostavka, oplata, stati — страницы; c-<раздел> — раздел каталога; p-<артикул> — товар (p-a907, p-3-7);
+  //   s-<статья> — статья. Те же правила — в bot/channel.py (app_payload) для кнопок постов канала.
+  var BLOCKS = { calc: 1, catalog: 1, models: 1, order: 1, contacts: 1, live: 1, pro: 1 };
   var PAGES = { dostavka: "/dostavka/", oplata: "/oplata/", stati: "/stati/" };
   function target(p) {
     p = String(p || "").toLowerCase();
     if (!/^[a-z0-9_-]{1,60}$/.test(p)) return "";
     if (BLOCKS[p]) return "/#" + p;
     if (PAGES[p]) return PAGES[p];
-    var m = /^c-([a-z0-9-]+)$/.exec(p);
+    var m = /^calc-([a-z0-9-]+)$/.exec(p);
+    if (m) return "/?panel=" + m[1].toUpperCase() + "#calc";
+    m = /^c-([a-z0-9-]+)$/.exec(p);
     if (m) return "/catalog/" + m[1] + "/";
     m = /^p-([a-z0-9-]+)$/.exec(p);
     if (m) return "/p/" + m[1] + "/";
+    m = /^s-([a-z0-9-]+)$/.exec(p);
+    if (m) return "/stati/" + m[1] + "/";
     return "";
   }
 
@@ -50,7 +55,7 @@
           else setTimeout(go, 50);
         }
       } else {
-        set("mxStart", path);   // перешли сразу на нужную страницу — «Назад» с неё не нужен
+        set("mxStart", path.split("?")[0]);   // перешли сразу на нужную страницу — «Назад» с неё не нужен
         location.replace(to);
         return;
       }

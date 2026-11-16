@@ -902,7 +902,7 @@ print("фид Яндекс Товаров yml.xml: %d предложений" % 
 # ---------- мини-приложение MAX (с 16.11.2026): на всех страницах — подключение assets/max.js, только если сайт открыт из MAX ----------
 # Признак — данные запуска MAX в адресе (#WebAppData=…) или уже сохранённые библиотекой MAX в sessionStorage.
 # В обычном браузере ничего не грузится. Файлы подтверждения поисковиков (google…, yandex_…) не трогаем.
-MAX_JS_V = "1"
+MAX_JS_V = "2"
 MAX_SNIP = ('<script>/*max-app*/try{if(/WebAppData=/.test(location.hash)||sessionStorage.getItem("WebAppData"))'
             '["https://st.max.ru/js/max-web-app.js","/assets/max.js?v=%s"].forEach(function(u){var s=document.createElement("script");'
             's.src=u;s.async=false;document.head.appendChild(s)})}catch(e){}</script>' % MAX_JS_V)
