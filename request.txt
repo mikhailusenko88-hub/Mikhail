@@ -1,15 +1,11 @@
-# 2026-11-16 07:00 обход: свои каналы (проверка запасной RSS) + кадры соседей и наших новых
-@TheHandwriting_of_Silence
-@LivingLinesTV
+# 2026-11-16 07:05 обход: «1000 шарик» 10:00 МСК, вкладка «Видео» при молчащем RSS, кадры наших роликов
 @bilesin_be_kz
-@pochemu_tak_fakty
 @Beautiful_shorts-s6u
-@FlagballArenaTV
-@kimyutadi_uz
 @cartoon_friend3
-info:cS31Gtl8VVw
-info:YlanqnTTHf4
-info:S6cpen59uDY
-info:2l0erijtP6s
-info:AWf2qlc50Ns
-info:jFlDauYjOsM
+@FlagballArenaTV
+@pochemu_tak_fakty
+info:4ejtez9n18c
+info:UXPbaSdMoFU
+info:NNRpfSGgsOw
+info:RmH0EkY3Su4
+info:AB95lhJLozM

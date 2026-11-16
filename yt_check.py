@@ -166,6 +166,36 @@ def shorts_tab(handle):
     return st, uniq
 
 
+def videos_tab(handle):
+    """Вкладка «Видео» (длинные ролики): название, просмотры (округлено), «N часов назад».
+    Нужна, когда RSS не отвечает: серии мультиков и длинные Flagball видны только здесь и в RSS."""
+    st, html = get(f"https://www.youtube.com/@{handle}/videos")
+    items = []
+    d = initial_data(html) if html else {}
+    for node in walk(d):
+        if "videoRenderer" in node:
+            v = node["videoRenderer"]
+            items.append({"id": v.get("videoId"), "title": text_of(v.get("title", {})),
+                          "views": text_of(v.get("viewCountText", {})),
+                          "ago": text_of(v.get("publishedTimeText", {})),
+                          "length": text_of(v.get("lengthText", {}))})
+        elif "lockupViewModel" in node:
+            v = node["lockupViewModel"]
+            meta = (v.get("metadata") or {}).get("lockupMetadataViewModel") or {}
+            parts = [text_of(p.get("text", {})) for p in walk(meta) if isinstance(p, dict) and "text" in p and isinstance(p.get("text"), dict)]
+            parts = [p for p in parts if p]
+            views = next((p for p in parts if re.search(r"просм|view", p, re.I)), "")
+            ago = next((p for p in parts if re.search(r"назад|ago", p, re.I)), "")
+            items.append({"id": v.get("contentId"), "title": text_of(meta.get("title", {})),
+                          "views": views, "ago": ago, "length": ""})
+    seen, uniq = set(), []
+    for it in items:
+        if it["id"] and it["id"] not in seen:
+            seen.add(it["id"])
+            uniq.append(it)
+    return st, uniq
+
+
 def rss(cid):
     # 14–16.11.2026: лента канала временами отдаёт серверу GitHub 404 на все каналы подряд.
     # Тогда — лента плейлиста «все загрузки» (UU…), потом ещё одна попытка ленты канала.
@@ -294,6 +324,10 @@ def main():
         sst, shorts = shorts_tab(h)
         rst, feed = rss(info["channel_id"]) if info.get("channel_id") else (0, [])
         info.update({"checked": now, "shorts_status": sst, "shorts": shorts, "rss_status": rst, "rss": feed})
+        if not feed and h not in rivals:   # RSS молчит — хотя бы вкладка «Видео» с «N часов назад»
+            time.sleep(1)
+            vst, vids = videos_tab(h)
+            info.update({"videos_status": vst, "videos": vids})
         try:
             YA.record_channel(info, now_dt, tab_rows=full, tab_limit=24 if h in rivals else 60)
         except Exception as e:  # noqa: BLE001
@@ -316,6 +350,10 @@ def main():
             md.append(f"- {r['published'][:16].replace('T', ' ')} · {r['views']} просм. · {r['title']} · {r['id']}")
         if not feed:
             md.append("- (пусто или лента недоступна, HTTP %s)" % rst)
+        if info.get("videos") is not None:
+            md += ["", f"## Вкладка «Видео» (RSS не ответил; просмотры округлены) — {len(info['videos'])} шт., HTTP {info.get('videos_status')}"]
+            for r in info["videos"][:15]:
+                md.append(f"- {r['ago'] or '?'} · {r['views'] or '?'} · {r['length']} · {r['title']} · {r['id']}")
         md += ["", f"## Вкладка Shorts (видно всем) — {len(shorts)} шт. на первой странице"]
         for s in shorts[:30]:
             md.append(f"- {s['views'] or '?'} · {s['title']} · {s['id']}")
