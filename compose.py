@@ -1,0 +1,116 @@
+"""Карточка товара для сайта из вырезанного образца: фон «Антрацит», мягкая тень, баланс белого, кадр 16:9.
+python3 compose.py <cut.png> <исходник.jpg> <выход_2x.jpg> <выход_1x.jpg> [--wb r,g,b] [--white]
+--wb — множители баланса белого (общие для серии снимков); --white — белое изделие: тянем светлое к ~245."""
+import sys
+import cv2
+import numpy as np
+from PIL import Image, ImageFilter
+
+BG = np.array([0x26, 0x29, 0x2E], dtype=np.float64)
+W2, H2 = 1580, 898
+
+
+def load(cut, src):
+    a = np.asarray(Image.open(cut).convert('RGBA'), dtype=np.float64)
+    rgb = np.asarray(Image.open(src).convert('RGB'), dtype=np.float64)
+    alpha = a[..., 3] / 255.0
+    return rgb, alpha
+
+
+def clean_alpha(alpha):
+    # убрать «пух» и ореол: мягкий порог и сжатие на 1 px
+    al = np.clip((alpha - 0.15) / 0.7, 0, 1)
+    im = Image.fromarray((al * 255).astype(np.uint8)).filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(0.8))
+    return np.asarray(im, dtype=np.float64) / 255.0
+
+
+def fix_hollows(rgb, alpha):
+    """Сквозь пустоты профиля виден стол: мелкие «коричневые» пятна внизу образца, окружённые чёрным
+    срезом, перекрашиваем в цвет среза. Крупные области (лицо реек) не трогаем."""
+    m = alpha > 0.5
+    hsv = cv2.cvtColor(np.clip(rgb, 0, 255).astype(np.uint8), cv2.COLOR_RGB2HSV)
+    brown = (m & (hsv[..., 1] > 55) & (hsv[..., 2] > 40)).astype(np.uint8)
+    n, lab, stats, cent = cv2.connectedComponentsWithStats(brown, 8)
+    ys, xs = np.where(m)
+    y0, y1, area = ys.min(), ys.max(), m.sum()
+    lum = rgb.mean(-1)
+    dark = m & (lum < 50)
+    dark[: int(y0 + 0.6 * (y1 - y0))] = False
+    foam = np.median(rgb[dark], 0) if dark.sum() > 50 else np.array([28.0, 27.0, 29.0])
+    fix = np.zeros(m.shape, np.uint8)
+    for i in range(1, n):
+        if stats[i, cv2.CC_STAT_AREA] < 0.015 * area and cent[i][1] > y0 + 0.62 * (y1 - y0):
+            fix[lab == i] = 1
+    if fix.any():
+        fix = cv2.dilate(fix, np.ones((5, 5), np.uint8)).astype(bool) & m
+        noise = np.random.default_rng(1).normal(0, 4, (fix.sum(), 1))
+        rgb = rgb.copy()
+        rgb[fix] = np.clip(foam[None, :] + noise, 0, 255)
+    return rgb, int(fix.sum())
+
+
+def main():
+    cut, src, out2, out1 = sys.argv[1:5]
+    wb = [1.0, 1.0, 1.0]
+    white = '--white' in sys.argv
+    if '--wb' in sys.argv:
+        wb = [float(x) for x in sys.argv[sys.argv.index('--wb') + 1].split(',')]
+    rgb, alpha = load(cut, src)
+    alpha = clean_alpha(alpha)
+    rgb = rgb * np.array(wb)
+    if white and '--autowb' in sys.argv:   # белое изделие: нейтрализуем по нему самому
+        mm = alpha > 0.9
+        l0 = rgb.mean(-1)
+        sel = mm & (l0 > np.percentile(l0[mm], 40))
+        mu = rgb[sel].mean(0)
+        rgb = rgb * (mu.mean() / mu)
+    if not white and '--hollows' in sys.argv:
+        rgb, nfix = fix_hollows(rgb, alpha)
+        print('hollow pixels fixed', nfix)
+    m = alpha > 0.9
+    lumv = (0.2126 * rgb[..., 0] + 0.7152 * rgb[..., 1] + 0.0722 * rgb[..., 2])[m]
+    if white:
+        hi = np.percentile(lumv, 97)
+        rgb = rgb * (246.0 / max(hi, 1))
+    else:
+        hi = np.percentile(lumv, 99.5)
+        if hi > 250:
+            rgb = rgb * (250.0 / hi)
+    rgb = np.clip(rgb, 0, 255)
+    ys, xs = np.where(alpha > 0.5)
+    y0, y1, x0, x1 = ys.min(), ys.max(), xs.min(), xs.max()
+    bw, bh = x1 - x0 + 1, y1 - y0 + 1
+    s = min(W2 * 0.80 / bw, H2 * 0.82 / bh)
+    nw, nh = int(round(rgb.shape[1] * s)), int(round(rgb.shape[0] * s))
+    rgb_s = np.asarray(Image.fromarray(rgb.astype(np.uint8)).resize((nw, nh), Image.LANCZOS), dtype=np.float64)
+    al_s = np.asarray(Image.fromarray((alpha * 255).astype(np.uint8)).resize((nw, nh), Image.LANCZOS), dtype=np.float64) / 255
+    cx, cy = (x0 + x1) / 2 * s, (y0 + y1) / 2 * s
+    ox, oy = int(round(W2 / 2 - cx)), int(round(H2 * 0.52 - cy))
+    canvas_rgb = np.zeros((H2, W2, 3))
+    canvas_al = np.zeros((H2, W2))
+    sy0, sx0 = max(0, -oy), max(0, -ox)
+    dy0, dx0 = max(0, oy), max(0, ox)
+    hh, ww = min(nh - sy0, H2 - dy0), min(nw - sx0, W2 - dx0)
+    canvas_rgb[dy0:dy0 + hh, dx0:dx0 + ww] = rgb_s[sy0:sy0 + hh, sx0:sx0 + ww]
+    canvas_al[dy0:dy0 + hh, dx0:dx0 + ww] = al_s[sy0:sy0 + hh, sx0:sx0 + ww]
+    # фон: «Антрацит», чуть светлее в центре
+    yy, xx = np.mgrid[0:H2, 0:W2]
+    r = np.sqrt(((xx - W2 / 2) / (W2 * 0.6)) ** 2 + ((yy - H2 * 0.5) / (H2 * 0.7)) ** 2)
+    glow = np.clip(1 - r, 0, 1) ** 1.5
+    bg = BG[None, None, :] * (1 + 0.18 * glow[..., None])
+    # тени: широкая мягкая и контактная
+    A = Image.fromarray((canvas_al * 255).astype(np.uint8))
+    soft = np.asarray(A.transform(A.size, Image.AFFINE, (1, 0, 0, 0, 1, -18)).filter(ImageFilter.GaussianBlur(28)), dtype=np.float64) / 255
+    cont = np.asarray(A.transform(A.size, Image.AFFINE, (1, 0, 0, 0, 1, -4)).filter(ImageFilter.GaussianBlur(5)), dtype=np.float64) / 255
+    shade = 1 - 0.55 * soft - 0.35 * cont
+    bg = bg * np.clip(shade, 0.25, 1)[..., None]
+    out = canvas_rgb * canvas_al[..., None] + bg * (1 - canvas_al[..., None])
+    img = Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
+    img = img.filter(ImageFilter.UnsharpMask(radius=1.2, percent=60, threshold=2))
+    img.save(out2, quality=90, optimize=True, progressive=True)
+    img.resize((W2 // 2, H2 // 2), Image.LANCZOS).save(out1, quality=88, optimize=True, progressive=True)
+    print('ok', out2, 'scale %.2f' % s)
+
+
+if __name__ == '__main__':
+    main()
