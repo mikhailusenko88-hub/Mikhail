@@ -117,6 +117,143 @@ def fill_white(rgb, alpha):
     return np.maximum(alpha, np.clip(fill * 1.2, 0, 1)), int(add8.sum())
 
 
+def relief(rgb, alpha, amount=0.55):
+    """Белое на белом: проявляем грани — локальный контраст по яркости только на изделии (CLAHE),
+    цвет не трогаем. Ничего не дорисовываем, лишь усиливаем перепады света, которые есть на фото."""
+    u8 = np.clip(rgb, 0, 255).astype(np.uint8)
+    lab = cv2.cvtColor(u8, cv2.COLOR_RGB2LAB)
+    L = lab[..., 0]
+    cl = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)).apply(L)
+    m = (alpha > 0.5).astype(np.float64)
+    m = cv2.GaussianBlur(m, (0, 0), 3)
+    L2 = L.astype(np.float64) * (1 - amount * m) + cl.astype(np.float64) * (amount * m)
+    lab[..., 0] = np.clip(L2, 0, 255).astype(np.uint8)
+    return cv2.cvtColor(lab, cv2.COLOR_LAB2RGB).astype(np.float64)
+
+
+def standing_clean(alpha):
+    """Образец стоит: нейросеть цепляет полосу стены/полки за ним — по бокам торчат «мушки».
+    Каждая колонка стоящего образца занята почти на всю его высоту, а полоса — узкая по вертикали:
+    вертикальное «открытие» маски линией в 35 % высоты убирает всё, что ниже этой длины."""
+    m = (alpha > 0.5).astype(np.uint8)
+    ys, xs = np.where(m > 0)
+    if len(ys) == 0:
+        return alpha, 0
+    H = ys.max() - ys.min()
+    k = cv2.getStructuringElement(cv2.MORPH_RECT, (1, max(15, int(0.35 * H))))
+    keep = cv2.morphologyEx(m, cv2.MORPH_OPEN, k)
+    keep = cv2.dilate(keep, np.ones((3, 3), np.uint8))          # не съедаем мягкий край
+    # от изделия — только крупнейшая связная часть
+    n, lab, st, _ = cv2.connectedComponentsWithStats(keep, 8)
+    if n > 2:
+        big = 1 + int(np.argmax(st[1:, cv2.CC_STAT_AREA]))
+        keep = (lab == big).astype(np.uint8)
+    a = alpha * keep
+    # образец отпилен ровно: левый, правый и верхний края — прямые. Подгоняем прямые по краям
+    # (устойчиво, без выбросов) и срезаем всё, что за ними торчит.
+    mk = a > 0.5
+    ys, xs = np.where(mk)
+    y0, y1 = ys.min(), ys.max()
+    rows = np.arange(y0 + int(0.04 * (y1 - y0)), y1 - int(0.10 * (y1 - y0)))
+    rows = rows[mk[rows].any(1)]
+    def fit(xv, yv):
+        k, b = np.polyfit(yv, xv, 1)
+        for _ in range(3):
+            r = np.abs(xv - (k * yv + b)); ok = r <= max(2.0, np.percentile(r, 60))
+            k, b = np.polyfit(yv[ok], xv[ok], 1)
+        return k, b
+    left = np.argmax(mk[rows], 1).astype(float)
+    right = (mk.shape[1] - 1 - np.argmax(mk[rows, ::-1], 1)).astype(float)
+    kl, bl = fit(left, rows.astype(float)); kr, br = fit(right, rows.astype(float))
+    yy, xx = np.mgrid[0:mk.shape[0], 0:mk.shape[1]]
+    lx = kl * yy + bl; rx = kr * yy + br
+    side = np.clip(np.minimum(xx - lx + 1.0, rx - xx + 1.0), 0, 1)       # мягкий край в 1 px
+    cols = np.arange(int(np.median(left)) + 5, int(np.median(right)) - 5)
+    top = np.argmax(mk[:, cols], 0).astype(float)
+    kt, bt = fit(top, cols.astype(float))
+    ty = kt * xx + bt
+    side = side * np.clip(yy - ty + 1.0, 0, 1)
+    a = a * side
+    return a, int(m.sum() - (a > 0.5).sum())
+
+
+def _robust_line(u, v):
+    """v = k*u + b, устойчиво к выбросам."""
+    k, b = np.polyfit(u, v, 1)
+    for _ in range(4):
+        r = np.abs(v - (k * u + b)); ok = r <= max(1.5, np.percentile(r, 55))
+        k, b = np.polyfit(u[ok], v[ok], 1)
+    return k, b
+
+
+def rectify(rgb, alpha):
+    """Стоящий образец — ровный прямоугольный отрезок. Телефон снимает чуть сверху и сбоку: кусок выходит
+    трапецией, края «плывут». Находим 4 угла (прямые по левому, правому, верхнему и нижнему краю) и
+    перспективой возвращаем прямоугольник: бока строго вертикальные, верх и низ горизонтальные."""
+    mk = alpha > 0.5
+    ys, xs = np.where(mk)
+    y0, y1 = ys.min(), ys.max(); x0, x1 = xs.min(), xs.max()
+    H, W = y1 - y0, x1 - x0
+    rows = np.arange(y0 + int(0.06 * H), y1 - int(0.12 * H)); rows = rows[mk[rows].any(1)]
+    left = np.argmax(mk[rows], 1).astype(float)
+    right = (mk.shape[1] - 1 - np.argmax(mk[rows, ::-1], 1)).astype(float)
+    kl, bl = _robust_line(rows.astype(float), left); kr, br = _robust_line(rows.astype(float), right)
+    cols = np.arange(x0 + int(0.08 * W), x1 - int(0.08 * W)); cols = cols[mk[:, cols].any(0)]
+    top = np.argmax(mk[:, cols], 0).astype(float)
+    bot = (mk.shape[0] - 1 - np.argmax(mk[::-1, cols], 0)).astype(float)
+    kt, bt = _robust_line(cols.astype(float), top)
+    # низ: по профилю он волнистый — берём линию по самым нижним точкам (там, где образец стоит на столе)
+    sel = bot >= np.percentile(bot, 70)
+    kb, bb = _robust_line(cols[sel].astype(float), bot[sel])
+    def cross(kx, bx, ky, by):     # x = kx*y + bx ; y = ky*x + by
+        y = (ky * bx + by) / (1 - ky * kx); return kx * y + bx, y
+    TL = cross(kl, bl, kt, bt); TR = cross(kr, br, kt, bt)
+    BL = cross(kl, bl, kb, bb); BR = cross(kr, br, kb, bb)
+    w = (np.hypot(TR[0] - TL[0], TR[1] - TL[1]) + np.hypot(BR[0] - BL[0], BR[1] - BL[1])) / 2
+    h = (np.hypot(BL[0] - TL[0], BL[1] - TL[1]) + np.hypot(BR[0] - TR[0], BR[1] - TR[1])) / 2
+    cx, cy = (TL[0] + TR[0] + BL[0] + BR[0]) / 4, (TL[1] + TR[1] + BL[1] + BR[1]) / 4
+    dst = np.float32([[cx - w / 2, cy - h / 2], [cx + w / 2, cy - h / 2], [cx + w / 2, cy + h / 2], [cx - w / 2, cy + h / 2]])
+    src = np.float32([TL, TR, BR, BL])
+    M = cv2.getPerspectiveTransform(src, dst)
+    sz = (rgb.shape[1], rgb.shape[0])
+    rgb2 = cv2.warpPerspective(rgb.astype(np.float32), M, sz, flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE).astype(np.float64)
+    a2 = cv2.warpPerspective(alpha.astype(np.float32), M, sz, flags=cv2.INTER_LINEAR).astype(np.float64)
+    # ровные бока и верх: всё, что за прямоугольником (кроме низа с профилем), — прочь; углы острые
+    L, R, T = dst[0][0], dst[1][0], dst[0][1]
+    yy, xx = np.mgrid[0:sz[1], 0:sz[0]]
+    box = np.clip(np.minimum(np.minimum(xx - L + 0.5, R - xx + 0.5), yy - T + 0.5), 0, 1)
+    a2 = np.clip(a2, 0, 1)
+    # дыры внутри силуэта (блики, приняты за фон) — заливаем; то, что касается края, не трогаем
+    from scipy.ndimage import binary_fill_holes
+    filled = binary_fill_holes(a2 > 0.5)
+    a2 = np.where(filled & (a2 < 0.5), 1.0, a2)
+    # бока и верх строго по прямоугольнику, внутрь на 2 px — без полоски стола у кромки
+    box = np.clip(np.minimum(np.minimum(xx - (L + 2) + 0.5, (R - 2) - xx + 0.5), yy - (T + 1) + 0.5), 0, 1)
+    a2 = a2 * box
+    # нижний край (профиль): убираем «бахрому» пены — сглаживаем контур, грани оставляем
+    a8 = (a2 * 255).astype(np.uint8)
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9))
+    a8 = cv2.morphologyEx(cv2.morphologyEx(a8, cv2.MORPH_OPEN, k), cv2.MORPH_CLOSE, k)
+    b = cv2.GaussianBlur(a8.astype(np.float64) / 255, (0, 0), 2.5)
+    a2 = np.clip((b - 0.5) * 3.0 + 0.5, 0, 1) * box
+    return rgb2, a2
+
+
+def smooth_cut(rgb, alpha):
+    """Срез ножовкой бывает рваным: убираем торчащие волокна по контуру и чуть сглаживаем заусенцы,
+    зернистость пены сохраняем (правило: срез белых изделий — зернистый, гладким не бывает)."""
+    a8 = (alpha * 255).astype(np.uint8)
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))       # маленькое ядро: волокна уходят, углы остаются острыми
+    a8 = cv2.morphologyEx(a8, cv2.MORPH_OPEN, k)
+    a8 = cv2.morphologyEx(a8, cv2.MORPH_CLOSE, k)
+    b = cv2.GaussianBlur(a8.astype(np.float64) / 255, (0, 0), 1.2)
+    alpha = np.clip((b - 0.5) * 4.0 + 0.5, 0, 1)
+    u8 = np.clip(rgb, 0, 255).astype(np.uint8)
+    sm = cv2.bilateralFilter(u8, 7, 18, 4).astype(np.float64)
+    rgb = rgb * 0.45 + sm * 0.55
+    return rgb, alpha
+
+
 def deskew(rgb, alpha, lim=9.0):
     """Выравниваем ближний (нижний) край образца по горизонтали — все карточки стоят одинаково."""
     m = alpha > 0.5
@@ -145,13 +282,24 @@ def main():
         wb = [float(x) for x in sys.argv[sys.argv.index('--wb') + 1].split(',')]
     rgb, alpha = load(cut, src)
     alpha = clean_alpha(alpha)
+    if '--standing' in sys.argv:
+        alpha, nst = standing_clean(alpha)
+        print('standing band removed', nst)
+    if '--smoothcut' in sys.argv:
+        rgb, alpha = smooth_cut(rgb, alpha)
     if '--table' in sys.argv:          # стол сквозь пустоты (реечные на чёрной основе)
         alpha, ntab = drop_table(rgb, alpha)
         print('table pixels removed', ntab)
     if white and '--nofill' not in sys.argv:
         alpha, nfill = fill_white(rgb, alpha)
         print('white fill', nfill)
-    if '--nodeskew' not in sys.argv:
+        if '--standing' in sys.argv:          # заливка могла снова прихватить полосу полки
+            alpha, nst = standing_clean(alpha)
+            print('standing band removed again', nst)
+    if '--standing' in sys.argv:
+        rgb, alpha = rectify(rgb, alpha)
+        print('rectified')
+    elif '--nodeskew' not in sys.argv:
         rgb, alpha, ang = deskew(rgb, alpha)
         print('deskew %.1f' % ang)
     rgb = rgb * np.array(wb)
@@ -173,6 +321,8 @@ def main():
         med = np.median(lum2[m & (lum2 > 120)])
         g = np.log(232.0 / 246) / np.log(max(min(med, 245), 150) / 246)   # медиана белых -> 232, верх остаётся 246
         rgb = 246.0 * (rgb / 246.0) ** g
+        if '--relief' in sys.argv:
+            rgb = relief(rgb, alpha)
     else:
         hi = np.percentile(lumv, 99.5)
         if hi > 250:
