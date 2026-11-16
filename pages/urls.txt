@@ -1,2 +1,3 @@
-https://crm.nashdekor.ru/api/outbox/status/ef336796-23ba-4bf4-88f1-62a7a8c792c3
-# 21:22:22
+# 17:16:43 кнопка Назад
+https://nashdekor.ru/assets/chat.js?v=202611162013
+https://nashdekor.ru/
