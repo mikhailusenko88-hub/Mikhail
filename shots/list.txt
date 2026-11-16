@@ -1,6 +1,6 @@
 # имя | адрес | desktop|mobile | js
-# 16.11.2026 — фото живых образцов: плинтусы, молдинги, панели (версия фото 6)
-pl-m | https://nashdekor.ru/catalog/plintusy/?s=2 | mobile | window.scrollTo(0,900)
-mold-d | https://nashdekor.ru/catalog/moldingi/?s=2 | desktop | window.scrollTo(0,500)
-home-pan-d | https://nashdekor.ru/?s=2 | desktop | document.querySelector('#grid').scrollIntoView(); window.scrollBy(0,-40)
-a703-m | https://nashdekor.ru/p/a703/?s=2 | mobile | document.querySelector('[data-v=photo]')?.click(); window.scrollTo(0,250)
+# 16.11.2026 — единый стиль фото (версия 7): молдинги, потолочные, уголки, карточка A608
+mold7-d | https://nashdekor.ru/?s=7 | desktop | document.querySelector('[data-cat=mold]')?.click(); document.querySelector('#grid').scrollIntoView(); window.scrollBy(0,-40)
+corn7-m | https://nashdekor.ru/?s=7 | mobile | document.querySelector('[data-cat=cornice]')?.click(); document.querySelector('#grid').scrollIntoView(); window.scrollBy(0,-60)
+a608-m | https://nashdekor.ru/p/a608/?s=7 | mobile | document.querySelector('[data-v=photo]')?.click(); window.scrollTo(0,200)
+a503-paint-d | https://nashdekor.ru/p/a503/?s=7 | desktop | document.querySelector('[data-v=photo]')?.click(); document.querySelectorAll('.dot')[4]?.click()
