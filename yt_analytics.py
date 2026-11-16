@@ -84,9 +84,11 @@ def record_channel(info, now, tab_rows=True, tab_limit=60):
     h = info.get("handle")
     subs = vids = None
     for p in info.get("header") or []:
-        if re.search(r"подпис|subscri", p, re.I):
+        if len(p) > 40:          # описание канала («Подписывайся… за 30 секунд») — не шапка
+            continue
+        if subs is None and re.search(r"подпис|subscri", p, re.I):
             subs = num(p)
-        elif re.search(r"видео|video", p, re.I):
+        elif vids is None and re.search(r"видео|video", p, re.I):
             vids = num(p)
     hist_append("channels", ["checked_utc", "handle", "channel_id", "subs", "videos", "page_status"],
                 [[stamp, h, info.get("channel_id"), subs, vids, info.get("page_status")]], now)
@@ -231,10 +233,10 @@ def channel_lite(handle, get, initial_data, now):
         for node in _walk(d.get("header", {})):
             for k in ("content", "simpleText"):
                 v = node.get(k) if isinstance(node, dict) else None
-                if isinstance(v, str) and re.search(r"\d", v):
-                    if re.search(r"подпис|subscri", v, re.I):
+                if isinstance(v, str) and re.search(r"\d", v) and len(v) <= 40:
+                    if "subs" not in out and re.search(r"подпис|subscri", v, re.I):
                         out["subs"] = num(v)
-                    elif re.search(r"видео|video", v, re.I):
+                    elif "videos" not in out and re.search(r"видео|video", v, re.I):
                         out["videos"] = num(v)
     if out.get("channel_id"):
         time.sleep(0.5)
