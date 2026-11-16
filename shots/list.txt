@@ -1,7 +1,7 @@
 # имя | адрес | desktop|mobile | js
-# 16.11.2026 вечер — по легенде коробок образцов: живые фото на A701 и A25, 3D-отрезки у AP1-100 и A605, A608 40×20
-a701-f | https://nashdekor.ru/p/a701/?s=11 | mobile | document.querySelector('[data-v="photo"]').click()
-ap1-f | https://nashdekor.ru/p/ap1-100/?s=11 | mobile | document.querySelector('[data-v="photo"]').click()
-a25-f | https://nashdekor.ru/p/a25/?s=11 | mobile | document.querySelector('[data-v="photo"]').click()
-a605-f | https://nashdekor.ru/p/a605/?s=11 | mobile | document.querySelector('[data-v="photo"]').click()
-a608-f | https://nashdekor.ru/p/a608/?s=11 | mobile | document.querySelector('[data-v="photo"]').click()
+# 16.11.2026 22:05 — расчёт стены: новая комната, камера, выбор панели карточками; главное фото белых панелей — повёрнутое
+calc-m | https://nashdekor.ru/?s=12 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,-66)
+calc-pick-m | https://nashdekor.ru/?s=12&panel=3-7 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,300)
+calc-d | https://nashdekor.ru/?s=12 | desktop | document.getElementById('calc').scrollIntoView()
+calc-side-d | https://nashdekor.ru/?s=12&panel=5-10 | desktop | document.getElementById('calc').scrollIntoView(); document.querySelector('[data-view="side"]').click()
+cat-m | https://nashdekor.ru/?s=12 | mobile | document.getElementById('catalog').scrollIntoView()
