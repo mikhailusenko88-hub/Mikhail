@@ -1608,19 +1608,28 @@ def _piece_stage(ob, W, T, L, view):
 
 
 
+EXPO_HOOK = None      # своя экспозиция сцены (если задана) вместо auto_expose по светлому месту
+
+
 def scene_slat_piece(item, view):
-    """Отрезок реечной панели «под дерево» (серии 2, 3, 5; 120×12 мм): полый профиль «змейкой» (slat_profile.py),
-    плёнка-декор только на лице реек (текстура tex_decor/<артикул>.jpg — ламель с фото каталога), бока и пазы чёрные,
-    срез — тёмная пена. Серия 3: рейка 29,5 / шаг 40 (живой образец 12.11); серия 5: рейка 10,5 / шаг 24
-    (измерено по фото образца 16.11); серия 2: 37 / 60 — по каталогу, с образцом не сверена."""
+    """Отрезок реечной панели «под дерево» (серии 2, 3, 5; 120×12 мм) — карточка товара в стиле фото живых образцов.
+    Геометрия: полый профиль «змейкой» (slat_profile.py). Серия 3: рейка 29,5 / шаг 40 (живой образец 12.11);
+    серия 5: рейка 10,5 / шаг 24 (измерено по фото образца 16.11); серия 2: рейка 30 / шаг 60 — по фото каталога,
+    с образцом не сверена. Плёнка-декор только на лице реек: у каждой рейки своя текстура tex_decor/<артикул>_<i>.jpg
+    (рейки с фото каталога, выпрямлены tools/decor_tex.py). Бока и пазы чёрные, срез — тёмная пена.
+    Цвет: вид Standard, экспозиция по лицу реек (серый шар 0,5 вместо плёнки) — декор выходит как на фото каталога."""
+    global EXPO_HOOK
     from mathutils import Matrix
     if ROOT not in sys.path:
         sys.path.insert(0, ROOT)
     import slat_profile as SP
     n = int(item[0])
-    SP.STEP, SP.LAM = {2: (60.0, 37.0), 3: (40.0, 29.5), 5: (24.0, 10.5)}[n]
-    pts = [(x, z) for x, z, _ in SP.outline(n)]
+    SP.STEP, SP.LAM = {2: (60.0, 30.0), 3: (40.0, 29.5), 5: (24.0, 10.5)}[n]
+    mirror = view in ('a', 'c')          # полка: на виде «а» — слева у зрителя, стоя — справа (как на фото образцов)
     W, T, L = 0.12, 0.012, float(A.get('len', 0.10))
+    pts = [(x, z) for x, z, _ in SP.rounded(SP.outline(n), r_top=0.7, r=0.4, seg=3)]
+    if mirror:
+        pts = [(120.0 - x, z) for x, z in reversed(pts)]
     cu = bpy.data.curves.new('slat', 'CURVE')
     cu.dimensions = '2D'
     cu.fill_mode = 'BOTH'
@@ -1636,42 +1645,81 @@ def scene_slat_piece(item, view):
     me = bpy.data.meshes.new_from_object(tmp.evaluated_get(bpy.context.evaluated_depsgraph_get()))
     bpy.data.objects.remove(tmp)
     me.transform(Matrix.Translation((-W / 2.0, 0.0, 0.0)))
-    m_black = mat_simple('pan_black_piece', (0.012, 0.012, 0.013, 1), rough=0.55)
-    m_wood, nt, out = new_mat('wood_piece')
-    bs = principled(nt, out, Roughness=0.5)
-    tx = nt.nodes.new('ShaderNodeTexImage')
-    tx.image = bpy.data.images.load(f'{ROOT}/tex_decor/{item}.jpg')
-    try:
+    while me.uv_layers:
+        me.uv_layers.remove(me.uv_layers[0])
+    uv = me.uv_layers.new(name='decor')
+    m_black = mat_simple('pan_black_piece', (0.012, 0.012, 0.013, 1), rough=float(A.get('brough', 0.5)))
+    me.materials.append(m_black)
+    me.materials.append(mat_foam())
+    info = json.load(open(f'{ROOT}/tex_decor/index.json', encoding='utf-8'))[item]
+    woods = []
+    for i in range(n):
+        m, nt, out = new_mat(f'wood_piece_{i}')
+        bs = principled(nt, out, Roughness=float(A.get('wrough', 0.6)), **{'Specular IOR Level': float(A.get('wspec', 0.35))})
+        tx = nt.nodes.new('ShaderNodeTexImage')
+        tx.image = bpy.data.images.load(f'{ROOT}/tex_decor/{item}_{i}.jpg')
+        tx.interpolation = 'Cubic'
         tx.extension = 'MIRROR'
-    except Exception as e:  # noqa
-        log('mirror', e)
-    uvn = nt.nodes.new('ShaderNodeUVMap')
-    nt.links.new(uvn.outputs['UV'], tx.inputs['Vector'])
-    nt.links.new(tx.outputs['Color'], bs.inputs['Base Color'])
-    for m in (m_black, m_wood, mat_foam()):
+        uvn = nt.nodes.new('ShaderNodeUVMap')
+        uvn.uv_map = 'decor'
+        nt.links.new(uvn.outputs['UV'], tx.inputs['Vector'])
+        nt.links.new(tx.outputs['Color'], bs.inputs['Base Color'])
         me.materials.append(m)
-    ratio = json.load(open(f'{ROOT}/tex_decor/index.json', encoding='utf-8'))[item]['ratio']
+        woods.append(m)
     step, lam = SP.STEP / 1000.0, SP.LAM / 1000.0
-    uv = me.uv_layers.new(name='UVMap')
+    nw = 0
     for poly in me.polygons:
         if abs(poly.normal.z) > 0.9:
-            poly.material_index = 2
-        elif poly.normal.y > 0.9 and poly.center.y > T - 0.0006:
             poly.material_index = 1
+            continue
+        xo = poly.center.x + W / 2.0
+        if mirror:
+            xo = W - xo
+        i = min(n - 1, max(0, int((xo + 1e-6) // step)))
+        if poly.center.y > T - 0.0007 and xo - i * step < lam + 0.001:
+            poly.material_index = 2 + i
+            nw += 1
+            ratio = info['ratio'][min(i, len(info['ratio']) - 1)]
             for li in poly.loop_indices:
                 co = me.vertices[me.loops[li].vertex_index].co
                 x = co.x + W / 2.0
-                i = int((x + 1e-6) // step)
-                uv.data[li].uv = ((x - i * step) / lam, co.z / (lam * ratio) + 0.31 * i)
+                if mirror:
+                    x = W - x
+                uv.data[li].uv = ((x - i * step) / lam, 1.0 - (co.z + L / 2.0) / (lam * ratio))
         else:
             poly.material_index = 0
+    log('slat piece', item, 'wood faces', nw, 'mirror', mirror)
     ob = bpy.data.objects.new('piece', me)
     col.objects.link(ob)
     _piece_stage(ob, W, T, L, view)
+    vs = scene.view_settings
+    try:
+        vs.view_transform = A.get('vt', 'Standard')
+        vs.look = 'None'
+    except Exception as e:  # noqa
+        log('view', e)
+
+    def expose_face():
+        gray = mat_simple('cal_gray', (0.5, 0.5, 0.5, 1), rough=1.0, **{'Specular IOR Level': 0.0})
+        for i in range(n):
+            me.materials[2 + i] = gray
+        rw = 280
+        rh = max(2, int(round(rw * H_PX / W_PX)))
+        lu = lum(render_linear(rw, rh, 48, 'ae').astype(np.float64))
+        for i in range(n):
+            me.materials[2 + i] = woods[i]
+        sel = lu[lu > 0.3 * float(np.percentile(lu, 99.5))]
+        face = float(np.median(sel)) if sel.size else 0.25
+        ev = math.log2(0.5 * float(A.get('gain', 0.92)) / max(face, 1e-6)) + EV
+        scene.view_settings.exposure = ev
+        log('face exposure: gray face %.4f -> exposure %.2f' % (face, ev))
+    EXPO_HOOK = expose_face
 
 
 def auto_expose():
     """Экспозиция по самому светлому месту кадра (белое изделие не выгорает, фон остаётся тёмным)."""
+    if EXPO_HOOK:
+        return EXPO_HOOK()
     rw = 240
     rh = max(2, int(round(rw * H_PX / W_PX)))
     px = render_linear(rw, rh, 32, 'ae')
