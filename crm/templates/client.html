@@ -7,6 +7,7 @@
 <div class="contacts">
   {% if cl['phone'] %}<a class="btn-s" href="tel:{{ cl['phone'] }}">☎ {{ cl['phone'] }}</a>{% endif %}
   {% if cl['email'] %}<a class="btn-s" href="mailto:{{ cl['email'] }}">✉ {{ cl['email'] }}</a>{% endif %}
+  {% if cl['kind'] == 'd' and cl['email'] and me and me['role'] == 'admin' %}<a class="btn-s" href="{{ url_for('designers_view', to=cl['email']) }}#send">Отправить 3D-модели и каталог</a>{% endif %}
 </div>
 <h2>Заявки</h2>
 <div class="panel list">{% for o in deals %}<a class="row btn" href="{{ url_for('deal_view', did=o['id']) }}"><div class="grow"><div class="t">№{{ o['id'] }} · {{ (o['want'] or 'без описания')[:70] }}</div><div class="d">{{ fmt_day(o['created_at']) }} · {{ SOURCE_NAMES.get(o['source'], o['source']) }}{% set s = total(o['gross'], o['discount']) %}{% if s %} · {{ rub(s) }}{% endif %}</div></div>{{ stage_pill(o['stage']) }}</a>{% else %}<div class="row"><span class="d">Заявок нет</span></div>{% endfor %}</div>

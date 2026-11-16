@@ -1953,6 +1953,134 @@ class TestDocs(TestPochta):
         self.assertIn("в документах", self.c.get("/outbox").get_data(as_text=True))
 
 
+class TestDesignerDocs(Base):
+    """«Дизайнеры → Документы для дизайнеров»: файлы раздела «Дизайнерам», ссылки без входа, письмо со ссылками."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        from pathlib import Path
+        self.docs = self.app.extensions["docs"]
+        self.docs.dir = Path(self.tmp.name) / "docs"
+        self.login()
+
+    def upload(self, files, **form):
+        import io
+        data = {"csrf": self.csrf(), **form}
+        data["file"] = [(io.BytesIO(b), n) for n, b in files]
+        return self.c.post("/docs/upload", data=data, content_type="multipart/form-data")
+
+    def links(self, page: str) -> list[str]:
+        return re.findall(r'https://crm\.nashdekor\.ru(/api/f/[A-Za-z0-9_-]+/[^"\s]+)', page)
+
+    def test_files_links_and_public_download(self) -> None:
+        page = self.c.get("/designers").get_data(as_text=True)
+        self.assertIn("Документы для дизайнеров", page); self.assertIn("Файлов пока нет", page)
+        r = self.upload([("nashdekor-3d-fbx.zip", b"PK\x03\x04fbx")], folder="Дизайнерам", back="designers", title="3D-модели для 3ds Max (FBX)")
+        self.assertTrue(r.headers["Location"].endswith("/designers#docs"))
+        self.upload([("katalog.pdf", b"%PDF-1.4 katalog")], folder="Дизайнерам", back="designers", title="Каталог «Наш декор»")
+        self.upload([("ИНН.pdf", b"%PDF inn")], folder="ИП")                                        # чужой раздел — не раздаётся
+        page = self.c.get("/designers").get_data(as_text=True)
+        self.assertIn("3D-модели для 3ds Max (FBX)", page); self.assertIn("Каталог «Наш декор»", page); self.assertNotIn("ИНН", page)
+        urls = self.links(page)
+        self.assertEqual(len(urls), 2)
+        zip_url = [u for u in urls if u.endswith("nashdekor-3d-fbx.zip")][0]
+        pdf_url = [u for u in urls if u.endswith("katalog.pdf")][0]
+        guest = self.app.test_client()                                                              # без входа в CRM
+        r = guest.get(zip_url)
+        self.assertEqual(r.status_code, 200); self.assertEqual(r.data, b"PK\x03\x04fbx")
+        self.assertIn("attachment", r.headers["Content-Disposition"]); self.assertIn("nashdekor-3d-fbx.zip", r.headers["Content-Disposition"])
+        self.assertIn("noindex", r.headers["X-Robots-Tag"]); self.assertNotIn("Set-Cookie", r.headers)
+        r = guest.get(pdf_url)
+        self.assertEqual(r.mimetype, "application/pdf"); self.assertEqual(r.headers["Content-Security-Policy"], "sandbox")
+        self.assertEqual(guest.get(zip_url.rsplit("/", 1)[0]).status_code, 200)                     # имя файла в ссылке не обязательно
+        self.assertEqual(guest.head(zip_url).status_code, 200)
+        self.assertIn("скачали по ссылкам: 2", self.c.get("/designers").get_data(as_text=True))     # HEAD не считается
+        self.assertEqual(guest.get("/api/f/" + "x" * 24).status_code, 404)
+        self.assertEqual(guest.get("/api/f/../crm.db").status_code, 404)
+        inn = self.docs.list("ИП")[0]
+        self.assertEqual(guest.get(f"/api/f/{inn['id']}").status_code, 404)                          # id документа — не ключ
+        self.assertEqual(guest.get(f"/docs/{inn['id']}").status_code, 302)                           # в CRM без входа не пускает
+        # новая ссылка — прежняя перестаёт работать
+        fbx = [d for d in self.docs.list("Дизайнерам") if d["filename"].endswith(".zip")][0]
+        self.post(f"/designers/docs/{fbx['id']}/relink")
+        self.assertEqual(guest.get(zip_url).status_code, 404)
+        new_url = [u for u in self.links(self.c.get("/designers").get_data(as_text=True)) if u.endswith(".zip")][0]
+        self.assertNotEqual(new_url, zip_url); self.assertEqual(guest.get(new_url).status_code, 200)
+        self.assertEqual(self.post(f"/designers/docs/{inn['id']}/relink").status_code, 404)          # не из раздела «Дизайнерам»
+        # удалили документ — ссылка умерла
+        self.post(f"/docs/{fbx['id']}/edit", {"delete": "1", "confirm": "1"})
+        self.assertEqual(guest.get(new_url).status_code, 404)
+        # не админ: страницы и действия закрыты, чужие ссылки на скачивание — открыты всем
+        c2 = self.app.test_client(); self.login("mikhail", "Secret-pass-2", client=c2)
+        self.assertEqual(c2.get("/designers").status_code, 403)
+        self.assertEqual(self.post("/designers/docs/send", {"email": "a@b.ru"}, client=c2).status_code, 403)
+        self.assertEqual(c2.get(pdf_url).status_code, 200)
+
+    def test_send_by_mail_personal_links(self) -> None:
+        self.upload([("nashdekor-3d-sketchup.zip", b"PK\x03\x04dae")], folder="Дизайнерам", title="3D-модели для SketchUp (DAE)")
+        self.upload([("katalog.pdf", b"%PDF-1.4 katalog")], folder="Дизайнерам", title="Каталог «Наш декор»")
+        with self.store.tx() as c:
+            cid = self.store.add_client(c, "Студия Арка", email="hello@arka.example", kind="d")
+        ids = {d["title"]: d["id"] for d in self.docs.list("Дизайнерам")}
+        page = self.c.get(f"/clients/{cid}").get_data(as_text=True)
+        self.assertIn("Отправить 3D-модели и каталог", page); self.assertIn("/designers?to=hello@arka.example#send", page)
+        self.assertIn('value="hello@arka.example"', self.c.get("/designers?to=hello@arka.example").get_data(as_text=True))
+        sent = []
+        orig = crm_app.send_mail
+        crm_app.send_mail = lambda to, subj, body, sender="", reply_to="", **k: sent.append((to, subj, body, sender, reply_to)) or True
+        try:
+            r = self.post("/designers/docs/send", {"email": "не почта", "ids": list(ids.values())})
+            self.assertEqual(sent, [])
+            r = self.post("/designers/docs/send", {"email": "hello@arka.example"})                  # ничего не отмечено
+            self.assertEqual(sent, [])
+            r = self.c.post("/designers/docs/send", data={"csrf": self.csrf(), "email": "Hello@Arka.example", "ids": list(ids.values()),
+                                                           "subject": "", "text": "Добрый день!\n\n{ссылки}\n\nЖдём вопросы."})
+            self.assertTrue(r.headers["Location"].endswith("/designers#sent"))
+        finally:
+            crm_app.send_mail = orig
+        self.assertEqual(len(sent), 1)
+        to, subj, body, sender, reply_to = sent[0]
+        self.assertEqual((to, subj, sender, reply_to), ("Hello@Arka.example", "3D-модели и каталог «Наш декор»",
+                                                        "Наш декор <info@nashdekor.ru>", "info@nashdekor.ru"))
+        self.assertIn("Добрый день!", body); self.assertIn("Ждём вопросы.", body); self.assertNotIn("{ссылки}", body)
+        self.assertIn("3D-модели для SketchUp (DAE)", body); self.assertIn("Каталог «Наш декор»", body)
+        self.assertIn("С уважением, Юлия, «Наш декор»", body); self.assertNotIn("бесплатно", (subj + body).lower())
+        personal = self.links(body)
+        self.assertEqual(len(personal), 2)
+        common = self.links(self.c.get("/designers").get_data(as_text=True))
+        self.assertFalse(set(personal) & set(common))                                                # личные ссылки — свои
+        page = self.c.get("/designers").get_data(as_text=True)
+        self.assertIn("Отправлено дизайнерам", page); self.assertIn("hello@arka.example", page); self.assertIn("ещё не скачал", page)
+        self.assertIn("Отправлены материалы для дизайнеров", self.c.get(f"/clients/{cid}").get_data(as_text=True))
+        guest = self.app.test_client()
+        self.assertEqual(guest.get(personal[0]).status_code, 200)
+        page = self.c.get("/designers").get_data(as_text=True)
+        self.assertIn("скачал ·", page); self.assertNotIn("ещё не скачал", page)
+        # почта не приняла — ссылки из письма гасим, в «Отправлено» одна прежняя запись
+        crm_app.send_mail = lambda *a, **k: False
+        try:
+            self.c.post("/designers/docs/send", data={"csrf": self.csrf(), "email": "other@studio.example", "ids": list(ids.values())})
+        finally:
+            crm_app.send_mail = orig
+        off = self.store.c().execute("SELECT COUNT(*) AS n FROM doc_links WHERE sent_to='other@studio.example' AND off=0").fetchone()["n"]
+        self.assertEqual(off, 0)
+
+    def test_download_limit_and_range(self) -> None:
+        import designer_docs
+        self.upload([("a.zip", b"0123456789")], folder="Дизайнерам")
+        url = self.links(self.c.get("/designers").get_data(as_text=True))[0]
+        guest = self.app.test_client()
+        r = guest.get(url, headers={"Range": "bytes=5-"})                                           # докачка — не новое скачивание
+        self.assertEqual(r.status_code, 206); self.assertEqual(r.data, b"56789")
+        self.assertNotIn("скачали по ссылкам", self.c.get("/designers").get_data(as_text=True))
+        old, designer_docs.DL_MAX = designer_docs.DL_MAX, 3
+        try:
+            codes = [guest.get(url).status_code for _ in range(5)]
+        finally:
+            designer_docs.DL_MAX = old
+        self.assertEqual(codes, [200, 200, 200, 429, 429])
+
+
 class TestInvoices(Base):
     """Счёт компании: реквизиты продавца, PDF с QR, письмо, автопривязка оплаты по номеру счёта."""
 

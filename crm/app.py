@@ -41,6 +41,7 @@ from ai_web import AI, register as register_ai
 from outbox import Outbox
 from pochta import INLINE_OK, Pochta, fmt_ts, size_h
 from docs import MAX_FILE as DOC_MAX, Docs, clean_folder, fmt_date
+from designer_docs import register as register_designer_docs
 from invoice import Invoices
 from push import WebPush
 from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, TochkaError, http_request, jwt_claims,
@@ -611,6 +612,9 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 os.path.join(os.path.dirname(os.path.abspath(conf["CRM_DB"])), "docs"))
     app.extensions["docs"] = docs
     ob.save_doc = docs.add                       # Claude кладёт документы через ветку outbox (docs/*.json, шифр)
+    register_designer_docs(app, store, docs, {"admin_required": admin_required, "who": who,
+                                              "send_mail": lambda *a, **k: send_mail(*a, **k),
+                                              "shop_domain": conf["SHOP_DOMAIN"] or "nashdekor.ru"})
 
     def folder_from_form() -> str:
         return clean_folder((request.form.get("new_folder") or "").strip() or request.form.get("folder", ""))
@@ -630,9 +634,10 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     def docs_upload() -> Any:
         files = [x for x in request.files.getlist("file") if x and x.filename]
         folder = folder_from_form()
+        to_designers = request.form.get("back") == "designers"      # загрузка со страницы «Дизайнеры» — туда и вернуться
         if not files:
             flash("Выберите файл.", "err")
-            return redirect(url_for("docs_view", f=folder))
+            return redirect(url_for("designers_view") + "#docs" if to_designers else url_for("docs_view", f=folder))
         added = same = 0
         for x in files:
             name = re.split(r"[\\/]", x.filename or "")[-1]
@@ -649,6 +654,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             flash(f"Сохранено в «{folder}»: {added}." + (f" Уже были: {same}." if same else ""), "ok")
         elif same:
             flash("Такой файл в этом разделе уже есть.", "ok")
+        if to_designers:
+            return redirect(url_for("designers_view") + "#docs")
         return redirect(url_for("docs_view", f=folder))
 
     @app.route("/docs/<did>")

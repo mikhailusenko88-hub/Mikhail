@@ -3,7 +3,53 @@
 {% block title %}Дизайнеры{% endblock %}
 {% block main %}
 {{ more_nav('designers') }}
-<h1>Вознаграждения дизайнерам</h1>
+<h1>Дизайнеры</h1>
+{% set dzd = dz_docs() %}
+<h2 id="docs">Документы для дизайнеров</h2>
+<p class="sub">3D-модели по программам, каталог и другие файлы. Скачайте файл себе, скопируйте ссылку для мессенджера или отправьте письмо со ссылками — будет видно, скачал ли дизайнер. По ссылке файл открывается без входа в CRM.</p>
+<div class="panel list">{% for d in dzd %}
+<div class="row dzrow">
+  <a class="docopen" href="{{ url_for('docs_file', did=d['id']) }}"><span class="t">{{ d['title'] }}</span>
+  <span class="d dzsub">{{ d['filename'] }} · {{ d['size_h'] }}{% if d['note'] %} · {{ d['note'] }}{% endif %}{% if d['hits'] %} · скачали по ссылкам: {{ d['hits'] }}{% endif %}</span></a>
+  <input class="dzlink" readonly id="dzl{{ loop.index }}" value="{{ d['url'] }}" aria-label="Ссылка на «{{ d['title'] }}»">
+  <button class="btn-s sm" type="button" data-copy="#dzl{{ loop.index }}">Скопировать ссылку</button>
+  <form method="post" action="{{ url_for('designer_doc_relink', did=d['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn-g sm" title="Прежняя ссылка перестанет работать">Новая ссылка</button></form>
+</div>{% else %}<div class="row"><span class="d">Файлов пока нет — добавьте ниже или в «Документах» в раздел «{{ DESIGNER_FOLDER }}».</span></div>{% endfor %}</div>
+
+<details class="panel pad sec" id="send" {% if request.args.get('to') %}open{% endif %}>
+<summary>Отправить дизайнеру на почту</summary>
+{% if dzd %}<form class="grid2 sec" method="post" action="{{ url_for('designer_docs_send') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f span2">Почта дизайнера<input name="email" type="email" required list="dzmails" value="{{ request.args.get('to', '') }}" placeholder="studio@example.ru"></label>
+  <datalist id="dzmails">{% for em, nm in dz_emails() %}<option value="{{ em }}">{{ nm }}</option>{% endfor %}</datalist>
+  <div class="span2 dzpick"><div class="d">Что отправить (в письме будут ссылки, не вложения):</div>
+  {% for d in dzd %}<label class="dzchk"><input type="checkbox" name="ids" value="{{ d['id'] }}"> {{ d['title'] }} <span class="d">· {{ d['size_h'] }}</span></label>{% endfor %}</div>
+  <label class="f span2">Тема письма<input name="subject" maxlength="150" value="{{ DZ_SUBJECT }}"></label>
+  <label class="f span2">Текст письма — ссылки на отмеченные файлы встанут вместо строки {{ DZ_MARK }}<textarea name="text" rows="11">{{ DZ_TEXT }}</textarea></label>
+  <div class="span2"><button class="btn-p">Отправить письмо</button>
+  <p class="d">Письмо уйдёт с info@, ответ придёт в «Почту». На адреса @gmail.com письма с нашего домена пока часто попадают в «Спам» — таким дизайнерам лучше скопировать ссылку и отправить в мессенджере.</p></div>
+</form>{% else %}<p class="d">Сначала добавьте файлы.</p>{% endif %}
+</details>
+
+<details class="panel pad sec">
+<summary>Добавить файл</summary>
+<form class="grid2 sec" method="post" enctype="multipart/form-data" action="{{ url_for('docs_upload') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="folder" value="{{ DESIGNER_FOLDER }}"><input type="hidden" name="back" value="designers">
+  <label class="f span2">Файл (архив, PDF — до 25 МБ)<input type="file" name="file" required></label>
+  <label class="f span2">Название для списка и письма<input name="title" maxlength="200" placeholder="например, 3D-модели для 3ds Max (FBX)"></label>
+  <div class="span2"><button class="btn-p">Загрузить</button>
+  <p class="d">Переименовать или удалить файл — в разделе <a href="{{ url_for('docs_view', f=DESIGNER_FOLDER) }}">«Документы → {{ DESIGNER_FOLDER }}»</a>.</p></div>
+</form>
+</details>
+
+{% set snd = dz_sends() %}{% if snd %}
+<h2 id="sent">Отправлено дизайнерам</h2>
+<div class="panel list">{% for x in snd %}<div class="row"><div class="grow"><div class="t">{% if x['client_id'] %}<a href="{{ url_for('client_view', cid=x['client_id']) }}">{{ x['sent_to'] }}</a>{% else %}{{ x['sent_to'] }}{% endif %}</div>
+<div class="d">{{ fmt_dt(x['at']) }}{% if x['by'] %} · {{ x['by'] }}{% endif %} · {{ x['titles']|join(', ') }}</div></div>
+{% if x['hits'] %}<span class="pill good">скачал{% if x['hits'] > 1 %}: {{ x['hits'] }}{% endif %} · {{ fmt_dt(x['last_hit']) }}</span>{% else %}<span class="pill">ещё не скачал</span>{% endif %}</div>{% endfor %}</div>
+{% endif %}
+
+<h2>Вознаграждения дизайнерам</h2>
 <p class="sub">Дизайнер, который привёл клиента, указывается в заявке (блок «Дизайнер»). Вознаграждение — процент от оплаченной суммы; начисляется, когда заказ отгружен. Платим только ИП (по акту) и самозанятым (по чеку из «Мой налог») — эти документы нужны для расходов на УСН.</p>
 {% for d in ds %}
 <div class="panel pad sec" id="d{{ d['id'] }}">

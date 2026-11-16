@@ -15,10 +15,12 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
-DEFAULT_FOLDERS = ["ИП", "Договоры", "Сертификаты и ТУ", "Налоги и отчётность", "Банк", "Из почты", "Прочее"]
+DESIGNER_FOLDER = "Дизайнерам"          # файлы этого раздела видны в «Дизайнеры → Документы для дизайнеров» и раздаются по ссылкам
+DEFAULT_FOLDERS = ["ИП", "Договоры", "Сертификаты и ТУ", "Налоги и отчётность", "Банк", DESIGNER_FOLDER, "Из почты", "Прочее"]
 MAX_FILE = 25 * 1024 * 1024
 WARN_DAYS = 60                       # «срок действия подходит» — за столько дней
 ID_RE = re.compile(r"^[0-9a-f]{32}$")
+TOKEN_RE = re.compile(r"^[A-Za-z0-9_-]{20,40}$")
 INLINE_OK = {"application/pdf", "image/png", "image/jpeg", "image/gif", "image/webp"}
 
 SCHEMA = """
@@ -35,6 +37,23 @@ CREATE TABLE IF NOT EXISTS docs (
     source     TEXT NOT NULL DEFAULT '',     -- откуда: загрузка, письмо, Claude
     created_at TEXT NOT NULL,
     created_by TEXT NOT NULL DEFAULT ''
+)
+"""
+
+
+# Ссылки на скачивание без входа в CRM (для дизайнеров): общая на документ (sent_to='') и личные — по одной на
+# каждую отправку письма (sent_to = адрес), чтобы было видно, кто скачал. Ссылку можно выключить (off=1).
+LINKS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS doc_links (
+    token      TEXT PRIMARY KEY,
+    doc_id     TEXT NOT NULL,
+    sent_to    TEXT NOT NULL DEFAULT '',
+    client_id  INTEGER,
+    created_at TEXT NOT NULL,
+    created_by TEXT NOT NULL DEFAULT '',
+    hits       INTEGER NOT NULL DEFAULT 0,
+    last_hit   TEXT NOT NULL DEFAULT '',
+    off        INTEGER NOT NULL DEFAULT 0
 )
 """
 
@@ -71,6 +90,8 @@ class Docs:
         with self.s.tx() as c:
             c.execute(SCHEMA)
             c.execute("CREATE INDEX IF NOT EXISTS docs_folder ON docs(folder)")
+            c.execute(LINKS_SCHEMA)
+            c.execute("CREATE INDEX IF NOT EXISTS doc_links_doc ON doc_links(doc_id)")
 
     def _now(self) -> str:
         from store import now
@@ -147,10 +168,69 @@ class Docs:
             return
         with self.s.tx() as c:
             c.execute("DELETE FROM docs WHERE id=?", (did,))
+            c.execute("DELETE FROM doc_links WHERE doc_id=?", (did,))
         try:
             (self.dir / did).unlink()
         except OSError:
             pass
+
+    # ------------------------------------------------------------ ссылки на скачивание (без входа в CRM)
+    def new_link(self, did: str, by: str = "", sent_to: str = "", client_id: int | None = None) -> str:
+        if not self.get(did):
+            raise ValueError("нет такого документа")
+        import secrets
+        tok = secrets.token_urlsafe(18)
+        with self.s.tx() as c:
+            c.execute("INSERT INTO doc_links(token, doc_id, sent_to, client_id, created_at, created_by) VALUES (?,?,?,?,?,?)",
+                      (tok, did, str(sent_to or "").strip().lower()[:120], client_id, self._now(), str(by or "")[:60]))
+        return tok
+
+    def share(self, did: str, by: str = "") -> str:
+        """Общая ссылка документа (одна; если нет — создаётся)."""
+        r = self.s.c().execute("SELECT token FROM doc_links WHERE doc_id=? AND sent_to='' AND off=0 ORDER BY created_at LIMIT 1",
+                               (did,)).fetchone()
+        return r["token"] if r else self.new_link(did, by)
+
+    def reshare(self, did: str, by: str = "") -> str:
+        """Выключить прежнюю общую ссылку и выдать новую (если ссылка ушла не туда)."""
+        with self.s.tx() as c:
+            c.execute("UPDATE doc_links SET off=1 WHERE doc_id=? AND sent_to=''", (did,))
+        return self.new_link(did, by)
+
+    def link(self, token: str) -> Any:
+        """Действующая ссылка вместе с документом или None."""
+        if not TOKEN_RE.match(token or ""):
+            return None
+        return self.s.c().execute("SELECT l.token, l.sent_to, l.client_id, l.hits, d.* FROM doc_links l JOIN docs d ON d.id=l.doc_id"
+                                  " WHERE l.token=? AND l.off=0", (token,)).fetchone()
+
+    def hit(self, token: str) -> None:
+        with self.s.tx() as c:
+            c.execute("UPDATE doc_links SET hits=hits+1, last_hit=? WHERE token=?", (self._now(), token))
+
+    def links_off(self, tokens: list[str]) -> None:
+        with self.s.tx() as c:
+            for t in tokens:
+                c.execute("UPDATE doc_links SET off=1 WHERE token=?", (t,))
+
+    def hits(self, did: str) -> int:
+        r = self.s.c().execute("SELECT COALESCE(SUM(hits),0) AS n FROM doc_links WHERE doc_id=?", (did,)).fetchone()
+        return int(r["n"])
+
+    def sends(self, limit: int = 300) -> list[dict[str, Any]]:
+        """Отправки дизайнерам: одна строка на письмо (адрес + минута), что отправили и сколько раз скачали."""
+        rows = self.s.c().execute("SELECT l.sent_to, l.client_id, l.created_at, l.created_by, l.hits, l.last_hit, d.title"
+                                  " FROM doc_links l JOIN docs d ON d.id=l.doc_id WHERE l.sent_to<>''"
+                                  " ORDER BY l.created_at DESC, d.title LIMIT ?", (limit,)).fetchall()
+        out: dict[tuple[str, str], dict[str, Any]] = {}
+        for r in rows:
+            k = (r["sent_to"], r["created_at"][:16])
+            x = out.setdefault(k, {"sent_to": r["sent_to"], "client_id": r["client_id"], "at": r["created_at"], "by": r["created_by"],
+                                   "titles": [], "hits": 0, "last_hit": ""})
+            x["titles"].append(r["title"])
+            x["hits"] += int(r["hits"])
+            x["last_hit"] = max(x["last_hit"], r["last_hit"] or "")
+        return list(out.values())
 
     @staticmethod
     def state(until: str, day: str) -> str:
