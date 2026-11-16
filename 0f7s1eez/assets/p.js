@@ -112,7 +112,7 @@ const PX = new Map(); let MIMG = null, maskLoading = false;
 function prep(img){
   if (PX.has(img.src)) return PX.get(img.src);
   const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement("canvas"); c.width = w; c.height = h;
-  const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(img, 0, 0);
+  const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(img, 0, 0, w, h);   // размер явно: на экранах с плотностью 2–3 браузер иначе рисует фото 2x в натуральных пикселях и в кадр попадает только угол
   const d = g.getImageData(0, 0, w, h).data, n = w * h, m = new Float32Array(n), L = new Float32Array(n), hist = new Uint32Array(256);
   const ss = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
   for (let i = 0, p = 0; i < n; i++, p += 4) {
