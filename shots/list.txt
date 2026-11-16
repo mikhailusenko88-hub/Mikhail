@@ -1,8 +1,7 @@
 # имя | адрес | desktop|mobile | js
 # 16.11.2026 вечер — по легенде коробок образцов: живые фото на A701 и A25, 3D-отрезки у AP1-100 и A605, A608 40×20
-a701-m | https://nashdekor.ru/p/a701/?s=10 | mobile
-ap1-m | https://nashdekor.ru/p/ap1-100/?s=10 | mobile
-a25-m | https://nashdekor.ru/p/a25/?s=10 | mobile
-a605-m | https://nashdekor.ru/p/a605/?s=10 | mobile
-a608-d | https://nashdekor.ru/p/a608/?s=10 | desktop
-mold-sec-d | https://nashdekor.ru/catalog/moldingi/?s=10 | desktop
+a701-f | https://nashdekor.ru/p/a701/?s=11 | mobile | document.querySelector('[data-v="photo"]').click()
+ap1-f | https://nashdekor.ru/p/ap1-100/?s=11 | mobile | document.querySelector('[data-v="photo"]').click()
+a25-f | https://nashdekor.ru/p/a25/?s=11 | mobile | document.querySelector('[data-v="photo"]').click()
+a605-f | https://nashdekor.ru/p/a605/?s=11 | mobile | document.querySelector('[data-v="photo"]').click()
+a608-f | https://nashdekor.ru/p/a608/?s=11 | mobile | document.querySelector('[data-v="photo"]').click()
