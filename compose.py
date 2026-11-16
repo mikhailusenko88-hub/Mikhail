@@ -281,7 +281,8 @@ def main():
     if '--wb' in sys.argv:
         wb = [float(x) for x in sys.argv[sys.argv.index('--wb') + 1].split(',')]
     rgb, alpha = load(cut, src)
-    alpha = clean_alpha(alpha)
+    if '--rawalpha' not in sys.argv:       # альфа уже точная (standing.py) — не «чистим», чтобы не скруглять углы
+        alpha = clean_alpha(alpha)
     if '--standing' in sys.argv:
         alpha, nst = standing_clean(alpha)
         print('standing band removed', nst)
@@ -323,6 +324,14 @@ def main():
         rgb = 246.0 * (rgb / 246.0) ** g
         if '--relief' in sys.argv:
             rgb = relief(rgb, alpha)
+        if '--lc' in sys.argv:              # мягко усилить светотень (грани) без пятен: крупный радиус, только по изделию
+            amt = float(sys.argv[sys.argv.index('--lc') + 1])
+            lum3 = 0.2126 * rgb[..., 0] + 0.7152 * rgb[..., 1] + 0.0722 * rgb[..., 2]
+            am = (alpha > 0.5).astype(np.float64)
+            sg = 0.035 * max(np.ptp(np.where(am.any(0))[0]), 50)
+            base = cv2.GaussianBlur(lum3 * am, (0, 0), sg) / np.maximum(cv2.GaussianBlur(am, (0, 0), sg), 1e-3)
+            new = np.clip(lum3 + amt * (lum3 - base), 40, 252)
+            rgb = rgb * (new / np.maximum(lum3, 1))[..., None]
     else:
         hi = np.percentile(lumv, 99.5)
         if hi > 250:
