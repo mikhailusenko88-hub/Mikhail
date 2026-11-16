@@ -1,9 +1,7 @@
 # имя | адрес | desktop|mobile | js
-home-d | https://nashdekor.ru/?s=1 | desktop
-home-m | https://nashdekor.ru/?s=1 | mobile
-a907-3d-m | https://nashdekor.ru/p/a907/?s=1 | mobile
-a907-photo-d | https://nashdekor.ru/p/a907/?s=1 | desktop | document.querySelector('[data-v=photo]').click()
-37-3d-d | https://nashdekor.ru/p/3-7/?s=1 | desktop | document.querySelector('[data-v=frag]')?.click(); window.scrollTo(0,200)
-37-photo-m | https://nashdekor.ru/p/3-7/?s=1 | mobile | document.querySelector('[data-v=photo]').click(); window.scrollTo(0,380)
-plinth-cat-d | https://nashdekor.ru/catalog/plintusy/?s=1 | desktop | window.scrollTo(0,420)
-a503-d | https://nashdekor.ru/p/a503/?s=1 | desktop
+# 16.11.2026 — фото живых образцов и карусель в каталоге
+cat-m | https://nashdekor.ru/?s=1 | mobile | document.querySelector('#grid').scrollIntoView()
+cat-swipe-m | https://nashdekor.ru/?s=1 | mobile | document.querySelector('#grid').scrollIntoView(); document.querySelectorAll('#grid .track').forEach((t,i)=>t.scrollTo({left:t.clientWidth*(i%2+1)}))
+cat-d | https://nashdekor.ru/?s=1 | desktop | document.querySelector('#grid').scrollIntoView()
+gs3-photo-m | https://nashdekor.ru/p/gs3/?s=1 | mobile | document.querySelector('[data-v=photo]').click(); window.scrollTo(0,300)
+a905-gal-d | https://nashdekor.ru/p/a905/?s=1 | desktop | document.querySelector('.gal').scrollIntoView()
