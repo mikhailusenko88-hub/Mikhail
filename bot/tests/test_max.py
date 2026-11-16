@@ -233,10 +233,36 @@ def test_polling_marker_and_update_parsing(tmp_path):
         assert f.sent(5) == []
         assert await h.db.get_setting(max_api.MARKER_KEY) == "4"
         q = [q for m, p, q, b in f.requests if p == "/updates"][-1]
-        assert q["types"] == "message_created,message_callback,bot_started" and q["limit"] == "100"
+        assert q["types"] == "message_created,message_callback,bot_started,bot_added,bot_removed" and q["limit"] == "100"
         await max_api.poll(h.client, h.engine, h.db, once=True)
         q = [q for m, p, q, b in f.requests if p == "/updates"][-1]
         assert q["marker"] == "4"  # после перезапуска продолжим с того же места
+        await done(f, h)
+
+    run(scenario())
+
+
+def test_bot_added_to_channel_is_remembered(tmp_path):
+    """Бота сделали администратором канала — id канала запоминается для channel.py; удалили — помечается."""
+    import json as _j
+
+    async def scenario():
+        f, h = await make(tmp_path)
+        await h.engine.start()
+        f.updates = [{"update_type": "bot_added", "timestamp": 5, "chat_id": -7001, "is_channel": True,
+                      "user": {"user_id": MANAGER, "first_name": "Юлия", "is_bot": False}},
+                     {"update_type": "bot_added", "timestamp": 6, "chat_id": -7002, "is_channel": False,
+                      "user": {"user_id": MANAGER, "first_name": "Юлия", "is_bot": False}}]
+        await max_api.poll(h.client, h.engine, h.db, once=True)
+        chats = _j.loads(await h.db.get_setting(max_api.CHATS_KEY))
+        assert chats["-7001"] == {"active": True, "at": 5, "channel": True, "by": "Юлия"}
+        assert chats["-7002"]["channel"] is False
+        assert f.sent(MANAGER) == []                       # клиентам и менеджеру ничего не пишет
+        f.updates = [{"update_type": "bot_removed", "timestamp": 9, "chat_id": -7002, "is_channel": False,
+                      "user": {"user_id": MANAGER, "first_name": "Юлия"}}]
+        await max_api.poll(h.client, h.engine, h.db, once=True)
+        chats = _j.loads(await h.db.get_setting(max_api.CHATS_KEY))
+        assert chats["-7002"]["active"] is False and chats["-7001"]["active"] is True
         await done(f, h)
 
     run(scenario())

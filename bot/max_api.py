@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import json
 import logging
 import os
 import ssl
@@ -34,7 +35,8 @@ from db import Database
 
 log = logging.getLogger("prostranstvo.max")
 
-UPDATE_TYPES = ("message_created", "message_callback", "bot_started")
+UPDATE_TYPES = ("message_created", "message_callback", "bot_started", "bot_added", "bot_removed")
+CHATS_KEY = "max_chats"        # каналы и группы, куда добавили бота (для channel.py: посты в канал «Наш декор»)
 TEXT_LIMIT = 4000
 SEND_INTERVAL_SEC = 0.55        # не больше 2 сообщений в секунду в один диалог
 POLL_TIMEOUT_SEC = 30
@@ -344,6 +346,33 @@ class MaxTransport:
                 await self.client.set_commands(CLIENT_COMMANDS)
 
 
+async def note_chat(db: Database, update: dict[str, Any]) -> bool:
+    """Бота добавили в канал (или убрали) — запомнить id, чтобы channel.py знал, куда публиковать."""
+    kind = update.get("update_type")
+    if kind not in ("bot_added", "bot_removed"):
+        return False
+    cid = str(update.get("chat_id") or "")
+    if not cid:
+        return True
+    try:
+        chats = json.loads(await db.get_setting(CHATS_KEY) or "{}")
+    except ValueError:
+        chats = {}
+    item = dict(chats.get(cid) or {})
+    user = update.get("user") or {}
+    item["active"] = kind == "bot_added"
+    item["at"] = int(update.get("timestamp") or 0)
+    if "is_channel" in update:
+        item["channel"] = bool(update.get("is_channel"))
+    if kind == "bot_added":
+        item["by"] = " ".join(x for x in (user.get("first_name") or user.get("name") or "", user.get("last_name") or "") if x)
+    chats[cid] = item
+    await db.set_setting(CHATS_KEY, json.dumps(chats, ensure_ascii=False))
+    log.info("MAX: бота %s %s %s", "добавили в" if item["active"] else "убрали из",
+             "канал" if item.get("channel") else "чат", cid)
+    return True
+
+
 # =========================================================================== запуск
 async def poll(client: MaxClient, engine: Engine, db: Database, *, once: bool = False) -> None:
     """Long polling: получать события и отдавать их ядру по одному (порядок важен для диалогов)."""
@@ -367,6 +396,8 @@ async def poll(client: MaxClient, engine: Engine, db: Database, *, once: bool = 
             continue
         delay = 5.0
         for update in res.get("updates") or []:
+            if await note_chat(db, update):
+                continue
             ev = from_update(update)
             if ev is not None:
                 await engine.handle(ev)
