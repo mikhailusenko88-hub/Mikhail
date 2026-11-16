@@ -1,3 +1,29 @@
+# IndexNow — 2026-11-16 17:00 UTC, коммит 6e39b26
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: изменённые страницы (29) из 341 изменённых файлов; без изменений по сути (только ?v=): 97
+  https://nashdekor.ru/
+  https://nashdekor.ru/p/2-10/
+  https://nashdekor.ru/p/2-11/
+  https://nashdekor.ru/p/2-12/
+  https://nashdekor.ru/p/2-13/
+  https://nashdekor.ru/p/2-14/
+  https://nashdekor.ru/p/2-3/
+  https://nashdekor.ru/p/2-4/
+  https://nashdekor.ru/p/2-5/
+  https://nashdekor.ru/p/2-7/
+  https://nashdekor.ru/p/2-8/
+  https://nashdekor.ru/p/2-9/
+  https://nashdekor.ru/p/3-11/
+  https://nashdekor.ru/p/3-12/
+  https://nashdekor.ru/p/3-15/
+  … и ещё 14
+- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
+- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
+  "success":true
+}
+
+---
+
 # IndexNow — 2026-11-16 16:03 UTC, коммит 3994c2c
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (11) из 131 изменённых файлов; без изменений по сути (только ?v=): 115
@@ -487,29 +513,3 @@
 - /google8ff025c950c4f362.html → 200
 - /yandex_9b48db37dadc94c9.html → 200
 - /robots.txt → 200
-
----
-
-# IndexNow — 2026-11-09 22:22 UTC, коммит e8ca235
-- ключ на сайте: https://nashdekor.ru/1a06371a537e385ae6bb830b593a5315.txt → 200, совпадает
-- режим: изменённые страницы (125) из 126 изменённых файлов
-  https://nashdekor.ru/catalog/karnizy/
-  https://nashdekor.ru/catalog/moldingi/
-  https://nashdekor.ru/catalog/paneli-pod-derevo/
-  https://nashdekor.ru/catalog/plintus-s-podsvetkoy/
-  https://nashdekor.ru/catalog/plintusy/
-  https://nashdekor.ru/catalog/reechnye-paneli/
-  https://nashdekor.ru/catalog/stenovye-paneli/
-  https://nashdekor.ru/catalog/ugolki/
-  https://nashdekor.ru/dostavka/
-  https://nashdekor.ru/oplata/
-  https://nashdekor.ru/p/2-10/
-  https://nashdekor.ru/p/2-11/
-  https://nashdekor.ru/p/2-12/
-  https://nashdekor.ru/p/2-13/
-  https://nashdekor.ru/p/2-14/
-  … и ещё 110
-- https://www.bing.com/indexnow: HTTP 403 — ключ не подошёл {"errorCode":"UserForbiddedToAccessSite","message":"User is unauthorized to access the site. Please verify the site using the key and try again","details":null}
-- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
-  "success":true
-}
