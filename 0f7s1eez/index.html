@@ -116,7 +116,7 @@ section{padding-block:8px 56px}
 .views{position:absolute;top:10px;left:10px;right:56px;display:flex;flex-wrap:wrap;gap:6px}
 .views button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink)}
 .views button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.views button[data-furn]{margin-left:auto}
+.views button[data-scene]{margin-left:auto}
 .zoom{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:6px}
 .zoom button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:20px;line-height:1;padding:0}
 .dims{position:absolute;left:10px;bottom:8px;font-size:12px;color:var(--ink);background:var(--paper);padding:2px 8px;border-radius:3px;pointer-events:none}
@@ -212,7 +212,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 <section id="calc"><div class="wrap">
   <div class="head"><div><h2>Расчёт реечных панелей на стену в 3D</h2><p>Калькулятор: укажите размеры стены, выберите панель и цвет — стена перестроится, а ниже посчитаются штуки, коробки и сумма. Можно добавить плинтус и потолочный плинтус. Расчёт уйдёт вместе с заявкой.</p></div></div>
   <div class="stage3d" id="stage"><canvas id="c3" aria-label="Стена с панелями в 3D"></canvas>
-    <div class="views" role="group" aria-label="Вид"><button type="button" data-view="room" aria-pressed="true">Вся стена</button><button type="button" data-view="side" aria-pressed="false">Сбоку</button><button type="button" data-view="close" aria-pressed="false">Вблизи</button><button type="button" data-furn aria-pressed="true">Мебель</button></div>
+    <div class="views" role="group" aria-label="Вид"><button type="button" data-view="room" aria-pressed="true">Вся стена</button><button type="button" data-view="side" aria-pressed="false">Сбоку</button><button type="button" data-view="close" aria-pressed="false">Вблизи</button><button type="button" data-scene aria-pressed="true" aria-label="Обстановка: ТВ-зона. Нажмите, чтобы сменить">ТВ-зона</button></div>
     <div class="zoom" role="group" aria-label="Масштаб"><button type="button" data-zoom="1" aria-label="Ближе">+</button><button type="button" data-zoom="-1" aria-label="Дальше">−</button></div>
     <div class="dims num" id="stDims"></div>
     <div class="hint"><span class="t">Ведите в сторону — поворот · два пальца — масштаб</span><span class="m">Тяните — поворот · + − или колесо после щелчка — масштаб</span></div>
@@ -364,6 +364,9 @@ function renderTabs(){
 /* Цвета покраски для изделий под покраску; «свой цвет» — любой оттенок или код RAL/NCS */
 const PAINT = [["Белый","#F6F4EF"],["Слоновая кость","#ECE4D3"],["Грейдж","#C2B8A8"],["Шалфей","#A4AE98"],["Олива","#7E8063"],["Пыльная роза","#C9A196"],["Терракота","#B4694B"],["Глубокий синий","#2F3F57"],["Графит","#45474A"],["Чёрный","#1F1F20"]];
 const WHITE = "#F6F4EF";
+/* Декоры «под дерево» для 3D-стены: средний цвет (пока грузится текстура) и длина рисунка полосы img/tex3/<артикул>.jpg, мм. Собирает nashdekor-build/make_decor_tex.py */
+const DECOR = {"2-3":["#b17453",497],"2-4":["#b19b7f",454],"2-5":["#af9a8a",446],"2-7":["#ab8a6f",433],"2-8":["#b1703e",439],"2-9":["#926d55",446],"2-10":["#a5755c",455],"2-11":["#996943",452],"2-12":["#aeb3b5",457],"2-13":["#926a47",454],"2-14":["#9d7a66",434],"3-3":["#cb7941",534],"3-4":["#bf774c",529],"3-5":["#a98471",532],"3-7":["#bb9378",529],"3-8":["#b97e54",528],"3-9":["#8c6f5d",531],"3-11":["#977559",530],"3-12":["#9ba6b1",530],"3-15":["#d6af82",527],"5-5":["#cda182",1087],"5-6":["#d7b69b",1130],"5-8":["#da8a54",951],"5-9":["#ca9979",972],"5-10":["#b4886e",933],"5-11":["#b48a6d",1048],"5-12":["#bcbfbe",1020],"5-15":["#edc699",881]};
+const TEX_V = "1";
 
 /* Перекраска фото: красим только саму панель (светлые малонасыщенные пиксели), сохраняя её светотень; синий фон не трогаем */
 const PX = new Map(), MASKS = new Set(["A172.jpg", "A38.jpg", "A503.jpg", "A504.jpg"]), MIMG = {};
@@ -800,7 +803,8 @@ const CAT_API = "https://crm.nashdekor.ru/api/catalog";
    Камера своя, без «уплывания»: поворот ограничен, масштаб — от «вблизи» до «вся стена», двигать можно только
    когда приблизили; при отдалении стена сама возвращается в центр. Вертикальный жест одним пальцем листает страницу. */
 const W3 = (() => {
-  let R, S, cam, grp, ready = false, view = "room", raf = 0, engaged = false, furn = true, floorT = null, sizeKey = "";
+  let R, S, cam, grp, ready = false, view = "room", raf = 0, engaged = false, scene = "tv", plan = null, lod = null, floorT = null, sizeKey = "";
+  const SCENES = [["tv", "ТВ-зона"], ["sofa", "Диван"], ["none", "Без мебели"]];   // обстановка для масштаба: кнопка переключает по кругу
   const texCache = {};
   const stage = document.getElementById("stage"), cv = document.getElementById("c3");
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -813,23 +817,26 @@ const W3 = (() => {
 
   function init(){
     if (!window.THREE) { document.getElementById("nogl").hidden = false; return; }
-    try { R = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true }); }
+    try { R = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, powerPreference: "high-performance" }); }
     catch (e) { document.getElementById("nogl").hidden = false; return; }
-    R.setPixelRatio(Math.min(devicePixelRatio, 2)); R.outputEncoding = THREE.sRGBEncoding; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = .86;
-    R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap; R.localClippingEnabled = true;
+    // цвет на экране = выбранный цвет × свет, без «киношной» кривой: она делала белые панели серыми
+    R.outputEncoding = THREE.sRGBEncoding; R.toneMapping = THREE.NoToneMapping;
+    R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFShadowMap;
     S = new THREE.Scene();
     cam = new THREE.PerspectiveCamera(FOV, 1, 40, 60000);
-    S.add(new THREE.HemisphereLight(col(0xfffaf2), col(0xb9ab96), 0.62));
-    const sun = new THREE.DirectionalLight(col(0xfff1dc), 2.1);
-    sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0006; sun.shadow.normalBias = 2.5;
+    // эти источники светят только на мебель: стены, пол и панели освещены расчётом в вершинах (см. «Свет посчитан заранее»)
+    S.add(new THREE.HemisphereLight(col(0xfff9f0), col(0x8f8271), .68));
+    const sun = new THREE.DirectionalLight(col(0xfff2e0), .74);
+    sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); sun.shadow.bias = -0.0005; sun.shadow.normalBias = 4; sun.shadow.radius = 3.5;
     S.add(sun); S.add(sun.target); S.userData.sun = sun;
-    const fill = new THREE.DirectionalLight(col(0xe6edff), 0.35); S.add(fill); S.add(fill.target); S.userData.fill = fill;
     new ResizeObserver(() => { size(); limits(); clampTo(); kick(); }).observe(stage); size();
     input();
     ready = true; build();
   }
   function size(){
     if (!R) return; const r = stage.getBoundingClientRect();
+    // плотность точек: не ниже 2 (иначе на обычном мониторе тонкие пазы реек рябят), не выше 3 и не больше ~4,5 млн точек на кадр
+    R.setPixelRatio(Math.min(Math.max(2, Math.min(devicePixelRatio || 1, 3)), Math.sqrt(4.5e6 / Math.max(1, r.width * r.height))));
     R.setSize(r.width, r.height, false); cam.aspect = r.width / Math.max(1, r.height); cam.updateProjectionMatrix();
   }
   /* отрисовка только когда что-то меняется: камера доезжает до цели, догрузилась текстура, перестроили стену */
@@ -841,6 +848,8 @@ const W3 = (() => {
     const cp = Math.cos(cur.pitch);
     cam.position.set(cur.tx + cur.dist * Math.sin(cur.yaw) * cp, cur.ty + cur.dist * Math.sin(cur.pitch), cur.dist * Math.cos(cur.yaw) * cp);
     cam.lookAt(cur.tx, cur.ty, 0);
+    // издалека паз реек тоньше точки экрана: чуть смягчаем его черноту, иначе частые линии дают рябь («муар»)
+    if (lod) { const px = lod.gw * cv.height / (2 * cur.dist * TAN); lod.m.color.copy(lod.c0).lerp(lod.c1, clamp((2.8 - px) / 2.2, 0, 1) * .5); }
     R.render(S, cam);
     if (moving) kick();
   }
@@ -855,7 +864,9 @@ const W3 = (() => {
   }
   function setView(v, instant){
     view = v; const f = fitDist();
-    if (v === "close") Object.assign(to, { yaw: .42, pitch: .04, dist: Math.min(1150, f * .5), tx: lim.W * .36, ty: lim.H * .54 });
+    if (v === "close") { // вблизи смотрим на свободный кусок стены: слева от экрана или над диваном
+      const p = plan && plan.kind === "tv" ? [Math.max(240, (lim.W - plan.tw) / 4), lim.H * .56] : plan ? [lim.W * .36, Math.max(lim.H * .62, 1500)] : [lim.W * .36, lim.H * .54];
+      Object.assign(to, { yaw: .42, pitch: .04, dist: Math.min(1150, f * .5), tx: p[0], ty: Math.min(p[1], lim.H - 380) }); }
     else if (v === "side") Object.assign(to, { yaw: .66, pitch: .1, dist: f * .86, tx: lim.W / 2, ty: lim.cy });
     else Object.assign(to, { yaw: .16, pitch: .09, dist: f, tx: lim.W / 2, ty: lim.cy });
     clampTo(); if (instant) Object.assign(cur, to);
@@ -916,39 +927,29 @@ const W3 = (() => {
       const b = e.target.closest("button"); if (!b) return;
       if (b.dataset.view) setView(b.dataset.view);
       else if (b.dataset.zoom) zoomAt(+b.dataset.zoom > 0 ? .7 : 1.43);
-      else if (b.dataset.furn != null) { furn = !furn; b.setAttribute("aria-pressed", furn); build(); }
+      else if (b.dataset.scene != null) { const i = (SCENES.findIndex(q => q[0] === scene) + 1) % SCENES.length; scene = SCENES[i][0];
+        b.textContent = SCENES[i][1]; b.setAttribute("aria-pressed", scene !== "none"); b.setAttribute("aria-label", `Обстановка: ${SCENES[i][1]}. Нажмите, чтобы сменить`); build(); if (view) setView(view); }
     });
   }
 
-  function woodTex(a){
-    if (!PHOTO[a]) return null;
-    if (!texCache[a]) {
-      const t = new THREE.TextureLoader().load(`img/tex/${PHOTO[a]}?v=${PHOTO_V}`, kick);
-      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding; texCache[a] = t;
-    }
-    return texCache[a];
-  }
-  /* пол: доски «в разбежку», рисуются один раз на холсте */
-  function floorTex(){
-    if (floorT) return floorT;
-    const c = document.createElement("canvas"); c.width = c.height = 1024; const g = c.getContext("2d");
-    const rows = 8, h = 1024 / rows; let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-    for (let r = 0; r < rows; r++) { let x = -rnd() * 400;
-      while (x < 1024) { const w = 380 + rnd() * 330, l = 50 + rnd() * 9, s = 30 + rnd() * 8;
-        g.fillStyle = `hsl(${30 + rnd() * 5},${s}%,${l}%)`; g.fillRect(x, r * h, w, h);
-        g.globalAlpha = .09; g.strokeStyle = "#5a3d22";
-        for (let i = 0; i < 7; i++) { const y = r * h + 6 + rnd() * (h - 12); g.beginPath(); g.moveTo(x, y); g.bezierCurveTo(x + w * .3, y + rnd() * 8 - 4, x + w * .7, y + rnd() * 8 - 4, x + w, y + rnd() * 6 - 3); g.stroke(); }
-        g.globalAlpha = 1; g.fillStyle = "rgba(60,40,22,.5)"; g.fillRect(x + w - 2, r * h, 2, h); x += w; }
-      g.fillStyle = "rgba(60,40,22,.45)"; g.fillRect(0, r * h, 1024, 2); }
-    floorT = new THREE.CanvasTexture(c); floorT.wrapS = floorT.wrapT = THREE.RepeatWrapping; floorT.encoding = THREE.sRGBEncoding;
-    floorT.anisotropy = R.capabilities.getMaxAnisotropy();
-    return floorT;
-  }
-  /* Сечение панели: верхняя линия профиля над основанием, по X — ширина, по Y — толщина, мм */
-  function paintGeo(a, len){
-    const pts = PROF[a] || PROF["A907"], sh = new THREE.Shape();
-    sh.moveTo(0, 0); pts.forEach(p => sh.lineTo(p[0], p[1])); sh.lineTo(pts[pts.length-1][0], 0); sh.lineTo(0, 0);
-    return new THREE.ExtrudeGeometry(sh, { depth: len, bevelEnabled: false, curveSegments: 1 });
+  /* ====== Свет посчитан заранее, в вершинах: стены, пол и панели рисуются без карт теней — ни ряби, ни полос ======
+     Панель — вытянутый профиль, поэтому тени в рельефе зависят только от сечения. Для каждой точки сечения находим,
+     какую часть комнаты ей заслоняют соседние рейки слева и справа (горизонты), и считаем освещённость формулой:
+     рассеянный свет комнаты + широкий мягкий свет от окна слева + слабая подсветка справа + свет, отражённый соседними гранями. */
+  const D2R = Math.PI / 180, KEY = [5 * D2R, 34 * D2R], FILL = [25 * D2R, 85 * D2R], LT = { amb: .61, key: .29, fill: .06 };
+  const KEYN = Math.cos(KEY[0]) - Math.cos(KEY[1]), FILLN = Math.cos(FILL[0]) - Math.cos(FILL[1]);
+  const knee = v => v <= .8 ? v : .8 + .2 * (1 - Math.exp(-(v - .8) / .2));      // мягкий потолок яркости: светлое не «выгорает»
+  const ao1 = (d, k, s) => 1 - k * Math.exp(-Math.max(0, d) / s);                  // затемнение у угла: k — сила, s — на каком расстоянии сходит на нет
+  const sm = v => { v = clamp(v, 0, 1); return v * v * (3 - 2 * v); };
+  const hash = (a, b, c) => { let h = (a * 73856093) ^ (b * 19349663) ^ (c * 83492791); h = (h ^ (h >>> 13)) * 1274126177; return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+
+  /* Сечение панели под покраску: верхняя линия профиля, мм. Края соседних панелей сходятся на одной высоте (маленькая ступенька — как в жизни) */
+  function paintSection(a, w){
+    const src = PROF[a] || PROF["A907"], n = src.length, k = w / (src[n - 1][0] || w), pts = src.map(p => [p[0] * k, p[1]]);
+    pts[0][0] = 0; pts[n - 1][0] = w;
+    if (Math.abs(pts[n - 1][1] - pts[0][1]) < .4) pts[n - 1][1] = pts[0][1];
+    else { pts[n - 1][0] = w - .06; pts.push([w, pts[0][1]]); }
+    return { pts, cls: pts.map(() => 0) };
   }
   function woodParts(x){
     if (x.a.split("-")[0] === "3") return { base: 5.35, slats: [[0, 29.5], [40, 69.5], [80, 109.5]] };   // серия 3 — по живому образцу: рейка 29,5, паз 10,5
@@ -957,7 +958,154 @@ const W3 = (() => {
     const n = { "2": 2, "3": 3, "5": 5 }[x.a.split("-")[0]] || 3, base = Math.max(2, x.t * 0.35), step = x.w / n, slat = step * (n < 5 ? 0.62 : 0.55);
     return { base, slats: Array.from({ length: n }, (_, i) => [i * step + (step - slat) / 2, i * step + (step + slat) / 2]) };
   }
-  const box = (x0, x1, y0, y1, len) => { const g = new THREE.BoxGeometry(x1 - x0, y1 - y0, len); g.translate((x0 + x1) / 2, (y0 + y1) / 2, len / 2); return g; };
+  /* Сечение панели под дерево: дно паза, стенки реек, маленькая фаска и лицо рейки (cls 1 — плёнка «под дерево», остальное чёрное) */
+  function woodSection(x){
+    const p = woodParts(x), c = .6, e = .08, pts = [], cls = [], add = (u, t, k) => { pts.push([u, t]); cls.push(k); };
+    let u = 0;
+    p.slats.forEach(([a0, a1], k) => {
+      if (a0 - e > u) add(u, p.base, 0);                         // дно паза до рейки
+      add(Math.max(u, a0 - e), p.base, 0);                       // левая стенка
+      add(a0 + (a0 - e < u ? e : 0), x.t - c, 30 + k);           // фаска слева (плёнка заходит на кромку)
+      add(a0 + c + (a0 - e < u ? e : 0), x.t, 10 + k);           // лицо рейки k
+      add(a1 - c, x.t, 50 + k);                                  // фаска справа
+      add(a1, x.t - c, 0);                                       // правая стенка
+      u = a1 + e;
+    });
+    add(u, p.base, 0); if (x.w > u + 1e-3) pts.push([x.w, p.base]); else { cls.pop(); }
+    return { pts, cls };
+  }
+  /* Сечение → отрезки с нормалями и горизонтами в концах. period — шаг повтора (ширина панели): соседние панели тоже заслоняют */
+  function prep(sec, period){
+    const P = sec.pts, n = P.length, hl = new Float32Array(n), hr = new Float32Array(n);
+    for (let i = 0; i < n; i++) { let a = 0, b = 0; const u = P[i][0], t = P[i][1];
+      for (let k = -1; k <= 1; k++) for (let j = 0; j < n; j++) { const dt = P[j][1] - t; if (dt <= 1e-6) continue; const du = P[j][0] + k * period - u;
+        if (du < -1e-6) { const el = Math.atan2(dt, -du); if (el > a) a = el; } else if (du > 1e-6) { const el = Math.atan2(dt, du); if (el > b) b = el; } }
+      hl[i] = a; hr[i] = b; }
+    const sn = [];
+    for (let i = 0; i < n - 1; i++) { const du = P[i + 1][0] - P[i][0], dt = P[i + 1][1] - P[i][1], l = Math.hypot(du, dt) || 1; sn.push([-dt / l, du / l]); }
+    const CREASE = Math.cos(26 * D2R);
+    const nrm = (i, j) => {     // нормаль в общей точке отрезков i и j: на плавном изгибе — средняя, на ребре — своя
+      if (j < 0 || j >= n - 1) return sn[i]; if (sn[i][0] * sn[j][0] + sn[i][1] * sn[j][1] < CREASE) return sn[i];
+      const x = sn[i][0] + sn[j][0], z = sn[i][1] + sn[j][1], l = Math.hypot(x, z) || 1; return [x / l, z / l]; };
+    const segs = [];
+    for (let i = 0; i < n - 1; i++) { const n0 = nrm(i, i - 1), n1 = nrm(i, i + 1);
+      segs.push({ k: sec.cls[i] || 0, a: { u: P[i][0], t: P[i][1], nx: n0[0], nz: n0[1], hl: hl[i], hr: hr[i] },
+        b: { u: P[i + 1][0], t: P[i + 1][1], nx: n1[0], nz: n1[1], hl: hl[i + 1], hr: hr[i + 1] } }); }
+    return segs;
+  }
+  /* Освещённость точки сечения (без учёта места на стене): rho — насколько светлая поверхность, от этого зависит свет в пазах */
+  function base(v, rho){
+    const tn = Math.atan2(v.nz, v.nx), a = Math.max(v.hr, tn - Math.PI / 2), b = Math.min(Math.PI - v.hl, tn + Math.PI / 2);
+    const ao = b > a ? (Math.sin(b - tn) - Math.sin(a - tn)) / 2 : 0;
+    let key = 0, fill = 0;
+    { const lo = Math.max(KEY[0], v.hl, Math.atan2(v.nx, v.nz)), hi = KEY[1];
+      if (hi > lo) key = ((-v.nx * Math.sin(hi) - v.nz * Math.cos(hi)) - (-v.nx * Math.sin(lo) - v.nz * Math.cos(lo))) / KEYN; }
+    { const lo = Math.max(FILL[0], v.hr, Math.atan2(-v.nx, v.nz)), hi = FILL[1];
+      if (hi > lo) fill = ((v.nx * Math.sin(hi) - v.nz * Math.cos(hi)) - (v.nx * Math.sin(lo) - v.nz * Math.cos(lo))) / FILLN; }
+    return LT.amb * ao + LT.key * key + LT.fill * fill + rho * (1 - ao) * (LT.amb * .7 + LT.key * .3);
+  }
+  /* Кусок стены одной сеткой: по ширине — сечение за сечением (последняя панель обрезается по стене), по высоте — ряды rowsY.
+     o.pick(k) — какие отрезки берём; o.G(X, Y) — свет по месту на стене; o.lamp(X, Y, v) — тёплый свет лампы; o.uv(c, s) — раскладка текстуры */
+  function wallGeo(segs, period, Wmm, rowsY, o){
+    const pos = [], colr = [], uv = [], idx = [], cols = Math.ceil(Wmm / period - 1e-6);
+    for (let c = 0; c < cols; c++) { const x0 = c * period;
+      for (const s of segs) { if (!o.pick(s.k)) continue; const A = s.a; let B = s.b;
+        if (x0 + A.u >= Wmm - 1e-3) continue;
+        if (x0 + B.u > Wmm) { const f = (Wmm - x0 - A.u) / (B.u - A.u); B = Object.assign({}, B, { u: Wmm - x0, t: A.t + (B.t - A.t) * f }); }
+        const tx = o.tex, soft = s.k >= 30 ? o.face * .55 : 0, k1 = s.k >= 30 ? .45 : 1;      // фаска рейки: наполовину как лицо — тонкая линия не «искрит» издалека
+        const bA = tx ? 1 : base(A, o.rho) * k1 + soft, bB = tx ? 1 : base(B, o.rho) * k1 + soft, m = o.uv ? o.uv(c, s) : null, i0 = pos.length / 3;
+        for (const y of rowsY) for (let e = 0; e < 2; e++) { const P = e ? B : A, X = x0 + P.u, g = o.G(X, y) * (e ? bB : bA), l = o.lamp(X, y, tx ? { nx: 0, nz: 1, hl: 0, hr: 0, t: P.t } : P);
+          pos.push(X, y, P.t);
+          if (tx) { colr.push(g + l, g + l * o.lc[1], g + l * o.lc[2]); uv.push(c + P.u / period, y / (period / 16)); }      // рельеф — из текстуры-полоски (точки её квадратные: ширина панели ↔ 1024, высота ↔ 64), здесь только свет по месту
+          else { const q = m && m.tone || 1; colr.push(knee((g + l) * q), knee((g + l * o.lc[1]) * q), knee((g + l * o.lc[2]) * q)); if (m) uv.push(e ? m.u1 : m.u0, m.v0 + y * m.sv); else uv.push(0, 0); } }
+        for (let r = 0; r < rowsY.length - 1; r++) { const q = i0 + r * 2; idx.push(q, q + 1, q + 3, q, q + 3, q + 2); }
+      } }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("color", new THREE.Float32BufferAttribute(colr, 3));
+    g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx);
+    return g;
+  }
+  /* Ряды по высоте: чаще у пола, потолка и там, где свет меняется быстро (верх дивана, лампа) */
+  function rowsOf(y0, y1, Hmm, extra){
+    const ys = [y0, y1];
+    for (let y = y0; y < y1; y += 210) ys.push(y);
+    [50, 120, 230, 380].forEach(d => { ys.push(d, Hmm - d); });
+    (extra || []).forEach(y => ys.push(y));
+    return [...new Set(ys.filter(y => y >= y0 && y <= y1).map(y => Math.round(y)))].sort((p, q) => p - q);
+  }
+  /* Плоскость (стена комнаты, пол, потолок) со светом в вершинах: fn(u, v) → яркость или [r, g, b]; u, v — мм от угла плоскости */
+  function shaded(w, h, sx, sy, hex, fn, map, alpha){
+    const g = new THREE.PlaneGeometry(w, h, sx, sy), p = g.attributes.position, n = alpha ? 4 : 3, c = new Float32Array(p.count * n);
+    for (let i = 0; i < p.count; i++) { const u = p.getX(i) + w / 2, t = p.getY(i) + h / 2, v = fn(u, t);
+      if (v.length) { c[i * n] = knee(v[0]); c[i * n + 1] = knee(v[1]); c[i * n + 2] = knee(v[2]); } else c[i * n] = c[i * n + 1] = c[i * n + 2] = knee(v);
+      if (alpha) c[i * n + 3] = alpha(u, t); }
+    g.setAttribute("color", new THREE.BufferAttribute(c, n));
+    return new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: col(hex), vertexColors: true, map: map || null, transparent: !!alpha }));
+  }
+  /* Лёгкая штора от потолка до пола на левой стене — оттуда и свет. Складки и свет в них посчитаны в вершинах */
+  function curtain(z0, z1, Hmm){
+    const nz = Math.round((z1 - z0) / 12), ys = [14, 60, Hmm * .5, Hmm - 30, Hmm], pos = [], colr = [], idx = [];
+    const fx = z => 62 + 26 * Math.sin(z / 23.5) + 11 * Math.sin(z / 9.7 + 1.3) + 9 * Math.sin(z / 61 + .4);
+    for (let i = 0; i <= nz; i++) { const z = z0 + (z1 - z0) * i / nz, d = (fx(z + 1) - fx(z - 1)) / 2, nx = 1 / Math.hypot(1, d);
+      // ткань просвечивает: где складка повёрнута к комнате — светлее, где ребром — плотнее и темнее
+      const b = (.80 + .24 * nx * nx * nx) * (1 - .10 * sm(1 - (z - z0) / 260)) * (1 - .10 * sm(1 - (z1 - z) / 260));
+      ys.forEach((y, r) => { const k = y < 80 ? 1.12 : 1; pos.push(fx(z) * k, y, z); const q = b * (y < 40 ? .9 : 1); colr.push(knee(q * 1.03), knee(q * 1.0), knee(q * .95)); });
+      if (i < nz) for (let r = 0; r < ys.length - 1; r++) { const a = i * ys.length + r, c2 = a + ys.length; idx.push(a, a + 1, c2 + 1, a, c2 + 1, c2); } }
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("color", new THREE.Float32BufferAttribute(colr, 3)); g.setIndex(idx);
+    return new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: col(0xf6f3ec), vertexColors: true }));
+  }
+
+  /* Декор «под дерево»: длинная полоса с фото реек; пока грузится — средний цвет декора */
+  function woodTex(a, onload){
+    if (!DECOR[a]) return null;
+    let t = texCache[a];
+    if (!t) {
+      t = texCache[a] = new THREE.TextureLoader().load(`img/tex3/${a.toLowerCase()}.jpg?v=${TEX_V}`, () => { t.ndOk = true; if (t.ndCb) t.ndCb(); });
+      t.wrapS = THREE.ClampToEdgeWrapping; t.wrapT = THREE.MirroredRepeatWrapping; t.encoding = THREE.sRGBEncoding;
+      t.anisotropy = R.capabilities.getMaxAnisotropy();
+    }
+    t.ndCb = onload;      // стену могли перестроить, пока текстура грузилась: сообщаем той, что на экране сейчас
+    return t;
+  }
+  /* Свет в рельефе панели под покраску — полоска-текстура на ширину панели. Вдали видеокарта сама её сглаживает,
+     поэтому тонкие тёмные пазы не рябят и не рвутся на штрихи. Заодно — едва заметная матовая фактура краски. */
+  const reliefCache = {};
+  const toS = v => v <= .0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - .055;
+  function reliefTex(key, segs, period, rho){
+    if (reliefCache[key]) return reliefCache[key];
+    const ks = Object.keys(reliefCache); if (ks.length > 5) { reliefCache[ks[0]].dispose(); delete reliefCache[ks[0]]; }
+    const W = 1024, H = 64, c = document.createElement("canvas"); c.width = W; c.height = H;
+    const g = c.getContext("2d"), d = g.createImageData(W, H), row = new Float32Array(W), bs = segs.map(q => [base(q.a, rho), base(q.b, rho)]);
+    for (let i = 0, si = 0; i < W; i++) { const u = (i + .5) / W * period; while (si < segs.length - 1 && segs[si].b.u < u) si++;
+      const q = segs[si], f = clamp((u - q.a.u) / Math.max(1e-6, q.b.u - q.a.u), 0, 1); row[i] = knee(bs[si][0] + (bs[si][1] - bs[si][0]) * f); }
+    let sd = 3; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+    for (let y = 0; y < H; y++) for (let i = 0; i < W; i++) { const v = Math.round(255 * toS(clamp(row[i] * (1 + (rnd() - .5) * .024), 0, 1))), k = (y * W + i) * 4;
+      d.data[k] = d.data[k + 1] = d.data[k + 2] = v; d.data[k + 3] = 255; }
+    g.putImageData(d, 0, 0);
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding; t.anisotropy = R.capabilities.getMaxAnisotropy();
+    return reliefCache[key] = t;
+  }
+  /* Пол: дубовая доска «в разбежку» — рисуется один раз на холсте (холст = 2,4 × 2,4 м, доска 150 мм) */
+  function floorTex(){
+    if (floorT) return floorT;
+    const N = 2048, c = document.createElement("canvas"); c.width = c.height = N; const g = c.getContext("2d");
+    const rows = 16, h = N / rows; let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for (let r = 0; r < rows; r++) { let x = -rnd() * 900;
+      while (x < N) { const w = 780 + rnd() * 520, l = 63.5 + rnd() * 4, s = 27 + rnd() * 4, hue = 31.5 + rnd() * 2.5;
+        g.fillStyle = `hsl(${hue},${s}%,${l}%)`; g.fillRect(x, r * h, w, h);
+        // волокна: много тонких линий разной силы, чуть волнистых
+        for (let i = 0; i < 46; i++) { const y = r * h + 2 + rnd() * (h - 4), dk = rnd() < .5;
+          g.globalAlpha = .04 + rnd() * .07; g.strokeStyle = dk ? "#6b4a2b" : "#fff3dd"; g.lineWidth = .6 + rnd() * 1.6;
+          g.beginPath(); g.moveTo(x, y); g.bezierCurveTo(x + w * .3, y + rnd() * 7 - 3.5, x + w * .7, y + rnd() * 7 - 3.5, x + w, y + rnd() * 5 - 2.5); g.stroke(); }
+        if (rnd() < .22) { const kx = x + w * (.2 + rnd() * .6), ky = r * h + h * (.3 + rnd() * .4); g.globalAlpha = .16; g.fillStyle = "#5d3f25";   // сучок
+          g.beginPath(); g.ellipse(kx, ky, 9 + rnd() * 8, 4 + rnd() * 3, 0, 0, 7); g.fill(); }
+        g.globalAlpha = 1; g.fillStyle = "rgba(58,40,24,.55)"; g.fillRect(x + w - 1.5, r * h, 1.5, h); x += w; }
+      g.fillStyle = "rgba(58,40,24,.5)"; g.fillRect(0, r * h, N, 1.5);
+      g.fillStyle = "rgba(255,244,224,.16)"; g.fillRect(0, r * h + 1.5, N, 1.2); }
+    floorT = new THREE.CanvasTexture(c); floorT.wrapS = floorT.wrapT = THREE.RepeatWrapping; floorT.encoding = THREE.sRGBEncoding;
+    floorT.anisotropy = R.capabilities.getMaxAnisotropy();
+    return floorT;
+  }
   /* скруглённый брус для мебели: w по X, h по Y, d по Z; центр по X и Z, низ на y = 0 */
   function rbox(w, h, d, r){
     r = Math.max(2, Math.min(r, w / 2 - 1, h / 2 - 1, d / 2 - 1)); const b = r * .6, cr = r - b, ww = w - 2 * b, hh = h - 2 * b, s = new THREE.Shape();
@@ -965,120 +1113,183 @@ const W3 = (() => {
     s.moveTo(x0 + cr, y0); s.lineTo(x0 + ww - cr, y0); s.quadraticCurveTo(x0 + ww, y0, x0 + ww, y0 + cr);
     s.lineTo(x0 + ww, y0 + hh - cr); s.quadraticCurveTo(x0 + ww, y0 + hh, x0 + ww - cr, y0 + hh);
     s.lineTo(x0 + cr, y0 + hh); s.quadraticCurveTo(x0, y0 + hh, x0, y0 + hh - cr); s.lineTo(x0, y0 + cr); s.quadraticCurveTo(x0, y0, x0 + cr, y0);
-    const g = new THREE.ExtrudeGeometry(s, { depth: d - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelSegments: 3, curveSegments: 4 });
+    const g = new THREE.ExtrudeGeometry(s, { depth: d - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelSegments: 4, curveSegments: 6 });
     g.translate(0, 0, -(d - 2 * b) / 2); return g;
+  }
+  /* ткань: мелкое переплетение — рисуется один раз, даёт дивану «мягкую» поверхность */
+  let clothT = null;
+  function clothTex(){
+    if (clothT) return clothT;
+    const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d"); g.fillStyle = "#f3f3f3"; g.fillRect(0, 0, 128, 128);
+    let s = 5; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+    for (let y = 0; y < 128; y += 2) for (let x = 0; x < 128; x += 2) { const v = 226 + Math.round(rnd() * 29) - ((x + y) % 4 ? 0 : 10); g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(x, y, 2, 2); }
+    clothT = new THREE.CanvasTexture(c); clothT.wrapS = clothT.wrapT = THREE.RepeatWrapping; clothT.repeat.set(.012, .012); clothT.encoding = THREE.sRGBEncoding; clothT.anisotropy = 4;
+    return clothT;
   }
   /* диван или кресло: сиденье, спинка, подлокотники, подушки, ножки. len — длина, cx — центр по стене, z0 — от стены */
   function sofa(len, cx, z0){
-    const g = new THREE.Group(), M = c => mat(c, .95);
-    const body = M(0x8d877c), cush = M(0x9c968a), leg = mat(0x3a2c20, .6);
+    const g = new THREE.Group(), M = c => mat(c, .96, { map: clothTex() });
+    const body = M(0xa39c90), cush = M(0xb1aa9d), leg = mat(0x3a2c20, .55);
     const add = (geo, mat, x, y, z, rx) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); if (rx) m.rotation.x = rx; m.castShadow = m.receiveShadow = true; g.add(m); return m; };
     const dp = 900, arm = 150, inner = len - 2 * arm, n = len > 1500 ? 2 : 1, cw = inner / n;
     add(rbox(len, 190, dp, 40), body, 0, 120, dp / 2);                                   // основание
     add(rbox(inner, 520, 190, 60), body, 0, 300, 110);                                   // спинка
-    [-1, 1].forEach(s => add(rbox(arm, 470, dp, 50), body, s * (len - arm) / 2, 120, dp / 2));   // подлокотники
+    [-1, 1].forEach(s => add(rbox(arm, 470, dp, 55), body, s * (len - arm) / 2, 120, dp / 2));   // подлокотники
     for (let i = 0; i < n; i++) { const x = -inner / 2 + cw * (i + .5);
-      add(rbox(cw - 14, 150, 640, 55), cush, x, 300, 215 + 320);                         // сиденье
-      add(rbox(cw - 30, 400, 150, 65), cush, x, 440, 235, -.2); }                        // подушка спинки
-    if (n > 1) { add(rbox(400, 400, 120, 55), M(0xd8d1c3), -inner / 2 + 250, 450, 380, -.32).rotation.z = .1;
-      add(rbox(360, 360, 110, 50), M(0x6f7f76), inner / 2 - 230, 450, 385, -.3).rotation.z = -.12; }
-    const lg = new THREE.CylinderGeometry(20, 14, 120, 12); lg.translate(0, 60, 0);
+      add(rbox(cw - 14, 150, 640, 60), cush, x, 300, 215 + 320);                         // сиденье
+      add(rbox(cw - 30, 400, 150, 70), cush, x, 440, 235, -.2); }                        // подушка спинки
+    if (n > 1) { add(rbox(400, 400, 120, 58), M(0xe6dfd2), -inner / 2 + 250, 450, 380, -.32).rotation.z = .1;
+      add(rbox(360, 360, 110, 54), M(0x7d8f85), inner / 2 - 230, 450, 385, -.3).rotation.z = -.12; }
+    const lg = new THREE.CylinderGeometry(20, 14, 120, 16); lg.translate(0, 60, 0);
     [[-1, 1], [1, 1], [-1, -1], [1, -1]].forEach(([sx, sz]) => add(lg, leg, sx * (len / 2 - 90), 0, dp / 2 + sz * (dp / 2 - 90)));
     g.position.set(cx, 0, z0); return g;
   }
-  /* мягкая тень под мебелью: свет скользит вдоль стены, настоящая тень прячется под диваном — без пятна мебель «висит» */
+  /* мягкая тень под мебелью: без пятна мебель «висит» */
   let blobT = null;
-  function blob(w, d, x, z, y){
-    if (!blobT) { const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d"), gr = g.createRadialGradient(64, 64, 8, 64, 64, 64);
-      gr.addColorStop(0, "rgba(30,22,14,.6)"); gr.addColorStop(.6, "rgba(30,22,14,.28)"); gr.addColorStop(1, "rgba(40,30,20,0)"); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); blobT = new THREE.CanvasTexture(c); }
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: blobT, transparent: true, depthWrite: false, toneMapped: false }));
+  function blob(w, d, x, z, y, k){
+    if (!blobT) { const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d"), gr = g.createRadialGradient(64, 64, 6, 64, 64, 64);
+      gr.addColorStop(0, "rgba(28,20,12,.62)"); gr.addColorStop(.55, "rgba(28,20,12,.30)"); gr.addColorStop(1, "rgba(36,28,18,0)"); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); blobT = new THREE.CanvasTexture(c); }
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: blobT, transparent: true, depthWrite: false, opacity: k || 1 }));
     m.rotation.x = -Math.PI / 2; m.position.set(x, y || 2, z); m.renderOrder = 2; return m;
   }
-  /* столик с лампой — тёплое пятно света на стене */
+  /* столик с лампой — тёплое пятно света на стене (само пятно считается в вершинах стены и пола) */
   function lamp(x, z){
-    const g = new THREE.Group(), wood = mat(0x5a4330, .6);
+    const g = new THREE.Group(), wood = mat(0x5a4330, .55);
     const put = (geo, mat, y) => { const m = new THREE.Mesh(geo, mat); m.position.y = y; m.castShadow = true; m.receiveShadow = true; g.add(m); return m; };
-    put(new THREE.CylinderGeometry(210, 210, 26, 40), wood, 520); put(new THREE.CylinderGeometry(16, 16, 510, 12), wood, 255); put(new THREE.CylinderGeometry(150, 150, 18, 32), wood, 9);
-    put(new THREE.CylinderGeometry(55, 70, 150, 20), mat(0xcfc8ba, .5), 608);
-    const sh = put(new THREE.CylinderGeometry(105, 150, 190, 32, 1, true), mat(0xfff1d6, .9, { emissive: col(0xffd9a0), emissiveIntensity: .9, side: THREE.DoubleSide }), 790);
+    put(new THREE.CylinderGeometry(210, 210, 26, 48), wood, 520); put(new THREE.CylinderGeometry(16, 16, 510, 16), wood, 255); put(new THREE.CylinderGeometry(150, 150, 18, 40), wood, 9);
+    put(new THREE.CylinderGeometry(55, 70, 150, 28), mat(0xd9d2c4, .45), 608);
+    const sh = put(new THREE.CylinderGeometry(105, 150, 190, 40, 1, true), mat(0xfff1d6, .9, { emissive: col(0xffdcaa), emissiveIntensity: .82, side: THREE.DoubleSide }), 790);
     sh.castShadow = false;
-    const pl = new THREE.PointLight(col(0xffc98a), 1.1, 2600, 2); pl.position.y = 800; g.add(pl);
+    const pl = new THREE.PointLight(col(0xffc98a), .8, 2400, 2); pl.position.y = 800; g.add(pl);
     g.position.set(x, 0, z); return g;
   }
 
+  /* ТВ-зона: подвесная тумба, экран на стене, ваза и книги. P — размеры и места (см. build) */
+  function tvzone(P, wood){
+    const g = new THREE.Group();
+    const add = (geo, m, x, y, z, cast) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.castShadow = cast !== false; o.receiveShadow = true; g.add(o); return o; };
+    const body = mat(wood ? 0xf0ede6 : 0xb6946c, wood ? .6 : .7), dark = mat(0x23262b, .6);
+    add(rbox(P.cw, P.ch, P.cd, 7), body, P.cx, P.cy0, P.z0 + P.cd / 2);                                   // тумба
+    const nd = P.cw > 1500 ? 3 : 2;                                                                      // фасады: тонкие зазоры между дверцами
+    for (let i = 1; i < nd; i++) add(new THREE.BoxGeometry(2.4, P.ch - 22, 2), dark, P.cx - P.cw / 2 + P.cw * i / nd, P.cy0 + P.ch / 2, P.z0 + P.cd + .4, false);
+    add(new THREE.BoxGeometry(P.cw - 16, 2.4, 2), dark, P.cx, P.cy0 + P.ch - 9, P.z0 + P.cd + .4, false);
+    add(rbox(P.tw, P.th, 30, 5), mat(0x0d0e10, .45), P.cx, P.ty0, P.z0 + 34);                              // экран: корпус
+    const scr = shaded(P.tw - 16, P.th - 16, 10, 8, 0xffffff, (u, v) => { const q = u / P.tw * .9 - v / P.th * .55, k = .014 + .05 * Math.exp(-(q - .18) * (q - .18) / .012) + .016 * v / P.th; return [k, k * 1.03, k * 1.08]; });
+    scr.position.set(P.cx, P.ty0 + P.th / 2, P.z0 + 49.6); g.add(scr);                                   // стекло с мягким отсветом от окна
+    if (P.cw >= 1100) {
+      const prof = [[0, 0], [52, 0], [70, 30], [78, 95], [62, 160], [34, 205], [30, 245], [38, 262]].map(q => new THREE.Vector2(q[0], q[1]));
+      add(new THREE.LatheGeometry(prof, 40), mat(wood ? 0x7d8f85 : 0xe8e3d9, .5, { side: THREE.DoubleSide }), P.cx - P.cw / 2 + 190, P.cy0 + P.ch, P.z0 + P.cd / 2);   // ваза
+      const bx = P.cx + P.cw / 2 - 260, by = P.cy0 + P.ch, bz = P.z0 + P.cd / 2 + 10;                    // книги стопкой
+      add(rbox(250, 34, 180, 4), mat(0x8b7d6b, .8), bx, by, bz).rotation.y = .12;
+      add(rbox(225, 28, 165, 4), mat(0xd9d2c5, .8), bx + 6, by + 34, bz).rotation.y = -.1;
+      add(rbox(190, 22, 140, 4), mat(0x55606b, .8), bx - 4, by + 62, bz).rotation.y = .22;
+    }
+    return g;
+  }
+
+  let ms = 0;      // сколько заняла последняя сборка стены, мс (для проверки на слабых телефонах)
   function build(){
-    if (!ready) return;
+    if (!ready) return; const t0 = performance.now();
     if (grp) { S.remove(grp); grp.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) [].concat(o.material).forEach(m => m.dispose()); }); }
     grp = new THREE.Group(); S.add(grp);
     const x = byA[$("cPanel").value]; if (!x) return;
     const Wmm = Math.max(300, (+$("cW").value || 0) * 10), Hmm = Math.max(300, (+$("cH").value || 0) * 10);
-    const clip = [new THREE.Plane(new THREE.Vector3(-1, 0, 0), Wmm), new THREE.Plane(new THREE.Vector3(0, -1, 0), Hmm)];
-    const cols = Math.ceil(Wmm / x.w), rows = Math.ceil(Hmm / x.l);
     lim.W = Wmm; lim.H = Hmm; limits();
     const depth = Math.max(4200, lim.dMax + 1800);
-
-    // комната: акцентная стена — вся в панелях; боковые стены, пол и потолок видны только изнутри, поэтому снаружи не заслоняют
-    const wallM = mat(0xe6e1d8, .95), white = mat(0xf4f1ea, .7);
-    const plane = (w, h, mat, px, py, pz, ry, rx) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); m.position.set(px, py, pz); if (ry) m.rotation.y = ry; if (rx) m.rotation.x = rx; m.receiveShadow = true; grp.add(m); return m; };
-    const flat = h => new THREE.MeshBasicMaterial({ color: col(h), toneMapped: false });   // боковые стены и потолок — ровным тоном: внимание на акцентной стене
-    plane(Wmm, Hmm, wallM, Wmm / 2, Hmm / 2, -1);
-    plane(depth, Hmm, flat(0xd6d1c7), 0, Hmm / 2, depth / 2, Math.PI / 2);
-    plane(depth, Hmm, flat(0xe2ddd4), Wmm, Hmm / 2, depth / 2, -Math.PI / 2);
-    const ft = floorTex(), fm = new THREE.MeshStandardMaterial({ map: ft, roughness: .62 });
-    const fl = plane(Wmm, depth, fm, Wmm / 2, 0, depth / 2, 0, -Math.PI / 2);
-    const uv = fl.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getY(i) * depth / 1500, uv.getX(i) * Wmm / 1500);   // холст 1,5 × 1,5 м: доска ≈ 19 см, доски идут от стены к зрителю
-    plane(Wmm, depth, flat(0xefece6), Wmm / 2, Hmm, depth / 2, 0, Math.PI / 2);
-    // плинтус вдоль боковых стен — для живости; на акцентной стене — только если его добавили в расчёт
-    [[0, 1], [Wmm, -1]].forEach(([px, s]) => { const m = new THREE.Mesh(new THREE.BoxGeometry(14, 80, depth), white); m.position.set(px + s * 7, 40, depth / 2); m.receiveShadow = true; grp.add(m); });
     const pl = $("cPlinthOn").checked && byA[$("cPlinth").value], cr = $("cCorniceOn").checked && byA[$("cCornice").value];
-    if (pl) { const m = new THREE.Mesh(new THREE.BoxGeometry(Wmm, pl.w, pl.t), white); m.position.set(Wmm / 2, pl.w / 2, x.t + pl.t / 2); m.castShadow = m.receiveShadow = true; grp.add(m); }
-    if (cr) { const m = new THREE.Mesh(new THREE.BoxGeometry(Wmm, cr.w, cr.t), white); m.position.set(Wmm / 2, Hmm - cr.w / 2, x.t + cr.t / 2); m.castShadow = m.receiveShadow = true; grp.add(m); }
 
-    // панели
+    // обстановка для масштаба (место нужно заранее: от него зависит свет на стене и полу):
+    // «ТВ-зона» — подвесная тумба и экран с мягкой подсветкой за ним; «Диван» — диван с лампой, на узкой стене — кресло
+    const zw = x.t + (pl ? pl.t : 0);
+    const F = scene === "none" || Wmm < 1300 ? null : scene === "tv" ? (() => { const cw = Math.min(1800, Wmm - 360), tw = Math.min(1450, cw - 140, Math.max(700, (Hmm - 1150) * 1.75)), th = tw * .573, cy0 = 280, ch = 340;
+        return { kind: "tv", cx: Wmm / 2, cw, ch, cd: 420, cy0, tw, th, ty0: Math.min(cy0 + ch + 240, Hmm - th - 120), z0: x.t, lc: [1, .9, .76] }; })()
+      : (() => { const z0 = zw + 90, wide = Wmm >= 2500, len = wide ? Math.min(2200, Wmm - (Wmm >= 3100 ? 900 : 300)) : 860;
+        const lampOn = Wmm >= 3100 || (!wide && Wmm >= 1750), cx = lampOn ? Wmm / 2 - 250 : Wmm / 2;
+        return { kind: "sofa", z0, len, cx, lamp: lampOn ? { x: cx + len / 2 + 330, y: 800, z: z0 + 330 } : null, lc: [1, .78, .52] }; })();
+    const LP = F && F.lamp, TV = F && F.kind === "tv" ? F : null, lc = F ? F.lc : [1, 1, 1]; plan = F;
+    // свет по месту на стене: слева, у окна, чуть светлее; у пола, потолка и в углах — мягкая тень; за мебелью — тень от неё
+    const G = (X, Y) => { let g = (1.045 - .11 * X / Wmm) * ao1(X, .10, 260) * ao1(Wmm - X, .13, 300) * ao1(Y, .12, 200) * ao1(Hmm - Y, .09, 280);
+      if (F && F.kind === "sofa") { const dx = Math.max(F.cx - F.len / 2 - X, X - (F.cx + F.len / 2) - 60, 0), dy = Math.max(Y - 770, 0); g *= 1 - .2 * (1 - sm(dx / 190)) * (1 - sm(dy / 170)); }
+      if (TV) { const dx = Math.max(TV.cx - TV.cw / 2 - X, X - (TV.cx + TV.cw / 2) - 50, 0);          // под подвесной тумбой и сразу над ней
+        g *= 1 - .26 * (1 - sm(dx / 170)) * (1 - sm((Y - TV.cy0 - TV.ch) / 70)) * (Y < TV.cy0 ? clamp(.45 + .55 * Y / TV.cy0, 0, 1) : 1); }
+      return g; };
+    const lampW = (X, Y, v) => {
+      if (TV) { const d = Math.hypot(Math.max(TV.cx - TV.tw / 2 - X, X - (TV.cx + TV.tw / 2), 0), Math.max(TV.ty0 - Y, Y - (TV.ty0 + TV.th), 0)); return .3 * Math.exp(-d / 250); }   // подсветка за экраном
+      if (!LP) return 0; const dx = LP.x - X, dy = LP.y - Y, dz = LP.z - v.t, r2 = dx * dx + dy * dy + dz * dz, nd = (v.nx * dx + v.nz * dz) / Math.sqrt(r2);
+      if (nd <= 0) return 0; const vis = clamp((Math.atan2(dz, Math.abs(dx)) - (dx < 0 ? v.hl : v.hr)) / .1 + .5, 0, 1);
+      return .5 * nd * vis / (1 + r2 / 302500); };
+    const rowsX = !F ? [] : TV ? [TV.cy0 - 60, TV.cy0, TV.cy0 + TV.ch, TV.cy0 + TV.ch + 45, TV.cy0 + TV.ch + 110, TV.ty0 - 120, TV.ty0 - 40, TV.ty0, TV.ty0 + TV.th, TV.ty0 + TV.th + 40, TV.ty0 + TV.th + 120, TV.ty0 + TV.th + 260] : [700, 770, 830, 900, 990];
+
+    // комната: боковые стены, потолок и пол — со светом в вершинах: ровные плавные переходы и тени в углах
+    const put = (m, px, py, pz, ry, rx) => { m.position.set(px, py, pz); if (ry) m.rotation.y = ry; if (rx) m.rotation.x = rx; grp.add(m); return m; };
+    const back = new THREE.Mesh(new THREE.PlaneGeometry(Wmm, Hmm), new THREE.MeshBasicMaterial({ color: col(0x8d8a84) })); put(back, Wmm / 2, Hmm / 2, -1);
+    const sz = Math.min(64, Math.ceil(depth / 150)), sy = Math.min(24, Math.ceil(Hmm / 150)), sx = Math.min(40, Math.ceil(Wmm / 150));
+    put(shaded(depth, Hmm, sz, sy, 0xe9e5dd, (u, v) => { const z = depth - u; return (.78 + .08 * sm(z / 3400)) * ao1(z, .15, 320) * ao1(v, .09, 230) * ao1(Hmm - v, .08, 300); }), 0, Hmm / 2, depth / 2, Math.PI / 2);
+    put(shaded(depth, Hmm, sz, sy, 0xe9e5dd, (u, v) => (.965 - .05 * sm(u / 4200)) * ao1(u, .13, 340) * ao1(v, .09, 230) * ao1(Hmm - v, .07, 300)), Wmm, Hmm / 2, depth / 2, -Math.PI / 2);
+    put(shaded(Wmm, depth, sx, sz, 0xf5f3ee, (u, v) => (.93 - .06 * u / Wmm) * ao1(v, .10, 330) * ao1(u, .08, 300) * ao1(Wmm - u, .08, 300)), Wmm / 2, Hmm, depth / 2, 0, Math.PI / 2);
+    const cz0 = 620, cz1 = Math.min(2500, depth - 900), win = z => sm((z - cz0 + 250) / 500) * sm((cz1 + 350 - z) / 700);      // окно со шторой на левой стене
+    const fl = put(shaded(Wmm, depth, sx, sz, 0xffffff, (u, v) => { const z = depth - v;
+      let e = (.94 - .04 * u / Wmm) * (.92 + .08 * sm(z / 2600)) * ao1(z, .34, 190) * ao1(u, .16, 220) * ao1(Wmm - u, .16, 220) + .16 * win(z) * Math.exp(-u / 1500);
+      if (!LP) return e; const r2 = (u - LP.x) * (u - LP.x) + (z - LP.z) * (z - LP.z), l = .18 / (1 + r2 / 250000); return [e + l, e + l * .78, e + l * .52]; },
+      floorTex(), (u, v) => 1 - .15 * Math.exp(-(depth - v) / 800)), Wmm / 2, 0, depth / 2, 0, -Math.PI / 2);      // у стены пол чуть «зеркалит»: в нём отражается её подножие
+    const fuv = fl.geometry.attributes.uv; for (let i = 0; i < fuv.count; i++) fuv.setXY(i, fuv.getY(i) * depth / 2400, fuv.getX(i) * Wmm / 2400);   // доски идут от стены к зрителю
+    // настоящая тень от мебели на полу — поверх нарисованного света
+    const shadow = new THREE.Mesh(new THREE.PlaneGeometry(Wmm, Math.min(depth, 3400)), new THREE.ShadowMaterial({ opacity: .2 }));
+    shadow.receiveShadow = true; shadow.renderOrder = 1; put(shadow, Wmm / 2, 1.5, Math.min(depth, 3400) / 2, 0, -Math.PI / 2);
+    if (cz1 - cz0 > 900) grp.add(curtain(cz0, cz1, Hmm));
+    // плинтус вдоль боковых стен — для живости; на акцентной стене — только если его добавили в расчёт
+    const white = mat(0xf4f1ea, .7);
+    [[0, 1, .80], [Wmm, -1, .97]].forEach(([px, s, k]) => { const m = new THREE.Mesh(new THREE.BoxGeometry(14, 80, depth), new THREE.MeshBasicMaterial({ color: col(0xf4f1ea).multiplyScalar(k) })); put(m, px + s * 7, 40, depth / 2); });
+    if (pl) { const m = new THREE.Mesh(new THREE.BoxGeometry(Wmm, pl.w, pl.t), white); m.castShadow = m.receiveShadow = true; put(m, Wmm / 2, pl.w / 2, x.t + pl.t / 2); }
+    if (cr) { const m = new THREE.Mesh(new THREE.BoxGeometry(Wmm, cr.w, cr.t), white); m.receiveShadow = true; put(m, Wmm / 2, Hmm - cr.w / 2, x.t + cr.t / 2); }
+
+    // панели: вся стена — одна-две сетки
+    const pieces = []; for (let y = 0; y < Hmm - 1; y += x.l) pieces.push([y, Math.min(Hmm, y + x.l)]);
+    lod = null;
     if (x.c === "color") {
-      const p = woodParts(x), tex = woodTex(x.a);
-      const blackM = mat(0x1b1b1d, .7, { clippingPlanes: clip });
-      const woodM = new THREE.MeshStandardMaterial({ color: tex ? 0xffffff : 0x9a6a40, map: tex, roughness: .55, clippingPlanes: clip });
-      if (tex) tex.repeat.set(1, x.l / 600);
-      // плёнка «под дерево» — только на лице реек; бока реек и пазы чёрные, срез тёмный (как у живого образца)
-      const endM = mat(0x2a2b2e, 1, { clippingPlanes: clip });
-      const gBase = box(0, x.w, 0, p.base, x.l), gSl = p.slats.map(([a0, a1]) => box(a0, a1, p.base, x.t, x.l));
-      const mBase = [blackM, blackM, blackM, blackM, endM, endM], mSl = [blackM, blackM, woodM, blackM, endM, endM];
-      for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) {
-        const pos = (m) => { m.rotation.x = Math.PI / 2; m.position.set(c * x.w, (r + 1) * x.l, 0); m.castShadow = m.receiveShadow = true; grp.add(m); };
-        pos(new THREE.Mesh(gBase, mBase)); gSl.forEach(g => pos(new THREE.Mesh(g, mSl)));
-      }
+      const segs = prep(woodSection(x), x.w), d = DECOR[x.a], Lt = d ? d[1] : 520;
+      const wm = new THREE.MeshBasicMaterial({ color: col(d ? d[0] : 0x9a6a40), vertexColors: true });
+      const tex = woodTex(x.a, () => { if (wm.map !== tex) { wm.map = tex; wm.color.set(0xffffff); wm.needsUpdate = true; } kick(); });
+      if (tex && tex.ndOk) { wm.map = tex; wm.color.set(0xffffff); }
+      const bm = new THREE.MeshBasicMaterial({ color: col(0x202022), vertexColors: true }), wp = woodParts(x);
+      lod = { m: bm, c0: col(0x202022), c1: col(d ? d[0] : 0x9a6a40).multiplyScalar(.5), gw: wp.slats.length > 1 ? wp.slats[1][0] - wp.slats[0][1] : 10 };
+      pieces.forEach(([y0, y1], r) => { const rows = rowsOf(y0, y1, Hmm, rowsX);
+        // у каждой рейки свой сдвиг рисунка и своё зеркало — соседние рейки не повторяют друг друга
+        grp.add(new THREE.Mesh(wallGeo(segs, x.w, Wmm, rows, { rho: .3, lc, face: base({ nx: 0, nz: 1, hl: 0, hr: 0 }, .3), pick: k => k >= 10, G, lamp: lampW,
+          uv: (c, s) => { const k = s.k % 10, h1 = hash(c + 1, k, r + 1), flip = hash(c + 7, k, r + 3) < .5, tone = .975 + .05 * hash(c + 3, k, r + 5);
+            const uL = flip ? .97 : .03, uR = flip ? .03 : .97;       // фаски берут цвет с края рисунка
+            return { u0: s.k >= 50 ? uR : uL, u1: s.k >= 30 && s.k < 50 ? uL : uR, v0: h1 * 2 - y0 / Lt, sv: 1 / Lt, tone }; } }), wm));
+        grp.add(new THREE.Mesh(wallGeo(segs, x.w, Wmm, rows, { rho: .04, lc, pick: k => k < 10, G, lamp: lampW }), bm));
+      });
+      grp.children.filter(o => o.material === wm || o.material === bm).forEach(o => { const q = o.clone(); q.scale.y = -1; grp.add(q); });   // отражение в полу
     } else {
-      const hex = (paint[x.a] && paint[x.a].hex) || WHITE;
-      const m = new THREE.MeshStandardMaterial({ color: new THREE.Color(hex).convertSRGBToLinear(), roughness: .62, clippingPlanes: clip });
-      const g = paintGeo(x.a, x.l);
-      for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) {
-        const mesh = new THREE.Mesh(g, m); mesh.rotation.x = Math.PI / 2; mesh.position.set(c * x.w, (r + 1) * x.l, 0);   // рельеф к зрителю
-        mesh.castShadow = mesh.receiveShadow = true; grp.add(mesh);
-      }
+      const hex = (paint[x.a] && paint[x.a].hex) || WHITE, c = new THREE.Color(hex).convertSRGBToLinear();
+      const segs = prep(paintSection(x.a, x.w), x.w), rho = (.2126 * c.r + .7152 * c.g + .0722 * c.b) * .88;
+      const m = new THREE.MeshBasicMaterial({ color: c, vertexColors: true, map: reliefTex(x.a + ":" + Math.round(rho * 40), segs, x.w, rho) });
+      const wall = new THREE.Mesh(wallGeo(segs, x.w, Wmm, rowsOf(0, Hmm, Hmm, rowsX), { tex: true, rho, lc, pick: () => true, G, lamp: lampW }), m);
+      grp.add(wall); const mir = wall.clone(); mir.scale.y = -1; grp.add(mir);   // отражение в полу
     }
-    // мебель для масштаба: диван с лампой, на узкой стене — кресло
-    if (furn && Wmm >= 1300) {
-      const z0 = x.t + 90 + (pl ? pl.t : 0), wide = Wmm >= 2500, len = wide ? Math.min(2200, Wmm - (Wmm >= 3100 ? 900 : 300)) : 860;
-      const lampOn = Wmm >= 3100 || (!wide && Wmm >= 1750), cx = lampOn ? Wmm / 2 - 250 : Wmm / 2;
-      grp.add(sofa(len, cx, z0));
-      if (lampOn) { grp.add(lamp(cx + len / 2 + 330, z0 + 330)); grp.add(blob(620, 620, cx + len / 2 + 330, z0 + 330)); }
-      const rug = new THREE.Mesh(rbox(Math.min(Wmm - 200, len + 240), 10, 1350, 4), mat(0x8f877a, 1));
-      rug.position.set(cx, 0, z0 + 1180); rug.receiveShadow = true; grp.add(rug);
-      grp.add(blob(len + 420, 1500, cx, z0 + 500, 12));
+    if (TV) { grp.add(tvzone(TV, x.c === "color")); grp.add(blob(TV.cw + 260, 760, TV.cx, TV.z0 + 250, 2, .62)); }
+    else if (F) {
+      grp.add(sofa(F.len, F.cx, F.z0));
+      if (LP) { grp.add(lamp(LP.x, LP.z)); grp.add(blob(640, 640, LP.x, LP.z, 2, .8)); }
+      const rug = new THREE.Mesh(rbox(Math.min(Wmm - 200, F.len + 240), 10, 1350, 4), mat(0xa29a8c, 1, { map: clothTex() }));
+      rug.position.set(F.cx, 0, F.z0 + 1180); rug.receiveShadow = true; grp.add(rug);
+      grp.add(blob(F.len + 380, 1400, F.cx, F.z0 + 470, 12, .75));
     }
-    // свет скользит по стене слева — рельеф виден; справа слабая подсветка без теней
-    const sun = S.userData.sun; sun.position.set(-Wmm * 0.4 - 2500, Hmm + 1200, 1250); sun.target.position.set(Wmm / 2, Hmm / 2, 0);
-    const span = Math.max(Wmm, Hmm) * 0.9 + 1500;
-    Object.assign(sun.shadow.camera, { left: -span, right: span, top: span, bottom: -span, near: 100, far: 16000 }); sun.shadow.camera.updateProjectionMatrix();
-    S.userData.fill.position.set(Wmm + 1500, Hmm * .7, 4000); S.userData.fill.target.position.set(Wmm / 2, Hmm / 2, 0);
+    // свет для мебели: слева спереди и сверху, как из окна; тени — только от мебели и только на пол, ковёр и саму мебель
+    const sun = S.userData.sun, tx = F ? F.cx : Wmm / 2;
+    sun.position.set(tx - 2500, 3300, 2700); sun.target.position.set(tx, 300, 600);
+    const span = (F ? (F.len || F.cw) / 2 : 800) + 1500;
+    Object.assign(sun.shadow.camera, { left: -span, right: span, top: 1900, bottom: -1900, near: 400, far: 9000 }); sun.shadow.camera.updateProjectionMatrix();
     $("stDims").textContent = `${Math.round(Wmm / 10)} × ${Math.round(Hmm / 10)} см · ${x.a}`;
     // камеру трогаем только когда изменились размеры стены: при смене панели или цвета ракурс остаётся — удобно сравнивать вблизи
     const key = Wmm + "x" + Hmm;
     if (key !== sizeKey) { const first = !sizeKey; sizeKey = key; setView(view || "room", first); } else { clampTo(); kick(); }
+    ms = performance.now() - t0;
   }
   let t; const rebuild = () => { clearTimeout(t); t = setTimeout(build, 120); };
-  return { init, rebuild };
+  return { init, rebuild, get ms(){ return ms; } };
 })();
 
 window.__w3 = W3; W3.init();
