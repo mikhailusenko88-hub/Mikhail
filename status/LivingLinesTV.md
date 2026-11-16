@@ -1,14 +1,14 @@
 # Живые строки  (@LivingLinesTV)
-Проверено: 2026-11-16 08:56 UTC
+Проверено: 2026-11-16 09:02 UTC
 
 - Страница канала: HTTP 200; ID: UCuufuU5RCswqp9N1HE0NZlw
 - Шапка: 38 подписчиков · 34 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
 - 2026-11-16 06:00 · 2 просм. · Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts · XOC7rxj2ntQ
-- 2026-11-15 16:00 · 152 просм. · Бабочка считает не месяцы, а мгновения — и у неё довольно… ✨ Rabindranath Tagore + 2 more #shorts · NNRpfSGgsOw
+- 2026-11-15 16:00 · 160 просм. · Бабочка считает не месяцы, а мгновения — и у неё довольно… ✨ Rabindranath Tagore + 2 more #shorts · NNRpfSGgsOw
 - 2026-11-15 11:00 · 723 просм. · Я пришёл к тебе с приветом, рассказать, что солнце встало ✨ Words to keep | Afanasy Fet #shorts · yT5ZmByY1eo
-- 2026-11-15 06:00 · 512 просм. · Если пришла Зима, разве Весна далеко? 🤍 Три мысли на сегодня | Percy Shelley #shorts · Nfl9ieBdJPQ
+- 2026-11-15 06:00 · 531 просм. · Если пришла Зима, разве Весна далеко? 🤍 Три мысли на сегодня | Percy Shelley #shorts · Nfl9ieBdJPQ
 - 2026-11-14 16:00 · 388 просм. · Всё течёт, всё меняется ✨ Heraclitus + 2 more #shorts · kRPxg2ieLto
 - 2026-11-14 11:00 · 920 просм. · Учение никогда не истощает ум ✨ Words to keep | Leonardo da Vinci #shorts · UGhGJt9HX8k
 - 2026-11-14 06:00 · 938 просм. · Пока дышу — надеюсь 🤍 Три мысли на сегодня | Cicero #shorts · kp4nk3--p_k
@@ -22,17 +22,17 @@
 - 2026-11-11 11:00 · 307 просм. · Весь мир — театр, и люди в нём — актёры ✨ Words to keep | William Shakespeare #shorts · ZAEMivmyKFA
 
 ## Вкладка Shorts (видно всем) — 34 шт. на первой странице
-- 20 просмотров · Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts · XOC7rxj2ntQ
-- 152 просмотра · Бабочка считает не месяцы, а мгновения — и у неё довольно… ✨ Rabindranath Tagore + 2 more #shorts · NNRpfSGgsOw
-- 687 просмотров · Я пришёл к тебе с приветом, рассказать, что солнце встало ✨ Words to keep | Afanasy Fet #shorts · yT5ZmByY1eo
-- 521 просмотр · Если пришла Зима, разве Весна далеко? 🤍 Три мысли на сегодня | Percy Shelley #shorts · Nfl9ieBdJPQ
-- 386 просмотров · Всё течёт, всё меняется ✨ Heraclitus + 2 more #shorts · kRPxg2ieLto
+- 2 просмотра · Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts · XOC7rxj2ntQ
+- 160 просмотров · Бабочка считает не месяцы, а мгновения — и у неё довольно… ✨ Rabindranath Tagore + 2 more #shorts · NNRpfSGgsOw
+- 723 просмотра · Я пришёл к тебе с приветом, рассказать, что солнце встало ✨ Words to keep | Afanasy Fet #shorts · yT5ZmByY1eo
+- 531 просмотр · Если пришла Зима, разве Весна далеко? 🤍 Три мысли на сегодня | Percy Shelley #shorts · Nfl9ieBdJPQ
+- 388 просмотров · Всё течёт, всё меняется ✨ Heraclitus + 2 more #shorts · kRPxg2ieLto
 - 920 просмотров · Учение никогда не истощает ум ✨ Words to keep | Leonardo da Vinci #shorts · UGhGJt9HX8k
 - 938 просмотров · Пока дышу — надеюсь 🤍 Три мысли на сегодня | Cicero #shorts · kp4nk3--p_k
 - 1 тыс. просмотров · Высшее счастье жизни — уверенность в том, что нас любят ✨ Victor Hugo + 2 more #shorts · nXOKONFyZgE
 - 1 тыс. просмотров · Что посеешь, то и пожнёшь ✨ Words to keep | Russian proverb #shorts · zMA6bLWxCJU
-- 977 просмотров · Сильные люди всегда просты 🤍 Три мысли на сегодня | Leo Tolstoy #shorts · X2vNGtftxSc
-- 588 просмотров · Кто везде — тот нигде ✨ Seneca + 2 more #shorts · pfJD1iFjdYs
+- 978 просмотров · Сильные люди всегда просты 🤍 Три мысли на сегодня | Leo Tolstoy #shorts · X2vNGtftxSc
+- 589 просмотров · Кто везде — тот нигде ✨ Seneca + 2 more #shorts · pfJD1iFjdYs
 - 955 просмотров · Сам погибай, а товарища выручай ✨ Words to keep | Alexander Suvorov #shorts · FX7fBPFEP7Y
 - 434 просмотра · Одни рождаются великими, другие достигают величия, а… 🤍 Три мысли на сегодня | Shakespeare #shorts · oiwYhZO3u24
 - 485 просмотров · Капля долбит камень не силой, а частым падением ✨ Ovid + 2 more #shorts · BWxPufCq48s
