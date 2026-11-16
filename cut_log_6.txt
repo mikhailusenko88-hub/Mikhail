@@ -1,0 +1,20 @@
+[0;93m2026-11-16 13:43:35.953368617 [W:onnxruntime:Default, device_discovery.cc:95 GetPciBusId] Skipping pci_bus_id for PCI path at "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/5620e0c7-8062-4dce-aeb7-520c7ef76171" because filename "5620e0c7-8062-4dce-aeb7-520c7ef76171" did not match expected pattern of [0-9a-f]+:[0-9a-f]+:[0-9a-f]+[.][0-9a-f]+[m
+Downloading data from 'https://github.com/danielgatis/rembg/releases/download/v0.0.0/BiRefNet-general-bb_swin_v1_tiny-epoch_232.onnx' to file '/home/runner/.rembg/models/birefnet-general-lite/birefnet-general-lite.onnx'.
+  0%|                                               | 0.00/224M [00:00<?, ?B/s]  2%|▊                                     | 4.88M/224M [00:00<00:04, 48.8MB/s]  8%|███▏                                   | 18.5M/224M [00:00<00:02, 100MB/s] 14%|█████▌                                 | 32.3M/224M [00:00<00:01, 117MB/s] 21%|████████                               | 46.3M/224M [00:00<00:01, 126MB/s] 27%|██████████▍                            | 59.8M/224M [00:00<00:01, 130MB/s] 33%|████████████▉                          | 74.4M/224M [00:00<00:01, 135MB/s] 40%|███████████████▍                       | 88.9M/224M [00:00<00:00, 138MB/s] 46%|██████████████████▍                     | 103M/224M [00:00<00:00, 141MB/s] 53%|█████████████████████                   | 118M/224M [00:00<00:00, 142MB/s] 59%|███████████████████████▋                | 133M/224M [00:01<00:00, 143MB/s] 66%|██████████████████████████▎             | 147M/224M [00:01<00:00, 144MB/s] 72%|████████████████████████████▉           | 162M/224M [00:01<00:00, 145MB/s] 79%|███████████████████████████████▌        | 177M/224M [00:01<00:00, 145MB/s] 85%|██████████████████████████████████▏     | 191M/224M [00:01<00:00, 146MB/s] 92%|████████████████████████████████████▋   | 206M/224M [00:01<00:00, 146MB/s] 98%|███████████████████████████████████████▎| 220M/224M [00:01<00:00, 144MB/s]  0%|                                               | 0.00/224M [00:00<?, ?B/s]100%|███████████████████████████████████████| 224M/224M [00:00<00:00, 1.70TB/s]
+birefnet-general-lite i3181 ok 14.5s
+birefnet-general-lite i3189 ok 23.5s
+birefnet-general-lite i3197 ok 31.6s
+birefnet-general-lite i3205 ok 39.6s
+birefnet-general-lite i3213 ok 48.3s
+birefnet-general-lite i3221 ok 56.2s
+birefnet-general-lite i3229 ok 64.2s
+birefnet-general-lite i3237 ok 72.2s
+birefnet-general-lite i3245 ok 80.1s
+birefnet-general-lite i3253 ok 87.9s
+birefnet-general-lite i3261 ok 95.9s
+birefnet-general-lite i3269 ok 104.1s
+birefnet-general-lite i3277 ok 112.2s
+birefnet-general-lite i3285 ok 120.1s
+birefnet-general-lite i3293 ok 128.1s
+birefnet-general-lite i3301 ok 136.3s
+birefnet-general-lite i3309 ok 144.3s
