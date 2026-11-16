@@ -1,19 +1,19 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-16 08:56 UTC
+Проверено: 2026-11-16 18:52 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
 - Шапка: 230 подписчиков · 141 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-15 21:20 · 1355 просм. · Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation · 4ejtez9n18c
-- 2026-11-15 17:03 · 1447 просм. · Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts · a9xDYsPrIa4
-- 2026-11-15 10:28 · 1448 просм. · What are 1,189 balls drawing? 🤔 Guess before the end! #shorts · p46Y16_FUkM
+- 2026-11-15 21:20 · 1575 просм. · Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation · 4ejtez9n18c
+- 2026-11-15 17:03 · 1591 просм. · Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts · a9xDYsPrIa4
+- 2026-11-15 10:28 · 1502 просм. · What are 1,189 balls drawing? 🤔 Guess before the end! #shorts · p46Y16_FUkM
 - 2026-11-12 15:26 · 238 просм. · Can it break out of 6 rings? 🚀 Space edition #shorts · Dw-O_K8qMds
 - 2026-11-12 11:29 · 1110 просм. · Sunrise watercolor 🌅 wait for the tape peel! #shorts · YGXQpqT2ur0
 - 2026-11-09 21:09 · 129 просм. · Last country standing WINS! 🌍 Who are you rooting for? #shorts · irOtTngZbls
 - 2026-11-08 17:06 · 731 просм. · 1 bullet vs 5 objects — how far does it go? 😳 #shorts · viBQgmzXg88
 - 2026-11-08 12:43 · 2471 просм. · Every bounce = BIGGER ball 🎵 …but the music speeds up 😱 #shorts · 98lnRofeeH8
-- 2026-11-07 09:44 · 1120 просм. · Spiked Bat vs Katana ⚔️ Who wins? #shorts · dEGnQFq6GCU
+- 2026-11-07 09:44 · 1121 просм. · Spiked Bat vs Katana ⚔️ Who wins? #shorts · dEGnQFq6GCU
 - 2026-11-06 12:17 · 2225 просм. · Scythe vs Dagger 💀 Who wins? #shorts · wrH8FbgHvC0
 - 2026-11-05 23:15 · 528 просм. · Katana vs Sword ⚔️ Who wins? #shorts · 5kPEHExdRks
 - 2026-11-05 20:00 · 1189 просм. · Can a steel ball break 50 layers of glass? 😳 #shorts · g8oBMJL95Ys
@@ -22,8 +22,8 @@
 - 2026-11-04 15:47 · 2719 просм. · Every bounce = BIGGER ball… this time it was SO close 😭 #shorts · NxErJ5KTOos
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
-- 1,3 тыс. просмотров · Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation · 4ejtez9n18c
-- 1,4 тыс. просмотров · Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts · a9xDYsPrIa4
+- 1,5 тыс. просмотров · Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation · 4ejtez9n18c
+- 1,6 тыс. просмотров · Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts · a9xDYsPrIa4
 - 1,4 тыс. просмотров · What are 1,189 balls drawing? 🤔 Guess before the end! #shorts · p46Y16_FUkM
 - 238 просмотров · Can it break out of 6 rings? 🚀 Space edition #shorts · Dw-O_K8qMds
 - 1,1 тыс. просмотров · Sunrise watercolor 🌅 wait for the tape peel! #shorts · YGXQpqT2ur0
