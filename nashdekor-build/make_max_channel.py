@@ -169,17 +169,17 @@ def short(x):
 
 
 def label_card(a, i=0):
-    """Фото товара как на сайте + полоса снизу: артикул, описание, размер."""
+    """Фото товара как на сайте + полоса снизу: артикул, описание, размер — по центру,
+    чтобы подпись не обрезалась и в квадратной миниатюре альбома."""
     x = CAT[a]
     ph = card_img(a, i).resize((1280, 728), Image.LANCZOS)
-    im = Image.new('RGB', (1280, 728 + 150), ANTH)
+    im = Image.new('RGB', (1280, 960), ANTH)
     im.paste(ph, (0, 0))
     d = ImageDraw.Draw(im)
-    d.line((48, 728, 1232, 728), fill=(0x40, 0x45, 0x4D), width=2)
-    d.text((48, 772), a, font=font(46, 'SemiBold'), fill=GAL, anchor='lm')
-    aw = d.textlength(a, font=font(46, 'SemiBold'))
-    d.text((48 + aw + 24, 774), label(x), font=font(30), fill=SUBD, anchor='lm')
-    d.text((48, 830), f"{x['w']}×{x['t']}×{x['l']} мм", font=font(28, 'Medium'), fill=BLUE, anchor='lm')
+    d.line((200, 736, 1080, 736), fill=(0x40, 0x45, 0x4D), width=2)
+    d.text((640, 790), a, font=font(58, 'SemiBold'), fill=GAL, anchor='mm')
+    d.text((640, 852), label(x), font=font(32), fill=SUBD, anchor='mm')
+    d.text((640, 904), f"{x['w']}×{x['t']}×{x['l']} мм", font=font(30, 'Medium'), fill=BLUE, anchor='mm')
     name = 'c_' + re.sub(r'[^a-z0-9]+', '-', a.lower()).strip('-')
     im.save(f'{OUT}/{name}.jpg', quality=86, optimize=True)
     return name
