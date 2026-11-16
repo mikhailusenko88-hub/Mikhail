@@ -1,0 +1,75 @@
+name: studio
+# Студия «Кот Барсик»: сборка серии без телефона. Запуск — строка в request.txt: «<имя сценария из scripts/> [настройки]».
+on:
+  push:
+    branches: [studio]
+    paths: [request.txt]
+permissions:
+  contents: write
+concurrency:
+  group: studio
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 170
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Что собираем
+        id: req
+        run: |
+          L=$(grep -v '^#' request.txt | head -1); set -- $L
+          echo "name=$1" >> $GITHUB_OUTPUT; shift || true; echo "opts=$*" >> $GITHUB_OUTPUT; echo "Сценарий: $L"
+      - name: Движок, герои, нейроголос
+        run: |
+          git clone -q --depth 1 --filter=blob:none --sparse -b mebel-3d https://github.com/${{ github.repository }} eng
+          (cd eng && git sparse-checkout set Resources/Mebel tools/multik/test && git log -1 --format='%h %ad %s' --date=short > ../engine.txt)
+          git clone -q --depth 1 -b multik-voice --single-branch https://github.com/${{ github.repository }} mv
+          (cd eng/Resources/Mebel && npm pack three@0.169.0 >/dev/null 2>&1 && tar -xzf three-0.169.0.tgz package/build/three.module.min.js && mv package/build/three.module.min.js . && rm -rf package three-0.169.0.tgz)
+          cat engine.txt; ls eng/Resources/Mebel | tr '\n' ' '; du -sh mv/voice mv/ort
+      - name: Инструменты
+        run: |
+          npm init -y >/dev/null && npm i playwright ffmpeg-static >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+          swiftc -O tts_mac.swift -o tts 2>&1 | tail -5
+          pip -q install faster-whisper praat-parselmouth numpy pillow 2>&1 | tail -2
+          node -e "console.log('ffmpeg:',require('ffmpeg-static'))"
+      - name: Голос Apple — прогрев
+        run: |
+          mkdir -p out
+          echo '[{"name":"w","text":"Раз, два, три. Проверка голоса. Все вместе они побежали домой.","ipa":[],"base":"female","pitch":1.38,"rate":0.52}]' > /tmp/w.json
+          for i in 1 2 3 4 5 6; do perl -e 'alarm 60; exec @ARGV' ./tts /tmp/w.json /tmp/warm 0 2>&1 | tail -1; done | tee out/apple_warm.txt
+      - name: Сборка
+        env:
+          ENG: ${{ github.workspace }}/eng
+          VOICE: ${{ github.workspace }}/mv
+        run: |
+          export ENGINE="$(cut -d' ' -f1 engine.txt)"
+          node studio.js "scripts/${{ steps.req.outputs.name }}.txt" out ${{ steps.req.outputs.opts }} 2> out/stderr.txt || echo "сборка не закончена"
+          tail -5 out/log.txt
+      - name: Приёмка
+        run: |
+          FF="$(node -e "console.log(require('ffmpeg-static'))")"
+          python qa.py out "$FF" 2> out/qa_err.txt || true
+          V="$(ls -S out/video/*.mp4 2>/dev/null | head -1)"
+          if [ -n "$V" ]; then cp "$V" "ep-${{ steps.req.outputs.name }}.mp4"; "$FF" -y -loglevel error -i "$V" -vf scale=960:540 -c:v libx264 -preset veryfast -crf 26 -c:a aac -b:a 96k -movflags +faststart "ep-${{ steps.req.outputs.name }}-540.mp4"; ls -la ep-*.mp4; fi
+      - name: Файлы — в релиз
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="studio-${{ steps.req.outputs.name }}"; ls ep-*.mp4 >/dev/null 2>&1 || exit 0
+          (cd out/files 2>/dev/null && zip -q -r ../../golosa.zip voices) || true
+          gh release delete "$TAG" -y --cleanup-tag >/dev/null 2>&1 || true
+          gh release create "$TAG" --target studio --prerelease --title "Студия: ${{ steps.req.outputs.name }}" --notes "Пробная сборка студии (не опубликовано на YouTube). Движок: $(cat engine.txt)" ep-*.mp4 $(ls golosa.zip 2>/dev/null)
+      - name: Итог — в ветку
+        if: always()
+        run: |
+          D="runs/${{ steps.req.outputs.name }}"; rm -rf "$D"; mkdir -p "$D"
+          cp engine.txt out/log.txt out/result.json out/stderr.txt out/qa_err.txt out/apple_warm.txt "$D"/ 2>/dev/null || true
+          cp -r out/qa "$D"/ 2>/dev/null || true; cp out/files/speech.json "$D"/ 2>/dev/null || true
+          cp out/video/*.txt "$D"/ 2>/dev/null || true; cp -r out/files/video "$D"/covers 2>/dev/null || true
+          git config user.name "studio"; git config user.email "actions@users.noreply.github.com"
+          git add runs && git commit -qm "студия: ${{ steps.req.outputs.name }} $(date -u +%F_%H:%M)" && git pull -q --rebase origin studio && git push -q || true
