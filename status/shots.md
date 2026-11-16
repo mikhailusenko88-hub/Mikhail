@@ -1,7 +1,13 @@
-# Скриншоты сайта — 2026-11-16 17:57 UTC
+# Скриншоты сайта — 2026-11-16 19:05 UTC
 
-- **a701-f** mobile https://nashdekor.ru/p/a701/?s=11 — ok
-- **ap1-f** mobile https://nashdekor.ru/p/ap1-100/?s=11 — ok
-- **a25-f** mobile https://nashdekor.ru/p/a25/?s=11 — ok
-- **a605-f** mobile https://nashdekor.ru/p/a605/?s=11 — ok
-- **a608-f** mobile https://nashdekor.ru/p/a608/?s=11 — ok
+- **calc-m** mobile https://nashdekor.ru/?s=12 — ok
+- **calc-pick-m** mobile https://nashdekor.ru/?s=12&panel=3-7 — ОШИБКА Page.goto: Timeout 45000ms exceeded.
+Call log:
+  - navigating to "https://nashdekor.ru/?s=12&panel=3-7", waiting until "networkidle"
+
+- **calc-d** desktop https://nashdekor.ru/?s=12 — ok
+- **calc-side-d** desktop https://nashdekor.ru/?s=12&panel=5-10 — ОШИБКА Page.goto: Timeout 45000ms exceeded.
+Call log:
+  - navigating to "https://nashdekor.ru/?s=12&panel=5-10", waiting until "networkidle"
+
+- **cat-m** mobile https://nashdekor.ru/?s=12 — ok
