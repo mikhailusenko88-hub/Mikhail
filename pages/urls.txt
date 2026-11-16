@@ -1,4 +1,2 @@
-# 23:05 мини-приложение MAX: код MAX Bridge и заголовки сайта (можно ли открыть во фрейме)
-https://st.max.ru/js/max-web-app.js
-https://nashdekor.ru/
-https://nashdekor.ru/katalog/
+# 23:25 мини-приложение MAX: max.js на сайте (обновление сайта с сервера)
+https://nashdekor.ru/assets/max.js?v=2
