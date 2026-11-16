@@ -1424,56 +1424,57 @@ def area_light(name, loc, look, sx, sy, power, color=(1.0, 1.0, 1.0), spread=180
     return ob
 
 
-def scene_studio():
-    """Каталог: n панелей стоят «стеной» и повёрнуты к камере, фон — «Антрацит», свет скользит поперёк рельефа.
-    Концы панелей за кадром (кадр «срез стены»), тыл и торец не видны.
-    item=a907|a903|slat (slat — реечные серии 3, decor=3-7…), rot — поворот панелей, az — откуда камера."""
-    item = A.get('item', 'a907').lower()
-    rot = R(float(A.get('rot', -30)))
-    L = float(A.get('len', 1.8))
-    m_bg = mat_simple('bg_anthracite', hexcol(A.get('bg', '26292E')), rough=0.9)
-    bgy = float(A.get('bg_y', 0.45))
-    box('bg_wall', -4, 4, bgy, bgy + 0.05, -0.5, 4.0, m_bg)
-    box('bg_floor', -4, 4, -6, bgy, -0.55, -0.5, m_bg)
-    objs = []
+def studio_panels(item, x0, x1, z0, z1):
+    """Панели артикула на стене y=0 (лицом к −Y) от x0 до x1, от z0 до z1."""
     if item == 'slat':
         m_wood = mat_decor(DECOR)
         m_black = mat_simple('pan_black', (0.007, 0.007, 0.008, 1), rough=0.8, **{'Specular IOR Level': 0.25})
-        w = 0.12 * int(A.get('n', 4))
-        objs.append(slat_wall('panels', -w / 2, w / 2, L, 0.0, m_wood, m_black, zbot=lambda x: 0.0))
+        ob = slat_wall('panels', x0, x1, z1, 0.0, m_wood, m_black, zbot=lambda x: z0)
+        return [ob]
+    mp = mat_simple('white_paint', hexcol(A.get('paint', 'EFEEEA')), rough=float(A.get('paint_rough', 0.55)),
+                    bump=0.02, bump_scale=1500.0)
+    pts = prof_points(item)
+    n = max(1, int(round((x1 - x0) / 0.18)))
+    out = []
+    for i in range(n):
+        ob = profile_panel(f'panel{i}', pts, x0 + 0.18 * i, z1 - z0, mp)
+        ob.location.z = z0
+        out.append(ob)
+    return out
+
+
+def scene_studio():
+    """Фото каталога. view=wall — участок стены из панелей на тёмной стене «Антрацит» с полом (как будет дома);
+    view=close — крупно под углом (рельеф и швы); view=slice — панели отдельно на фоне.
+    Концы панелей не видны (низ — на полу, верх — за кадром), тыл не виден.
+    item=a907|a903|slat (slat — реечные серии 3, decor=3-7…)."""
+    item = A.get('item', 'a907').lower()
+    view = A.get('view', 'wall')
+    w = float(A.get('w', 1.08 if item != 'slat' else 0.96))
+    m_wall = mat_pbr('wall_paint', 'beige_wall_001', 3.0, color=hexcol(A.get('wallcol', '3B3F45')), rough=0.9,
+                     nstrength=float(A.get('nstr', 0.25)))
+    m_floor = mat_pbr('floor', 'laminate_floor_02', 1.7, rough_add=-0.05, nstrength=0.8, rot=R(90),
+                      tint=srgb(232, 222, 210))
+    box('wall', -5, 5, 0.0, 0.2, -0.1, 3.2, m_wall)
+    box('floor', -5, 5, -7, 0.2, -0.1, 0.0, m_floor)
+    studio_panels(item, -w / 2, w / 2, 0.0, 2.7)
+    # свет: «окно» справа — вертикальный софтбокс скользит вдоль стены (рельеф), мягкая заливка со стороны камеры
+    area_light('key', (float(A.get('key_x', 1.8)), -float(A.get('key_off', 0.32)), float(A.get('key_z', 1.35))),
+               (0.0, 0.0, 1.0), float(A.get('key_w', 0.45)), float(A.get('key_h', 2.4)), float(A.get('key', 420)),
+               (1.0, 0.96, 0.90), spread=float(A.get('key_spread', 75)))
+    if view == 'close':
+        cam_loc, look, lens = (-0.80, -0.62, 1.02), (0.12, 0.0, 0.92), float(A.get('lens', 45))
     else:
-        mp = mat_simple('white_paint', hexcol(A.get('paint', 'EFEEEA')), rough=float(A.get('paint_rough', 0.55)),
-                        bump=0.02, bump_scale=1500.0)
-        n = int(A.get('n', 4))
-        pts = prof_points(item)
-        for i in range(n):
-            objs.append(profile_panel(f'panel{i}', pts, -0.09 * n + 0.18 * i, L, mp))
-    for ob in objs:
-        ob.rotation_euler.z = rot
-        ob.location.z = float(A.get('lift', -0.1))
-    # свет: скользящий ключ слева вдоль плоскости панелей (рельеф), мягкая заливка от камеры, контур справа, пятно на фоне
-    nx, ny = math.sin(rot), -math.cos(rot)          # нормаль лица
-    tx, ty = math.cos(rot), math.sin(rot)           # вдоль ширины
-    kd, kn = float(A.get('key_d', 1.3)), float(A.get('key_n', 0.30))
-    zc = float(A.get('look_z', 0.75))
-    area_light('key', (-tx * kd + nx * kn, -ty * kd + ny * kn, zc + float(A.get('key_z', 0.35))), (0, 0, zc),
-               float(A.get('key_w', 0.30)), float(A.get('key_h', 2.0)), float(A.get('key', 250)), (1.0, 0.97, 0.93),
-               spread=float(A.get('key_spread', 60)))
-    az = R(float(A.get('az', 10)))
-    dist = float(A.get('dist', 1.35))
-    cam_loc = (dist * math.sin(az), -dist * math.cos(az), float(A.get('cam_z', zc + 0.12)))
-    area_light('fill', (cam_loc[0] * 1.5, cam_loc[1] * 1.5, zc + 0.4), (0, 0, zc), 1.5, 1.5, float(A.get('fill', 8)),
-               (0.93, 0.96, 1.0), spread=50)
-    area_light('rim', (tx * 1.0 + nx * -0.2, ty * 1.0 + ny * -0.2 + 0.1, zc + 0.6), (0, 0, zc), 0.25, 1.4,
-               float(A.get('rim', 40)), spread=50)
-    area_light('bg_glow', (-0.3, bgy - 0.9, zc + 1.4), (0.15, bgy, zc - 0.1), 1.0, 1.0, float(A.get('glow', 18)),
-               spread=float(A.get('glow_spread', 50)))
-    w = bpy.data.worlds.new('W')
-    scene.world = w
-    w.use_nodes = True
-    w.node_tree.nodes['Background'].inputs['Color'].default_value = (0.004, 0.004, 0.0045, 1)
-    camera(cam_loc, (float(A.get('look_x', 0.0)), 0, zc), lens=float(A.get('lens', 35)),
-           fstop=float(A.get('fstop', 0)) or None, focus=dist, level=True)
+        cam_loc, look, lens = (float(A.get('cx', -1.25)), float(A.get('cy', -2.15)), float(A.get('cz', 1.05))), \
+                              (float(A.get('lx', 0.12)), 0.0, float(A.get('lz', 0.78))), float(A.get('lens', 32))
+    area_light('fill', (cam_loc[0] * 1.3, cam_loc[1] * 1.3, 1.8), (0.0, 0.0, 0.9), 1.6, 1.6, float(A.get('fill', 30)),
+               (0.94, 0.96, 1.0), spread=70)
+    wo = bpy.data.worlds.new('W')
+    scene.world = wo
+    wo.use_nodes = True
+    g = float(A.get('amb', 0.02))
+    wo.node_tree.nodes['Background'].inputs['Color'].default_value = (g, g, g * 1.05, 1)
+    camera(cam_loc, look, lens=lens, fstop=float(A.get('fstop', 0)) or None, level=True)
 
 
 def auto_expose():
