@@ -1,0 +1,21 @@
+ProductName:		macOS
+ProductVersion:		15.8.2
+BuildVersion:		24H232
+Apple M1 (Virtual)
+3
+7516192768
+== русские голоса
+Milena              ru_RU    # Здравствуйте! Меня зовут Милена.
+== ffmpeg
+нет
+v22.23.4
+движок: 6f535e7 2026-11-16 Мультики: герои не стоят боком; вещь, о которой только говорят, не появляется
+total 23992
+drwxr-xr-x   8 runner  staff      256 Nov 16 22:15 .
+drwxr-xr-x  26 runner  staff      832 Nov 16 22:15 ..
+-rw-r--r--   1 runner  staff  4252210 Nov 16 22:15 barsik_0.wasm
+-rw-r--r--   1 runner  staff    16093 Nov 16 22:15 barsik.json
+-rw-r--r--   1 runner  staff  3636590 Nov 16 22:15 pik_0.wasm
+-rw-r--r--   1 runner  staff    16364 Nov 16 22:15 pik.json
+-rw-r--r--   1 runner  staff  4339364 Nov 16 22:15 ron_0.wasm
+-rw-r--r--   1 runner  staff    15361 Nov 16 22:15 ron.json
