@@ -196,7 +196,7 @@ WOOD_NAMES = {"2": "две широкие ламели", "3": "три ламел
 def slug(a): return a.lower().replace("/", "-").replace(" ", "")
 def esc(s): return html.escape(str(s), quote=True)
 def fmt(n): return "{:,}".format(int(round(n))).replace(",", " ")
-PHOTO_V = "6"   # версия фото товаров (16.11.2026 — фото живых образцов, карусель): менять, когда фото перерисованы (11.11.2026 — фон «Антрацит»); то же — PHOTO_V в index.html
+PHOTO_V = "7"   # версия фото товаров (16.11.2026 — фото живых образцов, карусель): менять, когда фото перерисованы (11.11.2026 — фон «Антрацит»); то же — PHOTO_V в index.html
 def photo(a): return "img/" + PHOTO[a] + "?v=" + PHOTO_V if PHOTO.get(a) else ""
 # фото в 2 раза крупнее (нейросеть Real-ESRGAN, ветка img-upscale, 11.11.2026) — для чётких экранов, og:image, Яндекс Товаров
 def photo2x(a): return ("img/2x/" + PHOTO[a] + "?v=" + PHOTO_V) if PHOTO.get(a) and os.path.exists(os.path.join(SITE, "img", "2x", PHOTO[a])) else photo(a)
@@ -470,7 +470,8 @@ def product_page(x):
     related = ('<section class="rel"><div class="wrap"><h2>Ещё в разделе «%s»</h2><div class="grid">%s</div>'
                '<p class="more"><a class="btn ghost" href="%scatalog/%s/">Весь раздел</a></p></div></section>' % (esc(catc[2]), "".join(card(y, ROOT) for y in rel), ROOT, catc[1])) if rel else ""
 
-    data = {"root": ROOT, "item": x, "kind": KIND[c], "photo": ph, "mask": PHOTO.get(a, "") in ("A172.jpg", "A38.jpg", "A503.jpg", "A504.jpg"),
+    data = {"root": ROOT, "item": x, "kind": KIND[c], "photo": ph, "mask": False,   # маски были под старые фото карнизов; новые фото — белое изделие на тёмном фоне, маска не нужна
+            
             "paint": PAINT, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", "")}}
     if a in PROF: data["prof"] = PROF[a]
     elif a in PROF2: data["poly"] = PROF2[a]
