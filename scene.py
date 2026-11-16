@@ -1409,10 +1409,14 @@ def profile_panel(name, pts_mm, x_off, length, mat, sharp_deg=32.0):
     return ob
 
 
-def area_light(name, loc, look, sx, sy, power, color=(1.0, 1.0, 1.0)):
+def area_light(name, loc, look, sx, sy, power, color=(1.0, 1.0, 1.0), spread=180.0):
     ld = bpy.data.lights.new(name, 'AREA')
     ld.shape = 'RECTANGLE'
     ld.size, ld.size_y, ld.energy, ld.color = sx, sy, power, color
+    try:
+        ld.spread = R(spread)   # «сота» на софтбоксе: свет не растекается на фон
+    except Exception as e:  # noqa
+        log('spread', e)
     ob = bpy.data.objects.new(name, ld)
     col.objects.link(ob)
     ob.location = loc
@@ -1425,11 +1429,12 @@ def scene_studio():
     Концы панелей за кадром (кадр «срез стены»), тыл и торец не видны.
     item=a907|a903|slat (slat — реечные серии 3, decor=3-7…), rot — поворот панелей, az — откуда камера."""
     item = A.get('item', 'a907').lower()
-    rot = R(float(A.get('rot', -22)))
+    rot = R(float(A.get('rot', -30)))
     L = float(A.get('len', 1.8))
     m_bg = mat_simple('bg_anthracite', hexcol(A.get('bg', '26292E')), rough=0.9)
-    box('bg_wall', -4, 4, float(A.get('bg_y', 0.8)), float(A.get('bg_y', 0.8)) + 0.05, -0.5, 4.0, m_bg)
-    box('bg_floor', -4, 4, -6, float(A.get('bg_y', 0.8)), -0.55, -0.5, m_bg)
+    bgy = float(A.get('bg_y', 0.45))
+    box('bg_wall', -4, 4, bgy, bgy + 0.05, -0.5, 4.0, m_bg)
+    box('bg_floor', -4, 4, -6, bgy, -0.55, -0.5, m_bg)
     objs = []
     if item == 'slat':
         m_wood = mat_decor(DECOR)
@@ -1439,7 +1444,7 @@ def scene_studio():
     else:
         mp = mat_simple('white_paint', hexcol(A.get('paint', 'EFEEEA')), rough=float(A.get('paint_rough', 0.55)),
                         bump=0.02, bump_scale=1500.0)
-        n = int(A.get('n', 3))
+        n = int(A.get('n', 4))
         pts = prof_points(item)
         for i in range(n):
             objs.append(profile_panel(f'panel{i}', pts, -0.09 * n + 0.18 * i, L, mp))
@@ -1449,23 +1454,26 @@ def scene_studio():
     # свет: скользящий ключ слева вдоль плоскости панелей (рельеф), мягкая заливка от камеры, контур справа, пятно на фоне
     nx, ny = math.sin(rot), -math.cos(rot)          # нормаль лица
     tx, ty = math.cos(rot), math.sin(rot)           # вдоль ширины
-    kd, kn = float(A.get('key_d', 1.5)), float(A.get('key_n', 0.35))
-    zc = float(A.get('look_z', 0.8))
-    area_light('key', (-tx * kd + nx * kn, -ty * kd + ny * kn, zc + float(A.get('key_z', 0.25))), (0, 0, zc),
-               float(A.get('key_w', 0.35)), float(A.get('key_h', 1.8)), float(A.get('key', 320)), (1.0, 0.97, 0.93))
-    az = R(float(A.get('az', 16)))
-    dist = float(A.get('dist', 2.7))
-    cam_loc = (dist * math.sin(az), -dist * math.cos(az), float(A.get('cam_z', zc)))
-    area_light('fill', (cam_loc[0] * 1.2, cam_loc[1] * 1.2, zc + 0.6), (0, 0, zc), 2.0, 2.0, float(A.get('fill', 70)),
-               (0.93, 0.96, 1.0))
-    area_light('rim', (tx * 1.2 + 0.25, ty * 1.2 + 0.55, zc + 0.5), (0, 0, zc), 0.3, 1.4, float(A.get('rim', 90)))
-    area_light('bg_glow', (0.0, 0.0, zc + 1.6), (0.0, float(A.get('bg_y', 0.8)), zc), 1.2, 1.2, float(A.get('glow', 140)))
+    kd, kn = float(A.get('key_d', 1.3)), float(A.get('key_n', 0.30))
+    zc = float(A.get('look_z', 0.75))
+    area_light('key', (-tx * kd + nx * kn, -ty * kd + ny * kn, zc + float(A.get('key_z', 0.35))), (0, 0, zc),
+               float(A.get('key_w', 0.30)), float(A.get('key_h', 2.0)), float(A.get('key', 250)), (1.0, 0.97, 0.93),
+               spread=float(A.get('key_spread', 60)))
+    az = R(float(A.get('az', 10)))
+    dist = float(A.get('dist', 1.35))
+    cam_loc = (dist * math.sin(az), -dist * math.cos(az), float(A.get('cam_z', zc + 0.12)))
+    area_light('fill', (cam_loc[0] * 1.5, cam_loc[1] * 1.5, zc + 0.4), (0, 0, zc), 1.5, 1.5, float(A.get('fill', 8)),
+               (0.93, 0.96, 1.0), spread=50)
+    area_light('rim', (tx * 1.0 + nx * -0.2, ty * 1.0 + ny * -0.2 + 0.1, zc + 0.6), (0, 0, zc), 0.25, 1.4,
+               float(A.get('rim', 40)), spread=50)
+    area_light('bg_glow', (-0.3, bgy - 0.9, zc + 1.4), (0.15, bgy, zc - 0.1), 1.0, 1.0, float(A.get('glow', 18)),
+               spread=float(A.get('glow_spread', 50)))
     w = bpy.data.worlds.new('W')
     scene.world = w
     w.use_nodes = True
-    w.node_tree.nodes['Background'].inputs['Color'].default_value = (0.012, 0.012, 0.013, 1)
-    camera(cam_loc, (0, 0, zc), lens=float(A.get('lens', 70)), fstop=float(A.get('fstop', 0)) or None,
-           focus=dist, level=True)
+    w.node_tree.nodes['Background'].inputs['Color'].default_value = (0.004, 0.004, 0.0045, 1)
+    camera(cam_loc, (float(A.get('look_x', 0.0)), 0, zc), lens=float(A.get('lens', 35)),
+           fstop=float(A.get('fstop', 0)) or None, focus=dist, level=True)
 
 
 def auto_expose():
@@ -1474,7 +1482,8 @@ def auto_expose():
     rh = max(2, int(round(rw * H_PX / W_PX)))
     px = render_linear(rw, rh, 32, 'ae')
     hi = float(np.percentile(lum(px.astype(np.float64)), float(A.get('pct', 99.3))))
-    ev = math.log2(float(A.get('target', 1.5)) / max(hi, 1e-6)) + EV
+    target = float(A.get('target', 0.9 if A.get('item', '') == 'slat' else 2.0))
+    ev = math.log2(target / max(hi, 1e-6)) + EV
     scene.view_settings.exposure = ev
     log('auto exposure: p%.1f=%.4f -> exposure %.2f' % (float(A.get('pct', 99.3)), hi, ev))
 

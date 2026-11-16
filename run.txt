@@ -1,5 +1,5 @@
 # имя  аргументы для scene.py (или "py script.py")
-# 16.11.2026 — студийные фото каталога (scene=studio), превью
-s903p scene=studio item=a903 res=800x500 samples=48 noise=0.06
-s907p scene=studio item=a907 res=800x500 samples=48 noise=0.06
-s37p scene=studio item=slat decor=3-7 res=800x500 samples=48 noise=0.06
+# 16.11.2026 — студийные фото каталога (scene=studio), превью 2: ближе, перспектива, свет сбоку, фон тёмный
+s903q scene=studio item=a903 res=800x500 samples=48 noise=0.06
+s907q scene=studio item=a907 res=800x500 samples=48 noise=0.06
+s37q scene=studio item=slat decor=3-7 n=5 res=800x500 samples=48 noise=0.06
