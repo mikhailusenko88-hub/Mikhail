@@ -1,13 +1,25 @@
 # Kim yutadi?  (@kimyutadi_uz)
-Проверено: 2026-11-16 07:12 UTC
+Проверено: 2026-11-16 08:56 UTC
 
 - Страница канала: HTTP 200; ID: UC93S31Qkgoz4cFgKBzz-mLA
 - Шапка: 7 подписчиков · 33 видео
 
-## Последние открытые ролики (RSS, точные просмотры) — 0 шт.
-- (пусто или лента недоступна, HTTP 404)
-
-## Вкладка «Видео» (RSS не ответил; просмотры округлены) — 0 шт., HTTP 200
+## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
+- 2026-11-16 06:37 · 0 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №14 #shorts · AB95lhJLozM
+- 2026-11-15 14:37 · 13 просм. · Qaysi jamoa yutadi? Какой клуб победит? 🏆 Hafta finali · Финал недели #shorts · 9MPeFq6stkI
+- 2026-11-15 10:37 · 0 просм. · Qaysi mashina yutadi? Какая машина победит? 🏆 Hafta finali · Финал недели #shorts · qHSr0v1Qqfk
+- 2026-11-15 06:37 · 37 просм. · Qaysi shahar yutadi? Какой город победит? 🏆 Hafta finali · Финал недели #shorts · OoAUlWBsWDo
+- 2026-11-14 14:37 · 51 просм. · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №8 #shorts · di_e6dCzP-M
+- 2026-11-14 10:37 · 53 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №12 #shorts · ZFZ8yENudj4
+- 2026-11-14 06:36 · 156 просм. · Qaysi shahar yutadi? Какой город победит? 🏁 №9 #shorts · TXfltN8hkJ4
+- 2026-11-13 14:36 · 99 просм. · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №7 #shorts · Li1n6czv9gI
+- 2026-11-13 10:36 · 176 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №11 #shorts · r5e1gfw-jlY
+- 2026-11-13 06:37 · 158 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №10 #shorts · E-q512-ocQ0
+- 2026-11-12 14:37 · 585 просм. · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №6 #shorts · yf_qOpqsar8
+- 2026-11-12 10:37 · 598 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №9 #shorts · Zzd0-R9Pq6I
+- 2026-11-12 06:36 · 1 просм. · Qaysi shahar yutadi? Какой город победит? 🏁 №8 #shorts · DOAakgYql4w
+- 2026-11-11 18:03 · 870 просм. · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №5 #shorts · poKpw02WkZg
+- 2026-11-11 10:37 · 965 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №8 #shorts · U_jnHzzCTiI
 
 ## Вкладка Shorts (видно всем) — 33 шт. на первой странице
 - 0 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №14 #shorts · AB95lhJLozM
