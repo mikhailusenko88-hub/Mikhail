@@ -45,6 +45,18 @@ try:
     if still: note(f'картинка стоит 6 с и дольше, начиная с секунд: {still[:10]}')
 except Exception as ex: note('кадры: ' + str(ex)); traceback.print_exc()
 
+# 2а. кадры-кандидаты: моменты восклицаний и вопросов (для обложки и для проверки мордочек)
+try:
+    if SP:
+        cand = [s for s in SP['speech'] if not s.get('vocal') and s['name'] != 'Рассказчик' and re.search(r'[!?]', s['text']) and s['dur'] > 0.8]
+        if len(cand) > 24: cand = [cand[round(i * (len(cand) - 1) / 23)] for i in range(24)]
+        os.makedirs(os.path.join(QA, 'kadry'), exist_ok=True)
+        for s in cand:
+            t = s['t'] + min(0.45, s['dur'] / 2)
+            run([FF, '-y', '-loglevel', 'error', '-ss', f'{t:.2f}', '-i', MP4, '-frames:v', '1', '-vf', 'scale=640:360', '-q:v', '4', os.path.join(QA, 'kadry', f"k_{int(t):04d}_{s['name']}.jpg")])
+        R['kadry'] = len(cand)
+except Exception as ex: note('кадры-кандидаты: ' + str(ex))
+
 # 3. звук: громкость, пик, тишина
 WAV = os.path.join(QA, 'audio16k.wav')
 try:

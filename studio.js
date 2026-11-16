@@ -9,7 +9,7 @@ const pos = args.filter(a => !a.startsWith('--')), SCN = pos[0], OUT = path.reso
 const ENG = process.env.ENG, ROOT = path.join(ENG, 'Resources/Mebel'), VDIR = process.env.VOICE || '';
 const FFMPEG = process.env.FFMPEG || (() => { try { return require('ffmpeg-static'); } catch (e) { return 'ffmpeg'; } })();
 const TTS = path.resolve(process.env.TTS || './tts');
-const STD = flag('std'), SOFT = flag('soft'), RES = +opt('res', 1080), FPS = +opt('fps', 25);
+const STD = flag('std'), SOFT = flag('soft'), RES = +opt('res', 1080), FPS = +opt('fps', 25), ONLY = opt('only', '');
 fs.mkdirSync(path.join(OUT, 'tts'), { recursive: true });
 const T0 = Date.now(), el = () => Math.round((Date.now() - T0) / 1000);
 const LOG = path.join(OUT, 'log.txt'); fs.writeFileSync(LOG, '');
@@ -90,6 +90,39 @@ async function native(m) { const c = m && m.cmd;
     case 'keepAwake': case 'buildDone': case 'share': case 'copy': case 'removeFile': case 'speak': return true;
     default: return null; } }
 
+// ---- элементы для обложки: каждый герой отдельно (мордочки и позы), вещи, фоны всех мест серии ----
+async function elements(page, start) {
+  return await page.evaluate(async ([se, n, W, H]) => {
+    const P = Lib.data.projects.find(p => p.series === se), E = P.episodes.find(e => e.episode === n), ep = E.script, lib = Lib.data, PS = window.MKPoster;
+    if (!PS) return { ok: false, err: 'нет multik-poster.js' };
+    await Build.wait3d(); await prepHeroes(lib, null);
+    const names = {}; for (const id in lib.characters) names[id] = (lib.characters[id].spec || {}).name || id;
+    const cv = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; };
+    const lib2 = Object.assign({}, lib, { settings: Object.assign({}, lib.settings, { opening: 'new', intro: 'none' }) });
+    const mk = (scene, cam) => { const e2 = Object.assign({}, ep, { scenes: [scene], titleCard: false, endCard: false, subscribe: false, autoCam: false, main: false, mainSet: false, subtitles: false });
+      const tl = MK.compile(e2, lib2, {}); tl.style = '3d'; const sg = tl.segs.find(x => x.kind === 'scene'); if (sg && cam) sg.cam = [Object.assign({ t: 0, cut: true }, cam)]; return tl; };
+    const draw = (c0, tl, t) => { const c = c0.getContext('2d'); c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, W, H); c.setTransform(W / 1920, 0, 0, H / 1080, 0, 0); MK.render(c, tl, Math.max(0, t - .1)); MK.render(c, tl, t); c.setTransform(1, 0, 0, 1, 0, 0); };
+    const cut = (tl, t) => { const A = cv(), B = cv(); try { MK3D._studio = '#000000'; draw(A, tl, t); MK3D._studio = '#bfbfbf'; draw(B, tl, t); } finally { MK3D._studio = null; } return PS.matte(A, B); };
+    const small = (c, maxH) => { if (!c) return null; const k = Math.min(1, maxH / c.height); if (k >= 1) return c; const o = document.createElement('canvas'); o.width = Math.round(c.width * k); o.height = Math.round(c.height * k); const x = o.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(c, 0, 0, o.width, o.height); return o; };
+    const save = async (name, c, type, q) => { if (!c) return false; const d = c.toDataURL(type || 'image/png', q); await Native.call('writeFile', { path: 'el/' + name, d: d.slice(d.indexOf(',') + 1) }); return true; };
+    const hs = PS.heroes(ep, lib).slice(0, 6), loc0 = (ep.scenes[0] || {}).location, list = [];
+    for (let i = 0; i < hs.length; i++) { const id = hs[i], nm = names[id], cast = [{ who: id, x: .5, face: 'camera' }];
+      const shots = [['udiv', [{ who: id, emotion: 'surprised', say: 'Ого-о-о!' }, { wait: 2 }], 'close', null], ['rad', [{ who: id, emotion: 'happy', say: 'Ура-а-а!' }, { wait: 2 }], 'close', null], ['vot', [{ who: id, emotion: 'happy', say: 'Вот это да!' }, { wait: 2 }], 'close', .3],
+        ['likuet', [{ who: id, emotion: 'happy', do: 'cheer' }, { wait: 2 }], 'medium', [.45, .8]], ['pokaz', [{ who: id, emotion: 'surprised', do: 'point' }, { wait: 2 }], 'medium', [.5, .9]], ['mashet', [{ who: id, emotion: 'happy', do: 'wave' }, { wait: 2 }], 'medium', [.6]], ['pryg', [{ who: id, emotion: 'happy', do: 'jump' }, { wait: 2 }], 'medium', [.35]], ['dumaet', [{ who: id, do: 'think', text: '?' }, { wait: 2 }], 'medium', [.9]]];
+      for (const [tag, steps, cam, ts] of shots) { try { const tl = mk({ id: 'Э1', location: loc0, cast, props: [], steps, tail: 0 }, { mode: cam, on: id });
+        const sp = (tl.speech || []).find(x => x.who === id); const times = Array.isArray(ts) ? ts : [sp ? sp.t + (ts || .374) : 1.2];
+        for (let k = 0; k < times.length; k++) { const nmf = `g${i + 1}_${nm}_${tag}${times.length > 1 ? k + 1 : ''}.png`; if (await save(nmf, small(cut(tl, times[k]), 760))) list.push(nmf); await new Promise(r => setTimeout(r, 0)); } } catch (e) { console.log('студия: элемент', nm, tag, e && e.message); } } }
+    // вещи: главный предмет и всё, что показано в серии
+    const types = new Set(); const M = MK.mainOf(ep, lib); if (M && M.type) types.add(M.type); for (const sc of ep.scenes) for (const p of sc.props || []) if (p.type) types.add(p.type);
+    for (const t of [...types].slice(0, 14)) { try { const A = document.createElement('canvas'), B = document.createElement('canvas'); A.width = A.height = B.width = B.height = 900;
+        MK3D._studio = '#000000'; MK3D.propSheet(A, [t], 1); MK3D._studio = '#bfbfbf'; MK3D.propSheet(B, [t], 1); MK3D._studio = null; const nmf = `v_${t}${M && M.type === t ? '_GLAVNOE' : ''}.png`; if (await save(nmf, small(PS.matte(A, B), 620))) list.push(nmf); } catch (e) { MK3D._studio = null; console.log('студия: вещь', t, e && e.message); } }
+    // фоны: каждое место серии, общий план без героев
+    const seen = new Set(); let b = 0; for (const sc of ep.scenes) { const key = JSON.stringify(lib.locations[sc.location] ? lib.locations[sc.location].spec : sc.location); if (seen.has(key)) continue; seen.add(key);
+      try { const tl = mk({ id: 'Ф1', location: sc.location, cast: [], props: [], steps: [{ wait: 3 }], tail: 0 }, { mode: 'wide' }); const c = cv(); draw(c, tl, 1); const L = (lib.locations[sc.location] || {}).spec || {}; const nmf = `f${++b}_${L.type || 'mesto'}_${L.time || ''}.jpg`; if (await save(nmf, c, 'image/jpeg', .92)) list.push(nmf); } catch (e) { console.log('студия: фон', e && e.message); } if (b >= 8) break; }
+    return { ok: list.length > 0, n: list.length, heroes: hs.map(id => names[id]), main: M && M.type, list };
+  }, [start.series, start.episode, 1920, 1080]);
+}
+
 (async () => {
   await new Promise(r => srv.listen(0, r)); port = srv.address().port;
   const gpu = SOFT ? ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'];
@@ -104,7 +137,7 @@ async function native(m) { const c = m && m.cmd;
   await page.waitForFunction(() => typeof Lib !== 'undefined' && Lib.data && window.MK3D && MK3D.ready, null, { timeout: 180000 });
   const gl = await page.evaluate(() => { const c = document.createElement('canvas'), g = c.getContext('webgl2') || c.getContext('webgl'); if (!g) return 'нет WebGL'; const e = g.getExtension('WEBGL_debug_renderer_info'); return e ? g.getParameter(e.UNMASKED_RENDERER_WEBGL) : '?'; });
   log('страница готова; видеокарта:', gl);
-  const start = await page.evaluate(async ([txt, q, res, fps]) => {
+  const start = await page.evaluate(async ([txt, q, res, fps, only]) => {
     const R = MKScript.parse(txt, Lib.data); if (!R.episodes || !R.episodes.length) return { err: 'в сценарии нет серий', errors: R.errors };
     const ep = R.episodes[0], v = await Lib.importText(JSON.stringify(ep), true); if (v && v.errors && v.errors.length) return { err: v.errors };
     Lib.data.settings = Object.assign(Lib.data.settings || {}, { res, fps, quality: q }); try { MK3D.setQuality(q); } catch (e) {} await Lib.save();
@@ -118,10 +151,11 @@ async function native(m) { const c = m && m.cmd;
       const J = { dur: tl.dur, names, speech: tl.speech.map(s => ({ t: +s.t.toFixed(3), dur: +s.dur.toFixed(3), who: s.who, name: names[s.who] || s.who, text: s.text, vocal: !!s.vocal })), segs: tl.segs.map(g => ({ t0: +g.t0.toFixed(3), kind: g.kind, loc: g.lkey || '' })) };
       await Native.call('writeFile', { path: 'speech.json', d: btoa(unescape(encodeURIComponent(JSON.stringify(J)))) });
     } catch (e) { console.log('студия: голоса не сохранены', e && e.message); } return mix0.call(this, tl, bufs); };
-    Build.run(P, E);
+    if (!only) Build.run(P, E);
     return { ok: true, series: ep.series, episode: ep.episode, title: ep.title, scenes: ep.scenes.length, errors: R.errors, unknownWords: R.unknownWords, unknownObjects: R.unknownObjects, unknownNames: R.unknownNames };
-  }, [fs.readFileSync(SCN, 'utf8'), STD ? 'std' : 'hq', RES, FPS]);
+  }, [fs.readFileSync(SCN, 'utf8'), STD ? 'std' : 'hq', RES, FPS, ONLY]);
   log('серия принята:', start); if (!start.ok) { fs.writeFileSync(path.join(OUT, 'result.json'), JSON.stringify({ ok: false, start, stat }, null, 1)); await browser.close(); process.exit(3); }
+  if (ONLY === 'elements') { const r = await elements(page, start); fs.writeFileSync(path.join(OUT, 'result.json'), JSON.stringify({ ok: !!r.ok, elements: r, start, stat, gl, total_sec: el() }, null, 1)); log('ИТОГ элементы', r); await browser.close(); srv.close(); process.exit(r.ok ? 0 : 1); }
   let last = ''; const tick = setInterval(async () => { try { const t = await page.evaluate(() => Build.txt + ' · ' + document.getElementById('bbS').textContent); if (t !== last) { last = t; log(t.slice(0, 160)); } } catch (e) {} }, 30000);
   let video = null, err = null; try { video = await nextVideo(+opt('limit', 100) * 60000); } catch (e) { err = String(e.message || e); log('СБОЙ:', err); }
   clearInterval(tick); await new Promise(r => setTimeout(r, 1500));
