@@ -1,7 +1,5 @@
 # имя | адрес | desktop|mobile | js
-# 16.11.2026 22:05 — расчёт стены: новая комната, камера, выбор панели карточками; главное фото белых панелей — повёрнутое
-calc-m | https://nashdekor.ru/?s=12 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,-66)
-calc-pick-m | https://nashdekor.ru/?s=12&panel=3-7 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,300)
-calc-d | https://nashdekor.ru/?s=12 | desktop | document.getElementById('calc').scrollIntoView()
-calc-side-d | https://nashdekor.ru/?s=12&panel=5-10 | desktop | document.getElementById('calc').scrollIntoView(); document.querySelector('[data-view="side"]').click()
-cat-m | https://nashdekor.ru/?s=12 | mobile | document.getElementById('catalog').scrollIntoView()
+# 16.11.2026 22:10 — расчёт стены: дерево и вид сбоку (повтор)
+calc-wood-m | https://nashdekor.ru/?s=13&panel=3-7 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,300)
+calc-side-d | https://nashdekor.ru/?s=13&panel=5-10 | desktop | document.getElementById('calc').scrollIntoView(); document.querySelector('[data-view="side"]').click()
+calc-close-d | https://nashdekor.ru/?s=13 | desktop | document.getElementById('calc').scrollIntoView(); document.querySelector('[data-view="close"]').click()
