@@ -1,6 +1,43 @@
-2026-11-16 12:41 UTC
-200 https://www.youtube.com/@bilesin_be_kz
-200 avatar bilesin_be_kz
-200 banner bilesin_be_kz
-200 https://www.youtube.com/@bilesin_be_kz/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
+2026-11-16 18:52 UTC
+200 https://www.youtube.com/@Beautiful_shorts-s6u
+200 avatar Beautiful_shorts-s6u
+200 banner Beautiful_shorts-s6u
+200 https://www.youtube.com/@Beautiful_shorts-s6u/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
+200 https://www.youtube.com/@ballssimulator
+200 avatar ballssimulator
+200 banner ballssimulator
+200 https://www.youtube.com/@ballssimulator/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCWBjsYKhCg4vmdzieRFTQCw
+200 https://www.youtube.com/watch?v=HtUfK4RnBF8&hl=ru
+200 player WEB HtUfK4RnBF8
+ERR player ANDROID HtUfK4RnBF8 HTTP Error 400: Bad Request
+200 thumb HtUfK4RnBF8/oar2.jpg 150573 B
+200 thumb HtUfK4RnBF8/hqdefault.jpg 12702 B
+200 thumb HtUfK4RnBF8/hq1.jpg 8015 B
+200 thumb HtUfK4RnBF8/hq2.jpg 10929 B
+200 thumb HtUfK4RnBF8/hq3.jpg 16861 B
+200 https://www.youtube.com/watch?v=ClHozId02ys&hl=ru
+200 player WEB ClHozId02ys
+ERR player ANDROID ClHozId02ys HTTP Error 400: Bad Request
+200 thumb ClHozId02ys/oar2.jpg 133580 B
+200 thumb ClHozId02ys/hqdefault.jpg 11199 B
+200 thumb ClHozId02ys/hq1.jpg 7458 B
+200 thumb ClHozId02ys/hq2.jpg 11199 B
+200 thumb ClHozId02ys/hq3.jpg 13648 B
+200 https://www.youtube.com/watch?v=ClE3qqZQwKw&hl=ru
+200 player WEB ClE3qqZQwKw
+ERR player ANDROID ClE3qqZQwKw HTTP Error 400: Bad Request
+200 thumb ClE3qqZQwKw/oar2.jpg 179798 B
+200 thumb ClE3qqZQwKw/hqdefault.jpg 10420 B
+200 thumb ClE3qqZQwKw/hq1.jpg 8827 B
+200 thumb ClE3qqZQwKw/hq2.jpg 10899 B
+200 thumb ClE3qqZQwKw/hq3.jpg 11956 B
+200 https://www.youtube.com/watch?v=4ejtez9n18c&hl=ru
+200 player WEB 4ejtez9n18c
+ERR player ANDROID 4ejtez9n18c HTTP Error 400: Bad Request
+200 thumb 4ejtez9n18c/oar2.jpg 196966 B
+200 thumb 4ejtez9n18c/hqdefault.jpg 15825 B
+200 thumb 4ejtez9n18c/hq1.jpg 7823 B
+200 thumb 4ejtez9n18c/hq2.jpg 15825 B
+200 thumb 4ejtez9n18c/hq3.jpg 14142 B
