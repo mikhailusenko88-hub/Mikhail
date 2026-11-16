@@ -31,6 +31,7 @@ H = {
 OUT = Path("status")
 OUT.mkdir(exist_ok=True)
 LOG = []
+RSS_FAILS = [0]
 
 
 def get(url):
@@ -166,7 +167,22 @@ def shorts_tab(handle):
 
 
 def rss(cid):
-    st, xml = get(f"https://www.youtube.com/feeds/videos.xml?channel_id={cid}")
+    # 14–16.11.2026: лента канала временами отдаёт серверу GitHub 404 на все каналы подряд.
+    # Тогда — лента плейлиста «все загрузки» (UU…), потом ещё одна попытка ленты канала.
+    urls = [f"https://www.youtube.com/feeds/videos.xml?channel_id={cid}"]
+    if cid.startswith("UC"):
+        urls.append(f"https://www.youtube.com/feeds/videos.xml?playlist_id=UU{cid[2:]}")
+    urls.append(urls[0])
+    if RSS_FAILS[0] >= 3:          # три канала подряд без ленты — дальше без запасных попыток
+        urls = urls[:1]
+    st, xml = 0, ""
+    for i, u in enumerate(urls):
+        if i:
+            time.sleep(2 + 2 * i)
+        st, xml = get(u)
+        if st == 200 and xml:
+            break
+    RSS_FAILS[0] = 0 if (st == 200 and xml) else RSS_FAILS[0] + 1
     rows = []
     if not xml:
         return st, rows
