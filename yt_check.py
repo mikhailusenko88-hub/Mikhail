@@ -32,6 +32,7 @@ OUT = Path("status")
 OUT.mkdir(exist_ok=True)
 LOG = []
 RSS_FAILS = [0]
+T0 = time.time()
 
 
 def get(url):
@@ -297,6 +298,8 @@ def video_info(vid):
 
 
 def main():
+    global T0
+    T0 = time.time()
     now_dt = datetime.now(timezone.utc)
     now = now_dt.strftime("%Y-%m-%d %H:%M UTC")
     daily = "--daily" in sys.argv
@@ -313,38 +316,36 @@ def main():
         if full:
             lines += ["scan:" + x for x in YA.read_list("scans.txt")]
     rivals = {r.split()[0].lstrip("@") for r in YA.read_list("channels.txt") if len(r.split()) >= 3 and r.split()[2] != "своя"}
+    for l in lines:   # «rss-retry:0» в request.txt — не ждать RSS (быстрая проверка); «rss-retry:N» — минут от старта (≤ 12)
+        if l.startswith("rss-retry:"):
+            os.environ["RSS_RETRY_MIN"] = l.split(":", 1)[1].strip() or "0"
     handles = [l.lstrip("@") for l in lines
-               if l and not l.startswith("#") and not l.startswith(("video:", "info:", "scan:"))]
+               if l and not l.startswith("#") and not l.startswith(("video:", "info:", "scan:", "rss-retry:"))]
     videos = [l.split(":", 1)[1].strip() for l in lines if l.startswith("video:")]
     infos = [l.split(":", 1)[1].strip() for l in lines if l.startswith("info:")]
     scans = [l.split(":", 1)[1].strip() for l in lines if l.startswith("scan:")]
 
-    for h in dict.fromkeys(handles):
-        info = channel_info(h)
-        sst, shorts = shorts_tab(h)
-        rst, feed = rss(info["channel_id"]) if info.get("channel_id") else (0, [])
-        info.update({"checked": now, "shorts_status": sst, "shorts": shorts, "rss_status": rst, "rss": feed})
-        if not feed and h not in rivals:   # RSS молчит — хотя бы вкладка «Видео» с «N часов назад»
-            time.sleep(1)
-            vst, vids = videos_tab(h)
-            info.update({"videos_status": vst, "videos": vids})
+    def save_channel(h, info, stamp_dt):
+        stamp = stamp_dt.strftime("%Y-%m-%d %H:%M UTC")
+        info["checked"] = stamp
+        feed, rst, shorts = info.get("rss") or [], info.get("rss_status"), info.get("shorts") or []
         try:
-            YA.record_channel(info, now_dt, tab_rows=full, tab_limit=24 if h in rivals else 60)
+            YA.record_channel(info, stamp_dt, tab_rows=full, tab_limit=24 if h in rivals else 60)
         except Exception as e:  # noqa: BLE001
             LOG.append(f"ERR history {h} {e}")
         if h in rivals:
             (OUT / "rivals").mkdir(exist_ok=True)
             (OUT / "rivals" / f"{h}.json").write_text(json.dumps(info, ensure_ascii=False, indent=1), encoding="utf-8")
-            time.sleep(1)
-            continue
+            return
         (OUT / f"{h}.json").write_text(json.dumps(info, ensure_ascii=False, indent=1), encoding="utf-8")
-
-        md = [f"# {info.get('title') or h}  (@{h})", f"Проверено: {now}", ""]
+        md = [f"# {info.get('title') or h}  (@{h})", f"Проверено: {stamp}", ""]
         md.append(f"- Страница канала: HTTP {info.get('page_status')}; ID: {info.get('channel_id')}")
         if info.get("header"):
             md.append("- Шапка: " + " · ".join(info["header"]))
         if info.get("alerts"):
             md.append("- ⚠️ Сообщения YouTube: " + " | ".join(info["alerts"]))
+        if info.get("rss_tries", 1) > 1:
+            md.append(f"- RSS: попыток {info['rss_tries']}, последний ответ HTTP {rst}")
         md += ["", f"## Последние открытые ролики (RSS, точные просмотры) — {len(feed)} шт."]
         for r in feed:
             md.append(f"- {r['published'][:16].replace('T', ' ')} · {r['views']} просм. · {r['title']} · {r['id']}")
@@ -355,9 +356,24 @@ def main():
             for r in info["videos"][:15]:
                 md.append(f"- {r['ago'] or '?'} · {r['views'] or '?'} · {r['length']} · {r['title']} · {r['id']}")
         md += ["", f"## Вкладка Shorts (видно всем) — {len(shorts)} шт. на первой странице"]
-        for s in shorts[:30]:
-            md.append(f"- {s['views'] or '?'} · {s['title']} · {s['id']}")
+        for sh in shorts[:30]:
+            md.append(f"- {sh['views'] or '?'} · {sh['title']} · {sh['id']}")
         (OUT / f"{h}.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+
+    pending = {}   # свои каналы, у которых RSS не ответил: повторять до ответа (Михаил, 16.11.2026: «сразу перезагружай»)
+    for h in dict.fromkeys(handles):
+        info = channel_info(h)
+        sst, shorts = shorts_tab(h)
+        rst, feed = rss(info["channel_id"]) if info.get("channel_id") else (0, [])
+        info.update({"checked": now, "shorts_status": sst, "shorts": shorts, "rss_status": rst, "rss": feed, "rss_tries": 1})
+        if not feed and h not in rivals and info.get("channel_id"):
+            time.sleep(1)
+            vst, vids = videos_tab(h)
+            info.update({"videos_status": vst, "videos": vids})
+            pending[h] = info
+            time.sleep(1)
+            continue
+        save_channel(h, info, now_dt)
         time.sleep(1)
 
     for sc in scans:
@@ -391,6 +407,37 @@ def main():
                 md.append("- Теги: " + d["keywords"][:400])
             md.append("")
         (OUT / "info.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+
+    if pending:
+        # RSS у своих каналов молчит — перезапрашивать каждые RSS_RETRY_EVERY с, пока не ответит,
+        # но не дольше RSS_RETRY_MIN минут (утренние 404 14–16.11.2026 проходили сами через 1–2 ч).
+        # Окно — до конца бюджета запуска от его старта, чтобы уложиться в тайм-аут Actions
+        # (yt-check — 15 мин, yt-daily — 30 мин): по умолчанию 12 и 25 мин от старта.
+        every = int(os.environ.get("RSS_RETRY_EVERY", "120"))
+        budget = min(float(os.environ.get("RSS_RETRY_MIN") or (25 if daily else 12)), 25 if daily else 12)
+        limit = T0 + 60 * budget
+        while pending and time.time() + every + 60 < limit:
+            time.sleep(every)
+            RSS_FAILS[0] = 3          # в повторах — по одному запросу на канал, чтобы круг был коротким
+            for h in list(pending):
+                info = pending[h]
+                rst, feed = rss(info["channel_id"])
+                info["rss_tries"] = info.get("rss_tries", 1) + 1
+                info["rss_status"] = rst
+                if feed:
+                    info["rss"] = feed
+                    sst, shorts = shorts_tab(h)   # вкладка Shorts — на тот же момент, что и RSS
+                    if shorts:
+                        info.update({"shorts_status": sst, "shorts": shorts})
+                    info.pop("videos", None)
+                    info.pop("videos_status", None)
+                    LOG.append(f"RSS {h}: ответил с попытки {info['rss_tries']}")
+                    save_channel(h, info, datetime.now(timezone.utc))
+                    del pending[h]
+                time.sleep(1)
+        for h, info in pending.items():
+            LOG.append(f"RSS {h}: не ответил за {info['rss_tries']} попыток — данные только с вкладок")
+            save_channel(h, info, now_dt)
 
     (OUT / "_log.txt").write_text(now + "\n" + "\n".join(LOG) + "\n", encoding="utf-8")
 
