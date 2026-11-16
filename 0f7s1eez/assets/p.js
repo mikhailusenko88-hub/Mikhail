@@ -220,6 +220,20 @@ const W3 = (() => {
     return g;
   }
   const box = (x0, x1, y0, y1, len) => { const g = new THREE.BoxGeometry(x1 - x0, y1 - y0, len); g.translate((x0 + x1) / 2, (y0 + y1) / 2, len / 2); return g; };
+  /* Срез (торцы отрезка) — как у живых образцов: зернистая пена, белая у белых изделий и тёмно-серая у реек под дерево.
+     Краска и плёнка «под дерево» — только на лице, срез не красится. */
+  let foamT = null;
+  function foamTex(){
+    if (foamT) return foamT;
+    const s0 = document.createElement("canvas"); s0.width = s0.height = 48;
+    const g0 = s0.getContext("2d"), im = g0.createImageData(48, 48);
+    for (let i = 0; i < 48 * 48; i++) { const v = 188 + Math.random() * 67 | 0; im.data[i*4] = im.data[i*4+1] = im.data[i*4+2] = v; im.data[i*4+3] = 255; }
+    g0.putImageData(im, 0, 0);
+    const c0 = document.createElement("canvas"); c0.width = c0.height = 128; c0.getContext("2d").drawImage(s0, 0, 0, 128, 128);
+    foamT = new THREE.CanvasTexture(c0); foamT.wrapS = foamT.wrapT = THREE.RepeatWrapping; foamT.repeat.set(1 / 18, 1 / 18); foamT.encoding = THREE.sRGBEncoding;
+    return foamT;
+  }
+  const foamMat = dark => new THREE.MeshStandardMaterial({ color: dark ? 0x55565a : 0xf4f3f0, map: foamTex(), bumpMap: foamTex(), bumpScale: 0.5, roughness: 1 });
   /* Панели стоят вертикально, как на стене (рельеф к зрителю, срез сверху — виден профиль);
      сзади светлая стена с тенью, свет скользит слева — рельеф читается. */
   function build(){
@@ -231,21 +245,27 @@ const W3 = (() => {
     const put = (me, c) => { me.rotation.x = Math.PI / 2; me.position.set(c * W, len, 0); me.castShadow = me.receiveShadow = true; grp.add(me); };
     if (P.poly) {
       mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(cur.hex).convertSRGBToLinear(), roughness: .6 });
-      const me = new THREE.Mesh(polyGeo(len), mat); me.castShadow = me.receiveShadow = true; grp.add(me);
+      const me = new THREE.Mesh(polyGeo(len), [foamMat(false), mat]); me.castShadow = me.receiveShadow = true; grp.add(me);   // торцы — пена, лицо — краска
     } else if (P.wood) {
       if (!tex && P.tex) { tex = new THREE.TextureLoader().load(ROOT + P.tex); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.encoding = THREE.sRGBEncoding; tex.anisotropy = R.capabilities.getMaxAnisotropy(); }
       if (tex) tex.repeat.set(1, Math.max(1, len / 400));
       const blackM = new THREE.MeshStandardMaterial({ color: 0x141415, roughness: .7 });
       const woodM = new THREE.MeshStandardMaterial({ color: tex ? 0xffffff : 0x9a6a40, map: tex, roughness: .55 });
-      const { base, slats } = P.wood;
+      const { base, slats, outline } = P.wood, endM = foamMat(true);
       for (let c = 0; c < n; c++) {
-        put(new THREE.Mesh(box(0, W, 0, base, len), blackM), c);
-        slats.forEach(([a0, a1]) => put(new THREE.Mesh(box(a0, a1, base, X.t, len), woodM), c));
+        if (outline) {   // серия 3 — по живому образцу: полый профиль «змейкой», плёнка только на лице реек
+          const sh = new THREE.Shape(outline.map(q => new THREE.Vector2(q[0], q[1])));
+          put(new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: len, bevelEnabled: false, curveSegments: 1 }), [endM, blackM]), c);
+          slats.forEach(([a0, a1]) => put(new THREE.Mesh(box(a0, a1, X.t, X.t + 0.12, len), woodM), c));
+        } else {
+          put(new THREE.Mesh(box(0, W, 0, base, len), [blackM, blackM, blackM, blackM, endM, endM]), c);
+          slats.forEach(([a0, a1]) => put(new THREE.Mesh(box(a0, a1, base, X.t, len), [blackM, blackM, woodM, blackM, endM, endM]), c));
+        }
       }
     } else {
       mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(cur.hex).convertSRGBToLinear(), roughness: .6 });
-      const g = profGeo(len);
-      for (let c = 0; c < n; c++) put(new THREE.Mesh(g, mat), c);
+      const g = profGeo(len), fm = foamMat(false);
+      for (let c = 0; c < n; c++) put(new THREE.Mesh(g, [fm, mat]), c);   // срез сверху — белая зернистая пена
     }
     // габарит сцены: панели стоят (ширина по X, длина по Y), погонаж лежит (длина по X, высота по Y)
     const bw = P.poly ? len : n * W, bh = P.poly ? W : len, big = Math.max(bw, bh) * 8 + 6000;

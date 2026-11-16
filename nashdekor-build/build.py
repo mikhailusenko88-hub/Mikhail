@@ -201,7 +201,11 @@ def photo(a): return "img/" + PHOTO[a] + "?v=" + PHOTO_V if PHOTO.get(a) else ""
 # фото в 2 раза крупнее (нейросеть Real-ESRGAN, ветка img-upscale, 11.11.2026) — для чётких экранов, og:image, Яндекс Товаров
 def photo2x(a): return ("img/2x/" + PHOTO[a] + "?v=" + PHOTO_V) if PHOTO.get(a) and os.path.exists(os.path.join(SITE, "img", "2x", PHOTO[a])) else photo(a)
 def series(x): return x["a"].split("-")[0] if x["c"] == "color" else None
+# Серия 3 — по живому образцу (фото Михаила 12.11.2026): рейка 29,5 мм, паз 10,5, шаг 40, справа полка 10,5;
+# профиль полый «змейкой» толщиной ~6 мм (контур — slat_profile.py в ветке paneli-render). Серии 2 и 5 с образцом не сверены.
+SLAT3 = [[0.0, 6.0], [0.0, 12.0], [29.5, 12.0], [29.5, 6.0], [40.0, 6.0], [40.0, 12.0], [69.5, 12.0], [69.5, 6.0], [80.0, 6.0], [80.0, 12.0], [109.5, 12.0], [109.5, 5.0], [120.0, 5.0], [120.0, 0.0], [106.5, 0.0], [106.5, 6.0], [83.0, 6.0], [83.0, 0.0], [66.5, 0.0], [66.5, 6.0], [43.0, 6.0], [43.0, 0.0], [26.5, 0.0], [26.5, 6.0], [6.0, 6.0], [6.0, 0.0], [2.0, 0.0], [2.0, 6.0]]
 def wood_parts(x):
+    if series(x) == "3": return {"n": 3, "base": 6, "slats": [[0, 29.5], [40, 69.5], [80, 109.5]], "outline": SLAT3}
     n = {"2": 2, "3": 3, "5": 5}.get(series(x), 3); base = max(2, x["t"] * 0.35); step = x["w"] / n; slat = step * (0.62 if n < 5 else 0.55)
     return {"n": n, "base": round(base, 2), "slats": [[round(i * step + (step - slat) / 2, 2), round(i * step + (step + slat) / 2, 2)] for i in range(n)]}
 
