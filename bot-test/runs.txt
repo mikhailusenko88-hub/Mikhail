@@ -2,3 +2,4 @@
 2026-11-16_10:05 артикул в тексте, CRM (server 0a803bd)
 2026-11-16 канал MAX: bot_added → max_chats, channel.py (тесты test_channel)
 2026-11-16_23:25 мини-приложение: open_app в постах канала (server 868f668)
+2026-11-16_23:40 канал: без notify (server 80e3720)
