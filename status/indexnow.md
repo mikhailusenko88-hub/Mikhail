@@ -1,3 +1,29 @@
+# IndexNow — 2026-11-16 15:13 UTC, коммит b715c4e
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: изменённые страницы (30) из 395 изменённых файлов; без изменений по сути (только ?v=): 96
+  https://nashdekor.ru/
+  https://nashdekor.ru/p/a002-2/
+  https://nashdekor.ru/p/a004/
+  https://nashdekor.ru/p/a005/
+  https://nashdekor.ru/p/a10/
+  https://nashdekor.ru/p/a11-80/
+  https://nashdekor.ru/p/a122/
+  https://nashdekor.ru/p/a137/
+  https://nashdekor.ru/p/a151/
+  https://nashdekor.ru/p/a156/
+  https://nashdekor.ru/p/a161/
+  https://nashdekor.ru/p/a165/
+  https://nashdekor.ru/p/a301/
+  https://nashdekor.ru/p/a302/
+  https://nashdekor.ru/p/a33/
+  … и ещё 15
+- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
+- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
+  "success":true
+}
+
+---
+
 # IndexNow — 2026-11-16 15:01 UTC, коммит b3c0a26
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (1) из 231 изменённых файлов; без изменений по сути (только ?v=): 125
@@ -491,32 +517,6 @@
 # IndexNow — 2026-11-09 21:01 UTC, коммит 97c5fad
 - ключ на сайте: https://nashdekor.ru/1a06371a537e385ae6bb830b593a5315.txt → 200, совпадает
 - режим: изменённые страницы (124) из 127 изменённых файлов
-  https://nashdekor.ru/catalog/karnizy/
-  https://nashdekor.ru/catalog/moldingi/
-  https://nashdekor.ru/catalog/paneli-pod-derevo/
-  https://nashdekor.ru/catalog/plintus-s-podsvetkoy/
-  https://nashdekor.ru/catalog/plintusy/
-  https://nashdekor.ru/catalog/reechnye-paneli/
-  https://nashdekor.ru/catalog/stenovye-paneli/
-  https://nashdekor.ru/catalog/ugolki/
-  https://nashdekor.ru/dostavka/
-  https://nashdekor.ru/p/2-10/
-  https://nashdekor.ru/p/2-11/
-  https://nashdekor.ru/p/2-12/
-  https://nashdekor.ru/p/2-13/
-  https://nashdekor.ru/p/2-14/
-  https://nashdekor.ru/p/2-3/
-  … и ещё 109
-- https://www.bing.com/indexnow: HTTP 403 — ключ не подошёл {"errorCode":"UserForbiddedToAccessSite","message":"User is unauthorized to access the site. Please verify the site using the key and try again","details":null}
-- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
-  "success":true
-}
-
----
-
-# IndexNow — 2026-11-09 20:59 UTC, коммит 88fd761
-- ключ на сайте: https://nashdekor.ru/1a06371a537e385ae6bb830b593a5315.txt → 200, совпадает
-- режим: изменённые страницы (124) из 126 изменённых файлов
   https://nashdekor.ru/catalog/karnizy/
   https://nashdekor.ru/catalog/moldingi/
   https://nashdekor.ru/catalog/paneli-pod-derevo/
