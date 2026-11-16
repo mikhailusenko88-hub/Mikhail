@@ -322,8 +322,56 @@ def clean_white(rgb, alpha, speck=15, smooth=1.0, chroma=0.0, level=1.0):
     if interior.any() and band.any():
         idx = distance_transform_edt(~interior, return_distances=False, return_indices=True)
         out[band] = out[idx[0][band], idx[1][band]]
+    # у самого края внутри силуэта остаются тёмные точки (тень стола под срезом) — заменяем соседним цветом
+    deep = cv2.erode((alpha > 0.9).astype(np.uint8), np.ones((23, 23), np.uint8)).astype(bool)
+    band2 = (alpha > 0.004) & ~deep
+    ref = cv2.morphologyEx(L2.astype(np.float32), cv2.MORPH_CLOSE, np.ones((25, 25), np.uint8))
+    bad = band2 & ((ref - L2) > 18)
+    if bad.any():
+        good = (alpha > 0.5) & ~bad
+        idx2 = distance_transform_edt(~good, return_distances=False, return_indices=True)
+        out[bad] = out[idx2[0][bad], idx2[1][bad]]
     keep = (alpha > 0.004)[..., None]
     return np.where(keep, out, rgb)
+
+
+def polish_edge(alpha, eps=4.0, lmin=70.0, win=11):
+    """Гладкий край силуэта (замечание Михаила 16.11: «краешки, зацепы — они же гладкие должны быть»).
+    Заусенцы и волокна убираем открытием/закрытием; контур упрощаем: длинные почти прямые участки (кромки
+    образца) становятся ровными прямыми с острыми углами, короткие (дуги профиля) — сглаженной кривой."""
+    m = (alpha > 0.5).astype(np.uint8)
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9))
+    m = cv2.morphologyEx(cv2.morphologyEx(m, cv2.MORPH_OPEN, k), cv2.MORPH_CLOSE, k)
+    cnts, hier = cv2.findContours(m, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+    out = np.zeros(m.shape, np.uint8)
+    if hier is None:
+        return alpha
+    polys = []
+    for idx, c in enumerate(cnts):
+        if cv2.contourArea(c) < 300 or len(c) < 40:
+            continue
+        pts = c[:, 0, :].astype(np.float64); n = len(pts)
+        ker = np.ones(win) / win
+        sm = np.c_[np.convolve(np.r_[pts[-win:, 0], pts[:, 0], pts[:win, 0]], ker, 'same')[win:-win],
+                   np.convolve(np.r_[pts[-win:, 1], pts[:, 1], pts[:win, 1]], ker, 'same')[win:-win]]
+        ap = cv2.approxPolyDP(c, eps, True)[:, 0, :]
+        lut = {}
+        for i, (x, y) in enumerate(c[:, 0, :]):
+            lut.setdefault((int(x), int(y)), i)
+        ids = [lut[(int(x), int(y))] for x, y in ap]
+        res = []
+        for a, b in zip(ids, ids[1:] + ids[:1]):
+            res.append(pts[a])
+            cnt_len = (b - a) % n
+            if np.hypot(*(pts[b] - pts[a])) < lmin and 0 < cnt_len < 0.6 * n:
+                res.extend(sm[(a + j) % n] for j in range(2, cnt_len - 1, 2))
+        if len(res) >= 3:
+            polys.append((hier[0][idx][3] < 0, np.round(np.array(res) * 16).astype(np.int32)))
+    for outer in (True, False):                  # сначала внешние контуры, потом отверстия
+        for is_outer, poly in polys:
+            if is_outer == outer:
+                cv2.fillPoly(out, [poly], 255 if outer else 0, lineType=cv2.LINE_AA, shift=4)
+    return cv2.GaussianBlur(out.astype(np.float64) / 255.0, (0, 0), 0.7)
 
 
 def deskew(rgb, alpha, lim=9.0):
@@ -366,6 +414,8 @@ def main():
     if white and '--nofill' not in sys.argv:
         alpha, nfill = fill_white(rgb, alpha)
         print('white fill', nfill)
+        if '--smoothcut' in sys.argv:         # после возврата «выеденного» торца — гладкий край
+            alpha = polish_edge(alpha)
         if '--standing' in sys.argv:          # заливка могла снова прихватить полосу полки
             alpha, nst = standing_clean(alpha)
             print('standing band removed again', nst)
@@ -387,7 +437,15 @@ def main():
         print('hollow pixels fixed', nfix)
     m = alpha > 0.9
     lumv = (0.2126 * rgb[..., 0] + 0.7152 * rgb[..., 1] + 0.0722 * rgb[..., 2])[m]
-    if white:
+    if '--render' in sys.argv:
+        # 3D-отрезок: рендер уже чистый. Тон не растягиваем (иначе вылезают ступеньки 8 бит) — только
+        # нейтральный цвет и та же середина белого (236), что у фото.
+        lum5 = 0.2126 * rgb[..., 0] + 0.7152 * rgb[..., 1] + 0.0722 * rgb[..., 2]
+        med5 = float(np.median(lum5[m & (lum5 > np.percentile(lum5[m], 25))]))
+        g5 = lum5 * (236.0 / max(med5, 1.0))
+        g5 = np.where(g5 > 244.0, 244.0 + (g5 - 244.0) * 0.45, g5)
+        rgb = np.repeat(np.clip(g5, 0, 251)[..., None], 3, axis=2)
+    elif white:
         hi = np.percentile(lumv, 97)
         rgb = np.clip(rgb * (246.0 / max(hi, 1)), 0, 255)
         lum2 = (0.2126 * rgb[..., 0] + 0.7152 * rgb[..., 1] + 0.0722 * rgb[..., 2])
@@ -395,7 +453,8 @@ def main():
         g = np.log(232.0 / 246) / np.log(max(min(med, 245), 150) / 246)   # медиана белых -> 232, верх остаётся 246
         rgb = 246.0 * (rgb / 246.0) ** g
         if '--clean' in sys.argv:
-            rgb = clean_white(rgb, alpha)
+            sm_ = float(sys.argv[sys.argv.index('--smooth') + 1]) if '--smooth' in sys.argv else 1.0
+            rgb = clean_white(rgb, alpha, smooth=sm_)
             kc = float(sys.argv[sys.argv.index('--contrast') + 1]) if '--contrast' in sys.argv else 1.0
             lum4 = 0.2126 * rgb[..., 0] + 0.7152 * rgb[..., 1] + 0.0722 * rgb[..., 2]
             mo = alpha > 0.9
