@@ -254,6 +254,62 @@ def smooth_cut(rgb, alpha):
     return rgb, alpha
 
 
+def _lines(n):
+    """Линейные ядра 8 направлений длиной n."""
+    out = []
+    for ang in (0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5):
+        k = np.zeros((n, n), np.uint8); c = n // 2
+        dx, dy = np.cos(np.radians(ang)), np.sin(np.radians(ang))
+        cv2.line(k, (int(round(c - dx * c)), int(round(c - dy * c))), (int(round(c + dx * c)), int(round(c + dy * c))), 1, 1)
+        out.append(k)
+    return out
+
+
+def clean_white(rgb, alpha, speck=15, smooth=1.0, chroma=0.12):
+    """«Чистый» белый (замечание Михаила 16.11: «фото как будто грязные»).
+    Грязь давали: 1) локальный контраст (CLAHE/--lc) — вытягивал пятна и разводы; 2) пылинки и крошки пены;
+    3) цветные отсветы стола (бежевый торец, желтизна снизу, синева сверху).
+    Здесь: пылинки убираем, не трогая линии швов и рёбер (закрытие/открытие линейными ядрами по 8 направлениям —
+    длинная тонкая линия выживает, точка нет); мягко сглаживаем шум; цвет приводим к нейтральному белому."""
+    u8 = np.clip(rgb, 0, 255).astype(np.uint8)
+    lab = cv2.cvtColor(u8, cv2.COLOR_RGB2LAB)
+    L = lab[..., 0]
+    ks = _lines(speck)
+    Lc = None
+    for k in ks:                                     # тёмные точки (пыль)
+        c = cv2.morphologyEx(L, cv2.MORPH_CLOSE, k)
+        Lc = c if Lc is None else np.minimum(Lc, c)
+    Lo = None
+    for k in ks:                                     # светлые точки (крошки)
+        o = cv2.morphologyEx(Lc, cv2.MORPH_OPEN, k)
+        Lo = o if Lo is None else np.maximum(Lo, o)
+    Lf = L.astype(np.float32)
+    spk = np.abs(Lf - Lo.astype(np.float32)) > 3.0            # только настоящие точки; плавные тени не трогаем
+    spk = cv2.dilate(spk.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool)
+    L2 = np.where(spk, cv2.GaussianBlur(Lo.astype(np.float32), (0, 0), 1.2), Lf)
+    if smooth > 0:                                   # шум и рябь — прочь; у кромок и рёбер резкость оставляем
+        Ls = cv2.GaussianBlur(L2, (0, 0), 2.2 * smooth)
+        g = cv2.GaussianBlur(L2, (0, 0), 1.6)
+        e = np.hypot(cv2.Sobel(g, cv2.CV_32F, 1, 0, ksize=3), cv2.Sobel(g, cv2.CV_32F, 0, 1, ksize=3))
+        w = np.clip((e - 3.0) / 9.0, 0, 1)
+        w = cv2.GaussianBlur(w, (0, 0), 1.0)
+        L2 = w * L2 + (1 - w) * Ls
+    lab2 = lab.astype(np.float32)
+    lab2[..., 0] = L2
+    lab2[..., 1] = 128 + chroma * (lab2[..., 1] - 128)
+    lab2[..., 2] = 128 + chroma * (lab2[..., 2] - 128)
+    out = cv2.cvtColor(np.clip(lab2, 0, 255).astype(np.uint8), cv2.COLOR_LAB2RGB).astype(np.float64)
+    # кромка: у края силуэта в пиксели подмешан стол (бурая нитка) — берём цвет ближайшего внутреннего пикселя
+    from scipy.ndimage import distance_transform_edt
+    interior = cv2.erode((alpha > 0.9).astype(np.uint8), np.ones((7, 7), np.uint8)).astype(bool)
+    band = (alpha > 0.004) & ~interior
+    if interior.any() and band.any():
+        idx = distance_transform_edt(~interior, return_distances=False, return_indices=True)
+        out[band] = out[idx[0][band], idx[1][band]]
+    keep = (alpha > 0.004)[..., None]
+    return np.where(keep, out, rgb)
+
+
 def deskew(rgb, alpha, lim=9.0):
     """Выравниваем ближний (нижний) край образца по горизонтали — все карточки стоят одинаково."""
     m = alpha > 0.5
@@ -322,6 +378,11 @@ def main():
         med = np.median(lum2[m & (lum2 > 120)])
         g = np.log(232.0 / 246) / np.log(max(min(med, 245), 150) / 246)   # медиана белых -> 232, верх остаётся 246
         rgb = 246.0 * (rgb / 246.0) ** g
+        if '--clean' in sys.argv:
+            rgb = clean_white(rgb, alpha)
+            kc = float(sys.argv[sys.argv.index('--contrast') + 1]) if '--contrast' in sys.argv else 1.0
+            if kc != 1.0:                   # общий (не локальный) контраст вокруг середины — без пятен
+                rgb = np.clip(232.0 + kc * (rgb - 232.0), 60, 250)
         if '--relief' in sys.argv:
             rgb = relief(rgb, alpha)
         if '--lc' in sys.argv:              # мягко усилить светотень (грани) без пятен: крупный радиус, только по изделию
