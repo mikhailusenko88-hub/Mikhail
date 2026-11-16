@@ -1,0 +1,69 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 27,
+  "title": "Почему лодка не тонет?",
+  "scenes": 9,
+  "errors": [],
+  "unknownWords": [
+   {
+    "word": "дома",
+    "sentence": "Дома Барсик приготовил новую загадку"
+   }
+  ],
+  "unknownObjects": [],
+  "unknownNames": []
+ },
+ "video": {
+  "name": "Кот Барсик - 27. Почему лодка не тонет",
+  "path": "video/Кот Барсик - 27. Почему лодка не тонет.mp4",
+  "frames": 8206,
+  "sec": 861,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 328.21595454545457,
+  "video": "video/Кот Барсик - 27. Почему лодка не тонет.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "6f535e7",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 40.5,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 10,
+   "e": 90,
+   "b": 4,
+   "w": 1,
+   "n": 8200,
+   "at": 8200,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 86,
+  "ttsFail": 0,
+  "voice": 18,
+  "voiceFail": 0,
+  "voiceSec": 9,
+  "ttsSec": 64,
+  "frames": 8206,
+  "dialogs": [],
+  "errors": [],
+  "stages": []
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 1451,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
