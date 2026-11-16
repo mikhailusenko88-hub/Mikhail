@@ -1,6 +1,6 @@
-# Скриншоты сайта — 2026-11-16 15:15 UTC
+# Скриншоты сайта — 2026-11-16 15:53 UTC
 
-- **pl-m** mobile https://nashdekor.ru/catalog/plintusy/?s=2 — ok
-- **mold-d** desktop https://nashdekor.ru/catalog/moldingi/?s=2 — ok
-- **home-pan-d** desktop https://nashdekor.ru/?s=2 — ok
-- **a703-m** mobile https://nashdekor.ru/p/a703/?s=2 — ok
+- **mold7-d** desktop https://nashdekor.ru/?s=7 — ok
+- **corn7-m** mobile https://nashdekor.ru/?s=7 — ok
+- **a608-m** mobile https://nashdekor.ru/p/a608/?s=7 — ok
+- **a503-paint-d** desktop https://nashdekor.ru/p/a503/?s=7 — ok
