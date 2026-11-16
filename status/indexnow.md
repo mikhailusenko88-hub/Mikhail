@@ -1,3 +1,14 @@
+# IndexNow — 2026-11-16 20:58 UTC, коммит ba96488
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: изменённые страницы (1) из 135 изменённых файлов; без изменений по сути (только ?v=): 128
+  https://nashdekor.ru/
+- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
+- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
+  "success":true
+}
+
+---
+
 # IndexNow — 2026-11-16 20:41 UTC, коммит 30999ac
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (126) из 129 изменённых файлов; без изменений по сути (только ?v=): 0
@@ -456,29 +467,3 @@
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (0) из 1 изменённых файлов; без изменений по сути (только ?v=): 0
 - отправлять нечего (изменились не страницы)
-
----
-
-# IndexNow — 2026-11-11 07:32 UTC, коммит 0f6f0f2
-- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
-- режим: изменённые страницы (129) из 449 изменённых файлов; без изменений по сути (только ?v=): 0
-  https://nashdekor.ru/
-  https://nashdekor.ru/catalog/karnizy/
-  https://nashdekor.ru/catalog/moldingi/
-  https://nashdekor.ru/catalog/paneli-pod-derevo/
-  https://nashdekor.ru/catalog/plintus-s-podsvetkoy/
-  https://nashdekor.ru/catalog/plintusy/
-  https://nashdekor.ru/catalog/reechnye-paneli/
-  https://nashdekor.ru/catalog/stenovye-paneli/
-  https://nashdekor.ru/catalog/ugolki/
-  https://nashdekor.ru/consent.html
-  https://nashdekor.ru/dostavka/
-  https://nashdekor.ru/oferta.html
-  https://nashdekor.ru/oplata/
-  https://nashdekor.ru/p/2-10/
-  https://nashdekor.ru/p/2-11/
-  … и ещё 114
-- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
-- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
-  "success":true
-}
