@@ -1528,6 +1528,73 @@ def scene_sample():
     camera(cam_loc, look, lens=float(A.get('lens', 60)), level=True)
 
 
+def scene_piece():
+    """Отрезок-образец молдинга, плинтуса, карниза или уголка (≈100 мм) на прозрачном фоне — для позиций,
+    которых нет среди живых образцов. Вид и свет — как на фото образцов Михаила: view=a|b — лежит лицом вверх,
+    срез к камере (два ракурса), view=c — стоит на торце лицом к камере. Контур — profiles_mold.json
+    (x поперёк, y от стены к лицу, мм). Срез — белая зернистая пена. Фон и тень добавляет compose.py."""
+    from mathutils import Matrix
+    item = A.get('item', 'A157')
+    view = A.get('view', 'a')
+    P = json.load(open(f'{ROOT}/profiles_mold.json', encoding='utf-8'))[item]
+    W, T = float(P['w']) / 1000.0, float(P['t']) / 1000.0
+    L = float(A.get('len', 0.10))
+    cu = bpy.data.curves.new('prof', 'CURVE')
+    cu.dimensions = '2D'
+    cu.fill_mode = 'BOTH'
+    for loop in [P['outer']] + [h for h in (P.get('holes') or []) if len(h) > 2]:
+        sp = cu.splines.new('POLY')
+        sp.points.add(len(loop) - 1)
+        for pt, (x, y) in zip(sp.points, loop):
+            pt.co = (x / 1000.0, y / 1000.0, 0.0, 1.0)
+        sp.use_cyclic_u = True
+    cu.extrude = L / 2.0
+    tmp = bpy.data.objects.new('prof_c', cu)
+    col.objects.link(tmp)
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    me = bpy.data.meshes.new_from_object(tmp.evaluated_get(dg))
+    bpy.data.objects.remove(tmp)
+    me.transform(Matrix.Translation((-W / 2.0, 0.0, 0.0)))
+    mp = mat_simple('white_paint', hexcol(A.get('paint', 'EFEEEA')), rough=float(A.get('paint_rough', 0.6)),
+                    bump=0.015, bump_scale=1800.0)
+    me.materials.append(mp)
+    me.materials.append(mat_foam_white())
+    for poly in me.polygons:
+        cap = abs(poly.normal.z) > 0.9
+        poly.material_index = 1 if cap else 0
+        poly.use_smooth = not cap
+    try:
+        me.set_sharp_from_angle(angle=R(35))
+    except Exception as e:  # noqa
+        log('sharp', e)
+    ob = bpy.data.objects.new('piece', me)
+    col.objects.link(ob)
+    scene.render.film_transparent = True
+    big = max(W, L)
+    if view == 'c':                      # стоит на торце, лицом к камере
+        ob.rotation_euler = (0.0, 0.0, math.pi)
+        ob.location = (0.0, 0.0, L / 2.0)
+        cam_loc, look, lens, level = (0.0, -0.42, L * 0.95), (0.0, 0.0, L * 0.5), 60.0, True
+        key = (-0.50, -0.30, L * 0.5 + 0.30)
+    else:                                # лежит лицом вверх, срез к камере
+        yaw = R(float(A.get('yaw', -34 if view == 'a' else 40)))
+        ob.rotation_euler = (math.pi / 2.0, 0.0, yaw)
+        d = 0.12 + 2.2 * big
+        el = R(float(A.get('elev', 36 if view == 'a' else 28)))
+        cam_loc, look, lens, level = (0.0, -d * math.cos(el), d * math.sin(el)), (0.0, 0.0, T * 0.4), 70.0, False
+        key = (-0.30, -0.10, 0.55)
+    area_light('key', key, (0.0, 0.0, T * 0.5), 0.6, 0.6, float(A.get('key', 55)), (1.0, 0.98, 0.95), spread=140)
+    area_light('fill', (0.45, -0.50, 0.25), (0.0, 0.0, T * 0.5), 0.8, 0.8, float(A.get('fill', 16)), (0.95, 0.97, 1.0), spread=140)
+    area_light('top', (0.05, 0.10, 0.60), (0.0, 0.0, 0.0), 0.5, 0.5, float(A.get('top', 18)), spread=120)
+    wo = bpy.data.worlds.new('W')
+    scene.world = wo
+    wo.use_nodes = True
+    g = float(A.get('amb', 0.10))
+    wo.node_tree.nodes['Background'].inputs['Color'].default_value = (g, g, g, 1)
+    camera(cam_loc, look, lens=lens, level=level)
+
+
 def auto_expose():
     """Экспозиция по самому светлому месту кадра (белое изделие не выгорает, фон остаётся тёмным)."""
     rw = 240
@@ -1540,10 +1607,10 @@ def auto_expose():
     log('auto exposure: p%.1f=%.4f -> exposure %.2f' % (float(A.get('pct', 99.3)), hi, ev))
 
 
-SCENES = {'lounge': scene_lounge, 'arch': scene_arch, 'plinth': scene_plinth, 'studio': scene_studio, 'sample': scene_sample}
+SCENES = {'lounge': scene_lounge, 'arch': scene_arch, 'plinth': scene_plinth, 'studio': scene_studio, 'sample': scene_sample, 'piece': scene_piece}
 
 setup_render()
-if SCENE in ('studio', 'sample'):
+if SCENE in ('studio', 'sample', 'piece'):
     SCENES[SCENE]()
     bpy.context.view_layer.update()
     log('objects', len(scene.objects), 'studio built')
