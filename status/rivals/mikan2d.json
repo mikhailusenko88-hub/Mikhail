@@ -1,0 +1,40 @@
+{
+ "handle": "mikan2d",
+ "page_status": 200,
+ "channel_id": "UCRfxI01xPgzql7ZBS6WlebQ",
+ "title": "MIKAN",
+ "description": "Turning imagination into creative works.\n\nReaction, commentary, and reuse of my videos is not allowed without prior permission.\n",
+ "header": [
+  "3,1 млн подписчиков",
+  "452 видео"
+ ],
+ "alerts": [],
+ "images": {
+  "avatar": "https://yt3.googleusercontent.com/pzyy8-v-ALzI7HTRtpOaOWCp9lMJiVCT22QFLfXcgMnNg_WW1PRq_CINEYgb7FyaJq4xLFau2io=s900-c-k-c0x00ffffff-no-rj",
+  "banner": "https://yt3.googleusercontent.com/IiVgBMsZlCNd5TpZMhl0WedryJt0N1dDtxPv1UZoyL9Yx1UUgCn9wz0iuVozJpPHwvm0AcWGQn8=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
+ },
+ "checked": "2026-11-16 06:39 UTC",
+ "shorts_status": 200,
+ "shorts": [
+  {
+   "id": "biN5wJVlEzA",
+   "title": "Digging Race in Unity #Shorts",
+   "views": "5,7 млн просмотров",
+   "a11y": "Воспроизвести короткое видео \"Digging Race in Unity #Shorts, 5,7 миллиона просмотров\""
+  },
+  {
+   "id": "4S4LVaZoiks",
+   "title": "Particle Race 4 - Marble Race in Algodoo #Shorts",
+   "views": "5 млн просмотров",
+   "a11y": "Воспроизвести короткое видео \"Particle Race 4 - Marble Race in Algodoo #Shorts, 5 миллионов просмотров\""
+  },
+  {
+   "id": "sri2COs8mrA",
+   "title": "Block Destruction2 - Marble Race in Algodoo #Shorts",
+   "views": "3 млн просмотров",
+   "a11y": "Воспроизвести короткое видео \"Block Destruction2 - Marble Race in Algodoo #Shorts, 3 миллиона просмотров\""
+  }
+ ],
+ "rss_status": 404,
+ "rss": []
+}
