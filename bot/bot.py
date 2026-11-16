@@ -1,4 +1,4 @@
-"""Запуск бота магазина «Наш декор» (Санкт-Петербург, декор ARTDEC).
+"""Запуск бота магазина «Наш декор» (Санкт-Петербург, декор для стен).
 
     python bot.py                 — Telegram (служба prostranstvo-bot)
     python bot.py --channel max   — MAX      (служба prostranstvo-max)

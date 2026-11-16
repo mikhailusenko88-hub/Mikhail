@@ -365,7 +365,7 @@ def test_catalog_photo_linear_and_deep_links(tmp_path):
         await h.send(CLIENT, "/start A907")
         assert "ширину стены" in s.last(CLIENT)
         await h.send(CLIENT, "/start catalog")
-        assert "Каталог ARTDEC" in s.last(CLIENT)
+        assert "Каталог. Выберите группу" in s.last(CLIENT)
         for _ in range(5):
             await h.send(STRANGER, "/owner 111111")
         await h.send(STRANGER, f"/owner {CODE}")
