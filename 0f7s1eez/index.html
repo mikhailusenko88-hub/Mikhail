@@ -803,7 +803,7 @@ const CAT_API = "https://crm.nashdekor.ru/api/catalog";
    Камера своя, без «уплывания»: поворот ограничен, масштаб — от «вблизи» до «вся стена», двигать можно только
    когда приблизили; при отдалении стена сама возвращается в центр. Вертикальный жест одним пальцем листает страницу. */
 const W3 = (() => {
-  let R, S, cam, grp, ready = false, view = "room", raf = 0, engaged = false, scene = "tv", plan = null, lod = null, floorT = null, sizeKey = "";
+  let R, S, cam, grp, ready = false, view = "room", raf = 0, engaged = false, scene = "tv", plan = null, lod = null, flat = null, floorT = null, sizeKey = "";
   const SCENES = [["tv", "ТВ-зона"], ["sofa", "Диван"], ["none", "Без мебели"]];   // обстановка для масштаба: кнопка переключает по кругу
   const texCache = {};
   const stage = document.getElementById("stage"), cv = document.getElementById("c3");
@@ -850,6 +850,9 @@ const W3 = (() => {
     cam.lookAt(cur.tx, cur.ty, 0);
     // издалека паз реек тоньше точки экрана: чуть смягчаем его черноту, иначе частые линии дают рябь («муар»)
     if (lod) { const px = lod.gw * cv.height / (2 * cur.dist * TAN); lod.m.color.copy(lod.c0).lerp(lod.c1, clamp((2.8 - px) / 2.2, 0, 1) * .5); }
+    // панель под покраску издалека — плоская (рельеф рисует текстура, она сглажена): боковые грани реек тоньше точки экрана и «рвались» бы на штрихи.
+    // Вблизи рельеф настоящий — виден при повороте.
+    if (flat) { const k = Math.max(.001, sm((flat.depth * cv.height / (2 * cur.dist * TAN) - 4) / 5)); flat.meshes.forEach(m => { m.scale.z = k; }); }
     R.render(S, cam);
     if (moving) kick();
   }
@@ -864,8 +867,8 @@ const W3 = (() => {
   }
   function setView(v, instant){
     view = v; const f = fitDist();
-    if (v === "close") { // вблизи смотрим на свободный кусок стены: слева от экрана или над диваном
-      const p = plan && plan.kind === "tv" ? [Math.max(240, (lim.W - plan.tw) / 4), lim.H * .56] : plan ? [lim.W * .36, Math.max(lim.H * .62, 1500)] : [lim.W * .36, lim.H * .54];
+    if (v === "close") { // вблизи смотрим на свободный кусок стены: над экраном или над диваном
+      const p = plan && plan.kind === "tv" ? [lim.W * .4, (plan.ty0 + plan.th + lim.H) / 2 + 40] : plan ? [lim.W * .36, Math.max(lim.H * .62, 1500)] : [lim.W * .36, lim.H * .54];
       Object.assign(to, { yaw: .42, pitch: .04, dist: Math.min(1150, f * .5), tx: p[0], ty: Math.min(p[1], lim.H - 380) }); }
     else if (v === "side") Object.assign(to, { yaw: .66, pitch: .1, dist: f * .86, tx: lim.W / 2, ty: lim.cy });
     else Object.assign(to, { yaw: .16, pitch: .09, dist: f, tx: lim.W / 2, ty: lim.cy });
@@ -1245,7 +1248,7 @@ const W3 = (() => {
 
     // панели: вся стена — одна-две сетки
     const pieces = []; for (let y = 0; y < Hmm - 1; y += x.l) pieces.push([y, Math.min(Hmm, y + x.l)]);
-    lod = null;
+    lod = null; flat = null;
     if (x.c === "color") {
       const segs = prep(woodSection(x), x.w), d = DECOR[x.a], Lt = d ? d[1] : 520;
       const wm = new THREE.MeshBasicMaterial({ color: col(d ? d[0] : 0x9a6a40), vertexColors: true });
@@ -1268,6 +1271,7 @@ const W3 = (() => {
       const m = new THREE.MeshBasicMaterial({ color: c, vertexColors: true, map: reliefTex(x.a + ":" + Math.round(rho * 40), segs, x.w, rho) });
       const wall = new THREE.Mesh(wallGeo(segs, x.w, Wmm, rowsOf(0, Hmm, Hmm, rowsX), { tex: true, rho, lc, pick: () => true, G, lamp: lampW }), m);
       grp.add(wall); const mir = wall.clone(); mir.scale.y = -1; grp.add(mir);   // отражение в полу
+      const ts = segs.map(q => q.a.t); flat = { depth: Math.max(...ts) - Math.min(...ts), meshes: [wall, mir] };
     }
     if (TV) { grp.add(tvzone(TV, x.c === "color")); grp.add(blob(TV.cw + 260, 760, TV.cx, TV.z0 + 250, 2, .62)); }
     else if (F) {
