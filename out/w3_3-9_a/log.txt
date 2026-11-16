@@ -1,0 +1,16 @@
+[scene   0.0s] view transform bpy_struct: item.attr = val: enum "a" not found in ('Standard', 'Khronos PBR Neutral', 'AgX', 'Filmic', 'Filmic Log', 'False Color', 'Raw')
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.0s] slat piece 3-9 wood faces 29 mirror True
+[scene   0.0s] objects 6 studio built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/w3_3-9_a/_ae.exr'
+Time: 00:01.85 (Saving: 00:00.00)
+
+[scene   1.9s] face exposure: gray face 11.1697 -> exposure -4.60
+Saved: '/home/runner/work/Mikhail/Mikhail/out/w3_3-9_a/w3_3-9_a.png'
+Time: 01:04.72 (Saving: 00:00.23)
+
+[scene  66.6s] final render 64.7s /home/runner/work/Mikhail/Mikhail/out/w3_3-9_a/w3_3-9_a.png
+[scene  66.6s] done
+
+Blender quit
