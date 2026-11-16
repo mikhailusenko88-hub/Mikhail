@@ -1,3 +1,14 @@
+# IndexNow — 2026-11-16 19:04 UTC, коммит 2ee038c
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: изменённые страницы (1) из 198 изменённых файлов; без изменений по сути (только ?v=): 125
+  https://nashdekor.ru/
+- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
+- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
+  "success":true
+}
+
+---
+
 # IndexNow — 2026-11-16 17:53 UTC, коммит ff2dce8
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (3) из 154 изменённых файлов; без изменений по сути (только ?v=): 123
@@ -467,32 +478,6 @@
   https://nashdekor.ru/p/3-12/
   https://nashdekor.ru/p/3-15/
   … и ещё 93
-- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
-- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
-  "success":true
-}
-
----
-
-# IndexNow — 2026-11-10 21:31 UTC, коммит e6723de
-- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
-- режим: изменённые страницы (107) из 127 изменённых файлов; без изменений по сути (только ?v=): 18
-  https://nashdekor.ru/p/2-10/
-  https://nashdekor.ru/p/2-11/
-  https://nashdekor.ru/p/2-12/
-  https://nashdekor.ru/p/2-13/
-  https://nashdekor.ru/p/2-14/
-  https://nashdekor.ru/p/2-3/
-  https://nashdekor.ru/p/2-4/
-  https://nashdekor.ru/p/2-5/
-  https://nashdekor.ru/p/2-7/
-  https://nashdekor.ru/p/2-8/
-  https://nashdekor.ru/p/2-9/
-  https://nashdekor.ru/p/3-11/
-  https://nashdekor.ru/p/3-12/
-  https://nashdekor.ru/p/3-15/
-  https://nashdekor.ru/p/3-3/
-  … и ещё 92
 - https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
 - https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
   "success":true
