@@ -214,28 +214,18 @@
    ]
   },
   "cars": {
-   "no": 13,
+   "no": 14,
    "points": {
-    "Epica": 26,
-    "Tracker": 67,
-    "Onix": 29,
-    "Matiz": 78,
-    "Malibu": 50,
-    "Chery Tiggo": 30,
-    "Jiguli": 48,
-    "Gentra": 47,
-    "Captiva": 11,
-    "Labo": 42,
-    "Tico": 51,
-    "Cobalt": 35,
-    "Nexia": 43,
-    "BYD Song": 45,
-    "Equinox": 46,
-    "Spark": 40,
-    "Lacetti": 22,
-    "Tahoe": 61,
-    "Kia K5": 12,
-    "Damas": 25
+    "Spark": 25,
+    "Nexia": 18,
+    "Kia K5": 15,
+    "Epica": 12,
+    "Lacetti": 10,
+    "Cobalt": 8,
+    "Onix": 6,
+    "Labo": 4,
+    "Tico": 2,
+    "Malibu": 1
    },
    "results": [
     {
@@ -406,11 +396,24 @@
      ],
      "link": "https://youtube.com/shorts/qHSr0v1Qqfk",
      "final": true
+    },
+    {
+     "no": 14,
+     "date": "2026-11-16",
+     "slot": 1,
+     "winner": "Spark",
+     "top3": [
+      "Spark",
+      "Nexia",
+      "Kia K5"
+     ],
+     "link": "https://youtube.com/shorts/AB95lhJLozM",
+     "final": false
     }
    ],
-   "champion": "Tahoe",
-   "season_races": 8,
-   "season": "2026-W46",
+   "champion": null,
+   "season_races": 1,
+   "season": "2026-W47",
    "new_pending": [],
    "final_season": "2026-W46",
    "champions": [
@@ -463,6 +466,44 @@
       ]
      ],
      "champion": "Kia K5"
+    },
+    {
+     "season": "2026-W46",
+     "top": [
+      [
+       "Matiz",
+       78
+      ],
+      [
+       "Tracker",
+       67
+      ],
+      [
+       "Tahoe",
+       61
+      ],
+      [
+       "Tico",
+       51
+      ],
+      [
+       "Malibu",
+       50
+      ],
+      [
+       "Jiguli",
+       48
+      ],
+      [
+       "Gentra",
+       47
+      ],
+      [
+       "Equinox",
+       46
+      ]
+     ],
+     "champion": "Tahoe"
     }
    ]
   },
@@ -983,6 +1024,16 @@
    "final": true,
    "link": "https://youtube.com/shorts/9MPeFq6stkI",
    "title": "Qaysi jamoa yutadi? Какой клуб победит? 🏆 Hafta finali · Финал недели #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-16",
+   "slot": 1,
+   "league": "cars",
+   "no": 14,
+   "final": false,
+   "link": "https://youtube.com/shorts/AB95lhJLozM",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №14 #shorts",
    "pl": true
   }
  ],
