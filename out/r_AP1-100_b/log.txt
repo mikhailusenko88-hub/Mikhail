@@ -1,0 +1,15 @@
+[scene   0.0s] view transform bpy_struct: item.attr = val: enum "b" not found in ('Standard', 'Khronos PBR Neutral', 'AgX', 'Filmic', 'Filmic Log', 'False Color', 'Raw')
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.1s] objects 6 studio built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/r_AP1-100_b/_ae.exr'
+Time: 00:01.38 (Saving: 00:00.00)
+
+[scene   1.4s] auto exposure: p99.3=22.7202 -> exposure -3.51
+Saved: '/home/runner/work/Mikhail/Mikhail/out/r_AP1-100_b/r_AP1-100_b.png'
+Time: 01:01.42 (Saving: 00:00.71)
+
+[scene  62.9s] final render 61.4s /home/runner/work/Mikhail/Mikhail/out/r_AP1-100_b/r_AP1-100_b.png
+[scene  62.9s] done
+
+Blender quit
