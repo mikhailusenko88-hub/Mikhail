@@ -3,6 +3,9 @@
 import bpy, bmesh, json, math, os, random, sys, time, shutil, re
 from mathutils import Vector
 
+sys.path.insert(0, os.path.abspath('.'))
+import slat_profile as SP          # сечение реечных панелей «под дерево» (лежит в корне ветки paneli-render)
+
 T0 = time.time()
 argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
 A = dict(x.split('=', 1) for x in argv if '=' in x)
@@ -89,36 +92,16 @@ def clean(pts):
 
 
 def wood_layout(series):
-    """Раскладка реек (лицо под декор), мм от левого края. Серия 3 — по живому образцу (12.11.2026): рейка 29,5, паз 10,5,
-    шаг 40; серия 5 — по фото живого образца (16.11.2026): рейка 10,5, паз 13,5, шаг 24; серия 2 — по фото каталога:
-    рейка 30, паз 30, шаг 60 (с образцом не сверена). Первая рейка — от левого края, справа — полка под соседнюю панель."""
-    step, lam, n = {'2': (60.0, 30.0, 2), '5': (24.0, 10.5, 5)}.get(series, (40.0, 29.5, 3))
-    return [(i * step, i * step + lam) for i in range(n)]
+    """Раскладка реек (лицо под декор), мм от края с ножкой: серия 3 — рейка 29,5 / шаг 40 (живой образец),
+    серия 5 — 10,5 / 24 (фото живого образца 16.11.2026), серия 2 — 30 / 60 (по фото каталога, с образцом не сверена)."""
+    step, lam = SP.SERIES[int(series)]
+    return [(i * step, i * step + lam) for i in range(int(series))]
 
 
-def wood_profile(series, w=120.0, t=12.0, th=6.0, web=3.0, fl_top=5.0, foot=(2.0, 6.0)):
-    """Настоящее сечение реечной панели: полый профиль «змейкой» толщиной ~6 мм. Под рейками пустоты, в пазах панель
-    лежит на стене, под левым краем первой рейки узкая ножка, справа полка высотой 5 мм. Контур — как slat_profile.py."""
-    lams = wood_layout(series)
-    n = len(lams)
-    step = lams[1][0] - lams[0][0]
-    P = [(0.0, t - th)]
-    for i, (xs, xe) in enumerate(lams):
-        if i > 0:
-            P.append((xs, t - th))
-        P += [(xs, t), (xe, t)]
-        if i < n - 1:
-            P.append((xe, t - th))
-        else:
-            P += [(xe, fl_top), (w, fl_top)]
-    P.append((w, 0.0))
-    x = lams[-1][1] - web
-    P += [(x, 0.0), (x, t - th)]
-    for i in range(n - 2, -1, -1):
-        right, left = lams[i + 1][0] + web, lams[i][1] - web
-        P += [(right, t - th), (right, 0.0), (left, 0.0), (left, t - th)]
-    P += [(foot[1], t - th), (foot[1], 0.0), (foot[0], 0.0), (foot[0], t - th)]
-    return clean(P), lams
+def wood_profile(series):
+    """Настоящее сечение реечной панели (slat_profile.py, по фото торца живого образца): наклонные стенки пазов,
+    пустоты под рейками (у серии 5 рейки сплошные), с одного края свес с ножкой, с другого полка."""
+    return clean([(x, z) for x, z, _ in SP.outline(int(series))]), wood_layout(series)
 
 
 # ---------------------------------------------------------------- сетка
