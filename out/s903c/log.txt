@@ -1,0 +1,15 @@
+[scene   0.0s] view transform bpy_struct: item.attr = val: enum "close" not found in ('Standard', 'Khronos PBR Neutral', 'AgX', 'Filmic', 'Filmic Log', 'False Color', 'Raw')
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.0s] objects 11 studio built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/s903c/_ae.exr'
+Time: 00:03.93 (Saving: 00:00.00)
+
+[scene   4.0s] auto exposure: p99.3=16.4030 -> exposure -3.04
+Saved: '/home/runner/work/Mikhail/Mikhail/out/s903c/s903c.jpg'
+Time: 00:36.00 (Saving: 00:00.11)
+
+[scene  40.0s] final render 36.0s /home/runner/work/Mikhail/Mikhail/out/s903c/s903c.jpg
+[scene  40.0s] done
+
+Blender quit
