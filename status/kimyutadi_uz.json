@@ -13,7 +13,7 @@
   "avatar": "https://yt3.googleusercontent.com/j2tLoAL4x5fvNzHWi3KRNvl0jHgW8CocxBppBuFeYpVPjFXmEHurGEgfg1xMvHE05hqjBWTUeQ=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/nH-KKjx0Hz9KqmmObOPHEiXyPjsRBGS_56QhfHcc7LUzHxdMjAku4YzvOUYTN6bIZOIuHomPLA=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-16 06:57 UTC",
+ "checked": "2026-11-16 07:12 UTC",
  "shorts_status": 200,
  "shorts": [
   {
@@ -55,8 +55,8 @@
   {
    "id": "TXfltN8hkJ4",
    "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №9 #shorts",
-   "views": "155 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Qaysi shahar yutadi? Какой город победит? 🏁 №9 #shorts, 155 просмотров\""
+   "views": "156 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Qaysi shahar yutadi? Какой город победит? 🏁 №9 #shorts, 156 просмотров\""
   },
   {
    "id": "Li1n6czv9gI",
@@ -216,5 +216,7 @@
   }
  ],
  "rss_status": 404,
- "rss": []
+ "rss": [],
+ "videos_status": 200,
+ "videos": []
 }

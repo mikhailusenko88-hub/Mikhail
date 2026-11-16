@@ -13,14 +13,14 @@
   "avatar": "https://yt3.googleusercontent.com/wefYK3hoTThf90hy93wCVtVPKkdJB4JASlWU7V_lVOkalg0NqT7y8kX1m_QOskPaex4lMLRw=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/CtLAfow-c31AX9e2TjWnkbFk_Utt5vyxw9cR70GIqdhdCQf1X2Q6QAkXSpTsc2CRUK7F2X33i1c=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-16 06:57 UTC",
+ "checked": "2026-11-16 07:12 UTC",
  "shorts_status": 200,
  "shorts": [
   {
    "id": "XOC7rxj2ntQ",
    "title": "Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts",
-   "views": "2 просмотра",
-   "a11y": "Воспроизвести короткое видео \"Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts, 2 просмотра\""
+   "views": "5 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts, 5 просмотров\""
   },
   {
    "id": "NNRpfSGgsOw",
@@ -222,5 +222,7 @@
   }
  ],
  "rss_status": 404,
- "rss": []
+ "rss": [],
+ "videos_status": 200,
+ "videos": []
 }
