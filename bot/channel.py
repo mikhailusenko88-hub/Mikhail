@@ -282,7 +282,8 @@ class Channel:
         return out
 
     def _body(self, post: dict[str, Any], uploaded: bool) -> dict[str, Any]:
-        return {"text": post["text"], "format": "html", "notify": False,
+        # notify не передаём: MAX отклоняет «тихие» посты в канал (400 errors.send-message.channel-notify)
+        return {"text": post["text"], "format": "html",
                 "attachments": self._images(post.get("images") or [], uploaded) + keyboard(post.get("buttons") or [], self.app())}
 
     def _send(self, chat_id: str, post: dict[str, Any]) -> str:
@@ -298,6 +299,8 @@ class Channel:
                     continue
                 if e.status == 400:
                     why = f"{e.code} {e.message}".lower()
+                    if "notify" in why:
+                        raise
                     if any(k in why for k in ("button", "open_app", "web_app", "keyboard")) and self._no_app(e):
                         continue
                     if post.get("images") and not uploaded:
@@ -331,7 +334,7 @@ class Channel:
             time.sleep(PAUSE)
         pin = next((p for p in posts if p.get("pin")), None)
         if pin and done.get(pin["id"]) and not self.dry:
-            self.api.call("PUT", f"/chats/{chat_id}/pin", body={"message_id": done[pin["id"]], "notify": False})
+            self.api.call("PUT", f"/chats/{chat_id}/pin", body={"message_id": done[pin["id"]]})   # без notify — см. _body
             self.out(f"  закреплён «{pin['id']}»")
         return n
 

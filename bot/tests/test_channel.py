@@ -58,6 +58,8 @@ class Fake:
                         return self._reply(400, {"code": "bad.request", "message": "icon url"})
                     return self._reply(200, {"chat_id": int(CHAT)})
                 if method == "POST" and path == "/messages":
+                    if "notify" in body:      # как настоящий MAX: «тихий» пост в канал — ошибка
+                        return self._reply(400, {"code": "proto.payload", "message": "errors.send-message.channel-notify"})
                     imgs = [a for a in body.get("attachments") or [] if a["type"] == "image"]
                     if imgs and fake.not_ready_once:
                         fake.not_ready_once = False
@@ -148,7 +150,7 @@ def test_all_publishes_once_and_pins(tmp_path, monkeypatch, capsys):
     sent = fake.calls("POST", "/messages")
     assert len(sent) == len(posts["posts"]) + 1            # +1: первый раз «картинки ещё обрабатываются»
     first = sent[1]
-    assert first["format"] == "html" and first["notify"] is False
+    assert first["format"] == "html" and "notify" not in first
     imgs = [a for a in first["attachments"] if a["type"] == "image"]
     assert imgs[0]["payload"]["url"].endswith("/img/max/cover_paint.jpg?v=1")
     kb = [a for a in first["attachments"] if a["type"] == "inline_keyboard"][0]["payload"]["buttons"]
