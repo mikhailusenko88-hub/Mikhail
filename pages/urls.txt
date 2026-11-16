@@ -1,3 +1,4 @@
-# 17:33:14 проверка CRM
-https://crm.nashdekor.ru/login
+# 18:12:20 сайт не открывается у Михаила
 https://nashdekor.ru/
+https://nashdekor.ru/p/a913/
+https://crm.nashdekor.ru/login
