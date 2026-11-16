@@ -1,10 +1,7 @@
-# Скриншоты сайта — 2026-11-11 08:32 UTC
+# Скриншоты сайта — 2026-11-16 14:41 UTC
 
-- **home-d** desktop https://nashdekor.ru/?s=1 — ok
-- **home-m** mobile https://nashdekor.ru/?s=1 — ok
-- **a907-3d-m** mobile https://nashdekor.ru/p/a907/?s=1 — ok
-- **a907-photo-d** desktop https://nashdekor.ru/p/a907/?s=1 — ok
-- **37-3d-d** desktop https://nashdekor.ru/p/3-7/?s=1 — ok
-- **37-photo-m** mobile https://nashdekor.ru/p/3-7/?s=1 — ok
-- **plinth-cat-d** desktop https://nashdekor.ru/catalog/plintusy/?s=1 — ok
-- **a503-d** desktop https://nashdekor.ru/p/a503/?s=1 — ok
+- **cat-m** mobile https://nashdekor.ru/?s=1 — ok
+- **cat-swipe-m** mobile https://nashdekor.ru/?s=1 — ok
+- **cat-d** desktop https://nashdekor.ru/?s=1 — ok
+- **gs3-photo-m** mobile https://nashdekor.ru/p/gs3/?s=1 — ok
+- **a905-gal-d** desktop https://nashdekor.ru/p/a905/?s=1 — ok
