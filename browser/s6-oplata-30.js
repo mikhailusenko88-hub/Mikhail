@@ -3,12 +3,18 @@
 // Путь Авито: /bbl/<id>/period (срок) → /performance/<id> (2 экрана продвижения — всё выключить) →
 // /account/pay/step1 (итого) → /payment/page/<uuid> (выбрать «Кошелёк», «Оплатить N ₽») → /fees/success.
 // Любое расхождение (цена не PRICE, включено продвижение, не тот итог) — стоп всего пакета. Журнал — sessionStorage.nd_log6.
-const JOBS = [['3-7', '8402676722'], ['3-15', '8530976650'], ['3-9', '8546190071'], ['A703', '8495178294']];
+// 16.11.2026: так же возвращается объявление с истёкшим сроком (старое 8068817087: «Истёк срок размещения» → 463 ₽ за 30 дней,
+// 23 секунды, 2 подтверждения; после оплаты «опубликуется после проверки», в кабинете статус меняется не сразу).
+// Автопубликация платное размещение сама не продлевает. Паузы — через MessageChannel: при скрытой панели setTimeout срабатывает раз в минуту.
+const JOBS = [['старое', '8068817087']];
 const PRICE = '463 ₽', CONTACTS = '18';
 sessionStorage.setItem('nd_log6', '');
 const L = (...a) => { const s = new Date().toTimeString().slice(0, 8) + ' ' + a.join(' '); sessionStorage.setItem('nd_log6', (sessionStorage.getItem('nd_log6') || '') + s + '\n'); };
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-const norm = s => (s || '').replace(/ /g, ' ').trim();
+const mc = new MessageChannel(); let wake = null;
+mc.port1.onmessage = () => { const r = wake; wake = null; if (r) r(); };
+const tick = () => new Promise(r => { wake = r; mc.port2.postMessage(0); });
+const sleep = async ms => { const t = Date.now() + ms; while (Date.now() < t) await tick(); };
+const norm = s => (s || '').replace(/[\u00a0\u202f\u2009]/g, ' ').trim();   // неразрывные и узкие пробелы в ценах
 let fr;
 const d = () => fr.contentDocument, w = () => fr.contentWindow;
 const q = s => { try { return d().querySelector(s); } catch (e) { return null; } };
@@ -73,11 +79,10 @@ async function pay(art, id) {
 (async () => {
   try {
     for (const [a, id] of JOBS) { if (!await pay(a, id)) break; }
-    open('/profile/items/inactive');
-    await waitFor(() => /Ждут действий/.test(d().body.innerText), 20000); await sleep(2000);
-    const t = norm(d().body.innerText).replace(/\n+/g, ' | ');
-    const m1 = t.match(/Кошел[её]к \| ([\d\s]+ ₽)/), m2 = t.match(/Ждут действий \| (\d+)/), m3 = t.match(/Активные \| (\d+)/);
-    L('ИТОГ: кошелёк', m1 ? m1[1] : '?', '| ждут действий', m2 ? m2[1] : '0', '| активные', m3 ? m3[1] : '?');
+    open('/profile');
+    await waitFor(() => /Активные/.test(d().body.innerText) && d().querySelectorAll('a[href*="_8"]').length > 3, 25000); await sleep(2500);
+    const body = d().body.innerText || '';
+    L('ИТОГ: вкладки:', [...d().querySelectorAll('[data-marker*="tab"],[role=tab]')].map(e => norm(e.innerText).replace(/\s+/g, ' ')).filter(x => x && x.length < 40).slice(0, 8).join(' · '), '|', norm((body.match(/Кошел[её]к[^₽]{0,60}₽/) || [''])[0]).replace(/\s+/g, ' ') || 'кошелёк не виден');
     fr.remove();
     L('ВСЁ');
   } catch (e) { L('ОШИБКА', String(e && e.stack || e).slice(0, 300)); }
