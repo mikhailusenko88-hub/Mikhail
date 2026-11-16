@@ -24,6 +24,7 @@ echo "чат: скрипт на главной $(grep -c 'assets/chat.js' /tmp/i
 echo "строка разделов «едет»: главная $(grep -c 'tabs.stuck' /tmp/i.html), p.css $(curl -s "$U/assets/p.css" | grep -c 'sections.stuck')"
 echo "телефон на сайте (должно быть 0): $(grep -c '204-10-47\|2041047' /tmp/i.html), класс Г2 (должно быть 0): $(grep -c 'Г2' /tmp/i.html), кнопка «Заказать звонок»: $(grep -c 'id="callMe"' /tmp/i.html)"
 echo "контакты: MAX в списке: $(grep -c '\["MAX", SHOP.max' /tmp/i.html), подсказка «позвонить или написать в MAX»: $(grep -c 'написать в MAX' /tmp/i.html), WhatsApp: $(grep -ci whatsapp /tmp/i.html); боты в политике: $(curl -s "$U/privacy.html" | grep -c 'далее — Боты'), в согласии: $(curl -s "$U/consent.html" | grep -c 'MAX, Telegram'), в оферте: $(curl -s "$U/oferta.html" | grep -c 'чат-боте магазина в MAX')"
+echo "бот MAX (id470331302505_bot): на главной $(grep -c id470331302505_bot /tmp/i.html), в chat.js $(curl -s "$U/assets/chat.js" | grep -c id470331302505_bot), на A907 $(curl -s "$U/p/a907/" | grep -c id470331302505_bot), в оферте $(curl -s "$U/oferta.html" | grep -c id470331302505_bot); chat.js на главной: $(grep -o 'assets/chat.js?v=[0-9]*' /tmp/i.html)"
 echo "счётчик на главной: $(grep -c 'crm.nashdekor.ru/api/hit' /tmp/i.html), в политике п. 3.4: $(curl -s "$U/privacy.html" | grep -c 'счётчик посещений'), на документах: $(for f in oferta privacy consent; do curl -s "$U/$f.html" | grep -c api/hit; done | tr '\n' ' ')"
 echo
 echo "--- страницы товаров и разделов (сборка nashdekor-build/build.py)"
