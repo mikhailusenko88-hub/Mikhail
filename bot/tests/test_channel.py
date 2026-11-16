@@ -19,6 +19,8 @@ class Fake:
         self.admin = True
         self.not_ready_once = True
         self.reject_url_images = False
+        self.reject_open_app = False
+        self.me_name = "id470331302505_bot"
         self.n = 0
         fake = self
 
@@ -45,6 +47,8 @@ class Fake:
                 fake.requests.append((method, self.path, body))
                 if path.startswith("/img/"):
                     return self._reply(200, b"\xff\xd8JPEG")
+                if method == "GET" and path == "/me":
+                    return self._reply(200, {"user_id": 1, "is_bot": True, "username": fake.me_name})
                 if method == "GET" and path == f"/chats/{CHAT}":
                     return self._reply(200, {"chat_id": int(CHAT), "type": "channel", "title": "Наш декор", "participants_count": 3})
                 if method == "GET" and path == f"/chats/{CHAT}/members/me":
@@ -60,6 +64,10 @@ class Fake:
                         return self._reply(400, {"code": "attachment.not.ready", "message": "wait"})
                     if fake.reject_url_images and any("url" in a["payload"] for a in imgs):
                         return self._reply(400, {"code": "bad.request", "message": "image url"})
+                    kbs = [b for a in body.get("attachments") or [] if a["type"] == "inline_keyboard"
+                           for row in a["payload"]["buttons"] for b in row]
+                    if fake.reject_open_app and any(b["type"] == "open_app" for b in kbs):
+                        return self._reply(400, {"code": "bad.request", "message": "Invalid button: web app is not set"})
                     fake.n += 1
                     return self._reply(200, {"message": {"body": {"mid": f"mid.{fake.n}"}}})
                 if method == "PUT" and path == f"/chats/{CHAT}/pin":
@@ -144,7 +152,9 @@ def test_all_publishes_once_and_pins(tmp_path, monkeypatch, capsys):
     imgs = [a for a in first["attachments"] if a["type"] == "image"]
     assert imgs[0]["payload"]["url"].endswith("/img/max/cover_paint.jpg?v=1")
     kb = [a for a in first["attachments"] if a["type"] == "inline_keyboard"][0]["payload"]["buttons"]
-    assert kb[0][0]["type"] == "link" and kb[0][0]["text"] == "Все 18 панелей"
+    assert kb[0][0] == {"type": "open_app", "text": "Все 18 панелей", "web_app": "id470331302505_bot", "payload": "c-reechnye-paneli"}
+    assert kb[1][1] == {"type": "link", "text": "Заказать в MAX", "url": "https://max.ru/id470331302505_bot"}
+    assert "мини-приложение бота id470331302505_bot" in out
     live = [b for b in sent if "Наши панели в интерьере" in b["text"]][0]
     assert [a for a in live["attachments"] if a["type"] == "image"][0]["payload"]["url"].endswith("/img/live/2x/1.jpg?v=1")
     pin = fake.calls("PUT", f"/chats/{CHAT}/pin")
@@ -198,3 +208,51 @@ def test_images_uploaded_when_url_rejected(tmp_path, monkeypatch, capsys):
     assert len(ok) == len(posts["posts"])
     assert len(fake.calls("POST", "/uploads")) == 1 + sum(len(p["images"]) for p in posts["posts"])
     assert "загружаю файлами" in capsys.readouterr().out
+
+
+def test_app_payload_matches_site_routes():
+    """Параметры запуска — те же, что разбирает assets/max.js на сайте."""
+    P = channel.app_payload
+    assert P("https://nashdekor.ru/?utm_source=max") == ""
+    assert P("https://nashdekor.ru/?utm_source=max#calc") == "calc"
+    assert P("https://nashdekor.ru/?utm_source=max&panel=3-7#calc") == "calc-3-7"
+    assert P("https://nashdekor.ru/?panel=A907#calc") == "calc-a907"
+    assert P("https://nashdekor.ru/?utm_source=max#pro") == "pro"
+    assert P("https://nashdekor.ru/catalog/plintusy/?utm_source=max") == "c-plintusy"
+    assert P("https://nashdekor.ru/p/a907/") == "p-a907"
+    assert P("https://nashdekor.ru/stati/moldingi-na-stene-v-interere/?utm_source=max") == "s-moldingi-na-stene-v-interere"
+    assert P("https://nashdekor.ru/dostavka/?utm_source=max") == "dostavka"
+    assert P("https://max.ru/id470331302505_bot") is None
+    assert P("https://nashdekor.ru/?x=1#neizvestno") is None and P("http://nashdekor.ru/") is None
+    d = json.load(open(channel.os.path.join(channel.HERE, "channel_posts.json"), encoding="utf-8"))
+    for post in d["posts"]:
+        for row in post.get("buttons") or []:
+            for b in row:
+                pl = P(b["url"])
+                assert pl is not None or b["url"].startswith("https://max.ru/"), b
+                assert pl is None or (len(pl) <= 512 and channel.re.fullmatch(r"[\w-]*", pl)), pl
+
+
+def test_open_app_rejected_falls_back_to_links(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(channel.time, "sleep", lambda s: None)
+    fake = Fake()
+    fake.reject_open_app, fake.not_ready_once = True, False
+    args, posts = setup_files(tmp_path, fake, {CHAT: {"active": True, "channel": True}})
+    assert channel.main(["publish", *args]) == 0
+    ok = [b for b in fake.calls("POST", "/messages") if all(
+        x["type"] == "link" for a in b["attachments"] if a["type"] == "inline_keyboard" for r in a["payload"]["buttons"] for x in r)]
+    assert len(ok) == len(posts["posts"])
+    out = capsys.readouterr().out
+    assert out.count("кнопки мини-приложения MAX не принял") == 1 and f"Опубликовано постов: {len(posts['posts'])}" in out
+
+
+def test_links_flag_skips_mini_app(tmp_path, monkeypatch):
+    monkeypatch.setattr(channel.time, "sleep", lambda s: None)
+    fake = Fake()
+    fake.not_ready_once = False
+    args, posts = setup_files(tmp_path, fake, {CHAT: {"active": True, "channel": True}})
+    assert channel.main(["publish", *args, "--links"]) == 0
+    assert fake.calls("GET", "/me") == []
+    kinds = {x["type"] for b in fake.calls("POST", "/messages") for a in b["attachments"] if a["type"] == "inline_keyboard"
+             for r in a["payload"]["buttons"] for x in r}
+    assert kinds == {"link"}

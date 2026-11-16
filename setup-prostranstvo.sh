@@ -887,7 +887,8 @@ gzip_min_length 1024;
 gzip_types text/plain text/css text/xml application/xml application/javascript application/json image/svg+xml;
 
 add_header X-Content-Type-Options "nosniff" always;
-add_header X-Frame-Options "SAMEORIGIN" always;
+# Фрейм: свой сайт и MAX — в веб- и компьютерной версии MAX мини-приложение (наш сайт) открывается во фрейме.
+add_header Content-Security-Policy "frame-ancestors 'self' https://max.ru https://*.max.ru https://*.oneme.ru" always;
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
 expires \$prostranstvo_expires;

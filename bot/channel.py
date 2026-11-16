@@ -9,7 +9,11 @@
     python3 channel.py publish    — стартовые посты (каждый один раз) и закреп
     python3 channel.py update     — поправить текст и кнопки уже опубликованных постов
     python3 channel.py all        — check + setup + publish
-Ключи: --chat ID (если каналов несколько), --dry (только показать), --posts ФАЙЛ.
+Ключи: --chat ID (если каналов несколько), --dry (только показать), --posts ФАЙЛ,
+--links (кнопки — обычные ссылки в браузер, без мини-приложения).
+
+Кнопки на наш сайт открывают сайт внутри MAX (мини-приложение бота): параметр запуска — как в assets/max.js сайта.
+Если MAX не примет такие кнопки (мини-приложение не подключено), скрипт сам поставит обычные ссылки.
 
 Только стандартная библиотека Python: запускается системным python3 на сервере. Токен — из /etc/prostranstvo/bot.env,
 в вывод не попадает.
@@ -19,6 +23,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sqlite3
 import ssl
 import sys
@@ -39,6 +44,10 @@ CHATS_KEY = "max_chats"                    # пишет max_api.py, когда �
 NEED = {"write": "публиковать посты", "pin_message": "закреплять", "change_chat_info": "менять аватар и описание",
         "edit": "редактировать посты"}
 PAUSE = 1.2                                # между постами, чтобы не упереться в ограничение частоты
+SITE_HOSTS = {"nashdekor.ru", "www.nashdekor.ru"}
+APP_BLOCKS = {"calc", "catalog", "models", "order", "contacts", "live", "pro"}   # блоки главной (id на странице)
+APP_PAGES = {"/dostavka/": "dostavka", "/oplata/": "oplata", "/stati/": "stati"}
+APP_DIRS = {"catalog": "c-", "p": "p-", "stati": "s-"}
 
 
 class ApiError(Exception):
@@ -124,8 +133,41 @@ def img_url(cfg: dict[str, Any], name: str) -> str:
     return url + ("&" if "?" in url else "?") + "v=" + str(cfg.get("v", "1"))
 
 
-def keyboard(rows: list[list[dict[str, str]]]) -> list[dict[str, Any]]:
-    btns = [[{"type": "link", "text": b["text"], "url": b["url"]} for b in row] for row in rows or [] if row]
+def app_payload(url: str) -> str | None:
+    """Ссылка на наш сайт → параметр запуска мини-приложения (его разбирает assets/max.js на сайте).
+    "" — главная без параметра; None — ссылка не на сайт или такой раздел не открывается (останется ссылкой)."""
+    u = urllib.parse.urlsplit(url)
+    if u.scheme != "https" or (u.hostname or "") not in SITE_HOSTS:
+        return None
+    path, frag = u.path or "/", u.fragment
+    if path == "/":
+        if not frag:
+            return ""
+        if frag not in APP_BLOCKS:
+            return None
+        panel = (urllib.parse.parse_qs(u.query).get("panel") or [""])[0].lower()
+        return f"calc-{panel}" if frag == "calc" and re.fullmatch(r"[a-z0-9-]{1,40}", panel) else frag
+    if frag:
+        return None
+    if path in APP_PAGES:
+        return APP_PAGES[path]
+    m = re.fullmatch(r"/(catalog|p|stati)/([a-z0-9-]{1,60})/", path)
+    return APP_DIRS[m.group(1)] + m.group(2) if m else None
+
+
+def keyboard(rows: list[list[dict[str, str]]], app: str = "") -> list[dict[str, Any]]:
+    """Кнопки поста. app — публичное имя бота с мини-приложением: тогда ссылки на сайт открываются внутри MAX."""
+    btns = []
+    for row in rows or []:
+        out = []
+        for b in row:
+            pl = app_payload(b["url"]) if app else None
+            if pl is None:
+                out.append({"type": "link", "text": b["text"], "url": b["url"]})
+            else:
+                out.append({"type": "open_app", "text": b["text"], "web_app": app, **({"payload": pl} if pl else {})})
+        if out:
+            btns.append(out)
     return [{"type": "inline_keyboard", "payload": {"buttons": btns}}] if btns else []
 
 
@@ -155,8 +197,28 @@ def save_state(path: str, st: dict[str, Any]) -> None:
 
 # ------------------------------------------------------------------------------------------------ действия
 class Channel:
-    def __init__(self, api: Api, cfg: dict[str, Any], state_file: str, dry: bool, out=print) -> None:
+    def __init__(self, api: Api, cfg: dict[str, Any], state_file: str, dry: bool, out=print, app: bool = True) -> None:
         self.api, self.cfg, self.state_file, self.dry, self.out = api, cfg, state_file, dry, out
+        self.use_app = app
+        self._app: str | None = None if app else ""
+
+    def app(self) -> str:
+        """Публичное имя бота (для кнопок мини-приложения); "" — кнопки обычными ссылками."""
+        if self._app is None:
+            try:
+                self._app = str(self.api.call("GET", "/me").get("username") or "")
+            except ApiError:
+                self._app = ""
+        return self._app
+
+    def _no_app(self, e: ApiError) -> bool:
+        """MAX не принял кнопки мини-приложения → дальше обычные ссылки. True — есть что повторить."""
+        if not self._app:
+            return False
+        self.out(f"  кнопки мини-приложения MAX не принял ({e}) — ставлю обычные ссылки на сайт. "
+                 "Проверьте ссылку мини-приложения в настройках бота.")
+        self._app = ""
+        return True
 
     def pick(self, chats: dict[str, dict[str, Any]], wanted: str = "") -> str:
         if wanted:
@@ -183,6 +245,10 @@ class Channel:
             self.out("Не хватает прав у бота: " + "; ".join(NEED[p] for p in missing))
         else:
             self.out("Права бота — все нужные есть.")
+        if self.app():
+            self.out(f"Кнопки постов откроют сайт внутри MAX (мини-приложение бота {self.app()}).")
+        else:
+            self.out("Кнопки постов — обычные ссылки на сайт.")
         return missing
 
     def setup(self, chat_id: str) -> None:
@@ -217,11 +283,11 @@ class Channel:
 
     def _body(self, post: dict[str, Any], uploaded: bool) -> dict[str, Any]:
         return {"text": post["text"], "format": "html", "notify": False,
-                "attachments": self._images(post.get("images") or [], uploaded) + keyboard(post.get("buttons") or [])}
+                "attachments": self._images(post.get("images") or [], uploaded) + keyboard(post.get("buttons") or [], self.app())}
 
     def _send(self, chat_id: str, post: dict[str, Any]) -> str:
         uploaded = False
-        for attempt in range(1, 7):
+        for attempt in range(1, 8):
             body = self._body(post, uploaded)
             try:
                 res = self.api.call("POST", "/messages", {"chat_id": chat_id, "disable_link_preview": True}, body)
@@ -230,10 +296,16 @@ class Channel:
                 if "not.ready" in e.code or "not.ready" in e.message:     # MAX ещё обрабатывает картинки
                     time.sleep(2 * attempt)
                     continue
-                if e.status == 400 and post.get("images") and not uploaded:
-                    self.out(f"  картинки по ссылке MAX не принял ({e}) — загружаю файлами")
-                    uploaded = True
-                    continue
+                if e.status == 400:
+                    why = f"{e.code} {e.message}".lower()
+                    if any(k in why for k in ("button", "open_app", "web_app", "keyboard")) and self._no_app(e):
+                        continue
+                    if post.get("images") and not uploaded:
+                        self.out(f"  картинки по ссылке MAX не принял ({e}) — загружаю файлами")
+                        uploaded = True
+                        continue
+                    if self._no_app(e):
+                        continue
                 raise
         raise ApiError(500, "attachment.not.ready", "картинки так и не обработались")
 
@@ -274,7 +346,12 @@ class Channel:
             if self.dry:
                 self.out(f"[проверка] обновить «{post['id']}»")
                 continue
-            self.api.call("PUT", "/messages", {"message_id": mid}, self._body(post, False))
+            try:
+                self.api.call("PUT", "/messages", {"message_id": mid}, self._body(post, False))
+            except ApiError as e:
+                if e.status != 400 or not self._no_app(e):
+                    raise
+                self.api.call("PUT", "/messages", {"message_id": mid}, self._body(post, False))
             n += 1
             self.out(f"  обновлён «{post['id']}»")
             time.sleep(PAUSE)
@@ -290,6 +367,7 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--env", default=ENV_FILE)
     a.add_argument("--db", default=DB_FILE)
     a.add_argument("--state", default=STATE_FILE)
+    a.add_argument("--links", action="store_true", help="кнопки — обычные ссылки, без мини-приложения")
     o = a.parse_args(argv)
     env = read_env(o.env)
     token = env.get("MAX_TOKEN") or os.environ.get("MAX_TOKEN", "")
@@ -297,7 +375,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Нет токена MAX (MAX_TOKEN в {o.env}).")
         return 2
     api = Api(token, env.get("MAX_API_URL") or DEFAULT_API, env.get("MAX_CA_FILE") or CA_FILE)
-    ch = Channel(api, load_posts(o.posts), o.state, o.dry)
+    ch = Channel(api, load_posts(o.posts), o.state, o.dry, app=not o.links)
     try:
         chat_id = ch.pick(known_chats(o.db), o.chat)
         if o.cmd in ("check", "all"):
