@@ -527,29 +527,18 @@
    ]
   },
   "clubs": {
-   "no": 9,
+   "no": 10,
    "points": {
-    "Paxtakor": 44,
-    "Navbahor": 52,
-    "Olmaliq": 57,
-    "Xorazm": 22,
-    "Aral": 34,
-    "Buxoro": 24,
-    "Qizilqum": 26,
-    "Metallurg": 25,
-    "Sementchi": 17,
-    "Shoʻrtan": 32,
-    "Qoʻqon 1912": 38,
-    "Dinamo": 35,
-    "Turon": 41,
-    "Soʻgʻdiyona": 8,
-    "Lokomotiv": 2,
-    "Bunyodkor": 14,
-    "Olimpik": 25,
     "Andijon": 25,
-    "Nasaf": 34,
-    "Neftchi": 33,
-    "Mashʼal": 18
+    "Surxon": 18,
+    "Olmaliq": 15,
+    "Soʻgʻdiyona": 12,
+    "Mashʼal": 10,
+    "Nasaf": 8,
+    "Lokomotiv": 6,
+    "Xorazm": 4,
+    "Buxoro": 2,
+    "Dinamo": 1
    },
    "results": [
     {
@@ -668,11 +657,24 @@
      ],
      "link": "https://youtube.com/shorts/9MPeFq6stkI",
      "final": true
+    },
+    {
+     "no": 10,
+     "date": "2026-11-16",
+     "slot": 3,
+     "winner": "Andijon",
+     "top3": [
+      "Andijon",
+      "Surxon",
+      "Olmaliq"
+     ],
+     "link": "https://youtube.com/shorts/9HMvhcq9qL0",
+     "final": false
     }
    ],
-   "champion": "Paxtakor",
-   "season_races": 6,
-   "season": "2026-W46",
+   "champion": null,
+   "season_races": 1,
+   "season": "2026-W47",
    "new_pending": [],
    "seasons": [
     {
@@ -712,6 +714,44 @@
       ]
      ],
      "champion": null
+    },
+    {
+     "season": "2026-W46",
+     "top": [
+      [
+       "Olmaliq",
+       57
+      ],
+      [
+       "Navbahor",
+       52
+      ],
+      [
+       "Paxtakor",
+       44
+      ],
+      [
+       "Turon",
+       41
+      ],
+      [
+       "Qoʻqon 1912",
+       38
+      ],
+      [
+       "Dinamo",
+       35
+      ],
+      [
+       "Aral",
+       34
+      ],
+      [
+       "Nasaf",
+       34
+      ]
+     ],
+     "champion": "Paxtakor"
     }
    ],
    "final_season": "2026-W46",
@@ -1063,6 +1103,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/WoBiZkpr2O4",
    "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №15 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-16",
+   "slot": 3,
+   "league": "clubs",
+   "no": 10,
+   "final": false,
+   "link": "https://youtube.com/shorts/9HMvhcq9qL0",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №10 #shorts",
    "pl": true
   }
  ],

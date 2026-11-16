@@ -32,3 +32,4 @@
 | 2026-11-15 | 3 | clubs №9 ФИНАЛ | Paxtakor | https://youtube.com/shorts/9MPeFq6stkI | public |
 | 2026-11-16 | 1 | cars №14 | Spark | https://youtube.com/shorts/AB95lhJLozM | public |
 | 2026-11-16 | 2 | cars №15 | Tracker | https://youtube.com/shorts/WoBiZkpr2O4 | public |
+| 2026-11-16 | 3 | clubs №10 | Andijon | https://youtube.com/shorts/9HMvhcq9qL0 | public |
