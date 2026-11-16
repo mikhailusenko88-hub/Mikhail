@@ -61,7 +61,8 @@ jobs:
         run: |
           FF="$(node -e "console.log(require('ffmpeg-static'))")"
           python qa.py out "$FF" 2> out/qa_err.txt || true
-          V="$(ls -S out/video/*.mp4 2>/dev/null | head -1)"
+          V="$(ls -S out/video/*.mp4 2>/dev/null | head -1)"; SH="$(ls out/video/*Shorts*.mp4 2>/dev/null | head -1)"
+          if [ -n "$SH" ]; then cp "$SH" "ep-${{ steps.req.outputs.name }}-shorts.mp4"; fi
           if [ -n "$V" ]; then cp "$V" "ep-${{ steps.req.outputs.name }}.mp4"; "$FF" -y -loglevel error -i "$V" -vf scale=960:540 -c:v libx264 -preset veryfast -crf 26 -c:a aac -b:a 96k -movflags +faststart "ep-${{ steps.req.outputs.name }}-540.mp4"; ls -la ep-*.mp4; fi
       - name: Файлы — в релиз
         env:

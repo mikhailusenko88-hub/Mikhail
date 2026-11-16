@@ -35,7 +35,8 @@ try:
     from PIL import Image
     raw = run([FF, '-loglevel', 'error', '-i', MP4, '-vf', 'fps=1,scale=64:36,format=gray', '-f', 'rawvideo', '-'], text=False) if False else subprocess.run([FF, '-loglevel', 'error', '-i', MP4, '-vf', 'fps=1,scale=64:36,format=gray', '-f', 'rawvideo', '-'], capture_output=True).stdout
     fr = np.frombuffer(raw, dtype=np.uint8); n = len(fr) // (64 * 36); fr = fr[:n * 64 * 36].reshape(n, 36, 64).astype(np.float32)
-    mean = fr.mean(axis=(1, 2)); dark = [int(i) for i in np.where(mean < 18)[0]]
+    cuts = [g['t0'] for g in SP['segs']] if SP else []   # затемнение на стыке сцен — это переход, а не брак
+    mean = fr.mean(axis=(1, 2)); dark = [int(i) for i in np.where(mean < 18)[0] if not any(abs(i - c) <= 1.5 for c in cuts) and i < n - 2]
     diff = np.abs(fr[1:] - fr[:-1]).mean(axis=(1, 2)); still = []; runlen = 0
     for i, d in enumerate(diff):
         runlen = runlen + 1 if d < 0.35 else 0
@@ -98,6 +99,26 @@ try:
             else: miss.append(x)
         tot += len(exp); hit += h; b = by.setdefault(s['name'], [0, 0]); b[0] += h; b[1] += len(exp)
         lines.append({'t': s['t'], 'name': s['name'], 'text': s['text'], 'ok': h, 'n': len(exp), 'miss': miss, 'heard': ' '.join(got)})
+    # второй проход: распознаватель иногда пропускает целый кусок — реплики без единого слова слушаем отдельно
+    try:
+        import numpy as np, wave
+        wf = wave.open(WAV, 'rb'); sr = wf.getframerate(); pcm = np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16).astype(np.float32) / 32768.0; wf.close(); re2 = 0
+        for l in lines:
+            if l['n'] >= 2 and l['ok'] == 0:
+                sline = next(x for x in SP['speech'] if x['t'] == l['t']); a = max(0, int((l['t'] - 0.8) * sr)); b = min(len(pcm), int((l['t'] + sline['dur'] + 0.8) * sr))
+                sg2, _ = model.transcribe(pcm[a:b], language='ru', beam_size=5, condition_on_previous_text=False); got = [t for s2 in sg2 for t in norm(s2.text)]
+                exp = norm(l['text']); used = [False] * len(got); h = 0; miss = []
+                for x in exp:
+                    best = -1; bs = 0
+                    for i, g in enumerate(got):
+                        if used[i]: continue
+                        r_ = 1.0 if g == x else difflib.SequenceMatcher(None, g, x).ratio()
+                        if r_ > bs: bs, best = r_, i
+                    if best >= 0 and bs >= 0.72: used[best] = True; h += 1
+                    else: miss.append(x)
+                hit += h; by[l['name']][0] += h; l.update(ok=h, miss=miss, heard=' '.join(got), second=True); re2 += 1
+        R['words_second_pass'] = re2
+    except Exception as ex: note('слова, второй проход: ' + str(ex))
     bad = sorted([l for l in lines if l['n'] >= 2 and l['ok'] / l['n'] < 0.6], key=lambda l: l['ok'] / l['n'])
     R['words'] = {'pct': round(100 * hit / max(1, tot), 1), 'lines': len(lines), 'by_hero': {k: round(100 * v[0] / max(1, v[1]), 1) for k, v in by.items()}, 'worst': bad[:15]}
     json.dump(lines, open(os.path.join(QA, 'repliki.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=0)

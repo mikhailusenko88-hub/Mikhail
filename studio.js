@@ -41,11 +41,18 @@ async function voiceSpeak(m) { const t = Date.now();
   catch (e) { stat.voiceFail++; log('нейроголос: сбой', String(e && e.message || e).slice(0, 200)); return { error: String(e && e.message || e) }; } }
 async function voiceUnload() { if (vctx) { const c = vctx; vctx = null; vp = null; try { await c.close(); } catch (e) {} } return true; }
 
+// ---- громкость: приложение сводит звук тихо (около −24 LUFS) — в студии доводим до −15 LUFS (для YouTube), пики срезает ограничитель ----
+function loudness(file) { const r = spawnSync(FFMPEG, ['-hide_banner', '-nostats', '-i', file, '-af', 'ebur128', '-f', 'null', '-'], { encoding: 'utf8' }); const m = [...String(r.stderr).matchAll(/I:\s+(-?[\d.]+) LUFS/g)]; return m.length ? +m[m.length - 1][1] : null; }
+function normalize(src) { try { const TARGET = +opt('lufs', -15), dst = src.replace(/\.wav$/, '_norm.wav'); let I = loudness(src); if (I == null) return src; let gain = TARGET - I; stat.lufs_in = I;
+    for (let k = 0; k < 3; k++) { spawnSync(FFMPEG, ['-y', '-loglevel', 'error', '-i', src, '-af', `volume=${gain.toFixed(2)}dB,alimiter=limit=0.84:attack=5:release=80:level=disabled`, '-ar', '44100', dst]);
+      const J = loudness(dst); if (J == null) return src; stat.lufs_out = J; stat.gain_db = +gain.toFixed(1); if (Math.abs(J - TARGET) < 0.4) break; gain += TARGET - J; }
+    log('громкость:', stat.lufs_in, '→', stat.lufs_out, 'LUFS, усиление', stat.gain_db, 'дБ'); return dst; } catch (e) { log('громкость: сбой', String(e.message)); return src; } }
+
 // ---- «телефон»: запись видео ----
 let ff = null, ffName = '', ffErr = '', ffFrames = 0, ffT0 = 0, waiters = [], videos = [];
 function videoBegin(m) { const name = String(m.name || 'Серия'), dir = path.join(OUT, 'video'); fs.mkdirSync(dir, { recursive: true }); const out = path.join(dir, name + '.mp4'), fps = String(m.fps || 25);
   const a = ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', fps, '-c:v', 'mjpeg', '-i', '-'];
-  if (m.audioSrc) a.push('-ss', String(m.audioFrom || 0), '-i', path.join(OUT, m.audioSrc)); else a.push('-i', path.join(OUT, 'audio.wav'));
+  if (m.audioSrc) a.push('-ss', String(m.audioFrom || 0), '-i', path.join(OUT, m.audioSrc)); else a.push('-i', flag('nonorm') ? path.join(OUT, 'audio.wav') : normalize(path.join(OUT, 'audio.wav')));
   a.push('-map', '0:v', '-map', '1:a', '-vf', 'scale=in_color_matrix=bt601:in_range=full:out_color_matrix=bt709:out_range=tv,format=yuv420p',
     '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '19', '-g', String(2 * +fps), '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
     '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart'); if (m.audioSrc) a.push('-shortest'); a.push(out);
@@ -162,6 +169,9 @@ async function elements(page, start) {
   let card = null; try { card = await page.evaluate(([se, n]) => { const P = Lib.data.projects.find(p => p.series === se), E = P && P.episodes.find(e => e.episode === n); return E ? { status: E.status, dur: E.dur, video: E.video, voiceFb: E.voiceFb, made: E.made, perf: Lib.data.settings.buildPerf } : null; }, [start.series, start.episode]); } catch (e) {}
   // обложка — кнопкой приложения (постер), если просили
   if (video && video.ok && flag('cover')) { try { await page.evaluate(async ([se, n]) => { const P = Lib.data.projects.find(p => p.series === se), E = P.episodes.find(e => e.episode === n); await Cover.make(P, E, null); }, [start.series, start.episode]); log('обложка приложения готова'); } catch (e) { log('обложка приложения: сбой', String(e.message).slice(0, 200)); } }
+  // Shorts — кнопкой приложения: самый живой кусок 20–30 с, вертикальный кадр на героя
+  if (video && video.ok && flag('shorts')) { try { const w = nextVideo(15 * 60000); page.evaluate(([se, n]) => { const P = Lib.data.projects.find(p => p.series === se), E = P.episodes.find(e => e.episode === n); Shorts.make(P, E, null); }, [start.series, start.episode]).catch(() => {});
+      const v = await w; log('Shorts готов', v); await new Promise(r => setTimeout(r, 1500)); } catch (e) { log('Shorts: сбой', String(e.message).slice(0, 200)); } }
   if (libJson) fs.writeFileSync(path.join(OUT, 'lib.json'), libJson);
   const res = { ok: !!(video && video.ok), err, start, video, card, stat: Object.assign({}, stat, { ttsSec: Math.round(stat.ttsSec), voiceSec: Math.round(stat.voiceSec) }), gl, total_sec: el(), mode: STD ? 'обычное' : 'как в кино', res: RES, fps: FPS };
   fs.writeFileSync(path.join(OUT, 'result.json'), JSON.stringify(res, null, 1)); log('ИТОГ', res.ok ? 'готово' : 'не готово', `за ${Math.floor(el() / 60)} мин ${el() % 60} с`);
