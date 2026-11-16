@@ -113,6 +113,7 @@ def main():
     f = np.clip((lab2[..., 2] - b_ref) / max(b_tab - b_ref, 4.0), 0, 1.2) + np.clip((L_ref - lab2[..., 0]) / 140.0, 0, 1)
     f = cv2.GaussianBlur(f, (0, 0), 0.8)
     top = np.zeros(len(cx)); bot = np.full(len(cx), np.nan); tv = np.zeros(len(cx)); bv = np.ones(len(cx))
+    found = np.zeros(len(cx), bool); crosses = []
     for i, x in enumerate(cx):
         top[i], tv[i] = edge_pos(g2[:, x], int(Ty - 5), int(Ty + 0.10 * h), +1)
         col = f[strip0:strip1 + 1, x]
@@ -121,16 +122,27 @@ def main():
         # все переходы «образец → фон» сверху вниз; берём ближайший к подсказке (в тёмном пазу образец
         # сам похож на тень — там перехода нет, и остаётся подсказка)
         cr = np.where((col[:-1] < 0.5) & (col[1:] >= 0.5))[0]
-        best = None
-        for j0 in cr:
-            if j0 >= 3 and (col[j0 - 3:j0 + 1] < 0.5).all() and abs(j0 - mb) <= 12:
-                if best is None or abs(j0 - mb) < abs(best - mb):
-                    best = j0
-        if best is None:
-            bot[i] = strip0 + mb + 0.5
+        cr = [j0 for j0 in cr if j0 >= 3 and (col[j0 - 3:j0 + 1] < 0.5).all()]
+        sub = lambda j0: strip0 + j0 + float(np.clip((0.5 - col[j0]) / max(col[j0 + 1] - col[j0], 1e-6), 0, 1))
+        crosses.append([sub(j0) for j0 in cr])
+        near = [c for c in crosses[-1] if abs(c - (strip0 + mb)) <= 12]
+        if near:
+            bot[i] = min(near, key=lambda c: abs(c - (strip0 + mb))); found[i] = True
         else:
-            v0, v1 = col[best], col[best + 1]
-            bot[i] = strip0 + best + float(np.clip((0.5 - v0) / max(v1 - v0, 1e-6), 0, 1))
+            bot[i] = strip0 + mb + 0.5
+    # второй проход: маска нейросети в тёмном пазу иногда уходит «шипом» вверх — там перехода рядом с ней нет.
+    # Берём переход, ближайший к уровню соседних надёжных колонок; нет и такого — уровень соседей.
+    gi = np.where(found)[0]
+    if len(gi) > 10:
+        for i in np.where(~found)[0]:
+            k = np.searchsorted(gi, i)
+            nb = [gi[j] for j in (k - 1, k) if 0 <= j < len(gi) and abs(gi[j] - i) <= 90]
+            if not nb:
+                continue
+            target = float(np.mean([bot[j] for j in nb])) if len(nb) == 1 else \
+                float(np.interp(i, nb, [bot[j] for j in nb]))
+            cand = [c for c in crosses[i] if abs(c - target) <= 18]
+            bot[i] = min(cand, key=lambda c: abs(c - target)) if cand else target
     bad = np.isnan(bot)
     if bad.any():
         bot[bad] = np.interp(np.where(bad)[0], np.where(~bad)[0], bot[~bad])
@@ -142,6 +154,9 @@ def main():
         return median_filter(v, size=k, mode='nearest')
     from scipy.ndimage import gaussian_filter1d
     top = clean(top, tv, 9); bot = clean(bot, bv, 13)
+    from scipy.ndimage import grey_closing, grey_opening
+    ks = max(9, int(0.022 * w)) | 1                         # узкие «шипы» (уже любого паза) — убрать в обе стороны
+    bot = grey_opening(grey_closing(bot, size=ks, mode='nearest'), size=ks, mode='nearest')
     bot = gaussian_filter1d(bot, 1.5, mode='nearest')      # заусенцы среза — долой, форма профиля остаётся
     top = np.clip(top, Ty - 1, None)
     yy = np.arange(OH, dtype=np.float32)[:, None]
@@ -151,6 +166,20 @@ def main():
     # бока: строго вертикальные, на 1 px внутрь (без нитки фона), со сглаживанием в полпикселя
     xx = np.arange(OW, dtype=np.float32)[None, :]
     alpha *= np.clip(xx - (Lx + 1.0) + 0.5, 0, 1) * np.clip((Rx - 1.0) - xx + 0.5, 0, 1)
+    if '--flatten' in sys.argv:
+        # Образец — «выдавленный» профиль: вдоль высоты яркость каждой колонки должна быть ровной.
+        # На фото снизу лежит тень/рефлекс от стола, сверху пересвет. Поле освещённости = яркость / медиана колонки,
+        # сглаженное (только по образцу); делим на него. Рельеф (разница между колонками) и мелкая фактура остаются.
+        amt = float(sys.argv[sys.argv.index('--flatten') + 1])
+        lum = 0.2126 * img[..., 0] + 0.7152 * img[..., 1] + 0.0722 * img[..., 2]
+        solid = (alpha > 0.98).astype(np.float32)
+        r0, r1 = int(Ty + 0.25 * h), int(Ty + 0.6 * h)
+        colmed = np.median(lum[r0:r1], axis=0) + 1e-3
+        ratio = (lum / colmed[None, :]).astype(np.float32)
+        sg = float(sys.argv[sys.argv.index("--flatsigma") + 1]) if "--flatsigma" in sys.argv else max(6.0, 0.012 * h)
+        field = cv2.GaussianBlur(ratio * solid, (0, 0), sg) / np.maximum(cv2.GaussianBlur(solid, (0, 0), sg), 1e-3)
+        field = np.where(solid > 0, np.clip(field, 0.6, 1.4), 1.0)
+        img = img / (field[..., None] ** amt)
     out_rgba = np.dstack([np.clip(img, 0, 255), alpha * 255]).astype(np.uint8)
     Image.fromarray(out_rgba, 'RGBA').save(out)
     ang = lambda k: np.degrees(np.arctan(k))
