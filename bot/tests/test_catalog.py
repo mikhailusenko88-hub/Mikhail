@@ -122,3 +122,38 @@ def test_real_site_catalog():
     a703 = c.find("A703")
     assert (a703.length, a703.per_box) == (2000, 28)
     assert all(p.price > 0 and p.per_box > 0 for p in products)
+
+
+# ----------------------------------------------------------------- артикул в обычном сообщении
+def test_find_in_text():
+    c = Catalog(parse_catalog(SAMPLE_HTML))
+
+    def arts(text):
+        found, rest = c.find_in_text(text)
+        return [p.article for p in found], rest
+
+    assert arts("А907") == (["A907"], "")                       # русская «А», всё сообщение — артикул
+    assert arts("сколько стоит a907?") == (["A907"], "сколько стоит ?")
+    assert arts("панель А907 3,2 на 2,7")[0] == ["A907"]
+    assert arts("есть ли А703 и a907?")[0] == ["A703", "A907"]
+    assert arts("A11-80, 15 м")[0] == ["A11-80"]
+    assert arts("A201/2")[0] == ["A201/2"] and arts("gs1")[0] == ["GS 1"]
+    assert arts("2-3")[0] == ["2-3"] and arts("панель 2-3 под дерево")[0] == ["2-3"]
+    assert arts("нужно 2-3 панели")[0] == [] and arts("2-3 метра")[0] == []   # это не артикул
+    assert arts("а 907 штук")[0] == [] and arts("Здравствуйте")[0] == []      # «а» — союз
+
+
+def test_title_details_slug_and_crm():
+    c = Catalog(parse_catalog(SAMPLE_HTML))
+    a907 = c.find("A907")
+    assert a907.title == "Реечная панель A907"  # артикул в конце названия убирается только после тире
+    assert "180×10×3000 мм" not in a907.details and "широкие ламели" in a907.details
+    assert c.find("A201/2").slug == "a201-2" and c.find("GS 1").slug == "gs1"
+    assert a907.stock == -1  # без CRM наличие неизвестно
+    crm = cat.parse_crm(json.dumps({"ok": True, "items": {"A907": {"p": 990, "q": 5}, "GS 1": {"p": 0, "q": 0}}}))
+    products = {p.article: p for p in cat.apply_crm(list(c.products), crm)}
+    assert (products["A907"].price, products["A907"].stock) == (990, 5)
+    assert (products["GS 1"].price, products["GS 1"].stock) == (490, 0)    # своей цены в CRM нет — цена сайта
+    assert products["A703"].stock == 0                                      # нет в CRM — под заказ
+    with pytest.raises(CatalogError):
+        cat.parse_crm('{"ok": false}')

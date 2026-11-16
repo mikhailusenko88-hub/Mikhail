@@ -163,6 +163,58 @@ def test_full_flow_in_max(tmp_path):
     run(scenario())
 
 
+def test_article_in_free_text_in_max(tmp_path):
+    """Клиент просто пишет артикул — бот сразу показывает товар и считает (16.11.2026: раньше слал менеджеру)."""
+    async def scenario():
+        f, h = await make(tmp_path, site_url="https://nashdekor.ru")
+        await h.engine.start()
+        await h.send(MANAGER, f"/owner {CODE}")
+        await h.start(CLIENT)
+        n_mgr = len(f.sent(MANAGER))
+
+        await h.send(CLIENT, "А907")  # русская «А»
+        card = f.last_body(CLIENT)
+        assert "<b>A907</b> — Реечная панель A907" in card["text"] and "ширину стены" in card["text"]
+        assert {"type": "link", "text": "Фото и 3D на сайте", "url": "https://nashdekor.ru/p/a907/"} in kb_rows(card)[0]
+        assert payloads(card) == ["cn"]
+        assert len(f.sent(MANAGER)) == n_mgr  # просто артикул — менеджера не дёргаем
+        await h.send(CLIENT, "3,2 на 2,7")
+        assert f"Итого: 20{NB}шт" in f.last(CLIENT)
+
+        # артикул и размеры одним сообщением — сразу результат
+        await h.send(CLIENT, "панель a907 3 на 2,7")
+        res = f.last_body(CLIENT)
+        assert f"Итого: 19{NB}шт" in res["text"] and payloads(res) == ["ls|A907|3000|2700", "cn"]
+
+        # погонаж с длиной
+        await h.send(CLIENT, "плинтус А703 15 м")
+        assert f"Итого: 9{NB}шт" in f.last(CLIENT)
+
+        # во время ввода размеров написали другой артикул — переключаемся
+        await h.send(CLIENT, "A907")
+        await h.send(CLIENT, "A201/2")
+        assert "<b>A201/2</b>" in f.last(CLIENT) and "ширину стены" in f.last(CLIENT)
+
+        # вопрос с артикулом: карточка клиенту + вопрос менеджеру
+        await h.send(CLIENT, "Есть ли A703 в наличии?")
+        assert f.find(MANAGER, "Есть ли A703 в наличии?")
+        assert "передано менеджеру" in f.last(CLIENT)
+        # вопрос посреди расчёта — тоже менеджеру, расчёт не сбивается
+        await h.send(CLIENT, "А доставка в Мурино есть?")
+        assert f.find(MANAGER, "доставка в Мурино")
+        assert "передал менеджеру" in f.last(CLIENT) and "длину" in f.last(CLIENT)
+        await h.send(CLIENT, "15")
+        assert f"Итого: 9{NB}шт" in f.last(CLIENT)
+
+        # несколько артикулов — список с кнопками
+        await h.send(CLIENT, "A907 и A703")
+        body = f.last_body(CLIENT)
+        assert "Нашёл в вашем сообщении" in body["text"] and payloads(body) == ["ca|A907", "ca|A703"]
+        await done(f, h)
+
+    run(scenario())
+
+
 def test_polling_marker_and_update_parsing(tmp_path):
     async def scenario():
         f, h = await make(tmp_path)

@@ -46,7 +46,8 @@ async def run(channel: str) -> int:
         log.error("%s — обновите бота: curl … install-bot.sh | bash", exc)
         await asyncio.sleep(60)
         return 5
-    store = CatalogStore(cfg.catalog_file, cfg.catalog_url, cfg.catalog_cache, cfg.catalog_refresh_min)
+    store = CatalogStore(cfg.catalog_file, cfg.catalog_url, cfg.catalog_cache, cfg.catalog_refresh_min,
+                         crm_url=cfg.crm_catalog_url)
     if not await store.reload():
         log.error("каталог пока не загружен — расчёт и цены заработают после обновления")
     try:

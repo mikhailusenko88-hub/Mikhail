@@ -144,3 +144,15 @@ def test_parse_wall_pair(text, expected):
 def test_parse_wall_pair_errors_propagate():
     with pytest.raises(InputError):
         parse_wall_pair("abc x 2,7")
+
+
+# ----------------------------------------------------------------- размеры внутри сообщения
+def test_sizes_in_text():
+    assert calc.sizes_in_text("3,2 на 2,7", True) == (3200, 2700)
+    assert calc.sizes_in_text("панель 300 на 270 см", True) == (3000, 2700)
+    assert calc.sizes_in_text("ширина 3,2 м", True) == (3200,)
+    assert calc.sizes_in_text("15 м", False) == (15000,)
+    assert calc.sizes_in_text("сколько стоит?", True) is None
+    assert calc.sizes_in_text("мой номер 8 999 123-45-67", True) is None   # телефон — не размеры
+    assert calc.sizes_in_text("2 коробки", False) is None                  # без единиц — спросим отдельно
+    assert calc.sizes_in_text("500 м", True) is None                        # слишком большое — спросим

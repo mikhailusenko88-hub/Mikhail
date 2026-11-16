@@ -85,6 +85,8 @@ BTN_DELETE_YES = "Да, удалить"
 BTN_LEAD_SITE = "Заявка на сайте"
 BTN_OPEN_MAX = "Открыть бота в MAX"
 BTN_CONTINUE_MAX = "Продолжить в MAX"
+BTN_PRODUCT_SITE = "Фото и 3D на сайте"
+BTN_OTHER_PRODUCT = "Другой товар"
 
 
 def btn_write_here(channel: str) -> str:
@@ -102,6 +104,7 @@ def welcome(site_url: str, collect: bool = True) -> str:
         f"• <b>{BTN_CATALOG}</b> — все артикулы с ценами за штуку и за коробку;\n"
         f"• <b>{BTN_LEAD}</b> — {lead};\n"
         f"• <b>{BTN_MANAGER}</b> — или просто напишите вопрос в этот чат.\n\n"
+        "Можно сразу написать артикул и размеры, например <b>A907 3,2 на 2,7</b> — посчитаю.\n"
         "Продаём поштучно и коробками."
     )
     if site_url:
@@ -115,7 +118,8 @@ def help_client(site_url: str) -> str:
         f"• {BTN_CALC} — расчёт количества и стоимости;\n"
         f"• {BTN_CATALOG};\n"
         f"• {BTN_LEAD};\n"
-        f"• {BTN_MANAGER} — или просто напишите сообщение.\n\n"
+        f"• {BTN_MANAGER} — или просто напишите сообщение.\n"
+        "Артикул можно написать прямо в чат: «A907» или «A907 3,2 на 2,7».\n\n"
         "/cancel — отменить текущее действие\n"
         "/delete_me — удалить мои данные из базы магазина"
     )
@@ -143,8 +147,11 @@ def catalog_group(group: str, products: list[Product], site_url: str) -> list[st
     for p in products:
         desc = f" — {esc(p.short_desc)}" if p.short_desc else ""
         box = f" · коробка {p.per_box}{NBSP}шт = {rub(p.box_price)}" if p.per_box else ""
-        lines.append(f"<b>{esc(p.article)}</b>{desc}, {esc(p.size_text)}\n    {rub(p.price)}/шт{box}")
+        have = f" · <b>в наличии {p.stock}{NBSP}шт</b>" if p.stock > 0 else ""
+        lines.append(f"<b>{esc(p.article)}</b>{desc}, {esc(p.size_text)}\n    {rub(p.price)}/шт{box}{have}")
     tail = "\nЦены предварительные — точную сумму и наличие подтвердит менеджер."
+    if any(p.stock >= 0 for p in products):
+        tail = f"\nБез пометки «в наличии» — {ON_ORDER.lower()}." + tail
     if site_url:
         tail += f"\nФото и 3D-примеры: {esc(site_url)}"
     parts: list[str] = []
@@ -185,10 +192,53 @@ def article_not_found(query: str, suggestions: list[Product]) -> str:
     return text + "\nВыберите группу и артикул кнопками или напишите артикул точно, например A907."
 
 
+ON_ORDER = "Под заказ, 3–4 недели"
+
+
+def stock_line(p: Product) -> str:
+    """Наличие одной строкой — как на сайте. Пусто, если CRM не ответила (наличие неизвестно)."""
+    if p.stock < 0:
+        return ""
+    if p.stock > 0:
+        return f"В наличии в Санкт-Петербурге: {p.stock}{NBSP}шт"
+    return ON_ORDER
+
+
+def stock_for(p: Product, pieces: int) -> str:
+    """Наличие под расчёт: хватит ли того, что есть на складе."""
+    if p.stock < 0:
+        return ""
+    if p.stock >= pieces:
+        return "Есть в наличии в Санкт-Петербурге."
+    if p.stock > 0:
+        return f"В наличии {p.stock}{NBSP}шт, остальное — под заказ, 3–4 недели."
+    return ON_ORDER + "."
+
+
+def product_head(p: Product) -> str:
+    return f"<b>{esc(p.article)}</b> — {esc(p.title)}"
+
+
 def product_card(p: Product) -> str:
-    desc = f"\n{esc(p.desc)}" if p.desc else ""
+    details = f"\n{esc(p.details)}" if p.details else ""
     box = f", в коробке {p.per_box}{NBSP}шт ({rub(p.box_price)})" if p.per_box else ""
-    return f"<b>{esc(p.name)}</b>{desc}\nЦена: {rub(p.price)}/шт{box}"
+    stock = stock_line(p)
+    return f"{product_head(p)}{details}\nЦена: <b>{rub(p.price)}/шт</b>{box}" + (f"\n{stock}" if stock else "")
+
+
+def several_products(products: list[Product]) -> str:
+    lines = ["Нашёл в вашем сообщении:"]
+    for p in products:
+        stock = "" if p.stock < 0 else (f"в наличии {p.stock}{NBSP}шт" if p.stock > 0 else "под заказ, 3–4 недели")
+        lines.append(f"• {product_head(p)} — {rub(p.price)}/шт" + (f" · {stock}" if stock else ""))
+    return "\n".join(lines) + "\n\nЧто посчитать? Нажмите кнопку с артикулом."
+
+
+def question_forwarded_calc(what: str) -> str:
+    example = {"width": "3,2", "height": "2,7"}.get(what, "15,5")
+    word = {"width": "ширину стены", "height": "высоту стены"}.get(what, "длину")
+    return (f"Ваш вопрос передал менеджеру — ответ придёт сюда.\n"
+            f"А чтобы досчитать, введите {word} в метрах, например <b>{example}</b>. Отменить расчёт — /cancel")
 
 
 def ask_width(p: Product) -> str:
@@ -254,29 +304,31 @@ PRICE_NOTE = "Цены предварительные, точную сумму �
 def calc_result_area(p: Product, r: AreaResult) -> str:
     rows = "1 по высоте" if r.rows == 1 else f"{r.rows} по высоте (стена выше панели — со стыком)"
     lines = [
-        f"<b>Расчёт: {esc(p.name)}</b>",
+        f"<b>Расчёт: {esc(p.article)}</b> — {esc(p.title)}",
         f"Стена {meters(r.width_mm)} × {meters(r.height_mm)}{NBSP}м = {area(r.area_m2)}{NBSP}м²",
         f"Панель {p.width}×{p.length}{NBSP}мм, вертикально: {r.columns} в ряд × {rows} = {r.base_pieces}{NBSP}шт",
         f"Запас {r.reserve_percent}% на подрезку: +{r.reserve_pieces}{NBSP}шт",
         _boxes_line(r.pieces, r.per_box, r.boxes, r.rest),
         f"Ориентировочно: {r.pieces} × {rub(r.price)} = <b>{rub(r.total_price)}</b>",
+        stock_for(p, r.pieces),
         "",
         PRICE_NOTE,
     ]
-    return "\n".join(lines)
+    return "\n".join(x for i, x in enumerate(lines) if x or i == len(lines) - 2)
 
 
 def calc_result_linear(p: Product, r: LinearResult) -> str:
     lines = [
-        f"<b>Расчёт: {esc(p.name)}</b>",
+        f"<b>Расчёт: {esc(p.article)}</b> — {esc(p.title)}",
         f"Длина {meters(r.length_mm)}{NBSP}м + запас {r.reserve_percent}% = {meters(r.length_with_reserve_mm)}{NBSP}м",
         f"Планка {meters(r.piece_length_mm)}{NBSP}м: {r.pieces}{NBSP}шт ({meters(r.bought_length_mm)}{NBSP}м)",
         _boxes_line(r.pieces, r.per_box, r.boxes, r.rest),
         f"Ориентировочно: {r.pieces} × {rub(r.price)} = <b>{rub(r.total_price)}</b>",
+        stock_for(p, r.pieces),
         "",
         PRICE_NOTE,
     ]
-    return "\n".join(lines)
+    return "\n".join(x for i, x in enumerate(lines) if x or i == len(lines) - 2)
 
 
 def calc_summary(p: Product, r: AreaResult | LinearResult) -> str:
@@ -290,7 +342,7 @@ def calc_summary(p: Product, r: AreaResult | LinearResult) -> str:
     else:
         pack = "поштучно"
     total = f"{r.total_price:,}".replace(",", " ")
-    return (f"{p.article} ({p.name}): {what} → {r.pieces} шт с запасом {r.reserve_percent}% "
+    return (f"{p.article} ({p.title}): {what} → {r.pieces} шт с запасом {r.reserve_percent}% "
             f"({pack}), ≈ {total} ₽ по {r.price} ₽/шт")
 
 

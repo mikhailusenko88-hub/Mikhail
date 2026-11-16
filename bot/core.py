@@ -368,6 +368,27 @@ def parse_contact(text: str) -> str | None:
     return None
 
 
+# Слова, из которых состоит «просто артикул и размеры»: такое сообщение бот разбирает сам, менеджеру не шлёт.
+_PLAIN_WORDS = frozenset("""
+панель панели панелей панелька рейка рейки реек реечная реечные плинтус плинтуса плинтусов плинтуса молдинг
+молдинга молдинги молдингов карниз карниза карнизы уголок уголка уголки декор артикул арт номер мне нам нужен
+нужна нужно нужны надо хочу стоят стоит хотим хотела хотел беру возьму расчет расчёт посчитать посчитайте рассчитать
+рассчитайте посчитай цена цену цены сколько стоит стоимость почем почём на и или в для по м см мм метр метра
+метров метры шт штук штуки стена стену стены стенка ширина высота длина периметр х x здравствуйте здравствуй
+добрый день вечер утро привет пожалуйста спасибо белый белая белые под покраску дерево бетон дуб орех
+""".split())
+
+
+def _is_question(text: str | None) -> bool:
+    """Есть ли в сообщении что-то кроме артикула, размеров и вежливых слов — вопрос для менеджера."""
+    return bool(_question_words(text))
+
+
+def _question_words(text: str | None) -> list[str]:
+    words = re.findall(r"[a-zа-я]{2,}", (text or "").lower().replace("ё", "е"))
+    return [w for w in words if w not in _PLAIN_WORDS]
+
+
 def calc_link_payload(prefix: str, article: str, *nums: int) -> str:
     """Расчёт для ссылки «продолжить в другом мессенджере»: ls_<артикул hex>_<ширина>_<высота>."""
     return "_".join([prefix, article.encode().hex(), *(str(n) for n in nums)])
@@ -707,6 +728,8 @@ class Engine:
             return await self.calc_step(ev, me, st)
         if st.startswith("lead_"):
             return await self.lead_step(ev, me, st)
+        if text and await self.article_message(ev, me):
+            return
         if me:
             if text and text.startswith("/"):
                 await self.cmd_help(ev, me)
@@ -894,8 +917,10 @@ class Engine:
         for p in items:
             data = cb("ca", p.article)
             if data:
-                label = f"{p.article} · {p.short_desc}"[:40] if p.kind == "color" and p.short_desc \
-                    else f"{p.article} · {p.price} ₽"
+                if p.kind == "color" and (p.decor or p.short_desc):
+                    label = f"{p.article} · {p.decor or p.short_desc}"[:40]
+                else:
+                    label = f"{p.article} · {p.price} ₽"
                 buttons.append(Btn(label, data))
         width = 1 if group == "color" else 2
         rows = [buttons[i:i + width] for i in range(0, len(buttons), width)]
@@ -959,13 +984,56 @@ class Engine:
             return
         await self.start_product(ev.user_id, product, me)
 
+    def product_kb(self, product: Product, me: Person | None) -> Kb:
+        """Под карточкой товара: страница товара на сайте (фото, 3D, цвета) и «Другой товар»."""
+        if not self.cfg.site_url:
+            return self.menu(me)
+        return ikb([Btn(texts.BTN_PRODUCT_SITE, url=self.cfg.site_link(f"p/{product.slug}/"))],
+                   [Btn(texts.BTN_OTHER_PRODUCT, "cn")])
+
     async def start_product(self, uid: int, product: Product, me: Person | None) -> None:
         if product.is_area:
             self.set_state(uid, "calc_width", article=product.article)
-            await self.say(uid, texts.ask_width(product), self.menu(me))
+            await self.say(uid, texts.ask_width(product), self.product_kb(product, me))
         else:
             self.set_state(uid, "calc_length", article=product.article)
-            await self.say(uid, texts.ask_length(product), self.menu(me))
+            await self.say(uid, texts.ask_length(product), self.product_kb(product, me))
+
+    async def article_message(self, ev: Incoming, me: Person | None) -> bool:
+        """Артикул в обычном сообщении («А907», «панель а907 3,2 на 2,7», «есть ли A703?»).
+
+        Один товар — карточка с ценой и наличием и сразу расчёт (если размеры уже в сообщении —
+        сразу результат). Несколько — список с кнопками «Рассчитать …». Если в сообщении есть
+        ещё и вопрос («есть ли в наличии», «а доставка?») — он уходит менеджеру, как раньше."""
+        catalog = self.store.get()
+        text = ev.text or ""
+        if not catalog or not text.strip() or text.startswith("/"):
+            return False
+        found, rest = catalog.find_in_text(text)
+        if not found:
+            return False
+        uid = ev.user_id
+        if len(found) == 1:
+            product = found[0]
+            sizes = calc.sizes_in_text(rest, product.is_area)
+            if sizes and product.is_area and len(sizes) == 2:
+                await self._finish_area(uid, product, sizes[0], sizes[1])
+            elif sizes and product.is_area:
+                self.set_state(uid, "calc_height", article=product.article, width_mm=sizes[0])
+                await self.say(uid, texts.product_card(product) + "\n\n" + texts.ask_height(sizes[0]),
+                               self.product_kb(product, me))
+            elif sizes:
+                await self._finish_linear(uid, product, sizes[0])
+            else:
+                await self.start_product(uid, product, me)
+        else:
+            self.set_state(uid, "calc_article")
+            rows = [[Btn(f"{texts.BTN_CALC_GROUP} {p.article}", data)]
+                    for p in found[:6] if (data := cb("ca", p.article))]
+            await self.say(uid, texts.several_products(found[:6]), ikb(*rows))
+        if not me and _is_question(rest):
+            await self.client_message(ev)
+        return True
 
     async def calc_step(self, ev: Incoming, me: Person | None, st: str) -> None:
         uid = ev.user_id
@@ -981,12 +1049,14 @@ class Engine:
                 await self.say(uid, texts.CATALOG_UNAVAILABLE)
                 return
             query = ev.text.strip()
-            product = catalog.find(query)
-            if product:
-                await self.start_product(uid, product, me)
-            else:
-                await self.say(uid, texts.article_not_found(query, catalog.search(query)),
-                               self.groups_kb(catalog, "cg"))
+            if await self.article_message(ev, me):
+                return
+            if _is_question(query) and not me:
+                await self.client_message(ev)
+                await self.say(uid, texts.CALC_CHOOSE_GROUP, self.groups_kb(catalog, "cg"))
+                return
+            await self.say(uid, texts.article_not_found(query, catalog.search(query)),
+                           self.groups_kb(catalog, "cg"))
             return
         what = {"calc_width": "width", "calc_height": "height"}.get(st, "length")
         if ev.text is None:
@@ -1013,6 +1083,12 @@ class Engine:
             else:
                 await self._finish_linear(uid, product, calc.parse_length_mm(ev.text, calc.MAX_LINEAR_M))
         except calc.InputError as err:
+            if await self.article_message(ev, me):
+                return
+            if not me and _is_question(ev.text) and ("?" in ev.text or len(_question_words(ev.text)) >= 2):
+                await self.client_message(ev, ack=False)
+                await self.say(uid, texts.question_forwarded_calc(what))
+                return
             await self.say(uid, texts.input_error(err, what))
         except ValueError:
             self.clear(uid)
@@ -1168,7 +1244,7 @@ class Engine:
             log.warning("заявка №%d никому не отправлена: в команде пока никого (/owner КОД)", lead_id)
 
     # ------------------------------------------------------------------ сообщения клиентов
-    async def client_message(self, ev: Incoming) -> None:
+    async def client_message(self, ev: Incoming, ack: bool = True) -> None:
         uid = ev.user_id
         if ev.text and ev.text.startswith("/"):
             await self.say(uid, texts.help_client(self.cfg.site_url), client_menu())
@@ -1194,7 +1270,7 @@ class Engine:
                 await self.notify(recipients, {"t": "text", "client_id": client.id,
                                                "text": "Черновик ответа (клиенту не отправлен):\n" + texts.esc(draft)},
                                   client.id)
-        if self.rt.need_ack(uid):
+        if ack and self.rt.need_ack(uid):
             await self.say(uid, texts.MESSAGE_RECEIVED, client_menu())
 
     # ------------------------------------------------------------------ удаление данных

@@ -129,6 +129,36 @@ def parse_wall_pair(text: str) -> tuple[int, int] | None:
     return width, height
 
 
+_PAIR_FIND_RE = re.compile(rf"{_NUM}\s*{_UNIT}\.?\s*(?:[xх×*]|на)\s*{_NUM}\s*{_UNIT}\.?(?![а-яa-z])")
+_LEN_FIND_RE = re.compile(rf"{_NUM}\s*(миллиметр\w*|мм|mm|сантиметр\w*|см|cm|метр\w*|м|m)\.?(?![а-яa-z])")
+
+
+def sizes_in_text(text: str, is_area: bool) -> tuple[int, ...] | None:
+    """Размеры внутри обычного сообщения («А907 3,2 на 2,7», «плинтус A703 15 м»).
+
+    Стена: (ширина, высота) — пара «A x B» / «A на B»; или (ширина,) — одно число с единицей.
+    Погонаж: (длина,) — число с единицей («15 м», «1550 см»). Иначе None (спросим отдельно).
+    Ошибки (слишком большое и т. п.) — тоже None: спросим и покажем подсказку."""
+    s = _normalize(text)
+    try:
+        if is_area:
+            m = _PAIR_FIND_RE.search(s)
+            if m:
+                pair = parse_wall_pair(m.group(0))
+                if pair:
+                    return pair
+            m = _LEN_FIND_RE.search(s)
+            if m:
+                return (parse_length_mm(m.group(0), MAX_WALL_WIDTH_M),)
+            return None
+        m = _LEN_FIND_RE.search(s)
+        if m:
+            return (parse_length_mm(m.group(0), MAX_LINEAR_M),)
+    except InputError:
+        return None
+    return None
+
+
 # --------------------------------------------------------------------------- расчёт
 @dataclass(frozen=True)
 class AreaResult:

@@ -6,7 +6,8 @@
   b — штук в коробке, r — цена ₽ за штуку.
 
 Откуда берём (по порядку): файл сайта на сервере → GitHub (raw) → последняя
-удачная копия в кеше на диске. Перечитываем раз в час — цены меняются.
+удачная копия в кеше на диске. Поверх — цены и свободный остаток из CRM магазина
+(`/api/catalog`, как на сайте); если CRM не ответила — цены сайта, наличие «неизвестно».
 """
 
 from __future__ import annotations
@@ -20,7 +21,7 @@ import tempfile
 import time
 import urllib.request
 from collections.abc import Iterable
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 
 log = logging.getLogger("prostranstvo.catalog")
 
@@ -44,6 +45,18 @@ _CAT_RE = re.compile(r"\bCAT\s*=\s*\[")
 # Похожие кириллические буквы → латиница (клиент может набрать «А907» по-русски)
 _LOOKALIKE = str.maketrans("АВЕКМНОРСТХУЛ", "ABEKMHOPCTXYL")
 
+# Артикулы внутри обычного текста: «А907», «a703?», «A11-80», «AP1-100», «A201/2», «A80L», «GS 1».
+# Пробел между буквой и цифрами не допускаем: «а 10 штук» — это союз «а», а не молдинг A10.
+_ART_IN_TEXT_RE = re.compile(
+    r"(?<![0-9A-ZА-ЯЁ])([AА][PР]?\d{1,4}(?:-\d{1,3}|/\d{1,2})?[LЛ]?|G\s?[SС]\s?\d)(?![0-9A-ZА-ЯЁ/])")
+# Панели под дерево и бетон: «2-7», «3-15», «5-10» — легко спутать с «2-3 метра», поэтому принимаем,
+# только если сообщение короткое или в нём есть слова про панели/декор, а после кода нет единиц и счёта.
+_COLOR_IN_TEXT_RE = re.compile(r"(?<![\d.,/-])([235])\s?-\s?(\d{1,2})(?![\d.,/-])")
+_COLOR_WORDS = ("ПАНЕЛ", "ДЕКОР", "АРТИКУЛ", "ЦВЕТ", "ДУБ", "ОРЕХ", "БЕТОН", "ДЕРЕВ", "ТИК", "ОТТЕН")
+_COUNT_AFTER_RE = re.compile(
+    r"\s*(?:М\b|МЕТР|СМ\b|ММ\b|M\b|ШТ|КОР|ДН|НЕДЕЛ|РАЗ|ЧАС|ТЫС|РУБ|₽|%|ПАНЕЛ|РЕЕК|РЕЙК|ПЛИНТУС|МОЛДИНГ|КВ)")
+_SIZE_IN_DESC = re.compile(r"^\d+(?:\s*[×x]\s*\d+)+\s*мм$")
+
 
 class CatalogError(Exception):
     """Не удалось получить или разобрать каталог."""
@@ -60,6 +73,7 @@ class Product:
     length: int      # мм
     per_box: int     # штук в коробке
     price: int       # ₽ за штуку
+    stock: int = -1  # свободный остаток из CRM, шт; -1 — неизвестно (CRM не ответила)
 
     @property
     def is_area(self) -> bool:
@@ -77,6 +91,29 @@ class Product:
     def size_text(self) -> str:
         parts = [self.width, self.thickness, self.length] if self.thickness else [self.width, self.length]
         return "×".join(str(p) for p in parts) + " мм"
+
+    @property
+    def title(self) -> str:
+        """Название без артикула в конце: «Стеновая реечная панель …, 180×10×3000 мм»."""
+        t = re.sub(r"\s*[—–-]\s*" + re.escape(self.article) + r"\s*$", "", self.name).strip()
+        return t or self.name
+
+    @property
+    def details(self) -> str:
+        """Описание без размеров (они уже есть в названии)."""
+        parts = [x.strip() for x in self.desc.split(",")]
+        return ", ".join(x for x in parts if x and not _SIZE_IN_DESC.match(x))
+
+    @property
+    def decor(self) -> str:
+        """Название декора из описания: «дерево медовое (тик)»."""
+        m = re.search(r"«([^»]+)»", self.desc)
+        return m.group(1).strip() if m else ""
+
+    @property
+    def slug(self) -> str:
+        """Адрес страницы товара на сайте: /p/<slug>/ (как в build.py сайта)."""
+        return self.article.lower().replace("/", "-").replace(" ", "")
 
     @property
     def short_desc(self) -> str:
@@ -184,6 +221,42 @@ class Catalog:
             return None
         return self._by_key.get(key) or self._by_loose.get(_loose_key(text))
 
+    def find_in_text(self, text: str) -> tuple[list[Product], str]:
+        """Артикулы в обычном сообщении клиента → (товары по порядку, текст без артикулов).
+
+        «А907», «панель а907 3,2 на 2,7», «есть ли A703 и A705?», «2-7 дуб». Всё сообщение целиком
+        тоже пробуем как артикул («GS 1», «2-7»)."""
+        raw = text or ""
+        whole = self.find(raw) if len(raw.strip()) <= 12 else None
+        if whole:
+            return [whole], ""
+        upper = raw.upper()
+        found: list[Product] = []
+        spans: list[tuple[int, int]] = []
+        for m in _ART_IN_TEXT_RE.finditer(upper):
+            p = self.find(m.group(1))
+            if p:
+                if p not in found:
+                    found.append(p)
+                spans.append(m.span())
+        without_codes = upper
+        for a, b in spans:
+            without_codes = without_codes[:a] + " " * (b - a) + without_codes[b:]
+        words = re.findall(r"[A-ZА-ЯЁ]{2,}", without_codes)
+        colorish = len(words) <= 3 or any(w in upper for w in _COLOR_WORDS)
+        for m in _COLOR_IN_TEXT_RE.finditer(upper):
+            if not colorish or _COUNT_AFTER_RE.match(upper, m.end()):
+                continue
+            p = self.find(f"{m.group(1)}-{m.group(2)}")
+            if p:
+                if p not in found:
+                    found.append(p)
+                spans.append(m.span())
+        rest = raw
+        for a, b in sorted(spans, reverse=True):
+            rest = rest[:a] + " " + rest[b:]
+        return found, re.sub(r"\s+", " ", rest).strip()
+
     def search(self, text: str, limit: int = 8) -> list[Product]:
         """Похожие артикулы — для подсказки «может быть, вы имели в виду…»."""
         key = _loose_key(text)
@@ -250,8 +323,46 @@ def _load_cache(path: str) -> list[Product]:
     return products
 
 
-def load_catalog_sync(catalog_file: str, catalog_url: str, cache_path: str = "") -> Catalog:
-    """Файл сайта → GitHub → кеш. Ошибки пишутся в журнал, наружу — только если всё не удалось."""
+def parse_crm(raw: str) -> dict[str, tuple[int, int]]:
+    """Ответ CRM `/api/catalog` → {артикул: (цена, свободный остаток)}."""
+    data = json.loads(raw)
+    items = data.get("items") if isinstance(data, dict) else None
+    if not isinstance(items, dict):
+        raise CatalogError("в ответе CRM нет items")
+    out: dict[str, tuple[int, int]] = {}
+    for art, v in items.items():
+        if not isinstance(v, dict):
+            continue
+        try:
+            price = _to_int(v.get("p", 0) or 0)
+            qty = _to_int(v.get("q", 0) or 0)
+        except ValueError:
+            continue
+        out[norm_article(str(art))] = (max(price, 0), max(qty, 0))
+    return out
+
+
+def apply_crm(products: list[Product], crm: dict[str, tuple[int, int]]) -> list[Product]:
+    """Цена из CRM (если задана) и свободный остаток; артикулов нет в CRM — как на сайте, наличие 0."""
+    out = []
+    for p in products:
+        price, qty = crm.get(norm_article(p.article), (0, 0))
+        out.append(replace(p, price=price or p.price, stock=qty))
+    return out
+
+
+def _with_crm(products: list[Product], crm_url: str) -> list[Product]:
+    if not crm_url:
+        return products
+    try:
+        return apply_crm(products, parse_crm(_fetch_url(crm_url, timeout=10)))
+    except (OSError, ValueError, CatalogError) as exc:
+        log.warning("цены и наличие из CRM не получены (%s) — цены сайта", type(exc).__name__)
+        return products
+
+
+def load_catalog_sync(catalog_file: str, catalog_url: str, cache_path: str = "", crm_url: str = "") -> Catalog:
+    """Файл сайта → GitHub → кеш; поверх — цены и остатки из CRM. Наружу ошибка — только если всё не удалось."""
     errors: list[str] = []
     sources: list[tuple[str, str]] = []
     if catalog_file:
@@ -270,12 +381,12 @@ def load_catalog_sync(catalog_file: str, catalog_url: str, cache_path: str = "")
                 _save_cache(cache_path, products)
             except OSError as exc:
                 log.warning("не удалось сохранить кеш каталога: %s", exc)
-        return Catalog(products, source=label)
+        return Catalog(_with_crm(products, crm_url), source=label)
     if cache_path:
         try:
-            products = _load_cache(cache_path)
+            products = [replace(p, stock=-1) for p in _load_cache(cache_path)]
             log.warning("каталог взят из кеша (%s)", "; ".join(errors))
-            return Catalog(products, source="кеш", loaded_at=os.path.getmtime(cache_path))
+            return Catalog(_with_crm(products, crm_url), source="кеш", loaded_at=os.path.getmtime(cache_path))
         except (OSError, ValueError, TypeError, CatalogError) as exc:
             errors.append(f"кеш: {exc}")
     raise CatalogError("; ".join(errors) or "не задан ни один источник каталога")
@@ -284,10 +395,12 @@ def load_catalog_sync(catalog_file: str, catalog_url: str, cache_path: str = "")
 class CatalogStore:
     """Текущий каталог + фоновое обновление раз в N минут."""
 
-    def __init__(self, catalog_file: str, catalog_url: str, cache_path: str = "", refresh_min: int = 60):
+    def __init__(self, catalog_file: str, catalog_url: str, cache_path: str = "", refresh_min: int = 60,
+                 crm_url: str = ""):
         self.catalog_file = catalog_file
         self.catalog_url = catalog_url
         self.cache_path = cache_path
+        self.crm_url = crm_url
         self.refresh_sec = max(60, refresh_min * 60)
         self._catalog: Catalog | None = None
         self.last_error = ""
@@ -302,7 +415,7 @@ class CatalogStore:
         """Перечитать каталог. При неудаче остаётся прежний."""
         try:
             catalog = await asyncio.to_thread(
-                load_catalog_sync, self.catalog_file, self.catalog_url, self.cache_path
+                load_catalog_sync, self.catalog_file, self.catalog_url, self.cache_path, self.crm_url
             )
         except CatalogError as exc:
             self.last_error = str(exc)
