@@ -17,7 +17,7 @@ function hitSend(){
   clearTimeout(hitT);
   if (!hitOn || !hitQ.length) return;
   let r = ""; try { r = document.referrer ? new URL(document.referrer).hostname : ""; } catch (e) {}
-  const body = { e: hitQ.splice(0, 40), r, u: (new URLSearchParams(location.search).get("utm_source") || "").slice(0, 30),
+  const body = { e: hitQ.splice(0, 40), r, u: (new URLSearchParams(location.search).get("utm_source") || (() => { try { return sessionStorage.getItem("WebAppData") ? "max" : ""; } catch (e) { return ""; } })()).slice(0, 30),
     m: matchMedia("(pointer: coarse)").matches ? 1 : 0 };
   try { navigator.sendBeacon(HIT_API, new Blob([JSON.stringify(body)], { type: "text/plain" })); } catch (e) {}
   if (hitQ.length) hitSend();

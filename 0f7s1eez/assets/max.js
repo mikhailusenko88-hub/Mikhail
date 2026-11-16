@@ -1,0 +1,111 @@
+/* Сайт внутри MAX (мини-приложение бота «Наш декор»).
+   Подключается только когда сайт открыт из MAX: в адресе есть #WebAppData=… (первый экран)
+   или эти данные уже сохранены в sessionStorage (переходы по сайту). В обычном браузере не грузится.
+   Делает: стрелка «Назад» MAX, раздел по параметру запуска (startapp), внешние ссылки — через MAX,
+   метка источника «max» для счётчика посещений. */
+(function () {
+  "use strict";
+  var W = window.WebApp;
+  if (!W) return;
+  var S = window.sessionStorage;
+  function get(k) { try { return S.getItem(k); } catch (e) { return null; } }
+  function set(k, v) { try { S.setItem(k, v); } catch (e) {} }
+  function mobile() { return W.platform === "ios" || W.platform === "android"; }
+
+  var launch = /(^#|&)WebAppData=/.test(location.hash);
+  var param = "";
+  try {
+    param = (W.initDataUnsafe && W.initDataUnsafe.start_param) || new URLSearchParams(location.search).get("WebAppStartParam") || "";
+  } catch (e) {}
+
+  // Куда открыть по параметру запуска: https://max.ru/<бот>?startapp=calc
+  //   calc, catalog, models, order, contacts, live — блоки главной;
+  //   dostavka, oplata, stati — страницы; c-<раздел> — раздел каталога; p-<артикул> — товар (p-a907, p-3-7).
+  var BLOCKS = { calc: 1, catalog: 1, models: 1, order: 1, contacts: 1, live: 1 };
+  var PAGES = { dostavka: "/dostavka/", oplata: "/oplata/", stati: "/stati/" };
+  function target(p) {
+    p = String(p || "").toLowerCase();
+    if (!/^[a-z0-9_-]{1,60}$/.test(p)) return "";
+    if (BLOCKS[p]) return "/#" + p;
+    if (PAGES[p]) return PAGES[p];
+    var m = /^c-([a-z0-9-]+)$/.exec(p);
+    if (m) return "/catalog/" + m[1] + "/";
+    m = /^p-([a-z0-9-]+)$/.exec(p);
+    if (m) return "/p/" + m[1] + "/";
+    return "";
+  }
+
+  if (launch) {
+    set("mxStart", location.pathname);
+    // убрать служебные данные запуска из адреса (их уже сохранила библиотека MAX)
+    try { history.replaceState(history.state, "", location.pathname + location.search.replace(/([?&])WebAppStartParam=[^&]*&?/, "$1").replace(/[?&]$/, "")); } catch (e) {}
+    var to = target(param);
+    if (to) {
+      var path = to.split("#")[0];
+      if (path === location.pathname) {
+        var id = to.split("#")[1];
+        if (id) {
+          var go = function () { var el = document.getElementById(id); if (el) el.scrollIntoView(); };
+          if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { setTimeout(go, 50); });
+          else setTimeout(go, 50);
+        }
+      } else {
+        set("mxStart", path);   // перешли сразу на нужную страницу — «Назад» с неё не нужен
+        location.replace(to);
+        return;
+      }
+    }
+  }
+
+  // Стрелка «Назад» в шапке MAX: на первом экране скрыта, дальше — шаг назад по сайту
+  function sync() {
+    var start = get("mxStart");
+    try { if (!start || location.pathname === start) W.BackButton.hide(); else W.BackButton.show(); } catch (e) {}
+  }
+  try { W.BackButton.onClick(function () { history.back(); }); } catch (e) {}
+  sync();
+  window.addEventListener("pageshow", sync);
+  window.addEventListener("popstate", sync);
+
+  // Ссылки: max.ru — внутри MAX, другие сайты — во внешнем браузере (иначе мини-приложение уходит со страницы
+  // магазина и вернуться нельзя); свои страницы — здесь же, без новых вкладок; tel: и mailto: — как есть.
+  function outside(u) {
+    if (/(^|\.)max\.ru$/.test(u.hostname)) W.openMaxLink(u.href); else W.openLink(u.href);
+  }
+  document.addEventListener("click", function (e) {
+    if (e.defaultPrevented || e.button) return;
+    var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+    if (!a) return;
+    var u;
+    try { u = new URL(a.getAttribute("href"), location.href); } catch (x) { return; }
+    if (u.protocol !== "http:" && u.protocol !== "https:") return;
+    if (u.origin === location.origin) {
+      if (a.hasAttribute("download") && mobile() && W.downloadFile) {
+        e.preventDefault();
+        var name = a.getAttribute("download") || decodeURIComponent(u.pathname.split("/").pop() || "file");
+        W.downloadFile(u.href, name).catch(function () { location.href = u.href; });
+      } else if (a.target === "_blank") {
+        e.preventDefault();
+        location.href = u.href;
+      }
+      return;
+    }
+    e.preventDefault();
+    outside(u);
+  }, true);
+  var open0 = window.open;
+  window.open = function (url) {
+    try {
+      var u = new URL(url, location.href);
+      if (u.protocol === "http:" || u.protocol === "https:") {
+        if (u.origin === location.origin) location.href = u.href; else outside(u);
+        return null;
+      }
+    } catch (e) {}
+    return open0.apply(window, arguments);
+  };
+
+  // Свайп вниз на телефоне не закрывает приложение (иначе мешает листать и крутить 3D-стену)
+  if (mobile() && W.disableVerticalSwipes) { try { W.disableVerticalSwipes().catch(function () {}); } catch (e) {} }
+  try { W.ready(); } catch (e) {}
+})();

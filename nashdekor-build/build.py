@@ -899,4 +899,25 @@ YML += ['      <category id="%d"%s>%s</category>' % (i, (' parentId="%d"' % par)
 YML += ['    </categories>', '    <offers>'] + [yml_offer(x) for x in yml_items] + ['    </offers>', '  </shop>', '</yml_catalog>']
 open(os.path.join(SITE, "yml.xml"), "w", encoding="utf-8").write("\n".join(YML) + "\n")
 print("фид Яндекс Товаров yml.xml: %d предложений" % len(yml_items))
+# ---------- мини-приложение MAX (с 16.11.2026): на всех страницах — подключение assets/max.js, только если сайт открыт из MAX ----------
+# Признак — данные запуска MAX в адресе (#WebAppData=…) или уже сохранённые библиотекой MAX в sessionStorage.
+# В обычном браузере ничего не грузится. Файлы подтверждения поисковиков (google…, yandex_…) не трогаем.
+MAX_JS_V = "1"
+MAX_SNIP = ('<script>/*max-app*/try{if(/WebAppData=/.test(location.hash)||sessionStorage.getItem("WebAppData"))'
+            '["https://st.max.ru/js/max-web-app.js","/assets/max.js?v=%s"].forEach(function(u){var s=document.createElement("script");'
+            's.src=u;s.async=false;document.head.appendChild(s)})}catch(e){}</script>' % MAX_JS_V)
+_max_n = 0
+for _dir, _subs, _files in os.walk(SITE):
+    for _f in _files:
+        if not _f.endswith(".html") or _f.startswith(("google", "yandex_")):
+            continue
+        _p = os.path.join(_dir, _f); _h = open(_p, encoding="utf-8").read()
+        _h2 = re.sub(r'<script>/\*max-app\*/.*?</script>', "", _h)
+        if '<meta charset="utf-8">' not in _h2:
+            continue
+        _h2 = _h2.replace('<meta charset="utf-8">', '<meta charset="utf-8">' + MAX_SNIP, 1)
+        _max_n += 1
+        if _h2 != _h:
+            open(_p, "w", encoding="utf-8").write(_h2)
+print("мини-приложение MAX: подключение на %d страницах" % _max_n)
 print("товаров: %d, разделов: %d, статей: %d, в sitemap: %d адресов, версия ассетов %s" % (len(CAT), len(CATS), len(ARTICLES), len(urls) + 4, VER))
