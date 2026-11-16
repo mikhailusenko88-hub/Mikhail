@@ -1,0 +1,16 @@
+Downloading data from 'https://github.com/danielgatis/rembg/releases/download/v0.0.0/isnet-general-use.onnx' to file '/home/runner/.rembg/models/isnet-general-use/isnet-general-use.onnx'.
+  0%|                                               | 0.00/179M [00:00<?, ?B/s]  6%|██▍                                    | 11.0M/179M [00:00<00:01, 110MB/s] 17%|██████▍                                | 29.5M/179M [00:00<00:00, 154MB/s] 27%|██████████▌                            | 48.6M/179M [00:00<00:00, 171MB/s] 38%|██████████████▊                        | 67.6M/179M [00:00<00:00, 178MB/s] 49%|██████████████████▉                    | 86.8M/179M [00:00<00:00, 183MB/s] 59%|███████████████████████▊                | 106M/179M [00:00<00:00, 187MB/s] 70%|████████████████████████████            | 125M/179M [00:00<00:00, 189MB/s] 81%|████████████████████████████████▍       | 145M/179M [00:00<00:00, 190MB/s] 92%|████████████████████████████████████▋   | 164M/179M [00:00<00:00, 179MB/s]  0%|                                               | 0.00/179M [00:00<?, ?B/s]100%|███████████████████████████████████████| 179M/179M [00:00<00:00, 1.57TB/s]
+isnet-general-use a907 ok 3.7s
+isnet-general-use a910 ok 5.0s
+isnet-general-use s3_dub ok 6.2s
+isnet-general-use s3_red ok 7.5s
+isnet-general-use s5_med ok 8.7s
+isnet-general-use x_dark ok 9.9s
+Downloading data from 'https://github.com/danielgatis/rembg/releases/download/v0.0.0/BiRefNet-general-bb_swin_v1_tiny-epoch_232.onnx' to file '/home/runner/.rembg/models/birefnet-general-lite/birefnet-general-lite.onnx'.
+  0%|                                               | 0.00/224M [00:00<?, ?B/s]  6%|██▎                                    | 13.0M/224M [00:00<00:01, 130MB/s] 15%|█████▋                                 | 32.9M/224M [00:00<00:01, 171MB/s] 24%|█████████▎                             | 53.2M/224M [00:00<00:00, 185MB/s] 33%|████████████▊                          | 73.5M/224M [00:00<00:00, 192MB/s] 42%|████████████████▎                      | 93.8M/224M [00:00<00:00, 196MB/s] 51%|████████████████████▍                   | 114M/224M [00:00<00:00, 199MB/s] 60%|███████████████████████▉                | 134M/224M [00:00<00:00, 200MB/s] 69%|███████████████████████████▌            | 155M/224M [00:00<00:00, 200MB/s] 78%|███████████████████████████████▏        | 175M/224M [00:00<00:00, 199MB/s] 87%|██████████████████████████████████▊     | 195M/224M [00:01<00:00, 201MB/s] 96%|██████████████████████████████████████▍ | 215M/224M [00:01<00:00, 202MB/s]  0%|                                               | 0.00/224M [00:00<?, ?B/s]100%|███████████████████████████████████████| 224M/224M [00:00<00:00, 1.54TB/s]
+birefnet-general-lite a907 ok 12.0s
+birefnet-general-lite a910 ok 20.8s
+birefnet-general-lite s3_dub ok 28.9s
+birefnet-general-lite s3_red ok 36.8s
+birefnet-general-lite s5_med ok 44.9s
+birefnet-general-lite x_dark ok 52.9s
