@@ -1556,10 +1556,13 @@ def scene_piece():
     me = bpy.data.meshes.new_from_object(tmp.evaluated_get(dg))
     bpy.data.objects.remove(tmp)
     me.transform(Matrix.Translation((-W / 2.0, 0.0, 0.0)))
-    mp = mat_simple('white_paint', hexcol(A.get('paint', 'EFEEEA')), rough=float(A.get('paint_rough', 0.6)),
-                    bump=0.015, bump_scale=1800.0)
+    mp = mat_simple('white_paint_piece', hexcol(A.get('paint', 'EFEEEA')), rough=float(A.get('paint_rough', 0.7)))
     me.materials.append(mp)
-    me.materials.append(mat_foam_white())
+    mf = mat_foam_white()
+    for nd in mf.node_tree.nodes:            # срез на фото почти такой же светлый, как лицо
+        if nd.type == 'BSDF_PRINCIPLED':
+            nd.inputs['Base Color'].default_value = (0.86, 0.86, 0.85, 1.0)
+    me.materials.append(mf)
     for poly in me.polygons:
         cap = abs(poly.normal.z) > 0.9
         poly.material_index = 1 if cap else 0
@@ -1584,13 +1587,16 @@ def scene_piece():
         el = R(float(A.get('elev', 36 if view == 'a' else 28)))
         cam_loc, look, lens, level = (0.0, -d * math.cos(el), d * math.sin(el)), (0.0, 0.0, T * 0.4), 70.0, False
         key = (-0.30, -0.10, 0.55)
-    area_light('key', key, (0.0, 0.0, T * 0.5), 0.6, 0.6, float(A.get('key', 55)), (1.0, 0.98, 0.95), spread=140)
-    area_light('fill', (0.45, -0.50, 0.25), (0.0, 0.0, T * 0.5), 0.8, 0.8, float(A.get('fill', 16)), (0.95, 0.97, 1.0), spread=140)
-    area_light('top', (0.05, 0.10, 0.60), (0.0, 0.0, 0.0), 0.5, 0.5, float(A.get('top', 18)), spread=120)
+    if view != 'c':
+        key = (-0.25, -0.35, 0.50)
+    area_light('key', key, (0.0, 0.0, T * 0.5), 0.6, 0.6, float(A.get('key', 50)), (1.0, 0.98, 0.95), spread=140)
+    area_light('front', (0.10, -0.60, 0.16), (0.0, 0.0, T * 0.5), 0.7, 0.5, float(A.get('front', 38)), (1.0, 1.0, 1.0), spread=140)
+    area_light('fill', (0.45, -0.30, 0.30), (0.0, 0.0, T * 0.5), 0.8, 0.8, float(A.get('fill', 14)), (0.95, 0.97, 1.0), spread=140)
+    area_light('top', (0.05, 0.10, 0.60), (0.0, 0.0, 0.0), 0.5, 0.5, float(A.get('top', 14)), spread=120)
     wo = bpy.data.worlds.new('W')
     scene.world = wo
     wo.use_nodes = True
-    g = float(A.get('amb', 0.10))
+    g = float(A.get('amb', 0.25))
     wo.node_tree.nodes['Background'].inputs['Color'].default_value = (g, g, g, 1)
     camera(cam_loc, look, lens=lens, level=level)
 
