@@ -4,32 +4,59 @@
 # Срез — вспененный пористый, тыльная сторона — глянцевая чёрная. Раньше (по каталогу) было 24,8 / 15,2 и сплошная основа — неверно.
 import math
 
-STEP, LAM, T, TH, WEB, FLANGE, FL_TOP = 40.0, 29.5, 12.0, 6.0, 3.0, 10.5, 5.0
-LFOOT = (2.0, 6.0)
+# Шаг и ширина рейки по сериям. 3 — живой образец (12.11 и 16.11.2026); 5 — фото живого образца 16.11.2026 (стоя, в лоб:
+# дерево 10,0–10,8 мм, чёрное 13,0–13,8); 2 — по фото каталога (образца нет): 2 рейки по ≈30 мм.
+SERIES = {2: (60.0, 30.0), 3: (40.0, 29.5), 5: (24.0, 10.5)}
+STEP, LAM = SERIES[3]
+T = 12.0
+# Сечение по фото торца в упор (IMG_3212, 16.11.2026; масштаб по ширине 120 мм):
+TOPW = 5.1        # толщина верхней стенки рейки (потолок пустоты на 6,9 мм)
+GZ = 5.35         # верх дна паза (глубина паза ≈ 6,65 мм), дно паза лежит на стене
+SLOPE = 1.9       # стенки паза наклонные: паз сверху 10,5 мм, по дну ≈ 6,7 мм
+IN_TOP, IN_BASE = 3.1, 1.7    # внутренняя стенка пустоты: от края рейки у потолка и у стены
+FL_TOP = 5.4      # полка: толщина ≈ 5,4 мм, лежит на стене; стенка рейки над полкой вертикальная
+FL_WALL = 2.9     # толщина этой стенки
+OVER, FOOT, UNDER = 3.2, 5.1, 5.6   # другой край: свес рейки 3,2 мм, ножка 5,1 мм, под свесом 5,6 мм — туда заходит полка соседней панели
+SOLID = (5,)      # серия 5 (фото среза образца 16.11.2026): рейки сплошные, без пустот; верх реек скруглён сильнее
+TH, WEB, FLANGE, LFOOT = T - GZ, 3.0, 10.5, (OVER, OVER + FOOT)     # прежние имена (для старого кода)
 
 
 def outline(n=3):
-    """[(x, z, tag)] по часовой стрелке (x вправо, z вверх), мм. tag — поверхность ребра ОТ этой точки к следующей:
-    w — плёнка «под дерево», s — чёрная лицевая (бока реек, пазы, полка), b — тыльная сторона."""
-    P = [(0.0, T - TH, 's')]
+    """[(x, z, tag)] по часовой стрелке (x вправо, z вверх от стены), мм. Первая рейка — от x=0 (край с ножкой), полка справа.
+    tag — поверхность ребра ОТ этой точки к следующей: w — плёнка «под дерево» (верх рейки), s — чёрная лицевая
+    (бока реек, пазы, полка), b — тыльная сторона."""
+    step, lam = SERIES.get(n, (STEP, LAM)) if (STEP, LAM) == SERIES[3] else (STEP, LAM)
+    w = n * step
+    cz = T - TOPW
+    P = [(0.0, UNDER, 's')]
     for i in range(n):
-        xs, xe = i * STEP, i * STEP + LAM
-        if i > 0:
-            P.append((xs, T - TH, 's'))
+        xs, xe = i * step, i * step + lam
         P.append((xs, T, 'w'))
         P.append((xe, T, 's'))
         if i < n - 1:
-            P.append((xe, T - TH, 's'))
+            P.append((xe + SLOPE, GZ, 's'))
+            P.append((xs + step - SLOPE, GZ, 's'))
         else:
             P.append((xe, FL_TOP, 's'))
-            P.append((n * STEP, FL_TOP, 's'))
-    P.append((n * STEP, 0.0, 'b'))
-    x = (n - 1) * STEP + LAM - WEB
-    P += [(x, 0.0, 'b'), (x, T - TH, 'b')]
-    for i in range(n - 2, -1, -1):
-        right, left = (i + 1) * STEP + WEB, i * STEP + LAM - WEB
-        P += [(right, T - TH, 'b'), (right, 0.0, 'b'), (left, 0.0, 'b'), (left, T - TH, 'b')]
-    P += [(LFOOT[1], T - TH, 'b'), (LFOOT[1], 0.0, 'b'), (LFOOT[0], 0.0, 'b'), (LFOOT[0], T - TH, 'b')]
+            P.append((w, FL_TOP, 's'))
+    P.append((w, 0.0, 'b'))
+    if n in SOLID:                                       # узкие рейки сплошные, пустот нет
+        P += [(OVER, 0.0, 'b'), (OVER, UNDER, 'b')]
+        return P
+    xe = (n - 1) * step + lam
+    P += [(xe - FL_WALL, 0.0, 'b'), (xe - FL_WALL, cz, 'b')]
+    for i in range(n - 1, 0, -1):
+        xs, pe = i * step, (i - 1) * step + lam          # левая стенка рейки i, правая стенка рейки i-1
+        P += [(xs + IN_TOP, cz, 'b'), (xs + IN_BASE, 0.0, 'b')]
+        hollow = (pe - IN_TOP) - ((OVER + FOOT) if i == 1 else ((i - 1) * step + IN_TOP))
+        if hollow > 1.5:
+            P += [(pe - IN_BASE, 0.0, 'b'), (pe - IN_TOP, cz, 'b')]
+        elif i > 1:                                      # узкая рейка без пустоты — сплошная до следующего паза
+            continue
+    first_hollow = (lam - IN_TOP) - (OVER + FOOT) > 1.5 if n > 1 else (lam - FL_WALL) - (OVER + FOOT) > 1.5
+    if first_hollow:
+        P += [(OVER + FOOT, cz, 'b'), (OVER + FOOT, 0.0, 'b')]
+    P += [(OVER, 0.0, 'b'), (OVER, UNDER, 'b')]
     return P
 
 
@@ -53,7 +80,8 @@ def rounded(P, r_top=0.8, r=0.5, seg=3):
 
 
 if __name__ == '__main__':
-    o = outline()
-    print(len(o), 'точек; ширина', max(p[0] for p in o), 'высота', max(p[1] for p in o))
-    a = sum(o[k][0] * o[(k + 1) % len(o)][1] - o[(k + 1) % len(o)][0] * o[k][1] for k in range(len(o))) / 2
-    print('площадь сечения, мм²:', round(abs(a), 1), '(сплошная была бы', 120 * 12, ')')
+    for n in (2, 3, 5):
+        o = outline(n)
+        a = sum(o[k][0] * o[(k + 1) % len(o)][1] - o[(k + 1) % len(o)][0] * o[k][1] for k in range(len(o))) / 2
+        print('серия', n, len(o), 'точек; ширина', max(p[0] for p in o), 'высота', max(p[1] for p in o),
+              'площадь сечения %.0f мм² (сплошная %d)' % (abs(a), 120 * 12), 'по часовой' if a < 0 else 'ПРОТИВ часовой')

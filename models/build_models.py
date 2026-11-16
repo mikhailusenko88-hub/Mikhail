@@ -89,26 +89,36 @@ def clean(pts):
 
 
 def wood_layout(series):
-    """Раскладка ламелей по фото каталога: серия 2 — 2 ламели по 30 мм слева в шаге 60;
-    серия 3 — 3 ламели 24,8 мм справа в шаге 40; серия 5 — 5 ламелей 12 мм справа в шаге 24."""
-    if series == '2':
-        return [(i * 60.0, i * 60.0 + 30.0) for i in range(2)]
-    if series == '5':
-        return [(i * 24.0 + 12.0, i * 24.0 + 24.0) for i in range(5)]
-    return [(i * 40.0 + 15.2, i * 40.0 + 40.0) for i in range(3)]
+    """Раскладка реек (лицо под декор), мм от левого края. Серия 3 — по живому образцу (12.11.2026): рейка 29,5, паз 10,5,
+    шаг 40; серия 5 — по фото живого образца (16.11.2026): рейка 10,5, паз 13,5, шаг 24; серия 2 — по фото каталога:
+    рейка 30, паз 30, шаг 60 (с образцом не сверена). Первая рейка — от левого края, справа — полка под соседнюю панель."""
+    step, lam, n = {'2': (60.0, 30.0, 2), '5': (24.0, 10.5, 5)}.get(series, (40.0, 29.5, 3))
+    return [(i * step, i * step + lam) for i in range(n)]
 
 
-def wood_profile(series, w=120.0, t=12.0, base=4.2):
+def wood_profile(series, w=120.0, t=12.0, th=6.0, web=3.0, fl_top=5.0, foot=(2.0, 6.0)):
+    """Настоящее сечение реечной панели: полый профиль «змейкой» толщиной ~6 мм. Под рейками пустоты, в пазах панель
+    лежит на стене, под левым краем первой рейки узкая ножка, справа полка высотой 5 мм. Контур — как slat_profile.py."""
     lams = wood_layout(series)
-    xs = sorted({0.0, w} | {x for l in lams for x in l})
-    segs = []
-    for x0, x1 in zip(xs, xs[1:]):
-        mid = (x0 + x1) / 2
-        segs.append((x0, x1, t if any(a <= mid <= b for a, b in lams) else base))
-    pts = [(0.0, 0.0), (w, 0.0)]
-    for x0, x1, h in reversed(segs):
-        pts += [(x1, h), (x0, h)]
-    return clean(pts), lams
+    n = len(lams)
+    step = lams[1][0] - lams[0][0]
+    P = [(0.0, t - th)]
+    for i, (xs, xe) in enumerate(lams):
+        if i > 0:
+            P.append((xs, t - th))
+        P += [(xs, t), (xe, t)]
+        if i < n - 1:
+            P.append((xe, t - th))
+        else:
+            P += [(xe, fl_top), (w, fl_top)]
+    P.append((w, 0.0))
+    x = lams[-1][1] - web
+    P += [(x, 0.0), (x, t - th)]
+    for i in range(n - 2, -1, -1):
+        right, left = lams[i + 1][0] + web, lams[i][1] - web
+        P += [(right, t - th), (right, 0.0), (left, 0.0), (left, t - th)]
+    P += [(foot[1], t - th), (foot[1], 0.0), (foot[0], 0.0), (foot[0], t - th)]
+    return clean(P), lams
 
 
 # ---------------------------------------------------------------- сетка

@@ -1613,9 +1613,9 @@ EXPO_HOOK = None      # своя экспозиция сцены (если за�
 
 def scene_slat_piece(item, view):
     """Отрезок реечной панели «под дерево» (серии 2, 3, 5; 120×12 мм) — карточка товара в стиле фото живых образцов.
-    Геометрия: полый профиль «змейкой» (slat_profile.py). Серия 3: рейка 29,5 / шаг 40 (живой образец 12.11);
-    серия 5: рейка 10,5 / шаг 24 (измерено по фото образца 16.11); серия 2: рейка 30 / шаг 60 — по фото каталога,
-    с образцом не сверена. Плёнка-декор только на лице реек: у каждой рейки своя текстура tex_decor/<артикул>_<i>.jpg
+    Геометрия — slat_profile.py (сечение по фото торца живого образца 16.11.2026: наклонные стенки пазов, пустоты под
+    рейками, свес с ножкой и полка). Серия 3: рейка 29,5 / шаг 40; серия 5: рейка 10,5 / шаг 24, рейки сплошные;
+    серия 2: рейка 30 / шаг 60 — по фото каталога, с образцом не сверена. Плёнка-декор только на лице реек: у каждой рейки своя текстура tex_decor/<артикул>_<i>.jpg
     (рейки с фото каталога, выпрямлены tools/decor_tex.py). Бока и пазы чёрные, срез — тёмная пена.
     Цвет: вид Standard, экспозиция по лицу реек (серый шар 0,5 вместо плёнки) — декор выходит как на фото каталога."""
     global EXPO_HOOK
@@ -1624,11 +1624,12 @@ def scene_slat_piece(item, view):
         sys.path.insert(0, ROOT)
     import slat_profile as SP
     n = int(item[0])
-    SP.STEP, SP.LAM = {2: (60.0, 30.0), 3: (40.0, 29.5), 5: (24.0, 10.5)}[n]
+    SP.STEP, SP.LAM = SP.SERIES[n]
+    r_top = float(A.get('rtop', 1.4 if n == 5 else 0.8))
     mirror = True                        # полка: лёжа «а» — слева у зрителя (срез справа), стоя — справа, как на фото образцов;
     A.setdefault('yaw', '36' if view == 'a' else '-36')   # вид «б» — с другой стороны: у зрителя край первой рейки с ножкой
     W, T, L = 0.12, 0.012, float(A.get('len', 0.10))
-    pts = [(x, z) for x, z, _ in SP.rounded(SP.outline(n), r_top=0.7, r=0.4, seg=3)]
+    pts = [(x, z) for x, z, _ in SP.rounded(SP.outline(n), r_top=r_top, r=0.4, seg=5)]
     if mirror:
         pts = [(120.0 - x, z) for x, z in reversed(pts)]
     cu = bpy.data.curves.new('slat', 'CURVE')
@@ -1649,8 +1650,8 @@ def scene_slat_piece(item, view):
     while me.uv_layers:
         me.uv_layers.remove(me.uv_layers[0])
     uv = me.uv_layers.new(name='decor')
-    bk = float(A.get('black', 0.005))
-    m_black = mat_simple('pan_black_piece', (bk, bk, bk * 1.08, 1), rough=float(A.get('brough', 0.38)))
+    bk = float(A.get('black', 0.006))
+    m_black = mat_simple('pan_black_piece', (bk, bk, bk * 1.08, 1), rough=float(A.get('brough', 0.3)))
     me.materials.append(m_black)
     me.materials.append(mat_foam())
     info = json.load(open(f'{ROOT}/tex_decor/index.json', encoding='utf-8'))[item]
@@ -1678,7 +1679,7 @@ def scene_slat_piece(item, view):
         if mirror:
             xo = W - xo
         i = min(n - 1, max(0, int((xo + 1e-6) // step)))
-        if poly.center.y > T - 0.0007 and xo - i * step < lam + 0.001:
+        if poly.center.y > T - (0.9 * r_top + 0.05) / 1000.0 and xo - i * step < lam + 0.001:
             poly.material_index = 2 + i
             nw += 1
             ratio = info['ratio'][min(i, len(info['ratio']) - 1)]
