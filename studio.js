@@ -47,7 +47,7 @@ function videoBegin(m) { const name = String(m.name || 'Серия'), dir = path
   const a = ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', fps, '-c:v', 'mjpeg', '-i', '-'];
   if (m.audioSrc) a.push('-ss', String(m.audioFrom || 0), '-i', path.join(OUT, m.audioSrc)); else a.push('-i', path.join(OUT, 'audio.wav'));
   a.push('-map', '0:v', '-map', '1:a', '-vf', 'scale=in_color_matrix=bt601:in_range=full:out_color_matrix=bt709:out_range=tv,format=yuv420p',
-    '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-g', String(2 * +fps), '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
+    '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '19', '-g', String(2 * +fps), '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
     '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart'); if (m.audioSrc) a.push('-shortest'); a.push(out);
   if (ff) { try { ff.kill('SIGKILL'); } catch (e) {} }
   ff = spawn(FFMPEG, a, { stdio: ['pipe', 'ignore', 'pipe'] }); ffErr = ''; ff.stderr.on('data', d => { ffErr += d; }); ff.stdin.on('error', e => { ffErr += 'stdin: ' + e.message; });
