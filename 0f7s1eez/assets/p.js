@@ -253,7 +253,7 @@ const W3 = (() => {
       const woodM = new THREE.MeshStandardMaterial({ color: tex ? 0xffffff : 0x9a6a40, map: tex, roughness: .55 });
       const { base, slats, outline } = P.wood, endM = foamMat(true);
       for (let c = 0; c < n; c++) {
-        if (outline) {   // серия 3 — по живому образцу: полый профиль «змейкой», плёнка только на лице реек
+        if (outline) {   // сечение по живому образцу (серии 3 и 5; серия 2 — по каталогу): плёнка только на лице реек
           const sh = new THREE.Shape(outline.map(q => new THREE.Vector2(q[0], q[1])));
           put(new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: len, bevelEnabled: false, curveSegments: 1 }), [endM, blackM]), c);
           slats.forEach(([a0, a1]) => put(new THREE.Mesh(box(a0, a1, X.t, X.t + 0.12, len), woodM), c));
@@ -305,8 +305,14 @@ const W3 = (() => {
       if (tex) tex.repeat.set(1, X.l / 400);
       const blackM = new THREE.MeshStandardMaterial({ color: 0x141415, roughness: .7, clippingPlanes: clip });
       const woodM = new THREE.MeshStandardMaterial({ color: tex ? 0xffffff : 0x9a6a40, map: tex, roughness: .55, clippingPlanes: clip });
-      const { base, slats } = P.wood, gBase = box(0, W, 0, base, X.l), gSl = slats.map(([a0, a1]) => box(a0, a1, base, X.t, X.l));
-      for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) { put(new THREE.Mesh(gBase, blackM), c, r); gSl.forEach(g => put(new THREE.Mesh(g, woodM), c, r)); }
+      // плёнка «под дерево» — только на лице реек; бока реек и пазы чёрные, срез — тёмная зернистая пена (как у живого образца)
+      const { base, slats, outline } = P.wood, endM = foamMat(true); endM.clippingPlanes = clip;
+      const parts = outline
+        ? [[new THREE.ExtrudeGeometry(new THREE.Shape(outline.map(q => new THREE.Vector2(q[0], q[1]))), { depth: X.l, bevelEnabled: false, curveSegments: 1 }), [endM, blackM]]]
+            .concat(slats.map(([a0, a1]) => [box(a0, a1, X.t, X.t + 0.12, X.l), woodM]))
+        : [[box(0, W, 0, base, X.l), [blackM, blackM, blackM, blackM, endM, endM]]]
+            .concat(slats.map(([a0, a1]) => [box(a0, a1, base, X.t, X.l), [blackM, blackM, woodM, blackM, endM, endM]]));
+      for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) parts.forEach(([g, m]) => put(new THREE.Mesh(g, m), c, r));
     } else {
       mat = new THREE.MeshStandardMaterial({ color: new THREE.Color(cur.hex).convertSRGBToLinear(), roughness: .62, clippingPlanes: clip });
       const g = profGeo(X.l);

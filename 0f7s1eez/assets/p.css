@@ -95,6 +95,9 @@ section{padding-block:8px 56px}
 .sections a:hover{border-bottom-color:var(--ink)}
 .more{margin-top:14px;text-align:center}
 .note{font-size:13px;color:var(--muted)}
+.live{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;-webkit-overflow-scrolling:touch}
+.live a{flex:0 0 min(62vw,260px);scroll-snap-align:start;border-radius:8px;overflow:hidden;background:var(--sunk)}
+.live img{display:block;width:100%;height:auto;aspect-ratio:3/4;object-fit:cover}
 
 .calc{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start}
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:18px}
@@ -187,6 +190,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .prof .body{fill:var(--sunk);stroke:var(--ink);stroke-width:1.2;stroke-linejoin:round}
 .prof .slat{fill:#B88A5A;stroke:var(--ink);stroke-width:1}
 .prof .base{fill:#2a2a2c;stroke:var(--ink);stroke-width:1}
+.prof .film{fill:#B88A5A;stroke:none}
 .buy{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:12px}
 @media (min-width:861px){.buy{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px)}}
 .buy .price b{font-family:var(--f-display);font-size:30px;line-height:1.1}

@@ -44,6 +44,7 @@
 .prof .body{fill:var(--sunk);stroke:var(--ink);stroke-width:1.2;stroke-linejoin:round}
 .prof .slat{fill:#B88A5A;stroke:var(--ink);stroke-width:1}
 .prof .base{fill:#2a2a2c;stroke:var(--ink);stroke-width:1}
+.prof .film{fill:#B88A5A;stroke:none}
 .buy{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:12px}
 @media (min-width:861px){.buy{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px)}}
 .buy .price b{font-family:var(--f-display);font-size:30px;line-height:1.1}
