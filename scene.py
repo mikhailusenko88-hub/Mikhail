@@ -1377,12 +1377,120 @@ def scene_plinth():
     return world, sun, sun_dir, lamps, cal
 
 
-SCENES = {'lounge': scene_lounge, 'arch': scene_arch, 'plinth': scene_plinth}
+
+# ------------------------------------------------------------------ студия: фото товара для каталога сайта (16.11.2026)
+def prof_points(item):
+    """Лицевой контур панели: (x мм поперёк, толщина мм) — по чертежу каталога (сайт, PROF).
+    С живым образцом A903/A907 не сверены: тыл и торец в кадр не ставим."""
+    if item == 'a903':   # «призма»: 7 треугольных граней, гребень 10 мм, впадина ≈3,4 мм (по чертежу)
+        pitch, pts = 180.0 / 7, []
+        for k in range(7):
+            xm = k * pitch + pitch / 2
+            pts += [(k * pitch, 3.43), (xm - 0.5, 9.72), (xm, 10.0), (xm + 0.5, 9.72)]
+        pts.append((180.0, 3.43))
+        return pts
+    data = json.load(open(f'{ROOT}/profiles_site.json', encoding='utf-8'))[item.upper()]
+    return [(float(x), float(h)) for x, h in data]
+
+
+def profile_panel(name, pts_mm, x_off, length, mat, sharp_deg=32.0):
+    """Панель по контуру: лицо к −Y, тыл в плоскости y=0, высота по Z от 0 до length."""
+    pts = [(x_off + x / 1000.0, -h / 1000.0) for x, h in pts_mm]
+    pts += [(x_off + pts_mm[-1][0] / 1000.0, 0.0), (x_off + pts_mm[0][0] / 1000.0, 0.0)]
+    n = len(pts)
+    V = [(x, y, 0.0) for x, y in pts] + [(x, y, length) for x, y in pts]
+    F = [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
+    F += [tuple(reversed(range(n))), tuple(range(n, 2 * n))]
+    ob = make_obj(name, V, F, [mat], smooth=[True] * len(F))
+    try:
+        ob.data.set_sharp_from_angle(angle=R(sharp_deg))
+    except Exception as e:  # noqa
+        log('sharp edges', e)
+    return ob
+
+
+def area_light(name, loc, look, sx, sy, power, color=(1.0, 1.0, 1.0)):
+    ld = bpy.data.lights.new(name, 'AREA')
+    ld.shape = 'RECTANGLE'
+    ld.size, ld.size_y, ld.energy, ld.color = sx, sy, power, color
+    ob = bpy.data.objects.new(name, ld)
+    col.objects.link(ob)
+    ob.location = loc
+    ob.rotation_euler = (Vector(look) - Vector(loc)).to_track_quat('-Z', 'Y').to_euler()
+    return ob
+
+
+def scene_studio():
+    """Каталог: n панелей стоят «стеной» и повёрнуты к камере, фон — «Антрацит», свет скользит поперёк рельефа.
+    Концы панелей за кадром (кадр «срез стены»), тыл и торец не видны.
+    item=a907|a903|slat (slat — реечные серии 3, decor=3-7…), rot — поворот панелей, az — откуда камера."""
+    item = A.get('item', 'a907').lower()
+    rot = R(float(A.get('rot', -22)))
+    L = float(A.get('len', 1.8))
+    m_bg = mat_simple('bg_anthracite', hexcol(A.get('bg', '26292E')), rough=0.9)
+    box('bg_wall', -4, 4, float(A.get('bg_y', 0.8)), float(A.get('bg_y', 0.8)) + 0.05, -0.5, 4.0, m_bg)
+    box('bg_floor', -4, 4, -6, float(A.get('bg_y', 0.8)), -0.55, -0.5, m_bg)
+    objs = []
+    if item == 'slat':
+        m_wood = mat_decor(DECOR)
+        m_black = mat_simple('pan_black', (0.007, 0.007, 0.008, 1), rough=0.8, **{'Specular IOR Level': 0.25})
+        w = 0.12 * int(A.get('n', 4))
+        objs.append(slat_wall('panels', -w / 2, w / 2, L, 0.0, m_wood, m_black, zbot=lambda x: 0.0))
+    else:
+        mp = mat_simple('white_paint', hexcol(A.get('paint', 'EFEEEA')), rough=float(A.get('paint_rough', 0.55)),
+                        bump=0.02, bump_scale=1500.0)
+        n = int(A.get('n', 3))
+        pts = prof_points(item)
+        for i in range(n):
+            objs.append(profile_panel(f'panel{i}', pts, -0.09 * n + 0.18 * i, L, mp))
+    for ob in objs:
+        ob.rotation_euler.z = rot
+        ob.location.z = float(A.get('lift', -0.1))
+    # свет: скользящий ключ слева вдоль плоскости панелей (рельеф), мягкая заливка от камеры, контур справа, пятно на фоне
+    nx, ny = math.sin(rot), -math.cos(rot)          # нормаль лица
+    tx, ty = math.cos(rot), math.sin(rot)           # вдоль ширины
+    kd, kn = float(A.get('key_d', 1.5)), float(A.get('key_n', 0.35))
+    zc = float(A.get('look_z', 0.8))
+    area_light('key', (-tx * kd + nx * kn, -ty * kd + ny * kn, zc + float(A.get('key_z', 0.25))), (0, 0, zc),
+               float(A.get('key_w', 0.35)), float(A.get('key_h', 1.8)), float(A.get('key', 320)), (1.0, 0.97, 0.93))
+    az = R(float(A.get('az', 16)))
+    dist = float(A.get('dist', 2.7))
+    cam_loc = (dist * math.sin(az), -dist * math.cos(az), float(A.get('cam_z', zc)))
+    area_light('fill', (cam_loc[0] * 1.2, cam_loc[1] * 1.2, zc + 0.6), (0, 0, zc), 2.0, 2.0, float(A.get('fill', 70)),
+               (0.93, 0.96, 1.0))
+    area_light('rim', (tx * 1.2 + 0.25, ty * 1.2 + 0.55, zc + 0.5), (0, 0, zc), 0.3, 1.4, float(A.get('rim', 90)))
+    area_light('bg_glow', (0.0, 0.0, zc + 1.6), (0.0, float(A.get('bg_y', 0.8)), zc), 1.2, 1.2, float(A.get('glow', 140)))
+    w = bpy.data.worlds.new('W')
+    scene.world = w
+    w.use_nodes = True
+    w.node_tree.nodes['Background'].inputs['Color'].default_value = (0.012, 0.012, 0.013, 1)
+    camera(cam_loc, (0, 0, zc), lens=float(A.get('lens', 70)), fstop=float(A.get('fstop', 0)) or None,
+           focus=dist, level=True)
+
+
+def auto_expose():
+    """Экспозиция по самому светлому месту кадра (белое изделие не выгорает, фон остаётся тёмным)."""
+    rw = 240
+    rh = max(2, int(round(rw * H_PX / W_PX)))
+    px = render_linear(rw, rh, 32, 'ae')
+    hi = float(np.percentile(lum(px.astype(np.float64)), float(A.get('pct', 99.3))))
+    ev = math.log2(float(A.get('target', 1.5)) / max(hi, 1e-6)) + EV
+    scene.view_settings.exposure = ev
+    log('auto exposure: p%.1f=%.4f -> exposure %.2f' % (float(A.get('pct', 99.3)), hi, ev))
+
+
+SCENES = {'lounge': scene_lounge, 'arch': scene_arch, 'plinth': scene_plinth, 'studio': scene_studio}
 
 setup_render()
-world, sun, sun_dir, lamps, cal_cam = SCENES[SCENE]()
-bpy.context.view_layer.update()
-log('objects', len(scene.objects), 'scene built')
-calibrate(world, sun, sun_dir, neutral_prefixes=NEUTRAL, lamps=lamps, cal_cam=cal_cam)
+if SCENE == 'studio':
+    scene_studio()
+    bpy.context.view_layer.update()
+    log('objects', len(scene.objects), 'studio built')
+    auto_expose()
+else:
+    world, sun, sun_dir, lamps, cal_cam = SCENES[SCENE]()
+    bpy.context.view_layer.update()
+    log('objects', len(scene.objects), 'scene built')
+    calibrate(world, sun, sun_dir, neutral_prefixes=NEUTRAL, lamps=lamps, cal_cam=cal_cam)
 render_final()
 log('done')

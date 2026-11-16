@@ -1,4 +1,5 @@
 # имя  аргументы для scene.py (или "py script.py")
-m703_cutp scene=plinth cam=cut item=plinth zoom=1.12 ev=-0.25 res=800x600 samples=64 noise=0.06
-m703_cut scene=plinth cam=cut item=plinth zoom=1.12 ev=-0.25 res=1600x1200 samples=260 noise=0.025
-m703_top scene=plinth cam=top set=two ev=-0.35 res=1600x1200 samples=260 noise=0.025
+# 16.11.2026 — студийные фото каталога (scene=studio), превью
+s903p scene=studio item=a903 res=800x500 samples=48 noise=0.06
+s907p scene=studio item=a907 res=800x500 samples=48 noise=0.06
+s37p scene=studio item=slat decor=3-7 res=800x500 samples=48 noise=0.06
