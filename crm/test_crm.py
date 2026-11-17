@@ -445,6 +445,31 @@ class TestVisits(Base):
         self.assertIn("появится после обновления бота", t)          # базы бота нет — страница не падает
         self.assertIn("Нажали «Telegram» — написать в бота", t)
 
+    def test_interior_carousel(self) -> None:
+        """Карусель «панель в интерьере» на главной (18.11.2026): какие кадры листали, во весь экран, приближали, с какой панелью."""
+        self.hit([["view", "/"], ["3d"], ["iv", "tv1.a912", "go"], ["iv", "tv1.a912", "full"], ["iv", "tv1.a912", "zoom"],
+                  ["iv", "bed.a912", "go"], ["iv", "bed.nope", "go"], ["iv", "TV!.a912", "go"], ["iv", "tv1.a912", "x"],
+                  ["iv", "newroom.gs1", "go"], ["item", "A912", "order"]])
+        self.hit([["view", "/p/a912/"], ["3d", "A912", "rotate"], ["iv", "tv1.gs1", "go"]], ua=MAC, ip="198.51.100.9", m=0)
+        kinds = [(x["kind"], x["key"], x["act"]) for x in self.rows() if x["kind"] in ("iv", "3d", "item")]
+        self.assertEqual(kinds, [("3d", "", ""), ("iv", "tv1|A912", "go"), ("iv", "tv1|A912", "full"), ("iv", "tv1|A912", "zoom"),
+                                 ("iv", "bed|A912", "go"), ("iv", "newroom|GS 1", "go"), ("item", "A912", "order"),
+                                 ("3d", "p", ""), ("iv", "tv1|GS 1", "go")])
+        rep = self.app.extensions["visits"].report(crm_app.today(), 7)
+        iv = rep["iv"]
+        self.assertEqual((iv["touched"], iv["go"], iv["full"], iv["zoom"]), (2, 2, 1, 1))
+        sc = {x["scene"]: x for x in iv["scenes"]}
+        self.assertEqual((sc["tv1"]["name"], sc["tv1"]["who"], sc["tv1"]["full"], sc["tv1"]["zoom"]), ("ТВ-зона — полоса за экраном", 2, 1, 1))
+        self.assertEqual(sc["newroom"]["name"], "newroom")              # новая сцена без подписи — показываем как есть
+        self.assertEqual({a: n for a, _, n in iv["panels"]}, {"A912": 1, "GS 1": 2})
+        f = dict(rep["funnel"])
+        self.assertEqual((f["Смотрели панели в интерьере (главная)"], f["Крутили 3D на странице товара"]), (2, 1))
+        self.assertEqual({x["article"]: x["ask"] for x in rep["items"]}["A912"], 1)   # «Заказать» на странице товара
+        self.login()
+        t = self.c.get("/site?d=7").get_data(as_text=True)
+        self.assertIn("Панели в интерьере: карусель на главной", t)
+        self.assertIn("ТВ-зона — полоса за экраном", t)
+
     def test_site_page_shows_bot_starts(self) -> None:
         b = sqlite3.connect(self.botdb)
         b.executescript(bot_schema())

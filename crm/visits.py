@@ -40,7 +40,7 @@ KEEP_DAYS = 400
 MAX_EVENTS = 40          # отметок в одной посылке
 MAX_PER_DAY = 600        # отметок от одного посетителя за сутки
 
-KINDS = {"view", "sec", "item", "cat", "search", "more", "calc", "calcpanel", "3d", "copy", "form", "lead", "leadfail"}
+KINDS = {"view", "sec", "item", "cat", "search", "more", "calc", "calcpanel", "3d", "copy", "form", "lead", "leadfail", "iv"}
 SECTIONS = [("catalog", "Каталог"), ("calc", "Расчёт стены и 3D"), ("pro", "Дизайнерам"),
             ("terms", "Доставка и оплата"), ("order", "Заявка")]
 PAGES = {"/": "Главная", "/oferta.html": "Оферта", "/privacy.html": "Политика", "/consent.html": "Согласие",
@@ -57,7 +57,17 @@ ARTICLE_TITLES = {"duropolimer-chto-eto": "Дюрополимер — что э�
                   "moldingi-na-stene-v-interere": "Молдинги на стене в интерьере",
                   "montazh-stenovyh-panelej": "Монтаж стеновых панелей",
                   "rejki-na-stenu-v-interere": "Рейки на стену в интерьере"}
-ITEM_ACTS = {"use": "В расчёт", "ask": "Узнать", "decor": "Выбрали декор", "paint": "Выбрали цвет"}
+ITEM_ACTS = {"use": "В расчёт", "ask": "Узнать", "decor": "Выбрали декор", "paint": "Выбрали цвет", "order": "Заказать"}
+# карусель «панель в интерьере» на главной (с 18.11.2026): кадр = сцена × панель; что делали с кадром
+IV_SCENES = {"tvd": "ТВ-зона — крупно", "tv": "ТВ-зона — вся стена", "tv1": "ТВ-зона — полоса за экраном",
+             "tv2": "ТВ-зона — две полосы", "tvc": "ТВ-зона — полоса с переходом на потолок",
+             "sofad": "У дивана — крупно", "sofa": "За диваном — вся стена", "sofa1": "За диваном — одна полоса",
+             "sofa2": "За диваном — две полосы и полка", "bedd": "Спальня — крупно", "bed": "Спальня — вся стена",
+             "bed1": "Спальня — полоса за кроватью", "halld": "Прихожая — крупно", "hall": "Прихожая — вся стена",
+             "half": "Прихожая — панели до середины стены", "deskd": "Рабочее место — крупно", "desk": "Рабочее место — вся стена",
+             "cord": "Коридор — крупно", "cl": "Рельеф крупно"}
+IV_ACTS = {"go": "Листали к кадру", "full": "Во весь экран", "zoom": "Приближали"}
+_SCENE_RE = re.compile(r"[a-z0-9]{1,12}")
 COPY_NAMES = {"phone": "Скопировали телефон", "max": "Нажали «MAX» — написать в бота",
               "telegram": "Нажали «Telegram» — написать в бота", "channel": "Нажали «Канал в MAX»",
               "tgchannel": "Нажали «Канал в Telegram»", "avito": "Перешли на Авито"}
@@ -233,9 +243,18 @@ class Visits:
             elif kind == "cat":
                 if not _KEY_RE.fullmatch(key):
                     continue
+            elif kind == "iv":   # «tv1.a907» + go/full/zoom → «tv1|A907»
+                scene, _, slug = key.partition(".")
+                by_slug = getattr(self.store.catalog, "by_slug", None)
+                p = by_slug(slug) if by_slug and slug else None
+                if not _SCENE_RE.fullmatch(scene) or not p or act not in IV_ACTS:
+                    continue
+                key = f"{scene}|{p.article}"
+            elif kind == "3d":   # главная (кадр «в интерьере») — без артикула; страница товара — с артикулом
+                key = "p" if key else ""
             else:
                 key = ""
-            if kind != "item":
+            if kind not in ("item", "iv"):
                 act = ""
             out.append((kind, key, act))
         return out
@@ -315,6 +334,8 @@ class Visits:
         items: dict[str, dict[str, Any]] = {}
         searches: dict[str, int] = defaultdict(int)
         cats: dict[str, int] = defaultdict(int)
+        iv_scenes: dict[str, dict[str, set]] = {}
+        iv_panels: dict[str, set] = defaultdict(set)
         for r in rows:
             v = (r["day"], r["vid"])
             w = who.setdefault(v, {"src": "", "dev": r["dev"], "did": set(), "secs": set(), "pk": set()})
@@ -347,6 +368,18 @@ class Visits:
                 cats[r["key"]] += 1
             elif k == "copy":
                 w["did"].add("copy:" + r["key"])
+            elif k == "3d":
+                w["did"].add("3d:p" if r["key"] == "p" else "3d:home")
+            elif k == "iv":
+                scene, _, art = (r["key"] or "").partition("|")
+                act = r["act"] or "go"
+                w["did"].add("iv:" + act)
+                sc = iv_scenes.setdefault(scene, {"who": set(), "full": set(), "zoom": set()})
+                sc["who"].add(v)
+                if act in ("full", "zoom"):
+                    sc[act].add(v)
+                if art:
+                    iv_panels[art].add(v)
         visitors = [w for w in who.values() if "view" in w["did"]]
         total = len(visitors)
 
@@ -383,7 +416,8 @@ class Visits:
             ("Открывали страницы товаров", count(lambda w: "product" in w["pk"])),
             ("Нажимали на товары", count(lambda w: "item" in w["did"])),
             ("Считали стену", count(lambda w: w["did"] & {"calc", "calcpanel"})),
-            ("Крутили 3D-стену", count(lambda w: "3d" in w["did"])),
+            ("Смотрели панели в интерьере (главная)", count(lambda w: w["did"] & {"iv", "3d:home"})),
+            ("Крутили 3D на странице товара", count(lambda w: "3d:p" in w["did"])),
             ("Начали заполнять заявку", count(lambda w: "form" in w["did"])),
             ("Отправили заявку", count(lambda w: "lead" in w["did"])),
         ]
@@ -394,7 +428,7 @@ class Visits:
             p = cat.get(a)
             item_rows.append({"article": a, "name": (p.name.replace(a, "").strip(" ·,—-") if p else ""), "visitors": len(it["who"]),
                               "opened": len(it.get("opened") or ()),
-                              "use": it["use"], "ask": it["ask"], "color": it["decor"] + it["paint"], "calc": it["calc"]})
+                              "use": it["use"], "ask": it["ask"] + it.get("order", 0), "color": it["decor"] + it["paint"], "calc": it["calc"]})
         item_rows.sort(key=lambda x: (-x["visitors"], -(x["use"] + x["ask"] + x["color"] + x["calc"]), x["article"]))
         return {
             "days": days, "start": start, "end": day, "visitors": total, "views": views,
@@ -406,6 +440,16 @@ class Visits:
             "cats": sorted(cats.items(), key=lambda x: (-x[1], x[0])),
             "pages": sorted(((page_name(p, cat), len(s)) for p, s in pages.items()), key=lambda x: (-x[1], x[0]))[:60],
             "copy_counts": {k: count(lambda w, k=k: "copy:" + k in w["did"]) for k in COPY_NAMES},
+            "iv": {
+                "touched": count(lambda w: w["did"] & {"iv", "3d:home"}),
+                "go": count(lambda w: "iv:go" in w["did"]),
+                "full": count(lambda w: "iv:full" in w["did"]),
+                "zoom": count(lambda w: "iv:zoom" in w["did"]),
+                "scenes": sorted(({"scene": sc, "name": IV_SCENES.get(sc, sc), "who": len(d["who"]), "full": len(d["full"]),
+                                   "zoom": len(d["zoom"])} for sc, d in iv_scenes.items()), key=lambda x: (-x["who"], x["name"])),
+                "panels": sorted(((a, (cat.get(a).name.replace(a, "").strip(" ·,—-") if cat.get(a) else ""), len(ws))
+                                  for a, ws in iv_panels.items()), key=lambda x: (-x[2], x[0]))[:40],
+            },
         }
 
 

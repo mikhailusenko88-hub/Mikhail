@@ -17,6 +17,19 @@
 <div class="panel list">{% for name, n in r['funnel'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}{% if r['visitors'] %} · {{ (100 * n / r['visitors'])|round|int }}%{% endif %}</span></div>{% endfor %}
 {% for name, n in r['copies'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}</span></div>{% endfor %}</div>
 
+{% set iv = r.get('iv') %}{% if iv %}
+<h2>Панели в интерьере: карусель на главной</h2>
+<div class="panel list">
+{% for name, n in (('Трогали кадр', iv['touched']), ('Листали кадры', iv['go']), ('Открывали во весь экран', iv['full']), ('Приближали', iv['zoom'])) %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ [r['visitors'], 1]|max }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}{% if r['visitors'] %} · {{ (100 * n / r['visitors'])|round|int }}%{% endif %}</span></div>{% endfor %}</div>
+{% if iv['scenes'] %}<div class="panel tbl"><table class="site-iv"><thead><tr><th>Кадр</th><th class="r">Людей</th><th class="r">Во весь экран</th><th class="r">Приближали</th></tr></thead><tbody>
+{% for x in iv['scenes'] %}<tr><td>{{ x['name'] }}</td><td class="r num">{{ x['who'] }}</td><td class="r num">{{ x['full'] }}</td><td class="r num">{{ x['zoom'] }}</td></tr>{% endfor %}
+</tbody></table></div>{% endif %}
+{% if iv['panels'] %}<div class="panel tbl"><table class="site-iv"><thead><tr><th>Панель в кадре</th><th class="r">Людей</th></tr></thead><tbody>
+{% for a, name, n in iv['panels'] %}<tr><td><span class="mono t">{{ a }}</span>{% if name %}<div class="d">{{ name }}</div>{% endif %}</td><td class="r num">{{ n }}</td></tr>{% endfor %}
+</tbody></table></div>{% endif %}
+<p class="d site-note">Считается с 18.11.2026. «Трогали кадр» — нажали или провели пальцем по кадру; «Листали» — сами перешли к другому кадру (стрелки, свайп, миниатюры); в таблицах — какие кадры и с какой панелью смотрели. Один человек за один заход по каждому кадру считается один раз.</p>
+{% endif %}
+
 <h2>Мессенджеры: с сайта в бота</h2>
 {% set cc = r.get('copy_counts', {}) %}
 {% if bots.get('ready') %}{% set br = bots['rows'] %}
