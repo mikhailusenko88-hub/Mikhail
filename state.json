@@ -1,27 +1,18 @@
 {
  "leagues": {
   "cities": {
-   "no": 10,
+   "no": 11,
    "points": {
-    "Angren": 25,
-    "Chirchiq": 43,
-    "Shahrisabz": 29,
-    "Navoiy": 12,
-    "Jizzax": 18,
-    "Olmaliq": 32,
-    "Nukus": 14,
-    "Asaka": 23,
-    "Namangan": 18,
-    "Buxoro": 2,
-    "Samarqand": 25,
-    "Toshkent": 20,
-    "Termiz": 25,
-    "Urganch": 40,
-    "Qarshi": 27,
-    "Xiva": 16,
-    "Qoʻqon": 8,
-    "Guliston": 15,
-    "Margʻilon": 12
+    "Fargʻona": 25,
+    "Xiva": 18,
+    "Andijon": 15,
+    "Qarshi": 12,
+    "Jizzax": 10,
+    "Zarafshon": 8,
+    "Olmaliq": 6,
+    "Samarqand": 4,
+    "Shahrisabz": 2,
+    "Angren": 1
    },
    "results": [
     {
@@ -153,11 +144,24 @@
      ],
      "link": "https://youtube.com/shorts/OoAUlWBsWDo",
      "final": true
+    },
+    {
+     "no": 11,
+     "date": "2026-11-17",
+     "slot": 1,
+     "winner": "Fargʻona",
+     "top3": [
+      "Fargʻona",
+      "Xiva",
+      "Andijon"
+     ],
+     "link": "https://youtube.com/shorts/l3NmVylXJFQ",
+     "final": false
     }
    ],
-   "champion": "Olmaliq",
-   "season_races": 4,
-   "season": "2026-W46",
+   "champion": null,
+   "season_races": 1,
+   "season": "2026-W47",
    "new_pending": [],
    "final_season": "2026-W46",
    "champions": [
@@ -210,6 +214,44 @@
       ]
      ],
      "champion": "Xiva"
+    },
+    {
+     "season": "2026-W46",
+     "top": [
+      [
+       "Chirchiq",
+       43
+      ],
+      [
+       "Urganch",
+       40
+      ],
+      [
+       "Olmaliq",
+       32
+      ],
+      [
+       "Shahrisabz",
+       29
+      ],
+      [
+       "Qarshi",
+       27
+      ],
+      [
+       "Angren",
+       25
+      ],
+      [
+       "Samarqand",
+       25
+      ],
+      [
+       "Termiz",
+       25
+      ]
+     ],
+     "champion": "Olmaliq"
     }
    ]
   },
@@ -1113,6 +1155,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/9HMvhcq9qL0",
    "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №10 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-17",
+   "slot": 1,
+   "league": "cities",
+   "no": 11,
+   "final": false,
+   "link": "https://youtube.com/shorts/l3NmVylXJFQ",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №11 #shorts",
    "pl": true
   }
  ],

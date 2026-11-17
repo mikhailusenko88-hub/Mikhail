@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-16 слот 3: clubs №10 https://youtube.com/shorts/9HMvhcq9qL0, за 71 с
+ВЫЛОЖЕНО 2026-11-17 слот 1: cities №11 https://youtube.com/shorts/l3NmVylXJFQ, за 59 с
 
 {
- "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №10 #shorts",
- "description": "🏆 Oʻtgan hafta chempioni: Paxtakor · Чемпион прошлой недели: Пахтакор\n\n⏳ Finalgacha 6 kun · До финала 6 дней\n\nPaxtakor, Bunyodkor, Nasaf, Navbahor… qaysi jamoa tezroq? Izohlarda yoz 👇\n22 клубов Суперлиги Узбекистана в одной гонке: Пахтакор, Бунёдкор, Насаф, Навбахор и другие. Какой победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nJamoangiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего клуба? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #futbol #superliga #paxtakor #bunyodkor #nasaf #navbahor #гонкашариков #shorts",
+ "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №11 #shorts",
+ "description": "🏆 Oʻtgan hafta chempioni: Olmaliq · Чемпион прошлой недели: Алмалык\n\n⏳ Finalgacha 5 kun · До финала 5 дней\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,36 +11,35 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "futbol",
-  "футбол",
-  "superliga",
-  "суперлига узбекистана",
-  "paxtakor",
-  "bunyodkor",
-  "nasaf",
-  "navbahor",
-  "neftchi",
-  "pfl uzbekistan"
+  "toshkent",
+  "samarqand",
+  "buxoro",
+  "namangan",
+  "andijon",
+  "fargʻona",
+  "города узбекистана",
+  "shaharlar"
  ]
 }
 
 --- журнал (время Ташкента) ---
-19:35:40 режим publish, событие workflow_dispatch
-19:35:40 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-19:35:53 комментарии: роликов просмотрено: 15, комментариев: 1
-19:35:53 новая неделя (2026-W47): таблица начата заново
-19:35:53 Тема: гонка футбольных клубов. Подбираю трассу и заезд…
-19:35:56   трасса 1 (tunnel, hammers, bumpers, tramps, split): победа на 27.1 с, смен лидера 12, финишировали 8, расчёт 2 с
-19:35:58   трасса 2 (split, stairs, tramps, spinners, tunnel): победа на 24.8 с, смен лидера 12, финишировали 5, расчёт 2 с
-19:36:01   трасса 3 (stairs, tunnel, bumpy, hammers): победа на 35.5 с, смен лидера 5, финишировали 3, расчёт 3 с — не подходит
-19:36:01 Рисую трассу…
-19:36:01 Рисую кадры: заезд 30 с + финал 6 с…
-19:36:02   кадр 0/895, 8 с
-19:36:15   кадр 300/895, 21 с
-19:36:28   кадр 600/895, 34 с
-19:36:47 Свожу звук…
-19:36:47 Готово за 54 с: победил Andijon, ролик 36 с
-19:36:48 ролик готов: 36 с, 22 МБ, сборка 68 с; победил Andijon, топ-3: Andijon, Surxon, Olmaliq
-19:36:50 YouTube: https://youtube.com/shorts/9HMvhcq9qL0
-19:36:51 в плейлисте
-19:36:51 статус: public uploaded
+11:35:35 режим publish, событие workflow_dispatch
+11:35:36 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+11:35:49 комментарии: роликов просмотрено: 15, комментариев: 1
+11:35:50 новая неделя (2026-W47): таблица начата заново
+11:35:50 Тема: гонка городов. Подбираю трассу и заезд…
+11:35:51   трасса 1 (tramps, tunnel, hammers, bumpy): победа на 30.3 с, смен лидера 18, финишировали 4, расчёт 1 с
+11:35:53   трасса 2 (funnel, hammers, split, bumpy, tramps): победа на 26.9 с, смен лидера 24, финишировали 3, расчёт 2 с
+11:35:54   трасса 3 (tramps, bumpy, tunnel, stairs): победа на 28.6 с, смен лидера 6, финишировали 2, расчёт 1 с
+11:35:54 Рисую трассу…
+11:35:54 Рисую кадры: заезд 33 с + финал 6 с…
+11:35:54   кадр 0/991, 5 с
+11:36:04   кадр 300/991, 15 с
+11:36:14   кадр 600/991, 25 с
+11:36:24   кадр 900/991, 34 с
+11:36:31 Свожу звук…
+11:36:32 Готово за 42 с: победил Fargʻona, ролик 39 с
+11:36:32 ролик готов: 39 с, 25 МБ, сборка 56 с; победил Fargʻona, топ-3: Fargʻona, Xiva, Andijon
+11:36:34 YouTube: https://youtube.com/shorts/l3NmVylXJFQ
+11:36:34 в плейлисте
+11:36:35 статус: public uploaded
