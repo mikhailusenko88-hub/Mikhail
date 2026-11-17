@@ -559,8 +559,9 @@ function calcText(){
 }
 
 /* Порядок — как советуем клиентам: телефон, MAX, Telegram (запасной), Авито */
-const CONTACTS = [["Телефон", SHOP.phone, "phone"], ["MAX", SHOP.max, "max"], ["Канал в MAX", SHOP.channel, "channel"], ["Telegram", SHOP.telegram, "telegram"], ["Канал в Telegram", SHOP.tgchannel, "tgchannel"], ["Авито", SHOP.avito, "avito"]];
-const MSG = () => [SHOP.max && `<a href="${SHOP.max}" target="_blank" rel="noopener">MAX</a>`, SHOP.telegram && `<a href="${SHOP.telegram}" target="_blank" rel="noopener">Telegram</a>`].filter(Boolean).join(" или ") || "чат на сайте";   // боты «Наш декор» (Telegram с 17.11); личный Telegram убран 09.11
+const SITE_BOT = u => u ? u + "?start=site" : u;   // ссылка в бота с меткой «с сайта» — видно в статистике бота и CRM (17.11.2026)
+const CONTACTS = [["Телефон", SHOP.phone, "phone"], ["MAX", SITE_BOT(SHOP.max), "max"], ["Канал в MAX", SHOP.channel, "channel"], ["Telegram", SITE_BOT(SHOP.telegram), "telegram"], ["Канал в Telegram", SHOP.tgchannel, "tgchannel"], ["Авито", SHOP.avito, "avito"]];
+const MSG = () => [SHOP.max && `<a href="${SITE_BOT(SHOP.max)}" target="_blank" rel="noopener" data-max>MAX</a>`, SHOP.telegram && `<a href="${SITE_BOT(SHOP.telegram)}" target="_blank" rel="noopener" data-tg>Telegram</a>`].filter(Boolean).join(" или ") || "чат на сайте";   // боты «Наш декор» (Telegram с 17.11); личный Telegram убран 09.11
 let callback = false;   // клиент попросил перезвонить
 function renderContacts(){
   const c = CONTACTS.map((x,i)=>[...x,i]).filter(x=>x[1]);
@@ -1400,5 +1401,5 @@ window.__w3 = W3; W3.init();
     tb.classList.toggle("stuck", r.top <= 62.5 && g.bottom > r.bottom + 40); }); }, { passive: true }); })();
 </script>
 
-<script src="assets/chat.js?v=202611171732" defer></script>
+<script src="assets/chat.js?v=202611171939" defer></script>
 </body></html>

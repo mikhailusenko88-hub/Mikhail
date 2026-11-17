@@ -137,7 +137,7 @@
     + "<label class=\"ndc-consent\"><input type=\"checkbox\" class=\"ndc-ok\"><span>Согласен на <a href=\"" + ROOT + "consent.html\" target=\"_blank\">обработку персональных данных</a> и с <a href=\"" + ROOT + "privacy.html\" target=\"_blank\">политикой</a></span></label>"
     + "<div class=\"ndc-in\"><textarea rows=\"1\" placeholder=\"Напишите вопрос…\" aria-label=\"Сообщение\"></textarea>"
     + "<button type=\"submit\" aria-label=\"Отправить\">" + ICON_SEND + "</button></div>"
-    + ((BOTS.max || BOTS.tg) ? "<div class=\"ndc-bots\">Или в мессенджере:" + (BOTS.max ? "<a href=\"" + BOTS.max + "\" target=\"_blank\" rel=\"noopener\">MAX</a>" : "") + (BOTS.tg ? "<a href=\"" + BOTS.tg + "\" target=\"_blank\" rel=\"noopener\">Telegram</a>" : "") + "</div>" : "")
+    + ((BOTS.max || BOTS.tg) ? "<div class=\"ndc-bots\">Или в мессенджере:" + (BOTS.max ? "<a href=\"" + BOTS.max + "?start=site\" target=\"_blank\" rel=\"noopener\" data-max>MAX</a>" : "") + (BOTS.tg ? "<a href=\"" + BOTS.tg + "?start=site\" target=\"_blank\" rel=\"noopener\" data-tg>Telegram</a>" : "") + "</div>" : "")
     + "</form>";
   document.body.appendChild(btn); document.body.appendChild(panel);
 

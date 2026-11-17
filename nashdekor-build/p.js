@@ -32,6 +32,9 @@ if (hitOn) {
   hit("view", location.pathname); hitSend();
   addEventListener("pagehide", hitSend);
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") hitSend(); });
+  /* клики «написать в бота», каналы, Авито — как на главной (17.11.2026) */
+  const CLICKS = [["a[data-max]", "max"], ["a[data-tg]", "telegram"], ["a[data-channel]", "channel"], ["a[data-tgchannel]", "tgchannel"], ["a[data-avito]", "avito"]];
+  document.addEventListener("click", e => { for (const [sel, key] of CLICKS) if (e.target.closest(sel)) { hit("copy", key); hitSend(); } }, true);
 }
 
 /* ---------- цены и наличие из CRM (crm.nashdekor.ru → «Склад и цены») ---------- */
@@ -408,7 +411,7 @@ document.querySelectorAll("#oMode [data-m]").forEach(b => b.addEventListener("cl
 document.querySelectorAll('input[name="ship"]').forEach(r => r.addEventListener("change", shipUI));
 const WHO = {"Дизайнер": "designer", "Компания, объект": "company", "Ремонтная бригада": "company"};
 const SHOP = P.shop || {};
-const MSG = () => [SHOP.max && `<a href="${SHOP.max}" target="_blank" rel="noopener">MAX</a>`, SHOP.telegram && `<a href="${SHOP.telegram}" target="_blank" rel="noopener">Telegram</a>`].filter(Boolean).join(" или ") || "чат на сайте";   // боты «Наш декор» (Telegram с 17.11); личный Telegram убран
+const MSG = () => [SHOP.max && `<a href="${SHOP.max}?start=site" target="_blank" rel="noopener" data-max>MAX</a>`, SHOP.telegram && `<a href="${SHOP.telegram}?start=site" target="_blank" rel="noopener" data-tg>Telegram</a>`].filter(Boolean).join(" или ") || "чат на сайте";   // ?start=site — в статистике бота видно, что пришли с сайта (17.11)   // боты «Наш декор» (Telegram с 17.11); личный Telegram убран
 function orderText(){
   const sum = qty * price();
   const w = wall.used && wall.pcs === qty && wall.W && wall.H ? `\nСтена ${wall.W}×${wall.H} см${wall.open ? ", проёмы " + wall.open + " м²" : ""}${wall.reserve ? ", запас 10%" : ""}` : "";
