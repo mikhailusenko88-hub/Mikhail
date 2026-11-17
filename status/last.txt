@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-17 слот 1: cities №11 https://youtube.com/shorts/l3NmVylXJFQ, за 59 с
+ВЫЛОЖЕНО 2026-11-17 слот 2: cars №16 https://youtube.com/shorts/_UFVZ-syO4o, за 56 с
 
 {
- "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №11 #shorts",
- "description": "🏆 Oʻtgan hafta chempioni: Olmaliq · Чемпион прошлой недели: Алмалык\n\n⏳ Finalgacha 5 kun · До финала 5 дней\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
+ "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №16 #shorts",
+ "description": "🏆 Oʻtgan hafta chempioni: Tahoe · Чемпион прошлой недели: Tahoe\n\n⏳ Finalgacha 5 kun · До финала 5 дней\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,35 +11,33 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "toshkent",
-  "samarqand",
-  "buxoro",
-  "namangan",
-  "andijon",
-  "fargʻona",
-  "города узбекистана",
-  "shaharlar"
+  "mashina",
+  "cobalt",
+  "gentra",
+  "nexia",
+  "damas",
+  "malibu",
+  "chevrolet",
+  "машины узбекистана"
  ]
 }
 
 --- журнал (время Ташкента) ---
-11:35:35 режим publish, событие workflow_dispatch
-11:35:36 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-11:35:49 комментарии: роликов просмотрено: 15, комментариев: 1
-11:35:50 новая неделя (2026-W47): таблица начата заново
-11:35:50 Тема: гонка городов. Подбираю трассу и заезд…
-11:35:51   трасса 1 (tramps, tunnel, hammers, bumpy): победа на 30.3 с, смен лидера 18, финишировали 4, расчёт 1 с
-11:35:53   трасса 2 (funnel, hammers, split, bumpy, tramps): победа на 26.9 с, смен лидера 24, финишировали 3, расчёт 2 с
-11:35:54   трасса 3 (tramps, bumpy, tunnel, stairs): победа на 28.6 с, смен лидера 6, финишировали 2, расчёт 1 с
-11:35:54 Рисую трассу…
-11:35:54 Рисую кадры: заезд 33 с + финал 6 с…
-11:35:54   кадр 0/991, 5 с
-11:36:04   кадр 300/991, 15 с
-11:36:14   кадр 600/991, 25 с
-11:36:24   кадр 900/991, 34 с
-11:36:31 Свожу звук…
-11:36:32 Готово за 42 с: победил Fargʻona, ролик 39 с
-11:36:32 ролик готов: 39 с, 25 МБ, сборка 56 с; победил Fargʻona, топ-3: Fargʻona, Xiva, Andijon
-11:36:34 YouTube: https://youtube.com/shorts/l3NmVylXJFQ
-11:36:34 в плейлисте
-11:36:35 статус: public uploaded
+15:35:44 режим publish, событие workflow_dispatch
+15:35:44 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+15:35:58 комментарии: роликов просмотрено: 15, комментариев: 1
+15:35:58 Тема: гонка машин. Подбираю трассу и заезд…
+15:35:59   трасса 1 (hammers, pegs, tunnel, bumpy, split): победа на 30.7 с, смен лидера 8, финишировали 2, расчёт 1 с
+15:36:00   трасса 2 (split, stairs, bumpy, tunnel): победа на 25.3 с, смен лидера 16, финишировали 4, расчёт 1 с
+15:36:02   трасса 3 (tunnel, tramps, pegs, bumpy, hammers): победа на 28.2 с, смен лидера 25, финишировали 2, расчёт 1 с
+15:36:02 Рисую трассу…
+15:36:02 Рисую кадры: заезд 28 с + финал 6 с…
+15:36:02   кадр 0/840, 5 с
+15:36:13   кадр 300/840, 15 с
+15:36:24   кадр 600/840, 26 с
+15:36:37 Свожу звук…
+15:36:38 Готово за 40 с: победил Jiguli, ролик 34 с
+15:36:38 ролик готов: 34 с, 22 МБ, сборка 54 с; победил Jiguli, топ-3: Jiguli, Spark, Matiz
+15:36:40 YouTube: https://youtube.com/shorts/_UFVZ-syO4o
+15:36:41 в плейлисте
+15:36:41 статус: public uploaded

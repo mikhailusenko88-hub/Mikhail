@@ -34,3 +34,4 @@
 | 2026-11-16 | 2 | cars №15 | Tracker | https://youtube.com/shorts/WoBiZkpr2O4 | public |
 | 2026-11-16 | 3 | clubs №10 | Andijon | https://youtube.com/shorts/9HMvhcq9qL0 | public |
 | 2026-11-17 | 1 | cities №11 | Fargʻona | https://youtube.com/shorts/l3NmVylXJFQ | public |
+| 2026-11-17 | 2 | cars №16 | Jiguli | https://youtube.com/shorts/_UFVZ-syO4o | public |
