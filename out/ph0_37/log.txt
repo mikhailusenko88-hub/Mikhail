@@ -1,0 +1,15 @@
+[scene   0.0s] view Khronos PBR Neutral look None
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/scene.py", line 1858, in <module>
+    world, sun, sun_dir, lamps, cal_cam = SCENES[SCENE]()
+                                          ^^^^^^^^^^^^^^^
+  File "/home/runner/work/Mikhail/Mikhail/scene.py", line 1205, in scene_lounge
+    panel_wall(0.0, W, H, D)
+  File "/home/runner/work/Mikhail/Mikhail/scene.py", line 1156, in panel_wall
+    import slat_profile
+ModuleNotFoundError: No module named 'slat_profile'
+
+Error: script failed, file: 'scene.py', exiting.
+
+Blender quit
