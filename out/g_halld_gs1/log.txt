@@ -1,0 +1,14 @@
+[scene   0.0s] view Khronos PBR Neutral look None
+[scene   0.0s] profile wall panels panels 37 width 0.1199
+[scene   0.1s] asset ceramic_vase_02 size 0.22 x 0.22 x 0.31 objs 1
+[scene   0.1s] asset potted_plant_02 size 0.70 x 0.66 x 0.84 objs 3
+[scene   0.1s] objects 108 scene built
+[scene   0.1s] calibration from cal_photo.json {'sun_energy': 27.973735809326172, 'sun_color': [1.0, 0.9886969327926636, 0.9783092737197876], 'wb': [0.8804882125514708, 1.012251119522416, 1.2305568605142023], 'exposure': 1.4443015632022187, 'y_ref': 0.38584351539611816}
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/g_halld_gs1/g_halld_gs1.jpg'
+Time: 05:42.42 (Saving: 00:00.10)
+
+[scene 342.6s] final render 342.4s /home/runner/work/Mikhail/Mikhail/out/g_halld_gs1/g_halld_gs1.jpg
+[scene 342.6s] done
+
+Blender quit
