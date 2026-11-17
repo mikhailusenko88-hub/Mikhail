@@ -8,7 +8,7 @@ if (!file) { console.error('нужен сценарий: node vnutri.js сцен
 (async () => {
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--allow-file-access-from-files'] });
   const p = await b.newPage({ viewport: { width: 640, height: 360 } }); p.on('pageerror', e => console.error('ERR', e.message));
-  await p.goto('file://' + path.join(__dirname, 'frame.html') + '?noh6#nobarsik'); await p.waitForFunction(() => window.ready, null, { timeout: 900000 });
+  await p.goto('file://' + path.join(__dirname, 'frame.html') + '?noh6#nobarsik'); await p.waitForFunction(() => window.ready, null, { timeout: 180000 });
   const src = fs.readFileSync(file, 'utf8');
   const info = file.endsWith('.json') ? await p.evaluate(e => setup(e), JSON.parse(src)) : await p.evaluate(t => setupText(t), src);
   const out = await p.evaluate(([st, K, MIN]) => {
