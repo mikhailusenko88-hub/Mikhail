@@ -45,6 +45,9 @@ def parse_secret(raw):
         if hashlib.sha256(data).hexdigest()[:8] != chk:
             raise SystemExit("строка входа испорчена при копировании (не сходится проверка) — скопируй ещё раз")
         k = json.loads(data)
+    elif ":END" in flat and "{" not in flat:
+        raise SystemExit(f"строка входа скопирована не с начала: конец «END» есть, а начала «BK1:» нет (длина {len(raw)}, строк {raw.count(chr(10)) + 1}) — "
+                         "скопируй ответ команды целиком, с первой строки «BK1:…» до последней «…END»")
     else:
         t = raw.replace("“", '"').replace("”", '"').replace("«", '"').replace("»", '"')
         i, j = t.find("{"), t.rfind("}")

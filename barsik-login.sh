@@ -94,8 +94,11 @@ def main():
         s = "BK1:" + base64.b64encode(raw).decode() + ":" + hashlib.sha256(raw).hexdigest()[:8] + ":END"
         print(f"✅ Вход сделан: канал «{title}».")
         print("Скопируй ВСЕ строки ниже (от BK1 до END) и вставь в GitHub: секрет BARSIK_YT.\n")
-        for i in range(0, len(s), 24):
-            print(s[i:i + 24])
+        rows = [s[i:i + 24] for i in range(0, len(s), 24)]
+        for r in rows:
+            print(r)
+        print(f"\nПроверь перед тем, как вставлять: строк {len(rows)}, первая начинается с «BK1:», последняя кончается на «END».")
+        print("Проще всего скопировать весь этот ответ целиком — лишние слова не мешают.")
         return
     if LOGIN.exists() and time.time() < json.loads(LOGIN.read_text())["deadline"]:
         d = json.loads(LOGIN.read_text())
