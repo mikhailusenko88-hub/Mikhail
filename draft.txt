@@ -1,4 +1,3 @@
 # черновики (быстрая дорожка, .github/workflows/draft.yml): имя  аргументы для scene.py
-y3_cord_a910 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 calfile=cal_cor.json use=cor decor=A910 campos=3.4,0.35,1.35 camto=5.3,1.5,1.05 lens=32 ev=-2.2
-y3_cord_37 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 calfile=cal_cor.json use=cor decor=3-7 tex=strip campos=3.4,0.35,1.35 camto=5.3,1.5,1.05 lens=32 ev=-2.2
-y3_cord_a905 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 calfile=cal_cor.json use=cor decor=A905 campos=3.4,0.35,1.35 camto=5.3,1.5,1.05 lens=32 ev=-2.2
+y4_cord_a910 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 calfile=cal_cor.json use=cor decor=A910 campos=3.0,0.35,1.35 camto=5.2,1.5,1.05 lens=35 ev=-1.1
+y4_cord_37 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 calfile=cal_cor.json use=cor decor=3-7 tex=strip campos=3.0,0.35,1.35 camto=5.2,1.5,1.05 lens=35 ev=-1.1
