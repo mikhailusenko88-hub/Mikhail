@@ -1,3 +1,29 @@
+# IndexNow — 2026-11-17 14:33 UTC, коммит 06eeca8
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: изменённые страницы (128) из 134 изменённых файлов; без изменений по сути (только ?v=): 0
+  https://nashdekor.ru/
+  https://nashdekor.ru/catalog/karnizy/
+  https://nashdekor.ru/catalog/moldingi/
+  https://nashdekor.ru/catalog/paneli-pod-derevo/
+  https://nashdekor.ru/catalog/plintus-s-podsvetkoy/
+  https://nashdekor.ru/catalog/plintusy/
+  https://nashdekor.ru/catalog/reechnye-paneli/
+  https://nashdekor.ru/catalog/stenovye-paneli/
+  https://nashdekor.ru/catalog/ugolki/
+  https://nashdekor.ru/dostavka/
+  https://nashdekor.ru/oferta.html
+  https://nashdekor.ru/oplata/
+  https://nashdekor.ru/p/2-10/
+  https://nashdekor.ru/p/2-11/
+  https://nashdekor.ru/p/2-12/
+  … и ещё 113
+- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
+- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
+  "success":true
+}
+
+---
+
 # IndexNow — 2026-11-17 14:23 UTC, коммит c7973b7
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (0) из 18 изменённых файлов; без изменений по сути (только ?v=): 0
@@ -331,27 +357,6 @@
   https://nashdekor.ru/p/3-12/
   https://nashdekor.ru/p/3-15/
   … и ещё 14
-- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
-- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
-  "success":true
-}
-
----
-
-# IndexNow — 2026-11-16 16:03 UTC, коммит 3994c2c
-- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
-- режим: изменённые страницы (11) из 131 изменённых файлов; без изменений по сути (только ?v=): 115
-  https://nashdekor.ru/
-  https://nashdekor.ru/p/3-11/
-  https://nashdekor.ru/p/3-12/
-  https://nashdekor.ru/p/3-15/
-  https://nashdekor.ru/p/3-3/
-  https://nashdekor.ru/p/3-4/
-  https://nashdekor.ru/p/3-5/
-  https://nashdekor.ru/p/3-7/
-  https://nashdekor.ru/p/3-8/
-  https://nashdekor.ru/p/3-9/
-  https://nashdekor.ru/p/a910/
 - https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
 - https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
   "success":true
