@@ -3015,7 +3015,7 @@ function lightBase(type, time) { // свет всегда почти белый:
 function arcOf(S, lib, hugF) { let n = 0, a = 9, b = -9;
   for (const id in S) { const st = S[id]; if (!st || !st.vis || !lib.characters[id] || (hugF && hugF[id])) continue; const w = clamp(Math.min(st.x + .02, 1.02 - st.x) / .15, 0, 1); if (!(w > 0)) continue;
     n += w; const pen = (1 - w) * .45; a = Math.min(a, st.x + pen); b = Math.max(b, st.x - pen); }
-  const kd = MK3D.ARC_DEPTH != null ? MK3D.ARC_DEPTH : 1, k = kd * (n <= 2 ? 0 : n <= 3 ? .6 * (n - 2) : n <= 4 ? .6 + .2 * (n - 3) : n <= 5 ? .8 + .2 * (n - 4) : 1) * clamp((b - a - .2) / .1, 0, 1);
+  const kd = MK3D.ARC_DEPTH != null ? MK3D.ARC_DEPTH : 1, k = kd * (n <= 2 ? 0 : n <= 3 ? .55 * (n - 2) : n <= 4 ? .55 + .15 * (n - 3) : n <= 5 ? .7 + .15 * (n - 4) : .85) * clamp((b - a - .2) / .1, 0, 1);   /* трое — 0,55 м, четверо — 0,7, пятеро и больше — 0,85: глубже — середина мельчит */
   return k > 0 ? { mid: (a + b) / 2, half: (b - a) / 2, k } : null; }
 function arcDz(A, st) { if (!A || !st) return 0; const u = Math.min(1, Math.abs(st.x - A.mid) / A.half); return -A.k * (1 - u * u); }   /* глубина героя на полукруге, м: 0 у крайних, −k в середине */
 function camFor(c, S, seg, lib) {
@@ -3045,8 +3045,8 @@ function camFor(c, S, seg, lib) {
   // сосед на краю кадра виден наполовину — берём его в кадр целиком
   const edgeIn = (F, list) => { const hw = F.d * .612; let ch = false; for (const id of ids) { if (list.includes(id) || !S[id] || S[id].vis === false) continue; const k = F.d / Math.max(1, F.d - (pz(id) - F.z0)), x = F.mid + (px(id) - F.mid) * k, w = .42 * h(id) * k;
       if (x + w > F.mid - hw && x - w < F.mid + hw && (x - w < F.mid - hw || x + w > F.mid + hw)) { list.push(id); ch = true; } } return ch; };
-  if (c.mode === 'group') { const list = (c.ids || ids).filter(id => S[id] && S[id].vis !== false); let F = frameFit(list, 1.1, 3.3, 8.4, c.px);
-    for (let it = 0; it < 2 && F.ok && edgeIn(F, list); it++) F = frameFit(list, 1.1, 3.3, 8.4, c.px);
+  if (c.mode === 'group') { const list = (c.ids || ids).filter(id => S[id] && S[id].vis !== false); let F = frameFit(list, .85, 3.3, 8.4, c.px);   /* поля по краям — 0,85 м на двоих: раз кадр подобран точно, герои могут быть крупнее */
+    for (let it = 0; it < 2 && F.ok && edgeIn(F, list); it++) F = frameFit(list, .85, 3.3, 8.4, c.px);
     if (F.ok) { const hh = Math.max(.9, ...list.map(h)), d = F.d, tp = Math.max(...list.map(topOf)), ly = Math.max(.52 * hh + d * .035, tp - .28 * d); return { pos: new THREE.Vector3(F.mid, ly + .08 * hh + d * .095, F.z0 + d), look: new THREE.Vector3(F.mid, ly, F.z0) }; } }
   if (c.mode === 'two') { const pair = Array.isArray(c.on) ? c.on : ids.slice(0, 2); const inc = [pair[0]].concat(pair[1] != null && pair[1] !== pair[0] ? [pair[1]] : []), hh = Math.max(h(pair[0]), h(pair[1] || pair[0]));
     let F = frameFit(inc, .9, 2.9, 7); for (let it = 0; it < 2 && edgeIn(F, inc); it++) F = frameFit(inc, .9, 2.9, 8.4);
