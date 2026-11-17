@@ -1,9 +1,7 @@
 # имя | адрес | desktop|mobile | js
-# 17.11.2026 — служебная страница визуализаций: шесть крупных планов
-viz5-m | https://nashdekor.ru/vizual/?s=71 | mobile | 
-viz5-sofad-col-m | https://nashdekor.ru/vizual/?s=72 | mobile | document.querySelector('[data-s="sofad"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A910')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[1].click()},900)},300)
-viz5-bedd-col-m | https://nashdekor.ru/vizual/?s=73 | mobile | document.querySelector('[data-s="bedd"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A905')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[4].click()},900)},300)
-viz5-halld-col-d | https://nashdekor.ru/vizual/?s=74 | desktop | document.querySelector('[data-s="halld"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('GS2')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[6].click()},900)},300)
-viz5-deskd-col-d | https://nashdekor.ru/vizual/?s=75 | desktop | document.querySelector('[data-s="deskd"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A913')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[2].click()},900)},300)
-viz5-cord-col-m | https://nashdekor.ru/vizual/?s=76 | mobile | document.querySelector('[data-s="cord"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A908')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[5].click()},900)},300)
-viz5-pan-m | https://nashdekor.ru/vizual/?s=77 | mobile | document.querySelector('[data-m="p"]').click()
+# 17.11.2026 — страница-проба «панель в интерьере»: карточки и карусель
+viz6-m | https://nashdekor.ru/vizual/?s=81 | mobile | 
+viz6-a903-m | https://nashdekor.ru/vizual/?s=82#a903/sofad | mobile | document.querySelector('[data-paint="Шалфей"]').click()
+viz6-wood-m | https://nashdekor.ru/vizual/?s=83 | mobile | document.querySelector('[data-pg="s5"]').click(); setTimeout(()=>{window.scrollTo(0,520); document.querySelector('[data-pick="5-8"]').click(); document.querySelector('[data-step="1"]').click()},400)
+viz6-d | https://nashdekor.ru/vizual/?s=84#a913/bedd | desktop | document.querySelector('[data-paint="Глубокий синий"]').click()
+viz6-sceny-m | https://nashdekor.ru/vizual/sceny/?s=85 | mobile | 
