@@ -42,8 +42,10 @@ figcaption{padding:5px 8px;font-size:13px}figcaption i{font-style:normal;color:v
 <script>
 const SC = { tv: "ТВ-зона — вся стена", tv1: "ТВ-зона — одна полоса за экраном", tv2: "ТВ-зона — две полосы, экран между ними", tvc: "ТВ-зона — полоса с переходом на потолок",
   sofa: "За диваном — вся стена", sofa1: "За диваном — одна полоса", sofa2: "За диваном — две полосы и полка", bed: "Спальня — вся стена", bed1: "Спальня — полоса за кроватью",
-  hall: "Прихожая", half: "Прихожая — панели до середины стены", desk: "Рабочее место", cor: "Коридор", cl: "Крупно — рельеф" };
+  hall: "Прихожая", half: "Прихожая — панели до середины стены", desk: "Рабочее место", cor: "Коридор", cl: "Крупно — рельеф",
+  tvd: "Крупный план — ТВ-зона", sofad: "Крупный план — у дивана", bedd: "Крупный план — спальня", halld: "Крупный план — прихожая", deskd: "Крупный план — рабочее место", cord: "Крупный план — коридор" };
 const ORD = Object.keys(SC), num = s => ORD.indexOf(s) + 1;
+const FIRST = ["tvd", "sofad", "bedd", "halld", "deskd", "cord"], SHOW = FIRST.concat(ORD.filter(s => !FIRST.includes(s)));   // крупные планы — первыми; номера сцен прежние
 const COLORS = ["", "#c9b8a0", "#b9c2b4", "#7d8f85", "#556b5c", "#7E97AD", "#b9805f", "#3b4046", "#26292E"], BASE = [239, 238, 234];
 const $ = id => document.getElementById(id), wood = k => /^\d-\d+$/.test(k);
 const nm = k => wood(k) ? k : k.toUpperCase().replace(/^GS(\d)/, "GS $1").replace(/-(\d)$/, "/$1");
@@ -52,7 +54,7 @@ let INT = {}, V = "", mode = "s", curS = "", curK = "", list = [], at = 0, color
 const cache = {}, load = src => cache[src] || (cache[src] = new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; }));
 function panels(){ const set = new Set(); Object.values(INT).forEach(a => a.forEach(k => set.add(k))); return [...set].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b, "ru", { numeric: true })); }
 function render(){
-  const scs = ORD.filter(s => INT[s]), pn = panels();
+  const scs = SHOW.filter(s => INT[s]), pn = panels();
   if (!scs.includes(curS)) curS = scs[0]; if (!pn.includes(curK)) curK = pn[0];
   document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === mode));
   $("chips").innerHTML = mode === "s" ? scs.map(s => `<button type="button" data-s="${s}" aria-pressed="${s === curS}"><i>${num(s)}</i>${SC[s]}</button>`).join("")

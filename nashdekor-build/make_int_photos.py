@@ -7,7 +7,7 @@
 
     python3 make_int_photos.py /home/claude/render/out [--clean]      (--clean — сначала удалить img/int целиком)
 
-Сцены: tv, tv1, tv2, tvc, sofa, sofa1, sofa2, bed, bed1, hall, half, desk, cor, cl. Артикул в имени: строчными, без пробелов,
+Сцены: tv, tv1, tv2, tvc, sofa, sofa1, sofa2, bed, bed1, hall, half, desk, cor, cl; крупные планы — tvd, sofad, bedd, halld, deskd, cord. Артикул в имени: строчными, без пробелов,
 «/» → «-» (gs1, a201-2, 3-7). Сцена попадает в список, только если у неё есть маска. Страница просмотра — /vizual/."""
 import os, sys, re, json, shutil, time
 from PIL import Image
