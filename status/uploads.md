@@ -62,3 +62,4 @@
 | shorts | 2026-11-16 | 2 | USA vs UK vs Spain | https://youtube.com/shorts/uuZV0vOhDr0 | public (только Shorts) |
 | shorts | 2026-11-16 | 3 | Nigeria vs Kazakhstan vs Georgia | https://youtube.com/shorts/HeDgNql7_JM | public (только Shorts) |
 | shorts | 2026-11-17 | 1 | Egypt vs Italy vs Romania | https://youtube.com/shorts/azywoQy806U | public (только Shorts) |
+| shorts | 2026-11-17 | 2 | France vs Korea vs Saudi Arabia | https://youtube.com/shorts/9B_u7voUgJU | public (только Shorts) |
