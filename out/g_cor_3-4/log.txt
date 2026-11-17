@@ -1,0 +1,6 @@
+[scene   0.0s] view Khronos PBR Neutral look None
+[scene   0.1s] slat wall panels lamellas 155 faces 930
+[scene   0.2s] asset potted_plant_02 size 0.70 x 0.66 x 0.84 objs 3
+[scene   0.2s] objects 46 scene built
+[scene   0.2s] calibration from cal_cor.json {'sun_energy': 28.664627075195312, 'sun_color': [0.9508383274078369, 0.9656582474708557, 1.0], 'wb': [0.8578790602196991, 1.0130814847064245, 1.2889062871919283], 'exposure': 2.739798728144133, 'y_ref': 0.15719100832939148}
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
