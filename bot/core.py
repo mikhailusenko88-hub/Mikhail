@@ -872,7 +872,7 @@ class Engine:
         if me and not payload:
             await self.say(uid, self.role_help(me.role), team_menu(me.role))
             return
-        await self.say(uid, texts.welcome(self.cfg.site_url, self.collect), self.menu(me))
+        await self.say(uid, texts.welcome(self.cfg.site_url, self.collect, await self.channel_link()), self.menu(me))
         route = {"calc": self.open_calc, "catalog": lambda e: self.open_catalog(e, me),
                  "lead": lambda e: self.open_lead(e, me),
                  "manager": lambda e: self.open_chat(e, me)}
@@ -1480,6 +1480,20 @@ class Engine:
     # ------------------------------------------------------------------ заявки, переписка, ответы
     def history_btn(self, client_id: int) -> Btn:
         return Btn(texts.BTN_HISTORY, f"hist|{client_id}")
+
+    async def channel_link(self) -> tuple[str, str]:
+        """Канал «Наш декор» для приветствия: в Telegram — наш канал в Telegram, если бот уже в нём, иначе в MAX."""
+        if self.ch == CH_TG:
+            import json
+
+            from tg_channel import TG_CHATS_KEY, channel_url
+            try:
+                url = channel_url(json.loads(await self.db.get_setting(TG_CHATS_KEY) or "{}"))
+            except ValueError:
+                url = ""
+            if url:
+                return "Telegram", url
+        return "MAX", texts.CHANNEL_URL
 
     def reply_btn(self, client_id: int) -> Btn:
         return Btn(texts.BTN_REPLY, f"rp|{client_id}")

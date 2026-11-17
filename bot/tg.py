@@ -28,6 +28,7 @@ from aiogram.types import (
     BotCommandScopeChat,
     BotCommandScopeDefault,
     CallbackQuery,
+    ChatMemberUpdated,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     KeyboardButton,
@@ -41,6 +42,7 @@ from catalog import CatalogStore
 from config import CH_TG, Config
 from core import Blocked, Engine, Incoming, Kb, Temporary
 from db import ROLE_MANAGER, Database
+from tg_channel import remember_tg_chat
 
 log = logging.getLogger("prostranstvo.tg")
 
@@ -215,8 +217,23 @@ def build_dispatcher(engine: Engine) -> Dispatcher:
     async def on_callback(query: CallbackQuery) -> None:
         await engine.handle(from_callback(query))
 
+    async def on_member(update: ChatMemberUpdated) -> None:
+        """Бота добавили в канал (или убрали) — запомнить для tg_channel.py и ссылки на канал в приветствии."""
+        chat = update.chat
+        kind = str(getattr(chat.type, "value", chat.type))
+        if kind not in ("channel", "group", "supergroup"):
+            return
+        status = str(getattr(update.new_chat_member.status, "value", update.new_chat_member.status))
+        by = update.from_user.full_name if update.from_user else ""
+        item = await remember_tg_chat(engine.db, chat.id, chat.title or "", chat.username or "", kind, status, by,
+                                      int(update.date.timestamp()) if update.date else 0)
+        log.info("Telegram: бота %s %s «%s»%s", "добавили администратором в" if item["admin"] else
+                 ("добавили в" if item["active"] else "убрали из"), "канал" if item["channel"] else "чат",
+                 item["title"], f" (@{item['username']})" if item["username"] else "")
+
     router.message.register(on_message)
     router.callback_query.register(on_callback)
+    router.my_chat_member.register(on_member)
     dp = Dispatcher(disable_fsm=True)
     dp.include_router(router)
     return dp
@@ -258,7 +275,7 @@ async def run(cfg: Config, db: Database, store: CatalogStore) -> int:
             log.warning("менеджера ещё нет: отправьте боту /owner КОД (код показал установщик)")
         tasks = [asyncio.create_task(engine.outbox_loop()), asyncio.create_task(store.refresh_forever())]
         dp = build_dispatcher(engine)
-        await dp.start_polling(bot, allowed_updates=["message", "callback_query"])
+        await dp.start_polling(bot, allowed_updates=["message", "callback_query", "my_chat_member"])
     finally:
         for task in tasks:
             task.cancel()

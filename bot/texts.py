@@ -99,7 +99,7 @@ def btn_write_here(channel: str) -> str:
 
 
 # =========================================================================== общее
-def welcome(site_url: str, collect: bool = True) -> str:
+def welcome(site_url: str, collect: bool = True, channel: tuple[str, str] = ("MAX", CHANNEL_URL)) -> str:
     lead = "менеджер свяжется с вами" if collect else "на сайте или в нашем боте в MAX"
     text = (
         f"Здравствуйте! Это магазин {SHOP} — декор для стен в Санкт-Петербурге: "
@@ -115,7 +115,8 @@ def welcome(site_url: str, collect: bool = True) -> str:
     )
     if site_url:
         text += f"\nСайт: {esc(site_url)}"
-    text += f"\nНаш канал в MAX — панели и молдинги в интерьере: {CHANNEL_URL}"
+    if channel and channel[1]:
+        text += f"\nНаш канал в {channel[0]} — панели и молдинги в интерьере: {esc(channel[1])}"
     return text
 
 

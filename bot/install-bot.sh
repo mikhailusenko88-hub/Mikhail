@@ -574,10 +574,14 @@ write_channel_cron() {
 # Посмотреть очередь: python3 $APP_DIR/channel.py queue --list
 SHELL=/bin/bash
 7 * * * * root flock -n /run/prostranstvo-channel.lock /usr/bin/python3 $APP_DIR/channel.py queue >>/var/log/prostranstvo-channel.log 2>&1
+# Канал в Telegram — зеркало (tg_channel.py): как только бота добавят в канал — оформление и стартовые посты,
+# дальше — та же очередь. Посмотреть: $VENV_DIR/bin/python $APP_DIR/tg_channel.py check
+*/10 * * * * root cd $APP_DIR && PYTHONDONTWRITEBYTECODE=1 flock -n /run/prostranstvo-tg-channel.lock $VENV_DIR/bin/python $APP_DIR/tg_channel.py auto >>/var/log/prostranstvo-tg-channel.log 2>&1
 EOF
   install -m 644 "$tmp" "$f"
   rm -f "$tmp"
   ok "автопостинг в канал MAX: раз в час по очереди (журнал /var/log/prostranstvo-channel.log)"
+  ok "канал в Telegram (зеркало): раз в 10 минут (журнал /var/log/prostranstvo-tg-channel.log)"
 }
 
 # Ключ проверки подписей мини-приложения MAX для CRM (номер телефона и данные запуска из MAX подписаны токеном бота).
