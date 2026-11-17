@@ -2015,6 +2015,8 @@ def scene_use():
         box('rug', 1.5, 4.15, 2.6, 4.45, 0.0, 0.012, m_rug, bevel=0.004)
         if use == 'cl':
             camera((3.0, 4.55, 1.2), (3.75, D - 0.012, 1.15), lens=60)
+        elif use == 'tvc':                                 # ниже и шире — чтобы было видно полосу на потолке
+            camera((3.75, 1.7, 1.05), (1.95, D, 1.45), lens=22)
         else:
             camera((3.7, 1.9, 1.25), (1.9, D, 0.95), lens=26)
     elif use in ('sofa', 'sofa1', 'sofa2'):
@@ -2093,7 +2095,12 @@ def scene_use():
         load_asset('potted_plant_04', loc=(1.8, yw - 0.11, 1.65), rot=40)
         books(2.25, yw - 0.12, 1.65, 3, seed=2)
         load_asset('ceramic_vase_03', loc=(2.62, yw - 0.11, 1.65), rot=10)
-        load_asset(A.get('chair', 'modern_arm_chair_01'), loc=(2.2, yw - 1.15, 0.0), rot=float(A.get('chair_rot', 0)))
+        mch = mat_pbr('chair_fabric', 'rough_linen', 0.4, color=srgb(205, 198, 186), nstrength=1.3)       # стул у стола, спинкой к зрителю
+        xc, yc = 2.2, yw - 0.86
+        box('ch_seat', xc - 0.23, xc + 0.23, yc - 0.22, yc + 0.22, 0.43, 0.48, mch, bevel=0.02)
+        box('ch_back', xc - 0.22, xc + 0.22, yc - 0.245, yc - 0.205, 0.52, 0.88, mch, bevel=0.018)
+        for k, (dx, dy) in enumerate(((-0.2, -0.2), (0.2, -0.2), (-0.2, 0.19), (0.2, 0.19))):
+            cyl(f'ch_leg{k}', xc + dx, yc + dy, 0.0, 0.43 if dy > 0 else 0.56, 0.014, 0.017, mw)
         load_asset('potted_plant_01', loc=(0.72, D - 0.55, 0), rot=35)
         box('rug', 1.2, 3.4, 3.2, 4.7, 0.0, 0.012, m_rug, bevel=0.004)
         camera((3.65, 2.5, 1.3), (2.0, D, 1.0), lens=float(A.get('lens', 30)))
