@@ -8,7 +8,7 @@
     python3 make_int_photos.py /home/claude/render/out [--clean]      (--clean — сначала удалить img/int целиком)
 
 Сцены: tv, tv1, tv2, tvc, sofa, sofa1, sofa2, bed, bed1, hall, half, desk, cor, cl; крупные планы — tvd, sofad, bedd, halld, deskd, cord. Артикул в имени: строчными, без пробелов,
-«/» → «-» (gs1, a201-2, 3-7). Сцена попадает в список, только если у неё есть маска. Страница просмотра — /vizual/."""
+«/» → «-» (gs1, a201-2, 3-7). Сцена попадает в список, только если у неё есть маска. Страница-проба «панель в интерьере» — /vizual/ (карточки панелей для неё берутся из каталога главной), все кадры по сценам — /vizual/sceny/."""
 import os, sys, re, json, shutil, time
 from PIL import Image
 
@@ -67,10 +67,29 @@ for sc in sorted(os.listdir(dst)) if os.path.isdir(dst) else []:
         ks = sorted(f[:-4] for f in os.listdir(p) if f.endswith('.jpg'))
         if ks:                                  # сцена без единого кадра (посчитана только маска) на странице не показывается
             INT[sc] = ks
-json.dump({'v': time.strftime('%m%d%H%M'), 'scenes': INT}, open(os.path.join(dst, 'manifest.json'), 'w'), ensure_ascii=False, separators=(',', ':'))
+mf = os.path.join(dst, 'manifest.json')
+try:
+    old = json.load(open(mf, encoding='utf-8'))
+except Exception:  # noqa
+    old = {}
+if n or old.get('scenes') != INT:       # версия меняется только вместе с кадрами: по ней браузер решает, качать ли картинки заново
+    json.dump({'v': time.strftime('%m%d%H%M'), 'scenes': INT}, open(mf, 'w'), ensure_ascii=False, separators=(',', ':'))
 ix = os.path.join(root, 'index.html')
 s = open(ix, encoding='utf-8').read()
 if '/*INT*/' in s:
     s = re.sub(r'/\*INT\*/.*?/\*/INT\*/', lambda _: '/*INT*/const INT = ' + json.dumps(INT, ensure_ascii=False, separators=(',', ':')) + ';/*/INT*/', s, count=1, flags=re.S)
     open(ix, 'w', encoding='utf-8').write(s)
+# карточки панелей для страницы-пробы /vizual/ — из каталога главной: артикул, вид, размеры, фото
+vz = os.path.join(root, 'vizual', 'index.html')
+if os.path.exists(vz) and 'const CAT=' in s:
+    dec = json.JSONDecoder()
+    cat = dec.raw_decode(s, s.index('const CAT=') + len('const CAT='))[0]
+    photo = dec.raw_decode(s, s.index('const PHOTO = ') + len('const PHOTO = '))[0]
+    pv = re.search(r'const PHOTO_V = "([^"]*)"', s).group(1)
+    cards = [{'a': x['a'], 'c': x['c'], 'd': x['d'].split(',')[0], 'w': x['w'], 't': x['t'], 'l': x['l'], 'p': photo.get(x['a'], '')}
+             for x in cat if x['c'] in ('panel', 'color')]
+    v = open(vz, encoding='utf-8').read()
+    v2 = re.sub(r'/\*CARDS\*/.*?/\*/CARDS\*/', lambda _: '/*CARDS*/const CARDS = ' + json.dumps(cards, ensure_ascii=False, separators=(',', ':')) + f', PHOTO_V = "{pv}";/*/CARDS*/', v, count=1, flags=re.S)
+    if v2 != v:
+        open(vz, 'w', encoding='utf-8').write(v2)
 print('новых кадров:', n, '| сцены:', {k: len(v) for k, v in INT.items()})

@@ -1,102 +1,192 @@
 <!doctype html><html lang="ru"><head><meta charset="utf-8"><script>/*max-app*/try{if(/WebAppData=/.test(location.hash)||sessionStorage.getItem("WebAppData"))["https://st.max.ru/js/max-web-app.js","/assets/max.js?v=3"].forEach(function(u){var s=document.createElement("script");s.src=u;s.async=false;document.head.appendChild(s)})}catch(e){}</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex,nofollow"><title>Панели в интерьере — визуализации · Наш декор</title>
+<meta name="robots" content="noindex,nofollow"><title>Панель в интерьере — проба для сайта · Наш декор</title>
 <style>
-:root{--ink:#26292E;--bg:#F8F8F6;--paper:#fff;--line:#D9DEE3;--acc:#7E97AD;--muted:#6b7078}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
-header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 14px}
-header b{font-size:17px}header span{color:var(--muted);font-size:13px}
-main{max-width:1500px;margin:0 auto;padding:12px 14px 60px}
-.seg{display:inline-flex;border:1px solid var(--ink);border-radius:999px;overflow:hidden;margin-bottom:10px}
-.seg button{border:0;background:none;padding:8px 16px;font:inherit;color:var(--ink)}
-.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
-.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:thin}
-.chips button{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 12px;font:inherit;font-size:14px;color:var(--ink);white-space:nowrap}
-.chips button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
-.chips i{font-style:normal;color:var(--acc);margin-right:5px;font-weight:600}.chips button[aria-pressed="true"] i{color:#cfd9e2}
-h1{font-size:18px;margin:6px 0 10px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
-@media (max-width:560px){.grid{grid-template-columns:1fr 1fr;gap:6px}}
-figure{margin:0;background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden;cursor:pointer}
-figure img{display:block;width:100%;height:auto;aspect-ratio:3/2;background:#e9e5dd}
-figcaption{padding:5px 8px;font-size:13px}figcaption i{font-style:normal;color:var(--acc);font-weight:600;margin-right:4px}
-.lb{position:fixed;inset:0;z-index:10;background:rgba(20,22,25,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px}
-.lb[hidden]{display:none}.lb canvas{max-width:100%;max-height:calc(100vh - 150px);border-radius:4px}
-.cap{color:#fff;margin-top:10px;font-size:15px;text-align:center}
-.dots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px;min-height:34px}
-.dots button{width:30px;height:30px;border-radius:50%;border:2px solid #fff;padding:0}.dots button[aria-pressed="true"]{outline:2px solid var(--acc);outline-offset:2px}
-.dots input{width:34px;height:34px;border:0;padding:0;background:none}
-.lb .x,.lb .nav{position:absolute;border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:50%;width:44px;height:44px;font-size:24px;line-height:1}
-.lb .x{top:10px;right:10px}.lb .nav{top:45%}.lb .nav.p{left:8px}.lb .nav.n{right:8px}
-.note{color:var(--muted);font-size:13px;margin:0 0 10px}
+/* Проба блока «панель в интерьере» для главной: сверху кадр (карусель), ниже карточки панелей — как выбор панели в расчёте. Цвета и карточки — как на сайте. */
+:root{
+  --bg:#F4F2EE; --paper:#FBFAF7; --sunk:#EAE6DE; --line:#D9D5CD; --ink:#1E1D1B; --muted:#6B665E; --mark:#8A6F4E;
+  --f-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif;
+  --f-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{--bg:#171614; --paper:#201F1C; --sunk:#2A2825; --line:#3A3733; --ink:#EDEAE4; --muted:#A39D93; --mark:#C9A57A; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 14px}
+header.top{border-bottom:1px solid var(--line);padding:10px 0}
+header.top b{font-family:var(--f-display);font-weight:500;font-size:18px;letter-spacing:-.02em}
+header.top span{color:var(--muted);font-size:13px;margin-left:6px}
+h1{font-family:var(--f-display);font-size:22px;line-height:1.2;margin:16px 0 4px;letter-spacing:-.01em}
+.lead{color:var(--muted);font-size:14px;margin:0 0 12px;max-width:62ch}
+.lay{display:grid;gap:14px;padding-bottom:60px}
+/* кадр */
+.ist{position:relative;aspect-ratio:3/2;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#23262d center/cover no-repeat;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.ist canvas{position:absolute;inset:0;width:100%;height:100%;display:block;transition:opacity .18s}
+.ist .nav{position:absolute;top:50%;width:44px;height:44px;margin-top:-22px;border:0;border-radius:50%;background:rgba(251,250,247,.9);color:#1E1D1B;font-size:26px;line-height:1;display:grid;place-items:center;box-shadow:0 1px 6px rgba(0,0,0,.25)}
+.ist .nav.p{left:8px}.ist .nav.n{right:8px}
+.ist .tag{position:absolute;left:8px;top:8px;background:rgba(251,250,247,.92);color:#1E1D1B;border-radius:999px;padding:3px 11px;font-size:13px;font-weight:600}
+.ist .cap{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;padding:26px 12px 9px;color:#fff;font-size:14px;line-height:1.25;background:linear-gradient(transparent,rgba(0,0,0,.62));pointer-events:none}
+.ist .cap small{display:block;font-size:11px;opacity:.8}
+.ist .cap .num{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:13px}
+/* лента сцен */
+.ith{display:flex;gap:6px;overflow-x:auto;padding:8px 0 4px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.ith button{flex:0 0 auto;width:84px;padding:0;border:1px solid var(--line);border-radius:5px;overflow:hidden;background:#23262d;opacity:.72}
+.ith button.gap{margin-left:8px}
+.ith img{display:block;width:100%;height:auto;aspect-ratio:3/2}
+.ith button[aria-current="true"]{opacity:1;border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+/* цвет */
+.clr{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.clr .lbl{font-size:13px;color:var(--muted)}.clr .lbl b{color:var(--ink);font-weight:600}
+.dots{display:flex;flex-wrap:wrap;gap:7px}
+.dot{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);padding:0;position:relative;flex:none}
+.dot[aria-pressed="true"]{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
+.dot.own{background:conic-gradient(#d9534f,#f0ad4e,#5cb85c,#5bc0de,#428bca,#9b59b6,#d9534f);overflow:hidden;display:block;cursor:pointer}
+.dot.own input{position:absolute;inset:-6px;width:calc(100% + 12px);height:calc(100% + 12px);opacity:0;cursor:pointer;border:0;padding:0}
+/* выбор панели — как в расчёте на сайте */
+.pick{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.pick h2{font-family:var(--f-display);font-size:16px;margin:0}
+.pgroups{display:flex;flex-wrap:wrap;gap:6px}
+.pgroups button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 12px;font-size:13px;white-space:nowrap}
+.pgroups button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px}
+.pc{display:flex;flex-direction:column;gap:1px;padding:3px 3px 5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);text-align:center;min-width:0}
+.pc .pi{display:block;aspect-ratio:4/3;border-radius:4px;overflow:hidden;background:#23262d}
+.pc img{display:block;width:100%;height:100%;object-fit:cover}
+.pc b{font-size:13px;font-weight:600;line-height:1.3}
+.pc small{font-size:11px;line-height:1.2;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pc[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.pcur{font-size:13px;line-height:1.35}
+.foot{font-size:13px;color:var(--muted)}.foot a{color:var(--mark)}
+@media (max-width:899px){
+  .view{display:contents}
+  .ist{position:sticky;top:env(safe-area-inset-top,0px);z-index:4;margin:0 -14px;border-radius:0;border-inline:0;box-shadow:0 10px 18px -14px rgba(0,0,0,.5)}
+  .lay{gap:8px}
+}
+@media (min-width:900px){
+  .lay{grid-template-columns:minmax(0,1fr) 380px;align-items:start;gap:20px}
+  .view{position:sticky;top:12px}
+  h1{font-size:26px}
+}
 </style></head><body>
-<header><b>Наш декор</b> <span>· панели в интерьере, 3D-визуализации · <span id="cnt">загрузка…</span></span></header>
-<main>
-  <div class="seg" role="group" aria-label="Как смотреть"><button type="button" data-m="s" aria-pressed="true">По сценам</button><button type="button" data-m="p" aria-pressed="false">По панелям</button></div>
-  <div class="chips" id="chips"></div>
-  <h1 id="ttl"></h1>
-  <p class="note">Нажмите на кадр — откроется крупно. У белых панелей под кадром можно выбрать цвет стены. Номер сцены и артикул — в подписи.</p>
-  <div class="grid" id="grid"></div>
+<header class="top"><div class="wrap"><b>Наш декор</b><span>панель в интерьере · проба для сайта</span></div></header>
+<main class="wrap">
+  <h1>Как панель выглядит в интерьере</h1>
+  <p class="lead">Нажмите на панель ниже — она встанет на стену. Кадр листается в сторону: ТВ-зона, диван, спальня, прихожая, рабочее место. Белым панелям можно выбрать цвет.</p>
+  <div class="lay">
+    <div class="view">
+      <div class="ist" id="st" aria-roledescription="карусель" aria-label="Панель в интерьере">
+        <canvas id="cv" width="1350" height="900"></canvas>
+        <div class="tag" id="tag"></div>
+        <div class="cap"><div><span id="cap"></span><small id="sub"></small></div><div class="num" id="num"></div></div>
+        <button type="button" class="nav p" data-step="-1" aria-label="Предыдущий кадр">‹</button><button type="button" class="nav n" data-step="1" aria-label="Следующий кадр">›</button>
+      </div>
+      <div class="ith" id="strip" role="group" aria-label="Кадры"></div>
+      <div class="clr" id="clr"></div>
+    </div>
+    <div class="pick">
+      <h2>Панель</h2>
+      <div class="pgroups" id="pGroups" role="group" aria-label="Вид панели"></div>
+      <div class="pgrid" id="pGrid"></div>
+      <div class="pcur" id="pCur"></div>
+      <div class="foot">Кадры — 3D-визуализации. <a href="/vizual/sceny/">Все кадры по сценам</a></div>
+    </div>
+  </div>
 </main>
-<div class="lb" id="lb" hidden><canvas id="cv"></canvas><div class="cap" id="cap"></div><div class="dots" id="dots"></div>
-  <button type="button" class="x" aria-label="Закрыть">×</button><button type="button" class="nav p" aria-label="Назад">‹</button><button type="button" class="nav n" aria-label="Вперёд">›</button></div>
 <script>
-const SC = { tv: "ТВ-зона — вся стена", tv1: "ТВ-зона — одна полоса за экраном", tv2: "ТВ-зона — две полосы, экран между ними", tvc: "ТВ-зона — полоса с переходом на потолок",
-  sofa: "За диваном — вся стена", sofa1: "За диваном — одна полоса", sofa2: "За диваном — две полосы и полка", bed: "Спальня — вся стена", bed1: "Спальня — полоса за кроватью",
-  hall: "Прихожая", half: "Прихожая — панели до середины стены", desk: "Рабочее место", cor: "Коридор", cl: "Крупно — рельеф",
-  tvd: "Крупный план — ТВ-зона", sofad: "Крупный план — у дивана", bedd: "Крупный план — спальня", halld: "Крупный план — прихожая", deskd: "Крупный план — рабочее место", cord: "Крупный план — коридор" };
-const ORD = Object.keys(SC), num = s => ORD.indexOf(s) + 1;
-const FIRST = ["tvd", "sofad", "bedd", "halld", "deskd", "cord"], SHOW = FIRST.concat(ORD.filter(s => !FIRST.includes(s)));   // крупные планы — первыми; номера сцен прежние
-const COLORS = ["", "#c9b8a0", "#b9c2b4", "#7d8f85", "#556b5c", "#7E97AD", "#b9805f", "#3b4046", "#26292E"], BASE = [239, 238, 234];
-const $ = id => document.getElementById(id), wood = k => /^\d-\d+$/.test(k);
-const nm = k => wood(k) ? k : k.toUpperCase().replace(/^GS(\d)/, "GS $1").replace(/-(\d)$/, "/$1");
-const rank = k => wood(k) ? ({ 3: 1, 5: 2, 2: 3 })[k[0]] * 100 + +k.split("-")[1] : 0;
-let INT = {}, V = "", mode = "s", curS = "", curK = "", list = [], at = 0, color = "";
-const cache = {}, load = src => cache[src] || (cache[src] = new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; }));
-function panels(){ const set = new Set(); Object.values(INT).forEach(a => a.forEach(k => set.add(k))); return [...set].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b, "ru", { numeric: true })); }
-function render(){
-  const scs = SHOW.filter(s => INT[s]), pn = panels();
-  if (!scs.includes(curS)) curS = scs[0]; if (!pn.includes(curK)) curK = pn[0];
-  document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === mode));
-  $("chips").innerHTML = mode === "s" ? scs.map(s => `<button type="button" data-s="${s}" aria-pressed="${s === curS}"><i>${num(s)}</i>${SC[s]}</button>`).join("")
-    : pn.map(k => `<button type="button" data-k="${k}" aria-pressed="${k === curK}">${nm(k)}</button>`).join("");
-  list = mode === "s" ? INT[curS].slice().sort((a, b) => rank(a) - rank(b) || a.localeCompare(b, "ru", { numeric: true })).map(k => [curS, k]) : scs.filter(s => INT[s].includes(curK)).map(s => [s, curK]);
-  $("ttl").textContent = mode === "s" ? `Сцена ${num(curS)}. ${SC[curS]} — ${list.length} панелей` : `Панель ${nm(curK)} — ${list.length} сцен`;
-  $("grid").innerHTML = list.map(([s, k], i) => `<figure data-i="${i}"><img loading="lazy" width="450" height="300" alt="" src="/img/int/${s}/t/${k}.jpg?v=${V}"><figcaption>${mode === "s" ? nm(k) : `<i>${num(s)}</i>${SC[s]}`}</figcaption></figure>`).join("");
-  const on = $("chips").querySelector('[aria-pressed="true"]'); if (on) $("chips").scrollLeft = Math.max(0, on.offsetLeft - 80);
+/*CARDS*/const CARDS = [{"a":"A902","c":"panel","d":"полукруглые рейки (каннелюры)","w":130,"t":10,"l":3000,"p":"A902.jpg"},{"a":"A907","c":"panel","d":"широкие ламели с тонкими швами","w":180,"t":10,"l":3000,"p":"A907.jpg"},{"a":"A910","c":"panel","d":"частые полукруглые рейки","w":180,"t":12,"l":3000,"p":"A910.jpg"},{"a":"A913","c":"panel","d":"ступенчатая","w":180,"t":12,"l":3000,"p":"A913.jpg"},{"a":"A920","c":"panel","d":"прямоугольные рейки с глубокими пазами","w":180,"t":20,"l":3000,"p":"A920.jpg"},{"a":"A916","c":"panel","d":"прямоугольные рейки","w":180,"t":12,"l":3000,"p":"A916.jpg"},{"a":"GS 1","c":"panel","d":"узкие прямоугольные рейки","w":120,"t":13,"l":3000,"p":"GS1.jpg"},{"a":"GS 2","c":"panel","d":"2 широкие рейки с глубоким пазом","w":120,"t":20,"l":3000,"p":"GS2.jpg"},{"a":"GS 3","c":"panel","d":"прямоугольные рейки","w":120,"t":13,"l":3000,"p":"GS3.jpg"},{"a":"A903","c":"panel","d":"треугольные грани (призма)","w":180,"t":10,"l":3000,"p":"A903.jpg"},{"a":"A904","c":"panel","d":"плоская с прямоугольными выступами","w":150,"t":10,"l":3000,"p":"A904.jpg"},{"a":"A905","c":"panel","d":"вогнутые волны","w":200,"t":14,"l":3000,"p":"A905.jpg"},{"a":"A908","c":"panel","d":"вогнутые волны","w":180,"t":14,"l":3000,"p":"A908.jpg"},{"a":"A915","c":"panel","d":"частые узкие рейки","w":150,"t":9,"l":3000,"p":"A915.jpg"},{"a":"A906","c":"panel","d":"скошенные грани (пила)","w":180,"t":10,"l":3000,"p":"A906.jpg"},{"a":"A912","c":"panel","d":"частые треугольные грани (зигзаг)","w":180,"t":12,"l":3000,"p":"A912.jpg"},{"a":"A201","c":"panel","d":"плоская с полукруглыми валиками","w":100,"t":11,"l":2000,"p":"A201.jpg"},{"a":"2-3","c":"color","d":"декор «дерево медовое (тик)» на чёрной основе","w":120,"t":12,"l":3000,"p":"2-3.jpg"},{"a":"2-4","c":"color","d":"декор «дуб светлый» на чёрной основе","w":120,"t":12,"l":3000,"p":"2-4.jpg"},{"a":"2-5","c":"color","d":"декор «дерево светлое бежевое» на чёрной основе","w":120,"t":12,"l":3000,"p":"2-5.jpg"},{"a":"2-7","c":"color","d":"декор «дуб натуральный» на чёрной основе","w":120,"t":12,"l":3000,"p":"2-7.jpg"},{"a":"2-8","c":"color","d":"декор «дерево медовое» на чёрной основе","w":120,"t":12,"l":3000,"p":"2-8.jpg"},{"a":"2-9","c":"color","d":"декор «орех тёмный» на чёрной основе","w":120,"t":12,"l":3000,"p":"2-9.jpg"},{"a":"2-10","c":"color","d":"декор «орех» на чёрной основе","w":120,"t":12,"l":3000,"p":"2-10.jpg"},{"a":"2-11","c":"color","d":"декор «дерево полосатое тёмное» на чёрной основе","w":120,"t":12,"l":3000,"p":"2-11.jpg"},{"a":"2-12","c":"color","d":"декор «бетон серый» на чёрной основе","w":120,"t":12,"l":3000,"p":"2-12.jpg"},{"a":"2-13","c":"color","d":"декор «дерево коричневое» на чёрной основе","w":120,"t":12,"l":3000,"p":"2-13.jpg"},{"a":"2-14","c":"color","d":"декор «дуб серо-коричневый» на чёрной основе","w":120,"t":12,"l":3000,"p":"2-14.jpg"},{"a":"3-3","c":"color","d":"декор «дерево медовое (тик)» на чёрной основе","w":120,"t":12,"l":3000,"p":"3-3.jpg"},{"a":"3-4","c":"color","d":"декор «дуб светлый» на чёрной основе","w":120,"t":12,"l":3000,"p":"3-4.jpg"},{"a":"3-5","c":"color","d":"декор «дерево светлое бежевое» на чёрной основе","w":120,"t":12,"l":3000,"p":"3-5.jpg"},{"a":"3-7","c":"color","d":"декор «дуб натуральный» на чёрной основе","w":120,"t":12,"l":3000,"p":"3-7.jpg"},{"a":"3-8","c":"color","d":"декор «дерево медовое» на чёрной основе","w":120,"t":12,"l":3000,"p":"3-8.jpg"},{"a":"3-9","c":"color","d":"декор «орех тёмный» на чёрной основе","w":120,"t":12,"l":3000,"p":"3-9.jpg"},{"a":"3-11","c":"color","d":"декор «дерево полосатое тёмное» на чёрной основе","w":120,"t":12,"l":3000,"p":"3-11.jpg"},{"a":"3-12","c":"color","d":"декор «бетон серый» на чёрной основе","w":120,"t":12,"l":3000,"p":"3-12.jpg"},{"a":"3-15","c":"color","d":"декор «дерево светлое натуральное» на чёрной основе","w":120,"t":12,"l":3000,"p":"3-15.jpg"},{"a":"5-5","c":"color","d":"декор «дерево светлое бежевое» на чёрной основе","w":120,"t":12,"l":3000,"p":"5-5.jpg"},{"a":"5-6","c":"color","d":"декор «дуб светлый» на чёрной основе","w":120,"t":12,"l":3000,"p":"5-6.jpg"},{"a":"5-8","c":"color","d":"декор «дерево медовое» на чёрной основе","w":120,"t":12,"l":3000,"p":"5-8.jpg"},{"a":"5-9","c":"color","d":"декор «орех тёмный» на чёрной основе","w":120,"t":12,"l":3000,"p":"5-9.jpg"},{"a":"5-10","c":"color","d":"декор «орех» на чёрной основе","w":120,"t":12,"l":3000,"p":"5-10.jpg"},{"a":"5-11","c":"color","d":"декор «дерево полосатое тёмное» на чёрной основе","w":120,"t":12,"l":3000,"p":"5-11.jpg"},{"a":"5-12","c":"color","d":"декор «бетон серый» на чёрной основе","w":120,"t":12,"l":3000,"p":"5-12.jpg"},{"a":"5-15","c":"color","d":"декор «дерево светлое натуральное» на чёрной основе","w":120,"t":12,"l":3000,"p":"5-15.jpg"},{"a":"A201/2","c":"panel","d":"плоская с полукруглыми валиками","w":100,"t":11,"l":2400,"p":"A201.jpg"}], PHOTO_V = "12";/*/CARDS*/
+// Кадры карусели: [сцена, её номер, подпись] — по комнатам, сначала крупный план. Общий план коридора (сцена 13) не показываем.
+const SL = [["tvd", 15, "ТВ-зона — крупно", "tv"], ["tv", 1, "ТВ-зона — вся стена", "tv"], ["tv1", 2, "ТВ-зона — полоса за экраном", "tv"], ["tv2", 3, "ТВ-зона — две полосы", "tv"], ["tvc", 4, "ТВ-зона — полоса с переходом на потолок", "tv"],
+  ["sofad", 16, "У дивана — крупно", "sofa"], ["sofa", 5, "За диваном — вся стена", "sofa"], ["sofa1", 6, "За диваном — одна полоса", "sofa"], ["sofa2", 7, "За диваном — две полосы и полка", "sofa"],
+  ["bedd", 17, "Спальня — крупно", "bed"], ["bed", 8, "Спальня — вся стена", "bed"], ["bed1", 9, "Спальня — полоса за кроватью", "bed"],
+  ["halld", 18, "Прихожая — крупно", "hall"], ["hall", 10, "Прихожая — вся стена", "hall"], ["half", 11, "Прихожая — панели до середины стены", "hall"],
+  ["deskd", 19, "Рабочее место — крупно", "desk"], ["desk", 12, "Рабочее место — вся стена", "desk"],
+  ["cord", 20, "Коридор — крупно", "cor"], ["cl", 14, "Рельеф крупно", "cl"]];
+const PAINT = [["Белый", "#F6F4EF"], ["Слоновая кость", "#ECE4D3"], ["Грейдж", "#C2B8A8"], ["Шалфей", "#A4AE98"], ["Олива", "#7E8063"], ["Пыльная роза", "#C9A196"], ["Терракота", "#B4694B"], ["Глубокий синий", "#2F3F57"], ["Графит", "#45474A"], ["Чёрный", "#1F1F20"]];
+const WHITE = "#F6F4EF", BASE = [239, 238, 234];          // кадры белых панелей посчитаны в краске #EFEEEA
+const series = x => x.c === "color" ? "s" + x.a.split("-")[0] : null;
+const PG = [["paint", "Под покраску", x => x.c === "panel"], ["s3", "Дерево · 3 рейки", x => series(x) === "s3"], ["s5", "Дерево · 5 реек", x => series(x) === "s5"], ["s2", "Дерево · 2 рейки", x => series(x) === "s2"]];
+const $ = id => document.getElementById(id), byA = Object.fromEntries(CARDS.map(x => [x.a, x]));
+const key = a => a.toLowerCase().replace(/\s+/g, "").replace(/\//g, "-");
+const decorName = x => x.d.replace(/^декор\s*/i, "").replace(/\s*на ч[её]рной основе/i, "").replace(/[«»]/g, "");
+let INT = {}, V = "", cur = "", at = 0, seq = 0, pgCur = "", color = { name: "Белый", hex: WHITE };
+const pgLast = {}, cache = {}, ready = new Set();
+const load = src => cache[src] || (cache[src] = new Promise((ok, no) => { const i = new Image(); i.onload = () => { ready.add(src); ok(i); }; i.onerror = no; i.src = src; }));
+const slides = a => SL.filter(([s]) => INT[s] && INT[s].includes(key(a)));
+const full = (s, a) => `/img/int/${s}/${key(a)}.jpg?v=${V}`, thumb = (s, a) => `/img/int/${s}/t/${key(a)}.jpg?v=${V}`, maskUrl = s => `/img/int/${s}/mask.png?v=${V}`;
+const tinted = () => byA[cur].c === "panel" && /^#[0-9a-f]{6}$/i.test(color.hex) && color.hex.toUpperCase() !== WHITE;
+
+function renderPicker(){
+  const x = byA[cur], g = (PG.find(([, , f]) => f(x)) || PG[0])[0];
+  pgLast[g] = cur;
+  if (g !== pgCur) {
+    pgCur = g;
+    $("pGroups").innerHTML = PG.filter(([, , f]) => CARDS.some(f)).map(([k, t]) => `<button type="button" data-pg="${k}" aria-pressed="${k === g}">${t}</button>`).join("");
+    $("pGrid").innerHTML = CARDS.filter(PG.find(([k]) => k === g)[2]).map(y => `<button type="button" class="pc" data-pick="${y.a}" aria-pressed="false" title="${y.a} · ${y.d}"><span class="pi">${y.p ? `<img src="/img/${y.p}?v=${PHOTO_V}" alt="" loading="lazy" width="790" height="449">` : ""}</span><b>${y.a}</b><small>${y.c === "color" ? decorName(y) : y.w + "×" + y.t + " мм"}</small></button>`).join("");
+  }
+  $("pGrid").querySelectorAll("[data-pick]").forEach(b => b.setAttribute("aria-pressed", b.dataset.pick === cur));
+  $("pCur").textContent = `${x.a} · ${x.d} · ${x.w}×${x.t}×${x.l} мм`;
+}
+function renderStrip(){
+  const list = slides(cur);
+  $("strip").innerHTML = list.map(([s, , cap, room], i) => `<button type="button" data-go="${i}"${i && room !== list[i - 1][3] ? ' class="gap"' : ""} aria-label="${cap}" title="${cap}"><img src="${thumb(s, cur)}" alt="" loading="lazy" width="450" height="300"></button>`).join("");
+}
+function renderColor(){
+  const x = byA[cur];
+  if (x.c !== "panel") { $("clr").innerHTML = `<div class="lbl">Декор: <b>${decorName(x)}</b> — готовый, красить не нужно</div>`; return; }
+  const custom = !PAINT.some(([n]) => n === color.name);
+  $("clr").innerHTML = `<div class="lbl">Цвет покраски: <b>${color.name}${custom ? " " + color.hex.toUpperCase() : ""}</b></div><div class="dots" role="group" aria-label="Цвет покраски">`
+    + PAINT.map(([n, h]) => `<button type="button" class="dot" data-paint="${n}" data-hex="${h}" aria-pressed="${color.name === n}" title="${n}" aria-label="${n}" style="background:${h}"></button>`).join("")
+    + `<label class="dot own" title="Свой цвет" aria-pressed="${custom}"${custom ? ` style="background:${color.hex}"` : ""}><input type="color" value="${custom ? color.hex : "#9A8C7A"}" aria-label="Свой цвет"></label></div>`;
 }
 async function show(){
-  const [s, k] = list[at], cv = $("cv"), g = cv.getContext("2d");
-  $("cap").textContent = `Сцена ${num(s)}. ${SC[s]} · ${nm(k)} · 3D-визуализация`;
-  $("dots").innerHTML = wood(k) ? "" : COLORS.map(c => `<button type="button" data-c="${c}" aria-pressed="${c === color}" style="background:${c || "#EFEEEA"}" aria-label="${c || "белый"}"></button>`).join("") + `<input type="color" value="${/^#/.test(color) ? color : "#7d8f85"}" aria-label="Свой цвет">`;
+  const list = slides(cur); if (!list.length) return;
+  at = (at % list.length + list.length) % list.length;
+  const [s, n, cap] = list[at], x = byA[cur], cv = $("cv"), g = cv.getContext("2d"), me = ++seq, src = full(s, cur), tint = tinted();
+  $("cap").textContent = cap; $("sub").textContent = `сцена ${n} · 3D-визуализация`; $("num").textContent = `${at + 1} / ${list.length}`;
+  $("tag").textContent = x.a + (x.c === "panel" ? (tint ? " · " + color.name.toLowerCase() : " · белая") : " · " + decorName(x));
+  $("strip").querySelectorAll("[data-go]").forEach((b, i) => { b.setAttribute("aria-current", i === at); if (i === at) $("strip").scrollTo({ left: Math.max(0, b.offsetLeft - $("strip").clientWidth / 2 + 42), behavior: "smooth" }); });
+  history.replaceState(null, "", "#" + key(cur) + "/" + s);
+  if (!ready.has(src) || (tint && !ready.has(maskUrl(s)))) { $("st").style.backgroundImage = `url(${thumb(s, cur)})`; cv.style.opacity = 0; }
   try {
-    const [img, mask] = await Promise.all([load(`/img/int/${s}/${k}.jpg?v=${V}`), wood(k) ? null : load(`/img/int/${s}/mask.png?v=${V}`)]);
-    if (list[at][0] !== s || list[at][1] !== k) return;
-    const w = img.naturalWidth, h = img.naturalHeight; cv.width = w; cv.height = h; g.globalCompositeOperation = "source-over"; g.drawImage(img, 0, 0);
-    if (mask && /^#[0-9a-f]{6}$/i.test(color)) {
+    const [img, mask] = await Promise.all([load(src), tint ? load(maskUrl(s)) : null]);
+    if (me !== seq) return;
+    const w = img.naturalWidth, h = img.naturalHeight; if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+    g.globalCompositeOperation = "source-over"; g.drawImage(img, 0, 0);
+    if (mask) {                                          // покраска: кадр × (цвет / белый кадра) только по панелям
       const o = document.createElement("canvas"); o.width = w; o.height = h; const q = o.getContext("2d");
-      q.fillStyle = `rgb(${[1, 3, 5].map((p, i) => Math.min(255, Math.round(parseInt(color.slice(p, p + 2), 16) / BASE[i] * 255)))})`; q.fillRect(0, 0, w, h);
+      q.fillStyle = `rgb(${[1, 3, 5].map((p, i) => Math.min(255, Math.round(parseInt(color.hex.slice(p, p + 2), 16) / BASE[i] * 255)))})`; q.fillRect(0, 0, w, h);
       q.globalCompositeOperation = "destination-in"; q.drawImage(mask, 0, 0, w, h);
       g.globalCompositeOperation = "multiply"; g.drawImage(o, 0, 0); g.globalCompositeOperation = "source-over";
     }
-  } catch (e) {}
+    cv.style.opacity = 1;
+    [1, -1].forEach(d => { const nx = list[(at + d + list.length) % list.length]; load(full(nx[0], cur)).catch(() => {}); if (tint) load(maskUrl(nx[0])).catch(() => {}); });
+  } catch (e) { if (me === seq) cv.style.opacity = 0; }
+}
+function pick(a, scene){
+  if (!byA[a] || !slides(a).length) return;
+  const keep = scene || (cur && slides(cur)[at] ? slides(cur)[at][0] : null);       // при смене панели остаёмся в той же комнате
+  cur = a;
+  const i = slides(a).findIndex(([s]) => s === keep); at = i < 0 ? 0 : i;
+  renderPicker(); renderStrip(); renderColor(); show();
 }
 document.addEventListener("click", e => {
-  const b = e.target.closest("button"), f = e.target.closest("figure");
-  if (f) { at = +f.dataset.i; $("lb").hidden = false; show(); return; }
-  if (!b) { if (e.target === $("lb")) $("lb").hidden = true; return; }
-  if (b.dataset.m) { mode = b.dataset.m; render(); }
-  else if (b.dataset.s) { curS = b.dataset.s; render(); }
-  else if (b.dataset.k) { curK = b.dataset.k; render(); }
-  else if (b.dataset.c != null) { color = b.dataset.c; show(); }
-  else if (b.classList.contains("x")) $("lb").hidden = true;
-  else if (b.classList.contains("nav")) { at = (at + (b.classList.contains("n") ? 1 : -1) + list.length) % list.length; show(); }
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.pick) pick(b.dataset.pick);
+  else if (b.dataset.pg) { const f = PG.find(([k]) => k === b.dataset.pg)[2], a = pgLast[b.dataset.pg] || (CARDS.find(y => f(y) && slides(y.a).length) || {}).a; if (a) pick(a); }
+  else if (b.dataset.go) { at = +b.dataset.go; show(); }
+  else if (b.dataset.step) { at += +b.dataset.step; show(); }
+  else if (b.dataset.paint) { color = { name: b.dataset.paint, hex: b.dataset.hex }; renderColor(); show(); }
 });
-document.addEventListener("input", e => { if (e.target.type === "color") { color = e.target.value; show(); } });
-document.addEventListener("keydown", e => { if ($("lb").hidden) return; if (e.key === "Escape") $("lb").hidden = true; if (e.key === "ArrowRight" || e.key === "ArrowLeft") { at = (at + (e.key === "ArrowRight" ? 1 : -1) + list.length) % list.length; show(); } });
+document.addEventListener("input", e => { if (e.target.type === "color") { color = { name: "Свой цвет", hex: e.target.value }; const l = e.target.closest("label"); l.style.background = color.hex; l.setAttribute("aria-pressed", "true"); $("clr").querySelectorAll("button.dot").forEach(d => d.setAttribute("aria-pressed", "false")); $("clr").querySelector(".lbl b").textContent = "Свой цвет " + color.hex.toUpperCase(); show(); } });
+document.addEventListener("change", e => { if (e.target.type === "color") renderColor(); });
+document.addEventListener("keydown", e => { if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return; if (e.key === "ArrowRight" || e.key === "ArrowLeft") { at += e.key === "ArrowRight" ? 1 : -1; show(); } });
 let t0 = null;
-$("cv").addEventListener("touchstart", e => { t0 = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
-$("cv").addEventListener("touchend", e => { if (t0 == null) return; const dx = e.changedTouches[0].clientX - t0; t0 = null; if (Math.abs(dx) > 45) { at = (at + (dx < 0 ? 1 : -1) + list.length) % list.length; show(); } }, { passive: true });
-fetch("/img/int/manifest.json?" + Date.now()).then(r => r.json()).then(m => { INT = m.scenes || {}; V = m.v || "";
-  const n = Object.values(INT).reduce((a, b) => a + b.length, 0); $("cnt").textContent = `${Object.keys(INT).length} сцен, ${n} кадров`; if (n) render(); else $("ttl").textContent = "Кадры ещё считаются"; })
-  .catch(() => { $("cnt").textContent = "кадры ещё считаются"; });
+$("st").addEventListener("touchstart", e => { t0 = e.touches.length === 1 ? [e.touches[0].clientX, e.touches[0].clientY] : null; }, { passive: true });
+$("st").addEventListener("touchend", e => { if (!t0) return; const dx = e.changedTouches[0].clientX - t0[0], dy = e.changedTouches[0].clientY - t0[1]; t0 = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) { at += dx < 0 ? 1 : -1; show(); } }, { passive: true });
+fetch("/img/int/manifest.json?" + Date.now()).then(r => r.json()).then(m => {
+  INT = m.scenes || {}; V = m.v || "";
+  const [hk, hs] = decodeURIComponent(location.hash.slice(1)).split("/");
+  const first = CARDS.find(x => key(x.a) === hk && slides(x.a).length) || CARDS.find(x => slides(x.a).length);
+  if (first) pick(first.a, hs); else $("cap").textContent = "Кадры ещё готовятся";
+}).catch(() => { $("cap").textContent = "Кадры не загрузились — обновите страницу"; });
 </script></body></html>

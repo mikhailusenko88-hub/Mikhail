@@ -1,0 +1,102 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><script>/*max-app*/try{if(/WebAppData=/.test(location.hash)||sessionStorage.getItem("WebAppData"))["https://st.max.ru/js/max-web-app.js","/assets/max.js?v=3"].forEach(function(u){var s=document.createElement("script");s.src=u;s.async=false;document.head.appendChild(s)})}catch(e){}</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><title>Панели в интерьере — визуализации · Наш декор</title>
+<style>
+:root{--ink:#26292E;--bg:#F8F8F6;--paper:#fff;--line:#D9DEE3;--acc:#7E97AD;--muted:#6b7078}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 14px}
+header b{font-size:17px}header span{color:var(--muted);font-size:13px}
+main{max-width:1500px;margin:0 auto;padding:12px 14px 60px}
+.seg{display:inline-flex;border:1px solid var(--ink);border-radius:999px;overflow:hidden;margin-bottom:10px}
+.seg button{border:0;background:none;padding:8px 16px;font:inherit;color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:thin}
+.chips button{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 12px;font:inherit;font-size:14px;color:var(--ink);white-space:nowrap}
+.chips button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chips i{font-style:normal;color:var(--acc);margin-right:5px;font-weight:600}.chips button[aria-pressed="true"] i{color:#cfd9e2}
+h1{font-size:18px;margin:6px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+@media (max-width:560px){.grid{grid-template-columns:1fr 1fr;gap:6px}}
+figure{margin:0;background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden;cursor:pointer}
+figure img{display:block;width:100%;height:auto;aspect-ratio:3/2;background:#e9e5dd}
+figcaption{padding:5px 8px;font-size:13px}figcaption i{font-style:normal;color:var(--acc);font-weight:600;margin-right:4px}
+.lb{position:fixed;inset:0;z-index:10;background:rgba(20,22,25,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px}
+.lb[hidden]{display:none}.lb canvas{max-width:100%;max-height:calc(100vh - 150px);border-radius:4px}
+.cap{color:#fff;margin-top:10px;font-size:15px;text-align:center}
+.dots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px;min-height:34px}
+.dots button{width:30px;height:30px;border-radius:50%;border:2px solid #fff;padding:0}.dots button[aria-pressed="true"]{outline:2px solid var(--acc);outline-offset:2px}
+.dots input{width:34px;height:34px;border:0;padding:0;background:none}
+.lb .x,.lb .nav{position:absolute;border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:50%;width:44px;height:44px;font-size:24px;line-height:1}
+.lb .x{top:10px;right:10px}.lb .nav{top:45%}.lb .nav.p{left:8px}.lb .nav.n{right:8px}
+.note{color:var(--muted);font-size:13px;margin:0 0 10px}
+</style></head><body>
+<header><b>Наш декор</b> <span>· панели в интерьере, 3D-визуализации · <span id="cnt">загрузка…</span></span></header>
+<main>
+  <div class="seg" role="group" aria-label="Как смотреть"><button type="button" data-m="s" aria-pressed="true">По сценам</button><button type="button" data-m="p" aria-pressed="false">По панелям</button></div>
+  <div class="chips" id="chips"></div>
+  <h1 id="ttl"></h1>
+  <p class="note">Нажмите на кадр — откроется крупно. У белых панелей под кадром можно выбрать цвет стены. Номер сцены и артикул — в подписи.</p>
+  <div class="grid" id="grid"></div>
+</main>
+<div class="lb" id="lb" hidden><canvas id="cv"></canvas><div class="cap" id="cap"></div><div class="dots" id="dots"></div>
+  <button type="button" class="x" aria-label="Закрыть">×</button><button type="button" class="nav p" aria-label="Назад">‹</button><button type="button" class="nav n" aria-label="Вперёд">›</button></div>
+<script>
+const SC = { tv: "ТВ-зона — вся стена", tv1: "ТВ-зона — одна полоса за экраном", tv2: "ТВ-зона — две полосы, экран между ними", tvc: "ТВ-зона — полоса с переходом на потолок",
+  sofa: "За диваном — вся стена", sofa1: "За диваном — одна полоса", sofa2: "За диваном — две полосы и полка", bed: "Спальня — вся стена", bed1: "Спальня — полоса за кроватью",
+  hall: "Прихожая", half: "Прихожая — панели до середины стены", desk: "Рабочее место", cor: "Коридор", cl: "Крупно — рельеф",
+  tvd: "Крупный план — ТВ-зона", sofad: "Крупный план — у дивана", bedd: "Крупный план — спальня", halld: "Крупный план — прихожая", deskd: "Крупный план — рабочее место", cord: "Крупный план — коридор" };
+const ORD = Object.keys(SC), num = s => ORD.indexOf(s) + 1;
+const FIRST = ["tvd", "sofad", "bedd", "halld", "deskd", "cord"], SHOW = FIRST.concat(ORD.filter(s => !FIRST.includes(s)));   // крупные планы — первыми; номера сцен прежние
+const COLORS = ["", "#c9b8a0", "#b9c2b4", "#7d8f85", "#556b5c", "#7E97AD", "#b9805f", "#3b4046", "#26292E"], BASE = [239, 238, 234];
+const $ = id => document.getElementById(id), wood = k => /^\d-\d+$/.test(k);
+const nm = k => wood(k) ? k : k.toUpperCase().replace(/^GS(\d)/, "GS $1").replace(/-(\d)$/, "/$1");
+const rank = k => wood(k) ? ({ 3: 1, 5: 2, 2: 3 })[k[0]] * 100 + +k.split("-")[1] : 0;
+let INT = {}, V = "", mode = "s", curS = "", curK = "", list = [], at = 0, color = "";
+const cache = {}, load = src => cache[src] || (cache[src] = new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; }));
+function panels(){ const set = new Set(); Object.values(INT).forEach(a => a.forEach(k => set.add(k))); return [...set].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b, "ru", { numeric: true })); }
+function render(){
+  const scs = SHOW.filter(s => INT[s]), pn = panels();
+  if (!scs.includes(curS)) curS = scs[0]; if (!pn.includes(curK)) curK = pn[0];
+  document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === mode));
+  $("chips").innerHTML = mode === "s" ? scs.map(s => `<button type="button" data-s="${s}" aria-pressed="${s === curS}"><i>${num(s)}</i>${SC[s]}</button>`).join("")
+    : pn.map(k => `<button type="button" data-k="${k}" aria-pressed="${k === curK}">${nm(k)}</button>`).join("");
+  list = mode === "s" ? INT[curS].slice().sort((a, b) => rank(a) - rank(b) || a.localeCompare(b, "ru", { numeric: true })).map(k => [curS, k]) : scs.filter(s => INT[s].includes(curK)).map(s => [s, curK]);
+  $("ttl").textContent = mode === "s" ? `Сцена ${num(curS)}. ${SC[curS]} — ${list.length} панелей` : `Панель ${nm(curK)} — ${list.length} сцен`;
+  $("grid").innerHTML = list.map(([s, k], i) => `<figure data-i="${i}"><img loading="lazy" width="450" height="300" alt="" src="/img/int/${s}/t/${k}.jpg?v=${V}"><figcaption>${mode === "s" ? nm(k) : `<i>${num(s)}</i>${SC[s]}`}</figcaption></figure>`).join("");
+  const on = $("chips").querySelector('[aria-pressed="true"]'); if (on) $("chips").scrollLeft = Math.max(0, on.offsetLeft - 80);
+}
+async function show(){
+  const [s, k] = list[at], cv = $("cv"), g = cv.getContext("2d");
+  $("cap").textContent = `Сцена ${num(s)}. ${SC[s]} · ${nm(k)} · 3D-визуализация`;
+  $("dots").innerHTML = wood(k) ? "" : COLORS.map(c => `<button type="button" data-c="${c}" aria-pressed="${c === color}" style="background:${c || "#EFEEEA"}" aria-label="${c || "белый"}"></button>`).join("") + `<input type="color" value="${/^#/.test(color) ? color : "#7d8f85"}" aria-label="Свой цвет">`;
+  try {
+    const [img, mask] = await Promise.all([load(`/img/int/${s}/${k}.jpg?v=${V}`), wood(k) ? null : load(`/img/int/${s}/mask.png?v=${V}`)]);
+    if (list[at][0] !== s || list[at][1] !== k) return;
+    const w = img.naturalWidth, h = img.naturalHeight; cv.width = w; cv.height = h; g.globalCompositeOperation = "source-over"; g.drawImage(img, 0, 0);
+    if (mask && /^#[0-9a-f]{6}$/i.test(color)) {
+      const o = document.createElement("canvas"); o.width = w; o.height = h; const q = o.getContext("2d");
+      q.fillStyle = `rgb(${[1, 3, 5].map((p, i) => Math.min(255, Math.round(parseInt(color.slice(p, p + 2), 16) / BASE[i] * 255)))})`; q.fillRect(0, 0, w, h);
+      q.globalCompositeOperation = "destination-in"; q.drawImage(mask, 0, 0, w, h);
+      g.globalCompositeOperation = "multiply"; g.drawImage(o, 0, 0); g.globalCompositeOperation = "source-over";
+    }
+  } catch (e) {}
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("button"), f = e.target.closest("figure");
+  if (f) { at = +f.dataset.i; $("lb").hidden = false; show(); return; }
+  if (!b) { if (e.target === $("lb")) $("lb").hidden = true; return; }
+  if (b.dataset.m) { mode = b.dataset.m; render(); }
+  else if (b.dataset.s) { curS = b.dataset.s; render(); }
+  else if (b.dataset.k) { curK = b.dataset.k; render(); }
+  else if (b.dataset.c != null) { color = b.dataset.c; show(); }
+  else if (b.classList.contains("x")) $("lb").hidden = true;
+  else if (b.classList.contains("nav")) { at = (at + (b.classList.contains("n") ? 1 : -1) + list.length) % list.length; show(); }
+});
+document.addEventListener("input", e => { if (e.target.type === "color") { color = e.target.value; show(); } });
+document.addEventListener("keydown", e => { if ($("lb").hidden) return; if (e.key === "Escape") $("lb").hidden = true; if (e.key === "ArrowRight" || e.key === "ArrowLeft") { at = (at + (e.key === "ArrowRight" ? 1 : -1) + list.length) % list.length; show(); } });
+let t0 = null;
+$("cv").addEventListener("touchstart", e => { t0 = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
+$("cv").addEventListener("touchend", e => { if (t0 == null) return; const dx = e.changedTouches[0].clientX - t0; t0 = null; if (Math.abs(dx) > 45) { at = (at + (dx < 0 ? 1 : -1) + list.length) % list.length; show(); } }, { passive: true });
+fetch("/img/int/manifest.json?" + Date.now()).then(r => r.json()).then(m => { INT = m.scenes || {}; V = m.v || "";
+  const n = Object.values(INT).reduce((a, b) => a + b.length, 0); $("cnt").textContent = `${Object.keys(INT).length} сцен, ${n} кадров`; if (n) render(); else $("ttl").textContent = "Кадры ещё считаются"; })
+  .catch(() => { $("cnt").textContent = "кадры ещё считаются"; });
+</script></body></html>
