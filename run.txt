@@ -1,237 +1,237 @@
 # имя  аргументы для scene.py (или "py script.py")
-# Галерея применений для сайта: 18 белых + 28 под дерево × сцены sofa sofa1 sofa2 hall half, маски стены (tools/photo_jobs.py)
-g_sofa_mask scene=use use=sofa decor=A907 mask=1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900
-g_sofa_a907 scene=use use=sofa decor=A907 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a910 scene=use use=sofa decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a902 scene=use use=sofa decor=A902 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a913 scene=use use=sofa decor=A913 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a920 scene=use use=sofa decor=A920 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a916 scene=use use=sofa decor=A916 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_gs1 scene=use use=sofa decor=GS1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_gs2 scene=use use=sofa decor=GS2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_gs3 scene=use use=sofa decor=GS3 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a903 scene=use use=sofa decor=A903 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a904 scene=use use=sofa decor=A904 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a905 scene=use use=sofa decor=A905 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a908 scene=use use=sofa decor=A908 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a915 scene=use use=sofa decor=A915 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a906 scene=use use=sofa decor=A906 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a912 scene=use use=sofa decor=A912 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a201 scene=use use=sofa decor=A201 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_a201-2 scene=use use=sofa decor=A201-2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_2-3 scene=use use=sofa decor=2-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_2-4 scene=use use=sofa decor=2-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_2-5 scene=use use=sofa decor=2-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_2-7 scene=use use=sofa decor=2-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_2-8 scene=use use=sofa decor=2-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_2-9 scene=use use=sofa decor=2-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_2-10 scene=use use=sofa decor=2-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_2-11 scene=use use=sofa decor=2-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_2-12 scene=use use=sofa decor=2-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_2-13 scene=use use=sofa decor=2-13 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_2-14 scene=use use=sofa decor=2-14 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_3-3 scene=use use=sofa decor=3-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_3-4 scene=use use=sofa decor=3-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_3-5 scene=use use=sofa decor=3-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_3-7 scene=use use=sofa decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_3-8 scene=use use=sofa decor=3-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_3-9 scene=use use=sofa decor=3-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_3-11 scene=use use=sofa decor=3-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_3-12 scene=use use=sofa decor=3-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_3-15 scene=use use=sofa decor=3-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_5-5 scene=use use=sofa decor=5-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_5-6 scene=use use=sofa decor=5-6 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_5-8 scene=use use=sofa decor=5-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_5-9 scene=use use=sofa decor=5-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_5-10 scene=use use=sofa decor=5-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_5-11 scene=use use=sofa decor=5-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_5-12 scene=use use=sofa decor=5-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa_5-15 scene=use use=sofa decor=5-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_mask scene=use use=sofa1 decor=A907 mask=1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900
-g_sofa1_a907 scene=use use=sofa1 decor=A907 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a910 scene=use use=sofa1 decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a902 scene=use use=sofa1 decor=A902 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a913 scene=use use=sofa1 decor=A913 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a920 scene=use use=sofa1 decor=A920 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a916 scene=use use=sofa1 decor=A916 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_gs1 scene=use use=sofa1 decor=GS1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_gs2 scene=use use=sofa1 decor=GS2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_gs3 scene=use use=sofa1 decor=GS3 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a903 scene=use use=sofa1 decor=A903 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a904 scene=use use=sofa1 decor=A904 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a905 scene=use use=sofa1 decor=A905 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a908 scene=use use=sofa1 decor=A908 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a915 scene=use use=sofa1 decor=A915 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a906 scene=use use=sofa1 decor=A906 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a912 scene=use use=sofa1 decor=A912 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a201 scene=use use=sofa1 decor=A201 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_a201-2 scene=use use=sofa1 decor=A201-2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_2-3 scene=use use=sofa1 decor=2-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_2-4 scene=use use=sofa1 decor=2-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_2-5 scene=use use=sofa1 decor=2-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_2-7 scene=use use=sofa1 decor=2-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_2-8 scene=use use=sofa1 decor=2-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_2-9 scene=use use=sofa1 decor=2-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_2-10 scene=use use=sofa1 decor=2-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_2-11 scene=use use=sofa1 decor=2-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_2-12 scene=use use=sofa1 decor=2-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_2-13 scene=use use=sofa1 decor=2-13 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_2-14 scene=use use=sofa1 decor=2-14 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_3-3 scene=use use=sofa1 decor=3-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_3-4 scene=use use=sofa1 decor=3-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_3-5 scene=use use=sofa1 decor=3-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_3-7 scene=use use=sofa1 decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_3-8 scene=use use=sofa1 decor=3-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_3-9 scene=use use=sofa1 decor=3-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_3-11 scene=use use=sofa1 decor=3-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_3-12 scene=use use=sofa1 decor=3-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_3-15 scene=use use=sofa1 decor=3-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_5-5 scene=use use=sofa1 decor=5-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_5-6 scene=use use=sofa1 decor=5-6 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_5-8 scene=use use=sofa1 decor=5-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_5-9 scene=use use=sofa1 decor=5-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_5-10 scene=use use=sofa1 decor=5-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_5-11 scene=use use=sofa1 decor=5-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_5-12 scene=use use=sofa1 decor=5-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa1_5-15 scene=use use=sofa1 decor=5-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_mask scene=use use=sofa2 decor=A907 mask=1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900
-g_sofa2_a907 scene=use use=sofa2 decor=A907 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a910 scene=use use=sofa2 decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a902 scene=use use=sofa2 decor=A902 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a913 scene=use use=sofa2 decor=A913 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a920 scene=use use=sofa2 decor=A920 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a916 scene=use use=sofa2 decor=A916 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_gs1 scene=use use=sofa2 decor=GS1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_gs2 scene=use use=sofa2 decor=GS2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_gs3 scene=use use=sofa2 decor=GS3 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a903 scene=use use=sofa2 decor=A903 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a904 scene=use use=sofa2 decor=A904 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a905 scene=use use=sofa2 decor=A905 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a908 scene=use use=sofa2 decor=A908 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a915 scene=use use=sofa2 decor=A915 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a906 scene=use use=sofa2 decor=A906 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a912 scene=use use=sofa2 decor=A912 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a201 scene=use use=sofa2 decor=A201 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_a201-2 scene=use use=sofa2 decor=A201-2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_2-3 scene=use use=sofa2 decor=2-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_2-4 scene=use use=sofa2 decor=2-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_2-5 scene=use use=sofa2 decor=2-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_2-7 scene=use use=sofa2 decor=2-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_2-8 scene=use use=sofa2 decor=2-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_2-9 scene=use use=sofa2 decor=2-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_2-10 scene=use use=sofa2 decor=2-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_2-11 scene=use use=sofa2 decor=2-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_2-12 scene=use use=sofa2 decor=2-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_2-13 scene=use use=sofa2 decor=2-13 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_2-14 scene=use use=sofa2 decor=2-14 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_3-3 scene=use use=sofa2 decor=3-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_3-4 scene=use use=sofa2 decor=3-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_3-5 scene=use use=sofa2 decor=3-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_3-7 scene=use use=sofa2 decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_3-8 scene=use use=sofa2 decor=3-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_3-9 scene=use use=sofa2 decor=3-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_3-11 scene=use use=sofa2 decor=3-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_3-12 scene=use use=sofa2 decor=3-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_3-15 scene=use use=sofa2 decor=3-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_5-5 scene=use use=sofa2 decor=5-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_5-6 scene=use use=sofa2 decor=5-6 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_5-8 scene=use use=sofa2 decor=5-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_5-9 scene=use use=sofa2 decor=5-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_5-10 scene=use use=sofa2 decor=5-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_5-11 scene=use use=sofa2 decor=5-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_5-12 scene=use use=sofa2 decor=5-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_sofa2_5-15 scene=use use=sofa2 decor=5-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_mask scene=use use=hall decor=A907 mask=1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900
-g_hall_a907 scene=use use=hall decor=A907 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a910 scene=use use=hall decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a902 scene=use use=hall decor=A902 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a913 scene=use use=hall decor=A913 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a920 scene=use use=hall decor=A920 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a916 scene=use use=hall decor=A916 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_gs1 scene=use use=hall decor=GS1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_gs2 scene=use use=hall decor=GS2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_gs3 scene=use use=hall decor=GS3 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a903 scene=use use=hall decor=A903 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a904 scene=use use=hall decor=A904 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a905 scene=use use=hall decor=A905 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a908 scene=use use=hall decor=A908 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a915 scene=use use=hall decor=A915 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a906 scene=use use=hall decor=A906 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a912 scene=use use=hall decor=A912 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a201 scene=use use=hall decor=A201 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_a201-2 scene=use use=hall decor=A201-2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_2-3 scene=use use=hall decor=2-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_2-4 scene=use use=hall decor=2-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_2-5 scene=use use=hall decor=2-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_2-7 scene=use use=hall decor=2-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_2-8 scene=use use=hall decor=2-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_2-9 scene=use use=hall decor=2-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_2-10 scene=use use=hall decor=2-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_2-11 scene=use use=hall decor=2-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_2-12 scene=use use=hall decor=2-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_2-13 scene=use use=hall decor=2-13 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_2-14 scene=use use=hall decor=2-14 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_3-3 scene=use use=hall decor=3-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_3-4 scene=use use=hall decor=3-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_3-5 scene=use use=hall decor=3-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_3-7 scene=use use=hall decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_3-8 scene=use use=hall decor=3-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_3-9 scene=use use=hall decor=3-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_3-11 scene=use use=hall decor=3-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_3-12 scene=use use=hall decor=3-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_3-15 scene=use use=hall decor=3-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_5-5 scene=use use=hall decor=5-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_5-6 scene=use use=hall decor=5-6 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_5-8 scene=use use=hall decor=5-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_5-9 scene=use use=hall decor=5-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_5-10 scene=use use=hall decor=5-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_5-11 scene=use use=hall decor=5-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_5-12 scene=use use=hall decor=5-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_hall_5-15 scene=use use=hall decor=5-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_mask scene=use use=half decor=A907 mask=1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900
-g_half_a907 scene=use use=half decor=A907 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a910 scene=use use=half decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a902 scene=use use=half decor=A902 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a913 scene=use use=half decor=A913 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a920 scene=use use=half decor=A920 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a916 scene=use use=half decor=A916 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_gs1 scene=use use=half decor=GS1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_gs2 scene=use use=half decor=GS2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_gs3 scene=use use=half decor=GS3 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a903 scene=use use=half decor=A903 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a904 scene=use use=half decor=A904 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a905 scene=use use=half decor=A905 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a908 scene=use use=half decor=A908 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a915 scene=use use=half decor=A915 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a906 scene=use use=half decor=A906 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a912 scene=use use=half decor=A912 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a201 scene=use use=half decor=A201 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_a201-2 scene=use use=half decor=A201-2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_2-3 scene=use use=half decor=2-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_2-4 scene=use use=half decor=2-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_2-5 scene=use use=half decor=2-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_2-7 scene=use use=half decor=2-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_2-8 scene=use use=half decor=2-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_2-9 scene=use use=half decor=2-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_2-10 scene=use use=half decor=2-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_2-11 scene=use use=half decor=2-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_2-12 scene=use use=half decor=2-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_2-13 scene=use use=half decor=2-13 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_2-14 scene=use use=half decor=2-14 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_3-3 scene=use use=half decor=3-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_3-4 scene=use use=half decor=3-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_3-5 scene=use use=half decor=3-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_3-7 scene=use use=half decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_3-8 scene=use use=half decor=3-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_3-9 scene=use use=half decor=3-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_3-11 scene=use use=half decor=3-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_3-12 scene=use use=half decor=3-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_3-15 scene=use use=half decor=3-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_5-5 scene=use use=half decor=5-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_5-6 scene=use use=half decor=5-6 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_5-8 scene=use use=half decor=5-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_5-9 scene=use use=half decor=5-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_5-10 scene=use use=half decor=5-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_5-11 scene=use use=half decor=5-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_5-12 scene=use use=half decor=5-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
-g_half_5-15 scene=use use=half decor=5-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+# Галерея применений для сайта: 18 белых + 28 под дерево × сцены bed bed1 cor desk tvc, маски стены (tools/photo_jobs.py)
+g_bed_mask scene=use use=bed decor=A907 mask=1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900
+g_bed_a907 scene=use use=bed decor=A907 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a910 scene=use use=bed decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a902 scene=use use=bed decor=A902 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a913 scene=use use=bed decor=A913 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a920 scene=use use=bed decor=A920 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a916 scene=use use=bed decor=A916 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_gs1 scene=use use=bed decor=GS1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_gs2 scene=use use=bed decor=GS2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_gs3 scene=use use=bed decor=GS3 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a903 scene=use use=bed decor=A903 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a904 scene=use use=bed decor=A904 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a905 scene=use use=bed decor=A905 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a908 scene=use use=bed decor=A908 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a915 scene=use use=bed decor=A915 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a906 scene=use use=bed decor=A906 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a912 scene=use use=bed decor=A912 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a201 scene=use use=bed decor=A201 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_a201-2 scene=use use=bed decor=A201-2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_2-3 scene=use use=bed decor=2-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_2-4 scene=use use=bed decor=2-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_2-5 scene=use use=bed decor=2-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_2-7 scene=use use=bed decor=2-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_2-8 scene=use use=bed decor=2-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_2-9 scene=use use=bed decor=2-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_2-10 scene=use use=bed decor=2-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_2-11 scene=use use=bed decor=2-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_2-12 scene=use use=bed decor=2-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_2-13 scene=use use=bed decor=2-13 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_2-14 scene=use use=bed decor=2-14 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_3-3 scene=use use=bed decor=3-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_3-4 scene=use use=bed decor=3-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_3-5 scene=use use=bed decor=3-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_3-7 scene=use use=bed decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_3-8 scene=use use=bed decor=3-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_3-9 scene=use use=bed decor=3-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_3-11 scene=use use=bed decor=3-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_3-12 scene=use use=bed decor=3-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_3-15 scene=use use=bed decor=3-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_5-5 scene=use use=bed decor=5-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_5-6 scene=use use=bed decor=5-6 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_5-8 scene=use use=bed decor=5-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_5-9 scene=use use=bed decor=5-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_5-10 scene=use use=bed decor=5-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_5-11 scene=use use=bed decor=5-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_5-12 scene=use use=bed decor=5-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed_5-15 scene=use use=bed decor=5-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_mask scene=use use=bed1 decor=A907 mask=1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900
+g_bed1_a907 scene=use use=bed1 decor=A907 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a910 scene=use use=bed1 decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a902 scene=use use=bed1 decor=A902 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a913 scene=use use=bed1 decor=A913 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a920 scene=use use=bed1 decor=A920 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a916 scene=use use=bed1 decor=A916 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_gs1 scene=use use=bed1 decor=GS1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_gs2 scene=use use=bed1 decor=GS2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_gs3 scene=use use=bed1 decor=GS3 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a903 scene=use use=bed1 decor=A903 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a904 scene=use use=bed1 decor=A904 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a905 scene=use use=bed1 decor=A905 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a908 scene=use use=bed1 decor=A908 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a915 scene=use use=bed1 decor=A915 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a906 scene=use use=bed1 decor=A906 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a912 scene=use use=bed1 decor=A912 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a201 scene=use use=bed1 decor=A201 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_a201-2 scene=use use=bed1 decor=A201-2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_2-3 scene=use use=bed1 decor=2-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_2-4 scene=use use=bed1 decor=2-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_2-5 scene=use use=bed1 decor=2-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_2-7 scene=use use=bed1 decor=2-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_2-8 scene=use use=bed1 decor=2-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_2-9 scene=use use=bed1 decor=2-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_2-10 scene=use use=bed1 decor=2-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_2-11 scene=use use=bed1 decor=2-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_2-12 scene=use use=bed1 decor=2-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_2-13 scene=use use=bed1 decor=2-13 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_2-14 scene=use use=bed1 decor=2-14 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_3-3 scene=use use=bed1 decor=3-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_3-4 scene=use use=bed1 decor=3-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_3-5 scene=use use=bed1 decor=3-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_3-7 scene=use use=bed1 decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_3-8 scene=use use=bed1 decor=3-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_3-9 scene=use use=bed1 decor=3-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_3-11 scene=use use=bed1 decor=3-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_3-12 scene=use use=bed1 decor=3-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_3-15 scene=use use=bed1 decor=3-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_5-5 scene=use use=bed1 decor=5-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_5-6 scene=use use=bed1 decor=5-6 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_5-8 scene=use use=bed1 decor=5-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_5-9 scene=use use=bed1 decor=5-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_5-10 scene=use use=bed1 decor=5-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_5-11 scene=use use=bed1 decor=5-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_5-12 scene=use use=bed1 decor=5-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_bed1_5-15 scene=use use=bed1 decor=5-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_cor_mask scene=use use=cor decor=A907 mask=1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900
+g_cor_a907 scene=use use=cor decor=A907 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a910 scene=use use=cor decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a902 scene=use use=cor decor=A902 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a913 scene=use use=cor decor=A913 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a920 scene=use use=cor decor=A920 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a916 scene=use use=cor decor=A916 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_gs1 scene=use use=cor decor=GS1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_gs2 scene=use use=cor decor=GS2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_gs3 scene=use use=cor decor=GS3 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a903 scene=use use=cor decor=A903 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a904 scene=use use=cor decor=A904 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a905 scene=use use=cor decor=A905 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a908 scene=use use=cor decor=A908 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a915 scene=use use=cor decor=A915 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a906 scene=use use=cor decor=A906 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a912 scene=use use=cor decor=A912 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a201 scene=use use=cor decor=A201 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_a201-2 scene=use use=cor decor=A201-2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_2-3 scene=use use=cor decor=2-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_2-4 scene=use use=cor decor=2-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_2-5 scene=use use=cor decor=2-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_2-7 scene=use use=cor decor=2-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_2-8 scene=use use=cor decor=2-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_2-9 scene=use use=cor decor=2-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_2-10 scene=use use=cor decor=2-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_2-11 scene=use use=cor decor=2-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_2-12 scene=use use=cor decor=2-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_2-13 scene=use use=cor decor=2-13 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_2-14 scene=use use=cor decor=2-14 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_3-3 scene=use use=cor decor=3-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_3-4 scene=use use=cor decor=3-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_3-5 scene=use use=cor decor=3-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_3-7 scene=use use=cor decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_3-8 scene=use use=cor decor=3-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_3-9 scene=use use=cor decor=3-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_3-11 scene=use use=cor decor=3-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_3-12 scene=use use=cor decor=3-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_3-15 scene=use use=cor decor=3-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_5-5 scene=use use=cor decor=5-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_5-6 scene=use use=cor decor=5-6 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_5-8 scene=use use=cor decor=5-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_5-9 scene=use use=cor decor=5-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_5-10 scene=use use=cor decor=5-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_5-11 scene=use use=cor decor=5-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_5-12 scene=use use=cor decor=5-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_cor_5-15 scene=use use=cor decor=5-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-2.3 calfile=cal_cor.json samples=120 noise=0.05
+g_desk_mask scene=use use=desk decor=A907 mask=1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900
+g_desk_a907 scene=use use=desk decor=A907 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a910 scene=use use=desk decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a902 scene=use use=desk decor=A902 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a913 scene=use use=desk decor=A913 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a920 scene=use use=desk decor=A920 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a916 scene=use use=desk decor=A916 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_gs1 scene=use use=desk decor=GS1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_gs2 scene=use use=desk decor=GS2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_gs3 scene=use use=desk decor=GS3 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a903 scene=use use=desk decor=A903 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a904 scene=use use=desk decor=A904 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a905 scene=use use=desk decor=A905 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a908 scene=use use=desk decor=A908 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a915 scene=use use=desk decor=A915 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a906 scene=use use=desk decor=A906 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a912 scene=use use=desk decor=A912 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a201 scene=use use=desk decor=A201 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_a201-2 scene=use use=desk decor=A201-2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_2-3 scene=use use=desk decor=2-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_2-4 scene=use use=desk decor=2-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_2-5 scene=use use=desk decor=2-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_2-7 scene=use use=desk decor=2-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_2-8 scene=use use=desk decor=2-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_2-9 scene=use use=desk decor=2-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_2-10 scene=use use=desk decor=2-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_2-11 scene=use use=desk decor=2-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_2-12 scene=use use=desk decor=2-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_2-13 scene=use use=desk decor=2-13 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_2-14 scene=use use=desk decor=2-14 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_3-3 scene=use use=desk decor=3-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_3-4 scene=use use=desk decor=3-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_3-5 scene=use use=desk decor=3-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_3-7 scene=use use=desk decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_3-8 scene=use use=desk decor=3-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_3-9 scene=use use=desk decor=3-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_3-11 scene=use use=desk decor=3-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_3-12 scene=use use=desk decor=3-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_3-15 scene=use use=desk decor=3-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_5-5 scene=use use=desk decor=5-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_5-6 scene=use use=desk decor=5-6 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_5-8 scene=use use=desk decor=5-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_5-9 scene=use use=desk decor=5-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_5-10 scene=use use=desk decor=5-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_5-11 scene=use use=desk decor=5-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_5-12 scene=use use=desk decor=5-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_desk_5-15 scene=use use=desk decor=5-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_mask scene=use use=tvc decor=A907 mask=1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900
+g_tvc_a907 scene=use use=tvc decor=A907 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a910 scene=use use=tvc decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a902 scene=use use=tvc decor=A902 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a913 scene=use use=tvc decor=A913 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a920 scene=use use=tvc decor=A920 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a916 scene=use use=tvc decor=A916 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_gs1 scene=use use=tvc decor=GS1 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_gs2 scene=use use=tvc decor=GS2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_gs3 scene=use use=tvc decor=GS3 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a903 scene=use use=tvc decor=A903 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a904 scene=use use=tvc decor=A904 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a905 scene=use use=tvc decor=A905 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a908 scene=use use=tvc decor=A908 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a915 scene=use use=tvc decor=A915 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a906 scene=use use=tvc decor=A906 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a912 scene=use use=tvc decor=A912 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a201 scene=use use=tvc decor=A201 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_a201-2 scene=use use=tvc decor=A201-2 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_2-3 scene=use use=tvc decor=2-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_2-4 scene=use use=tvc decor=2-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_2-5 scene=use use=tvc decor=2-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_2-7 scene=use use=tvc decor=2-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_2-8 scene=use use=tvc decor=2-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_2-9 scene=use use=tvc decor=2-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_2-10 scene=use use=tvc decor=2-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_2-11 scene=use use=tvc decor=2-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_2-12 scene=use use=tvc decor=2-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_2-13 scene=use use=tvc decor=2-13 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_2-14 scene=use use=tvc decor=2-14 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_3-3 scene=use use=tvc decor=3-3 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_3-4 scene=use use=tvc decor=3-4 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_3-5 scene=use use=tvc decor=3-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_3-7 scene=use use=tvc decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_3-8 scene=use use=tvc decor=3-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_3-9 scene=use use=tvc decor=3-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_3-11 scene=use use=tvc decor=3-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_3-12 scene=use use=tvc decor=3-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_3-15 scene=use use=tvc decor=3-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_5-5 scene=use use=tvc decor=5-5 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_5-6 scene=use use=tvc decor=5-6 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_5-8 scene=use use=tvc decor=5-8 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_5-9 scene=use use=tvc decor=5-9 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_5-10 scene=use use=tvc decor=5-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_5-11 scene=use use=tvc decor=5-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_5-12 scene=use use=tvc decor=5-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+g_tvc_5-15 scene=use use=tvc decor=5-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
