@@ -1,8 +1,11 @@
 # имя  аргументы для scene.py (или "py script.py")
-# 17.11.2026 — «Фото» для сайта: подбор ракурсов (3:2) и экспозиции
-c_hero scene=lounge tv=1 cam=angle decor=A907 chair_at=3.9,0.6 ax=3.7 ay=1.9 az=1.25 lx=1.9 lens=26 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
-c_hero2 scene=lounge tv=1 cam=angle decor=A907 chair_at=3.9,0.6 ax=3.95 ay=2.3 az=1.2 lx=1.7 lens=28 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
-c_hero37 scene=lounge tv=1 cam=angle decor=3-7 tex=strip chair_at=3.9,0.6 ax=3.7 ay=1.9 az=1.25 lx=1.9 lens=26 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
-c_live scene=lounge cam=main decor=A907 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
-c_macro scene=lounge tv=1 cam=macro fs=0 decor=A910 chair_at=3.9,0.6 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
-c_macro37 scene=lounge tv=1 cam=macro fs=0 decor=3-7 tex=strip chair_at=3.9,0.6 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
+# 17.11.2026 — «Фото» для сайта, пробник в чистовом качестве: ТВ-зона (tv), гостиная (lv), крупно (cl); маски стены
+f_tv_a907 scene=lounge tv=1 cam=angle chair_at=3.9,0.6 ax=3.7 ay=1.9 az=1.25 lx=1.9 lens=26 decor=A907 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200 samples=220 noise=0.03
+f_tv_a910 scene=lounge tv=1 cam=angle chair_at=3.9,0.6 ax=3.7 ay=1.9 az=1.25 lx=1.9 lens=26 decor=A910 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200 samples=220 noise=0.03
+f_tv_37 scene=lounge tv=1 cam=angle chair_at=3.9,0.6 ax=3.7 ay=1.9 az=1.25 lx=1.9 lens=26 decor=3-7 tex=strip cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200 samples=220 noise=0.03
+f_tv_mask scene=lounge tv=1 cam=angle chair_at=3.9,0.6 ax=3.7 ay=1.9 az=1.25 lx=1.9 lens=26 decor=A907 mask=1 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200
+f_cl_a910 scene=lounge tv=1 cam=macro fs=0 chair_at=3.9,0.6 decor=A910 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200 samples=220 noise=0.03
+f_cl_37 scene=lounge tv=1 cam=macro fs=0 chair_at=3.9,0.6 decor=3-7 tex=strip cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200 samples=220 noise=0.03
+f_cl_mask scene=lounge tv=1 cam=macro fs=0 chair_at=3.9,0.6 decor=A910 mask=1 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200
+f_lv_a907 scene=lounge cam=main decor=A907 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200 samples=220 noise=0.03
+f_lv_mask scene=lounge cam=main decor=A907 mask=1 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200
