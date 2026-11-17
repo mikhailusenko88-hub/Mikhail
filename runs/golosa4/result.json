@@ -1,0 +1,87 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 95,
+  "title": "Проба голоса Топы рядом с Барсиком",
+  "scenes": 2,
+  "errors": [],
+  "unknownWords": [
+   {
+    "word": "сейчас",
+    "sentence": "Топа, как сейчас"
+   },
+   {
+    "word": "сначала",
+    "sentence": "Сначала Барсик, потом Топа"
+   },
+   {
+    "word": "вариант",
+    "sentence": "Топа, вариант три"
+   },
+   {
+    "word": "новым",
+    "sentence": "А так Филя с новым голосом звучит рядом с Роном"
+   }
+  ],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 95. Проба голоса Топы рядом с Барсиком",
+  "path": "video/Кот Барсик - 95. Проба голоса Топы рядом с Барсиком.mp4",
+  "frames": 1437,
+  "sec": 167,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 57.477999999999994,
+  "video": "video/Кот Барсик - 95. Проба голоса Топы рядом с Барсиком.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "6f535e7",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 33.4,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 20,
+   "e": 86,
+   "b": 9,
+   "w": 1,
+   "n": 1430,
+   "at": 1430,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 4,
+  "ttsFail": 0,
+  "voice": 7,
+  "voiceFail": 0,
+  "voiceSec": 11,
+  "ttsSec": 3,
+  "frames": 1437,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -17.9,
+  "lufs_out": -15.3,
+  "gain_db": 2.9
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 203,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
