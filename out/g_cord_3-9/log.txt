@@ -1,0 +1,13 @@
+[scene   0.0s] view Khronos PBR Neutral look None
+[scene   0.0s] slat wall panels lamellas 155 faces 930
+[scene   0.1s] asset potted_plant_02 size 0.70 x 0.66 x 0.84 objs 3
+[scene   0.1s] objects 47 scene built
+[scene   0.1s] calibration from cal_cor.json {'sun_energy': 28.664627075195312, 'sun_color': [0.9508383274078369, 0.9656582474708557, 1.0], 'wb': [0.8578790602196991, 1.0130814847064245, 1.2889062871919283], 'exposure': 2.739798728144133, 'y_ref': 0.15719100832939148}
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/g_cord_3-9/g_cord_3-9.jpg'
+Time: 01:55.20 (Saving: 00:00.10)
+
+[scene 115.3s] final render 115.2s /home/runner/work/Mikhail/Mikhail/out/g_cord_3-9/g_cord_3-9.jpg
+[scene 115.3s] done
+
+Blender quit
