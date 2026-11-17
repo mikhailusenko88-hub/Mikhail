@@ -1,6 +1,8 @@
 # имя  аргументы для scene.py (или "py script.py")
-# 17.11.2026 — пробник режима «Фото»: рейки под дерево (повтор после исправления импорта)
-ph1_37 scene=lounge tv=1 cam=angle decor=3-7 tex=strip chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
-ph1_37v scene=lounge tv=1 cam=angle decor=3-7 chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
-ph1_510 scene=lounge tv=1 cam=angle decor=5-10 tex=strip chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
-ph1_212 scene=lounge tv=1 cam=angle decor=2-12 tex=strip chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
+# 17.11.2026 — «Фото» для сайта: подбор ракурсов (3:2) и экспозиции
+c_hero scene=lounge tv=1 cam=angle decor=A907 chair_at=3.9,0.6 ax=3.7 ay=1.9 az=1.25 lx=1.9 lens=26 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
+c_hero2 scene=lounge tv=1 cam=angle decor=A907 chair_at=3.9,0.6 ax=3.95 ay=2.3 az=1.2 lx=1.7 lens=28 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
+c_hero37 scene=lounge tv=1 cam=angle decor=3-7 tex=strip chair_at=3.9,0.6 ax=3.7 ay=1.9 az=1.25 lx=1.9 lens=26 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
+c_live scene=lounge cam=main decor=A907 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
+c_macro scene=lounge tv=1 cam=macro fs=0 decor=A910 chair_at=3.9,0.6 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
+c_macro37 scene=lounge tv=1 cam=macro fs=0 decor=3-7 tex=strip chair_at=3.9,0.6 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
