@@ -1,0 +1,82 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 96,
+  "title": "Проба голосов Фили, третий круг",
+  "scenes": 2,
+  "errors": [],
+  "unknownWords": [
+   {
+    "word": "сначала",
+    "sentence": "Сначала Барсик, Рон и Пик"
+   },
+   {
+    "word": "голос",
+    "sentence": "Филя, голос четыре"
+   }
+  ],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1}",
+   "Филик: {\"speaker\":\"ru_zara\",\"F\":1.2,\"P\":1.36,\"R\":1.15}",
+   "Филёк: {\"speaker\":\"ru_aigul\",\"F\":1.15,\"P\":1.42,\"R\":1.15}",
+   "Филюша: {\"speaker\":\"ru_zara\",\"F\":1.07,\"P\":0.96,\"R\":1.15}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 96. Проба голосов Фили, третий круг",
+  "path": "video/Кот Барсик - 96. Проба голосов Фили, третий круг.mp4",
+  "frames": 1350,
+  "sec": 153,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 53.992000000000004,
+  "video": "video/Кот Барсик - 96. Проба голосов Фили, третий круг.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "6f535e7",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 13.1,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 20,
+   "e": 83,
+   "b": 8,
+   "w": 1,
+   "n": 1350,
+   "at": 1350,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 2,
+  "ttsFail": 0,
+  "voice": 11,
+  "voiceFail": 0,
+  "voiceSec": 9,
+  "ttsSec": 2,
+  "frames": 1350,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -18,
+  "lufs_out": -15.3,
+  "gain_db": 3
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 192,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
