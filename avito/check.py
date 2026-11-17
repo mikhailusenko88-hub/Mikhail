@@ -85,6 +85,8 @@ def item_page(pg, url, shot=None):
     if m: d['favorites'] = m.group(0)
     desc = txt(pg, '[data-marker="item-view/item-description"]')
     d['desc_first'] = desc.split('\n')[0][:160] if desc else ''
+    d['desc_len'] = len(desc)
+    d['desc_mat'] = [re.sub(r'\s+', ' ', x).strip()[:220] for x in re.findall(r'[^\n.]*(?:дюрополимер|полистирол)[^\n.]*', desc, re.I)][:4]
     d['status_text'] = ''
     for pat in (r'Объявление снято с публикации', r'Объявление закрыто', r'на проверке', r'отклонено', r'Объявление не найдено', r'удалено'):
         if re.search(pat, body, re.I): d['status_text'] += pat + '; '
@@ -147,6 +149,7 @@ def brand_page(pg, url):
             d['items'].append({'id': (c.get_attribute('data-item-id') or ''), 'title': t.inner_text(timeout=1500).strip() if t.count() else '', 'price': (pr.get_attribute('content') or '') if pr.count() else ''})
         except Exception: pass
     d['body_head'] = re.sub(r'\s+', ' ', body[:700])
+    d['about_mat'] = [re.sub(r'\s+', ' ', x).strip()[:260] for x in re.findall(r'[^\n.]*(?:дюрополимер|полистирол)[^\n.]*', body, re.I)][:4]
     return d
 
 data = {'when': time.strftime('%Y-%m-%d %H:%M UTC', time.gmtime()), 'ours': [], 'brand': None, 'search': [], 'competitors': []}
