@@ -901,7 +901,9 @@ const IV = (() => {
     }
     show();
   }
-  const step = d => { at += d; show(); };
+  // счётчик (CRM → «Сайт» → «Панели в интерьере»): кадр = сцена.панель; go — сами листали, full — во весь экран, zoom — приближали
+  const track = act => { const l = slides(cur)[at]; if (l && typeof hit === "function") hit("iv", l[0] + "." + slug(cur), act); };
+  const step = d => { at += d; show(); track("go"); };
 
   /* во весь экран и приближение */
   let full = false, real = false, openedAt = 0, z = 1, tx = 0, ty = 0, hintT = 0;
@@ -916,11 +918,11 @@ const IV = (() => {
     cv.style.transform = z === 1 ? "" : `translate(${tx}px,${ty}px) scale(${z})`;
     st.classList.toggle("zoomed", z > 1);
   }
-  function zoomAt(nz, px, py){ nz = Math.max(1, Math.min(4, nz)); tx = px - (px - tx) / z * nz; ty = py - (py - ty) / z * nz; z = nz; clamp(); }
+  function zoomAt(nz, px, py){ nz = Math.max(1, Math.min(4, nz)); tx = px - (px - tx) / z * nz; ty = py - (py - ty) / z * nz; z = nz; clamp(); if (z > 1.05) track("zoom"); }
   function resetZoom(){ z = 1; clamp(); }
   function open(){
     if (full) return;
-    full = true; real = false; openedAt = Date.now();
+    full = true; real = false; openedAt = Date.now(); track("full");
     st.classList.add("full"); document.documentElement.classList.add("ivfull");
     fs.innerHTML = COL; fs.setAttribute("aria-label", "Свернуть"); fs.title = "Свернуть";
     if (document.fullscreenEnabled && st.requestFullscreen) {            // Android, компьютер — настоящий полный экран
@@ -952,7 +954,7 @@ const IV = (() => {
     else if (b === fs) full ? close() : open();
     else if (!b && !full) open();
   });
-  strip.addEventListener("click", e => { const b = e.target.closest("[data-ivgo]"); if (b) { at = +b.dataset.ivgo; show(); } });
+  strip.addEventListener("click", e => { const b = e.target.closest("[data-ivgo]"); if (b) { at = +b.dataset.ivgo; show(); track("go"); } });
   st.addEventListener("keydown", e => { if (full) return; if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); step(e.key === "ArrowRight" ? 1 : -1); } });
   document.addEventListener("keydown", e => {
     if (!full) return;
@@ -982,7 +984,7 @@ const IV = (() => {
     if (pin && e.touches.length === 2) {
       e.preventDefault();
       const a = rel(e.touches[0]), b = rel(e.touches[1]), nz = Math.max(1, Math.min(4, pin.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / pin.d));
-      z = nz; tx = (a[0] + b[0]) / 2 - pin.cx * nz; ty = (a[1] + b[1]) / 2 - pin.cy * nz; clamp();
+      z = nz; tx = (a[0] + b[0]) / 2 - pin.cx * nz; ty = (a[1] + b[1]) / 2 - pin.cy * nz; clamp(); if (z > 1.05) track("zoom");
     } else if (pan && e.touches.length === 1) {
       e.preventDefault(); const p = rel(e.touches[0]); tx = pan.tx + p[0] - pan.x; ty = pan.ty + p[1] - pan.y; clamp();
     } else e.preventDefault();
