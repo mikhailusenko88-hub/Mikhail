@@ -468,7 +468,7 @@ def product_page(x):
     revs_html = ('<div class="revs"><h2>Отзывы</h2>%s</div>' % "".join(review_html(r, ROOT) for r in revs)) if revs else ""
 
     price_b = ('<b class="num" id="price">%s ₽</b>' % fmt(x["r"])) if x.get("r") else '<b id="price">По запросу</b>'
-    calc_btn = ('<a class="btn ghost" id="toCalc" href="%s?panel=%s#calc">Рассчитать на стену в 3D</a>' % (ROOT, esc(a))) if c in ("panel", "color") else ""
+    calc_btn = ('<a class="btn ghost" id="toCalc" href="%s?panel=%s#calc">В интерьере и расчёт на стену</a>' % (ROOT, esc(a))) if c in ("panel", "color") else ""
     per = ("за штуку · ≈ <span id=\"pm2\">%s</span> ₽/м² · %d шт в коробке" % (fmt(m2(x)), x["b"])) if m2(x) else "за штуку · %d шт в коробке" % x["b"]
     buy = ('<aside class="buy" aria-label="Цена и заказ"><div class="price">%s<small>%s</small></div><div class="stock" id="stock">Под заказ, 3–4 недели</div>'
            '<div class="qty"><span class="qlbl">Количество</span><button type="button" id="qMinus" aria-label="Меньше">−</button><input type="number" id="qty" min="1" max="9999" value="1" inputmode="numeric" aria-label="Количество, штук">'
