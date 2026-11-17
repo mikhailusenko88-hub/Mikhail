@@ -1,4 +1,4 @@
-# Документы в CRM — 2026-11-17 16:45 UTC
+# Документы в CRM — 2026-11-17 21:52 UTC
 
 ```
 загрузка 2 МБ: 302 → https://crm.nashdekor.ru/docs?f=%D0%A1%D0%B5%D1%80%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%82%D1%8B+%D0%B8+%D0%A2%D0%A3
@@ -8,7 +8,7 @@
 файл совпадает: да
 без входа: 302
 на диске: -rw------- prostranstvo:prostranstvo 2000000
-копия: /var/backups/prostranstvo/2026-11-17
+копия: /var/backups/prostranstvo/2026-11-18
 total 1956
-9440038 -rw------- 1 prostranstvo prostranstvo 2000000 Nov 17 19:45 afec7b4e1a964f3da94de388d005d027
+4782980 -rw------- 1 prostranstvo prostranstvo 2000000 Nov 18 00:52 512b6914b5f9447baa21a18b84ee6e3a
 ```
