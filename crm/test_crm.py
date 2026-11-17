@@ -2500,7 +2500,7 @@ class TestSiteEditor(Base):
 
     def item(self, **kw):
         d = {"c": "panel", "n": "Стеновая реечная панель белая под покраску 120×12×2700 мм — A912",
-             "d": "узкие рейки, полистирол высокой плотности (дюрополимер)", "w": "120", "t": "12", "l": "2700", "b": "6", "r": "990"}
+             "d": "узкие рейки, дюрополимер", "w": "120", "t": "12", "l": "2700", "b": "6", "r": "990"}
         d.update(kw)
         return d
 
@@ -2526,7 +2526,7 @@ class TestSiteEditor(Base):
         ed = self.app.extensions["site_edits"]
         api = self.c.get("/api/site/edits").get_json()["edits"]
         self.assertEqual([(e["kind"], e["article"]) for e in api], [("product", "A912")])
-        self.assertEqual(api[0]["data"]["d"], "узкие рейки, полистирол высокой плотности (дюрополимер)")
+        self.assertEqual(api[0]["data"]["d"], "узкие рейки, дюрополимер")
         self.assertIn("правка ждёт", self.c.get("/site/edit").get_data(as_text=True))
         # запрещённые слова и пустые поля
         r = self.save(self.item(old="A912", d="панель из МДФ, класс Г1"))
@@ -2559,7 +2559,7 @@ class TestSiteEditor(Base):
         self.post(f"/site/edit/{dl['id']}/cancel")
         self.assertFalse(any(e["kind"] == "delete" for e in self.c.get("/api/site/edits").get_json()["edits"]))
         # новая правка того же товара заменяет старую
-        self.save(self.item(old="A912", d="другое описание, полистирол высокой плотности (дюрополимер)"))
+        self.save(self.item(old="A912", d="другое описание, дюрополимер"))
         a912 = [e for e in self.c.get("/api/site/edits").get_json()["edits"] if e["article"] == "A912"]
         self.assertEqual(len(a912), 1)
         self.assertTrue(a912[0]["data"]["d"].startswith("другое"))

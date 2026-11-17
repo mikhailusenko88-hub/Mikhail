@@ -21,7 +21,7 @@
   <label class="f">Раздел<select name="c">{% for key, name in kinds %}<option value="{{ key }}" {% if cur.get('c') == key %}selected{% endif %}>{{ name }}</option>{% endfor %}</select>
     <span class="d">нужного нет — создайте во вкладке «Разделы»</span></label>
   <label class="f span2">Название (как в поиске: тип, цвет, «под покраску», свойства, размеры, артикул)<input name="n" value="{{ cur.get('n', '') }}" maxlength="160" required placeholder="Стеновая реечная панель белая под покраску, ударопрочная, 180×10×3000 мм — A921"></label>
-  <label class="f span2">Описание (коротко: какой профиль, для чего)<textarea name="d" rows="4" maxlength="600" placeholder="широкие ламели с тонкими швами, полистирол высокой плотности (дюрополимер), ударопрочная, влагостойкая, под покраску">{{ cur.get('d', '') }}</textarea></label>
+  <label class="f span2">Описание (коротко: какой профиль, для чего)<textarea name="d" rows="4" maxlength="600" placeholder="широкие ламели с тонкими швами, дюрополимер, ударопрочная, влагостойкая, под покраску">{{ cur.get('d', '') }}</textarea></label>
   <label class="f">Ширина, мм<input name="w" inputmode="numeric" value="{{ cur.get('w', '') }}" required></label>
   <label class="f">Толщина, мм<input name="t" inputmode="numeric" value="{{ cur.get('t', '') }}" required></label>
   <label class="f">Длина, мм<input name="l" inputmode="numeric" value="{{ cur.get('l', '') }}" required placeholder="3000"></label>
