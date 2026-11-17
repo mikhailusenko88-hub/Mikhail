@@ -43,7 +43,9 @@ INT = {}
 for sc in sorted(os.listdir(dst)) if os.path.isdir(dst) else []:
     p = os.path.join(dst, sc)
     if os.path.isdir(p) and os.path.exists(os.path.join(p, 'mask.png')):
-        INT[sc] = sorted(f[:-4] for f in os.listdir(p) if f.endswith('.jpg'))
+        ks = sorted(f[:-4] for f in os.listdir(p) if f.endswith('.jpg'))
+        if ks:                                  # сцена без единого кадра (посчитана только маска) на странице не показывается
+            INT[sc] = ks
 json.dump({'v': time.strftime('%m%d%H%M'), 'scenes': INT}, open(os.path.join(dst, 'manifest.json'), 'w'), ensure_ascii=False, separators=(',', ':'))
 ix = os.path.join(root, 'index.html')
 s = open(ix, encoding='utf-8').read()
