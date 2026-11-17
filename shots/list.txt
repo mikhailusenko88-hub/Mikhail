@@ -1,5 +1,10 @@
 # имя | адрес | desktop|mobile | js
-# 16.11.2026 22:10 — расчёт стены: дерево и вид сбоку (повтор)
-calc-wood-m | https://nashdekor.ru/?s=13&panel=3-7 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,300)
-calc-side-d | https://nashdekor.ru/?s=13&panel=5-10 | desktop | document.getElementById('calc').scrollIntoView(); document.querySelector('[data-view="side"]').click()
-calc-close-d | https://nashdekor.ru/?s=13 | desktop | document.getElementById('calc').scrollIntoView(); document.querySelector('[data-view="close"]').click()
+# 17.11.2026 03:25 — 3D-стена: новые обстановки и белые фото без разводов
+wall-tv-m | https://nashdekor.ru/?s=21 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,-60)
+wall-menu-m | https://nashdekor.ru/?s=22 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,-60); document.querySelector('#stage [data-scene]').click()
+wall-light-m | https://nashdekor.ru/?s=23&panel=A910 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,-60); __w3.scene('tvlight')
+wall-fire-d | https://nashdekor.ru/?s=24&panel=3-7 | desktop | document.getElementById('calc').scrollIntoView(); __w3.scene('tvfire'); document.querySelector('[data-view="side"]').click()
+wall-bed-d | https://nashdekor.ru/?s=25&panel=3-9 | desktop | document.getElementById('calc').scrollIntoView(); __w3.scene('bed')
+photo-a913-m | https://nashdekor.ru/p/a913/?s=26 | mobile | document.querySelector('[data-v="photo"]').click()
+photo-a88-d | https://nashdekor.ru/p/a88/?s=27 | desktop | document.querySelector('[data-v="photo"]').click()
+cat-paneli-m | https://nashdekor.ru/catalog/stenovye-paneli/?s=28 | mobile | window.scrollBy(0,500)
