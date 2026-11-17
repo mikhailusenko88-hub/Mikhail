@@ -1,7 +1,10 @@
 // Замена одной фразы в описаниях живых объявлений. 17.11.2026: материал называем «дюрополимер (ударопрочный полистирол)».
 // JOBS: [артикул, номер, старая фраза, новая фраза]. Меняется только эта фраза и только если она стоит в описании ровно один раз;
 // если её нет — объявление не сохраняется, в журнал пишутся строки со словами из WORDS, чтобы показать их Михаилу.
-// READ — номера объявлений, которые только читаем (ищем слова из WORDS); PROFILE — страница профиля, тоже только чтение.
+// READ — номера объявлений, которые только читаем (ищем слова из WORDS); PROFILE — публичная страница профиля, только чтение;
+// ABOUT — та же замена в тексте «О компании» профиля (форма «Главное» на /profile/extended).
+// 17.11.2026 в 12:12: пять новых объявлений — 2 мин вместе с проверкой, все сохранились; в старом объявлении и в профиле
+// нашлась та же фраза «из полистирола высокой плотности (дюрополимера)» — добавлены в JOBS и ABOUT.
 // WAIT15 = true — скрипт вставлен одним вызовом после s15-den.js: ждёт, пока обход закончится («ВСЁ» в nd_log15), и не правит,
 // если обход не дошёл до конца или вход в кабинет не найден. Так обход и правка идут за один запуск и одно чтение.
 // Всё во фрейме поверх страницы Авито, паузы через MessageChannel, запуск без await. Журнал — sessionStorage.nd_log16.
@@ -14,9 +17,11 @@ const JOBS = [
   ['A703', '8495178294', A, B],
   ['3-9', '8546190071', 'дюрополимер (ударопрочный полистирол высокой плотности)', 'дюрополимер (ударопрочный полистирол)'],
   ['3-15', '8530976650', 'ударопрочный полистирол высокой плотности (дюрополимер)', 'ударопрочный полистирол (дюрополимер)'],
+  ['старое', '8068817087', 'из полистирола высокой плотности (дюрополимера)', 'из дюрополимера'],
 ];
-const READ = ['8068817087'];
+const READ = [];                                  // номера только для чтения
 const PROFILE = '/brands/41c3cda03dbcc4779122153b28a75b36';
+const ABOUT = ['из полистирола высокой плотности (дюрополимера)', 'из дюрополимера'];   // та же замена в тексте «О компании» профиля; [] — не трогать
 const WORDS = /плотн|кг\s*\/\s*м/i;
 const WAIT15 = true;
 const SS = sessionStorage; SS.setItem('nd_log16', '');
@@ -44,6 +49,40 @@ async function frame(url, form) {
   if (!ready()) { let t = ''; try { t = (fr.contentDocument.title || '') + ' | ' + (fr.contentDocument.body.innerText || '').slice(0, 160).replace(/\s+/g, ' '); } catch (e) { t = e.message; } L('фрейм', url, '— не открылось:', t); return null; }
   await sleep(form ? 2000 : 1200);
   return fr;
+}
+const vis = e => { const r = e.getBoundingClientRect(); return r.width > 2 && r.height > 2; };
+const norm = s => (s || '').replace(/[\u00a0\u202f\u2009]/g, ' ').replace(/\s+/g, ' ').trim();
+async function about(a, b) {   // текст «О компании»: /profile/extended → «Главное» → поле с фразой → «Сохранить»; при любом расхождении не сохраняет
+  const fr = await frame('/profile/extended', false);
+  if (!fr) { L('ПРОФИЛЬ: страница управления не открылась'); return false; }
+  const d = fr.contentDocument, w = fr.contentWindow;
+  await until(() => !!d.querySelector('[data-marker="about/edit-button"]'), 15000, 300);
+  const eb = d.querySelector('[data-marker="about/edit-button"]');
+  if (!eb) { L('ПРОФИЛЬ: нет кнопки правки «Главное». Маркеры с edit:', JSON.stringify([...d.querySelectorAll('[data-marker*="edit"]')].map(e => e.getAttribute('data-marker')).slice(0, 12))); return false; }
+  eb.click();
+  const find = () => [...d.querySelectorAll('textarea, input[type=text], input:not([type])')].find(e => (e.value || '').includes(a));
+  if (!(await until(() => !!find(), 12000, 300))) {
+    L('ПРОФИЛЬ: поле со старой фразой не нашлось. Поля:', JSON.stringify([...d.querySelectorAll('textarea, input[type=text]')].filter(vis).map(e => (e.name || e.getAttribute('data-marker') || e.tagName) + ': ' + (e.value || '').slice(0, 70)).slice(0, 10)));
+    return false;
+  }
+  const t = find(), val = t.value;
+  if (val.split(a).length - 1 !== 1) { L('ПРОФИЛЬ: фраза встречается не один раз — не трогаю'); return false; }
+  const nv = val.replace(a, b);
+  const proto = t.tagName === 'TEXTAREA' ? w.HTMLTextAreaElement.prototype : w.HTMLInputElement.prototype;
+  Object.getOwnPropertyDescriptor(proto, 'value').set.call(t, nv);
+  ['input', 'change', 'blur'].forEach(e => t.dispatchEvent(new w.Event(e, { bubbles: true })));
+  await sleep(1000);
+  if (t.value !== nv) { L('ПРОФИЛЬ: текст не встал — не сохраняю'); return false; }
+  const scope = t.closest('form') || t.closest('[role=dialog],[aria-modal=true]') || d;
+  const btn = [...scope.querySelectorAll('button')].filter(vis).find(x => norm(x.innerText) === 'Сохранить' && !x.disabled);
+  if (!btn) { L('ПРОФИЛЬ: нет кнопки «Сохранить» — не сохранено. Кнопки:', JSON.stringify([...scope.querySelectorAll('button')].filter(vis).map(x => norm(x.innerText)).slice(0, 12))); return false; }
+  btn.click();
+  await sleep(4000);
+  const errs = [...d.querySelectorAll('[class*=error],[data-marker*=error]')].filter(vis).map(e => norm(e.innerText).slice(0, 120)).filter(Boolean).slice(0, 4);
+  L('ПРОФИЛЬ: нажато «Сохранить» | было', val.length, 'зн., стало', nv.length, '| ошибки на странице:', JSON.stringify(errs));
+  const fr2 = await frame('/profile/extended', false);
+  if (fr2) { const v = fr2.contentDocument.body.innerText; L('ПРОФИЛЬ, проверка в управлении: старая фраза', v.includes(a) ? 'ЕСТЬ' : 'нет', '| новая', v.includes(b) ? 'ЕСТЬ' : 'на странице не видна', '| про проверку:', JSON.stringify((v.match(/[^\n]*(на проверке|проверя|модерац)[^\n]*/gi) || []).slice(0, 3))); }
+  return true;
 }
 async function job(art, id, a, b) {
   L('—', art, id);
@@ -110,6 +149,7 @@ async function job(art, id, a, b) {
         const d = fr.contentDocument, v = ta(d).value, h = hits(v + '\n' + ((titleInp(d) || {}).value || ''));
         L('ЧТЕНИЕ', id, '| заголовок: «' + (titleInp(d) || {}).value + '» | длина описания', v.length, '| слова про плотность:', h.length ? JSON.stringify(h) : 'нет', '| про материал:', JSON.stringify((v.match(/[^\n.]*(дюрополимер|полистирол)[^\n.]*\.?/gi) || []).slice(0, 4)));
       }
+      if (ABOUT.length === 2) await about(ABOUT[0], ABOUT[1]);
       if (PROFILE) {
         const fr = await frame(PROFILE, false);
         if (!fr) L('ПРОФИЛЬ не открылся');
