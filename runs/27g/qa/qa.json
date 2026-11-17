@@ -1,0 +1,253 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рассказчик и Топа"
+ ],
+ "file": {
+  "mb": 297.8,
+  "dur": 345.83,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 345.33,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 345,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 163.0
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.3,
+  "lra": 4.6,
+  "peak_db": -1.2,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 98.9,
+  "lines": 98,
+  "by_hero": {
+   "Рон": 98.9,
+   "Пик": 95.3,
+   "Топа": 100.0,
+   "Филя": 100.0,
+   "Барсик": 100.0,
+   "Рассказчик": 100.0
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 214.0,
+   "range_st": 5.0,
+   "hnr": 14.7,
+   "jitter": 2.2,
+   "shimmer": 8.2,
+   "F1": 483.0,
+   "F2": 1971.0,
+   "F3": 3252.0,
+   "bright": -12.4,
+   "air": -16.2,
+   "cog": 618.0,
+   "rate": 5.9,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Пик": {
+   "f0": 373.0,
+   "range_st": 6.1,
+   "hnr": 20.5,
+   "jitter": 0.8,
+   "shimmer": 4.7,
+   "F1": 466.0,
+   "F2": 1749.0,
+   "F3": 3631.0,
+   "bright": -17.4,
+   "air": -22.6,
+   "cog": 597.0,
+   "rate": 6.6,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 95.3
+  },
+  "Рассказчик": {
+   "f0": 164.5,
+   "range_st": 5.3,
+   "hnr": 12.8,
+   "jitter": 2.6,
+   "shimmer": 9.8,
+   "F1": 420.5,
+   "F2": 1783.5,
+   "F3": 3334.0,
+   "bright": -18.6,
+   "air": -16.9,
+   "cog": 458.5,
+   "rate": 4.5,
+   "voiced": 0.7,
+   "n": 2,
+   "age": "взрослый",
+   "pleasant": 4.3,
+   "why": [
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 308.0,
+   "range_st": 7.5,
+   "hnr": 21.9,
+   "jitter": 0.9,
+   "shimmer": 5.2,
+   "F1": 416.0,
+   "F2": 1645.0,
+   "F3": 3535.0,
+   "bright": -21.7,
+   "air": -27.3,
+   "cog": 433.0,
+   "rate": 4.9,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 98.9
+  },
+  "Топа": {
+   "f0": 156.0,
+   "range_st": 5.0,
+   "hnr": 11.7,
+   "jitter": 2.7,
+   "shimmer": 10.1,
+   "F1": 437.0,
+   "F2": 1912.0,
+   "F3": 3334.0,
+   "bright": -16.2,
+   "air": -23.3,
+   "cog": 602.0,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Филя": {
+   "f0": 286.0,
+   "range_st": 4.9,
+   "hnr": 17.0,
+   "jitter": 1.7,
+   "shimmer": 7.6,
+   "F1": 499.0,
+   "F2": 2082.0,
+   "F3": 3337.0,
+   "bright": -15.0,
+   "air": -22.2,
+   "cog": 612.0,
+   "rate": 4.5,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  }
+ },
+ "voices_close": [
+  [
+   "Рассказчик",
+   "Топа",
+   0.9
+  ]
+ ],
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 1543,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 345.33695454545455,
+   "video": "video/Кот Барсик - 27. Почему лодка не тонет.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "6f535e7",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 41.3,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 9,
+    "e": 89,
+    "b": 4,
+    "w": 1,
+    "n": 8630,
+    "at": 8630,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 49,
+   "ttsFail": 0,
+   "voice": 55,
+   "voiceFail": 0,
+   "voiceSec": 31,
+   "ttsSec": 37,
+   "frames": 8634,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -24.4,
+   "lufs_out": -15.3,
+   "gain_db": 9.4
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 27,
+   "title": "Почему лодка не тонет?",
+   "scenes": 9,
+   "errors": [],
+   "unknownWords": [
+    {
+     "word": "дома",
+     "sentence": "Дома Барсик приготовил новую загадку"
+    }
+   ],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4}"
+   ]
+  }
+ }
+}
