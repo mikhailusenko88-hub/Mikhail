@@ -16,7 +16,14 @@ import requests
 API = "https://www.googleapis.com/youtube/v3"
 UP = "https://www.googleapis.com/upload/youtube/v3"
 CHANNEL_ID = "UCe72zB7nk8xkf3cHFL15luA"      # @cartoon_friend3 «Кот Барсик | Мультфильмы для детей»
-PLAYLIST_WORD = "барсик"                      # серия кладётся в плейлист, в названии которого есть это слово
+PLAYLIST_WORD = "барсик"                      # запасной признак плейлиста канала
+# Как устроен канал (смотрел в Studio 17.11.2026): два открытых плейлиста —
+#   «Кот Барсик 🐱 | Все серии подряд | Мультики для детей» — все полные серии, по порядку с 1-й (новая — в конец);
+#   «Кот Барсик 🐱 | Смешные моменты и Shorts» — все Shorts.
+PLAYLIST_KEYS = {"episode": "все серии", "short": "shorts"}
+HANDLE = "@cartoon_friend3"
+SHORT_PHRASES = ["Что было дальше?", "Вот это да!", "Ну и дела!", "Ты только посмотри!", "Кто бы мог подумать!", "Вот это поворот!", "Угадаешь разгадку?"]
+SHORT_TAGS = "#КотБарсик #МультикиДляДетей #Shorts #Мультфильмы #ДетскиеМультфильмы #МультикДляМалышей #cartoon #kidscartoon #shorts"
 BASE_TAGS = ["Кот Барсик", "мультики", "мультики для детей", "мультфильм", "мультфильмы для детей", "новая серия",
              "мультик про кота", "развивающие мультики", "для малышей"]
 SECRET = "BARSIK_YT"
@@ -68,6 +75,31 @@ def video_body(title, desc, publish_at=None, category="1"):
         st["publishAt"] = publish_at
     return {"snippet": {"title": title[:100], "description": desc[:4900], "tags": tags_for(desc), "categoryId": str(category),
                         "defaultLanguage": "ru", "defaultAudioLanguage": "ru"}, "status": st}
+
+
+def with_playlist_link(desc, playlist_id):
+    """В описание серии — строка со ссылкой на плейлист «Все серии подряд» (перед хэштегами), если её там ещё нет."""
+    if not playlist_id or "playlist?list=" in (desc or ""):
+        return desc
+    line = f"📺 Все серии подряд: https://www.youtube.com/playlist?list={playlist_id}"
+    rows = (desc or "").rstrip().split("\n")
+    i = len(rows)
+    while i > 0 and (rows[i - 1].strip().startswith("#") or not rows[i - 1].strip()):
+        i -= 1                                                 # хэштеги остаются последними строками
+    return "\n".join(rows[:i] + ["", line, ""] + [r for r in rows[i:] if r.strip()])
+
+
+def short_body(name, num, full_id, playlist_id=None, publish_at=None, category="1"):
+    """Shorts по образцу тех, что уже стоят на канале: «<название серии> 🐱 Кот Барсик | N серия #shorts»."""
+    title = f"{name.strip()} 🐱 Кот Барсик | {num} серия #shorts"
+    if len(title) > 100:
+        title = f"{name.strip()[:100 - len(title) - 1].rstrip()}… 🐱 Кот Барсик | {num} серия #shorts"
+    rows = [f"{SHORT_PHRASES[int(num) % len(SHORT_PHRASES)]} 😺 Отрывок из мультика «Кот Барсик», {num} серия.", "",
+            f"🎬 Полная серия: https://www.youtube.com/watch?v={full_id}",
+            f"📺 Все серии подряд: https://www.youtube.com/playlist?list={playlist_id}" if playlist_id else f"📺 Все серии на канале: https://www.youtube.com/{HANDLE}",
+            "", "Котёнок Барсик и его друзья — мышонок Пик, щенок Рон, медвежонок Топа и зайчонок Филя. Добрые и смешные истории о дружбе для детей.",
+            "❤️ Подписывайтесь, чтобы не пропустить новые серии!", "", SHORT_TAGS]
+    return video_body(title, "\n".join(rows), publish_at, category)
 
 
 class YT:
@@ -158,11 +190,19 @@ class YT:
             r = requests.post(f"{UP}/thumbnails/set", params={"videoId": vid}, headers=self.h({"Content-Type": "image/jpeg"}), data=f.read(), timeout=120)
         return "обложка поставлена" if r.status_code == 200 else f"обложка: {r.status_code} {r.text[:200]}"
 
-    def to_playlist(self, vid):
-        pl = [p for p in self.playlists() if PLAYLIST_WORD in p["title"].lower()]
-        if not pl:
-            return "плейлист со словом «Барсик» не найден"
-        p = sorted(pl, key=lambda x: -x["n"])[0]
+    def playlist_for(self, kind="episode", pls=None):
+        """Плейлист канала под полные серии («Все серии подряд») или под Shorts; None — если не нашёлся."""
+        pls = self.playlists() if pls is None else pls
+        key = PLAYLIST_KEYS[kind]
+        hit = [p for p in pls if key in p["title"].lower()]
+        if not hit and kind == "episode":                        # плейлист переименовали — берём самый большой «барсиковый» не про Shorts
+            hit = [p for p in pls if PLAYLIST_WORD in p["title"].lower() and PLAYLIST_KEYS["short"] not in p["title"].lower()]
+        return sorted(hit, key=lambda x: -x["n"])[0] if hit else None
+
+    def to_playlist(self, vid, kind="episode"):
+        p = self.playlist_for(kind)
+        if not p:
+            return f"плейлист для «{kind}» не найден — ролик без плейлиста"
         r = requests.post(f"{API}/playlistItems", params={"part": "snippet"}, headers=self.h(), timeout=30,
                           json={"snippet": {"playlistId": p["id"], "resourceId": {"kind": "youtube#video", "videoId": vid}}})
         return f"в плейлисте «{p['title']}»" if r.status_code == 200 else f"плейлист: {r.status_code} {r.text[:200]}"
