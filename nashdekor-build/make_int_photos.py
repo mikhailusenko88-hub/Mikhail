@@ -12,6 +12,25 @@
 import os, sys, re, json, shutil, time
 from PIL import Image
 
+def door_corner(im):
+    """Прихожая (hall, half): в рендерах до 17.11 на углу наличника двери (справа вверху) чёрный ромбик — совпавшие грани
+    двух планок. Закрашивается цветом стойки наличника под ним (тот же столбец кадра). В новых рендерах ромбика нет — кадр не меняется."""
+    import numpy as np
+    a = np.asarray(im).copy()
+    h, w = a.shape[:2]
+    x0, x1, y1 = int(w * .952), int(w * .993), int(h * .078)
+    d = a[:y1, x0:x1].astype(int).sum(2) < 200
+    if d.sum() < 40:
+        return im
+    for _ in range(2):                                      # край ромбика со сглаживанием — на 2 точки шире
+        e = d.copy(); e[1:] |= d[:-1]; e[:-1] |= d[1:]; e[:, 1:] |= d[:, :-1]; e[:, :-1] |= d[:, 1:]; d = e
+    for x in np.unique(np.nonzero(d)[1]):
+        col = np.nonzero(d[:, x])[0]
+        yb = col.max()
+        a[col, x0 + x] = a[yb + 4:yb + 22, x0 + x].mean(0)
+    return Image.fromarray(a)
+
+
 src = sys.argv[1]
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '0f7s1eez')
 dst = os.path.join(root, 'img', 'int')
@@ -36,6 +55,8 @@ for d in sorted(os.listdir(src)):
         o.save(out, optimize=True)
     else:
         im = im.convert('RGB')
+        if sc in ('hall', 'half'):
+            im = door_corner(im)
         im.save(out, quality=80, optimize=True, progressive=True)
         im.resize((450, 300), Image.LANCZOS).save(os.path.join(dst, sc, 't', key + '.jpg'), quality=72, optimize=True)
     n += 1
