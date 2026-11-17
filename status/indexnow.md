@@ -1,3 +1,14 @@
+# IndexNow — 2026-11-17 08:11 UTC, коммит 52df5eb
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: изменённые страницы (1) из 107 изменённых файлов; без изменений по сути (только ?v=): 0
+  https://nashdekor.ru/vizual/
+- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
+- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
+  "success":true
+}
+
+---
+
 # IndexNow — 2026-11-17 06:47 UTC, коммит 4b7d71e
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (123) из 133 изменённых файлов; без изменений по сути (только ?v=): 4
@@ -447,16 +458,5 @@
   … и ещё 92
 - https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
 - https://yandex.com/indexnow: HTTP 202 — принято, ключ ещё проверяется {
-  "success":true
-}
-
----
-
-# IndexNow — 2026-11-11 16:27 UTC, коммит 02b30eb
-- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
-- режим: изменённые страницы (1) из 132 изменённых файлов; без изменений по сути (только ?v=): 125
-  https://nashdekor.ru/
-- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
-- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
   "success":true
 }
