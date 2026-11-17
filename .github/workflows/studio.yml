@@ -62,6 +62,7 @@ jobs:
       - name: Приёмка
         run: |
           FF="$(node -e "console.log(require('ffmpeg-static'))")"
+          perl -e 'alarm 300; exec @ARGV' node eng/tools/multik/test/vnutri.js "scripts/${{ steps.req.outputs.name }}.txt" --json > out/vnutri.json 2> out/vnutri_err.txt || true
           python qa.py out "$FF" 2> out/qa_err.txt || true
           V="$(ls -S out/video/*.mp4 2>/dev/null | head -1)"; SH="$(ls out/video/*Shorts*.mp4 2>/dev/null | head -1)"
           if [ -n "$SH" ]; then cp "$SH" "ep-${{ steps.req.outputs.name }}-shorts.mp4"; fi

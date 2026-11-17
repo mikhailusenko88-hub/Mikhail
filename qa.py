@@ -182,6 +182,13 @@ try:
     if close: note('голоса почти не различаются: ' + '; '.join(f'{a} и {b}' for a, b, _ in close))
 except Exception as ex: note('голоса: ' + str(ex)); traceback.print_exc()
 
+# никто ни в ком: тест движка vnutri.js (шкала времени — с подставными голосами, по сценам совпадает)
+try:
+    vn = json.load(open(os.path.join(OUT, 'vnutri.json'), encoding='utf-8')).get('vnutri')
+    R['vnutri'] = vn
+    if vn: R['ok'] = False; note('герой стоит в герое: ' + '; '.join(f"сцена {v['sc'] + 1}: {v['a']} и {v['b']} ({v['t1'] - v['t0']:.0f} с)" for v in vn))
+except Exception as ex: R['vnutri'] = None; note('проверка «никто ни в ком» не выполнена: ' + str(ex))
+
 R['build'] = {k: res.get(k) for k in ['ok', 'err', 'total_sec', 'mode', 'gl', 'card', 'stat', 'start']}
 json.dump(R, open(os.path.join(QA, 'qa.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 try: os.remove(WAV)
