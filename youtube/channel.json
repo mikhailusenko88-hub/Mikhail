@@ -1,7 +1,7 @@
 {
  "channel": "Кот Барсик | Мультфильмы для детей",
  "subs": "9",
- "videos": "43",
+ "videos": "44",
  "playlists": [
   {
    "id": "PLKIEWQEeV1UA",
@@ -16,6 +16,18 @@
  ],
  "last": [
   {
+   "id": "0k2EDD0Sf6U",
+   "title": "⛵ ПОЧЕМУ ЛОДКА НЕ ТОНЕТ?! Секрет воды | Кот Барсик | Новая серия 27",
+   "published": "2026-11-17T15:30:01Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT5M46S",
+   "views": 1,
+   "likes": 1
+  },
+  {
    "id": "mTGrxw_g0t8",
    "title": "Почему лодка не тонет? 🐱 Кот Барсик | 27 серия #shorts",
    "published": "2026-11-17T15:03:28Z",
@@ -24,18 +36,6 @@
    "kids": true,
    "category": "1",
    "dur": "PT28S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "0k2EDD0Sf6U",
-   "title": "⛵ ПОЧЕМУ ЛОДКА НЕ ТОНЕТ?! Секрет воды | Кот Барсик | Новая серия 27",
-   "published": "2026-11-17T15:02:19Z",
-   "privacy": "private",
-   "publishAt": "2026-11-17T15:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT5M46S",
    "views": 0,
    "likes": 0
   },
@@ -70,7 +70,7 @@
    "privacy": "public",
    "publishAt": null,
    "kids": true,
-   "category": "1",
+   "category": "22",
    "dur": "PT7M47S",
    "views": 62,
    "likes": 1
@@ -84,7 +84,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT8M19S",
-   "views": 169,
+   "views": 167,
    "likes": 2
   },
   {
@@ -118,9 +118,9 @@
    "privacy": "public",
    "publishAt": null,
    "kids": true,
-   "category": "1",
+   "category": "22",
    "dur": "PT9M7S",
-   "views": 78,
+   "views": 75,
    "likes": 1
   },
   {
@@ -216,7 +216,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT8M3S",
-   "views": 150,
+   "views": 151,
    "likes": 1
   },
   {
