@@ -1,5 +1,5 @@
 # TheHandwriting_of_Silence  (@TheHandwriting_of_Silence)
-Проверено: 2026-11-17 06:54 UTC
+Проверено: 2026-11-17 08:11 UTC
 
 - Страница канала: HTTP 200; ID: UCkt1JJZzMwZRW7ojZzOyswg
 - Шапка: 38 подписчиков · 63 видео

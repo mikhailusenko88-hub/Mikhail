@@ -1,16 +1,16 @@
 # Flagball Arena  (@FlagballArenaTV)
-Проверено: 2026-11-17 06:54 UTC
+Проверено: 2026-11-17 08:11 UTC
 
 - Страница канала: HTTP 200; ID: UCUKgRxWtL1kPWr9hdfL8qQw
 - Шапка: 13 подписчиков · 62 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-17 04:03 · 124 просм. · Egypt, Italy or Romania: who loses the first life? 💔 Marble Race #shorts · azywoQy806U
+- 2026-11-17 04:03 · 293 просм. · Egypt, Italy or Romania: who loses the first life? 💔 Marble Race #shorts · azywoQy806U
 - 2026-11-16 19:38 · 416 просм. · Race 26/67: 8 of 24 lose a life 😱 Nigeria vs Kazakhstan vs Georgia #shorts · HeDgNql7_JM
 - 2026-11-16 11:37 · 716 просм. · Last chance for USA 😱 USA vs UK vs Spain | Country Marble Race #shorts · uuZV0vOhDr0
 - 2026-11-16 03:35 · 895 просм. · Last chance for Brazil 😱 Brazil vs Mexico vs Japan | Country Marble Race #shorts · AWf2qlc50Ns
 - 2026-11-15 11:34 · 208 просм. · USA vs Indonesia vs Germany 🔥 SUNDAY MEGA TRACK – Who Loses a Life? | Marble Race #23 · EVCXBjTSO-k
-- 2026-11-15 11:34 · 1006 просм. · SUNDAY MEGA TRACK 🔥 USA vs Indonesia vs Germany — who loses a life? #shorts · cK3k5givA2c
+- 2026-11-15 11:34 · 1008 просм. · SUNDAY MEGA TRACK 🔥 USA vs Indonesia vs Germany — who loses a life? #shorts · cK3k5givA2c
 - 2026-11-15 10:08 · 751 просм. · Which country wins? 🇧🇩 Bangladesh vs 🇬🇧 UK vs 🇸🇦 Saudi Arabia #shorts · iGHcGEJ6Mho
 - 2026-11-15 03:41 · 40 просм. · MEGA TRACK 🔥 Russia vs Türkiye vs Poland… 7 of 24 Lose a Life | Country Marble Race #22 · 0OizaWNrguU
 - 2026-11-15 03:41 · 488 просм. · Russia vs Türkiye vs Poland 😱 Who Survives? Country Marble Race #shorts · 8GyXq2dRNLo
@@ -22,7 +22,7 @@
 - 2026-11-14 03:38 · 1079 просм. · Mexico vs UK vs Nigeria 😱 Who Survives? Country Marble Race #shorts · 054ZfXvp4Js
 
 ## Вкладка Shorts (видно всем) — 30 шт. на первой странице
-- 124 просмотра · Egypt, Italy or Romania: who loses the first life? 💔 Marble Race #shorts · azywoQy806U
+- 293 просмотра · Egypt, Italy or Romania: who loses the first life? 💔 Marble Race #shorts · azywoQy806U
 - 416 просмотров · Race 26/67: 8 of 24 lose a life 😱 Nigeria vs Kazakhstan vs Georgia #shorts · HeDgNql7_JM
 - 716 просмотров · Last chance for USA 😱 USA vs UK vs Spain | Country Marble Race #shorts · uuZV0vOhDr0
 - 895 просмотров · Last chance for Brazil 😱 Brazil vs Mexico vs Japan | Country Marble Race #shorts · AWf2qlc50Ns
