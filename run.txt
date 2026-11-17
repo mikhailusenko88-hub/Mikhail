@@ -1,11 +1,14 @@
 # имя  аргументы для scene.py (или "py script.py")
-# 17.11.2026 — «Фото» для сайта, пробник в чистовом качестве: ТВ-зона (tv), гостиная (lv), крупно (cl); маски стены
-f_tv_a907 scene=lounge tv=1 cam=angle chair_at=3.9,0.6 ax=3.7 ay=1.9 az=1.25 lx=1.9 lens=26 decor=A907 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200 samples=220 noise=0.03
-f_tv_a910 scene=lounge tv=1 cam=angle chair_at=3.9,0.6 ax=3.7 ay=1.9 az=1.25 lx=1.9 lens=26 decor=A910 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200 samples=220 noise=0.03
-f_tv_37 scene=lounge tv=1 cam=angle chair_at=3.9,0.6 ax=3.7 ay=1.9 az=1.25 lx=1.9 lens=26 decor=3-7 tex=strip cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200 samples=220 noise=0.03
-f_tv_mask scene=lounge tv=1 cam=angle chair_at=3.9,0.6 ax=3.7 ay=1.9 az=1.25 lx=1.9 lens=26 decor=A907 mask=1 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200
-f_cl_a910 scene=lounge tv=1 cam=macro fs=0 chair_at=3.9,0.6 decor=A910 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200 samples=220 noise=0.03
-f_cl_37 scene=lounge tv=1 cam=macro fs=0 chair_at=3.9,0.6 decor=3-7 tex=strip cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200 samples=220 noise=0.03
-f_cl_mask scene=lounge tv=1 cam=macro fs=0 chair_at=3.9,0.6 decor=A910 mask=1 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200
-f_lv_a907 scene=lounge cam=main decor=A907 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200 samples=220 noise=0.03
-f_lv_mask scene=lounge cam=main decor=A907 mask=1 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.9 view=Khronos_PBR_Neutral look=None calfile=cal_photo.json res=1800x1200
+# 17.11.2026 — галерея применений для сайта: черновые кадры новых сцен
+u_tv1_37 scene=use use=tv1 decor=3-7 tex=strip cabcol=C9B8A0 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08 calfile=cal_photo.json
+u_tv2_37 scene=use use=tv2 decor=3-7 tex=strip cabcol=C9B8A0 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08 calfile=cal_photo.json
+u_sofa_37 scene=use use=sofa decor=3-7 tex=strip cabcol=C9B8A0 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08 calfile=cal_photo.json
+u_bed_37 scene=use use=bed decor=3-7 tex=strip cabcol=C9B8A0 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08 calfile=cal_photo.json
+u_hall_37 scene=use use=hall decor=3-7 tex=strip cabcol=C9B8A0 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08 calfile=cal_photo.json
+u_cor_37 scene=use use=cor decor=3-7 tex=strip cabcol=C9B8A0 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08
+u_tv1_a910 scene=use use=tv1 decor=A910 cabcol=C9B8A0 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08 calfile=cal_photo.json
+u_tv2_a913 scene=use use=tv2 decor=A913 cabcol=C9B8A0 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08 calfile=cal_photo.json
+u_sofa_a907 scene=use use=sofa decor=A907 cabcol=C9B8A0 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08 calfile=cal_photo.json
+u_bed_a908 scene=use use=bed decor=A908 cabcol=C9B8A0 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08 calfile=cal_photo.json
+u_hall_a910 scene=use use=hall decor=A910 cabcol=C9B8A0 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08 calfile=cal_photo.json
+u_cor_a910 scene=use use=cor decor=A910 cabcol=C9B8A0 ev=-0.9 view=Khronos_PBR_Neutral look=None res=900x600 samples=48 noise=0.08

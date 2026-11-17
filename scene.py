@@ -1848,7 +1848,208 @@ def auto_expose():
     log('auto exposure: p%.1f=%.4f -> exposure %.2f' % (float(A.get('pct', 99.3)), hi, ev))
 
 
-SCENES = {'lounge': scene_lounge, 'arch': scene_arch, 'plinth': scene_plinth, 'studio': scene_studio, 'sample': scene_sample, 'piece': scene_piece}
+# ------------------------------------------------------------------ галерея применений для сайта (use=tv|tv1|tv2|sofa|bed|hall|cor|cl)
+def pillow(name, loc, w, d, h, mat, rot=0.0, tilt=0.0, n=20):
+    """Подушка: w × d в плане, толщина h в середине, к краям сходит на нет. tilt — наклон вокруг оси X (градусы), rot — поворот вокруг Z."""
+    V, F, UV = [], [], []
+    for sgn in (1, -1):
+        base = len(V)
+        for j in range(n + 1):
+            for i in range(n + 1):
+                u, v = -1 + 2 * i / n, -1 + 2 * j / n
+                t = h * 0.5 * max(0.0, (1 - u ** 4) * (1 - v ** 4)) ** 0.6
+                V.append((u * w / 2 * (1 - 0.05 * v * v), v * d / 2 * (1 - 0.05 * u * u), sgn * t))
+        for j in range(n):
+            for i in range(n):
+                q = base + j * (n + 1) + i
+                f = (q, q + 1, q + n + 2, q + n + 1)
+                F.append(f if sgn > 0 else tuple(reversed(f)))
+                UV.append([(V[k][0], V[k][1]) for k in F[-1]])
+    ob = make_obj(name, V, F, [mat], uvs=UV, smooth=[True] * len(F))
+    ob.location = loc
+    ob.rotation_euler = (R(tilt), 0.0, R(rot))
+    return ob
+
+
+def disc_y(name, x, y, z, r, mat, n=72):
+    """Круг в плоскости стены (лицом к −Y)."""
+    V = [(x + r * math.cos(2 * math.pi * i / n), y, z + r * math.sin(2 * math.pi * i / n)) for i in range(n)]
+    return make_obj(name, V, [tuple(range(n))], [mat])
+
+
+def sofa(xc, yb, length=2.3, depth=0.95):
+    """Прямой диван у стены: основание, спинка, подлокотники, подушки сиденья и спинки, две декоративные подушки, плед."""
+    mf = mat_pbr('sofa_fabric', 'rough_linen', 0.5, tint=srgb(196, 190, 180), nstrength=1.3)
+    x0, x1, yf, arm = xc - length / 2, xc + length / 2, yb - depth, 0.17
+    box('sofa_base', x0, x1, yf + 0.03, yb, 0.11, 0.30, mf, bevel=0.03)
+    box('sofa_back', x0, x1, yb - 0.19, yb, 0.30, 0.76, mf, bevel=0.05)
+    box('sofa_arm_l', x0, x0 + arm, yf + 0.03, yb, 0.30, 0.62, mf, bevel=0.05)
+    box('sofa_arm_r', x1 - arm, x1, yf + 0.03, yb, 0.30, 0.62, mf, bevel=0.05)
+    ml = mat_simple('sofa_legs', srgb(52, 40, 30), rough=0.5)
+    for k, (lx, ly) in enumerate(((x0 + 0.08, yf + 0.10), (x1 - 0.08, yf + 0.10), (x0 + 0.08, yb - 0.08), (x1 - 0.08, yb - 0.08))):
+        cyl(f'sofa_leg{k}', lx, ly, 0.0, 0.11, 0.018, 0.025, ml)
+    n = 3
+    sw = (length - 2 * arm) / n
+    for i in range(n):
+        xa = x0 + arm + i * sw
+        box(f'sofa_seat{i}', xa + 0.005, xa + sw - 0.005, yf, yb - 0.19, 0.30, 0.46, mf, bevel=0.045)
+        pillow(f'sofa_bk{i}', (xa + sw / 2, yb - 0.27, 0.69), sw - 0.03, 0.50, 0.20, mf, tilt=78)
+    pillow('sofa_p1', (x0 + arm + 0.26, yb - 0.40, 0.66), 0.46, 0.46, 0.15, mat_pbr('pil_sage', 'rough_linen', 0.4, tint=srgb(132, 150, 138), nstrength=1.3), rot=-14, tilt=64)
+    pillow('sofa_p2', (x1 - arm - 0.30, yb - 0.41, 0.65), 0.50, 0.42, 0.14, mat_pbr('pil_sand', 'rough_linen', 0.4, tint=srgb(222, 208, 186), nstrength=1.3), rot=12, tilt=62)
+    box('sofa_throw', x1 - arm - 0.02, x1 + 0.012, yf - 0.012, yb - 0.30, 0.20, 0.625, mat_pbr('throw', 'rough_linen', 0.35, tint=srgb(186, 128, 98), nstrength=1.5), bevel=0.012)
+
+
+def bed(xc, yb, width=1.8, length=2.06, wood=True):
+    """Кровать у стены без своего изголовья (изголовье — стена из панелей): основание, матрас, одеяло с отворотом, подушки, плед."""
+    mb = mat_pbr('bed_frame', 'rough_linen', 0.5, tint=srgb(170, 162, 150), nstrength=1.3)
+    mwh = mat_pbr('bed_white', 'rough_linen', 0.45, tint=srgb(244, 241, 235), nstrength=0.9)
+    mln = mat_pbr('bed_linen', 'rough_linen', 0.45, tint=srgb(226, 219, 206), nstrength=1.2)
+    x0, x1, yf = xc - width / 2, xc + width / 2, yb - length
+    box('bed_base', x0 - 0.03, x1 + 0.03, yf - 0.03, yb, 0.10, 0.32, mb, bevel=0.025)
+    ml = mat_simple('bed_legs', srgb(52, 40, 30), rough=0.5)
+    for k, (lx, ly) in enumerate(((x0 + 0.06, yf + 0.06), (x1 - 0.06, yf + 0.06))):
+        cyl(f'bed_leg{k}', lx, ly, 0.0, 0.10, 0.02, 0.028, ml)
+    box('bed_matt', x0, x1, yf, yb - 0.01, 0.32, 0.54, mwh, bevel=0.05)
+    box('bed_duvet', x0 - 0.035, x1 + 0.035, yf - 0.02, yb - 0.74, 0.47, 0.615, mln, bevel=0.055)
+    box('bed_fold', x0 - 0.03, x1 + 0.03, yb - 0.93, yb - 0.70, 0.565, 0.655, mwh, bevel=0.04)
+    pw = width / 2 - 0.07
+    for i, sx in enumerate((-1, 1)):
+        pillow(f'bed_pil{i}', (xc + sx * (pw / 2 + 0.025), yb - 0.20, 0.76), pw, 0.50, 0.19, mwh, tilt=72)
+    pillow('bed_p1', (xc - 0.33, yb - 0.44, 0.71), 0.48, 0.40, 0.15, mat_pbr('pil_sage', 'rough_linen', 0.4, tint=srgb(132, 150, 138), nstrength=1.3), rot=-8, tilt=60)
+    pillow('bed_p2', (xc + 0.30, yb - 0.46, 0.69), 0.55, 0.32, 0.13, mat_pbr('pil_sand', 'rough_linen', 0.4, tint=srgb(214, 196, 170), nstrength=1.3), rot=6, tilt=58)
+    box('bed_throw', x0 - 0.045, x1 + 0.045, yf + 0.10, yf + 0.62, 0.60, 0.635, mat_pbr('throw', 'rough_linen', 0.35, tint=srgb(186, 128, 98), nstrength=1.5), bevel=0.012)
+
+
+def door_x(name, xw, y0, y1, mat):
+    """Дверь в правой стене (x = xw): полотно, наличники, ручка."""
+    box(name + '_leaf', xw - 0.036, xw - 0.006, y0, y1, 0.0, 2.05, mat, bevel=0.002)
+    for k, (a, b, z0, z1) in enumerate(((y0 - 0.07, y0, 0.0, 2.12), (y1, y1 + 0.07, 0.0, 2.12), (y0 - 0.07, y1 + 0.07, 2.05, 2.12))):
+        box(f'{name}_cas{k}', xw - 0.046, xw, a, b, z0, z1, mat, bevel=0.003)
+    mh = mat_simple('handle', (0.02, 0.02, 0.022, 1), rough=0.35, metallic=1.0)
+    box(name + '_h1', xw - 0.085, xw - 0.036, y0 + 0.075, y0 + 0.095, 1.0, 1.02, mh)
+    box(name + '_h2', xw - 0.085, xw - 0.067, y0 + 0.075, y0 + 0.20, 1.0, 1.02, mh, bevel=0.002)
+
+
+def door_y(name, x0, x1, mat):
+    """Дверь в стене y = 0 (напротив панелей)."""
+    box(name + '_leaf', x0, x1, 0.006, 0.036, 0.0, 2.05, mat, bevel=0.002)
+    for k, (a, b, z0, z1) in enumerate(((x0 - 0.07, x0, 0.0, 2.12), (x1, x1 + 0.07, 0.0, 2.12), (x0 - 0.07, x1 + 0.07, 2.05, 2.12))):
+        box(f'{name}_cas{k}', a, b, 0.0, 0.046, z0, z1, mat, bevel=0.003)
+    mh = mat_simple('handle', (0.02, 0.02, 0.022, 1), rough=0.35, metallic=1.0)
+    box(name + '_h1', x0 + 0.075, x0 + 0.095, 0.036, 0.085, 1.0, 1.02, mh)
+    box(name + '_h2', x0 + 0.075, x0 + 0.20, 0.067, 0.085, 1.0, 1.02, mh, bevel=0.002)
+
+
+def scene_use():
+    """Галерея «где и как применяют» для сайта. use: tv — ТВ-зона, вся стена; tv1 — одна полоса за экраном; tv2 — две полосы, экран между ними;
+    sofa — за диваном; bed — спальня; hall — прихожая; cor — коридор; cl — крупно. Панель — decor=…, как в lounge."""
+    use = A.get('use', 'tv')
+    lamps = []
+    az, el = float(A.get('sun_az', 32)), float(A.get('sun_el', 52))
+    sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
+    m_wall = mat_pbr('wall_paint', 'beige_wall_001', 3.0, color=srgb(236, 232, 224), rough=0.9, nstrength=0.6)
+    m_ceil = mat_simple('ceil_paint', srgb(244, 243, 240), rough=0.95)
+    m_floor = mat_pbr('floor', 'laminate_floor_02', 1.7, rough_add=-0.05, nstrength=0.8, rot=R(90), tint=srgb(232, 222, 210))
+    m_rug = mat_pbr('rug', 'hessian_230', 0.55, tint=srgb(240, 232, 218), nstrength=1.5)
+    cabcol = hexcol(A.get('cabcol', 'C9B8A0'))
+    m_door = mat_simple('door_white', srgb(240, 239, 235), rough=0.4)
+    if use == 'cor':
+        W, D, H = 6.2, 1.5, 2.7
+        room(W, D, H, win=(0.2, 1.3, 0.06, 2.4), m_wall=m_wall, m_floor=m_floor, m_ceil=m_ceil)
+        panel_wall(0.0, W, H, D)
+        for k, x0 in enumerate((1.75, 4.05)):
+            door_y(f'door{k}', x0, x0 + 0.82, m_door)
+        door_x('door_end', W, 0.34, 1.16, m_door)
+        mp = mat_simple('plinth2', srgb(240, 240, 238), rough=0.4)
+        for k, (a, b) in enumerate(((0.0, 1.68), (2.64, 3.98), (4.94, W))):
+            box(f'plinth_f{k}', a, b, 0.0, 0.013, 0.0, 0.08, mp, bevel=0.002)
+        box('runner', 0.6, 5.7, 0.40, 1.10, 0.0, 0.01, m_rug, bevel=0.003)
+        load_asset('potted_plant_02', loc=(5.9, 0.30, 0), rot=20)
+        world, sun = setup_world(sun_dir)
+        cal = camera((0.85, 0.45, 1.42), (5.4, 1.32, 1.15), lens=float(A.get('lens', 21)))
+        return world, sun, sun_dir, lamps, cal
+    W, D, H = 4.4, 5.2, 2.7
+    room(W, D, H, win=(2.3, 4.7, 0.06, 2.46), m_wall=m_wall, m_floor=m_floor, m_ceil=m_ceil)
+    for a, b in {'tv1': [(1.2, 3.1)], 'tv2': [(0.38, 1.10), (3.20, 3.92)]}.get(use, [(0.0, W)]):
+        panel_wall(a, b, H, D)
+    curtain('sheer', 0.12, 2.1, 4.95, 0.012, 2.64, mat_sheer())
+    box('track', 0.07, 0.17, 2.0, 5.05, 2.64, 2.67, mat_simple('track', srgb(240, 240, 238), rough=0.4))
+    yw = D - 0.012 - 0.015
+    world, sun = setup_world(sun_dir)
+    cal = camera((2.55, 0.75, 1.22), (2.15, D, 1.02), lens=30, fstop=5.6, focus=4.3)
+    if use in ('tv', 'tv1', 'tv2', 'cl'):
+        yc = yw - 0.21
+        top = credenza(1.2, 3.1, yw, color=cabcol)
+        ms = mat_simple('tv_screen', (0.012, 0.012, 0.014, 1), rough=1.0, **{'Specular IOR Level': 0.0})
+        mb = mat_simple('tv_body', (0.01, 0.01, 0.011, 1), rough=0.4)
+        tw, th, tz = 1.45, 0.83, 1.32
+        box('tv_body', 2.15 - tw / 2, 2.15 + tw / 2, D - 0.012 - 0.045, D - 0.012 - 0.012, tz - th / 2, tz + th / 2, mb, bevel=0.002)
+        box('tv_screen', 2.15 - tw / 2 + 0.008, 2.15 + tw / 2 - 0.008, D - 0.012 - 0.0465, D - 0.012 - 0.045, tz - th / 2 + 0.008, tz + th / 2 - 0.012, ms)
+        zz = books(1.55, yc - 0.02, top, 3, seed=4)
+        load_asset('ceramic_vase_02', loc=(1.55, yc - 0.02, zz), rot=20)
+        load_asset('ceramic_vase_03', loc=(2.85, yc - 0.03, top), rot=10)
+        load_asset('potted_plant_04', loc=(2.62, yc + 0.02, top), rot=40)
+        load_asset('potted_plant_01', loc=(0.62, 3.75, 0) if use == 'tv2' else (0.72, D - 0.55, 0), rot=35)
+        box('rug', 1.5, 4.15, 2.6, 4.45, 0.0, 0.012, m_rug, bevel=0.004)
+        if use == 'cl':
+            camera((3.0, 4.55, 1.2), (3.75, D - 0.012, 1.15), lens=60)
+        else:
+            camera((3.7, 1.9, 1.25), (1.9, D, 0.95), lens=26)
+    elif use == 'sofa':
+        sofa(2.2, yw, 2.3)
+        mw = mat_pbr('tbl_wood', 'oak_veneer_01', 1.83, rough=0.45, tint=srgb(206, 180, 150))
+        mk = mat_simple('tbl_legs', (0.012, 0.012, 0.013, 1), rough=0.42, metallic=1.0)
+        cyl('st_top', 3.75, yw - 0.34, 0.50, 0.522, 0.23, 0.23, mw)                    # столик с лампой
+        cyl('st_stem', 3.75, yw - 0.34, 0.012, 0.50, 0.016, 0.016, mk)
+        cyl('st_base', 3.75, yw - 0.34, 0.0, 0.012, 0.15, 0.15, mk)
+        table_lamp(3.75, yw - 0.34, 0.522, lamps)
+        cyl('ct_top', 2.3, 3.55, 0.33, 0.355, 0.45, 0.45, mw)                           # журнальный стол
+        for k in range(3):
+            a = 2 * math.pi * k / 3 + 0.5
+            cyl(f'ct_leg{k}', 2.3 + 0.33 * math.cos(a), 3.55 + 0.33 * math.sin(a), 0.0, 0.33, 0.012, 0.014, mk)
+        zz = books(2.2, 3.5, 0.355, 2, seed=6)
+        load_asset('ceramic_vase_03', loc=(2.46, 3.62, 0.355), rot=30)
+        load_asset('potted_plant_01', loc=(0.72, D - 0.55, 0), rot=35)
+        box('rug', 0.95, 3.75, 2.7, 4.75, 0.0, 0.012, m_rug, bevel=0.004)
+        camera((3.7, 1.9, 1.25), (1.9, D, 0.95), lens=26)
+    elif use == 'bed':
+        bed(2.2, yw, 1.8)
+        mw = mat_pbr('tbl_wood', 'oak_veneer_01', 1.83, rough=0.45, tint=srgb(206, 180, 150))
+        ml = mat_simple('ns_legs', srgb(52, 40, 30), rough=0.5)
+        for k, xn in enumerate((0.96, 3.44)):
+            box(f'ns{k}', xn - 0.24, xn + 0.24, yw - 0.40, yw, 0.14, 0.50, mw, bevel=0.006)
+            for q, (lx, ly) in enumerate(((xn - 0.2, yw - 0.36), (xn + 0.2, yw - 0.36), (xn - 0.2, yw - 0.04), (xn + 0.2, yw - 0.04))):
+                cyl(f'ns{k}leg{q}', lx, ly, 0.0, 0.14, 0.012, 0.016, ml)
+            table_lamp(xn, yw - 0.2, 0.50, lamps)
+        zz = books(3.44 + 0.02, yw - 0.33, 0.50, 2, seed=8)
+        load_asset('potted_plant_01', loc=(0.6, 3.3, 0), rot=35)
+        box('rug', 0.75, 3.65, 2.35, 4.35, 0.0, 0.012, m_rug, bevel=0.004)
+        camera((3.85, 1.6, 1.4), (1.9, D, 0.9), lens=26)
+    elif use == 'hall':
+        top = credenza(1.42, 2.32, yw, z0=0.12, h=0.70, depth=0.32, n_doors=2, color=cabcol)       # обувница и круглое зеркало над ней
+        disc_y('mirror_frame', 1.87, yw - 0.004, 1.52, 0.385, mat_simple('mir_fr', (0.015, 0.015, 0.016, 1), rough=0.4))
+        disc_y('mirror', 1.87, yw - 0.008, 1.52, 0.37, mat_simple('mirror', (0.92, 0.92, 0.92, 1), rough=0.02, metallic=1.0))
+        load_asset('ceramic_vase_02', loc=(1.62, yw - 0.16, top), rot=20)
+        books(2.08, yw - 0.16, top, 2, seed=5)
+        bench(2.62, 3.72, yw)                                                                   # скамья, подушка, вешалка с сумкой
+        box('bench_pad', 2.66, 3.30, yw - 0.345, yw - 0.02, 0.44, 0.50, mat_pbr('pad', 'rough_linen', 0.4, tint=srgb(196, 190, 180), nstrength=1.3), bevel=0.022)
+        mw = mat_pbr('rail_wood', 'oak_veneer_01', 1.83, rough=0.45, tint=srgb(206, 180, 150))
+        box('rail', 2.62, 3.72, yw - 0.022, yw, 1.62, 1.70, mw, bevel=0.003)
+        for k in range(5):
+            xk = 2.74 + k * 0.215
+            box(f'peg{k}', xk - 0.012, xk + 0.012, yw - 0.085, yw - 0.02, 1.648, 1.672, mw, bevel=0.003)
+        mbag = mat_pbr('bag', 'rough_linen', 0.35, tint=srgb(132, 150, 138), nstrength=1.4)
+        box('bag', 3.385 - 0.17, 3.385 + 0.17, yw - 0.105, yw - 0.035, 1.0, 1.36, mbag, bevel=0.02)
+        for k, dx in enumerate((-0.085, 0.07)):
+            box(f'bag_strap{k}', 3.385 + dx, 3.385 + dx + 0.015, yw - 0.075, yw - 0.068, 1.35, 1.66, mbag)
+        door_x('door_in', W, 3.45, 4.33, m_door)
+        load_asset('potted_plant_02', loc=(4.05, yw - 0.28, 0), rot=10)
+        box('rug', 2.2, 4.05, 3.1, 4.55, 0.0, 0.012, m_rug, bevel=0.004)
+        camera((2.5, 2.3, 1.35), (3.0, D, 1.05), lens=float(A.get('lens', 27)))
+    return world, sun, sun_dir, lamps, cal
+
+
+SCENES = {'use': scene_use, 'lounge': scene_lounge, 'arch': scene_arch, 'plinth': scene_plinth, 'studio': scene_studio, 'sample': scene_sample, 'piece': scene_piece}
 
 setup_render()
 if SCENE in ('studio', 'sample', 'piece'):
