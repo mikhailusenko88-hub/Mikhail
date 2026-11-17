@@ -1,0 +1,17 @@
+[scene   0.0s] view Khronos PBR Neutral look None
+[scene   0.0s] profile wall panels panels 5 width 0.1799
+[scene   0.0s] profile wall panels panels 5 width 0.1799
+[scene   0.1s] asset ceramic_vase_01 size 0.20 x 0.20 x 0.40 objs 1
+[scene   0.7s] asset potted_plant_01 size 0.59 x 0.63 x 1.35 objs 4
+[scene   0.8s] asset ceramic_vase_02 size 0.22 x 0.22 x 0.31 objs 1
+[scene   0.9s] asset standing_picture_frame_02 size 0.22 x 0.10 x 0.27 objs 1
+[scene   0.9s] asset potted_plant_04 size 0.17 x 0.18 x 0.27 objs 4
+[scene   0.9s] objects 84 scene built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/g_sofa2_mask/g_sofa2_mask.jpg'
+Time: 00:11.40 (Saving: 00:00.02)
+
+[scene  12.5s] final render 11.6s /home/runner/work/Mikhail/Mikhail/out/g_sofa2_mask/g_sofa2_mask.jpg
+[scene  12.5s] done
+
+Blender quit
