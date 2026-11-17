@@ -152,7 +152,7 @@ def main():
     if mode == "cancel":
         return finish([f"ОТМЕНА {a[1]}: {yt.cancel(a[1])}"])
     if mode == "lang":                                         # старым полным сериям — русский язык и категория «Фильмы и анимация» (разрешил Михаил 17.11.2026)
-        done, skip, shorts, errs = yt.set_lang()
+        done, skip, shorts, errs = yt.set_lang(limit=int(a[1]) if len(a) > 1 and a[1].isdigit() else 30)   # «lang 1» — сначала одна серия на пробу
         bad = [d for d in done if not d["text_same"] or d["now"] != ["1", "ru", "ru"]]
         return finish([f"ЯЗЫК И КАТЕГОРИЯ: исправлено серий {len(done)}, уже были в порядке {skip}, Shorts не трогал {shorts}"
                        + (f", ОШИБОК {len(errs)}" if errs else "") + (f", ПРОВЕРИТЬ {len(bad)}" if bad else ""),
