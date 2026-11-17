@@ -122,6 +122,14 @@ class Hero:
             d = self.field(o + dirn * t[:, None]); t = np.minimum(t + np.maximum(d, 0.0004) * 0.9, tmax)
             if np.all(np.abs(d) < 0.0005): break
         return o + dirn * t[:, None]
+    def hit2(self, o, dirn, tmax=0.4):
+        # как hit, но луч, дошедший до поверхности, дальше не идёт (в hit такие лучи «проваливаются» внутрь, пока не сойдутся остальные)
+        o = np.atleast_2d(o).astype(F); dirn = nrm(np.atleast_2d(dirn).astype(F)); t = np.zeros(len(o), F); done = np.zeros(len(o), bool)
+        for _ in range(120):
+            d = self.field(o + dirn * t[:, None]); done |= np.abs(d) < 0.0005
+            t = np.where(done, t, np.minimum(t + np.maximum(d, 0.0004) * 0.9, tmax))
+            if np.all(done): break
+        return o + dirn * t[:, None]
     def creases(self):
         out = []; RE = self.RE
         for E in self.EYES:

@@ -6,17 +6,19 @@ from hero_common import *
 
 class Topa(Hero):
     NAME = 'topa'
-    H = V(0, 0.0, 0.67); HEAD_R = V(0.205, 0.185, 0.178)
-    RE = 0.056; LID_OFF = 0.93; LID_K = 0.02                     # глаза большие, но сидят в голове, взгляд спокойный и добрый
-    EYES = [V(s * 0.084, -0.138, 0.692) for s in (-1, 1)]
+    def hit(self, o, dirn, tmax=0.4): return self.hit2(o, dirn, tmax)   # линии рта и усы — точно на поверхности
+    H = V(0, 0.0, 0.69); HEAD_R = V(0.2, 0.185, 0.178)                          # круглая голова (обложки)
+    RE = 0.055; LID_OFF = 0.8; LID_K = 0.03; LID_NY = 0.12                     # глаза большие, но сидят в голове, взгляд спокойный и добрый
+    EYES = [V(s * 0.075, -0.14, 0.684) for s in (-1, 1)]      # по сетке с обложек 22–23: лоб высокий, низ лица короткий      # над мордочкой, между глазами ~0,5 ширины глаза (обложки 18, 22, 26)
     IRIS = [(0.012, 0.006, 0.003), (0.07, 0.03, 0.012), (0.38, 0.18, 0.05)]      # медовые карие: сверху темнее, книзу светятся
     IRIS_STYLE = 1
-    EYE_K = (0.64, 0.885)                                                         # большая радужка и большой зрачок, белок виден по краям
+    EYE_K = (0.69, 0.93)                                                          # большая радужка — без «испуга»                                                         # большая радужка и большой зрачок, белок виден по краям
     EYE_AIM = V(0, -1.6, 0.7); EYE_DIV = 0.18
-    EYE_CENTER = (0.6, 0.5)
-    EYE_S = V(0.9, 1.0, 1.1)
-    EYE_RING = (0.07, 0.035, 0.02)
-    BROW = {'up': 1.24, 'w': 0.58, 'r': [0.0066, 0.0036], 'col': (0.06, 0.026, 0.011)}      # короткие густые бровки ближе к глазам
+    EYE_CENTER = (0.1, 0.3)                                                       # зрачок чуть ниже середины — веко касается радужки, взгляд мягкий
+    EYE_S = V(0.85, 1.0, 1.18)                                                    # вытянутый вверх овал
+    EYE_RING = (0.04, 0.02, 0.012); EYE_RING_TOP = True
+    LID_LINE = {'r': (0.0014, 0.0032), 'col': (0.035, 0.018, 0.01), 'off': 1.06, 'flick': 0.12}   # тёмная линия ресниц по верхнему веку (как на обложках)
+    BROW = {'up': 1.38, 'w': 0.5, 'r': [0.0058, 0.003], 'col': (0.13, 0.06, 0.025)}      # короткие густые бровки ближе к глазам
     SHOULD = [V(s * 0.128, -0.03, 0.44) for s in (-1, 1)]
     WRIST = [V(s * 0.186, -0.092, 0.292) for s in (-1, 1)]
     PAW = [V(s * 0.192, -0.106, 0.264) for s in (-1, 1)]
@@ -25,10 +27,10 @@ class Topa(Hero):
     TAIL = [V(0, 0.135, 0.19), V(0, 0.165, 0.205), V(0, 0.18, 0.215)]
     TAIL_R = [0.036, 0.04, 0.032]
     NECK = V(0, -0.01, 0.495)
-    SN_A = V(0, -0.115, 0.615); SN_B = V(0, -0.208, 0.606)
-    NOSE_C = V(0, -0.252, 0.64)
-    MOUTHS = {'a': (V(0, -0.214, 0.57), V(0.046, 0.042, 0.028)), 'o': (V(0, -0.216, 0.571), V(0.027, 0.042, 0.028))}
-    TONGUE = (V(0, -0.184, 0.552), V(0.025, 0.032, 0.007))
+    SN_A = V(0, -0.11, 0.626); SN_B = V(0, -0.2, 0.618)
+    NOSE_C = V(0, -0.262, 0.66)                                                  # на мордочке, а не внутри неё (иначе нос тонет в мехе)
+    MOUTHS = {'a': (V(0, -0.204, 0.586), V(0.038, 0.04, 0.024)), 'o': (V(0, -0.206, 0.587), V(0.022, 0.04, 0.024))}
+    TONGUE = (V(0, -0.18, 0.57), V(0.021, 0.03, 0.006))
     PIV = {'head': V(0, -0.01, 0.505), 'armL': SHOULD[0], 'armR': SHOULD[1], 'tail': TAIL[0]}
     BOX = {'head': ((-0.3, -0.335, 0.47), (0.3, 0.23, 0.935)), 'body': ((-0.24, -0.22, -0.01), (0.24, 0.22, 0.59)),
            'armL': ((-0.28, -0.19, 0.19), (-0.05, 0.07, 0.52)), 'armR': ((0.05, -0.19, 0.19), (0.28, 0.07, 0.52)), 'tail': ((-0.07, 0.07, 0.13), (0.07, 0.24, 0.27)),
@@ -40,8 +42,8 @@ class Topa(Hero):
     def ear_sd(self, p, i, inner=False):
         s = 1 if i else -1
         q = rotz(p - self.EAR_C[i], -s * 0.3); q = rotx(q, 0.1)
-        if inner: return sd_ell(q, V(0, -0.018, -0.002), V(0.043, 0.012, 0.041))
-        return sd_ell(q, V(0, 0, 0), V(0.072, 0.03, 0.068))
+        if inner: return sd_ell(q, V(0, -0.019, -0.004), V(0.05, 0.012, 0.047))
+        return sd_ell(q, V(0, 0, 0), V(0.08, 0.032, 0.076))
     def ear_inner(self, p): return np.minimum(self.ear_sd(p, 0, True), self.ear_sd(p, 1, True))
     PAW_F = nrm(V(0, -0.037, -0.016))
     def front_paw(self, p, i): return toe_paw(p, self.PAW[i], (0.05, 0.054, 0.042), self.PAW_F, tr=0.0172, tk=0.0062, fk=0.7, dk=0.3)
@@ -66,13 +68,13 @@ class Topa(Hero):
         t = smin(t, sd_cap(p, V(0, 0, 0.45), self.NECK + V(0, -0.005, 0.05), 0.082), 0.05)
         d['torso'] = t
         h = sd_ell(p, self.H, self.HEAD_R)
-        for s in (-1, 1): h = smin(h, sd_ell(p, V(s * 0.115, -0.075, 0.625), V(0.11, 0.098, 0.092)), 0.06)   # щёки
-        h = smin(h, sd_ell(p, V(0, -0.008, 0.76), V(0.15, 0.13, 0.085)), 0.055)                               # круглый лоб
+        for s in (-1, 1): h = smin(h, sd_ell(p, V(s * 0.1, -0.075, 0.645), V(0.1, 0.09, 0.084)), 0.06)      # щёки — мягче, без «брылей»
+        h = smin(h, sd_ell(p, V(0, -0.006, 0.785), V(0.16, 0.14, 0.088)), 0.06)                               # круглый лоб
         d['head'] = h
-        m = sd_rcone(p, self.SN_A, self.SN_B, 0.09, 0.068)                                                    # короткая широкая морда
-        m = smin(m, sd_ell(p, V(0, -0.2, 0.636), V(0.052, 0.05, 0.03)), 0.03)                                   # переносица к носу
-        for s in (-1, 1): m = smin(m, sd_ell(p, V(s * 0.036, -0.218, 0.59), V(0.043, 0.047, 0.034)), 0.028)    # губы-подушечки
-        m = smin(m, sd_ell(p, V(0, -0.178, 0.556), V(0.038, 0.056, 0.023)), 0.028)                            # подбородок
+        m = sd_rcone(p, self.SN_A, self.SN_B, 0.094, 0.07)                                                    # широкая светлая мордочка (обложки)                                                    # короткая широкая морда
+        m = smin(m, sd_ell(p, V(0, -0.19, 0.645), V(0.042, 0.042, 0.026)), 0.026)                                   # переносица к носу
+        for s in (-1, 1): m = smin(m, sd_ell(p, V(s * 0.036, -0.206, 0.597), V(0.042, 0.042, 0.032)), 0.026)    # губы-подушечки
+        m = smin(m, sd_ell(p, V(0, -0.18, 0.572), V(0.032, 0.048, 0.02)), 0.024)                            # подбородок
         d['muzzle'] = m
         d['lid'] = self.lid(p)
         d['ear'] = np.minimum(self.ear_sd(p, 0), self.ear_sd(p, 1))
@@ -93,16 +95,16 @@ class Topa(Hero):
         """Бурый медвежонок: светлая мордочка и животик, уши внутри светлее, румянец, тёмные подушечки."""
         N = len(p); x, y, z = p[:, 0], p[:, 1], p[:, 2]; w = wob(p, 1.3) * 0.5
         reg = np.where((reg0 == 9) | (reg0 == 12), np.where(z > 0.15, 5, 6), reg0)
-        brown = V(0.23, 0.085, 0.022); cream = V(0.62, 0.47, 0.3); blush = V(0.72, 0.26, 0.26)   # в кадре мех выходит примерно в полтора раза светлее заданного
+        brown = V(0.3, 0.1, 0.022); cream = V(0.72, 0.5, 0.26); blush = V(0.72, 0.26, 0.26)   # карамельно-бурый и светлая мордочка, как на обложках
         k = np.clip(0.94 + 0.1 * w - 0.14 * np.clip(y * 5, 0, 1), 0.68, 1.1); fur = brown[None] * k[:, None]
         wm = np.zeros(N, F)
         wm = np.maximum(wm, np.clip((1.1 - np.linalg.norm((p - V(0, -0.12, 0.27)) / V(0.105, 0.08, 0.15), axis=-1)) * 4, 0, 1) * (reg == 0))   # животик
         wm = np.maximum(wm, (reg == 2).astype(F))                                                                                           # мордочка
         fur = fur * (1 - wm[:, None]) + cream[None] * wm[:, None]
         for s in (-1, 1):                                                                                                                   # румянец
-            b = np.clip((1.0 - np.linalg.norm((p - V(s * 0.146, -0.13, 0.612)) / V(0.046, 0.046, 0.032), axis=-1)) * 2.5, 0, 1) * (reg == 1)
+            b = np.clip((1.0 - np.linalg.norm((p - V(s * 0.14, -0.13, 0.632)) / V(0.046, 0.046, 0.032), axis=-1)) * 2.5, 0, 1) * (reg == 1)
             fur = fur * (1 - 0.58 * b[:, None]) + blush[None] * (0.58 * b[:, None])
-        skin = fur * 0.9
+        skin = fur * 0.55
         skin = np.where((reg == 8)[:, None], V(0.46, 0.28, 0.18)[None] * (0.95 + 0.05 * w[:, None]), skin)                                    # уши внутри
         skin = np.where((reg == 10)[:, None], V(0.14, 0.03, 0.03)[None], np.where((reg == 11)[:, None], V(0.72, 0.3, 0.34)[None], skin))
         skin = np.where((reg0 == 12)[:, None], V(0.1, 0.06, 0.045)[None] * (0.95 + 0.1 * w[:, None]), skin)                                  # тёмные подушечки
@@ -124,38 +126,38 @@ class Topa(Hero):
     def fur_ok(self, p, reg):
         ok = (reg != 10) & (reg != 11) & (reg != 8) & (reg != 12)
         for E in self.EYES: ok &= self.eye_d(p, E) > self.RE + 0.005
-        ok &= np.linalg.norm(p - self.NOSE_C, axis=-1) > 0.044
+        ok &= np.linalg.norm(p - self.NOSE_C, axis=-1) > 0.042
         ok &= self.scarf_fn(p) > 0.0015                                # мех растёт вплотную к шарфу — без голой полоски на шее
         return ok
     def nose_fn(self, p):   # крупный мягкий нос-«фасолина» с ноздрями
-        c = self.NOSE_C; d = sd_ell(p, c, V(0.04, 0.024, 0.027))
-        d = smin(d, sd_ell(p, c + V(0, 0.004, -0.02), V(0.012, 0.015, 0.013)), 0.01)
-        for s in (-1, 1): d = smax(d, -sd_ell(p, c + V(s * 0.016, -0.022, -0.003), V(0.0075, 0.0065, 0.005)), 0.003)
+        c = self.NOSE_C; d = sd_ell(p, c, V(0.036, 0.021, 0.023))
+        d = smin(d, sd_ell(p, c + V(0, 0.003, -0.016), V(0.0095, 0.012, 0.01)), 0.008)
+        for s in (-1, 1): d = smax(d, -sd_ell(p, c + V(s * 0.0125, -0.017, -0.0025), V(0.006, 0.005, 0.004)), 0.0025)
         return d
-    NOSE_COL = (0.035, 0.022, 0.018); NOSE_WET = False     # тёмно-шоколадный, с мягким бликом (не «хром»)
+    NOSE_COL = (0.07, 0.035, 0.022); NOSE_WET = False     # тёмно-шоколадный, с мягким бликом (не «хром»)
     def mouth_lines(self):
         lines = []; nz = self.NOSE_C
-        phil = [V(0, -0.5, nz[2] - 0.03 - 0.022 * i / 6) for i in range(7)]
+        phil = [V(0, -0.5, nz[2] - 0.024 - 0.018 * i / 6) for i in range(7)]
         ph = self.hit(np.array(phil), np.tile(V(0, 1, 0), (7, 1)), 0.6)
         if self.MOUTH is not None:
             m0 = self.MOUTH; self.MOUTH = None; pb = self.hit(np.array(phil), np.tile(V(0, 1, 0), (7, 1)), 0.6); self.MOUTH = m0
             keep = np.linalg.norm(ph - pb, axis=-1) < 0.003; ph = ph[keep] if keep.sum() >= 2 else pb[:2]
         lines.append(ph)
         for s in (-1, 1):
-            ang = np.linspace(0, math.pi, 12); xs = s * (0.03 - 0.03 * np.cos(ang)); zs = nz[2] - 0.05 - 0.012 * np.sin(ang) + 0.016 * (xs * s / 0.06) ** 2   # улыбка: уголки вверх
+            ang = np.linspace(0, math.pi, 12); xs = s * (0.025 - 0.025 * np.cos(ang)); zs = nz[2] - 0.041 - 0.01 * np.sin(ang) + 0.014 * (xs * s / 0.05) ** 2   # улыбка: уголки вверх
             lines.append(self.hit(np.stack([xs, np.full(12, -0.5, F), zs], -1).astype(F), np.tile(V(0, 1, 0), (12, 1)), 0.6))
         return lines[:1] if self.MOUTH is not None else lines
     def whiskers(self):   # у медвежонка усов почти нет — по две короткие щетинки
         out = []
         for s in (-1, 1):
             for j, (dz, ang) in enumerate([(0.006, 0.12), (-0.006, -0.1)]):
-                o = V(s * (0.036 + 0.008 * j), -0.5, 0.592 + dz); r0 = self.hit(o, V(0, 1, 0), 0.6)[0] + V(0, 0.002, 0)
+                o = V(s * (0.03 + 0.007 * j), -0.5, 0.604 + dz); r0 = self.hit(o, V(0, 1, 0), 0.6)[0] + V(0, 0.002, 0)
                 dirn = nrm(V(s * 1.0, -0.5, ang)); out.append(np.array([r0 + dirn * 0.035 * (k / 7) + V(0, 0.004 * (k / 7) ** 2, -0.006 * (k / 7) ** 2) for k in range(8)], F))
         return out
     WHISK_R = (0.0007, 0.0002); WHISK_COL = (0.16, 0.1, 0.07)
     FUR = {'K': 0.56e6, 'dens': [1.0, 1.1, 1.0, 1.4, 1.0, 1.0, 1.0, 1.05, 0.0, 1.1], 'L': [0.015, 0.011, 0.006, 0.004, 0.007, 0.013, 0.014, 0.018, 0.0, 0.0055],
            'lean': [1.15, 1.2, 1.35, 1.35, 1.25, 1.18, 1.18, 1.0, 0.5, 1.32], 'down': [0.35, 0.2, 0.15, 0.1, 0.1, 0.22, 0.22, 0.0, 0.0, 0.1], 'rad': 0.00085, 'radLid': 0.0006,
-           'cell': 0.012, 'clump': 0.2, 'frontK': 0.5, 'spec': 0.08, 'gold': 0.1, 'ruff': [0.125, 0.56, 0.68, 10.0, 0.8, -0.2], 'earTip': None, 'chest': [0.0, -0.06, 0.41, 1.2], 'tailTip': None}
+           'cell': 0.012, 'clump': 0.2, 'frontK': 0.5, 'spec': 0.1, 'gold': 0.15, 'tip': 0.25, 'ruff': [0.125, 0.56, 0.68, 10.0, 0.8, -0.2], 'earTip': None, 'chest': [0.0, -0.06, 0.41, 1.2], 'tailTip': None}
     def fur_src(self):
         return {'nose': self.NOSE_C.tolist(), 'earOff': [0, 0.1, 0.1], 'neck': (self.NECK + V(0, 0, 0.03)).tolist(), 'should': [s.tolist() for s in self.SHOULD], 'wrist': [s.tolist() for s in self.WRIST],
                 'hip': [(h + V(0, 0, 0.06)).tolist() for h in self.HIP], 'foot': [f.tolist() for f in self.FOOT], 'tail': [t.tolist() for t in self.TAIL], 'H': self.H.tolist(), 'headR': float(self.HEAD_R[0])}

@@ -109,9 +109,19 @@ def render(eye, look, fov, W, Hh):
     ao = np.clip(scene(P + n * 0.02) / 0.02, 0.35, 1) ** 0.6
     img[hi] = col * ao[:, None]
     return img.reshape(Hh, W, 3)
+import json as _js
+for vn in list(views):
+    if vn.startswith('cam='):
+        e_, l_, f_ = vn[4:].split(':'); VW[vn] = dict(eye=tuple(map(float, e_.split(','))), look=tuple(map(float, l_.split(','))), fov=float(f_), W=600, Hh=600)
+def proj(P, eye, look, fov, W, Hh):
+    eye = V(*eye); look = V(*look); fw = nrm(look - eye); rt = nrm(np.cross(fw, V(0, 0, 1))); up = np.cross(rt, fw); d = P - eye; t = math.tan(math.radians(fov) / 2)
+    x = (d @ rt) / (d @ fw) / (t * W / Hh); y = (d @ up) / (d @ fw) / t; return [float((x + 1) / 2 * W), float((1 - y) / 2 * Hh)]
+marks = {}
 outs = []
 for vn in views:
+    marks[vn] = {'eyes': [proj(E, **VW[vn]) for E in H.EYES], 'nose': proj(H.NOSE_C, **VW[vn])}
     im = render(**VW[vn]); im = im / (1 + 0.18 * im); im = np.clip(im, 0, 1) ** (1 / 2.2); outs.append(Image.fromarray((im * 255).astype(np.uint8)))
 Wt = sum(x.size[0] for x in outs); Ht = max(x.size[1] for x in outs); sheet = Image.new('RGB', (Wt, Ht), (255, 255, 255)); x = 0
 for im in outs: sheet.paste(im, (x, 0)); x += im.size[0]
-sheet.save(os.path.join(os.environ.get('OUT', '.'), '%s.jpg' % tag), quality=92); print('ok', sheet.size)
+sheet.save(os.path.join(os.environ.get('OUT', '.'), '%s.jpg' % tag), quality=92)
+open(os.path.join(os.environ.get('OUT', '.'), '%s.json' % tag), 'w').write(_js.dumps(marks)); print('ok', sheet.size)

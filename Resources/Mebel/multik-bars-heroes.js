@@ -34,7 +34,7 @@ function THREE_Color(r, g, b) { return { r, g, b, isColor: true, _lazy: [r, g, b
 // ---------- нити: шерсть и трава, ленточки из текстуры точек (без атрибутов, по gl_VertexID) ----------
 function strandVS(depth) { return GL_HEAD + `
 uniform sampler2D uPts, uCol, uB0, uB1, uB2, uNrm; uniform int uK; uniform int uLive, uCull; uniform float uCullK, uKT; uniform float uRadK, uTaper, uPx, uMinPx; uniform vec4 uGR; uniform int uGrass; uniform vec3 uCamDir;
-uniform float uTime, uWind; uniform mat4 uPartM[6]; uniform int uBlink, uDec, uDecC, uHideArm; uniform vec4 uMouthC; uniform vec3 uMouthR; uniform int uPoseOn; uniform sampler2D uPA, uPB; uniform float uPW;
+uniform float uTime, uWind, uTipK; uniform mat4 uPartM[6]; uniform int uBlink, uDec, uDecC, uHideArm; uniform vec4 uMouthC; uniform vec3 uMouthR; uniform int uPoseOn; uniform sampler2D uPA, uPB; uniform float uPW;
 out vec3 vCol; out vec3 vE; out vec4 vVis; out vec3 vT; out vec3 vP; out float vCov; out float vTT; out float vMist;
 vec3 P(int i) { return TX(uPts, i).xyz; }
 void main() {
@@ -73,7 +73,8 @@ void main() {
       E += Cs[j] * (.3 + .7 * sqrt(max(0.0, 1.0 - c * c))) * pow(vec3(max(v, 1e-4)), ke); vn[j] = v; }
     vE += E; vVis = vn; }
   if (uGrass == 1) vCol = mix(vec3(0.02, 0.06, 0.01), vec3(0.25, 0.45, 0.06), tt);
-  else vCol *= mix(vec3(0.62, 0.55, 0.5), vec3(1.0), 1.0 - (1.0 - tt) * (1.0 - tt));`}
+  else { vCol *= mix(vec3(0.62, 0.55, 0.5), vec3(1.0), 1.0 - (1.0 - tt) * (1.0 - tt));
+    if (uTipK > 0.0) vCol = mix(vCol, min(vCol * 1.55 + vec3(0.05, 0.04, 0.03), vec3(1.0)), smoothstep(.45, 1.0, tt) * uTipK); }`}   // светлые кончики (у героя info.fur.tip)
 }`; }
 const STRAND_FS = GL_HEAD + `
 uniform int uGrass, uDbgS; uniform float uHairK, uMS, uSpec, uDesat, uGold; uniform vec3 uGoldT;
@@ -444,6 +445,7 @@ async function buildTemplate(name) {
   T.mouthB = info.lines.mouth_base.map(l => tube(l, .0017 * sc, .0015 * sc, [0.12, 0.04, 0.03], 'mouth'));
   T.mouthO = info.lines.mouth_open.map(l => tube(l, .0017 * sc, .0015 * sc, [0.12, 0.04, 0.03], 'mouthO', { noOcc: true }));
   T.creases = info.lines.creases.map(l => tube(l, .0012 * sc, .0024 * sc, [0.07, 0.035, 0.02], 'crease', { noOcc: true }));
+  T.lidL = (info.lines.lid || []).map(l => tube(l, (info.lidR || [.0012, .0026])[0], (info.lidR || [.0012, .0026])[1], info.lidCol || [0.05, 0.035, 0.03], 'lid', { noOcc: true }));   // линия ресниц открытого глаза (если есть у героя)
   // ---- мимика: брови (мягкие, чуть темнее шерсти) и улыбка/грусть линией рта — варианты, телефон переключает по эмоции ----
   { const hs = D.skins.head, HP = hs.p, HN = hs.n, HF = hs.fd, nh = hs.nv, RE2 = info.re, Lf = info.fur && info.fur.L ? info.fur.L[1] || .006 : .006;
     const cand = []; { const ctr = info.eyes.map(V3); for (const l of info.lines.mouth_base) ctr.push(V3(l[l.length >> 1])); const r2 = (RE2 * 3.2) ** 2;   // искать поверхность только у глаз и рта — в 20 раз быстрее
@@ -515,7 +517,7 @@ function instance(T, U, baked) {
   // шерсть (блеск, «золото» и рассеяние можно задать у героя: info.fur.spec / gold / ms / hairK — иначе как у Пика и Рона)
   const FQ = (T.info && T.info.fur) || {};
   const fu = { uPts: { value: T.fur.ptsTex }, uCol: { value: T.fur.colTex }, uB0: { value: baked ? T.fur.B[0] : null }, uB1: { value: baked ? T.fur.B[1] : null }, uB2: { value: baked ? T.fur.B[2] : null }, uK: { value: 5 }, uRadK: { value: 0.001 }, uTaper: { value: .85 },
-    uPx: { value: .001 }, uMinPx: { value: .6 }, uGR: { value: new THREE.Vector4() }, uGrass: { value: 0 }, uCamDir: { value: new THREE.Vector3() }, uTime: { value: 0 }, uWind: { value: 0 }, uHairK: { value: FQ.hairK != null ? FQ.hairK : .095 }, uMS: { value: FQ.ms != null ? FQ.ms : .25 }, uSpec: { value: FQ.spec != null ? FQ.spec : .2 }, uDesat: { value: 0 },
+    uPx: { value: .001 }, uMinPx: { value: .6 }, uGR: { value: new THREE.Vector4() }, uGrass: { value: 0 }, uCamDir: { value: new THREE.Vector3() }, uTime: { value: 0 }, uWind: { value: 0 }, uHairK: { value: FQ.hairK != null ? FQ.hairK : .095 }, uMS: { value: FQ.ms != null ? FQ.ms : .25 }, uSpec: { value: FQ.spec != null ? FQ.spec : .2 }, uDesat: { value: 0 }, uTipK: { value: FQ.tip || 0 },
     uGold: { value: FQ.gold != null ? FQ.gold : .85 }, uGoldT: { value: new THREE.Vector3(1, .66, .25) }, uPartM: { value: [0, 1, 2, 3, 4, 5].map(() => new THREE.Matrix4()) }, uBlink: { value: 0 }, uNrm: { value: T.fur.nrmTex }, uLive: { value: baked ? 1 : 0 }, uCull: { value: baked ? 1 : 0 }, uCullK: { value: -.3 }, uKT: { value: .5 }, uDec: { value: 2 },
     uPoseOn: { value: 0 }, uPA: { value: null }, uPB: { value: null }, uPW: { value: 0 }, uDbgS: { value: 0 }, uHideArm: { value: 0 }, uDecC: { value: 1 }, uMouthC: { value: new THREE.Vector4() }, uMouthR: { value: new THREE.Vector3(1, 1, 1) } };
   const fmat = raw(strandVS(false), STRAND_FS, fu, { side: THREE.DoubleSide, alphaToCoverage: false });   // alpha-to-coverage на iPhone рисует сетку тёмных точек — шерсть сплошная, сглаживает MSAA
@@ -536,7 +538,7 @@ function instance(T, U, baked) {
     if (it.eye != null) { const e = T.eyes[it.eye]; const co = new THREE.Mesh(e.co.geo, coMat()); co.position.copy(e.co.pos); co.quaternion.copy(e.co.quat); co.userData = { cornea: true, bars: true }; co.frustumCulled = false; m.add(co); I.eyes.push({ e: m, co, irisInv: it.irisInv }); I.corn.push(co); I.meshes.push(co); }
   }
   const byIt = new Map(I.meshes.filter(m => m.userData.it).map(m => [m.userData.it, m]));
-  I.mouthB = T.mouthB.map(it => byIt.get(it)); I.mouthO = T.mouthO.map(it => byIt.get(it)); I.creases = T.creases.map(it => byIt.get(it));
+  I.mouthB = T.mouthB.map(it => byIt.get(it)); I.mouthO = T.mouthO.map(it => byIt.get(it)); I.creases = T.creases.map(it => byIt.get(it)); I.lidL = (T.lidL || []).map(it => byIt.get(it));
   I.mouthSm = (T.mouthSm || []).map(it => byIt.get(it)); I.mouthSd = (T.mouthSd || []).map(it => byIt.get(it)); I.brows = {}; for (const k in (T.brows || {})) I.brows[k] = T.brows[k].map(it => byIt.get(it)); I.lash = {}; for (const k in (T.lash || {})) I.lash[k] = T.lash[k].map(it => byIt.get(it));
   I.restPose = () => { for (const k of ['head', 'armL', 'armR', 'tail', 'body']) G[k].matrix.identity(); G.legs.forEach(g => g.matrix.identity()); setFace(I, 'base', false, 'neutral', 1); root.updateMatrixWorld(true); partMats(I); };
   I.restPose();
@@ -548,7 +550,7 @@ const FACE = { smile: ['sm', 'neutral'], happy: ['sm', 'neutral'], love: ['sm', 
 function setFace(I, m, closed, emo, ek) { for (const k in I.heads) I.heads[k].visible = k === (closed ? 'blink' : m); for (const e of I.eyes) { e.e.visible = !closed; e.co.visible = !closed; }
   const fc = FACE[(ek == null || ek > .4) ? emo : 'neutral'] || ['b', 'neutral'], mv = m === 'base' && !closed ? fc[0] : '';
   for (const o of I.mouthSm || []) o.visible = mv === 'sm'; for (const o of I.mouthSd || []) o.visible = mv === 'sd'; for (const k in I.brows || {}) for (const o of I.brows[k]) o.visible = k === fc[1];
-  for (const o of I.mouthB) o.visible = !closed && m === 'base' && mv === 'b'; for (const o of I.mouthO) o.visible = !closed && m !== 'base'; for (const o of I.creases) o.visible = closed && !I.lash.calm; I.fu.uBlink.value = closed ? 1 : 0;
+  for (const o of I.mouthB) o.visible = !closed && m === 'base' && mv === 'b'; for (const o of I.mouthO) o.visible = !closed && m !== 'base'; for (const o of I.creases) o.visible = closed && !I.lash.calm; for (const o of I.lidL || []) o.visible = !closed; I.fu.uBlink.value = closed ? 1 : 0;
   { const lk = closed ? (/^(laugh|happy|smile|love)$/.test((ek == null || ek > .4) ? emo : '') ? 'up' : 'calm') : ''; for (const k in I.lash || {}) for (const o of I.lash[k]) o.visible = k === lk; }
   const mz = I.T.mouthZ && !closed && I.T.mouthZ[m]; I.fu.uMouthC.value.set(mz ? mz.c[0] : 0, mz ? mz.c[1] : 0, mz ? mz.c[2] : 0, mz ? 1 : 0); if (mz) I.fu.uMouthR.value.set(mz.r[0], mz.r[1], mz.r[2]); }
 const _toB = () => new THREE.Matrix4().set(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1);

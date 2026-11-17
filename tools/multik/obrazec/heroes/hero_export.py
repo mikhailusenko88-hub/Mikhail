@@ -129,6 +129,19 @@ else:
     Hh.set_var('base'); mb = Hh.mouth_lines(); Hh.set_var('a'); mo = Hh.mouth_lines(); Hh.set_var('blink'); cr = Hh.creases(); Hh.set_var('base')
     pad = lambda ls: np.array([np.pad(m, ((0, 12 - len(m)), (0, 0)), mode='edge') for m in ls])
     LINES = {'mouth_base': pad(mb), 'mouth_open': pad(mo), 'creases': np.array(cr), 'whisk': np.array(Hh.whiskers())}
+    if getattr(Hh, 'LID_LINE', None):   # линия ресниц по краю верхнего века открытого глаза: от внутреннего уголка к внешнему, у внешнего — толще и с хвостиком
+        LL = []; Es = Hh.EYE_S if Hh.EYE_S is not None else V(1, 1, 1)
+        for E in Hh.EYES:
+            n = Hh.lid_n(E); c0 = n * Hh.RE * Hh.LID_OFF; rr = Hh.RE * math.sqrt(max(1e-6, 1 - Hh.LID_OFF ** 2))
+            a1 = nrm(np.cross(n, V(0, 0, 1))); a2 = np.cross(n, a1); a2 = a2 if a2[1] < 0 else -a2
+            o = np.sign(E[0]); pts = []
+            for j in range(15):
+                t = (j / 14 * 2 - 1) * 1.02; ang = t * math.pi / 2
+                q = c0 + (a1 * math.sin(ang) * (o if np.dot(a1, V(1, 0, 0)) > 0 else -o) + a2 * math.cos(ang)) * rr
+                q = nrm(q) * Hh.RE * Hh.LID_LINE.get('off', 1.07); pts.append(E + q * Es)
+            ext = pts[-1] + nrm(pts[-1] - pts[-2]) * Hh.RE * Hh.LID_LINE.get('flick', 0.18) + V(0, 0, Hh.RE * 0.06); pts.append(ext)
+            LL.append(np.array(pts, F))
+        LINES['lid'] = np.array(LL)
     PIV = Hh.PIV; WHISK = {'r': list(Hh.WHISK_R), 'col': list(Hh.WHISK_COL)}; NOSE = {'col': list(getattr(Hh, 'NOSE_COL', (0.85, 0.47, 0.52))), 'wet': bool(getattr(Hh, 'NOSE_WET', False))}
     FUR = dict(Hh.FUR); src = Hh.fur_src(); SRC = {k: src[k] for k in ['nose', 'earOff', 'neck', 'should', 'wrist', 'hip', 'foot', 'tail']}
     if FUR.get('chest') and len(FUR['chest']) == 4: FUR['chest'] = FUR['chest'][1:]
@@ -173,7 +186,7 @@ for sk, (v, f, n, reg) in SKINS.items():
     reg = np.asarray(reg).astype(np.int32); skin, fur = HERO.colors(v, reg, n)
     if part == 'head' and var != 'blink':   # тёмная «подводка» вокруг глаз
         ring = np.zeros(len(v), bool)
-        for c in EY: q = v - c; ring |= (np.linalg.norm(HERO.eye_q(q) if hasattr(HERO, 'eye_q') else q, axis=-1) < RE * 1.18) & (q[:, 1] < RE * 0.16)
+        for c in EY: q = v - c; ring |= (np.linalg.norm(HERO.eye_q(q) if hasattr(HERO, 'eye_q') else q, axis=-1) < RE * 1.18) & (q[:, 1] < RE * 0.16) & ((q[:, 2] > -RE * 0.05) if getattr(HERO, 'EYE_RING_TOP', False) else True)   # EYE_RING_TOP — только линия ресниц по верхнему веку
         skin[ring] = getattr(HERO, 'EYE_RING', (0.09, 0.04, 0.02) if name == 'barsik' else (0.05, 0.035, 0.03))
     sss = np.where(reg == 8, 0.9, np.where(reg == 4, 0.5, 0.18))
     ok = HERO.fur_ok(v, reg)
@@ -210,6 +223,7 @@ if getattr(HERO, 'EYE_CENTER', 0):   # радужка — в середину в
         yw = math.atan2(c[0], -c[1]) * kh; pt = math.atan2(c[2], -c[1]) * kv; d = nrm(V(math.tan(yw), -1, math.tan(pt))); dirs.append(ax(d).tolist())
     man['info']['eyeDirs'] = dirs; log('радужка смотрит', [[round(x, 3) for x in d] for d in dirs])
 if getattr(HERO, 'EYE_S', None) is not None: es = HERO.EYE_S; man['info']['eyeS'] = [float(es[0]), float(es[2]), float(es[1])]   # в осях глаза: вбок, вверх, вперёд
+if getattr(HERO, 'LID_LINE', None): man['info']['lidR'] = list(HERO.LID_LINE.get('r', (0.0012, 0.0026))); man['info']['lidCol'] = list(HERO.LID_LINE.get('col', (0.05, 0.035, 0.03)))
 if getattr(HERO, 'BROW', None): man['info']['brow'] = {k: (list(v) if isinstance(v, (list, tuple)) else float(v)) for k, v in HERO.BROW.items()}
 man['info']['toeY'] = float(getattr(HERO, 'TOE_Z', 0.0)); man['info']['irisS'] = int(getattr(HERO, 'IRIS_STYLE', 0))
 if getattr(HERO, 'MOUTHS', None):   # где открыт рот (в осях телефона) — там шерсть закрытых губ прячется, пока рот открыт
