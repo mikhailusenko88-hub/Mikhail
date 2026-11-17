@@ -3018,22 +3018,42 @@ function arcOf(S, lib, hugF) { let n = 0, a = 9, b = -9;
   const kd = MK3D.ARC_DEPTH != null ? MK3D.ARC_DEPTH : 1, k = kd * (n <= 2 ? 0 : n <= 3 ? .55 * (n - 2) : n <= 4 ? .55 + .15 * (n - 3) : n <= 5 ? .7 + .15 * (n - 4) : .85) * clamp((b - a - .2) / .1, 0, 1);   /* трое — 0,55 м, четверо — 0,7, пятеро и больше — 0,85: глубже — середина мельчит */
   return k > 0 ? { mid: (a + b) / 2, half: (b - a) / 2, k } : null; }
 function arcDz(A, st) { if (!A || !st) return 0; const u = Math.min(1, Math.abs(st.x - A.mid) / A.half); return -A.k * (1 - u * u); }   /* глубина героя на полукруге, м: 0 у крайних, −k в середине */
+// средний план «по промежуткам»: края кадра ставим между героями — сдвигом вбок и расстоянием камеры (0,8…1,24 от обычного), чтобы сосед был либо целиком в кадре,
+// либо целиком за ним, а не половиной у края. Решение одно на весь план (по его началу, середине и концу), поэтому камера внутри плана не дёргается.
+function mediumFit(c, id, seg, lib, zk) {
+  if (c._mf && c._mf.id === id && c._mf.zk === zk) return c._mf;
+  const lc = lib.characters[id], rg = lc && rigFor(lc), fit = c._mf = { id, zk, d: 0, s: 1 }; if (!rg || !rg.headH || !global.MK || !global.MK._sceneState || MK3D.MEDIUM_FIT === false) return fit;
+  const cs = seg.cam.filter(q => !q.shake), i = cs.indexOf(c), tA = c.t, tB = i >= 0 && i + 1 < cs.length ? cs[i + 1].t : seg.t1 - seg.t0;
+  const times = tB - tA > 1.2 ? [tA + .2, (tA + tB) / 2, tB - .2] : [(tA + tB) / 2];
+  const hy = rg.headH, hr = rg.headR, D0 = Math.max(hr * 11.5, hy * 1.9) / zk, T = Math.tan(19 * Math.PI / 180), TX = T * 16 / 9, half0 = D0 * TX;
+  const sMin = Math.max(.8, Math.min(1, Math.max(hy * .4 + hr * 1.75 + .05, hy * .6 + .02) / T / D0));   // ближе нельзя: герой во весь рост, с ушками и лапами
+  const wOf = o => { const l = lib.characters[o], r = l && rigFor(l); return r && r.headR ? r.headR * 1.8 + .04 : .7; };   // полуширина героя с ушами и лапами ≈ 1,8 радиуса головы
+  const fr = []; let side = null; for (const t of times.length > 1 ? [times[1], times[0], times[2]] : times) { let S; try { S = global.MK._sceneState({ audio: {} }, seg, t, 0); } catch (e) { return fit; } const st = S[id]; if (!st || !st.vis) continue;
+    const A = arcOf(S, lib), zOf = q => -(q.z || 0) * 1.5 + arcDz(A, q), x = X(st.x), z = zOf(st); if (side == null) fit.side = side = st.face < 0 ? -1 : 1;   // с какой стороны камера — по середине плана и на весь план (герой повернул голову — камера не прыгает)
+    fr.push({ look: x + side * hr * .4, off: side * hr * 1.2, hx: x, nb: Object.keys(S).filter(o => o !== id && S[o].vis && lib.characters[o] && !(S[o].walk && S[o].walk.on) && S[o].x > -.05 && S[o].x < 1.05).map(o => ({ o, x: X(S[o].x), dz: z - zOf(S[o]), w: wOf(o), wt: 1 })) }); }
+  for (const f of fr.slice(1)) for (const n of f.nb) { const m = fr[0].nb.find(q => q.o === n.o); if (!m || Math.abs(m.x - n.x) > .3) n.wt = .5; }   // кто за время плана перешёл на другое место — в начале и в конце плана считается вполовину (главное — середина)
+  if (!fr.some(f => f.nb.length)) return fit;
+  const proj = (f, n, d, D) => { const cam = f.look + f.off + d, k = D / Math.max(.3, D + n.dz); return { x: cam + (n.x - cam) * k, w: n.w * k, k }; };   // сосед на плоскости героя, как его видит камера
+  const edges = (f, d, D) => { const cam = f.look + f.off + d, tp = -f.off / D; return [cam + D * (tp - TX) / (1 + tp * TX), cam + D * (tp + TX) / (1 - tp * TX)]; };   // края кадра на плоскости героя (камера смотрит чуть сбоку — кадр несимметричен)
+  const cost = (d, s) => { const D = D0 * s, half = D * TX; let c = 0;
+    for (const f of fr) { const cx = f.look + d, u = Math.abs(f.hx - cx) / half, [L, R] = edges(f, d, D); if (u > .58) return 99; c += .6 * Math.max(0, u - .2) * ((f.hx - cx) * side > 0 ? 1.6 : 1);   // герой не у края кадра, тем более не носом в край: перед взглядом — место
+      for (const n of f.nb) { const q = proj(f, n, d, D), vis = Math.min(R, q.x + q.w) - Math.max(L, q.x - q.w); if (vis <= .03 || vis >= 2 * q.w - .03) continue; const v = vis / (2 * q.w); c += n.wt * 4 * v * (1 - v); } }   // 0 — цел или за кадром, 1 — разрезан пополам
+    return c / fr.length + .7 * Math.abs(Math.log(s)) + .04 * Math.abs(d) / half0; };
+  let best = cost(0, 1); fit.c0 = fit.c = best; if (best < .02) return fit;
+  for (const s of [1, .93, .86, .8, 1.08, 1.16, 1.24]) { if (s < sMin - 1e-6) continue; const D = D0 * s, half = D * TX, ds = [0];
+    for (const f of fr) for (const n of f.nb) { const q = proj(f, n, 0, D), [L, R] = edges(f, 0, D); ds.push((q.x + q.w - L + .06) / q.k, (q.x - q.w - L - .06) / q.k, (q.x - q.w - R - .06) / q.k, (q.x + q.w - R + .06) / q.k); }   // сосед слева/справа: убрать за край или взять целиком
+    for (const d of ds) { if (Math.abs(d) > half * .5) continue; const cc = cost(d, s); if (cc < best - 1e-6) { best = cc; fit.d = d; fit.s = s; fit.c = cc; } } }
+  return fit; }
 function camFor(c, S, seg, lib) {
   const h = id => { const lc = lib.characters[id]; return lc ? (lc.spec.height || 1) * (lc.spec.kind === 'human' && (lc.spec.age === 'adult' || lc.spec.age === 'old') ? 1.62 : lc.spec.kind === 'human' ? 1.02 : 1) : 1; };
   const ARCc = arcOf(S, lib);   /* камера знает настоящую глубину героя на полукруге: крупный и средний план не «наезжают» и не мельчат */
   const px = id => S[id] ? X(S[id].x) : 0, pz = id => S[id] ? -(S[id].z || 0) * 1.5 + arcDz(ARCc, S[id]) : 0;
   const ids = Object.keys(seg.C);
   const topOf = id => { const lc = lib.characters[id], rg = lc && rigFor(lc); return rg && rg.headH ? rg.headH + rg.headR * 1.75 : 1.1 * h(id); }; // макушка с ушками — всегда в кадре
-  // средний план: сосед не должен торчать половиной у края кадра — чуть сдвигаем кадр, чтобы он вошёл целиком или ушёл совсем
-  const edgeFit = (v, id) => { const zOf = o => pz(o), dist = v.pos.z - zOf(id); if (!(dist > .3)) return v; const half = dist * Math.tan(19 * Math.PI / 180) * 16 / 9, cx = v.look.x, hx = px(id); let need = 0;
-    for (const o of ids) { if (o === id || !S[o] || S[o].vis === false) continue; const k = dist / Math.max(.3, v.pos.z - zOf(o)), ox = v.pos.x + (px(o) - v.pos.x) * k, ow = (.5 * h(o) + .2) * k, L = cx - half, R = cx + half; if (ox + ow <= L || ox - ow >= R) continue; if (ox - ow >= L && ox + ow <= R) continue;   // сосед ближе к камере — на экране шире и дальше от центра
-      const opts = ox < cx ? [ox + ow - L, -(L - (ox - ow))] : [-(R - (ox - ow)), (ox + ow) - R];   // [убрать соседа, взять целиком] — сдвиг центра кадра
-      const ok = opts.filter(d => Math.abs(d) <= half * .4 && Math.abs(hx - (cx + d)) <= half * .55).sort((a, b) => Math.abs(a) - Math.abs(b)); if (ok.length && Math.abs(ok[0]) > Math.abs(need)) need = ok[0]; }
-    if (need) { v.pos.x += need; v.look.x += need; } return v; };
   if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close', side = c.vert ? 0 : S[id] && S[id].face < 0 ? -1 : 1;   /* vert — Shorts 9:16: герой по центру кадра */
     const lc = lib.characters[id], rg = lc && rigFor(lc); if (rg && rg.headH) { const hy = rg.headH, hr = rg.headR, zk = c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1; // кадр по голове героя: крупно — лицо и плечи, средний — во весь рост
       return close ? { pos: new THREE.Vector3(x + side * hr * .9, hy - hr * .05, z + hr * 6.4 / zk), look: new THREE.Vector3(x + side * hr * .2, hy - hr * .32, z) }
-        : (c.vert ? (v0 => v0) : v0 => edgeFit(v0, id))({ pos: new THREE.Vector3(x + side * hr * 1.6, hy * .78, z + Math.max(hr * 11.5, hy * 1.9) / zk), look: new THREE.Vector3(x + side * hr * .4, hy * .6, z) }); }
+        : (mf => { const sd = mf.side != null ? mf.side : side; return { pos: new THREE.Vector3(x + sd * hr * 1.6 + mf.d, hy * .78, z + Math.max(hr * 11.5, hy * 1.9) / zk * mf.s), look: new THREE.Vector3(x + sd * hr * .4 + mf.d, hy * .6, z) }; })(c.vert ? { d: 0, s: 1 } : mediumFit(c, id, seg, lib, zk)); }   // средний: края кадра — между героями
     return { pos: new THREE.Vector3(x + side * (close ? .13 : .3), (close ? .78 : .8) * hh + (close ? .02 : .06), z + (close ? 1.15 : 2.15) * Math.max(.8, hh) / (c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1)), look: new THREE.Vector3(x + side * (close ? .03 : .08), (close ? .7 : .56) * hh, z) }; }
   // «группа» и «двое»: кадр подбирается с учётом глубины — кто ближе к зрителю, тот на экране шире; плоскость кадра — по средней глубине группы
   const frameFit = (list, pad, dmin, dmax, pts) => { const z0 = list.reduce((a, id) => a + pz(id), 0) / Math.max(1, list.length); let lo = 1e9, hi = -1e9, mid = 0, d = dmax;
