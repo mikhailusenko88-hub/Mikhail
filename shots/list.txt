@@ -1,7 +1,7 @@
 # имя | адрес | desktop|mobile | js
-# 17.11.2026 — служебная страница визуализаций: новые сцены
-viz2-m | https://nashdekor.ru/vizual/?s=41 | mobile | 
-viz2-sofa-m | https://nashdekor.ru/vizual/?s=42 | mobile | document.querySelector('[data-s="sofa"]').click()
-viz2-sofa-col-m | https://nashdekor.ru/vizual/?s=43 | mobile | document.querySelector('[data-s="sofa"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A907')).click(); setTimeout(()=>{document.querySelector('.dots button[data-c^="#"]').click()},900)},300)
-viz2-tv2-col-d | https://nashdekor.ru/vizual/?s=44 | desktop | document.querySelector('[data-s="tv2"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A910')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[2].click()},900)},300)
-viz2-pan-m | https://nashdekor.ru/vizual/?s=45 | mobile | document.querySelector('[data-m="p"]').click()
+# 17.11.2026 — служебная страница визуализаций: прихожая, за диваном (полосы)
+viz3-m | https://nashdekor.ru/vizual/?s=51 | mobile | 
+viz3-hall-m | https://nashdekor.ru/vizual/?s=52 | mobile | document.querySelector('[data-s="hall"]').click()
+viz3-hall-col-d | https://nashdekor.ru/vizual/?s=53 | desktop | document.querySelector('[data-s="hall"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A907')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[3].click()},900)},300)
+viz3-sofa2-col-d | https://nashdekor.ru/vizual/?s=54 | desktop | document.querySelector('[data-s="sofa2"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A905')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[6].click()},900)},300)
+viz3-sofa1-col-m | https://nashdekor.ru/vizual/?s=55 | mobile | document.querySelector('[data-s="sofa1"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('GS2')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[4].click()},900)},300)
