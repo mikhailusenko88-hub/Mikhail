@@ -1,3 +1,3 @@
 # Снятые страницы
 
-- 01 200 https://nashdekor.ru/avito.xml (162879 симв.)
+- 01 200 https://t.me/s/nashdekorspb (3575 симв.)
