@@ -1,0 +1,7 @@
+# черновики (быстрая дорожка, .github/workflows/draft.yml): имя  аргументы для scene.py
+w_desk_a907 scene=use use=desk decor=A907 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=900x600 ev=-0.9 calfile=cal_photo.json samples=48 noise=0.08
+w_desk_37 scene=use use=desk decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=900x600 ev=-0.9 calfile=cal_photo.json samples=48 noise=0.08
+w_tvc_a910 scene=use use=tvc decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=900x600 ev=-0.9 calfile=cal_photo.json samples=48 noise=0.08
+w_tvc_37 scene=use use=tvc decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=900x600 ev=-0.9 calfile=cal_photo.json samples=48 noise=0.08
+w_cor_a910 scene=use use=cor decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=900x600 ev=-2.3 calfile=cal_cor.json samples=48 noise=0.08
+w_cor_37 scene=use use=cor decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=900x600 ev=-2.3 calfile=cal_cor.json samples=48 noise=0.08
