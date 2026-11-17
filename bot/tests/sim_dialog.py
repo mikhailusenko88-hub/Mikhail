@@ -6,7 +6,7 @@
     python3 tests/sim_dialog.py --script мой_сценарий.txt                     # свой сценарий
 
 Сценарий — строки:  «> текст» — клиент пишет; «* Кнопка» — клиент жмёт кнопку (по началу подписи);
-«M> текст» — пишет менеджер; «# …» — комментарий. Без --site берётся маленький каталог из тестов.
+«M> текст» — пишет менеджер; «M* Кнопка» — менеджер жмёт кнопку; «# …» — комментарий. Без --site берётся маленький каталог из тестов.
 Печатает всё, что бот отправил: текст (без HTML) и кнопки — так видно логику целиком.
 """
 from __future__ import annotations
@@ -56,8 +56,15 @@ M> /owner 111222
 * Напишите мне
 * Пропустить
 * Согласен
-* Связаться с менеджером
+* Написать менеджеру
 > Сколько ждать доставку?
+> А907 есть в наличии?
+M* Ответить
+M> Доставим завтра, А907 есть
+M> Что-нибудь ещё?
+> Спасибо, а плинтус к ней?
+M* Закончить
+* Рассчитать стену
 > /cancel
 """
 
@@ -146,27 +153,29 @@ async def main() -> None:
             text = line[2:]
             print(f"\n→ клиент: «{text}»")
             await engine.handle(Incoming(user_id=CLIENT, first_name="Иван", text=text, message_id="in"))
-        elif line.startswith("* "):
-            label = line[2:]
+        elif line.startswith(("* ", "M* ")):
+            who_uid, name = (MANAGER, "Юлия") if line.startswith("M") else (CLIENT, "Иван")
+            label = line.split("* ", 1)[1]
             hit = None
             for kind, uid, mid, _text, kb in reversed(t.log):
-                if uid == CLIENT and kb:
+                if uid == who_uid and kb:
                     hit = next(((mid, b) for row in kb.rows for b in row if b.text.startswith(label)), None)
                     if hit:
                         break
+            role = "менеджера" if who_uid == MANAGER else "клиента"
             if not hit:
-                print(f"\n!! у клиента нет кнопки «{label}»")
+                print(f"\n!! у {role} нет кнопки «{label}»")
                 continue
             mid, b = hit
-            print(f"\n⊙ клиент жмёт [{b.text}]")
+            print(f"\n⊙ {'менеджер' if who_uid == MANAGER else 'клиент'} жмёт [{b.text}]")
             if b.url:
                 print(f"     (ссылка {b.url})")
                 continue
             if b.data:
-                await engine.handle(Incoming(user_id=CLIENT, first_name="Иван", data=b.data, message_id=mid,
+                await engine.handle(Incoming(user_id=who_uid, first_name=name, data=b.data, message_id=mid,
                                              callback_id="c"))
             else:
-                await engine.handle(Incoming(user_id=CLIENT, first_name="Иван", text=b.text, message_id="in"))
+                await engine.handle(Incoming(user_id=who_uid, first_name=name, text=b.text, message_id="in"))
         for kind, uid, mid, text, kb in t.log[pos:]:
             who = "клиенту" if uid == CLIENT else "менеджеру" if uid == MANAGER else str(uid)
             if kind == "toast":

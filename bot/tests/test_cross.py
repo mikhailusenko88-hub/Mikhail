@@ -30,8 +30,9 @@ def run(coro):
 async def setup(tmp_path, **kw):
     fake = FakeMax()
     url = await fake.start()
+    kw.setdefault("telegram_collect_contacts", False)
     cfg = make_cfg(tmp_path, bot_token="42:TEST", max_token=MAX_TOKEN, max_api_url=url,
-                   telegram_collect_contacts=False, site_url="https://example.ru", **kw)
+                   site_url="https://example.ru", **kw)
     store = make_store()
     t = TgHarness(cfg, Database(cfg.db_path), store, NAMES)        # процесс Telegram
     m = MaxHarness(cfg, Database(cfg.db_path), store, fake, url, NAMES)  # процесс MAX (свой коннект к базе)
@@ -156,6 +157,48 @@ def test_two_messengers_one_shop(tmp_path):
         await m.start(MAX_CLIENT, link.split("start=", 1)[1])  # клиент открыл ссылку в MAX
         assert f"Итого: 19{NB}шт" in f.last(MAX_CLIENT)
         assert payloads(f.last_body(MAX_CLIENT))[0] == "ls|A907|3000|2700"  # там можно отправить менеджеру
+        await teardown(t, m, f)
+
+    run(scenario())
+
+
+def test_staff_gets_messages_where_client_writes(tmp_path):
+    """Менеджер в обоих мессенджерах, Telegram с приёмом заявок: сообщение клиента из Telegram — ему в Telegram
+    (видно целиком, фото тоже), из MAX — в MAX. В «Уведомлениях» можно выбрать «всё в MAX» (17.11.2026)."""
+    async def scenario():
+        t, m, f = await setup(tmp_path, telegram_collect_contacts=True)
+        s = t.s
+        await m.send(MGR_MAX, f"/owner {CODE}")
+        await m.send(MGR_MAX, "Уведомления")
+        await m.press(MGR_MAX, "lnk|tg")
+        await t.send(MGR_TG, "/join " + re.search(r"/join (\d{6})", f.last(MGR_MAX)).group(1))
+        await flush(t, m)
+
+        # клиент из Telegram — менеджеру в Telegram, в MAX не дублируем
+        await t.send(TG_CLIENT, "Написать менеджеру")
+        await t.send(TG_CLIENT, "Здравствуйте, нужна панель A907")
+        await flush(t, m)
+        fwd = s.find(MGR_TG, "нужна панель A907")
+        assert fwd and datas(fwd.reply_markup) == ["rp|1", "hist|1"]
+        assert f.find(MGR_MAX, "нужна панель A907") is None
+        # ответ кнопкой «Ответить» прямо из Telegram
+        await t.press(MGR_TG, "rp|1")
+        await t.send(MGR_TG, "Есть в наличии")
+        assert "Есть в наличии" in s.last(TG_CLIENT)
+
+        # клиент из MAX — менеджеру в MAX
+        await m.send(MAX_CLIENT, "Добрый день, есть плинтус?")
+        await flush(t, m)
+        assert f.find(MGR_MAX, "есть плинтус") and s.find(MGR_TG, "есть плинтус") is None
+
+        # «Уведомления»: по умолчанию «Туда, где пишет клиент»; переключаем на «всё в MAX»
+        await m.send(MGR_MAX, "Уведомления")
+        body = f.last_body(MGR_MAX)
+        assert "туда, где пишет клиент" in body["text"] and "dlv|same" in payloads(body)
+        await m.press(MGR_MAX, "dlv|max")
+        await t.send(TG_CLIENT, "И ещё вопрос")
+        await flush(t, m)
+        assert f.find(MGR_MAX, "И ещё вопрос") and s.find(MGR_TG, "И ещё вопрос") is None
         await teardown(t, m, f)
 
     run(scenario())

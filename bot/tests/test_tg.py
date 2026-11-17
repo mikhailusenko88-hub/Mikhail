@@ -68,7 +68,7 @@ def test_team_leads_and_shipping_in_telegram(tmp_path):
         await h.send(CLIENT, "/start")
         assert "Здравствуйте" in s.last(CLIENT) and "Санкт-Петербурге" in s.last(CLIENT)
         assert buttons(s.last_req(CLIENT).reply_markup) == [
-            "Рассчитать стену", "Каталог и цены", "Оставить заявку", "Связаться с менеджером"]
+            "Написать менеджеру", "Рассчитать стену", "Каталог и цены", "Оставить заявку"]
         assert "Сайт:" not in s.last(CLIENT)
         await make_team(h)
 
@@ -311,7 +311,7 @@ def test_telegram_without_contacts(tmp_path):
         notice = s.last(MANAGER)
         assert "Новое сообщение в Telegram" in notice and "/history К1" in notice
         assert "Иван" not in notice and "8 999" not in notice and "перезвоните" not in notice
-        assert datas(s.last_req(MANAGER).reply_markup) == ["hist|1"]
+        assert datas(s.last_req(MANAGER).reply_markup) == ["rp|1", "hist|1"]
         await h.send(CLIENT, None, photo=[PhotoSize(file_id="f", file_unique_id="u", width=1, height=1)])
         assert "Новое сообщение (фото) в Telegram" in s.last(MANAGER)
         assert not any(isinstance(r, CopyMessage) for r in s.requests)  # фото в Telegram сотрудникам не пересылаем

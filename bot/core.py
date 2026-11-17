@@ -63,6 +63,10 @@ PAGE_SIZE = 10
 ACK_INTERVAL_SEC = 10 * 60      # «сообщение передано» — не чаще раза в 10 минут
 MEDIA_GROUP_TTL_SEC = 120
 STATE_TTL_SEC = 6 * 3600        # незаконченный диалог (только в памяти) забывается через 6 часов
+CHAT_TTL_SEC = 3 * 24 * 3600    # клиент в чате с менеджером — 3 дня с последнего сообщения
+STAFF_CHAT_TTL_SEC = 3600       # менеджер пишет одному клиенту — час с последнего сообщения
+WORK_HOURS = (10, 20)           # менеджер на связи ежедневно 10:00–20:00 (Москва)
+STATE_TTL = {"chat": CHAT_TTL_SEC, "staff_chat": STAFF_CHAT_TTL_SEC}
 OUTBOX_POLL_SEC = 1.0
 OUTBOX_MAX_ATTEMPTS = 12
 
@@ -108,7 +112,12 @@ def rkb(*rows: list[str | Btn], menu: bool = False) -> Kb:
 
 
 def client_menu() -> Kb:
-    return rkb([texts.BTN_CALC, texts.BTN_CATALOG], [texts.BTN_LEAD, texts.BTN_MANAGER], menu=True)
+    return rkb([texts.BTN_MANAGER], [texts.BTN_CALC, texts.BTN_CATALOG], [texts.BTN_LEAD], menu=True)
+
+
+def off_hours() -> bool:
+    """Сейчас нерабочее время менеджера (по Москве)."""
+    return not WORK_HOURS[0] <= now_local().hour < WORK_HOURS[1]
 
 
 def team_menu(role: str) -> Kb:
@@ -245,18 +254,24 @@ class Team:
         chosen = sorted(p for p, v in self._persons.items() if v.notify == NOTIFY_ALL)
         return chosen or self.managers()
 
-    def deliver_channel(self, person: Person, enabled: tuple[str, ...], default: str) -> str:
+    def deliver_channel(self, person: Person, enabled: tuple[str, ...], default: str,
+                        client_ch: str = "") -> str:
+        """Куда слать человеку. По умолчанию (deliver '' или same) сообщения и заявки клиента — в тот
+        мессенджер, где пишет клиент, если человек там подключён; иначе — выбранный или по умолчанию."""
         chans = [c for c in person.channels if c in enabled] or person.channels
+        if person.deliver in ("", texts.DELIVER_SAME) and client_ch in chans:
+            return client_ch
         for want in (person.deliver, default):
             if want in chans:
                 return want
         return chans[0] if chans else ""
 
-    def target(self, person_id: int, enabled: tuple[str, ...], default: str) -> Seat | None:
+    def target(self, person_id: int, enabled: tuple[str, ...], default: str,
+               client_ch: str = "") -> Seat | None:
         person = self._persons.get(person_id)
         if not person:
             return None
-        ch = self.deliver_channel(person, enabled, default)
+        ch = self.deliver_channel(person, enabled, default, client_ch)
         return next((s for s in person.seats if s.channel == ch), None)
 
     def name(self, person_id: int) -> str:
@@ -412,6 +427,16 @@ class Engine:
         return self.ch != CH_TG or self.cfg.telegram_collect_contacts
 
     @property
+    def same_ch(self) -> str:
+        """Мессенджер клиента для «туда, где пишет клиент» — если там сотрудник видит переписку целиком."""
+        return self.ch if self.collect else ""
+
+    @property
+    def same_ok(self) -> bool:
+        """Можно ли выбрать «туда, где пишет клиент»: во всех мессенджерах переписка видна целиком."""
+        return self.cfg.telegram_collect_contacts
+
+    @property
     def enabled(self) -> tuple[str, ...]:
         return self.cfg.channels or (self.ch,)
 
@@ -444,7 +469,7 @@ class Engine:
         item = self._states.get(uid)
         if not item:
             return ""
-        if time.monotonic() - item[2] > STATE_TTL_SEC:
+        if time.monotonic() - item[2] > STATE_TTL.get(item[0], STATE_TTL_SEC):
             del self._states[uid]
             return ""
         return item[0]
@@ -514,13 +539,14 @@ class Engine:
             await self._on_blocked(item)
 
     async def notify(self, person_ids: list[int], item: dict, client_id: int | None = None,
-                     exclude: int | None = None) -> list[Seat]:
-        """Отправить сотрудникам — каждому в мессенджер, который он выбрал."""
+                     exclude: int | None = None, client_ch: str = "") -> list[Seat]:
+        """Отправить сотрудникам — каждому в мессенджер, который он выбрал.
+        client_ch — где пишет клиент: по умолчанию сотруднику туда же, если он там подключён."""
         seats = []
         for pid in person_ids:
             if pid == exclude:
                 continue
-            seat = self.team.target(pid, self.enabled, self.cfg.staff_default_channel)
+            seat = self.team.target(pid, self.enabled, self.cfg.staff_default_channel, client_ch)
             if seat:
                 seats.append(seat)
                 await self.post(seat.channel, seat.user_id, item, client_id)
@@ -601,7 +627,7 @@ class Engine:
         elif t == "msg_notice":
             client_id = int(item["client_id"])
             mid = await self.say(uid, texts.tg_message_notice(client_id, item.get("kind", "text")),
-                                 ikb([self.history_btn(client_id)]))
+                                 ikb([self.reply_btn(client_id), self.history_btn(client_id)]))
             await self.relay(uid, mid, client_id)
         elif t == "to_client":
             await self._deliver_to_client(uid, item)
@@ -619,10 +645,12 @@ class Engine:
         client = await self.db.get_client(int(msg["client_id"]))
         if not client:
             return
-        hist = ikb([self.history_btn(client.id)])
+        hist = ikb([self.reply_btn(client.id), self.history_btn(client.id)])
+        busy = self.data(uid).get("client_id") if self.state(uid) == "staff_chat" else None
+        note = "\n\n" + texts.staff_chat_other(int(busy)) if busy and int(busy) != client.id else ""
         if msg["kind"] == "text":
             mid = await self.say(uid, texts.client_message_text(client.name, client.username, msg["text"],
-                                                                client.id, client.channel, pii), hist)
+                                                                client.id, client.channel, pii) + note, hist)
             await self.relay(uid, mid, client.id)
             return
         same = item.get("src") == self.ch and item.get("media") is not None and pii
@@ -632,7 +660,7 @@ class Engine:
                                                client.channel, pii)
             if not same:
                 head += "\n" + texts.media_unavailable(msg["kind"], client.channel)
-            mid = await self.say(uid, head, hist)
+            mid = await self.say(uid, head + note, hist)
             await self.relay(uid, mid, client.id)
         if same:
             mid = await self.t.copy(uid, item["media"])
@@ -643,6 +671,8 @@ class Engine:
         staff = item.get("staff") or {}
         if not client:
             return
+        if self.state(uid) in ("", "chat"):
+            self.set_state(uid, "chat")   # ответ менеджера — клиент снова в чате с менеджером
         if item.get("text") is not None:
             await self.say(uid, texts.manager_reply(item["text"]))
             kind, body = "text", item["text"]
@@ -714,16 +744,18 @@ class Engine:
             return await self.open_catalog(ev, me)
         if text == texts.BTN_LEAD or cmd == "lead":
             return await self.open_lead(ev, me)
-        if text == texts.BTN_MANAGER or cmd == "manager":
-            self.clear(uid)
-            await self.say(uid, texts.manager_prompt(self.collect), self.menu(me))
-            return
+        if text in texts.MANAGER_BUTTONS or cmd == "manager":
+            return await self.open_chat(ev, me)
 
         st = self.state(uid)
         if manager and st.startswith("ship_"):
             return await self.ship_step(ev, me, st)
         if me and ev.reply_to:
             return await self.staff_reply(ev, me)
+        if me and (st == "staff_chat" or text == texts.BTN_CHAT_END):
+            return await self.staff_chat_step(ev, me, st)
+        if not me and st == "chat":
+            return await self.chat_message(ev)
         if st.startswith("calc_"):
             return await self.calc_step(ev, me, st)
         if st.startswith("lead_"):
@@ -797,6 +829,10 @@ class Engine:
             await self.cb_delete(ev, me)
         elif me and d.startswith("ld|"):
             await self.cb_open_lead(ev, me)
+        elif me and d.startswith("rp|"):
+            arg = d.split("|", 1)[1]
+            if arg.isdigit():
+                await self.open_staff_chat(ev.user_id, me, int(arg))
         elif me and d.startswith("hist|"):
             arg = d.split("|", 1)[1]
             if arg.isdigit():
@@ -808,7 +844,7 @@ class Engine:
                 await self.show(ev, texts.notify_set(mode))
         elif me and d.startswith("dlv|"):
             ch = d.split("|", 1)[1]
-            if ch in me.channels:
+            if ch in me.channels or (ch == texts.DELIVER_SAME and self.same_ok):
                 await self.db.set_deliver(me.person_id, ch)
                 await self.show(ev, texts.deliver_set(ch))
         elif me and d.startswith("lnk|"):
@@ -839,7 +875,7 @@ class Engine:
         await self.say(uid, texts.welcome(self.cfg.site_url, self.collect), self.menu(me))
         route = {"calc": self.open_calc, "catalog": lambda e: self.open_catalog(e, me),
                  "lead": lambda e: self.open_lead(e, me),
-                 "manager": lambda e: self.say(e.user_id, texts.manager_prompt(self.collect), self.menu(me))}
+                 "manager": lambda e: self.open_chat(e, me)}
         if payload in route:
             await route[payload](ev)
             return
@@ -1239,7 +1275,7 @@ class Engine:
                                          consent_at=iso_now(), consent_version=self.cfg.consent_version)
         log.info("заявка №%d сохранена (%s)", lead_id, self.ch)
         await self.say(uid, texts.lead_thanks(lead_id), self.menu(me))
-        seats = await self.notify(self.team.all(), {"t": "lead", "lead_id": lead_id}, client.id)
+        seats = await self.notify(self.team.all(), {"t": "lead", "lead_id": lead_id}, client.id, client_ch=self.same_ch)
         if not seats:
             log.warning("заявка №%d никому не отправлена: в команде пока никого (/owner КОД)", lead_id)
 
@@ -1261,7 +1297,7 @@ class Engine:
                     "media": ev.media if kind != "text" else None}
         else:
             item = {"t": "msg_notice", "client_id": client.id, "kind": kind}
-        seats = await self.notify(recipients, item, client.id)
+        seats = await self.notify(recipients, item, client.id, client_ch=self.same_ch)
         if not seats:
             log.warning("сообщение клиента сохранено, но в команде пока никого нет")
         if self.collect and yagpt.is_enabled(self.cfg) and kind == "text" and seats:
@@ -1269,7 +1305,7 @@ class Engine:
             if draft:
                 await self.notify(recipients, {"t": "text", "client_id": client.id,
                                                "text": "Черновик ответа (клиенту не отправлен):\n" + texts.esc(draft)},
-                                  client.id)
+                                  client.id, client_ch=self.same_ch)
         if ack and self.rt.need_ack(uid):
             await self.say(uid, texts.MESSAGE_RECEIVED, client_menu())
 
@@ -1428,7 +1464,13 @@ class Engine:
                 [Btn((mark if me.notify == NOTIFY_ORDERS else "") + texts.BTN_NOTIFY_ORDERS, "ntf|orders")]]
         deliver = self.team.deliver_channel(me, self.enabled, self.cfg.staff_default_channel)
         if len(me.channels) > 1:
-            rows.append([Btn((mark if deliver == ch else "") + texts.btn_deliver(ch), f"dlv|{ch}")
+            same = self.same_ok and me.deliver in ("", texts.DELIVER_SAME)
+            if same:
+                deliver = texts.DELIVER_SAME
+            if self.same_ok:
+                rows.append([Btn((mark if same else "") + texts.btn_deliver(texts.DELIVER_SAME),
+                                 f"dlv|{texts.DELIVER_SAME}")])
+            rows.append([Btn((mark if not same and deliver == ch else "") + texts.btn_deliver(ch), f"dlv|{ch}")
                          for ch in me.channels])
         for ch in self.enabled:
             if ch not in me.channels:
@@ -1438,6 +1480,50 @@ class Engine:
     # ------------------------------------------------------------------ заявки, переписка, ответы
     def history_btn(self, client_id: int) -> Btn:
         return Btn(texts.BTN_HISTORY, f"hist|{client_id}")
+
+    def reply_btn(self, client_id: int) -> Btn:
+        return Btn(texts.BTN_REPLY, f"rp|{client_id}")
+
+    # ------------------------------------------------------------------ чат клиента с менеджером
+    async def open_chat(self, ev: Incoming, me: Person | None) -> None:
+        """«Написать менеджеру»: дальше всё, что пишет клиент, уходит менеджеру — бот не встревает."""
+        uid = ev.user_id
+        self.clear(uid)
+        if not me:
+            self.set_state(uid, "chat")
+        await self.say(uid, texts.manager_prompt(self.collect, off_hours()), self.menu(me))
+
+    async def chat_message(self, ev: Incoming) -> None:
+        uid = ev.user_id
+        self.update(uid)
+        if ev.text in texts.STEP_BUTTONS:
+            await self.say(uid, texts.MENU_HINT, client_menu())
+            return
+        await self.client_message(ev, ack=False)
+        if self.rt.need_ack(uid):
+            await self.say(uid, texts.message_received(off_hours()), client_menu())
+
+    async def open_staff_chat(self, uid: int, me: Person, client_id: int) -> None:
+        """Кнопка «Ответить» у сотрудника: его следующие сообщения уходят этому клиенту."""
+        client = await self.db.get_client(client_id)
+        if not client:
+            await self.say(uid, texts.NO_SUCH_LEAD)
+            return
+        self.set_state(uid, "staff_chat", client_id=client.id)
+        await self.say(uid, texts.staff_chat_open(client.id, client.name, client.channel, self.collect),
+                       rkb([texts.BTN_CHAT_END]))
+
+    async def staff_chat_step(self, ev: Incoming, me: Person, st: str) -> None:
+        uid = ev.user_id
+        if ev.text == texts.BTN_CHAT_END or st != "staff_chat":
+            self.clear(uid)
+            await self.say(uid, texts.STAFF_CHAT_CLOSED, team_menu(me.role))
+            return
+        if ev.text and ev.text.startswith("/"):
+            await self.cmd_help(ev, me)
+            return
+        self.update(uid)
+        await self.send_to_client(ev, me, int(self.data(uid)["client_id"]))
 
     def lead_kb(self, lead: Lead, role: str) -> Kb:
         rows: list[list[Btn] | None] = []

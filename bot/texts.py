@@ -66,8 +66,12 @@ def boxes_word(n: int) -> str:
 BTN_CALC = "Рассчитать стену"
 BTN_CATALOG = "Каталог и цены"
 BTN_LEAD = "Оставить заявку"
-BTN_MANAGER = "Связаться с менеджером"
-MENU_BUTTONS = (BTN_CALC, BTN_CATALOG, BTN_LEAD, BTN_MANAGER)
+BTN_MANAGER = "Написать менеджеру"
+# прежняя подпись — на старых сообщениях клиентов кнопка с ней ещё есть
+MANAGER_BUTTONS = (BTN_MANAGER, "Связаться с менеджером")
+MENU_BUTTONS = (BTN_CALC, BTN_CATALOG, BTN_LEAD, *MANAGER_BUTTONS)
+BTN_REPLY = "Ответить"
+BTN_CHAT_END = "Закончить переписку"
 
 BTN_CANCEL = "Отмена"
 BTN_SKIP = "Пропустить"
@@ -100,11 +104,12 @@ def welcome(site_url: str, collect: bool = True) -> str:
     text = (
         f"Здравствуйте! Это магазин {SHOP} — декор для стен в Санкт-Петербурге: "
         "реечные панели под покраску, панели под дерево и бетон, молдинги, плинтусы, карнизы и уголки.\n\n"
-        "Здесь можно:\n"
+        f"Не хотите разбираться с кнопками — нажмите <b>{BTN_MANAGER}</b> и пишите как в обычном "
+        "чате: менеджер ответит здесь.\n\n"
+        "Или сами:\n"
         f"• <b>{BTN_CALC}</b> — сколько панелей или погонажа нужно и сколько это стоит;\n"
         f"• <b>{BTN_CATALOG}</b> — все артикулы с ценами за штуку и за коробку;\n"
-        f"• <b>{BTN_LEAD}</b> — {lead};\n"
-        f"• <b>{BTN_MANAGER}</b> — или просто напишите вопрос в этот чат.\n\n"
+        f"• <b>{BTN_LEAD}</b> — {lead}.\n\n"
         "Можно сразу написать артикул и размеры, например <b>A907 3,2 на 2,7</b> — посчитаю.\n"
         "Продаём поштучно и коробками."
     )
@@ -120,7 +125,7 @@ def help_client(site_url: str) -> str:
         f"• {BTN_CALC} — расчёт количества и стоимости;\n"
         f"• {BTN_CATALOG};\n"
         f"• {BTN_LEAD};\n"
-        f"• {BTN_MANAGER} — или просто напишите сообщение.\n"
+        f"• {BTN_MANAGER} — переписка с менеджером, как в обычном чате.\n"
         "Артикул можно написать прямо в чат: «A907» или «A907 3,2 на 2,7».\n\n"
         "/cancel — отменить текущее действие\n"
         "/delete_me — удалить мои данные из базы магазина"
@@ -438,15 +443,30 @@ def lead_elsewhere(has_site: bool, has_max: bool, with_calc: bool = False) -> st
 
 
 # =========================================================================== менеджер
-def manager_prompt(collect: bool = True) -> str:
-    text = ("Напишите ваш вопрос прямо сюда — менеджер ответит в этом чате в рабочее время. "
-            "Можно прислать фото стены или проекта.")
+WORK_HOURS_TEXT = "ежедневно с 10:00 до 20:00"
+
+
+def manager_prompt(collect: bool = True, off_hours: bool = False) -> str:
+    """Клиент нажал «Написать менеджеру» — дальше всё, что он пишет, уходит менеджеру."""
+    text = ("<b>Вы в чате с менеджером.</b> Пишите как обычно — вопрос, размеры стены, фото стены "
+            "или проекта. Всё, что вы сюда напишете, получит менеджер, ответ придёт в этот чат.\n")
+    if off_hours:
+        text += f"Сейчас нерабочее время — менеджер ответит с 10:00 (мы на связи {WORK_HOURS_TEXT}).\n"
+    else:
+        text += f"Менеджер на связи {WORK_HOURS_TEXT}.\n"
     if not collect:
-        text += f"\nТелефон для связи лучше оставить через «{BTN_LEAD}» — на сайте или в MAX."
-    return text
+        text += f"Телефон для связи лучше оставить через «{BTN_LEAD}» — на сайте или в MAX.\n"
+    return text + f"Вернуться к расчёту и каталогу — кнопки «{BTN_CALC}» и «{BTN_CATALOG}»."
 
 
 MESSAGE_RECEIVED = "Спасибо, сообщение передано менеджеру. Ответ придёт сюда в рабочее время."
+
+
+def message_received(off_hours: bool = False) -> str:
+    if off_hours:
+        return ("Спасибо, сообщение передано менеджеру. Сейчас нерабочее время — ответим с 10:00, "
+                "ответ придёт сюда.")
+    return "Спасибо, сообщение передано менеджеру — ответ придёт сюда."
 
 
 def manager_reply(text: str) -> str:
@@ -518,15 +538,22 @@ def btn_link(channel: str) -> str:
 
 
 def btn_deliver(channel: str) -> str:
+    if channel == DELIVER_SAME:
+        return "Туда, где пишет клиент"
     return f"Присылать в {ch_name(channel)}"
 
 
+DELIVER_SAME = "same"   # сообщения клиента из Telegram — в Telegram, из MAX — в MAX
+
+
 def reply_how(channel: str) -> str:
+    chat = (f"Проще всего — кнопка «{BTN_REPLY}» под сообщением клиента: дальше просто пишите, всё уйдёт "
+            f"этому клиенту от имени магазина, пока не нажмёте «{BTN_CHAT_END}». ")
     if channel == "max":
-        return ("Чтобы ответить клиенту, нажмите на его сообщение, выберите «Ответить» и напишите "
-                "ответ — бот отправит его клиенту от имени магазина.")
-    return ("Чтобы ответить клиенту, смахните его сообщение влево (или нажмите на него → «Ответить») "
-            "и напишите ответ — бот отправит его клиенту от имени магазина. Можно фото и файлы.")
+        return chat + ("Или нажмите на его сообщение, выберите «Ответить» и напишите "
+                       "ответ — бот отправит его клиенту от имени магазина.")
+    return chat + ("Или смахните его сообщение влево (нажмите на него → «Ответить») "
+                   "и напишите ответ — бот отправит его клиенту от имени магазина. Можно фото и файлы.")
 
 
 def help_manager(channel: str) -> str:
@@ -645,7 +672,9 @@ REMOVED_YOU = "Вас убрали из команды магазина. Теп�
 def notify_current(mode: str, deliver: str, channels: list[str]) -> str:
     text = f"Сейчас вы получаете: <b>{NOTIFY_NAMES.get(mode, mode)}</b>."
     if len(channels) > 1:
-        text += f"\nПодключены: {', '.join(ch_name(c) for c in channels)}; присылаю в <b>{ch_name(deliver)}</b>."
+        where = ("туда, где пишет клиент (из Telegram — в Telegram, из MAX — в MAX)" if deliver == DELIVER_SAME
+                 else f"в <b>{ch_name(deliver)}</b>")
+        text += f"\nПодключены: {', '.join(ch_name(c) for c in channels)}; присылаю {where}."
     return text + "\nЧто получать?"
 
 
@@ -654,6 +683,9 @@ def notify_set(mode: str) -> str:
 
 
 def deliver_set(channel: str) -> str:
+    if channel == DELIVER_SAME:
+        return ("Готово. Сообщения и заявки клиента буду присылать туда, где он пишет: из Telegram — "
+                "в Telegram, из MAX — в MAX.")
     return f"Готово. Заявки и сообщения буду присылать в {ch_name(channel)}."
 
 
@@ -663,9 +695,24 @@ ONLY_MANAGER = "Это может сделать только менеджер."
 # --- ответы клиентам
 NOT_REPLY_TARGET = ("Не понял, кому ответить. Ответьте на сообщение клиента, его заявку или "
                     "«Переписку» и напишите текст.")
-TEAM_FREE_TEXT = ("Это сообщение никуда не отправлено. Чтобы ответить клиенту, ответьте на его "
-                  f"сообщение (нажмите на него → «Ответить»). Подсказка — «{BTN_T_HELP}».")
+TEAM_FREE_TEXT = ("Это сообщение никуда не отправлено. Чтобы ответить клиенту, нажмите кнопку "
+                  f"«{BTN_REPLY}» под его сообщением (или ответьте на само сообщение). Подсказка — «{BTN_T_HELP}».")
 SENT_TO_CLIENT = "Отправлено клиенту."
+
+
+def staff_chat_open(client_id: int, name: str, channel: str, pii: bool = True) -> str:
+    who = f"{esc(name)} (клиент К{client_id}, {ch_name(channel)})" if pii and name else \
+        f"клиент К{client_id}, {ch_name(channel)}"
+    return (f"Переписка с клиентом: <b>{who}</b>.\n"
+            "Пишите — каждое сообщение уйдёт этому клиенту от имени магазина. "
+            f"Закончить — «{BTN_CHAT_END}».")
+
+
+def staff_chat_other(client_id: int) -> str:
+    return (f"<i>Сейчас вы пишете клиенту К{client_id}. Чтобы ответить этому — нажмите «{BTN_REPLY}».</i>")
+
+
+STAFF_CHAT_CLOSED = "Переписка закрыта. Новые сообщения клиентов придут сюда, ответить — кнопка «Ответить» под ними."
 SEND_FAILED = "Не удалось отправить: клиент заблокировал бота или удалил чат."
 
 

@@ -50,8 +50,8 @@ def test_full_flow_in_max(tmp_path):
         body = f.last_body(CLIENT)
         assert "Здравствуйте" in body["text"] and body["format"] == "html"
         assert "менеджер свяжется с вами" in body["text"]  # в MAX заявки принимаются
-        assert labels(body, "message") == ["Рассчитать стену", "Каталог и цены", "Оставить заявку",
-                                           "Связаться с менеджером"]
+        assert labels(body, "message") == ["Написать менеджеру", "Рассчитать стену", "Каталог и цены",
+                                           "Оставить заявку"]
 
         # команда магазина — те же коды
         await h.send(MANAGER, f"/owner {CODE}")
@@ -211,6 +211,70 @@ def test_article_in_free_text_in_max(tmp_path):
         await h.send(CLIENT, "A907 и A703")
         body = f.last_body(CLIENT)
         assert "Нашёл в вашем сообщении" in body["text"] and payloads(body) == ["ca|A907", "ca|A703"]
+        await done(f, h)
+
+    run(scenario())
+
+
+def test_chat_with_manager_in_max(tmp_path, monkeypatch):
+    """«Написать менеджеру» — живая переписка: бот не встревает с расчётами, менеджер отвечает кнопкой
+    «Ответить» и дальше просто пишет (17.11.2026)."""
+    from datetime import datetime
+
+    import core
+    from db import TZ
+    clock = {"h": 12}
+    monkeypatch.setattr(core, "now_local", lambda: datetime(2026, 11, 17, clock["h"], 0, tzinfo=TZ))
+
+    async def scenario():
+        f, h = await make(tmp_path, site_url="https://nashdekor.ru")
+        await h.engine.start()
+        await h.send(MANAGER, f"/owner {CODE}")
+        await h.start(CLIENT)
+        assert "Не хотите разбираться с кнопками" in f.last(CLIENT)
+        assert labels(f.last_body(CLIENT), "message")[0] == "Написать менеджеру"
+
+        await h.send(CLIENT, "Написать менеджеру")
+        assert "Вы в чате с менеджером" in f.last(CLIENT) and "на связи ежедневно" in f.last(CLIENT)
+        await h.send(CLIENT, "А907 есть в наличии?")
+        fwd = f.find(MANAGER, "А907 есть в наличии?")
+        assert fwd and payloads(fwd) == ["rp|1", "hist|1"]
+        assert "передано менеджеру" in f.last(CLIENT) and "Цена" not in f.last(CLIENT)  # без карточки товара
+        n = len(f.sent(CLIENT))
+        await h.send(CLIENT, "3 на 2,7")
+        assert f.find(MANAGER, "3 на 2,7") and len(f.sent(CLIENT)) == n  # без расчёта и без повторного «передано»
+
+        # менеджер нажимает «Ответить» — дальше просто пишет, всё уходит этому клиенту
+        await h.press(MANAGER, "rp|1")
+        assert "Переписка с клиентом" in f.last(MANAGER) and "Иван" in f.last(MANAGER)
+        await h.send(MANAGER, "Есть, 12 штук в коробке")
+        assert "Ответ менеджера" in f.last(CLIENT) and "12 штук" in f.last(CLIENT)
+        assert f.last(MANAGER) == "Отправлено клиенту."
+        await h.send(MANAGER, "Какая высота потолка?")
+        assert "высота потолка" in f.last(CLIENT)
+        # пишет другой клиент — менеджеру подсказка, что сейчас идёт переписка с первым
+        await h.start(CLIENT2)
+        await h.send(CLIENT2, "Здравствуйте!")
+        assert "Сейчас вы пишете клиенту К1" in f.last(MANAGER)
+        await h.send(MANAGER, "Закончить переписку")
+        assert "Переписка закрыта" in f.last(MANAGER)
+        await h.send(MANAGER, "это уже никому")
+        assert "никуда не отправлено" in f.last(MANAGER) and "никому" not in f.last(CLIENT)
+
+        # ответ менеджера держит клиента в чате — его ответ снова уходит менеджеру
+        await h.send(CLIENT, "2,7 м")
+        assert f.find(MANAGER, "2,7 м")
+        # клиент сам ушёл считать — бот снова считает
+        await h.send(CLIENT, "Рассчитать стену")
+        await h.send(CLIENT, "A907")
+        assert "ширину стены" in f.last(CLIENT)
+
+        # ночью — предупреждаем, что ответят с 10:00; старая подпись кнопки тоже работает
+        clock["h"] = 23
+        await h.send(CLIENT2, "Связаться с менеджером")
+        assert "нерабочее время" in f.last(CLIENT2)
+        await h.send(CLIENT2, "Перезвоните завтра")
+        assert "ответим с 10:00" in f.last(CLIENT2)
         await done(f, h)
 
     run(scenario())
