@@ -1,6 +1,9 @@
 # имя | адрес | desktop|mobile | js
-# 17.11.2026 — служебная страница визуализаций: крупные планы
-viz4-m | https://nashdekor.ru/vizual/?s=61 | mobile | 
-viz4-tvd-lb-m | https://nashdekor.ru/vizual/?s=62 | mobile | document.querySelector('[data-s="tvd"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A910')).click()},300)
-viz4-tvd-col-m | https://nashdekor.ru/vizual/?s=63 | mobile | document.querySelector('[data-s="tvd"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A905')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[3].click()},900)},300)
-viz4-tvd-col-d | https://nashdekor.ru/vizual/?s=64 | desktop | document.querySelector('[data-s="tvd"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A913')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[6].click()},900)},300)
+# 17.11.2026 — служебная страница визуализаций: шесть крупных планов
+viz5-m | https://nashdekor.ru/vizual/?s=71 | mobile | 
+viz5-sofad-col-m | https://nashdekor.ru/vizual/?s=72 | mobile | document.querySelector('[data-s="sofad"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A910')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[1].click()},900)},300)
+viz5-bedd-col-m | https://nashdekor.ru/vizual/?s=73 | mobile | document.querySelector('[data-s="bedd"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A905')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[4].click()},900)},300)
+viz5-halld-col-d | https://nashdekor.ru/vizual/?s=74 | desktop | document.querySelector('[data-s="halld"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('GS2')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[6].click()},900)},300)
+viz5-deskd-col-d | https://nashdekor.ru/vizual/?s=75 | desktop | document.querySelector('[data-s="deskd"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A913')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[2].click()},900)},300)
+viz5-cord-col-m | https://nashdekor.ru/vizual/?s=76 | mobile | document.querySelector('[data-s="cord"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A908')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[5].click()},900)},300)
+viz5-pan-m | https://nashdekor.ru/vizual/?s=77 | mobile | document.querySelector('[data-m="p"]').click()
