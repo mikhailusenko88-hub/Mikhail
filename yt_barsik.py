@@ -57,6 +57,12 @@ def secret_shape(raw):
     gaps = [odd[i + 1][0] - odd[i][0] for i in range(len(odd) - 1)]
     kind += ("посторонние знаки: " + ", ".join(f"«{c}»×{n}" if c.isascii() and not c.isalnum() else f"U+{ord(c):04X}×{n}" for c, n in hist.most_common(8))
              + f"; шаг между ними {gaps[:24]}; первый на {odd[0][0] if odd else '—'}; " if odd else "")
+    esc = collections.Counter(x.upper() for x in re.findall(r"%([0-9A-Fa-f]{2})", flat))
+    if esc:                                                    # какие знаки телефон записал «по-ссылочному»: 0A — перенос, 3A — двоеточие, 2B — плюс, 20 — пробел
+        order = "".join("-" if c == "-" else "%" for _, c in odd)
+        kind += "записи «%XX»: " + ", ".join(f"{c}×{n}" for c, n in esc.most_common(8)) + f"; порядок посторонних знаков {order}; "
+        codes = [x.upper() for x in re.findall(r"%([0-9A-Fa-f]{2})", flat)]
+        kind += f"коды по порядку {' '.join(codes)}; "
     kind += (f"заглавных {sum(c.isupper() for c in flat)}, строчных {sum(c.islower() for c in flat)}, цифр {sum(c.isdigit() for c in flat)}, "
              f"«+» {flat.count('+')}, «/» {flat.count('/')}, «=» {flat.count('=')} (первый на {flat.find('=')}), ")
     return (kind + f"длина {len(raw)}, строк {raw.count(chr(10)) + 1}, пробелов {raw.count(' ')}, двоеточий {col}, "
@@ -74,24 +80,33 @@ def _try_b64(body, chk):
 
 
 def _repair(raw):
-    """Строка, прошедшая через чужие руки: телефон принял «BK1:…» за ссылку (строчные буквы в начале, %0A вместо переносов, %3A вместо двоеточий),
-    переносы стали «\\n» или <br>, двоеточия пропали. Собираем заново и сверяем с 8 проверочными знаками в конце."""
-    import html, urllib.parse
+    """Строка, прошедшая через чужие руки: телефон принял «BK1:…» за ссылку (строчные буквы в начале, %0A вместо переносов, %3A вместо двоеточий,
+    «+» стал пробелом или «-»), переносы стали «\\n» или <br>, двоеточия пропали. Собираем заново; верно ли собрали — скажут 8 проверочных знаков в конце."""
+    import html, itertools, urllib.parse
     seen = []
     for v in (raw, urllib.parse.unquote(raw), html.unescape(raw), urllib.parse.unquote(html.unescape(raw))):
         for w in (v, re.sub(r"\\[rnt]", "", v), re.sub(r"<[^<>]{0,8}>", "", v)):
             if w not in seen:
                 seen.append(w)
     for v in seen:
-        t = re.sub(WS, "", v)
+        t = re.sub(r"[\r\n\t\u200b-\u200f\ufeff]", "", v.strip())            # переносы — точно не часть ключа (и «END» бывает разорван переносом)
         t = re.sub(r"^.*?(?:bk1|fb1)[^A-Za-z0-9+/=]*", "", t, count=1, flags=re.I | re.S)
-        t = re.sub(r"[^A-Za-z0-9+/=]*END[^A-Za-z0-9]*$", "", t)
-        t = re.sub(r"[^A-Za-z0-9+/=]", "", t)
-        if len(t) < 60:
-            continue
-        b64, chk = t[:-8], t[-8:].lower()
-        for body in (b64, b64.rstrip("=")):
-            data = _try_b64(body, chk)
+        t = re.sub(r"[^A-Za-z0-9+/=]*E[^A-Za-z0-9]*N[^A-Za-z0-9]*D[^A-Za-z0-9]*$", "", t)
+        t = t.replace(":", "")
+        spots = [m.start() for m in re.finditer(r"[^A-Za-z0-9+/=]", t)]    # пробел, «-», «_»… — либо мусор, либо бывший «+» или «/»
+        if len(t) < 60 or len(spots) > 9:
+            if len(spots) > 9:                                             # слишком много неясных мест — пробуем только «всё выбросить»
+                spots, t = [], re.sub(r"[^A-Za-z0-9+/=]", "", t)
+            else:
+                continue
+        for fill in itertools.product(("", "+", "/"), repeat=len(spots)):
+            u, last = [], 0
+            for pos, f in zip(spots, fill):
+                u.append(t[last:pos] + f)
+                last = pos + 1
+            u = "".join(u) + t[last:]
+            b64, chk = u[:-8], u[-8:].lower()
+            data = _try_b64(b64, chk)
             if data and data[:1] == b"{":
                 return data
     return None
