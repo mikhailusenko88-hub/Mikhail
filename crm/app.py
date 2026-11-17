@@ -1551,7 +1551,12 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         except ValueError:
             d = 7
         d = d if d in (1, 7, 30, 90) else 7
-        return render_template("site.html", r=visits.report(today(), d), d=d)
+        r = visits.report(today(), d)
+        try:
+            bots = store.bot_starts(r["start"], r["end"])
+        except Exception:  # noqa: BLE001 — статистика ботов не должна ломать страницу
+            bots = {"ready": False}
+        return render_template("site.html", r=r, d=d, bots=bots)
 
     # ------------------------------------------------------------ настройки
     @app.route("/settings")

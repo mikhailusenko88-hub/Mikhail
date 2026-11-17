@@ -288,7 +288,7 @@ def test_telegram_without_contacts(tmp_path):
 
         await h.send(CLIENT, "Оставить заявку")
         assert "оставьте заявку на сайте или в нашем боте в MAX" in s.last(CLIENT)
-        assert urls(s.last_req(CLIENT).reply_markup) == ["https://example.ru/#order",
+        assert urls(s.last_req(CLIENT).reply_markup) == ["https://example.ru/?utm_source=tg_bot#order",
                                                           "https://max.ru/id000000000000_bot?start=lead"]
         assert h.engine.state(CLIENT) == ""  # имя и телефон здесь не спрашиваем
 
@@ -300,7 +300,7 @@ def test_telegram_without_contacts(tmp_path):
         payload = core.calc_link_payload("ls", "A907", 3000, 2700)
         assert payload == "ls_41393037_3000_2700"
         assert urls(res.reply_markup) == [f"https://max.ru/id000000000000_bot?start={payload}",
-                                          "https://example.ru/#order"]
+                                          "https://example.ru/?utm_source=tg_bot#order"]
         assert datas(res.reply_markup) == ["cn"]
         await h.press(CLIENT, "ls|A907|3000|2700")  # старая кнопка — снова ссылки, без анкеты
         assert "Продолжить в MAX" in s.last(CLIENT) and h.engine.state(CLIENT) == ""
@@ -365,6 +365,10 @@ def test_catalog_photo_linear_and_deep_links(tmp_path):
         await h.send(CLIENT, "/start A907")
         assert "ширину стены" in s.last(CLIENT)
         await h.send(CLIENT, "/start catalog")
+        assert "Каталог. Выберите группу" in s.last(CLIENT)
+        await h.send(CLIENT, "/start site_A907")       # с сайта: метка источника не мешает открыть товар
+        assert "ширину стены" in s.last(CLIENT)
+        await h.send(CLIENT, "/start ch_catalog")      # из канала
         assert "Каталог. Выберите группу" in s.last(CLIENT)
         for _ in range(5):
             await h.send(STRANGER, "/owner 111111")

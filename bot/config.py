@@ -126,11 +126,21 @@ class Config:
     def token(self, channel: str) -> str:
         return self.bot_token if channel == CH_TG else self.max_token
 
-    def site_link(self, page: str = "") -> str:
-        """Адрес страницы сайта или пустая строка, если SITE_URL не задан."""
+    def site_link(self, page: str = "", utm: str = "") -> str:
+        """Адрес страницы сайта или пустая строка, если SITE_URL не задан.
+        utm — метка для счётчика сайта (CRM → «Сайт» → «Откуда пришли»), например tg_bot."""
         if not self.site_url:
             return ""
-        return f"{self.site_url}/{page.lstrip('/')}" if page else f"{self.site_url}/"
+        url = f"{self.site_url}/{page.lstrip('/')}" if page else f"{self.site_url}/"
+        return with_utm(url, utm)
+
+
+def with_utm(url: str, source: str) -> str:
+    """https://site/#order + tg_bot → https://site/?utm_source=tg_bot#order (метка — до «#»)."""
+    if not url or not source or "utm_source=" in url:
+        return url
+    base, sep, frag = url.partition("#")
+    return f"{base}{'&' if '?' in base else '?'}utm_source={source}{sep}{frag}"
 
 
 def load_config(channel: str | None = None) -> Config:

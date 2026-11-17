@@ -413,6 +413,62 @@ class TestVisits(Base):
         self.assertEqual(dict(rep["pages"]), {"Главная": 2, "Политика": 1})
         self.assertEqual(self.app.extensions["visits"].brief(crm_app.today()), {"today": 2, "yesterday": 0, "leads": 1})
 
+    def test_all_site_pages_and_tags(self) -> None:
+        """С 17.11.2026 считаются страницы товаров, разделов и статей (раньше — только главная и документы)."""
+        self.hit([["view", "/p/a912/"], ["view", "/p/gs1/"], ["view", "/catalog/moldingi/"],
+                  ["view", "/stati/kak-otrezat-ugol-potolochnogo-pli"], ["view", "/dostavka/"],
+                  ["view", "/p/nope/"], ["view", "/vizual/"], ["view", "/admin"], ["view", "/catalog/zzz/"],
+                  ["copy", "telegram"], ["copy", "max"]], u="tg_bot")
+        self.hit([["view", "/p/a912/index.html"], ["view", "/stati/duropolimer-chto-eto/"]], ua=MAC, ip="198.51.100.9", u="tg", m=0)
+        self.hit([["view", "/"]], ua=MAC, ip="198.51.100.10", u="max_bot", m=0)
+        keys = [x["key"] for x in self.rows() if x["kind"] == "view"]
+        self.assertEqual(keys, ["/p/a912/", "/p/gs1/", "/catalog/moldingi/", "/stati/kak-otrezat-ugol-potolochnogo-pli",
+                                "/dostavka/", "/p/a912/", "/stati/duropolimer-chto-eto/", "/"])
+        rep = self.app.extensions["visits"].report(crm_app.today(), 7)
+        self.assertEqual(rep["visitors"], 3)
+        self.assertEqual(dict(rep["sources"]), {"Telegram — бот": 1, "Telegram — канал": 1, "MAX — бот": 1})
+        f = dict(rep["funnel"])
+        self.assertEqual((f["Смотрели каталог"], f["Открывали страницы товаров"]), (2, 2))
+        it = {x["article"]: x for x in rep["items"]}
+        self.assertEqual((it["A912"]["visitors"], it["A912"]["opened"]), (2, 2))
+        self.assertEqual(it["GS 1"]["opened"], 1)
+        pages = dict(rep["pages"])
+        self.assertEqual(pages["Товар A912 · Рейка 912"], 2)
+        self.assertEqual(pages["Раздел: Молдинги"], 1)
+        self.assertEqual(pages["Статья: Как отрезать угол потолочного плинтуса"], 1)
+        self.assertEqual(pages["Статья: Дюрополимер — что это"], 1)
+        self.assertEqual(pages["Доставка"], 1)
+        self.assertEqual((rep["copy_counts"]["telegram"], rep["copy_counts"]["max"]), (1, 1))
+        self.login()
+        t = self.c.get("/site?d=7").get_data(as_text=True)
+        self.assertIn("Мессенджеры: с сайта в бота", t)
+        self.assertIn("появится после обновления бота", t)          # базы бота нет — страница не падает
+        self.assertIn("Нажали «Telegram» — написать в бота", t)
+
+    def test_site_page_shows_bot_starts(self) -> None:
+        b = sqlite3.connect(self.botdb)
+        b.executescript(bot_schema())
+        ts = int(time.time())
+        b.execute("INSERT INTO clients(channel, user_id, username, name, created_ts, last_ts) VALUES ('tg', 5, NULL, 'Анна', ?, ?)", (ts, ts))
+        b.execute("INSERT INTO leads(created_ts, created_at, user_id, name, contact, consent_at, consent_version, channel, client_id)"
+                  " VALUES (?, 'x', 5, 'Анна', '+79990000000', 'x', '1', 'tg', 1)", (ts,))
+        for ch, h, src, cid in (("tg", "h1", "site", 1), ("tg", "h2", "site", None), ("tg", "h3", "channel", None),
+                                ("max", "h4", "site", None), ("max", "h5", "direct", None), ("tg", "old", "site", None)):
+            b.execute("INSERT INTO starts(channel, uhash, src, ts, client_id) VALUES (?,?,?,?,?)",
+                      (ch, h, src, ts - (40 * 86400 if h == "old" else 0), cid))
+        b.commit()
+        b.close()
+        got = self.store.bot_starts(crm_app.today(), crm_app.today())
+        self.assertTrue(got["ready"])
+        self.assertEqual(got["total"], 5)                             # 40 дней назад — не в периоде
+        self.assertEqual(got["rows"][("tg", "site")], {"n": 2, "wrote": 1, "leads": 1})
+        self.assertEqual(got["rows"][("max", "direct")]["n"], 1)
+        self.login()
+        t = self.c.get("/site?d=1").get_data(as_text=True)
+        self.assertIn("Пришли в бота с сайта", t)
+        self.assertIn("Новые в ботах: откуда пришли", t)
+        self.assertNotIn("появится после обновления бота", t)
+
     def test_rejects_junk_bots_strangers_and_staff(self) -> None:
         self.hit([["view", "/"]], origin="https://evil.example")
         self.hit([["view", "/"]], origin="")

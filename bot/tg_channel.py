@@ -58,8 +58,13 @@ def plain_len(html: str) -> int:
     return len(re.sub(r"<[^>]+>", "", html).replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&"))
 
 
+def bot_from_channel(url: str) -> str:
+    """Кнопка «в бота» из канала — с меткой ?start=ch: в статистике бота видно, что пришли из канала."""
+    return TG_BOT_URL + "?start=ch" if url == TG_BOT_URL else url
+
+
 def buttons(post: dict[str, Any]) -> list[list[tuple[str, str]]]:
-    return [[(adapt(b["text"]), adapt(b["url"])) for b in row] for row in post.get("buttons") or [] if row]
+    return [[(adapt(b["text"]), bot_from_channel(adapt(b["url"]))) for b in row] for row in post.get("buttons") or [] if row]
 
 
 def plan(post: dict[str, Any], cfg: dict[str, Any]) -> list[tuple]:

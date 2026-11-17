@@ -471,6 +471,7 @@ class Catalog:
         self._mtime = -1.0
         self._items: list[Product] = []
         self._by: dict[str, Product] = {}
+        self._slug: dict[str, Product] = {}
         self._lock = threading.Lock()
 
     def _load(self) -> None:
@@ -489,6 +490,7 @@ class Catalog:
             if items:
                 self._items = items
                 self._by = {p.article.upper().replace(" ", ""): p for p in items}
+                self._slug = {p.article.lower().replace("/", "-").replace(" ", ""): p for p in items}   # как адрес /p/<…>/ на сайте
             self._mtime = mt
 
     def all(self) -> list[Product]:
@@ -498,6 +500,11 @@ class Catalog:
     def get(self, article: str) -> Product | None:
         self._load()
         return self._by.get((article or "").upper().replace(" ", "").translate(_LOOKALIKE))
+
+    def by_slug(self, slug: str) -> Product | None:
+        """Товар по адресу страницы сайта: a907 → A907, a201-2 → A201/2."""
+        self._load()
+        return self._slug.get((slug or "").lower())
 
     def find(self, text: str) -> Product | None:
         """Нестрогий поиск: точный артикул; без буквы («902» → A902); единственное совпадение по цифрам."""
@@ -1424,6 +1431,31 @@ class Store:
             return []
         finally:
             b.close()
+
+    def bot_starts(self, start_day: str, end_day: str) -> dict[str, Any]:
+        """Новые в ботах за период (таблица starts в базе бота, с 17.11.2026): по мессенджерам и откуда пришли;
+        сколько из них написали и оставили заявку. {"ready": False} — бот ещё не обновлён или базы нет."""
+        b = self._bot()
+        if b is None:
+            return {"ready": False}
+        try:
+            if not b.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='starts'").fetchone():
+                return {"ready": False}
+            t0 = int(datetime.fromisoformat(start_day).replace(tzinfo=TZ).timestamp())
+            t1 = int((datetime.fromisoformat(end_day) + timedelta(days=1)).replace(tzinfo=TZ).timestamp())
+            rows = b.execute(
+                "SELECT channel, src, COUNT(*) AS n, SUM(client_id IS NOT NULL) AS wrote,"
+                " SUM(client_id IN (SELECT client_id FROM leads WHERE client_id IS NOT NULL)) AS leads"
+                " FROM starts WHERE ts >= ? AND ts < ? GROUP BY channel, src", (t0, t1)).fetchall()
+        except (sqlite3.Error, ValueError):
+            return {"ready": False}
+        finally:
+            b.close()
+        out: dict[str, Any] = {"ready": True, "rows": {}, "total": 0}
+        for r in rows:
+            out["rows"][(r["channel"], r["src"])] = {"n": int(r["n"] or 0), "wrote": int(r["wrote"] or 0), "leads": int(r["leads"] or 0)}
+            out["total"] += int(r["n"] or 0)
+        return out
 
     def notify_team(self, text: str, roles: tuple[str, ...] = ("manager",), title: str = "", url: str = "") -> int:
         """Оповестить команду: пуш на телефоны (если включены) и текст через очередь бота (MAX/Telegram, если бот есть)."""

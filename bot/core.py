@@ -404,6 +404,22 @@ def _question_words(text: str | None) -> list[str]:
     return [w for w in words if w not in _PLAIN_WORDS]
 
 
+# откуда пришли в бота: метка в начале ссылки ?start=… (site — с сайта, ch — из канала); дальше — как раньше
+_SOURCE_TAGS = {"site": "site", "ch": "channel"}
+
+
+def split_source(payload: str) -> tuple[str, str]:
+    """'site' → ('site', ''); 'site_A907' → ('site', 'A907'); 'ch_calc' → ('channel', 'calc');
+    без метки: 'A907' → ('link', 'A907'), '' → ('direct', '')."""
+    p = (payload or "").strip()
+    for tag, src in _SOURCE_TAGS.items():
+        if p == tag:
+            return src, ""
+        if p.startswith(tag + "_"):
+            return src, p[len(tag) + 1:]
+    return ("link" if p else "direct"), p
+
+
 def calc_link_payload(prefix: str, article: str, *nums: int) -> str:
     """Расчёт для ссылки «продолжить в другом мессенджере»: ls_<артикул hex>_<ширина>_<высота>."""
     return "_".join([prefix, article.encode().hex(), *(str(n) for n in nums)])
@@ -869,6 +885,12 @@ class Engine:
     async def cmd_start(self, ev: Incoming, me: Person | None, payload: str) -> None:
         uid = ev.user_id
         self.clear(uid)
+        src, payload = split_source(payload)
+        if not me:   # откуда пришёл — только для статистики; ошибка учёта не мешает клиенту
+            try:
+                await self.db.note_start(self.ch, uid, src)
+            except Exception as exc:  # noqa: BLE001
+                log.warning("не записан источник входа в бота: %s", type(exc).__name__)
         if me and not payload:
             await self.say(uid, self.role_help(me.role), team_menu(me.role))
             return
@@ -926,7 +948,7 @@ class Engine:
         parts = texts.catalog_group(group, items, self.cfg.site_url)
         kb = ikb([Btn(f"{texts.BTN_CALC_GROUP}: {group_title(group)}", f"cgn|{group}")],
                  [Btn(texts.BTN_OTHER_GROUPS, "kb")],
-                 [Btn(texts.BTN_SITE, url=self.cfg.site_link())] if self.cfg.site_url else None)
+                 [Btn(texts.BTN_SITE, url=self.site())] if self.cfg.site_url else None)
         for i, part in enumerate(parts):
             await self.say(ev.user_id, part, kb if i == len(parts) - 1 else None)
 
@@ -1020,11 +1042,16 @@ class Engine:
             return
         await self.start_product(ev.user_id, product, me)
 
+    def site(self, page: str = "") -> str:
+        """Ссылка на сайт с меткой мессенджера (tg_bot) — чтобы в CRM было видно, что пришли из бота.
+        В MAX без метки: там сайт открывается внутри MAX (мини-приложение) и сам помечает заход как MAX."""
+        return self.cfg.site_link(page, utm="" if self.ch == CH_MAX else f"{self.ch}_bot")
+
     def product_kb(self, product: Product, me: Person | None) -> Kb:
         """Под карточкой товара: страница товара на сайте (фото, 3D, цвета) и «Другой товар»."""
         if not self.cfg.site_url:
             return self.menu(me)
-        return ikb([Btn(texts.BTN_PRODUCT_SITE, url=self.cfg.site_link(f"p/{product.slug}/"))],
+        return ikb([Btn(texts.BTN_PRODUCT_SITE, url=self.site(f"p/{product.slug}/"))],
                    [Btn(texts.BTN_OTHER_PRODUCT, "cn")])
 
     async def start_product(self, uid: int, product: Product, me: Person | None) -> None:
@@ -1141,7 +1168,7 @@ class Engine:
             rows.append([Btn(texts.BTN_CONTINUE_MAX,
                              url=f"{max_link}?start={calc_link_payload(prefix, product.article, *nums)}")])
         if self.cfg.site_url:
-            rows.append([Btn(texts.BTN_LEAD_SITE, url=self.cfg.site_link("#order"))])
+            rows.append([Btn(texts.BTN_LEAD_SITE, url=self.site("#order"))])
         rows.append(again)
         return ikb(*rows)
 
@@ -1195,7 +1222,7 @@ class Engine:
     # ------------------------------------------------------------------ заявка
     async def lead_elsewhere(self, uid: int, with_calc: bool = False) -> None:
         max_link = await self.bot_link(CH_MAX)
-        kb = ikb([Btn(texts.BTN_LEAD_SITE, url=self.cfg.site_link("#order"))] if self.cfg.site_url else None,
+        kb = ikb([Btn(texts.BTN_LEAD_SITE, url=self.site("#order"))] if self.cfg.site_url else None,
                  [Btn(texts.BTN_OPEN_MAX, url=f"{max_link}?start=lead")] if max_link else None)
         await self.say(uid, texts.lead_elsewhere(bool(self.cfg.site_url), bool(max_link), with_calc),
                        kb if kb.rows else client_menu())

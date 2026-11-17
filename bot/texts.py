@@ -941,16 +941,41 @@ def stats(s, catalog_count: int, catalog_source: str, catalog_time: str, catalog
         "<b>Статистика</b>\n"
         f"Заявки: сегодня {s.leads_today}, за 7 дней {s.leads_week}, всего {s.leads_total}\n"
         f"Сообщения клиентов: сегодня {s.messages_today}, за 7 дней {s.messages_week}\n"
-        f"Клиентов за 7 дней: {s.clients_week}\n"
+        f"Клиентов за 7 дней: {s.clients_week}{_by_channel(getattr(s, 'clients_week_by_channel', None))}\n"
         f"Отгрузки: открытых {s.shipments_open}, отгружено за 7 дней {s.shipped_week}\n"
         f"Каталог: {catalog_count} позиций (откуда: {esc(catalog_source)}, {esc(catalog_time)})"
     )
+    text += _starts_line(s)
     waiting = {ch: n for ch, n in (queues or {}).items() if n}
     if waiting:
         text += "\nЖдут отправки: " + ", ".join(f"{ch_name(ch)} — {n}" for ch, n in waiting.items())
     if catalog_error:
         text += f"\nПоследний раз цены обновить не удалось: {esc(catalog_error[:300])}"
     return text
+
+
+SOURCE_NAMES = {"site": "с сайта", "channel": "из канала", "link": "по ссылке на товар или расчёт", "direct": "сами"}
+
+
+def _by_channel(d: dict | None) -> str:
+    """{'tg': 3, 'max': 2} → « (MAX — 2, Telegram — 3)»."""
+    if not d:
+        return ""
+    return " (" + ", ".join(f"{ch_name(ch)} — {n}" for ch, n in sorted(d.items(), key=lambda x: x[0] != "max")) + ")"
+
+
+def _starts_line(s) -> str:
+    """Новые в боте за 7 дней: сколько, где и откуда пришли (учёт с 17.11.2026)."""
+    by_ch = getattr(s, "starts_week_by_channel", None) or {}
+    total = sum(by_ch.values())
+    if not total:
+        return "\nНовые в боте за 7 дней: 0"
+    by_src = getattr(s, "starts_week_by_src", None) or {}
+    src = ", ".join(f"{SOURCE_NAMES[k]} — {by_src[k]}" for k in SOURCE_NAMES if by_src.get(k))
+    active = getattr(s, "starts_week_active", 0)
+    return (f"\nНовые в боте за 7 дней: {total}{_by_channel(by_ch)}"
+            f"\nОткуда пришли: {src}"
+            f"\nИз новых написали или оставили заявку: {active}")
 
 
 def reload_result(count: int, source: str, error: str) -> str:

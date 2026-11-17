@@ -442,3 +442,25 @@ def test_site_links_open_mini_app():
 
     run(scenario())
 
+
+
+def test_start_source_counted_in_max(tmp_path):
+    """Откуда пришли в бота (17.11.2026): ?start=site / site_A907 / ch — в «Статистике» менеджера, без имён."""
+    async def scenario():
+        f, h = await make(tmp_path, site_url="https://nashdekor.ru")
+        await h.engine.start()
+        await h.send(MANAGER, f"/owner {CODE}")
+        await h.start(MANAGER, "site")                       # вход сотрудника в статистику не попадает
+        await h.start(CLIENT, "site")
+        assert "Не хотите разбираться с кнопками" in f.last(CLIENT)
+        await h.start(CLIENT2, "site_A907")
+        assert "<b>A907</b>" in f.last(CLIENT2) and "ширину стены" in f.last(CLIENT2)
+        await h.start(CLIENT, "ch")                          # повторный вход источник не меняет
+        await h.send(CLIENT2, "Здравствуйте, есть в наличии?")
+        await h.send(MANAGER, "Статистика")
+        st = f.last(MANAGER)
+        assert "Новые в боте за 7 дней: 2 (MAX — 2)" in st and "с сайта — 2" in st and "из канала" not in st
+        assert "Из новых написали или оставили заявку: 1" in st
+        await done(f, h)
+
+    run(scenario())

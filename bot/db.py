@@ -17,6 +17,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import hashlib
+import hmac
 import json
 import os
 import secrets
@@ -24,7 +25,7 @@ import sqlite3
 import threading
 import time
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Any, TypeVar
 
@@ -187,6 +188,18 @@ CREATE TABLE IF NOT EXISTS settings (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
+
+-- откуда человек впервые пришёл в бота (для статистики): без имени и номера —
+-- только обезличенная метка мессенджер-аккаунта; client_id — если потом написал или оставил заявку
+CREATE TABLE IF NOT EXISTS starts (
+    channel    TEXT    NOT NULL,
+    uhash      TEXT    NOT NULL,
+    src        TEXT    NOT NULL,           -- site | channel | link | direct
+    ts         INTEGER NOT NULL,
+    client_id  INTEGER,
+    PRIMARY KEY (channel, uhash)
+);
+CREATE INDEX IF NOT EXISTS starts_ts ON starts(ts)
 """
 
 
@@ -315,6 +328,14 @@ class Stats:
     clients_week: int
     shipments_open: int
     shipped_week: int
+    clients_week_by_channel: dict = field(default_factory=dict)   # {'tg': 3, 'max': 2} — писали или оставили заявку
+    starts_week_by_channel: dict = field(default_factory=dict)    # новые в боте за 7 дней
+    starts_week_by_src: dict = field(default_factory=dict)        # {'site': 2, 'channel': 1, 'link': 0, 'direct': 4}
+    starts_week_active: int = 0                                   # из новых — написали или оставили заявку
+
+
+START_SOURCES = ("site", "channel", "link", "direct")
+STARTS_KEEP_DAYS = 400
 
 
 _INT_FIELDS = {"status_ts", "created_by", "accepted_by", "accepted_ts", "shipped_by", "shipped_ts",
@@ -428,6 +449,35 @@ def _create_stmt(table: str) -> str:
     raise KeyError(table)  # pragma: no cover
 
 
+def _source_stats(c: sqlite3.Connection, since: int) -> dict[str, Any]:
+    """Кто писал за период — по мессенджерам; новые в боте — по мессенджерам и откуда пришли."""
+    out: dict[str, Any] = {}
+    with contextlib.suppress(sqlite3.Error):
+        out["clients_week_by_channel"] = {r[0]: int(r[1]) for r in c.execute(
+            "SELECT c.channel, COUNT(DISTINCT c.id) FROM clients c WHERE c.id IN"
+            " (SELECT client_id FROM messages WHERE direction = 'in' AND created_ts >= ?"
+            "  UNION SELECT client_id FROM leads WHERE created_ts >= ?) GROUP BY c.channel", (since, since))}
+        out["starts_week_by_channel"] = {r[0]: int(r[1]) for r in c.execute(
+            "SELECT channel, COUNT(*) FROM starts WHERE ts >= ? GROUP BY channel", (since,))}
+        out["starts_week_by_src"] = {r[0]: int(r[1]) for r in c.execute(
+            "SELECT src, COUNT(*) FROM starts WHERE ts >= ? GROUP BY src", (since,))}
+        out["starts_week_active"] = int(c.execute(
+            "SELECT COUNT(*) FROM starts WHERE ts >= ? AND client_id IS NOT NULL", (since,)).fetchone()[0])
+    return out
+
+
+def _start_hash(c: sqlite3.Connection, channel: str, user_id: int) -> str:
+    """Обезличенная метка аккаунта для таблицы starts: HMAC от id в мессенджере с секретом этой базы."""
+    row = c.execute("SELECT value FROM settings WHERE key = 'start_salt'").fetchone()
+    if row:
+        salt = row[0]
+    else:
+        salt = secrets.token_hex(32)
+        c.execute("INSERT OR IGNORE INTO settings(key, value) VALUES ('start_salt', ?)", (salt,))
+        salt = c.execute("SELECT value FROM settings WHERE key = 'start_salt'").fetchone()[0]
+    return hmac.new(salt.encode(), f"{channel}:{user_id}".encode(), hashlib.sha256).hexdigest()[:20]
+
+
 class Database:
     def __init__(self, path: str) -> None:
         self.path = path
@@ -527,7 +577,28 @@ class Database:
                 " name = excluded.name, last_ts = excluded.last_ts",
                 (channel, user_id, username or "", name or "", ts, ts))
             row = c.execute("SELECT * FROM clients WHERE channel = ? AND user_id = ?", (channel, user_id)).fetchone()
+            with contextlib.suppress(sqlite3.Error):   # статистика «откуда пришёл» не должна мешать заявкам
+                c.execute("UPDATE starts SET client_id = ? WHERE channel = ? AND uhash = ? AND client_id IS NULL",
+                          (row["id"], channel, _start_hash(c, channel, user_id)))
             return Client(**_clean(row))
+
+        return await self._call(q)
+
+    async def note_start(self, channel: str, user_id: int, src: str) -> bool:
+        """Первый вход человека в бота: запомнить, откуда пришёл (сайт, канал, ссылка, сам). Повторный — не меняет."""
+        src = src if src in START_SOURCES else "direct"
+        ts = int(time.time())
+
+        def q(c: sqlite3.Connection) -> bool:
+            uhash = _start_hash(c, channel, user_id)
+            cur = c.execute("INSERT OR IGNORE INTO starts(channel, uhash, src, ts) VALUES (?,?,?,?)",
+                            (channel, uhash, src, ts))
+            if cur.rowcount:
+                row = c.execute("SELECT id FROM clients WHERE channel = ? AND user_id = ?", (channel, user_id)).fetchone()
+                if row:   # клиент уже писал раньше (до учёта источников)
+                    c.execute("UPDATE starts SET client_id = ? WHERE channel = ? AND uhash = ?", (row[0], channel, uhash))
+                c.execute("DELETE FROM starts WHERE ts < ?", (ts - STARTS_KEEP_DAYS * 86400,))
+            return bool(cur.rowcount)
 
         return await self._call(q)
 
@@ -732,6 +803,8 @@ class Database:
             kept = int(c.execute("SELECT COUNT(*) FROM leads WHERE client_id = ?", (client_id,)).fetchone()[0])
             messages = c.execute("DELETE FROM messages WHERE client_id = ?", (client_id,)).rowcount
             c.execute("DELETE FROM outbox WHERE client_id = ?", (client_id,))
+            with contextlib.suppress(sqlite3.Error):
+                c.execute("DELETE FROM starts WHERE client_id = ?", (client_id,))
             if kept:
                 c.execute("DELETE FROM relay WHERE client_id = ? AND (lead_id IS NULL OR lead_id NOT IN"
                           " (SELECT id FROM leads WHERE client_id = ?))", (client_id, client_id))
@@ -773,6 +846,7 @@ class Database:
                     start_week, start_week),
                 shipments_open=one("SELECT COUNT(*) FROM leads WHERE status IN (?, ?)", *OPEN_SHIPMENT),
                 shipped_week=one("SELECT COUNT(*) FROM shipments WHERE shipped_ts >= ?", start_week),
+                **_source_stats(c, start_week),
             )
 
         return await self._call(q)

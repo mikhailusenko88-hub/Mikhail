@@ -43,9 +43,24 @@ MAX_PER_DAY = 600        # отметок от одного посетителя
 KINDS = {"view", "sec", "item", "cat", "search", "more", "calc", "calcpanel", "3d", "copy", "form", "lead", "leadfail"}
 SECTIONS = [("catalog", "Каталог"), ("calc", "Расчёт стены и 3D"), ("pro", "Дизайнерам"),
             ("terms", "Доставка и оплата"), ("order", "Заявка")]
-PAGES = {"/": "Главная", "/oferta.html": "Оферта", "/privacy.html": "Политика", "/consent.html": "Согласие"}
+PAGES = {"/": "Главная", "/oferta.html": "Оферта", "/privacy.html": "Политика", "/consent.html": "Согласие",
+         "/dostavka/": "Доставка", "/oplata/": "Оплата и возврат", "/stati/": "Статьи"}
+# страницы сайта, которые считаем с 17.11.2026 (раньше счётчик принимал только главную и документы)
+CATALOG_PAGES = {"stenovye-paneli": "Стеновые панели", "reechnye-paneli": "Реечные панели под покраску",
+                 "paneli-pod-derevo": "Панели под дерево и бетон", "plintusy": "Плинтусы напольные",
+                 "plintus-s-podsvetkoy": "Плинтус с подсветкой", "karnizy": "Потолочные плинтусы",
+                 "moldingi": "Молдинги", "ugolki": "Уголки"}
+ARTICLE_TITLES = {"duropolimer-chto-eto": "Дюрополимер — что это",
+                  "kak-kleit-plintus-iz-duropolimera": "Чем клеить плинтус",
+                  "kak-otrezat-ugol-potolochnogo-plintusa": "Как отрезать угол потолочного плинтуса",
+                  "kak-pokrasit-plintus-i-paneli": "Как покрасить плинтус и панели",
+                  "moldingi-na-stene-v-interere": "Молдинги на стене в интерьере",
+                  "montazh-stenovyh-panelej": "Монтаж стеновых панелей",
+                  "rejki-na-stenu-v-interere": "Рейки на стену в интерьере"}
 ITEM_ACTS = {"use": "В расчёт", "ask": "Узнать", "decor": "Выбрали декор", "paint": "Выбрали цвет"}
-COPY_NAMES = {"phone": "Скопировали телефон", "telegram": "Скопировали Telegram", "avito": "Скопировали Авито"}
+COPY_NAMES = {"phone": "Скопировали телефон", "max": "Нажали «MAX» — написать в бота",
+              "telegram": "Нажали «Telegram» — написать в бота", "channel": "Нажали «Канал в MAX»",
+              "tgchannel": "Нажали «Канал в Telegram»", "avito": "Перешли на Авито"}
 INTERNAL = "внутри сайта"
 DIRECT = "Прямой заход"
 
@@ -73,8 +88,45 @@ _REF = [  # (часть адреса, название)
     (("houzz.",), "Houzz"),
 ]
 _UTM = {"avito": "Авито", "yandex": "Яндекс", "ya": "Яндекс", "direct": "Яндекс", "google": "Google",
-        "tg": "Telegram", "telegram": "Telegram", "max": "MAX", "vk": "ВКонтакте", "wa": "WhatsApp",
-        "whatsapp": "WhatsApp", "qr": "QR-код", "card": "Визитка"}
+        "telegram": "Telegram", "max": "MAX", "vk": "ВКонтакте", "wa": "WhatsApp",
+        "whatsapp": "WhatsApp", "qr": "QR-код", "card": "Визитка",
+        # с 17.11.2026: из какого места мессенджера (метки ставят бот и посты каналов)
+        "tg": "Telegram — канал", "tg_ch": "Telegram — канал", "tg_bot": "Telegram — бот",
+        "max_ch": "MAX — канал", "max_bot": "MAX — бот", "vk_ch": "ВКонтакте", "vk_bot": "ВКонтакте — бот"}
+_PROD_RE = re.compile(r"/p/([a-z0-9-]{1,30})/?")
+_CAT_RE = re.compile(r"/catalog/([a-z0-9-]{2,40})/?")
+_ART_RE = re.compile(r"/stati/([a-z0-9-]{2,70})/?")
+
+
+def page_name(path: str, catalog: Any = None) -> str:
+    """/p/a907/ → «Товар A907 · Реечная панель…»; /catalog/moldingi/ → «Раздел: Молдинги»; /stati/… → «Статья: …»."""
+    if path in PAGES:
+        return PAGES[path]
+    m = _PROD_RE.fullmatch(path)
+    if m:
+        p = catalog.by_slug(m.group(1)) if catalog is not None and hasattr(catalog, "by_slug") else None
+        return f"Товар {p.article}" + (f" · {p.name.replace(p.article, '').strip(' ·,—-')}" if p and p.name else "") if p else path
+    m = _CAT_RE.fullmatch(path)
+    if m:
+        return "Раздел: " + CATALOG_PAGES.get(m.group(1), m.group(1))
+    m = _ART_RE.fullmatch(path)
+    if m:
+        slug = m.group(1)
+        title = ARTICLE_TITLES.get(slug) or next((t for k, t in ARTICLE_TITLES.items() if k.startswith(slug)), slug)
+        return "Статья: " + title
+    return path
+
+
+def page_kind(path: str) -> str:
+    if path == "/":
+        return "home"
+    if path.startswith("/p/"):
+        return "product"
+    if path.startswith("/catalog/"):
+        return "catalog"
+    if path.startswith("/stati/"):
+        return "article"
+    return "info"
 
 
 def source(ref_host: str, utm: str, shop_domain: str) -> str:
@@ -153,13 +205,13 @@ class Visits:
             if not isinstance(e, (list, tuple)) or not e:
                 continue
             kind = str(e[0])[:12]
-            key = str(e[1]).strip()[:40] if len(e) > 1 and e[1] is not None else ""
+            key = str(e[1]).strip()[:80 if kind == "view" else 40] if len(e) > 1 and e[1] is not None else ""
             act = str(e[2])[:10] if len(e) > 2 and e[2] is not None else ""
             if kind not in KINDS:
                 continue
             if kind == "view":
-                key = "/" if key in ("", "/index.html") else key
-                if key not in PAGES:
+                key = self.view_key(key)
+                if not key:
                     continue
             elif kind == "sec":
                 if key not in dict(SECTIONS):
@@ -187,6 +239,26 @@ class Visits:
                 act = ""
             out.append((kind, key, act))
         return out
+
+    def view_key(self, raw: str) -> str:
+        """Адрес открытой страницы → как храним; пусто — не считаем (служебные и несуществующие страницы)."""
+        key = (raw or "").split("?", 1)[0].split("#", 1)[0].lower()
+        if key.endswith("/index.html"):
+            key = key[:-len("index.html")]
+        key = "/" if key in ("", "/index.html") else key
+        if key in PAGES:
+            return key
+        m = _PROD_RE.fullmatch(key)
+        if m:
+            by_slug = getattr(self.store.catalog, "by_slug", None)
+            return f"/p/{m.group(1)}/" if by_slug and by_slug(m.group(1)) else ""
+        m = _CAT_RE.fullmatch(key)
+        if m:
+            return f"/catalog/{m.group(1)}/" if m.group(1) in CATALOG_PAGES else ""
+        m = _ART_RE.fullmatch(key)
+        if m:   # длинный адрес статьи сайт мог обрезать — оставляем как есть, название найдём по началу
+            return key if key.endswith("/") or len(key) >= 36 else key + "/"
+        return ""
 
     def add(self, *, day: str, at: str, ip: str, ua: str, body: dict[str, Any]) -> int:
         events = self.clean(body.get("e"))
@@ -237,6 +309,7 @@ class Visits:
             "SELECT day, vid, kind, key, act, src, dev FROM visits WHERE day>=? AND day<=? ORDER BY id",
             (start, day)).fetchall()
         who: dict[tuple[str, str], dict[str, Any]] = {}
+        cat = self.store.catalog
         views = 0
         pages: dict[str, set] = defaultdict(set)
         items: dict[str, dict[str, Any]] = {}
@@ -244,18 +317,25 @@ class Visits:
         cats: dict[str, int] = defaultdict(int)
         for r in rows:
             v = (r["day"], r["vid"])
-            w = who.setdefault(v, {"src": "", "dev": r["dev"], "did": set(), "secs": set()})
+            w = who.setdefault(v, {"src": "", "dev": r["dev"], "did": set(), "secs": set(), "pk": set()})
             k = r["kind"]
             w["did"].add(k)
             if k == "view":
                 views += 1
                 pages[r["key"]].add(v)
+                w["pk"].add(page_kind(r["key"]))
                 if not w["src"] and r["src"] != INTERNAL:
                     w["src"] = r["src"]
+                m = _PROD_RE.fullmatch(r["key"])
+                p = cat.by_slug(m.group(1)) if m and hasattr(cat, "by_slug") else None
+                if p:
+                    it = items.setdefault(p.article, {"who": set(), "use": 0, "ask": 0, "decor": 0, "paint": 0, "calc": 0, "opened": set()})
+                    it["who"].add(v)
+                    it.setdefault("opened", set()).add(v)
             elif k == "sec":
                 w["secs"].add(r["key"])
             elif k in ("item", "calcpanel"):
-                it = items.setdefault(r["key"], {"who": set(), "use": 0, "ask": 0, "decor": 0, "paint": 0, "calc": 0})
+                it = items.setdefault(r["key"], {"who": set(), "use": 0, "ask": 0, "decor": 0, "paint": 0, "calc": 0, "opened": set()})
                 it["who"].add(v)
                 if k == "item":
                     it[r["act"]] = it.get(r["act"], 0) + 1
@@ -298,7 +378,9 @@ class Visits:
 
         funnel = [
             ("Зашли на сайт", total),
-            ("Смотрели каталог", count(lambda w: "catalog" in w["secs"] or w["did"] & {"item", "cat", "search", "more"})),
+            ("Смотрели каталог", count(lambda w: "catalog" in w["secs"] or w["did"] & {"item", "cat", "search", "more"}
+                                       or w["pk"] & {"product", "catalog"})),
+            ("Открывали страницы товаров", count(lambda w: "product" in w["pk"])),
             ("Нажимали на товары", count(lambda w: "item" in w["did"])),
             ("Считали стену", count(lambda w: w["did"] & {"calc", "calcpanel"})),
             ("Крутили 3D-стену", count(lambda w: "3d" in w["did"])),
@@ -307,11 +389,11 @@ class Visits:
         ]
         sections = [(name, count(lambda w, s=s: s in w["secs"])) for s, name in SECTIONS]
         copies = [(name, count(lambda w, k=k: "copy:" + k in w["did"])) for k, name in COPY_NAMES.items()]
-        cat = self.store.catalog
         item_rows = []
         for a, it in items.items():
             p = cat.get(a)
             item_rows.append({"article": a, "name": (p.name.replace(a, "").strip(" ·,—-") if p else ""), "visitors": len(it["who"]),
+                              "opened": len(it.get("opened") or ()),
                               "use": it["use"], "ask": it["ask"], "color": it["decor"] + it["paint"], "calc": it["calc"]})
         item_rows.sort(key=lambda x: (-x["visitors"], -(x["use"] + x["ask"] + x["color"] + x["calc"]), x["article"]))
         return {
@@ -322,7 +404,8 @@ class Visits:
             "items": item_rows[:60],
             "searches": sorted(searches.items(), key=lambda x: (-x[1], x[0]))[:20],
             "cats": sorted(cats.items(), key=lambda x: (-x[1], x[0])),
-            "pages": sorted(((PAGES.get(p, p), len(s)) for p, s in pages.items()), key=lambda x: -x[1]),
+            "pages": sorted(((page_name(p, cat), len(s)) for p, s in pages.items()), key=lambda x: (-x[1], x[0]))[:60],
+            "copy_counts": {k: count(lambda w, k=k: "copy:" + k in w["did"]) for k in COPY_NAMES},
         }
 
 

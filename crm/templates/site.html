@@ -17,12 +17,32 @@
 <div class="panel list">{% for name, n in r['funnel'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}{% if r['visitors'] %} · {{ (100 * n / r['visitors'])|round|int }}%{% endif %}</span></div>{% endfor %}
 {% for name, n in r['copies'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}</span></div>{% endfor %}</div>
 
-<h2>Товары: на что нажимали</h2>
-<div class="panel tbl"><table class="site-items"><thead><tr><th>Артикул</th><th class="r">Людей</th><th class="r">В расчёт</th><th class="r">Узнать</th><th class="r">Цвет</th></tr></thead><tbody>
-{% for it in r['items'] %}<tr><td><span class="mono t">{{ it['article'] }}</span>{% if it['name'] %}<div class="d">{{ it['name'] }}</div>{% endif %}</td><td class="r num">{{ it['visitors'] }}</td><td class="r num">{{ it['use'] + it['calc'] }}</td><td class="r num">{{ it['ask'] }}</td><td class="r num">{{ it['color'] }}</td></tr>
-{% else %}<tr><td colspan="5"><span class="d">Пока никто не нажимал на товары</span></td></tr>{% endfor %}
+<h2>Мессенджеры: с сайта в бота</h2>
+{% set cc = r.get('copy_counts', {}) %}
+{% if bots.get('ready') %}{% set br = bots['rows'] %}
+<div class="panel tbl"><table class="site-bots"><thead><tr><th></th><th class="r">MAX</th><th class="r">Telegram</th></tr></thead><tbody>
+<tr><td>Нажали на сайте «написать в бота»</td><td class="r num">{{ cc.get('max', 0) }}</td><td class="r num">{{ cc.get('telegram', 0) }}</td></tr>
+{% for key, name in (('n', 'Пришли в бота с сайта'), ('wrote', '— из них написали'), ('leads', '— из них оставили заявку')) %}
+<tr><td>{{ name }}</td>{% for ch in ('max', 'tg') %}<td class="r num">{{ br.get((ch, 'site'), {}).get(key, 0) }}</td>{% endfor %}</tr>{% endfor %}
 </tbody></table></div>
-<p class="d site-note">«Людей» — сколько посетителей нажимали на артикул (кнопки, цвет, выбор в расчёте). «В расчёт» — кнопка у товара и выбор панели в расчёте стены.</p>
+<h2>Новые в ботах: откуда пришли</h2>
+<div class="panel tbl"><table class="site-bots"><thead><tr><th>Откуда</th><th class="r">MAX</th><th class="r">Telegram</th><th class="r">Написали</th><th class="r">Заявки</th></tr></thead><tbody>
+{% for src, name in (('site', 'С сайта'), ('channel', 'Из канала'), ('link', 'По ссылке на товар или расчёт'), ('direct', 'Сами (поиск, адрес бота)')) %}
+{% set a = br.get(('max', src), {}) %}{% set b = br.get(('tg', src), {}) %}
+<tr><td>{{ name }}</td><td class="r num">{{ a.get('n', 0) }}</td><td class="r num">{{ b.get('n', 0) }}</td><td class="r num">{{ a.get('wrote', 0) + b.get('wrote', 0) }}</td><td class="r num">{{ a.get('leads', 0) + b.get('leads', 0) }}</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="d site-note">Новые в ботах — кто впервые нажал «Начать» за этот период. «С сайта» и «Из канала» — по меткам в ссылках (с 17.11.2026); «Сами» — нашли бота поиском или по адресу без метки. Имена и номера здесь не хранятся.</p>
+{% else %}
+<div class="panel list"><div class="row"><span class="grow">Нажали на сайте «написать в бота»: MAX — {{ cc.get('max', 0) }}, Telegram — {{ cc.get('telegram', 0) }}</span></div>
+<div class="row"><span class="d">Сколько из них зашли в бота и написали, появится после обновления бота.</span></div></div>
+{% endif %}
+
+<h2>Товары: что смотрели и на что нажимали</h2>
+<div class="panel tbl"><table class="site-items"><thead><tr><th>Артикул</th><th class="r">Людей</th><th class="r">Открыли</th><th class="r">В расчёт</th><th class="r">Узнать</th><th class="r">Цвет</th></tr></thead><tbody>
+{% for it in r['items'] %}<tr><td><span class="mono t">{{ it['article'] }}</span>{% if it['name'] %}<div class="d">{{ it['name'] }}</div>{% endif %}</td><td class="r num">{{ it['visitors'] }}</td><td class="r num">{{ it.get('opened', 0) }}</td><td class="r num">{{ it['use'] + it['calc'] }}</td><td class="r num">{{ it['ask'] }}</td><td class="r num">{{ it['color'] }}</td></tr>
+{% else %}<tr><td colspan="6"><span class="d">Пока никто не смотрел товары</span></td></tr>{% endfor %}
+</tbody></table></div>
+<p class="d site-note">«Людей» — сколько посетителей открывали страницу товара или нажимали на артикул на главной. «Открыли» — заходили на страницу товара (считается с 17.11.2026). «В расчёт» — кнопка у товара и выбор панели в расчёте стены.</p>
 
 <h2>Разделы: сколько людей долистали</h2>
 <div class="panel list">{% for name, n in r['sections'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}{% if r['visitors'] %} · {{ (100 * n / r['visitors'])|round|int }}%{% endif %}</span></div>{% endfor %}</div>
