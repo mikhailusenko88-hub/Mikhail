@@ -1,0 +1,82 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 97,
+  "title": "Проба голосов Фили, второй круг",
+  "scenes": 2,
+  "errors": [],
+  "unknownWords": [
+   {
+    "word": "сравнения",
+    "sentence": "Для сравнения — Барсик, Рон и Пик"
+   },
+   {
+    "word": "новый",
+    "sentence": "Филя, новый голос четыре"
+   }
+  ],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Филя: {\"speaker\":\"ru_zara\",\"F\":1.07,\"P\":0.96,\"R\":1.15}",
+   "Филик: {\"speaker\":\"ru_zara\",\"F\":1.18,\"P\":1.08,\"R\":1.15}",
+   "Филёк: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.15,\"R\":1.1}",
+   "Филюша: {\"speaker\":\"ru_aigul\",\"F\":1.1,\"P\":1.02,\"R\":1.15}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 97. Проба голосов Фили, второй круг",
+  "path": "video/Кот Барсик - 97. Проба голосов Фили, второй круг.mp4",
+  "frames": 1398,
+  "sec": 197,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 55.896,
+  "video": "video/Кот Барсик - 97. Проба голосов Фили, второй круг.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "6f535e7",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 13.6,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 29,
+   "e": 96,
+   "b": 13,
+   "w": 2,
+   "n": 1390,
+   "at": 1390,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 2,
+  "ttsFail": 0,
+  "voice": 11,
+  "voiceFail": 0,
+  "voiceSec": 11,
+  "ttsSec": 2,
+  "frames": 1398,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -18.6,
+  "lufs_out": -15.3,
+  "gain_db": 3.6
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 233,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
