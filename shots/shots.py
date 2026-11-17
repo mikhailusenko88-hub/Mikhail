@@ -17,6 +17,7 @@ with sync_playwright() as p:
             ctx = br.new_context(viewport={'width': 1280, 'height': 900}, device_scale_factor=2)
         pg = ctx.new_page(); errs, fails = [], []
         pg.on('console', lambda m: errs.append(m.text) if m.type == 'error' else None)
+        pg.on('pageerror', lambda e: errs.append('ОШИБКА СКРИПТА: ' + str(e)[:200]))   # падение скрипта страницы — в консоль оно не пишется
         pg.on('requestfailed', lambda q: fails.append(q.url))
         pg.on('response', lambda s: fails.append(f'{s.status} {s.url}') if s.status >= 400 else None)
         try:

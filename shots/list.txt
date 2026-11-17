@@ -1,7 +1,7 @@
 # имя | адрес | desktop|mobile | js
-# 17.11.2026 — главная: карусель «в интерьере» вместо 3D-стены
-glav-int-m | https://nashdekor.ru/?s=91#calc | mobile | document.getElementById('calc').scrollIntoView()
-glav-int-col-m | https://nashdekor.ru/?s=92#calc | mobile | document.querySelector('#pGrid [data-pick="A903"]').click(); document.querySelector('#cColors [data-name="Шалфей"]').click(); document.querySelector('#stage [data-ivstep="1"]').click(); document.querySelector('#stage [data-ivstep="1"]').click(); document.getElementById('calc').scrollIntoView()
-glav-int-wood-d | https://nashdekor.ru/?s=93&panel=3-15#calc | desktop | document.getElementById('calc').scrollIntoView(); document.querySelector('#ivStrip [data-ivgo="9"]').click()
-glav-top-m | https://nashdekor.ru/?s=94 | mobile | 
-prod-a910-m | https://nashdekor.ru/p/a910/?s=95 | mobile | 
+# 17.11.2026 — главная: карусель «в интерьере» вместо 3D-стены (после исправления)
+glav2-int-m | https://nashdekor.ru/?s=101#calc | mobile | document.getElementById('calc').scrollIntoView()
+glav2-int-col-m | https://nashdekor.ru/?s=102#calc | mobile | setTimeout(()=>{document.querySelector('#pGrid [data-pick="A903"]').click(); document.querySelector('#cColors [data-name="Шалфей"]').click(); document.querySelector('#stage [data-ivstep="1"]').click(); document.querySelector('#stage [data-ivstep="1"]').click(); document.getElementById('calc').scrollIntoView()},600)
+glav2-int-wood-d | https://nashdekor.ru/?s=103&panel=3-15#calc | desktop | setTimeout(()=>{document.getElementById('calc').scrollIntoView(); document.querySelector('#ivStrip [data-ivgo="9"]').click()},800)
+glav2-cat-m | https://nashdekor.ru/?s=104#catalog | mobile | document.getElementById('catalog').scrollIntoView()
+prod2-a910-m | https://nashdekor.ru/p/a910/?s=105 | mobile | 
