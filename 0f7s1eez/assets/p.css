@@ -129,6 +129,16 @@ section{padding-block:8px 56px}
 @media (hover:none){.hint .t{display:inline}.hint .m{display:none}.hint{left:10px;right:auto;bottom:34px}}
 @media (max-width:520px){.views button{padding:5px 9px;font-size:12px}}
 .stage3d.used .hint{opacity:0}
+#gScenes{right:10px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#gScenes::-webkit-scrollbar{display:none}
+#gScenes button{flex:0 0 auto;white-space:nowrap}
+.gnav{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:22px;line-height:1;padding:0 0 3px;opacity:.92}
+.gnav[data-go="-1"]{left:10px}.gnav[data-go="1"]{right:10px}
+@media (max-width:520px){.gnav{width:32px;height:32px;font-size:19px}}
+.stage3d.photo{height:auto;min-height:0;aspect-ratio:3/2;background:#e9e5dd}
+.stage3d[hidden]{display:none}
+.stage3d #cph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:default;touch-action:pan-y}
+.stage3d.photo.wait #cph{opacity:.55;transition:opacity .2s}
 .pgroups{display:flex;flex-wrap:wrap;gap:6px}
 .pgroups button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 12px;font-size:13px;color:var(--ink);white-space:nowrap}
 .pgroups button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
