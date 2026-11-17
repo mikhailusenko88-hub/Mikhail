@@ -29,32 +29,59 @@ BASE_TAGS = ["Кот Барсик", "мультики", "мультики для
 SECRET = "BARSIK_YT"
 
 
+WS = r"[\s\u200b-\u200f\ufeff\u00a0]+"
+
+
+def secret_shape(raw):
+    """Только форма секрета (длины и счётчики), без единого его знака: статус попадает в открытый репозиторий."""
+    flat = re.sub(WS, "", raw)
+    cyr = sum(1 for c in flat if "а" <= c.lower() <= "я" or c in "ёЁ")
+    b64 = sum(1 for c in flat if re.match(r"[A-Za-z0-9+/=]", c))
+    col = flat.count(":")
+    parts = [len(x) for x in flat.split(":")]
+    return (f"длина {len(raw)}, строк {raw.count(chr(10)) + 1}, пробелов {raw.count(' ')}, двоеточий {col}, "
+            f"куски между двоеточиями {parts[:8]}, русских букв {cyr}, прочих знаков {len(flat) - b64 - col - cyr}, "
+            f"«BK1» {'есть' if 'BK1' in flat else 'нет'}, «END» {'есть' if 'END' in flat else 'нет'}")
+
+
+def _try_b64(body, chk):
+    b64 = re.sub(r"[^A-Za-z0-9+/=]", "", body).rstrip("=")
+    try:
+        data = base64.b64decode(b64 + "=" * (-len(b64) % 4))
+    except Exception:
+        return None
+    return data if hashlib.sha256(data).hexdigest()[:8] == chk else None
+
+
 def parse_secret(raw):
     raw = (raw or "").strip()
     if not raw:
         raise SystemExit(f"ЖДУ ВХОД: нет секрета {SECRET} — вход в канал ещё не сделан")
-    flat = re.sub(r"[\s\u200b-\u200f\ufeff\u00a0]+", "", raw)   # строка приходит порезанной на строчки по 24 знака: «:END» и «BK1:» могут оказаться разорваны переносом
-    m = re.search(r"(BK1|FB1):", flat)
-    if m:
-        j = flat.rfind(":END")
-        if j < m.end():
-            raise SystemExit(f"строка входа обрезана: начало «{m.group(1)}:» есть, конца «:END» нет (длина {len(raw)}) — скопируй ответ команды целиком, до слова END")
-        body = re.sub(r"[^A-Za-z0-9+/=:]", "", flat[m.end():j])   # мусор от копирования с телефона
-        b64, chk = body.rsplit(":", 1)
-        data = base64.b64decode(b64 + "=" * (-len(b64) % 4))
-        if hashlib.sha256(data).hexdigest()[:8] != chk:
-            raise SystemExit("строка входа испорчена при копировании (не сходится проверка) — скопируй ещё раз")
+    flat = re.sub(WS, "", raw)   # строка приходит порезанной на строчки по 24 знака: «:END» и «BK1:» могут оказаться разорваны переносом
+    k = None
+    m = re.search(r":([0-9a-fA-F]{8}):?END", flat)
+    if m:                                                      # <что-то>:<8 знаков проверки>:END — начало может быть испорчено или потеряно
+        chk, pre = m.group(1).lower(), flat[:m.start()]
+        a = re.search(r"(BK1|FB1):", pre)
+        cands = ([pre[a.end():]] if a else []) + [pre[i + 1:] for i, c in enumerate(pre[:40]) if c == ":"] + [pre]
+        data = next((d for d in (_try_b64(b, chk) for b in cands) if d), None)
+        if data is None:                                       # пропала первая строчка из 24 знаков («BK1:» + 20): её содержимое известно, кроме одного знака
+            body = re.sub(r"[^A-Za-z0-9+/=]", "", pre)
+            for ch in "0123456789":
+                head = base64.b64encode(('{"client_id":"' + ch).encode()).decode()
+                data = _try_b64(head + body, chk)
+                if data:
+                    break
+        if data is None:
+            raise SystemExit(f"строка входа скопирована не целиком или испорчена: проверка не сходится ({secret_shape(raw)})")
         k = json.loads(data)
-    elif ":END" in flat and "{" not in flat:
-        raise SystemExit(f"строка входа скопирована не с начала: конец «END» есть, а начала «BK1:» нет (длина {len(raw)}, строк {raw.count(chr(10)) + 1}) — "
-                         "скопируй ответ команды целиком, с первой строки «BK1:…» до последней «…END»")
-    else:
+    elif "{" in raw:
         t = raw.replace("“", '"').replace("”", '"').replace("«", '"').replace("»", '"')
         i, j = t.find("{"), t.rfind("}")
-        if i < 0 or j <= i:
-            raise SystemExit(f"секрет {SECRET} не похож на строку входа (длина {len(raw)}, строк {raw.count(chr(10)) + 1}, "
-                             f"есть «BK1»: {'да' if 'BK1' in flat else 'нет'}, есть «END»: {'да' if 'END' in flat else 'нет'})")   # сам секрет не печатаем
-        k = json.loads(re.sub(r"[\s​-‏﻿   ]+", "", t[i:j + 1]))
+        if j > i:
+            k = json.loads(re.sub(WS, "", t[i:j + 1]))
+    if k is None:
+        raise SystemExit(f"секрет {SECRET} не похож на строку входа ({secret_shape(raw)})")   # сам секрет не печатаем
     if not all(k.get(x) for x in ("client_id", "client_secret", "refresh_token")):
         raise SystemExit(f"в секрете {SECRET} не хватает полей входа")
     return k
