@@ -157,7 +157,9 @@ def main():
         return finish([f"ЯЗЫК И КАТЕГОРИЯ: исправлено серий {len(done)}, уже были в порядке {skip}, Shorts не трогал {shorts}"
                        + (f", ОШИБОК {len(errs)}" if errs else "") + (f", ПРОВЕРИТЬ {len(bad)}" if bad else ""),
                        "название и описание остались как были: " + ("да, у всех" if all(d["text_same"] for d in done) else "НЕ У ВСЕХ")]
-                      + [f"  {d['id']} {d['title'][:60]} — было {d['was']}, стало {d['now']}" for d in done] + errs, {"done": done, "skip": skip, "shorts": shorts, "errs": errs}, "lang")
+                      + [f"  {d['id']} {d['title'][:60]} — было {d['was']}, стало {d['now']}" for d in done] + errs
+                      + ["короткие ролики длиннее минуты (проверить, не серии ли): " + ("; ".join(f"{x['title'][:40]} — {x['sec']} с" for x in getattr(yt, "short_list", []) if x["sec"] > 60) or "нет")],
+                      {"done": done, "skip": skip, "shorts": shorts, "errs": errs, "short_list": getattr(yt, "short_list", [])}, "lang")
     last, pls = yt.last_videos(50), yt.playlists()
     pe = yt.playlist_for("episode", pls)
     if mode == "short":

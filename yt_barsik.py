@@ -335,8 +335,10 @@ class YT:
             r.raise_for_status()
             for v in r.json().get("items", []):
                 sn = v["snippet"]
-                if iso_seconds(v["contentDetails"].get("duration")) < min_sec:
+                dur = iso_seconds(v["contentDetails"].get("duration"))
+                if dur < min_sec:
                     shorts += 1
+                    self.short_list = getattr(self, "short_list", []) + [{"id": v["id"], "title": sn["title"][:60], "sec": dur}]
                     continue
                 new = lang_snippet(sn, lang, category)
                 if all(sn.get(k) == new[k] for k in ("categoryId", "defaultLanguage", "defaultAudioLanguage")):
