@@ -98,6 +98,10 @@ class Config:
     # отдельного уведомления не нужно (данные клиентов хранятся только на нашем сервере в РФ).
     # 0 — заявки принимают только сайт и бот в MAX, сотрудникам в Telegram ПДн не показываются.
     telegram_collect_contacts: bool = True
+    # Прокси до api.telegram.org, если сервер в РФ до Telegram не достаёт (замедление с 02.2026):
+    # socks5://127.0.0.1:1080 — SSH-туннель через наш сервер в Казахстане (bot/tg-tunnel.sh).
+    # Через туннель идёт только связь с Telegram (шифрованная); база и заявки — только на сервере в РФ.
+    telegram_proxy: str = ""
     staff_default_channel: str = CH_MAX                 # куда слать сотруднику, если он в обоих
     max_bot_url: str = ""                               # https://max.ru/<ник бота>
     max_api_url: str = DEFAULT_MAX_API_URL
@@ -149,6 +153,7 @@ def load_config(channel: str | None = None) -> Config:
         reserve_percent=_env_int("RESERVE_PERCENT", 7, 0, 30),
         log_level=(_env("LOG_LEVEL", "INFO") or "INFO").upper(),
         telegram_collect_contacts=_env_bool("TELEGRAM_COLLECT_CONTACTS", True),
+        telegram_proxy=_env("TELEGRAM_PROXY"),
         staff_default_channel=_env("STAFF_DEFAULT_CHANNEL", CH_MAX) or CH_MAX,
         max_bot_url=_url(_env("MAX_BOT_URL")),
         max_api_url=_url(_env("MAX_API_URL", DEFAULT_MAX_API_URL)) or DEFAULT_MAX_API_URL,

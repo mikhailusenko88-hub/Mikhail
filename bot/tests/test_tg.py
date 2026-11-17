@@ -391,6 +391,24 @@ def test_static_admin_ids(tmp_path):
     run(scenario())
 
 
+def test_proxy_for_telegram():
+    """TELEGRAM_PROXY (туннель через сервер в Казахстане, 17.11.2026): бот ходит в Telegram через SOCKS."""
+    import os
+
+    import config
+    import tg
+    bot = tg.make_bot("42:TEST", "socks5://127.0.0.1:1080")
+    assert bot.session.proxy == "socks5://127.0.0.1:1080"   # нужен aiohttp-socks из requirements.txt
+    assert tg.make_bot("42:TEST").session.proxy is None
+    old = dict(os.environ)
+    try:
+        os.environ.update(BOT_TOKEN="42:TEST", TELEGRAM_PROXY="socks5://127.0.0.1:1080")
+        assert config.load_config().telegram_proxy == "socks5://127.0.0.1:1080"
+    finally:
+        os.environ.clear()
+        os.environ.update(old)
+
+
 def test_parse_helpers():
     assert core.parse_contact("+7 999 123-45-67") == "+79991234567"
     assert core.parse_contact("89991234567") == "+79991234567"

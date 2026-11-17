@@ -63,7 +63,11 @@ MANAGER_COMMANDS = [
 ]
 
 
-def make_bot(token: str, **kwargs: Any) -> Bot:
+def make_bot(token: str, proxy: str = "", **kwargs: Any) -> Bot:
+    if proxy and "session" not in kwargs:
+        # прокси (туннель через Казахстан) — нужен пакет aiohttp-socks из requirements.txt
+        from aiogram.client.session.aiohttp import AiohttpSession
+        kwargs["session"] = AiohttpSession(proxy=proxy)
     return Bot(token, default=DefaultBotProperties(parse_mode=ParseMode.HTML, link_preview_is_disabled=True),
                **kwargs)
 
@@ -219,7 +223,15 @@ def build_dispatcher(engine: Engine) -> Dispatcher:
 
 
 async def run(cfg: Config, db: Database, store: CatalogStore) -> int:
-    bot = make_bot(cfg.bot_token)
+    try:
+        bot = make_bot(cfg.bot_token, cfg.telegram_proxy)
+    except (ImportError, RuntimeError, ValueError) as exc:
+        log.error("TELEGRAM_PROXY задан, но прокси не настроить (%s): обновите бота установщиком или "
+                  "отключите туннель: tg-tunnel.sh off", exc)
+        await asyncio.sleep(60)
+        return 5
+    if cfg.telegram_proxy:
+        log.info("связь с Telegram — через прокси %s", cfg.telegram_proxy.split("@")[-1])
     engine = Engine(cfg, db, store, TgTransport(bot))
     tasks: list[asyncio.Task] = []
     try:
@@ -231,7 +243,9 @@ async def run(cfg: Config, db: Database, store: CatalogStore) -> int:
             await asyncio.sleep(60)
             return 3
         except TelegramNetworkError as exc:
-            log.error("нет связи с Telegram (%s) — повтор через 30 секунд", type(exc).__name__)
+            hint = "проверьте туннель: systemctl status prostranstvo-tg-tunnel" if cfg.telegram_proxy else \
+                "сервер не достаёт до api.telegram.org — туннель: bot/tg-tunnel.sh"
+            log.error("нет связи с Telegram (%s) — повтор через 30 секунд; %s", type(exc).__name__, hint)
             await asyncio.sleep(30)
             return 4
         await bot.delete_webhook(drop_pending_updates=False)

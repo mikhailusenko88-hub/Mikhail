@@ -226,6 +226,8 @@ MAX_BOT_URL=
 # Telegram: принимать заявки с телефоном (1, по умолчанию) или вести за ними на сайт и в MAX (0).
 # РКН 14.08.2026: переписка лиц из РФ через иностранный мессенджер — не трансграничная передача.
 TELEGRAM_COLLECT_CONTACTS=1
+# Прокси до api.telegram.org (ставит tg-tunnel.sh on; пусто — напрямую). Данные клиентов там не хранятся.
+TELEGRAM_PROXY=
 # Куда присылать заявки сотруднику, подключённому в обоих мессенджерах (пока он сам не выбрал): max или tg
 STAFF_DEFAULT_CHANNEL=max
 # Адрес сайта для ссылок в боте; пусто — ссылки на сайт не показываются
@@ -258,6 +260,7 @@ upgrade_env() {
     "# Telegram: принимать заявки с телефоном (1, по умолчанию) или вести на сайт и в MAX (0)"
   ensure_env "$ENV_FILE" STAFF_DEFAULT_CHANNEL max "# Куда присылать сотруднику, подключённому в обоих мессенджерах"
   ensure_env "$ENV_FILE" MAX_ADMIN_IDS "" "# id постоянных менеджеров в MAX (обычно не нужно)"
+  ensure_env "$ENV_FILE" TELEGRAM_PROXY "" "# Прокси до api.telegram.org (ставит tg-tunnel.sh on; пусто — напрямую)"
 }
 
 new_code() {
@@ -289,8 +292,12 @@ site_url_from_server() {
 # tg_get_me ТОКЕН — «OK имя» | «BAD» (Telegram не принял токен) | «NET» (нет связи).
 # Адрес с токеном передаётся curl через stdin (--config -), а не в командной строке.
 tg_get_me() {
-  local token=$1 out code body
-  out=$(printf 'url = "https://api.telegram.org/bot%s/getMe"\n' "$token" |
+  local token=$1 out code body proxy
+  # туннель через Казахстан (tg-tunnel.sh): проверяем токен тем же путём, что и бот
+  proxy=$(get_env "$ENV_FILE" TELEGRAM_PROXY)
+  proxy=${proxy/#socks5:\/\//socks5h://}
+  out=$({ printf 'url = "https://api.telegram.org/bot%s/getMe"\n' "$token"
+          if [[ -n $proxy ]]; then printf 'proxy = "%s"\n' "$proxy"; fi; } |
     curl -sS --max-time 20 --retry 2 --retry-delay 2 --config - -w '\n%{http_code}' 2>/dev/null) || out=$'\n000'
   code=${out##*$'\n'}
   body=${out%$'\n'*}
