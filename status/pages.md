@@ -1,3 +1,3 @@
 # Снятые страницы
 
-- 01 200 https://max.ru/id470331302505_biz (462 симв.)
+- 01 200 https://nashdekor.ru/avito.xml (164509 симв.)
