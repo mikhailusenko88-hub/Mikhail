@@ -33,10 +33,13 @@ def parse_secret(raw):
     raw = (raw or "").strip()
     if not raw:
         raise SystemExit(f"ЖДУ ВХОД: нет секрета {SECRET} — вход в канал ещё не сделан")
-    m = re.search(r"(BK1|FB1):", raw)
-    if m and ":END" in raw:
-        body = raw[m.end():raw.rindex(":END")]
-        body = re.sub(r"[^A-Za-z0-9+/=:]", "", body)          # переносы и мусор от копирования с телефона
+    flat = re.sub(r"[\s\u200b-\u200f\ufeff\u00a0]+", "", raw)   # строка приходит порезанной на строчки по 24 знака: «:END» и «BK1:» могут оказаться разорваны переносом
+    m = re.search(r"(BK1|FB1):", flat)
+    if m:
+        j = flat.rfind(":END")
+        if j < m.end():
+            raise SystemExit(f"строка входа обрезана: начало «{m.group(1)}:» есть, конца «:END» нет (длина {len(raw)}) — скопируй ответ команды целиком, до слова END")
+        body = re.sub(r"[^A-Za-z0-9+/=:]", "", flat[m.end():j])   # мусор от копирования с телефона
         b64, chk = body.rsplit(":", 1)
         data = base64.b64decode(b64 + "=" * (-len(b64) % 4))
         if hashlib.sha256(data).hexdigest()[:8] != chk:
@@ -46,7 +49,8 @@ def parse_secret(raw):
         t = raw.replace("“", '"').replace("”", '"').replace("«", '"').replace("»", '"')
         i, j = t.find("{"), t.rfind("}")
         if i < 0 or j <= i:
-            raise SystemExit(f"секрет {SECRET} не похож на строку входа (длина {len(raw)})")   # сам секрет не печатаем
+            raise SystemExit(f"секрет {SECRET} не похож на строку входа (длина {len(raw)}, строк {raw.count(chr(10)) + 1}, "
+                             f"есть «BK1»: {'да' if 'BK1' in flat else 'нет'}, есть «END»: {'да' if 'END' in flat else 'нет'})")   # сам секрет не печатаем
         k = json.loads(re.sub(r"[\s​-‏﻿   ]+", "", t[i:j + 1]))
     if not all(k.get(x) for x in ("client_id", "client_secret", "refresh_token")):
         raise SystemExit(f"в секрете {SECRET} не хватает полей входа")
