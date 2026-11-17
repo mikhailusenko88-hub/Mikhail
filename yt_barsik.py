@@ -222,6 +222,19 @@ def tags_for(desc):
     return out
 
 
+def iso_seconds(d):
+    m = re.fullmatch(r"P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?", d or "")
+    return sum(int(x or 0) * k for x, k in zip(m.groups(), (86400, 3600, 60, 1))) if m else 0
+
+
+def lang_snippet(sn, lang="ru", category="1"):
+    """Тело для videos.update(part=snippet): всё, что YouTube иначе сотрёт (описание, теги), переносим как было."""
+    new = {"title": sn["title"], "description": sn.get("description", ""), "categoryId": category, "defaultLanguage": lang, "defaultAudioLanguage": lang}
+    if sn.get("tags"):
+        new["tags"] = sn["tags"]
+    return new
+
+
 def video_body(title, desc, publish_at=None, category="1"):
     """publish_at — время выхода в UTC, вид 2026-11-18T12:30:00Z; без него ролик остаётся закрытым черновиком."""
     st = {"privacyStatus": "private", "selfDeclaredMadeForKids": True, "embeddable": True, "publicStatsViewable": True,
@@ -303,6 +316,45 @@ class YT:
                         "kids": st.get("madeForKids"), "category": s.get("categoryId"), "dur": v["contentDetails"].get("duration"),
                         "views": int(cd.get("viewCount", 0)), "likes": int(cd.get("likeCount", 0))})
         return out
+
+    def set_lang(self, lang="ru", category="1", limit=30, min_sec=180):
+        """Старым полным сериям — язык и категория «Фильмы и анимация». Название, описание и теги остаются как были; Shorts не трогаем."""
+        up = self.channel()["contentDetails"]["relatedPlaylists"]["uploads"]
+        ids, tok = [], None
+        for _ in range(3):
+            r = requests.get(f"{API}/playlistItems", params={"part": "contentDetails", "playlistId": up, "maxResults": 50, **({"pageToken": tok} if tok else {})},
+                             headers=self.h(), timeout=30)
+            r.raise_for_status()
+            ids += [i["contentDetails"]["videoId"] for i in r.json().get("items", [])]
+            tok = r.json().get("nextPageToken")
+            if not tok:
+                break
+        done, skip, shorts, errs = [], 0, 0, []
+        for i in range(0, len(ids), 50):
+            r = requests.get(f"{API}/videos", params={"part": "snippet,contentDetails", "id": ",".join(ids[i:i + 50])}, headers=self.h(), timeout=30)
+            r.raise_for_status()
+            for v in r.json().get("items", []):
+                sn = v["snippet"]
+                if iso_seconds(v["contentDetails"].get("duration")) < min_sec:
+                    shorts += 1
+                    continue
+                new = lang_snippet(sn, lang, category)
+                if all(sn.get(k) == new[k] for k in ("categoryId", "defaultLanguage", "defaultAudioLanguage")):
+                    skip += 1
+                    continue
+                if len(done) >= limit or (errs and errs[-1].startswith("СТОП")):
+                    continue
+                rr = requests.put(f"{API}/videos", params={"part": "snippet"}, headers=self.h({"Content-Type": "application/json"}),
+                                  data=json.dumps({"id": v["id"], "snippet": new}), timeout=30)
+                if rr.status_code == 200:
+                    back = rr.json().get("snippet", {})
+                    same = back.get("title") == sn["title"] and back.get("description", "") == sn.get("description", "")
+                    done.append({"id": v["id"], "title": sn["title"], "was": [sn.get("categoryId"), sn.get("defaultLanguage"), sn.get("defaultAudioLanguage")],
+                                 "now": [back.get("categoryId"), back.get("defaultLanguage"), back.get("defaultAudioLanguage")], "text_same": same})
+                else:
+                    errs.append(("СТОП " if rr.status_code in (401, 403, 429) else "") + f"{v['id']}: {rr.status_code} {rr.text[:160]}")
+                time.sleep(.4)
+        return done, skip, shorts, errs
 
     def upload(self, path, body, notify=True):
         size = os.path.getsize(path)

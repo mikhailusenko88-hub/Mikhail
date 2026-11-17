@@ -7,6 +7,7 @@
   short <релиз> <серия> <ГГГГ-ММ-ДДTЧЧ:ММ> — Shorts этой серии (ep-<релиз>-shorts.mp4) с таймером выхода; полная серия уже должна быть загружена
   cancel <id ролика>                     — снять таймер выхода (ролик остаётся закрытым)
   stats                                  — последние ролики канала: просмотры, статус
+  lang                                   — старым полным сериям проставить русский язык и категорию «Фильмы и анимация» (текст не меняется, Shorts не трогает)
 <релиз> — имя сборки студии (релиз studio-<релиз>, файл ep-<релиз>.mp4); название, описание и обложка — со страницы
 супруги (ветка mebel, s9kbars/serii.json и serii/<серия>/cover.jpg). Итог — youtube/status.txt и youtube/<релиз>.json.
 Куда что кладётся (как на канале): полная серия — в плейлист «Все серии подряд», Shorts — в «Смешные моменты и Shorts»;
@@ -120,7 +121,7 @@ def short(yt, a, rel, num, it, body_when, last, pe):
 def main():
     a = request_line()
     mode = a[0] if a else ""
-    if mode not in ("check", "draft", "plan", "short", "cancel", "stats"):
+    if mode not in ("check", "draft", "plan", "short", "cancel", "stats", "lang"):
         return finish([f"НЕ ПОНЯЛ строку publish.txt: {' '.join(a)}"])
     if mode in ("draft", "plan", "short"):
         rel, num = a[1], a[2]
@@ -150,6 +151,13 @@ def main():
                        "последний: " + (f"{vids[0]['title'][:70]} — {vids[0]['views']} просмотров, категория {vids[0]['category']}, для детей: {vids[0]['kids']}" if vids else "—")])
     if mode == "cancel":
         return finish([f"ОТМЕНА {a[1]}: {yt.cancel(a[1])}"])
+    if mode == "lang":                                         # старым полным сериям — русский язык и категория «Фильмы и анимация» (разрешил Михаил 17.11.2026)
+        done, skip, shorts, errs = yt.set_lang()
+        bad = [d for d in done if not d["text_same"] or d["now"] != ["1", "ru", "ru"]]
+        return finish([f"ЯЗЫК И КАТЕГОРИЯ: исправлено серий {len(done)}, уже были в порядке {skip}, Shorts не трогал {shorts}"
+                       + (f", ОШИБОК {len(errs)}" if errs else "") + (f", ПРОВЕРИТЬ {len(bad)}" if bad else ""),
+                       "название и описание остались как были: " + ("да, у всех" if all(d["text_same"] for d in done) else "НЕ У ВСЕХ")]
+                      + [f"  {d['id']} {d['title'][:60]} — было {d['was']}, стало {d['now']}" for d in done] + errs, {"done": done, "skip": skip, "shorts": shorts, "errs": errs}, "lang")
     last, pls = yt.last_videos(50), yt.playlists()
     pe = yt.playlist_for("episode", pls)
     if mode == "short":
