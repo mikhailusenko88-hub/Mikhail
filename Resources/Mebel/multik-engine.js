@@ -806,9 +806,11 @@ function lineFor(ep, lib, who, text, step, vi) {
   const seed = hash32(String(who) + (ch.name || ''));
   const nv = who === 'Р' && !synth ? MK.narratorVoice(lib) : null;
   const hn = who !== 'Р' && !synth ? MK.heroNeural(lib, who) : null;
-  if (synth === 'laugh' && who !== 'Р' && !(lib.characters[who] || {}).laugh && MK.laughPick(lib, who) === 'voice') { const hl = MK.heroNeural(lib, who); // смех тем же нейроголосом, что и речь
+  // «laugh» в паспорте голоса героя (c.golos.laugh = образец из BARSGolos.LAUGHS) — этот герой смеётся своим нейроголосом, даже когда общий новый смех выключен; смех, выбранный в «🎙 Голос» (c.laughId), важнее
+  const ownLaugh = synth === 'laugh' && who !== 'Р' && !(lib.characters[who] || {}).laughId && !!(MK.barsPassport(lib, who) || {}).laugh;
+  if (synth === 'laugh' && who !== 'Р' && !(lib.characters[who] || {}).laugh && (ownLaugh || MK.laughPick(lib, who) === 'voice')) { const hl = MK.heroNeural(lib, who); // смех тем же нейроголосом, что и речь
     const bp0 = MK.barsPassport(lib, who);
-    if ((hl || bp0) && MK.barsLaugh(lib)) { // БАРС-озвучка: тот же голос, но каждый «ха» ложится на ритм и мелодию настоящего смеха
+    if ((hl || bp0) && (ownLaugh || MK.barsLaugh(lib))) { // БАРС-озвучка: тот же голос, но каждый «ха» ложится на ритм и мелодию настоящего смеха
       const V = hl ? { speaker: hl.speaker, model: hl.model, F: hl.shift || 1, P: hl.shift || 1 } : bp0, c0 = lib.characters[who] || {}, big = (V.P || 1) < .9;
       const tpl = c0.laughTpl || V.laugh || BARSGolos.laughFor(ch.name, big ? 'belly' : (V.P || 1) > 1.3 ? 'giggle' : 'laugh', variant), n = BARSGolos.LAUGHS[tpl] ? BARSGolos.LAUGHS[tpl].t.length : 10;
       const bars = { kind: 'laugh', tpl, F: V.F || 1, P: V.P || 1, seed: String(who) + variant }; if (short) bars.short = true; else bars.n = Math.min(12, n); if (V.vow) bars.vow = V.vow; if (big) bars.lift = 2;
