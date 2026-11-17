@@ -223,6 +223,7 @@ if getattr(HERO, 'EYE_CENTER', 0):   # радужка — в середину в
         yw = math.atan2(c[0], -c[1]) * kh; pt = math.atan2(c[2], -c[1]) * kv; d = nrm(V(math.tan(yw), -1, math.tan(pt))); dirs.append(ax(d).tolist())
     man['info']['eyeDirs'] = dirs; log('радужка смотрит', [[round(x, 3) for x in d] for d in dirs])
 if getattr(HERO, 'EYE_S', None) is not None: es = HERO.EYE_S; man['info']['eyeS'] = [float(es[0]), float(es[2]), float(es[1])]   # в осях глаза: вбок, вверх, вперёд
+if getattr(HERO, 'LID_SH', None): man['info']['lidSh'] = float(HERO.LID_SH)
 if getattr(HERO, 'LID_LINE', None): man['info']['lidR'] = list(HERO.LID_LINE.get('r', (0.0012, 0.0026))); man['info']['lidCol'] = list(HERO.LID_LINE.get('col', (0.05, 0.035, 0.03)))
 if getattr(HERO, 'BROW', None): man['info']['brow'] = {k: (list(v) if isinstance(v, (list, tuple)) else float(v)) for k, v in HERO.BROW.items()}
 man['info']['toeY'] = float(getattr(HERO, 'TOE_Z', 0.0)); man['info']['irisS'] = int(getattr(HERO, 'IRIS_STYLE', 0))

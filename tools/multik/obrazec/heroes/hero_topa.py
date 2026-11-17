@@ -17,6 +17,7 @@ class Topa(Hero):
     EYE_CENTER = (0.1, 0.3)                                                       # зрачок чуть ниже середины — веко касается радужки, взгляд мягкий
     EYE_S = V(0.85, 1.0, 1.18)                                                    # вытянутый вверх овал
     EYE_RING = (0.04, 0.02, 0.012); EYE_RING_TOP = True
+    LID_SH = 0.45                                                                  # тень от верхнего века на глазу — взгляд мягче, глаз не «стеклянный»
     LID_LINE = {'r': (0.0014, 0.0032), 'col': (0.035, 0.018, 0.01), 'off': 1.06, 'flick': 0.12}   # тёмная линия ресниц по верхнему веку (как на обложках)
     BROW = {'up': 1.38, 'w': 0.5, 'r': [0.0058, 0.003], 'col': (0.13, 0.06, 0.025)}      # короткие густые бровки ближе к глазам
     SHOULD = [V(s * 0.128, -0.03, 0.44) for s in (-1, 1)]
@@ -157,7 +158,7 @@ class Topa(Hero):
     WHISK_R = (0.0007, 0.0002); WHISK_COL = (0.16, 0.1, 0.07)
     FUR = {'K': 0.56e6, 'dens': [1.0, 1.1, 1.0, 1.4, 1.0, 1.0, 1.0, 1.05, 0.0, 1.1], 'L': [0.015, 0.011, 0.006, 0.004, 0.007, 0.013, 0.014, 0.018, 0.0, 0.0055],
            'lean': [1.15, 1.2, 1.35, 1.35, 1.25, 1.18, 1.18, 1.0, 0.5, 1.32], 'down': [0.35, 0.2, 0.15, 0.1, 0.1, 0.22, 0.22, 0.0, 0.0, 0.1], 'rad': 0.00085, 'radLid': 0.0006,
-           'cell': 0.012, 'clump': 0.2, 'frontK': 0.5, 'spec': 0.1, 'gold': 0.15, 'tip': 0.25, 'ruff': [0.125, 0.56, 0.68, 10.0, 0.8, -0.2], 'earTip': None, 'chest': [0.0, -0.06, 0.41, 1.2], 'tailTip': None}
+           'cell': 0.012, 'clump': 0.2, 'frontK': 0.5, 'spec': 0.06, 'gold': 0.15, 'tip': 0.18, 'ms': 0.12, 'ruff': [0.125, 0.56, 0.68, 10.0, 0.8, -0.2], 'earTip': None, 'chest': [0.0, -0.06, 0.41, 1.2], 'tailTip': None}
     def fur_src(self):
         return {'nose': self.NOSE_C.tolist(), 'earOff': [0, 0.1, 0.1], 'neck': (self.NECK + V(0, 0, 0.03)).tolist(), 'should': [s.tolist() for s in self.SHOULD], 'wrist': [s.tolist() for s in self.WRIST],
                 'hip': [(h + V(0, 0, 0.06)).tolist() for h in self.HIP], 'foot': [f.tolist() for f in self.FOOT], 'tail': [t.tolist() for t in self.TAIL], 'H': self.H.tolist(), 'headR': float(self.HEAD_R[0])}

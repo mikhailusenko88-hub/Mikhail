@@ -119,7 +119,7 @@ float vn(vec3 x) { vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(mix(h3(i), h3(i + vec3(1, 0, 0)), f.x), mix(h3(i + vec3(0, 1, 0)), h3(i + vec3(1, 1, 0)), f.x), f.y), mix(mix(h3(i + vec3(0, 0, 1)), h3(i + vec3(1, 0, 1)), f.x), mix(h3(i + vec3(0, 1, 1)), h3(i + vec3(1, 1, 1)), f.x), f.y), f.z); }
 float fbm(vec3 p) { float s = 0.0, a = .5; for (int i = 0; i < 5; i++) { s += a * vn(p); p *= 2.03; a *= .5; } return s; }`;
 const SURF_FS = GL_HEAD + NOISE + `
-uniform int uMat; uniform vec3 uAlb; uniform vec4 uCapC; uniform vec3 uEyeD, uEyeC; uniform float uRough, uWet; uniform vec3 uIris0, uIris1, uIris2; uniform vec2 uEyeK; uniform float uIrisS;
+uniform int uMat; uniform vec3 uAlb; uniform vec4 uCapC; uniform vec3 uEyeD, uEyeC; uniform float uRough, uWet; uniform vec3 uIris0, uIris1, uIris2; uniform vec2 uEyeK; uniform float uIrisS, uLidSh;
 uniform vec3 uSky, uGnd; uniform mat4 uEyeM; uniform int uDbg; uniform float uGndK;
 in vec3 vE; in vec4 vVis; in vec3 vN; in vec3 vP; in vec4 vC; in vec3 vL; in float vMist; in vec3 vDbg;
 out vec4 oc;
@@ -148,7 +148,8 @@ void main() {
     } else {
       ir = n < .55 ? mix(uIris0, uIris1, smoothstep(.3, .55, n)) : mix(uIris1, uIris2, smoothstep(.55, .75, n));
       ir *= mix(vec3(0.2, 0.25, 0.16), vec3(1.0), ring); }
-    alb = mix(mix(vec3(0.9, 0.88, 0.86), ir, iris), vec3(0.004, 0.003, 0.003), pup); }
+    alb = mix(mix(vec3(0.9, 0.88, 0.86), ir, iris), vec3(0.004, 0.003, 0.003), pup);
+    if (uLidSh > 0.0) alb *= 1.0 - uLidSh * smoothstep(.1, .8, q.z); }   // мягкая тень от верхнего века (у героя info.lidSh)
   else if (uMat == 6) spec = .6;                                  // нос — влажный
   else if (uMat == 8) { alb = uAlb * .25; }                                                        // золото (жетон)
   else if (uMat == 9) { float sh = pow(1.0 - max(dot(N, V), 0.0), 2.0); extra = uAlb * sh * .35 * (vE / 3.14159); } // атлас (бантик, ошейник)
@@ -433,7 +434,7 @@ async function buildTemplate(name) {
   const RE = info.re; T.eyes = [];
   for (let ei = 0; ei < info.eyes.length; ei++) { const cv = V3(info.eyes[ei]); const eS = new THREE.Vector3(...(info.eyeS || [1, 1, 1]));
     const dL = new THREE.Vector3(...(info.eyeDirs ? info.eyeDirs[ei] : [0, 0, 1])).normalize(), iq = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), dL);
-    const it = item(new THREE.SphereGeometry(RE, 48, 36), 5, null, { pos: cv, quat: new THREE.Quaternion(), scale: eS, name: 'eye', group: 'head', part: 1, iris: info.iris, eyeK: info.eyeK, irisS: info.irisS || 0, eye: ei });
+    const it = item(new THREE.SphereGeometry(RE, 48, 36), 5, null, { pos: cv, quat: new THREE.Quaternion(), scale: eS, name: 'eye', group: 'head', part: 1, iris: info.iris, eyeK: info.eyeK, irisS: info.irisS || 0, lidSh: info.lidSh || 0, eye: ei });
     it.irisInv = new THREE.Matrix4().makeRotationFromQuaternion(iq).invert();
     T.eyes.push({ it, c: cv, dL, iq, co: { geo: new THREE.SphereGeometry(RE * .872, 40, 28), pos: dL.clone().multiplyScalar(RE * 0.208), quat: iq.clone() } }); }
   // ---- рот, складки век, усы ----
@@ -530,7 +531,7 @@ function instance(T, U, baked) {
   for (const it of T.items) { const ir = it.iris || [[0.06, 0.2, 0.05], [0.16, 0.42, 0.08], [0.35, 0.62, 0.12]];
     const uni = { uB0: { value: baked ? T.set.B[0] : null }, uB1: { value: baked ? T.set.B[1] : null }, uB2: { value: baked ? T.set.B[2] : null }, uBase: { value: it.base }, uMat: { value: it.matId }, uAlb: { value: new THREE.Color().setRGB(...it.alb) }, uCapC: { value: capC(it) }, uRough: { value: .5 }, uEyeM: { value: new THREE.Matrix4() }, uDbg: DBG,
       uGndK: { value: 0 }, uLiveS: { value: baked ? 1 : 0 }, uRestN: { value: it.restN }, uPoseOn: { value: 0 }, uPA: { value: null }, uPB: { value: null }, uPW: { value: 0 },
-      uWet: { value: it.wet ? 1 : 0 }, uEyeK: { value: new THREE.Vector2(...(it.eyeK || [.70, .915])) }, uIrisS: { value: it.irisS || 0 }, uIris0: { value: new THREE.Vector3(...ir[0]) }, uIris1: { value: new THREE.Vector3(...ir[1]) }, uIris2: { value: new THREE.Vector3(...ir[2]) } };
+      uWet: { value: it.wet ? 1 : 0 }, uEyeK: { value: new THREE.Vector2(...(it.eyeK || [.70, .915])) }, uIrisS: { value: it.irisS || 0 }, uLidSh: { value: it.lidSh || 0 }, uIris0: { value: new THREE.Vector3(...ir[0]) }, uIris1: { value: new THREE.Vector3(...ir[1]) }, uIris2: { value: new THREE.Vector3(...ir[2]) } };
     const m = new THREE.Mesh(it.geo, raw(SURF_VS, SURF_FS, uni)); m.frustumCulled = false; m.userData = { dmat, mat: m.material, noOcc: !!it.noOcc, bars: true, it };
     if (it.pos) m.position.copy(it.pos); if (it.quat) m.quaternion.copy(it.quat); if (it.scale) m.scale.copy(it.scale);
     G[it.group].add(m); I.meshes.push(m);
