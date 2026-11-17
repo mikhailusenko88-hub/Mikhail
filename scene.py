@@ -1983,6 +1983,8 @@ def scene_use():
         load_asset('potted_plant_02', loc=(5.9, 0.30, 0), rot=20)
         world, sun = setup_world(sun_dir)
         cal = camera((0.85, 0.45, 1.42), (5.4, 1.32, 1.15), lens=float(A.get('lens', 21)))
+        if 'campos' in A and 'camto' in A:                     # своя камера (крупный план)
+            camera(tuple(float(v) for v in A['campos'].split(',')), tuple(float(v) for v in A['camto'].split(',')), lens=float(A.get('lens', 35)))
         return world, sun, sun_dir, lamps, cal
     W, D, H = 4.4, 5.2, 2.7
     room(W, D, H, win=(2.3, 4.7, 0.06, 2.46), m_wall=m_wall, m_floor=m_floor, m_ceil=m_ceil)
