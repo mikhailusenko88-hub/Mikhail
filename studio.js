@@ -9,6 +9,9 @@ const pos = args.filter(a => !a.startsWith('--')), SCN = pos[0], OUT = path.reso
 const ENG = process.env.ENG, ROOT = path.join(ENG, 'Resources/Mebel'), VDIR = process.env.VOICE || '';
 const FFMPEG = process.env.FFMPEG || (() => { try { return require('ffmpeg-static'); } catch (e) { return 'ffmpeg'; } })();
 const TTS = path.resolve(process.env.TTS || './tts');
+// Утверждённые Михаилом голоса героев — golosa.json рядом со сборщиком («имя»: «тип каталога[:P=…:F=…]»); флаг --golos=Имя:… важнее, «Имя:off» — голос как раньше.
+const GOLOSA = (() => { let g = opt('golos', ''); try { const d = JSON.parse(fs.readFileSync(path.join(__dirname, 'golosa.json'), 'utf8')), have = new Set(g.split(',').filter(Boolean).map(x => x.split(':')[0]));
+  for (const k in d) if (k[0] !== '_' && !have.has(k)) g += (g ? ',' : '') + k + ':' + d[k]; } catch (e) {} return g.split(',').filter(x => x && x.split(':')[1] !== 'off').join(','); })();
 const STD = flag('std'), SOFT = flag('soft'), RES = +opt('res', 1080), FPS = +opt('fps', 25), ONLY = opt('only', '');
 fs.mkdirSync(path.join(OUT, 'tts'), { recursive: true });
 const T0 = Date.now(), el = () => Math.round((Date.now() - T0) / 1000);
@@ -167,7 +170,7 @@ async function elements(page, start) {
     } catch (e) { console.log('студия: голоса не сохранены', e && e.message); } return mix0.call(this, tl, bufs); };
     if (!only) Build.run(P, E);
     return { ok: true, series: ep.series, episode: ep.episode, title: ep.title, scenes: ep.scenes.length, errors: R.errors, unknownWords: R.unknownWords, unknownObjects: R.unknownObjects, unknownNames: R.unknownNames, probe };
-  }, [fs.readFileSync(SCN, 'utf8'), STD ? 'std' : 'hq', RES, FPS, ONLY, opt('golos', ''), opt('fx', '')]);
+  }, [fs.readFileSync(SCN, 'utf8'), STD ? 'std' : 'hq', RES, FPS, ONLY, GOLOSA, opt('fx', '')]);
   log('серия принята:', start); if (!start.ok) { fs.writeFileSync(path.join(OUT, 'result.json'), JSON.stringify({ ok: false, start, stat }, null, 1)); await browser.close(); process.exit(3); }
   if (ONLY === 'elements') { const r = await elements(page, start); fs.writeFileSync(path.join(OUT, 'result.json'), JSON.stringify({ ok: !!r.ok, elements: r, start, stat, gl, total_sec: el() }, null, 1)); log('ИТОГ элементы', r); await browser.close(); srv.close(); process.exit(r.ok ? 0 : 1); }
   let last = ''; const tick = setInterval(async () => { try { const t = await page.evaluate(() => Build.txt + ' · ' + document.getElementById('bbS').textContent); if (t !== last) { last = t; log(t.slice(0, 160)); } } catch (e) {} }, 30000);
