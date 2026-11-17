@@ -11,3 +11,4 @@
 2026-11-17_11:45 Telegram через туннель, aiohttp-socks (server 7bc6f07)
 2026-11-17_18:40 канал Telegram — зеркало (server 14da6ca)
 2026-11-17_19:02 канал Telegram: частота и возобновление (server 2cdc0f5)
+2026-11-17_19:12 канал Telegram: delete (server 09938fe)
