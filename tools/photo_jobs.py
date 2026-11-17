@@ -7,14 +7,14 @@ import json, os, sys
 R = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 B = 'cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900'
 Q = 'samples=120 noise=0.05'
-EXP = {'cor': 'ev=-2.3 calfile=cal_cor.json', 'cord': 'ev=-2.5 calfile=cal_cor.json'}      # у коридора своя комната и свой свет
+EXP = {'cor': 'ev=-2.3 calfile=cal_cor.json', 'cord': 'ev=-1.1 calfile=cal_cor.json'}      # у коридора своя комната и свой свет
 # Крупные планы (17.11: на общих планах рельеф на телефоне не виден): сцена → (комната, своя камера). В кадре ~2 м стены и мебель.
 DET = {'tvd': ('tv', 'campos=3.95,3.55,1.25 camto=2.7,5.2,1.05 lens=40'),
        'sofad': ('sofa', 'campos=2.3,3.55,1.15 camto=3.4,5.2,0.95 lens=40'),
        'deskd': ('desk', 'campos=4.05,3.9,1.25 camto=3.0,5.2,1.1 lens=40'),
        'bedd': ('bed', 'campos=3.7,3.5,1.15 camto=2.95,5.2,0.9 lens=40'),
        'halld': ('hall', 'campos=3.95,3.6,1.25 camto=2.9,5.2,1.0 lens=40'),
-       'cord': ('cor', 'campos=1.6,0.3,1.35 camto=3.2,1.5,1.25 lens=35')}
+       'cord': ('cor', 'campos=3.0,0.35,1.35 camto=5.2,1.5,1.05 lens=35')}       # конец коридора: дверь и растение; там темнее, поэтому ev выше
 ALL = ['tv', 'cl', 'tv1', 'tv2', 'sofa', 'bed', 'hall', 'cor', 'sofa1', 'sofa2', 'bed1', 'half', 'desk', 'tvc'] + list(DET)
 use = [a for a in sys.argv[1:] if a in ALL] or ALL
 white = list(json.load(open(f'{R}/profiles_site.json', encoding='utf-8')))
