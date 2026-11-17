@@ -1033,7 +1033,18 @@ MK.compile = function (ep, lib, audio) {
     // встать рядом с вещью (с той стороны, где свободно); если уже рядом — не идти
     const reachX = (id, px) => { const me = C[id].x; if (Math.abs(me - px) < .09) return null; for (const sd of me < px ? [-1, 1] : [1, -1]) { const x = px + sd * .065; if (x < .04 || x > .96) continue; if (!Object.keys(C).some(o => o !== id && C[o].vis && Math.abs(C[o].x - x) < (wOf(id) + wOf(o)) / 2 + .01)) return x; } return null; };
     for (const id in C) C[id].w = wOf(id); // ширина героя — чтобы на ходу обходить стоящих, а не проходить сквозь
-    const besideX = (id, to) => { const tx = C[to].x, me = C[id].x, sides = me < tx ? [-1, 1] : [1, -1]; for (const sd of sides) { const x = tx + sd * Math.max(.1, (wOf(id) + wOf(to)) / 2 + .01); if (x < .05 || x > .95) continue; if (!Object.keys(C).some(o => o !== id && o !== to && C[o].vis && Math.abs(C[o].x - x) < (wOf(id) + wOf(o)) / 2 + .02)) return x; } return tx + sides[0] * .1; };
+    // встать рядом с тем, кому отдаёт / кого обнимает. С обеих сторон стоят другие — соседи расступаются по цепочке (BESIDE_MV: кого и куда подвинуть), а не герой встаёт в соседа; места нет совсем — остаётся, где стоял (null)
+    let BESIDE_MV = [];
+    const besideX = (id, to, now) => { BESIDE_MV = []; const tx = C[to].x, me = C[id].x, sides = me < tx ? [-1, 1] : [1, -1], slot = sd => tx + sd * Math.max(.1, (wOf(id) + wOf(to)) / 2 + .01);
+      for (const sd of sides) { const x = slot(sd); if (x < .05 || x > .95) continue; if (!Object.keys(C).some(o => o !== id && o !== to && C[o].vis && Math.abs(C[o].x - x) < (wOf(id) + wOf(o)) / 2 + .02)) return x; }
+      const still = o => { let p = null; for (const e of C[o].ev) if (e.k === 'persist' && e.t <= (now || 0) + .01 && (!p || e.t >= p.t)) p = e; return !!p && p.v !== 'none' && !(p.v === 'crouch' && (now || 0) - p.t > 4.6); };   // сидит, лежит, спит — его не двигаем
+      const offProp = (o, x, sd) => { for (let k = 0; k < 3; k++) for (const p of PR) { if (p.holder || !p.vis || p.tb || (p.big || 1) > 1.2) continue; const need = wOf(o) / 2 + .035 * Math.min(1, p.big || 1); if (Math.abs(p.x - x) < need) x = p.x + sd * (need + .005); } return x; };   // и не на вещь, что лежит на полу
+      for (const sd of sides) { const x = slot(sd); if (x < .07 || x > .93) continue;
+        const row = Object.keys(C).filter(o => o !== id && o !== to && C[o].vis && (C[o].x - tx) * sd > 0).sort((a, b) => (C[a].x - C[b].x) * sd);
+        let px = x, pw = wOf(id), ok = true; const mv = [];
+        for (const o of row) { let nx = px + sd * ((pw + wOf(o)) / 2 + .02); if ((C[o].x - nx) * sd >= -1e-6) break; nx = offProp(o, nx, sd); if (still(o) || nx < .07 || nx > .93) { ok = false; break; } mv.push({ o, x: nx }); px = nx; pw = wOf(o); }
+        if (ok) { BESIDE_MV = mv; return x; } }
+      return null; };
     { const vis = Object.keys(C).filter(id => C[id].vis).sort((a, b) => C[a].x - C[b].x); for (let i = 1; i < vis.length; i++) { const a = C[vis[i - 1]], b = C[vis[i]]; if (a.z === b.z && b.x - a.x < GAP) b.x = a.x + GAP; }
       const over = vis.length ? C[vis[vis.length - 1]].x - .93 : 0; if (over > 0) vis.forEach(id => C[id].x = Math.max(.07, C[id].x - over));
       if (vis.length > 6) vis.forEach((id, i) => { if (i % 2) C[id].z = .6; }); }
@@ -1122,11 +1133,13 @@ MK.compile = function (ep, lib, audio) {
           let s0 = start;
           // подойти, если для действия нужно быть рядом (обнять, отдать, пнуть мяч)
           const heldF = props.find(p => p.holder === who && p.vis);
-          const tgtX = (d === 'hug' || d === 'give') && step.to && C[step.to] ? besideX(who, step.to)
+          const tgtX = (d === 'hug' || d === 'give') && step.to && C[step.to] ? besideX(who, step.to, start)
             : d === 'take' ? (() => { const p = props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; return p && !p.holder && p.vis ? reachX(who, p.x) : null; })()
             : d === 'drop' && TB != null && heldF && FOOD.has(heldF.type) ? reachX(who, TB)
             : d === 'paint' ? (() => { const e = props.find(p => p.type === 'easel' && p.vis); return e ? reachX(who, e.x) : null; })()
             : d === 'kick' ? (() => { const p = props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; return p ? p.x - (p.x > ch.x ? .07 : -.07) : null; })() : null;
+          if (BESIDE_MV.length) { const ta = s0 + Math.max(0, (tgtX != null ? Math.abs(tgtX - ch.x) / .22 : 0) - .7);   // соседи делают шаг в сторону, когда он подходит (лицом не поворачиваются)
+            for (const m of BESIDE_MV) { const o = C[m.o]; let t0 = ta; for (const e of o.ev) if (e.k === 'move' && e.t1 > t0) t0 = e.t1; o.ev.push({ t: t0, k: 'move', x0: o.x, x1: m.x, t1: t0 + Math.max(.4, Math.abs(m.x - o.x) / .22), side: true }); o.x = m.x; } BESIDE_MV = []; }
           if (tgtX != null && Math.abs(tgtX - ch.x) > .04) { const wd = Math.abs(tgtX - ch.x) / .22; { const indoor = /^(room|kitchen)$/.test(lspec.type || ''); for (let tt = s0 + .05, k = 0; tt < s0 + wd - .05; tt += .3, k++) sfx.push({ t: st0 + tt, n: indoor ? 'tap' : lspec.type === 'winter' ? 'crunch' : 'step', v: .5 * (k % 2 ? .85 : 1) }); } ch.ev.push({ t: s0, k: 'move', x0: ch.x, x1: tgtX, t1: s0 + wd }); ch.ev.push({ t: s0, k: 'face', v: tgtX >= ch.x ? 1 : -1 }); ch.x = tgtX; s0 += wd; }
           dur = (s0 - start) + (step.dur || DUR[d]);
           if (['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d)) ch.ev.push({ t: s0, k: 'persist', v: d === 'fall' ? 'fallen' : d });
@@ -1299,7 +1312,7 @@ function evalChar(init, ev, t, audio, T) {
   for (const e of ev) {
     if (e.t > t) break;
     switch (e.k) {
-      case 'move': { const p = clamp((t - e.t) / (e.t1 - e.t), 0, 1); x = lerp(e.x0, e.x1, p); if (p < 1) { walk = { on: true, run: e.run, style: e.style, ph: (t - e.t) * (e.run ? 15 : e.style ? 6 : 9.5), x0: e.x0, x1: e.x1 }; } else walk = { on: false }; break; }
+      case 'move': { const p = clamp((t - e.t) / (e.t1 - e.t), 0, 1); x = lerp(e.x0, e.x1, p); if (p < 1) { walk = { on: true, run: e.run, style: e.style, side: e.side, ph: (t - e.t) * (e.run ? 15 : e.style ? 6 : 9.5), x0: e.x0, x1: e.x1 }; } else walk = { on: false }; break; }
       case 'face': if (e.v !== face) { faceFrom = face; face = e.v; faceT = e.t; } break;
       case 'emo': emo = e.v; emoT = e.t; emoT1 = e.t1 != null ? e.t1 : Infinity; break;
       case 'vis': vis = e.v; break;
