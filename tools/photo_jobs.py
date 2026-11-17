@@ -17,6 +17,8 @@ DET = {'tvd': ('tv', 'campos=3.95,3.55,1.25 camto=2.7,5.2,1.05 lens=40'),
        'cord': ('cor', 'campos=3.0,0.35,1.35 camto=5.2,1.5,1.05 lens=35')}       # конец коридора: дверь и растение; там темнее, поэтому ev выше
 ALL = ['tv', 'cl', 'tv1', 'tv2', 'sofa', 'bed', 'hall', 'cor', 'sofa1', 'sofa2', 'bed1', 'half', 'desk', 'tvc'] + list(DET)
 use = [a for a in sys.argv[1:] if a in ALL] or ALL
+ONLY = next((a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('only=')), None)   # only=2-10 — пересчитать один артикул во всех названных сценах (и готовые тоже)
+NOSTRIP = {'2-10'}      # декоры с арками волокна: короткая полоска с сайта повторяется слишком заметно — берём длинный шпон (decors.json, ref/stats.json)
 white = list(json.load(open(f'{R}/profiles_site.json', encoding='utf-8')))
 wood = list(json.load(open(f'{R}/tex3/index.json', encoding='utf-8')))
 key = lambda a: a.lower().replace(' ', '').replace('/', '-')
@@ -28,11 +30,12 @@ for sc in use:
     e = EXP.get(sc, ('ev=-1.1' if sc in DET else 'ev=-0.9') + ' calfile=cal_photo.json')
     if cam:
         e = cam + ' ' + e
-    if not done(f'g_{sc}_mask'):
+    if not ONLY and not done(f'g_{sc}_mask'):
         print(f'g_{sc}_mask scene=use use={u} decor=A907 mask=1 {B} {cam}'.rstrip())
     for a in white:
-        if not done(f'g_{sc}_{key(a)}'):
+        if (ONLY == key(a)) if ONLY else not done(f'g_{sc}_{key(a)}'):
             print(f'g_{sc}_{key(a)} scene=use use={u} decor={key(a).upper()} {B} {e} {Q}')
     for a in wood:
-        if not done(f'g_{sc}_{a}'):
-            print(f'g_{sc}_{a} scene=use use={u} decor={a} tex=strip {B} {e} {Q}')
+        if (ONLY == a) if ONLY else not done(f'g_{sc}_{a}'):
+            t = '' if a in NOSTRIP else ' tex=strip'
+            print(f'g_{sc}_{a} scene=use use={u} decor={a}{t} {B} {e} {Q}')
