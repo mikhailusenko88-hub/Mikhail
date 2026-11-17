@@ -29,12 +29,32 @@ CSS = """.ist{position:relative;aspect-ratio:3/2;width:min(100%,calc(min(52vh,56
 .ith button.gap{margin-left:8px}
 .ith img{display:block;width:100%;height:auto;aspect-ratio:3/2}
 .ith button[aria-current="true"]{opacity:1;border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.ist .ivfs{position:absolute;right:8px;top:8px;width:40px;height:40px;border:0;border-radius:50%;background:rgba(251,250,247,.9);color:#1E1D1B;padding:0;display:grid;place-items:center;box-shadow:0 1px 6px rgba(0,0,0,.25);cursor:pointer}
+.ist{cursor:zoom-in}.ist button{cursor:pointer}
+.ist .ivhint{display:none}
+.ist.full{position:fixed!important;inset:0!important;z-index:2147483000;width:auto!important;height:auto!important;max-width:none;aspect-ratio:auto;margin:0!important;border:0;border-radius:0;box-shadow:none!important;background-color:#0d0e10;background-size:contain;touch-action:none;cursor:default}
+.ist.full.zoomed{cursor:grab}
+.ist.full canvas{object-fit:contain;transform-origin:0 0}
+.ist.full .ivfs{top:calc(env(safe-area-inset-top,0px) + 10px);right:calc(env(safe-area-inset-right,0px) + 10px);width:48px;height:48px}
+.ist.full .ivtag{top:calc(env(safe-area-inset-top,0px) + 18px);left:calc(env(safe-area-inset-left,0px) + 12px)}
+.ist.full .ivnav[data-ivstep="-1"]{left:calc(env(safe-area-inset-left,0px) + 10px)}.ist.full .ivnav[data-ivstep="1"]{right:calc(env(safe-area-inset-right,0px) + 10px)}
+.ist.full .ivcap{padding:40px calc(env(safe-area-inset-right,0px) + 14px) calc(env(safe-area-inset-bottom,0px) + 12px) calc(env(safe-area-inset-left,0px) + 14px)}
+.ist.full.zoomed .ivnav,.ist.full.zoomed .ivcap{opacity:0;pointer-events:none}
+.ist.full .ivhint{display:flex;flex-direction:column;align-items:center;gap:2px;position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 74px);transform:translateX(-50%);max-width:calc(100% - 28px);background:rgba(13,14,16,.78);color:#fff;font-size:13px;line-height:1.35;text-align:center;padding:7px 12px;border-radius:10px;pointer-events:none;opacity:0;transition:opacity .4s}
+.ist.full .ivhint.on{opacity:1}
+.ivhint .t,.ivhint .r{display:none}
+@media (hover:none){.ivhint .t{display:block}.ivhint .m{display:none}}
+@media (hover:none) and (orientation:portrait){.ivhint .r{display:block}}
+html.ivfull,html.ivfull body{overflow:hidden}
+html.ivfull .ndc-btn,html.ivfull .ndc-panel{display:none!important}
 """
 
 STAGE = """  <div class="ist" id="stage" tabindex="0" aria-roledescription="карусель" aria-label="Панель в интерьере">
     <canvas id="iv" width="1350" height="900"></canvas>
     <div class="ivtag" id="ivTag"></div>
     <div class="ivcap"><div><span id="ivCap"></span><small>3D-визуализация</small></div><div class="ivnum" id="ivNum"></div></div>
+    <button type="button" class="ivfs" id="ivFs" aria-label="Во весь экран" title="Во весь экран"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-6.5 6.5M10 20H4v-6M4 20l6.5-6.5"/></svg></button>
+    <div class="ivhint" id="ivHint"><span class="t">Два пальца или двойное касание — приблизить</span><span class="r">Поверните телефон — кадр станет крупнее</span><span class="m">Колесо мыши или двойной щелчок — приблизить · Esc — свернуть</span></div>
     <button type="button" class="ivnav" data-ivstep="-1" aria-label="Предыдущий кадр">‹</button><button type="button" class="ivnav" data-ivstep="1" aria-label="Следующий кадр">›</button>
   </div>
   <div class="ith" id="ivStrip" role="group" aria-label="Кадры: панель в интерьере"></div>
@@ -45,7 +65,9 @@ HEAD_NEW = '<h2>Реечные панели в интерьере и расчё�
 
 JS = r"""/* Панель в интерьере: кадр-карусель над расчётом. Панель и цвет — из расчёта (выбор панели, кружки покраски).
    Кадры — 3D-визуализации img/int/<сцена>/<артикул>.jpg, уменьшенные — …/t/…, у каждой сцены mask.png (где на кадре панели) —
-   по ней белая панель красится в выбранный цвет. Какие сцены и панели готовы — img/int/manifest.json. */
+   по ней белая панель красится в выбранный цвет. Какие сцены и панели готовы — img/int/manifest.json.
+   Во весь экран: кнопка со стрелками в углу или касание кадра; свернуть — та же кнопка, Esc или «назад» на телефоне.
+   Внутри — два пальца, двойное касание, колесо мыши: приблизить; приближенный кадр двигается пальцем или мышью. */
 const IV = (() => {
   // кадры по комнатам, сначала крупный план: [сцена, подпись, комната]
   const SL = [["tvd", "ТВ-зона — крупно", "tv"], ["tv", "ТВ-зона — вся стена", "tv"], ["tv1", "ТВ-зона — полоса за экраном", "tv"], ["tv2", "ТВ-зона — две полосы", "tv"], ["tvc", "ТВ-зона — полоса с переходом на потолок", "tv"],
@@ -55,8 +77,9 @@ const IV = (() => {
     ["deskd", "Рабочее место — крупно", "desk"], ["desk", "Рабочее место — вся стена", "desk"],
     ["cord", "Коридор — крупно", "cor"], ["cl", "Рельеф крупно", "cl"]];
   const BASE = [239, 238, 234];                              // белая краска, в которой посчитаны кадры (#EFEEEA)
-  const st = $("stage"), cv = $("iv"), strip = $("ivStrip"), cache = {}, ready = new Set();
-  let INT = null, V = "", cur = "", at = 0, seq = 0;
+  const EXP = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-6.5 6.5M10 20H4v-6M4 20l6.5-6.5"/></svg>', COL = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4l-6 6M14 5v5h5M4 20l6-6M10 19v-5H5"/></svg>';
+  const st = $("stage"), cv = $("iv"), strip = $("ivStrip"), fs = $("ivFs"), hint = $("ivHint"), cache = {}, ready = new Set();
+  let INT = null, V = "", cur = "", at = 0, seq = 0, shown = "";
   const load = src => cache[src] || (cache[src] = new Promise((ok, no) => { const i = new Image(); i.onload = () => { ready.add(src); ok(i); }; i.onerror = no; i.src = src; }));
   const slides = a => INT ? SL.filter(([s]) => INT[s] && INT[s].includes(slug(a))) : [];
   const url = (s, a, small) => `img/int/${s}/${small ? "t/" : ""}${slug(a)}.jpg?v=${V}`, maskUrl = s => `img/int/${s}/mask.png?v=${V}`;
@@ -71,6 +94,7 @@ const IV = (() => {
     if (!list.length) { ++seq; cv.style.opacity = 0; st.style.backgroundImage = ""; $("ivTag").textContent = ""; $("ivNum").textContent = ""; $("ivCap").textContent = INT ? `Для ${cur} кадров в интерьере пока нет` : ""; return; }
     at = (at % list.length + list.length) % list.length;
     const [s, cap] = list[at], me = ++seq, src = url(s, cur), tint = tintOf(cur);
+    if (shown !== s + cur) { shown = s + cur; resetZoom(); }  // другой кадр — снова целиком
     $("ivCap").textContent = cap; $("ivNum").textContent = `${at + 1} / ${list.length}`;
     $("ivTag").textContent = cur + " · " + (x.c === "color" ? decorName(x) : tint ? tint.name.toLowerCase() : "белая");
     strip.querySelectorAll("[data-ivgo]").forEach((b, i) => { b.setAttribute("aria-current", i === at); if (i === at) strip.scrollTo({ left: Math.max(0, b.offsetLeft - strip.offsetLeft - strip.clientWidth / 2 + 42), behavior: "smooth" }); });
@@ -99,15 +123,106 @@ const IV = (() => {
     show();
   }
   const step = d => { at += d; show(); };
-  st.addEventListener("click", e => { const b = e.target.closest("[data-ivstep]"); if (b) step(+b.dataset.ivstep); });
+
+  /* во весь экран и приближение */
+  let full = false, real = false, openedAt = 0, z = 1, tx = 0, ty = 0, hintT = 0;
+  const rel = p => { const r = st.getBoundingClientRect(); return [p.clientX - r.left, p.clientY - r.top]; };
+  function clamp(){                                          // кадр не уезжает за край; меньше экрана — по центру
+    if (z <= 1.001) { z = 1; tx = 0; ty = 0; }
+    else {
+      const W = st.clientWidth, H = st.clientHeight, iw = Math.min(W, H * 1.5), ih = iw / 1.5, ox = (W - iw) / 2, oy = (H - ih) / 2;
+      const fit = (t, S, o, s) => s * z <= S ? S / 2 - (o + s / 2) * z : Math.min(-o * z, Math.max(S - (o + s) * z, t));
+      tx = fit(tx, W, ox, iw); ty = fit(ty, H, oy, ih);
+    }
+    cv.style.transform = z === 1 ? "" : `translate(${tx}px,${ty}px) scale(${z})`;
+    st.classList.toggle("zoomed", z > 1);
+  }
+  function zoomAt(nz, px, py){ nz = Math.max(1, Math.min(4, nz)); tx = px - (px - tx) / z * nz; ty = py - (py - ty) / z * nz; z = nz; clamp(); }
+  function resetZoom(){ z = 1; clamp(); }
+  function open(){
+    if (full) return;
+    full = true; real = false; openedAt = Date.now();
+    st.classList.add("full"); document.documentElement.classList.add("ivfull");
+    fs.innerHTML = COL; fs.setAttribute("aria-label", "Свернуть"); fs.title = "Свернуть";
+    if (document.fullscreenEnabled && st.requestFullscreen) {            // Android, компьютер — настоящий полный экран
+      real = true; st.requestFullscreen({ navigationUI: "hide" }).catch(() => { real = false; if (full) history.pushState({ ivf: 1 }, ""); });
+    } else history.pushState({ ivf: 1 }, "");                           // iPhone: окно поверх страницы, «назад» сворачивает
+    resetZoom(); hint.classList.add("on"); clearTimeout(hintT); hintT = setTimeout(() => hint.classList.remove("on"), 3500);
+    st.focus({ preventScroll: true });
+  }
+  function done(){
+    if (!full) return;
+    full = false; real = false;
+    st.classList.remove("full"); document.documentElement.classList.remove("ivfull"); hint.classList.remove("on");
+    fs.innerHTML = EXP; fs.setAttribute("aria-label", "Во весь экран"); fs.title = "Во весь экран";
+    resetZoom();
+  }
+  function close(){
+    if (!full) return;
+    if (document.fullscreenElement) { document.exitFullscreen().catch(done); return; }
+    if (history.state && history.state.ivf) { history.back(); return; }
+    done();
+  }
+  document.addEventListener("fullscreenchange", () => { if (document.fullscreenElement === st) return; if (full && real) done(); });
+  addEventListener("popstate", () => { if (full && !document.fullscreenElement) done(); });
+  addEventListener("resize", () => { if (full) clamp(); });
+
+  st.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (b && b.dataset.ivstep) step(+b.dataset.ivstep);
+    else if (b === fs) full ? close() : open();
+    else if (!b && !full) open();
+  });
   strip.addEventListener("click", e => { const b = e.target.closest("[data-ivgo]"); if (b) { at = +b.dataset.ivgo; show(); } });
-  st.addEventListener("keydown", e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); step(e.key === "ArrowRight" ? 1 : -1); } });
-  let t0 = null;
-  st.addEventListener("touchstart", e => { t0 = e.touches.length === 1 ? [e.touches[0].clientX, e.touches[0].clientY] : null; }, { passive: true });
-  st.addEventListener("touchend", e => { if (!t0) return; const dx = e.changedTouches[0].clientX - t0[0], dy = e.changedTouches[0].clientY - t0[1]; t0 = null; if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) step(dx < 0 ? 1 : -1); }, { passive: true });
+  st.addEventListener("keydown", e => { if (full) return; if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); step(e.key === "ArrowRight" ? 1 : -1); } });
+  document.addEventListener("keydown", e => {
+    if (!full) return;
+    if (e.key === "Escape") { e.preventDefault(); close(); }
+    else if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); step(e.key === "ArrowRight" ? 1 : -1); }
+  });
+  st.addEventListener("dblclick", e => { if (!full || e.target.closest("button") || Date.now() - openedAt < 500) return; const p = rel(e); zoomAt(z > 1 ? 1 : 2.5, p[0], p[1]); });
+  st.addEventListener("wheel", e => { if (!full) return; e.preventDefault(); const p = rel(e); zoomAt(z * Math.exp(-e.deltaY * 0.0022), p[0], p[1]); }, { passive: false });
+  let md = null;
+  st.addEventListener("mousedown", e => { if (full && z > 1 && !e.target.closest("button")) { md = { x: e.clientX, y: e.clientY, tx, ty }; e.preventDefault(); } });
+  addEventListener("mousemove", e => { if (md) { tx = md.tx + e.clientX - md.x; ty = md.ty + e.clientY - md.y; clamp(); } });
+  addEventListener("mouseup", () => { md = null; });
+
+  // пальцы: в сторону — следующий кадр; во весь экран — два пальца и двойное касание приближают, приближенный кадр двигается
+  let t0 = null, pin = null, pan = null, tapT = 0, tapX = 0, tapY = 0;
+  st.addEventListener("touchstart", e => {
+    if (e.touches.length === 2 && full) {
+      const a = rel(e.touches[0]), b = rel(e.touches[1]);
+      pin = { d: Math.hypot(a[0] - b[0], a[1] - b[1]) || 1, z, cx: ((a[0] + b[0]) / 2 - tx) / z, cy: ((a[1] + b[1]) / 2 - ty) / z }; t0 = null; pan = null; return;
+    }
+    if (e.touches.length !== 1) { t0 = null; return; }
+    const p = rel(e.touches[0]); t0 = [e.touches[0].clientX, e.touches[0].clientY];
+    pan = full && z > 1 ? { x: p[0], y: p[1], tx, ty } : null;
+  }, { passive: true });
+  st.addEventListener("touchmove", e => {
+    if (!full) return;
+    if (pin && e.touches.length === 2) {
+      e.preventDefault();
+      const a = rel(e.touches[0]), b = rel(e.touches[1]), nz = Math.max(1, Math.min(4, pin.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / pin.d));
+      z = nz; tx = (a[0] + b[0]) / 2 - pin.cx * nz; ty = (a[1] + b[1]) / 2 - pin.cy * nz; clamp();
+    } else if (pan && e.touches.length === 1) {
+      e.preventDefault(); const p = rel(e.touches[0]); tx = pan.tx + p[0] - pan.x; ty = pan.ty + p[1] - pan.y; clamp();
+    } else e.preventDefault();
+  }, { passive: false });
+  st.addEventListener("touchend", e => {
+    if (pin) { if (e.touches.length < 2) { pin = null; t0 = null; pan = e.touches.length === 1 && z > 1 ? (p => ({ x: p[0], y: p[1], tx, ty }))(rel(e.touches[0])) : null; } return; }
+    if (!t0) return;
+    const c = e.changedTouches[0], dx = c.clientX - t0[0], dy = c.clientY - t0[1]; t0 = null;
+    if (pan) { pan = null; if (Math.abs(dx) + Math.abs(dy) > 10) return; }
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3) { if (z === 1) step(dx < 0 ? 1 : -1); return; }
+    if (!full || Math.abs(dx) > 10 || Math.abs(dy) > 10 || e.target.closest("button")) return;
+    const now = Date.now(), p = rel(c);
+    if (now - tapT < 320 && Math.hypot(p[0] - tapX, p[1] - tapY) < 40) { e.preventDefault(); tapT = 0; zoomAt(z > 1 ? 1 : 2.5, p[0], p[1]); }
+    else { tapT = now; tapX = p[0]; tapY = p[1]; }
+  }, { passive: false });
+
   fetch("img/int/manifest.json", { cache: "no-cache" }).then(r => r.json()).then(m => { INT = m.scenes || {}; V = m.v || ""; update(); })
     .catch(() => { st.hidden = true; strip.hidden = true; });  // кадры не загрузились — расчёт ниже работает как обычно
-  return { update };
+  return { update, open, close };
 })();
 window.__iv = IV; IV.update();"""
 
