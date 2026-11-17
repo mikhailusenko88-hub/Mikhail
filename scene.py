@@ -303,7 +303,7 @@ def cyl(name, x, y, z0, z1, r0, r1, mat, n=48, caps=True, smooth=True):
 
 
 def slat_wall(name, x0, x1, z_top, y_wall, m_wood, m_black, zbot=None, step=0.040, lam_w=0.0295, total_t=0.012, base_t=0.006,
-              tex_m=1.0, cham=0.0008):
+              tex_m=1.0, cham=0.0008, strip=None):
     """Реечные панели 120×12 мм: 3 рейки, шаг 40 мм, рейка 29,5 мм, паз 10,5 мм глубиной 6 мм (по живому образцу). Лицом к −Y.
     zbot(x) — высота низа (для арок/проёмов), по умолчанию от пола."""
     zb = zbot or (lambda x: 0.0)
@@ -335,6 +335,10 @@ def slat_wall(name, x0, x1, z_top, y_wall, m_wood, m_black, zbot=None, step=0.04
         xl, xr = xa + (step - lam_w) / 2, xa + (step + lam_w) / 2
         prof = [(xl, yb), (xl, yf + cham), (xl + cham, yf), (xr - cham, yf), (xr, yf + cham), (xr, yb)]
         u0, v0, j = random.random(), random.random(), random.random()
+        if strip:      # полоска tex3: поперёк рейки 0…1, вдоль — длина рисунка strip (м), сдвиг и зеркало свои у каждой рейки
+            WUV = lambda x, z, _xl=xl, _v=int(v0 * 8) + u0: ((x - _xl) / lam_w, _v + z / strip)
+        else:
+            WUV = lambda x, z, _xl=xl, _u=u0, _v=v0: (_u + (x - _xl) / tex_m, _v + z / tex_m)
         zs = [zb(min(max(p[0], xa + 1e-6), xb - 1e-6)) for p in prof]
         for k in range(5):
             (xA, yA), (xB, yB) = prof[k], prof[k + 1]
@@ -343,13 +347,11 @@ def slat_wall(name, x0, x1, z_top, y_wall, m_wood, m_black, zbot=None, step=0.04
                 for q in range(4):
                     xq0, xq1 = xA + (xB - xA) * q / 4, xA + (xB - xA) * (q + 1) / 4
                     zq0, zq1 = zb(xq0), zb(xq1)
-                    uv = [(u0 + (xq0 - xl) / tex_m, v0 + zq0 / tex_m), (u0 + (xq1 - xl) / tex_m, v0 + zq1 / tex_m),
-                          (u0 + (xq1 - xl) / tex_m, v0 + z_top / tex_m), (u0 + (xq0 - xl) / tex_m, v0 + z_top / tex_m)]
+                    uv = [WUV(xq0, zq0), WUV(xq1, zq1), WUV(xq1, z_top), WUV(xq0, z_top)]
                     quad([(xq0, yA, zq0), (xq1, yA, zq1), (xq1, yA, z_top), (xq0, yA, z_top)], 0, uv, j)
                 continue
             if wood:
-                uv = [(u0 + (xA - xl) / tex_m, v0 + zs[k] / tex_m), (u0 + (xB - xl) / tex_m, v0 + zs[k + 1] / tex_m),
-                      (u0 + (xB - xl) / tex_m, v0 + z_top / tex_m), (u0 + (xA - xl) / tex_m, v0 + z_top / tex_m)]
+                uv = [WUV(xA, zs[k]), WUV(xB, zs[k + 1]), WUV(xB, z_top), WUV(xA, z_top)]
             else:
                 uv = [(0, 0)] * 4
             quad([(xA, yA, zs[k]), (xB, yB, zs[k + 1]), (xB, yB, z_top), (xA, yA, z_top)], 0 if wood else 1, uv, j)
@@ -672,7 +674,18 @@ def lum(a):
 
 def calibrate(world, sun, sun_dir, neutral_prefixes=('wall', 'ceil'), lamps=(), cal_cam=None):
     """1) сила солнца относительно неба, 2) баланс белого по белым стенам, 3) экспозиция.
-    cal_cam — общий план сцены: по нему меряем свет, даже если снимаем крупный план."""
+    cal_cam — общий план сцены: по нему меряем свет, даже если снимаем крупный план.
+    calfile=<файл.json> — взять готовые значения (весь набор кадров с одним светом и экспозицией); значения каждого кадра пишутся в out/<имя>/cal.json."""
+    cf = A.get('calfile')
+    if cf and os.path.exists(f'{ROOT}/{cf}'):
+        c = json.load(open(f'{ROOT}/{cf}'))
+        sun.data.energy, sun.data.color = c['sun_energy'], tuple(c['sun_color'])
+        world.node_tree.nodes['WB'].inputs['Color2'].default_value = tuple(c['wb']) + (1.0,)
+        scene.view_settings.exposure = c['exposure'] + EV
+        for ld, k in lamps:
+            ld.energy = k * c['y_ref']
+        log('calibration from', cf, c)
+        return c['y_ref']
     final_cam = scene.camera
     if cal_cam is not None:
         scene.camera = cal_cam
@@ -746,6 +759,8 @@ def calibrate(world, sun, sun_dir, neutral_prefixes=('wall', 'ceil'), lamps=(), 
     for ld, k in lamps:
         ld.energy = k * y_ref
     scene.camera = final_cam
+    json.dump({'sun_energy': float(sun.data.energy), 'sun_color': [float(v) for v in sun.data.color], 'wb': [float(v) for v in gains],
+               'exposure': float(ev - EV), 'y_ref': float(y_ref)}, open(f'{OUT}/cal.json', 'w'))
     if 'reexp' in A:      # экспозиция по медиане итогового кадра: нужно, когда свой свет сильнее оконного
         y2 = float(np.median(lum(render_linear(pw, ph, 48, 'pre2'))))
         ev = math.log2(float(A['reexp']) / max(y2, 1e-6)) + EV
@@ -1071,14 +1086,112 @@ def hexcol(h):
     return srgb(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
 
 
+def mat_decor_strip(decor):
+    """Плёнка «под дерево» по полоске с сайта (tex3/<артикул>.jpg — настоящий рисунок декора с фото поставщика)."""
+    m, nt, out = new_mat('decor_' + decor)
+    b = principled(nt, out, Roughness=0.46)
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    n = nt.nodes.new('ShaderNodeTexImage')
+    n.image = load_img(f'{ROOT}/tex3/{decor.lower()}.jpg')
+    n.extension = 'MIRROR'
+    nt.links.new(tc.outputs['UV'], n.inputs['Vector'])
+    uv2 = nt.nodes.new('ShaderNodeUVMap')
+    uv2.uv_map = 'jit'
+    sep = nt.nodes.new('ShaderNodeSeparateXYZ')
+    nt.links.new(uv2.outputs['UV'], sep.inputs['Vector'])
+    mr = nt.nodes.new('ShaderNodeMapRange')
+    mr.inputs['To Min'].default_value = 0.95
+    mr.inputs['To Max'].default_value = 1.04
+    nt.links.new(sep.outputs['X'], mr.inputs['Value'])
+    hs = nt.nodes.new('ShaderNodeHueSaturation')
+    hs.inputs['Saturation'].default_value = float(A.get('dsat', 1.0))
+    nt.links.new(n.outputs['Color'], hs.inputs['Color'])
+    nt.links.new(mr.outputs['Result'], hs.inputs['Value'])
+    gm = nt.nodes.new('ShaderNodeGamma')              # dgam > 1 — темнее (подгонка под фото каталога)
+    gm.inputs['Gamma'].default_value = float(A.get('dgam', 1.0))
+    nt.links.new(hs.outputs['Color'], gm.inputs['Color'])
+    nt.links.new(gm.outputs['Color'], b.inputs['Base Color'])
+    bw = nt.nodes.new('ShaderNodeRGBToBW')
+    nt.links.new(n.outputs['Color'], bw.inputs['Color'])
+    rr = nt.nodes.new('ShaderNodeMapRange')
+    rr.inputs['To Min'].default_value = 0.56
+    rr.inputs['To Max'].default_value = 0.42
+    nt.links.new(bw.outputs['Val'], rr.inputs['Value'])
+    nt.links.new(rr.outputs['Result'], b.inputs['Roughness'])
+    return m
+
+
+def profile_wall(name, pts_mm, x0, x1, z_top, y_wall, mat):
+    """Стена из панелей по лицевому контуру (profiles_site.json): панели встык от x0, последняя подрезана по x1. Лицом к −Y."""
+    wid = pts_mm[-1][0] / 1000.0
+    n = int(math.ceil((x1 - x0) / wid - 1e-6))
+    obs = []
+    for i in range(n):
+        xo, pts = x0 + i * wid, pts_mm
+        if xo + wid > x1 + 1e-6:
+            lim = (x1 - xo) * 1000.0
+            cut = [q for q in pts_mm if q[0] <= lim]
+            nxt = next(q for q in pts_mm if q[0] > lim)
+            t = (lim - cut[-1][0]) / (nxt[0] - cut[-1][0])
+            pts = cut + [(lim, cut[-1][1] + (nxt[1] - cut[-1][1]) * t)]
+        ob = profile_panel(f'{name}{i}', pts, xo, z_top, mat)
+        ob.location.y = y_wall
+        obs.append(ob)
+    log('profile wall', name, 'panels', n, 'width', wid)
+    return obs
+
+
 def panel_wall(x0, x1, z_top, y_wall, zbot=None):
-    """Стена из панелей выбранного артикула: реечные «под дерево» (3-7, 3-15, 3-9) или A910 под покраску."""
-    if DECOR.upper() == 'A910':
-        mp = mat_simple('a910_paint', hexcol(A.get('paint', 'EFEEEA')), rough=float(A.get('paint_rough', 0.55)), bump=0.02, bump_scale=1500.0)
-        return reeded_wall('panels', x0, x1, z_top, y_wall, mp, zbot=zbot)
-    m_wood = mat_decor(DECOR)
+    """Стена из панелей выбранного артикула: любая белая под покраску (profiles_site.json; A910 — по живому образцу)
+    или реечная «под дерево» серий 2, 3, 5 (decor=3-7 …; tex=strip — рисунок декора с сайта, иначе шпон Poly Haven)."""
+    d = DECOR.upper().replace(' ', '').replace('/', '-')
+    paint = lambda: mat_simple('panel_paint', hexcol(A.get('paint', 'EFEEEA')), rough=float(A.get('paint_rough', 0.55)), bump=0.02, bump_scale=1500.0)
+    if d == 'A910':
+        return reeded_wall('panels', x0, x1, z_top, y_wall, paint(), zbot=zbot)
+    profs = json.load(open(f'{ROOT}/profiles_site.json', encoding='utf-8'))
+    key = next((k for k in profs if k.upper().replace(' ', '').replace('/', '-') == d), None)
+    if key:
+        return profile_wall('panels', [(float(x), float(h)) for x, h in profs[key]], x0, x1, z_top, y_wall, paint())
     m_black = mat_simple('pan_black', (0.007, 0.007, 0.008, 1), rough=0.8, **{'Specular IOR Level': 0.25})
-    return slat_wall('panels', x0, x1, z_top, y_wall, m_wood, m_black, zbot=zbot)
+    import slat_profile
+    ser = int(DECOR.split('-')[0]) if DECOR[:1] in '235' and '-' in DECOR else 3
+    step, lam = slat_profile.SERIES[ser]
+    if A.get('tex') == 'strip':
+        ln = json.load(open(f'{ROOT}/tex3/index.json', encoding='utf-8'))[DECOR]['len_mm'] / 1000.0
+        return slat_wall('panels', x0, x1, z_top, y_wall, mat_decor_strip(DECOR), m_black, zbot=zbot, step=step / 1000.0, lam_w=lam / 1000.0, strip=ln)
+    return slat_wall('panels', x0, x1, z_top, y_wall, mat_decor(DECOR), m_black, zbot=zbot, step=step / 1000.0, lam_w=lam / 1000.0)
+
+
+def make_mask(world, sun, lamps):
+    """mask=1 — маска стены из панелей: панели белые, всё остальное чёрное (для перекраски стены на готовом фото)."""
+    def em(name, v):
+        m, nt, out = new_mat(name)
+        e = nt.nodes.new('ShaderNodeEmission')
+        e.inputs['Color'].default_value = (v, v, v, 1)
+        nt.links.new(e.outputs['Emission'], out.inputs['Surface'])
+        return m
+    mw, mk = em('mask_white', 1.0), em('mask_black', 0.0)
+    for ob in scene.objects:
+        if ob.type != 'MESH':
+            continue
+        ob.data.materials.clear()
+        ob.data.materials.append(mw if ob.name.startswith('panel') else mk)
+        ob.data.polygons.foreach_set('material_index', [0] * len(ob.data.polygons))
+    wo = bpy.data.worlds.new('mask_world')
+    wo.use_nodes = True
+    wo.node_tree.nodes['Background'].inputs['Color'].default_value = (0, 0, 0, 1)
+    scene.world = wo
+    sun.hide_render = True
+    for ld, k in lamps:
+        ld.energy = 0.0
+    vs = scene.view_settings
+    vs.view_transform, vs.exposure = 'Standard', 0.0
+    try:
+        vs.look = 'None'
+    except Exception as e:  # noqa
+        log('look', e)
+    c = scene.cycles
+    c.samples, c.use_adaptive_sampling, c.use_denoising = 64, False, False
 
 
 # ------------------------------------------------------------------ сцены
@@ -1745,6 +1858,9 @@ else:
     world, sun, sun_dir, lamps, cal_cam = SCENES[SCENE]()
     bpy.context.view_layer.update()
     log('objects', len(scene.objects), 'scene built')
-    calibrate(world, sun, sun_dir, neutral_prefixes=NEUTRAL, lamps=lamps, cal_cam=cal_cam)
+    if A.get('mask') == '1':
+        make_mask(world, sun, lamps)
+    else:
+        calibrate(world, sun, sun_dir, neutral_prefixes=NEUTRAL, lamps=lamps, cal_cam=cal_cam)
 render_final()
 log('done')
