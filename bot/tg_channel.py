@@ -10,6 +10,7 @@
     venv/bin/python tg_channel.py all     — check + оформление + стартовые посты (каждый один раз) + закреп
     venv/bin/python tg_channel.py auto    — то же, если ещё не сделано, и очередной пост из очереди (cron)
     venv/bin/python tg_channel.py queue [--list]
+    venv/bin/python tg_channel.py delete 44-53   — удалить сообщения канала по номерам (лишний альбом и т. п.)
 Ключи: --chat @имя_канала или id (если бот не запомнил канал сам), --dry (только показать).
 
 Тексты и кнопки берутся из channel_posts.json / channel_queue.json (как для MAX) и переделываются под Telegram:
@@ -92,6 +93,20 @@ def known_chats(db_file: str) -> dict[str, dict[str, Any]]:
         return json.loads(row[0]) if row else {}
     except (sqlite3.Error, ValueError):
         return {}
+
+
+def parse_ids(spec: str) -> list[int]:
+    """«44-53,60» → [44, …, 53, 60] (номера сообщений канала, не больше 100 за раз)."""
+    out: list[int] = []
+    for part in (spec or "").replace(" ", "").split(","):
+        if not part:
+            continue
+        a, _, b = part.partition("-")
+        lo, hi = int(a), int(b or a)
+        out += list(range(min(lo, hi), max(lo, hi) + 1))
+    if not out or len(out) > 100 or min(out) < 1:
+        raise ValueError("номера сообщений: например 44-53 (не больше 100)")
+    return sorted(set(out))
 
 
 def chat_ref(chat: str) -> int | str:
@@ -317,6 +332,14 @@ async def amain(o: argparse.Namespace) -> int:
     bot = make_bot(token, env.get("TELEGRAM_PROXY", ""))
     key, chat = str(chat), chat_ref(chat)
     try:
+        if o.cmd == "delete":
+            ids = parse_ids(o.ids)
+            if o.dry:
+                print(f"[проверка] удалил бы сообщения {ids[0]}–{ids[-1]} ({len(ids)} шт.)")
+                return 0
+            await bot.delete_messages(chat, ids)
+            print(f"Удалено сообщений: {len(ids)} ({ids[0]}–{ids[-1]}).")
+            return 0
         if o.cmd in ("queue",) or (o.cmd == "auto" and st.get(key, {}).get("_starter")):
             cfg = load_queue(o.queue)
             ch = TgChannel(bot, cfg, o.state, o.dry, key=key)
@@ -346,7 +369,8 @@ async def amain(o: argparse.Namespace) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    a.add_argument("cmd", choices=["check", "all", "auto", "queue"])
+    a.add_argument("cmd", choices=["check", "all", "auto", "queue", "delete"])
+    a.add_argument("ids", nargs="?", default="", help="delete: номера сообщений, например 44-53")
     a.add_argument("--chat", default="")
     a.add_argument("--dry", action="store_true")
     a.add_argument("--list", action="store_true")

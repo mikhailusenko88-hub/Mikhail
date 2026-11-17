@@ -173,3 +173,11 @@ def test_resume_without_duplicate_album(tmp_path):
     assert calls == ["album", "text", "text"]                       # альбом — один раз
     st = json.load(open(state))["-1"]
     assert st["p"] == "m:3" and st["p#0"] == "a:1,2"
+
+
+def test_parse_ids():
+    assert tc.parse_ids("44-53") == list(range(44, 54))
+    assert tc.parse_ids("5, 7-8") == [5, 7, 8]
+    for bad in ("", "0-3", "1-200"):
+        with pytest.raises(ValueError):
+            tc.parse_ids(bad)
