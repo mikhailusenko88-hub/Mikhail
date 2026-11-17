@@ -1093,7 +1093,8 @@ def mat_decor_strip(decor):
     tc = nt.nodes.new('ShaderNodeTexCoord')
     n = nt.nodes.new('ShaderNodeTexImage')
     n.image = load_img(f'{ROOT}/tex3/{decor.lower()}.jpg')
-    n.extension = 'MIRROR'
+    # короткая полоска повторяется зеркально; у декора с арками волокна (2-10) зеркало даёт «глазки» — у него в index.json tile=repeat (полоска сделана бесшовной)
+    n.extension = 'REPEAT' if json.load(open(f'{ROOT}/tex3/index.json')).get(decor.lower(), {}).get('tile') == 'repeat' else 'MIRROR'
     nt.links.new(tc.outputs['UV'], n.inputs['Vector'])
     uv2 = nt.nodes.new('ShaderNodeUVMap')
     uv2.uv_map = 'jit'
