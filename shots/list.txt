@@ -1,5 +1,7 @@
 # имя | адрес | desktop|mobile | js
-# 17.11.2026 — служебная страница визуализаций
-viz-m | https://nashdekor.ru/vizual/?s=31 | mobile | 
-viz-lb-m | https://nashdekor.ru/vizual/?s=32 | mobile | setTimeout(()=>{document.querySelector('figure').click()},1500)
-main-calc-m | https://nashdekor.ru/?s=33 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,-60)
+# 17.11.2026 — служебная страница визуализаций: новые сцены
+viz2-m | https://nashdekor.ru/vizual/?s=41 | mobile | 
+viz2-sofa-m | https://nashdekor.ru/vizual/?s=42 | mobile | document.querySelector('[data-s="sofa"]').click()
+viz2-sofa-col-m | https://nashdekor.ru/vizual/?s=43 | mobile | document.querySelector('[data-s="sofa"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A907')).click(); setTimeout(()=>{document.querySelector('.dots button[data-c^="#"]').click()},900)},300)
+viz2-tv2-col-d | https://nashdekor.ru/vizual/?s=44 | desktop | document.querySelector('[data-s="tv2"]').click(); setTimeout(()=>{[...document.querySelectorAll('figure')].find(f=>f.textContent.includes('A910')).click(); setTimeout(()=>{document.querySelectorAll('.dots button[data-c^="#"]')[2].click()},900)},300)
+viz2-pan-m | https://nashdekor.ru/vizual/?s=45 | mobile | document.querySelector('[data-m="p"]').click()
