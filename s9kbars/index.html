@@ -113,7 +113,7 @@
       var c=document.createElement('div');c.className='card sc'+((s.pub||past)?' past':'');c.id='s'+it.num;
       var M={title:it.title,yt:it.yt_desc,rt:it.rt_desc,fyt:it.title+'\n\n'+it.yt_desc,frt:it.title+'\n\n'+it.rt_desc,scn:it.scenario};
       c.innerHTML='<div class="head"><span>Серия '+it.num+' · выход <b>'+esc(it.when)+'</b>'+(it.date===today?' — СЕГОДНЯ':'')+'</span><span>'+(it.build?'сборка '+esc(it.build)+'+':'')+'</span></div>'+
-        '<div class="t">'+esc(it.title)+'</div><div class="note">'+esc(it.note||'')+(it.v>1?' · версия '+it.v:'')+'</div>'+
+        '<div class="t">'+esc(it.title)+'</div><div class="note">'+esc(it.note||'').replace(/https?:\/\/[^\s<)]+/g,function(u){return '<a href="'+u+'" target="_blank" rel="noopener">'+u+'</a>'})+(it.v>1?' · версия '+it.v:'')+'</div>'+
         (it.cover?'<img class="cov" loading="lazy" src="'+esc(it.cover)+'?v='+it.v+'" alt=""><div class="btns"><a class="btn" href="'+esc(it.cover)+'" download="Обложка_Серия_'+it.num+'.jpg">⬇︎ Обложка</a></div>':'')+
         '<div class="scn"><div class="ph">СЦЕНАРИЙ</div><div class="btns"><button class="btn big" data-copy="scn">📋 Скопировать сценарий</button><a class="btn" href="'+esc(it.scenario_file)+'" download="Серия_'+it.num+'_сценарий.txt">⬇︎ .txt</a></div>'+
         '<div class="how">Вставить в «✍️ Мой сценарий» целиком. В сборке 59 и новее: «Начало серии — новое».</div>'+
