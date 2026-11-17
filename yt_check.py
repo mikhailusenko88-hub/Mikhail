@@ -284,7 +284,7 @@ def video_info(vid):
             out["keywords"] = ", ".join(det["keywords"])[:600]
     thumbs = OUT / "thumbs"
     thumbs.mkdir(exist_ok=True)
-    for name in ("oar2.jpg", "hqdefault.jpg", "hq1.jpg", "hq2.jpg", "hq3.jpg"):   # hq1–3 — кадры из ролика (25/50/75%)
+    for name in ("maxresdefault.jpg", "sddefault.jpg", "oar2.jpg", "hqdefault.jpg", "hq1.jpg", "hq2.jpg", "hq3.jpg"):   # maxres — обложка 1280×720; hq1–3 — кадры из ролика (25/50/75%)
         req = urllib.request.Request(f"https://i.ytimg.com/vi/{vid}/{name}", headers=H)
         try:
             with urllib.request.urlopen(req, timeout=25) as r:
