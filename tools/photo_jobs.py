@@ -6,8 +6,8 @@ bed — спальня; hall — прихожая; cor — коридор; cl �
 import json, os, sys
 R = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 B = 'cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900'
-Q = 'samples=150 noise=0.045'
-EXP = {'cor': 'ev=-1.9 calfile=cal_cor.json'}                 # у коридора своя комната и свой свет
+Q = 'samples=120 noise=0.05'
+EXP = {'cor': 'ev=-2.3 calfile=cal_cor.json'}                 # у коридора своя комната и свой свет
 ALL = ['tv', 'cl', 'tv1', 'tv2', 'sofa', 'bed', 'hall', 'cor', 'sofa1', 'sofa2', 'bed1', 'half', 'desk', 'tvc']
 use = [a for a in sys.argv[1:] if a in ALL] or ALL
 white = list(json.load(open(f'{R}/profiles_site.json', encoding='utf-8')))
