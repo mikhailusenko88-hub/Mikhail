@@ -433,7 +433,11 @@ class YT:
         r = requests.put(f"{API}/videos", params={"part": "status"}, headers=self.h({"Content-Type": "application/json"}), data=json.dumps(body), timeout=30)
         if r.status_code != 200:
             return False, f"не перенёсся: {r.status_code} {r.text[:200]}"
-        now = self.status(vid)
+        for _ in range(5):                                     # YouTube отдаёт новое время не сразу (17.11: ответ 200, а чтение следом показало старое)
+            time.sleep(4)
+            now = self.status(vid)
+            if (now.get("publishAt") or "")[:16] == publish_at[:16]:
+                break
         return now.get("privacyStatus") == "private" and (now.get("publishAt") or "")[:16] == publish_at[:16], f"было {st.get('publishAt')}, стало {now.get('publishAt')}, {now.get('privacyStatus')}"
 
     def cancel(self, vid):
