@@ -21,7 +21,7 @@
   "name": "Кот Барсик - 27. Почему лодка не тонет",
   "path": "video/Кот Барсик - 27. Почему лодка не тонет.mp4",
   "frames": 8206,
-  "sec": 861,
+  "sec": 885,
   "ok": true,
   "err": ""
  },
@@ -40,8 +40,8 @@
    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
   },
   "perf": {
-   "r": 10,
-   "e": 90,
+   "r": 11,
+   "e": 91,
    "b": 4,
    "w": 1,
    "n": 8200,
@@ -54,15 +54,18 @@
   "ttsFail": 0,
   "voice": 18,
   "voiceFail": 0,
-  "voiceSec": 9,
-  "ttsSec": 64,
-  "frames": 8206,
+  "voiceSec": 10,
+  "ttsSec": 52,
+  "frames": 8884,
   "dialogs": [],
   "errors": [],
-  "stages": []
+  "stages": [],
+  "lufs_in": -24.6,
+  "lufs_out": -15.2,
+  "gain_db": 9.6
  },
  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
- "total_sec": 1451,
+ "total_sec": 1531,
  "mode": "как в кино",
  "res": 1080,
  "fps": 25
