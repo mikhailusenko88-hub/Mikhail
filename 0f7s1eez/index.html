@@ -779,7 +779,7 @@ if (hitOn) {
   $("q").addEventListener("input", () => { clearTimeout(qT); qT = setTimeout(() => { const v = $("q").value.trim().toLowerCase(); if (v.length >= 2) hit("search", v); }, 1500); });
   ["cW","cH","cOpen","cReserve","cPlinthOn","cPlinth","cCorniceOn","cCornice"].forEach(id => $(id).addEventListener("input", () => hit("calc")));
   $("cPanel").addEventListener("change", () => { hit("calc"); hit("calcpanel", $("cPanel").value); });
-  $("c3").addEventListener("pointerdown", () => hit("3d"), { passive: true });
+  $("stage").addEventListener("pointerdown", () => hit("3d"), { passive: true });   // «3d» — прежнее имя счётчика: теперь это кадр «в интерьере» над расчётом
   $("leadForm").addEventListener("focusin", () => hit("form"));
 }
 

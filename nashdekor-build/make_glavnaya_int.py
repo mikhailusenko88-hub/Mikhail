@@ -138,7 +138,10 @@ def transform(s):
     s = once(s, old, old + '\n  .ist{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hdr,57px));z-index:4;box-shadow:0 10px 18px -14px rgba(0,0,0,.5)}', 'прилипание сцены на телефоне')
     s = between(s, '/* 3D-стена: комната с акцентной стеной из выбранных панелей', 'window.__w3 = W3; W3.init();', JS, 'модуль 3D-стены')
     s = once(s, 'if (window.__w3) window.__w3.rebuild();', 'if (window.__iv) window.__iv.update();', 'вызов из расчёта')
-    for left in ('W3.', '__w3', 'id="c3"', 'class="stage3d"', 'three.min'):
+    s = once(s, '$("c3").addEventListener("pointerdown", () => hit("3d"), { passive: true });',
+             '$("stage").addEventListener("pointerdown", () => hit("3d"), { passive: true });   // «3d» — прежнее имя счётчика: теперь это кадр «в интерьере» над расчётом',
+             'счётчик нажатий на 3D (работает только на nashdekor.ru)')
+    for left in ('W3.', '__w3', 'id="c3"', '$("c3")', 'class="stage3d"', 'three.min'):
         if left in s:
             sys.exit(f'ОШИБКА: после замены остался след 3D-стены: {left}')
     return s
