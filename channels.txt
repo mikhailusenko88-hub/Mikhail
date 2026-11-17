@@ -21,3 +21,10 @@
 @ballssimulator             шарики  сосед
 @SatisfyingPhysicsSimulation шарики  сосед
 @getitstudy                 шарики  сосед
+# добавлены 17.11.2026 (сканы: быстрые ролики небольших каналов в наших нишах)
+@ASMRBallSimulations        шарики  сосед
+@MudrostBytiya              цитаты  сосед
+@neochevidno_tv             факты  сосед
+@moreballs                  гонки  сосед
+@Marblerun-1m               гонки  сосед
+@MarbleVortex-o2u           гонки  сосед
