@@ -1,0 +1,103 @@
+{
+ "el": "el",
+ "series": "СЕРИЯ 27",
+ "text": "ПОЧЕМУ ЛОДКА|НЕ ТОНЕТ?",
+ "logo": 0.8,
+ "vignette": 0.28,
+ "bg": "f1_beach_day.jpg",
+ "bg_zoom": [
+  0.5,
+  0.45,
+  1.9
+ ],
+ "blur": 3,
+ "sat": 1.5,
+ "bri": 1.06,
+ "text_at": "center",
+ "rays": {
+  "cx": 0.47,
+  "cy": 0.36,
+  "n": 16,
+  "col": [
+   255,
+   247,
+   200
+  ],
+  "a": 55
+ },
+ "spot": {
+  "cx": 0.47,
+  "cy": 0.38,
+  "r": 0.22,
+  "col": [
+   255,
+   252,
+   225
+  ],
+  "a": 185
+ },
+ "items": [
+  {
+   "water": true,
+   "cx": 0.47,
+   "cy": 0.615,
+   "w": 0.34
+  },
+  {
+   "img": "v_boat_GLAVNOE.png",
+   "cx": 0.47,
+   "bottom": 0.645,
+   "h": 0.52,
+   "outline": 5,
+   "glow": [
+    255,
+    238,
+    150
+   ]
+  },
+  {
+   "sparkles": true,
+   "cx": 0.47,
+   "cy": 0.33,
+   "r": 0.19,
+   "n": 7
+  },
+  {
+   "mark": "?",
+   "cx": 0.615,
+   "cy": 0.165,
+   "h": 0.19,
+   "rot": -12
+  },
+  {
+   "img": "g2_Рон_likuet1.png",
+   "cx": 0.115,
+   "bottom": 1.05,
+   "h": 0.68,
+   "outline": 6
+  },
+  {
+   "img": "v_rock.png",
+   "cx": 0.232,
+   "bottom": 0.475,
+   "h": 0.105,
+   "outline": 4,
+   "rot": 12
+  },
+  {
+   "img": "g5_Пик_pokaz1.png",
+   "cx": 0.285,
+   "bottom": 1.05,
+   "h": 0.42,
+   "outline": 5
+  },
+  {
+   "img": "g1_Барсик_udiv.png",
+   "cx": 0.835,
+   "bottom": 1.1,
+   "h": 0.86,
+   "outline": 6,
+   "flip": true
+  }
+ ]
+}
