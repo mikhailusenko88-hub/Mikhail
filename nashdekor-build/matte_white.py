@@ -130,6 +130,21 @@ def along(L, v, sig_t=110.0, sig_r=6.0, step=3, cross=False):
     return acc / ws
 
 
+def flat_faces(D, obj):
+    """широкие ПЛОСКИЕ грани: убрать большое мягкое пятно (тень от телефона, отсвет) — свет на плоской грани должен меняться ровно.
+       Грань — связная область без перепадов; подгоняем к ней плоскость и убираем 80 % отклонения. Выгнутые грани (отклонение большое) не трогаем."""
+    b = cv2.GaussianBlur(D, (0, 0), 3.0); g = np.hypot(cv2.Sobel(b, cv2.CV_32F, 1, 0, ksize=3), cv2.Sobel(b, cv2.CV_32F, 0, 1, ksize=3)) / 8
+    sm = cv2.morphologyEx(((g < .12) & (obj > .98)).astype(np.uint8), cv2.MORPH_OPEN, np.ones((9, 9), np.uint8))
+    n, lab, st, _ = cv2.connectedComponentsWithStats(sm, connectivity=4); C = np.zeros_like(D); done = 0
+    for i in range(1, n):
+        if st[i, cv2.CC_STAT_AREA] < 9000: continue
+        ys, xs = np.nonzero(lab == i); z = D[ys, xs]; A = np.c_[xs, ys, np.ones(len(xs))].astype(np.float64)
+        k = np.linalg.lstsq(A, z.astype(np.float64), rcond=None)[0]; r = z - (A @ k).astype(np.float32)
+        if r.std() > 5.5: continue
+        C[ys, xs] = -.8 * r; done += 1
+    return D + cv2.GaussianBlur(C, (0, 0), 6.0), done
+
+
 def matte(im, standing=False, info=None):
     lab = cv2.cvtColor(im, cv2.COLOR_BGR2LAB).astype(np.float32); L = lab[..., 0]
     obj = cv2.GaussianBlur(np.clip((L - 120) / 50, 0, 1), (0, 0), 1.2)                 # изделие (светлое) против тёмного фона
@@ -138,6 +153,8 @@ def matte(im, standing=False, info=None):
     if v is None or e > 4.0: return None                                               # направление не нашлось — не трогаем, смотреть глазами
     D = along(L, v)
     D = along(D, v, 60.0, 2.5, 3, True)                                                 # порог 2,5 ступени яркости: рельеф (перепады от 6) не задевает
+    D, nf = flat_faces(D, obj)
+    if info is not None: info.update(faces=nf)
     H = L - cv2.GaussianBlur(L, (0, 0), 2.2)                                           # мелкие детали: зерно среза, кромки
     A = cv2.GaussianBlur(np.abs(H), (0, 0), 4.0); w = np.clip((A - 1.2) / 1.6, 0, 1); w = w * w * (3 - 2 * w)
     out = D * (1 - w) + (cv2.GaussianBlur(D, (0, 0), 2.2) + H) * w
