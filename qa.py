@@ -189,6 +189,14 @@ try:
     if vn: R['ok'] = False; note('герой стоит в герое: ' + '; '.join(f"сцена {v['sc'] + 1}: {v['a']} и {v['b']} ({v['t1'] - v['t0']:.0f} с)" for v in vn))
 except Exception as ex: R['vnutri'] = None; note('проверка «никто ни в ком» не выполнена: ' + str(ex))
 
+# край кадра режет героя на среднем плане: тест движка kraj.js (замечание, сборку не бракует)
+try:
+    kr = json.load(open(os.path.join(OUT, 'kraj.json'), encoding='utf-8'))
+    bad = [s for s in kr.get('list', []) if s.get('bad')]
+    R['kraj'] = {'shots': kr.get('shots'), 'bad': kr.get('bad'), 'bad_sec': kr.get('badSec'), 'tot_sec': kr.get('totSec'), 'list': bad}
+    if bad: note(f"край кадра режет героя: {len(bad)} средних планов из {kr.get('shots')} ({kr.get('badSec'):.0f} с)")
+except Exception as ex: R['kraj'] = None; note('проверка «край кадра» не выполнена: ' + str(ex))
+
 R['build'] = {k: res.get(k) for k in ['ok', 'err', 'total_sec', 'mode', 'gl', 'card', 'stat', 'start']}
 json.dump(R, open(os.path.join(QA, 'qa.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 try: os.remove(WAV)
