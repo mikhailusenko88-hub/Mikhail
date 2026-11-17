@@ -1939,9 +1939,25 @@ def door_y(name, x0, x1, mat):
     box(name + '_h2', x0 + 0.075, x0 + 0.20, 0.067, 0.085, 1.0, 1.02, mh, bevel=0.002)
 
 
+def to_ceiling(obs, D, H):
+    """Панели, построенные на стене y = D от пола вверх, переложить на потолок: от стены в комнату, лицом вниз."""
+    obs = obs if isinstance(obs, (list, tuple)) else [obs]
+    e = bpy.data.objects.new('ceil_pivot', None)
+    col.objects.link(e)
+    e.location = (0, D, 0)
+    bpy.context.view_layer.update()
+    for ob in obs:
+        ob.parent = e
+        ob.matrix_parent_inverse = e.matrix_world.inverted()
+    e.rotation_euler = (R(90), 0, 0)
+    e.location = (0, D, H)
+
+
 def scene_use():
     """Галерея «где и как применяют» для сайта. use: tv — ТВ-зона, вся стена; tv1 — одна полоса за экраном; tv2 — две полосы, экран между ними;
-    sofa — за диваном; bed — спальня; hall — прихожая; cor — коридор; cl — крупно. Панель — decor=…, как в lounge."""
+    sofa — за диваном (sofa1 — одна полоса, sofa2 — две полосы и полка); bed — спальня (bed1 — полоса шириной с кровать); hall — прихожая
+    (half — панели до середины стены); desk — рабочее место; tvc — полоса за экраном с переходом на потолок; cor — коридор; cl — крупно.
+    Панель — decor=…, как в lounge."""
     use = A.get('use', 'tv')
     lamps = []
     az, el = float(A.get('sun_az', 32)), float(A.get('sun_el', 52))
@@ -1969,14 +1985,21 @@ def scene_use():
         return world, sun, sun_dir, lamps, cal
     W, D, H = 4.4, 5.2, 2.7
     room(W, D, H, win=(2.3, 4.7, 0.06, 2.46), m_wall=m_wall, m_floor=m_floor, m_ceil=m_ceil)
-    for a, b in {'tv1': [(1.2, 3.1)], 'tv2': [(0.38, 1.10), (3.20, 3.92)]}.get(use, [(0.0, W)]):
-        panel_wall(a, b, H, D)
+    secs = {'tv1': [(1.2, 3.1)], 'tvc': [(1.2, 3.1)], 'tv2': [(0.38, 1.10), (3.20, 3.92)], 'sofa1': [(1.0, 3.4)], 'sofa2': [(0.50, 1.22), (3.18, 3.90)],
+            'bed1': [(1.2, 3.2)]}.get(use, [(0.0, W)])
+    ztop = 1.2 if use == 'half' else H                    # half — панели до середины стены, сверху планка
+    for a, b in secs:
+        panel_wall(a, b, ztop, D)
+    if use == 'half':
+        box('panel_cap', 0.0, W, D - 0.034, D, 1.2, 1.232, mat_simple('panel_paint_cap', hexcol(A.get('paint', 'EFEEEA')), rough=0.55), bevel=0.004)
+    if use == 'tvc':                                      # та же полоса продолжается по потолку
+        to_ceiling(panel_wall(1.2, 3.1, 1.3, D), D, H)
     curtain('sheer', 0.12, 2.1, 4.95, 0.012, 2.64, mat_sheer())
     box('track', 0.07, 0.17, 2.0, 5.05, 2.64, 2.67, mat_simple('track', srgb(240, 240, 238), rough=0.4))
     yw = D - 0.012 - 0.015
     world, sun = setup_world(sun_dir)
     cal = camera((2.55, 0.75, 1.22), (2.15, D, 1.02), lens=30, fstop=5.6, focus=4.3)
-    if use in ('tv', 'tv1', 'tv2', 'cl'):
+    if use in ('tv', 'tv1', 'tv2', 'cl', 'tvc'):
         yc = yw - 0.21
         top = credenza(1.2, 3.1, yw, color=cabcol)
         ms = mat_simple('tv_screen', (0.012, 0.012, 0.014, 1), rough=1.0, **{'Specular IOR Level': 0.0})
@@ -1994,7 +2017,7 @@ def scene_use():
             camera((3.0, 4.55, 1.2), (3.75, D - 0.012, 1.15), lens=60)
         else:
             camera((3.7, 1.9, 1.25), (1.9, D, 0.95), lens=26)
-    elif use == 'sofa':
+    elif use in ('sofa', 'sofa1', 'sofa2'):
         sofa(2.2, yw, 2.3)
         mw = mat_simple('tbl_wood', srgb(206, 178, 142), rough=0.45, bump=0.01, bump_scale=600.0)
         mk = mat_simple('tbl_legs', (0.012, 0.012, 0.013, 1), rough=0.42, metallic=1.0)
@@ -2009,9 +2032,14 @@ def scene_use():
         zz = books(1.78, 3.68, 0.355, 2, seed=6)
         load_asset('ceramic_vase_01', loc=(1.98, 3.80, 0.355), rot=30)
         load_asset('potted_plant_01', loc=(0.72, D - 0.55, 0), rot=35)
+        if use == 'sofa2':                                 # между полосами — полка с вещами
+            box('shelf', 1.55, 2.85, yw - 0.20, yw, 1.52, 1.55, mw, bevel=0.003)
+            load_asset('ceramic_vase_02', loc=(1.78, yw - 0.10, 1.55), rot=20)
+            load_asset('standing_picture_frame_02', loc=(2.25, yw - 0.08, 1.55), rot=8)
+            load_asset('potted_plant_04', loc=(2.62, yw - 0.10, 1.55), rot=40)
         box('rug', 0.95, 3.75, 2.7, 4.75, 0.0, 0.012, m_rug, bevel=0.004)
         camera((3.7, 1.9, 1.25), (1.9, D, 0.95), lens=26)
-    elif use == 'bed':
+    elif use in ('bed', 'bed1'):
         bed(2.2, yw, 1.8)
         mw = mat_pbr('tbl_wood', 'oak_veneer_01', 1.83, rough=0.45, tint=srgb(206, 180, 150))
         ml = mat_simple('ns_legs', srgb(52, 40, 30), rough=0.5)
@@ -2024,7 +2052,7 @@ def scene_use():
         load_asset('potted_plant_01', loc=(0.6, 3.3, 0), rot=35)
         box('rug', 0.75, 3.65, 2.35, 4.35, 0.0, 0.012, m_rug, bevel=0.004)
         camera((3.95, 1.25, 1.5), (1.85, D, 0.95), lens=26)
-    elif use == 'hall':
+    elif use in ('hall', 'half'):
         top = credenza(1.42, 2.32, yw, z0=0.12, h=0.70, depth=0.32, n_doors=2, color=cabcol)       # обувница и круглое зеркало над ней
         disc_y('mirror_frame', 1.87, yw - 0.004, 1.52, 0.385, mat_simple('mir_fr', (0.015, 0.015, 0.016, 1), rough=0.4))
         disc_y('mirror', 1.87, yw - 0.008, 1.52, 0.37, mat_simple('mirror', (0.92, 0.92, 0.92, 1), rough=0.02, metallic=1.0))
@@ -2045,6 +2073,30 @@ def scene_use():
         load_asset('potted_plant_02', loc=(4.05, yw - 0.28, 0), rot=10)
         box('rug', 2.2, 4.05, 3.1, 4.55, 0.0, 0.012, m_rug, bevel=0.004)
         camera((2.5, 2.3, 1.35), (3.0, D, 1.05), lens=float(A.get('lens', 27)))
+    elif use == 'desk':                                        # рабочее место: стол у стены, монитор, кресло, полка
+        mw = mat_simple('tbl_wood', srgb(206, 178, 142), rough=0.45, bump=0.01, bump_scale=600.0)
+        mk = mat_simple('tbl_legs', (0.012, 0.012, 0.013, 1), rough=0.42, metallic=1.0)
+        box('desk_top', 1.5, 2.9, yw - 0.66, yw, 0.72, 0.75, mw, bevel=0.003)
+        for k, xx in enumerate((1.56, 2.82)):
+            box(f'desk_leg{k}a', xx, xx + 0.025, yw - 0.62, yw - 0.595, 0.0, 0.72, mk)
+            box(f'desk_leg{k}b', xx, xx + 0.025, yw - 0.065, yw - 0.04, 0.0, 0.72, mk)
+            box(f'desk_leg{k}c', xx, xx + 0.025, yw - 0.62, yw - 0.04, 0.70, 0.72, mk)
+        md = mat_simple('mon_body', (0.012, 0.012, 0.013, 1), rough=0.4)
+        box('mon_base', 2.08, 2.32, yw - 0.30, yw - 0.14, 0.75, 0.762, md, bevel=0.003)
+        box('mon_neck', 2.185, 2.215, yw - 0.215, yw - 0.195, 0.762, 0.98, md)
+        box('mon_body', 1.88, 2.52, yw - 0.235, yw - 0.215, 0.90, 1.27, md, bevel=0.003)
+        box('mon_screen', 1.887, 2.513, yw - 0.2365, yw - 0.235, 0.907, 1.263, mat_simple('mon_screen', (0.014, 0.015, 0.018, 1), rough=1.0, **{'Specular IOR Level': 0.0}))
+        box('kbd', 2.0, 2.42, yw - 0.52, yw - 0.40, 0.75, 0.762, mat_simple('kbd', srgb(226, 226, 224), rough=0.5), bevel=0.003)
+        table_lamp(1.68, yw - 0.22, 0.75, lamps)
+        books(2.72, yw - 0.2, 0.75, 3, seed=9)
+        box('shelf', 1.6, 2.8, yw - 0.22, yw, 1.62, 1.65, mw, bevel=0.003)
+        load_asset('potted_plant_04', loc=(1.8, yw - 0.11, 1.65), rot=40)
+        books(2.25, yw - 0.12, 1.65, 3, seed=2)
+        load_asset('ceramic_vase_03', loc=(2.62, yw - 0.11, 1.65), rot=10)
+        load_asset(A.get('chair', 'modern_arm_chair_01'), loc=(2.2, yw - 1.15, 0.0), rot=float(A.get('chair_rot', 0)))
+        load_asset('potted_plant_01', loc=(0.72, D - 0.55, 0), rot=35)
+        box('rug', 1.2, 3.4, 3.2, 4.7, 0.0, 0.012, m_rug, bevel=0.004)
+        camera((3.65, 2.5, 1.3), (2.0, D, 1.0), lens=float(A.get('lens', 30)))
     return world, sun, sun_dir, lamps, cal
 
 
