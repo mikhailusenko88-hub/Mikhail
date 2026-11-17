@@ -1879,7 +1879,7 @@ def disc_y(name, x, y, z, r, mat, n=72):
 
 def sofa(xc, yb, length=2.3, depth=0.95):
     """Прямой диван у стены: основание, спинка, подлокотники, подушки сиденья и спинки, две декоративные подушки, плед."""
-    mf = mat_pbr('sofa_fabric', 'rough_linen', 0.5, tint=srgb(196, 190, 180), nstrength=1.3)
+    mf = mat_pbr('sofa_fabric', 'rough_linen', 0.5, color=srgb(205, 198, 186), nstrength=1.3)
     x0, x1, yf, arm = xc - length / 2, xc + length / 2, yb - depth, 0.17
     box('sofa_base', x0, x1, yf + 0.03, yb, 0.11, 0.30, mf, bevel=0.03)
     box('sofa_back', x0, x1, yb - 0.19, yb, 0.30, 0.76, mf, bevel=0.05)
@@ -1894,16 +1894,15 @@ def sofa(xc, yb, length=2.3, depth=0.95):
         xa = x0 + arm + i * sw
         box(f'sofa_seat{i}', xa + 0.005, xa + sw - 0.005, yf, yb - 0.19, 0.30, 0.46, mf, bevel=0.045)
         pillow(f'sofa_bk{i}', (xa + sw / 2, yb - 0.27, 0.69), sw - 0.03, 0.50, 0.20, mf, tilt=78)
-    pillow('sofa_p1', (x0 + arm + 0.26, yb - 0.40, 0.66), 0.46, 0.46, 0.15, mat_pbr('pil_sage', 'rough_linen', 0.4, tint=srgb(132, 150, 138), nstrength=1.3), rot=-14, tilt=64)
-    pillow('sofa_p2', (x1 - arm - 0.30, yb - 0.41, 0.65), 0.50, 0.42, 0.14, mat_pbr('pil_sand', 'rough_linen', 0.4, tint=srgb(222, 208, 186), nstrength=1.3), rot=12, tilt=62)
-    box('sofa_throw', x1 - arm - 0.02, x1 + 0.012, yf - 0.012, yb - 0.30, 0.20, 0.625, mat_pbr('throw', 'rough_linen', 0.35, tint=srgb(186, 128, 98), nstrength=1.5), bevel=0.012)
+    pillow('sofa_p1', (x0 + arm + 0.26, yb - 0.40, 0.66), 0.46, 0.46, 0.15, mat_pbr('pil_sage', 'rough_linen', 0.4, color=srgb(128, 146, 134), nstrength=1.3), rot=-14, tilt=64)
+    pillow('sofa_p2', (x1 - arm - 0.30, yb - 0.41, 0.65), 0.50, 0.42, 0.14, mat_pbr('pil_sand', 'rough_linen', 0.4, color=srgb(228, 216, 196), nstrength=1.3), rot=12, tilt=62)
 
 
 def bed(xc, yb, width=1.8, length=2.06, wood=True):
     """Кровать у стены без своего изголовья (изголовье — стена из панелей): основание, матрас, одеяло с отворотом, подушки, плед."""
-    mb = mat_pbr('bed_frame', 'rough_linen', 0.5, tint=srgb(170, 162, 150), nstrength=1.3)
-    mwh = mat_pbr('bed_white', 'rough_linen', 0.45, tint=srgb(244, 241, 235), nstrength=0.9)
-    mln = mat_pbr('bed_linen', 'rough_linen', 0.45, tint=srgb(226, 219, 206), nstrength=1.2)
+    mb = mat_pbr('bed_frame', 'rough_linen', 0.5, color=srgb(178, 170, 158), nstrength=1.3)
+    mwh = mat_pbr('bed_white', 'rough_linen', 0.45, color=srgb(241, 238, 232), nstrength=0.9)
+    mln = mat_pbr('bed_linen', 'rough_linen', 0.45, color=srgb(224, 217, 204), nstrength=1.2)
     x0, x1, yf = xc - width / 2, xc + width / 2, yb - length
     box('bed_base', x0 - 0.03, x1 + 0.03, yf - 0.03, yb, 0.10, 0.32, mb, bevel=0.025)
     ml = mat_simple('bed_legs', srgb(52, 40, 30), rough=0.5)
@@ -1915,9 +1914,9 @@ def bed(xc, yb, width=1.8, length=2.06, wood=True):
     pw = width / 2 - 0.07
     for i, sx in enumerate((-1, 1)):
         pillow(f'bed_pil{i}', (xc + sx * (pw / 2 + 0.025), yb - 0.20, 0.76), pw, 0.50, 0.19, mwh, tilt=72)
-    pillow('bed_p1', (xc - 0.33, yb - 0.44, 0.71), 0.48, 0.40, 0.15, mat_pbr('pil_sage', 'rough_linen', 0.4, tint=srgb(132, 150, 138), nstrength=1.3), rot=-8, tilt=60)
-    pillow('bed_p2', (xc + 0.30, yb - 0.46, 0.69), 0.55, 0.32, 0.13, mat_pbr('pil_sand', 'rough_linen', 0.4, tint=srgb(214, 196, 170), nstrength=1.3), rot=6, tilt=58)
-    box('bed_throw', x0 - 0.045, x1 + 0.045, yf + 0.10, yf + 0.62, 0.60, 0.635, mat_pbr('throw', 'rough_linen', 0.35, tint=srgb(186, 128, 98), nstrength=1.5), bevel=0.012)
+    pillow('bed_p1', (xc - 0.33, yb - 0.44, 0.71), 0.48, 0.40, 0.15, mat_pbr('pil_sage', 'rough_linen', 0.4, color=srgb(128, 146, 134), nstrength=1.3), rot=-8, tilt=60)
+    pillow('bed_p2', (xc + 0.30, yb - 0.46, 0.69), 0.55, 0.32, 0.13, mat_pbr('pil_sand', 'rough_linen', 0.4, color=srgb(222, 206, 182), nstrength=1.3), rot=6, tilt=58)
+    box('bed_throw', x0 - 0.045, x1 + 0.045, yf + 0.12, yf + 0.55, 0.60, 0.635, mat_pbr('throw', 'rough_linen', 0.35, color=srgb(150, 162, 150), nstrength=1.5), bevel=0.012)
 
 
 def door_x(name, xw, y0, y1, mat):
@@ -1997,18 +1996,18 @@ def scene_use():
             camera((3.7, 1.9, 1.25), (1.9, D, 0.95), lens=26)
     elif use == 'sofa':
         sofa(2.2, yw, 2.3)
-        mw = mat_pbr('tbl_wood', 'oak_veneer_01', 1.83, rough=0.45, tint=srgb(206, 180, 150))
+        mw = mat_simple('tbl_wood', srgb(206, 178, 142), rough=0.45, bump=0.01, bump_scale=600.0)
         mk = mat_simple('tbl_legs', (0.012, 0.012, 0.013, 1), rough=0.42, metallic=1.0)
         cyl('st_top', 3.75, yw - 0.34, 0.50, 0.522, 0.23, 0.23, mw)                    # столик с лампой
         cyl('st_stem', 3.75, yw - 0.34, 0.012, 0.50, 0.016, 0.016, mk)
         cyl('st_base', 3.75, yw - 0.34, 0.0, 0.012, 0.15, 0.15, mk)
         table_lamp(3.75, yw - 0.34, 0.522, lamps)
-        cyl('ct_top', 2.3, 3.55, 0.33, 0.355, 0.45, 0.45, mw)                           # журнальный стол
+        cyl('ct_top', 1.85, 3.72, 0.33, 0.355, 0.38, 0.38, mw)                           # журнальный стол
         for k in range(3):
             a = 2 * math.pi * k / 3 + 0.5
-            cyl(f'ct_leg{k}', 2.3 + 0.33 * math.cos(a), 3.55 + 0.33 * math.sin(a), 0.0, 0.33, 0.012, 0.014, mk)
-        zz = books(2.2, 3.5, 0.355, 2, seed=6)
-        load_asset('ceramic_vase_03', loc=(2.46, 3.62, 0.355), rot=30)
+            cyl(f'ct_leg{k}', 1.85 + 0.28 * math.cos(a), 3.72 + 0.28 * math.sin(a), 0.0, 0.33, 0.012, 0.014, mk)
+        zz = books(1.78, 3.68, 0.355, 2, seed=6)
+        load_asset('ceramic_vase_01', loc=(1.98, 3.80, 0.355), rot=30)
         load_asset('potted_plant_01', loc=(0.72, D - 0.55, 0), rot=35)
         box('rug', 0.95, 3.75, 2.7, 4.75, 0.0, 0.012, m_rug, bevel=0.004)
         camera((3.7, 1.9, 1.25), (1.9, D, 0.95), lens=26)
@@ -2024,7 +2023,7 @@ def scene_use():
         zz = books(3.44 + 0.02, yw - 0.33, 0.50, 2, seed=8)
         load_asset('potted_plant_01', loc=(0.6, 3.3, 0), rot=35)
         box('rug', 0.75, 3.65, 2.35, 4.35, 0.0, 0.012, m_rug, bevel=0.004)
-        camera((3.85, 1.6, 1.4), (1.9, D, 0.9), lens=26)
+        camera((3.95, 1.25, 1.5), (1.85, D, 0.95), lens=26)
     elif use == 'hall':
         top = credenza(1.42, 2.32, yw, z0=0.12, h=0.70, depth=0.32, n_doors=2, color=cabcol)       # обувница и круглое зеркало над ней
         disc_y('mirror_frame', 1.87, yw - 0.004, 1.52, 0.385, mat_simple('mir_fr', (0.015, 0.015, 0.016, 1), rough=0.4))
@@ -2032,13 +2031,13 @@ def scene_use():
         load_asset('ceramic_vase_02', loc=(1.62, yw - 0.16, top), rot=20)
         books(2.08, yw - 0.16, top, 2, seed=5)
         bench(2.62, 3.72, yw)                                                                   # скамья, подушка, вешалка с сумкой
-        box('bench_pad', 2.66, 3.30, yw - 0.345, yw - 0.02, 0.44, 0.50, mat_pbr('pad', 'rough_linen', 0.4, tint=srgb(196, 190, 180), nstrength=1.3), bevel=0.022)
+        box('bench_pad', 2.66, 3.30, yw - 0.345, yw - 0.02, 0.44, 0.50, mat_pbr('pad', 'rough_linen', 0.4, color=srgb(205, 198, 186), nstrength=1.3), bevel=0.022)
         mw = mat_pbr('rail_wood', 'oak_veneer_01', 1.83, rough=0.45, tint=srgb(206, 180, 150))
         box('rail', 2.62, 3.72, yw - 0.022, yw, 1.62, 1.70, mw, bevel=0.003)
         for k in range(5):
             xk = 2.74 + k * 0.215
             box(f'peg{k}', xk - 0.012, xk + 0.012, yw - 0.085, yw - 0.02, 1.648, 1.672, mw, bevel=0.003)
-        mbag = mat_pbr('bag', 'rough_linen', 0.35, tint=srgb(132, 150, 138), nstrength=1.4)
+        mbag = mat_pbr('bag', 'rough_linen', 0.35, color=srgb(128, 146, 134), nstrength=1.4)
         box('bag', 3.385 - 0.17, 3.385 + 0.17, yw - 0.105, yw - 0.035, 1.0, 1.36, mbag, bevel=0.02)
         for k, dx in enumerate((-0.085, 0.07)):
             box(f'bag_strap{k}', 3.385 + dx, 3.385 + dx + 0.015, yw - 0.075, yw - 0.068, 1.35, 1.66, mbag)
