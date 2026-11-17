@@ -186,7 +186,7 @@ for sk, (v, f, n, reg) in SKINS.items():
     reg = np.asarray(reg).astype(np.int32); skin, fur = HERO.colors(v, reg, n)
     if part == 'head' and var != 'blink':   # тёмная «подводка» вокруг глаз
         ring = np.zeros(len(v), bool)
-        for c in EY: q = v - c; ring |= (np.linalg.norm(HERO.eye_q(q) if hasattr(HERO, 'eye_q') else q, axis=-1) < RE * 1.18) & (q[:, 1] < RE * 0.16) & ((q[:, 2] > -RE * 0.05) if getattr(HERO, 'EYE_RING_TOP', False) else True)   # EYE_RING_TOP — только линия ресниц по верхнему веку
+        for c in EY: q = v - c; ring |= (np.linalg.norm(HERO.eye_q(q) if hasattr(HERO, 'eye_q') else q, axis=-1) < RE * getattr(HERO, 'EYE_RING_R', 1.18)) & (q[:, 1] < RE * 0.16) & ((q[:, 2] > -RE * 0.05) if getattr(HERO, 'EYE_RING_TOP', False) else True)   # EYE_RING_TOP — только линия ресниц по верхнему веку
         skin[ring] = getattr(HERO, 'EYE_RING', (0.09, 0.04, 0.02) if name == 'barsik' else (0.05, 0.035, 0.03))
     sss = np.where(reg == 8, 0.9, np.where(reg == 4, 0.5, 0.18))
     ok = HERO.fur_ok(v, reg)
@@ -220,7 +220,9 @@ if getattr(HERO, 'EYE_CENTER', 0):   # радужка — в середину в
     import eye_open; dirs = []
     kh, kv = HERO.EYE_CENTER if isinstance(HERO.EYE_CENTER, tuple) else (HERO.EYE_CENTER, HERO.EYE_CENTER)
     for c, _ in eye_open.opening(HERO):
-        yw = math.atan2(c[0], -c[1]) * kh; pt = math.atan2(c[2], -c[1]) * kv; d = nrm(V(math.tan(yw), -1, math.tan(pt))); dirs.append(ax(d).tolist())
+        yw = math.atan2(c[0], -c[1]) * kh; pt = math.atan2(c[2], -c[1]) * kv
+        tl = getattr(HERO, 'EYE_TILT', (0.0, 0.0)); yw -= math.radians(tl[0]) * np.sign(c[0]); pt += math.radians(tl[1])   # EYE_TILT: (к носу°, вверх°)
+        d = nrm(V(math.tan(yw), -1, math.tan(pt))); dirs.append(ax(d).tolist())
     man['info']['eyeDirs'] = dirs; log('радужка смотрит', [[round(x, 3) for x in d] for d in dirs])
 if getattr(HERO, 'EYE_S', None) is not None: es = HERO.EYE_S; man['info']['eyeS'] = [float(es[0]), float(es[2]), float(es[1])]   # в осях глаза: вбок, вверх, вперёд
 if getattr(HERO, 'LID_SH', None): man['info']['lidSh'] = float(HERO.LID_SH)

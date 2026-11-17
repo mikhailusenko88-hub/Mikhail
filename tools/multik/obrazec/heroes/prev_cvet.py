@@ -6,7 +6,14 @@ sys.path.insert(0, '.')
 from hero_common import *
 import eye_open
 from PIL import Image
-m = importlib.import_module(sys.argv[1]); H = m.HERO; tag = sys.argv[2]; views = sys.argv[3:]
+m = importlib.import_module(sys.argv[1]); H = m.HERO; 
+if os.environ.get('OVR'):   # подбор: переопределить числа героя без правки файла, например {"EYE_XZ": [0.07, 0.47], "FORM.Rx": 0.16}
+    import json as _j
+    for k_, v_ in _j.loads(os.environ['OVR']).items():
+        if k_.startswith('FORM.'): d_ = dict(type(H).FORM); d_[k_[5:]] = v_; type(H).FORM = d_
+        else: setattr(type(H), k_, tuple(v_) if isinstance(v_, list) and k_ in ('EYE_XZ', 'EYE_TILT', 'EYE_K') else (V(*v_) if isinstance(v_, list) else v_))
+    if hasattr(H, 'place_face'): H.place_face()
+tag = sys.argv[2]; views = sys.argv[3:]
 VAR = 'base'
 if views and views[0] in ('a', 'o', 'blink'): VAR = views[0]; views = views[1:]
 H.set_var('base'); OPEN = eye_open.opening(H)
@@ -14,7 +21,9 @@ S = H.EYE_S if H.EYE_S is not None else V(1, 1, 1)
 kh, kv = H.EYE_CENTER if isinstance(getattr(H, 'EYE_CENTER', 0), tuple) else (getattr(H, 'EYE_CENTER', 0),) * 2
 IDIR = []
 for (c, _), E in zip(OPEN, H.EYES):
-    if getattr(H, 'EYE_CENTER', 0): yw = math.atan2(c[0], -c[1]) * kh; pt = math.atan2(c[2], -c[1]) * kv; IDIR.append(nrm(V(math.tan(yw), -1, math.tan(pt))))
+    if getattr(H, 'EYE_CENTER', 0):
+        yw = math.atan2(c[0], -c[1]) * kh; pt = math.atan2(c[2], -c[1]) * kv; tl = getattr(H, 'EYE_TILT', (0.0, 0.0)); yw -= math.radians(tl[0]) * np.sign(c[0]); pt += math.radians(tl[1])
+        IDIR.append(nrm(V(math.tan(yw), -1, math.tan(pt))))
     else:
         d = nrm(H.EYE_AIM - E); a = float(getattr(H, 'EYE_DIV', 0)) * np.sign(E[0]); cs, sn = math.cos(a), math.sin(a); IDIR.append(V(d[0] * cs - d[1] * sn, d[0] * sn + d[1] * cs, d[2]))
 for E in H.EYES[:1]:
@@ -46,6 +55,7 @@ VW = {'face': dict(eye=(0.0, -0.95 * k, hz + 0.02), look=(0, 0, hz - 0.005), fov
       'front': dict(eye=(0.0, -2.1 * k, hz * 0.62), look=(0, 0, hz * 0.6), fov=24, W=300, Hh=440), 'f34': dict(eye=(0.95 * k, -1.85 * k, hz * 0.75), look=(0, 0, hz * 0.6), fov=24, W=300, Hh=440),
       'side': dict(eye=(2.1 * k, -0.2 * k, hz * 0.62), look=(0, 0, hz * 0.6), fov=24, W=300, Hh=440)}
 def ss(a, b, x): t = np.clip((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t)
+LBL = {}
 def render(eye, look, fov, W, Hh):
     eye = V(*eye); look = V(*look); fw = nrm(look - eye); rt = nrm(np.cross(fw, V(0, 0, 1))); up = np.cross(rt, fw)
     ys, xs = np.mgrid[0:Hh, 0:W]; t = math.tan(math.radians(fov) / 2)
@@ -58,6 +68,7 @@ def render(eye, look, fov, W, Hh):
         d = scene(o[idx] + dirs[idx] * tt[idx, None]); h = d < 0.0006; hitm[idx[h]] = True; tt[idx] = np.where(h, tt[idx], tt[idx] + np.maximum(d, 0.0008)); live[idx[h]] = False; live[idx[tt[idx] > 6]] = False
     sky = np.linspace(0, 1, Hh)[:, None, None]; img = (V(0.62, 0.78, 0.93)[None, None] * (1 - sky) + V(0.5, 0.72, 0.42)[None, None] * sky) * np.ones((Hh, W, 1), F); img = img.reshape(-1, 3).copy()
     hi = np.nonzero(hitm)[0]
+    lab = np.zeros(len(dirs), np.uint8); LBL['cur'] = (lab, W, Hh)
     if not len(hi): return img.reshape(Hh, W, 3)
     P = o[hi] + dirs[hi] * tt[hi, None]; g = np.zeros_like(P); e = 0.0007
     for kk in range(3): dp = np.zeros(3, F); dp[kk] = e; g[:, kk] = scene(P + dp) - scene(P - dp)
@@ -68,8 +79,9 @@ def render(eye, look, fov, W, Hh):
     b = who == 0
     if b.any():
         Pb = P[b]; reg = H.region_of(Pb); skin, fur = H.colors(Pb, reg, n[b]); ok = H.fur_ok(Pb, reg); base = np.where(ok[:, None], fur, skin)
+        lab[hi[b]] = np.where((reg == 4) | (reg == 8), 6, np.where((reg == 0) | (reg == 5) | (reg == 6) | (reg == 7) | (reg == 9) | (reg == 12), 8, 1))   # 1 голова, 6 ухо, 8 тело
         ring = np.zeros(len(Pb), bool)
-        for E in H.EYES: q = Pb - E; ring |= (np.linalg.norm(q / S, axis=-1) < H.RE * 1.18) & (q[:, 1] < H.RE * 0.16)
+        for E in H.EYES: q = Pb - E; ring |= (np.linalg.norm(q / S, axis=-1) < H.RE * getattr(H, 'EYE_RING_R', 1.18)) & (q[:, 1] < H.RE * 0.16) & ((q[:, 2] > -H.RE * 0.05) if getattr(H, 'EYE_RING_TOP', False) else True)
         base = np.where((ring & ~ok)[:, None], V(*getattr(H, 'EYE_RING', (0.05, 0.035, 0.03)))[None], base)
         ld = np.full(len(Pb), 9.0, F)
         for L in LINES: ld = np.minimum(ld, seg_d(Pb, L))
@@ -86,7 +98,8 @@ def render(eye, look, fov, W, Hh):
     for i, (E, dL) in enumerate(zip(H.EYES, IDIR)):
         q = (P - E) / S; on = (who == 1) & (np.linalg.norm(P - E, axis=-1) < H.RE * 1.3)
         if not on.any(): continue
-        qn = nrm(q[on]); cz = qn @ dL; U0 = nrm(V(0, 0, 1) - dL * dL[2]); upc = (qn @ U0) / max(math.sqrt(1 - K[0] ** 2), .1)
+        qn = nrm(q[on]); cz = qn @ dL; lab[hi[on]] = np.where(cz > K[0], 5, 2)   # 2 белок, 5 радужка
+        U0 = nrm(V(0, 0, 1) - dL * dL[2]); upc = (qn @ U0) / max(math.sqrt(1 - K[0] ** 2), .1)
         I0, I1, I2 = [V(*c) for c in H.IRIS]
         if getattr(H, 'IRIS_STYLE', 0):
             tq = np.clip((K[1] - cz) / max(K[1] - K[0], 1e-3), 0, 1); ir = I1[None] + (I2 - I1)[None] * ss(0.15, -0.85, upc)[:, None]; ir = ir + (I0[None] - ir) * ss(.8, .98, tq)[:, None]
@@ -107,12 +120,14 @@ def render(eye, look, fov, W, Hh):
         if b.any(): col[b] = V(*a.get('col', (0.5, 0.5, 0.5)))[None] * (np.clip((ndl[b] + 0.35) / 1.35, 0, 1) * 0.95 + 0.45 + 0.15 * n[b][:, 2])[:, None]
     # мягкая тень сверху вниз (окклюзия по полю)
     ao = np.clip(scene(P + n * 0.02) / 0.02, 0.35, 1) ** 0.6
+    lab[hi[who == 2]] = 3
+    for j in range(len(ACCS)): lab[hi[who == 3 + j]] = 10 + j
     img[hi] = col * ao[:, None]
     return img.reshape(Hh, W, 3)
 import json as _js
 for vn in list(views):
     if vn.startswith('cam='):
-        e_, l_, f_ = vn[4:].split(':'); VW[vn] = dict(eye=tuple(map(float, e_.split(','))), look=tuple(map(float, l_.split(','))), fov=float(f_), W=600, Hh=600)
+        e_, l_, f_ = vn[4:].split(':'); R_ = int(os.environ.get('RES', 600)); VW[vn] = dict(eye=tuple(map(float, e_.split(','))), look=tuple(map(float, l_.split(','))), fov=float(f_), W=R_, Hh=R_)
 def proj(P, eye, look, fov, W, Hh):
     eye = V(*eye); look = V(*look); fw = nrm(look - eye); rt = nrm(np.cross(fw, V(0, 0, 1))); up = np.cross(rt, fw); d = P - eye; t = math.tan(math.radians(fov) / 2)
     x = (d @ rt) / (d @ fw) / (t * W / Hh); y = (d @ up) / (d @ fw) / t; return [float((x + 1) / 2 * W), float((1 - y) / 2 * Hh)]
@@ -120,7 +135,10 @@ marks = {}
 outs = []
 for vn in views:
     marks[vn] = {'eyes': [proj(E, **VW[vn]) for E in H.EYES], 'nose': proj(H.NOSE_C, **VW[vn])}
-    im = render(**VW[vn]); im = im / (1 + 0.18 * im); im = np.clip(im, 0, 1) ** (1 / 2.2); outs.append(Image.fromarray((im * 255).astype(np.uint8)))
+    if hasattr(H, 'LIP_Z'): marks[vn]['lip'] = proj(H.hit(V(0, -0.6, H.LIP_Z), V(0, 1, 0), 0.8)[0], **VW[vn])
+    im = render(**VW[vn])
+    if os.environ.get('LBL'): lab, w_, h_ = LBL['cur']; Image.fromarray(lab.reshape(h_, w_)).save(os.path.join(os.environ.get('OUT', '.'), '%s_%d_lbl.png' % (tag, views.index(vn))))
+    im = im / (1 + 0.18 * im); im = np.clip(im, 0, 1) ** (1 / 2.2); outs.append(Image.fromarray((im * 255).astype(np.uint8)))
 Wt = sum(x.size[0] for x in outs); Ht = max(x.size[1] for x in outs); sheet = Image.new('RGB', (Wt, Ht), (255, 255, 255)); x = 0
 for im in outs: sheet.paste(im, (x, 0)); x += im.size[0]
 sheet.save(os.path.join(os.environ.get('OUT', '.'), '%s.jpg' % tag), quality=92)

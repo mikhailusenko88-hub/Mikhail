@@ -460,7 +460,7 @@ async function buildTemplate(name) {
         const U0 = new THREE.Vector3(0, 1, 0).addScaledVector(dL, -dL.y).normalize(), S = new THREE.Vector3().crossVectors(U0, dL).normalize(); const inSgn = Math.sign(-c.x) * Math.sign(S.x) || 1;
         const [bi, bo, ba] = BROW[k], pts = [];
         for (let j = 0; j < 9; j++) { const u = j / 8 * 2 - 1, wi = (1 + u * inSgn) / 2, arch = 1 - u * u;
-          const q = c.clone().addScaledVector(dL, RE2 * .55).addScaledVector(U0, RE2 * ((BQ.up != null ? BQ.up : 1.32) + .14 * arch + (bi * wi + bo * (1 - wi) + ba * arch))).addScaledVector(S, u * RE2 * (BQ.w != null ? BQ.w : .82) + (k === 'frown' ? -inSgn * wi * RE2 * .08 : 0));
+          const q = c.clone().addScaledVector(dL, RE2 * .55).addScaledVector(U0, RE2 * ((BQ.up != null ? BQ.up : 1.32) + .14 * arch + ((bi + (BQ.tilt || 0)) * wi + bo * (1 - wi) + ba * arch))).addScaledVector(S, u * RE2 * (BQ.w != null ? BQ.w : .82) + (k === 'frown' ? -inSgn * wi * RE2 * .08 : 0));
           pts.push(snap(q, Lf * .75 + .0016 * sc)); }
         if (!bcol && HF) { const i = near(pts[4]), f = [HF[i * 5] / 255, HF[i * 5 + 1] / 255, HF[i * 5 + 2] / 255], lum = .3 * f[0] + .55 * f[1] + .15 * f[2];   // на светлой шерсти — темнее шерсти, на тёмной (Рон) — светлее, иначе бровей не видно
           bcol = lum < .14 ? f.map((x, j) => Math.min(.55, x * 2.4 + [.12, .1, .08][j])) : f.map(x => x * .4); }
