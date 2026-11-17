@@ -18,3 +18,11 @@
     gcc -O2 -o sim_frog sim_frog.c -lm
     ./sim_frog sim_frog.bin events_frog.txt 3 0.9 900 0 11 30 1200 10.5 1.6 4.8 120   # последний аргумент — шариков на старте
     python3 render_frog.py out.mp4                                                    # 14 с
+
+## Медведь с музыкой (H27, 18.11.2026) — своя мелодия, шарики рождаются на каждую восьмую
+    python3 music_bear.py bear_music.wav bear_notes.txt          # мелодия: 2 круга с ускорением, мажор на «пыке»
+    python3 ../ear/studio/enc.py bear_music.wav bear_music.m4a -14   # −14 LUFS (ветка muzyka-sluh)
+    gcc -O2 -o sim_bear sim_bear.c -lm
+    ./sim_bear sim_bear.bin events_bear.txt 3 0.9 900 0 11 30 1140 18.25 1.3 8.5 120 bear_grid.txt   # роды только на сетке восьмых
+    python3 render_bear.py out.mp4                                # 16,6 с, звук из bear_music.m4a
+«Уши» (ветка muzyka-sluh, medved_krug_v2): плач 26, свет 61, CLAP радость 0,41 / меланхолия 0,40, шипение −89 дБ, плотность 0,00001.
