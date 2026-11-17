@@ -61,3 +61,4 @@
 | shorts | 2026-11-16 | 1 | Brazil vs Mexico vs Japan | https://youtube.com/shorts/AWf2qlc50Ns | public (только Shorts) |
 | shorts | 2026-11-16 | 2 | USA vs UK vs Spain | https://youtube.com/shorts/uuZV0vOhDr0 | public (только Shorts) |
 | shorts | 2026-11-16 | 3 | Nigeria vs Kazakhstan vs Georgia | https://youtube.com/shorts/HeDgNql7_JM | public (только Shorts) |
+| shorts | 2026-11-17 | 1 | Egypt vs Italy vs Romania | https://youtube.com/shorts/azywoQy806U | public (только Shorts) |
