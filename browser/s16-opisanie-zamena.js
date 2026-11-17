@@ -85,10 +85,11 @@ async function job(art, id, a, b) {
   try {
     L('=== запуск ===', location.pathname);
     if (WAIT15) {
-      const end = () => /(ВСЁ|ОШИБКА)\s*$/.test((SS.getItem('nd_log15') || '').trim());
+      const end = () => { const t = (SS.getItem('nd_log15') || '').trim(); return /ВСЁ$/.test(t) || /\d ОШИБКА/.test(t); };
       const ok = await until(end, 9 * 60000, 1500);
       const log15 = (SS.getItem('nd_log15') || '').trim(), day15 = SS.getItem('nd_day15') || '';
-      if (!ok || !/ВСЁ\s*$/.test(log15)) { L('СТОП: обход s15 не дошёл до конца — описания не трогаю. Конец его журнала:', log15.slice(-200)); return; }
+      if (!ok || !/ВСЁ$/.test(log15)) { L('СТОП: обход s15 не дошёл до конца — описания не трогаю. Конец его журнала:', log15.slice(-200)); return; }
+      if (/БЛОК на/.test(log15) || /!! блок на|кабинет: блок|»: блок/.test(day15)) { L('СТОП: в обходе Авито показал блок — описания не трогаю'); return; }
       if (/ВХОД:\s*НЕТ/i.test(day15)) { L('СТОП: обход шёл без входа в кабинет — описания не трогаю'); return; }
       L('обход закончен, начинаю правку описаний');
       await sleep(2500);
