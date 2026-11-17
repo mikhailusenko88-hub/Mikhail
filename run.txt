@@ -1,10 +1,6 @@
 # имя  аргументы для scene.py (или "py script.py")
-# 17.11.2026 — пробник режима «Фото» для расчёта стены на сайте: ТВ-зона, вид под углом; маска стены для перекраски
-ph0_37 scene=lounge tv=1 cam=angle decor=3-7 tex=strip chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
-ph0_37v scene=lounge tv=1 cam=angle decor=3-7 chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
-ph0_a910 scene=lounge tv=1 cam=angle decor=A910 chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
-ph0_a907 scene=lounge tv=1 cam=angle decor=A907 chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
-ph0_a913 scene=lounge tv=1 cam=angle decor=A913 chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
-ph0_mask scene=lounge tv=1 cam=angle decor=A907 mask=1 chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 res=800x600
-ph0_front scene=lounge tv=1 cam=main decor=A910 cabcol=C9B8A0 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
-ph0_510 scene=lounge tv=1 cam=angle decor=5-10 tex=strip chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
+# 17.11.2026 — пробник режима «Фото»: рейки под дерево (повтор после исправления импорта)
+ph1_37 scene=lounge tv=1 cam=angle decor=3-7 tex=strip chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
+ph1_37v scene=lounge tv=1 cam=angle decor=3-7 chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
+ph1_510 scene=lounge tv=1 cam=angle decor=5-10 tex=strip chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08
+ph1_212 scene=lounge tv=1 cam=angle decor=2-12 tex=strip chair_at=3.9,0.6 cabcol=C9B8A0 ax=4.0 ay=2.7 lx=1.6 lens=32 sun_az=32 sun_el=52 ev=-0.4 view=Khronos_PBR_Neutral look=None res=800x600 samples=48 noise=0.08

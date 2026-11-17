@@ -1153,6 +1153,8 @@ def panel_wall(x0, x1, z_top, y_wall, zbot=None):
     if key:
         return profile_wall('panels', [(float(x), float(h)) for x, h in profs[key]], x0, x1, z_top, y_wall, paint())
     m_black = mat_simple('pan_black', (0.007, 0.007, 0.008, 1), rough=0.8, **{'Specular IOR Level': 0.25})
+    if ROOT not in sys.path:
+        sys.path.insert(0, ROOT)
     import slat_profile
     ser = int(DECOR.split('-')[0]) if DECOR[:1] in '235' and '-' in DECOR else 3
     step, lam = slat_profile.SERIES[ser]
