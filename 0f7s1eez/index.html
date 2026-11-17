@@ -568,6 +568,8 @@ function renderContacts(){
     `<div class="c"><div><div class="eyebrow">Телефон</div><span>Перезвоним вам</span></div><button class="btn sm ghost" type="button" id="callMe">Заказать звонок</button></div>` +
     c.map(([k,v,key,i]) => key === "max"
       ? `<div class="c"><div><div class="eyebrow">${k}</div><span>Бот «Наш декор» — вопросы и заявки</span></div><a class="btn sm ghost" href="${v}" target="_blank" rel="noopener" data-max>Написать</a></div>`
+      : key === "telegram"
+      ? `<div class="c"><div><div class="eyebrow">${k}</div><span>Бот «Наш декор» в Telegram — вопросы и заявки</span></div><a class="btn sm ghost" href="${v}" target="_blank" rel="noopener" data-tg>Написать</a></div>`
       : key === "channel"
       ? `<div class="c"><div><div class="eyebrow">${k}</div><span>Канал «Наш декор» — панели, плинтусы и молдинги в интерьере</span></div><a class="btn sm ghost" href="${v}" target="_blank" rel="noopener" data-channel>Подписаться</a></div>`
       : key === "avito"
@@ -744,7 +746,7 @@ if (hitOn) {
     const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { hit("sec", e.target.dataset.sec); io.unobserve(e.target); } }), { threshold: 0.6 });
     document.querySelectorAll("main section[id]").forEach(sec => { const h = sec.querySelector("h2"); if (h) { h.dataset.sec = sec.id; io.observe(h); } });
   }
-  document.addEventListener("click", e => { if (e.target.closest("a[data-avito]")) hit("copy", "avito"); if (e.target.closest("a[data-max]")) hit("copy", "max"); if (e.target.closest("a[data-channel]")) hit("copy", "channel"); }, true);
+  document.addEventListener("click", e => { if (e.target.closest("a[data-avito]")) hit("copy", "avito"); if (e.target.closest("a[data-max]")) hit("copy", "max"); if (e.target.closest("a[data-tg]")) hit("copy", "telegram"); if (e.target.closest("a[data-channel]")) hit("copy", "channel"); }, true);
   document.addEventListener("click", e => {
     const t = e.target.closest("button"); if (!t) return;
     const d = t.dataset;
@@ -1398,5 +1400,5 @@ window.__w3 = W3; W3.init();
     tb.classList.toggle("stuck", r.top <= 62.5 && g.bottom > r.bottom + 40); }); }, { passive: true }); })();
 </script>
 
-<script src="assets/chat.js?v=202611162013" defer></script>
+<script src="assets/chat.js?v=202611171732" defer></script>
 </body></html>
