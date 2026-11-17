@@ -48,8 +48,10 @@ jobs:
           VOICE: ${{ github.workspace }}/mv
         run: |
           export ENGINE="$(cut -d' ' -f1 engine.txt)"
-          node studio.js "scripts/${{ steps.req.outputs.name }}.txt" out ${{ steps.req.outputs.opts }} 2> out/stderr.txt || echo "сборка не закончена"
-          tail -5 out/log.txt
+          case "${{ steps.req.outputs.opts }}" in
+            *only=elements*) echo "только элементы обложки — серию не собираем" ;;
+            *) node studio.js "scripts/${{ steps.req.outputs.name }}.txt" out ${{ steps.req.outputs.opts }} 2> out/stderr.txt || echo "сборка не закончена"; tail -5 out/log.txt ;;
+          esac
       - name: Элементы обложки
         env:
           ENG: ${{ github.workspace }}/eng
@@ -68,10 +70,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="studio-${{ steps.req.outputs.name }}"; ls ep-*.mp4 >/dev/null 2>&1 || exit 0
+          TAG="studio-${{ steps.req.outputs.name }}"; ls ep-*.mp4 >/dev/null 2>&1 || ls elementy.zip >/dev/null 2>&1 || exit 0
           (cd out/files 2>/dev/null && zip -q -r ../../golosa.zip voices) || true
           gh release delete "$TAG" -y --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" --target studio --prerelease --title "Студия: ${{ steps.req.outputs.name }}" --notes "Пробная сборка студии (не опубликовано на YouTube). Движок: $(cat engine.txt)" ep-*.mp4 $(ls golosa.zip elementy.zip 2>/dev/null)
+          gh release create "$TAG" --target studio --prerelease --title "Студия: ${{ steps.req.outputs.name }}" --notes "Пробная сборка студии (не опубликовано на YouTube). Движок: $(cat engine.txt)" $(ls ep-*.mp4 golosa.zip elementy.zip 2>/dev/null)
       - name: Итог — в ветку
         if: always()
         run: |
