@@ -1,10 +1,5 @@
 # имя | адрес | desktop|mobile | js
-# 17.11.2026 03:25 — 3D-стена: новые обстановки и белые фото без разводов
-wall-tv-m | https://nashdekor.ru/?s=21 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,-60)
-wall-menu-m | https://nashdekor.ru/?s=22 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,-60); document.querySelector('#stage [data-scene]').click()
-wall-light-m | https://nashdekor.ru/?s=23&panel=A910 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,-60); __w3.scene('tvlight')
-wall-fire-d | https://nashdekor.ru/?s=24&panel=3-7 | desktop | document.getElementById('calc').scrollIntoView(); __w3.scene('tvfire'); document.querySelector('[data-view="side"]').click()
-wall-bed-d | https://nashdekor.ru/?s=25&panel=3-9 | desktop | document.getElementById('calc').scrollIntoView(); __w3.scene('bed')
-photo-a913-m | https://nashdekor.ru/p/a913/?s=26 | mobile | document.querySelector('[data-v="photo"]').click()
-photo-a88-d | https://nashdekor.ru/p/a88/?s=27 | desktop | document.querySelector('[data-v="photo"]').click()
-cat-paneli-m | https://nashdekor.ru/catalog/stenovye-paneli/?s=28 | mobile | window.scrollBy(0,500)
+# 17.11.2026 — служебная страница визуализаций
+viz-m | https://nashdekor.ru/vizual/?s=31 | mobile | 
+viz-lb-m | https://nashdekor.ru/vizual/?s=32 | mobile | setTimeout(()=>{document.querySelector('figure').click()},1500)
+main-calc-m | https://nashdekor.ru/?s=33 | mobile | document.getElementById('stage').scrollIntoView(); window.scrollBy(0,-60)
