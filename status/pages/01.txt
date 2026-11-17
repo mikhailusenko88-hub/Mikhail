@@ -1,147 +1,36 @@
-URL: https://nashdekor.ru/p/a703/
+URL: https://max.ru/id470331302505_biz
 КОД: 200
 ЗАГОЛОВКИ:
-Server: nginx
-Date: Tue, 17 Nov 2026 06:48:55 GMT
+Server: kittenx
+Date: Tue, 17 Nov 2026 06:52:01 GMT
 Content-Type: text/html; charset=utf-8
-Content-Length: 27458
-Last-Modified: Tue, 17 Nov 2026 06:48:03 GMT
+Content-Length: 13346
 Connection: close
 Vary: Accept-Encoding
-ETag: "6afbf8a3-6b42"
-Expires: Thu, 01 Jan 1970 00:00:01 GMT
-Cache-Control: no-cache
-Strict-Transport-Security: max-age=15552000
-X-Content-Type-Options: nosniff
-Content-Security-Policy: frame-ancestors 'self' https://max.ru https://*.max.ru https://*.oneme.ru
-Referrer-Policy: strict-origin-when-cross-origin
-Accept-Ranges: bytes
+Vary: Accept-Encoding
+etag: "npw796"
+link: <./_app/immutable/assets/0.9JB6QHOA.css>; rel="preload"; as="style"; nopush, <./_app/immutable/assets/TechLandingButton.Dr--mBck.css>; rel="preload"; as="style"; nopush, <./_app/immutable/assets/2.C0W_aNDV.css>; rel="preload"; as="style"; nopush, <./_app/immutable/assets/8.CdSTarIR.css>; rel="preload"; as="style"; nopush, <./_app/immutable/entry/start.cwFE94c_.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/D7DC7O5L.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/Cjhe2CaW.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/DUJR7jYO.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/CKaaOAzO.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/D0iwhpLH.js>; rel="modulepreload"; nopush, <./_app/immutable/entry/app.CYmTN9GG.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/PPVm8Dsz.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/DsnmJJEf.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/MxraB5uh.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/BKLMIckG.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/jcZ0UKhe.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/C-6ETNAV.js>; rel="modulepreload"; nopush, <./_app/immutable/nodes/0.jRWmcl8R.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/BdVh24-X.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/C8aSf9Y1.js>; rel="modulepreload"; nopush, <./_app/immutable/nodes/2.DYH4avO6.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/DsfYL9TC.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/BnYnSLks.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/BkDkuitc.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/CM_BKnh_.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/CNrzhEgY.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/NoZ7Ut4U.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/79-mXssI.js>; rel="modulepreload"; nopush, <./_app/immutable/nodes/8.BOny7W0z.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/BJR5yr2g.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/D7Pm3tlp.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/iiAc3By5.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/CCtBMWdH.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/34EJXlfS.js>; rel="modulepreload"; nopush
+x-sveltekit-page: true
+Referrer-Policy: origin
 
-Плинтус напольный белый под покраску 80 мм, ударопрочный влагостойкий, 80×15×2000 мм — A703 | Наш декор Стеновые панели Плинтусы Расчёт стены Статьи Доставка Заявка Заказать 
- Главная Плинтусы A703 Плинтус напольный белый под покраску 80 мм, ударопрочный влагостойкий, 80×15×2000 мм — A703
- высота 80 мм, 80×15×2000 мм, дюрополимер, ударопрочный, влагостойкий, под покраску — белый
- 3D · фрагмент 3D · вся длина 2 м Фото 
- 3D не запускается в этом браузере — посмотрите фото.
- Фото
- Профиль (сечение)
- Сечение плинтуса в масштабе: высота 80 мм, толщина 15 мм (верх плинтуса слева, стена снизу). Контур снят с каталога производителя.
- Характеристики
- Артикул
- A703
- Тип
- Плинтус напольный
- Ширина
- 80 мм
- Толщина
- 15 мм
- Длина
- 2000 мм
- В коробке
- 28 шт
- Материал
- дюрополимер
- Покрытие
- белый грунт, под покраску
- Производитель
- ARTDEC (ТОО «Art Dec», Алматы, Казахстан)
- Система качества производителя
- сертифицирована по ISO 9001:2015
- 3D-модель этого профиля для 3ds Max, SketchUp, ArchiCAD и Revit — пришлём дизайнерам бесплатно 
- О товаре
- A703 — напольный плинтус ARTDEC из дюрополимера под покраску высотой 80 мм, толщина 15 мм, длина 2 м. Не крошится, не боится влажной уборки; красится в цвет стен, дверей или в контраст.
- Монтаж на клей (жидкие гвозди), углы запиливаются под 45°. Сколько нужно: периметр комнаты без дверных проёмов ÷ 2 м, плюс запас 10% на подрезку. В коробке 28 шт.
- 475 ₽ за штуку · 28 шт в коробке 
- Под заказ, 3–4 недели
- Количество − шт + 
- Взять коробкой — 28 шт Итого, предварительно — 
- Купить Запросить расчёт 
- Цена без НДС. Точную стоимость, наличие и доставку подтвердим в ответ на заявку.
- Отправляем в Москву и любой регион транспортной компанией · самовывоз в СПб бесплатно
- С этим берут
- Что обычно докупают вместе с A703 (плинтус напольный): закрыть торцы панелей на внешнем углу; рамки и панно на соседней стене; стык стены и потолка.
- Потолочный плинтус
- A172
- 71×71×2000 мм, дюрополимер, ударопрочный, влагостойкий, под покраску — белый
- 1 095 ₽ за шт · 16 шт в коробке Под заказ, 3–4 недели 
- Уголок декоративный
- A116
- 22×22×2000 мм, для внешних углов и торцов стеновых панелей, дюрополимер, под покраску — белый
- 460 ₽ за шт · 72 шт в коробке Под заказ, 3–4 недели 
- Молдинг для стен
- A35
- 25×12×2000 мм, дюрополимер, ударопрочный, влагостойкий, под покраску — белый
- 210 ₽ за шт · 120 шт в коробке Под заказ, 3–4 недели 
- Ещё в разделе «Плинтусы»
- Плинтус напольный
- A004
- высота 119 мм, 119×14×2000 мм, дюрополимер, ударопрочный, влагостойкий, под покраску — белый
- 780 ₽ за шт · 19 шт в коробке Под заказ, 3–4 недели 
- Плинтус напольный
- A005
- высота 80 мм, 80×14×2000 мм, дюрополимер, ударопрочный, влагостойкий, под покраску — белый
- 525 ₽ за шт · 26 шт в коробке Под заказ, 3–4 недели 
- Плинтус напольный
- A15
- высота 99 мм, 99×14×2000 мм, дюрополимер, ударопрочный, влагостойкий, под покраску — белый
- 610 ₽ за шт · 22 шт в коробке Под заказ, 3–4 недели 
- Плинтус напольный
- A122
- высота 78 мм, 78×21×2000 мм, дюрополимер, ударопрочный, влагостойкий, под покраску — белый
- 685 ₽ за шт · 22 шт в коробке Под заказ, 3–4 недели 
- Плинтус напольный
- A701
- высота 100 мм, 100×14×2000 мм, дюрополимер, ударопрочный, влагостойкий, под покраску — белый
- 625 ₽ за шт · 22 шт в коробке Под заказ, 3–4 недели 
- Плинтус напольный
- A702
- высота 150 мм, 150×22×2000 мм, дюрополимер, ударопрочный, влагостойкий, под покраску — белый
- 1 170 ₽ за шт · 14 шт в коробке Под заказ, 3–4 недели 
- Весь раздел 
- Заявка
- Ответим с ценой, наличием и сроком в рабочее время. Быстрее всего — написать в чат (кнопка «Чат» внизу справа) или заказать обратный звонок — перезвоним сами.
- Оставьте номер — перезвоним в рабочее время, расскажем про наличие, цену и доставку. Укажите в комментарии, когда удобно принять звонок.
- Менеджер подтвердит наличие и стоимость доставки и пришлёт ссылку на оплату картой или через СБП — оплата до отгрузки, электронный чек придёт на e-mail. Компаниям и ИП — счёт. Самовывоз со склада в СПб — бесплатно. Об оплате и возврате 
- Плинтус напольный A703 Количество: 1 шт · — · цвет и количество подставятся автоматически
- Заявка узнать цену, срок и наличие Купить оформить заказ Звонок перезвоним вам 
- Имя Телефон или мессенджер 
- E-mail — пришлём расчёт письмом (необязательно) Получение Доставка по адресу Самовывоз со склада, СПб 
- Кто вы Делаю ремонт у себя Дизайнер Ремонтная бригада Компания, объект Комментарий Я даю согласие на обработку персональных данных и ознакомлен с Политикой обработки персональных данных и условиями продажи 
- Отправить заявку 
- Наш декор · Санкт-Петербург · Мы на Авито · Канал в MAX ИП Усенко Юлия Валерьевна · ОГРНИП 326784700412203 · ИНН 470331302505 Стеновые панели Реечные панели Под дерево и бетон Плинтусы Плинтус с подсветкой Потолочный плинтус Молдинги Уголки Статьи Доставка в Москву и по России Оплата и возврат Оферта Политика конфиденциальности Согласие на обработку данных
+Наш декор — стеновые панели и молдинги в мессенджере MAX 
+ Наш декор — стеновые панели и молдинги
+ @id470331302505_biz
+ Стеновые реечные панели под покраску и под дерево, плинтусы и молдинги. Санкт-Петербург и Ленобласть, отправка по России. Каталог и расчёт стены в 3D — nashdekor.ru. Цены, наличие и заказ — в боте «Наш декор»: max.ru/id470331302505_bot 
+ Перейти в канал Открыть в браузере 
+ Если у вас установлено приложение, 
+вы можете сразу перейти в канал
 
 ССЫЛКИ:
-../../
-../../apple-touch-icon.png
-../../assets/brand.css?v=202611170946
-../../assets/fonts/inter-400.woff
-../../assets/p.css?v=202611170946
-../../catalog/karnizy/
-../../catalog/moldingi/
-../../catalog/paneli-pod-derevo/
-../../catalog/plintus-s-podsvetkoy/
-../../catalog/plintusy/
-../../catalog/reechnye-paneli/
-../../catalog/stenovye-paneli/
-../../catalog/ugolki/
-../../consent.html
-../../dostavka/
-../../favicon.ico
-../../icon.svg
-../../img/2x/A703_2.jpg
-../../img/2x/A703_3.jpg
-../../oferta.html
-../../oplata/
-../../p/a004/
-../../p/a005/
-../../p/a116/
-../../p/a122/
-../../p/a15/
-../../p/a172/
-../../p/a35/
-../../p/a701/
-../../p/a702/
-../../privacy.html
-../../stati/
-https://max.ru/id470331302505_biz
-https://nashdekor.ru/p/a703/
-https://www.avito.ru/brands/41c3cda03dbcc4779122153b28a75b36
+./_app/immutable/assets/0.9JB6QHOA.css
+./_app/immutable/assets/2.C0W_aNDV.css
+./_app/immutable/assets/8.CdSTarIR.css
+./_app/immutable/assets/TechLandingButton.Dr--mBck.css
+/apple-touch-icon.png
+/favicon.ico
+/favicon.svg
+/manifest.json
+android-app://ru.oneme.app/https/play.google.com/store/apps/details?id=ru.oneme.app
+https://max.ru
+https://web.max.ru/id470331302505_biz
+max://max.ru/id470331302505_biz
