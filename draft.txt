@@ -1,4 +1,4 @@
 # черновики (быстрая дорожка, .github/workflows/draft.yml): имя  аргументы для scene.py
-y2_bedd_a910 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 lens=40 calfile=cal_photo.json ev=-1.1 use=bed decor=A910 campos=3.7,3.5,1.15 camto=2.95,5.2,0.9
-y2_halld_a910 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 lens=40 calfile=cal_photo.json ev=-1.1 use=hall decor=A910 campos=3.95,3.6,1.25 camto=2.9,5.2,1.0
-y2_halld_37 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 lens=40 calfile=cal_photo.json ev=-1.1 use=hall decor=3-7 tex=strip campos=3.95,3.6,1.25 camto=2.9,5.2,1.0
+y3_cord_a910 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 calfile=cal_cor.json use=cor decor=A910 campos=3.4,0.35,1.35 camto=5.3,1.5,1.05 lens=32 ev=-2.2
+y3_cord_37 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 calfile=cal_cor.json use=cor decor=3-7 tex=strip campos=3.4,0.35,1.35 camto=5.3,1.5,1.05 lens=32 ev=-2.2
+y3_cord_a905 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 calfile=cal_cor.json use=cor decor=A905 campos=3.4,0.35,1.35 camto=5.3,1.5,1.05 lens=32 ev=-2.2
