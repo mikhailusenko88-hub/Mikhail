@@ -6,6 +6,7 @@
   plan  <релиз> <серия> <ГГГГ-ММ-ДДTЧЧ:ММ> — загрузить закрытой и поставить таймер выхода (время московское)
   short <релиз> <серия> <ГГГГ-ММ-ДДTЧЧ:ММ> — Shorts этой серии (ep-<релиз>-shorts.mp4) с таймером выхода; полная серия уже должна быть загружена
   cancel <id ролика>                     — снять таймер выхода (ролик остаётся закрытым)
+  retime <id ролика> <ГГГГ-ММ-ДДTЧЧ:ММ>  — перенести таймер выхода закрытого ролика (время московское)
   stats                                  — последние ролики канала: просмотры, статус
   lang [сколько] [от скольки секунд]     — старым полным сериям проставить русский язык и категорию «Фильмы и анимация» (текст не меняется, Shorts не трогает)
 <релиз> — имя сборки студии (релиз studio-<релиз>, файл ep-<релиз>.mp4); название, описание и обложка — со страницы
@@ -121,7 +122,7 @@ def short(yt, a, rel, num, it, body_when, last, pe):
 def main():
     a = request_line()
     mode = a[0] if a else ""
-    if mode not in ("check", "draft", "plan", "short", "cancel", "stats", "lang"):
+    if mode not in ("check", "draft", "plan", "short", "cancel", "stats", "lang", "retime"):
         return finish([f"НЕ ПОНЯЛ строку publish.txt: {' '.join(a)}"])
     if mode in ("draft", "plan", "short"):
         rel, num = a[1], a[2]
@@ -151,6 +152,10 @@ def main():
                        "последний: " + (f"{vids[0]['title'][:70]} — {vids[0]['views']} просмотров, категория {vids[0]['category']}, для детей: {vids[0]['kids']}" if vids else "—")])
     if mode == "cancel":
         return finish([f"ОТМЕНА {a[1]}: {yt.cancel(a[1])}"])
+    if mode == "retime":                                       # перенести таймер: retime <id ролика> <ГГГГ-ММ-ДДTЧЧ:ММ>
+        at, human = when_utc(a[2])
+        ok, msg = yt.retime(a[1], at)
+        return finish([("ТАЙМЕР ПЕРЕНЕСЁН" if ok else "ТАЙМЕР НЕ ПЕРЕНЕСЁН") + f": https://youtu.be/{a[1]} — выйдет {human}" if ok else f"ТАЙМЕР НЕ ПЕРЕНЕСЁН: https://youtu.be/{a[1]}", msg])
     if mode == "lang":                                         # старым полным сериям — русский язык и категория «Фильмы и анимация» (разрешил Михаил 17.11.2026)
         done, skip, shorts, errs = yt.set_lang(limit=int(a[1]) if len(a) > 1 and a[1].isdigit() else 30,      # «lang 1» — сначала одна серия на пробу
                                                min_sec=int(a[2]) if len(a) > 2 and a[2].isdigit() else 180)   # «lang 5 60» — и короткие серии-части (не Shorts)

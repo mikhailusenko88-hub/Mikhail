@@ -421,6 +421,21 @@ class YT:
         items = r.json().get("items", []) if r.status_code == 200 else []
         return {**items[0]["status"], "processing": items[0].get("processingDetails", {}).get("processingStatus")} if items else {}
 
+    def retime(self, vid, publish_at):
+        """Перенести таймер выхода закрытого ролика. Уже вышедший ролик не трогаем."""
+        st = self.status(vid)
+        if not st:
+            return False, "ролик не найден"
+        if st.get("privacyStatus") != "private" or not st.get("publishAt"):
+            return False, f"ролик {st.get('privacyStatus')}, таймера нет — не трогаю"
+        body = {"id": vid, "status": {"privacyStatus": "private", "publishAt": publish_at, "selfDeclaredMadeForKids": bool(st.get("selfDeclaredMadeForKids", True)),
+                                       "embeddable": st.get("embeddable", True), "license": st.get("license", "youtube")}}
+        r = requests.put(f"{API}/videos", params={"part": "status"}, headers=self.h({"Content-Type": "application/json"}), data=json.dumps(body), timeout=30)
+        if r.status_code != 200:
+            return False, f"не перенёсся: {r.status_code} {r.text[:200]}"
+        now = self.status(vid)
+        return now.get("privacyStatus") == "private" and (now.get("publishAt") or "")[:16] == publish_at[:16], f"было {st.get('publishAt')}, стало {now.get('publishAt')}, {now.get('privacyStatus')}"
+
     def cancel(self, vid):
         """Снять таймер выхода: ролик остаётся закрытым. Уже вышедший ролик этим не закрывается — только по отдельной просьбе Михаила."""
         st = self.status(vid)
