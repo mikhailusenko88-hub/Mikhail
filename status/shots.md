@@ -1,7 +1,6 @@
-# Скриншоты сайта — 2026-11-17 12:10 UTC
+# Скриншоты сайта — 2026-11-17 14:23 UTC
 
-- **viz3-m** mobile https://nashdekor.ru/vizual/?s=51 — ok
-- **viz3-hall-m** mobile https://nashdekor.ru/vizual/?s=52 — ok
-- **viz3-hall-col-d** desktop https://nashdekor.ru/vizual/?s=53 — ok
-- **viz3-sofa2-col-d** desktop https://nashdekor.ru/vizual/?s=54 — ok
-- **viz3-sofa1-col-m** mobile https://nashdekor.ru/vizual/?s=55 — ok
+- **viz4-m** mobile https://nashdekor.ru/vizual/?s=61 — ok
+- **viz4-tvd-lb-m** mobile https://nashdekor.ru/vizual/?s=62 — ok
+- **viz4-tvd-col-m** mobile https://nashdekor.ru/vizual/?s=63 — ok
+- **viz4-tvd-col-d** desktop https://nashdekor.ru/vizual/?s=64 — ok
