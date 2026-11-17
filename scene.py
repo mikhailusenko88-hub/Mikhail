@@ -1956,11 +1956,11 @@ def scene_use():
         W, D, H = 6.2, 1.5, 2.7
         room(W, D, H, win=(0.2, 1.3, 0.06, 2.4), m_wall=m_wall, m_floor=m_floor, m_ceil=m_ceil)
         panel_wall(0.0, W, H, D)
-        for k, x0 in enumerate((1.75, 4.05)):
+        for k, x0 in enumerate((2.55, 4.60)):
             door_y(f'door{k}', x0, x0 + 0.82, m_door)
         door_x('door_end', W, 0.34, 1.16, m_door)
         mp = mat_simple('plinth2', srgb(240, 240, 238), rough=0.4)
-        for k, (a, b) in enumerate(((0.0, 1.68), (2.64, 3.98), (4.94, W))):
+        for k, (a, b) in enumerate(((0.0, 2.48), (3.44, 4.53), (5.49, W))):
             box(f'plinth_f{k}', a, b, 0.0, 0.013, 0.0, 0.08, mp, bevel=0.002)
         box('runner', 0.6, 5.7, 0.40, 1.10, 0.0, 0.01, m_rug, bevel=0.003)
         load_asset('potted_plant_02', loc=(5.9, 0.30, 0), rot=20)
