@@ -1,0 +1,80 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 98,
+  "title": "Проба голосов",
+  "scenes": 2,
+  "errors": [],
+  "unknownWords": [
+   {
+    "word": "сравнения",
+    "sentence": "Для сравнения — Рон"
+   },
+   {
+    "word": "сейчас",
+    "sentence": "Топа, как сейчас"
+   },
+   {
+    "word": "вариант",
+    "sentence": "Топа, вариант три"
+   }
+  ],
+  "unknownObjects": [],
+  "unknownNames": []
+ },
+ "video": {
+  "name": "Кот Барсик - 98. Проба голосов",
+  "path": "video/Кот Барсик - 98. Проба голосов.mp4",
+  "frames": 1669,
+  "sec": 195,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 66.731,
+  "video": "video/Кот Барсик - 98. Проба голосов.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "6f535e7",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 34.4,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 20,
+   "e": 87,
+   "b": 9,
+   "w": 1,
+   "n": 1660,
+   "at": 1660,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 9,
+  "ttsFail": 0,
+  "voice": 8,
+  "voiceFail": 0,
+  "voiceSec": 5,
+  "ttsSec": 6,
+  "frames": 1669,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -18.7,
+  "lufs_out": -15.1,
+  "gain_db": 3.7
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 227,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
