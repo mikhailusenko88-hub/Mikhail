@@ -144,9 +144,16 @@ async function elements(page, start) {
   await page.waitForFunction(() => typeof Lib !== 'undefined' && Lib.data && window.MK3D && MK3D.ready, null, { timeout: 180000 });
   const gl = await page.evaluate(() => { const c = document.createElement('canvas'), g = c.getContext('webgl2') || c.getContext('webgl'); if (!g) return 'нет WebGL'; const e = g.getExtension('WEBGL_debug_renderer_info'); return e ? g.getParameter(e.UNMASKED_RENDERER_WEBGL) : '?'; });
   log('страница готова; видеокарта:', gl);
-  const start = await page.evaluate(async ([txt, q, res, fps, only]) => {
+  const start = await page.evaluate(async ([txt, q, res, fps, only, gol, fxs]) => {
     const R = MKScript.parse(txt, Lib.data); if (!R.episodes || !R.episodes.length) return { err: 'в сценарии нет серий', errors: R.errors };
     const ep = R.episodes[0], v = await Lib.importText(JSON.stringify(ep), true); if (v && v.errors && v.errors.length) return { err: v.errors };
+    // пробы голосов: --golos=Имя:тип[:P=1.1:F=1.2:T=.95:R=1.2][,…] — паспорт нейроголоса из каталога BARSGolos.CATALOG; --fx=Имя:тембр[,…] — тембр голоса iPhone (MK.VOICE_FX)
+    const probe = [], byName = nm => Object.keys(Lib.data.characters).find(k => ((Lib.data.characters[k].spec || {}).name || '') === nm);
+    for (const part of (gol || '').split(',').filter(Boolean)) { const [nm, type, ...kv] = part.split(':'), id = byName(nm), cat = typeof BARSGolos !== 'undefined' && BARSGolos.CATALOG && BARSGolos.CATALOG[type];
+      if (!id || !cat) { probe.push(nm + ': НЕ ПРИМЕНЁН (' + (!id ? 'нет героя' : 'нет голоса «' + type + '»') + ')'); continue; }
+      const g = Object.assign({}, cat); delete g.name; for (const x of kv) { const [k, v] = x.split('='); g[k] = isNaN(+v) ? v : +v; } Lib.data.characters[id].golos = g; probe.push(nm + ': ' + JSON.stringify(g)); }
+    for (const part of (fxs || '').split(',').filter(Boolean)) { const [nm, preset] = part.split(':'), id = byName(nm);
+      if (!id || !MK.VOICE_FX[preset]) { probe.push(nm + ': тембр НЕ ПРИМЕНЁН'); continue; } Lib.data.characters[id].fx = { preset }; probe.push(nm + ': тембр ' + preset); }
     Lib.data.settings = Object.assign(Lib.data.settings || {}, { res, fps, quality: q }); try { MK3D.setQuality(q); } catch (e) {} await Lib.save();
     const P = Lib.data.projects.find(p => p.series === ep.series), E = P.episodes.find(e => e.episode === ep.episode);
     // для приёмки: чистые голоса героев (до музыки) и расписание реплик — в момент сведения звука
@@ -159,8 +166,8 @@ async function elements(page, start) {
       await Native.call('writeFile', { path: 'speech.json', d: btoa(unescape(encodeURIComponent(JSON.stringify(J)))) });
     } catch (e) { console.log('студия: голоса не сохранены', e && e.message); } return mix0.call(this, tl, bufs); };
     if (!only) Build.run(P, E);
-    return { ok: true, series: ep.series, episode: ep.episode, title: ep.title, scenes: ep.scenes.length, errors: R.errors, unknownWords: R.unknownWords, unknownObjects: R.unknownObjects, unknownNames: R.unknownNames };
-  }, [fs.readFileSync(SCN, 'utf8'), STD ? 'std' : 'hq', RES, FPS, ONLY]);
+    return { ok: true, series: ep.series, episode: ep.episode, title: ep.title, scenes: ep.scenes.length, errors: R.errors, unknownWords: R.unknownWords, unknownObjects: R.unknownObjects, unknownNames: R.unknownNames, probe };
+  }, [fs.readFileSync(SCN, 'utf8'), STD ? 'std' : 'hq', RES, FPS, ONLY, opt('golos', ''), opt('fx', '')]);
   log('серия принята:', start); if (!start.ok) { fs.writeFileSync(path.join(OUT, 'result.json'), JSON.stringify({ ok: false, start, stat }, null, 1)); await browser.close(); process.exit(3); }
   if (ONLY === 'elements') { const r = await elements(page, start); fs.writeFileSync(path.join(OUT, 'result.json'), JSON.stringify({ ok: !!r.ok, elements: r, start, stat, gl, total_sec: el() }, null, 1)); log('ИТОГ элементы', r); await browser.close(); srv.close(); process.exit(r.ok ? 0 : 1); }
   let last = ''; const tick = setInterval(async () => { try { const t = await page.evaluate(() => Build.txt + ' · ' + document.getElementById('bbS').textContent); if (t !== last) { last = t; log(t.slice(0, 160)); } } catch (e) {} }, 30000);
