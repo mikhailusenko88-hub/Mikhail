@@ -4,7 +4,7 @@
 Вход должен быть сделан с аккаунта ВЛАДЕЛЬЦА канала: «менеджера» из прав доступа YouTube Studio API не пускает.
 Защита: работаем только с каналом CHANNEL_ID; серия уходит закрытой («private») — либо как черновик, либо с таймером выхода (publishAt).
 """
-import base64
+import base64, collections
 import hashlib
 import json
 import os
@@ -52,7 +52,13 @@ def secret_shape(raw):
                      "внутри JSON, " if d[:1] == b"{" else "внутри не JSON, ")
         except Exception:
             kind += "не base64, "
-    kind += f"знаков «-» {flat.count('-')}, «_» {flat.count('_')}, «.» {flat.count('.')}, «+» {flat.count('+')}, «/» {flat.count('/')}, «=» {flat.count('=')}, "
+    odd = [(i, c) for i, c in enumerate(flat) if not re.match(r"[A-Za-z0-9+/=:]", c)]
+    hist = collections.Counter(c for _, c in odd)
+    gaps = [odd[i + 1][0] - odd[i][0] for i in range(len(odd) - 1)]
+    kind += ("посторонние знаки: " + ", ".join(f"«{c}»×{n}" if c.isascii() and not c.isalnum() else f"U+{ord(c):04X}×{n}" for c, n in hist.most_common(8))
+             + f"; шаг между ними {gaps[:24]}; первый на {odd[0][0] if odd else '—'}; " if odd else "")
+    kind += (f"заглавных {sum(c.isupper() for c in flat)}, строчных {sum(c.islower() for c in flat)}, цифр {sum(c.isdigit() for c in flat)}, "
+             f"«+» {flat.count('+')}, «/» {flat.count('/')}, «=» {flat.count('=')} (первый на {flat.find('=')}), ")
     return (kind + f"длина {len(raw)}, строк {raw.count(chr(10)) + 1}, пробелов {raw.count(' ')}, двоеточий {col}, "
             f"куски между двоеточиями {parts[:8]}, русских букв {cyr}, прочих знаков {len(flat) - b64 - col - cyr}, "
             f"«BK1» {'есть' if 'BK1' in flat else 'нет'}, «END» {'есть' if 'END' in flat else 'нет'}")
@@ -67,13 +73,40 @@ def _try_b64(body, chk):
     return data if hashlib.sha256(data).hexdigest()[:8] == chk else None
 
 
+def _repair(raw):
+    """Строка, прошедшая через чужие руки: телефон принял «BK1:…» за ссылку (строчные буквы в начале, %0A вместо переносов, %3A вместо двоеточий),
+    переносы стали «\\n» или <br>, двоеточия пропали. Собираем заново и сверяем с 8 проверочными знаками в конце."""
+    import html, urllib.parse
+    seen = []
+    for v in (raw, urllib.parse.unquote(raw), html.unescape(raw), urllib.parse.unquote(html.unescape(raw))):
+        for w in (v, re.sub(r"\\[rnt]", "", v), re.sub(r"<[^<>]{0,8}>", "", v)):
+            if w not in seen:
+                seen.append(w)
+    for v in seen:
+        t = re.sub(WS, "", v)
+        t = re.sub(r"^.*?(?:bk1|fb1)[^A-Za-z0-9+/=]*", "", t, count=1, flags=re.I | re.S)
+        t = re.sub(r"[^A-Za-z0-9+/=]*END[^A-Za-z0-9]*$", "", t)
+        t = re.sub(r"[^A-Za-z0-9+/=]", "", t)
+        if len(t) < 60:
+            continue
+        b64, chk = t[:-8], t[-8:].lower()
+        for body in (b64, b64.rstrip("=")):
+            data = _try_b64(body, chk)
+            if data and data[:1] == b"{":
+                return data
+    return None
+
+
 def parse_secret(raw):
     raw = (raw or "").strip()
     if not raw:
         raise SystemExit(f"ЖДУ ВХОД: нет секрета {SECRET} — вход в канал ещё не сделан")
     flat = re.sub(WS, "", raw)   # строка приходит порезанной на строчки по 24 знака: «:END» и «BK1:» могут оказаться разорваны переносом
     k = None
-    m = re.search(r":([0-9a-fA-F]{8}):?END", flat)
+    fixed = _repair(raw)
+    if fixed is not None:
+        k = json.loads(fixed)
+    m = None if k else re.search(r":([0-9a-fA-F]{8}):?END", flat)
     if m:                                                      # <что-то>:<8 знаков проверки>:END — начало может быть испорчено или потеряно
         chk, pre = m.group(1).lower(), flat[:m.start()]
         a = re.search(r"(BK1|FB1):", pre)
