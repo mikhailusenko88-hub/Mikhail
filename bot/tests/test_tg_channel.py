@@ -115,7 +115,7 @@ def test_publish_and_queue_state(tmp_path):
     ch = tc.TgChannel(Bot(), cfg, state, key="-1001", out=lambda *a: None)
     n = {"i": 0}
 
-    async def fake_send(chat, post):
+    async def fake_send(chat, post, done=None, st=None):
         n["i"] += 1
         sent.append(post["id"])
         return f"m:{n['i']}"
@@ -135,3 +135,41 @@ def test_publish_and_queue_state(tmp_path):
     now = dt.datetime(2026, 11, 19, 12, 5, tzinfo=tc.MSK)
     assert asyncio.run(chq.queue(-1001, now)) == 1
     assert asyncio.run(chq.queue(-1001, now + dt.timedelta(days=5))) == 0   # q2 без «да» не выходит
+
+
+def test_resume_without_duplicate_album(tmp_path):
+    """Запуск оборвался после альбома (ограничение частоты) — следующий не выкладывает альбом второй раз."""
+    pytest.importorskip("aiogram")
+    from aiogram.exceptions import TelegramNetworkError
+
+    calls: list[str] = []
+
+    class M:
+        def __init__(self, i):
+            self.message_id = i
+
+    class Bot:
+        fail = True
+
+        async def send_media_group(self, chat, media):
+            calls.append("album")
+            return [M(1), M(2)]
+
+        async def send_message(self, chat, text, **kw):
+            calls.append("text")
+            if Bot.fail:
+                Bot.fail = False
+                raise TelegramNetworkError(method=None, message="нет связи")
+            return M(3)
+
+    cfg = {"img": "https://nashdekor.ru/img/max/", "posts": [
+        {"id": "p", "text": "<b>Пост</b>", "images": ["a.jpg", "b.jpg"], "buttons": []}]}
+    state = str(tmp_path / "st.json")
+    tc.PAUSE = 0
+    ch = tc.TgChannel(Bot(), cfg, state, key="-1", out=lambda *a: None)
+    with pytest.raises(TelegramNetworkError):
+        asyncio.run(ch.publish(-1))
+    assert asyncio.run(ch.publish(-1)) == 1
+    assert calls == ["album", "text", "text"]                       # альбом — один раз
+    st = json.load(open(state))["-1"]
+    assert st["p"] == "m:3" and st["p#0"] == "a:1,2"

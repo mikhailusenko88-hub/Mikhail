@@ -40,7 +40,7 @@ TG_BOT_URL = "https://t.me/nashdekor_bot"
 MAX_BOT_URL = "https://max.ru/id470331302505_bot"
 CAPTION_MAX = 1024                 # подпись к фото в Telegram
 DESCRIPTION_MAX = 255              # описание канала в Telegram
-PAUSE = 1.5
+PAUSE = 3.2                        # Telegram: в канал не больше ~20 сообщений в минуту, альбом из 10 фото — это 10 сообщений
 REPLACE = [(MAX_BOT_URL, TG_BOT_URL), ("utm_source=max", "utm_source=tg"), (" в MAX", " в Telegram")]
 NEED = {"can_post_messages": "публиковать посты", "can_edit_messages": "редактировать и закреплять посты",
         "can_change_info": "менять название, описание и фото канала"}
@@ -148,10 +148,11 @@ class TgChannel:
 
     async def _retry(self, fn, *args, **kwargs):
         from aiogram.exceptions import TelegramRetryAfter
-        for _ in range(5):
+        for _ in range(8):
             try:
                 return await fn(*args, **kwargs)
             except TelegramRetryAfter as e:
+                self.out(f"  Telegram просит подождать {e.retry_after} с (ограничение частоты)")
                 await asyncio.sleep(int(e.retry_after) + 1)
         return await fn(*args, **kwargs)
 
@@ -206,17 +207,26 @@ class TgChannel:
             save_state(self.state_file, st)
         self.out("Оформление канала: название, описание и фото — готово.")
 
-    async def send(self, chat: str, post: dict[str, Any]) -> str:
-        """Выложить пост; вернуть «тип:id» главного сообщения (m — текст, c — фото с подписью)."""
+    async def send(self, chat: str, post: dict[str, Any], done: dict[str, str] | None = None,
+                   st: dict[str, Any] | None = None) -> str:
+        """Выложить пост; вернуть «тип:id» главного сообщения (m — текст, c — фото с подписью).
+        Каждый шаг (альбом, текст) записывается в состояние сразу: если запуск оборвётся посередине
+        (ограничение частоты, нет связи), следующий не выложит альбом второй раз."""
         from aiogram.exceptions import TelegramBadRequest
         from aiogram.types import InputMediaPhoto, LinkPreviewOptions
         main = ""
-        for step in plan(post, self.cfg):
+        done = done if done is not None else {}
+        for i, step in enumerate(plan(post, self.cfg)):
+            mark = f"{post.get('id')}#{i}"
+            if done.get(mark):
+                main = done[mark] if step[0] != "album" else main
+                continue
             for upload in (False, True):          # сначала Telegram забирает картинки по ссылке, не вышло — загружаем
                 try:
                     if step[0] == "album":
                         media = [InputMediaPhoto(media=await self._media(u, upload)) for u in step[1]]
-                        await self._retry(self.bot.send_media_group, chat, media)
+                        ms = await self._retry(self.bot.send_media_group, chat, media)
+                        done[mark] = "a:" + ",".join(str(m.message_id) for m in ms or [])
                     elif step[0] == "photo":
                         m = await self._retry(self.bot.send_photo, chat, await self._media(step[1], upload),
                                               caption=step[2], reply_markup=self._kb(step[3]))
@@ -225,12 +235,16 @@ class TgChannel:
                         m = await self._retry(self.bot.send_message, chat, step[1], reply_markup=self._kb(step[2]),
                                               link_preview_options=LinkPreviewOptions(is_disabled=True))
                         main = f"m:{m.message_id}"
+                    if step[0] != "album":
+                        done[mark] = main
+                    if st is not None:
+                        save_state(self.state_file, st)
                     break
                 except TelegramBadRequest as e:
                     if upload or step[0] == "text":
                         raise
                     self.out(f"  картинки по ссылке Telegram не взял ({e}) — загружаю файлами")
-            await asyncio.sleep(PAUSE)
+            await asyncio.sleep(PAUSE * (len(step[1]) if step[0] == "album" else 1))
         return main
 
     async def publish(self, chat: str) -> int:
@@ -243,7 +257,7 @@ class TgChannel:
             if self.dry:
                 self.out(f"[проверка] пост «{post['id']}»: " + ", ".join(s[0] for s in plan(post, self.cfg)))
                 continue
-            done[post["id"]] = await self.send(chat, post)
+            done[post["id"]] = await self.send(chat, post, done, st)
             save_state(self.state_file, st)
             n += 1
             self.out(f"  опубликован «{post['id']}»")
@@ -273,7 +287,7 @@ class TgChannel:
             if self.dry:
                 self.out(f"[проверка] вышел бы пост «{post['id']}» ({post['at']})")
                 return 0
-            done[post["id"]] = await self.send(chat, post)
+            done[post["id"]] = await self.send(chat, post, done, st)
             save_state(self.state_file, st)
             self.out(f"{now:%d.%m %H:%M} опубликован «{post['id']}» (по плану {post['at']})")
             return 1
