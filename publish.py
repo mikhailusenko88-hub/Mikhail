@@ -38,6 +38,8 @@ def say(*a):
 def finish(lines, data=None, name=None):
     os.makedirs(OUT, exist_ok=True)
     now = dt.datetime.now(MSK).strftime("%d.%m.%Y %H:%M МСК")
+    if Y.REPAIR_NOTE and not lines[0].startswith("СБОЙ"):
+        lines = lines + ["ВНИМАНИЕ: " + Y.REPAIR_NOTE]
     open(f"{OUT}/status.txt", "w", encoding="utf-8").write("\n".join([lines[0] + f"  ({now})"] + lines[1:]) + "\n")
     if data is not None and name:
         json.dump(data, open(f"{OUT}/{name}.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)

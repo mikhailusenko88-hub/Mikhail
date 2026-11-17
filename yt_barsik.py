@@ -79,27 +79,70 @@ def _try_b64(body, chk):
     return data if hashlib.sha256(data).hexdigest()[:8] == chk else None
 
 
+OCR_NARROW = ["Il1", "O0"]                                   # что распознавание текста путает чаще всего
+OCR_WIDE = ["Il1", "O0oQD", "5Ss", "8B", "2Zz", "6G", "9gq", "cC", "kK", "pP", "uU", "vV", "wW", "xX", "yY", "mM", "jJ", "E3", "T7", "nh", "ec", "ao"]
+REPAIR_NOTE = ""                                               # что пришлось исправить (число мест, без самих знаков) — в статус
+
+
+def _ocr_search(body, chk, groups, max_err, deadline):
+    """Ключ прошёл через распознавание текста с картинки: ищем, какие 1…max_err знаков прочитаны неверно. Проверка — 8 знаков sha256."""
+    import binascii, itertools
+    alt = {}
+    for g in groups:
+        for c in g:
+            alt.setdefault(c, set()).update(x for x in g if x != c)
+    arr = bytearray(body.encode())
+    pos = [(i, [ord(x) for x in sorted(alt[chr(b)])]) for i, b in enumerate(arr) if chr(b) in alt]
+    want = bytes.fromhex(chk)
+    pad = b"=" * (-len(arr) % 4)
+    n = 0
+    for k in range(1, max_err + 1):
+        for combo in itertools.combinations(pos, k):
+            for repl in itertools.product(*[c[1] for c in combo]):
+                old = [arr[c[0]] for c in combo]
+                for c, r in zip(combo, repl):
+                    arr[c[0]] = r
+                try:
+                    d = binascii.a2b_base64(bytes(arr) + pad)
+                    if hashlib.sha256(d).digest()[:4] == want and d[:1] == b"{":
+                        json.loads(d)
+                        return d, k
+                except Exception:
+                    pass
+                for c, o in zip(combo, old):
+                    arr[c[0]] = o
+                n += 1
+                if n % 200000 == 0 and time.time() > deadline:
+                    return None, 0
+    return None, 0
+
+
 def _repair(raw):
     """Строка, прошедшая через чужие руки: телефон принял «BK1:…» за ссылку (строчные буквы в начале, %0A вместо переносов, %3A вместо двоеточий,
-    «+» стал пробелом или «-»), переносы стали «\\n» или <br>, двоеточия пропали. Собираем заново; верно ли собрали — скажут 8 проверочных знаков в конце."""
+    «+» стал пробелом или «-»), переносы стали «\\n» или <br>, двоеточия пропали, текст сняли с картинки. Собираем заново; верно ли собрали —
+    скажут 8 проверочных знаков в конце."""
+    global REPAIR_NOTE
     import html, itertools, urllib.parse
     seen = []
     for v in (raw, urllib.parse.unquote(raw), html.unescape(raw), urllib.parse.unquote(html.unescape(raw))):
         for w in (v, re.sub(r"\\[rnt]", "", v), re.sub(r"<[^<>]{0,8}>", "", v)):
             if w not in seen:
                 seen.append(w)
+    ocr = []
     for v in seen:
         t = re.sub(r"[\r\n\t\u200b-\u200f\ufeff]", "", v.strip())            # переносы — точно не часть ключа (и «END» бывает разорван переносом)
         t = re.sub(r"^.*?(?:bk1|fb1)[^A-Za-z0-9+/=]*", "", t, count=1, flags=re.I | re.S)
         t = re.sub(r"[^A-Za-z0-9+/=]*E[^A-Za-z0-9]*N[^A-Za-z0-9]*D[^A-Za-z0-9]*$", "", t)
         t = t.replace(":", "")
-        spots = [m.start() for m in re.finditer(r"[^A-Za-z0-9+/=]", t)]    # пробел, «-», «_»… — либо мусор, либо бывший «+» или «/»
-        if len(t) < 60 or len(spots) > 9:
-            if len(spots) > 9:                                             # слишком много неясных мест — пробуем только «всё выбросить»
-                spots, t = [], re.sub(r"[^A-Za-z0-9+/=]", "", t)
-            else:
-                continue
-        for fill in itertools.product(("", "+", "/"), repeat=len(spots)):
+        spots = [m.start() for m in re.finditer(r"[^A-Za-z0-9+/=]", t)]    # пробел, «-», «_»… — либо мусор, либо бывший «+» или «/»; «|» — бывшая l, I или 1
+        if len(t) < 60:
+            continue
+        escaped = bool(re.search(r"%[0-9A-Fa-f]{2}", v))                   # «%0A» ещё не развёрнуты — эта запись годится только для прямой проверки
+        if len(spots) > 9:                                                 # слишком много неясных мест — пробуем только «всё выбросить»
+            spots, t = [], re.sub(r"[^A-Za-z0-9+/=|]", "", t)
+            spots = [m.start() for m in re.finditer(r"\|", t)][:6]
+        opts = [("l", "I", "1") if t[p] == "|" else ("", "+", "/") for p in spots]
+        for fill in itertools.product(*opts):
             u, last = [], 0
             for pos, f in zip(spots, fill):
                 u.append(t[last:pos] + f)
@@ -108,6 +151,19 @@ def _repair(raw):
             b64, chk = u[:-8], u[-8:].lower()
             data = _try_b64(b64, chk)
             if data and data[:1] == b"{":
+                if spots:
+                    REPAIR_NOTE = f"ключ собран заново: неясных мест {len(spots)}"
+                return data
+            if not escaped and all(f == "" for p, f in zip(spots, fill) if t[p] != "|"):   # мусор выброшен, «|» заменён — заготовки для поиска опечаток
+                chk2 = chk.translate(str.maketrans("olisgqzb", "01159926")) if not re.fullmatch(r"[0-9a-f]{8}", chk) else chk
+                if re.fullmatch(r"[0-9a-f]{8}", chk2) and len(b64.rstrip("=")) % 4 != 1 and (b64, chk2) not in ocr and len(ocr) < 3:
+                    ocr.append((b64, chk2))
+    t0 = time.time()
+    for groups, max_err, budget in ((OCR_WIDE, 1, 10), (OCR_NARROW, 3, 20), (OCR_WIDE, 2, 90), (OCR_NARROW, 5, 90), (OCR_WIDE, 3, 240)):
+        for b64, chk in ocr[:1] if max_err > 1 else ocr:                    # неверно выбранная замена «|» найдётся как ещё одна опечатка
+            data, k = _ocr_search(b64, chk, groups, max_err, time.time() + budget)
+            if data:
+                REPAIR_NOTE = f"ключ был снят с картинки с ошибками — исправлено знаков: {k} (плюс замена «|»), поиск {time.time() - t0:.0f} с. Лучше вставить ключ заново, текстом"
                 return data
     return None
 
