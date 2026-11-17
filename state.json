@@ -584,18 +584,23 @@
    ]
   },
   "clubs": {
-   "no": 10,
+   "no": 11,
    "points": {
     "Andijon": 25,
-    "Surxon": 18,
-    "Olmaliq": 15,
-    "Soʻgʻdiyona": 12,
+    "Surxon": 30,
+    "Olmaliq": 40,
+    "Soʻgʻdiyona": 22,
     "Mashʼal": 10,
-    "Nasaf": 8,
+    "Nasaf": 26,
     "Lokomotiv": 6,
     "Xorazm": 4,
-    "Buxoro": 2,
-    "Dinamo": 1
+    "Buxoro": 4,
+    "Dinamo": 1,
+    "Shoʻrtan": 15,
+    "Paxtakor": 8,
+    "Bunyodkor": 6,
+    "Sementchi": 4,
+    "Olimpik": 1
    },
    "results": [
     {
@@ -727,10 +732,23 @@
      ],
      "link": "https://youtube.com/shorts/9HMvhcq9qL0",
      "final": false
+    },
+    {
+     "no": 11,
+     "date": "2026-11-17",
+     "slot": 3,
+     "winner": "Olmaliq",
+     "top3": [
+      "Olmaliq",
+      "Nasaf",
+      "Shoʻrtan"
+     ],
+     "link": "https://youtube.com/shorts/NTJTO3M2V58",
+     "final": false
     }
    ],
    "champion": null,
-   "season_races": 1,
+   "season_races": 2,
    "season": "2026-W47",
    "new_pending": [],
    "seasons": [
@@ -1190,6 +1208,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/_UFVZ-syO4o",
    "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №16 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-17",
+   "slot": 3,
+   "league": "clubs",
+   "no": 11,
+   "final": false,
+   "link": "https://youtube.com/shorts/NTJTO3M2V58",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №11 #shorts",
    "pl": true
   }
  ],
