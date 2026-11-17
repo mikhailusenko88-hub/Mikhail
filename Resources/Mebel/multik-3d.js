@@ -3010,16 +3010,22 @@ function lightBase(type, time) { // свет всегда почти белый:
 }
 
 // ---------- камера ----------
-// трое и больше стоят в ряд — мягкая дуга к зрителю (крайние чуть ближе), как компания в разговоре, а не строй на линейке
-function arcOf(S, lib, hugF) { const ids = Object.keys(S).filter(id => S[id].vis && lib.characters[id] && !(hugF && hugF[id])); if (ids.length < 3) return null; let a = 9, b = -9; for (const id of ids) { a = Math.min(a, S[id].x); b = Math.max(b, S[id].x); } if (b - a < .25 || a < -.05 || b > 1.05) return null; return { mid: (a + b) / 2, half: (b - a) / 2, k: MK3D.ARC_DEPTH != null ? MK3D.ARC_DEPTH : .5 }; }
-function arcDz(A, st) { return A && st && st.x >= -.02 && st.x <= 1.02 ? A.k * Math.pow(Math.min(1, Math.abs(st.x - A.mid) / A.half), 2) : 0; }
+// трое и больше — не строем на линейке, а полукругом, как компания вокруг дела: середина отступает от зрителя, крайние остаются на месте (никто не вылезает из кадра).
+// Чем больше компания, тем глубже полукруг. Всё плавно: входящий «включается» по мере захода в кадр (вес w), без скачков у остальных.
+function arcOf(S, lib, hugF) { let n = 0, a = 9, b = -9;
+  for (const id in S) { const st = S[id]; if (!st || !st.vis || !lib.characters[id] || (hugF && hugF[id])) continue; const w = clamp(Math.min(st.x + .02, 1.02 - st.x) / .15, 0, 1); if (!(w > 0)) continue;
+    n += w; const pen = (1 - w) * .45; a = Math.min(a, st.x + pen); b = Math.max(b, st.x - pen); }
+  const kd = MK3D.ARC_DEPTH != null ? MK3D.ARC_DEPTH : 1, k = kd * (n <= 2 ? 0 : n <= 3 ? .6 * (n - 2) : n <= 4 ? .6 + .2 * (n - 3) : n <= 5 ? .8 + .2 * (n - 4) : 1) * clamp((b - a - .2) / .1, 0, 1);
+  return k > 0 ? { mid: (a + b) / 2, half: (b - a) / 2, k } : null; }
+function arcDz(A, st) { if (!A || !st) return 0; const u = Math.min(1, Math.abs(st.x - A.mid) / A.half); return -A.k * (1 - u * u); }   /* глубина героя на полукруге, м: 0 у крайних, −k в середине */
 function camFor(c, S, seg, lib) {
   const h = id => { const lc = lib.characters[id]; return lc ? (lc.spec.height || 1) * (lc.spec.kind === 'human' && (lc.spec.age === 'adult' || lc.spec.age === 'old') ? 1.62 : lc.spec.kind === 'human' ? 1.02 : 1) : 1; };
-  const px = id => S[id] ? X(S[id].x) : 0, pz = id => S[id] ? -(S[id].z || 0) * 1.5 : 0;
+  const ARCc = arcOf(S, lib);   /* камера знает настоящую глубину героя на полукруге: крупный и средний план не «наезжают» и не мельчат */
+  const px = id => S[id] ? X(S[id].x) : 0, pz = id => S[id] ? -(S[id].z || 0) * 1.5 + arcDz(ARCc, S[id]) : 0;
   const ids = Object.keys(seg.C);
   const topOf = id => { const lc = lib.characters[id], rg = lc && rigFor(lc); return rg && rg.headH ? rg.headH + rg.headR * 1.75 : 1.1 * h(id); }; // макушка с ушками — всегда в кадре
   // средний план: сосед не должен торчать половиной у края кадра — чуть сдвигаем кадр, чтобы он вошёл целиком или ушёл совсем
-  const edgeFit = (v, id) => { const A = arcOf(S, lib), zOf = o => pz(o) + arcDz(A, S[o]), dist = v.pos.z - zOf(id); if (!(dist > .3)) return v; const half = dist * Math.tan(19 * Math.PI / 180) * 16 / 9, cx = v.look.x, hx = px(id); let need = 0;
+  const edgeFit = (v, id) => { const zOf = o => pz(o), dist = v.pos.z - zOf(id); if (!(dist > .3)) return v; const half = dist * Math.tan(19 * Math.PI / 180) * 16 / 9, cx = v.look.x, hx = px(id); let need = 0;
     for (const o of ids) { if (o === id || !S[o] || S[o].vis === false) continue; const k = dist / Math.max(.3, v.pos.z - zOf(o)), ox = v.pos.x + (px(o) - v.pos.x) * k, ow = (.5 * h(o) + .2) * k, L = cx - half, R = cx + half; if (ox + ow <= L || ox - ow >= R) continue; if (ox - ow >= L && ox + ow <= R) continue;   // сосед ближе к камере — на экране шире и дальше от центра
       const opts = ox < cx ? [ox + ow - L, -(L - (ox - ow))] : [-(R - (ox - ow)), (ox + ow) - R];   // [убрать соседа, взять целиком] — сдвиг центра кадра
       const ok = opts.filter(d => Math.abs(d) <= half * .4 && Math.abs(hx - (cx + d)) <= half * .55).sort((a, b) => Math.abs(a) - Math.abs(b)); if (ok.length && Math.abs(ok[0]) > Math.abs(need)) need = ok[0]; }
@@ -3029,19 +3035,22 @@ function camFor(c, S, seg, lib) {
       return close ? { pos: new THREE.Vector3(x + side * hr * .9, hy - hr * .05, z + hr * 6.4 / zk), look: new THREE.Vector3(x + side * hr * .2, hy - hr * .32, z) }
         : (c.vert ? (v0 => v0) : v0 => edgeFit(v0, id))({ pos: new THREE.Vector3(x + side * hr * 1.6, hy * .78, z + Math.max(hr * 11.5, hy * 1.9) / zk), look: new THREE.Vector3(x + side * hr * .4, hy * .6, z) }); }
     return { pos: new THREE.Vector3(x + side * (close ? .13 : .3), (close ? .78 : .8) * hh + (close ? .02 : .06), z + (close ? 1.15 : 2.15) * Math.max(.8, hh) / (c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1)), look: new THREE.Vector3(x + side * (close ? .03 : .08), (close ? .7 : .56) * hh, z) }; }
-  if (c.mode === 'group') { const list = (c.ids || ids).filter(id => S[id] && S[id].vis !== false); let lo = 1e9, hi = -1e9, hh = .9;
-    for (const id of list) { const x = px(id), w = .5 * h(id); lo = Math.min(lo, x - w); hi = Math.max(hi, x + w); hh = Math.max(hh, h(id)); } for (const q of c.px || []) { lo = Math.min(lo, X(q) - .45); hi = Math.max(hi, X(q) + .45); }
-    if (lo <= hi) for (let it = 0; it < 2; it++) { const d0 = clamp((hi - lo + 1.1) / 2 / .612, 3.3, 8.4), hw = d0 * .612, m0 = (lo + hi) / 2; let ch = false;   // сосед на краю кадра — целиком, а не половинкой
-      for (const id of ids) { if (list.includes(id) || !S[id] || S[id].vis === false) continue; const x = px(id), w = .42 * h(id); if (x + w > m0 - hw && x - w < m0 + hw && (x - w < m0 - hw || x + w > m0 + hw)) { lo = Math.min(lo, x - .5 * h(id)); hi = Math.max(hi, x + .5 * h(id)); list.push(id); hh = Math.max(hh, h(id)); ch = true; } }
-      if (!ch) break; }
-    if (lo <= hi) { const mid = (lo + hi) / 2, d = clamp((hi - lo + 1.1) / 2 / .612, 3.3, 8.4), tp = Math.max(...list.map(topOf)), ly = Math.max(.52 * hh + d * .035, tp - .28 * d); return { pos: new THREE.Vector3(mid, ly + .08 * hh + d * .095, d), look: new THREE.Vector3(mid, ly, 0) }; } }
-  if (c.mode === 'two') { const pair = Array.isArray(c.on) ? c.on : ids.slice(0, 2); const a = px(pair[0]), b = px(pair[1] || pair[0]), hh = Math.max(h(pair[0]), h(pair[1] || pair[0])), wa = .5 * h(pair[0]), wb = .5 * h(pair[1] || pair[0]);
-    let lo = Math.min(a - wa, b - wb), hi = Math.max(a + wa, b + wb), mid = (lo + hi) / 2, d = clamp((hi - lo + .9) / 2 / .612, 2.9, 7), inc = pair.slice();
-    // сосед на краю кадра виден наполовину — берём его в кадр целиком (не больше двух раз)
-    for (let it = 0; it < 2; it++) { const hw = d * .612; let ch = false; for (const id of ids) { if (inc.includes(id) || !S[id] || S[id].vis === false) continue; const x = px(id), w = .42 * h(id);
-        if (x + w > mid - hw && x - w < mid + hw && (x - w < mid - hw || x + w > mid + hw)) { lo = Math.min(lo, x - .5 * h(id)); hi = Math.max(hi, x + .5 * h(id)); inc.push(id); ch = true; } }
-      if (!ch) break; mid = (lo + hi) / 2; d = clamp((hi - lo + .9) / 2 / .612, 2.9, 8.4); }
-    const tp = Math.max(...inc.map(topOf)), ly = Math.max(.55 * hh + d * .03, tp - .28 * d); return { pos: new THREE.Vector3(mid, ly + .05 * hh + d * .09, d), look: new THREE.Vector3(mid, ly, 0) }; }
+  // «группа» и «двое»: кадр подбирается с учётом глубины — кто ближе к зрителю, тот на экране шире; плоскость кадра — по средней глубине группы
+  const frameFit = (list, pad, dmin, dmax, pts) => { const z0 = list.reduce((a, id) => a + pz(id), 0) / Math.max(1, list.length); let lo = 1e9, hi = -1e9, mid = 0, d = dmax;
+    for (const id of list) { const x = px(id), w = .5 * h(id); lo = Math.min(lo, x - w); hi = Math.max(hi, x + w); } for (const q of pts || []) { lo = Math.min(lo, X(q) - .45); hi = Math.max(hi, X(q) + .45); }
+    for (let i = 0; i < 4 && lo <= hi; i++) { mid = (lo + hi) / 2; d = clamp((hi - lo + pad) / 2 / .612, dmin, dmax); if (i === 3) break; lo = 1e9; hi = -1e9;
+      for (const id of list) { const k = d / Math.max(1, d - (pz(id) - z0)), x = mid + (px(id) - mid) * k, w = .5 * h(id) * k; lo = Math.min(lo, x - w); hi = Math.max(hi, x + w); }
+      for (const q of pts || []) { const k = d / Math.max(1, d + z0), x = mid + (X(q) - mid) * k; lo = Math.min(lo, x - .45 * k); hi = Math.max(hi, x + .45 * k); } }
+    return { ok: lo <= hi, mid, d, z0 }; };
+  // сосед на краю кадра виден наполовину — берём его в кадр целиком
+  const edgeIn = (F, list) => { const hw = F.d * .612; let ch = false; for (const id of ids) { if (list.includes(id) || !S[id] || S[id].vis === false) continue; const k = F.d / Math.max(1, F.d - (pz(id) - F.z0)), x = F.mid + (px(id) - F.mid) * k, w = .42 * h(id) * k;
+      if (x + w > F.mid - hw && x - w < F.mid + hw && (x - w < F.mid - hw || x + w > F.mid + hw)) { list.push(id); ch = true; } } return ch; };
+  if (c.mode === 'group') { const list = (c.ids || ids).filter(id => S[id] && S[id].vis !== false); let F = frameFit(list, 1.1, 3.3, 8.4, c.px);
+    for (let it = 0; it < 2 && F.ok && edgeIn(F, list); it++) F = frameFit(list, 1.1, 3.3, 8.4, c.px);
+    if (F.ok) { const hh = Math.max(.9, ...list.map(h)), d = F.d, tp = Math.max(...list.map(topOf)), ly = Math.max(.52 * hh + d * .035, tp - .28 * d); return { pos: new THREE.Vector3(F.mid, ly + .08 * hh + d * .095, F.z0 + d), look: new THREE.Vector3(F.mid, ly, F.z0) }; } }
+  if (c.mode === 'two') { const pair = Array.isArray(c.on) ? c.on : ids.slice(0, 2); const inc = [pair[0]].concat(pair[1] != null && pair[1] !== pair[0] ? [pair[1]] : []), hh = Math.max(h(pair[0]), h(pair[1] || pair[0]));
+    let F = frameFit(inc, .9, 2.9, 7); for (let it = 0; it < 2 && edgeIn(F, inc); it++) F = frameFit(inc, .9, 2.9, 8.4);
+    const d = F.d, tp = Math.max(...inc.map(topOf)), ly = Math.max(.55 * hh + d * .03, tp - .28 * d); return { pos: new THREE.Vector3(F.mid, ly + .05 * hh + d * .09, F.z0 + d), look: new THREE.Vector3(F.mid, ly, F.z0) }; }
   if (c.mode === 'sky') { // герой смотрит на луну: камера ниже героя, смотрит вверх — в кадре его голова и луна
     const id = c.on || ids[0], x = px(id), z = pz(id), mp = (seg.props || []).find(q => q.type === 'moon'), mx = mp ? X(mp._x != null ? mp._x : mp.x0) : x + 1.5, cx = x * .62 + mx * .38;
     return { pos: new THREE.Vector3(cx, .55, z + 4.3), look: new THREE.Vector3(cx, 2.2, z - 2) }; }
