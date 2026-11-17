@@ -131,6 +131,17 @@ section{padding-block:8px 56px}
 @media (hover:none){.hint .t{display:inline}.hint .m{display:none}.hint{left:10px;right:auto;bottom:34px}}
 @media (max-width:520px){.views button{padding:5px 9px;font-size:12px}}
 .stage3d.used .hint{opacity:0}
+.mode{position:absolute;right:10px;bottom:8px;display:flex;border:1px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--paper);z-index:2}
+.mode button{border:0;background:none;padding:6px 14px;font-size:13px;color:var(--ink)}
+.mode button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+@media (hover:hover){.hint{right:128px}}
+@media (hover:none){.hint{bottom:46px}}
+.stage3d [data-pscene]{display:none}
+.stage3d.photo [data-pscene]{display:inline-block}
+.stage3d.photo [data-view],.stage3d.photo [data-scene],.stage3d.photo .zoom,.stage3d.photo .hint,.stage3d.photo #c3,.stage3d.photo .scn{display:none}
+.stage3d.photo{height:auto;min-height:0;aspect-ratio:3/2;background:#e9e5dd}
+.stage3d #cph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:default;touch-action:pan-y}
+.stage3d.photo.wait #cph{opacity:.55;transition:opacity .2s}
 .pgroups{display:flex;flex-wrap:wrap;gap:6px}
 .pgroups button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 12px;font-size:13px;color:var(--ink);white-space:nowrap}
 .pgroups button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -216,9 +227,10 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 <section id="calc"><div class="wrap">
   <div class="head"><div><h2>Расчёт реечных панелей на стену в 3D</h2><p>Калькулятор: укажите размеры стены, выберите панель и цвет — стена перестроится, а ниже посчитаются штуки, коробки и сумма. Можно добавить плинтус и потолочный плинтус. Расчёт уйдёт вместе с заявкой.</p></div></div>
-  <div class="stage3d" id="stage"><canvas id="c3" aria-label="Стена с панелями в 3D"></canvas>
-    <div class="views" role="group" aria-label="Вид"><button type="button" data-view="room" aria-pressed="true">Вся стена</button><button type="button" data-view="side" aria-pressed="false">Сбоку</button><button type="button" data-view="close" aria-pressed="false">Вблизи</button><button type="button" data-scene aria-pressed="true" aria-haspopup="true" aria-expanded="false" aria-label="Обстановка: ТВ-зона. Нажмите, чтобы выбрать другую">ТВ-зона</button></div><div class="scn" id="scn" role="menu" aria-label="Обстановка" hidden></div>
+  <div class="stage3d" id="stage"><canvas id="c3" aria-label="Стена с панелями в 3D"></canvas><canvas id="cph" hidden aria-label="Панели в интерьере — фото"></canvas>
+    <div class="views" role="group" aria-label="Вид"><button type="button" data-view="room" aria-pressed="true">Вся стена</button><button type="button" data-view="side" aria-pressed="false">Сбоку</button><button type="button" data-view="close" aria-pressed="false">Вблизи</button><button type="button" data-pscene="tv" aria-pressed="true">ТВ-зона</button><button type="button" data-pscene="lv" aria-pressed="false">Гостиная</button><button type="button" data-pscene="cl" aria-pressed="false">Крупно</button><button type="button" data-scene aria-pressed="true" aria-haspopup="true" aria-expanded="false" aria-label="Обстановка: ТВ-зона. Нажмите, чтобы выбрать другую">ТВ-зона</button></div><div class="scn" id="scn" role="menu" aria-label="Обстановка" hidden></div>
     <div class="zoom" role="group" aria-label="Масштаб"><button type="button" data-zoom="1" aria-label="Ближе">+</button><button type="button" data-zoom="-1" aria-label="Дальше">−</button></div>
+    <div class="mode" role="group" aria-label="Показ стены"><button type="button" data-mode="3d" aria-pressed="true">3D</button><button type="button" data-mode="photo" aria-pressed="false">Фото</button></div>
     <div class="dims num" id="stDims"></div>
     <div class="hint"><span class="t">Ведите в сторону — поворот · два пальца — масштаб</span><span class="m">Тяните — поворот · + − или колесо после щелчка — масштаб</span></div>
     <div class="nogl" id="nogl" hidden>3D не запускается в этом браузере. Расчёт ниже работает как обычно.</div>
@@ -540,6 +552,7 @@ function renderCalc(){
   if (cx) { $("cColorLbl").textContent = cx.c === "color" ? "Декор" : "Цвет покраски"; $("cColors").innerHTML = cx.c === "color" ? "" : dots(cx, "calc"); $("cColorBox").hidden = cx.c === "color"; }
   renderPicker();
   if (window.__w3) window.__w3.rebuild();
+  if (window.__ph) window.__ph.update();
   $("cPlinthBox").hidden = !$("cPlinthOn").checked;
   $("cCorniceBox").hidden = !$("cCorniceOn").checked;
   const r = calc();
@@ -1375,7 +1388,7 @@ const W3 = (() => {
     S.userData.hemi.intensity = .68 * dim; sun.intensity = dim < 1 ? .4 : .74;      // вечером — только общий мягкий свет
     const span = (F ? (F.len || F.cw) / 2 : 800) + 1500;
     Object.assign(sun.shadow.camera, { left: -span, right: span, top: 1900, bottom: -1900, near: 400, far: 9000 }); sun.shadow.camera.updateProjectionMatrix();
-    $("stDims").textContent = `${Math.round(Wmm / 10)} × ${Math.round(Hmm / 10)} см · ${x.a}`;
+    if (!(window.__ph && window.__ph.on)) $("stDims").textContent = `${Math.round(Wmm / 10)} × ${Math.round(Hmm / 10)} см · ${x.a}`;
     // камеру трогаем только когда изменились размеры стены: при смене панели или цвета ракурс остаётся — удобно сравнивать вблизи
     const key = Wmm + "x" + Hmm;
     if (key !== sizeKey) { const first = !sizeKey; sizeKey = key; setView(view || "room", first); } else { clampTo(); kick(); }
@@ -1386,6 +1399,51 @@ const W3 = (() => {
 })();
 
 window.__w3 = W3; W3.init();
+
+/* ===== «Фото»: та же стена в настоящем интерьере — готовые кадры (Blender Cycles), свои для каждой панели.
+   Цвет покраски накладывается на кадр умножением по маске стены: свет, тени и рельеф остаются с кадра. ===== */
+const INT_V = "1";                                   // версия кадров img/int/<сцена>/<артикул>.jpg
+const PH = (() => {
+  const stage = $("stage"), cv = $("cph"), BASE = [239, 238, 234];          // белая краска, в которой посчитаны кадры (#EFEEEA)
+  let on = false, sc = "tv", seq = 0, off = null; const cache = {};
+  const file = a => a.toLowerCase().replace(/\s+/g, "").replace("/", "-");
+  const load = src => cache[src] || (cache[src] = new Promise((ok, no) => { const i = new Image(); i.decoding = "async"; i.onload = () => ok(i); i.onerror = () => { delete cache[src]; no(); }; i.src = src; }));
+  async function update(){
+    if (!on) return;
+    const a = $("cPanel").value, x = byA[a]; if (!x) return;
+    const my = ++seq; stage.classList.add("wait");
+    try {
+      const [img, mask] = await Promise.all([load(`img/int/${sc}/${file(a)}.jpg?v=${INT_V}`), x.c === "color" ? null : load(`img/int/${sc}/mask.png?v=${INT_V}`)]);
+      if (my !== seq) return;
+      const w = img.naturalWidth, h = img.naturalHeight, g = cv.getContext("2d");
+      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+      g.globalCompositeOperation = "source-over"; g.drawImage(img, 0, 0);
+      const hex = paint[a] && paint[a].hex;
+      if (mask && /^#[0-9a-f]{6}$/i.test(hex || "")) {
+        if (!off) off = document.createElement("canvas");
+        if (off.width !== w || off.height !== h) { off.width = w; off.height = h; }
+        const o = off.getContext("2d"), k = [1, 3, 5].map((q, i) => Math.min(255, Math.round(parseInt(hex.slice(q, q + 2), 16) / BASE[i] * 255)));
+        o.globalCompositeOperation = "source-over"; o.fillStyle = `rgb(${k})`; o.fillRect(0, 0, w, h);
+        o.globalCompositeOperation = "destination-in"; o.drawImage(mask, 0, 0, w, h);
+        g.globalCompositeOperation = "multiply"; g.drawImage(off, 0, 0); g.globalCompositeOperation = "source-over";
+      }
+      stage.classList.remove("wait");
+      $("stDims").textContent = `Пример в интерьере · ${x.a} · 3D-визуализация`;
+    } catch (e) { if (my === seq) { stage.classList.remove("wait"); set(false); } }      // кадра нет — остаёмся в 3D
+  }
+  function set(v){
+    on = v; stage.classList.toggle("photo", on); cv.hidden = !on;
+    stage.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", (b.dataset.mode === "photo") === on));
+    if (on) update(); else if (window.__w3) window.__w3.rebuild();
+  }
+  stage.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.mode) { const v = b.dataset.mode === "photo"; if (v !== on) { set(v); if (v) hit("calcphoto"); } }
+    else if (b.dataset.pscene) { sc = b.dataset.pscene; stage.querySelectorAll("[data-pscene]").forEach(o => o.setAttribute("aria-pressed", o === b)); update(); }
+  });
+  return { update, set, get on(){ return on; } };
+})();
+window.__ph = PH;
 (() => { const h = document.querySelector("header.top"), st = $("stage");
   const set = () => { if (h) document.documentElement.style.setProperty("--hdr", h.offsetHeight + "px"); }; set(); addEventListener("resize", set);
   ["pointerdown", "touchstart"].forEach(n => st.addEventListener(n, () => st.classList.add("used"), { passive: true, once: true })); })();
