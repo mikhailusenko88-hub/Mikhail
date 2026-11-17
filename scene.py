@@ -2105,6 +2105,8 @@ def scene_use():
         load_asset('potted_plant_01', loc=(0.72, D - 0.55, 0), rot=35)
         box('rug', 1.2, 3.4, 3.2, 4.7, 0.0, 0.012, m_rug, bevel=0.004)
         camera((3.65, 2.5, 1.3), (2.0, D, 1.0), lens=float(A.get('lens', 30)))
+    if 'campos' in A and 'camto' in A:                         # своя камера (пробы ракурса): campos=x,y,z camto=x,y,z lens=…
+        camera(tuple(float(v) for v in A['campos'].split(',')), tuple(float(v) for v in A['camto'].split(',')), lens=float(A.get('lens', 35)))
     return world, sun, sun_dir, lamps, cal
 
 

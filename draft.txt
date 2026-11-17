@@ -1,4 +1,9 @@
 # черновики (быстрая дорожка, .github/workflows/draft.yml): имя  аргументы для scene.py
-w2_hall_a907 scene=use use=hall decor=A907 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=900x600 ev=-0.9 calfile=cal_photo.json samples=48 noise=0.08
-w2_cor_a910 scene=use use=cor decor=A910 cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=900x600 ev=-2.3 calfile=cal_cor.json samples=48 noise=0.08
-w2_cor_37 scene=use use=cor decor=3-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=900x600 ev=-2.3 calfile=cal_cor.json samples=48 noise=0.08
+x_tvdet_a910 scene=use use=tv cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 calfile=cal_photo.json samples=64 noise=0.06 decor=A910 campos=3.5,3.2,1.2 camto=3.0,5.2,1.1 lens=40 ev=-1.3
+x_tvdet_a905 scene=use use=tv cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 calfile=cal_photo.json samples=64 noise=0.06 decor=A905 campos=3.5,3.2,1.2 camto=3.0,5.2,1.1 lens=40 ev=-1.3
+x_tvdetb_a910 scene=use use=tv cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 calfile=cal_photo.json samples=64 noise=0.06 decor=A910 campos=3.95,3.55,1.25 camto=2.7,5.2,1.05 lens=40 ev=-1.3
+x_tvsun_a910 scene=use use=tv cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 calfile=cal_photo.json samples=64 noise=0.06 decor=A910 sun_az=14 sun_el=28 ev=-1.4
+x_tvdet_a913 scene=use use=tv cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 calfile=cal_photo.json samples=64 noise=0.06 decor=A913 campos=3.5,3.2,1.2 camto=3.0,5.2,1.1 lens=40 ev=-1.3
+x_tvdet_37 scene=use use=tv cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 calfile=cal_photo.json samples=64 noise=0.06 decor=3-7 tex=strip campos=3.5,3.2,1.2 camto=3.0,5.2,1.1 lens=40 ev=-1.3
+x_tvsun_a905 scene=use use=tv cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 calfile=cal_photo.json samples=64 noise=0.06 decor=A905 sun_az=14 sun_el=28 ev=-1.4
+x_tvev_a910 scene=use use=tv cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 calfile=cal_photo.json samples=64 noise=0.06 decor=A910 ev=-1.5
