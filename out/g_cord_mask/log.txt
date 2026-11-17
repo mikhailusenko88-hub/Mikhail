@@ -1,0 +1,12 @@
+[scene   0.0s] view Khronos PBR Neutral look None
+[scene   0.1s] profile wall panels panels 35 width 0.1799
+[scene   0.2s] asset potted_plant_02 size 0.70 x 0.66 x 0.84 objs 3
+[scene   0.2s] objects 81 scene built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/g_cord_mask/g_cord_mask.jpg'
+Time: 00:14.12 (Saving: 00:00.03)
+
+[scene  14.3s] final render 14.1s /home/runner/work/Mikhail/Mikhail/out/g_cord_mask/g_cord_mask.jpg
+[scene  14.3s] done
+
+Blender quit
