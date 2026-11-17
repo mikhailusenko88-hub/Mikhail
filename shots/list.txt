@@ -1,7 +1,7 @@
 # имя | адрес | desktop|mobile | js
-# 17.11.2026 — страница-проба «панель в интерьере»: карточки и карусель
-viz6-m | https://nashdekor.ru/vizual/?s=81 | mobile | 
-viz6-a903-m | https://nashdekor.ru/vizual/?s=82#a903/sofad | mobile | document.querySelector('[data-paint="Шалфей"]').click()
-viz6-wood-m | https://nashdekor.ru/vizual/?s=83 | mobile | document.querySelector('[data-pg="s5"]').click(); setTimeout(()=>{window.scrollTo(0,520); document.querySelector('[data-pick="5-8"]').click(); document.querySelector('[data-step="1"]').click()},400)
-viz6-d | https://nashdekor.ru/vizual/?s=84#a913/bedd | desktop | document.querySelector('[data-paint="Глубокий синий"]').click()
-viz6-sceny-m | https://nashdekor.ru/vizual/sceny/?s=85 | mobile | 
+# 17.11.2026 — главная: карусель «в интерьере» вместо 3D-стены
+glav-int-m | https://nashdekor.ru/?s=91#calc | mobile | document.getElementById('calc').scrollIntoView()
+glav-int-col-m | https://nashdekor.ru/?s=92#calc | mobile | document.querySelector('#pGrid [data-pick="A903"]').click(); document.querySelector('#cColors [data-name="Шалфей"]').click(); document.querySelector('#stage [data-ivstep="1"]').click(); document.querySelector('#stage [data-ivstep="1"]').click(); document.getElementById('calc').scrollIntoView()
+glav-int-wood-d | https://nashdekor.ru/?s=93&panel=3-15#calc | desktop | document.getElementById('calc').scrollIntoView(); document.querySelector('#ivStrip [data-ivgo="9"]').click()
+glav-top-m | https://nashdekor.ru/?s=94 | mobile | 
+prod-a910-m | https://nashdekor.ru/p/a910/?s=95 | mobile | 
