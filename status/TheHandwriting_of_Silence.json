@@ -6,27 +6,33 @@
  "description": "Всё что хочется услышать «Everything You Want to Hear»",
  "header": [
   "38 подписчиков",
-  "63 видео"
+  "64 видео"
  ],
  "alerts": [],
  "images": {
   "avatar": "https://yt3.googleusercontent.com/UtCp7ixk74NISIjixeGp5oPwRp3pxMDlGo5PsTFpAV4wqnspdRjsJYNm3h-0raq1DCRavPgvzw=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/5VT-xJ6_tn05sBBpgHimbrnctQXI0-H3guZELd6g4eDNbowlv3j-h_ezGHC8i7mOxDcyAAEv5g=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-17 08:11 UTC",
+ "checked": "2026-11-17 21:00 UTC",
  "shorts_status": 200,
  "shorts": [
   {
+   "id": "_yO6U0c8GZc",
+   "title": "Тебе вернули один день… Какой выберешь? ⏳ #Shorts",
+   "views": "201 просмотр",
+   "a11y": "Воспроизвести короткое видео \"Тебе вернули один день… Какой выберешь? ⏳ #Shorts, 201 просмотр\""
+  },
+  {
    "id": "NVIcokZCh78",
    "title": "Что мы тратим, не замечая? ⏳ | Сенека о цене жизни #Shorts",
-   "views": "216 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Что мы тратим, не замечая? ⏳ | Сенека о цене жизни #Shorts, 216 просмотров\""
+   "views": "235 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Что мы тратим, не замечая? ⏳ | Сенека о цене жизни #Shorts, 235 просмотров\""
   },
   {
    "id": "UXPbaSdMoFU",
    "title": "Когда жизнь бьёт ключом | Джек Лондон",
-   "views": "323 просмотра",
-   "a11y": "Воспроизвести короткое видео \"Когда жизнь бьёт ключом | Джек Лондон, 323 просмотра\""
+   "views": "326 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Когда жизнь бьёт ключом | Джек Лондон, 326 просмотров\""
   },
   {
    "id": "m0OAs9apqa4",
@@ -73,8 +79,8 @@
   {
    "id": "WZMuTqPiQIc",
    "title": "❤️ У счастья нет завтрашнего дня… | Иван Тургенев «Ася» #Shorts",
-   "views": "53 просмотра",
-   "a11y": "Воспроизвести короткое видео \"❤️ У счастья нет завтрашнего дня… | Иван Тургенев «Ася» #Shorts, 53 просмотра\""
+   "views": "54 просмотра",
+   "a11y": "Воспроизвести короткое видео \"❤️ У счастья нет завтрашнего дня… | Иван Тургенев «Ася» #Shorts, 54 просмотра\""
   },
   {
    "id": "bkvBk3kZOWw",
@@ -121,8 +127,8 @@
   {
    "id": "rR49kQ2K8cI",
    "title": "🤍 Тебе не нужно быть идеальным, чтобы быть счастливым… | Джон Стейнбек #Shorts",
-   "views": "320 просмотров",
-   "a11y": "Воспроизвести короткое видео \"🤍 Тебе не нужно быть идеальным, чтобы быть счастливым… | Джон Стейнбек #Shorts, 320 просмотров\""
+   "views": "321 просмотр",
+   "a11y": "Воспроизвести короткое видео \"🤍 Тебе не нужно быть идеальным, чтобы быть счастливым… | Джон Стейнбек #Shorts, 321 просмотр\""
   },
   {
    "id": "IWJ2oOXy0nw",
@@ -241,8 +247,8 @@
   {
    "id": "bUvUkFmCnxs",
    "title": "Даже в самые тёмные времена можно найти счастье… ✨❤️ | Дамблдор #Shorts",
-   "views": "293 просмотра",
-   "a11y": "Воспроизвести короткое видео \"Даже в самые тёмные времена можно найти счастье… ✨❤️ | Дамблдор #Shorts, 293 просмотра\""
+   "views": "295 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Даже в самые тёмные времена можно найти счастье… ✨❤️ | Дамблдор #Shorts, 295 просмотров\""
   },
   {
    "id": "Gn9Dz9lkzVg",
@@ -297,28 +303,29 @@
    "title": "Великие слова Толстого, которые заставляют задуматься… 🤍 | Leo Tolstoy #Shorts",
    "views": "12 просмотров",
    "a11y": "Воспроизвести короткое видео \"Великие слова Толстого, которые заставляют задуматься… 🤍 | Leo Tolstoy #Shorts, 12 просмотров\""
-  },
-  {
-   "id": "fnvFC600NvM",
-   "title": "Ты смотришь… но видишь ли главное? 🦋🤍 | Henry David Thoreau #Shorts",
-   "views": "483 просмотра",
-   "a11y": "Воспроизвести короткое видео \"Ты смотришь… но видишь ли главное? 🦋🤍 | Henry David Thoreau #Shorts, 483 просмотра\""
   }
  ],
  "rss_status": 200,
  "rss": [
   {
+   "id": "_yO6U0c8GZc",
+   "published": "2026-11-17T15:00:13+00:00",
+   "title": "Тебе вернули один день… Какой выберешь? ⏳ #Shorts",
+   "views": 225,
+   "desc": "Представь: тебе вернули один день из прошлого. Любой.\n\nКакой день ты выберешь? И почему именно его?\n\n15 секунд. Один вопрос. Возможно, совсем другой взгляд на жизнь.\n\nImagine you could have one day from your past back. Any day.\nWhich one would you choose — and why?\n\nОригинальная мини-история «Почерка тишины» / An original short story by The Handwriting of Silence.\n\n#ПочеркТишины #ОдинДень #КороткиеИстории #Shorts #DeepThoughts #LifeQuestions"
+  },
+  {
    "id": "NVIcokZCh78",
    "published": "2026-11-16T15:00:39+00:00",
    "title": "Что мы тратим, не замечая? ⏳ | Сенека о цене жизни #Shorts",
-   "views": 216,
+   "views": 235,
    "desc": "Мы внимательно считаем деньги. Но часто не замечаем, как отдаём другим то, чего нельзя вернуть — собственное время.\n\n«Нет человека, желающего разделить с другими деньги, а скольким раздаёт каждый свою жизнь!»\n\n— Луций Анней Сенека, «О скоротечности жизни» (русский перевод).\n\nWe count our money so carefully. Yet we give away something far more precious without noticing — our time.\n\n“No one is to be found who is willing to distribute his money, yet among how many does each one of us distribute his life!”\n\n— Lucius Annaeus Seneca, On the Shortness of Life.\n\n«Почерк тишины» / The Handwriting of Silence\n\nА кому ты отдаёшь своё время — и что оставляешь себе?\nWho receives your time — and how much do you keep for yourself?\n\n#ПочеркТишины #Сенека #ОСкоротечностиЖизни #Философия #СмыслЖизни #ЦитатыИзКниг #Shorts #Seneca #OnTheShortnessOfLife #Stoicism #LifeQuotes #TheHandwritingOfSilence"
   },
   {
    "id": "UXPbaSdMoFU",
    "published": "2026-11-15T10:43:27+00:00",
    "title": "Когда жизнь бьёт ключом | Джек Лондон",
-   "views": 323,
+   "views": 326,
    "desc": "Бывает, так увлечёшься мгновением, что забываешь обо всём. Джек Лондон поймал это чувство в одной фразе.\n\nДжек Лондон · «Зов предков»\nJack London · The Call of the Wild\nМузыка / Music: Magnetic Lullaby — Amulets\n\n#Shorts #ПочеркТишины #ДжекЛондон #ЗовПредков #ЦитатыИзКниг #JackLondon #TheCallOfTheWild #BookQuotes"
   },
   {
@@ -374,7 +381,7 @@
    "id": "WZMuTqPiQIc",
    "published": "2026-11-10T15:37:59+00:00",
    "title": "❤️ У счастья нет завтрашнего дня… | Иван Тургенев «Ася» #Shorts",
-   "views": 53,
+   "views": 54,
    "desc": "✨ А вдруг самое счастливое мгновение твоей жизни происходит прямо сейчас?\n\n«У счастья нет завтрашнего дня; у него нет и вчерашнего; оно не помнит прошедшего, не думает о будущем; у него есть настоящее — и то не день, а мгновенье».\n\n❤️ Иван Тургенев — «Ася»\n\nМы часто ждём счастья завтра.\nВспоминаем, как были счастливы вчера.\nИ иногда не замечаем, что самое прекрасное происходит именно сейчас…\n\n🌅 Один взгляд.\n❤️ Одна встреча.\n✨ Одно мгновение, которое остаётся в сердце навсегда.\n\nНе откладывай счастье на потом.\n\n━━━━━━━━━━━━━━\n\n✨ HAPPINESS EXISTS IN A MOMENT.\n\n“Happiness has no tomorrow, nor a yesterday; it does not remember the past, nor think of the future; it has only the present — and not even a day, but a moment.”\n\n❤️ Ivan Turgenev — Asya\n\nSometimes the most beautiful moments are the ones we almost miss.\n\nDon’t wait for tomorrow to be happy. Cherish the moment you’re living now.\n\n🤍 ПОЧЕРК ТИШИНЫ\nTHE HANDWRITING OF SILENCE\n\nЛитература, которая касается души.\nTimeless words. Beautiful thoughts. Moments that stay with us.\n\n💬 А какое мгновение своей жизни ты хотел бы пережить ещё раз?\n\nWhat is one beautiful moment you wish you could relive?\n\n#ПочеркТишины #ИванТургенев #Ася #ЦитатыСоСмыслом #МудрыеМысли #КрасивыеЦитаты #Счастье #МгновенияСчастья #СмыслЖизни #РусскаяЛитература #КлассическаяЛитература #ЦитатыОЛюбви #ДушевныеЦитаты #Вдохновение #Turgenev #IvanTurgenev #Happiness #LifeQuotes #InspirationalQuotes #MeaningfulQuotes #RussianLiterature #BeautifulWords #Shorts #YouTubeShorts"
   },
   {
@@ -404,13 +411,6 @@
    "title": "❤️ А вы знаете, что такое настоящая любовь? | Сент-Экзюпери #Shorts",
    "views": 134,
    "desc": "❤️ А вдруг настоящая любовь — совсем не то, что мы привыкли думать?\n\n«Любить — это не значит смотреть друг на друга, любить — значит вместе смотреть в одном направлении».\n\n— Антуан де Сент-Экзюпери, «Планета людей»\n\n✨ Любовь — это не только красивые слова, романтика и признания.\n\nЭто когда два человека выбирают друг друга.\nКогда мечтают вместе.\nКогда поддерживают друг друга даже в самые трудные моменты.\nКогда смотрят не только друг на друга, но и в одно будущее. ❤️\n\nИногда одна фраза способна изменить наше представление о любви…\n\n💬 А вы согласны с этими словами? Или настоящая любовь для вас — нечто другое?\n\nНапишите в комментариях. Возможно, именно ваш ответ тронет чьё-то сердце. 🤍\n\n━━━━━━━━━━━━━━\n\n❤️ WHAT IS TRUE LOVE?\n\n“Love does not consist in gazing at each other, but in looking outward together in the same direction.”\n\n— Antoine de Saint-Exupéry, Wind, Sand and Stars\n\n✨ True love is more than romance. It’s choosing each other, sharing dreams, and walking through life together.\n\nSometimes a single quote can change the way we see love.\n\n💬 Do you agree? What does true love mean to you?\n\n━━━━━━━━━━━━━━\n\n🤍 ПОЧЕРК ТИШИНЫ\nThe Handwriting of Silence\n\nСлова, которые хочется перечитывать.\nЦитаты, которые остаются в сердце.\n\nWords worth remembering.\nFeelings worth sharing.\n\n❤️ Подписывайтесь, если любите красивые слова со смыслом.\n\n#ПочеркТишины #Любовь #НастоящаяЛюбовь #ЦитатыПроЛюбовь #СентЭкзюпери #МудрыеМысли #КрасивыеСлова #Отношения #Чувства #СловаСоСмыслом #Цитаты #ФилософияЛюбви #Love #TrueLove #LoveQuotes #RelationshipQuotes #DeepQuotes #MeaningfulQuotes #SaintExupery #Shorts #YouTubeShorts"
-  },
-  {
-   "id": "EjD1vCqLghY",
-   "published": "2026-11-08T19:46:37+00:00",
-   "title": "❤️ У сердца есть свои тайны… | Блез Паскаль | Мудрые слова #Shorts",
-   "views": 72,
-   "desc": "❤️ Почему сердце иногда знает то, чего не может объяснить разум?\n\n«У сердца есть свои доводы, которых разум не знает».\n— Блез Паскаль, «Мысли»\n\n✨ Иногда чувства оказываются сильнее логики. Мы не всегда можем объяснить, почему любим, скучаем или чувствуем особенную связь с человеком.\n\nЭти слова Блеза Паскаля напоминают: не всё самое важное в жизни можно понять одним лишь разумом.\n\n💭 А вы чаще слушаете своё сердце или разум? Напишите в комментариях!\n\n❤️ The heart has its reasons which reason knows nothing of.\n— Blaise Pascal, Pensées\n\n✨ Some feelings cannot be explained by logic. Sometimes the heart understands what words cannot express.\n\n💭 Do you follow your heart or your mind?\n\n🤍 «Почерк тишины» | The Handwriting of Silence\n\nКрасивые цитаты, мудрые мысли и слова, которые остаются в сердце.\n\nПодписывайтесь, чтобы каждый день находить немного вдохновения.\n\n#ПочеркТишины #БлезПаскаль #Цитаты #МудрыеМысли #КрасивыеЦитаты #ЦитатыПроЛюбовь #Любовь #Чувства #Сердце #Душа #Философия #Мудрость #СмыслЖизни #СловаСоСмыслом #ГлубокиеМысли #Вдохновение #Pascal #BlaisePascal #LoveQuotes #DeepQuotes #Wisdom #Philosophy #HeartAndMind #InspirationalQuotes #MeaningfulQuotes #Shorts #YouTubeShorts"
   }
  ],
  "rss_tries": 1
