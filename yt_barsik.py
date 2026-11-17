@@ -39,7 +39,21 @@ def secret_shape(raw):
     b64 = sum(1 for c in flat if re.match(r"[A-Za-z0-9+/=]", c))
     col = flat.count(":")
     parts = [len(x) for x in flat.split(":")]
-    return (f"длина {len(raw)}, строк {raw.count(chr(10)) + 1}, пробелов {raw.count(' ')}, двоеточий {col}, "
+    kind = ""
+    if col:                                                    # что это за строка, если не строка входа: только вид, без содержимого
+        pre, rest = flat.split(":", 1)
+        known = {"vpn": "ключ VPN (vpn://…)", "http": "ссылка", "https": "ссылка", "ss": "ключ VPN", "vless": "ключ VPN", "ssh": "адрес ssh",
+                 "bk1": "строка входа «Кот Барсик»", "fb1": "строка входа другого канала", "kz1": "строка входа другого канала"}
+        kind = known.get(pre.lower()) or ("начало из " + "".join("б" if c.isalpha() else "ц" if c.isdigit() else "?" for c in pre[:6]) + " (б — буква, ц — цифра)")
+        kind = f"вид: {kind}, после двоеточия «//» {'есть' if rest.startswith('//') else 'нет'}, «END» за {len(flat) - flat.rfind('END') - 3 if 'END' in flat else '—'} зн. до конца, "
+        try:
+            d = base64.urlsafe_b64decode(re.sub(r"[^A-Za-z0-9_\-]", "", rest.lstrip("/")) + "===")
+            kind += ("внутри сжатые данные (так устроен ключ Amnezia VPN), " if len(d) > 5 and d[4] == 0x78 else
+                     "внутри JSON, " if d[:1] == b"{" else "внутри не JSON, ")
+        except Exception:
+            kind += "не base64, "
+    kind += f"знаков «-» {flat.count('-')}, «_» {flat.count('_')}, «.» {flat.count('.')}, «+» {flat.count('+')}, «/» {flat.count('/')}, «=» {flat.count('=')}, "
+    return (kind + f"длина {len(raw)}, строк {raw.count(chr(10)) + 1}, пробелов {raw.count(' ')}, двоеточий {col}, "
             f"куски между двоеточиями {parts[:8]}, русских букв {cyr}, прочих знаков {len(flat) - b64 - col - cyr}, "
             f"«BK1» {'есть' if 'BK1' in flat else 'нет'}, «END» {'есть' if 'END' in flat else 'нет'}")
 
