@@ -235,3 +235,4 @@ g_tvc_5-10 scene=use use=tvc decor=5-10 tex=strip cabcol=C9B8A0 view=Khronos_PBR
 g_tvc_5-11 scene=use use=tvc decor=5-11 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
 g_tvc_5-12 scene=use use=tvc decor=5-12 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
 g_tvc_5-15 scene=use use=tvc decor=5-15 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 ev=-0.9 calfile=cal_photo.json samples=120 noise=0.05
+# набор C, повтор с исправленным наличником двери (12:06 UTC)
