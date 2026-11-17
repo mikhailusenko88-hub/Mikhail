@@ -6,6 +6,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:                 # наборы кадров идут по очереди: один считается, следующий ждёт (в очереди — только один, новый вытесняет прежний ожидающий)
+  group: paneli-render
+  cancel-in-progress: false
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -32,6 +35,7 @@ jobs:
     timeout-minutes: 100
     strategy:
       fail-fast: false
+      max-parallel: 12        # не занимать все 20 мест GitHub: на аккаунте считаются и другие задания (YouTube, студия, бот, сайт)
       matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
     env:
       NAME: ${{ matrix.name }}
