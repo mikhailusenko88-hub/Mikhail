@@ -272,9 +272,8 @@ def test_chat_with_manager_in_max(tmp_path, monkeypatch):
         # ночью — предупреждаем, что ответят с 10:00; старая подпись кнопки тоже работает
         clock["h"] = 23
         await h.send(CLIENT2, "Связаться с менеджером")
-        assert "нерабочее время" in f.last(CLIENT2)
-        await h.send(CLIENT2, "Перезвоните завтра")
-        assert "ответим с 10:00" in f.last(CLIENT2)
+        assert "нерабочее время" in f.last(CLIENT2) and "ответит с 10:00" in f.last(CLIENT2)
+        assert "ответим с 10:00" in core.texts.message_received(core.off_hours())
         await done(f, h)
 
     run(scenario())
