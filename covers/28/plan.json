@@ -1,0 +1,83 @@
+{
+ "el": "/home/claude/el28/el/el",
+ "series": "СЕРИЯ 28",
+ "text": "ВТОРОЙ РОН|В ЗЕРКАЛЕ?",
+ "logo": 0.8,
+ "vignette": 0.28,
+ "bg": "f1_room_day.jpg",
+ "bg_zoom": [
+  0.5,
+  0.4,
+  1.7
+ ],
+ "blur": 4,
+ "sat": 1.45,
+ "bri": 1.05,
+ "text_at": "center",
+ "rays": {
+  "cx": 0.5,
+  "cy": 0.42,
+  "n": 16,
+  "col": [
+   255,
+   247,
+   200
+  ],
+  "a": 55
+ },
+ "spot": {
+  "cx": 0.5,
+  "cy": 0.42,
+  "r": 0.26,
+  "col": [
+   255,
+   252,
+   225
+  ],
+  "a": 190
+ },
+ "items": [
+  {
+   "img": "v_mirror_ron.png",
+   "cx": 0.5,
+   "bottom": 1.12,
+   "h": 1.04,
+   "outline": 5,
+   "glow": [
+    255,
+    238,
+    150
+   ],
+   "rot": 0
+  },
+  {
+   "sparkles": true,
+   "cx": 0.5,
+   "cy": 0.38,
+   "r": 0.23,
+   "n": 7
+  },
+  {
+   "mark": "?",
+   "cx": 0.672,
+   "cy": 0.2,
+   "h": 0.19,
+   "rot": 12
+  },
+  {
+   "img": "g2_Рон_pokaz1.png",
+   "cx": 0.165,
+   "bottom": 1.12,
+   "h": 0.8,
+   "outline": 6
+  },
+  {
+   "img": "g1_Барсик_udiv.png",
+   "cx": 0.845,
+   "bottom": 1.1,
+   "h": 0.84,
+   "outline": 6,
+   "flip": true
+  }
+ ]
+}
