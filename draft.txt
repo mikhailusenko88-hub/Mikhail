@@ -1,3 +1,3 @@
 # черновики (быстрая дорожка, .github/workflows/draft.yml): имя  аргументы для scene.py
-z2_tvd_2-10 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 calfile=cal_photo.json ev=-1.1 decor=2-10 tex=strip use=tv campos=3.95,3.55,1.25 camto=2.7,5.2,1.05 lens=40
-z2_tv_2-10 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 calfile=cal_photo.json ev=-0.9 decor=2-10 tex=strip use=tv
+z3_tvd_2-10 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 calfile=cal_photo.json ev=-1.1 decor=2-10 use=tv campos=3.95,3.55,1.25 camto=2.7,5.2,1.05 lens=40
+z3_tv_2-10 scene=use cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=1350x900 samples=64 noise=0.06 calfile=cal_photo.json ev=-0.9 decor=2-10 use=tv
