@@ -159,7 +159,7 @@ def _repair(raw):
                 if re.fullmatch(r"[0-9a-f]{8}", chk2) and len(b64.rstrip("=")) % 4 != 1 and (b64, chk2) not in ocr and len(ocr) < 3:
                     ocr.append((b64, chk2))
     t0 = time.time()
-    for groups, max_err, budget in ((OCR_WIDE, 1, 10), (OCR_NARROW, 3, 20), (OCR_WIDE, 2, 90), (OCR_NARROW, 5, 90), (OCR_WIDE, 3, 240)):
+    for groups, max_err, budget in ((OCR_WIDE, 1, 5), (OCR_NARROW, 3, 10), (OCR_WIDE, 2, 45)):
         for b64, chk in ocr[:1] if max_err > 1 else ocr:                    # неверно выбранная замена «|» найдётся как ещё одна опечатка
             data, k = _ocr_search(b64, chk, groups, max_err, time.time() + budget)
             if data:
@@ -174,10 +174,7 @@ def parse_secret(raw):
         raise SystemExit(f"ЖДУ ВХОД: нет секрета {SECRET} — вход в канал ещё не сделан")
     flat = re.sub(WS, "", raw)   # строка приходит порезанной на строчки по 24 знака: «:END» и «BK1:» могут оказаться разорваны переносом
     k = None
-    fixed = _repair(raw)
-    if fixed is not None:
-        k = json.loads(fixed)
-    m = None if k else re.search(r":([0-9a-fA-F]{8}):?END", flat)
+    m = re.search(r":([0-9a-fA-F]{8}):?END", flat)
     if m:                                                      # <что-то>:<8 знаков проверки>:END — начало может быть испорчено или потеряно
         chk, pre = m.group(1).lower(), flat[:m.start()]
         a = re.search(r"(BK1|FB1):", pre)
@@ -191,6 +188,8 @@ def parse_secret(raw):
                 if data:
                     break
         if data is None:
+            data = _repair(raw)
+        if data is None:
             raise SystemExit(f"строка входа скопирована не целиком или испорчена: проверка не сходится ({secret_shape(raw)})")
         k = json.loads(data)
     elif "{" in raw:
@@ -198,6 +197,10 @@ def parse_secret(raw):
         i, j = t.find("{"), t.rfind("}")
         if j > i:
             k = json.loads(re.sub(WS, "", t[i:j + 1]))
+    if k is None:
+        fixed = _repair(raw)                                   # запись «по-ссылочному», потерянные двоеточия, текст с картинки
+        if fixed is not None:
+            k = json.loads(fixed)
     if k is None:
         raise SystemExit(f"секрет {SECRET} не похож на строку входа ({secret_shape(raw)})")   # сам секрет не печатаем
     if not all(k.get(x) for x in ("client_id", "client_secret", "refresh_token")):
