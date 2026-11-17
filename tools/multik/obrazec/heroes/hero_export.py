@@ -102,7 +102,7 @@ if name == 'barsik':
            'hip': [(h + V(0, 0, 0.06)).tolist() for h in B.HIP], 'foot': [f.tolist() for f in B.FOOT], 'tail': [t.tolist() for t in B.TAIL]}
 else:
     M = importlib.import_module('hero_' + os.environ.get('MOD', name)); HERO = M.HERO; Hh = HERO
-    hstep = {'pik': 0.0024, 'ron': 0.003}[name]; STEP = getattr(Hh, 'STEP', {})
+    hstep = getattr(Hh, 'HSTEP', {'pik': 0.0024, 'ron': 0.003, 'fila': 0.0024, 'topa': 0.0032}.get(name, 0.003)); STEP = getattr(Hh, 'STEP', {})
     def fn_head(p): return smin(Hh.head_sd(p), sd_cap(p, *Hh.NECK_PLUG), 0.03)
     def fn_body_full(p): d = Hh.parts(p); return smin(d['torso'], d['leg'], 0.05)
     Z0 = getattr(Hh, 'ANKLE', None); OV = 0.004
@@ -121,7 +121,7 @@ else:
         Hh.set_var(var); v, f = mc(fn_head, *Hh.BOX['head'], h=STEP.get('head', hstep)); n = grad(fn_head, v); reg = Hh.region_of(v); SKINS['head_' + var] = (v, f, n, reg); log('голова', var, len(v))
     Hh.set_var('base')
     SMALL = {}
-    nv, nf = Hh.small_mesh(Hh.nose_fn, Hh.NOSE_C - V(0.045, 0.035, 0.035), Hh.NOSE_C + V(0.045, 0.035, 0.035), h=0.0008 if name == 'pik' else 0.0011)
+    nv, nf = Hh.small_mesh(Hh.nose_fn, Hh.NOSE_C - V(0.045, 0.035, 0.035), Hh.NOSE_C + V(0.045, 0.035, 0.035), h=getattr(Hh, 'NOSE_H', 0.0008 if name in ('pik', 'fila') else 0.0011))
     SMALL['nose'] = (nv, nf, 'nose', getattr(Hh, 'NOSE_COL', (0.85, 0.47, 0.52)))
     accs = getattr(Hh, 'ACCS', None) or [dict(Hh.ACC, fn='acc_fn')]
     for a in accs:
@@ -174,7 +174,7 @@ for sk, (v, f, n, reg) in SKINS.items():
     if part == 'head' and var != 'blink':   # тёмная «подводка» вокруг глаз
         ring = np.zeros(len(v), bool)
         for c in EY: q = v - c; ring |= (np.linalg.norm(HERO.eye_q(q) if hasattr(HERO, 'eye_q') else q, axis=-1) < RE * 1.18) & (q[:, 1] < RE * 0.16)
-        skin[ring] = (0.09, 0.04, 0.02) if name == 'barsik' else (0.05, 0.035, 0.03)
+        skin[ring] = getattr(HERO, 'EYE_RING', (0.09, 0.04, 0.02) if name == 'barsik' else (0.05, 0.035, 0.03))
     sss = np.where(reg == 8, 0.9, np.where(reg == 4, 0.5, 0.18))
     ok = HERO.fur_ok(v, reg)
     if var == 'blink':     # на закрытых веках — только шерсть у глаз (отдельная, видна при моргании)
@@ -210,6 +210,7 @@ if getattr(HERO, 'EYE_CENTER', 0):   # радужка — в середину в
         yw = math.atan2(c[0], -c[1]) * kh; pt = math.atan2(c[2], -c[1]) * kv; d = nrm(V(math.tan(yw), -1, math.tan(pt))); dirs.append(ax(d).tolist())
     man['info']['eyeDirs'] = dirs; log('радужка смотрит', [[round(x, 3) for x in d] for d in dirs])
 if getattr(HERO, 'EYE_S', None) is not None: es = HERO.EYE_S; man['info']['eyeS'] = [float(es[0]), float(es[2]), float(es[1])]   # в осях глаза: вбок, вверх, вперёд
+if getattr(HERO, 'BROW', None): man['info']['brow'] = {k: (list(v) if isinstance(v, (list, tuple)) else float(v)) for k, v in HERO.BROW.items()}
 man['info']['toeY'] = float(getattr(HERO, 'TOE_Z', 0.0)); man['info']['irisS'] = int(getattr(HERO, 'IRIS_STYLE', 0))
 if getattr(HERO, 'MOUTHS', None):   # где открыт рот (в осях телефона) — там шерсть закрытых губ прячется, пока рот открыт
     man['info']['mouth'] = {k: {'c': ax(c).tolist(), 'r': [float(r[0]), float(r[2]), float(r[1])]} for k, (c, r) in HERO.MOUTHS.items()}

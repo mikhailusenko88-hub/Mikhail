@@ -354,7 +354,9 @@ function fetchBuf(url) {
 const fetchJSON = url => fetchBuf(url).then(b => JSON.parse(new TextDecoder().decode(b)));
 const yieldUI = () => new Promise(r => setTimeout(r, 0));
 
-const NAMES = { pik: { kind: 'mouse', re: /^\s*пик(?![а-яё])/i, k: .56, bounce: [0.36, 0.35, 0.33] }, ron: { kind: 'dog', re: /^\s*рон(?![а-яё])/i, k: .82, bounce: [0.34, 0.35, 0.36] }, barsik: { kind: 'cat', re: /^\s*барсик(?![а-яё])/i, k: 1, bounce: [0.5, 0.36, 0.24], opt: true } };
+const NAMES = { pik: { kind: 'mouse', re: /^\s*пик(?![а-яё])/i, k: .56, bounce: [0.36, 0.35, 0.33] }, ron: { kind: 'dog', re: /^\s*рон(?![а-яё])/i, k: .82, bounce: [0.34, 0.35, 0.36] }, barsik: { kind: 'cat', re: /^\s*барсик(?![а-яё])/i, k: 1, bounce: [0.5, 0.36, 0.24], opt: true },
+  fila: { kind: 'rabbit', re: /^\s*фил[яюеи](?![а-яё])/i, k: .6, bounce: [0.44, 0.44, 0.43] },     /* Филя — белый зайчонок (17.11.2026), завод tools/multik/obrazec/heroes/hero_fila.py */
+  topa: { kind: 'bear', re: /^\s*топ[аыуе](?![а-яё])/i, k: .86, bounce: [0.42, 0.31, 0.22] } };    /* Топа — бурый медвежонок, hero_topa.py */
 H6.useBarsik = false;   // Барсик образца 6.2 (шерсть растит телефон, свет как в Blender) вместо «неонового»
 H6.whoIs = spec => { if (!spec) return null; const nm = String(spec.name || ''); for (const k in NAMES) if ((!NAMES[k].opt || H6.useBarsik) && spec.kind === NAMES[k].kind && NAMES[k].re.test(nm)) return k; return null; };
 H6.isHero = spec => !!H6.whoIs(spec);
@@ -449,17 +451,17 @@ async function buildTemplate(name) {
     const near = q => { let bi = 0, bd = 1e9; for (const i of cand) { const dx = HP[i * 3] - q.x, dy = HP[i * 3 + 1] - q.y, dz = HP[i * 3 + 2] - q.z, d = dx * dx + dy * dy + dz * dz; if (d < bd) { bd = d; bi = i; } } return bi; };
     const snap = (q, lift) => { const i = near(q), n = new THREE.Vector3(HN[i * 3], HN[i * 3 + 1], HN[i * 3 + 2]).normalize(); return new THREE.Vector3(HP[i * 3], HP[i * 3 + 1], HP[i * 3 + 2]).addScaledVector(n, lift); };
     const BROW = { neutral: [0, 0, 0], up: [.3, .3, .06], sad: [.28, -.05, 0], frown: [-.2, .07, 0], shy: [.15, 0, 0] };   // подъём у переносицы, у виска, дуга (в радиусах глаза)
-    T.brows = {}; let bcol = null;
+    T.brows = {}; let bcol = null; const BQ = info.brow || {};   // у героя можно задать свои брови: up — высота над глазом, w — полуширина (в радиусах глаза), r — толщина [середина, концы] в метрах, col — цвет
     for (const k in BROW) { T.brows[k] = [];
       for (let ei = 0; ei < info.eyes.length; ei++) { const c = V3(info.eyes[ei]), dL = new THREE.Vector3(...(info.eyeDirs ? info.eyeDirs[ei] : [0, 0, 1])).normalize();
         const U0 = new THREE.Vector3(0, 1, 0).addScaledVector(dL, -dL.y).normalize(), S = new THREE.Vector3().crossVectors(U0, dL).normalize(); const inSgn = Math.sign(-c.x) * Math.sign(S.x) || 1;
         const [bi, bo, ba] = BROW[k], pts = [];
         for (let j = 0; j < 9; j++) { const u = j / 8 * 2 - 1, wi = (1 + u * inSgn) / 2, arch = 1 - u * u;
-          const q = c.clone().addScaledVector(dL, RE2 * .55).addScaledVector(U0, RE2 * (1.32 + .14 * arch + (bi * wi + bo * (1 - wi) + ba * arch))).addScaledVector(S, u * RE2 * .82 + (k === 'frown' ? -inSgn * wi * RE2 * .08 : 0));
+          const q = c.clone().addScaledVector(dL, RE2 * .55).addScaledVector(U0, RE2 * ((BQ.up != null ? BQ.up : 1.32) + .14 * arch + (bi * wi + bo * (1 - wi) + ba * arch))).addScaledVector(S, u * RE2 * (BQ.w != null ? BQ.w : .82) + (k === 'frown' ? -inSgn * wi * RE2 * .08 : 0));
           pts.push(snap(q, Lf * .75 + .0016 * sc)); }
         if (!bcol && HF) { const i = near(pts[4]), f = [HF[i * 5] / 255, HF[i * 5 + 1] / 255, HF[i * 5 + 2] / 255], lum = .3 * f[0] + .55 * f[1] + .15 * f[2];   // на светлой шерсти — темнее шерсти, на тёмной (Рон) — светлее, иначе бровей не видно
           bcol = lum < .14 ? f.map((x, j) => Math.min(.55, x * 2.4 + [.12, .1, .08][j])) : f.map(x => x * .4); }
-        const pa = pts.map(v => [v.x, v.y, v.z]); T.brows[k].push(tube(pa, .0034 * sc, .0018 * sc, bcol || [0.1, 0.09, 0.09], 'brow', { noOcc: true })); } }
+        const pa = pts.map(v => [v.x, v.y, v.z]); T.brows[k].push(tube(pa, BQ.r ? BQ.r[0] : .0034 * sc, BQ.r ? BQ.r[1] : .0018 * sc, BQ.col || bcol || [0.1, 0.09, 0.09], 'brow', { noOcc: true })); } }
     // рот: улыбка — уголки вверх, грусть — вниз (только линии губ; желобок как был)
     const lip = (l, d) => { const xm = Math.max(...l.map(p => Math.abs(p[0]))) || 1; return l.map(p => { const w = Math.pow(Math.min(1, Math.max(0, (Math.abs(p[0]) / xm - .25) / .75)), 1.3); const v = snap(new THREE.Vector3(p[0], p[1] + d * RE2 * w, p[2]), .0004 * sc); return [v.x, v.y, v.z]; }); };
     const mvar = d => info.lines.mouth_base.map((l, i) => tube(i === 0 ? l : lip(l, d), .0017 * sc, .0015 * sc, [0.12, 0.04, 0.03], 'mouth'));
@@ -510,10 +512,11 @@ function instance(T, U, baked) {
   const G = { body: grp() }; root.add(G.body); for (const nm of ['head', 'armL', 'armR', 'tail']) { G[nm] = grp(); G.body.add(G[nm]); }
   G.legs = [grp(), grp()]; G.legs.forEach(g => G.body.add(g));
   const I = { T, U, root, G, meshes: [], heads: {}, eyes: [], mouthB: [], mouthO: [], creases: [], corn: [] };
-  // шерсть
+  // шерсть (блеск, «золото» и рассеяние можно задать у героя: info.fur.spec / gold / ms / hairK — иначе как у Пика и Рона)
+  const FQ = (T.info && T.info.fur) || {};
   const fu = { uPts: { value: T.fur.ptsTex }, uCol: { value: T.fur.colTex }, uB0: { value: baked ? T.fur.B[0] : null }, uB1: { value: baked ? T.fur.B[1] : null }, uB2: { value: baked ? T.fur.B[2] : null }, uK: { value: 5 }, uRadK: { value: 0.001 }, uTaper: { value: .85 },
-    uPx: { value: .001 }, uMinPx: { value: .6 }, uGR: { value: new THREE.Vector4() }, uGrass: { value: 0 }, uCamDir: { value: new THREE.Vector3() }, uTime: { value: 0 }, uWind: { value: 0 }, uHairK: { value: .095 }, uMS: { value: .25 }, uSpec: { value: .2 }, uDesat: { value: 0 },
-    uGold: { value: .85 }, uGoldT: { value: new THREE.Vector3(1, .66, .25) }, uPartM: { value: [0, 1, 2, 3, 4, 5].map(() => new THREE.Matrix4()) }, uBlink: { value: 0 }, uNrm: { value: T.fur.nrmTex }, uLive: { value: baked ? 1 : 0 }, uCull: { value: baked ? 1 : 0 }, uCullK: { value: -.3 }, uKT: { value: .5 }, uDec: { value: 2 },
+    uPx: { value: .001 }, uMinPx: { value: .6 }, uGR: { value: new THREE.Vector4() }, uGrass: { value: 0 }, uCamDir: { value: new THREE.Vector3() }, uTime: { value: 0 }, uWind: { value: 0 }, uHairK: { value: FQ.hairK != null ? FQ.hairK : .095 }, uMS: { value: FQ.ms != null ? FQ.ms : .25 }, uSpec: { value: FQ.spec != null ? FQ.spec : .2 }, uDesat: { value: 0 },
+    uGold: { value: FQ.gold != null ? FQ.gold : .85 }, uGoldT: { value: new THREE.Vector3(1, .66, .25) }, uPartM: { value: [0, 1, 2, 3, 4, 5].map(() => new THREE.Matrix4()) }, uBlink: { value: 0 }, uNrm: { value: T.fur.nrmTex }, uLive: { value: baked ? 1 : 0 }, uCull: { value: baked ? 1 : 0 }, uCullK: { value: -.3 }, uKT: { value: .5 }, uDec: { value: 2 },
     uPoseOn: { value: 0 }, uPA: { value: null }, uPB: { value: null }, uPW: { value: 0 }, uDbgS: { value: 0 }, uHideArm: { value: 0 }, uDecC: { value: 1 }, uMouthC: { value: new THREE.Vector4() }, uMouthR: { value: new THREE.Vector3(1, 1, 1) } };
   const fmat = raw(strandVS(false), STRAND_FS, fu, { side: THREE.DoubleSide, alphaToCoverage: false });   // alpha-to-coverage на iPhone рисует сетку тёмных точек — шерсть сплошная, сглаживает MSAA
   const fd = raw(strandVS(true), DEPTH_FS, fu, { side: THREE.DoubleSide, colorWrite: false });
