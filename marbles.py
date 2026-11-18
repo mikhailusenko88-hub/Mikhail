@@ -28,8 +28,9 @@ if "range" in A:
 else:
     FRAMES = [int(v) for v in A.get("frames", "40,120,220").split(",")]
 SIM_TO = max(FRAMES) if "range" not in A else max(FRAMES)
-BR = float(A.get("r", "0.0075"))                 # радиус шара, м
+BR = float(A.get("r", "0.009"))                 # радиус шара, м
 SEED = int(A.get("seed", "7"))
+ANIM = A.get("anim")                             # out/<sim>/anim.npz — готовое движение шаров (рендер без физики)
 random.seed(SEED)
 t0 = time.time()
 
@@ -119,8 +120,8 @@ area("fill", (-0.9, -0.8, 0.5), (math.radians(70), 0, math.radians(-50)), 0.5, 4
 # ---------------------------------------------------------------- физика
 bpy.ops.rigidbody.world_add()
 rbw = sc.rigidbody_world
-rbw.substeps_per_frame = 10
-rbw.solver_iterations = 10
+rbw.substeps_per_frame = int(A.get("sub", "6"))
+rbw.solver_iterations = int(A.get("it", "8"))
 rbw.point_cache.frame_start = 1
 rbw.point_cache.frame_end = FR_END
 
@@ -210,9 +211,10 @@ bpy.ops.mesh.primitive_uv_sphere_add(segments=20, ring_count=12, radius=BR, loca
 base = bpy.context.active_object
 bpy.ops.object.shade_smooth()
 base.data.materials.append(m_ball)
-add_rb(base, "ACTIVE", "SPHERE", friction=0.5, rest=0.16, mass=0.012)
-base.rigid_body.linear_damping = 0.1
-base.rigid_body.angular_damping = 0.25
+if not ANIM:
+    add_rb(base, "ACTIVE", "SPHERE", friction=0.5, rest=0.16, mass=0.012)
+    base.rigid_body.linear_damping = 0.1
+    base.rigid_body.angular_damping = 0.25
 step = 2.08 * BR
 balls = []
 cz = -BH + BR + 0.004
@@ -228,7 +230,7 @@ while cz < -0.03:
             p = center + Vector((x + random.uniform(-0.15, 0.15) * BR, y + random.uniform(-0.15, 0.15) * BR, cz))
             o = base.copy()
             sc.collection.objects.link(o)
-            if rbw.collection.objects.get(o.name) is None:
+            if not ANIM and rbw.collection.objects.get(o.name) is None:
                 rbw.collection.objects.link(o)
             o.location = LIP + p
             balls.append(o)
@@ -266,17 +268,40 @@ cam_d.dof.use_dof = True
 cam_d.dof.focus_object = tgt
 cam_d.dof.aperture_fstop = 8
 
-# ---------------------------------------------------------------- симуляция (по кадрам) и координаты для звука
+# ---------------------------------------------------------------- симуляция (по кадрам) или готовое движение
+if ANIM:
+    an = np.load(ANIM)
+    APOS, AROT = an["pos"].astype(np.float32), an["rot"].astype(np.float32)
+    assert APOS.shape[1] == len(balls), (APOS.shape, len(balls))
+    for o in balls:
+        o.rotation_mode = "QUATERNION"
+    for f in FRAMES:
+        sc.frame_set(f)
+        k = min(f - 1, APOS.shape[0] - 1)
+        for i, o in enumerate(balls):
+            o.location = APOS[k, i]
+            o.rotation_quaternion = AROT[k, i]
+        sc.render.filepath = os.path.join(OUT, f"f_{f:04d}.jpg")
+        bpy.ops.render.render(write_still=True)
+        print(f"кадр {f} нарисован, {time.time() - t0:.0f} с", flush=True)
+    sys.exit(0)
+
 pos = np.zeros((SIM_TO, len(balls), 3), np.float32)
+rot = np.zeros((SIM_TO, len(balls), 4), np.float32)
 for f in range(1, SIM_TO + 1):
     sc.frame_set(f)
     for i, o in enumerate(balls):
-        pos[f - 1, i] = o.matrix_world.translation
+        mw = o.matrix_world
+        pos[f - 1, i] = mw.translation
+        rot[f - 1, i] = mw.to_quaternion()
     if f % 30 == 0:
         print(f"кадр {f}, {time.time() - t0:.0f} с", flush=True)
 np.savez_compressed(os.path.join(OUT, "pos.npz"), pos=pos.astype(np.float16), r=BR, fps=30,
                     glass=np.array([GW, GD, GH, T]))
+np.savez_compressed(os.path.join(OUT, "anim.npz"), pos=pos, rot=rot.astype(np.float16))
 print(f"симуляция готова, {time.time() - t0:.0f} с", flush=True)
+if A.get("mode") == "sim":
+    sys.exit(0)
 
 # ---------------------------------------------------------------- рендер
 for f in FRAMES:
