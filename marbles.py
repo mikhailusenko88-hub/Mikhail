@@ -72,7 +72,7 @@ def mat_principled(name, **kw):
 
 m_floor, _ = mat_principled("floor", **{"Base Color": (0.006, 0.007, 0.010, 1), "Roughness": 0.16, "Specular IOR Level": 0.7})
 m_glass, _ = mat_principled("glass", **{"Base Color": (0.97, 0.99, 1.0, 1), "Roughness": 0.015, "IOR": 1.5, "Transmission Weight": 1.0})
-m_metal, _ = mat_principled("bucket", **{"Base Color": (0.015, 0.09, 0.42, 1), "Roughness": 0.22, "Coat Weight": 0.6, "Coat Roughness": 0.08})   # синее эмалированное ведро
+m_metal, _ = mat_principled("bucket", **{"Base Color": (0.012, 0.07, 0.36, 1), "Roughness": 0.35, "Coat Weight": 0.35, "Coat Roughness": 0.18})   # синее эмалированное ведро
 m_ball, pb = mat_principled("ball", **{"Roughness": 0.18, "Coat Weight": 0.8, "Coat Roughness": 0.04})
 nt = m_ball.node_tree
 oi = nt.nodes.new("ShaderNodeObjectInfo")
@@ -113,7 +113,7 @@ def area(name, loc, rot, size, power, color):
     return o
 
 
-area("top", (0.0, -0.55, 1.35), (math.radians(28), 0, 0), 0.55, 160, (1.0, 0.95, 0.88))
+area("top", (0.05, -0.45, 1.45), (math.radians(20), 0, 0), 0.7, 150, (1.0, 0.95, 0.88))
 area("rim", (0.7, 0.55, 0.75), (math.radians(-55), math.radians(35), math.radians(140)), 0.45, 140, (0.55, 0.7, 1.0))
 area("fill", (-0.9, -0.8, 0.5), (math.radians(70), 0, math.radians(-50)), 0.5, 45, (1.0, 0.8, 0.7))
 
@@ -155,6 +155,7 @@ for loc, dim in slabs:                        # видимое стекло — 
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     bpy.ops.object.shade_flat()
     o.data.materials.append(m_glass)
+    o.visible_shadow = False                 # без каустики стекло иначе «гасит» свет внутри куба
 # невидимые толстые стенки для физики (5 см наружу от внутренней поверхности стекла) — тонкое стекло шары «пробивали»
 TK = 0.05
 proxies = [((0, 0, T - TK / 2), (GW + 2 * TK, GD + 2 * TK, TK)),
@@ -256,12 +257,12 @@ sc.collection.objects.link(cam)
 sc.camera = cam
 tgt = bpy.data.objects.new("tgt", None)
 sc.collection.objects.link(tgt)
-tgt.location = (-0.03, 0, 0.36)
+tgt.location = (-0.04, 0, 0.42)
 c = cam.constraints.new("TRACK_TO")
 c.target = tgt
 c.track_axis = "TRACK_NEGATIVE_Z"
 c.up_axis = "UP_Y"
-for f, y, z in ((1, -1.80, 0.66), (FR_END, -1.58, 0.58)):
+for f, y, z in ((1, -2.15, 0.72), (FR_END, -1.85, 0.62)):
     cam.location = (-0.05, y, z)
     cam.keyframe_insert("location", frame=f)
 cam_d.dof.use_dof = True
