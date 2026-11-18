@@ -1,3 +1,1 @@
-# пробы: серия 2 — 17 мм (ответ поставщика 18.11)
-d17_2-7_a scene=piece item=2-7 view=a res=1400x880 samples=48 noise=0.06
-d17_cl_2-7 scene=use use=cl decor=2-7 tex=strip cabcol=C9B8A0 view=Khronos_PBR_Neutral look=None res=900x600 ev=-0.9 calfile=cal_photo.json samples=48 noise=0.08
+# черновики (быстрая дорожка, .github/workflows/draft.yml): имя  аргументы для scene.py
