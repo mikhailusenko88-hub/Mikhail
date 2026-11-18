@@ -15,7 +15,9 @@ def all_float():
 all_float()
 print('модель загружена за %.0f с' % (time.time() - t0), flush=True)
 rem = BackgroundRemover(); os.makedirs('out', exist_ok=True)
+ONLY = os.environ.get('ONLY')
 for f in sorted(glob.glob('in/*.png')):
+    if ONLY and os.path.basename(f)[:-4] != ONLY: continue
     name = os.path.basename(f)[:-4]; t1 = time.time()
     img = Image.open(f).convert('RGB'); img = rem(img); img.save('out/%s_mask.png' % name)
     all_float()

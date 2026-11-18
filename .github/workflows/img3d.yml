@@ -6,7 +6,11 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        img: [fila26, topa23, fila20, topa22]
     permissions: { contents: write }
     steps:
       - uses: actions/checkout@v4
@@ -21,14 +25,14 @@ jobs:
           pip install -q -e h3d --no-deps
       - name: Картинка → 3D (Hunyuan3D-2mini)
         continue-on-error: true
-        run: python gen_h3d.py 2>&1 | tee out_h3d.log
+        run: ONLY=${{ matrix.img }} OCT=160 python gen_h3d.py 2>&1 | tee out_h3d_${{ matrix.img }}.log
       - name: Предпросмотр
         continue-on-error: true
         run: python prevmesh.py 2>&1 | tail -5
       - name: Сохранить
         if: always()
         run: |
-          mkdir -p out; cp out_h3d.log out/ 2>/dev/null || true
+          mkdir -p out; cp out_h3d_*.log out/ 2>/dev/null || true
           git config user.name "Claude"; git config user.email "noreply@anthropic.com"
-          git add out; git commit -q -m "img3d: итог $(date -u +%H:%M)" || true
-          git push -q origin HEAD:geroi3d
+          git add out; git commit -q -m "img3d: ${{ matrix.img }} $(date -u +%H:%M)" || true
+          for k in 1 2 3 4 5; do git pull -q --rebase origin geroi3d && git push -q origin HEAD:geroi3d && break; sleep $((k*7)); done
