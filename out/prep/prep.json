@@ -38,5 +38,45 @@
   ],
   "semi_birefnet": 0.047,
   "agree_isnet": 0.6238
+ },
+ "fila26b": {
+  "size": [
+   849,
+   1010
+  ],
+  "semi_birefnet": 0.072,
+  "agree_isnet": 0.6557
+ },
+ "fila22b": {
+  "size": [
+   988,
+   1072
+  ],
+  "semi_birefnet": 0.053,
+  "agree_isnet": 0.5496
+ },
+ "fila20b": {
+  "size": [
+   913,
+   944
+  ],
+  "semi_birefnet": 0.05,
+  "agree_isnet": 0.6564
+ },
+ "topa23b": {
+  "size": [
+   995,
+   1026
+  ],
+  "semi_birefnet": 0.046,
+  "agree_isnet": 0.5837
+ },
+ "topa22b": {
+  "size": [
+   1019,
+   1152
+  ],
+  "semi_birefnet": 0.039,
+  "agree_isnet": 0.5456
  }
 }
