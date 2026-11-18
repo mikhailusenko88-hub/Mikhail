@@ -17,7 +17,7 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq libosmesa6-dev libgl1 libopengl0 libglu1-mesa > /dev/null
           pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchvision
           git clone -q --depth 1 https://github.com/Tencent-Hunyuan/Hunyuan3D-2 h3d
-          pip install -q diffusers==0.31.0 einops opencv-python-headless numpy transformers==4.46.3 huggingface_hub==0.26.5 omegaconf tqdm trimesh pymeshlab pygltflib xatlas accelerate rembg onnxruntime scikit-image pyrender PyOpenGL==3.1.0
+          pip install -q diffusers==0.31.0 einops opencv-python-headless numpy transformers==4.46.3 huggingface_hub==0.26.5 omegaconf tqdm trimesh pymeshlab pygltflib xatlas accelerate rembg onnxruntime scikit-image pyrender PyOpenGL==3.1.0 fast-simplification
           pip install -q -e h3d --no-deps
       - name: Картинка → 3D (Hunyuan3D-2mini)
         continue-on-error: true

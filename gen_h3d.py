@@ -24,6 +24,14 @@ for f in sorted(glob.glob('in/*.png')):
     with torch.autocast('cpu', enabled=False):
       mesh = pipe(image=img, num_inference_steps=int(os.environ.get('STEPS', 5)), octree_resolution=int(os.environ.get('OCT', 256)), num_chunks=8000,
                   generator=torch.manual_seed(1234), output_type='trimesh')[0]
-    mesh = FloaterRemover()(mesh); mesh = DegenerateFaceRemover()(mesh); mesh = FaceReducer()(mesh, max_facenum=60000)
+    mesh.export('out/%s_h3d_raw.ply' % name)
+    try:
+        parts = mesh.split(only_watertight=False); mesh = max(parts, key=lambda m: len(m.faces))   # самая большая часть, без «мусора»
+    except Exception as e: print('split:', e)
+    try:
+        import fast_simplification
+        if len(mesh.faces) > 80000:
+            v, f_ = fast_simplification.simplify(mesh.vertices, mesh.faces, target_reduction=1 - 80000 / len(mesh.faces)); import trimesh; mesh = trimesh.Trimesh(v, f_)
+    except Exception as e: print('simplify:', e)
     mesh.export('out/%s_h3d.glb' % name); mesh.export('out/%s_h3d.ply' % name)
     print('%s: %d вершин, %.0f с' % (name, len(mesh.vertices), time.time() - t1), flush=True)
