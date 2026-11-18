@@ -1,0 +1,284 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рассказчик и Топа; Рон и Филя"
+ ],
+ "file": {
+  "mb": 257.0,
+  "dur": 323.92,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 323.42,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 323,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 121.4
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 6.6,
+  "peak_db": -1.3,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 97.8,
+  "lines": 87,
+  "by_hero": {
+   "Рон": 96.9,
+   "Пик": 93.3,
+   "Барсик": 100.0,
+   "Филя": 99.1,
+   "Топа": 100.0,
+   "Рассказчик": 100.0
+  },
+  "worst": [
+   {
+    "t": 64.357,
+    "name": "Рон",
+    "text": "Теперь веди ты.",
+    "ok": 1,
+    "n": 3,
+    "miss": [
+     "веди",
+     "ты"
+    ],
+    "heard": "теперь видитый"
+   },
+   {
+    "t": 304.137,
+    "name": "Пик",
+    "text": "Хорошая загадка.",
+    "ok": 1,
+    "n": 2,
+    "miss": [
+     "загадка"
+    ],
+    "heard": "хорошая задатка завтра"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 215.0,
+   "range_st": 4.4,
+   "hnr": 13.7,
+   "jitter": 2.5,
+   "shimmer": 9.2,
+   "F1": 506.0,
+   "F2": 1927.0,
+   "F3": 3242.0,
+   "bright": -13.5,
+   "air": -16.8,
+   "cog": 573.0,
+   "rate": 5.6,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Пик": {
+   "f0": 373.0,
+   "range_st": 7.1,
+   "hnr": 20.1,
+   "jitter": 0.8,
+   "shimmer": 4.9,
+   "F1": 523.0,
+   "F2": 1788.0,
+   "F3": 3550.0,
+   "bright": -17.1,
+   "air": -22.3,
+   "cog": 615.0,
+   "rate": 6.6,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 93.3
+  },
+  "Рассказчик": {
+   "f0": 163.0,
+   "range_st": 5.5,
+   "hnr": 12.9,
+   "jitter": 2.6,
+   "shimmer": 10.8,
+   "F1": 392.0,
+   "F2": 2013.0,
+   "F3": 3129.0,
+   "bright": -12.2,
+   "air": -21.9,
+   "cog": 453.0,
+   "rate": 5.1,
+   "voiced": 0.8,
+   "n": 1,
+   "age": "взрослый",
+   "pleasant": 4.3,
+   "why": [
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 303.0,
+   "range_st": 7.1,
+   "hnr": 21.6,
+   "jitter": 0.9,
+   "shimmer": 5.3,
+   "F1": 402.0,
+   "F2": 1995.0,
+   "F3": 3622.0,
+   "bright": -18.2,
+   "air": -25.7,
+   "cog": 426.0,
+   "rate": 5.0,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 96.9
+  },
+  "Топа": {
+   "f0": 158.0,
+   "range_st": 5.2,
+   "hnr": 12.9,
+   "jitter": 2.6,
+   "shimmer": 10.0,
+   "F1": 453.0,
+   "F2": 1905.0,
+   "F3": 3289.0,
+   "bright": -17.3,
+   "air": -29.0,
+   "cog": 530.0,
+   "rate": 5.4,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 4.3,
+   "why": [
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Филя": {
+   "f0": 287.0,
+   "range_st": 5.5,
+   "hnr": 15.4,
+   "jitter": 1.8,
+   "shimmer": 7.7,
+   "F1": 522.0,
+   "F2": 2113.0,
+   "F3": 3327.0,
+   "bright": -14.0,
+   "air": -20.2,
+   "cog": 693.0,
+   "rate": 4.9,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 99.1
+  }
+ },
+ "voices_close": [
+  [
+   "Рассказчик",
+   "Топа",
+   0.5
+  ],
+  [
+   "Рон",
+   "Филя",
+   0.9
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 45,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 168,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 4696,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 323.41982758620685,
+   "video": "video/Кот Барсик - 28. Второй Рон в зеркале!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "0e5fed0",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 48.7,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 35,
+    "e": 455,
+    "b": 9,
+    "w": 2,
+    "n": 8080,
+    "at": 8080,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 40,
+   "ttsFail": 0,
+   "voice": 56,
+   "voiceFail": 0,
+   "voiceSec": 25,
+   "ttsSec": 30,
+   "frames": 8086,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -25,
+   "lufs_out": -15.1,
+   "gain_db": 10.5
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 28,
+   "title": "Второй Рон в зеркале?!",
+   "scenes": 8,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}

@@ -1,0 +1,71 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 28,
+  "title": "Второй Рон в зеркале?!",
+  "scenes": 8,
+  "errors": [],
+  "unknownWords": [],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 28. Второй Рон в зеркале!",
+  "path": "video/Кот Барсик - 28. Второй Рон в зеркале!.mp4",
+  "frames": 8086,
+  "sec": 4052,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 323.41982758620685,
+  "video": "video/Кот Барсик - 28. Второй Рон в зеркале!.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "0e5fed0",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 48.7,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 35,
+   "e": 455,
+   "b": 9,
+   "w": 2,
+   "n": 8080,
+   "at": 8080,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 40,
+  "ttsFail": 0,
+  "voice": 56,
+  "voiceFail": 0,
+  "voiceSec": 25,
+  "ttsSec": 30,
+  "frames": 8086,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -25,
+  "lufs_out": -15.1,
+  "gain_db": 10.5
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 4696,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
