@@ -1,0 +1,42 @@
+{
+ "fila26b": {
+  "ply": "fila26b_s1.ply",
+  "iou": 0.929,
+  "all": {
+   "fila26b_s1.ply": 0.929,
+   "fila26b_s2.ply": 0.919
+  }
+ },
+ "fila22b": {
+  "ply": "fila22b_s1.ply",
+  "iou": 0.833,
+  "all": {
+   "fila22b_s1.ply": 0.833,
+   "fila22b_s2.ply": 0.789
+  }
+ },
+ "fila20b": {
+  "ply": "fila20b_s1.ply",
+  "iou": 0.766,
+  "all": {
+   "fila20b_s1.ply": 0.766,
+   "fila20b_s2.ply": 0.69
+  }
+ },
+ "topa23b": {
+  "ply": "topa23b_s2.ply",
+  "iou": 0.773,
+  "all": {
+   "topa23b_s2.ply": 0.773,
+   "topa23b_s1.ply": 0.755
+  }
+ },
+ "topa22b": {
+  "ply": "topa22b_s2.ply",
+  "iou": 0.792,
+  "all": {
+   "topa22b_s2.ply": 0.792,
+   "topa22b_s1.ply": 0.783
+  }
+ }
+}

@@ -44,7 +44,7 @@ for n, c in cfg.items():
     for col, tag in (((255, 0, 255), 'mag'), ((255, 255, 255), 'white')):
         bg = Image.new('RGBA', (x1 - x0, y1 - y0), col + (255,)); bg.alpha_composite(Image.fromarray(rgba, 'RGBA'))
         bg.convert('RGB').save(f'out/prep/{n}_{tag}.jpg', quality=90)
-    rep[n] = {'size': [int(x1 - x0), int(y1 - y0)], 'semi_birefnet': round(semi, 3),
+    rep[n] = {'size': [int(x1 - x0), int(y1 - y0)], 'crop_xy': [int(x0), int(y0)], 'scale': K, 'box': c['box'], 'semi_birefnet': round(semi, 3),
               'agree_isnet': round(float((((masks['isnet-anime'] > 0.5) & keep) == ((a > 0.5) & keep)).mean()), 4)}
     print(n, rep[n], flush=True)
 json.dump(rep, open('out/prep/prep.json', 'w'), ensure_ascii=False, indent=1)

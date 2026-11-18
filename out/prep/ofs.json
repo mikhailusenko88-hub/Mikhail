@@ -1,0 +1,202 @@
+{
+ "fila26": {
+  "cover": "8Gyke-2WIyw",
+  "scale": 4,
+  "crop_xy": [
+   154,
+   0
+  ],
+  "size": [
+   845,
+   968
+  ],
+  "to_cover": "x_обл = box[0] + (x_вх + crop_xy[0]) / 4; y_обл = box[1] + (y_вх + crop_xy[1]) / 4",
+  "box": [
+   660,
+   0,
+   940,
+   280
+  ],
+  "err": 0.0
+ },
+ "fila22": {
+  "cover": "Xn3vyfdqCuo",
+  "scale": 4,
+  "crop_xy": [
+   0,
+   53
+  ],
+  "size": [
+   983,
+   931
+  ],
+  "to_cover": "x_обл = box[0] + (x_вх + crop_xy[0]) / 4; y_обл = box[1] + (y_вх + crop_xy[1]) / 4",
+  "box": [
+   590,
+   150,
+   870,
+   430
+  ],
+  "err": 0.0
+ },
+ "fila20": {
+  "cover": "Zd2QhucOkRI",
+  "scale": 4,
+  "crop_xy": [
+   0,
+   179
+  ],
+  "size": [
+   910,
+   780
+  ],
+  "to_cover": "x_обл = box[0] + (x_вх + crop_xy[0]) / 4; y_обл = box[1] + (y_вх + crop_xy[1]) / 4",
+  "box": [
+   470,
+   120,
+   750,
+   400
+  ],
+  "err": 0.0
+ },
+ "topa23": {
+  "cover": "0VAW6h7-Yf0",
+  "scale": 4,
+  "crop_xy": [
+   125,
+   180
+  ],
+  "size": [
+   983,
+   771
+  ],
+  "to_cover": "x_обл = box[0] + (x_вх + crop_xy[0]) / 4; y_обл = box[1] + (y_вх + crop_xy[1]) / 4",
+  "box": [
+   20,
+   150,
+   320,
+   450
+  ],
+  "err": 0.0
+ },
+ "topa22": {
+  "cover": "Xn3vyfdqCuo",
+  "scale": 4,
+  "crop_xy": [
+   0,
+   58
+  ],
+  "size": [
+   1009,
+   887
+  ],
+  "to_cover": "x_обл = box[0] + (x_вх + crop_xy[0]) / 4; y_обл = box[1] + (y_вх + crop_xy[1]) / 4",
+  "box": [
+   370,
+   60,
+   670,
+   360
+  ],
+  "err": 0.0
+ },
+ "fila26b": {
+  "cover": "8Gyke-2WIyw",
+  "scale": 4,
+  "crop_xy": [
+   152,
+   0
+  ],
+  "size": [
+   849,
+   1010
+  ],
+  "to_cover": "x_обл = box[0] + (x_вх + crop_xy[0]) / 4; y_обл = box[1] + (y_вх + crop_xy[1]) / 4",
+  "box": [
+   660,
+   0,
+   940,
+   280
+  ],
+  "err": 0.0
+ },
+ "fila22b": {
+  "cover": "Xn3vyfdqCuo",
+  "scale": 4,
+  "crop_xy": [
+   0,
+   48
+  ],
+  "size": [
+   988,
+   1072
+  ],
+  "to_cover": "x_обл = box[0] + (x_вх + crop_xy[0]) / 4; y_обл = box[1] + (y_вх + crop_xy[1]) / 4",
+  "box": [
+   590,
+   150,
+   870,
+   430
+  ],
+  "err": 0.0
+ },
+ "fila20b": {
+  "cover": "Zd2QhucOkRI",
+  "scale": 4,
+  "crop_xy": [
+   0,
+   176
+  ],
+  "size": [
+   913,
+   944
+  ],
+  "to_cover": "x_обл = box[0] + (x_вх + crop_xy[0]) / 4; y_обл = box[1] + (y_вх + crop_xy[1]) / 4",
+  "box": [
+   470,
+   120,
+   750,
+   400
+  ],
+  "err": 0.0
+ },
+ "topa23b": {
+  "cover": "0VAW6h7-Yf0",
+  "scale": 4,
+  "crop_xy": [
+   119,
+   174
+  ],
+  "size": [
+   995,
+   1026
+  ],
+  "to_cover": "x_обл = box[0] + (x_вх + crop_xy[0]) / 4; y_обл = box[1] + (y_вх + crop_xy[1]) / 4",
+  "box": [
+   20,
+   150,
+   320,
+   450
+  ],
+  "err": 0.0
+ },
+ "topa22b": {
+  "cover": "Xn3vyfdqCuo",
+  "scale": 4,
+  "crop_xy": [
+   0,
+   48
+  ],
+  "size": [
+   1019,
+   1152
+  ],
+  "to_cover": "x_обл = box[0] + (x_вх + crop_xy[0]) / 4; y_обл = box[1] + (y_вх + crop_xy[1]) / 4",
+  "box": [
+   370,
+   60,
+   670,
+   360
+  ],
+  "err": 0.0
+ }
+}
