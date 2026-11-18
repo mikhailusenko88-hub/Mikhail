@@ -1,0 +1,267 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рон и Филя"
+ ],
+ "file": {
+  "mb": 460.1,
+  "dur": 374.85,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 374.35,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg",
+   "list_03.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 374,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 115.0
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.3,
+  "lra": 4.8,
+  "peak_db": -1.4,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 96.0,
+  "lines": 111,
+  "by_hero": {
+   "Топа": 96.7,
+   "Рон": 96.3,
+   "Филя": 99.0,
+   "Пик": 91.8,
+   "Барсик": 97.1,
+   "Рассказчик": 95.1
+  },
+  "worst": [
+   {
+    "t": 182.333,
+    "name": "Рон",
+    "text": "Ой! Кто заказал полив?",
+    "ok": 2,
+    "n": 4,
+    "miss": [
+     "кто",
+     "полив"
+    ],
+    "heard": "ой что заказала полиция"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 221.0,
+   "range_st": 5.1,
+   "hnr": 15.0,
+   "jitter": 2.1,
+   "shimmer": 8.5,
+   "F1": 483.0,
+   "F2": 2044.0,
+   "F3": 3233.0,
+   "bright": -14.2,
+   "air": -14.7,
+   "cog": 497.0,
+   "rate": 6.0,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.1
+  },
+  "Пик": {
+   "f0": 380.0,
+   "range_st": 4.4,
+   "hnr": 19.9,
+   "jitter": 0.8,
+   "shimmer": 4.8,
+   "F1": 502.0,
+   "F2": 1789.0,
+   "F3": 3692.0,
+   "bright": -17.4,
+   "air": -21.3,
+   "cog": 609.0,
+   "rate": 7.5,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 91.8
+  },
+  "Рассказчик": {
+   "f0": 162.0,
+   "range_st": 5.1,
+   "hnr": 13.9,
+   "jitter": 2.4,
+   "shimmer": 9.9,
+   "F1": 377.0,
+   "F2": 2236.0,
+   "F3": 3250.0,
+   "bright": -15.6,
+   "air": -17.7,
+   "cog": 391.0,
+   "rate": 4.4,
+   "voiced": 0.8,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 95.1
+  },
+  "Рон": {
+   "f0": 302.0,
+   "range_st": 6.8,
+   "hnr": 22.2,
+   "jitter": 0.9,
+   "shimmer": 5.3,
+   "F1": 366.0,
+   "F2": 1942.0,
+   "F3": 3580.0,
+   "bright": -22.1,
+   "air": -27.1,
+   "cog": 407.0,
+   "rate": 5.6,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 96.3
+  },
+  "Топа": {
+   "f0": 155.0,
+   "range_st": 6.0,
+   "hnr": 12.3,
+   "jitter": 2.9,
+   "shimmer": 10.8,
+   "F1": 434.0,
+   "F2": 2083.0,
+   "F3": 3350.0,
+   "bright": -15.3,
+   "air": -23.3,
+   "cog": 514.0,
+   "rate": 4.3,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 4.3,
+   "why": [
+    "дрожит высота"
+   ],
+   "clear_pct": 96.7
+  },
+  "Филя": {
+   "f0": 282.0,
+   "range_st": 6.1,
+   "hnr": 15.7,
+   "jitter": 1.9,
+   "shimmer": 7.9,
+   "F1": 509.0,
+   "F2": 2028.0,
+   "F3": 3317.0,
+   "bright": -14.1,
+   "air": -19.3,
+   "cog": 658.0,
+   "rate": 4.7,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 99.0
+  }
+ },
+ "voices_close": [
+  [
+   "Рон",
+   "Филя",
+   1.2
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 50,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 187,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 1932,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 374.3495172413793,
+   "video": "video/Кот Барсик - 29. Маленький жёлудь — большой секрет!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "e88f0b5",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 42.9,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 11,
+    "e": 96,
+    "b": 6,
+    "w": 1,
+    "n": 9350,
+    "at": 9350,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 49,
+   "ttsFail": 0,
+   "voice": 68,
+   "voiceFail": 0,
+   "voiceSec": 31,
+   "ttsSec": 46,
+   "frames": 9943,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -22.1,
+   "lufs_out": -15.3,
+   "gain_db": 7.1
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 29,
+   "title": "Маленький жёлудь — большой секрет!",
+   "scenes": 8,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}

@@ -1,0 +1,71 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 29,
+  "title": "Маленький жёлудь — большой секрет!",
+  "scenes": 8,
+  "errors": [],
+  "unknownWords": [],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 29. Маленький жёлудь — большой секрет!",
+  "path": "video/Кот Барсик - 29. Маленький жёлудь — большой секрет!.mp4",
+  "frames": 9359,
+  "sec": 1066,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 374.3495172413793,
+  "video": "video/Кот Барсик - 29. Маленький жёлудь — большой секрет!.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "e88f0b5",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 42.9,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 11,
+   "e": 96,
+   "b": 6,
+   "w": 1,
+   "n": 9350,
+   "at": 9350,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 49,
+  "ttsFail": 0,
+  "voice": 68,
+  "voiceFail": 0,
+  "voiceSec": 31,
+  "ttsSec": 46,
+  "frames": 9943,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -22.1,
+  "lufs_out": -15.3,
+  "gain_db": 7.1
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 1932,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
