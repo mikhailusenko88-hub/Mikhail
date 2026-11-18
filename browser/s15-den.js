@@ -36,6 +36,7 @@ const NPROF = 4;                             // сколько профилей 
 const EXTRA = [];                            // разовые запросы «как основные» (со второй страницей), например после смены заголовка
 const WIDE_ON = true, PROF_ON = true;        // false — короткий перемер: только кабинет и основные запросы
 const ANON = ['плинтус напольный', 'плинтус дюрополимер', 'реечные панели для стен'];   // эти запросы снять ещё и «как посторонний» (фрейм без куки)
+const WATCH = { 'реечные панели под дерево': ['3-7', '3-15'], 'реечные панели для стен': ['3-15'], 'плинтус напольный': ['A703'] };   // если этих объявлений нет на первой странице — смотреть вторую, даже когда там нашлось другое наше (18.11: по «реечные панели под дерево» со входом нашлось только старое, рейки пропали)
 const SEEN = ['/brands/i189669386', '/brands/9b74c0149fa35c68ab3583d2482cccd3', '/brands/e6722563236e2eed0c7215d87dd4b379', '/brands/plintusy', '/brands/i35021401',
   '/brands/i303422686', '/brands/544ffd9a46ae4cb7b0de074a6ec6d7e3', '/brands/arhidea', '/brands/90967ed0df52f22382beaf3e0f587006',
   '/brands/i188920544', '/brands/i122608885', '/brands/i72526920', '/brands/akupanel.ru', '/brands/i200336086', '/brands/6fce8c6bbc94076bfb4ce1c8c3d3fd4e',
@@ -152,7 +153,8 @@ async function serp(q, wide, p) {
   const cnt = ((d.querySelector('[data-marker="page-title/count"]') || {}).innerText || '').trim();
   S((wide ? '## ' : '- ') + q + ' | всего ' + cnt + ' | НАШИ: ' + (ours.join(', ') || 'нет на 1-й стр.') + ' | продвинуто в десятке: ' + top.slice(0, 10).filter(x => x.promo).length +
     (wide ? '\n   ' + top.slice(0, 6).map((x, i) => (i + 1) + ') ' + x.t.slice(0, 44) + ' ' + x.pr + (x.promo ? ' П' : '')).join(' ; ') : ''));
-  return ours.length ? true : 'none';
+  const names = ours.map(x => x.split(' №')[0]), w = WATCH[q];
+  return (!ours.length || (w && !w.some(a => names.includes(a)))) ? 'none' : true;
 }
 async function profile(href, s) {
   const fr = mk(href, 2400);
