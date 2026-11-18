@@ -196,7 +196,7 @@ WOOD_NAMES = {"2": "две широкие ламели", "3": "три ламел
 def slug(a): return a.lower().replace("/", "-").replace(" ", "")
 def esc(s): return html.escape(str(s), quote=True)
 def fmt(n): return "{:,}".format(int(round(n))).replace(",", " ")
-PHOTO_V = "13"   # версия фото товаров (16.11.2026 — фото живых образцов, карусель): менять, когда фото перерисованы (11.11.2026 — фон «Антрацит»); то же — PHOTO_V в index.html
+PHOTO_V = "14"   # версия фото товаров (16.11.2026 — фото живых образцов, карусель): менять, когда фото перерисованы (11.11.2026 — фон «Антрацит»); то же — PHOTO_V в index.html
 def photo(a): return "img/" + PHOTO[a] + "?v=" + PHOTO_V if PHOTO.get(a) else ""
 # фото в 2 раза крупнее (нейросеть Real-ESRGAN, ветка img-upscale, 11.11.2026) — для чётких экранов, og:image, Яндекс Товаров
 def photo2x(a): return ("img/2x/" + PHOTO[a] + "?v=" + PHOTO_V) if PHOTO.get(a) and os.path.exists(os.path.join(SITE, "img", "2x", PHOTO[a])) else photo(a)
