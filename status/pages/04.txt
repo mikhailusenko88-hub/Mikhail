@@ -1,0 +1,19 @@
+URL: https://crm.nashdekor.ru/api/outbox/status/665f1da4-5465-4f96-b017-cb1431f74c2e
+КОД: 200
+ЗАГОЛОВКИ:
+Server: nginx
+Date: Wed, 18 Nov 2026 11:38:25 GMT
+Content-Type: application/json
+Content-Length: 43
+Connection: close
+Cache-Control: no-store
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: same-origin
+Vary: Cookie
+Strict-Transport-Security: max-age=15552000
+X-Robots-Tag: noindex, nofollow
+
+{"error":"","sent_at":"","status":"saved"}
+
+ССЫЛКИ:

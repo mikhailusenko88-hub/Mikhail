@@ -1,145 +1,19 @@
-URL: https://t.me/s/nashdekorspb
+URL: https://crm.nashdekor.ru/api/outbox/status/0761d585-dece-42af-b8d7-31d04c5ddf04
 КОД: 200
 ЗАГОЛОВКИ:
-Server: nginx/1.30.1
-Date: Tue, 17 Nov 2026 16:03:36 GMT
-Content-Type: text/html; charset=utf-8
-Content-Length: 75763
+Server: nginx
+Date: Wed, 18 Nov 2026 11:38:22 GMT
+Content-Type: application/json
+Content-Length: 43
 Connection: close
-Set-Cookie: stel_ssid=65199199373af5e2ec_6476941942070510652; expires=Wed, 18 Nov 2026 16:03:36 GMT; path=/; samesite=None; secure; HttpOnly
-Pragma: no-cache
-Cache-control: no-store
-X-Frame-Options: SAMEORIGIN
-Strict-Transport-Security: max-age=35768000
+Cache-Control: no-store
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: same-origin
+Vary: Cookie
+Strict-Transport-Security: max-age=15552000
+X-Robots-Tag: noindex, nofollow
 
-Наш декор — стеновые панели и молдинги – Telegram 
- Наш декор — стеновые панели и молдинги 
- @nashdekorspb 
- 2 subscribers 
- 65 photos 
- 1 link 
- Стеновые реечные панели под покраску и под дерево, плинтусы и молдинги. СПб и Ленобласть, отправка по России. Каталог и расчёт стены в 3D — nashdekor.ru . Цены, наличие и заказ — в боте @nashdekor_bot 
- Download Telegram
- About 
- Blog 
- Apps 
- Platform 
- Join
- Наш декор — стеновые панели и молдинги 
- 2 subscribers
- Наш декор — стеновые панели и молдинги 
- 2 views 16:00 
- Наш декор — стеновые панели и молдинги 
- Молдинги под покраску 
-28 профилей шириной от 15 до 96 мм — для буазери, обрамления стен и проёмов, зеркал, стыков панелей. Есть с кабель-каналом: A35/2 и A157/2.
-Красятся вместе со стеной или в контраст. Длина 2 м.
- 2 views 16:00 
- Все молдинги 
- Молдинги в интерьере 
- Наш декор — стеновые панели и молдинги 
- 2 views 16:00 
- Наш декор — стеновые панели и молдинги 
- Потолочные плинтусы и уголки 
-Потолочные плинтусы под покраску — от лаконичного A38 20×20 мм до A503 под светодиодную подсветку.
-Уголки A116 и A06 закрывают внешние углы и торцы стеновых панелей.
- 2 views 16:00 
- Потолочные плинтусы Уголки 
- Наш декор — стеновые панели и молдинги 
- Расчёт стены в 3D — на сайте 
-1. Укажите ширину и высоту стены.
-2. Выберите панель — под покраску или под дерево.
-3. Выберите цвет — стена в 3D перекрасится.
-Сразу видно, сколько нужно штук и коробок и сколько это стоит; можно добавить плинтус и потолочный плинтус. Расчёт уходит вместе с заявкой — менеджер подтвердит наличие и сроки.
-Или напишите нашему боту, например «А907 3,2 на 2,7» — он посчитает прямо в Telegram.
- 2 views 16:00 
- Рассчитать стену 
- Посчитать в Telegram 
- Наш декор — стеновые панели и молдинги 
- Дизайнерам и бригадам 
-• 3D-модели всех 105 профилей в натуральную величину: FBX для 3ds Max и Corona, DAE для SketchUp, OBJ, GLB и сечения DXF для AutoCAD, ArchiCAD и Revit. Пришлём ссылкой.
-• Расчёт по проекту: пришлите развёртку стены — вернём спецификацию по артикулам и смету.
-• Счёт и закрывающие документы для компаний и ИП, по ЭДО или на бумаге.
-Напишите боту «3D-модели» и в какой программе работаете.
- 2 views 16:00 
- Написать в Telegram 
- Для дизайнеров на сайте 
- Наш декор — стеновые панели и молдинги 
- Доставка и оплата 
-• По Санкт-Петербургу — 1–2 дня, по Ленобласти — 1–3 дня после оплаты, по тарифу перевозчика. Стоимость называем до оплаты.
-• В Москву и другие города — транспортной компанией, доставку оплачивает получатель.
-• Панели длиной 3 м едут в машине с кузовом от 3 м.
-• Оплата: частным покупателям — через СБП по ссылке, чек на e-mail; компаниям и ИП — по счёту.
-• Возврат — в течение 7 дней, если товар не распилен, не окрашен и не монтировался.
- 2 views 16:00 
- Доставка Оплата и возврат 
- Наш декор — стеновые панели и молдинги 
- Наш декор — стеновые панели, плинтусы и молдинги в Санкт-Петербурге.
-• Реечные панели под покраску — 18 профилей, длина 3 м
-• Панели под дерево — 28 декоров, красить не нужно
-• Напольные плинтусы — 27 профилей, есть с каналом для кабеля и с подсветкой
-• Молдинги — 28 профилей для буазери и обрамления
-• Потолочные плинтусы и уголки 
- Расчёт стены в 3D : размер стены → панель → цвет, и сразу штуки, коробки и сумма.
-Цены, наличие и заказ — в нашем боте: напишите артикул, например «А907 3,2 на 2,7», и он посчитает.
-Доставка по Санкт-Петербургу и Ленобласти, в другие города — транспортной компанией.
- 2 views 16:01 
- Каталог на сайте 
- Рассчитать стену Написать в Telegram 
- Наш декор — стеновые панели и молдинги 
- Наш декор — стеновые панели и молдинги pinned a photo
- 16:01
+{"error":"","sent_at":"","status":"saved"}
 
 ССЫЛКИ:
-//core.telegram.org/
-//telegram.org/apps
-//telegram.org/blog
-//telegram.org/css/font-roboto.css?1
-//telegram.org/css/telegram-web.css?39
-//telegram.org/css/widget-frame.css?75
-//telegram.org/dl?tme=65199199373af5e2ec_6476941942070510652
-//telegram.org/faq
-//telegram.org/img/apple-touch-icon.png
-//telegram.org/img/favicon-16x16.png
-//telegram.org/img/favicon-32x32.png
-//telegram.org/img/favicon.ico
-//telegram.org/img/website_icon.svg?4
-/s/nashdekorspb
-/s/nashdekorspb?before=54
-/s/nashdekorspb?before=77
-http://nashdekor.ru/
-https://nashdekor.ru/catalog/karnizy/?utm_source=tg
-https://nashdekor.ru/catalog/moldingi/?utm_source=tg
-https://nashdekor.ru/catalog/paneli-pod-derevo/?utm_source=tg
-https://nashdekor.ru/catalog/plintusy/?utm_source=tg
-https://nashdekor.ru/catalog/reechnye-paneli/?utm_source=tg
-https://nashdekor.ru/catalog/ugolki/?utm_source=tg
-https://nashdekor.ru/dostavka/?utm_source=tg
-https://nashdekor.ru/oplata/?utm_source=tg
-https://nashdekor.ru/stati/moldingi-na-stene-v-interere/?utm_source=tg
-https://t.me/nashdekor_bot
-https://t.me/nashdekorspb
-https://t.me/nashdekorspb/54
-https://t.me/nashdekorspb/54?single
-https://t.me/nashdekorspb/55?single
-https://t.me/nashdekorspb/56?single
-https://t.me/nashdekorspb/57?single
-https://t.me/nashdekorspb/58?single
-https://t.me/nashdekorspb/59?single
-https://t.me/nashdekorspb/60?single
-https://t.me/nashdekorspb/61?single
-https://t.me/nashdekorspb/62?single
-https://t.me/nashdekorspb/63?single
-https://t.me/nashdekorspb/64
-https://t.me/nashdekorspb/65
-https://t.me/nashdekorspb/65?single
-https://t.me/nashdekorspb/66?single
-https://t.me/nashdekorspb/67?single
-https://t.me/nashdekorspb/68?single
-https://t.me/nashdekorspb/69?single
-https://t.me/nashdekorspb/70?single
-https://t.me/nashdekorspb/71
-https://t.me/nashdekorspb/72
-https://t.me/nashdekorspb/73
-https://t.me/nashdekorspb/74
-https://t.me/nashdekorspb/75
-https://t.me/nashdekorspb/76
