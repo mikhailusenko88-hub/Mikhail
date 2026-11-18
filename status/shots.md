@@ -1,4 +1,4 @@
-# Скриншоты сайта — 2026-11-18 11:40 UTC
+# Скриншоты сайта — 2026-11-18 13:53 UTC
 
-- **calc37** mobile https://nashdekor.ru/?s=206&panel=3-7#calc — ok
-- **p27b** mobile https://nashdekor.ru/p/2-7/?s=207 — ok
+- **int27** mobile https://nashdekor.ru/?s=208&panel=2-7#calc — ok
+- **viz27** mobile https://nashdekor.ru/vizual/?s=209#2-7/cl — ok
