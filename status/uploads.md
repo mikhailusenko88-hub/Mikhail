@@ -38,3 +38,4 @@
 | 2026-11-17 | 3 | clubs №11 | Olmaliq | https://youtube.com/shorts/NTJTO3M2V58 | public |
 | 2026-11-18 | 1 | cars №17 | Cobalt | https://youtube.com/shorts/G-Yq6FjzY0Q | public |
 | 2026-11-18 | 2 | cars №18 | Tracker | https://youtube.com/shorts/TYpJ3QSkl_g | public |
+| 2026-11-18 | 3 | clubs №12 | Xorazm | https://youtube.com/shorts/yHBl5IdkZV0 | public |
