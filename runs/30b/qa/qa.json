@@ -1,0 +1,294 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рассказчик и Топа"
+ ],
+ "file": {
+  "mb": 385.0,
+  "dur": 386.15,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 385.65,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg",
+   "list_03.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 386,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 131.5
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.3,
+  "lra": 5.4,
+  "peak_db": -1.3,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 97.3,
+  "lines": 106,
+  "by_hero": {
+   "Рон": 95.9,
+   "Топа": 100.0,
+   "Барсик": 97.7,
+   "Филя": 99.1,
+   "Пик": 94.4,
+   "Рассказчик": 100.0
+  },
+  "worst": [
+   {
+    "t": 41.229,
+    "name": "Пик",
+    "text": "Это ты о себе?",
+    "ok": 2,
+    "n": 4,
+    "miss": [
+     "ты",
+     "о"
+    ],
+    "heard": "это для себе у меня"
+   },
+   {
+    "t": 126.873,
+    "name": "Пик",
+    "text": "Не будем!",
+    "ok": 1,
+    "n": 2,
+    "miss": [
+     "не"
+    ],
+    "heard": "будем первый"
+   },
+   {
+    "t": 341.354,
+    "name": "Рон",
+    "text": "Ой! Кепка к прогулке не готова!",
+    "ok": 3,
+    "n": 6,
+    "miss": [
+     "ой",
+     "к",
+     "прогулке"
+    ],
+    "heard": "тепка в прогнете не готова"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 215.0,
+   "range_st": 4.9,
+   "hnr": 14.3,
+   "jitter": 2.0,
+   "shimmer": 8.2,
+   "F1": 432.0,
+   "F2": 2069.0,
+   "F3": 3307.0,
+   "bright": -13.6,
+   "air": -15.1,
+   "cog": 591.0,
+   "rate": 5.8,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.7
+  },
+  "Пик": {
+   "f0": 382.0,
+   "range_st": 5.2,
+   "hnr": 22.2,
+   "jitter": 0.8,
+   "shimmer": 4.3,
+   "F1": 462.0,
+   "F2": 1747.0,
+   "F3": 3354.0,
+   "bright": -18.7,
+   "air": -24.7,
+   "cog": 527.0,
+   "rate": 7.1,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 94.4
+  },
+  "Рассказчик": {
+   "f0": 166.0,
+   "range_st": 7.4,
+   "hnr": 11.0,
+   "jitter": 2.7,
+   "shimmer": 9.9,
+   "F1": 404.0,
+   "F2": 2083.0,
+   "F3": 3392.0,
+   "bright": -12.9,
+   "air": -15.4,
+   "cog": 650.0,
+   "rate": 3.0,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 305.0,
+   "range_st": 6.8,
+   "hnr": 22.6,
+   "jitter": 0.9,
+   "shimmer": 5.3,
+   "F1": 401.0,
+   "F2": 1859.0,
+   "F3": 3544.0,
+   "bright": -22.6,
+   "air": -27.6,
+   "cog": 408.0,
+   "rate": 5.3,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 95.9
+  },
+  "Топа": {
+   "f0": 157.0,
+   "range_st": 5.2,
+   "hnr": 11.7,
+   "jitter": 2.5,
+   "shimmer": 9.7,
+   "F1": 441.0,
+   "F2": 2002.0,
+   "F3": 3330.0,
+   "bright": -13.8,
+   "air": -22.8,
+   "cog": 605.0,
+   "rate": 4.0,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 4.5,
+   "why": [
+    "немного шумный тембр"
+   ],
+   "clear_pct": 100.0
+  },
+  "Филя": {
+   "f0": 289.0,
+   "range_st": 4.8,
+   "hnr": 14.3,
+   "jitter": 1.8,
+   "shimmer": 7.9,
+   "F1": 483.0,
+   "F2": 2187.0,
+   "F3": 3394.0,
+   "bright": -13.4,
+   "air": -18.0,
+   "cog": 707.0,
+   "rate": 5.0,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 99.1
+  }
+ },
+ "voices_close": [
+  [
+   "Рассказчик",
+   "Топа",
+   1.0
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 40,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 143,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 2581,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 385.6518228840125,
+   "video": "video/Кот Барсик - 30. Кто откусил Луну!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "ae8eced",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 46.3,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 8,
+    "e": 154,
+    "b": 5,
+    "w": 1,
+    "n": 9640,
+    "at": 9640,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 54,
+   "ttsFail": 0,
+   "voice": 59,
+   "voiceFail": 0,
+   "voiceSec": 30,
+   "ttsSec": 38,
+   "frames": 10235,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -20.1,
+   "lufs_out": -15.3,
+   "gain_db": 5.1
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 30,
+   "title": "Кто откусил Луну?!",
+   "scenes": 9,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}
