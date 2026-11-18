@@ -500,6 +500,7 @@ class DzLeads:
         for k, v in vals.items():
             t = t.replace(k, v)
         t = re.sub(r"[ \t]+\n", "\n", t)
+        t = re.sub(r"(?m)^[ \t]+", "", t)
         t = re.sub(r"\n{3,}", "\n\n", t)
         return t.strip()
 

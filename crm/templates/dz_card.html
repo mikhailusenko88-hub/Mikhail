@@ -123,7 +123,7 @@
   <label class="f">Объявление Авито<input name="avito_ad" value="{{ d['avito_ad'] }}"></label>
   <label class="f span2">Чем занимаются<textarea name="about" rows="2">{{ d['about'] }}</textarea></label>
   <label class="f span2">Зацепка (для себя)<input name="hook" value="{{ d['hook'] }}"></label>
-  <label class="f span2">Личная строка в письмо и сообщение — одно предложение про их работу<textarea name="line" rows="2">{{ d['line'] }}</textarea></label>
+  <label class="f span2">Личная строка в письмо — одно предложение про их работу<textarea name="line" rows="2">{{ d['line'] }}</textarea></label>
   <label class="f span2">Раздел сайта в письме<select name="link"><option value="">Главная</option>{% for p, n in DZ_LINKS %}<option value="{{ p }}" {% if d['link']==p %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
   <label class="f">Отзывы<input name="rating" value="{{ d['rating'] }}"></label>
   <label class="f">Цена у них от<input name="price_from" value="{{ d['price_from'] }}"></label>
