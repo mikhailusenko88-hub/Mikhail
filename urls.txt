@@ -1,3 +1,5 @@
-# 15:56:43 серия 28 на таймере, даты 29–33 сдвинуты
+# 08:36:06 серия 29 на таймере (19.11 15:30), обложка-афиша 29
 http://89.126.192.214:8080/mebel/s9kbars/serii.json
 http://89.126.192.214:8080/mebel/s9kbars/index.html
+http://89.126.192.214:8080/mebel/s9kbars/serii/29/cover.jpg
+https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel/s9kbars/serii/29/cover.jpg
