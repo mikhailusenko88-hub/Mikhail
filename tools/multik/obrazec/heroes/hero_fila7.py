@@ -27,6 +27,18 @@ class Fila7(Fila):
     CHIN = V(0, -0.124, 0.384)
     BLUSH = [V(s * 0.083, -0.097, 0.414) for s in (-1, 1)]
     K_MUZ = 0.034; K_EAR = 0.026; K_TORSO = 0.055
+    # ручки (Михаил 18.11 14:12: «прижимает к туловищу, как будто без лапок») — плечи шире, кисти вынесены вбок и вперёд от животика,
+    # ручка тоньше, лапка крупнее: силуэт лапки читается на фоне белого тела
+    SHOULD = [V(s * 0.068, -0.02, 0.292) for s in (-1, 1)]
+    WRIST = [V(s * 0.122, -0.084, 0.212) for s in (-1, 1)]
+    PAW = [V(s * 0.128, -0.094, 0.195) for s in (-1, 1)]
+    PIV = dict(Fila.PIV, armL=SHOULD[0], armR=SHOULD[1])
+    BOX = dict(Fila.BOX, armL=((-0.175, -0.14, 0.15), (-0.02, 0.045, 0.345)), armR=((0.02, -0.14, 0.15), (0.175, 0.045, 0.345)))
+    def front_paw(self, p, i): return toe_paw(p, self.PAW[i], (0.0275, 0.03, 0.0235), self.PAW_F, tr=0.0098, tk=0.0037, fk=0.7, dk=0.3)
+    def arm_sd(self, p, i):
+        x = sd_rcone(p, self.SHOULD[i], self.WRIST[i], 0.028, 0.0215)
+        x = smin(x, self.front_paw(p, i)[0], 0.012)
+        return smin(x, sd_sph(p, self.SHOULD[i] + V(0, 0.003, 0.003), 0.029), 0.016)
     EAR_C = [V(s * 0.07, 0.03, 0.685) for s in (-1, 1)]
     def ear_sd(self, p, i, inner=False):                                              # длинное заячье ухо: стоит «галочкой», слегка назад, развёрнуто наружу
         s = 1 if i else -1
