@@ -6,9 +6,9 @@
 [scene   0.2s] calibration from cal_photo.json {'sun_energy': 27.973735809326172, 'sun_color': [1.0, 0.9886969327926636, 0.9783092737197876], 'wb': [0.8804882125514708, 1.012251119522416, 1.2305568605142023], 'exposure': 1.4443015632022187, 'y_ref': 0.38584351539611816}
 Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
 Saved: '/home/runner/work/Mikhail/Mikhail/out/g_hall_2-4/g_hall_2-4.jpg'
-Time: 06:42.53 (Saving: 00:00.18)
+Time: 06:30.33 (Saving: 00:00.17)
 
-[scene 402.7s] final render 402.5s /home/runner/work/Mikhail/Mikhail/out/g_hall_2-4/g_hall_2-4.jpg
-[scene 402.7s] done
+[scene 390.5s] final render 390.3s /home/runner/work/Mikhail/Mikhail/out/g_hall_2-4/g_hall_2-4.jpg
+[scene 390.5s] done
 
 Blender quit
