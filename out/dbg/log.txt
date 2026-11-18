@@ -1,0 +1,17 @@
+шаров 3294, сцена 0 с
+в мире физики: 3301 ['Cube.005', 'Cube.006', 'Cube.007', 'Cube.008', 'Cube.009', 'Plane', 'bucket']
+Plane PASSIVE BOX True False (30.0, 30.0, 0.0) (0.0, 0.0, 0.0) [True, False, False]
+Cube.005 PASSIVE BOX True False (0.42, 0.3, 0.05) (0.0, 0.0, 0.0) [True, False, False]
+Cube.006 PASSIVE BOX True False (0.05, 0.3, 0.504) (0.0, 0.0, 0.0) [True, False, False]
+Cube.007 PASSIVE BOX True False (0.05, 0.3, 0.504) (0.0, 0.0, 0.0) [True, False, False]
+Cube.008 PASSIVE BOX True False (0.42, 0.05, 0.504) (0.0, 0.0, 0.0) [True, False, False]
+Cube.009 PASSIVE BOX True False (0.42, 0.05, 0.504) (0.0, 0.0, 0.0) [True, False, False]
+bucket PASSIVE MESH True True (0.349, 0.349, 0.253) (-0.11, 0.0, 0.574) [True, False, False]
+симуляция готова, 11 с
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: 'out/dbg/f_0002.jpg'
+Time: 00:00.42 (Saving: 00:00.03)
+
+кадр 2 нарисован, 11 с
+
+Blender quit
