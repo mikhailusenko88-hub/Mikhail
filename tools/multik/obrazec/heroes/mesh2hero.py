@@ -6,7 +6,8 @@ from scipy.spatial import cKDTree
 from scipy.ndimage import map_coordinates
 from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); from plyview import read_ply
-name = sys.argv[1]; G3 = os.environ.get('G3D', '/home/claude/g3d')   # клон ветки geroi3d (модели out/<имя>_h3d.ply и картинки in/<имя>.png); HERE = os.path.dirname(os.path.abspath(__file__))
+name = sys.argv[1]; HERE = os.path.dirname(os.path.abspath(__file__))
+G3 = os.environ.get('G3D', '/home/claude/g3d')   # клон ветки geroi3d (модели out/<имя>_h3d.ply и картинки in/<имя>.png)
 CFG = json.load(open(os.path.join(HERE, 'meshes', 'cfg.json')))[name]
 V, Fc = read_ply('%s/out/%s_h3d.ply' % (G3, name)); V = V.astype(np.float64)
 AL = json.load(open(os.path.join(HERE, 'meshes', 'align_%s.json' % name))); yaw, s_img, dx, dy = AL['yaw'], AL['s'], AL['dx'], AL['dy']
@@ -70,11 +71,23 @@ for (u, v, w) in CFG['eyes_img']:
 nose = m2h(hit_img(*CFG['nose_img']))[0]; lip = m2h(hit_img(*CFG['lip_img']))[0]
 # 5б) выпрямить голову: линия глаз — по x (без крена и поворота), «вверх» — как на обложке (камера на уровне глаз); середина глаз — в точку EYE_MID
 eL, eR = sorted([e[0] for e in eyes], key=lambda q: q[0]); mid = (eL + eR) / 2
-ex = (eR - eL) / np.linalg.norm(eR - eL); fw = np.cross(ex, [0, 0, 1.0]); fw /= np.linalg.norm(fw); up = np.cross(fw, ex)
-Rm = np.stack([ex, -fw, up])          # строки: куда идут оси героя x, y, z
-T = np.array(CFG.get('eye_mid', [0.0, -0.145, 0.468])) - ((mid - Hh) @ Rm.T + Hh)
-def fix(Q): Q = np.atleast_2d(Q); return (Q - Hh) @ Rm.T + Hh + T
-eyes = [(fix(e[0])[0], e[1]) for e in eyes]; nose = fix(nose)[0]; lip = fix(lip)[0]
+if CFG.get('mid') == 'nose':
+    # дальний глаз на обложке в 3/4 модель ставит неточно: середина лица — плоскость через нос, «вперёд» — нормаль лица вокруг носа
+    nm = h2m(nose)[0]; near = np.linalg.norm(S_pts - nm, axis=-1) < float(CFG.get('nose_r', 0.15)); nn = m2h(nm + S_n[near].mean(0))[0] - m2h(nm)[0]
+    fw = np.array([nn[0], nn[1], 0.0]); fw /= np.linalg.norm(fw); ex = np.cross([0, 0, 1.0], fw); up = np.array([0, 0, 1.0])
+    Rm = np.stack([ex, -fw, up]); en = eyes[int(CFG.get('near_eye', 0))][0]
+    q = (en - Hh) @ Rm.T + Hh; qn = (nose - Hh) @ Rm.T + Hh; tgt = np.array(CFG.get('eye_mid', [0.0, -0.145, 0.468]))
+    T = np.array([-qn[0], tgt[1] - q[1], tgt[2] - q[2]])
+    eyes = [((en - Hh) @ Rm.T + Hh + T, eyes[int(CFG.get('near_eye', 0))][1])]; eyes.append((eyes[0][0] * np.array([-1, 1, 1]), eyes[0][1]))
+    def fix(Q): Q = np.atleast_2d(Q); return (Q - Hh) @ Rm.T + Hh + T
+    nose = fix(nose)[0]; lip = fix(lip)[0]
+    print('середина — по носу: «вперёд»', fw.round(3), 'ближний глаз', eyes[0][0].round(4))
+else:
+  ex = (eR - eL) / np.linalg.norm(eR - eL); fw = np.cross(ex, [0, 0, 1.0]); fw /= np.linalg.norm(fw); up = np.cross(fw, ex)
+  Rm = np.stack([ex, -fw, up])          # строки: куда идут оси героя x, y, z
+  T = np.array(CFG.get('eye_mid', [0.0, -0.145, 0.468])) - ((mid - Hh) @ Rm.T + Hh)
+  def fix(Q): Q = np.atleast_2d(Q); return (Q - Hh) @ Rm.T + Hh + T
+  eyes = [(fix(e[0])[0], e[1]) for e in eyes]; nose = fix(nose)[0]; lip = fix(lip)[0]
 print('после выпрямления: глаза', [e[0].round(4) for e in eyes], 'нос', nose.round(4), 'рот', lip.round(4))
 print('нос', nose.round(4), 'рот', lip.round(4))
 # 6) глубина кадра обложки — чтобы красить только видимое с обложки
