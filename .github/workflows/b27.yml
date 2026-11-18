@@ -26,6 +26,7 @@ jobs:
         id: p
         run: |
           set -a; source run.txt; set +a
+          if [ -n "$FROM_RUN" ]; then echo "n=0" >> $GITHUB_OUTPUT; echo "кадры уже есть в запуске $FROM_RUN"; exit 0; fi
           per=$(( (NF + SHARDS - 1) / SHARDS )); from=$(( ${{ matrix.shard }} * per )); n=$per; [ $((from + n)) -gt $NF ] && n=$((NF - from)); [ $n -lt 0 ] && n=0
           echo "from=$from" >> $GITHUB_OUTPUT; echo "n=$n" >> $GITHUB_OUTPUT; echo "кадры $from…$((from + n - 1))"
       - name: Движок (ветка mebel-3d, закреплённая версия)
@@ -67,11 +68,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Откуда кадры
+        id: src
+        run: |
+          set -a; source run.txt; set +a
+          echo "run=${FROM_RUN:-${{ github.run_id }}}" >> $GITHUB_OUTPUT
       - uses: actions/download-artifact@v4
         with:
           pattern: r-*
           merge-multiple: true
           path: all
+          run-id: ${{ steps.src.outputs.run }}
+          github-token: ${{ github.token }}
       - name: Ролик и сравнение
         env:
           GH_TOKEN: ${{ github.token }}
@@ -82,12 +90,14 @@ jobs:
           gh release download studio-27t -R ${{ github.repository }} -p 'ep-27t.mp4' -O ep.mp4
           pip -q install faster-whisper >/dev/null 2>&1
           # где в серии Филя начинает «Вода выталкивает…» — чтобы звук лёг на рот
-          python3 - <<'PY' > off.txt
+          python3 - <<'PY' > off.txt || echo none > off.txt
           from faster_whisper import WhisperModel
           import subprocess
           subprocess.run(['ffmpeg','-y','-loglevel','error','-ss','90','-t','90','-i','ep.mp4','-ac','1','-ar','16000','seg.wav'])
           m = WhisperModel('small', device='cpu', compute_type='int8')
-          segs, _ = m.transcribe('seg.wav', language='ru', word_timestamps=True)
+          import wave, numpy as np
+          with wave.open('seg.wav') as wf: x = np.frombuffer(wf.readframes(wf.getnframes()), np.int16).astype(np.float32) / 32768.0
+          segs, _ = m.transcribe(x, language='ru', word_timestamps=True)
           t = None; cand = None
           for s in segs:
               for w in s.words:
@@ -98,6 +108,7 @@ jobs:
           if t is None: print('none')
           else: print(round(90 + (cand if cand is not None and t - cand < 2.5 else t - 0.45), 3))
           PY
+          [ -s off.txt ] || echo none > off.txt
           cat off.txt; LINE=$(cat off.txt)
           DUR=$(python3 -c "print($NF/$FPS)")
           # в нашем плане реплика Фили начинается на 134.20 (время движка) → звук сдвигаем так, чтобы начало совпало
