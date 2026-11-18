@@ -65,3 +65,4 @@
 | shorts | 2026-11-17 | 2 | France vs Korea vs Saudi Arabia | https://youtube.com/shorts/9B_u7voUgJU | public (только Shorts) |
 | shorts | 2026-11-17 | 3 | Russia vs Türkiye vs Philippines | https://youtube.com/shorts/2M2rBU-WwBk | public (только Shorts) |
 | shorts | 2026-11-18 | 1 | Indonesia vs Pakistan vs Algeria | https://youtube.com/shorts/BYrVOM5QkiU | public (только Shorts) |
+| shorts | 2026-11-18 | 2 | India vs Vietnam vs Thailand | https://youtube.com/shorts/TQP4Lgy5ROY | public (только Shorts) |
