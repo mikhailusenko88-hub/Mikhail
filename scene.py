@@ -1159,10 +1159,11 @@ def panel_wall(x0, x1, z_top, y_wall, zbot=None):
     import slat_profile
     ser = int(DECOR.split('-')[0]) if DECOR[:1] in '235' and '-' in DECOR else 3
     step, lam = slat_profile.SERIES[ser]
+    tt = slat_profile.thick(ser) / 1000.0          # серия 2 — 17 мм
     if A.get('tex') == 'strip':
         ln = json.load(open(f'{ROOT}/tex3/index.json', encoding='utf-8'))[DECOR]['len_mm'] / 1000.0
-        return slat_wall('panels', x0, x1, z_top, y_wall, mat_decor_strip(DECOR), m_black, zbot=zbot, step=step / 1000.0, lam_w=lam / 1000.0, strip=ln)
-    return slat_wall('panels', x0, x1, z_top, y_wall, mat_decor(DECOR), m_black, zbot=zbot, step=step / 1000.0, lam_w=lam / 1000.0)
+        return slat_wall('panels', x0, x1, z_top, y_wall, mat_decor_strip(DECOR), m_black, zbot=zbot, step=step / 1000.0, lam_w=lam / 1000.0, strip=ln, total_t=tt)
+    return slat_wall('panels', x0, x1, z_top, y_wall, mat_decor(DECOR), m_black, zbot=zbot, step=step / 1000.0, lam_w=lam / 1000.0, total_t=tt)
 
 
 def make_mask(world, sun, lamps):
@@ -1744,7 +1745,7 @@ def scene_slat_piece(item, view):
     r_top = float(A.get('rtop', 1.4 if n == 5 else 0.8))
     mirror = True                        # полка: лёжа «а» — слева у зрителя (срез справа), стоя — справа, как на фото образцов;
     A.setdefault('yaw', '36' if view == 'a' else '-36')   # вид «б» — с другой стороны: у зрителя край первой рейки с ножкой
-    W, T, L = 0.12, 0.012, float(A.get('len', 0.10))
+    W, T, L = 0.12, SP.thick(n) / 1000.0, float(A.get('len', 0.10))
     pts = [(x, z) for x, z, _ in SP.rounded(SP.outline(n), r_top=r_top, r=0.4, seg=5)]
     if mirror:
         pts = [(120.0 - x, z) for x, z in reversed(pts)]

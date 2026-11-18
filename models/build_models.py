@@ -180,6 +180,7 @@ def build(name, a, it, L, prev=False):
     if c == 'color':
         series, suf = a.split('-')
         pts, lams = wood_profile(series)
+        top = max(z for _, z in pts)          # лицо реек: серия 2 — 17 мм, серии 3 и 5 — 12 мм
         tinfo = TEX[suf]
         rnd = random.Random(sum(ord(ch) * (i + 1) for i, ch in enumerate(a)))
         offs = [(rnd.uniform(0, tinfo['w_mm'] - 31), rnd.uniform(0, tinfo['h_mm'])) for _ in lams]
@@ -187,10 +188,10 @@ def build(name, a, it, L, prev=False):
         def matfn(p, q):
             if p is None:
                 return 1
-            return 0 if (abs(p[1] - 12.0) < 1e-3 and abs(q[1] - 12.0) < 1e-3) else 1
+            return 0 if (abs(p[1] - top) < 1e-3 and abs(q[1] - top) < 1e-3) else 1
 
         def uvfn(p, q, L_, i):
-            if not (abs(p[1] - 12.0) < 1e-3 and abs(q[1] - 12.0) < 1e-3):
+            if not (abs(p[1] - top) < 1e-3 and abs(q[1] - top) < 1e-3):
                 return None
             k = next(k for k, (l0, l1) in enumerate(lams) if l0 - 1e-3 <= min(p[0], q[0]) and max(p[0], q[0]) <= l1 + 1e-3)
             l0 = lams[k][0]

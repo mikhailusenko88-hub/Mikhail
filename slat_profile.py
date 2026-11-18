@@ -9,6 +9,13 @@ import math
 SERIES = {2: (60.0, 30.0), 3: (40.0, 29.5), 5: (24.0, 10.5)}
 STEP, LAM = SERIES[3]
 T = 12.0
+# Толщина по сериям: серия 2 — 17 мм (ответ поставщика 18.11.2026: QZ2 = 120×17×3000, по форме как GS, только тоньше);
+# рейки выше, пустоты под ними глубже (верхняя стенка та же 5,1 мм), дно пазов и полка — как у серии 3. Серии 3 и 5 — 12 мм.
+THICK = {2: 17.0}
+
+
+def thick(n=3):
+    return THICK.get(int(n), T)
 # Сечение по фото торца в упор (IMG_3212, 16.11.2026; масштаб по ширине 120 мм):
 TOPW = 5.1        # толщина верхней стенки рейки (потолок пустоты на 6,9 мм)
 GZ = 5.35         # верх дна паза (глубина паза ≈ 6,65 мм), дно паза лежит на стене
@@ -27,12 +34,13 @@ def outline(n=3):
     (бока реек, пазы, полка), b — тыльная сторона."""
     step, lam = SERIES.get(n, (STEP, LAM)) if (STEP, LAM) == SERIES[3] else (STEP, LAM)
     w = n * step
-    cz = T - TOPW
+    t = thick(n)
+    cz = t - TOPW
     P = [(0.0, UNDER, 's')]
     for i in range(n):
         xs, xe = i * step, i * step + lam
-        P.append((xs, T, 'w'))
-        P.append((xe, T, 's'))
+        P.append((xs, t, 'w'))
+        P.append((xe, t, 's'))
         if i < n - 1:
             P.append((xe + SLOPE, GZ, 's'))
             P.append((xs + step - SLOPE, GZ, 's'))
@@ -63,12 +71,13 @@ def outline(n=3):
 def rounded(P, r_top=0.8, r=0.5, seg=3):
     """Скругляет все углы контура (углы у верха реек — r_top: плёнка заходит на кромку)."""
     out, n = [], len(P)
+    top = max(z for _, z, _ in P)                       # верх реек (серия 2 — 17 мм, остальные 12)
     for k in range(n):
         px, pz, tp = P[k - 1]
         cx, cz, tc = P[k]
         qx, qz, _ = P[(k + 1) % n]
         l1, l2 = math.hypot(px - cx, pz - cz), math.hypot(qx - cx, qz - cz)
-        d = min(r_top if abs(cz - T) < 1e-6 else r, 0.45 * l1, 0.45 * l2)
+        d = min(r_top if abs(cz - top) < 1e-6 else r, 0.45 * l1, 0.45 * l2)
         ax, az = cx + (px - cx) / l1 * d, cz + (pz - cz) / l1 * d
         bx, bz = cx + (qx - cx) / l2 * d, cz + (qz - cz) / l2 * d
         ta = 'w' if 'w' in (tp, tc) else tc
