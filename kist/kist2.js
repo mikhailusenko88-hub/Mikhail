@@ -10,7 +10,7 @@ function rng32(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B
 // ---------- мазки шерсти с готовым светом ----------
 const STROKE_VS = `
 uniform sampler2D uPos; uniform sampler2D uBake; uniform sampler2D uAttr; uniform sampler2D uNrm;
-uniform int uN; uniform float uSeed, uSeedA, uCov, uWmin, uWmax, uWk, uBias, uAlpha, uLenCap, uNdvMin; uniform vec2 uView;
+uniform int uN; uniform float uJit, uSeed, uSeedA, uCov, uWmin, uWmax, uWk, uBias, uAlpha, uLenCap, uNdvMin; uniform vec2 uView;
 out vec3 vP; out vec3 vT; out float vt; out vec3 vB0; out vec3 vB1; out vec3 vAlb; flat out int vKind; out vec2 vUV; out float vA; out vec3 vDbg;
 ivec2 ti(int i) { return ivec2(i & 2047, i >> 11); }
 float h1(float n) { return fract(sin(n * 12.9898 + 4.1414) * 43758.5453); }
@@ -24,7 +24,7 @@ void main() {
   vec3 m0 = r0.xyz, m2 = r0.xyz + (texelFetch(uPos, ti(s * 5 + 2), 0).xyz - r0.xyz) * tr, m4 = r0.xyz + (texelFetch(uPos, ti(s * 5 + 4), 0).xyz - r0.xyz) * tr;
   float rank = h1(float(s) * .6131 + uSeed * 7.193);
   if ((m > 0 || uSeed > 0.0) && !line) {   // вблизи одно зерно даёт несколько мазков рядом — кисть мельчит; в каждом проходе накопления мазки ложатся заново
-    vec3 d = normalize(m4 - m0 + 1e-7), a = normalize(cross(d, abs(d.z) < .9 ? vec3(0, 0, 1) : vec3(1, 0, 0))), b = cross(d, a); float amp = m > 0 ? 1.1 : .6;
+    vec3 d = normalize(m4 - m0 + 1e-7), a = normalize(cross(d, abs(d.z) < .9 ? vec3(0, 0, 1) : vec3(1, 0, 0))), b = cross(d, a); float amp = m > 0 ? 1.1 : uJit;
     vec3 off = (a * (h1(float(s) * 1.7 + fm * 3.1 + uSeed * 5.31) - .5) + b * (h1(float(s) * 2.3 + fm * 5.7 + uSeed * 9.13) - .5)) * sqrt(uSeedA) * amp; m0 += off; m2 += off; m4 += off; if (m > 0) rank = h1(float(s) * .913 + fm * 7.77 + uSeed * 3.71); }
   vec3 p0 = toW(poseP(m0, wh, ts, we, wb, wx)), p2 = toW(poseP(m2, wh, ts, we, wb, wx)), p4 = toW(poseP(m4, wh, ts, we, wb, wx));
   vec4 v0 = viewMatrix * vec4(p0, 1.0), v2 = viewMatrix * vec4(p2, 1.0), v4 = viewMatrix * vec4(p4, 1.0); float z = -v0.z;
@@ -211,14 +211,14 @@ K2.boot = async function (THREE, canvas, opts) {
   K2.levels = [];
   const mkSet = (name, data, prm, order) => {
     const U2 = Object.assign({}, B.U, { uPos: { value: data.tP }, uBake: { value: data.tB }, uAttr: { value: data.tA }, uNrm: { value: data.tN }, uN: { value: data.n }, uSeedA: { value: K2.furArea / data.n }, uCov: { value: prm.cov },
-      uWmin: { value: prm.wmin }, uWmax: { value: prm.wmax }, uWk: { value: 2.0 }, uBias: { value: prm.bias }, uAlpha: { value: prm.alpha }, uEdge: { value: prm.edge }, uLenCap: { value: prm.lenCap }, uNdvMin: { value: prm.ndv }, uView: { value: new THREE.Vector2(1280, 720) }, uDbgS: { value: 0 }, uSeed: { value: 0 } });
+      uWmin: { value: prm.wmin }, uWmax: { value: prm.wmax }, uWk: { value: 2.0 }, uBias: { value: prm.bias }, uAlpha: { value: prm.alpha }, uEdge: { value: prm.edge }, uLenCap: { value: prm.lenCap }, uNdvMin: { value: prm.ndv }, uView: { value: new THREE.Vector2(1280, 720) }, uDbgS: { value: 0 }, uSeed: { value: 0 }, uJit: { value: prm.jit == null ? .6 : prm.jit } });
     const m = new THREE.RawShaderMaterial(Object.assign({ uniforms: U2, vertexShader: MKB._k.COMMON + STROKE_VS, fragmentShader: FS, glslVersion: THREE.GLSL3 }, blend));
     const g = new THREE.BufferGeometry(); g.setDrawRange(0, data.n * MMAX * 12); g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e4);
     const mesh = new THREE.Mesh(g, m); mesh.frustumCulled = false; mesh.renderOrder = order; B.bg.add(mesh); mesh.onBeforeRender = B.fur.onBeforeRender;
     const L = { name, mesh, U: U2, n: data.n, pos: data.pos, prm }; K2.levels.push(L); return L; };
   mkSet('мягкие', L2, { cov: 1.25, wmin: 3.0, wmax: 24, alpha: .42, edge: 0.0, bias: .004, lenCap: 40, ndv: .32 }, 27);
   mkSet('прядки', L1, { cov: 1.5, wmin: 2.0, wmax: 10, alpha: .5, edge: .1, bias: .003, lenCap: 24, ndv: .12 }, 28);
-  const fine = mkSet('волоски', { n: NS, tP: S.tPos, tB: S.tBake, tA: S.tAttr, tN: K2.tN, pos: D.pos }, { cov: 2.2, wmin: 1.0, wmax: 2.2, alpha: .62, edge: .35, bias: .002, lenCap: 14, ndv: -.12 }, 30);
+  const fine = mkSet('волоски', { n: NS, tP: S.tPos, tB: S.tBake, tA: S.tAttr, tN: K2.tN, pos: D.pos }, { cov: 2.2, wmin: 1.0, wmax: 2.2, alpha: .62, edge: .35, bias: .002, lenCap: 14, ndv: -.12, jit: .12 }, 30);
   const strokes = fine.mesh; K2.strokes = strokes; K2.SU = fine.U;
   // фон, лес, земля
   const fogC = new THREE.Color(.37, .42, .41); const U = { uFogC: { value: new THREE.Vector3(fogC.r, fogC.g, fogC.b) }, uFogK: { value: .32 }, uSat: { value: 1 },
@@ -307,7 +307,7 @@ Object.assign(K2, { spp: 1, tone: 1, shadowOn: true, dof: 0, shutter: 0, sunAng:
 K2.PRESETS = {
   app: { sun: 2.3, rim: 1.2, hemi: 1.25, env: .35, expo: 1.0, key: 1.4, desat: .22, tint: [.95, 1, 1], tone: 0, grass: [1, 1, 1] },
   // подобрано по цифрам кадра Blender (лоб, грудка, лапа, трава): нет студийной подсветки спереди, солнце главнее, трава светлее и желтее
-  blender: { sun: 2.6, rim: 1.1, hemi: 1.0, env: .25, expo: .76, key: .45, desat: 1.4, tint: [1.0, 1.22, .9], tone: 0, grass: [2.0, 1.3, 1.6] } };
+  blender: { sun: 2.6, rim: 1.1, hemi: 1.0, env: .25, expo: .76, key: .45, desat: .7, tint: [1.0, 1.12, .9], tone: 0, grass: [2.0, 1.3, 1.6] } };
 K2.lightPreset = function (name) {
   const L = K2.L, MKB = window.MKBarsik; K2.preset = name;
   const P = K2.PRESETS[name] || K2.PRESETS.app; L.sun.intensity = P.sun; L.rim.intensity = P.rim; L.hemi.intensity = P.hemi; L.envI = P.env; L.expo = P.expo; MKB.K.key = P.key; MKB.desatU.value = P.desat; K2.tone = P.tone; if (MKB.tintU.value && MKB.tintU.value.set) MKB.tintU.value.set(...(P.tint || [1, 1, 1])); K2.GU.uGrassK.value.set(...P.grass);
