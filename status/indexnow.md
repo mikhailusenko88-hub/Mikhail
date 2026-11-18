@@ -1,3 +1,29 @@
+# IndexNow — 2026-11-18 11:09 UTC, коммит 9ccc3c2
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: изменённые страницы (35) из 136 изменённых файлов; без изменений по сути (только ?v=): 91
+  https://nashdekor.ru/
+  https://nashdekor.ru/catalog/paneli-pod-derevo/
+  https://nashdekor.ru/catalog/stenovye-paneli/
+  https://nashdekor.ru/p/2-10/
+  https://nashdekor.ru/p/2-11/
+  https://nashdekor.ru/p/2-12/
+  https://nashdekor.ru/p/2-13/
+  https://nashdekor.ru/p/2-14/
+  https://nashdekor.ru/p/2-3/
+  https://nashdekor.ru/p/2-4/
+  https://nashdekor.ru/p/2-5/
+  https://nashdekor.ru/p/2-7/
+  https://nashdekor.ru/p/2-8/
+  https://nashdekor.ru/p/2-9/
+  https://nashdekor.ru/p/3-11/
+  … и ещё 20
+- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
+- https://yandex.com/indexnow: HTTP 202 — принято, ключ ещё проверяется {
+  "success":true
+}
+
+---
+
 # IndexNow — 2026-11-17 20:22 UTC, коммит dea8c0c
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (1) из 2 изменённых файлов; без изменений по сути (только ?v=): 0
@@ -325,17 +351,6 @@
 # IndexNow — 2026-11-16 23:35 UTC, коммит 5fbc19a
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (1) из 129 изменённых файлов; без изменений по сути (только ?v=): 125
-  https://nashdekor.ru/
-- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
-- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
-  "success":true
-}
-
----
-
-# IndexNow — 2026-11-16 23:16 UTC, коммит f2278d6
-- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
-- режим: изменённые страницы (1) из 128 изменённых файлов; без изменений по сути (только ?v=): 125
   https://nashdekor.ru/
 - https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
 - https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
