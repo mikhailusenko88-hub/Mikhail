@@ -1,0 +1,34 @@
+name: img3d
+on:
+  push:
+    branches: [geroi3d]
+    paths: ['request.txt']
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.10' }
+      - name: Установка
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq libosmesa6-dev libgl1 > /dev/null
+          pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchvision
+          git clone -q --depth 1 https://github.com/Tencent-Hunyuan/Hunyuan3D-2 h3d
+          pip install -q diffusers einops opencv-python-headless numpy transformers omegaconf tqdm trimesh pymeshlab pygltflib xatlas accelerate rembg onnxruntime scikit-image pyrender PyOpenGL==3.1.0
+          pip install -q -e h3d --no-deps
+      - name: Картинка → 3D (Hunyuan3D-2mini)
+        continue-on-error: true
+        run: python gen_h3d.py 2>&1 | tee out_h3d.log
+      - name: Предпросмотр
+        continue-on-error: true
+        run: python prevmesh.py 2>&1 | tail -5
+      - name: Сохранить
+        if: always()
+        run: |
+          mkdir -p out; cp out_h3d.log out/ 2>/dev/null || true
+          git config user.name "Claude"; git config user.email "noreply@anthropic.com"
+          git add out; git commit -q -m "img3d: итог $(date -u +%H:%M)" || true
+          git push -q origin HEAD:geroi3d
