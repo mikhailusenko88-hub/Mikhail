@@ -151,7 +151,7 @@ for loc, dim in slabs:                        # видимое стекло — 
     bpy.ops.mesh.primitive_cube_add(size=1, location=loc)
     o = bpy.context.active_object
     o.scale = dim
-    bpy.ops.object.transform_apply(scale=True)
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     bpy.ops.object.shade_flat()
     o.data.materials.append(m_glass)
 # невидимые толстые стенки для физики (5 см наружу от внутренней поверхности стекла) — тонкое стекло шары «пробивали»
@@ -165,7 +165,7 @@ for loc, dim in proxies:
     bpy.ops.mesh.primitive_cube_add(size=1, location=loc)
     o = bpy.context.active_object
     o.scale = dim
-    bpy.ops.object.transform_apply(scale=True)
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     o.hide_render = True
     o.display_type = "WIRE"
     add_rb(o, "PASSIVE", "BOX", friction=0.45, rest=0.15)
