@@ -3097,14 +3097,35 @@ function ppInit(w, h) {
   P.bright = ppMat('uniform sampler2D t; uniform float thr; varying vec2 vUv; void main(){ vec3 c = texture2D(t, vUv).rgb; c = badc(c) ? vec3(0.0) : min(c, vec3(24.0)); float l = max(c.r, max(c.g, c.b)); float k = clamp((l - thr) / (l + 1e-4), 0.0, 1.0); gl_FragColor = vec4(c * k * k, 1.0); }', { t: { value: null }, thr: { value: .92 } });
   P.blur = ppMat('uniform sampler2D t; uniform vec2 d; varying vec2 vUv; void main(){ vec3 c = texture2D(t, vUv).rgb * .2270; c += (texture2D(t, vUv + d * 1.3846).rgb + texture2D(t, vUv - d * 1.3846).rgb) * .3162; c += (texture2D(t, vUv + d * 3.2308).rgb + texture2D(t, vUv - d * 3.2308).rgb) * .0703; gl_FragColor = vec4(c, 1.0); }', { t: { value: null }, d: { value: new THREE.Vector2() } });
   P.r1 = rt(w / 4, h / 4); P.r2 = rt(w / 4, h / 4);
+  /* ТЕНЬ-КАСАНИЕ И ЗАТЕНЕНИЕ: по глубине кадра видно, где свет «не пролезает» — под лапами, между героем и полом, в углах и складках (как у Blender) */
+  P.ao1 = rt(w / 2, h / 2); P.ao2 = rt(w / 2, h / 2);
+  P.ao = ppMat(`uniform sampler2D tDepth; uniform mat4 pInv; uniform vec2 px; uniform float P11, asp, rad, k, sK; uniform vec4 sph[30]; uniform int nSph; varying vec2 vUv;
+    vec3 vpos(vec2 uv) { float d = texture2D(tDepth, uv).x; vec4 v = pInv * vec4(uv * 2.0 - 1.0, d * 2.0 - 1.0, 1.0); return v.xyz / v.w; }
+    void main(){ if (texture2D(tDepth, vUv).x >= .99999) { gl_FragColor = vec4(1.0); return; }
+      vec3 P = vpos(vUv), Pr = vpos(vUv + vec2(px.x, 0.0)), Pl = vpos(vUv - vec2(px.x, 0.0)), Pu = vpos(vUv + vec2(0.0, px.y)), Pd = vpos(vUv - vec2(0.0, px.y));
+      vec3 dx = abs(Pr.z - P.z) < abs(P.z - Pl.z) ? Pr - P : P - Pl, dy = abs(Pu.z - P.z) < abs(P.z - Pd.z) ? Pu - P : P - Pd; vec3 N = normalize(cross(dx, dy));
+      float z = max(-P.z, .05), r = min(rad * .5 * P11 / z, .14), a0 = 6.2832 * fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(.06711056, .00583715)))), s = 0.0;
+      for (int i = 0; i < 12; i++) { float a = a0 + float(i) * 2.39996, f = sqrt((float(i) + .5) / 12.0); vec2 o = vec2(cos(a) * asp, sin(a)) * r * f;
+        vec3 v = vpos(clamp(vUv + o, vec2(.001), vec2(.999))) - P; float vv = dot(v, v); s += max(0.0, dot(v, N) * inversesqrt(vv + 1e-6) - .12) * clamp(1.0 - vv / (rad * rad), 0.0, 1.0); }
+      float ao = clamp(1.0 - k * s / 12.0, 0.0, 1.0);
+      for (int h = 0; h < 10; h++) { if (h * 3 >= nSph) break; vec4 F = sph[h * 3], B = sph[h * 3 + 1], Hd = sph[h * 3 + 2];
+        if (length(P - B.xyz) < B.w * 1.25 || length(P - Hd.xyz) < Hd.w * 1.2 || length(P - F.xyz) < F.w * 1.1) continue;   /* точка на самом герое — своя «подушка» на себя не ложится */
+        for (int j = 0; j < 3; j++) { vec4 S = j == 0 ? F : (j == 1 ? B : Hd); vec3 d = S.xyz - P; float l = max(length(d), 1e-4);
+          ao *= 1.0 - sK * max(0.0, dot(N, d) / l) * min(1.0, S.w * S.w / (l * l)); } }   /* сколько неба закрывает шар (формула Квилеса) */   /* сколько неба закрывает шар (формула Квилеса) */
+      gl_FragColor = vec4(vec3(ao), 1.0); }`, { tDepth: { value: null }, pInv: { value: null }, px: { value: new THREE.Vector2() }, P11: { value: 1 }, asp: { value: 1 }, rad: { value: .35 }, k: { value: 1.6 }, sK: { value: .8 }, sph: { value: Array.from({ length: 30 }, () => new THREE.Vector4()) }, nSph: { value: 0 } });
+  P.aoBlur = ppMat(`#include <packing>
+    uniform sampler2D t, tDepth; uniform vec2 d; uniform float near, far; varying vec2 vUv;
+    float lz(vec2 uv) { return -perspectiveDepthToViewZ(texture2D(tDepth, uv).x, near, far); }
+    void main(){ float z0 = lz(vUv), s = 0.0, ws = 0.0; for (int i = -4; i <= 4; i++) { vec2 uv = vUv + d * float(i); float w = exp(-float(i * i) / 8.0) * exp(-abs(lz(uv) - z0) / (.03 * z0 + .01)); s += texture2D(t, uv).r * w; ws += w; }
+      gl_FragColor = vec4(vec3(s / max(ws, 1e-4)), 1.0); }`, { t: { value: null }, tDepth: { value: null }, d: { value: new THREE.Vector2() }, near: { value: .1 }, far: { value: 200 } });
   P.rays = ppMat(`uniform sampler2D tMain, tDepth; uniform vec2 src; varying vec2 vUv;
     void main(){ vec2 uv = vUv, d = (vUv - src) / 56.0; float decay = 1.0; vec3 acc = vec3(0.0);
       for (int i = 0; i < 56; i++) { uv -= d; vec2 u = clamp(uv, 0.001, .999); float sky = step(.99995, texture2D(tDepth, u).x); vec3 c = texture2D(tMain, u).rgb; if (badc(c)) c = vec3(0.0); c = min(c, vec3(24.0)); float l = max(c.r, max(c.g, c.b)); acc += c * sky * smoothstep(.45, 1.0, l) * decay; decay *= .955; }
       gl_FragColor = vec4(acc / 22.0, 1.0); }`, { tMain: { value: null }, tDepth: { value: null }, src: { value: new THREE.Vector2(.7, 1.25) } });
   P.comp = ppMat(`#include <packing>
-    uniform sampler2D tMain, tHalf, tQuart, tB1, tB2, tDepth, tRays; uniform float near, far, focus, ap, bloom, sat, con, vig, rays; uniform vec3 tintH, tintS, rayCol; varying vec2 vUv;
+    uniform sampler2D tMain, tHalf, tQuart, tB1, tB2, tDepth, tRays, tAO; uniform float near, far, focus, ap, bloom, sat, con, vig, rays, aoK; uniform vec3 tintH, tintS, rayCol; varying vec2 vUv;
     void main(){
-      vec3 c = texture2D(tMain, vUv).rgb; c = badc(c) ? vec3(0.0) : min(c, vec3(48.0));
+      vec3 c = texture2D(tMain, vUv).rgb; c = badc(c) ? vec3(0.0) : min(c, vec3(48.0)); float dbg = aoK > 2.5 ? -perspectiveDepthToViewZ(texture2D(tDepth, vUv).x, near, far) / 12.0 : (aoK > 1.5 ? texture2D(tAO, vUv).r : -1.0); if (aoK > 0.0 && aoK <= 1.0) c *= mix(1.0, texture2D(tAO, vUv).r, aoK);
       if (ap > 0.0) { float z = -perspectiveDepthToViewZ(texture2D(tDepth, vUv).x, near, far); float coc = clamp(ap * abs(1.0 - focus / max(z, .01)) * 2.4, 0.0, 1.0);
         vec3 hb = texture2D(tHalf, vUv).rgb, qb = texture2D(tQuart, vUv).rgb; if (badc(hb)) hb = c; if (badc(qb)) qb = hb; c = coc < .5 ? mix(c, hb, coc * 2.0) : mix(hb, qb, (coc - .5) * 2.0); }
       c += texture2D(tB1, vUv).rgb * bloom * .7 + texture2D(tB2, vUv).rgb * bloom;
@@ -3116,7 +3137,8 @@ function ppInit(w, h) {
       gl_FragColor = vec4(c, 1.0);
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
-    }`, { tMain: { value: null }, tHalf: { value: null }, tQuart: { value: null }, tB1: { value: null }, tB2: { value: null }, tDepth: { value: null }, tRays: { value: null }, rays: { value: 0 }, rayCol: { value: new THREE.Vector3(1, .95, .82) }, near: { value: .1 }, far: { value: 200 }, focus: { value: 5 }, ap: { value: 0 }, bloom: { value: .5 }, sat: { value: 1.06 }, con: { value: 1.05 }, vig: { value: .22 }, tintH: { value: new THREE.Vector3(1, 1, 1) }, tintS: { value: new THREE.Vector3(1, 1, 1) } }, true);
+      if (dbg >= 0.0) gl_FragColor = vec4(vec3(dbg), 1.0);
+    }`, { tMain: { value: null }, tHalf: { value: null }, tQuart: { value: null }, tB1: { value: null }, tB2: { value: null }, tDepth: { value: null }, tRays: { value: null }, tAO: { value: null }, aoK: { value: 0 }, rays: { value: 0 }, rayCol: { value: new THREE.Vector3(1, .95, .82) }, near: { value: .1 }, far: { value: 200 }, focus: { value: 5 }, ap: { value: 0 }, bloom: { value: .5 }, sat: { value: 1.06 }, con: { value: 1.05 }, vig: { value: .22 }, tintH: { value: new THREE.Vector3(1, 1, 1) }, tintS: { value: new THREE.Vector3(1, 1, 1) } }, true);
   return P; }
 function ppPass(mat, uni, target) { const P = PP; P.quad.material = mat; for (const k in uni) mat.uniforms[k].value = uni[k]; R.setRenderTarget(target); R.render(P.scene, P.cam); }
 const GRADE = { rainy: [[1.0, 1.01, 1.02], [.92, .97, 1.06], .86, 1.04], indoorDay: [[1.05, 1.01, .95], [.95, .97, 1.03], 1.08, 1.06], indoorEve: [[1.08, 1.0, .9], [.95, .93, 1.02], 1.08, 1.06], indoorNight: [[1.08, 1.0, .88], [.86, .9, 1.08], 1.05, 1.08], forestNight: [[.98, 1.02, 1.04], [.82, .92, 1.14], 1.04, 1.08], winter: [[1.02, 1.01, 1.0], [.9, .96, 1.08], 1.06, 1.06], beach: [[1.04, 1.02, .96], [.92, .98, 1.06], 1.12, 1.06], city: [[1.05, 1.01, .95], [.93, .96, 1.05], 1.08, 1.06], meadow: [[1.06, 1.02, .93], [.9, .97, 1.08], 1.13, 1.08], sunset: [[1.05, 1.0, .94], [.88, .9, 1.1], 1.08, 1.08], forest: [[1.07, 1.01, .9], [.86, .99, 1.05], 1.1, 1.09], day: [[1.03, 1.01, .97], [.97, .99, 1.04], 1.08, 1.05], evening: [[1.08, .99, .9], [.94, .9, 1.06], 1.08, 1.06], night: [[.96, .99, 1.06], [.84, .9, 1.12], .92, 1.08], indoor: [[1.05, 1.0, .94], [.97, .97, 1.0], 1.05, 1.04], space: [[1, 1, 1.02], [.9, .92, 1.1], 1.05, 1.1] };
@@ -3129,10 +3151,23 @@ function msaaN() { if (MSAA !== null) return MSAA; MSAA = 0; if (MK3D._noMsaa) r
     R.setRenderTarget(a); R.render(ts, tc); q.material = new THREE.MeshBasicMaterial({ map: a.texture }); R.setRenderTarget(b); R.render(ts, tc); const px = new Uint8Array(4 * 4 * 4); R.readRenderTargetPixels(b, 0, 0, 4, 4, px); R.setRenderTarget(null);
     if (px[0] > 150 && px[1] < 80) MSAA = n; a.dispose(); b.dispose(); } catch (e) { MSAA = 0; } return MSAA; }
 MK3D.ss = () => MK3D._ssOverride || (msaaN() ? 1 : 1.5);
+/* герой для тени-подушки — три шара: лапы у земли, туловище, голова (центры — в осях камеры) */
+const _hs = [], _hv = () => new THREE.Vector3();
+function heroSpheres(out) { let n = 0; if (_hs.length === 0) for (let i = 0; i < 4; i++) _hs.push(_hv()); const V = cam.matrixWorldInverse;
+  for (const k in rigCache) { const rg = rigCache[k]; if (!rg.root.visible || !rg.head || n > out.length - 3) continue; let vis = true; for (let o = rg.root; o; o = o.parent) if (!o.visible) { vis = false; break; } if (!vis) continue;
+    const base = _hs[0].setFromMatrixPosition((rg.pose || rg.root).matrixWorld), hp = _hs[1].setFromMatrixPosition(rg.head.matrixWorld), up = _hs[2].copy(hp).sub(base), H = Math.max(.2, up.length()), hr = rg.headR || H * .3;
+    const put = (t, r) => { _hs[3].copy(base).addScaledVector(up, t).applyMatrix4(V); out[n++].set(_hs[3].x, _hs[3].y, _hs[3].z, r); };
+    put(.16, H * .13); put(.45, Math.max(hr * .8, H * .27)); _hs[3].copy(hp).applyMatrix4(V); out[n++].set(_hs[3].x, _hs[3].y, _hs[3].z, hr * .92); }
+  return n; }
+MK3D.aoK = .9; MK3D.aoR = .3; MK3D.aoS = 2.5; MK3D.aoH = 1.7;   /* тень-касание и затенение (svet-eng): сила, радиус в метрах, крутизна; 0 — как раньше */
+MK3D._dbg = () => ({ scene, cam, sun, hemi, rim, R, lightFor, lightBase });   /* для выгрузки сцены в Blender и проверок */
 function renderHQ(w, h) {
-  if (!PP || PP.w !== w || PP.h !== h) { if (PP) for (const k of ['main', 'h1', 'h2', 'q1', 'q2', 'b1', 'b2', 'e1', 'e2', 'r1', 'r2']) PP[k].dispose(); PP = ppInit(w, h); }
+  if (!PP || PP.w !== w || PP.h !== h) { if (PP) for (const k of ['main', 'h1', 'h2', 'q1', 'q2', 'b1', 'b2', 'e1', 'e2', 'r1', 'r2', 'ao1', 'ao2']) PP[k].dispose(); PP = ppInit(w, h); }
   const P = PP, f = Math.max(.5, w / 3840); R.setRenderTarget(P.main); R.clear(); R.render(scene, cam); // f: размытия задуманы для кадра 3840 — тот же размер на экране
-  const ap = MK3D._ap || 0;
+  const ap = MK3D._ap || 0, aoK = MK3D.aoK || 0;
+  if (aoK > 0) { const pm = cam.projectionMatrix.elements, n = heroSpheres(P.ao.uniforms.sph.value);
+    ppPass(P.ao, { tDepth: P.main.depthTexture, pInv: cam.projectionMatrixInverse, px: new THREE.Vector2(1.5 / w, 1.5 / h), P11: pm[5], asp: h / w, rad: MK3D.aoR || .35, k: MK3D.aoS || 1.6, sK: MK3D.aoH != null ? MK3D.aoH : .8, nSph: n }, P.ao1);
+    ppPass(P.aoBlur, { t: P.ao1.texture, tDepth: P.main.depthTexture, d: new THREE.Vector2(1.5 / P.ao1.width, 0), near: cam.near, far: cam.far }, P.ao2); ppPass(P.aoBlur, { t: P.ao2.texture, tDepth: P.main.depthTexture, d: new THREE.Vector2(0, 1.5 / P.ao1.height), near: cam.near, far: cam.far }, P.ao1); }
   ppPass(P.copy, { t: P.main.texture }, P.h1);
   if (ap > 0) { ppPass(P.blur, { t: P.h1.texture, d: new THREE.Vector2(1.6 * f / P.h1.width, 0) }, P.h2); ppPass(P.blur, { t: P.h2.texture, d: new THREE.Vector2(0, 1.6 * f / P.h1.height) }, P.h1);
     ppPass(P.copy, { t: P.h1.texture }, P.q1); ppPass(P.blur, { t: P.q1.texture, d: new THREE.Vector2(2.2 * f / P.q1.width, 0) }, P.q2); ppPass(P.blur, { t: P.q2.texture, d: new THREE.Vector2(0, 2.2 * f / P.q1.height) }, P.q1); }
@@ -3141,7 +3176,7 @@ function renderHQ(w, h) {
   ppPass(P.copy, { t: P.b1.texture }, P.e1); ppPass(P.blur, { t: P.e1.texture, d: new THREE.Vector2(2 * f / P.e1.width, 0) }, P.e2); ppPass(P.blur, { t: P.e2.texture, d: new THREE.Vector2(0, 2 * f / P.e1.height) }, P.e1);
   const rs = MK3D._rays || 0; if (rs > 0) { ppPass(P.rays, { tMain: P.main.texture, tDepth: P.main.depthTexture, src: MK3D._raySrc || new THREE.Vector2(.7, 1.25) }, P.r1); ppPass(P.blur, { t: P.r1.texture, d: new THREE.Vector2(1.2 * f / P.r1.width, 0) }, P.r2); ppPass(P.blur, { t: P.r2.texture, d: new THREE.Vector2(0, 1.2 * f / P.r1.height) }, P.r1); }
   let gr = GRADE[MK3D._grade || 'day'] || GRADE.day; if (MK3D._wxRain) { const k = MK3D._wxRain, b = GRADE.rainy, m = (x, y) => x + (y - x) * k; gr = [gr[0].map((v, i) => m(v, b[0][i])), gr[1].map((v, i) => m(v, b[1][i])), m(gr[2], b[2]), m(gr[3], b[3])]; }
-  ppPass(P.comp, { tRays: P.r1.texture, rays: rs, rayCol: MK3D._rayCol || new THREE.Vector3(1, .95, .82), tMain: P.main.texture, tHalf: P.h1.texture, tQuart: P.q1.texture, tB1: P.b1.texture, tB2: P.e1.texture, tDepth: P.main.depthTexture, near: cam.near, far: cam.far, focus: MK3D._focus || 5, ap, bloom: .55, sat: gr[2], con: gr[3], vig: MK3D._vig != null ? MK3D._vig : .22, tintH: new THREE.Vector3(...gr[0]), tintS: new THREE.Vector3(...gr[1]) }, null);
+  ppPass(P.comp, { tAO: P.ao1.texture, aoK, tRays: P.r1.texture, rays: rs, rayCol: MK3D._rayCol || new THREE.Vector3(1, .95, .82), tMain: P.main.texture, tHalf: P.h1.texture, tQuart: P.q1.texture, tB1: P.b1.texture, tB2: P.e1.texture, tDepth: P.main.depthTexture, near: cam.near, far: cam.far, focus: MK3D._focus || 5, ap, bloom: .55, sat: gr[2], con: gr[3], vig: MK3D._vig != null ? MK3D._vig : .22, tintH: new THREE.Vector3(...gr[0]), tintS: new THREE.Vector3(...gr[1]) }, null);
 }
 let shN = 0, shT = -9, shLoc = null, shP = null;
 function render(ctx) {
@@ -3289,7 +3324,7 @@ MK3D.keepLocs = function (keys) { for (const k in locCache) { if (k === '__stage
   g.traverse(o => { if (o.geometry && o.geometry.dispose) o.geometry.dispose(); }); delete locCache[k]; } };
 /** Облегчённый режим (если телефону не хватило памяти на сцене): без сглаживания ×4 — меньше видеопамяти. */
 MK3D.lowMem = function (on) { on = !!on; if (!!MK3D._noMsaa === on) return; MK3D._noMsaa = on; MK3D._ssOverride = on ? 1 : 0; MSAA = null;
-  if (PP) { for (const k of ['main', 'h1', 'h2', 'q1', 'q2', 'b1', 'b2', 'e1', 'e2', 'r1', 'r2']) PP[k].dispose(); PP = null; } };
+  if (PP) { for (const k of ['main', 'h1', 'h2', 'q1', 'q2', 'b1', 'b2', 'e1', 'e2', 'r1', 'r2', 'ao1', 'ao2']) PP[k].dispose(); PP = null; } };
 MK3D.locPreview = function (canvas, spec, T) {
   if (!MK3D.ready) return false; hideAllRigs(); const key = global.MK.canon(spec); const g = showLoc(key, spec); g.userData.wxK = null; animateLoc(g, T || 2);
   const cineF = MK3D.hq && spec.type === 'forest'; // лес «как в кино» — с тем же туманом, что в серии (иначе сверху видны тёмные полосы крон на голом небе)
