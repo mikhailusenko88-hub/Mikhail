@@ -43,9 +43,13 @@ def seal(payload):
 
 
 def unwrap(h):
-    """Ссылка-переадресация (Google /url, DDG uddg, Zoon redirect, VK away) → настоящий адрес."""
+    """Ссылка-переадресация (Google /url, Bing /ck/a, DDG uddg, Zoon redirect, VK away) → настоящий адрес."""
     try:
         p = urllib.parse.urlparse(h)
+        qs = urllib.parse.parse_qs(p.query)
+        if "bing.com" in p.netloc and p.path.startswith("/ck/a") and qs.get("u", [""])[0].startswith("a1"):
+            u = qs["u"][0][2:]
+            return base64.urlsafe_b64decode(u + "=" * (-len(u) % 4)).decode("utf-8", "replace")
         for k, vs in urllib.parse.parse_qs(p.query).items():
             for v in vs:
                 if v.startswith("http") and k in ("q", "url", "u", "to", "uddg", "target", "link", "redirect", "href"):
@@ -53,6 +57,23 @@ def unwrap(h):
     except Exception:
         pass
     return h
+
+
+def from_cite(cite):
+    """Google отдаёт ссылки /goto?url=… (шифр) — адрес берём из строки под заголовком: «https://t.me › name»."""
+    c = (cite or "").strip().split("\n")[0]
+    if not c:
+        return ""
+    parts = [x.strip() for x in c.replace("\u203a", "›").split("›")]
+    base = parts[0]
+    if not base.startswith("http"):
+        base = "https://" + base
+    path = []
+    for seg in parts[1:]:
+        if not seg or "..." in seg or "\u2026" in seg or " " in seg:
+            return base.rstrip("/") + "/"          # адрес обрезан — только главная (для своего сайта этого хватает)
+        path.append(seg)
+    return base.rstrip("/") + ("/" + "/".join(path) if path else "/")
 
 
 def host(u):
@@ -126,8 +147,14 @@ JS_GOOGLE = """() => { const out = [], seen = new Set();
   for (const a of document.querySelectorAll('#search a:has(h3), #rso a:has(h3), a:has(h3)')) {
     if (seen.has(a.href)) continue; seen.add(a.href);
     const b = a.closest('div.MjjYud, div.g, div[data-hveid]') || a.parentElement;
-    out.push({u: a.href, t: a.querySelector('h3').innerText, s: (b ? b.innerText : '').replace(/\\s+/g, ' ').slice(0, 320)}); }
+    const ci = b ? b.querySelector('cite') : null;
+    out.push({u: a.getAttribute('data-href') || a.href, t: a.querySelector('h3').innerText, cite: ci ? ci.innerText : '',
+              s: (b ? b.innerText : '').replace(/\\s+/g, ' ').slice(0, 320)}); }
   return {res: out.slice(0, 10), text: document.body ? document.body.innerText.slice(0, 20000) : ''}; }"""
+JS_BING = """() => ({res: [...document.querySelectorAll('li.b_algo')].map(li => { const a = li.querySelector('h2 a');
+  return a ? {u: a.href, t: a.innerText, cite: ((li.querySelector('cite') || {}).innerText || ''),
+              s: ((li.querySelector('.b_caption p, .b_lineclamp2, .b_lineclamp3, .b_paractl, p') || {}).innerText || '').slice(0, 320)} : null; })
+  .filter(Boolean).slice(0, 10), text: document.body ? document.body.innerText.slice(0, 20000) : ''})"""
 JS_DDG = """() => ({res: [...document.querySelectorAll('.result')].map(r => { const a = r.querySelector('a.result__a');
   return a ? {u: a.href, t: a.innerText, s: ((r.querySelector('.result__snippet') || {}).innerText || '').slice(0, 320)} : null; })
   .filter(Boolean).slice(0, 10), text: document.body ? document.body.innerText.slice(0, 20000) : ''})"""
@@ -182,28 +209,33 @@ def main():
         for n, (code, q, site, toks) in enumerate(rows, 1):
             item = {"code": code, "q": q, "site": site, "res": [], "pages": []}
             if q:
-                eng = "google" if google_ok else "ddg"
-                url = (f"https://www.google.com/search?q={urllib.parse.quote(q)}&hl=ru&gl=ru&num=10" if eng == "google"
-                       else f"https://html.duckduckgo.com/html/?q={urllib.parse.quote(q)}&kl=ru-ru")
-                try:
-                    load(url, 1.5)
-                    d = page.evaluate(JS_GOOGLE if eng == "google" else JS_DDG)
-                    if eng == "google" and (CAPTCHA.search(page.url) or (not d["res"] and CAPTCHA.search(d["text"][:3000]))):
-                        google_ok = False
-                        log.append(f"{n}: google капча → ddg")
-                        eng = "ddg"
-                        load(f"https://html.duckduckgo.com/html/?q={urllib.parse.quote(q)}&kl=ru-ru", 1.5)
-                        d = page.evaluate(JS_DDG)
-                    item["eng"] = eng
-                    for r in d["res"]:
-                        u = unwrap(r["u"])
-                        if not u.startswith("http"):
-                            continue
-                        item["res"].append({"u": u[:200], "t": r["t"][:100], "s": r["s"][:320],
-                                            "hit": hits(r["t"] + " " + r["s"], toks), "c": contacts(r["s"], [])})
-                except Exception as e:
-                    item["err"] = str(e).split("\n")[0][:120]
-                time.sleep(random.uniform(6, 11))
+                engines = (["google"] if google_ok else []) + ["bing"]
+                seen_u = set()
+                for eng in engines:
+                    try:
+                        if eng == "google":
+                            load(f"https://www.google.com/search?q={urllib.parse.quote(q)}&hl=ru&gl=ru&num=10", 1.5)
+                            d = page.evaluate(JS_GOOGLE)
+                            if CAPTCHA.search(page.url) or (not d["res"] and CAPTCHA.search(d["text"][:3000])):
+                                google_ok = False
+                                log.append(f"{n}: google капча")
+                                continue
+                        else:
+                            load(f"https://www.bing.com/search?q={urllib.parse.quote(q)}&setlang=ru&mkt=ru-RU&count=15", 1.5)
+                            d = page.evaluate(JS_BING)
+                        item.setdefault("eng", []).append(f"{eng}:{len(d['res'])}")
+                        for r in d["res"]:
+                            u = unwrap(r["u"])
+                            if host(u).startswith(("google.", "bing.")) or "/goto?" in u:
+                                u = from_cite(r.get("cite", ""))
+                            if not u.startswith("http") or u in seen_u:
+                                continue
+                            seen_u.add(u)
+                            item["res"].append({"u": u[:200], "t": r["t"][:100], "s": r["s"][:320], "e": eng[0],
+                                                "hit": hits(r["t"] + " " + r["s"] + " " + u, toks), "c": contacts(r["s"], [])})
+                    except Exception as e:
+                        item["err"] = str(e).split("\n")[0][:120]
+                    time.sleep(random.uniform(5, 9))
             # что открыть: сайт из списка, потом найденное (свой сайт, taplink, t.me, vk, zoon…) — до 5 страниц
             cand, seen_hosts = [], set()
             if site:
@@ -212,6 +244,9 @@ def main():
                 h = host(r["u"])
                 if not h or any(s in h for s in SKIP):
                     continue
+                if any(x in h for x in ("zoon.ru", "flamp.ru", "yell.ru", "houzz", "profi.ru", "behance", "vk.com", "vk.ru", "t.me")) \
+                        and urllib.parse.urlparse(r["u"]).path.strip("/") in ("", "spb", "spb/building"):
+                    continue                     # обрезанный адрес справочника — не карточка студии
                 key = h if not any(x in h for x in ("t.me", "vk.com", "vk.ru", "taplink", "zoon.ru", "yell.ru", "houzz", "behance",
                                                        "profi.ru", "linktr.ee")) else r["u"]
                 if key in seen_hosts:
@@ -221,7 +256,7 @@ def main():
                 seen_hosts.add(key)
                 cand.append(r["u"])
             done = set()
-            for u in cand[:5]:
+            for u in cand[:6]:
                 if u in done:
                     continue
                 done.add(u)
