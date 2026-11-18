@@ -23,10 +23,12 @@ jobs:
         run: |
           L=$(grep -v '^#' request.txt | head -1); set -- $L
           echo "name=$1" >> $GITHUB_OUTPUT; shift || true; echo "opts=$*" >> $GITHUB_OUTPUT; echo "Сценарий: $L"
+          # --eng=<ветка> — движок и герои из другой ветки (проба героев до слияния в mebel-3d); по умолчанию mebel-3d
+          E=$(printf '%s\n' "$@" | sed -n 's/^--eng=\([A-Za-z0-9._-]*\)$/\1/p' | head -1); echo "eng=${E:-mebel-3d}" >> $GITHUB_OUTPUT; echo "Движок из ветки: ${E:-mebel-3d}"
       - name: Движок, герои, нейроголос
         run: |
-          git clone -q --depth 1 --filter=blob:none --sparse -b mebel-3d https://github.com/${{ github.repository }} eng
-          (cd eng && git sparse-checkout set Resources/Mebel tools/multik/test && git log -1 --format='%h %ad %s' --date=short > ../engine.txt)
+          git clone -q --depth 1 --filter=blob:none --sparse -b "${{ steps.req.outputs.eng }}" https://github.com/${{ github.repository }} eng
+          (cd eng && git sparse-checkout set Resources/Mebel tools/multik/test && git log -1 --format="%h %ad [${{ steps.req.outputs.eng }}] %s" --date=short > ../engine.txt)
           git clone -q --depth 1 -b multik-voice --single-branch https://github.com/${{ github.repository }} mv
           (cd eng/Resources/Mebel && npm pack three@0.169.0 >/dev/null 2>&1 && tar -xzf three-0.169.0.tgz package/build/three.module.min.js && mv package/build/three.module.min.js . && rm -rf package three-0.169.0.tgz)
           cat engine.txt; ls eng/Resources/Mebel | tr '\n' ' '; du -sh mv/voice mv/ort
