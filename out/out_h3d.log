@@ -1,39 +1,46 @@
-[0;93m2026-11-18 05:22:25.894583434 [W:onnxruntime:Default, device_discovery.cc:164 DiscoverDevicesForPlatform] GPU device discovery failed: device_discovery.cc:89 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
 The cache for model files in Transformers v4.22.0 has been updated. Migrating your old cache. This is a one-time only operation. You can interrupt this and resume the migration later on by calling `transformers.utils.move_cache()`.
 0it [00:00, ?it/s]0it [00:00, ?it/s]
-2026-11-18 05:22:58,008 - hy3dgen.shapgen - INFO - Try to load model from local path: /home/runner/.cache/hy3dgen/tencent/Hunyuan3D-2mini/hunyuan3d-dit-v2-mini-turbo
-2026-11-18 05:22:58,008 - hy3dgen.shapgen - INFO - Model path not exists, try to download from huggingface
-Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]Fetching 3 files:  33%|███▎      | 1/3 [00:00<00:00,  6.67it/s]Fetching 3 files:  67%|██████▋   | 2/3 [00:20<00:10, 10.15s/it]Fetching 3 files: 100%|██████████| 3/3 [00:24<00:00,  8.27s/it]Fetching 3 files: 100%|██████████| 3/3 [00:24<00:00,  8.27s/it]
-2026-11-18 05:23:22,949 - hy3dgen.shapgen - INFO - Loading model from /home/runner/.cache/huggingface/hub/models--tencent--Hunyuan3D-2mini/snapshots/f90a0f7df7d5e6f71109cf333f6a95a0ae3194a6/hunyuan3d-dit-v2-mini-turbo/model.fp16.safetensors
-2026-11-18 05:23:39,138 - hy3dgen.shapgen - INFO - Try to load model from local path: /home/runner/.cache/hy3dgen/tencent/Hunyuan3D-2mini/hunyuan3d-vae-v2-mini-turbo
-2026-11-18 05:23:39,138 - hy3dgen.shapgen - INFO - Model path not exists, try to download from huggingface
+2026-11-18 05:29:10,403 - hy3dgen.shapgen - INFO - Try to load model from local path: /home/runner/.cache/hy3dgen/tencent/Hunyuan3D-2mini/hunyuan3d-dit-v2-mini-turbo
+2026-11-18 05:29:10,403 - hy3dgen.shapgen - INFO - Model path not exists, try to download from huggingface
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]Fetching 3 files:  33%|███▎      | 1/3 [00:00<00:00,  8.83it/s]Fetching 3 files:  67%|██████▋   | 2/3 [00:28<00:14, 14.01s/it]Fetching 3 files: 100%|██████████| 3/3 [00:29<00:00,  9.80s/it]Fetching 3 files: 100%|██████████| 3/3 [00:29<00:00,  9.80s/it]
+2026-11-18 05:29:39,919 - hy3dgen.shapgen - INFO - Loading model from /home/runner/.cache/huggingface/hub/models--tencent--Hunyuan3D-2mini/snapshots/f90a0f7df7d5e6f71109cf333f6a95a0ae3194a6/hunyuan3d-dit-v2-mini-turbo/model.fp16.safetensors
+2026-11-18 05:29:58,512 - hy3dgen.shapgen - INFO - Try to load model from local path: /home/runner/.cache/hy3dgen/tencent/Hunyuan3D-2mini/hunyuan3d-vae-v2-mini-turbo
+2026-11-18 05:29:58,512 - hy3dgen.shapgen - INFO - Model path not exists, try to download from huggingface
 PointCrossAttentionEncoder INFO: pc_sharpedge_size is given, using pc_size=5120, pc_sharpedge_size=5120
-Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]Fetching 3 files:  33%|███▎      | 1/3 [00:00<00:00,  6.46it/s]Fetching 3 files:  67%|██████▋   | 2/3 [00:01<00:00,  1.75it/s]Fetching 3 files: 100%|██████████| 3/3 [00:01<00:00,  1.57it/s]Fetching 3 files: 100%|██████████| 3/3 [00:01<00:00,  1.57it/s]
-2026-11-18 05:23:41,147 - hy3dgen.shapgen - INFO - Loading model from /home/runner/.cache/huggingface/hub/models--tencent--Hunyuan3D-2mini/snapshots/f90a0f7df7d5e6f71109cf333f6a95a0ae3194a6/hunyuan3d-vae-v2-mini-turbo/model.fp16.safetensors
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]Fetching 3 files:  33%|███▎      | 1/3 [00:00<00:00,  9.99it/s]Fetching 3 files:  67%|██████▋   | 2/3 [00:02<00:01,  1.29s/it]Fetching 3 files: 100%|██████████| 3/3 [00:02<00:00,  1.04it/s]Fetching 3 files: 100%|██████████| 3/3 [00:02<00:00,  1.04it/s]
+2026-11-18 05:30:01,446 - hy3dgen.shapgen - INFO - Loading model from /home/runner/.cache/huggingface/hub/models--tencent--Hunyuan3D-2mini/snapshots/f90a0f7df7d5e6f71109cf333f6a95a0ae3194a6/hunyuan3d-vae-v2-mini-turbo/model.fp16.safetensors
 PointCrossAttentionEncoder INFO: pc_sharpedge_size is given, using pc_size=5120, pc_sharpedge_size=5120
-модель загружена за 45 с
+  vae -> float32
+  model -> float32
+  conditioner -> float32
+модель загружена за 53 с
 Downloading data from 'https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.onnx' to file '/home/runner/.u2net/u2net.onnx'.
-  0%|                                               | 0.00/176M [00:00<?, ?B/s]  0%|▏                                      | 632k/176M [00:00<00:28, 6.24MB/s]  6%|██▎                                   | 10.5M/176M [00:00<00:02, 60.1MB/s] 15%|█████▋                                 | 25.7M/176M [00:00<00:01, 102MB/s] 24%|█████████▎                             | 42.3M/176M [00:00<00:01, 127MB/s] 33%|████████████▋                          | 57.2M/176M [00:00<00:00, 135MB/s] 41%|████████████████▏                      | 72.9M/176M [00:00<00:00, 142MB/s] 51%|███████████████████▊                   | 89.6M/176M [00:00<00:00, 150MB/s] 60%|███████████████████████▏               | 105M/176M [00:01<00:01, 44.1MB/s] 66%|█████████████████████████▋             | 116M/176M [00:01<00:01, 50.0MB/s] 71%|███████████████████████████▉           | 126M/176M [00:01<00:00, 54.8MB/s] 80%|███████████████████████████████        | 140M/176M [00:01<00:00, 69.4MB/s] 89%|██████████████████████████████████▉    | 158M/176M [00:02<00:00, 88.3MB/s] 99%|███████████████████████████████████████▋| 175M/176M [00:02<00:00, 105MB/s]  0%|                                               | 0.00/176M [00:00<?, ?B/s]100%|███████████████████████████████████████| 176M/176M [00:00<00:00, 1.36TB/s]
-Diffusion Sampling::   0%|          | 0/5 [00:00<?, ?it/s]Diffusion Sampling::  20%|██        | 1/5 [00:22<01:30, 22.66s/it]Diffusion Sampling::  40%|████      | 2/5 [00:45<01:07, 22.65s/it]Diffusion Sampling::  60%|██████    | 3/5 [01:07<00:45, 22.59s/it]Diffusion Sampling::  80%|████████  | 4/5 [01:30<00:22, 22.55s/it]Diffusion Sampling:: 100%|██████████| 5/5 [01:52<00:00, 22.51s/it]Diffusion Sampling:: 100%|██████████| 5/5 [01:52<00:00, 22.55s/it]
+  0%|                                               | 0.00/176M [00:00<?, ?B/s]  3%|█▏                                    | 5.31M/176M [00:00<00:03, 53.1MB/s] 12%|████▊                                  | 22.0M/176M [00:00<00:01, 120MB/s] 22%|████████▋                              | 38.9M/176M [00:00<00:00, 143MB/s] 32%|████████████▎                          | 55.6M/176M [00:00<00:00, 152MB/s] 41%|████████████████                       | 72.3M/176M [00:00<00:00, 157MB/s] 51%|███████████████████▋                   | 89.0M/176M [00:00<00:00, 161MB/s] 60%|████████████████████████                | 106M/176M [00:00<00:00, 163MB/s] 70%|███████████████████████████▊            | 123M/176M [00:00<00:00, 165MB/s] 79%|███████████████████████████████▋        | 139M/176M [00:00<00:00, 166MB/s] 89%|███████████████████████████████████▍    | 156M/176M [00:01<00:00, 166MB/s] 98%|███████████████████████████████████████▎| 173M/176M [00:01<00:00, 167MB/s]  0%|                                               | 0.00/176M [00:00<?, ?B/s]100%|███████████████████████████████████████| 176M/176M [00:00<00:00, 1.12TB/s]
+  vae -> float32
+  model -> float32
+  conditioner -> float32
+Diffusion Sampling::   0%|          | 0/5 [00:00<?, ?it/s]Diffusion Sampling::  20%|██        | 1/5 [00:23<01:35, 23.96s/it]Diffusion Sampling::  40%|████      | 2/5 [00:47<01:11, 23.82s/it]Diffusion Sampling::  60%|██████    | 3/5 [01:11<00:47, 23.94s/it]Diffusion Sampling::  80%|████████  | 4/5 [01:35<00:23, 23.77s/it]Diffusion Sampling:: 100%|██████████| 5/5 [01:59<00:00, 23.97s/it]Diffusion Sampling:: 100%|██████████| 5/5 [01:59<00:00, 23.92s/it]
+2026-11-18 05:33:07,873 - hy3dgen.shapgen - INFO - FlashVDMVolumeDecoding Resolution: [63, 126, 252]
+FlashVDM Volume Decoding:   0%|          | 0/64 [00:00<?, ?it/s]FlashVDM Volume Decoding:   5%|▍         | 3/64 [00:00<00:03, 16.35it/s]FlashVDM Volume Decoding:   9%|▉         | 6/64 [00:00<00:02, 21.26it/s]FlashVDM Volume Decoding:  14%|█▍        | 9/64 [00:00<00:02, 23.60it/s]FlashVDM Volume Decoding:  19%|█▉        | 12/64 [00:00<00:02, 24.92it/s]FlashVDM Volume Decoding:  23%|██▎       | 15/64 [00:00<00:01, 25.37it/s]FlashVDM Volume Decoding:  28%|██▊       | 18/64 [00:00<00:01, 25.48it/s]FlashVDM Volume Decoding:  33%|███▎      | 21/64 [00:00<00:01, 25.94it/s]FlashVDM Volume Decoding:  38%|███▊      | 24/64 [00:00<00:01, 26.34it/s]FlashVDM Volume Decoding:  42%|████▏     | 27/64 [00:01<00:01, 26.56it/s]FlashVDM Volume Decoding:  47%|████▋     | 30/64 [00:01<00:01, 26.24it/s]FlashVDM Volume Decoding:  52%|█████▏    | 33/64 [00:01<00:01, 22.69it/s]FlashVDM Volume Decoding:  56%|█████▋    | 36/64 [00:01<00:01, 23.81it/s]FlashVDM Volume Decoding:  61%|██████    | 39/64 [00:01<00:01, 24.35it/s]FlashVDM Volume Decoding:  66%|██████▌   | 42/64 [00:01<00:00, 24.26it/s]FlashVDM Volume Decoding:  70%|███████   | 45/64 [00:01<00:00, 24.77it/s]FlashVDM Volume Decoding:  75%|███████▌  | 48/64 [00:01<00:00, 25.30it/s]FlashVDM Volume Decoding:  80%|███████▉  | 51/64 [00:02<00:00, 25.71it/s]FlashVDM Volume Decoding:  84%|████████▍ | 54/64 [00:02<00:00, 26.01it/s]FlashVDM Volume Decoding:  89%|████████▉ | 57/64 [00:02<00:00, 26.16it/s]FlashVDM Volume Decoding:  94%|█████████▍| 60/64 [00:02<00:00, 22.39it/s]FlashVDM Volume Decoding:  98%|█████████▊| 63/64 [00:02<00:00, 23.55it/s]FlashVDM Volume Decoding: 100%|██████████| 64/64 [00:02<00:00, 24.46it/s]
+/home/runner/work/Mikhail/Mikhail/h3d/hy3dgen/shapegen/models/autoencoders/volume_decoders.py:81: UserWarning: Using a non-tuple sequence for multidimensional indexing is deprecated and will be changed in pytorch 2.9; use x[tuple(seq)] instead of x[seq]. In pytorch 2.9 this will be interpreted as tensor index, x[torch.tensor(seq)], which will result either in an error or a different result (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/python_variable_indexing.cpp:356.)
+  sliced = padded[slice_dims]
 Traceback (most recent call last):
-  File "/home/runner/work/Mikhail/Mikhail/gen_h3d.py", line 19, in <module>
-    mesh = pipe(image=img, num_inference_steps=int(os.environ.get('STEPS', 5)), octree_resolution=int(os.environ.get('OCT', 256)), num_chunks=8000,
-  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
-    return func(*args, **kwargs)
-  File "/home/runner/work/Mikhail/Mikhail/h3d/hy3dgen/shapegen/pipelines.py", line 765, in __call__
-    return self._export(
-  File "/home/runner/work/Mikhail/Mikhail/h3d/hy3dgen/shapegen/pipelines.py", line 661, in _export
-    latents = self.vae(latents)
-  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
-    return forward_call(*args, **kwargs)
-  File "/home/runner/work/Mikhail/Mikhail/h3d/hy3dgen/shapegen/models/autoencoders/model.py", line 280, in forward
-    latents = self.post_kl(latents)
-  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
-    return forward_call(*args, **kwargs)
-  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/torch/nn/modules/linear.py", line 134, in forward
-    return F.linear(input, self.weight, self.bias)
-RuntimeError: mat1 and mat2 must have the same dtype, but got Float and Half
+  File "/home/runner/work/Mikhail/Mikhail/h3d/hy3dgen/shapegen/models/autoencoders/surface_extractors.py", line 54, in __call__
+    vertices, faces = self.run(grid_logits[i], **kwargs)
+  File "/home/runner/work/Mikhail/Mikhail/h3d/hy3dgen/shapegen/models/autoencoders/surface_extractors.py", line 69, in run
+    vertices, faces, normals, _ = measure.marching_cubes(
+  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/skimage/measure/_marching_cubes_lewiner.py", line 139, in marching_cubes
+    return _marching_cubes_lewiner(
+  File "/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/skimage/measure/_marching_cubes_lewiner.py", line 206, in _marching_cubes_lewiner
+    raise RuntimeError('No surface found at the given iso value.')
+RuntimeError: No surface found at the given iso value.
+Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/gen_h3d.py", line 27, in <module>
+    mesh = FloaterRemover()(mesh); mesh = DegenerateFaceRemover()(mesh); mesh = FaceReducer()(mesh, max_facenum=60000)
+  File "/home/runner/work/Mikhail/Mikhail/h3d/hy3dgen/shapegen/utils.py", line 83, in wrapper
+    result = func(*args, **kwargs)
+  File "/home/runner/work/Mikhail/Mikhail/h3d/hy3dgen/shapegen/postprocessors.py", line 138, in __call__
+    ms = remove_floater(ms)
+  File "/home/runner/work/Mikhail/Mikhail/h3d/hy3dgen/shapegen/postprocessors.py", line 55, in remove_floater
+    mesh.apply_filter("compute_selection_by_small_disconnected_components_per_face",
+AttributeError: 'NoneType' object has no attribute 'apply_filter'
