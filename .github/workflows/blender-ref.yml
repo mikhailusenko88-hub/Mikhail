@@ -1,0 +1,34 @@
+name: blender-ref
+# Эталон Blender Cycles для кадров движка «Мультиков»: строки «сцена сэмплы ширина» в request.txt, сцены — scenes/<сцена>.json.gz
+on:
+  push:
+    branches: [blender-ref]
+    paths: [request.txt]
+permissions:
+  contents: write
+concurrency:
+  group: blender-ref
+  cancel-in-progress: false
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Blender
+        run: |
+          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y libxi6 libxxf86vm1 libxfixes3 libxrender1 libgl1 libxkbcommon0 libsm6 libice6 libegl1 >/dev/null
+          for v in 4.5.3 4.5.2 4.5.1 4.5.0 4.2.9 4.2.3 4.2.0; do s=${v%.*}; if curl -fsSL "https://download.blender.org/release/Blender$s/blender-$v-linux-x64.tar.xz" -o b.tar.xz; then echo "Blender $v"; break; fi; done
+          mkdir bl && tar -xJf b.tar.xz -C bl --strip-components=1 && ./bl/blender --version | head -1; nproc
+      - name: Рендер
+        run: |
+          mkdir -p out
+          grep -v '^#' request.txt | while read n spp w; do [ -z "$n" ] && continue; t0=$(date +%s)
+            ./bl/blender -b -noaudio -P build_scene.py -- "scenes/$n.json.gz" "out/$n" "$spp" "$w" 2>&1 | grep -v "^Fra:" | tail -25
+            echo "$n: $(( $(date +%s) - t0 )) с" | tee -a out/vremya.txt; done
+      - name: Итог в ветку
+        if: always()
+        run: |
+          git config user.name "blender-ref"; git config user.email "blender-ref@users.noreply.github.com"
+          git add out; git commit -q -m "эталон Blender: $(grep -v '^#' request.txt | tr '\n' ' ')" || true
+          git pull -q --rebase origin blender-ref || true; git push -q origin HEAD:blender-ref || true
