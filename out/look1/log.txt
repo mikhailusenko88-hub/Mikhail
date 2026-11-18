@@ -1,11 +1,29 @@
+шаров 2172, сцена 0 с
+кадр 30, 148 с
+кадр 60, 339 с
+кадр 90, 406 с
+кадр 120, 418 с
+кадр 150, 424 с
+кадр 180, 428 с
+кадр 210, 431 с
+кадр 240, 433 с
+симуляция готова, 435 с
 Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
-Error: Object 'Sphere.001' already in collection 'RigidBodyWorld'
-Traceback (most recent call last):
-  File "/home/runner/work/Mikhail/Mikhail/marbles.py", line 217, in <module>
-    rbw.collection.objects.link(o)
-RuntimeError: Error: Object 'Sphere.001' already in collection 'RigidBodyWorld'
+Saved: 'out/look1/f_0030.jpg'
+Time: 02:19.30 (Saving: 00:00.35)
 
+кадр 30 нарисован, 574 с
+Saved: 'out/look1/f_0075.jpg'
+Time: 02:26.87 (Saving: 00:00.23)
 
-Error: script failed, file: 'marbles.py', exiting.
+кадр 75 нарисован, 721 с
+Saved: 'out/look1/f_0140.jpg'
+Time: 02:27.02 (Saving: 00:00.23)
+
+кадр 140 нарисован, 868 с
+Saved: 'out/look1/f_0260.jpg'
+Time: 02:27.60 (Saving: 00:00.23)
+
+кадр 260 нарисован, 1015 с
 
 Blender quit
