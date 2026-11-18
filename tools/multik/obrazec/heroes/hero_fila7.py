@@ -100,7 +100,7 @@ class Fila7(Fila):
             t = sd_ell(q, V(0, 0, 0), V(0.0041, 0.0018, 0.0058)); t = smax(t, q[:, 2] - 0.004, 0.0009)
             out = t if out is None else np.minimum(out, t)
         return out
-    ACCS = [Fila.ACCS[0], {'name': 'teeth', 'fn': 'teeth_fn', 'box': ((-0.016, -0.19, 0.38), (0.016, -0.14, 0.415)), 'mat': 'tooth', 'col': (0.88, 0.86, 0.82), 'h': 0.0004}]
+    ACCS = [Fila.ACCS[0]]                                                             # без зубиков (Михаил 18.11: у наших зверей зубов нет)
     def mouth_lines(self):
         lines = []; nz = self.NOSE_C; k = self.K
         phil = [V(0, -0.4, nz[2] - (0.0112 + 0.0078 * i / 6) * k) for i in range(7)]
