@@ -1,0 +1,6 @@
+[00:07] страница: Failed to load resource: the server responded with a status of 404 (Not Found)
+[00:08] страница готова; видеокарта: ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)
+[00:08] серия принята: {"ok":true,"series":"Кот Барсик","episode":30,"title":"Кто откусил Луну?!","scenes":9,"errors":[],"unknownWords":[],"unknownObjects":[],"unknownNames":[],"probe":["Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}","Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"]}
+[00:39] Серия 30. Кто откусил Луну?! · 0% · Озвучка реплик · 1 из 116: Ой! Смотрите, луна!
+[01:08] Серия 30. Кто откусил Луну?! · 7% · Озвучка реплик · 101 из 116: Ого!
+[01:38] Серия 30. Кто откусил Луну?! · 8% · Музыка и звуки · Свожу звуковую дорожку…
