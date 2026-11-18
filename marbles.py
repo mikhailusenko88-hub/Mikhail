@@ -28,7 +28,7 @@ if "range" in A:
 else:
     FRAMES = [int(v) for v in A.get("frames", "40,120,220").split(",")]
 SIM_TO = max(FRAMES) if "range" not in A else max(FRAMES)
-BR = float(A.get("r", "0.008"))                 # радиус шара, м
+BR = float(A.get("r", "0.0085"))                 # радиус шара, м
 SEED = int(A.get("seed", "7"))
 random.seed(SEED)
 t0 = time.time()
@@ -54,7 +54,7 @@ sc.render.resolution_percentage = 100
 sc.render.fps = 30
 sc.frame_start, sc.frame_end = 1, FR_END
 sc.view_settings.view_transform = "AgX"
-sc.view_settings.look = "AgX - Medium High Contrast"
+sc.view_settings.look = A.get("look", "AgX - Punchy")
 sc.view_settings.exposure = float(A.get("ev", "0"))
 sc.render.image_settings.file_format = "JPEG"
 sc.render.image_settings.quality = 93
@@ -69,10 +69,10 @@ def mat_principled(name, **kw):
     return m, p
 
 
-m_floor, _ = mat_principled("floor", **{"Base Color": (0.012, 0.013, 0.018, 1), "Roughness": 0.22, "Specular IOR Level": 0.6})
+m_floor, _ = mat_principled("floor", **{"Base Color": (0.006, 0.007, 0.010, 1), "Roughness": 0.16, "Specular IOR Level": 0.7})
 m_glass, _ = mat_principled("glass", **{"Base Color": (0.97, 0.99, 1.0, 1), "Roughness": 0.015, "IOR": 1.5, "Transmission Weight": 1.0})
-m_metal, _ = mat_principled("bucket", **{"Base Color": (0.78, 0.80, 0.83, 1), "Metallic": 1.0, "Roughness": 0.26, "Anisotropic": 0.4})
-m_ball, pb = mat_principled("ball", **{"Roughness": 0.12, "Coat Weight": 1.0, "Coat Roughness": 0.03})
+m_metal, _ = mat_principled("bucket", **{"Base Color": (0.55, 0.57, 0.60, 1), "Metallic": 1.0, "Roughness": 0.36, "Anisotropic": 0.5})
+m_ball, pb = mat_principled("ball", **{"Roughness": 0.18, "Coat Weight": 0.8, "Coat Roughness": 0.04})
 nt = m_ball.node_tree
 oi = nt.nodes.new("ShaderNodeObjectInfo")
 ramp = nt.nodes.new("ShaderNodeValToRGB")
@@ -95,7 +95,7 @@ w.use_nodes = True
 w.node_tree.nodes["Background"].inputs[0].default_value = (0.004, 0.005, 0.009, 1)
 w.node_tree.nodes["Background"].inputs[1].default_value = 1.0
 
-bpy.ops.mesh.primitive_plane_add(size=8, location=(0, 0, 0))
+bpy.ops.mesh.primitive_plane_add(size=30, location=(0, 0, 0))
 floor = bpy.context.active_object
 floor.data.materials.append(m_floor)
 
@@ -112,15 +112,15 @@ def area(name, loc, rot, size, power, color):
     return o
 
 
-area("top", (0, -0.2, 1.7), (math.radians(8), 0, 0), 1.4, 380, (1.0, 0.96, 0.9))
-area("rim", (0.9, 0.7, 0.9), (math.radians(-60), math.radians(40), math.radians(140)), 0.8, 260, (0.6, 0.75, 1.0))
-area("fill", (-1.1, -0.9, 0.6), (math.radians(70), 0, math.radians(-50)), 1.0, 120, (1.0, 0.85, 0.75))
+area("top", (0.0, -0.55, 1.35), (math.radians(28), 0, 0), 0.55, 160, (1.0, 0.95, 0.88))
+area("rim", (0.7, 0.55, 0.75), (math.radians(-55), math.radians(35), math.radians(140)), 0.45, 140, (0.55, 0.7, 1.0))
+area("fill", (-0.9, -0.8, 0.5), (math.radians(70), 0, math.radians(-50)), 0.5, 45, (1.0, 0.8, 0.7))
 
 # ---------------------------------------------------------------- физика
 bpy.ops.rigidbody.world_add()
 rbw = sc.rigidbody_world
-rbw.substeps_per_frame = 12
-rbw.solver_iterations = 14
+rbw.substeps_per_frame = 8
+rbw.solver_iterations = 10
 rbw.point_cache.frame_start = 1
 rbw.point_cache.frame_end = FR_END
 
@@ -154,8 +154,8 @@ for loc, dim in slabs:
     bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.shade_flat()
     o.data.materials.append(m_glass)
-    add_rb(o, "PASSIVE", "BOX", friction=0.3, rest=0.45)
-add_rb(floor, "PASSIVE", "BOX", friction=0.5, rest=0.3)
+    add_rb(o, "PASSIVE", "BOX", friction=0.45, rest=0.15)
+add_rb(floor, "PASSIVE", "BOX", friction=0.6, rest=0.12)
 
 # ведро: усечённый конус без крышки, стенка 5 мм; начало координат — на кромке, через которую льётся
 R0, R1, BH = 0.125, 0.16, 0.24
@@ -178,13 +178,13 @@ bev.width = 0.002
 bucket.data.materials.append(m_metal)
 for p in bucket.data.polygons:
     p.use_smooth = True
-LIP = Vector((-0.07, 0.0, GH + T + 0.13))
+LIP = Vector((0.03, 0.0, GH + T + 0.07))         # кромка над серединой куба, в 7 см над краем
 bucket.location = LIP
 rb = add_rb(bucket, "PASSIVE", "MESH", friction=0.35, rest=0.3)
 rb.kinematic = True
 rb.mesh_source = "FINAL"
 # наклон: стоит до 0,6 с, к 2,3 с опрокинуто на 128°
-for f, ang in ((1, 0), (18, 0), (40, 55), (70, 128), (FR_END, 128)):
+for f, ang in ((1, 0), (20, 0), (50, 45), (95, 92), (150, 132), (FR_END, 132)):   # плавно: ровная струя
     bucket.rotation_euler = (0, math.radians(ang), 0)
     bucket.keyframe_insert("rotation_euler", frame=f)
 for fc in bucket.animation_data.action.fcurves:
@@ -196,9 +196,9 @@ bpy.ops.mesh.primitive_uv_sphere_add(segments=20, ring_count=12, radius=BR, loca
 base = bpy.context.active_object
 bpy.ops.object.shade_smooth()
 base.data.materials.append(m_ball)
-add_rb(base, "ACTIVE", "SPHERE", friction=0.4, rest=0.42, mass=0.012)
-base.rigid_body.linear_damping = 0.04
-base.rigid_body.angular_damping = 0.08
+add_rb(base, "ACTIVE", "SPHERE", friction=0.5, rest=0.16, mass=0.012)
+base.rigid_body.linear_damping = 0.1
+base.rigid_body.angular_damping = 0.25
 step = 2.08 * BR
 balls = []
 cz = -BH + BR + 0.004
@@ -232,12 +232,12 @@ sc.collection.objects.link(cam)
 sc.camera = cam
 tgt = bpy.data.objects.new("tgt", None)
 sc.collection.objects.link(tgt)
-tgt.location = (-0.07, 0, 0.40)
+tgt.location = (-0.03, 0, 0.36)
 c = cam.constraints.new("TRACK_TO")
 c.target = tgt
 c.track_axis = "TRACK_NEGATIVE_Z"
 c.up_axis = "UP_Y"
-for f, y, z in ((1, -1.42, 0.50), (FR_END, -1.22, 0.44)):
+for f, y, z in ((1, -1.80, 0.66), (FR_END, -1.58, 0.58)):
     cam.location = (-0.05, y, z)
     cam.keyframe_insert("location", frame=f)
 cam_d.dof.use_dof = True
