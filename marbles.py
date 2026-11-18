@@ -214,7 +214,8 @@ while cz < -0.03:
             p = center + Vector((x + random.uniform(-0.15, 0.15) * BR, y + random.uniform(-0.15, 0.15) * BR, cz))
             o = base.copy()
             sc.collection.objects.link(o)
-            rbw.collection.objects.link(o)
+            if rbw.collection.objects.get(o.name) is None:
+                rbw.collection.objects.link(o)
             o.location = LIP + p
             balls.append(o)
     cz += step
