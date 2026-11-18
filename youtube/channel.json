@@ -1,20 +1,56 @@
 {
  "channel": "Кот Барсик | Мультфильмы для детей",
  "subs": "9",
- "videos": "45",
+ "videos": "46",
  "playlists": [
   {
    "id": "PLKIEWQEeV1UA",
    "title": "Кот Барсик 🐱 | Смешные моменты и Shorts",
-   "n": 18
+   "n": 19
   },
   {
    "id": "PLSaY8-Tx3Vwg",
    "title": "Кот Барсик 🐱 | Все серии подряд | Мультики для детей",
-   "n": 28
+   "n": 29
   }
  ],
  "last": [
+  {
+   "id": "54Kd2XR7pr8",
+   "title": "🪞 ВТОРОЙ РОН В ЗЕРКАЛЕ?! Живое зеркало | Кот Барсик | Новая серия 28",
+   "published": "2026-11-18T12:30:32Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT5M27S",
+   "views": 1,
+   "likes": 0
+  },
+  {
+   "id": "u4KPnWFFgLc",
+   "title": "Маленький жёлудь — большой секрет! 🐱 Кот Барсик | 29 серия #shorts",
+   "published": "2026-11-18T08:33:41Z",
+   "privacy": "private",
+   "publishAt": "2026-11-19T13:30:00Z",
+   "kids": true,
+   "category": "1",
+   "dur": "PT24S",
+   "views": 0,
+   "likes": 0
+  },
+  {
+   "id": "WJgtVbLahok",
+   "title": "🌳 ДУБ ИЗ ЖЁЛУДЯ?! Маленький секрет | Кот Барсик | Новая серия 29",
+   "published": "2026-11-18T08:32:01Z",
+   "privacy": "private",
+   "publishAt": "2026-11-19T12:30:00Z",
+   "kids": true,
+   "category": "1",
+   "dur": "PT6M15S",
+   "views": 0,
+   "likes": 0
+  },
   {
    "id": "mTGrxw_g0t8",
    "title": "Почему лодка не тонет? 🐱 Кот Барсик | 27 серия #shorts",
@@ -40,18 +76,6 @@
    "likes": 0
   },
   {
-   "id": "54Kd2XR7pr8",
-   "title": "🪞 ВТОРОЙ РОН В ЗЕРКАЛЕ?! Живое зеркало | Кот Барсик | Новая серия 28",
-   "published": "2026-11-17T15:53:32Z",
-   "privacy": "private",
-   "publishAt": "2026-11-18T12:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT5M27S",
-   "views": 0,
-   "likes": 0
-  },
-  {
    "id": "0k2EDD0Sf6U",
    "title": "⛵ ПОЧЕМУ ЛОДКА НЕ ТОНЕТ?! Секрет воды | Кот Барсик | Новая серия 27",
    "published": "2026-11-17T15:30:01Z",
@@ -60,7 +84,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M46S",
-   "views": 38,
+   "views": 41,
    "likes": 2
   },
   {
@@ -84,7 +108,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT6M33S",
-   "views": 19,
+   "views": 24,
    "likes": 1
   },
   {
@@ -96,7 +120,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT7M47S",
-   "views": 80,
+   "views": 90,
    "likes": 1
   },
   {
@@ -108,7 +132,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT8M19S",
-   "views": 197,
+   "views": 212,
    "likes": 2
   },
   {
@@ -120,8 +144,8 @@
    "kids": true,
    "category": "22",
    "dur": "PT33S",
-   "views": 23,
-   "likes": 2
+   "views": 24,
+   "likes": 3
   },
   {
    "id": "YBz1-I2nVxQ",
@@ -144,7 +168,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT9M7S",
-   "views": 92,
+   "views": 100,
    "likes": 1
   },
   {
@@ -229,30 +253,6 @@
    "category": "22",
    "dur": "PT33S",
    "views": 9,
-   "likes": 2
-  },
-  {
-   "id": "L-F99tVc0xY",
-   "title": "😱 КТО ПОВТОРЯЕТ ЗА РОНОМ?! 🐾 Тайна невидимого незнакомца | Кот Барсик — Серия 21",
-   "published": "2026-11-10T14:58:50Z",
-   "privacy": "public",
-   "publishAt": null,
-   "kids": true,
-   "category": "1",
-   "dur": "PT8M3S",
-   "views": 167,
-   "likes": 1
-  },
-  {
-   "id": "e7q171tZ1Cs",
-   "title": "Невидимый гость и тайна золотого сундука 🐱 Кот Барсик | 7 серия #shorts",
-   "published": "2026-11-09T13:38:56Z",
-   "privacy": "public",
-   "publishAt": null,
-   "kids": true,
-   "category": "22",
-   "dur": "PT33S",
-   "views": 3,
    "likes": 2
   }
  ]
