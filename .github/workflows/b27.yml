@@ -1,0 +1,113 @@
+name: b27-render
+# План 27-й серии: движок снимает каждый кадр (герои, позы, шерсть, комната), Blender Cycles ставит свет и рендерит.
+# Запуск — изменить run.txt в ветке blender-27. Итог — релиз blender-27-proba (ролик, сравнение «движок / Blender»).
+on:
+  push:
+    branches: [blender-27]
+    paths: [run.txt]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: b27
+  cancel-in-progress: true
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Какие кадры
+        id: p
+        run: |
+          set -a; source run.txt; set +a
+          per=$(( (NF + SHARDS - 1) / SHARDS )); from=$(( ${{ matrix.shard }} * per )); n=$per; [ $((from + n)) -gt $NF ] && n=$((NF - from)); [ $n -lt 0 ] && n=0
+          echo "from=$from" >> $GITHUB_OUTPUT; echo "n=$n" >> $GITHUB_OUTPUT; echo "кадры $from…$((from + n - 1))"
+      - name: Движок (ветка mebel-3d, закреплённая версия)
+        if: steps.p.outputs.n != '0'
+        run: |
+          set -a; source run.txt; set +a
+          git init -q eng && cd eng && git remote add origin https://github.com/${{ github.repository }}
+          git sparse-checkout init --no-cone && git sparse-checkout set /Resources/Mebel/ /tools/multik/test/
+          git fetch -q --depth 1 --filter=blob:none origin "$ENGINE_SHA" && git checkout -q FETCH_HEAD && git log -1 --format='%h %ad %s' --date=short
+          cd Resources/Mebel && npm pack three@0.169.0 >/dev/null 2>&1 && tar -xzf three-0.169.0.tgz package/build/three.module.min.js && mv package/build/three.module.min.js . && rm -rf package three-0.169.0.tgz && ls -la three.module.min.js
+      - name: Chrome и Blender
+        if: steps.p.outputs.n != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          npm init -y >/dev/null && npm i playwright@1.49.1 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1 && echo chromium ok
+          gh release download blender-tools -R ${{ github.repository }} -p '*.tar.xz' -O b.tar.xz && tar -xJf b.tar.xz && rm b.tar.xz && mv blender-*-linux-x64 blender && blender/blender --version | head -1
+      - name: Снять кадры из движка
+        if: steps.p.outputs.n != '0'
+        run: |
+          set -a; source run.txt; set +a
+          ENG=$PWD/eng node exp/export.js ep27.txt fr "$T0" "$FPS" "${{ steps.p.outputs.n }}" --from=${{ steps.p.outputs.from }} --w=$W 2>&1 | tee export.log | grep -vE "GPU stall|Driver Message" | tail -40
+      - name: Blender — свет и рендер
+        if: steps.p.outputs.n != '0'
+        run: |
+          set -a; source run.txt; set +a
+          a=${{ steps.p.outputs.from }}; b=$((a + ${{ steps.p.outputs.n }} - 1))
+          eval "blender/blender -b --factory-startup -P b27.py -- --in fr --frames $a-$b --out out --w $W --samples $SPP $BARGS" 2>&1 | tee blender.log | grep -E "^\[|rror" | tail -40
+          cp fr/*_eng.png out/ 2>/dev/null; cp export.log out/export_${{ matrix.shard }}.log; cp blender.log out/blender_${{ matrix.shard }}.log; ls out | head -30
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.p.outputs.n != '0'
+        with:
+          name: r-${{ matrix.shard }}
+          path: out/
+          retention-days: 7
+  compose:
+    needs: render
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: r-*
+          merge-multiple: true
+          path: all
+      - name: Ролик и сравнение
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -a; source run.txt; set +a
+          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y ffmpeg >/dev/null
+          ls all | grep -c '^r_' ; ls all | grep -c '_eng.png'
+          gh release download studio-27t -R ${{ github.repository }} -p 'ep-27t.mp4' -O ep.mp4
+          pip -q install faster-whisper >/dev/null 2>&1
+          # где в серии Филя начинает «Вода выталкивает…» — чтобы звук лёг на рот
+          python3 - <<'PY' > off.txt
+          from faster_whisper import WhisperModel
+          import subprocess
+          subprocess.run(['ffmpeg','-y','-loglevel','error','-ss','90','-t','90','-i','ep.mp4','-ac','1','-ar','16000','seg.wav'])
+          m = WhisperModel('small', device='cpu', compute_type='int8')
+          segs, _ = m.transcribe('seg.wav', language='ru', word_timestamps=True)
+          t = None; cand = None
+          for s in segs:
+              for w in s.words:
+                  x = w.word.lower()
+                  if 'вода' in x: cand = w.start
+                  if 'выталк' in x and t is None: t = w.start
+              if t is not None: break
+          if t is None: print('none')
+          else: print(round(90 + (cand if cand is not None and t - cand < 2.5 else t - 0.45), 3))
+          PY
+          cat off.txt; LINE=$(cat off.txt)
+          DUR=$(python3 -c "print($NF/$FPS)")
+          # в нашем плане реплика Фили начинается на 134.20 (время движка) → звук сдвигаем так, чтобы начало совпало
+          if [ "$LINE" != "none" ]; then AS=$(python3 -c "print(round($LINE - (134.20 - $T0), 3))"); else AS=$T0; fi; echo "звук с $AS"
+          ffmpeg -y -loglevel error -ss $AS -t $DUR -i ep.mp4 -vn -c:a aac -b:a 192k a.m4a
+          ffmpeg -y -loglevel error -framerate $FPS -start_number 0 -i all/r_%03d.png -i a.m4a -c:v libx264 -preset slow -crf 16 -pix_fmt yuv420p -c:a copy -shortest -movflags +faststart blender_27.mp4
+          ffmpeg -y -loglevel error -framerate $FPS -start_number 0 -i all/f_%03d_eng.png -c:v libx264 -crf 18 -pix_fmt yuv420p eng.mp4
+          ffmpeg -y -loglevel error -i eng.mp4 -framerate $FPS -start_number 0 -i all/r_%03d.png -i a.m4a -filter_complex "[0:v]scale=1280:720,drawtext=text='СЕЙЧАС (движок)':x=20:y=20:fontsize=34:fontcolor=white:borderw=3[a];[1:v]scale=1280:720,drawtext=text='BLENDER':x=20:y=20:fontsize=34:fontcolor=white:borderw=3[b];[a][b]vstack" -map 2:a -c:v libx264 -crf 18 -pix_fmt yuv420p -c:a copy -shortest -movflags +faststart sravnenie_27.mp4 || true
+          cp all/r_060.png kadr_blender.png 2>/dev/null; cp all/f_060_eng.png kadr_dvizhok.png 2>/dev/null
+          (cd all && tar -czf ../logs.tgz *.log) || true
+          ls -la *.mp4 *.png
+          gh release delete blender-27-proba -y --cleanup-tag >/dev/null 2>&1 || true
+          gh release create blender-27-proba --target blender-27 --prerelease --title "Проба: 27-я серия в Blender" --notes "План 2:14–2:19, движок ae8eced → Blender Cycles. $(cat off.txt)" $(ls blender_27.mp4 sravnenie_27.mp4 kadr_*.png logs.tgz 2>/dev/null)

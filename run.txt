@@ -1,0 +1,11 @@
+# Проба: план 27-й серии (2:14,1–2:18,9, общий план, все пятеро) — движок → Blender Cycles.
+# Меняешь строку ниже и отправляешь — GitHub собирает ролик заново.
+T0=134.12
+FPS=25
+NF=120
+SHARDS=20
+W=1280
+SPP=48
+ENGINE_SHA=ae8eced96025cc2aaec29b5c757c77093b9f752c
+BARGS="--world 0.06 --fillw 60 --keyw 800 --keys 1.2 --sunk 7 --barsk 4.5 --minpx 0.22"
+RUN=1
