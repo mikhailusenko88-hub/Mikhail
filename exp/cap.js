@@ -87,7 +87,8 @@
               if (!ok) continue; const c = ((s * (K - 1) + K - 2) * 6 + 2) * 4; Cc[n * 3] = r.B[c]; Cc[n * 3 + 1] = r.B[c + 1]; Cc[n * 3 + 2] = r.B[c + 2]; n++; }
             objs.push({ k: 'curves', name, kind: 'bars', K, n, pos: put(P.subarray(0, n * K * 3)), rad: put(Rr.subarray(0, n * K)), col: put(Cc.subarray(0, n * 3)) }); cnt('волосков БАРС', n); continue; }
           if (g.isInstancedBufferGeometry && ud.barsik) {   // шерсть Барсика: 5 точек на волосок, по 2 вершины на точку
-            const r = gpu(THREE, R, cam, o, 'vec4(p, max(rad, 1e-6))', 'vec4(vAlb, float(vKind))', { set: { uDecC: 1 } }); if (!r) continue;
+            const lash = /float\s+rad0\s*=/.test(o.material.vertexShader || '');   // ресницы: rad там — вектор, ширина — rad0, скрытые (hid=0) не берём
+            const r = gpu(THREE, R, cam, o, lash ? 'vec4(p, hid > 0.5 ? max(rad0, 1e-6) : 0.0)' : 'vec4(p, max(rad, 1e-6))', 'vec4(vAlb, float(vKind))', { set: { uDecC: 1 } }); if (!r) continue;
             const K = 5, ns = r.inst; const P = new Float32Array(ns * K * 3), Rr = new Float32Array(ns * K), Cc = new Float32Array(ns * 3), Kd = new Float32Array(ns); let n = 0;
             for (let s = 0; s < ns; s++) { let ok = true; for (let kk = 0; kk < K; kk++) { const a = (s * r.nv + kk * 2) * 4; if (!(r.A[a + 3] > 0)) { ok = false; break; }
                 P[(n * K + kk) * 3] = r.A[a]; P[(n * K + kk) * 3 + 1] = r.A[a + 1]; P[(n * K + kk) * 3 + 2] = r.A[a + 2]; Rr[n * K + kk] = r.A[a + 3]; }

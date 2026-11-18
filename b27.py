@@ -176,7 +176,7 @@ def make_curves(name, P, K, rad, col, rscale=1.0):
     n = len(P) // K
     if n == 0: return None
     if CAMP is not None:   # как в движке: волосок не тоньше доли пикселя на своём расстоянии — иначе мех просвечивает
-        d = np.linalg.norm(P - CAMP[None, :], axis=1); rad = np.maximum(rad * rscale, d * PXK * float(opt('minpx', '0.3'))); rscale = 1.0
+        d = np.linalg.norm(P - CAMP[None, :], axis=1); rad = np.maximum(np.minimum(rad * rscale, 0.006), d * PXK * float(opt('minpx', '0.3'))); rscale = 1.0   # предохранитель: волосок толще 6 мм — ошибка снятия
     hc = bpy.data.hair_curves.new(name); hc.add_curves([K] * n)
     hc.attributes['position'].data.foreach_set('vector', P.ravel())
     ra = hc.attributes.get('radius') or hc.attributes.new('radius', 'FLOAT', 'POINT'); ra.data.foreach_set('value', (rad * rscale).astype(np.float32))
