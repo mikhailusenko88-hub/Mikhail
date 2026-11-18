@@ -1,0 +1,11 @@
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Error: Object 'Sphere.001' already in collection 'RigidBodyWorld'
+Traceback (most recent call last):
+  File "/home/runner/work/Mikhail/Mikhail/marbles.py", line 217, in <module>
+    rbw.collection.objects.link(o)
+RuntimeError: Error: Object 'Sphere.001' already in collection 'RigidBodyWorld'
+
+
+Error: script failed, file: 'marbles.py', exiting.
+
+Blender quit
