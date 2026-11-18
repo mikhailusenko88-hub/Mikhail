@@ -1,2 +1,13 @@
-# 2026-11-18 22:35 — проверка света и камеры по готовому движению (повтор: вернул anim.npz в ветку)
-look7 anim=out/look6/anim.npz frames=80,120,230 end=240 samples=32 res=720x1280
+# 2026-11-18 22:45 — весь ролик: кадры 28–231 на 12 машинах (по готовому движению look6)
+seg01 anim=out/look6/anim.npz range=28-44 end=240 samples=40 res=1080x1920
+seg02 anim=out/look6/anim.npz range=45-61 end=240 samples=40 res=1080x1920
+seg03 anim=out/look6/anim.npz range=62-78 end=240 samples=40 res=1080x1920
+seg04 anim=out/look6/anim.npz range=79-95 end=240 samples=40 res=1080x1920
+seg05 anim=out/look6/anim.npz range=96-112 end=240 samples=40 res=1080x1920
+seg06 anim=out/look6/anim.npz range=113-129 end=240 samples=40 res=1080x1920
+seg07 anim=out/look6/anim.npz range=130-146 end=240 samples=40 res=1080x1920
+seg08 anim=out/look6/anim.npz range=147-163 end=240 samples=40 res=1080x1920
+seg09 anim=out/look6/anim.npz range=164-180 end=240 samples=40 res=1080x1920
+seg10 anim=out/look6/anim.npz range=181-197 end=240 samples=40 res=1080x1920
+seg11 anim=out/look6/anim.npz range=198-214 end=240 samples=40 res=1080x1920
+seg12 anim=out/look6/anim.npz range=215-231 end=240 samples=40 res=1080x1920
