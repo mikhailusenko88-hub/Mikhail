@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-17 слот 3: clubs №11 https://youtube.com/shorts/NTJTO3M2V58, за 50 с
+ВЫЛОЖЕНО 2026-11-18 слот 1: cars №17 https://youtube.com/shorts/G-Yq6FjzY0Q, за 59 с
 
 {
- "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №11 #shorts",
- "description": "🏆 Oʻtgan hafta chempioni: Paxtakor · Чемпион прошлой недели: Пахтакор\n\n⏳ Finalgacha 5 kun · До финала 5 дней\n\nPaxtakor, Bunyodkor, Nasaf, Navbahor… qaysi jamoa tezroq? Izohlarda yoz 👇\n22 клубов Суперлиги Узбекистана в одной гонке: Пахтакор, Бунёдкор, Насаф, Навбахор и другие. Какой победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nJamoangiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего клуба? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #futbol #superliga #paxtakor #bunyodkor #nasaf #navbahor #гонкашариков #shorts",
+ "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №17 #shorts",
+ "description": "🏆 Oʻtgan hafta chempioni: Tahoe · Чемпион прошлой недели: Tahoe\n\n⏳ Finalgacha 4 kun · До финала 4 дня\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,35 +11,35 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "futbol",
-  "футбол",
-  "superliga",
-  "суперлига узбекистана",
-  "paxtakor",
-  "bunyodkor",
-  "nasaf",
-  "navbahor",
-  "neftchi",
-  "pfl uzbekistan"
+  "mashina",
+  "cobalt",
+  "gentra",
+  "nexia",
+  "damas",
+  "malibu",
+  "chevrolet",
+  "машины узбекистана"
  ]
 }
 
 --- журнал (время Ташкента) ---
-19:35:41 режим publish, событие workflow_dispatch
-19:35:41 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-19:35:57 комментарии: роликов просмотрено: 15, комментариев: 0
-19:35:57 Тема: гонка футбольных клубов. Подбираю трассу и заезд…
-19:35:58   трасса 1 (hammers, split, bumpy, tramps): победа на 34.4 с, смен лидера 14, финишировали 4, расчёт 1 с — не подходит
-19:35:59   трасса 2 (bumpy, tunnel, tramps, split): победа на 26.0 с, смен лидера 18, финишировали 4, расчёт 1 с
-19:36:00   трасса 3 (stairs, split, tunnel, tramps): победа на 27.4 с, смен лидера 4, финишировали 7, расчёт 1 с
-19:36:00 Рисую трассу…
-19:36:00 Рисую кадры: заезд 29 с + финал 6 с…
-19:36:00   кадр 0/861, 4 с
-19:36:08   кадр 300/861, 11 с
-19:36:15   кадр 600/861, 19 с
-19:36:25 Свожу звук…
-19:36:26 Готово за 29 с: победил Olmaliq, ролик 35 с
-19:36:26 ролик готов: 35 с, 21 МБ, сборка 45 с; победил Olmaliq, топ-3: Olmaliq, Nasaf, Shoʻrtan
-19:36:29 YouTube: https://youtube.com/shorts/NTJTO3M2V58
-19:36:30 в плейлисте
-19:36:31 статус: public uploaded
+11:35:38 режим publish, событие workflow_dispatch
+11:35:39 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+11:35:51 комментарии: роликов просмотрено: 15, комментариев: 0
+11:35:51 Тема: гонка машин. Подбираю трассу и заезд…
+11:35:52   трасса 1 (hammers, stairs, tramps, tunnel): победа на 32.6 с, смен лидера 14, финишировали 5, расчёт 1 с — не подходит
+11:35:54   трасса 2 (split, stairs, hammers, tramps): победа на 27.6 с, смен лидера 9, финишировали 2, расчёт 1 с
+11:35:56   трасса 3 (hammers, tunnel, tramps, bumpy): победа на 36.8 с, смен лидера 33, финишировали 3, расчёт 2 с — не подходит
+11:35:57   трасса 4 (tramps, tunnel, hammers, stairs): победа на 27.6 с, смен лидера 15, финишировали 2, расчёт 1 с
+11:35:57 Рисую трассу…
+11:35:57 Рисую кадры: заезд 30 с + финал 6 с…
+11:35:57   кадр 0/911, 7 с
+11:36:08   кадр 300/911, 17 с
+11:36:18   кадр 600/911, 28 с
+11:36:29   кадр 900/911, 38 с
+11:36:34 Свожу звук…
+11:36:35 Готово за 44 с: победил Cobalt, ролик 36 с
+11:36:35 ролик готов: 36 с, 23 МБ, сборка 56 с; победил Cobalt, топ-3: Cobalt, Chery Tiggo, Nexia
+11:36:37 YouTube: https://youtube.com/shorts/G-Yq6FjzY0Q
+11:36:38 в плейлисте
+11:36:38 статус: public uploaded

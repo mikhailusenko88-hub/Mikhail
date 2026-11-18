@@ -36,3 +36,4 @@
 | 2026-11-17 | 1 | cities №11 | Fargʻona | https://youtube.com/shorts/l3NmVylXJFQ | public |
 | 2026-11-17 | 2 | cars №16 | Jiguli | https://youtube.com/shorts/_UFVZ-syO4o | public |
 | 2026-11-17 | 3 | clubs №11 | Olmaliq | https://youtube.com/shorts/NTJTO3M2V58 | public |
+| 2026-11-18 | 1 | cars №17 | Cobalt | https://youtube.com/shorts/G-Yq6FjzY0Q | public |
