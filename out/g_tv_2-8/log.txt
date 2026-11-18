@@ -1,16 +1,16 @@
 [scene   0.0s] view Khronos PBR Neutral look None
 [scene   0.1s] slat wall panels lamellas 73 faces 438
 [scene   0.1s] asset ceramic_vase_02 size 0.22 x 0.22 x 0.31 objs 1
-[scene   0.1s] asset ceramic_vase_03 size 0.11 x 0.11 x 0.41 objs 1
+[scene   0.2s] asset ceramic_vase_03 size 0.11 x 0.11 x 0.41 objs 1
 [scene   0.2s] asset potted_plant_04 size 0.17 x 0.18 x 0.27 objs 4
-[scene   0.7s] asset potted_plant_01 size 0.59 x 0.63 x 1.35 objs 4
-[scene   0.8s] objects 60 scene built
-[scene   0.8s] calibration from cal_photo.json {'sun_energy': 27.973735809326172, 'sun_color': [1.0, 0.9886969327926636, 0.9783092737197876], 'wb': [0.8804882125514708, 1.012251119522416, 1.2305568605142023], 'exposure': 1.4443015632022187, 'y_ref': 0.38584351539611816}
+[scene   0.8s] asset potted_plant_01 size 0.59 x 0.63 x 1.35 objs 4
+[scene   1.1s] objects 60 scene built
+[scene   1.1s] calibration from cal_photo.json {'sun_energy': 27.973735809326172, 'sun_color': [1.0, 0.9886969327926636, 0.9783092737197876], 'wb': [0.8804882125514708, 1.012251119522416, 1.2305568605142023], 'exposure': 1.4443015632022187, 'y_ref': 0.38584351539611816}
 Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
 Saved: '/home/runner/work/Mikhail/Mikhail/out/g_tv_2-8/g_tv_2-8.jpg'
-Time: 04:54.55 (Saving: 00:00.13)
+Time: 05:26.79 (Saving: 00:00.17)
 
-[scene 295.4s] final render 294.6s /home/runner/work/Mikhail/Mikhail/out/g_tv_2-8/g_tv_2-8.jpg
-[scene 295.4s] done
+[scene 327.8s] final render 326.8s /home/runner/work/Mikhail/Mikhail/out/g_tv_2-8/g_tv_2-8.jpg
+[scene 327.8s] done
 
 Blender quit
