@@ -235,6 +235,14 @@ while cz < -0.03:
     cz += step
 bpy.data.objects.remove(base, do_unlink=True)
 print(f"шаров {len(balls)}, сцена {time.time() - t0:.0f} с", flush=True)
+if A.get("debug"):
+    names = [o.name for o in rbw.collection.objects]
+    print("в мире физики:", len(names), [n for n in names if not n.startswith("Sphere")][:20])
+    for o in sc.objects:
+        if o.rigid_body and not o.name.startswith("Sphere"):
+            rb_ = o.rigid_body
+            print(o.name, rb_.type, rb_.collision_shape, rb_.enabled, rb_.kinematic, tuple(round(v, 3) for v in o.dimensions), tuple(round(v, 3) for v in o.location),
+                  list(rb_.collision_collections)[:3])
 
 # ---------------------------------------------------------------- камера: вертикальный кадр, медленный наезд
 cam_d = bpy.data.cameras.new("cam")
