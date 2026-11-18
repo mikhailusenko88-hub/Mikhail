@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}Тексты · База дизайнеров{% endblock %}
+{% block main %}
+{{ more_nav('dz') }}
+<p class="sub"><a href="{{ url_for('dz_list') }}">← База дизайнеров</a></p>
+<h1>Тексты писем и сообщений</h1>
+<p class="sub">Метки подставит CRM: <b>{строка}</b> — личная строка из карточки, <b>{раздел}</b> — раздел сайта со ссылкой, <b>{сайт}</b>, <b>{телефон}</b>, <b>{имя}</b> — «, Имя», если известно контактное лицо, <b>{кому}</b> — «вашей студии», «вашей компании» (ремонт) или «вам» (частный дизайнер), <b>{макс}</b> — наш канал в MAX. Перед отправкой текст видно в карточке, его можно поправить. Не писать: класс горючести, срок годности, бренд поставщика, процент дизайнерам, «лучшие цены»; в теме — без «бесплатно».</p>
+<form class="grid2" method="post" action="{{ url_for('dz_texts') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f">Телефон в подписи<input name="phone" value="{{ phone }}" inputmode="tel"></label>
+  <label class="f">Писем из базы в сутки (новый домен — до 15)<input name="daily" value="{{ daily }}" inputmode="numeric"></label>
+  {% for k, title, text in tpls %}
+  <label class="f span2">{{ title }}{% if k.endswith('subject') %}<input name="{{ k }}" value="{{ text }}" maxlength="150">{% else %}<textarea name="{{ k }}" rows="{{ 12 if k in ('m1','call') else 7 }}">{{ text }}</textarea>{% endif %}</label>
+  {% endfor %}
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
+{% endblock %}

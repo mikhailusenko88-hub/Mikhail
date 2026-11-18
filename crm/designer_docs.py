@@ -108,6 +108,9 @@ def register(app: Flask, store: Any, docs: Docs, h: dict[str, Any]) -> None:
         if cid:
             with store.tx() as c:
                 store.log(c, "Отправлены материалы для дизайнеров: " + ", ".join(d["title"] for d in chosen), who(), client_id=cid)
+        dzl = app.extensions.get("dz")
+        if dzl is not None:
+            dzl.after_models(email, [d["title"] for d in chosen], who())
         flash(f"Письмо отправлено на {email}: {len(chosen)} файл(ов) по ссылкам. Когда дизайнер скачает — будет видно ниже.", "ok")
         return redirect(url_for("designers_view") + "#sent")
 

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}База дизайнеров{% endblock %}
+{% block main %}
+{{ more_nav('dz') }}
+<div class="bar"><h1>База дизайнеров</h1>{% if me['role']=='admin' %}<a class="btn-g sm" href="{{ url_for('dz_texts') }}">Тексты писем</a>{% endif %}</div>
+<p class="sub">Кому предлагаем «Наш декор». В карточке — письмо, сообщение в мессенджер, звонок и всё, что о дизайнере известно. Писем из базы сегодня: {{ sent_today }} из {{ limit }}.</p>
+
+{% macro qs(g=grp, f=f, p=prio) -%}{{ url_for('dz_list', g=g or None, f=f or None, p=p or None, q=q or None) }}{%- endmacro %}
+<nav class="chips dzgroups" aria-label="Откуда">
+  <a class="chip" href="{{ qs(g='avito') }}" {% if grp=='avito' %}aria-current="true"{% endif %}>Авито · {{ cnt['avito'] }}</a>
+  <a class="chip" href="{{ qs(g='other') }}" {% if grp=='other' %}aria-current="true"{% endif %}>Не Авито · {{ cnt['other'] }}</a>
+  <a class="chip" href="{{ qs(g='') }}" {% if not grp %}aria-current="true"{% endif %}>Все · {{ cnt['all'] }}</a>
+</nav>
+<nav class="chips" aria-label="Статус">
+  <a class="chip" href="{{ qs(f='today') }}" {% if f=='today' %}aria-current="true"{% endif %}>Сегодня{% if cnt['today'] %} · {{ cnt['today'] }}{% endif %}</a>
+  <a class="chip" href="{{ qs(f='contact') }}" {% if f=='contact' %}aria-current="true"{% endif %}>Есть контакт, не писали</a>
+  {% for key, name, _s in DZ_FILTERS %}<a class="chip" href="{{ qs(f=key) }}" {% if f==key %}aria-current="true"{% endif %}>{{ name }}</a>{% endfor %}
+  <a class="chip" href="{{ qs(f='') }}" {% if not f %}aria-current="true"{% endif %}>Все статусы</a>
+</nav>
+<nav class="chips" aria-label="Группа">
+  {% for p in DZ_PRIOS %}<a class="chip" href="{{ qs(p=p) }}" {% if prio==p %}aria-current="true"{% endif %}>{{ p }}</a>{% endfor %}
+  <a class="chip" href="{{ qs(p='') }}" {% if not prio %}aria-current="true"{% endif %}>A, B, C</a>
+</nav>
+<form class="addline" method="get" action="{{ url_for('dz_list') }}" role="search">
+  {% if grp %}<input type="hidden" name="g" value="{{ grp }}">{% endif %}{% if f %}<input type="hidden" name="f" value="{{ f }}">{% endif %}
+  <input type="search" name="q" value="{{ q }}" placeholder="Имя, студия, метро, почта" aria-label="Поиск по базе">
+  <button class="btn-s">Найти</button>
+</form>
+<p class="sub">{{ rows|length }} в списке</p>
+<div class="panel list">
+{% for d in rows %}
+  <a class="row btn" href="{{ url_for('dz_card', lid=d['id']) }}">
+    <div class="grow">
+      <div class="t"><span class="muted">{{ d['code'] }}</span> {{ d['name'] }}</div>
+      <div class="d">{% if d['area'] %}{{ d['area'] }} · {% endif %}{{ (d['about'] or '')[:90] }}</div>
+      <div class="dzicons d">{% if d['email'] %}✉ почта {% endif %}{% if d['telegram'] %}· Telegram {% endif %}{% if d['whatsapp'] %}· WhatsApp {% endif %}{% if d['phone'] %}· ☎ {% endif %}{% if d['source']=='avito' and grp!='avito' %}· Авито{% endif %}</div>
+    </div>
+    <div class="dzpills">
+      <span class="pill dzp-{{ d['prio'] }}">{{ d['prio'] }}</span>
+      <span class="pill dzs-{{ d['status'] }}">{{ DZ_STATUS.get(d['status'], d['status']) }}</span>
+      {% if d['next_at'] and d['status'] not in ('partner','refused','wrong','skip') %}{% if d['next_at'] < today %}<span class="pill crit">{{ fmt_day(d['next_at']) }}</span>{% elif d['next_at'] == today %}<span class="pill warn">сегодня</span>{% else %}<span class="pill">{{ fmt_day(d['next_at']) }}</span>{% endif %}{% endif %}
+    </div>
+  </a>
+{% else %}<div class="row"><span class="d">Никого — поменяйте фильтр.</span></div>{% endfor %}
+</div>
+
+<details class="panel pad sec">
+<summary>Добавить дизайнера</summary>
+<form class="grid2 sec" method="post" action="{{ url_for('dz_new') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f span2">Имя или студия<input name="name" required maxlength="200"></label>
+  <label class="f">Откуда<select name="source">{% for k, n in DZ_SOURCES %}<option value="{{ k }}">{{ n }}</option>{% endfor %}</select></label>
+  <label class="f">Телефон<input name="phone" inputmode="tel"></label>
+  <label class="f">Почта<input name="email" type="email"></label>
+  <label class="f">Telegram<input name="telegram" placeholder="@name или t.me/name"></label>
+  <label class="f">Сайт<input name="site" placeholder="studio.ru"></label>
+  <label class="f">Метро / район<input name="area"></label>
+  <label class="f span2">Чем занимаются<textarea name="about" rows="2"></textarea></label>
+  <div class="span2"><button class="btn-p">Добавить</button></div>
+</form>
+</details>
+{% endblock %}

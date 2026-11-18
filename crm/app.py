@@ -42,6 +42,8 @@ from outbox import Outbox
 from pochta import INLINE_OK, Pochta, fmt_ts, size_h
 from docs import MAX_FILE as DOC_MAX, Docs, clean_folder, fmt_date
 from designer_docs import register as register_designer_docs
+from dz_leads import DzLeads
+from dz_web import register as register_dz
 from invoice import Invoices
 from push import WebPush
 from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, TochkaError, http_request, jwt_claims,
@@ -627,6 +629,13 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     register_designer_docs(app, store, docs, {"admin_required": admin_required, "who": who,
                                               "send_mail": lambda *a, **k: send_mail(*a, **k),
                                               "shop_domain": conf["SHOP_DOMAIN"] or "nashdekor.ru"})
+    # ------------------------------------------------------------ база дизайнеров: кому предлагаем (Авито / сайты и Zoon)
+    dz = DzLeads(store, conf["SHOP_DOMAIN"] or "nashdekor.ru")
+    app.extensions["dz"] = dz
+    ob.save_dz = dz.import_payload               # Claude пополняет базу через ветку outbox (dz/*.json, шифр)
+    register_dz(app, store, dz, {"login_required": login_required, "admin_required": admin_required, "who": who,
+                                 "send_mail": lambda *a, **k: send_mail(*a, **k), "pochta": pochta,
+                                 "shop_domain": conf["SHOP_DOMAIN"] or "nashdekor.ru"})
 
     def folder_from_form() -> str:
         return clean_folder((request.form.get("new_folder") or "").strip() or request.form.get("folder", ""))

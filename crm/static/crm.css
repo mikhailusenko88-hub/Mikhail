@@ -288,3 +288,20 @@ code.sel,pre.sel{user-select:all;-webkit-user-select:all;word-break:break-all}
 .dzchk{display:flex;gap:8px;align-items:baseline;font-weight:600}
 .dzchk input{flex:none;width:18px;height:18px}
 .dzchk .d{font-weight:400}
+/* База дизайнеров */
+.dzact{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.dzpills{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:0 0 auto}
+.dzicons{margin-top:2px}
+.pill.dzp-A{background:var(--good-soft);color:var(--good)}
+.pill.dzp-B{background:var(--accent-soft);color:var(--accent)}
+.pill.dzs-found,.pill.dzs-interest,.pill.dzs-models,.pill.dzs-talk{background:var(--warn-soft);color:var(--warn)}
+.pill.dzs-partner{background:var(--good-soft);color:var(--good)}
+.pill.dzs-refused,.pill.dzs-wrong,.pill.dzs-skip{background:var(--crit-soft);color:var(--crit)}
+.pill.dzs-sent,.pill.dzs-reminded,.pill.dzs-nocall{background:var(--accent-soft);color:var(--accent)}
+.dzscript,.dzpre{white-space:pre-wrap}
+.dzscript{background:var(--sunk);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:14px;color:var(--ink)}
+#dzmsg{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:15px;background:var(--surface)}
+.dzres{border:0;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px 14px}
+.dzres label{display:flex;gap:6px;align-items:center;font-size:15px}
+.dzres input{width:18px;height:18px}
+.dzgroups .chip{font-size:15px;padding:7px 14px;font-weight:600}

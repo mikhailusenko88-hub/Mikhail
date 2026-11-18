@@ -4,6 +4,7 @@
 {% block main %}
 {{ more_nav('designers') }}
 <h1>Дизайнеры</h1>
+<div class="panel list"><a class="row btn" href="{{ url_for('dz_list') }}"><div class="grow"><div class="t">База дизайнеров — кому предлагаем</div><div class="d">Авито и сайты: письма, Telegram, звонки, статусы{% if dz_due() %} · на сегодня {{ dz_due() }}{% endif %}</div></div><span class="d">Открыть ›</span></a></div>
 {% set dzd = dz_docs() %}
 <h2 id="docs">Документы для дизайнеров</h2>
 <p class="sub">«Скачать» — файл себе. «Поделиться файлом» — сразу в мессенджер или в «Файлы». «Скопировать ссылку» — ссылка, по которой файл открывается без входа в CRM; видно, скачал ли дизайнер.</p>

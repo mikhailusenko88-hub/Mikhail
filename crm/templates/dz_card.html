@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}{{ d['name'] }} · База дизайнеров{% endblock %}
+{% block main %}
+<p class="sub"><a href="{{ url_for('dz_list', g='avito' if d['source']=='avito' else 'other') }}">← База дизайнеров</a></p>
+<div class="bar"><h1 class="m0">{{ d['name'] }}</h1>
+  <span><span class="pill dzp-{{ d['prio'] }}">{{ d['prio'] }}</span> <span class="pill dzs-{{ d['status'] }}">{{ DZ_STATUS.get(d['status'], d['status']) }}</span></span></div>
+<p class="sub">{{ d['code'] }} · {{ DZ_SOURCE_NAMES.get(d['source'], d['source']) }}{% if d['person'] %} · {{ d['person'] }}{% endif %}{% if d['area'] %} · {{ d['area'] }}{% endif %}{% if d['rating'] %} · отзывы {{ d['rating'] }}{% endif %}</p>
+{% if d['about'] %}<p>{{ d['about'] }}</p>{% endif %}
+{% if d['hook'] %}<p class="d">Зацепка: {{ d['hook'] }}</p>{% endif %}
+{% if d['note'] %}<p class="d">Заметка: {{ d['note'] }}</p>{% endif %}
+
+<div class="dzact">
+  {% if d['email'] %}<a class="btn-p" href="#mail">✉ Письмо</a>{% endif %}
+  {% if links.get('telegram') %}<a class="btn-s" href="#msg">Telegram</a>{% endif %}
+  {% if links.get('whatsapp') %}<a class="btn-s" href="#msg">WhatsApp</a>{% endif %}
+  {% if links.get('max_link') %}<a class="btn-s" href="#msg">MAX</a>{% endif %}
+  {% if links.get('phone') %}<a class="btn-s" href="{{ links['phone'] }}">☎ {{ d['phone']|dz_phone }}</a>{% endif %}
+  {% if links.get('phone2') %}<a class="btn-s" href="{{ links['phone2'] }}">☎ {{ d['phone2']|dz_phone }}</a>{% endif %}
+  {% if links.get('site') %}<a class="btn-s" href="{{ links['site'] }}" target="_blank" rel="noopener noreferrer">Сайт ↗</a>{% endif %}
+  {% if links.get('vk') %}<a class="btn-s" href="{{ links['vk'] }}" target="_blank" rel="noopener noreferrer">VK ↗</a>{% endif %}
+  {% if links.get('instagram') %}<a class="btn-s" href="{{ links['instagram'] }}" target="_blank" rel="noopener noreferrer">Instagram ↗</a>{% endif %}
+  {% if links.get('avito_profile') %}<a class="btn-g" href="{{ links['avito_profile'] }}" target="_blank" rel="noopener noreferrer">Профиль Авито ↗</a>{% endif %}
+  {% if links.get('avito_ad') %}<a class="btn-g" href="{{ links['avito_ad'] }}" target="_blank" rel="noopener noreferrer">Объявление ↗</a>{% endif %}
+</div>
+{% if not d['email'] and not links.get('telegram') and not links.get('whatsapp') and not links.get('max_link') and not links.get('phone') %}
+<div class="flash">Контактов пока нет{% if d['contacts_note'] %}: {{ d['contacts_note'] }}{% endif %}. Если нашли почту, Telegram или телефон — впишите в «Данные» ниже.{% if d['source']=='avito' %} В чат Авито не пишем: по правилам Авито сообщения — только по сделке, а на нашем профиле оплаченные объявления.{% endif %}</div>
+{% elif d['contacts_note'] %}<p class="d">О контактах: {{ d['contacts_note'] }}</p>{% endif %}
+
+<div class="panel pad sec" id="next">
+  <form class="grid2" method="post" action="{{ url_for('dz_status', lid=d['id']) }}">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label class="f">Статус<select name="status">{% for k, n in DZ_STATUSES %}<option value="{{ k }}" {% if d['status']==k %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
+    <label class="f">Когда следующий шаг<input type="date" name="next_at" value="{{ d['next_at'] }}"></label>
+    <label class="f span2">Следующий шаг<input name="next_step" maxlength="200" value="{{ d['next_step'] }}" placeholder="например, Напоминание (письмо 2)"></label>
+    <label class="f span2">Заметка<textarea name="note" rows="2">{{ d['note'] }}</textarea></label>
+    <div class="span2"><button class="btn-s">Сохранить</button></div>
+  </form>
+</div>
+
+{% if d['email'] %}
+<details class="panel pad sec" id="mail" {% if d['status'] in ('new','found') or (d['next_at'] and d['next_at'] <= today) %}open{% endif %}>
+<summary>✉ Письмо {% if mail_kind=='m2' %}2 — напоминание{% elif mail_kind=='reply' %}— ответ тем, кому интересно{% else %}1{% endif %} на {{ d['email'] }}</summary>
+{% if gmail %}<div class="flash err">Адрес на Gmail: письма с нашего нового домена туда часто падают в «Спам». Лучше сначала написать в Telegram или позвонить, а письмо — после согласия.</div>{% endif %}
+<form class="grid2 sec" method="post" action="{{ url_for('dz_mail', lid=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="kind" value="{{ mail_kind }}">
+  <p class="d span2">От: {{ mail_from }} · ответ придёт в «Почту» (info@). Сегодня из базы отправлено {{ sent_today }} из {{ limit }}.</p>
+  <label class="f span2">Тема<input name="subject" maxlength="150" value="{{ mail_subject }}"></label>
+  <label class="f span2">Текст — прочитайте и поправьте личную строку, если нужно<textarea name="text" rows="18">{{ mail_body }}</textarea></label>
+  {% if not d['line'] and mail_kind=='m1' %}<p class="d span2">Личной строки нет — допишите в «Данные → Личная строка», иначе письмо получится общим.</p>{% endif %}
+  <div class="span2"><button class="btn-p">Отправить письмо</button></div>
+</form>
+</details>
+{% endif %}
+
+<details class="panel pad sec" id="msg" {% if not d['email'] and (links.get('telegram') or links.get('whatsapp') or links.get('max_link')) %}open{% endif %}>
+<summary>💬 Сообщение в Telegram, WhatsApp, MAX</summary>
+<textarea id="dzmsg" class="sec" rows="8" aria-label="Текст сообщения">{{ msg }}</textarea>
+<div class="dzact sec">
+  <button class="btn-p sm" type="button" data-copy="#dzmsg">Скопировать текст</button>
+  {% if links.get('telegram') %}<a class="btn-s sm" href="{{ links['telegram'] }}" target="_blank" rel="noopener noreferrer">Открыть Telegram</a>{% endif %}
+  {% if links.get('whatsapp') %}<a class="btn-s sm" href="{{ links['whatsapp'] }}" target="_blank" rel="noopener noreferrer">Открыть WhatsApp (текст подставится)</a>{% endif %}
+  {% if links.get('max_link') %}<a class="btn-s sm" href="{{ links['max_link'] }}" target="_blank" rel="noopener noreferrer">Открыть MAX</a>{% endif %}
+  {% if links.get('vk') %}<a class="btn-s sm" href="{{ links['vk'] }}" target="_blank" rel="noopener noreferrer">Открыть VK</a>{% endif %}
+</div>
+<p class="d">Скопируйте текст, откройте чат, вставьте и отправьте. Потом отметьте здесь — CRM запишет и поставит следующий шаг.</p>
+<form class="addline" method="post" action="{{ url_for('dz_message', lid=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="text" value="{{ msg }}">
+  <select name="channel" aria-label="Куда написали">{% for k, n in MSG_CHANNELS.items() %}<option value="{{ k }}">{{ n }}</option>{% endfor %}</select>
+  <button class="btn-s">Отметить: написали</button>
+</form>
+</details>
+
+<details class="panel pad sec" id="call" {% if not d['email'] and not links.get('telegram') and not links.get('whatsapp') and links.get('phone') %}open{% endif %}>
+<summary>☎ Звонок{% if d['phone'] %} — {{ d['phone']|dz_phone }}{% endif %}</summary>
+{% if links.get('phone') %}<p><a class="btn-p" href="{{ links['phone'] }}">Позвонить {{ d['phone'] }}</a></p>{% else %}<p class="d">Телефона нет — впишите в «Данные».</p>{% endif %}
+<div class="dzscript d">{{ call_script }}</div>
+<form class="grid2 sec" method="post" action="{{ url_for('dz_call', lid=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <fieldset class="span2 dzres"><legend class="d">Итог звонка</legend>
+    <label><input type="radio" name="result" value="noanswer"> Не дозвонились</label>
+    <label><input type="radio" name="result" value="contact"> Дали контакт</label>
+    <label><input type="radio" name="result" value="interest"> Интересно</label>
+    <label><input type="radio" name="result" value="later"> Перезвонить позже</label>
+    <label><input type="radio" name="result" value="refused"> Отказ</label>
+    <label><input type="radio" name="result" value="wrong"> Не по адресу</label>
+  </fieldset>
+  <label class="f">Почта, если дали<input name="email" type="email"></label>
+  <label class="f">Telegram, если дали<input name="telegram" placeholder="@name"></label>
+  <label class="f">С кем говорили<input name="person"></label>
+  <label class="f">Другой телефон<input name="phone2" inputmode="tel"></label>
+  <label class="f span2">Комментарий<input name="comment" maxlength="300" placeholder="например, перезвонить после 15:00"></label>
+  <div class="span2"><button class="btn-s">Записать итог</button></div>
+</form>
+</details>
+
+{% if me['role']=='admin' %}
+<div class="panel pad sec"><b>3D-модели и каталог</b>
+<p class="d">Кому интересно — отправьте файлы по почте со ссылками (видно, скачал ли).{% if not d['email'] %} Почты нет — скопируйте ссылки в мессенджер.{% endif %}</p>
+<a class="btn-s sm" href="{{ url_for('designers_view', to=d['email'] or None) }}#{{ 'send' if d['email'] else 'docs' }}">Отправить 3D-модели и каталог</a></div>
+{% endif %}
+
+<details class="panel pad sec" id="data">
+<summary>Данные и контакты</summary>
+<form class="grid2 sec" method="post" action="{{ url_for('dz_edit', lid=d['id']) }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label class="f span2">Имя или студия<input name="name" value="{{ d['name'] }}" maxlength="200"></label>
+  <label class="f">Контактное лицо<input name="person" value="{{ d['person'] }}"></label>
+  <label class="f">Кто это<input name="kind" value="{{ d['kind'] }}" placeholder="Дизайн, дизайн + ремонт…"></label>
+  <label class="f">Группа<select name="prio">{% for p in DZ_PRIOS %}<option {% if d['prio']==p %}selected{% endif %}>{{ p }}</option>{% endfor %}</select></label>
+  <label class="f">Откуда<select name="source">{% for k, n in DZ_SOURCES %}<option value="{{ k }}" {% if d['source']==k %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
+  <label class="f">Телефон<input name="phone" value="{{ d['phone'] }}" inputmode="tel"></label>
+  <label class="f">Второй телефон<input name="phone2" value="{{ d['phone2'] }}" inputmode="tel"></label>
+  <label class="f">Почта<input name="email" type="email" value="{{ d['email'] }}"></label>
+  <label class="f">Telegram<input name="telegram" value="{{ d['telegram'] }}" placeholder="@name или t.me/name"></label>
+  <label class="f">WhatsApp (номер)<input name="whatsapp" value="{{ d['whatsapp'] }}" inputmode="tel"></label>
+  <label class="f">MAX (ссылка)<input name="max_link" value="{{ d['max_link'] }}"></label>
+  <label class="f">VK<input name="vk" value="{{ d['vk'] }}"></label>
+  <label class="f">Instagram<input name="instagram" value="{{ d['instagram'] }}"></label>
+  <label class="f">Сайт<input name="site" value="{{ d['site'] }}"></label>
+  <label class="f">Метро / район / адрес<input name="area" value="{{ d['area'] }}"></label>
+  <label class="f">Профиль Авито<input name="avito_profile" value="{{ d['avito_profile'] }}"></label>
+  <label class="f">Объявление Авито<input name="avito_ad" value="{{ d['avito_ad'] }}"></label>
+  <label class="f span2">Чем занимаются<textarea name="about" rows="2">{{ d['about'] }}</textarea></label>
+  <label class="f span2">Зацепка (для себя)<input name="hook" value="{{ d['hook'] }}"></label>
+  <label class="f span2">Личная строка в письмо и сообщение — одно предложение про их работу<textarea name="line" rows="2">{{ d['line'] }}</textarea></label>
+  <label class="f span2">Раздел сайта в письме<select name="link"><option value="">Главная</option>{% for p, n in DZ_LINKS %}<option value="{{ p }}" {% if d['link']==p %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
+  <label class="f">Отзывы<input name="rating" value="{{ d['rating'] }}"></label>
+  <label class="f">Цена у них от<input name="price_from" value="{{ d['price_from'] }}"></label>
+  <label class="f span2">Питерский? (как проверили)<input name="city_check" value="{{ d['city_check'] }}"></label>
+  <label class="f span2">О контактах (где искали, что нашли)<input name="contacts_note" value="{{ d['contacts_note'] }}"></label>
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
+</details>
+
+<div class="panel pad sec">
+{% if client %}<p>В «Клиентах»: <a href="{{ url_for('client_view', cid=client['id']) }}">{{ client['name'] }}</a></p>
+{% else %}<form method="post" action="{{ url_for('dz_client', lid=d['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}">
+<button class="btn-s">В клиенты</button> <span class="d">— когда дизайнер заинтересовался: тогда в заявке можно указать, кто привёл, и считать вознаграждение.</span></form>{% endif %}
+</div>
+
+{% if letters %}
+<h2>Письма от {{ d['email'] }}</h2>
+<div class="panel list">{% for e in letters %}<a class="row btn" href="{{ url_for('pochta_letter', mid=e['id']) }}"><div class="grow"><div class="t">{{ e['subject'] or '(без темы)' }}</div><div class="d">{{ e['when'] }}</div></div></a>{% endfor %}</div>
+{% endif %}
+
+<h2 id="hist">История</h2>
+<form class="addline" method="post" action="{{ url_for('dz_note', lid=d['id']) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input name="text" placeholder="Заметка: что было, что договорились" aria-label="Заметка"><button class="btn-s">Записать</button></form>
+<div class="panel list hist">{% for t in touches %}<div class="row"><div class="grow"><div class="t">{{ DZ_CHANNELS.get(t['channel'], t['channel']) }}</div><div class="d dzpre">{{ t['text'] }}</div><div class="d">{{ fmt_dt(t['at']) }}{% if t['by_name'] %} · {{ t['by_name'] }}{% endif %}</div></div></div>{% else %}<div class="row"><span class="d">Пока ничего</span></div>{% endfor %}</div>
+{% endblock %}

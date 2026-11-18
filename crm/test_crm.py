@@ -3137,3 +3137,228 @@ class TestRescueHooks(Base):
         self.c.post("/logout", data={"csrf": self.csrf()})
         self.login("mikhail", "Secret-pass-2")
         self.assertNotIn('class="sos"', self.c.get("/").get_data(as_text=True))
+
+
+class TestDzLeads(Base):
+    """«База дизайнеров»: вкладки Авито / не Авито, карточка со способами связи, статусы и следующий шаг, загрузка Claude."""
+
+    ITEMS = [
+        {"code": "Д01", "source": "zoon", "prio": "A", "name": "Атлон ФМ", "phone": "+7 (812) 604-88-38", "email": "info@spbatlon.ru",
+         "site": "spbatlon.ru", "vk": "vk.ru/atlon_fm", "area": "наб. реки Мойки", "about": "Дизайн и ремонт под ключ, комплектация",
+         "line": "Вы ведёте ремонт под ключ со своим складом материалов — можем поставлять панели на ваши объекты.",
+         "link": "/catalog/stenovye-paneli/", "status": "sent", "next_step": "Напоминание", "next_at": "2026-11-19",
+         "last_subject": "Рейки, молдинги и плинтусы для ваших проектов — 3D-модели профилей"},
+        {"code": "Д02", "source": "zoon", "prio": "A", "name": "Мастер СПб", "phone": "+7 (812) 443-87-66", "telegram": "t.me/masterspb",
+         "about": "Дизайн и ремонт квартир"},
+        {"code": "АВ01", "source": "avito", "prio": "A", "name": "Татьяна Поварова", "person": "Татьяна Поварова",
+         "avito_profile": "https://www.avito.ru/brands/eb8f", "avito_ad": "https://www.avito.ru/7266116498",
+         "whatsapp": "8 921 000-00-01", "about": "проект, комплектация", "line": "Вы сами подбираете клиентам материалы.",
+         "link": "/catalog/moldingi/"},
+        {"code": "АВ02", "source": "avito", "prio": "C", "name": "Марина", "about": "проект", "telegram": "javascript:alert(1)",
+         "site": "evil\" onmouseover=\"x", "contacts_note": "только Авито"},
+    ]
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.dz = self.app.extensions["dz"]
+        self.dz.import_items(self.ITEMS)
+        self.sent = []
+        self.orig = crm_app.send_mail
+        crm_app.send_mail = lambda to, subj, body, **kw: self.sent.append((to, subj, body, kw)) or True
+        self.login()
+
+    def tearDown(self) -> None:
+        crm_app.send_mail = self.orig
+        super().tearDown()
+
+    def test_texts_by_kind_and_signature(self) -> None:
+        """Ремонтной компании — «вашей компании», частному дизайнеру — «вам»; в напоминании и ответе — канал в MAX."""
+        self.dz.import_items([{"code": "Д30", "source": "zoon", "name": "Рестроймастер", "kind": "Ремонт + дизайн", "email": "a@b.ru"},
+                              {"code": "АВ09", "source": "avito", "name": "Анастасия Фомина", "kind": "Частный исполнитель",
+                               "person": "Анастасия Фомина", "email": "f@b.ru"}])
+        d30, av, d01 = self.dz.by_code("Д30"), self.dz.by_code("АВ09"), self.dz.by_code("Д01")
+        self.assertIn("Что можем предложить вашей компании:", self.dz.render("m1", d30))
+        m1 = self.dz.render("m1", av)
+        self.assertIn("Что можем предложить вам:", m1)
+        self.assertIn("Здравствуйте, Анастасия!", m1)
+        self.assertIn("«Наш декор» (ИП Усенко Ю. В.), Санкт-Петербург", m1)
+        self.assertIn("вашей студии", self.dz.render("m1", d01) if d01["kind"] else self.dz.render("m1", d01))
+        kind, subj, body = self.dz.mail_draft(d01)
+        self.assertEqual(kind, "m2")
+        self.assertTrue(subj.startswith("Re: Рейки"))
+        self.assertIn("Канал в MAX: https://max.ru/", body)
+        self.assertIn("бесплатно прислать", body)
+        self.assertNotIn("{", self.dz.render("reply", d01) + self.dz.render("msg", d01) + self.dz.render("call", d01))
+
+    def lid(self, code: str) -> int:
+        return int(self.dz.by_code(code)["id"])
+
+    def test_tabs_and_card(self) -> None:
+        page = self.c.get("/dz").get_data(as_text=True)
+        for n in ("Атлон ФМ", "Мастер СПб", "Татьяна Поварова", "Марина", "Авито · 2", "Не Авито · 2", "Все · 4"):
+            self.assertIn(n, page)
+        page = self.c.get("/dz?g=avito").get_data(as_text=True)
+        self.assertIn("Татьяна Поварова", page); self.assertNotIn("Атлон ФМ", page)
+        page = self.c.get("/dz?g=other").get_data(as_text=True)
+        self.assertIn("Атлон ФМ", page); self.assertNotIn("Татьяна Поварова", page)
+        self.assertIn("Мастер СПб", self.c.get("/dz?f=contact").get_data(as_text=True))             # telegram есть, писали — нет
+        self.assertEqual(self.dz.by_code("Д02")["status"], "found")
+        self.assertIn("Атлон ФМ", self.c.get("/dz?q=мойки").get_data(as_text=True))
+        card = self.c.get(f"/dz/{self.lid('АВ01')}").get_data(as_text=True)
+        self.assertIn("https://wa.me/79210000001?text=", card)                                     # WhatsApp — текст подставится
+        self.assertIn("Профиль Авито", card); self.assertIn("Скопировать текст", card)
+        self.assertIn("Вы сами подбираете клиентам материалы.", card)                               # личная строка в сообщении
+        card = self.c.get(f"/dz/{self.lid('Д02')}").get_data(as_text=True)
+        self.assertIn('href="https://t.me/masterspb"', card); self.assertIn('href="tel:+78124438766"', card)
+        card = self.c.get(f"/dz/{self.lid('АВ02')}").get_data(as_text=True)
+        self.assertNotIn("javascript:", card); self.assertNotIn("onmouseover", card)                # опасные ссылки не попадают
+        self.assertIn("В чат Авито не пишем", card); self.assertIn("только Авито", card)
+        staff = self.app.test_client()
+        self.login("mikhail", "Secret-pass-2", client=staff)
+        self.assertEqual(staff.get("/dz").status_code, 200)                                         # Юлия и сотрудники тоже
+        self.assertEqual(staff.get("/dz/texts").status_code, 403)                                   # тексты — только владельцам
+        self.assertIn("База дизайнеров", self.c.get("/designers").get_data(as_text=True))
+
+    def test_mail_letter1_then_reminder_and_limit(self) -> None:
+        lid = self.lid("АВ01")
+        self.dz.update(lid, "Юлия", email="tanya@studio-p.ru")
+        self.store.set_setting("dz_phone", "+7 900 000-00-00")
+        card = self.c.get(f"/dz/{lid}").get_data(as_text=True)
+        self.assertIn("Письмо 1", card); self.assertIn("Здравствуйте, Татьяна!", card)
+        self.assertIn("Молдинги: https://nashdekor.ru/catalog/moldingi/", card); self.assertIn("+7 900 000-00-00", card)
+        kind, subj, body = self.dz.mail_draft(self.dz.get(lid))
+        r = self.post(f"/dz/{lid}/mail", {"kind": kind, "subject": subj, "text": body + "\nPS"})
+        self.assertEqual(r.status_code, 302)
+        to, s, b, kw = self.sent[-1]
+        self.assertEqual(to, "tanya@studio-p.ru"); self.assertTrue(b.endswith("PS"))               # уходит то, что поправили
+        self.assertEqual(kw["sender"], "Михаил — Наш декор <mikhail@nashdekor.ru>"); self.assertEqual(kw["reply_to"], "info@nashdekor.ru")
+        d = self.dz.get(lid)
+        self.assertEqual(d["status"], "sent"); self.assertIn("Напоминание", d["next_step"])
+        from dz_leads import add_workdays
+        from store import today
+        self.assertEqual(d["next_at"], add_workdays(today(), 3))
+        kind, subj, body = self.dz.mail_draft(d)
+        self.assertEqual(kind, "m2"); self.assertTrue(subj.startswith("Re: Рейки"))
+        self.store.set_setting("dz_mail_day", "1")
+        r = self.post(f"/dz/{lid}/mail", {"kind": kind, "subject": subj, "text": body})
+        self.assertEqual(len(self.sent), 1)                                                          # лимит в сутки
+        self.post(f"/dz/{self.lid('Д02')}/mail", {"kind": "m1", "subject": "x", "text": "y"})        # нет почты — не отправляется
+        self.assertEqual(len(self.sent), 1)
+        hist = self.c.get(f"/dz/{lid}").get_data(as_text=True)
+        self.assertIn("PS", hist); self.assertIn("Новый → Написали", hist.replace("Контакт найден", "Новый"))
+
+    def test_gmail_warning(self) -> None:
+        lid = self.lid("Д02")
+        self.dz.update(lid, "Юлия", email="Studio@Gmail.com")
+        self.assertEqual(self.dz.get(lid)["email"], "studio@gmail.com")
+        self.assertIn("Адрес на Gmail", self.c.get(f"/dz/{lid}").get_data(as_text=True))
+
+    def test_call_results_and_message(self) -> None:
+        lid = self.lid("Д02")
+        self.post(f"/dz/{lid}/call", {"result": "noanswer"})
+        d = self.dz.get(lid)
+        self.assertEqual(d["status"], "nocall"); self.assertTrue(d["next_at"] > "2000")
+        self.post(f"/dz/{lid}/call", {"result": "contact", "email": "boss@masterspb.ru", "person": "Олег", "comment": "снабженец"})
+        d = self.dz.get(lid)
+        self.assertEqual((d["status"], d["email"], d["person"]), ("found", "boss@masterspb.ru", "Олег"))
+        self.post(f"/dz/{lid}/message", {"channel": "telegram", "text": "привет"})
+        self.assertEqual(self.dz.get(lid)["status"], "sent")
+        self.post(f"/dz/{lid}/call", {"result": "interest"})
+        self.assertEqual(self.dz.get(lid)["status"], "interest")
+        self.assertIn("ответ тем, кому интересно", self.c.get(f"/dz/{lid}").get_data(as_text=True))
+        self.post(f"/dz/{lid}/call", {"result": "refused"})
+        d = self.dz.get(lid)
+        self.assertEqual((d["status"], d["next_at"]), ("refused", ""))
+        self.assertNotIn("Мастер СПб", self.c.get("/dz?f=today").get_data(as_text=True))
+        self.assertEqual(self.post(f"/dz/{lid}/call", {"result": "bogus"}).status_code, 302)
+
+    def test_status_today_and_client(self) -> None:
+        from store import today
+        lid = self.lid("Д01")
+        self.post(f"/dz/{lid}/status", {"status": "interest", "next_step": "Позвонить Михаилу", "next_at": today(), "note": "просили каталог"})
+        d = self.dz.get(lid)
+        self.assertEqual((d["status"], d["next_at"], d["note"]), ("interest", today(), "просили каталог"))
+        self.assertIn("Атлон ФМ", self.c.get("/dz?f=today").get_data(as_text=True))
+        self.assertIn("Дизайнеры на сегодня", self.c.get("/").get_data(as_text=True))
+        r = self.post(f"/dz/{lid}/client")
+        cid = int(r.headers["Location"].rsplit("/", 1)[-1])
+        cl = self.store.client(cid)
+        self.assertEqual((cl["kind"], cl["email"]), ("d", "info@spbatlon.ru"))
+        self.post(f"/dz/{lid}/client")
+        self.assertEqual(self.store.c().execute("SELECT COUNT(*) FROM clients").fetchone()[0], 1)   # второй раз — тот же клиент
+
+    def test_reimport_keeps_human_changes(self) -> None:
+        lid = self.lid("Д01")
+        self.post(f"/dz/{lid}/status", {"status": "interest", "next_step": "x", "next_at": ""})
+        self.post(f"/dz/{lid}/edit", {"email": "olga@spbatlon.ru"})
+        a, u = self.dz.import_items([dict(self.ITEMS[0], email="other@spbatlon.ru", status="new", telegram="@atlon_spb",
+                                          about="Новое описание")])
+        d = self.dz.get(lid)
+        self.assertEqual((a, u), (0, 1))
+        self.assertEqual((d["status"], d["email"], d["telegram"], d["about"]), ("interest", "olga@spbatlon.ru", "@atlon_spb", "Новое описание"))
+        a, u = self.dz.import_items([dict(self.ITEMS[1], status="sent", next_step="Ждать ответа")])  # никто не трогал — статус от Claude
+        self.assertEqual(self.dz.by_code("Д02")["status"], "sent")
+        a, u = self.dz.import_items([{"code": "АВ75", "source": "avito", "name": "Новая", "email": "new@x.ru"}])
+        self.assertEqual((a, self.dz.by_code("АВ75")["status"]), (1, "found"))
+
+    def test_texts_page(self) -> None:
+        r = self.post("/dz/texts", {"phone": "+7 921 111-22-33", "daily": "10", "m1_subject": "Тема для студий",
+                                    "msg": "Привет! {строка} {сайт}"})
+        self.assertEqual(r.status_code, 302)
+        lid = self.lid("АВ01")
+        self.assertEqual(self.dz.tpl("m1_subject"), "Тема для студий"); self.assertEqual(self.dz.daily_limit(), 10)
+        self.assertEqual(self.dz.render("msg", self.dz.get(lid)), "Привет! Вы сами подбираете клиентам материалы. https://nashdekor.ru")
+        self.assertIn("+7 921 111-22-33", self.dz.render("m2", self.dz.get(lid)))
+
+    def test_add_manual(self) -> None:
+        r = self.post("/dz/new", {"name": "Студия Х", "source": "avito", "telegram": "@studio_x"})
+        lid = int(r.headers["Location"].rsplit("/", 1)[-1])
+        d = self.dz.get(lid)
+        self.assertEqual((d["code"], d["telegram"], d["status"]), ("АВ03", "@studio_x", "found"))
+        self.assertEqual(self.post("/dz/new", {"name": " "}).status_code, 302)
+
+
+class TestDzChannel(TestOutbox):
+    """Claude пополняет базу дизайнеров через ветку outbox: dz/<id>.json (шифр), один раз, с текстами и телефоном подписи."""
+
+    def test_dz_envelope(self) -> None:
+        import json as _j
+        import uuid
+        import outbox
+        pushes = []
+        self.ob.notify = lambda t, x, u: pushes.append((t, x, u))
+        key = self.c.get("/api/outbox/key").get_data(as_text=True).strip()
+        mid = str(uuid.uuid4())
+        p = {"id": mid, "kind": "dz", "title": "Дизайнеры СПб: Авито и сайты",
+             "settings": {"dz_phone": "+7 921 000-00-00", "dz_tpl_m1_subject": "Тема 18.11", "evil": "x"},
+             "items": [{"code": "АВ01", "source": "avito", "name": "LEONTEVA DESIGN", "telegram": "@leonteva"},
+                       {"code": "Д01", "source": "zoon", "name": "Атлон ФМ", "email": "info@spbatlon.ru", "status": "sent"}]}
+        os.makedirs(os.path.join(self.work, "dz"), exist_ok=True)
+        with open(os.path.join(self.work, "dz", mid + ".json"), "w", encoding="utf-8") as f:
+            _j.dump(outbox.seal(key, p), f)
+        self.git("-C", self.work, "add", "-A"); self.git("-C", self.work, "commit", "-q", "-m", "dz"); self.git("-C", self.work, "push", "-q", "origin", "outbox")
+        out = self.ob.run()
+        self.assertTrue(any("добавлено 2" in x for x in out), out)
+        self.assertEqual(self.sent, [])
+        self.assertEqual(self.ob.status(mid)["status"], "saved")
+        dz = self.app.extensions["dz"]
+        self.assertEqual(dz.by_code("Д01")["status"], "sent"); self.assertEqual(dz.phone(), "+7 921 000-00-00")
+        self.assertEqual(dz.tpl("m1_subject"), "Тема 18.11"); self.assertEqual(self.store.setting("evil", ""), "")
+        self.assertTrue(any(u == "/dz" for _, _, u in pushes))
+        self.ob.run()
+        self.assertEqual(self.store.c().execute("SELECT COUNT(*) FROM dz_leads").fetchone()[0], 2)    # один раз
+
+    def test_models_mark_lead(self) -> None:
+        import io
+        from pathlib import Path
+        docs = self.app.extensions["docs"]; docs.dir = Path(self.tmp.name) / "docs"
+        dz = self.app.extensions["dz"]
+        dz.import_items([{"code": "Д05", "source": "zoon", "name": "Студия Ольги", "email": "olga@mudryakova.ru"}])
+        data = {"csrf": self.csrf(), "folder": "Дизайнерам", "back": "designers", "title": "3D FBX",
+                "file": [(io.BytesIO(b"PK\x03\x04"), "fbx.zip")]}
+        self.c.post("/docs/upload", data=data, content_type="multipart/form-data")
+        did = docs.list("Дизайнерам")[0]["id"]
+        self.post("/designers/docs/send", {"email": "olga@mudryakova.ru", "ids": did, "subject": "s", "text": "{ссылки}"})
+        d = dz.by_code("Д05")
+        self.assertEqual(d["status"], "models")
+        self.assertIn("3D FBX", self.c.get(f"/dz/{d['id']}").get_data(as_text=True))

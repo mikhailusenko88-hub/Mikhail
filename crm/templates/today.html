@@ -15,6 +15,8 @@
 </div>
 <div class="panel list site-today"><a class="row btn" href="{{ url_for('site_view', d=1) }}"><span class="ic ic-site"></span><div class="grow"><div class="t">На сайте сегодня: {{ vb['today'] }} {{ 'человек' if vb['today'] % 10 not in (2,3,4) or vb['today'] % 100 in (12,13,14) else 'человека' }}</div><div class="d">вчера {{ vb['yesterday'] }}{% if vb['leads'] %} · заявок с сайта сегодня: {{ vb['leads'] }}{% endif %}</div></div><span class="d">Подробно ›</span></a></div>
 
+{% if dz_due() %}<div class="panel list"><a class="row btn" href="{{ url_for('dz_list', f='today') }}"><span class="ic ic-clients"></span><div class="grow"><div class="t">Дизайнеры на сегодня: {{ dz_due() }}</div><div class="d">написать, напомнить или перезвонить</div></div><span class="d">Открыть ›</span></a></div>{% endif %}
+
 {% if deadlines %}
 <h2>Сроки отчётности</h2>
 <div class="panel list">{% for x in deadlines %}<a class="row btn" href="{{ x['url'] }}"><div class="grow"><div class="t">{{ x['title'] }}</div>{% if x['amount'] %}<div class="d">{{ rubk(x['amount']) }}</div>{% endif %}</div>{{ due_pill(x['due'], x['due']) }}</a>{% endfor %}</div>

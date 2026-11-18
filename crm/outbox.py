@@ -135,6 +135,7 @@ class Outbox:
         self.workdir = Path(workdir or os.environ.get("OUTBOX_DIR", "/var/lib/prostranstvo/outbox-git"))
         self.save_doc: Callable[..., tuple[str, bool]] | None = None   # ставит app.py — раздел «Документы»
         self.replace_doc: Callable[..., tuple[str, bool]] | None = None   # новая версия файла (ссылки сохраняются)
+        self.save_dz: Callable[[dict[str, Any]], tuple[int, int, str]] | None = None   # база дизайнеров (dz/*.json)
         c = self.s.c()
         c.execute(SCHEMA)
 
@@ -414,6 +415,30 @@ class Outbox:
             self._docs_saved.append((folder, names))
         return f"{mid}: в документы «{folder}» — {len(names)} файл(ов)" + (f"; ошибка {err}" if err else "")
 
+    def _save_dz(self, sk: X25519PrivateKey, mid: str, f: Path) -> str:
+        """Конверт из dz/ — пополнение «Базы дизайнеров» (кладёт Claude): список студий и дизайнеров с контактами."""
+        try:
+            env = json.loads(f.read_text(encoding="utf-8"))
+            if env.get("v") != 1 or env.get("id") != mid:
+                raise ValueError("не тот формат")
+            p = unseal(sk, env)
+        except Exception:  # noqa: BLE001
+            self._record(mid, status="error", to_addr="База дизайнеров", error="не расшифровалось (чужой ключ или повреждённый файл)")
+            return f"{mid}: база дизайнеров — не расшифровалось"
+        if p.get("id") != mid or p.get("kind") != "dz" or not self.save_dz:
+            self._record(mid, status="error", to_addr="База дизайнеров", error="не тот формат")
+            return f"{mid}: база дизайнеров — не тот формат"
+        try:
+            added, updated, err = self.save_dz(p)
+        except Exception as e:  # noqa: BLE001
+            added, updated, err = 0, 0, str(e)[:200]
+        note = f"добавлено {added}, дополнено {updated}"
+        self._record(mid, status="error" if err else "saved", to_addr="База дизайнеров", subject=str(p.get("title") or note)[:200],
+                     body=note, error=err)
+        if not err:
+            self._dz_saved.append(note)
+        return f"{mid}: база дизайнеров — {note}" + (f"; ошибка {err}" if err else "")
+
     def run(self) -> list[str]:
         """Одна проходка cron: новые письма из ветки outbox и повторы неотправленных."""
         send_on = self.enabled()
@@ -442,6 +467,13 @@ class Outbox:
             for f in sorted(ddir.glob("*.json")) if ddir.is_dir() else []:
                 if ID_RE.match(f.stem) and not self._row(f.stem):
                     out.append(self._save_docs(sk, f.stem, f))
+        self._dz_saved: list[str] = []                                        # база дизайнеров от Claude
+        ddir = self.workdir / "dz"
+        for f in sorted(ddir.glob("*.json")) if ddir.is_dir() else []:
+            if ID_RE.match(f.stem) and not self._row(f.stem):
+                out.append(self._save_dz(sk, f.stem, f))
+        if self._dz_saved:
+            self.notify("Claude пополнил базу дизайнеров", "; ".join(self._dz_saved)[:180], "/dz")
         if self._docs_saved:                                                  # один пуш на всю пачку, а не на каждый файл
             dnames = [n for _, ns in self._docs_saved for n in ns]
             folders = sorted({fo for fo, _ in self._docs_saved})
