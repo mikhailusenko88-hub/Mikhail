@@ -13,10 +13,11 @@ class Fila3D(Fila):
     MH = MeshHead(SRC)
     NEAR = -1 if SRC == 'fila20' else 1                                                     # какая половина лица ближе к зрителю на обложке (с неё цвет и ухо)
     FORM = dict(Fila.FORM, C=V(0, -0.004, 0.47))
-    EYE_XZ = (0.066, 0.469); RE = 0.046; EYE_S = V(0.94, 1.0, 1.12); EYE_OUT = 0.24; LID_OFF = 0.84  # видимая ширина глаза = 2·0,8·RE·0,94 ≈ 7,8 см, как на обложке          # глаза — по обложке 26: крупные, высокие овалы
+    EYE_XZ = (0.054, 0.469); RE = 0.04; EYE_S = V(0.94, 0.75, 1.14); EYE_OUT = 0.36; LID_OFF = 0.84   # глаз сплющен вглубь: крупный, но не «навыкате»  # видимая ширина глаза = 2·0,8·RE·0,94 ≈ 7,8 см, как на обложке          # глаза — по обложке 26: крупные, высокие овалы
     EYE_TILT = (2.0, -6.0); EYE_K = (0.886, 0.969)                                           # радужка ~0,58 видимой ширины, зрачок ~0,31 (обложка 26)
     IRIS = [(0.01, 0.012, 0.02), (0.06, 0.15, 0.34), (0.42, 0.64, 0.92)]                  # голубые, как на обложке 26
-    BROW = {'up': 1.5, 'w': 0.72, 'tilt': 0.2, 'r': [0.0062, 0.003], 'col': (0.38, 0.27, 0.22)}
+    BROW = {'up': 1.55, 'w': 0.75, 'tilt': 0.2, 'r': [0.0068, 0.0034], 'col': (0.34, 0.23, 0.19)}
+    LID_LINE = dict(Fila.LID_LINE, r=(0.0024, 0.0052), lashes=4)                         # густая тёмная линия ресниц, как на обложке
     NOSE_Z = 0.4254; LIP_Zf = 0.394
     EAR_Z = 0.605                                                                          # выше — уши (короткий мех), ниже — голова
     MUZ_R = 0.05
@@ -101,6 +102,15 @@ class Fila3D(Fila):
     def place_face(self):
         self.bake_head(); Fila.place_face(self)
     def ear_inner(self, p): return np.full(len(p), 9.0, F)
+    def pink(self, p):   # насколько точка — розовая серединка уха на обложке (0..1)
+        ph = np.asarray(p, np.float64).copy(); ph[:, 0] = np.abs(ph[:, 0]) * self.NEAR; rgb, vis = self.MH.color(self.p2m(ph), tol=0.05)
+        sat = rgb.max(1) - rgb.min(1); return np.clip((sat - 0.12) / 0.1, 0, 1) * vis * (rgb[:, 0] > rgb[:, 2])
+    def fur_ok(self, p, reg):
+        ok = Fila.fur_ok(self, p, reg); er = reg == 4
+        if er.any(): k = self.pink(p[er]); o = ok[er]; o &= k < 0.5; ok[er] = o            # серединка уха — голая розовая кожа, как у прежнего Фили и на обложке
+        return ok
+    NOSE_K = 1.3                                                                              # носик крупнее (обложка 26)
+    def nose_fn(self, p): c = self.NOSE_C; return Fila.nose_fn(self, c + (p - c) / self.NOSE_K) * self.NOSE_K
     def whiskers(self):   # усы — от щёк у уголков рта, наружу и чуть вниз (на обложке не пересекают глаза)
         out = []; z0 = float(self.NOSE_C[2]) - 0.022
         for sg in (-1, 1):
@@ -132,13 +142,16 @@ class Fila3D(Fila):
             if not hasattr(self, '_ref'):                                                    # общий тёплый оттенок обложки (свет сцены) — снять: белый мех = наш белый
                 al = self.MH.alb[self.MH.mask > 0.5]; sat = al.max(1) - al.min(1); self._ref = np.median(al[sat < np.percentile(sat, 40)], 0)
             white = V(0.74, 0.7, 0.64); rgb = np.clip(rgb / self._ref * white, 0, 1)
+            lum = rgb.mean(1, keepdims=True); sat = (rgb.max(1) - rgb.min(1))[:, None]
+            wp = np.clip((sat - 0.07) / 0.12, 0, 1)                                            # почти белое — ровно наш белый; розовое — ярче (уши, щёки)
+            rgb = np.clip(white[None] * (lum / white.mean()) * (1 - wp) + (lum + (rgb - lum) * 1.7) * wp, 0, 1)
             col = rgb * vis[:, None] + base * (1 - vis[:, None])
             ph = p[hd]
             for B in self.BLUSH:                                                              # румянец на щёчках, как на обложке
                 b = np.clip((1.0 - np.linalg.norm((ph - B) / V(0.036, 0.03, 0.026), axis=-1)) * 2.0, 0, 1)[:, None] * 0.45
                 col = col * (1 - b) + V(0.86, 0.5, 0.52)[None] * b
             fur[hd] = col; skin[hd] = col * 0.92
-        tint = V(1.06, 1.1, 1.16)                                                              # белый, а не бежевый: свет сцен тёплый, мех берём холоднее
+        tint = V(1.05, 1.1, 1.2)                                                              # белый, а не бежевый: свет сцен тёплый, мех берём холоднее
         return np.clip(skin * tint, 0, 1).astype(F), np.clip(fur * tint, 0, 1).astype(F)
 
 EAR_SIDE_DEFAULT = 1
