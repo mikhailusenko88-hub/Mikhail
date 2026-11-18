@@ -1,40 +1,86 @@
-2026-11-18 07:37 UTC
-200 https://www.youtube.com/@TheHandwriting_of_Silence
-200 avatar TheHandwriting_of_Silence
-200 banner TheHandwriting_of_Silence
-200 https://www.youtube.com/@TheHandwriting_of_Silence/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
-200 https://www.youtube.com/@LivingLinesTV
-200 avatar LivingLinesTV
-200 banner LivingLinesTV
-200 https://www.youtube.com/@LivingLinesTV/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCuufuU5RCswqp9N1HE0NZlw
-200 https://www.youtube.com/@bilesin_be_kz
-200 avatar bilesin_be_kz
-200 banner bilesin_be_kz
-200 https://www.youtube.com/@bilesin_be_kz/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
-200 https://www.youtube.com/@pochemu_tak_fakty
-200 avatar pochemu_tak_fakty
-200 banner pochemu_tak_fakty
-200 https://www.youtube.com/@pochemu_tak_fakty/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
-200 https://www.youtube.com/@Beautiful_shorts-s6u
-200 avatar Beautiful_shorts-s6u
-200 banner Beautiful_shorts-s6u
-200 https://www.youtube.com/@Beautiful_shorts-s6u/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
-200 https://www.youtube.com/@FlagballArenaTV
-200 avatar FlagballArenaTV
-200 banner FlagballArenaTV
-200 https://www.youtube.com/@FlagballArenaTV/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCUKgRxWtL1kPWr9hdfL8qQw
-200 https://www.youtube.com/@kimyutadi_uz
-200 avatar kimyutadi_uz
-200 banner kimyutadi_uz
-200 https://www.youtube.com/@kimyutadi_uz/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC93S31Qkgoz4cFgKBzz-mLA
-200 https://www.youtube.com/@cartoon_friend3
-200 avatar cartoon_friend3
-200 https://www.youtube.com/@cartoon_friend3/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
+2026-11-18 19:03 UTC
+200 https://www.youtube.com/results?search_query=marbles%20pouring%20asmr&sp=CAM%3D
+200 https://www.youtube.com/@DIYHUB
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCqC2U0ZEj_0Nqn6x3mFWTiw
+200 https://www.youtube.com/@5MadMovieMakers
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCLkZVEXz_qObWr7hAEbS_pQ
+200 https://www.youtube.com/@Amakandu
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCvn4PVcIgJ19HZzTljPZqnA
+200 https://www.youtube.com/@asmrkoubou
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCmE8Q_3X-IemhFfH9HfcTeA
+200 https://www.youtube.com/@MarbleRunToys
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCsNwOM-iYxUkeIT3mW2RPZg
+200 https://www.youtube.com/@watermarblerun2858
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCJ9kqViKJQtwm-5ZFdU-vyA
+200 https://www.youtube.com/@WoodSoupGirlASMR
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCvfaemdtAp_RGi16t7DitKw
+200 https://www.youtube.com/results?search_query=pouring%20marbles%20into%20glass&sp=CAM%3D
+200 https://www.youtube.com/@magicofmaking
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCXXooqWk8AZrHeY4dICgo6w
+200 https://www.youtube.com/@SteveMcDonaldArtsandCrafts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC2EHd4fvq9t8WrKPgqhoYIQ
+200 https://www.youtube.com/@modustrial
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC9aRTgvFLqnK1S0RsWZzlMw
+200 https://www.youtube.com/@brailleskateboarding
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC9PgszLOAWhQC6orYejcJlw
+200 https://www.youtube.com/results?search_query=marbles%20asmr%20satisfying&sp=EgIIBA%3D%3D
+ERR oembed rTJVVWluDU4 HTTP Error 401: Unauthorized
+200 https://www.youtube.com/@Roblox-Lofi-Beats
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCggCekVoNmrMuySp2-eAb1g
+200 https://www.youtube.com/@MattSidorenko-u8s
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC9OR1hYtwGGA0waKzIb7Oeg
+200 https://www.youtube.com/@PlayLabUsa
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCVN4QGSxotys5JLsnV3CW8Q
+200 https://www.youtube.com/@MarbleASMR-Race
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC1n3XN7b5-FlQ_yxN3rH8Xw
+200 https://www.youtube.com/@Satisfy-hub-studio
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC8ZBbXEek3eQijpgiOvaawg
+200 https://www.youtube.com/@MarbleWishpers
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC_ZTm3mM4SMbRbhIlgvfOnA
+200 https://www.youtube.com/@MarblePulseofficial
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCPg8lWcChE2TBXqmokW23Gw
+200 https://www.youtube.com/results?search_query=3d%20balls%20asmr%20satisfying&sp=CAM%3D
+200 https://www.youtube.com/@MagneticGamesIT
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCwnjkBGhMfrNjDBA3BjwVeA
+200 https://www.youtube.com/@MagnetChallenge
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCE5IjMc_iztLrN2U92B-vTg
+200 https://www.youtube.com/@iBuyNewStuff
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCqawM4BZvk9oa0x5nV2Svlw
+200 https://www.youtube.com/@MagnetCooking
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCRl1FYzjQ9hmKEfIJ8wHdKg
+200 https://www.youtube.com/@RecNinja
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCuPNsY-Ro2plEqvZDPS_Sig
+200 https://www.youtube.com/@AmazingMagnets
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC5SYKAP880X9TDtpg3TZCIA
+200 https://www.youtube.com/@Kawaken_3DCG
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCTj4XriyD11OaRgDr7w-cJg
+200 https://www.youtube.com/hashtag/marblesasmr/shorts
+200 https://www.youtube.com/@marblyrace
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCP3ckwekJMcvg7t1OPDGVpg
+200 https://www.youtube.com/@MarblesRunViral
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC3s09kccofix71y2lCyjnKg
+200 https://www.youtube.com/@PerpetualASMR
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC8MSL2SD-Dvfta0DDLfaCbg
+200 https://www.youtube.com/@PaintbrushASMR
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCImPom2UCI3WoawlH03g4hw
+200 https://www.youtube.com/@marbledance-vg6bh
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCa5dpSphZgzeLhBBV1OLq6A
+200 https://www.youtube.com/@dailyasmrtherapy-q6e
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCqO4bYDFf-eMUL1lQZjbCdw
+200 https://www.youtube.com/hashtag/asmrsounds/shorts
+200 https://www.youtube.com/@foot_relax
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCrqKMUQOfmZQacHTSRkEKZg
+200 https://www.youtube.com/@cniel_chocolatier
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCN9tz_Fv5fuL8LOWEgNLH2A
+200 https://www.youtube.com/@SimOrbit3D
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCG6B1-97Tk69n0NakaMxGCQ
+200 https://www.youtube.com/@ASMR_Dream_Touch
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCHNetQpLj03qlW9FevXlUow
+200 https://www.youtube.com/@protonionpaintball5456
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCRRNlsBx_vvhKbEQWulqWPA
+200 https://www.youtube.com/@TheDestructorOfficial
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCzlwoio5o-atk8q87WIA61Q
+200 https://www.youtube.com/@MrToysUpdate
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCD-GHKLXWjLewapBVrH_d0Q
+200 https://www.youtube.com/@its.baronsky
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC9DQj_8v3VZgWRs_-I6IDtw
