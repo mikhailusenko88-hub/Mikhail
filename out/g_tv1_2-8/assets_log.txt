@@ -5,3 +5,5 @@ src oak_veneer_01 (8192, 8192, 3) gx/gy 7.83 1.92
 decor 3-15 {'src': 'oak_veneer_01', 'size_mm': 1830, 'l_gain': 1.06, 'shape': [8192, 8192], 'mean_bgr': [105.4, 160.9, 208.5]}
 src walnut_veneer_02 (8192, 8192, 3) gx/gy 1.62 6.45 rotated
 decor 3-9 {'src': 'walnut_veneer_02', 'size_mm': 1000, 'l_gain': 1.8, 'shape': [8192, 8192], 'mean_bgr': [69.2, 93.2, 130.6]}
+src american_walnut_veneer (2048, 2048, 3) gx/gy 1.85 3.88 rotated
+decor 2-10 {'src': 'american_walnut_veneer', 'size_mm': 1000, 'l_gain': 2.2, 'shape': [2048, 2048], 'mean_bgr': [91.7, 116.3, 163.9]}
