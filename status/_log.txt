@@ -1,91 +1,40 @@
-2026-11-18 19:05 UTC
-200 https://www.youtube.com/@SimOrbit3D
-200 avatar SimOrbit3D
-200 banner SimOrbit3D
-200 https://www.youtube.com/@SimOrbit3D/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCG6B1-97Tk69n0NakaMxGCQ
-200 https://www.youtube.com/@CODIS3DCG
-200 avatar CODIS3DCG
-200 banner CODIS3DCG
-200 https://www.youtube.com/@CODIS3DCG/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCcWBFFGSpN2X_-GG_Xczybw
-200 https://www.youtube.com/@Satisfy-hub-studio
-200 avatar Satisfy-hub-studio
-200 banner Satisfy-hub-studio
-200 https://www.youtube.com/@Satisfy-hub-studio/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC8ZBbXEek3eQijpgiOvaawg
-200 https://www.youtube.com/@Kawaken_3DCG
-200 avatar Kawaken_3DCG
-200 banner Kawaken_3DCG
-200 https://www.youtube.com/@Kawaken_3DCG/shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCTj4XriyD11OaRgDr7w-cJg
-200 https://www.youtube.com/results?search_query=satisfying%203d%20simulation%20asmr&sp=EgIIBA%3D%3D
-200 https://www.youtube.com/@Kawaken_3DCG
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCTj4XriyD11OaRgDr7w-cJg
-200 https://www.youtube.com/@SimOrbit3D
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCG6B1-97Tk69n0NakaMxGCQ
-200 https://www.youtube.com/@SimuRoll
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCdQ2c6u_sEe6_s1UhTmWyXw
-200 https://www.youtube.com/@Aurum3DStudio
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCxfNN9VGIJEtSc5feaFR0wQ
-200 https://www.youtube.com/@LumeLayer3D
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCV2pYb293u6y1kSDD8aaU3g
-200 https://www.youtube.com/@TheBlender3D
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCPEVjx8nnSFEe71lk_tEMhg
-200 https://www.youtube.com/@Foxsplash3D
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCqzg9KKR1Bra1nznLxcftVw
-200 https://www.youtube.com/@calmcuts3d
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCet3NUIgKVEo3XsRFj-j_9A
-200 https://www.youtube.com/results?search_query=satisfying%203d%20simulation%20shorts&sp=CAM%3D
-200 https://www.youtube.com/hashtag/3dsimulation/shorts
-200 https://www.youtube.com/@Morphik3d
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCUc3ERfqcjVKvptFCQY8_Xg
-200 https://www.youtube.com/@SIMSKY_BOSSKY
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCmZAu_AYLQokgMc0iKgqdqw
-200 https://www.youtube.com/@ReyHub99
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCtFpCbkOx47NSrQaJbi-H4Q
-200 https://www.youtube.com/@bks_simulation
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC1Gn9q8kREs6a-LWt3CNXxQ
-200 https://www.youtube.com/@MotionDelight3D
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCKtfT0-YVKflOF_GMC4bF1A
-200 https://www.youtube.com/@mrrr_beasto-v679
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCaQ6X_R0lPWMYA6TZkw00Gw
-200 https://www.youtube.com/@3DAnimationBlender-17
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCljfTkPD_A3HD22TqG32WFw
-200 https://www.youtube.com/@JustBlenderSim
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCyyNO7W2GLeWcqREfoM3ofw
-200 https://www.youtube.com/hashtag/satisfyingsounds/shorts
-200 https://www.youtube.com/@CanCrushingasmrofficial
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCcn1hwT-i_DAScoUy0Ia6GA
-200 https://www.youtube.com/@touchlessAnimations
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC56EV6vFCYzYkMJNcdMdRYA
-200 https://www.youtube.com/@BeatboxJCOP
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCdX5KXiCTPYWYZscfphgQ4g
-200 https://www.youtube.com/@RenderPhysics
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCz411tW_Rm1_SjvOkCSXWLw
-200 https://www.youtube.com/@Peshawargamers-x2h
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC65VoFfUMY6m69ZIfRZP9jg
-200 https://www.youtube.com/@Dino_3DCG
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCMnfeFTMqUi6lp8YQpoW6qQ
-200 https://www.youtube.com/@Arny.Satisfying
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCz4Yl-ig8UovpU5EXzPUjPQ
-200 https://www.youtube.com/watch?v=QIGjpu6HRCg&hl=ru
-200 player WEB QIGjpu6HRCg
-ERR player ANDROID QIGjpu6HRCg HTTP Error 400: Bad Request
-200 thumb QIGjpu6HRCg/maxresdefault.jpg 45599 B
-200 thumb QIGjpu6HRCg/sddefault.jpg 24036 B
-200 thumb QIGjpu6HRCg/oar2.jpg 105480 B
-200 thumb QIGjpu6HRCg/hqdefault.jpg 7053 B
-200 thumb QIGjpu6HRCg/hq1.jpg 5033 B
-200 thumb QIGjpu6HRCg/hq2.jpg 7053 B
-200 thumb QIGjpu6HRCg/hq3.jpg 11064 B
-200 https://www.youtube.com/watch?v=IQnXYjlds8w&hl=ru
-200 player WEB IQnXYjlds8w
-ERR player ANDROID IQnXYjlds8w HTTP Error 400: Bad Request
-200 thumb IQnXYjlds8w/maxresdefault.jpg 86002 B
-200 thumb IQnXYjlds8w/sddefault.jpg 38036 B
-200 thumb IQnXYjlds8w/oar2.jpg 228412 B
-200 thumb IQnXYjlds8w/hqdefault.jpg 9427 B
-200 thumb IQnXYjlds8w/hq1.jpg 11162 B
-200 thumb IQnXYjlds8w/hq2.jpg 10287 B
-200 thumb IQnXYjlds8w/hq3.jpg 9427 B
+2026-11-18 20:37 UTC
+200 https://www.youtube.com/@TheHandwriting_of_Silence
+200 avatar TheHandwriting_of_Silence
+200 banner TheHandwriting_of_Silence
+200 https://www.youtube.com/@TheHandwriting_of_Silence/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
+200 https://www.youtube.com/@LivingLinesTV
+200 avatar LivingLinesTV
+200 banner LivingLinesTV
+200 https://www.youtube.com/@LivingLinesTV/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCuufuU5RCswqp9N1HE0NZlw
+200 https://www.youtube.com/@bilesin_be_kz
+200 avatar bilesin_be_kz
+200 banner bilesin_be_kz
+200 https://www.youtube.com/@bilesin_be_kz/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
+200 https://www.youtube.com/@pochemu_tak_fakty
+200 avatar pochemu_tak_fakty
+200 banner pochemu_tak_fakty
+200 https://www.youtube.com/@pochemu_tak_fakty/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
+200 https://www.youtube.com/@Beautiful_shorts-s6u
+200 avatar Beautiful_shorts-s6u
+200 banner Beautiful_shorts-s6u
+200 https://www.youtube.com/@Beautiful_shorts-s6u/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
+200 https://www.youtube.com/@FlagballArenaTV
+200 avatar FlagballArenaTV
+200 banner FlagballArenaTV
+200 https://www.youtube.com/@FlagballArenaTV/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCUKgRxWtL1kPWr9hdfL8qQw
+200 https://www.youtube.com/@kimyutadi_uz
+200 avatar kimyutadi_uz
+200 banner kimyutadi_uz
+200 https://www.youtube.com/@kimyutadi_uz/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC93S31Qkgoz4cFgKBzz-mLA
+200 https://www.youtube.com/@cartoon_friend3
+200 avatar cartoon_friend3
+200 https://www.youtube.com/@cartoon_friend3/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
