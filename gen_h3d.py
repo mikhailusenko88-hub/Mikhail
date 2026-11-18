@@ -6,6 +6,9 @@ from hy3dgen.shapegen import Hunyuan3DDiTFlowMatchingPipeline, FloaterRemover, D
 torch.set_num_threads(os.cpu_count())
 t0 = time.time()
 pipe = Hunyuan3DDiTFlowMatchingPipeline.from_pretrained('tencent/Hunyuan3D-2mini', subfolder='hunyuan3d-dit-v2-mini-turbo', use_safetensors=True, device='cpu', dtype=torch.float32)
+for m_ in ('model', 'vae', 'conditioner'):
+    if hasattr(pipe, m_): getattr(pipe, m_).float()
+pipe.dtype = torch.float32
 try: pipe.enable_flashvdm(mc_algo='mc')
 except Exception as e: print('flashvdm нет:', e)
 print('модель загружена за %.0f с' % (time.time() - t0), flush=True)
