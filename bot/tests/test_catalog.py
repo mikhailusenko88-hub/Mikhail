@@ -157,3 +157,18 @@ def test_title_details_slug_and_crm():
     assert products["A703"].stock == 0                                      # нет в CRM — под заказ
     with pytest.raises(CatalogError):
         cat.parse_crm('{"ok": false}')
+
+
+def test_step_from_catalog_lay_width():
+    """Поле s каталога сайта — шаг укладки (луверы: 120 мм, замок под соседнюю → 116): по нему считается количество."""
+    from catalog import parse_catalog
+    import calc, texts
+    html = ('<script>const CAT=[{"a":"3-7","c":"color","n":"Панель 3-7","w":120,"s":116,"t":12,"l":3000,"b":19,"r":1045},'
+            '{"a":"A907","c":"panel","n":"Панель A907","w":180,"t":10,"l":3000,"b":12,"r":1100},'
+            '{"a":"X1","c":"color","n":"Битый шаг","w":120,"s":999,"t":12,"l":3000,"b":19,"r":1}];</script>')
+    by = {p.article: p for p in parse_catalog(html)}
+    assert by["3-7"].lay_width == 116 and by["A907"].lay_width == 180 and by["X1"].lay_width == 120
+    r = calc.calc_area(3200, 2700, by["3-7"].lay_width, 3000, 19, 1045, 0)
+    assert r.columns == 28                       # 3200 / 116 = 27,6 → 28 (по 120 было бы 27)
+    assert "по стене 116" in texts.calc_result_area(by["3-7"], r)
+    assert "по стене" not in texts.calc_result_area(by["A907"], calc.calc_area(3200, 2700, 180, 3000, 12, 1100, 0))

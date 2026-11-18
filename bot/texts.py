@@ -314,7 +314,8 @@ def calc_result_area(p: Product, r: AreaResult) -> str:
     lines = [
         f"<b>Расчёт: {esc(p.article)}</b> — {esc(p.title)}",
         f"Стена {meters(r.width_mm)} × {meters(r.height_mm)}{NBSP}м = {area(r.area_m2)}{NBSP}м²",
-        f"Панель {p.width}×{p.length}{NBSP}мм, вертикально: {r.columns} в ряд × {rows} = {r.base_pieces}{NBSP}шт",
+        f"Панель {p.width}×{p.length}{NBSP}мм" + (f" (по стене {p.lay_width}{NBSP}мм — край заходит под соседнюю)" if p.lay_width != p.width else "")
+        + f", вертикально: {r.columns} в ряд × {rows} = {r.base_pieces}{NBSP}шт",
         f"Запас {r.reserve_percent}% на подрезку: +{r.reserve_pieces}{NBSP}шт",
         _boxes_line(r.pieces, r.per_box, r.boxes, r.rest),
         f"Ориентировочно: {r.pieces} × {rub(r.price)} = <b>{rub(r.total_price)}</b>",

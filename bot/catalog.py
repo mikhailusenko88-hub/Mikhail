@@ -74,6 +74,12 @@ class Product:
     per_box: int     # штук в коробке
     price: int       # ₽ за штуку
     stock: int = -1  # свободный остаток из CRM, шт; -1 — неизвестно (CRM не ответила)
+    step: int = 0    # шаг укладки, мм (луверы: панель 120, замок 3–4 мм заходит под соседнюю → 116); 0 — равен ширине
+
+    @property
+    def lay_width(self) -> int:
+        """Сколько ширины стены закрывает одна панель (для расчёта количества)."""
+        return self.step if 0 < self.step <= self.width else self.width
 
     @property
     def is_area(self) -> bool:
@@ -161,11 +167,16 @@ def _product_from_raw(raw: object) -> Product | None:
         price = _to_int(raw.get("r", 0) or 0)
     except (KeyError, TypeError, ValueError):
         return None
+    try:
+        step = _to_int(raw.get("s", 0) or 0)   # необязательное поле каталога сайта
+    except (TypeError, ValueError):
+        step = 0
     if not article or width <= 0 or length <= 0 or per_box < 0 or price < 0:
         return None
     return Product(
         article=article, kind=kind, name=name, desc=str(raw.get("d") or "").strip(),
         width=width, thickness=max(thickness, 0), length=length, per_box=per_box, price=price,
+        step=step if 0 < step <= width else 0,
     )
 
 

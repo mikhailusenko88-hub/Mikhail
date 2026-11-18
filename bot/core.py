@@ -1173,7 +1173,7 @@ class Engine:
         return ikb(*rows)
 
     async def _finish_area(self, uid: int, product: Product, width_mm: int, height_mm: int) -> None:
-        result = calc.calc_area(width_mm, height_mm, product.width, product.length,
+        result = calc.calc_area(width_mm, height_mm, product.lay_width, product.length,
                                 product.per_box, product.price, self.cfg.reserve_percent)
         self.clear(uid)
         await self.say(uid, texts.calc_result_area(product, result),
@@ -1197,7 +1197,7 @@ class Engine:
         try:
             if parts[0] == "ls" and len(nums) == 2 and product.is_area:
                 result: calc.AreaResult | calc.LinearResult = calc.calc_area(
-                    nums[0], nums[1], product.width, product.length, product.per_box, product.price,
+                    nums[0], nums[1], product.lay_width, product.length, product.per_box, product.price,
                     self.cfg.reserve_percent)
             elif parts[0] == "ll" and len(nums) == 1 and not product.is_area:
                 result = calc.calc_linear(nums[0], product.length, product.per_box, product.price,
