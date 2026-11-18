@@ -6,8 +6,6 @@ from hy3dgen.shapegen import Hunyuan3DDiTFlowMatchingPipeline, FloaterRemover, D
 torch.set_num_threads(os.cpu_count())
 t0 = time.time()
 pipe = Hunyuan3DDiTFlowMatchingPipeline.from_pretrained('tencent/Hunyuan3D-2mini', subfolder='hunyuan3d-dit-v2-mini-turbo', use_safetensors=True, device='cpu', dtype=torch.float32)
-try: pipe.enable_flashvdm(mc_algo='mc')
-except Exception as e: print('flashvdm нет:', e)
 def all_float():
     for k_, v_ in list(vars(pipe).items()):
         if isinstance(v_, torch.nn.Module):
@@ -22,8 +20,9 @@ for f in sorted(glob.glob('in/*.png')):
     img = Image.open(f).convert('RGB'); img = rem(img); img.save('out/%s_mask.png' % name)
     all_float()
     with torch.autocast('cpu', enabled=False):
-      mesh = pipe(image=img, num_inference_steps=int(os.environ.get('STEPS', 5)), octree_resolution=int(os.environ.get('OCT', 256)), num_chunks=8000,
+      mesh = pipe(image=img, num_inference_steps=int(os.environ.get('STEPS', 5)), octree_resolution=int(os.environ.get('OCT', 192)), num_chunks=20000,
                   generator=torch.manual_seed(1234), output_type='trimesh')[0]
+    if mesh is None: print(name, ': поверхность не найдена'); continue
     mesh.export('out/%s_h3d_raw.ply' % name)
     try:
         parts = mesh.split(only_watertight=False); mesh = max(parts, key=lambda m: len(m.faces))   # самая большая часть, без «мусора»
