@@ -1,7 +1,7 @@
 # имя | адрес | desktop|mobile | js
-# 17.11.2026 — главная: кадр «в интерьере» во весь экран
-fs-m0 | https://nashdekor.ru/?s=111#calc | mobile | setTimeout(()=>document.getElementById('calc').scrollIntoView(),300)
-fs-m1 | https://nashdekor.ru/?s=112#calc | mobile | setTimeout(()=>{document.getElementById('calc').scrollIntoView(); document.getElementById('ivFs').click()},600)
-fs-m2 | https://nashdekor.ru/?s=113#calc | mobile | setTimeout(()=>{document.querySelector('#pGrid [data-pick="A905"]').click(); document.querySelector('#cColors [data-name="Шалфей"]').click(); document.getElementById('ivFs').click(); document.querySelector('#stage [data-ivstep="1"]').click()},600)
-fs-d1 | https://nashdekor.ru/?s=114&panel=3-7#calc | desktop | setTimeout(()=>{document.getElementById('ivFs').click(); document.querySelector('#stage [data-ivstep="1"]').click()},600)
-fs-d0 | https://nashdekor.ru/?s=115#calc | desktop | setTimeout(()=>document.getElementById('calc').scrollIntoView(),300)
+# 18.11.2026 — правки по ответам поставщика: серия 2 — 17 мм, шаг луверов 116, живые фото 3-5, сечения A80L/A100L
+p27 | https://nashdekor.ru/p/2-7/?s=201 | mobile | setTimeout(()=>window.scrollTo(0,0),300)
+p35 | https://nashdekor.ru/p/3-5/?s=202 | mobile | setTimeout(()=>{const b=document.querySelector('[data-v="photo"]'); if(b) b.click()},600)
+a100l | https://nashdekor.ru/p/a100l/?s=203 | mobile | setTimeout(()=>window.scrollTo(0,0),300)
+a80l | https://nashdekor.ru/p/a80l/?s=204 | desktop | setTimeout(()=>window.scrollTo(0,0),300)
+calc37 | https://nashdekor.ru/?s=205&panel=3-7#calc | mobile | setTimeout(()=>{const r=document.getElementById('cRes')||document.getElementById('calc'); r.scrollIntoView()},800)
