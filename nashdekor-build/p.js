@@ -165,7 +165,7 @@ function wallCalc(){
   wall.W = Wcm; wall.H = Hcm; wall.open = Math.max(0, +($("wO") || {}).value || 0); wall.reserve = !!($("wR") && $("wR").checked);
   const area = Wcm * Hcm / 10000, net = Math.max(0, area - wall.open);
   if (!Wcm || !Hcm) { wall.pcs = 0; return; }
-  const cols = Math.ceil(Wcm * 10 / X.w), perCol = Math.ceil(Hcm * 10 / X.l);
+  const cols = Math.ceil(Wcm * 10 / (X.s || X.w)), perCol = Math.ceil(Hcm * 10 / X.l);   // s — шаг укладки (луверы: замок 3–4 мм под соседнюю)
   wall.pcs = Math.ceil(cols * perCol * (area ? net / area : 1) * (wall.reserve ? 1.1 : 1));
   wall.area = area; wall.net = net;
 }
@@ -256,7 +256,7 @@ const W3 = (() => {
       const woodM = new THREE.MeshStandardMaterial({ color: tex ? 0xffffff : 0x9a6a40, map: tex, roughness: .55 });
       const { base, slats, outline } = P.wood, endM = foamMat(true);
       for (let c = 0; c < n; c++) {
-        if (outline) {   // сечение по живому образцу (серии 3 и 5; серия 2 — по каталогу): плёнка только на лице реек
+        if (outline) {   // сечение по живому образцу (серии 3 и 5; серия 2 — 120×17 по ответу ARTDEC, раскладка по каталогу): плёнка только на лице реек
           const sh = new THREE.Shape(outline.map(q => new THREE.Vector2(q[0], q[1])));
           put(new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: len, bevelEnabled: false, curveSegments: 1 }), [endM, blackM]), c);
           slats.forEach(([a0, a1]) => put(new THREE.Mesh(box(a0, a1, X.t, X.t + 0.12, len), woodM), c));
@@ -292,7 +292,7 @@ const W3 = (() => {
   /* Стена клиента: комната, панели рядами по ширине и высоте, обрезка по размерам стены (как на главной) */
   function buildWall(){
     wallCalc();
-    const Wmm = Math.max(300, wall.W * 10), Hmm = Math.max(300, wall.H * 10), W = X.w;
+    const Wmm = Math.max(300, wall.W * 10), Hmm = Math.max(300, wall.H * 10), W = X.s || X.w;   // панели ставятся с шагом укладки: полка заходит под свес соседней
     const clip = [new THREE.Plane(new THREE.Vector3(-1, 0, 0), Wmm), new THREE.Plane(new THREE.Vector3(0, -1, 0), Hmm)];
     const cols = Math.ceil(Wmm / W), rows = Math.ceil(Hmm / X.l);
     const wallM = new THREE.MeshStandardMaterial({ color: 0xe7e2d9, roughness: .95 });

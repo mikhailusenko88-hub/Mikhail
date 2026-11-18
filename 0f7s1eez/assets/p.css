@@ -144,6 +144,24 @@ section{padding-block:8px 56px}
 .ith button.gap{margin-left:8px}
 .ith img{display:block;width:100%;height:auto;aspect-ratio:3/2}
 .ith button[aria-current="true"]{opacity:1;border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.ist .ivfs{position:absolute;right:8px;top:8px;width:40px;height:40px;border:0;border-radius:50%;background:rgba(251,250,247,.9);color:#1E1D1B;padding:0;display:grid;place-items:center;box-shadow:0 1px 6px rgba(0,0,0,.25);cursor:pointer}
+.ist{cursor:zoom-in}.ist button{cursor:pointer}
+.ist .ivhint{display:none}
+.ist.full{position:fixed!important;inset:0!important;z-index:2147483000;width:auto!important;height:auto!important;max-width:none;aspect-ratio:auto;margin:0!important;border:0;border-radius:0;box-shadow:none!important;background-color:#0d0e10;background-size:contain;touch-action:none;cursor:default}
+.ist.full.zoomed{cursor:grab}
+.ist.full canvas{object-fit:contain;transform-origin:0 0}
+.ist.full .ivfs{top:calc(env(safe-area-inset-top,0px) + 10px);right:calc(env(safe-area-inset-right,0px) + 10px);width:48px;height:48px}
+.ist.full .ivtag{top:calc(env(safe-area-inset-top,0px) + 18px);left:calc(env(safe-area-inset-left,0px) + 12px)}
+.ist.full .ivnav[data-ivstep="-1"]{left:calc(env(safe-area-inset-left,0px) + 10px)}.ist.full .ivnav[data-ivstep="1"]{right:calc(env(safe-area-inset-right,0px) + 10px)}
+.ist.full .ivcap{padding:40px calc(env(safe-area-inset-right,0px) + 14px) calc(env(safe-area-inset-bottom,0px) + 12px) calc(env(safe-area-inset-left,0px) + 14px)}
+.ist.full.zoomed .ivnav,.ist.full.zoomed .ivcap{opacity:0;pointer-events:none}
+.ist.full .ivhint{display:flex;flex-direction:column;align-items:center;gap:2px;position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 74px);transform:translateX(-50%);max-width:calc(100% - 28px);background:rgba(13,14,16,.78);color:#fff;font-size:13px;line-height:1.35;text-align:center;padding:7px 12px;border-radius:10px;pointer-events:none;opacity:0;transition:opacity .4s}
+.ist.full .ivhint.on{opacity:1}
+.ivhint .t,.ivhint .r{display:none}
+@media (hover:none){.ivhint .t{display:block}.ivhint .m{display:none}}
+@media (hover:none) and (orientation:portrait){.ivhint .r{display:block}}
+html.ivfull,html.ivfull body{overflow:hidden}
+html.ivfull .ndc-btn,html.ivfull .ndc-panel{display:none!important}
 .pgroups{display:flex;flex-wrap:wrap;gap:6px}
 .pgroups button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 12px;font-size:13px;color:var(--ink);white-space:nowrap}
 .pgroups button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
