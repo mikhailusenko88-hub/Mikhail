@@ -1,11 +1,11 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-18 06:53 UTC
+Проверено: 2026-11-18 07:37 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
-- Шапка: 234 подписчика · 143 видео
+- Шапка: 233 подписчика · 143 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-17 22:08 · 1055 просм. · Every bounce = +1 ball 🐻 Can they fill the bear? 🔊 #satisfying #physics #simulation · 5vVhZ-Aus_A
+- 2026-11-17 22:08 · 1065 просм. · Every bounce = +1 ball 🐻 Can they fill the bear? 🔊 #satisfying #physics #simulation · 5vVhZ-Aus_A
 - 2026-11-16 19:02 · 1386 просм. · Every bounce = +1 ball 🐸 Can they fill the frog? #satisfying #physics #simulation · 7h5ICq0Civ8
 - 2026-11-15 21:20 · 1980 просм. · Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation · 4ejtez9n18c
 - 2026-11-15 17:03 · 2151 просм. · Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts · a9xDYsPrIa4
@@ -24,13 +24,13 @@
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
 - 1 тыс. просмотров · Every bounce = +1 ball 🐻 Can they fill the bear? 🔊 #satisfying #physics #simulation · 5vVhZ-Aus_A
 - 1,3 тыс. просмотров · Every bounce = +1 ball 🐸 Can they fill the frog? #satisfying #physics #simulation · 7h5ICq0Civ8
-- 2 тыс. просмотров · Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation · 4ejtez9n18c
+- 1,9 тыс. просмотров · Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation · 4ejtez9n18c
 - 2,1 тыс. просмотров · Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts · a9xDYsPrIa4
 - 1,5 тыс. просмотров · What are 1,189 balls drawing? 🤔 Guess before the end! #shorts · p46Y16_FUkM
-- 247 просмотров · Can it break out of 6 rings? 🚀 Space edition #shorts · Dw-O_K8qMds
+- 246 просмотров · Can it break out of 6 rings? 🚀 Space edition #shorts · Dw-O_K8qMds
 - 1,1 тыс. просмотров · Sunrise watercolor 🌅 wait for the tape peel! #shorts · YGXQpqT2ur0
-- 137 просмотров · Last country standing WINS! 🌍 Who are you rooting for? #shorts · irOtTngZbls
-- 737 просмотров · 1 bullet vs 5 objects — how far does it go? 😳 #shorts · viBQgmzXg88
+- 136 просмотров · Last country standing WINS! 🌍 Who are you rooting for? #shorts · irOtTngZbls
+- 736 просмотров · 1 bullet vs 5 objects — how far does it go? 😳 #shorts · viBQgmzXg88
 - 2,4 тыс. просмотров · Every bounce = BIGGER ball 🎵 …but the music speeds up 😱 #shorts · 98lnRofeeH8
 - 1,1 тыс. просмотров · Spiked Bat vs Katana ⚔️ Who wins? #shorts · dEGnQFq6GCU
 - 2,2 тыс. просмотров · Scythe vs Dagger 💀 Who wins? #shorts · wrH8FbgHvC0

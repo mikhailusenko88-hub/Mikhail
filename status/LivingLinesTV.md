@@ -1,16 +1,16 @@
 # Живые строки  (@LivingLinesTV)
-Проверено: 2026-11-18 06:53 UTC
+Проверено: 2026-11-18 07:37 UTC
 
 - Страница канала: HTTP 200; ID: UCuufuU5RCswqp9N1HE0NZlw
 - Шапка: 48 подписчиков · 40 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-18 06:00 · 38 просм. · Начало — самая важная часть работы 🤍 Три мысли на сегодня | Plato #shorts · Izl4WoK8gDs
+- 2026-11-18 06:00 · 52 просм. · Начало — самая важная часть работы 🤍 Три мысли на сегодня | Plato #shorts · Izl4WoK8gDs
 - 2026-11-17 16:00 · 277 просм. · Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts · _KAkT_vZ8F4
-- 2026-11-17 11:00 · 370 просм. · Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts · GtEGS1lUXIM
+- 2026-11-17 11:00 · 451 просм. · Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts · GtEGS1lUXIM
 - 2026-11-17 06:00 · 539 просм. · И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts · dUie49tmaC8
-- 2026-11-16 16:00 · 438 просм. · Счастье зависит от нас самих ✨ Aristotle + 2 more #shorts · HQR2WewFVWQ
-- 2026-11-16 11:00 · 618 просм. · Ты навсегда в ответе за всех, кого приручил ✨ Words to keep | Antoine de Saint-Exupéry #shorts · 2JO-pSUStKs
+- 2026-11-16 16:00 · 466 просм. · Счастье зависит от нас самих ✨ Aristotle + 2 more #shorts · HQR2WewFVWQ
+- 2026-11-16 11:00 · 646 просм. · Ты навсегда в ответе за всех, кого приручил ✨ Words to keep | Antoine de Saint-Exupéry #shorts · 2JO-pSUStKs
 - 2026-11-16 06:00 · 938 просм. · Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts · XOC7rxj2ntQ
 - 2026-11-15 16:00 · 968 просм. · Бабочка считает не месяцы, а мгновения — и у неё довольно… ✨ Rabindranath Tagore + 2 more #shorts · NNRpfSGgsOw
 - 2026-11-15 11:00 · 946 просм. · Я пришёл к тебе с приветом, рассказать, что солнце встало ✨ Words to keep | Afanasy Fet #shorts · yT5ZmByY1eo
@@ -22,12 +22,12 @@
 - 2026-11-13 11:00 · 1004 просм. · Что посеешь, то и пожнёшь ✨ Words to keep | Russian proverb #shorts · zMA6bLWxCJU
 
 ## Вкладка Shorts (видно всем) — 40 шт. на первой странице
-- 38 просмотров · Начало — самая важная часть работы 🤍 Три мысли на сегодня | Plato #shorts · Izl4WoK8gDs
+- 52 просмотра · Начало — самая важная часть работы 🤍 Три мысли на сегодня | Plato #shorts · Izl4WoK8gDs
 - 277 просмотров · Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts · _KAkT_vZ8F4
-- 451 просмотр · Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts · GtEGS1lUXIM
-- 547 просмотров · И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts · dUie49tmaC8
-- 466 просмотров · Счастье зависит от нас самих ✨ Aristotle + 2 more #shorts · HQR2WewFVWQ
-- 646 просмотров · Ты навсегда в ответе за всех, кого приручил ✨ Words to keep | Antoine de Saint-Exupéry #shorts · 2JO-pSUStKs
+- 446 просмотров · Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts · GtEGS1lUXIM
+- 552 просмотра · И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts · dUie49tmaC8
+- 477 просмотров · Счастье зависит от нас самих ✨ Aristotle + 2 more #shorts · HQR2WewFVWQ
+- 626 просмотров · Ты навсегда в ответе за всех, кого приручил ✨ Words to keep | Antoine de Saint-Exupéry #shorts · 2JO-pSUStKs
 - 938 просмотров · Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts · XOC7rxj2ntQ
 - 968 просмотров · Бабочка считает не месяцы, а мгновения — и у неё довольно… ✨ Rabindranath Tagore + 2 more #shorts · NNRpfSGgsOw
 - 947 просмотров · Я пришёл к тебе с приветом, рассказать, что солнце встало ✨ Words to keep | Afanasy Fet #shorts · yT5ZmByY1eo
