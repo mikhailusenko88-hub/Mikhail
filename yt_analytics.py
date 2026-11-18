@@ -165,6 +165,40 @@ def parse_items(d):
             items.append({"id": v.get("videoId"), "kind": "short", "title": _text(v.get("headline", {})),
                           "views": num(_text(v.get("viewCountText", {}))), "views_txt": _text(v.get("viewCountText", {})),
                           "age": "", "length": "", "channel": "", "handle": "", "channel_id": "", "snippet": ""})
+        elif "lockupViewModel" in node and isinstance(node["lockupViewModel"], dict):
+            # 17.11.2026: выдача поиска «мультик про кота» пришла новым видом (lockupViewModel вместо videoRenderer)
+            v = node["lockupViewModel"]
+            ctype = str(v.get("contentType", ""))
+            if ctype and "VIDEO" not in ctype:      # плейлисты, каналы, миксы — пропускаем
+                continue
+            meta = (v.get("metadata") or {}).get("lockupMetadataViewModel") or {}
+            rows = []
+            for n in _walk(meta.get("metadata", {})):
+                if isinstance(n, dict) and isinstance(n.get("metadataParts"), list):
+                    rows.append([_text(p.get("text", {})) for p in n["metadataParts"] if isinstance(p, dict)])
+            parts = [p for r in rows for p in r if p]
+            views_txt = next((p for p in parts if re.search(r"просм|view", p, re.I)), "")
+            age = next((p for p in parts if re.search(r"назад|ago", p, re.I)), "")
+            channel = rows[0][0] if rows and rows[0] and rows[0][0] not in (views_txt, age) else ""
+            handle, cid = "", ""
+            for n in _walk(v):
+                be = n.get("browseEndpoint") if isinstance(n, dict) else None
+                if isinstance(be, dict) and str(be.get("browseId", "")).startswith("UC"):
+                    handle, cid = (be.get("canonicalBaseUrl") or "").lstrip("/"), be["browseId"]
+                    break
+            length = ""
+            for n in _walk(v.get("contentImage") or {}):
+                b = n.get("thumbnailBadgeViewModel") if isinstance(n, dict) else None
+                t = _text(b.get("text", "")) if isinstance(b, dict) else ""
+                if t and re.fullmatch(r"\d+(:\d\d){1,2}", t.strip()):
+                    length = t.strip()
+                    break
+            reel = any(isinstance(n, dict) and "reelWatchEndpoint" in n for n in _walk(v))
+            is_short = reel or (length and re.fullmatch(r"0?:?[0-5]?\d|1:00|0:\d\d", length) is not None)
+            items.append({"id": v.get("contentId"), "kind": "short" if is_short else "video",
+                          "title": _text(meta.get("title", {})), "views": num(views_txt), "views_txt": views_txt,
+                          "age": age, "length": length, "channel": channel, "handle": handle, "channel_id": cid,
+                          "snippet": ""})
     seen, out = set(), []
     for it in items:
         if it["id"] and it["id"] not in seen:
