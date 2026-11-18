@@ -1,29 +1,19 @@
-URL: https://crm.nashdekor.ru/dz
+URL: https://crm.nashdekor.ru/api/outbox/status/08de5ae3-14d3-442e-9db6-6ad7ce190043
 КОД: 200
 ЗАГОЛОВКИ:
 Server: nginx
-Date: Wed, 18 Nov 2026 12:17:58 GMT
-Content-Type: text/html; charset=utf-8
-Content-Length: 1425
+Date: Wed, 18 Nov 2026 12:28:31 GMT
+Content-Type: application/json
+Content-Length: 67
 Connection: close
+Cache-Control: no-store
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 Referrer-Policy: same-origin
-Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'
-Cache-Control: no-store
 Vary: Cookie
-Set-Cookie: crm=eyJjc3JmIjoiNjRjdWFpbGg2RjdQeE1VQ2IxZm5NcUFFTzRfdzk4YU0ifQ.av2Xdg.7vanhmliT9N_mKBL5NKUvqkhXBg; Secure; HttpOnly; Path=/; SameSite=Lax
 Strict-Transport-Security: max-age=15552000
 X-Robots-Tag: noindex, nofollow
 
-Вход · Наш декор 
- Наш декор CRM 
- Логин 
- Пароль 
- Войти
+{"error":"","sent_at":"2026-11-18T15:27:08+03:00","status":"sent"}
 
 ССЫЛКИ:
-/manifest.webmanifest
-/static/apple-touch-icon.png
-/static/crm.css?v=21
-/static/icon.svg
