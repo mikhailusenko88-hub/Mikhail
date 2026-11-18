@@ -16,3 +16,6 @@ search:мультик про кота
 search-views:marble art what picture will appear
 search-month:can multiplying balls fill
 search-month:will the ball multiply
+search-month:satisfying 3d simulation asmr
+hashtag:3dsimulation
+search-views:marbles pouring asmr
