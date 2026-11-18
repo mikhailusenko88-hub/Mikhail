@@ -1,0 +1,38 @@
+name: dz-contacts
+# Открытые контакты студий и дизайнеров (сайт, Telegram, VK, WhatsApp, MAX, почта, телефон).
+# Запуск — изменение dz/q.txt в ветке domain-check. Результат зашифрован ключом dz/key.pub: status/dz/part-*.json
+on:
+  push:
+    branches: [domain-check]
+    paths: ['dz/q.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: dz-contacts
+  cancel-in-progress: false
+jobs:
+  find:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Playwright (браузер Chrome уже есть на раннере)
+        run: pip install -q playwright cryptography && (google-chrome --version || npx -y playwright install --with-deps chrome)
+      - name: Искать
+        run: python dz_contacts.py ${{ matrix.part }} 4
+      - name: Сохранить результат
+        if: always()
+        run: |
+          git config user.name "dz-contacts"
+          git config user.email "dz-contacts@users.noreply.github.com"
+          git add status/dz
+          git commit -m "dz-contacts ${{ matrix.part }} $(date -u +%F_%H:%M)" || exit 0
+          for i in 1 2 3 4 5 6 7 8; do git pull --rebase origin domain-check && git push origin HEAD:domain-check && break; sleep $((RANDOM % 12 + 4)); done
