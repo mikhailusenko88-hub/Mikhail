@@ -61,8 +61,11 @@ for k, M in enumerate(d['meshes']):
         try: me.normals_split_custom_set_from_vertices([(n[i * 3], n[i * 3 + 1], n[i * 3 + 2]) for i in range(nv)])
         except Exception as e: pass
     me.materials.append(material(M['mat'], bool(M['col']), bool(M['uv'])))
-    for mw in M['mats']:
+    for j, mw in enumerate(M['mats']):
         ob = bpy.data.objects.new('o%d' % nobj, me); ob.matrix_world = C @ m4(mw); sc.collection.objects.link(ob); nobj += 1
+        if M.get('hero'): ob.pass_index = 1   # тела героев — маска для обучения
+        if M.get('icol'):   # цвет экземпляра (книги на полке)
+            md = dict(M['mat']); md['color'] = [md['color'][c] * M['icol'][j][c] for c in range(3)]; ob.material_slots[0].link = 'OBJECT'; ob.material_slots[0].material = material(md, bool(M['col']), bool(M['uv']))
 # свет
 for i, L in enumerate(d['lights']):
     if L['type'] == 'sun':
@@ -91,7 +94,11 @@ r.resolution_x = WID; r.resolution_y = round(WID / d['cam']['aspect']); r.resolu
 try: sc.view_settings.view_transform = 'Khronos PBR Neutral'
 except Exception: sc.view_settings.view_transform = 'Standard'
 sc.view_settings.look = 'None'; sc.view_settings.exposure = 0
-vl = sc.view_layers[0]; vl.use_pass_ambient_occlusion = True; vl.use_pass_diffuse_direct = True; vl.use_pass_diffuse_indirect = True; vl.use_pass_diffuse_color = True
+vl = sc.view_layers[0]; vl.use_pass_object_index = True; vl.use_pass_ambient_occlusion = True; vl.use_pass_diffuse_direct = True; vl.use_pass_diffuse_indirect = True; vl.use_pass_diffuse_color = True
+# маска тел героев (для обучения): компоновщик пишет её отдельным файлом
+sc.use_nodes = True; ct = sc.node_tree; ct.nodes.clear(); rl = ct.nodes.new('CompositorNodeRLayers'); cp = ct.nodes.new('CompositorNodeComposite'); ct.links.new(rl.outputs['Image'], cp.inputs['Image'])
+idm = ct.nodes.new('CompositorNodeIDMask'); idm.index = 1; fo = ct.nodes.new('CompositorNodeOutputFile'); fo.base_path = os.path.dirname(os.path.abspath(OUT)); fo.file_slots[0].path = os.path.basename(OUT) + '_mask'; fo.format.file_format = 'PNG'
+ct.links.new(rl.outputs['IndexOB'], idm.inputs['ID value']); ct.links.new(idm.outputs['Alpha'], fo.inputs[0])
 print('объектов', nobj, 'материалов', len(mcache), 'вид', sc.view_settings.view_transform, flush=True)
 bpy.ops.render.render(write_still=False)
 img = bpy.data.images['Render Result']

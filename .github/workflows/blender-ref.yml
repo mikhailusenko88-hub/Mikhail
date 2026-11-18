@@ -26,6 +26,11 @@ jobs:
           grep -v '^#' request.txt | while read n spp w; do [ -z "$n" ] && continue; t0=$(date +%s)
             ./bl/blender -b -noaudio -P build_scene.py -- "scenes/$n.json.gz" "out/$n" "$spp" "$w" 2>&1 | grep -v "^Fra:" | tail -25
             echo "$n: $(( $(date +%s) - t0 )) с" | tee -a out/vremya.txt; done
+      - name: Обучение «Blender-учителя»
+        if: hashFiles('train.txt') != ''
+        run: |
+          pip -q install torch --index-url https://download.pytorch.org/whl/cpu 2>&1 | tail -1; pip -q install pillow numpy 2>&1 | tail -1
+          set -- $(cat train.txt); perl -e 'alarm 2400; exec @ARGV' python train.py "$1" "$2" 2>&1 | tail -20 || true
       - name: Итог в ветку
         if: always()
         run: |
