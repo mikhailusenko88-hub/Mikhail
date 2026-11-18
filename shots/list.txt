@@ -1,4 +1,4 @@
 # имя | адрес | desktop|mobile | js
-# 18.11.2026 — расчёт на главной (3-7) и фото серии 2 после замены
-calc37 | https://nashdekor.ru/?s=206&panel=3-7#calc | mobile | setTimeout(()=>document.getElementById('calc').scrollIntoView(),800)
-p27b | https://nashdekor.ru/p/2-7/?s=207 | mobile | setTimeout(()=>window.scrollTo(0,0),300)
+# 18.11.2026 — галерея «в интерьере» серии 2 (17 мм)
+int27 | https://nashdekor.ru/?s=208&panel=2-7#calc | mobile | setTimeout(()=>document.getElementById('calc').scrollIntoView(),800)
+viz27 | https://nashdekor.ru/vizual/?s=209#2-7/cl | mobile | setTimeout(()=>window.scrollTo(0,0),300)
