@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Кисть — Барсик мазками (проба)</title>
+<style>
+body{margin:0;background:#111614;color:#e8efe9;font:15px/1.4 -apple-system,system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:10px}
+h1{font-size:19px;margin:6px 0 2px}
+.sub{color:#9fb0aa;font-size:13px;margin-bottom:8px}
+.view{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;touch-action:none}
+canvas{width:100%;height:100%;display:block}
+.tag{position:absolute;left:8px;bottom:6px;font-size:12px;color:#dfe;background:rgba(0,0,0,.45);padding:2px 7px;border-radius:6px}
+#ld{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,16,14,.78);text-align:center;padding:10px}
+#ld .big{font-size:36px;font-weight:700;color:#7fe0b0}#ld .t{font-size:15px;margin-top:6px}#ld .s{font-size:13px;color:#9fb0aa;margin-top:4px}
+#ld .b2{width:70%;height:8px;background:#2a3532;border-radius:4px;overflow:hidden;margin-top:10px}#ld .b2 i{display:block;height:100%;width:0;background:#3fae7a}
+#ld.err .t{color:#ff8f8f}
+.row{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0 3px}.lab{width:100%;color:#9fb0aa;font-size:13px;margin-top:4px}
+button{background:#2a3532;color:#e8efe9;border:2px solid transparent;border-radius:9px;padding:9px 13px;font-size:15px}
+button.on{border-color:#3fae7a}button.go{background:#3fae7a;color:#05140c;font-weight:700}button:disabled{opacity:.45}
+.res{background:#1b2321;border-radius:10px;padding:10px 13px;margin-top:10px;font-size:15px;white-space:pre-line}
+.res b{color:#7fe0b0}
+.live{font-size:13px;color:#cfe;margin-top:6px;min-height:18px}
+#log{font:12px/1.45 ui-monospace,Menlo,monospace;color:#9fb0aa;white-space:pre-wrap;margin-top:10px}
+</style></head><body><div class="wrap">
+<h1>Кисть 4 — кадр-накопитель, тень мазками, свет как в Blender</h1>
+<div class="sub">Пирамида мазков из Кисти 3 + то, чем Blender берёт качество: кадр рисуется много раз и складывается (как сэмплы). Каждый проход мазки ложатся заново, камера сдвинута на долю пикселя, солнце — из другой точки своего диска (мягкая тень Барсика на траве). Остановите движение — картинка «дозреет» до выбранного числа проходов.</div>
+<div class="view" id="view"><canvas id="c" width="1280" height="720"></canvas><div class="tag" id="tag">—</div>
+<div id="ld"><div class="big" id="ldp">0%</div><div class="t" id="ldt">Начинаю…</div><div class="b2"><i id="ldb"></i></div><div class="s" id="lds">прошло 0 с</div></div></div>
+<div class="live" id="live"></div>
+<div class="row"><div class="lab">План (можно крутить пальцем, щипком — ближе/дальше)</div>
+<button data-s="photo" class="on">Как на фото</button><button data-s="medium">Средний</button><button data-s="close">Крупный</button><button data-s="macro">Мордочка</button></div>
+<div class="row"><div class="lab">Что показать</div>
+<button data-m="paint" class="on">Мазки</button><button data-m="hair">Волоски (как в приложении)</button><button data-m="strokes">Покажи мазки</button><button data-m="nograss">Без травы</button><button id="play" class="on">Движение ⏸</button></div>
+<div class="row"><div class="lab">Качество кадра (проходов накопления)</div>
+<button data-q="1">1 проход</button><button data-q="8" class="on">Кино ×8</button><button data-q="16">Кино ×16</button><button data-q="32">×32 (медленно)</button></div>
+<div class="row"><div class="lab">Свет и цвет</div>
+<button data-l="blender" class="on">Как Blender (по цифрам кадра)</button><button data-l="app">Как в приложении</button><button id="shd" class="on">Тень Барсика</button></div>
+<div class="row"><div class="lab">Замер, как для ролика (с выбранным числом проходов)</div><button class="go" id="go" disabled>▶ Замер 5 с (1920×1080)</button><button id="copy">Копировать результат</button></div>
+<div class="res" id="res">Замер покажет: сколько мазков в кадре, сколько мазков в секунду и сколько займут 5 секунд и 5 минут ролика.</div>
+<div id="log"></div>
+</div>
+<script src="barsik-mod.js"></script><script src="kist2.js"></script>
+<script type="module">
+import * as THREE from './three.module.min.js';
+const $ = id => document.getElementById(id); const KI = window.KIST2;
+const say = s => { $('log').textContent += s + '\n'; };
+const sec = ms => (ms / 1000).toFixed(1).replace('.', ',') + ' с', tys = n => n >= 1e6 ? (n / 1e6).toFixed(2).replace('.', ',') + ' млн' : Math.round(n / 1000) + ' тыс.';
+const START = performance.now(); let LS = { stage: 'load', k: 0 }, ldOn = true;
+const ldErr = m => { $('ld').style.display = 'flex'; $('ld').classList.add('err'); $('ldt').textContent = 'Ошибка: ' + m + ' — пришли скриншот'; };
+window.addEventListener('error', e => { say('Ошибка: ' + e.message); ldErr(e.message); });
+window.addEventListener('unhandledrejection', e => { const m = (e.reason && e.reason.message || e.reason); say('Ошибка: ' + m); ldErr(m); });
+function ldPaint() { if (!ldOn) return; const t = performance.now(); let pct = 0, txt = '';
+  const el = (t - START) / 1000;
+  if (LS.stage === 'load') { pct = Math.min(90, el * 6); txt = 'Скачиваю Барсика со светом (14 МБ, один файл) и распаковываю…'; }
+  else { pct = 100; txt = 'Рисую первый кадр…'; }
+  $('ldp').textContent = Math.floor(pct) + '%'; $('ldt').textContent = txt; $('ldb').style.width = pct + '%'; $('lds').textContent = 'прошло ' + Math.round((t - START) / 1000) + ' с'; }
+KI.onProgress = (s, k) => { LS = { stage: s, k }; ldPaint(); }; const ldT = setInterval(ldPaint, 250);
+const canvas = $('c'); let spp = 8, shot = 'photo', mode = 'paint', playing = true, orbit = { yaw: 0, pitch: 0, zoom: 1 }, ready = false, busy = false;
+const T0 = performance.now(); let tAnim = 0, lastT = performance.now(), fpsAcc = [], lastLive = 0, dirty = true;
+function applyMode() { KI.mode = mode === 'hair' ? 'hair' : 'strokes'; KI.grassOn = mode !== 'nograss'; }
+function size() { const r = canvas.getBoundingClientRect(); const dpr = Math.min(window.devicePixelRatio || 1, 2); let w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
+  const k = Math.min(1, 1280 / w); w = Math.round(w * k); h = Math.round(h * k); if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; KI.R.setPixelRatio(1); KI.R.setSize(w, h, false); } return [w, h]; }
+const tagT = () => ({ photo: 'как на фото', medium: 'средний', close: 'крупный', macro: 'мордочка' })[shot] + (mode === 'strokes' ? ' · каждый мазок своим цветом' : mode === 'hair' ? ' · волоски, как в приложении' : ' · мазки') + ' · проход ' + KI.accN + ' из ' + (playing ? 1 : spp);
+function draw(full) { if (!ready || busy) return; const [w, h] = size(); KI.setShot(KI.SHOTS[shot], orbit);
+  const st = KI.frame(w, h, tAnim, { dbg: mode === 'strokes' ? 1 : 0, spp: full ? spp : 1 }); $('tag').textContent = tagT(); return st; }
+function ripen() { const [w, h] = size(); KI.setShot(KI.SHOTS[shot], orbit); KI.sub(w, h, tAnim, KI.accN, { dbg: mode === 'strokes' ? 1 : 0 }); KI.resolve(w, h, null); $('tag').textContent = tagT(); }
+function loop() { requestAnimationFrame(loop); if (!ready || busy) return; const t = performance.now(), dt = t - lastT; lastT = t;
+  if (!playing && !dirty) { if (KI.accN < spp) ripen(); return; } dirty = false; if (playing) tAnim += Math.min(dt, 100) / 1000;
+  const st = draw(); fpsAcc.push(dt); if (fpsAcc.length > 30) fpsAcc.shift();
+  if (t - lastLive > 500 && st) { lastLive = t; const ms = fpsAcc.reduce((a, b) => a + b, 0) / fpsAcc.length, tot = st.hero + (KI.grassOn !== false ? st.grass : 0);
+    $('live').textContent = 'Живьём ' + canvas.width + '×' + canvas.height + ': мазков в кадре ~' + tys(tot) + ' (Барсик ' + (mode === 'hair' ? 'волосками' : tys(st.hero)) + ', трава ' + tys(KI.grassOn !== false ? st.grass : 0) + ') · кадр ' + Math.round(ms) + ' мс · ~' + tys(tot * 1000 / ms) + ' мазков в секунду'; } }
+document.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-s]').forEach(x => x.classList.toggle('on', x === b)); shot = b.dataset.s; orbit = { yaw: 0, pitch: 0, zoom: 1 }; dirty = true; });
+document.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-m]').forEach(x => x.classList.toggle('on', x === b)); mode = b.dataset.m; applyMode(); dirty = true; });
+document.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-q]').forEach(x => x.classList.toggle('on', x === b)); spp = +b.dataset.q; dirty = true; });
+document.querySelectorAll('[data-l]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-l]').forEach(x => x.classList.toggle('on', x === b)); KI.lightPreset(b.dataset.l); dirty = true; });
+$('shd').onclick = () => { KI.shadowOn = !KI.shadowOn; $('shd').classList.toggle('on', KI.shadowOn); dirty = true; };
+$('play').onclick = () => { playing = !playing; dirty = true; $('play').classList.toggle('on', playing); $('play').textContent = playing ? 'Движение ⏸' : 'Движение ▶'; };
+// пальцем — крутить, двумя — ближе/дальше
+const view = $('view'); let pts = new Map(), d0 = 0, z0 = 1;
+view.addEventListener('pointerdown', e => { view.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]); if (pts.size === 2) { const [a, b] = [...pts.values()]; d0 = Math.hypot(a[0] - b[0], a[1] - b[1]); z0 = orbit.zoom; } });
+view.addEventListener('pointermove', e => { if (!pts.has(e.pointerId)) return; const p = pts.get(e.pointerId);
+  if (pts.size === 1) { orbit.yaw -= (e.clientX - p[0]) * .008; orbit.pitch = Math.max(-.5, Math.min(.9, orbit.pitch + (e.clientY - p[1]) * .006)); }
+  pts.set(e.pointerId, [e.clientX, e.clientY]); if (pts.size === 2) { const [a, b] = [...pts.values()]; const d = Math.hypot(a[0] - b[0], a[1] - b[1]); orbit.zoom = Math.max(.25, Math.min(2.5, z0 * d0 / Math.max(d, 1))); }
+  dirty = true; });
+const up = e => { pts.delete(e.pointerId); }; view.addEventListener('pointerup', up); view.addEventListener('pointercancel', up);
+view.addEventListener('wheel', e => { e.preventDefault(); orbit.zoom = Math.max(.25, Math.min(2.5, orbit.zoom * Math.exp(e.deltaY * .001))); dirty = true; }, { passive: false });
+let text = '';
+$('copy').onclick = () => { navigator.clipboard && navigator.clipboard.writeText(text || $('res').textContent); $('copy').textContent = 'Скопировано'; setTimeout(() => $('copy').textContent = 'Копировать результат', 1500); };
+// замер: 125 кадров 1920×1080, каждый кадр честно дочитывается из видеокарты (как при записи ролика)
+$('go').onclick = async () => { if (busy) return; busy = true; $('go').disabled = true; const W = 1920, H = 1080, N = 125;
+  const tgt = new THREE.WebGLRenderTarget(W, H, { type: THREE.UnsignedByteType, depthBuffer: false }); const px = new Uint8Array(W * H * 4); KI.setShot(KI.SHOTS[shot], orbit);
+  KI.frame(W, H, 0, { target: tgt, spp }); KI.R.readRenderTargetPixels(tgt, 0, 0, W, H, px);   // прогрев
+  let sumH = 0, sumG = 0; const t0 = performance.now();
+  for (let i = 0; i < N; i++) { const st = KI.frame(W, H, i / 25, { target: tgt, spp }); KI.R.readRenderTargetPixels(tgt, 0, 0, W, H, px); sumH += st.hero; sumG += KI.grassOn !== false ? st.grass : 0;
+    if (i % 10 === 0) { $('res').textContent = 'Рисую ролик: кадр ' + (i + 1) + ' из ' + N + '…'; await new Promise(r => setTimeout(r, 0)); } }
+  const ms = (performance.now() - t0) / N, perS = (sumH + sumG) / N * 1000 / ms; tgt.dispose(); KI.R.setRenderTarget(null);
+  const ua = navigator.userAgent, dev = /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Mac/.test(ua) ? 'Mac' : 'другое';
+  text = 'Кисть 4 (' + (mode === 'hair' ? 'волоски, как в приложении' : 'пирамида мазков') + ', проходов ' + spp + ', свет ' + (KI.preset === 'blender' ? 'как Blender' : 'как в приложении') + ')\nУстройство: ' + dev + '\nПлан: ' + ({ photo: 'как на фото', medium: 'средний', close: 'крупный', macro: 'мордочка' })[shot] + ', 1920×1080\n' +
+    'Мазков в кадре: ~' + tys((sumH + sumG) / N) + ' (Барсик ' + tys(sumH / N) + ', трава ' + tys(sumG / N) + ')\n' +
+    'Кадр (рисование + выдача в видео): ' + Math.round(ms) + ' мс\nМазков в секунду: ~' + tys(perS) + '\n' +
+    '5 секунд ролика (125 кадров): ' + sec(ms * 125) + '\n5 минут серии (7500 кадров): ' + (ms * 7500 / 60000).toFixed(1).replace('.', ',') + ' мин\n' +
+    'Загрузка и подготовка Барсика: ' + sec(KI.t.boot) + ' — один раз';
+  $('res').innerHTML = text.replace(/(Мазков в секунду: [^\n]+|5 секунд[^\n]+|5 минут[^\n]+)/g, '<b>$1</b>'); busy = false; $('go').disabled = false; };
+window.KUI = { set: (s, m) => { shot = s; mode = m; applyMode(); orbit = { yaw: 0, pitch: 0, zoom: 1 }; }, pause: () => { playing = false; }, draw: (n) => { const o = spp; if (n) spp = n; const r = draw(true); spp = o; return r; },
+  hold: (v) => { busy = !!v; },
+  opt: (o) => { if (o.spp) spp = o.spp; if (o.preset) KI.lightPreset(o.preset); if (o.shadow != null) KI.shadowOn = o.shadow; } };
+KI.boot(THREE, canvas, { base: './data/' }).then(() => { ready = true; applyMode(); KI.lightPreset('blender');
+  say('WebGPU в этом браузере: ' + (navigator.gpu ? 'есть' : 'нет') + ' (нужен для будущей Кисти на «растеризаторе волос», как в играх)');
+  say('Барсик скачан и распакован за ' + sec(KI.t.load) + '; зёрна мазков (волоски со светом): ' + tys(KI.NS) + '; трава: ' + tys(KI.NG) + ' зёрен');
+  KI.R.setPixelRatio(1); draw(); ldOn = false; clearInterval(ldT); $('ld').style.display = 'none'; $('go').disabled = false;
+  say('Всего до первого кадра: ' + sec(performance.now() - START)); requestAnimationFrame(loop); });
+</script></body></html>

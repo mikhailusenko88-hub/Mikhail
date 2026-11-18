@@ -1,0 +1,36 @@
+name: kist-bench
+# Замер «Кисти 4» (мазки + накопление) на Mac GitHub с видеокартой Metal, как у студии. Запуск — изменение bench/request.txt.
+on:
+  push:
+    branches: [kist-bench]
+    paths: [bench/request.txt]
+permissions:
+  contents: write
+concurrency:
+  group: kist-bench
+  cancel-in-progress: false
+jobs:
+  bench:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Инструменты
+        run: |
+          npm init -y >/dev/null && npm i playwright >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+          sysctl -n machdep.cpu.brand_string; sysctl -n hw.ncpu
+      - name: Замер
+        run: |
+          mkdir -p bench/out
+          (cd kist && python3 -m http.server 8772 --bind 127.0.0.1 >/dev/null 2>&1 &)
+          sleep 2
+          perl -e 'alarm 2400; exec @ARGV' node bench/bench.js bench/out || true
+      - name: Итог в ветку
+        if: always()
+        run: |
+          git config user.name "kist-bench"; git config user.email "kist-bench@users.noreply.github.com"
+          git add bench/out
+          git commit -q -m "Кисть 4: замер на Mac GitHub" || true
+          git pull -q --rebase origin kist-bench || true
+          git push -q origin HEAD:kist-bench || true
