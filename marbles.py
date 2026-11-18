@@ -119,7 +119,7 @@ area("fill", (-0.9, -0.8, 0.5), (math.radians(70), 0, math.radians(-50)), 0.5, 4
 # ---------------------------------------------------------------- физика
 bpy.ops.rigidbody.world_add()
 rbw = sc.rigidbody_world
-rbw.substeps_per_frame = 8
+rbw.substeps_per_frame = 10
 rbw.solver_iterations = 10
 rbw.point_cache.frame_start = 1
 rbw.point_cache.frame_end = FR_END
@@ -147,13 +147,27 @@ slabs = [((0, 0, T / 2), (GW + 2 * T, GD + 2 * T, T)),
          (((GW + T) / 2, 0, GH / 2 + T), (T, GD + 2 * T, GH)),
          ((0, -(GD + T) / 2, GH / 2 + T), (GW, T, GH)),
          ((0, (GD + T) / 2, GH / 2 + T), (GW, T, GH))]
-for loc, dim in slabs:
+for loc, dim in slabs:                        # видимое стекло — без физики
     bpy.ops.mesh.primitive_cube_add(size=1, location=loc)
     o = bpy.context.active_object
     o.scale = dim
     bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.shade_flat()
     o.data.materials.append(m_glass)
+# невидимые толстые стенки для физики (5 см наружу от внутренней поверхности стекла) — тонкое стекло шары «пробивали»
+TK = 0.05
+proxies = [((0, 0, T - TK / 2), (GW + 2 * TK, GD + 2 * TK, TK)),
+           ((-(GW / 2 + TK / 2), 0, (GH + T) / 2 + T), (TK, GD + 2 * TK, GH + T)),
+           (((GW / 2 + TK / 2), 0, (GH + T) / 2 + T), (TK, GD + 2 * TK, GH + T)),
+           ((0, -(GD / 2 + TK / 2), (GH + T) / 2 + T), (GW + 2 * TK, TK, GH + T)),
+           ((0, (GD / 2 + TK / 2), (GH + T) / 2 + T), (GW + 2 * TK, TK, GH + T))]
+for loc, dim in proxies:
+    bpy.ops.mesh.primitive_cube_add(size=1, location=loc)
+    o = bpy.context.active_object
+    o.scale = dim
+    bpy.ops.object.transform_apply(scale=True)
+    o.hide_render = True
+    o.display_type = "WIRE"
     add_rb(o, "PASSIVE", "BOX", friction=0.45, rest=0.15)
 add_rb(floor, "PASSIVE", "BOX", friction=0.6, rest=0.12)
 
