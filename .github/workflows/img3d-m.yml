@@ -1,0 +1,86 @@
+name: img3d-m
+# «Картинка → 3D» менеджера. request.txt: первая строка без # — «prep» (вырезки и маски)
+# или «gen imgs=fila26,topa23 seeds=1,2 [steps=30] [oct=256] [model=hunyuan3d-dit-v2-mini]».
+on:
+  push:
+    branches: [geroi3d-m]
+    paths: ['request.txt']
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.p.outputs.mode }}
+      imgs: ${{ steps.p.outputs.imgs }}
+      seeds: ${{ steps.p.outputs.seeds }}
+      steps: ${{ steps.p.outputs.steps }}
+      oct: ${{ steps.p.outputs.oct }}
+      model: ${{ steps.p.outputs.model }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: p
+        run: |
+          python3 - <<'EOF' >> $GITHUB_OUTPUT
+          import json, re
+          L = [l.strip() for l in open('request.txt', encoding='utf-8') if l.strip() and not l.startswith('#')][0].split()
+          kv = dict(x.split('=', 1) for x in L[1:] if '=' in x)
+          ok = lambda s: re.fullmatch(r'[A-Za-z0-9._,-]+', s) is not None
+          imgs = [x for x in kv.get('imgs', 'fila26').split(',') if ok(x)]
+          seeds = [int(x) for x in kv.get('seeds', '1').split(',') if x.isdigit()]
+          print('mode=' + ('gen' if L[0] == 'gen' else 'prep'))
+          print('imgs=' + json.dumps(imgs)); print('seeds=' + json.dumps(seeds))
+          print('steps=' + str(int(kv.get('steps', 30)))); print('oct=' + str(int(kv.get('oct', 256))))
+          m = kv.get('model', 'hunyuan3d-dit-v2-mini'); print('model=' + (m if ok(m) else 'hunyuan3d-dit-v2-mini'))
+          EOF
+          cat $GITHUB_OUTPUT
+  prep:
+    needs: plan
+    if: needs.plan.outputs.mode == 'prep'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install -q "rembg[cpu]" opencv-python-headless pillow numpy
+      - run: python prep.py
+      - name: Сохранить
+        run: |
+          git config user.name "Claude"; git config user.email "noreply@anthropic.com"
+          git add in out/prep; git commit -q -m "img3d-m: вырезки и маски $(date -u +%H:%M)" || true
+          for k in 1 2 3 4 5; do git pull -q --rebase origin geroi3d-m && git push -q origin HEAD:geroi3d-m && break; sleep $((k*7)); done
+  gen:
+    needs: plan
+    if: needs.plan.outputs.mode == 'gen'
+    runs-on: ubuntu-latest
+    timeout-minutes: 200
+    permissions: { contents: write }
+    strategy:
+      fail-fast: false
+      matrix:
+        img: ${{ fromJSON(needs.plan.outputs.imgs) }}
+        seed: ${{ fromJSON(needs.plan.outputs.seeds) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.10' }
+      - name: Установка
+        run: |
+          pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchvision
+          git clone -q --depth 1 https://github.com/Tencent-Hunyuan/Hunyuan3D-2 h3d
+          pip install -q diffusers==0.31.0 einops opencv-python-headless numpy transformers==4.46.3 huggingface_hub==0.26.5 omegaconf tqdm trimesh pymeshlab pygltflib xatlas accelerate rembg onnxruntime scikit-image fast-simplification
+          pip install -q -e h3d --no-deps
+      - name: Картинка → 3D
+        env:
+          IMG: ${{ matrix.img }}
+          SEED: ${{ matrix.seed }}
+          STEPS: ${{ needs.plan.outputs.steps }}
+          OCT: ${{ needs.plan.outputs.oct }}
+          MODEL: ${{ needs.plan.outputs.model }}
+        run: mkdir -p out && python gen.py 2>&1 | tr '\r' '\n' | grep -v '^\s*$' | awk '/it\/s|s\/it/ && !/100%/ {next} {print}' | tee out/log_${{ matrix.img }}_s${{ matrix.seed }}.txt
+      - name: Сохранить
+        if: always()
+        run: |
+          git config user.name "Claude"; git config user.email "noreply@anthropic.com"
+          git add out; git commit -q -m "img3d-m: ${{ matrix.img }} зерно ${{ matrix.seed }} $(date -u +%H:%M)" || true
+          for k in 1 2 3 4 5 6 7 8; do git pull -q --rebase origin geroi3d-m && git push -q origin HEAD:geroi3d-m && break; sleep $((k*9)); done
