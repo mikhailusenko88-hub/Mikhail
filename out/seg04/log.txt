@@ -1,0 +1,70 @@
+шаров 1932, сцена 0 с
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: 'out/seg04/f_0079.jpg'
+Time: 00:51.95 (Saving: 00:00.13)
+
+кадр 79 нарисован, 52 с
+Saved: 'out/seg04/f_0080.jpg'
+Time: 00:50.91 (Saving: 00:00.11)
+
+кадр 80 нарисован, 103 с
+Saved: 'out/seg04/f_0081.jpg'
+Time: 00:51.13 (Saving: 00:00.11)
+
+кадр 81 нарисован, 154 с
+Saved: 'out/seg04/f_0082.jpg'
+Time: 00:51.15 (Saving: 00:00.12)
+
+кадр 82 нарисован, 205 с
+Saved: 'out/seg04/f_0083.jpg'
+Time: 00:51.46 (Saving: 00:00.11)
+
+кадр 83 нарисован, 257 с
+Saved: 'out/seg04/f_0084.jpg'
+Time: 00:51.68 (Saving: 00:00.12)
+
+кадр 84 нарисован, 309 с
+Saved: 'out/seg04/f_0085.jpg'
+Time: 00:52.05 (Saving: 00:00.11)
+
+кадр 85 нарисован, 361 с
+Saved: 'out/seg04/f_0086.jpg'
+Time: 00:51.81 (Saving: 00:00.12)
+
+кадр 86 нарисован, 412 с
+Saved: 'out/seg04/f_0087.jpg'
+Time: 00:52.07 (Saving: 00:00.11)
+
+кадр 87 нарисован, 465 с
+Saved: 'out/seg04/f_0088.jpg'
+Time: 00:52.35 (Saving: 00:00.11)
+
+кадр 88 нарисован, 517 с
+Saved: 'out/seg04/f_0089.jpg'
+Time: 00:52.38 (Saving: 00:00.11)
+
+кадр 89 нарисован, 569 с
+Saved: 'out/seg04/f_0090.jpg'
+Time: 00:52.45 (Saving: 00:00.11)
+
+кадр 90 нарисован, 622 с
+Saved: 'out/seg04/f_0091.jpg'
+Time: 00:52.50 (Saving: 00:00.12)
+
+кадр 91 нарисован, 674 с
+Saved: 'out/seg04/f_0092.jpg'
+Time: 00:52.63 (Saving: 00:00.12)
+
+кадр 92 нарисован, 727 с
+Saved: 'out/seg04/f_0093.jpg'
+Time: 00:52.75 (Saving: 00:00.11)
+
+кадр 93 нарисован, 780 с
+Saved: 'out/seg04/f_0094.jpg'
+Time: 00:52.86 (Saving: 00:00.11)
+
+кадр 94 нарисован, 833 с
+Saved: 'out/seg04/f_0095.jpg'
+Time: 00:53.12 (Saving: 00:00.11)
+
+кадр 95 нарисован, 886 с
