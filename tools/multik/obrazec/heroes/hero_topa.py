@@ -4,19 +4,19 @@
 # Лепка 3 (17.11.2026): лицо прежнего Топы — огромные тёмные блестящие глаза, румянец, светлая мордочка с улыбкой, насыщенно-бурый мех, толстый шарф.
 from hero_common import *
 
-class Topa(Hero):
+class Topa(FormHead, Hero):
     NAME = 'topa'
     def hit(self, o, dirn, tmax=0.4): return self.hit2(o, dirn, tmax)   # линии рта и усы — точно на поверхности
     H = V(0, 0.0, 0.69); HEAD_R = V(0.2, 0.185, 0.178)                          # круглая голова (обложки)
-    RE = 0.055; LID_OFF = 0.8; LID_K = 0.03; LID_NY = 0.12                     # глаза большие, но сидят в голове, взгляд спокойный и добрый
+    RE = 0.0423; LID_OFF = 0.99; LID_K = 0.03; LID_NY = 0.12                     # глаза большие, но сидят в голове, взгляд спокойный и добрый
     EYES = [V(s * 0.075, -0.14, 0.684) for s in (-1, 1)]      # по сетке с обложек 22–23: лоб высокий, низ лица короткий      # над мордочкой, между глазами ~0,5 ширины глаза (обложки 18, 22, 26)
     IRIS = [(0.012, 0.006, 0.003), (0.07, 0.03, 0.012), (0.38, 0.18, 0.05)]      # медовые карие: сверху темнее, книзу светятся
     IRIS_STYLE = 1
-    EYE_K = (0.69, 0.93)                                                          # большая радужка — без «испуга»                                                         # большая радужка и большой зрачок, белок виден по краям
+    EYE_K = (0.833, 0.968)                                                          # большая радужка — без «испуга»                                                         # большая радужка и большой зрачок, белок виден по краям
     EYE_AIM = V(0, -1.6, 0.7); EYE_DIV = 0.18
     EYE_CENTER = (0.1, 0.3)                                                       # зрачок чуть ниже середины — веко касается радужки, взгляд мягкий
-    EYE_S = V(0.85, 1.0, 1.18)                                                    # вытянутый вверх овал
-    EYE_RING = (0.04, 0.02, 0.012); EYE_RING_TOP = True
+    EYE_S = V(1.0, 1.0, 1.017)                                                    # вытянутый вверх овал
+    EYE_RING = (0.04, 0.02, 0.012); EYE_RING_TOP = True; EYE_RING_R = 1.07
     LID_SH = 0.45                                                                  # тень от верхнего века на глазу — взгляд мягче, глаз не «стеклянный»
     LID_LINE = {'r': (0.0014, 0.0032), 'col': (0.035, 0.018, 0.01), 'off': 1.06, 'flick': 0.12}   # тёмная линия ресниц по верхнему веку (как на обложках)
     BROW = {'up': 1.38, 'w': 0.5, 'r': [0.0058, 0.003], 'col': (0.13, 0.06, 0.025)}      # короткие густые бровки ближе к глазам
@@ -68,14 +68,13 @@ class Topa(Hero):
         t = smin(t, sd_ell(p, V(0, -0.012, 0.2), V(0.166, 0.152, 0.115)), 0.06)           # круглый живот
         t = smin(t, sd_cap(p, V(0, 0, 0.45), self.NECK + V(0, -0.005, 0.05), 0.082), 0.05)
         d['torso'] = t
-        h = sd_ell(p, self.H, self.HEAD_R)
-        for s in (-1, 1): h = smin(h, sd_ell(p, V(s * 0.1, -0.075, 0.645), V(0.1, 0.09, 0.084)), 0.06)      # щёки — мягче, без «брылей»
-        h = smin(h, sd_ell(p, V(0, -0.006, 0.785), V(0.16, 0.14, 0.088)), 0.06)                               # круглый лоб
+        h = self.head_form(p)
         d['head'] = h
-        m = sd_rcone(p, self.SN_A, self.SN_B, 0.094, 0.07)                                                    # широкая светлая мордочка (обложки)                                                    # короткая широкая морда
-        m = smin(m, sd_ell(p, V(0, -0.19, 0.645), V(0.042, 0.042, 0.026)), 0.026)                                   # переносица к носу
-        for s in (-1, 1): m = smin(m, sd_ell(p, V(s * 0.036, -0.206, 0.597), V(0.042, 0.042, 0.032)), 0.026)    # губы-подушечки
-        m = smin(m, sd_ell(p, V(0, -0.18, 0.572), V(0.032, 0.048, 0.02)), 0.024)                            # подбородок
+        z0 = self.MZ_Z; k = self.MZ_S; yb = self.MZ_Y                                                       # мордочка: овал вперёд, с переносицей, губами-подушечками и подбородком
+        m = sd_rcone(p, V(0, yb + 0.09 * k, z0), V(0, yb, z0 - 0.008 * k), 0.094 * k, 0.07 * k)
+        m = smin(m, sd_ell(p, V(0, yb + 0.01 * k, z0 + 0.019 * k), V(0.042, 0.042, 0.026) * k), 0.026 * k)
+        for s in (-1, 1): m = smin(m, sd_ell(p, V(s * 0.036 * k, yb - 0.006 * k, z0 - 0.029 * k), V(0.042, 0.042, 0.032) * k), 0.026 * k)
+        m = smin(m, sd_ell(p, V(0, yb + 0.02 * k, z0 - 0.054 * k), V(0.032, 0.048, 0.02) * k), 0.024 * k)
         d['muzzle'] = m
         d['lid'] = self.lid(p)
         d['ear'] = np.minimum(self.ear_sd(p, 0), self.ear_sd(p, 1))
@@ -92,6 +91,20 @@ class Topa(Hero):
             x = sd_rcone(p, self.TAIL[i], self.TAIL[i + 1], self.TAIL_R[i], self.TAIL_R[i + 1]); tl = x if tl is None else smin(tl, x, 0.015)
         d['tail'] = tl
         return d
+    # ---- лепка 5 (18.11.2026): голова — форма, черты — по месту на лице; числа подобраны по обложкам 18, 22, 23 (sravnenie/) ----
+    FORM = dict(C=V(0, 0.0, 0.69), n=2.1, nz=2.1, Rx=0.2, RyF=0.175, RyB=0.185, RzT=0.18, RzB=0.17,
+                bumps=[(55, -20, 0.03, 0.14, True),    # щёки
+                       (0, 30, 0.01, 0.1, False)])     # лоб
+    EYE_XZ = (0.0666, 0.6866); EYE_OUT = 0.3; EYE_TILT = (0.0, -18.4)
+    MZ_Z, MZ_S, MZ_Y = 0.626, 0.82, -0.2                # мордочка: высота, размер, насколько вперёд
+    NOSE_Z, LIP_Zf = 0.6216, 0.5764
+    def place_face(self):
+        cls = type(self); cls.MZ_Z = self.NOSE_Z - 0.034; self.place_eyes()                    # мордочка идёт за носом
+        S = self.front_hit(0, self.NOSE_Z, self.field); cls.NOSE_C = (S + V(0, -0.006, 0)).astype(F)
+        cls.LIP_Z = float(self.LIP_Zf); Sm = self.front_hit(0, self.LIP_Zf - 0.012, self.field); mc = (Sm + V(0, 0.046, 0)).astype(F)
+        cls.MOUTHS = {'a': (mc, V(0.038, 0.04, 0.024)), 'o': (mc + V(0, -0.002, 0.001), V(0.022, 0.04, 0.024))}
+        cls.TONGUE = ((mc + V(0, 0.024, -0.016)).astype(F), V(0.021, 0.03, 0.006))
+        ex, ez = self.EYE_XZ; cls.BLUSH = [self.front_hit(sg * (ex + 0.065), ez - 0.05) for sg in (-1, 1)]
     def colors(self, p, reg0, nor):
         """Бурый медвежонок: светлая мордочка и животик, уши внутри светлее, румянец, тёмные подушечки."""
         N = len(p); x, y, z = p[:, 0], p[:, 1], p[:, 2]; w = wob(p, 1.3) * 0.5
@@ -103,7 +116,7 @@ class Topa(Hero):
         wm = np.maximum(wm, (reg == 2).astype(F))                                                                                           # мордочка
         fur = fur * (1 - wm[:, None]) + cream[None] * wm[:, None]
         for s in (-1, 1):                                                                                                                   # румянец
-            b = np.clip((1.0 - np.linalg.norm((p - V(s * 0.14, -0.13, 0.632)) / V(0.046, 0.046, 0.032), axis=-1)) * 2.5, 0, 1) * (reg == 1)
+            b = np.clip((1.0 - np.linalg.norm((p - self.BLUSH[0 if s < 0 else 1]) / V(0.046, 0.046, 0.032), axis=-1)) * 2.5, 0, 1) * (reg == 1)
             fur = fur * (1 - 0.58 * b[:, None]) + blush[None] * (0.58 * b[:, None])
         skin = fur * 0.55
         skin = np.where((reg == 8)[:, None], V(0.46, 0.28, 0.18)[None] * (0.95 + 0.05 * w[:, None]), skin)                                    # уши внутри
@@ -138,21 +151,21 @@ class Topa(Hero):
     NOSE_COL = (0.07, 0.035, 0.022); NOSE_WET = False     # тёмно-шоколадный, с мягким бликом (не «хром»)
     def mouth_lines(self):
         lines = []; nz = self.NOSE_C
-        phil = [V(0, -0.5, nz[2] - 0.024 - 0.018 * i / 6) for i in range(7)]
+        z0 = nz[2] - 0.024; phil = [V(0, -0.5, z0 + (self.LIP_Z - z0) * i / 6) for i in range(7)]
         ph = self.hit(np.array(phil), np.tile(V(0, 1, 0), (7, 1)), 0.6)
         if self.MOUTH is not None:
             m0 = self.MOUTH; self.MOUTH = None; pb = self.hit(np.array(phil), np.tile(V(0, 1, 0), (7, 1)), 0.6); self.MOUTH = m0
             keep = np.linalg.norm(ph - pb, axis=-1) < 0.003; ph = ph[keep] if keep.sum() >= 2 else pb[:2]
         lines.append(ph)
         for s in (-1, 1):
-            ang = np.linspace(0, math.pi, 12); xs = s * (0.025 - 0.025 * np.cos(ang)); zs = nz[2] - 0.041 - 0.01 * np.sin(ang) + 0.014 * (xs * s / 0.05) ** 2   # улыбка: уголки вверх
+            ang = np.linspace(0, math.pi, 12); xs = s * (0.025 - 0.025 * np.cos(ang)); zs = self.LIP_Z - 0.01 * np.sin(ang) + 0.014 * (xs * s / 0.05) ** 2   # улыбка: уголки вверх
             lines.append(self.hit(np.stack([xs, np.full(12, -0.5, F), zs], -1).astype(F), np.tile(V(0, 1, 0), (12, 1)), 0.6))
         return lines[:1] if self.MOUTH is not None else lines
     def whiskers(self):   # у медвежонка усов почти нет — по две короткие щетинки
         out = []
         for s in (-1, 1):
             for j, (dz, ang) in enumerate([(0.006, 0.12), (-0.006, -0.1)]):
-                o = V(s * (0.03 + 0.007 * j), -0.5, 0.604 + dz); r0 = self.hit(o, V(0, 1, 0), 0.6)[0] + V(0, 0.002, 0)
+                o = V(s * (0.03 + 0.007 * j), -0.5, self.LIP_Z + 0.018 + dz); r0 = self.hit(o, V(0, 1, 0), 0.6)[0] + V(0, 0.002, 0)
                 dirn = nrm(V(s * 1.0, -0.5, ang)); out.append(np.array([r0 + dirn * 0.035 * (k / 7) + V(0, 0.004 * (k / 7) ** 2, -0.006 * (k / 7) ** 2) for k in range(8)], F))
         return out
     WHISK_R = (0.0007, 0.0002); WHISK_COL = (0.16, 0.1, 0.07)
@@ -163,4 +176,4 @@ class Topa(Hero):
         return {'nose': self.NOSE_C.tolist(), 'earOff': [0, 0.1, 0.1], 'neck': (self.NECK + V(0, 0, 0.03)).tolist(), 'should': [s.tolist() for s in self.SHOULD], 'wrist': [s.tolist() for s in self.WRIST],
                 'hip': [(h + V(0, 0, 0.06)).tolist() for h in self.HIP], 'foot': [f.tolist() for f in self.FOOT], 'tail': [t.tolist() for t in self.TAIL], 'H': self.H.tolist(), 'headR': float(self.HEAD_R[0])}
 
-HERO = Topa()
+HERO = Topa(); HERO.place_face()

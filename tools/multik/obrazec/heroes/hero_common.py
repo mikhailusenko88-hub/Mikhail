@@ -171,3 +171,39 @@ class Hero:
                 c = nrm(q) @ nrm(V(np.sign(E[0]) * 0.18, -1, 0.02)); base = np.where(on[:, None], np.where((c > 0.93)[:, None], V(0.03, 0.02, 0.02), np.where((c > 0.72)[:, None], V(*self.IRIS[1]), V(0.95, 0.95, 0.94))), base)
             img[hi] = base * (dif[:, None] * 0.8 + amb[:, None])
         Image.fromarray((np.clip(img.reshape(Hh, W, 3), 0, 1) ** (1 / 1.8) * 255).astype(np.uint8)).save(path)
+
+
+class FormHead:
+    """Голова, вылепленная как форма: радиус по направлению из центра C (асимметричный «моти»-эллипсоид) + мягкие «нашлёпки»
+    A·exp(-(1-cos)/w) — щёки, лоб, «холмик» лица. Черты ставятся по месту на лице (x, z) лучом спереди — не по углу."""
+    @staticmethod
+    def _dir(yaw, pitch):
+        a, b = math.radians(yaw), math.radians(pitch); return V(math.sin(a) * math.cos(b), -math.cos(a) * math.cos(b), math.sin(b))
+    def form_r(self, dd):
+        Fm = self.FORM; dx, dy, dz = dd[:, 0], dd[:, 1], dd[:, 2]
+        Ry = np.where(dy < 0, Fm['RyF'], Fm['RyB']); Rz = np.where(dz > 0, Fm['RzT'], Fm['RzB'])
+        n = Fm.get('n', 2.0); h = (np.abs(dx / Fm['Rx']) ** n + np.abs(dy / Ry) ** n) ** (2.0 / n)
+        nz = Fm.get('nz', 2.0); r = 1.0 / (h ** (nz / 2.0) + np.abs(dz / Rz) ** nz) ** (1.0 / nz)
+        for yaw, pitch, A, w, mir in Fm['bumps']:
+            for sg in ((-1, 1) if mir else (1,)):
+                u = self._dir(sg * yaw, pitch); r = r + A * np.exp(-(1.0 - dd @ u) / w)
+        return r
+    def head_form(self, p):
+        q = p - self.FORM['C']; n = np.maximum(np.linalg.norm(q, axis=-1), 1e-6); return ((n - self.form_r(q / n[:, None])) * 0.88).astype(F)
+    def front_hit(self, x, z, fn=None):
+        """точка поверхности, если смотреть строго спереди (луч вдоль +y) в (x, z); fn — какое поле (по умолчанию форма головы)"""
+        fn = fn or self.head_form; o = V(x, -0.7, z); t = 0.0
+        for _ in range(300):
+            d = float(fn((o + V(0, t, 0))[None])[0])
+            if d < 0.0003: break
+            t += d * 0.9
+        return o + V(0, t, 0)
+    def normal_at(self, S, fn=None):
+        fn = fn or self.head_form; e = 0.0008
+        g = V(*[float(fn((S + dv)[None])[0] - fn((S - dv)[None])[0]) for dv in (V(e, 0, 0), V(0, e, 0), V(0, 0, e))]); return g / np.linalg.norm(g)
+    def place_eyes(self):
+        out = []; ex, ez = self.EYE_XZ; Sy = float(self.EYE_S[1]) if self.EYE_S is not None else 1.0
+        for sg in (-1, 1):
+            S = self.front_hit(sg * ex, ez); u = self.normal_at(S)
+            c0 = S - u * self.RE * (1.0 - self.EYE_OUT) * Sy; c0[0] = sg * ex; c0[2] = ez; out.append(c0.astype(F))
+        type(self).EYES = out

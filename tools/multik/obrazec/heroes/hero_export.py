@@ -141,6 +141,13 @@ else:
                 q = nrm(q) * Hh.RE * Hh.LID_LINE.get('off', 1.07); pts.append(E + q * Es)
             ext = pts[-1] + nrm(pts[-1] - pts[-2]) * Hh.RE * Hh.LID_LINE.get('flick', 0.18) + V(0, 0, Hh.RE * 0.06); pts.append(ext)
             LL.append(np.array(pts, F))
+        nl = int(Hh.LID_LINE.get('lashes', 0))   # реснички у внешнего уголка: короткие изогнутые штрихи наружу-вверх (обложки)
+        for E, L0 in zip(Hh.EYES, list(LL)):
+            o = np.sign(E[0])
+            for k in range(nl):
+                j = 14 - k * 2; P0 = L0[j]; tdir = nrm(L0[j] - L0[j - 1]); out_ = nrm(P0 - E); up_ = V(0, 0, 1)
+                d0 = nrm(out_ * 0.8 + up_ * 0.35 + tdir * 0.45); ln = Hh.RE * (0.2 - 0.04 * k)
+                LL.append(np.array([P0 + d0 * ln * (i / 15) + (nrm(tdir + up_) * ln * 0.25 * (i / 15) ** 2) for i in range(16)], F))
         LINES['lid'] = np.array(LL)
     PIV = Hh.PIV; WHISK = {'r': list(Hh.WHISK_R), 'col': list(Hh.WHISK_COL)}; NOSE = {'col': list(getattr(Hh, 'NOSE_COL', (0.85, 0.47, 0.52))), 'wet': bool(getattr(Hh, 'NOSE_WET', False))}
     FUR = dict(Hh.FUR); src = Hh.fur_src(); SRC = {k: src[k] for k in ['nose', 'earOff', 'neck', 'should', 'wrist', 'hip', 'foot', 'tail']}
