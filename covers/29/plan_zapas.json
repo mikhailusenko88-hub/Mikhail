@@ -1,0 +1,25 @@
+{
+ "el": "/home/claude/el29/x/el",
+ "series": "СЕРИЯ 29",
+ "text": "ДУБ ИЗ|ЖЁЛУДЯ?",
+ "text_at": "center",
+ "text_px": 96,
+ "text_w": 0.5,
+ "logo": 0.8,
+ "vignette": 0.22,
+ "bg": "f1_yard_day.jpg",
+ "bg_zoom": [0.3, 0.4, 1.3],
+ "blur": 4,
+ "sat": 1.35,
+ "bri": 1.08,
+ "rays": {"cx": 0.5, "cy": 0.42, "n": 16, "col": [255, 245, 190], "a": 45},
+ "spot": {"cx": 0.5, "cy": 0.42, "r": 0.2, "col": [255, 248, 210], "a": 170},
+ "items": [
+  {"img": "v_dub.png", "cx": 0.5, "top": -0.08, "h": 0.8, "outline": 5, "shadow": 0.35},
+  {"img": "v_acorn_GLAVNOE.png", "cx": 0.5, "bottom": 0.7, "h": 0.4, "outline": 6, "glow": [255, 225, 120], "rot": 6},
+  {"sparkles": true, "cx": 0.5, "cy": 0.48, "r": 0.14, "n": 7},
+  {"mark": "?", "cx": 0.66, "cy": 0.36, "h": 0.2, "rot": 12},
+  {"img": "g2_Рон_udiv.png", "cx": 0.14, "bottom": 1.1, "h": 0.82, "outline": 6},
+  {"img": "g1_Барсик_rad.png", "cx": 0.86, "bottom": 1.1, "h": 0.84, "outline": 6, "flip": true}
+ ]
+}

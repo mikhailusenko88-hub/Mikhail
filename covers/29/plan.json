@@ -1,0 +1,25 @@
+{
+ "el": "/home/claude/el29/x/el",
+ "series": "СЕРИЯ 29",
+ "text": "ДУБ ИЗ|ЖЁЛУДЯ?",
+ "text_at": "center",
+ "text_px": 96,
+ "text_w": 0.5,
+ "logo": 0.8,
+ "vignette": 0.22,
+ "bg": "f4_meadow_day.jpg",
+ "bg_zoom": [0.3, 0.42, 1.25],
+ "blur": 4,
+ "sat": 1.35,
+ "bri": 1.08,
+ "rays": {"cx": 0.36, "cy": 0.5, "n": 16, "col": [255, 245, 190], "a": 45},
+ "spot": {"cx": 0.36, "cy": 0.5, "r": 0.18, "col": [255, 248, 210], "a": 170},
+ "items": [
+  {"img": "v_dub.png", "cx": 0.62, "top": -0.06, "h": 0.86, "outline": 5, "shadow": 0.35},
+  {"img": "v_strelka.png", "cx": 0.47, "bottom": 0.42, "h": 0.28, "outline": 0, "shadow": 0.2},
+  {"img": "v_acorn_GLAVNOE.png", "cx": 0.35, "bottom": 0.7, "h": 0.36, "outline": 6, "glow": [255, 225, 120], "rot": -8},
+  {"sparkles": true, "cx": 0.35, "cy": 0.5, "r": 0.13, "n": 7},
+  {"img": "g3_Топа_pokaz1.png", "cx": 0.12, "bottom": 1.1, "h": 0.8, "outline": 6},
+  {"img": "g1_Барсик_udiv.png", "cx": 0.86, "bottom": 1.1, "h": 0.84, "outline": 6, "flip": true}
+ ]
+}
