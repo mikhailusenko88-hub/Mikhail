@@ -1,7 +1,4 @@
 # имя | адрес | desktop|mobile | js
-# 18.11.2026 — правки по ответам поставщика: серия 2 — 17 мм, шаг луверов 116, живые фото 3-5, сечения A80L/A100L
-p27 | https://nashdekor.ru/p/2-7/?s=201 | mobile | setTimeout(()=>window.scrollTo(0,0),300)
-p35 | https://nashdekor.ru/p/3-5/?s=202 | mobile | setTimeout(()=>{const b=document.querySelector('[data-v="photo"]'); if(b) b.click()},600)
-a100l | https://nashdekor.ru/p/a100l/?s=203 | mobile | setTimeout(()=>window.scrollTo(0,0),300)
-a80l | https://nashdekor.ru/p/a80l/?s=204 | desktop | setTimeout(()=>window.scrollTo(0,0),300)
-calc37 | https://nashdekor.ru/?s=205&panel=3-7#calc | mobile | setTimeout(()=>{const r=document.getElementById('cRes')||document.getElementById('calc'); r.scrollIntoView()},800)
+# 18.11.2026 — расчёт на главной (3-7) и фото серии 2 после замены
+calc37 | https://nashdekor.ru/?s=206&panel=3-7#calc | mobile | setTimeout(()=>document.getElementById('calc').scrollIntoView(),800)
+p27b | https://nashdekor.ru/p/2-7/?s=207 | mobile | setTimeout(()=>window.scrollTo(0,0),300)
