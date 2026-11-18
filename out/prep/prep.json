@@ -1,0 +1,42 @@
+{
+ "fila26": {
+  "size": [
+   845,
+   968
+  ],
+  "semi_birefnet": 0.073,
+  "agree_isnet": 0.6738
+ },
+ "fila22": {
+  "size": [
+   983,
+   931
+  ],
+  "semi_birefnet": 0.053,
+  "agree_isnet": 0.6432
+ },
+ "fila20": {
+  "size": [
+   910,
+   780
+  ],
+  "semi_birefnet": 0.064,
+  "agree_isnet": 0.7462
+ },
+ "topa23": {
+  "size": [
+   983,
+   771
+  ],
+  "semi_birefnet": 0.055,
+  "agree_isnet": 0.705
+ },
+ "topa22": {
+  "size": [
+   1009,
+   887
+  ],
+  "semi_birefnet": 0.047,
+  "agree_isnet": 0.6238
+ }
+}
