@@ -2879,6 +2879,7 @@ function interiorC(g, time, kind) { const night = time === 'night', eve = time =
     light: night ? { hs: '#ffe2c4', hg: '#8a6a50', hi: .55, sc: '#ffd2a0', si: 1.7, sp: [-5, 7, 7], rc: '#a8c0ff', ri: .8, rp: [1.5, 7, -4], ei: .32, box: { left: -10, right: 10, top: 9, bottom: -6 } }
       : eve ? { hs: '#ffe2cc', hg: '#a87a58', hi: .6, sc: '#ffc890', si: 2.5, sp: [-6, 5, 6], rc: '#ffb070', ri: 1.1, rp: [1.5, 7, -4], ei: .36, box: { left: -10, right: 10, top: 9, bottom: -6 } }
         : { hs: '#fff4e6', hg: '#c09a78', hi: .62, sc: '#fff2dc', si: 2.7, sp: [-5, 7, 7], rc: '#eaf2ff', ri: 1.0, rp: [1.5, 7, -4], ei: .4, box: { left: -10, right: 10, top: 9, bottom: -6 } } };
+  if (MK3D.inK !== false) { const L = C.light, k = MK3D.inK || { hi: .3, ei: .3, si: .75 }; L.hi *= k.hi; L.ei *= k.ei; L.si *= k.si; }   /* сверено с эталоном Blender (серия 28, 0:40): в комнату небо светит только через окно — рассеянного света втрое меньше */
   g.userData.cine = C; return C; }
 // ---------------- КОМНАТА ----------------
 function roomHQ(g, spec, r) { const time = spec.time || 'day', night = time === 'night', eve = time === 'evening', on = night || eve; const C = interiorC(g, time, 'room');
@@ -2893,7 +2894,8 @@ function roomHQ(g, spec, r) { const time = spec.time || 'day', night = time === 
   windowIn(g, WX, WY, WW, WH, BZ, time, { kind: 'fence' });
   curtain(g, WX - WW / 2 - .32, WY + .05, BZ + .2, .7, 2.5, '#e86a5f', r); curtain(g, WX + WW / 2 + .32, WY + .05, BZ + .2, .7, 2.5, '#e86a5f', r);
   { const rod = new THREE.Mesh(G.cyl(.02, .02, WW + 1.6, 10), new THREE.MeshStandardMaterial({ color: '#c8a050', metalness: .8, roughness: .3 })); rod.rotation.z = Math.PI / 2; rod.position.set(WX, WY + 1.32, BZ + .22); g.add(rod); for (const sd of [-1, 1]) { const fn = new THREE.Mesh(G.sph(.045, 14, 10), rod.material); fn.position.set(WX + sd * (WW / 2 + .8), WY + 1.32, BZ + .22); g.add(fn); } }
-  if (!on) { const sp = new THREE.SpotLight(0xfff0d8, 14, 9, .7, 1, 1.4); sp.position.set(WX, WY + .3, BZ - .6); sp.target.position.set(WX - .3, 0, BZ + 2.6); g.add(sp); g.add(sp.target); }
+  if (!on) { const sp = new THREE.SpotLight(0xfff0d8, 14, 9, .7, 1, 1.4); sp.position.set(WX, WY + .3, BZ - .6); sp.target.position.set(WX - .3, 0, BZ + 2.6); g.add(sp); g.add(sp.target);
+    if (MK3D.winShadow) { sp.castShadow = true; sp.shadow.mapSize.set(1024, 1024); sp.shadow.radius = 14; sp.shadow.blurSamples = 16; sp.shadow.bias = -.0006; Object.assign(sp.shadow.camera, { near: .4, far: 12 }); sp.shadow.camera.layers.enable(1); } }   /* свет из окна отбрасывает тени героев к зрителю — как в эталоне Blender */
   for (const [px, pz, pr] of [[WX - .65, BZ + .12, .14], [WX + .65, BZ + .12, .12]]) { const pt = new THREE.Mesh(G.cyl(pr * .7, pr * .55, pr * 1.1, 16), stdM(px < WX ? '#f4f0e8' : '#7fb8d8', null, .4)); pt.position.set(px, WY - WH / 2 + pr * .55, pz); pt.castShadow = true; g.add(pt); bushHQ(g, px, pz, pr * 1.8, '#4a8a3a'); g.children[g.children.length - 1].position.y = WY - WH / 2 + pr * 1.05; }
   // диван (из глины) под картинами, торшер, книжная полка, растение, ковёр, игрушки
   const sofa = new THREE.Group(); sofa.position.set(4.6, 0, -2.95); sofa.userData.tag = 'sofa'; g.add(sofa); furnitureHQ(g, false);
@@ -3160,7 +3162,7 @@ function heroSpheres(out) { let n = 0; if (_hs.length === 0) for (let i = 0; i <
     put(.16, H * .13); put(.45, Math.max(hr * .8, H * .27)); _hs[3].copy(hp).applyMatrix4(V); out[n++].set(_hs[3].x, _hs[3].y, _hs[3].z, hr * .92); }
   return n; }
 MK3D.aoK = .9; MK3D.aoR = .3; MK3D.aoS = 2.5; MK3D.aoH = 1.7;   /* тень-касание и затенение (svet-eng): сила, радиус в метрах, крутизна; 0 — как раньше */
-MK3D._dbg = () => ({ scene, cam, sun, hemi, rim, R, lightFor, lightBase });   /* для выгрузки сцены в Blender и проверок */
+MK3D._svet = () => ({ scene, cam, sun, hemi, rim, R, lightFor, lightBase, locCache });   /* для выгрузки сцены в Blender и проверок */
 function renderHQ(w, h) {
   if (!PP || PP.w !== w || PP.h !== h) { if (PP) for (const k of ['main', 'h1', 'h2', 'q1', 'q2', 'b1', 'b2', 'e1', 'e2', 'r1', 'r2', 'ao1', 'ao2']) PP[k].dispose(); PP = ppInit(w, h); }
   const P = PP, f = Math.max(.5, w / 3840); R.setRenderTarget(P.main); R.clear(); R.render(scene, cam); // f: размытия задуманы для кадра 3840 — тот же размер на экране
