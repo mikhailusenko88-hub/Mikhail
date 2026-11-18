@@ -28,7 +28,7 @@ if "range" in A:
 else:
     FRAMES = [int(v) for v in A.get("frames", "40,120,220").split(",")]
 SIM_TO = max(FRAMES) if "range" not in A else max(FRAMES)
-BR = float(A.get("r", "0.0085"))                 # радиус шара, м
+BR = float(A.get("r", "0.0075"))                 # радиус шара, м
 SEED = int(A.get("seed", "7"))
 random.seed(SEED)
 t0 = time.time()
@@ -53,8 +53,8 @@ sc.render.resolution_x, sc.render.resolution_y = RX, RY
 sc.render.resolution_percentage = 100
 sc.render.fps = 30
 sc.frame_start, sc.frame_end = 1, FR_END
-sc.view_settings.view_transform = "AgX"
-sc.view_settings.look = A.get("look", "AgX - Punchy")
+sc.view_settings.view_transform = A.get("vt", "Standard")
+sc.view_settings.look = A.get("look", "Medium High Contrast")
 sc.view_settings.exposure = float(A.get("ev", "0"))
 sc.render.image_settings.file_format = "JPEG"
 sc.render.image_settings.quality = 93
@@ -71,14 +71,14 @@ def mat_principled(name, **kw):
 
 m_floor, _ = mat_principled("floor", **{"Base Color": (0.006, 0.007, 0.010, 1), "Roughness": 0.16, "Specular IOR Level": 0.7})
 m_glass, _ = mat_principled("glass", **{"Base Color": (0.97, 0.99, 1.0, 1), "Roughness": 0.015, "IOR": 1.5, "Transmission Weight": 1.0})
-m_metal, _ = mat_principled("bucket", **{"Base Color": (0.55, 0.57, 0.60, 1), "Metallic": 1.0, "Roughness": 0.36, "Anisotropic": 0.5})
+m_metal, _ = mat_principled("bucket", **{"Base Color": (0.015, 0.09, 0.42, 1), "Roughness": 0.22, "Coat Weight": 0.6, "Coat Roughness": 0.08})   # синее эмалированное ведро
 m_ball, pb = mat_principled("ball", **{"Roughness": 0.18, "Coat Weight": 0.8, "Coat Roughness": 0.04})
 nt = m_ball.node_tree
 oi = nt.nodes.new("ShaderNodeObjectInfo")
 ramp = nt.nodes.new("ShaderNodeValToRGB")
 ramp.color_ramp.interpolation = "CONSTANT"
-PAL = [(0.95, 0.05, 0.08), (1.0, 0.42, 0.0), (1.0, 0.82, 0.0), (0.15, 0.85, 0.15), (0.0, 0.75, 0.95),
-       (0.12, 0.28, 1.0), (0.62, 0.15, 1.0), (1.0, 0.18, 0.62)]
+PAL = [(0.85, 0.01, 0.02), (1.0, 0.22, 0.0), (1.0, 0.62, 0.0), (0.04, 0.6, 0.04), (0.0, 0.45, 0.85),
+       (0.03, 0.08, 0.9), (0.35, 0.03, 0.85), (0.95, 0.04, 0.35)]   # линейные значения: в Standard выходят сочными
 els = ramp.color_ramp.elements
 while len(els) < len(PAL):
     els.new(0.5)
@@ -141,7 +141,7 @@ def add_rb(obj, typ, shape, friction=0.45, rest=0.35, mass=0.01):
 
 
 # стеклянный куб: внутри 0,32 × 0,20 × 0,50 м, стенки 8 мм
-GW, GD, GH, T = 0.32, 0.20, 0.50, 0.008
+GW, GD, GH, T = 0.32, 0.20, 0.50, 0.004
 slabs = [((0, 0, T / 2), (GW + 2 * T, GD + 2 * T, T)),
          ((-(GW + T) / 2, 0, GH / 2 + T), (T, GD + 2 * T, GH)),
          (((GW + T) / 2, 0, GH / 2 + T), (T, GD + 2 * T, GH)),
@@ -158,7 +158,7 @@ for loc, dim in slabs:
 add_rb(floor, "PASSIVE", "BOX", friction=0.6, rest=0.12)
 
 # ведро: усечённый конус без крышки, стенка 5 мм; начало координат — на кромке, через которую льётся
-R0, R1, BH = 0.125, 0.16, 0.24
+R0, R1, BH = 0.13, 0.17, 0.25
 bm = bmesh.new()
 bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=56, radius1=R0, radius2=R1, depth=BH)
 top = [f for f in bm.faces if f.calc_center_median().z > BH / 2 - 1e-4]
@@ -178,7 +178,7 @@ bev.width = 0.002
 bucket.data.materials.append(m_metal)
 for p in bucket.data.polygons:
     p.use_smooth = True
-LIP = Vector((0.03, 0.0, GH + T + 0.07))         # кромка над серединой куба, в 7 см над краем
+LIP = Vector((-0.11, 0.0, GH + T + 0.07))        # кромка над левой половиной куба: струя уходит вправо и падает в середину
 bucket.location = LIP
 rb = add_rb(bucket, "PASSIVE", "MESH", friction=0.35, rest=0.3)
 rb.kinematic = True
