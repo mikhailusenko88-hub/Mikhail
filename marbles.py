@@ -290,12 +290,14 @@ sc.collection.objects.link(cam)
 sc.camera = cam
 tgt = bpy.data.objects.new("tgt", None)
 sc.collection.objects.link(tgt)
-tgt.location = (-0.04, 0, 0.42)
+tgt.location = (-0.04, 0, float(A.get("tz", "0.42")))
 c = cam.constraints.new("TRACK_TO")
 c.target = tgt
 c.track_axis = "TRACK_NEGATIVE_Z"
 c.up_axis = "UP_Y"
-for f, y, z in ((1, -2.15, 0.72), (FR_END, -1.85, 0.62)):
+CY0, CY1 = float(A.get("cy0", "-2.15")), float(A.get("cy1", "-1.85"))     # камера: отъезд/наезд (м) и высота
+CZ0, CZ1 = float(A.get("cz0", "0.72")), float(A.get("cz1", "0.62"))
+for f, y, z in ((1, CY0, CZ0), (FR_END, CY1, CZ1)):
     cam.location = (-0.05, y, z)
     cam.keyframe_insert("location", frame=f)
 cam_d.dof.use_dof = True

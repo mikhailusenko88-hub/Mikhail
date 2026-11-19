@@ -1,4 +1,3 @@
-# 2026-11-19 10:45 — светлая студия (как у топа ниши), 3 варианта вида на одной физике seed=21
-lt1 seed=21 bg=light lp=0.55 frames=60,130,240 end=240 samples=40 res=1080x1920
-lt2 seed=21 bg=light vt=AgX look=AgX_-_Punchy frames=60,130,240 end=240 samples=40 res=1080x1920
-lt3 seed=21 bg=light vt=AgX look=AgX_-_Punchy pal=candy frames=60,130,240 end=240 samples=40 res=1080x1920
+# 2026-11-19 10:58 — светлая студия: экспозиция и камера с местом под счётчик сверху (готовое движение lt2)
+cm1 anim=out/lt2/anim.npz bg=light lp=0.55 ev=-1.0 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 frames=60,130,231 end=240 samples=40 res=1080x1920
+cm2 anim=out/lt2/anim.npz bg=light lp=0.55 ev=-1.5 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 frames=60,130,231 end=240 samples=40 res=1080x1920
