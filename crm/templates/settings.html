@@ -141,6 +141,10 @@
   <label class="f span2">Адрес забора — наш склад (ПЭК забирает груз у нас; в цену покупателя входит забор){% if not pek['pickup'] %} — пока не задан, считается по Санкт-Петербургу{% endif %}<input name="pickup" value="{{ pek['pickup'] }}" autocomplete="off" placeholder="Санкт-Петербург, улица, дом"></label>
   <label class="f">Вес коробки панелей 3 м, кг<input name="box3" inputmode="decimal" value="{{ pek['box3'] }}" placeholder="20 — если пусто"></label>
   <label class="f">Вес коробки 2 м (плинтус, молдинг), кг<input name="box2" inputmode="decimal" value="{{ pek['box2'] }}" placeholder="14 — если пусто"></label>
+  <fieldset class="f span2"><legend>Неполная коробка в другой город</legend>
+    <label><input type="radio" name="partial" value="box" {% if pek['partial'] == 'box' %}checked{% endif %}> В пустой заводской коробке с прокладкой — ПЭК считает как целую коробку (дешевле для клиента)</label>
+    <label><input type="radio" name="partial" value="hp" {% if pek['partial'] == 'hp' %}checked{% endif %}> В жёсткой упаковке ПЭК (обрешётка, ≈ +1 500 ₽) — когда пустых коробок нет</label>
+  </fieldset>
   <div class="span2 row wrap">
     <button class="btn-p" name="act" value="save">Сохранить</button>
     <button class="btn-s" name="act" value="check" {% if not pek['has_key'] %}disabled{% endif %}>Проверить связь</button>

@@ -1059,6 +1059,11 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 out[m] = v
         return out
 
+    def pek_partial() -> str:
+        """Неполная коробка в другой город: «box» — в пустой заводской коробке с прокладкой (по умолчанию, решение 19.11),
+        «hp» — в жёсткой упаковке ПЭК (когда пустых коробок нет). Переключатель — Настройки → ПЭК."""
+        return "hp" if store.setting("pek_partial", "box") == "hp" else "box"
+
     def pek_piece_g() -> dict[str, int]:
         """Вес штуки по артикулам, г — из «Склад → ТН ВЭД и вес для документов» (там же он для УПД и ДОПП)."""
         try:
@@ -1147,7 +1152,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         snd = pek_zone(t, PEK_SENDER)
         if not snd:
             raise PekError(200, "ПЭК не нашёл склад в Санкт-Петербурге")
-        cargos = cargos_for(lines, pek_box_kg(), pek_piece_g(), hp_partial=True)    # неполная коробка — в жёсткой упаковке ПЭК
+        mode = pek_partial()                       # неполная коробка: в заводской коробке с прокладкой или в обрешётке ПЭК
+        cargos = cargos_for(lines, pek_box_kg(), pek_piece_g(), partial=mode)
         if not cargos:
             return {"ok": False, "error": "items"}
         pick = store.setting("pek_pickup_address", "") or PEK_SENDER      # забор у нас со склада (адрес — в Настройках)
@@ -1157,9 +1163,10 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             term = pek_price(t, snd["warehouse"], z["warehouse"], cargos, insure, pick=pick, where=where)
             pek_cache.put("p|" + sig, term, PEK_PRICE_TTL)
         packed = any(c.get("isHP") for c in cargos)
+        fill = fill_to_box(lines)
         out: dict[str, Any] = {"ok": True, "branch": z["branch"], "place": z["formatted"] or where, "terminal": term, "places": len(cargos),
                                "packed": packed and not term.get("no_hp"), "pack_later": packed and bool(term.get("no_hp")),
-                               "fill": fill_to_box(lines)}
+                               "boxed": mode == "box" and bool(fill), "fill": fill}
         if has_street(where):
             dk = "d|" + sig + "|" + addr.lower()
             door = pek_cache.get(dk)
@@ -1774,6 +1781,11 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             if key:
                 store.set_setting("pek_key", key)
                 c = store.c(); store.log(c, "ПЭК: сохранён новый ключ API", who()); c.commit()
+            if request.form.get("partial") in ("box", "hp"):
+                if request.form["partial"] != pek_partial():
+                    c = store.c(); store.log(c, "ПЭК: неполная коробка — " + ("в заводской коробке с прокладкой" if request.form["partial"] == "box"
+                                                                             else "в жёсткой упаковке ПЭК"), who()); c.commit()
+                store.set_setting("pek_partial", request.form["partial"])
             if "pickup" in request.form:
                 pa = re.sub(r"\s+", " ", request.form.get("pickup", "")).strip(" ,")[:200]
                 store.set_setting("pek_pickup_address", ("Россия, " + pa) if pa and not pa.lower().startswith("россия") else pa)
@@ -1824,6 +1836,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             if snd and z:                             # страховка на сумму заказа и неполная коробка — как на сайте
                 probe_price("та же коробка со страховкой 23 400 ₽", cargos_for([(probe, 12)], pek_box_kg()), 23400)
                 bare = probe_price("1 панель без упаковки", cargos_for([(probe, 1)], pek_box_kg()), 0)
+                probe_price("в заводской коробке с прокладкой", cargos_for([(probe, 1)], pek_box_kg(), partial="box"), 0)
                 hp = probe_price("в жёсткой упаковке ПЭК", cargos_for([(probe, 1)], pek_box_kg(), hp_partial=True), 0)
                 if bare is not None and hp is not None and hp <= bare:
                     msg += " (ПЭК не добавил упаковку — скажите Claude)"
@@ -1858,6 +1871,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                         box3=store.setting("pek_box3_kg", ""), box2=store.setting("pek_box2_kg", ""),
                                         pickup=store.setting("pek_pickup_address", ""),
                                         check=store.setting("pek_check", ""), last_error=store.setting("pek_last_error", ""),
+                                        partial=pek_partial(),
                                         goods=pek_goods()))
 
     def offsite_conf() -> dict[str, str]:

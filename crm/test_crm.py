@@ -1024,11 +1024,12 @@ class TestPek(Base):
         self.login()
         self.post("/settings/pek", {"act": "enable"})                                          # без ключа не включить
         self.assertFalse(self.c.get("/api/ship").get_json()["on"])
-        self.post("/settings/pek", {"act": "save", "login": "nashdekor", "key": " abc 123 ", "box3": "21,5", "box2": "мусор"})
+        self.post("/settings/pek", {"act": "save", "login": "nashdekor", "key": " abc 123 ", "box3": "21,5", "box2": "мусор", "partial": "hp"})
+        self.assertEqual(self.store.setting("pek_partial"), "hp")                                # дальше — режим «обрешётка ПЭК»
         self.assertEqual((self.store.setting("pek_key"), self.store.setting("pek_box3_kg"), self.store.setting("pek_box2_kg")), ("abc123", "21.5", ""))
         self.post("/settings/pek", {"act": "check"})
         self.assertIn("Москва", self.store.setting("pek_check")); self.assertIn("1 350 ₽", self.store.setting("pek_check"))
-        self.assertIn("1 панель без упаковки ≈ 1 350 ₽; в жёсткой упаковке ПЭК ≈ 1 750 ₽", self.store.setting("pek_check"))
+        self.assertIn("1 панель без упаковки ≈ 1 350 ₽; в заводской коробке с прокладкой ≈ 1 350 ₽; в жёсткой упаковке ПЭК ≈ 1 750 ₽", self.store.setting("pek_check"))
         self.assertIn("та же коробка со страховкой 23 400 ₽ ≈ 1 350 ₽", self.store.setting("pek_check"))
         auth = self.pek.calls[0][1]["Authorization"]
         self.assertEqual(auth, "Basic " + base64.b64encode(b"nashdekor:abc123").decode())
@@ -1110,6 +1111,29 @@ class TestPek(Base):
         self.post("/settings/pek", {"act": "disable"}); self.assertFalse(self.c.get("/api/ship").get_json()["on"])
         self.post("/settings/pek", {"act": "enable"}); self.post("/settings/pek", {"act": "forget"})
         self.assertEqual((self.store.setting("pek_key"), self.store.setting("pek_enabled")), ("", "0"))
+
+    def test_partial_in_factory_box(self) -> None:
+        """По умолчанию неполная коробка едет в пустой заводской коробке с прокладкой: место — размеры коробки, без обрешётки."""
+        self.login()
+        self.post("/settings/pek", {"act": "save", "login": "n", "key": "k"}); self.post("/settings/pek", {"act": "enable"})
+        self.assertIn('value="box" checked', self.c.get("/settings").get_data(as_text=True))
+        j = self.ship("Казань", [{"a": "A912", "q": 13}]).get_json()                      # 6 в коробке: 2 целые + 1 шт
+        self.assertEqual((j["terminal"]["cost"], j["places"], j["packed"], j["boxed"]), (900 + 450 * 3, 3, False, True))
+        calc = [c for c in self.pek.calls if c[0].endswith("calculateprice/")][-1][2]
+        self.assertEqual(calc["cargos"][2], {"length": 3.0, "width": 0.185, "height": 0.125, "weight": round(20 / 6 + 0.7 + 0.3, 2)})
+        self.assertFalse(any(c.get("isHP") for c in calc["cargos"]))
+        # остатки одной длины разных артикулов — в одну коробку, пока влезают по объёму
+        from types import SimpleNamespace as N
+        from pek import cargos_for
+        c = cargos_for([(N(article="X", size="180×10×3000", per_box=12), 5), (N(article="Y", size="130×10×3000", per_box=11), 4),
+                        (N(article="Z", size="80×14×2000", per_box=26), 30)], partial="box")
+        self.assertEqual(sorted((x["length"], x["width"]) for x in c), [(2.0, 0.2), (2.0, 0.2), (3.0, 0.185)])   # 5/12+4/11 < 1 → одна; Z: 1 целая + остаток
+        c = cargos_for([(N(article="X", size="180×10×3000", per_box=12), 11), (N(article="Y", size="130×10×3000", per_box=11), 10)], partial="box")
+        self.assertEqual(len(c), 2)                                                              # 11/12 + 10/11 > 1 → две коробки
+        # переключили на обрешётку — снова isHP и «упаковка в цене»
+        self.post("/settings/pek", {"act": "save", "partial": "hp"})
+        j = self.ship("Казань", [{"a": "A912", "q": 7}]).get_json()
+        self.assertEqual((j["packed"], j["boxed"]), (True, False))
 
     def test_piece_weight_from_stock_docs(self) -> None:
         self.login()

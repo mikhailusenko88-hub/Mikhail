@@ -20,6 +20,7 @@ from __future__ import annotations
 import base64
 import json
 import logging
+import math
 import re
 import time
 import urllib.error
@@ -37,6 +38,7 @@ BOX_3M = (3.0, 0.185, 0.125)          # заводская коробка пан
 BOX_2M = (2.0, 0.20, 0.15)            # заводская коробка погонажа 2 м, м
 BOX_KG_DEFAULT = {3: 20.0, 2: 14.0}   # типовой вес коробки, кг (точнее — в настройках CRM)
 TARE_KG = 0.7                         # пустая коробка, кг (к весу штук, когда вес штуки известен)
+PAD_KG = 0.3                          # прокладка в неполной коробке (пупырка, картон), кг
 ZONE_TTL = 30 * 86400
 PRICE_TTL = 6 * 3600
 
@@ -180,13 +182,17 @@ def _dims(size: str) -> tuple[int, int, int]:
 
 
 def cargos_for(lines: list[tuple[Any, int]], box_kg: dict[int, float] | None = None,
-               piece_g: dict[str, int] | None = None, hp_partial: bool = False) -> list[dict[str, Any]]:
+               piece_g: dict[str, int] | None = None, hp_partial: bool = False, partial: str = "") -> list[dict[str, Any]]:
     """lines: (товар из каталога CRM с .size «Ш×Т×Д» и .per_box, количество шт).
     Полные коробки — отдельные места; остаток поштучно — одна связка на каждую длину (по объёму доли коробки).
     Длина места — по длине товара (2,4 м не влезает в коробку 2 м). Вес: если у артикула заполнен вес штуки
     (piece_g, граммы — «Склад → ТН ВЭД и вес для документов»), коробка = штук × вес + тара; иначе типовая коробка.
     hp_partial — неполную коробку (связку) ПЭК везёт в жёсткой упаковке (isHP, обрешётка): тонкие рейки в межгороде
-    без неё ломаются (решение Михаила 19.11); стоимость упаковки ПЭК включает в цену."""
+    без неё ломаются (решение Михаила 19.11); стоимость упаковки ПЭК включает в цену.
+    partial="box" — неполную коробку кладём в пустую заводскую коробку с прокладкой (решение Михаила 19.11: обрешётка ПЭК
+    ≈ 1 560 ₽ за место 3 м, а в коробке ПЭК считает как целую — дешевле ≈ 1 200 ₽): место — размеры коробки, вес — штуки
+    + тара + прокладка; остатки одной длины разных артикулов кладём вместе, сколько коробок понадобится по объёму."""
+    partial = partial or ("hp" if hp_partial else "bundle")
     kg = {**BOX_KG_DEFAULT, **(box_kg or {})}
     piece_g = piece_g or {}
     places: list[dict[str, Any]] = []
@@ -212,9 +218,16 @@ def cargos_for(lines: list[tuple[Any, int]], box_kg: dict[int, float] | None = N
             r[1] += part * g / 1000 if g > 0 else kg[meters] * share
     for blen, (vol, wt, meters) in sorted(rest.items(), reverse=True):
         box = BOX_3M if meters == 3 else BOX_2M
+        if partial == "box":
+            full_vol = blen * box[1] * box[2]
+            n = max(1, math.ceil(vol / full_vol - 1e-6))
+            for _ in range(n):
+                places.append({"length": blen, "width": box[1], "height": box[2],
+                               "weight": round(max(wt / n, 0.5) + TARE_KG + PAD_KG, 2)})
+            continue
         place: dict[str, Any] = {"volume": round(max(vol, blen * box[1] * box[2] * 0.25) + 0.005, 2), "maxSize": blen,
                                  "weight": round(max(wt, 1.0) + 0.005, 2)}
-        if hp_partial:
+        if partial == "hp":
             place["isHP"] = True
         places.append(place)
     return places
