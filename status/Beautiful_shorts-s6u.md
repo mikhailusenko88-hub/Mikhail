@@ -1,5 +1,5 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-19 06:54 UTC
+Проверено: 2026-11-19 07:31 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
 - Шапка: 234 подписчика · 144 видео
@@ -10,7 +10,7 @@
 - 2026-11-16 19:02 · 1495 просм. · Every bounce = +1 ball 🐸 Can they fill the frog? #satisfying #physics #simulation · 7h5ICq0Civ8
 - 2026-11-15 21:20 · 2223 просм. · Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation · 4ejtez9n18c
 - 2026-11-15 17:03 · 2842 просм. · Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts · a9xDYsPrIa4
-- 2026-11-15 10:28 · 1620 просм. · What are 1,189 balls drawing? 🤔 Guess before the end! #shorts · p46Y16_FUkM
+- 2026-11-15 10:28 · 1618 просм. · What are 1,189 balls drawing? 🤔 Guess before the end! #shorts · p46Y16_FUkM
 - 2026-11-12 15:26 · 254 просм. · Can it break out of 6 rings? 🚀 Space edition #shorts · Dw-O_K8qMds
 - 2026-11-12 11:29 · 1131 просм. · Sunrise watercolor 🌅 wait for the tape peel! #shorts · YGXQpqT2ur0
 - 2026-11-09 21:09 · 142 просм. · Last country standing WINS! 🌍 Who are you rooting for? #shorts · irOtTngZbls

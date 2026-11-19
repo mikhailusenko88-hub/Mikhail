@@ -1,10 +1,11 @@
 # Kim yutadi?  (@kimyutadi_uz)
-Проверено: 2026-11-19 06:54 UTC
+Проверено: 2026-11-19 07:31 UTC
 
 - Страница канала: HTTP 200; ID: UC93S31Qkgoz4cFgKBzz-mLA
 - Шапка: 8 подписчиков · 42 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
+- 2026-11-19 06:46 · 0 просм. · Qaysi shahar yutadi? Какой город победит? 🏁 №12 #shorts · g2K5gcUFJGg
 - 2026-11-18 14:49 · 94 просм. · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №12 #shorts · yHBl5IdkZV0
 - 2026-11-18 10:46 · 134 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №18 #shorts · TYpJ3QSkl_g
 - 2026-11-18 06:37 · 208 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №17 #shorts · G-Yq6FjzY0Q
@@ -19,14 +20,13 @@
 - 2026-11-15 06:37 · 69 просм. · Qaysi shahar yutadi? Какой город победит? 🏆 Hafta finali · Финал недели #shorts · OoAUlWBsWDo
 - 2026-11-14 14:37 · 57 просм. · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №8 #shorts · di_e6dCzP-M
 - 2026-11-14 10:37 · 58 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №12 #shorts · ZFZ8yENudj4
-- 2026-11-14 06:36 · 153 просм. · Qaysi shahar yutadi? Какой город победит? 🏁 №9 #shorts · TXfltN8hkJ4
 
 ## Вкладка Shorts (видно всем) — 42 шт. на первой странице
 - 0 просмотров · Qaysi shahar yutadi? Какой город победит? 🏁 №12 #shorts · g2K5gcUFJGg
 - 97 просмотров · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №12 #shorts · yHBl5IdkZV0
-- 134 просмотра · Qaysi mashina yutadi? Какая машина победит? 🚗 №18 #shorts · TYpJ3QSkl_g
-- 205 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №17 #shorts · G-Yq6FjzY0Q
-- 165 просмотров · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №11 #shorts · NTJTO3M2V58
+- 136 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №18 #shorts · TYpJ3QSkl_g
+- 209 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №17 #shorts · G-Yq6FjzY0Q
+- 170 просмотров · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №11 #shorts · NTJTO3M2V58
 - 228 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №16 #shorts · _UFVZ-syO4o
 - 253 просмотра · Qaysi shahar yutadi? Какой город победит? 🏁 №11 #shorts · l3NmVylXJFQ
 - 78 просмотров · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №10 #shorts · 9HMvhcq9qL0
