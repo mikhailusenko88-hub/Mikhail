@@ -1,0 +1,6 @@
+# 2026-11-08 15:15 МСК — ТЕСТ нового вида ролика (крупная камера, без отсчёта, ~35 с), не выкладывать
+mode: test    # test | publish | login | check | comments | probe
+league: cars     # auto | cities | cars | clubs
+final: auto
+date: auto
+slot: auto

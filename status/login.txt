@@ -1,0 +1,6 @@
+ВХОД: Google не выдал код: {'error': 'invalid_scope', 'error_description': 'Invalid device flow scope: https://www.googleapis.com/auth/youtube.force-ssl'}
+
+
+
+--- журнал (время Ташкента) ---
+21:40:34 режим login, событие push

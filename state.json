@@ -1,0 +1,1330 @@
+{
+ "leagues": {
+  "cities": {
+   "no": 12,
+   "points": {
+    "Fargʻona": 29,
+    "Xiva": 18,
+    "Andijon": 16,
+    "Qarshi": 12,
+    "Jizzax": 25,
+    "Zarafshon": 18,
+    "Olmaliq": 6,
+    "Samarqand": 4,
+    "Shahrisabz": 2,
+    "Angren": 1,
+    "Namangan": 25,
+    "Qoʻqon": 18,
+    "Termiz": 12,
+    "Margʻilon": 8,
+    "Asaka": 6,
+    "Nukus": 2
+   },
+   "results": [
+    {
+     "no": 1,
+     "date": "2026-11-05",
+     "slot": 3,
+     "winner": "Xiva",
+     "top3": [
+      "Xiva",
+      "Urganch",
+      "Andijon"
+     ],
+     "link": "https://youtube.com/shorts/0erkMjYIh-k",
+     "final": false
+    },
+    {
+     "no": 2,
+     "date": "2026-11-06",
+     "slot": 1,
+     "winner": "Asaka",
+     "top3": [
+      "Asaka",
+      "Margʻilon",
+      "Zarafshon"
+     ],
+     "link": "https://youtube.com/shorts/-FSYqlw4SAg",
+     "final": false
+    },
+    {
+     "no": 3,
+     "date": "2026-11-06",
+     "slot": 3,
+     "winner": "Urganch",
+     "top3": [
+      "Urganch",
+      "Buxoro",
+      "Zarafshon"
+     ],
+     "link": "https://youtube.com/shorts/Whe76DcdOhU",
+     "final": false
+    },
+    {
+     "no": 4,
+     "date": "2026-11-07",
+     "slot": 1,
+     "winner": "Jizzax",
+     "top3": [
+      "Jizzax",
+      "Qarshi",
+      "Buxoro"
+     ],
+     "link": "https://youtube.com/shorts/EK5EzrtpOfQ",
+     "final": false
+    },
+    {
+     "no": 5,
+     "date": "2026-11-08",
+     "slot": 1,
+     "winner": "Xiva",
+     "top3": [
+      "Xiva",
+      "Urganch",
+      "Zarafshon"
+     ],
+     "link": "https://youtube.com/shorts/Z_9cGwbFfE0",
+     "final": true
+    },
+    {
+     "no": 6,
+     "date": "2026-11-09",
+     "slot": 1,
+     "winner": "Angren",
+     "top3": [
+      "Angren",
+      "Chirchiq",
+      "Shahrisabz"
+     ],
+     "link": "https://youtube.com/shorts/GhdHYuWpwmY",
+     "final": false
+    },
+    {
+     "no": 7,
+     "date": "2026-11-10",
+     "slot": 1,
+     "winner": "Samarqand",
+     "top3": [
+      "Samarqand",
+      "Toshkent",
+      "Termiz"
+     ],
+     "link": "https://youtube.com/shorts/fXjgrOsRP88",
+     "final": false
+    },
+    {
+     "no": 8,
+     "date": "2026-11-12",
+     "slot": 1,
+     "winner": "Qarshi",
+     "top3": [
+      "Qarshi",
+      "Urganch",
+      "Asaka"
+     ],
+     "link": "https://youtube.com/shorts/DOAakgYql4w",
+     "final": false
+    },
+    {
+     "no": 9,
+     "date": "2026-11-14",
+     "slot": 1,
+     "winner": "Chirchiq",
+     "top3": [
+      "Chirchiq",
+      "Olmaliq",
+      "Guliston"
+     ],
+     "link": "https://youtube.com/shorts/TXfltN8hkJ4",
+     "final": false
+    },
+    {
+     "no": 10,
+     "date": "2026-11-15",
+     "slot": 1,
+     "winner": "Olmaliq",
+     "top3": [
+      "Olmaliq",
+      "Qarshi",
+      "Shahrisabz"
+     ],
+     "link": "https://youtube.com/shorts/OoAUlWBsWDo",
+     "final": true
+    },
+    {
+     "no": 11,
+     "date": "2026-11-17",
+     "slot": 1,
+     "winner": "Fargʻona",
+     "top3": [
+      "Fargʻona",
+      "Xiva",
+      "Andijon"
+     ],
+     "link": "https://youtube.com/shorts/l3NmVylXJFQ",
+     "final": false
+    },
+    {
+     "no": 12,
+     "date": "2026-11-19",
+     "slot": 1,
+     "winner": "Namangan",
+     "top3": [
+      "Namangan",
+      "Qoʻqon",
+      "Jizzax"
+     ],
+     "link": "https://youtube.com/shorts/g2K5gcUFJGg",
+     "final": false
+    }
+   ],
+   "champion": null,
+   "season_races": 2,
+   "season": "2026-W47",
+   "new_pending": [],
+   "final_season": "2026-W46",
+   "champions": [
+    {
+     "season": "2026-W45",
+     "champion": "Xiva",
+     "link": "https://youtube.com/shorts/Z_9cGwbFfE0"
+    },
+    {
+     "season": "2026-W46",
+     "champion": "Olmaliq",
+     "link": "https://youtube.com/shorts/OoAUlWBsWDo"
+    }
+   ],
+   "seasons": [
+    {
+     "season": "2026-W45",
+     "top": [
+      [
+       "Urganch",
+       51
+      ],
+      [
+       "Zarafshon",
+       44
+      ],
+      [
+       "Buxoro",
+       41
+      ],
+      [
+       "Xiva",
+       35
+      ],
+      [
+       "Toshkent",
+       30
+      ],
+      [
+       "Jizzax",
+       27
+      ],
+      [
+       "Asaka",
+       26
+      ],
+      [
+       "Margʻilon",
+       24
+      ]
+     ],
+     "champion": "Xiva"
+    },
+    {
+     "season": "2026-W46",
+     "top": [
+      [
+       "Chirchiq",
+       43
+      ],
+      [
+       "Urganch",
+       40
+      ],
+      [
+       "Olmaliq",
+       32
+      ],
+      [
+       "Shahrisabz",
+       29
+      ],
+      [
+       "Qarshi",
+       27
+      ],
+      [
+       "Angren",
+       25
+      ],
+      [
+       "Samarqand",
+       25
+      ],
+      [
+       "Termiz",
+       25
+      ]
+     ],
+     "champion": "Olmaliq"
+    }
+   ]
+  },
+  "cars": {
+   "no": 18,
+   "points": {
+    "Spark": 45,
+    "Nexia": 33,
+    "Kia K5": 40,
+    "Epica": 30,
+    "Lacetti": 23,
+    "Cobalt": 38,
+    "Onix": 29,
+    "Labo": 37,
+    "Tico": 4,
+    "Malibu": 1,
+    "Tracker": 50,
+    "Equinox": 18,
+    "BYD Song": 16,
+    "Captiva": 22,
+    "Tahoe": 12,
+    "Jiguli": 29,
+    "Matiz": 37,
+    "Gentra": 16,
+    "Chery Tiggo": 18,
+    "Damas": 7
+   },
+   "results": [
+    {
+     "no": 1,
+     "date": "2026-11-05",
+     "slot": 0,
+     "winner": "Matiz",
+     "top3": [
+      "Matiz",
+      "Captiva",
+      "Lacetti"
+     ],
+     "link": "https://youtube.com/shorts/pR3p1cAbElU",
+     "final": false
+    },
+    {
+     "no": 2,
+     "date": "2026-11-06",
+     "slot": 2,
+     "winner": "Malibu",
+     "top3": [
+      "Malibu",
+      "Labo",
+      "Kia K5"
+     ],
+     "link": "https://youtube.com/shorts/BnWWFWrkd3w",
+     "final": false
+    },
+    {
+     "no": 3,
+     "date": "2026-11-07",
+     "slot": 2,
+     "winner": "Epica",
+     "top3": [
+      "Epica",
+      "Tahoe",
+      "Labo"
+     ],
+     "link": "https://youtube.com/shorts/DQuwCiz6_kg",
+     "final": false
+    },
+    {
+     "no": 4,
+     "date": "2026-11-08",
+     "slot": 2,
+     "winner": "Kia K5",
+     "top3": [
+      "Kia K5",
+      "Tahoe",
+      "Lacetti"
+     ],
+     "link": "https://youtube.com/shorts/5sIu0BCsPB4",
+     "final": true
+    },
+    {
+     "no": 5,
+     "date": "2026-11-09",
+     "slot": 2,
+     "winner": "Epica",
+     "top3": [
+      "Epica",
+      "Tracker",
+      "Onix"
+     ],
+     "link": "https://youtube.com/shorts/fZ5DMJvsSPk",
+     "final": false
+    },
+    {
+     "no": 6,
+     "date": "2026-11-10",
+     "slot": 2,
+     "winner": "Tico",
+     "top3": [
+      "Tico",
+      "Cobalt",
+      "Malibu"
+     ],
+     "link": "https://youtube.com/shorts/_5EqS-RCHKM",
+     "final": false
+    },
+    {
+     "no": 7,
+     "date": "2026-11-11",
+     "slot": 1,
+     "winner": "Matiz",
+     "top3": [
+      "Matiz",
+      "Labo",
+      "Tracker"
+     ],
+     "link": "https://youtube.com/shorts/OsEnOlxc5ro",
+     "final": false
+    },
+    {
+     "no": 8,
+     "date": "2026-11-11",
+     "slot": 2,
+     "winner": "Tahoe",
+     "top3": [
+      "Tahoe",
+      "BYD Song",
+      "Tracker"
+     ],
+     "link": "https://youtube.com/shorts/U_jnHzzCTiI",
+     "final": false
+    },
+    {
+     "no": 9,
+     "date": "2026-11-12",
+     "slot": 2,
+     "winner": "Gentra",
+     "top3": [
+      "Gentra",
+      "Equinox",
+      "BYD Song"
+     ],
+     "link": "https://youtube.com/shorts/Zzd0-R9Pq6I",
+     "final": false
+    },
+    {
+     "no": 10,
+     "date": "2026-11-13",
+     "slot": 1,
+     "winner": "Tico",
+     "top3": [
+      "Tico",
+      "Tahoe",
+      "Tracker"
+     ],
+     "link": "https://youtube.com/shorts/E-q512-ocQ0",
+     "final": false
+    },
+    {
+     "no": 11,
+     "date": "2026-11-13",
+     "slot": 2,
+     "winner": "Nexia",
+     "top3": [
+      "Nexia",
+      "Jiguli",
+      "Matiz"
+     ],
+     "link": "https://youtube.com/shorts/r5e1gfw-jlY",
+     "final": false
+    },
+    {
+     "no": 12,
+     "date": "2026-11-14",
+     "slot": 2,
+     "winner": "Damas",
+     "top3": [
+      "Damas",
+      "Equinox",
+      "Malibu"
+     ],
+     "link": "https://youtube.com/shorts/ZFZ8yENudj4",
+     "final": false
+    },
+    {
+     "no": 13,
+     "date": "2026-11-15",
+     "slot": 2,
+     "winner": "Tahoe",
+     "top3": [
+      "Tahoe",
+      "Jiguli",
+      "Matiz"
+     ],
+     "link": "https://youtube.com/shorts/qHSr0v1Qqfk",
+     "final": true
+    },
+    {
+     "no": 14,
+     "date": "2026-11-16",
+     "slot": 1,
+     "winner": "Spark",
+     "top3": [
+      "Spark",
+      "Nexia",
+      "Kia K5"
+     ],
+     "link": "https://youtube.com/shorts/AB95lhJLozM",
+     "final": false
+    },
+    {
+     "no": 15,
+     "date": "2026-11-16",
+     "slot": 2,
+     "winner": "Tracker",
+     "top3": [
+      "Tracker",
+      "Equinox",
+      "Onix"
+     ],
+     "link": "https://youtube.com/shorts/WoBiZkpr2O4",
+     "final": false
+    },
+    {
+     "no": 16,
+     "date": "2026-11-17",
+     "slot": 2,
+     "winner": "Jiguli",
+     "top3": [
+      "Jiguli",
+      "Spark",
+      "Matiz"
+     ],
+     "link": "https://youtube.com/shorts/_UFVZ-syO4o",
+     "final": false
+    },
+    {
+     "no": 17,
+     "date": "2026-11-18",
+     "slot": 1,
+     "winner": "Cobalt",
+     "top3": [
+      "Cobalt",
+      "Chery Tiggo",
+      "Nexia"
+     ],
+     "link": "https://youtube.com/shorts/G-Yq6FjzY0Q",
+     "final": false
+    },
+    {
+     "no": 18,
+     "date": "2026-11-18",
+     "slot": 2,
+     "winner": "Tracker",
+     "top3": [
+      "Tracker",
+      "Matiz",
+      "Kia K5"
+     ],
+     "link": "https://youtube.com/shorts/TYpJ3QSkl_g",
+     "final": false
+    }
+   ],
+   "champion": null,
+   "season_races": 5,
+   "season": "2026-W47",
+   "new_pending": [],
+   "final_season": "2026-W46",
+   "champions": [
+    {
+     "season": "2026-W45",
+     "champion": "Kia K5",
+     "link": "https://youtube.com/shorts/5sIu0BCsPB4"
+    },
+    {
+     "season": "2026-W46",
+     "champion": "Tahoe",
+     "link": "https://youtube.com/shorts/qHSr0v1Qqfk"
+    }
+   ],
+   "seasons": [
+    {
+     "season": "2026-W45",
+     "top": [
+      [
+       "Epica",
+       37
+      ],
+      [
+       "Labo",
+       33
+      ],
+      [
+       "Captiva",
+       30
+      ],
+      [
+       "Matiz",
+       27
+      ],
+      [
+       "Lacetti",
+       27
+      ],
+      [
+       "Malibu",
+       25
+      ],
+      [
+       "Kia K5",
+       19
+      ],
+      [
+       "Tahoe",
+       18
+      ]
+     ],
+     "champion": "Kia K5"
+    },
+    {
+     "season": "2026-W46",
+     "top": [
+      [
+       "Matiz",
+       78
+      ],
+      [
+       "Tracker",
+       67
+      ],
+      [
+       "Tahoe",
+       61
+      ],
+      [
+       "Tico",
+       51
+      ],
+      [
+       "Malibu",
+       50
+      ],
+      [
+       "Jiguli",
+       48
+      ],
+      [
+       "Gentra",
+       47
+      ],
+      [
+       "Equinox",
+       46
+      ]
+     ],
+     "champion": "Tahoe"
+    }
+   ]
+  },
+  "clubs": {
+   "no": 12,
+   "points": {
+    "Andijon": 25,
+    "Surxon": 36,
+    "Olmaliq": 48,
+    "Soʻgʻdiyona": 22,
+    "Mashʼal": 22,
+    "Nasaf": 26,
+    "Lokomotiv": 6,
+    "Xorazm": 29,
+    "Buxoro": 14,
+    "Dinamo": 5,
+    "Shoʻrtan": 15,
+    "Paxtakor": 26,
+    "Bunyodkor": 6,
+    "Sementchi": 6,
+    "Olimpik": 2,
+    "Turon": 15
+   },
+   "results": [
+    {
+     "no": 1,
+     "date": "2026-11-07",
+     "slot": 3,
+     "winner": "Paxtakor",
+     "top3": [
+      "Paxtakor",
+      "Olmaliq",
+      "Navbahor"
+     ],
+     "link": "https://youtube.com/shorts/3RAKmJ4Jjc0",
+     "final": false
+    },
+    {
+     "no": 2,
+     "date": "2026-11-08",
+     "slot": 3,
+     "winner": "Turon",
+     "top3": [
+      "Turon",
+      "Surxon",
+      "Dinamo"
+     ],
+     "link": "https://youtube.com/shorts/TVIZNeuxQdU",
+     "final": false
+    },
+    {
+     "no": 3,
+     "date": "2026-11-09",
+     "slot": 3,
+     "winner": "Paxtakor",
+     "top3": [
+      "Paxtakor",
+      "Navbahor",
+      "Olmaliq"
+     ],
+     "link": "https://youtube.com/shorts/ghWysRy343s",
+     "final": false
+    },
+    {
+     "no": 4,
+     "date": "2026-11-10",
+     "slot": 3,
+     "winner": "Qoʻqon 1912",
+     "top3": [
+      "Qoʻqon 1912",
+      "Aral",
+      "Olmaliq"
+     ],
+     "link": "https://youtube.com/shorts/WVoOKB-mmNU",
+     "final": false
+    },
+    {
+     "no": 5,
+     "date": "2026-11-11",
+     "slot": 3,
+     "winner": "Olimpik",
+     "top3": [
+      "Olimpik",
+      "Qizilqum",
+      "Andijon"
+     ],
+     "link": "https://youtube.com/shorts/poKpw02WkZg",
+     "final": false
+    },
+    {
+     "no": 6,
+     "date": "2026-11-12",
+     "slot": 3,
+     "winner": "Turon",
+     "top3": [
+      "Turon",
+      "Paxtakor",
+      "Dinamo"
+     ],
+     "link": "https://youtube.com/shorts/yf_qOpqsar8",
+     "final": false
+    },
+    {
+     "no": 7,
+     "date": "2026-11-13",
+     "slot": 3,
+     "winner": "Shoʻrtan",
+     "top3": [
+      "Shoʻrtan",
+      "Nasaf",
+      "Neftchi"
+     ],
+     "link": "https://youtube.com/shorts/Li1n6czv9gI",
+     "final": false
+    },
+    {
+     "no": 8,
+     "date": "2026-11-14",
+     "slot": 3,
+     "winner": "Olmaliq",
+     "top3": [
+      "Olmaliq",
+      "Mashʼal",
+      "Sementchi"
+     ],
+     "link": "https://youtube.com/shorts/di_e6dCzP-M",
+     "final": false
+    },
+    {
+     "no": 9,
+     "date": "2026-11-15",
+     "slot": 3,
+     "winner": "Paxtakor",
+     "top3": [
+      "Paxtakor",
+      "Olmaliq",
+      "Navbahor"
+     ],
+     "link": "https://youtube.com/shorts/9MPeFq6stkI",
+     "final": true
+    },
+    {
+     "no": 10,
+     "date": "2026-11-16",
+     "slot": 3,
+     "winner": "Andijon",
+     "top3": [
+      "Andijon",
+      "Surxon",
+      "Olmaliq"
+     ],
+     "link": "https://youtube.com/shorts/9HMvhcq9qL0",
+     "final": false
+    },
+    {
+     "no": 11,
+     "date": "2026-11-17",
+     "slot": 3,
+     "winner": "Olmaliq",
+     "top3": [
+      "Olmaliq",
+      "Nasaf",
+      "Shoʻrtan"
+     ],
+     "link": "https://youtube.com/shorts/NTJTO3M2V58",
+     "final": false
+    },
+    {
+     "no": 12,
+     "date": "2026-11-18",
+     "slot": 3,
+     "winner": "Xorazm",
+     "top3": [
+      "Xorazm",
+      "Paxtakor",
+      "Turon"
+     ],
+     "link": "https://youtube.com/shorts/yHBl5IdkZV0",
+     "final": false
+    }
+   ],
+   "champion": null,
+   "season_races": 3,
+   "season": "2026-W47",
+   "new_pending": [],
+   "seasons": [
+    {
+     "season": "2026-W45",
+     "top": [
+      [
+       "Paxtakor",
+       25
+      ],
+      [
+       "Turon",
+       25
+      ],
+      [
+       "Surxon",
+       19
+      ],
+      [
+       "Olmaliq",
+       18
+      ],
+      [
+       "Metallurg",
+       18
+      ],
+      [
+       "Bunyodkor",
+       16
+      ],
+      [
+       "Navbahor",
+       15
+      ],
+      [
+       "Dinamo",
+       15
+      ]
+     ],
+     "champion": null
+    },
+    {
+     "season": "2026-W46",
+     "top": [
+      [
+       "Olmaliq",
+       57
+      ],
+      [
+       "Navbahor",
+       52
+      ],
+      [
+       "Paxtakor",
+       44
+      ],
+      [
+       "Turon",
+       41
+      ],
+      [
+       "Qoʻqon 1912",
+       38
+      ],
+      [
+       "Dinamo",
+       35
+      ],
+      [
+       "Aral",
+       34
+      ],
+      [
+       "Nasaf",
+       34
+      ]
+     ],
+     "champion": "Paxtakor"
+    }
+   ],
+   "final_season": "2026-W46",
+   "champions": [
+    {
+     "season": "2026-W46",
+     "champion": "Paxtakor",
+     "link": "https://youtube.com/shorts/9MPeFq6stkI"
+    }
+   ]
+  }
+ },
+ "history": [
+  {
+   "date": "2026-11-05",
+   "slot": 3,
+   "league": "cities",
+   "no": 1,
+   "final": false,
+   "link": "https://youtube.com/shorts/0erkMjYIh-k",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №1",
+   "pl": true
+  },
+  {
+   "date": "2026-11-05",
+   "slot": 0,
+   "league": "cars",
+   "no": 1,
+   "final": false,
+   "link": "https://youtube.com/shorts/pR3p1cAbElU",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №1",
+   "pl": true
+  },
+  {
+   "date": "2026-11-06",
+   "slot": 1,
+   "league": "cities",
+   "no": 2,
+   "final": false,
+   "link": "https://youtube.com/shorts/-FSYqlw4SAg",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №2",
+   "pl": true
+  },
+  {
+   "date": "2026-11-06",
+   "slot": 2,
+   "league": "cars",
+   "no": 2,
+   "final": false,
+   "link": "https://youtube.com/shorts/BnWWFWrkd3w",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №2",
+   "pl": true
+  },
+  {
+   "date": "2026-11-06",
+   "slot": 3,
+   "league": "cities",
+   "no": 3,
+   "final": false,
+   "link": "https://youtube.com/shorts/Whe76DcdOhU",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №3",
+   "pl": true
+  },
+  {
+   "date": "2026-11-07",
+   "slot": 1,
+   "league": "cities",
+   "no": 4,
+   "final": false,
+   "link": "https://youtube.com/shorts/EK5EzrtpOfQ",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №4",
+   "pl": true
+  },
+  {
+   "date": "2026-11-07",
+   "slot": 2,
+   "league": "cars",
+   "no": 3,
+   "final": false,
+   "link": "https://youtube.com/shorts/DQuwCiz6_kg",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №3 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-07",
+   "slot": 3,
+   "league": "clubs",
+   "no": 1,
+   "final": false,
+   "link": "https://youtube.com/shorts/3RAKmJ4Jjc0",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №1 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-08",
+   "slot": 1,
+   "league": "cities",
+   "no": 5,
+   "final": true,
+   "link": "https://youtube.com/shorts/Z_9cGwbFfE0",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏆 Hafta finali · Финал недели #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-08",
+   "slot": 2,
+   "league": "cars",
+   "no": 4,
+   "final": true,
+   "link": "https://youtube.com/shorts/5sIu0BCsPB4",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🏆 Hafta finali · Финал недели #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-08",
+   "slot": 3,
+   "league": "clubs",
+   "no": 2,
+   "final": false,
+   "link": "https://youtube.com/shorts/TVIZNeuxQdU",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №2 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-09",
+   "slot": 1,
+   "league": "cities",
+   "no": 6,
+   "final": false,
+   "link": "https://youtube.com/shorts/GhdHYuWpwmY",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №6 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-09",
+   "slot": 2,
+   "league": "cars",
+   "no": 5,
+   "final": false,
+   "link": "https://youtube.com/shorts/fZ5DMJvsSPk",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №5 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-09",
+   "slot": 3,
+   "league": "clubs",
+   "no": 3,
+   "final": false,
+   "link": "https://youtube.com/shorts/ghWysRy343s",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №3 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-10",
+   "slot": 1,
+   "league": "cities",
+   "no": 7,
+   "final": false,
+   "link": "https://youtube.com/shorts/fXjgrOsRP88",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №7 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-10",
+   "slot": 2,
+   "league": "cars",
+   "no": 6,
+   "final": false,
+   "link": "https://youtube.com/shorts/_5EqS-RCHKM",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №6 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-10",
+   "slot": 3,
+   "league": "clubs",
+   "no": 4,
+   "final": false,
+   "link": "https://youtube.com/shorts/WVoOKB-mmNU",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №4 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-11",
+   "slot": 1,
+   "league": "cars",
+   "no": 7,
+   "final": false,
+   "link": "https://youtube.com/shorts/OsEnOlxc5ro",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №7 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-11",
+   "slot": 2,
+   "league": "cars",
+   "no": 8,
+   "final": false,
+   "link": "https://youtube.com/shorts/U_jnHzzCTiI",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №8 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-11",
+   "slot": 3,
+   "league": "clubs",
+   "no": 5,
+   "final": false,
+   "link": "https://youtube.com/shorts/poKpw02WkZg",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №5 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-12",
+   "slot": 1,
+   "league": "cities",
+   "no": 8,
+   "final": false,
+   "link": "https://youtube.com/shorts/DOAakgYql4w",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №8 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-12",
+   "slot": 2,
+   "league": "cars",
+   "no": 9,
+   "final": false,
+   "link": "https://youtube.com/shorts/Zzd0-R9Pq6I",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №9 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-12",
+   "slot": 3,
+   "league": "clubs",
+   "no": 6,
+   "final": false,
+   "link": "https://youtube.com/shorts/yf_qOpqsar8",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №6 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-13",
+   "slot": 1,
+   "league": "cars",
+   "no": 10,
+   "final": false,
+   "link": "https://youtube.com/shorts/E-q512-ocQ0",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №10 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-13",
+   "slot": 2,
+   "league": "cars",
+   "no": 11,
+   "final": false,
+   "link": "https://youtube.com/shorts/r5e1gfw-jlY",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №11 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-13",
+   "slot": 3,
+   "league": "clubs",
+   "no": 7,
+   "final": false,
+   "link": "https://youtube.com/shorts/Li1n6czv9gI",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №7 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-14",
+   "slot": 1,
+   "league": "cities",
+   "no": 9,
+   "final": false,
+   "link": "https://youtube.com/shorts/TXfltN8hkJ4",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №9 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-14",
+   "slot": 2,
+   "league": "cars",
+   "no": 12,
+   "final": false,
+   "link": "https://youtube.com/shorts/ZFZ8yENudj4",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №12 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-14",
+   "slot": 3,
+   "league": "clubs",
+   "no": 8,
+   "final": false,
+   "link": "https://youtube.com/shorts/di_e6dCzP-M",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №8 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-15",
+   "slot": 1,
+   "league": "cities",
+   "no": 10,
+   "final": true,
+   "link": "https://youtube.com/shorts/OoAUlWBsWDo",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏆 Hafta finali · Финал недели #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-15",
+   "slot": 2,
+   "league": "cars",
+   "no": 13,
+   "final": true,
+   "link": "https://youtube.com/shorts/qHSr0v1Qqfk",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🏆 Hafta finali · Финал недели #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-15",
+   "slot": 3,
+   "league": "clubs",
+   "no": 9,
+   "final": true,
+   "link": "https://youtube.com/shorts/9MPeFq6stkI",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? 🏆 Hafta finali · Финал недели #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-16",
+   "slot": 1,
+   "league": "cars",
+   "no": 14,
+   "final": false,
+   "link": "https://youtube.com/shorts/AB95lhJLozM",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №14 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-16",
+   "slot": 2,
+   "league": "cars",
+   "no": 15,
+   "final": false,
+   "link": "https://youtube.com/shorts/WoBiZkpr2O4",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №15 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-16",
+   "slot": 3,
+   "league": "clubs",
+   "no": 10,
+   "final": false,
+   "link": "https://youtube.com/shorts/9HMvhcq9qL0",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №10 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-17",
+   "slot": 1,
+   "league": "cities",
+   "no": 11,
+   "final": false,
+   "link": "https://youtube.com/shorts/l3NmVylXJFQ",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №11 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-17",
+   "slot": 2,
+   "league": "cars",
+   "no": 16,
+   "final": false,
+   "link": "https://youtube.com/shorts/_UFVZ-syO4o",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №16 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-17",
+   "slot": 3,
+   "league": "clubs",
+   "no": 11,
+   "final": false,
+   "link": "https://youtube.com/shorts/NTJTO3M2V58",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №11 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-18",
+   "slot": 1,
+   "league": "cars",
+   "no": 17,
+   "final": false,
+   "link": "https://youtube.com/shorts/G-Yq6FjzY0Q",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №17 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-18",
+   "slot": 2,
+   "league": "cars",
+   "no": 18,
+   "final": false,
+   "link": "https://youtube.com/shorts/TYpJ3QSkl_g",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №18 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-18",
+   "slot": 3,
+   "league": "clubs",
+   "no": 12,
+   "final": false,
+   "link": "https://youtube.com/shorts/yHBl5IdkZV0",
+   "title": "Qaysi jamoa yutadi? Какой клуб победит? ⚽ №12 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-19",
+   "slot": 1,
+   "league": "cities",
+   "no": 12,
+   "final": false,
+   "link": "https://youtube.com/shorts/g2K5gcUFJGg",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №12 #shorts",
+   "pl": true
+  }
+ ],
+ "seen_comments": [
+  "UgwixsBTAlCJfIcyTtB4AaABAg",
+  "UgyIG1kkFYVTcXMKhcZ4AaABAg",
+  "Ugzd-vs69BoVu_HR_Xd4AaABAg"
+ ]
+}
