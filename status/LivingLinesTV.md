@@ -1,42 +1,42 @@
-# Живые строки  (@LivingLinesTV)
-Проверено: 2026-11-18 20:37 UTC
+# LivingLinesTV  (@LivingLinesTV)
+Проверено: 2026-11-19 06:54 UTC
 
 - Страница канала: HTTP 200; ID: UCuufuU5RCswqp9N1HE0NZlw
-- Шапка: 49 подписчиков · 42 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-18 16:00 · 340 просм. · Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts · O_AdQlCECak
-- 2026-11-18 11:00 · 198 просм. · Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts · JlBFZaRcgAI
-- 2026-11-18 06:00 · 235 просм. · Начало — самая важная часть работы 🤍 Три мысли на сегодня | Plato #shorts · Izl4WoK8gDs
-- 2026-11-17 16:00 · 373 просм. · Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts · _KAkT_vZ8F4
-- 2026-11-17 11:00 · 540 просм. · Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts · GtEGS1lUXIM
-- 2026-11-17 06:00 · 627 просм. · И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts · dUie49tmaC8
+- 2026-11-19 06:00 · 29 просм. · Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts · N-99DrrtTBU
+- 2026-11-18 16:00 · 593 просм. · Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts · O_AdQlCECak
+- 2026-11-18 11:00 · 402 просм. · Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts · JlBFZaRcgAI
+- 2026-11-18 06:00 · 335 просм. · Начало — самая важная часть работы 🤍 Три мысли на сегодня | Plato #shorts · Izl4WoK8gDs
+- 2026-11-17 16:00 · 481 просм. · Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts · _KAkT_vZ8F4
+- 2026-11-17 11:00 · 584 просм. · Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts · GtEGS1lUXIM
+- 2026-11-17 06:00 · 735 просм. · И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts · dUie49tmaC8
 - 2026-11-16 16:00 · 531 просм. · Счастье зависит от нас самих ✨ Aristotle + 2 more #shorts · HQR2WewFVWQ
 - 2026-11-16 11:00 · 665 просм. · Ты навсегда в ответе за всех, кого приручил ✨ Words to keep | Antoine de Saint-Exupéry #shorts · 2JO-pSUStKs
 - 2026-11-16 06:00 · 940 просм. · Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts · XOC7rxj2ntQ
-- 2026-11-15 16:00 · 969 просм. · Бабочка считает не месяцы, а мгновения — и у неё довольно… ✨ Rabindranath Tagore + 2 more #shorts · NNRpfSGgsOw
-- 2026-11-15 11:00 · 950 просм. · Я пришёл к тебе с приветом, рассказать, что солнце встало ✨ Words to keep | Afanasy Fet #shorts · yT5ZmByY1eo
-- 2026-11-15 06:00 · 628 просм. · Если пришла Зима, разве Весна далеко? 🤍 Три мысли на сегодня | Percy Shelley #shorts · Nfl9ieBdJPQ
-- 2026-11-14 16:00 · 397 просм. · Всё течёт, всё меняется ✨ Heraclitus + 2 more #shorts · kRPxg2ieLto
+- 2026-11-15 16:00 · 967 просм. · Бабочка считает не месяцы, а мгновения — и у неё довольно… ✨ Rabindranath Tagore + 2 more #shorts · NNRpfSGgsOw
+- 2026-11-15 11:00 · 945 просм. · Я пришёл к тебе с приветом, рассказать, что солнце встало ✨ Words to keep | Afanasy Fet #shorts · yT5ZmByY1eo
+- 2026-11-15 06:00 · 627 просм. · Если пришла Зима, разве Весна далеко? 🤍 Три мысли на сегодня | Percy Shelley #shorts · Nfl9ieBdJPQ
+- 2026-11-14 16:00 · 395 просм. · Всё течёт, всё меняется ✨ Heraclitus + 2 more #shorts · kRPxg2ieLto
 - 2026-11-14 11:00 · 923 просм. · Учение никогда не истощает ум ✨ Words to keep | Leonardo da Vinci #shorts · UGhGJt9HX8k
-- 2026-11-14 06:00 · 938 просм. · Пока дышу — надеюсь 🤍 Три мысли на сегодня | Cicero #shorts · kp4nk3--p_k
 
-## Вкладка Shorts (видно всем) — 42 шт. на первой странице
-- 340 просмотров · Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts · O_AdQlCECak
-- 269 просмотров · Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts · JlBFZaRcgAI
-- 242 просмотра · Начало — самая важная часть работы 🤍 Три мысли на сегодня | Plato #shorts · Izl4WoK8gDs
-- 379 просмотров · Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts · _KAkT_vZ8F4
-- 540 просмотров · Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts · GtEGS1lUXIM
-- 613 просмотров · И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts · dUie49tmaC8
+## Вкладка Shorts (видно всем) — 43 шт. на первой странице
+- 29 просмотров · Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts · N-99DrrtTBU
+- 593 просмотра · Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts · O_AdQlCECak
+- 399 просмотров · Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts · JlBFZaRcgAI
+- 335 просмотров · Начало — самая важная часть работы 🤍 Три мысли на сегодня | Plato #shorts · Izl4WoK8gDs
+- 481 просмотр · Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts · _KAkT_vZ8F4
+- 593 просмотра · Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts · GtEGS1lUXIM
+- 740 просмотров · И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts · dUie49tmaC8
 - 531 просмотр · Счастье зависит от нас самих ✨ Aristotle + 2 more #shorts · HQR2WewFVWQ
 - 665 просмотров · Ты навсегда в ответе за всех, кого приручил ✨ Words to keep | Antoine de Saint-Exupéry #shorts · 2JO-pSUStKs
 - 940 просмотров · Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts · XOC7rxj2ntQ
-- 969 просмотров · Бабочка считает не месяцы, а мгновения — и у неё довольно… ✨ Rabindranath Tagore + 2 more #shorts · NNRpfSGgsOw
-- 950 просмотров · Я пришёл к тебе с приветом, рассказать, что солнце встало ✨ Words to keep | Afanasy Fet #shorts · yT5ZmByY1eo
-- 628 просмотров · Если пришла Зима, разве Весна далеко? 🤍 Три мысли на сегодня | Percy Shelley #shorts · Nfl9ieBdJPQ
-- 397 просмотров · Всё течёт, всё меняется ✨ Heraclitus + 2 more #shorts · kRPxg2ieLto
+- 967 просмотров · Бабочка считает не месяцы, а мгновения — и у неё довольно… ✨ Rabindranath Tagore + 2 more #shorts · NNRpfSGgsOw
+- 945 просмотров · Я пришёл к тебе с приветом, рассказать, что солнце встало ✨ Words to keep | Afanasy Fet #shorts · yT5ZmByY1eo
+- 627 просмотров · Если пришла Зима, разве Весна далеко? 🤍 Три мысли на сегодня | Percy Shelley #shorts · Nfl9ieBdJPQ
+- 395 просмотров · Всё течёт, всё меняется ✨ Heraclitus + 2 more #shorts · kRPxg2ieLto
 - 923 просмотра · Учение никогда не истощает ум ✨ Words to keep | Leonardo da Vinci #shorts · UGhGJt9HX8k
-- 938 просмотров · Пока дышу — надеюсь 🤍 Три мысли на сегодня | Cicero #shorts · kp4nk3--p_k
+- 939 просмотров · Пока дышу — надеюсь 🤍 Три мысли на сегодня | Cicero #shorts · kp4nk3--p_k
 - 999 просмотров · Высшее счастье жизни — уверенность в том, что нас любят ✨ Victor Hugo + 2 more #shorts · nXOKONFyZgE
 - 1 тыс. просмотров · Что посеешь, то и пожнёшь ✨ Words to keep | Russian proverb #shorts · zMA6bLWxCJU
 - 989 просмотров · Сильные люди всегда просты 🤍 Три мысли на сегодня | Leo Tolstoy #shorts · X2vNGtftxSc
@@ -48,7 +48,6 @@
 - 696 просмотров · Главное — самому себе не лгите 🤍 Три мысли на сегодня | Dostoevsky #shorts · SbvPblinoUQ
 - 696 просмотров · Мысль изречённая есть ложь ✨ Fyodor Tyutchev + 2 more #shorts · mfFP9C-DDO4
 - 968 просмотров · Имей мужество пользоваться собственным умом ✨ Words to keep | Immanuel Kant #shorts · X8JceTEeoBI
-- 349 просмотров · Воля и труд человека дивные дивы творят 🤍 Три мысли на сегодня | Nikolai Nekrasov #shorts · eESLxbg3h24
+- 350 просмотров · Воля и труд человека дивные дивы творят 🤍 Три мысли на сегодня | Nikolai Nekrasov #shorts · eESLxbg3h24
 - 1 тыс. просмотров · Пусть в вашей близости останется простор ✨ Kahlil Gibran + 2 more #shorts · vRSX5w0n1i8
 - 839 просмотров · Не откладывай на завтра то, что можно сделать сегодня ✨ Words to keep | Russian proverb #shorts · mnkKhyizaTU
-- 459 просмотров · Кроткий ответ отвращает гнев 🤍 Три мысли на сегодня | Book of Proverbs #shorts · GNmfdx_2vxg
