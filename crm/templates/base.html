@@ -28,7 +28,7 @@
 </header>
 <nav class="tabs" aria-label="Разделы">
   {% set ep = request.endpoint or '' %}
-  <a href="{{ url_for('today_view') }}" {% if ep=='today_view' %}aria-current="page"{% endif %}><span class="ic ic-today"></span>Сегодня</a>
+  <a href="{{ url_for('today_view') }}" {% if ep=='today_view' %}aria-current="page"{% endif %}><span class="ic ic-today"></span>Сегодня{% if nav_today %}<span class="badge">{{ nav_today }}</span>{% endif %}</a>
   <a href="{{ url_for('board') }}" {% if ep in ('board','deal_view','deal_new') %}aria-current="page"{% endif %}><span class="ic ic-funnel"></span>Воронка{% if nav_new %}<span class="badge">{{ nav_new }}</span>{% endif %}</a>
   <a href="{{ url_for('clients_view') }}" {% if ep in ('clients_view','client_view') %}aria-current="page"{% endif %}><span class="ic ic-clients"></span>Клиенты</a>
   <a href="{{ url_for('stock_view') }}" {% if ep in ('stock_view','stock_docs_view') %}aria-current="page"{% endif %}><span class="ic ic-stock"></span>Склад</a>

@@ -32,7 +32,8 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
         return {"DZ_STATUS": STATUS_NAMES, "DZ_STATUSES": STATUSES, "DZ_SOURCES": SOURCES, "DZ_SOURCE_NAMES": SOURCE_NAMES,
                 "DZ_CHANNELS": CHANNEL_NAMES, "DZ_FILTERS": FILTERS, "DZ_LINKS": LINKS, "DZ_PRIOS": PRIOS, "DZ_PRIO_NAMES": PRIO_NAMES, "DZ_PRIO_ABOUT": PRIO_ABOUT,
                 "DZ_REPLY": REPLY_RESULTS,
-                "dz_due": lambda: dz.due_today() if getattr(g, "user", None) else 0}
+                "dz_due": lambda: dz.due_today() if getattr(g, "user", None) else 0,
+                "dz_todo": lambda upcoming=False: dz.todo(upcoming=upcoming) if getattr(g, "user", None) else []}
 
     def lead_or_404(lid: int) -> Any:
         row = dz.get(lid)

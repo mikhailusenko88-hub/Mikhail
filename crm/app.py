@@ -195,7 +195,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 "KIND_TITLES": KIND_TITLES, "rub": rub, "fmt_dt": fmt_dt, "fmt_day": fmt_day, "today": today(),
                 "me": getattr(g, "user", None), "csrf": session.get("csrf", ""), "total": Store.total,
                 "auto_paused": os.path.exists(conf["PAUSE_FLAG"]),
-                "nav_new": getattr(g, "nav_new", 0), "nav_chat": getattr(g, "nav_chat", 0), "SHOP_DOMAIN": conf["SHOP_DOMAIN"] or "nashdekor.ru",
+                "nav_new": getattr(g, "nav_new", 0), "nav_chat": getattr(g, "nav_chat", 0), "nav_today": getattr(g, "nav_today", 0), "SHOP_DOMAIN": conf["SHOP_DOMAIN"] or "nashdekor.ru",
                 "PUSH_KEY": wp.public_key() if getattr(g, "user", None) and wp.enabled else "",
                 "rubk": rubk, "PAY_STATUS": STATUS_NAMES, "PAY_TYPES": PAY_TYPES}
 
@@ -240,6 +240,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             store.import_bot_leads()
             g.nav_new = len(store.deals(stage="new", limit=99))
             g.nav_chat = store.chat_unread()
+            dzx = app.extensions.get("dz")
+            g.nav_today = len(store.tasks(until=today())) + (dzx.due_today() if dzx else 0)
         return None
 
     def login_required(fn: Any) -> Any:
@@ -380,13 +382,18 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         exp = buh.expiring(day or today())      # срок годности партий — только для своих, в пуше команде
         dexp = docs.expiring(day or today(), 30)  # документы, у которых кончается срок действия (сертификаты и т. п.)
         offsite_bad = offsite_stale()
-        if not (s["new"] or s["today"] or s["overdue"] or s["paid"] or soon or exp or dexp or offsite_bad):
+        dzx = app.extensions.get("dz")
+        dz_due = dzx.due_today() if dzx else 0
+        if not (s["new"] or s["today"] or s["overdue"] or s["paid"] or soon or exp or dexp or offsite_bad or dz_due):
             return ""
         parts = []
         if s["overdue"]: parts.append(f"просрочено задач: {s['overdue']}")
         if s["today"]: parts.append(f"задач на сегодня: {s['today']}")
         if s["new"]: parts.append(f"новых заявок: {s['new']}")
         if s["paid"]: parts.append(f"оплачено, ждут отгрузки: {s['paid']}")
+        if dz_due:
+            late = dzx.overdue()
+            parts.append(f"дизайнеры — написать или напомнить: {dz_due}" + (f" (срок прошёл у {late})" if late else ""))
         if soon:
             x = soon[0]
             when = ("срок прошёл " if x["due"] and x["due"] < (day or today()) else "до ") + fmt_day(x["due"]) if x["due"] else "дата не указана"

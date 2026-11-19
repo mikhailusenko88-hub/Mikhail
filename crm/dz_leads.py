@@ -303,6 +303,31 @@ class DzLeads:
         out["today"] = self.due_today()
         return out
 
+    def todo(self, until: str | None = None, upcoming: bool = False, limit: int = 200) -> list[dict[str, Any]]:
+        """Дизайнеры со следующим шагом — как задачи: срок, что сделать, где был последний контакт, на сколько дней опоздали.
+        upcoming=False — только на сегодня и просроченные; True — все запланированные."""
+        t = today()
+        sql = (f"SELECT * FROM dz_leads WHERE next_at<>'' AND status NOT IN ({','.join('?' * len(CLOSED))})"
+               + ("" if upcoming else " AND next_at<=?") + " ORDER BY next_at, prio, code LIMIT ?")
+        args: list[Any] = [*CLOSED] + ([] if upcoming else [until or t]) + [limit]
+        rows = self.s.c().execute(sql, args).fetchall()
+        last = self.last_out() if rows else {}
+        out = []
+        for r in rows:
+            try:
+                late = (date.fromisoformat(t) - date.fromisoformat(r["next_at"])).days
+            except ValueError:
+                late = 0
+            out.append({"id": r["id"], "code": r["code"], "name": r["name"], "prio": r["prio"], "status": r["status"],
+                        "next_at": r["next_at"], "next_step": r["next_step"] or "Следующий шаг",
+                        "late": max(late, 0), "last": last.get(int(r["id"]))})
+        return out
+
+    def overdue(self) -> int:
+        return int(self.s.c().execute(
+            f"SELECT COUNT(*) FROM dz_leads WHERE next_at<>'' AND next_at<? AND status NOT IN ({','.join('?' * len(CLOSED))})",
+            (today(), *CLOSED)).fetchone()[0])
+
     def due_today(self) -> int:
         return int(self.s.c().execute(
             f"SELECT COUNT(*) FROM dz_leads WHERE next_at<>'' AND next_at<=? AND status NOT IN ({','.join('?' * len(CLOSED))})",

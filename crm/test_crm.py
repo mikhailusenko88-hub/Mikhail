@@ -3307,6 +3307,31 @@ class TestDzLeads(Base):
         self.assertEqual(self.dz.get(lid)["status"], "refused")
         self.assertEqual(self.post(f"/dz/{lid}/reply", {"result": "bogus"}).status_code, 302)
 
+    def test_designer_steps_like_tasks(self) -> None:
+        """Шаги по дизайнерам — как задачи: на «Сегодня» и в «Задачах», просрочено — красным с днями, в пуше утра — строкой."""
+        from datetime import date, timedelta
+        from store import today
+        d3 = (date.fromisoformat(today()) - timedelta(days=3)).isoformat()
+        later = (date.fromisoformat(today()) + timedelta(days=4)).isoformat()
+        lid = self.lid("Д02")
+        self.post(f"/dz/{lid}/message", {"channel": "telegram", "text": "привет"})
+        self.dz.set_status(lid, "sent", "Юлия", "Напомнить в Telegram или позвонить", d3)
+        av = self.lid("АВ01")
+        self.dz.set_status(av, "found", "Юлия", "Написать в WhatsApp", later)
+        page = self.c.get("/").get_data(as_text=True)
+        self.assertIn("Напомнить в Telegram или позвонить", page)
+        self.assertIn("+3 дн.", page)
+        self.assertIn("написали в Telegram", page)
+        self.assertNotIn("Написать в WhatsApp", page)            # срок ещё не пришёл — на «Сегодня» не показываем
+        self.assertRegex(page, r"Сегодня<span class=\"badge\">\d+</span>")
+        tasks = self.c.get("/tasks").get_data(as_text=True)
+        self.assertIn("Дизайнеры — следующие шаги", tasks)
+        self.assertIn("Написать в WhatsApp", tasks)              # в «Задачах» — и будущие
+        self.assertLess(tasks.index("Напомнить в Telegram"), tasks.index("Написать в WhatsApp"))
+        text = self.app.extensions["digest"]()
+        self.assertIn("изайнеры — написать или напомнить", text)
+        self.assertIn("срок прошёл у", text)
+
     def test_import_touches_once(self) -> None:
         """Письмо, ушедшее через канал Claude, приходит касанием — видно «Последний контакт: Письмо», второй раз не пишется."""
         item = {"code": "Д01", "name": "Атлон ФМ", "touches": [
@@ -3327,7 +3352,7 @@ class TestDzLeads(Base):
         d = self.dz.get(lid)
         self.assertEqual((d["status"], d["next_at"], d["note"]), ("interest", today(), "просили каталог"))
         self.assertIn("Атлон ФМ", self.c.get("/dz?f=today").get_data(as_text=True))
-        self.assertIn("Дизайнеры на сегодня", self.c.get("/").get_data(as_text=True))
+        self.assertIn("Позвонить Михаилу", self.c.get("/").get_data(as_text=True))
         r = self.post(f"/dz/{lid}/client")
         cid = int(r.headers["Location"].rsplit("/", 1)[-1])
         cl = self.store.client(cid)

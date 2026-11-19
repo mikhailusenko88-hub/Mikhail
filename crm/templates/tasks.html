@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "macros.html" import task_row, more_nav with context %}
+{% from "macros.html" import task_row, more_nav, dz_todo_row with context %}
 {% block title %}Ещё{% endblock %}
 {% block main %}
 {{ more_nav('tasks') }}
@@ -11,4 +11,10 @@
   <input name="due" type="date" value="{{ today }}" aria-label="Срок" class="date">
   <button class="btn-s">Поставить</button>
 </form>
+
+{% set dzu = dz_todo(True) %}
+<h2 id="dz">Дизайнеры — следующие шаги{% if dzu %} · {{ dzu|length }}{% endif %}</h2>
+<p class="sub">Красным — срок прошёл (сколько дней), жёлтым — сегодня, серым — позже. Нажмите — откроется карточка: письмо, сообщение, звонок и «Ответили?». Сделали шаг — CRM сама ставит следующий.</p>
+<div class="panel list">{% for x in dzu[:80] %}{{ dz_todo_row(x) }}{% else %}<div class="row"><span class="d">Нет запланированных шагов</span></div>{% endfor %}</div>
+{% if dzu|length > 80 %}<p class="sub"><a href="{{ url_for('dz_list') }}">Вся база дизайнеров ›</a></p>{% endif %}
 {% endblock %}

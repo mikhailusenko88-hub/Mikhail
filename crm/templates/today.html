@@ -1,21 +1,20 @@
 {% extends "base.html" %}
-{% from "macros.html" import deal_row, task_row, push_box, due_pill with context %}
+{% from "macros.html" import deal_row, task_row, push_box, due_pill, dz_todo_row with context %}
 {% block title %}Сегодня{% endblock %}
 {% block main %}
 <h1>Сегодня</h1>
 {{ push_box(compact=True) }}
 {% if chats_unread %}<div class="panel list chatsnew">{% for c in chats_unread %}<a class="row" href="{{ url_for('chat_view', cid=c['id']) }}"><span class="ic ic-chat"></span><span class="grow"><b>Чат: {{ c['name'] or c['contact'] or 'посетитель сайта' }}</b><span class="d">{{ (c['last_text'] or '')[:80] }}</span></span><span class="pill warn">{{ c['unread'] }}</span></a>{% endfor %}</div>{% endif %}
 <p class="sub">{{ me['name'] }}, {{ fmt_day(today) }}</p>
-{% set bs = s['by_stage'] %}
+{% set bs = s['by_stage'] %}{% set dzt = dz_todo() %}
 <div class="stats">
   <a class="stat" href="{{ url_for('board') }}"><b>{{ new|length }}</b><span>новых заявок</span></a>
-  <a class="stat" href="{{ url_for('tasks_view') }}"><b>{{ tasks|length }}</b><span>задач на сегодня</span></a>
+  <a class="stat" href="{{ url_for('tasks_view') }}"><b>{{ tasks|length + dzt|length }}</b><span>задач на сегодня</span></a>
   <a class="stat" href="{{ url_for('board') }}"><b>{{ rub((bs.get('work', (0,0))[1]) + (bs.get('quote', (0,0))[1])) }}</b><span>в работе ({{ bs.get('work',(0,0))[0] + bs.get('quote',(0,0))[0] }})</span></a>
   <a class="stat" href="{{ url_for('reports_view') }}"><b>{{ rub(s['paid_week']) }}</b><span>оплачено за 7 дней</span></a>
 </div>
 <div class="panel list site-today"><a class="row btn" href="{{ url_for('site_view', d=1) }}"><span class="ic ic-site"></span><div class="grow"><div class="t">На сайте сегодня: {{ vb['today'] }} {{ 'человек' if vb['today'] % 10 not in (2,3,4) or vb['today'] % 100 in (12,13,14) else 'человека' }}</div><div class="d">вчера {{ vb['yesterday'] }}{% if vb['leads'] %} · заявок с сайта сегодня: {{ vb['leads'] }}{% endif %}</div></div><span class="d">Подробно ›</span></a></div>
 
-{% if dz_due() %}<div class="panel list"><a class="row btn" href="{{ url_for('dz_list', f='today') }}"><span class="ic ic-clients"></span><div class="grow"><div class="t">Дизайнеры на сегодня: {{ dz_due() }}</div><div class="d">написать, напомнить или перезвонить</div></div><span class="d">Открыть ›</span></a></div>{% endif %}
 
 {% if deadlines %}
 <h2>Сроки отчётности</h2>
@@ -26,7 +25,10 @@
 <div class="panel list">{% for d in new %}{{ deal_row(d) }}{% else %}<div class="row"><span class="d">Новых заявок нет</span></div>{% endfor %}</div>
 
 <h2>Задачи на сегодня</h2>
-<div class="panel list">{% for t in tasks %}{{ task_row(t, url_for('today_view')) }}{% else %}<div class="row"><span class="d">Всё сделано</span></div>{% endfor %}</div>
+<div class="panel list">{% for t in tasks %}{{ task_row(t, url_for('today_view')) }}{% endfor %}
+{% for x in dzt[:15] %}{{ dz_todo_row(x) }}{% endfor %}
+{% if dzt|length > 15 %}<a class="row btn" href="{{ url_for('tasks_view') }}#dz"><span class="d grow">Ещё дизайнеров на сегодня: {{ dzt|length - 15 }}</span><span class="d">Все ›</span></a>{% endif %}
+{% if not tasks and not dzt %}<div class="row"><span class="d">Всё сделано</span></div>{% endif %}</div>
 
 {% if paid %}
 <h2>Оплачено — ждёт отгрузки</h2>

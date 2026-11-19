@@ -61,6 +61,18 @@
 </nav>
 {%- endmacro %}
 
+{# Дизайнер со следующим шагом — как задача: красным срок прошёл (+дни), жёлтым — сегодня #}
+{% macro dz_todo_row(x) -%}
+<a class="row btn dztodo" href="{{ url_for('dz_card', lid=x['id']) }}">
+  <span class="ic ic-clients" aria-hidden="true"></span>
+  <div class="grow">
+    <div class="t">{{ x['next_step'] }}</div>
+    <div class="d">Дизайнер {{ x['code'] }} · {{ x['name'] }}{% if x['last'] %} · {% if x['last']['channel']=='call' %}звонили{% elif x['last']['channel']=='models' %}отправили модели{% else %}написали {{ x['last']['where'] }}{% endif %} {{ fmt_day(x['last']['day']) }}{% endif %}</div>
+  </div>
+  {% if x['late'] > 0 %}<span class="pill crit">{{ fmt_day(x['next_at']) }} · +{{ x['late'] }} дн.</span>{% elif x['next_at'] == today %}<span class="pill warn">сегодня</span>{% else %}<span class="pill">{{ fmt_day(x['next_at']) }}</span>{% endif %}
+</a>
+{%- endmacro %}
+
 {% macro due_pill(due, soon) -%}
 {% if not due %}<span class="pill warn">нет даты</span>{% elif due < today %}<span class="pill crit">{{ fmt_day(due) }}</span>{% elif due == today %}<span class="pill crit">сегодня</span>{% elif due <= soon %}<span class="pill warn">{{ fmt_day(due) }}</span>{% else %}<span class="pill">{{ dmy(due) }}</span>{% endif %}
 {%- endmacro %}
