@@ -7,8 +7,9 @@ from typing import Any
 from flask import Flask, abort, flash, g, redirect, render_template, request, url_for
 
 from pochta import fmt_ts
-from dz_leads import (CHANNEL_NAMES, FILTERS, LINKS, PRIO_ABOUT, PRIO_NAMES, PRIOS, REPLY_RESULTS, SOURCE_NAMES, SOURCES,
-                      STATUS_NAMES, STATUSES, TEMPLATES,
+from store import today
+from dz_leads import (CHANNEL_NAMES, CLOSED, FILTERS, LINKS, PRIO_ABOUT, PRIO_NAMES, PRIOS, REPLY_RESULTS, SOURCE_NAMES, SOURCES,
+                      SENDERS, STATUS_NAMES, STATUSES, TEMPLATES, WORK_KIND, WORK_SECTIONS,
                       TEXT_FIELDS, DzLeads, EMAIL_RE)
 
 MSG_CHANNELS = {"telegram": "Telegram", "whatsapp": "WhatsApp", "max": "MAX", "vk": "VK", "form": "Форма на сайте"}
@@ -31,9 +32,34 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
     def dz_ctx() -> dict[str, Any]:
         return {"DZ_STATUS": STATUS_NAMES, "DZ_STATUSES": STATUSES, "DZ_SOURCES": SOURCES, "DZ_SOURCE_NAMES": SOURCE_NAMES,
                 "DZ_CHANNELS": CHANNEL_NAMES, "DZ_FILTERS": FILTERS, "DZ_LINKS": LINKS, "DZ_PRIOS": PRIOS, "DZ_PRIO_NAMES": PRIO_NAMES, "DZ_PRIO_ABOUT": PRIO_ABOUT,
-                "DZ_REPLY": REPLY_RESULTS,
+                "DZ_REPLY": REPLY_RESULTS, "DZ_SECTIONS": WORK_SECTIONS,
                 "dz_due": lambda: dz.due_today() if getattr(g, "user", None) else 0,
-                "dz_todo": lambda upcoming=False: dz.todo(upcoming=upcoming) if getattr(g, "user", None) else []}
+                "dz_todo": lambda upcoming=False: dz.todo(upcoming=upcoming) if getattr(g, "user", None) else [],
+                "dz_waiting": lambda: dz.waiting() if getattr(g, "user", None) else 0}
+
+    def group_rows(rows: list[Any]) -> list[tuple[str, str, str, list[Any]]]:
+        """Список по разделам работы: сегодня — первый контакт / напомнить / ответили; потом ждём ответа, не писали, закрытые."""
+        t = today()
+        names = {k: (title, hint) for k, title, hint in WORK_SECTIONS}
+        order = [("first", *names["first"]), ("remind", *names["remind"]), ("hot", *names["hot"]),
+                 ("wait", "Ждём ответа", "Написали — CRM напомнит, когда придёт срок (дата справа)."),
+                 ("later", "Ещё не писали", "Контакт есть или ищем — срок позже или не задан."),
+                 ("closed", "Отказ, не по адресу, не писать", "")]
+        box: dict[str, list[Any]] = {k: [] for k, *_ in order}
+        for r in rows:
+            k = WORK_KIND.get(r["status"])
+            due = bool(r["next_at"]) and r["next_at"] <= t
+            if r["status"] in CLOSED:
+                box["closed"].append(r)
+            elif k == "hot":
+                box["hot"].append(r)
+            elif k == "remind":
+                box["remind" if due else "wait"].append(r)
+            else:
+                box["first" if due else "later"].append(r)
+        for k in ("first", "remind", "wait"):
+            box[k].sort(key=lambda r: (r["next_at"] or "9999", r["prio"], r["code"]))
+        return [(k, title, hint, box[k]) for k, title, hint in order if box[k]]
 
     def lead_or_404(lid: int) -> Any:
         row = dz.get(lid)
@@ -53,14 +79,18 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
         prio = request.args.get("p", "")
         q = (request.args.get("q") or "").strip()[:80]
         rows = dz.list(grp, f, q, prio)
-        return render_template("dz_list.html", rows=rows, grp=grp, f=f, prio=prio, q=q, cnt=dz.counts(), last=dz.last_out(),
+        sections = group_rows(rows) if f in ("", "today") else []
+        has_due = any(k in ("first", "remind", "hot") for k, *_r in sections)
+        return render_template("dz_list.html", rows=rows, sections=sections, has_due=has_due, grp=grp, f=f, prio=prio, q=q, cnt=dz.counts(), last=dz.last_out(),
                                sent_today=dz.sent_today(), limit=dz.daily_limit())
 
     @app.route("/dz/<int:lid>")
     @login_required
     def dz_card(lid: int) -> Any:
         row = lead_or_404(lid)
-        kind, subj, body = dz.mail_draft(row)
+        sender = request.args.get("from", "")
+        sender = sender if sender in SENDERS else dz.sender_for(g.user["login"])
+        kind, subj, body = dz.mail_draft(row, sender)
         letters = []
         if pochta is not None and row["email"] and g.user["role"] == "admin":
             try:
@@ -73,7 +103,8 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
                                prio_about=dz.prio_about(row), mail_kind=kind, mail_subject=subj, mail_body=body,
                                msg=dz.render("msg", row), call_script=dz.render("call", row), touches=dz.touches(lid),
                                letters=letters, client=client, gmail=dz.gmail(row), sent_today=dz.sent_today(),
-                               limit=dz.daily_limit(), MSG_CHANNELS=MSG_CHANNELS, mail_from=f"Михаил — Наш декор <mikhail@{dom}>")
+                               limit=dz.daily_limit(), MSG_CHANNELS=MSG_CHANNELS, mail_from=dz.sender_addr(sender),
+                               sender=sender, SENDERS=SENDERS)
 
     @app.post("/dz/<int:lid>/edit")
     @login_required
@@ -118,11 +149,14 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
             flash(f"Сегодня из базы уже отправлено {dz.sent_today()} писем — остальное завтра (новый домен: малыми партиями, "
                   "чтобы не попасть в спам).", "err")
             return back(lid, "mail")
-        ok = send_mail(email, subject, body, sender=f"Михаил — Наш декор <mikhail@{dom}>", reply_to=f"info@{dom}")
+        sender = request.form.get("sender", "")
+        sender = sender if sender in SENDERS else dz.sender_for(g.user["login"])
+        ok = send_mail(email, subject, body, sender=dz.sender_addr(sender), reply_to=f"info@{dom}")
         if not ok:
             flash("Письмо не ушло — почтовый сервер не принял. Попробуйте позже или напишите в мессенджер.", "err")
             return back(lid, "mail")
-        dz.after_mail(lid, kind if kind in ("m1", "m2", "reply") else "m1", subject, body, who())
+        dz.after_mail(lid, kind if kind in ("m1", "m2", "reply") else "m1", subject, body, who(),
+                      sender=SENDERS[sender]["box"] + "@" + dom)
         flash(f"Письмо отправлено на {email}. Ответ придёт в «Почту» (info@). Следующий шаг поставлен.", "ok")
         return back(lid)
 
@@ -202,11 +236,13 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
                 if k in request.form:
                     dz.set_tpl(k, request.form.get(k, ""))
             store.set_setting("dz_phone", re.sub(r"[^\d+()\- ]", "", request.form.get("phone", ""))[:30])
+            store.set_setting("dz_phone_yulia", re.sub(r"[^\d+()\- ]", "", request.form.get("phone_yulia", ""))[:30])
             try:
                 store.set_setting("dz_mail_day", str(max(1, min(60, int(request.form.get("daily", "15"))))))
             except ValueError:
                 pass
             flash("Тексты сохранены.", "ok")
             return redirect(url_for("dz_texts"))
-        return render_template("dz_texts.html", tpls=[(k, TEMPLATES[k][0], dz.tpl(k)) for k in TEMPLATES], phone=dz.phone(),
+        return render_template("dz_texts.html", tpls=[(k, TEMPLATES[k][0], dz.tpl(k)) for k in TEMPLATES], phone=dz.s.setting("dz_phone", ""),
+                               phone_yulia=dz.s.setting("dz_phone_yulia", ""),
                                daily=dz.daily_limit())

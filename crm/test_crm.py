@@ -3226,12 +3226,15 @@ class TestDzLeads(Base):
         card = self.c.get(f"/dz/{lid}").get_data(as_text=True)
         self.assertIn("Письмо 1", card); self.assertIn("Здравствуйте, Татьяна!", card)
         self.assertIn("Молдинги: https://nashdekor.ru/catalog/moldingi/", card); self.assertIn("+7 900 000-00-00", card)
-        kind, subj, body = self.dz.mail_draft(self.dz.get(lid))
+        kind, subj, body = self.dz.mail_draft(self.dz.get(lid), "yulia")
         r = self.post(f"/dz/{lid}/mail", {"kind": kind, "subject": subj, "text": body + "\nPS"})
         self.assertEqual(r.status_code, 302)
         to, s, b, kw = self.sent[-1]
         self.assertEqual(to, "tanya@studio-p.ru"); self.assertTrue(b.endswith("PS"))               # уходит то, что поправили
-        self.assertEqual(kw["sender"], "Михаил — Наш декор <mikhail@nashdekor.ru>"); self.assertEqual(kw["reply_to"], "info@nashdekor.ru")
+        # вошла Юлия — письмо от неё: «Меня зовут Юлия», подпись Юлия, условия — «их расскажет Михаил лично»
+        self.assertEqual(kw["sender"], "Юлия — Наш декор <yulia@nashdekor.ru>"); self.assertEqual(kw["reply_to"], "info@nashdekor.ru")
+        self.assertIn("Меня зовут Юлия", b); self.assertIn("их расскажет Михаил лично", b); self.assertIn("\nЮлия\n«Наш декор»", b)
+        self.assertIn("От yulia@nashdekor.ru", self.dz.touches(lid)[-1]["text"] + self.c.get(f"/dz/{lid}").get_data(as_text=True))
         d = self.dz.get(lid)
         self.assertEqual(d["status"], "sent"); self.assertIn("Напоминание", d["next_step"])
         from dz_leads import add_workdays
@@ -3325,12 +3328,32 @@ class TestDzLeads(Base):
         self.assertNotIn("Написать в WhatsApp", page)            # срок ещё не пришёл — на «Сегодня» не показываем
         self.assertRegex(page, r"Сегодня<span class=\"badge\">\d+</span>")
         tasks = self.c.get("/tasks").get_data(as_text=True)
-        self.assertIn("Дизайнеры — следующие шаги", tasks)
+        self.assertIn("Напомнить — срок пришёл", tasks)
+        self.assertIn("Запланировано на потом", tasks)
         self.assertIn("Написать в WhatsApp", tasks)              # в «Задачах» — и будущие
         self.assertLess(tasks.index("Напомнить в Telegram"), tasks.index("Написать в WhatsApp"))
         text = self.app.extensions["digest"]()
         self.assertIn("изайнеры — написать или напомнить", text)
         self.assertIn("срок прошёл у", text)
+
+    def test_sender_by_login_and_switch(self) -> None:
+        """Юлия отправляет от себя, Михаил — от себя (по логину); в карточке можно переключить «От кого»."""
+        lid = self.lid("Д01")
+        self.dz.set_status(lid, "found", "Юлия")
+        with self.app.app_context():
+            pass
+        card = self.c.get(f"/dz/{lid}").get_data(as_text=True)
+        self.assertIn("Меня зовут Юлия", card); self.assertIn("Юлия — Наш декор &lt;yulia@nashdekor.ru&gt;", card)
+        card = self.c.get(f"/dz/{lid}?from=mikhail").get_data(as_text=True)
+        self.assertIn("Меня зовут Михаил", card); self.assertIn("расскажу лично", card)
+        self.store.set_setting("dz_phone", "+7 900 000-00-01"); self.store.set_setting("dz_phone_yulia", "+7 900 000-00-02")
+        self.assertIn("+7 900 000-00-02", self.c.get(f"/dz/{lid}").get_data(as_text=True))
+        self.assertIn("+7 900 000-00-01", self.c.get(f"/dz/{lid}?from=mikhail").get_data(as_text=True))
+        kind, subj, body = self.dz.mail_draft(self.dz.get(lid), "mikhail")
+        self.post(f"/dz/{lid}/mail", {"kind": kind, "subject": subj, "text": body, "sender": "mikhail"})
+        self.assertEqual(self.sent[-1][3]["sender"], "Михаил — Наш декор <mikhail@nashdekor.ru>")
+        self.post(f"/dz/{lid}/mail", {"kind": "m2", "subject": "Re: x", "text": "y", "sender": "hacker"})
+        self.assertEqual(self.sent[-1][3]["sender"], "Юлия — Наш декор <yulia@nashdekor.ru>")   # чужое — по логину
 
     def test_import_touches_once(self) -> None:
         """Письмо, ушедшее через канал Claude, приходит касанием — видно «Последний контакт: Письмо», второй раз не пишется."""

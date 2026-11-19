@@ -13,8 +13,19 @@
 </form>
 
 {% set dzu = dz_todo(True) %}
-<h2 id="dz">Дизайнеры — следующие шаги{% if dzu %} · {{ dzu|length }}{% endif %}</h2>
-<p class="sub">Красным — срок прошёл (сколько дней), жёлтым — сегодня, серым — позже. Нажмите — откроется карточка: письмо, сообщение, звонок и «Ответили?». Сделали шаг — CRM сама ставит следующий.</p>
-<div class="panel list">{% for x in dzu[:80] %}{{ dz_todo_row(x) }}{% else %}<div class="row"><span class="d">Нет запланированных шагов</span></div>{% endfor %}</div>
-{% if dzu|length > 80 %}<p class="sub"><a href="{{ url_for('dz_list') }}">Вся база дизайнеров ›</a></p>{% endif %}
+<h2 id="dz">Дизайнеры</h2>
+<p class="sub">Красным — срок прошёл (на сколько дней), жёлтым — сегодня. Нажмите — откроется карточка: письмо, сообщение, звонок и «Ответили?». Сделали шаг — CRM сама ставит следующий.</p>
+{% for key, title, hint in DZ_SECTIONS %}{% set xs = dzu|selectattr('kind', 'equalto', key)|selectattr('due')|list %}{% if xs %}
+<h3 id="dz-{{ key }}" class="dzh dzh-{{ key }}">{{ title }} · {{ xs|length }}</h3>
+<p class="sub">{{ hint }}</p>
+<div class="panel list">{% for x in xs %}{{ dz_todo_row(x) }}{% endfor %}</div>
+{% endif %}{% endfor %}
+{% if not (dzu|selectattr('due')|list) %}<div class="panel list"><div class="row"><span class="d">На сегодня по дизайнерам всё сделано</span></div></div>{% endif %}
+{% set wait = dzu|rejectattr('due')|selectattr('kind', 'equalto', 'remind')|list %}
+{% if wait %}<details class="dzsec" id="dz-wait"><summary><h3 class="dzh">Ждём ответа · {{ wait|length }}</h3></summary>
+<p class="sub">Уже написали. Когда придёт дата — строка переедет наверх, в «Напомнить».</p>
+<div class="panel list">{% for x in wait %}{{ dz_todo_row(x, True) }}{% endfor %}</div></details>{% endif %}
+{% set later = dzu|rejectattr('due')|rejectattr('kind', 'equalto', 'remind')|list %}
+{% if later %}<details class="dzsec"><summary><h3 class="dzh">Запланировано на потом · {{ later|length }}</h3></summary>
+<div class="panel list">{% for x in later %}{{ dz_todo_row(x) }}{% endfor %}</div></details>{% endif %}
 {% endblock %}

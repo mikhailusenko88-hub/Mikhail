@@ -888,11 +888,13 @@ EOF
     if ! grep -qE '^[[:space:]]*zapros(@[^[:space:]]+)?[[:space:]]' "$al" 2>/dev/null; then
       printf 'zapros info\n' >>"$al"; chmod 644 "$al"
     fi
-    # письма дизайнерам — от mikhail@; если такого ящика нет, возвраты и случайные ответы — в info@
-    if ! grep -qE '^mikhail@' /etc/postfix/pochta-mailboxes 2>/dev/null \
-       && ! grep -qE '^[[:space:]]*mikhail(@[^[:space:]]+)?[[:space:]]' "$al" 2>/dev/null; then
-      printf 'mikhail info\n' >>"$al"; chmod 644 "$al"
-    fi
+    # письма дизайнерам — от mikhail@ или yulia@ (кто вошёл в CRM); если такого ящика нет, возвраты и случайные ответы — в info@
+    for box in mikhail yulia; do
+      if ! grep -qE "^${box}@" /etc/postfix/pochta-mailboxes 2>/dev/null \
+         && ! grep -qE "^[[:space:]]*${box}(@[^[:space:]]+)?[[:space:]]" "$al" 2>/dev/null; then
+        printf '%s info\n' "$box" >>"$al"; chmod 644 "$al"
+      fi
+    done
     if /usr/local/sbin/prostranstvo-pochta rebuild >>"$DETAIL_LOG" 2>&1; then
       ok "исходящие: письма от zapros@$DOMAIN, ответы — в info@$DOMAIN"
     else

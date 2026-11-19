@@ -310,3 +310,12 @@ code.sel,pre.sel{user-select:all;-webkit-user-select:all;word-break:break-all}
 .dzlegend p{margin:6px 0}
 .dzlast{margin-top:2px}
 .dzlastbox{background:var(--surface)}
+.dzh{font-size:17px;margin:16px 0 4px;padding-left:10px;border-left:4px solid var(--line)}
+h2.dzh{font-size:19px}
+.dzh-first{border-left-color:var(--accent)}
+.dzh-remind{border-left-color:var(--warn)}
+.dzh-hot{border-left-color:var(--good)}
+.dzsec>summary{cursor:pointer;list-style:none}
+.dzsec>summary::-webkit-details-marker{display:none}
+.dzsec>summary .dzh::after{content:" ▸";color:var(--muted)}
+.dzsec[open]>summary .dzh::after{content:" ▾"}

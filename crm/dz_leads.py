@@ -102,6 +102,14 @@ PRIO_ABOUT = {
     "other": {"A": "студии дизайна — часто сами комплектуют и ведут ремонт",
               "B": "ремонтные компании с дизайном — нужен тот, кто закупает отделку",
               "C": "премиум-студии из рейтингов — контакты на сайтах"}}
+# какая это работа: первый контакт, напоминание или довести того, кто ответил — у каждого свой раздел
+WORK_KIND = {"new": "first", "found": "first", "nocall": "first", "sent": "remind", "reminded": "remind",
+             "interest": "hot", "models": "hot", "talk": "hot", "partner": "hot"}
+WORK_SECTIONS: list[tuple[str, str, str]] = [
+    ("first", "Написать или позвонить — первый контакт", "Ещё не писали или не дозвонились — срок пришёл."),
+    ("remind", "Напомнить — срок пришёл", "Уже писали, ответа нет — пора второе касание."),
+    ("hot", "Ответили — довести до заказа", "Отправить модели и каталог, договориться о звонке Михаила."),
+]
 # касания «мы написали / позвонили» — по ним видно, где и когда был последний контакт
 OUT_CHANNELS = ("email", "telegram", "whatsapp", "max", "vk", "call", "form", "models")
 REPLY_RESULTS = {"interest": "Интересно — просят модели или подробности", "question": "Задали вопрос — ответить",
@@ -140,11 +148,17 @@ LINK_NAMES = dict(LINKS)
 # Метки: {строка} — личная строка, {раздел} — «подпись: ссылка» на раздел сайта, {сайт}, {телефон}, {имя}, {тема},
 # {кому} — «вашей студии» / «вашей компании» / «вам», {макс} — канал в MAX, {домен}.
 MAX_CHANNEL = "https://max.ru/id470331302505_biz"
+# от кого письмо дизайнеру: по логину входа (Юлия — от себя, Михаил — от себя), в карточке можно переключить.
+# {я} — имя в тексте и подписи, {условия} — про отдельные условия: их обсуждает только Михаил.
+SENDERS: dict[str, dict[str, str]] = {
+    "mikhail": {"name": "Михаил", "box": "mikhail", "terms": "расскажу лично"},
+    "yulia": {"name": "Юлия", "box": "yulia", "terms": "их расскажет Михаил лично"},
+}
 TEMPLATES: dict[str, tuple[str, str]] = {
     "m1_subject": ("Письмо 1 — тема", "Рейки, молдинги и плинтусы для ваших проектов — 3D-модели профилей"),
     "m1": ("Письмо 1 — текст", """Здравствуйте{имя}!
 
-Меня зовут Михаил, магазин «Наш декор» в Санкт-Петербурге. Мы продаём стеновые реечные панели, плинтусы, молдинги и потолочные плинтусы из дюрополимера (ударопрочного полистирола): белые под покраску и с готовым декором под дерево и бетон.
+Меня зовут {я}, магазин «Наш декор» в Санкт-Петербурге. Мы продаём стеновые реечные панели, плинтусы, молдинги и потолочные плинтусы из дюрополимера (ударопрочного полистирола): белые под покраску и с готовым декором под дерево и бетон.
 
 {строка} {раздел}
 
@@ -152,24 +166,24 @@ TEMPLATES: dict[str, tuple[str, str]] = {
 — 3D-модели всех профилей для 3ds Max, SketchUp, ArchiCAD, Revit и Blender, сечения в DXF — пришлём архивом;
 — на сайте у каждого профиля — 3D-просмотр, чертёж сечения, любой цвет по RAL/NCS и примерка на стену нужного размера с расчётом количества;
 — расчёт по вашему проекту — стены, проёмы, запас;
-— отдельные условия для дизайнеров и студий — расскажу лично.
+— отдельные условия для дизайнеров и студий — {условия}.
 
 Если интересно — ответьте на это письмо, пришлю модели и каталог. Если не по адресу — напишите «нет», больше не побеспокою.
 
 С уважением,
-Михаил
+{я}
 «Наш декор» (ИП Усенко Ю. В.), Санкт-Петербург
 {сайт}
 {телефон}"""),
     "m2": ("Письмо 2 — напоминание (через 3 рабочих дня, один раз)", """Здравствуйте! Пишу ещё раз по поводу письма ниже: можем бесплатно прислать 3D-модели наших реек, молдингов и плинтусов для ваших проектов. Посмотреть профили в 3D и примерить на стену можно на сайте: {сайт}
 Если сейчас не нужно — ответьте «нет», больше не напишем.
 
-Михаил, «Наш декор», {телефон}
+{я}, «Наш декор», {телефон}
 {сайт}
 Канал в MAX: {макс}"""),
     "reply": ("Ответ тем, кому интересно", """Спасибо за ответ! Архив 3D-моделей и каталог придут отдельным письмом с info@{домен}. Цены, наличие и 3D каждого профиля — на сайте {сайт}: на странице панели во вкладке «3D · моя стена» можно ввести размеры стены заказчика и сразу увидеть количество. Условия для студий удобнее обсудить голосом — когда Михаилу позвонить вам и по какому номеру?
 
-Михаил, «Наш декор», {телефон}
+{я}, «Наш декор», {телефон}
 {сайт}
 Канал в MAX: {макс}"""),
     "msg": ("Сообщение в Telegram / WhatsApp / MAX", """Здравствуйте! Это «Наш декор» из Петербурга — реечные панели, плинтусы и молдинги под покраску и под дерево. Работаем с дизайнерами: бесплатно присылаем 3D-модели всех профилей (3ds Max, SketchUp, ArchiCAD, Revit, Blender), считаем количество по проекту, для студий — свои условия. Каталог с 3D, ценами и расчётом стены: {сайт}
@@ -319,9 +333,15 @@ class DzLeads:
             except ValueError:
                 late = 0
             out.append({"id": r["id"], "code": r["code"], "name": r["name"], "prio": r["prio"], "status": r["status"],
+                        "kind": WORK_KIND.get(r["status"], "first"), "due": r["next_at"] <= t,
                         "next_at": r["next_at"], "next_step": r["next_step"] or "Следующий шаг",
                         "late": max(late, 0), "last": last.get(int(r["id"]))})
         return out
+
+    def waiting(self) -> int:
+        """Написали и ждём ответа — срок напомнить ещё не пришёл."""
+        return int(self.s.c().execute(
+            "SELECT COUNT(*) FROM dz_leads WHERE status IN ('sent','reminded') AND next_at>?", (today(),)).fetchone()[0])
 
     def overdue(self) -> int:
         return int(self.s.c().execute(
@@ -531,7 +551,7 @@ class DzLeads:
         if p.get("kind") != "dz":
             return 0, 0, "не тот формат"
         for k, v in (p.get("settings") or {}).items():
-            if k.startswith("dz_tpl_") and k[7:] in TEMPLATES or k in ("dz_phone", "dz_mail_day", "dz_max"):
+            if k.startswith("dz_tpl_") and k[7:] in TEMPLATES or k in ("dz_phone", "dz_phone_mikhail", "dz_phone_yulia", "dz_mail_day", "dz_max"):
                 self.s.set_setting(k, str(v)[:6000])
         a, u = self.import_items(p.get("items") or [])
         return a, u, ""
@@ -545,8 +565,17 @@ class DzLeads:
             text = (text or "").replace("\r\n", "\n").strip()[:6000]
             self.s.set_setting("dz_tpl_" + key, "" if text == TEMPLATES[key][1] else text)
 
-    def phone(self) -> str:
-        return self.s.setting("dz_phone", "")
+    def phone(self, sender: str = "mikhail") -> str:
+        """Телефон в подписи: свой у каждого отправителя (настройка dz_phone_<логин>), иначе общий dz_phone."""
+        return self.s.setting(f"dz_phone_{sender}", "") or self.s.setting("dz_phone", "")
+
+    @staticmethod
+    def sender_for(login: str) -> str:
+        return login if login in SENDERS else "mikhail"
+
+    def sender_addr(self, sender: str) -> str:
+        sd = SENDERS.get(sender) or SENDERS["mikhail"]
+        return f"{sd['name']} — Наш декор <{sd['box']}@{self.domain}>"
 
     @staticmethod
     def whom(lead: Any) -> str:
@@ -570,12 +599,14 @@ class DzLeads:
         name = LINK_NAMES.get(path, "Подробнее")
         return f"{name}: {self.site_url()}{path}"
 
-    def render(self, key: str, lead: Any) -> str:
+    def render(self, key: str, lead: Any, sender: str = "mikhail") -> str:
+        sd = SENDERS.get(sender) or SENDERS["mikhail"]
         nm = first_name(lead["person"]) if lead is not None else ""
         subj = self.tpl("m1_subject")
         vals = {"{строка}": (lead["line"] or "").strip() if lead is not None else "",
                 "{раздел}": self.section(lead) if lead is not None else self.site_url(),
-                "{сайт}": self.site_url(), "{телефон}": self.phone(), "{имя}": (", " + nm) if nm else "", "{тема}": subj,
+                "{сайт}": self.site_url(), "{телефон}": self.phone(sender), "{имя}": (", " + nm) if nm else "", "{тема}": subj,
+                "{я}": sd["name"], "{условия}": sd["terms"],
                 "{кому}": self.whom(lead), "{макс}": self.s.setting("dz_max", MAX_CHANNEL) or MAX_CHANNEL, "{домен}": self.domain}
         t = self.tpl(key)
         for k, v in vals.items():
@@ -585,23 +616,23 @@ class DzLeads:
         t = re.sub(r"\n{3,}", "\n\n", t)
         return t.strip()
 
-    def mail_draft(self, lead: Any) -> tuple[str, str, str]:
+    def mail_draft(self, lead: Any, sender: str = "mikhail") -> tuple[str, str, str]:
         """(вид, тема, текст) — что предложить в карточке: письмо 1, напоминание или ответ тем, кому интересно."""
         st = lead["status"]
         sent = self.s.c().execute("SELECT COUNT(*) FROM dz_touches WHERE lead_id=? AND channel='email'", (lead["id"],)).fetchone()[0]
         if st in ("interest", "models", "talk"):
-            return "reply", "Re: " + (lead["last_subject"] or self.tpl("m1_subject")), self.render("reply", lead)
+            return "reply", "Re: " + (lead["last_subject"] or self.tpl("m1_subject")), self.render("reply", lead, sender)
         if sent or st in ("sent", "reminded"):
-            return "m2", "Re: " + (lead["last_subject"] or self.tpl("m1_subject")), self.render("m2", lead)
-        return "m1", self.tpl("m1_subject"), self.render("m1", lead)
+            return "m2", "Re: " + (lead["last_subject"] or self.tpl("m1_subject")), self.render("m2", lead, sender)
+        return "m1", self.tpl("m1_subject"), self.render("m1", lead, sender)
 
     # ------------------------------------------------------------------ события
-    def after_mail(self, lid: int, kind: str, subject: str, body: str, by: str) -> None:
+    def after_mail(self, lid: int, kind: str, subject: str, body: str, by: str, sender: str = "") -> None:
         row = self.get(lid)
         if not row:
             return
         with self.s.tx() as c:
-            self._touch(c, lid, "email", f"{subject}\n\n{body}", by)
+            self._touch(c, lid, "email", (f"От {sender}\n" if sender else "") + f"{subject}\n\n{body}", by)
             c.execute("UPDATE dz_leads SET last_subject=? WHERE id=?", (re.sub(r"^(Re:\s*)+", "", subject)[:200], lid))
         t = today()
         if kind == "m2":

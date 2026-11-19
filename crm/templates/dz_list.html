@@ -32,9 +32,7 @@
   <input type="search" name="q" value="{{ q }}" placeholder="Имя, студия, метро, почта" aria-label="Поиск по базе">
   <button class="btn-s">Найти</button>
 </form>
-<p class="sub">{{ rows|length }} в списке</p>
-<div class="panel list">
-{% for d in rows %}
+{% macro dzrow(d, sec='') -%}
   <a class="row btn" href="{{ url_for('dz_card', lid=d['id']) }}">
     <div class="grow">
       <div class="t"><span class="muted">{{ d['code'] }}</span> {{ d['name'] }}</div>
@@ -45,11 +43,23 @@
     <div class="dzpills">
       <span class="pill dzp-{{ d['prio'] }}" title="{{ d['prio'] }} — {{ DZ_PRIO_NAMES.get(d['prio'], '') }}">{{ d['prio'] }}</span>
       <span class="pill dzs-{{ d['status'] }}">{{ DZ_STATUS.get(d['status'], d['status']) }}{% if lo and d['status'] in ('sent','reminded') %} · {{ lo.name }}{% endif %}</span>
-      {% if d['next_at'] and d['status'] not in ('partner','refused','wrong','skip') %}{% if d['next_at'] < today %}<span class="pill crit">{{ fmt_day(d['next_at']) }}</span>{% elif d['next_at'] == today %}<span class="pill warn">сегодня</span>{% else %}<span class="pill">{{ fmt_day(d['next_at']) }}</span>{% endif %}{% endif %}
+      {% if d['next_at'] and d['status'] not in ('partner','refused','wrong','skip') %}{% if d['next_at'] < today %}<span class="pill crit">{{ fmt_day(d['next_at']) }}{% if sec in ('first','remind','hot') %} · просрочено{% endif %}</span>{% elif d['next_at'] == today %}<span class="pill warn">сегодня</span>{% else %}<span class="pill">{% if sec=='wait' %}напомнить {% endif %}{{ fmt_day(d['next_at']) }}</span>{% endif %}{% endif %}
     </div>
   </a>
-{% else %}<div class="row"><span class="d">Никого — поменяйте фильтр.</span></div>{% endfor %}
+{%- endmacro %}
+<p class="sub">{{ rows|length }} в списке</p>
+{% if sections %}
+{% for key, title, hint, rs in sections %}
+{% if key in ('wait', 'later', 'closed') %}<details class="dzsec" {% if key=='wait' and not has_due %}open{% endif %}><summary><h2 class="dzh dzh-{{ key }}">{{ title }} · {{ rs|length }}</h2></summary>{% else %}<h2 class="dzh dzh-{{ key }}">{{ title }} · {{ rs|length }}</h2>{% endif %}
+{% if hint %}<p class="sub">{{ hint }}</p>{% endif %}
+<div class="panel list">{% for d in rs %}{{ dzrow(d, key) }}{% endfor %}</div>
+{% if key in ('wait', 'later', 'closed') %}</details>{% endif %}
+{% endfor %}
+{% else %}
+<div class="panel list">
+{% for d in rows %}{{ dzrow(d) }}{% else %}<div class="row"><span class="d">Никого — поменяйте фильтр.</span></div>{% endfor %}
 </div>
+{% endif %}
 
 <details class="panel pad sec">
 <summary>Добавить дизайнера</summary>

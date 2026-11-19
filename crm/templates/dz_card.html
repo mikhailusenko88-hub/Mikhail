@@ -67,7 +67,10 @@
 {% if gmail %}<div class="flash err">Адрес на Gmail: письма с нашего нового домена туда часто падают в «Спам». Лучше сначала написать в Telegram или позвонить, а письмо — после согласия.</div>{% endif %}
 <form class="grid2 sec" method="post" action="{{ url_for('dz_mail', lid=d['id']) }}">
   <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="kind" value="{{ mail_kind }}">
-  <p class="d span2">От: {{ mail_from }} · ответ придёт в «Почту» (info@). Сегодня из базы отправлено {{ sent_today }} из {{ limit }}.</p>
+  <input type="hidden" name="sender" value="{{ sender }}">
+  <div class="span2"><span class="d">От кого:</span>
+    <nav class="chips" aria-label="От кого письмо">{% for k, sd in SENDERS.items() %}<a class="chip" href="{{ url_for('dz_card', lid=d['id'], **{'from': k}) }}#mail" {% if sender==k %}aria-current="true"{% endif %}>{{ sd['name'] }}</a>{% endfor %}</nav></div>
+  <p class="d span2">Письмо уйдёт от: {{ mail_from }} · ответ придёт в «Почту» (info@). Сегодня из базы отправлено {{ sent_today }} из {{ limit }}.</p>
   <label class="f span2">Тема<input name="subject" maxlength="150" value="{{ mail_subject }}"></label>
   <label class="f span2">Текст — прочитайте и поправьте личную строку, если нужно<textarea name="text" rows="18">{{ mail_body }}</textarea></label>
   {% if not d['line'] and mail_kind=='m1' %}<p class="d span2">Личной строки нет — допишите в «Данные → Личная строка», иначе письмо получится общим.</p>{% endif %}

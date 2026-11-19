@@ -25,10 +25,16 @@
 <div class="panel list">{% for d in new %}{{ deal_row(d) }}{% else %}<div class="row"><span class="d">Новых заявок нет</span></div>{% endfor %}</div>
 
 <h2>Задачи на сегодня</h2>
-<div class="panel list">{% for t in tasks %}{{ task_row(t, url_for('today_view')) }}{% endfor %}
-{% for x in dzt[:15] %}{{ dz_todo_row(x) }}{% endfor %}
-{% if dzt|length > 15 %}<a class="row btn" href="{{ url_for('tasks_view') }}#dz"><span class="d grow">Ещё дизайнеров на сегодня: {{ dzt|length - 15 }}</span><span class="d">Все ›</span></a>{% endif %}
-{% if not tasks and not dzt %}<div class="row"><span class="d">Всё сделано</span></div>{% endif %}</div>
+<div class="panel list">{% for t in tasks %}{{ task_row(t, url_for('today_view')) }}{% else %}<div class="row"><span class="d">Всё сделано</span></div>{% endfor %}</div>
+
+{% if dzt %}
+<h2>Дизайнеры на сегодня · {{ dzt|length }}</h2>
+{% for key, title, hint in DZ_SECTIONS %}{% set xs = dzt|selectattr('kind', 'equalto', key)|list %}{% if xs %}
+<h3 class="dzh dzh-{{ key }}">{{ title }} · {{ xs|length }}</h3>
+<div class="panel list">{% for x in xs[:10] %}{{ dz_todo_row(x) }}{% endfor %}{% if xs|length > 10 %}<a class="row btn" href="{{ url_for('tasks_view') }}#dz-{{ key }}"><span class="d grow">Ещё {{ xs|length - 10 }}</span><span class="d">Все ›</span></a>{% endif %}</div>
+{% endif %}{% endfor %}
+{% endif %}
+{% set nw = dz_waiting() %}{% if nw %}<p class="sub"><a href="{{ url_for('tasks_view') }}#dz-wait">Ждём ответа от дизайнеров: {{ nw }} — напомним, когда придёт срок ›</a></p>{% endif %}
 
 {% if paid %}
 <h2>Оплачено — ждёт отгрузки</h2>
