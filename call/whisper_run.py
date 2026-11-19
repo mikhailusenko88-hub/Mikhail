@@ -4,6 +4,8 @@
 import sys, time
 
 src, out, info = sys.argv[1], sys.argv[2], sys.argv[3]
+import os
+VAD = "novad" not in open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "request.txt"), encoding="utf-8").read()
 from faster_whisper import WhisperModel
 
 t0 = time.time()
@@ -37,9 +39,9 @@ def load_audio(path):
 
 audio = load_audio(src)
 segments, meta = model.transcribe(
-    audio, language="ru", beam_size=5, vad_filter=True,
-    vad_parameters=dict(min_silence_duration_ms=400),
-    condition_on_previous_text=False,
+    audio, language="ru", beam_size=5, vad_filter=VAD,
+    vad_parameters=dict(min_silence_duration_ms=400) if VAD else None,
+    condition_on_previous_text=False, no_speech_threshold=0.85 if not VAD else 0.6,
     initial_prompt="Разговор продавца с менеджером поддержки Авито: объявления, тариф, лимит контактов, продвижение, автозагрузка, доставка, отзывы.",
 )
 n = 0
