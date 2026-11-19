@@ -3231,9 +3231,9 @@ class TestDzLeads(Base):
         self.assertEqual(r.status_code, 302)
         to, s, b, kw = self.sent[-1]
         self.assertEqual(to, "tanya@studio-p.ru"); self.assertTrue(b.endswith("PS"))               # уходит то, что поправили
-        # вошла Юлия — письмо от неё: «Меня зовут Юлия», подпись Юлия, условия — «их расскажет Михаил лично»
+        # вошла Юлия — письмо от неё: «Меня зовут Юлия», подпись Юлия, условия обсуждает сама («расскажу лично»)
         self.assertEqual(kw["sender"], "Юлия — Наш декор <yulia@nashdekor.ru>"); self.assertEqual(kw["reply_to"], "info@nashdekor.ru")
-        self.assertIn("Меня зовут Юлия", b); self.assertIn("их расскажет Михаил лично", b); self.assertIn("\nЮлия\n«Наш декор»", b)
+        self.assertIn("Меня зовут Юлия", b); self.assertIn("условия для дизайнеров и студий — расскажу лично", b); self.assertNotIn("Михаил лично", b); self.assertIn("\nЮлия\n«Наш декор»", b)
         self.assertIn("От yulia@nashdekor.ru", self.dz.touches(lid)[-1]["text"] + self.c.get(f"/dz/{lid}").get_data(as_text=True))
         d = self.dz.get(lid)
         self.assertEqual(d["status"], "sent"); self.assertIn("Напоминание", d["next_step"])
@@ -3349,6 +3349,10 @@ class TestDzLeads(Base):
         self.store.set_setting("dz_phone", "+7 900 000-00-01"); self.store.set_setting("dz_phone_yulia", "+7 900 000-00-02")
         self.assertIn("+7 900 000-00-02", self.c.get(f"/dz/{lid}").get_data(as_text=True))
         self.assertIn("+7 900 000-00-01", self.c.get(f"/dz/{lid}?from=mikhail").get_data(as_text=True))
+        row = self.dz.get(lid)
+        self.assertIn("когда мне позвонить вам", self.dz.render("reply", row, "yulia"))
+        self.assertIn("когда Михаилу позвонить вам", self.dz.render("reply", row, "mikhail"))
+        self.assertNotIn("Михаил расскажет", self.dz.render("call", row))
         kind, subj, body = self.dz.mail_draft(self.dz.get(lid), "mikhail")
         self.post(f"/dz/{lid}/mail", {"kind": kind, "subject": subj, "text": body, "sender": "mikhail"})
         self.assertEqual(self.sent[-1][3]["sender"], "Михаил — Наш декор <mikhail@nashdekor.ru>")
