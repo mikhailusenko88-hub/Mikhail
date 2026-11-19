@@ -2,31 +2,37 @@
  "handle": "LivingLinesTV",
  "page_status": 200,
  "channel_id": "UCuufuU5RCswqp9N1HE0NZlw",
- "title": null,
- "description": "",
- "header": [],
+ "title": "Живые строки",
+ "description": "Живые строки — мысли классиков на акварели.\n\nКаждый день три коротких ролика. В каждом три цитаты: Пушкин, Толстой, Чехов, Достоевский, Сенека, Марк Аврелий, Тагор, Шекспир и другие. Русский текст и а",
+ "header": [
+  "52 подписчика",
+  "43 видео"
+ ],
  "alerts": [],
- "images": {},
- "checked": "2026-11-19 06:54 UTC",
+ "images": {
+  "avatar": "https://yt3.googleusercontent.com/wefYK3hoTThf90hy93wCVtVPKkdJB4JASlWU7V_lVOkalg0NqT7y8kX1m_QOskPaex4lMLRw=s900-c-k-c0x00ffffff-no-rj",
+  "banner": "https://yt3.googleusercontent.com/CtLAfow-c31AX9e2TjWnkbFk_Utt5vyxw9cR70GIqdhdCQf1X2Q6QAkXSpTsc2CRUK7F2X33i1c=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
+ },
+ "checked": "2026-11-19 07:02 UTC",
  "shorts_status": 200,
  "shorts": [
   {
    "id": "N-99DrrtTBU",
    "title": "Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts",
-   "views": "29 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts, 29 просмотров\""
+   "views": "34 просмотра",
+   "a11y": "Воспроизвести короткое видео \"Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts, 34 просмотра\""
   },
   {
    "id": "O_AdQlCECak",
    "title": "Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts",
-   "views": "593 просмотра",
-   "a11y": "Воспроизвести короткое видео \"Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts, 593 просмотра\""
+   "views": "603 просмотра",
+   "a11y": "Воспроизвести короткое видео \"Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts, 603 просмотра\""
   },
   {
    "id": "JlBFZaRcgAI",
    "title": "Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts",
-   "views": "399 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts, 399 просмотров\""
+   "views": "402 просмотра",
+   "a11y": "Воспроизвести короткое видео \"Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts, 402 просмотра\""
   },
   {
    "id": "Izl4WoK8gDs",
@@ -43,14 +49,14 @@
   {
    "id": "GtEGS1lUXIM",
    "title": "Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts",
-   "views": "593 просмотра",
-   "a11y": "Воспроизвести короткое видео \"Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts, 593 просмотра\""
+   "views": "589 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts, 589 просмотров\""
   },
   {
    "id": "dUie49tmaC8",
    "title": "И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts",
-   "views": "740 просмотров",
-   "a11y": "Воспроизвести короткое видео \"И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts, 740 просмотров\""
+   "views": "748 просмотров",
+   "a11y": "Воспроизвести короткое видео \"И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts, 748 просмотров\""
   },
   {
    "id": "HQR2WewFVWQ",
@@ -275,14 +281,14 @@
    "id": "N-99DrrtTBU",
    "published": "2026-11-19T06:00:34+00:00",
    "title": "Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts",
-   "views": 29,
+   "views": 34,
    "desc": "Три мысли классиков на акварели: Екклесиаст · Антон Чехов · Лев Толстой.\nThree timeless thoughts on watercolor: Ecclesiastes · Anton Chekhov · Leo Tolstoy.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
   },
   {
    "id": "O_AdQlCECak",
    "published": "2026-11-18T16:00:35+00:00",
    "title": "Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts",
-   "views": 593,
+   "views": 603,
    "desc": "Три мысли классиков на акварели: Уолт Уитмен · Фридрих Ницше · Джебран Халиль Джебран.\nThree timeless thoughts on watercolor: Walt Whitman · Nietzsche · Kahlil Gibran.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
   },
   {

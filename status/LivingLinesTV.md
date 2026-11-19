@@ -1,11 +1,12 @@
-# LivingLinesTV  (@LivingLinesTV)
-Проверено: 2026-11-19 06:54 UTC
+# Живые строки  (@LivingLinesTV)
+Проверено: 2026-11-19 07:02 UTC
 
 - Страница канала: HTTP 200; ID: UCuufuU5RCswqp9N1HE0NZlw
+- Шапка: 52 подписчика · 43 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-19 06:00 · 29 просм. · Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts · N-99DrrtTBU
-- 2026-11-18 16:00 · 593 просм. · Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts · O_AdQlCECak
+- 2026-11-19 06:00 · 34 просм. · Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts · N-99DrrtTBU
+- 2026-11-18 16:00 · 603 просм. · Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts · O_AdQlCECak
 - 2026-11-18 11:00 · 402 просм. · Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts · JlBFZaRcgAI
 - 2026-11-18 06:00 · 335 просм. · Начало — самая важная часть работы 🤍 Три мысли на сегодня | Plato #shorts · Izl4WoK8gDs
 - 2026-11-17 16:00 · 481 просм. · Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts · _KAkT_vZ8F4
@@ -21,13 +22,13 @@
 - 2026-11-14 11:00 · 923 просм. · Учение никогда не истощает ум ✨ Words to keep | Leonardo da Vinci #shorts · UGhGJt9HX8k
 
 ## Вкладка Shorts (видно всем) — 43 шт. на первой странице
-- 29 просмотров · Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts · N-99DrrtTBU
-- 593 просмотра · Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts · O_AdQlCECak
-- 399 просмотров · Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts · JlBFZaRcgAI
+- 34 просмотра · Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts · N-99DrrtTBU
+- 603 просмотра · Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts · O_AdQlCECak
+- 402 просмотра · Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts · JlBFZaRcgAI
 - 335 просмотров · Начало — самая важная часть работы 🤍 Три мысли на сегодня | Plato #shorts · Izl4WoK8gDs
 - 481 просмотр · Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts · _KAkT_vZ8F4
-- 593 просмотра · Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts · GtEGS1lUXIM
-- 740 просмотров · И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts · dUie49tmaC8
+- 589 просмотров · Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts · GtEGS1lUXIM
+- 748 просмотров · И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts · dUie49tmaC8
 - 531 просмотр · Счастье зависит от нас самих ✨ Aristotle + 2 more #shorts · HQR2WewFVWQ
 - 665 просмотров · Ты навсегда в ответе за всех, кого приручил ✨ Words to keep | Antoine de Saint-Exupéry #shorts · 2JO-pSUStKs
 - 940 просмотров · Что меня не убивает, делает меня сильнее 🤍 Три мысли на сегодня | Nietzsche #shorts · XOC7rxj2ntQ
