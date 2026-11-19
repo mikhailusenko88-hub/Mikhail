@@ -1074,6 +1074,17 @@ class TestPek(Base):
         self.post("/settings/pek", {"act": "enable"}); self.post("/settings/pek", {"act": "forget"})
         self.assertEqual((self.store.setting("pek_key"), self.store.setting("pek_enabled")), ("", "0"))
 
+    def test_piece_weight_from_stock_docs(self) -> None:
+        self.login()
+        self.post("/settings/pek", {"act": "save", "login": "n", "key": "k"}); self.post("/settings/pek", {"act": "enable"})
+        page = self.c.get("/settings").get_data(as_text=True)
+        self.assertIn("Вес штуки для расчёта", page); self.assertIn("заполнен у 0 из 3", page)
+        self.post("/stock/docs/A912", {"weight_g": "1812", "tnved": "", "doc_name": ""})
+        self.assertIn("заполнен у 1 из 3", self.c.get("/settings").get_data(as_text=True))
+        self.ship("Казань", [{"a": "A912", "q": 6}])
+        calc = [c for c in self.pek.calls if c[0].endswith("calculateprice/")][-1][2]
+        self.assertEqual(calc["cargos"], [{"length": 3.0, "width": 0.185, "height": 0.125, "weight": round(6 * 1.812 + 0.7, 2)}])
+
     def test_staff_cannot_change_pek(self) -> None:
         self.login("mikhail", "Secret-pass-2")
         self.post("/settings/pek", {"act": "save", "login": "x", "key": "y"})
@@ -1085,6 +1096,10 @@ class TestPek(Base):
         c = cargos_for([(N(size="180×10×3000", per_box=12), 30), (N(size="80×14×2000", per_box=26), 10)])
         self.assertEqual(len(c), 4)                                   # 2 коробки 3 м + связка 3 м (6 шт) + связка 2 м (10 шт)
         self.assertEqual(c[2]["maxSize"], 3.0); self.assertEqual(c[3]["maxSize"], 2.0)
+        c = cargos_for([(N(article="A201/2", size="100×11×2400", per_box=18), 20)])
+        self.assertEqual((c[0]["length"], c[1]["maxSize"]), (2.4, 2.4))           # 2,4 м не в коробке 2 м
+        c = cargos_for([(N(article="A912", size="180×12×3000", per_box=12), 13)], piece_g={"A912": 1812})
+        self.assertEqual((c[0]["weight"], c[1]["weight"]), (22.44, 1.82))         # 12 × 1,812 + тара 0,7; связка 1 шт
         self.assertTrue(has_street("Казань, ул. Баумана, 10")); self.assertTrue(has_street("Тверь, Советская, 5"))
         self.assertFalse(has_street("Нижний Новгород")); self.assertFalse(has_street("Ростов-на-Дону"))
 

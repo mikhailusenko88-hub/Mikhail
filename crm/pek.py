@@ -36,6 +36,7 @@ LOCAL_BRANCHES = ("санкт-петербург",)  # по СПб и Леноб
 BOX_3M = (3.0, 0.185, 0.125)          # заводская коробка панелей 3 м, м
 BOX_2M = (2.0, 0.20, 0.15)            # заводская коробка погонажа 2 м, м
 BOX_KG_DEFAULT = {3: 20.0, 2: 14.0}   # типовой вес коробки, кг (точнее — в настройках CRM)
+TARE_KG = 0.7                         # пустая коробка, кг (к весу штук, когда вес штуки известен)
 ZONE_TTL = 30 * 86400
 PRICE_TTL = 6 * 3600
 
@@ -142,12 +143,16 @@ def _dims(size: str) -> tuple[int, int, int]:
     return (nums + [0, 0, 0])[:3] if len(nums) >= 3 else (0, 0, 0)
 
 
-def cargos_for(lines: list[tuple[Any, int]], box_kg: dict[int, float] | None = None) -> list[dict[str, Any]]:
+def cargos_for(lines: list[tuple[Any, int]], box_kg: dict[int, float] | None = None,
+               piece_g: dict[str, int] | None = None) -> list[dict[str, Any]]:
     """lines: (товар из каталога CRM с .size «Ш×Т×Д» и .per_box, количество шт).
-    Полные коробки — отдельные места; остаток поштучно — одна связка на каждую длину (по объёму доли коробки)."""
+    Полные коробки — отдельные места; остаток поштучно — одна связка на каждую длину (по объёму доли коробки).
+    Длина места — по длине товара (2,4 м не влезает в коробку 2 м). Вес: если у артикула заполнен вес штуки
+    (piece_g, граммы — «Склад → ТН ВЭД и вес для документов»), коробка = штук × вес + тара; иначе типовая коробка."""
     kg = {**BOX_KG_DEFAULT, **(box_kg or {})}
+    piece_g = piece_g or {}
     places: list[dict[str, Any]] = []
-    rest: dict[int, list[float]] = {}           # длина 3/2 → [объём, вес]
+    rest: dict[float, list[float]] = {}         # длина места, м → [объём, вес, 3/2]
     for p, qty in lines:
         qty = max(0, int(qty))
         if not qty:
@@ -155,18 +160,21 @@ def cargos_for(lines: list[tuple[Any, int]], box_kg: dict[int, float] | None = N
         _w, _t, ln = _dims(getattr(p, "size", ""))
         meters = 3 if ln >= 2500 else 2
         box = BOX_3M if meters == 3 else BOX_2M
+        blen = max(box[0], round(ln / 1000, 2)) if ln else box[0]
         per_box = max(1, int(getattr(p, "per_box", 0) or 1))
+        g = int(piece_g.get(str(getattr(p, "article", "")), 0) or 0)
+        box_w = per_box * g / 1000 + TARE_KG if g > 0 else kg[meters]
         full, part = divmod(qty, per_box)
         for _ in range(min(full, 200)):
-            places.append({"length": box[0], "width": box[1], "height": box[2], "weight": round(kg[meters], 2)})
+            places.append({"length": blen, "width": box[1], "height": box[2], "weight": round(box_w, 2)})
         if part:
             share = part / per_box
-            r = rest.setdefault(meters, [0.0, 0.0])
-            r[0] += box[0] * box[1] * box[2] * share
-            r[1] += kg[meters] * share
-    for meters, (vol, wt) in sorted(rest.items(), reverse=True):
+            r = rest.setdefault(blen, [0.0, 0.0, meters])
+            r[0] += blen * box[1] * box[2] * share
+            r[1] += part * g / 1000 if g > 0 else kg[meters] * share
+    for blen, (vol, wt, meters) in sorted(rest.items(), reverse=True):
         box = BOX_3M if meters == 3 else BOX_2M
-        places.append({"volume": round(max(vol, box[0] * box[1] * box[2] * 0.25) + 0.005, 2), "maxSize": box[0],
+        places.append({"volume": round(max(vol, blen * box[1] * box[2] * 0.25) + 0.005, 2), "maxSize": blen,
                        "weight": round(max(wt, 1.0) + 0.005, 2)})
     return places
 

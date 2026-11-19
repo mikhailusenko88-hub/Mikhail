@@ -50,7 +50,7 @@ from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, Tochk
                     parse_jwk, receipt_items, verify_rs256)
 from visits import Visits, is_bot, parse_body
 from pek import PRICE_TTL as PEK_PRICE_TTL, SENDER_ADDRESS as PEK_SENDER, ZONE_TTL as PEK_ZONE_TTL
-from pek import Cache as PekCache, Pek, PekError, cargos_for, has_street, is_local
+from pek import Cache as PekCache, Pek, PekError, _dims as _pek_dims, cargos_for, has_street, is_local
 import maxapp
 
 log = logging.getLogger("crm")
@@ -84,6 +84,11 @@ SERVER_ACTIONS: list[tuple[str, str, str]] = [
 SERVER_ACTION_KEYS = {k for k, _, _ in SERVER_ACTIONS}
 MAX_CHANNEL_URL = "https://max.ru/id470331302505_biz"   # канал «Наш декор» в MAX (создан 16.11.2026) — в подписи писем
 HIT_MAX = 150
+
+
+def _pek_len(size: str) -> int:
+    """Длина товара, мм, из размера каталога «Ш×Т×Д»; 0 — размер не разобрать."""
+    return _pek_dims(size)[2]
 
 
 def _secret(path: str) -> str:
@@ -1054,6 +1059,22 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 out[m] = v
         return out
 
+    def pek_piece_g() -> dict[str, int]:
+        """Вес штуки по артикулам, г — из «Склад → ТН ВЭД и вес для документов» (там же он для УПД и ДОПП)."""
+        try:
+            return {str(r["article"]): int(r["weight_g"]) for r in
+                    buh.c().execute("SELECT article, weight_g FROM product_info WHERE weight_g > 0").fetchall()}
+        except Exception:  # noqa: BLE001 — нет таблицы/базы — считаем типовой коробкой
+            return {}
+
+    def pek_goods() -> dict[str, Any]:
+        """Для раздела ПЭК в Настройках: у скольких товаров сайта есть вес штуки; без длины или «штук в коробке» — список."""
+        w = pek_piece_g()
+        items = store.catalog.all()
+        no_w = [p.article for p in items if not w.get(p.article)]
+        no_size = [p.article for p in items if not _pek_len(p.size) or int(p.per_box or 0) < 1]
+        return {"total": len(items), "with_w": len(items) - len(no_w), "no_w": no_w, "no_size": no_size}
+
     def pek_zone(t: Pek, address: str) -> dict[str, Any] | None:
         key = "z|" + address.lower()
         z = pek_cache.get(key)
@@ -1077,7 +1098,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 return out_l
             try:
                 snd = pek_zone(t, PEK_SENDER)
-                cargos = cargos_for(lines, pek_box_kg())
+                cargos = cargos_for(lines, pek_box_kg(), pek_piece_g())
                 if snd and cargos:
                     pick = store.setting("pek_pickup_address", "") or PEK_SENDER
                     dk = "l|" + json.dumps([z["warehouse"], cargos, insure // 1000, pick, addr.lower()], sort_keys=True)
@@ -1092,7 +1113,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         snd = pek_zone(t, PEK_SENDER)
         if not snd:
             raise PekError(200, "ПЭК не нашёл склад в Санкт-Петербурге")
-        cargos = cargos_for(lines, pek_box_kg())
+        cargos = cargos_for(lines, pek_box_kg(), pek_piece_g())
         if not cargos:
             return {"ok": False, "error": "items"}
         pick = store.setting("pek_pickup_address", "") or PEK_SENDER      # забор у нас со склада (адрес — в Настройках)
@@ -1779,7 +1800,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                pek=dict(has_key=bool(store.setting("pek_key", "")), login=store.setting("pek_login", ""), on=pek_on(),
                                         box3=store.setting("pek_box3_kg", ""), box2=store.setting("pek_box2_kg", ""),
                                         pickup=store.setting("pek_pickup_address", ""),
-                                        check=store.setting("pek_check", "")))
+                                        check=store.setting("pek_check", ""), goods=pek_goods()))
 
     def offsite_conf() -> dict[str, str]:
         return {k: store.setting("offsite_" + k, "") for k in ("endpoint", "region", "bucket", "key", "secret", "prefix")}
