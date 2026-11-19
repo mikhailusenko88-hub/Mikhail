@@ -1,0 +1,29 @@
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.1s] reeded wall panels ribs 36 faces 720
+[scene   0.1s] reeded wall panels ribs 36 faces 720
+[scene   0.1s] asset ceramic_vase_01 size 0.20 x 0.20 x 0.40 objs 1
+[scene   0.8s] asset potted_plant_01 size 0.59 x 0.63 x 1.35 objs 4
+[scene   1.0s] asset ceramic_vase_02 size 0.22 x 0.22 x 0.31 objs 1
+[scene   1.0s] asset standing_picture_frame_02 size 0.22 x 0.10 x 0.27 objs 1
+[scene   1.1s] asset potted_plant_04 size 0.17 x 0.18 x 0.27 objs 4
+[scene   1.1s] objects 81 scene built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/nf4_sofa2w/_sky.exr'
+Time: 00:02.98 (Saving: 00:00.00)
+
+[scene   4.1s] sky irradiance [0.246 0.271 0.284] sun strength 0.0
+Saved: '/home/runner/work/Mikhail/Mikhail/out/nf4_sofa2w/_pre.exr'
+Time: 00:09.35 (Saving: 00:00.00)
+
+[scene  14.3s] white pixels 14041 illuminant [0.706 0.988 1.984] wb gains [1. 1. 1.] wall Y 0.0487 exposure 4.43
+Saved: '/home/runner/work/Mikhail/Mikhail/out/nf4_sofa2w/_pre2.exr'
+Time: 00:08.52 (Saving: 00:00.00)
+
+[scene  22.8s] re-exposure: frame median 0.1722 exposure -0.52
+Saved: '/home/runner/work/Mikhail/Mikhail/out/nf4_sofa2w/nf4_sofa2w.jpg'
+Time: 15:39.09 (Saving: 00:00.28)
+
+[scene 961.9s] final render 939.1s /home/runner/work/Mikhail/Mikhail/out/nf4_sofa2w/nf4_sofa2w.jpg
+[scene 961.9s] done
+
+Blender quit
