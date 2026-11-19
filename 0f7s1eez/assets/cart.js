@@ -384,7 +384,8 @@ async function shipCalc(el, where){
     const t = j.terminal, d = j.door, days = x => x && x.days ? `, ≈ ${x.days} дн.` : "";
     /* неполная коробка в другой город — в жёсткой упаковке ПЭК (решение 19.11), подсказка «добрать до коробки» */
     const fill = Array.isArray(j.fill) ? j.fill.filter(f => f && f.add > 0) : [];
-    let pack = j.packed ? "<small>Неполная коробка поедет в жёсткой упаковке ПЭК (обрешётка) — так тонкие рейки не ломаются в дороге; упаковка уже в цене.</small>" : "";
+    let pack = j.packed ? "<small>Неполная коробка поедет в жёсткой упаковке ПЭК (обрешётка) — так тонкие рейки не ломаются в дороге; упаковка уже в цене.</small>"
+      : j.pack_later ? "<small>Неполную коробку отправим в жёсткой упаковке ПЭК (обрешётка) — её стоимость назовём при подтверждении заказа.</small>" : "";
     if (fill.length) pack += `<small class="ndk-fill">${el.dataset.ship === "item" ? `До целой коробки ещё ${fill[0].add} шт`
       : "До целых коробок: " + fill.map(f => `${esc(f.a)} — ещё ${f.add} шт`).join(", ")}. Целой коробкой надёжнее и без доплаты за упаковку. `
       + `<button type="button" class="btn sm ghost ndk-fillb">Добрать до коробки</button></small>`;
@@ -401,7 +402,7 @@ async function shipCalc(el, where){
       shipCalc(el, where);
     });
     shipLast = { mode: el.dataset.ship, a: el.dataset.a || "", city: where,
-                 text: `Доставка ПЭК: ${where} — до терминала ≈ ${fmt(t.cost)} ₽${t.days ? ", ≈ " + t.days + " дн." : ""}${d ? `, до двери ≈ ${fmt(d.cost)} ₽` : ""}${j.packed ? ", неполная коробка — в жёсткой упаковке ПЭК" : ""} (расчёт на сайте)` };
+                 text: `Доставка ПЭК: ${where} — до терминала ≈ ${fmt(t.cost)} ₽${t.days ? ", ≈ " + t.days + " дн." : ""}${d ? `, до двери ≈ ${fmt(d.cost)} ₽` : ""}${j.packed ? ", неполная коробка — в жёсткой упаковке ПЭК" : j.pack_later ? ", неполная коробка — в жёсткой упаковке ПЭК (упаковка не в расчёте)" : ""} (расчёт на сайте)` };
     const addr = $("kAddr");                                      // корзина: адрес с улицей — сразу в форму заказа
     if (el.dataset.ship === "cart" && d && addr && !addr.value.trim()) addr.value = where;
     return;
