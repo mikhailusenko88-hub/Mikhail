@@ -1,0 +1,28 @@
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.1s] reeded wall panels ribs 36 faces 720
+[scene   0.1s] reeded wall panels ribs 36 faces 720
+[scene   0.1s] asset ceramic_vase_02 size 0.22 x 0.22 x 0.31 objs 1
+[scene   0.2s] asset ceramic_vase_03 size 0.11 x 0.11 x 0.41 objs 1
+[scene   0.2s] asset potted_plant_04 size 0.17 x 0.18 x 0.27 objs 4
+[scene   0.9s] asset potted_plant_01 size 0.59 x 0.63 x 1.35 objs 4
+[scene   1.1s] objects 68 scene built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/nd8_tv2dark/_sky.exr'
+Time: 00:02.93 (Saving: 00:00.00)
+
+[scene   4.0s] sky irradiance [3.076 3.387 3.55 ] sun strength 0.0
+Saved: '/home/runner/work/Mikhail/Mikhail/out/nd8_tv2dark/_pre.exr'
+Time: 00:07.92 (Saving: 00:00.00)
+
+[scene  12.7s] white pixels 13182 illuminant [1.202 0.847 1.925] wb gains [1. 1. 1.] wall Y 0.1139 exposure 3.2
+Saved: '/home/runner/work/Mikhail/Mikhail/out/nd8_tv2dark/_pre2.exr'
+Time: 00:07.34 (Saving: 00:00.00)
+
+[scene  20.0s] re-exposure: frame median 0.1476 exposure -0.56
+Saved: '/home/runner/work/Mikhail/Mikhail/out/nd8_tv2dark/nd8_tv2dark.jpg'
+Time: 01:32.72 (Saving: 00:00.18)
+
+[scene 112.8s] final render 92.7s /home/runner/work/Mikhail/Mikhail/out/nd8_tv2dark/nd8_tv2dark.jpg
+[scene 112.8s] done
+
+Blender quit
