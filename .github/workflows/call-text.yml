@@ -31,7 +31,7 @@ jobs:
           git add -A call; git commit -q -m "call-text: ключ раннера"
           for i in 1 2 3; do git pull -q --rebase origin call-text && git push -q origin HEAD:call-text && break; sleep 4; done
       - name: Распознаватель
-        run: pip install -q faster-whisper "av<15" imageio-ffmpeg
+        run: pip install -q faster-whisper imageio-ffmpeg
       - name: Ждать запись
         run: |
           for i in $(seq 1 90); do
