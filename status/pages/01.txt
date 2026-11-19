@@ -1,24 +1,19 @@
-URL: https://crm.nashdekor.ru/dz/1/reply
-КОД: 405
+URL: https://crm.nashdekor.ru/api/outbox/status/26a6473c-c2aa-4603-bb7d-ca36c2824094
+КОД: 200
 ЗАГОЛОВКИ:
 Server: nginx
-Date: Thu, 19 Nov 2026 09:06:08 GMT
-Content-Type: text/html; charset=utf-8
-Content-Length: 153
+Date: Thu, 19 Nov 2026 09:07:56 GMT
+Content-Type: application/json
+Content-Length: 21
 Connection: close
-Allow: POST, OPTIONS
+Cache-Control: no-store
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 Referrer-Policy: same-origin
-Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'
-Cache-Control: no-store
 Vary: Cookie
-Set-Cookie: crm=eyJjc3JmIjoiWHF4RlY1S05ZSFJEdEZabEhSOEZ3RzYxeGEwXzhTcGYifQ.av68AA.9M4lHu8Ix8FrT1oGDOfO4XK1tlw; Secure; HttpOnly; Path=/; SameSite=Lax
 Strict-Transport-Security: max-age=15552000
 X-Robots-Tag: noindex, nofollow
 
-405 Method Not Allowed 
- Method Not Allowed
- The method is not allowed for the requested URL.
+{"status":"unknown"}
 
 ССЫЛКИ:
