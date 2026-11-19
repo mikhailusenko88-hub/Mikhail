@@ -2016,6 +2016,8 @@ def scene_use():
     box('track', 0.07, 0.17, 2.0, 5.05, 2.64, 2.67, mat_simple('track', srgb(240, 240, 238), rough=0.4))
     yw = D - 0.012 - 0.015
     world, sun = setup_world(sun_dir)
+    if neon:                                               # вечер: небо за окном тусклое (skyk — доля силы неба)
+        world.node_tree.nodes['Background'].inputs['Strength'].default_value = float(A.get('skyk', 0.08))
     cal = camera((2.55, 0.75, 1.22), (2.15, D, 1.02), lens=30, fstop=5.6, focus=4.3)
     if use in ('tv', 'tv1', 'tv2', 'cl', 'tvc'):
         yc = yw - 0.21
@@ -2029,7 +2031,7 @@ def scene_use():
             box('neon_tvback', 2.15 - tw / 2 + 0.05, 2.15 + tw / 2 - 0.05, D - 0.0225, D - 0.017, tz - th / 2 + 0.05, tz + th / 2 - 0.05,
                 mat_simple('neon_tvback', (0, 0, 0, 1), rough=0.5, **{'Emission Color': hexcol(A.get('ncol2', 'FF2E9A')), 'Emission Strength': float(A.get('neonk', 60)) * 2.5}))
             box('neon_under', 1.25, 3.05, yw - 0.30, yw - 0.27, 0.155, 0.165,
-                mat_simple('neon_under', (0, 0, 0, 1), rough=0.5, **{'Emission Color': hexcol(A.get('ncol1', '1ED8FF')), 'Emission Strength': float(A.get('neonk', 60)) * 0.6}))
+                mat_simple('neon_under', (0, 0, 0, 1), rough=0.5, **{'Emission Color': hexcol(A.get('ncol1', '1ED8FF')), 'Emission Strength': float(A.get('neonk', 60)) * 0.3}))
         zz = books(1.55, yc - 0.02, top, 3, seed=4)
         load_asset('ceramic_vase_02', loc=(1.55, yc - 0.02, zz), rot=20)
         load_asset('ceramic_vase_03', loc=(2.85, yc - 0.03, top), rot=10)

@@ -1,6 +1,6 @@
 # черновики (быстрая дорожка, .github/workflows/draft.yml): имя  аргументы для scene.py
-# неоновая комната, вечер (20.11.2026): без солнца, неон сильнее неба
-nd5_tv2 scene=use decor=A910 neon=1 wbk=0 sun_el=4 sun_az=40 sun=0 neonk=400 res=900x600 samples=48 noise=0.08 paint=2E3140 use=tv2 reexp=0.10
-nd6_close scene=use decor=A910 neon=1 wbk=0 sun_el=4 sun_az=40 sun=0 neonk=400 res=900x600 samples=48 noise=0.08 paint=2E3140 use=tv2 reexp=0.12 campos=1.95,3.85,1.30 camto=0.74,5.17,1.15 lens=35
-nd7_sofa2 scene=use decor=A910 neon=1 wbk=0 sun_el=4 sun_az=40 sun=0 neonk=400 res=900x600 samples=48 noise=0.08 paint=2E3140 use=sofa2 reexp=0.11
-nd8_tv2dark scene=use decor=A910 neon=1 wbk=0 sun_el=4 sun_az=40 sun=0 neonk=400 res=900x600 samples=48 noise=0.08 paint=3B3050 cabcol=2F2F36 use=tv2 reexp=0.10
+# неоновая комната, вечер (20.11.2026): небо тусклое; белые A910 в неоне против графитовых
+nd9_tv2w scene=use decor=A910 neon=1 wbk=0 sun_el=4 sun_az=40 sun=0 neonk=400 skyk=0.08 res=900x600 samples=48 noise=0.08 paint=EFEEEA use=tv2 reexp=0.12
+nd10_closew scene=use decor=A910 neon=1 wbk=0 sun_el=4 sun_az=40 sun=0 neonk=400 skyk=0.08 res=900x600 samples=48 noise=0.08 paint=EFEEEA use=tv2 reexp=0.14 campos=1.95,3.85,1.30 camto=0.74,5.17,1.15 lens=35
+nd11_tv1w scene=use decor=A910 neon=1 wbk=0 sun_el=4 sun_az=40 sun=0 neonk=400 skyk=0.08 res=900x600 samples=48 noise=0.08 paint=EFEEEA use=tv1 reexp=0.12
+nd12_tv2g scene=use decor=A910 neon=1 wbk=0 sun_el=4 sun_az=40 sun=0 neonk=400 skyk=0.08 res=900x600 samples=48 noise=0.08 paint=5A5E70 cabcol=2F2F36 use=tv2 reexp=0.12
