@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Проект 100/7</title>
+<style>
+:root{
+  --bg:#eceef0; --panel:#ffffff; --fg:#1d2328; --muted:#5f6b75; --accent:#2f6f8f; --line:#d3d8dc;
+  --f-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --f-num: ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root{--bg:#1a1e22;--panel:#23292e;--fg:#e6eaed;--muted:#9aa6af;--accent:#6fb3d4;--line:#38424a;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+#view{position:relative;flex:1 1 auto;min-height:240px}
+#c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.ttl{position:absolute;top:calc(8px + env(safe-area-inset-top,0px));left:max(12px,env(safe-area-inset-left,0px));font-size:14px;font-weight:600;margin:0;pointer-events:none;color:var(--muted)}
+.hint{position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:8px;font-size:12px;color:var(--muted);pointer-events:none;transition:opacity .6s}
+.bar{flex:0 0 auto;max-height:44vh;overflow:auto;background:var(--panel);border-top:1px solid var(--line);
+  padding:8px max(12px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));
+  display:flex;flex-direction:column;gap:8px}
+@media (min-width:900px){#app{flex-direction:row}.bar{width:400px;max-height:none;height:100%;border-top:0;border-left:1px solid var(--line)}}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lbl{font-size:12px;color:var(--muted);min-width:74px}
+.note{font-size:12.5px;margin:0;color:var(--muted);line-height:1.35}
+.sel{font-size:12px;margin:0;color:var(--muted)}
+button{font:500 12.5px var(--f-ui);padding:7px 10px;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
+button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select{font:13px var(--f-ui);padding:6px 8px;border:1px solid var(--line);border-radius:7px;background:var(--panel);color:var(--fg);max-width:100%}
+.sw{display:flex;gap:6px;align-items:center;font-size:12.5px;flex-wrap:wrap}
+.sw .dot{width:26px;height:26px;padding:0;border-radius:50%;border:1px solid rgba(0,0,0,.18)}
+.sw .dot[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:2px;background-clip:padding-box}
+.own{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.own input[type=color]{width:34px;height:26px;border:1px solid var(--line);border-radius:6px;padding:0;background:transparent}
+.own input[type=text]{font:12.5px var(--f-ui);padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--fg);width:170px}
+.dims{display:grid;grid-template-columns:1fr;gap:0;font-size:12.5px;margin:0}
+.dims div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding:3px 0}
+.dims span{color:var(--muted)} .dims b{font-weight:500;font-family:var(--f-num);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="view">
+    <canvas id="c"></canvas>
+    <h1 class="ttl">Проект 100/7 — кухня угловая</h1>
+    <div class="hint" id="hint">Нажмите на фасад — откроется · крутить пальцем, приблизить двумя</div>
+  </div>
+  <div class="bar" id="bar">
+    <div class="row"><span class="lbl">Планировка</span><span class="row" id="segLay"></span></div>
+    <div class="row"><span class="lbl">Материал</span><span class="row" id="segMat"></span></div>
+    <p class="note" id="note"></p>
+    <div class="row"><span class="lbl">Цвет для</span><select id="tgt" aria-label="Что красим"></select></div>
+    <div class="sw" id="sw"></div>
+    <div class="own"><span class="lbl">Свой цвет</span><input type="color" id="own" value="#f2f1ec" aria-label="Свой цвет"><input type="text" id="ownName" placeholder="название или артикул (Egger U750, RAL 7044)"></div>
+    <div class="row">
+      <button id="bOpen" aria-pressed="false">Открыть всё</button>
+      <button id="bFr" aria-pressed="true">Фасады</button>
+      <button id="bCodes" aria-pressed="true">Коды</button>
+      <button id="bDims" aria-pressed="false">Размеры</button>
+      <button id="b3d">3D</button><button id="bFront">Спереди</button><button id="bPlan">Сверху</button>
+      <button id="bTab" aria-pressed="false">Таблица размеров</button>
+    </div>
+    <div id="tab" hidden></div>
+    <p class="sel" id="sel"></p>
+    
+  </div>
+</div>
+
+<script src="/mebel/_lib/three.min.js"></script>
+<script>
+'use strict';
+// Все размеры в мм. x — вдоль задней стены от левой, y — от пола, z — от задней стены к нам.
+// Модуль строится в своей системе: x по ширине, z от стены к фасаду; модули левой стены повёрнуты.
+const S=0.001;
+const PL=100, BH=720, BD=560, FT=18, CT=38, CTD=600, TOP=PL+BH+CT, GOLA=30, FTOP=PL+BH-GOLA;
+const UY=1460, UTOP=2400, UH=UTOP-UY, GH=320, FH=UH-GH, UD=320;
+const RW=2800, RD=1600, RH=2700;
+const FR={w:750,h:1900,d:660}, ANT_Y=FR.h+60;
+
+// ---------- палитры
+const FRONT_COLORS=[['Белый W1100','#f2f1ec'],['Кашемир U702','#b5ab9c'],['Серый камень U727','#8f8c86'],['Зелёный шалфей U638','#7d8a78'],
+ ['Графит U961','#3e4245'],['Дуб Кассела','#a77c55'],['Дуб песочный H3309','#c9a77d'],['Дуб натуральный H1145','#b08a5e'],['Дуб табак H1180','#6b4a33']];
+const STONE_COLORS=[['Бетон серый','#8c8a86'],['Бетон светлый','#c4c1bc'],['Мрамор белый','#e8e6e1'],['Графит','#3c3d3f'],['Дуб натуральный','#b08a5e'],['Кашемир','#b5ab9c']];
+const FRAME_COLORS=[['Чёрный','#1d1d1d'],['Графит','#4a4c4f'],['Алюминий','#b9bcbf'],['Золото','#c9a55a'],['Белый','#eeeeec']];
+
+// ---------- планировки
+const LAYS={
+ 1:{name:'1 · Как на фото',
+  note:'Мойка у угла, духовка под варочной панелью, СВЧ встроена в верхний шкаф В2, вытяжка спрятана в В3. Холодильник отдельностоящий 75 см — в нише П1 с антресолью сверху.',
+  mods:[
+  {code:'Н1',type:'corner',name:'Тумба угловая, полка',w:1000,wall:'back',at:0,blind:'L'},
+  {code:'Н2',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'back',at:1000},
+  {code:'Н3',type:'drawers',name:'Тумба с 3 ящиками',w:400,wall:'back',at:1600},
+  {code:'П1',type:'fridge',name:'Ниша холодильника с антресолью',w:800,wall:'back',at:2000,side:true},
+  {code:'Н4',type:'sink',name:'Тумба под мойку',w:600,wall:'left',at:580},
+  {code:'Н5',type:'door',name:'Тумба с полкой',w:400,wall:'left',at:1180,vis:'L',hinge:'L'},
+  {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой, сушка над мойкой',w:1200,wall:'left',at:0,doors:2},
+  {code:'В2',type:'upMicro',name:'Шкаф верхний со встроенной СВЧ',w:660,wall:'back',at:340},
+  {code:'В3',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой',w:600,wall:'back',at:1000},
+  {code:'В4',type:'up',name:'Шкаф верхний, полка',w:400,wall:'back',at:1600,hinge:'R'},
+  {code:'С1',type:'glass',name:'Витрина со стеклом',w:660,wall:'back',at:340},
+  {code:'С2',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:1000},
+  {code:'С3',type:'glass',name:'Витрина со стеклом',w:400,wall:'back',at:1600}],
+  top:[[0,0,2000,600],[0,600,600,1000]], splash:{back:2000,left:1600}},
+ 2:{name:'2 · С посудомойкой',
+  note:'Как вариант 1, но рядом с мойкой встроена посудомоечная машина 45 см (Н5), мойка 55 см. Холодильник 75 см — в нише П1.',
+  mods:[
+  {code:'Н1',type:'corner',name:'Тумба угловая, полка',w:1000,wall:'back',at:0,blind:'L'},
+  {code:'Н2',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'back',at:1000},
+  {code:'Н3',type:'drawers',name:'Тумба с 3 ящиками',w:400,wall:'back',at:1600},
+  {code:'П1',type:'fridge',name:'Ниша холодильника с антресолью',w:800,wall:'back',at:2000,side:true},
+  {code:'Н4',type:'sink',name:'Тумба под мойку',w:550,wall:'left',at:580},
+  {code:'Н5',type:'dw',name:'Посудомоечная машина 45 см, фасад + боковина',w:450,wall:'left',at:1130,endPanel:true},
+  {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой, сушка над мойкой',w:1200,wall:'left',at:0,doors:2},
+  {code:'В2',type:'upMicro',name:'Шкаф верхний со встроенной СВЧ',w:660,wall:'back',at:340},
+  {code:'В3',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой',w:600,wall:'back',at:1000},
+  {code:'В4',type:'up',name:'Шкаф верхний, полка',w:400,wall:'back',at:1600,hinge:'R'},
+  {code:'С1',type:'glass',name:'Витрина со стеклом',w:660,wall:'back',at:340},
+  {code:'С2',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:1000},
+  {code:'С3',type:'glass',name:'Витрина со стеклом',w:400,wall:'back',at:1600}],
+  top:[[0,0,2000,600],[0,600,600,1000]], splash:{back:2000,left:1600}},
+ 3:{name:'3 · Духовка в пенале',
+  note:'Духовка и СВЧ — в пенале П1 на удобной высоте, под варочной панелью 3 широких ящика (Н2, 80 см). Мойка в конце левой стороны. Холодильник 75 см — в нише П2.',
+  mods:[
+  {code:'Н1',type:'corner',name:'Тумба угловая, полка',w:1000,wall:'left',at:0,blind:'R'},
+  {code:'Н2',type:'drawers',name:'Тумба с 3 ящиками под варочной панелью',w:800,wall:'back',at:580,hob:true},
+  {code:'Н3',type:'sink',name:'Тумба под мойку',w:600,wall:'left',at:1000,vis:'L'},
+  {code:'П1',type:'ovenCol',name:'Пенал: 2 ящика, духовка, СВЧ, дверь',w:600,wall:'back',at:1380,vis:'L'},
+  {code:'П2',type:'fridge',name:'Ниша холодильника с антресолью',w:820,wall:'back',at:1980,side:false},
+  {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой, сушка над мойкой',w:1600,wall:'left',at:0,doors:3},
+  {code:'В2',type:'up',name:'Шкаф верхний узкий (специи)',w:240,wall:'back',at:340,hinge:'L'},
+  {code:'В3',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой',w:800,wall:'back',at:580},
+  {code:'С1',type:'glass',name:'Витрина со стеклом',w:240,wall:'back',at:340},
+  {code:'С2',type:'glass',name:'Витрина со стеклом',w:800,wall:'back',at:580}],
+  top:[[0,0,600,1600],[600,0,780,600]], splash:{back:1380,left:1600}}
+};
+const MATV={A:{name:'А · МДФ в плёнке',note:'Фасады — МДФ в матовой плёнке ПВХ, верхние — рифлёные; видимые боковины — тоже МДФ; корпус — белая ЛДСП.'},
+            B:{name:'Б · ЛДСП',note:'Всё из ЛДСП Egger: фасады гладкие, корпус белый. Рифление на ЛДСП не делается.'}};
+
+// ---------- состояние (выбор клиента сохраняется в его браузере)
+const DEF={lay:1,mat:'A',all:{c:'#f2f1ec',n:'Белый W1100'},low:null,up:null,mods:{},top:{c:'#8c8a86',n:'Бетон серый'},splash:{c:'#c4c1bc',n:'Бетон светлый'},frame:{c:'#1d1d1d',n:'Чёрный'}};
+let state=JSON.parse(JSON.stringify(DEF));
+try{const s=JSON.parse(localStorage.getItem('p1007')||'null');if(s&&s.all)state=Object.assign(state,s)}catch(e){}
+function save(){try{localStorage.setItem('p1007',JSON.stringify(state))}catch(e){}}
+
+// ---------- сцена
+const view=document.getElementById('view'), canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(42,1,0.02,60);
+scene.add(new THREE.HemisphereLight(0xffffff,0x9a958c,0.72));
+const dl=new THREE.DirectionalLight(0xffffff,0.5); dl.position.set(2.6,3.4,4.2); scene.add(dl);
+const dl2=new THREE.DirectionalLight(0xffffff,0.22); dl2.position.set(4,2.2,1.2); scene.add(dl2);
+
+const Lm=c=>new THREE.MeshLambertMaterial({color:c});
+const Ph=(c,sh,sp)=>new THREE.MeshPhongMaterial({color:c,shininess:sh||60,specular:sp||0x444444});
+function fluteTexture(){const cv=document.createElement('canvas');cv.width=32;cv.height=2;const x=cv.getContext('2d');
+  for(let i=0;i<32;i++){const t=(i+0.5)/32,v=Math.round(255*(0.74+0.26*Math.sin(Math.PI*t)));x.fillStyle=`rgb(${v},${v},${v})`;x.fillRect(i,0,1,2)}
+  const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=renderer.capabilities.getMaxAnisotropy();return t}
+function floorTexture(){const cv=document.createElement('canvas');cv.width=512;cv.height=512;const x=cv.getContext('2d');
+  let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
+  for(let r=0;r<8;r++){let off=Math.floor(rnd()*400);const segs=[[-512+off,off],[off,off+512]];
+    segs.forEach(([a,b])=>{const k=0.9+rnd()*0.16;x.fillStyle=`rgb(${Math.round(206*k)},${Math.round(186*k)},${Math.round(156*k)})`;x.fillRect(a,r*64,b-a,64);
+      for(let i=0;i<6;i++){x.fillStyle=`rgba(120,90,60,${0.04+rnd()*0.05})`;x.fillRect(a,r*64+rnd()*60,b-a,1+rnd()*2)}
+      x.fillStyle='rgba(90,70,50,0.35)';x.fillRect(b-1,r*64,2,64)});
+    x.fillStyle='rgba(90,70,50,0.35)';x.fillRect(0,r*64,512,1.5)}
+  const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=renderer.capabilities.getMaxAnisotropy();return t}
+const FLUTE=fluteTexture();
+const MATS={white:Lm(0xf3f2ee), wall:new THREE.MeshLambertMaterial({color:0xd9d7d3,emissive:0x3c3b39}), top:Lm(state.top.c), splash:Lm(state.splash.c), frame:Lm(state.frame.c),
+  black:Ph(0x161616,80,0x555555), glassDark:Ph(0x0b0b0c,120,0x777777), steel:Ph(0xc6c9cc,70,0x666666), steelDark:Ph(0x8d9195,50,0x444444),
+  inner:Lm(0xf7f7f5), sink:Ph(0x232323,30,0x222222), sinkIn:Ph(0x151515,20,0x111111), hob:Ph(0x0d0d0e,140,0x888888),
+  ring:new THREE.MeshBasicMaterial({color:0x4b4b4b}), led:new THREE.MeshBasicMaterial({color:0xfff2d8}),
+  glass:new THREE.MeshPhongMaterial({color:0x3b3e42,transparent:true,opacity:0.38,shininess:120,specular:0x999999,depthWrite:false}),
+  dish:Lm(0xfafaf8), cup:new THREE.MeshPhongMaterial({color:0xe8eef2,transparent:true,opacity:0.55,shininess:100})};
+
+// комната: стены видны только изнутри
+function plane(w,h,mat,px,py,pz,ry,rx){const m=new THREE.Mesh(new THREE.PlaneGeometry(w*S,h*S),mat);m.position.set(px*S,py*S,pz*S);if(ry)m.rotation.y=ry;if(rx)m.rotation.x=rx;scene.add(m);return m}
+plane(RW,RH,MATS.wall,RW/2,RH/2,0);
+plane(2600,RH,MATS.wall,0,RH/2,1300,Math.PI/2);
+plane(2600,RH,MATS.wall,RW,RH/2,1300,-Math.PI/2);
+const ft=floorTexture(); ft.repeat.set(RW/1600,2600/1600);
+plane(RW,2600,new THREE.MeshLambertMaterial({color:0xffffff,map:ft}),RW/2,0,1300,0,-Math.PI/2);
+
+// ---------- помощники
+function box(w,h,d,x,y,z,mat,parent){const m=new THREE.Mesh(new THREE.BoxGeometry(w*S,h*S,d*S),mat);m.position.set((x+w/2)*S,(y+h/2)*S,(z+d/2)*S);parent.add(m);return m}
+const CODES=[], DIMS=[];
+function label(text,x,y,z,kind,parent){
+  const big=kind==='code', fs=big?58:38, cv=document.createElement('canvas'), ctx=cv.getContext('2d');
+  const font=`600 ${fs}px ui-monospace, Menlo, Consolas, monospace`; ctx.font=font;
+  cv.width=Math.ceil(ctx.measureText(text).width)+26; cv.height=fs+20; ctx.font=font;
+  ctx.fillStyle=big?'#2f6f8f':'rgba(255,255,255,0.94)'; ctx.fillRect(0,0,cv.width,cv.height);
+  if(!big){ctx.strokeStyle='rgba(47,111,143,0.6)';ctx.lineWidth=2;ctx.strokeRect(1,1,cv.width-2,cv.height-2)}
+  ctx.fillStyle=big?'#ffffff':'#1d2328'; ctx.textBaseline='middle'; ctx.fillText(text,13,cv.height/2+2);
+  const t=new THREE.CanvasTexture(cv); t.minFilter=THREE.LinearFilter;
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));
+  const k=big?0.0011:0.001; sp.scale.set(cv.width*k,cv.height*k,1);
+  sp.position.set(x*S,y*S,z*S); sp.renderOrder=10; parent.add(sp);
+  (big?CODES:DIMS).push(sp); sp.visible=big?showCodes:showDims; return sp;
+}
+let showCodes=true, showDims=false, showFronts=true;
+
+// ---------- фасады и видимые боковины (цвет модуля)
+const FRONTS=[], VIS=[], FRAMES=[], EDGE=new THREE.LineBasicMaterial({color:0x8f8f8a,transparent:true,opacity:0.5});
+function frontMesh(mod,w,h,fluted,name){
+  const g=new THREE.BoxGeometry(w*S,h*S,FT*S);
+  if(fluted){const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setX(i,uv.getX(i)*w/26)}
+  const m=new THREE.Mesh(g,MATS.white); m.userData.front={mod,fluted}; m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),EDGE));
+  FRONTS.push(m); applyFront(m); mod.hasFront=true;
+  
+  return m;
+}
+function applyFront(m){const {mod,fluted}=m.userData.front, M=mod.mats;
+  const face=(state.mat==='A'&&fluted)?M.flute:M.front, back=state.mat==='A'?MATS.inner:M.front;
+  m.material=[M.front,M.front,M.front,M.front,face,back]}
+function visPanel(mod,x,y,w,h,d,outer,parent){const m=box(w,h,d,x,y,0,MATS.white,parent||mod.g);m.userData.vis={mod,outer};VIS.push(m);applyVis(m);return m}
+function applyVis(m){const {mod,outer}=m.userData.vis, M=mod.mats.front, inn=state.mat==='A'?MATS.white:M;
+  const a=[M,M,M,M,M,M]; if(outer==='L')a[0]=inn; else a[1]=inn; m.material=a}
+
+// ---------- открывание
+function door(mod,x,y,w,h,hinge,fluted,z0,parent){
+  const g=new THREE.Group(); g.position.set((hinge==='L'?x:x+w)*S,0,(z0==null?BD:z0)*S); (parent||mod.g).add(g);
+  const m=frontMesh(mod,w,h,fluted,'Дверь'); m.position.set((hinge==='L'?w/2:-w/2)*S,(y+h/2)*S,FT/2*S); g.add(m);
+  mod.op.push({k:'door',g,dir:hinge==='L'?-1:1,c:0,t:0});
+  
+  return g;
+}
+function drawer(mod,x,y,w,h,ix0,ix1,depth,fluted){
+  const g=new THREE.Group(); mod.g.add(g); depth=depth||470;
+  const m=frontMesh(mod,w,h,fluted,'Фасад ящика'); m.position.set((x+w/2)*S,(y+h/2)*S,(BD+FT/2)*S); g.add(m);
+  const bh=Math.max(60,Math.min(h-55,190)), by=y+22, z0=BD-depth;
+  box(13,bh,depth,ix0+3,by,z0,MATS.steelDark,g); box(13,bh,depth,ix1-16,by,z0,MATS.steelDark,g);
+  box(ix1-ix0-32,16,depth-4,ix0+16,by,z0,MATS.inner,g); box(ix1-ix0-32,bh-10,16,ix0+16,by,z0,MATS.inner,g);
+  mod.op.push({k:'slide',g,dist:depth*0.82,c:0,t:0});
+  
+  return g;
+}
+function lift(mod,x,yTop,w,h,z0,build){ // фасад поднимается вверх
+  const g=new THREE.Group(); g.position.set(x*S,yTop*S,z0*S); mod.g.add(g); build(g,w,h);
+  mod.op.push({k:'lift',g,c:0,t:0});
+  
+  return g;
+}
+function flap(mod,x,yBot,z0,build,amax){const g=new THREE.Group(); g.position.set(x*S,yBot*S,z0*S); mod.g.add(g); build(g); mod.op.push({k:'flap',g,c:0,t:0,a:amax||1.45}); return g}
+
+// ---------- техника
+function hob(mod,cx){const g=mod.g;box(590,5,520,cx-295,TOP,40,MATS.hob,g);
+  [[-140,160,0.095],[140,160,0.075],[-140,400,0.075],[140,400,0.095]].forEach(([dx,dz,r])=>{const ring=new THREE.Mesh(new THREE.RingGeometry(r-0.004,r,40),MATS.ring);
+    ring.rotation.x=-Math.PI/2;ring.position.set((cx+dx)*S,(TOP+5.6)*S,(40+dz)*S);g.add(ring)})}
+function oven(mod,x,y,zf){const g=mod.g;
+  box(595,595,540,x,y,zf-560,MATS.black,g);
+  box(595,92,20,x,y+503,zf-20,MATS.glassDark,g); // панель управления
+  box(110,32,2,x+242,y+533,zf,new THREE.MeshBasicMaterial({color:0x2a3a44}),g);
+  flap(mod,x,y,zf-20,fg=>{box(595,500,20,0,0,0,MATS.glassDark,fg);box(470,300,2,62,110,19,Ph(0x050505,150,0x999999),fg);box(480,14,22,57,455,20,MATS.steel,fg)},1.5);
+}
+function micro(mod,x,y,zf){const g=mod.g;
+  box(595,388,300,x,y,zf-300,MATS.black,g);
+  box(595,388,4,x,y,zf-4,MATS.glassDark,g);
+  box(380,250,2,x+30,y+70,zf,Ph(0x050505,150,0x999999),g);
+  box(90,26,2,x+470,y+300,zf,new THREE.MeshBasicMaterial({color:0x2a3a44}),g);
+}
+function sink(mod,cx,ws){const g=mod.g;ws=ws||480;
+  box(ws,4,440,cx-ws/2,TOP,70,MATS.sink,g); box(ws-60,2,380,cx-ws/2+30,TOP+3,95,MATS.sinkIn,g);
+  const dr=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.002,24),MATS.steelDark);dr.position.set(cx*S,(TOP+5.2)*S,330*S);g.add(dr);
+  const tx=cx*S,tz=40*S,ty=TOP*S;
+  const cyl=(r,h,x,y,z)=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,20),MATS.black);c.position.set(x,y,z);g.add(c);return c};
+  cyl(0.026,0.04,tx,ty+0.02,tz); cyl(0.016,0.3,tx,ty+0.17,tz);
+  const lev=cyl(0.006,0.08,tx+0.045,ty+0.21,tz); lev.rotation.z=Math.PI/2.4;
+  const arc=new THREE.CatmullRomCurve3([[0,0.31,0],[0,0.38,0.05],[0,0.39,0.13],[0,0.35,0.2],[0,0.3,0.215]].map(p=>new THREE.Vector3(tx+p[0],ty+p[1],tz+p[2])));
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(arc,30,0.013,12),MATS.black)); cyl(0.019,0.07,tx,ty+0.27,tz+0.215);
+}
+function fridge(mod,x){const g=mod.g, z0=30, bd=FR.d-50;
+  const body=box(FR.w,FR.h-25,bd,x,25,z0,MATS.steel,g); body.material=[MATS.steel,MATS.steel,MATS.steel,MATS.steel,MATS.inner,MATS.steel];
+  [[500],[900],[1300]].forEach(([y])=>box(FR.w-60,6,bd-40,x+30,y,z0+20,MATS.glass,g));
+  box(FR.w-60,4,bd-40,x+30,700,z0+20,MATS.steelDark,g);
+  const zf=z0+bd;
+  [[25,690],[718,FR.h-718]].forEach(([y,h])=>{const dg=new THREE.Group();dg.position.set(x*S,0,zf*S);g.add(dg);
+    box(FR.w-2,h,50,1,y,0,MATS.steel,dg); box(FR.w-60,h-60,8,30,y+30,-8,MATS.inner,dg);
+    box(18,Math.min(420,h-160),30,FR.w-60,y+(h>800?80:h-440),50,MATS.steelDark,dg);
+    mod.op.push({k:'door',g:dg,dir:-1,c:0,t:0,ap:1})});
+}
+
+// ---------- корпуса
+function baseCarcass(mod,o){o=o||{};const g=mod.g,w=mod.w,y=PL;
+  if(mod.vis==='L')visPanel(mod,0,0,16,PL+BH,BD,'L'); else box(16,BH,BD,0,y,0,MATS.white,g);
+  if(mod.vis==='R')visPanel(mod,w-16,0,16,PL+BH,BD,'R'); else box(16,BH,BD,w-16,y,0,MATS.white,g);
+  box(w-32,16,BD,16,y,0,MATS.white,g);
+  box(w-32,16,100,16,y+BH-16,0,MATS.white,g); box(w-32,16,100,16,y+BH-16,BD-100,MATS.white,g);
+  if(o.back!==false)box(w-32,BH-20,4,16,y+10,4,MATS.white,g);
+  if(o.shelf)box(w-34,16,BD-60,17,y+BH/2-30,20,MATS.white,g);
+  box(w,GOLA+4,14,0,FTOP-2,BD-14,MATS.frame,g);           // профиль Gola под столешницей
+  box(w-(mod.vis?16:0),PL-6,16,mod.vis==='L'?16:0,0,BD+FT-66,mod.mats.front,g); // цоколь
+  
+}
+function upCarcass(mod,y,h,o){o=o||{};const g=mod.g,w=mod.w,d=o.d||UD;
+  if(mod.vis==='L'&&!o.noVis)visPanel(mod,0,y,16,h,d,'L'); else box(16,h,d,0,y,0,MATS.white,g);
+  box(16,h,d,w-16,y,0,MATS.white,g);
+  box(w-32,16,d,16,y,0,MATS.white,g); box(w-32,16,d,16,y+h-16,0,MATS.white,g);
+  box(w-32,h-32,4,16,y+16,4,MATS.white,g);
+  const sh=o.shelves||0; for(let i=1;i<=sh;i++)box(w-34,16,d-24,17,y+i*h/(sh+1)-8,8,MATS.white,g);
+  
+}
+function led(mod,x,w,y,z){box(w,4,12,x,y-4,z,MATS.led,mod.g);}
+function codeAt(mod,x,y,z){label(mod.code,x,y,z,'code',mod.g);label(mod.size,x,y-120,z,'dim',mod.g)}
+
+// ---------- модули
+const BUILD={
+ corner(mod){baseCarcass(mod,{shelf:true});const w=mod.w,dw=350,fh=FTOP-PL,blindW=578;
+   if(mod.blind==='L'){const fx=blindW;const f=frontMesh(mod,w-dw-fx,fh,false,'Планка угловая');f.position.set((fx+(w-dw-fx)/2)*S,(PL+fh/2)*S,(BD+FT/2)*S);mod.g.add(f);
+     door(mod,w-dw+1.5,PL,dw-3,fh,'R',false);mod.size=`${w} × ${BH} × ${BD}`;codeAt(mod,w-dw/2,560,BD+60)}
+   else{door(mod,1.5,PL,dw-3,fh,'L',false);const fw=w-blindW-dw;const f=frontMesh(mod,fw,fh,false,'Планка угловая');f.position.set((dw+fw/2)*S,(PL+fh/2)*S,(BD+FT/2)*S);mod.g.add(f);mod.size=`${w} × ${BH} × ${BD}`;codeAt(mod,dw/2,560,BD+60)}
+   mod.size=`${w} × ${BH} × ${BD}`},
+ oven(mod){baseCarcass(mod,{shelf:false});const w=mod.w;
+   drawer(mod,1.5,PL,w-3,92,16,w-16,470);
+   oven(mod,(w-595)/2,FTOP-595,BD+FT); hob(mod,w/2);
+   mod.size=`${w} × ${BH} × ${BD}`; codeAt(mod,w/2,520,BD+80)},
+ drawers(mod){baseCarcass(mod,{shelf:false});const w=mod.w;
+   [[640,150],[370,240],[100,240]].forEach(([y,h])=>drawer(mod,1.5,y,w-3,h,16,w-16,470));
+   box(w,GOLA,14,0,610,BD-14,MATS.frame,mod.g); box(w,GOLA,14,0,340,BD-14,MATS.frame,mod.g);
+   
+   if(mod.hob)hob(mod,w/2);
+   mod.size=`${w} × ${BH} × ${BD}`; codeAt(mod,w/2,520,BD+60)},
+ sink(mod){baseCarcass(mod,{shelf:false,back:false});const w=mod.w,fh=FTOP-PL;
+   door(mod,1.5,PL,w/2-3,fh,'L',false); door(mod,w/2+1.5,PL,w/2-3,fh,'R',false);
+   sink(mod,w/2,Math.min(w-110,480));
+   mod.size=`${w} × ${BH} × ${BD}`; codeAt(mod,w/2,560,BD+60)},
+ door(mod){baseCarcass(mod,{shelf:true});const w=mod.w,fh=FTOP-PL;
+   door(mod,1.5,PL,w-3,fh,mod.hinge||'L',false);
+   mod.size=`${w} × ${BH} × ${BD}`; codeAt(mod,w/2,560,BD+60)},
+ dw(mod){const w=mod.w,g=mod.g,fh=FTOP-PL;
+   box(w-4,790,480,2,25,15,MATS.steelDark,g);
+   flap(mod,1.5,PL,BD,fg=>{const f=frontMesh(mod,w-3,fh,false,'Фасад ПММ');f.position.set((w-3)/2*S,fh/2*S,FT/2*S);fg.add(f);box(w-40,fh-30,20,18,10,-20,MATS.steel,fg)},1.5);
+   box(w,GOLA+4,14,0,FTOP-2,BD-14,MATS.frame,g); box(w,PL-6,16,0,0,BD+FT-66,mod.mats.front,g);
+   if(mod.endPanel)visPanel(mod,-16,0,16,PL+BH,BD+FT,'L');
+   
+   mod.size=`${w} × ${BH} (ниша ПММ 450)`; codeAt(mod,w/2,560,BD+60)},
+ up(mod){const w=mod.w;upCarcass(mod,UY,FH,{shelves:1});
+   const n=w>650?2:1,fh=FH+13,y0=UY-15;
+   if(n===1)door(mod,1.5,y0,w-3,fh,mod.hinge||'L',true,UD); else{door(mod,1.5,y0,w/2-3,fh,'L',true,UD);door(mod,w/2+1.5,y0,w/2-3,fh,'R',true,UD)}
+   led(mod,15,w-30,UY,UD-70);
+   mod.size=`${w} × ${FH} × ${UD}`; codeAt(mod,w/2,UY+FH/2+70,UD+60)},
+ upMicro(mod){const w=mod.w,g=mod.g;upCarcass(mod,UY,FH,{shelves:0});
+   box(w-32,16,UD-10,16,UY+404,0,MATS.white,g);
+   const mx=(w-595)/2; micro(mod,mx,UY+14,UD+FT);
+   const sw=mx-3;[[1.5,sw],[w-1.5-sw,sw]].forEach(([x,ww])=>{const f=frontMesh(mod,ww,404+15,false,'Планка у СВЧ');f.position.set((x+ww/2)*S,(UY-15+(404+15)/2)*S,(UD+FT/2)*S);g.add(f)});
+   const ly=UY+406,lh=UY+FH-1.5-ly;
+   lift(mod,1.5,UY+FH-1.5,w-3,lh,UD,(lg,ww,hh)=>{const f=frontMesh(mod,ww,hh,true,'Фасад подъёмный');f.position.set(ww/2*S,-hh/2*S,FT/2*S);lg.add(f)});
+   led(mod,15,w-30,UY,UD-70);
+   
+   mod.size=`${w} × ${FH} × ${UD}`; codeAt(mod,w/2,UY+FH-110,UD+60)},
+ upHood(mod){const w=mod.w,g=mod.g;upCarcass(mod,UY,FH,{shelves:0});
+   const hw=598,hx=(w-hw)/2;
+   box(hw-40,170,280,hx+20,UY+16,20,MATS.steelDark,g);
+   const sg=new THREE.Group();g.add(sg);box(hw,40,300,hx,UY-22,30,MATS.steel,sg);box(hw-60,6,4,hx+30,UY-10,330,MATS.black,sg);
+   mod.op.push({k:'slide',g:sg,dist:200,c:0,t:0});
+   if(hx>4)[[1.5,hx-3],[w-hx+1.5,hx-3]].forEach(([x,ww])=>{const f=frontMesh(mod,ww,33,false,'Планка у вытяжки');f.position.set((x+ww/2)*S,(UY-15+16.5)*S,(UD+FT/2)*S);g.add(f)});
+   const y0=UY+21,fh=UY+FH-1.5-y0,n=w>650?2:1;
+   if(n===1)door(mod,1.5,y0,w-3,fh,'L',true,UD); else{door(mod,1.5,y0,w/2-3,fh,'L',true,UD);door(mod,w/2+1.5,y0,w/2-3,fh,'R',true,UD)}
+   mod.size=`${w} × ${FH} × ${UD}`; codeAt(mod,w/2,UY+FH/2+70,UD+60)},
+ glass(mod){const w=mod.w,g=mod.g,y=UY+FH;upCarcass(mod,y,GH,{shelves:0});
+   box(w-40,4,10,20,y+GH-20,UD-60,MATS.led,g);
+   const n=Math.max(1,Math.floor((w-60)/230));for(let i=0;i<n;i++){const cx=(w/(n))*(i+0.5);
+     if(i%2===0){for(let k=0;k<4;k++){const p=new THREE.Mesh(new THREE.CylinderGeometry(0.105,0.1,0.012,32),MATS.dish);p.position.set(cx*S,(y+16+8+k*14)*S,0.16);g.add(p)}}
+     else{[-55,0,55].forEach(dx=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(0.034,0.028,0.11,20),MATS.cup);c.position.set((cx+dx)*S,(y+16+55)*S,0.15);g.add(c)})}}
+   lift(mod,1.5,y+GH-1.5,w-3,GH-3,UD,(lg,ww,hh)=>{const fr=new THREE.Group();lg.add(fr);
+     box(ww,20,FT,0,-20,0,MATS.frame,fr);box(ww,20,FT,0,-hh,0,MATS.frame,fr);box(20,hh,FT,0,-hh,0,MATS.frame,fr);box(20,hh,FT,ww-20,-hh,0,MATS.frame,fr);
+     box(ww-40,hh-40,4,20,-hh+20,7,MATS.glass,fr); FRAMES.push(fr)});
+   
+   mod.size=`${w} × ${GH} × ${UD}`; codeAt(mod,w/2,y+GH/2+40,UD+80)},
+ cornerUp(mod){const w=mod.w,g=mod.g;mod.vis='L';upCarcass(mod,UY,UH,{shelves:2});
+   const dzone=w-400,n=mod.doors,dw=dzone/n,y0=UY-15,fh=UH+13.5;
+   for(let i=0;i<n;i++)door(mod,i*dw+1.5,y0,dw-3,fh,i<n/2?'L':'R',false,UD);
+   const f=frontMesh(mod,62,fh,false,'Планка угловая');f.position.set((dzone+31)*S,(y0+fh/2)*S,(UD+FT/2)*S);g.add(f);
+   // сушка над мойкой — в первой секции (ближе к краю)
+   [UY+60,UY+330].forEach(yy=>{box(dw-50,5,UD-60,25,yy,30,MATS.steelDark,g);
+     for(let k=0;k<14;k++){const r=new THREE.Mesh(new THREE.CylinderGeometry(0.0022,0.0022,0.09,6),MATS.steel);r.position.set((35+k*(dw-70)/13)*S,(yy+50)*S,(UD-80)*S);g.add(r)}});
+   led(mod,15,dzone-30,UY,UD-70);
+   
+   mod.size=`${w} × ${UH} × ${UD}`; codeAt(mod,dzone/2,UY+UH/2+60,UD+70)},
+ fridge(mod){const w=mod.w,g=mod.g;let x0=0;
+   if(mod.side){visPanel(mod,0,0,16,UTOP,CTD,'L');x0=16}
+   const iw=w-x0,ah=UTOP-ANT_Y,ad=580;
+   box(16,ah,ad,x0,ANT_Y,0,MATS.white,g);box(16,ah,ad,w-16,ANT_Y,0,MATS.white,g);
+   box(iw-32,16,ad,x0+16,ANT_Y,0,MATS.white,g);box(iw-32,16,ad,x0+16,UTOP-16,0,MATS.white,g);box(iw-32,ah-32,4,x0+16,ANT_Y+16,4,MATS.white,g);
+   door(mod,x0+1.5,ANT_Y+1.5,iw/2-3,ah-3,'L',false,ad);door(mod,x0+iw/2+1.5,ANT_Y+1.5,iw/2-3,ah-3,'R',false,ad);
+   fridge(mod,x0+(iw-FR.w)/2);
+   label('холодильник 75 см',x0+iw/2,1250,FR.d+120,'dim',g).visible=true; CODES.push(DIMS.pop());
+   
+   mod.size=`${w} × ${UTOP} × ${CTD}, ниша ${iw}`; mod.iw=iw; codeAt(mod,x0+iw/2,ANT_Y+ah/2+40,ad+80)},
+ ovenCol(mod){const w=mod.w,g=mod.g,H=UTOP-PL;
+   visPanel(mod,0,0,16,UTOP,BD,'L'); box(16,H,BD,w-16,PL,0,MATS.white,g);
+   box(w-32,16,BD,16,PL,0,MATS.white,g); box(w-32,16,BD,16,UTOP-16,0,MATS.white,g); box(w-32,H-32,4,16,PL+16,4,MATS.white,g);
+   [687,1284,1690].forEach(y=>box(w-32,16,BD-20,16,y,0,MATS.white,g)); box(w-34,16,BD-60,17,2040,20,MATS.white,g);
+   drawer(mod,1.5,100,w-3,270,16,w-16,470); drawer(mod,1.5,400,w-3,270,16,w-16,470);
+   box(w-16,GOLA,14,16,370,BD-14,MATS.frame,g); box(w-16,GOLA,14,16,670,BD-14,MATS.frame,g);
+   oven(mod,(w-595)/2,703,BD+FT); micro(mod,(w-595)/2,1300,BD+FT);
+   door(mod,1.5,1691,w-3,UTOP-1.5-1691,'L',false);
+   box(w-16,PL-6,16,16,0,BD+FT-66,mod.mats.front,g);
+   
+   mod.size=`${w} × ${UTOP-PL} × ${BD} + ножки ${PL}`; codeAt(mod,w/2,2080,BD+80)}
+};
+
+// ---------- сборка планировок
+function buildLayout(id){const L=LAYS[id];L.root=new THREE.Group();L.root.visible=false;scene.add(L.root);L.mods=[];
+  L.top.forEach(([x,z,w,d])=>box(w,CT,d,x,PL+BH,z,MATS.top,L.root));
+  box(L.splash.back,UY-TOP,8,0,TOP,0,MATS.splash,L.root); box(8,UY-TOP,L.splash.left,0,TOP,0,MATS.splash,L.root);
+  L.specList.forEach(sp=>{
+    const g=new THREE.Group();
+    if(sp.wall==='left'){g.position.set(0,0,(sp.at+sp.w)*S);g.rotation.y=Math.PI/2}else g.position.set(sp.at*S,0,0);
+    L.root.add(g);
+    const col=new THREE.Color(DEF.all.c);
+    const mod=Object.assign({},sp,{g,op:[],open:false,hasFront:false,layout:id,
+      mats:{front:new THREE.MeshLambertMaterial({color:col}),flute:new THREE.MeshLambertMaterial({color:col,map:FLUTE})}
+      });
+    BUILD[sp.type](mod);
+    g.traverse(o=>{if(o.isMesh)o.userData.mod=mod});
+    L.mods.push(mod);
+  });
+  // общие размеры
+  const dg=new THREE.Group();L.root.add(dg);
+  const line=(a,b)=>{const ge=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(a[0]*S,a[1]*S,a[2]*S),new THREE.Vector3(b[0]*S,b[1]*S,b[2]*S)]);
+    const l=new THREE.Line(ge,new THREE.LineBasicMaterial({color:0x2f6f8f,depthTest:false}));l.renderOrder=9;dg.add(l)};
+  line([0,UTOP+70,40],[RW,UTOP+70,40]); label(`${RW}`,RW/2,UTOP+120,40,'dim',dg);
+  line([40,UTOP+70,0],[40,UTOP+70,RD]); label(`${RD}`,40,UTOP+120,RD/2,'dim',dg);
+  const vx=650,vz=RD+40; line([vx,0,vz],[vx,UTOP,vz]);
+  label(`столешница ${TOP}`,vx,TOP,vz,'dim',dg); label(`низ верхних ${UY}`,vx,UY,vz,'dim',dg); label(`верх ${UTOP}`,vx,UTOP,vz,'dim',dg);
+  L.dimsGroup=dg; dg.visible=showDims;
+}
+Object.keys(LAYS).forEach(id=>{LAYS[id].specList=LAYS[id].mods;buildLayout(id)});
+
+// ---------- цвета
+const isLow=c=>/^[НП]/.test(c), isUp=c=>/^В/.test(c);
+function modColor(code){return state.mods[code]||(isLow(code)?state.low:isUp(code)?state.up:null)||state.all}
+function applyAll(){
+  Object.values(LAYS).forEach(L=>L.mods.forEach(m=>{const c=modColor(m.code).c;m.mats.front.color.set(c);m.mats.flute.color.set(c)}));
+  FRONTS.forEach(applyFront); VIS.forEach(applyVis);
+  MATS.top.color.set(state.top.c); MATS.splash.color.set(state.splash.c); MATS.frame.color.set(state.frame.c);
+  MATS.frame.emissive.set(state.frame.n==='Золото'?0x3a2a08:0x000000);
+}
+function targets(){const L=LAYS[state.lay];const t=[['all','Все фасады'],['low','Все нижние и пеналы'],['up','Все верхние']];
+  L.mods.filter(m=>m.hasFront).forEach(m=>t.push([m.code,`${m.code} — ${m.name}`]));
+  t.push(['top','Столешница'],['splash','Фартук (стеновая панель)'],['frame','Рамки витрин и профиль Gola']);return t}
+let tgt='all';
+function tgtColor(){if(['top','splash','frame'].includes(tgt))return state[tgt];if(tgt==='all')return state.all;if(tgt==='low')return state.low||state.all;if(tgt==='up')return state.up||state.all;return modColor(tgt)}
+function palette(){return tgt==='frame'?FRAME_COLORS:(tgt==='top'||tgt==='splash')?STONE_COLORS:FRONT_COLORS}
+function setColor(c,n){const v={c,n:n||c};
+  if(['top','splash','frame'].includes(tgt))state[tgt]=v;
+  else if(tgt==='all'){state.all=v;state.low=null;state.up=null;state.mods={}}
+  else if(tgt==='low'){state.low=v;Object.keys(state.mods).forEach(k=>{if(isLow(k))delete state.mods[k]})}
+  else if(tgt==='up'){state.up=v;Object.keys(state.mods).forEach(k=>{if(isUp(k))delete state.mods[k]})}
+  else state.mods[tgt]=v;
+  applyAll();save();drawSw();drawSel();
+}
+const swEl=document.getElementById('sw'), ownEl=document.getElementById('own'), ownName=document.getElementById('ownName');
+function drawSw(){swEl.innerHTML='';const cur=tgtColor();
+  palette().forEach(([n,c])=>{const b=document.createElement('button');b.className='dot';b.style.background=c;b.title=n;b.setAttribute('aria-label',n);
+    b.setAttribute('aria-pressed',cur.c.toLowerCase()===c&&cur.n===n);b.onclick=()=>{setColor(c,n);ownName.value=''};swEl.appendChild(b)});
+  ownEl.value=cur.c; if(!palette().some(p=>p[0]===cur.n)&&cur.n!==cur.c)ownName.value=cur.n; else ownName.value='';
+}
+ownEl.oninput=()=>setColor(ownEl.value,ownName.value.trim()||('свой цвет '+ownEl.value));
+ownName.onchange=()=>setColor(ownEl.value,ownName.value.trim()||('свой цвет '+ownEl.value));
+const tgtEl=document.getElementById('tgt');
+function drawTargets(){tgtEl.innerHTML='';const t=targets();if(!t.some(x=>x[0]===tgt))tgt='all';
+  t.forEach(([v,n])=>{const o=document.createElement('option');o.value=v;o.textContent=n;tgtEl.appendChild(o)});tgtEl.value=tgt}
+tgtEl.onchange=()=>{tgt=tgtEl.value;drawSw()};
+function drawSel(){const L=LAYS[state.lay];const parts=[`Фасады: ${state.all.n}`];
+  if(state.low)parts.push(`нижние и пеналы: ${state.low.n}`); if(state.up)parts.push(`верхние: ${state.up.n}`);
+  L.mods.forEach(m=>{if(state.mods[m.code])parts.push(`${m.code}: ${state.mods[m.code].n}`)});
+  parts.push(`столешница: ${state.top.n}`,`фартук: ${state.splash.n}`,`рамки: ${state.frame.n}`);
+  document.getElementById('sel').textContent='Выбор: '+LAYS[state.lay].name+', '+MATV[state.mat].name.split(',')[0]+'. '+parts.join('; ')+'.'}
+
+// ---------- переключатели
+function seg(el,items,cur,on){el.innerHTML='';items.forEach(([v,n])=>{const b=document.createElement('button');b.textContent=n;b.setAttribute('aria-pressed',String(v)===String(cur));b.onclick=()=>on(v);el.appendChild(b)})}
+function setLayout(id){state.lay=+id;Object.keys(LAYS).forEach(k=>{LAYS[k].root.visible=(+k===state.lay)});save();refresh()}
+function setMat(v){state.mat=v;applyAll();save();refresh()}
+function refresh(){
+  seg(document.getElementById('segLay'),Object.keys(LAYS).map(k=>[k,LAYS[k].name]),state.lay,setLayout);
+  seg(document.getElementById('segMat'),Object.keys(MATV).map(k=>[k,MATV[k].name]),state.mat,setMat);
+  document.getElementById('note').textContent=LAYS[state.lay].note+' '+MATV[state.mat].note;
+  drawTargets();drawSw();drawSel();drawTab();
+  
+  setOpenBtn();
+}
+function drawTab(){const L=LAYS[state.lay];const fr=L.mods.find(m=>m.type==='fridge');
+  const rows=[['Кухня по стенам','2800 × 1600'],['Ножки и цоколь',`${PL}`],['Нижние модули, корпус',`выс. ${BH}, гл. ${BD}`],['Столешница 38 мм, верх от пола',`${TOP}`],
+    ['Фартук (стеновая панель)',`${TOP} – ${UY}`],['Верхние: низ / верх',`${UY} / ${UTOP}`]];
+  L.mods.forEach(m=>rows.push([`${m.code} ${m.name}`,m.size]));
+  rows.push(['Холодильник отдельностоящий (уточнить модель)',`${FR.w} × ${FR.h} × ${FR.d}`]);
+  if(fr)rows.push(['Ниша холодильника / антресоль над ним',`${fr.iw} / ${UTOP-ANT_Y}`]);
+  rows.push(['Техника и мойка','по вашим моделям, ниши уточним']);
+  document.getElementById('tab').innerHTML='<div class="dims">'+rows.map(r=>`<div><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')+'</div>'}
+function tog(id,get,set){const b=document.getElementById(id);b.onclick=()=>{set(!get());b.setAttribute('aria-pressed',get())}}
+tog('bCodes',()=>showCodes,v=>{showCodes=v;CODES.forEach(s=>s.visible=v)});
+tog('bDims',()=>showDims,v=>{showDims=v;DIMS.forEach(s=>s.visible=v);Object.values(LAYS).forEach(L=>L.dimsGroup.visible=v)});
+tog('bFr',()=>showFronts,v=>{showFronts=v;FRONTS.forEach(m=>m.visible=v);FRAMES.forEach(f=>f.visible=v)});
+document.getElementById('bTab').onclick=e=>{const t=document.getElementById('tab');t.hidden=!t.hidden;e.target.setAttribute('aria-pressed',!t.hidden)};
+function curMods(){return LAYS[state.lay].mods}
+function setOpen(m,o,all){m.open=o;m.op.forEach(p=>{if(!(all&&p.ap&&o))p.t=o?1:0})}
+function setOpenBtn(){const any=curMods().some(m=>m.open);const b=document.getElementById('bOpen');b.textContent=any?'Закрыть всё':'Открыть всё';b.setAttribute('aria-pressed',any)}
+document.getElementById('bOpen').onclick=()=>{const any=curMods().some(m=>m.open);curMods().forEach(m=>setOpen(m,!any,true));setOpenBtn()};
+
+// ---------- камера: вращение одним пальцем, приближение и сдвиг двумя
+const ctl={t:new THREE.Vector3(),r:4,th:0,ph:1.2};
+function camUpd(){const sp=Math.sin(ctl.ph);cam.position.set(ctl.t.x+ctl.r*sp*Math.sin(ctl.th),ctl.t.y+ctl.r*Math.cos(ctl.ph),ctl.t.z+ctl.r*sp*Math.cos(ctl.th));cam.lookAt(ctl.t);cam.updateMatrixWorld()}
+function setView(p,t){ctl.t.set(...t);const d=new THREE.Vector3(...p).sub(ctl.t);const asp=cam.aspect||1;ctl.r=d.length()*1.06*(asp<1.35?Math.pow(1.35/asp,0.75):1);ctl.ph=Math.acos(d.y/ctl.r);ctl.th=Math.atan2(d.x,d.z);camUpd()}
+const V3D=()=>setView([2.25,1.75,3.85],[1.25,1.15,0.6]), VFR=()=>setView([1.4,1.32,4.7],[1.4,1.25,0.4]), VPL=()=>setView([1.4,6.2,1.45],[1.4,0,1.2]);
+document.getElementById('b3d').onclick=V3D;document.getElementById('bFront').onclick=VFR;document.getElementById('bPlan').onclick=VPL;
+const pts=new Map();let gest=null;
+function pan(dx,dy){const k=ctl.r*0.0013*(cam.fov/42);const rt=new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld,0),up=new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld,1);
+  ctl.t.addScaledVector(rt,-dx*k).addScaledVector(up,dy*k);ctl.t.y=Math.max(0,Math.min(2.6,ctl.t.y));camUpd()}
+canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pts.size===1)gest={x:e.clientX,y:e.clientY,t:performance.now(),moved:0,multi:false,btn:e.button,shift:e.shiftKey};else if(gest)gest.multi=true});
+canvas.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;const dx=e.clientX-p.x,dy=e.clientY-p.y;
+  if(pts.size===1){if(gest)gest.moved+=Math.abs(dx)+Math.abs(dy);
+    if(gest&&(gest.btn===2||gest.shift))pan(dx,dy);else{ctl.th-=dx*0.0065;ctl.ph=Math.max(0.12,Math.min(1.72,ctl.ph-dy*0.0065));camUpd()}}
+  else if(pts.size===2){const a=[...pts.values()];const o=a.find(q=>q!==p);
+    const d0=Math.hypot(p.x-o.x,p.y-o.y),d1=Math.hypot(e.clientX-o.x,e.clientY-o.y);if(d1>0&&d0>0){ctl.r=Math.max(0.6,Math.min(9,ctl.r*d0/d1))}
+    pan(dx/2,dy/2)}
+  p.x=e.clientX;p.y=e.clientY});
+function up_(e){if(!pts.has(e.pointerId))return;pts.delete(e.pointerId);
+  if(pts.size===0&&gest){if(!gest.multi&&gest.moved<8&&performance.now()-gest.t<500&&gest.btn===0)pick(e.clientX,e.clientY);gest=null}}
+canvas.addEventListener('pointerup',up_);canvas.addEventListener('pointercancel',up_);
+canvas.addEventListener('wheel',e=>{e.preventDefault();ctl.r=Math.max(0.6,Math.min(9,ctl.r*(1+e.deltaY*0.0012)));camUpd()},{passive:false});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+const ray=new THREE.Raycaster();ray.camera=cam;
+function pick(cx,cy){const r=canvas.getBoundingClientRect();
+  ray.setFromCamera({x:(cx-r.left)/r.width*2-1,y:-(cy-r.top)/r.height*2+1},cam);
+  const hits=ray.intersectObject(LAYS[state.lay].root,true);
+  for(const h of hits){if(h.object.isSprite||h.object.isLine||!h.object.visible)continue;let o=h.object,m=null;while(o&&!m){m=o.userData.mod;o=o.parent}
+    if(m){if(m.op.length)setOpen(m,!m.open);if(m.hasFront){tgt=m.code;tgtEl.value=tgt;drawSw()}setOpenBtn();document.getElementById('hint').style.opacity=0;return}
+    break}
+}
+
+
+
+// ---------- старт
+function resize(){const w=view.clientWidth,h=view.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+if(window.ResizeObserver)new ResizeObserver(resize).observe(view); window.addEventListener('resize',resize);
+applyAll(); setLayout(state.lay); resize(); V3D();
+(function loop(){curMods().forEach(m=>m.op.forEach(p=>{if(Math.abs(p.t-p.c)<0.001){p.c=p.t}else p.c+=(p.t-p.c)*0.14;
+   if(p.k==='door')p.g.rotation.y=p.c*p.dir*1.75; else if(p.k==='slide')p.g.position.z=p.c*p.dist*S; else if(p.k==='lift')p.g.rotation.x=-p.c*1.25; else if(p.k==='flap')p.g.rotation.x=p.c*p.a}));
+  renderer.render(scene,cam);requestAnimationFrame(loop)})();
+</script>
+</body>
+</html>
