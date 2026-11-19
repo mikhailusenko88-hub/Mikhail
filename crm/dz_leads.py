@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import re
 import sqlite3
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any, Iterable
 from urllib.parse import quote
 
@@ -133,6 +133,9 @@ FIELD_MAX = {"about": 600, "hook": 400, "line": 600, "contacts_note": 600, "note
 EMAIL_RE = re.compile(r"^[A-Za-z0-9._%+'-]{1,64}@[A-Za-z0-9-]{1,63}(\.[A-Za-z0-9-]{1,63})*\.[A-Za-z]{2,24}$")
 TG_RE = re.compile(r"^(?:https?://)?(?:t\.me|telegram\.me)/(\+?[A-Za-z0-9_]{4,64})/?$|^@?([A-Za-z][A-Za-z0-9_]{3,31})$")
 GMAIL = ("gmail.com", "googlemail.com")
+# бесплатные почты: по домену такого адреса студию не узнать (только по самому адресу)
+PUBLIC_DOMAINS = {"gmail.com", "googlemail.com", "mail.ru", "bk.ru", "inbox.ru", "list.ru", "internet.ru", "yandex.ru", "ya.ru",
+                  "yandex.com", "rambler.ru", "outlook.com", "hotmail.com", "icloud.com", "me.com", "yahoo.com", "proton.me"}
 DEFAULT_DAILY = 15            # писем в сутки из базы: новый домен — малыми партиями, чтобы не попасть в спам
 
 # раздел сайта для письма: путь → подпись
@@ -579,7 +582,7 @@ class DzLeads:
             if k.startswith("dz_tpl_") and k[7:] in TEMPLATES or k in ("dz_phone", "dz_phone_mikhail", "dz_phone_yulia", "dz_mail_day", "dz_max"):
                 self.s.set_setting(k, str(v)[:6000])
         a, u = self.import_items(p.get("items") or [])
-        return a, u, ""
+        return a, u + self.claude_marks(p), ""
 
     # ------------------------------------------------------------------ тексты
     def tpl(self, key: str) -> str:
@@ -740,6 +743,107 @@ class DzLeads:
         if row["status"] not in ("talk", "partner"):
             self.set_status(int(row["id"]), "models", by, "Проверить, скачал ли; предложить расчёт и обсудить условия",
                             add_workdays(today(), 2))
+
+    # ------------------------------------------------------------------ Claude: ответы, сводка, письма из облака
+    def reply_contacts(self) -> list[dict[str, Any]]:
+        """Кому уже писали (любым каналом) и у кого есть почта — их письма в info@ видит Claude (шифром)."""
+        marks = ",".join("?" * len(OUT_CHANNELS))
+        rows = self.s.c().execute(
+            "SELECT l.id, l.code, l.name, l.status, l.email, l.last_subject, MIN(t.at) AS since FROM dz_leads l"
+            f" JOIN dz_touches t ON t.lead_id=l.id AND t.channel IN ({marks}) WHERE l.email<>'' GROUP BY l.id",
+            OUT_CHANNELS).fetchall()
+        return [{"id": r["id"], "code": r["code"], "name": r["name"], "status": r["status"], "email": r["email"],
+                 "subject": r["last_subject"], "since": r["since"]} for r in rows]
+
+    def export(self, sends: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+        """Сводка для Claude (уходит только шифром): карточки, касания, что отправили и скачали, тексты."""
+        c = self.s.c()
+        leads = [dict(r) for r in c.execute("SELECT * FROM dz_leads ORDER BY id").fetchall()]
+        touches = [{"lead": r["lead_id"], "at": r["at"], "by": r["by_name"], "channel": r["channel"], "text": (r["text"] or "")[:1500]}
+                   for r in c.execute("SELECT * FROM (SELECT * FROM dz_touches ORDER BY id DESC LIMIT 5000) ORDER BY id").fetchall()]
+        return {"kind": "dz-export", "at": iso_now(), "today": today(), "leads": leads, "touches": touches, "docs": sends or [],
+                "tpl": {k: self.tpl(k) for k in TEMPLATES},
+                "settings": {k: self.s.setting(k, "") for k in ("dz_phone", "dz_phone_mikhail", "dz_phone_yulia", "dz_mail_day", "dz_max")},
+                "sent_today": self.sent_today(), "limit": self.daily_limit()}
+
+    def _last_out(self, lid: int) -> str:
+        marks = ",".join("?" * len(OUT_CHANNELS))
+        r = self.s.c().execute(f"SELECT MAX(at) FROM dz_touches WHERE lead_id=? AND channel IN ({marks})", (lid, *OUT_CHANNELS)).fetchone()
+        return (r[0] if r else "") or ""
+
+    def wrote_back(self, row: Any, letters: Iterable[dict[str, Any]]) -> bool:
+        """Пришло ли от дизайнера письмо в info@ после нашего последнего касания (с его адреса или домена студии)."""
+        email = (row["email"] or "").strip().lower()
+        if "@" not in email:
+            return False
+        dom = email.rsplit("@", 1)[1]
+        own = dom not in PUBLIC_DOMAINS and dom != self.domain
+        last = self._last_out(int(row["id"]))
+        try:
+            since = datetime.fromisoformat(last).timestamp() if last else 0.0
+        except ValueError:
+            since = 0.0
+        for e in letters:
+            frm = str(e.get("from") or "").lower()
+            if e.get("box") != "info" or float(e.get("ts") or 0) < since:
+                continue
+            if frm == email or (own and frm.endswith("@" + dom)):
+                return True
+        return False
+
+    def claude_mail_check(self, dz: dict[str, Any], to: str, letters: Iterable[dict[str, Any]] = ()) -> str:
+        """Перед отправкой письма от Claude (через «Исходящие»): «» — можно, иначе — почему не нужно."""
+        row = self.by_code(str(dz.get("code") or ""))
+        if not row:
+            return "нет такого дизайнера в базе"
+        if (row["email"] or "").strip().lower() != (to or "").strip().lower():
+            return f"адрес не совпадает с карточкой ({row['email'] or 'почты нет'})"
+        if row["status"] in CLOSED:
+            return "карточка закрыта: " + STATUS_NAMES[row["status"]].lower()
+        mails = int(self.s.c().execute("SELECT COUNT(*) FROM dz_touches WHERE lead_id=? AND channel='email'",
+                                       (row["id"],)).fetchone()[0])
+        kind = dz.get("kind")
+        if kind == "m1" and (mails or row["status"] not in ("new", "found", "nocall", "sent")):
+            return "письмо 1 уже было или дизайнер уже ответил"
+        if kind == "m2":
+            if row["status"] != "sent":
+                return "статус уже «" + STATUS_NAMES[row["status"]] + "»"
+            if mails >= 2:
+                return "уже два письма"
+        if kind in ("m1", "m2") and self.wrote_back(row, letters):
+            return "дизайнер написал в info@ — сначала ответить ему"
+        return ""
+
+    def claude_mail_sent(self, dz: dict[str, Any], m: dict[str, Any]) -> None:
+        row = self.by_code(str(dz.get("code") or ""))
+        if row:
+            self.after_mail(int(row["id"]), str(dz.get("kind") or "m1"), m["subject"], m["body"], "Claude",
+                            sender=f"{m.get('box') or 'mikhail'}@{self.domain}")
+
+    def claude_marks(self, p: dict[str, Any]) -> int:
+        """Отметки Claude из конверта: «replies» — что ответил дизайнер, «marks» — статус и шаг или заметка в истории."""
+        n = 0
+        for r in p.get("replies") or []:
+            row = self.by_code(str(r.get("code") or "")) if isinstance(r, dict) else None
+            if row and r.get("result") in REPLY_RESULTS:
+                ch = str(r.get("channel") or "email")
+                self.after_reply(int(row["id"]), ch if ch in CHANNEL_NAMES else "note", r["result"],
+                                 str(r.get("comment") or "")[:1000], "Claude")
+                n += 1
+        for r in p.get("marks") or []:
+            row = self.by_code(str(r.get("code") or "")) if isinstance(r, dict) else None
+            if not row:
+                continue
+            if (r.get("touch") or "").strip():
+                ch = str(r.get("channel") or "note")
+                self.touch(int(row["id"]), ch if ch in CHANNEL_NAMES else "note", str(r["touch"])[:2000], "Claude")
+            if r.get("status") in STATUS_NAMES:
+                na = str(r.get("next_at") or "")
+                self.set_status(int(row["id"]), r["status"], "Claude",
+                                str(r["next_step"])[:200] if r.get("next_step") is not None else None,
+                                na if re.fullmatch(r"\d{4}-\d{2}-\d{2}", na) else None)
+            n += 1
+        return n
 
     def to_client(self, lid: int, by: str) -> int | None:
         row = self.get(lid)

@@ -2165,6 +2165,134 @@ class TestPochta(TestOutbox):
         self.assertTrue(x["off"]); self.assertEqual(x["items"], [])
 
 
+class TestDzClaude(TestPochta):
+    """19.11: Claude ведёт дизайнеров сам — видит их ответы (и на письма из карточки CRM), получает сводку базы шифром,
+    отмечает ответы и шлёт напоминания через «Исходящие»; CRM сама ставит касание и следующий шаг."""
+    test_replies_for_claude = None                       # унаследованные проверки уже идут в TestPochta/TestOutbox
+    test_mail_page_letter_and_attachments = None
+
+    def setUp(self) -> None:
+        super().setUp()
+        import outbox
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
+        self.outbox = outbox
+        self.dz = self.app.extensions["dz"]
+        self.dz.import_items([
+            {"code": "Д03", "source": "zoon", "name": "Студия Линия", "email": "hello@liniya-studio.ru", "line": "Видели ваш проект."},
+            {"code": "Д06", "source": "zoon", "name": "Частный дизайнер", "email": "olga.d@gmail.com"},
+            {"code": "Д09", "source": "zoon", "name": "Ещё не писали", "email": "x@nowrite.ru"}])
+        self.sk = X25519PrivateKey.generate()
+        pub = outbox._b64(self.sk.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw))
+        with open(os.path.join(self.work, "READER.pub"), "w") as f:
+            f.write(pub + "\n")
+        self.git("-C", self.work, "add", "-A"); self.git("-C", self.work, "commit", "-q", "-m", "k")
+        self.git("-C", self.work, "push", "-q", "origin", "outbox")
+
+    def lead(self, code):
+        return self.dz.by_code(code)
+
+    def put_dz(self, p):
+        import json as _j
+        key = self.c.get("/api/outbox/key").get_data(as_text=True).strip()
+        env = self.outbox.seal(key, p)
+        os.makedirs(os.path.join(self.work, "dz"), exist_ok=True)
+        with open(os.path.join(self.work, "dz", p["id"] + ".json"), "w", encoding="utf-8") as f:
+            _j.dump(env, f)
+        self.git("-C", self.work, "add", "-A"); self.git("-C", self.work, "commit", "-q", "-m", "dz")
+        self.git("-C", self.work, "push", "-q", "origin", "outbox")
+
+    def test_replies_from_designers_written_in_crm(self) -> None:
+        # Юлия написала из карточки (почтой) Д03 и в Telegram Д06; Д09 — ещё никто
+        self.post(f"/dz/{self.lead('Д03')['id']}/mail", {"subject": "Рейки и молдинги для ваших проектов", "text": "Добрый день!", "kind": "m1", "sender": "yulia"})
+        self.post(f"/dz/{self.lead('Д06')['id']}/message", {"channel": "telegram", "text": "Здравствуйте!"})
+        self.ob.run()
+        a, _ = self.deliver(self.msg("Мария <maria@liniya-studio.ru>", "Re: Рейки и молдинги для ваших проектов", text="Пришлите модели для 3ds Max"))
+        b, _ = self.deliver(self.msg("olga.d@gmail.com", "Панели", text="Видела ваше сообщение в Telegram"))
+        c, _ = self.deliver(self.msg("x@nowrite.ru", "Привет", text="не писали им"))
+        d, _ = self.deliver(self.msg("client@gmail.com", "Хочу панели"))
+        self.export()
+        data = self.c.get("/api/outbox/replies").get_json()
+        got = {}
+        for env_ in data["items"]:
+            x = self.outbox.unseal(self.sk, env_, self.outbox.INFO_REPLIES)
+            got[x["id"]] = x
+        self.assertEqual(set(got), {a, b})                                    # только тем, кому писали
+        self.assertEqual(got[a]["dz"]["code"], "Д03")                         # по домену студии
+        self.assertEqual(got[b]["dz"]["code"], "Д06")                         # по самому адресу gmail
+        self.assertNotIn("Хочу панели", self.c.get("/api/outbox/replies").get_data(as_text=True))
+
+    def test_export_only_sealed(self) -> None:
+        self.ob.run()                                                         # сервер увидел ключ
+        self.post(f"/dz/{self.lead('Д03')['id']}/message", {"channel": "telegram", "text": "Здравствуйте!"})
+        r = self.c.get("/api/dz/export")
+        self.assertEqual(r.headers["Cache-Control"], "no-store")
+        raw = r.get_data(as_text=True)
+        self.assertNotIn("liniya", raw); self.assertNotIn("Линия", raw)
+        x = self.outbox.unseal(self.sk, r.get_json()["item"], self.outbox.INFO_DZ)
+        self.assertEqual(x["kind"], "dz-export")
+        self.assertEqual({l["code"] for l in x["leads"]}, {"Д03", "Д06", "Д09"})
+        self.assertTrue(any(t["channel"] == "telegram" for t in x["touches"]))
+        self.assertIn("m2", x["tpl"])
+        with self.assertRaises(Exception):
+            self.outbox.unseal(self.sk, r.get_json()["item"], self.outbox.INFO_REPLIES)   # чужой «ярлык» не подходит
+        self.post("/outbox", {"on": "1", "daily": "30"})                     # галочку сняли — сводки нет
+        self.assertTrue(self.c.get("/api/dz/export").get_json()["off"])
+
+    def test_claude_letters_and_marks(self) -> None:
+        d3 = self.lead("Д03")
+        # письмо 1 от Claude с отметкой дизайнера → касание, «Написали», напоминание через 3 рабочих дня
+        p1, env1 = self.letter(to="hello@liniya-studio.ru", subject="Рейки и молдинги", body="Добрый день!", attachments=[],
+                               dz={"code": "Д03", "kind": "m1"}, **{"from": "mikhail"})
+        self.put(env1)
+        self.ob.run()
+        self.assertEqual(len(self.sent), 1)
+        r = self.lead("Д03")
+        self.assertEqual(r["status"], "sent"); self.assertTrue(r["next_at"]); self.assertEqual(r["last_subject"], "Рейки и молдинги")
+        t = self.dz.touches(d3["id"])
+        self.assertTrue(any(x["channel"] == "email" and x["by_name"] == "Claude" and "mikhail@" in x["text"] for x in t))
+        # дизайнер ответил в info@ — напоминание (письмо 2) не уходит, в «Исходящих» — «не нужно»
+        self.deliver(self.msg("maria@liniya-studio.ru", "Re: Рейки и молдинги", text="Интересно"))
+        self.export()
+        p2, env2 = self.letter(to="hello@liniya-studio.ru", subject="Re: Рейки и молдинги", body="Напоминаю", attachments=[],
+                               dz={"code": "Д03", "kind": "m2"}, **{"from": "mikhail"})
+        self.put(env2)
+        self.ob.run()
+        self.assertEqual(len(self.sent), 1)
+        st = self.c.get(f"/api/outbox/status/{p2['id']}").get_json()
+        self.assertEqual(st["status"], "skipped"); self.assertIn("написал", st["error"])
+        # Claude отмечает ответ → «Интерес», следующий шаг — модели и каталог
+        import uuid
+        self.put_dz({"id": str(uuid.uuid4()), "kind": "dz", "items": [],
+                     "replies": [{"code": "Д03", "channel": "email", "result": "interest", "comment": "просят FBX для 3ds Max"}],
+                     "marks": [{"code": "Д06", "touch": "Claude: нашёл второй адрес студии", "status": "found", "next_step": "Позвонить"},
+                               {"code": "НЕТ1", "status": "refused"}]})
+        self.ob.run()
+        self.assertEqual(self.lead("Д03")["status"], "interest")
+        self.assertTrue(any("FBX" in x["text"] for x in self.dz.touches(d3["id"])))
+        self.assertEqual(self.lead("Д06")["next_step"], "Позвонить")
+        # письмо не на тот адрес и неверная отметка — не уходят
+        p3, env3 = self.letter(to="other@liniya-studio.ru", subject="X", body="Y", attachments=[], dz={"code": "Д03", "kind": "m1"})
+        p4, env4 = self.letter(to="x@nowrite.ru", subject="X", body="Y", attachments=[], dz={"code": "Д09", "kind": "zz"})
+        self.put(env3); self.put(env4)
+        self.ob.run()
+        self.assertEqual(len(self.sent), 1)
+        self.assertEqual(self.c.get(f"/api/outbox/status/{p3['id']}").get_json()["status"], "skipped")
+        self.assertEqual(self.c.get(f"/api/outbox/status/{p4['id']}").get_json()["status"], "error")
+        self.assertIn("не нужно", self.c.get("/outbox").get_data(as_text=True))
+        # обычное письмо 2 тому, кто молчит, уходит и ставит «Напомнили»
+        self.dz.import_items([{"code": "Д10", "source": "zoon", "name": "Молчат", "email": "quiet@silent.ru"}])
+        p5, env5 = self.letter(to="quiet@silent.ru", subject="Привет", body="1", attachments=[], dz={"code": "Д10", "kind": "m1"}, **{"from": "mikhail"})
+        self.put(env5); self.ob.run()
+        p6, env6 = self.letter(to="quiet@silent.ru", subject="Re: Привет", body="2", attachments=[], dz={"code": "Д10", "kind": "m2"}, **{"from": "mikhail"})
+        self.put(env6); self.ob.run()
+        self.assertEqual(len(self.sent), 3)
+        self.assertEqual(self.lead("Д10")["status"], "reminded")
+        p7, env7 = self.letter(to="quiet@silent.ru", subject="Re: Привет", body="3", attachments=[], dz={"code": "Д10", "kind": "m2"}, **{"from": "mikhail"})
+        self.put(env7); self.ob.run()
+        self.assertEqual(len(self.sent), 3)                                   # третьего письма не бывает
+
+
 class TestDocs(TestPochta):
     """Раздел «Документы»: загрузка, разделы, срок действия, из письма, через канал Claude."""
 

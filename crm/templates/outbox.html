@@ -10,15 +10,15 @@
   <label class="f inline"><input type="checkbox" name="on" value="1" {% if on %}checked{% endif %}> Отправлять письма</label>
   <label class="f">Не больше писем в сутки<input name="daily" inputmode="numeric" value="{{ daily }}"></label>
   <p class="d span2">Сегодня отправлено: {{ today_sent }} из {{ daily }}. Если выключить — новые письма подождут, пока отправку не включат снова.</p>
-  <label class="f inline span2"><input type="checkbox" name="read" value="1" {% if read_on %}checked{% endif %}> Claude видит ответы на свои запросы</label>
-  <p class="d span2">Только письма в info@, которые пришли в ответ на письма с zapros@ (ссылаются на них, с тех же адресов или доменов, с той же темой). Письма клиентов и zakaz@ — никогда. Передаются только шифром для ключа Claude{% if read_on %}{% if reader %} — ключ подключён{% else %} — ключа пока нет, Claude ничего не видит{% endif %}{% endif %}.</p>
+  <label class="f inline span2"><input type="checkbox" name="read" value="1" {% if read_on %}checked{% endif %}> Claude видит ответы на свои запросы и ответы дизайнеров</label>
+  <p class="d span2">Только письма в info@, которые пришли в ответ на письма Claude (ссылаются на них, с тех же адресов или доменов, с той же темой), и письма дизайнеров из «Базы дизайнеров», которым уже писали (из карточки, в Telegram, звонком). Раз в день Claude получает сводку базы дизайнеров: статусы, касания, кто скачал модели. Письма клиентов и zakaz@ — никогда. Передаются только шифром для ключа Claude{% if read_on %}{% if reader %} — ключ подключён{% else %} — ключа пока нет, Claude ничего не видит{% endif %}{% endif %}.</p>
   <div class="span2"><button class="btn-p">Сохранить</button></div>
 </form>
 {% if read_on and reader and shared %}<h2>Ответы, которые видит Claude</h2>
 <div class="panel list">{% for e in shared %}<a class="row btn" href="{{ url_for('pochta_letter', mid=e['id']) }}"><span class="grow"><span class="t">{{ e['name'] or e['from'] }}</span><span class="d"> · {{ e['subject'] or '(без темы)' }} · {{ fmt_ts(e['ts']) }}</span></span></a>{% endfor %}</div>
 {% endif %}
 <h2>Письма</h2>
-<div class="panel list">{% for m in mails %}<details class="mailrow" id="m-{{ m['id'] }}"><summary class="row"><span class="grow">{{ m['to_addr'] or '—' }} · {{ m['subject'] or 'без темы' }}<span class="d"> · {{ fmt_dt(m['sent_at'] or m['received_at']) }}{% if m['att_names'] %} · вложения: {{ m['att_names'] }}{% endif %}</span></span> {% if m['status'] == 'sent' %}<span class="pill good">отправлено</span>{% elif m['status'] == 'saved' %}<span class="pill good">в документах</span>{% elif m['status'] == 'error' %}<span class="pill crit">не отправлено</span>{% else %}<span class="pill warn">в очереди</span>{% endif %}</summary>
+<div class="panel list">{% for m in mails %}<details class="mailrow" id="m-{{ m['id'] }}"><summary class="row"><span class="grow">{{ m['to_addr'] or '—' }} · {{ m['subject'] or 'без темы' }}<span class="d"> · {{ fmt_dt(m['sent_at'] or m['received_at']) }}{% if m['att_names'] %} · вложения: {{ m['att_names'] }}{% endif %}</span></span> {% if m['status'] == 'sent' %}<span class="pill good">отправлено</span>{% elif m['status'] == 'saved' %}<span class="pill good">в документах</span>{% elif m['status'] == 'skipped' %}<span class="pill">не нужно — {{ m['error'] }}</span>{% elif m['status'] == 'error' %}<span class="pill crit">не отправлено</span>{% else %}<span class="pill warn">в очереди</span>{% endif %}</summary>
 {% if m['error'] %}<p class="d mailtext">{{ m['error'] }}</p>{% endif %}
 {% if m['body'] %}<div class="mailtext">{{ m['body'] }}</div>{% endif %}
 </details>{% else %}<div class="row"><span class="d">Писем пока не было</span></div>{% endfor %}</div>

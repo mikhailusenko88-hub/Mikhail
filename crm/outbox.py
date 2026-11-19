@@ -15,6 +15,7 @@ from __future__ import annotations
 import base64
 import json
 import logging
+import uuid
 import os
 import re
 import shutil
@@ -34,6 +35,7 @@ log = logging.getLogger("crm.outbox")
 
 INFO = b"nashdekor-outbox-v1"
 INFO_REPLIES = b"nashdekor-replies-v1"     # ответы на запросы → Claude (ключ READER.pub в ветке outbox)
+INFO_DZ = b"nashdekor-dz-v1"               # сводка базы дизайнеров → Claude (тот же ключ READER.pub)
 REPO_URL = "https://github.com/mikhailusenko88-hub/Mikhail.git"
 BRANCH = "outbox"
 ID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
@@ -138,6 +140,11 @@ class Outbox:
         self.save_doc: Callable[..., tuple[str, bool]] | None = None   # ставит app.py — раздел «Документы»
         self.replace_doc: Callable[..., tuple[str, bool]] | None = None   # новая версия файла (ссылки сохраняются)
         self.save_dz: Callable[[dict[str, Any]], tuple[int, int, str]] | None = None   # база дизайнеров (dz/*.json)
+        # дизайнеры, которым уже писали (почта из «Базы дизайнеров»): их ответы в info@ тоже видит Claude
+        self.dz_contacts: Callable[[], list[dict[str, Any]]] | None = None
+        # письмо дизайнеру от Claude (поле "dz": {"code", "kind"}): проверка перед отправкой и отметка в карточке
+        self.dz_check: Callable[[dict[str, Any], str], str] | None = None
+        self.dz_sent: Callable[[dict[str, Any], dict[str, Any]], Any] | None = None
         c = self.s.c()
         c.execute(SCHEMA)
 
@@ -205,6 +212,22 @@ class Outbox:
     def _correspondents(self) -> dict[str, Any]:
         rows = self.s.c().execute("SELECT id, to_addr, subject, sent_at FROM outbox_mail WHERE status='sent' AND sent_at<>''").fetchall()
         addrs, doms, subj, ids, since = set(), set(), set(), set(), 0.0
+        dz_addr: dict[str, dict[str, Any]] = {}
+        dz_dom: dict[str, dict[str, Any]] = {}
+
+        def add(a: str, lead: dict[str, Any] | None = None) -> None:
+            a = a.strip().lower()
+            if "@" not in a:
+                return
+            addrs.add(a)
+            d = a.rsplit("@", 1)[1]
+            if d not in PUBLIC_MAIL and d != self.domain:
+                doms.add(d)
+                if lead:
+                    dz_dom.setdefault(d, lead)
+            if lead:
+                dz_addr.setdefault(a, lead)
+
         for r in rows:
             t = _ts(r["sent_at"])
             if not t:
@@ -215,18 +238,29 @@ class Outbox:
             if len(ns) >= 8:
                 subj.add(ns)
             for a in str(r["to_addr"] or "").split(","):
-                a = a.strip().lower()
-                if "@" in a:
-                    addrs.add(a)
-                    d = a.rsplit("@", 1)[1]
-                    if d not in PUBLIC_MAIL and d != self.domain:
-                        doms.add(d)
-        return {"addrs": addrs, "doms": doms, "subj": subj, "ids": ids, "since": since}
+                add(a)
+        try:
+            leads = self.dz_contacts() if self.dz_contacts else []
+        except Exception:  # noqa: BLE001
+            log.exception("outbox: база дизайнеров для ответов")
+            leads = []
+        for x in leads:                                   # дизайнеры, которым писали Юлия, Михаил или Claude (из CRM и мессенджеров)
+            t = _ts(str(x.get("since") or ""))
+            if not t:
+                continue
+            since = t if not since else min(since, t)
+            lead = {k: x.get(k) for k in ("id", "code", "name", "status")}
+            add(str(x.get("email") or ""), lead)
+            ns = norm_subject(str(x.get("subject") or ""))
+            if len(ns) >= 8:
+                subj.add(ns)
+        return {"addrs": addrs, "doms": doms, "subj": subj, "ids": ids, "since": since, "dz_addr": dz_addr, "dz_dom": dz_dom}
 
-    def matched(self, letters: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    def matched(self, letters: list[dict[str, Any]], c: dict[str, Any] | None = None) -> list[dict[str, Any]]:
         """Какие письма в info@ — ответы на наши запросы: ссылаются на наше письмо, пришли с адреса или
-        домена, куда писали (кроме бесплатных почт), или та же тема. Письма клиентов (zakaz@) — никогда."""
-        c = self._correspondents()
+        домена, куда писали (кроме бесплатных почт), или та же тема. Письма клиентов (zakaz@) — никогда.
+        Сюда же — письма дизайнеров из «Базы дизайнеров», которым уже писали (почтой из CRM, в Telegram и т. д.)."""
+        c = c or self._correspondents()
         if not c["since"]:
             return []
         out = []
@@ -255,7 +289,8 @@ class Outbox:
         if not k:
             return {"v": 1, "nokey": True, "items": []}
         items, total = [], 0
-        for e in self.matched(pochta.index()):
+        corr = self._correspondents()
+        for e in self.matched(pochta.index(), corr):
             m = pochta.get(e["id"])
             if not m:
                 continue
@@ -271,8 +306,21 @@ class Outbox:
                 atts.append(x)
             payload = {k2: m.get(k2) for k2 in ("id", "box", "spam", "ts", "from", "name", "to", "cc", "subject", "text", "cut")}
             payload["atts"] = atts
+            frm = str(m.get("from") or e.get("from") or "").lower()
+            lead = corr["dz_addr"].get(frm) or (corr["dz_dom"].get(frm.rsplit("@", 1)[1]) if "@" in frm else None)
+            if lead:
+                payload["dz"] = lead                      # чья карточка в «Базе дизайнеров»
             items.append(seal(k, payload, INFO_REPLIES))
         return {"v": 1, "key": k[:8], "items": items}
+
+    def sealed(self, payload: dict[str, Any], info: bytes = INFO_DZ) -> dict[str, Any]:
+        """Любая выгрузка для Claude (сводка базы дизайнеров) — только шифром для его ключа READER.pub."""
+        if not self.read_enabled():
+            return {"v": 1, "off": True}
+        k = self.reader_key()
+        if not k:
+            return {"v": 1, "nokey": True}
+        return {"v": 1, "key": k[:8], "item": seal(k, {"id": str(uuid.uuid4()), **payload}, info)}
 
     # ------------------------------------------------------------------ git
     # до GitHub с сервера бывает медленно (19.11: каталог 11 МБ не успел за 90 с, обрыв оставил замок) — ждём дольше;
@@ -391,8 +439,16 @@ class Outbox:
             atts.append((name, data, mime))
         if total > MAX_ATTACH:
             return None, "вложения больше 7 МБ"
+        dz = p.get("dz")
+        if dz is not None:
+            if not isinstance(dz, dict) or not re.fullmatch(r"[A-Za-zА-Яа-яЁё]{1,3}\d{1,4}", str(dz.get("code") or "")) \
+                    or dz.get("kind") not in ("m1", "m2", "reply"):
+                return None, "непонятная отметка дизайнера (dz: code, kind m1|m2|reply)"
+            if len(to_list) != 1:
+                return None, "письмо дизайнеру — ровно одному получателю"
+            dz = {"code": str(dz["code"]), "kind": dz["kind"]}
         return {"to": ", ".join(to_list), "subject": subject, "body": body, "reply_to": reply, "attachments": atts,
-                "sender": self.sender(box), "box": box}, ""
+                "sender": self.sender(box), "box": box, "dz": dz}, ""
 
     def sent_today(self) -> int:
         day = datetime.now().astimezone().date().isoformat()
@@ -407,12 +463,25 @@ class Outbox:
                 c.execute("UPDATE outbox_mail SET " + ", ".join(f"{k}=?" for k in f) + " WHERE id=?", (*f.values(), mid))
 
     def _deliver(self, mid: str, m: dict[str, Any]) -> str:
+        if m.get("dz") and self.dz_check:                # дизайнер за это время ответил, отказался, уже два письма — не шлём
+            try:
+                why = self.dz_check(m["dz"], m["to"])
+            except Exception as e:  # noqa: BLE001
+                why = f"проверка карточки не удалась: {e}"[:200]
+            if why:
+                self._record(mid, status="skipped", error=why[:300], payload="")
+                return f"{mid}: не отправлено — {why}"
         ok = self.send(m["to"], m["subject"], m["body"], sender=m.get("sender") or self.sender(), reply_to=m["reply_to"],
                        attachments=m["attachments"], msgid=self.msgid(mid))
         row = self._row(mid)
         attempts = int(row["attempts"]) + 1 if row else 1
         if ok:
             self._record(mid, status="sent", sent_at=_now(), attempts=attempts, error="", payload="")
+            if m.get("dz") and self.dz_sent:
+                try:
+                    self.dz_sent(m["dz"], m)              # касание и следующий шаг в карточке дизайнера
+                except Exception:  # noqa: BLE001
+                    log.exception("outbox: отметка в базе дизайнеров")
             self.notify(f"Письмо отправлено с {m.get('box') or 'zapros'}@", f"{m['to']}: {m['subject']}"[:180], "/outbox")
             return f"{mid}: отправлено → {m['to']}"
         if attempts >= 3:

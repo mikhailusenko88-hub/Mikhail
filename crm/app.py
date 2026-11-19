@@ -646,6 +646,17 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     dz = DzLeads(store, conf["SHOP_DOMAIN"] or "nashdekor.ru")
     app.extensions["dz"] = dz
     ob.save_dz = dz.import_payload               # Claude пополняет базу через ветку outbox (dz/*.json, шифр)
+    ob.dz_contacts = dz.reply_contacts           # ответы дизайнеров, которым уже писали, тоже видит Claude (шифром)
+    ob.dz_check = lambda d, to: dz.claude_mail_check(d, to, pochta.index())   # письмо 2 не уйдёт, если дизайнер уже ответил
+    ob.dz_sent = dz.claude_mail_sent             # письмо от Claude → касание и следующий шаг в карточке
+
+    @app.route("/api/dz/export")
+    def dz_export() -> Any:
+        """Сводка «Базы дизайнеров» для Claude — только шифром для его ключа (как ответы), выключается там же."""
+        ready = ob.read_enabled() and bool(ob.reader_key())
+        resp = jsonify(ob.sealed(dz.export(docs.sends(3000)) if ready else {}))
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
     register_dz(app, store, dz, {"login_required": login_required, "admin_required": admin_required, "who": who,
                                  "send_mail": lambda *a, **k: send_mail(*a, **k), "pochta": pochta,
                                  "shop_domain": conf["SHOP_DOMAIN"] or "nashdekor.ru"})
