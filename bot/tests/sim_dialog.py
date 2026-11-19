@@ -66,6 +66,15 @@ M> Что-нибудь ещё?
 M* Закончить
 * Рассчитать стену
 > /cancel
+# справка для своих: номер без буквы, с нулём, несколько, нет такого, посреди расчёта
+M> 88
+M> а 088
+M> А88, А908
+M> 2-7
+M> 70
+M* Рассчитать A88
+M> 15
+M> А907
 """
 
 
@@ -94,6 +103,11 @@ class FakeTransport:
 
     async def copy(self, uid, media, kb=None):
         return str(next(self.ids))
+
+    async def send_photo(self, uid, url, caption, kb=None):
+        mid = str(next(self.ids))
+        self.log.append(("send", uid, mid, f"[фото {url}]\n" + caption, kb))
+        return mid
 
     async def link(self):
         return "https://max.ru/id000000000000_bot"

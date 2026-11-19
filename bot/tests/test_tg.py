@@ -424,3 +424,46 @@ def test_parse_helpers():
     assert core.phone_from_contact("8 (999) 123-45-67") == "+79991234567"
     assert core.parse_cmd("/history@prostranstvo_bot К5") == ("history", "К5")
     assert core.parse_cmd("привет") == ("", "")
+
+
+def test_staff_lookup_photo_in_telegram(tmp_path, monkeypatch):
+    """Справка для своих (19.11.2026): фото по ссылке с подписью и кнопками, затем ответ клиенту в <code>
+    (в Telegram нажатие на него копирует текст). Telegram не скачал ссылку — бот скачивает фото сам."""
+    from aiogram.types import BufferedInputFile
+    from conftest import SAMPLE_HTML
+
+    import tg
+    from catalog import Catalog, CatalogStore, parse_catalog
+    from fakes import TgHarness
+
+    html = SAMPLE_HTML + '<script>const PHOTO_V = "3"; const PHOTOS = {"A703":["A703.jpg"]};</script>'
+    store = CatalogStore("", "", "", 60)
+    store.set(Catalog(parse_catalog(html), source="тест"))
+    fetched = []
+    monkeypatch.setattr(tg, "fetch_bytes", lambda url: fetched.append(url) or b"\xff\xd8jpeg")
+
+    async def scenario():
+        cfg = make_cfg(tmp_path, site_url="https://nashdekor.ru")
+        h = TgHarness(cfg, Database(cfg.db_path), store, NAMES)
+        await h.send(MANAGER, f"/owner {CODE}")
+        await h.send(MANAGER, "703")
+        ph = h.s.photos_to(MANAGER)
+        assert len(ph) == 1 and ph[0].photo == "https://nashdekor.ru/img/2x/A703.jpg?v=3"
+        assert "<b>A703</b>" in ph[0].caption and "290" in ph[0].caption
+        assert "ca|A703" in datas(ph[0].reply_markup) and any("/p/a703/" in u for u in urls(ph[0].reply_markup))
+        answer = h.s.last(MANAGER)
+        assert answer.startswith("<code>Здравствуйте! A703") and answer.endswith("</code>")
+        # Telegram не смог скачать фото по ссылке — загружаем файлом
+        h.s.photo_url_bad = True
+        await h.send(MANAGER, "а 0703")
+        ph = h.s.photos_to(MANAGER)
+        assert isinstance(ph[-1].photo, BufferedInputFile) and fetched == ["https://nashdekor.ru/img/2x/A703.jpg?v=3"]
+        assert h.s.last(MANAGER).startswith("<code>Здравствуйте! A703")
+        # клиенту «703» — не справка
+        await h.send(CLIENT, "/start")
+        await h.send(CLIENT, "703")
+        assert not h.s.photos_to(CLIENT)
+        await h.close()
+        h.db.close()
+
+    run(scenario())

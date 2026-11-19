@@ -19,7 +19,7 @@ import pytest
 pytest.importorskip("aiogram")
 
 from aiogram.client.session.base import BaseSession  # noqa: E402
-from aiogram.methods import AnswerCallbackQuery, CopyMessage, EditMessageText, GetMe, SendMessage  # noqa: E402
+from aiogram.methods import AnswerCallbackQuery, CopyMessage, EditMessageText, GetMe, SendMessage, SendPhoto  # noqa: E402
 from aiogram.types import CallbackQuery, Chat, Message, Update, User  # noqa: E402
 from aiohttp import web  # noqa: E402
 from aiohttp.test_utils import TestServer  # noqa: E402
@@ -59,6 +59,7 @@ class FakeTelegram(BaseSession):
         self.requests: list[Any] = []
         self.blocked: set[int] = set()
         self._ids = itertools.count(1000)
+        self.photo_url_bad = False   # как Telegram, который не смог скачать фото по ссылке
 
     async def close(self) -> None:
         pass
@@ -87,6 +88,13 @@ class FakeTelegram(BaseSession):
             result = self._message(int(method.chat_id or 0), method.text, method.message_id)
         elif isinstance(method, CopyMessage):
             result = {"message_id": next(self._ids)}
+        elif isinstance(method, SendPhoto):
+            if self.photo_url_bad and isinstance(method.photo, str):
+                body = {"ok": False, "error_code": 400,
+                        "description": "Bad Request: wrong file identifier/HTTP URL specified"}
+                self.check_response(bot, method, 400, json.dumps(body))
+            result = {**self._message(int(method.chat_id), None), "caption": method.caption,
+                      "photo": [{"file_id": "f1", "file_unique_id": "u1", "width": 10, "height": 10}]}
         else:
             result = True
         return self.check_response(bot, method, 200, json.dumps({"ok": True, "result": result})).result
@@ -117,6 +125,9 @@ class FakeTelegram(BaseSession):
 
     def toasts(self) -> list[str]:
         return [r.text or "" for r in self.requests if isinstance(r, AnswerCallbackQuery)]
+
+    def photos_to(self, chat_id: int) -> list[Any]:
+        return [r for r in self.requests if isinstance(r, SendPhoto) and int(r.chat_id) == chat_id]
 
     def copies_to(self, chat_id: int) -> list[Any]:
         return [r for r in self.requests if isinstance(r, CopyMessage) and int(r.chat_id) == chat_id]

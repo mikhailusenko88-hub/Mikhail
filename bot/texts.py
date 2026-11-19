@@ -203,6 +203,91 @@ def article_not_found(query: str, suggestions: list[Product]) -> str:
 ON_ORDER = "Под заказ, 3–4 недели"
 
 
+# --------------------------------------------------------------------------- справка для своих
+# Менеджер или отгрузка пишет боту артикул или просто номер («88», «а 088», «908») — бот присылает
+# фото, цену, наличие и готовый ответ клиенту (для Авито и любых чатов: без ссылок и контактов).
+LOOKUP_HINT = "Ниже — готовый ответ клиенту: нажмите на текст, он скопируется, и вставьте в Авито."
+
+
+def _plain_rub(amount: int) -> str:
+    """Для текста, который копируют в другие приложения, — обычные пробелы: «1 950 ₽»."""
+    return f"{amount:,}".replace(",", " ") + " ₽"
+
+
+def _lower_first(text: str) -> str:
+    return text[:1].lower() + text[1:] if text[:1].isupper() and not text[1:2].isupper() else text
+
+
+def staff_card(p: Product) -> str:
+    """Подпись к фото для своих: всё, что нужно ответить клиенту, одним взглядом."""
+    per = f"≈{NBSP}{rub(p.price_m2)}/м²" if p.is_area else f"{rub(p.price_m)}/м"
+    box = f" · в коробке {p.per_box}{NBSP}шт ({rub(p.box_price)})" if p.per_box else ""
+    stock = stock_line(p)
+    return (f"{product_head(p)}\n"
+            f"<b>{rub(p.price)}/шт</b> · {per}{box}"
+            + (f"\n{stock}" if stock else ""))
+
+
+def _client_stock(p: Product) -> str:
+    if p.stock > 0:
+        return "Есть в наличии в Санкт-Петербурге."
+    if p.stock == 0:
+        return "Сейчас под заказ, срок 3–4 недели."
+    return ""
+
+
+def _client_item(p: Product) -> str:
+    """«A88 — плинтус напольный белый под покраску 100 мм, 100×12×2000 мм»."""
+    name = _lower_first(p.short_name)
+    extra = ", готовый декор — красить не нужно" if p.kind == "color" else ""
+    return f"{p.article} — {name}, {p.size_text}{extra}"
+
+
+def client_answer(products: list[Product]) -> str:
+    """Готовый ответ клиенту (копируют в Авито): цена, размер, срок и вопрос, чтобы разговор не оборвался.
+    Без ссылок и контактов — Авито их запрещает."""
+    if len(products) == 1:
+        p = products[0]
+        if p.is_area:
+            price = (f"Цена {_plain_rub(p.price)} за штуку (≈ {_plain_rub(p.price_m2)} за м²)"
+                     + (f", в коробке {p.per_box} шт." if p.per_box else "."))
+            ask = "Напишите ширину и высоту стены — посчитаю, сколько нужно панелей и на какую сумму."
+        else:
+            price = (f"Цена {_plain_rub(p.price)} за штуку ({meters(p.length)} м) — "
+                     f"это {_plain_rub(p.price_m)} за метр.")
+            ask = "Сколько метров нужно? Посчитаю точно."
+        parts = [f"Здравствуйте! {_client_item(p)}.", price, _client_stock(p), ask]
+        return " ".join(x for x in parts if x)
+    lines = ["Здравствуйте! Цены:"]
+    for p in products:
+        per = f"≈ {_plain_rub(p.price_m2)} за м²" if p.is_area else f"{_plain_rub(p.price_m)} за метр"
+        here = " (есть в наличии)" if p.stock > 0 else ""
+        lines.append(f"{_client_item(p)} — {_plain_rub(p.price)} за штуку, {per}{here}.")
+    if all(p.stock == 0 for p in products):
+        lines.append("Сейчас под заказ, срок 3–4 недели.")
+    elif any(p.stock == 0 for p in products):
+        lines.append("Чего нет в наличии — под заказ, срок 3–4 недели.")
+    lines.append("Напишите, сколько нужно (для панелей — размеры стены), — посчитаю точно.")
+    return "\n".join(lines)
+
+
+def staff_answer_message(products: list[Product]) -> str:
+    """Отдельное сообщение — только ответ клиенту, моноширинным: в Telegram нажатие копирует его целиком."""
+    return f"<code>{esc(client_answer(products))}</code>"
+
+
+def staff_not_found(query: str, suggestions: list[Product]) -> str:
+    text = f"Не нашёл «{esc(query[:40])}» в каталоге."
+    if suggestions:
+        text += " Может быть: " + ", ".join(f"<b>{esc(p.article)}</b>" for p in suggestions) + "?"
+    return text + " Напишите артикул или номер, например <b>88</b> или <b>А908</b>."
+
+
+LOOKUP_HELP = ("<b>Цена для клиента</b> — напишите сюда артикул или просто номер (88, а 088, 908, 2-7, "
+               "можно несколько: 88 908): пришлю фото, цену и готовый ответ — нажмите на него, он "
+               "скопируется, и вставьте в Авито.")
+
+
 def stock_line(p: Product) -> str:
     """Наличие одной строкой — как на сайте. Пусто, если CRM не ответила (наличие неизвестно)."""
     if p.stock < 0:
@@ -567,7 +652,8 @@ def help_manager(channel: str) -> str:
         f"<b>{BTN_T_ORDERS}</b> — что сейчас на отгрузке.\n"
         f"<b>{BTN_T_TEAM}</b> — кто помогает с ботом, пригласить или убрать человека.\n"
         f"<b>{BTN_T_NOTIFY}</b> — что получать и куда: в MAX или в Telegram; подключить второй мессенджер.\n"
-        f"<b>{BTN_T_STATS}</b> — сколько заявок и сообщений за сегодня и неделю.\n\n"
+        f"<b>{BTN_T_STATS}</b> — сколько заявок и сообщений за сегодня и неделю.\n"
+        + LOOKUP_HELP + "\n\n"
         "То же командами: /leads, /orders, /team, /notify, /stats, /history номер_заявки, "
         "/reply номер_заявки текст, /invite shipping, /reload (обновить цены с сайта). "
         "Меню — команда /start."
@@ -583,7 +669,8 @@ def help_shipping(channel: str) -> str:
         f"<b>{BTN_T_ORDERS}</b> — что сейчас нужно отгрузить.\n"
         f"<b>{BTN_T_LEADS}</b> — последние заявки, под каждой — «{BTN_HISTORY}» с клиентом.\n"
         f"<b>{BTN_T_NOTIFY}</b> — только заявки и отгрузки (так сейчас) или все сообщения клиентов; "
-        "куда присылать; подключить второй мессенджер.\n\n"
+        "куда присылать; подключить второй мессенджер.\n"
+        + LOOKUP_HELP + "\n\n"
         "То же командами: /orders, /leads, /history номер_заявки, /notify all или /notify orders. "
         "Меню — команда /start."
     )
@@ -606,7 +693,7 @@ def joined(role: str, channel: str, linked: bool = False) -> str:
     if role == "manager":
         return ("Готово, вы менеджер магазина. Сюда будут приходить сообщения клиентов и заявки.\n\n"
                 + reply_how(channel) + f"\n\nКнопки: «{BTN_T_LEADS}», «{BTN_T_ORDERS}», «{BTN_T_TEAM}». "
-                f"Подсказка — «{BTN_T_HELP}».")
+                f"Подсказка — «{BTN_T_HELP}».\n\n" + LOOKUP_HELP)
     return ("Готово, вы в команде магазина — роль «отгрузка». Сюда будут приходить новые заявки и "
             f"карточки «На отгрузку».\n\nКнопки: «{BTN_T_ORDERS}», «{BTN_T_LEADS}». "
             f"Подсказка — «{BTN_T_HELP}».")

@@ -75,8 +75,9 @@ def test_starts_first_touch_link_stats_and_delete(tmp_path):
     run(scenario())
     db.close()
     c = sqlite3.connect(path)
-    blob = " ".join(str(r) for r in c.execute("SELECT * FROM starts").fetchall())
-    assert "501" not in blob and "502" not in blob                        # id в мессенджере в таблице не хранится
+    cells = {str(v) for r in c.execute("SELECT * FROM starts").fetchall() for v in r}
+    assert "501" not in cells and "502" not in cells                      # id в мессенджере в таблице не хранится
+    # (раньше искали подстроку во всей строке — тест падал, когда в метке времени попадалось «501»)
     c.close()
 
 

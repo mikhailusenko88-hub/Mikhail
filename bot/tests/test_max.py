@@ -464,3 +464,33 @@ def test_start_source_counted_in_max(tmp_path):
         await done(f, h)
 
     run(scenario())
+
+
+def test_staff_lookup_photo_in_max(tmp_path):
+    """Справка для своих (19.11.2026): в MAX фото уходит вложением image по ссылке вместе с кнопками,
+    следом — ответ клиенту в <code>."""
+    from conftest import SAMPLE_HTML
+
+    from catalog import Catalog, CatalogStore, parse_catalog
+
+    html = SAMPLE_HTML + '<script>const PHOTO_V = "3"; const PHOTOS = {"A703":["A703.jpg"]};</script>'
+    store = CatalogStore("", "", "", 60)
+    store.set(Catalog(parse_catalog(html), source="тест"))
+
+    async def scenario():
+        fake = FakeMax()
+        url = await fake.start()
+        cfg = make_cfg(tmp_path, bot_token="", max_token=MAX_TOKEN, max_api_url=url, site_url="https://nashdekor.ru")
+        h = MaxHarness(cfg, Database(cfg.db_path), store, fake, url, NAMES)
+        await h.engine.start()
+        await h.send(MANAGER, f"/owner {CODE}")
+        await h.send(MANAGER, "88 703")
+        sent = fake.sent(MANAGER)
+        photo = next(b for b in sent if any(a.get("type") == "image" for a in b.get("attachments") or []))
+        assert {"type": "image", "payload": {"url": "https://nashdekor.ru/img/2x/A703.jpg?v=3"}} in photo["attachments"]
+        assert "<b>A703</b>" in photo["text"] and photo["format"] == "html"
+        assert "ca|A703" in payloads(photo)
+        assert fake.last(MANAGER).startswith("<code>Здравствуйте! A703")
+        await done(fake, h)
+
+    run(scenario())

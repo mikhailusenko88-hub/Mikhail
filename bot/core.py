@@ -58,6 +58,9 @@ from db import (
 )
 
 log = logging.getLogger("prostranstvo.core")
+# Посреди расчёта «15», «3,2 на 2,7», «320 см» — это размеры, а не номер артикула для справки
+_NUM = r"\d+(?:[.,]\d+)?\s*(?:м|см|мм|m)?\.?"
+_SIZE_ONLY_RE = re.compile(rf"\s*{_NUM}\s*(?:(?:x|х|×|\*|на)\s*{_NUM}\s*)?", re.IGNORECASE)
 
 PAGE_SIZE = 10
 ACK_INTERVAL_SEC = 10 * 60      # «сообщение передано» — не чаще раза в 10 минут
@@ -772,6 +775,8 @@ class Engine:
             return await self.staff_chat_step(ev, me, st)
         if not me and st == "chat":
             return await self.chat_message(ev)
+        if me and text and not st.startswith("lead_") and await self.staff_lookup(ev, me, st):
+            return
         if st.startswith("calc_"):
             return await self.calc_step(ev, me, st)
         if st.startswith("lead_"):
@@ -1061,6 +1066,64 @@ class Engine:
         else:
             self.set_state(uid, "calc_length", article=product.article)
             await self.say(uid, texts.ask_length(product), self.product_kb(product, me))
+
+    # ------------------------------------------------------------ справка для своих
+    async def staff_lookup(self, ev: Incoming, me: Person, st: str) -> bool:
+        """Менеджер или отгрузка пишет артикул или номер («88», «а 088», «908», «А88 А908») — фото, цена,
+        наличие и готовый ответ клиенту (скопировать и вставить в Авито). Цены — из CRM, как на сайте.
+
+        Посреди расчёта просто число — это размер (идёт в расчёт), а артикул с буквой — справка."""
+        catalog = self.store.get()
+        text = (ev.text or "").strip()
+        if not catalog or not text or text.startswith("/"):
+            return False
+        if st.startswith("calc_") and _SIZE_ONLY_RE.fullmatch(text):
+            return False
+        found = catalog.lookup(text)
+        uid = ev.user_id
+        if not found:
+            # похоже на номер или артикул («70», «А123») — скажем, что такого нет, а не «никуда не отправлено»
+            if not st.startswith("calc_") and len(text) <= 12 and re.search(r"\d", text) \
+                    and re.fullmatch(r"[AaАа]?\s*[\d\s/-]+[LlЛл]?", text):
+                digits = re.sub(r"\D", "", text)
+                await self.say(uid, texts.staff_not_found(text, catalog.search(digits)))
+                return True
+            return False
+        if st.startswith("calc_"):
+            self.clear(uid)
+        for p in found:
+            await self.send_staff_card(uid, p)
+        await self.say(uid, texts.staff_answer_message(found))
+        return True
+
+    def staff_card_kb(self, product: Product) -> Kb:
+        rows: list[list[Btn] | None] = []
+        if (data := cb("ca", product.article)):
+            rows.append([Btn(f"{texts.BTN_CALC_GROUP} {product.article}", data)])
+        if self.cfg.site_url:
+            rows.append([Btn(texts.BTN_PRODUCT_SITE, url=self.site(f"p/{product.slug}/"))])
+        return ikb(*rows)
+
+    def photo_url(self, product: Product) -> str:
+        if not product.photo or not self.cfg.site_url:
+            return ""
+        return f"{self.cfg.site_url.rstrip('/')}/{product.photo}"
+
+    async def send_staff_card(self, uid: int, product: Product) -> None:
+        """Фото с подписью; если мессенджер фото не принял — та же подпись текстом (справка важнее фото)."""
+        caption = texts.staff_card(product) + "\n\n" + texts.LOOKUP_HINT
+        kb = self.staff_card_kb(product)
+        url = self.photo_url(product)
+        send_photo = getattr(self.t, "send_photo", None)
+        if url and send_photo:
+            try:
+                await send_photo(uid, url, caption, kb)
+                return
+            except Blocked:
+                raise
+            except Exception as exc:  # noqa: BLE001 - фото не дошло: отправим текстом
+                log.warning("справка: фото %s не отправлено (%s) — шлю текстом", product.article, type(exc).__name__)
+        await self.say(uid, caption, kb)
 
     async def article_message(self, ev: Incoming, me: Person | None) -> bool:
         """Артикул в обычном сообщении («А907», «панель а907 3,2 на 2,7», «есть ли A703?»).

@@ -172,3 +172,52 @@ def test_step_from_catalog_lay_width():
     assert r.columns == 28                       # 3200 / 116 = 27,6 → 28 (по 120 было бы 27)
     assert "по стене 116" in texts.calc_result_area(by["3-7"], r)
     assert "по стене" not in texts.calc_result_area(by["A907"], calc.calc_area(3200, 2700, 180, 3000, 12, 1100, 0))
+
+
+# --------------------------------------------------------------------------- справка для своих (19.11.2026)
+def _site_catalog():
+    path = site_sample_path()
+    if not path:
+        pytest.skip("нет index.html сайта (CATALOG_SAMPLE)")
+    return Catalog(parse_catalog(open(path, encoding="utf-8").read()))
+
+
+def test_lookup_numbers_without_letter_and_zeros():
+    c = _site_catalog()
+    for q in ("88", "088", "а 088", "А88", "a 88", "A-88", "плинтус А88 цена", "Плинтуса А88 в какую цену"):
+        assert [p.article for p in c.lookup(q)] == ["A88"], q
+    assert [p.article for p in c.lookup("88 908")] == ["A88", "A908"]
+    assert [p.article for p in c.lookup("А88, А908")] == ["A88", "A908"]
+    assert [p.article for p in c.lookup("2-7")] == ["2-7"]
+    assert [p.article for p in c.lookup("005")] == ["A005"]
+    assert c.lookup("70") == [] and c.lookup("привет") == [] and c.lookup("/start") == []
+
+
+def test_photo_from_site_photos():
+    c = _site_catalog()
+    p = c.find("A88")
+    assert p.photo.startswith("img/2x/A88.jpg")
+    assert c.find("A201/2").photo.startswith("img/2x/A201.jpg")
+    assert sum(1 for x in c.products if x.photo) >= 100
+
+
+def test_parse_photos_sample_and_missing():
+    html = 'const CAT=[]; const PHOTO_V = "7"; const PHOTOS = {"A88":["A88.jpg","A88_2.jpg"],"GS 1":["GS 1.jpg"]};'
+    assert cat.parse_photos(html) == {"A88": "img/2x/A88.jpg?v=7", "GS1": "img/2x/GS%201.jpg?v=7"}
+    assert cat.parse_photos("const CAT=[];") == {}
+    assert parse_catalog(SAMPLE_HTML)[0].photo == ""          # без PHOTOS — без фото, справка всё равно работает
+
+
+def test_nozero_find_does_not_break_exact():
+    c = _site_catalog()
+    assert c.find("A005").article == "A005" and c.find("A05").article == "A005"
+    assert c.find("A50").article == "A50"                      # «50» не превращается в «5»
+    assert c.find("A088").article == "A88"
+
+
+def test_price_per_unit_like_site():
+    c = _site_catalog()
+    assert c.find("A908").price_m2 == round(c.find("A908").price / 0.54)
+    assert c.find("2-7").price_m2 == 2903 or c.find("2-7").price != 1045
+    p = c.find("A88")
+    assert p.price_m == int(p.price / 2 + 0.5)

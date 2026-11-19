@@ -366,6 +366,21 @@ class MaxTransport:
             with contextlib.suppress(MaxApiError, MaxNetworkError):
                 await self.client.answer(ev.callback_id, {"notification": text} if text else {})
 
+    async def send_photo(self, user_id: int, url: str, caption: str, kb: Kb | None = None) -> str:
+        """Фото по ссылке с подписью (справка для своих). MAX сам скачивает картинку; пока он её
+        обрабатывает, отвечает «not.ready» — ждём и пробуем ещё. Не вышло — ядро пришлёт текст."""
+        body: dict[str, Any] = {"text": caption[:TEXT_LIMIT], "format": "html",
+                                "attachments": [{"type": "image", "payload": {"url": url}}]
+                                + render(kb, await self.app())}
+        for attempt in range(1, 4):
+            try:
+                return await self._post(user_id, body, kb)
+            except MaxApiError as exc:
+                if "not.ready" not in f"{exc.code} {exc}" or attempt == 3:
+                    raise
+                await asyncio.sleep(1.5 * attempt)
+        return ""
+
     async def copy(self, user_id: int, media: Any, kb: Kb | None = None) -> str:
         media = media or {}
         body: dict[str, Any] = {"attachments": list(media.get("attachments") or []) + render(kb, await self.app())}

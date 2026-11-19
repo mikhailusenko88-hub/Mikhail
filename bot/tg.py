@@ -8,6 +8,8 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
+import os
+import urllib.request
 from typing import Any
 
 from aiogram import Bot, Dispatcher, Router
@@ -25,6 +27,7 @@ from aiogram.exceptions import (
 )
 from aiogram.types import (
     BotCommand,
+    BufferedInputFile,
     BotCommandScopeChat,
     BotCommandScopeDefault,
     CallbackQuery,
@@ -90,6 +93,19 @@ def render(kb: Kb | None) -> InlineKeyboardMarkup | ReplyKeyboardMarkup | None:
     )
 
 
+CAPTION_LIMIT = 1024   # подпись к фото в Telegram
+PHOTO_MAX_BYTES = 10 * 1024 * 1024
+
+
+def fetch_bytes(url: str, timeout: float = 15.0) -> bytes:
+    req = urllib.request.Request(url, headers={"User-Agent": "prostranstvo-bot/1.0"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310 - адрес нашего сайта из настроек
+        data = resp.read(PHOTO_MAX_BYTES + 1)
+    if not data or len(data) > PHOTO_MAX_BYTES:
+        raise ValueError("фото пустое или слишком большое")
+    return data
+
+
 class _Errors:
     """Ошибки Telegram → Blocked / Temporary для ядра."""
 
@@ -141,6 +157,21 @@ class TgTransport:
         if ev.callback_id:
             with contextlib.suppress(TelegramAPIError):
                 await self.bot.answer_callback_query(ev.callback_id, text=text or None, show_alert=alert or None)
+
+    async def send_photo(self, user_id: int, url: str, caption: str, kb: Kb | None = None) -> str:
+        """Фото по ссылке с подписью (справка для своих). Telegram не скачал ссылку — скачиваем сами
+        и загружаем файлом (сайт может не открываться с серверов Telegram)."""
+        caption = caption[:CAPTION_LIMIT]
+        try:
+            with _Errors():
+                msg = await self.bot.send_photo(user_id, photo=url, caption=caption, reply_markup=render(kb))
+        except TelegramBadRequest:
+            data = await asyncio.to_thread(fetch_bytes, url)
+            name = os.path.basename(url.split("?")[0]) or "photo.jpg"
+            with _Errors():
+                msg = await self.bot.send_photo(user_id, photo=BufferedInputFile(data, name), caption=caption,
+                                                reply_markup=render(kb))
+        return str(msg.message_id)
 
     async def copy(self, user_id: int, media: Any, kb: Kb | None = None) -> str:
         with _Errors():

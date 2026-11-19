@@ -19,6 +19,7 @@ import os
 import re
 import tempfile
 import time
+import urllib.parse
 import urllib.request
 from collections.abc import Iterable
 from dataclasses import asdict, dataclass, replace
@@ -41,6 +42,12 @@ OTHER_TITLE = "Другое"
 AREA_KINDS = frozenset({"panel", "color"})  # считаются по площади стены
 
 _CAT_RE = re.compile(r"\bCAT\s*=\s*\[")
+# Главное фото товара на сайте: const PHOTOS = {"A88": ["A88.jpg", …]}; версия фото — const PHOTO_V = "14"
+_PHOTOS_RE = re.compile(r"\bPHOTOS\s*=\s*\{")
+_PHOTO_V_RE = re.compile(r"\bPHOTO_V\s*=\s*[\"']([^\"']{0,20})[\"']")
+# Номер без буквы — для своих (менеджер, отгрузка): «88», «088», «а 088», «88 908», «А88, А908»
+_NUMBERS_RE = re.compile(r"(?:[AaАа]\s*)?\d{1,4}(?:[\s,;]+(?:[AaАа]\s*)?\d{1,4})*")
+_NUMBER_RE = re.compile(r"(?:[AaАа]\s*)?(\d{1,4})")
 
 # Похожие кириллические буквы → латиница (клиент может набрать «А907» по-русски)
 _LOOKALIKE = str.maketrans("АВЕКМНОРСТХУЛ", "ABEKMHOPCTXYL")
@@ -75,6 +82,7 @@ class Product:
     price: int       # ₽ за штуку
     stock: int = -1  # свободный остаток из CRM, шт; -1 — неизвестно (CRM не ответила)
     step: int = 0    # шаг укладки, мм (луверы: панель 120, замок 3–4 мм заходит под соседнюю → 116); 0 — равен ширине
+    photo: str = ""  # главное фото на сайте: «img/2x/A88.jpg?v=14» (как og:image страницы товара); "" — нет
 
     @property
     def lay_width(self) -> int:
@@ -122,6 +130,21 @@ class Product:
         return self.article.lower().replace("/", "-").replace(" ", "")
 
     @property
+    def price_m2(self) -> int:
+        """Цена за м² — как на сайте: цена ÷ (ширина × длина)."""
+        return int(self.price * 1_000_000 / (self.width * self.length) + 0.5) if self.width and self.length else 0
+
+    @property
+    def price_m(self) -> int:
+        """Цена за погонный метр (для плинтусов, молдингов, карнизов, уголков)."""
+        return int(self.price * 1000 / self.length + 0.5) if self.length else 0
+
+    @property
+    def short_name(self) -> str:
+        """Название для ответа клиенту — до первой запятой: «Плинтус напольный белый под покраску 100 мм»."""
+        return self.title.split(",")[0].strip() or self.title
+
+    @property
     def short_desc(self) -> str:
         """Описание без размеров и материала: «широкие ламели с тонкими швами»."""
         first = self.desc.split(",")[0].strip()
@@ -139,6 +162,11 @@ def norm_article(text: str) -> str:
 def _loose_key(text: str) -> str:
     """Ещё грубее: без разделителей («A2012» ~ «A201/2», «23» ~ «2-3»)."""
     return re.sub(r"[^0-9A-Z]", "", norm_article(text))
+
+
+def _nozero_key(text: str) -> str:
+    """Без нулей после букв: «А088» ~ «A88», «A05» ~ «A005» (клиенты пишут номер «как в каталоге»)."""
+    return re.sub(r"^([A-Z]+)0+(?=\d)", r"\1", _loose_key(text))
 
 
 def _to_int(value: object) -> int:
@@ -180,6 +208,28 @@ def _product_from_raw(raw: object) -> Product | None:
     )
 
 
+def parse_photos(html: str) -> dict[str, str]:
+    """{артикул: «img/2x/A88.jpg?v=14»} — главное фото товара из PHOTOS сайта. Нет PHOTOS — пустой словарь."""
+    match = _PHOTOS_RE.search(html or "")
+    if not match:
+        return {}
+    try:
+        raw, _ = json.JSONDecoder().raw_decode(html, match.end() - 1)
+    except json.JSONDecodeError:
+        log.warning("каталог: PHOTOS не разобран — карточки для своих будут без фото")
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    vm = _PHOTO_V_RE.search(html)
+    ver = f"?v={urllib.parse.quote(vm.group(1))}" if vm and vm.group(1) else ""
+    out: dict[str, str] = {}
+    for art, files in raw.items():
+        first = files[0] if isinstance(files, list) and files else files
+        if isinstance(first, str) and first.strip() and "/" not in first and ".." not in first:
+            out[norm_article(str(art))] = f"img/2x/{urllib.parse.quote(first.strip())}{ver}"
+    return out
+
+
 def parse_catalog(html: str) -> list[Product]:
     """Достать товары из текста index.html. Битые позиции пропускаются."""
     match = _CAT_RE.search(html or "")
@@ -206,6 +256,9 @@ def parse_catalog(html: str) -> list[Product]:
         log.warning("каталог: пропущено позиций с ошибками или повторами: %d", skipped)
     if not products:
         raise CatalogError("в CAT нет ни одной правильной позиции")
+    photos = parse_photos(html)
+    if photos:
+        products = [replace(p, photo=photos.get(norm_article(p.article), "")) for p in products]
     return products
 
 
@@ -221,6 +274,10 @@ class Catalog:
         for p in self.products:
             loose.setdefault(_loose_key(p.article), []).append(p)
         self._by_loose = {k: v[0] for k, v in loose.items() if len(v) == 1}
+        nozero: dict[str, list[Product]] = {}
+        for p in self.products:
+            nozero.setdefault(_nozero_key(p.article), []).append(p)
+        self._by_nozero = {k: v[0] for k, v in nozero.items() if len(v) == 1}
 
     def __len__(self) -> int:
         return len(self.products)
@@ -230,7 +287,29 @@ class Catalog:
         key = norm_article(text)
         if not key:
             return None
-        return self._by_key.get(key) or self._by_loose.get(_loose_key(text))
+        return self._by_key.get(key) or self._by_loose.get(_loose_key(text)) or self._by_nozero.get(_nozero_key(text))
+
+    def lookup(self, text: str, limit: int = 5) -> list[Product]:
+        """Справка для своих: артикул или просто номер → товары.
+
+        «88», «088», «а 088», «А88», «88 908», «А88, А908», «2-7», «плинтус А88 цена». Номер без буквы
+        понимаем только здесь (у клиентов «88» может значить что угодно)."""
+        raw = (text or "").strip()
+        if not raw or len(raw) > 80 or raw.startswith("/"):
+            return []
+        found: list[Product] = []
+        if _NUMBERS_RE.fullmatch(raw):
+            for m in _NUMBER_RE.finditer(raw):
+                p = self.find("A" + m.group(1))
+                if p and p not in found:
+                    found.append(p)
+            if found:
+                return found[:limit]
+        whole = self.find(raw) if len(raw) <= 12 else None
+        if whole:
+            return [whole]
+        found, _ = self.find_in_text(raw)
+        return found[:limit]
 
     def find_in_text(self, text: str) -> tuple[list[Product], str]:
         """Артикулы в обычном сообщении клиента → (товары по порядку, текст без артикулов).
