@@ -1,9 +1,9 @@
 {
  "el": "/home/claude/w19/el30/el",
  "series": "СЕРИЯ 30",
- "text": "КТО ОТКУСИЛ|ЛУНУ?",
+ "text": "КТО ОТКУСИЛ ЛУНУ?",
  "text_at": "center",
- "text_px": 96,
+ "text_px": 40,
  "text_w": 0.5,
  "logo": 0.8,
  "vignette": 0.2,
@@ -18,7 +18,7 @@
  "bri": 1.2,
  "rays": {
   "cx": 0.46,
-  "cy": 0.3,
+  "cy": 0.36,
   "n": 16,
   "col": [
    255,
@@ -29,7 +29,7 @@
  },
  "spot": {
   "cx": 0.45,
-  "cy": 0.3,
+  "cy": 0.36,
   "r": 0.15,
   "col": [
    255,
@@ -42,16 +42,16 @@
   {
    "img": "v_moon_bitten.png",
    "cx": 0.5,
-   "top": 0.02,
-   "h": 0.58,
+   "top": 0.03,
+   "h": 0.66,
    "outline": 0,
    "shadow": 0.3
   },
   {
    "sparkles": true,
    "cx": 0.5,
-   "cy": 0.3,
-   "r": 0.23,
+   "cy": 0.36,
+   "r": 0.25,
    "n": 8,
    "col": [
     255,
@@ -61,39 +61,39 @@
   },
   {
    "mark": "?",
-   "cx": 0.69,
-   "cy": 0.2,
-   "h": 0.2,
+   "cx": 0.7,
+   "cy": 0.22,
+   "h": 0.22,
    "rot": -10
   },
   {
    "img": "g2_Рон_vot.png",
    "cx": 0.15,
-   "bottom": 1.1,
-   "h": 0.74,
+   "bottom": 1.06,
+   "h": 0.82,
    "outline": 6
   },
   {
    "img": "v_cookie_bitten.png",
    "cx": 0.33,
-   "bottom": 0.62,
-   "h": 0.15,
+   "bottom": 0.7,
+   "h": 0.17,
    "outline": 4,
    "rot": -14
   },
   {
    "img": "v_kroshki.png",
    "cx": 0.27,
-   "bottom": 0.5,
-   "h": 0.13,
+   "bottom": 0.56,
+   "h": 0.14,
    "outline": 0,
    "shadow": 0.2
   },
   {
    "img": "g1_Барсик_udiv.png",
-   "cx": 0.86,
-   "bottom": 1.1,
-   "h": 0.84,
+   "cx": 0.85,
+   "bottom": 1.06,
+   "h": 0.92,
    "outline": 6,
    "flip": true
   }
