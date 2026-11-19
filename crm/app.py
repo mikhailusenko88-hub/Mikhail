@@ -49,11 +49,15 @@ from push import WebPush
 from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, TochkaError, http_request, jwt_claims,
                     parse_jwk, receipt_items, verify_rs256)
 from visits import Visits, is_bot, parse_body
+from pek import PRICE_TTL as PEK_PRICE_TTL, SENDER_ADDRESS as PEK_SENDER, ZONE_TTL as PEK_ZONE_TTL
+from pek import Cache as PekCache, Pek, PekError, cargos_for, has_street, is_local
 import maxapp
 
 log = logging.getLogger("crm")
 
 LOGIN_WINDOW = 15 * 60
+SHIP_WINDOW = 10 * 60          # расчёт доставки ПЭК с сайта: не больше SHIP_MAX запросов с одного адреса за 10 минут
+SHIP_MAX = 30
 LOGIN_MAX_FAILS = 10
 LEAD_WINDOW = 10 * 60
 LEAD_MAX = 5
@@ -157,6 +161,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     fails: dict[str, deque[float]] = defaultdict(deque)
     leads_by_ip: dict[str, deque[float]] = defaultdict(deque)
     chat_by_ip: dict[str, deque[float]] = defaultdict(deque)
+    ship_by_ip: dict[str, deque[float]] = defaultdict(deque)
+    pek_cache = PekCache()
 
     def ip() -> str:
         return request.remote_addr or "?"
@@ -1008,6 +1014,65 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         """Можно создавать ссылки: ключ есть, клиент банка выбран, приём включён в Настройках."""
         return bool(store.setting("tochka_jwt", "") and store.setting("tochka_customer", "")) and store.setting("tochka_enabled", "0") == "1"
 
+    # ------------------------------------------------------------ ПЭК: расчёт доставки в другой город для сайта (19.11.2026)
+    def pek_client() -> Pek | None:
+        login, key = store.setting("pek_login", ""), store.setting("pek_key", "")
+        if not (login and key):
+            return None
+        return Pek(login, key, post=app.extensions.get("pek_http"))
+
+    def pek_on() -> bool:
+        """Сайт показывает расчёт: логин и ключ ПЭК сохранены и расчёт включён в Настройках (выключить — та же кнопка)."""
+        return pek_client() is not None and store.setting("pek_enabled", "0") == "1"
+
+    def pek_box_kg() -> dict[int, float]:
+        out: dict[int, float] = {}
+        for m in (3, 2):
+            try:
+                v = float((store.setting(f"pek_box{m}_kg", "") or "0").replace(",", "."))
+            except ValueError:
+                v = 0.0
+            if 0.5 <= v <= 80:
+                out[m] = v
+        return out
+
+    def pek_zone(t: Pek, address: str) -> dict[str, Any] | None:
+        key = "z|" + address.lower()
+        z = pek_cache.get(key)
+        if z is None:
+            z = t.zone(address) or {}
+            pek_cache.put(key, z, PEK_ZONE_TTL)
+        return z or None
+
+    def ship_quote(t: Pek, where: str, lines: list[tuple[Any, int]], insure: int) -> dict[str, Any]:
+        """Цена ПЭК для покупателя: до терминала в его городе и, если введён адрес с улицей, до двери."""
+        addr = where if where.lower().startswith("россия") else "Россия, " + where
+        z = pek_zone(t, addr)
+        if not z:
+            return {"ok": False, "error": "city"}
+        if is_local(z["branch"]):
+            return {"ok": True, "local": True, "branch": z["branch"]}
+        snd = pek_zone(t, PEK_SENDER)
+        if not snd:
+            raise PekError(200, "ПЭК не нашёл склад в Санкт-Петербурге")
+        cargos = cargos_for(lines, pek_box_kg())
+        if not cargos:
+            return {"ok": False, "error": "items"}
+        sig = json.dumps([z["warehouse"], cargos, insure // 1000], sort_keys=True)
+        term = pek_cache.get("p|" + sig)
+        if term is None:
+            term = t.price(snd["warehouse"], z["warehouse"], cargos, insure)
+            pek_cache.put("p|" + sig, term, PEK_PRICE_TTL)
+        out: dict[str, Any] = {"ok": True, "branch": z["branch"], "place": z["formatted"] or where, "terminal": term, "places": len(cargos)}
+        if has_street(where):
+            dk = "d|" + sig + "|" + addr.lower()
+            door = pek_cache.get(dk)
+            if door is None:
+                door = t.price(snd["warehouse"], z["warehouse"], cargos, insure, door_address=addr)
+                pek_cache.put(dk, door, PEK_PRICE_TTL)
+            out["door"] = door
+        return out
+
     def notify_money(did: int, kop: int, how: str, result: str) -> None:
         d = store.deal(did)
         if not d:
@@ -1592,6 +1657,68 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         return render_template("site.html", r=r, d=d, bots=bots)
 
     # ------------------------------------------------------------ настройки
+    @app.post("/settings/pek")
+    @admin_required
+    def settings_pek() -> Any:
+        """ПЭК: логин и ключ API, вес коробок, проверка связи, вкл/выкл расчёта на сайте, удаление ключа."""
+        act = request.form.get("act", "save")
+        back = redirect(url_for("settings_view") + "#pek")
+        if act == "forget":
+            for k in ("pek_login", "pek_key", "pek_check"):
+                store.set_setting(k, "")
+            store.set_setting("pek_enabled", "0")
+            c = store.c(); store.log(c, "ПЭК: логин и ключ удалены из CRM", who()); c.commit()
+            flash("Ключ ПЭК удалён из CRM, расчёт на сайте выключен. Отзовите ключ и в кабинете ПЭК («Ключи API»).", "ok")
+            return back
+        if act == "save":
+            login = request.form.get("login", "").strip()[:120]
+            key = re.sub(r"\s+", "", request.form.get("key", ""))[:300]
+            if login:
+                store.set_setting("pek_login", login)
+            if key:
+                store.set_setting("pek_key", key)
+                c = store.c(); store.log(c, "ПЭК: сохранён новый ключ API", who()); c.commit()
+            for m in (3, 2):
+                f = f"box{m}"
+                if f in request.form:
+                    v = request.form.get(f, "").strip().replace(",", ".")
+                    try:
+                        ok = v == "" or 0.5 <= float(v) <= 80
+                    except ValueError:
+                        ok = False
+                    if ok:
+                        store.set_setting(f"pek_box{m}_kg", v)
+            flash("Сохранено." + (" Теперь нажмите «Проверить связь»." if key else ""), "ok")
+            return back
+        t = pek_client()
+        if t is None:
+            flash("Сначала впишите логин и ключ API из личного кабинета ПЭК.", "err")
+            return back
+        if act == "check":
+            from types import SimpleNamespace
+            probe = SimpleNamespace(size="180×10×3000", per_box=12, price=1950)        # одна коробка панелей 3 м
+            try:
+                r = ship_quote(t, "Москва", [(probe, 12)], 0)
+            except PekError as e:
+                store.set_setting("pek_check", f"{datetime.now():%d.%m %H:%M} — ошибка: {e.human()}")
+                flash("ПЭК: " + e.human(), "err")
+                return back
+            if not r.get("ok") or not r.get("terminal"):
+                flash("ПЭК не нашёл Москву — проверьте ключ и попробуйте ещё раз.", "err")
+                return back
+            tr = r["terminal"]
+            msg = f"Санкт-Петербург → Москва, 1 коробка панелей 3 м: ≈ {tr['cost']:,} ₽".replace(",", " ") + (f", ≈ {tr['days']} дн." if tr.get("days") else "")
+            store.set_setting("pek_check", f"{datetime.now():%d.%m %H:%M} — {msg}")
+            flash("Связь с ПЭК есть. " + msg + ". Теперь можно включить расчёт на сайте.", "ok")
+            return back
+        if act in ("enable", "disable"):
+            store.set_setting("pek_enabled", "1" if act == "enable" else "0")
+            c = store.c(); store.log(c, "ПЭК: расчёт доставки на сайте " + ("включён" if act == "enable" else "выключен"), who()); c.commit()
+            flash("Расчёт доставки ПЭК на сайте " + ("включён — блок появится на страницах товаров и в корзине в течение минуты."
+                                                     if act == "enable" else "выключен. На сайте снова «стоимость доставки назовём при подтверждении»."), "ok")
+            return back
+        return back
+
     @app.route("/settings")
     @login_required
     def settings_view() -> Any:
@@ -1607,7 +1734,10 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                            method=store.setting("tochka_method", "full_prepayment"), webhook=store.setting("tochka_webhook", ""),
                                            unlinked=len(store.bank_events(200, unlinked=True))),
                                TAX_SYSTEMS=TAX_SYSTEMS, inv=invoices.seller(), inv_probs=invoices.seller_problems(),
-                               offsite=offsite_view())
+                               offsite=offsite_view(),
+                               pek=dict(has_key=bool(store.setting("pek_key", "")), login=store.setting("pek_login", ""), on=pek_on(),
+                                        box3=store.setting("pek_box3_kg", ""), box2=store.setting("pek_box2_kg", ""),
+                                        check=store.setting("pek_check", "")))
 
     def offsite_conf() -> dict[str, str]:
         return {k: store.setting("offsite_" + k, "") for k in ("endpoint", "region", "bucket", "key", "secret", "prefix")}
@@ -1949,6 +2079,53 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         send_mail(conf["NOTIFY_EMAIL"], head, txt + f"\n\nCRM: https://crm.{conf['SHOP_DOMAIN']}/deals/{did}"
                   if conf["SHOP_DOMAIN"] else txt)
         return cors(jsonify(ok=True, id=did)), 200
+
+    # ------------------------------------------------------------ API: доставка ПЭК в другой город (сайт, с 19.11.2026)
+    # GET — включён ли расчёт (сайт показывает блок только тогда); POST {city, items:[{a, q}]} — цена и срок ПЭК.
+    @app.route("/api/ship", methods=["GET", "POST", "OPTIONS"])
+    def api_ship() -> Any:
+        if request.method == "OPTIONS":
+            return cors(Response(status=204))
+        origin = request.headers.get("Origin", "").rstrip("/")
+        if origin and origin not in conf["SITE_ORIGINS"]:
+            return cors(jsonify(ok=False, error="origin")), 403
+        if request.method == "GET":
+            return cors(jsonify(ok=True, on=pek_on()), cache="public, max-age=60")
+        if not pek_on():
+            return cors(jsonify(ok=False, error="off")), 503
+        q = _recent(ship_by_ip[ip()], SHIP_WINDOW)
+        if len(q) >= SHIP_MAX:
+            return cors(jsonify(ok=False, error="rate")), 429
+        data = request.get_json(silent=True)
+        if not isinstance(data, dict):
+            return cors(jsonify(ok=False, error="format")), 400
+        where = re.sub(r"\s+", " ", str(data.get("city") or "")).strip(" ,")[:200]
+        if len(where) < 2 or not re.search(r"[A-Za-zА-Яа-яЁё]", where):
+            return cors(jsonify(ok=False, error="city")), 400
+        lines: list[tuple[Any, int]] = []
+        insure = 0
+        for it in (data.get("items") if isinstance(data.get("items"), list) else [])[:40]:
+            if not isinstance(it, dict):
+                continue
+            p = store.catalog.get(str(it.get("a") or "").strip()[:30])
+            try:
+                n = max(0, min(9999, int(it.get("q") or 0)))
+            except (TypeError, ValueError):
+                n = 0
+            if p and n:
+                lines.append((p, n))
+                insure += int(p.price or 0) * n
+        if not lines:
+            return cors(jsonify(ok=False, error="items")), 400
+        q.append(time.monotonic())
+        t = pek_client()
+        assert t is not None
+        try:
+            out = ship_quote(t, where, lines, insure)
+        except PekError as e:
+            log.warning("ПЭК: расчёт не получился: %s", str(e)[:200])
+            return cors(jsonify(ok=False, error="pek")), 502
+        return cors(jsonify(out))
 
     # ------------------------------------------------------------ API: чат на сайте
     # Окно «Чат» на каждой странице сайта. Посетитель — без входа: его переписку определяет случайный

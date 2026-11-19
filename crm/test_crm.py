@@ -5,6 +5,7 @@ from __future__ import annotations
 import os as _os
 for _k in ("NOTIFY_EMAIL", "CRM_DB", "BOT_DB", "CATALOG_FILE", "SITE_ORIGINS", "SITE_LEADS", "SHOP_DOMAIN", "CRM_SECRET_FILE"):
     _os.environ.pop(_k, None)  # тесты никогда не трогают настоящую базу и почту сервера
+import base64
 import json
 import os
 import re
@@ -968,6 +969,105 @@ class TestBot(Base):
         self.assertEqual(rows[0][:2], ("max", 777))
         self.assertEqual(json.loads(rows[0][2])["t"], "text")
         self.assertEqual(self.c.get("/settings").status_code, 200)
+
+
+class FakePek:
+    """Кабинет ПЭК для тестов: зоны городов и калькулятор «ПЭК:LTL Авто»."""
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, dict, dict]] = []
+        self.status = 200
+
+    def http(self, url, headers, body):
+        data = json.loads(body.decode())
+        self.calls.append((url, headers, data))
+        if self.status != 200:
+            return self.status, b""
+        if url.endswith("branches/findzonebyaddress/"):
+            a = data["address"].lower()
+            zones = {"санкт-петербург": ("WH-SPB", "Санкт-Петербург"), "москва": ("WH-MSK", "Москва"),
+                     "казань": ("WH-KZN", "Казань"), "колпино": ("WH-SPB", "Санкт-Петербург")}
+            for k, (wh, br) in zones.items():
+                if k in a:
+                    return 200, json.dumps({"mainWarehouseId": wh, "branchTitle": br,
+                                            "GeoData": {"kind": "street" if "ул." in a else "locality", "Address": {"formatted": data["address"]}}}).encode()
+            return 200, b"{}"
+        if url.endswith("calculator/calculateprice/"):
+            places = len(data["cargos"])
+            cost = 900 + 450 * places + (700 if data.get("isDelivery") else 0)
+            return 200, json.dumps({"hasError": False, "transfers": [{"type": 3, "hasError": False, "costTotal": cost, "estDeliveryTime": 3}]}).encode()
+        return 404, b""
+
+
+class TestPek(Base):
+    def setUp(self) -> None:
+        super().setUp()
+        self.pek = FakePek()
+        self.app.extensions["pek_http"] = self.pek.http
+
+    def ship(self, city, items, origin="https://nashdekor.ru"):
+        h = {"Origin": origin} if origin else {}
+        return self.c.post("/api/ship", data=json.dumps({"city": city, "items": items}), content_type="application/json", headers=h)
+
+    def test_settings_check_enable_and_quotes(self) -> None:
+        self.assertFalse(self.c.get("/api/ship", headers={"Origin": "https://nashdekor.ru"}).get_json()["on"])
+        self.assertEqual(self.ship("Казань", [{"a": "A912", "q": 6}]).status_code, 503)          # выключено — сайт блок не показывает
+        self.login()
+        self.post("/settings/pek", {"act": "enable"})                                          # без ключа не включить
+        self.assertFalse(self.c.get("/api/ship").get_json()["on"])
+        self.post("/settings/pek", {"act": "save", "login": "nashdekor", "key": " abc 123 ", "box3": "21,5", "box2": "мусор"})
+        self.assertEqual((self.store.setting("pek_key"), self.store.setting("pek_box3_kg"), self.store.setting("pek_box2_kg")), ("abc123", "21.5", ""))
+        self.post("/settings/pek", {"act": "check"})
+        self.assertIn("Москва", self.store.setting("pek_check")); self.assertIn("1 350 ₽", self.store.setting("pek_check"))
+        auth = self.pek.calls[0][1]["Authorization"]
+        self.assertEqual(auth, "Basic " + base64.b64encode(b"nashdekor:abc123").decode())
+        page = self.c.get("/settings").get_data(as_text=True)
+        self.assertIn("ПЭК — расчёт доставки на сайте", page); self.assertNotIn("abc123", page)  # ключ на страницу не выводится
+        self.post("/settings/pek", {"act": "enable"})
+        self.assertTrue(self.c.get("/api/ship").get_json()["on"])
+        # 13 шт A912 (6 в коробке, 2,7 м): 2 коробки + связка из 1 шт = 3 места
+        self.pek.calls.clear()
+        r = self.ship("Казань", [{"a": "A912", "q": 13}, {"a": "НЕТ", "q": 5}])
+        j = r.get_json()
+        self.assertEqual((r.status_code, j["ok"], j["branch"], j["terminal"]["cost"], j["terminal"]["days"], j["places"]), (200, True, "Казань", 2250, 3, 3))
+        self.assertNotIn("door", j)
+        calc = [c for c in self.pek.calls if c[0].endswith("calculateprice/")][0][2]
+        self.assertEqual((calc["types"], calc["senderWarehouseId"], calc["receiverWarehouseId"], calc["isDelivery"]), ([3], "WH-SPB", "WH-KZN", False))
+        self.assertEqual(calc["cargos"][0], {"length": 3.0, "width": 0.185, "height": 0.125, "weight": 21.5})
+        self.assertEqual(calc["cargos"][2]["maxSize"], 3.0); self.assertTrue(calc["isInsurance"]); self.assertEqual(calc["isInsurancePrice"], 13 * 990)
+        # повтор — из кеша, ПЭК не дёргаем
+        n = len(self.pek.calls); self.ship("Казань", [{"a": "A912", "q": 13}]); self.assertEqual(len(self.pek.calls), n)
+        # адрес с улицей — ещё и «до двери»
+        j = self.ship("Казань, ул. Баумана, 10", [{"a": "A116", "q": 3}, {"a": "GS 1", "q": 5}]).get_json()
+        self.assertEqual((j["terminal"]["cost"], j["door"]["cost"]), (900 + 450 * 2, 900 + 450 * 2 + 700))
+        door = [c for c in self.pek.calls if c[0].endswith("calculateprice/") and c[2]["isDelivery"]][-1][2]
+        self.assertEqual(door["delivery"]["address"], "Россия, Казань, ул. Баумана, 10")
+        # Петербург и область — возим сами
+        self.assertTrue(self.ship("Колпино", [{"a": "A912", "q": 1}]).get_json()["local"])
+        # не нашли город, пустой заказ, чужой сайт
+        self.assertEqual(self.ship("Нарния", [{"a": "A912", "q": 1}]).get_json()["error"], "city")
+        self.assertEqual(self.ship("Казань", [{"a": "НЕТ", "q": 1}]).status_code, 400)
+        self.assertEqual(self.ship("Казань", [{"a": "A912", "q": 1}], origin="https://evil.example").status_code, 403)
+        # ПЭК не отвечает — сайт пишет «назовём при подтверждении»
+        self.pek.status = 0
+        self.assertEqual(self.ship("Москва", [{"a": "A116", "q": 40}]).get_json()["error"], "pek")
+        # выключить и удалить ключ
+        self.post("/settings/pek", {"act": "disable"}); self.assertFalse(self.c.get("/api/ship").get_json()["on"])
+        self.post("/settings/pek", {"act": "enable"}); self.post("/settings/pek", {"act": "forget"})
+        self.assertEqual((self.store.setting("pek_key"), self.store.setting("pek_enabled")), ("", "0"))
+
+    def test_staff_cannot_change_pek(self) -> None:
+        self.login("mikhail", "Secret-pass-2")
+        self.post("/settings/pek", {"act": "save", "login": "x", "key": "y"})
+        self.assertEqual(self.store.setting("pek_key"), "")
+
+    def test_cargos_and_address(self) -> None:
+        from types import SimpleNamespace as N
+        from pek import cargos_for, has_street
+        c = cargos_for([(N(size="180×10×3000", per_box=12), 30), (N(size="80×14×2000", per_box=26), 10)])
+        self.assertEqual(len(c), 4)                                   # 2 коробки 3 м + связка 3 м (6 шт) + связка 2 м (10 шт)
+        self.assertEqual(c[2]["maxSize"], 3.0); self.assertEqual(c[3]["maxSize"], 2.0)
+        self.assertTrue(has_street("Казань, ул. Баумана, 10")); self.assertTrue(has_street("Тверь, Советская, 5"))
+        self.assertFalse(has_street("Нижний Новгород")); self.assertFalse(has_street("Ростов-на-Дону"))
 
 
 class FakeBank:
