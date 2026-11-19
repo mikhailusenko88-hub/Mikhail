@@ -37,6 +37,7 @@ LAST_SLOT = {"cities": 1, "cars": 2, "clubs": 3}           # в воскресе
 PLAYLIST = {"cities": "Qaysi shahar yutadi? · Гонка городов", "cars": "Qaysi mashina yutadi? · Гонка машин",
             "clubs": "Qaysi jamoa yutadi? · Гонка клубов"}
 HANDLE = "@kimyutadi_uz"
+CLUBS_OFF = True      # H33: слот 3 без клубов, проверка 5 дней (до 24.11.2026) — медиана слота за 24 ч против 41–132
 
 
 def slot_league(d, slot):
@@ -44,6 +45,11 @@ def slot_league(d, slot):
     только вт/чт/сб/вс (в воскресенье — финал недели), в пн/ср/пт вместо них вторая гонка машин."""
     if slot == 1 and d.weekday() in (0, 2, 4):
         return "cars"
+    if slot == 3 and CLUBS_OFF:
+        # H33 (19.11.2026, Михаил: «делай всё, что нужно»): клубы в 20:00 Ташкента — самый слабый слот 4 дня из 5
+        # (41–132 просмотра за 24 ч против 132–253 у городов и машин). Вместо них — та лига, которой не было в полдень:
+        # пн/ср/пт (в полдень машины) — города, остальные дни — машины. Откат: CLUBS_OFF = False.
+        return "cities" if d.weekday() in (0, 2, 4) else "cars"
     return SLOTS[slot][0]
 
 
