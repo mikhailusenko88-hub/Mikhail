@@ -325,7 +325,8 @@ async function prices(){
 
 /* ---------- доставка ПЭК в другой город (с 19.11.2026) ----------
    Блок <div data-ship="item" data-a="A907"> на странице товара и <div data-ship="cart"> в корзине. Показывается, только если
-   в CRM включён расчёт (Настройки → «ПЭК — расчёт доставки»); CRM спрашивает ПЭК: до терминала, а с улицей — и до двери. */
+   в CRM включён расчёт (Настройки → «ПЭК — расчёт доставки»); CRM спрашивает ПЭК: до терминала, а с улицей — и до двери.
+   СПб и Ленобласть (с 19.11): только до двери по адресу с улицей — ориентир; везём ПЭК или другим вариантом, что выгоднее. */
 const SHIP_API = "https://crm.nashdekor.ru/api/ship";
 const CITY_KEY = "nd_city";
 const CITIES = ["Москва", "Казань", "Нижний Новгород", "Екатеринбург", "Новосибирск", "Краснодар", "Ростов-на-Дону", "Самара",
@@ -343,6 +344,8 @@ function shipStale(mode){
   shipLast = null;
   document.querySelectorAll(`[data-ship="${mode || "cart"}"] .ndk-shipr`).forEach(r => { if (r.innerHTML) r.innerHTML = "<small>Состав изменился — нажмите «Рассчитать» ещё раз.</small>"; });
 }
+/* введён адрес, а не только город (как has_street в CRM) */
+const has_street = s => /(^|[\s,])(ул|улица|пр|просп|проспект|пер|переулок|ш|шоссе|наб|бульвар|б-р|пл|площадь|мкр|дом|д)\.?\s/i.test(s || "") || /,\s*\d+/.test(s || "");
 function shipItems(el){
   if (el.dataset.ship === "cart") return load().map(i => ({ a: i.a, q: i.q }));
   const q = Math.max(1, parseInt(($("qty") || {}).value, 10) || 1);
@@ -362,8 +365,19 @@ async function shipCalc(el, where){
   } catch (e) { j = null; }
   btn.disabled = false;
   const note = "<small>В цене — забор груза с нашего склада. Ориентир по тарифам ПЭК на сегодня; точную сумму назовём при подтверждении заказа. Доставку оплачиваете в ПЭК при получении.</small>";
-  if (j && j.ok && j.local) {
-    res.innerHTML = "По Санкт-Петербургу и Ленобласти доставляем сами — стоимость назовём при подтверждении заказа, самовывоз со склада бесплатно.";
+  if (j && j.ok && j.local) {                 /* СПб и Ленобласть: ПЭК до двери — ориентир; везём ПЭК или другим вариантом — что выгоднее */
+    const d = j.door, alt = "Если другой вариант — например, грузовое такси — выйдет выгоднее или удобнее, предложим его при подтверждении заказа. Доставка по СПб и Ленобласти оплачивается вместе с товаром; самовывоз со склада — бесплатно.";
+    if (d) {
+      res.innerHTML = `По Петербургу и области ПЭК заберёт у нас и привезёт до двери: <b>≈ ${fmt(d.cost)} ₽</b><small>${alt}</small>`;
+      shipLast = { mode: el.dataset.ship, a: el.dataset.a || "", city: where,
+                   text: `Доставка по СПб/ЛО: ${where} — ПЭК до двери ≈ ${fmt(d.cost)} ₽ (расчёт на сайте; можно другим вариантом, если выгоднее)` };
+      const addr = $("kAddr");
+      if (el.dataset.ship === "cart" && addr && !addr.value.trim()) addr.value = where;
+      return;
+    }
+    res.innerHTML = has_street(where)
+      ? "По Петербургу и области доставим ПЭК или грузовым такси — что выгоднее и удобнее вам; стоимость назовём при подтверждении заказа. Самовывоз со склада — бесплатно."
+      : `По Петербургу и области доставим ПЭК или другим вариантом — что выгоднее и удобнее вам; самовывоз со склада — бесплатно.<small>Введите адрес с улицей и домом — посчитаем доставку ПЭК до двери.</small>`;
     shipLast = null; return;
   }
   if (j && j.ok && j.terminal) {
@@ -386,7 +400,7 @@ function renderShip(el){
   css();
   if (!$("ndkCities")) { const dl = document.createElement("datalist"); dl.id = "ndkCities"; dl.innerHTML = CITIES.map(c => `<option value="${esc(c)}">`).join(""); document.body.appendChild(dl); }
   el.classList.add("ndk-ship");
-  el.innerHTML = '<b>Доставка в другой город — ПЭК</b><form class="ndk-shipf" novalidate><input type="text" list="ndkCities" autocomplete="address-level2" placeholder="Город или адрес" aria-label="Город или адрес доставки">'
+  el.innerHTML = '<b>Доставка ПЭК — посчитать стоимость</b><form class="ndk-shipf" novalidate><input type="text" list="ndkCities" autocomplete="address-level2" placeholder="Город или адрес" aria-label="Город или адрес доставки">'
     + '<button class="btn sm ghost" type="submit">Рассчитать</button></form><div class="ndk-shipr" aria-live="polite"></div>';
   const inp = el.querySelector("input"); inp.value = getCity();
   el.querySelector("form").addEventListener("submit", e => {
