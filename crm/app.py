@@ -1063,13 +1063,32 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         return z or None
 
     def ship_quote(t: Pek, where: str, lines: list[tuple[Any, int]], insure: int) -> dict[str, Any]:
-        """Цена ПЭК для покупателя: до терминала в его городе и, если введён адрес с улицей, до двери."""
+        """Цена ПЭК для покупателя: до терминала в его городе и, если введён адрес с улицей, до двери.
+        Петербург и Ленобласть (решение Михаила 19.11): только «до двери» — ПЭК забирает у нас и везёт покупателю; это ориентир,
+        а везём ПЭК или другим вариантом (грузовое такси) — смотрим по выгоде и удобству. Без улицы или если ПЭК не посчитал —
+        {"local": true} без цены, сайт пишет «стоимость назовём при подтверждении»."""
         addr = where if where.lower().startswith("россия") else "Россия, " + where
         z = pek_zone(t, addr)
         if not z:
             return {"ok": False, "error": "city"}
         if is_local(z["branch"]):
-            return {"ok": True, "local": True, "branch": z["branch"]}
+            out_l: dict[str, Any] = {"ok": True, "local": True, "branch": z["branch"]}
+            if not has_street(where):
+                return out_l
+            try:
+                snd = pek_zone(t, PEK_SENDER)
+                cargos = cargos_for(lines, pek_box_kg())
+                if snd and cargos:
+                    pick = store.setting("pek_pickup_address", "") or PEK_SENDER
+                    dk = "l|" + json.dumps([z["warehouse"], cargos, insure // 1000, pick, addr.lower()], sort_keys=True)
+                    door = pek_cache.get(dk)
+                    if door is None:
+                        door = t.price(snd["warehouse"], z["warehouse"], cargos, insure, door_address=addr, pickup_address=pick)
+                        pek_cache.put(dk, door, PEK_PRICE_TTL)
+                    out_l.update(door=door, places=len(cargos), place=z["formatted"] or where)
+            except PekError as e:                  # по городу ПЭК может не считать — тогда цену назовём сами
+                log.info("ПЭК: по СПб не посчитал: %s", str(e)[:200])
+            return out_l
         snd = pek_zone(t, PEK_SENDER)
         if not snd:
             raise PekError(200, "ПЭК не нашёл склад в Санкт-Петербурге")

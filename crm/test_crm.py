@@ -992,6 +992,8 @@ class FakePek:
                                             "GeoData": {"kind": "street" if "ул." in a else "locality", "Address": {"formatted": data["address"]}}}).encode()
             return 200, b"{}"
         if url.endswith("calculator/calculateprice/"):
+            if getattr(self, "fail_calc", False):
+                return 200, json.dumps({"hasError": True, "errorMessage": "Город отправления совпадает с городом получения"}).encode()
             places = len(data["cargos"])
             cost = 900 + 450 * places + (700 if data.get("isDelivery") else 0)
             return 200, json.dumps({"hasError": False, "transfers": [{"type": 3, "hasError": False, "costTotal": cost, "estDeliveryTime": 3}]}).encode()
@@ -1046,8 +1048,20 @@ class TestPek(Base):
         self.assertEqual((j["terminal"]["cost"], j["door"]["cost"]), (900 + 450 * 2, 900 + 450 * 2 + 700))
         door = [c for c in self.pek.calls if c[0].endswith("calculateprice/") and c[2]["isDelivery"]][-1][2]
         self.assertEqual(door["delivery"]["address"], "Россия, Казань, ул. Баумана, 10")
-        # Петербург и область — возим сами
-        self.assertTrue(self.ship("Колпино", [{"a": "A912", "q": 1}]).get_json()["local"])
+        # Петербург и область: без улицы — без цены (ПЭК не спрашиваем); с адресом — ПЭК забор у нас + до двери, как ориентир
+        n = len(self.pek.calls)
+        j = self.ship("Колпино", [{"a": "A912", "q": 1}]).get_json()
+        self.assertTrue(j["local"]); self.assertNotIn("door", j)
+        self.assertFalse([c for c in self.pek.calls[n:] if c[0].endswith("calculateprice/")])
+        j = self.ship("Санкт-Петербург, ул. Седова, 12", [{"a": "A912", "q": 6}]).get_json()
+        self.assertTrue(j["local"]); self.assertEqual((j["door"]["cost"], j["places"]), (900 + 450 + 700, 1))
+        loc = [c for c in self.pek.calls if c[0].endswith("calculateprice/")][-1][2]
+        self.assertEqual((loc["senderWarehouseId"], loc["receiverWarehouseId"], loc["isPickUp"], loc["isDelivery"]), ("WH-SPB", "WH-SPB", True, True))
+        self.assertEqual(loc["delivery"]["address"], "Россия, Санкт-Петербург, ул. Седова, 12")
+        self.pek.fail_calc = True                                   # ПЭК не считает по городу — остаётся «назовём при подтверждении»
+        j = self.ship("Колпино, ул. Труда, 3", [{"a": "A912", "q": 2}]).get_json()
+        self.assertEqual((j["ok"], j["local"], "door" in j), (True, True, False))
+        self.pek.fail_calc = False
         # не нашли город, пустой заказ, чужой сайт
         self.assertEqual(self.ship("Нарния", [{"a": "A912", "q": 1}]).get_json()["error"], "city")
         self.assertEqual(self.ship("Казань", [{"a": "НЕТ", "q": 1}]).status_code, 400)
