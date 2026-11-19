@@ -17,8 +17,27 @@ for name in ("large-v3-turbo", "turbo", "medium"):
 if model is None:
     sys.exit(2)
 
+def load_audio(path):
+    """Звук -> массив 16 кГц моно. Сначала штатный разбор, при сбое — через ffmpeg."""
+    try:
+        from faster_whisper.audio import decode_audio
+        return decode_audio(path, sampling_rate=16000)
+    except Exception as e:
+        sys.stderr.write("штатный разбор звука не сработал: %s\n" % str(e)[:120])
+    import shutil, subprocess
+    import numpy as np
+    exe = shutil.which("ffmpeg")
+    if not exe:
+        import imageio_ffmpeg
+        exe = imageio_ffmpeg.get_ffmpeg_exe()
+    raw = subprocess.run([exe, "-v", "error", "-i", path, "-f", "f32le", "-ac", "1", "-ar", "16000", "-"],
+                         check=True, stdout=subprocess.PIPE).stdout
+    return np.frombuffer(raw, dtype=np.float32)
+
+
+audio = load_audio(src)
 segments, meta = model.transcribe(
-    src, language="ru", beam_size=5, vad_filter=True,
+    audio, language="ru", beam_size=5, vad_filter=True,
     vad_parameters=dict(min_silence_duration_ms=400),
     condition_on_previous_text=False,
     initial_prompt="Разговор продавца с менеджером поддержки Авито: объявления, тариф, лимит контактов, продвижение, автозагрузка, доставка, отзывы.",
