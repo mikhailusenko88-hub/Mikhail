@@ -67,3 +67,4 @@
 | shorts | 2026-11-18 | 1 | Indonesia vs Pakistan vs Algeria | https://youtube.com/shorts/BYrVOM5QkiU | public (только Shorts) |
 | shorts | 2026-11-18 | 2 | India vs Vietnam vs Thailand | https://youtube.com/shorts/TQP4Lgy5ROY | public (только Shorts) |
 | shorts | 2026-11-18 | 3 | Japan vs Colombia vs Peru | https://youtube.com/shorts/k5c9gvYtk6c | public (только Shorts) |
+| shorts | 2026-11-19 | 1 | Mexico vs Thailand vs Spain | https://youtube.com/shorts/wbeECqcgslo | public (только Shorts) |
