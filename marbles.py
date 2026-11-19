@@ -31,6 +31,9 @@ SIM_TO = max(FRAMES) if "range" not in A else max(FRAMES)
 BR = float(A.get("r", "0.009"))                 # радиус шара, м
 SEED = int(A.get("seed", "7"))
 ANIM = A.get("anim")                             # out/<sim>/anim.npz — готовое движение шаров (рендер без физики)
+BG = A.get("bg", "dark")                         # dark — тёмная студия (первый ролик), light — светлая студия с циклорамой (как у топа ниши)
+LP = float(A.get("lp", "1"))                     # множитель силы ламп
+PALN = A.get("pal", "rainbow")                   # rainbow | candy (пастель)
 random.seed(SEED)
 t0 = time.time()
 
@@ -55,7 +58,11 @@ sc.render.resolution_percentage = 100
 sc.render.fps = 30
 sc.frame_start, sc.frame_end = 1, FR_END
 sc.view_settings.view_transform = A.get("vt", "Standard")
-sc.view_settings.look = A.get("look", "Medium High Contrast")
+try:
+    sc.view_settings.look = A.get("look", "Medium High Contrast").replace("_", " ")
+except TypeError as e:                           # имя «вида» не подошло к этому view transform — без него
+    print("look не подошёл:", e, flush=True)
+    sc.view_settings.look = "None"
 sc.view_settings.exposure = float(A.get("ev", "0"))
 sc.render.image_settings.file_format = "JPEG"
 sc.render.image_settings.quality = 93
@@ -70,7 +77,10 @@ def mat_principled(name, **kw):
     return m, p
 
 
-m_floor, _ = mat_principled("floor", **{"Base Color": (0.006, 0.007, 0.010, 1), "Roughness": 0.16, "Specular IOR Level": 0.7})
+if BG == "light":
+    m_floor, _ = mat_principled("floor", **{"Base Color": (0.40, 0.40, 0.42, 1), "Roughness": 0.34, "Specular IOR Level": 0.45})
+else:
+    m_floor, _ = mat_principled("floor", **{"Base Color": (0.006, 0.007, 0.010, 1), "Roughness": 0.16, "Specular IOR Level": 0.7})
 m_glass, _ = mat_principled("glass", **{"Base Color": (0.97, 0.99, 1.0, 1), "Roughness": 0.015, "IOR": 1.5, "Transmission Weight": 1.0})
 m_metal, _ = mat_principled("bucket", **{"Base Color": (0.012, 0.07, 0.36, 1), "Roughness": 0.35, "Coat Weight": 0.35, "Coat Roughness": 0.18})   # синее эмалированное ведро
 m_ball, pb = mat_principled("ball", **{"Roughness": 0.18, "Coat Weight": 0.8, "Coat Roughness": 0.04})
@@ -80,6 +90,9 @@ ramp = nt.nodes.new("ShaderNodeValToRGB")
 ramp.color_ramp.interpolation = "CONSTANT"
 PAL = [(0.85, 0.01, 0.02), (1.0, 0.22, 0.0), (1.0, 0.62, 0.0), (0.04, 0.6, 0.04), (0.0, 0.45, 0.85),
        (0.03, 0.08, 0.9), (0.35, 0.03, 0.85), (0.95, 0.04, 0.35)]   # линейные значения: в Standard выходят сочными
+if PALN == "candy":                              # пастель «леденцы»
+    PAL = [(1.0, 0.32, 0.45), (1.0, 0.52, 0.22), (1.0, 0.82, 0.2), (0.3, 0.82, 0.5), (0.3, 0.62, 1.0),
+           (0.55, 0.4, 1.0), (1.0, 0.25, 0.25), (0.15, 0.78, 0.82)]
 els = ramp.color_ramp.elements
 while len(els) < len(PAL):
     els.new(0.5)
@@ -93,18 +106,38 @@ nt.links.new(ramp.outputs["Color"], pb.inputs["Base Color"])
 w = bpy.data.worlds.new("w")
 sc.world = w
 w.use_nodes = True
-w.node_tree.nodes["Background"].inputs[0].default_value = (0.004, 0.005, 0.009, 1)
-w.node_tree.nodes["Background"].inputs[1].default_value = 1.0
+if BG == "light":
+    w.node_tree.nodes["Background"].inputs[0].default_value = (0.55, 0.56, 0.60, 1)
+    w.node_tree.nodes["Background"].inputs[1].default_value = float(A.get("wl", "0.8"))
+else:
+    w.node_tree.nodes["Background"].inputs[0].default_value = (0.004, 0.005, 0.009, 1)
+    w.node_tree.nodes["Background"].inputs[1].default_value = 1.0
 
 bpy.ops.mesh.primitive_plane_add(size=30, location=(0, 0, 0))
 floor = bpy.context.active_object
 floor.data.materials.append(m_floor)
+if BG == "light":                                # циклорама: пол плавно переходит в стену — фон без линии горизонта
+    prof = [(0.45 + 0.9 * math.sin(math.radians(a)), 0.9 - 0.9 * math.cos(math.radians(a))) for a in range(0, 91, 5)] + [(1.35, 4.0)]
+    bmc = bmesh.new()
+    rows = []
+    for x in (-5.0, 5.0):
+        rows.append([bmc.verts.new((x, y, max(z, 0.0006))) for y, z in prof])
+    for i in range(len(prof) - 1):
+        bmc.faces.new((rows[0][i], rows[1][i], rows[1][i + 1], rows[0][i + 1]))
+    mec = bpy.data.meshes.new("cyc")
+    bmc.to_mesh(mec)
+    bmc.free()
+    cyc = bpy.data.objects.new("cyc", mec)
+    sc.collection.objects.link(cyc)
+    cyc.data.materials.append(m_floor)
+    for pg in cyc.data.polygons:
+        pg.use_smooth = True
 
 
 def area(name, loc, rot, size, power, color):
     d = bpy.data.lights.new(name, "AREA")
     d.size = size
-    d.energy = power
+    d.energy = power * LP
     d.color = color
     o = bpy.data.objects.new(name, d)
     sc.collection.objects.link(o)
