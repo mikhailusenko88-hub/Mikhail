@@ -1,0 +1,59 @@
+name: call-text
+# Расшифровка закрытой звукозаписи в текст. Репозиторий открытый, поэтому:
+# звук приходит зашифрованным ключом, который раннер создаёт на время задания (call/runner.pub),
+# текст уходит зашифрованным ключом сессии (call/session.pub). В открытом виде ни звук, ни текст
+# в репозиторий и в журнал не попадают. Запуск — изменение call/request.txt в ветке call-text.
+on:
+  push:
+    branches: [call-text]
+    paths: ['call/request.txt']
+permissions:
+  contents: write
+concurrency:
+  group: call-text
+  cancel-in-progress: false
+jobs:
+  text:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Ключ раннера
+        run: |
+          set -e
+          mkdir -p "$RUNNER_TEMP/k"
+          openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out "$RUNNER_TEMP/k/runner.key" 2>/dev/null
+          openssl pkey -in "$RUNNER_TEMP/k/runner.key" -pubout -out call/runner.pub
+          rm -f call/in.enc call/in.key.enc call/in.ready call/out.enc call/out.key.enc call/out.info
+          git config user.name call-text; git config user.email call-text@users.noreply.github.com
+          git add -A call; git commit -q -m "call-text: ключ раннера"
+          for i in 1 2 3; do git pull -q --rebase origin call-text && git push -q origin HEAD:call-text && break; sleep 4; done
+      - name: Распознаватель
+        run: pip install -q faster-whisper
+      - name: Ждать запись
+        run: |
+          for i in $(seq 1 90); do
+            git pull -q --rebase origin call-text || true
+            [ -f call/in.ready ] && [ -f call/in.enc ] && [ -f call/in.key.enc ] && break
+            sleep 10
+          done
+          [ -f call/in.ready ] || { echo "запись не пришла за 15 минут"; exit 1; }
+      - name: Расшифровать и распознать
+        run: |
+          set -e
+          T="$RUNNER_TEMP/k"
+          openssl pkeyutl -decrypt -inkey "$T/runner.key" -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -in call/in.key.enc -out "$T/in.key"
+          openssl enc -d -aes-256-ctr -pbkdf2 -md sha256 -iter 100000 -pass "file:$T/in.key" -in call/in.enc -out "$T/in.m4a"
+          python call/whisper_run.py "$T/in.m4a" "$T/out.txt" "$T/info.txt" > /dev/null 2> "$T/err.txt" || { echo "распознавание не удалось"; tail -3 "$T/err.txt" | cut -c1-160; exit 1; }
+          openssl rand -hex 32 > "$T/out.key"
+          openssl enc -aes-256-ctr -pbkdf2 -md sha256 -iter 100000 -pass "file:$T/out.key" -in "$T/out.txt" -out call/out.enc
+          openssl pkeyutl -encrypt -pubin -inkey call/session.pub -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -in "$T/out.key" -out call/out.key.enc
+          cp "$T/info.txt" call/out.info
+          rm -f call/in.enc call/in.key.enc call/in.ready call/runner.pub
+          rm -rf "$T"
+      - name: Сохранить
+        run: |
+          git add -A call; git commit -q -m "call-text: результат (зашифрован)" || exit 0
+          for i in 1 2 3; do git pull -q --rebase origin call-text && git push -q origin HEAD:call-text && break; sleep 4; done
