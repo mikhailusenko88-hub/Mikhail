@@ -50,7 +50,7 @@ from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, Tochk
                     parse_jwk, receipt_items, verify_rs256)
 from visits import Visits, is_bot, parse_body
 from pek import PRICE_TTL as PEK_PRICE_TTL, SENDER_ADDRESS as PEK_SENDER, ZONE_TTL as PEK_ZONE_TTL
-from pek import Cache as PekCache, Pek, PekError, _dims as _pek_dims, cargos_for, has_street, is_local
+from pek import Cache as PekCache, Pek, PekError, _dims as _pek_dims, cargos_for, fill_to_box, has_street, is_local
 import maxapp
 
 log = logging.getLogger("crm")
@@ -1113,7 +1113,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         snd = pek_zone(t, PEK_SENDER)
         if not snd:
             raise PekError(200, "ПЭК не нашёл склад в Санкт-Петербурге")
-        cargos = cargos_for(lines, pek_box_kg(), pek_piece_g())
+        cargos = cargos_for(lines, pek_box_kg(), pek_piece_g(), hp_partial=True)    # неполная коробка — в жёсткой упаковке ПЭК
         if not cargos:
             return {"ok": False, "error": "items"}
         pick = store.setting("pek_pickup_address", "") or PEK_SENDER      # забор у нас со склада (адрес — в Настройках)
@@ -1122,7 +1122,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if term is None:
             term = t.price(snd["warehouse"], z["warehouse"], cargos, insure, pickup_address=pick)
             pek_cache.put("p|" + sig, term, PEK_PRICE_TTL)
-        out: dict[str, Any] = {"ok": True, "branch": z["branch"], "place": z["formatted"] or where, "terminal": term, "places": len(cargos)}
+        out: dict[str, Any] = {"ok": True, "branch": z["branch"], "place": z["formatted"] or where, "terminal": term, "places": len(cargos),
+                               "packed": any(c.get("isHP") for c in cargos), "fill": fill_to_box(lines)}
         if has_street(where):
             dk = "d|" + sig + "|" + addr.lower()
             door = pek_cache.get(dk)
@@ -1769,7 +1770,19 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 flash("ПЭК не нашёл Москву — проверьте ключ и попробуйте ещё раз.", "err")
                 return back
             tr = r["terminal"]
-            msg = f"Санкт-Петербург → Москва, 1 коробка панелей 3 м: ≈ {tr['cost']:,} ₽".replace(",", " ") + (f", ≈ {tr['days']} дн." if tr.get("days") else "")
+            rub = lambda v: f"{int(v):,}".replace(",", " ")      # noqa: E731 — 2 202, без порчи запятых в тексте
+            msg = f"Санкт-Петербург → Москва, 1 коробка панелей 3 м: ≈ {rub(tr['cost'])} ₽" + (f", ≈ {tr['days']} дн." if tr.get("days") else "")
+            try:                                     # неполная коробка: 1 панель без упаковки и в жёсткой упаковке ПЭК
+                snd, z = pek_zone(t, PEK_SENDER), pek_zone(t, "Россия, Москва")
+                pick = store.setting("pek_pickup_address", "") or PEK_SENDER
+                if snd and z:
+                    bare = t.price(snd["warehouse"], z["warehouse"], cargos_for([(probe, 1)], pek_box_kg()), 0, pickup_address=pick)
+                    hp = t.price(snd["warehouse"], z["warehouse"], cargos_for([(probe, 1)], pek_box_kg(), hp_partial=True), 0, pickup_address=pick)
+                    msg += f"; 1 панель без упаковки ≈ {rub(bare['cost'])} ₽, в жёсткой упаковке ПЭК ≈ {rub(hp['cost'])} ₽"
+                    if hp["cost"] <= bare["cost"]:
+                        msg += " (ПЭК не добавил упаковку — скажите Claude)"
+            except PekError as e:
+                msg += "; неполную коробку посчитать не вышло: " + e.human()
             store.set_setting("pek_check", f"{datetime.now():%d.%m %H:%M} — {msg}")
             flash("Связь с ПЭК есть. " + msg + ". Теперь можно включить расчёт на сайте.", "ok")
             return back

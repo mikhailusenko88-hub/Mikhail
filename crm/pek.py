@@ -144,11 +144,13 @@ def _dims(size: str) -> tuple[int, int, int]:
 
 
 def cargos_for(lines: list[tuple[Any, int]], box_kg: dict[int, float] | None = None,
-               piece_g: dict[str, int] | None = None) -> list[dict[str, Any]]:
+               piece_g: dict[str, int] | None = None, hp_partial: bool = False) -> list[dict[str, Any]]:
     """lines: (товар из каталога CRM с .size «Ш×Т×Д» и .per_box, количество шт).
     Полные коробки — отдельные места; остаток поштучно — одна связка на каждую длину (по объёму доли коробки).
     Длина места — по длине товара (2,4 м не влезает в коробку 2 м). Вес: если у артикула заполнен вес штуки
-    (piece_g, граммы — «Склад → ТН ВЭД и вес для документов»), коробка = штук × вес + тара; иначе типовая коробка."""
+    (piece_g, граммы — «Склад → ТН ВЭД и вес для документов»), коробка = штук × вес + тара; иначе типовая коробка.
+    hp_partial — неполную коробку (связку) ПЭК везёт в жёсткой упаковке (isHP, обрешётка): тонкие рейки в межгороде
+    без неё ломаются (решение Михаила 19.11); стоимость упаковки ПЭК включает в цену."""
     kg = {**BOX_KG_DEFAULT, **(box_kg or {})}
     piece_g = piece_g or {}
     places: list[dict[str, Any]] = []
@@ -174,9 +176,23 @@ def cargos_for(lines: list[tuple[Any, int]], box_kg: dict[int, float] | None = N
             r[1] += part * g / 1000 if g > 0 else kg[meters] * share
     for blen, (vol, wt, meters) in sorted(rest.items(), reverse=True):
         box = BOX_3M if meters == 3 else BOX_2M
-        places.append({"volume": round(max(vol, blen * box[1] * box[2] * 0.25) + 0.005, 2), "maxSize": blen,
-                       "weight": round(max(wt, 1.0) + 0.005, 2)})
+        place: dict[str, Any] = {"volume": round(max(vol, blen * box[1] * box[2] * 0.25) + 0.005, 2), "maxSize": blen,
+                                 "weight": round(max(wt, 1.0) + 0.005, 2)}
+        if hp_partial:
+            place["isHP"] = True
+        places.append(place)
     return places
+
+
+def fill_to_box(lines: list[tuple[Any, int]]) -> list[dict[str, Any]]:
+    """Сколько штук добрать до целой коробки по каждому артикулу с неполной коробкой."""
+    out = []
+    for p, qty in lines:
+        per_box = int(getattr(p, "per_box", 0) or 0)
+        part = int(qty) % per_box if per_box > 1 else 0
+        if part:
+            out.append({"a": str(getattr(p, "article", "")), "add": per_box - part, "box": per_box})
+    return out
 
 
 def is_local(branch: str) -> bool:

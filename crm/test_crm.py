@@ -995,7 +995,7 @@ class FakePek:
             if getattr(self, "fail_calc", False):
                 return 200, json.dumps({"hasError": True, "errorMessage": "Город отправления совпадает с городом получения"}).encode()
             places = len(data["cargos"])
-            cost = 900 + 450 * places + (700 if data.get("isDelivery") else 0)
+            cost = 900 + 450 * places + (700 if data.get("isDelivery") else 0) + 400 * sum(1 for c in data["cargos"] if c.get("isHP"))
             return 200, json.dumps({"hasError": False, "transfers": [{"type": 3, "hasError": False, "costTotal": cost, "estDeliveryTime": 3}]}).encode()
         return 404, b""
 
@@ -1020,6 +1020,7 @@ class TestPek(Base):
         self.assertEqual((self.store.setting("pek_key"), self.store.setting("pek_box3_kg"), self.store.setting("pek_box2_kg")), ("abc123", "21.5", ""))
         self.post("/settings/pek", {"act": "check"})
         self.assertIn("Москва", self.store.setting("pek_check")); self.assertIn("1 350 ₽", self.store.setting("pek_check"))
+        self.assertIn("1 панель без упаковки ≈ 1 350 ₽, в жёсткой упаковке ПЭК ≈ 1 750 ₽", self.store.setting("pek_check"))
         auth = self.pek.calls[0][1]["Authorization"]
         self.assertEqual(auth, "Basic " + base64.b64encode(b"nashdekor:abc123").decode())
         page = self.c.get("/settings").get_data(as_text=True)
@@ -1030,8 +1031,10 @@ class TestPek(Base):
         self.pek.calls.clear()
         r = self.ship("Казань", [{"a": "A912", "q": 13}, {"a": "НЕТ", "q": 5}])
         j = r.get_json()
-        self.assertEqual((r.status_code, j["ok"], j["branch"], j["terminal"]["cost"], j["terminal"]["days"], j["places"]), (200, True, "Казань", 2250, 3, 3))
+        self.assertEqual((r.status_code, j["ok"], j["branch"], j["terminal"]["cost"], j["terminal"]["days"], j["places"]), (200, True, "Казань", 2250 + 400, 3, 3))
         self.assertNotIn("door", j)
+        # неполная коробка (13 шт при 6 в коробке) — связка в жёсткой упаковке ПЭК и подсказка «добрать 5 шт»
+        self.assertEqual((j["packed"], j["fill"]), (True, [{"a": "A912", "add": 5, "box": 6}]))
         calc = [c for c in self.pek.calls if c[0].endswith("calculateprice/")][0][2]
         self.assertEqual((calc["types"], calc["senderWarehouseId"], calc["receiverWarehouseId"], calc["isDelivery"]), ([3], "WH-SPB", "WH-KZN", False))
         self.assertEqual((calc["isPickUp"], calc["pickup"]["address"]), (True, "Россия, Санкт-Петербург"))      # забор у нас — всегда
@@ -1041,11 +1044,13 @@ class TestPek(Base):
         self.assertEqual([c for c in self.pek.calls if c[0].endswith("calculateprice/")][-1][2]["pickup"]["address"], "Россия, Санкт-Петербург, Складская ул., 1")
         self.assertEqual(calc["cargos"][0], {"length": 3.0, "width": 0.185, "height": 0.125, "weight": 21.5})
         self.assertEqual(calc["cargos"][2]["maxSize"], 3.0); self.assertTrue(calc["isInsurance"]); self.assertEqual(calc["isInsurancePrice"], 13 * 990)
+        self.assertEqual([c.get("isHP", False) for c in calc["cargos"]], [False, False, True])        # целые коробки — без обрешётки
         # повтор — из кеша, ПЭК не дёргаем
         n = len(self.pek.calls); self.ship("Казань", [{"a": "A912", "q": 13}]); self.assertEqual(len(self.pek.calls), n)
         # адрес с улицей — ещё и «до двери»
         j = self.ship("Казань, ул. Баумана, 10", [{"a": "A116", "q": 3}, {"a": "GS 1", "q": 5}]).get_json()
-        self.assertEqual((j["terminal"]["cost"], j["door"]["cost"]), (900 + 450 * 2, 900 + 450 * 2 + 700))
+        self.assertEqual((j["terminal"]["cost"], j["door"]["cost"]), (900 + 450 * 2 + 400, 900 + 450 * 2 + 700 + 400))
+        self.assertEqual(j["fill"], [{"a": "A116", "add": 17, "box": 20}])                      # GS 1 — целая коробка
         door = [c for c in self.pek.calls if c[0].endswith("calculateprice/") and c[2]["isDelivery"]][-1][2]
         self.assertEqual(door["delivery"]["address"], "Россия, Казань, ул. Баумана, 10")
         # Петербург и область: без улицы — без цены (ПЭК не спрашиваем); с адресом — ПЭК забор у нас + до двери, как ориентир
