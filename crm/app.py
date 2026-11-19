@@ -654,7 +654,14 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     def dz_export() -> Any:
         """Сводка «Базы дизайнеров» для Claude — только шифром для его ключа (как ответы), выключается там же."""
         ready = ob.read_enabled() and bool(ob.reader_key())
-        resp = jsonify(ob.sealed(dz.export(docs.sends(3000)) if ready else {}))
+        data: dict[str, Any] = {}
+        if ready:
+            data = dz.export(docs.sends(3000))
+            emails = {str(x.get("email") or "").strip().lower() for x in data["leads"]} - {""}
+            data["outbox"] = [dict(r) for r in store.c().execute(       # письма дизайнерам из «Исходящих» — чтобы цитировать в напоминании
+                "SELECT id, to_addr, subject, body, sent_at, status, error FROM outbox_mail WHERE status IN ('sent','skipped','error')"
+                " ORDER BY received_at DESC LIMIT 1000").fetchall() if str(r["to_addr"] or "").strip().lower() in emails]
+        resp = jsonify(ob.sealed(data))
         resp.headers["Cache-Control"] = "no-store"
         return resp
     register_dz(app, store, dz, {"login_required": login_required, "admin_required": admin_required, "who": who,

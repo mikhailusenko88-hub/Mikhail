@@ -2234,6 +2234,7 @@ class TestDzClaude(TestPochta):
         self.assertEqual({l["code"] for l in x["leads"]}, {"Д03", "Д06", "Д09"})
         self.assertTrue(any(t["channel"] == "telegram" for t in x["touches"]))
         self.assertIn("m2", x["tpl"])
+        self.assertIn("outbox", x)
         with self.assertRaises(Exception):
             self.outbox.unseal(self.sk, r.get_json()["item"], self.outbox.INFO_REPLIES)   # чужой «ярлык» не подходит
         self.post("/outbox", {"on": "1", "daily": "30"})                     # галочку сняли — сводки нет
@@ -2291,6 +2292,10 @@ class TestDzClaude(TestPochta):
         p7, env7 = self.letter(to="quiet@silent.ru", subject="Re: Привет", body="3", attachments=[], dz={"code": "Д10", "kind": "m2"}, **{"from": "mikhail"})
         self.put(env7); self.ob.run()
         self.assertEqual(len(self.sent), 3)                                   # третьего письма не бывает
+        x = self.outbox.unseal(self.sk, self.c.get("/api/dz/export").get_json()["item"], self.outbox.INFO_DZ)
+        ob_ = {o["subject"]: o for o in x["outbox"]}                          # свои письма — чтобы цитировать в напоминании
+        self.assertEqual(ob_["Рейки и молдинги"]["body"], "Добрый день!"); self.assertEqual(ob_["Re: Рейки и молдинги"]["status"], "skipped")
+        self.assertNotIn("other@liniya-studio.ru", [o["to_addr"] for o in x["outbox"]])
 
 
 class TestDocs(TestPochta):
