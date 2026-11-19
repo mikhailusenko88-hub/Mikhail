@@ -305,3 +305,8 @@ code.sel,pre.sel{user-select:all;-webkit-user-select:all;word-break:break-all}
 .dzres label{display:flex;gap:6px;align-items:center;font-size:15px}
 .dzres input{width:18px;height:18px}
 .dzgroups .chip{font-size:15px;padding:7px 14px;font-weight:600}
+.dzlegend{margin:2px 0 10px}
+.dzlegend summary{cursor:pointer;color:var(--accent,#2a6)}
+.dzlegend p{margin:6px 0}
+.dzlast{margin-top:2px}
+.dzlastbox{background:var(--surface)}

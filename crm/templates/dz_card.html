@@ -6,9 +6,32 @@
 <div class="bar"><h1 class="m0">{{ d['name'] }}</h1>
   <span><span class="pill dzp-{{ d['prio'] }}">{{ d['prio'] }}</span> <span class="pill dzs-{{ d['status'] }}">{{ DZ_STATUS.get(d['status'], d['status']) }}</span></span></div>
 <p class="sub">{{ d['code'] }} · {{ DZ_SOURCE_NAMES.get(d['source'], d['source']) }}{% if d['person'] %} · {{ d['person'] }}{% endif %}{% if d['area'] %} · {{ d['area'] }}{% endif %}{% if d['rating'] %} · отзывы {{ d['rating'] }}{% endif %}</p>
+{% if prio_about %}<p class="d">Группа {{ prio_about }}</p>{% endif %}
 {% if d['about'] %}<p>{{ d['about'] }}</p>{% endif %}
 {% if d['hook'] %}<p class="d">Зацепка: {{ d['hook'] }}</p>{% endif %}
 {% if d['note'] %}<p class="d">Заметка: {{ d['note'] }}</p>{% endif %}
+
+<div class="panel pad sec dzlastbox" id="reply">
+{% if last %}
+  <div><b>Последний контакт:</b> {{ last.name }} · {{ fmt_dt(last.at) }}{% if last.by %} · {{ last.by }}{% endif %}{% if last.n > 1 %} · касаний всего: {{ last.n }}{% endif %}</div>
+  {% if d['status'] in ('sent','reminded','nocall') %}<div class="d">{% if d['next_step'] %}{% if d['next_at'] %}{{ fmt_day(d['next_at']) }}: {% endif %}{{ d['next_step'] }}{% elif d['status']=='nocall' %}Не дозвонились{% else %}Ждём ответа {{ last.where }}{% endif %}</div>{% endif %}
+{% else %}
+  <div class="d">{% if d['status'] in ('new','found') %}Ещё не писали и не звонили.{% else %}Касаний в CRM нет.{% endif %}</div>
+{% endif %}
+{% if last %}
+  <details class="sec"><summary>Ответили? Отметьте здесь</summary>
+  <form class="grid2 sec" method="post" action="{{ url_for('dz_reply', lid=d['id']) }}">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label class="f">Где ответили<select name="channel">{% for k in ('telegram','whatsapp','max','vk','email','call') %}<option value="{{ k }}" {% if last.channel==k %}selected{% endif %}>{{ DZ_CHANNELS[k] }}</option>{% endfor %}</select></label>
+    <fieldset class="span2 dzres"><legend class="d">Что ответили</legend>
+      {% for k, n in DZ_REPLY.items() %}<label><input type="radio" name="result" value="{{ k }}"> {{ n }}</label>{% endfor %}
+    </fieldset>
+    <label class="f span2">Коротко, что написали<input name="comment" maxlength="300" placeholder="например, просят модели для SketchUp"></label>
+    <div class="span2"><button class="btn-s">Записать ответ</button></div>
+  </form>
+  </details>
+{% endif %}
+</div>
 
 <div class="dzact">
   {% if d['email'] %}<a class="btn-p" href="#mail">✉ Письмо</a>{% endif %}

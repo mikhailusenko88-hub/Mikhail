@@ -22,6 +22,11 @@
   {% for p in DZ_PRIOS %}<a class="chip" href="{{ qs(p=p) }}" {% if prio==p %}aria-current="true"{% endif %}>{{ p }}</a>{% endfor %}
   <a class="chip" href="{{ qs(p='') }}" {% if not prio %}aria-current="true"{% endif %}>A, B, C</a>
 </nav>
+<details class="d dzlegend"><summary>Что значат A, B, C</summary>
+<p><b>A</b> — {{ DZ_PRIO_NAMES['A'] }}, <b>B</b> — {{ DZ_PRIO_NAMES['B'] }}, <b>C</b> — {{ DZ_PRIO_NAMES['C'] }}. Букву можно поменять в карточке → «Данные и контакты» → «Группа».</p>
+{% for src, title in (('other', 'Не Авито (Zoon, рейтинги)'), ('avito', 'Авито')) %}{% if not grp or grp == src %}
+<p>{{ title }}:{% for p in DZ_PRIOS %}<br><b>{{ p }}</b> — {{ DZ_PRIO_ABOUT[src][p] }}{% endfor %}</p>{% endif %}{% endfor %}
+</details>
 <form class="addline" method="get" action="{{ url_for('dz_list') }}" role="search">
   {% if grp %}<input type="hidden" name="g" value="{{ grp }}">{% endif %}{% if f %}<input type="hidden" name="f" value="{{ f }}">{% endif %}
   <input type="search" name="q" value="{{ q }}" placeholder="Имя, студия, метро, почта" aria-label="Поиск по базе">
@@ -34,11 +39,12 @@
     <div class="grow">
       <div class="t"><span class="muted">{{ d['code'] }}</span> {{ d['name'] }}</div>
       <div class="d">{% if d['area'] %}{{ d['area'] }} · {% endif %}{{ (d['about'] or '')[:90] }}</div>
+      {% set lo = last.get(d['id']) %}{% if lo %}<div class="d dzlast">Последний контакт: <b>{{ lo.name }}</b> · {{ fmt_day(lo.day) }}{% if lo.by %} · {{ lo.by }}{% endif %}{% if d['status'] in ('sent','reminded') %} — ждём ответа{% endif %}</div>{% endif %}
       <div class="dzicons d">{% if d['email'] %}✉ почта {% endif %}{% if d['telegram'] %}· Telegram {% endif %}{% if d['whatsapp'] %}· WhatsApp {% endif %}{% if d['phone'] %}· ☎ {% endif %}{% if d['source']=='avito' and grp!='avito' %}· Авито{% endif %}</div>
     </div>
     <div class="dzpills">
-      <span class="pill dzp-{{ d['prio'] }}">{{ d['prio'] }}</span>
-      <span class="pill dzs-{{ d['status'] }}">{{ DZ_STATUS.get(d['status'], d['status']) }}</span>
+      <span class="pill dzp-{{ d['prio'] }}" title="{{ d['prio'] }} — {{ DZ_PRIO_NAMES.get(d['prio'], '') }}">{{ d['prio'] }}</span>
+      <span class="pill dzs-{{ d['status'] }}">{{ DZ_STATUS.get(d['status'], d['status']) }}{% if lo and d['status'] in ('sent','reminded') %} · {{ lo.name }}{% endif %}</span>
       {% if d['next_at'] and d['status'] not in ('partner','refused','wrong','skip') %}{% if d['next_at'] < today %}<span class="pill crit">{{ fmt_day(d['next_at']) }}</span>{% elif d['next_at'] == today %}<span class="pill warn">сегодня</span>{% else %}<span class="pill">{{ fmt_day(d['next_at']) }}</span>{% endif %}{% endif %}
     </div>
   </a>

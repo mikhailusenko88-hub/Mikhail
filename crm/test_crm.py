@@ -3272,6 +3272,54 @@ class TestDzLeads(Base):
         self.assertNotIn("Мастер СПб", self.c.get("/dz?f=today").get_data(as_text=True))
         self.assertEqual(self.post(f"/dz/{lid}/call", {"result": "bogus"}).status_code, 302)
 
+    def test_messenger_touch_is_visible_and_reply(self) -> None:
+        """Написали в Telegram — в списке и карточке видно где, когда и кто; ждём ответа; ответ отмечается кнопкой."""
+        lid = self.lid("Д02")
+        self.post(f"/dz/{lid}/message", {"channel": "telegram", "text": "Здравствуйте!"})
+        d = self.dz.get(lid)
+        self.assertEqual(d["status"], "sent")
+        self.assertIn("Ждём ответа в Telegram", d["next_step"])
+        lo = self.dz.last_out(lid)[lid]
+        self.assertEqual((lo["channel"], lo["n"]), ("telegram", 1))
+        page = self.c.get("/dz?g=other").get_data(as_text=True)
+        self.assertIn("Последний контакт: <b>Telegram</b>", page)
+        self.assertIn("Написали · Telegram", page)
+        self.assertIn("Что значат A, B, C", page)
+        self.assertIn("в первую очередь", page)
+        card = self.c.get(f"/dz/{lid}").get_data(as_text=True)
+        self.assertIn("Ждём ответа в Telegram", card)
+        self.assertIn("Ответили? Отметьте здесь", card)
+        self.assertIn("Группа A — в первую очередь", card)
+        # второе касание другим каналом → «Напомнили»
+        self.post(f"/dz/{lid}/message", {"channel": "whatsapp", "text": "Добрый день!"})
+        d = self.dz.get(lid)
+        self.assertEqual(d["status"], "reminded")
+        self.assertIn("второе касание", d["next_step"])
+        self.assertEqual(self.dz.last_out(lid)[lid]["n"], 2)
+        # ответили в Telegram — интересно
+        self.post(f"/dz/{lid}/reply", {"channel": "telegram", "result": "interest", "comment": "просят модели для SketchUp"})
+        d = self.dz.get(lid)
+        self.assertEqual(d["status"], "interest")
+        self.assertIn("3D-модели", d["next_step"])
+        hist = self.c.get(f"/dz/{lid}").get_data(as_text=True)
+        self.assertIn("Ответили: Интересно. просят модели для SketchUp", hist)
+        self.post(f"/dz/{lid}/reply", {"channel": "telegram", "result": "refused"})
+        self.assertEqual(self.dz.get(lid)["status"], "refused")
+        self.assertEqual(self.post(f"/dz/{lid}/reply", {"result": "bogus"}).status_code, 302)
+
+    def test_import_touches_once(self) -> None:
+        """Письмо, ушедшее через канал Claude, приходит касанием — видно «Последний контакт: Письмо», второй раз не пишется."""
+        item = {"code": "Д01", "name": "Атлон ФМ", "touches": [
+            {"channel": "email", "at": "2026-11-16T11:55:00+03:00", "text": "Письмо 1 от mikhail@", "by": "Claude"}]}
+        self.dz.import_items([item])
+        self.dz.import_items([item])
+        lid = self.lid("Д01")
+        lo = self.dz.last_out(lid)[lid]
+        self.assertEqual((lo["channel"], lo["day"], lo["n"]), ("email", "2026-11-16", 1))
+        self.assertIn("Последний контакт: <b>Письмо</b>", self.c.get("/dz?g=other").get_data(as_text=True))
+        self.dz.import_items([{"code": "Д01", "name": "Атлон ФМ", "touches": [{"channel": "hack", "at": "x"}]}])
+        self.assertEqual(self.dz.last_out(lid)[lid]["n"], 1)
+
     def test_status_today_and_client(self) -> None:
         from store import today
         lid = self.lid("Д01")

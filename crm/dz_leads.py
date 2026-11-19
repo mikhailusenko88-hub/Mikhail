@@ -93,6 +93,22 @@ CHANNEL_NAMES = {"email": "Письмо", "telegram": "Telegram", "whatsapp": "W
                  "call": "Звонок", "form": "Форма на сайте", "models": "3D-модели и каталог", "note": "Заметка",
                  "status": "Статус", "import": "База"}
 PRIOS = ("A", "B", "C")
+# что значит буква группы — подсказка в списке и карточке
+PRIO_NAMES = {"A": "в первую очередь", "B": "во вторую очередь", "C": "в последнюю очередь"}
+PRIO_ABOUT = {
+    "avito": {"A": "только Петербург, сами подбирают материалы или со своей бригадой, от 10 отзывов",
+              "B": "остальные питерские: с отзывами, комплектацией или надзором; «СПб + ещё город»",
+              "C": "начинающие, 3D-визуализаторы, «бесплатно ради портфолио»"},
+    "other": {"A": "студии дизайна — часто сами комплектуют и ведут ремонт",
+              "B": "ремонтные компании с дизайном — нужен тот, кто закупает отделку",
+              "C": "премиум-студии из рейтингов — контакты на сайтах"}}
+# касания «мы написали / позвонили» — по ним видно, где и когда был последний контакт
+OUT_CHANNELS = ("email", "telegram", "whatsapp", "max", "vk", "call", "form", "models")
+REPLY_RESULTS = {"interest": "Интересно — просят модели или подробности", "question": "Задали вопрос — ответить",
+                 "later": "Сейчас не нужно, позже", "refused": "Не нужно — больше не пишем"}
+# «в Telegram», «по почте» — для подписи «ждём ответа …»
+CHANNEL_WHERE = {"email": "по почте", "telegram": "в Telegram", "whatsapp": "в WhatsApp", "max": "в MAX", "vk": "в VK",
+                 "call": "по телефону", "form": "через форму на сайте", "models": "по почте"}
 # поля, которые можно править в карточке и присылать через канал
 TEXT_FIELDS = ("name", "person", "kind", "phone", "phone2", "email", "telegram", "whatsapp", "max_link", "vk", "instagram",
                "site", "avito_profile", "avito_ad", "area", "about", "hook", "line", "link", "rating", "city_check",
@@ -231,6 +247,26 @@ class DzLeads:
     def touches(self, lid: int, limit: int = 100) -> list[sqlite3.Row]:
         return self.s.c().execute("SELECT * FROM dz_touches WHERE lead_id=? ORDER BY id DESC LIMIT ?", (lid, limit)).fetchall()
 
+    def last_out(self, lid: int | None = None) -> dict[int, dict[str, Any]]:
+        """Последнее «мы написали / позвонили» по каждому дизайнеру: канал, когда, кто и сколько всего касаний."""
+        marks = ",".join("?" * len(OUT_CHANNELS))
+        sql = (f"SELECT t.lead_id, t.channel, t.at, t.by_name, m.n FROM dz_touches t JOIN "
+               f"(SELECT lead_id, MAX(at || printf('%010d', id)) k, COUNT(*) n FROM dz_touches WHERE channel IN ({marks})"
+               f"{' AND lead_id=?' if lid else ''} GROUP BY lead_id) m "
+               f"ON t.lead_id=m.lead_id AND (t.at || printf('%010d', t.id))=m.k")
+        args: list[Any] = [*OUT_CHANNELS] + ([lid] if lid else [])
+        return {int(r["lead_id"]): {"channel": r["channel"], "name": CHANNEL_NAMES.get(r["channel"], r["channel"]),
+                                    "where": CHANNEL_WHERE.get(r["channel"], ""), "at": r["at"], "day": r["at"][:10],
+                                    "by": r["by_name"], "n": int(r["n"])}
+                for r in self.s.c().execute(sql, args).fetchall()}
+
+    @staticmethod
+    def prio_about(row: Any) -> str:
+        p = row["prio"] if row is not None else ""
+        if p not in PRIO_NAMES:
+            return ""
+        return f"{p} — {PRIO_NAMES[p]}: " + PRIO_ABOUT["avito" if row["source"] == "avito" else "other"][p]
+
     def list(self, group: str = "", f: str = "", q: str = "", prio: str = "") -> list[sqlite3.Row]:
         sql, args = "SELECT * FROM dz_leads WHERE 1=1", []
         if group == "avito":
@@ -288,9 +324,9 @@ class DzLeads:
         return self.s.c().execute("SELECT * FROM dz_leads WHERE lower(email)=lower(?) ORDER BY id LIMIT 1", (email.strip(),)).fetchone()
 
     # ------------------------------------------------------------------ запись
-    def _touch(self, c: sqlite3.Connection, lid: int, channel: str, text: str, by: str) -> None:
+    def _touch(self, c: sqlite3.Connection, lid: int, channel: str, text: str, by: str, at: str = "") -> None:
         c.execute("INSERT INTO dz_touches(lead_id, at, by_name, channel, text) VALUES (?,?,?,?,?)",
-                  (lid, iso_now(), by[:60], channel if channel in CHANNEL_NAMES else "note", (text or "")[:4000]))
+                  (lid, at or iso_now(), by[:60], channel if channel in CHANNEL_NAMES else "note", (text or "")[:4000]))
 
     def touch(self, lid: int, channel: str, text: str, by: str) -> None:
         with self.s.tx() as c:
@@ -373,6 +409,23 @@ class DzLeads:
         self.update(lid, by, **f)
         return lid
 
+    def _import_touches(self, lid: int, touches: Any, by: str) -> int:
+        """Касания, сделанные вне CRM (например, письмо через канал Claude): {"channel", "at", "text", "by"}.
+        Одинаковое (канал + время) второй раз не пишется."""
+        n = 0
+        for t in touches if isinstance(touches, list) else []:
+            if not isinstance(t, dict) or t.get("channel") not in OUT_CHANNELS:
+                continue
+            at = str(t.get("at") or "")
+            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2})?", at):
+                continue
+            with self.s.tx() as c:
+                if c.execute("SELECT 1 FROM dz_touches WHERE lead_id=? AND channel=? AND at=?", (lid, t["channel"], at)).fetchone():
+                    continue
+                self._touch(c, lid, t["channel"], str(t.get("text") or "")[:4000], str(t.get("by") or by)[:60], at)
+                n += 1
+        return n
+
     def _next_code(self, source: str) -> str:
         pre = "АВ" if source == "avito" else "Д"
         n = 0
@@ -413,6 +466,7 @@ class DzLeads:
                               (st, str(it.get("next_step") or "")[:200],
                                str(it.get("next_at") or "") if re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(it.get("next_at") or "")) else "",
                                str(it.get("note") or "")[:FIELD_MAX["note"]], str(it.get("last_subject") or "")[:200], lid))
+                self._import_touches(lid, it.get("touches"), by)
                 added += 1
                 continue
             lid = int(row["id"])
@@ -441,6 +495,8 @@ class DzLeads:
                                lid))
                 elif row["status"] == "new" and any((sets.get(k) or row[k]) for k in ("email", "telegram", "whatsapp", "max_link")):
                     c.execute("UPDATE dz_leads SET status='found' WHERE id=?", (lid,))
+            if self._import_touches(lid, it.get("touches"), by):
+                sets["touches"] = "1"
             if sets:
                 updated += 1
         return added, updated
@@ -539,8 +595,34 @@ class DzLeads:
         if not row:
             return
         self.touch(lid, channel, text or "Отправлено сообщение", by)
+        where = CHANNEL_WHERE.get(channel, "")
         if row["status"] in ("new", "found", "nocall"):
-            self.set_status(lid, "sent", by, "Если молчат — звонок", add_workdays(today(), 3))
+            self.set_status(lid, "sent", by, f"Ждём ответа {where}. Если молчат — второе касание: звонок или письмо",
+                            add_workdays(today(), 3))
+        elif row["status"] == "sent":                  # второе касание другим каналом
+            self.set_status(lid, "reminded", by, f"Ждём ответа {where} (второе касание). Если молчат — больше не пишем",
+                            add_workdays(today(), 3))
+
+    def after_reply(self, lid: int, channel: str, result: str, comment: str, by: str) -> str:
+        """Дизайнер ответил (в Telegram, по почте…): записать ответ и сразу поставить следующий шаг."""
+        row = self.get(lid)
+        if not row or result not in REPLY_RESULTS:
+            return ""
+        label = REPLY_RESULTS[result].split(" — ")[0]
+        self.touch(lid, channel if channel in CHANNEL_NAMES else "note",
+                   f"Ответили: {label}" + (f". {comment.strip()}" if (comment or "").strip() else ""), by)
+        t = today()
+        if result == "interest":
+            self.set_status(lid, row["status"] if row["status"] in ("models", "talk", "partner") else "interest", by,
+                            "Отправить 3D-модели и каталог; договориться о звонке Михаила", t)
+        elif result == "question":
+            self.set_status(lid, row["status"] if row["status"] in ("interest", "models", "talk", "partner") else "interest", by,
+                            "Ответить на вопрос" + (f": {comment.strip()[:120]}" if (comment or "").strip() else ""), t)
+        elif result == "later":
+            self.set_status(lid, row["status"], by, "Сказали «позже» — написать ещё раз через месяц", add_workdays(t, 20))
+        else:
+            self.set_status(lid, "refused", by)
+        return label
 
     def after_call(self, lid: int, result: str, comment: str, by: str, **contacts: str) -> str:
         row = self.get(lid)

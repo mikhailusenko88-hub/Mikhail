@@ -7,7 +7,8 @@ from typing import Any
 from flask import Flask, abort, flash, g, redirect, render_template, request, url_for
 
 from pochta import fmt_ts
-from dz_leads import (CHANNEL_NAMES, FILTERS, LINKS, PRIOS, SOURCE_NAMES, SOURCES, STATUS_NAMES, STATUSES, TEMPLATES,
+from dz_leads import (CHANNEL_NAMES, FILTERS, LINKS, PRIO_ABOUT, PRIO_NAMES, PRIOS, REPLY_RESULTS, SOURCE_NAMES, SOURCES,
+                      STATUS_NAMES, STATUSES, TEMPLATES,
                       TEXT_FIELDS, DzLeads, EMAIL_RE)
 
 MSG_CHANNELS = {"telegram": "Telegram", "whatsapp": "WhatsApp", "max": "MAX", "vk": "VK", "form": "Форма на сайте"}
@@ -29,7 +30,8 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
     @app.context_processor
     def dz_ctx() -> dict[str, Any]:
         return {"DZ_STATUS": STATUS_NAMES, "DZ_STATUSES": STATUSES, "DZ_SOURCES": SOURCES, "DZ_SOURCE_NAMES": SOURCE_NAMES,
-                "DZ_CHANNELS": CHANNEL_NAMES, "DZ_FILTERS": FILTERS, "DZ_LINKS": LINKS, "DZ_PRIOS": PRIOS,
+                "DZ_CHANNELS": CHANNEL_NAMES, "DZ_FILTERS": FILTERS, "DZ_LINKS": LINKS, "DZ_PRIOS": PRIOS, "DZ_PRIO_NAMES": PRIO_NAMES, "DZ_PRIO_ABOUT": PRIO_ABOUT,
+                "DZ_REPLY": REPLY_RESULTS,
                 "dz_due": lambda: dz.due_today() if getattr(g, "user", None) else 0}
 
     def lead_or_404(lid: int) -> Any:
@@ -50,7 +52,7 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
         prio = request.args.get("p", "")
         q = (request.args.get("q") or "").strip()[:80]
         rows = dz.list(grp, f, q, prio)
-        return render_template("dz_list.html", rows=rows, grp=grp, f=f, prio=prio, q=q, cnt=dz.counts(),
+        return render_template("dz_list.html", rows=rows, grp=grp, f=f, prio=prio, q=q, cnt=dz.counts(), last=dz.last_out(),
                                sent_today=dz.sent_today(), limit=dz.daily_limit())
 
     @app.route("/dz/<int:lid>")
@@ -66,7 +68,8 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
             except Exception:  # noqa: BLE001 — почта не обязательна для карточки
                 letters = []
         client = store.client(int(row["client_id"])) if row["client_id"] else None
-        return render_template("dz_card.html", d=row, links=dz.links(row), mail_kind=kind, mail_subject=subj, mail_body=body,
+        return render_template("dz_card.html", d=row, links=dz.links(row), last=dz.last_out(lid).get(lid),
+                               prio_about=dz.prio_about(row), mail_kind=kind, mail_subject=subj, mail_body=body,
                                msg=dz.render("msg", row), call_script=dz.render("call", row), touches=dz.touches(lid),
                                letters=letters, client=client, gmail=dz.gmail(row), sent_today=dz.sent_today(),
                                limit=dz.daily_limit(), MSG_CHANNELS=MSG_CHANNELS, mail_from=f"Михаил — Наш декор <mikhail@{dom}>")
@@ -132,6 +135,18 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
             return back(lid, "msg")
         dz.after_message(lid, ch, (request.form.get("text") or "").strip()[:4000], who())
         flash(f"Записано: написали в {MSG_CHANNELS[ch]}.", "ok")
+        return back(lid)
+
+    @app.post("/dz/<int:lid>/reply")
+    @login_required
+    def dz_reply(lid: int) -> Any:
+        lead_or_404(lid)
+        res, ch = request.form.get("result", ""), request.form.get("channel", "")
+        if res not in REPLY_RESULTS:
+            flash("Выберите, что ответили.", "err")
+            return back(lid)
+        label = dz.after_reply(lid, ch if ch in CHANNEL_NAMES else "note", res, request.form.get("comment", ""), who())
+        flash(f"Записано: ответили — {label.lower()}.", "ok")
         return back(lid)
 
     @app.post("/dz/<int:lid>/call")
