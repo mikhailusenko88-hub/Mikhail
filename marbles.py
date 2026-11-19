@@ -147,7 +147,7 @@ def area(name, loc, rot, size, power, color):
 
 
 area("top", (0.05, -0.45, 1.45), (math.radians(20), 0, 0), 0.7, 150, (1.0, 0.95, 0.88))
-area("rim", (0.7, 0.55, 0.75), (math.radians(-55), math.radians(35), math.radians(140)), 0.45, 140, (0.55, 0.7, 1.0))
+area("rim", (0.7, 0.55, 0.75), (math.radians(-55), math.radians(35), math.radians(140)), 0.45, 140 * float(A.get("rim", "1")), (0.55, 0.7, 1.0))   # в светлой студии rim<1: иначе синее пятно на стене
 area("fill", (-0.9, -0.8, 0.5), (math.radians(70), 0, math.radians(-50)), 0.5, 45, (1.0, 0.8, 0.7))
 
 # ---------------------------------------------------------------- физика
