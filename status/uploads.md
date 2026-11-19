@@ -69,3 +69,4 @@
 | shorts | 2026-11-18 | 3 | Japan vs Colombia vs Peru | https://youtube.com/shorts/k5c9gvYtk6c | public (только Shorts) |
 | shorts | 2026-11-19 | 1 | Mexico vs Thailand vs Spain | https://youtube.com/shorts/wbeECqcgslo | public (только Shorts) |
 | shorts | 2026-11-19 | 2 | Egypt vs Saudi Arabia vs Australia | https://youtube.com/shorts/UUcE_OSvPJk | public (только Shorts) |
+| shorts | 2026-11-19 | 3 | Indonesia vs UK vs Philippines | https://youtube.com/shorts/TA9lwkDQejM | public (только Shorts) |
