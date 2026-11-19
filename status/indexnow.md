@@ -1,3 +1,14 @@
+# IndexNow — 2026-11-19 14:33 UTC, коммит 49f73b4
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: изменённые страницы (1) из 131 изменённых файлов; без изменений по сути (только ?v=): 125
+  https://nashdekor.ru/dostavka/
+- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
+- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
+  "success":true
+}
+
+---
+
 # IndexNow — 2026-11-19 13:56 UTC, коммит 1df94b8
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (0) из 130 изменённых файлов; без изменений по сути (только ?v=): 126
@@ -402,32 +413,6 @@
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (1) из 4 изменённых файлов; без изменений по сути (только ?v=): 3
   https://nashdekor.ru/
-- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
-- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
-  "success":true
-}
-
----
-
-# IndexNow — 2026-11-17 14:33 UTC, коммит 06eeca8
-- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
-- режим: изменённые страницы (128) из 134 изменённых файлов; без изменений по сути (только ?v=): 0
-  https://nashdekor.ru/
-  https://nashdekor.ru/catalog/karnizy/
-  https://nashdekor.ru/catalog/moldingi/
-  https://nashdekor.ru/catalog/paneli-pod-derevo/
-  https://nashdekor.ru/catalog/plintus-s-podsvetkoy/
-  https://nashdekor.ru/catalog/plintusy/
-  https://nashdekor.ru/catalog/reechnye-paneli/
-  https://nashdekor.ru/catalog/stenovye-paneli/
-  https://nashdekor.ru/catalog/ugolki/
-  https://nashdekor.ru/dostavka/
-  https://nashdekor.ru/oferta.html
-  https://nashdekor.ru/oplata/
-  https://nashdekor.ru/p/2-10/
-  https://nashdekor.ru/p/2-11/
-  https://nashdekor.ru/p/2-12/
-  … и ещё 113
 - https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
 - https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
   "success":true
