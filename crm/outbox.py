@@ -17,7 +17,9 @@ import json
 import logging
 import os
 import re
+import shutil
 import subprocess
+import time
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import quote
@@ -273,13 +275,51 @@ class Outbox:
         return {"v": 1, "key": k[:8], "items": items}
 
     # ------------------------------------------------------------------ git
-    def _git(self, *args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
+    # до GitHub с сервера бывает медленно (19.11: каталог 11 МБ не успел за 90 с, обрыв оставил замок) — ждём дольше;
+    # cron запускает раз в минуту под flock, так что долгая загрузка просто пропускает следующие запуски
+    NET_TIMEOUT = 900
+
+    def _clone(self) -> subprocess.CompletedProcess[str]:
+        try:
+            return self._git("clone", "--quiet", "--depth", "1", "--single-branch", "--branch", BRANCH,
+                             self.repo_url, str(self.workdir), timeout=self.NET_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            shutil.rmtree(self.workdir, ignore_errors=True)
+            return subprocess.CompletedProcess([], 1, "", f"GitHub не отдал ветку за {self.NET_TIMEOUT // 60} мин")
+
+    def _update_branch(self) -> str:
+        for args in (("fetch", "--quiet", "--depth", "1", "origin", BRANCH), ("reset", "--quiet", "--hard", "FETCH_HEAD")):
+            try:
+                r = self._git(*args, cwd=self.workdir, timeout=self.NET_TIMEOUT)
+            except subprocess.TimeoutExpired:
+                return f"GitHub не отдал ветку за {self.NET_TIMEOUT // 60} мин"
+            if r.returncode != 0:
+                return r.stderr.strip()[-200:] or "git: ошибка"
+        return ""
+
+    def _drop_stale_locks(self, older: int = 300) -> None:
+        """Замок git (index.lock, shallow.lock…), оставшийся от оборванного запуска (обновление CRM, перезагрузка),
+        больше не даёт забирать письма — снимаем, если ему больше 5 минут."""
+        g = self.workdir / ".git"
+        try:
+            locks = list(g.rglob("*.lock")) if g.is_dir() else []
+        except OSError:
+            locks = []
+        for f in locks:                                   # index.lock, shallow.lock, refs/…/outbox.lock и прочие
+            try:
+                if time.time() - f.stat().st_mtime > older:
+                    f.unlink()
+                    log.warning("outbox: снят старый замок git %s", f.relative_to(g))
+            except OSError:
+                pass
+
+    def _git(self, *args: str, cwd: Path | None = None, timeout: int = 90) -> subprocess.CompletedProcess[str]:
         env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": str(self.workdir.parent),
                "GIT_TERMINAL_PROMPT": "0", "GIT_CONFIG_NOSYSTEM": "1", "LC_ALL": "C"}
         base = cwd or self.workdir.parent                 # не текущая папка: у cron это /root, недоступный пользователю CRM
         base.mkdir(parents=True, exist_ok=True)
         return subprocess.run(["git", *args], cwd=str(base), env=env, capture_output=True,
-                              text=True, timeout=90, check=False)
+                              text=True, timeout=timeout, check=False)
 
     def fetch(self) -> list[Path]:
         """Забрать ветку outbox (только если она изменилась). Возвращает файлы писем."""
@@ -291,15 +331,19 @@ class Outbox:
             return []                                     # ветки ещё нет — писем нет
         if not (self.workdir / ".git").is_dir():
             self.workdir.parent.mkdir(parents=True, exist_ok=True)
-            r = self._git("clone", "--quiet", "--depth", "1", "--single-branch", "--branch", BRANCH,
-                          self.repo_url, str(self.workdir))
+            shutil.rmtree(self.workdir, ignore_errors=True)          # остаток оборванного скачивания мешает clone
+            r = self._clone()
             if r.returncode != 0:
                 raise RuntimeError("не удалось скачать ветку outbox: " + r.stderr.strip()[-200:])
         elif self.s.setting("outbox_head", "") != head:
-            for args in (("fetch", "--quiet", "--depth", "1", "origin", BRANCH), ("reset", "--quiet", "--hard", "FETCH_HEAD")):
-                r = self._git(*args, cwd=self.workdir)
+            self._drop_stale_locks()
+            err = self._update_branch()
+            if err:                                       # не вышло — скачать ветку заново: в папке нет ничего своего
+                shutil.rmtree(self.workdir, ignore_errors=True)
+                r = self._clone()
                 if r.returncode != 0:
-                    raise RuntimeError("не удалось обновить ветку outbox: " + r.stderr.strip()[-200:])
+                    raise RuntimeError("не удалось обновить ветку outbox: " + err + " · и заново не скачалась: "
+                                       + r.stderr.strip()[-150:])
         self.s.set_setting("outbox_head", head)
         d = self.workdir / "outbox"
         return sorted(d.glob("*.json")) if d.is_dir() else []

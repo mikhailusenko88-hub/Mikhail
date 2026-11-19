@@ -1793,6 +1793,30 @@ class TestOutbox(Base):
         key = self.c.get("/api/outbox/key").get_data(as_text=True).strip()
         return p, outbox.seal(key, p)
 
+    def test_stale_git_lock_does_not_block(self) -> None:
+        """19.11: замок git (index.lock) остался от оборванного запуска — письма перестали уходить. Теперь: старый замок
+        снимается сам, а если обновить ветку всё равно не вышло — она скачивается заново."""
+        import time as _t
+        p1, env1 = self.letter(subject="Первое")
+        self.put(env1)
+        self.ob.run()
+        self.assertEqual(len(self.sent), 1)
+        lock = self.ob.workdir / ".git" / "index.lock"
+        lock.write_text("")
+        old = _t.time() - 3600
+        os.utime(lock, (old, old))
+        p2, env2 = self.letter(subject="Второе")
+        self.put(env2)
+        self.ob.run()
+        self.assertEqual([x[1] for x in self.sent], ["Первое", "Второе"])
+        self.assertFalse(lock.exists())
+        # свежий замок (идёт другой запуск) не трогаем, но ветка всё равно скачивается заново и письмо уходит
+        lock.write_text("")
+        p3, env3 = self.letter(subject="Третье")
+        self.put(env3)
+        self.ob.run()
+        self.assertEqual([x[1] for x in self.sent], ["Первое", "Второе", "Третье"])
+
     def test_send_once_and_status(self) -> None:
         import outbox
         self.assertEqual(self.ob.run(), [])                                  # ветки ещё нет — ничего
