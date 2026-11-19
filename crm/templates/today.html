@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "macros.html" import deal_row, task_row, push_box, due_pill, dz_todo_row with context %}
+{% from "macros.html" import deal_row, task_row, push_box, due_pill, dz_todo_row, dz_tabs with context %}
 {% block title %}Сегодня{% endblock %}
 {% block main %}
 <h1>Сегодня</h1>
@@ -29,12 +29,9 @@
 
 {% if dzt %}
 <h2>Дизайнеры на сегодня · {{ dzt|length }}</h2>
-{% for key, title, hint in DZ_SECTIONS %}{% set xs = dzt|selectattr('kind', 'equalto', key)|list %}{% if xs %}
-<h3 class="dzh dzh-{{ key }}">{{ title }} · {{ xs|length }}</h3>
-<div class="panel list">{% for x in xs[:10] %}{{ dz_todo_row(x) }}{% endfor %}{% if xs|length > 10 %}<a class="row btn" href="{{ url_for('tasks_view') }}#dz-{{ key }}"><span class="d grow">Ещё {{ xs|length - 10 }}</span><span class="d">Все ›</span></a>{% endif %}</div>
-{% endif %}{% endfor %}
+{% call(t) dz_tabs(dz_todo_tabs(), 'today') %}{% for x in t['items'][:15] %}{{ dz_todo_row(x) }}{% else %}<div class="row"><span class="d">{{ 'Нет — всё сделано' if t['key'] in ('first', 'remind', 'hot') else 'Сейчас никого' }}</span></div>{% endfor %}{% if t['items']|length > 15 %}<a class="row btn" href="{{ url_for('tasks_view') }}#dz"><span class="d grow">Ещё {{ t['items']|length - 15 }}</span><span class="d">Все ›</span></a>{% endif %}{% endcall %}
 {% endif %}
-{% set nw = dz_waiting() %}{% if nw %}<p class="sub"><a href="{{ url_for('tasks_view') }}#dz-wait">Ждём ответа от дизайнеров: {{ nw }} — напомним, когда придёт срок ›</a></p>{% endif %}
+{% set nw = dz_waiting() %}{% if nw %}<p class="sub"><a href="{{ url_for('tasks_view') }}#dz">Ждём ответа от дизайнеров: {{ nw }} — напомним, когда придёт срок ›</a></p>{% endif %}
 
 {% if paid %}
 <h2>Оплачено — ждёт отгрузки</h2>

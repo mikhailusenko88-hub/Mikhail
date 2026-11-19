@@ -35,9 +35,10 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
                 "DZ_REPLY": REPLY_RESULTS, "DZ_SECTIONS": WORK_SECTIONS,
                 "dz_due": lambda: dz.due_today() if getattr(g, "user", None) else 0,
                 "dz_todo": lambda upcoming=False: dz.todo(upcoming=upcoming) if getattr(g, "user", None) else [],
-                "dz_waiting": lambda: dz.waiting() if getattr(g, "user", None) else 0}
+                "dz_waiting": lambda: dz.waiting() if getattr(g, "user", None) else 0,
+                "dz_todo_tabs": lambda upcoming=False: dz.todo_tabs(upcoming) if getattr(g, "user", None) else []}
 
-    def group_rows(rows: list[Any]) -> list[tuple[str, str, str, list[Any]]]:
+    def group_rows(rows: list[Any]) -> list[dict[str, Any]]:
         """Список по разделам работы: сегодня — первый контакт / напомнить / ответили; потом ждём ответа, не писали, закрытые."""
         t = today()
         names = {k: (title, hint) for k, title, hint in WORK_SECTIONS}
@@ -59,7 +60,18 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
                 box["first" if due else "later"].append(r)
         for k in ("first", "remind", "wait"):
             box[k].sort(key=lambda r: (r["next_at"] or "9999", r["prio"], r["code"]))
-        return [(k, title, hint, box[k]) for k, title, hint in order if box[k]]
+        tabs = []
+        for k, _title, hint in order:
+            rs = box[k]
+            due = k in ("first", "remind", "hot")
+            late = sum(1 for r in rs if due and r["next_at"] and r["next_at"] < t)
+            now = sum(1 for r in rs if due and r["next_at"] == t)
+            if rs or k in ("first", "remind", "hot"):
+                tab = dz.make_tab(k, rs, late, now, hint)
+                if k == "later":
+                    tab["title"] = "Не писали"
+                tabs.append(tab)
+        return tabs
 
     def lead_or_404(lid: int) -> Any:
         row = dz.get(lid)
@@ -80,7 +92,7 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
         q = (request.args.get("q") or "").strip()[:80]
         rows = dz.list(grp, f, q, prio)
         sections = group_rows(rows) if f in ("", "today") else []
-        has_due = any(k in ("first", "remind", "hot") for k, *_r in sections)
+        has_due = any(x["n"] for x in sections if x["key"] in ("first", "remind", "hot"))
         return render_template("dz_list.html", rows=rows, sections=sections, has_due=has_due, grp=grp, f=f, prio=prio, q=q, cnt=dz.counts(), last=dz.last_out(),
                                sent_today=dz.sent_today(), limit=dz.daily_limit())
 

@@ -73,6 +73,23 @@
 </a>
 {%- endmacro %}
 
+{# Вкладки-кнопки по дизайнерам: «Написать / позвонить» | «Напомнить» | «Ответили» … — у каждой своя цифра:
+   красная — срок прошёл, жёлтая — сегодня. Переключаются без перезагрузки (радиокнопки + CSS). #}
+{% macro dz_tabs(tabs, p) -%}
+{% set ns = namespace(a='') %}
+{% for t in tabs %}{% if not ns.a and (t['late'] or t['now']) %}{% set ns.a = t['key'] %}{% endif %}{% endfor %}
+{% for t in tabs %}{% if not ns.a and t['n'] %}{% set ns.a = t['key'] %}{% endif %}{% endfor %}
+{% if not ns.a and tabs %}{% set ns.a = tabs[0]['key'] %}{% endif %}
+<div class="dztabs">
+{% for t in tabs %}<input class="dztab-in" type="radio" name="dzt-{{ p }}" id="dzt-{{ p }}-{{ t['key'] }}" value="{{ t['key'] }}" {% if t['key'] == ns.a %}checked{% endif %}>{% endfor %}
+<div class="dztab-bar">{% for t in tabs %}<label class="dztab" for="dzt-{{ p }}-{{ t['key'] }}" data-k="{{ t['key'] }}">{{ t['title'] }} <span class="pill {{ 'crit' if t['late'] else ('warn' if t['now'] else '') }}">{{ t['n'] }}</span></label>{% endfor %}</div>
+{% for t in tabs %}<div class="dztab-panel" data-k="{{ t['key'] }}">
+{% if t['hint'] or t['late'] %}<p class="sub">{{ t['hint'] }}{% if t['late'] %} <b class="crit-t">Срок прошёл: {{ t['late'] }}.</b>{% endif %}</p>{% endif %}
+<div class="panel list">{{ caller(t) }}</div>
+</div>{% endfor %}
+</div>
+{%- endmacro %}
+
 {% macro due_pill(due, soon) -%}
 {% if not due %}<span class="pill warn">нет даты</span>{% elif due < today %}<span class="pill crit">{{ fmt_day(due) }}</span>{% elif due == today %}<span class="pill crit">сегодня</span>{% elif due <= soon %}<span class="pill warn">{{ fmt_day(due) }}</span>{% else %}<span class="pill">{{ dmy(due) }}</span>{% endif %}
 {%- endmacro %}

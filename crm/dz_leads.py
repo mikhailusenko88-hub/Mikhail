@@ -110,6 +110,12 @@ WORK_SECTIONS: list[tuple[str, str, str]] = [
     ("remind", "Напомнить — срок пришёл", "Уже писали, ответа нет — пора второе касание."),
     ("hot", "Ответили — довести до заказа", "Отправить модели и каталог, договориться о звонке и условиях."),
 ]
+# короткие надписи кнопок-вкладок (список не одной лентой, а по кнопкам; красная цифра — срок прошёл)
+TAB_TITLES = {"first": "Написать / позвонить", "remind": "Напомнить", "hot": "Ответили", "wait": "Ждём ответа",
+              "later": "На потом", "closed": "Закрытые"}
+TAB_HINTS = {"wait": "Уже написали. Когда придёт дата — дизайнер сам переедет во вкладку «Напомнить».",
+             "later": "Первый контакт или «ответили» — запланировано на другие дни.",
+             "closed": "Отказ, не по адресу, не писать."}
 # касания «мы написали / позвонили» — по ним видно, где и когда был последний контакт
 OUT_CHANNELS = ("email", "telegram", "whatsapp", "max", "vk", "call", "form", "models")
 REPLY_RESULTS = {"interest": "Интересно — просят модели или подробности", "question": "Задали вопрос — ответить",
@@ -338,6 +344,24 @@ class DzLeads:
                         "next_at": r["next_at"], "next_step": r["next_step"] or "Следующий шаг",
                         "late": max(late, 0), "last": last.get(int(r["id"]))})
         return out
+
+    @staticmethod
+    def make_tab(key: str, items: list[Any], late: int = 0, now: int = 0, hint: str = "") -> dict[str, Any]:
+        return {"key": key, "title": TAB_TITLES.get(key, key), "hint": hint or TAB_HINTS.get(key, ""), "items": items,
+                "n": len(items), "late": late, "now": now}
+
+    def todo_tabs(self, upcoming: bool = False) -> list[dict[str, Any]]:
+        """Вкладки дел по дизайнерам: «Написать / позвонить», «Напомнить», «Ответили» (+ «Ждём ответа», «На потом»)."""
+        items = self.todo(upcoming=upcoming, limit=500)
+        tabs = []
+        for key, _title, hint in WORK_SECTIONS:
+            xs = [x for x in items if x["kind"] == key and x["due"]]
+            tabs.append(self.make_tab(key, xs, sum(1 for x in xs if x["late"] > 0),
+                                      sum(1 for x in xs if not x["late"]), hint))
+        if upcoming:
+            tabs.append(self.make_tab("wait", [x for x in items if x["kind"] == "remind" and not x["due"]]))
+            tabs.append(self.make_tab("later", [x for x in items if x["kind"] != "remind" and not x["due"]]))
+        return tabs
 
     def waiting(self) -> int:
         """Написали и ждём ответа — срок напомнить ещё не пришёл."""

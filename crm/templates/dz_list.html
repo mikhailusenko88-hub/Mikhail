@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "macros.html" import more_nav with context %}
+{% from "macros.html" import more_nav, dz_tabs with context %}
 {% block title %}База дизайнеров{% endblock %}
 {% block main %}
 {{ more_nav('dz') }}
@@ -49,12 +49,7 @@
 {%- endmacro %}
 <p class="sub">{{ rows|length }} в списке</p>
 {% if sections %}
-{% for key, title, hint, rs in sections %}
-{% if key in ('wait', 'later', 'closed') %}<details class="dzsec" {% if key=='wait' and not has_due %}open{% endif %}><summary><h2 class="dzh dzh-{{ key }}">{{ title }} · {{ rs|length }}</h2></summary>{% else %}<h2 class="dzh dzh-{{ key }}">{{ title }} · {{ rs|length }}</h2>{% endif %}
-{% if hint %}<p class="sub">{{ hint }}</p>{% endif %}
-<div class="panel list">{% for d in rs %}{{ dzrow(d, key) }}{% endfor %}</div>
-{% if key in ('wait', 'later', 'closed') %}</details>{% endif %}
-{% endfor %}
+{% call(t) dz_tabs(sections, 'list') %}{% for d in t['items'] %}{{ dzrow(d, t['key']) }}{% else %}<div class="row"><span class="d">Сейчас никого</span></div>{% endfor %}{% endcall %}
 {% else %}
 <div class="panel list">
 {% for d in rows %}{{ dzrow(d) }}{% else %}<div class="row"><span class="d">Никого — поменяйте фильтр.</span></div>{% endfor %}

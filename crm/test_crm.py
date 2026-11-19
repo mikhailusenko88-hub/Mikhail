@@ -3352,8 +3352,10 @@ class TestDzLeads(Base):
         self.assertNotIn("Написать в WhatsApp", page)            # срок ещё не пришёл — на «Сегодня» не показываем
         self.assertRegex(page, r"Сегодня<span class=\"badge\">\d+</span>")
         tasks = self.c.get("/tasks").get_data(as_text=True)
-        self.assertIn("Напомнить — срок пришёл", tasks)
-        self.assertIn("Запланировано на потом", tasks)
+        self.assertIn('data-k="remind">Напомнить <span class="pill crit">2</span>', tasks)   # вкладка «Напомнить» — красная
+        self.assertIn('data-k="first">Написать / позвонить <span class="pill ">0</span>', tasks)
+        self.assertIn('data-k="later">На потом', tasks)
+        self.assertIn('value="remind" checked', tasks)                     # открыта та, где срок прошёл
         self.assertIn("Написать в WhatsApp", tasks)              # в «Задачах» — и будущие
         self.assertLess(tasks.index("Напомнить в Telegram"), tasks.index("Написать в WhatsApp"))
         text = self.app.extensions["digest"]()
