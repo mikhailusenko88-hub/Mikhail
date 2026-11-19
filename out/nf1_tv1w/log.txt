@@ -1,0 +1,27 @@
+[scene   0.0s] view AgX look AgX - Medium High Contrast
+[scene   0.0s] reeded wall panels ribs 95 faces 1900
+[scene   0.1s] asset ceramic_vase_02 size 0.22 x 0.22 x 0.31 objs 1
+[scene   0.1s] asset ceramic_vase_03 size 0.11 x 0.11 x 0.41 objs 1
+[scene   0.1s] asset potted_plant_04 size 0.17 x 0.18 x 0.27 objs 4
+[scene   0.5s] asset potted_plant_01 size 0.59 x 0.63 x 1.35 objs 4
+[scene   0.7s] objects 65 scene built
+Blender 4.2.0 (hash a51f293548ad built 2024-07-16 06:27:02)
+Saved: '/home/runner/work/Mikhail/Mikhail/out/nf1_tv1w/_sky.exr'
+Time: 00:01.74 (Saving: 00:00.00)
+
+[scene   2.4s] sky irradiance [0.246 0.271 0.284] sun strength 0.0
+Saved: '/home/runner/work/Mikhail/Mikhail/out/nf1_tv1w/_pre.exr'
+Time: 00:03.97 (Saving: 00:00.00)
+
+[scene   6.8s] white pixels 15249 illuminant [1.028 0.903 1.88 ] wb gains [1. 1. 1.] wall Y 0.02 exposure 5.72
+Saved: '/home/runner/work/Mikhail/Mikhail/out/nf1_tv1w/_pre2.exr'
+Time: 00:04.51 (Saving: 00:00.00)
+
+[scene  11.4s] re-exposure: frame median 0.1233 exposure -0.04
+Saved: '/home/runner/work/Mikhail/Mikhail/out/nf1_tv1w/nf1_tv1w.jpg'
+Time: 07:28.79 (Saving: 00:00.19)
+
+[scene 460.1s] final render 448.8s /home/runner/work/Mikhail/Mikhail/out/nf1_tv1w/nf1_tv1w.jpg
+[scene 460.1s] done
+
+Blender quit
