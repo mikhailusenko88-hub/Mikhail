@@ -304,7 +304,7 @@ def footer(root):
     avito += (' · <a href="%s" target="_blank" rel="noopener" style="color:inherit" data-channel>Канал в MAX</a>' % esc(SHOP["channel"])) if SHOP.get("channel") else ""
     avito += (' · <a href="%s" target="_blank" rel="noopener" style="color:inherit" data-tgchannel>Канал в Telegram</a>' % esc(SHOP["tgchannel"])) if SHOP.get("tgchannel") else ""
     revlink = ('<a href="%sotzyvy/" style="color:inherit">Отзывы и наши работы</a>' % root) if REVIEWS else ""
-    return ('<footer><div class="wrap"><span><b>Наш</b> декор · Санкт-Петербург' + avito + '</span><span>%s</span>'
+    return ('<footer><div class="wrap"><span><b>Наш</b> декор · Санкт-Петербург' + avito + '</span><span>%s · <a href="mailto:info@nashdekor.ru" style="color:inherit">info@nashdekor.ru</a></span>'
             '<nav aria-label="Разделы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px">%s<a href="%sstati/" style="color:inherit">Статьи</a>%s<a href="%sdostavka/" style="color:inherit">Доставка в Москву и по России</a></nav>'
             '<nav aria-label="Документы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px"><a href="%soplata/" style="color:inherit">Оплата и возврат</a><a href="%soferta.html" style="color:inherit">Оферта</a>'
             '<a href="%sprivacy.html" style="color:inherit">Политика конфиденциальности</a><a href="%sconsent.html" style="color:inherit">Согласие на обработку данных</a></nav>'
