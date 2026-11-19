@@ -1,11 +1,11 @@
 # Flagball Arena  (@FlagballArenaTV)
-Проверено: 2026-11-19 07:02 UTC
+Проверено: 2026-11-19 07:31 UTC
 
 - Страница канала: HTTP 200; ID: UCUKgRxWtL1kPWr9hdfL8qQw
 - Шапка: 16 подписчиков · 68 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-19 03:37 · 369 просм. · Last chance for Spain 😱 Mexico vs Thailand vs Spain | Country Marble Race #shorts · wbeECqcgslo
+- 2026-11-19 03:37 · 408 просм. · Last chance for Spain 😱 Mexico vs Thailand vs Spain | Country Marble Race #shorts · wbeECqcgslo
 - 2026-11-18 19:55 · 911 просм. · Race 32/67: 8 of 24 lose a life 😱 Japan vs Colombia vs Peru #shorts · k5c9gvYtk6c
 - 2026-11-18 11:40 · 882 просм. · India ❤️❤️❤️ vs Vietnam ❤️❤️❤️ vs Thailand ❤️❤️ — Who Survives? #shorts · TQP4Lgy5ROY
 - 2026-11-18 03:35 · 1013 просм. · Indonesia vs Pakistan vs Algeria 😱 Who Survives? Country Marble Race #shorts · BYrVOM5QkiU
@@ -22,7 +22,7 @@
 - 2026-11-15 03:41 · 461 просм. · Russia vs Türkiye vs Poland 😱 Who Survives? Country Marble Race #shorts · 8GyXq2dRNLo
 
 ## Вкладка Shorts (видно всем) — 36 шт. на первой странице
-- 369 просмотров · Last chance for Spain 😱 Mexico vs Thailand vs Spain | Country Marble Race #shorts · wbeECqcgslo
+- 408 просмотров · Last chance for Spain 😱 Mexico vs Thailand vs Spain | Country Marble Race #shorts · wbeECqcgslo
 - 911 просмотров · Race 32/67: 8 of 24 lose a life 😱 Japan vs Colombia vs Peru #shorts · k5c9gvYtk6c
 - 882 просмотра · India ❤️❤️❤️ vs Vietnam ❤️❤️❤️ vs Thailand ❤️❤️ — Who Survives? #shorts · TQP4Lgy5ROY
 - 1 тыс. просмотров · Indonesia vs Pakistan vs Algeria 😱 Who Survives? Country Marble Race #shorts · BYrVOM5QkiU
