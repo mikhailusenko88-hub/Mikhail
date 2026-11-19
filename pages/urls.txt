@@ -1,2 +1,1 @@
-# 18.11 — статус письма ARTDEC (договор)
-https://crm.nashdekor.ru/api/outbox/status/0eccf70b-878f-4573-b6b4-af1b90dcbd79
+https://crm.nashdekor.ru/api/outbox/status/423573b1-07fb-4415-b5bc-1718b8ede981
