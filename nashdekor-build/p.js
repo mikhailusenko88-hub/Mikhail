@@ -448,7 +448,7 @@ $("leadForm").addEventListener("submit", async e => {
   if (buy && !pickup && !addr) { err.textContent = "Укажите адрес доставки или выберите самовывоз."; err.hidden = false; $("lAddr").focus(); return; }
   err.hidden = true;
   const now = new Date().toISOString();
-  const lead = { name, contact, email: ($("lEmail") ? $("lEmail").value.trim() : ""), who: $("lWho").value, message: $("lMsg").value.trim(), calc: orderText(), total: Math.round(qty * price()), consentAt: now, consentVersion: "2026-10-29", intent: mode, address: addr };
+  const lead = { name, contact, email: ($("lEmail") ? $("lEmail").value.trim() : ""), who: $("lWho").value, message: [$("lMsg").value.trim(), window.NDShip ? NDShip.text(X.a) : ""].filter(Boolean).join("\n"), calc: orderText(), total: Math.round(qty * price()), consentAt: now, consentVersion: "2026-10-29", intent: mode, address: addr };
   const btn = $("lSend"); btn.disabled = true; btn.textContent = "Отправляем…";
   let saved = false; try { saved = await sendLead(lead); } catch (x) { saved = false; }
   btn.disabled = false; btn.textContent = BTN[mode];

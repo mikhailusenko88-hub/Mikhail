@@ -34,6 +34,7 @@ function load(){
   return mem.map(clean).filter(Boolean);
 }
 function save(items){
+  shipStale("cart");
   mem = items;
   try { localStorage.setItem(KEY, JSON.stringify({ v: 1, t: Date.now(), items })); } catch (e) {}
   paint();
@@ -77,6 +78,9 @@ function css(){
     + ".ndk-step a{color:inherit;text-decoration:none;font-weight:600;font-size:14px;flex:1;text-align:center;line-height:36px}"
     + ".ndk-note{margin:10px 0 0;font-size:14px}.ndk-note a{color:var(--ink,#26292E)}"
     + ".ndk-fly{position:fixed;width:40px;height:40px;border-radius:50%;object-fit:cover;background:var(--accent,#26292E);z-index:1003;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.25)}"
+    + ".ndk-ship{margin-top:14px;border-top:1px solid var(--line,#D9DEE3);padding-top:12px;font-size:14px}.ndk-ship>b{display:block;font-size:15px}"
+    + ".ndk-shipf{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 6px;max-width:100%}.ndk-shipf input{flex:1 1 150px;width:auto;min-width:0;box-sizing:border-box;height:38px;border:1px solid var(--line,#D9DEE3);border-radius:6px;padding:0 10px;font:inherit;font-size:16px;background:var(--paper,#fff);color:var(--ink,#26292E)}"
+    + ".ndk-shipf .btn{margin:0;white-space:nowrap;flex:0 0 auto;width:auto!important}.ndk-shipr small{display:block;color:var(--muted,#6b7280);margin-top:4px;font-size:12.5px}.ndk-shipr b{white-space:nowrap}"
     + "@media (max-width:560px){.ndk-tot{flex-direction:column;align-items:flex-start;gap:2px}.ndk-item{grid-template-columns:72px 1fr}.ndk-item img{width:72px;height:42px}.ndk-sum{grid-column:2;text-align:left}}";
   document.head.appendChild(s);
 }
@@ -195,6 +199,7 @@ function render(){
   if (!box) return;
   css();
   const items = load(), form = $("cartOrder");
+  document.querySelectorAll('[data-ship="cart"].ndk-ship').forEach(el => { el.hidden = !items.length; });
   if (!items.length) {
     if (!box.dataset.done) box.innerHTML = `<p class="ndk-empty">Корзина пуста. Выберите товары в <a href="${esc(box.dataset.catalog || "/catalog/stenovye-paneli/")}" style="color:var(--ink)">каталоге</a> — на странице товара кнопка «В корзину».</p>`;
     if (form) form.hidden = true;
@@ -278,7 +283,7 @@ function initForm(){
     if (!addr) return fail("Укажите адрес доставки или выберите самовывоз.", $("kAddr"));
     if (!$("kAgree").checked) return fail("Отметьте согласие на обработку данных и условия продажи.", $("kAgree"));
     err.hidden = true;
-    const lead = { name, contact, email: $("kEmail").value.trim(), who: $("kWho").value, message: $("kMsg").value.trim(),
+    const lead = { name, contact, email: $("kEmail").value.trim(), who: $("kWho").value, message: [$("kMsg").value.trim(), window.NDShip.text()].filter(Boolean).join("\n"),
                    calc: orderText(items), total: Math.round(total(items)), consentAt: new Date().toISOString(), consentVersion: "2026-10-29", address: addr };
     const btn = $("kSend"); btn.disabled = true; btn.textContent = "Отправляем…";
     const id = await sendLead(lead);
@@ -318,9 +323,96 @@ async function prices(){
   } catch (e) {}
 }
 
+/* ---------- доставка ПЭК в другой город (с 19.11.2026) ----------
+   Блок <div data-ship="item" data-a="A907"> на странице товара и <div data-ship="cart"> в корзине. Показывается, только если
+   в CRM включён расчёт (Настройки → «ПЭК — расчёт доставки»); CRM спрашивает ПЭК: до терминала, а с улицей — и до двери. */
+const SHIP_API = "https://crm.nashdekor.ru/api/ship";
+const CITY_KEY = "nd_city";
+const CITIES = ["Москва", "Казань", "Нижний Новгород", "Екатеринбург", "Новосибирск", "Краснодар", "Ростов-на-Дону", "Самара",
+  "Воронеж", "Пермь", "Уфа", "Челябинск", "Волгоград", "Тверь", "Великий Новгород", "Псков", "Петрозаводск", "Мурманск",
+  "Архангельск", "Вологда", "Череповец", "Ярославль", "Калининград", "Сочи", "Новороссийск", "Тула", "Рязань", "Владимир",
+  "Иваново", "Кострома", "Калуга", "Смоленск", "Брянск", "Белгород", "Курск", "Липецк", "Тамбов", "Орёл", "Пенза", "Саратов",
+  "Ульяновск", "Тольятти", "Оренбург", "Тюмень", "Омск", "Томск", "Красноярск", "Барнаул", "Иркутск", "Хабаровск",
+  "Владивосток", "Ставрополь", "Махачкала", "Чебоксары", "Ижевск", "Киров", "Сыктывкар", "Набережные Челны", "Сургут",
+  "Симферополь", "Севастополь", "Кемерово", "Новокузнецк", "Астрахань", "Магнитогорск"];
+let shipLast = null;           // последний расчёт: {mode, a, city, text}
+const getCity = () => { try { return localStorage.getItem(CITY_KEY) || ""; } catch (e) { return ""; } };
+const setCity = v => { try { localStorage.setItem(CITY_KEY, v); } catch (e) {} };
+function shipStale(mode){
+  if (!shipLast || (mode && shipLast.mode !== mode)) return;
+  shipLast = null;
+  document.querySelectorAll(`[data-ship="${mode || "cart"}"] .ndk-shipr`).forEach(r => { if (r.innerHTML) r.innerHTML = "<small>Состав изменился — нажмите «Рассчитать» ещё раз.</small>"; });
+}
+function shipItems(el){
+  if (el.dataset.ship === "cart") return load().map(i => ({ a: i.a, q: i.q }));
+  const q = Math.max(1, parseInt(($("qty") || {}).value, 10) || 1);
+  return [{ a: el.dataset.a, q }];
+}
+async function shipCalc(el, where){
+  const res = el.querySelector(".ndk-shipr"), btn = el.querySelector("button");
+  const items = shipItems(el);
+  if (!items.length) { res.innerHTML = "<small>Сначала положите товары в корзину.</small>"; return; }
+  btn.disabled = true; res.innerHTML = "<small>Считаем по тарифам ПЭК…</small>";
+  let j = null, code = 0;
+  try {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 20000);
+    const r = await fetch(SHIP_API, { method: "POST", mode: "cors", credentials: "omit", signal: ctl.signal,
+      headers: { "Content-Type": "application/json" }, body: JSON.stringify({ city: where, items }) });
+    clearTimeout(t); code = r.status; j = await r.json().catch(() => null);
+  } catch (e) { j = null; }
+  btn.disabled = false;
+  const note = "<small>Ориентир по тарифам ПЭК на сегодня; точную сумму назовём при подтверждении заказа. Доставку оплачиваете в ПЭК при получении.</small>";
+  if (j && j.ok && j.local) {
+    res.innerHTML = "По Санкт-Петербургу и Ленобласти доставляем сами — стоимость назовём при подтверждении заказа, самовывоз со склада бесплатно.";
+    shipLast = null; return;
+  }
+  if (j && j.ok && j.terminal) {
+    const t = j.terminal, d = j.door, days = x => x && x.days ? `, ≈ ${x.days} дн.` : "";
+    res.innerHTML = `До терминала ПЭК (${esc(j.branch)}): <b>≈ ${fmt(t.cost)} ₽</b>${days(t)}`
+      + (d ? `<br>До двери: <b>≈ ${fmt(d.cost)} ₽</b>${days(d)}` : "<small>Введите адрес с улицей и домом — посчитаем и до двери.</small>") + note;
+    shipLast = { mode: el.dataset.ship, a: el.dataset.a || "", city: where,
+                 text: `Доставка ПЭК: ${where} — до терминала ≈ ${fmt(t.cost)} ₽${t.days ? ", ≈ " + t.days + " дн." : ""}${d ? `, до двери ≈ ${fmt(d.cost)} ₽` : ""} (расчёт на сайте)` };
+    const addr = $("kAddr");                                      // корзина: адрес с улицей — сразу в форму заказа
+    if (el.dataset.ship === "cart" && d && addr && !addr.value.trim()) addr.value = where;
+    return;
+  }
+  shipLast = null;
+  const err = j && j.error;
+  res.innerHTML = err === "city" ? "<small>ПЭК не нашёл такой город — проверьте название или добавьте область.</small>"
+    : code === 429 ? "<small>Слишком много расчётов подряд — попробуйте через несколько минут.</small>"
+    : "<small>Сейчас не получилось посчитать — стоимость доставки назовём при подтверждении заказа.</small>";
+}
+function renderShip(el){
+  css();
+  if (!$("ndkCities")) { const dl = document.createElement("datalist"); dl.id = "ndkCities"; dl.innerHTML = CITIES.map(c => `<option value="${esc(c)}">`).join(""); document.body.appendChild(dl); }
+  el.classList.add("ndk-ship");
+  el.innerHTML = '<b>Доставка в другой город — ПЭК</b><form class="ndk-shipf" novalidate><input type="text" list="ndkCities" autocomplete="address-level2" placeholder="Город или адрес" aria-label="Город или адрес доставки">'
+    + '<button class="btn sm ghost" type="submit">Рассчитать</button></form><div class="ndk-shipr" aria-live="polite"></div>';
+  const inp = el.querySelector("input"); inp.value = getCity();
+  el.querySelector("form").addEventListener("submit", e => {
+    e.preventDefault();
+    const v = inp.value.replace(/\s+/g, " ").trim();
+    if (v.length < 2) { inp.focus(); return; }
+    setCity(v); shipCalc(el, v);
+  });
+  el.hidden = el.dataset.ship === "cart" && !load().length;
+}
+async function initShip(){
+  const els = document.querySelectorAll("[data-ship]");
+  if (!els.length || !ON_SITE) return;
+  let on = false;
+  try { const r = await fetch(SHIP_API, { credentials: "omit" }); on = !!((await r.json()) || {}).on; } catch (e) { on = false; }
+  if (!on) return;                                    // расчёт выключен в CRM — блока нет, как раньше
+  els.forEach(renderShip);
+  ["qMinus", "qPlus", "qBox"].forEach(id => { const b = $(id); if (b) b.addEventListener("click", () => shipStale("item")); });
+  if ($("qty")) $("qty").addEventListener("input", () => shipStale("item"));
+}
+window.NDShip = { text: a => shipLast && (!a || shipLast.a === a || shipLast.mode === "cart") ? shipLast.text : "" };
+
 function start(){
   paint(); syncAll();
   if (box) { render(); initForm(); prices(); }
+  initShip();
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })();

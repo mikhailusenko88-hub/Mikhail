@@ -513,7 +513,8 @@ def product_page(x):
            '<div class="total"><div><small>Итого, предварительно</small><b class="num" id="tSum">—</b></div><small id="tPack"></small></div>'
            '<div class="btns"><button class="btn wide" type="button" id="toCart">В корзину</button><button class="btn ghost" type="button" id="toBuy">Купить сразу</button><button class="btn ghost" type="button" id="toOrder">Запросить расчёт</button></div><p class="ndk-note" data-cart-note="%s" hidden></p>%s'
            '<p class="fine">Цена без НДС. Точную стоимость, наличие и доставку подтвердим в ответ на заявку.</p>'
-           '<p class="fine ship"><a href="%sdostavka/">Отправляем в Москву и любой регион транспортной компанией</a> · самовывоз в СПб бесплатно</p></aside>' % (price_b, per, x["b"], esc(a), calc_btn, ROOT))
+           '<p class="fine ship"><a href="%sdostavka/">Отправляем в Москву и любой регион транспортной компанией</a> · самовывоз в СПб бесплатно</p>'
+           '<div data-ship="item" data-a="%s" hidden></div></aside>' % (price_b, per, x["b"], esc(a), calc_btn, ROOT, esc(a)))
 
     with_it = buy_with(x)
     rel = [y for y in CAT if y["c"] == c and y["a"] != a]
@@ -852,7 +853,7 @@ def cart_page():
             '<h1 style="margin:8px 0 4px">Корзина</h1>'
             '<div id="ndCart" data-catalog="%scatalog/stenovye-paneli/" data-max="%s" data-tg="%s"><p class="note">Загружаем корзину…</p>'
             '<noscript><p>Корзина работает с включённым JavaScript. Можно оформить заказ на странице товара (кнопка «Купить сразу») или написать в чат.</p></noscript></div>'
-            '</div>' % (root, esc(SHOP.get("max", "")), esc(SHOP.get("telegram", ""))) + form + "</main>" + footer(root) +
+            '<div data-ship="cart" hidden style="max-width:560px"></div></div>' % (root, esc(SHOP.get("max", "")), esc(SHOP.get("telegram", ""))) + form + "</main>" + footer(root) +
             '<script>window.P=%s</script><script src="%sassets/p.js?v=%s"></script></body></html>' % (json.dumps({"root": root, "list": True, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", "")}}, ensure_ascii=False), root, VER))
     return head("Корзина | Наш декор", "Корзина интернет-магазина «Наш декор»: оформление заказа на стеновые панели, плинтусы и молдинги.", url, BASE + "/og.jpg",
                 '<meta name="robots" content="noindex,follow">', root) + body
