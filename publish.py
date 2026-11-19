@@ -9,6 +9,7 @@
   retime <id ролика> <ГГГГ-ММ-ДДTЧЧ:ММ>  — перенести таймер выхода закрытого ролика (время московское)
   stats                                  — последние ролики канала: просмотры, статус
   lang [сколько] [от скольки секунд]     — старым полным сериям проставить русский язык и категорию «Фильмы и анимация» (текст не меняется, Shorts не трогает)
+  thumb <id ролика> <серия>              — заменить обложку ролика на serii/<серия>/cover.jpg со страницы; только закрытому (ещё не вышедшему) ролику
 <релиз> — имя сборки студии (релиз studio-<релиз>, файл ep-<релиз>.mp4); название, описание и обложка — со страницы
 супруги (ветка mebel, s9kbars/serii.json и serii/<серия>/cover.jpg). Итог — youtube/status.txt и youtube/<релиз>.json.
 Куда что кладётся (как на канале): полная серия — в плейлист «Все серии подряд», Shorts — в «Смешные моменты и Shorts»;
@@ -122,7 +123,7 @@ def short(yt, a, rel, num, it, body_when, last, pe):
 def main():
     a = request_line()
     mode = a[0] if a else ""
-    if mode not in ("check", "draft", "plan", "short", "cancel", "stats", "lang", "retime"):
+    if mode not in ("check", "draft", "plan", "short", "cancel", "stats", "lang", "retime", "thumb"):
         return finish([f"НЕ ПОНЯЛ строку publish.txt: {' '.join(a)}"])
     if mode in ("draft", "plan", "short"):
         rel, num = a[1], a[2]
@@ -156,6 +157,18 @@ def main():
         at, human = when_utc(a[2])
         ok, msg = yt.retime(a[1], at)
         return finish([("ТАЙМЕР ПЕРЕНЕСЁН" if ok else "ТАЙМЕР НЕ ПЕРЕНЕСЁН") + f": https://youtu.be/{a[1]} — выйдет {human}" if ok else f"ТАЙМЕР НЕ ПЕРЕНЕСЁН: https://youtu.be/{a[1]}", msg])
+    if mode == "thumb":                                        # новая обложка ещё не вышедшему ролику: thumb <id ролика> <серия> (Михаил 19.11: надпись меньше)
+        vid, num = a[1], a[2]
+        it, st = card(num), yt.status(vid)
+        if not st:
+            return finish([f"ОБЛОЖКА НЕ ЗАМЕНЕНА: ролика {vid} нет на канале"])
+        if st.get("privacyStatus") != "private" and "--public" not in a:
+            return finish([f"ОБЛОЖКА НЕ ЗАМЕНЕНА: https://youtu.be/{vid} уже {st.get('privacyStatus')} — вышедшее меняю только с --public (после «да» Михаила)"])
+        os.makedirs("tmp", exist_ok=True)
+        n = fetch(f"{RAW}/mebel/s9kbars/{it.get('cover') or f'serii/{num}/cover.jpg'}", "tmp/cover.jpg", 20_000)
+        th = yt.thumbnail(vid, "tmp/cover.jpg")
+        return finish([("ОБЛОЖКА ЗАМЕНЕНА" if th == "обложка поставлена" else "ОБЛОЖКА НЕ ЗАМЕНЕНА") + f": серия {num} — https://youtu.be/{vid} ({st.get('privacyStatus')}, выход {st.get('publishAt')})",
+                       f"{th}; файл со страницы {n} байт"])
     if mode == "lang":                                         # старым полным сериям — русский язык и категория «Фильмы и анимация» (разрешил Михаил 17.11.2026)
         done, skip, shorts, errs = yt.set_lang(limit=int(a[1]) if len(a) > 1 and a[1].isdigit() else 30,      # «lang 1» — сначала одна серия на пробу
                                                min_sec=int(a[2]) if len(a) > 2 and a[2].isdigit() else 180)   # «lang 5 60» — и короткие серии-части (не Shorts)
