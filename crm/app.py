@@ -738,6 +738,16 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         flash("Сохранено в «Документы». Выберите раздел и название." if new else "Этот файл уже есть в документах.", "ok")
         return redirect(url_for("docs_edit", did=did))
 
+    def return_text(d: Any) -> str:
+        """Условия возврата — только в заказе (заявка «ЗАКАЗ.» или создана ссылка на оплату), 19.11.2026.
+        Письменно и при оформлении: тогда срок возврата 7 дней, а не 3 месяца (ст. 26.1 ЗоЗПП; п. 21 Правил продажи, ПП № 657 —
+        можно электронно). В расчёте до заказа не пишем."""
+        if not ((d["want"] or "").startswith("ЗАКАЗ.") or (d["pay_link"] or "").strip()):
+            return ""
+        dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
+        return ("Возврат: неподошедший товар можно вернуть в течение 7 дней после получения, если он не распилен, не окрашен "
+                "и не монтировался; товар с браком — по закону. Подробно: " + f"https://{dom}/oplata/#vozvrat")
+
     def letter_ctx(d: Any, lines: list[Any], manager: str = "") -> dict[str, str]:
         """Подстановки для шаблонов «Конструктора»: {имя}, {номер}, {состав}…"""
         gross = sum(int(ln["qty"]) * int(ln["price"]) for ln in lines)
@@ -758,13 +768,18 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 "ссылка_на_оплату": (f"Оплатить через СБП (QR-код в приложении банка): {link}\nОплата проходит на защищённой странице банка, "
                                      "ссылка действует 7 дней. Электронный чек придёт на e-mail.") if link else "",
                 "дата_расчёта": fmt_day(d["stage_at"][:10]) if d["stage_at"] else "", "действует_до": fmt_day(until) if until else "конца недели",
-                "заметка": (d["client_note"] or "").strip(), "менеджер": manager or "", "подпись": "\n".join(mail_signature(manager)).strip()}
+                "заметка": (d["client_note"] or "").strip(), "менеджер": manager or "", "подпись": "\n".join(mail_signature(manager)).strip(),
+                "возврат": return_text(d)}
 
     def calc_text(d: Any, lines: list[Any], manager: str = "") -> str:
         """Расчёт для клиента: позиции, суммы, итог, что дальше, контакты — в письмо или в мессенджер."""
         t = k.template("calc")
         if t:                                   # свой текст из «Конструктора»
-            return k.render(t["body"], letter_ctx(d, lines, manager))
+            ctx = letter_ctx(d, lines, manager)
+            body = t["body"]
+            if ctx["возврат"] and "{возврат}" not in body:   # условия возврата в заказе — всегда, даже если в шаблоне их забыли
+                body = body.replace("{подпись}", "{возврат}\n\n{подпись}") if "{подпись}" in body else body + "\n\n{возврат}"
+            return k.render(body, ctx)
         gross = sum(int(ln["qty"]) * int(ln["price"]) for ln in lines)
         total = Store.total(gross, d["discount"])
         is_order = (d["want"] or "").startswith("ЗАКАЗ.")
@@ -784,6 +799,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if (d["pay_link"] or "").strip():
             out += ["", f"Оплатить через СБП (QR-код в приложении банка): {d['pay_link'].strip()}",
                     "Оплата проходит на защищённой странице банка, ссылка действует 7 дней. Электронный чек придёт на e-mail. После оплаты пришлём подтверждение и согласуем доставку."]
+        if return_text(d):
+            out += ["", return_text(d)]
         out += ["",
                 "Цены без НДС. Доставка по Санкт-Петербургу и Ленобласти рассчитывается отдельно, самовывоз со склада — бесплатно.",
                 "Расчёт действует 7 дней; наличие и срок поставки подтвердим при заказе.", "",

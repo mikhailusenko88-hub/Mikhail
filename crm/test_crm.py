@@ -877,6 +877,33 @@ class TestApi(Base):
         d = self.store.deal(did)
         self.assertEqual((d["client_note"], d["pay_link"], d["stage"]), ("Как договорились по телефону.", "https://pay.tochka.com/abc", "quote"))
 
+    def test_return_terms_only_in_order(self) -> None:
+        """Условия возврата (7 дней) — автоматически в письме/сообщении по заказу; в обычном расчёте до заказа их нет (19.11.2026)."""
+        self.login()
+        sent = {}
+        def fake_mail(to, subject, body, sender="", reply_to=""):
+            sent.update(to=to, subject=subject, body=body); return True
+        orig = crm_app.send_mail; crm_app.send_mail = fake_mail
+        try:
+            did = self.lead(email="q@example.com", calc="Товар: A912 — 12 шт").get_json()["id"]      # заявка, не заказ
+            self.post(f"/deals/{did}/send-calc", {"email": "q@example.com"})
+            self.assertIn("Расчёт №", sent["body"]); self.assertIn("A912", sent["body"]); self.assertNotIn("Возврат:", sent["body"])
+            self.post(f"/deals/{did}/send-calc", {"email": "q@example.com", "pay_link": "https://pay.tochka.com/x"})   # ссылка на оплату — это уже заказ
+            self.assertIn("в течение 7 дней после получения", sent["body"]); self.assertIn("/oplata/#vozvrat", sent["body"])
+            oid = self.lead(email="o@example.com", intent="buy", address="Самовывоз, СПб",
+                            calc="Заказ из корзины сайта, позиций: 3\nТовар: A912 (стеновая реечная панель) — 10 шт, цвет: Белый, ≈ 9 900 ₽\nТовар: A116 (уголок декоративный) — 2 шт, цвет: Белый — 1 шт; RAL 9010 — 1 шт\nТовар: GS 1 (стеновая панель с декором) — 3 шт, декор: дуб\nИтого ≈ 15 000 ₽ (предварительно)").get_json()["id"]
+            self.assertEqual(sorted((ln["article"], ln["qty"]) for ln in self.store.lines(oid)), [("A116", 2), ("A912", 10), ("GS 1", 3)])   # строки корзины — в позициях сделки
+            self.post(f"/deals/{oid}/send-calc", {"email": "o@example.com"})
+            self.assertIn("Ваш заказ №", sent["body"]); self.assertIn("в течение 7 дней после получения", sent["body"])
+            # свой шаблон без {возврат}: условия всё равно добавятся перед подписью
+            self.post("/k/templates/calc", {"subject": "Заказ №{номер}", "body": "Привет, {имя}!\n\n{состав}\n\n{подпись}"})
+            self.post(f"/deals/{oid}/send-calc", {"email": "o@example.com"})
+            b = sent["body"]
+            self.assertIn("в течение 7 дней после получения", b); self.assertLess(b.index("Возврат:"), b.index("С уважением"))
+            self.post(f"/deals/{did}/send-calc", {"email": "q@example.com", "pay_link": ""})          # снова просто расчёт
+        finally:
+            crm_app.send_mail = orig
+
     def test_preflight(self) -> None:
         r = self.c.options("/api/lead", headers={"Origin": "https://nashdekor.ru",
                                                  "Access-Control-Request-Method": "POST"})
