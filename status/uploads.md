@@ -41,3 +41,4 @@
 | 2026-11-18 | 3 | clubs №12 | Xorazm | https://youtube.com/shorts/yHBl5IdkZV0 | public |
 | 2026-11-19 | 1 | cities №12 | Namangan | https://youtube.com/shorts/g2K5gcUFJGg | public |
 | 2026-11-19 | 2 | cars №19 | Tahoe | https://youtube.com/shorts/NdB6r0N5XqQ | public |
+| 2026-11-19 | 3 | cars №20 | Epica | https://youtube.com/shorts/ZAyx08ROrvc | public |

@@ -1,7 +1,7 @@
-ВЫЛОЖЕНО 2026-11-19 слот 2: cars №19 https://youtube.com/shorts/NdB6r0N5XqQ, за 47 с
+ВЫЛОЖЕНО 2026-11-19 слот 3: cars №20 https://youtube.com/shorts/ZAyx08ROrvc, за 58 с
 
 {
- "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №19 #shorts",
+ "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №20 #shorts",
  "description": "🏆 Oʻtgan hafta chempioni: Tahoe · Чемпион прошлой недели: Tahoe\n\n⏳ Finalgacha 3 kun · До финала 3 дня\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
@@ -23,22 +23,21 @@
 }
 
 --- журнал (время Ташкента) ---
-15:41:49 режим publish, событие workflow_dispatch
-15:41:49 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-15:41:55 комментарии: 15 роликов не прочиталось · роликов просмотрено: 15, комментариев: 0
-15:41:55 Тема: гонка машин. Подбираю трассу и заезд…
-15:41:57   трасса 1 (tunnel, bumpy, hammers, split): победа на 36.4 с, смен лидера 6, финишировали 6, расчёт 1 с — не подходит
-15:41:58   трасса 2: никто не доехал за 37 с — не подходит
-15:41:59   трасса 3 (split, tramps, bumpy, stairs): победа на 27.4 с, смен лидера 18, финишировали 6, расчёт 1 с
-15:41:59 Рисую трассу…
-15:41:59 Рисую кадры: заезд 30 с + финал 6 с…
-15:42:00   кадр 0/904, 4 с
-15:42:09   кадр 300/904, 14 с
-15:42:18   кадр 600/904, 23 с
-15:42:27   кадр 900/904, 32 с
-15:42:33 Свожу звук…
-15:42:33 Готово за 38 с: победил Tahoe, ролик 36 с
-15:42:33 ролик готов: 36 с, 22 МБ, сборка 44 с; победил Tahoe, топ-3: Tahoe, Matiz, Epica
-15:42:35 YouTube: https://youtube.com/shorts/NdB6r0N5XqQ
-15:42:36 в плейлисте
-15:42:36 статус: public uploaded
+19:39:37 режим publish, событие workflow_dispatch
+19:39:38 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+19:39:55 комментарии: роликов просмотрено: 15, комментариев: 0
+19:39:56 Тема: гонка машин. Подбираю трассу и заезд…
+19:39:57   трасса 1 (hammers, stairs, tunnel, tramps): победа на 31.7 с, смен лидера 21, финишировали 10, расчёт 1 с — не подходит
+19:39:58   трасса 2 (bumpy, split, hammers, tramps, funnel): победа на 25.6 с, смен лидера 20, финишировали 4, расчёт 1 с
+19:39:59   трасса 3 (stairs, tramps, tunnel, split, pegs): победа на 30.8 с, смен лидера 11, финишировали 11, расчёт 1 с
+19:39:59 Рисую трассу…
+19:39:59 Рисую кадры: заезд 28 с + финал 6 с…
+19:40:00   кадр 0/850, 4 с
+19:40:09   кадр 300/850, 14 с
+19:40:19   кадр 600/850, 23 с
+19:40:32 Свожу звук…
+19:40:32 Готово за 36 с: победил Epica, ролик 34 с
+19:40:32 ролик готов: 34 с, 21 МБ, сборка 55 с; победил Epica, топ-3: Epica, Lacetti, Cobalt
+19:40:34 YouTube: https://youtube.com/shorts/ZAyx08ROrvc
+19:40:35 в плейлисте
+19:40:35 статус: public uploaded
