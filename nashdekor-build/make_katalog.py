@@ -59,6 +59,7 @@ def short(x):
 
 
 pages = []
+TXT = []   # для каждой страницы: [(x, y, размер, текст)] — невидимый текст, чтобы в PDF искался артикул
 # ---------------- обложка
 im = Image.new('RGB', (W, H), ANTH); d = ImageDraw.Draw(im)
 lg = Image.open(LOGO); lg = lg.crop(lg.getbbox()); lw = 900
@@ -75,7 +76,68 @@ for c, title, _ in SECTIONS:
 d.text((M, H - 300), 'Санкт-Петербург и Ленинградская область · доставка по России', font=font(34), fill=SUBD)
 d.text((M, H - 240), 'nashdekor.ru · info@nashdekor.ru', font=font(34, 'SemiBold'), fill=GAL)
 d.text((M, H - 170), f'Цены на {DAY}. Актуальные цены и наличие — на сайте.', font=font(28), fill=SUBD)
-pages.append(im)
+pages.append(im); TXT.append([])
+
+# ---------------- прайс одной таблицей: быстро найти цену по артикулу
+def label(x):
+    if x['c'] == 'color':
+        m = re.search(r'«([^»]+)»', x['d'])
+        return m.group(1) if m else ''
+    if x['c'] in ('panel', 'plinth'):
+        return f"{x['w']} мм"
+    return f"{x['w']}×{x['t']} мм"
+
+
+def price_pages():
+    cols3, g3 = 3, 56
+    cw = (W - 2 * M - g3 * (cols3 - 1)) // cols3
+    top, bottom, lh = 330, H - 160, 47
+    lines = []
+    for c, title, _ in SECTIONS:
+        lines.append(('h', title))
+        lines += [('i', x) for x in CAT if x['c'] == c]
+    out = []
+    i = 0
+    while i < len(lines):
+        im, d = page('Все цены одной таблицей')
+        d.text((M, 262), 'Цена за штуку. Артикул — как на фото и на сайте. Поиск по PDF: введите номер, например A88.',
+               font=font(26), fill=SUBL)
+        tx = []
+        for q in range(cols3):
+            x0, y = M + q * (cw + g3), top
+            while i < len(lines):
+                kind, v = lines[i]
+                need = (lh + 18) * 2 if kind == 'h' else lh
+                if y + need > bottom:
+                    break
+                if kind == 'h':
+                    if y > top:
+                        y += 18
+                    d.text((x0, y), v, font=font(28, 'SemiBold'), fill=BLUE)
+                    d.line([x0, y + 40, x0 + cw, y + 40], fill=STONE, width=2)
+                    y += lh + 6
+                else:
+                    a, pr = v['a'], f"{fmt(v['r'])} ₽"
+                    d.text((x0, y), a, font=font(30, 'SemiBold'), fill=ANTH)
+                    d.text((x0 + cw, y), pr, font=font(30, 'SemiBold'), fill=ANTH, anchor='ra')
+                    aw = d.textlength(a, font=font(30, 'SemiBold'))
+                    pw = d.textlength(pr, font=font(30, 'SemiBold'))
+                    lab, f = label(v), font(23)
+                    room = cw - aw - pw - 44
+                    while lab and d.textlength(lab, font=f) > room:
+                        lab = lab[:-2].rstrip() + '…'
+                    if lab:
+                        d.text((x0 + aw + 18, y + 6), lab, font=f, fill=SUBL)
+                    d.line([x0, y + lh - 8, x0 + cw, y + lh - 8], fill=HAZE, width=1)
+                    tx.append((x0, y, 30, f"{a} {v['n']} {pr}"))
+                    y += lh
+                i += 1
+        out.append((im, tx))
+    return out
+
+
+for im, tx in price_pages():
+    pages.append(im); TXT.append(tx)
 
 # ---------------- разделы
 cols, gap = 2, 44
@@ -95,6 +157,7 @@ for c, title, lead in SECTIONS:
             y0 += 26
             first = False
         rows = (H - 150 - y0) // rowh
+        tx = []
         for r in range(rows):
             for q in range(cols):
                 if k >= len(items):
@@ -110,6 +173,7 @@ for c, title, lead in SECTIONS:
                     d.rectangle([px, py, px + tw, py + th], fill=HAZE)
                 yy = py + th + 16
                 d.text((px, yy), x['a'], font=font(40, 'SemiBold'), fill=ANTH)
+                tx.append((px, yy, 40, f"{x['a']} {x['n']} {fmt(x['r'])} ₽"))
                 d.text((px + tw, yy + 4), f"{fmt(x['r'])} ₽ / шт", font=font(36, 'SemiBold'), fill=ANTH, anchor='ra')
                 yy += 56
                 for ln in wrap(d, short(x), font(25), tw)[:2]:
@@ -118,7 +182,7 @@ for c, title, lead in SECTIONS:
                 if c in ('panel', 'color'):
                     dims += f" · ≈ {fmt(x['r'] / (x['w'] / 1000 * x['l'] / 1000))} ₽/м²"
                 d.text((px, py + th + 16 + 56 + 2 * 34 + 2), dims, font=font(24, 'Medium'), fill=BLUE)
-        pages.append(im)
+        pages.append(im); TXT.append(tx)
 
 # ---------------- последняя страница
 im, d = page('Как мы работаем')
@@ -127,7 +191,7 @@ blocks = [('Расчёт по проекту', 'Пришлите развёрт�
           ('3D-модели для дизайнеров', 'Все профили в натуральную величину: FBX для 3ds Max, DAE для SketchUp, OBJ, GLB и DXF-сечения для AutoCAD, ArchiCAD и Revit. Пришлём по запросу.'),
           ('Покраска', 'Белые панели, плинтусы и молдинги — под покраску: цвет подбираете под стену или в контраст.'),
           ('Доставка', 'Самовывоз со склада — бесплатно. По Петербургу — 1–2 дня, по Ленобласти — 1–3 дня после оплаты, по тарифу перевозчика. В Москву и другие регионы отправляем транспортной компанией. Стоимость доставки называем до оплаты.'),
-          ('Оплата', 'Частным покупателям — картой или через СБП по ссылке, электронный чек на e-mail. Компаниям и ИП — по счёту. Цены без НДС.'),
+          ('Оплата', 'Частным покупателям — по QR-коду через СБП, электронный чек на e-mail. Компаниям и ИП — по счёту. Цены без НДС.'),
           ('Документы для объекта', 'Счёт, накладная и закрывающие документы для компаний и ИП, по ЭДО или на бумаге.')]
 for t, txt in blocks:
     d.text((M, y), t, font=font(44, 'SemiBold'), fill=ANTH); y += 66
@@ -137,7 +201,30 @@ for t, txt in blocks:
 d.rounded_rectangle([M, y + 10, W - M, y + 250], radius=18, fill=ANTH)
 d.text((M + 50, y + 56), 'nashdekor.ru', font=font(64, 'SemiBold'), fill=GAL)
 d.text((M + 50, y + 150), 'info@nashdekor.ru · каталог, цены, 3D-просмотр и расчёт стены', font=font(32), fill=SUBD)
-pages.append(im)
+pages.append(im); TXT.append([])
 
-pages[0].save(OUT, save_all=True, append_images=pages[1:], resolution=200, quality=86)
+# PDF: страницы картинками (JPEG) + невидимый текст артикулов и цен — в PDF работает поиск («A88»)
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+pdfmetrics.registerFont(TTFont('DV', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'))
+PW, PH = 595.2756, 841.8898
+k = PW / W
+cv = canvas.Canvas(OUT, pagesize=(PW, PH))
+cv.setTitle('Наш декор — каталог с ценами'); cv.setAuthor('Наш декор'); cv.setSubject(f'Цены на {DAY}')
+tmpdir = os.path.dirname(os.path.abspath(OUT))
+for n, (im, tx) in enumerate(zip(pages, TXT)):
+    jp = os.path.join(tmpdir, f'.page{n:02d}.jpg')
+    im.save(jp, quality=86, optimize=True, dpi=(200, 200))
+    cv.drawImage(jp, 0, 0, PW, PH)
+    for (x, y, sz, t) in tx:
+        o = cv.beginText()
+        o.setTextRenderMode(3)
+        o.setFont('DV', sz * k)
+        o.setTextOrigin(x * k, PH - (y + sz * 0.85) * k)
+        o.textOut(t)
+        cv.drawText(o)
+    cv.showPage()
+    os.remove(jp)
+cv.save()
 print('pages', len(pages), 'items', len(CAT), OUT, os.path.getsize(OUT) // 1024, 'KB')
