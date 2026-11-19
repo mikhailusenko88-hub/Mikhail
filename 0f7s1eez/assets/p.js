@@ -473,6 +473,13 @@ $("leadForm").addEventListener("submit", async e => {
 function goOrder(m){ setMode(m); hit("item", X.a, "ask"); $("order").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); setTimeout(() => $("lName").focus({ preventScroll: true }), 400); }
 $("toOrder").addEventListener("click", () => goOrder("lead"));
 if ($("toBuy")) $("toBuy").addEventListener("click", () => goOrder("buy"));
+/* корзина (assets/cart.js, с 19.11.2026): положить выбранное количество и цвет; нет корзины — как «Купить сразу» */
+if ($("toCart")) $("toCart").addEventListener("click", () => {
+  if (!window.NDCart) { goOrder("buy"); return; }
+  let img = ""; try { img = P.photo ? (u => u.pathname + u.search)(new URL(ROOT + P.photo, location.href)) : ""; } catch (e) {}
+  NDCart.add({ a: X.a, n: X.n, k: P.kind, c: colorText(), cl: isWood ? "декор" : "цвет", q: qty, r: price(), b: X.b, u: location.pathname, img });
+  hit("item", X.a, "cart");
+});
 if (location.hash === "#buy" || location.hash === "#call") setMode(location.hash.slice(1));
 if ($("toCalc")) $("toCalc").addEventListener("click", () => hit("item", X.a, "use"));
 $("leadForm").addEventListener("focusin", () => hit("form", X.a));

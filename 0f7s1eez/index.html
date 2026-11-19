@@ -31,11 +31,12 @@ h2{font-size:clamp(22px,4vw,32px)}
 header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .bar{display:flex;align-items:center;gap:16px;padding-block:12px}
+.cartlink{position:relative;display:inline-flex;align-items:center;gap:6px;color:var(--ink);text-decoration:none;font-size:15px;padding:6px 2px;flex:none}.cartlink .t{white-space:nowrap}.cartlink.ic .t{display:none}.bt2{display:none}@media (max-width:440px){.bt1{display:none}.bt2{display:inline}}.cartn{position:absolute;top:-1px;left:13px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:700;line-height:18px;text-align:center;box-sizing:border-box}
 .logo{font-family:var(--f-display);font-weight:500;font-size:18px;letter-spacing:-.02em;text-decoration:none;color:var(--ink)}
 .logo b{font-weight:700}
 nav.links{display:flex;gap:18px;margin-left:auto;font-size:15px}
 nav.links a{color:var(--ink);text-decoration:none}
-@media (max-width:720px){nav.links{display:none}.bar .btn{margin-left:auto}}
+@media (max-width:720px){nav.links{display:none}.bar .btn{margin-left:auto}.bar .cartlink{margin-left:auto}.bar .cartlink+.btn{margin-left:0}.cartlink .t{display:none}}
 
 .hero{padding-block:40px 28px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:center}
 .hero h1{font-size:clamp(28px,5.4vw,52px);line-height:1.08}
@@ -214,8 +215,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 <header class="top"><div class="wrap bar">
   <a class="logo" href="#catalog" aria-label="Наш декор"><svg viewBox="0 0 724 120" width="169" height="28" aria-hidden="true" focusable="false"><use href="assets/logo.svg#logo"/></svg></a>
-  <nav class="links"><a href="catalog/stenovye-paneli/">Стеновые панели</a><a href="catalog/plintusy/">Плинтусы</a><a href="#calc">Расчёт стены</a><a href="stati/">Статьи</a><a href="dostavka/">Доставка</a><a href="#order">Заявка</a></nav>
-  <a class="btn sm" href="#order">Получить расчёт</a>
+  <nav class="links"><a href="catalog/stenovye-paneli/">Стеновые панели</a><a href="catalog/plintusy/">Плинтусы</a><a href="#calc">Расчёт стены</a><a href="stati/">Статьи</a><a href="dostavka/">Доставка</a></nav>
+  <a class="cartlink ic" href="korzina/" aria-label="Корзина"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.3a1.5 1.5 0 0 0 1.5-1.1L20.5 8H6.2"/><circle cx="10" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/></svg><span class="t">Корзина</span><span class="cartn" hidden>0</span></a>
+  <a class="btn sm" href="#order"><span class="bt1">Получить расчёт</span><span class="bt2">Расчёт</span></a>
 </div></header>
 
 <main>
@@ -1019,4 +1021,5 @@ window.__iv = IV; IV.update();
 </script>
 
 <script src="assets/chat.js?v=202611171939" defer></script>
+<script src="assets/cart.js?v=202611191500" defer></script>
 </body></html>

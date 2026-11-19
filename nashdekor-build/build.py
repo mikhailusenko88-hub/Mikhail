@@ -191,6 +191,31 @@ for _code, _o in CONTENT.get("sections", {}).items():   # тексты суще�
             CATS[_i] = (_c[0], _c[1], _o.get("menu") or _c[2], _o.get("h1") or _c[3], _o.get("intro") or _c[4], _o.get("title") or _c[5], _o.get("description") or _c[6])
     if _o.get("faq"): FAQ[_code] = [tuple(q) for q in _o["faq"] if len(q) == 2]
 CAT_BY = {c[0]: c for c in CATS}
+# Вопросы «где купить / сколько стоит / есть ли в наличии» — добавляются к FAQ раздела при сборке (19.11.2026, для ответов Алисы
+# и товарных запросов). Цена «от» считается из каталога, поэтому всегда совпадает с карточками. В редакторе CRM их нет —
+# если в CRM появится вопрос с тем же текстом, берётся вариант из CRM.
+FAQ_NOUN = {"wall": "стеновые панели", "panel": "реечные панели под покраску", "color": "стеновые панели под дерево и бетон",
+            "plinth": "напольный плинтус под покраску", "led": "плинтус с подсветкой", "cornice": "потолочный плинтус",
+            "mold": "молдинги для стен", "corner": "декоративные уголки"}
+def faq_extra(code):
+    noun = FAQ_NOUN.get(code)
+    if not noun: return []
+    items = cat_items(code); out = []
+    out.append(("Где купить %s в Санкт-Петербурге?" % noun,
+                "В интернет-магазине «Наш декор» на этом сайте: положите нужные модели в корзину (кнопка «В корзину» на странице товара) и оформите заказ. "
+                "Менеджер подтвердит наличие, дату доставки и пришлёт QR-код для оплаты через СБП, компаниям и ИП — счёт. "
+                "Самовывоз со склада в Санкт-Петербурге бесплатно, доставка по СПб и Ленобласти, в другие города — транспортной компанией."))
+    prices = [x["r"] for x in items if x.get("r")]
+    if prices and code != "wall":   # у «Стеновых панелей» цена за м² уже есть в FAQ
+        m2s = [m2(x) for x in items if m2(x)]
+        out.append(("Сколько %s %s?" % ("стоит" if code in ("plinth", "led", "cornice") else "стоят", noun),
+                    "От %s ₽ за штуку%s. Цена каждой модели — в её карточке; продаём поштучно и коробками, цены без НДС."
+                    % (fmt(min(prices)), (" (≈ от %s ₽ за м²)" % fmt(min(m2s))) if m2s else "")))
+    out.append(("Есть ли %s в наличии?" % noun,
+                "Наличие каждой модели показано в карточке и обновляется по нашему складу в Санкт-Петербурге. "
+                "Если нужной модели нет на складе — привезём под заказ, срок 3–4 недели."))
+    return out
+
 WOOD_NAMES = {"2": "две широкие ламели", "3": "три ламели", "5": "пять узких ламелей"}
 
 def slug(a): return a.lower().replace("/", "-").replace(" ", "")
@@ -269,8 +294,9 @@ def head(t, desc, canon, og_img, extra_ld, root):
 
 def header(root):
     return ('<header class="top"><div class="wrap bar"><a class="logo" href="%s" aria-label="Наш декор — на главную"><svg viewBox="0 0 724 120" width="169" height="28" aria-hidden="true" focusable="false"><use href="%sassets/logo.svg#logo"/></svg></a>'
-            '<nav class="links"><a href="%scatalog/stenovye-paneli/">Стеновые панели</a><a href="%scatalog/plintusy/">Плинтусы</a><a href="%s#calc">Расчёт стены</a><a href="%sstati/">Статьи</a><a href="%sdostavka/">Доставка</a><a href="#order">Заявка</a></nav>'
-            '<a class="btn sm" href="#order">Заказать</a></div></header>' % (root, root, root, root, root, root, root))
+            '<nav class="links"><a href="%scatalog/stenovye-paneli/">Стеновые панели</a><a href="%scatalog/plintusy/">Плинтусы</a><a href="%s#calc">Расчёт стены</a><a href="%sstati/">Статьи</a><a href="%sdostavka/">Доставка</a></nav>'
+            '<a class="cartlink" href="%skorzina/" aria-label="Корзина"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.3a1.5 1.5 0 0 0 1.5-1.1L20.5 8H6.2"/><circle cx="10" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/></svg><span class="t">Корзина</span><span class="cartn" hidden>0</span></a>'
+            '<a class="btn sm" href="#order">Заказать</a></div></header>' % (root, root, root, root, root, root, root, root))
 
 def footer(root):
     cats = "".join('<a href="%scatalog/%s/" style="color:inherit">%s</a>' % (root, s, esc(menu)) for _, s, menu, _, _, _, _ in CATS)
@@ -282,7 +308,7 @@ def footer(root):
             '<nav aria-label="Разделы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px">%s<a href="%sstati/" style="color:inherit">Статьи</a>%s<a href="%sdostavka/" style="color:inherit">Доставка в Москву и по России</a></nav>'
             '<nav aria-label="Документы" style="flex-basis:100%%;display:flex;flex-wrap:wrap;gap:6px 18px"><a href="%soplata/" style="color:inherit">Оплата и возврат</a><a href="%soferta.html" style="color:inherit">Оферта</a>'
             '<a href="%sprivacy.html" style="color:inherit">Политика конфиденциальности</a><a href="%sconsent.html" style="color:inherit">Согласие на обработку данных</a></nav>'
-            '</div></footer><script src="%sassets/chat.js?v=%s" defer></script>' % (esc(SHOP["legal"]), cats, root, revlink, root, root, root, root, root, root, VER))
+            '</div></footer><script src="%sassets/chat.js?v=%s" defer></script><script src="%sassets/cart.js?v=%s" defer></script>' % (esc(SHOP["legal"]), cats, root, revlink, root, root, root, root, root, root, VER, root, VER))
 
 def sections_nav(cur_code, root):
     return '<nav class="sections" aria-label="Разделы каталога">' + "".join(
@@ -478,7 +504,7 @@ def product_page(x):
            '<span class="unit">шт</span><button type="button" id="qPlus" aria-label="Больше">+</button></div>'
            '<button type="button" class="btn sm ghost qbox" id="qBox">Взять коробкой — %d шт</button>'
            '<div class="total"><div><small>Итого, предварительно</small><b class="num" id="tSum">—</b></div><small id="tPack"></small></div>'
-           '<div class="btns"><button class="btn" type="button" id="toBuy">Купить</button><button class="btn ghost" type="button" id="toOrder">Запросить расчёт</button></div>%s'
+           '<div class="btns"><button class="btn wide" type="button" id="toCart">В корзину</button><button class="btn ghost" type="button" id="toBuy">Купить сразу</button><button class="btn ghost" type="button" id="toOrder">Запросить расчёт</button></div>%s'
            '<p class="fine">Цена без НДС. Точную стоимость, наличие и доставку подтвердим в ответ на заявку.</p>'
            '<p class="fine ship"><a href="%sdostavka/">Отправляем в Москву и любой регион транспортной компанией</a> · самовывоз в СПб бесплатно</p></aside>' % (price_b, per, x["b"], calc_btn, ROOT))
 
@@ -548,7 +574,8 @@ def category_page(code, sl, menu, h1, intro, ctitle, cdesc):
     crumb_items = [("Главная", ROOT), (menu, "")]
     first_ph = next((photo(x["a"]) for x in items if photo(x["a"])), "")
     og_img = BASE + "/" + first_ph if first_ph else BASE + "/og.jpg"
-    faq = FAQ.get(code, [])
+    faq = FAQ.get(code, []); _have = {q for q, _ in faq}
+    faq = faq + [qa for qa in faq_extra(code) if qa[0] not in _have]
     faq_html = ('<section class="faq"><h2>Вопросы и ответы</h2>%s</section>' % "".join(
         '<details><summary>%s</summary><p>%s</p></details>' % (esc(q), esc(a_)) for q, a_ in faq)) if faq else ""
     ld = ('<script type="application/ld+json">%s</script>' % json.dumps({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
@@ -793,15 +820,46 @@ def payment_page():
 # ---------- сборка ----------
 ROOT = "../../"
 VER = datetime.datetime.now().strftime("%Y%m%d%H%M")
+# ---------- корзина /korzina/ (с 19.11.2026): товары с разных страниц → один заказ в CRM; список рисует assets/cart.js ----------
+def cart_page():
+    root = "../"; url = BASE + "/korzina/"
+    crumb_items = [("Главная", root), ("Корзина", "")]
+    form = ('<section class="porder" id="cartOrder" hidden><div class="wrap"><div class="form"><div><h2>Оформление заказа</h2>'
+            '<p class="note" style="font-size:15px;margin-top:8px">В заказе <span id="kN">—</span> · <span id="kSum">—</span>. Менеджер проверит наличие, уточнит дату и время доставки и пришлёт QR-код для оплаты через СБП — оплата до отгрузки, электронный чек придёт на e-mail. '
+            'Компаниям и ИП — счёт. Самовывоз со склада в СПб — бесплатно. <a href="%soplata/" style="color:var(--ink)">Об оплате и возврате</a> · <a href="%sdostavka/" style="color:var(--ink)">О доставке</a></p></div>'
+            '<div class="stack"><form class="panel stack" id="kForm" novalidate><div class="two">'
+            '<label class="f">Имя<input type="text" id="kName" autocomplete="name" required></label>'
+            '<label class="f">Телефон или мессенджер<input type="text" id="kContact" autocomplete="tel" placeholder="+7 … или @ник" required></label></div>'
+            '<label class="f">E-mail — пришлём подтверждение заказа и чек (необязательно)<input type="email" id="kEmail" autocomplete="email" inputmode="email" placeholder="name@mail.ru"></label>'
+            '<fieldset class="f ship"><legend>Получение</legend>'
+            '<div class="radios"><label class="chk"><input type="radio" name="kship" value="delivery" checked> Доставка по адресу</label>'
+            '<label class="chk"><input type="radio" name="kship" value="pickup"> Самовывоз со склада, СПб</label></div>'
+            '<input type="text" id="kAddr" autocomplete="street-address" placeholder="Город, улица, дом, квартира, этаж"></fieldset>'
+            '<label class="f">Кто вы<select id="kWho"><option>Делаю ремонт у себя</option><option>Дизайнер</option><option>Ремонтная бригада</option><option>Компания, объект</option></select></label>'
+            '<label class="f">Комментарий<textarea id="kMsg" rows="3" placeholder="Удобные дата и время доставки, этаж, домофон, пожелания"></textarea></label>'
+            '<label class="chk" style="align-items:flex-start"><input type="checkbox" id="kAgree" required style="margin-top:3px"> <span>Я даю <a href="%sconsent.html" style="color:var(--ink)">согласие на обработку персональных данных</a>, ознакомлен с <a href="%sprivacy.html" style="color:var(--ink)">Политикой обработки персональных данных</a> и <a href="%soferta.html" style="color:var(--ink)">условиями продажи</a></span></label>'
+            '<input type="text" id="kHp" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
+            '<div class="err" id="kErr" hidden></div><button class="btn" type="submit" id="kSend">Оформить заказ</button></form><div id="kDone" hidden></div></div></div></div></section>'
+            % (root, root, root, root, root))
+    body = (header(root) + '<main><div class="wrap">' + crumbs(crumb_items) +
+            '<h1 style="margin:8px 0 4px">Корзина</h1>'
+            '<div id="ndCart" data-catalog="%scatalog/stenovye-paneli/" data-max="%s" data-tg="%s"><p class="note">Загружаем корзину…</p>'
+            '<noscript><p>Корзина работает с включённым JavaScript. Можно оформить заказ на странице товара (кнопка «Купить сразу») или написать в чат.</p></noscript></div>'
+            '</div>' % (root, esc(SHOP.get("max", "")), esc(SHOP.get("telegram", ""))) + form + "</main>" + footer(root) +
+            '<script>window.P=%s</script><script src="%sassets/p.js?v=%s"></script></body></html>' % (json.dumps({"root": root, "list": True, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", "")}}, ensure_ascii=False), root, VER))
+    return head("Корзина | Наш декор", "Корзина интернет-магазина «Наш декор»: оформление заказа на стеновые панели, плинтусы и молдинги.", url, BASE + "/og.jpg",
+                '<meta name="robots" content="noindex,follow">', root) + body
+
 os.makedirs(os.path.join(SITE, "assets"), exist_ok=True)
 open(os.path.join(SITE, "assets", "p.css"), "w", encoding="utf-8").write(BASE_CSS + "\n" + open(os.path.join(HERE, "p.css"), encoding="utf-8").read())
 shutil.copy(os.path.join(HERE, "p.js"), os.path.join(SITE, "assets", "p.js"))
 shutil.copy(os.path.join(HERE, "chat.js"), os.path.join(SITE, "assets", "chat.js"))
+shutil.copy(os.path.join(HERE, "cart.js"), os.path.join(SITE, "assets", "cart.js"))   # корзина (с 19.11.2026)
 shutil.copy(os.path.join(HERE, "brand.css"), os.path.join(SITE, "assets", "brand.css"))  # фирменный стиль (брендбук)
 shutil.copy(os.path.join(HERE, "logo.svg"), os.path.join(SITE, "assets", "logo.svg"))    # логотип для шапки (symbol #logo)
 
-pdir = os.path.join(SITE, "p"); cdir = os.path.join(SITE, "catalog"); adir = os.path.join(SITE, "stati"); ddir = os.path.join(SITE, "dostavka"); odir = os.path.join(SITE, "oplata")
-for d in (pdir, cdir, adir, ddir, odir):
+pdir = os.path.join(SITE, "p"); cdir = os.path.join(SITE, "catalog"); adir = os.path.join(SITE, "stati"); ddir = os.path.join(SITE, "dostavka"); odir = os.path.join(SITE, "oplata"); kdir = os.path.join(SITE, "korzina")
+for d in (pdir, cdir, adir, ddir, odir, kdir):
     if os.path.isdir(d): shutil.rmtree(d)
 urls = []
 for x in CAT:
@@ -818,6 +876,8 @@ urls.append(("%s/dostavka/" % BASE, "monthly", "0.6"))
 os.makedirs(odir, exist_ok=True)
 open(os.path.join(odir, "index.html"), "w", encoding="utf-8").write(payment_page())
 urls.append(("%s/oplata/" % BASE, "monthly", "0.5"))
+os.makedirs(kdir, exist_ok=True)
+open(os.path.join(kdir, "index.html"), "w", encoding="utf-8").write(cart_page())   # корзина — не в sitemap (noindex)
 os.makedirs(adir, exist_ok=True)
 open(os.path.join(adir, "index.html"), "w", encoding="utf-8").write(articles_index())
 urls.append(("%s/stati/" % BASE, "weekly", "0.6"))

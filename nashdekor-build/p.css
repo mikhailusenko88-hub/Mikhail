@@ -116,6 +116,7 @@ a.card .price b{color:var(--ink)}
 /* заявка / купить */
 .buy .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .buy .btns .btn{width:100%;padding-left:8px;padding-right:8px}
+.buy .btns .wide{grid-column:1/-1}
 .seg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:4px;border-radius:14px;background:var(--bg2,#eef0ee);margin-bottom:4px}
 .seg button{appearance:none;border:0;background:transparent;border-radius:11px;padding:10px 4px;font:inherit;font-weight:600;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2}
 .seg button small{font-weight:400;font-size:11px;text-align:center;color:var(--mute,#6b7280)}

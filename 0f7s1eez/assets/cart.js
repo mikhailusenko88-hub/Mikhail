@@ -1,0 +1,248 @@
+/* Корзина «Наш декор» (с 19.11.2026).
+   Покупатель складывает товары с разных страниц и оформляет их ОДНИМ заказом → CRM (/api/lead, intent "buy";
+   CRM сама разбирает строки «Товар: A907 (…) — 8 шт» в позиции сделки).
+   Корзина хранится в браузере покупателя (localStorage, ключ nd_cart). Нет хранилища — живёт до закрытия страницы.
+   Старые формы «Купить» и «Заявка» на страницах товаров работают как раньше — корзина их не заменяет.
+   Аварийно вернуть сайт без корзины: CRM → 🛟 (crm.nashdekor.ru/rescue/) → «Версии сайта» → прошлая версия. */
+(() => {
+"use strict";
+if (window.NDCart) return;
+const KEY = "nd_cart";
+const ON_SITE = /(^|\.)nashdekor\.ru$/.test(location.hostname);
+const LEAD_API = "https://crm.nashdekor.ru/api/lead";
+const CAT_API = "https://crm.nashdekor.ru/api/catalog";
+const HIT_API = "https://crm.nashdekor.ru/api/hit";
+const fmt = n => Math.round(n).toLocaleString("ru-RU");
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const reduce = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- хранение ---------- */
+let mem = [];
+const clampQ = q => Math.max(1, Math.min(9999, parseInt(q, 10) || 1));
+function clean(i){
+  if (!i || typeof i.a !== "string" || !i.a.trim()) return null;
+  return { a: i.a.trim().slice(0, 30), n: String(i.n || i.a).slice(0, 120), k: String(i.k || "").slice(0, 60),
+           c: String(i.c || "").slice(0, 80), cl: i.cl === "декор" ? "декор" : "цвет", q: clampQ(i.q),
+           r: Math.max(0, +i.r || 0), b: Math.max(0, parseInt(i.b, 10) || 0), u: String(i.u || "").slice(0, 200), img: String(i.img || "").slice(0, 300) };
+}
+function load(){
+  try {
+    const j = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (j && Array.isArray(j.items)) return j.items.map(clean).filter(Boolean);
+  } catch (e) {}
+  return mem.map(clean).filter(Boolean);
+}
+function save(items){
+  mem = items;
+  try { localStorage.setItem(KEY, JSON.stringify({ v: 1, t: Date.now(), items })); } catch (e) {}
+  paint();
+}
+const keyOf = i => i.a + "|" + (i.c || "");
+
+/* ---------- значок в шапке ---------- */
+function cartUrl(){ const l = document.querySelector("a.cartlink"); return l ? l.href : "/korzina/"; }
+function paint(){
+  const n = load().length;
+  document.querySelectorAll(".cartn").forEach(b => { b.textContent = n; b.hidden = n === 0; });
+  document.querySelectorAll("a.cartlink").forEach(l => l.setAttribute("aria-label", n ? `Корзина: ${n} ${plural(n, "позиция", "позиции", "позиций")}` : "Корзина"));
+}
+function plural(n, one, few, many){ const m10 = n % 10, m100 = n % 100; return m10 === 1 && m100 !== 11 ? one : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? few : many; }
+
+/* ---------- стили (свои классы ndk-*, цвета — из брендбука сайта) ---------- */
+function css(){
+  if ($("ndkCss")) return;
+  const s = document.createElement("style"); s.id = "ndkCss";
+  s.textContent =
+    ".ndk-toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 68px);transform:translateX(-50%);z-index:1002;width:min(440px,calc(100vw - 32px));"
+    + "background:var(--paper,#fff);color:var(--ink,#26292E);border:1px solid var(--line,#D9DEE3);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:14px 16px;font-size:15px}"
+    + ".ndk-toast b{display:block;margin-bottom:2px}.ndk-toast .ndk-row{display:flex;gap:8px;margin-top:12px}.ndk-toast .btn{flex:1;margin:0;padding:10px 8px;white-space:nowrap}"
+    + ".ndk-toast .ndk-x{position:absolute;right:6px;top:4px;background:none;border:0;font-size:22px;line-height:1;color:var(--muted,#6b7280);padding:6px;cursor:pointer}"
+    + ".ndk-list{display:grid;gap:12px;margin:8px 0 16px}"
+    + ".ndk-item{display:grid;grid-template-columns:96px 1fr auto;gap:12px 16px;align-items:start;background:var(--paper,#fff);border:1px solid var(--line,#D9DEE3);border-radius:8px;padding:12px}"
+    + ".ndk-item img{width:96px;height:56px;object-fit:cover;border-radius:4px;background:#26292E;display:block}"
+    + ".ndk-item .ndk-n{font-weight:600;color:var(--ink,#26292E);text-decoration:none}.ndk-item .ndk-n:hover{text-decoration:underline}"
+    + ".ndk-item .ndk-m{font-size:13px;color:var(--muted,#6b7280);margin-top:2px}.ndk-item .ndk-st{font-size:13px;margin-top:2px;color:var(--muted,#6b7280)}.ndk-item .ndk-st.ndk-ok{color:var(--good,#2e7d32)}"
+    + ".ndk-q{display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap}"
+    + ".ndk-q button{width:36px;height:36px;border:1px solid var(--line,#D9DEE3);background:var(--paper,#fff);color:var(--ink,#26292E);border-radius:6px;font-size:18px;cursor:pointer}"
+    + ".ndk-q input{width:72px;height:36px;border:1px solid var(--line,#D9DEE3);border-radius:6px;text-align:center;font:inherit;font-size:16px;background:var(--paper,#fff);color:var(--ink,#26292E)}"
+    + ".ndk-q small{color:var(--muted,#6b7280);font-size:13px}"
+    + ".ndk-sum{text-align:right;white-space:nowrap}.ndk-sum b{display:block;font-size:17px}.ndk-sum small{color:var(--muted,#6b7280);font-size:13px}"
+    + ".ndk-del{background:none;border:0;color:var(--muted,#6b7280);text-decoration:underline;font:inherit;font-size:13px;padding:8px 0 0;cursor:pointer}"
+    + ".ndk-tot{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line,#D9DEE3);padding-top:14px;margin-bottom:6px}"
+    + ".ndk-tot b{font-size:22px}.ndk-empty{padding:24px 0 8px;font-size:16px}"
+    + "@media (max-width:560px){.ndk-tot{flex-direction:column;align-items:flex-start;gap:2px}.ndk-item{grid-template-columns:72px 1fr}.ndk-item img{width:72px;height:42px}.ndk-sum{grid-column:2;text-align:left}}";
+  document.head.appendChild(s);
+}
+
+/* ---------- «Добавлено в корзину» ---------- */
+let toastT = 0;
+function toast(it, total){
+  css();
+  let t = $("ndkToast");
+  if (!t) { t = document.createElement("div"); t.id = "ndkToast"; t.className = "ndk-toast"; t.setAttribute("role", "status"); t.setAttribute("aria-live", "polite"); document.body.appendChild(t); }
+  t.innerHTML = `<button type="button" class="ndk-x" aria-label="Закрыть">×</button><b>Добавлено в корзину</b>${esc(it.a)}${it.c ? " · " + esc(it.c) : ""} — ${fmt(total)} шт в корзине`
+    + `<div class="ndk-row"><a class="btn" href="${esc(cartUrl())}">Оформить заказ</a><button type="button" class="btn ghost ndk-go">Продолжить</button></div>`;
+  t.hidden = false;
+  const close = () => { t.hidden = true; clearTimeout(toastT); };
+  t.querySelector(".ndk-x").onclick = close; t.querySelector(".ndk-go").onclick = close;
+  clearTimeout(toastT); toastT = setTimeout(close, 8000);
+}
+
+function add(it){
+  const x = clean(it); if (!x) return 0;
+  const items = load(), ex = items.find(i => keyOf(i) === keyOf(x));
+  if (ex) { ex.q = Math.min(9999, ex.q + x.q); if (x.r) ex.r = x.r; if (x.img) ex.img = x.img; }
+  else items.push(x);
+  save(items);
+  toast(x, ex ? ex.q : x.q);
+  return items.length;
+}
+
+window.NDCart = { add, items: load, count: () => load().length, clear: () => save([]) };
+addEventListener("storage", e => { if (e.key === KEY) { paint(); if (box) render(); } });
+document.addEventListener("pageshow", paint);
+
+/* ================= страница корзины /korzina/ ================= */
+const box = $("ndCart");
+let stock = {};                 // артикул → остаток на складе из CRM (если CRM ответила)
+const stockText = q => q > 0 ? `В наличии: ${fmt(q)} шт` : "Под заказ, 3–4 недели";
+
+function packText(i){
+  if (!i.b) return "";
+  const boxes = Math.floor(i.q / i.b), rest = i.q % i.b;
+  return boxes ? `${boxes} кор.${rest ? " + " + rest + " шт" : ""} · в коробке ${i.b} шт` : `в коробке ${i.b} шт`;
+}
+function total(items){ return items.reduce((s, i) => s + i.q * i.r, 0); }
+function render(){
+  if (!box) return;
+  css();
+  const items = load(), form = $("cartOrder");
+  if (!items.length) {
+    if (!box.dataset.done) box.innerHTML = `<p class="ndk-empty">Корзина пуста. Выберите товары в <a href="${esc(box.dataset.catalog || "/catalog/stenovye-paneli/")}" style="color:var(--ink)">каталоге</a> — на странице товара кнопка «В корзину».</p>`;
+    if (form) form.hidden = true;
+    return;
+  }
+  box.dataset.done = "";
+  const sum = total(items), noPrice = items.some(i => !i.r);
+  box.innerHTML = '<div class="ndk-list">' + items.map((i, n) => {
+    const q = stock[i.a];
+    const st = q === undefined ? "" : `<div class="ndk-st${q > 0 ? " ndk-ok" : ""}">${esc(stockText(q))}</div>`;
+    const img = i.img ? `<a href="${esc(i.u || "#")}" tabindex="-1" aria-hidden="true"><img src="${esc(i.img)}" alt="" width="96" height="56" loading="lazy"></a>` : '<span></span>';
+    return `<div class="ndk-item" data-i="${n}">${img}<div><a class="ndk-n" href="${esc(i.u || "#")}">${esc(i.k ? i.k + " " + i.a : i.n)}</a>`
+      + `<div class="ndk-m">${i.c ? (i.cl === "декор" ? "Декор: " : "Цвет: ") + esc(i.c) : ""}</div>${st}`
+      + `<div class="ndk-q"><button type="button" data-d="-1" aria-label="Меньше">−</button><input type="number" min="1" max="9999" inputmode="numeric" value="${i.q}" aria-label="Количество ${esc(i.a)}, штук">`
+      + `<span>шт</span><button type="button" data-d="1" aria-label="Больше">+</button>${i.b ? `<small>${esc(packText(i))}</small>` : ""}</div>`
+      + `<button type="button" class="ndk-del">Убрать</button></div>`
+      + `<div class="ndk-sum"><b class="num">${i.r ? fmt(i.q * i.r) + " ₽" : "По запросу"}</b><small>${i.r ? fmt(i.r) + " ₽ за шт" : ""}</small></div></div>`;
+  }).join("") + "</div>"
+    + `<div class="ndk-tot"><span>Итого, предварительно${noPrice ? " (без позиций «по запросу»)" : ""}</span><b class="num">${sum ? fmt(sum) + " ₽" : "По запросу"}</b></div>`
+    + '<p class="fine" style="margin-top:0">Цены без НДС. Наличие, дату и стоимость доставки подтвердит менеджер — заказ ни к чему не обязывает до оплаты.</p>';
+  if (form) form.hidden = false;
+  const oSum = $("kSum"); if (oSum) oSum.textContent = sum ? "≈ " + fmt(sum) + " ₽" : "цена по запросу";
+  const oN = $("kN"); if (oN) oN.textContent = items.length + " " + plural(items.length, "позиция", "позиции", "позиций");
+  box.querySelectorAll(".ndk-item").forEach(row => {
+    const n = +row.dataset.i;
+    const setQ = q => { const all = load(); if (!all[n]) return; all[n].q = clampQ(q); save(all); render(); };
+    row.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { const all = load(); if (all[n]) setQ(all[n].q + +b.dataset.d); });
+    const inp = row.querySelector("input");
+    inp.onchange = () => setQ(inp.value);
+    row.querySelector(".ndk-del").onclick = () => { const all = load(); all.splice(n, 1); save(all); render(); };
+  });
+}
+
+/* текст заказа для CRM: одна строка на артикул (CRM разбирает «Товар: АРТИКУЛ (…) — N шт» в позиции сделки) */
+function orderText(items){
+  const by = new Map();
+  items.forEach(i => { const g = by.get(i.a) || { a: i.a, k: i.k, cl: i.cl, q: 0, sum: 0, parts: [] }; g.q += i.q; g.sum += i.q * i.r; if (i.c) g.parts.push([i.c, i.q]); by.set(i.a, g); });
+  const lines = [...by.values()].map(g => `Товар: ${g.a} (${(g.k || "товар").toLowerCase()}) — ${g.q} шт${g.parts.length ? ", " + g.cl + ": " + (g.parts.length === 1 ? g.parts[0][0] : g.parts.map(([c, q]) => c + " — " + q + " шт").join("; ")) : ""}${g.sum ? ", ≈ " + fmt(g.sum) + " ₽" : ""}`);
+  const sum = total(items);
+  return ("Заказ из корзины сайта, позиций: " + by.size + "\n" + lines.join("\n") + (sum ? `\nИтого ≈ ${fmt(sum)} ₽ (предварительно)` : "")).slice(0, 3900);
+}
+
+const WHO = { "Дизайнер": "designer", "Компания, объект": "company", "Ремонтная бригада": "company" };
+async function sendLead(lead){
+  if (!ON_SITE) return null;
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 12000);
+  try {
+    const r = await fetch(LEAD_API, { method: "POST", mode: "cors", credentials: "omit", signal: ctl.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: lead.name, contact: lead.contact, email: lead.email || "", who: WHO[lead.who] || "private",
+        message: [lead.who && lead.who !== "Делаю ремонт у себя" ? "Кто: " + lead.who : "", lead.message].filter(Boolean).join("\n"),
+        calc: lead.calc, total: lead.total, consent: true, consentAt: lead.consentAt, consentVersion: lead.consentVersion,
+        intent: "buy", address: lead.address || "", website: ($("kHp") || {}).value || "",
+        max: window.NDMax && NDMax.lead ? NDMax.lead() : undefined }) });
+    const j = await r.json().catch(() => ({}));
+    return r.ok && j.ok === true ? (j.id || true) : null;
+  } catch (e) { return null; } finally { clearTimeout(timer); }
+}
+function hitOrder(){
+  if (!ON_SITE || !navigator.sendBeacon || navigator.doNotTrack === "1" || navigator.globalPrivacyControl) return;
+  try { navigator.sendBeacon(HIT_API, new Blob([JSON.stringify({ e: [["lead", "cart", "buy"]], r: "", u: "", m: matchMedia("(pointer: coarse)").matches ? 1 : 0 })], { type: "text/plain" })); } catch (e) {}
+}
+function msgLinks(){
+  const mx = box.dataset.max, tg = box.dataset.tg;
+  return [mx && `<a href="${esc(mx)}?start=site" target="_blank" rel="noopener" data-max>MAX</a>`, tg && `<a href="${esc(tg)}?start=site" target="_blank" rel="noopener" data-tg>Telegram</a>`].filter(Boolean).join(" или ") || "чат на сайте";
+}
+
+function initForm(){
+  const f = $("kForm"); if (!f) return;
+  const shipUI = () => { const d = f.querySelector('input[name="kship"]:checked'); const pick = d && d.value === "pickup"; $("kAddr").hidden = pick; $("kAddr").required = !pick; };
+  f.querySelectorAll('input[name="kship"]').forEach(r => r.addEventListener("change", shipUI)); shipUI();
+  f.addEventListener("submit", async e => {
+    e.preventDefault();
+    const items = load(), err = $("kErr");
+    const fail = (t, el) => { err.textContent = t; err.hidden = false; if (el) el.focus(); };
+    if (!items.length) return fail("Корзина пуста — добавьте товары на странице товара.");
+    const name = $("kName").value.trim(), contact = $("kContact").value.trim();
+    if (!name || !contact) return fail("Укажите имя и телефон или ник в мессенджере — по ним мы ответим.", !name ? $("kName") : $("kContact"));
+    const pickup = (f.querySelector('input[name="kship"]:checked') || {}).value === "pickup";
+    const addr = pickup ? "Самовывоз, СПб" : $("kAddr").value.trim();
+    if (!addr) return fail("Укажите адрес доставки или выберите самовывоз.", $("kAddr"));
+    if (!$("kAgree").checked) return fail("Отметьте согласие на обработку данных и условия продажи.", $("kAgree"));
+    err.hidden = true;
+    const lead = { name, contact, email: $("kEmail").value.trim(), who: $("kWho").value, message: $("kMsg").value.trim(),
+                   calc: orderText(items), total: Math.round(total(items)), consentAt: new Date().toISOString(), consentVersion: "2026-10-29", address: addr };
+    const btn = $("kSend"); btn.disabled = true; btn.textContent = "Отправляем…";
+    const id = await sendLead(lead);
+    btn.disabled = false; btn.textContent = "Оформить заказ";
+    const done = $("kDone"); done.hidden = false;
+    if (id) {
+      hitOrder();
+      const no = typeof id === "number" || /^\d+$/.test(String(id)) ? ` №${id}` : "";
+      done.innerHTML = `<div class="stack" style="gap:12px"><div class="ok" role="status"><b id="kThanks"></b>Менеджер проверит наличие, уточнит дату и время доставки и пришлёт QR-код для оплаты через СБП${lead.email ? " (копию — на " + esc(lead.email) + ")" : ""} в рабочее время. Оплата до отгрузки, чек придёт на e-mail; компаниям и ИП — счёт.`
+        + `<p>Свяжемся с вами:<br><span id="kTo" style="white-space:nowrap;font-weight:600"></span></p><p>Если в номере ошибка — напишите нам в ${msgLinks()}.</p></div></div>`;
+      $("kThanks").textContent = `Спасибо, ${name}! Заказ${no} принят. `; $("kTo").textContent = contact;
+      f.reset(); f.hidden = true; box.dataset.done = "1"; save([]);
+      box.innerHTML = '<p class="ndk-empty">Заказ отправлен, корзина очищена.</p>';
+      const sec = $("cartOrder"); if (sec) sec.hidden = false;
+      done.scrollIntoView({ block: "center", behavior: reduce() ? "auto" : "smooth" });
+    } else {
+      const text = `Заказ: ${name}, ${contact}${lead.email ? ", " + lead.email : ""} (${lead.who})\nПолучение: ${addr}${lead.message ? "\n" + lead.message : ""}\n${lead.calc}`;
+      done.innerHTML = `<div class="stack" style="gap:8px"><div class="err">Заказ сейчас не отправляется. Скопируйте текст и пришлите его в ${msgLinks()} — корзина сохранена.</div><pre class="copy" id="kText"></pre><button class="btn sm" type="button" id="kCopy">Копировать заказ</button></div>`;
+      $("kText").textContent = text;
+      $("kCopy").onclick = async ev => { const b = ev.currentTarget; try { await navigator.clipboard.writeText(text); b.textContent = "Скопировано"; } catch (x) { b.textContent = "Выделите и скопируйте"; } setTimeout(() => b.textContent = "Копировать заказ", 1800); };
+    }
+  });
+}
+
+async function prices(){
+  if (!ON_SITE) return;
+  try {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 5000);
+    const r = await fetch(CAT_API, { signal: ctl.signal, credentials: "omit" }); clearTimeout(t);
+    if (!r.ok) return;
+    const cat = (await r.json()).items || {};
+    const items = load(); let ch = false;
+    items.forEach(i => { const k = cat[i.a]; if (!k) return; stock[i.a] = Math.max(0, k.q | 0); if (k.p > 0 && k.p !== i.r) { i.r = k.p; ch = true; } });
+    if (ch) save(items);
+    render();
+  } catch (e) {}
+}
+
+function start(){
+  paint();
+  if (box) { render(); initForm(); prices(); }
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
+})();
