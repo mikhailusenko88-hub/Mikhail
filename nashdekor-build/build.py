@@ -203,7 +203,7 @@ def faq_extra(code):
     items = cat_items(code); out = []
     out.append(("Где купить %s в Санкт-Петербурге?" % noun,
                 "В интернет-магазине «Наш декор» на этом сайте: положите нужные модели в корзину (кнопка «В корзину» на странице товара) и оформите заказ. "
-                "Менеджер подтвердит наличие, дату доставки и пришлёт QR-код для оплаты через СБП, компаниям и ИП — счёт. "
+                "Менеджер подтвердит наличие, дату доставки и пришлёт ссылку на оплату картой или через СБП, компаниям и ИП — счёт. "
                 "Самовывоз со склада в Санкт-Петербурге бесплатно, доставка по СПб и Ленобласти, в другие города — транспортной компанией."))
     prices = [x["r"] for x in items if x.get("r")]
     if prices and code != "wall":   # у «Стеновых панелей» цена за м² уже есть в FAQ
@@ -363,9 +363,16 @@ def card(x, root):
     img = ('<img src="%s%s" alt="%s %s" loading="lazy" width="790" height="449">' % (root, ph, esc(KIND[x["c"]]), esc(x["a"]))) if ph else ""
     price = ('<b class="num">%s ₽</b>' % fmt(x["r"])) if x.get("r") else "<b>По запросу</b>"
     per = ("за шт · ≈ <span class=\"m2\">%s</span> ₽/м² · %d шт в коробке" % (fmt(m2(x)), x["b"])) if m2(x) else "за шт · %d шт в коробке" % x["b"]
-    return ('<a class="card" href="%sp/%s/" data-p="%s"><div class="sw" data-c="%s">%s</div><div class="in"><div class="eyebrow">%s</div><div class="art">%s</div><div class="d">%s</div>'
-            '<div class="price">%s<small>%s</small><small class="stock">Под заказ, 3–4 недели</small></div></div></a>'
-            % (root, slug(x["a"]), esc(x["a"]), x["c"], img, esc(KIND[x["c"]]), esc(x["a"]), esc(x["d"]), price, per))
+    # «В корзину» (с 19.11.2026): данные строки корзины — в data-* блока .cadd, кнопку и счётчик «− N шт +» рисует assets/cart.js;
+    # без cart.js остаётся ссылка на заказ этого товара
+    color = x["d"].split(",")[0] if x["c"] == "color" else "Белый"
+    cadd = ('<div class="cadd" data-cart-add data-a="%s" data-k="%s" data-c="%s" data-cl="%s" data-r="%s" data-b="%d" data-u="/p/%s/" data-img="%s">'
+            '<a class="btn sm" href="%sp/%s/#buy">В корзину</a></div>'
+            % (esc(x["a"]), esc(KIND[x["c"]]), esc(color), "декор" if x["c"] == "color" else "цвет", x.get("r") or 0, x["b"], slug(x["a"]),
+               ("/" + esc(ph)) if ph else "", root, slug(x["a"])))
+    return ('<div class="card" data-p="%s"><a class="cl" href="%sp/%s/"><div class="sw" data-c="%s">%s</div><div class="in"><div class="eyebrow">%s</div><div class="art">%s</div><div class="d">%s</div>'
+            '<div class="price">%s<small>%s</small><small class="stock">Под заказ, 3–4 недели</small></div></div></a>%s</div>'
+            % (esc(x["a"]), root, slug(x["a"]), x["c"], img, esc(KIND[x["c"]]), esc(x["a"]), esc(x["d"]), price, per, cadd))
 
 # ---------- тексты «о товаре» ----------
 def about_custom(x):
@@ -504,9 +511,9 @@ def product_page(x):
            '<span class="unit">шт</span><button type="button" id="qPlus" aria-label="Больше">+</button></div>'
            '<button type="button" class="btn sm ghost qbox" id="qBox">Взять коробкой — %d шт</button>'
            '<div class="total"><div><small>Итого, предварительно</small><b class="num" id="tSum">—</b></div><small id="tPack"></small></div>'
-           '<div class="btns"><button class="btn wide" type="button" id="toCart">В корзину</button><button class="btn ghost" type="button" id="toBuy">Купить сразу</button><button class="btn ghost" type="button" id="toOrder">Запросить расчёт</button></div>%s'
+           '<div class="btns"><button class="btn wide" type="button" id="toCart">В корзину</button><button class="btn ghost" type="button" id="toBuy">Купить сразу</button><button class="btn ghost" type="button" id="toOrder">Запросить расчёт</button></div><p class="ndk-note" data-cart-note="%s" hidden></p>%s'
            '<p class="fine">Цена без НДС. Точную стоимость, наличие и доставку подтвердим в ответ на заявку.</p>'
-           '<p class="fine ship"><a href="%sdostavka/">Отправляем в Москву и любой регион транспортной компанией</a> · самовывоз в СПб бесплатно</p></aside>' % (price_b, per, x["b"], calc_btn, ROOT))
+           '<p class="fine ship"><a href="%sdostavka/">Отправляем в Москву и любой регион транспортной компанией</a> · самовывоз в СПб бесплатно</p></aside>' % (price_b, per, x["b"], esc(a), calc_btn, ROOT))
 
     with_it = buy_with(x)
     rel = [y for y in CAT if y["c"] == c and y["a"] != a]
@@ -825,7 +832,7 @@ def cart_page():
     root = "../"; url = BASE + "/korzina/"
     crumb_items = [("Главная", root), ("Корзина", "")]
     form = ('<section class="porder" id="cartOrder" hidden><div class="wrap"><div class="form"><div><h2>Оформление заказа</h2>'
-            '<p class="note" style="font-size:15px;margin-top:8px">В заказе <span id="kN">—</span> · <span id="kSum">—</span>. Менеджер проверит наличие, уточнит дату и время доставки и пришлёт QR-код для оплаты через СБП — оплата до отгрузки, электронный чек придёт на e-mail. '
+            '<p class="note" style="font-size:15px;margin-top:8px">В заказе <span id="kN">—</span> · <span id="kSum">—</span>. Менеджер проверит наличие, уточнит дату и время доставки и пришлёт ссылку на оплату картой или через СБП — оплата до отгрузки, электронный чек придёт на e-mail. '
             'Компаниям и ИП — счёт. Самовывоз со склада в СПб — бесплатно. <a href="%soplata/" style="color:var(--ink)">Об оплате и возврате</a> · <a href="%sdostavka/" style="color:var(--ink)">О доставке</a></p></div>'
             '<div class="stack"><form class="panel stack" id="kForm" novalidate><div class="two">'
             '<label class="f">Имя<input type="text" id="kName" autocomplete="name" required></label>'

@@ -520,6 +520,7 @@ function renderGrid(){
         <div class="cname">Цвет: ${colorName}</div>
         <div class="row"><div class="price">${priceHtml(x)}</div>
         ${x.c === "panel" || x.c === "color" ? `<button class="btn sm" type="button" data-use="${a}">В расчёт</button>` : `<button class="btn sm ghost" type="button" data-ask="${a}">Узнать</button>`}</div>
+        <div class="cadd" data-cart-add data-home="1" data-a="${a}"><a class="btn sm" href="${href}#buy">В корзину</a></div>
       </div>
     </article>`;
   }).join("") || `<p class="note">Ничего не нашлось. Попробуйте артикул без пробелов, например A907.</p>`;
@@ -527,6 +528,11 @@ function renderGrid(){
   $("moreBtn").hidden = items.length <= shown;
   $("moreBtn").textContent = `Показать ещё ${Math.min(12, items.length - shown)}`;
 }
+// корзина (assets/cart.js, с 19.11.2026): данные строки корзины для «В корзину» на карточке — с выбранным цветом
+window.NDCartItem = a => { const x = byA[a]; if (!x) return null; const p = paint[a];
+  return { a, n: x.n || a, k: KIND[x.c], cl: x.c === "color" ? "декор" : "цвет",
+           c: x.c === "color" ? x.d.split(",")[0] : (p ? p.name + (p.code ? " · " + p.code : "") + (p.name === "Свой цвет" ? " " + p.hex : "") : "Белый"),
+           r: x.r || 0, b: x.b, u: "/p/" + slug(a) + "/", img: PHOTO[a] ? "/img/" + PHOTO[a] + "?v=" + PHOTO_V : "" }; };
 const colorOf = a => { const x = byA[a]; if (!x) return ""; if (x.c === "color") return x.d.split(",")[0]; const p = paint[a]; return p ? p.name + (p.code ? " (" + p.code + ")" : "") + (p.name === "Свой цвет" ? " " + p.hex : "") : "белый, под покраску"; };
 
 function opts(sel, filter, def){
@@ -1021,5 +1027,5 @@ window.__iv = IV; IV.update();
 </script>
 
 <script src="assets/chat.js?v=202611171939" defer></script>
-<script src="assets/cart.js?v=202611191500" defer></script>
+<script src="assets/cart.js?v=202611191620" defer></script>
 </body></html>

@@ -71,6 +71,12 @@ function css(){
     + ".ndk-del{background:none;border:0;color:var(--muted,#6b7280);text-decoration:underline;font:inherit;font-size:13px;padding:8px 0 0;cursor:pointer}"
     + ".ndk-tot{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line,#D9DEE3);padding-top:14px;margin-bottom:6px}"
     + ".ndk-tot b{font-size:22px}.ndk-empty{padding:24px 0 8px;font-size:16px}"
+    + ".cadd{margin-top:8px}.cadd .btn{width:100%;margin:0}"
+    + ".ndk-step{display:flex;align-items:center;justify-content:space-between;background:var(--accent,#26292E);color:var(--accent-ink,#fff);border-radius:6px;height:36px;overflow:hidden}"
+    + ".ndk-step button{width:44px;height:100%;background:none;border:0;color:inherit;font-size:20px;line-height:1;cursor:pointer;padding:0}"
+    + ".ndk-step a{color:inherit;text-decoration:none;font-weight:600;font-size:14px;flex:1;text-align:center;line-height:36px}"
+    + ".ndk-note{margin:10px 0 0;font-size:14px}.ndk-note a{color:var(--ink,#26292E)}"
+    + ".ndk-fly{position:fixed;width:40px;height:40px;border-radius:50%;object-fit:cover;background:var(--accent,#26292E);z-index:1003;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.25)}"
     + "@media (max-width:560px){.ndk-tot{flex-direction:column;align-items:flex-start;gap:2px}.ndk-item{grid-template-columns:72px 1fr}.ndk-item img{width:72px;height:42px}.ndk-sum{grid-column:2;text-align:left}}";
   document.head.appendChild(s);
 }
@@ -89,18 +95,89 @@ function toast(it, total){
   clearTimeout(toastT); toastT = setTimeout(close, 8000);
 }
 
-function add(it){
+function add(it, from){
   const x = clean(it); if (!x) return 0;
   const items = load(), ex = items.find(i => keyOf(i) === keyOf(x));
   if (ex) { ex.q = Math.min(9999, ex.q + x.q); if (x.r) ex.r = x.r; if (x.img) ex.img = x.img; }
   else items.push(x);
   save(items);
+  fly(from, x.img);
   toast(x, ex ? ex.q : x.q);
+  syncAll();
   return items.length;
 }
+function setQty(key, q){
+  const items = load(), i = items.findIndex(x => keyOf(x) === key);
+  if (i < 0) return;
+  if (q <= 0) items.splice(i, 1); else items[i].q = clampQ(q);
+  save(items); syncAll();
+}
 
-window.NDCart = { add, items: load, count: () => load().length, clear: () => save([]) };
-addEventListener("storage", e => { if (e.key === KEY) { paint(); if (box) render(); } });
+/* «летит в корзину»: картинка товара (или кружок) от кнопки к значку корзины, значок «подпрыгивает» */
+function pop(){
+  if (reduce()) return;
+  document.querySelectorAll(".cartn").forEach(b => { if (b.animate) b.animate([{ transform: "scale(1)" }, { transform: "scale(1.6)" }, { transform: "scale(1)" }], { duration: 380, easing: "ease-out" }); });
+}
+function fly(from, img){
+  const to = [...document.querySelectorAll("a.cartlink")].find(l => l.getClientRects().length);
+  if (!from || !to || reduce() || !document.body.animate) return pop();
+  css();
+  const a = from.getBoundingClientRect(), b = to.getBoundingClientRect();
+  const d = document.createElement(img ? "img" : "div"); if (img) { d.src = img; d.alt = ""; }
+  d.className = "ndk-fly"; d.setAttribute("aria-hidden", "true");
+  const x0 = a.left + a.width / 2 - 20, y0 = a.top + a.height / 2 - 20, dx = b.left + b.width / 2 - 20 - x0, dy = b.top + b.height / 2 - 20 - y0;
+  d.style.left = x0 + "px"; d.style.top = y0 + "px"; document.body.appendChild(d);
+  const an = d.animate([{ transform: "translate(0,0) scale(1)", opacity: 1 },
+                        { transform: `translate(${dx * 0.45}px,${dy * 0.45 - 70}px) scale(.85)`, opacity: 1, offset: 0.45 },
+                        { transform: `translate(${dx}px,${dy}px) scale(.3)`, opacity: 0.5 }], { duration: 700, easing: "ease-in" });
+  an.onfinish = an.oncancel = () => { d.remove(); pop(); };
+}
+
+/* ---------- карточки товаров: «В корзину» → [− N шт +] ----------
+   Разметка: <div class="cadd" data-cart-add data-a data-k data-c data-cl data-r data-b data-u data-img> (страницы разделов),
+   на главной data-home="1" — данные (и выбранный цвет) даёт window.NDCartItem(артикул). */
+function infoOf(el){
+  const d = el.dataset;
+  if (d.home && typeof window.NDCartItem === "function") { try { return clean(Object.assign(window.NDCartItem(d.a) || {}, { q: 1 })); } catch (e) { return null; } }
+  return clean({ a: d.a, k: d.k, c: d.c, cl: d.cl, r: +d.r || 0, b: +d.b || 0, u: d.u, img: d.img, q: 1 });
+}
+const qtyOf = key => { const i = load().find(x => keyOf(x) === key); return i ? i.q : 0; };
+function syncCtl(el){
+  const it = infoOf(el); if (!it) return;
+  const q = qtyOf(keyOf(it)), st = q ? "s" + q : "a";
+  if (el.dataset.st === st) return;
+  el.dataset.st = st;
+  el.innerHTML = q
+    ? `<div class="ndk-step" role="group" aria-label="${esc(it.a)} в корзине"><button type="button" data-s="-1" aria-label="Убрать одну штуку">−</button><a href="${esc(cartUrl())}" title="Перейти в корзину">${fmt(q)} шт в корзине</a><button type="button" data-s="1" aria-label="Добавить ещё одну">+</button></div>`
+    : '<button type="button" class="btn sm ndk-add">В корзину</button>';
+}
+function noteSync(el){
+  const a = el.dataset.cartNote, q = load().filter(i => i.a === a).reduce((s, i) => s + i.q, 0);
+  el.hidden = !q;
+  if (q) el.innerHTML = `В корзине: <b>${fmt(q)} шт</b> · <a href="${esc(cartUrl())}">Оформить заказ</a>`;
+}
+let syncRaf = 0;
+function syncAll(){
+  cancelAnimationFrame(syncRaf);
+  syncRaf = requestAnimationFrame(() => {
+    const ctl = document.querySelectorAll("[data-cart-add]"); if (ctl.length) css();
+    ctl.forEach(syncCtl); document.querySelectorAll("[data-cart-note]").forEach(noteSync);
+  });
+}
+document.addEventListener("click", e => {
+  const el = e.target.closest && e.target.closest("[data-cart-add]");
+  if (!el) { syncAll(); return; }                 // на главной выбор цвета меняет, какая строка корзины у карточки
+  const b = e.target.closest("button"); if (!b || !el.contains(b)) return;   // «N шт в корзине» — обычная ссылка в корзину
+  e.preventDefault(); e.stopPropagation();
+  const it = infoOf(el); if (!it) return;
+  if (b.classList.contains("ndk-add")) add(it, b);
+  else setQty(keyOf(it), qtyOf(keyOf(it)) + (+b.dataset.s || 0));
+}, true);
+if (window.MutationObserver) new MutationObserver(ms => { if (ms.some(m => [...m.addedNodes].some(n => n.nodeType === 1 && (n.matches("[data-cart-add]") || n.querySelector("[data-cart-add]"))))) syncAll(); })
+  .observe(document.documentElement, { childList: true, subtree: true });
+
+window.NDCart = { add, items: load, count: () => load().length, clear: () => { save([]); syncAll(); }, refresh: () => syncAll() };
+addEventListener("storage", e => { if (e.key === KEY) { paint(); syncAll(); if (box) render(); } });
 document.addEventListener("pageshow", paint);
 
 /* ================= страница корзины /korzina/ ================= */
@@ -210,7 +287,7 @@ function initForm(){
     if (id) {
       hitOrder();
       const no = typeof id === "number" || /^\d+$/.test(String(id)) ? ` №${id}` : "";
-      done.innerHTML = `<div class="stack" style="gap:12px"><div class="ok" role="status"><b id="kThanks"></b>Менеджер проверит наличие, уточнит дату и время доставки и пришлёт QR-код для оплаты через СБП${lead.email ? " (копию — на " + esc(lead.email) + ")" : ""} в рабочее время. Оплата до отгрузки, чек придёт на e-mail; компаниям и ИП — счёт.`
+      done.innerHTML = `<div class="stack" style="gap:12px"><div class="ok" role="status"><b id="kThanks"></b>Менеджер проверит наличие, уточнит дату и время доставки и пришлёт ссылку на оплату картой или через СБП${lead.email ? " (копию — на " + esc(lead.email) + ")" : ""} в рабочее время. Оплата до отгрузки, чек придёт на e-mail; компаниям и ИП — счёт.`
         + `<p>Свяжемся с вами:<br><span id="kTo" style="white-space:nowrap;font-weight:600"></span></p><p>Если в номере ошибка — напишите нам в ${msgLinks()}.</p></div></div>`;
       $("kThanks").textContent = `Спасибо, ${name}! Заказ${no} принят. `; $("kTo").textContent = contact;
       f.reset(); f.hidden = true; box.dataset.done = "1"; save([]);
@@ -241,7 +318,7 @@ async function prices(){
 }
 
 function start(){
-  paint();
+  paint(); syncAll();
   if (box) { render(); initForm(); prices(); }
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();

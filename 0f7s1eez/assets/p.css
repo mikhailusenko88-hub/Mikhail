@@ -288,8 +288,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .rel{padding-block:8px 48px}
 .rel h2{font-size:20px;margin-bottom:14px}
 .rel .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
-a.card{text-decoration:none;color:inherit}
-a.card .price b{color:var(--ink)}
+a.card,.card a.cl{text-decoration:none;color:inherit}
+a.card .price b,.card a.cl .price b{color:var(--ink)}
+.card a.cl{display:flex;flex-direction:column;flex:1}
+.card .cadd{padding:0 12px 12px;margin-top:0}
+.card .cadd .btn{width:100%;margin:0}
 .rel .card .in{padding:10px 12px 12px;gap:3px}
 .rel .card .art{font-size:14px}
 .rel .card .d{font-size:12px;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}

@@ -477,7 +477,7 @@ if ($("toBuy")) $("toBuy").addEventListener("click", () => goOrder("buy"));
 if ($("toCart")) $("toCart").addEventListener("click", () => {
   if (!window.NDCart) { goOrder("buy"); return; }
   let img = ""; try { img = P.photo ? (u => u.pathname + u.search)(new URL(ROOT + P.photo, location.href)) : ""; } catch (e) {}
-  NDCart.add({ a: X.a, n: X.n, k: P.kind, c: colorText(), cl: isWood ? "декор" : "цвет", q: qty, r: price(), b: X.b, u: location.pathname, img });
+  NDCart.add({ a: X.a, n: X.n, k: P.kind, c: colorText(), cl: isWood ? "декор" : "цвет", q: qty, r: price(), b: X.b, u: location.pathname, img }, $("toCart"));
   hit("item", X.a, "cart");
 });
 if (location.hash === "#buy" || location.hash === "#call") setMode(location.hash.slice(1));
