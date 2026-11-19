@@ -1,4 +1,5 @@
-# 07:52:00 серия 30 на таймере, карточка v4
-http://89.126.192.214:8080/mebel/s9kbars/serii.json
-http://89.126.192.214:8080/mebel/s9kbars/index.html
+# 07:58:34 обложки 29 и 30 с маленькой надписью (raw и сервер)
+http://89.126.192.214:8080/mebel/s9kbars/serii/29/cover.jpg
 http://89.126.192.214:8080/mebel/s9kbars/serii/30/cover.jpg
+https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel/s9kbars/serii/29/cover.jpg
+https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel/s9kbars/serii/30/cover.jpg
