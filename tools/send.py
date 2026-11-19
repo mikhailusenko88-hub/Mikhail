@@ -47,6 +47,7 @@ def main():
     a.add_argument("--attach", action="append", default=[])
     a.add_argument("--reply-to", default="")
     a.add_argument("--from", dest="sender", choices=["zapros", "mikhail"], default="zapros")
+    a.add_argument("--dz", default="", help="письмо дизайнеру из «Базы дизайнеров»: КОД:вид, вид m1|m2|reply (Д03:m2)")
     a.add_argument("--key", default=os.path.join(HERE, "KEY.pub"))
     o = a.parse_args()
     body = o.body if o.body is not None else open(o.body_file, encoding="utf-8").read()
@@ -62,6 +63,11 @@ def main():
         p["reply_to"] = o.reply_to
     if o.sender != "zapros":
         p["from"] = o.sender
+    if o.dz:
+        code, _, kind = o.dz.partition(":")
+        if kind not in ("m1", "m2", "reply") or len(o.to) != 1:
+            sys.exit("--dz КОД:m1|m2|reply и ровно один --to")
+        p["dz"] = {"code": code.strip(), "kind": kind}
     os.makedirs(os.path.join(HERE, "outbox"), exist_ok=True)
     with open(os.path.join(HERE, "outbox", p["id"] + ".json"), "w", encoding="utf-8") as f:
         json.dump(seal(key, p), f)
