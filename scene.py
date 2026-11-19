@@ -2026,8 +2026,8 @@ def scene_use():
         box('tv_body', 2.15 - tw / 2, 2.15 + tw / 2, D - 0.012 - 0.045, D - 0.012 - 0.012, tz - th / 2, tz + th / 2, mb, bevel=0.002)
         box('tv_screen', 2.15 - tw / 2 + 0.008, 2.15 + tw / 2 - 0.008, D - 0.012 - 0.0465, D - 0.012 - 0.045, tz - th / 2 + 0.008, tz + th / 2 - 0.012, ms)
         if neon:                                           # подсветка за экраном (ореол на стене) и под тумбой
-            box('neon_tvback', 2.15 - tw / 2 + 0.12, 2.15 + tw / 2 - 0.12, D - 0.0225, D - 0.017, tz - th / 2 + 0.1, tz + th / 2 - 0.1,
-                mat_simple('neon_tvback', (0, 0, 0, 1), rough=0.5, **{'Emission Color': hexcol(A.get('ncol2', 'FF2E9A')), 'Emission Strength': float(A.get('neonk', 60)) * 1.2}))
+            box('neon_tvback', 2.15 - tw / 2 + 0.05, 2.15 + tw / 2 - 0.05, D - 0.0225, D - 0.017, tz - th / 2 + 0.05, tz + th / 2 - 0.05,
+                mat_simple('neon_tvback', (0, 0, 0, 1), rough=0.5, **{'Emission Color': hexcol(A.get('ncol2', 'FF2E9A')), 'Emission Strength': float(A.get('neonk', 60)) * 2.5}))
             box('neon_under', 1.25, 3.05, yw - 0.30, yw - 0.27, 0.155, 0.165,
                 mat_simple('neon_under', (0, 0, 0, 1), rough=0.5, **{'Emission Color': hexcol(A.get('ncol1', '1ED8FF')), 'Emission Strength': float(A.get('neonk', 60)) * 0.6}))
         zz = books(1.55, yc - 0.02, top, 3, seed=4)
