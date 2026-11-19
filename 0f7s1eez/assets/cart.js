@@ -80,7 +80,7 @@ function css(){
     + ".ndk-fly{position:fixed;width:40px;height:40px;border-radius:50%;object-fit:cover;background:var(--accent,#26292E);z-index:1003;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.25)}"
     + ".ndk-ship{margin-top:14px;border-top:1px solid var(--line,#D9DEE3);padding-top:12px;font-size:14px}.ndk-ship>b{display:block;font-size:15px}"
     + ".ndk-shipf{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 6px;max-width:100%}.ndk-shipf input{flex:1 1 150px;width:auto;min-width:0;box-sizing:border-box;height:38px;border:1px solid var(--line,#D9DEE3);border-radius:6px;padding:0 10px;font:inherit;font-size:16px;background:var(--paper,#fff);color:var(--ink,#26292E)}"
-    + ".ndk-shipf .btn{margin:0;white-space:nowrap;flex:0 0 auto;width:auto!important}.ndk-shipr small{display:block;color:var(--muted,#6b7280);margin-top:4px;font-size:12.5px}.ndk-shipr b{white-space:nowrap}"
+    + ".ndk-shipf .btn{margin:0;white-space:nowrap;flex:0 0 auto;width:auto!important}.ndk-shipr small{display:block;color:var(--muted,#6b7280);margin-top:4px;font-size:12.5px}.ndk-shipr b{white-space:nowrap}.ndk-fill .btn{margin:6px 0 0;display:inline-block;width:auto!important}"
     + "@media (max-width:560px){.ndk-tot{flex-direction:column;align-items:flex-start;gap:2px}.ndk-item{grid-template-columns:72px 1fr}.ndk-item img{width:72px;height:42px}.ndk-sum{grid-column:2;text-align:left}}";
   document.head.appendChild(s);
 }
@@ -382,10 +382,26 @@ async function shipCalc(el, where){
   }
   if (j && j.ok && j.terminal) {
     const t = j.terminal, d = j.door, days = x => x && x.days ? `, ≈ ${x.days} дн.` : "";
+    /* неполная коробка в другой город — в жёсткой упаковке ПЭК (решение 19.11), подсказка «добрать до коробки» */
+    const fill = Array.isArray(j.fill) ? j.fill.filter(f => f && f.add > 0) : [];
+    let pack = j.packed ? "<small>Неполная коробка поедет в жёсткой упаковке ПЭК (обрешётка) — так тонкие рейки не ломаются в дороге; упаковка уже в цене.</small>" : "";
+    if (fill.length) pack += `<small class="ndk-fill">${el.dataset.ship === "item" ? `До целой коробки ещё ${fill[0].add} шт`
+      : "До целых коробок: " + fill.map(f => `${esc(f.a)} — ещё ${f.add} шт`).join(", ")}. Целой коробкой надёжнее и без доплаты за упаковку. `
+      + `<button type="button" class="btn sm ghost ndk-fillb">Добрать до коробки</button></small>`;
     res.innerHTML = `До терминала ПЭК (${esc(j.branch)}): <b>≈ ${fmt(t.cost)} ₽</b>${days(t)}`
-      + (d ? `<br>До двери: <b>≈ ${fmt(d.cost)} ₽</b>${days(d)}` : "<small>Введите адрес с улицей и домом — посчитаем и до двери.</small>") + note;
+      + (d ? `<br>До двери: <b>≈ ${fmt(d.cost)} ₽</b>${days(d)}` : "<small>Введите адрес с улицей и домом — посчитаем и до двери.</small>") + pack + note;
+    const fb = res.querySelector(".ndk-fillb");
+    if (fb) fb.addEventListener("click", () => {
+      if (el.dataset.ship === "item") { const qb = $("qBox"); if (qb) qb.click(); }
+      else {
+        const items = load();
+        fill.forEach(f => { const same = items.filter(i => i.a === f.a); if (same.length === 1) setQty(keyOf(same[0]), same[0].q + f.add); });
+        if (box) render();
+      }
+      shipCalc(el, where);
+    });
     shipLast = { mode: el.dataset.ship, a: el.dataset.a || "", city: where,
-                 text: `Доставка ПЭК: ${where} — до терминала ≈ ${fmt(t.cost)} ₽${t.days ? ", ≈ " + t.days + " дн." : ""}${d ? `, до двери ≈ ${fmt(d.cost)} ₽` : ""} (расчёт на сайте)` };
+                 text: `Доставка ПЭК: ${where} — до терминала ≈ ${fmt(t.cost)} ₽${t.days ? ", ≈ " + t.days + " дн." : ""}${d ? `, до двери ≈ ${fmt(d.cost)} ₽` : ""}${j.packed ? ", неполная коробка — в жёсткой упаковке ПЭК" : ""} (расчёт на сайте)` };
     const addr = $("kAddr");                                      // корзина: адрес с улицей — сразу в форму заказа
     if (el.dataset.ship === "cart" && d && addr && !addr.value.trim()) addr.value = where;
     return;
