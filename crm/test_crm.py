@@ -1032,6 +1032,11 @@ class TestPek(Base):
         self.assertNotIn("door", j)
         calc = [c for c in self.pek.calls if c[0].endswith("calculateprice/")][0][2]
         self.assertEqual((calc["types"], calc["senderWarehouseId"], calc["receiverWarehouseId"], calc["isDelivery"]), ([3], "WH-SPB", "WH-KZN", False))
+        self.assertEqual((calc["isPickUp"], calc["pickup"]["address"]), (True, "Россия, Санкт-Петербург"))      # забор у нас — всегда
+        self.post("/settings/pek", {"act": "save", "pickup": "Санкт-Петербург, Складская ул., 1"})
+        self.assertEqual(self.store.setting("pek_pickup_address"), "Россия, Санкт-Петербург, Складская ул., 1")
+        self.ship("Казань", [{"a": "A912", "q": 13}])
+        self.assertEqual([c for c in self.pek.calls if c[0].endswith("calculateprice/")][-1][2]["pickup"]["address"], "Россия, Санкт-Петербург, Складская ул., 1")
         self.assertEqual(calc["cargos"][0], {"length": 3.0, "width": 0.185, "height": 0.125, "weight": 21.5})
         self.assertEqual(calc["cargos"][2]["maxSize"], 3.0); self.assertTrue(calc["isInsurance"]); self.assertEqual(calc["isInsurancePrice"], 13 * 990)
         # повтор — из кеша, ПЭК не дёргаем

@@ -121,7 +121,7 @@
 </form>
 <h2 id="pek">ПЭК — расчёт доставки на сайте</h2>
 <div class="panel pad d">
-  Покупатель из другого города вводит город или адрес на странице товара или в корзине и видит стоимость и срок «ПЭК:LTL Авто» от терминала в Петербурге — до терминала в своём городе и, если ввёл улицу, до двери. Как подключить: 1) личный кабинет на pecom.ru (на ИП); 2) «Регистрационные данные» → «Ключи API» → новый ключ «сайт nashdekor.ru»; 3) логин кабинета (имя пользователя) и ключ — сюда → «Сохранить» → «Проверить связь» → «Включить расчёт на сайте».
+  Покупатель из другого города вводит город или адрес на странице товара или в корзине и видит стоимость и срок «ПЭК:LTL Авто» с забором груза с нашего склада — до терминала в своём городе и, если ввёл улицу, до двери. Как подключить: 1) личный кабинет на pecom.ru (на ИП); 2) «Регистрационные данные» → «Ключи API» → новый ключ «сайт nashdekor.ru»; 3) логин кабинета (имя пользователя) и ключ — сюда → «Сохранить» → «Проверить связь» → «Включить расчёт на сайте».
 </div>
 <div class="panel list">
   <div class="row"><span class="grow">Логин и ключ API{% if pek['login'] %}<span class="d"> · {{ pek['login'] }}</span>{% endif %}</span>{% if pek['has_key'] %}<span class="pill good">сохранены</span>{% else %}<span class="pill warn">нет</span>{% endif %}</div>
@@ -132,6 +132,7 @@
   <input type="hidden" name="csrf" value="{{ csrf }}">
   <label class="f">Логин личного кабинета ПЭК<input name="login" value="{{ pek['login'] }}" autocomplete="off" spellcheck="false" placeholder="имя пользователя"></label>
   <label class="f">Ключ API {% if pek['has_key'] %}(сохранён; вставьте новый, только если меняете){% endif %}<input name="key" type="password" autocomplete="off" spellcheck="false" placeholder="из «Ключи API»"></label>
+  <label class="f span2">Адрес забора — наш склад (ПЭК забирает груз у нас; в цену покупателя входит забор){% if not pek['pickup'] %} — пока не задан, считается по Санкт-Петербургу{% endif %}<input name="pickup" value="{{ pek['pickup'] }}" autocomplete="off" placeholder="Санкт-Петербург, улица, дом"></label>
   <label class="f">Вес коробки панелей 3 м, кг<input name="box3" inputmode="decimal" value="{{ pek['box3'] }}" placeholder="20 — если пусто"></label>
   <label class="f">Вес коробки 2 м (плинтус, молдинг), кг<input name="box2" inputmode="decimal" value="{{ pek['box2'] }}" placeholder="14 — если пусто"></label>
   <div class="span2 row wrap">

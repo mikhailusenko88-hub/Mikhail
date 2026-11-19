@@ -1076,17 +1076,18 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         cargos = cargos_for(lines, pek_box_kg())
         if not cargos:
             return {"ok": False, "error": "items"}
-        sig = json.dumps([z["warehouse"], cargos, insure // 1000], sort_keys=True)
+        pick = store.setting("pek_pickup_address", "") or PEK_SENDER      # забор у нас со склада (адрес — в Настройках)
+        sig = json.dumps([z["warehouse"], cargos, insure // 1000, pick], sort_keys=True)
         term = pek_cache.get("p|" + sig)
         if term is None:
-            term = t.price(snd["warehouse"], z["warehouse"], cargos, insure)
+            term = t.price(snd["warehouse"], z["warehouse"], cargos, insure, pickup_address=pick)
             pek_cache.put("p|" + sig, term, PEK_PRICE_TTL)
         out: dict[str, Any] = {"ok": True, "branch": z["branch"], "place": z["formatted"] or where, "terminal": term, "places": len(cargos)}
         if has_street(where):
             dk = "d|" + sig + "|" + addr.lower()
             door = pek_cache.get(dk)
             if door is None:
-                door = t.price(snd["warehouse"], z["warehouse"], cargos, insure, door_address=addr)
+                door = t.price(snd["warehouse"], z["warehouse"], cargos, insure, door_address=addr, pickup_address=pick)
                 pek_cache.put(dk, door, PEK_PRICE_TTL)
             out["door"] = door
         return out
@@ -1696,6 +1697,9 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             if key:
                 store.set_setting("pek_key", key)
                 c = store.c(); store.log(c, "ПЭК: сохранён новый ключ API", who()); c.commit()
+            if "pickup" in request.form:
+                pa = re.sub(r"\s+", " ", request.form.get("pickup", "")).strip(" ,")[:200]
+                store.set_setting("pek_pickup_address", ("Россия, " + pa) if pa and not pa.lower().startswith("россия") else pa)
             for m in (3, 2):
                 f = f"box{m}"
                 if f in request.form:
@@ -1755,6 +1759,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                offsite=offsite_view(),
                                pek=dict(has_key=bool(store.setting("pek_key", "")), login=store.setting("pek_login", ""), on=pek_on(),
                                         box3=store.setting("pek_box3_kg", ""), box2=store.setting("pek_box2_kg", ""),
+                                        pickup=store.setting("pek_pickup_address", ""),
                                         check=store.setting("pek_check", "")))
 
     def offsite_conf() -> dict[str, str]:

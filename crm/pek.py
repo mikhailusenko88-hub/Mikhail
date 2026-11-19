@@ -5,7 +5,8 @@ API: https://kabinet.pecom.ru/api/v1/<группа>/<метод>/ — POST JSON,
 Логин и ключ хранятся только в базе CRM на сервере (settings.pek_login / pek_key), в журнал и на страницы не выводятся.
 
 Как считаем:
-- склад отправления — основное отделение ПЭК в Санкт-Петербурге (груз сдаём на терминал сами, забор не заказываем);
+- забор груза у нас: ПЭК забирает со склада (адрес — в настройках CRM; пока не задан — «Санкт-Петербург», считается по городу),
+  в цену покупателя входит забор (решение Михаила 19.11: сами на терминал не возим); склад отправления — основное отделение СПб;
 - склад получения — основное отделение филиала, к которому ПЭК относит город/адрес покупателя (/branches/findzonebyaddress/);
 - продукт 3 — «ПЭК:LTL Авто» (сборный груз, работа по оферте, договор не нужен);
 - до терминала — без доставки; если покупатель ввёл адрес с улицей — второй расчёт «до двери» (isDelivery + delivery.address);
@@ -107,14 +108,17 @@ class Pek:
                 "formatted": str((geo.get("Address") or {}).get("formatted") or "")}
 
     def price(self, sender_wh: str, receiver_wh: str, cargos: list[dict[str, Any]], insure: int = 0,
-              door_address: str = "") -> dict[str, Any]:
+              door_address: str = "", pickup_address: str = "") -> dict[str, Any]:
         """Стоимость и срок «ПЭК:LTL Авто». Возвращает {"cost": ₽, "days": дней}."""
         planned = (datetime.now() + timedelta(days=1)).replace(hour=12, minute=0, second=0, microsecond=0)
         data: dict[str, Any] = {"types": [PRODUCT_LTL], "senderWarehouseId": sender_wh, "receiverWarehouseId": receiver_wh,
                                 "isOpenCarSender": False, "isOpenCarReceiver": False, "isHyperMarket": False,
                                 "plannedDateTime": planned.strftime("%Y-%m-%dT%H:%M:%S"),
                                 "isInsurance": insure > 0, "isInsurancePrice": max(0, int(insure)),
-                                "isPickUp": False, "isDelivery": bool(door_address), "cargos": cargos}
+                                "isPickUp": bool(pickup_address), "isDelivery": bool(door_address), "cargos": cargos}
+        if pickup_address:                       # грузим сами — погрузку ПЭК не считаем
+            data["pickup"] = {"address": pickup_address}
+            data["pickupServices"] = {"isLoading": False, "floor": 0, "carryingDistance": 0, "isElevator": False}
         if door_address:
             data["delivery"] = {"address": door_address}
             data["deliveryServices"] = {"isLoading": False, "floor": 0, "carryingDistance": 0, "isElevator": False}
