@@ -80,7 +80,7 @@ const S=0.001;
 const PL=100, BH=720, BD=560, FT=18, CT=38, CTD=600, TOP=PL+BH+CT, GOLA=30, FTOP=PL+BH-GOLA;
 const UY=1460, UTOP=2400, UH=UTOP-UY, GH=320, FH=UH-GH, UD=320;
 const RW=2800, RD=1600, RH=2700;
-const FR={w:750,h:1900,d:660}, ANT_Y=FR.h+60;
+const FR={w:750,h:1780,d:545}; // встраиваемый холодильник 75 см: ниша по высоте 1780 (уточнить по модели)
 
 // ---------- палитры
 const FRONT_COLORS=[['Белый W1100','#f2f1ec'],['Кашемир U702','#b5ab9c'],['Серый камень U727','#8f8c86'],['Зелёный шалфей U638','#7d8a78'],
@@ -91,12 +91,12 @@ const FRAME_COLORS=[['Чёрный','#1d1d1d'],['Графит','#4a4c4f'],['Ал
 // ---------- планировки
 const LAYS={
  1:{name:'1 · Основной, как на фото',
-  note:'Как на фото: у угла узкая дверь, духовка под варкой, тумба с 3 ящиками, над ней СВЧ (В4), вытяжка спрятана в В3; холодильник 75 см в нише П1. На левой стене — мойка 40 см у угла и ваша посудомойка 60 см (Н5). Мойку шире здесь не поставить: на стене 1,6 м помещается только мойка 40 + посудомойка 60.',
+  note:'Как на фото: у угла узкая дверь, духовка под варкой, тумба с 3 ящиками, над ней СВЧ (В4), вытяжка спрятана в В3; встроенный холодильник 75 см в пенале П1 за фасадами. На левой стене — мойка 40 см у угла и ваша посудомойка 60 см (Н5). Мойку шире здесь не поставить: на стене 1,6 м помещается только мойка 40 + посудомойка 60.',
   mods:[
   {code:'Н1',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'back',at:0,blind:'L',dw:220},
   {code:'Н2',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'back',at:800},
   {code:'Н3',type:'drawers',name:'Тумба с 3 ящиками',w:600,wall:'back',at:1400},
-  {code:'П1',type:'fridge',name:'Ниша холодильника с антресолью',w:800,wall:'back',at:2000,side:'L'},
+  {code:'П1',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'back',at:2000,side:'L',hinge:'L'},
   {code:'Н4',type:'sink',name:'Тумба под мойку 40 см',w:400,wall:'left',at:580},
   {code:'Н5',type:'dw',name:'Посудомоечная машина 60 см, фасад + боковина',w:600,wall:'left',at:980,endPanel:true},
   {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой, сушка над мойкой',w:1200,wall:'left',at:0,doors:2,rackDoor:1},
@@ -113,7 +113,7 @@ const LAYS={
   {code:'Н1',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'back',at:0,blind:'L',dw:220},
   {code:'Н2',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'back',at:800},
   {code:'Н3',type:'dw',name:'Посудомоечная машина 60 см, фасад',w:600,wall:'back',at:1400},
-  {code:'П1',type:'fridge',name:'Ниша холодильника с антресолью',w:800,wall:'back',at:2000,side:'L'},
+  {code:'П1',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'back',at:2000,side:'L',hinge:'L'},
   {code:'Н4',type:'sink',name:'Тумба под мойку 60 см',w:600,wall:'left',at:580},
   {code:'Н5',type:'drawers',name:'Тумба с 3 ящиками',w:400,wall:'left',at:1180,vis:'L'},
   {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой, сушка над мойкой',w:1200,wall:'left',at:0,doors:2,rackDoor:0},
@@ -125,15 +125,15 @@ const LAYS={
   {code:'С3',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:1400}],
   top:[[0,0,2000,600],[0,600,600,1000]], splash:{back:2000,left:1600}},
  3:{name:'3 · Холодильник на левой стене',
-  note:'Холодильник 75 см переезжает на левую стену, в конец (П1). Вся задняя стена — рабочая: мойка 60 и посудомойка 60 рядом, духовка с варкой, тумба с 3 ящиками 42 см. Над мойкой сушка (В3), над посудомойкой СВЧ (В4), вытяжка в В5. Больше всего рабочей столешницы.',
+  note:'Пенал со встроенным холодильником 75 см переезжает на левую стену, в конец (П1). Вся задняя стена — рабочая: мойка 60 и посудомойка 60 рядом, духовка с варкой, тумба с 3 ящиками 42 см. Над мойкой сушка (В3), над посудомойкой СВЧ (В4), вытяжка в В5. Больше всего рабочей столешницы.',
   mods:[
-  {code:'Н1',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:780,wall:'left',at:0,blind:'R',dw:200},
-  {code:'П1',type:'fridge',name:'Ниша холодильника с антресолью',w:820,wall:'left',at:780,side:'LR'},
+  {code:'Н1',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'left',at:0,blind:'R',dw:220},
+  {code:'П1',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'left',at:800,side:'LR',hinge:'L'},
   {code:'Н2',type:'sink',name:'Тумба под мойку 60 см',w:600,wall:'back',at:580},
   {code:'Н3',type:'dw',name:'Посудомоечная машина 60 см, фасад',w:600,wall:'back',at:1180},
   {code:'Н4',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'back',at:1780},
   {code:'Н5',type:'drawers',name:'Тумба с 3 ящиками',w:420,wall:'back',at:2380},
-  {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой',w:780,wall:'left',at:0,doors:1,noVis:true},
+  {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой',w:800,wall:'left',at:0,doors:1,noVis:true},
   {code:'В2',type:'up',name:'Шкаф верхний узкий (специи)',w:240,wall:'back',at:340,hinge:'L'},
   {code:'В3',type:'up',name:'Шкаф верхний с сушкой над мойкой',w:600,wall:'back',at:580,hinge:'L',rack:true},
   {code:'В4',type:'upMicro',name:'Шкаф верхний со встроенной СВЧ',w:600,wall:'back',at:1180},
@@ -144,14 +144,14 @@ const LAYS={
   {code:'С3',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:1180},
   {code:'С4',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:1780},
   {code:'С5',type:'glass',name:'Витрина со стеклом',w:420,wall:'back',at:2380}],
-  top:[[0,0,600,780],[600,0,2200,600]], splash:{back:2800,left:780}, cam:[[2.75,1.7,3.7],[1.35,1.15,0.7]]},
+  top:[[0,0,600,800],[600,0,2200,600]], splash:{back:2800,left:800}, cam:[[2.75,1.7,3.7],[1.35,1.15,0.7]]},
  4:{name:'4 · Духовка в пенале',
-  note:'Духовка и СВЧ — в пенале П1 на удобной высоте, под варочной панелью 3 широких ящика (Н2). Холодильник 75 см — в нише П2. На левой стене мойка 40 см у угла и посудомойка 60 (Н4).',
+  note:'Духовка и СВЧ — в пенале П1 на удобной высоте, под варочной панелью 3 широких ящика (Н2). Встроенный холодильник 75 см — в пенале П2. На левой стене мойка 40 см у угла и посудомойка 60 (Н4).',
   mods:[
   {code:'Н1',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'back',at:0,blind:'L',dw:220},
   {code:'Н2',type:'drawers',name:'Тумба с 3 ящиками под варочной панелью',w:600,wall:'back',at:800,hob:true},
   {code:'П1',type:'ovenCol',name:'Пенал: 2 ящика, духовка, СВЧ, дверь',w:600,wall:'back',at:1400,vis:'L'},
-  {code:'П2',type:'fridge',name:'Ниша холодильника с антресолью',w:800,wall:'back',at:2000,side:''},
+  {code:'П2',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'back',at:2000,side:'',hinge:'L'},
   {code:'Н3',type:'sink',name:'Тумба под мойку 40 см',w:400,wall:'left',at:580},
   {code:'Н4',type:'dw',name:'Посудомоечная машина 60 см, фасад + боковина',w:600,wall:'left',at:980,endPanel:true},
   {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой, сушка над мойкой',w:1200,wall:'left',at:0,doors:2,rackDoor:1},
@@ -298,17 +298,6 @@ function sink(mod,cx,ws){const g=mod.g;ws=ws||480;
   const arc=new THREE.CatmullRomCurve3([[0,0.31,0],[0,0.38,0.05],[0,0.39,0.13],[0,0.35,0.2],[0,0.3,0.215]].map(p=>new THREE.Vector3(tx+p[0],ty+p[1],tz+p[2])));
   g.add(new THREE.Mesh(new THREE.TubeGeometry(arc,30,0.013,12),MATS.black)); cyl(0.019,0.07,tx,ty+0.27,tz+0.215);
 }
-function fridge(mod,x){const g=mod.g, z0=30, bd=FR.d-50;
-  const body=box(FR.w,FR.h-25,bd,x,25,z0,MATS.steel,g); body.material=[MATS.steel,MATS.steel,MATS.steel,MATS.steel,MATS.inner,MATS.steel];
-  [[500],[900],[1300]].forEach(([y])=>box(FR.w-60,6,bd-40,x+30,y,z0+20,MATS.glass,g));
-  box(FR.w-60,4,bd-40,x+30,700,z0+20,MATS.steelDark,g);
-  const zf=z0+bd;
-  [[25,690],[718,FR.h-718]].forEach(([y,h])=>{const dg=new THREE.Group();dg.position.set(x*S,0,zf*S);g.add(dg);
-    box(FR.w-2,h,50,1,y,0,MATS.steel,dg); box(FR.w-60,h-60,8,30,y+30,-8,MATS.inner,dg);
-    box(18,Math.min(420,h-160),30,FR.w-60,y+(h>800?80:h-440),50,MATS.steelDark,dg);
-    mod.op.push({k:'door',g:dg,dir:-1,c:0,t:0,ap:1})});
-}
-
 // ---------- корпуса
 function baseCarcass(mod,o){o=o||{};const g=mod.g,w=mod.w,y=PL;
   if(mod.vis==='L')visPanel(mod,0,0,16,PL+BH,BD,'L'); else box(16,BH,BD,0,y,0,MATS.white,g);
@@ -406,18 +395,31 @@ const BUILD={
    if(mod.rackDoor!=null){rack(mod,mod.rackDoor*dw+25,dw-50);}
    led(mod,15,dzone-30,UY,UD-70);
    mod.size=`${w} × ${UH} × ${UD}`; codeAt(mod,dzone/2,UY+UH/2+60,UD+70)},
- fridge(mod){const w=mod.w,g=mod.g;let x0=0;
-   const sd=mod.side||'';let x1=w;
-   if(sd.includes('L')){visPanel(mod,0,0,16,UTOP,CTD,'L');x0=16}
-   if(sd.includes('R')){visPanel(mod,w-16,0,16,UTOP,CTD,'R');x1=w-16}
-   const iw=x1-x0,ah=UTOP-ANT_Y,ad=580;
-   box(16,ah,ad,x0,ANT_Y,0,MATS.white,g);box(16,ah,ad,x1-16,ANT_Y,0,MATS.white,g);
-   box(iw-32,16,ad,x0+16,ANT_Y,0,MATS.white,g);box(iw-32,16,ad,x0+16,UTOP-16,0,MATS.white,g);box(iw-32,ah-32,4,x0+16,ANT_Y+16,4,MATS.white,g);
-   door(mod,x0+1.5,ANT_Y+1.5,iw/2-3,ah-3,'L',false,ad);door(mod,x0+iw/2+1.5,ANT_Y+1.5,iw/2-3,ah-3,'R',false,ad);
-   fridge(mod,x0+(iw-FR.w)/2);
-   label('холодильник 75 см',x0+iw/2,1250,FR.d+120,'dim',g).visible=true; CODES.push(DIMS.pop());
+ fridge(mod){const w=mod.w,g=mod.g,H=UTOP-PL,sd=mod.side||'',hl=mod.hinge!=='R';
+   if(sd.includes('L'))visPanel(mod,0,0,16,UTOP,BD,'L'); else box(16,H,BD,0,PL,0,MATS.white,g);
+   if(sd.includes('R'))visPanel(mod,w-16,0,16,UTOP,BD,'R'); else box(16,H,BD,w-16,PL,0,MATS.white,g);
+   const iw=w-32, ny=PL+16, sy=ny+FR.h;
+   box(iw,16,BD,16,PL,0,MATS.white,g); box(iw,16,BD,16,sy,0,MATS.white,g); box(iw,16,BD,16,UTOP-16,0,MATS.white,g);
+   box(iw,UTOP-sy-32,4,16,sy+16,4,MATS.white,g);
+   box(w-(sd?16:0),PL-6,16,sd.includes('L')?16:0,0,BD+FT-66,mod.mats.front,g); // цоколь
+   box(Math.min(400,iw-80),40,4,(w-Math.min(400,iw-80))/2,30,BD+FT-49,MATS.frame,g); // решётка вентиляции в цоколе
+   // сам холодильник в нише (виден, когда двери открыты)
+   const fx=16+(iw-FR.w)/2; const body=box(FR.w,FR.h-6,FR.d-30,fx,ny+3,8,MATS.inner,g);
+   [ny+380,ny+760,ny+1080,ny+1380].forEach(y=>box(FR.w-60,5,FR.d-80,fx+30,y,30,y<ny+700?MATS.steelDark:MATS.glass,g));
+   // фасады навешиваются на двери холодильника; ручка — вертикальный профиль Gola у свободного края
+   const gw=22, fw=w-3-gw, fx0=hl?1.5:1.5+gw;
+   box(gw,H,14,hl?w-gw:0,PL,BD-14,MATS.frame,g);
+   const mk=(y,h,name)=>{const dg=new THREE.Group();dg.position.set((hl?fx0:fx0+fw)*S,0,BD*S);g.add(dg);
+     const f=frontMesh(mod,fw,h,false,name);f.position.set((hl?fw/2:-fw/2)*S,(y+h/2)*S,FT/2*S);dg.add(f);
+     const lx=hl?30:-fw+30; box(fw-60,h-40,40,lx,y+20,-40,MATS.inner,dg);
+     for(let yy=y+120;yy<y+h-100;yy+=260)box(fw-120,50,90,lx+30,yy,-130,MATS.cup,dg);
+     mod.op.push({k:'door',g:dg,dir:hl?-1:1,c:0,t:0,ap:1})};
+   mk(PL,715,'Фасад морозильной камеры'); mk(PL+718,sy+16-1.5-(PL+718),'Фасад холодильной камеры');
+   const ay=sy+16+1.5, ah=UTOP-1.5-ay;
+   lift(mod,fx0,UTOP-1.5,fw,ah,BD,(lg,ww,hh)=>{const f=frontMesh(mod,ww,hh,false,'Фасад антресоли подъёмный');f.position.set(ww/2*S,-hh/2*S,FT/2*S);lg.add(f)});
+   label('встроенный холодильник 75 см',w/2,1250,BD+FT+60,'dim',g).visible=true; CODES.push(DIMS.pop());
    
-   mod.size=`${w} × ${UTOP} × ${CTD}, ниша ${iw}`; mod.iw=iw; codeAt(mod,x0+iw/2,ANT_Y+ah/2+40,ad+80)},
+   mod.size=`${w} × ${H} × ${BD} + ножки ${PL}, ниша ${iw} × ${FR.h}`; mod.iw=iw; codeAt(mod,w/2,(ay+UTOP)/2+40,BD+80)},
  ovenCol(mod){const w=mod.w,g=mod.g,H=UTOP-PL;
    visPanel(mod,0,0,16,UTOP,BD,'L'); box(16,H,BD,w-16,PL,0,MATS.white,g);
    box(w-32,16,BD,16,PL,0,MATS.white,g); box(w-32,16,BD,16,UTOP-16,0,MATS.white,g); box(w-32,H-32,4,16,PL+16,4,MATS.white,g);
@@ -516,8 +518,7 @@ function drawTab(){const L=LAYS[state.lay];const fr=L.mods.find(m=>m.type==='fri
   const rows=[['Кухня по стенам','2800 × 1600'],['Ножки и цоколь',`${PL}`],['Нижние модули, корпус',`выс. ${BH}, гл. ${BD}`],['Столешница 38 мм, верх от пола',`${TOP}`],
     ['Фартук (стеновая панель)',`${TOP} – ${UY}`],['Верхние: низ / верх',`${UY} / ${UTOP}`]];
   L.mods.forEach(m=>rows.push([`${m.code} ${m.name}`,m.size]));
-  rows.push(['Холодильник отдельностоящий (уточнить модель)',`${FR.w} × ${FR.h} × ${FR.d}`]);
-  if(fr)rows.push(['Ниша холодильника / антресоль над ним',`${fr.iw} / ${UTOP-ANT_Y}`]);
+  rows.push(['Холодильник встраиваемый 75 см (уточнить модель)',`ниша ${fr?fr.iw:768} × ${FR.h}`]);
   rows.push(['Техника и мойка','по вашим моделям, ниши уточним']);
   document.getElementById('tab').innerHTML='<div class="dims">'+rows.map(r=>`<div><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')+'</div>'}
 function tog(id,get,set){const b=document.getElementById(id);b.onclick=()=>{set(!get());b.setAttribute('aria-pressed',get())}}
