@@ -288,7 +288,8 @@ function initForm(){
       hitOrder();
       const no = typeof id === "number" || /^\d+$/.test(String(id)) ? ` №${id}` : "";
       done.innerHTML = `<div class="stack" style="gap:12px"><div class="ok" role="status"><b id="kThanks"></b>Менеджер проверит наличие, уточнит дату и время доставки и пришлёт ссылку на оплату картой или через СБП${lead.email ? " (копию — на " + esc(lead.email) + ")" : ""} в рабочее время. Оплата до отгрузки, чек придёт на e-mail; компаниям и ИП — счёт.`
-        + `<p>Свяжемся с вами:<br><span id="kTo" style="white-space:nowrap;font-weight:600"></span></p><p>Если в номере ошибка — напишите нам в ${msgLinks()}.</p></div></div>`;
+        + `<p>Свяжемся с вами:<br><span id="kTo" style="white-space:nowrap;font-weight:600"></span></p><p>Если в номере ошибка — напишите нам в ${msgLinks()}.</p>`
+        + `<p style="font-size:14px">Вернуть неподошедший товар можно в течение 7 дней после получения, если он не распилен, не окрашен и не монтировался; товар с браком — по закону. <a href="${esc(cartUrl().replace(/korzina\/?$/, "oplata/#vozvrat"))}" style="color:inherit">Условия возврата</a></p></div></div>`;   // условия возврата — только после заказа (19.11.2026)
       $("kThanks").textContent = `Спасибо, ${name}! Заказ${no} принят. `; $("kTo").textContent = contact;
       f.reset(); f.hidden = true; box.dataset.done = "1"; save([]);
       box.innerHTML = '<p class="ndk-empty">Заказ отправлен, корзина очищена.</p>';
