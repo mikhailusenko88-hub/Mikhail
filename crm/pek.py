@@ -110,8 +110,29 @@ class Pek:
 
     def price(self, sender_wh: str, receiver_wh: str, cargos: list[dict[str, Any]], insure: int = 0,
               door_address: str = "", pickup_address: str = "") -> dict[str, Any]:
-        """Стоимость и срок «ПЭК:LTL Авто». Возвращает {"cost": ₽, "days": дней}."""
-        planned = (datetime.now() + timedelta(days=1)).replace(hour=12, minute=0, second=0, microsecond=0)
+        """Стоимость и срок «ПЭК:LTL Авто». Возвращает {"cost": ₽, "days": дней}.
+        Забор планируем на ближайший рабочий день в 12:00; если ПЭК отвечает «для выбранного времени забор невозможен»
+        (вечером ПЭК уже не берёт заявки на завтра, в выходные не забирает) — следующий рабочий день, до 4 попыток.
+        Удачный сдвиг запоминаем на сегодня, чтобы не спрашивать ПЭК лишний раз."""
+        days = work_days()
+        skip = _SHIFT.get(datetime.now().strftime("%Y-%m-%d"), 0) if pickup_address else 0
+        last: PekError | None = None
+        for i, planned in enumerate(days[skip:skip + 4], start=skip):
+            try:
+                r = self._price_at(planned, sender_wh, receiver_wh, cargos, insure, door_address, pickup_address)
+            except PekError as e:
+                if pickup_address and e.status == 200 and PICKUP_TIME_ERR.search(e.message):
+                    last = e
+                    continue
+                raise
+            if pickup_address:
+                _SHIFT.clear(); _SHIFT[datetime.now().strftime("%Y-%m-%d")] = i
+            return r
+        assert last is not None
+        raise last
+
+    def _price_at(self, planned: datetime, sender_wh: str, receiver_wh: str, cargos: list[dict[str, Any]], insure: int,
+                  door_address: str, pickup_address: str) -> dict[str, Any]:
         data: dict[str, Any] = {"types": [PRODUCT_LTL], "senderWarehouseId": sender_wh, "receiverWarehouseId": receiver_wh,
                                 "isOpenCarSender": False, "isOpenCarReceiver": False, "isHyperMarket": False,
                                 "plannedDateTime": planned.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -135,6 +156,21 @@ class Pek:
                     return {"cost": int(round(cost)), "days": int(t.get("estDeliveryTime") or 0) or None}
         errs = [str(t.get("errorMessage")) for t in out.get("transfers") or [] if t.get("errorMessage")]
         raise PekError(200, "; ".join(errs) or "нет цены для «ПЭК:LTL Авто»")
+
+
+PICKUP_TIME_ERR = re.compile(r"времени|невозможен|дат[аыуе]", re.I)
+_SHIFT: dict[str, int] = {}                  # сегодня → на сколько рабочих дней сдвигать забор (вечером/в выходные)
+
+
+def work_days(now: datetime | None = None, n: int = 8) -> list[datetime]:
+    """Ближайшие рабочие дни (пн–пт), начиная с завтра, в 12:00 — время забора для расчёта."""
+    d = (now or datetime.now()).replace(hour=12, minute=0, second=0, microsecond=0) + timedelta(days=1)
+    out: list[datetime] = []
+    while len(out) < n:
+        if d.weekday() < 5:
+            out.append(d)
+        d += timedelta(days=1)
+    return out
 
 
 # ---------------------------------------------------------------- грузоместа заказа

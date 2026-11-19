@@ -992,6 +992,10 @@ class FakePek:
                                             "GeoData": {"kind": "street" if "ул." in a else "locality", "Address": {"formatted": data["address"]}}}).encode()
             return 200, b"{}"
         if url.endswith("calculator/calculateprice/"):
+            if getattr(self, "busy_days", 0) and data.get("isPickUp"):     # вечером на ближайший день забор не берут
+                first = __import__("pek").work_days()[0].strftime("%Y-%m-%d")
+                if data["plannedDateTime"][:10] <= first:
+                    return 200, json.dumps({"hasError": True, "errorMessage": "Для выбранного времени, забор груза невозможен"}).encode()
             rj = getattr(self, "reject", "")
             if rj == "all" or (rj == "isInsurance" and data.get("isInsurance")) or (rj == "isHP" and any(c.get("isHP") for c in data["cargos"])):
                 msg = {"isInsurance": "Страховка не принята", "isHP": "Упаковка не принята"}.get(rj, "Ошибка данных")
@@ -1072,6 +1076,16 @@ class TestPek(Base):
         j = self.ship("Колпино, ул. Труда, 3", [{"a": "A912", "q": 2}]).get_json()
         self.assertEqual((j["ok"], j["local"], "door" in j), (True, True, False))
         self.pek.fail_calc = False
+        # вечером ПЭК не берёт забор на завтра — сдвигаем на следующий рабочий день и запоминаем сдвиг
+        import pek as pek_mod
+        pek_mod._SHIFT.clear(); self.pek.busy_days = 1
+        j = self.ship("Москва", [{"a": "A912", "q": 18}]).get_json()
+        self.assertEqual((j["ok"], j["terminal"]["cost"]), (True, 900 + 450 * 3))
+        plan = [c[2]["plannedDateTime"][:10] for c in self.pek.calls if c[0].endswith("calculateprice/")][-2:]
+        self.assertEqual(plan, [d.strftime("%Y-%m-%d") for d in pek_mod.work_days()[:2]])
+        n = len(self.pek.calls); self.ship("Москва", [{"a": "A912", "q": 24}])
+        self.assertEqual(len([c for c in self.pek.calls[n:] if c[0].endswith("calculateprice/")]), 1)   # сразу на второй день
+        self.pek.busy_days = 0; pek_mod._SHIFT.clear()
         # ПЭК не принял страховку — считаем без неё; не принял упаковку — без неё, «упаковку назовём при подтверждении»
         self.pek.reject = "isInsurance"
         j = self.ship("Москва", [{"a": "A912", "q": 12}]).get_json()
@@ -1119,6 +1133,9 @@ class TestPek(Base):
         c = cargos_for([(N(size="180×10×3000", per_box=12), 30), (N(size="80×14×2000", per_box=26), 10)])
         self.assertEqual(len(c), 4)                                   # 2 коробки 3 м + связка 3 м (6 шт) + связка 2 м (10 шт)
         self.assertEqual(c[2]["maxSize"], 3.0); self.assertEqual(c[3]["maxSize"], 2.0)
+        from datetime import datetime as DT
+        from pek import work_days
+        self.assertEqual([d.strftime("%a %d") for d in work_days(DT(2026, 11, 19, 17, 8), 3)], ["Fri 20", "Mon 23", "Tue 24"])
         c = cargos_for([(N(article="A201/2", size="100×11×2400", per_box=18), 20)])
         self.assertEqual((c[0]["length"], c[1]["maxSize"]), (2.4, 2.4))           # 2,4 м не в коробке 2 м
         c = cargos_for([(N(article="A912", size="180×12×3000", per_box=12), 13)], piece_g={"A912": 1812})

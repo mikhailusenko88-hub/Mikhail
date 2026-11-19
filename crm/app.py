@@ -49,7 +49,7 @@ from push import WebPush
 from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, TochkaError, http_request, jwt_claims,
                     parse_jwk, receipt_items, verify_rs256)
 from visits import Visits, is_bot, parse_body
-from pek import PRICE_TTL as PEK_PRICE_TTL, SENDER_ADDRESS as PEK_SENDER, ZONE_TTL as PEK_ZONE_TTL
+from pek import PICKUP_TIME_ERR, PRICE_TTL as PEK_PRICE_TTL, SENDER_ADDRESS as PEK_SENDER, ZONE_TTL as PEK_ZONE_TTL
 from pek import Cache as PekCache, Pek, PekError, _dims as _pek_dims, cargos_for, fill_to_box, has_street, is_local
 import maxapp
 
@@ -1104,7 +1104,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             try:
                 r = t.price(snd_wh, rcv_wh, cg, ins, door_address=door, pickup_address=pick)
             except PekError as e:
-                if e.status != 200:                  # нет связи / ключ / лимит — повторять бессмысленно
+                if e.status != 200 or PICKUP_TIME_ERR.search(e.message):   # нет связи / ключ / лимит / нет дня забора — без вариантов
                     pek_note_error(e, where)
                     raise
                 first = first or e
