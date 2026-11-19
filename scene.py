@@ -1965,8 +1965,10 @@ def scene_use():
     lamps = []
     az, el = float(A.get('sun_az', 32)), float(A.get('sun_el', 52))
     sun_dir = Vector((math.cos(R(el)) * math.cos(R(az)), math.cos(R(el)) * math.sin(R(az)), -math.sin(R(el))))
-    m_wall = mat_pbr('wall_paint', 'beige_wall_001', 3.0, color=srgb(236, 232, 224), rough=0.9, nstrength=0.6)
-    m_ceil = mat_simple('ceil_paint', srgb(244, 243, 240), rough=0.95)
+    neon = A.get('neon') == '1'          # вечер с неоновой подсветкой (стиль «Майами 80-х»): тёмные стены, светодиодные линии
+    wcol = hexcol(A.get('wallcol', '2A2D3A')) if neon else srgb(236, 232, 224)
+    m_wall = mat_pbr('wall_paint', 'beige_wall_001', 3.0, color=wcol, rough=0.9, nstrength=0.6)
+    m_ceil = mat_simple('ceil_paint', hexcol(A.get('ceilcol', '3A3C48')) if neon else srgb(244, 243, 240), rough=0.95)
     m_floor = mat_pbr('floor', 'laminate_floor_02', 1.7, rough_add=-0.05, nstrength=0.8, rot=R(90), tint=srgb(232, 222, 210))
     m_rug = mat_pbr('rug', 'hessian_230', 0.55, tint=srgb(240, 232, 218), nstrength=1.5)
     cabcol = hexcol(A.get('cabcol', 'C9B8A0'))
@@ -1999,6 +2001,17 @@ def scene_use():
         box('panel_cap', 0.0, W, D - 0.034, D, 1.2, 1.232, mat_simple('panel_paint_cap', hexcol(A.get('paint', 'EFEEEA')), rough=0.55), bevel=0.004)
     if use == 'tvc':                                      # та же полоса продолжается по потолку
         to_ceiling(panel_wall(1.2, 3.1, 1.3, D), D, H)
+    if neon:
+        nk = float(A.get('neonk', 60))
+        def neon_mat(nm, hx, k=1.0):
+            return mat_simple(nm, (0.0, 0.0, 0.0, 1.0), rough=0.4, **{'Emission Color': hexcol(hx), 'Emission Strength': nk * k})
+        m_side = neon_mat('neon_side', A.get('ncol1', '1ED8FF'))           # вертикальные линии у краёв панелей: косой свет по рельефу
+        m_cove = neon_mat('neon_cove', A.get('ncol2', 'FF2E9A'), 0.8)      # линия под потолком
+        for k, (a, b) in enumerate(secs):
+            for q, xs in enumerate((a - 0.035, b + 0.035)):
+                if 0.03 < xs < W - 0.03:
+                    box(f'neon_side{k}{q}', xs - 0.006, xs + 0.006, D - 0.016, D - 0.002, 0.08, H - 0.06, m_side)
+        box('neon_cove', 0.06, W - 0.06, D - 0.045, D - 0.033, H - 0.045, H - 0.033, m_cove)
     curtain('sheer', 0.12, 2.1, 4.95, 0.012, 2.64, mat_sheer())
     box('track', 0.07, 0.17, 2.0, 5.05, 2.64, 2.67, mat_simple('track', srgb(240, 240, 238), rough=0.4))
     yw = D - 0.012 - 0.015
@@ -2012,6 +2025,11 @@ def scene_use():
         tw, th, tz = 1.45, 0.83, 1.32
         box('tv_body', 2.15 - tw / 2, 2.15 + tw / 2, D - 0.012 - 0.045, D - 0.012 - 0.012, tz - th / 2, tz + th / 2, mb, bevel=0.002)
         box('tv_screen', 2.15 - tw / 2 + 0.008, 2.15 + tw / 2 - 0.008, D - 0.012 - 0.0465, D - 0.012 - 0.045, tz - th / 2 + 0.008, tz + th / 2 - 0.012, ms)
+        if neon:                                           # подсветка за экраном (ореол на стене) и под тумбой
+            box('neon_tvback', 2.15 - tw / 2 + 0.12, 2.15 + tw / 2 - 0.12, D - 0.0225, D - 0.017, tz - th / 2 + 0.1, tz + th / 2 - 0.1,
+                mat_simple('neon_tvback', (0, 0, 0, 1), rough=0.5, **{'Emission Color': hexcol(A.get('ncol2', 'FF2E9A')), 'Emission Strength': float(A.get('neonk', 60)) * 1.2}))
+            box('neon_under', 1.25, 3.05, yw - 0.30, yw - 0.27, 0.155, 0.165,
+                mat_simple('neon_under', (0, 0, 0, 1), rough=0.5, **{'Emission Color': hexcol(A.get('ncol1', '1ED8FF')), 'Emission Strength': float(A.get('neonk', 60)) * 0.6}))
         zz = books(1.55, yc - 0.02, top, 3, seed=4)
         load_asset('ceramic_vase_02', loc=(1.55, yc - 0.02, zz), rot=20)
         load_asset('ceramic_vase_03', loc=(2.85, yc - 0.03, top), rot=10)
