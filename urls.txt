@@ -1,5 +1,4 @@
-# 07:42:41 обложка-афиша 30 (raw и сервер)
+# 07:52:00 серия 30 на таймере, карточка v4
 http://89.126.192.214:8080/mebel/s9kbars/serii.json
 http://89.126.192.214:8080/mebel/s9kbars/index.html
 http://89.126.192.214:8080/mebel/s9kbars/serii/30/cover.jpg
-https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel/s9kbars/serii/30/cover.jpg
