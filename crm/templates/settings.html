@@ -127,6 +127,7 @@
   <div class="row"><span class="grow">Логин и ключ API{% if pek['login'] %}<span class="d"> · {{ pek['login'] }}</span>{% endif %}</span>{% if pek['has_key'] %}<span class="pill good">сохранены</span>{% else %}<span class="pill warn">нет</span>{% endif %}</div>
   <div class="row"><span class="grow">Расчёт на сайте</span>{% if pek['on'] %}<span class="pill good">включён</span>{% else %}<span class="pill warn">выключен</span>{% endif %}</div>
   {% if pek['check'] %}<div class="row"><span class="grow d">Последняя проверка: {{ pek['check'] }}</span></div>{% endif %}
+  {% if pek['last_error'] %}<div class="row"><span class="grow d">Последняя ошибка ПЭК при расчёте: {{ pek['last_error'] }}</span></div>{% endif %}
   {% set gd = pek['goods'] %}
   <div class="row"><span class="grow">Вес штуки для расчёта<span class="d"> · заполнен у {{ gd['with_w'] }} из {{ gd['total'] }} товаров; без веса считаем типовую коробку ({{ pek['box3'] or 20 }} кг — 3 м, {{ pek['box2'] or 14 }} кг — 2 м)</span></span><a class="btn-s sm" href="{{ url_for('stock_docs_view') }}">Заполнить</a></div>
   {% if gd['no_w'] %}<div class="row"><details class="grow d"><summary>Без веса: {{ gd['no_w']|length }}</summary>{{ gd['no_w']|join(', ') }}</details></div>{% endif %}

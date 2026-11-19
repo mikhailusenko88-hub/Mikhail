@@ -992,6 +992,10 @@ class FakePek:
                                             "GeoData": {"kind": "street" if "ул." in a else "locality", "Address": {"formatted": data["address"]}}}).encode()
             return 200, b"{}"
         if url.endswith("calculator/calculateprice/"):
+            rj = getattr(self, "reject", "")
+            if rj == "all" or (rj == "isInsurance" and data.get("isInsurance")) or (rj == "isHP" and any(c.get("isHP") for c in data["cargos"])):
+                msg = {"isInsurance": "Страховка не принята", "isHP": "Упаковка не принята"}.get(rj, "Ошибка данных")
+                return 200, json.dumps({"hasError": True, "errorMessage": msg}).encode()
             if getattr(self, "fail_calc", False):
                 return 200, json.dumps({"hasError": True, "errorMessage": "Город отправления совпадает с городом получения"}).encode()
             places = len(data["cargos"])
@@ -1020,7 +1024,8 @@ class TestPek(Base):
         self.assertEqual((self.store.setting("pek_key"), self.store.setting("pek_box3_kg"), self.store.setting("pek_box2_kg")), ("abc123", "21.5", ""))
         self.post("/settings/pek", {"act": "check"})
         self.assertIn("Москва", self.store.setting("pek_check")); self.assertIn("1 350 ₽", self.store.setting("pek_check"))
-        self.assertIn("1 панель без упаковки ≈ 1 350 ₽, в жёсткой упаковке ПЭК ≈ 1 750 ₽", self.store.setting("pek_check"))
+        self.assertIn("1 панель без упаковки ≈ 1 350 ₽; в жёсткой упаковке ПЭК ≈ 1 750 ₽", self.store.setting("pek_check"))
+        self.assertIn("та же коробка со страховкой 23 400 ₽ ≈ 1 350 ₽", self.store.setting("pek_check"))
         auth = self.pek.calls[0][1]["Authorization"]
         self.assertEqual(auth, "Basic " + base64.b64encode(b"nashdekor:abc123").decode())
         page = self.c.get("/settings").get_data(as_text=True)
@@ -1067,6 +1072,19 @@ class TestPek(Base):
         j = self.ship("Колпино, ул. Труда, 3", [{"a": "A912", "q": 2}]).get_json()
         self.assertEqual((j["ok"], j["local"], "door" in j), (True, True, False))
         self.pek.fail_calc = False
+        # ПЭК не принял страховку — считаем без неё; не принял упаковку — без неё, «упаковку назовём при подтверждении»
+        self.pek.reject = "isInsurance"
+        j = self.ship("Москва", [{"a": "A912", "q": 12}]).get_json()
+        self.assertEqual((j["ok"], j["terminal"]["cost"], j["terminal"]["no_insure"]), (True, 900 + 450 * 2, True))
+        self.assertIn("Страховка не принята", self.store.setting("pek_last_error"))
+        self.assertIn("Последняя ошибка ПЭК при расчёте", self.c.get("/settings").get_data(as_text=True))
+        self.pek.reject = "isHP"
+        j = self.ship("Москва", [{"a": "A912", "q": 7}]).get_json()
+        self.assertEqual((j["ok"], j["packed"], j["pack_later"], j["terminal"]["no_hp"]), (True, False, True, True))
+        self.pek.reject = "all"
+        r = self.ship("Москва", [{"a": "A912", "q": 5}])
+        self.assertEqual((r.status_code, r.get_json()["error"], r.get_json()["detail"]), (502, "pek", "Ошибка данных"))
+        self.pek.reject = ""
         # не нашли город, пустой заказ, чужой сайт
         self.assertEqual(self.ship("Нарния", [{"a": "A912", "q": 1}]).get_json()["error"], "city")
         self.assertEqual(self.ship("Казань", [{"a": "НЕТ", "q": 1}]).status_code, 400)

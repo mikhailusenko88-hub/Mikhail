@@ -1083,6 +1083,40 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             pek_cache.put(key, z, PEK_ZONE_TTL)
         return z or None
 
+    def pek_note_error(e: PekError, where: str = "") -> None:
+        """Последняя ошибка ПЭК — в Настройки → ПЭК (видно, что именно ПЭК не принял)."""
+        try:
+            store.set_setting("pek_last_error", f"{datetime.now():%d.%m %H:%M} — {where + ': ' if where else ''}{e.human()}"[:400])
+        except Exception:  # noqa: BLE001
+            pass
+
+    def pek_price(t: Pek, snd_wh: str, rcv_wh: str, cargos: list[dict[str, Any]], insure: int,
+                  door: str = "", pick: str = "", where: str = "") -> dict[str, Any]:
+        """Цена ПЭК с запасными вариантами: если ПЭК не принял страховку или жёсткую упаковку — считаем без них
+        и помечаем (no_insure / no_hp), чтобы сайт не показал «не получилось», а ошибка была видна в Настройках."""
+        bare = [{k: v for k, v in c.items() if k != "isHP"} for c in cargos]
+        has_hp = bare != cargos
+        tries = [(cargos, insure)] + ([(cargos, 0)] if insure > 0 else [])
+        if has_hp:
+            tries += [(bare, insure)] + ([(bare, 0)] if insure > 0 else [])
+        first: PekError | None = None
+        for cg, ins in tries:
+            try:
+                r = t.price(snd_wh, rcv_wh, cg, ins, door_address=door, pickup_address=pick)
+            except PekError as e:
+                if e.status != 200:                  # нет связи / ключ / лимит — повторять бессмысленно
+                    pek_note_error(e, where)
+                    raise
+                first = first or e
+                continue
+            if first is not None:
+                pek_note_error(first, where)
+                r = dict(r, no_insure=bool(insure > 0 and ins == 0), no_hp=bool(has_hp and cg is bare))
+            return r
+        assert first is not None
+        pek_note_error(first, where)
+        raise first
+
     def ship_quote(t: Pek, where: str, lines: list[tuple[Any, int]], insure: int) -> dict[str, Any]:
         """Цена ПЭК для покупателя: до терминала в его городе и, если введён адрес с улицей, до двери.
         Петербург и Ленобласть (решение Михаила 19.11): только «до двери» — ПЭК забирает у нас и везёт покупателю; это ориентир,
@@ -1104,7 +1138,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                     dk = "l|" + json.dumps([z["warehouse"], cargos, insure // 1000, pick, addr.lower()], sort_keys=True)
                     door = pek_cache.get(dk)
                     if door is None:
-                        door = t.price(snd["warehouse"], z["warehouse"], cargos, insure, door_address=addr, pickup_address=pick)
+                        door = pek_price(t, snd["warehouse"], z["warehouse"], cargos, insure, door=addr, pick=pick, where=where)
                         pek_cache.put(dk, door, PEK_PRICE_TTL)
                     out_l.update(door=door, places=len(cargos), place=z["formatted"] or where)
             except PekError as e:                  # по городу ПЭК может не считать — тогда цену назовём сами
@@ -1120,15 +1154,17 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         sig = json.dumps([z["warehouse"], cargos, insure // 1000, pick], sort_keys=True)
         term = pek_cache.get("p|" + sig)
         if term is None:
-            term = t.price(snd["warehouse"], z["warehouse"], cargos, insure, pickup_address=pick)
+            term = pek_price(t, snd["warehouse"], z["warehouse"], cargos, insure, pick=pick, where=where)
             pek_cache.put("p|" + sig, term, PEK_PRICE_TTL)
+        packed = any(c.get("isHP") for c in cargos)
         out: dict[str, Any] = {"ok": True, "branch": z["branch"], "place": z["formatted"] or where, "terminal": term, "places": len(cargos),
-                               "packed": any(c.get("isHP") for c in cargos), "fill": fill_to_box(lines)}
+                               "packed": packed and not term.get("no_hp"), "pack_later": packed and bool(term.get("no_hp")),
+                               "fill": fill_to_box(lines)}
         if has_street(where):
             dk = "d|" + sig + "|" + addr.lower()
             door = pek_cache.get(dk)
             if door is None:
-                door = t.price(snd["warehouse"], z["warehouse"], cargos, insure, door_address=addr, pickup_address=pick)
+                door = pek_price(t, snd["warehouse"], z["warehouse"], cargos, insure, door=addr, pick=pick, where=where)
                 pek_cache.put(dk, door, PEK_PRICE_TTL)
             out["door"] = door
         return out
@@ -1772,17 +1808,25 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             tr = r["terminal"]
             rub = lambda v: f"{int(v):,}".replace(",", " ")      # noqa: E731 — 2 202, без порчи запятых в тексте
             msg = f"Санкт-Петербург → Москва, 1 коробка панелей 3 м: ≈ {rub(tr['cost'])} ₽" + (f", ≈ {tr['days']} дн." if tr.get("days") else "")
-            try:                                     # неполная коробка: 1 панель без упаковки и в жёсткой упаковке ПЭК
-                snd, z = pek_zone(t, PEK_SENDER), pek_zone(t, "Россия, Москва")
-                pick = store.setting("pek_pickup_address", "") or PEK_SENDER
-                if snd and z:
-                    bare = t.price(snd["warehouse"], z["warehouse"], cargos_for([(probe, 1)], pek_box_kg()), 0, pickup_address=pick)
-                    hp = t.price(snd["warehouse"], z["warehouse"], cargos_for([(probe, 1)], pek_box_kg(), hp_partial=True), 0, pickup_address=pick)
-                    msg += f"; 1 панель без упаковки ≈ {rub(bare['cost'])} ₽, в жёсткой упаковке ПЭК ≈ {rub(hp['cost'])} ₽"
-                    if hp["cost"] <= bare["cost"]:
-                        msg += " (ПЭК не добавил упаковку — скажите Claude)"
-            except PekError as e:
-                msg += "; неполную коробку посчитать не вышло: " + e.human()
+            snd, z = pek_zone(t, PEK_SENDER), pek_zone(t, "Россия, Москва")
+            pick = store.setting("pek_pickup_address", "") or PEK_SENDER
+
+            def probe_price(label: str, cg: list[dict[str, Any]], ins: int) -> int | None:
+                """Отдельный пробный расчёт: цена или текст ошибки ПЭК прямо в строку проверки."""
+                nonlocal msg
+                try:
+                    v = t.price(snd["warehouse"], z["warehouse"], cg, ins, pickup_address=pick)["cost"]
+                    msg += f"; {label} ≈ {rub(v)} ₽"
+                    return int(v)
+                except PekError as e:
+                    msg += f"; {label} — ПЭК не посчитал: {e.message[:160] or e.human()}"
+                    return None
+            if snd and z:                             # страховка на сумму заказа и неполная коробка — как на сайте
+                probe_price("та же коробка со страховкой 23 400 ₽", cargos_for([(probe, 12)], pek_box_kg()), 23400)
+                bare = probe_price("1 панель без упаковки", cargos_for([(probe, 1)], pek_box_kg()), 0)
+                hp = probe_price("в жёсткой упаковке ПЭК", cargos_for([(probe, 1)], pek_box_kg(), hp_partial=True), 0)
+                if bare is not None and hp is not None and hp <= bare:
+                    msg += " (ПЭК не добавил упаковку — скажите Claude)"
             store.set_setting("pek_check", f"{datetime.now():%d.%m %H:%M} — {msg}")
             flash("Связь с ПЭК есть. " + msg + ". Теперь можно включить расчёт на сайте.", "ok")
             return back
@@ -1813,7 +1857,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                pek=dict(has_key=bool(store.setting("pek_key", "")), login=store.setting("pek_login", ""), on=pek_on(),
                                         box3=store.setting("pek_box3_kg", ""), box2=store.setting("pek_box2_kg", ""),
                                         pickup=store.setting("pek_pickup_address", ""),
-                                        check=store.setting("pek_check", ""), goods=pek_goods()))
+                                        check=store.setting("pek_check", ""), last_error=store.setting("pek_last_error", ""),
+                                        goods=pek_goods()))
 
     def offsite_conf() -> dict[str, str]:
         return {k: store.setting("offsite_" + k, "") for k in ("endpoint", "region", "bucket", "key", "secret", "prefix")}
@@ -2200,7 +2245,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             out = ship_quote(t, where, lines, insure)
         except PekError as e:
             log.warning("ПЭК: расчёт не получился: %s", str(e)[:200])
-            return cors(jsonify(ok=False, error="pek")), 502
+            return cors(jsonify(ok=False, error="pek", detail=e.message[:160] if e.status == 200 else f"status {e.status}")), 502
         return cors(jsonify(out))
 
     # ------------------------------------------------------------ API: чат на сайте
