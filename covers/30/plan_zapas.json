@@ -1,0 +1,85 @@
+{
+ "el": "/home/claude/w19/el30/el",
+ "series": "СЕРИЯ 30",
+ "text": "КТО ОТКУСИЛ|ЛУНУ?",
+ "text_at": "center",
+ "text_px": 96,
+ "text_w": 0.5,
+ "logo": 0.8,
+ "vignette": 0.2,
+ "bg": "f1_yard_night.jpg",
+ "bg_zoom": [
+  0.62,
+  0.28,
+  1.3
+ ],
+ "blur": 4,
+ "sat": 1.3,
+ "bri": 1.2,
+ "rays": {
+  "cx": 0.52,
+  "cy": 0.3,
+  "n": 16,
+  "col": [
+   255,
+   240,
+   170
+  ],
+  "a": 28
+ },
+ "spot": {
+  "cx": 0.51,
+  "cy": 0.3,
+  "r": 0.15,
+  "col": [
+   255,
+   245,
+   200
+  ],
+  "a": 120
+ },
+ "items": [
+  {
+   "img": "v_moon_bitten.png",
+   "cx": 0.56,
+   "top": 0.03,
+   "h": 0.55,
+   "outline": 0,
+   "shadow": 0.3
+  },
+  {
+   "sparkles": true,
+   "cx": 0.56,
+   "cy": 0.3,
+   "r": 0.23,
+   "n": 8,
+   "col": [
+    255,
+    250,
+    220
+   ]
+  },
+  {
+   "img": "g1_Барсик_pokaz1.png",
+   "cx": 0.15,
+   "bottom": 1.08,
+   "h": 0.8,
+   "outline": 6
+  },
+  {
+   "img": "g3_Топа_udiv.png",
+   "cx": 0.87,
+   "bottom": 1.1,
+   "h": 0.8,
+   "outline": 6,
+   "flip": true
+  },
+  {
+   "mark": "?",
+   "cx": 0.78,
+   "cy": 0.28,
+   "h": 0.2,
+   "rot": 10
+  }
+ ]
+}
