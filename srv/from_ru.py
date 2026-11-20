@@ -37,3 +37,12 @@ def run(kind, target):
     print()
 for kind, t in [("tcp", f"{IP}:22"), ("tcp", f"{IP}:443"), ("tcp", f"{IP}:8443"), ("tcp", f"{IP}:8080"), ("http", f"http://{IP}:8080/mebel/s9kbars/index.html")]:
     run(kind, t)
+
+# Соседи по сети хостера (для сравнения: блок именно нашего IP или всей сети/маршрута)
+import os
+nb = [l.strip() for l in open("/tmp/neighbors.txt")] if os.path.exists("/tmp/neighbors.txt") else []
+nb = [x for x in nb if x and not x.startswith(IP + ":")][:4]
+print("=== Соседи по сети хостера:", ", ".join(nb) or "не найдены")
+print()
+for t in nb + ["hoster.kz:443"]:
+    run("tcp", t)
