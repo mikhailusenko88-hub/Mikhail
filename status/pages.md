@@ -1,7 +1,10 @@
 # Снятые страницы
 
-- 01 200 https://crm.nashdekor.ru/api/outbox/status/30fef65b-9271-4043-9ad3-54b875fb763e (66 симв.)
-- 02 200 https://crm.nashdekor.ru/api/outbox/status/5bc9e97a-5eb4-4ea7-9a7a-cabba24588ed (66 симв.)
-- 03 200 https://crm.nashdekor.ru/api/outbox/status/95f54fa7-84c5-447f-824d-628aef14da27 (66 симв.)
-- 04 200 https://crm.nashdekor.ru/api/outbox/status/944e5b85-f41f-40f2-b645-81b877ffa05e (66 симв.)
-- 05 200 https://crm.nashdekor.ru/api/outbox/status/a1ece9d6-825d-4da1-aac1-06f8294a9607 (66 симв.)
+- 01 200 https://arhidis.ru (7995 симв.)
+- 02 200 https://victory-design.pro (7942 симв.)
+- 03 200 https://artdyakonov.design (12881 симв.)
+- 04 200 https://burozero.ru (4428 симв.)
+- 05 200 https://design-mm.ru (10336 симв.)
+- 06 200 https://studia-23-spb.ru (12330 симв.)
+- 07 200 https://nowdesign.ru (3392 симв.)
+- 08 ошибка: <urlopen error [Errno 101] Network is unreachable> https://polozov.design (0 симв.)
