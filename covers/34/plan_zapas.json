@@ -1,0 +1,78 @@
+{
+ "el": "/home/claude/w20/el34b/el",
+ "series": "СЕРИЯ 34",
+ "text": "ЖЁЛУДЬ ПРОСНУЛСЯ?",
+ "text_at": "center",
+ "text_px": 40,
+ "text_w": 0.5,
+ "logo": 0.8,
+ "vignette": 0.22,
+ "bg": "f1_meadow_day.jpg",
+ "bg_zoom": [
+  0.5,
+  0.6,
+  1.3
+ ],
+ "blur": 4,
+ "sat": 1.3,
+ "bri": 1.08,
+ "rays": {
+  "cx": 0.45,
+  "cy": 0.5,
+  "n": 16,
+  "col": [
+   255,
+   240,
+   170
+  ],
+  "a": 36
+ },
+ "spot": {
+  "cx": 0.45,
+  "cy": 0.52,
+  "r": 0.18,
+  "col": [
+   255,
+   250,
+   215
+  ],
+  "a": 140
+ },
+ "items": [
+  {
+   "img": "g5_Топа_udiv.png",
+   "cx": 0.64,
+   "bottom": 0.98,
+   "h": 0.62,
+   "outline": 5
+  },
+  {
+   "img": "v_sprout_GLAVNOE.png",
+   "cx": 0.44,
+   "bottom": 0.86,
+   "h": 0.62,
+   "outline": 5,
+   "glow": [
+    255,
+    240,
+    150
+   ],
+   "shadow": 0.35
+  },
+  {
+   "img": "g2_Рон_udiv.png",
+   "cx": 0.15,
+   "bottom": 1.06,
+   "h": 0.84,
+   "outline": 6
+  },
+  {
+   "img": "g1_Барсик_udiv.png",
+   "cx": 0.87,
+   "bottom": 1.06,
+   "h": 0.86,
+   "outline": 6,
+   "flip": true
+  }
+ ]
+}
