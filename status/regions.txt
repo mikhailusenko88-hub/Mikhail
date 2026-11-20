@@ -1,5 +1,5 @@
 Проверка: 2026-11-20 19:39 МСК
-Проб Globalping всего: 5607, в России: 176
+Проб Globalping всего: 5604, в России: 176
   1× Kazan — Alex Group
   1× Kazan — DLine Media
   1× Khabarovsk — Misaka Network
@@ -7,6 +7,7 @@
   1× Krasnodar — GENERAL IT RUS
   1× Kursk — Kurier
   1× Kursk — Kursktelecom
+  1× Mar'ino — TRC FIORD
   4× Moscow — AI DATACENTER
   1× Moscow — ANDREY LEBEDEV
   1× Moscow — ARGOTEL AS RU
@@ -52,7 +53,7 @@
   1× Moscow — RS-Media
   1× Moscow — RocketCloud.ru
   1× Moscow — SBCLOUD
-  3× Moscow — SERV.HOST GROUP
+  2× Moscow — SERV.HOST GROUP
   4× Moscow — Selectel
   1× Moscow — ServTech
   1× Moscow — Smart Ape
@@ -112,9 +113,43 @@
   1× Yekaterinburg — Izet Telecom Ural
   1× Yoshkar-Ola — Rostelecom
   1× Yuzhno-Sakhalinsk — S.SETEVAYA SVYAZ
-наш сервер :443: не удалось запустить (HTTP Error 400: Bad Request)
-наш сервер :22: не удалось запустить (HTTP Error 400: Bad Request)
-сосед Hoster.kz :443: не удалось запустить (HTTP Error 400: Bad Request)
+Городов: 29, запрашиваю до 62 проб
+наш сервер :443: не удалось запустить (HTTP Error 400: Bad Request) {
+  "error": {
+    "type": "validation_error",
+    "message": "Parameter validation failed.",
+    "params": {
+      "locations": "the sum of limits must be less than or equal to 50"
+    }
+  },
+  "links": {
+    "documentation": "https://globalping.io/docs/api.globalping.io#post-/v1/measurements"
+  }
+}
+наш сервер :22: не удалось запустить (HTTP Error 400: Bad Request) {
+  "error": {
+    "type": "validation_error",
+    "message": "Parameter validation failed.",
+    "params": {
+      "locations": "the sum of limits must be less than or equal to 50"
+    }
+  },
+  "links": {
+    "documentation": "https://globalping.io/docs/api.globalping.io#post-/v1/measurements"
+  }
+}
+сосед Hoster.kz :443: не удалось запустить (HTTP Error 400: Bad Request) {
+  "error": {
+    "type": "validation_error",
+    "message": "Parameter validation failed.",
+    "params": {
+      "locations": "the sum of limits must be less than or equal to 50"
+    }
+  },
+  "links": {
+    "documentation": "https://globalping.io/docs/api.globalping.io#post-/v1/measurements"
+  }
+}
 
 === Результат по точкам (регион — сеть: наш :443 | наш :22 | сосед :443)
 
