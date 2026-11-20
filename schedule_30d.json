@@ -1075,21 +1075,43 @@
   "date": "2026-11-21",
   "time": "09:00",
   "quotes": [
-   "chekhov_human",
-   "gorky_feat",
-   "krylov_accord"
+   "jpprov_seven",
+   "plato_victory",
+   "aurelius7_bear",
+   "seneca6_stars",
+   "tolstoy7_warriors"
   ],
   "scenes": [
-   "lavender",
-   "deer",
    "alpine"
   ],
-  "music": "golos_prostor",
+  "music": "orch_dorian",
   "seed": 1049,
-  "title": "Берегите в себе человека 🤍 Три мысли на сегодня | Anton Chekhov #shorts",
-  "description": "Три мысли классиков на акварели: Антон Чехов · Максим Горький · Иван Крылов.\nThree timeless thoughts on watercolor: Anton Chekhov · Maxim Gorky · Ivan Krylov.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d17_1",
-  "music_was": "orch_dorian"
+  "title": "5 МЫСЛЕЙ, КОТОРЫЕ ДЕЛАЮТ СИЛЬНЕЕ ✨ Платон, Марк Аврелий, Толстой #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Упади семь раз — поднимись восемь. — Японская пословица\n2. Самая большая победа — победа над собой. — Платон\n3. Ни с кем не случается ничего такого, чего он не в силах вынести. — Марк Аврелий\n4. Нет лёгкого пути от земли к звёздам. — Сенека\n5. Нет сильнее тех двух воинов — терпение и время. — Лев Толстой\n\nFive timeless thoughts: Japanese proverb · Plato · Marcus Aurelius · Seneca · Leo Tolstoy.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d17_1L",
+  "was": {
+   "quotes": [
+    "chekhov_human",
+    "gorky_feat",
+    "krylov_accord"
+   ],
+   "scenes": [
+    "lavender",
+    "deer",
+    "alpine"
+   ],
+   "music": "golos_prostor",
+   "title": "Берегите в себе человека 🤍 Три мысли на сегодня | Anton Chekhov #shorts",
+   "description": "Три мысли классиков на акварели: Антон Чехов · Максим Горький · Иван Крылов.\nThree timeless thoughts on watercolor: Anton Chekhov · Maxim Gorky · Ivan Krylov.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d17_1",
+   "music_was": "orch_dorian"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ, КОТОРЫЕ",
+   "ДЕЛАЮТ СИЛЬНЕЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 50,
@@ -1143,20 +1165,42 @@
   "date": "2026-11-22",
   "time": "09:00",
   "quotes": [
-   "suvorov_training",
-   "shakespeare_self",
-   "emerson_day"
+   "aurelius6_be",
+   "seneca7_imagine",
+   "seneca7_port",
+   "aurelius6_last",
+   "epictetus6_free"
   ],
   "scenes": [
-   "savanna",
-   "lighthouse",
-   "deer"
+   "lighthouse"
   ],
   "music": "orch_hope",
   "seed": 1052,
-  "title": "Тяжело в учении — легко в бою 🤍 Три мысли на сегодня | Suvorov #shorts",
-  "description": "Три мысли классиков на акварели: Александр Суворов · Уильям Шекспир · Ральф Уолдо Эмерсон.\nThree timeless thoughts on watercolor: Alexander Suvorov · William Shakespeare · Ralph Waldo Emerson.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d18_1"
+  "title": "5 ПРАВИЛ СТОИКОВ, КОТОРЫЕ МЕНЯЮТ ЖИЗНЬ ✨ Сенека, Марк Аврелий, Эпиктет #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Хватит рассуждать о том, каким должен быть хороший человек. Будь им. — Марк Аврелий\n2. Мы чаще страдаем в воображении, чем в действительности. — Сенека\n3. Если не знаешь, к какой гавани плывёшь, ни один ветер не будет попутным. — Сенека\n4. Делай каждое дело так, будто оно последнее в твоей жизни. — Марк Аврелий\n5. Свобода приходит не через исполнение желаний, а через освобождение от них. — Эпиктет\n\nFive timeless thoughts: Marcus Aurelius · Seneca · Epictetus.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d18_1L",
+  "was": {
+   "quotes": [
+    "suvorov_training",
+    "shakespeare_self",
+    "emerson_day"
+   ],
+   "scenes": [
+    "savanna",
+    "lighthouse",
+    "deer"
+   ],
+   "music": "orch_hope",
+   "title": "Тяжело в учении — легко в бою 🤍 Три мысли на сегодня | Suvorov #shorts",
+   "description": "Три мысли классиков на акварели: Александр Суворов · Уильям Шекспир · Ральф Уолдо Эмерсон.\nThree timeless thoughts on watercolor: Alexander Suvorov · William Shakespeare · Ralph Waldo Emerson.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d18_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 ПРАВИЛ СТОИКОВ,",
+   "КОТОРЫЕ МЕНЯЮТ ЖИЗНЬ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 53,
@@ -1210,21 +1254,43 @@
   "date": "2026-11-23",
   "time": "09:00",
   "quotes": [
-   "voltaire_questions",
-   "johnson_objections",
-   "fet_beauty"
+   "kzprov_knowledge",
+   "kz7_listen",
+   "kz7_father",
+   "ruprov5_hands",
+   "ruprov5_honour"
   ],
   "scenes": [
-   "waterfall",
-   "lavender",
-   "lighthouse"
+   "steppe_horses"
   ],
-  "music": "golos_rassvet",
+  "music": "orch_sea",
   "seed": 1055,
-  "title": "Суди о человеке по его вопросам, а не по ответам 🤍 Три мысли на сегодня | Voltaire #shorts",
-  "description": "Три мысли классиков на акварели: Вольтер · Сэмюэл Джонсон · Афанасий Фет.\nThree timeless thoughts on watercolor: Voltaire · Samuel Johnson · Afanasy Fet.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d19_1",
-  "music_was": "orch_sea"
+  "title": "5 ПОСЛОВИЦ, ПРОВЕРЕННЫХ ВЕКАМИ ✨ казахская и русская мудрость #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Сильный победит одного, знающий — тысячу. — Казахская пословица\n2. Говори мало — слушай много. — Казахская пословица\n3. Кто видел, как отец стрелы строгает, и сам научится. — Казахская пословица\n4. Глаза боятся, а руки делают. — Русская пословица\n5. Береги честь смолоду. — Русская пословица\n\nFive timeless thoughts: Kazakh proverb · Russian proverb.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d19_1L",
+  "was": {
+   "quotes": [
+    "voltaire_questions",
+    "johnson_objections",
+    "fet_beauty"
+   ],
+   "scenes": [
+    "waterfall",
+    "lavender",
+    "lighthouse"
+   ],
+   "music": "golos_rassvet",
+   "title": "Суди о человеке по его вопросам, а не по ответам 🤍 Три мысли на сегодня | Voltaire #shorts",
+   "description": "Три мысли классиков на акварели: Вольтер · Сэмюэл Джонсон · Афанасий Фет.\nThree timeless thoughts on watercolor: Voltaire · Samuel Johnson · Afanasy Fet.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d19_1",
+   "music_was": "orch_sea"
+  },
+  "kind": "list",
+  "header": [
+   "5 ПОСЛОВИЦ,",
+   "ПРОВЕРЕННЫХ ВЕКАМИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 56,
@@ -1278,20 +1344,42 @@
   "date": "2026-11-24",
   "time": "09:00",
   "quotes": [
-   "epictetus",
-   "kzprov_home",
-   "tolstoy_change"
+   "dostoevsky_lovelife",
+   "seneca_long",
+   "tolstoy_wait",
+   "ruprov5_friend",
+   "goethe_today"
   ],
   "scenes": [
-   "wheat",
-   "lotus",
-   "winter"
+   "lone_tree"
   ],
   "music": "orch_lullaby",
   "seed": 1058,
-  "title": "Людей тревожат не вещи, а их мнения о вещах 🤍 Три мысли на сегодня | Epictetus #shorts",
-  "description": "Три мысли классиков на акварели: Эпиктет · Казахская пословица · Лев Толстой.\nThree timeless thoughts on watercolor: Epictetus · Kazakh proverb · Leo Tolstoy.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d20_1"
+  "title": "С ВОЗРАСТОМ ПОНИМАЕШЬ: 5 простых истин ✨ Достоевский, Сенека, Толстой #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Надо любить жизнь больше, чем смысл жизни. — Фёдор Достоевский\n2. Жизнь долга, если ею умело пользоваться. — Сенека\n3. Всё приходит вовремя для того, кто умеет ждать. — Лев Толстой\n4. Старый друг лучше новых двух. — Русская пословица\n5. Ничто не стоит больше, чем этот день. — Иоганн Вольфганг Гёте\n\nFive timeless thoughts: Fyodor Dostoevsky · Seneca · Leo Tolstoy · Russian proverb · Johann Wolfgang von Goethe.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d20_1L",
+  "was": {
+   "quotes": [
+    "epictetus",
+    "kzprov_home",
+    "tolstoy_change"
+   ],
+   "scenes": [
+    "wheat",
+    "lotus",
+    "winter"
+   ],
+   "music": "orch_lullaby",
+   "title": "Людей тревожат не вещи, а их мнения о вещах 🤍 Три мысли на сегодня | Epictetus #shorts",
+   "description": "Три мысли классиков на акварели: Эпиктет · Казахская пословица · Лев Толстой.\nThree timeless thoughts on watercolor: Epictetus · Kazakh proverb · Leo Tolstoy.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d20_1"
+  },
+  "kind": "list",
+  "header": [
+   "С ВОЗРАСТОМ",
+   "ПОНИМАЕШЬ:"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 59,
@@ -1345,21 +1433,43 @@
   "date": "2026-11-25",
   "time": "09:00",
   "quotes": [
-   "cnprov_door",
-   "montaigne_fear",
-   "thoreau_price"
+   "emerson",
+   "bacon7_friendship",
+   "cervantes7_company",
+   "ruprov5_trouble",
+   "kz7_salt"
   ],
   "scenes": [
-   "meadow",
-   "autumn",
-   "aurora"
+   "cabin"
   ],
-  "music": "golos_gimn",
+  "music": "orch_dawn",
   "seed": 1061,
-  "title": "Учитель открывает дверь, но входишь ты сам 🤍 Три мысли на сегодня | Chinese proverb #shorts",
-  "description": "Три мысли классиков на акварели: Китайская пословица · Мишель де Монтень · Генри Дэвид Торо.\nThree timeless thoughts on watercolor: Chinese proverb · Michel de Montaigne · Henry David Thoreau.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d21_1",
-  "music_was": "orch_dawn"
+  "title": "5 МЫСЛЕЙ О НАСТОЯЩЕЙ ДРУЖБЕ ✨ Эмерсон, Бэкон, Сервантес #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Единственный способ иметь друга — быть им. — Ральф Уолдо Эмерсон\n2. Дружба удваивает радость и делит горе пополам. — Фрэнсис Бэкон\n3. Скажи мне, с кем ты водишься, и я скажу, кто ты. — Мигель де Сервантес\n4. Друзья познаются в беде. — Русская пословица\n5. Человек без друга — что еда без соли. — Казахская пословица\n\nFive timeless thoughts: Ralph Waldo Emerson · Francis Bacon · Miguel de Cervantes · Russian proverb · Kazakh proverb.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d21_1L",
+  "was": {
+   "quotes": [
+    "cnprov_door",
+    "montaigne_fear",
+    "thoreau_price"
+   ],
+   "scenes": [
+    "meadow",
+    "autumn",
+    "aurora"
+   ],
+   "music": "golos_gimn",
+   "title": "Учитель открывает дверь, но входишь ты сам 🤍 Три мысли на сегодня | Chinese proverb #shorts",
+   "description": "Три мысли классиков на акварели: Китайская пословица · Мишель де Монтень · Генри Дэвид Торо.\nThree timeless thoughts on watercolor: Chinese proverb · Michel de Montaigne · Henry David Thoreau.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d21_1",
+   "music_was": "orch_dawn"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О НАСТОЯЩЕЙ ДРУЖБЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 62,
@@ -1413,20 +1523,42 @@
   "date": "2026-11-26",
   "time": "09:00",
   "quotes": [
-   "chekhov_once",
-   "flaubert_order",
-   "kant_stars"
+   "franklin_time",
+   "virgil7_time",
+   "seneca7_day",
+   "derzhavin_river",
+   "khayyam7_today"
   ],
   "scenes": [
-   "balloons",
-   "rain_window",
-   "lavender"
+   "sunrise"
   ],
   "music": "orch_night",
   "seed": 1064,
-  "title": "Жизнь даётся один раз, и хочется прожить её бодро… 🤍 Три мысли на сегодня | Anton Chekhov #shorts",
-  "description": "Три мысли классиков на акварели: Антон Чехов · Гюстав Флобер · Иммануил Кант.\nThree timeless thoughts on watercolor: Anton Chekhov · Gustave Flaubert · Immanuel Kant.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d22_1"
+  "title": "5 МЫСЛЕЙ О ВРЕМЕНИ ✨ Франклин, Вергилий, Сенека #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Потерянное время не найти вновь. — Бенджамин Франклин\n2. Бежит невозвратное время. — Вергилий\n3. Считай каждый день отдельной жизнью. — Сенека\n4. Река времён в своём стремленьи уносит все дела людей… — Гавриил Державин\n5. Неродившееся завтра, умершее вчера — зачем о них тревожиться, если сегодня сладко? — Омар Хайям\n\nFive timeless thoughts: Benjamin Franklin · Virgil · Seneca · Gavrila Derzhavin · Omar Khayyam.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d22_1L",
+  "was": {
+   "quotes": [
+    "chekhov_once",
+    "flaubert_order",
+    "kant_stars"
+   ],
+   "scenes": [
+    "balloons",
+    "rain_window",
+    "lavender"
+   ],
+   "music": "orch_night",
+   "title": "Жизнь даётся один раз, и хочется прожить её бодро… 🤍 Три мысли на сегодня | Anton Chekhov #shorts",
+   "description": "Три мысли классиков на акварели: Антон Чехов · Гюстав Флобер · Иммануил Кант.\nThree timeless thoughts on watercolor: Anton Chekhov · Gustave Flaubert · Immanuel Kant.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d22_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ВРЕМЕНИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 65,
@@ -1480,21 +1612,43 @@
   "date": "2026-11-27",
   "time": "09:00",
   "quotes": [
-   "balzac_walk",
-   "ovid_pain",
-   "jerome_idle"
+   "dostoevsky5_money",
+   "thoreau_price",
+   "seneca_poor",
+   "thoreau7_rich",
+   "epicurus_enjoy"
   ],
   "scenes": [
-   "dunes",
-   "lotus",
-   "wheat"
+   "canyon"
   ],
-  "music": "golos_doroga",
+  "music": "orch_horns",
   "seed": 1067,
-  "title": "Чтобы дойти до цели, надо прежде всего идти 🤍 Три мысли на сегодня | Honoré de Balzac #shorts",
-  "description": "Три мысли классиков на акварели: Оноре де Бальзак · Овидий · Джером К. Джером.\nThree timeless thoughts on watercolor: Honoré de Balzac · Ovid · Jerome K. Jerome.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d23_1",
-  "music_was": "orch_horns"
+  "title": "5 МЫСЛЕЙ О ДЕНЬГАХ И БОГАТСТВЕ ✨ Достоевский, Торо, Сенека #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Деньги есть чеканенная свобода. — Фёдор Достоевский\n2. Цена любой вещи — это количество жизни, которое ты отдаёшь за неё. — Генри Дэвид Торо\n3. Беден не тот, у кого мало, а тот, кто хочет большего. — Сенека\n4. Человек богат пропорционально числу вещей, без которых может обойтись. — Генри Дэвид Торо\n5. Не то, что мы имеем, а то, чем наслаждаемся, составляет наше богатство. — Эпикур\n\nFive timeless thoughts: Fyodor Dostoevsky · Henry David Thoreau · Seneca · Epicurus.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d23_1L",
+  "was": {
+   "quotes": [
+    "balzac_walk",
+    "ovid_pain",
+    "jerome_idle"
+   ],
+   "scenes": [
+    "dunes",
+    "lotus",
+    "wheat"
+   ],
+   "music": "golos_doroga",
+   "title": "Чтобы дойти до цели, надо прежде всего идти 🤍 Три мысли на сегодня | Honoré de Balzac #shorts",
+   "description": "Три мысли классиков на акварели: Оноре де Бальзак · Овидий · Джером К. Джером.\nThree timeless thoughts on watercolor: Honoré de Balzac · Ovid · Jerome K. Jerome.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d23_1",
+   "music_was": "orch_horns"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ДЕНЬГАХ И БОГАТСТВЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 68,
@@ -1548,20 +1702,42 @@
   "date": "2026-11-28",
   "time": "09:00",
   "quotes": [
-   "franklin_time",
-   "pushkin_habit",
-   "blake_grain"
+   "kzprov5_parents",
+   "exupery_children",
+   "wordsworth6_child",
+   "ru7_home",
+   "payne7_home"
   ],
   "scenes": [
-   "sea",
-   "sunflowers",
-   "sunrise"
+   "steppe_yurts"
   ],
   "music": "orch_lydian",
   "seed": 1070,
-  "title": "Потерянное время не найти вновь 🤍 Три мысли на сегодня | Franklin #shorts",
-  "description": "Три мысли классиков на акварели: Бенджамин Франклин · Александр Пушкин · Уильям Блейк.\nThree timeless thoughts on watercolor: Benjamin Franklin · Alexander Pushkin · William Blake.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d24_1"
+  "title": "5 МЫСЛЕЙ О СЕМЬЕ И ДОМЕ ✨ Сент-Экзюпери, Вордсворт, Пейн #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Почитай отца и мать — и дети будут почитать тебя. — Казахская пословица\n2. Все взрослые сначала были детьми, только мало кто из них об этом помнит. — Антуан де Сент-Экзюпери\n3. Ребёнок — отец человека. — Уильям Вордсворт\n4. В гостях хорошо, а дома лучше. — Русская пословица\n5. Пусть он и скромен — нет места лучше, чем дом. — Джон Говард Пейн\n\nFive timeless thoughts: Kazakh proverb · Antoine de Saint-Exupéry · William Wordsworth · Russian proverb · John Howard Payne.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d24_1L",
+  "was": {
+   "quotes": [
+    "franklin_time",
+    "pushkin_habit",
+    "blake_grain"
+   ],
+   "scenes": [
+    "sea",
+    "sunflowers",
+    "sunrise"
+   ],
+   "music": "orch_lydian",
+   "title": "Потерянное время не найти вновь 🤍 Три мысли на сегодня | Franklin #shorts",
+   "description": "Три мысли классиков на акварели: Бенджамин Франклин · Александр Пушкин · Уильям Блейк.\nThree timeless thoughts on watercolor: Benjamin Franklin · Alexander Pushkin · William Blake.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d24_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О СЕМЬЕ И ДОМЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 71,
@@ -1615,21 +1791,43 @@
   "date": "2026-11-29",
   "time": "09:00",
   "quotes": [
-   "andersen_music",
-   "dickinson_sweet",
-   "tolstoy_thoughts"
+   "gibran_work",
+   "carlyle7_work",
+   "edison_genius",
+   "nekrasov_will",
+   "kz7_bread"
   ],
   "scenes": [
-   "meadow",
-   "birch",
-   "lavender"
+   "wheat"
   ],
-  "music": "golos_kolybelnaya",
+  "music": "orch_cello",
   "seed": 1073,
-  "title": "Там, где кончаются слова, начинается музыка 🤍 Три мысли на сегодня | Andersen #shorts",
-  "description": "Три мысли классиков на акварели: Ханс Кристиан Андерсен · Эмили Дикинсон · Лев Толстой.\nThree timeless thoughts on watercolor: Hans Christian Andersen · Emily Dickinson · Leo Tolstoy.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d25_1",
-  "music_was": "orch_cello"
+  "title": "5 МЫСЛЕЙ О ТРУДЕ И ДЕЛЕ ✨ Джебран, Карлейль, Эдисон #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Труд — это любовь, ставшая зримой. — Джебран Халиль Джебран\n2. Блажен тот, кто нашёл своё дело; пусть он не ищет иного блаженства. — Томас Карлейль\n3. Гений — это один процент вдохновения и девяносто девять процентов пота. — Томас Эдисон\n4. Воля и труд человека дивные дивы творят! — Николай Некрасов\n5. Хлеб, заработанный трудом, сладок. — Казахская пословица\n\nFive timeless thoughts: Kahlil Gibran · Thomas Carlyle · Thomas Edison · Nikolai Nekrasov · Kazakh proverb.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d25_1L",
+  "was": {
+   "quotes": [
+    "andersen_music",
+    "dickinson_sweet",
+    "tolstoy_thoughts"
+   ],
+   "scenes": [
+    "meadow",
+    "birch",
+    "lavender"
+   ],
+   "music": "golos_kolybelnaya",
+   "title": "Там, где кончаются слова, начинается музыка 🤍 Три мысли на сегодня | Andersen #shorts",
+   "description": "Три мысли классиков на акварели: Ханс Кристиан Андерсен · Эмили Дикинсон · Лев Толстой.\nThree timeless thoughts on watercolor: Hans Christian Andersen · Emily Dickinson · Leo Tolstoy.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d25_1",
+   "music_was": "orch_cello"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ТРУДЕ И ДЕЛЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 74,
@@ -1683,20 +1881,42 @@
   "date": "2026-11-30",
   "time": "09:00",
   "quotes": [
-   "emerson_enthusiasm",
+   "laozi6_speak",
+   "zeno_ears",
    "kipling_words",
-   "ecclesiastes_wind"
+   "ru7_sparrow",
+   "jp7_kindword"
   ],
   "scenes": [
-   "waterfall",
-   "autumn",
-   "night"
+   "moon_sea"
   ],
   "music": "orch_winter",
   "seed": 1076,
-  "title": "Ничто великое не совершалось без воодушевления 🤍 Три мысли на сегодня | Emerson #shorts",
-  "description": "Три мысли классиков на акварели: Ральф Уолдо Эмерсон · Редьярд Киплинг · Екклесиаст.\nThree timeless thoughts on watercolor: Ralph Waldo Emerson · Rudyard Kipling · Ecclesiastes.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d26_1"
+  "title": "5 МЫСЛЕЙ О СЛОВЕ И МОЛЧАНИИ ✨ Лао-цзы, Китийский, Киплинг #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Знающий не говорит, говорящий не знает. — Лао-цзы\n2. У нас два уха и один рот, чтобы больше слушать и меньше говорить. — Зенон Китийский\n3. Слова — самое сильное лекарство, известное человечеству. — Редьярд Киплинг\n4. Слово не воробей: вылетит — не поймаешь. — Русская пословица\n5. Одно доброе слово может согреть три зимних месяца. — Японская пословица\n\nFive timeless thoughts: Lao Tzu · Zeno of Citium · Rudyard Kipling · Russian proverb · Japanese proverb.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d26_1L",
+  "was": {
+   "quotes": [
+    "emerson_enthusiasm",
+    "kipling_words",
+    "ecclesiastes_wind"
+   ],
+   "scenes": [
+    "waterfall",
+    "autumn",
+    "night"
+   ],
+   "music": "orch_winter",
+   "title": "Ничто великое не совершалось без воодушевления 🤍 Три мысли на сегодня | Emerson #shorts",
+   "description": "Три мысли классиков на акварели: Ральф Уолдо Эмерсон · Редьярд Киплинг · Екклесиаст.\nThree timeless thoughts on watercolor: Ralph Waldo Emerson · Rudyard Kipling · Ecclesiastes.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d26_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О СЛОВЕ И МОЛЧАНИИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 77,
@@ -1750,21 +1970,43 @@
   "date": "2026-12-01",
   "time": "09:00",
   "quotes": [
-   "seneca_teach",
-   "tolstoy_wait",
-   "kipling_if"
+   "kzprov5_patience",
+   "lafontaine_patience",
+   "ovid_drop",
+   "epictetus7_fig",
+   "ovid_pain"
   ],
   "scenes": [
-   "cabin",
-   "birch",
-   "windmill"
+   "tianshan_winter"
   ],
-  "music": "golos_prostor",
+  "music": "orch_dorian",
   "seed": 1079,
-  "title": "Уча других, мы учимся сами 🤍 Три мысли на сегодня | Seneca #shorts",
-  "description": "Три мысли классиков на акварели: Сенека · Лев Толстой · Редьярд Киплинг.\nThree timeless thoughts on watercolor: Seneca · Leo Tolstoy · Rudyard Kipling.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d27_1",
-  "music_was": "orch_dorian"
+  "title": "5 МЫСЛЕЙ О ТЕРПЕНИИ ✨ Лафонтен, Овидий, Эпиктет #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Конец терпения — чистое золото. — Казахская пословица\n2. Терпение и время дают больше, чем сила и ярость. — Жан де Лафонтен\n3. Капля долбит камень не силой, а частым падением. — Овидий\n4. Ничто великое не возникает сразу — даже виноградная гроздь или смоква. — Эпиктет\n5. Терпи и будь твёрд: эта боль когда-нибудь принесёт тебе пользу. — Овидий\n\nFive timeless thoughts: Kazakh proverb · Jean de La Fontaine · Ovid · Epictetus.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d27_1L",
+  "was": {
+   "quotes": [
+    "seneca_teach",
+    "tolstoy_wait",
+    "kipling_if"
+   ],
+   "scenes": [
+    "cabin",
+    "birch",
+    "windmill"
+   ],
+   "music": "golos_prostor",
+   "title": "Уча других, мы учимся сами 🤍 Три мысли на сегодня | Seneca #shorts",
+   "description": "Три мысли классиков на акварели: Сенека · Лев Толстой · Редьярд Киплинг.\nThree timeless thoughts on watercolor: Seneca · Leo Tolstoy · Rudyard Kipling.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d27_1",
+   "music_was": "orch_dorian"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ТЕРПЕНИИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 80,
@@ -1818,20 +2060,42 @@
   "date": "2026-12-02",
   "time": "09:00",
   "quotes": [
-   "dostoevsky_purpose",
+   "bacon7_power",
    "plutarch_fire",
-   "chekhov_beautiful"
+   "kzprov5_knowledge",
+   "confucius7_think",
+   "aristotle7_roots"
   ],
   "scenes": [
-   "candle",
-   "autumn",
-   "birch"
+   "street_lamp"
   ],
   "music": "orch_hope",
   "seed": 1082,
-  "title": "Жизнь задыхается без цели 🤍 Три мысли на сегодня | Dostoevsky #shorts",
-  "description": "Три мысли классиков на акварели: Фёдор Достоевский · Плутарх · Антон Чехов.\nThree timeless thoughts on watercolor: Fyodor Dostoevsky · Plutarch · Anton Chekhov.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d28_1"
+  "title": "5 МЫСЛЕЙ О ЗНАНИИ И УЧЁБЕ ✨ Бэкон, Плутарх, Конфуций #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Знание — сила. — Фрэнсис Бэкон\n2. Ум — не сосуд, который нужно наполнить, а огонь, который нужно зажечь. — Плутарх\n3. Знание — клад, который не иссякнет. — Казахская пословица\n4. Учиться и не размышлять — напрасно терять время; размышлять и не учиться — опасно. — Конфуций\n5. Корни учения горьки, а плоды сладки. — Аристотель\n\nFive timeless thoughts: Francis Bacon · Plutarch · Kazakh proverb · Confucius · Aristotle.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d28_1L",
+  "was": {
+   "quotes": [
+    "dostoevsky_purpose",
+    "plutarch_fire",
+    "chekhov_beautiful"
+   ],
+   "scenes": [
+    "candle",
+    "autumn",
+    "birch"
+   ],
+   "music": "orch_hope",
+   "title": "Жизнь задыхается без цели 🤍 Три мысли на сегодня | Dostoevsky #shorts",
+   "description": "Три мысли классиков на акварели: Фёдор Достоевский · Плутарх · Антон Чехов.\nThree timeless thoughts on watercolor: Fyodor Dostoevsky · Plutarch · Anton Chekhov.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d28_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ЗНАНИИ И УЧЁБЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 83,
@@ -1885,21 +2149,43 @@
   "date": "2026-12-03",
   "time": "09:00",
   "quotes": [
-   "gibran_work",
-   "aesop_slow",
-   "dante_origin"
+   "laozi_step",
+   "balzac_walk",
+   "af7_together",
+   "cnprov_slow",
+   "basho_seek"
   ],
   "scenes": [
-   "meadow",
-   "savanna",
-   "swans"
+   "steppe_horses"
   ],
-  "music": "golos_rassvet",
+  "music": "orch_sea",
   "seed": 1085,
-  "title": "Труд — это любовь, ставшая зримой 🤍 Три мысли на сегодня | Kahlil Gibran #shorts",
-  "description": "Три мысли классиков на акварели: Джебран Халиль Джебран · Эзоп · Данте Алигьери.\nThree timeless thoughts on watercolor: Kahlil Gibran · Aesop · Dante Alighieri.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d29_1",
-  "music_was": "orch_sea"
+  "title": "5 МЫСЛЕЙ О ДОРОГЕ И ПУТИ ✨ Лао-цзы, Бальзак, Басё #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Путь в тысячу ли начинается с первого шага. — Лао-цзы\n2. Чтобы дойти до цели, надо прежде всего идти. — Оноре де Бальзак\n3. Если хочешь идти быстро — иди один. Если хочешь идти далеко — идите вместе. — Африканская пословица\n4. Не бойся идти медленно — бойся стоять на месте. — Китайская пословица\n5. Не следуй по стопам древних — ищи то, что искали они. — Мацуо Басё\n\nFive timeless thoughts: Lao Tzu · Honoré de Balzac · African proverb · Chinese proverb · Matsuo Basho.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d29_1L",
+  "was": {
+   "quotes": [
+    "gibran_work",
+    "aesop_slow",
+    "dante_origin"
+   ],
+   "scenes": [
+    "meadow",
+    "savanna",
+    "swans"
+   ],
+   "music": "golos_rassvet",
+   "title": "Труд — это любовь, ставшая зримой 🤍 Три мысли на сегодня | Kahlil Gibran #shorts",
+   "description": "Три мысли классиков на акварели: Джебран Халиль Джебран · Эзоп · Данте Алигьери.\nThree timeless thoughts on watercolor: Kahlil Gibran · Aesop · Dante Alighieri.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d29_1",
+   "music_was": "orch_sea"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ДОРОГЕ И ПУТИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 86,
@@ -1953,20 +2239,42 @@
   "date": "2026-12-04",
   "time": "09:00",
   "quotes": [
-   "shakespeare_love",
-   "gogol_truths",
-   "abai_brick"
+   "aristotle_happy",
+   "korolenko_bird",
+   "prutkov",
+   "cn7_help",
+   "dostoevsky_happiness"
   ],
   "scenes": [
-   "sea",
-   "rain_window",
-   "deer"
+   "almaty_lake"
   ],
   "music": "orch_lullaby",
   "seed": 1088,
-  "title": "Люби всех, доверяй немногим, не делай зла никому 🤍 Три мысли на сегодня | Shakespeare #shorts",
-  "description": "Три мысли классиков на акварели: Уильям Шекспир · Николай Гоголь · Абай Кунанбаев.\nThree timeless thoughts on watercolor: William Shakespeare · Nikolai Gogol · Abai Kunanbaiuly.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d30_1"
+  "title": "5 МЫСЛЕЙ О СЧАСТЬЕ ✨ Аристотель, Короленко, Прутков #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Счастье зависит от нас самих. — Аристотель\n2. Человек создан для счастья, как птица для полёта. — Владимир Короленко\n3. Если хочешь быть счастливым, будь им. — Козьма Прутков\n4. Хочешь счастья на всю жизнь — помогай другим. — Китайская пословица\n5. Счастье не в счастье, а лишь в его достижении. — Фёдор Достоевский\n\nFive timeless thoughts: Aristotle · Vladimir Korolenko · Kozma Prutkov · Chinese proverb · Fyodor Dostoevsky.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d30_1L",
+  "was": {
+   "quotes": [
+    "shakespeare_love",
+    "gogol_truths",
+    "abai_brick"
+   ],
+   "scenes": [
+    "sea",
+    "rain_window",
+    "deer"
+   ],
+   "music": "orch_lullaby",
+   "title": "Люби всех, доверяй немногим, не делай зла никому 🤍 Три мысли на сегодня | Shakespeare #shorts",
+   "description": "Три мысли классиков на акварели: Уильям Шекспир · Николай Гоголь · Абай Кунанбаев.\nThree timeless thoughts on watercolor: William Shakespeare · Nikolai Gogol · Abai Kunanbaiuly.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d30_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О СЧАСТЬЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 89,
@@ -2020,21 +2328,43 @@
   "date": "2026-12-05",
   "time": "09:00",
   "quotes": [
-   "chesterton_angels",
-   "fet5_picture",
-   "exupery_children"
+   "aesop",
+   "seneca6_kindness",
+   "henryjames7_kind",
+   "shakespeare7_candle",
+   "chekhov_good"
   ],
   "scenes": [
-   "balloons",
-   "winter_village",
-   "meadow"
+   "winter_village"
   ],
-  "music": "golos_gimn",
+  "music": "orch_hope",
   "seed": 1091,
-  "title": "Ангелы умеют летать, потому что относятся к себе… 🤍 Три мысли на сегодня | G. K. Chesterton #shorts",
-  "description": "Три мысли классиков на акварели: Гилберт Честертон · Афанасий Фет · Антуан де Сент-Экзюпери.\nThree timeless thoughts on watercolor: G. K. Chesterton · Afanasy Fet · Antoine de Saint-Exupéry.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d31_1",
-  "music_was": "orch_hope"
+  "title": "5 МЫСЛЕЙ О ДОБРОТЕ ✨ Эзоп, Сенека, Джеймс #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Ни одно доброе дело, даже самое малое, не пропадает даром. — Эзоп\n2. Где бы ни был человек, там есть место для доброго дела. — Сенека\n3. Три вещи в жизни важны: первая — быть добрым, вторая — быть добрым, и третья — быть добрым. — Генри Джеймс\n4. Как далеко бросает лучи маленькая свеча! Так и доброе дело светит в недобром мире. — Уильям Шекспир\n5. Пока молоды, сильны, бодры, не уставайте делать добро! — Антон Чехов\n\nFive timeless thoughts: Aesop · Seneca · Henry James · William Shakespeare · Anton Chekhov.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d31_1L",
+  "was": {
+   "quotes": [
+    "chesterton_angels",
+    "fet5_picture",
+    "exupery_children"
+   ],
+   "scenes": [
+    "balloons",
+    "winter_village",
+    "meadow"
+   ],
+   "music": "golos_gimn",
+   "title": "Ангелы умеют летать, потому что относятся к себе… 🤍 Три мысли на сегодня | G. K. Chesterton #shorts",
+   "description": "Три мысли классиков на акварели: Гилберт Честертон · Афанасий Фет · Антуан де Сент-Экзюпери.\nThree timeless thoughts on watercolor: G. K. Chesterton · Afanasy Fet · Antoine de Saint-Exupéry.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d31_1",
+   "music_was": "orch_hope"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ДОБРОТЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 92,
@@ -2088,20 +2418,42 @@
   "date": "2026-12-06",
   "time": "09:00",
   "quotes": [
-   "wilde6_saint",
-   "tyutchev5_winter",
-   "fet5_spring"
+   "seneca_dare",
+   "montaigne_fear",
+   "gorky_feat",
+   "stevenson_courage",
+   "kant_courage"
   ],
   "scenes": [
-   "lotus",
-   "cabin",
-   "birch"
+   "lighthouse"
   ],
   "music": "orch_sea",
   "seed": 1094,
-  "title": "У каждого святого есть прошлое, у каждого грешника… 🤍 Три мысли на сегодня | Oscar Wilde #shorts",
-  "description": "Три мысли классиков на акварели: Оскар Уайльд · Фёдор Тютчев · Афанасий Фет.\nThree timeless thoughts on watercolor: Oscar Wilde · Fyodor Tyutchev · Afanasy Fet.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d32_1"
+  "title": "5 МЫСЛЕЙ О СМЕЛОСТИ ✨ Сенека, Монтень, Горький #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Мы не потому не решаемся, что трудно; трудно потому, что не решаемся. — Сенека\n2. Кто боится страдать, уже страдает от того, чего боится. — Мишель де Монтень\n3. В жизни всегда есть место подвигу. — Максим Горький\n4. Держи свои страхи при себе, но делись своей смелостью с другими. — Роберт Льюис Стивенсон\n5. Имей мужество пользоваться собственным умом. — Иммануил Кант\n\nFive timeless thoughts: Seneca · Michel de Montaigne · Maxim Gorky · Robert Louis Stevenson · Immanuel Kant.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d32_1L",
+  "was": {
+   "quotes": [
+    "wilde6_saint",
+    "tyutchev5_winter",
+    "fet5_spring"
+   ],
+   "scenes": [
+    "lotus",
+    "cabin",
+    "birch"
+   ],
+   "music": "orch_sea",
+   "title": "У каждого святого есть прошлое, у каждого грешника… 🤍 Три мысли на сегодня | Oscar Wilde #shorts",
+   "description": "Три мысли классиков на акварели: Оскар Уайльд · Фёдор Тютчев · Афанасий Фет.\nThree timeless thoughts on watercolor: Oscar Wilde · Fyodor Tyutchev · Afanasy Fet.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d32_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О СМЕЛОСТИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 95,
@@ -2155,21 +2507,43 @@
   "date": "2026-12-07",
   "time": "09:00",
   "quotes": [
-   "tyutchev5_met",
-   "twain6_cheer",
-   "dostoevsky5_earn"
+   "shelley_spring",
+   "ruskin_weather",
+   "no7_weather",
+   "ru7_sledge",
+   "ru7_frost"
   ],
   "scenes": [
-   "sakura",
-   "sunrise",
-   "rain_window"
+   "frozen_lake"
   ],
-  "music": "golos_doroga",
+  "music": "orch_lullaby",
   "seed": 1097,
-  "title": "Я встретил вас — и всё былое в отжившем сердце… 🤍 Три мысли на сегодня | Fyodor Tyutchev #shorts",
-  "description": "Три мысли классиков на акварели: Фёдор Тютчев · Марк Твен · Фёдор Достоевский.\nThree timeless thoughts on watercolor: Fyodor Tyutchev · Mark Twain · Fyodor Dostoevsky.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d33_1",
-  "music_was": "orch_lullaby"
+  "title": "5 МЫСЛЕЙ О ЗИМЕ ✨ Шелли, Рёскин #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Если пришла Зима, разве Весна далеко? — Перси Шелли\n2. Плохой погоды не бывает — есть разные виды хорошей. — Джон Рёскин\n3. Нет плохой погоды — есть плохая одежда. — Норвежская пословица\n4. Готовь сани летом, а телегу зимой. — Русская пословица\n5. Мороз невелик, да стоять не велит. — Русская пословица\n\nFive timeless thoughts: Percy Shelley · John Ruskin · Norwegian proverb · Russian proverb.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d33_1L",
+  "was": {
+   "quotes": [
+    "tyutchev5_met",
+    "twain6_cheer",
+    "dostoevsky5_earn"
+   ],
+   "scenes": [
+    "sakura",
+    "sunrise",
+    "rain_window"
+   ],
+   "music": "golos_doroga",
+   "title": "Я встретил вас — и всё былое в отжившем сердце… 🤍 Три мысли на сегодня | Fyodor Tyutchev #shorts",
+   "description": "Три мысли классиков на акварели: Фёдор Тютчев · Марк Твен · Фёдор Достоевский.\nThree timeless thoughts on watercolor: Fyodor Tyutchev · Mark Twain · Fyodor Dostoevsky.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d33_1",
+   "music_was": "orch_lullaby"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ЗИМЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 98,
@@ -2223,20 +2597,42 @@
   "date": "2026-12-08",
   "time": "09:00",
   "quotes": [
-   "goethe6_moment",
-   "einstein_mystery",
-   "pascal6_letter"
+   "heraclitus6_character",
+   "confucius6_demand",
+   "tolstoy_simple",
+   "plutarch6_habit",
+   "shakespeare_self"
   ],
   "scenes": [
-   "waterfall",
-   "forest_rays",
-   "rain_window"
+   "sea"
   ],
   "music": "orch_dawn",
   "seed": 1100,
-  "title": "Остановись, мгновенье, ты прекрасно 🤍 Три мысли на сегодня | Goethe #shorts",
-  "description": "Три мысли классиков на акварели: Иоганн Вольфганг Гёте · Альберт Эйнштейн · Блез Паскаль.\nThree timeless thoughts on watercolor: Johann Wolfgang von Goethe · Albert Einstein · Blaise Pascal.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d34_1"
+  "title": "5 МЫСЛЕЙ О ХАРАКТЕРЕ ✨ Гераклит, Конфуций, Толстой #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Характер человека — его судьба. — Гераклит\n2. Благородный человек требователен к себе, низкий — к другим. — Конфуций\n3. Сильные люди всегда просты. — Лев Толстой\n4. Характер — это просто привычка, ставшая долгой. — Плутарх\n5. Главное — будь верен самому себе. — Уильям Шекспир\n\nFive timeless thoughts: Heraclitus · Confucius · Leo Tolstoy · Plutarch · William Shakespeare.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d34_1L",
+  "was": {
+   "quotes": [
+    "goethe6_moment",
+    "einstein_mystery",
+    "pascal6_letter"
+   ],
+   "scenes": [
+    "waterfall",
+    "forest_rays",
+    "rain_window"
+   ],
+   "music": "orch_dawn",
+   "title": "Остановись, мгновенье, ты прекрасно 🤍 Три мысли на сегодня | Goethe #shorts",
+   "description": "Три мысли классиков на акварели: Иоганн Вольфганг Гёте · Альберт Эйнштейн · Блез Паскаль.\nThree timeless thoughts on watercolor: Johann Wolfgang von Goethe · Albert Einstein · Blaise Pascal.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d34_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ХАРАКТЕРЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 101,
@@ -2290,21 +2686,43 @@
   "date": "2026-12-09",
   "time": "09:00",
   "quotes": [
-   "ruprov5_trouble",
-   "turgenev5_roses",
-   "bunin5_passes"
+   "cicero",
+   "dumas_hope",
+   "fuller7_dawn",
+   "jp7_rain",
+   "ko7_sky"
   ],
   "scenes": [
-   "candle",
-   "meadow",
-   "beach"
+   "sunrise"
   ],
-  "music": "golos_kolybelnaya",
+  "music": "orch_night",
   "seed": 1103,
-  "title": "Друзья познаются в беде 🤍 Три мысли на сегодня | Russian proverb #shorts",
-  "description": "Три мысли классиков на акварели: Русская пословица · Иван Тургенев · Иван Бунин.\nThree timeless thoughts on watercolor: Russian proverb · Ivan Turgenev · Ivan Bunin.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d35_1",
-  "music_was": "orch_night"
+  "title": "5 МЫСЛЕЙ О НАДЕЖДЕ ✨ Цицерон, Дюма, Фуллер #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Пока дышу — надеюсь. — Цицерон\n2. Вся человеческая мудрость заключена в двух словах: ждать и надеяться. — Александр Дюма\n3. Темнее всего — перед рассветом. — Томас Фуллер\n4. После дождя земля становится твёрже. — Японская пословица\n5. Даже если небо рухнет, найдётся дыра, чтобы выбраться. — Корейская пословица\n\nFive timeless thoughts: Cicero · Alexandre Dumas · Thomas Fuller · Japanese proverb · Korean proverb.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d35_1L",
+  "was": {
+   "quotes": [
+    "ruprov5_trouble",
+    "turgenev5_roses",
+    "bunin5_passes"
+   ],
+   "scenes": [
+    "candle",
+    "meadow",
+    "beach"
+   ],
+   "music": "golos_kolybelnaya",
+   "title": "Друзья познаются в беде 🤍 Три мысли на сегодня | Russian proverb #shorts",
+   "description": "Три мысли классиков на акварели: Русская пословица · Иван Тургенев · Иван Бунин.\nThree timeless thoughts on watercolor: Russian proverb · Ivan Turgenev · Ivan Bunin.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d35_1",
+   "music_was": "orch_night"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О НАДЕЖДЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 104,
@@ -2358,20 +2776,42 @@
   "date": "2026-12-10",
   "time": "09:00",
   "quotes": [
-   "juvenal_mind",
-   "longfellow_rain",
-   "tagore6_roots"
+   "shakespeare7_mind",
+   "seneca7_love",
+   "ovid6_lovable",
+   "tennyson_loved",
+   "tolstoy7_hearts"
   ],
   "scenes": [
-   "alpine",
-   "winter_village",
-   "wheat"
+   "moon_sea"
   ],
   "music": "orch_horns",
   "seed": 1106,
-  "title": "В здоровом теле — здоровый дух 🤍 Три мысли на сегодня | Juvenal #shorts",
-  "description": "Три мысли классиков на акварели: Ювенал · Генри Лонгфелло · Рабиндранат Тагор.\nThree timeless thoughts on watercolor: Juvenal · Henry Longfellow · Rabindranath Tagore.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d36_1"
+  "title": "5 МЫСЛЕЙ О ЛЮБВИ ✨ Шекспир, Сенека, Овидий #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Любовь смотрит не глазами, а душой. — Уильям Шекспир\n2. Хочешь, чтобы тебя любили, — люби. — Сенека\n3. Хочешь, чтобы тебя любили, — будь достоин любви. — Овидий\n4. Лучше любить и потерять, чем никогда не любить. — Альфред Теннисон\n5. Сколько сердец, столько и родов любви. — Лев Толстой\n\nFive timeless thoughts: William Shakespeare · Seneca · Ovid · Alfred Tennyson · Leo Tolstoy.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d36_1L",
+  "was": {
+   "quotes": [
+    "juvenal_mind",
+    "longfellow_rain",
+    "tagore6_roots"
+   ],
+   "scenes": [
+    "alpine",
+    "winter_village",
+    "wheat"
+   ],
+   "music": "orch_horns",
+   "title": "В здоровом теле — здоровый дух 🤍 Три мысли на сегодня | Juvenal #shorts",
+   "description": "Три мысли классиков на акварели: Ювенал · Генри Лонгфелло · Рабиндранат Тагор.\nThree timeless thoughts on watercolor: Juvenal · Henry Longfellow · Rabindranath Tagore.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d36_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ЛЮБВИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 107,
@@ -2425,21 +2865,43 @@
   "date": "2026-12-11",
   "time": "09:00",
   "quotes": [
-   "ruprov5_slow",
-   "basho_seek",
-   "cor_love"
+   "tolstoy_change",
+   "cnprov_wind",
+   "aurelius6_change",
+   "lat7_times",
+   "heraclitus_river"
   ],
   "scenes": [
-   "winter",
-   "poppies",
-   "birch"
+   "boat_dusk"
   ],
-  "music": "golos_prostor",
+  "music": "orch_lydian",
   "seed": 1109,
-  "title": "Тише едешь — дальше будешь 🤍 Три мысли на сегодня | Russian proverb #shorts",
-  "description": "Три мысли классиков на акварели: Русская пословица · Мацуо Басё · Апостол Павел.\nThree timeless thoughts on watercolor: Russian proverb · Matsuo Basho · Apostle Paul.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d37_1",
-  "music_was": "orch_lydian"
+  "title": "5 МЫСЛЕЙ О ПЕРЕМЕНАХ ✨ Толстой, Марк Аврелий, Гераклит #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Каждый хочет изменить человечество, но никто не задумывается о том, как изменить себя. — Лев Толстой\n2. Когда дует ветер перемен, одни строят стены, а другие — ветряные мельницы. — Китайская пословица\n3. Утрата — не что иное, как перемена, а перемены — радость природы. — Марк Аврелий\n4. Времена меняются, и мы меняемся вместе с ними. — Латинская пословица\n5. Нельзя дважды войти в одну и ту же реку. — Гераклит\n\nFive timeless thoughts: Leo Tolstoy · Chinese proverb · Marcus Aurelius · Latin proverb · Heraclitus.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d37_1L",
+  "was": {
+   "quotes": [
+    "ruprov5_slow",
+    "basho_seek",
+    "cor_love"
+   ],
+   "scenes": [
+    "winter",
+    "poppies",
+    "birch"
+   ],
+   "music": "golos_prostor",
+   "title": "Тише едешь — дальше будешь 🤍 Три мысли на сегодня | Russian proverb #shorts",
+   "description": "Три мысли классиков на акварели: Русская пословица · Мацуо Басё · Апостол Павел.\nThree timeless thoughts on watercolor: Russian proverb · Matsuo Basho · Apostle Paul.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d37_1",
+   "music_was": "orch_lydian"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ПЕРЕМЕНАХ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 110,
@@ -2493,20 +2955,42 @@
   "date": "2026-12-12",
   "time": "09:00",
   "quotes": [
-   "augustus_hasten",
-   "ilf_ice",
-   "confucius6_learn"
+   "chekhov_once",
+   "dickinson_sweet",
+   "seneca7_play",
+   "wilde_live",
+   "maupassant_life"
   ],
   "scenes": [
-   "steppe_yurts",
-   "winter",
-   "sakura"
+   "lone_tree"
   ],
   "music": "orch_cello",
   "seed": 1112,
-  "title": "Спеши медленно 🤍 Три мысли на сегодня | Emperor Augustus #shorts",
-  "description": "Три мысли классиков на акварели: Император Август · Ильф и Петров · Конфуций.\nThree timeless thoughts on watercolor: Emperor Augustus · Ilf and Petrov · Confucius.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d38_1"
+  "title": "5 МУДРЫХ МЫСЛЕЙ О ЖИЗНИ ✨ Чехов, Дикинсон, Сенека #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Жизнь даётся один раз, и хочется прожить её бодро, осмысленно, красиво. — Антон Чехов\n2. Жизнь так сладка потому, что она никогда не повторится. — Эмили Дикинсон\n3. Жизнь — как пьеса: важно не то, долго ли она длится, а то, хорошо ли сыграна. — Сенека\n4. Жить — редчайшая вещь на свете. Большинство людей просто существуют. — Оскар Уайльд\n5. Жизнь, видите ли, никогда не бывает ни так хороша, ни так плоха, как думается. — Ги де Мопассан\n\nFive timeless thoughts: Anton Chekhov · Emily Dickinson · Seneca · Oscar Wilde · Guy de Maupassant.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d38_1L",
+  "was": {
+   "quotes": [
+    "augustus_hasten",
+    "ilf_ice",
+    "confucius6_learn"
+   ],
+   "scenes": [
+    "steppe_yurts",
+    "winter",
+    "sakura"
+   ],
+   "music": "orch_cello",
+   "title": "Спеши медленно 🤍 Три мысли на сегодня | Emperor Augustus #shorts",
+   "description": "Три мысли классиков на акварели: Император Август · Ильф и Петров · Конфуций.\nThree timeless thoughts on watercolor: Emperor Augustus · Ilf and Petrov · Confucius.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d38_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МУДРЫХ",
+   "МЫСЛЕЙ О ЖИЗНИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 113,
@@ -2560,21 +3044,43 @@
   "date": "2026-12-13",
   "time": "09:00",
   "quotes": [
-   "franklin6_conscience",
-   "lomonosov_abyss",
-   "gibran6_give"
+   "dostoevsky_lie",
+   "prutkov7_lied",
+   "gogol_truths",
+   "tolstoy_greatness",
+   "keats6_truth"
   ],
   "scenes": [
-   "xmas_tree",
-   "aurora",
-   "lotus"
+   "tianshan_winter"
   ],
-  "music": "golos_rassvet",
+  "music": "orch_winter",
   "seed": 1115,
-  "title": "Чистая совесть — нескончаемое Рождество 🤍 Три мысли на сегодня | Franklin #shorts",
-  "description": "Три мысли классиков на акварели: Бенджамин Франклин · Михаил Ломоносов · Халиль Джебран.\nThree timeless thoughts on watercolor: Benjamin Franklin · Mikhail Lomonosov · Kahlil Gibran.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d39_1",
-  "music_was": "orch_winter"
+  "title": "5 МЫСЛЕЙ О ПРАВДЕ И ЧЕСТИ ✨ Достоевский, Прутков, Гоголь #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Главное — самому себе не лгите. — Фёдор Достоевский\n2. Единожды солгавши, кто тебе поверит? — Козьма Прутков\n3. Чем выше истины, тем нужно быть осторожней с ними. — Николай Гоголь\n4. Нет величия там, где нет простоты, добра и правды. — Лев Толстой\n5. Красота есть правда, правда — красота. — Джон Китс\n\nFive timeless thoughts: Fyodor Dostoevsky · Kozma Prutkov · Nikolai Gogol · Leo Tolstoy · John Keats.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d39_1L",
+  "was": {
+   "quotes": [
+    "franklin6_conscience",
+    "lomonosov_abyss",
+    "gibran6_give"
+   ],
+   "scenes": [
+    "xmas_tree",
+    "aurora",
+    "lotus"
+   ],
+   "music": "golos_rassvet",
+   "title": "Чистая совесть — нескончаемое Рождество 🤍 Три мысли на сегодня | Franklin #shorts",
+   "description": "Три мысли классиков на акварели: Бенджамин Франклин · Михаил Ломоносов · Халиль Джебран.\nThree timeless thoughts on watercolor: Benjamin Franklin · Mikhail Lomonosov · Kahlil Gibran.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d39_1",
+   "music_was": "orch_winter"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ПРАВДЕ И ЧЕСТИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 116,
@@ -2628,20 +3134,42 @@
   "date": "2026-12-14",
   "time": "09:00",
   "quotes": [
-   "emerson6_flowers",
-   "voltaire6_garden",
-   "confucius6_know"
+   "aurelius7_dawn",
+   "aurelius7_hard",
+   "aurelius_revenge",
+   "aurelius_within",
+   "aurelius7_people"
   ],
   "scenes": [
-   "lavender",
-   "sunflowers",
-   "apple_orchard"
+   "dunes"
   ],
   "music": "orch_dorian",
   "seed": 1118,
-  "title": "Земля смеётся цветами 🤍 Три мысли на сегодня | Emerson #shorts",
-  "description": "Три мысли классиков на акварели: Ральф Уолдо Эмерсон · Вольтер · Конфуций.\nThree timeless thoughts on watercolor: Ralph Waldo Emerson · Voltaire · Confucius.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d40_1"
+  "title": "5 УРОКОВ МАРКА АВРЕЛИЯ ✨ «Размышления» императора-философа #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. На рассвете, когда не хочется вставать, держи наготове мысль: я поднимаюсь к делу человека. — Марк Аврелий\n2. Если тебе что-то трудно, не думай, что это невозможно для человека. — Марк Аврелий\n3. Лучший способ отомстить — не уподобляться обидчику. — Марк Аврелий\n4. Загляни внутрь себя: там источник добра, который никогда не иссякнет, если будешь копать. — Марк Аврелий\n5. Люби людей, с которыми свела тебя судьба, — но люби искренне. — Марк Аврелий\n\nFive timeless thoughts: Marcus Aurelius.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d40_1L",
+  "was": {
+   "quotes": [
+    "emerson6_flowers",
+    "voltaire6_garden",
+    "confucius6_know"
+   ],
+   "scenes": [
+    "lavender",
+    "sunflowers",
+    "apple_orchard"
+   ],
+   "music": "orch_dorian",
+   "title": "Земля смеётся цветами 🤍 Три мысли на сегодня | Emerson #shorts",
+   "description": "Три мысли классиков на акварели: Ральф Уолдо Эмерсон · Вольтер · Конфуций.\nThree timeless thoughts on watercolor: Ralph Waldo Emerson · Voltaire · Confucius.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d40_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 УРОКОВ",
+   "МАРКА АВРЕЛИЯ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 119,
@@ -2695,21 +3223,43 @@
   "date": "2026-12-15",
   "time": "09:00",
   "quotes": [
-   "altynsarin_learn",
-   "confucius6_demand",
-   "tyutchev5_nature"
+   "tolstoy_thoughts",
+   "tolstoy7_believe",
+   "tolstoy7_life",
+   "tolstoy_knowledge",
+   "tolstoy_think"
   ],
   "scenes": [
-   "apple_orchard",
-   "birch",
-   "waterfall"
+   "birch"
   ],
-  "music": "golos_gimn",
+  "music": "orch_hope",
   "seed": 1121,
-  "title": "Придите, дети, будем учиться 🤍 Три мысли на сегодня | Ibrai Altynsarin #shorts",
-  "description": "Три мысли классиков на акварели: Ыбырай Алтынсарин · Конфуций · Фёдор Тютчев.\nThree timeless thoughts on watercolor: Ibrai Altynsarin · Confucius · Fyodor Tyutchev.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d41_1",
-  "music_was": "orch_hope"
+  "title": "5 МЫСЛЕЙ ЛЬВА ТОЛСТОГО ✨ мудрость великого писателя #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Все мысли, которые имеют огромные последствия, всегда просты. — Лев Толстой\n2. Надо жить, надо любить, надо верить. — Лев Толстой\n3. Пока есть жизнь, есть и счастие. Впереди много, много. — Лев Толстой\n4. Важно не количество знаний, а качество их. — Лев Толстой\n5. Думай хорошо, и мысли созреют в добрые поступки. — Лев Толстой\n\nFive timeless thoughts: Leo Tolstoy.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d41_1L",
+  "was": {
+   "quotes": [
+    "altynsarin_learn",
+    "confucius6_demand",
+    "tyutchev5_nature"
+   ],
+   "scenes": [
+    "apple_orchard",
+    "birch",
+    "waterfall"
+   ],
+   "music": "golos_gimn",
+   "title": "Придите, дети, будем учиться 🤍 Три мысли на сегодня | Ibrai Altynsarin #shorts",
+   "description": "Три мысли классиков на акварели: Ыбырай Алтынсарин · Конфуций · Фёдор Тютчев.\nThree timeless thoughts on watercolor: Ibrai Altynsarin · Confucius · Fyodor Tyutchev.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d41_1",
+   "music_was": "orch_hope"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "ЛЬВА ТОЛСТОГО"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 122,
@@ -2763,20 +3313,42 @@
   "date": "2026-12-16",
   "time": "09:00",
   "quotes": [
-   "kuprin_love",
-   "abai_five",
-   "tolstoy5_now"
+   "kzprov_home",
+   "kz7_homeland",
+   "kz7_cradle",
+   "prishvin7_homeland",
+   "griboedov_smoke"
   ],
   "scenes": [
-   "aurora",
-   "steppe_yurts",
-   "apple_orchard"
+   "steppe_yurts"
   ],
   "music": "orch_sea",
   "seed": 1124,
-  "title": "Любовь должна быть трагедией. Величайшей тайной… 🤍 Три мысли на сегодня | Alexander Kuprin #shorts",
-  "description": "Три мысли классиков на акварели: Александр Куприн · Абай Кунанбаев · Лев Толстой.\nThree timeless thoughts on watercolor: Alexander Kuprin · Abai Kunanbaiuly · Leo Tolstoy.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d42_1"
+  "title": "5 МЫСЛЕЙ О РОДНОЙ ЗЕМЛЕ ✨ Пришвин, Грибоедов #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Нет земли лучше родной, нет народа лучше своего. — Казахская пословица\n2. Родина теплее огня. — Казахская пословица\n3. Родной край — золотая колыбель. — Казахская пословица\n4. Рыбе — вода, птице — воздух, зверю — лес, степи, горы. А человеку нужна родина. — Михаил Пришвин\n5. И дым Отечества нам сладок и приятен! — Александр Грибоедов\n\nFive timeless thoughts: Kazakh proverb · Mikhail Prishvin · Alexander Griboyedov.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d42_1L",
+  "was": {
+   "quotes": [
+    "kuprin_love",
+    "abai_five",
+    "tolstoy5_now"
+   ],
+   "scenes": [
+    "aurora",
+    "steppe_yurts",
+    "apple_orchard"
+   ],
+   "music": "orch_sea",
+   "title": "Любовь должна быть трагедией. Величайшей тайной… 🤍 Три мысли на сегодня | Alexander Kuprin #shorts",
+   "description": "Три мысли классиков на акварели: Александр Куприн · Абай Кунанбаев · Лев Толстой.\nThree timeless thoughts on watercolor: Alexander Kuprin · Abai Kunanbaiuly · Leo Tolstoy.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d42_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О РОДНОЙ ЗЕМЛЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 125,
@@ -2830,21 +3402,43 @@
   "date": "2026-12-17",
   "time": "09:00",
   "quotes": [
-   "shakespeare6_dreams",
-   "issa_flowers",
-   "aurelius6_change"
+   "confucius6_know",
+   "confucius6_learn",
+   "confucius_golden",
+   "confucius7_calm",
+   "confucius_friend"
   ],
   "scenes": [
-   "night",
-   "lotus",
-   "apple_orchard"
+   "moon_forest"
   ],
-  "music": "golos_doroga",
+  "music": "orch_lullaby",
   "seed": 1127,
-  "title": "Мы сделаны из того же вещества, что и сны 🤍 Три мысли на сегодня | Shakespeare #shorts",
-  "description": "Три мысли классиков на акварели: Уильям Шекспир · Кобаяси Исса · Марк Аврелий.\nThree timeless thoughts on watercolor: William Shakespeare · Kobayashi Issa · Marcus Aurelius.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d43_1",
-  "music_was": "orch_lullaby"
+  "title": "5 МЫСЛЕЙ КОНФУЦИЯ ✨ изречения из «Лунь юй» #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Знать — значит знать, что знаешь, и знать, что не знаешь. — Конфуций\n2. Учиться и время от времени повторять изученное — разве это не приятно? — Конфуций\n3. Не делай другим того, чего не желаешь себе. — Конфуций\n4. Благородный муж безмятежен и спокоен, низкий человек всегда озабочен. — Конфуций\n5. Разве не радость, когда друг приезжает издалека? — Конфуций\n\nFive timeless thoughts: Confucius.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d43_1L",
+  "was": {
+   "quotes": [
+    "shakespeare6_dreams",
+    "issa_flowers",
+    "aurelius6_change"
+   ],
+   "scenes": [
+    "night",
+    "lotus",
+    "apple_orchard"
+   ],
+   "music": "golos_doroga",
+   "title": "Мы сделаны из того же вещества, что и сны 🤍 Три мысли на сегодня | Shakespeare #shorts",
+   "description": "Три мысли классиков на акварели: Уильям Шекспир · Кобаяси Исса · Марк Аврелий.\nThree timeless thoughts on watercolor: William Shakespeare · Kobayashi Issa · Marcus Aurelius.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d43_1",
+   "music_was": "orch_lullaby"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "КОНФУЦИЯ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 128,
@@ -2898,20 +3492,42 @@
   "date": "2026-12-18",
   "time": "09:00",
   "quotes": [
-   "derzhavin_river",
-   "basho_pond",
-   "exupery_direction"
+   "seneca_teach",
+   "seneca_everywhere",
+   "seneca_present",
+   "seneca6_fight",
+   "seneca7_humane"
   ],
   "scenes": [
-   "boat_dusk",
-   "swans",
-   "sunrise"
+   "sea"
   ],
   "music": "orch_dawn",
   "seed": 1130,
-  "title": "Река времён в своём стремленьи уносит все дела людей 🤍 Три мысли на сегодня | Derzhavin #shorts",
-  "description": "Три мысли классиков на акварели: Гавриил Державин · Мацуо Басё · Антуан де Сент-Экзюпери.\nThree timeless thoughts on watercolor: Gavrila Derzhavin · Matsuo Bashō · Antoine de Saint-Exupéry.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d44_1"
+  "title": "5 МЫСЛЕЙ СЕНЕКИ ✨ римский философ-стоик #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Уча других, мы учимся сами. — Сенека\n2. Кто везде — тот нигде. — Сенека\n3. Истинное счастье — радоваться настоящему, не тревожась о будущем. — Сенека\n4. Жить — значит бороться. — Сенека\n5. Пока мы среди людей, будем человечны. — Сенека\n\nFive timeless thoughts: Seneca.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d44_1L",
+  "was": {
+   "quotes": [
+    "derzhavin_river",
+    "basho_pond",
+    "exupery_direction"
+   ],
+   "scenes": [
+    "boat_dusk",
+    "swans",
+    "sunrise"
+   ],
+   "music": "orch_dawn",
+   "title": "Река времён в своём стремленьи уносит все дела людей 🤍 Три мысли на сегодня | Derzhavin #shorts",
+   "description": "Три мысли классиков на акварели: Гавриил Державин · Мацуо Басё · Антуан де Сент-Экзюпери.\nThree timeless thoughts on watercolor: Gavrila Derzhavin · Matsuo Bashō · Antoine de Saint-Exupéry.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d44_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "СЕНЕКИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 131,
@@ -2965,21 +3581,43 @@
   "date": "2026-12-19",
   "time": "09:00",
   "quotes": [
-   "gibran6_follow",
-   "austen6_friends",
-   "tyutchev"
+   "tyutchev5_winter",
+   "pushkin7_carpets",
+   "fet7_birch",
+   "fet5_picture",
+   "yesenin7_sings"
   ],
   "scenes": [
-   "almaty_lake",
-   "apple_orchard",
-   "windmill"
+   "winter_village"
   ],
-  "music": "golos_kolybelnaya",
+  "music": "orch_night",
   "seed": 1133,
-  "title": "Когда любовь зовёт тебя — иди за ней, хотя пути её… 🤍 Три мысли на сегодня | Kahlil Gibran #shorts",
-  "description": "Три мысли классиков на акварели: Халиль Джебран · Джейн Остин · Фёдор Тютчев.\nThree timeless thoughts on watercolor: Kahlil Gibran · Jane Austen · Fyodor Tyutchev.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d45_1",
-  "music_was": "orch_night"
+  "title": "ЗИМА В СТИХАХ: 5 СТРОК КЛАССИКОВ ✨ Тютчев, Пушкин, Фет #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Чародейкою Зимою околдован, лес стоит — и под снежной бахромою чудной жизнью он блестит. — Фёдор Тютчев\n2. Под голубыми небесами великолепными коврами, блестя на солнце, снег лежит. — Александр Пушкин\n3. Печальная берёза у моего окна, и прихотью мороза разубрана она. — Афанасий Фет\n4. Чудная картина, как ты мне родна: белая равнина, полная луна… — Афанасий Фет\n5. Поёт зима — аукает, мохнатый лес баюкает стозвоном сосняка. — Сергей Есенин\n\nFive timeless thoughts: Fyodor Tyutchev · Alexander Pushkin · Afanasy Fet · Sergei Yesenin.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d45_1L",
+  "was": {
+   "quotes": [
+    "gibran6_follow",
+    "austen6_friends",
+    "tyutchev"
+   ],
+   "scenes": [
+    "almaty_lake",
+    "apple_orchard",
+    "windmill"
+   ],
+   "music": "golos_kolybelnaya",
+   "title": "Когда любовь зовёт тебя — иди за ней, хотя пути её… 🤍 Три мысли на сегодня | Kahlil Gibran #shorts",
+   "description": "Три мысли классиков на акварели: Халиль Джебран · Джейн Остин · Фёдор Тютчев.\nThree timeless thoughts on watercolor: Kahlil Gibran · Jane Austen · Fyodor Tyutchev.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d45_1",
+   "music_was": "orch_night"
+  },
+  "kind": "list",
+  "header": [
+   "ЗИМА В СТИХАХ:",
+   "5 СТРОК КЛАССИКОВ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 134,
@@ -3033,20 +3671,42 @@
   "date": "2026-12-20",
   "time": "09:00",
   "quotes": [
-   "tagore6_love",
-   "tennyson6_strive",
-   "prutkov_fountain"
+   "socrates_know",
+   "laozi_know",
+   "horace_wise",
+   "montaigne_cheer",
+   "thales7_hard"
   ],
   "scenes": [
-   "winter_village",
-   "aurora",
-   "waterfall"
+   "canyon"
   ],
   "music": "orch_horns",
   "seed": 1136,
-  "title": "Мы живём в этом мире, когда любим его 🤍 Три мысли на сегодня | Tagore #shorts",
-  "description": "Три мысли классиков на акварели: Рабиндранат Тагор · Альфред Теннисон · Козьма Прутков.\nThree timeless thoughts on watercolor: Rabindranath Tagore · Alfred Tennyson · Kozma Prutkov.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d46_1"
+  "title": "5 МЫСЛЕЙ О МУДРОСТИ ✨ Сократ, Лао-цзы, Гораций #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Я знаю, что ничего не знаю. — Сократ\n2. Знающий людей разумен. Знающий себя — просветлён. — Лао-цзы\n3. Решись быть мудрым: начни! — Гораций\n4. Самый верный признак мудрости — постоянная радость. — Мишель де Монтень\n5. Что труднее всего? Познать самого себя. Что легче всего? Давать советы другим. — Фалес\n\nFive timeless thoughts: Socrates · Lao Tzu · Horace · Michel de Montaigne · Thales.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d46_1L",
+  "was": {
+   "quotes": [
+    "tagore6_love",
+    "tennyson6_strive",
+    "prutkov_fountain"
+   ],
+   "scenes": [
+    "winter_village",
+    "aurora",
+    "waterfall"
+   ],
+   "music": "orch_horns",
+   "title": "Мы живём в этом мире, когда любим его 🤍 Три мысли на сегодня | Tagore #shorts",
+   "description": "Три мысли классиков на акварели: Рабиндранат Тагор · Альфред Теннисон · Козьма Прутков.\nThree timeless thoughts on watercolor: Rabindranath Tagore · Alfred Tennyson · Kozma Prutkov.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d46_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О МУДРОСТИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 137,
@@ -3100,21 +3760,43 @@
   "date": "2026-12-21",
   "time": "09:00",
   "quotes": [
-   "pushkin5_bloom",
-   "whitman6_grass",
-   "goethe6_freedom"
+   "wilde_experience",
+   "jpprov_monkey",
+   "cicero_error",
+   "kierkegaard_backwards",
+   "ru7_straw"
   ],
   "scenes": [
-   "forest_rays",
-   "wheat",
-   "almaty_lake"
+   "boat_dusk"
   ],
-  "music": "golos_prostor",
+  "music": "orch_lydian",
   "seed": 1139,
-  "title": "И с каждой осенью я расцветаю вновь 🤍 Три мысли на сегодня | Pushkin #shorts",
-  "description": "Три мысли классиков на акварели: Александр Пушкин · Уолт Уитмен · Иоганн Вольфганг Гёте.\nThree timeless thoughts on watercolor: Alexander Pushkin · Walt Whitman · Johann Wolfgang von Goethe.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d47_1",
-  "music_was": "orch_lydian"
+  "title": "5 МЫСЛЕЙ ОБ ОПЫТЕ И ОШИБКАХ ✨ Уайльд, Цицерон, Кьеркегор #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Опыт — это просто имя, которое мы даём своим ошибкам. — Оскар Уайльд\n2. Даже обезьяна падает с дерева. — Японская пословица\n3. Любой человек может ошибаться, но только глупец упорствует в ошибке. — Цицерон\n4. Жизнь можно понять только оглядываясь назад, но жить нужно вперёд. — Сёрен Кьеркегор\n5. Знал бы, где упасть, — соломки бы подстелил. — Русская пословица\n\nFive timeless thoughts: Oscar Wilde · Japanese proverb · Cicero · Søren Kierkegaard · Russian proverb.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d47_1L",
+  "was": {
+   "quotes": [
+    "pushkin5_bloom",
+    "whitman6_grass",
+    "goethe6_freedom"
+   ],
+   "scenes": [
+    "forest_rays",
+    "wheat",
+    "almaty_lake"
+   ],
+   "music": "golos_prostor",
+   "title": "И с каждой осенью я расцветаю вновь 🤍 Три мысли на сегодня | Pushkin #shorts",
+   "description": "Три мысли классиков на акварели: Александр Пушкин · Уолт Уитмен · Иоганн Вольфганг Гёте.\nThree timeless thoughts on watercolor: Alexander Pushkin · Walt Whitman · Johann Wolfgang von Goethe.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d47_1",
+   "music_was": "orch_lydian"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "ОБ ОПЫТЕ И ОШИБКАХ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 140,
@@ -3168,20 +3850,42 @@
   "date": "2026-12-22",
   "time": "09:00",
   "quotes": [
-   "virgil6_can",
-   "laozi6_speak",
-   "dostoevsky5_sand"
+   "tennyson6_strive",
+   "nietzsche_stronger",
+   "nietzsche_why",
+   "goethe6_freedom",
+   "buddha_victory"
   ],
   "scenes": [
-   "boat_dusk",
-   "sea",
-   "meadow"
+   "tianshan_winter"
   ],
   "music": "orch_cello",
   "seed": 1142,
-  "title": "Они могут, потому что верят, что могут 🤍 Три мысли на сегодня | Virgil #shorts",
-  "description": "Три мысли классиков на акварели: Вергилий · Лао-цзы · Фёдор Достоевский.\nThree timeless thoughts on watercolor: Virgil · Lao Tzu · Fyodor Dostoevsky.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d48_1"
+  "title": "5 МЫСЛЕЙ О СИЛЕ ДУХА ✨ Теннисон, Ницше, Гёте #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Бороться и искать, найти и не сдаваться. — Альфред Теннисон\n2. Что меня не убивает, делает меня сильнее. — Фридрих Ницше\n3. Тот, у кого есть зачем жить, может вынести почти любое как. — Фридрих Ницше\n4. Лишь тот достоин жизни и свободы, кто каждый день идёт за них на бой! — Иоганн Вольфганг Гёте\n5. Тысяча побед над тысячей людей не стоит одной победы над собой. — Будда\n\nFive timeless thoughts: Alfred Tennyson · Friedrich Nietzsche · Johann Wolfgang von Goethe · The Buddha.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d48_1L",
+  "was": {
+   "quotes": [
+    "virgil6_can",
+    "laozi6_speak",
+    "dostoevsky5_sand"
+   ],
+   "scenes": [
+    "boat_dusk",
+    "sea",
+    "meadow"
+   ],
+   "music": "orch_cello",
+   "title": "Они могут, потому что верят, что могут 🤍 Три мысли на сегодня | Virgil #shorts",
+   "description": "Три мысли классиков на акварели: Вергилий · Лао-цзы · Фёдор Достоевский.\nThree timeless thoughts on watercolor: Virgil · Lao Tzu · Fyodor Dostoevsky.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d48_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О СИЛЕ ДУХА"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 143,
@@ -3235,21 +3939,43 @@
   "date": "2026-12-23",
   "time": "09:00",
   "quotes": [
-   "tsvetaeva5_love",
-   "lermontov5_cloud",
-   "bulgakov_ask"
+   "suvorov_comrade",
+   "gogol",
+   "kzprov5_friends",
+   "krylov_accord",
+   "cicero7_friendship"
   ],
   "scenes": [
-   "lighthouse",
-   "alpine",
-   "dunes"
+   "steppe_horses"
   ],
-  "music": "golos_rassvet",
+  "music": "orch_winter",
   "seed": 1145,
-  "title": "Любить — видеть человека таким, каким его… 🤍 Три мысли на сегодня | Marina Tsvetaeva #shorts",
-  "description": "Три мысли классиков на акварели: Марина Цветаева · Михаил Лермонтов · Михаил Булгаков.\nThree timeless thoughts on watercolor: Marina Tsvetaeva · Mikhail Lermontov · Mikhail Bulgakov.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d49_1",
-  "music_was": "orch_winter"
+  "title": "5 МЫСЛЕЙ О ТОВАРИЩЕСТВЕ ✨ Суворов, Гоголь, Крылов #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Сам погибай, а товарища выручай. — Александр Суворов\n2. Нет уз святее товарищества. — Николай Гоголь\n3. Тысяча друзей — мало, один враг — много. — Казахская пословица\n4. Когда в товарищах согласья нет, на лад их дело не пойдёт. — Иван Крылов\n5. Дружба делает счастье ярче, а несчастье — легче, разделяя его. — Цицерон\n\nFive timeless thoughts: Alexander Suvorov · Nikolai Gogol · Kazakh proverb · Ivan Krylov · Cicero.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d49_1L",
+  "was": {
+   "quotes": [
+    "tsvetaeva5_love",
+    "lermontov5_cloud",
+    "bulgakov_ask"
+   ],
+   "scenes": [
+    "lighthouse",
+    "alpine",
+    "dunes"
+   ],
+   "music": "golos_rassvet",
+   "title": "Любить — видеть человека таким, каким его… 🤍 Три мысли на сегодня | Marina Tsvetaeva #shorts",
+   "description": "Три мысли классиков на акварели: Марина Цветаева · Михаил Лермонтов · Михаил Булгаков.\nThree timeless thoughts on watercolor: Marina Tsvetaeva · Mikhail Lermontov · Mikhail Bulgakov.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d49_1",
+   "music_was": "orch_winter"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ТОВАРИЩЕСТВЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 146,
@@ -3303,20 +4029,42 @@
   "date": "2026-12-24",
   "time": "09:00",
   "quotes": [
-   "pasteur_chance",
-   "aurelius6_last",
-   "exupery_judge"
+   "thoreau_simplify",
+   "yesenin_simple",
+   "voltaire6_garden",
+   "chekhov_brevity",
+   "laozi_easy"
   ],
   "scenes": [
-   "apple_orchard",
-   "aurora",
-   "birch"
+   "cabin"
   ],
   "music": "orch_dorian",
   "seed": 1148,
-  "title": "Случай благоприятствует только подготовленному уму 🤍 Три мысли на сегодня | Louis Pasteur #shorts",
-  "description": "Три мысли классиков на акварели: Луи Пастер · Марк Аврелий · Антуан де Сент-Экзюпери.\nThree timeless thoughts on watercolor: Louis Pasteur · Marcus Aurelius · Antoine de Saint-Exupéry.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d50_1"
+  "title": "5 МЫСЛЕЙ О ПРОСТОТЕ ✨ Торо, Есенин, Вольтер #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Наша жизнь растрачивается на мелочи. Упрощай, упрощай! — Генри Дэвид Торо\n2. Жить нужно легче, жить нужно проще, всё принимая, что есть на свете. — Сергей Есенин\n3. Надо возделывать свой сад. — Вольтер\n4. Краткость — сестра таланта. — Антон Чехов\n5. Берись за трудное, пока оно легко; делай великое, пока оно мало. — Лао-цзы\n\nFive timeless thoughts: Henry David Thoreau · Sergei Yesenin · Voltaire · Anton Chekhov · Lao Tzu.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d50_1L",
+  "was": {
+   "quotes": [
+    "pasteur_chance",
+    "aurelius6_last",
+    "exupery_judge"
+   ],
+   "scenes": [
+    "apple_orchard",
+    "aurora",
+    "birch"
+   ],
+   "music": "orch_dorian",
+   "title": "Случай благоприятствует только подготовленному уму 🤍 Три мысли на сегодня | Louis Pasteur #shorts",
+   "description": "Три мысли классиков на акварели: Луи Пастер · Марк Аврелий · Антуан де Сент-Экзюпери.\nThree timeless thoughts on watercolor: Louis Pasteur · Marcus Aurelius · Antoine de Saint-Exupéry.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d50_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ПРОСТОТЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 149,
@@ -3370,21 +4118,43 @@
   "date": "2026-12-25",
   "time": "09:00",
   "quotes": [
-   "kzprov5_patience",
-   "montgomery_october",
-   "ruskin_weather"
+   "cn7_source",
+   "aesop_gratitude",
+   "zhukovsky_were",
+   "prutkov_keep",
+   "cicero7_gratitude"
   ],
   "scenes": [
-   "steppe_yurts",
-   "autumn",
-   "windmill"
+   "almaty_lake"
   ],
-  "music": "golos_gimn",
+  "music": "orch_hope",
   "seed": 1151,
-  "title": "Конец терпения — чистое золото 🤍 Три мысли на сегодня | Kazakh proverb #shorts",
-  "description": "Три мысли классиков на акварели: Казахская пословица · Люси Мод Монтгомери · Джон Рёскин.\nThree timeless thoughts on watercolor: Kazakh proverb · L. M. Montgomery · John Ruskin.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d51_1",
-  "music_was": "orch_hope"
+  "title": "5 МЫСЛЕЙ О БЛАГОДАРНОСТИ ✨ Эзоп, Жуковский, Прутков #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Когда пьёшь воду, помни об источнике. — Китайская пословица\n2. Благодарность — признак благородной души. — Эзоп\n3. Не говори с тоской: их нет, но с благодарностию: были. — Василий Жуковский\n4. Что имеем — не храним; потерявши — плачем. — Козьма Прутков\n5. Благодарность — не только величайшая из добродетелей, но и мать всех остальных. — Цицерон\n\nFive timeless thoughts: Chinese proverb · Aesop · Vasily Zhukovsky · Kozma Prutkov · Cicero.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d51_1L",
+  "was": {
+   "quotes": [
+    "kzprov5_patience",
+    "montgomery_october",
+    "ruskin_weather"
+   ],
+   "scenes": [
+    "steppe_yurts",
+    "autumn",
+    "windmill"
+   ],
+   "music": "golos_gimn",
+   "title": "Конец терпения — чистое золото 🤍 Три мысли на сегодня | Kazakh proverb #shorts",
+   "description": "Три мысли классиков на акварели: Казахская пословица · Люси Мод Монтгомери · Джон Рёскин.\nThree timeless thoughts on watercolor: Kazakh proverb · L. M. Montgomery · John Ruskin.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d51_1",
+   "music_was": "orch_hope"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О БЛАГОДАРНОСТИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 152,
@@ -3438,20 +4208,42 @@
   "date": "2026-12-26",
   "time": "09:00",
   "quotes": [
-   "ruprov5_hands",
-   "austen6_past",
-   "nekrasov5_frost"
+   "ar7_want",
+   "cnprov_door",
+   "in7_boat",
+   "jp7_frog",
+   "tr7_coffee"
   ],
   "scenes": [
-   "canyon",
-   "boat_dusk",
-   "winter"
+   "dunes"
   ],
   "music": "orch_sea",
   "seed": 1154,
-  "title": "Глаза боятся, а руки делают 🤍 Три мысли на сегодня | Russian proverb #shorts",
-  "description": "Три мысли классиков на акварели: Русская пословица · Джейн Остин · Николай Некрасов.\nThree timeless thoughts on watercolor: Russian proverb · Jane Austen · Nikolai Nekrasov.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d52_1"
+  "title": "5 ПОСЛОВИЦ НАРОДОВ МИРА ✨ мудрость разных народов #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Кто хочет — ищет возможности, кто не хочет — ищет причины. — Арабская пословица\n2. Учитель открывает дверь, но входишь ты сам. — Китайская пословица\n3. Помоги лодке брата переплыть реку — и твоя достигнет берега. — Индийская пословица\n4. Лягушка в колодце не знает великого океана. — Японская пословица\n5. Чашка кофе помнится сорок лет. — Турецкая пословица\n\nFive timeless thoughts: Arabic proverb · Chinese proverb · Indian proverb · Japanese proverb · Turkish proverb.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d52_1L",
+  "was": {
+   "quotes": [
+    "ruprov5_hands",
+    "austen6_past",
+    "nekrasov5_frost"
+   ],
+   "scenes": [
+    "canyon",
+    "boat_dusk",
+    "winter"
+   ],
+   "music": "orch_sea",
+   "title": "Глаза боятся, а руки делают 🤍 Три мысли на сегодня | Russian proverb #shorts",
+   "description": "Три мысли классиков на акварели: Русская пословица · Джейн Остин · Николай Некрасов.\nThree timeless thoughts on watercolor: Russian proverb · Jane Austen · Nikolai Nekrasov.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d52_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 ПОСЛОВИЦ",
+   "НАРОДОВ МИРА"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 155,
@@ -3505,21 +4297,43 @@
   "date": "2026-12-27",
   "time": "09:00",
   "quotes": [
-   "heraclitus6_character",
-   "dostoevsky5_hell",
-   "newton_giants"
+   "bunin5_passes",
+   "griboedov_believe",
+   "pushkin_peace",
+   "pushkin7_master",
+   "lermontov_struggle"
   ],
   "scenes": [
-   "xmas_tree",
-   "cabin",
-   "night"
+   "birch"
   ],
-  "music": "golos_doroga",
+  "music": "orch_lullaby",
   "seed": 1157,
-  "title": "Характер человека — его судьба 🤍 Три мысли на сегодня | Heraclitus #shorts",
-  "description": "Три мысли классиков на акварели: Гераклит · Фёдор Достоевский · Исаак Ньютон.\nThree timeless thoughts on watercolor: Heraclitus · Fyodor Dostoevsky · Isaac Newton.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d53_1",
-  "music_was": "orch_lullaby"
+  "title": "5 СТРОК РУССКОЙ КЛАССИКИ ✨ Бунин, Грибоедов, Пушкин #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Всё проходит, да не всё забывается. — Иван Бунин\n2. Блажен, кто верует, — тепло ему на свете! — Александр Грибоедов\n3. На свете счастья нет, но есть покой и воля. — Александр Пушкин\n4. Учитесь властвовать собою. — Александр Пушкин\n5. Так жизнь скучна, когда боренья нет. — Михаил Лермонтов\n\nFive timeless thoughts: Ivan Bunin · Alexander Griboyedov · Alexander Pushkin · Mikhail Lermontov.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d53_1L",
+  "was": {
+   "quotes": [
+    "heraclitus6_character",
+    "dostoevsky5_hell",
+    "newton_giants"
+   ],
+   "scenes": [
+    "xmas_tree",
+    "cabin",
+    "night"
+   ],
+   "music": "golos_doroga",
+   "title": "Характер человека — его судьба 🤍 Три мысли на сегодня | Heraclitus #shorts",
+   "description": "Три мысли классиков на акварели: Гераклит · Фёдор Достоевский · Исаак Ньютон.\nThree timeless thoughts on watercolor: Heraclitus · Fyodor Dostoevsky · Isaac Newton.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d53_1",
+   "music_was": "orch_lullaby"
+  },
+  "kind": "list",
+  "header": [
+   "5 СТРОК",
+   "РУССКОЙ КЛАССИКИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 158,
@@ -3573,20 +4387,42 @@
   "date": "2026-12-28",
   "time": "09:00",
   "quotes": [
-   "griboedov_believe",
-   "cbronte6_happy",
-   "cnprov_wind"
+   "epictetus",
+   "shantideva7_worry",
+   "proverbs_answer",
+   "buddha_hatred",
+   "longfellow_letrain"
   ],
   "scenes": [
-   "winter_village",
-   "poppies",
-   "windmill"
+   "frozen_lake"
   ],
   "music": "orch_dawn",
   "seed": 1160,
-  "title": "Блажен, кто верует, — тепло ему на свете 🤍 Три мысли на сегодня | Griboyedov #shorts",
-  "description": "Три мысли классиков на акварели: Александр Грибоедов · Шарлотта Бронте · Китайская пословица.\nThree timeless thoughts on watercolor: Alexander Griboyedov · Charlotte Brontë · Chinese proverb.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d54_1"
+  "title": "5 МЫСЛЕЙ О СПОКОЙСТВИИ ✨ Эпиктет, Шантидева, Книга Притчей #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Людей тревожат не вещи, а их мнения о вещах. — Эпиктет\n2. Если беду можно исправить — зачем печалиться? Если нельзя — что пользы печалиться? — Шантидева\n3. Кроткий ответ отвращает гнев. — Книга Притчей\n4. Ненависть никогда не прекращается ненавистью — лишь любовью она прекращается. — Будда\n5. Лучшее, что можно сделать, когда идёт дождь, — дать ему идти. — Генри Лонгфелло\n\nFive timeless thoughts: Epictetus · Shantideva · Book of Proverbs · The Buddha · Henry Longfellow.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d54_1L",
+  "was": {
+   "quotes": [
+    "griboedov_believe",
+    "cbronte6_happy",
+    "cnprov_wind"
+   ],
+   "scenes": [
+    "winter_village",
+    "poppies",
+    "windmill"
+   ],
+   "music": "orch_dawn",
+   "title": "Блажен, кто верует, — тепло ему на свете 🤍 Три мысли на сегодня | Griboyedov #shorts",
+   "description": "Три мысли классиков на акварели: Александр Грибоедов · Шарлотта Бронте · Китайская пословица.\nThree timeless thoughts on watercolor: Alexander Griboyedov · Charlotte Brontë · Chinese proverb.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d54_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О СПОКОЙСТВИИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 161,
@@ -3640,21 +4476,43 @@
   "date": "2026-12-29",
   "time": "09:00",
   "quotes": [
-   "kzprov5_friends",
-   "talmud_world",
-   "pushkin5_autumn"
+   "dostoevsky_purpose",
+   "virgil6_can",
+   "thoreau",
+   "browning_reach",
+   "verne_imagine"
   ],
   "scenes": [
-   "steppe_yurts",
-   "winter_village",
-   "forest_rays"
+   "aurora"
   ],
-  "music": "golos_kolybelnaya",
+  "music": "orch_night",
   "seed": 1163,
-  "title": "Тысяча друзей — мало, один враг — много 🤍 Три мысли на сегодня | Kazakh proverb #shorts",
-  "description": "Три мысли классиков на акварели: Казахская пословица · Талмуд · Александр Пушкин.\nThree timeless thoughts on watercolor: Kazakh proverb · Talmud · Alexander Pushkin.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d55_1",
-  "music_was": "orch_night"
+  "title": "5 МЫСЛЕЙ О МЕЧТЕ И ЦЕЛИ ✨ Достоевский, Вергилий, Торо #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Жизнь задыхается без цели. — Фёдор Достоевский\n2. Они могут, потому что верят, что могут. — Вергилий\n3. Смело иди навстречу своей мечте. Живи той жизнью, какую себе представлял. — Генри Дэвид Торо\n4. Человек должен тянуться выше, чем может достать, — иначе зачем небо? — Роберт Браунинг\n5. Всё, что один человек способен представить, другие сумеют осуществить. — Жюль Верн\n\nFive timeless thoughts: Fyodor Dostoevsky · Virgil · Henry David Thoreau · Robert Browning · Jules Verne.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d55_1L",
+  "was": {
+   "quotes": [
+    "kzprov5_friends",
+    "talmud_world",
+    "pushkin5_autumn"
+   ],
+   "scenes": [
+    "steppe_yurts",
+    "winter_village",
+    "forest_rays"
+   ],
+   "music": "golos_kolybelnaya",
+   "title": "Тысяча друзей — мало, один враг — много 🤍 Три мысли на сегодня | Kazakh proverb #shorts",
+   "description": "Три мысли классиков на акварели: Казахская пословица · Талмуд · Александр Пушкин.\nThree timeless thoughts on watercolor: Kazakh proverb · Talmud · Alexander Pushkin.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d55_1",
+   "music_was": "orch_night"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О МЕЧТЕ И ЦЕЛИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 164,
@@ -3708,20 +4566,42 @@
   "date": "2026-12-30",
   "time": "09:00",
   "quotes": [
-   "ruprov5_honour",
-   "exupery_desert",
-   "yesenin5_apple"
+   "goethe6_moment",
+   "emerson_day",
+   "tagore6_love",
+   "chekhov_human",
+   "einstein_mystery"
   ],
   "scenes": [
-   "apple_orchard",
-   "dunes",
    "winter_village"
   ],
   "music": "orch_horns",
   "seed": 1166,
-  "title": "Береги честь смолоду 🤍 Три мысли на сегодня | Russian proverb #shorts",
-  "description": "Три мысли классиков на акварели: Русская пословица · Антуан де Сент-Экзюпери · Сергей Есенин.\nThree timeless thoughts on watercolor: Russian proverb · Antoine de Saint-Exupéry · Sergei Yesenin.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d56_1"
+  "title": "5 МЫСЛЕЙ ПЕРЕД НОВЫМ ГОДОМ ✨ Гёте, Эмерсон, Тагор #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Остановись, мгновенье, ты прекрасно! — Иоганн Вольфганг Гёте\n2. Запиши в своём сердце: каждый день — лучший день в году. — Ральф Уолдо Эмерсон\n3. Мы живём в этом мире, когда любим его. — Рабиндранат Тагор\n4. Берегите в себе человека. — Антон Чехов\n5. Самое прекрасное, что мы можем испытать, — это ощущение тайны. — Альберт Эйнштейн\n\nFive timeless thoughts: Johann Wolfgang von Goethe · Ralph Waldo Emerson · Rabindranath Tagore · Anton Chekhov · Albert Einstein.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d56_1L",
+  "was": {
+   "quotes": [
+    "ruprov5_honour",
+    "exupery_desert",
+    "yesenin5_apple"
+   ],
+   "scenes": [
+    "apple_orchard",
+    "dunes",
+    "winter_village"
+   ],
+   "music": "orch_horns",
+   "title": "Береги честь смолоду 🤍 Три мысли на сегодня | Russian proverb #shorts",
+   "description": "Три мысли классиков на акварели: Русская пословица · Антуан де Сент-Экзюпери · Сергей Есенин.\nThree timeless thoughts on watercolor: Russian proverb · Antoine de Saint-Exupéry · Sergei Yesenin.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d56_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "ПЕРЕД НОВЫМ ГОДОМ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 167,
@@ -3775,21 +4655,43 @@
   "date": "2026-12-31",
   "time": "09:00",
   "quotes": [
-   "dostoevsky5_money",
-   "pushkin5_learned",
-   "fitzgerald_boats"
+   "franklin6_conscience",
+   "wilde6_saint",
+   "stevenson7_kings",
+   "shakespeare7_ends",
+   "psalm7_day"
   ],
   "scenes": [
-   "almaty_lake",
-   "lotus",
-   "boat_dusk"
+   "xmas_tree"
   ],
-  "music": "golos_prostor",
+  "music": "orch_lydian",
   "seed": 1169,
-  "title": "Деньги есть чеканенная свобода 🤍 Три мысли на сегодня | Dostoevsky #shorts",
-  "description": "Три мысли классиков на акварели: Фёдор Достоевский · Александр Пушкин · Фрэнсис Скотт Фицджеральд.\nThree timeless thoughts on watercolor: Fyodor Dostoevsky · Alexander Pushkin · F. Scott Fitzgerald.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d57_1",
-  "music_was": "orch_lydian"
+  "title": "С ЧЕМ ВОЙТИ В НОВЫЙ ГОД ✨ Франклин, Уайльд, Стивенсон #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Чистая совесть — нескончаемое Рождество. — Бенджамин Франклин\n2. У каждого святого есть прошлое, у каждого грешника — будущее. — Оскар Уайльд\n3. Мир так полон разных вещей — все мы должны быть счастливы, как короли. — Роберт Льюис Стивенсон\n4. Всё хорошо, что хорошо кончается. — Уильям Шекспир\n5. Сей день сотворил Господь: возрадуемся и возвеселимся в оный! — Псалтирь\n\nFive timeless thoughts: Benjamin Franklin · Oscar Wilde · Robert Louis Stevenson · William Shakespeare · Book of Psalms.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d57_1L",
+  "was": {
+   "quotes": [
+    "dostoevsky5_money",
+    "pushkin5_learned",
+    "fitzgerald_boats"
+   ],
+   "scenes": [
+    "almaty_lake",
+    "lotus",
+    "boat_dusk"
+   ],
+   "music": "golos_prostor",
+   "title": "Деньги есть чеканенная свобода 🤍 Три мысли на сегодня | Dostoevsky #shorts",
+   "description": "Три мысли классиков на акварели: Фёдор Достоевский · Александр Пушкин · Фрэнсис Скотт Фицджеральд.\nThree timeless thoughts on watercolor: Fyodor Dostoevsky · Alexander Pushkin · F. Scott Fitzgerald.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d57_1",
+   "music_was": "orch_lydian"
+  },
+  "kind": "list",
+  "header": [
+   "С ЧЕМ ВОЙТИ",
+   "В НОВЫЙ ГОД"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 170,
@@ -3843,20 +4745,42 @@
   "date": "2027-01-01",
   "time": "09:00",
   "quotes": [
-   "kzprov5_knowledge",
-   "song_waters",
-   "tyutchev5_dontfuss"
+   "montgomery_tomorrow",
+   "cnprov_tree",
+   "plato_beginning",
+   "johnson_objections",
+   "carroll_begin"
   ],
   "scenes": [
-   "canyon",
-   "sea",
-   "moon_sea"
+   "sunrise"
   ],
   "music": "orch_cello",
   "seed": 1172,
-  "title": "Знание — клад, который не иссякнет 🤍 Три мысли на сегодня | Kazakh proverb #shorts",
-  "description": "Три мысли классиков на акварели: Казахская пословица · Песнь песней · Фёдор Тютчев.\nThree timeless thoughts on watercolor: Kazakh proverb · Song of Songs · Fyodor Tyutchev.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d58_1"
+  "title": "НОВЫЙ ГОД: 5 МЫСЛЕЙ О НАЧАЛЕ ✨ Монтгомери, Платон, Джонсон #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Как хорошо, что завтра — новый день, в котором ещё нет ни одной ошибки. — Люси Мод Монтгомери\n2. Лучшее время посадить дерево было двадцать лет назад. Следующее лучшее — сейчас. — Китайская пословица\n3. Начало — самая важная часть работы. — Платон\n4. Ничего не будет начато, если сначала нужно преодолеть все возможные возражения. — Сэмюэл Джонсон\n5. Начни с начала, продолжай до конца — и остановись. — Льюис Кэрролл\n\nFive timeless thoughts: L. M. Montgomery · Chinese proverb · Plato · Samuel Johnson · Lewis Carroll.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d58_1L",
+  "was": {
+   "quotes": [
+    "kzprov5_knowledge",
+    "song_waters",
+    "tyutchev5_dontfuss"
+   ],
+   "scenes": [
+    "canyon",
+    "sea",
+    "moon_sea"
+   ],
+   "music": "orch_cello",
+   "title": "Знание — клад, который не иссякнет 🤍 Три мысли на сегодня | Kazakh proverb #shorts",
+   "description": "Три мысли классиков на акварели: Казахская пословица · Песнь песней · Фёдор Тютчев.\nThree timeless thoughts on watercolor: Kazakh proverb · Song of Songs · Fyodor Tyutchev.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d58_1"
+  },
+  "kind": "list",
+  "header": [
+   "НОВЫЙ ГОД:",
+   "5 МЫСЛЕЙ О НАЧАЛЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 173,
@@ -3910,21 +4834,43 @@
   "date": "2027-01-02",
   "time": "09:00",
   "quotes": [
-   "kzprov5_word",
-   "ovid6_lovable",
-   "thoreau6_good"
+   "juvenal_mind",
+   "schopenhauer_health",
+   "buddha6_health",
+   "franklin6_early",
+   "turgenev_health"
   ],
   "scenes": [
-   "steppe_yurts",
-   "xmas_tree",
-   "boat_dusk"
+   "almaty_lake"
   ],
-  "music": "golos_rassvet",
+  "music": "orch_winter",
   "seed": 1175,
-  "title": "Начало всякого искусства — слово 🤍 Три мысли на сегодня | Kazakh proverb #shorts",
-  "description": "Три мысли классиков на акварели: Казахская пословица · Овидий · Генри Дэвид Торо.\nThree timeless thoughts on watercolor: Kazakh proverb · Ovid · Henry David Thoreau.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d59_1",
-  "music_was": "orch_winter"
+  "title": "5 МЫСЛЕЙ О ЗДОРОВЬЕ ✨ Ювенал, Шопенгауэр, Будда #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. В здоровом теле — здоровый дух. — Ювенал\n2. Здоровый нищий счастливее больного короля. — Артур Шопенгауэр\n3. Здоровье — высший дар, довольство — высшее богатство, верность — лучшее родство. — Будда\n4. Кто рано ложится и рано встаёт, здоровье, богатство и ум наживёт. — Бенджамин Франклин\n5. Счастье — как здоровье: когда его не замечаешь, значит, оно есть. — Иван Тургенев\n\nFive timeless thoughts: Juvenal · Arthur Schopenhauer · The Buddha · Benjamin Franklin · Ivan Turgenev.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d59_1L",
+  "was": {
+   "quotes": [
+    "kzprov5_word",
+    "ovid6_lovable",
+    "thoreau6_good"
+   ],
+   "scenes": [
+    "steppe_yurts",
+    "xmas_tree",
+    "boat_dusk"
+   ],
+   "music": "golos_rassvet",
+   "title": "Начало всякого искусства — слово 🤍 Три мысли на сегодня | Kazakh proverb #shorts",
+   "description": "Три мысли классиков на акварели: Казахская пословица · Овидий · Генри Дэвид Торо.\nThree timeless thoughts on watercolor: Kazakh proverb · Ovid · Henry David Thoreau.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d59_1",
+   "music_was": "orch_winter"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ЗДОРОВЬЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 176,
@@ -3978,20 +4924,42 @@
   "date": "2027-01-03",
   "time": "09:00",
   "quotes": [
-   "balzac6_hope",
-   "ruprov_fish",
-   "issa_snail"
+   "abai_heart",
+   "abai_brick",
+   "abai_son",
+   "abai_five",
+   "abai7_love"
   ],
   "scenes": [
-   "dunes",
-   "almaty_lake",
-   "alpine"
+   "steppe_yurts"
   ],
   "music": "orch_dorian",
   "seed": 1178,
-  "title": "Надежда — это память, которая желает 🤍 Три мысли на сегодня | Honoré de Balzac #shorts",
-  "description": "Три мысли классиков на акварели: Оноре де Бальзак · Русская пословица · Кобаяси Исса.\nThree timeless thoughts on watercolor: Honoré de Balzac · Russian proverb · Kobayashi Issa.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d60_1"
+  "title": "МУДРОСТЬ АБАЯ: 5 МЫСЛЕЙ ✨ Абай Кунанбаев #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Воля, разум и сердце должны быть вместе, а вести их должно сердце. — Абай Кунанбаев\n2. И ты — кирпич в стене этого мира: найди своё место и встань в неё. — Абай Кунанбаев\n3. Будь не сыном своего отца — будь сыном человечества. — Абай Кунанбаев\n4. Стремление, труд, глубокая мысль, умеренность и доброта — пять драгоценных дел. — Абай Кунанбаев\n5. Без любви мир пуст. — Абай Кунанбаев\n\nFive timeless thoughts: Abai Kunanbaiuly.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d60_1L",
+  "was": {
+   "quotes": [
+    "balzac6_hope",
+    "ruprov_fish",
+    "issa_snail"
+   ],
+   "scenes": [
+    "dunes",
+    "almaty_lake",
+    "alpine"
+   ],
+   "music": "orch_dorian",
+   "title": "Надежда — это память, которая желает 🤍 Три мысли на сегодня | Honoré de Balzac #shorts",
+   "description": "Три мысли классиков на акварели: Оноре де Бальзак · Русская пословица · Кобаяси Исса.\nThree timeless thoughts on watercolor: Honoré de Balzac · Russian proverb · Kobayashi Issa.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d60_1"
+  },
+  "kind": "list",
+  "header": [
+   "МУДРОСТЬ АБАЯ:",
+   "5 МЫСЛЕЙ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 179,
@@ -4045,21 +5013,43 @@
   "date": "2027-01-04",
   "time": "09:00",
   "quotes": [
-   "lamb7_january",
-   "kz7_guest",
-   "yesenin7_snow"
+   "nietzsche6_become",
+   "whitman",
+   "emerson_enthusiasm",
+   "melville_original",
+   "vangogh7_paint"
   ],
   "scenes": [
-   "sunrise",
-   "steppe_yurts",
-   "moon_forest"
+   "lighthouse"
   ],
-  "music": "golos_gimn",
+  "music": "orch_sea",
   "seed": 1181,
-  "title": "Никто никогда не встречал первое января равнодушно 🤍 Три мысли на сегодня | Charles Lamb #shorts",
-  "description": "Три мысли классиков на акварели: Чарльз Лэм · Казахская пословица · Сергей Есенин.\nThree timeless thoughts on watercolor: Charles Lamb · Kazakh proverb · Sergei Yesenin.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d61_1",
-  "music_was": "orch_sea"
+  "title": "5 МЫСЛЕЙ О ВЕРЕ В СЕБЯ ✨ Ницше, Уитмен, Эмерсон #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Стань тем, кто ты есть. — Фридрих Ницше\n2. Я существую такой, какой есть, — и этого достаточно. — Уолт Уитмен\n3. Ничто великое не совершалось без воодушевления. — Ральф Уолдо Эмерсон\n4. Лучше потерпеть неудачу в своём, чем преуспеть в подражании. — Герман Мелвилл\n5. Если внутри звучит голос «ты не умеешь рисовать» — тогда непременно рисуй, и голос замолчит. — Винсент Ван Гог\n\nFive timeless thoughts: Friedrich Nietzsche · Walt Whitman · Ralph Waldo Emerson · Herman Melville · Vincent van Gogh.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d61_1L",
+  "was": {
+   "quotes": [
+    "lamb7_january",
+    "kz7_guest",
+    "yesenin7_snow"
+   ],
+   "scenes": [
+    "sunrise",
+    "steppe_yurts",
+    "moon_forest"
+   ],
+   "music": "golos_gimn",
+   "title": "Никто никогда не встречал первое января равнодушно 🤍 Три мысли на сегодня | Charles Lamb #shorts",
+   "description": "Три мысли классиков на акварели: Чарльз Лэм · Казахская пословица · Сергей Есенин.\nThree timeless thoughts on watercolor: Charles Lamb · Kazakh proverb · Sergei Yesenin.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d61_1",
+   "music_was": "orch_sea"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ВЕРЕ В СЕБЯ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 182,
@@ -4113,20 +5103,42 @@
   "date": "2027-01-05",
   "time": "09:00",
   "quotes": [
-   "tennyson7_bells",
-   "yesenin7_porosha",
-   "aurelius7_bear"
+   "pasteur_chance",
+   "dostoevsky_mind",
+   "descartes_think",
+   "goethe_understand",
+   "buddha_thoughts"
   ],
   "scenes": [
-   "xmas_tree",
-   "steppe_horses",
-   "moon_forest"
+   "street_lamp"
   ],
   "music": "orch_winter",
   "seed": 1184,
-  "title": "Звоните, колокола, — прочь старое, звоните новому 🤍 Три мысли на сегодня | Alfred Tennyson #shorts",
-  "description": "Три мысли классиков на акварели: Альфред Теннисон · Сергей Есенин · Марк Аврелий.\nThree timeless thoughts on watercolor: Alfred Tennyson · Sergei Yesenin · Marcus Aurelius.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d62_1"
+  "title": "5 МЫСЛЕЙ ОБ УМЕ ✨ Пастер, Достоевский, Декарт #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Случай благоприятствует только подготовленному уму. — Луи Пастер\n2. Чтобы умно поступать, одного ума мало. — Фёдор Достоевский\n3. Мыслю, следовательно, существую. — Рене Декарт\n4. Чего ты не понимаешь, тем ты не владеешь. — Иоганн Вольфганг Гёте\n5. Всё, что мы есть, — результат наших мыслей. — Будда\n\nFive timeless thoughts: Louis Pasteur · Fyodor Dostoevsky · René Descartes · Johann Wolfgang von Goethe · The Buddha.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d62_1L",
+  "was": {
+   "quotes": [
+    "tennyson7_bells",
+    "yesenin7_porosha",
+    "aurelius7_bear"
+   ],
+   "scenes": [
+    "xmas_tree",
+    "steppe_horses",
+    "moon_forest"
+   ],
+   "music": "orch_winter",
+   "title": "Звоните, колокола, — прочь старое, звоните новому 🤍 Три мысли на сегодня | Alfred Tennyson #shorts",
+   "description": "Три мысли классиков на акварели: Альфред Теннисон · Сергей Есенин · Марк Аврелий.\nThree timeless thoughts on watercolor: Alfred Tennyson · Sergei Yesenin · Marcus Aurelius.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d62_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "ОБ УМЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 185,
@@ -4180,21 +5192,43 @@
   "date": "2027-01-06",
   "time": "09:00",
   "quotes": [
-   "cicero7_habit",
-   "kz7_name",
-   "ruth7_go"
+   "gibran6_give",
+   "rustaveli7_give",
+   "syrus_twice",
+   "longfellow_give",
+   "eccl6_bread"
   ],
   "scenes": [
-   "winter",
-   "night",
-   "boat_dusk"
+   "winter_village"
   ],
-  "music": "golos_doroga",
+  "music": "orch_horns",
   "seed": 1187,
-  "title": "Привычка — вторая натура 🤍 Три мысли на сегодня | Cicero #shorts",
-  "description": "Три мысли классиков на акварели: Цицерон · Казахская пословица · Книга Руфь.\nThree timeless thoughts on watercolor: Cicero · Kazakh proverb · Book of Ruth.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d63_1",
-  "music_was": "orch_horns"
+  "title": "5 МЫСЛЕЙ О ЩЕДРОСТИ ✨ Джебран, Руставели, Сир #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Вы даёте мало, когда даёте от своего имущества. По-настоящему вы даёте, когда отдаёте себя. — Халиль Джебран\n2. Что ты спрятал — то пропало, что ты отдал — то твоё. — Шота Руставели\n3. Дважды даёт тот, кто даёт быстро. — Публилий Сир\n4. Отдавай то, что имеешь. Для кого-то это может оказаться большим, чем ты думаешь. — Генри Лонгфелло\n5. Отпускай хлеб твой по водам, потому что по прошествии многих дней опять найдёшь его. — Екклесиаст\n\nFive timeless thoughts: Kahlil Gibran · Shota Rustaveli · Publilius Syrus · Henry Longfellow · Ecclesiastes.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d63_1L",
+  "was": {
+   "quotes": [
+    "cicero7_habit",
+    "kz7_name",
+    "ruth7_go"
+   ],
+   "scenes": [
+    "winter",
+    "night",
+    "boat_dusk"
+   ],
+   "music": "golos_doroga",
+   "title": "Привычка — вторая натура 🤍 Три мысли на сегодня | Cicero #shorts",
+   "description": "Три мысли классиков на акварели: Цицерон · Казахская пословица · Книга Руфь.\nThree timeless thoughts on watercolor: Cicero · Kazakh proverb · Book of Ruth.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d63_1",
+   "music_was": "orch_horns"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ЩЕДРОСТИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 188,
@@ -4248,20 +5282,42 @@
   "date": "2027-01-07",
   "time": "09:00",
   "quotes": [
-   "longfellow7_bells",
-   "batyushkov7_memory",
-   "exupery7_answer"
+   "dostoevsky_compassion",
+   "talmud_world",
+   "dickinson_heart",
+   "dickens_heart",
+   "buddha7_conquer"
   ],
   "scenes": [
-   "winter_village",
-   "rain_window",
-   "dunes"
+   "moon_forest"
   ],
   "music": "orch_lullaby",
   "seed": 1190,
-  "title": "Я слышал в Рождество колокола: мир на земле… 🤍 Три мысли на сегодня | Henry Longfellow #shorts",
-  "description": "Три мысли классиков на акварели: Генри Лонгфелло · Константин Батюшков · Антуан де Сент-Экзюпери.\nThree timeless thoughts on watercolor: Henry Longfellow · Konstantin Batyushkov · Antoine de Saint-Exupéry.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d64_1"
+  "title": "5 МЫСЛЕЙ О МИЛОСЕРДИИ ✨ Достоевский, Талмуд, Дикинсон #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Сострадание есть главнейший и, может быть, единственный закон бытия всего человечества. — Фёдор Достоевский\n2. Кто спасает одну жизнь — спасает целый мир. — Талмуд\n3. Если я смогу удержать хоть одно сердце от разрыва, я жила не напрасно. — Эмили Дикинсон\n4. Пусть сердце никогда не черствеет, нрав не устаёт, а прикосновение не ранит. — Чарльз Диккенс\n5. Победи гнев — кротостью, зло — добром, скупого — щедростью, лжеца — правдой. — Будда\n\nFive timeless thoughts: Fyodor Dostoevsky · Talmud · Emily Dickinson · Charles Dickens · The Buddha.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d64_1L",
+  "was": {
+   "quotes": [
+    "longfellow7_bells",
+    "batyushkov7_memory",
+    "exupery7_answer"
+   ],
+   "scenes": [
+    "winter_village",
+    "rain_window",
+    "dunes"
+   ],
+   "music": "orch_lullaby",
+   "title": "Я слышал в Рождество колокола: мир на земле… 🤍 Три мысли на сегодня | Henry Longfellow #shorts",
+   "description": "Три мысли классиков на акварели: Генри Лонгфелло · Константин Батюшков · Антуан де Сент-Экзюпери.\nThree timeless thoughts on watercolor: Henry Longfellow · Konstantin Batyushkov · Antoine de Saint-Exupéry.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d64_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О МИЛОСЕРДИИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 191,
@@ -4315,21 +5371,43 @@
   "date": "2027-01-08",
   "time": "09:00",
   "quotes": [
-   "cervantes7_company",
-   "ru7_tongue",
-   "nekrasov7_frost"
+   "jerome_idle",
+   "leonardo_iron",
+   "tchaikovsky7_guest",
+   "renard7_lazy",
+   "ruprov_stone"
   ],
   "scenes": [
-   "moon_forest",
-   "frost_window",
-   "winter"
+   "wheat"
   ],
-  "music": "golos_kolybelnaya",
+  "music": "orch_lydian",
   "seed": 1193,
-  "title": "Скажи мне, с кем ты водишься, и я скажу, кто ты 🤍 Три мысли на сегодня | Cervantes #shorts",
-  "description": "Три мысли классиков на акварели: Мигель де Сервантес · Русская пословица · Николай Некрасов.\nThree timeless thoughts on watercolor: Miguel de Cervantes · Russian proverb · Nikolai Nekrasov.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d65_1",
-  "music_was": "orch_lydian"
+  "title": "5 МЫСЛЕЙ О ДЕЛЕ И ЛЕНИ ✨ Джером, Винчи, Чайковский #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Невозможно по-настоящему наслаждаться бездельем, если нет уймы работы. — Джером К. Джером\n2. Железо ржавеет без дела, стоячая вода теряет чистоту, а бездействие губит силу ума. — Леонардо да Винчи\n3. Вдохновение — это такая гостья, которая не любит посещать ленивых. — Пётр Чайковский\n4. Лень — привычка отдыхать до того, как устанешь. — Жюль Ренар\n5. Под лежачий камень вода не течёт. — Русская пословица\n\nFive timeless thoughts: Jerome K. Jerome · Leonardo da Vinci · Pyotr Tchaikovsky · Jules Renard · Russian proverb.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d65_1L",
+  "was": {
+   "quotes": [
+    "cervantes7_company",
+    "ru7_tongue",
+    "nekrasov7_frost"
+   ],
+   "scenes": [
+    "moon_forest",
+    "frost_window",
+    "winter"
+   ],
+   "music": "golos_kolybelnaya",
+   "title": "Скажи мне, с кем ты водишься, и я скажу, кто ты 🤍 Три мысли на сегодня | Cervantes #shorts",
+   "description": "Три мысли классиков на акварели: Мигель де Сервантес · Русская пословица · Николай Некрасов.\nThree timeless thoughts on watercolor: Miguel de Cervantes · Russian proverb · Nikolai Nekrasov.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d65_1",
+   "music_was": "orch_lydian"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ДЕЛЕ И ЛЕНИ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 194,
@@ -4383,20 +5461,42 @@
   "date": "2027-01-09",
   "time": "09:00",
   "quotes": [
-   "ko7_sky",
-   "krylov7_dragonfly",
-   "aurelius7_people"
+   "ecclesiastes_wind",
+   "ruprov_measure",
+   "khayyam_alone",
+   "shakespeare_doubts",
+   "kipling_if"
   ],
   "scenes": [
-   "street_lamp",
-   "frozen_lake",
-   "frost_window"
+   "canyon"
   ],
   "music": "ballad_violin",
   "seed": 1196,
-  "title": "Даже если небо рухнет, найдётся дыра, чтобы… 🤍 Три мысли на сегодня | Korean proverb #shorts",
-  "description": "Три мысли классиков на акварели: Корейская пословица · Иван Крылов · Марк Аврелий.\nThree timeless thoughts on watercolor: Korean proverb · Ivan Krylov · Marcus Aurelius.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d66_1"
+  "title": "5 МЫСЛЕЙ О ВЫБОРЕ ✨ Екклесиаст, Хайям, Шекспир #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Кто наблюдает ветер, тому не сеять; и кто смотрит на облака, тому не жать. — Екклесиаст\n2. Семь раз отмерь, один раз отрежь. — Русская пословица\n3. Лучше голодать, чем есть что попало; лучше быть одному, чем с кем попало. — Омар Хайям\n4. Сомненья — предатели: боясь попытки, мы теряем то, что могли бы обрести. — Уильям Шекспир\n5. Если ты можешь встретить Триумф и Беду и равно обойтись с этими двумя обманщиками… — Редьярд Киплинг\n\nFive timeless thoughts: Ecclesiastes · Russian proverb · Omar Khayyam · William Shakespeare · Rudyard Kipling.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d66_1L",
+  "was": {
+   "quotes": [
+    "ko7_sky",
+    "krylov7_dragonfly",
+    "aurelius7_people"
+   ],
+   "scenes": [
+    "street_lamp",
+    "frozen_lake",
+    "frost_window"
+   ],
+   "music": "ballad_violin",
+   "title": "Даже если небо рухнет, найдётся дыра, чтобы… 🤍 Три мысли на сегодня | Korean proverb #shorts",
+   "description": "Три мысли классиков на акварели: Корейская пословица · Иван Крылов · Марк Аврелий.\nThree timeless thoughts on watercolor: Korean proverb · Ivan Krylov · Marcus Aurelius.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d66_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ВЫБОРЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 197,
@@ -4450,21 +5550,43 @@
   "date": "2027-01-10",
   "time": "09:00",
   "quotes": [
-   "muir7_mountains",
-   "yesenin7_sings",
-   "lamartine7_time"
+   "austen6_past",
+   "tolstoy_word",
+   "gibran_yesterday",
+   "carroll_yesterday",
+   "fitzgerald_boats"
   ],
   "scenes": [
-   "alpine",
-   "winter",
    "boat_dusk"
   ],
-  "music": "golos_prostor",
+  "music": "canon_strings",
   "seed": 1199,
-  "title": "Горы зовут — и я должен идти 🤍 Три мысли на сегодня | John Muir #shorts",
-  "description": "Три мысли классиков на акварели: Джон Мьюир · Сергей Есенин · Альфонс де Ламартин.\nThree timeless thoughts on watercolor: John Muir · Sergei Yesenin · Alphonse de Lamartine.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d67_1",
-  "music_was": "canon_strings"
+  "title": "5 МЫСЛЕЙ О ПАМЯТИ И ПРОШЛОМ ✨ Остин, Толстой, Джебран #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Думайте о прошлом лишь тогда, когда воспоминание доставляет вам радость. — Джейн Остин\n2. Время проходит, но сказанное слово остаётся. — Лев Толстой\n3. Вчера — лишь память сегодняшнего дня, а завтра — его мечта. — Джебран Халиль Джебран\n4. Я не могу вернуться во вчера, потому что тогда я была другой. — Льюис Кэрролл\n5. Так мы и плывём вперёд, лодки против течения, а нас всё сносит и сносит в прошлое. — Фрэнсис Скотт Фицджеральд\n\nFive timeless thoughts: Jane Austen · Leo Tolstoy · Kahlil Gibran · Lewis Carroll · F. Scott Fitzgerald.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d67_1L",
+  "was": {
+   "quotes": [
+    "muir7_mountains",
+    "yesenin7_sings",
+    "lamartine7_time"
+   ],
+   "scenes": [
+    "alpine",
+    "winter",
+    "boat_dusk"
+   ],
+   "music": "golos_prostor",
+   "title": "Горы зовут — и я должен идти 🤍 Три мысли на сегодня | John Muir #shorts",
+   "description": "Три мысли классиков на акварели: Джон Мьюир · Сергей Есенин · Альфонс де Ламартин.\nThree timeless thoughts on watercolor: John Muir · Sergei Yesenin · Alphonse de Lamartine.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d67_1",
+   "music_was": "canon_strings"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ПАМЯТИ И ПРОШЛОМ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 200,
@@ -4518,20 +5640,42 @@
   "date": "2027-01-11",
   "time": "09:00",
   "quotes": [
-   "cn7_source",
-   "basho7_snow",
-   "fet7_mama"
+   "donne_island",
+   "terence_human",
+   "saadi7_body",
+   "emerson7_master",
+   "socrates_speak"
   ],
   "scenes": [
-   "waterfall",
-   "winter",
-   "winter_village"
+   "tianshan_winter"
   ],
   "music": "dorian_clarinet",
   "seed": 1202,
-  "title": "Когда пьёшь воду, помни об источнике 🤍 Три мысли на сегодня | Chinese proverb #shorts",
-  "description": "Три мысли классиков на акварели: Китайская пословица · Мацуо Басё · Афанасий Фет.\nThree timeless thoughts on watercolor: Chinese proverb · Matsuo Bashō · Afanasy Fet.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d68_1"
+  "title": "5 МЫСЛЕЙ О ЛЮДЯХ ✨ Донн, Теренций, Саади #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Нет человека, который был бы как остров, сам по себе. — Джон Донн\n2. Я человек, и ничто человеческое мне не чуждо. — Теренций\n3. Все люди — части одного тела, из одной сути сотворены. — Саади\n4. Каждый, кого я встречаю, в чём-то меня превосходит — и в этом я у него учусь. — Ральф Уолдо Эмерсон\n5. Заговори, чтобы я тебя увидел. — Сократ\n\nFive timeless thoughts: John Donne · Terence · Saadi · Ralph Waldo Emerson · Socrates.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d68_1L",
+  "was": {
+   "quotes": [
+    "cn7_source",
+    "basho7_snow",
+    "fet7_mama"
+   ],
+   "scenes": [
+    "waterfall",
+    "winter",
+    "winter_village"
+   ],
+   "music": "dorian_clarinet",
+   "title": "Когда пьёшь воду, помни об источнике 🤍 Три мысли на сегодня | Chinese proverb #shorts",
+   "description": "Три мысли классиков на акварели: Китайская пословица · Мацуо Басё · Афанасий Фет.\nThree timeless thoughts on watercolor: Chinese proverb · Matsuo Bashō · Afanasy Fet.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d68_1"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О ЛЮДЯХ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 203,

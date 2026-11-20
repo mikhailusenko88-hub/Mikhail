@@ -34,5 +34,9 @@ if __name__ == "__main__":
             print("уже есть", out)
             continue
         print(f"== {v['name']} {v['date']} {v['time']} | {v['quotes']} | {v['scenes']} | {v['music']}", flush=True)
-        qc.render_multi(build(v), str(out))
+        if v.get("kind") == "list":          # H35: карточка-список «5 мыслей» (render_list.py)
+            import render_list
+            render_list.render(v, str(out))
+        else:
+            qc.render_multi(build(v), str(out))
         (OUT / f"{v['name']}.txt").write_text(v["title"] + "\n\n" + v["description"] + "\n", encoding="utf-8")
