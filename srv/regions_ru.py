@@ -1,6 +1,6 @@
 # Доступен ли сервер из разных регионов России: Globalping (пробы у людей и в дата-центрах по всей РФ).
 # TCP-«пинг» на порты 443 и 22 нашего сервера и, для сравнения, соседа по сети Hoster.kz.
-import json, time, urllib.request, collections, sys
+import json, time, urllib.request, urllib.error, collections, sys
 API = "https://api.globalping.io/v1"
 TARGETS = [("89.126.192.214", 443, "наш сервер :443"), ("89.126.192.214", 22, "наш сервер :22"), ("89.126.192.15", 443, "сосед Hoster.kz :443")]
 
@@ -18,11 +18,17 @@ for k, n in sorted(cnt.items()):
     print(f"  {n}× {k}")
 sys.stdout.flush()
 
+cities = sorted({p["location"]["city"] for p in ru})
+LOC = [{"country": "RU", "city": c, "limit": 2} for c in cities if c not in ("Moscow", "Saint Petersburg")]
+LOC += [{"country": "RU", "city": "Moscow", "limit": 4}, {"country": "RU", "city": "Saint Petersburg", "limit": 4}]
+print(f"Городов: {len(cities)}, запрашиваю до {sum(l['limit'] for l in LOC)} проб")
 rows = collections.defaultdict(dict)
 for ip, port, name in TARGETS:
     try:
-        m = req(API + "/measurements", {"type": "ping", "target": ip, "locations": [{"country": "RU", "limit": 60}],
+        m = req(API + "/measurements", {"type": "ping", "target": ip, "locations": LOC,
                                         "measurementOptions": {"packets": 3, "protocol": "TCP", "port": port}})
+    except urllib.error.HTTPError as e:
+        print(f"{name}: не удалось запустить ({e}) {e.read().decode()[:600]}"); continue
     except Exception as e:
         print(f"{name}: не удалось запустить ({e})"); continue
     for _ in range(40):
