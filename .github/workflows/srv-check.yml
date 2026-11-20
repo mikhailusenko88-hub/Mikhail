@@ -39,7 +39,9 @@ jobs:
             echo; echo "=== UDP (VPN AmneziaWG/WireGuard — open|filtered = норма, closed = порт не слушает)"
             timeout 120 sudo nmap -Pn -sU -T4 --max-retries 1 --top-ports 50 -n $IP 2>&1 | grep -E 'udp|done' | grep -v 'closed' | head -30 || true
             echo; echo "=== Маршрут (последние шаги)"
-            timeout 60 traceroute -n -T -p 22 -w 2 -q 1 -m 25 $IP 2>&1 | tail -6 || true
+            timeout 60 sudo traceroute -n -T -p 22 -w 2 -q 1 -m 25 $IP 2>&1 | tail -6 || true
+            echo; echo "=== С других точек мира, сначала Россия (check-host.net)"
+            timeout 200 python3 srv/from_ru.py || echo "check-host не сработал"
           } > status/server.txt 2>&1
           cat status/server.txt
       - name: save
