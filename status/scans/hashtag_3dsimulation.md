@@ -1,40 +1,40 @@
 # Скан: hashtag:3dsimulation
-Проверено: 2026-11-19 06:54 UTC · HTTP 200 · найдено 36
+Проверено: 2026-11-20 06:54 UTC · HTTP 200 · найдено 36
 Ссылка: https://www.youtube.com/hashtag/3dsimulation/shorts
 
 Хэштег: 10 тыс. видео • 3,3 тыс. каналов
 
 | # | просм. | возраст | в сутки | канал (подписчики) | длит. | название |
 |---|---|---|---|---|---|---|
-| 1 | 4957143 | 31 дн | 161777 | MORPHIK 3D (@Morphik3d, 10800) | ? | Metallic Cloth Takes Over a Red Ball 😍 / Satisfying 3D Simulation  #satisfying #3danimatio |
-| 2 | 37000000 | ? | ? | BKS Simulation (@bks_simulation, 77300) | ? | 0% vs 100% Softness: Satisfying Cylinder Soft Body Physics in Spiral Glass Tube |
-| 3 | 11000000 | ? | ? | BKS Simulation (@bks_simulation, 77300) | ? | 0% vs 100% Softness : Satisfying Cylinder Soft Body Physics / Curved Glass Tube |
-| 4 | 1200000 | ? | ? | MotionDelight 3D (@MotionDelight3D, 1870) | ? | Воздушный шар против 1, 4, 16, 100, 1 000 шипов / 3D-симуляция, 1 |
-| 5 | 38000000 | ? | ? | BKS Simulation (@bks_simulation, 77300) | ? | 0% vs 100% Softness : Satisfying Star Shape Soft Body Physics |
-| 6 | 492528 | 13 дн | 38960 | MORPHIK 3D (@Morphik3d, 10800) | ? | Metallic Cloth Takes Over an Orange Ball 😍 / Satisfying 3D Simulation #satisfying #3danima |
-| 7 | 22000 | ? | ? | Just Blender Sim (@JustBlenderSim, 17400) | ? | Blender Grass Simulation ASMR #asmr #animation #3danimation #blender #relaxing #3dsimulati |
+| 1 | 4900000 | ? | ? | MORPHIK 3D (@Morphik3d, 10800) | ? | Metallic Cloth Takes Over a Red Ball 😍 / Satisfying 3D Simulation  #satisfying #3danimatio |
+| 2 | 23000000 | ? | ? | SIMSKY BOSSKY (@SIMSKY_BOSSKY, 104000) | ? | 0% vs 100% Sofntess: Blue Metaball x Red Cylinder |
+| 3 | 38000000 | ? | ? | BKS Simulation (@bks_simulation, 77300) | ? | 0% vs 100% Softness : Satisfying Star Shape Soft Body Physics |
+| 4 | 517012 | 14 дн | 37899 | MORPHIK 3D (@Morphik3d, 10800) | ? | Metallic Cloth Takes Over an Orange Ball 😍 / Satisfying 3D Simulation #satisfying #3danima |
+| 5 | 8600000 | ? | ? | BKS Simulation (@bks_simulation, 77300) | ? | 0% vs 100% Softness: Golden Cylinder Soft Body Physics / Oscillating Barrier, 8 |
+| 6 | 11000000 | ? | ? | BKS Simulation (@bks_simulation, 77300) | ? | 0% vs 100% Softness : Satisfying Cylinder Soft Body Physics / Curved Glass Tube |
+| 7 | 220609 | 7 дн | 31721 | BKS Simulation (@bks_simulation, 77300) | ? | 0% vs 100% Satisfying Rectangular Bar Soft Body Physics |
 | 8 | 10000000 | ? | ? | SIMSKY BOSSKY (@SIMSKY_BOSSKY, 104000) | ? | 0% vs 100% Softness: Red Capsules x Marble Platforms |
-| 9 | 33000 | ? | ? | BeamNG_KShM (@BeamNG_KShM, 649) | ? | 😱 Angry Balls Vs Deep Water Pool #shorts #satisfying #beamng #animation I #011  💥🚗🔵💦  Beam |
-| 10 | 26916 | 19 дн | 1444 | ImmersiveX Studio (@immersivexstudio, 2490) | ? | 0% vs 100% Soft TWO GIANT Golden Spheres x Pistons 😳 3D Soft Body Simulation #satisfying # |
-| 11 | 20000000 | ? | ? | BKS Simulation (@bks_simulation, 77300) | ? | 0% vs 100% Softness: Menger Sponge shaped Jelly Cubes Soft Body Physics |
-| 12 | 39434 | 6 дн | 6989 | MORPHIK 3D (@Morphik3d, 10800) | ? | Metallic Cloth Takes Over an Yellow painted Ball 😍 / Satisfying 3D Cloth Simulation #satis |
-| 13 | 24000000 | ? | ? | SIMSKY BOSSKY (@SIMSKY_BOSSKY, 104000) | ? | 0% vs 100% Softness: Metal Cylinder x Marble Torus |
-| 14 | 3354 | 13 дн | 262 | Oddly Soft 3D (@OddlySoft3D, 297) | ? | GIANT Sphere vs Capsule vs Cone vs Torus 😳 Which Shape Finds the Hole? 3D Physics #shorts, |
-| 15 | 7200000 | ? | ? | BKS Simulation (@bks_simulation, 77300) | ? | 100% vs 0% Softness: Satisfying Sphere Soft Body Physics Simulation, 7 |
-| 16 | 5400 | ? | ? | ? (@?, ?) | ? | What happens when two balls hit the spike? 0% vs 100% SOFT 🔺 #shorts, 5 |
-| 17 | 32000 | ? | ? | ? (@?, ?) | ? | 0% vs 100% Softness: Will the Rings Hang On? Torus Soft Body #Shorts #Satisfying |
-| 18 | 25000 | ? | ? | ? (@?, ?) | ? | 0% vs 100% Cylinder x Glass Pipe Soft Body Simulation |
-| 19 | 18000 | ? | ? | ? (@?, ?) | ? | Orange Cat doesn't like that  #3dsimulation #animation #blender3d |
-| 20 | 29000 | ? | ? | ? (@?, ?) | ? | 😱 Big & Small Colorful Moon Cars vs GIANT WATER TRAP in BeamNG.drive Gameplay! 🌕🚗🌊  #020   |
-| 21 | 70037 | 23 дн | 2988 | ? (@?, 297) | ? | 0% vs 100% Soft ONE GIANT Golden Sphere x Piston 😳 3D Soft Body Simulation #shorts |
-| 22 | 16000000 | ? | ? | ? (@?, ?) | ? | 0% vs 100% Softness: Cylinder Soft Body Physics / Slide to the Target |
-| 23 | 37000000 | ? | ? | ? (@?, ?) | ? | 0% vs 100% Softness: Green and Red Jelly Shapes x Marble Staircase |
-| 24 | 4800 | ? | ? | ? (@?, ?) | ? | Thunderclap 👏 vs 2,000 Cubes 🧊 Field force Simulation #asmr #satisfying #shorts #viral, 4 |
-| 25 | 7700 | ? | ? | ? (@?, ?) | ? | 1 kg vs 1,000 kg on a Balloon 🎈💥, 7 |
-| 26 | 5345 | 21 дн | 259 | ? (@?, 2490) | ? | 0% vs 100% Soft FOUR Golden Spheres Falling x Pipes 😳 3D Soft Body Simulation #shorts, 5 |
-| 27 | 6800000 | ? | ? | ? (@?, ?) | ? | 0% vs 100% Softness: Red Sphere x Honey Slabs, 6 |
-| 28 | 78243 | 27 дн | 2936 | ? (@?, 10800) | ? | What Happens When Metal Cloth Covers Red Balls? 😱 / Blender Simulation |
-| 29 | 20000 | ? | ? | ? (@?, ?) | ? | 0% vs 100% Rings X Spheres Soft Body Simulation / #satisfying #3d #shorts |
-| 30 | 41000 | ? | ? | ? (@?, ?) | ? | 😱 Angry Balls Vs Deep Water Pool #shorts #satisfying #beamng #animation I #009  💥🚗🔵💦 / Bea |
+| 9 | 30070 | 21 дн | 1428 | Fact Vizuki (@FactVizuki, 235) | ? | What Happens When a Bullet Hits an Axe? 😱 #Shorts |
+| 10 | 33000 | ? | ? | BeamNG_KShM (@BeamNG_KShM, 674) | ? | 😱 Angry Balls Vs Deep Water Pool #shorts #satisfying #beamng #animation I #011  💥🚗🔵💦  Beam |
+| 11 | 17000 | ? | ? | ? (@?, ?) | ? | 😍🔴Satisfying rigid body physics #blender, #shorts, #3danimation |
+| 12 | 674197 | 40 дн | 16891 | BKS Simulation (@bks_simulation, 77300) | ? | 0% vs 100% Rectangular Candy Satisfying Soft Body Physics |
+| 13 | 6800000 | ? | ? | SIMSKY BOSSKY (@SIMSKY_BOSSKY, 104000) | ? | 0% vs 100% Softness: Red Sphere x Honey Slabs, 6 |
+| 14 | 25784 | 26 дн | 988 | RenderVault (@RenderVault-3D, 2710) | ? | 0% vs 100% Cylinder x Glass Pipe Soft Body Simulation |
+| 15 | 1085606 | 57 дн | 19074 | BKS Simulation (@bks_simulation, 77300) | ? | 0% vs 100% Rectangular Candy Soft Body Physics |
+| 16 | 16000 | ? | ? | ? (@?, ?) | ? | 😱 Big & Small Colorful Moon Cars vs GIANT WATER TRAP in BeamNG.drive Gameplay! 🌕🚗🌊 #021 |
+| 17 | 45000 | ? | ? | ? (@?, ?) | ? | 😱 СЕКРЕТИ АЕРОДИНАМІКИ В 3D! 💥 #цікавіфакти #наука #технології |
+| 18 | 24000000 | ? | ? | ? (@?, ?) | ? | 0% vs 100% Softness: Metal Cylinder x Marble Torus |
+| 19 | 201000 | ? | ? | ? (@?, ?) | ? | satisfying viscosity test simulation |
+| 20 | 1800000 | ? | ? | ? (@?, ?) | ? | Воздушный шар против 1, 4, 16, 100, 1 000 шипов / 3D-симуляция, 1 |
+| 21 | 38000 | ? | ? | ? (@?, ?) | ? | 😱 Big & Small Colorful Moon Cars vs GIANT WATER TRAP in BeamNG.drive Gameplay! 🌕🚗🌊 #022 |
+| 22 | 39000 | ? | ? | ? (@?, ?) | ? | Thousands Of Rods Bend Like Candy & Slide Into The Holes 🤯 / 3D Simulation #shorts |
+| 23 | 37000000 | ? | ? | ? (@?, ?) | ? | 0% vs 100% Softness: Satisfying Cylinder Soft Body Physics in Spiral Glass Tube |
+| 24 | 73000 | ? | ? | ? (@?, ?) | ? | 4 vs 4096 Faces Chainmail Physics Simulation 🔗✨ Oddly Satisfying ASMR #shorts |
+| 25 | 246000 | ? | ? | ? (@?, ?) | ? | What Happens When Metal Cloth Covers a Ball? 😱  #animation #satisfying #3d #satisfyingvide |
+| 26 | 7700 | ? | ? | ? (@?, ?) | ? | 1 kg vs 1,000 kg on a Balloon 🎈💥, 7 |
+| 27 | 25000 | ? | ? | ? (@?, ?) | ? | Satisfying Minecraft Blocks / Perfect 3D Loop 🤯 |
+| 28 | 34000 | ? | ? | ? (@?, ?) | ? | 0% vs 100% Softness: Can the Soft Cylinder Squeeze Through the Curvy Rift? #Shorts #Satisf |
+| 29 | 78294 | 28 дн | 2832 | ? (@?, 10800) | ? | What Happens When Metal Cloth Covers Red Balls? 😱 / Blender Simulation |
+| 30 | 308000 | ? | ? | ? (@?, ?) | ? | 0% vs 100% Soft Body Red and Green Metaballs x Marble Prisms |
 
-Хэштеги у первых 30: #shorts ×11, #satisfying ×9, #animation ×4, #3d ×3, #3danimation ×3, #3dsimulation ×2, #asmr ×2, #beamng ×2, #4k ×1, #blender ×1, #relaxing ×1, #011 ×1, #blender3d ×1, #020 ×1, #viral ×1, #009 ×1
+Хэштеги у первых 30: #shorts ×6, #satisfying ×5, #3d ×3, #3danimation ×3, #animation ×2, #blender ×2, #011 ×1, #beamng ×1, #021 ×1, #наука ×1, #технології ×1, #цікавіфакти ×1, #022 ×1, #satisfyingvideo ×1
