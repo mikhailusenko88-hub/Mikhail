@@ -2,7 +2,7 @@
 # TCP-«пинг» на порты 443 и 22 нашего сервера и, для сравнения, соседа по сети Hoster.kz.
 import json, time, urllib.request, urllib.error, collections, sys
 API = "https://api.globalping.io/v1"
-TARGETS = [("89.126.192.214", 443, "наш сервер :443"), ("89.126.192.214", 22, "наш сервер :22"), ("89.126.192.15", 443, "сосед Hoster.kz :443")]
+TARGETS = [("89.126.192.214", 443, "наш сервер :443"), ("89.126.192.214", 22, "наш сервер :22"), ("89.126.192.214", 8443, "наш сервер :8443")]
 
 def req(url, data=None):
     r = urllib.request.Request(url, data=json.dumps(data).encode() if data else None,
@@ -21,6 +21,10 @@ sys.stdout.flush()
 cities = sorted({p["location"]["city"] for p in ru})
 LOC = [{"country": "RU", "city": c, "limit": 1} for c in cities if c not in ("Moscow", "Saint Petersburg")]
 LOC += [{"country": "RU", "city": "Moscow", "limit": 4}, {"country": "RU", "city": "Saint Petersburg", "limit": 4}]
+magic = [l.split(":",1)[1].strip() for l in open("regions.txt", encoding="utf-8") if l.startswith("magic:")]
+if magic:
+    LOC = [{"magic": m.split("|")[0].strip(), "limit": int(m.split("|")[1])} for m in magic]
+    print("Режим по сетям:", LOC)
 print(f"Городов: {len(cities)}, запрашиваю до {sum(l['limit'] for l in LOC)} проб")
 rows = collections.defaultdict(dict)
 for ip, port, name in TARGETS:
@@ -43,7 +47,7 @@ for ip, port, name in TARGETS:
         rows[key][name] = f'ОК {round(st.get("avg") or 0)} мс' if ok else "НЕТ"
     time.sleep(2)
 
-print("\n=== Результат по точкам (регион — сеть: наш :443 | наш :22 | сосед :443)")
+print("\n=== Результат по точкам (регион — сеть: :443 | :22 | :8443)")
 yes = 0
 for key in sorted(rows):
     v = rows[key]
