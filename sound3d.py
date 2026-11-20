@@ -2,6 +2,7 @@
 панорама по положению. О стекло — звонче, о шары — сухой щелчок, о пол/кучу — глуше. Без шумов (чистые затухающие моды).
 python3 sound3d.py pos.npz out.wav [начало_с] [длина_с]"""
 import math
+import os
 import sys
 import wave
 
@@ -12,7 +13,18 @@ SR = 44100
 d = np.load(sys.argv[1])
 pos = d["pos"].astype(np.float32)          # кадры × шары × 3
 FPS = int(d["fps"])
-GW, GD, GH, T = (float(v) for v in d["glass"])
+VES = str(d["vessel"]) if "vessel" in d.files else None
+if VES:                                              # сосуд-зверь: «стекло» — центр шара у стенки по SDF (изнутри или снаружи)
+    from scipy.ndimage import map_coordinates
+    _vs = np.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), "vessels", VES + "_sdf.npz"))
+    _D, _O, _H = _vs["d"].astype(np.float32), _vs["o"], float(_vs["h"])
+    LIFT = float(d["lift"])
+    BRAD = float(d["r"])
+    _P = pos.reshape(-1, 3) - np.array([0, 0, LIFT])
+    SD = map_coordinates(_D, ((_P - _O) / _H).T, order=1, mode="nearest").reshape(pos.shape[:2])
+    del _P
+else:
+    GW, GD, GH, T = (float(v) for v in d["glass"])
 OUT = sys.argv[2]
 T0 = float(sys.argv[3]) if len(sys.argv) > 3 else 0.0
 DUR = float(sys.argv[4]) if len(sys.argv) > 4 else pos.shape[0] / FPS - T0
@@ -73,8 +85,15 @@ for f in range(f_from, f_to):
     for i in keep:
         x, y, z = P[f, i]
         j = min(J[f, i], 4.0)
-        near_wall = (abs(abs(x) - GW / 2) < 0.02 or abs(abs(y) - GD / 2) < 0.02) and z < GH + T + 0.01 and abs(x) < GW / 2 + 0.03
-        if near_wall:
+        if VES:
+            sd = float(SD[min(f + 1, SD.shape[0] - 1), i])
+            if -(BRAD + 0.007) < sd < BRAD + 0.011:
+                kind = "glass"
+            elif z < 0.03 and sd > 0.02:
+                kind = "floor"
+            else:
+                kind = "ball"
+        elif (abs(abs(x) - GW / 2) < 0.02 or abs(abs(y) - GD / 2) < 0.02) and z < GH + T + 0.01 and abs(x) < GW / 2 + 0.03:
             kind = "glass"
         elif z < 0.03 and (abs(x) > GW / 2 + 0.02 or abs(y) > GD / 2 + 0.02):
             kind = "floor"

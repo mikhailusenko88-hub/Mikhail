@@ -21,10 +21,21 @@ nf = int(subprocess.run(['ffprobe', '-v', 'error', '-count_frames', '-select_str
                          'stream=nb_read_frames', '-of', 'csv=p=0', raw], capture_output=True, text=True).stdout.strip())
 d = np.load(posf)
 pos = d['pos'].astype(np.float32)
-GW, GD, GH, T = (float(v) for v in d['glass'])
-inside = (np.abs(pos[..., 0]) < GW / 2 + 0.003) & (np.abs(pos[..., 1]) < GD / 2 + 0.003) & (pos[..., 2] < ZC)
-cnt = inside.sum(1)                                    # по кадрам 1..N (индекс f-1)
-cnt = np.maximum.accumulate(cnt)                       # счётчик не идёт назад (шар, отскочивший вверх, не «убывает»)
+if 'vessel' in d.files:                                # сосуд-зверь: внутри = SDF < 0 и ниже края отверстия
+    from scipy.ndimage import map_coordinates, median_filter
+    vs = np.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vessels', str(d['vessel']) + '_sdf.npz'))
+    D, O, HH = vs['d'].astype(np.float32), vs['o'], float(vs['h'])
+    rimz = float(vs['mouth'][3]) + float(d['lift'])
+    P = pos.reshape(-1, 3) - np.array([0, 0, float(d['lift'])])
+    sd = map_coordinates(D, ((P - O) / HH).T, order=1, mode='nearest').reshape(pos.shape[:2])
+    inside = (sd < 0) & (pos[..., 2] < rimz + 0.004)
+    cnt = median_filter(inside.sum(1), size=5, mode='nearest')
+    cnt = np.maximum.accumulate(cnt) if os.environ.get('MONO') else cnt
+else:
+    GW, GD, GH, T = (float(v) for v in d['glass'])
+    inside = (np.abs(pos[..., 0]) < GW / 2 + 0.003) & (np.abs(pos[..., 1]) < GD / 2 + 0.003) & (pos[..., 2] < ZC)
+    cnt = inside.sum(1)                                    # по кадрам 1..N (индекс f-1)
+    cnt = np.maximum.accumulate(cnt)                       # счётчик не идёт назад (шар, отскочивший вверх, не «убывает»)
 TOTAL = pos.shape[1]
 print('кадров', nf, 'шаров всего', TOTAL, 'в кубе к концу', int(cnt[min(len(cnt) - 1, F0 - 1 + nf - 1)]))
 fb = ImageFont.truetype('/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf', 150)
@@ -62,7 +73,7 @@ for _ in range(HOLD):
 enc.stdin.close(); enc.wait(); dec.wait()
 dur = (used + HOLD) / 30
 wav = os.path.join(tmp, 'a.wav')
-subprocess.run(['python3', '/home/claude/s3d/sound3d.py', posf, wav, str((max(S, F0) - 1) / 30), str(dur)], check=True)
+subprocess.run(['python3', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sound3d.py'), posf, wav, str((max(S, F0) - 1) / 30), str(dur)], check=True)
 subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', os.path.join(tmp, 'v.mp4'), '-i', wav, '-c:v', 'copy',
                 '-af', 'loudnorm=I=-15:TP=-1.5:LRA=11', '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-shortest', OUT], check=True)
 print('готово', OUT, round(dur, 2), 'с')
