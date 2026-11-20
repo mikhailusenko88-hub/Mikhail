@@ -1,5 +1,5 @@
-Проверка: 2026-11-20 19:41 МСК
-Проб Globalping всего: 5596, в России: 177
+Проверка: 2026-11-20 19:43 МСК
+Проб Globalping всего: 5602, в России: 177
   1× Kazan — Alex Group
   1× Kazan — DLine Media
   1× Khabarovsk — Misaka Network
@@ -114,53 +114,15 @@
   1× Yekaterinburg — Izet Telecom Ural
   1× Yoshkar-Ola — Rostelecom
   1× Yuzhno-Sakhalinsk — S.SETEVAYA SVYAZ
-Городов: 29, запрашиваю до 35 проб
+Режим по сетям: [{'magic': 'AS9123', 'limit': 12}, {'magic': 'AS49505', 'limit': 12}, {'magic': 'AS50340', 'limit': 6}, {'magic': 'AS39435', 'limit': 5}, {'magic': 'AS39264', 'limit': 3}, {'magic': 'Samara', 'limit': 4}, {'magic': 'Volgograd', 'limit': 4}, {'magic': 'AS200487', 'limit': 4}]
+Городов: 29, запрашиваю до 50 проб
 
-=== Результат по точкам (регион — сеть: наш :443 | наш :22 | сосед :443)
-Kazan (Eastern Europe) — Alex Group AS212165: НЕТ | — | —
-Kazan (Eastern Europe) — DLine Media AS213316: — | НЕТ | НЕТ
-Khabarovsk (Eastern Europe) — Misaka Network AS57578: НЕТ | НЕТ | НЕТ
-Kostroma (Eastern Europe) — Rostelecom AS12389: НЕТ | НЕТ | НЕТ
-Krasnodar (Eastern Europe) — GENERAL IT RUS AS215455: НЕТ | НЕТ | НЕТ
-Kursk (Eastern Europe) — Kurier AS203791: — | НЕТ | —
-Kursk (Eastern Europe) — Kursktelecom AS42277: НЕТ | — | НЕТ
-Mar'ino (Eastern Europe) — TRC FIORD AS51369: НЕТ | — | НЕТ
-Moscow (Eastern Europe) — EuroByte AS210079: НЕТ | — | —
-Moscow (Eastern Europe) — Hosting technology AS48282: НЕТ | НЕТ | НЕТ
-Moscow (Eastern Europe) — IOT AS29182: — | — | НЕТ
-Moscow (Eastern Europe) — Mediasoft ekspert AS48347: — | НЕТ | —
+=== Результат по точкам (регион — сеть: :443 | :22 | :8443)
 Moscow (Eastern Europe) — Selectel AS50340: НЕТ | НЕТ | НЕТ
-Moscow (Eastern Europe) — Timeweb AS9123: ОК 51 мс | ОК 51 мс | НЕТ
-Mytishchi (Eastern Europe) — Information and Communication Technologies AS35539: НЕТ | НЕТ | НЕТ
-Naberezhnyye Chelny (Eastern Europe) — ER-Telecom Holding AS42116: НЕТ | НЕТ | НЕТ
-Novokuznetsk (Eastern Europe) — E-Light-Telecom AS39927: НЕТ | — | —
-Novokuznetsk (Eastern Europe) — Regional Digital Telecommunication Company AS29072: — | НЕТ | НЕТ
-Novosibirsk (Eastern Europe) — Adman AS57494: НЕТ | НЕТ | —
-Novosibirsk (Eastern Europe) — Global Internet Solutions AS207713: — | — | НЕТ
-Obninsk (Eastern Europe) — EuroByte AS210079: НЕТ | НЕТ | НЕТ
-Omsk (Eastern Europe) — Osnova Data Net AS52086: НЕТ | НЕТ | НЕТ
-Orenburg (Eastern Europe) — Goroshko Evgeniy Andreevich AS50284: НЕТ | НЕТ | НЕТ
-Penza (Eastern Europe) — ER-Telecom Holding AS41754: НЕТ | НЕТ | НЕТ
-Rostov-on-Don (Eastern Europe) — MTS AS8359: НЕТ | НЕТ | НЕТ
-Saint Petersburg (Eastern Europe) — Alex Group AS212165: НЕТ | НЕТ | НЕТ
-Saint Petersburg (Eastern Europe) — EDIS AS57169: — | НЕТ | —
-Saint Petersburg (Eastern Europe) — Petersburg Internet Network AS216368: НЕТ | — | —
-Saint Petersburg (Eastern Europe) — SPRINTHOST.RU AS35278: — | — | НЕТ
-Saint Petersburg (Eastern Europe) — Selectel AS49505: ОК 64 мс | ОК 64 мс | НЕТ
+Moscow (Eastern Europe) — Timeweb AS9123: ОК 51 мс | ОК 51 мс | ОК 53 мс
+Saint Petersburg (Eastern Europe) — Selectel AS49505: ОК 62 мс | ОК 64 мс | ОК 62 мс
 Saint Petersburg (Eastern Europe) — VPS AS200487: НЕТ | НЕТ | НЕТ
-Samara (Eastern Europe) — Region Svyaz Konsalt AS39264: ОК 28 мс | ОК 28 мс | НЕТ
-Sochi (Eastern Europe) — Business Svyaz AS47586: НЕТ | НЕТ | НЕТ
-Taganrog (Eastern Europe) — Consumer Internet Cooperative PG-19 AS60246: НЕТ | НЕТ | НЕТ
-Tambov (Eastern Europe) — HOSTKEY AS50867: НЕТ | НЕТ | НЕТ
-Tomsk (Eastern Europe) — Limited Company Information and Consulting Agency AS31357: НЕТ | НЕТ | НЕТ
-Tula (Eastern Europe) — ER-Telecom Holding AS52207: НЕТ | НЕТ | НЕТ
-Ufa (Eastern Europe) — New Hosting Technologies AS216334: НЕТ | — | —
-Ufa (Eastern Europe) — Vimpelcom AS3216: — | НЕТ | НЕТ
-Vladivostok (Eastern Europe) — PortTelekom AS34470: НЕТ | НЕТ | НЕТ
-Volgograd (Eastern Europe) — ER-Telecom Holding AS39435: ОК 77 мс | ОК 79 мс | НЕТ
-Yekaterinburg (Eastern Europe) — GalaxyStar AS206873: НЕТ | — | —
-Yekaterinburg (Eastern Europe) — Izet Telecom Ural AS41925: — | НЕТ | НЕТ
-Yoshkar-Ola (Eastern Europe) — Rostelecom AS12389: НЕТ | НЕТ | НЕТ
-Yuzhno-Sakhalinsk (Eastern Europe) — S.SETEVAYA SVYAZ AS8440: НЕТ | НЕТ | НЕТ
+Samara (Eastern Europe) — Region Svyaz Konsalt AS39264: ОК 28 мс | ОК 28 мс | ОК 366 мс
+Volgograd (Eastern Europe) — ER-Telecom Holding AS39435: ОК 81 мс | ОК 78 мс | ОК 78 мс
 
-Точек, откуда НАШ сервер открывается: 4 из 45
+Точек, откуда НАШ сервер открывается: 4 из 6
