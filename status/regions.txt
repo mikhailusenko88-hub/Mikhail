@@ -1,0 +1,121 @@
+Проверка: 2026-11-20 19:39 МСК
+Проб Globalping всего: 5607, в России: 176
+  1× Kazan — Alex Group
+  1× Kazan — DLine Media
+  1× Khabarovsk — Misaka Network
+  1× Kostroma — Rostelecom
+  1× Krasnodar — GENERAL IT RUS
+  1× Kursk — Kurier
+  1× Kursk — Kursktelecom
+  4× Moscow — AI DATACENTER
+  1× Moscow — ANDREY LEBEDEV
+  1× Moscow — ARGOTEL AS RU
+  3× Moscow — Aeza Group
+  2× Moscow — Alex Group
+  1× Moscow — Citytelecom
+  1× Moscow — Cloud assets
+  2× Moscow — Cloud.ru
+  2× Moscow — Datacheap
+  1× Moscow — Delta
+  2× Moscow — Denis Aleksandrovich Iakovlev
+  1× Moscow — Digital Network
+  1× Moscow — Domain names registrar REG.RU
+  1× Moscow — EDIS
+  1× Moscow — ER-Telecom Holding
+  4× Moscow — EuroByte
+  2× Moscow — FIRST SERVER
+  2× Moscow — Garant Park Internet
+  2× Moscow — HOSTKEY
+  1× Moscow — HUAWEI CLOUDS
+  5× Moscow — Hosting technology
+  2× Moscow — IHOR HOSTING
+  1× Moscow — INTERNATIONAL HOSTING COMPANY
+  4× Moscow — IOT
+  1× Moscow — IQHost
+  1× Moscow — ITSOFT
+  3× Moscow — Ilia Baikov
+  1× Moscow — JOINT-STOCK COMPANY "TELEPORT TELECOM"
+  2× Moscow — LIGHT NODE
+  1× Moscow — Lovitel
+  1× Moscow — MASTERHOST
+  1× Moscow — MT FINANCE
+  1× Moscow — Mastertel
+  1× Moscow — Media Land
+  4× Moscow — Mediasoft ekspert
+  1× Moscow — Moscow city telephone network
+  1× Moscow — NEKOBYTE INTERNATIONAL
+  1× Moscow — New Hosting Technologies
+  1× Moscow — OJSC National Cable Networks
+  2× Moscow — OKB PROGRESS
+  1× Moscow — Packet Loss
+  2× Moscow — QWARTA
+  1× Moscow — RS-Media
+  1× Moscow — RocketCloud.ru
+  1× Moscow — SBCLOUD
+  3× Moscow — SERV.HOST GROUP
+  4× Moscow — Selectel
+  1× Moscow — ServTech
+  1× Moscow — Smart Ape
+  1× Moscow — SpaceWeb
+  1× Moscow — Start2
+  1× Moscow — Sun Network Company
+  2× Moscow — TIME-HOST
+  10× Moscow — Timeweb
+  1× Moscow — VDSka hosting
+  1× Moscow — VK
+  1× Moscow — Vpsville
+  1× Moscow — WestCall
+  4× Moscow — Yandex.Cloud
+  1× Moscow — ZTV CORP
+  1× Moscow — eServer
+  1× Mytishchi — Information and Communication Technologies
+  1× Naberezhnyye Chelny — ER-Telecom Holding
+  1× Novokuznetsk — E-Light-Telecom
+  1× Novokuznetsk — Regional Digital Telecommunication Company
+  2× Novosibirsk — Adman
+  1× Novosibirsk — Alex Group
+  3× Novosibirsk — Global Internet Solutions
+  2× Novosibirsk — MTS
+  1× Novosibirsk — SERV.HOST GROUP
+  1× Obninsk — Alex Group
+  2× Obninsk — EuroByte
+  1× Omsk — Osnova Data Net
+  1× Orenburg — Goroshko Evgeniy Andreevich
+  1× Orenburg — Stroytechservice
+  1× Penza — ER-Telecom Holding
+  1× Rostov-on-Don — MTS
+  2× Saint Petersburg — Alex Group
+  1× Saint Petersburg — Beget
+  1× Saint Petersburg — Citytelecom
+  1× Saint Petersburg — EDIS
+  2× Saint Petersburg — ER-Telecom Holding
+  1× Saint Petersburg — H2NEXUS CLOUD SERVICES - FZCO
+  1× Saint Petersburg — Miran
+  1× Saint Petersburg — New Hosting Technologies
+  1× Saint Petersburg — Petersburg Internet Network
+  1× Saint Petersburg — SPRINTHOST.RU
+  4× Saint Petersburg — Selectel
+  1× Saint Petersburg — SkyNET
+  1× Saint Petersburg — VEESP
+  2× Saint Petersburg — VPS
+  1× Samara — Region Svyaz Konsalt
+  1× Sochi — Business Svyaz
+  2× Taganrog — Consumer Internet Cooperative PG-19
+  2× Tambov — HOSTKEY
+  2× Tomsk — Limited Company Information and Consulting Agency
+  1× Tula — ER-Telecom Holding
+  1× Ufa — New Hosting Technologies
+  1× Ufa — Vimpelcom
+  2× Vladivostok — PortTelekom
+  1× Volgograd — ER-Telecom Holding
+  1× Yekaterinburg — GalaxyStar
+  1× Yekaterinburg — Izet Telecom Ural
+  1× Yoshkar-Ola — Rostelecom
+  1× Yuzhno-Sakhalinsk — S.SETEVAYA SVYAZ
+наш сервер :443: не удалось запустить (HTTP Error 400: Bad Request)
+наш сервер :22: не удалось запустить (HTTP Error 400: Bad Request)
+сосед Hoster.kz :443: не удалось запустить (HTTP Error 400: Bad Request)
+
+=== Результат по точкам (регион — сеть: наш :443 | наш :22 | сосед :443)
+
+Точек, откуда НАШ сервер открывается: 0 из 0
