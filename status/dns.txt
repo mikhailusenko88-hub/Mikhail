@@ -1,0 +1,48 @@
+## dns duckdns.org
+   RU Moscow: A 3.96.91.14
+   RU Moscow: A 3.96.91.14
+   RU Saint Petersburg: A 3.96.91.14
+   DE Nuremberg: A 3.96.91.14
+   DE Langen: A 3.96.91.14
+   DE Frankfurt: A 3.96.91.14
+
+## http https://www.duckdns.org
+   RU Moscow: 200 OK
+   RU Moscow: 200 OK
+   RU Saint Petersburg: 200 OK
+   DE Nuremberg: 200 OK
+   DE Langen: 200 OK
+   DE Frankfurt: 200 OK
+
+## dns dedyn.io
+   RU Moscow: A 88.99.64.5
+   RU Moscow: A 88.99.64.5
+   RU Saint Petersburg: A 88.99.64.5
+   DE Nuremberg: A 88.99.64.5
+   DE Langen: A 88.99.64.5
+   DE Frankfurt: A 88.99.64.5
+
+## http https://desec.io
+   RU Moscow: 200 OK
+   RU Moscow: 200 OK
+   RU Saint Petersburg: 200 OK
+   DE Nuremberg: 200 OK
+   DE Langen: 200 OK
+   DE Frankfurt: 200 OK
+
+## dns freeddns.org
+   RU Moscow: A 162.216.242.208
+   RU Moscow: A 162.216.242.208
+   RU Saint Petersburg: A 162.216.242.208
+   DE Nuremberg: A 162.216.242.208
+   DE Langen: A 162.216.242.208
+   DE Frankfurt: A 162.216.242.208
+
+## http https://www.dynu.com
+   RU Moscow: 200 OK
+   RU Moscow: 200 OK
+   RU Saint Petersburg: 200 OK
+   DE Nuremberg: 200 OK
+   DE Langen: 200 OK
+   DE Frankfurt: 200 OK
+
