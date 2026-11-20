@@ -1,5 +1,8 @@
-https://crm.nashdekor.ru/api/outbox/status/30fef65b-9271-4043-9ad3-54b875fb763e
-https://crm.nashdekor.ru/api/outbox/status/5bc9e97a-5eb4-4ea7-9a7a-cabba24588ed
-https://crm.nashdekor.ru/api/outbox/status/95f54fa7-84c5-447f-824d-628aef14da27
-https://crm.nashdekor.ru/api/outbox/status/944e5b85-f41f-40f2-b645-81b877ffa05e
-https://crm.nashdekor.ru/api/outbox/status/a1ece9d6-825d-4da1-aac1-06f8294a9607
+https://arhidis.ru
+https://victory-design.pro
+https://artdyakonov.design
+https://burozero.ru
+https://design-mm.ru
+https://studia-23-spb.ru
+https://nowdesign.ru
+https://polozov.design
