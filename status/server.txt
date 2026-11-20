@@ -1,24 +1,67 @@
-Проверка: 2026-11-04 17:04 UTC из GitHub (US)
+Проверка: 2026-11-20 10:27 UTC (13:27 МСК) из GitHub (US)
+
+=== Попытка 1 — 13:27:25 МСК
 --- ping
-3 packets transmitted, 0 received, 100% packet loss, time 2078ms
+3 packets transmitted, 0 received, 100% packet loss, time 2085ms
 
 --- порты TCP
 22 открыт
 80 открыт
-443 НЕ отвечает
+443 открыт
 2222 НЕ отвечает
 8080 открыт
---- SSH баннер
-SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
-нет ответа от SSH
+8443 открыт
+--- SSH баннер: SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
+--- http://89.126.192.214/ -> 302 за 0.363026s
+--- 8080 страница -> 200 19848 байт за 0.601134s
 
---- ssh-keyscan
-# 89.126.192.214:22 SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
-# 89.126.192.214:22 SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
-89.126.192.214 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC4iNlXUHb8zl4B5XeO4jD05SzrVAVsl7v2F4LMgrU7PkO9jqAFftXaV76+q3ZsyrTTTOKTIe09wz3lR2yZjXoCY/nfPufaPczSTQai6dPUBpoojupiHHWW/z91q+ii5HY2B+w6Zz7b0A6QJVpepGZ04wzDBWXD2BQUl+Q1Gf3TERt7H+ntpILeIQD1jbdBgYgO8Wb/wjRq79TV9B+ds+zKcCQekA2NZcA5lmKT5Ss3iGtmOZo4cWFBrIXdmm2GGV43WCkntsz76b5FZDiQOiL0x9Eu5ctgDh45hYNcGzAHSnTMT/Get2kxSUwm3lqUNghmeOkeau8C/LhVdVAc7mejiS8GrhatEVBWHRay/lH8nJSRmOtNiDOloJubG29VTMsiB3wJ+pub8BA30/whY9H1nZ/cCnGuOw8l00H8eTJWcvnubXRy1P2Wgr/5wYvMGU5chqksnE0FvuF8/XRPyx28OK+3Ctvr0/52Vbiw6/s7DUxd+GNTblc87fOai4XZVEM=
---- HTTP
-http://89.126.192.214/ -> 302 за 0.361865s
-https://89.126.192.214/ -> 000 за 0.179859s
-https не ответил
---- traceroute (последние шаги)
-timeout: failed to execute process: No such file or directory (os error 2)
+=== Попытка 2 — 13:27:50 МСК
+--- ping
+3 packets transmitted, 0 received, 100% packet loss, time 2085ms
+
+--- порты TCP
+22 открыт
+80 открыт
+443 открыт
+2222 НЕ отвечает
+8080 открыт
+8443 открыт
+--- SSH баннер: SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
+--- http://89.126.192.214/ -> 302 за 0.361869s
+--- 8080 страница -> 200 19848 байт за 0.600297s
+
+=== Попытка 3 — 13:28:16 МСК
+--- ping
+3 packets transmitted, 0 received, 100% packet loss, time 2027ms
+
+--- порты TCP
+22 открыт
+80 открыт
+443 открыт
+2222 НЕ отвечает
+8080 открыт
+8443 открыт
+--- SSH баннер: SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
+--- http://89.126.192.214/ -> 302 за 0.362615s
+--- 8080 страница -> 200 19848 байт за 0.600261s
+
+=== Все открытые TCP-порты (nmap)
+Host is up (0.19s latency).
+Not shown: 65517 closed tcp ports (reset), 11 filtered tcp ports (no-response)
+Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
+22/tcp   open  ssh
+80/tcp   open  http
+443/tcp  open  https
+445/tcp  open  microsoft-ds
+8080/tcp open  http-proxy
+8091/tcp open  jamlink
+8443/tcp open  https-alt
+Nmap done: 1 IP address (1 host up) scanned in 55.25 seconds
+
+=== UDP (VPN AmneziaWG/WireGuard — open|filtered = норма, closed = порт не слушает)
+Not shown: 50 open|filtered udp ports (no-response)
+Nmap done: 1 IP address (1 host up) scanned in 6.13 seconds
+
+=== Маршрут (последние шаги)
+You do not have enough privileges to use this traceroute method.
+socket: Operation not permitted
