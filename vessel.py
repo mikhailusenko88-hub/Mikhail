@@ -1,4 +1,4 @@
-"""Ведро шаров высыпается через стеклянную воронку в стеклянного зверя (сосуд из SDF, vessels/<имя>_mesh.npz).
+"""Ведро шаров высыпается в стеклянную банку-зверя (сосуд из SDF, vessels/<имя>_mesh.npz): сколько попадёт — столько попадёт.
 Серия «ведро против сосуда». Blender 4.2, Cycles, физика Bullet. Параметры как в marbles.py + vessel=cat, nosim=1.
 blender -b --factory-startup -P marbles.py -- name=NAME frames=40,120,220 res=1080x1920 samples=64 n=3000
   frames=a,b,c   — какие кадры отрисовать (симуляция идёт до последнего)
@@ -144,6 +144,7 @@ def area(name, loc, rot, size, power, color):
     sc.collection.objects.link(o)
     o.location = loc
     o.rotation_euler = rot
+    o.visible_camera = False
     return o
 
 
@@ -189,9 +190,9 @@ ves = bpy.data.objects.new(VES, me)
 sc.collection.objects.link(ves)
 ves.location = (0, 0, LIFT)
 sv = ves.modifiers.new("sol", "SOLIDIFY")              # стекло 3 мм наружу; внутренняя поверхность = сетка = физика
-sv.thickness = 0.003
+sv.thickness = 0.0035
 sv.offset = 1.0
-sv.use_even_offset = True
+sv.use_even_offset = False
 ves.data.materials.append(m_glass)
 ves.visible_shadow = False
 rb = add_rb(ves, "PASSIVE", "MESH", friction=0.4, rest=0.2)
@@ -199,45 +200,15 @@ rb.mesh_source = "BASE"
 # под сосудом — невидимая плита на уровне внутреннего дна (шары не проваливаются под стекло)
 bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, LIFT - 0.025))
 o = bpy.context.active_object
-o.scale = (0.34, 0.34, 0.05)
+o.scale = (0.26, 0.24, 0.05)
 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 o.hide_render = True
 o.display_type = "WIRE"
 add_rb(o, "PASSIVE", "BOX", friction=0.5, rest=0.15)
 add_rb(floor, "PASSIVE", "BOX", friction=0.6, rest=0.12)
 GH = 0.0
-# воронка: носик в горлышке, конус 35° от оси
-RIN = MR - 0.0045                                     # внутренний радиус носика
-ZSB, ZST = MZ1 + LIFT - 0.025, MZ1 + LIFT + 0.04
-RF = float(A.get("rf", "0.16"))
-ZTOP = ZST + (RF - RIN) / math.tan(math.radians(35))
-prof = [(RIN, ZSB), (RIN, ZST)] + [(RIN + (RF - RIN) * k / 10, ZST + (ZTOP - ZST) * k / 10) for k in range(1, 11)] + [(RF, ZTOP + 0.012)]
-bmf = bmesh.new()
-SEG = 72
-rings = [[bmf.verts.new((MX + r * math.cos(2 * math.pi * j / SEG), MY + r * math.sin(2 * math.pi * j / SEG), z)) for j in range(SEG)] for r, z in prof]
-for i in range(len(rings) - 1):
-    for j in range(SEG):
-        bmf.faces.new((rings[i][j], rings[i][(j + 1) % SEG], rings[i + 1][(j + 1) % SEG], rings[i + 1][j]))
-bmesh.ops.recalc_face_normals(bmf, faces=bmf.faces)
-mef = bpy.data.meshes.new("funnel")
-bmf.to_mesh(mef)
-bmf.free()
-for pg in mef.polygons:
-    pg.use_smooth = True
-fun = bpy.data.objects.new("funnel", mef)
-sc.collection.objects.link(fun)
-# нормали наружу (от оси)?
-pg = mef.polygons[SEG * 4]
-if (pg.normal.x * (pg.center.x - MX) + pg.normal.y * (pg.center.y - MY)) < 0:
-    mef.flip_normals()
-sf = fun.modifiers.new("sol", "SOLIDIFY")
-sf.thickness = 0.003
-sf.offset = 1.0
-fun.data.materials.append(m_glass)
-fun.visible_shadow = False
-rb = add_rb(fun, "PASSIVE", "MESH", friction=0.25, rest=0.2)
-rb.mesh_source = "BASE"
-print(f"сосуд {VES}: граней {len(me.polygons)}, воронка до z={ZTOP:.3f}", flush=True)
+ZTOP = MZ1 + LIFT                                    # нижняя точка края отверстия
+print(f"сосуд {VES}: граней {len(me.polygons)}, край от z={ZTOP:.3f}", flush=True)
 
 # ведро: усечённый конус без крышки, стенка 5 мм; начало координат — на кромке, через которую льётся
 R0, R1, BH = 0.13, 0.17, 0.25
@@ -260,7 +231,7 @@ bev.width = 0.002
 bucket.data.materials.append(m_metal)
 for p in bucket.data.polygons:
     p.use_smooth = True
-LIP = Vector((MX - float(A.get("lx", "0.11")), MY, ZTOP + 0.012 + float(A.get("lz", "0.06"))))   # кромка над левой половиной воронки
+LIP = Vector((MX - float(A.get("lx", "0.10")), MY, ZTOP + float(A.get("lz", "0.10"))))   # кромка ведра левее и выше отверстия
 bucket.location = LIP
 rb = add_rb(bucket, "PASSIVE", "MESH", friction=0.35, rest=0.3)
 rb.kinematic = True
@@ -281,7 +252,7 @@ base.data.materials.append(m_ball)
 if not ANIM:
     add_rb(base, "ACTIVE", "SPHERE", friction=0.5, rest=0.16, mass=0.012)
     base.rigid_body.linear_damping = 0.1
-    base.rigid_body.angular_damping = 0.25
+    base.rigid_body.angular_damping = float(A.get("adamp", "0.6"))   # рассыпанные шары не укатываются из кадра
 step = 2.08 * BR
 balls = []
 cz = -BH + BR + 0.004
