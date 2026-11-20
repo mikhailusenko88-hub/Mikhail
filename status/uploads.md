@@ -70,3 +70,4 @@
 | shorts | 2026-11-19 | 1 | Mexico vs Thailand vs Spain | https://youtube.com/shorts/wbeECqcgslo | public (только Shorts) |
 | shorts | 2026-11-19 | 2 | Egypt vs Saudi Arabia vs Australia | https://youtube.com/shorts/UUcE_OSvPJk | public (только Shorts) |
 | shorts | 2026-11-19 | 3 | Indonesia vs UK vs Philippines | https://youtube.com/shorts/TA9lwkDQejM | public (только Shorts) |
+| shorts | 2026-11-20 | 1 | Brazil vs Russia vs Germany | https://youtube.com/shorts/HE2vZpO_2MU | public (только Shorts) |
