@@ -1,0 +1,256 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рассказчик и Топа"
+ ],
+ "file": {
+  "mb": 274.8,
+  "dur": 352.9,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 352.4,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 352,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 155.2
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.3,
+  "lra": 3.8,
+  "peak_db": -1.3,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 96.6,
+  "lines": 114,
+  "by_hero": {
+   "Рон": 96.3,
+   "Топа": 97.1,
+   "Барсик": 97.6,
+   "Пик": 94.8,
+   "Филя": 98.1,
+   "Рассказчик": 100.0
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 223.0,
+   "range_st": 4.8,
+   "hnr": 14.2,
+   "jitter": 2.2,
+   "shimmer": 8.8,
+   "F1": 491.0,
+   "F2": 1924.0,
+   "F3": 3325.0,
+   "bright": -11.7,
+   "air": -16.6,
+   "cog": 596.0,
+   "rate": 4.7,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.6
+  },
+  "Пик": {
+   "f0": 376.0,
+   "range_st": 6.9,
+   "hnr": 19.8,
+   "jitter": 0.9,
+   "shimmer": 5.2,
+   "F1": 559.0,
+   "F2": 1781.0,
+   "F3": 3506.0,
+   "bright": -16.4,
+   "air": -20.7,
+   "cog": 655.0,
+   "rate": 7.3,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 94.8
+  },
+  "Рассказчик": {
+   "f0": 164.0,
+   "range_st": 6.7,
+   "hnr": 10.5,
+   "jitter": 2.6,
+   "shimmer": 8.4,
+   "F1": 470.0,
+   "F2": 2129.0,
+   "F3": 3219.0,
+   "bright": -13.6,
+   "air": -15.9,
+   "cog": 584.0,
+   "rate": 3.6,
+   "voiced": 0.6,
+   "n": 3,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 297.0,
+   "range_st": 7.8,
+   "hnr": 22.0,
+   "jitter": 0.9,
+   "shimmer": 5.3,
+   "F1": 402.0,
+   "F2": 1683.0,
+   "F3": 3607.0,
+   "bright": -20.7,
+   "air": -26.4,
+   "cog": 439.0,
+   "rate": 5.0,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 96.3
+  },
+  "Топа": {
+   "f0": 160.0,
+   "range_st": 5.3,
+   "hnr": 12.2,
+   "jitter": 2.8,
+   "shimmer": 9.8,
+   "F1": 507.0,
+   "F2": 2087.0,
+   "F3": 3425.0,
+   "bright": -17.2,
+   "air": -22.4,
+   "cog": 617.0,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 4.3,
+   "why": [
+    "дрожит высота"
+   ],
+   "clear_pct": 97.1
+  },
+  "Филя": {
+   "f0": 290.0,
+   "range_st": 6.4,
+   "hnr": 14.6,
+   "jitter": 1.8,
+   "shimmer": 7.7,
+   "F1": 494.0,
+   "F2": 2153.0,
+   "F3": 3253.0,
+   "bright": -15.4,
+   "air": -20.0,
+   "cog": 728.0,
+   "rate": 4.7,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 98.1
+  }
+ },
+ "voices_close": [
+  [
+   "Рассказчик",
+   "Топа",
+   0.4
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 43,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 163,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 2138,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 352.398,
+   "video": "video/Кот Барсик - 31. Солнце выпило лужу!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "ae8eced",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 41.8,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 15,
+    "e": 129,
+    "b": 6,
+    "w": 1,
+    "n": 8810,
+    "at": 8810,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 63,
+   "ttsFail": 0,
+   "voice": 62,
+   "voiceFail": 0,
+   "voiceSec": 26,
+   "ttsSec": 47,
+   "frames": 9483,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -23.5,
+   "lufs_out": -15.3,
+   "gain_db": 8.5
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 31,
+   "title": "Солнце выпило лужу?!",
+   "scenes": 9,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}
