@@ -237,7 +237,8 @@ rb = add_rb(bucket, "PASSIVE", "MESH", friction=0.35, rest=0.3)
 rb.kinematic = True
 rb.mesh_source = "FINAL"
 # наклон: стоит до 0,6 с, к 2,3 с опрокинуто на 128°
-for f, ang in ((1, 0), (20, 0), (50, 45), (95, 92), (150, 132), (FR_END, 132)):   # плавно: ровная струя
+TILT = [tuple(int(v) for v in kv.split(":")) for kv in A.get("tilt", "1:0,20:0,50:45,95:92,150:132").split(",")]
+for f, ang in TILT + [(FR_END, TILT[-1][1])]:   # плавно: ровная струя
     bucket.rotation_euler = (0, math.radians(ang), 0)
     bucket.keyframe_insert("rotation_euler", frame=f)
 for fc in bucket.animation_data.action.fcurves:
