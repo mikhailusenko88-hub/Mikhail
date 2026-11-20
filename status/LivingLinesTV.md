@@ -1,5 +1,5 @@
 # Живые строки  (@LivingLinesTV)
-Проверено: 2026-11-20 06:54 UTC
+Проверено: 2026-11-20 07:24 UTC
 
 - Страница канала: HTTP 200; ID: UCuufuU5RCswqp9N1HE0NZlw
 - Шапка: 55 подписчиков · 46 видео
@@ -7,10 +7,10 @@
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
 - 2026-11-20 06:00 · 40 просм. · Любовь побеждает всё 🤍 Три мысли на сегодня | Virgil #shorts · 5v-ZCvVHLpg
 - 2026-11-19 16:00 · 800 просм. · Молодость счастлива тем, что у неё есть будущее ✨ Nikolai Gogol + 2 more #shorts · w5lhb9vTxlc
-- 2026-11-19 11:00 · 454 просм. · Пока живёшь — учись жить ✨ Words to keep | Seneca #shorts · c4s7hqTO1Xc
+- 2026-11-19 11:00 · 481 просм. · Пока живёшь — учись жить ✨ Words to keep | Seneca #shorts · c4s7hqTO1Xc
 - 2026-11-19 06:00 · 419 просм. · Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts · N-99DrrtTBU
 - 2026-11-18 16:00 · 925 просм. · Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts · O_AdQlCECak
-- 2026-11-18 11:00 · 746 просм. · Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts · JlBFZaRcgAI
+- 2026-11-18 11:00 · 752 просм. · Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts · JlBFZaRcgAI
 - 2026-11-18 06:00 · 455 просм. · Начало — самая важная часть работы 🤍 Три мысли на сегодня | Plato #shorts · Izl4WoK8gDs
 - 2026-11-17 16:00 · 516 просм. · Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts · _KAkT_vZ8F4
 - 2026-11-17 11:00 · 612 просм. · Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts · GtEGS1lUXIM
@@ -24,10 +24,10 @@
 ## Вкладка Shorts (видно всем) — 46 шт. на первой странице
 - 40 просмотров · Любовь побеждает всё 🤍 Три мысли на сегодня | Virgil #shorts · 5v-ZCvVHLpg
 - 800 просмотров · Молодость счастлива тем, что у неё есть будущее ✨ Nikolai Gogol + 2 more #shorts · w5lhb9vTxlc
-- 475 просмотров · Пока живёшь — учись жить ✨ Words to keep | Seneca #shorts · c4s7hqTO1Xc
+- 481 просмотр · Пока живёшь — учись жить ✨ Words to keep | Seneca #shorts · c4s7hqTO1Xc
 - 428 просмотров · Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts · N-99DrrtTBU
 - 925 просмотров · Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts · O_AdQlCECak
-- 746 просмотров · Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts · JlBFZaRcgAI
+- 748 просмотров · Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts · JlBFZaRcgAI
 - 455 просмотров · Начало — самая важная часть работы 🤍 Три мысли на сегодня | Plato #shorts · Izl4WoK8gDs
 - 516 просмотров · Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts · _KAkT_vZ8F4
 - 612 просмотров · Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts · GtEGS1lUXIM
