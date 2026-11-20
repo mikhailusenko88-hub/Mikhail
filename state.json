@@ -1,24 +1,28 @@
 {
  "leagues": {
   "cities": {
-   "no": 12,
+   "no": 13,
    "points": {
     "Fargʻona": 29,
     "Xiva": 18,
-    "Andijon": 16,
+    "Andijon": 20,
     "Qarshi": 12,
     "Jizzax": 25,
-    "Zarafshon": 18,
+    "Zarafshon": 36,
     "Olmaliq": 6,
     "Samarqand": 4,
-    "Shahrisabz": 2,
+    "Shahrisabz": 8,
     "Angren": 1,
-    "Namangan": 25,
+    "Namangan": 37,
     "Qoʻqon": 18,
     "Termiz": 12,
-    "Margʻilon": 8,
-    "Asaka": 6,
-    "Nukus": 2
+    "Margʻilon": 16,
+    "Asaka": 31,
+    "Nukus": 2,
+    "Navoiy": 15,
+    "Chirchiq": 10,
+    "Toshkent": 2,
+    "Urganch": 1
    },
    "results": [
     {
@@ -176,10 +180,23 @@
      ],
      "link": "https://youtube.com/shorts/g2K5gcUFJGg",
      "final": false
+    },
+    {
+     "no": 13,
+     "date": "2026-11-20",
+     "slot": 3,
+     "winner": "Asaka",
+     "top3": [
+      "Asaka",
+      "Zarafshon",
+      "Navoiy"
+     ],
+     "link": "https://youtube.com/shorts/3kDDQNW1DEk",
+     "final": false
     }
    ],
    "champion": null,
-   "season_races": 2,
+   "season_races": 3,
    "season": "2026-W47",
    "new_pending": [],
    "final_season": "2026-W46",
@@ -1411,6 +1428,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/3lcJci36uVk",
    "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №22 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-20",
+   "slot": 3,
+   "league": "cities",
+   "no": 13,
+   "final": false,
+   "link": "https://youtube.com/shorts/3kDDQNW1DEk",
+   "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №13 #shorts",
    "pl": true
   }
  ],

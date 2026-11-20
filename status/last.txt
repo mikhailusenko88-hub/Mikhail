@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-20 слот 2: cars №22 https://youtube.com/shorts/3lcJci36uVk, за 64 с
+ВЫЛОЖЕНО 2026-11-20 слот 3: cities №13 https://youtube.com/shorts/3kDDQNW1DEk, за 162 с
 
 {
- "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №22 #shorts",
- "description": "🏆 Oʻtgan hafta chempioni: Tahoe · Чемпион прошлой недели: Tahoe\n\n⏳ Finalgacha 2 kun · До финала 2 дня\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
+ "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №13 #shorts",
+ "description": "🏆 Oʻtgan hafta chempioni: Olmaliq · Чемпион прошлой недели: Алмалык\n\n⏳ Finalgacha 2 kun · До финала 2 дня\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,34 +11,34 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "mashina",
-  "cobalt",
-  "gentra",
-  "nexia",
-  "damas",
-  "malibu",
-  "chevrolet",
-  "машины узбекистана"
+  "toshkent",
+  "samarqand",
+  "buxoro",
+  "namangan",
+  "andijon",
+  "fargʻona",
+  "города узбекистана",
+  "shaharlar"
  ]
 }
 
 --- журнал (время Ташкента) ---
-15:35:35 режим publish, событие workflow_dispatch
-15:35:36 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-15:35:50 комментарии: роликов просмотрено: 15, комментариев: 0
-15:35:50 Тема: гонка машин. Подбираю трассу и заезд…
-15:35:52   трасса 1 (split, stairs, hammers, tramps): победа на 30.1 с, смен лидера 2, финишировали 4, расчёт 2 с
-15:35:53   трасса 2 (tunnel, tramps, stairs, bumpy, funnel): победа на 34.4 с, смен лидера 32, финишировали 3, расчёт 1 с — не подходит
-15:35:55   трасса 3 (tramps, split, stairs, hammers): победа на 30.3 с, смен лидера 17, финишировали 6, расчёт 1 с
-15:35:55 Рисую трассу…
-15:35:55 Рисую кадры: заезд 33 с + финал 6 с…
-15:35:55   кадр 0/990, 5 с
-15:36:06   кадр 300/990, 16 с
-15:36:16   кадр 600/990, 26 с
-15:36:26   кадр 900/990, 36 с
-15:36:34 Свожу звук…
-15:36:35 Готово за 45 с: победил Gentra, ролик 39 с
-15:36:35 ролик готов: 39 с, 26 МБ, сборка 60 с; победил Gentra, топ-3: Gentra, Jiguli, Cobalt
-15:36:38 YouTube: https://youtube.com/shorts/3lcJci36uVk
-15:36:39 в плейлисте
-15:36:39 статус: public uploaded
+19:36:03 режим publish, событие workflow_dispatch
+19:36:03 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+19:38:02 комментарии: роликов просмотрено: 15, комментариев: 0
+19:38:02 Тема: гонка городов. Подбираю трассу и заезд…
+19:38:04   трасса 1: никто не доехал за 37 с — не подходит
+19:38:05   трасса 2 (hammers, split, funnel, stairs, tunnel): победа на 32.6 с, смен лидера 2, финишировали 3, расчёт 2 с — не подходит
+19:38:07   трасса 3 (funnel, tramps, stairs, bumpy, split): победа на 36.5 с, смен лидера 18, финишировали 4, расчёт 1 с — не подходит
+19:38:08   трасса 4 (split, tunnel, stairs, tramps): победа на 26.7 с, смен лидера 13, финишировали 6, расчёт 1 с
+19:38:08 Рисую трассу…
+19:38:08 Рисую кадры: заезд 29 с + финал 6 с…
+19:38:08   кадр 0/883, 6 с
+19:38:18   кадр 300/883, 15 с
+19:38:27   кадр 600/883, 25 с
+19:38:41 Свожу звук…
+19:38:41 Готово за 39 с: победил Asaka, ролик 35 с
+19:38:41 ролик готов: 35 с, 22 МБ, сборка 159 с; победил Asaka, топ-3: Asaka, Zarafshon, Navoiy
+19:38:43 YouTube: https://youtube.com/shorts/3kDDQNW1DEk
+19:38:44 в плейлисте
+19:38:44 статус: public uploaded
