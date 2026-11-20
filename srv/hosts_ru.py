@@ -10,7 +10,17 @@ def open_port(host):
             socket.create_connection((host, p), timeout=6).close(); return p
         except Exception: pass
     return None
-rows = [l.split("|") for l in open("hosts.txt", encoding="utf-8") if "|" in l and not l.startswith("#")]
+import subprocess
+rows = []
+for l in open("hosts.txt", encoding="utf-8"):
+    if "|" not in l or l.startswith("#"): continue
+    name, host = [x.strip() for x in l.split("|", 1)]
+    if host.startswith("scan:"):   # scan:CIDR — взять до 2 живых адресов из сети хостера
+        out = subprocess.run(["sudo", "nmap", "-Pn", "-n", "-T4", "--max-retries", "1", "-p", "22,443", "--open", host[5:], "-oG", "-"], capture_output=True, text=True, timeout=120).stdout
+        ips = [ln.split()[1] for ln in out.splitlines() if "Ports:" in ln][:2]
+        rows += [(f"{name} {ip}", ip) for ip in ips] or [(name + " (живых нет)", "0.0.0.0")]
+    else:
+        rows.append((name, host))
 print("Проверка:", time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime()))
 for name, host in rows:
     name, host = name.strip(), host.strip()

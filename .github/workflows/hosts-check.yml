@@ -10,9 +10,11 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+      - name: tools
+        run: sudo apt-get -qq update >/dev/null 2>&1; sudo apt-get -qq install -y nmap >/dev/null 2>&1 || true
       - name: check
         run: mkdir -p status && python3 srv/hosts_ru.py > status/hosts.txt 2>&1; cat status/hosts.txt
       - name: save
