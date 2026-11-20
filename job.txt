@@ -1,15 +1,3 @@
-# 2026-11-19 11:20 — второй 3D: светлая студия, место под счётчик, движение lt2 (seed=21); кадры 28–231 на 14 машинах
-lt01 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=28-42
-lt02 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=43-57
-lt03 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=58-72
-lt04 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=73-87
-lt05 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=88-102
-lt06 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=103-117
-lt07 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=118-132
-lt08 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=133-147
-lt09 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=148-162
-lt10 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=163-177
-lt11 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=178-192
-lt12 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=193-207
-lt13 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=208-222
-lt14 anim=out/lt2/anim.npz bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80 end=240 samples=40 res=1080x1920 range=223-231
+# 2026-11-20 19:35 — серия «ведро против сосуда»: стеклянный кот. Проба вида (без физики) и проба физики (300 кадров, 4 кадра на просмотр)
+catlook py=vessel.py nosim=1 frames=1 end=300 res=720x1280 samples=48 tz=0.52 cy0=-2.4 cy1=-2.2 cz0=0.84 cz1=0.78
+catsim1 py=vessel.py frames=90,150,210,300 end=300 res=540x960 samples=24 tz=0.52 cy0=-2.4 cy1=-2.2 cz0=0.84 cz1=0.78

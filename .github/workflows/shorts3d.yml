@@ -62,7 +62,8 @@ jobs:
             sudo apt-get install -y -qq libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libgl1 libsm6 libegl1 >/dev/null || true
           fi
           nproc
-          ./blender/blender -b --factory-startup --python-exit-code 1 -P marbles.py -- name=$NAME $CMD 2>&1 | grep --line-buffered -v "^Fra:\| Sample \|Rendered \|Updating \|Loading render kernels\|Path Tracing\|Denoising\|Synchronizing\|Waiting for" | tee "out/$NAME/log.txt" | tail -150
+          SCRIPT=marbles.py; for a in $CMD; do case "$a" in py=*) SCRIPT="${a#py=}";; esac; done
+          ./blender/blender -b --factory-startup --python-exit-code 1 -P "$SCRIPT" -- name=$NAME $CMD 2>&1 | grep --line-buffered -v "^Fra:\| Sample \|Rendered \|Updating \|Loading render kernels\|Path Tracing\|Denoising\|Synchronizing\|Waiting for" | tee "out/$NAME/log.txt" | tail -150
           if [[ "$CMD" == *range=* ]] && ls out/$NAME/f_*.jpg >/dev/null 2>&1; then
             command -v ffmpeg >/dev/null || { sudo apt-get install -y -qq ffmpeg >/dev/null; }
             ffmpeg -y -loglevel error -framerate 30 -pattern_type glob -i "out/$NAME/f_*.jpg" -vf "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p" -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:v libx264 -preset slow -crf 15 "out/$NAME/seg.mp4"
