@@ -1,0 +1,6 @@
+dns duckdns.org
+http https://www.duckdns.org
+dns dedyn.io
+http https://desec.io
+dns freeddns.org
+http https://www.dynu.com
