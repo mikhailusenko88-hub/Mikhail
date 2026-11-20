@@ -19,7 +19,7 @@ for k, n in sorted(cnt.items()):
 sys.stdout.flush()
 
 cities = sorted({p["location"]["city"] for p in ru})
-LOC = [{"country": "RU", "city": c, "limit": 2} for c in cities if c not in ("Moscow", "Saint Petersburg")]
+LOC = [{"country": "RU", "city": c, "limit": 1} for c in cities if c not in ("Moscow", "Saint Petersburg")]
 LOC += [{"country": "RU", "city": "Moscow", "limit": 4}, {"country": "RU", "city": "Saint Petersburg", "limit": 4}]
 print(f"Городов: {len(cities)}, запрашиваю до {sum(l['limit'] for l in LOC)} проб")
 rows = collections.defaultdict(dict)
