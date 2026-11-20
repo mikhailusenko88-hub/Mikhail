@@ -1,42 +1,49 @@
 name: srv-check
+# Сервер в Казахстане 89.126.192.214 снаружи: ping, порты, SSH, страницы 8080, все открытые TCP-порты (nmap), маршрут.
+# Запуск — изменение run.txt в ветке srv-check. Результат — status/server.txt. На сервер не входит и ничего не меняет.
 on:
   push:
     branches: [srv-check]
     paths: ['run.txt']
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
+      - name: tools
+        run: sudo apt-get -qq update >/dev/null 2>&1; sudo apt-get -qq install -y nmap traceroute >/dev/null 2>&1 || true
       - name: check server
         run: |
           IP=89.126.192.214
           mkdir -p status
           {
-            echo "Проверка: $(date -u '+%Y-%m-%d %H:%M UTC') из GitHub ($(curl -s --max-time 5 https://ipinfo.io/country || echo ?))"
-            echo "--- ping"
-            ping -c 3 -W 3 $IP 2>&1 | tail -2 || true
-            echo "--- порты TCP"
-            for p in 22 80 443 2222 8080; do
-              if timeout 6 bash -c "exec 3<>/dev/tcp/$IP/$p" 2>/dev/null; then echo "$p открыт"; else echo "$p НЕ отвечает"; fi
+            echo "Проверка: $(date -u '+%Y-%m-%d %H:%M UTC') ($(TZ=Europe/Moscow date '+%H:%M') МСК) из GitHub ($(curl -s --max-time 5 https://ipinfo.io/country || echo ?))"
+            for round in 1 2 3; do
+              echo; echo "=== Попытка $round — $(TZ=Europe/Moscow date '+%H:%M:%S') МСК"
+              echo "--- ping"; ping -c 3 -W 3 $IP 2>&1 | tail -2 || true
+              echo "--- порты TCP"
+              for p in 22 80 443 2222 8080 8443; do
+                if timeout 6 bash -c "exec 3<>/dev/tcp/$IP/$p" 2>/dev/null; then echo "$p открыт"; else echo "$p НЕ отвечает"; fi
+              done
+              echo "--- SSH баннер: $(timeout 8 bash -c "exec 3<>/dev/tcp/$IP/22; head -c 60 <&3" 2>/dev/null | tr -d '\r\n' || true)"
+              curl -s -o /dev/null -w "--- http://$IP/ -> %{http_code} за %{time_total}s\n" --max-time 10 http://$IP/ || echo "--- http://$IP/ не ответил"
+              curl -s -o /dev/null -w "--- 8080 страница -> %{http_code} %{size_download} байт за %{time_total}s\n" --max-time 20 http://$IP:8080/mebel/s9kbars/index.html || echo "--- 8080 страница не ответила"
+              [ $round -lt 3 ] && sleep 10
             done
-            echo "--- SSH баннер"
-            timeout 8 bash -c "exec 3<>/dev/tcp/$IP/22; head -c 80 <&3" 2>&1 || echo "нет ответа от SSH"
-            echo
-            echo "--- ssh-keyscan"
-            timeout 15 ssh-keyscan -T 8 -p 22 $IP 2>&1 | head -3 || echo "keyscan не ответил"
-            echo "--- HTTP"
-            curl -s -o /dev/null -w "http://$IP/ -> %{http_code} за %{time_total}s\n" --max-time 10 http://$IP/ || echo "http не ответил"
-            curl -sk -o /dev/null -w "https://$IP/ -> %{http_code} за %{time_total}s\n" --max-time 10 https://$IP/ || echo "https не ответил"
-            echo "--- traceroute (последние шаги)"
-            timeout 40 traceroute -n -w 2 -q 1 -m 25 $IP 2>&1 | tail -6 || true
+            echo; echo "=== Все открытые TCP-порты (nmap)"
+            timeout 240 sudo nmap -Pn -sS -T4 --max-retries 1 -p- --open -n $IP 2>&1 | grep -E 'open|filtered|Host|done' || echo "nmap не сработал"
+            echo; echo "=== UDP (VPN AmneziaWG/WireGuard — open|filtered = норма, closed = порт не слушает)"
+            timeout 120 sudo nmap -Pn -sU -T4 --max-retries 1 --top-ports 50 -n $IP 2>&1 | grep -E 'udp|done' | grep -v 'closed' | head -30 || true
+            echo; echo "=== Маршрут (последние шаги)"
+            timeout 60 traceroute -n -T -p 22 -w 2 -q 1 -m 25 $IP 2>&1 | tail -6 || true
           } > status/server.txt 2>&1
           cat status/server.txt
       - name: save
         run: |
           git config user.name "srv-check"; git config user.email "srv-check@users.noreply.github.com"
           git add status; git commit -m "server status" || exit 0
-          git pull --rebase origin srv-check || true; git push origin HEAD:srv-check
+          for i in 1 2 3; do git pull -q --rebase origin srv-check && git push -q origin HEAD:srv-check && break; sleep 5; done
