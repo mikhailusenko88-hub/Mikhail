@@ -461,7 +461,13 @@ class YT:
         if r.status_code != 200 and "image" in body["brandingSettings"]:      # картинка шапки бывает только для чтения
             del body["brandingSettings"]["image"]
             r = requests.put(f"{API}/channels", params={"part": "brandingSettings"}, headers=hdr, data=json.dumps(body), timeout=30)
-        return r.status_code == 200, ("" if r.status_code == 200 else f"{r.status_code} {r.text[:300]}"), was, self.branding()
+        now = self.branding()
+        for _ in range(6):                                     # YouTube отдаёт новое описание не сразу (20.11: ответ 200, чтение следом — старое, через минуту — новое)
+            if r.status_code != 200 or now.get("channel", {}).get("description") == ch.get("description"):
+                break
+            time.sleep(10)
+            now = self.branding()
+        return r.status_code == 200, ("" if r.status_code == 200 else f"{r.status_code} {r.text[:300]}"), was, now
 
     def sections(self):
         r = requests.get(f"{API}/channelSections", params={"part": "snippet,contentDetails", "mine": "true"}, headers=self.h(), timeout=30)
