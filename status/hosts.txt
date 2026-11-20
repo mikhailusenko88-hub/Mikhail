@@ -1,73 +1,10 @@
-Проверка: 2026-11-20 13:25 UTC
+Проверка: 2026-11-20 17:18 UTC
 
-## HostUp 82.197.73.57 — 82.197.73.57 (82.197.73.57), открытый порт из GitHub: 443
-   RU Moscow: ОК 20 мс
-   RU Moscow: ОК 75 мс
-   RU Saint Petersburg: ОК 15 мс
-   DE Nuremberg: ОК 26 мс
-   DE Langen: ОК 25 мс
-   DE Frankfurt: ОК 25 мс
-   KZ Karaganda: ОК 86 мс
-
-## HostUp 206.168.213.28 — 206.168.213.28 (206.168.213.28), открытый порт из GitHub: 443
-   RU Moscow: ОК 23 мс
-   RU Moscow: ОК 56 мс
-   RU Saint Petersburg: ОК 14 мс
-   DE Nuremberg: ОК 26 мс
-   DE Langen: ОК 25 мс
-   DE Frankfurt: ОК 25 мс
-   KZ Karaganda: ОК 82 мс
-
-## HostUp сеть 91.226.221 91.226.221.2 — 91.226.221.2 (91.226.221.2), открытый порт из GitHub: 22
-   RU Moscow: ОК 22 мс
-   RU Moscow: ОК 63 мс
-   RU Saint Petersburg: ОК 13 мс
-   DE Nuremberg: ОК 29 мс
-   DE Langen: ОК 25 мс
-   DE Frankfurt: ОК 25 мс
-   KZ Karaganda: ОК 86 мс
-
-## HostUp сеть 91.226.221 91.226.221.4 — 91.226.221.4 (91.226.221.4), открытый порт из GitHub: 443
-   RU Moscow: ОК 25 мс
-   RU Moscow: ОК 75 мс
+## Новый сервер HostUp (Стокгольм) — 193.53.40.82 (193.53.40.82), открытый порт из GitHub: 22
+   RU Moscow: ОК 21 мс
+   RU Moscow: ОК 76 мс
    RU Saint Petersburg: ОК 13 мс
    DE Nuremberg: ОК 26 мс
    DE Langen: ОК 25 мс
    DE Frankfurt: ОК 23 мс
-   KZ Karaganda: ОК 80 мс
-
-## HostUp сеть 136.148.208 136.148.208.5 — 136.148.208.5 (136.148.208.5), открытый порт из GitHub: 443
-   RU Moscow: ОК 22 мс
-   RU Moscow: ОК 87 мс
-   RU Saint Petersburg: ОК 14 мс
-   DE Nuremberg: ОК 26 мс
-   DE Langen: ОК 25 мс
-   DE Frankfurt: ОК 28 мс
-   KZ Karaganda: ОК 91 мс
-
-## HostUp сеть 136.148.208 136.148.208.6 — 136.148.208.6 (136.148.208.6), открытый порт из GitHub: 443
-   RU Moscow: ОК 23 мс
-   RU Moscow: ОК 43 мс
-   RU Saint Petersburg: ОК 15 мс
-   DE Nuremberg: ОК 26 мс
-   DE Langen: ОК 25 мс
-   DE Frankfurt: ОК 25 мс
-   KZ Karaganda: ОК 83 мс
-
-## HostUp сеть 78.109.16 78.109.16.4 — 78.109.16.4 (78.109.16.4), открытый порт из GitHub: 22
-   RU Moscow: ОК 24 мс
-   RU Moscow: ОК 82 мс
-   RU Saint Petersburg: ОК 14 мс
-   DE Nuremberg: ОК 36 мс
-   DE Langen: ОК 23 мс
-   DE Frankfurt: ОК 25 мс
-   KZ Karaganda: ОК 70 мс
-
-## HostUp сеть 78.109.16 78.109.16.5 — 78.109.16.5 (78.109.16.5), открытый порт из GitHub: 443
-   RU Moscow: ОК 22 мс
-   RU Moscow: ОК 39 мс
-   RU Saint Petersburg: ОК 13 мс
-   DE Nuremberg: ОК 26 мс
-   DE Langen: ОК 29 мс
-   DE Frankfurt: ОК 25 мс
-   KZ Karaganda: ОК 69 мс
+   KZ Karaganda: ОК 99 мс
