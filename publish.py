@@ -10,6 +10,8 @@
   stats                                  — последние ролики канала: просмотры, статус
   lang [сколько] [от скольки секунд]     — старым полным сериям проставить русский язык и категорию «Фильмы и анимация» (текст не меняется, Shorts не трогает)
   thumb <id ролика> <серия>              — заменить обложку ролика на serii/<серия>/cover.jpg со страницы; только закрытому (ещё не вышедшему) ролику
+  kanal [--go]                           — главная канала по kanal.json (описание, трейлер для неподписанных); без --go только показать «было/станет»
+  sbornik <имя> <ГГГГ-ММ-ДДTЧЧ:ММ>       — сборник серий подряд по sborniki/<имя>.json (склейка ep-<релиз>.mp4 без пересжатия, главы в описании), закрытым с таймером
 <релиз> — имя сборки студии (релиз studio-<релиз>, файл ep-<релиз>.mp4); название, описание и обложка — со страницы
 супруги (ветка mebel, s9kbars/serii.json и serii/<серия>/cover.jpg). Итог — youtube/status.txt и youtube/<релиз>.json.
 Куда что кладётся (как на канале): полная серия — в плейлист «Все серии подряд», Shorts — в «Смешные моменты и Shorts»;
@@ -123,7 +125,7 @@ def short(yt, a, rel, num, it, body_when, last, pe):
 def main():
     a = request_line()
     mode = a[0] if a else ""
-    if mode not in ("check", "draft", "plan", "short", "cancel", "stats", "lang", "retime", "thumb"):
+    if mode not in ("check", "draft", "plan", "short", "cancel", "stats", "lang", "retime", "thumb", "kanal", "sbornik"):
         return finish([f"НЕ ПОНЯЛ строку publish.txt: {' '.join(a)}"])
     if mode in ("draft", "plan", "short"):
         rel, num = a[1], a[2]
@@ -179,6 +181,53 @@ def main():
                       + [f"  {d['id']} {d['title'][:60]} — было {d['was']}, стало {d['now']}" for d in done] + errs
                       + ["короткие ролики длиннее минуты (проверить, не серии ли): " + ("; ".join(f"{x['title'][:40]} — {x['sec']} с" for x in getattr(yt, "short_list", []) if x["sec"] > 60) or "нет")],
                       {"done": done, "skip": skip, "shorts": shorts, "errs": errs, "short_list": getattr(yt, "short_list", [])}, "lang")
+    if mode == "kanal":                                        # главная канала (Михаил 20.11: «ты менеджер, решаешь сам»)
+        want = json.load(open("kanal.json", encoding="utf-8"))
+        b = yt.branding().get("channel", {})
+        lines = [f"КАНАЛ сейчас: трейлер {b.get('unsubscribedTrailer') or 'нет'}; описание {len(b.get('description') or '')} знаков",
+                 "разделы главной: " + "; ".join(f"{s.get('pos')}: {s.get('type')} {s.get('title') or ''} {s.get('playlists') or ''}".strip() for s in yt.sections())]
+        if "--go" not in a:
+            return finish(["ПРОБА (без --go ничего не менял)"] + lines + ["станет: трейлер " + str(want.get("trailer")), "описание станет:", want.get("description", "")],
+                          {"now": b, "want": want}, "kanal")
+        ok, err, was, now = yt.set_branding(want.get("description"), want.get("trailer"))
+        c = now.get("channel", {})
+        return finish([("КАНАЛ ОБНОВЛЁН" if ok else "КАНАЛ НЕ ОБНОВЛЁН: " + err),
+                       f"трейлер: было {was.get('channel', {}).get('unsubscribedTrailer') or 'нет'}, стало {c.get('unsubscribedTrailer') or 'нет'}",
+                       f"описание: {'новое' if c.get('description') == want.get('description') else 'НЕ СОВПАЛО с kanal.json'}; ключевые слова сохранились: {was.get('channel', {}).get('keywords') == c.get('keywords')}"] + lines,
+                      {"was": was, "now": now}, "kanal")
+    if mode == "sbornik":                                      # сборник: sbornik <имя> <ГГГГ-ММ-ДДTЧЧ:ММ>
+        name, (at, human) = a[1], when_utc(a[2])
+        sb = json.load(open(f"sborniki/{name}.json", encoding="utf-8"))
+        last, pls = yt.last_videos(50), yt.playlists()
+        same = [v for v in last if v["title"].strip() == sb["title"].strip()]
+        if same and "--again" not in a:
+            return finish([f"НЕ ЗАГРУЖАЛ: сборник с таким названием уже есть ({same[0]['privacy']}, https://youtu.be/{same[0]['id']})"])
+        if subprocess.run("command -v ffmpeg", shell=True).returncode:
+            subprocess.run("sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null", shell=True, check=True)
+        os.makedirs("tmp", exist_ok=True)
+        t0, chapters, files = 0.0, [], []
+        for it in sb["items"]:
+            f = f"tmp/ep-{it['rel']}.mp4"
+            fetch(f"https://github.com/{REPO}/releases/download/studio-{it['rel']}/ep-{it['rel']}.mp4", f, 20_000_000)
+            d = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", f], capture_output=True, text=True).stdout.strip())
+            name_ep = it.get("name") or card(str(it["num"]))["title"].split(" | ")[0].strip()
+            chapters.append(f"{int(t0 // 60)}:{int(t0 % 60):02d} {name_ep}")
+            files.append(f)
+            t0 += d
+        open("tmp/list.txt", "w").write("".join(f"file '{os.path.basename(f)}'\n" for f in files))
+        subprocess.run(["ffmpeg", "-v", "error", "-f", "concat", "-safe", "0", "-i", "tmp/list.txt", "-c", "copy", "-movflags", "+faststart", "tmp/sbornik.mp4"], check=True)
+        mb = os.path.getsize("tmp/sbornik.mp4") / 1e6
+        pe = yt.playlist_for("episode", pls)
+        desc = sb["desc"].replace("{CHAPTERS}", "\n".join(chapters)).replace("{PLAYLIST}", f"https://www.youtube.com/playlist?list={pe['id']}" if pe else f"https://www.youtube.com/{Y.HANDLE}")
+        body = Y.video_body(sb["title"], desc, at)
+        say(f"сборник {name}: {len(files)} серий, {t0 / 60:.1f} мин, {mb:.0f} МБ; загружаю закрытым, выход {human}")
+        vid = yt.upload("tmp/sbornik.mp4", body)
+        th = yt.thumbnail(vid, sb["cover"]) if os.path.exists(sb.get("cover", "")) else "обложки нет — YouTube возьмёт кадр"
+        st = yt.status(vid)
+        ok = st.get("privacyStatus") == "private" and bool(st.get("publishAt"))
+        return finish([(f"СБОРНИК ЗАГРУЖЕН, выйдет {human}" if ok else f"СБОРНИК ЗАГРУЖЕН, НО СТАТУС НЕ ТОТ: {st}") + f": https://youtu.be/{vid}", sb["title"],
+                       f"{len(files)} серий, {t0 / 60:.1f} мин, {mb:.0f} МБ; {th}; для детей: {st.get('selfDeclaredMadeForKids')}", "главы:"] + chapters,
+                      {"id": vid, "url": f"https://youtu.be/{vid}", "title": sb["title"], "publishAt": st.get("publishAt"), "chapters": chapters, "mb": round(mb), "status": st}, f"sbornik-{name}")
     last, pls = yt.last_videos(50), yt.playlists()
     pe = yt.playlist_for("episode", pls)
     if mode == "short":

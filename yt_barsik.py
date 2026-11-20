@@ -440,6 +440,36 @@ class YT:
                 break
         return now.get("privacyStatus") == "private" and (now.get("publishAt") or "")[:16] == publish_at[:16], f"было {st.get('publishAt')}, стало {now.get('publishAt')}, {now.get('privacyStatus')}"
 
+    def branding(self):
+        r = requests.get(f"{API}/channels", params={"part": "brandingSettings", "mine": "true"}, headers=self.h(), timeout=30)
+        r.raise_for_status()
+        return (r.json().get("items") or [{}])[0].get("brandingSettings", {})
+
+    def set_branding(self, description=None, trailer=None):
+        """Описание канала и трейлер для тех, кто не подписан. Остальное из brandingSettings переносим как было — иначе YouTube сотрёт."""
+        was = self.branding()
+        ch = dict(was.get("channel", {}))
+        if description is not None:
+            ch["description"] = description
+        if trailer is not None:
+            ch["unsubscribedTrailer"] = trailer
+        body = {"id": CHANNEL_ID, "brandingSettings": {"channel": ch}}
+        if was.get("image"):
+            body["brandingSettings"]["image"] = was["image"]
+        hdr = self.h({"Content-Type": "application/json"})
+        r = requests.put(f"{API}/channels", params={"part": "brandingSettings"}, headers=hdr, data=json.dumps(body), timeout=30)
+        if r.status_code != 200 and "image" in body["brandingSettings"]:      # картинка шапки бывает только для чтения
+            del body["brandingSettings"]["image"]
+            r = requests.put(f"{API}/channels", params={"part": "brandingSettings"}, headers=hdr, data=json.dumps(body), timeout=30)
+        return r.status_code == 200, ("" if r.status_code == 200 else f"{r.status_code} {r.text[:300]}"), was, self.branding()
+
+    def sections(self):
+        r = requests.get(f"{API}/channelSections", params={"part": "snippet,contentDetails", "mine": "true"}, headers=self.h(), timeout=30)
+        if r.status_code != 200:
+            return [{"error": f"{r.status_code} {r.text[:200]}"}]
+        return [{"id": s["id"], "type": s["snippet"].get("type"), "title": s["snippet"].get("title"), "pos": s["snippet"].get("position"),
+                 "playlists": s.get("contentDetails", {}).get("playlists")} for s in r.json().get("items", [])]
+
     def cancel(self, vid):
         """Снять таймер выхода: ролик остаётся закрытым. Уже вышедший ролик этим не закрывается — только по отдельной просьбе Михаила."""
         st = self.status(vid)
