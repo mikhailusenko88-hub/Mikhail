@@ -43,3 +43,4 @@
 | 2026-11-19 | 2 | cars №19 | Tahoe | https://youtube.com/shorts/NdB6r0N5XqQ | public |
 | 2026-11-19 | 3 | cars №20 | Epica | https://youtube.com/shorts/ZAyx08ROrvc | public |
 | 2026-11-20 | 1 | cars №21 | Equinox | https://youtube.com/shorts/Z-I-pSJYtMQ | public |
+| 2026-11-20 | 2 | cars №22 | Gentra | https://youtube.com/shorts/3lcJci36uVk | public |
