@@ -148,6 +148,22 @@ THEMES = {
          ["donne_island", "terence_human", "saadi7_body", "emerson7_master", "terence7_minds", "socrates_speak", "platonov_people"], None),
 }
 FIXED = range(17, 22)        # уже собраны 20.11 — без перепроверки
+# Михаил 20.11 12:05: «чтобы сегодня уже сегодняшние тоже по твоему правилу вышли» — 20.11 в 14:00 и 19:00 тоже карточки.
+# Подбираются после всех карточек 09:00 (их цитаты не трогают).
+EXTRA = {
+    (16, 2): (["5 МЫСЛЕЙ, КОТОРЫЕ", "СТОИТ ЗАПОМНИТЬ"], "almaty_lake",
+              ["dostoevsky_self", "newton_giants", "suvorov_training", "aesop6_help", "exupery_desert", "horace_day", "ruprov5_slow",
+               "augustus_hasten"], None),
+    (16, 3): (["5 МЫСЛЕЙ", "О НАСТОЯЩЕМ ЧЕЛОВЕКЕ"], "steppe_horses",
+              ["chekhov_beautiful", "shakespeare_love", "voltaire_questions", "hugo6_just", "shakespeare6_honesty", "dante_origin",
+               "twain6_truth", "alcott_storms"], None),
+}
+
+
+def target(v):
+    if v["slot"] == 1 and v["day"] in THEMES:
+        return THEMES[v["day"]]
+    return EXTRA.get((v["day"], v["slot"]))
 
 
 def flat(s):
@@ -210,15 +226,16 @@ if __name__ == "__main__":
     # где ещё идёт цитата (кроме слота 1 дней карточек)
     uses = {}
     for v in videos:
-        if v["slot"] == 1 and v["day"] in THEMES:
+        if target(v):
             continue
         for q in v["quotes"]:
             uses.setdefault(q, []).append(v["day"])
     taken, done, short = set(), 0, []
-    for v in sorted(videos, key=lambda x: x["n"]):
-        if v["slot"] != 1 or v["day"] not in THEMES:
+    order = sorted(videos, key=lambda x: (x["slot"] != 1, x["n"]))      # сначала все 09:00, потом EXTRA
+    for v in order:
+        if not target(v):
             continue
-        header, scene, cands, tail = THEMES[v["day"]]
+        header, scene, cands, tail = target(v)
         pick = []
         for k in cands:
             assert k in QUOTES, k
@@ -238,7 +255,8 @@ if __name__ == "__main__":
         music = base if base in orchestra.STYLES else "orch_dawn"
         v.pop("music_was", None)
         v.update(kind="list", header=header, quotes=pick, scenes=[scene], music=music, ask=ASK,
-                 title=TITLES.get(v["day"]) or title_of(header, pick, tail), description=describe(pick), name=f"d{v['day']:02d}_1L")
+                 title=(TITLES.get(v["day"]) if v["slot"] == 1 else None) or title_of(header, pick, tail), description=describe(pick),
+                 name=f"d{v['day']:02d}_{v['slot']}L")
         done += 1
         print(f"{v['n']:>3} {v['date']} {v['name']} {music:<14} {v['title']}")
         for k in pick:
