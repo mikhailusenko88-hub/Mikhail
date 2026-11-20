@@ -1,0 +1,96 @@
+{
+ "el": "/home/claude/w20/el31/el",
+ "series": "СЕРИЯ 31",
+ "text": "СОЛНЦЕ ВЫПИЛО ЛУЖУ?",
+ "text_at": "center",
+ "text_px": 40,
+ "text_w": 0.5,
+ "logo": 0.8,
+ "vignette": 0.2,
+ "bg": "f1_street_day.jpg",
+ "bg_zoom": [
+  0.5,
+  0.55,
+  1.15
+ ],
+ "blur": 4,
+ "sat": 1.3,
+ "bri": 1.1,
+ "rays": {
+  "cx": 0.42,
+  "cy": 0.12,
+  "n": 16,
+  "col": [
+   255,
+   236,
+   150
+  ],
+  "a": 34
+ },
+ "spot": {
+  "cx": 0.42,
+  "cy": 0.13,
+  "r": 0.14,
+  "col": [
+   255,
+   245,
+   200
+  ],
+  "a": 120
+ },
+ "items": [
+  {
+   "img": "v_solnce.png",
+   "cx": 0.42,
+   "top": -0.05,
+   "h": 0.36,
+   "outline": 0,
+   "shadow": 0
+  },
+  {
+   "img": "v_par.png",
+   "cx": 0.46,
+   "bottom": 0.66,
+   "h": 0.3,
+   "outline": 0,
+   "shadow": 0
+  },
+  {
+   "img": "v_luzha.png",
+   "cx": 0.46,
+   "bottom": 0.86,
+   "h": 0.3,
+   "outline": 0,
+   "shadow": 0
+  },
+  {
+   "img": "g5_Топа_udiv.png",
+   "cx": 0.62,
+   "bottom": 0.9,
+   "h": 0.5,
+   "outline": 5
+  },
+  {
+   "img": "g3_Филя_udiv.png",
+   "cx": 0.73,
+   "bottom": 0.92,
+   "h": 0.58,
+   "outline": 5
+  },
+  {
+   "img": "g2_Рон_udiv.png",
+   "cx": 0.15,
+   "bottom": 1.06,
+   "h": 0.84,
+   "outline": 6
+  },
+  {
+   "img": "g1_Барсик_udiv.png",
+   "cx": 0.88,
+   "bottom": 1.06,
+   "h": 0.86,
+   "outline": 6,
+   "flip": true
+  }
+ ]
+}
