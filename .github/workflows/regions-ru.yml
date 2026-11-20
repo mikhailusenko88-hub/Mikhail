@@ -1,0 +1,25 @@
+name: regions-ru
+# Доступность сервера 89.126.192.214 из разных регионов России (Globalping). Запуск — изменение regions.txt.
+on:
+  push:
+    branches: [srv-check]
+    paths: ['regions.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: check
+        run: |
+          mkdir -p status
+          { echo "Проверка: $(TZ=Europe/Moscow date '+%Y-%m-%d %H:%M') МСК"; timeout 420 python3 srv/regions_ru.py || echo "скрипт не сработал"; } > status/regions.txt 2>&1
+          cat status/regions.txt
+      - name: save
+        run: |
+          git config user.name "srv-check"; git config user.email "srv-check@users.noreply.github.com"
+          git add status; git commit -m "regions status" || exit 0
+          for i in 1 2 3; do git pull -q --rebase origin srv-check && git push -q origin HEAD:srv-check && break; sleep 5; done
