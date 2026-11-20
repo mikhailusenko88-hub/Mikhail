@@ -1030,21 +1030,43 @@
   "date": "2026-11-20",
   "time": "14:00",
   "quotes": [
-   "pushkin_peace",
-   "terence_human",
-   "carroll_begin"
+   "dostoevsky_self",
+   "newton_giants",
+   "suvorov_training",
+   "aesop6_help",
+   "exupery_desert"
   ],
   "scenes": [
-   "cabin",
-   "lotus",
-   "autumn"
+   "almaty_lake"
   ],
-  "music": "golos_doroga",
+  "music": "orch_horns",
   "seed": 1047,
-  "title": "На свете счастья нет, но есть покой и воля ✨ Words to keep | Alexander Pushkin #shorts",
-  "description": "Три мысли классиков на акварели: Александр Пушкин · Теренций · Льюис Кэрролл.\nThree timeless thoughts on watercolor: Alexander Pushkin · Terence · Lewis Carroll.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d16_2",
-  "music_was": "orch_horns"
+  "title": "5 МЫСЛЕЙ, КОТОРЫЕ СТОИТ ЗАПОМНИТЬ ✨ Достоевский, Ньютон, Суворов #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Если хочешь победить весь мир, победи себя. — Фёдор Достоевский\n2. Если я видел дальше других, то потому, что стоял на плечах гигантов. — Исаак Ньютон\n3. Тяжело в учении — легко в бою. — Александр Суворов\n4. Боги помогают тем, кто помогает себе сам. — Эзоп\n5. Пустыня хороша тем, что где-то в ней скрываются родники. — Антуан де Сент-Экзюпери\n\nFive timeless thoughts: Fyodor Dostoevsky · Isaac Newton · Alexander Suvorov · Aesop · Antoine de Saint-Exupéry.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d16_2L",
+  "was": {
+   "quotes": [
+    "pushkin_peace",
+    "terence_human",
+    "carroll_begin"
+   ],
+   "scenes": [
+    "cabin",
+    "lotus",
+    "autumn"
+   ],
+   "music": "golos_doroga",
+   "title": "На свете счастья нет, но есть покой и воля ✨ Words to keep | Alexander Pushkin #shorts",
+   "description": "Три мысли классиков на акварели: Александр Пушкин · Теренций · Льюис Кэрролл.\nThree timeless thoughts on watercolor: Alexander Pushkin · Terence · Lewis Carroll.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d16_2",
+   "music_was": "orch_horns"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ, КОТОРЫЕ",
+   "СТОИТ ЗАПОМНИТЬ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 48,
@@ -1053,20 +1075,42 @@
   "date": "2026-11-20",
   "time": "19:00",
   "quotes": [
-   "gogol",
-   "zhukovsky_means",
-   "wilde_stars"
+   "chekhov_beautiful",
+   "shakespeare_love",
+   "voltaire_questions",
+   "hugo6_just",
+   "shakespeare6_honesty"
   ],
   "scenes": [
-   "lighthouse",
-   "sunflowers",
-   "sea"
+   "steppe_horses"
   ],
   "music": "orch_lullaby",
   "seed": 1048,
-  "title": "Нет уз святее товарищества ✨ Nikolai Gogol + 2 more #shorts",
-  "description": "Три мысли классиков на акварели: Николай Гоголь · Василий Жуковский · Оскар Уайльд.\nThree timeless thoughts on watercolor: Nikolai Gogol · Vasily Zhukovsky · Oscar Wilde.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
-  "name": "d16_3"
+  "title": "5 МЫСЛЕЙ О НАСТОЯЩЕМ ЧЕЛОВЕКЕ ✨ Чехов, Шекспир, Вольтер #shorts",
+  "description": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. В человеке должно быть всё прекрасно: и лицо, и одежда, и душа, и мысли. — Антон Чехов\n2. Люби всех, доверяй немногим, не делай зла никому. — Уильям Шекспир\n3. Суди о человеке по его вопросам, а не по ответам. — Вольтер\n4. Быть добрым легко; трудно быть справедливым. — Виктор Гюго\n5. Нет наследства богаче честности. — Уильям Шекспир\n\nFive timeless thoughts: Anton Chekhov · William Shakespeare · Voltaire · Victor Hugo.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts",
+  "name": "d16_3L",
+  "was": {
+   "quotes": [
+    "gogol",
+    "zhukovsky_means",
+    "wilde_stars"
+   ],
+   "scenes": [
+    "lighthouse",
+    "sunflowers",
+    "sea"
+   ],
+   "music": "orch_lullaby",
+   "title": "Нет уз святее товарищества ✨ Nikolai Gogol + 2 more #shorts",
+   "description": "Три мысли классиков на акварели: Николай Гоголь · Василий Жуковский · Оскар Уайльд.\nThree timeless thoughts on watercolor: Nikolai Gogol · Vasily Zhukovsky · Oscar Wilde.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts",
+   "name": "d16_3"
+  },
+  "kind": "list",
+  "header": [
+   "5 МЫСЛЕЙ",
+   "О НАСТОЯЩЕМ ЧЕЛОВЕКЕ"
+  ],
+  "ask": "Какая — про тебя? Напиши номер в комментариях"
  },
  {
   "n": 49,
