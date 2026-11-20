@@ -1,0 +1,55 @@
+Проверка: 2026-11-20 12:20 UTC
+
+## Наш Hoster.kz (для сравнения) — 89.126.192.214 (89.126.192.214), открытый порт из GitHub: 443
+   RU Moscow: НЕТ (Connection timed out)
+   RU Moscow: НЕТ (Connection timed out)
+   RU Saint Petersburg: НЕТ (Connection timed out)
+   DE Nuremberg: ОК 77 мс
+   DE Langen: ОК 86 мс
+   DE Frankfurt: ОК 85 мс
+   KZ Karaganda: ОК 15 мс
+
+## EDIS Хельсинки (Equinix HE7) — 193.182.144.14 (193.182.144.14), открытый порт из GitHub: 443
+   RU Moscow: ОК 101 мс
+   RU Moscow: ОК 98 мс
+   RU Saint Petersburg: ОК 100 мс
+   DE Nuremberg: ОК 55 мс
+   DE Langen: ОК 65 мс
+   DE Frankfurt: ОК 61 мс
+   KZ Karaganda: ОК 142 мс
+
+## EDIS Хельсинки (LG) — 192.71.247.10 (192.71.247.10), открытый порт из GitHub: 443
+   RU Moscow: ОК 26 мс
+   RU Moscow: ОК 25 мс
+   RU Saint Petersburg: ОК 12 мс
+   DE Nuremberg: ОК 30 мс
+   DE Langen: ОК 31 мс
+   DE Frankfurt: ОК 30 мс
+   KZ Karaganda: ОК 89 мс
+
+## EDIS Стокгольм — 46.246.93.100 (46.246.93.100), открытый порт из GitHub: 443
+   RU Moscow: ОК 21 мс
+   RU Moscow: ОК 39 мс
+   RU Saint Petersburg: ОК 59 мс
+   DE Nuremberg: ОК 29 мс
+   DE Langen: ОК 25 мс
+   DE Frankfurt: ОК 23 мс
+   KZ Karaganda: ОК 169 мс
+
+## HostUp Стокгольм — lg.hostup.se (104.26.8.90), открытый порт из GitHub: 443
+   RU Moscow: ОК 40 мс
+   RU Moscow: ОК 50 мс
+   RU Saint Petersburg: ОК 40 мс
+   DE Nuremberg: ОК 14 мс
+   DE Langen: ОК 1 мс
+   DE Frankfurt: ОК 3 мс
+   KZ Karaganda: ОК 14 мс
+
+## FST.kz Казахстан — fst.kz (188.130.238.250), открытый порт из GitHub: 443
+   RU Moscow: ОК 101 мс
+   RU Moscow: ОК 48 мс
+   RU Saint Petersburg: ОК 68 мс
+   DE Nuremberg: ОК 92 мс
+   DE Langen: ОК 106 мс
+   DE Frankfurt: ОК 156 мс
+   KZ Karaganda: ОК 22 мс
