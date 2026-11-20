@@ -1673,6 +1673,18 @@ function propMesh(p) {
       const lf = A(leafGeo(false), P('#4fae45', 'plastic'), g, 0); lf.scale.setScalar(.08); lf.position.set(.005, .2, 0); lf.rotation.z = -.9; break; }
     case 'acorn': { A(lathe([[0, 0], [.025, .006], [.045, .04], [.045, .07], [0, .075]], 24), P('#b8742f', 'gloss'));
       const cp = A(lathe([[0, .1], [.048, .08], [.05, .065], [.04, .06], [0, .07]], 24), P(null, 'wood', speckT('#7a5230', '#5a3a1e', 160)), g, 0); A(G.cyl(.006, .006, .025, 6), P('#5a3a1e', 'wood'), g, 0).position.y = .11; break; }
+    case 'sprout': { // росток (20.11, для серии 34): жёлудь лежит на земле, из его носика — стебелёк с листиками, под ним холмик земли
+      const V = (x, y, z) => new THREE.Vector3(x, y, z);
+      const mo = A(G.sph(.1, 24, 10, 0, Math.PI * 2, 0, Math.PI / 2), P(null, 'wood', speckT('#6b4a2e', '#4a321e', 220)), g, 0); mo.scale.set(1.25, .22, 1);   // холмик влажной земли
+      const ac = new THREE.Group(); ac.position.set(.0, .036, .02); ac.rotation.set(0, -.5, Math.PI / 2 + .15); g.add(ac);   // жёлудь на боку, носик к стебельку
+      A(lathe([[0, 0], [.025, .006], [.045, .04], [.045, .07], [0, .075]], 24), P('#b8742f', 'gloss'), ac);
+      A(lathe([[0, .1], [.048, .08], [.05, .065], [.04, .06], [0, .07]], 24), P(null, 'wood', speckT('#7a5230', '#5a3a1e', 160)), ac, 0);
+      A(taperTube(new THREE.CatmullRomCurve3([V(.0, .03, .02), V(.012, .012, .03), V(.03, .0, .03)]), 6, tt => .005 - tt * .003, 5), P('#efe3c8', 'plastic'), g, 0);   // корешок в землю
+      const cv = new THREE.CatmullRomCurve3([V(.0, .035, .02), V(.03, .12, .01), V(.0, .22, .0), V(.02, .3, 0)]);
+      A(taperTube(cv, 18, tt => .011 - tt * .004, 7), P('#6db33f', 'plastic'), g, 0);
+      for (const [x, y, sc, ry, rz] of [[.012, .14, .1, 0, -1.15], [.0, .19, .11, Math.PI, -1.0], [.02, .3, .13, 0, -.5], [.02, .3, .12, Math.PI, -.45]]) {   // два листика на стебле и два сверху
+        const lf = A(leafGeo(false), P('#7fcf4f', 'plastic'), g, 0); lf.scale.setScalar(sc); lf.position.set(x, y, 0); lf.rotation.set(.15, ry, rz); }
+      break; }
     case 'pinecone': { const pts = []; for (let i = 0; i <= 12; i++) { const y = i / 12 * .2; pts.push([.06 * Math.sin(Math.PI * Math.pow(i / 12, .8)) + .005, y]); } const b = A(lathe(pts, 24), P(null, 'wood', pineT())); b.position.y = 0; break; }
     case 'snowball': { const c0 = cl || '#f6fbff'; const b = A(G.sph(.09, 28, 20), P(null, 'food', speckT(c0, '#dfeaf5', 80))); b.position.y = .09; break; }
     case 'sled': { const c0 = cl || '#d8213a'; for (const s of [-1, 1]) { const rn = A(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-.32, .01, s * .14), new THREE.Vector3(.28, .01, s * .14), new THREE.Vector3(.36, .06, s * .14), new THREE.Vector3(.33, .12, s * .14)]), 24, .012, 8), P('#c9c9c9', 'metal'), g, 0);
