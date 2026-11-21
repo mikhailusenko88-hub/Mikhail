@@ -46,3 +46,4 @@
 | 2026-11-20 | 2 | cars №22 | Gentra | https://youtube.com/shorts/3lcJci36uVk | public |
 | 2026-11-20 | 3 | cities №13 | Asaka | https://youtube.com/shorts/3kDDQNW1DEk | public |
 | 2026-11-21 | 1 | cities №14 | Buxoro | https://youtube.com/shorts/NiAY6Nz1Wmc | public |
+| 2026-11-21 | 2 | cars №23 | Spark | https://youtube.com/shorts/Twv1hyOMYVU | public |

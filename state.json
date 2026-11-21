@@ -306,27 +306,27 @@
    ]
   },
   "cars": {
-   "no": 22,
+   "no": 23,
    "points": {
-    "Spark": 47,
-    "Nexia": 61,
+    "Spark": 72,
+    "Nexia": 71,
     "Kia K5": 56,
     "Epica": 70,
-    "Lacetti": 47,
+    "Lacetti": 49,
     "Cobalt": 88,
     "Onix": 39,
     "Labo": 47,
     "Tico": 26,
     "Malibu": 5,
-    "Tracker": 93,
-    "Equinox": 49,
-    "BYD Song": 22,
-    "Captiva": 22,
-    "Tahoe": 39,
+    "Tracker": 97,
+    "Equinox": 50,
+    "BYD Song": 28,
+    "Captiva": 40,
+    "Tahoe": 51,
     "Jiguli": 47,
-    "Matiz": 60,
+    "Matiz": 75,
     "Gentra": 45,
-    "Chery Tiggo": 34,
+    "Chery Tiggo": 42,
     "Damas": 12
    },
    "results": [
@@ -615,10 +615,23 @@
      ],
      "link": "https://youtube.com/shorts/3lcJci36uVk",
      "final": false
+    },
+    {
+     "no": 23,
+     "date": "2026-11-21",
+     "slot": 2,
+     "winner": "Spark",
+     "top3": [
+      "Spark",
+      "Captiva",
+      "Matiz"
+     ],
+     "link": "https://youtube.com/shorts/Twv1hyOMYVU",
+     "final": false
     }
    ],
    "champion": null,
-   "season_races": 9,
+   "season_races": 10,
    "season": "2026-W47",
    "new_pending": [],
    "final_season": "2026-W46",
@@ -1462,6 +1475,16 @@
    "final": false,
    "link": "https://youtube.com/shorts/NiAY6Nz1Wmc",
    "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №14 #shorts",
+   "pl": true
+  },
+  {
+   "date": "2026-11-21",
+   "slot": 2,
+   "league": "cars",
+   "no": 23,
+   "final": false,
+   "link": "https://youtube.com/shorts/Twv1hyOMYVU",
+   "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №23 #shorts",
    "pl": true
   }
  ],

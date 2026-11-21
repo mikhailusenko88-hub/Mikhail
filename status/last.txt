@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-21 слот 1: cities №14 https://youtube.com/shorts/NiAY6Nz1Wmc, за 50 с
+ВЫЛОЖЕНО 2026-11-21 слот 2: cars №23 https://youtube.com/shorts/Twv1hyOMYVU, за 49 с
 
 {
- "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №14 #shorts",
- "description": "🏆 Oʻtgan hafta chempioni: Olmaliq · Чемпион прошлой недели: Алмалык\n\n⏳ Final — ertaga! · Финал — завтра!\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
+ "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №23 #shorts",
+ "description": "🏆 Oʻtgan hafta chempioni: Tahoe · Чемпион прошлой недели: Tahoe\n\n⏳ Final — ertaga! · Финал — завтра!\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,35 +11,35 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
-  "toshkent",
-  "samarqand",
-  "buxoro",
-  "namangan",
-  "andijon",
-  "fargʻona",
-  "города узбекистана",
-  "shaharlar"
+  "mashina",
+  "cobalt",
+  "gentra",
+  "nexia",
+  "damas",
+  "malibu",
+  "chevrolet",
+  "машины узбекистана"
  ]
 }
 
 --- журнал (время Ташкента) ---
-11:35:27 режим publish, событие workflow_dispatch
-11:35:27 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-11:35:39 комментарии: роликов просмотрено: 15, комментариев: 0
-11:35:39 Тема: гонка городов. Подбираю трассу и заезд…
-11:35:40   трасса 1 (hammers, tunnel, bumpy, stairs): победа на 27.4 с, смен лидера 2, финишировали 6, расчёт 1 с
-11:35:41   трасса 2 (tunnel, tramps, stairs, hammers): победа на 33.1 с, смен лидера 18, финишировали 14, расчёт 1 с — не подходит
-11:35:43   трасса 3 (bumpy, hammers, stairs, tramps, funnel): победа на 34.8 с, смен лидера 12, финишировали 7, расчёт 2 с — не подходит
-11:35:44   трасса 4 (bumpy, tramps, stairs, split): победа на 30.3 с, смен лидера 27, финишировали 7, расчёт 1 с
-11:35:44 Рисую трассу…
-11:35:44 Рисую кадры: заезд 33 с + финал 6 с…
-11:35:44   кадр 0/989, 5 с
-11:35:52   кадр 300/989, 13 с
-11:36:00   кадр 600/989, 21 с
-11:36:08   кадр 900/989, 29 с
-11:36:13 Свожу звук…
-11:36:14 Готово за 35 с: победил Buxoro, ролик 39 с
-11:36:14 ролик готов: 39 с, 25 МБ, сборка 47 с; победил Buxoro, топ-3: Buxoro, Termiz, Shahrisabz
-11:36:16 YouTube: https://youtube.com/shorts/NiAY6Nz1Wmc
-11:36:17 в плейлисте
-11:36:17 статус: public uploaded
+15:35:34 режим publish, событие workflow_dispatch
+15:35:34 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+15:35:46 комментарии: роликов просмотрено: 15, комментариев: 0
+15:35:46 Тема: гонка машин. Подбираю трассу и заезд…
+15:35:47   трасса 1 (stairs, bumpy, split, tunnel): победа на 30.1 с, смен лидера 8, финишировали 4, расчёт 1 с
+15:35:48   трасса 2 (stairs, bumpy, funnel, hammers, split): победа на 27.1 с, смен лидера 4, финишировали 1, расчёт 1 с
+15:35:49   трасса 3 (stairs, tramps, bumpy, hammers, funnel): победа на 31.3 с, смен лидера 26, финишировали 3, расчёт 1 с — не подходит
+15:35:50   трасса 4 (tramps, tunnel, stairs, hammers): победа на 30.4 с, смен лидера 19, финишировали 7, расчёт 1 с
+15:35:50 Рисую трассу…
+15:35:51 Рисую кадры: заезд 33 с + финал 6 с…
+15:35:51   кадр 0/995, 5 с
+15:35:58   кадр 300/995, 12 с
+15:36:06   кадр 600/995, 19 с
+15:36:13   кадр 900/995, 27 с
+15:36:19 Свожу звук…
+15:36:20 Готово за 34 с: победил Spark, ролик 39 с
+15:36:20 ролик готов: 39 с, 26 МБ, сборка 46 с; победил Spark, топ-3: Spark, Captiva, Matiz
+15:36:22 YouTube: https://youtube.com/shorts/Twv1hyOMYVU
+15:36:23 в плейлисте
+15:36:23 статус: public uploaded
