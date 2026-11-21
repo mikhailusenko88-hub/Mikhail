@@ -20,7 +20,7 @@
   "name": "Кот Барсик - 32. Упрямая стрелка!",
   "path": "video/Кот Барсик - 32. Упрямая стрелка!.mp4",
   "frames": 1074,
-  "sec": 178,
+  "sec": 176,
   "ok": true,
   "err": ""
  },
@@ -31,7 +31,7 @@
   "voiceFb": 0,
   "made": {
    "app": "студия",
-   "ver": "cb6f0c1",
+   "ver": "390db44",
    "intro": "overlay",
    "open": "new",
    "q": "hq",
@@ -39,7 +39,7 @@
    "text": "заставка: плашкой поверх действия · начало: новое · качество: как в кино · 1920×1080 25 к/с"
   },
   "perf": {
-   "r": 21,
+   "r": 19,
    "e": 138,
    "b": 5,
    "w": 1,
@@ -53,8 +53,8 @@
   "ttsFail": 0,
   "voice": 6,
   "voiceFail": 0,
-  "voiceSec": 6,
-  "ttsSec": 8,
+  "voiceSec": 8,
+  "ttsSec": 7,
   "frames": 1074,
   "dialogs": [],
   "errors": [],
@@ -64,7 +64,7 @@
   "gain_db": 11
  },
  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
- "total_sec": 217,
+ "total_sec": 219,
  "mode": "как в кино",
  "res": 1080,
  "fps": 25

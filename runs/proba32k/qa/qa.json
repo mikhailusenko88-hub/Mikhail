@@ -2,7 +2,7 @@
  "ok": true,
  "notes": [],
  "file": {
-  "mb": 28.1,
+  "mb": 27.9,
   "dur": 43.44,
   "video": "h264",
   "w": 1920,
@@ -36,13 +36,13 @@
  },
  "words_second_pass": 0,
  "words": {
-  "pct": 97.3,
+  "pct": 100.0,
   "lines": 11,
   "by_hero": {
    "Рон": 100.0,
    "Топа": 100.0,
    "Барсик": 100.0,
-   "Пик": 71.4
+   "Пик": 100.0
   },
   "worst": []
  },
@@ -85,7 +85,7 @@
    "age": "мультяшно-детский",
    "pleasant": 5.0,
    "why": [],
-   "clear_pct": 71.4
+   "clear_pct": 100.0
   },
   "Рон": {
    "f0": 327.0,
@@ -142,7 +142,7 @@
  "build": {
   "ok": true,
   "err": null,
-  "total_sec": 217,
+  "total_sec": 219,
   "mode": "как в кино",
   "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
   "card": {
@@ -152,7 +152,7 @@
    "voiceFb": 0,
    "made": {
     "app": "студия",
-    "ver": "cb6f0c1",
+    "ver": "390db44",
     "intro": "overlay",
     "open": "new",
     "q": "hq",
@@ -160,7 +160,7 @@
     "text": "заставка: плашкой поверх действия · начало: новое · качество: как в кино · 1920×1080 25 к/с"
    },
    "perf": {
-    "r": 21,
+    "r": 19,
     "e": 138,
     "b": 5,
     "w": 1,
@@ -174,8 +174,8 @@
    "ttsFail": 0,
    "voice": 6,
    "voiceFail": 0,
-   "voiceSec": 6,
-   "ttsSec": 8,
+   "voiceSec": 8,
+   "ttsSec": 7,
    "frames": 1074,
    "dialogs": [],
    "errors": [],
