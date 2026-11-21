@@ -1693,7 +1693,7 @@ function propMesh(p) {
     case 'bell': { const c0 = cl || '#ffd23f'; A(lathe([[0, .01], [.085, .01], [.09, .015], [.08, .03], [.055, .08], [.045, .17], [.03, .2], [0, .2]], 32), P(c0, 'metal')).position.y = 0;
       A(G.sph(.018, 12, 10), P('#888888', 'metal'), g, 0).position.y = .015; const rb = A(G.tor(.02, .007, 8, 16), P('#d8213a', 'cloth'), g, 0); rb.position.y = .22; break; }
     case 'mirror': { const c0 = cl || '#ff8fb1'; const mg = new THREE.Group(); mg.position.y = .02; mg.rotation.x = -Math.PI / 2 + .2; g.add(mg);
-      A(G.tor(.08, .014, 12, 40), P(c0, 'gloss'), mg); const gl = A(G.cyl(.078, .078, .006, 32), P('#e8f2ff', 'metal'), mg, 0); gl.rotation.x = Math.PI / 2; g.userData.glass = gl;
+      A(G.tor(.08, .014, 12, 40), P(c0, 'gloss'), mg); const gl = A(G.cyl(.078, .078, .006, 32), P('#e8f2ff', 'metal'), mg, 0); gl.rotation.set(Math.PI / 2, Math.PI / 2, 0);   /* 21.11.2026: отражение стояло на боку (серия 28) — повернул стекло на четверть оборота */ g.userData.glass = gl;
       const h = A(G.cap(.014, .1, 6, 12), P(c0, 'gloss'), mg); h.position.y = -.15; g.userData.heldRot = [Math.PI / 2 - .2, 0, 0]; g.userData.heldS = 1; break; }
     case 'jar': { const c0 = cl || '#d8213a'; A(lathe([[0, 0], [.07, 0], [.075, .01], [.075, .15], [.06, .16], [.06, .17], [0, .17]], 32), P('#ffffff', 'glass'));
       const jm = A(lathe([[0, .005], [.07, .005], [.07, .13], [0, .13]], 32), P(c0, 'gloss'), g, 0); const ld = A(lathe([[0, .17], [.068, .165], [.075, .19], [.06, .2], [0, .2]], 32), P(null, 'cloth', giftT('#e8344e')), g, 0);
