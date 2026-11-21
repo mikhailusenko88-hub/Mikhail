@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-21 слот 2: cars №23 https://youtube.com/shorts/Twv1hyOMYVU, за 49 с
+ТЕСТ ОК: mass_cars №1 собран за 31 с, 11 МБ, 31 с (не выложен)
 
 {
- "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №23 #shorts",
- "description": "🏆 Oʻtgan hafta chempioni: Tahoe · Чемпион прошлой недели: Tahoe\n\n⏳ Final — ertaga! · Финал — завтра!\n\nCobalt, Gentra, Nexia, Damas… qaysi biri tezroq? Izohlarda yoz 👇\n20 машин в одной гонке: Cobalt, Gentra, Nexia, Damas, Malibu и другие. Какая победит? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #cobalt #gentra #nexia #damas #mashina #гонкашариков #shorts",
+ "title": "1000 ta shar! Nexia, Cobalt, Jiguli… Qaysi mashina yutadi? Какая машина победит? №1 #shorts",
+ "description": "1000 ta shar — 10 ta mashina. Qaysi mashinaning sharlari kubokka koʻproq tushadi?\n1000 шариков — 10 машин. Чьих шариков в кубке окажется больше?\n\nIshtirokchilar / Участники: Malibu, Spark, Tico, Gentra, Damas, Jiguli, Nexia, Cobalt, Epica, Chery Tiggo\n\nSen qaysi mashina tarafdorisan? Izohlarda yoz 👇\nА ты за какую машину? Пиши в комментариях 👇\nMashinang yoʻqmi? Yoz — qoʻshamiz! · Нет твоей машины? Напиши — добавим!\n\n#uzbekistan #ozbekiston #mashina #cobalt #gentra #1000tashar #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -11,35 +11,29 @@
   "sharchalar poygasi",
   "гонка шариков",
   "marble race",
+  "1000 ta shar",
+  "1000 шариков",
+  "qaysi mashina yutadi",
+  "какая машина победит",
   "mashina",
-  "cobalt",
-  "gentra",
-  "nexia",
-  "damas",
-  "malibu",
   "chevrolet",
-  "машины узбекистана"
+  "1000 marbles",
+  "Malibu",
+  "Spark",
+  "Tico",
+  "Gentra"
  ]
 }
 
 --- журнал (время Ташкента) ---
-15:35:34 режим publish, событие workflow_dispatch
-15:35:34 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-15:35:46 комментарии: роликов просмотрено: 15, комментариев: 0
-15:35:46 Тема: гонка машин. Подбираю трассу и заезд…
-15:35:47   трасса 1 (stairs, bumpy, split, tunnel): победа на 30.1 с, смен лидера 8, финишировали 4, расчёт 1 с
-15:35:48   трасса 2 (stairs, bumpy, funnel, hammers, split): победа на 27.1 с, смен лидера 4, финишировали 1, расчёт 1 с
-15:35:49   трасса 3 (stairs, tramps, bumpy, hammers, funnel): победа на 31.3 с, смен лидера 26, финишировали 3, расчёт 1 с — не подходит
-15:35:50   трасса 4 (tramps, tunnel, stairs, hammers): победа на 30.4 с, смен лидера 19, финишировали 7, расчёт 1 с
-15:35:50 Рисую трассу…
-15:35:51 Рисую кадры: заезд 33 с + финал 6 с…
-15:35:51   кадр 0/995, 5 с
-15:35:58   кадр 300/995, 12 с
-15:36:06   кадр 600/995, 19 с
-15:36:13   кадр 900/995, 27 с
-15:36:19 Свожу звук…
-15:36:20 Готово за 34 с: победил Spark, ролик 39 с
-15:36:20 ролик готов: 39 с, 26 МБ, сборка 46 с; победил Spark, топ-3: Spark, Captiva, Matiz
-15:36:22 YouTube: https://youtube.com/shorts/Twv1hyOMYVU
-15:36:23 в плейлисте
-15:36:23 статус: public uploaded
+17:51:22 режим test, событие push
+17:51:23 «1000 ta shar» (cars) №1: Malibu, Spark, Tico, Gentra, Damas, Jiguli, Nexia, Cobalt, Epica, Chery Tiggo
+17:51:27 «1000 шарик»: действие 26.5 с, ролик 31.1 с; в кубке 329; победа Nexia 40
+17:51:28 кадр 0 / 932
+17:51:32 кадр 150 / 932
+17:51:36 кадр 300 / 932
+17:51:39 кадр 450 / 932
+17:51:41 кадр 600 / 932
+17:51:44 кадр 750 / 932
+17:51:50 кадр 900 / 932
+17:51:53 ролик готов: 31 с, 11 МБ, сборка 30 с; победил Nexia, топ-3: Nexia, Malibu, Damas, в кубке 329
