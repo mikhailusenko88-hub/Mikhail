@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-20 слот 3: cities №13 https://youtube.com/shorts/3kDDQNW1DEk, за 162 с
+ВЫЛОЖЕНО 2026-11-21 слот 1: cities №14 https://youtube.com/shorts/NiAY6Nz1Wmc, за 50 с
 
 {
- "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №13 #shorts",
- "description": "🏆 Oʻtgan hafta chempioni: Olmaliq · Чемпион прошлой недели: Алмалык\n\n⏳ Finalgacha 2 kun · До финала 2 дня\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
+ "title": "Qaysi shahar yutadi? Какой город победит? 🏁 №14 #shorts",
+ "description": "🏆 Oʻtgan hafta chempioni: Olmaliq · Чемпион прошлой недели: Алмалык\n\n⏳ Final — ertaga! · Финал — завтра!\n\n22 ta shahar — bitta marra! Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n22 городов Узбекистана в одной гонке. За какой город болеешь? Пиши в комментариях!\n\nHar kuni — yangi poyga. Каждый день новая гонка и турнирная таблица.\nShahringiz yoʻqmi? Yozing — qoʻshamiz! Нет твоего города? Напиши — добавим!\n\nYakshanba kuni — hafta finali! В воскресенье — финал недели!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #poyga #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -23,22 +23,23 @@
 }
 
 --- журнал (время Ташкента) ---
-19:36:03 режим publish, событие workflow_dispatch
-19:36:03 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-19:38:02 комментарии: роликов просмотрено: 15, комментариев: 0
-19:38:02 Тема: гонка городов. Подбираю трассу и заезд…
-19:38:04   трасса 1: никто не доехал за 37 с — не подходит
-19:38:05   трасса 2 (hammers, split, funnel, stairs, tunnel): победа на 32.6 с, смен лидера 2, финишировали 3, расчёт 2 с — не подходит
-19:38:07   трасса 3 (funnel, tramps, stairs, bumpy, split): победа на 36.5 с, смен лидера 18, финишировали 4, расчёт 1 с — не подходит
-19:38:08   трасса 4 (split, tunnel, stairs, tramps): победа на 26.7 с, смен лидера 13, финишировали 6, расчёт 1 с
-19:38:08 Рисую трассу…
-19:38:08 Рисую кадры: заезд 29 с + финал 6 с…
-19:38:08   кадр 0/883, 6 с
-19:38:18   кадр 300/883, 15 с
-19:38:27   кадр 600/883, 25 с
-19:38:41 Свожу звук…
-19:38:41 Готово за 39 с: победил Asaka, ролик 35 с
-19:38:41 ролик готов: 35 с, 22 МБ, сборка 159 с; победил Asaka, топ-3: Asaka, Zarafshon, Navoiy
-19:38:43 YouTube: https://youtube.com/shorts/3kDDQNW1DEk
-19:38:44 в плейлисте
-19:38:44 статус: public uploaded
+11:35:27 режим publish, событие workflow_dispatch
+11:35:27 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+11:35:39 комментарии: роликов просмотрено: 15, комментариев: 0
+11:35:39 Тема: гонка городов. Подбираю трассу и заезд…
+11:35:40   трасса 1 (hammers, tunnel, bumpy, stairs): победа на 27.4 с, смен лидера 2, финишировали 6, расчёт 1 с
+11:35:41   трасса 2 (tunnel, tramps, stairs, hammers): победа на 33.1 с, смен лидера 18, финишировали 14, расчёт 1 с — не подходит
+11:35:43   трасса 3 (bumpy, hammers, stairs, tramps, funnel): победа на 34.8 с, смен лидера 12, финишировали 7, расчёт 2 с — не подходит
+11:35:44   трасса 4 (bumpy, tramps, stairs, split): победа на 30.3 с, смен лидера 27, финишировали 7, расчёт 1 с
+11:35:44 Рисую трассу…
+11:35:44 Рисую кадры: заезд 33 с + финал 6 с…
+11:35:44   кадр 0/989, 5 с
+11:35:52   кадр 300/989, 13 с
+11:36:00   кадр 600/989, 21 с
+11:36:08   кадр 900/989, 29 с
+11:36:13 Свожу звук…
+11:36:14 Готово за 35 с: победил Buxoro, ролик 39 с
+11:36:14 ролик готов: 39 с, 25 МБ, сборка 47 с; победил Buxoro, топ-3: Buxoro, Termiz, Shahrisabz
+11:36:16 YouTube: https://youtube.com/shorts/NiAY6Nz1Wmc
+11:36:17 в плейлисте
+11:36:17 статус: public uploaded
