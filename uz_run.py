@@ -14,6 +14,7 @@ request.txt (ручной запуск — поменять и запушить)
   final:  auto | yes
   mode: comments — только прочитать комментарии и добавить просьбы (без ролика)
   extra:  yes — ещё один ролик прямо сейчас, сверх расписания (то же делает кнопка Run workflow на GitHub)
+  league: mass_cars | mass_cities — «1000 ta shar» (с 21.11.2026 по расписанию всегда, пока MASS_ON = True)
 Отчёт всегда в status/last.txt (логи Actions из облака не видно).
 """
 import datetime as dt
@@ -38,6 +39,35 @@ PLAYLIST = {"cities": "Qaysi shahar yutadi? · Гонка городов", "cars
             "clubs": "Qaysi jamoa yutadi? · Гонка клубов"}
 HANDLE = "@kimyutadi_uz"
 CLUBS_OFF = True      # H33: слот 3 без клубов, проверка 5 дней (до 24.11.2026) — медиана слота за 24 ч против 41–132
+# 21.11.2026 (Михаил: «да, все 3 слота»): канал переходит на «1000 ta shar» — движок «1000 шарик» с «Білесің бе?»
+# (там гонка городов умерла, а «1000 шарик» дал 600–1 040 на ролик). 12:00 и 20:00 Ташкента — машины, 16:00 — города.
+# Без таблиц и финалов недели. Проверка H39 — 5 дней: медиана за 24 ч против 82. Откат: MASS_ON = False.
+MASS_ON = True
+MASS_SLOTS = {0: "cars", 1: "cars", 2: "cities", 3: "cars"}
+MASS_BIG = {"cars": ["Cobalt", "Gentra", "Nexia"], "cities": ["Toshkent", "Samarqand"]}   # всегда в заезде
+PLAYLIST.update({"mass_cars": "1000 ta shar · Qaysi mashina yutadi?", "mass_cities": "1000 ta shar · Qaysi shahar yutadi?"})
+MASS_TXT = {
+    "cars": {"q": "Qaysi mashina yutadi? Какая машина победит?",
+             "desc": ("1000 ta shar — 10 ta mashina. Qaysi mashinaning sharlari kubokka koʻproq tushadi?\n"
+                      "1000 шариков — 10 машин. Чьих шариков в кубке окажется больше?\n\n"
+                      "Ishtirokchilar / Участники: {list}\n\n"
+                      "Sen qaysi mashina tarafdorisan? Izohlarda yoz 👇\n"
+                      "А ты за какую машину? Пиши в комментариях 👇\n"
+                      "Mashinang yoʻqmi? Yoz — qoʻshamiz! · Нет твоей машины? Напиши — добавим!\n\n"
+                      "#uzbekistan #ozbekiston #mashina #cobalt #gentra #1000tashar #гонкашариков #shorts"),
+             "tags": ["1000 ta shar", "1000 шариков", "qaysi mashina yutadi", "какая машина победит", "mashina",
+                      "chevrolet", "1000 marbles"]},
+    "cities": {"q": "Qaysi shahar yutadi? Какой город победит?",
+               "desc": ("1000 ta shar — 10 ta shahar. Qaysi shaharning sharlari kubokka koʻproq tushadi?\n"
+                        "1000 шариков — 10 городов Узбекистана. Чьих шариков в кубке окажется больше?\n\n"
+                        "Ishtirokchilar / Участники: {list}\n\n"
+                        "Sen qaysi shahar muxlisisan? Izohlarda yoz 👇\n"
+                        "За какой город болеешь? Пиши в комментариях 👇\n"
+                        "Shahring yoʻqmi? Yoz — qoʻshamiz! · Нет твоего города? Напиши — добавим!\n\n"
+                        "#uzbekistan #ozbekiston #toshkent #samarqand #1000tashar #гонкашариков #shorts"),
+               "tags": ["1000 ta shar", "1000 шариков", "qaysi shahar yutadi", "какой город победит",
+                        "города узбекистана", "1000 marbles"]},
+}
 
 
 def slot_league(d, slot):
@@ -245,6 +275,86 @@ def new_season(ls, sid):
     ls["season"] = sid
 
 
+def run_mass(d, slot, theme, mode, yt, state, t0):
+    """«1000 ta shar»: один ролик без таблицы и финалов. 10 участников: большие всегда, новые из комментариев,
+    остальные — кто реже был в «1000 ta shar»."""
+    import race_leagues as RL
+    sim = BASE / "mass" / "mass_sim"
+    if not sim.exists():
+        subprocess.run(["gcc", "-O2", "-o", str(sim), str(BASE / "mass" / "mass_sim.c"), "-lm"], check=True)
+    sys.path.insert(0, str(BASE / "mass"))
+    import mass_video
+    lg = "mass_" + theme
+    ms = state.setdefault("mass", {}).setdefault(theme, {"no": 0, "cnt": {}})
+    no = ms.get("no", 0) + 1
+    rnd = random.SystemRandom()
+    ls = league_state(state, theme)
+    by = {e["key"]: e for e in RL.entries(theme, ls.get("extra"))}
+    big = [k for k in MASS_BIG[theme] if k in by]
+    newp = [k for k in ls.get("new_pending", []) if k in by and k not in big][:3]
+    cnt = ms.setdefault("cnt", {})
+    rest = [k for k in by if k not in big and k not in newp]
+    rnd.shuffle(rest)
+    rest.sort(key=lambda k: cnt.get(k, 0))
+    keys = (big + newp + rest)[:10]
+    rnd.shuffle(keys)
+    parts = [(by[k]["kk"], by[k]["ru"]) for k in keys]
+    WORK.mkdir(parents=True, exist_ok=True)
+    out = WORK / f"{d}_{slot}_{lg}{no}.mp4"
+    log(f"«1000 ta shar» ({theme}) №{no}: {', '.join(k for k, _ in parts)}")
+    info = mass_video.render(out, seed=rnd.randrange(1, 10 ** 9), cities=parts, no=no, log=log, theme=theme)
+    size = out.stat().st_size / 1e6
+    log(f"ролик готов: {info['duration']:.0f} с, {size:.0f} МБ, сборка {time.time() - t0:.0f} с; "
+        f"победил {info['winner']}, топ-3: {', '.join(info['ranking'][:3])}, в кубке {info['in_cup']}")
+    T = MASS_TXT[theme]
+    named = [rnd.choice(big)] if big else []                       # в названии: один большой + двое из заезда
+    named += rnd.sample([k for k, _ in parts if k not in named], 3 - len(named))
+    title = f"1000 ta shar! {', '.join(named)}… {T['q']} №{no} #shorts"
+    if len(title) > 100:
+        title = f"1000 ta shar! {T['q']} №{no} #shorts"
+    desc = T["desc"].format(list=", ".join(k for k, _ in parts))
+    if newp:
+        ru = ", ".join(by[k]["ru"] for k in newp)
+        desc = f"🆕 Yangi: {', '.join(newp)} — izohlaringiz boʻyicha! · Новые по вашим комментариям: {ru}\n\n" + desc
+    meta = {"title": title, "description": desc, "tags": RL.TAGS_COMMON + T["tags"] + [k for k, _ in parts][:4]}
+
+    if mode != "publish":
+        shutil.rmtree("status/test", ignore_errors=True)
+        os.makedirs("status/test", exist_ok=True)
+        dur = info["duration"]
+        for k, ts in enumerate((0.5, dur * 0.3, dur * 0.6, dur - 5.0, dur - 0.5)):
+            subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-ss", f"{max(0, ts):.2f}", "-i", str(out),
+                            "-frames:v", "1", "-vf", "scale=540:-1", f"status/test/{lg}_{k + 1}.jpg"])
+        write_status(f"ТЕСТ ОК: {lg} №{no} собран за {time.time() - t0:.0f} с, {size:.0f} МБ, {info['duration']:.0f} с "
+                     f"(не выложен)", json.dumps(meta, ensure_ascii=False, indent=1))
+        return
+
+    vid = yt.upload(str(out), meta)
+    link = f"https://youtube.com/shorts/{vid}"
+    log("YouTube:", link)
+    pl = yt.to_playlist(vid, PLAYLIST[lg])
+    log(pl)
+    st = yt.status(vid)
+    log("статус:", st.get("privacyStatus"), st.get("uploadStatus"))
+    ms["no"] = no
+    for k in keys:
+        cnt[k] = cnt.get(k, 0) + 1
+    if newp:
+        ls["new_pending"] = [k for k in ls.get("new_pending", []) if k not in newp]
+    ms.setdefault("results", []).append({"no": no, "date": d.isoformat(), "slot": slot, "winner": info["winner"],
+                                         "top3": info["ranking"][:3], "in_cup": info["in_cup"], "link": link})
+    ms["results"] = ms["results"][-300:]
+    state.setdefault("history", []).append({"date": d.isoformat(), "slot": slot, "league": lg, "no": no,
+                                            "final": False, "link": link, "title": title, "pl": pl == "в плейлисте"})
+    state["history"] = state["history"][-500:]
+    Path("state.json").write_text(json.dumps(state, ensure_ascii=False, indent=1), encoding="utf-8")
+    with open("status/uploads.md", "a", encoding="utf-8") as f:
+        f.write(f"| {d} | {slot} | {lg} №{no} | {info['winner']} | {link} | {st.get('privacyStatus')} |\n")
+    warn = "" if st.get("privacyStatus") == "public" else "  ⚠️ НЕ ОТКРЫТ"
+    write_status(f"ВЫЛОЖЕНО {d} слот {slot}: {lg} №{no} {link}{warn}, за {time.time() - t0:.0f} с",
+                 json.dumps(meta, ensure_ascii=False, indent=1))
+
+
 def main():
     t0 = time.time()
     req = read_request()
@@ -341,6 +451,15 @@ def main():
             take_requests(state, yt, log)
         except Exception as e:  # noqa: BLE001 — просьбы из комментариев не должны мешать выкладке
             log(f"просьбы из комментариев: ошибка {type(e).__name__}: {str(e)[:150]}")
+
+    mass_theme = None
+    if req["league"] in ("mass_cars", "mass_cities"):
+        mass_theme = req["league"][5:]
+    elif MASS_ON and req["league"] == "auto":
+        mass_theme = MASS_SLOTS.get(slot, "cars")
+    if mass_theme:
+        run_mass(d, slot, mass_theme, mode, yt, state, t0)
+        return
 
     import race_leagues as RL
     import race_video as rv

@@ -1,6 +1,6 @@
-# 2026-11-08 15:15 МСК — ТЕСТ нового вида ролика (крупная камера, без отсчёта, ~35 с), не выкладывать
+# 2026-11-21 16:00 МСК — ТЕСТ «1000 ta shar» (машины) на GitHub, не выкладывать
 mode: test    # test | publish | login | check | comments | probe
-league: cars     # auto | cities | cars | clubs
+league: mass_cars     # auto | cities | cars | clubs | mass_cars | mass_cities
 final: auto
 date: auto
 slot: auto
