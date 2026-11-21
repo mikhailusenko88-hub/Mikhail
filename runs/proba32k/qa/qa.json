@@ -1,0 +1,203 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 28.1,
+  "dur": 43.44,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 42.94,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 1,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 43,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 168.6
+ },
+ "kadry": 6,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 2.3,
+  "peak_db": -1.4,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 97.3,
+  "lines": 11,
+  "by_hero": {
+   "Рон": 100.0,
+   "Топа": 100.0,
+   "Барсик": 100.0,
+   "Пик": 71.4
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 212.0,
+   "range_st": 5.5,
+   "hnr": 12.2,
+   "jitter": 2.2,
+   "shimmer": 8.0,
+   "F1": 496.0,
+   "F2": 2033.0,
+   "F3": 3178.0,
+   "bright": -12.5,
+   "air": -11.8,
+   "cog": 813.0,
+   "rate": 5.1,
+   "voiced": 0.5,
+   "n": 1,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Пик": {
+   "f0": 413.0,
+   "range_st": 8.1,
+   "hnr": 22.0,
+   "jitter": 0.8,
+   "shimmer": 4.7,
+   "F1": 511.0,
+   "F2": 1816.0,
+   "F3": 3552.0,
+   "bright": -20.3,
+   "air": -30.6,
+   "cog": 518.0,
+   "rate": 6.9,
+   "voiced": 0.8,
+   "n": 1,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 71.4
+  },
+  "Рон": {
+   "f0": 327.0,
+   "range_st": 7.1,
+   "hnr": 22.1,
+   "jitter": 0.9,
+   "shimmer": 5.3,
+   "F1": 411.0,
+   "F2": 2186.0,
+   "F3": 3622.0,
+   "bright": -22.4,
+   "air": -27.3,
+   "cog": 433.0,
+   "rate": 4.3,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Топа": {
+   "f0": 154.0,
+   "range_st": 4.0,
+   "hnr": 12.2,
+   "jitter": 2.6,
+   "shimmer": 9.2,
+   "F1": 542.0,
+   "F2": 1599.0,
+   "F3": 3300.0,
+   "bright": -16.9,
+   "air": -25.7,
+   "cog": 596.0,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 1,
+   "age": "взрослый",
+   "pleasant": 4.3,
+   "why": [
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 7,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 21,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 217,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 42.94099999999999,
+   "video": "video/Кот Барсик - 32. Упрямая стрелка!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "cb6f0c1",
+    "intro": "overlay",
+    "open": "new",
+    "q": "hq",
+    "at": null,
+    "text": "заставка: плашкой поверх действия · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 21,
+    "e": 138,
+    "b": 5,
+    "w": 1,
+    "n": 1070,
+    "at": 1070,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 10,
+   "ttsFail": 0,
+   "voice": 6,
+   "voiceFail": 0,
+   "voiceSec": 6,
+   "ttsSec": 8,
+   "frames": 1074,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -25.3,
+   "lufs_out": -15.1,
+   "gain_db": 11
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 32,
+   "title": "Упрямая стрелка?!",
+   "scenes": 1,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}
