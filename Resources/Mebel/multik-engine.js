@@ -907,7 +907,8 @@ MK.validate = function (ep, lib) {
 };
 
 // Еда на кухне лежит на столе (x стола на сцене)
-const FOOD = new Set(['cake', 'pie', 'cup', 'milk', 'cookie', 'apple', 'pear', 'banana', 'cheese', 'candy', 'honey', 'icecream', 'lollipop', 'watermelon', 'carrot', 'fish', 'egg', 'basket', 'sandwich', 'pizza', 'strawberry', 'grapes', 'cherry', 'jar', 'teapot', 'plate', 'pot']);
+const FOOD = new Set(['cake', 'pie', 'cup', 'milk', 'cookie', 'apple', 'pear', 'banana', 'cheese', 'candy', 'honey', 'icecream', 'lollipop', 'watermelon', 'carrot', 'fish', 'egg', 'basket', 'sandwich', 'pizza', 'strawberry', 'grapes', 'cherry', 'jar', 'teapot', 'plate', 'pot', 'bowl']);
+const FLOAT_IN = new Set(['pinecone', 'boat', 'leaf', 'feather', 'acorn']);   // 21.11.2026: кладут на стол, где миска с водой, — плавает в миске
 const TABLE_X = { kitchen: .855 };
 const NEAR_ACT = new Set(['read', 'peer', 'write', 'paint', 'play', 'drink', 'sniff']), KEY_PROP = new Set(['map', 'letter', 'compass', 'key', 'book', 'magnifier', 'crown', 'gift', 'mirror', 'jar', 'feather', 'flower', 'acorn', 'butterfly']);
 const BIGACT = new Set(['fall', 'jump', 'dance', 'spin', 'somersault', 'roll', 'run', 'crawl', 'sneak', 'stomp', 'hug', 'give', 'kick', 'throw', 'take', 'drop']);
@@ -1008,7 +1009,7 @@ MK.compile = function (ep, lib, audio) {
   const IC = MK.introCfg(lib, ep); let intro = IC.mode, titleAt = null;
   const TITLE = intro === 'start' ? 4.5 : 0, END = ep.endCard === false ? 0 : 4, coldOn = MK.openingCfg(lib) === 'new';
   if (TITLE) { segs.push({ kind: 'title', t0: 0, t1: TITLE }); music.push({ t0: 0, t1: TITLE, mood: 'happy' }); sfx.push({ t: .3, n: 'sparkle' }); t = TITLE; }
-  const MAIN = MK.mainOf(ep, lib);
+  const MAIN = MK.mainOf(ep, lib); let lastPropCam = -99;
   const evts = [];   // события серии (вещь появилась/исчезла, большое действие, вход, звук, погода) — для проверки «Начало серии»
     for (const [si, sc] of (ep.scenes || []).entries()) {
     // «после завязки»: заставка 3 с на первой склейке между сценами после ~12 с действия (первая сцена идёт с нуля)
@@ -1051,9 +1052,9 @@ MK.compile = function (ep, lib, audio) {
       const over = vis.length ? C[vis[vis.length - 1]].x - .93 : 0; if (over > 0) vis.forEach(id => C[id].x = Math.max(.07, C[id].x - over));
       if (vis.length > 6) vis.forEach((id, i) => { if (i % 2) C[id].z = .6; }); }
     for (const cs of sc.cast || []) if (C[cs.who]) cs._x = C[cs.who].x, cs._z = C[cs.who].z;
-    const props = (sc.props || []).map(p => ({ id: p.id, type: p.type, color: p.color, kind: p.kind || null, phase: p.phase || null, low: !!p.low, main: !!(coldOn && MAIN && p.type === MAIN.type), skyMoon: !!(coldOn && p.type === 'moon' && /^(evening|night)$/.test(lspec.time || 'day') && !/^(room|kitchen|space)$/.test(lspec.type || '')), x: p.x != null ? p.x : .5, x0: p.x != null ? p.x : .5, holder: p.holder && C[p.holder] ? p.holder : null, h0: p.holder && C[p.holder] ? p.holder : null, decor: !!p.decor, big: p.big || 1, vis0: !p.hidden, glow0: !!p.glow, vis: !p.hidden, ev: [] }));
+    const props = (sc.props || []).map(p => ({ id: p.id, type: p.type, color: p.color, kind: p.kind || null, phase: p.phase || null, low: !!p.low, main: !!(coldOn && MAIN && p.type === MAIN.type), skyMoon: !!(coldOn && p.type === 'moon' && /^(evening|night)$/.test(lspec.time || 'day') && !/^(room|kitchen|space)$/.test(lspec.type || '')), x: p.x != null ? p.x : .5, x0: p.x != null ? p.x : .5, holder: p.holder && C[p.holder] ? p.holder : null, h0: p.holder && C[p.holder] ? p.holder : null, decor: !!p.decor, big: p.big || 1, vis0: !p.hidden, glow0: !!p.glow, vis: !p.hidden, open0: p.open0 != null ? !!p.open0 : p.type === 'pinecone', _put: !!p._put, ev: [] }));   /* шишка по умолчанию раскрыта (сухая) */
     PR = props;
-    const TB = TABLE_X[lspec.type]; if (TB != null) { let k = 0; for (const p of props) if (!p.holder && FOOD.has(p.type) && !(p.big > 1)) { p.x = p.x0 = TB + (k++ % 3) * .025; p.tb0 = p.tb = true; } }
+    const TB = TABLE_X[lspec.type]; if (TB != null) { let k = 0; const bowl0 = props.some(q => q.type === 'bowl' && !q.holder); for (const p of props) if (!p.holder && (FOOD.has(p.type) || (bowl0 && FLOAT_IN.has(p.type) && p._put)) && !(p.big > 1)) { p.x = p.x0 = TB + (k++ % 3) * .025; p.tb0 = p.tb = true; } }
     const beats = [];
     const strokes = {}; for (const st of sc.steps || []) if (st.prop && st.state === 'paint') strokes[st.prop] = (strokes[st.prop] || 0) + 1; const strokeN = {};
     const free = p => !p.holder && !p.decor && p.vis;
@@ -1099,7 +1100,7 @@ MK.compile = function (ep, lib, audio) {
           if (step.state === 'glow') p.ev.push({ t: start + (step.with ? .4 : 0), glow: true });
           if (step.state === 'unglow') p.ev.push({ t: start, glow: false });
           if (step.state === 'paint') { strokeN[p.id] = (strokeN[p.id] || 0) + 1; p.ev.push({ t: start + (step.with ? .6 : .2), paint: strokeN[p.id] / strokes[p.id] }); }
-          if (step.state === 'open' || step.state === 'close') { p.ev.push({ t: start + .3, open: step.state === 'open' }); if (step.state === 'open') sfx.push({ t: st0 + start + .3, n: 'magic' }); }
+          if (step.state === 'open' || step.state === 'close') { p.ev.push({ t: start + .3, open: step.state === 'open' }); if (step.state === 'open' && p.type !== 'pinecone') sfx.push({ t: st0 + start + .3, n: 'magic' }); }
           if (step.state === 'move' && !p.holder) { let near = null, nd = 9; for (const id in C) if (C[id].vis && Math.abs(C[id].x - p.x) < nd) { nd = Math.abs(C[id].x - p.x); near = C[id].x; } const dir = near == null ? 1 : p.x >= near ? 1 : -1;
             const x1 = clamp(p.x + dir * .09, .05, .95), x2 = clamp(x1 + dir * .07, .05, .95); p.ev.push({ t: start + .1, fly: { x0: p.x, x1, t1: start + .6, h: .28 }, x: x1, tb: false }); p.ev.push({ t: start + .7, fly: { x0: x1, x1: x2, t1: start + 1.1, h: .14 }, x: x2 }); p.x = x2;
             sfx.push({ t: st0 + start + .55, n: 'boing', v: .45 }); sfx.push({ t: st0 + start + 1.05, n: 'boing', v: .3 }); }
@@ -1158,7 +1159,7 @@ MK.compile = function (ep, lib, audio) {
               const tf = s0 + .45, fd = .5 + Math.abs(to - fromX) * .8; p.ev.push({ t: tf, holder: null, fly: { x0: fromX, x1: to, t1: tf + fd, h: d === 'kick' ? .9 : 1.2 }, x: to }); p.holder = null; p.x = to;
               if (step.to && C[step.to]) { p.ev.push({ t: tf + fd, holder: step.to }); p.holder = step.to; } } }
           if (d === 'take') { const p = props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]; if (p) { for (const q of props) if (q !== p && q.holder === who && q.vis) { q.ev.push({ t: s0 + .3, holder: null, x: ch.x - .05 * (ch.face || 1) }); q.holder = null; q.x = ch.x - .05 * (ch.face || 1); } p.ev.push({ t: s0 + .3, holder: who, tb: false }); p.holder = who; if (!p.vis) { p.ev.push({ t: s0 + .3, vis: true }); p.vis = true; } } }
-          if (d === 'drop' && !step.into) { const p = props.find(p => p.holder === who); if (p) { const onT = TB != null && FOOD.has(p.type); const tall = /^(umbrella|flag|ladder|bike|scooter|telescope|rod|net|sled|boat|guitar|drum|kite|broom|shovel|stick|lantern|teddy|box|basket|bucket|backpack|gift|pumpkin)$/.test(p.type);   // высокую вещь ставит сбоку, а не себе под нос
+          if (d === 'drop' && !step.into) { const p = props.find(p => p.holder === who); if (p) { const onT = TB != null && (FOOD.has(p.type) || (FLOAT_IN.has(p.type) && props.some(q => q.type === 'bowl' && !q.holder))); const tall = /^(umbrella|flag|ladder|bike|scooter|telescope|rod|net|sled|boat|guitar|drum|kite|broom|shovel|stick|lantern|teddy|box|basket|bucket|backpack|gift|pumpkin)$/.test(p.type);   // высокую вещь ставит сбоку, а не себе под нос
             const side = sd => { const x = ch.x + sd * (C[who].w / 2 + .045); return x > .06 && x < .94 && !Object.keys(C).some(o => o !== who && C[o].vis && Math.abs(C[o].x - x) < C[o].w / 2 + .03) ? x : null; };
             const xx = onT ? TB : tall ? (side(ch.x > .5 ? -1 : 1) ?? side(ch.x > .5 ? 1 : -1) ?? clamp(ch.x + (ch.x > .5 ? -1 : 1) * (C[who].w / 2 + .045), .05, .95)) : ch.x + .03 * (ch.face || 1); /* к середине кадра, где нет соседа */ p.ev.push({ t: s0 + .3, holder: null, x: xx, tb: onT }); p.holder = null; p.x = xx; } }
           if (d === 'give' && step.to && C[step.to]) { const p = props.find(p => p.holder === who); if (p) { p.ev.push({ t: s0 + .5, holder: step.to, from: who }); p.holder = step.to; } ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); }
@@ -1211,7 +1212,7 @@ MK.compile = function (ep, lib, audio) {
         const big0 = ex[0] ? ex[0].big : MAIN.big || 1, need = big0 > 1.2 ? .16 : .1; let x = .5, best = -1;
         for (const cx of [.5, .42, .58, .34, .66, .26, .74, .18, .82]) { const m = xs.length ? Math.min(...xs.map(v => Math.abs(v - cx))) : 1; if (m >= need) { x = cx; best = m; break; } if (m > best) { best = m; x = cx; } }
         const later = ex.length ? Math.min(...ex.map(visAt)) : 99, tOff = Math.max(3.5, Math.min(7.5, later - .4)), T1 = 1;
-        props.push({ id: '__main', type: mt, color: ex[0] ? ex[0].color : ep.mainColor || null, kind: ex[0] ? ex[0].kind : null, phase: ex[0] ? ex[0].phase : null, x, x0: x, holder: null, h0: null, decor: big0 > 1.2, big: big0 * 1.3, vis0: false, glow0: false, vis: false, teaser: true,
+        props.push({ id: '__main', type: mt, open0: ex[0] ? ex[0].open0 : mt === 'pinecone', color: ex[0] ? ex[0].color : ep.mainColor || null, kind: ex[0] ? ex[0].kind : null, phase: ex[0] ? ex[0].phase : null, x, x0: x, holder: null, h0: null, decor: big0 > 1.2, big: big0 * 1.3, vis0: false, glow0: false, vis: false, teaser: true,
           ev: [{ t: T1, vis: true, fx: 'appear' }, { t: tOff, vis: false, fx: 'quiet' }] });
         sfx.push({ t: st0 + T1, n: 'magic' }); sfx.push({ t: st0 + T1 + .05, n: 'sparkle' }); evts.push({ t: st0 + T1, k: 'prop', type: mt, state: 'appear', teaser: true });
         coldPx = x; mainAt = T1; coldSky = mt === 'moon' || mt === 'rainbow' ? mt : false; } }
@@ -1220,11 +1221,21 @@ MK.compile = function (ep, lib, audio) {
       const manual = cam.slice(1).filter(c => !c.auto && !c.shake); const auto = directScene(beats, C, inits, manual, { cold: cold && !(sc.camera && sc.camera !== 'wide') ? { px: coldPx, sky: coldSky } : null, capWide: coldOn && !sc.camera, tempo: coldOn });   // всё новое в режиссуре — только при «Начало серии: новое»; «как было» — кадр в кадр как раньше
       if (auto[0] && auto[0].cold) { const c0 = auto.shift(); if (sc.camera === 'wide') { c0.t = 1.5; auto.unshift(c0); } else Object.assign(cam[0], c0, { t: 0 }); }   // «КАМЕРА: общий план» в начале — не дольше 1,5 с
       const keep = cam.slice(1).filter(c => !c.auto); cam.length = 1; cam.push(...auto, ...keep); cam.sort((a, b) => a.t - b.t);
-      if (coldOn && MAIN && !cam.some(c => c.mode === 'prop')) { const tk = beats.find(b => b.k === 'act' && b.d === 'take' && b.ptype === MAIN.type && C[b.who]);   // 21.11.2026: берёт главный предмет серии — на 1,9 с вещь в лапе на весь кадр (в 32-й компас был мелким, стрелку не видно)
-        if (tk) { const t0 = Math.max(tk.t1 != null ? tk.t1 + .1 : tk.t + .9, cam[0] && cam[0].cold ? 1.8 : 0), t1 = t0 + 1.9;
-          if (!cam.some(c => !c.auto && !c.shake && c.t > t0 - .3 && c.t < t1) && t1 < sdur - .5) { let back = null; for (let i = cam.length - 1; i >= 1; i--) { const c = cam[i]; if (c.auto && !c.shake && c.t > t0 - .25 && c.t < t1 + .4) { if (!back || c.t > back.t) back = c; cam.splice(i, 1); } }
-            if (!back) back = cam.filter(c => !c.shake && c.t <= t0).pop() || cam[0]; const ret = Object.assign({}, back, { t: t1, cut: true, auto: true }); delete ret.cold;
-            cam.push({ t: t0, mode: 'prop', on: tk.who, prop: MAIN.type, cut: true, auto: true }, ret); cam.sort((a, b) => a.t - b.t); } } } }
+      if (coldOn && MAIN && !cam.some(c => c.mode === 'prop')) {   // 21.11.2026: «крупно вещь» — главный предмет серии на весь кадр:
+        // (1) герой берёт его — в первой сцене всегда, дальше не чаще раза в минуту (в 32-й компас был мелким, стрелку не видно);
+        // (2) предмет меняется на глазах (шишка закрывается под дождём) — показываем, как меняется
+        const wins = [], tk = beats.find(b => b.k === 'act' && b.d === 'take' && b.ptype === MAIN.type && C[b.who]);
+        if (tk && (si === 0 || t + tk.t - lastPropCam >= 60)) { const t0 = Math.max(tk.t1 != null ? tk.t1 + .1 : tk.t + .9, cam[0] && cam[0].cold ? 1.8 : 0); wins.push({ t0, t1: t0 + 1.9, on: tk.who }); }
+        for (const p of props) if (p.type === MAIN.type) for (const e of p.ev) if (e.open != null && e.t > .8) wins.push({ t0: e.t - .35, t1: e.t + 2.3, pid: p.id });
+        { const S2 = global.MKScript; for (const b of beats) if (b.k === 'say' && b.who && C[b.who] && b.t > .5) { const tx = b.text || '';   // (3) «Смотрите! Шишка закрылась!» или удивлённо с ним в лапах — показываем вещь, пока говорит
+          const look = /(смотри|гляди|глянь)/i.test(tx) && S2 && S2.mainOf && (S2.mainOf(tx) || {}).type === MAIN.type, held = b.emo === 'surprised' && props.some(p => p.type === MAIN.type && MK.propAt(p, b.t + .2).holder === b.who);
+          if ((look || held) && props.some(p => p.type === MAIN.type && MK.propAt(p, b.t + .3).vis)) wins.push({ t0: b.t + .15, t1: b.t + 2.15, on: held ? b.who : null }); } }
+        for (const w of wins) if (cam[0] && cam[0].cold && w.t0 < 1.8) { w.t1 += 1.8 - w.t0; w.t0 = 1.8; }   // первый план серии держим хотя бы 1,6 с
+        wins.sort((a, b) => a.t0 - b.t0);
+        for (const w of wins) { const { t0, t1 } = w; if (cam.some(c => c.mode === 'prop' && Math.abs(c.t - t0) < 3) || cam.some(c => !c.auto && !c.shake && c.t > t0 - .3 && c.t < t1) || t1 > sdur - .5) continue;
+          let back = null; for (let i = cam.length - 1; i >= 1; i--) { const c = cam[i]; if (c.auto && !c.shake && c.t > t0 - .25 && c.t < t1 + .4) { if (!back || c.t > back.t) back = c; cam.splice(i, 1); } }
+          if (!back) back = cam.filter(c => !c.shake && c.t <= t0).pop() || cam[0]; const ret = Object.assign({}, back, { t: t1, cut: true, auto: true }); delete ret.cold;
+          cam.push(Object.assign({ t: t0, mode: 'prop', on: w.on || null, prop: MAIN.type, cut: true, auto: true }, w.pid ? { pid: w.pid } : {}), ret); cam.sort((a, b) => a.t - b.t); lastPropCam = t + t0; } } }
     segs.push({ kind: 'scene', t0: t, t1: t + sdur, sc, loc: buildLocation(lspec), lspec, lkey: canon(lspec), C, props, cam, idx: si, theme: sc.theme || ep.theme || null, cold: cold || undefined, mainAt: mainAt != null ? t + mainAt : undefined });
     music.push({ t0: t, t1: t + sdur, mood: sc.music || ep.music || 'happy' });
     t += sdur;
@@ -1280,7 +1291,7 @@ MK.introCheck = function (ep, lib) {
 };
 function fmtT(t) { t = Math.max(0, Math.round(t)); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); }
 /** Где предмет в момент t: {holder, x, air} */
-MK.propAt = function (p, t) { let holder = p.h0 || null, x = p.x0 != null ? p.x0 : p.x, air = 0, vis = p.vis0 !== false, glow = !!p.glow0, fx = null, fxT = 0, glowT = -9, tb = !!p.tb0, open = false, openT = -9, pa0 = 0, pa1 = 0, paT = -9; if (p.x0 == null) p.x0 = p.x;
+MK.propAt = function (p, t) { let holder = p.h0 || null, x = p.x0 != null ? p.x0 : p.x, air = 0, vis = p.vis0 !== false, glow = !!p.glow0, fx = null, fxT = 0, glowT = -9, tb = !!p.tb0, open = !!p.open0, openT = -9, pa0 = 0, pa1 = 0, paT = -9; if (p.x0 == null) p.x0 = p.x;
   for (const e of p.ev) { if (e.t > t) break; if (e.paint != null) { pa0 = pa1; pa1 = e.paint; paT = e.t; } if ('holder' in e) holder = e.holder || null; if (e.tb != null) tb = e.tb; if (e.open != null) { open = e.open; openT = e.t; } if (e.vis != null) vis = e.vis; if (e.fx) { fx = e.fx; fxT = e.t; } if (e.glow != null) { glow = e.glow; glowT = e.t; } if (e.fly) { const k = clamp((t - e.t) / (e.fly.t1 - e.t), 0, 1); if (k < 1) { x = lerp(e.fly.x0, e.fly.x1, k); air = Math.sin(k * Math.PI) * e.fly.h; holder = null; } else x = e.fly.x1; } else if (e.x != null) x = e.x; }
   const ok = clamp((t - openT) / 1.3, 0, 1); return { holder, x, air, vis, glow, glowK: glow ? Math.min(1, (t - glowT) / .6) : 0, fx, fxAge: fx ? t - fxT : 99, tb: tb && !holder && !air, openK: open ? ease(ok) : openT > 0 ? 1 - ease(ok) : 0, paintK: pa0 + (pa1 - pa0) * clamp((t - paT) / 2.2, 0, 1) }; };
 function faceVal(v, ch, C) { if (v === 'left') return -1; if (v === 'right') return 1; if (v === 'camera' || v === 'front') return 0; if (C[v]) return C[v].x >= ch.x ? 1 : -1; return ch.face; }

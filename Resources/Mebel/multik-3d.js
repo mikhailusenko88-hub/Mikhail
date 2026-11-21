@@ -1648,6 +1648,10 @@ function propMesh(p) {
       const blob = (rx, rz, seed) => { const sh = new THREE.Shape(), N = 64; for (let i = 0; i <= N; i++) { const a = i / N * Math.PI * 2, k = 1 + .12 * Math.sin(a * 3 + seed) + .07 * Math.sin(a * 5 + seed * 2.3) + .04 * Math.sin(a * 9 + seed * .7); const x = Math.cos(a) * rx * k, z = Math.sin(a) * rz * k; if (i) sh.lineTo(x, z); else sh.moveTo(x, z); } return new THREE.ShapeGeometry(sh, 2); };
       const rim = A(blob(.92, .6, 1.3), P(cl ? shadeC(cl, .45) : '#3c3f44', 'paper'), g, 0); rim.rotation.x = -Math.PI / 2; rim.position.y = .004; rim.material = rim.material.clone(); rim.material.transparent = true; rim.material.opacity = .55; rim.material.depthWrite = false;
       const w = A(blob(.8, .52, 1.3), P(cl || '#5f7488', 'water'), g, 0); w.rotation.x = -Math.PI / 2; w.position.y = .008; w.renderOrder = 1; break; }
+    case 'bowl': {   // 21.11.2026: миска с водой (серия 33 — шишка в воде): керамика снаружи, вода внутри видна сверху
+      const c0 = cl || '#f4f1ea'; A(lathe([[0, 0], [.07, 0], [.11, .02], [.145, .06], [.15, .075], [.142, .077], [.135, .062], [.1, .025], [0, .02]], 40), P(c0, 'ceramic'));
+      A(G.tor(.146, .006, 8, 40), P('#5aa0d8', 'gloss'), g, 0).rotation.x = Math.PI / 2; g.children[g.children.length - 1].position.y = .076;
+      const wt = new THREE.Mesh(new THREE.CircleGeometry(.132, 40), new THREE.MeshStandardMaterial({ color: '#5fb6ec', roughness: .12, metalness: 0, transparent: true, opacity: .82, envMapIntensity: 1.2 })); wt.rotation.x = -Math.PI / 2; wt.position.y = .058; g.add(wt); g.userData.waterY = .058; break; }
     case 'plate': { const c0 = cl || '#ffffff'; A(lathe([[0, 0], [.07, 0], [.08, .006], [.14, .022], [.15, .03], [.145, .032], [.08, .012], [0, .012]], 40), P(c0, 'ceramic'));
       const rm = A(G.tor(.135, .004, 8, 48), P('#3d8fe0', 'ceramic'), g, 0); rm.rotation.x = Math.PI / 2; rm.position.y = .027; break; }
     case 'spoon': { const c0 = cl || '#c9c9c9'; const sp = new THREE.Group(); sp.position.y = .012; g.add(sp); const bw = A(G.sph(.03, 20, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), P(c0, 'metal'), sp, 0); bw.scale.set(1, .35, 1.4); bw.position.x = .08; bw.material = bw.material; bw.rotation.x = Math.PI;
@@ -1685,7 +1689,13 @@ function propMesh(p) {
       for (const [x, y, sc, rz] of [[.022, .13, .1, -1.2], [.008, .19, .1, 1.15], [.02, .285, .12, -.55], [.02, .285, .11, .6]]) {   // листик вправо, листик влево, два сверху «рогаткой»
         const lf = A(leafGeo(false), P('#7fcf4f', 'plastic'), sg, 0); lf.material = lf.material.clone(); lf.material.side = THREE.DoubleSide; lf.scale.setScalar(sc); lf.position.set(x, y, 0); lf.rotation.set(.12, 0, rz); }
       break; }
-    case 'pinecone': { const pts = []; for (let i = 0; i <= 12; i++) { const y = i / 12 * .2; pts.push([.06 * Math.sin(Math.PI * Math.pow(i / 12, .8)) + .005, y]); } const b = A(lathe(pts, 24), P(null, 'wood', pineT())); b.position.y = 0; break; }
+    case 'pinecone': {   // 21.11.2026: шишка из чешуек — раскрывается и закрывается (p._open): сухая раскрыта, мокрая сомкнута (серия 33)
+      const core = A(G.cap(.017, .15, 6, 12), P('#5a3a1e', 'wood'), g, 0); core.position.y = .1; A(G.cyl(.006, .008, .025, 8), P('#5a3a1e', 'wood'), g, 0).position.y = .003;
+      const sg = G.sph(1, 10, 8), m1 = P('#8d5b30', 'wood'), m2 = P('#74482a', 'wood'), sc = [], N = 64, GA = Math.PI * (3 - Math.sqrt(5));
+      for (let i = 0; i < N; i++) { const f = i / (N - 1), y = .016 + f * .178, prof = Math.sin(Math.PI * Math.pow(Math.min(.97, f * .93 + .04), .8)), rc = .012 + .011 * prof;
+        const pv = new THREE.Group(); pv.position.y = y; pv.rotation.y = i * GA; g.add(pv); const hg = new THREE.Group(); hg.position.x = rc; pv.add(hg);
+        const L = .02 + .052 * prof, W = .015 + .024 * prof, s = A(sg, i % 2 ? m1 : m2, hg, .06); s.scale.set(.0068, L / 2, W / 2); s.position.y = L * .45; hg.userData.k = prof; sc.push(hg); }
+      g.userData.scales = sc; g.userData.scaleA = [.4, 1.3]; for (const h of sc) h.rotation.z = -1.3; break; }
     case 'snowball': { const c0 = cl || '#f6fbff'; const b = A(G.sph(.09, 28, 20), P(null, 'food', speckT(c0, '#dfeaf5', 80))); b.position.y = .09; break; }
     case 'sled': { const c0 = cl || '#d8213a'; for (const s of [-1, 1]) { const rn = A(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-.32, .01, s * .14), new THREE.Vector3(.28, .01, s * .14), new THREE.Vector3(.36, .06, s * .14), new THREE.Vector3(.33, .12, s * .14)]), 24, .012, 8), P('#c9c9c9', 'metal'), g, 0);
         for (const x of [-.2, .1]) A(G.box(.015, .1, .015), P('#c9c9c9', 'metal'), g, 0).position.set(x, .06, s * .14); }
@@ -3062,10 +3072,12 @@ function camFor(c, S, seg, lib) {
   const px = id => S[id] ? X(S[id].x) : 0, pz = id => S[id] ? -(S[id].z || 0) * 1.5 + arcDz(ARCc, S[id]) : 0;
   const ids = Object.keys(seg.C);
   const topOf = id => { const lc = lib.characters[id], rg = lc && rigFor(lc); return rg && rg.headH ? rg.headH + rg.headR * 1.75 : 1.1 * h(id); }; // макушка с ушками — всегда в кадре
-  if (c.mode === 'prop') {   // 21.11.2026: вещь в лапе героя на весь кадр (главный предмет серии, «КАМЕРА: крупно компас»): плоскую — чуть сверху, зеркальце — спереди
-    const hp = (seg.props || []).find(p => (!c.prop || p.type === c.prop) && p._holder && p._vis !== false && (!c.on || p._holder === c.on)), id = (hp && hp._holder) || c.on, lc = id && lib.characters[id], rg = lc && rigFor(lc);
-    if (hp && rg && rg.headH) { const pm = propMesh(hp), v = new THREE.Vector3(); pm.updateMatrixWorld(true); pm.getWorldPosition(v); const ps = pm.scale.x || 1; v.y += (pm.userData.topY || 0) * ps;
-      const hr = rg.headR || .22 * (rg.scale || 1), ws = (pm.userData.sz || .17) * ps, d = Math.max(hr * 1.8, Math.min(hr * 4, ws * 2.5)), sd = c.vert ? 0 : S[id] && S[id].face < 0 ? -1 : 1, front = hp.type === 'mirror';
+  if (c.mode === 'prop') {   // 21.11.2026: вещь на весь кадр (главный предмет серии, «КАМЕРА: крупно компас»): в лапе или лежит; плоскую — чуть сверху, зеркальце — спереди
+    const ok = p => p._vis !== false && (!c.prop || p.type === c.prop), hp = (seg.props || []).find(p => c.pid ? p.id === c.pid : ok(p) && p._holder && (!c.on || p._holder === c.on)) || (seg.props || []).find(p => ok(p) && !p._holder && !p.decor);
+    const id = (hp && hp._holder) || c.on, lc = id && lib.characters[id], rg = lc && rigFor(lc);
+    if (hp && (rg && rg.headH || !hp._holder)) { const pm = propMesh(hp), v = new THREE.Vector3(); pm.updateMatrixWorld(true); pm.getWorldPosition(v); const ps = pm.scale.x || 1; v.y += (pm.userData.topY || 0) * ps;
+      const ws = (pm.userData.sz || .17) * ps, hr = rg && rg.headH ? rg.headR || .22 * (rg.scale || 1) : ws * .55, d = Math.max(hr * 1.8, Math.min(hr * 4, ws * 2.5)), sd = c.vert ? 0 : id && S[id] && S[id].face < 0 ? -1 : 1, front = hp.type === 'mirror';
+      if (!front) { const bb = new THREE.Box3().setFromObject(pm); if (!bb.isEmpty()) { bb.getCenter(v); if (pm.userData.topY) v.y = bb.max.y; } }   // в середину вещи (шишка в лапе торчала из кадра), у плоской — на верх
       const el = front ? .2 : .74; return { pos: new THREE.Vector3(v.x + sd * d * .1, v.y + d * Math.sin(el), v.z + d * Math.cos(el)), look: new THREE.Vector3(v.x, v.y, v.z) }; }
     return camFor(Object.assign({}, c, { mode: id ? 'medium' : 'wide', on: id || null }), S, seg, lib); }
   if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close', side = c.vert ? 0 : S[id] && S[id].face < 0 ? -1 : 1;   /* vert — Shorts 9:16: герой по центру кадра */
@@ -3237,10 +3249,13 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
         m.position.lerp(p1, k); m.quaternion.slerp(q1, k); m.scale.multiplyScalar(1 + k * (boost - 1)); }
       if (A && A.mouthY != null && hk !== 2 && ha.n !== 'eat' && ha.n !== 'drink' && !m.userData.overHead) { m.updateMatrixWorld(true); const bb = new THREE.Box3().setFromObject(m), lim = A.mouthY - .02 * A.sc; if (bb.max.y > lim) m.position.y -= bb.max.y - lim; } } // книга, письмо, вещь в лапках — ниже рта, мордочку не закрывают
     else if (p._holder && S[p._holder] && !S[p._holder].vis) { m.visible = false; continue; } // вещь у героя, которого ещё нет в кадре
-    else if (p._tb && L.type === 'kitchen') { m.position.set(clamp(X(p._x), 3.35, 4.45), .83, -.95); m.scale.setScalar(1.15 * sc); m.rotation.set(0, 0, 0); }
+    else if (p._tb && L.type === 'kitchen') { const bw = p.type !== 'bowl' && /^(pinecone|boat|leaf|feather|acorn)$/.test(p.type) ? seg.props.find(q => q.type === 'bowl' && q._tb && q._vis !== false) : null;   // в миске с водой — плавает
+      if (bw) { const bm = propMesh(bw); m.position.set(clamp(X(bw._x), 3.35, 4.45) + .02, .83 + (bm.userData.waterY || .058) * 1.15 - .012, -.95); m.scale.setScalar(1.0 * sc); m.rotation.set(0, .6, p.type === 'pinecone' ? Math.PI / 2 - .12 : 0); m.position.y += p.type === 'pinecone' ? .045 : 0; }
+      else { m.position.set(clamp(X(p._x), 3.35, 4.45), .83, -.95); m.scale.setScalar(1.15 * sc); m.rotation.set(0, 0, 0); } }
     else if (p.skyMoon) { m.position.set(X(p._x), 0, -7); m.scale.setScalar(sc); m.rotation.set(0, 0, 0); }   // ночная луна — далеко в небе, крупная (размер — в самой луне)
     else { const zz = p.decor && big > 1.5 ? -1.9 : p.decor ? -.5 : .35; m.position.set(X(p._x), (CF && CF.floor ? CF.floor(X(p._x), zz) : 0) + (p._air || 0) * 1.2 + (m.userData.float ? Math.sin(T * 2 + p._x * 9) * .08 : 0), zz); m.scale.setScalar(big * (p.decor && big < 1.5 ? 1.6 : 1) * sc); m.rotation.set(0, 0, -(p._air || 0) * 3); }
     if (m.userData.lid) { const ok = p._open || 0; m.userData.lid.rotation.x = -ok * m.userData.lidOpen; if (ok > .05 && ok < .999 && m.visible) for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2 + T, r = .08 + ok * .25; sprite(glyphTex('★', '#ffd23f', '#ffffff'), m.position.x + Math.cos(a) * r * m.scale.x, m.position.y + (.3 + ok * .45) * m.scale.y, m.position.z + Math.sin(a) * r * .5, .09 * m.scale.x, 1 - ok * .7); } }
+    if (m.userData.scales) { const ok = p._open == null ? 1 : p._open, a0 = m.userData.scaleA[0], a1 = m.userData.scaleA[1]; if (m.userData._ok !== ok) { m.userData._ok = ok; for (const h of m.userData.scales) h.rotation.z = -(a0 + (a1 - a0) * ok * (.82 + .18 * h.userData.k)); } }   // шишка раскрывается и закрывается
     if (m.userData.leaf) { const ok = p._open || 0; m.userData.leaf.rotation.y = -ok * 1.75; m.userData.doorLight.material.opacity = Math.min(1, ok * 1.6); if (ok > .05 && m.visible) sprite(haloTex('#ffe6a0'), m.position.x, m.position.y + .55 * m.scale.x, m.position.z + .1, 1.6 * m.scale.x * (.6 + ok * .4), .7 * ok); }
     if (m.userData.flames) m.userData.flames.forEach((f, i) => { const s0 = f.userData.s0 || (f.userData.s0 = f.scale.clone()); const k = 1 + Math.sin(T * 13 + i * 2.1) * .08 + Math.sin(T * 7.3 + i) * .06; f.scale.set(s0.x * (2 - k), s0.y * k, s0.z * (2 - k)); });
     const gl = m.userData.alwaysGlow ? 1 : (p._glow || 0); if (m.userData.faceMat) m.userData.faceMat.color.set(gl > 0 ? 0xffc23a : 0x3a1a08);
