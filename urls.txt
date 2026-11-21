@@ -1,4 +1,5 @@
-# 14:30 серия 33 v4: обложка и сценарий
+# 17:55 серии 33 v5 и 34 v2
 http://89.126.192.214:8080/mebel/s9kbars/serii.json
-http://89.126.192.214:8080/mebel/s9kbars/serii/33/cover.jpg
+http://89.126.192.214:8080/mebel/s9kbars/serii/34/cover.jpg
 http://89.126.192.214:8080/mebel/s9kbars/serii/33/scenario.txt
+http://89.126.192.214:8080/mebel/s9kbars/serii/34/scenario.txt
