@@ -1228,6 +1228,8 @@ MK.compile = function (ep, lib, audio) {
         const tkP = tk && props.find(p => p.type === MAIN.type && MK.propAt(p, (tk.t1 != null ? tk.t1 : tk.t + .9) + .1).holder === tk.who), tkOpen = tkP ? MK.propAt(tkP, (tk.t1 != null ? tk.t1 : tk.t + .9) + .2).openK > .5 : null;
         if (tk && (si === 0 || t + tk.t - lastPropCam >= 60 || (lastPropOpen != null && tkOpen != null && tkOpen !== lastPropOpen))) { /* или вещь уже другая (шишка была закрытой — теперь раскрыта) */ const t0 = Math.max(tk.t1 != null ? tk.t1 + .1 : tk.t + .9, cam[0] && cam[0].cold ? 1.8 : 0); wins.push({ t0, t1: t0 + 1.9, on: tk.who }); }
         for (const p of props) if (p.type === MAIN.type) for (const e of p.ev) if (e.open != null && e.t > .8) wins.push({ t0: e.t - .35, t1: e.t + 2.3, pid: p.id });
+        for (const b of beats) if (b.k === 'act' && b.d === 'peer') { const mp = props.find(p => p.type === MAIN.type && !(p.big > 1) && !p.skyMoon && MK.propAt(p, b.t + .3).vis && MK.propAt(p, b.t + .3).holder !== b.who);   // (5) смотрит в лупу — показываем, что видно в лупу (корешок ростка в 34-й)
+          if (mp) wins.push({ t0: b.t + .4, t1: b.t + 3.2, pid: mp.id, lens: /^(magnifier)$/.test((props.find(p => p.holder === b.who || MK.propAt(p, b.t + .3).holder === b.who) || {}).type || '') }); }
         if (props.some(q => q.type === 'bowl')) for (const p of props) if (p.type === MAIN.type) for (const e of p.ev) if ('holder' in e && !e.holder && e.tb) wins.push({ t0: e.t - .1, t1: e.t + 2.1, pid: p.id });   // кладут в миску с водой — показываем, как плывёт
         { const S2 = global.MKScript; for (const b of beats) if (b.k === 'say' && b.who && C[b.who]) { const tx = b.text || '';   // (3) «Смотрите! Шишка закрылась!» или удивлённо с ним в лапах — показываем вещь, пока говорит
           const look = /(смотри|гляди|глянь)/i.test(tx) && S2 && S2.mainOf && (S2.mainOf(tx) || {}).type === MAIN.type, held = b.emo === 'surprised' && props.some(p => p.type === MAIN.type && MK.propAt(p, b.t + .2).holder === b.who);
@@ -1240,7 +1242,7 @@ MK.compile = function (ep, lib, audio) {
         for (const w of wins) { const { t0, t1 } = w; if (cam.some(c => c.mode === 'prop' && Math.abs(c.t - t0) < 3) || cam.some(c => !c.auto && !c.shake && c.t > t0 - .3 && c.t < t1) || t1 > sdur - .5) continue;
           let back = null; for (let i = cam.length - 1; i >= 1; i--) { const c = cam[i]; if (c.auto && !c.shake && c.t > t0 - .25 && c.t < t1 + .4) { if (!back || c.t > back.t) back = c; cam.splice(i, 1); } }
           if (!back) back = cam.filter(c => !c.shake && c.t <= t0).pop() || cam[0]; const ret = Object.assign({}, back, { t: t1, cut: true, auto: true }); delete ret.cold;
-          cam.push(Object.assign({ t: t0, mode: 'prop', on: w.on || null, prop: w.other ? (props.find(p => p.id === w.pid) || {}).type : MAIN.type, cut: true, auto: true }, w.pid ? { pid: w.pid } : {}), ret); cam.sort((a, b) => a.t - b.t); lastPropCam = t + t0; { const sp = w.pid ? props.find(p => p.id === w.pid) : props.find(p => p.type === MAIN.type && (!w.on || MK.propAt(p, t1 - .1).holder === w.on)); if (sp) lastPropOpen = MK.propAt(sp, t1 - .1).openK > .5; } } } }
+          cam.push(Object.assign({ t: t0, mode: 'prop', on: w.on || null, prop: w.other ? (props.find(p => p.id === w.pid) || {}).type : MAIN.type, cut: true, auto: true }, w.pid ? { pid: w.pid } : {}, w.lens ? { lens: true } : {}), ret); cam.sort((a, b) => a.t - b.t); lastPropCam = t + t0; { const sp = w.pid ? props.find(p => p.id === w.pid) : props.find(p => p.type === MAIN.type && (!w.on || MK.propAt(p, t1 - .1).holder === w.on)); if (sp) lastPropOpen = MK.propAt(sp, t1 - .1).openK > .5; } } } }
     segs.push({ kind: 'scene', t0: t, t1: t + sdur, sc, loc: buildLocation(lspec), lspec, lkey: canon(lspec), C, props, cam, idx: si, theme: sc.theme || ep.theme || null, cold: cold || undefined, mainAt: mainAt != null ? t + mainAt : undefined });
     music.push({ t0: t, t1: t + sdur, mood: sc.music || ep.music || 'happy' });
     t += sdur;
@@ -1374,6 +1376,11 @@ MK.render = function (ctx, tl, T) {
   if (use3d) { global.MK3D.draw(ctx, tl, seg, t, T); if (seg.kind === 'title' || seg.kind === 'end') drawCard(ctx, tl, seg, t, T, true); }
   else if (seg.kind === 'title' || seg.kind === 'end') drawCard(ctx, tl, seg, t, T);
   else drawScene(ctx, tl, seg, t, T);
+  if (seg.kind === 'scene' && seg.cam) { let cs = null; for (const c of seg.cam) if (!c.shake && c.t <= t) cs = c;   // 21.11.2026: «вид в лупу» — круглое окошко с оправой, пока камера показывает, что видно в лупу
+    if (cs && cs.lens) { const k = Math.min(1, (t - cs.t) / .25), cw = W, ch = H, r = Math.min(cw, ch) * (.62 - .12 * (1 - k)), x = cw / 2, y = ch / 2;
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, cw, ch); ctx.arc(x, y, r, 0, Math.PI * 2, true); ctx.fillStyle = 'rgba(20,14,8,.93)'; ctx.fill('evenodd');
+      ctx.lineWidth = r * .07; ctx.strokeStyle = '#3b2210'; ctx.beginPath(); ctx.arc(x, y, r + r * .03, 0, Math.PI * 2); ctx.stroke(); ctx.lineWidth = r * .045; ctx.strokeStyle = '#e8b33c'; ctx.beginPath(); ctx.arc(x, y, r + r * .03, 0, Math.PI * 2); ctx.stroke();
+      ctx.lineWidth = r * .03; ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.beginPath(); ctx.arc(x, y, r * .82, Math.PI * 1.1, Math.PI * 1.35); ctx.stroke(); ctx.restore(); } }
   // переходы
   const si = tl.segs.indexOf(seg), sameP = tl.segs[si - 1], sameN = tl.segs[si + 1], same = o => o && o.kind === 'scene' && seg.kind === 'scene' && o.lkey === seg.lkey;
   const fin = same(sameP) ? 1 : clamp(t / .4, 0, 1), fout = same(sameN) ? 1 : clamp((seg.t1 - T) / .4, 0, 1), a = 1 - Math.min(fin, fout);
