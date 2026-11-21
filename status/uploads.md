@@ -73,3 +73,4 @@
 | shorts | 2026-11-20 | 1 | Brazil vs Russia vs Germany | https://youtube.com/shorts/HE2vZpO_2MU | public (только Shorts) |
 | shorts | 2026-11-20 | 2 | Bangladesh vs Guatemala vs Cambodia | https://youtube.com/shorts/-3EWQRVajaY | public (только Shorts) |
 | shorts | 2026-11-20 | 3 | Vietnam vs France vs Korea | https://youtube.com/shorts/hO0r9li7C4M | public (только Shorts) |
+| shorts | 2026-11-21 | 1 | India vs Türkiye vs Spain | https://youtube.com/shorts/pr0AjwyzNbE | public (только Shorts) |
