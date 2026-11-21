@@ -3073,7 +3073,7 @@ function camFor(c, S, seg, lib) {
   const ids = Object.keys(seg.C);
   const topOf = id => { const lc = lib.characters[id], rg = lc && rigFor(lc); return rg && rg.headH ? rg.headH + rg.headR * 1.75 : 1.1 * h(id); }; // макушка с ушками — всегда в кадре
   if (c.mode === 'prop') {   // 21.11.2026: вещь на весь кадр (главный предмет серии, «КАМЕРА: крупно компас»): в лапе или лежит; плоскую — чуть сверху, зеркальце — спереди
-    const ok = p => p._vis !== false && (!c.prop || p.type === c.prop), hp = (seg.props || []).find(p => c.pid ? p.id === c.pid : ok(p) && p._holder && (!c.on || p._holder === c.on)) || (seg.props || []).find(p => ok(p) && !p._holder && !p.decor);
+    const ok = p => p._vis !== false && (!c.prop || p.type === c.prop), hp = (seg.props || []).find(p => c.pid ? p.id === c.pid : ok(p) && p._holder && (!c.on || p._holder === c.on)) || (seg.props || []).find(p => ok(p) && !p._holder && !p.decor) || (seg.props || []).find(p => ok(p) && !p._holder);
     const id = (hp && hp._holder) || c.on, lc = id && lib.characters[id], rg = lc && rigFor(lc);
     if (hp && (rg && rg.headH || !hp._holder)) { const pm = propMesh(hp), v = new THREE.Vector3(); pm.updateMatrixWorld(true); pm.getWorldPosition(v); const ps = pm.scale.x || 1; v.y += (pm.userData.topY || 0) * ps;
       const ws = (pm.userData.sz || .17) * ps, hr = rg && rg.headH ? rg.headR || .22 * (rg.scale || 1) : ws * .55, d = Math.max(hr * 1.8, Math.min(hr * 4, ws * 2.5)), sd = c.vert ? 0 : id && S[id] && S[id].face < 0 ? -1 : 1, front = hp.type === 'mirror';

@@ -1227,7 +1227,7 @@ MK.compile = function (ep, lib, audio) {
         const wins = [], tk = beats.find(b => b.k === 'act' && b.d === 'take' && b.ptype === MAIN.type && C[b.who]);
         if (tk && (si === 0 || t + tk.t - lastPropCam >= 60)) { const t0 = Math.max(tk.t1 != null ? tk.t1 + .1 : tk.t + .9, cam[0] && cam[0].cold ? 1.8 : 0); wins.push({ t0, t1: t0 + 1.9, on: tk.who }); }
         for (const p of props) if (p.type === MAIN.type) for (const e of p.ev) if (e.open != null && e.t > .8) wins.push({ t0: e.t - .35, t1: e.t + 2.3, pid: p.id });
-        { const S2 = global.MKScript; for (const b of beats) if (b.k === 'say' && b.who && C[b.who] && b.t > .5) { const tx = b.text || '';   // (3) «Смотрите! Шишка закрылась!» или удивлённо с ним в лапах — показываем вещь, пока говорит
+        { const S2 = global.MKScript; for (const b of beats) if (b.k === 'say' && b.who && C[b.who]) { const tx = b.text || '';   // (3) «Смотрите! Шишка закрылась!» или удивлённо с ним в лапах — показываем вещь, пока говорит
           const look = /(смотри|гляди|глянь)/i.test(tx) && S2 && S2.mainOf && (S2.mainOf(tx) || {}).type === MAIN.type, held = b.emo === 'surprised' && props.some(p => p.type === MAIN.type && MK.propAt(p, b.t + .2).holder === b.who);
           if ((look || held) && props.some(p => p.type === MAIN.type && MK.propAt(p, b.t + .3).vis)) wins.push({ t0: b.t + .15, t1: b.t + 2.15, on: held ? b.who : null }); } }
         for (const w of wins) if (cam[0] && cam[0].cold && w.t0 < 1.8) { w.t1 += 1.8 - w.t0; w.t0 = 1.8; }   // первый план серии держим хотя бы 1,6 с
