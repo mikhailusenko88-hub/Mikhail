@@ -175,7 +175,7 @@ def add_rb(obj, typ, shape, friction=0.45, rest=0.35, mass=0.01):
 
 
 # стеклянный куб: внутри 0,32 × 0,20 × 0,50 м, стенки 8 мм
-GW, GD, GH, T = 0.32, 0.20, float(A.get("gh", "0.50")), 0.004
+GW, GD, GH, T = float(A.get("gw", "0.32")), float(A.get("gd", "0.20")), float(A.get("gh", "0.50")), 0.004
 slabs = [((0, 0, T / 2), (GW + 2 * T, GD + 2 * T, T)),
          ((-(GW + T) / 2, 0, GH / 2 + T), (T, GD + 2 * T, GH)),
          (((GW + T) / 2, 0, GH / 2 + T), (T, GD + 2 * T, GH)),
