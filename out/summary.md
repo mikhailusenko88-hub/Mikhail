@@ -203,12 +203,14 @@
 | e34_002 | edge:ru-RU-SvetlanaNeural | 4.0 | 0.875 | 0 (+1) | 2/3 |
 | e34_003 | edge:ru-RU-SvetlanaNeural | 3.77 | 0.8 | 1 (+0) | 0/2 |
 | e34_004 | edge:ru-RU-SvetlanaNeural | 4.01 | 1.0 | 0 (+0) | 2/2 |
+| e34_005 | edge:ru-RU-SvetlanaNeural | 3.61 | 1.0 | 0 (+0) | 1/1 |
 | e34_006 | edge:ru-RU-SvetlanaNeural | 3.78 | 1.0 | 1 (+0) | 1/1 |
 | e34_007 | edge:ru-RU-SvetlanaNeural | 3.81 | 0.929 | 0 (+0) | 3/3 |
 | e34_008 | edge:ru-RU-SvetlanaNeural | 3.85 | 0.833 | 0 (+0) | 1/1 |
 | e34_009 | edge:ru-RU-SvetlanaNeural | 3.98 | 1.0 | 0 (+0) | 1/1 |
 | e34_010 | edge:ru-RU-SvetlanaNeural | 3.99 | 1.0 | 1 (+1) | 2/2 |
 | e34_011 | edge:ru-RU-SvetlanaNeural | 4.06 | 0.8 | 0 (+0) | 1/1 |
+| e34_012 | edge:ru-RU-SvetlanaNeural | 3.92 | 1.0 | 0 (+1) | 0/1 |
 | e34_013 | edge:ru-RU-SvetlanaNeural | 3.8 | 1.0 | 2 (+0) | 2/3 |
 | e34_014 | edge:ru-RU-SvetlanaNeural | 4.1 | 1.0 | 0 (+0) | 1/1 |
 | e34_015 | edge:ru-RU-SvetlanaNeural | 4.22 | 1.0 | 0 (+0) | 1/1 |
@@ -227,16 +229,24 @@
 | e34_028 | edge:ru-RU-SvetlanaNeural | 4.04 | 1.0 | 0 (+0) | 1/1 |
 | e34_029 | edge:ru-RU-SvetlanaNeural | 3.86 | 1.0 | 0 (+1) | 1/1 |
 | e34_030 | edge:ru-RU-SvetlanaNeural | 3.76 | 1.0 | 0 (+1) | 1/1 |
+| e34_031 | edge:ru-RU-SvetlanaNeural | 3.91 | 1.0 | 0 (+1) | 2/2 |
+| e34_032 | edge:ru-RU-SvetlanaNeural | 4.02 | 1.0 | 0 (+0) | 2/2 |
 | e34_033 | edge:ru-RU-SvetlanaNeural | 4.02 | 0.889 | 0 (+0) | 2/2 |
 | e34_034 | edge:ru-RU-SvetlanaNeural | 3.74 | 1.0 | 0 (+1) | 2/2 |
+| e34_035 | edge:ru-RU-SvetlanaNeural | 3.81 | 1.0 | 0 (+0) | 1/1 |
 | e34_036 | edge:ru-RU-SvetlanaNeural | 3.88 | 1.0 | 0 (+0) | 1/1 |
 | e34_038 | edge:ru-RU-SvetlanaNeural | 4.12 | 1.0 | 1 (+0) | 0/1 |
 | e34_039 | edge:ru-RU-SvetlanaNeural | 3.73 | 0.0 | 0 (+0) | 1/1 |
 | e34_040 | edge:ru-RU-SvetlanaNeural | 3.73 | 0.889 | 0 (+0) | 2/2 |
 | e34_041 | edge:ru-RU-SvetlanaNeural | 4.0 | 0.727 | 1 (+0) | 2/2 |
+| e34_042 | edge:ru-RU-SvetlanaNeural | 3.74 | 1.0 | 0 (+0) | 0/1 |
 | e34_043 | edge:ru-RU-SvetlanaNeural | 3.66 | 1.0 | 0 (+1) | 1/2 |
 | e34_044 | edge:ru-RU-SvetlanaNeural | 3.78 | 1.0 | 0 (+0) | 2/2 |
 | e34_045 | edge:ru-RU-SvetlanaNeural | 3.97 | 1.0 | 0 (+0) | 1/1 |
+| e34_046 | edge:ru-RU-SvetlanaNeural | 3.89 | 1.0 | 1 (+0) | 3/3 |
+| e34_047 | edge:ru-RU-SvetlanaNeural | 3.99 | 0.889 | 0 (+1) | 1/2 |
+| e34_048 | edge:ru-RU-SvetlanaNeural | 3.82 | 1.0 | 0 (+0) | 1/1 |
+| e34_049 | edge:ru-RU-SvetlanaNeural | 3.96 | 0.857 | 0 (+0) | 1/1 |
 | e34_050 | edge:ru-RU-SvetlanaNeural | 3.87 | 1.0 | 0 (+0) | 2/3 |
 | f2_albina_slow | silero_cis:ru_albina@slow | 3.2 | 0.935 | 0 (+1) | 4/4 |
 | f2_albina_slow_soft | silero_cis:ru_albina@slow,soft | 2.88 | 0.935 | 1 (+1) | 4/4 |
@@ -671,6 +681,17 @@
 | r33_p1 | Mac Milena, сам | 2.79 | 1.0 | 1 (+0) | 2/2 |
 | r33_p3 | Mac Milena, перенос | 2.31 | 1.0 | 0 (+0) | 2/2 |
 | r33_w1 | Mac Milena (Пик) | 2.59 | 0.75 | 0 (+0) | 1/1 |
+| r34_a1 | Mac Milena | 2.15 | 1.0 | 0 (+0) | 1/1 |
+| r34_a2 | Mac Milena | 2.78 | 0.5 | 0 (+0) | 1/1 |
+| r34_b1 | Mac Milena | 2.62 | 1.0 | 0 (+0) | 0/1 |
+| r34_b2 | Mac Milena | 2.89 | 0.8 | 0 (+0) | 0/1 |
+| r34_c1 | Mac Milena | 2.69 | 0.6 | 1 (+0) | 1/1 |
+| r34_c2 | Mac Milena | 2.82 | 1.0 | 0 (+1) | 0/1 |
+| r34_d1 | Mac Milena | 2.48 | 1.0 | 0 (+0) | 1/1 |
+| r34_d2 | Mac Milena | 2.43 | 1.0 | 0 (+0) | 1/1 |
+| r34_e1 | Mac Milena | 2.12 | 0.5 | 1 (+0) | 2/2 |
+| r34_e2 | Mac Milena | 2.51 | 0.545 | 0 (+0) | 1/2 |
+| r34_f1 | Mac Milena | 2.51 | 1.0 | 1 (+0) | 1/2 |
 | r34_k1 | голос iPhone (Milena, Mac) — сам | 1.98 | 0.5 | 0 (+0) | 0/1 |
 | r34_k2 | голос iPhone (Milena, Mac) — сам | 2.58 | 0.889 | 0 (+0) | 2/2 |
 | r34_k3 | голос iPhone (Milena, Mac) — сам | 2.68 | 0.8 | 0 (+1) | 0/1 |
