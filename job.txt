@@ -1,16 +1,4 @@
-# 2026-11-20 20:10 — банка-кот, версия A (физика jarsim1): кадры 58–215 на 14 машинах; параллельно физика B — медленный наклон ведра, шары не укатываются
-ja01 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=58-68
-ja02 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=69-80
-ja03 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=81-91
-ja04 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=92-102
-ja05 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=103-113
-ja06 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=114-125
-ja07 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=126-136
-ja08 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=137-147
-ja09 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=148-159
-ja10 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=160-170
-ja11 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=171-181
-ja12 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=182-192
-ja13 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=193-204
-ja14 py=vessel.py anim=out/jarsim1/anim.npz end=300 samples=40 res=1080x1920 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66 range=205-215
-jarsim2 py=vessel.py tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 frames=110,170,230,300,360 end=360 res=540x960 samples=24 tz=0.42 cy0=-2.15 cy1=-1.95 cz0=0.72 cz1=0.66
+# 2026-11-21 13:00 — четвёртый 3D (H37): кот крупно (на полкадра), медленный наклон, ведро ближе к горлу — ищем вариант, где кот наполняется доверху; кадры-пробы 540x960
+cs03 py=vessel.py tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 lx=0.03 frames=100,140,180,220,260,300 end=330 res=540x960 samples=20 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
+cs05 py=vessel.py tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 lx=0.05 frames=100,140,180,220,260,300 end=330 res=540x960 samples=20 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
+cs07 py=vessel.py tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 lx=0.07 frames=100,140,180,220,260,300 end=330 res=540x960 samples=20 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
