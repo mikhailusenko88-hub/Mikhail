@@ -1,5 +1,5 @@
 # Flagball Arena  (@FlagballArenaTV)
-Проверено: 2026-11-21 06:54 UTC
+Проверено: 2026-11-21 07:16 UTC
 
 - Страница канала: HTTP 200; ID: UCUKgRxWtL1kPWr9hdfL8qQw
 - Шапка: 17 подписчиков · 74 видео
@@ -9,8 +9,8 @@
 - 2026-11-20 19:54 · 930 просм. · Race 38/67: 8 of 24 lose a life 😱 Vietnam vs France vs Korea #shorts · hO0r9li7C4M
 - 2026-11-20 11:37 · 933 просм. · 10 days to the Grand Final ⏳ Bangladesh vs Guatemala vs Cambodia — Who Survives? #shorts · -3EWQRVajaY
 - 2026-11-20 03:41 · 956 просм. · Last chance for Brazil 😱 Brazil vs Russia vs Germany | Country Marble Race #shorts · HE2vZpO_2MU
-- 2026-11-19 19:37 · 1119 просм. · Indonesia on its LAST life ❤️ Indonesia vs UK vs Philippines — Who Survives? #shorts · TA9lwkDQejM
-- 2026-11-19 11:39 · 241 просм. · Egypt vs Saudi Arabia vs Australia 😱 Who Survives? Country Marble Race #shorts · UUcE_OSvPJk
+- 2026-11-19 19:37 · 1122 просм. · Indonesia on its LAST life ❤️ Indonesia vs UK vs Philippines — Who Survives? #shorts · TA9lwkDQejM
+- 2026-11-19 11:39 · 273 просм. · Egypt vs Saudi Arabia vs Australia 😱 Who Survives? Country Marble Race #shorts · UUcE_OSvPJk
 - 2026-11-19 03:37 · 1081 просм. · Last chance for Spain 😱 Mexico vs Thailand vs Spain | Country Marble Race #shorts · wbeECqcgslo
 - 2026-11-18 19:55 · 1054 просм. · Race 32/67: 8 of 24 lose a life 😱 Japan vs Colombia vs Peru #shorts · k5c9gvYtk6c
 - 2026-11-18 11:40 · 1159 просм. · India ❤️❤️❤️ vs Vietnam ❤️❤️❤️ vs Thailand ❤️❤️ — Who Survives? #shorts · TQP4Lgy5ROY
