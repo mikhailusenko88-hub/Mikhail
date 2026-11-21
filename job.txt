@@ -1,4 +1,16 @@
-# 2026-11-21 13:00 — четвёртый 3D (H37): кот крупно (на полкадра), медленный наклон, ведро ближе к горлу — ищем вариант, где кот наполняется доверху; кадры-пробы 540x960
-cs03 py=vessel.py tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 lx=0.03 frames=100,140,180,220,260,300 end=330 res=540x960 samples=20 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
-cs05 py=vessel.py tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 lx=0.05 frames=100,140,180,220,260,300 end=330 res=540x960 samples=20 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
-cs07 py=vessel.py tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 lx=0.07 frames=100,140,180,220,260,300 end=330 res=540x960 samples=20 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
+# 2026-11-21 10:20 UTC — четвёртый 3D (H37): физика cs07 (lx=0.07, в коте 1 731 из 3 294 — доверху), кот на полкадра; кадры 96–245 на 15 машинах
+cf01 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=96-105
+cf02 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=106-115
+cf03 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=116-125
+cf04 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=126-135
+cf05 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=136-145
+cf06 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=146-155
+cf07 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=156-165
+cf08 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=166-175
+cf09 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=176-185
+cf10 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=186-195
+cf11 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=196-205
+cf12 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=206-215
+cf13 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=216-225
+cf14 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=226-235
+cf15 py=vessel.py anim=out/cs07/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.27 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=236-245
