@@ -1,7 +1,7 @@
 {
  "channel": "Кот Барсик | Мультфильмы для детей",
- "subs": "10",
- "videos": "49",
+ "subs": "13",
+ "videos": "53",
  "playlists": [
   {
    "id": "PLKIEWQEeV1UA",
@@ -18,9 +18,9 @@
   {
    "id": "3M_Krj-DKvQ",
    "title": "Солнце выпило лужу?! 🐱 Кот Барсик | 31 серия #shorts",
-   "published": "2026-11-20T08:33:13Z",
-   "privacy": "private",
-   "publishAt": "2026-11-21T06:30:00Z",
+   "published": "2026-11-21T06:30:21Z",
+   "privacy": "public",
+   "publishAt": null,
    "kids": true,
    "category": "1",
    "dur": "PT27S",
@@ -30,14 +30,50 @@
   {
    "id": "WEDzKbIDJY4",
    "title": "☀️ СОЛНЦЕ ВЫПИЛО ЛУЖУ?! Куда исчезает вода | Кот Барсик | Новая серия 31",
-   "published": "2026-11-20T08:32:27Z",
-   "privacy": "private",
-   "publishAt": "2026-11-21T05:30:00Z",
+   "published": "2026-11-21T05:30:32Z",
+   "privacy": "public",
+   "publishAt": null,
    "kids": true,
    "category": "1",
    "dur": "PT5M53S",
    "views": 0,
    "likes": 0
+  },
+  {
+   "id": "ko1NB7Hx32Q",
+   "title": "🐱 КОТ БАРСИК — 5 серий подряд! Лодка, зеркало, жёлудь, Луна и лужа | Мультики для детей",
+   "published": "2026-11-20T16:29:30Z",
+   "privacy": "private",
+   "publishAt": "2026-11-22T08:30:00Z",
+   "kids": true,
+   "category": "1",
+   "dur": "PT29M47S",
+   "views": 0,
+   "likes": 0
+  },
+  {
+   "id": "N8bZi91y5-M",
+   "title": "Кто откусил Луну?! 🐱 Кот Барсик | 30 серия #shorts",
+   "published": "2026-11-20T13:30:04Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT24S",
+   "views": 3,
+   "likes": 0
+  },
+  {
+   "id": "jUEf1BN18iE",
+   "title": "🌙 КТО ОТКУСИЛ ЛУНУ?! Тайна лунных фаз | Кот Барсик | Новая серия 30",
+   "published": "2026-11-20T12:30:39Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT6M27S",
+   "views": 235,
+   "likes": 1
   },
   {
    "id": "u4KPnWFFgLc",
@@ -48,7 +84,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT24S",
-   "views": 3,
+   "views": 10,
    "likes": 0
   },
   {
@@ -60,32 +96,8 @@
    "kids": true,
    "category": "1",
    "dur": "PT6M15S",
-   "views": 320,
-   "likes": 2
-  },
-  {
-   "id": "N8bZi91y5-M",
-   "title": "Кто откусил Луну?! 🐱 Кот Барсик | 30 серия #shorts",
-   "published": "2026-11-19T07:49:56Z",
-   "privacy": "private",
-   "publishAt": "2026-11-20T13:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT24S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "jUEf1BN18iE",
-   "title": "🌙 КТО ОТКУСИЛ ЛУНУ?! Тайна лунных фаз | Кот Барсик | Новая серия 30",
-   "published": "2026-11-19T07:48:49Z",
-   "privacy": "private",
-   "publishAt": "2026-11-20T12:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT6M27S",
-   "views": 0,
-   "likes": 0
+   "views": 579,
+   "likes": 3
   },
   {
    "id": "mNyk6Ug2etA",
@@ -96,7 +108,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT26S",
-   "views": 1,
+   "views": 7,
    "likes": 0
   },
   {
@@ -108,7 +120,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M27S",
-   "views": 43,
+   "views": 54,
    "likes": 0
   },
   {
@@ -120,7 +132,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT28S",
-   "views": 4,
+   "views": 6,
    "likes": 0
   },
   {
@@ -132,7 +144,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M46S",
-   "views": 56,
+   "views": 59,
    "likes": 2
   },
   {
@@ -144,7 +156,7 @@
    "kids": true,
    "category": "22",
    "dur": "PT33S",
-   "views": 3,
+   "views": 11,
    "likes": 1
   },
   {
@@ -156,7 +168,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT6M33S",
-   "views": 51,
+   "views": 97,
    "likes": 1
   },
   {
@@ -168,7 +180,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT7M47S",
-   "views": 165,
+   "views": 219,
    "likes": 1
   },
   {
@@ -180,7 +192,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT8M19S",
-   "views": 232,
+   "views": 245,
    "likes": 2
   },
   {
@@ -192,7 +204,7 @@
    "kids": true,
    "category": "22",
    "dur": "PT33S",
-   "views": 25,
+   "views": 28,
    "likes": 3
   },
   {
@@ -204,7 +216,7 @@
    "kids": true,
    "category": "22",
    "dur": "PT33S",
-   "views": 19,
+   "views": 23,
    "likes": 2
   },
   {
@@ -216,7 +228,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT9M7S",
-   "views": 133,
+   "views": 165,
    "likes": 1
   },
   {
@@ -240,20 +252,8 @@
    "kids": true,
    "category": "22",
    "dur": "PT33S",
-   "views": 49,
+   "views": 55,
    "likes": 2
-  },
-  {
-   "id": "UX0hEi83i4U",
-   "title": "Куда пропала волшебная звезда? 🐱 Кот Барсик | 9 серия #shorts",
-   "published": "2026-11-11T14:31:15Z",
-   "privacy": "public",
-   "publishAt": null,
-   "kids": true,
-   "category": "22",
-   "dur": "PT33S",
-   "views": 16,
-   "likes": 1
   }
  ]
 }
