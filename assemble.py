@@ -47,6 +47,7 @@ enc = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', 
                         '-color_trc', 'bt709', '-color_range', 'tv', '-c:v', 'libx264', '-preset', 'slow', '-crf', '16',
                         os.path.join(tmp, 'v.mp4')], stdin=subprocess.PIPE)
 COL = tuple(json.loads(os.environ.get('CCOL', '[28,32,44]')))
+CX = W * float(os.environ.get('TX', '0.5'))              # центр счётчика по ширине (доля кадра)
 TY = int(os.environ.get('TY', '170'))                  # верх счётчика, px (подпись — на 180 px ниже)
 SW = int(os.environ.get('SW', '0'))                    # обводка цифр, px (0 — без обводки)
 SCOL = tuple(json.loads(os.environ.get('SCOL', '[245,245,247]')))
@@ -66,9 +67,9 @@ for i in range(nf):
     dr = ImageDraw.Draw(im)
     txt = f"{n:,}"
     tw = dr.textlength(txt, font=fb)
-    dr.text(((W - tw) / 2, TY), txt, font=fb, fill=COL, stroke_width=SW, stroke_fill=SCOL)
+    dr.text((CX - tw / 2, TY), txt, font=fb, fill=COL, stroke_width=SW, stroke_fill=SCOL)
     lw = dr.textlength(LABEL, font=fs)
-    dr.text(((W - lw) / 2, TY + 180), LABEL, font=fs, fill=COL, stroke_width=max(0, SW // 2), stroke_fill=SCOL)
+    dr.text((CX - lw / 2, TY + 180), LABEL, font=fs, fill=COL, stroke_width=max(0, SW // 2), stroke_fill=SCOL)
     enc.stdin.write(im.tobytes())
     last = im
 for _ in range(HOLD):
