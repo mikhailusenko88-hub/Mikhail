@@ -524,6 +524,9 @@ const Shorts = {
       const marks = [];
       for (const sp of tl.speech) if (sp.who && sg.C[sp.who] && sp.t >= sg.t0 && sp.t < sg.t1) marks.push({ t: sp.t - sg.t0 - .1, sh: { mode: sp.vocal ? 'close' : 'medium', on: sp.who } });
       for (const id of ids) for (const e of sg.C[id].ev) if (e.k === 'act' && BIG_SH.has(e.n) && !tl.speech.some(sp => sp.who === id && sp.t - sg.t0 <= e.t + .3 && sp.t + sp.dur - sg.t0 >= e.t)) marks.push({ t: e.t - .1, sh: { mode: 'medium', on: id } });
+      { const cs = (sg.cam || []).filter(c => !c.shake), pv = cs.filter(c => c.mode === 'prop').map(c => { const nx = cs.find(x => x.t > c.t + .05); return { t: c.t, t1: nx ? nx.t : c.t + 1.9, c }; });   // 21.11.2026: «крупно вещь» из серии остаётся и в Shorts
+        for (let i = marks.length - 1; i >= 0; i--) if (pv.some(p => marks[i].t > p.t - .3 && marks[i].t < p.t1 - .05)) marks.splice(i, 1);
+        for (const p of pv) { marks.push({ t: p.t, sh: { mode: 'prop', on: p.c.on || null, prop: p.c.prop, pid: p.c.pid } }); const sp = tl.speech.find(s => s.who && sg.C[s.who] && s.t - sg.t0 <= p.t1 && s.t + s.dur - sg.t0 > p.t1); marks.push({ t: p.t1, sh: { mode: 'medium', on: (sp && sp.who) || p.c.on || ids[0] } }); } }
       marks.sort((a, b) => a.t - b.t); const first = marks.find(m => m.t + sg.t0 >= t0 - .5) || marks[0];
       put(0, first ? first.sh : { mode: 'medium', on: ids[0] }); for (const m of marks) put(m.t, m.sh); list.forEach(c => c.vert = true); sg.cam = list; } },   // vert — герой по центру вертикального кадра
   header(c, ep) { const q = Cover.question(ep) || ep.title || ''; if (!q) return; const W = this.W, F = Cover.FONT; c.save(); c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';

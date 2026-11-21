@@ -3076,7 +3076,7 @@ function camFor(c, S, seg, lib) {
     const ok = p => p._vis !== false && (!c.prop || p.type === c.prop), hp = (seg.props || []).find(p => c.pid ? p.id === c.pid : ok(p) && p._holder && (!c.on || p._holder === c.on)) || (seg.props || []).find(p => ok(p) && !p._holder && !p.decor) || (seg.props || []).find(p => ok(p) && !p._holder);
     const id = (hp && hp._holder) || c.on, lc = id && lib.characters[id], rg = lc && rigFor(lc);
     if (hp && (rg && rg.headH || !hp._holder)) { const pm = propMesh(hp), v = new THREE.Vector3(); pm.updateMatrixWorld(true); pm.getWorldPosition(v); const ps = pm.scale.x || 1; v.y += (pm.userData.topY || 0) * ps;
-      const ws = (pm.userData.sz || .17) * ps, hr = rg && rg.headH ? rg.headR || .22 * (rg.scale || 1) : ws * .55, d = Math.max(hr * 1.8, Math.min(hr * 4, ws * 2.5)), sd = c.vert ? 0 : id && S[id] && S[id].face < 0 ? -1 : 1, front = hp.type === 'mirror';
+      const ws = (pm.userData.sz || .17) * ps, hr = rg && rg.headH ? rg.headR || .22 * (rg.scale || 1) : ws * .55, d = Math.max(hr * 1.8, Math.min(hr * 4, ws * 2.5)) * (c.vert ? 1.6 : 1), sd = c.vert ? 0 : id && S[id] && S[id].face < 0 ? -1 : 1, front = hp.type === 'mirror';
       if (!front) { const bb = new THREE.Box3().setFromObject(pm); if (!bb.isEmpty()) { bb.getCenter(v); if (pm.userData.topY) v.y = bb.max.y; } }   // в середину вещи (шишка в лапе торчала из кадра), у плоской — на верх
       const el = front ? .2 : .74; return { pos: new THREE.Vector3(v.x + sd * d * .1, v.y + d * Math.sin(el), v.z + d * Math.cos(el)), look: new THREE.Vector3(v.x, v.y, v.z) }; }
     return camFor(Object.assign({}, c, { mode: id ? 'medium' : 'wide', on: id || null }), S, seg, lib); }
