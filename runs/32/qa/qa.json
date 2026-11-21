@@ -1,0 +1,271 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рассказчик и Топа"
+ ],
+ "file": {
+  "mb": 378.7,
+  "dur": 332.2,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 331.7,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 332,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 139.4
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 4.6,
+  "peak_db": -1.1,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 98.3,
+  "lines": 98,
+  "by_hero": {
+   "Рон": 98.4,
+   "Топа": 100.0,
+   "Барсик": 100.0,
+   "Пик": 94.8,
+   "Филя": 98.9,
+   "Рассказчик": 97.4
+  },
+  "worst": [
+   {
+    "t": 203.864,
+    "name": "Рон",
+    "text": "Восемнадцать… девятнадцать… двадцать! Смотрите, камень!",
+    "ok": 2,
+    "n": 5,
+    "miss": [
+     "восемнадцать",
+     "девятнадцать",
+     "двадцать"
+    ],
+    "heard": "18 19 20 смотрите камень это"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 217.0,
+   "range_st": 5.6,
+   "hnr": 12.2,
+   "jitter": 2.2,
+   "shimmer": 9.5,
+   "F1": 497.0,
+   "F2": 1885.0,
+   "F3": 3272.0,
+   "bright": -12.5,
+   "air": -12.4,
+   "cog": 813.0,
+   "rate": 5.0,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Пик": {
+   "f0": 377.0,
+   "range_st": 7.7,
+   "hnr": 21.2,
+   "jitter": 0.8,
+   "shimmer": 4.6,
+   "F1": 451.0,
+   "F2": 1800.0,
+   "F3": 3779.0,
+   "bright": -18.9,
+   "air": -22.5,
+   "cog": 554.0,
+   "rate": 6.4,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 94.8
+  },
+  "Рассказчик": {
+   "f0": 167.0,
+   "range_st": 6.4,
+   "hnr": 10.8,
+   "jitter": 2.7,
+   "shimmer": 9.9,
+   "F1": 404.0,
+   "F2": 1987.0,
+   "F3": 3178.0,
+   "bright": -13.0,
+   "air": -14.9,
+   "cog": 806.0,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 97.4
+  },
+  "Рон": {
+   "f0": 327.0,
+   "range_st": 6.3,
+   "hnr": 22.1,
+   "jitter": 0.9,
+   "shimmer": 5.3,
+   "F1": 397.0,
+   "F2": 1942.0,
+   "F3": 3625.0,
+   "bright": -21.3,
+   "air": -26.2,
+   "cog": 449.0,
+   "rate": 4.8,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 98.4
+  },
+  "Топа": {
+   "f0": 161.0,
+   "range_st": 5.2,
+   "hnr": 11.5,
+   "jitter": 3.0,
+   "shimmer": 10.0,
+   "F1": 517.0,
+   "F2": 1889.0,
+   "F3": 3366.0,
+   "bright": -16.9,
+   "air": -25.7,
+   "cog": 596.0,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Филя": {
+   "f0": 289.0,
+   "range_st": 5.4,
+   "hnr": 14.6,
+   "jitter": 1.9,
+   "shimmer": 7.8,
+   "F1": 545.0,
+   "F2": 2132.0,
+   "F3": 3255.0,
+   "bright": -14.8,
+   "air": -19.5,
+   "cog": 775.0,
+   "rate": 4.8,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 98.9
+  }
+ },
+ "voices_close": [
+  [
+   "Рассказчик",
+   "Топа",
+   0.6
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 43,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 162,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 1853,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 331.6971904761905,
+   "video": "video/Кот Барсик - 32. Упрямая стрелка!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "0d6984e",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 35.7,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 9,
+    "e": 131,
+    "b": 5,
+    "w": 1,
+    "n": 8290,
+    "at": 8290,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 46,
+   "ttsFail": 0,
+   "voice": 65,
+   "voiceFail": 0,
+   "voiceSec": 25,
+   "ttsSec": 30,
+   "frames": 8918,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -25.6,
+   "lufs_out": -15.1,
+   "gain_db": 11.2
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 32,
+   "title": "Упрямая стрелка?!",
+   "scenes": 9,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}
