@@ -4,3 +4,6 @@
 Сборка: MONO=1 TX=0.72 TY=150 SW=6 python3 assemble.py out out/cs07/pos.npz 96 cf01,…,cf15 out/final04/beautiful-shorts-3d-04-cat-full.mp4 "OF 3,294 · IN THE CAT" 96-245
 5,4 с, −15,5 LUFS; счётчик растёт до 4,8 с (89% длины).
 Название: 3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr
+Описание: 3,294 glossy marbles pour from a bucket into a glass cat. How many fit inside? Watch the counter 👀 / Guess before the end: will the cat fill all the way up? Comment your number 👇 / Satisfying 3D simulation made in Blender (Cycles + Bullet physics). Every sound is generated from the real collisions of the balls — no music. / #asmr #satisfying #3danimation #simulation #blender
+Закреп: Which animal should we fill next? 🐶🐻🐸 Write it below 👇
+Теги: satisfying 3d simulation, asmr, marbles asmr, balls pouring, glass cat, satisfying video, 3d animation, blender simulation, physics simulation, oddly satisfying, marble sounds, relaxing
