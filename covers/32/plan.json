@@ -1,0 +1,85 @@
+{
+ "el": "/home/claude/c32/el",
+ "series": "СЕРИЯ 32",
+ "text": "УПРЯМАЯ СТРЕЛКА?",
+ "text_at": "center",
+ "text_px": 40,
+ "text_w": 0.5,
+ "logo": 0.8,
+ "vignette": 0.2,
+ "bg": "f1_room_day.jpg",
+ "bg_zoom": [
+  0.5,
+  0.45,
+  1.2
+ ],
+ "blur": 4,
+ "sat": 1.3,
+ "bri": 1.08,
+ "rays": {
+  "cx": 0.5,
+  "cy": 0.5,
+  "n": 18,
+  "col": [
+   255,
+   236,
+   150
+  ],
+  "a": 42
+ },
+ "spot": {
+  "cx": 0.5,
+  "cy": 0.52,
+  "r": 0.22,
+  "col": [
+   255,
+   245,
+   200
+  ],
+  "a": 150
+ },
+ "items": [
+  {
+   "img": "v_compass_GLAVNOE.png",
+   "cx": 0.5,
+   "bottom": 0.76,
+   "h": 0.46,
+   "outline": 0,
+   "shadow": 0,
+   "glow": [
+    255,
+    220,
+    90
+   ]
+  },
+  {
+   "sparkles": true,
+   "cx": 0.5,
+   "cy": 0.5,
+   "r": 0.24,
+   "n": 9
+  },
+  {
+   "mark": "?",
+   "cx": 0.62,
+   "cy": 0.17,
+   "h": 0.2,
+   "rot": -10
+  },
+  {
+   "img": "g2_Рон_udiv.png",
+   "cx": 0.17,
+   "bottom": 1.06,
+   "h": 0.84,
+   "outline": 6
+  },
+  {
+   "img": "g1_Барсик_udiv.png",
+   "cx": 0.85,
+   "bottom": 1.06,
+   "h": 0.9,
+   "outline": 6,
+   "flip": true
+  }
+ ]
+}
