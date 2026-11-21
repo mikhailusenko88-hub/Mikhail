@@ -1,13 +1,2 @@
-# 20.11 10:10 МСК кадры топа ниш и наших новых, «Білесің бе?» 10:00
-@bilesin_be_kz
-@kimyutadi_uz
-info:VkJHqMo_cx4
-info:tsOB79HRlpU
-info:eJ0jJhTup7Y
-info:D-xTjFDUlkw
-info:EjiTsX0dWHQ
-info:WJgtVbLahok
-info:eb2g6nxLwl4
-info:O68dL2sNf0Y
-info:38UIoqeial4
-info:g2K5gcUFJGg
+# 21.11 09:54 МСК all — обход 21.11
+all
