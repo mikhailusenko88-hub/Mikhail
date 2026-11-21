@@ -1567,7 +1567,7 @@ function propMesh(p) {
       A(G.tor(.07, .012, 12, 40), P('#c9a227', 'metal'), lp); const gl = A(G.cyl(.068, .068, .006, 32), P('#cfeaff', 'glass'), lp, 0); gl.rotation.x = Math.PI / 2;
       const h = A(G.cap(.016, .12, 6, 12), P(cl || '#8a4b2a', 'wood'), lp); h.position.y = -.15; g.userData.heldRot = [Math.PI / 2 - .25, 0, 0]; g.userData.heldS = 1; break; }
     case 'compass': { const c0 = cl || '#c9a227'; A(G.cyl(.08, .085, .03, 40), P(c0, 'metal')).position.y = .015;
-      const face = A(G.cyl(.069, .069, .004, 40), P(null, 'paper', compassT()), g, 0); face.position.y = .032;
+      const face = A(G.cyl(.069, .069, .004, 40), P(null, 'paper', compassT()), g, 0); face.position.y = .032; g.userData.gripBack = .072; g.userData.topY = .034;   // держат за дальний край: лапа не закрывает стрелку (21.11.2026)
       const rim = A(G.tor(.073, .008, 10, 40), P(c0, 'metal'), g, 0); rim.rotation.x = Math.PI / 2; rim.position.y = .033;
       for (const [s, c2] of [[1, '#e8344e'], [-1, '#f5f5f5']]) { const nd = A(G.cone(.012, .05, 4), P(c2, 'gloss'), g, 0); nd.rotation.z = -s * Math.PI / 2; nd.position.set(s * .025, .038, 0); nd.scale.z = .35; }
       const lp = A(G.tor(.016, .005, 8, 16), P(c0, 'metal'), g, 0); lp.position.set(0, .03, -.09); break; }
@@ -3062,11 +3062,11 @@ function camFor(c, S, seg, lib) {
   const px = id => S[id] ? X(S[id].x) : 0, pz = id => S[id] ? -(S[id].z || 0) * 1.5 + arcDz(ARCc, S[id]) : 0;
   const ids = Object.keys(seg.C);
   const topOf = id => { const lc = lib.characters[id], rg = lc && rigFor(lc); return rg && rg.headH ? rg.headH + rg.headR * 1.75 : 1.1 * h(id); }; // макушка с ушками — всегда в кадре
-  if (c.mode === 'prop') {   // 21.11.2026: вещь в лапе героя на весь кадр (главный предмет серии, «КАМЕРА: крупно компас»): чуть сверху, видно лицевую сторону
+  if (c.mode === 'prop') {   // 21.11.2026: вещь в лапе героя на весь кадр (главный предмет серии, «КАМЕРА: крупно компас»): плоскую — чуть сверху, зеркальце — спереди
     const hp = (seg.props || []).find(p => (!c.prop || p.type === c.prop) && p._holder && p._vis !== false && (!c.on || p._holder === c.on)), id = (hp && hp._holder) || c.on, lc = id && lib.characters[id], rg = lc && rigFor(lc);
-    if (hp && rg && rg.headH && rg.hand) { const A = rg.h6 && global.BARSHeroes && BARSHeroes.anchors ? BARSHeroes.anchors(rg) : rg.bars && global.MKBarsik && MKBarsik.anchors ? MKBarsik.anchors(rg) : null, v = new THREE.Vector3(); if (A && A.handR) v.copy(A.handR); else rg.hand.getWorldPosition(v); v.y -= .12 * (rg.scale || 1);
-      const hr = rg.headR || .22 * (rg.scale || 1), sd = c.vert ? 0 : S[id] && S[id].face < 0 ? -1 : 1;
-      return { pos: new THREE.Vector3(v.x + sd * hr * .3, v.y + hr * 2.0, v.z + hr * 2.15), look: new THREE.Vector3(v.x, v.y + hr * .02, v.z) }; }
+    if (hp && rg && rg.headH) { const pm = propMesh(hp), v = new THREE.Vector3(); pm.updateMatrixWorld(true); pm.getWorldPosition(v); const ps = pm.scale.x || 1; v.y += (pm.userData.topY || 0) * ps;
+      const hr = rg.headR || .22 * (rg.scale || 1), ws = (pm.userData.sz || .17) * ps, d = Math.max(hr * 1.8, Math.min(hr * 4, ws * 2.5)), sd = c.vert ? 0 : S[id] && S[id].face < 0 ? -1 : 1, front = hp.type === 'mirror';
+      const el = front ? .2 : .74; return { pos: new THREE.Vector3(v.x + sd * d * .1, v.y + d * Math.sin(el), v.z + d * Math.cos(el)), look: new THREE.Vector3(v.x, v.y, v.z) }; }
     return camFor(Object.assign({}, c, { mode: id ? 'medium' : 'wide', on: id || null }), S, seg, lib); }
   if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close', side = c.vert ? 0 : S[id] && S[id].face < 0 ? -1 : 1;   /* vert — Shorts 9:16: герой по центру кадра */
     const lc = lib.characters[id], rg = lc && rigFor(lc); if (rg && rg.headH) { const hy = rg.headH, hr = rg.headR, zk = c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1; // кадр по голове героя: крупно — лицо и плечи, средний — во весь рост
@@ -3224,6 +3224,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
       if (p.type === 'mirror' && m.userData.glass) { const ht = headTexC['hd:' + global.MK.canon(lc.spec)]; if (ht && m.userData.glass.material.map !== ht) m.userData.glass.material = new THREE.MeshBasicMaterial({ map: ht, color: '#e6eef8' });   // в зеркальце — отражение того, кто держит
         if (rig.headH) { const hr = rig.headR || .2, hp = new THREE.Vector3(rig.root.position.x, rig.headH, rig.root.position.z), sd = v.x >= hp.x ? 1 : -1;   // держит у лица, стеклом к зрителю — видно и героя, и отражение
           m.position.set(hp.x + sd * hr * 1.55, hp.y - hr * .45, hp.z + hr * .85); m.scale.setScalar(Math.max(m.scale.x, hr * .9 / .085 * sc)); } } const hr = m.userData.heldRot; m.rotation.set(hr ? hr[0] : 0, hr ? hr[1] : 0, hr ? hr[2] : 0);
+      if (m.userData.gripBack && rig.yaw) { const fw = new THREE.Vector3(0, 0, 1).applyQuaternion(rig.yaw.getWorldQuaternion(new THREE.Quaternion())); fw.y = 0; if (fw.lengthSq() > 1e-4) { fw.normalize().multiplyScalar(m.userData.gripBack * m.scale.x); m.position.add(fw); } }   // плоскую вещь держат за край, вещь — перед лапой
       const ha = S[p._holder].act || {}, hk = ha.n === 'read' && READ_FLAT.has(p.type) && rig.handL ? 1 : ha.n === 'peer' && EYE_HELD.has(p.type) ? 2 : 0;
       if (p.type === 'wateringcan') { const w = ha.n === 'water' ? Math.max(0, Math.min(1, (ha.t || 0) / .45, (1 - (ha.p || 0)) / .15)) : 0; m.rotation.set(0, rig.yaw.rotation.y - Math.PI / 2, 0); m.rotateZ(-.1 - w * .7);   // носик туда, куда смотрит герой; поливает — наклоняет, из носика капает
         if (w > .4) { m.updateMatrixWorld(true); const tip = m.localToWorld(m.userData.spout.clone()); for (let i = 0; i < 10; i++) { const ph = (T * 1.7 + i / 10) % 1; sprite(haloTex('#9fd8ff'), tip.x + Math.sin(i * 2.3) * .025, tip.y - ph * .6, tip.z + Math.cos(i * 1.7) * .025, .06, .9 * (1 - ph) * w); } } }
