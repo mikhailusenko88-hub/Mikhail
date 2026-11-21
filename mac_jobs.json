@@ -1,1 +1,130 @@
-[{"name":"z_N","text":"У реки стоял старый замок.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"z_p","text":"У реки стоял старый з+амок.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"z_e","text":"У реки стоял старый замок+.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"z_s","text":"У реки стоял старый замок­.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"z_m","text":"У реки стоял старый з­амок.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"l_N","text":"Кто-то мог слушать из леса.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"l_p","text":"Кто-то мог слушать из л+еса.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"l_e","text":"Кто-то мог слушать из леса+.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"l_s","text":"Кто-то мог слушать из леса­.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"l_m","text":"Кто-то мог слушать из л­еса.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"d_N","text":"Может, это ключ от дома?","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"d_p","text":"Может, это ключ от д+ома?","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"d_e","text":"Может, это ключ от дома+?","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"d_s","text":"Может, это ключ от дома­?","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"d_m","text":"Может, это ключ от д­ома?","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"d2_N","text":"Мы весь день сидели дома, а у печи грелся кот.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"d2_p","text":"Мы весь день сидели д+ома, а у печи грелся кот.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"d2_e","text":"Мы весь день сидели дома+, а у печи грелся кот.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"d2_s","text":"Мы весь день сидели дома­, а у печи грелся кот.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"d2_m","text":"Мы весь день сидели д­ома, а у печи грелся кот.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"v_N","text":"В природе солнечный свет проходит через капельки воды и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"v_R","text":"В природе солнечный свет проходит через капельки мечты и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"v_W","text":"В природе солнечный свет проходит через капельки воды и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">В природе солнечный свет проходит через капельки <phoneme alphabet=\"ipa\" ph=\"vaˈdɨ\">воды</phoneme> и разделяется на цвета.</prosody></speak>"},{"name":"v_W85","text":"В природе солнечный свет проходит через капельки воды и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">В природе солнечный свет проходит через капельки <prosody pitch=\"+20%\" rate=\"85%\"><phoneme alphabet=\"ipa\" ph=\"vaˈdɨ\">воды</phoneme></prosody> и разделяется на цвета.</prosody></speak>"},{"name":"v_W92","text":"В природе солнечный свет проходит через капельки воды и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">В природе солнечный свет проходит через капельки <prosody pitch=\"+20%\" rate=\"92%\"><phoneme alphabet=\"ipa\" ph=\"vaˈdɨ\">воды</phoneme></prosody> и разделяется на цвета.</prosody></speak>"},{"name":"v_W100","text":"В природе солнечный свет проходит через капельки воды и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">В природе солнечный свет проходит через капельки <prosody pitch=\"+20%\" rate=\"100%\"><phoneme alphabet=\"ipa\" ph=\"vaˈdɨ\">воды</phoneme></prosody> и разделяется на цвета.</prosody></speak>"},{"name":"v_a1","text":"В природе солнечный свет проходит через капельки воды́+ и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"v_a2","text":"В природе солнечный свет проходит через капельки вод+ы́ и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"v_a3","text":"В природе солнечный свет проходит через капельки воды́­ и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"v_a4","text":"В природе солнечный свет проходит через капельки водЫ+ и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"v_a5","text":"В природе солнечный свет проходит через капельки воды'+ и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"v_a6","text":"В природе солнечный свет проходит через капельки вод++ы и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c1_N","text":"Замечайте цвета вокруг, они помогут разбудить радугу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c1_R","text":"Замечайте тебя вокруг, они помогут разбудить радугу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c1_W","text":"Замечайте цвета вокруг, они помогут разбудить радугу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Замечайте <phoneme alphabet=\"ipa\" ph=\"tsvʲɪˈta\">цвета</phoneme> вокруг, они помогут разбудить радугу.</prosody></speak>"},{"name":"c1_W85","text":"Замечайте цвета вокруг, они помогут разбудить радугу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Замечайте <prosody pitch=\"+20%\" rate=\"85%\"><phoneme alphabet=\"ipa\" ph=\"tsvʲɪˈta\">цвета</phoneme></prosody> вокруг, они помогут разбудить радугу.</prosody></speak>"},{"name":"c1_W92","text":"Замечайте цвета вокруг, они помогут разбудить радугу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Замечайте <prosody pitch=\"+20%\" rate=\"92%\"><phoneme alphabet=\"ipa\" ph=\"tsvʲɪˈta\">цвета</phoneme></prosody> вокруг, они помогут разбудить радугу.</prosody></speak>"},{"name":"c1_W100","text":"Замечайте цвета вокруг, они помогут разбудить радугу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Замечайте <prosody pitch=\"+20%\" rate=\"100%\"><phoneme alphabet=\"ipa\" ph=\"tsvʲɪˈta\">цвета</phoneme></prosody> вокруг, они помогут разбудить радугу.</prosody></speak>"},{"name":"c1_a1","text":"Замечайте цвета́+ вокруг, они помогут разбудить радугу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c1_a2","text":"Замечайте цвет+а́ вокруг, они помогут разбудить радугу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c1_a3","text":"Замечайте цвета́­ вокруг, они помогут разбудить радугу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c1_a4","text":"Замечайте цветА+ вокруг, они помогут разбудить радугу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c1_a5","text":"Замечайте цвета'+ вокруг, они помогут разбудить радугу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c1_a6","text":"Замечайте цвет++а вокруг, они помогут разбудить радугу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c2_N","text":"Начнём искать цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c2_R","text":"Начнём искать тебя.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c2_W","text":"Начнём искать цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Начнём искать <phoneme alphabet=\"ipa\" ph=\"tsvʲɪˈta\">цвета</phoneme>.</prosody></speak>"},{"name":"c2_W85","text":"Начнём искать цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Начнём искать <prosody pitch=\"+20%\" rate=\"85%\"><phoneme alphabet=\"ipa\" ph=\"tsvʲɪˈta\">цвета</phoneme></prosody>.</prosody></speak>"},{"name":"c2_W92","text":"Начнём искать цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Начнём искать <prosody pitch=\"+20%\" rate=\"92%\"><phoneme alphabet=\"ipa\" ph=\"tsvʲɪˈta\">цвета</phoneme></prosody>.</prosody></speak>"},{"name":"c2_W100","text":"Начнём искать цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Начнём искать <prosody pitch=\"+20%\" rate=\"100%\"><phoneme alphabet=\"ipa\" ph=\"tsvʲɪˈta\">цвета</phoneme></prosody>.</prosody></speak>"},{"name":"c2_a1","text":"Начнём искать цвета́+.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c2_a2","text":"Начнём искать цвет+а́.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c2_a3","text":"Начнём искать цвета́­.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c2_a4","text":"Начнём искать цветА+.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c2_a5","text":"Начнём искать цвета'+.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"c2_a6","text":"Начнём искать цвет++а.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"g_N","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"g_R","text":"Мои руки устали, а до мечты ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"g_W","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Мои руки устали, а до <phoneme alphabet=\"ipa\" ph=\"gaˈrɨ\">горы</phoneme> ещё далеко.</prosody></speak>"},{"name":"g_W85","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Мои руки устали, а до <prosody pitch=\"+20%\" rate=\"85%\"><phoneme alphabet=\"ipa\" ph=\"gaˈrɨ\">горы</phoneme></prosody> ещё далеко.</prosody></speak>"},{"name":"g_W92","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Мои руки устали, а до <prosody pitch=\"+20%\" rate=\"92%\"><phoneme alphabet=\"ipa\" ph=\"gaˈrɨ\">горы</phoneme></prosody> ещё далеко.</prosody></speak>"},{"name":"g_W100","text":"Мои руки устали, а до горы ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Мои руки устали, а до <prosody pitch=\"+20%\" rate=\"100%\"><phoneme alphabet=\"ipa\" ph=\"gaˈrɨ\">горы</phoneme></prosody> ещё далеко.</prosody></speak>"},{"name":"g_a1","text":"Мои руки устали, а до горы́+ ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"g_a2","text":"Мои руки устали, а до гор+ы́ ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"g_a3","text":"Мои руки устали, а до горы́­ ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"g_a4","text":"Мои руки устали, а до горЫ+ ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"g_a5","text":"Мои руки устали, а до горы'+ ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"g_a6","text":"Мои руки устали, а до гор++ы ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"r_N","text":"Смотрите, какой старый замок на двери!","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"r_R","text":"Смотрите, какой старый замок на тебе!","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"r_W","text":"Смотрите, какой старый замок на двери!","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Смотрите, какой старый замок на <phoneme alphabet=\"ipa\" ph=\"dvʲɪˈrʲi\">двери</phoneme>!</prosody></speak>"},{"name":"r_W85","text":"Смотрите, какой старый замок на двери!","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Смотрите, какой старый замок на <prosody pitch=\"+20%\" rate=\"85%\"><phoneme alphabet=\"ipa\" ph=\"dvʲɪˈrʲi\">двери</phoneme></prosody>!</prosody></speak>"},{"name":"r_W92","text":"Смотрите, какой старый замок на двери!","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Смотрите, какой старый замок на <prosody pitch=\"+20%\" rate=\"92%\"><phoneme alphabet=\"ipa\" ph=\"dvʲɪˈrʲi\">двери</phoneme></prosody>!</prosody></speak>"},{"name":"r_W100","text":"Смотрите, какой старый замок на двери!","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Смотрите, какой старый замок на <prosody pitch=\"+20%\" rate=\"100%\"><phoneme alphabet=\"ipa\" ph=\"dvʲɪˈrʲi\">двери</phoneme></prosody>!</prosody></speak>"},{"name":"r_a1","text":"Смотрите, какой старый замок на двери́+!","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"r_a2","text":"Смотрите, какой старый замок на двер+и́!","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"r_a3","text":"Смотрите, какой старый замок на двери́­!","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"r_a4","text":"Смотрите, какой старый замок на дверИ+!","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"r_a5","text":"Смотрите, какой старый замок на двери'+!","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"r_a6","text":"Смотрите, какой старый замок на двер++и!","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"s_N","text":"Этот подарок самому лучшему другу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"s_R","text":"Этот подарок старому лучшему другу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"s_W","text":"Этот подарок самому лучшему другу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Этот подарок <phoneme alphabet=\"ipa\" ph=\"ˈsaməmu\">самому</phoneme> лучшему другу.</prosody></speak>"},{"name":"s_W85","text":"Этот подарок самому лучшему другу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Этот подарок <prosody pitch=\"+20%\" rate=\"85%\"><phoneme alphabet=\"ipa\" ph=\"ˈsaməmu\">самому</phoneme></prosody> лучшему другу.</prosody></speak>"},{"name":"s_W92","text":"Этот подарок самому лучшему другу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Этот подарок <prosody pitch=\"+20%\" rate=\"92%\"><phoneme alphabet=\"ipa\" ph=\"ˈsaməmu\">самому</phoneme></prosody> лучшему другу.</prosody></speak>"},{"name":"s_W100","text":"Этот подарок самому лучшему другу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379,"ssml":"<speak><prosody pitch=\"+20%\" rate=\"77%\">Этот подарок <prosody pitch=\"+20%\" rate=\"100%\"><phoneme alphabet=\"ipa\" ph=\"ˈsaməmu\">самому</phoneme></prosody> лучшему другу.</prosody></speak>"},{"name":"s_a1","text":"Этот подарок са́мому+ лучшему другу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"s_a2","text":"Этот подарок с+а́мому лучшему другу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"s_a3","text":"Этот подарок са́мому­ лучшему другу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"s_a4","text":"Этот подарок сАмому+ лучшему другу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"s_a5","text":"Этот подарок са'мому+ лучшему другу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"s_a6","text":"Этот подарок с++амому лучшему другу.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"v_sp","text":"В природе солнечный свет проходит через капельки во ды и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"v_sp2","text":"В природе солнечный свет проходит через капельки ва ды и разделяется на цвета.","ipa":[],"base":"female","pitch":1.207,"rate":0.379},{"name":"g_sp","text":"Мои руки устали, а до го ры ещё далеко.","ipa":[],"base":"female","pitch":1.207,"rate":0.379}]
+[
+{
+"name": "r31_st_a",
+"text": "Я её сторожу.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_st_p",
+"text": "Я её сторож+у.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_pd_a",
+"text": "Подержу холодную ложку над чашкой.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_pd_p",
+"text": "Подерж+у холодную ложку над чашкой.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_nk_a",
+"text": "Я и не намокал.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_nk_p",
+"text": "Я и не намок+ал.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_nm_a",
+"text": "Поймал пар. Но он сразу намок.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_nm_p",
+"text": "Поймал пар. Но он сразу нам+ок.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_rz_a",
+"text": "Вода улетает крошечными частичками — их не разглядеть.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_rz_p",
+"text": "Вода улет+ает крошечными частичками — их не разгляд+еть.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_pv_a",
+"text": "Тёплая вода понемногу превращается в пар. Пар улетает в воздух.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_pv_p",
+"text": "Тёплая вода понемногу превращ+ается в пар. Пар улет+ает в воздух.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_iz_a",
+"text": "Я измерю!",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_iz_p",
+"text": "Я изм+ерю!",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_bg_a",
+"text": "Наверное, лужа бегает по утрам.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+},
+{
+"name": "r31_bg_p",
+"text": "Наверное, лужа б+егает по утрам.",
+"ipa": [],
+"base": "female",
+"pitch": 1.38,
+"rate": 0.45
+}
+]
