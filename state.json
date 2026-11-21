@@ -1486,11 +1486,53 @@
    "link": "https://youtube.com/shorts/Twv1hyOMYVU",
    "title": "Qaysi mashina yutadi? Какая машина победит? 🚗 №23 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-21",
+   "slot": 3,
+   "league": "mass_cars",
+   "no": 1,
+   "final": false,
+   "link": "https://youtube.com/shorts/xp3QgXkT4rM",
+   "title": "1000 ta shar! Cobalt, Malibu, Kia K5… Qaysi mashina yutadi? Какая машина победит? №1 #shorts",
+   "pl": false
   }
  ],
  "seen_comments": [
   "UgwixsBTAlCJfIcyTtB4AaABAg",
   "UgyIG1kkFYVTcXMKhcZ4AaABAg",
   "Ugzd-vs69BoVu_HR_Xd4AaABAg"
- ]
+ ],
+ "mass": {
+  "cars": {
+   "no": 1,
+   "cnt": {
+    "Malibu": 1,
+    "Damas": 1,
+    "Onix": 1,
+    "Kia K5": 1,
+    "Gentra": 1,
+    "Nexia": 1,
+    "BYD Song": 1,
+    "Cobalt": 1,
+    "Matiz": 1,
+    "Lacetti": 1
+   },
+   "results": [
+    {
+     "no": 1,
+     "date": "2026-11-21",
+     "slot": 3,
+     "winner": "Onix",
+     "top3": [
+      "Onix",
+      "Gentra",
+      "Kia K5"
+     ],
+     "in_cup": 325,
+     "link": "https://youtube.com/shorts/xp3QgXkT4rM"
+    }
+   ]
+  }
+ }
 }

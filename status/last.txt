@@ -1,8 +1,8 @@
-ТЕСТ ОК: mass_cars №1 собран за 31 с, 11 МБ, 31 с (не выложен)
+ВЫЛОЖЕНО 2026-11-21 слот 3: mass_cars №1 https://youtube.com/shorts/xp3QgXkT4rM, за 148 с
 
 {
- "title": "1000 ta shar! Nexia, Cobalt, Jiguli… Qaysi mashina yutadi? Какая машина победит? №1 #shorts",
- "description": "1000 ta shar — 10 ta mashina. Qaysi mashinaning sharlari kubokka koʻproq tushadi?\n1000 шариков — 10 машин. Чьих шариков в кубке окажется больше?\n\nIshtirokchilar / Участники: Malibu, Spark, Tico, Gentra, Damas, Jiguli, Nexia, Cobalt, Epica, Chery Tiggo\n\nSen qaysi mashina tarafdorisan? Izohlarda yoz 👇\nА ты за какую машину? Пиши в комментариях 👇\nMashinang yoʻqmi? Yoz — qoʻshamiz! · Нет твоей машины? Напиши — добавим!\n\n#uzbekistan #ozbekiston #mashina #cobalt #gentra #1000tashar #гонкашариков #shorts",
+ "title": "1000 ta shar! Cobalt, Malibu, Kia K5… Qaysi mashina yutadi? Какая машина победит? №1 #shorts",
+ "description": "1000 ta shar — 10 ta mashina. Qaysi mashinaning sharlari kubokka koʻproq tushadi?\n1000 шариков — 10 машин. Чьих шариков в кубке окажется больше?\n\nIshtirokchilar / Участники: Malibu, Damas, Onix, Kia K5, Gentra, Nexia, BYD Song, Cobalt, Matiz, Lacetti\n\nSen qaysi mashina tarafdorisan? Izohlarda yoz 👇\nА ты за какую машину? Пиши в комментариях 👇\nMashinang yoʻqmi? Yoz — qoʻshamiz! · Нет твоей машины? Напиши — добавим!\n\n#uzbekistan #ozbekiston #mashina #cobalt #gentra #1000tashar #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -19,21 +19,34 @@
   "chevrolet",
   "1000 marbles",
   "Malibu",
-  "Spark",
-  "Tico",
-  "Gentra"
+  "Damas",
+  "Onix",
+  "Kia K5"
  ]
 }
 
 --- журнал (время Ташкента) ---
-17:51:22 режим test, событие push
-17:51:23 «1000 ta shar» (cars) №1: Malibu, Spark, Tico, Gentra, Damas, Jiguli, Nexia, Cobalt, Epica, Chery Tiggo
-17:51:27 «1000 шарик»: действие 26.5 с, ролик 31.1 с; в кубке 329; победа Nexia 40
-17:51:28 кадр 0 / 932
-17:51:32 кадр 150 / 932
-17:51:36 кадр 300 / 932
-17:51:39 кадр 450 / 932
-17:51:41 кадр 600 / 932
-17:51:44 кадр 750 / 932
-17:51:50 кадр 900 / 932
-17:51:53 ролик готов: 31 с, 11 МБ, сборка 30 с; победил Nexia, топ-3: Nexia, Malibu, Damas, в кубке 329
+19:35:55 режим publish, событие workflow_dispatch
+19:35:55 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+19:37:56 комментарии: роликов просмотрено: 15, комментариев: 0
+19:37:58 «1000 ta shar» (cars) №1: Malibu, Damas, Onix, Kia K5, Gentra, Nexia, BYD Song, Cobalt, Matiz, Lacetti
+19:38:02 «1000 шарик»: действие 25.1 с, ролик 29.6 с; в кубке 325; победа Onix 38
+19:38:02 кадр 0 / 889
+19:38:05 кадр 150 / 889
+19:38:08 кадр 300 / 889
+19:38:10 кадр 450 / 889
+19:38:12 кадр 600 / 889
+19:38:14 кадр 750 / 889
+19:38:20 ролик готов: 30 с, 11 МБ, сборка 145 с; победил Onix, топ-3: Onix, Gentra, Kia K5, в кубке 325
+19:38:21 YouTube: https://youtube.com/shorts/xp3QgXkT4rM
+19:38:22 плейлист: 409 {
+  "error": {
+    "code": 409,
+    "message": "The operation was aborted.",
+    "errors": [
+      {
+        "domain": "youtube.CoreErrorDomain",
+        "reason": "SERVICE_UNAVAILABLE"
+      }
+    ],
+19:38:23 статус: public uploaded

@@ -47,3 +47,4 @@
 | 2026-11-20 | 3 | cities №13 | Asaka | https://youtube.com/shorts/3kDDQNW1DEk | public |
 | 2026-11-21 | 1 | cities №14 | Buxoro | https://youtube.com/shorts/NiAY6Nz1Wmc | public |
 | 2026-11-21 | 2 | cars №23 | Spark | https://youtube.com/shorts/Twv1hyOMYVU | public |
+| 2026-11-21 | 3 | mass_cars №1 | Onix | https://youtube.com/shorts/xp3QgXkT4rM | public |
