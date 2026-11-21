@@ -961,7 +961,7 @@ function directScene(beats, C, inits, manual, opt) { opt = opt || {};
     const i = says.indexOf(b), nx = says.slice(i + 1).find(x => x.t < b.t1 + 4.5 && x.who !== who && v.includes(x.who));
     const recentPrev = prevSay && prevSay !== who && b.t - prevT < 6 && v.includes(prevSay) ? prevSay : null;
     const partner = nx ? nx.who : recentPrev;
-    const strong = /^(scared|surprised|angry|cry|sad|love|shy)$/.test(b.emo || ''), text = b.text || '';
+    const strong = /^(scared|surprised|angry|cry|sad|love|shy)$/.test(b.emo || ''), text = b.text || '', early = !!opt.cold && b.t < 20, fast = quiet || early;   // 21.11.2026: первые 20 с серии — планы чаще (не дольше ~3 с), крупно и реакция
     let sh;
     if (firstSay) sh = v.length > 1 ? group(b.t) : { mode: 'medium', on: who };
     else if (v.length >= 3 && /(друзья|ребята|смотрите|давайте|вперёд|вперед|(^|[^а-я])(мы|нам|нас|все|всех)(?![а-я]))/i.test(text) && b.t - lastGroup > 10) sh = group(b.t);
@@ -969,17 +969,17 @@ function directScene(beats, C, inits, manual, opt) { opt = opt || {};
     else sh = { mode: 'medium', on: who };
     // выразительный крупный план: сильная эмоция, герой уже в кадре, на него не сразу отвечают
     if (!firstSay && strong && text.length < 50 && n % 2 === 0 && has(cur, who) && age > 2.5 && (!nx || nx.t - b.t1 > 1.2)) sh = { mode: 'close', on: who };
-    else if (!firstSay && quiet && n % 3 === 2 && has(cur, who) && age > 2 && text.length < 90) sh = { mode: 'close', on: who };
+    else if (!firstSay && fast && n % (early ? 2 : 3) === (early ? 1 : 2) && has(cur, who) && age > 2 && text.length < 90) sh = { mode: 'close', on: who };
     firstSay = false; n++;
     const need = partner ? [who, partner] : [who];
     // план держим, пока в нём есть и говорящий, и тот, кто ответит; меняем не чаще, чем раз в 2.5 с
     const fits = cur.mode !== 'wide' && need.every(id => has(cur, id));
-    if (fits && sh.mode !== 'close' && age < (quiet ? 3 : 5)) { prevSay = who; prevT = b.t; continue; }
+    if (fits && sh.mode !== 'close' && age < (fast ? 3 : 5)) { prevSay = who; prevT = b.t; continue; }
     // тот же план слишком долго — меняем ракурс: средний на говорящего или пара
     if (key(cur) === key(sh) && age >= 5) sh = sh.mode === 'medium' ? (partner ? pair(who, partner, b.t) : group(b.t)) : { mode: 'medium', on: who };
     if (!has(cur, who) || cur.mode === 'wide' || age >= 2.5) { cut(b.t, sh); if (sh.mode === 'group') lastGroup = b.t; }
     // долгая реплика в тихом куске — на середине крупно тот, кто слушает (реакция), потом ответит он же
-    if (quiet && partner && b.t1 - b.t > 4.5 && n % 2 === 1 && !locked(b.t + 2.2)) cut(b.t + 2.3, { mode: 'close', on: partner });
+    if (fast && partner && b.t1 - b.t > (early ? 3.4 : 4.5) && (early || n % 2 === 1) && !locked(b.t + (early ? 1.7 : 2.2))) cut(b.t + (early ? 1.8 : 2.3), { mode: 'close', on: partner });
     prevSay = who; prevT = b.t;
   }
   // общий план места в начале сцены — не дольше ~3–4 с (дольше — только пока входит компания), потом герои поближе
@@ -1009,7 +1009,7 @@ MK.compile = function (ep, lib, audio) {
   const IC = MK.introCfg(lib, ep); let intro = IC.mode, titleAt = null;
   const TITLE = intro === 'start' ? 4.5 : 0, END = ep.endCard === false ? 0 : 4, coldOn = MK.openingCfg(lib) === 'new';
   if (TITLE) { segs.push({ kind: 'title', t0: 0, t1: TITLE }); music.push({ t0: 0, t1: TITLE, mood: 'happy' }); sfx.push({ t: .3, n: 'sparkle' }); t = TITLE; }
-  const MAIN = MK.mainOf(ep, lib); let lastPropCam = -99;
+  const MAIN = MK.mainOf(ep, lib); let lastPropCam = -99, lastPropOpen = null;
   const evts = [];   // события серии (вещь появилась/исчезла, большое действие, вход, звук, погода) — для проверки «Начало серии»
     for (const [si, sc] of (ep.scenes || []).entries()) {
     // «после завязки»: заставка 3 с на первой склейке между сценами после ~12 с действия (первая сцена идёт с нуля)
@@ -1225,17 +1225,22 @@ MK.compile = function (ep, lib, audio) {
         // (1) герой берёт его — в первой сцене всегда, дальше не чаще раза в минуту (в 32-й компас был мелким, стрелку не видно);
         // (2) предмет меняется на глазах (шишка закрывается под дождём) — показываем, как меняется
         const wins = [], tk = beats.find(b => b.k === 'act' && b.d === 'take' && b.ptype === MAIN.type && C[b.who]);
-        if (tk && (si === 0 || t + tk.t - lastPropCam >= 60)) { const t0 = Math.max(tk.t1 != null ? tk.t1 + .1 : tk.t + .9, cam[0] && cam[0].cold ? 1.8 : 0); wins.push({ t0, t1: t0 + 1.9, on: tk.who }); }
+        const tkP = tk && props.find(p => p.type === MAIN.type && MK.propAt(p, (tk.t1 != null ? tk.t1 : tk.t + .9) + .1).holder === tk.who), tkOpen = tkP ? MK.propAt(tkP, (tk.t1 != null ? tk.t1 : tk.t + .9) + .2).openK > .5 : null;
+        if (tk && (si === 0 || t + tk.t - lastPropCam >= 60 || (lastPropOpen != null && tkOpen != null && tkOpen !== lastPropOpen))) { /* или вещь уже другая (шишка была закрытой — теперь раскрыта) */ const t0 = Math.max(tk.t1 != null ? tk.t1 + .1 : tk.t + .9, cam[0] && cam[0].cold ? 1.8 : 0); wins.push({ t0, t1: t0 + 1.9, on: tk.who }); }
         for (const p of props) if (p.type === MAIN.type) for (const e of p.ev) if (e.open != null && e.t > .8) wins.push({ t0: e.t - .35, t1: e.t + 2.3, pid: p.id });
+        if (props.some(q => q.type === 'bowl')) for (const p of props) if (p.type === MAIN.type) for (const e of p.ev) if ('holder' in e && !e.holder && e.tb) wins.push({ t0: e.t - .1, t1: e.t + 2.1, pid: p.id });   // кладут в миску с водой — показываем, как плывёт
         { const S2 = global.MKScript; for (const b of beats) if (b.k === 'say' && b.who && C[b.who]) { const tx = b.text || '';   // (3) «Смотрите! Шишка закрылась!» или удивлённо с ним в лапах — показываем вещь, пока говорит
           const look = /(смотри|гляди|глянь)/i.test(tx) && S2 && S2.mainOf && (S2.mainOf(tx) || {}).type === MAIN.type, held = b.emo === 'surprised' && props.some(p => p.type === MAIN.type && MK.propAt(p, b.t + .2).holder === b.who);
           if ((look || held) && props.some(p => p.type === MAIN.type && MK.propAt(p, b.t + .3).vis)) wins.push({ t0: b.t + .15, t1: b.t + 2.15, on: held ? b.who : null }); } }
+        if (si === (ep.scenes || []).length - 1) { let best = null;   // (4) в последней сцене появилась вещь-крючок («Вот росток!» в конце 33-й) — последнюю из появившихся крупно
+          for (const p of props) if (p.type !== MAIN.type && !(p.big > 1) && !/^(tree|moon|rainbow|sun|cloud|door|house|rocket|tent|castle|snowman|puddle|garland|ghost|bat|easel|rock)$/.test(p.type)) { const e = p.ev.find(e => e.vis === true && (e.fx === 'appear' || e.fx === 'quiet') && e.t > .5); if (e && (!best || e.t > best.t)) best = { t: e.t, pid: p.id }; }
+          if (best && !wins.some(w => Math.abs(w.t0 - best.t) < 4)) wins.push({ t0: best.t + .2, t1: best.t + 2.2, pid: best.pid, other: true }); }
         for (const w of wins) if (cam[0] && cam[0].cold && w.t0 < 1.8) { w.t1 += 1.8 - w.t0; w.t0 = 1.8; }   // первый план серии держим хотя бы 1,6 с
         wins.sort((a, b) => a.t0 - b.t0);
         for (const w of wins) { const { t0, t1 } = w; if (cam.some(c => c.mode === 'prop' && Math.abs(c.t - t0) < 3) || cam.some(c => !c.auto && !c.shake && c.t > t0 - .3 && c.t < t1) || t1 > sdur - .5) continue;
           let back = null; for (let i = cam.length - 1; i >= 1; i--) { const c = cam[i]; if (c.auto && !c.shake && c.t > t0 - .25 && c.t < t1 + .4) { if (!back || c.t > back.t) back = c; cam.splice(i, 1); } }
           if (!back) back = cam.filter(c => !c.shake && c.t <= t0).pop() || cam[0]; const ret = Object.assign({}, back, { t: t1, cut: true, auto: true }); delete ret.cold;
-          cam.push(Object.assign({ t: t0, mode: 'prop', on: w.on || null, prop: MAIN.type, cut: true, auto: true }, w.pid ? { pid: w.pid } : {}), ret); cam.sort((a, b) => a.t - b.t); lastPropCam = t + t0; } } }
+          cam.push(Object.assign({ t: t0, mode: 'prop', on: w.on || null, prop: w.other ? (props.find(p => p.id === w.pid) || {}).type : MAIN.type, cut: true, auto: true }, w.pid ? { pid: w.pid } : {}), ret); cam.sort((a, b) => a.t - b.t); lastPropCam = t + t0; { const sp = w.pid ? props.find(p => p.id === w.pid) : props.find(p => p.type === MAIN.type && (!w.on || MK.propAt(p, t1 - .1).holder === w.on)); if (sp) lastPropOpen = MK.propAt(sp, t1 - .1).openK > .5; } } } }
     segs.push({ kind: 'scene', t0: t, t1: t + sdur, sc, loc: buildLocation(lspec), lspec, lkey: canon(lspec), C, props, cam, idx: si, theme: sc.theme || ep.theme || null, cold: cold || undefined, mainAt: mainAt != null ? t + mainAt : undefined });
     music.push({ t0: t, t1: t + sdur, mood: sc.music || ep.music || 'happy' });
     t += sdur;
