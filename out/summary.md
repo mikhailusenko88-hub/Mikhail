@@ -414,6 +414,22 @@
 | qz4_now_r9 | silero_cis:ru_albina@ssml,soft,rise9w300 | 2.74 | 1.0 | 0 (+0) | 1/1 |
 | r11 | silero_random:11 | 1.43 | 0.915 | 0 (+0) | 4/4 |
 | r23 | silero_random:23 | 1.52 | 0.967 | 2 (+2) | 4/4 |
+| r31_bg_a | голос iPhone (Milena, Mac) — сам | 2.65 | 0.8 | 0 (+1) | 1/1 |
+| r31_bg_p | голос iPhone (Milena, Mac) — с «+» | 2.62 | 1.0 | 1 (+1) | 1/1 |
+| r31_iz_a | голос iPhone (Milena, Mac) — сам | 2.89 | 1.0 | 0 (+1) | 0/1 |
+| r31_iz_p | голос iPhone (Milena, Mac) — с «+» | 2.89 | 1.0 | 0 (+1) | 0/1 |
+| r31_nk_a | голос iPhone (Milena, Mac) — сам | 2.47 | 1.0 | 1 (+0) | 1/1 |
+| r31_nk_p | голос iPhone (Milena, Mac) — с «+» | 2.47 | 1.0 | 1 (+0) | 1/1 |
+| r31_nm_a | голос iPhone (Milena, Mac) — сам | 2.7 | 1.0 | 1 (+0) | 2/2 |
+| r31_nm_p | голос iPhone (Milena, Mac) — с «+» | 2.7 | 1.0 | 1 (+0) | 2/2 |
+| r31_pd_a | голос iPhone (Milena, Mac) — сам | 2.43 | 0.667 | 0 (+0) | 1/1 |
+| r31_pd_p | голос iPhone (Milena, Mac) — с «+» | 2.51 | 0.667 | 0 (+0) | 1/1 |
+| r31_pv_a | голос iPhone (Milena, Mac) — сам | 2.42 | 1.0 | 0 (+0) | 2/2 |
+| r31_pv_p | голос iPhone (Milena, Mac) — с «+» | 2.42 | 1.0 | 0 (+0) | 2/2 |
+| r31_rz_a | голос iPhone (Milena, Mac) — сам | 2.64 | 1.0 | 0 (+0) | 1/1 |
+| r31_rz_p | голос iPhone (Milena, Mac) — с «+» | 2.66 | 1.0 | 1 (+1) | 1/1 |
+| r31_st_a | голос iPhone (Milena, Mac) — сам | 2.33 | 0.667 | 2 (+0) | 1/1 |
+| r31_st_p | голос iPhone (Milena, Mac) — с «+» | 2.33 | 0.667 | 2 (+0) | 1/1 |
 | r37 | silero_random:37 | 1.46 | 0.915 | 4 (+1) | 4/4 |
 | r42 | silero_random:42 | 1.62 | 1.0 | 1 (+0) | 4/4 |
 | r58 | silero_random:58 | 1.41 | 0.603 | 6 (+0) | 4/4 |
