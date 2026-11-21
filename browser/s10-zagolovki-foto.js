@@ -10,6 +10,9 @@
 // 21.11.2026: проверка главного фото на одном объявлении (решение Михаила «пробуй на одном»): 3-15 — набор 3-15v6, интерьер первым,
 // дальше восемь прежних фото (всего 9). DARK2 заменён на ORDER: 'DDL' — первые два тёмные, третье светлое; 'LDD' — первое светлое
 // (интерьер), второе и третье тёмные (фото сайта); '' — порядок по яркости не проверять.
+// 21.11.2026, первый запуск: Авито поменял форму — у превью больше нет кнопки preview(N)/delete-button, есть preview(N)/rotate-button,
+// меню actions(N)/actions-button и значок mainImage(N)/badge_main. Скрипт остановился до удаления, объявление не изменилось.
+// Удаление теперь через меню действий фото (delPhoto): открыть меню, нажать пункт «Удалить»; пункты меню первого фото пишутся в журнал.
 (() => {
 const JOBS = [
   ['3-15', '8530976650', '3-15v6', 9, ''],   // 21.11: интерьер первым (проверка главного фото). Вернуть как было: ['3-15', '8530976650', '3-15v5', 8, ''] и ORDER = 'DDL'
@@ -17,7 +20,8 @@ const JOBS = [
 // наборы «как на сайте» (16.11, ORDER = 'DDL'): 3-7v5, 3-15v5, 3-9v5, A910v6, A703v5 — по 8 фото
 const ORDER = 'LDD';   // порядок по яркости первых трёх превью: 'DDL', 'LDD' или '' (не проверять)
 const orderOk = lm => !ORDER || !lm.every(x => typeof x === 'number') || (ORDER === 'DDL' ? (lm[0] < 115 && lm[1] < 115 && lm[2] > lm[0] + 15) : (lm[1] < 115 && lm[2] < 115 && lm[0] > lm[1] + 15));
-const RAW = 'https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/paneli-render/avito_foto/';
+const REF = 'paneli-render';   // ветка с наборами; сразу после push надёжнее дать полный SHA коммита — raw.githubusercontent обновляет ветку до 5 минут
+const RAW = 'https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/' + REF + '/avito_foto/';
 const SS = sessionStorage;
 SS.setItem('nd_log10', ''); SS.removeItem('nd_done10');   // новый пакет: прежние отметки «сохранено» не действуют (при повторе после сбоя эту строку убрать)
 document.getElementById('nd_ov')?.remove();
@@ -60,6 +64,29 @@ async function lum(src) {
     return Math.round(s / (px.length / 4));
   } catch (e) { return 'н/д'; }
 }
+const leafTexts = (d, before) => [...new Set([...d.querySelectorAll('body *')].filter(e => !before.has(e) && !e.children.length && (e.innerText || e.textContent || '').trim()).map(e => (e.innerText || e.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40)))].join(' | ');
+const realClick = (w, e) => { const r = e.getBoundingClientRect(), o = { bubbles: true, cancelable: true, view: w, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, button: 0 }; ['pointerdown', 'mousedown', 'pointerup', 'mouseup'].forEach(t => e.dispatchEvent(new (t.startsWith('pointer') ? w.PointerEvent : w.MouseEvent)(t, o))); e.click(); };
+const DEL = /^Удалить(\s+\S+)?$/i, tx = e => (e.textContent || '').trim(), vis = e => !!(e.offsetParent || e.getClientRects().length);
+async function delPhoto(d, w, p, art, first) {   // удалить одно фото в форме: прежняя кнопка или меню действий
+  const direct = d.querySelector(`[data-marker="preview(${p})/delete-button"]`);
+  if (direct) { direct.click(); return await until(() => !ids(d).includes(p), 8000, 150); }
+  const ab = d.querySelector(`[data-marker="actions(${p})/actions-button"]`);
+  if (!ab) { L('СТОП', art, 'у фото', p, 'нет ни кнопки удаления, ни меню действий'); return false; }
+  const before = new Set(d.querySelectorAll('body *'));
+  const pre = new Set([...before].filter(e => DEL.test(tx(e)) && vis(e)));   // «Удалить», видимые до открытия меню, — не наши
+  const delItem = () => [...d.querySelectorAll('body *')].filter(e => !pre.has(e) && DEL.test(tx(e)) && vis(e)).pop();
+  ab.click();
+  if (!(await until(() => !!delItem(), 2500, 150))) { realClick(w, ab); await until(() => !!delItem(), 3000, 150); }
+  if (first) L('меню действий фото:', leafTexts(d, before) || 'новых элементов нет');
+  const it = delItem();
+  if (!it) { L('СТОП', art, 'в меню фото', p, 'нет пункта «Удалить»:', leafTexts(d, before) || 'меню не открылось', '| aria-expanded:', ab.getAttribute('aria-expanded')); return false; }
+  const b2 = new Set(d.querySelectorAll('body *'));
+  (it.closest('button,[role=menuitem],[role=button],li,a') || it).click();
+  if (await until(() => !ids(d).includes(p), 4000, 150)) return true;
+  const conf = [...d.querySelectorAll('[role=dialog] button,[aria-modal=true] button')].filter(e => !b2.has(e) && /^(Удалить|Да|Подтвердить)/i.test((e.innerText || '').trim()))[0];
+  if (conf) { L('подтверждение удаления:', (conf.innerText || '').trim()); conf.click(); return await until(() => !ids(d).includes(p), 6000, 150); }
+  L('СТОП', art, 'фото', p, 'не удалилось; появилось:', leafTexts(d, b2).slice(0, 200)); return false;
+}
 async function job(art, id, folder, N, title) {
   if (done().includes(art)) { L('—', art, 'уже сохранено раньше, пропускаю'); return true; }
   L('—', art, id);
@@ -82,12 +109,8 @@ async function job(art, id, folder, N, title) {
       files.push(new w.File([b], art + '-' + i + '.jpg', { type: 'image/jpeg' }));
     }
     L('скачано', files.length, 'фото,', Math.round(files.reduce((s, f) => s + f.size, 0) / 1024), 'КБ');
-    for (const p of old) {
-      const b = d.querySelector(`[data-marker="preview(${p})/delete-button"]`);
-      if (!b) { L('СТОП', art, 'нет кнопки удаления у фото', p, '— не сохраняю'); return false; }
-      b.click();
-      await until(() => !ids(d).includes(p), 8000, 150);
-    }
+    let k = 0;
+    for (const p of old) { if (!(await delPhoto(d, w, p, art, k++ === 0))) { L('СТОП', art, 'удаление не прошло — не сохраняю'); return false; } }
     if (!(await until(() => ids(d).length === 0, 8000))) { L('СТОП', art, 'старые фото не удалились, осталось', ids(d).length, '— не сохраняю'); return false; }
     const inp = d.querySelector('input[type=file][accept*="image"]');
     if (!inp) { L('СТОП', art, 'нет поля загрузки фото — не сохраняю'); return false; }
