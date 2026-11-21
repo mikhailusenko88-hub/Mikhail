@@ -3062,6 +3062,12 @@ function camFor(c, S, seg, lib) {
   const px = id => S[id] ? X(S[id].x) : 0, pz = id => S[id] ? -(S[id].z || 0) * 1.5 + arcDz(ARCc, S[id]) : 0;
   const ids = Object.keys(seg.C);
   const topOf = id => { const lc = lib.characters[id], rg = lc && rigFor(lc); return rg && rg.headH ? rg.headH + rg.headR * 1.75 : 1.1 * h(id); }; // макушка с ушками — всегда в кадре
+  if (c.mode === 'prop') {   // 21.11.2026: вещь в лапе героя на весь кадр (главный предмет серии, «КАМЕРА: крупно компас»): чуть сверху, видно лицевую сторону
+    const hp = (seg.props || []).find(p => (!c.prop || p.type === c.prop) && p._holder && p._vis !== false && (!c.on || p._holder === c.on)), id = (hp && hp._holder) || c.on, lc = id && lib.characters[id], rg = lc && rigFor(lc);
+    if (hp && rg && rg.headH && rg.hand) { const A = rg.h6 && global.BARSHeroes && BARSHeroes.anchors ? BARSHeroes.anchors(rg) : rg.bars && global.MKBarsik && MKBarsik.anchors ? MKBarsik.anchors(rg) : null, v = new THREE.Vector3(); if (A && A.handR) v.copy(A.handR); else rg.hand.getWorldPosition(v); v.y -= .12 * (rg.scale || 1);
+      const hr = rg.headR || .22 * (rg.scale || 1), sd = c.vert ? 0 : S[id] && S[id].face < 0 ? -1 : 1;
+      return { pos: new THREE.Vector3(v.x + sd * hr * .3, v.y + hr * 2.0, v.z + hr * 2.15), look: new THREE.Vector3(v.x, v.y + hr * .02, v.z) }; }
+    return camFor(Object.assign({}, c, { mode: id ? 'medium' : 'wide', on: id || null }), S, seg, lib); }
   if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close', side = c.vert ? 0 : S[id] && S[id].face < 0 ? -1 : 1;   /* vert — Shorts 9:16: герой по центру кадра */
     const lc = lib.characters[id], rg = lc && rigFor(lc); if (rg && rg.headH) { const hy = rg.headH, hr = rg.headR, zk = c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1; // кадр по голове героя: крупно — лицо и плечи, средний — во весь рост
       return close ? { pos: new THREE.Vector3(x + side * hr * .9, hy - hr * .05, z + hr * 6.4 / zk), look: new THREE.Vector3(x + side * hr * .2, hy - hr * .32, z) }

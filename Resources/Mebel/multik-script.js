@@ -401,6 +401,7 @@ S.parse = function (text, lib, opts) {
     if (!sc || !sc._out || !sc._out[id]) return; delete sc._out[id]; const x = sc._x[id] != null ? sc._x[id] : placeX(); sc.steps.push({ who: id, do: 'enter', from: (sc._xs && sc._xs[id]) || (x > .5 ? 'right' : 'left'), to: x }); }   // возвращается с той стороны, куда ушёл
   function camera(t) { const d = low(t); const who = namesIn(d, idx);
     if (/(крупн|лицо)/.test(d) && who[0]) sc.steps.push({ camera: 'close', on: who[0] });
+    else if (/(крупн)/.test(d) && propIn(d)) sc.steps.push({ camera: 'prop', camProp: propIn(d) });   // «КАМЕРА: крупно компас» — вещь в лапе героя на весь кадр (21.11.2026)
     else if (/(средн)/.test(d) && who[0]) sc.steps.push({ camera: 'medium', on: who[0] });
     else if (/(оба|вдво|двое)/.test(d) && who.length >= 2) sc.steps.push({ camera: 'two', on: who.slice(0, 2) });
     else if (/(тряс|дрож)/.test(d)) sc.steps.push({ shake: .6 });

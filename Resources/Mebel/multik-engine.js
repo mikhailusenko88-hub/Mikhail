@@ -923,7 +923,7 @@ function directScene(beats, C, inits, manual, opt) { opt = opt || {};
   const out = []; let cur = { mode: 'wide', t: 0 }, prevSay = null, prevT = -9, lastGroup = -99, firstSay = true, n = 0, lastEvt = 0;
   const has = (sh, id) => sh.mode === 'wide' || (sh.mode === 'group' && sh.ids.includes(id)) || sh.on === id || (Array.isArray(sh.on) && sh.on.includes(id));
   const key = sh => sh.mode + ':' + JSON.stringify(sh.on || sh.ids || null);
-  const cut = (t, sh) => { if (key(sh) === key(cur)) return; const C0 = !!(out.length && out[0].cold); if (C0 && t < 1.72) t = 1.72;   /* первый план серии держим хотя бы до 1,6 с, смена — сразу после */ sh.t = Math.max(0, t - .12); sh.cut = true; sh.auto = true;
+  const cut = (t, sh) => { if (key(sh) === key(cur)) return; const C0 = !!(out.length && out[0].cold); if (C0 && t < 1.72) t = 1.72;   /* первый план серии держим хотя бы до 1,6 с, смена — сразу после */ if (locked(t)) return;   /* 21.11.2026: сдвинутый план не лезет в ручную «КАМЕРА:» */ sh.t = Math.max(0, t - .12); sh.cut = true; sh.auto = true;
     while (out.length && !(C0 && out.length === 1) && sh.t - out[out.length - 1].t < 1.2) out.pop(); if (C0 && out.length === 1 && key(sh) === key(out[0])) { cur = out[0]; return; } out.push(sh); cur = sh; };
   const group = (t, extra, px) => { const v = vis(t); for (const e of extra || []) if (e && !v.includes(e)) v.push(e); const g = { mode: 'group', ids: v.sort() }; if (px) g.px = px; return g; };
   // вещь в кадре: тот, кто на неё смотрит (или кто ближе к ней), и все, кто стоит между ними
@@ -1084,7 +1084,7 @@ MK.compile = function (ep, lib, audio) {
         if (xGroup && !step.side) step._xside = xg.side; if (xGroup && !(exitPrev && exitPrev.g === xg)) cam.push({ t: start, mode: 'wide', cut: true, exitGroup: true });   // компания уходит — общий план: видно, как уходят все, а не толкучка спин крупно
         exitPrev = { g: xg, t: start }; }
       const who = step.who, ch = who && C[who];
-      if (step.camera) { cam.push({ t: start, mode: step.camera, on: step.on || null, zoom: step.zoom, auto: !!step.auto, cut: true }); }
+      if (step.camera) { cam.push({ t: start, mode: step.camera, on: step.on || null, zoom: step.zoom, auto: !!step.auto, cut: true, prop: step.camProp || undefined }); }
       if (coldOn && step.say && who && who !== 'Р' && C[who] && /(лун|месяц)/i.test(step.say) && /(смотри|гляди|вот|вон|ого|какая|какой)/i.test(step.say) && props.some(p => p.type === 'moon' && p.vis !== false) && /^(evening|night)$/.test(lspec.time || 'day') && !/^(room|kitchen|space)$/.test(lspec.type || '')) cam.push({ t: start, mode: 'sky', on: who, cut: true, moonLook: true });   // «Смотрите, луна!» — кадр снизу: герой и луна
       if (step.shake) cam.push({ t: start, shake: step.shake === true ? .6 : step.shake });
       if (step.wait) dur = Math.max(dur, +step.wait);
@@ -1149,7 +1149,7 @@ MK.compile = function (ep, lib, audio) {
           else if (d === 'turn' || d === 'look') ch.ev.push({ t: start, k: 'face', v: faceVal(step.to || step.face || 'camera', ch, C) });
           else if (!['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d) || d === 'fall') ch.ev.push({ t: s0, k: 'act', n: d, t1: start + dur, text: step.text, to: step.to });
           if (d === 'hug' && step.to && C[step.to]) { C[step.to].ev.push({ t: s0, k: 'act', n: 'hug', t1: start + dur, to: who }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); }
-          beats.push({ t: s0, t1: start + dur, k: 'act', who, d, to: step.to, near: NEAR_ACT.has(d) || (d === 'take' && (KEY_PROP.has((props.find(p => p.id === step.prop) || {}).type) || !!(coldOn && MAIN && (props.find(p => p.id === step.prop) || {}).type === MAIN.type))) });   // берёт главный предмет — средний план на него if (BIGACT.has(d)) evts.push({ t: st0 + s0, k: 'act', d, who });
+          beats.push({ t: s0, t1: start + dur, k: 'act', who, d, to: step.to, ptype: step.prop ? (props.find(p => p.id === step.prop) || {}).type : undefined, near: NEAR_ACT.has(d) || (d === 'take' && (KEY_PROP.has((props.find(p => p.id === step.prop) || {}).type) || !!(coldOn && MAIN && (props.find(p => p.id === step.prop) || {}).type === MAIN.type))) });   // берёт главный предмет — средний план на него if (BIGACT.has(d)) evts.push({ t: st0 + s0, k: 'act', d, who });
           if (d === 'play' && step.sfx !== false) { const ins = (props.find(p => p.holder === who) || {}).type; const sn = ins === 'bell' ? 'bell' : ins === 'drum' ? 'drum' : null;   // звонит в колокольчик, стучит в барабан — их и слышно
             if (sn) sfx.push({ t: st0 + s0 + .25, n: sn, rep: sn === 'drum' ? 6 : 3, gap: sn === 'drum' ? .32 : .6 }); }
           if (AUTO_SFX[d] && step.sfx !== false) sfx.push({ t: st0 + s0 + (d === 'fall' ? .3 : d === 'clap' ? 0 : d === 'kick' ? .45 : d === 'throw' ? .45 : .05), n: AUTO_SFX[d], rep: d === 'clap' ? 4 : d === 'stomp' ? 3 : d === 'eat' ? 3 : 1, gap: d === 'stomp' ? .35 : d === 'eat' ? .5 : .22 });
@@ -1219,7 +1219,12 @@ MK.compile = function (ep, lib, audio) {
     if (ep.autoCam !== false) {
       const manual = cam.slice(1).filter(c => !c.auto && !c.shake); const auto = directScene(beats, C, inits, manual, { cold: cold && !(sc.camera && sc.camera !== 'wide') ? { px: coldPx, sky: coldSky } : null, capWide: coldOn && !sc.camera, tempo: coldOn });   // всё новое в режиссуре — только при «Начало серии: новое»; «как было» — кадр в кадр как раньше
       if (auto[0] && auto[0].cold) { const c0 = auto.shift(); if (sc.camera === 'wide') { c0.t = 1.5; auto.unshift(c0); } else Object.assign(cam[0], c0, { t: 0 }); }   // «КАМЕРА: общий план» в начале — не дольше 1,5 с
-      const keep = cam.slice(1).filter(c => !c.auto); cam.length = 1; cam.push(...auto, ...keep); cam.sort((a, b) => a.t - b.t); }
+      const keep = cam.slice(1).filter(c => !c.auto); cam.length = 1; cam.push(...auto, ...keep); cam.sort((a, b) => a.t - b.t);
+      if (coldOn && MAIN && !cam.some(c => c.mode === 'prop')) { const tk = beats.find(b => b.k === 'act' && b.d === 'take' && b.ptype === MAIN.type && C[b.who]);   // 21.11.2026: берёт главный предмет серии — на 1,9 с вещь в лапе на весь кадр (в 32-й компас был мелким, стрелку не видно)
+        if (tk) { const t0 = Math.max(tk.t1 != null ? tk.t1 + .1 : tk.t + .9, cam[0] && cam[0].cold ? 1.8 : 0), t1 = t0 + 1.9;
+          if (!cam.some(c => !c.auto && !c.shake && c.t > t0 - .3 && c.t < t1) && t1 < sdur - .5) { let back = null; for (let i = cam.length - 1; i >= 1; i--) { const c = cam[i]; if (c.auto && !c.shake && c.t > t0 - .25 && c.t < t1 + .4) { if (!back || c.t > back.t) back = c; cam.splice(i, 1); } }
+            if (!back) back = cam.filter(c => !c.shake && c.t <= t0).pop() || cam[0]; const ret = Object.assign({}, back, { t: t1, cut: true, auto: true }); delete ret.cold;
+            cam.push({ t: t0, mode: 'prop', on: tk.who, prop: MAIN.type, cut: true, auto: true }, ret); cam.sort((a, b) => a.t - b.t); } } } }
     segs.push({ kind: 'scene', t0: t, t1: t + sdur, sc, loc: buildLocation(lspec), lspec, lkey: canon(lspec), C, props, cam, idx: si, theme: sc.theme || ep.theme || null, cold: cold || undefined, mainAt: mainAt != null ? t + mainAt : undefined });
     music.push({ t0: t, t1: t + sdur, mood: sc.music || ep.music || 'happy' });
     t += sdur;
@@ -1331,7 +1336,7 @@ function evalChar(init, ev, t, audio, T) {
 function camTarget(c, seg, t, S) {
   const pos = id => { const cd = seg.C[id]; if (!cd) return null; const st = S[id]; return st ? { x: st.x * W, y: GROUND - (seg._h[id] || .9) * UNIT * .55, h: seg._h[id] || .9 } : null; };
   let cx = W / 2, cy = H / 2, z = 1;
-  if (c.mode === 'close' || c.mode === 'medium') { const p = pos(c.on || Object.keys(seg.C)[0]); if (p) { z = c.zoom || (c.mode === 'close' ? 2.3 : 1.55); cx = p.x; cy = c.mode === 'close' ? GROUND - p.h * UNIT * .75 : GROUND - p.h * UNIT * .55; } }
+  if (c.mode === 'close' || c.mode === 'medium' || c.mode === 'prop') { const p = pos(c.on || Object.keys(seg.C)[0]); if (p) { z = c.zoom || (c.mode !== 'medium' ? 2.3 : 1.55); cx = p.x; cy = c.mode !== 'medium' ? GROUND - p.h * UNIT * .75 : GROUND - p.h * UNIT * .55; } }
   else if (c.mode === 'two') { const ids = Array.isArray(c.on) ? c.on : Object.keys(seg.C).slice(0, 2); const a = pos(ids[0]), b = pos(ids[1]); if (a && b) { cx = (a.x + b.x) / 2; z = c.zoom || clamp(W * .62 / (Math.abs(a.x - b.x) + 300), 1, 1.9); cy = GROUND - Math.max(a.h, b.h) * UNIT * .6; } }
   else if (c.mode === 'pan') { cx = (c.on != null ? +c.on : .5) * W; z = c.zoom || 1.3; cy = GROUND - UNIT * .5; }
   else if (c.mode === 'group') { const ps = (c.ids || Object.keys(seg.C)).map(pos).filter(Boolean); const xs = ps.map(p => p.x).concat((c.px || []).map(x => x * W)); if (xs.length) { const lo = Math.min(...xs), hi = Math.max(...xs); cx = (lo + hi) / 2; z = clamp(W * .7 / (hi - lo + 420), 1, 1.8); cy = GROUND - UNIT * .5; } }
