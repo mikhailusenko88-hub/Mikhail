@@ -75,20 +75,23 @@ MK.ruIPA = ruIPA;
       поставить ударение на последний слог — тоже («глаз+а» превратилось бы в «гла́за»).
     Поэтому трогаем только слова из списка APPLE_RULES (для каждого записью проверено: сам голос ошибается, «по правилам» читает
     верно) и только когда нужное ударение — на предпоследнем слоге. Всё остальное голос читает сам, как раньше. */
-const APPLE_RULES = new Set(['замок', 'леса', 'дома']), APPLE_V = 'аеёиоуыэюя';
+const APPLE_RULES = new Set(['замок', 'леса', 'дома', 'шишка']), APPLE_V = 'аеёиоуыэюя';
+// 21.11.2026 (серия 33, Mac Milena): «шишка» голос сам читает «шишка́» — 13 реплик Рона и Пика; с мягким переносом — «ши́шка» (длина почти та же).
+// Такие слова (не омографы — ударение одно) правим всегда, без «+» в реплике; число — после скольких букв ставить перенос.
+const APPLE_ALWAYS = { 'шишка': 2 };
 MK.appleRulesHas = text => (String(text || '').toLowerCase().replace(/[+́]/g, '').match(/[а-яё]+/g) || []).some(w => APPLE_RULES.has(w));
 /** marked — реплика с «+» перед ударными гласными (ударения по смыслу); text — то, что идёт голосу (без «+»); ipa — транскрипции слов.
     → { text, ipa, n }: в словах из списка с ударением на предпоследнем слоге — мягкий перенос после первой буквы, их транскрипция убрана. */
 MK.appleRules = function (marked, text, ipa) {
   text = String(text || ''); const want = {}, seen = {};
   for (const tok of (String(marked || '').match(/[А-Яа-яЁё+]+/g) || [])) { const c = tok.replace(/\+/g, '').toLowerCase(); if (!c) continue;
-    const occ = seen[c] = (seen[c] || 0) + 1, p = tok.indexOf('+'); if (p < 0 || !APPLE_RULES.has(c)) continue;
+    const occ = seen[c] = (seen[c] || 0) + 1, p = tok.indexOf('+'); if (p < 0 && APPLE_ALWAYS[c] && !/\+/.test(tok)) { want[c + '|' + occ] = 1; continue; } if (p < 0 || !APPLE_RULES.has(c)) continue;
     const vi = [...c].map((ch, j) => APPLE_V.includes(ch) ? j : -1).filter(j => j >= 0), k = vi.findIndex(j => j >= p);
     if (vi.length >= 2 && k === vi.length - 2) want[c + '|' + occ] = 1; }
   if (!Object.keys(want).length) return { text, ipa: ipa || null, n: 0 };
   let out = '', last = 0, n = 0; const cnt = {}, spans = (ipa || []).map(x => x.slice()), re = /[А-Яа-яЁё]+/g; let m;
   while ((m = re.exec(text))) { const c = m[0].toLowerCase(), occ = cnt[c] = (cnt[c] || 0) + 1; if (!want[c + '|' + occ]) continue;
-    const a = m.index, b = a + m[0].length, at = a + 1;                                  // перенос — после первой буквы слова
+    const a = m.index, b = a + m[0].length, at = a + (APPLE_ALWAYS[c] || 1);             // перенос — после первой буквы слова («шишка» — после «ши»)
     for (let i = spans.length - 1; i >= 0; i--) if (spans[i][0] < b && spans[i][0] + spans[i][1] > a) spans.splice(i, 1); // свою транскрипцию этого слова убрать
     out += text.slice(last, at) + '­'; last = at; n++;
     const shift = out.length - at; for (const sp of spans) if (sp._o === undefined) sp._o = sp[0]; for (const sp of spans) if (sp._o >= b) sp[0] = sp._o + shift; }
