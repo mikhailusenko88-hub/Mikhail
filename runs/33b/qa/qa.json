@@ -1,0 +1,261 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рассказчик и Топа; Рон и Филя"
+ ],
+ "file": {
+  "mb": 397.8,
+  "dur": 347.86,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 347.36,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 347,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 139.1
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 4.0,
+  "peak_db": -1.0,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 97.3,
+  "lines": 101,
+  "by_hero": {
+   "Топа": 98.7,
+   "Барсик": 100.0,
+   "Рон": 97.1,
+   "Пик": 92.2,
+   "Филя": 99.0,
+   "Рассказчик": 100.0
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 212.0,
+   "range_st": 5.5,
+   "hnr": 12.5,
+   "jitter": 2.2,
+   "shimmer": 9.0,
+   "F1": 511.0,
+   "F2": 1940.0,
+   "F3": 3219.0,
+   "bright": -9.1,
+   "air": -12.5,
+   "cog": 812.0,
+   "rate": 5.3,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Пик": {
+   "f0": 374.0,
+   "range_st": 7.8,
+   "hnr": 17.5,
+   "jitter": 1.0,
+   "shimmer": 4.9,
+   "F1": 504.0,
+   "F2": 1865.0,
+   "F3": 3798.0,
+   "bright": -15.1,
+   "air": -18.3,
+   "cog": 712.0,
+   "rate": 6.9,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 92.2
+  },
+  "Рассказчик": {
+   "f0": 164.0,
+   "range_st": 5.8,
+   "hnr": 9.9,
+   "jitter": 2.3,
+   "shimmer": 9.9,
+   "F1": 502.0,
+   "F2": 1983.0,
+   "F3": 3414.0,
+   "bright": -9.7,
+   "air": -14.2,
+   "cog": 650.0,
+   "rate": 2.7,
+   "voiced": 0.4,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 4.5,
+   "why": [
+    "немного шумный тембр"
+   ],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 306.0,
+   "range_st": 6.8,
+   "hnr": 20.4,
+   "jitter": 0.9,
+   "shimmer": 5.3,
+   "F1": 391.0,
+   "F2": 1940.0,
+   "F3": 3632.0,
+   "bright": -16.8,
+   "air": -23.4,
+   "cog": 446.0,
+   "rate": 4.8,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.1
+  },
+  "Топа": {
+   "f0": 162.0,
+   "range_st": 5.7,
+   "hnr": 11.4,
+   "jitter": 2.6,
+   "shimmer": 10.3,
+   "F1": 445.0,
+   "F2": 2080.0,
+   "F3": 3417.0,
+   "bright": -13.0,
+   "air": -21.7,
+   "cog": 593.0,
+   "rate": 4.4,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 98.7
+  },
+  "Филя": {
+   "f0": 291.0,
+   "range_st": 5.9,
+   "hnr": 14.7,
+   "jitter": 1.8,
+   "shimmer": 7.8,
+   "F1": 519.0,
+   "F2": 2063.0,
+   "F3": 3282.0,
+   "bright": -14.6,
+   "air": -19.6,
+   "cog": 702.0,
+   "rate": 4.2,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 99.0
+  }
+ },
+ "voices_close": [
+  [
+   "Рассказчик",
+   "Топа",
+   0.2
+  ],
+  [
+   "Рон",
+   "Филя",
+   0.9
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 45,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 150,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 1966,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 347.36,
+   "video": "video/Кот Барсик - 33. Шишка знает погоду!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "1ee3da6",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 41.4,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 11,
+    "e": 129,
+    "b": 5,
+    "w": 1,
+    "n": 8680,
+    "at": 8680,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 55,
+   "ttsFail": 0,
+   "voice": 59,
+   "voiceFail": 0,
+   "voiceSec": 29,
+   "ttsSec": 41,
+   "frames": 9309,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -25.7,
+   "lufs_out": -15.1,
+   "gain_db": 11.1
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 33,
+   "title": "Шишка знает погоду?!",
+   "scenes": 9,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}
