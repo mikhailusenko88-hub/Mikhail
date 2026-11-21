@@ -1,5 +1,5 @@
 # Kim yutadi?  (@kimyutadi_uz)
-Проверено: 2026-11-21 06:54 UTC
+Проверено: 2026-11-21 07:04 UTC
 
 - Страница канала: HTTP 200; ID: UC93S31Qkgoz4cFgKBzz-mLA
 - Шапка: 8 подписчиков · 48 видео
@@ -24,7 +24,7 @@
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
 - 6 просмотров · Qaysi shahar yutadi? Какой город победит? 🏁 №14 #shorts · NiAY6Nz1Wmc
 - 108 просмотров · Qaysi shahar yutadi? Какой город победит? 🏁 №13 #shorts · 3kDDQNW1DEk
-- 25 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №22 #shorts · 3lcJci36uVk
+- 42 просмотра · Qaysi mashina yutadi? Какая машина победит? 🚗 №22 #shorts · 3lcJci36uVk
 - 38 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №21 #shorts · Z-I-pSJYtMQ
 - 60 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №20 #shorts · ZAyx08ROrvc
 - 427 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №19 #shorts · NdB6r0N5XqQ
