@@ -1,0 +1,232 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рон и Филя"
+ ],
+ "file": {
+  "mb": 425.6,
+  "dur": 348.69,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 348.19,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 348,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 131.6
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 4.7,
+  "peak_db": -1.2,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 97.5,
+  "lines": 95,
+  "by_hero": {
+   "Рон": 97.0,
+   "Топа": 100.0,
+   "Пик": 97.2,
+   "Барсик": 97.8,
+   "Филя": 96.7
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 227.0,
+   "range_st": 5.2,
+   "hnr": 12.8,
+   "jitter": 2.4,
+   "shimmer": 9.1,
+   "F1": 510.0,
+   "F2": 1893.0,
+   "F3": 3263.0,
+   "bright": -10.7,
+   "air": -14.5,
+   "cog": 700.0,
+   "rate": 4.6,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.8
+  },
+  "Пик": {
+   "f0": 374.0,
+   "range_st": 6.3,
+   "hnr": 20.3,
+   "jitter": 0.9,
+   "shimmer": 5.0,
+   "F1": 480.0,
+   "F2": 1740.0,
+   "F3": 3775.0,
+   "bright": -16.1,
+   "air": -20.7,
+   "cog": 600.0,
+   "rate": 6.1,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.2
+  },
+  "Рон": {
+   "f0": 304.0,
+   "range_st": 6.5,
+   "hnr": 22.3,
+   "jitter": 0.9,
+   "shimmer": 4.7,
+   "F1": 402.0,
+   "F2": 1954.0,
+   "F3": 3648.0,
+   "bright": -20.5,
+   "air": -26.7,
+   "cog": 417.0,
+   "rate": 5.1,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.0
+  },
+  "Топа": {
+   "f0": 161.0,
+   "range_st": 5.4,
+   "hnr": 12.2,
+   "jitter": 2.6,
+   "shimmer": 10.4,
+   "F1": 436.0,
+   "F2": 1909.0,
+   "F3": 3351.0,
+   "bright": -17.7,
+   "air": -25.1,
+   "cog": 492.0,
+   "rate": 4.1,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 4.3,
+   "why": [
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Филя": {
+   "f0": 292.0,
+   "range_st": 5.5,
+   "hnr": 14.5,
+   "jitter": 1.9,
+   "shimmer": 7.7,
+   "F1": 530.0,
+   "F2": 2022.0,
+   "F3": 3247.0,
+   "bright": -14.7,
+   "air": -20.4,
+   "cog": 730.0,
+   "rate": 4.3,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 96.7
+  }
+ },
+ "voices_close": [
+  [
+   "Рон",
+   "Филя",
+   0.7
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 43,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 154,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 2017,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 348.1841363636363,
+   "video": "video/Кот Барсик - 34. Жёлудь проснулся!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "70a6953",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 67.4,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 11,
+    "e": 136,
+    "b": 6,
+    "w": 1,
+    "n": 8700,
+    "at": 8700,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 55,
+   "ttsFail": 0,
+   "voice": 53,
+   "voiceFail": 0,
+   "voiceSec": 24,
+   "ttsSec": 34,
+   "frames": 9313,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -25.3,
+   "lufs_out": -15,
+   "gain_db": 10.7
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 34,
+   "title": "Жёлудь проснулся?!",
+   "scenes": 9,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}
