@@ -175,7 +175,7 @@ def add_rb(obj, typ, shape, friction=0.45, rest=0.35, mass=0.01):
 
 
 # стеклянный куб: внутри 0,32 × 0,20 × 0,50 м, стенки 8 мм
-GW, GD, GH, T = 0.32, 0.20, 0.50, 0.004
+GW, GD, GH, T = 0.32, 0.20, float(A.get("gh", "0.50")), 0.004
 slabs = [((0, 0, T / 2), (GW + 2 * T, GD + 2 * T, T)),
          ((-(GW + T) / 2, 0, GH / 2 + T), (T, GD + 2 * T, GH)),
          (((GW + T) / 2, 0, GH / 2 + T), (T, GD + 2 * T, GH)),
@@ -207,7 +207,8 @@ for loc, dim in proxies:
 add_rb(floor, "PASSIVE", "BOX", friction=0.6, rest=0.12)
 
 # ведро: усечённый конус без крышки, стенка 5 мм; начало координат — на кромке, через которую льётся
-R0, R1, BH = 0.13, 0.17, 0.25
+BS = float(A.get("bs", "1"))                     # масштаб ведра
+R0, R1, BH = 0.13 * BS, 0.17 * BS, 0.25 * BS
 bm = bmesh.new()
 bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=56, radius1=R0, radius2=R1, depth=BH)
 top = [f for f in bm.faces if f.calc_center_median().z > BH / 2 - 1e-4]
@@ -227,7 +228,7 @@ bev.width = 0.002
 bucket.data.materials.append(m_metal)
 for p in bucket.data.polygons:
     p.use_smooth = True
-LIP = Vector((-0.11, 0.0, GH + T + 0.07))        # кромка над левой половиной куба: струя уходит вправо и падает в середину
+LIP = Vector((-float(A.get("lx", "0.11")), 0.0, GH + T + float(A.get("lz", "0.07"))))        # кромка над левой половиной куба: струя уходит вправо и падает в середину
 bucket.location = LIP
 rb = add_rb(bucket, "PASSIVE", "MESH", friction=0.35, rest=0.3)
 rb.kinematic = True
