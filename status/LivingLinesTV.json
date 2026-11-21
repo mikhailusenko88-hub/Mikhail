@@ -5,70 +5,82 @@
  "title": "Живые строки",
  "description": "Живые строки — мысли классиков на акварели.\n\nКаждый день три коротких ролика. В каждом три цитаты: Пушкин, Толстой, Чехов, Достоевский, Сенека, Марк Аврелий, Тагор, Шекспир и другие. Русский текст и а",
  "header": [
-  "58 подписчиков",
-  "49 видео"
+  "60 подписчиков",
+  "51 видео"
  ],
  "alerts": [],
  "images": {
   "avatar": "https://yt3.googleusercontent.com/wefYK3hoTThf90hy93wCVtVPKkdJB4JASlWU7V_lVOkalg0NqT7y8kX1m_QOskPaex4lMLRw=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/CtLAfow-c31AX9e2TjWnkbFk_Utt5vyxw9cR70GIqdhdCQf1X2Q6QAkXSpTsc2CRUK7F2X33i1c=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-21 07:16 UTC",
+ "checked": "2026-11-21 19:22 UTC",
  "shorts_status": 200,
  "shorts": [
   {
+   "id": "lQjjw2iwgvg",
+   "title": "Терпение и труд всё перетрут ✨ Russian proverb + 2 more #shorts",
+   "views": "208 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Терпение и труд всё перетрут ✨ Russian proverb + 2 more #shorts, 208 просмотров\""
+  },
+  {
+   "id": "cWza902RnTs",
+   "title": "Никто не обнимет необъятного ✨ Words to keep | Kozma Prutkov #shorts",
+   "views": "296 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Никто не обнимет необъятного ✨ Words to keep | Kozma Prutkov #shorts, 296 просмотров\""
+  },
+  {
    "id": "4hcLXa31iHA",
    "title": "5 МЫСЛЕЙ, КОТОРЫЕ ДЕЛАЮТ СИЛЬНЕЕ ✨ Платон, Марк Аврелий, Толстой #shorts",
-   "views": "105 просмотров",
-   "a11y": "Воспроизвести короткое видео \"5 МЫСЛЕЙ, КОТОРЫЕ ДЕЛАЮТ СИЛЬНЕЕ ✨ Платон, Марк Аврелий, Толстой #shorts, 105 просмотров\""
+   "views": "1 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"5 МЫСЛЕЙ, КОТОРЫЕ ДЕЛАЮТ СИЛЬНЕЕ ✨ Платон, Марк Аврелий, Толстой #shorts, 1 тысяча просмотров\""
   },
   {
    "id": "WTV1oneh7EQ",
    "title": "5 МЫСЛЕЙ О НАСТОЯЩЕМ ЧЕЛОВЕКЕ ✨ Чехов, Шекспир, Вольтер #shorts",
-   "views": "954 просмотра",
-   "a11y": "Воспроизвести короткое видео \"5 МЫСЛЕЙ О НАСТОЯЩЕМ ЧЕЛОВЕКЕ ✨ Чехов, Шекспир, Вольтер #shorts, 954 просмотра\""
+   "views": "1 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"5 МЫСЛЕЙ О НАСТОЯЩЕМ ЧЕЛОВЕКЕ ✨ Чехов, Шекспир, Вольтер #shorts, 1 тысяча просмотров\""
   },
   {
    "id": "fGe6Vnlo_qQ",
    "title": "На свете счастья нет, но есть покой и воля ✨ Words to keep | Alexander Pushkin #shorts",
-   "views": "432 просмотра",
-   "a11y": "Воспроизвести короткое видео \"На свете счастья нет, но есть покой и воля ✨ Words to keep | Alexander Pushkin #shorts, 432 просмотра\""
+   "views": "618 просмотров",
+   "a11y": "Воспроизвести короткое видео \"На свете счастья нет, но есть покой и воля ✨ Words to keep | Alexander Pushkin #shorts, 618 просмотров\""
   },
   {
    "id": "5v-ZCvVHLpg",
    "title": "Любовь побеждает всё 🤍 Три мысли на сегодня | Virgil #shorts",
-   "views": "211 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Любовь побеждает всё 🤍 Три мысли на сегодня | Virgil #shorts, 211 просмотров\""
+   "views": "268 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Любовь побеждает всё 🤍 Три мысли на сегодня | Virgil #shorts, 268 просмотров\""
   },
   {
    "id": "w5lhb9vTxlc",
    "title": "Молодость счастлива тем, что у неё есть будущее ✨ Nikolai Gogol + 2 more #shorts",
-   "views": "931 просмотр",
-   "a11y": "Воспроизвести короткое видео \"Молодость счастлива тем, что у неё есть будущее ✨ Nikolai Gogol + 2 more #shorts, 931 просмотр\""
+   "views": "983 просмотра",
+   "a11y": "Воспроизвести короткое видео \"Молодость счастлива тем, что у неё есть будущее ✨ Nikolai Gogol + 2 more #shorts, 983 просмотра\""
   },
   {
    "id": "c4s7hqTO1Xc",
    "title": "Пока живёшь — учись жить ✨ Words to keep | Seneca #shorts",
-   "views": "708 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Пока живёшь — учись жить ✨ Words to keep | Seneca #shorts, 708 просмотров\""
+   "views": "763 просмотра",
+   "a11y": "Воспроизвести короткое видео \"Пока живёшь — учись жить ✨ Words to keep | Seneca #shorts, 763 просмотра\""
   },
   {
    "id": "N-99DrrtTBU",
    "title": "Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts",
-   "views": "660 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts, 660 просмотров\""
+   "views": "685 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts, 685 просмотров\""
   },
   {
    "id": "O_AdQlCECak",
    "title": "Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts",
-   "views": "941 просмотр",
-   "a11y": "Воспроизвести короткое видео \"Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts, 941 просмотр\""
+   "views": "940 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts, 940 просмотров\""
   },
   {
    "id": "JlBFZaRcgAI",
    "title": "Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts",
-   "views": "843 просмотра",
-   "a11y": "Воспроизвести короткое видео \"Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts, 843 просмотра\""
+   "views": "834 просмотра",
+   "a11y": "Воспроизвести короткое видео \"Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts, 834 просмотра\""
   },
   {
    "id": "Izl4WoK8gDs",
@@ -79,14 +91,14 @@
   {
    "id": "_KAkT_vZ8F4",
    "title": "Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts",
-   "views": "515 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts, 515 просмотров\""
+   "views": "516 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts, 516 просмотров\""
   },
   {
    "id": "GtEGS1lUXIM",
    "title": "Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts",
-   "views": "612 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts, 612 просмотров\""
+   "views": "613 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts, 613 просмотров\""
   },
   {
    "id": "dUie49tmaC8",
@@ -97,8 +109,8 @@
   {
    "id": "HQR2WewFVWQ",
    "title": "Счастье зависит от нас самих ✨ Aristotle + 2 more #shorts",
-   "views": "531 просмотр",
-   "a11y": "Воспроизвести короткое видео \"Счастье зависит от нас самих ✨ Aristotle + 2 more #shorts, 531 просмотр\""
+   "views": "532 просмотра",
+   "a11y": "Воспроизвести короткое видео \"Счастье зависит от нас самих ✨ Aristotle + 2 more #shorts, 532 просмотра\""
   },
   {
    "id": "2JO-pSUStKs",
@@ -291,83 +303,85 @@
    "title": "Доброе слово и кошке приятно 🤍 Три мысли на сегодня | Russian proverb #shorts",
    "views": "184 просмотра",
    "a11y": "Воспроизвести короткое видео \"Доброе слово и кошке приятно 🤍 Три мысли на сегодня | Russian proverb #shorts, 184 просмотра\""
-  },
-  {
-   "id": "BhqWvoke4_4",
-   "title": "Лови мгновение, как можно меньше доверяя будущему ✨ Horace + 2 more #shorts",
-   "views": "16 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Лови мгновение, как можно меньше доверяя будущему ✨ Horace + 2 more #shorts, 16 просмотров\""
-  },
-  {
-   "id": "tG0BTq9myKs",
-   "title": "Если хочешь победить весь мир, победи себя ✨ Words to keep | Fyodor Dostoevsky #shorts",
-   "views": "56 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Если хочешь победить весь мир, победи себя ✨ Words to keep | Fyodor Dostoevsky #shorts, 56 просмотров\""
   }
  ],
  "rss_status": 200,
  "rss": [
   {
+   "id": "lQjjw2iwgvg",
+   "published": "2026-11-21T16:00:33+00:00",
+   "title": "Терпение и труд всё перетрут ✨ Russian proverb + 2 more #shorts",
+   "views": 208,
+   "desc": "Три мысли классиков на акварели: Русская пословица · Жан-Жак Руссо · Иван Тургенев.\nThree timeless thoughts on watercolor: Russian proverb · Jean-Jacques Rousseau · Ivan Turgenev.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
+  },
+  {
+   "id": "cWza902RnTs",
+   "published": "2026-11-21T11:00:25+00:00",
+   "title": "Никто не обнимет необъятного ✨ Words to keep | Kozma Prutkov #shorts",
+   "views": 302,
+   "desc": "Три мысли классиков на акварели: Козьма Прутков · Лао-цзы · Оскар Уайльд.\nThree timeless thoughts on watercolor: Kozma Prutkov · Lao Tzu · Oscar Wilde.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
+  },
+  {
    "id": "4hcLXa31iHA",
    "published": "2026-11-21T06:00:25+00:00",
    "title": "5 МЫСЛЕЙ, КОТОРЫЕ ДЕЛАЮТ СИЛЬНЕЕ ✨ Платон, Марк Аврелий, Толстой #shorts",
-   "views": 105,
+   "views": 1045,
    "desc": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. Упади семь раз — поднимись восемь. — Японская пословица\n2. Самая большая победа — победа над собой. — Платон\n3. Ни с кем не случается ничего такого, чего он не в силах вынести. — Марк Аврелий\n4. Нет лёгкого пути от земли к звёздам. — Сенека\n5. Нет сильнее тех двух воинов — терпение и время. — Лев Толстой\n\nFive timeless thoughts: Japanese proverb · Plato · Marcus Aurelius · Seneca · Leo Tolstoy.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts"
   },
   {
    "id": "WTV1oneh7EQ",
    "published": "2026-11-20T16:00:32+00:00",
    "title": "5 МЫСЛЕЙ О НАСТОЯЩЕМ ЧЕЛОВЕКЕ ✨ Чехов, Шекспир, Вольтер #shorts",
-   "views": 954,
+   "views": 1069,
    "desc": "Пять мыслей на одной карточке — сохрани, чтобы перечитать.\nКакая — про тебя? Напиши номер в комментариях.\n\n1. В человеке должно быть всё прекрасно: и лицо, и одежда, и душа, и мысли. — Антон Чехов\n2. Люби всех, доверяй немногим, не делай зла никому. — Уильям Шекспир\n3. Суди о человеке по его вопросам, а не по ответам. — Вольтер\n4. Быть добрым легко; трудно быть справедливым. — Виктор Гюго\n5. Нет наследства богаче честности. — Уильям Шекспир\n\nFive timeless thoughts: Anton Chekhov · William Shakespeare · Voltaire · Victor Hugo.\n\n#цитаты #мудрость #жизнь #цитатыосмысле #мудрыеслова #quotes #wisdom #shorts"
   },
   {
    "id": "fGe6Vnlo_qQ",
    "published": "2026-11-20T11:00:25+00:00",
    "title": "На свете счастья нет, но есть покой и воля ✨ Words to keep | Alexander Pushkin #shorts",
-   "views": 431,
+   "views": 585,
    "desc": "Три мысли классиков на акварели: Александр Пушкин · Теренций · Льюис Кэрролл.\nThree timeless thoughts on watercolor: Alexander Pushkin · Terence · Lewis Carroll.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
   },
   {
    "id": "5v-ZCvVHLpg",
    "published": "2026-11-20T06:00:43+00:00",
    "title": "Любовь побеждает всё 🤍 Три мысли на сегодня | Virgil #shorts",
-   "views": 211,
+   "views": 268,
    "desc": "Три мысли классиков на акварели: Вергилий · Марк Аврелий · Эпиктет.\nThree timeless thoughts on watercolor: Virgil · Marcus Aurelius · Epictetus.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
   },
   {
    "id": "w5lhb9vTxlc",
    "published": "2026-11-19T16:00:31+00:00",
    "title": "Молодость счастлива тем, что у неё есть будущее ✨ Nikolai Gogol + 2 more #shorts",
-   "views": 931,
+   "views": 983,
    "desc": "Три мысли классиков на акварели: Николай Гоголь · Иоганн Вольфганг Гёте · Марк Твен.\nThree timeless thoughts on watercolor: Nikolai Gogol · Johann Wolfgang von Goethe · Mark Twain.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
   },
   {
    "id": "c4s7hqTO1Xc",
    "published": "2026-11-19T11:00:41+00:00",
    "title": "Пока живёшь — учись жить ✨ Words to keep | Seneca #shorts",
-   "views": 708,
+   "views": 762,
    "desc": "Три мысли классиков на акварели: Сенека · Казахская пословица · Джордж Элиот.\nThree timeless thoughts on watercolor: Seneca · Kazakh proverb · George Eliot.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
   },
   {
    "id": "N-99DrrtTBU",
    "published": "2026-11-19T06:00:34+00:00",
    "title": "Всему своё время, и время всякой вещи под небом 🤍 Три мысли на сегодня | Ecclesiastes #shorts",
-   "views": 660,
+   "views": 685,
    "desc": "Три мысли классиков на акварели: Екклесиаст · Антон Чехов · Лев Толстой.\nThree timeless thoughts on watercolor: Ecclesiastes · Anton Chekhov · Leo Tolstoy.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
   },
   {
    "id": "O_AdQlCECak",
    "published": "2026-11-18T16:00:35+00:00",
    "title": "Я велик — я вмещаю множества ✨ Walt Whitman + 2 more #shorts",
-   "views": 941,
+   "views": 940,
    "desc": "Три мысли классиков на акварели: Уолт Уитмен · Фридрих Ницше · Джебран Халиль Джебран.\nThree timeless thoughts on watercolor: Walt Whitman · Nietzsche · Kahlil Gibran.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
   },
   {
    "id": "JlBFZaRcgAI",
    "published": "2026-11-18T11:00:29+00:00",
    "title": "Наша жизнь растрачивается на мелочи. Упрощай, упрощай ✨ Words to keep | Henry David Thoreau #shorts",
-   "views": 843,
+   "views": 834,
    "desc": "Три мысли классиков на акварели: Генри Дэвид Торо · Лев Толстой · Владимир Маяковский.\nThree timeless thoughts on watercolor: Henry David Thoreau · Leo Tolstoy · Vladimir Mayakovsky.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
   },
   {
@@ -381,14 +395,14 @@
    "id": "_KAkT_vZ8F4",
    "published": "2026-11-17T16:00:37+00:00",
    "title": "Что имеем — не храним; потерявши — плачем ✨ Kozma Prutkov + 2 more #shorts",
-   "views": 515,
+   "views": 516,
    "desc": "Три мысли классиков на акварели: Козьма Прутков · Лао-цзы · Василий Жуковский.\nThree timeless thoughts on watercolor: Kozma Prutkov · Lao Tzu · Vasily Zhukovsky.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
   },
   {
    "id": "GtEGS1lUXIM",
    "published": "2026-11-17T11:00:38+00:00",
    "title": "Безумство храбрых — вот мудрость жизни ✨ Words to keep | Maxim Gorky #shorts",
-   "views": 612,
+   "views": 613,
    "desc": "Три мысли классиков на акварели: Максим Горький · Роберт Льюис Стивенсон · Лао-цзы.\nThree timeless thoughts on watercolor: Maxim Gorky · Robert Louis Stevenson · Lao Tzu.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
   },
   {
@@ -397,20 +411,6 @@
    "title": "И скучно и грустно, и некому руку подать в минуту… 🤍 Три мысли на сегодня | Lermontov #shorts",
    "views": 749,
    "desc": "Три мысли классиков на акварели: Михаил Лермонтов · Эмили Дикинсон · Лао-цзы.\nThree timeless thoughts on watercolor: Mikhail Lermontov · Emily Dickinson · Lao Tzu.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
-  },
-  {
-   "id": "HQR2WewFVWQ",
-   "published": "2026-11-16T16:00:23+00:00",
-   "title": "Счастье зависит от нас самих ✨ Aristotle + 2 more #shorts",
-   "views": 531,
-   "desc": "Три мысли классиков на акварели: Аристотель · Александр Грибоедов · Фёдор Тютчев.\nThree timeless thoughts on watercolor: Aristotle · Alexander Griboyedov · Fyodor Tyutchev.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
-  },
-  {
-   "id": "2JO-pSUStKs",
-   "published": "2026-11-16T11:00:36+00:00",
-   "title": "Ты навсегда в ответе за всех, кого приручил ✨ Words to keep | Antoine de Saint-Exupéry #shorts",
-   "views": 667,
-   "desc": "Три мысли классиков на акварели: Антуан де Сент-Экзюпери · Александр Блок · Лев Толстой.\nThree timeless thoughts on watercolor: Antoine de Saint-Exupéry · Alexander Blok · Leo Tolstoy.\nРусский текст и английский перевод.\n\n#цитаты #мудрость #цитатыизкниг #quotes #wisdom #watercolor #shorts"
   }
  ],
  "rss_tries": 1
