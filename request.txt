@@ -1,15 +1,12 @@
-# 21.11 10:12 МСК кадры топа ниш и наших новых, «Білесің бе?» 10:00
-@bilesin_be_kz
-@LivingLinesTV
-@cartoon_friend3
+# 21.11 14:30 МСК узбекская ниша: что смотрят в Узбекистане (под переделку Kim yutadi?)
 @kimyutadi_uz
-info:7Dsdyue7g0Y
-info:XyMgyd1b3QQ
-info:oTREyEwhT1Q
-info:3B5cChUZeZU
-info:d12Mk5yTGGo
-info:WTV1oneh7EQ
-info:4hcLXa31iHA
-info:jUEf1BN18iE
-info:WEDzKbIDJY4
-info:TXuIY-vYzRE
+scan:search:qaysi shahar yutadi
+scan:search:sharlar poygasi
+scan:search:marble race uzbekistan
+scan:search:qiziqarli faktlar
+scan:search-views:qiziqarli faktlar
+scan:hashtag:uzbekistan
+scan:hashtag:qiziqarli
+scan:search:o'zbekcha shorts
+scan:search:mashina poygasi
+scan:search-month:1000 ta shar
