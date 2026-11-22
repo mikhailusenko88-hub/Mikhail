@@ -1,4 +1,2 @@
-# 2026-11-22 19:45 — коробка 1 + новое: золотые шары. Проба вида на готовом движении lt2 (золото; золото+серебро) и новая физика seed=7
-gl1 anim=out/lt2/anim.npz pal=gold frames=110 end=240 res=720x1280 samples=48 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80
-gl2 anim=out/lt2/anim.npz pal=goldsilver frames=110 end=240 res=720x1280 samples=48 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80
-gs7 seed=7 pal=gold frames=60,66,70,90,130 end=240 res=540x960 samples=24 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80
+# 2026-11-22 20:05 — золотая коробка: полная физика seed=7 до 240-го кадра (проба gs7 досчитала только до 130)
+gs7f seed=7 pal=gold frames=240 end=240 res=540x960 samples=16 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80
