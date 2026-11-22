@@ -50,11 +50,16 @@
     "de": {
      "engine": "piper",
      "model": "de/de_DE/thorsten/high/de_DE-thorsten-high"
+    },
+    "hi": {
+     "engine": "kokoro",
+     "lang": "h",
+     "voice": "hm_omega"
     }
    }
   },
   "Пик": {
-   "_": "Проба 22.11: голос источника поднят до 340 Гц и медленнее ×0,88 — английский 90→100%, испанский 85→95% понятых слов; можно на 15% длиннее русской реплики (Пик по-русски говорит быстро). Немецкий (проба 22.11 вечер): источник — Chatterbox по-немецки с образцом Kerstin, медленнее 0,9 → 86% понятых слов (было 50–59% с Piper), высота Пика та же 375 Гц.",
+   "_": "Проба 22.11: голос источника поднят до 340 Гц и медленнее ×0,88 — английский 90→100%, испанский 85→95% понятых слов; можно на 15% длиннее русской реплики (Пик по-русски говорит быстро). Немецкий (проба 22.11 вечер): источник — Chatterbox по-немецки с образцом Kerstin, медленнее 0,9 → 86% понятых слов (было 50–59% с Piper), высота Пика та же 375 Гц. 22.11 поздно: немецкий Пик спокойнее (cfg 0,3, эмоции 0,4) → 100 % по точному распознавателю.",
    "pre_all": {
     "f0": 340,
     "F": 1.1
@@ -66,7 +71,14 @@
      "engine": "mtl",
      "lang": "de",
      "ref_piper": "de/de_DE/kerstin/low/de_DE-kerstin-low",
-     "speed": 0.9
+     "speed": 0.9,
+     "cfg": 0.3,
+     "exag": 0.4
+    },
+    "hi": {
+     "engine": "kokoro",
+     "lang": "h",
+     "voice": "hf_alpha"
     }
    }
   },
@@ -75,6 +87,29 @@
     "de": {
      "engine": "piper",
      "model": "de/de_DE/thorsten/high/de_DE-thorsten-high"
+    },
+    "hi": {
+     "engine": "kokoro",
+     "lang": "h",
+     "voice": "hf_alpha"
+    }
+   }
+  },
+  "Барсик": {
+   "src": {
+    "hi": {
+     "engine": "kokoro",
+     "lang": "h",
+     "voice": "hf_beta"
+    }
+   }
+  },
+  "Рон": {
+   "src": {
+    "hi": {
+     "engine": "kokoro",
+     "lang": "h",
+     "voice": "hf_beta"
     }
    }
   }
@@ -85,9 +120,11 @@
   "36c": "36c"
  },
  "whisper_lang": {
-  "hi": "fw:large-v3-turbo"
+  "hi": "fw:large-v3-turbo",
+  "de": "fw:large-v3-turbo"
  },
  "by_chars": [
   "hi"
- ]
+ ],
+ "_hi": "Хинди (проба 22.11, faster-whisper large-v3-turbo, по буквам): Барсик hf_beta 98 %, Рон hf_beta 100 %, Филя hf_alpha 100 %, Топа hm_omega 100 %, Пик hf_alpha (поднят, ×0,88) 93 %."
 }
