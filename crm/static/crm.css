@@ -348,3 +348,4 @@ details.visit>summary .d{font-weight:400}
 .warn-t{color:var(--warn)}
 .site-ux th.grp{background:var(--sunk);text-align:left;font-size:12.5px}
 .site-ux td .d{font-size:12px}
+details.src{width:auto}

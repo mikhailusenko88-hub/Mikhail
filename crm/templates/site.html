@@ -83,12 +83,10 @@
 {% set ux = r['ux'] %}
 <h2 id="ux">Где теряем людей</h2>
 {% if ux['pages'] %}
-<div class="panel tbl"><table class="site-ux"><thead><tr><th>Страница</th><th class="r">Людей</th><th class="r">Время</th><th class="r">До середины</th><th class="r">До конца</th><th class="r">Ушли с неё</th><th class="r">Зашли сюда и сразу ушли</th></tr></thead><tbody>
-{% for p in ux['pages'] %}<tr><td>{{ p['name'] }}{% if p['slow'] %}<div class="d warn-t">медленно грузилась: {{ p['slow'] }}</div>{% endif %}{% if p['dead'] or p['rage'] %}<div class="d warn-t">{% if p['dead'] %}нажимали «в пустоту»: {{ p['dead'] }}{% endif %}{% if p['dead'] and p['rage'] %} · {% endif %}{% if p['rage'] %}много нажатий подряд: {{ p['rage'] }}{% endif %}</div>{% endif %}</td>
-<td class="r num">{{ p['who'] }}</td><td class="r num">{% if p['timed'] %}{{ fmt_sec(p['median_sec']) }}{% else %}—{% endif %}</td>
-<td class="r num">{{ p['s50'] }}</td><td class="r num">{{ p['s90'] }}</td><td class="r num">{{ p['exit'] }}</td><td class="r num">{% if p['landing'] %}{{ p['bounce'] }} из {{ p['landing'] }}{% else %}—{% endif %}</td></tr>{% endfor %}
-</tbody></table></div>
-<p class="d site-note">«Время» — сколько обычно смотрят страницу (половина людей меньше, половина больше). «До середины» и «до конца» — сколько человек долистали. «Ушли с неё» — последняя страница перед уходом с сайта. «Зашли сюда и сразу ушли» — первая страница, меньше 10 секунд и ничего не нажимали. Считается с 23.11.2026.</p>
+<div class="panel list">{% for p in ux['pages'] %}<div class="row"><div class="grow"><div class="t">{{ p['name'] }}</div>
+<div class="d">{{ p['who'] }} чел.{% if p['timed'] %} · смотрят {{ fmt_sec(p['median_sec']) }}{% endif %} · до середины {{ p['s50'] }} · до конца {{ p['s90'] }} · <b>ушли с неё {{ p['exit'] }}</b>{% if p['landing'] %} · вошли сюда {{ p['landing'] }}, из них сразу ушли {{ p['bounce'] }}{% endif %}</div>
+{% if p['slow'] or p['dead'] or p['rage'] %}<div class="d warn-t">{% if p['slow'] %}медленно грузилась: {{ p['slow'] }} · {% endif %}{% if p['dead'] %}нажимали — ничего не произошло: {{ p['dead'] }}{% endif %}{% if p['dead'] and p['rage'] %} · {% endif %}{% if p['rage'] %}много нажатий подряд: {{ p['rage'] }}{% endif %}</div>{% endif %}</div></div>{% endfor %}</div>
+<p class="d site-note">«Смотрят» — сколько обычно страница на экране (половина людей меньше, половина больше). «До середины» и «до конца» — сколько человек долистали. «Ушли с неё» — последняя страница перед уходом с сайта. «Сразу ушли» — это была первая страница, меньше 10 секунд и ничего не нажимали. Считается с 23.11.2026.</p>
 {% else %}<div class="panel list"><div class="row"><span class="d">Появится после первых заходов с новым счётчиком.</span></div></div>{% endif %}
 
 {% if ux['blocks'] %}
@@ -103,7 +101,7 @@
 {% if ux['clicks'] or ux['errors'] %}
 <h2>Что мешает</h2>
 <div class="panel tbl"><table class="site-ux"><thead><tr><th>Где</th><th>Что</th><th class="r">Людей</th></tr></thead><tbody>
-{% for c in ux['clicks'] %}<tr><td>{{ c['page'] }}</td><td>{% if c['what'] == 'dead' %}Нажимали — ничего не произошло{% else %}Нажимали много раз подряд{% endif %}: <span class="mono">{{ c['on'] }}</span></td><td class="r num">{{ c['who'] }}</td></tr>{% endfor %}
+{% for c in ux['clicks'] %}<tr><td>{{ c['page'] }}</td><td>{% if c['what'] == 'dead' %}Ничего не произошло{% else %}Много раз подряд{% endif %} — {{ c['label'] }}</td><td class="r num">{{ c['who'] }}</td></tr>{% endfor %}
 {% for e in ux['errors'] %}<tr><td>{{ e['page'] }}</td><td>Ошибка на странице: <span class="mono">{{ e['msg'] }}</span></td><td class="r num">{{ e['who'] }}</td></tr>{% endfor %}
 </tbody></table></div>
 <p class="d site-note">«Ничего не произошло» — люди нажали на то, что выглядит нажимаемым (фото, цена, текст), а страница не ответила: кандидат сделать там кнопку или ссылку. «Много раз подряд» — три и больше нажатий в одно место за секунду: что-то не срабатывает или срабатывает медленно.</p>

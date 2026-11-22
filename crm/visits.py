@@ -63,7 +63,10 @@ BLOCK_NAMES = {"top": "Первый экран", "catalog": "Каталог", "c
                "pro": "Дизайнерам", "order": "Заявка", "terms": "Доставка и оплата", "footer": "Подвал (контакты)",
                "photo": "Фото / 3D товара", "buy": "Цена и кнопки заказа", "colors": "Выбор цвета", "wall": "Расчёт на стену",
                "about": "Описание и размеры", "rel": "Ещё в разделе", "list": "Список товаров", "text": "Текст страницы",
-               "cart": "Корзина", "ship": "Доставка в другой город", "faq": "Вопросы и ответы"}
+               "cart": "Корзина", "ship": "Доставка в другой город", "faq": "Вопросы и ответы",
+               "title": "Название и описание", "gallery": "Ещё фото", "profile": "Профиль (сечение)", "specs": "Характеристики",
+               "reviews": "Отзывы", "with": "С этим берут", "head": "Заголовок раздела", "sections": "Вкладки разделов",
+               "more": "Другие статьи", "other": "Вне блоков"}
 PAGE_KINDS = {"home": "Главная", "product": "Страница товара", "catalog": "Раздел каталога", "article": "Статья", "info": "Другие страницы"}
 APPS = [(re.compile(r"Telegram", re.I), "Telegram"), (re.compile(r"VKAndroidApp|VKClient|com\.vk\.|vkontakte", re.I), "ВКонтакте"),
         (re.compile(r"Instagram"), "Instagram"), (re.compile(r"FBAN|FBAV|FB_IAB"), "Facebook"), (re.compile(r"avito", re.I), "Авито"),
@@ -243,6 +246,26 @@ def fmt_sec(n: int) -> str:
 
 def block_name(blk: str) -> str:
     return BLOCK_NAMES.get(blk, blk)
+
+
+TAG_NAMES = {"img": "фото", "h1": "заголовок", "h2": "заголовок", "h3": "заголовок", "b": "текст", "span": "текст", "p": "текст",
+             "div": "блок", "li": "пункт списка", "td": "таблица", "svg": "значок", "section": "блок", "main": "страница",
+             "body": "страница", "html": "страница", "footer": "подвал", "picture": "фото"}
+
+
+def click_label(on: str) -> str:
+    """«buy:b#price «1 950»» → «Цена и кнопки заказа: текст «1 950»» (как место нажатия выглядит для человека)."""
+    blk, _, rest = (on or "").partition(":")
+    tag, _, text = rest.partition(" «")
+    tag = re.split(r"[#.]", tag, 1)[0]
+    what = TAG_NAMES.get(tag, tag or "место")
+    return f"{block_name(blk)}: {what}" + (f" «{text}" if text else "")
+
+
+def page_short(path: str, catalog: Any = None) -> str:
+    """Короткое название страницы для ленты и таблиц: у товара — до первой запятой."""
+    n = page_name(path, catalog)
+    return n.split(",", 1)[0] if path.startswith("/p/") else n
 
 
 ENGAGED = {"item", "calc", "calcpanel", "3d", "copy", "form", "lead", "leadfail", "iv", "search", "cat", "more",
@@ -524,7 +547,7 @@ class Visits:
                 w["pk"].add(page_kind(r["key"]))
                 if not w["src"] and r["src"] != INTERNAL:
                     w["src"] = r["src"]
-                w["seq"].append({"path": r["key"], "name": page_name(r["key"], cat), "at": r["at"], "sec": 0, "scroll": 0,
+                w["seq"].append({"path": r["key"], "name": page_short(r["key"], cat), "at": r["at"], "sec": 0, "scroll": 0,
                                  "blk": {}, "dead": 0, "rage": 0, "load": 0})
             elif k in ("time", "scroll", "blk", "dead", "rage", "load", "err"):
                 path, sep, rest = r["key"].partition("#" if k == "blk" else "|")
@@ -593,7 +616,8 @@ class Visits:
             blk = sorted(x["blk"].items(), key=lambda kv: -kv[1])
             pages.append({"path": x["path"], "name": x["name"], "at": x["at"], "sec": x["sec"], "scroll": x["scroll"],
                           "load": x["load"], "dead": x["dead"], "rage": x["rage"],
-                          "dead_on": x.get("dead_on", [])[:5], "rage_on": x.get("rage_on", [])[:5], "err": x.get("err", [])[:3],
+                          "dead_on": [click_label(o) for o in x.get("dead_on", [])[:5]], "rage_on": [click_label(o) for o in x.get("rage_on", [])[:5]],
+                          "dead_raw": x.get("dead_on", [])[:5], "rage_raw": x.get("rage_on", [])[:5], "err": x.get("err", [])[:3],
                           "blk": [(b, block_name(b), s) for b, s in blk[:8]]})
         src = w["src"] or DIRECT
         return {"day": w["day"], "first": w["first"], "last": w["last"], "src": src, "app": w["app"], "camp": w["camp"],
@@ -804,7 +828,7 @@ class Visits:
         pages = []
         for path, p in pg.items():
             n = len(p["who"])
-            pages.append({"path": path, "name": page_name(path, cat), "who": n, "median_sec": _median(p["secs"]),
+            pages.append({"path": path, "name": page_short(path, cat), "who": n, "median_sec": _median(p["secs"]),
                           "timed": len(p["secs"]), "s50": len(p["s50"]), "s90": len(p["s90"]), "exit": len(p["exit"]),
                           "load_med": _median(p["loads"]), "slow": sum(1 for x in p["loads"] if x > 4000),
                           "dead": len(p["dead"]), "rage": len(p["rage"]),
@@ -814,10 +838,10 @@ class Visits:
         for (kind, b), d in blocks.items():
             blk.append({"kind": kind, "kind_name": PAGE_KINDS.get(kind, kind), "blk": b, "name": block_name(b), "who": len(d["who"]),
                         "median_sec": _median(list(d["secs"].values()))})
-        blk.sort(key=lambda x: (list(PAGE_KINDS).index(x["kind"]) if x["kind"] in PAGE_KINDS else 9, -x["who"], x["name"]))
-        clicks = sorted(({"what": what, "page": page_name(path, cat), "path": path, "on": on, "who": len(ws)}
+        blk.sort(key=lambda x: (list(PAGE_KINDS).index(x["kind"]) if x["kind"] in PAGE_KINDS else 9, -x["who"], -x["median_sec"], x["name"]))
+        clicks = sorted(({"what": what, "page": page_short(path, cat), "path": path, "on": on, "label": click_label(on), "who": len(ws)}
                          for (what, path, on), ws in dead.items()), key=lambda x: (-x["who"], x["what"], x["page"]))
-        errors = sorted(({"page": page_name(path, cat), "msg": e, "who": len(ws)} for (path, e), ws in errs.items()),
+        errors = sorted(({"page": page_short(path, cat), "msg": e, "who": len(ws)} for (path, e), ws in errs.items()),
                         key=lambda x: -x["who"])
         return {"pages": pages[:60], "blocks": blk[:80], "clicks": clicks[:40], "errors": errors[:20], "has_time": has_time}
 
