@@ -1,0 +1,428 @@
+[
+ {
+  "slug": "barsik",
+  "name": "Барсик",
+  "who": "котёнок, голос мальчика",
+  "ref": "It knows! The red tip always points north. Let's go to the room. The book will explain it.",
+  "variants": [
+   {
+    "n": 1,
+    "engine": "kokoro",
+    "voice": "af_heart",
+    "target": {
+     "engine": "kokoro",
+     "voice": "af_heart",
+     "speed": 1.0,
+     "f0": 260,
+     "F": 1.08,
+     "range": 1.1,
+     "dur": 1.0
+    },
+    "f0": 256.9,
+    "range_st": 9.3,
+    "hnr": 11.4,
+    "f0_raw": 201.7,
+    "heard": "It knows the red tip always points north. Let's go to the room. The book will explain it.",
+    "clear": 100.0,
+    "sec": 7.22
+   },
+   {
+    "n": 2,
+    "engine": "kokoro",
+    "voice": "am_puck",
+    "target": {
+     "engine": "kokoro",
+     "voice": "am_puck",
+     "speed": 1.0,
+     "f0": 250,
+     "F": 1.18,
+     "range": 1.15,
+     "dur": 1.0
+    },
+    "f0": 250.1,
+    "range_st": 9.3,
+    "hnr": 13.4,
+    "f0_raw": 119.3,
+    "heard": "It knows the red tip always points north. Let's go to the room, the book will explain it.",
+    "clear": 100.0,
+    "sec": 6.65
+   },
+   {
+    "n": 3,
+    "engine": "edge",
+    "voice": "en-US-AnaNeural",
+    "target": {
+     "engine": "edge",
+     "voice": "en-US-AnaNeural",
+     "rate": "+0%",
+     "f0": 260,
+     "F": 1.0,
+     "range": 1.0,
+     "dur": 1.0
+    },
+    "f0": 259.5,
+    "range_st": 5.3,
+    "hnr": 12.6,
+    "f0_raw": 304.9,
+    "heard": "It knows. The red tip always points north. Let's go to the room. The book will explain it.",
+    "clear": 100.0,
+    "sec": 10.53
+   }
+  ]
+ },
+ {
+  "slug": "pik",
+  "name": "Пик",
+  "who": "мышонок, голос девочки",
+  "ref": "Up north it's cold. Snow and polar bears! A magnet pulls iron things. A nail, a clip, a little key.",
+  "variants": [
+   {
+    "n": 1,
+    "engine": "kokoro",
+    "voice": "af_bella",
+    "target": {
+     "engine": "kokoro",
+     "voice": "af_bella",
+     "speed": 1.05,
+     "f0": 410,
+     "F": 1.12,
+     "range": 1.1,
+     "dur": 1.0
+    },
+    "f0": 403.9,
+    "range_st": 7.3,
+    "hnr": 14.7,
+    "f0_raw": 203.4,
+    "heard": "Up north it's cold, snow and polar bears. A magnet pulls iron things. A nail a clip a little key.",
+    "clear": 100.0,
+    "sec": 9.0
+   },
+   {
+    "n": 2,
+    "engine": "kokoro",
+    "voice": "af_heart",
+    "target": {
+     "engine": "kokoro",
+     "voice": "af_heart",
+     "speed": 1.05,
+     "f0": 410,
+     "F": 1.15,
+     "range": 1.1,
+     "dur": 1.0
+    },
+    "f0": 407.9,
+    "range_st": 9.1,
+    "hnr": 12.5,
+    "f0_raw": 204.4,
+    "heard": "Up north it's cold, snow and polar bears. A magnet pulls iron things, a nail a clip a little key.",
+    "clear": 100.0,
+    "sec": 8.43
+   },
+   {
+    "n": 3,
+    "engine": "edge",
+    "voice": "en-US-AnaNeural",
+    "target": {
+     "engine": "edge",
+     "voice": "en-US-AnaNeural",
+     "rate": "+5%",
+     "f0": 410,
+     "F": 1.06,
+     "range": 1.0,
+     "dur": 1.0
+    },
+    "f0": 407.1,
+    "range_st": 6.1,
+    "hnr": 14.6,
+    "f0_raw": 292.1,
+    "heard": "Up north it's cold. Snow and polar bears. A magnet pulls iron things. A nail, a clip, a little key.",
+    "clear": 100.0,
+    "sec": 11.92
+   }
+  ]
+ },
+ {
+  "slug": "ron",
+  "name": "Рон",
+  "who": "щенок, голос мальчика, энергичный",
+  "ref": "Look! The arrow points that way again! Oh! My head is spinning. But the arrow doesn't care!",
+  "variants": [
+   {
+    "n": 1,
+    "engine": "kokoro",
+    "voice": "af_heart",
+    "target": {
+     "engine": "kokoro",
+     "voice": "af_heart",
+     "speed": 1.0,
+     "f0": 300,
+     "F": 1.1,
+     "range": 1.3,
+     "dur": 1.0
+    },
+    "f0": 298.8,
+    "range_st": 9.5,
+    "hnr": 10.9,
+    "f0_raw": 206.0,
+    "heard": "Look, the arrow points that way again. Oh, my head is spinning, but the arrow doesn't care.",
+    "clear": 100.0,
+    "sec": 7.03
+   },
+   {
+    "n": 2,
+    "engine": "kokoro",
+    "voice": "am_puck",
+    "target": {
+     "engine": "kokoro",
+     "voice": "am_puck",
+     "speed": 1.0,
+     "f0": 290,
+     "F": 1.2,
+     "range": 1.3,
+     "dur": 1.0
+    },
+    "f0": 288.0,
+    "range_st": 11.5,
+    "hnr": 11.9,
+    "f0_raw": 115.4,
+    "heard": "Look, the arrow points that way again. Oh, my head is spinning, but the arrow doesn't care.",
+    "clear": 100.0,
+    "sec": 6.47
+   },
+   {
+    "n": 3,
+    "engine": "edge",
+    "voice": "en-US-AnaNeural",
+    "target": {
+     "engine": "edge",
+     "voice": "en-US-AnaNeural",
+     "rate": "+0%",
+     "f0": 300,
+     "F": 1.02,
+     "range": 1.3,
+     "dur": 1.0
+    },
+    "f0": 299.0,
+    "range_st": 9.4,
+    "hnr": 11.5,
+    "f0_raw": 306.0,
+    "heard": "Look! The arrow points that way again. Oh! My head is spinning. But the arrow doesn't care.",
+    "clear": 100.0,
+    "sec": 11.3
+   }
+  ]
+ },
+ {
+  "slug": "filya",
+  "name": "Филя",
+  "who": "зайчонок, голос мальчика, мягкий",
+  "ref": "What if we take the cookie away? Look! The arrow didn't move!",
+  "variants": [
+   {
+    "n": 1,
+    "engine": "kokoro",
+    "voice": "af_nicole",
+    "target": {
+     "engine": "kokoro",
+     "voice": "af_nicole",
+     "speed": 1.0,
+     "f0": 360,
+     "F": 1.12,
+     "range": 1.0,
+     "dur": 1.0
+    },
+    "f0": 355.2,
+    "range_st": 7.5,
+    "hnr": 5.6,
+    "f0_raw": 155.1,
+    "heard": "What if we take the cookie away? Look, the arrow didn't move.",
+    "clear": 100.0,
+    "sec": 6.58
+   },
+   {
+    "n": 2,
+    "engine": "kokoro",
+    "voice": "af_bella",
+    "target": {
+     "engine": "kokoro",
+     "voice": "af_bella",
+     "speed": 1.0,
+     "f0": 360,
+     "F": 1.15,
+     "range": 1.0,
+     "dur": 1.0
+    },
+    "f0": 357.9,
+    "range_st": 7.0,
+    "hnr": 13.1,
+    "f0_raw": 199.2,
+    "heard": "What if we take the cookie away? Look! The arrow didn't move.",
+    "clear": 100.0,
+    "sec": 5.9
+   },
+   {
+    "n": 3,
+    "engine": "edge",
+    "voice": "en-US-AnaNeural",
+    "target": {
+     "engine": "edge",
+     "voice": "en-US-AnaNeural",
+     "rate": "+0%",
+     "f0": 360,
+     "F": 1.05,
+     "range": 1.0,
+     "dur": 1.0
+    },
+    "f0": 356.7,
+    "range_st": 4.8,
+    "hnr": 15.2,
+    "f0_raw": 311.3,
+    "heard": "What if we take the cookie away? Look! The arrow didn't move!",
+    "clear": 100.0,
+    "sec": 7.41
+   }
+  ]
+ },
+ {
+  "slug": "topa",
+  "name": "Топа",
+  "who": "медвежонок, голос мальчика, медленнее",
+  "ref": "It's like the arrow knows where to look. So we can't trick the arrow!",
+  "variants": [
+   {
+    "n": 1,
+    "engine": "kokoro",
+    "voice": "af_heart",
+    "target": {
+     "engine": "kokoro",
+     "voice": "af_heart",
+     "speed": 0.95,
+     "f0": 225,
+     "F": 1.02,
+     "range": 1.0,
+     "dur": 1.08
+    },
+    "f0": 224.6,
+    "range_st": 8.4,
+    "hnr": 11.2,
+    "f0_raw": 191.0,
+    "heard": "It's like the arrow knows where to look. So we can't trick the arrow.",
+    "clear": 100.0,
+    "sec": 6.07
+   },
+   {
+    "n": 2,
+    "engine": "kokoro",
+    "voice": "am_puck",
+    "target": {
+     "engine": "kokoro",
+     "voice": "am_puck",
+     "speed": 0.95,
+     "f0": 210,
+     "F": 1.1,
+     "range": 1.0,
+     "dur": 1.08
+    },
+    "f0": 210.0,
+    "range_st": 15.3,
+    "hnr": 12.4,
+    "f0_raw": 124.2,
+    "heard": "It's like the arrow knows where to look. So we can't trick the arrow.",
+    "clear": 100.0,
+    "sec": 5.75
+   },
+   {
+    "n": 3,
+    "engine": "edge",
+    "voice": "en-US-AnaNeural",
+    "target": {
+     "engine": "edge",
+     "voice": "en-US-AnaNeural",
+     "rate": "-5%",
+     "f0": 230,
+     "F": 0.96,
+     "range": 1.0,
+     "dur": 1.1
+    },
+    "f0": 227.6,
+    "range_st": 5.0,
+    "hnr": 11.6,
+    "f0_raw": 307.0,
+    "heard": "It's like the arrow knows where to look. So we can't trick the arrow.",
+    "clear": 100.0,
+    "sec": 7.94
+   }
+  ]
+ },
+ {
+  "slug": "rasskazchik",
+  "name": "Рассказчик",
+  "who": "взрослый тёплый голос",
+  "ref": "One sunny morning, Barsik and his friends found a little compass. Its red arrow always points the same way. But why?",
+  "variants": [
+   {
+    "n": 1,
+    "engine": "kokoro",
+    "voice": "af_heart",
+    "target": {
+     "engine": "kokoro",
+     "voice": "af_heart",
+     "speed": 0.95,
+     "f0": 0,
+     "F": 1.0,
+     "range": 1.0,
+     "dur": 1.0
+    },
+    "f0": 191.7,
+    "range_st": 7.3,
+    "hnr": 10.8,
+    "f0_raw": 190.5,
+    "heard": "One sunny morning, Bar sick and his friends found a little compass. Its red arrow always points the same way, but why?",
+    "clear": 95.2,
+    "sec": 9.18
+   },
+   {
+    "n": 2,
+    "engine": "kokoro",
+    "voice": "bf_emma",
+    "target": {
+     "engine": "kokoro",
+     "voice": "bf_emma",
+     "speed": 0.95,
+     "f0": 0,
+     "F": 1.0,
+     "range": 1.0,
+     "dur": 1.0
+    },
+    "f0": 181.0,
+    "range_st": 5.2,
+    "hnr": 10.8,
+    "f0_raw": 181.2,
+    "heard": "One sunny morning, Barcic and his friends found a little compass. Its red arrow always points the same way, but why?",
+    "clear": 95.2,
+    "sec": 9.53
+   },
+   {
+    "n": 3,
+    "engine": "edge",
+    "voice": "en-US-EmmaMultilingualNeural",
+    "target": {
+     "engine": "edge",
+     "voice": "en-US-EmmaMultilingualNeural",
+     "rate": "-5%",
+     "f0": 0,
+     "F": 1.0,
+     "range": 1.0,
+     "dur": 1.0
+    },
+    "f0": 164.5,
+    "range_st": 12.4,
+    "hnr": 14.1,
+    "f0_raw": 164.5,
+    "heard": "One sunny morning, Bar sick and his friends found a little compass. Its red arrow always points the same way. But why?",
+    "clear": 95.2,
+    "sec": 9.23
+   }
+  ]
+ }
+]
