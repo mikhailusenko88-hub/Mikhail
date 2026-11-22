@@ -1,0 +1,47 @@
+name: golos-lab
+on:
+  push:
+    branches: [golos-en]
+    paths: ['lab.json', 'dub_lab.py', 'dubcore.py', 'request-lab.txt', 'refs_lab/**', '.github/workflows/golos-lab.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: golos-lab
+  cancel-in-progress: false
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    env:
+      HF_HUB_DISABLE_SYMLINKS_WARNING: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+          key: golos-lab-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q chatterbox-tts --extra-index-url https://download.pytorch.org/whl/cpu
+          pip install -q "kokoro>=0.9.4" piper-tts speechbrain openai-whisper praat-parselmouth soundfile edge-tts --extra-index-url https://download.pytorch.org/whl/cpu
+          python -m spacy download en_core_web_sm -q || true
+          python -c "import torch, numpy; print('torch', torch.__version__, 'numpy', numpy.__version__)"
+      - name: Lab
+        run: python dub_lab.py lab.json
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name golos-lab
+          git config user.email golos-lab@users.noreply.github.com
+          git add -A out_lab || true
+          git commit -m "golos-lab result" || echo nothing
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done

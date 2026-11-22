@@ -1,0 +1,438 @@
+{
+ "_": "Пробы перекраски 22.11.2026: Пик на четырёх языках (4 настройки) и немецкий для остальных героев (источник Piper Kerstin/Thorsten, CC0).",
+ "out": "out_lab",
+ "whisper": "small",
+ "names": {
+  "barsik": "Барсик",
+  "pik": "Пик",
+  "ron": "Рон",
+  "filya": "Филя",
+  "topa": "Топа"
+ },
+ "jobs": [
+  {
+   "key": "pik_en_1",
+   "hero": "pik",
+   "lang": "en",
+   "note": "как было: источник → перекраска → высота",
+   "src": {
+    "engine": "kokoro",
+    "lang": "a",
+    "voice": "af_heart"
+   },
+   "lines": [
+    "Up north it's cold. Snow and polar bears!",
+    "A magnet pulls iron things. A nail, a clip, a little key."
+   ]
+  },
+  {
+   "key": "pik_en_2",
+   "hero": "pik",
+   "lang": "en",
+   "note": "источник поднят до 340 Гц до перекраски",
+   "src": {
+    "engine": "kokoro",
+    "lang": "a",
+    "voice": "af_heart"
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "lines": [
+    "Up north it's cold. Snow and polar bears!",
+    "A magnet pulls iron things. A nail, a clip, a little key."
+   ]
+  },
+  {
+   "key": "pik_en_3",
+   "hero": "pik",
+   "lang": "en",
+   "note": "поднят + медленнее (0,88)",
+   "src": {
+    "engine": "kokoro",
+    "lang": "a",
+    "voice": "af_heart",
+    "speed": 0.88
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "lines": [
+    "Up north it's cold. Snow and polar bears!",
+    "A magnet pulls iron things. A nail, a clip, a little key."
+   ]
+  },
+  {
+   "key": "pik_en_4",
+   "hero": "pik",
+   "lang": "en",
+   "note": "поднят + медленнее + образец из 5 реплик",
+   "src": {
+    "engine": "kokoro",
+    "lang": "a",
+    "voice": "af_heart",
+    "speed": 0.88
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "ref": "refs_lab/pik_ref5.wav",
+   "lines": [
+    "Up north it's cold. Snow and polar bears!",
+    "A magnet pulls iron things. A nail, a clip, a little key."
+   ]
+  },
+  {
+   "key": "pik_es_1",
+   "hero": "pik",
+   "lang": "es",
+   "note": "как было: источник → перекраска → высота",
+   "src": {
+    "engine": "kokoro",
+    "lang": "e",
+    "voice": "ef_dora"
+   },
+   "lines": [
+    "Al norte hace frío. ¡Nieve y osos polares!",
+    "Un imán atrae cosas de hierro. Un clavo, un clip, una llavecita."
+   ]
+  },
+  {
+   "key": "pik_es_2",
+   "hero": "pik",
+   "lang": "es",
+   "note": "источник поднят до 340 Гц до перекраски",
+   "src": {
+    "engine": "kokoro",
+    "lang": "e",
+    "voice": "ef_dora"
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "lines": [
+    "Al norte hace frío. ¡Nieve y osos polares!",
+    "Un imán atrae cosas de hierro. Un clavo, un clip, una llavecita."
+   ]
+  },
+  {
+   "key": "pik_es_3",
+   "hero": "pik",
+   "lang": "es",
+   "note": "поднят + медленнее (0,88)",
+   "src": {
+    "engine": "kokoro",
+    "lang": "e",
+    "voice": "ef_dora",
+    "speed": 0.88
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "lines": [
+    "Al norte hace frío. ¡Nieve y osos polares!",
+    "Un imán atrae cosas de hierro. Un clavo, un clip, una llavecita."
+   ]
+  },
+  {
+   "key": "pik_es_4",
+   "hero": "pik",
+   "lang": "es",
+   "note": "поднят + медленнее + образец из 5 реплик",
+   "src": {
+    "engine": "kokoro",
+    "lang": "e",
+    "voice": "ef_dora",
+    "speed": 0.88
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "ref": "refs_lab/pik_ref5.wav",
+   "lines": [
+    "Al norte hace frío. ¡Nieve y osos polares!",
+    "Un imán atrae cosas de hierro. Un clavo, un clip, una llavecita."
+   ]
+  },
+  {
+   "key": "pik_pt_1",
+   "hero": "pik",
+   "lang": "pt",
+   "note": "как было: источник → перекраска → высота",
+   "src": {
+    "engine": "kokoro",
+    "lang": "p",
+    "voice": "pf_dora"
+   },
+   "lines": [
+    "No norte faz frio. Neve e ursos polares!",
+    "Um ímã puxa coisas de ferro. Um prego, um clipe, uma chavinha."
+   ]
+  },
+  {
+   "key": "pik_pt_2",
+   "hero": "pik",
+   "lang": "pt",
+   "note": "источник поднят до 340 Гц до перекраски",
+   "src": {
+    "engine": "kokoro",
+    "lang": "p",
+    "voice": "pf_dora"
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "lines": [
+    "No norte faz frio. Neve e ursos polares!",
+    "Um ímã puxa coisas de ferro. Um prego, um clipe, uma chavinha."
+   ]
+  },
+  {
+   "key": "pik_pt_3",
+   "hero": "pik",
+   "lang": "pt",
+   "note": "поднят + медленнее (0,88)",
+   "src": {
+    "engine": "kokoro",
+    "lang": "p",
+    "voice": "pf_dora",
+    "speed": 0.88
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "lines": [
+    "No norte faz frio. Neve e ursos polares!",
+    "Um ímã puxa coisas de ferro. Um prego, um clipe, uma chavinha."
+   ]
+  },
+  {
+   "key": "pik_pt_4",
+   "hero": "pik",
+   "lang": "pt",
+   "note": "поднят + медленнее + образец из 5 реплик",
+   "src": {
+    "engine": "kokoro",
+    "lang": "p",
+    "voice": "pf_dora",
+    "speed": 0.88
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "ref": "refs_lab/pik_ref5.wav",
+   "lines": [
+    "No norte faz frio. Neve e ursos polares!",
+    "Um ímã puxa coisas de ferro. Um prego, um clipe, uma chavinha."
+   ]
+  },
+  {
+   "key": "pik_de_1",
+   "hero": "pik",
+   "lang": "de",
+   "note": "как было: источник → перекраска → высота",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/kerstin/low/de_DE-kerstin-low"
+   },
+   "lines": [
+    "Im Norden ist es kalt. Schnee und Eisbären!",
+    "Ein Magnet zieht Dinge aus Eisen an. Einen Nagel, eine Klammer, einen kleinen Schlüssel."
+   ]
+  },
+  {
+   "key": "pik_de_2",
+   "hero": "pik",
+   "lang": "de",
+   "note": "источник поднят до 340 Гц до перекраски",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/kerstin/low/de_DE-kerstin-low"
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "lines": [
+    "Im Norden ist es kalt. Schnee und Eisbären!",
+    "Ein Magnet zieht Dinge aus Eisen an. Einen Nagel, eine Klammer, einen kleinen Schlüssel."
+   ]
+  },
+  {
+   "key": "pik_de_3",
+   "hero": "pik",
+   "lang": "de",
+   "note": "поднят + медленнее (0,88)",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/kerstin/low/de_DE-kerstin-low",
+    "speed": 0.88
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "lines": [
+    "Im Norden ist es kalt. Schnee und Eisbären!",
+    "Ein Magnet zieht Dinge aus Eisen an. Einen Nagel, eine Klammer, einen kleinen Schlüssel."
+   ]
+  },
+  {
+   "key": "pik_de_4",
+   "hero": "pik",
+   "lang": "de",
+   "note": "поднят + медленнее + образец из 5 реплик",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/kerstin/low/de_DE-kerstin-low",
+    "speed": 0.88
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "ref": "refs_lab/pik_ref5.wav",
+   "lines": [
+    "Im Norden ist es kalt. Schnee und Eisbären!",
+    "Ein Magnet zieht Dinge aus Eisen an. Einen Nagel, eine Klammer, einen kleinen Schlüssel."
+   ]
+  },
+  {
+   "key": "barsik_de_k",
+   "hero": "barsik",
+   "lang": "de",
+   "note": "немецкий, источник Kerstin (женский)",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/kerstin/low/de_DE-kerstin-low"
+   },
+   "lines": [
+    "Sie weiß es! Die rote Spitze zeigt immer nach Norden.",
+    "Gehen wir ins Zimmer. Das Buch erklärt es."
+   ]
+  },
+  {
+   "key": "barsik_de_t",
+   "hero": "barsik",
+   "lang": "de",
+   "note": "немецкий, источник Thorsten (мужской)",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/thorsten/high/de_DE-thorsten-high"
+   },
+   "lines": [
+    "Sie weiß es! Die rote Spitze zeigt immer nach Norden.",
+    "Gehen wir ins Zimmer. Das Buch erklärt es."
+   ]
+  },
+  {
+   "key": "ron_de_k",
+   "hero": "ron",
+   "lang": "de",
+   "note": "немецкий, источник Kerstin (женский)",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/kerstin/low/de_DE-kerstin-low"
+   },
+   "lines": [
+    "Schaut mal! Die Nadel zeigt schon wieder dorthin!",
+    "Oh! Mir ist ganz schwindelig. Aber der Nadel ist das egal!"
+   ]
+  },
+  {
+   "key": "ron_de_t",
+   "hero": "ron",
+   "lang": "de",
+   "note": "немецкий, источник Thorsten (мужской)",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/thorsten/high/de_DE-thorsten-high"
+   },
+   "lines": [
+    "Schaut mal! Die Nadel zeigt schon wieder dorthin!",
+    "Oh! Mir ist ganz schwindelig. Aber der Nadel ist das egal!"
+   ]
+  },
+  {
+   "key": "filya_de_k",
+   "hero": "filya",
+   "lang": "de",
+   "note": "немецкий, источник Kerstin (женский)",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/kerstin/low/de_DE-kerstin-low"
+   },
+   "lines": [
+    "Und wenn wir den Keks wegnehmen?",
+    "Schaut! Die Nadel hat sich nicht bewegt!"
+   ]
+  },
+  {
+   "key": "filya_de_t",
+   "hero": "filya",
+   "lang": "de",
+   "note": "немецкий, источник Thorsten (мужской)",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/thorsten/high/de_DE-thorsten-high"
+   },
+   "lines": [
+    "Und wenn wir den Keks wegnehmen?",
+    "Schaut! Die Nadel hat sich nicht bewegt!"
+   ]
+  },
+  {
+   "key": "topa_de_k",
+   "hero": "topa",
+   "lang": "de",
+   "note": "немецкий, источник Kerstin (женский)",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/kerstin/low/de_DE-kerstin-low"
+   },
+   "lines": [
+    "Als ob die Nadel weiß, wohin sie schauen muss.",
+    "Also können wir die Nadel nicht austricksen!"
+   ]
+  },
+  {
+   "key": "topa_de_t",
+   "hero": "topa",
+   "lang": "de",
+   "note": "немецкий, источник Thorsten (мужской)",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/thorsten/high/de_DE-thorsten-high"
+   },
+   "lines": [
+    "Als ob die Nadel weiß, wohin sie schauen muss.",
+    "Also können wir die Nadel nicht austricksen!"
+   ]
+  }
+ ],
+ "labels": {
+  "ru_now": "По-русски, как сейчас.",
+  "en": "Английский.",
+  "es": "Испанский.",
+  "pt": "Португальский.",
+  "de": "Немецкий.",
+  "v1": "Вариант один.",
+  "v2": "Вариант два.",
+  "v3": "Вариант три.",
+  "v4": "Вариант четыре.",
+  "barsik": "Барсик.",
+  "pik": "Пик.",
+  "ron": "Рон.",
+  "filya": "Филя.",
+  "topa": "Топа."
+ }
+}
