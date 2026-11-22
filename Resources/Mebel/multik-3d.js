@@ -2615,7 +2615,7 @@ function winterHQ(g, spec, r) { const time = spec.time || 'day', night = time ==
   // сугробы-кочки
   for (let k = 0; k < 14; k++) { const x = (r() - .5) * 24; if (Math.abs(x) < 4.5) continue; const z = -1 - r() * 7; const d = new THREE.Mesh(G.sph(1, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), snowMat()); d.position.set(x, H(x, z) - .05, z); d.scale.set(.7 + r() * 1.2, .22 + r() * .25, .6 + r() * .8); d.receiveShadow = true; d.castShadow = true; g.add(d); }
   // снеговик, санки, снежки
-  { const sm = placeProp(g, 'snowman', -3.3, 0, -4.4, 1.7, .4); sm.traverse(o => { if (o.isMesh && o.material && o.material.map && o.material.color && o.material.color.r > .9 && o.material.color.g > .9) o.material = snowMat(); }); }
+  if (!spec.noSnowman) { const sm = placeProp(g, 'snowman', -3.3, 0, -4.4, 1.7, .4); sm.traverse(o => { if (o.isMesh && o.material && o.material.map && o.material.color && o.material.color.r > .9 && o.material.color.g > .9) o.material = snowMat(); }); }
   placeProp(g, 'sled', -4.4, 0, .4, 1.5, .7); for (let k = 0; k < 7; k++) { const b = new THREE.Mesh(G.sph(.1 + r() * .04, 14, 10), snowMat()); b.position.set(-5.4 + (r() - .5) * .5, .09, -1.2 + (r() - .5) * .4 - (k > 4 ? 0 : 0)); if (k > 4) b.position.y = .26; b.castShadow = true; g.add(b); }
   // избушка с тёплым окном и дымком
   { const cx = 11.5, cz = -19, hs = gableHouse({ w: 3.4, d: 3, h: 2.1, rh: 1.5, wallMap: grainTex('#8a5a3a'), roof: '#f2f6fc', lit: '#ffc070', chim: '#7a5a48' }); hs.position.set(cx, H(cx, cz) - .05, cz); hs.rotation.y = -.35; g.add(hs);

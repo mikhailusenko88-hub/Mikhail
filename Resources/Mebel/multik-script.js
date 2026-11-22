@@ -546,6 +546,7 @@ S.parse = function (text, lib, opts) {
     const usedC = new Set(), usedL = new Set(); e.scenes.forEach(s => { usedL.add(s.location); s.cast.forEach(c => usedC.add(c.who)); s.steps.forEach(st => st.who && usedC.add(st.who)); });
     e.characters = [...usedC].filter(id => newChars[id]).map(id => newChars[id]);
     e.locations = [...usedL].filter(id => newLocs[id]).map(id => newLocs[id]);
+    if (e.scenes.some(x => (x.props || []).some(q => q.type === 'snowman')) || e.absent.includes('snowman')) for (const l of e.locations) if (l.type === 'winter') l.noSnowman = true;   // 22.11: снеговик в сюжете (лепят, «снеговика нет») — фонового снеговика зимы не ставим, иначе «пропал», а он стоит
     e.series = e.series || series;
     e.youtube = { title: `${e.series} — Серия ${e.episode}${e.title ? '. ' + e.title : ''}`, description: `${e.series}. Серия ${e.episode}${e.title ? ': ' + e.title : ''}. Мультфильм для детей.`, tags: ['мультик', 'мультфильм', e.series] };
     out.push(e);
