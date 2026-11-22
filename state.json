@@ -1495,7 +1495,17 @@
    "final": false,
    "link": "https://youtube.com/shorts/xp3QgXkT4rM",
    "title": "1000 ta shar! Cobalt, Malibu, Kia K5… Qaysi mashina yutadi? Какая машина победит? №1 #shorts",
-   "pl": false
+   "pl": true
+  },
+  {
+   "date": "2026-11-22",
+   "slot": 1,
+   "league": "mass_cars",
+   "no": 2,
+   "final": false,
+   "link": "https://youtube.com/shorts/uLEjsasDCLQ",
+   "title": "1000 ta shar! Cobalt, Nexia, Jiguli… Qaysi mashina yutadi? Какая машина победит? №2 #shorts",
+   "pl": true
   }
  ],
  "seen_comments": [
@@ -1505,18 +1515,25 @@
  ],
  "mass": {
   "cars": {
-   "no": 1,
+   "no": 2,
    "cnt": {
     "Malibu": 1,
     "Damas": 1,
     "Onix": 1,
     "Kia K5": 1,
-    "Gentra": 1,
-    "Nexia": 1,
+    "Gentra": 2,
+    "Nexia": 2,
     "BYD Song": 1,
-    "Cobalt": 1,
+    "Cobalt": 2,
     "Matiz": 1,
-    "Lacetti": 1
+    "Lacetti": 1,
+    "Equinox": 1,
+    "Labo": 1,
+    "Spark": 1,
+    "Tahoe": 1,
+    "Jiguli": 1,
+    "Captiva": 1,
+    "Chery Tiggo": 1
    },
    "results": [
     {
@@ -1531,6 +1548,19 @@
      ],
      "in_cup": 325,
      "link": "https://youtube.com/shorts/xp3QgXkT4rM"
+    },
+    {
+     "no": 2,
+     "date": "2026-11-22",
+     "slot": 1,
+     "winner": "Jiguli",
+     "top3": [
+      "Jiguli",
+      "Chery Tiggo",
+      "Labo"
+     ],
+     "in_cup": 401,
+     "link": "https://youtube.com/shorts/uLEjsasDCLQ"
     }
    ]
   }
