@@ -1,20 +1,56 @@
 {
  "channel": "Кот Барсик | Мультфильмы для детей",
- "subs": "24",
- "videos": "55",
+ "subs": "26",
+ "videos": "56",
  "playlists": [
   {
    "id": "PLKIEWQEeV1UA",
    "title": "Кот Барсик 🐱 | Смешные моменты и Shorts",
-   "n": 24
+   "n": 25
   },
   {
    "id": "PLSaY8-Tx3Vwg",
    "title": "Кот Барсик 🐱 | Все серии подряд | Мультики для детей",
-   "n": 34
+   "n": 35
   }
  ],
  "last": [
+  {
+   "id": "_CKTe5ULnwk",
+   "title": "Росток под снегом?! 🐱 Кот Барсик | 35 серия #shorts",
+   "published": "2026-11-22T09:14:06Z",
+   "privacy": "private",
+   "publishAt": "2026-11-25T13:30:00Z",
+   "kids": true,
+   "category": "1",
+   "dur": "PT27S",
+   "views": 0,
+   "likes": 0
+  },
+  {
+   "id": "c6vT6oqU1Ss",
+   "title": "❄️ РОСТОК ПОД СНЕГОМ?! Тёплое одеяло зимы | Кот Барсик | Новая серия 35",
+   "published": "2026-11-22T09:12:21Z",
+   "privacy": "private",
+   "publishAt": "2026-11-25T12:30:00Z",
+   "kids": true,
+   "category": "1",
+   "dur": "PT5M35S",
+   "views": 0,
+   "likes": 0
+  },
+  {
+   "id": "ko1NB7Hx32Q",
+   "title": "🐱 КОТ БАРСИК — 5 серий подряд! Лодка, зеркало, жёлудь, Луна и лужа | Мультики для детей",
+   "published": "2026-11-22T08:30:39Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT29M47S",
+   "views": 0,
+   "likes": 0
+  },
   {
    "id": "2KnQrxCPnUw",
    "title": "Упрямая стрелка?! 🐱 Кот Барсик | 32 серия #shorts",
@@ -108,20 +144,8 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M53S",
-   "views": 1592,
+   "views": 1608,
    "likes": 3
-  },
-  {
-   "id": "ko1NB7Hx32Q",
-   "title": "🐱 КОТ БАРСИК — 5 серий подряд! Лодка, зеркало, жёлудь, Луна и лужа | Мультики для детей",
-   "published": "2026-11-20T16:29:30Z",
-   "privacy": "private",
-   "publishAt": "2026-11-22T08:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT29M47S",
-   "views": 0,
-   "likes": 0
   },
   {
    "id": "N8bZi91y5-M",
@@ -144,7 +168,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT6M27S",
-   "views": 246,
+   "views": 259,
    "likes": 1
   },
   {
@@ -168,7 +192,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT6M15S",
-   "views": 990,
+   "views": 1021,
    "likes": 4
   },
   {
@@ -204,7 +228,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT28S",
-   "views": 5,
+   "views": 10,
    "likes": 0
   },
   {
@@ -216,7 +240,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M46S",
-   "views": 76,
+   "views": 77,
    "likes": 2
   },
   {
@@ -229,30 +253,6 @@
    "category": "22",
    "dur": "PT33S",
    "views": 8,
-   "likes": 1
-  },
-  {
-   "id": "8Gyke-2WIyw",
-   "title": "КТО ЗАБРАЛ УГОЩЕНИЕ?! 🍪 Загадки Топы | Кот Барсик | Новая серия 26",
-   "published": "2026-11-15T13:00:14Z",
-   "privacy": "public",
-   "publishAt": null,
-   "kids": true,
-   "category": "1",
-   "dur": "PT6M33S",
-   "views": 117,
-   "likes": 1
-  },
-  {
-   "id": "WPyuyfNH1dQ",
-   "title": "🪁 ЗМЕЙ НЕ КУСАЕТСЯ?! Сюрприз в сундуке | Кот Барсик | Новая серия 25",
-   "published": "2026-11-14T13:00:08Z",
-   "privacy": "public",
-   "publishAt": null,
-   "kids": true,
-   "category": "1",
-   "dur": "PT7M47S",
-   "views": 226,
    "likes": 1
   }
  ]
