@@ -1,2 +1,1 @@
-https://nashdekor.ru/stati/kak-vybrat-potolochnyj-plintus/
-https://nashdekor.ru/stati/
+https://crm.nashdekor.ru/api/site/export
