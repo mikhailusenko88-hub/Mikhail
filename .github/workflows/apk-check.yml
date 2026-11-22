@@ -1,0 +1,33 @@
+name: apk-check
+on:
+  push:
+    branches: [apk-check]
+    paths: ['apk/request.txt', 'apk/analyze.sh', '.github/workflows/apk-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download APK from Domonap public Yandex Disk folder
+        run: |
+          set -e
+          mkdir -p work
+          KEY="$(head -1 apk/request.txt)"
+          FILE="$(sed -n 2p apk/request.txt)"
+          curl -sS -G 'https://cloud-api.yandex.net/v1/disk/public/resources' --data-urlencode "public_key=$KEY" --data-urlencode "limit=50" > work/meta.json || true
+          HREF=$(curl -sS -G 'https://cloud-api.yandex.net/v1/disk/public/resources/download' --data-urlencode "public_key=$KEY" --data-urlencode "path=$FILE" | python3 -c 'import sys,json;print(json.load(sys.stdin)["href"])')
+          curl -sSL --retry 3 -o work/app.apk "$HREF"
+          ls -la work
+      - name: Analyze (static only, nothing is executed)
+        run: bash apk/analyze.sh work/app.apk work/meta.json > apk/report.txt 2>&1 || true
+      - name: Commit report
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add apk/report.txt
+          git commit -m "apk report [skip ci]" || true
+          git push
