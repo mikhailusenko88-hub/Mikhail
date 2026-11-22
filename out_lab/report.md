@@ -1,0 +1,28 @@
+# Пробы перекраски
+
+| Ключ | Заметка | Понято | Лишних слов | Сходство | Ближе всего | Чужой | f0 | HNR | Сдвиг, пт | Синтез, с | Услышано |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| pik_en_1 | как было: источник → перекраска → высота | 90.5% | 3 | 0.618 | Пик | 0.358 | 376.5 | 16.4 | [5.4, 6.1] | 83.6 | Up north it's cold, snow and polar bears. A magnet pulls iron things, and they all a clip a little key. |
+| pik_en_2 | источник поднят до 340 Гц до перекраски | 81.0% | 4 | 0.728 | Пик | 0.446 | 375.6 | 16.7 | [1.5, 2.0] | 51.4 | Up north it's cold, snow and polar bears. A magnet pulls iron things, and they all equip a little key. |
+| pik_en_3 | поднят + медленнее (0,88) | 100.0% | 0 | 0.658 | Пик | 0.415 | 376.4 | 17.1 | [0.0, 1.7] | 54.6 | Up north it's cold, snow and polar bears. A magnet pulls iron things. A nail, a clip, a little key. |
+| pik_en_4 | поднят + медленнее + образец из 5 реплик | 100.0% | 0 | 0.677 | Пик | 0.454 | 371.8 | 16.2 | [0.0, 1.6] | 66.2 | Up north it's cold, snow and polar bears. A magnet pulls iron things, a nail, a clip, a little key. |
+| pik_es_1 | как было: источник → перекраска → высота | 85.0% | 2 | 0.731 | Пик | 0.539 | 377.5 | 17.9 | [4.2, 5.5] | 49.9 | Al norte hace frío, nieve y osos polares. Animán atrae cosas de hierro, un clavo, un clip, una llevecita. |
+| pik_es_2 | источник поднят до 340 Гц до перекраски | 80.0% | 3 | 0.764 | Пик | 0.504 | 359.1 | 17.8 | [0.0, 2.4] | 48.1 | El norte hace frío, nieve y osos polades. Niman atrae cosas de hierro, un clavo, un clip, una llavecita. |
+| pik_es_3 | поднят + медленнее (0,88) | 95.0% | 1 | 0.791 | Пик | 0.527 | 361.0 | 17.4 | [0.0, 2.7] | 50.3 | al norte hace frío, nieve y oso polares. Un imán atrae cosas de hierro, un clavo, un clip, una llavecita. |
+| pik_es_4 | поднят + медленнее + образец из 5 реплик | 85.0% | 2 | 0.766 | Пик | 0.52 | 352.0 | 18.1 | [0.0, 0.0] | 62.4 | al norte hace frío, nieve y oso polares. Booniman atrae cosas de hierro, un clavo, un clip, una llavecita. |
+| pik_pt_1 | как было: источник → перекраска → высота | 85.0% | 3 | 0.807 | Пик | 0.578 | 375.5 | 16.6 | [2.8, 4.2] | 49.6 | No norte faz frio, neve e orço polares. Um imapuxa coisas de ferro, um prego, um clipe e uma chavinha. |
+| pik_pt_2 | источник поднят до 340 Гц до перекраски | 80.0% | 4 | 0.806 | Пик | 0.607 | 364.5 | 18.5 | [0.0, 2.1] | 48.8 | Do norte faz frio, neve e urso polares. Um imapuxa coisas de ferro, um prego, um clipe e uma chavinha. |
+| pik_pt_3 | поднят + медленнее (0,88) | 80.0% | 3 | 0.8 | Пик | 0.605 | 362.5 | 18.6 | [1.7, 0.0] | 51.4 | No norte faz frio, neve e ursos polares. Um imapuxa coisas de ferro, emprega um clipe e uma chavinha. |
+| pik_pt_4 | поднят + медленнее + образец из 5 реплик | 90.0% | 2 | 0.781 | Пик | 0.571 | 369.0 | 19.0 | [0.0, 0.0] | 62.6 | No norte faz frio, neve e ursos polares. Um imapuxa coisas de ferro, um prego, um clipe e uma chavinha. |
+| pik_de_1 | как было: источник → перекраска → высота | 54.5% | 6 | 0.713 | Пик | 0.466 | 376.6 | 16.4 | [4.2, 6.0] | 51.9 | In Nordnisterskeit, Schnee und Asperen. Ein Magnet zieht Dinge aus Eisen an. Eine Nagel, eine Klammer, eine Kleinschlüssel. |
+| pik_de_2 | источник поднят до 340 Гц до перекраски | 50.0% | 8 | 0.768 | Пик | 0.432 | 368.1 | 16.7 | [0.0, 2.6] | 50.9 | In Mordendistis kalt, Schnee und Pasbieren. Ein Magnet zieht den Oaseisen an, ein Nabeln, eine Klammer, einen kleinen Schwürzel. |
+| pik_de_3 | поднят + медленнее (0,88) | 59.1% | 7 | 0.77 | Пик | 0.452 | 372.2 | 18.4 | [0.0, 2.5] | 53.2 | In Norden ist es kalt. Schnee und Aspeere. Ein Magnet zieht den Auseisen an. Ein Nagel, eine Klammer, ein Kleinschlüssel. |
+| pik_de_4 | поднят + медленнее + образец из 5 реплик | 54.5% | 9 | 0.73 | Пик | 0.397 | 361.9 | 18.1 | [0.0, 0.0] | 62.7 | Genohnt ist es kalt. Schnee und Essbären. Dein Magnet zieht den aus Heißen an. Ein Nebel, eine Klammer, eine kleine Schlüssel. |
+| barsik_de_k | немецкий, источник Kerstin (женский) | 88.9% | 2 | 0.569 | Барсик | 0.146 | 226.2 | 11.8 | [0.0, 0.0] | 53.7 | Sie weiß es. Die rote Spitze zeigt immer nach Norden. Den wir ins Zimmer, das Buch erklärt ist. |
+| barsik_de_t | немецкий, источник Thorsten (мужской) | 77.8% | 2 | 0.513 | Барсик | 0.149 | 227.6 | 12.8 | [0.0, -1.6] | 55.2 | Sie weiß es, Gerote Spitze zeigt immer nach Norden. Gehen wir ins Zimmer, Gastro erklärt es. |
+| ron_de_k | немецкий, источник Kerstin (женский) | 89.5% | 3 | 0.803 | Рон | 0.656 | 286.1 | 18.3 | [0.0, 2.3] | 57.0 | Schaut mal, die Nadel zeigt schon wieder dort hin. Oh, wir ist ganz schwindelig, aber der Nadel ist das egal. |
+| ron_de_t | немецкий, источник Thorsten (мужской) | 84.2% | 4 | 0.72 | Рон | 0.572 | 289.1 | 18.8 | [3.7, 3.9] | 57.6 | Schaut mal, die Nade zeigt schon wieder dort hing. Oh, mir ist ganz schwindelig, aber der Nade ist das egal. |
+| filya_de_k | немецкий, источник Kerstin (женский) | 61.5% | 4 | 0.693 | Филя | 0.508 | 290.9 | 14.9 | [0.0, 1.7] | 46.0 | und Jendi dem Kicks wegnehmen. Zauf, die Nadel hat sich nicht bewegt. |
+| filya_de_t | немецкий, источник Thorsten (мужской) | 92.3% | 1 | 0.573 | Филя | 0.522 | 296.7 | 15.1 | [2.5, 2.0] | 47.8 | Und wenn wir den Kekse wegnehmen, schaut. Die Nadel hat sich nicht bewegt. |
+| topa_de_k | немецкий, источник Kerstin (женский) | 87.5% | 2 | 0.638 | Топа | 0.152 | 160.3 | 12.5 | [0.0, 0.0] | 51.5 | als ob die Nade weiß, wohin sie schauen muss. Also können wir die Nade nicht austricksen. |
+| topa_de_t | немецкий, источник Thorsten (мужской) | 100.0% | 0 | 0.58 | Топа | 0.155 | 155.6 | 12.8 | [1.8, 0.0] | 52.6 | als ob die Nadel weiß wohin sie schauen muss. Also können wir die Nadel nicht austricksen. |
