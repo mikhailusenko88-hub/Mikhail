@@ -76,8 +76,10 @@ jobs:
         run: |
           TAG="studio-${{ steps.req.outputs.name }}"; ls ep-*.mp4 >/dev/null 2>&1 || ls elementy.zip >/dev/null 2>&1 || exit 0
           (cd out/files 2>/dev/null && zip -q -r ../../golosa.zip voices) || true
+          # для дубляжа на другие языки (dub.py в ветке golos-en): реплики, музыка и шумы без голосов, полное сведение
+          (cd out/files 2>/dev/null && [ -d dub ] && { cp ../audio.wav dub/full.wav 2>/dev/null; zip -q -r ../../dub.zip dub; ls dub/lines | wc -l; }) || true
           gh release delete "$TAG" -y --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" --target studio --prerelease --title "Студия: ${{ steps.req.outputs.name }}" --notes "Пробная сборка студии (не опубликовано на YouTube). Движок: $(cat engine.txt)" $(ls ep-*.mp4 golosa.zip elementy.zip 2>/dev/null)
+          gh release create "$TAG" --target studio --prerelease --title "Студия: ${{ steps.req.outputs.name }}" --notes "Пробная сборка студии (не опубликовано на YouTube). Движок: $(cat engine.txt)" $(ls ep-*.mp4 golosa.zip elementy.zip dub.zip 2>/dev/null)
       - name: Итог — в ветку
         if: always()
         run: |
