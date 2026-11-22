@@ -1,0 +1,71 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 38,
+  "title": "Кто рисует на окне?!",
+  "scenes": 6,
+  "errors": [],
+  "unknownWords": [],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 38. Кто рисует на окне!",
+  "path": "video/Кот Барсик - 38. Кто рисует на окне!.mp4",
+  "frames": 6224,
+  "sec": 881,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 248.95800000000003,
+  "video": "video/Кот Барсик - 38. Кто рисует на окне!.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "f542c5b",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 57.5,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 11,
+   "e": 126,
+   "b": 4,
+   "w": 1,
+   "n": 6220,
+   "at": 6220,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 38,
+  "ttsFail": 0,
+  "voice": 51,
+  "voiceFail": 0,
+  "voiceSec": 26,
+  "ttsSec": 30,
+  "frames": 6828,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -23.9,
+  "lufs_out": -15.1,
+  "gain_db": 9.6
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 1443,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
