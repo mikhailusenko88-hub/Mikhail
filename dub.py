@@ -13,6 +13,19 @@ import soundfile as sf
 
 import dubcore as D
 
+
+def _words(t):
+    # латиница: «averigüemos» = «averiguemos», «adónde» = «a dónde» — это не ошибка голоса, а запись распознавателя
+    import re, unicodedata
+    t = t.lower()
+    if all(ord(c) < 0x250 or not c.isalpha() for c in t):
+        t = "".join(c for c in unicodedata.normalize("NFKD", t) if not unicodedata.combining(c))
+        t = re.sub(r"\ba donde\b", "adonde", t)
+    return re.findall(r"\w+", t)
+
+
+D.words = _words                  # D.clear_pct берёт words из модуля dubcore
+
 NAME, LANG = sys.argv[1], sys.argv[2]
 SRM = 44100                       # частота сведения студии
 OUT = os.path.join("out_dub", NAME)
