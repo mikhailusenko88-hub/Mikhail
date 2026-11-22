@@ -26,6 +26,7 @@ const srv = http.createServer((q, r) => { const u = decodeURIComponent(q.url.spl
 
 // ---- «телефон»: голос Apple ----
 function appleTTS(m) { const t = Date.now(), key = String(m.key || 'k').replace(/[\/\\:]/g, '_'), dir = path.join(OUT, 'tts'), wav = path.join(dir, key + '.wav');
+  if (/\u00ad/.test(String(m.text || ''))) { stat.appleFix = (stat.appleFix || 0) + 1; if (stat.appleFix <= 3) log('голос Apple: правка ударения (мягкий перенос):', String(m.text).replace(/\u00ad/g, '|').slice(0, 80)); }   // 21.11.2026: видно, что «ши|шка» дошла до голоса
   if (!fs.existsSync(wav)) { const v = m.voice || {};
     if (!fs.existsSync(TTS)) { stat.ttsFail++; return null; }
     const jf = path.join(dir, key + '.json'); fs.writeFileSync(jf, JSON.stringify([{ name: key, text: String(m.text || ''), ipa: v.ipa || [], base: v.base || 'female', pitch: v.pitch, rate: v.rate }]));
