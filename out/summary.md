@@ -248,6 +248,25 @@
 | e34_048 | edge:ru-RU-SvetlanaNeural | 3.82 | 1.0 | 0 (+0) | 1/1 |
 | e34_049 | edge:ru-RU-SvetlanaNeural | 3.96 | 0.857 | 0 (+0) | 1/1 |
 | e34_050 | edge:ru-RU-SvetlanaNeural | 3.87 | 1.0 | 0 (+0) | 2/3 |
+| e35_p35_1 | edge:ru-RU-SvetlanaNeural | 3.81 | 1.0 | 0 (+0) | 2/2 |
+| e35_p35_2 | edge:ru-RU-SvetlanaNeural | 3.89 | 1.0 | 0 (+0) | 1/1 |
+| e35_p35_3 | edge:ru-RU-SvetlanaNeural | 4.09 | 1.0 | 1 (+0) | 3/3 |
+| e35_p35_4 | edge:ru-RU-SvetlanaNeural | 3.86 | 1.0 | 2 (+0) | 2/2 |
+| e35_p35_5 | edge:ru-RU-SvetlanaNeural | 3.67 | 1.0 | 1 (+0) | 2/2 |
+| e35_p35_6 | edge:ru-RU-SvetlanaNeural | 4.08 | 1.0 | 0 (+0) | 1/1 |
+| e35_p35_7 | edge:ru-RU-SvetlanaNeural | 3.87 | 1.0 | 0 (+1) | 1/1 |
+| e35_r35_1 | edge:ru-RU-SvetlanaNeural | 3.99 | 1.0 | 0 (+0) | 2/2 |
+| e35_r35_10 | edge:ru-RU-SvetlanaNeural | 4.03 | 0.857 | 0 (+0) | 2/2 |
+| e35_r35_11 | edge:ru-RU-SvetlanaNeural | 3.66 | 0.833 | 0 (+0) | 1/2 |
+| e35_r35_12 | edge:ru-RU-SvetlanaNeural | 4.02 | 1.0 | 1 (+0) | 0/1 |
+| e35_r35_2 | edge:ru-RU-SvetlanaNeural | 3.59 | 1.0 | 0 (+0) | 1/1 |
+| e35_r35_3 | edge:ru-RU-SvetlanaNeural | 3.85 | 1.0 | 1 (+0) | 1/2 |
+| e35_r35_4 | edge:ru-RU-SvetlanaNeural | 3.75 | 1.0 | 0 (+0) | 0/2 |
+| e35_r35_5 | edge:ru-RU-SvetlanaNeural | 3.95 | 1.0 | 0 (+0) | 1/2 |
+| e35_r35_6 | edge:ru-RU-SvetlanaNeural | 3.86 | 1.0 | 0 (+0) | 2/3 |
+| e35_r35_7 | edge:ru-RU-SvetlanaNeural | 3.89 | 1.0 | 0 (+0) | 2/2 |
+| e35_r35_8 | edge:ru-RU-SvetlanaNeural | 3.63 | 1.0 | 0 (+0) | 1/2 |
+| e35_r35_9 | edge:ru-RU-SvetlanaNeural | 4.0 | 1.0 | 0 (+0) | 2/2 |
 | f2_albina_slow | silero_cis:ru_albina@slow | 3.2 | 0.935 | 0 (+1) | 4/4 |
 | f2_albina_slow_soft | silero_cis:ru_albina@slow,soft | 2.88 | 0.935 | 1 (+1) | 4/4 |
 | f2_albina_soft | silero_cis:ru_albina@soft | 3.33 | 0.935 | 0 (+1) | 4/4 |
@@ -492,6 +511,13 @@
 | m_barhat | morph:kseniya:0.92:200 | 2.98 | 0.967 | 0 (+0) | 4/4 |
 | m_molozhe | morph:kseniya:1.06:245 | 3.09 | 0.967 | 0 (+0) | 4/4 |
 | m_teplee | morph:kseniya:0.96:215 | 3.14 | 0.967 | 0 (+0) | 4/4 |
+| p35_1 | Mac Milena | 2.56 | 1.0 | 0 (+0) | 1/2 |
+| p35_2 | Mac Milena | 2.7 | 1.0 | 0 (+0) | 1/1 |
+| p35_3 | Mac Milena | 2.37 | 1.0 | 1 (+0) | 3/3 |
+| p35_4 | Mac Milena | 2.67 | 0.615 | 2 (+0) | 2/2 |
+| p35_5 | Mac Milena | 2.72 | 1.0 | 0 (+0) | 2/2 |
+| p35_6 | Mac Milena | 2.8 | 1.0 | 0 (+0) | 1/1 |
+| p35_7 | Mac Milena | 2.33 | 0.909 | 0 (+0) | 1/1 |
 | pq_0h | Альбина, вопрос (подъём: high) | 3.87 | 1.0 | 0 (+0) | 0/1 |
 | pq_0n | Альбина, вопрос (подъём: нет) | 3.91 | 1.0 | 0 (+0) | 0/1 |
 | pq_0x | Альбина, вопрос (подъём: x-high) | 3.78 | 0.75 | 0 (+0) | 0/1 |
@@ -700,6 +726,18 @@
 | r34_s2 | голос iPhone (Milena, Mac) — сам | 2.78 | 0.778 | 0 (+0) | 2/2 |
 | r34_s3 | голос iPhone (Milena, Mac) — сам | 3.02 | 0.875 | 0 (+0) | 0/1 |
 | r34_s4 | голос iPhone (Milena, Mac) — сам | 2.33 | 0.667 | 2 (+0) | 1/1 |
+| r35_1 | Mac Milena | 3.0 | 1.0 | 0 (+0) | 2/2 |
+| r35_10 | Mac Milena | 2.67 | 0.857 | 0 (+0) | 2/2 |
+| r35_11 | Mac Milena | 2.73 | 0.833 | 1 (+0) | 2/2 |
+| r35_12 | Mac Milena | 3.03 | 0.5 | 0 (+0) | 1/1 |
+| r35_2 | Mac Milena | 2.46 | 1.0 | 0 (+0) | 0/1 |
+| r35_3 | Mac Milena | 2.68 | 1.0 | 0 (+0) | 1/2 |
+| r35_4 | Mac Milena | 2.73 | 1.0 | 0 (+0) | 0/2 |
+| r35_5 | Mac Milena | 2.85 | 1.0 | 0 (+0) | 0/2 |
+| r35_6 | Mac Milena | 2.66 | 1.0 | 0 (+0) | 0/3 |
+| r35_7 | Mac Milena | 2.68 | 1.0 | 0 (+0) | 2/2 |
+| r35_8 | Mac Milena | 2.82 | 1.0 | 0 (+0) | 1/2 |
+| r35_9 | Mac Milena | 2.74 | 1.0 | 0 (+0) | 2/2 |
 | r37 | silero_random:37 | 1.46 | 0.915 | 4 (+1) | 4/4 |
 | r42 | silero_random:42 | 1.62 | 1.0 | 1 (+0) | 4/4 |
 | r58 | silero_random:58 | 1.41 | 0.603 | 6 (+0) | 4/4 |
