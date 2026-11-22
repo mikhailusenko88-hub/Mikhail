@@ -1,3 +1,22 @@
+# IndexNow — 2026-11-22 10:43 UTC, коммит 5393a8c
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: изменённые страницы (9) из 131 изменённых файлов; без изменений по сути (только ?v=): 118
+  https://nashdekor.ru/stati/
+  https://nashdekor.ru/stati/duropolimer-chto-eto/
+  https://nashdekor.ru/stati/kak-kleit-plintus-iz-duropolimera/
+  https://nashdekor.ru/stati/kak-otrezat-ugol-potolochnogo-plintusa/
+  https://nashdekor.ru/stati/kak-pokrasit-plintus-i-paneli/
+  https://nashdekor.ru/stati/kak-vybrat-potolochnyj-plintus/
+  https://nashdekor.ru/stati/moldingi-na-stene-v-interere/
+  https://nashdekor.ru/stati/montazh-stenovyh-panelej/
+  https://nashdekor.ru/stati/rejki-na-stenu-v-interere/
+- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
+- https://yandex.com/indexnow: HTTP 202 — принято, ключ ещё проверяется {
+  "success":true
+}
+
+---
+
 # IndexNow — 2026-11-19 14:33 UTC, коммит 49f73b4
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (1) из 131 изменённых файлов; без изменений по сути (только ?v=): 125
@@ -406,14 +425,3 @@
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (0) из 78 изменённых файлов; без изменений по сути (только ?v=): 0
 - отправлять нечего (изменились не страницы)
-
----
-
-# IndexNow — 2026-11-17 14:36 UTC, коммит 8b45d1d
-- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
-- режим: изменённые страницы (1) из 4 изменённых файлов; без изменений по сути (только ?v=): 3
-  https://nashdekor.ru/
-- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
-- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
-  "success":true
-}
