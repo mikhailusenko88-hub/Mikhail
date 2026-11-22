@@ -1,0 +1,214 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Барсик и Рон; Рон и Филя"
+ ],
+ "file": {
+  "mb": 23.9,
+  "dur": 39.1,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 38.6,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 1,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 39,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 167.9
+ },
+ "kadry": 7,
+ "audio": {
+  "lufs": -15.4,
+  "lra": 8.3,
+  "peak_db": -1.4,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 96.5,
+  "lines": 9,
+  "by_hero": {
+   "Барсик": 100.0,
+   "Рон": 100.0,
+   "Филя": 100.0,
+   "Пик": 75.0
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 279.0,
+   "range_st": 6.6,
+   "hnr": 12.7,
+   "jitter": 2.0,
+   "shimmer": 8.7,
+   "F1": 509.5,
+   "F2": 2050.5,
+   "F3": 3290.0,
+   "bright": -14.1,
+   "air": -14.6,
+   "cog": 922.5,
+   "rate": 4.6,
+   "voiced": 0.6,
+   "n": 4,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Пик": {
+   "f0": 381.0,
+   "range_st": 6.4,
+   "hnr": 22.3,
+   "jitter": 0.7,
+   "shimmer": 4.4,
+   "F1": 504.0,
+   "F2": 1716.0,
+   "F3": 3406.0,
+   "bright": -19.2,
+   "air": -23.4,
+   "cog": 597.0,
+   "rate": 6.6,
+   "voiced": 0.7,
+   "n": 1,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 75.0
+  },
+  "Рон": {
+   "f0": 302.0,
+   "range_st": 6.2,
+   "hnr": 21.5,
+   "jitter": 0.7,
+   "shimmer": 4.3,
+   "F1": 670.0,
+   "F2": 1996.0,
+   "F3": 3392.5,
+   "bright": -21.9,
+   "air": -30.1,
+   "cog": 567.0,
+   "rate": 4.7,
+   "voiced": 0.6,
+   "n": 2,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Филя": {
+   "f0": 311.0,
+   "range_st": 6.9,
+   "hnr": 13.2,
+   "jitter": 2.1,
+   "shimmer": 8.6,
+   "F1": 585.0,
+   "F2": 2073.0,
+   "F3": 3350.5,
+   "bright": -13.8,
+   "air": -20.5,
+   "cog": 823.0,
+   "rate": 4.8,
+   "voiced": 0.6,
+   "n": 2,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  }
+ },
+ "voices_close": [
+  [
+   "Барсик",
+   "Рон",
+   1.4
+  ],
+  [
+   "Рон",
+   "Филя",
+   0.5
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 0,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 0,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 208,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 38.595575680272106,
+   "video": "video/Кот Барсик - 38. Кто рисует на окне!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "804d336",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 16.2,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 32,
+    "e": 112,
+    "b": 7,
+    "w": 3,
+    "n": 960,
+    "at": 960,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 4,
+   "ttsFail": 0,
+   "voice": 6,
+   "voiceFail": 0,
+   "voiceSec": 13,
+   "ttsSec": 6,
+   "frames": 965,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -17.8,
+   "lufs_out": -15.3,
+   "gain_db": 2.8
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 38,
+   "title": "Кто рисует на окне?!",
+   "scenes": 3,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: НЕ ПРИМЕНЁН (нет героя)"
+   ]
+  }
+ }
+}
