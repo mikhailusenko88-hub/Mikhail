@@ -2,13 +2,13 @@ URL: https://nashdekor.ru/stati/
 КОД: 200
 ЗАГОЛОВКИ:
 Server: nginx
-Date: Sun, 22 Nov 2026 10:43:40 GMT
+Date: Sun, 22 Nov 2026 10:45:25 GMT
 Content-Type: text/html; charset=utf-8
-Content-Length: 16147
-Last-Modified: Thu, 19 Nov 2026 14:34:02 GMT
+Content-Length: 16867
+Last-Modified: Sun, 22 Nov 2026 10:44:02 GMT
 Connection: close
 Vary: Accept-Encoding
-ETag: "6aff08da-3f13"
+ETag: "6b02c772-41e3"
 Expires: Thu, 01 Jan 1970 00:00:01 GMT
 Cache-Control: no-cache
 Strict-Transport-Security: max-age=15552000
@@ -27,6 +27,7 @@ Accept-Ranges: bytes
  Дюрополимер — что это за материал Дюрополимер — это ударопрочный полистирол. Из чего он состоит, какие свойства: прочность, влагостойкость, вес, как режется, клеится и красится. Для чего подходит. 
  Молдинги на стене в интерьере: идеи, размеры, правила Молдинги для стен в интерьере: рамки, панно, горизонтальное деление, подсветка. Какие размеры рамок делать, какую ширину молдинга выбрать, как разметить и чем клеить. 
  Рейки на стену в интерьере: где использовать и как выбрать Декоративные рейки на стену: ТВ-зона, изголовье, прихожая, перегородка. Какой профиль реечной панели выбрать, под покраску или под дерево, как рассчитать и смонтировать. 
+ Как выбрать потолочный плинтус: размер, натяжной потолок, подсветка Какой потолочный плинтус выбрать: узкий или широкий под высоту потолка, белый или в цвет стен, как ставить с натяжным потолком и сколько штук брать. 
  Заявка
  Ответим с ценой, наличием и сроком в рабочее время. Быстрее всего — написать в чат (кнопка «Чат» внизу справа) или заказать обратный звонок — перезвоним сами.
  Оставьте номер — перезвоним в рабочее время, расскажем про наличие, цену и доставку. Укажите в комментарии, когда удобно принять звонок.
@@ -44,9 +45,9 @@ Accept-Ranges: bytes
 ../../oplata/
 ../../privacy.html
 ../apple-touch-icon.png
-../assets/brand.css?v=202611191432
+../assets/brand.css?v=202611221342
 ../assets/fonts/inter-400.woff
-../assets/p.css?v=202611191432
+../assets/p.css?v=202611221342
 ../catalog/karnizy/
 ../catalog/moldingi/
 ../catalog/paneli-pod-derevo/
@@ -68,6 +69,7 @@ Accept-Ranges: bytes
 ../stati/kak-kleit-plintus-iz-duropolimera/
 ../stati/kak-otrezat-ugol-potolochnogo-plintusa/
 ../stati/kak-pokrasit-plintus-i-paneli/
+../stati/kak-vybrat-potolochnyj-plintus/
 ../stati/moldingi-na-stene-v-interere/
 ../stati/montazh-stenovyh-panelej/
 ../stati/rejki-na-stenu-v-interere/
