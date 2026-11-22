@@ -1,0 +1,252 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 222.1,
+  "dur": 316.17,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 315.67,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 316,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 173.0
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 5.0,
+  "peak_db": -1.3,
+  "silences": []
+ },
+ "words_second_pass": 1,
+ "words": {
+  "pct": 96.2,
+  "lines": 91,
+  "by_hero": {
+   "Рон": 92.0,
+   "Барсик": 100.0,
+   "Топа": 94.2,
+   "Филя": 98.7,
+   "Пик": 97.6
+  },
+  "worst": [
+   {
+    "t": 79.761,
+    "name": "Рон",
+    "text": "Тук-тук! Лужа, ты дома?",
+    "ok": 2,
+    "n": 5,
+    "miss": [
+     "тук",
+     "тук",
+     "лужа"
+    ],
+    "heard": "уже ты дома она"
+   },
+   {
+    "t": 99.701,
+    "name": "Рон",
+    "text": "Вода, стань твёрдой! Раз, два, три!",
+    "ok": 3,
+    "n": 6,
+    "miss": [
+     "раз",
+     "два",
+     "три"
+    ],
+    "heard": "вода станет твердой 1 2 3"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 215.0,
+   "range_st": 5.1,
+   "hnr": 14.0,
+   "jitter": 2.1,
+   "shimmer": 8.9,
+   "F1": 529.0,
+   "F2": 1960.0,
+   "F3": 3303.0,
+   "bright": -18.6,
+   "air": -14.5,
+   "cog": 565.0,
+   "rate": 4.5,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Пик": {
+   "f0": 376.0,
+   "range_st": 6.9,
+   "hnr": 21.6,
+   "jitter": 0.8,
+   "shimmer": 5.0,
+   "F1": 483.0,
+   "F2": 1711.0,
+   "F3": 3583.0,
+   "bright": -19.7,
+   "air": -22.5,
+   "cog": 542.0,
+   "rate": 6.1,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.6
+  },
+  "Рон": {
+   "f0": 309.0,
+   "range_st": 6.8,
+   "hnr": 22.1,
+   "jitter": 0.9,
+   "shimmer": 5.5,
+   "F1": 429.0,
+   "F2": 1963.0,
+   "F3": 3622.0,
+   "bright": -22.8,
+   "air": -27.3,
+   "cog": 437.0,
+   "rate": 3.8,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 92.0
+  },
+  "Топа": {
+   "f0": 148.0,
+   "range_st": 4.1,
+   "hnr": 12.5,
+   "jitter": 2.6,
+   "shimmer": 10.8,
+   "F1": 434.0,
+   "F2": 1815.0,
+   "F3": 3351.0,
+   "bright": -17.6,
+   "air": -26.6,
+   "cog": 478.0,
+   "rate": 3.1,
+   "voiced": 0.4,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 4.3,
+   "why": [
+    "дрожит высота"
+   ],
+   "clear_pct": 94.2
+  },
+  "Филя": {
+   "f0": 297.0,
+   "range_st": 5.9,
+   "hnr": 16.6,
+   "jitter": 1.8,
+   "shimmer": 7.8,
+   "F1": 451.0,
+   "F2": 2139.0,
+   "F3": 3309.0,
+   "bright": -14.4,
+   "air": -23.7,
+   "cog": 672.0,
+   "rate": 3.9,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 98.7
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 42,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 150,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 1711,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 315.66681818181814,
+   "video": "video/Кот Барсик - 37. Лужа стала льдом!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "f542c5b",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 44.6,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 9,
+    "e": 124,
+    "b": 3,
+    "w": 1,
+    "n": 7890,
+    "at": 7890,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 45,
+   "ttsFail": 0,
+   "voice": 64,
+   "voiceFail": 0,
+   "voiceSec": 24,
+   "ttsSec": 30,
+   "frames": 8555,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "appleFix": 1,
+   "lufs_in": -25.8,
+   "lufs_out": -15.1,
+   "gain_db": 11.5
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 37,
+   "title": "Лужа стала льдом?!",
+   "scenes": 9,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}
