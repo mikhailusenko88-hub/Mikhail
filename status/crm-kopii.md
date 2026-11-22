@@ -1,4 +1,4 @@
-# Копии баз — 2026-11-17 21:54 UTC
+# Копии баз — 2026-11-22 21:28 UTC
 
 ```
 пароль копий: root:prostranstvo 640, длина 20
@@ -6,21 +6,21 @@
 cron: 1
 кнопка «Копия баз — скачать»: 302
 Действие: Копия баз для скачивания
-Запросил: yulia, 18.11.2026 00:54
+Запросил: yulia, 23.11.2026 00:28
 Состояние: готово
 
-Готово: nashdekor-kopiya-2026-11-18-0054.tar.gz.enc, 2.0M. Скачать — CRM → Ещё → Сервер, ниже «Копии баз для скачивания».
-в CRM ссылка: nashdekor-kopiya-2026-11-18-0054.tar.gz.enc
-скачано: 2036592 байт, начало: Salted__
+Готово: nashdekor-kopiya-2026-11-23-0028.tar.gz.enc, 2.0M. Скачать — CRM → Ещё → Сервер, ниже «Копии баз для скачивания».
+в CRM ссылка: nashdekor-kopiya-2026-11-23-0028.tar.gz.enc
+скачано: 2036272 байт, начало: Salted__
 без входа: 302
 пароль на странице — только по кнопке: 0 / 1
 --- содержимое архива (расшифровка openssl тем же паролем):
 файлов: 60
-var/backups/prostranstvo/2026-11-18/crm.db
+var/backups/prostranstvo/2026-11-23/crm.db
 var/mail/vhosts/nashdekor.ru/zakaz/
 var/mail/vhosts/nashdekor.ru/info/
-etc/prostranstvo/backup-pass
 etc/prostranstvo/crm-paroli.txt
+etc/prostranstvo/backup-pass
 var/lib/rspamd/dkim/
 var/lib/rspamd/dkim/nashdekor.ru.mail.key
 --- облако (MinIO как Selectel)
