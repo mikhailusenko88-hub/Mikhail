@@ -38,7 +38,7 @@ from site_web import register as register_site
 from konstruktor import Konstruktor
 from konstruktor_web import register as register_k
 from ai_web import AI, register as register_ai
-from outbox import Outbox
+from outbox import INFO_SITE, Outbox
 from pochta import INLINE_OK, Pochta, fmt_ts, size_h
 from docs import MAX_FILE as DOC_MAX, Docs, clean_folder, fmt_date
 from designer_docs import register as register_designer_docs
@@ -48,7 +48,8 @@ from invoice import Invoices
 from push import WebPush
 from tochka import (KEY_URL, PAY_TYPES, STATUS_NAMES, TAX_SYSTEMS, Tochka, TochkaError, http_request, jwt_claims,
                     parse_jwk, receipt_items, verify_rs256)
-from visits import Visits, is_bot, parse_body
+from visits import BLOCK_NAMES, PAGE_KINDS, Visits, fmt_sec, is_bot, parse_body
+from geo import Geo
 from pek import PICKUP_TIME_ERR, PRICE_TTL as PEK_PRICE_TTL, SENDER_ADDRESS as PEK_SENDER, ZONE_TTL as PEK_ZONE_TTL
 from pek import Cache as PekCache, Pek, PekError, _dims as _pek_dims, cargos_for, fill_to_box, has_street, is_local
 import maxapp
@@ -134,6 +135,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         "RESCUE_PASS_FILE": cfg.get("RESCUE_PASS_FILE") or env("RESCUE_PASS_FILE", "/etc/prostranstvo/rescue-pass"),
         "MAX_APP_KEY_FILE": cfg.get("MAX_APP_KEY_FILE") or env("MAX_APP_KEY_FILE", "/etc/prostranstvo/max-app.key"),
         "PAUSE_FLAG": cfg.get("PAUSE_FLAG") or env("PAUSE_FLAG", "/var/lib/prostranstvo/pause-auto"),
+        # база городов DB-IP City Lite (prostranstvo-crm geo кладёт её раз в месяц); нет файла — город не определяется
+        "GEO_DB": cfg.get("GEO_DB", env("GEO_DB", "/var/lib/prostranstvo/geo/dbip-city-lite.mmdb")),
     }
     app = Flask(__name__)
     app.request_class = CrmRequest
@@ -152,6 +155,8 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     app.extensions["store"] = store
     app.extensions["crm_conf"] = conf
     visits = Visits(store, conf["SHOP_DOMAIN"])
+    geo = Geo(conf["GEO_DB"])
+    app.extensions["geo"] = geo
     wp = WebPush(store, f"mailto:zakaz@{conf['SHOP_DOMAIN'] or 'nashdekor.ru'}")
     wp.sync = bool(cfg.get("TESTING")) or bool(cfg.get("PUSH_SYNC"))
     app.extensions["push"] = wp
@@ -510,7 +515,11 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         stock = {r["article"]: r for r in store.stock_rows()}
         bot = store.bot_lead(d["bot_lead_id"]) if d["bot_lead_id"] else None
         msgs = store.bot_messages(d["bot_client_id"]) if d["bot_client_id"] else []
-        return render_template("deal.html", d=d, lines=lines, gross=gross, total_sum=Store.total(gross, d["discount"]),
+        try:
+            site_path = visits.deal_path(did)
+        except Exception:  # noqa: BLE001 — статистика не должна ломать карточку
+            site_path = None
+        return render_template("deal.html", d=d, site_path=site_path, fmt_sec=fmt_sec, lines=lines, gross=gross, total_sum=Store.total(gross, d["discount"]),
                                calc_text=calc_text(d, lines, who()) if lines else "",
                                stock=stock, tasks=store.tasks(deal_id=did, open_only=False),
                                events=store.events(deal_id=did), bot=bot, msgs=msgs,
@@ -1757,7 +1766,87 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             bots = store.bot_starts(r["start"], r["end"])
         except Exception:  # noqa: BLE001 — статистика ботов не должна ломать страницу
             bots = {"ready": False}
-        return render_template("site.html", r=r, d=d, bots=bots)
+        show = request.args.get("all") == "1"
+        return render_template("site.html", r=r, d=d, bots=bots, fmt_sec=fmt_sec, BLOCK_NAMES=BLOCK_NAMES, PAGE_KINDS=PAGE_KINDS,
+                               feed=r["feed"] if show else r["feed"][:30], feed_all=show, geo_ready=geo.ready(),
+                               claude_on=site_claude_on(), spam=sorted(visits.spam_hosts()))
+
+    def site_claude_on() -> bool:
+        return store.setting("site_read", "1") == "1"
+
+    @app.post("/site/switch")
+    @admin_required
+    def site_switch() -> Any:
+        """Аварийный выключатель подробных отметок и «Claude видит статистику сайта» — всегда внизу страницы «Сайт»."""
+        what = request.form.get("what", "")
+        on = request.form.get("on") == "1"
+        c = store.c()
+        if what == "deep":
+            visits.set_deep(on)
+            store.log(c, "Сайт: подробные отметки " + ("включены" if on else "выключены"), who())
+            flash("Подробные отметки " + ("включены." if on else "выключены — сайт шлёт их по-прежнему, но CRM их не принимает."), "ok")
+        elif what == "claude":
+            store.set_setting("site_read", "1" if on else "0")
+            store.log(c, "Сайт: Claude " + ("видит" if on else "не видит") + " статистику", who())
+            flash("Claude " + ("видит статистику сайта (шифром для его ключа)." if on else "больше не видит статистику сайта."), "ok")
+        c.commit()
+        return redirect(url_for("site_view", d=request.form.get("d", "7")) + "#switches")
+
+    @app.post("/site/spam")
+    @admin_required
+    def site_spam() -> Any:
+        host = request.form.get("host", "")
+        on = request.form.get("on") == "1"
+        if visits.mark_spam(host, on):
+            c = store.c(); store.log(c, f"Сайт: {host} — " + ("спам, не считать" if on else "снова считать"), who()); c.commit()
+            flash(f"{host}: " + ("больше не считается — показан в «Отсеяно»." if on else "снова считается."), "ok")
+        else:
+            flash("Это не адрес сайта.", "err")
+        return redirect(url_for("site_view", d=request.form.get("d", "7")) + "#filtered")
+
+    @app.route("/site/links")
+    @login_required
+    def site_links() -> Any:
+        """Ссылка с меткой: куда поставим ссылку → потом в «Откуда пришли» видно именно это место."""
+        dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
+        src = request.args.get("src", "")
+        page = request.args.get("page", "/")
+        art = re.sub(r"[^A-Za-z0-9 -]", "", request.args.get("art", ""))[:20].strip()
+        camp = translit_slug(request.args.get("camp", ""))[:40]
+        pages = link_pages()
+        link = ""
+        if src in dict(LINK_SOURCES):
+            path = page if page in dict(pages) else "/"
+            if art:
+                p = store.catalog.get(art)
+                path = f"/p/{p.article.lower().replace('/', '-').replace(' ', '')}/" if p else path
+            q = f"utm_source={src}" + (f"&utm_campaign={camp}" if camp else "")
+            link = f"https://{dom}{path}?{q}"
+        return render_template("site_links.html", sources=LINK_SOURCES, pages=pages, src=src, page=page, art=art,
+                               camp=camp, link=link)
+
+    def link_pages() -> list[tuple[str, str]]:
+        from visits import ARTICLE_TITLES, CATALOG_PAGES
+        out = [("/", "Главная"), ("/dostavka/", "Доставка"), ("/oplata/", "Оплата и возврат"), ("/stati/", "Статьи")]
+        out += [(f"/catalog/{k}/", "Раздел: " + v) for k, v in CATALOG_PAGES.items()]
+        out += [(f"/stati/{k}/", "Статья: " + v) for k, v in ARTICLE_TITLES.items()]
+        return out
+
+    @app.route("/api/site/export")
+    def site_export() -> Any:
+        """Статистика сайта для Claude — только шифром для его ключа (SITE.pub, иначе READER.pub в ветке outbox).
+        Выключается в CRM → «Сайт» внизу («Claude видит статистику сайта») и общей галочкой в «Исходящих»."""
+        if not site_claude_on():
+            resp = jsonify({"v": 1, "off": True})
+        else:
+            try:
+                data = visits.export(today())
+            except Exception:  # noqa: BLE001
+                log.warning("выгрузка статистики для Claude не собралась")
+                data = {"v": 1, "error": "report"}
+            resp = jsonify(ob.sealed(data, INFO_SITE, keyfile="SITE.pub"))
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
 
     # ------------------------------------------------------------ настройки
     @app.post("/settings/pek")
@@ -2204,6 +2293,10 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                 consent_version=str(data.get("consentVersion") or "")[:40])
         if calc:
             store.lines_from_calc(did, calc, "сайт")
+        try:                                       # что человек смотрел на сайте перед заявкой (обезличенный номер на сутки)
+            visits.link_deal(did, today(), ip(), request.headers.get("User-Agent", "")[:400])
+        except Exception:  # noqa: BLE001 — заявка важнее статистики
+            log.warning("счётчик: заявка не связана с посещением")
         if is_order and address:
             store.update_deal(did, "сайт", address=address)
         if is_call:
@@ -2330,6 +2423,11 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if contact and not text:
             store.chat_post(sid, "note", f"Оставил контакт: {name + ', ' if name else ''}{contact}")
         did = chat_to_deal(cid)
+        if did:
+            try:
+                visits.link_deal(did, today(), ip(), request.headers.get("User-Agent", "")[:400])
+            except Exception:  # noqa: BLE001
+                log.warning("счётчик: заявка из чата не связана с посещением")
         ch = store.chat(cid)
         who_s = ch["name"] or (ch["contact"] if ch["contact"] else "посетитель")
         wp.notify(f"Чат с сайта: {who_s}" + (f" · №{did}" if did else ""), text or f"Оставил контакт: {contact}", f"/chats/{cid}", tag=f"chat-{cid}")
@@ -2432,7 +2530,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         if body:
             t = now()
             try:
-                visits.add(day=t.date().isoformat(), at=t.strftime("%H:%M"), ip=ip(), ua=ua, body=body)
+                visits.add(day=t.date().isoformat(), at=t.strftime("%H:%M"), ip=ip(), ua=ua, body=body, city=geo.city(ip()))
             except Exception:  # noqa: BLE001 — счётчик не должен ронять CRM
                 log.warning("счётчик: отметка не записана")
         return cors(Response(status=204))
@@ -2461,6 +2559,22 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                  "server": {"keys": SERVER_ACTION_KEYS, "request": request_file, "last": last_action}})
 
     return app
+
+
+# «Ссылка с меткой» (CRM → Сайт): метка → как покажется в «Откуда пришли» (подписи — visits._UTM)
+LINK_SOURCES = [("dz", "Письмо дизайнеру"), ("email", "Письмо (другим)"), ("tg_ch", "Пост в Telegram-канале"),
+                ("max_ch", "Пост в канале MAX"), ("tg_bot", "Telegram-бот"), ("max_bot", "Бот в MAX"), ("vk", "ВКонтакте"),
+                ("avito", "Авито (профиль, ответ)"), ("avito_chat", "Авито — переписка"), ("yandex_maps", "Яндекс Карты / Бизнес"),
+                ("2gis", "2ГИС"), ("qr", "QR-код (образцы, коробки)"), ("card", "Визитка"), ("print", "Печать (листовка, наклейка)"),
+                ("wa", "WhatsApp"), ("other", "Другое")]
+_TR = dict(zip("абвгдеёжзийклмнопрстуфхцчшщъыьэюя", ["a", "b", "v", "g", "d", "e", "e", "zh", "z", "i", "y", "k", "l", "m", "n", "o",
+                                                   "p", "r", "s", "t", "u", "f", "h", "c", "ch", "sh", "sch", "", "y", "", "e", "yu", "ya"]))
+
+
+def translit_slug(text: str) -> str:
+    """«Пост 12 — камин» → «post-12-kamin» (для utm_campaign)."""
+    t = "".join(_TR.get(ch, ch) for ch in (text or "").lower())
+    return re.sub(r"-{2,}", "-", re.sub(r"[^a-z0-9_.-]+", "-", t)).strip("-.")
 
 
 def rubk(kop: Any) -> str:

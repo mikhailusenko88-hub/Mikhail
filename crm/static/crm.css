@@ -335,3 +335,16 @@ h2.dzh{font-size:19px}
 .dztab-in[value=first]:focus-visible~.dztab-bar [data-k=first],.dztab-in[value=remind]:focus-visible~.dztab-bar [data-k=remind],
 .dztab-in[value=hot]:focus-visible~.dztab-bar [data-k=hot],.dztab-in[value=wait]:focus-visible~.dztab-bar [data-k=wait],
 .dztab-in[value=later]:focus-visible~.dztab-bar [data-k=later],.dztab-in[value=closed]:focus-visible~.dztab-bar [data-k=closed]{outline:2px solid var(--accent);outline-offset:2px}
+
+/* «Сайт»: кто заходил, где теряем людей (23.11.2026) */
+.site-links{margin:14px 0 4px;gap:8px;align-items:center}
+.site-feed{display:flex;flex-direction:column;gap:6px}
+details.visit{padding:10px 12px}
+details.visit>summary{cursor:pointer;line-height:1.45}
+details.visit>summary .d{font-weight:400}
+.visit-path{margin:8px 0 6px;padding-left:22px}
+.visit-path li{margin:4px 0;line-height:1.4}
+.visit-path .num{color:var(--muted);font-size:12.5px;margin-right:4px}
+.warn-t{color:var(--warn)}
+.site-ux th.grp{background:var(--sunk);text-align:left;font-size:12.5px}
+.site-ux td .d{font-size:12px}

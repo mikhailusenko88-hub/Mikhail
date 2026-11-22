@@ -36,6 +36,7 @@ log = logging.getLogger("crm.outbox")
 INFO = b"nashdekor-outbox-v1"
 INFO_REPLIES = b"nashdekor-replies-v1"     # ответы на запросы → Claude (ключ READER.pub в ветке outbox)
 INFO_DZ = b"nashdekor-dz-v1"               # сводка базы дизайнеров → Claude (тот же ключ READER.pub)
+INFO_SITE = b"nashdekor-site-v1"           # статистика сайта → Claude (ключ SITE.pub, а нет его — READER.pub)
 REPO_URL = "https://github.com/mikhailusenko88-hub/Mikhail.git"
 BRANCH = "outbox"
 ID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
@@ -193,10 +194,11 @@ class Outbox:
     def set_read(self, on: bool) -> None:
         self.s.set_setting("outbox_read", "1" if on else "0")
 
-    def reader_key(self) -> str:
-        """Открытый ключ Claude для чтения ответов — файл READER.pub в ветке outbox (меняется с каждым его сеансом)."""
+    def reader_key(self, name: str = "READER.pub") -> str:
+        """Открытый ключ Claude для чтения ответов — файл READER.pub в ветке outbox (меняется с каждым его сеансом).
+        SITE.pub — отдельный ключ для статистики сайта, чтобы её разбор не сбивал ключ ответов."""
         try:
-            k = (self.workdir / "READER.pub").read_text(encoding="utf-8").strip()
+            k = (self.workdir / name).read_text(encoding="utf-8").strip()
             return k if len(_ub64(k)) == 32 else ""
         except Exception:  # noqa: BLE001
             return ""
@@ -313,11 +315,11 @@ class Outbox:
             items.append(seal(k, payload, INFO_REPLIES))
         return {"v": 1, "key": k[:8], "items": items}
 
-    def sealed(self, payload: dict[str, Any], info: bytes = INFO_DZ) -> dict[str, Any]:
-        """Любая выгрузка для Claude (сводка базы дизайнеров) — только шифром для его ключа READER.pub."""
+    def sealed(self, payload: dict[str, Any], info: bytes = INFO_DZ, keyfile: str = "READER.pub") -> dict[str, Any]:
+        """Любая выгрузка для Claude (сводка базы дизайнеров, статистика сайта) — только шифром для его ключа."""
         if not self.read_enabled():
             return {"v": 1, "off": True}
-        k = self.reader_key()
+        k = (self.reader_key(keyfile) if keyfile != "READER.pub" else "") or self.reader_key()
         if not k:
             return {"v": 1, "nokey": True}
         return {"v": 1, "key": k[:8], "item": seal(k, {"id": str(uuid.uuid4()), **payload}, info)}

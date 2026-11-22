@@ -154,6 +154,10 @@ step_packages() {
     sleep 30
   done
   ok "Flask $(python3 -c 'import importlib.metadata as m; print(m.version("flask"))' 2>/dev/null), gunicorn $(gunicorn --version 2>/dev/null | awk '{print $NF}' | tr -d '()')"
+  # город посетителя сайта (необязательно): не поставился — CRM работает как раньше, только без городов
+  if ! python3 -c 'import maxminddb' 2>/dev/null; then
+    run "${apt[@]}" install --no-install-recommends python3-maxminddb || warn "модуль городов python3-maxminddb не поставился — город посетителя не будет определяться"
+  fi
 }
 
 crm_alive() { [[ $(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:$PORT/api/health" 2>/dev/null) == 200 ]]; }
@@ -426,6 +430,29 @@ cmd_mail_watch() {   # новые письма в ящиках магазина 
   return 0
 }
 
+cmd_geo() {   # база городов DB-IP City Lite (CC BY 4.0) для счётчика сайта: раз в месяц; не скачалась — остаётся прежняя
+  local dir=/var/lib/prostranstvo/geo f=dbip-city-lite.mmdb tmp m ok=""
+  local force=${1:-}
+  install -d -m 755 "$dir"
+  if [[ $force != --force && -s $dir/$f ]] && [[ -z $(find "$dir/$f" -mtime +32 2>/dev/null) ]]; then
+    echo "база городов свежая ($(date -r "$dir/$f" '+%d.%m.%Y'))"; return 0
+  fi
+  tmp=$(mktemp "$dir/.dl.XXXXXX")
+  for m in "$(date +%Y-%m)" "$(date -d '-1 month' +%Y-%m)" "https://cdn.jsdelivr.net/npm/dbip-city-lite/dbip-city-lite.mmdb.gz"; do
+    [[ $m == https://* ]] || m="https://download.db-ip.com/free/dbip-city-lite-$m.mmdb.gz"
+    if curl -fsSL --max-time 600 --retry 2 -o "$tmp.gz" "$m" && gzip -dc "$tmp.gz" >"$tmp" 2>/dev/null && [[ $(stat -c %s "$tmp") -gt 10000000 ]]; then
+      ok=$m; break
+    fi
+  done
+  rm -f "$tmp.gz"
+  if [[ -z $ok ]]; then rm -f "$tmp"; echo "база городов не скачалась — осталась прежняя (если была)"; return 1; fi
+  if python3 -c 'import maxminddb' 2>/dev/null && ! python3 -c 'import maxminddb,sys; maxminddb.open_database(sys.argv[1]).get("8.8.8.8")' "$tmp" 2>/dev/null; then
+    rm -f "$tmp"; echo "скачанная база городов не читается — осталась прежняя"; return 1
+  fi
+  chmod 644 "$tmp"; mv -f "$tmp" "$dir/$f"
+  echo "база городов обновлена: $(basename "$ok") ($(du -h "$dir/$f" | cut -f1))"
+}
+
 cmd_backup() {
   local d f keep=14
   d="$BACKUP_DIR/$(date +%F)"
@@ -637,6 +664,7 @@ prostranstvo-crm — CRM https://$CRM_HOST
   prostranstvo-crm outbox              — отправить новые письма с zapros@ из ветки outbox на GitHub (cron, раз в минуту)
   prostranstvo-crm outbox-key          — открытый ключ для шифрования писем (он же — https://$CRM_HOST/api/outbox/key)
   prostranstvo-crm push "Текст"        — пуш всем сотрудникам с включёнными уведомлениями
+  prostranstvo-crm geo [--force]       — база городов для счётчика сайта (DB-IP City Lite; cron, раз в месяц)
   prostranstvo-crm cert                 — получить сертификат для $CRM_HOST сейчас
 EOF
 }
@@ -661,6 +689,7 @@ case ${1:-status} in
   outbox-key) manage outbox-key || rc=$? ;;
   tochka-poll) manage tochka-poll || rc=$? ;;
   push) shift; manage push "Наш декор" "${1:-Проверка уведомлений}" || rc=$? ;;
+  geo) shift; cmd_geo "$@" || rc=$? ;;
   cert) shift; cmd_cert "$@" || rc=$? ;;
   -h | --help | help) usage ;;
   *) usage; rc=1 ;;
@@ -880,7 +909,12 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 35 9 * * *          root  /usr/local/sbin/prostranstvo-crm digest 2>&1 | logger -t prostranstvo-digest
 */5 * * * *         root  flock -n /run/prostranstvo-tochka.lock /usr/local/sbin/prostranstvo-crm tochka-poll 2>&1 | grep -v '^ok$\|не подключена' | logger -t prostranstvo-tochka
 * * * * *           root  flock -n /run/prostranstvo-outbox.lock /usr/local/sbin/prostranstvo-crm outbox 2>&1 | grep -v '^ok$' | logger -t prostranstvo-outbox
+47 4 5 * *          root  flock -n /run/prostranstvo-geo.lock /usr/local/sbin/prostranstvo-crm geo 2>&1 | logger -t prostranstvo-geo
 EOF
+  # база городов для счётчика сайта: при первой установке и если устарела (скачивается ~1 минуту; не вышло — без городов)
+  local geo_out
+  if geo_out=$(timeout 900 /usr/local/sbin/prostranstvo-crm geo 2>&1); then ok "$geo_out"
+  else warn "${geo_out:-база городов не скачалась} — город посетителя пока не определяется, повторится сам 5-го числа"; fi
   /usr/local/sbin/prostranstvo-crm server-page --now >/dev/null 2>&1 || true
   # исходящие письма с zapros@: ответы и возвраты на zapros@ — в ящик info@ (своя пересылка почты)
   local al=/etc/prostranstvo/pochta-aliases.txt

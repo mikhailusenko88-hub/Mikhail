@@ -2956,6 +2956,213 @@ class TestBackupCopies(Base):
         self.assertEqual(self.c.get(f"/server/export/{good}").status_code, 403)
 
 
+class TestVisitsDeep(Base):
+    """23.11.2026: подробные отметки (время, прокрутка, блоки, нажатия, фото, загрузка), лента «Кто заходил», «Где теряем людей»,
+    отсев роботов и спама, приложения, город, путь к заявке, ссылки с меткой, выключатели."""
+
+    def hit(self, events, ua=IPHONE, ip="203.0.113.7", client=None, **extra):
+        body = {"e": events, "r": extra.pop("r", ""), "u": extra.pop("u", ""), "m": extra.pop("m", 1)}
+        body.update(extra.pop("body", {}))
+        h = {"User-Agent": ua, "Content-Type": "text/plain;charset=UTF-8", "Origin": "https://nashdekor.ru"}
+        return (client or self.c).post("/api/hit", data=json.dumps(body, ensure_ascii=False), headers=h,
+                                       environ_base={"REMOTE_ADDR": ip})
+
+    def rows(self):
+        return [dict(r) for r in self.store.c().execute("SELECT * FROM visits ORDER BY id").fetchall()]
+
+    def test_deep_events_cleaned(self) -> None:
+        self.hit([["view", "/p/a912/"]], body={"p": "/p/a912/"})
+        self.hit([["time", "", "42"], ["time", "", "-5"], ["time", "", "abc"], ["scroll", "", "50"], ["scroll", "", "33"],
+                  ["blk", "photo", "12"], ["blk", "Bad Block!", "3"], ["blk", "buy", "0"],
+                  ["dead", "photo:img.main"], ["dead", "<script>"], ["rage", "buy:button#toCart"],
+                  ["photo", "A912", "3"], ["photo", "NOPE", "1"], ["photo", "A912", "99"],
+                  ["load", "", "5300"], ["err", "TypeError: x is null"], ["err", "<b>"]], body={"p": "/p/a912/index.html"})
+        self.hit([["time", "", "10"]], body={"p": "/admin"})                     # неизвестная страница — не берём
+        self.hit([["time", "", "10"]])                                           # без страницы — не берём
+        got = [(x["kind"], x["key"], x["act"]) for x in self.rows() if x["kind"] != "view"]
+        self.assertEqual(got, [("time", "/p/a912/", "42"), ("scroll", "/p/a912/", "50"), ("blk", "/p/a912/#photo", "12"),
+                               ("dead", "/p/a912/|photo:img.main", ""), ("rage", "/p/a912/|buy:button#toCart", ""),
+                               ("photo", "A912", "3"), ("photo", "A912", "40"), ("load", "/p/a912/", "5300"),
+                               ("err", "/p/a912/|TypeError: x is null", ""), ("err", "/p/a912/|ошибка", "")])
+        self.hit([["view", "/"]], body={"w": 1}, ip="198.51.100.40")             # автоматический браузер — не считаем
+        self.assertFalse(any(x["kind"] == "view" and x["key"] == "/" for x in self.rows()))
+
+    def test_switch_off_keeps_old(self) -> None:
+        self.login()
+        self.post("/site/switch", {"what": "deep", "on": "0"})
+        self.assertFalse(self.app.extensions["visits"].deep_on())
+        anon = self.app.test_client()                                            # вошедшие в CRM не считаются
+        self.hit([["view", "/"], ["time", "", "30"], ["scroll", "", "100"]], body={"p": "/"}, client=anon)
+        self.assertEqual([x["kind"] for x in self.rows()], ["view"])            # прежнее считается, новое — нет
+        t = self.c.get("/site?d=7").get_data(as_text=True)
+        self.assertIn("выключены", t)
+        self.post("/site/switch", {"what": "deep", "on": "1"})
+        self.hit([["time", "", "30"]], body={"p": "/"}, client=anon)
+        self.assertEqual([x["kind"] for x in self.rows()], ["view", "time"])
+        c2 = self.app.test_client(); self.login("mikhail", "Secret-pass-2", client=c2)
+        self.assertEqual(self.post("/site/switch", {"what": "deep", "on": "0"}, client=c2).status_code, 403)
+
+    def test_feed_ux_and_blocks(self) -> None:
+        a = dict(ip="203.0.113.7")
+        self.hit([["view", "/"], ["sec", "catalog"]], r="yandex.ru", body={"p": "/"}, **a)
+        self.hit([["time", "", "20"], ["scroll", "", "50"], ["blk", "top", "8"], ["blk", "catalog", "11"]], body={"p": "/"}, **a)
+        self.hit([["view", "/p/a912/"]], r="nashdekor.ru", body={"p": "/p/a912/"}, **a)
+        self.hit([["time", "", "95"], ["time", "", "130"], ["scroll", "", "90"], ["blk", "photo", "40"], ["blk", "buy", "15"],
+                  ["dead", "photo:img"], ["photo", "A912", "2"], ["item", "A912", "ask"], ["copy", "max"]], body={"p": "/p/a912/"}, **a)
+        self.hit([["view", "/p/a912/"]], ua=MAC, ip="198.51.100.9", m=0, body={"p": "/p/a912/"})      # зашёл и сразу ушёл
+        self.hit([["time", "", "4"]], ua=MAC, ip="198.51.100.9", m=0, body={"p": "/p/a912/"})
+        rep = self.app.extensions["visits"].report(crm_app.today(), 7)
+        self.assertEqual(rep["visitors"], 2)
+        feed = {x["dev"]: x for x in rep["feed"]}
+        f = feed["Телефон"]
+        self.assertEqual(f["src"], "Яндекс")
+        self.assertEqual([p["name"] for p in f["pages"]], ["Главная", "Товар A912 · Рейка 912"])
+        self.assertEqual((f["pages"][1]["sec"], f["pages"][1]["scroll"]), (130, 90))
+        self.assertEqual(f["pages"][1]["blk"][0][:2], ("photo", "Фото / 3D товара"))
+        self.assertEqual(f["pages"][1]["dead_on"], ["photo:img"])
+        self.assertEqual(f["total_sec"], 150)
+        self.assertTrue(any("Нажали «MAX»" in x for x in f["acts"]))
+        self.assertTrue(any("A912 №2" in x for x in f["acts"]))
+        ux = {p["path"]: p for p in rep["ux"]["pages"]}
+        self.assertEqual((ux["/p/a912/"]["who"], ux["/p/a912/"]["exit"], ux["/p/a912/"]["s90"]), (2, 2, 1))
+        self.assertEqual((ux["/p/a912/"]["landing"], ux["/p/a912/"]["bounce"]), (1, 1))
+        self.assertEqual(ux["/"]["exit"], 0)
+        self.assertEqual(ux["/p/a912/"]["median_sec"], 67)                      # (130 + 4) / 2
+        blk = {(b["kind"], b["blk"]): b for b in rep["ux"]["blocks"]}
+        self.assertEqual(blk[("product", "photo")]["median_sec"], 40)
+        self.assertEqual(blk[("home", "catalog")]["name"], "Каталог")
+        self.assertEqual(rep["ux"]["clicks"][0]["on"], "photo:img")
+        self.assertEqual(rep["photos"], [("A912", "2", 1)])
+        self.login()
+        t = self.c.get("/site?d=7").get_data(as_text=True)
+        for s in ("Кто заходил", "Где теряем людей", "Блоки страниц: что смотрят", "Что мешает", "Фото / 3D товара",
+                  "долистал до 90%", "2 мин 10 с", "Ссылка с меткой", "Выключатели"):
+            self.assertIn(s, t)
+
+    def test_spam_robots_and_apps(self) -> None:
+        self.hit([["view", "/"]], r="aimanhunt.online", ip="198.51.100.1")                      # спам-ссылка
+        self.hit([["view", "/"]], r="weird-site.example", ip="198.51.100.2")                    # одна страница, ничего — робот
+        self.hit([["view", "/"], ["item", "A912", "use"]], r="forum.example", ip="198.51.100.3")  # живой человек с форума
+        tg = IPHONE.replace("Safari/604.1", "Safari/604.1 Telegram-iOS/11.5")
+        self.hit([["view", "/"]], ua=tg, ip="198.51.100.4")
+        rep = self.app.extensions["visits"].report(crm_app.today(), 7)
+        self.assertEqual(rep["visitors"], 2)
+        self.assertEqual(dict(rep["sources"]), {"forum.example": 1, "Прямой заход · из приложения Telegram": 1})
+        self.assertEqual({(s, w) for s, w, n in rep["filtered"]}, {("aimanhunt.online", "спам-ссылка"),
+                                                                    ("weird-site.example", "похоже на робота")})
+        self.assertEqual(dict(rep["funnel"])["Зашли на сайт"], 2)
+        self.assertEqual(rep["by_day"][0]["visitors"], 2)
+        self.login()
+        self.post("/site/spam", {"host": "forum.example", "on": "1"})
+        rep = self.app.extensions["visits"].report(crm_app.today(), 7)
+        self.assertEqual(rep["visitors"], 1)
+        self.post("/site/spam", {"host": "aimanhunt.online", "on": "0"})        # «снова считать» — даже встроенный
+        self.assertNotIn("aimanhunt.online", self.app.extensions["visits"].spam_hosts())
+        self.assertEqual(self.post("/site/spam", {"host": "Яндекс", "on": "1"}).status_code, 302)
+        self.assertNotIn("Яндекс", self.app.extensions["visits"].spam_hosts())   # известный источник в спам не берём
+        t = self.c.get("/site?d=7").get_data(as_text=True)
+        self.assertIn("Отсеяно: роботы и спам", t)
+        self.assertIn("weird-site.example", t)
+
+    def test_city_and_campaign(self) -> None:
+        from geo import label
+        self.assertEqual(label({"city": {"names": {"en": "Saint Petersburg"}}, "country": {"iso_code": "RU", "names": {"en": "Russia"}}}),
+                         "Санкт-Петербург")
+        self.assertEqual(label({"city": {"names": {"en": "Almaty"}}, "country": {"iso_code": "KZ"}}), "Алматы, Казахстан")
+        self.assertEqual(label({"country": {"iso_code": "RU"}}), "Россия")
+        self.assertEqual(self.app.extensions["geo"].city("10.0.0.1"), "")      # своя сеть и нет базы — без города
+        self.assertEqual(self.app.extensions["geo"].city("203.0.113.5"), "")
+        geo = self.app.extensions["geo"]
+        geo.city = lambda ip: "Санкт-Петербург" if ip.endswith(".7") else ""
+        self.hit([["view", "/"]], u="dz", body={"c": "Studio-Loft"})
+        self.hit([["view", "/"]], ip="198.51.100.8", body={"c": "<bad>"})
+        rows = self.rows()
+        self.assertEqual((rows[0]["city"], rows[0]["camp"]), ("Санкт-Петербург", "studio-loft"))
+        self.assertEqual((rows[1]["city"], rows[1]["camp"]), ("", ""))
+        rep = self.app.extensions["visits"].report(crm_app.today(), 7)
+        self.assertEqual(dict(rep["cities"]), {"Санкт-Петербург": 1, "Не определён": 1})
+        self.assertEqual(rep["camps"], [("Письмо дизайнеру · studio-loft", 1)])
+        self.assertNotIn("203.0.113.7", json.dumps(rows, ensure_ascii=False))
+
+    def test_links_page(self) -> None:
+        self.assertEqual(crm_app.translit_slug("Пост 12 — Камин!"), "post-12-kamin")
+        self.login()
+        t = self.c.get("/site/links").get_data(as_text=True)
+        self.assertIn("Ссылка с меткой", t)
+        t = self.c.get("/site/links?src=dz&page=/catalog/moldingi/&camp=Студия Лофт").get_data(as_text=True)
+        self.assertIn("https://nashdekor.ru/catalog/moldingi/?utm_source=dz&amp;utm_campaign=studiya-loft", t)
+        t = self.c.get("/site/links?src=qr&art=A912").get_data(as_text=True)
+        self.assertIn("https://nashdekor.ru/p/a912/?utm_source=qr", t)
+        t = self.c.get("/site/links?src=evil&page=/").get_data(as_text=True)
+        self.assertNotIn("utm_source=evil", t)
+
+    def test_lead_shows_site_path(self) -> None:
+        self.hit([["view", "/p/a912/"]], r="google.com", body={"p": "/p/a912/"})       # (CRM включает заявки с сайта: SITE_LEADS=1)
+        self.hit([["time", "", "75"], ["scroll", "", "75"], ["item", "A912", "order"]], body={"p": "/p/a912/"})
+        r = self.c.post("/api/lead", json={"name": "Анна", "contact": "+7 900 000-00-00", "consent": True},
+                        headers={"Origin": "https://nashdekor.ru", "User-Agent": IPHONE}, environ_base={"REMOTE_ADDR": "203.0.113.7"})
+        did = r.get_json()["id"]
+        r2 = self.c.post("/api/lead", json={"name": "Борис", "contact": "+7 900 000-00-01", "consent": True},
+                         headers={"Origin": "https://nashdekor.ru", "User-Agent": MAC}, environ_base={"REMOTE_ADDR": "198.51.100.77"})
+        did2 = r2.get_json()["id"]
+        self.login()
+        t = self.c.get(f"/deals/{did}").get_data(as_text=True)
+        self.assertIn("Что смотрел на сайте перед заявкой", t)
+        self.assertIn("Товар A912", t)
+        self.assertIn("1 мин 15 с", t)
+        self.assertIn("Google", t)
+        self.assertNotIn("Что смотрел на сайте", self.c.get(f"/deals/{did2}").get_data(as_text=True))   # не заходил — блока нет
+        self.app.extensions["visits"].clear()
+        self.assertEqual(self.c.get(f"/deals/{did}").status_code, 200)
+
+
+class TestSiteExport(TestOutbox):
+    """Статистика сайта для Claude — только шифром (SITE.pub, иначе READER.pub), выключатель на странице «Сайт»."""
+    test_stale_git_lock_does_not_block = None
+    test_send_once_and_status = None
+    test_sender_mikhail_and_only_allowed = None
+    test_bad_letters_limits_and_switch = None
+    test_retry_when_mail_server_refuses = None
+
+    def key(self, name):
+        import outbox
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
+        sk = X25519PrivateKey.generate()
+        pub = outbox._b64(sk.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw))
+        with open(os.path.join(self.work, name), "w") as f:
+            f.write(pub + "\n")
+        self.git("-C", self.work, "add", "-A"); self.git("-C", self.work, "commit", "-q", "-m", "k")
+        self.git("-C", self.work, "push", "-q", "origin", "outbox")
+        self.ob.run()
+        return sk
+
+    def test_export_sealed(self) -> None:
+        import outbox
+        h = {"User-Agent": IPHONE, "Content-Type": "text/plain", "Origin": "https://nashdekor.ru"}
+        body = {"e": [["view", "/p/a912/"], ["time", "", "30"]], "r": "yandex.ru", "u": "", "m": 1, "p": "/p/a912/"}
+        self.app.test_client().post("/api/hit", data=json.dumps(body), headers=h, environ_base={"REMOTE_ADDR": "203.0.113.70"})
+        self.assertTrue(self.c.get("/api/site/export").get_json()["nokey"])
+        sk = self.key("READER.pub")
+        r = self.c.get("/api/site/export")
+        self.assertEqual(r.headers["Cache-Control"], "no-store")
+        self.assertNotIn("A912", r.get_data(as_text=True))
+        x = outbox.unseal(sk, r.get_json()["item"], outbox.INFO_SITE)
+        self.assertEqual(x["d30"]["visitors"], 1)
+        self.assertEqual(x["d30"]["feed"][0]["pages"][0]["sec"], 30)
+        self.assertNotIn("feed", x["d7"])
+        with self.assertRaises(Exception):
+            outbox.unseal(sk, r.get_json()["item"], outbox.INFO_DZ)
+        sk2 = self.key("SITE.pub")                                               # отдельный ключ для статистики
+        x = outbox.unseal(sk2, self.c.get("/api/site/export").get_json()["item"], outbox.INFO_SITE)
+        self.assertEqual(x["d7"]["visitors"], 1)
+        self.post("/site/switch", {"what": "claude", "on": "0"})
+        self.assertTrue(self.c.get("/api/site/export").get_json()["off"])
+        self.post("/site/switch", {"what": "claude", "on": "1"})
+        self.post("/outbox", {"on": "1", "daily": "30"})                       # общая галочка «Claude видит…» сняли
+        self.assertTrue(self.c.get("/api/site/export").get_json()["off"])
+
+
 class TestSiteEditor(Base):
     """«Редактор сайта»: правки товаров, фото, контакты, отмена, API для GitHub Actions, итог с сайта."""
 

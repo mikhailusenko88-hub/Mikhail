@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Ссылка с меткой{% endblock %}
+{% block main %}
+<p><a href="{{ url_for('site_view') }}">← Сайт</a></p>
+<h1>Ссылка с меткой</h1>
+<p class="sub">Ставьте такую ссылку в письмо, пост, QR-код или визитку — в CRM «Сайт» → «Откуда пришли» будет видно именно это место, а не «Прямой заход».</p>
+<form class="panel pad grid2" method="get" action="{{ url_for('site_links') }}">
+  <label class="f">Куда поставим ссылку<select name="src" required><option value="">— выберите —</option>
+    {% for k, n in sources %}<option value="{{ k }}" {% if k == src %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
+  <label class="f">На какую страницу<select name="page">{% for p, n in pages %}<option value="{{ p }}" {% if p == page %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></label>
+  <label class="f">Или на товар (артикул)<input name="art" value="{{ art }}" placeholder="например A910"></label>
+  <label class="f">Название (необязательно)<input name="camp" value="{{ camp }}" placeholder="например пост-камин или студия-лофт"></label>
+  <div class="span2"><button class="btn-p">Сделать ссылку</button></div>
+</form>
+{% if link %}
+<div class="panel pad">
+  <div class="d">Ссылка:</div>
+  <p class="mono" id="lnk" style="word-break:break-all;font-size:15px">{{ link }}</p>
+  <button class="btn-s" type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('lnk').textContent).then(()=>{this.textContent='Скопировано'})">Скопировать</button>
+</div>
+<p class="d site-note">Название латиницей — так ссылка короче и не ломается в мессенджерах; русские буквы переводятся сами. Одна ссылка — на одно место: для каждого поста, письма или партии QR — своё название.</p>
+{% endif %}
+{% endblock %}

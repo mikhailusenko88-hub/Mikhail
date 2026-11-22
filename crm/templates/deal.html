@@ -197,6 +197,12 @@
 {% if d['calc'] %}<details class="panel pad src" {% if not lines %}open{% endif %}><summary>С чем обратился клиент — исходная заявка с сайта от {{ fmt_dt(d['created_at']) }}</summary>
 <pre class="calc">{{ d['calc'] }}</pre><div class="d">Это текст заявки на момент обращения, он не меняется. Актуальный расчёт — таблица «Расчёт» выше; в письмо клиенту уходит она.</div></details>{% endif %}
 
+{% if site_path %}{% set x = site_path %}<details class="panel pad src" id="sitepath"><summary>Что смотрел на сайте перед заявкой — {{ x['pages']|length }} стр.{% if x['total_sec'] %}, {{ fmt_sec(x['total_sec']) }}{% endif %} · {{ x['src'] }}{% if x['city'] %} · {{ x['city'] }}{% endif %}</summary>
+<ol class="visit-path">{% for p in x['pages'] %}<li><span class="num">{{ p['at'] }}</span> {{ p['name'] }}{% if p['sec'] or p['scroll'] %} <span class="d">— {% if p['sec'] %}{{ fmt_sec(p['sec']) }}{% endif %}{% if p['scroll'] %}{% if p['sec'] %}, {% endif %}долистал до {{ p['scroll'] }}%{% endif %}</span>{% endif %}
+{% if p['blk'] %}<div class="d">Смотрел: {% for b, name, sec in p['blk'] %}{{ name }} {{ fmt_sec(sec) }}{% if not loop.last %} · {% endif %}{% endfor %}</div>{% endif %}</li>{% endfor %}</ol>
+{% if x['acts'] %}<div class="d">Что делал: {{ x['acts']|join(' · ') }}</div>{% endif %}
+<div class="d">Только за день заявки и только с этого устройства. Подсказка для разговора: какие товары и цвета смотрел, считал ли стену.</div></details>{% endif %}
+
 {% if d['kind'] == 'c' and not (d['full_name'] and d['inn'] and d['legal_address']) %}<p class="alert warn">Покупатель — компания: для счёта и УПД заполните реквизиты в <a href="{{ url_for('client_view', cid=d['client_id']) }}#req">карточке клиента</a> (кнопка «Заполнить по ИНН»).</p>{% endif %}
 
 {{ k_values_block("deal", d["id"]) }}

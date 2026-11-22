@@ -12,6 +12,26 @@
   <div class="stat"><b>{% if r['visitors'] %}{{ ('%.1f'|format(100 * r['leads'] / r['visitors'])).replace('.0', '').replace('.', ',') }}%{% else %}—{% endif %}</b><span>из зашедших — в заявку</span></div>
 </div>
 
+<div class="row wrap site-links"><a class="btn-s" href="{{ url_for('site_links') }}">Ссылка с меткой</a><span class="d">— для письма, поста, QR: потом здесь видно, откуда именно пришли</span></div>
+
+<h2 id="feed">Кто заходил</h2>
+{% if feed %}
+<div class="site-feed">{% for x in feed %}
+<details class="panel visit">
+  <summary><b>{% if r['days'] > 1 %}{{ fmt_day(x['day']) }}, {% endif %}{{ x['first'] }}</b> · {{ x['src'] }}{% if x['app'] and x['src'] != 'Прямой заход' %} (в приложении {{ x['app'] }}){% elif x['app'] %} · из приложения {{ x['app'] }}{% endif %}{% if x['camp'] %} · «{{ x['camp'] }}»{% endif %}
+    <span class="d">· {% if x['city'] %}{{ x['city'] }} · {% endif %}{{ x['dev'] }} · {{ x['pages']|length }} стр.{% if x['total_sec'] %}, {{ fmt_sec(x['total_sec']) }}{% endif %}</span>{% if x['lead'] %} <span class="pill good">заявка</span>{% endif %}</summary>
+  <ol class="visit-path">{% for p in x['pages'] %}<li><span class="num">{{ p['at'] }}</span> {{ p['name'] }}{% if p['sec'] or p['scroll'] %} <span class="d">— {% if p['sec'] %}{{ fmt_sec(p['sec']) }}{% endif %}{% if p['scroll'] %}{% if p['sec'] %}, {% endif %}долистал до {{ p['scroll'] }}%{% endif %}</span>{% endif %}
+    {% if p['blk'] %}<div class="d">Смотрел: {% for b, name, sec in p['blk'] %}{{ name }} {{ fmt_sec(sec) }}{% if not loop.last %} · {% endif %}{% endfor %}</div>{% endif %}
+    {% if p['dead_on'] %}<div class="d warn-t">Нажимал — ничего не произошло: {{ p['dead_on']|join(', ') }}</div>{% endif %}
+    {% if p['rage_on'] %}<div class="d warn-t">Нажимал много раз подряд: {{ p['rage_on']|join(', ') }}</div>{% endif %}
+    {% if p['load'] and p['load'] > 4000 %}<div class="d warn-t">Страница грузилась {{ '%.1f'|format(p['load'] / 1000) }} с</div>{% endif %}
+    {% if p['err'] %}<div class="d warn-t">Ошибка на странице: {{ p['err']|join(', ') }}</div>{% endif %}</li>{% endfor %}</ol>
+  {% if x['acts'] %}<div class="d">Что делал: {{ x['acts']|join(' · ') }}</div>{% endif %}
+</details>{% endfor %}</div>
+{% if not feed_all and r['feed']|length > feed|length %}<p><a href="{{ url_for('site_view', d=d, all=1) }}#feed">Показать всех ({{ r['feed']|length }}{% if r['feed_total'] > r['feed']|length %} из {{ r['feed_total'] }}{% endif %})</a></p>{% endif %}
+<p class="d site-note">Каждый посетитель — одно устройство за сутки: во сколько зашёл, откуда, город (по адресу в интернете; на мобильном интернете бывает неточным), какие страницы и сколько на них смотрел. Время и прокрутка считаются с 23.11.2026. Имён, IP-адресов и cookie здесь нет.</p>
+{% else %}<div class="panel list"><div class="row"><span class="d">Пока никого</span></div></div>{% endif %}
+
 <h2>Путь по сайту</h2>
 {% set mx = r['visitors'] or 1 %}
 <div class="panel list">{% for name, n in r['funnel'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}{% if r['visitors'] %} · {{ (100 * n / r['visitors'])|round|int }}%{% endif %}</span></div>{% endfor %}
@@ -60,11 +80,57 @@
 <h2>Разделы: сколько людей долистали</h2>
 <div class="panel list">{% for name, n in r['sections'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}{% if r['visitors'] %} · {{ (100 * n / r['visitors'])|round|int }}%{% endif %}</span></div>{% endfor %}</div>
 
+{% set ux = r['ux'] %}
+<h2 id="ux">Где теряем людей</h2>
+{% if ux['pages'] %}
+<div class="panel tbl"><table class="site-ux"><thead><tr><th>Страница</th><th class="r">Людей</th><th class="r">Время</th><th class="r">До середины</th><th class="r">До конца</th><th class="r">Ушли с неё</th><th class="r">Зашли сюда и сразу ушли</th></tr></thead><tbody>
+{% for p in ux['pages'] %}<tr><td>{{ p['name'] }}{% if p['slow'] %}<div class="d warn-t">медленно грузилась: {{ p['slow'] }}</div>{% endif %}{% if p['dead'] or p['rage'] %}<div class="d warn-t">{% if p['dead'] %}нажимали «в пустоту»: {{ p['dead'] }}{% endif %}{% if p['dead'] and p['rage'] %} · {% endif %}{% if p['rage'] %}много нажатий подряд: {{ p['rage'] }}{% endif %}</div>{% endif %}</td>
+<td class="r num">{{ p['who'] }}</td><td class="r num">{% if p['timed'] %}{{ fmt_sec(p['median_sec']) }}{% else %}—{% endif %}</td>
+<td class="r num">{{ p['s50'] }}</td><td class="r num">{{ p['s90'] }}</td><td class="r num">{{ p['exit'] }}</td><td class="r num">{% if p['landing'] %}{{ p['bounce'] }} из {{ p['landing'] }}{% else %}—{% endif %}</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="d site-note">«Время» — сколько обычно смотрят страницу (половина людей меньше, половина больше). «До середины» и «до конца» — сколько человек долистали. «Ушли с неё» — последняя страница перед уходом с сайта. «Зашли сюда и сразу ушли» — первая страница, меньше 10 секунд и ничего не нажимали. Считается с 23.11.2026.</p>
+{% else %}<div class="panel list"><div class="row"><span class="d">Появится после первых заходов с новым счётчиком.</span></div></div>{% endif %}
+
+{% if ux['blocks'] %}
+<h2>Блоки страниц: что смотрят</h2>
+<div class="panel tbl"><table class="site-ux"><thead><tr><th>Блок</th><th class="r">Людей</th><th class="r">Смотрят</th></tr></thead><tbody>
+{% for b in ux['blocks'] %}{% if loop.first or b['kind'] != ux['blocks'][loop.index0 - 1]['kind'] %}<tr><th colspan="3" class="grp">{{ b['kind_name'] }}</th></tr>{% endif %}
+<tr><td>{{ b['name'] }}</td><td class="r num">{{ b['who'] }}</td><td class="r num">{{ fmt_sec(b['median_sec']) }}</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="d site-note">Блок считается увиденным, если он был на экране хотя бы секунду. «Смотрят» — сколько обычно он на экране у одного человека.</p>
+{% endif %}
+
+{% if ux['clicks'] or ux['errors'] %}
+<h2>Что мешает</h2>
+<div class="panel tbl"><table class="site-ux"><thead><tr><th>Где</th><th>Что</th><th class="r">Людей</th></tr></thead><tbody>
+{% for c in ux['clicks'] %}<tr><td>{{ c['page'] }}</td><td>{% if c['what'] == 'dead' %}Нажимали — ничего не произошло{% else %}Нажимали много раз подряд{% endif %}: <span class="mono">{{ c['on'] }}</span></td><td class="r num">{{ c['who'] }}</td></tr>{% endfor %}
+{% for e in ux['errors'] %}<tr><td>{{ e['page'] }}</td><td>Ошибка на странице: <span class="mono">{{ e['msg'] }}</span></td><td class="r num">{{ e['who'] }}</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="d site-note">«Ничего не произошло» — люди нажали на то, что выглядит нажимаемым (фото, цена, текст), а страница не ответила: кандидат сделать там кнопку или ссылку. «Много раз подряд» — три и больше нажатий в одно место за секунду: что-то не срабатывает или срабатывает медленно.</p>
+{% endif %}
+
+{% if r['photos'] %}
+<h2>Фото товаров: что открывали</h2>
+<div class="panel tbl"><table class="site-ux"><thead><tr><th>Товар</th><th class="r">Фото №</th><th class="r">Людей</th></tr></thead><tbody>
+{% for a, n, who in r['photos'] %}<tr><td class="mono">{{ a }}</td><td class="r num">{{ n }}</td><td class="r num">{{ who }}</td></tr>{% endfor %}
+</tbody></table></div>
+{% endif %}
+
 <h2>Откуда пришли</h2>
 <div class="panel list">{% for name, n in r['sources'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}</span></div>{% else %}<div class="row"><span class="d">Пока никого</span></div>{% endfor %}</div>
 
 <h2>Устройства</h2>
 <div class="panel list">{% for name, n in r['devices'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}</span></div>{% else %}<div class="row"><span class="d">Пока никого</span></div>{% endfor %}</div>
+
+<h2>Города</h2>
+{% if r['cities'] %}<div class="panel list">{% for name, n in r['cities'] %}<div class="row"><div class="grow"><div class="t">{{ name }}</div><meter min="0" max="{{ mx }}" value="{{ n }}"></meter></div><span class="num site-n">{{ n }}</span></div>{% endfor %}</div>
+<p class="d site-note">Город — по адресу в интернете в момент захода (сам адрес не хранится). На мобильном интернете оператор может показывать другой город. Данные о городах: <a href="https://db-ip.com">IP Geolocation by DB-IP</a>.</p>
+{% else %}<div class="panel list"><div class="row"><span class="d">{% if geo_ready %}Появится после первых заходов.{% else %}База городов ещё не загружена на сервер — появится после обновления CRM (команда prostranstvo-crm geo).{% endif %}</span></div></div>{% endif %}
+
+{% if r['camps'] %}
+<h2>Ссылки с меткой</h2>
+<div class="panel list">{% for name, n in r['camps'] %}<div class="row"><span class="grow">{{ name }}</span><span class="num site-n">{{ n }}</span></div>{% endfor %}</div>
+{% endif %}
 
 {% if r['cats'] or r['searches'] %}
 <h2>Каталог: вкладки и поиск</h2>
@@ -80,6 +146,29 @@
 {% if r['pages'] %}
 <h2>Страницы</h2>
 <div class="panel list">{% for name, n in r['pages'] %}<div class="row"><span class="grow">{{ name }}</span><span class="num site-n">{{ n }} чел.</span></div>{% endfor %}</div>
+{% endif %}
+
+<h2 id="filtered">Отсеяно: роботы и спам</h2>
+<div class="panel list">{% for src, why, n in r['filtered'] %}<div class="row wrap"><span class="grow">{{ src }} <span class="d">— {{ why }}</span></span><span class="num site-n">{{ n }}</span>
+{% if g.user['role'] == 'admin' and why != 'спам-ссылка' and '.' in src %}<form method="post" action="{{ url_for('site_spam') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="d" value="{{ d }}"><input type="hidden" name="host" value="{{ src }}"><button class="btn-s" name="on" value="1">Это спам</button></form>{% endif %}</div>
+{% else %}<div class="row"><span class="d">Никого не отсеяли</span></div>{% endfor %}</div>
+{% if g.user['role'] == 'admin' %}
+<details class="panel pad"><summary>Спам-адреса ({{ spam|length }})</summary>
+{% for h in spam %}<form class="row" method="post" action="{{ url_for('site_spam') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="d" value="{{ d }}"><input type="hidden" name="host" value="{{ h }}"><span class="grow mono">{{ h }}</span><button class="btn-s" name="on" value="0">Снова считать</button></form>{% endfor %}
+<form class="row" method="post" action="{{ url_for('site_spam') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="d" value="{{ d }}"><input name="host" placeholder="адрес сайта, например spam.example" class="grow"><button class="btn-s" name="on" value="1">Не считать</button></form>
+</details>{% endif %}
+<p class="d site-note">Спам-ссылки — сайты, которые подставляют свой адрес в «откуда пришли», чтобы вы из любопытства зашли к ним (например, aimanhunt.online — копия сервиса продажи номеров для СМС). «Похоже на робота» — пришёл с незнакомого сайта, открыл одну страницу меньше чем на 5 секунд и ничего не нажимал. Отсеянные не попадают ни в одну цифру выше.</p>
+
+{% if g.user['role'] == 'admin' %}
+<h2 id="switches">Выключатели</h2>
+<div class="panel list">
+<form class="row wrap" method="post" action="{{ url_for('site_switch') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="d" value="{{ d }}"><input type="hidden" name="what" value="deep">
+  <span class="grow">Подробные отметки (время, прокрутка, блоки, нажатия, фото, загрузка): <b>{% if r['deep'] %}включены{% else %}выключены{% endif %}</b><div class="d">Если со статистикой что-то не так — выключите: CRM перестанет их принимать, остальное считается как раньше.</div></span>
+  <button class="btn-s" name="on" value="{{ '0' if r['deep'] else '1' }}">{% if r['deep'] %}Выключить{% else %}Включить{% endif %}</button></form>
+<form class="row wrap" method="post" action="{{ url_for('site_switch') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="d" value="{{ d }}"><input type="hidden" name="what" value="claude">
+  <span class="grow">Claude видит статистику сайта: <b>{% if claude_on %}да{% else %}нет{% endif %}</b><div class="d">Сводка за 30 дней уходит только шифром для его ключа — чтобы он разбирал, где теряем людей, и предлагал правки сайта. Имён, телефонов и IP в ней нет.</div></span>
+  <button class="btn-s" name="on" value="{{ '0' if claude_on else '1' }}">{% if claude_on %}Выключить{% else %}Включить{% endif %}</button></form>
+</div>
 {% endif %}
 
 <p class="d site-note">Посетитель — одно устройство за сутки: тот же человек на следующий день считается снова. Ваши визиты не считаются, если в этом же браузере вы вошли в CRM или заходите со своих IP-адресов (список — в Настройках). Боты и браузеры с запретом отслеживания не считаются. Cookie не ставятся, IP-адреса не хранятся.</p>
