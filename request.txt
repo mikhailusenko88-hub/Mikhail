@@ -1,12 +1,2 @@
-# 21.11 14:30 МСК узбекская ниша: что смотрят в Узбекистане (под переделку Kim yutadi?)
-@kimyutadi_uz
-scan:search:qaysi shahar yutadi
-scan:search:sharlar poygasi
-scan:search:marble race uzbekistan
-scan:search:qiziqarli faktlar
-scan:search-views:qiziqarli faktlar
-scan:hashtag:uzbekistan
-scan:hashtag:qiziqarli
-scan:search:o'zbekcha shorts
-scan:search:mashina poygasi
-scan:search-month:1000 ta shar
+# 22.11 09:55 МСК обход: all
+all
