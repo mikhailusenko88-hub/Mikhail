@@ -1704,7 +1704,7 @@ function propMesh(p) {
         const pv = new THREE.Group(); pv.position.y = y; pv.rotation.y = i * GA; g.add(pv); const hg = new THREE.Group(); hg.position.x = rc; pv.add(hg);
         const L = .02 + .052 * prof, W = .015 + .024 * prof, s = A(sg, i % 2 ? m1 : m2, hg, .06); s.scale.set(.0095, L / 2, W / 2); s.position.y = L * .45; s.rotation.z = .12; hg.userData.k = prof; sc.push(hg); }
       g.userData.scales = sc; g.userData.scaleA = [.36, 1.02]; for (const h of sc) h.rotation.z = -1.02; break; }
-    case 'snowball': { const c0 = cl || '#f6fbff'; const b = A(G.sph(.09, 28, 20), P(null, 'food', speckT(c0, '#dfeaf5', 80))); b.position.y = .09; break; }
+    case 'snowball': { const c0 = cl || '#ffffff'; const b = A(G.sph(.09, 28, 20), P(null, 'wax', speckT(c0, '#e4ecf6', 160))); b.position.y = .09; break; }   // 22.11.2026: снег как у снеговика (в тёплой кухне «пищевой» снежок был похож на булочку)
     case 'sled': { const c0 = cl || '#d8213a'; for (const s of [-1, 1]) { const rn = A(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-.32, .01, s * .14), new THREE.Vector3(.28, .01, s * .14), new THREE.Vector3(.36, .06, s * .14), new THREE.Vector3(.33, .12, s * .14)]), 24, .012, 8), P('#c9c9c9', 'metal'), g, 0);
         for (const x of [-.2, .1]) A(G.box(.015, .1, .015), P('#c9c9c9', 'metal'), g, 0).position.set(x, .06, s * .14); }
       for (let k = 0; k < 4; k++) A(G.box(.11, .02, .36), P(c0, 'wood'), g).position.set(-.22 + k * .13, .12, 0); break; }
