@@ -5,6 +5,7 @@
   draft <релиз> <серия>                  — загрузить серию закрытым черновиком (никто не видит)
   plan  <релиз> <серия> <ГГГГ-ММ-ДДTЧЧ:ММ> — загрузить закрытой и поставить таймер выхода (время московское)
   short <релиз> <серия> <ГГГГ-ММ-ДДTЧЧ:ММ> — Shorts этой серии (ep-<релиз>-shorts.mp4) с таймером выхода; полная серия уже должна быть загружена
+    … --file=<путь в ветке> — взять Shorts из файла ветки studio, а не из релиза (Shorts в формате сервера: shorts_server.py)
   cancel <id ролика>                     — снять таймер выхода (ролик остаётся закрытым)
   retime <id ролика> <ГГГГ-ММ-ДДTЧЧ:ММ>  — перенести таймер выхода закрытого ролика (время московское)
   stats                                  — последние ролики канала: просмотры, статус
@@ -110,7 +111,13 @@ def short(yt, a, rel, num, it, body_when, last, pe):
     if full[0]["privacy"] == "private" and full[0].get("publishAt") and body_when[0] < full[0]["publishAt"]:
         return finish([f"SHORTS НЕ ЗАГРУЖАЛ: он вышел бы раньше полной серии ({full_at}) — ссылка вела бы на закрытый ролик"])
     os.makedirs("tmp", exist_ok=True)
-    mb = fetch(f"https://github.com/{REPO}/releases/download/studio-{rel}/ep-{rel}-shorts.mp4", "tmp/short.mp4", 500_000) / 1e6
+    own = next((x.split("=", 1)[1] for x in a if x.startswith("--file=")), None)   # 22.11: свой файл из ветки (Shorts в формате сервера, проба H28)
+    if own:
+        if not os.path.exists(own) or os.path.getsize(own) < 500_000:
+            return finish([f"SHORTS НЕ ЗАГРУЖАЛ: нет файла {own} в ветке studio"])
+        subprocess.run(["cp", own, "tmp/short.mp4"], check=True); mb = os.path.getsize(own) / 1e6
+    else:
+        mb = fetch(f"https://github.com/{REPO}/releases/download/studio-{rel}/ep-{rel}-shorts.mp4", "tmp/short.mp4", 500_000) / 1e6
     say(f"Shorts серии {num}, файл {mb:.0f} МБ; загружаю закрытым, выход {body_when[1]}")
     vid = yt.upload("tmp/short.mp4", body)
     pl, st = yt.to_playlist(vid, "short"), yt.status(vid)
