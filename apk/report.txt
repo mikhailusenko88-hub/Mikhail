@@ -3,7 +3,7 @@ build-tools: /usr/local/lib/android/sdk/build-tools/37.0.0
 update-mod-release.apk 245943995 2026-06-25T12:20:56+00:00 14ce4e3caa75cb781e18bd740b739fa8
 Инструкция Приложение для Планшетов.pdf 1354856 2026-01-20T15:23:19+00:00 b19af9d9b7d4b7f79dd05268bedccf80
 == file
--rw-r--r-- 1 runner runner 245943995 Nov 22 22:05 work/app.apk
+-rw-r--r-- 1 runner runner 245943995 Nov 22 22:06 work/app.apk
 976bd503b4d046dece2a9e835e79261989e31223c8ee58b677757f1cff9e25e4  work/app.apk
 work/app.apk: Android package (APK), with gradle app-metadata.properties
 == badging
@@ -421,8 +421,13 @@ kotlin/kotlin.kotlin_builtins
 kotlin/ranges/ranges.kotlin_builtins
 kotlin/reflect/reflect.kotlin_builtins
 dex files: 2
+unzip:  cannot find or open work/app.apk, work/app.apk.zip or work/app.apk.ZIP.
+total 8
+drwxr-xr-x  2 runner runner 4096 Nov 22 22:06 .
+drwxrwxrwt 13 root   root   4096 Nov 22 22:06 ..
 strings total: 0
 == vendor / device checks (rubetek, model, system props, hardware)
+== domonap classes mentioning rubetek / panel / stationary
 == panel mode / activation / connection
 == battery / power
 == push services
