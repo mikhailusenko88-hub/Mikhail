@@ -863,7 +863,7 @@ MK.collectLines = function (ep, lib) {
 
 /** Подписка на канал (Настройки → «Подписка на канал»). У роликов «для детей» YouTube выключает конечные заставки, подсказки, значок канала и колокольчик —
  *  поэтому зовём подписаться в самом мультике: плашка в углу посреди серии (без звука), кнопка на последней заставке и фраза главного героя к ребёнку и родителям. */
-MK.SUB_LINE = 'Понравился мультик? Попроси маму или папу подписаться на канал. До встречи в новой серии!';
+MK.SUB_LINE = 'Понравился мультик? Попроси маму или папу поставить лайк и подписаться на канал. До встречи в новой серии!';   // 22.11.2026: Михаил — «нет призыва к лайкам»
 MK.SUB_YT = 'https://www.youtube.com/@Cartoon_Friend3'; MK.SUB_RT = 'https://rutube.ru/channel/82826859/';
 /** Строка про подписку в конце описания ролика: YouTube — ссылка сразу с окном «Подписаться» (?sub_confirmation=1), Rutube — ссылка на канал. */
 MK.subDescLine = function (lib, where) { const s = ((lib && lib.settings) || {}).sub || {}; if (s.on === false || s.desc === false) return '';
@@ -1253,8 +1253,8 @@ MK.compile = function (ep, lib, audio) {
   if (sub && sub.badge) { const TD = titleAt != null ? INTRO_DUR : 0, L = t - TITLE - TD, fr = L >= 90 ? [.3, .7] : L >= 30 ? [.5] : [];   // доли от действия, без заставки; на заставку не попадаем
     subMarks = fr.map(f => { let m = TITLE + L * f; if (titleAt != null && m >= titleAt) m += TD; if (titleAt != null && m < titleAt + TD && m + SUB_BADGE > titleAt) m = titleAt + TD + .5; return Math.round(m * 10) / 10; }).filter(m => m + SUB_BADGE <= t); }   // плашка в углу: длинная серия — дважды, короткая — раз
   if (END) { let say = null, end = END; if (sl) { const a = audio[sl.key], d = a ? a.dur : estSpeech(sl.subText); say = { who: sl.who, t: .8, dur: d, key: sl.key, text: sl.subText }; end = Math.max(END, say.t + d + 1.6); }
-    const tap = sub && sub.badge ? (say ? say.t + say.dur * .55 : 2) : null;   // лапка жмёт «Подписаться» на словах «подписаться на канал»
-    segs.push({ kind: 'end', t0: t, t1: t + end, say, tap }); music.push({ t0: t, t1: t + end, mood: 'happy' });
+    const liked = /лайк/i.test((sl && sl.subText) || ''), tap = sub && sub.badge ? (say ? say.t + say.dur * (liked ? .62 : .55) : 2) : null, likeTap = tap != null && liked ? (say ? say.t + say.dur * .38 : 1.2) : null;   // лапка жмёт «лайк» на словах «поставить лайк», потом «Подписаться» — на «подписаться на канал»
+    segs.push({ kind: 'end', t0: t, t1: t + end, say, tap, likeTap }); music.push({ t0: t, t1: t + end, mood: 'happy' });
     if (say) speech.push({ t: t + say.t, dur: say.dur, key: say.key, who: say.who, text: say.text, vocal: false });
     if (tap != null) sfx.push({ t: t + tap, n: 'pop' });
     t += end; }
@@ -1391,7 +1391,7 @@ MK.render = function (ctx, tl, T) {
   if (tl.ep.subtitles) { const sp = tl.speech.find(s => T >= s.t && T < s.t + s.dur); if (sp) drawSubtitle(ctx, sp, tl.lib); }
   ctx.restore();
 };
-const SUB_BADGE = 7, SUB_TAP = 2.6, SUB_FONT = '-apple-system, "SF Pro Rounded", "Arial Rounded MT Bold", "DejaVu Sans", sans-serif';
+const SUB_BADGE = 7, SUB_TAP = 3.3, LIKE_TAP = 1.8, SUB_FONT = '-apple-system, "SF Pro Rounded", "Arial Rounded MT Bold", "DejaVu Sans", sans-serif';
 function subRR(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 /** Кнопка «ПОДПИСАТЬСЯ» (центр cx,cy): до щелчка красная и чуть дышит, в момент щелчка вдавливается, после — серая «✓ ВЫ ПОДПИСАНЫ» и сердечки. */
 function subButton(ctx, cx, cy, sc, k, tap) {
@@ -1408,6 +1408,19 @@ function subButton(ctx, cx, cy, sc, k, tap) {
     ctx.save(); ctx.globalAlpha = clamp((1 - q) * 1.6, 0, 1); ctx.translate(cx + Math.cos(an) * d * 1.9, cy + Math.sin(an) * d); ctx.rotate((r() - .5) * .8); ctx.fillStyle = ['#ff4d6d', '#ff8fab', '#ffd23f'][i % 3];
       ctx.beginPath(); ctx.moveTo(0, s2 * .35); ctx.bezierCurveTo(-s2 * 1.1, -s2 * .45, -s2 * .45, -s2 * 1.2, 0, -s2 * .45); ctx.bezierCurveTo(s2 * .45, -s2 * 1.2, s2 * 1.1, -s2 * .45, 0, s2 * .35); ctx.fill(); ctx.restore(); } }
 }
+/** Кнопка «лайк» (круг с пальцем вверх, центр cx,cy): до щелчка белая, палец бледный; после — синяя, палец яркий, «+1» и сердечки (22.11.2026). */
+function likeButton(ctx, cx, cy, sc, k, tap) {
+  const done = k >= tap, press = k > tap - .1 && k < tap + .12 ? .88 : 1, pulse = done ? 1 : 1 + Math.sin(k * 5.5 + 1) * .04, R = 56;
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(sc * press * pulse, sc * press * pulse);
+  ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = 7; ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.fillStyle = done ? '#3ea6ff' : '#ffffff'; ctx.fill();
+  ctx.shadowColor = 'transparent'; ctx.lineWidth = 6; ctx.strokeStyle = done ? '#1b6fd1' : '#c9ced8'; ctx.stroke();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `62px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", ${SUB_FONT}`; ctx.globalAlpha = done ? 1 : .7; ctx.fillText('👍', 0, 4); ctx.globalAlpha = 1;
+  ctx.restore();
+  if (done && k - tap < 1.2) { const q = (k - tap) / 1.2; ctx.save(); ctx.globalAlpha = clamp((1 - q) * 1.8, 0, 1); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 ${Math.round(46 * sc)}px ${SUB_FONT}`; ctx.lineWidth = 8 * sc; ctx.strokeStyle = '#ffffff'; ctx.strokeText('+1', cx, cy - (70 + 60 * ease(q)) * sc); ctx.fillStyle = '#1b6fd1'; ctx.fillText('+1', cx, cy - (70 + 60 * ease(q)) * sc); ctx.restore();
+    const r = rng(9); for (let i = 0; i < 6; i++) { const an = -Math.PI * (.15 + .7 * i / 5) + (r() - .5) * .3, d = (60 + r() * 40) * sc * ease(q * 1.6) + 30 * sc, s2 = (12 + r() * 8) * sc * (1 - q * .5);
+      ctx.save(); ctx.globalAlpha = clamp((1 - q) * 1.6, 0, 1); ctx.translate(cx + Math.cos(an) * d * 1.3, cy + Math.sin(an) * d); ctx.fillStyle = ['#ff4d6d', '#3ea6ff', '#ffd23f'][i % 3];
+        ctx.beginPath(); ctx.moveTo(0, s2 * .35); ctx.bezierCurveTo(-s2 * 1.1, -s2 * .45, -s2 * .45, -s2 * 1.2, 0, -s2 * .45); ctx.bezierCurveTo(s2 * .45, -s2 * 1.2, s2 * 1.1, -s2 * .45, 0, s2 * .35); ctx.fill(); ctx.restore(); } }
+}
 /** Лапка-«палец»: подушечки сверху, (x,y) — куда жмёт. */
 function subPaw(ctx, x, y, sc, rot, arm) { arm = arm || 150;
   ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sc, sc); ctx.lineWidth = 5; ctx.strokeStyle = '#5a2e12';
@@ -1423,17 +1436,17 @@ function subPawAt(ctx, bx, by, sc, k, tap, side) {
   const far = 330 * sc, p = inK * (1 - outK), dip = k > tap - .1 && k < tap + .12 ? 8 * sc : 0, R = side === 'right';
   subPaw(ctx, bx + (1 - p) * far * (R ? 1.2 : .8) + (R ? dip * .6 : 0), by + (1 - p) * far * (R ? .2 : 1) + dip, sc * .9, R ? -1.15 : -.45);
 }
-MK._sub = { button: subButton, paw: subPaw };   // та же кнопка и лапка — картинками для Shorts (tools/multik/test/subpng.js)
+MK._sub = { button: subButton, paw: subPaw, like: likeButton };   // та же кнопка и лапка — картинками для Shorts (tools/multik/test/subpng.js)
 function drawSub(ctx, tl, seg, t, T, use3d) {
   ctx.save();
   if (seg.kind === 'end') { if (seg.tap != null) { const k = t, a = ease((k - .5) / .45), bounce = 1 + Math.sin(clamp((k - .5) / .45, 0, 1) * Math.PI) * .12; if (a > 0) {
-      const cx = W / 2, cy = H * (use3d ? .875 : .5), sc = 1.12 * a * bounce;   /* в 3D — на сцене под ногами героев, на плоской заставке — между надписью и героями */ subButton(ctx, cx, cy, sc, k, seg.tap); subPawAt(ctx, cx + 120, cy + 18, 1.05, k, seg.tap); } }
+      const cy = H * (use3d ? .875 : .5), sc = 1.12 * a * bounce, cx = W / 2 + (seg.likeTap != null ? 70 : 0), lx = W / 2 - 250;   /* в 3D — на сцене под ногами героев, на плоской заставке — между надписью и героями */ if (seg.likeTap != null) { likeButton(ctx, lx, cy, sc, k, seg.likeTap); subPawAt(ctx, lx + 20, cy + 18, 1.05, k, seg.likeTap); } subButton(ctx, cx, cy, sc, k, seg.tap); subPawAt(ctx, cx + 120, cy + 18, 1.05, k, seg.tap); } }
     ctx.restore(); return; }
   if (seg.kind === 'scene') for (const m of tl.sub.marks) { const k = T - m; if (k < 0 || k >= SUB_BADGE) continue;
-    const a = Math.min(ease(k / .45), ease((SUB_BADGE - k) / .45)), Z = .88, pw = 500, ph = 222, x = W - 40 - pw * Z / 2 + (1 - a) * (pw * Z + 80), y = 40 + ph * Z / 2;
+    const a = Math.min(ease(k / .45), ease((SUB_BADGE - k) / .45)), Z = .88, pw = 640, ph = 222, x = W - 40 - pw * Z / 2 + (1 - a) * (pw * Z + 80), y = 40 + ph * Z / 2;
     ctx.save(); ctx.translate(x, y); ctx.scale(Z, Z); ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8; subRR(ctx, -pw / 2, -ph / 2, pw, ph, 40); ctx.fillStyle = 'rgba(255,255,255,.95)'; ctx.fill(); ctx.shadowColor = 'transparent';
     ctx.lineWidth = 5; ctx.strokeStyle = '#ffd23f'; ctx.stroke(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 44px ${SUB_FONT}`; ctx.fillStyle = '#3a1d10'; ctx.fillText('Нравится мультик?', 0, -ph / 2 + 56);
-    subButton(ctx, 0, 34, .95, k, SUB_TAP); subPawAt(ctx, 150, 40, .85, k, SUB_TAP, 'right'); ctx.restore(); }
+    likeButton(ctx, -232, 34, .95, k, LIKE_TAP); subPawAt(ctx, -212, 40, .85, k, LIKE_TAP, 'right'); subButton(ctx, 82, 34, .86, k, SUB_TAP); subPawAt(ctx, 222, 40, .85, k, SUB_TAP, 'right'); ctx.restore(); }
   ctx.restore();
 }
 /** Заставка «плашкой поверх»: въезжает слева сверху на 2-й секунде, уезжает к 6-й; действие не останавливается. */
