@@ -1,0 +1,430 @@
+build-tools: /usr/local/lib/android/sdk/build-tools/37.0.0
+== folder listing (name, size, modified, md5)
+update-mod-release.apk 245943995 2026-06-25T12:20:56+00:00 14ce4e3caa75cb781e18bd740b739fa8
+Инструкция Приложение для Планшетов.pdf 1354856 2026-01-20T15:23:19+00:00 b19af9d9b7d4b7f79dd05268bedccf80
+== file
+-rw-r--r-- 1 runner runner 245943995 Nov 22 22:05 work/app.apk
+976bd503b4d046dece2a9e835e79261989e31223c8ee58b677757f1cff9e25e4  work/app.apk
+work/app.apk: Android package (APK), with gradle app-metadata.properties
+== badging
+package: name='com.domonap.app' versionCode='9845' versionName='9845' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+minSdkVersion:'24'
+targetSdkVersion:'36'
+uses-permission: name='android.permission.MODIFY_AUDIO_SETTINGS'
+uses-permission: name='android.permission.RECORD_AUDIO'
+uses-permission: name='android.permission.CAMERA'
+uses-permission: name='android.permission.ACCESS_COARSE_LOCATION'
+uses-permission: name='android.permission.ACCESS_FINE_LOCATION'
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='android.permission.ACCESS_NETWORK_STATE'
+uses-permission: name='android.permission.CHANGE_NETWORK_STATE'
+uses-permission: name='android.permission.POST_NOTIFICATIONS'
+uses-permission: name='android.permission.USE_FULL_SCREEN_INTENT'
+uses-permission: name='android.permission.FOREGROUND_SERVICE'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_DATA_SYNC'
+uses-permission: name='android.permission.READ_PHONE_STATE'
+uses-permission: name='android.permission.READ_CONTACTS'
+uses-permission: name='android.permission.READ_EXTERNAL_STORAGE' maxSdkVersion='32'
+uses-permission: name='android.permission.WRITE_EXTERNAL_STORAGE' maxSdkVersion='31'
+uses-permission: name='android.permission.READ_MEDIA_IMAGES'
+uses-permission: name='android.permission.READ_MEDIA_VISUAL_USER_SELECTED'
+uses-permission: name='android.permission.WAKE_LOCK'
+uses-permission: name='android.permission.SYSTEM_ALERT_WINDOW'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_SPECIAL_USE'
+uses-permission: name='android.permission.VIBRATE'
+uses-permission: name='android.permission.BLUETOOTH_CONNECT'
+uses-permission: name='android.permission.MANAGE_OWN_CALLS'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_PHONE_CALL'
+uses-permission: name='android.permission.REQUEST_INSTALL_PACKAGES'
+uses-permission: name='android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS'
+uses-permission: name='android.permission.RECEIVE_BOOT_COMPLETED'
+uses-permission: name='android.permission.USE_FINGERPRINT'
+uses-permission: name='android.permission.USE_BIOMETRIC'
+uses-permission: name='com.google.android.providers.gsf.permission.READ_GSERVICES'
+uses-permission: name='com.google.android.gms.permission.AD_ID'
+uses-permission: name='com.domonap.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+uses-permission: name='android.permission.CHANGE_WIFI_MULTICAST_STATE'
+uses-permission: name='android.permission.BLUETOOTH'
+uses-permission: name='android.permission.ACCESS_NOTIFICATION_POLICY'
+uses-permission: name='android.permission.ACCESS_WIFI_STATE'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_CAMERA'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_MICROPHONE'
+uses-permission: name='com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE'
+application-label:'Domonap'
+application: label='Domonap' icon='res/BW.xml'
+uses-library-not-required:'org.apache.http.legacy'
+launchable-activity: name='com.domonap.app.ui.main.MainActivity'  label='' icon=''
+uses-library-not-required:'androidx.camera.extensions.impl'
+uses-library-not-required:'androidx.window.extensions'
+uses-library-not-required:'androidx.window.sidecar'
+feature-group: label=''
+  uses-gl-es: '0x20000'
+  uses-feature-not-required: name='android.hardware.camera'
+  uses-feature-not-required: name='android.hardware.camera.any'
+  uses-feature-not-required: name='android.hardware.camera.autofocus'
+  uses-feature-not-required: name='android.hardware.telephony'
+  uses-feature: name='android.hardware.bluetooth'
+  uses-implied-feature: name='android.hardware.bluetooth' reason='requested android.permission.BLUETOOTH permission, and targetSdkVersion > 4'
+  uses-feature: name='android.hardware.faketouch'
+  uses-implied-feature: name='android.hardware.faketouch' reason='default feature for all apps'
+  uses-feature: name='android.hardware.location'
+  uses-implied-feature: name='android.hardware.location' reason='requested android.permission.ACCESS_COARSE_LOCATION permission, and requested android.permission.ACCESS_FINE_LOCATION permission'
+  uses-feature: name='android.hardware.microphone'
+  uses-implied-feature: name='android.hardware.microphone' reason='requested android.permission.RECORD_AUDIO permission'
+  uses-feature: name='android.hardware.wifi'
+  uses-implied-feature: name='android.hardware.wifi' reason='requested android.permission.ACCESS_WIFI_STATE permission, and requested android.permission.CHANGE_WIFI_MULTICAST_STATE permission'
+provides-component:'app-widget'
+provides-component:'launcher'
+main
+other-activities
+other-receivers
+other-services
+supports-screens: 'normal'
+supports-any-density: 'true'
+locales: '--_--' 'en' 'ru' 'zh-CN'
+densities: '120' '160' '240' '320' '480' '640' '65534'
+native-code: 'arm64-v8a' 'armeabi-v7a' 'x86' 'x86_64'
+== permissions
+package: com.domonap.app
+uses-permission: name='android.permission.MODIFY_AUDIO_SETTINGS'
+uses-permission: name='android.permission.RECORD_AUDIO'
+uses-permission: name='android.permission.CAMERA'
+uses-permission: name='android.permission.ACCESS_COARSE_LOCATION'
+uses-permission: name='android.permission.ACCESS_FINE_LOCATION'
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='android.permission.ACCESS_NETWORK_STATE'
+uses-permission: name='android.permission.CHANGE_NETWORK_STATE'
+uses-permission: name='android.permission.POST_NOTIFICATIONS'
+uses-permission: name='android.permission.USE_FULL_SCREEN_INTENT'
+uses-permission: name='android.permission.FOREGROUND_SERVICE'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_DATA_SYNC'
+uses-permission: name='android.permission.READ_PHONE_STATE'
+uses-permission: name='android.permission.READ_CONTACTS'
+uses-permission: name='android.permission.READ_EXTERNAL_STORAGE' maxSdkVersion='32'
+uses-permission: name='android.permission.WRITE_EXTERNAL_STORAGE' maxSdkVersion='31'
+uses-permission: name='android.permission.READ_MEDIA_IMAGES'
+uses-permission: name='android.permission.READ_MEDIA_VISUAL_USER_SELECTED'
+uses-permission: name='android.permission.WAKE_LOCK'
+uses-permission: name='android.permission.SYSTEM_ALERT_WINDOW'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_SPECIAL_USE'
+uses-permission: name='android.permission.VIBRATE'
+uses-permission: name='android.permission.BLUETOOTH_CONNECT'
+uses-permission: name='android.permission.MANAGE_OWN_CALLS'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_PHONE_CALL'
+uses-permission: name='android.permission.REQUEST_INSTALL_PACKAGES'
+uses-permission: name='android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS'
+uses-permission: name='android.permission.RECEIVE_BOOT_COMPLETED'
+uses-permission: name='android.permission.USE_FINGERPRINT'
+uses-permission: name='android.permission.USE_BIOMETRIC'
+uses-permission: name='com.google.android.providers.gsf.permission.READ_GSERVICES'
+uses-permission: name='com.google.android.gms.permission.AD_ID'
+permission: com.domonap.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+uses-permission: name='com.domonap.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+uses-permission: name='android.permission.CHANGE_WIFI_MULTICAST_STATE'
+uses-permission: name='android.permission.BLUETOOTH'
+uses-permission: name='android.permission.ACCESS_NOTIFICATION_POLICY'
+uses-permission: name='android.permission.ACCESS_WIFI_STATE'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_CAMERA'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_MICROPHONE'
+uses-permission: name='com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE'
+== manifest: features, activities, intent filters
+      E: uses-sdk (line=7)
+        A: http://schemas.android.com/apk/res/android:minSdkVersion=24
+        A: http://schemas.android.com/apk/res/android:targetSdkVersion=36
+      E: uses-feature (line=11)
+        A: http://schemas.android.com/apk/res/android:required=false
+      E: uses-feature (line=14)
+        A: http://schemas.android.com/apk/res/android:name="android.hardware.camera.any" (Raw: "android.hardware.camera.any")
+        A: http://schemas.android.com/apk/res/android:required=false
+      E: uses-feature (line=17)
+        A: http://schemas.android.com/apk/res/android:name="android.hardware.camera" (Raw: "android.hardware.camera")
+        A: http://schemas.android.com/apk/res/android:required=false
+      E: uses-feature (line=20)
+        A: http://schemas.android.com/apk/res/android:name="android.hardware.camera.autofocus" (Raw: "android.hardware.camera.autofocus")
+        A: http://schemas.android.com/apk/res/android:required=false
+      E: uses-feature (line=23)
+        A: http://schemas.android.com/apk/res/android:name="android.hardware.telephony" (Raw: "android.hardware.telephony")
+        A: http://schemas.android.com/apk/res/android:required=false
+        A: http://schemas.android.com/apk/res/android:name="android.permission.MODIFY_AUDIO_SETTINGS" (Raw: "android.permission.MODIFY_AUDIO_SETTINGS")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.RECORD_AUDIO" (Raw: "android.permission.RECORD_AUDIO")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.CAMERA" (Raw: "android.permission.CAMERA")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.ACCESS_COARSE_LOCATION" (Raw: "android.permission.ACCESS_COARSE_LOCATION")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.ACCESS_FINE_LOCATION" (Raw: "android.permission.ACCESS_FINE_LOCATION")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.INTERNET" (Raw: "android.permission.INTERNET")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.ACCESS_NETWORK_STATE" (Raw: "android.permission.ACCESS_NETWORK_STATE")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.CHANGE_NETWORK_STATE" (Raw: "android.permission.CHANGE_NETWORK_STATE")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.POST_NOTIFICATIONS" (Raw: "android.permission.POST_NOTIFICATIONS")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.USE_FULL_SCREEN_INTENT" (Raw: "android.permission.USE_FULL_SCREEN_INTENT")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.FOREGROUND_SERVICE" (Raw: "android.permission.FOREGROUND_SERVICE")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" (Raw: "android.permission.FOREGROUND_SERVICE_DATA_SYNC")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.READ_PHONE_STATE" (Raw: "android.permission.READ_PHONE_STATE")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.READ_CONTACTS" (Raw: "android.permission.READ_CONTACTS")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.READ_EXTERNAL_STORAGE" (Raw: "android.permission.READ_EXTERNAL_STORAGE")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.WRITE_EXTERNAL_STORAGE" (Raw: "android.permission.WRITE_EXTERNAL_STORAGE")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.READ_MEDIA_IMAGES" (Raw: "android.permission.READ_MEDIA_IMAGES")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" (Raw: "android.permission.READ_MEDIA_VISUAL_USER_SELECTED")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.WAKE_LOCK" (Raw: "android.permission.WAKE_LOCK")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.SYSTEM_ALERT_WINDOW" (Raw: "android.permission.SYSTEM_ALERT_WINDOW")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" (Raw: "android.permission.FOREGROUND_SERVICE_SPECIAL_USE")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.VIBRATE" (Raw: "android.permission.VIBRATE")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.BLUETOOTH_CONNECT" (Raw: "android.permission.BLUETOOTH_CONNECT")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.MANAGE_OWN_CALLS" (Raw: "android.permission.MANAGE_OWN_CALLS")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" (Raw: "android.permission.FOREGROUND_SERVICE_PHONE_CALL")
+              E: action (line=65)
+                A: http://schemas.android.com/apk/res/android:name="android.intent.action.GET_CONTENT" (Raw: "android.intent.action.GET_CONTENT")
+              E: category (line=67)
+                A: http://schemas.android.com/apk/res/android:name="android.intent.category.OPENABLE" (Raw: "android.intent.category.OPENABLE")
+              E: action (line=72)
+                A: http://schemas.android.com/apk/res/android:name="android.media.action.IMAGE_CAPTURE" (Raw: "android.media.action.IMAGE_CAPTURE")
+              E: action (line=75)
+                A: http://schemas.android.com/apk/res/android:name="androidx.camera.extensions.action.VENDOR_ACTION" (Raw: "androidx.camera.extensions.action.VENDOR_ACTION")
+              E: action (line=78)
+                A: http://schemas.android.com/apk/res/android:name="android.intent.action.MAIN" (Raw: "android.intent.action.MAIN")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.REQUEST_INSTALL_PACKAGES" (Raw: "android.permission.REQUEST_INSTALL_PACKAGES")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" (Raw: "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.RECEIVE_BOOT_COMPLETED" (Raw: "android.permission.RECEIVE_BOOT_COMPLETED")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.USE_FINGERPRINT" (Raw: "android.permission.USE_FINGERPRINT")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.USE_BIOMETRIC" (Raw: "android.permission.USE_BIOMETRIC")
+        A: http://schemas.android.com/apk/res/android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" (Raw: "com.google.android.providers.gsf.permission.READ_GSERVICES")
+        A: http://schemas.android.com/apk/res/android:name="com.google.android.gms.permission.AD_ID" (Raw: "com.google.android.gms.permission.AD_ID")
+        A: http://schemas.android.com/apk/res/android:name="com.domonap.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" (Raw: "com.domonap.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION")
+        A: http://schemas.android.com/apk/res/android:name="com.domonap.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" (Raw: "com.domonap.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" (Raw: "android.permission.CHANGE_WIFI_MULTICAST_STATE")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.BLUETOOTH" (Raw: "android.permission.BLUETOOTH")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.ACCESS_NOTIFICATION_POLICY" (Raw: "android.permission.ACCESS_NOTIFICATION_POLICY")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.ACCESS_WIFI_STATE" (Raw: "android.permission.ACCESS_WIFI_STATE")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.FOREGROUND_SERVICE_CAMERA" (Raw: "android.permission.FOREGROUND_SERVICE_CAMERA")
+        A: http://schemas.android.com/apk/res/android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" (Raw: "android.permission.FOREGROUND_SERVICE_MICROPHONE")
+        A: http://schemas.android.com/apk/res/android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" (Raw: "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE")
+      E: application (line=103)
+        A: http://schemas.android.com/apk/res/android:name="com.domonap.app.application.App" (Raw: "com.domonap.app.application.App")
+            A: http://schemas.android.com/apk/res/android:name="androidx.startup.InitializationProvider" (Raw: "androidx.startup.InitializationProvider")
+                A: http://schemas.android.com/apk/res/android:name="androidx.emoji2.text.EmojiCompatInitializer" (Raw: "androidx.emoji2.text.EmojiCompatInitializer")
+                A: http://schemas.android.com/apk/res/android:name="androidx.lifecycle.ProcessLifecycleInitializer" (Raw: "androidx.lifecycle.ProcessLifecycleInitializer")
+                A: http://schemas.android.com/apk/res/android:name="androidx.profileinstaller.ProfileInstallerInitializer" (Raw: "androidx.profileinstaller.ProfileInstallerInitializer")
+                A: http://schemas.android.com/apk/res/android:name="okhttp3.internal.platform.PlatformInitializer" (Raw: "okhttp3.internal.platform.PlatformInitializer")
+          E: uses-library (line=141)
+            A: http://schemas.android.com/apk/res/android:name="org.apache.http.legacy" (Raw: "org.apache.http.legacy")
+            A: http://schemas.android.com/apk/res/android:required=false
+          E: activity (line=145)
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.cropper.CropImageActivity" (Raw: "com.domonap.cropper.CropImageActivity")
+          E: activity (line=149)
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.app.ui.widgets.WidgetOpenActivity" (Raw: "com.domonap.app.ui.widgets.WidgetOpenActivity")
+          E: activity (line=156)
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.app.ui.main.MainActivity" (Raw: "com.domonap.app.ui.main.MainActivity")
+                  E: action (line=163)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.action.MAIN" (Raw: "android.intent.action.MAIN")
+                  E: category (line=165)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.category.HOME" (Raw: "android.intent.category.HOME")
+                  E: category (line=166)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.category.LAUNCHER" (Raw: "android.intent.category.LAUNCHER")
+                  E: category (line=167)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.category.DEFAULT" (Raw: "android.intent.category.DEFAULT")
+                  E: action (line=170)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.action.VIEW" (Raw: "android.intent.action.VIEW")
+                  E: category (line=172)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.category.DEFAULT" (Raw: "android.intent.category.DEFAULT")
+                  E: category (line=173)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.category.BROWSABLE" (Raw: "android.intent.category.BROWSABLE")
+          E: activity (line=179)
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.authorization.AuthorizationActivity" (Raw: "com.domonap.authorization.AuthorizationActivity")
+          E: service (line=186)
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.app.services.floating.RubetekOverlayButtonService" (Raw: "com.domonap.app.services.floating.RubetekOverlayButtonService")
+          E: service (line=193)
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.app.services.push.signalR.SignalRService" (Raw: "com.domonap.app.services.push.signalR.SignalRService")
+            A: http://schemas.android.com/apk/res/android:directBootAware=true
+          E: service (line=198)
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.app.services.news.NewsService" (Raw: "com.domonap.app.services.news.NewsService")
+          E: receiver (line=203)
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.app.ui.widgets.WidgetProvider" (Raw: "com.domonap.app.ui.widgets.WidgetProvider")
+                  E: action (line=208)
+                    A: http://schemas.android.com/apk/res/android:name="android.appwidget.action.APPWIDGET_UPDATE" (Raw: "android.appwidget.action.APPWIDGET_UPDATE")
+                A: http://schemas.android.com/apk/res/android:name="android.appwidget.provider" (Raw: "android.appwidget.provider")
+          E: service (line=216)
+            A: http://schemas.android.com/apk/res/android:name="androidx.appcompat.app.AppLocalesMetadataHolderService" (Raw: "androidx.appcompat.app.AppLocalesMetadataHolderService")
+                A: http://schemas.android.com/apk/res/android:name="autoStoreLocales" (Raw: "autoStoreLocales")
+          E: activity (line=225)
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.telephony.presentation.activity.incoming.IncomingDomofonCallActivity" (Raw: "com.domonap.telephony.presentation.activity.incoming.IncomingDomofonCallActivity")
+          E: service (line=236)
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.telephony.presentation.service.TelephonyService" (Raw: "com.domonap.telephony.presentation.service.TelephonyService")
+            A: http://schemas.android.com/apk/res/android:directBootAware=true
+          E: receiver (line=242)
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.telephony.presentation.broadcast.NotificationIntentReceiver" (Raw: "com.domonap.telephony.presentation.broadcast.NotificationIntentReceiver")
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.cropper.CropFileProvider" (Raw: "com.domonap.cropper.CropFileProvider")
+                A: http://schemas.android.com/apk/res/android:name="android.support.FILE_PROVIDER_PATHS" (Raw: "android.support.FILE_PROVIDER_PATHS")
+          E: service (line=256)
+            A: http://schemas.android.com/apk/res/android:name="com.domonap.feature.update.presentation.service.DownloadUpdateService" (Raw: "com.domonap.feature.update.presentation.service.DownloadUpdateService")
+            A: http://schemas.android.com/apk/res/android:directBootAware=true
+            A: http://schemas.android.com/apk/res/android:name="androidx.core.content.FileProvider" (Raw: "androidx.core.content.FileProvider")
+                A: http://schemas.android.com/apk/res/android:name="android.support.FILE_PROVIDER_PATHS" (Raw: "android.support.FILE_PROVIDER_PATHS")
+          E: uses-library (line=272)
+            A: http://schemas.android.com/apk/res/android:name="androidx.camera.extensions.impl" (Raw: "androidx.camera.extensions.impl")
+            A: http://schemas.android.com/apk/res/android:required=false
+          E: service (line=276)
+            A: http://schemas.android.com/apk/res/android:name="androidx.camera.core.impl.MetadataHolderService" (Raw: "androidx.camera.core.impl.MetadataHolderService")
+                A: http://schemas.android.com/apk/res/android:name="androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER" (Raw: "androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER")
+          E: activity (line=285)
+            A: http://schemas.android.com/apk/res/android:name="androidx.glance.appwidget.action.ActionTrampolineActivity" (Raw: "androidx.glance.appwidget.action.ActionTrampolineActivity")
+          E: activity (line=291)
+            A: http://schemas.android.com/apk/res/android:name="androidx.glance.appwidget.action.InvisibleActionTrampolineActivity" (Raw: "androidx.glance.appwidget.action.InvisibleActionTrampolineActivity")
+          E: receiver (line=300)
+            A: http://schemas.android.com/apk/res/android:name="androidx.glance.appwidget.action.ActionCallbackBroadcastReceiver" (Raw: "androidx.glance.appwidget.action.ActionCallbackBroadcastReceiver")
+          E: receiver (line=304)
+            A: http://schemas.android.com/apk/res/android:name="androidx.glance.appwidget.UnmanagedSessionReceiver" (Raw: "androidx.glance.appwidget.UnmanagedSessionReceiver")
+          E: receiver (line=308)
+            A: http://schemas.android.com/apk/res/android:name="androidx.glance.appwidget.MyPackageReplacedReceiver" (Raw: "androidx.glance.appwidget.MyPackageReplacedReceiver")
+                  E: action (line=313)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.action.MY_PACKAGE_REPLACED" (Raw: "android.intent.action.MY_PACKAGE_REPLACED")
+          E: service (line=317)
+            A: http://schemas.android.com/apk/res/android:name="androidx.glance.appwidget.GlanceRemoteViewsService" (Raw: "androidx.glance.appwidget.GlanceRemoteViewsService")
+          E: service (line=321)
+            A: http://schemas.android.com/apk/res/android:name="androidx.work.impl.background.systemalarm.SystemAlarmService" (Raw: "androidx.work.impl.background.systemalarm.SystemAlarmService")
+            A: http://schemas.android.com/apk/res/android:directBootAware=false
+          E: service (line=326)
+            A: http://schemas.android.com/apk/res/android:name="androidx.work.impl.background.systemjob.SystemJobService" (Raw: "androidx.work.impl.background.systemjob.SystemJobService")
+            A: http://schemas.android.com/apk/res/android:directBootAware=false
+          E: service (line=332)
+            A: http://schemas.android.com/apk/res/android:name="androidx.work.impl.foreground.SystemForegroundService" (Raw: "androidx.work.impl.foreground.SystemForegroundService")
+            A: http://schemas.android.com/apk/res/android:directBootAware=false
+          E: receiver (line=338)
+            A: http://schemas.android.com/apk/res/android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver" (Raw: "androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver")
+            A: http://schemas.android.com/apk/res/android:directBootAware=false
+          E: receiver (line=343)
+            A: http://schemas.android.com/apk/res/android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy" (Raw: "androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy")
+            A: http://schemas.android.com/apk/res/android:directBootAware=false
+                  E: action (line=349)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.action.ACTION_POWER_CONNECTED" (Raw: "android.intent.action.ACTION_POWER_CONNECTED")
+                  E: action (line=350)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.action.ACTION_POWER_DISCONNECTED" (Raw: "android.intent.action.ACTION_POWER_DISCONNECTED")
+          E: receiver (line=353)
+            A: http://schemas.android.com/apk/res/android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy" (Raw: "androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy")
+            A: http://schemas.android.com/apk/res/android:directBootAware=false
+                  E: action (line=359)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.action.BATTERY_OKAY" (Raw: "android.intent.action.BATTERY_OKAY")
+                  E: action (line=360)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.action.BATTERY_LOW" (Raw: "android.intent.action.BATTERY_LOW")
+          E: receiver (line=363)
+            A: http://schemas.android.com/apk/res/android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy" (Raw: "androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy")
+            A: http://schemas.android.com/apk/res/android:directBootAware=false
+                  E: action (line=369)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.action.DEVICE_STORAGE_LOW" (Raw: "android.intent.action.DEVICE_STORAGE_LOW")
+                  E: action (line=370)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.action.DEVICE_STORAGE_OK" (Raw: "android.intent.action.DEVICE_STORAGE_OK")
+          E: receiver (line=373)
+            A: http://schemas.android.com/apk/res/android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy" (Raw: "androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy")
+            A: http://schemas.android.com/apk/res/android:directBootAware=false
+                  E: action (line=379)
+                    A: http://schemas.android.com/apk/res/android:name="android.net.conn.CONNECTIVITY_CHANGE" (Raw: "android.net.conn.CONNECTIVITY_CHANGE")
+          E: receiver (line=382)
+            A: http://schemas.android.com/apk/res/android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver" (Raw: "androidx.work.impl.background.systemalarm.RescheduleReceiver")
+            A: http://schemas.android.com/apk/res/android:directBootAware=false
+                  E: action (line=388)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.action.BOOT_COMPLETED" (Raw: "android.intent.action.BOOT_COMPLETED")
+                  E: action (line=389)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.action.TIME_SET" (Raw: "android.intent.action.TIME_SET")
+                  E: action (line=390)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.action.TIMEZONE_CHANGED" (Raw: "android.intent.action.TIMEZONE_CHANGED")
+          E: receiver (line=393)
+            A: http://schemas.android.com/apk/res/android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver" (Raw: "androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver")
+            A: http://schemas.android.com/apk/res/android:directBootAware=false
+                  E: action (line=399)
+                    A: http://schemas.android.com/apk/res/android:name="androidx.work.impl.background.systemalarm.UpdateProxies" (Raw: "androidx.work.impl.background.systemalarm.UpdateProxies")
+          E: receiver (line=402)
+            A: http://schemas.android.com/apk/res/android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver" (Raw: "androidx.work.impl.diagnostics.DiagnosticsReceiver")
+            A: http://schemas.android.com/apk/res/android:directBootAware=false
+                  E: action (line=409)
+                    A: http://schemas.android.com/apk/res/android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" (Raw: "androidx.work.diagnostics.REQUEST_DIAGNOSTICS")
+          E: service (line=413)
+            A: http://schemas.android.com/apk/res/android:name="androidx.room.MultiInstanceInvalidationService" (Raw: "androidx.room.MultiInstanceInvalidationService")
+            A: http://schemas.android.com/apk/res/android:directBootAware=true
+            A: http://schemas.android.com/apk/res/android:name="com.bumptech.glide.integration.okhttp3.OkHttpGlideModule" (Raw: "com.bumptech.glide.integration.okhttp3.OkHttpGlideModule")
+          E: service (line=421)
+            A: http://schemas.android.com/apk/res/android:name="io.appmetrica.analytics.internal.AppMetricaService" (Raw: "io.appmetrica.analytics.internal.AppMetricaService")
+                  E: category (line=426)
+                    A: http://schemas.android.com/apk/res/android:name="android.intent.category.DEFAULT" (Raw: "android.intent.category.DEFAULT")
+                  E: action (line=428)
+                    A: http://schemas.android.com/apk/res/android:name="io.appmetrica.analytics.IAppMetricaService" (Raw: "io.appmetrica.analytics.IAppMetricaService")
+            A: http://schemas.android.com/apk/res/android:name="io.appmetrica.analytics.internal.PreloadInfoContentProvider" (Raw: "io.appmetrica.analytics.internal.PreloadInfoContentProvider")
+          E: activity (line=439)
+            A: http://schemas.android.com/apk/res/android:name="com.google.android.gms.common.api.GoogleApiActivity" (Raw: "com.google.android.gms.common.api.GoogleApiActivity")
+            A: http://schemas.android.com/apk/res/android:name="com.google.android.gms.version" (Raw: "com.google.android.gms.version")
+          E: receiver (line=447)
+            A: http://schemas.android.com/apk/res/android:name="androidx.core.telecom.internal.MuteStateReceiver" (Raw: "androidx.core.telecom.internal.MuteStateReceiver")
+                  E: action (line=451)
+                    A: http://schemas.android.com/apk/res/android:name="android.media.action.MICROPHONE_MUTE_CHANGED" (Raw: "android.media.action.MICROPHONE_MUTE_CHANGED")
+          E: service (line=455)
+            A: http://schemas.android.com/apk/res/android:name="androidx.core.telecom.internal.JetpackConnectionService" (Raw: "androidx.core.telecom.internal.JetpackConnectionService")
+                  E: action (line=460)
+                    A: http://schemas.android.com/apk/res/android:name="android.telecom.ConnectionService" (Raw: "android.telecom.ConnectionService")
+          E: uses-library (line=464)
+            A: http://schemas.android.com/apk/res/android:name="androidx.window.extensions" (Raw: "androidx.window.extensions")
+            A: http://schemas.android.com/apk/res/android:required=false
+          E: uses-library (line=467)
+            A: http://schemas.android.com/apk/res/android:name="androidx.window.sidecar" (Raw: "androidx.window.sidecar")
+            A: http://schemas.android.com/apk/res/android:required=false
+          E: service (line=471)
+            A: http://schemas.android.com/apk/res/android:name="androidx.core.widget.RemoteViewsCompatService" (Raw: "androidx.core.widget.RemoteViewsCompatService")
+          E: receiver (line=475)
+            A: http://schemas.android.com/apk/res/android:name="androidx.profileinstaller.ProfileInstallReceiver" (Raw: "androidx.profileinstaller.ProfileInstallReceiver")
+            A: http://schemas.android.com/apk/res/android:directBootAware=false
+                  E: action (line=482)
+                    A: http://schemas.android.com/apk/res/android:name="androidx.profileinstaller.action.INSTALL_PROFILE" (Raw: "androidx.profileinstaller.action.INSTALL_PROFILE")
+                  E: action (line=485)
+                    A: http://schemas.android.com/apk/res/android:name="androidx.profileinstaller.action.SKIP_FILE" (Raw: "androidx.profileinstaller.action.SKIP_FILE")
+                  E: action (line=488)
+                    A: http://schemas.android.com/apk/res/android:name="androidx.profileinstaller.action.SAVE_PROFILE" (Raw: "androidx.profileinstaller.action.SAVE_PROFILE")
+                  E: action (line=491)
+                    A: http://schemas.android.com/apk/res/android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" (Raw: "androidx.profileinstaller.action.BENCHMARK_OPERATION")
+== signing certificate
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/usr/local/lib/android/sdk/build-tools/37.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+V2 Signer: certificate DN: CN=Gia Kvaratskheliya, O=Domonap, L=Moscow, ST=Moscow, C=ru
+V2 Signer: certificate SHA-256 digest: 4426bc7c187ff0979186c5062442af6a417e8c4384d3c38b19a3790d52e4cc0b
+V2 Signer: certificate SHA-1 digest: 98c3cbd0ed0f5070a01c301424c0e6bdda62aaec
+V2 Signer: certificate MD5 digest: 01305a2daa9a87bff3dbed868f5dbb32
+== native libraries per CPU
+     18 arm64-v8a
+     18 armeabi-v7a
+     18 x86
+     18 x86_64
+-- library names
+libZXing.so
+libandroidx.graphics.path.so
+libbctoolbox.so
+libc++_shared.so
+libcronet.143.0.7445.0.so
+libimage_processing_util_jni.so
+libjingle_peerconnection_so.so
+libjpeg.so
+libjsoncpp.so
+liblinphone.so
+libmediastreamer2.so
+libmsaaudio.so
+libmsandroidcamera2.so
+libmswebrtc.so
+libortp.so
+libsrtp2.so
+libsurface_util_jni.so
+libturbojpeg.so
+== framework hints
+assets/dexopt/baseline.prof
+assets/dexopt/baseline.profm
+kotlin/annotation/annotation.kotlin_builtins
+kotlin/collections/collections.kotlin_builtins
+kotlin/concurrent/atomics/atomics.kotlin_builtins
+kotlin/coroutines/coroutines.kotlin_builtins
+kotlin/internal/internal.kotlin_builtins
+kotlin/kotlin.kotlin_builtins
+kotlin/ranges/ranges.kotlin_builtins
+kotlin/reflect/reflect.kotlin_builtins
+dex files: 2
+strings total: 0
+== vendor / device checks (rubetek, model, system props, hardware)
+== panel mode / activation / connection
+== battery / power
+== push services
+== audio / video / sip
+== done
