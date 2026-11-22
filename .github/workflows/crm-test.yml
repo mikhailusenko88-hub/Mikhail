@@ -564,6 +564,46 @@ jobs:
           git add status; git commit -m "crm-test site stats $(date -u +%F_%H:%M)" || exit 0
           git pull --rebase origin domain-check || true
           git push origin HEAD:domain-check || true
+      - name: Счётчик — подробные отметки, город, выгрузка для Claude (23.11.2026)
+        if: always()
+        run: |
+          mkdir -p status; O=status/crm-site-deep.md
+          {
+          echo "# Подробный счётчик и город — $(date -u '+%F %H:%M') UTC"; echo; echo '```'
+          H=crm.nashdekor.ru; R="--resolve $H:443:127.0.0.1"; J=/tmp/j9
+          UA='Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Mobile/15E148 Safari/604.1'
+          echo "модуль maxminddb: $(python3 -c 'import maxminddb; print(maxminddb.__version__)' 2>&1 | tail -n1)"
+          for i in $(seq 1 36); do [[ -s /var/lib/prostranstvo/geo/dbip-city-lite.mmdb ]] && break; sleep 5; done
+          echo "база городов (фон при установке): $(ls -la /var/lib/prostranstvo/geo/ 2>&1 | tail -n +2 | tr '\n' ' ')"
+          sudo journalctl --no-pager -n 5 -u 'prostranstvo-geo-*' 2>/dev/null | tail -n 3 || true
+          echo "prostranstvo-crm geo: $(sudo prostranstvo-crm geo 2>&1 | tail -n1)"
+          for ip in 77.88.8.8 95.161.224.1 87.255.192.1 8.8.8.8; do
+            echo "  $ip → $(cd /opt/prostranstvo-crm/src/crm && python3 -c 'import sys; from geo import Geo; print(Geo("/var/lib/prostranstvo/geo/dbip-city-lite.mmdb").city(sys.argv[1]) or "—")' $ip 2>&1 | tail -n1)"
+          done
+          hit() { curl -s -o /dev/null -w '%{http_code} ' -H "X-Forwarded-For: $1" -H 'Origin: https://nashdekor.ru' -H 'Content-Type: text/plain' -A "$UA" --data-binary "$2" http://127.0.0.1:8081/api/hit; }
+          hit 77.88.8.8 '{"e":[["view","/",""]],"r":"","u":"dz","c":"studio-test","m":1}'
+          hit 77.88.8.8 '{"e":[["time","","42"],["scroll","","75"],["blk","catalog","12"],["dead","top:img «Фото»"],["load","","1800"]],"p":"/","r":"","u":"dz","m":1}'
+          hit 77.88.8.9 '{"e":[["view","/",""]],"r":"aimanhunt.online","u":"","m":1}'
+          hit 77.88.8.10 '{"e":[["view","/",""]],"r":"","u":"","m":1,"w":1}'
+          echo
+          echo "строки: $(sudo sqlite3 /var/lib/prostranstvo/crm.db "select kind||'|'||key||'|'||act||'|'||city||'|'||camp from visits order by id desc limit 7" 2>&1 | tr '\n' ' ')"
+          echo "робот (webdriver) записан: $(sudo sqlite3 /var/lib/prostranstvo/crm.db "select count(*) from visits where vid in (select vid from visits group by vid having count(*)=1) and src='Прямой заход' and camp=''" 2>&1)"
+          tok() { grep -o 'name="csrf" value="[^"]*"' | head -n1 | sed 's/.*value="//;s/"$//'; }
+          PW=$(sudo awk '$1=="yulia"{print $2}' /etc/prostranstvo/crm-paroli.txt)
+          T=$(curl -sk $R -c $J -b $J https://$H/login | tok)
+          curl -sk $R -c $J -b $J -o /dev/null --data-urlencode "csrf=$T" --data-urlencode "login=yulia" --data-urlencode "password=$PW" https://$H/login
+          echo "/site: $(curl -sk $R -c $J -b $J -o /tmp/site2.html -w '%{http_code}' 'https://'$H'/site?d=1')"
+          for s in 'Кто заходил' 'Где теряем людей' 'Блоки страниц' 'Что мешает' 'Города' 'Москва' 'Ссылки с меткой' 'studio-test' 'Отсеяно: роботы и спам' 'aimanhunt.online' 'Выключатели'; do echo "  «$s»: $(grep -c "$s" /tmp/site2.html)"; done
+          echo "/site/links: $(curl -sk $R -c $J -b $J 'https://'$H'/site/links?src=qr&art=A910' | grep -o 'https://nashdekor.ru/p/a910/?utm_source=qr' | head -n1)"
+          echo "/api/site/export: $(curl -sk $R https://$H/api/site/export | head -c 120)"
+          echo "тесты CRM при установке: $(sudo grep -o 'Ran [0-9]* tests' /var/log/prostranstvo-crm-setup-details.log | tail -n1)"
+          echo '```'
+          } > "$O" 2>&1
+          cat "$O"
+          git config user.name crm-test; git config user.email crm-test@users.noreply.github.com
+          git add status; git commit -m "crm-test site deep $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
       - name: Кнопки страницы «Сервер»
         if: always()
         run: |
