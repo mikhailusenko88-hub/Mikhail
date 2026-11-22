@@ -18,7 +18,8 @@ function hitSend(){
   if (!hitOn || !hitQ.length) return;
   let r = ""; try { r = document.referrer ? new URL(document.referrer).hostname : ""; } catch (e) {}
   const body = { e: hitQ.splice(0, 40), r, u: (new URLSearchParams(location.search).get("utm_source") || (() => { try { return sessionStorage.getItem("WebAppData") ? "max" : ""; } catch (e) { return ""; } })()).slice(0, 30),
-    m: matchMedia("(pointer: coarse)").matches ? 1 : 0 };
+    m: matchMedia("(pointer: coarse)").matches ? 1 : 0, c: (new URLSearchParams(location.search).get("utm_campaign") || "").slice(0, 40),
+    w: navigator.webdriver ? 1 : 0 };
   try { navigator.sendBeacon(HIT_API, new Blob([JSON.stringify(body)], { type: "text/plain" })); } catch (e) {}
   if (hitQ.length) hitSend();
 }
@@ -30,6 +31,8 @@ function hit(kind, key = "", act = ""){
 }
 if (hitOn) {
   hit("view", location.pathname); hitSend();
+  /* подробный счётчик (время, прокрутка, блоки, нажатия) — отдельным файлом: его сбой не трогает страницу (23.11.2026) */
+  try { const an = document.createElement("script"); an.src = ROOT + "assets/an.js?v=1"; an.defer = true; document.head.appendChild(an); } catch (e) {}
   addEventListener("pagehide", hitSend);
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") hitSend(); });
   /* клики «написать в бота», каналы, Авито — как на главной (17.11.2026) */
@@ -448,7 +451,7 @@ $("leadForm").addEventListener("submit", async e => {
   if (buy && !pickup && !addr) { err.textContent = "Укажите адрес доставки или выберите самовывоз."; err.hidden = false; $("lAddr").focus(); return; }
   err.hidden = true;
   const now = new Date().toISOString();
-  const lead = { name, contact, email: ($("lEmail") ? $("lEmail").value.trim() : ""), who: $("lWho").value, message: [$("lMsg").value.trim(), window.NDShip ? NDShip.text(X.a) : ""].filter(Boolean).join("\n"), calc: orderText(), total: Math.round(qty * price()), consentAt: now, consentVersion: "2026-10-29", intent: mode, address: addr };
+  const lead = { name, contact, email: ($("lEmail") ? $("lEmail").value.trim() : ""), who: $("lWho").value, message: [$("lMsg").value.trim(), window.NDShip ? NDShip.text(X.a) : ""].filter(Boolean).join("\n"), calc: orderText(), total: Math.round(qty * price()), consentAt: now, consentVersion: "2026-11-23", intent: mode, address: addr };
   const btn = $("lSend"); btn.disabled = true; btn.textContent = "Отправляем…";
   let saved = false; try { saved = await sendLead(lead); } catch (x) { saved = false; }
   btn.disabled = false; btn.textContent = BTN[mode];

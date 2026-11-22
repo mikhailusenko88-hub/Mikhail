@@ -861,6 +861,7 @@ def cart_page():
 os.makedirs(os.path.join(SITE, "assets"), exist_ok=True)
 open(os.path.join(SITE, "assets", "p.css"), "w", encoding="utf-8").write(BASE_CSS + "\n" + open(os.path.join(HERE, "p.css"), encoding="utf-8").read())
 shutil.copy(os.path.join(HERE, "p.js"), os.path.join(SITE, "assets", "p.js"))
+shutil.copy(os.path.join(HERE, "an.js"), os.path.join(SITE, "assets", "an.js"))   # подробный счётчик (23.11.2026)
 shutil.copy(os.path.join(HERE, "chat.js"), os.path.join(SITE, "assets", "chat.js"))
 shutil.copy(os.path.join(HERE, "cart.js"), os.path.join(SITE, "assets", "cart.js"))   # корзина (с 19.11.2026)
 shutil.copy(os.path.join(HERE, "brand.css"), os.path.join(SITE, "assets", "brand.css"))  # фирменный стиль (брендбук)

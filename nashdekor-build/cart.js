@@ -284,7 +284,7 @@ function initForm(){
     if (!$("kAgree").checked) return fail("Отметьте согласие на обработку данных и условия продажи.", $("kAgree"));
     err.hidden = true;
     const lead = { name, contact, email: $("kEmail").value.trim(), who: $("kWho").value, message: [$("kMsg").value.trim(), window.NDShip.text()].filter(Boolean).join("\n"),
-                   calc: orderText(items), total: Math.round(total(items)), consentAt: new Date().toISOString(), consentVersion: "2026-10-29", address: addr };
+                   calc: orderText(items), total: Math.round(total(items)), consentAt: new Date().toISOString(), consentVersion: "2026-11-23", address: addr };
     const btn = $("kSend"); btn.disabled = true; btn.textContent = "Отправляем…";
     const id = await sendLead(lead);
     btn.disabled = false; btn.textContent = "Оформить заказ";

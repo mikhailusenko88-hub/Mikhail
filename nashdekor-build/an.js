@@ -1,0 +1,137 @@
+/* «Наш декор» — подробный счётчик (с 23.11.2026). Свой, на нашем сервере, без cookie и без хранения чего-либо в браузере.
+   Что уходит в CRM: сколько секунд страница была на экране, докуда её долистали, какие блоки страницы были на экране
+   и сколько, нажатия, после которых ничего не произошло, и много нажатий подряд в одно место (что именно нажали — тег
+   и класс элемента с сайта, не то, что вводил человек), какое фото товара открыли, за сколько загрузилась страница,
+   ошибки скриптов сайта. При «Не отслеживать» и в автоматических браузерах не работает. Сбой здесь страницу не ломает. */
+(() => {
+"use strict";
+try {
+  if (!/(^|\.)nashdekor\.ru$/.test(location.hostname) || !navigator.sendBeacon || navigator.doNotTrack === "1" ||
+      navigator.globalPrivacyControl || navigator.webdriver) return;
+  if (window.__ndAn) return; window.__ndAn = 1;
+  const API = "https://crm.nashdekor.ru/api/hit";
+  const PAGE = location.pathname;
+  const qs = new URLSearchParams(location.search);
+  const P = window.P || {};
+  const ART = (P.item && P.item.a) || "";
+  const clean = s => String(s || "").replace(/[^0-9A-Za-zА-Яа-яЁё _.#:\/«»,()+-]/g, " ").replace(/\s+/g, " ").trim().slice(0, 60);
+  const q = []; let qT = 0;
+  function send(){
+    clearTimeout(qT);
+    if (!q.length) return;
+    let r = ""; try { r = document.referrer ? new URL(document.referrer).hostname : ""; } catch (e) {}
+    let u = qs.get("utm_source") || ""; try { if (!u && sessionStorage.getItem("WebAppData")) u = "max"; } catch (e) {}
+    const body = { e: q.splice(0, 40), p: PAGE, r, u: u.slice(0, 30), c: (qs.get("utm_campaign") || "").slice(0, 40),
+                   m: matchMedia("(pointer: coarse)").matches ? 1 : 0 };
+    try { navigator.sendBeacon(API, new Blob([JSON.stringify(body)], { type: "text/plain" })); } catch (e) {}
+    if (q.length) send();
+  }
+  function push(ev){ q.push(ev); clearTimeout(qT); qT = setTimeout(send, 4000); }
+  const once = new Set();
+  function pushOnce(ev){ const k = ev.join("|"); if (once.has(k)) return; once.add(k); push(ev); }
+
+  /* ---------- блоки страницы: метки data-an (если на странице их ещё нет) ---------- */
+  const MAP = [[".hero", "top"], ["#catalog", "catalog"], ["#calc", "calc"], ["#live", "live"], ["#pro", "pro"], ["#terms", "terms"],
+    [".ptitle", "title"], ["#pview", "photo"], [".vtabs", "photo"], ["#colors", "colors"], [".gal", "gallery"], [".prof", "profile"], [".specs", "specs"],
+    [".about", "about"], [".revs", "reviews"], ["aside.buy", "buy"], ["#wallBox", "wall"], ["section.with", "with"],
+    ["section.rel:not(.with)", "rel"], ["section.porder", "order"], ["#order", "order"], ["main .head", "head"],
+    ["nav.sections", "sections"], ["main .grid", "list"], ["article.article", "text"], [".more-art", "more"], ["footer", "footer"]];
+  function mark(){
+    for (const [sel, id] of MAP) document.querySelectorAll(sel).forEach(el => { if (!el.dataset.an && !el.closest("[data-an]")) el.dataset.an = id; });
+    const main = document.querySelector("main");
+    if (main && !main.querySelector("[data-an]")) main.dataset.an = "text";
+  }
+  mark();
+
+  /* ---------- время на экране, блоки, прокрутка: раз в секунду, только пока страница видна ---------- */
+  let secs = 0, sentSecs = 0;
+  const vis = new Map(), bsec = new Map(), bsent = new Map();
+  if ("IntersectionObserver" in window) {
+    const th = []; for (let i = 0; i <= 20; i++) th.push(i / 20);
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      const h = e.boundingClientRect.height || 1, seen = e.intersectionRect.height;
+      vis.set(e.target, e.isIntersecting && seen >= Math.min(h * 0.5, innerHeight * 0.4));
+    }), { threshold: th });
+    document.querySelectorAll("[data-an]").forEach(el => io.observe(el));
+  }
+  const MARKS = [25, 50, 75, 90, 100];
+  function depth(){
+    const de = document.documentElement, full = Math.max(de.scrollHeight, document.body ? document.body.scrollHeight : 0);
+    if (full <= innerHeight * 1.05) return 100;        // страница целиком на экране
+    const pct = (scrollY + innerHeight) / full * 100;
+    for (let i = MARKS.length - 1; i >= 0; i--) if (pct >= (MARKS[i] === 100 ? 98 : MARKS[i])) { pushOnce(["scroll", "", String(MARKS[i])]); break; }
+  }
+  addEventListener("scroll", () => { clearTimeout(depth.t); depth.t = setTimeout(depth, 300); }, { passive: true });
+  setInterval(() => {
+    if (document.visibilityState !== "visible") return;
+    secs++;
+    vis.forEach((on, el) => { if (on) { const id = el.dataset.an; bsec.set(id, (bsec.get(id) || 0) + 1); } });
+    if (secs % 30 === 0) flushTime(false);
+  }, 1000);
+  function flushTime(now){
+    if (secs > sentSecs) { push(["time", "", String(Math.min(secs, 3600))]); sentSecs = secs; }
+    bsec.forEach((s, id) => { if (s >= 1 && s !== bsent.get(id)) { push(["blk", id, String(Math.min(s, 3600))]); bsent.set(id, s); } });
+    if (now) send();
+  }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushTime(true); });
+  addEventListener("pagehide", () => flushTime(true));
+
+  /* ---------- нажатия: «ничего не произошло» и «много раз подряд» ---------- */
+  const ACTIVE = "a,button,input,select,textarea,label,summary,details,option,[role=button],[role=tab],[role=link],[onclick],[tabindex],canvas,video,audio,iframe,[contenteditable],.dot,.hp";
+  function where(el){
+    const b = el.closest("[data-an]"), blk = b ? b.dataset.an : "other";
+    const t = el.closest("img,h1,h2,h3,b,p,span,div,li,td,svg") || el;
+    let d = t.tagName.toLowerCase();
+    if (t.id) d += "#" + t.id; else if (t.classList && t.classList[0]) d += "." + t.classList[0];
+    const txt = t.tagName === "IMG" ? (t.getAttribute("alt") || "") : (t.children.length > 3 ? "" : (t.textContent || ""));
+    const short = clean(txt).slice(0, 22);
+    return clean(blk + ":" + d + (short ? " «" + short + "»" : ""));
+  }
+  let last = [];
+  document.addEventListener("click", e => {
+    const el = e.target;
+    if (!(el instanceof Element)) return;
+    const d = where(el), t = performance.now();
+    last = last.filter(c => t - c.t < 1000); last.push({ t, x: e.clientX, y: e.clientY, d });
+    if (last.length >= 3 && last.every(c => Math.abs(c.x - e.clientX) < 40 && Math.abs(c.y - e.clientY) < 40)) { pushOnce(["rage", d]); last = []; }
+    if (el.closest(ACTIVE) || el.closest("[data-v],[data-use],[data-ask],[data-cat]")) return;
+    try { if (String(getSelection() || "").length > 1) return; } catch (x) {}
+    let changed = false;
+    const mo = new MutationObserver(ms => {
+      for (const m of ms) {                  // перезапись тем же значением — не изменение (cart.js так обновляет подсказки)
+        if (m.type === "attributes" && m.oldValue === m.target.getAttribute(m.attributeName)) continue;
+        if (m.type === "characterData" && m.oldValue === m.target.data) continue;
+        changed = true; break;
+      }
+    });
+    mo.observe(document.body, { subtree: true, childList: true, attributes: true, characterData: true, attributeOldValue: true, characterDataOldValue: true });
+    const y0 = scrollY, h0 = location.href;
+    setTimeout(() => { mo.disconnect(); if (!changed && Math.abs(scrollY - y0) < 2 && location.href === h0) pushOnce(["dead", d]); }, 700);
+  }, true);
+
+  /* ---------- фото товара: какое открыли ---------- */
+  if (ART) document.addEventListener("click", e => {
+    const a = e.target.closest && e.target.closest(".gal a");
+    if (!a) return;
+    const all = [...document.querySelectorAll(".gal a")];
+    push(["photo", ART, String(all.indexOf(a) + 2)]); send();        // №1 — главное фото, галерея — со второго
+  }, true);
+
+  /* ---------- загрузка страницы и ошибки ---------- */
+  function load(){
+    try {
+      const n = performance.getEntriesByType("navigation")[0];
+      const ms = n ? Math.round(n.loadEventEnd || n.domContentLoadedEventEnd) : 0;
+      if (ms > 0) push(["load", "", String(ms)]);
+    } catch (e) {}
+  }
+  if (document.readyState === "complete") setTimeout(load, 0); else addEventListener("load", () => setTimeout(load, 0));
+  let errs = 0;
+  addEventListener("error", e => {
+    if (errs >= 3 || !e || !e.message) return;
+    if (e.filename && !/nashdekor\.ru/.test(e.filename)) return;     // только наши скрипты
+    errs++; pushOnce(["err", clean(e.message).slice(0, 60) || "ошибка"]);
+  });
+  setTimeout(depth, 1500);
+} catch (e) { /* счётчик не должен ломать страницу */ }
+})();

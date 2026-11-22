@@ -665,7 +665,7 @@ async function submit(e){
   err.hidden = true;
   const lead = { name, contact, email: ($("lEmail") ? $("lEmail").value.trim() : ""), who: $("lWho").value, message: $("lMsg").value.trim(),
     calc: $("lCalc").checked ? calcText() : "", total: $("lCalc").checked ? Math.round(calc().sum) : 0,
-    source: "сайт", status: "новая", createdAt: new Date().toISOString(), consentAt: new Date().toISOString(), consentVersion: "2026-10-29",
+    source: "сайт", status: "новая", createdAt: new Date().toISOString(), consentAt: new Date().toISOString(), consentVersion: "2026-11-23",
     intent: callback ? "call" : "lead" };
   const btn = $("lSend"); btn.disabled = true; btn.textContent = "Отправляем…";
   let saved = false;
@@ -741,7 +741,7 @@ async function sendModels(e){
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, contact: phone, email, who: "designer",
           message: `3D-МОДЕЛИ: прислать архив 3D-моделей на ${email}. Программа: ${app}.`,
-          consent: true, consentAt: new Date().toISOString(), consentVersion: "2026-10-29", intent: "models",
+          consent: true, consentAt: new Date().toISOString(), consentVersion: "2026-11-23", intent: "models",
           website: $("mHp").value || "", max: window.NDMax ? NDMax.lead() : undefined }) });
       const j = await r.json().catch(() => ({}));
       ok = r.ok && j.ok === true;
@@ -772,7 +772,8 @@ function hitSend(){
   if (!hitOn || !hitQ.length) return;
   let r = ""; try { r = document.referrer ? new URL(document.referrer).hostname : ""; } catch (e) {}
   const body = { e: hitQ.splice(0, 40), r, u: (new URLSearchParams(location.search).get("utm_source") || (() => { try { return sessionStorage.getItem("WebAppData") ? "max" : ""; } catch (e) { return ""; } })()).slice(0, 30),
-    m: matchMedia("(pointer: coarse)").matches ? 1 : 0 };
+    m: matchMedia("(pointer: coarse)").matches ? 1 : 0, c: (new URLSearchParams(location.search).get("utm_campaign") || "").slice(0, 40),
+    w: navigator.webdriver ? 1 : 0 };
   try { navigator.sendBeacon(HIT_API, new Blob([JSON.stringify(body)], { type: "text/plain" })); } catch (e) {}
   if (hitQ.length) hitSend();
 }
@@ -1028,4 +1029,5 @@ window.__iv = IV; IV.update();
 
 <script src="assets/chat.js?v=202611171939" defer></script>
 <script src="assets/cart.js?v=202611191620" defer></script>
+<script src="assets/an.js?v=1" defer></script>
 </body></html>
