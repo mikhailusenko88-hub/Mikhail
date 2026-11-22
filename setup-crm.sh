@@ -911,10 +911,15 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 * * * * *           root  flock -n /run/prostranstvo-outbox.lock /usr/local/sbin/prostranstvo-crm outbox 2>&1 | grep -v '^ok$' | logger -t prostranstvo-outbox
 47 4 5 * *          root  flock -n /run/prostranstvo-geo.lock /usr/local/sbin/prostranstvo-crm geo 2>&1 | logger -t prostranstvo-geo
 EOF
-  # база городов для счётчика сайта: при первой установке и если устарела (скачивается ~1 минуту; не вышло — без городов)
-  local geo_out
-  if geo_out=$(timeout 900 /usr/local/sbin/prostranstvo-crm geo 2>&1); then ok "$geo_out"
-  else warn "${geo_out:-база городов не скачалась} — город посетителя пока не определяется, повторится сам 5-го числа"; fi
+  # база городов для счётчика сайта: при первой установке и если устарела — скачивается в фоне (~1–3 минуты), обновление
+  # CRM её не ждёт; не скачалась — город просто не определяется, повторится само 5-го числа (cron выше)
+  if [[ -s /var/lib/prostranstvo/geo/dbip-city-lite.mmdb ]] && [[ -z $(find /var/lib/prostranstvo/geo/dbip-city-lite.mmdb -mtime +32 2>/dev/null) ]]; then
+    ok "база городов для счётчика сайта на месте"
+  elif systemd-run --quiet --no-block --collect --unit="prostranstvo-geo-$(date +%s)" /usr/local/sbin/prostranstvo-crm geo >/dev/null 2>&1; then
+    info "база городов для счётчика сайта скачивается в фоне (1–3 минуты)"
+  else
+    warn "не удалось запустить загрузку базы городов — повторится сама 5-го числа (или: prostranstvo-crm geo)"
+  fi
   /usr/local/sbin/prostranstvo-crm server-page --now >/dev/null 2>&1 || true
   # исходящие письма с zapros@: ответы и возвраты на zapros@ — в ящик info@ (своя пересылка почты)
   local al=/etc/prostranstvo/pochta-aliases.txt
