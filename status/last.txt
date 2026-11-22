@@ -1,93 +1,93 @@
-ВЫЛОЖЕНО #54 2026-11-21 слот 3: Shorts https://youtube.com/shorts/iC7WG5L26Is (public, без длинного), за 445 с
+ВЫЛОЖЕНО #55 2026-11-22 слот 1: Shorts https://youtube.com/shorts/egKFQhdpuzU (public, без длинного), за 598 с
 
 {
- "title": "Egypt vs Colombia vs Cambodia ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #41",
- "description": "Flagball Arena · Season 2, Race 41 of 67: 24 countries, 3 stages — the last 7 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Andorra ❤❤❤, Bolivia ❤, Burundi ❤, Cambodia ❤❤, Colombia ❤❤, Croatia ❤❤❤, Cyprus ❤, Denmark ❤❤, Egypt ❤❤, Eswatini ❤❤❤, Guinea-Bissau ❤❤, Ireland ❤, Jordan ❤, Malawi ❤❤, Marshall Islands ❤❤, Mauritania ❤❤, Montenegro ❤, Paraguay ❤❤, Samoa ❤❤, San Marino ❤❤, Senegal ❤❤, Serbia ❤, Sierra Leone ❤, Slovakia ❤❤❤.\n\nCountries still in the game before this race: 150 of 193.\nNext race: Race 42/67. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
- "race_no": 54,
- "date": "2026-11-21",
- "slot": 3,
+ "title": "MEGA TRACK 🔥 Brazil vs Indonesia vs Morocco… 8 of 24 Lose a Life | Country Marble Race #42",
+ "description": "🔥 SUNDAY MEGA TRACK — longer stages, the craziest obstacles of the week.\n\nFlagball Arena · Season 2, Race 42 of 67: 24 countries, 3 stages — the last 8 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Afghanistan ❤, Algeria ❤❤, Armenia ❤❤❤, Azerbaijan ❤❤, Bahrain ❤❤, Bhutan ❤❤, Botswana ❤, Brazil ❤, DR Congo ❤, Ecuador ❤, El Salvador ❤❤, Gambia ❤❤, Guinea ❤, Indonesia ❤, Kazakhstan ❤, Kuwait ❤❤, Laos ❤❤, Latvia ❤❤, Liechtenstein ❤, Mali ❤❤, Morocco ❤❤, Palau ❤, Romania ❤❤❤, Slovenia ❤❤.\n\nCountries still in the game before this race: 148 of 193.\nNext race: Race 43/67. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "race_no": 55,
+ "date": "2026-11-22",
+ "slot": 1,
  "season": 2,
  "round": 1,
- "heat": 41,
+ "heat": 42,
  "heats": 67,
- "survive": 17,
+ "survive": 16,
  "final": false,
  "kind": "heat",
- "label": "RACE 41/67",
+ "label": "RACE 42/67",
  "n": 24,
  "lives_mode": true,
- "losers": 7,
- "mega": false,
+ "losers": 8,
+ "mega": true,
  "codes": [
-  "bi",
-  "dk",
-  "mh",
-  "jo",
-  "kh",
-  "co",
-  "cy",
-  "hr",
-  "eg",
-  "me",
-  "ad",
-  "mr",
-  "sm",
-  "mw",
-  "sz",
-  "ie",
-  "py",
-  "rs",
-  "sn",
-  "sk",
-  "ws",
-  "sl",
-  "bo",
-  "gw"
+  "bh",
+  "id",
+  "bw",
+  "br",
+  "pw",
+  "bt",
+  "sv",
+  "dz",
+  "la",
+  "kw",
+  "gn",
+  "ma",
+  "af",
+  "am",
+  "li",
+  "kz",
+  "ro",
+  "lv",
+  "cd",
+  "si",
+  "az",
+  "ml",
+  "gm",
+  "ec"
  ],
  "spans": [
   [
    7.800000000000001,
-   71.53333333333333,
-   75.13333333333333
+   88.63333333333333,
+   92.23333333333332
   ],
   [
-   78.73333333333332,
-   141.93333333333334,
-   145.53333333333333
+   95.83333333333331,
+   179.89999999999998,
+   183.49999999999997
   ],
   [
-   149.13333333333333,
-   210.1,
-   213.7
+   187.09999999999997,
+   266.96666666666664,
+   270.56666666666666
   ]
  ],
- "duration": 238.7,
+ "duration": 295.56666666666666,
  "heats_in_video": 1,
  "races": [
-  54
+  55
  ],
  "featured": [
-  "eg",
-  "co",
-  "kh"
+  "br",
+  "id",
+  "ma"
  ]
 }
 
 --- журнал ---
-22:30:41 режим publish, гонка #54, 2026-11-21 слот 3, событие workflow_dispatch
-22:30:41 по плану: S2 RACE 41/67
-22:30:41 канал: Flagball Arena
-22:30:41 в этом видео заездов: 1 (раунд 1, осталось в раунде 27)
-гонка #54 2026-11-21 слот 3: S2 RACE 41/67, 24→17, участники: BDI DNK MHL JOR KHM COL CYP HRV EGY MNE AND MRT SMR MWI SWZ IRL PRY SRB SEN SVK WSM SLE BOL GNB
-  этап 1: 24→22, блоков 11 ['sliders', 'tunnels', 'pendulums', 'glass', 'ring_gate', 'drum', 'zigzag', 'pushers', 'twin_rings', 'windmills', 'trapdoors'], Q-финиш 61.2 c, кадров 1912
-  этап 2: 22→19, блоков 12 ['split', 'drum', 'glass', 'windmills', 'sliders', 'zigzag', 'rotor', 'bumpers', 'ring_gate', 'twin_rings', 'pushers', 'stairs'], Q-финиш 60.7 c, кадров 1896
-  этап 3: 19→17, блоков 11 ['twin_rings', 'split', 'tunnels', 'comb', 'trapdoors', 'windmills', 'zigzag', 'pendulums', 'rotor', 'drum', 'glass'], Q-финиш 58.4 c, кадров 1829
-длительность ролика ≈ 4.0 мин
-готово: 7161 кадров за 422 с
-кадров 7161, 3.98 мин, рендер 424 с
-выжили: MNE MRT MHL SVK BOL GNB WSM SRB PRY MWI SMR EGY IRL DNK JOR KHM BDI
-22:37:45 заезд 1/1 готов: 128 МБ, 424 с
-22:37:46 видео готово: 128 МБ, 4.0 мин, 425 с с начала; название: Egypt vs Colombia vs Cambodia ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #41
-22:38:04 Shorts готов: 26 с — 9 days to the Grand Final ⏳ Egypt vs Colombia vs Cambodia — Who Survives? #shorts
-22:38:04 длинное видео в этом слоте: нет (только Shorts)
-22:38:06 Shorts на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}
+06:30:29 режим publish, гонка #55, 2026-11-22 слот 1, событие workflow_dispatch
+06:30:29 по плану: S2 RACE 42/67
+06:30:29 канал: Flagball Arena
+06:30:29 в этом видео заездов: 1 (раунд 1, осталось в раунде 26)
+гонка #55 2026-11-22 слот 1: S2 RACE 42/67, 24→16, участники: BHR IDN BWA BRA PLW BTN SLV DZA LAO KWT GIN MAR AFG ARM LIE KAZ ROU LVA COD SVN AZE MLI GMB ECU
+  этап 1: 24→21, блоков 19 ['drum', 'ring_gate', 'tunnels', 'glass', 'split', 'trapdoors', 'pushers', 'sliders', 'rotor', 'comb', 'pendulums', 'pushers', 'sliders', 'comb', 'pendulums', 'tunnels', 'trapdoors', 'ring_gate', 'drum'], Q-финиш 78.3 c, кадров 2425
+  этап 2: 21→19, блоков 17 ['tunnels', 'comb', 'trapdoors', 'sliders', 'glass', 'pendulums', 'rotor', 'pushers', 'drum', 'split', 'ring_gate', 'pendulums', 'split', 'trapdoors', 'tunnels', 'sliders', 'pushers'], Q-финиш 81.5 c, кадров 2522
+  этап 3: 19→16, блоков 17 ['sliders', 'trapdoors', 'ring_gate', 'split', 'rotor', 'drum', 'comb', 'pushers', 'tunnels', 'glass', 'pendulums', 'trapdoors', 'sliders', 'tunnels', 'split', 'pendulums', 'ring_gate'], Q-финиш 77.3 c, кадров 2396
+длительность ролика ≈ 4.9 мин
+готово: 8867 кадров за 572 с
+кадров 8867, 4.93 мин, рендер 576 с
+выжили: ARM DZA ECU BHR LAO GMB MLI BRA LIE LVA BTN SLV IDN KWT AZE ROU
+06:40:05 заезд 1/1 готов: 163 МБ, 576 с
+06:40:06 видео готово: 163 МБ, 4.9 мин, 577 с с начала; название: MEGA TRACK 🔥 Brazil vs Indonesia vs Morocco… 8 of 24 Lose a Life | Country Marble Race #42
+06:40:25 Shorts готов: 26 с — Brazil vs Indonesia vs Morocco 😱 Who Survives? Country Marble Race #shorts
+06:40:25 длинное видео в этом слоте: нет (только Shorts)
+06:40:27 Shorts на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}

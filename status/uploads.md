@@ -76,3 +76,4 @@
 | shorts | 2026-11-21 | 1 | India vs Türkiye vs Spain | https://youtube.com/shorts/pr0AjwyzNbE | public (только Shorts) |
 | shorts | 2026-11-21 | 2 | Mexico vs Thailand vs Ukraine | https://youtube.com/shorts/2OebbtHeVAY | public (только Shorts) |
 | shorts | 2026-11-21 | 3 | Egypt vs Colombia vs Cambodia | https://youtube.com/shorts/iC7WG5L26Is | public (только Shorts) |
+| shorts | 2026-11-22 | 1 | Brazil vs Indonesia vs Morocco | https://youtube.com/shorts/egKFQhdpuzU | public (только Shorts) |
