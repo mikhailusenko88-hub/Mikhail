@@ -1,16 +1,74 @@
 {
  "_": "Настройки дубляжа «Кот Барсик» (dub.py). Вариант 2 — перекраска (выбран Михаилом 22.11.2026). src — источник с родным произношением по языку; heroes.<имя>.src/pre — свои настройки героя (pre — подъём высоты источника до перекраски). builds — какой перевод брать для сборки.",
- "slug": {"Барсик": "barsik", "Пик": "pik", "Рон": "ron", "Филя": "filya", "Топа": "topa", "Рассказчик": "rasskazchik"},
+ "slug": {
+  "Барсик": "barsik",
+  "Пик": "pik",
+  "Рон": "ron",
+  "Филя": "filya",
+  "Топа": "topa",
+  "Рассказчик": "rasskazchik"
+ },
  "src": {
-  "en": {"engine": "kokoro", "lang": "a", "voice": "af_heart"},
-  "es": {"engine": "kokoro", "lang": "e", "voice": "ef_dora"},
-  "pt": {"engine": "kokoro", "lang": "p", "voice": "pf_dora"},
-  "de": {"engine": "piper", "model": "de/de_DE/kerstin/low/de_DE-kerstin-low"}
+  "en": {
+   "engine": "kokoro",
+   "lang": "a",
+   "voice": "af_heart"
+  },
+  "es": {
+   "engine": "kokoro",
+   "lang": "e",
+   "voice": "ef_dora"
+  },
+  "pt": {
+   "engine": "kokoro",
+   "lang": "p",
+   "voice": "pf_dora"
+  },
+  "de": {
+   "engine": "piper",
+   "model": "de/de_DE/kerstin/low/de_DE-kerstin-low"
+  }
  },
  "heroes": {
-  "Топа": {"src": {"es": {"engine": "kokoro", "lang": "e", "voice": "em_alex"}, "pt": {"engine": "kokoro", "lang": "p", "voice": "pm_alex"}}},
-  "Пик": {}
+  "Топа": {
+   "src": {
+    "es": {
+     "engine": "kokoro",
+     "lang": "e",
+     "voice": "em_alex"
+    },
+    "pt": {
+     "engine": "kokoro",
+     "lang": "p",
+     "voice": "pm_alex"
+    },
+    "de": {
+     "engine": "piper",
+     "model": "de/de_DE/thorsten/high/de_DE-thorsten-high"
+    }
+   }
+  },
+  "Пик": {
+   "_": "Проба 22.11: голос источника поднят до 340 Гц и медленнее ×0,88 — английский 90→100%, испанский 85→95% понятых слов; можно на 15% длиннее русской реплики (Пик по-русски говорит быстро).",
+   "pre_all": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "speed": 0.88,
+   "len_k": 1.15
+  },
+  "Филя": {
+   "src": {
+    "de": {
+     "engine": "piper",
+     "model": "de/de_DE/thorsten/high/de_DE-thorsten-high"
+    }
+   }
+  }
  },
  "whisper": "small",
- "builds": {"36dub": "36c", "36c": "36c"}
+ "builds": {
+  "36dub": "36c",
+  "36c": "36c"
+ }
 }

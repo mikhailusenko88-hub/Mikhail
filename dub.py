@@ -134,10 +134,12 @@ def main():
             continue
         hero = G["heroes"].get(name, {})
         spec = dict((hero.get("src") or {}).get(LANG) or G["src"][LANG])
+        if hero.get("speed"):
+            spec["speed"] = round(spec.get("speed", 1.0) * hero["speed"], 3)
         pre = (hero.get("pre") or {}).get(LANG) or hero.get("pre_all")
         nxt = min([s for s in starts if s > ln["t"] + 0.05] + [L["dur"]])
         window = max(ln["bdur"], nxt - ln["t"] - 0.08)
-        target = min(window, max(ln["bdur"], 0.4))        # длина русской реплики (и не дальше следующей)
+        target = min(window, max(ln["bdur"], 0.4) * hero.get("len_k", 1.0))   # длина русской реплики (и не дальше следующей)
         best = None
         for attempt in range(2):
             try:
