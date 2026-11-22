@@ -1,15 +1,4 @@
-# 2026-11-21 22:50 — вторая часть коробки: то же ведро 1 932, коробка меньше 0,24×0,16×0,24 — влезут ли? (физика ovb1: в коробке 1 800, доверху). Кадры 62–200 на 14 машинах
-bx01 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=62-71
-bx02 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=72-81
-bx03 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=82-91
-bx04 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=92-101
-bx05 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=102-111
-bx06 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=112-121
-bx07 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=122-131
-bx08 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=132-140
-bx09 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=141-150
-bx10 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=151-160
-bx11 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=161-170
-bx12 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=171-180
-bx13 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=181-190
-bx14 anim=out/ovb1/anim.npz gw=0.24 gd=0.16 gh=0.24 end=270 samples=40 res=1080x1920 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.42 cy0=-2.15 cy1=-2.0 cz0=0.72 cz1=0.67 range=191-200
+# 2026-11-22 19:45 — коробка 1 + новое: золотые шары. Проба вида на готовом движении lt2 (золото; золото+серебро) и новая физика seed=7
+gl1 anim=out/lt2/anim.npz pal=gold frames=110 end=240 res=720x1280 samples=48 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80
+gl2 anim=out/lt2/anim.npz pal=goldsilver frames=110 end=240 res=720x1280 samples=48 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80
+gs7 seed=7 pal=gold frames=60,66,70,90,130 end=240 res=540x960 samples=24 bg=light lp=0.55 rim=0.25 ev=-1.3 tz=0.56 cy0=-2.55 cy1=-2.3 cz0=0.86 cz1=0.80

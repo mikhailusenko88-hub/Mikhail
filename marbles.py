@@ -93,6 +93,13 @@ PAL = [(0.85, 0.01, 0.02), (1.0, 0.22, 0.0), (1.0, 0.62, 0.0), (0.04, 0.6, 0.04)
 if PALN == "candy":                              # пастель «леденцы»
     PAL = [(1.0, 0.32, 0.45), (1.0, 0.52, 0.22), (1.0, 0.82, 0.2), (0.3, 0.82, 0.5), (0.3, 0.62, 1.0),
            (0.55, 0.4, 1.0), (1.0, 0.25, 0.25), (0.15, 0.78, 0.82)]
+if PALN in ("gold", "goldsilver"):              # металл: золото (и серебро) — зеркальные шары
+    PAL = [(1.0, 0.78, 0.40), (1.0, 0.70, 0.29), (0.98, 0.64, 0.32), (1.0, 0.74, 0.34)]
+    if PALN == "goldsilver":
+        PAL = [(1.0, 0.72, 0.31), (0.93, 0.93, 0.95), (1.0, 0.66, 0.30), (0.88, 0.89, 0.92)]
+    pb.inputs["Metallic"].default_value = 1.0
+    pb.inputs["Roughness"].default_value = float(A.get("mrough", "0.12"))
+    pb.inputs["Coat Weight"].default_value = 0.0
 els = ramp.color_ramp.elements
 while len(els) < len(PAL):
     els.new(0.5)
