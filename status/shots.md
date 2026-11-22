@@ -1,4 +1,4 @@
-# Скриншоты сайта — 2026-11-22 20:27 UTC
+# Скриншоты сайта — 2026-11-22 21:13 UTC
 
-- **aiman_d** desktop https://aimanhunt.online/ — ok
-- **aiman_m** mobile https://aimanhunt.online/ — ok
+- **an_home** mobile https://nashdekor.ru/ — ok
+- **an_prod** mobile https://nashdekor.ru/p/a910/ — ok
