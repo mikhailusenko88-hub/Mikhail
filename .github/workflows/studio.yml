@@ -7,7 +7,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: studio-dub
+  group: studio-dub-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   build:
