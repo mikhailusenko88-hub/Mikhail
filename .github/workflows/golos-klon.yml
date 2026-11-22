@@ -42,6 +42,6 @@ jobs:
         run: |
           git config user.name golos-klon
           git config user.email golos-klon@users.noreply.github.com
-          git add -A out_klon
+          git add -A out_klon out_klon2
           git commit -m "golos-klon result" || echo nothing
           for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done

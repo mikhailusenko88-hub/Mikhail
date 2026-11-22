@@ -1,22 +1,20 @@
 {
-  "_": "Голоса героев «Кот Барсик» на других языках (22.11.2026). Образец голоса — refs/<slug>_ref.wav (реплики 1–3 из серии 36), проверка узнаваемости — refs/<slug>_held.wav (реплики 0 и 4). Способ A — Chatterbox Multilingual клонирует голос и говорит сам; способ B — Kokoro читает с родным произношением, Chatterbox VC перекрашивает в голос героя.",
+  "_": "Голоса героев «Кот Барсик» на других языках. 22.11.2026 19:46 Михаил выбрал вариант 2 (перекраска: Kokoro читает с родным произношением, Chatterbox VC перекрашивает в голос героя). Этот прогон — Рон, Филя, Топа на испанском и португальском. Первый прогон (A и B, Барсик и Пик на трёх языках, остальные по-английски) — out_klon.",
+  "out": "out_klon2",
+  "methods": ["B"],
   "kokoro_src": {"en": ["a", "af_heart"], "es": ["e", "ef_dora"], "pt": ["p", "pf_dora"]},
   "lang_name": {"en": "Английский", "es": "Испанский", "pt": "Португальский"},
+  "names": {"barsik": "Барсик", "pik": "Пик", "ron": "Рон", "filya": "Филя", "topa": "Топа"},
   "heroes": [
-    {"slug": "barsik", "name": "Барсик", "texts": {
-      "en": ["It knows! The red tip always points north.", "Let's go to the room. The book will explain it."],
-      "es": ["¡Ella lo sabe! La punta roja siempre señala el norte.", "Vamos al cuarto. El libro lo explicará."],
-      "pt": ["Ela sabe! A ponta vermelha sempre aponta para o norte.", "Vamos para o quarto. O livro vai explicar."]}},
-    {"slug": "pik", "name": "Пик", "texts": {
-      "en": ["Up north it's cold. Snow and polar bears!", "A magnet pulls iron things. A nail, a clip, a little key."],
-      "es": ["Al norte hace frío. ¡Nieve y osos polares!", "Un imán atrae cosas de hierro. Un clavo, un clip, una llavecita."],
-      "pt": ["No norte faz frio. Neve e ursos polares!", "Um ímã puxa coisas de ferro. Um prego, um clipe, uma chavinha."]}},
     {"slug": "ron", "name": "Рон", "texts": {
-      "en": ["Look! The arrow points that way again!", "Oh! My head is spinning. But the arrow doesn't care!"]}},
+      "es": ["¡Miren! ¡La flecha apunta para allá otra vez!", "¡Ay! Me da vueltas la cabeza. ¡Pero a la flecha no le importa!"],
+      "pt": ["Olhem! A seta aponta para lá de novo!", "Ai! Minha cabeça está girando. Mas a seta nem liga!"]}},
     {"slug": "filya", "name": "Филя", "texts": {
-      "en": ["What if we take the cookie away?", "Look! The arrow didn't move!"]}},
-    {"slug": "topa", "name": "Топа", "texts": {
-      "en": ["It's like the arrow knows where to look.", "So we can't trick the arrow!"]}}
+      "es": ["¿Y si nos llevamos la galleta?", "¡Miren! ¡La flecha no se movió!"],
+      "pt": ["E se a gente levar o biscoito embora?", "Olhem! A seta não se mexeu!"]}},
+    {"slug": "topa", "name": "Топа", "src": {"es": ["e", "em_alex"], "pt": ["p", "pm_alex"]}, "texts": {
+      "es": ["Es como si la flecha supiera adónde mirar.", "¡Así que no podemos engañar a la flecha!"],
+      "pt": ["É como se a seta soubesse para onde olhar.", "Então não dá para enganar a seta!"]}}
   ],
   "label_voice": "ru-RU-SvetlanaNeural"
 }

@@ -24,12 +24,12 @@ import parselmouth  # noqa: E402
 from parselmouth.praat import call  # noqa: E402
 
 SR = 24000
-OUT, TMP = "out_klon", "tmp_klon"
+J = json.load(open("clone.json", encoding="utf-8"))
+OUT, TMP = J.get("out", "out_klon"), "tmp_klon"
 for d in (OUT, os.path.join(OUT, "v"), TMP):
     os.makedirs(d, exist_ok=True)
-J = json.load(open("clone.json", encoding="utf-8"))
 NUM = ["один", "два", "три"]
-METHODS = ["A", "B"]
+METHODS = J.get("methods", ["A", "B"])
 
 
 def log(*a):
@@ -173,7 +173,7 @@ def run_B(items):
     for it in items:
         try:
             t0 = time.time()
-            lang_code, voice = J["kokoro_src"][it["lang"]]
+            lang_code, voice = it["src"]
             pieces = []
             for k, line in enumerate(it["lines"]):
                 src = os.path.join(TMP, f"Bsrc_{it['key']}_{k}.wav")
@@ -257,23 +257,27 @@ REF_F0 = {}
 
 def main():
     heroes = J["heroes"]
-    refs = {h["slug"]: load(f"refs/{h['slug']}_ref.wav") for h in heroes}
+    ALL = J.get("names") or {h["slug"]: h["name"] for h in heroes}
+    refs = {s: load(f"refs/{s}_ref.wav") for s in ALL}
     ref_f0 = {s: measure(a)["f0"] for s, a in refs.items()}
     REF_F0.update(ref_f0)
     items = []
     for h in heroes:
         for lang, lines in h["texts"].items():
             items.append({"key": f"{h['slug']}_{lang}", "slug": h["slug"], "lang": lang, "lines": lines,
-                          "ref": f"refs/{h['slug']}_ref.wav"})
+                          "ref": f"refs/{h['slug']}_ref.wav",
+                          "src": h.get("src", {}).get(lang) or J["kokoro_src"][lang]})
     log("фраз:", sum(len(i["lines"]) for i in items), "наборов:", len(items))
-    run_A(items)
-    run_B(items)
+    if "A" in METHODS:
+        run_A(items)
+    if "B" in METHODS:
+        run_B(items)
 
     log("проверка: сходство голосов")
     E, base = {}, {}
     try:
         E = {s: embed(a) for s, a in refs.items()}
-        held = {h["slug"]: load(f"refs/{h['slug']}_held.wav") for h in heroes}
+        held = {s: load(f"refs/{s}_held.wav") for s in ALL}
         for s, a in held.items():
             e = embed(a)
             sims = {t: float(e @ E[t]) for t in E}
@@ -296,7 +300,7 @@ def main():
 
 
     # файлы героев: по-русски как сейчас, потом языки и способы
-    names = {h["slug"]: h["name"] for h in heroes}
+    names = ALL
     for h in heroes:
         s = h["slug"]
         seq = [loudnorm(label("По-русски, как сейчас.", os.path.join(TMP, f"l_ru_{s}.wav")), os.path.join(TMP, f"ln_ru_{s}.wav")),
@@ -306,7 +310,8 @@ def main():
                 r = it.get(m) or {}
                 if r.get("audio") is None:
                     continue
-                lab = label(f"{J['lang_name'][it['lang']]}, вариант {NUM[n]}.", os.path.join(TMP, f"l_{m}_{it['key']}.wav"))
+                lab_txt = f"{J['lang_name'][it['lang']]}." if len(METHODS) == 1 else f"{J['lang_name'][it['lang']]}, вариант {NUM[n]}."
+                lab = label(lab_txt, os.path.join(TMP, f"l_{m}_{it['key']}.wav"))
                 seq += [loudnorm(lab, os.path.join(TMP, f"ln_{m}_{it['key']}.wav")), silence(0.3), r["audio"], silence(0.9)]
         sf.write(os.path.join(TMP, "hero.wav"), np.concatenate(seq), SR)
         ff("-i", os.path.join(TMP, "hero.wav"), "-codec:a", "libmp3lame", "-q:a", "3", os.path.join(OUT, f"{s}.mp3"))
