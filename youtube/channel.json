@@ -1,6 +1,6 @@
 {
  "channel": "Кот Барсик | Мультфильмы для детей",
- "subs": "26",
+ "subs": "28",
  "videos": "56",
  "playlists": [
   {
@@ -48,8 +48,8 @@
    "kids": true,
    "category": "1",
    "dur": "PT29M47S",
-   "views": 0,
-   "likes": 0
+   "views": 1,
+   "likes": 1
   },
   {
    "id": "2KnQrxCPnUw",
@@ -60,7 +60,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT26S",
-   "views": 0,
+   "views": 1,
    "likes": 0
   },
   {
@@ -72,7 +72,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M33S",
-   "views": 1,
+   "views": 157,
    "likes": 0
   },
   {
@@ -144,7 +144,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M53S",
-   "views": 1608,
+   "views": 1653,
    "likes": 3
   },
   {
@@ -156,7 +156,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT24S",
-   "views": 1,
+   "views": 12,
    "likes": 0
   },
   {
@@ -168,7 +168,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT6M27S",
-   "views": 259,
+   "views": 295,
    "likes": 1
   },
   {
@@ -180,7 +180,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT24S",
-   "views": 10,
+   "views": 20,
    "likes": 1
   },
   {
@@ -192,7 +192,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT6M15S",
-   "views": 1021,
+   "views": 1224,
    "likes": 4
   },
   {
@@ -216,7 +216,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M27S",
-   "views": 70,
+   "views": 73,
    "likes": 0
   },
   {
@@ -228,7 +228,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT28S",
-   "views": 10,
+   "views": 13,
    "likes": 0
   },
   {
@@ -240,7 +240,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M46S",
-   "views": 77,
+   "views": 79,
    "likes": 2
   },
   {
@@ -252,7 +252,7 @@
    "kids": true,
    "category": "22",
    "dur": "PT33S",
-   "views": 8,
+   "views": 10,
    "likes": 1
   }
  ]
