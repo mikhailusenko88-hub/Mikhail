@@ -8,7 +8,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: dub
+  group: dub-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   plan:
