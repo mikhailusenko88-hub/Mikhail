@@ -1,0 +1,198 @@
+# Дубляж серии «Кот Барсик» на другой язык голосами наших героев (вариант 2 — перекраска, выбран Михаилом 22.11.2026).
+#   python dub.py <сборка> <язык>      например: python dub.py 36dub en
+# Берёт из релиза studio-<сборка> файл dub.zip (студия кладёт: dub/lines/NNN.wav — каждая реплика, dub/lines.json — расписание,
+# dub/me_NN.wav — музыка и шумы без голосов, dub/full.wav — полное сведение), перевод perevod/<серия>.json,
+# настройки голосов geroi.json. Каждая реплика: источник с родным произношением → перекраска в голос героя (образец —
+# его же реплики из этой серии) → высота как у героя → по времени в окно русской реплики → громкость как у русской.
+# Смех и вздохи остаются свои. Сведение: громкость музыки и голосов подбирается по полному русскому сведению.
+# Итог: out_dub/<сборка>/dub_<язык>.wav (для YouTube Studio → Языки → Дубляж), отчёт по репликам.
+import json, os, subprocess, sys, time, traceback, zipfile
+
+import numpy as np
+import soundfile as sf
+
+import dubcore as D
+
+NAME, LANG = sys.argv[1], sys.argv[2]
+SRM = 44100                       # частота сведения студии
+OUT = os.path.join("out_dub", NAME)
+os.makedirs(OUT, exist_ok=True)
+G = json.load(open("geroi.json", encoding="utf-8"))
+
+
+def lufs(path):
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", path, "-af", "ebur128", "-f", "null", "-"],
+                       capture_output=True, text=True)
+    vals = [float(x.split("I:")[1].split("LUFS")[0]) for x in r.stderr.splitlines() if "I:" in x and "LUFS" in x]
+    return vals[-1] if vals else None
+
+
+def normalize(src, dst, target=-15.0):
+    """Как studio.js: усиление до −15 LUFS и ограничитель 0.84, до трёх подходов."""
+    I = lufs(src)
+    gain = target - (I if I is not None else target)
+    for _ in range(3):
+        D.ff("-i", src, "-af", f"volume={gain:.2f}dB,alimiter=limit=0.84:attack=5:release=80:level=disabled", "-ar", str(SRM), dst)
+        J = lufs(dst)
+        if J is None or abs(J - target) < 0.4:
+            break
+        gain += target - J
+    return I, lufs(dst)
+
+
+def place(track, arr, t, sr=SRM):
+    i0 = int(round(t * sr))
+    if i0 >= len(track):
+        return
+    n = min(len(arr), len(track) - i0)
+    track[i0:i0 + n] += arr[:n]
+
+
+def main():
+    t_start = time.time()
+    src_dir = os.path.join("tmp_dubsrc", NAME)
+    if not os.path.isdir(os.path.join(src_dir, "dub")):
+        os.makedirs(src_dir, exist_ok=True)
+        zipfile.ZipFile(os.path.join(src_dir, "dub.zip")).extractall(src_dir)
+    dd = os.path.join(src_dir, "dub")
+    L = json.load(open(os.path.join(dd, "lines.json"), encoding="utf-8"))
+    ep = G.get("builds", {}).get(NAME, NAME)
+    P = json.load(open(f"perevod/{ep}.json", encoding="utf-8"))
+    T = P[LANG]
+    D.log(f"{NAME} → {LANG}: реплик {len(L['lines'])}, длина {L['dur']:.1f} с, перевод perevod/{ep}.json")
+
+    # русские реплики (44.1 кГц), проверка, что перевод от этой же серии
+    ru = {}
+    bad = []
+    for ln in L["lines"]:
+        a = D.load(os.path.join(dd, "lines", f"{ln['i']:03d}.wav"), SRM)
+        ru[ln["i"]] = a
+        if not ln["vocal"] and P.get("ru", {}).get(str(ln["i"])) not in (None, ln["text"]):
+            bad.append(ln["i"])
+    if bad:
+        D.log("ВНИМАНИЕ: текст реплик не совпадает с переводом:", bad[:10])
+
+    # образцы голосов героев — их же реплики из этой серии (самые длинные, всего ~12 с)
+    refs, f0s = {}, {}
+    for name in sorted({ln["name"] for ln in L["lines"] if not ln["vocal"]}):
+        mine = sorted([ln for ln in L["lines"] if ln["name"] == name and not ln["vocal"]], key=lambda x: -x["bdur"])
+        pieces, tot = [], 0.0
+        for ln in mine:
+            if tot > 12:
+                break
+            a = D.trim(D.resample(ru[ln["i"]], SRM, D.SR))
+            pieces += [a, D.silence(0.3)]
+            tot += len(a) / D.SR
+        ref = np.concatenate(pieces)
+        p = os.path.join(OUT, f"ref_{G['slug'].get(name, name)}.wav")
+        D.save(ref, p)
+        refs[name] = p
+        f0s[name] = G.get("f0", {}).get(name) or D.measure(ref)["f0"]
+    D.log("высота героев", f0s)
+
+    # озвучка реплик
+    rows, dub = [], {}
+    starts = [ln["t"] for ln in L["lines"]]
+    for k, ln in enumerate(L["lines"]):
+        if ln["vocal"]:
+            continue
+        i, name = ln["i"], ln["name"]
+        text = T.get(str(i))
+        row = {"i": i, "name": name, "t": ln["t"], "ru": ln["text"], "text": text}
+        if not text:
+            row["error"] = "нет перевода"
+            rows.append(row)
+            continue
+        hero = G["heroes"].get(name, {})
+        spec = dict((hero.get("src") or {}).get(LANG) or G["src"][LANG])
+        pre = (hero.get("pre") or {}).get(LANG) or hero.get("pre_all")
+        nxt = min([s for s in starts if s > ln["t"] + 0.05] + [L["dur"]])
+        window = max(ln["bdur"], nxt - ln["t"] - 0.08)
+        best = None
+        for attempt in range(2):
+            try:
+                a, info = D.render(text, spec, refs[name], f0s[name], pre=pre)
+                heard = D.heard(a, LANG, G.get("whisper", "small"))
+                clear, extra = D.clear_pct(text, heard)
+                cand = {"a": a, "heard": heard, "clear": clear, "extra": extra, "shift": info["shift_st"]}
+                if best is None or (clear - 10 * extra) > (best["clear"] - 10 * best["extra"]):
+                    best = cand
+                if clear >= 85 and extra <= 1:
+                    break
+                spec["speed"] = round(spec.get("speed", 1.0) * 0.92, 3)   # вторая попытка — медленнее
+            except Exception as ex:
+                traceback.print_exc()
+                row["error"] = f"{type(ex).__name__}: {ex}"[:200]
+        if best is None:
+            rows.append(row)
+            continue
+        a = best["a"]
+        k_t = len(a) / D.SR / window
+        if k_t > 1.0:
+            a = D.tempo(a, min(k_t, 1.3))
+        a = D.resample(a, D.SR, SRM)
+        r_ru, r_db = D.rms(D.trim(ru[i], sr=SRM)), D.rms(a)
+        if r_db > 0:
+            a = a * (r_ru / r_db)
+        if ln.get("soft"):
+            a = a * 0.65
+        dub[i] = a
+        row.update(heard=best["heard"], clear=best["clear"], extra=best["extra"], shift=best["shift"],
+                   tempo=round(max(1.0, k_t), 2), over=round(max(0.0, len(a) / SRM - window), 2),
+                   sec=round(len(a) / SRM, 2), window=round(window, 2))
+        rows.append(row)
+        D.log(f"{i:3d} {name:7s} понято {best['clear']:5.1f}% лишних {best['extra']} темп ×{row['tempo']} | {text}")
+
+    # сведение: подобрать громкость музыки (a) и голосов (b) по русскому полному сведению
+    me = np.concatenate([D.load(os.path.join(dd, f), SRM) for f in sorted(os.listdir(dd)) if f.startswith("me_")])
+    full = D.load(os.path.join(dd, "full.wav"), SRM)
+    n = max(len(me), len(full))
+    me = np.pad(me, (0, n - len(me)))
+    full = np.pad(full, (0, n - len(full)))
+    v_ru = np.zeros(n, dtype=np.float64)
+    for ln in L["lines"]:
+        place(v_ru, ru[ln["i"]] * (0.65 if ln.get("soft") else 1.0), ln["t"])
+    A = np.stack([me.astype(np.float64), v_ru], axis=1)
+    (ga, gb), *_ = np.linalg.lstsq(A, full.astype(np.float64), rcond=None)
+    resid = full - A @ np.array([ga, gb])
+    fit = 1 - float(np.sum(resid ** 2) / max(1e-9, np.sum(full.astype(np.float64) ** 2)))
+    D.log(f"сведение: музыка ×{ga:.3f}, голоса ×{gb:.3f}, совпадение с русским сведением {fit:.3f}")
+
+    v_dub = np.zeros(n, dtype=np.float64)
+    for ln in L["lines"]:
+        if ln["vocal"]:
+            place(v_dub, ru[ln["i"]] * (0.65 if ln.get("soft") else 1.0), ln["t"])   # смех и вздохи — свои
+        elif ln["i"] in dub:
+            place(v_dub, dub[ln["i"]], ln["t"])
+    mix = ga * me + gb * v_dub
+    pk = float(np.max(np.abs(mix))) or 1.0
+    mix = mix / pk * 0.89
+    raw = os.path.join(OUT, f"mix_{LANG}.wav")
+    sf.write(raw, mix.astype(np.float32), SRM)
+    fin = os.path.join(OUT, f"dub_{LANG}.wav")
+    I0, I1 = normalize(raw, fin)
+    os.remove(raw)
+    D.log(f"громкость {I0} → {I1} LUFS; длина {n / SRM:.1f} с (русская {len(full) / SRM:.1f} с)")
+
+    ok = [r for r in rows if "clear" in r]
+    report = {"build": NAME, "lang": LANG, "fit": round(fit, 4), "gain_music": round(float(ga), 4), "gain_voice": round(float(gb), 4),
+              "lufs": I1, "dur": round(n / SRM, 2), "lines": len(rows), "done": len(ok),
+              "clear_avg": round(float(np.mean([r["clear"] for r in ok])), 1) if ok else None,
+              "low": [r["i"] for r in ok if r["clear"] < 80 or r["extra"] > 1],
+              "stretched": [r["i"] for r in ok if r["tempo"] > 1.15], "over": [r["i"] for r in ok if r["over"] > 0.1],
+              "minutes": round((time.time() - t_start) / 60, 1), "rows": rows}
+    json.dump(report, open(os.path.join(OUT, f"report_{LANG}.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    md = [f"# Дубляж {NAME} → {LANG}", "",
+          f"Реплик {report['lines']}, озвучено {report['done']}, понято в среднем {report['clear_avg']}%; "
+          f"плохо понятых {len(report['low'])}: {report['low']}; ускорено больше ×1,15: {report['stretched']}; "
+          f"вылезли за окно: {report['over']}. Сведение совпало с русским на {fit:.3f}. Громкость {I1} LUFS. {report['minutes']} мин.", "",
+          "| № | Герой | Русский | Перевод | Понято | Лишних | Темп | Услышано |", "|---|---|---|---|---|---|---|---|"]
+    for r in rows:
+        md.append(f"| {r['i']} | {r['name']} | {r['ru']} | {r.get('text') or ''} | {r.get('clear', r.get('error', ''))} | "
+                  f"{r.get('extra', '')} | {r.get('tempo', '')} | {r.get('heard', '')} |")
+    open(os.path.join(OUT, f"report_{LANG}.md"), "w", encoding="utf-8").write("\n".join(md) + "\n")
+    D.log("готово", report["minutes"], "мин")
+
+
+if __name__ == "__main__":
+    main()
