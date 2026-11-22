@@ -1,429 +1,156 @@
-URL: https://aimanhunt.online/
+URL: https://nashdekor.ru/assets/an.js?v=1
 КОД: 200
 ЗАГОЛОВКИ:
-Date: Sun, 22 Nov 2026 20:27:50 GMT
-Content-Type: text/html; charset=utf-8
-Transfer-Encoding: chunked
+Server: nginx
+Date: Sun, 22 Nov 2026 21:13:33 GMT
+Content-Type: application/javascript; charset=utf-8
+Content-Length: 9232
+Last-Modified: Sun, 22 Nov 2026 21:12:02 GMT
 Connection: close
-Server: cloudflare
-Nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
-X-Frontend-Release: deploy-4715-536bfc60-8953
-Server-Timing: nuxt_ssr;dur=349.93;desc="origin", nuxt_render;dur=317.61, nuxt_data;dur=233.58, nuxt_vue;dur=84.01;desc="components+prefetch", nuxt_serialize;dur=25.76;desc="head+payload", nuxt_template;dur=0.03, api_sum;dur=228.87;desc="calls=5;errors=0", api_wall;dur=192.81, api_configs;dur=15.42;desc="calls=1", api_menus;dur=21.42;desc="calls=1", api_cms;dur=128.58;desc="calls=1", api_services;dur=17.71;desc="calls=1", api_prices;dur=45.73;desc="calls=1", api_php_origin;dur=855.42;desc="origin samples;cached=3", startup_shell;dur=5.48;desc="static", youtube_html;dur=2.18;desc="calls=2;previews=2"
-Server-Timing: cfCacheStatus;desc="HIT"
-Server-Timing: cfEdge;dur=127,cfOrigin;dur=0
-Speculation-Rules: "/cdn-cgi/speculation"
-Cache-Control: public, max-age=0, s-maxage=300
-CDN-Cache-Control: public, max-age=0, s-maxage=300
-X-Grizzly-Public-HTML: 1
 Vary: Accept-Encoding
-X-Frontend-Cache-Epoch: e1f07c27a6b64cd99def7abb2585ca3c
-X-Cache-Status2: HIT
-X-Grizzly-SSR-Cache: HIT
-Report-To: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=r%2BwYSTqxklCv2NKFkddtJTvfTjpTH3oIS8apqDdFwlQ%2F3%2BR9GWBoKwQwPn2exXoDBoj0O9rBAVhP%2BlAwPFq4JL67vMmZEC3k93vALvAzj1r5yBcH8kaWP8hxQC5fQBZp"}]}
-X-No-Cache: 0
-x-b: 0
+ETag: "6b035aa2-2410"
+Expires: Sun, 29 Nov 2026 21:13:33 GMT
+Cache-Control: max-age=604800
+Strict-Transport-Security: max-age=15552000
 X-Content-Type-Options: nosniff
-Referrer-Policy: strict-origin
-X-Frame-Options: sameorigin
-Content-Security-Policy: default-src 'self' grizzlysms.com *.grizzlysms.com widget.trustpilot.com *.doubleclick.net stat.sms971.com challenges.cloudflare.com *.jivo.ru *.openai.com *.jivosite.com jsdelivr.net *.jsdelivr.net google.com *.google.com youtube.com *.youtube.com crisp.chat *.crisp.chat clarity.ms *.clarity.ms cloudflareinsights *.cloudflareinsights.com google-analytics.com mc.webvisor.org mc.yandex.ru *.yandex.ru mc.yandex.com *.yandex.com *.google-analytics.com googletagmanager.com *.googletagmanager.com googleusercontent.com *.googleusercontent.com ws:; frame-ancestors 'self' docs.google.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' jsdelivr.net *.jsdelivr.net widget.trustpilot.com *.doubleclick.net stat.sms971.com challenges.cloudflare.com *.jivo.ru *.openai.com *.jivosite.com mc.webvisor.org mc.yandex.ru *.yandex.ru mc.yandex.com *.yandex.com google.com *.google.com youtube.com *.youtube.com  crisp.chat *.crisp.chat cloudflareinsights.com *.cloudflareinsights.com clarity.ms *.clarity.ms googletagmanager.com *.googletagmanager.com crisp.chat *.crisp.chat https://appleid.cdn-apple.com; style-src 'self' 'unsafe-inline' jsdelivr.net widget.trustpilot.com *.jsdelivr.net *.doubleclick.net stat.sms971.com challenges.cloudflare.com *.jivo.ru *.openai.com *.jivosite.com google.com *.google.com youtube.com *.youtube.com  mc.webvisor.org mc.yandex.ru *.yandex.ru mc.yandex.com *.yandex.com crisp.chat *.crisp.chat; img-src * data: blob:; font-src * data:; object-src * data:
-Strict-Transport-Security: max-age=31536000;
-cf-cache-status: HIT
-CF-RAY: a5eaad569855eada-ORD
-alt-svc: h3=":443"; ma=86400
+Content-Security-Policy: frame-ancestors 'self' https://max.ru https://*.max.ru https://*.oneme.ru
+Referrer-Policy: strict-origin-when-cross-origin
+Accept-Ranges: bytes
 
-Get virtual phone number for receive SMS and verification 
- Loading is taking longer than usual. Try refreshing the page. Reload page 
- Price
- API
- FAQ
- Earn with us
- Affiliate programs
- Software
- eSIM Proxies beta 
- English 
- English 
- 中文 
- Español 
- हिन्दी 
- Русский 
- Türkçe 
- العربية 
- Français 
- Português 
- Play sound for code 
- Play sound for number 
- My purchases Balance history Settings Referral program 
- Profile $ 0 
- Loading is taking longer than usual. Try refreshing the page. Reload page 
- Activations
- eSIM
- Proxies
- beta 
- ?
- Service selection
- All services
- facebook 
- Search (2 497) 
- facebook
- Whatsapp
- TikTok
- Telegram
- AnyOther
- Google, Gmail, Youtube
- Instagram + Threads
- Amazon
- Noon
- Apple
- AI Chat
- PayPal
- Country selection for facebook 
- All countries
- Top countries 
- Quantity 
- Price 
- Austria
- 1866258 qty
- $ 0.36
- USA
- from $ 0.077 
- 45124 qty
- $ 0.95 
- Quantity
- Price
- Available 15539 qty
- $ 0.95
- Available 201 qty
- $ 0.83
- All prices 10 
- USA (virtual)
- from $ 0.026 
- 407784 qty
- $ 0.52 
- Quantity
- Price
- Available 20 qty
- $ 0.52
- Available 48 qty
- $ 0.325
- All prices 8 
- Hong Kong
- 2299948 qty
- $ 0.14
- Japan
- 13777 qty
- $ 0.39
- Sweden
- 2070218 qty
- $ 0.1
- Indonesia
- from $ 0.0125 
- 9203 qty
- $ 0.05 
- Quantity
- Price
- Available 743 qty
- $ 0.05
- Available 2754 qty
- $ 0.04
- All prices 5 
- Thailand
- from $ 0.076 
- 11057 qty
- $ 0.247 
- Quantity
- Price
- Available 149 qty
- $ 0.247
- Available 648 qty
- $ 0.183
- All prices 6 
- United Kingdom
- from $ 0.08 
- 29644 qty
- $ 0.63 
- Quantity
- Price
- Available 327 qty
- $ 0.63
- Available 20 qty
- $ 0.35
- All prices 7 
- Mexico
- from $ 0.06 
- 303 qty
- $ 0.26 
- Quantity
- Price
- Available 20 qty
- $ 0.26
- Available 35 qty
- $ 0.089
- All prices 3 
- Bulgaria
- 10908 qty
- $ 0.09
- Netherlands
- from $ 0.08 
- 184 qty
- $ 0.7 
- Quantity
- Price
- Available 43 qty
- $ 0.7
- Available 121 qty
- $ 0.19
- All prices 3 
- Poland
- from $ 0.094 
- 1853 qty
- $ 0.11 
- Quantity
- Price
- Available 646 qty
- $ 0.11
- Available 1207 qty
- $ 0.094
- Turkey
- from $ 0.065 
- 5696 qty
- $ 0.12 
- Quantity
- Price
- Available 253 qty
- $ 0.12
- Available 5443 qty
- $ 0.065
- Show more
- Customer favorites
- Ticketmaster United Kingdom 
- $ 0.14
- Ticketmaster United Kingdom 
- facebook USA (virtual) 
- $ 0.026
- facebook USA (virtual) 
- Ticketmaster Chile 
- $ 0.058
- Ticketmaster Chile 
- Ticketmaster South Africa 
- $ 0.168
- Ticketmaster South Africa 
- Google, Gmail, Youtube Colombia 
- $ 0.03
- Google, Gmail, Youtube Colombia 
- Shopee Indonesia 
- $ 0.0028
- Shopee Indonesia 
- TikTok Colombia 
- $ 0.01
- TikTok Colombia 
- TikTok USA 
- $ 0.088
- TikTok USA 
- TikTok Indonesia 
- $ 0.005
- TikTok Indonesia 
- Naver USA (virtual) 
- $ 0.025
- Naver USA (virtual) 
- TikTok USA (virtual) 
- $ 0.015
- TikTok USA (virtual) 
- Google, Gmail, Youtube Chile 
- $ 0.038
- Google, Gmail, Youtube Chile 
- Get 5% cashback every month
- Subscribe in our Android app and earn 5% cashback on your first 50 activations each month — on the web or in the app
- Telegram Mini App
- Use all Grizzly SMS features without leaving Telegram — open our convenient mini app →
- News & special offers
- Join our Telegram channel for important service updates, special offers and great discounts →
- YouTube 
- How it works
- Receive SMS messages to a virtual number from any available services
- Register an account in our system
- Top up the balance in your account
- Receive SMS from any service
- Grizzly SMS is an international platform for receiving SMS verification codes. Sign up and get codes for 2,300+ services.
- About our service
- Buy temporary phone number for OTP
- Looking for a fast, reliable way to receive SMS verification codes? Grizzly SMS is exactly what you need. We help you instantly get temporary phone numbers for OTPs and SMS activation — safe, affordable, and ready to use.
- Why choose Grizzly SMS? 
- We provide a time-saving and budget-friendly service where you can buy a virtual number in just a couple of clicks. Whether you're a business, a marketer, or just an everyday user, our service helps you register, verify, and manage accounts with ease.
- Unlike many competitors, we don't resell numbers. That means lower prices and higher quality for you.
- Get phone numbers for SMS verification
- The majority of services require a phone number for registration. However, sharing your personal information may be quite uncomfortable. Don't bother yourself and buy a virtual mobile number for SMS verification.
- Where you can use our numbers:
- Payment systems & banks: PayPal , PaySafe Card , and more.
- Social networks: Google , Twitter , TikTok , Instagram .
- Messengers: WhatsApp , Telegram , Viber .
- Our catalog covers almost any service worldwide. Just pick what you need through our easy-to-use filters and start right away.
- After purchase, all SMS codes arrive instantly in your personal panel on our website. You can even enable notifications so you don't miss a thing.
- Use virtual number to receive SMS anonymously
- Your privacy is our top priority. Here's the list of our advantages:
- Privacy protection. Unlike some other companies that may share sensitive client data, we never do. In fact, we don't even request personal information beyond your email address.
- No exposure to the online community. Using your personal number online can lead to unwanted calls from scammers or marketers if your data is mishandled.
- Safety of our clients is our primary concern. Protecting our clients is our top priority. We go the extra mile to safeguard your anonymity and shield you from anything that could compromise your privacy, reputation, or finances.
- Temporary phone number for OTP from 100+ countries
- Registering on foreign services can sometimes be challenging. In such cases, you may need a temporary phone number for SMS verification from a specific country.
- The SMS activation service Grizzly SMS is fully focused on meeting our customers' needs. You can buy a temporary OTP number from the USA , India , Turkey and many other countries around the world — over 180 countries in total. What is equally important — our prices are affordable, making it easy to create accounts or profiles on any site that requires phone verification.
- Our benefits
- Our mission is to save your time and ensure your safety. Grizzly SMS is designed to solve your problems quickly, efficiently, and without hassle. We strive to provide excellent service for anyone who wants to buy a virtual phone number for SMS.
- Here are some of the benefits our clients enjoy:
- Affordability for everyone. Prices go as low as $0.04 per number. You'll be satisfied with our pricing.
- Instant delivery. Numbers are available immediately after purchase so you can start your operations right away.
- Automated service. All operations are handled by algorithms to minimize human error.
- Effortless convenience. Purchasing and using a number takes just a couple of clicks.
- 24/7 responsive customer support. We value communication and ensure every client feels heard and assisted.
- More details
- Blog
- TikTok Phone Number Already in Use: Separate Personal and Work Accounts
-TikTok Phone Number Already in Use: Separate Personal and Work Accounts
- A number-already-in-use message calls for checking existing account links, not deleting your personal profile. Identify th...
- Michael Roberts
- 4.24 
- 11-16-2026
- More details
- Instagram Login Code Not Arriving? Recovering Access to a Professional Account
-Instagram Login Code Not Arriving? Recovering Access to a Professional Account
- A missing Instagram code can mean a delivery problem, an unavailable two-factor method, or an account restriction....
- David Chen
- 4.25 
- 11-09-2026
- More details
- Facebook Page Admin Access: Protect Your Account and Organize Team Permissions
-Facebook Page Admin Access: Protect Your Account and Organize Team Permissions
- A working Facebook Page needs clear permissions and secure administrator accounts. Learn how to diagnose access pro...
- Sarah Johnson
- 4.22 
- 11-02-2026
- More details
- Google Rejects Your Phone Number: What to Do for Gmail and YouTube
-Google Rejects Your Phone Number: What to Do for Gmail and YouTube
- A rejected number, a missing SMS, and a YouTube channel limit are different problems. Identify the verification step first, fol...
- David Chen
- 4.25 
- 10-26-2026
- More details
- Show more
- The best service
-for receiving SMS messages online 
- youtube telegram reddit instagram 
- Price
- API
- FAQ
- Earn with us
- Affiliate programs
- Software
- eSIM Proxies beta 
- Grizzly Corp Limited (Business Registration No. 80665761), addressed at Unit 308, 3/F, Chevalier House, 45–51 Chatham Road South, Tsim Sha Tsui, Hong Kong 
- Personal data and cookie policy
- Public offer
- Legal info
+/* «Наш декор» — подробный счётчик (с 23.11.2026). Свой, на нашем сервере, без cookie и без хранения чего-либо в браузере.
+   Что уходит в CRM: сколько секунд страница была на экране, докуда её долистали, какие блоки страницы были на экране
+   и сколько, нажатия, после которых ничего не произошло, и много нажатий подряд в одно место (что именно нажали — тег
+   и класс элемента с сайта, не то, что вводил человек), какое фото товара открыли, за сколько загрузилась страница,
+   ошибки скриптов сайта. При «Не отслеживать» и в автоматических браузерах не работает. Сбой здесь страницу не ломает. */
+(() => {
+"use strict";
+try {
+  if (!/(^|\.)nashdekor\.ru$/.test(location.hostname) || !navigator.sendBeacon || navigator.doNotTrack === "1" ||
+      navigator.globalPrivacyControl || navigator.webdriver) return;
+  if (window.__ndAn) return; window.__ndAn = 1;
+  const API = "https://crm.nashdekor.ru/api/hit";
+  const PAGE = location.pathname;
+  const qs = new URLSearchParams(location.search);
+  const P = window.P || {};
+  const ART = (P.item && P.item.a) || "";
+  const clean = s => String(s || "").replace(/[^0-9A-Za-zА-Яа-яЁё _.#:\/«»,()+-]/g, " ").replace(/\s+/g, " ").trim().slice(0, 60);
+  const q = []; let qT = 0;
+  function send(){
+    clearTimeout(qT);
+    if (!q.length) return;
+    let r = ""; try { r = document.referrer ? new URL(document.referrer).hostname : ""; } catch (e) {}
+    let u = qs.get("utm_source") || ""; try { if (!u && sessionStorage.getItem("WebAppData")) u = "max"; } catch (e) {}
+    const body = { e: q.splice(0, 40), p: PAGE, r, u: u.slice(0, 30), c: (qs.get("utm_campaign") || "").slice(0, 40),
+                   m: matchMedia("(pointer: coarse)").matches ? 1 : 0 };
+    try { navigator.sendBeacon(API, new Blob([JSON.stringify(body)], { type: "text/plain" })); } catch (e) {}
+    if (q.length) send();
+  }
+  function push(ev){ q.push(ev); clearTimeout(qT); qT = setTimeout(send, 4000); }
+  const once = new Set();
+  function pushOnce(ev){ const k = ev.join("|"); if (once.has(k)) return; once.add(k); push(ev); }
 
-ССЫЛКИ:
-/
-/_nuxt/deploy-4715-536bfc60-8953/css/43d6175.css
-/_nuxt/deploy-4715-536bfc60-8953/css/49f06ba.css
-/_nuxt/deploy-4715-536bfc60-8953/css/5b22651.css
-/_nuxt/deploy-4715-536bfc60-8953/css/7b05d3d.css
-/_nuxt/deploy-4715-536bfc60-8953/css/834937b.css
-/_nuxt/deploy-4715-536bfc60-8953/css/939e2ef.css
-/_nuxt/deploy-4715-536bfc60-8953/css/9baf434.css
-/_nuxt/deploy-4715-536bfc60-8953/css/a1a9f72.css
-/_nuxt/deploy-4715-536bfc60-8953/css/a9f96bd.css
-/_nuxt/deploy-4715-536bfc60-8953/css/b127764.css
-/_nuxt/deploy-4715-536bfc60-8953/css/bf22cc0.css
-/_nuxt/deploy-4715-536bfc60-8953/css/ec8dc3c.css
-/_nuxt/deploy-4715-536bfc60-8953/css/fb73286.css
-/_nuxt/deploy-4715-536bfc60-8953/css/fc2f781.css
-/_nuxt/deploy-4715-536bfc60-8953/css/fd4354c.css
-/_nuxt/deploy-4715-536bfc60-8953/icons/icon_512x512.6ad523.png
-/_nuxt/deploy-4715-536bfc60-8953/icons/icon_64x64.6ad523.png
-/_nuxt/deploy-4715-536bfc60-8953/manifest.4a1a9853.json
-/ai-services
-/amazon
-/anyother
-/apple
-/apple-touch-icon.png
-/ar
-/authorization
-/authors/david-chen
-/authors/michael-roberts
-/authors/sarah-johnson
-/blog
-/blog/facebook-page-admin-access
-/blog/google-phone-verification-help
-/blog/instagram-login-code-recovery
-/blog/tiktok-number-already-in-use
-/cn
-/countries
-/docs
-/es
-/esim
-/facebook
-/faq
-/favicon-16x16.png
-/favicon-32x32.png
-/favicon.ico
-/fonts/Manrope-Bold.woff2?v=2118e360b2266c474e70
-/fonts/Manrope-Regular.woff2?v=bfd7875fab6788311cdc
-/fonts/fonts.css?v=d4988dd56c1ecbc68a14
-/fr
-/gmail
-/hi
-/instagram
-/legal
-/logos/logo-light-v1.svg?v=44f9854e03d6f36719c0
-/naver
-/noon
-/offer
-/paypal
-/price
-/privacy
-/profit
-/proxy
-/pt
-/refer
-/registration
-/ru
-/safari-pinned-tab.svg
-/services
-/shopee
-/softs
-/telegram
-/ticketmaster
-/tiktok
-/tr
-/whatsapp
-https://apps.apple.com/us/app/grizzly-sms/id6811858700?l=en
-https://github.com/GrizzlySMS-Git/grizzly-sms-mcp
-https://grizzlysms.com/
-https://grizzlysms.com/api/storage/image/71203_w-782_fit-default.webp
-https://grizzlysms.com/api/storage/image/71204_w-320_fit-crop_q-60.webp
-https://grizzlysms.com/ar
-https://grizzlysms.com/cn
-https://grizzlysms.com/countries/india
-https://grizzlysms.com/countries/turkey
-https://grizzlysms.com/countries/usa
-https://grizzlysms.com/es
-https://grizzlysms.com/fr
-https://grizzlysms.com/gmail
-https://grizzlysms.com/hi
-https://grizzlysms.com/instagram
-https://grizzlysms.com/paypal
-https://grizzlysms.com/paysafecard
-https://grizzlysms.com/pt
-https://grizzlysms.com/ru
-https://grizzlysms.com/telegram
-https://grizzlysms.com/tiktok-douyin
-https://grizzlysms.com/tr
-https://grizzlysms.com/twitter
-https://grizzlysms.com/viber
-https://grizzlysms.com/whatsapp
-https://play.google.com/store/apps/details?id=com.grizzlysms
-https://t.me/GrizzlySMS_EN
-https://t.me/GrizzlySMScom_bot/app
-https://www.instagram.com/grizzlysms_com/
-https://www.reddit.com/r/GrizzlySMS
-https://www.youtube.com/@GrizzlySms
-https://www.youtube.com/watch?v=ADPWmHlvQnQ
+  /* ---------- блоки страницы: метки data-an (если на странице их ещё нет) ---------- */
+  const MAP = [[".hero", "top"], ["#catalog", "catalog"], ["#calc", "calc"], ["#live", "live"], ["#pro", "pro"], ["#terms", "terms"],
+    [".ptitle", "title"], ["#pview", "photo"], [".vtabs", "photo"], ["#colors", "colors"], [".gal", "gallery"], [".prof", "profile"], [".specs", "specs"],
+    [".about", "about"], [".revs", "reviews"], ["aside.buy", "buy"], ["#wallBox", "wall"], ["section.with", "with"],
+    ["section.rel:not(.with)", "rel"], ["section.porder", "order"], ["#order", "order"], ["main .head", "head"],
+    ["nav.sections", "sections"], ["main .grid", "list"], ["article.article", "text"], [".more-art", "more"], ["footer", "footer"]];
+  function mark(){
+    for (const [sel, id] of MAP) document.querySelectorAll(sel).forEach(el => { if (!el.dataset.an && !el.closest("[data-an]")) el.dataset.an = id; });
+    const main = document.querySelector("main");
+    if (main && !main.querySelector("[data-an]")) main.dataset.an = "text";
+  }
+  mark();
+
+  /* ---------- время на экране, блоки, прокрутка: раз в секунду, только пока страница видна ---------- */
+  let secs = 0, sentSecs = 0;
+  const vis = new Map(), bsec = new Map(), bsent = new Map();
+  if ("IntersectionObserver" in window) {
+    const th = []; for (let i = 0; i <= 20; i++) th.push(i / 20);
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      const h = e.boundingClientRect.height || 1, seen = e.intersectionRect.height;
+      vis.set(e.target, e.isIntersecting && seen >= Math.min(h * 0.5, innerHeight * 0.4));
+    }), { threshold: th });
+    document.querySelectorAll("[data-an]").forEach(el => io.observe(el));
+  }
+  const MARKS = [25, 50, 75, 90, 100];
+  function depth(){
+    const de = document.documentElement, full = Math.max(de.scrollHeight, document.body ? document.body.scrollHeight : 0);
+    if (full <= innerHeight * 1.05) return 100;        // страница целиком на экране
+    const pct = (scrollY + innerHeight) / full * 100;
+    for (let i = MARKS.length - 1; i >= 0; i--) if (pct >= (MARKS[i] === 100 ? 98 : MARKS[i])) { pushOnce(["scroll", "", String(MARKS[i])]); break; }
+  }
+  addEventListener("scroll", () => { clearTimeout(depth.t); depth.t = setTimeout(depth, 300); }, { passive: true });
+  setInterval(() => {
+    if (document.visibilityState !== "visible") return;
+    secs++;
+    vis.forEach((on, el) => { if (on) { const id = el.dataset.an; bsec.set(id, (bsec.get(id) || 0) + 1); } });
+    if (secs % 30 === 0) flushTime(false);
+  }, 1000);
+  function flushTime(now){
+    if (secs > sentSecs) { push(["time", "", String(Math.min(secs, 3600))]); sentSecs = secs; }
+    bsec.forEach((s, id) => { if (s >= 1 && s !== bsent.get(id)) { push(["blk", id, String(Math.min(s, 3600))]); bsent.set(id, s); } });
+    if (now) send();
+  }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushTime(true); });
+  addEventListener("pagehide", () => flushTime(true));
+
+  /* ---------- нажатия: «ничего не произошло» и «много раз подряд» ---------- */
+  const ACTIVE = "a,button,input,select,textarea,label,summary,details,option,[role=button],[role=tab],[role=link],[onclick],[tabindex],canvas,video,audio,iframe,[contenteditable],.dot,.hp";
+  function where(el){
+    const b = el.closest("[data-an]"), blk = b ? b.dataset.an : "other";
+    const t = el.closest("img,h1,h2,h3,b,p,span,div,li,td,svg") || el;
+    let d = t.tagName.toLowerCase();
+    if (t.id) d += "#" + t.id; else if (t.classList && t.classList[0]) d += "." + t.classList[0];
+    const txt = t.tagName === "IMG" ? (t.getAttribute("alt") || "") : (t.children.length > 3 ? "" : (t.textContent || ""));
+    const short = clean(txt).slice(0, 22);
+    return clean(blk + ":" + d + (short ? " «" + short + "»" : ""));
+  }
+  let last = [];
+  document.addEventListener("click", e => {
+    const el = e.target;
+    if (!(el instanceof Element)) return;
+    const d = where(el), t = performance.now();
+    last = last.filter(c => t - c.t < 1000); last.push({ t, x: e.clientX, y: e.clientY, d });
+    if (last.length >= 3 && last.every(c => Math.abs(c.x - e.clientX) < 40 && Math.abs(c.y - e.clientY) < 40)) { pushOnce(["rage", d]); last = []; }
+    if (el.closest(ACTIVE) || el.closest("[data-v],[data-use],[data-ask],[data-cat]")) return;
+    try { if (String(getSelection() || "").length > 1) return; } catch (x) {}
+    let changed = false;
+    const mo = new MutationObserver(ms => {
+      for (const m of ms) {                  // перезапись тем же значением — не изменение (cart.js так обновляет подсказки)
+        if (m.type === "attributes" && m.oldValue === m.target.getAttribute(m.attributeName)) continue;
+        if (m.type === "characterData" && m.oldValue === m.target.data) continue;
+        changed = true; break;
+      }
+    });
+    mo.observe(document.body, { subtree: true, childList: true, attributes: true, characterData: true, attributeOldValue: true, characterDataOldValue: true });
+    const y0 = scrollY, h0 = location.href;
+    setTimeout(() => { mo.disconnect(); if (!changed && Math.abs(scrollY - y0) < 2 && location.href === h0) pushOnce(["dead", d]); }, 700);
+  }, true);
+
+  /* ---------- фото товара: какое открыли ---------- */
+  if (ART) document.addEventListener("click", e => {
+    const a = e.target.closest && e.target.closest(".gal a");
+    if (!a) return;
+    const all = [...document.querySelectorAll(".gal a")];
+    push(["photo", ART, String(all.indexOf(a) + 2)]); send();        // №1 — главное фото, галерея — со второго
+  }, true);
+
+  /* ---------- загрузка страницы и ошибки ---------- */
+  function load(){
+    try {
+      const n = performance.getEntriesByType("navigation")[0];
+      const ms = n ? Math.round(n.loadEventEnd || n.domContentLoadedEventEnd) : 0;
+      if (ms > 0) push(["load", "", String(ms)]);
+    } catch (e) {}
+  }
+  if (document.readyState === "complete") setTimeout(load, 0); else addEventListener("load", () => setTimeout(load, 0));
+  let errs = 0;
+  addEventListener("error", e => {
+    if (errs >= 3 || !e || !e.message) return;
+    if (e.filename && !/nashdekor\.ru/.test(e.filename)) return;     // только наши скрипты
+    errs++; pushOnce(["err", clean(e.message).slice(0, 60) || "ошибка"]);
+  });
+  setTimeout(depth, 1500);
+} catch (e) { /* счётчик не должен ломать страницу */ }
+})();

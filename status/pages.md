@@ -1,4 +1,4 @@
 # Снятые страницы
 
-- 01 200 https://aimanhunt.online/ (8666 симв.)
-- 02 200 http://aimanhunt.online/ (8666 симв.)
+- 01 200 https://nashdekor.ru/assets/an.js?v=1 (8418 симв., как есть)
+- 02 200 https://nashdekor.ru/privacy.html (7426 симв.)
