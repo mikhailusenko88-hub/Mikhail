@@ -308,6 +308,39 @@
 | e36_r36_7 | edge:ru-RU-SvetlanaNeural | 3.92 | 1.0 | 0 (+0) | 1/3 |
 | e36_r36_8 | edge:ru-RU-SvetlanaNeural | 3.79 | 1.0 | 0 (+0) | 2/2 |
 | e36_r36_9 | edge:ru-RU-SvetlanaNeural | 4.02 | 1.0 | 1 (+0) | 1/1 |
+| e37_p37_1 | edge:ru-RU-SvetlanaNeural | 4.14 | 1.0 | 0 (+0) | 2/2 |
+| e37_p37_10 | edge:ru-RU-SvetlanaNeural | 3.76 | 1.0 | 1 (+0) | 1/2 |
+| e37_p37_11 | edge:ru-RU-SvetlanaNeural | 3.91 | 1.0 | 0 (+0) | 2/2 |
+| e37_p37_2 | edge:ru-RU-SvetlanaNeural | 3.87 | 1.0 | 0 (+0) | 2/2 |
+| e37_p37_3 | edge:ru-RU-SvetlanaNeural | 3.69 | 1.0 | 0 (+0) | 1/2 |
+| e37_p37_4 | edge:ru-RU-SvetlanaNeural | 3.98 | 1.0 | 0 (+1) | 2/2 |
+| e37_p37_5 | edge:ru-RU-SvetlanaNeural | 3.87 | 1.0 | 0 (+0) | 2/2 |
+| e37_p37_6 | edge:ru-RU-SvetlanaNeural | 4.03 | 1.0 | 0 (+0) | 0/1 |
+| e37_p37_7 | edge:ru-RU-SvetlanaNeural | 3.76 | 1.0 | 0 (+0) | 1/1 |
+| e37_p37_9 | edge:ru-RU-SvetlanaNeural | 3.92 | 1.0 | 0 (+0) | 2/2 |
+| e37_r37_10 | edge:ru-RU-SvetlanaNeural | 4.07 | 1.0 | 1 (+0) | 2/2 |
+| e37_r37_11 | edge:ru-RU-SvetlanaNeural | 3.83 | 0.545 | 0 (+0) | 1/2 |
+| e37_r37_13 | edge:ru-RU-SvetlanaNeural | 3.75 | 0.667 | 0 (+0) | 1/2 |
+| e37_r37_15 | edge:ru-RU-SvetlanaNeural | 3.8 | 1.0 | 0 (+0) | 1/1 |
+| e37_r37_16 | edge:ru-RU-SvetlanaNeural | 3.83 | 0.6 | 2 (+0) | 1/2 |
+| e37_r37_17 | edge:ru-RU-SvetlanaNeural | 3.59 | 0.0 | 0 (+0) | 0/0 |
+| e37_r37_18 | edge:ru-RU-SvetlanaNeural | 3.68 | 1.0 | 0 (+0) | 1/2 |
+| e37_r37_19 | edge:ru-RU-SvetlanaNeural | 3.92 | 0.333 | 0 (+0) | 1/2 |
+| e37_r37_2 | edge:ru-RU-SvetlanaNeural | 3.76 | 1.0 | 1 (+0) | 0/2 |
+| e37_r37_20 | edge:ru-RU-SvetlanaNeural | 3.91 | 0.75 | 0 (+0) | 2/2 |
+| e37_r37_21 | edge:ru-RU-SvetlanaNeural | 3.82 | 1.0 | 1 (+0) | 1/2 |
+| e37_r37_22 | edge:ru-RU-SvetlanaNeural | 3.66 | 1.0 | 0 (+0) | 1/1 |
+| e37_r37_23 | edge:ru-RU-SvetlanaNeural | 3.89 | 1.0 | 2 (+0) | 2/2 |
+| e37_r37_24 | edge:ru-RU-SvetlanaNeural | 3.76 | 1.0 | 0 (+0) | 1/1 |
+| e37_r37_25 | edge:ru-RU-SvetlanaNeural | 3.8 | 1.0 | 0 (+1) | 1/1 |
+| e37_r37_26 | edge:ru-RU-SvetlanaNeural | 3.78 | 1.0 | 0 (+0) | 1/1 |
+| e37_r37_3 | edge:ru-RU-SvetlanaNeural | 4.08 | 1.0 | 0 (+0) | 1/2 |
+| e37_r37_4 | edge:ru-RU-SvetlanaNeural | 3.91 | 1.0 | 0 (+0) | 0/1 |
+| e37_r37_5 | edge:ru-RU-SvetlanaNeural | 3.89 | 0.6 | 0 (+0) | 1/2 |
+| e37_r37_6 | edge:ru-RU-SvetlanaNeural | 3.95 | 1.0 | 0 (+0) | 0/1 |
+| e37_r37_7 | edge:ru-RU-SvetlanaNeural | 3.45 | 1.0 | 0 (+0) | 1/1 |
+| e37_r37_8 | edge:ru-RU-SvetlanaNeural | 3.7 | 0.75 | 0 (+0) | 1/1 |
+| e37_r37_9 | edge:ru-RU-SvetlanaNeural | 3.78 | 0.833 | 0 (+0) | 1/2 |
 | f2_albina_slow | silero_cis:ru_albina@slow | 3.2 | 0.935 | 0 (+1) | 4/4 |
 | f2_albina_slow_soft | silero_cis:ru_albina@slow,soft | 2.88 | 0.935 | 1 (+1) | 4/4 |
 | f2_albina_soft | silero_cis:ru_albina@soft | 3.33 | 0.935 | 0 (+1) | 4/4 |
@@ -573,6 +606,18 @@
 | p36_7 | Mac Milena | 2.27 | 1.0 | 0 (+0) | 2/2 |
 | p36_8 | Mac Milena | 2.72 | 1.0 | 1 (+0) | 2/2 |
 | p36_9 | Mac Milena | 2.65 | 0.727 | 0 (+0) | 2/2 |
+| p37_1 | Mac Milena | 2.65 | 1.0 | 0 (+0) | 2/2 |
+| p37_10 | Mac Milena | 2.89 | 0.833 | 1 (+0) | 2/2 |
+| p37_11 | Mac Milena | 2.2 | 1.0 | 0 (+0) | 2/2 |
+| p37_12 | Mac Milena | 2.35 | 1.0 | 0 (+0) | 1/2 |
+| p37_2 | Mac Milena | 2.22 | 1.0 | 0 (+0) | 2/2 |
+| p37_3 | Mac Milena | 2.74 | 1.0 | 0 (+0) | 1/2 |
+| p37_4 | Mac Milena | 2.83 | 1.0 | 0 (+0) | 2/2 |
+| p37_5 | Mac Milena | 2.37 | 0.933 | 0 (+0) | 2/2 |
+| p37_6 | Mac Milena | 2.04 | 1.0 | 0 (+0) | 0/1 |
+| p37_7 | Mac Milena | 2.4 | 1.0 | 0 (+0) | 1/1 |
+| p37_8 | Mac Milena | 2.61 | 0.833 | 0 (+0) | 1/3 |
+| p37_9 | Mac Milena | 2.58 | 1.0 | 0 (+0) | 2/2 |
 | pq_0h | Альбина, вопрос (подъём: high) | 3.87 | 1.0 | 0 (+0) | 0/1 |
 | pq_0n | Альбина, вопрос (подъём: нет) | 3.91 | 1.0 | 0 (+0) | 0/1 |
 | pq_0x | Альбина, вопрос (подъём: x-high) | 3.78 | 0.75 | 0 (+0) | 0/1 |
@@ -821,6 +866,32 @@
 | r36_8 | Mac Milena | 2.82 | 0.857 | 0 (+0) | 2/2 |
 | r36_9 | Mac Milena | 2.64 | 1.0 | 1 (+1) | 1/1 |
 | r37 | silero_random:37 | 1.46 | 0.915 | 4 (+1) | 4/4 |
+| r37_1 | Mac Milena | 2.78 | 0.5 | 0 (+0) | 0/2 |
+| r37_10 | Mac Milena | 3.5 | 1.0 | 0 (+0) | 2/2 |
+| r37_11 | Mac Milena | 2.6 | 0.545 | 0 (+0) | 0/2 |
+| r37_12 | Mac Milena | 3.09 | 1.0 | 0 (+0) | 0/2 |
+| r37_13 | Mac Milena | 2.59 | 0.667 | 0 (+0) | 2/2 |
+| r37_14 | Mac Milena | 2.83 | 0.833 | 0 (+0) | 1/1 |
+| r37_15 | Mac Milena | 2.53 | 1.0 | 0 (+0) | 1/1 |
+| r37_16 | Mac Milena | 3.06 | 0.727 | 0 (+0) | 1/2 |
+| r37_17 | Mac Milena | 2.17 | 0.0 | 0 (+0) | 0/0 |
+| r37_18 | Mac Milena | 2.48 | 1.0 | 0 (+0) | 1/2 |
+| r37_19 | Mac Milena | 2.52 | 0.333 | 0 (+0) | 0/2 |
+| r37_2 | Mac Milena | 2.5 | 1.0 | 0 (+0) | 2/2 |
+| r37_20 | Mac Milena | 2.55 | 1.0 | 0 (+0) | 1/2 |
+| r37_21 | Mac Milena | 2.74 | 1.0 | 0 (+0) | 1/2 |
+| r37_22 | Mac Milena | 2.76 | 0.667 | 0 (+0) | 1/1 |
+| r37_23 | Mac Milena | 2.99 | 1.0 | 0 (+0) | 2/2 |
+| r37_24 | Mac Milena | 2.65 | 0.667 | 0 (+0) | 0/1 |
+| r37_25 | Mac Milena | 2.21 | 0.833 | 0 (+0) | 0/1 |
+| r37_26 | Mac Milena | 2.67 | 1.0 | 0 (+1) | 1/1 |
+| r37_3 | Mac Milena | 2.85 | 0.667 | 0 (+0) | 1/2 |
+| r37_4 | Mac Milena | 2.66 | 1.0 | 0 (+0) | 0/1 |
+| r37_5 | Mac Milena | 2.52 | 0.727 | 0 (+0) | 0/2 |
+| r37_6 | Mac Milena | 2.83 | 1.0 | 0 (+0) | 0/1 |
+| r37_7 | Mac Milena | 2.04 | 0.75 | 0 (+0) | 1/1 |
+| r37_8 | Mac Milena | 2.32 | 0.75 | 0 (+0) | 0/1 |
+| r37_9 | Mac Milena | 2.54 | 1.0 | 0 (+0) | 1/2 |
 | r42 | silero_random:42 | 1.62 | 1.0 | 1 (+0) | 4/4 |
 | r58 | silero_random:58 | 1.41 | 0.603 | 6 (+0) | 4/4 |
 | r71 | silero_random:71 | 1.41 | 0.967 | 1 (+0) | 3/4 |
