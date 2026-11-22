@@ -1,37 +1,34 @@
 # Скан: search-month:marble vs marble 3d
-Проверено: 2026-11-21 06:54 UTC · HTTP 200 · найдено 29
+Проверено: 2026-11-22 06:54 UTC · HTTP 200 · найдено 26
 Ссылка: https://www.youtube.com/results?search_query=marble%20vs%20marble%203d&sp=EgIIBA%3D%3D
 
 | # | просм. | возраст | в сутки | канал (подписчики) | длит. | название |
 |---|---|---|---|---|---|---|
-| 1 | 2150 | 4 ч | 11720 | 3D Creator (@3DCreatorOfficial, 200) | ? | 3D Printed Spiral Marble Run 🌀 Satisfying & Mesmerizing! |
-| 2 | 17131 | 5 дн | 3470 | SimOrbit 3D (@SimOrbit3D, 3450) | ? | 300 marbles VS marble funnel 🌀 pick your color #satisfying #simulation #asmr |
-| 3 | 54000 | ? | ? | Gravity Prints (@gravityprints3d, 151) | ? | 360 Glass Marbles vs a Giant Grid Infill Floor in White PLA |
-| 4 | 3400 | ? | ? | Gravity Prints (@gravityprints3d, 151) | ? | 54 Glass Marbles vs a Giant Grid Infill Floor in Blue ABS-GF |
-| 5 | 80196 | 26 дн | 3099 | YE Studio 3D Print (@yestudio3dprint, 38800) | ? | I 3D Printed a Giant's grove marble run 🌳🔮 |
-| 6 | 7810 | 20 ч | 9421 | MoreBalls Races (@MoreBallsRaces, 5820) | 3:36 | Lights Off Marble Race / #marbles #marblerace #asmr #physics #3danimation #simulation |
-| 7 | 32 | 8 дн | 4 | Memphys Labs (@MemphysLabs, 3) | 15:56 | 3D Marble Race: Pick Your Marble! 20 Marbles, 10 Floors Down |
-| 8 | 6617 | 21 дн | 317 | David Baller (@David.Baller, 6070) | 28:01 | 3D Marble Tennis Championship |
-| 9 | 12 | ? | ? | Stone⧫Wood (@EdP_StoneWood, 4) | ? | Premium KELEIDI Brand PLA 3D Printing Marble Consumables, High-Speed 1.75mm, 1 kg (2.2 lb) |
-| 10 | 5874 | 33 ч | 4285 | Gravity Prints (@gravityprints3d, 151) | ? | 220 Metal Balls vs a Giant Grid Infill Floor in Sandstone PLA |
-| 11 | 32000 | ? | ? | Gravity Prints (@gravityprints3d, 151) | ? | 360 Glass Marbles vs a Giant Grid Infill Floor in Lavender PLA |
-| 12 | ? | ? | ? | Maker Explained – 3D Printing & DIY (@MakerExplained, ?) | ? | Grid vs Gyroid Infill: Which One Should You Use? |
-| 13 | 29000 | ? | ? | Marble Mannequin (@MarbleMannequin, ?) | ? | Will it fit? #3danimation #woodworking #satisfying  #blender3d |
+| 1 | 29902 | 4 дн | 6767 | Blendify (@Blendify0, 48200) | ? | Verity vs Marbles 🎱😴 |
+| 2 | 16807 | 17 ч | 23877 | 3Ds Marble Show (@3DsMarbleShow, 10100) | ? | can these eyes see? #satisfying #3d #simulation #asmr #marblerace #marblerun #3danimations |
+| 3 | 347 | 28 ч | 298 | Gravity Prints (@gravityprints3d, 165) | ? | 220 Glass Marbles vs a Giant Grid Infill Floor in Translucent Gray PETG |
+| 4 | 92652 | 31 ч | 71243 | SimOrbit 3D (@SimOrbit3D, 4080) | ? | Glass Marbles Magnet #shorts #3danimation |
+| 5 | 83000 | ? | ? | YE Studio 3D Print (@yestudio3dprint, 39400) | ? | I 3D Printed a Giant's grove marble run 🌳🔮 |
+| 6 | 12508 | 24 ч | 12508 | MoreBalls Races (@MoreBallsRaces, 5870) | 3:36 | Lights Off Marble Race / #marbles #marblerace #asmr #physics #3danimation #simulation |
+| 7 | 11247 | 6 дн | 1742 | Mash (@Mash-NL, 539) | ? | Marble Race Part 7: Pick your marble / 3D Blender Animation #oddlysatisfying #blender3d |
+| 8 | 7837 | 8 дн | 1034 | Mash (@Mash-NL, 539) | ? | Marble Race Part 5: Pick your marble / 3D Blender Animation #oddlysatisfying #blender3d |
+| 9 | 12611 | 8 дн | 1510 | Mash (@Mash-NL, 539) | ? | Marble Race Part 4: Pick your marble / 3D Blender Animation #oddlysatisfying #blender3d |
+| 10 | 680 | 46 ч | 355 | Marbles Everyday (@MarblesEverydayHng, 14) | ? | Will It Make It? 🌿 Marble vs Jungle Ruins Traps #shorts |
+| 11 | 1100 | ? | ? | Satisfying 3D Lab (@TheSatisfying3DLab, ?) | ? | 45 Marbles vs Peg Board 😌 #satisfying #marblerun #3danimation #shorts |
+| 12 | 1000 | ? | ? | Marblaze (@MarblazeRaces, ?) | ? | Which Country Wins? 🏆 3D Marble Slide Race #shorts |
+| 13 | 772 | ? | ? | LoopLab 3D (@3DlooplabAnimated, ?) | ? | The Impossible Final Marble Run! 🌀 #Shorts |
 | 14 | 1200 | ? | ? | POLYVERSE (@POLYVERSE-i3i, ?) | ? | Mesmerizing Marble Run 🤯 / Satisfying 3D Physics |
-| 15 | 5 | ? | ? | Maker Explained – 3D Printing & DIY (@MakerExplained, ?) | ? | Walls or Infill: What Makes a 3D Print Stronger? |
-| 16 | 59 | ? | ? | ? (@?, ?) | ? | One Marble vs 100 Dominoes! 😱 Perfect Chain Reaction #Shorts |
-| 17 | 1000 | ? | ? | ? (@?, ?) | ? | 50 neon marbles. Spinning glass turbines. A maze of obstacles. Who will take the trophy? 🏆 |
-| 18 | 1200 | ? | ? | ? (@?, ?) | ? | Endless Marble Drop: Red vs Blue 3D 🔴🔵 works as a clear, looping hook. |
-| 19 | 1300 | ? | ? | ? (@?, ?) | ? | Which marble survives the longest? 🔵🟢🟠 |
-| 20 | 43000 | ? | ? | ? (@?, ?) | ? | 5 Satisfying 3D Prints You NEED to SEE (ASMR No Music) |
-| 21 | 576 | ? | ? | ? (@?, ?) | ? | Chrome Ball vs Star Mold: 1 Bar vs 2 Bar vs 3 Bar |
-| 22 | 197 | ? | ? | ? (@?, ?) | ? | Carbon or 3D Print 🤔? |
-| 23 | 284 | ? | ? | ? (@?, ?) | ? | 1,100 Marbles vs One Tiny Funnel |
-| 24 | 3500 | ? | ? | ? (@?, ?) | ? | Is Multicolor 3D Printing Worth the Purge Waste? |
-| 25 | 1100 | ? | ? | ? (@?, ?) | ? | 820 Marbles Rained Down… Can They Fill Every Hole? 🌧️ #satisfying #oddlysatisfying #asmr |
-| 26 | 248 | ? | ? | ? (@?, ?) | ? | 64 Smiling Ceramic Face Balls Cascading Down a Pastel Waffle Grid! #marblerace #shorts |
-| 27 | 271 | 4 ч | 1666 | ? (@?, 151) | ? | 220 Glass Marbles vs a Giant Grid Infill Floor in Translucent Gray PETG |
-| 28 | 1100 | ? | ? | ? (@?, ?) | ? | .Marbles Drop in Waves! Red vs Blue 3D Physics ⚽ emphasizes the color battle and the physi |
-| 29 | 53070 | ? | ? | Balls Race 3D (@BallsRace3D, ?) | 28:05 | Countries Marble Race – Season 86 / Back to the Classic! 🌎🏁 |
+| 15 | 257 | ? | ? | Marbles Are Fun (@MarblesAreFun, ?) | ? | Only 1 Marble Survives This 😳👇 |
+| 16 | 2600 | ? | ? | ? (@?, ?) | ? | One Green Marble Unleashes a Marble Flood |
+| 17 | 10000 | ? | ? | ? (@?, ?) | ? | Satisfying Marble Loop 🔁 Steel Balls & Wooden Cradles / Watch It 10 Times |
+| 18 | 1200 | ? | ? | ? (@?, ?) | ? | 1 Marble vs 10,000 Marbles |
+| 19 | 2600 | ? | ? | ? (@?, ?) | ? | 1 vs 5 Springs… Can the Marble Make It? 🤯 #Shorts |
+| 20 | 1200 | ? | ? | ? (@?, ?) | ? | Endless Marble Drop: Red vs Blue 3D 🔴🔵 works as a clear, looping hook. |
+| 21 | 2300 | ? | ? | ? (@?, ?) | ? | Solving Maze with triple color marble and the secret behind |
+| 22 | 263 | ? | ? | ? (@?, ?) | ? | 18 Rainbow Marbles Spiral Into a Glass Tube #satisfying #shorts |
+| 23 | 837 | ? | ? | ? (@?, ?) | ? | A 10 kg Steel Ball Dropped on 1,300 Marbles: 0.5 m to 32 m |
+| 24 | 2100 | ? | ? | ? (@?, ?) | ? | Tiny marbles vs a giant ball 🔴 |
+| 25 | 47 | ? | ? | ? (@?, ?) | ? | Can Nvidia Beat Apple, Microsoft, Google, Amazon & Meta? Marble Race |
+| 26 | 2200 | ? | ? | ? (@?, ?) | ? | 1 Giant vs 25 Marbles: Can They Break Glass 7x Thicker? |
 
-Хэштеги у первых 30: #asmr ×3, #satisfying ×3, #simulation ×2, #3danimation ×2, #marblerace ×2, #shorts ×2, #marbles ×1, #physics ×1, #blender3d ×1, #woodworking ×1, #cgi ×1, #oddlysatisfying ×1
+Хэштеги у первых 30: #shorts ×7, #satisfying ×3, #3danimation ×3, #blender3d ×3, #oddlysatisfying ×3, #asmr ×2, #marblerace ×2, #marblerun ×2, #simulation ×2, #3d ×1, #3danimations ×1, #marbles ×1, #physics ×1

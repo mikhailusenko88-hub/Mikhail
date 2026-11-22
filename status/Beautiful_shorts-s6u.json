@@ -6,33 +6,39 @@
  "description": "",
  "header": [
   "235 подписчиков",
-  "146 видео"
+  "147 видео"
  ],
  "alerts": [],
  "images": {
   "avatar": "https://yt3.googleusercontent.com/3SkKQKzbtqBO-oV1lqFtoaDen4tgg8hlao1TVZcMdY9LUtqppGJBftTFyKYp3H1P5pTekG9tog=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/6_IYCMEMtoe0Q__Y2_zj7OKcLMKAO9UGQ8aCjGFh5-3XlnsPQBUApKWlK2iCM9InaG-mlW-rq7A=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-21 19:22 UTC",
+ "checked": "2026-11-22 06:54 UTC",
  "shorts_status": 200,
  "shorts": [
   {
+   "id": "NQaXjwgZuUk",
+   "title": "1,932 Balls vs a Smaller Box — Will They Fit? 😳 Satisfying 3D Simulation #shorts #asmr",
+   "views": "1,1 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"1,932 Balls vs a Smaller Box — Will They Fit? 😳 Satisfying 3D Simulation #shorts #asmr, 1,1 тысячи просмотров\""
+  },
+  {
    "id": "d12Mk5yTGGo",
    "title": "3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr",
-   "views": "1,4 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr, 1,4 тысячи просмотров\""
+   "views": "1,8 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr, 1,8 тысячи просмотров\""
   },
   {
    "id": "EjiTsX0dWHQ",
    "title": "1,932 Balls — How Many Land in the Box? 😳 Satisfying 3D Simulation #shorts #asmr",
-   "views": "4,8 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"1,932 Balls — How Many Land in the Box? 😳 Satisfying 3D Simulation #shorts #asmr, 4,8 тысячи просмотров\""
+   "views": "5,1 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"1,932 Balls — How Many Land in the Box? 😳 Satisfying 3D Simulation #shorts #asmr, 5,1 тысячи просмотров\""
   },
   {
    "id": "7mG_xtPN52w",
    "title": "1,932 Balls Pour Into a Glass Box! 🔊 Satisfying 3D Simulation #shorts #asmr",
-   "views": "1,9 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"1,932 Balls Pour Into a Glass Box! 🔊 Satisfying 3D Simulation #shorts #asmr, 1,9 тысячи просмотров\""
+   "views": "2,2 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"1,932 Balls Pour Into a Glass Box! 🔊 Satisfying 3D Simulation #shorts #asmr, 2,2 тысячи просмотров\""
   },
   {
    "id": "5vVhZ-Aus_A",
@@ -297,63 +303,64 @@
    "title": "Cat bodybuilder",
    "views": "17 просмотров",
    "a11y": "Воспроизвести короткое видео \"Cat bodybuilder, 17 просмотров\""
-  },
-  {
-   "id": "JyJKmi3Qxps",
-   "title": "Dog and shadow",
-   "views": "28 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Dog and shadow, 28 просмотров\""
   }
  ],
  "rss_status": 200,
  "rss": [
   {
+   "id": "NQaXjwgZuUk",
+   "published": "2026-11-21T20:22:12+00:00",
+   "title": "1,932 Balls vs a Smaller Box — Will They Fit? 😳 Satisfying 3D Simulation #shorts #asmr",
+   "views": 1198,
+   "desc": "Part 2: same bucket, same 1,932 balls — but the box is smaller. Will they all fit? Watch the counter 👀 Comment your guess 👇\nEvery sound is a real collision from the simulation 🔊\n\n#asmr #satisfying #oddlysatisfying #3dsimulation #blender #physics"
+  },
+  {
    "id": "d12Mk5yTGGo",
    "published": "2026-11-20T18:12:31+00:00",
    "title": "3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr",
-   "views": 1413,
+   "views": 1887,
    "desc": "A bucket of 3,294 balls vs a glass cat 🐱 Guess how many land inside before the counter stops — write your number 👇\nEvery sound is a real collision from the simulation 🔊\n\n#asmr #satisfying #oddlysatisfying #3dsimulation #blender #physics #satisfyingsounds #cat"
   },
   {
    "id": "EjiTsX0dWHQ",
    "published": "2026-11-19T14:11:05+00:00",
    "title": "1,932 Balls — How Many Land in the Box? 😳 Satisfying 3D Simulation #shorts #asmr",
-   "views": 4853,
+   "views": 5091,
    "desc": "1,932 glossy balls pour from a bucket into a glass box. Watch the counter — how many make it in? 👀\nReal physics (Blender + Bullet), every sound comes from a real impact.\n#satisfying #asmr #3danimation #simulation #physics #blender"
   },
   {
    "id": "7mG_xtPN52w",
    "published": "2026-11-18T19:19:16+00:00",
    "title": "1,932 Balls Pour Into a Glass Box! 🔊 Satisfying 3D Simulation #shorts #asmr",
-   "views": 1963,
+   "views": 2186,
    "desc": "1,932 glossy balls pour from a bucket into a glass box. Real physics, and every sound is a real collision from the simulation 🔊 Headphones on 🎧\n\nGlass, balls or floor — which sound is the most satisfying? 👇\n\n#asmr #satisfying #oddlysatisfying #3dsimulation #blender #physics #asmrsounds #satisfyingsounds"
   },
   {
    "id": "5vVhZ-Aus_A",
    "published": "2026-11-17T22:08:40+00:00",
    "title": "Every bounce = +1 ball 🐻 Can they fill the bear? 🔊 #satisfying #physics #simulation",
-   "views": 1259,
+   "views": 1265,
    "desc": "Every note = new balls 🎵 Turn the sound ON 🔊 At 100% something happens 😳\nWhich animal should we fill next? 👇"
   },
   {
    "id": "7h5ICq0Civ8",
    "published": "2026-11-16T19:02:11+00:00",
    "title": "Every bounce = +1 ball 🐸 Can they fill the frog? #satisfying #physics #simulation",
-   "views": 1678,
+   "views": 1675,
    "desc": "Every bounce = a new ball. At 100% something happens 😳\nWhich animal should we fill next? 👇"
   },
   {
    "id": "4ejtez9n18c",
    "published": "2026-11-15T21:20:49+00:00",
    "title": "Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation",
-   "views": 2762,
+   "views": 2764,
    "desc": "Every bounce = a new ball. At 100% something happens 😳\nWhich animal should we fill next? 👇"
   },
   {
    "id": "a9xDYsPrIa4",
    "published": "2026-11-15T17:03:00+00:00",
    "title": "Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts",
-   "views": 3284,
+   "views": 3286,
    "desc": "1 ball. Every bounce = a new ball. Can they fill every corner of the cat — even the ears? 👀 Wait for 100%… something happens 😳\nWhich animal should we fill next? Comment below! 👇\n\n#satisfying #oddlysatisfying #physics #simulation #asmr #cat #shorts"
   },
   {
@@ -395,7 +402,7 @@
    "id": "98lnRofeeH8",
    "published": "2026-11-08T12:43:05+00:00",
    "title": "Every bounce = BIGGER ball 🎵 …but the music speeds up 😱 #shorts",
-   "views": 2480,
+   "views": 2482,
    "desc": "Every bounce makes the ball bigger — and plays the next note of a famous song. 5 spinning rings, the last gap is almost too small… Did you recognize the song? Name it in the comments! 🎵👇\n\n#satisfying #oddlysatisfying #physics #simulation #asmr #music #shorts"
   },
   {
@@ -404,13 +411,6 @@
    "title": "Spiked Bat vs Katana ⚔️ Who wins? #shorts",
    "views": 1133,
    "desc": "Every hit the bat grows a new SPIKE… every hit the katana gets more CRIT chance. 8 lead changes — who did you pick? 👇 Idea by @Minebloxatoring\n\n#satisfying #simulation #battle #weapons #whowins #shorts"
-  },
-  {
-   "id": "wrH8FbgHvC0",
-   "published": "2026-11-06T12:17:07+00:00",
-   "title": "Scythe vs Dagger 💀 Who wins? #shorts",
-   "views": 2234,
-   "desc": "SCYTHE gets a BIGGER BLADE with every hit. DAGGER gets FASTER with every hit. Who wins? 😱\nIdea by @Minebloxatoring — thanks again!\nComment who should fight NEXT 👇\n#shorts #weaponballs #scythe #dagger #battle #satisfying"
   }
  ],
  "rss_tries": 1
