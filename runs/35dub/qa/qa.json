@@ -1,0 +1,248 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 220.8,
+  "dur": 334.78,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 334.28,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 334,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 176.5
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.2,
+  "lra": 4.4,
+  "peak_db": -1.2,
+  "silences": []
+ },
+ "words_second_pass": 12,
+ "words": {
+  "pct": 97.7,
+  "lines": 92,
+  "by_hero": {
+   "Рон": 99.0,
+   "Филя": 96.9,
+   "Топа": 100.0,
+   "Барсик": 96.9,
+   "Рассказчик": 100.0,
+   "Пик": 93.3
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 220.0,
+   "range_st": 5.2,
+   "hnr": 13.3,
+   "jitter": 2.2,
+   "shimmer": 9.3,
+   "F1": 470.0,
+   "F2": 2214.0,
+   "F3": 3275.0,
+   "bright": -12.3,
+   "air": -13.8,
+   "cog": 782.0,
+   "rate": 4.3,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 96.9
+  },
+  "Пик": {
+   "f0": 374.0,
+   "range_st": 7.1,
+   "hnr": 21.2,
+   "jitter": 0.8,
+   "shimmer": 5.0,
+   "F1": 471.0,
+   "F2": 1775.0,
+   "F3": 3376.0,
+   "bright": -18.4,
+   "air": -21.4,
+   "cog": 560.0,
+   "rate": 5.5,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 93.3
+  },
+  "Рассказчик": {
+   "f0": 166.0,
+   "range_st": 6.5,
+   "hnr": 8.7,
+   "jitter": 3.0,
+   "shimmer": 9.4,
+   "F1": 505.5,
+   "F2": 1815.5,
+   "F3": 3242.5,
+   "bright": -13.6,
+   "air": -12.5,
+   "cog": 867.0,
+   "rate": 3.5,
+   "voiced": 0.5,
+   "n": 2,
+   "age": "взрослый",
+   "pleasant": 3.3,
+   "why": [
+    "шумный, сиплый тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 297.0,
+   "range_st": 6.8,
+   "hnr": 22.1,
+   "jitter": 0.9,
+   "shimmer": 5.3,
+   "F1": 379.0,
+   "F2": 1836.0,
+   "F3": 3554.0,
+   "bright": -20.2,
+   "air": -26.6,
+   "cog": 433.0,
+   "rate": 4.1,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 99.0
+  },
+  "Топа": {
+   "f0": 155.0,
+   "range_st": 5.2,
+   "hnr": 12.7,
+   "jitter": 2.6,
+   "shimmer": 10.0,
+   "F1": 457.0,
+   "F2": 1996.0,
+   "F3": 3375.0,
+   "bright": -18.1,
+   "air": -25.9,
+   "cog": 494.0,
+   "rate": 3.6,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 4.3,
+   "why": [
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Филя": {
+   "f0": 286.0,
+   "range_st": 5.5,
+   "hnr": 15.4,
+   "jitter": 1.7,
+   "shimmer": 8.2,
+   "F1": 529.0,
+   "F2": 2153.0,
+   "F3": 3267.0,
+   "bright": -13.9,
+   "air": -21.3,
+   "cog": 697.0,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 96.9
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 37,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 137,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 2120,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 334.285,
+   "video": "video/Кот Барсик - 35. Росток под снегом!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "e717209",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 49.2,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 9,
+    "e": 125,
+    "b": 3,
+    "w": 1,
+    "n": 8350,
+    "at": 8350,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 47,
+   "ttsFail": 0,
+   "voice": 56,
+   "voiceFail": 0,
+   "voiceSec": 29,
+   "ttsSec": 33,
+   "frames": 8358,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -25.7,
+   "lufs_out": -15.2,
+   "gain_db": 11.2
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 35,
+   "title": "Росток под снегом?!",
+   "scenes": 8,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}
