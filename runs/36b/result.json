@@ -1,0 +1,71 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 36,
+  "title": "Куда ушёл снеговик?!",
+  "scenes": 8,
+  "errors": [],
+  "unknownWords": [],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 36. Куда ушёл снеговик!",
+  "path": "video/Кот Барсик - 36. Куда ушёл снеговик!.mp4",
+  "frames": 7956,
+  "sec": 1096,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 318.234,
+  "video": "video/Кот Барсик - 36. Куда ушёл снеговик!.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "0032189",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 43.5,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 9,
+   "e": 124,
+   "b": 4,
+   "w": 1,
+   "n": 7950,
+   "at": 7950,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 45,
+  "ttsFail": 0,
+  "voice": 54,
+  "voiceFail": 0,
+  "voiceSec": 25,
+  "ttsSec": 36,
+  "frames": 8516,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -25.3,
+  "lufs_out": -15.1,
+  "gain_db": 10.8
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 1677,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
