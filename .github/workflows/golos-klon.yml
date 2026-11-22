@@ -1,0 +1,47 @@
+name: golos-klon
+on:
+  push:
+    branches: [golos-en]
+    paths: ['clone.json', 'en_clone.py', 'request-klon.txt', 'refs/**', '.github/workflows/golos-klon.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: golos-klon
+  cancel-in-progress: false
+jobs:
+  klon:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      HF_HUB_DISABLE_SYMLINKS_WARNING: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+          key: golos-klon-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q chatterbox-tts --extra-index-url https://download.pytorch.org/whl/cpu
+          pip install -q "kokoro>=0.9.4" speechbrain openai-whisper praat-parselmouth soundfile edge-tts --extra-index-url https://download.pytorch.org/whl/cpu
+          python -m spacy download en_core_web_sm -q || true
+          python -c "import torch, transformers, numpy; print('torch', torch.__version__, 'transformers', transformers.__version__, 'numpy', numpy.__version__)"
+      - name: Clone voices
+        run: python en_clone.py
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name golos-klon
+          git config user.email golos-klon@users.noreply.github.com
+          git add -A out_klon
+          git commit -m "golos-klon result" || echo nothing
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
