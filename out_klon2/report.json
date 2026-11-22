@@ -1,0 +1,146 @@
+{
+ "ref_f0": {
+  "barsik": 224.4,
+  "pik": 375.2,
+  "ron": 288.7,
+  "filya": 294.9,
+  "topa": 157.5
+ },
+ "baseline": {
+  "barsik": {
+   "own": 0.879,
+   "nearest": "barsik",
+   "others": 0.3
+  },
+  "pik": {
+   "own": 0.867,
+   "nearest": "pik",
+   "others": 0.468
+  },
+  "ron": {
+   "own": 0.918,
+   "nearest": "ron",
+   "others": 0.707
+  },
+  "filya": {
+   "own": 0.921,
+   "nearest": "filya",
+   "others": 0.731
+  },
+  "topa": {
+   "own": 0.8,
+   "nearest": "topa",
+   "others": 0.257
+  }
+ },
+ "items": [
+  {
+   "key": "ron_es",
+   "lang": "es",
+   "method": "B",
+   "gen_sec": 36.1,
+   "src": "kokoro:ef_dora",
+   "f0_raw": 255.5,
+   "f0": 290.0,
+   "shift_st": 2.1,
+   "range_st": 5.7,
+   "hnr": 19.2,
+   "sim_own": 0.869,
+   "nearest": "ron",
+   "sim_other": 0.683,
+   "heard": "Miren, la flecha apunta para allá otra vez. Ahí me da vuestras macabezas, pero la flecha no le importa.",
+   "clear": 76.2,
+   "sec": 7.1
+  },
+  {
+   "key": "ron_pt",
+   "lang": "pt",
+   "method": "B",
+   "gen_sec": 26.3,
+   "src": "kokoro:pf_dora",
+   "f0_raw": 249.7,
+   "f0": 288.9,
+   "shift_st": 2.5,
+   "range_st": 6.3,
+   "hnr": 18.8,
+   "sim_own": 0.863,
+   "nearest": "ron",
+   "sim_other": 0.658,
+   "heard": "Olhem a seta ponta para lá de novo. Ai, minha cabeça está girando, mas a seta nem liga.",
+   "clear": 94.4,
+   "sec": 6.5
+  },
+  {
+   "key": "filya_es",
+   "lang": "es",
+   "method": "B",
+   "gen_sec": 22.9,
+   "src": "kokoro:ef_dora",
+   "f0_raw": 276.6,
+   "f0": 276.3,
+   "shift_st": 0.0,
+   "range_st": 7.4,
+   "hnr": 14.5,
+   "sim_own": 0.726,
+   "nearest": "filya",
+   "sim_other": 0.542,
+   "heard": "Y si nos llevamos la galleta, miren la flecha no se movió.",
+   "clear": 100.0,
+   "sec": 5.1
+  },
+  {
+   "key": "filya_pt",
+   "lang": "pt",
+   "method": "B",
+   "gen_sec": 23.0,
+   "src": "kokoro:pf_dora",
+   "f0_raw": 276.0,
+   "f0": 275.5,
+   "shift_st": 0.0,
+   "range_st": 7.6,
+   "hnr": 12.3,
+   "sim_own": 0.829,
+   "nearest": "filya",
+   "sim_other": 0.629,
+   "heard": "E se a gente levar o biscoito embora? Olhem, a seta não se mexeu.",
+   "clear": 100.0,
+   "sec": 5.4
+  },
+  {
+   "key": "topa_es",
+   "lang": "es",
+   "method": "B",
+   "gen_sec": 26.2,
+   "src": "kokoro:em_alex",
+   "f0_raw": 155.8,
+   "f0": 155.7,
+   "shift_st": 0.0,
+   "range_st": 8.1,
+   "hnr": 9.3,
+   "sim_own": 0.719,
+   "nearest": "topa",
+   "sim_other": 0.152,
+   "heard": "es como si la flecha supiera a donde mirar. Así que no podemos engañar a la flecha.",
+   "clear": 93.8,
+   "sec": 6.5
+  },
+  {
+   "key": "topa_pt",
+   "lang": "pt",
+   "method": "B",
+   "gen_sec": 25.3,
+   "src": "kokoro:pm_alex",
+   "f0_raw": 151.2,
+   "f0": 151.7,
+   "shift_st": 0.0,
+   "range_st": 6.4,
+   "hnr": 9.8,
+   "sim_own": 0.677,
+   "nearest": "topa",
+   "sim_other": 0.152,
+   "heard": "É como se a seta soubesse para onde olhar. Então não dá para enganar a seta.",
+   "clear": 100.0,
+   "sec": 6.1
+  }
+ ]
+}
