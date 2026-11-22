@@ -908,7 +908,7 @@ MK.validate = function (ep, lib) {
 
 // Еда на кухне лежит на столе (x стола на сцене)
 const FOOD = new Set(['cake', 'pie', 'cup', 'milk', 'cookie', 'apple', 'pear', 'banana', 'cheese', 'candy', 'honey', 'icecream', 'lollipop', 'watermelon', 'carrot', 'fish', 'egg', 'basket', 'sandwich', 'pizza', 'strawberry', 'grapes', 'cherry', 'jar', 'teapot', 'plate', 'pot', 'bowl']);
-const FLOAT_IN = new Set(['pinecone', 'boat', 'leaf', 'feather', 'acorn']);   // 21.11.2026: кладут на стол, где миска с водой, — плавает в миске
+const FLOAT_IN = new Set(['pinecone', 'boat', 'leaf', 'feather', 'acorn', 'snowball']);   // 21.11.2026: кладут на стол, где миска с водой, — плавает в миске; 22.11: снежок — лежит в пустой миске (серия 36: снег в тепле становится водой)
 const TABLE_X = { kitchen: .855 };
 const NEAR_ACT = new Set(['read', 'peer', 'write', 'paint', 'play', 'drink', 'sniff']), KEY_PROP = new Set(['map', 'letter', 'compass', 'key', 'book', 'magnifier', 'crown', 'gift', 'mirror', 'jar', 'feather', 'flower', 'acorn', 'butterfly']);
 const BIGACT = new Set(['fall', 'jump', 'dance', 'spin', 'somersault', 'roll', 'run', 'crawl', 'sneak', 'stomp', 'hug', 'give', 'kick', 'throw', 'take', 'drop']);
