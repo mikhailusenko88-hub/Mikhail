@@ -40,6 +40,35 @@ def normalize(src, dst, target=-15.0):
     return I, lufs(dst)
 
 
+VOW = "aeiouyáéíóúàâêôãõüöäåæøœіыэяюёаеиоу"
+
+
+def syllables(text):
+    """Грубо: группы гласных (для сравнения темпа языков, не для точного счёта)."""
+    import re
+    return max(1, len(re.findall(f"[{VOW}]+", text.lower())))
+
+
+def with_speed(spec, k):
+    s = dict(spec)
+    s["speed"] = round(max(0.8, min(1.45, s.get("speed", 1.0) * k)), 3)
+    return s
+
+
+def render_fit(text, spec, ref, f0, pre, target):
+    """Озвучить так, чтобы длина была близка к русской реплике: второй проход с темпом источника,
+    а не растяжкой готового звука — речь остаётся естественной на любом языке."""
+    a, info = D.render(text, spec, ref, f0, pre=pre)
+    r = len(a) / D.SR / max(0.3, target)
+    if r > 1.08 or r < 0.85:
+        sp2 = with_speed(spec, r if r > 1 else max(r, 0.9))
+        a2, info2 = D.render(text, sp2, ref, f0, pre=pre)
+        r2 = len(a2) / D.SR / max(0.3, target)
+        if abs(np.log(r2)) < abs(np.log(r)):
+            return a2, info2, sp2, r2
+    return a, info, spec, r
+
+
 def place(track, arr, t, sr=SRM):
     i0 = int(round(t * sr))
     if i0 >= len(track):
@@ -108,18 +137,20 @@ def main():
         pre = (hero.get("pre") or {}).get(LANG) or hero.get("pre_all")
         nxt = min([s for s in starts if s > ln["t"] + 0.05] + [L["dur"]])
         window = max(ln["bdur"], nxt - ln["t"] - 0.08)
+        target = min(window, max(ln["bdur"], 0.4))        # длина русской реплики (и не дальше следующей)
         best = None
         for attempt in range(2):
             try:
-                a, info = D.render(text, spec, refs[name], f0s[name], pre=pre)
+                a, info, used, ratio = render_fit(text, spec, refs[name], f0s[name], pre, target)
                 heard = D.heard(a, LANG, G.get("whisper", "small"))
                 clear, extra = D.clear_pct(text, heard)
-                cand = {"a": a, "heard": heard, "clear": clear, "extra": extra, "shift": info["shift_st"]}
+                cand = {"a": a, "heard": heard, "clear": clear, "extra": extra, "shift": info["shift_st"],
+                        "speed": used.get("speed", 1.0), "ratio": round(ratio, 2)}
                 if best is None or (clear - 10 * extra) > (best["clear"] - 10 * best["extra"]):
                     best = cand
                 if clear >= 85 and extra <= 1:
                     break
-                spec["speed"] = round(spec.get("speed", 1.0) * 0.92, 3)   # вторая попытка — медленнее
+                spec = with_speed(spec, 0.92)   # вторая попытка — медленнее (разборчивее)
             except Exception as ex:
                 traceback.print_exc()
                 row["error"] = f"{type(ex).__name__}: {ex}"[:200]
@@ -138,8 +169,10 @@ def main():
             a = a * 0.65
         dub[i] = a
         row.update(heard=best["heard"], clear=best["clear"], extra=best["extra"], shift=best["shift"],
-                   tempo=round(max(1.0, k_t), 2), over=round(max(0.0, len(a) / SRM - window), 2),
-                   sec=round(len(a) / SRM, 2), window=round(window, 2))
+                   speed=best["speed"], tempo=round(max(1.0, k_t), 2), over=round(max(0.0, len(a) / SRM - window), 2),
+                   sec=round(len(a) / SRM, 2), window=round(window, 2), ru_sec=round(ln["bdur"], 2),
+                   syl_ru=round(syllables(ln["text"]) / max(0.3, ln["bdur"]), 1),
+                   syl=round(syllables(text) / max(0.3, len(a) / SRM), 1))
         rows.append(row)
         D.log(f"{i:3d} {name:7s} понято {best['clear']:5.1f}% лишних {best['extra']} темп ×{row['tempo']} | {text}")
 
@@ -180,16 +213,23 @@ def main():
               "clear_avg": round(float(np.mean([r["clear"] for r in ok])), 1) if ok else None,
               "low": [r["i"] for r in ok if r["clear"] < 80 or r["extra"] > 1],
               "stretched": [r["i"] for r in ok if r["tempo"] > 1.15], "over": [r["i"] for r in ok if r["over"] > 0.1],
-              "minutes": round((time.time() - t_start) / 60, 1), "rows": rows}
+              "minutes": round((time.time() - t_start) / 60, 1),
+              "syl_ru": round(float(np.median([r["syl_ru"] for r in ok])), 1) if ok else None,
+              "syl": round(float(np.median([r["syl"] for r in ok])), 1) if ok else None,
+              "len_ratio": round(float(np.median([r["sec"] / max(0.3, r["ru_sec"]) for r in ok])), 2) if ok else None,
+              "fast": [r["i"] for r in ok if r["speed"] > 1.25], "rows": rows}
     json.dump(report, open(os.path.join(OUT, f"report_{LANG}.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     md = [f"# Дубляж {NAME} → {LANG}", "",
           f"Реплик {report['lines']}, озвучено {report['done']}, понято в среднем {report['clear_avg']}%; "
           f"плохо понятых {len(report['low'])}: {report['low']}; ускорено больше ×1,15: {report['stretched']}; "
           f"вылезли за окно: {report['over']}. Сведение совпало с русским на {fit:.3f}. Громкость {I1} LUFS. {report['minutes']} мин.", "",
-          "| № | Герой | Русский | Перевод | Понято | Лишних | Темп | Услышано |", "|---|---|---|---|---|---|---|---|"]
+          f"Темп: по-русски {report['syl_ru']} слог/с, здесь {report['syl']} слог/с; реплика длиннее русской в {report['len_ratio']} раза (медиана). "
+          f"Пришлось ускорять голос больше ×1,25 (перевод длинноват — сократить): {report['fast']}.", "",
+          "| № | Герой | Русский | Перевод | Понято | Лишних | Скорость голоса | Растяжка | Сек (рус) | Услышано |",
+          "|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
         md.append(f"| {r['i']} | {r['name']} | {r['ru']} | {r.get('text') or ''} | {r.get('clear', r.get('error', ''))} | "
-                  f"{r.get('extra', '')} | {r.get('tempo', '')} | {r.get('heard', '')} |")
+                  f"{r.get('extra', '')} | {r.get('speed', '')} | {r.get('tempo', '')} | {r.get('sec', '')} ({r.get('ru_sec', '')}) | {r.get('heard', '')} |")
     open(os.path.join(OUT, f"report_{LANG}.md"), "w", encoding="utf-8").write("\n".join(md) + "\n")
     D.log("готово", report["minutes"], "мин")
 
