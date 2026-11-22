@@ -180,26 +180,53 @@ def main():
 
     # сведение: подобрать громкость музыки (a) и голосов (b) по русскому полному сведению
     me = np.concatenate([D.load(os.path.join(dd, f), SRM) for f in sorted(os.listdir(dd)) if f.startswith("me_")])
-    full = D.load(os.path.join(dd, "full.wav"), SRM)
+    full = D.load(os.path.join(dd, "full.wav"), SRM).astype(np.float64)
     n = max(len(me), len(full))
     me = np.pad(me, (0, n - len(me)))
     full = np.pad(full, (0, n - len(full)))
+    # голоса в полном сведении сдвинуты на несколько мс (пересчёт частоты) — найти сдвиг и громкость по репликам
+    lags, scales = [], []
+    quiet = np.ones(n, dtype=bool)
+    for ln in L["lines"]:
+        quiet[int(ln["t"] * SRM):int((ln["t"] + ln["bdur"]) * SRM) + SRM // 5] = False
+    mq = me[quiet].astype(np.float64)
+    a0 = float(np.dot(mq, full[quiet]) / max(1e-9, np.dot(mq, mq))) if quiet.any() else 0.0
+    res0 = full - a0 * me.astype(np.float64)
+    for ln in [x for x in L["lines"] if not x["vocal"]][:24]:
+        a = ru[ln["i"]].astype(np.float64)
+        i0 = int(round(ln["t"] * SRM))
+        lo = max(0, i0 - SRM // 10)
+        seg = res0[lo:i0 + len(a) + SRM // 10]
+        if len(seg) <= len(a) or not np.any(a):
+            continue
+        x = np.correlate(seg, a, mode="valid")
+        k = int(np.argmax(np.abs(x)))
+        lags.append(k - (i0 - lo))
+        scales.append(x[k] / float(np.dot(a, a)))
+    lag = int(np.median(lags)) if lags else 0
+    gb = float(np.median(scales)) if scales else 1.0
     v_ru = np.zeros(n, dtype=np.float64)
     for ln in L["lines"]:
-        place(v_ru, ru[ln["i"]] * (0.65 if ln.get("soft") else 1.0), ln["t"])
-    A = np.stack([me.astype(np.float64), v_ru], axis=1)
-    (ga, gb), *_ = np.linalg.lstsq(A, full.astype(np.float64), rcond=None)
-    resid = full - A @ np.array([ga, gb])
-    fit = 1 - float(np.sum(resid ** 2) / max(1e-9, np.sum(full.astype(np.float64) ** 2)))
-    D.log(f"сведение: музыка ×{ga:.3f}, голоса ×{gb:.3f}, совпадение с русским сведением {fit:.3f}")
+        place(v_ru, ru[ln["i"]] * (0.65 if ln.get("soft") else 1.0), ln["t"] + lag / SRM)
+    mem = me.astype(np.float64)
+    ga = float(np.dot(mem, full - gb * v_ru) / max(1e-9, np.dot(mem, mem)))
+    # совпадение по громкости во времени (огибающая 50 мс) — сравнение по форме волны занижает из-за сдвигов в доли мс
+    fr = SRM // 20
+    m_ = (n // fr) * fr
+
+    def env(x):
+        return np.sqrt(np.mean(np.asarray(x[:m_], dtype=np.float64).reshape(-1, fr) ** 2, axis=1))
+    e_full, e_mod = env(full), env(ga * mem + gb * v_ru)
+    fit = 1 - float(np.sum((e_full - e_mod) ** 2) / max(1e-9, np.sum(e_full ** 2)))
+    D.log(f"сведение: сдвиг голосов {lag} отсч. ({lag / SRM * 1000:.1f} мс), музыка ×{ga:.3f}, голоса ×{gb:.3f}, совпадение с русским сведением {fit:.3f}")
 
     v_dub = np.zeros(n, dtype=np.float64)
     for ln in L["lines"]:
         if ln["vocal"]:
-            place(v_dub, ru[ln["i"]] * (0.65 if ln.get("soft") else 1.0), ln["t"])   # смех и вздохи — свои
+            place(v_dub, ru[ln["i"]] * (0.65 if ln.get("soft") else 1.0), ln["t"] + lag / SRM)   # смех и вздохи — свои
         elif ln["i"] in dub:
-            place(v_dub, dub[ln["i"]], ln["t"])
-    mix = ga * me + gb * v_dub
+            place(v_dub, dub[ln["i"]], ln["t"] + lag / SRM)
+    mix = ga * me.astype(np.float64) + gb * v_dub
     pk = float(np.max(np.abs(mix))) or 1.0
     mix = mix / pk * 0.89
     raw = os.path.join(OUT, f"mix_{LANG}.wav")
