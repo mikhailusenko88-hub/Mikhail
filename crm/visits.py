@@ -820,7 +820,8 @@ class Visits:
             pg[last]["exit"].add(v)
             first = seq[0]
             landing[first["path"]][0] += 1
-            if len(seq) == 1 and first["sec"] < 10 and not (w["did"] & ENGAGED):
+            # «сразу ушли» знаем только у тех, от кого пришёл подробный счётчик (с 23.11.2026): у старых записей времени нет
+            if len(seq) == 1 and first["sec"] < 10 and not (w["did"] & ENGAGED) and (w["did"] & DEEP_KINDS):
                 landing[first["path"]][1] += 1
         for (what, path, on), ws in dead.items():
             if path in pg:

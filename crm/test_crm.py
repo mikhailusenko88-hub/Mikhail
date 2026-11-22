@@ -3028,6 +3028,9 @@ class TestVisitsDeep(Base):
         self.assertEqual((ux["/p/a912/"]["who"], ux["/p/a912/"]["exit"], ux["/p/a912/"]["s90"]), (2, 2, 1))
         self.assertEqual((ux["/p/a912/"]["landing"], ux["/p/a912/"]["bounce"]), (1, 1))
         self.assertEqual(ux["/"]["exit"], 0)
+        self.hit([["view", "/catalog/moldingi/"]], ip="198.51.100.30")         # без подробного счётчика: «сразу ушёл» не знаем
+        ux = {p["path"]: p for p in self.app.extensions["visits"].report(crm_app.today(), 7)["ux"]["pages"]}
+        self.assertEqual((ux["/catalog/moldingi/"]["landing"], ux["/catalog/moldingi/"]["bounce"]), (1, 0))
         self.assertEqual(ux["/p/a912/"]["median_sec"], 67)                      # (130 + 4) / 2
         blk = {(b["kind"], b["blk"]): b for b in rep["ux"]["blocks"]}
         self.assertEqual(blk[("product", "photo")]["median_sec"], 40)
