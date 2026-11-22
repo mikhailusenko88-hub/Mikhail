@@ -3,9 +3,9 @@ build-tools: /usr/local/lib/android/sdk/build-tools/37.0.0
 update-mod-release.apk 245943995 2026-06-25T12:20:56+00:00 14ce4e3caa75cb781e18bd740b739fa8
 Инструкция Приложение для Планшетов.pdf 1354856 2026-01-20T15:23:19+00:00 b19af9d9b7d4b7f79dd05268bedccf80
 == file
--rw-r--r-- 1 runner runner 245943995 Nov 22 22:06 work/app.apk
-976bd503b4d046dece2a9e835e79261989e31223c8ee58b677757f1cff9e25e4  work/app.apk
-work/app.apk: Android package (APK), with gradle app-metadata.properties
+-rw-r--r-- 1 runner runner 245943995 Nov 22 22:07 /home/runner/work/Mikhail/Mikhail/work/app.apk
+976bd503b4d046dece2a9e835e79261989e31223c8ee58b677757f1cff9e25e4  /home/runner/work/Mikhail/Mikhail/work/app.apk
+/home/runner/work/Mikhail/Mikhail/work/app.apk: Android package (APK), with gradle app-metadata.properties
 == badging
 package: name='com.domonap.app' versionCode='9845' versionName='9845' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
 minSdkVersion:'24'
@@ -421,15 +421,443 @@ kotlin/kotlin.kotlin_builtins
 kotlin/ranges/ranges.kotlin_builtins
 kotlin/reflect/reflect.kotlin_builtins
 dex files: 2
-unzip:  cannot find or open work/app.apk, work/app.apk.zip or work/app.apk.ZIP.
-total 8
-drwxr-xr-x  2 runner runner 4096 Nov 22 22:06 .
-drwxrwxrwt 13 root   root   4096 Nov 22 22:06 ..
-strings total: 0
+total 17644
+drwxr-xr-x  2 runner runner     4096 Nov 22 22:07 .
+drwxrwxrwt 13 root   root       4096 Nov 22 22:07 ..
+-rw-r--r--  1 runner runner 10531208 Jan  1  1981 classes.dex
+-rw-r--r--  1 runner runner  7522404 Jan  1  1981 classes2.dex
+strings total: 211611
 == vendor / device checks (rubetek, model, system props, hardware)
+      2 manufacturer
+      2 getPropertyUsers
+      2 getPropertyCardKeys
+      2 getProperty
+      2 getPropertiesList
+      2 getProperties
+      2 getManufacturer
+      2 MANUFACTURER
+      2 ?Lcom/domonap/app/services/floating/RubetekOverlayButtonService;
+      1 wakeRubetekScreen
+      1 setForcedIceRelayEnabled
+      1 setAnimateShowBeforeLayout
+      1 sLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$getUpdateInfoFromPrefs$$inlined$fromJson$1;
+      1 rubetekDomHeaders
+      1 ro.build.version.oneui
+      1 ro.build.date.utc
+      1 requestOpenRelayByDoorId
+      1 repoEffect
+      1 presumeWritableWhenFullyRelayed
+      1 openRelayJob
+      1 openRelayByKeyIdJob
+      1 openRelayByKeyId
+      1 openRelayByDoorId
+      1 onRubetekUpdateReceive
+      1 nLcom/domonap/telephony/presentation/activity/incoming/IncomingDomofonCallViewModel$requestOpenRelayByDoorId$1;
+      1 measureChildBeforeLayout
+      1 mPreLayoutPosition
+      1 lcom.domonap.telephony.presentation.activity.incoming.IncomingDomofonCallViewModel$requestOpenRelayByDoorId$1
+      1 isRubetekRequest
+      1 isRubetekDevice
+      1 isRubetek$lambda$0
+      1 isForcedIceRelayEnabled
+      1 isAlmostRubetekDeviceType
+      1 ic_rubetek_logo
+      1 h[Platform Helper] [Network Manager 26] WiFi only mode enabled and current network isn't WiFi or ethernet
+      1 h[Platform Helper] [Network Manager 24] Wifi only mode enabled and current network isn't wifi or ethernet
+      1 h[Platform Helper] [Network Manager 23] Wifi only mode enabled and current network isn't wifi or ethernet
+      1 h[Platform Helper] [Network Manager 21] Wifi only mode enabled and current network isn't wifi or ethernet
+      1 getPropertyValues
+      1 getPropertyTypeChosen
+      1 getPropertyType
+      1 getPropertyNumber
+      1 getPropertyName
+      1 getPropertyList(...)
+      1 getPropertyId
+      1 getPropertyFlags
+      1 getPropertyByteArray(...)
+      1 getPropertyByteArray
+      1 getPropertyByName
+      1 getProperty(...)
+      1 getPropertiesMap$default
+      1 getPropertiesMap
+      1 getProperties()Ljava/util/List;
+      1 getProperTypeRelatedToStringify
+      1 getPropagation
+      1 getDeviceManufacturer
+      1 gLcom/domonap/telephony/presentation/activity/incoming/IncomingDomofonCallViewModel$openRelayByDoorId$1;
+      1 enter_rubetek_confirm_code
+      1 ensureLayoutState
+      1 ecom.domonap.telephony.presentation.activity.incoming.IncomingDomofonCallViewModel$openRelayByDoorId$1
+      1 eLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$runCatchingWithTimeout$2$1$1;
+      1 disableSystemBarsForRubetek
+      1 device_manufacturer
+      1 com.domonap.authorization.rubetek.RubetekLoginScreenGeneralizationKt$RubetekLoginScreenGeneralization$$inlined$CollectUiEffect$1$1
+      1 com.domonap.authorization.rubetek.RubetekLoginScreenGeneralizationKt$RubetekLoginScreenGeneralization$$inlined$CollectUiEffect$1
+      1 checkAndLaunchRubetekOverlay
+      1 cgetPropertyAccessorRenderingPolicy()Lorg/jetbrains/kotlin/renderer/PropertyAccessorRenderingPolicy;
+      1 ccom.domonap.feature.update.data.repository.RubetekUpdateRepositoryImpl$runCatchingWithTimeout$2$1$1
+      1 cLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$special$$inlined$map$1$2$1;
+      1 cLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$runCatchingWithTimeout$2$1;
+      1 cLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$downloadWithLoopFallback$1;
+      1 bLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$writeStreamWithResume$2$1;
+      1 animateShowBeforeLayout
+      1 acom.domonap.feature.update.data.repository.RubetekUpdateRepositoryImpl$runCatchingWithTimeout$2$1
+      1 aLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$special$$inlined$map$1$2;
+      1 aLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$runCatchingWithTimeout$1;
+      1 aLcom/domonap/app/services/floating/RubetekOverlayButtonService$special$$inlined$inject$default$2;
+      1 aLcom/domonap/app/services/floating/RubetekOverlayButtonService$special$$inlined$inject$default$1;
+      1 `com.domonap.feature.update.data.repository.RubetekUpdateRepositoryImpl$writeStreamWithResume$2$1
+      1 `Lcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$writeStreamWithResume$1;
+      1 _com.domonap.feature.update.data.repository.RubetekUpdateRepositoryImpl$special$$inlined$map$1$2
+      1 _Lcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$special$$inlined$map$1;
+      1 _Lcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$fetchUpdateInfo$info$2;
+      1 _Lcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$fetchUpdateInfo$info$1;
+      1 ]com.domonap.feature.update.data.repository.RubetekUpdateRepositoryImpl$fetchUpdateInfo$info$2
+      1 ]com.domonap.feature.update.data.repository.RubetekUpdateRepositoryImpl$fetchUpdateInfo$info$1
+      1 ](Lcom/domonap/data/network/requests/device/OpenRelayByDoorIdRequest;Lhj/c;)Ljava/lang/Object;
+      1 \(Lcom/domonap/data/network/requests/device/OpenRelayByKeyIdRequest;Lhj/c;)Ljava/lang/Object;
+      1 [Lcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$defineByteOffset$1;
+      1 ZLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$requestAsStream$1;
+      1 ZLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$fetchUpdateInfo$1;
+      1 XLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$startDownload$1;
+      1 VPackage in android.resource:// URI not found. Check http://g.co/dev/packagevisibility.
+      1 VLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$getFileSize$1;
+      1 ULcom/domonap/authorization/rubetek/RubetekScreenComposablesKt$RubetekLoginScreen$2$1;
+      1 ULcom/domonap/authorization/rubetek/PanelConfirmationViewModel$confirmAuthorization$1;
+      1 TpoETqnETrlERsmE
+      1 Scom.domonap.authorization.rubetek.RubetekScreenComposablesKt$RubetekLoginScreen$2$1
+      1 Scom.domonap.authorization.rubetek.PanelConfirmationViewModel$confirmAuthorization$1
+      1 SOC_MANUFACTURER
+      1 SLcom/domonap/feature/update/presentation/utils/WakeLockManager$wakeRubetekScreen$1;
+      1 SLcom/domonap/authorization/rubetek/ComposableSingletons$RubetekScreenComposablesKt;
+      1 RubetekUpdateRepositoryImpl.kt
+      1 RubetekUpdate
+      1 RubetekScreenComposables.kt
+      1 RubetekOverlayButtonService.kt
+      1 RubetekLoginScreenPreview
+      1 RubetekLoginScreen$lambda$2
+      1 RubetekLoginScreen$lambda$0$0$0
+      1 RubetekLoginScreen
+      1 RubetekLogin
+      1 Rubetek
+      1 RelayConnection
+      1 RUBETEK_PANEL_KEY
+      1 RUBETEK_PANEL
+      1 RUBETEK
+      1 RLcom/domonap/feature/update/data/repository/RubetekUpdateRepositoryImpl$Companion;
+      1 RELAY
+      1 Qcom.domonap.feature.update.presentation.utils.WakeLockManager$wakeRubetekScreen$1
+      1 PACKAGE_RUBETEK
 == domonap classes mentioning rubetek / panel / stationary
+Lcom/domonap/app/ui/keys/activation/KeyActivationComposablesKt$AddressPartChoiceScreen$lambda$0$3$1$0$$inlined$itemsIndexed$default$1;
+Lcom/domonap/app/ui/keys/activation/KeyActivationComposablesKt$AddressPartChoiceScreen$lambda$0$3$1$0$$inlined$itemsIndexed$default$2;
+Lcom/domonap/app/ui/keys/activation/KeyActivationComposablesKt$AddressPartChoiceScreen$lambda$0$3$1$0$$inlined$itemsIndexed$default$3;
+Lcom/domonap/authorization/rubetek/RubetekLoginScreenGeneralizationKt$RubetekLoginScreenGeneralization$$inlined$CollectUiEffect$1$1$1;
+Lcom/domonap/authorization/rubetek/RubetekLoginScreenGeneralizationKt$RubetekLoginScreenGeneralization$$inlined$CollectUiEffect$1$1;
+Lcom/domonap/authorization/rubetek/RubetekLoginScreenGeneralizationKt$RubetekLoginScreenGeneralization$$inlined$CollectUiEffect$1;
 == panel mode / activation / connection
+	panell_dl
+	panell_ds
+	panell_dt
+ Activate AppMetrica with APIKey 
+ UserActivationConfirmedDto(user=
+ com.sony.dtv.hardware.panel.qfhd
+ deactivated: 
+ for ActivationCodeStatus
+!CFG_IS_FIRST_ACTIVATION_AS_UPDATE
+!Launcher has not been initialized
+!Lcom/microsoft/signalr/Negotiate;
+!Lcom/microsoft/signalr/Transport;
+!PanelConfirmCodeBody(confirmCode=
+!RECEIVED SIGNALR PUSH for RUBETEK
+"Lcom/microsoft/signalr/ActionBase;
+"Lcom/microsoft/signalr/HttpClient;
+"Lcom/microsoft/signalr/HubMessage;
+"Lcom/microsoft/signalr/StreamItem;
+"PanelCompleteTokenDto(accessToken=
+"UserActivationConfirmedModel(user=
+"client-api/Key/ActivateResidentKey
+"com.rubetek.client.system.launcher
+"materialAlertDialogTitlePanelStyle
+#Lcom/microsoft/signalr/CallbackMap;
+#Lcom/microsoft/signalr/HttpRequest;
+#Lcom/microsoft/signalr/HubProtocol;
+#Lcom/microsoft/signalr/PingMessage;
+$Apply is called on deactivated node 
+$Lcom/microsoft/signalr/CloseMessage;
+$Lcom/microsoft/signalr/FunctionBase;
+$Lcom/microsoft/signalr/HttpResponse;
+$Lcom/microsoft/signalr/HubException;
+$Lcom/microsoft/signalr/Subscription;
+$PanelCompleteTokenModel(accessToken=
+$SignalR closed, scheduling reconnect
+$client-api/Key/ActivateSharedKeyLink
+$modifier is updated when deactivated
+$sso-api/Authorization/UserActivation
+%Activate AppMetrica in anonymous mode
+%ActivateSharedKeyLinkRequest(keyLink=
+%Landroidx/slidingpanelayout/widget/a;
+%Landroidx/slidingpanelayout/widget/b;
+%Landroidx/slidingpanelayout/widget/c;
+%Landroidx/slidingpanelayout/widget/d;
+%Landroidx/slidingpanelayout/widget/e;
+%Landroidx/slidingpanelayout/widget/f;
+%Landroidx/slidingpanelayout/widget/g;
+%Lcom/microsoft/signalr/HubConnection;
+%Lcom/microsoft/signalr/TransportEnum;
+%Lcom/microsoft/signalr/TypeReference;
+%place is called on a deactivated node
+%signalRModule$lambda$0$provideSignalR
+&ConfirmUserActivationBody(deviceToken=
+&Lcom/domonap/app/ui/keys/activation/a;
+&Lcom/domonap/app/ui/keys/activation/b;
+&Lcom/domonap/app/ui/keys/activation/c;
+&Lcom/domonap/app/ui/keys/activation/d;
+&Lcom/domonap/app/ui/keys/activation/e;
+&Lcom/domonap/app/ui/keys/activation/f;
+&Lcom/domonap/app/ui/keys/activation/g;
+&Lcom/domonap/app/ui/keys/activation/h;
+&Lcom/domonap/app/ui/keys/activation/i;
+&Lcom/domonap/app/ui/keys/activation/j;
+&Lcom/domonap/app/ui/keys/activation/k;
+&Lcom/domonap/app/ui/keys/activation/l;
+&Lcom/domonap/app/ui/keys/activation/m;
+&Lcom/domonap/app/ui/keys/activation/n;
+&Lcom/domonap/app/ui/keys/activation/o;
+&Lcom/domonap/app/ui/keys/activation/p;
+&Lcom/microsoft/signalr/FunctionSingle;
+&Lcom/microsoft/signalr/FunctionSingle<
+&Lcom/microsoft/signalr/HubMessageType;
+&Lcom/microsoft/signalr/TransferFormat;
+&[Lcom/microsoft/signalr/TransportEnum;
+'()Lcom/microsoft/signalr/HubConnection;
+'EVENT_TYPE_UPDATE_PRE_ACTIVATION_CONFIG
+'Landroid/app/admin/DevicePolicyManager;
+'Lcom/microsoft/signalr/Function1Single;
+'Lcom/microsoft/signalr/Function1Single<
+'Lcom/microsoft/signalr/Function2Single;
+'Lcom/microsoft/signalr/Function2Single<
+'Lcom/microsoft/signalr/Function3Single;
+'Lcom/microsoft/signalr/Function3Single<
+'Lcom/microsoft/signalr/Function4Single;
+'Lcom/microsoft/signalr/Function4Single<
+'Lcom/microsoft/signalr/Function5Single;
+'Lcom/microsoft/signalr/Function5Single<
+'Lcom/microsoft/signalr/Function6Single;
+'Lcom/microsoft/signalr/Function6Single<
+'Lcom/microsoft/signalr/Function7Single;
+'Lcom/microsoft/signalr/Function7Single<
+'Lcom/microsoft/signalr/Function8Single;
+'Lcom/microsoft/signalr/Function8Single<
+'Lcom/microsoft/signalr/GsonHubProtocol;
+'Lcom/microsoft/signalr/HubConnection$1;
+'Lcom/microsoft/signalr/UserAgentHelper;
+'PanelAuthConfirmationDto(completeToken=
+'[Lcom/microsoft/signalr/HubMessageType;
+'[Lcom/microsoft/signalr/TransferFormat;
+'measure is called on a deactivated node
+'signalRModule$lambda$0$provideSignalR$0
+'signalRModule$lambda$0$provideSignalR$1
+(ActivateNewsSubscriptionRequest(channel=
+(Activation failed due to context is null
+(JLio/appmetrica/analytics/coreapi/internal/executors/ICommonExecutor;Lio/appmetrica/analytics/coreapi/internal/servicecomponents/Activation
+(JLrj/k;JLrj/k;Lcom/domonap/ui/bar/AppBarState;Lrj/k;Lea/d0;Lrj/a;Lrj/a;Landroid/content/Intent;Lcom/domonap/sdk/domain/repository/Connectio
+(Landroidx/activity/ComponentActivity;Lrj/o;Lea/d0;Lo3/u;Lrj/a;Lcom/domonap/authorization/rubetek/PanelConfirmationViewModel;Landroidx/compo
+(Lcom/domonap/domain/from_app_module/domain/models/addresses/AddressSuggestionsProjection;)Lcom/domonap/app/ui/keys/activation/KeyActivation
+(Lcom/domonap/sdk/domain/repository/AppBus;Lcom/domonap/sdk/domain/repository/LocalDataRepo;Lcom/domonap/data/datasource/db/dbcontext/AppDat
+(Lcom/domonap/sdk/domain/usecase/AuthorizePhoneNumberUseCase;Lcom/domonap/sdk/auth/domain/usecase/AuthorizationConfirmUseCaseImpl;Lcom/domon
+(Lcom/microsoft/signalr/InvocationBinder;
+(Lcom/microsoft/signalr/OnClosedCallback;
+(Lcom/microsoft/signalr/WebSocketWrapper;
+(Ljava/lang/String;Ljava/lang/String;Lcom/domonap/domain/from_app_module/domain/enums/ImmovablesType;J)Lcom/domonap/domain/from_app_module/d
+(access$getConfirmUserActivationUseCase$p
+(client-api/News/ActivateNewsSubscription
+)AppMetrica SDK already has been activated
+)Lcom/domonap/app/services/push/signalR/a;
+)Lcom/domonap/app/services/push/signalR/b;
+)Lcom/domonap/app/services/push/signalR/c;
+)Lcom/microsoft/signalr/CompletionMessage;
+)Lcom/microsoft/signalr/DefaultHttpClient;
+)Lcom/microsoft/signalr/GsonHubProtocol$1;
+)Lcom/microsoft/signalr/HandshakeProtocol;
+)Lcom/microsoft/signalr/InvocationHandler;
+)Lcom/microsoft/signalr/InvocationMessage;
+)Lcom/microsoft/signalr/InvocationRequest;
+)Lcom/microsoft/signalr/NegotiateResponse;
+)Lcom/microsoft/signalr/OnReceiveCallBack;
+)Lorg/linphone/core/VideoActivationPolicy;
+)MaterialAlertDialog_Material3_Title_Panel
+)PanelAuthConfirmationModel(completeToken=
+*DeactivateNewsSubscriptionRequest(channel=
+*Lcom/microsoft/signalr/HubConnectionState;
+*Lcom/microsoft/signalr/WebSocketTransport;
+*client-api/News/DeactivateNewsSubscription
++Lcom/domonap/app/di/module/SignalRModuleKt;
++Lcom/microsoft/signalr/DefaultHttpClient$1;
++Lcom/microsoft/signalr/DefaultHttpClient$2;
++[Lcom/microsoft/signalr/HubConnectionState;
++sso-api/Authorization/ConfirmUserActivation
+, activationCode=
+, firstActivationAsUpdate=
+, mFirstActivationAsUpdate=
+, panel=
+,()Lcom/microsoft/signalr/HubConnectionState;
+,Lcom/microsoft/signalr/HttpRequestException;
+,Lcom/microsoft/signalr/HubConnectionBuilder;
+,Lcom/microsoft/signalr/LongPollingTransport;
+,access$signalRModule$lambda$0$provideSignalR
 == battery / power
+                `requires_battery_not_low` INTEGER NOT NULL,
+                `requires_charging` INTEGER NOT NULL,
+            `requires_battery_not_low`,
+            `requires_charging`,
+ requestIgnoreBatteryOptimization
+!KEY_BATTERY_NOT_LOW_PROXY_ENABLED
+!android.intent.action.BATTERY_LOW
+"KEY_BATTERY_CHARGING_PROXY_ENABLED
+"android.intent.action.BATTERY_OKAY
+#tagWithPrefix("BatteryChrgTracker")
+%android.intent.action.BATTERY_CHANGED
+%tagWithPrefix("BatteryNotLowTracker")
+)[Headset] Unknown headset plugged state: 
+)requestIgnoreBatteryOptimization$lambda$1
+, requiresBatteryNotLow=
+, requiresCharging=
+,android.intent.action.ACTION_POWER_CONNECTED
+/android.intent.action.ACTION_POWER_DISCONNECTED
+5android.settings.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+7android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+BatteryChrgTracker
+BatteryNotLowTracker
+CREATE TABLE IF NOT EXISTS `WorkSpec` (`id` TEXT NOT NULL, `state` INTEGER NOT NULL, `worker_class_name` TEXT NOT NULL, `input_merger_class_
+CREATE TABLE IF NOT EXISTS `_new_WorkSpec` (`id` TEXT NOT NULL, `state` INTEGER NOT NULL, `worker_class_name` TEXT NOT NULL, `input_merger_c
+C[Platform Helper] Is app in device battery optimization whitelist: 
+INSERT INTO `_new_WorkSpec` (`id`,`state`,`worker_class_name`,`input_merger_class_name`,`input`,`output`,`initial_delay`,`interval_duration`
+INSERT OR IGNORE INTO `WorkSpec` (`id`,`state`,`worker_class_name`,`input_merger_class_name`,`input`,`output`,`initial_delay`,`interval_dura
+NLandroidx/work/impl/background/systemalarm/ConstraintProxy$BatteryNotLowProxy;
+PLandroidx/work/impl/background/systemalarm/ConstraintProxy$BatteryChargingProxy;
+SELECT id, state, output, run_attempt_count, generation, required_network_type, required_network_request, requires_charging, requires_device
+SLio/appmetrica/analytics/coreapi/internal/servicecomponents/batteryinfo/ChargeType;
+TLio/appmetrica/analytics/coreapi/internal/servicecomponents/batteryinfo/BatteryInfo;
+T[Lio/appmetrica/analytics/coreapi/internal/servicecomponents/batteryinfo/ChargeType;
+U()Lio/appmetrica/analytics/coreapi/internal/servicecomponents/batteryinfo/ChargeType;
+UPDATE OR ABORT `WorkSpec` SET `id` = ?,`state` = ?,`worker_class_name` = ?,`input_merger_class_name` = ?,`input` = ?,`output` = ?,`initial_
+[Lio/appmetrica/analytics/coreapi/internal/servicecomponents/batteryinfo/ChargeTypeProvider;
+]()Lio/appmetrica/analytics/coreapi/internal/servicecomponents/batteryinfo/ChargeTypeProvider;
+aLio/appmetrica/analytics/coreapi/internal/servicecomponents/batteryinfo/ChargeTypeChangeListener;
+android.os.action.CHARGING
+android.os.action.DISCHARGING
+batteryLevel
+d(Lio/appmetrica/analytics/coreapi/internal/servicecomponents/batteryinfo/ChargeTypeChangeListener;)V
+getBatteryCapacity
+getBatteryLevel
+isAppBatteryOptimizationEnabled
+isIgnoringBatteryOptimizations
+plugged
+requires_battery_not_low
+requires_charging
+setRequiresBatteryNotLow
+setRequiresCharging
 == push services
+	getHuawei
+!Lcom/google/firebase/FirebaseApp;
+!com.google.android.gms.ads.AdView
+#com.google.android.gms.availability
+#isFirebaseCloudMessaging23Available
+$com.google.android.gms.appset.AppSet
+%com.google.android.gms.org.conscrypt.
++[Push Notification] Firebase not available.
++com.google.android.gms.appset.service.START
++com.google.android.gms.extra.fileDescriptor
++com.google.android.gms.signin.service.START
+, huaweiOaid=
+, mHuawei=
+, ruStore=
+-Lcom/google/firebase/messaging/RemoteMessage;
+-com.google.android.gms.dynamic.IObjectWrapper
+.  You must have the following declaration within the <application> element:     <meta-dat
+.[Push Notification] Firebase getToken failed: 
+/com.google.android.gms.location.LocationRequest
+/com.google.firebase.messaging.FirebaseMessaging
+/com_google_firebase_crashlytics_mapping_file_id
+0com.google.android.gms.common.internal.ICertData
+0com.google.android.gms.net.GmsCoreCronetProvider
+0content://com.huawei.appmarket.commondata/item/5
+0unknown exception during binding huawei services
+1Lcom/google/firebase/messaging/FirebaseMessaging;
+1[Push Notification] Token fetched from Firebase: 
+3com.google.android.gms.ads.identifier.service.START
+3com.google.android.gms.signin.internal.hostedDomain
+3com.google.android.gms.signin.internal.logSessionId
+4Lorg/linphone/core/tools/firebase/FirebaseMessaging;
+4com.google.android.gms.common.internal.IGmsCallbacks
+4com_google_firebase_crashlytics_version_control_info
+5Lorg/linphone/core/tools/firebase/FirebasePushHelper;
+5com.google.android.gms.appset.internal.IAppSetService
+5com.google.android.gms.common.telemetry.service.START
+5com.google.android.gms.net.PlayServicesCronetProvider
+5com.google.android.gms.signin.internal.ISignInService
+5com.google.android.gms.signin.internal.serverClientId
+6Lorg/linphone/core/tools/firebase/FirebaseMessaging$1;
 == audio / video / sip
+	SipDomain
+	webRtcAPI
+  >>> WebRTC <<<
+ Lorg/linphone/core/AuthInfoImpl;
+ Lorg/linphone/core/CallListener;
+ Lorg/linphone/core/ChatRoomImpl;
+ Lorg/linphone/core/CoreListener;
+ Lorg/linphone/core/DialPlanImpl;
+ Lorg/linphone/core/EventLogImpl;
+ Lorg/linphone/core/FriendDevice;
+ Lorg/linphone/core/Player$State;
+ Lorg/linphone/core/PresenceNote;
+ Lorg/linphone/core/PublishState;
+ Lorg/linphone/core/RecorderImpl;
+ Lorg/linphone/core/SearchResult;
+ Lorg/linphone/core/SupportLevel;
+ Lorg/linphone/core/TunnelConfig;
+ Lorg/linphone/core/XmlRpcStatus;
+ Lorg/webrtc/AndroidVideoDecoder;
+ Lorg/webrtc/BaseBitrateAdjuster;
+ Lorg/webrtc/CameraVideoCapturer;
+ Lorg/webrtc/FileVideoCapturer$1;
+ Lorg/webrtc/FrameCryptorFactory;
+ Lorg/webrtc/NativeLibraryLoader;
+ Lorg/webrtc/NetEqFactoryFactory;
+ Lorg/webrtc/RtpParameters$Codec;
+ Lorg/webrtc/SurfaceViewRenderer;
+ Lorg/webrtc/TextureBufferImpl$1;
+ Lorg/webrtc/TextureBufferImpl$2;
+ Lorg/webrtc/ThreadUtils$1Result;
+ Lorg/webrtc/VideoDecoderFactory;
+ Lorg/webrtc/VideoDecoderWrapper;
+ Lorg/webrtc/VideoEncoderFactory;
+ Lorg/webrtc/VideoEncoderWrapper;
+ Lorg/webrtc/VideoFileRenderer$1;
+ [Lorg/linphone/core/AudioDevice;
+ [Lorg/linphone/core/Call$Status;
+ [Lorg/linphone/core/ChatMessage;
+ [Lorg/linphone/core/GlobalState;
+ [Lorg/linphone/core/Participant;
+ [Lorg/linphone/core/PayloadType;
+ [Lorg/linphone/core/ProxyConfig;
+ [Lorg/linphone/core/Tunnel$Mode;
+ [Lorg/webrtc/Logging$TraceLevel;
+ [Lorg/webrtc/VideoCodecMimeType;
+ camera2.streamSpec.streamUseCase
+ camerax.core.useCase.captureType
+ camerax.core.useCase.sessionType
+ camerax.core.useCase.zslDisabled
+ reportWebRtcAudioRecordInitError
+ reportWebRtcAudioTrackStartError
+ stream-webrtc-android-ui_release
+!Linphone core.iterate() scheduler
+!Lorg/linphone/core/AccountDevice;
+!Lorg/linphone/core/AccountParams;
+!Lorg/linphone/core/AlertListener;
+!Lorg/linphone/core/CallStatsImpl;
+!Lorg/linphone/core/CardDavParams;
+!Lorg/linphone/core/CoreException;
+!Lorg/linphone/core/ErrorInfoImpl;
 == done
