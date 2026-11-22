@@ -1,5 +1,5 @@
-# 17:55 серии 33 v5 и 34 v2
+# 2026-11-22 12:20 МСК — серии 35 и 36 на странице (размеры как в ветке mebel: serii.json 139773, index.html 19848, обложка 35 224777, обложка 36 197365)
 http://89.126.192.214:8080/mebel/s9kbars/serii.json
-http://89.126.192.214:8080/mebel/s9kbars/serii/34/cover.jpg
-http://89.126.192.214:8080/mebel/s9kbars/serii/33/scenario.txt
-http://89.126.192.214:8080/mebel/s9kbars/serii/34/scenario.txt
+http://89.126.192.214:8080/mebel/s9kbars/index.html
+http://89.126.192.214:8080/mebel/s9kbars/serii/35/cover.jpg
+http://89.126.192.214:8080/mebel/s9kbars/serii/36/cover.jpg
