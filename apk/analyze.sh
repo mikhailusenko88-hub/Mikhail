@@ -44,7 +44,7 @@ unzip -l "$APK" | awk '{print $4}' | grep -E "libflutter|libapp\.so|libreactnati
 echo "dex files: $(unzip -l "$APK" | grep -c '\.dex$')"
 
 mkdir -p /tmp/x && cd /tmp/x
-unzip -o -q "$APK" 'classes*.dex' 'lib/*/libapp.so' 'assets/index.android.bundle' 2>/dev/null
+unzip -o -q "$APK" 'classes*.dex' -d /tmp/x; ls -la /tmp/x
 : > /tmp/str.txt
 for f in /tmp/x/classes*.dex /tmp/x/lib/*/libapp.so /tmp/x/assets/index.android.bundle; do
   [ -f "$f" ] && strings -n 4 "$f" >> /tmp/str.txt
@@ -54,6 +54,8 @@ echo "strings total: $(wc -l < /tmp/str.txt)"
 echo "== vendor / device checks (rubetek, model, system props, hardware)"
 grep -iE "rubetek|rcp-?0[0-9]|rcp_0|ro\.product|ro\.build\.|ro\.hardware|Build\.MODEL|MANUFACTURER|getprop|/sys/class|/dev/|gpio|relay|poe|ethernet" /tmp/str.txt | cut -c1-140 | sort | uniq -c | sort -rn | head -120
 
+echo "== domonap classes mentioning rubetek / panel / stationary"
+grep -E "^L?com/domonap|^Lcom/domonap" /tmp/str.txt | grep -iE "rubetek|panel|stationar|kiosk|tablet|device|activation" | cut -c1-160 | sort -u | head -150
 echo "== panel mode / activation / connection"
 grep -iE "signalr|panel|activation|activate|stationary|kiosk|launcher|HOME_APP|BOOT_COMPLETED|lockTask|device_owner|DevicePolicy" /tmp/str.txt | cut -c1-140 | sort -u | head -150
 
