@@ -1310,7 +1310,7 @@ function cheeseT() { return ctex('cheese', 256, 128, (g) => { g.fillStyle = '#ff
 function stoneT() { return ctex('stone', 256, 256, (g) => { g.fillStyle = '#b8b2a8'; g.fillRect(0, 0, 256, 256); g.strokeStyle = 'rgba(80,70,60,.45)'; g.lineWidth = 3; for (let y = 0; y < 256; y += 32) { g.beginPath(); g.moveTo(0, y); g.lineTo(256, y); g.stroke(); for (let x = ((y / 32) % 2) * 32; x < 256; x += 64) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 32); g.stroke(); } } const r = rng(6); for (let i = 0; i < 300; i++) { g.fillStyle = 'rgba(' + (r() < .5 ? '255,255,255' : '60,50,40') + ',.08)'; g.fillRect(r() * 256, r() * 256, 4, 4); } }, [2, 2]); }
 function fabricT(a, b) { return ctex('fab' + a + b, 128, 128, (g) => { g.fillStyle = a; g.fillRect(0, 0, 128, 128); g.fillStyle = b; for (let i = 0; i < 4; i++) g.fillRect(i * 32, 0, 16, 128); }); }
 function propMesh(p) {
-  const key = p.id + p.type + (p.color || '') + (p.phase || '') + (p.low ? 'L' : '') + (p.skyMoon ? 'S' : '') + (p.main ? 'M' : ''); if (propCache[key]) return propCache[key];
+  const key = p.id + p.type + (p.color || '') + (p.phase || '') + (p.low ? 'L' : '') + (p.skyMoon ? 'S' : '') + (p.main ? 'M' : '') + (p.frozen ? 'F' : ''); if (propCache[key]) return propCache[key];
   const g = new THREE.Group(), t = p.type, cl = p.color;
   const A = (geo, mat, par, ol) => mesh(geo, mat, ol == null ? .04 : ol, par || g); // деталь
   const P = (c, k, map) => pmat(c, k, map);
@@ -1647,11 +1647,19 @@ function propMesh(p) {
     case 'puddle': { // лужа (15.11, для серии 31): плоская вода с неровным краем и тёмным мокрым ободком — лежит на земле/асфальте
       const blob = (rx, rz, seed) => { const sh = new THREE.Shape(), N = 64; for (let i = 0; i <= N; i++) { const a = i / N * Math.PI * 2, k = 1 + .12 * Math.sin(a * 3 + seed) + .07 * Math.sin(a * 5 + seed * 2.3) + .04 * Math.sin(a * 9 + seed * .7); const x = Math.cos(a) * rx * k, z = Math.sin(a) * rz * k; if (i) sh.lineTo(x, z); else sh.moveTo(x, z); } return new THREE.ShapeGeometry(sh, 2); };
       const rim = A(blob(.92, .6, 1.3), P(cl ? shadeC(cl, .45) : '#3c3f44', 'paper'), g, 0); rim.rotation.x = -Math.PI / 2; rim.position.y = .004; rim.material = rim.material.clone(); rim.material.transparent = true; rim.material.opacity = .55; rim.material.depthWrite = false;
+      if (p.frozen) { rim.material.color.set('#f2f8fc'); rim.material.opacity = .85;   // 22.11.2026 (серия 37): лужа замёрзла — лёд: светло-голубой, блестит, белый иней по краю, трещинки
+        const ic = A(blob(.8, .52, 1.3), P('#bfe0f2', 'gloss'), g, 0); ic.rotation.x = -Math.PI / 2; ic.position.y = .01; ic.renderOrder = 1;
+        const cr = [[-.35, -.1, .5, .3], [.1, .12, .42, -.5], [.3, -.15, .3, 1.1], [-.1, .2, .28, 2.2]]; for (const [x, z, l, a] of cr) { const c = A(G.box(l, .002, .008), P('#ffffff', 'gloss'), g, 0); c.position.set(x, .013, z); c.rotation.y = a; }
+        for (const [x, z, r] of [[-.2, -.12, .1], [.25, .08, .07]]) { const h = A(new THREE.CircleGeometry(r, 20), P('#ffffff', 'gloss'), g, 0); h.rotation.x = -Math.PI / 2; h.position.set(x, .012, z); h.scale.set(1.8, .5, 1); h.material = h.material.clone(); h.material.transparent = true; h.material.opacity = .45; }
+        break; }
       const w = A(blob(.8, .52, 1.3), P(cl || '#5f7488', 'water'), g, 0); w.rotation.x = -Math.PI / 2; w.position.y = .008; w.renderOrder = 1; break; }
     case 'bowl': {   // 21.11.2026: миска с водой (серия 33 — шишка в воде): керамика снаружи, вода внутри видна сверху
       const c0 = cl || '#f4f1ea'; A(lathe([[0, 0], [.07, 0], [.11, .02], [.145, .06], [.15, .075], [.142, .077], [.135, .062], [.1, .025], [0, .02]], 40), P(c0, 'ceramic'));
       A(G.tor(.146, .006, 8, 40), P('#5aa0d8', 'gloss'), g, 0).rotation.x = Math.PI / 2; g.children[g.children.length - 1].position.y = .076;
-      const wt = new THREE.Mesh(new THREE.CircleGeometry(.132, 40), new THREE.MeshStandardMaterial({ color: '#5fb6ec', roughness: .12, metalness: 0, transparent: true, opacity: .82, envMapIntensity: 1.2 })); wt.rotation.x = -Math.PI / 2; wt.position.y = .058; g.add(wt); g.userData.waterY = .058; g.userData.water = wt; break; }
+      const wt = new THREE.Mesh(new THREE.CircleGeometry(.132, 40), new THREE.MeshStandardMaterial({ color: '#5fb6ec', roughness: .12, metalness: 0, transparent: true, opacity: .82, envMapIntensity: 1.2 })); wt.rotation.x = -Math.PI / 2; wt.position.y = .058; g.add(wt); g.userData.waterY = .058; g.userData.water = wt;
+      if (p.frozen) { wt.material.color.set('#d6edf9'); wt.material.opacity = .97; wt.material.roughness = .05; wt.position.y = .062;   // 22.11.2026 (серия 37): вода в миске замёрзла — лёд с белыми трещинками
+        for (const [l, a] of [[.2, .4], [.16, -.9], [.12, 1.9]]) { const c = A(G.box(l, .002, .005), P('#ffffff', 'gloss'), g, 0); c.position.y = .064; c.rotation.y = a; } }
+      break; }
     case 'plate': { const c0 = cl || '#ffffff'; A(lathe([[0, 0], [.07, 0], [.08, .006], [.14, .022], [.15, .03], [.145, .032], [.08, .012], [0, .012]], 40), P(c0, 'ceramic'));
       const rm = A(G.tor(.135, .004, 8, 48), P('#3d8fe0', 'ceramic'), g, 0); rm.rotation.x = Math.PI / 2; rm.position.y = .027; break; }
     case 'spoon': { const c0 = cl || '#c9c9c9'; const sp = new THREE.Group(); sp.position.y = .012; g.add(sp); const bw = A(G.sph(.03, 20, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), P(c0, 'metal'), sp, 0); bw.scale.set(1, .35, 1.4); bw.position.x = .08; bw.material = bw.material; bw.rotation.x = Math.PI;
