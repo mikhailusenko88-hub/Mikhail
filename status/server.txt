@@ -1,66 +1,65 @@
-Проверка: 2026-11-20 16:20 UTC (19:20 МСК) из GitHub (US)
+Сервер: 193.53.40.82
+Проверка: 2026-11-22 08:50 UTC (11:50 МСК) из GitHub (US)
 
-=== Попытка 1 — 19:20:49 МСК
---- ping
-3 packets transmitted, 0 received, 100% packet loss, time 2078ms
-
---- порты TCP
-22 открыт
-80 открыт
-443 открыт
-2222 НЕ отвечает
-8080 открыт
-8443 открыт
---- SSH баннер: SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
---- http://89.126.192.214/ -> 302 за 0.489305s
---- 8080 страница -> 200 19848 байт за 0.689133s
-
-=== Попытка 2 — 19:21:15 МСК
+=== Попытка 1 — 11:50:43 МСК
 --- ping
 3 packets transmitted, 0 received, 100% packet loss, time 2058ms
 
 --- порты TCP
 22 открыт
-80 открыт
-443 открыт
+80 НЕ отвечает
+443 НЕ отвечает
 2222 НЕ отвечает
-8080 открыт
-8443 открыт
---- SSH баннер: SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
---- http://89.126.192.214/ -> 302 за 0.451857s
---- 8080 страница -> 200 19848 байт за 0.691629s
+8080 НЕ отвечает
+8443 НЕ отвечает
+--- SSH баннер: SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.19
+--- http://193.53.40.82/ -> 000 за 0.127216s
+--- http://193.53.40.82/ не ответил
+--- 8080 страница -> 000 0 байт за 0.125927s
+--- 8080 страница не ответила
 
-=== Попытка 3 — 19:21:41 МСК
+=== Попытка 2 — 11:51:07 МСК
 --- ping
-3 packets transmitted, 0 received, 100% packet loss, time 2057ms
+3 packets transmitted, 0 received, 100% packet loss, time 2058ms
 
 --- порты TCP
 22 открыт
-80 открыт
-443 открыт
+80 НЕ отвечает
+443 НЕ отвечает
 2222 НЕ отвечает
-8080 открыт
-8443 открыт
---- SSH баннер: SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
---- http://89.126.192.214/ -> 302 за 0.453891s
---- 8080 страница -> 200 19848 байт за 0.697198s
+8080 НЕ отвечает
+8443 НЕ отвечает
+--- SSH баннер: SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.19
+--- http://193.53.40.82/ -> 000 за 0.131592s
+--- http://193.53.40.82/ не ответил
+--- 8080 страница -> 000 0 байт за 0.127449s
+--- 8080 страница не ответила
+
+=== Попытка 3 — 11:51:31 МСК
+--- ping
+3 packets transmitted, 0 received, 100% packet loss, time 2048ms
+
+--- порты TCP
+22 открыт
+80 НЕ отвечает
+443 НЕ отвечает
+2222 НЕ отвечает
+8080 НЕ отвечает
+8443 НЕ отвечает
+--- SSH баннер: SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.19
+--- http://193.53.40.82/ -> 000 за 0.123001s
+--- http://193.53.40.82/ не ответил
+--- 8080 страница -> 000 0 байт за 0.129806s
+--- 8080 страница не ответила
 
 === Все открытые TCP-порты (nmap)
-Host is up (0.31s latency).
-Not shown: 65459 closed tcp ports (reset), 69 filtered tcp ports (no-response)
-Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
-22/tcp   open  ssh
-80/tcp   open  http
-443/tcp  open  https
-445/tcp  open  microsoft-ds
-8080/tcp open  http-proxy
-8091/tcp open  jamlink
-8443/tcp open  https-alt
-Nmap done: 1 IP address (1 host up) scanned in 81.13 seconds
+Host is up (0.14s latency).
+22/tcp open  ssh
+Nmap done: 1 IP address (1 host up) scanned in 29.74 seconds
 
 === UDP (VPN AmneziaWG/WireGuard — open|filtered = норма, closed = порт не слушает)
 Not shown: 50 open|filtered udp ports (no-response)
-Nmap done: 1 IP address (1 host up) scanned in 6.08 seconds
+Nmap done: 1 IP address (1 host up) scanned in 6.12 seconds
 
 === Маршрут (последние шаги)
 20  *
@@ -71,199 +70,196 @@ Nmap done: 1 IP address (1 host up) scanned in 6.08 seconds
 25  *
 
 === С других точек мира, сначала Россия (check-host.net)
-Соседей с открытыми портами: 194
-## tcp 89.126.192.214:22
+Соседей с открытыми портами: 211
+## ping 193.53.40.82
+- RU Moscow: НЕТ (0/4)
+- RU Moscow: НЕТ (0/4)
+- RU Saint Petersburg: НЕТ (0/4)
+- AT Vienna: НЕТ (0/4)
+- AZ Baku: НЕТ (0/4)
+- BG Sofia: НЕТ (0/4)
+- BR Sao Paulo: НЕТ (0/4)
+- CA Vancouver: НЕТ (0/4)
+- CH Zurich: НЕТ (0/0)
+- CH Zurich: НЕТ (0/4)
+- DE Frankfurt: НЕТ (0/4)
+- DE Langen: НЕТ (0/4)
+- DE Nuremberg: НЕТ (0/4)
+- ES Barcelona: НЕТ (0/4)
+- ES Madrid: НЕТ (0/4)
+- FR Paris: НЕТ (0/4)
+- GB London: НЕТ (0/4)
+- HK Hong Kong: НЕТ (0/4)
+- HU Nyiregyhaza: НЕТ (0/4)
+- ID Jakarta: НЕТ (0/4)
+- ID Jakarta: НЕТ (0/4)
+- IL Netanya: НЕТ (0/4)
+- IL Tel Aviv: НЕТ (0/4)
+- IN Mumbai: НЕТ (0/4)
+- IN Rajpura: НЕТ (0/4)
+- IR Isfahan: НЕТ (0/4)
+- IR Qom: НЕТ (0/4)
+- IR Shiraz: НЕТ (0/4)
+- IR Shiraz: НЕТ (0/4)
+- IR Tehran: НЕТ (0/4)
+- IR Tehran: НЕТ (0/4)
+- IR Tehran: НЕТ (0/4)
+- IR Tehran: НЕТ (0/4)
+- IS Reykjavik: НЕТ (0/4)
+- IT Milan: НЕТ (0/4)
+- IT Milan: НЕТ (0/4)
+- JP Tokyo: НЕТ (0/4)
+- KZ Karaganda: НЕТ (0/4)
+- MD Chisinau: НЕТ (0/4)
+- NL Amsterdam: НЕТ (0/4)
+- NL Meppel: НЕТ (0/4)
+- PL Warsaw: НЕТ (0/4)
+- PL Warsaw: НЕТ (0/4)
+- PT Viana: НЕТ (0/4)
+- RO Bucharest: НЕТ (0/4)
+- RS Belgrade: НЕТ (0/4)
+- SE Stockholm: НЕТ (0/4)
+- SE Stockholm: НЕТ (0/4)
+- SG Singapore: НЕТ (0/4)
+- SI Maribor: НЕТ (0/4)
+- TR Istanbul: НЕТ (0/4)
+- TR Istanbul: НЕТ (0/4)
+- UA Khmelnytskyi: НЕТ (0/4)
+- UA Kyiv: НЕТ (0/4)
+- US Atlanta: НЕТ (0/4)
+- US Dallas: НЕТ (0/4)
+- US Los Angeles: НЕТ (0/4)
+- US Miami: НЕТ (0/4)
+- US New York: НЕТ (0/4)
+- VN Ho Chi Minh City: НЕТ (0/4)
+
+## tcp 193.53.40.82:22
 - RU Moscow: НЕТ (Connection timed out)
 - RU Moscow: НЕТ (Connection timed out)
 - RU Saint Petersburg: НЕТ (Connection timed out)
-- AT Vienna: ОК 102 мс
-- AZ Baku: ОК 92 мс
-- BG Sofia: ОК 128 мс
-- BR Sao Paulo: ОК 299 мс
-- CA Vancouver: ОК 247 мс
-- CH Zurich: ОК 103 мс
-- CH Zurich: ОК 92 мс
-- DE Frankfurt: ОК 83 мс
-- DE Langen: ОК 106 мс
-- DE Nuremberg: ОК 76 мс
-- ES Barcelona: ОК 122 мс
-- ES Madrid: ОК 97 мс
-- FR Paris: ОК 95 мс
-- GB London: ОК 97 мс
-- HK Hong Kong: ОК 319 мс
-- HU Nyiregyhaza: ОК 98 мс
-- ID Jakarta: ОК 262 мс
-- ID Jakarta: ОК 333 мс
-- IL Netanya: ОК 146 мс
-- IL Tel Aviv: ОК 151 мс
-- IN Mumbai: ОК 268 мс
-- IN Rajpura: ОК 1261 мс
-- IR Isfahan: ОК 131 мс
-- IR Qom: ОК 103 мс
-- IR Shiraz: ОК 110 мс
-- IR Shiraz: ОК 146 мс
-- IR Tehran: ОК 103 мс
-- IR Tehran: ОК 128 мс
-- IR Tehran: ОК 143 мс
-- IR Tehran: ОК 143 мс
-- IS Reykjavik: ОК 132 мс
-- IT Milan: ОК 120 мс
-- IT Milan: ОК 88 мс
-- JP Tokyo: ОК 301 мс
-- KZ Karaganda: ОК 7 мс
-- MD Chisinau: ОК 97 мс
-- NL Amsterdam: ОК 77 мс
-- NL Meppel: ОК 112 мс
-- PL Warsaw: ОК 109 мс
-- PL Warsaw: ОК 92 мс
-- PT Viana: ОК 110 мс
+- AT Vienna: ОК 31 мс
+- AZ Baku: ОК 71 мс
+- BG Sofia: ОК 41 мс
+- BR Sao Paulo: ОК 232 мс
+- CA Vancouver: ОК 152 мс
+- CH Zurich: НЕТ (?)
+- CH Zurich: ОК 34 мс
+- DE Frankfurt: ОК 23 мс
+- DE Langen: ОК 23 мс
+- DE Nuremberg: ОК 26 мс
+- ES Barcelona: ОК 48 мс
+- ES Madrid: ОК 49 мс
+- FR Paris: ОК 27 мс
+- GB London: ОК 24 мс
+- HK Hong Kong: ОК 196 мс
+- HU Nyiregyhaza: ОК 42 мс
+- ID Jakarta: ОК 182 мс
+- ID Jakarta: ОК 186 мс
+- IL Netanya: ОК 78 мс
+- IL Tel Aviv: ОК 82 мс
+- IN Mumbai: ОК 193 мс
+- IN Rajpura: ОК 171 мс
+- IR Isfahan: ОК 80 мс
+- IR Qom: ОК 65 мс
+- IR Shiraz: ОК 74 мс
+- IR Shiraz: ОК 98 мс
+- IR Tehran: ОК 100 мс
+- IR Tehran: ОК 80 мс
+- IR Tehran: ОК 82 мс
+- IR Tehran: ОК 90 мс
+- IS Reykjavik: ОК 53 мс
+- IT Milan: ОК 32 мс
+- IT Milan: ОК 33 мс
+- JP Tokyo: ОК 257 мс
+- KZ Karaganda: ОК 91 мс
+- MD Chisinau: ОК 57 мс
+- NL Amsterdam: ОК 20 мс
+- NL Meppel: ОК 24 мс
+- PL Warsaw: ОК 30 мс
+- PL Warsaw: ОК 39 мс
+- PT Viana: ОК 56 мс
+- RO Bucharest: ОК 45 мс
+- RS Belgrade: ОК 44 мс
+- SE Stockholm: ОК 1 мс
+- SE Stockholm: ОК 2 мс
+- SG Singapore: ОК 177 мс
+- SI Maribor: ОК 37 мс
+- TR Istanbul: ОК 63 мс
+- TR Istanbul: ОК 65 мс
+- UA Khmelnytskyi: ОК 39 мс
+- UA Kyiv: ОК 54 мс
+- US Atlanta: ОК 123 мс
+- US Dallas: ОК 131 мс
+- US Los Angeles: ОК 149 мс
+- US Miami: ОК 147 мс
+- US New York: ОК 98 мс
+- VN Ho Chi Minh City: ОК 249 мс
+
+=== Соседи по сети хостера: 193.53.40.2:443, 193.53.40.3:443, 193.53.40.4:22, 193.53.40.5:443
+
+## tcp 193.53.40.2:443
+- RU Moscow: ОК 23 мс
+- RU Moscow: ОК 42 мс
+- RU Saint Petersburg: ОК 14 мс
+- AT Vienna: ОК 33 мс
+- AZ Baku: ОК 68 мс
+- BG Sofia: ОК 41 мс
+- BR Sao Paulo: ОК 228 мс
+- CA Vancouver: ОК 153 мс
+- CH Zurich: НЕТ (?)
+- CH Zurich: ОК 41 мс
+- DE Frankfurt: ОК 24 мс
+- DE Langen: ОК 24 мс
+- DE Nuremberg: ОК 26 мс
+- ES Barcelona: ОК 48 мс
+- ES Madrid: ОК 49 мс
+- FR Paris: ОК 27 мс
+- GB London: ОК 24 мс
+- HK Hong Kong: ОК 199 мс
+- HU Nyiregyhaza: ОК 41 мс
+- ID Jakarta: ОК 183 мс
+- ID Jakarta: ОК 183 мс
+- IL Netanya: ОК 79 мс
+- IL Tel Aviv: ОК 73 мс
+- IN Mumbai: ОК 190 мс
+- IN Rajpura: ОК 170 мс
+- IR Isfahan: ОК 98 мс
+- IR Qom: ОК 63 мс
+- IR Shiraz: ОК 73 мс
+- IR Shiraz: ОК 93 мс
+- IR Tehran: ОК 79 мс
+- IR Tehran: ОК 83 мс
+- IR Tehran: ОК 88 мс
+- IR Tehran: ОК 98 мс
+- IS Reykjavik: ОК 54 мс
+- IT Milan: ОК 32 мс
+- IT Milan: ОК 33 мс
+- JP Tokyo: ОК 268 мс
+- KZ Karaganda: ОК 81 мс
+- MD Chisinau: ОК 57 мс
+- NL Amsterdam: ОК 19 мс
+- NL Meppel: ОК 24 мс
+- PL Warsaw: ОК 30 мс
+- PL Warsaw: ОК 39 мс
+- PT Viana: ОК 56 мс
 - RO Bucharest: НЕТ (Connection timed out)
-- RS Belgrade: ОК 104 мс
-- SE Stockholm: ОК 74 мс
-- SE Stockholm: ОК 84 мс
-- SG Singapore: ОК 297 мс
-- SI Maribor: ОК 128 мс
-- TR Istanbul: ОК 117 мс
-- TR Istanbul: ОК 130 мс
-- UA Khmelnytskyi: ОК 89 мс
-- UA Kyiv: ОК 141 мс
-- US Atlanta: ОК 185 мс
-- US Dallas: НЕТ (?)
-- US Los Angeles: ОК 227 мс
-- US Miami: ОК 198 мс
-- US New York: ОК 180 мс
-- VN Ho Chi Minh City: ОК 269 мс
+- RS Belgrade: ОК 44 мс
+- SE Stockholm: ОК 1 мс
+- SE Stockholm: ОК 2 мс
+- SG Singapore: ОК 187 мс
+- SI Maribor: ОК 34 мс
+- TR Istanbul: ОК 62 мс
+- TR Istanbul: ОК 64 мс
+- UA Khmelnytskyi: ОК 51 мс
+- UA Kyiv: ОК 64 мс
+- US Atlanta: ОК 115 мс
+- US Dallas: ОК 132 мс
+- US Los Angeles: ОК 149 мс
+- US Miami: ОК 147 мс
+- US New York: ОК 99 мс
+- VN Ho Chi Minh City: ОК 252 мс
 
-## tcp 89.126.192.214:443: check-host не ответил (HTTP Error 429: Too Many Requests)
-## tcp 89.126.192.214:8443: check-host не ответил (HTTP Error 429: Too Many Requests)
-## tcp 89.126.192.214:8080: check-host не ответил (HTTP Error 429: Too Many Requests)
-## http http://89.126.192.214:8080/mebel/s9kbars/index.html
-- RU Moscow: НЕТ (Connection timed out)
-- RU Moscow: НЕТ (Connection timed out)
-- RU Saint Petersburg: НЕТ (Connection timed out)
-- AT Vienna: 200 OK за 0.6 с
-- AZ Baku: 200 OK за 0.2 с
-- BG Sofia: 200 OK за 0.2 с
-- BR Sao Paulo: 200 OK за 0.6 с
-- CA Vancouver: 200 OK за 0.5 с
-- CH Zurich: 200 OK за 0.2 с
-- CH Zurich: 200 OK за 0.2 с
-- DE Frankfurt: 200 OK за 0.2 с
-- DE Langen: 200 OK за 0.2 с
-- DE Nuremberg: 200 OK за 0.2 с
-- ES Barcelona: 200 OK за 0.2 с
-- ES Madrid: 200 OK за 0.2 с
-- FR Paris: 200 OK за 0.2 с
-- GB London: 200 OK за 0.2 с
-- HK Hong Kong: 200 OK за 0.7 с
-- HU Nyiregyhaza: 200 OK за 0.2 с
-- ID Jakarta: 200 OK за 0.7 с
-- ID Jakarta: 200 OK за 1.6 с
-- IL Netanya: 200 OK за 0.3 с
-- IL Tel Aviv: 200 OK за 0.3 с
-- IN Mumbai: 200 OK за 0.5 с
-- IN Rajpura: 200 OK за 0.8 с
-- IR Isfahan: 200 OK за 0.4 с
-- IR Qom: 200 OK за 0.3 с
-- IR Shiraz: 200 OK за 0.2 с
-- IR Shiraz: 200 OK за 2.4 с
-- IR Tehran: 200 OK за 0.2 с
-- IR Tehran: 200 OK за 0.2 с
-- IR Tehran: 200 OK за 0.3 с
-- IR Tehran: 200 OK за 0.3 с
-- IS Reykjavik: 200 OK за 0.3 с
-- IT Milan: 200 OK за 0.2 с
-- IT Milan: 200 OK за 0.2 с
-- JP Tokyo: 200 OK за 0.6 с
-- KZ Karaganda: 200 OK за 0.0 с
-- MD Chisinau: 200 OK за 0.2 с
-- NL Amsterdam: 200 OK за 0.2 с
-- NL Meppel: 200 OK за 0.2 с
-- PL Warsaw: 200 OK за 0.2 с
-- PL Warsaw: 200 OK за 0.2 с
-- PT Viana: 200 OK за 0.2 с
-- RO Bucharest: 200 OK за 0.2 с
-- RS Belgrade: 200 OK за 0.2 с
-- SE Stockholm: 200 OK за 0.1 с
-- SE Stockholm: 200 OK за 0.2 с
-- SG Singapore: 200 OK за 0.5 с
-- SI Maribor: 200 OK за 0.2 с
-- TR Istanbul: 200 OK за 0.2 с
-- TR Istanbul: 200 OK за 0.3 с
-- UA Khmelnytskyi: 200 OK за 0.2 с
-- UA Kyiv: 200 OK за 0.3 с
-- US Atlanta: 200 OK за 0.4 с
-- US Dallas: НЕТ (?)
-- US Los Angeles: 200 OK за 0.5 с
-- US Miami: 200 OK за 0.4 с
-- US New York: 200 OK за 0.4 с
-- VN Ho Chi Minh City: 200 OK за 0.5 с
-
-=== Соседи по сети хостера: 89.126.192.2:22, 89.126.192.3:443, 89.126.192.14:443, 89.126.192.15:22
-
-## tcp 89.126.192.2:22: check-host не ответил (HTTP Error 429: Too Many Requests)
-## tcp 89.126.192.3:443: check-host не ответил (HTTP Error 429: Too Many Requests)
-## tcp 89.126.192.14:443: check-host не ответил (HTTP Error 429: Too Many Requests)
-## tcp 89.126.192.15:22
-- RU Moscow: ОК 63 мс
-- RU Moscow: ОК 67 мс
-- RU Saint Petersburg: ОК 89 мс
-- AT Vienna: ОК 117 мс
-- AZ Baku: ОК 94 мс
-- BG Sofia: ОК 124 мс
-- BR Sao Paulo: ОК 282 мс
-- CA Vancouver: ОК 232 мс
-- CH Zurich: ОК 100 мс
-- CH Zurich: ОК 93 мс
-- DE Frankfurt: ОК 82 мс
-- DE Langen: ОК 102 мс
-- DE Nuremberg: ОК 76 мс
-- ES Barcelona: ОК 111 мс
-- ES Madrid: ОК 109 мс
-- FR Paris: ОК 82 мс
-- GB London: ОК 93 мс
-- HK Hong Kong: ОК 309 мс
-- HU Nyiregyhaza: ОК 107 мс
-- ID Jakarta: ОК 260 мс
-- ID Jakarta: ОК 334 мс
-- IL Netanya: ОК 143 мс
-- IL Tel Aviv: ОК 145 мс
-- IN Mumbai: ОК 265 мс
-- IN Rajpura: НЕТ (?)
-- IR Isfahan: ОК 133 мс
-- IR Qom: ОК 105 мс
-- IR Shiraz: ОК 111 мс
-- IR Shiraz: ОК 177 мс
-- IR Tehran: ОК 102 мс
-- IR Tehran: ОК 104 мс
-- IR Tehran: ОК 133 мс
-- IR Tehran: ОК 151 мс
-- IS Reykjavik: ОК 128 мс
-- IT Milan: ОК 102 мс
-- IT Milan: ОК 121 мс
-- JP Tokyo: ОК 312 мс
-- KZ Karaganda: ОК 7 мс
-- MD Chisinau: ОК 98 мс
-- NL Amsterdam: ОК 86 мс
-- NL Meppel: ОК 110 мс
-- PL Warsaw: ОК 104 мс
-- PL Warsaw: ОК 109 мс
-- PT Viana: ОК 120 мс
-- RO Bucharest: ОК 111 мс
-- RS Belgrade: ОК 102 мс
-- SE Stockholm: ОК 79 мс
-- SE Stockholm: ОК 94 мс
-- SG Singapore: ОК 314 мс
-- SI Maribor: ОК 136 мс
-- TR Istanbul: ОК 120 мс
-- TR Istanbul: ОК 136 мс
-- UA Khmelnytskyi: ОК 89 мс
-- UA Kyiv: ОК 148 мс
-- US Atlanta: ОК 183 мс
-- US Dallas: НЕТ (?)
-- US Los Angeles: ОК 248 мс
-- US Miami: ОК 202 мс
-- US New York: ОК 175 мс
-- VN Ho Chi Minh City: ОК 271 мс
-
-## tcp hoster.kz:443: check-host не ответил (HTTP Error 429: Too Many Requests)
+## tcp 193.53.40.3:443: check-host не ответил (HTTP Error 429: Too Many Requests)
+## tcp 193.53.40.4:22: check-host не ответил (HTTP Error 429: Too Many Requests)
+## tcp 193.53.40.5:443: check-host не ответил (HTTP Error 429: Too Many Requests)
+## tcp hostup.se:443: check-host не ответил (HTTP Error 429: Too Many Requests)
