@@ -11,6 +11,11 @@
    У ответа дизайнера из «Базы дизайнеров» — строка «Дизайнер: Д03 …» (его карточка).
 4) Сводка базы дизайнеров (CRM от 19.11): https://crm.nashdekor.ru/api/dz/export (тот же workflow, файл dz.json):
        python3 tools/replies.py dz dz.json --out база.json        → карточки, касания, отправки моделей, тексты
+5) Статистика сайта (CRM от 23.11): https://crm.nashdekor.ru/api/site/export (тот же workflow, файл site.json).
+   Свой ключ SITE.pub — чтобы разбор сайта не сбивал READER.pub у сеанса, который ведёт дизайнеров:
+       python3 tools/replies.py key --site                         → пишет SITE.pub (закоммитить и запушить в outbox)
+       python3 tools/replies.py site site.json --out сайт.json     → 30 дней: лента посетителей, где теряем людей, блоки, нажатия
+   Нет SITE.pub на сервере — CRM шифрует для READER.pub.
 """
 import argparse
 import base64
@@ -28,6 +33,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 INFO = b"nashdekor-replies-v1"
 INFO_DZ = b"nashdekor-dz-v1"
+INFO_SITE = b"nashdekor-site-v1"
 HOME = Path(os.environ.get("READER_HOME", Path.home() / ".nashdekor-reader"))
 MSK = timezone(timedelta(hours=3))
 
@@ -55,7 +61,7 @@ def cmd_key(a):
         with os.fdopen(fd, "w") as f:
             f.write(base64.b64encode(raw).decode() + "\n")
     pub = pub_b64(sk)
-    Path(a.repo, "READER.pub").write_text(pub + "\n")
+    Path(a.repo, "SITE.pub" if a.site else "READER.pub").write_text(pub + "\n")
     print(pub)
 
 
@@ -87,6 +93,29 @@ def cmd_dz(a):
         st[l["status"]] = st.get(l["status"], 0) + 1
     print(f"Сводка на {x.get('at')}: карточек {len(x.get('leads', []))}, касаний {len(x.get('touches', []))}, "
           f"отправок моделей {len(x.get('docs', []))}; статусы {st}; писем сегодня {x.get('sent_today')}/{x.get('limit')} → {a.out}")
+
+
+def cmd_site(a):
+    d = json.loads(Path(a.file).read_text(encoding="utf-8"))
+    if d.get("off"):
+        sys.exit("В CRM выключено «Claude видит статистику сайта» (CRM → Сайт → Выключатели) или общая галочка в «Исходящих».")
+    if d.get("nokey"):
+        sys.exit("Сервер ещё не видит ключ — запушить SITE.pub (или READER.pub) и подождать минуту.")
+    sk = load_sk()
+    check_head(d, sk)
+    x = unseal(sk, d["item"], INFO_SITE)
+    Path(a.out).write_text(json.dumps(x, ensure_ascii=False, indent=1), encoding="utf-8")
+    r30, r7 = x.get("d30") or {}, x.get("d7") or {}
+    print(f"Статистика на {x.get('day')}: за 7 дней {r7.get('visitors')} чел., {r7.get('leads')} заявок; "
+          f"за 30 дней {r30.get('visitors')} чел., {r30.get('leads')} заявок; в ленте {len(r30.get('feed') or [])} посетителей → {a.out}")
+    print("Откуда (30 дн.):", ", ".join(f"{n} {c}" for n, c in (r30.get("sources") or [])[:8]))
+    ux = r30.get("ux") or {}
+    for p in (ux.get("pages") or [])[:8]:
+        print(f"  {p['name'][:50]}: {p['who']} чел., смотрят {p['median_sec']} с, до конца {p['s90']}, ушли с неё {p['exit']}, сразу ушли {p['bounce']}/{p['landing']}")
+    if ux.get("clicks"):
+        print("Нажатия без ответа:", "; ".join(f"{c['page'][:30]} — {c['label']} ({c['who']})" for c in ux["clicks"][:6]))
+    if r30.get("filtered"):
+        print("Отсеяно:", ", ".join(f"{s} — {w} ({n})" for s, w, n in r30["filtered"][:6]))
 
 
 def cmd_read(a):
@@ -129,10 +158,12 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     k = sub.add_parser("key"); k.add_argument("--new", action="store_true", help="новый ключ"); k.add_argument("--repo", default=".")
+    k.add_argument("--site", action="store_true", help="записать ключ в SITE.pub (статистика сайта), а не в READER.pub")
     r = sub.add_parser("read"); r.add_argument("file"); r.add_argument("--out", default=""); r.add_argument("--json", default="")
     z = sub.add_parser("dz"); z.add_argument("file"); z.add_argument("--out", default="dz-base.json")
+    st = sub.add_parser("site"); st.add_argument("file"); st.add_argument("--out", default="site-stats.json")
     a = ap.parse_args()
-    {"key": cmd_key, "read": cmd_read, "dz": cmd_dz}[a.cmd](a)
+    {"key": cmd_key, "read": cmd_read, "dz": cmd_dz, "site": cmd_site}[a.cmd](a)
 
 
 if __name__ == "__main__":
