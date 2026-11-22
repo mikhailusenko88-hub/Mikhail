@@ -27,6 +27,11 @@
   "de": {
    "engine": "piper",
    "model": "de/de_DE/kerstin/low/de_DE-kerstin-low"
+  },
+  "hi": {
+   "engine": "kokoro",
+   "lang": "h",
+   "voice": "hf_alpha"
   }
  },
  "heroes": {
@@ -78,5 +83,11 @@
  "builds": {
   "36dub": "36c",
   "36c": "36c"
- }
+ },
+ "whisper_lang": {
+  "hi": "fw:large-v3-turbo"
+ },
+ "by_chars": [
+  "hi"
+ ]
 }

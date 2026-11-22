@@ -185,7 +185,7 @@ def source(text, spec):
         return piper(text, spec["model"], spec.get("speed", 1.0))
     if spec["engine"] == "mtl":
         # Chatterbox Multilingual с образцом родного голоса (например, сделанным Piper) — родное произношение, звук 24 кГц
-        return mtl(text, spec["lang"], spec_ref(spec), spec.get("speed", 1.0))
+        return mtl(text, spec["lang"], spec_ref(spec), spec.get("speed", 1.0), spec.get("cfg", 0.5), spec.get("exag", 0.5))
     if spec["engine"] == "edge":
         import edge_tts
         mp3 = os.path.join(TMP, "edge.mp3")
@@ -213,7 +213,7 @@ def spec_ref(spec):
     return _refcache[key]
 
 
-def mtl(text, lang, ref, speed=1.0):
+def mtl(text, lang, ref, speed=1.0, cfg=0.5, exag=0.5):
     global _mtl
     from chatterbox.mtl_tts import ChatterboxMultilingualTTS as M
     if _mtl is None:
@@ -222,7 +222,7 @@ def mtl(text, lang, ref, speed=1.0):
         except Exception:
             traceback.print_exc()
             _mtl = M.from_pretrained(device="cpu")
-    w = call_kw(_mtl.generate, text=text, language_id=lang, audio_prompt_path=ref, exaggeration=0.5, cfg_weight=0.5, temperature=0.8)
+    w = call_kw(_mtl.generate, text=text, language_id=lang, audio_prompt_path=ref, exaggeration=exag, cfg_weight=cfg, temperature=0.8)
     a = resample(to_np(w), _mtl.sr)
     return tempo(a, speed) if abs(speed - 1.0) > 0.01 else a
 
@@ -275,12 +275,34 @@ def embed(arr):
 
 
 def heard(arr, lang, size="small"):
+    """Что услышал распознаватель. size: 'small' (openai-whisper) или 'fw:large-v3-turbo' (faster-whisper, точнее, нужен для хинди)."""
+    p = os.path.join(TMP, "wh.wav")
+    save(arr, p)
+    if size.startswith("fw:"):
+        from faster_whisper import WhisperModel
+        if size not in _wh:
+            _wh[size] = WhisperModel(size[3:], device="cpu", compute_type="int8")
+        segs, _ = _wh[size].transcribe(p, language=lang, beam_size=5, vad_filter=False)
+        return " ".join(s.text.strip() for s in segs).strip()
     import whisper
     if size not in _wh:
         _wh[size] = whisper.load_model(size)
-    p = os.path.join(TMP, "wh.wav")
-    save(arr, p)
     return _wh[size].transcribe(p, language=lang, fp16=False)["text"].strip()
+
+
+def norm_chars(t):
+    """Для сравнения по буквам: без знаков препинания и пробелов; деванагари — без нукты, чандрабинду как анусвара."""
+    import unicodedata
+    t = unicodedata.normalize("NFC", t.lower())
+    t = t.replace("\u093c", "").replace("\u0901", "\u0902")
+    return "".join(ch for ch in t if ch.isalnum())
+
+
+def char_pct(ref, hyp):
+    """Доля совпавших букв (для языков, где написание слова «плавает», например хинди)."""
+    r, h = norm_chars(ref), norm_chars(hyp)
+    sm = difflib.SequenceMatcher(a=r, b=h, autojunk=False)
+    return round(100.0 * sum(b.size for b in sm.get_matching_blocks()) / max(1, len(r)), 1)
 
 
 def words(t):

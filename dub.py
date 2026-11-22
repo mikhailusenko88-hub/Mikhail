@@ -145,8 +145,10 @@ def main():
             try:
                 tgt = target if attempt == 0 else min(window, target * 1.3)   # вторая попытка — можно чуть длиннее (в паузу)
                 a, info, used, ratio = render_fit(text, spec, refs[name], f0s[name], pre, tgt)
-                heard = D.heard(a, LANG, G.get("whisper", "small"))
+                heard = D.heard(a, LANG, G.get("whisper_lang", {}).get(LANG, G.get("whisper", "small")))
                 clear, extra = D.clear_pct(text, heard)
+                if LANG in G.get("by_chars", []):       # хинди: написание слов «плавает» — считаем по буквам
+                    clear, extra = D.char_pct(text, heard), 0
                 cand = {"a": a, "heard": heard, "clear": clear, "extra": extra, "shift": info["shift_st"],
                         "speed": used.get("speed", 1.0), "ratio": round(ratio, 2)}
                 if best is None or (clear - 10 * extra) > (best["clear"] - 10 * best["extra"]):

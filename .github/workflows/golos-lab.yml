@@ -32,7 +32,7 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
           pip install -q chatterbox-tts --extra-index-url https://download.pytorch.org/whl/cpu
-          pip install -q "kokoro>=0.9.4" piper-tts speechbrain openai-whisper praat-parselmouth soundfile edge-tts --extra-index-url https://download.pytorch.org/whl/cpu
+          pip install -q "kokoro>=0.9.4" piper-tts speechbrain openai-whisper faster-whisper praat-parselmouth soundfile edge-tts --extra-index-url https://download.pytorch.org/whl/cpu
           python -m spacy download en_core_web_sm -q || true
           python -c "import torch, numpy; print('torch', torch.__version__, 'numpy', numpy.__version__)"
       - name: Lab

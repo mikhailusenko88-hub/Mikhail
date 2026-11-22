@@ -40,9 +40,11 @@ def main():
             D.ff("-i", norm, "-codec:a", "libmp3lame", "-q:a", "3", os.path.join(OUT, "v", job["key"] + ".mp3"))
             m = D.measure(arr)
             row.update(m, shift=shifts, synth_sec=round(secs, 1), dur=round(len(arr) / D.SR, 1))
-            txt = D.heard(arr, job["lang"], CFG.get("whisper", "small"))
+            wsz = CFG.get("whisper_lang", {}).get(job["lang"], CFG.get("whisper", "small"))
+            txt = D.heard(arr, job["lang"], wsz)
             row["heard"] = txt
             row["clear"], row["extra"] = D.clear_pct(" ".join(job["lines"]), txt)
+            row["chars"] = D.char_pct(" ".join(job["lines"]), txt)
             try:
                 if not E:
                     E.update({s: D.embed(a) for s, a in ref_arr.items()})
@@ -64,13 +66,13 @@ def main():
 
     json.dump({"ref_f0": ref_f0, "rows": rows}, open(os.path.join(OUT, "report.json"), "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
-    md = ["# Пробы перекраски", "", "| Ключ | Заметка | Понято | Лишних слов | Сходство | Ближе всего | Чужой | f0 | HNR | Сдвиг, пт | Синтез, с | Услышано |",
-          "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    md = ["# Пробы перекраски", "", "| Ключ | Заметка | Понято | Букв | Лишних слов | Сходство | Ближе всего | Чужой | f0 | HNR | Сдвиг, пт | Синтез, с | Услышано |",
+          "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
         if r.get("error"):
-            md.append(f"| {r['key']} | {r.get('note') or ''} | ОШИБКА | | | | | | | | | {r['error']} |")
+            md.append(f"| {r['key']} | {r.get('note') or ''} | ОШИБКА | | | | | | | | | | {r['error']} |")
         else:
-            md.append(f"| {r['key']} | {r.get('note') or ''} | {r.get('clear')}% | {r.get('extra')} | {r.get('sim')} | "
+            md.append(f"| {r['key']} | {r.get('note') or ''} | {r.get('clear')}% | {r.get('chars')}% | {r.get('extra')} | {r.get('sim')} | "
                       f"{NAMES.get(r.get('nearest'), '')} | {r.get('other')} | {r.get('f0')} | {r.get('hnr')} | {r.get('shift')} | "
                       f"{r.get('synth_sec')} | {r.get('heard')} |")
     open(os.path.join(OUT, "report.md"), "w", encoding="utf-8").write("\n".join(md) + "\n")
