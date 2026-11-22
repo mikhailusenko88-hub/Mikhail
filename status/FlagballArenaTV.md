@@ -1,5 +1,5 @@
 # Flagball Arena  (@FlagballArenaTV)
-Проверено: 2026-11-22 06:54 UTC
+Проверено: 2026-11-22 07:02 UTC
 
 - Страница канала: HTTP 200; ID: UCUKgRxWtL1kPWr9hdfL8qQw
 - Шапка: 18 подписчиков · 77 видео
@@ -7,7 +7,7 @@
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
 - 2026-11-22 03:40 · 216 просм. · Brazil vs Indonesia vs Morocco 😱 Who Survives? Country Marble Race #shorts · egKFQhdpuzU
 - 2026-11-21 19:38 · 660 просм. · 9 days to the Grand Final ⏳ Egypt vs Colombia vs Cambodia — Who Survives? #shorts · iC7WG5L26Is
-- 2026-11-21 11:37 · 834 просм. · Mexico vs Thailand vs Ukraine 😱 Who Survives? Country Marble Race #shorts · 2OebbtHeVAY
+- 2026-11-21 11:37 · 842 просм. · Mexico vs Thailand vs Ukraine 😱 Who Survives? Country Marble Race #shorts · 2OebbtHeVAY
 - 2026-11-21 03:38 · 977 просм. · Türkiye on its LAST life ❤️ India vs Türkiye vs Spain — Who Survives? #shorts · pr0AjwyzNbE
 - 2026-11-20 19:54 · 1201 просм. · Race 38/67: 8 of 24 lose a life 😱 Vietnam vs France vs Korea #shorts · hO0r9li7C4M
 - 2026-11-20 11:37 · 911 просм. · 10 days to the Grand Final ⏳ Bangladesh vs Guatemala vs Cambodia — Who Survives? #shorts · -3EWQRVajaY
@@ -24,7 +24,7 @@
 ## Вкладка Shorts (видно всем) — 45 шт. на первой странице
 - 216 просмотров · Brazil vs Indonesia vs Morocco 😱 Who Survives? Country Marble Race #shorts · egKFQhdpuzU
 - 660 просмотров · 9 days to the Grand Final ⏳ Egypt vs Colombia vs Cambodia — Who Survives? #shorts · iC7WG5L26Is
-- 834 просмотра · Mexico vs Thailand vs Ukraine 😱 Who Survives? Country Marble Race #shorts · 2OebbtHeVAY
+- 837 просмотров · Mexico vs Thailand vs Ukraine 😱 Who Survives? Country Marble Race #shorts · 2OebbtHeVAY
 - 977 просмотров · Türkiye on its LAST life ❤️ India vs Türkiye vs Spain — Who Survives? #shorts · pr0AjwyzNbE
 - 1,2 тыс. просмотров · Race 38/67: 8 of 24 lose a life 😱 Vietnam vs France vs Korea #shorts · hO0r9li7C4M
 - 911 просмотров · 10 days to the Grand Final ⏳ Bangladesh vs Guatemala vs Cambodia — Who Survives? #shorts · -3EWQRVajaY

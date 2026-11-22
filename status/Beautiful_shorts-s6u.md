@@ -1,12 +1,12 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-22 06:54 UTC
+Проверено: 2026-11-22 07:02 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
 - Шапка: 235 подписчиков · 147 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
 - 2026-11-21 20:22 · 1198 просм. · 1,932 Balls vs a Smaller Box — Will They Fit? 😳 Satisfying 3D Simulation #shorts #asmr · NQaXjwgZuUk
-- 2026-11-20 18:12 · 1887 просм. · 3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr · d12Mk5yTGGo
+- 2026-11-20 18:12 · 1891 просм. · 3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr · d12Mk5yTGGo
 - 2026-11-19 14:11 · 5091 просм. · 1,932 Balls — How Many Land in the Box? 😳 Satisfying 3D Simulation #shorts #asmr · EjiTsX0dWHQ
 - 2026-11-18 19:19 · 2186 просм. · 1,932 Balls Pour Into a Glass Box! 🔊 Satisfying 3D Simulation #shorts #asmr · 7mG_xtPN52w
 - 2026-11-17 22:08 · 1265 просм. · Every bounce = +1 ball 🐻 Can they fill the bear? 🔊 #satisfying #physics #simulation · 5vVhZ-Aus_A
@@ -25,7 +25,7 @@
 - 1,1 тыс. просмотров · 1,932 Balls vs a Smaller Box — Will They Fit? 😳 Satisfying 3D Simulation #shorts #asmr · NQaXjwgZuUk
 - 1,8 тыс. просмотров · 3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr · d12Mk5yTGGo
 - 5,1 тыс. просмотров · 1,932 Balls — How Many Land in the Box? 😳 Satisfying 3D Simulation #shorts #asmr · EjiTsX0dWHQ
-- 2,2 тыс. просмотров · 1,932 Balls Pour Into a Glass Box! 🔊 Satisfying 3D Simulation #shorts #asmr · 7mG_xtPN52w
+- 2,1 тыс. просмотров · 1,932 Balls Pour Into a Glass Box! 🔊 Satisfying 3D Simulation #shorts #asmr · 7mG_xtPN52w
 - 1,2 тыс. просмотров · Every bounce = +1 ball 🐻 Can they fill the bear? 🔊 #satisfying #physics #simulation · 5vVhZ-Aus_A
 - 1,6 тыс. просмотров · Every bounce = +1 ball 🐸 Can they fill the frog? #satisfying #physics #simulation · 7h5ICq0Civ8
 - 2,7 тыс. просмотров · Can 1 ball fill the 🐱? Wait for 100%… 😳 #satisfying #physics #simulation · 4ejtez9n18c
