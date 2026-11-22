@@ -1,7 +1,7 @@
 #!/bin/bash
 # Static analysis of an Android APK: what Android version, CPU, hardware and vendor it needs.
 # Nothing from the APK is executed.
-APK="$1"
+APK="$(readlink -f "$1")"
 META="$2"
 BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
 echo "build-tools: $BT"
