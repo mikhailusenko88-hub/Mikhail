@@ -1,91 +1,19 @@
-Проверка: 2026-11-22 09:05 UTC
+Проверка: 2026-11-22 10:17 UTC
 
-## HostUp 206.168.212 206.168.212.14 — 206.168.212.14 (206.168.212.14), открытый порт из GitHub: 443
-   RU Moscow: ОК 21 мс
-   RU Moscow: ОК 42 мс
+## Hoster.kz Астана (старый VPN, 3D-страницы, боты) — 89.126.192.214 (89.126.192.214), открытый порт из GitHub: 443
+   RU Moscow: НЕТ (Connection timed out)
+   RU Moscow: НЕТ (Connection timed out)
+   RU Saint Petersburg: НЕТ (Connection timed out)
+   DE Nuremberg: ОК 121 мс
+   DE Langen: ОК 85 мс
+   DE Frankfurt: ОК 2164 мс
+   KZ Karaganda: ОК 6 мс
+
+## HostUp вход (nimble-ibex) — 206.168.213.210 (206.168.213.210), открытый порт из GitHub: 22
+   RU Moscow: ОК 30 мс
+   RU Moscow: ОК 77 мс
    RU Saint Petersburg: ОК 13 мс
    DE Nuremberg: ОК 26 мс
    DE Langen: ОК 22 мс
    DE Frankfurt: ОК 24 мс
    KZ Karaganda: ОК 85 мс
-
-## HostUp 206.168.212 206.168.212.15 — 206.168.212.15 (206.168.212.15), открытый порт из GitHub: 443
-   RU Moscow: ОК 26 мс
-   RU Moscow: ОК 90 мс
-   RU Saint Petersburg: ОК 13 мс
-   DE Nuremberg: ОК 26 мс
-   DE Langen: ОК 25 мс
-   DE Frankfurt: ОК 23 мс
-   KZ Karaganda: ОК 81 мс
-
-## HostUp 206.168.213 206.168.213.2 — 206.168.213.2 (206.168.213.2), открытый порт из GitHub: 443
-   RU Moscow: ОК 22 мс
-   RU Moscow: ОК 40 мс
-   RU Saint Petersburg: ОК 14 мс
-   DE Nuremberg: ОК 26 мс
-   DE Langen: ОК 26 мс
-   DE Frankfurt: ОК 25 мс
-   KZ Karaganda: ОК 89 мс
-
-## HostUp 206.168.213 206.168.213.4 — 206.168.213.4 (206.168.213.4), открытый порт из GitHub: 443
-   RU Moscow: ОК 22 мс
-   RU Moscow: ОК 52 мс
-   RU Saint Petersburg: ОК 16 мс
-   DE Nuremberg: ОК 26 мс
-   DE Langen: ОК 22 мс
-   DE Frankfurt: ОК 23 мс
-   KZ Karaganda: ОК 87 мс
-
-## HostUp 103.177.249 103.177.249.2 — 103.177.249.2 (103.177.249.2), открытый порт из GitHub: 443
-   RU Moscow: ОК 22 мс
-   RU Moscow: ОК 71 мс
-   RU Saint Petersburg: ОК 14 мс
-   DE Nuremberg: ОК 26 мс
-   DE Langen: ОК 26 мс
-   DE Frankfurt: ОК 25 мс
-   KZ Karaganda: ОК 97 мс
-
-## HostUp 103.177.249 103.177.249.3 — 103.177.249.3 (103.177.249.3), открытый порт из GitHub: 443
-   RU Moscow: ОК 22 мс
-   RU Moscow: ОК 46 мс
-   RU Saint Petersburg: ОК 14 мс
-   DE Nuremberg: ОК 26 мс
-   DE Langen: ОК 22 мс
-   DE Frankfurt: ОК 25 мс
-   KZ Karaganda: ОК 82 мс
-
-## HostUp 91.226.221 91.226.221.2 — 91.226.221.2 (91.226.221.2), открытый порт из GitHub: 22
-   RU Moscow: ОК 22 мс
-   RU Moscow: ОК 30 мс
-   RU Saint Petersburg: ОК 13 мс
-   DE Nuremberg: ОК 26 мс
-   DE Langen: ОК 23 мс
-   DE Frankfurt: ОК 23 мс
-   KZ Karaganda: ОК 95 мс
-
-## HostUp 91.226.221 91.226.221.4 — 91.226.221.4 (91.226.221.4), открытый порт из GitHub: 443
-   RU Moscow: ОК 22 мс
-   RU Moscow: ОК 65 мс
-   RU Saint Petersburg: ОК 14 мс
-   DE Nuremberg: ОК 26 мс
-   DE Langen: ОК 23 мс
-   DE Frankfurt: ОК 25 мс
-   KZ Karaganda: ОК 81 мс
-
-## HostUp 143.14.50 143.14.50.5 — 143.14.50.5 (143.14.50.5), открытый порт из GitHub: 443
-   RU Moscow: ОК 22 мс
-   RU Moscow: ОК 69 мс
-   RU Saint Petersburg: ОК 13 мс
-   DE Nuremberg: ОК 27 мс
-   DE Langen: ОК 25 мс
-   DE Frankfurt: ОК 26 мс
-   KZ Karaganda: ОК 82 мс
-
-## HostUp 143.14.50 143.14.50.6 — 143.14.50.6 (143.14.50.6), открытый порт из GitHub: 443
-   RU Moscow: ОК 21 мс
-   RU Moscow: ОК 101 мс
-   RU Saint Petersburg: ОК 14 мс
-   DE Nuremberg: ОК 27 мс
-   DE Langen: ОК 23 мс
-   DE Frankfurt: ОК 25 мс
-   KZ Karaganda: ОК 84 мс
