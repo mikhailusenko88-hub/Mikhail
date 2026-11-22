@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import ipaddress
+import re
 import logging
 import os
 import threading
@@ -123,6 +124,7 @@ def label(rec: dict[str, Any]) -> str:
     city = name(rec.get("city"))
     cc = str((rec.get("country") or {}).get("iso_code") or "").upper()[:2] if isinstance(rec.get("country"), dict) else ""
     country = COUNTRY_RU.get(cc) or name(rec.get("country"))
+    city = re.sub(r"\s*\(.*$", "", city).strip()    # DB-IP: «Moscow (Tsentralnyy administrativnyy okrug)» → «Moscow»
     city = CITY_RU.get(city, city)
     if city and cc and cc != "RU":
         return f"{city}, {country}"[:60]

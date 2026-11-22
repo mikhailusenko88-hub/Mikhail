@@ -3075,6 +3075,9 @@ class TestVisitsDeep(Base):
                          "Санкт-Петербург")
         self.assertEqual(label({"city": {"names": {"en": "Almaty"}}, "country": {"iso_code": "KZ"}}), "Алматы, Казахстан")
         self.assertEqual(label({"country": {"iso_code": "RU"}}), "Россия")
+        self.assertEqual(label({"city": {"names": {"en": "Moscow (Tsentralnyy administrativnyy okrug)"}}, "country": {"iso_code": "RU"}}), "Москва")
+        self.assertEqual(label({"city": {"names": {"en": "Saint Petersburg (Admiralteyskiy rayon)"}}, "country": {"iso_code": "RU"}}),
+                         "Санкт-Петербург")
         self.assertEqual(self.app.extensions["geo"].city("10.0.0.1"), "")      # своя сеть и нет базы — без города
         self.assertEqual(self.app.extensions["geo"].city("203.0.113.5"), "")
         geo = self.app.extensions["geo"]
