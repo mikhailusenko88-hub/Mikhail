@@ -1,0 +1,319 @@
+{
+ "ref_f0": {
+  "barsik": 224.4,
+  "pik": 375.2,
+  "ron": 288.7,
+  "filya": 294.9,
+  "topa": 157.5
+ },
+ "rows": [
+  {
+   "key": "barsik_hi_hf_alpha",
+   "hero": "barsik",
+   "lang": "hi",
+   "note": "хинди, Kokoro hf_alpha",
+   "f0": 241.9,
+   "range_st": 7.3,
+   "hnr": 12.4,
+   "shift": [
+    0.0,
+    0.0
+   ],
+   "synth_sec": 56.7,
+   "dur": 8.6,
+   "heard": "उसे पता है, लान सिरा हमीशा उत्तर की ओड इशारा करता है. चलो कमडे में चलते हैं किताब समझा देगी.",
+   "clear": 89.3,
+   "extra": 3,
+   "chars": 93.2,
+   "sim": 0.625,
+   "nearest": "barsik",
+   "other": 0.097
+  },
+  {
+   "key": "barsik_hi_hf_beta",
+   "hero": "barsik",
+   "lang": "hi",
+   "note": "хинди, Kokoro hf_beta",
+   "f0": 240.1,
+   "range_st": 6.9,
+   "hnr": 12.4,
+   "shift": [
+    0.0,
+    0.0
+   ],
+   "synth_sec": 37.9,
+   "dur": 7.4,
+   "heard": "उसे पता है, लाल जिरा हमेशा उत्तर की ओर इशारा करता है. चलो कमरे में चलते हैं किताब समझा देगी.",
+   "clear": 96.4,
+   "extra": 1,
+   "chars": 97.7,
+   "sim": 0.548,
+   "nearest": "barsik",
+   "other": 0.097
+  },
+  {
+   "key": "ron_hi_hf_alpha",
+   "hero": "ron",
+   "lang": "hi",
+   "note": "хинди, Kokoro hf_alpha",
+   "f0": 274.6,
+   "range_st": 8.1,
+   "hnr": 17.5,
+   "shift": [
+    0.0,
+    0.0
+   ],
+   "synth_sec": 40.9,
+   "dur": 9.4,
+   "heard": "देखो सुई फिर से उधर ही इशारा कर लही है। अरे मेरा सिर्क घूम रहा है लेकिन सुई को कोई फर्प नहीं पड़ता।",
+   "clear": 89.2,
+   "extra": 4,
+   "chars": 95.7,
+   "sim": 0.772,
+   "nearest": "ron",
+   "other": 0.587
+  },
+  {
+   "key": "ron_hi_hf_beta",
+   "hero": "ron",
+   "lang": "hi",
+   "note": "хинди, Kokoro hf_beta",
+   "f0": 280.4,
+   "range_st": 8.1,
+   "hnr": 19.0,
+   "shift": [
+    1.6,
+    0.0
+   ],
+   "synth_sec": 37.1,
+   "dur": 8.5,
+   "heard": "देखो सुई फिर से उधर ही इशारा कर रही है अरे मेरा सिर घूम रहा है लेकिन सुई को कोई फर्क नहीं पड़ता",
+   "clear": 94.6,
+   "extra": 1,
+   "chars": 100.0,
+   "sim": 0.799,
+   "nearest": "ron",
+   "other": 0.598
+  },
+  {
+   "key": "filya_hi_hf_alpha",
+   "hero": "filya",
+   "lang": "hi",
+   "note": "хинди, Kokoro hf_alpha",
+   "f0": 286.7,
+   "range_st": 8.5,
+   "hnr": 13.6,
+   "shift": [
+    0.0,
+    0.0
+   ],
+   "synth_sec": 31.2,
+   "dur": 5.1,
+   "heard": "अगर हम बिस्कुट हटा दी तो, देखो सुई बिल्कुल नहीं हिली.",
+   "clear": 100.0,
+   "extra": 0,
+   "chars": 100.0,
+   "sim": 0.663,
+   "nearest": "filya",
+   "other": 0.482
+  },
+  {
+   "key": "filya_hi_hf_beta",
+   "hero": "filya",
+   "lang": "hi",
+   "note": "хинди, Kokoro hf_beta",
+   "f0": 281.1,
+   "range_st": 8.5,
+   "hnr": 13.3,
+   "shift": [
+    0.0,
+    0.0
+   ],
+   "synth_sec": 30.4,
+   "dur": 4.5,
+   "heard": "अगर हम विस्कुद हटा दे तो, देखो सोई बिल्कुल नहीं हिले.",
+   "clear": 90.0,
+   "extra": 2,
+   "chars": 92.0,
+   "sim": 0.688,
+   "nearest": "filya",
+   "other": 0.465
+  },
+  {
+   "key": "topa_hi_hm_omega",
+   "hero": "topa",
+   "lang": "hi",
+   "note": "хинди, Kokoro hm_omega (мужской)",
+   "f0": 160.8,
+   "range_st": 8.9,
+   "hnr": 10.6,
+   "shift": [
+    0.0,
+    0.0
+   ],
+   "synth_sec": 36.4,
+   "dur": 6.6,
+   "heard": "जैसे सुई को पता है कि किधर देखना है तो हम सुई को धोखा नहीं दे सकते।",
+   "clear": 100.0,
+   "extra": 0,
+   "chars": 100.0,
+   "sim": 0.669,
+   "nearest": "topa",
+   "other": 0.07
+  },
+  {
+   "key": "topa_hi_hm_psi",
+   "hero": "topa",
+   "lang": "hi",
+   "note": "хинди, Kokoro hm_psi (мужской)",
+   "f0": 157.9,
+   "range_st": 9.0,
+   "hnr": 10.4,
+   "shift": [
+    -1.5,
+    -1.7
+   ],
+   "synth_sec": 36.1,
+   "dur": 6.4,
+   "heard": "जैसे सुई को पता है कि किधर देखना है तो हम सुई को धोखा नहीं दे सकते।",
+   "clear": 100.0,
+   "extra": 0,
+   "chars": 100.0,
+   "sim": 0.634,
+   "nearest": "topa",
+   "other": 0.107
+  },
+  {
+   "key": "pik_hi_hf_alpha",
+   "hero": "pik",
+   "lang": "hi",
+   "note": "хинди, Kokoro hf_alpha, поднят до 340, медленнее 0,88",
+   "f0": 351.4,
+   "range_st": 9.9,
+   "hnr": 17.6,
+   "shift": [
+    0.0,
+    0.0
+   ],
+   "synth_sec": 34.4,
+   "dur": 10.1,
+   "heard": "उत्तर में छंड होती है, बर्फ और धुरुवी भालू। चुमबक लोहे की चीज़ें खेंचता है केल, क्लिप छोती सिचाबे।",
+   "clear": 89.2,
+   "extra": 3,
+   "chars": 93.0,
+   "sim": 0.756,
+   "nearest": "pik",
+   "other": 0.486
+  },
+  {
+   "key": "pik_hi_hf_beta",
+   "hero": "pik",
+   "lang": "hi",
+   "note": "хинди, Kokoro hf_beta, поднят до 340, медленнее 0,88",
+   "f0": 348.1,
+   "range_st": 9.6,
+   "hnr": 17.9,
+   "shift": [
+    0.0,
+    0.0
+   ],
+   "synth_sec": 32.6,
+   "dur": 8.0,
+   "heard": "उत्तर में छंद होती है बर्फ और ध्रुवी फालू। जुंबक नोहे की चीजे खिंचता है कील, क्लिप छोटी सी चाबी।",
+   "clear": 83.8,
+   "extra": 5,
+   "chars": 86.0,
+   "sim": 0.764,
+   "nearest": "pik",
+   "other": 0.486
+  },
+  {
+   "key": "pik_de_f",
+   "hero": "pik",
+   "lang": "de",
+   "note": "как сейчас: Chatterbox по-немецки (Kerstin), 0,9",
+   "f0": 375.7,
+   "range_st": 6.9,
+   "hnr": 17.9,
+   "shift": [
+    2.3,
+    2.8
+   ],
+   "synth_sec": 109.7,
+   "dur": 10.4,
+   "heard": "Im Norden ist es kalt, Schnee und Eisbären. Ein Magnet zieht Dinge aus Eisnern, einen Nagel, eine Klammer, einen kleinen Schlüssel.",
+   "clear": 90.9,
+   "extra": 1,
+   "chars": 98.1,
+   "sim": 0.761,
+   "nearest": "pik",
+   "other": 0.481
+  },
+  {
+   "key": "pik_de_g",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Chatterbox, 0,85, поднят до 360, форманты ×1,12",
+   "f0": 370.8,
+   "range_st": 6.7,
+   "hnr": 18.3,
+   "shift": [
+    0.0,
+    2.0
+   ],
+   "synth_sec": 88.3,
+   "dur": 12.1,
+   "heard": "Im Norden ist es kalt, Schnee und Reisbeeren. Ein Magnet zieht Dinge aus Eisen an, einen Nagel, eine Klammer, einen kleinen Schlüssel.",
+   "clear": 95.5,
+   "extra": 1,
+   "chars": 99.0,
+   "sim": 0.733,
+   "nearest": "pik",
+   "other": 0.489
+  },
+  {
+   "key": "pik_de_h",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Chatterbox с образцом Thorsten, 0,9",
+   "f0": 366.1,
+   "range_st": 9.7,
+   "hnr": 18.2,
+   "shift": [
+    0.0,
+    2.6
+   ],
+   "synth_sec": 84.4,
+   "dur": 10.8,
+   "heard": "Im Loden ist es kalt. Schnee und Eisbären. Ein Magnet zieht Dinge aus Eisen an. Eine Nadel, eine Klammer, einen kleinen Schlüssel.",
+   "clear": 86.4,
+   "extra": 3,
+   "chars": 96.2,
+   "sim": 0.698,
+   "nearest": "pik",
+   "other": 0.449
+  },
+  {
+   "key": "pik_de_i",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Chatterbox спокойнее (cfg 0,3, эмоции 0,4), 0,9",
+   "f0": 374.1,
+   "range_st": 6.9,
+   "hnr": 17.5,
+   "shift": [
+    2.1,
+    2.5
+   ],
+   "synth_sec": 86.7,
+   "dur": 11.1,
+   "heard": "Im Norden ist es kalt, Schnee und Eisbären. Ein Magnet zieht Dinge aus Eisen an. Einen Nagel, eine Klammer, einen kleinen Schlüssel.",
+   "clear": 100.0,
+   "extra": 0,
+   "chars": 100.0,
+   "sim": 0.735,
+   "nearest": "pik",
+   "other": 0.464
+  }
+ ]
+}
