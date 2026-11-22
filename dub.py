@@ -141,9 +141,10 @@ def main():
         window = max(ln["bdur"], nxt - ln["t"] - 0.08)
         target = min(window, max(ln["bdur"], 0.4) * hero.get("len_k", 1.0))   # длина русской реплики (и не дальше следующей)
         best = None
-        for attempt in range(2):
+        for attempt in range(3):
             try:
-                a, info, used, ratio = render_fit(text, spec, refs[name], f0s[name], pre, target)
+                tgt = target if attempt == 0 else min(window, target * 1.3)   # вторая попытка — можно чуть длиннее (в паузу)
+                a, info, used, ratio = render_fit(text, spec, refs[name], f0s[name], pre, tgt)
                 heard = D.heard(a, LANG, G.get("whisper", "small"))
                 clear, extra = D.clear_pct(text, heard)
                 cand = {"a": a, "heard": heard, "clear": clear, "extra": extra, "shift": info["shift_st"],
