@@ -50,3 +50,4 @@
 | 2026-11-21 | 3 | mass_cars №1 | Onix | https://youtube.com/shorts/xp3QgXkT4rM | public |
 | 2026-11-22 | 1 | mass_cars №2 | Jiguli | https://youtube.com/shorts/uLEjsasDCLQ | public |
 | 2026-11-22 | 2 | mass_cities №1 | Xiva | https://youtube.com/shorts/Zr9iRlRDw5Q | public |
+| 2026-11-22 | 3 | mass_cars №3 | Epica | https://youtube.com/shorts/6CCntXS89D4 | public |

@@ -1516,34 +1516,48 @@
    "link": "https://youtube.com/shorts/Zr9iRlRDw5Q",
    "title": "1000 ta shar! Samarqand, Toshkent, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №1 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-22",
+   "slot": 3,
+   "league": "mass_cars",
+   "no": 3,
+   "final": false,
+   "link": "https://youtube.com/shorts/6CCntXS89D4",
+   "title": "1000 ta shar! Nexia, Equinox, Epica… Qaysi mashina yutadi? Какая машина победит? №3 #shorts",
+   "pl": true
   }
  ],
  "seen_comments": [
   "UgwixsBTAlCJfIcyTtB4AaABAg",
   "UgyIG1kkFYVTcXMKhcZ4AaABAg",
-  "Ugzd-vs69BoVu_HR_Xd4AaABAg"
+  "Ugzd-vs69BoVu_HR_Xd4AaABAg",
+  "UgxjR9BPQ2NcmWwWWRl4AaABAg"
  ],
  "mass": {
   "cars": {
-   "no": 2,
+   "no": 3,
    "cnt": {
     "Malibu": 1,
     "Damas": 1,
-    "Onix": 1,
+    "Onix": 2,
     "Kia K5": 1,
-    "Gentra": 2,
-    "Nexia": 2,
+    "Gentra": 3,
+    "Nexia": 3,
     "BYD Song": 1,
-    "Cobalt": 2,
-    "Matiz": 1,
+    "Cobalt": 3,
+    "Matiz": 2,
     "Lacetti": 1,
-    "Equinox": 1,
+    "Equinox": 2,
     "Labo": 1,
     "Spark": 1,
     "Tahoe": 1,
     "Jiguli": 1,
     "Captiva": 1,
-    "Chery Tiggo": 1
+    "Chery Tiggo": 2,
+    "Epica": 1,
+    "Tracker": 1,
+    "Tico": 1
    },
    "results": [
     {
@@ -1571,6 +1585,19 @@
      ],
      "in_cup": 401,
      "link": "https://youtube.com/shorts/uLEjsasDCLQ"
+    },
+    {
+     "no": 3,
+     "date": "2026-11-22",
+     "slot": 3,
+     "winner": "Epica",
+     "top3": [
+      "Epica",
+      "Tracker",
+      "Cobalt"
+     ],
+     "in_cup": 298,
+     "link": "https://youtube.com/shorts/6CCntXS89D4"
     }
    ]
   },
