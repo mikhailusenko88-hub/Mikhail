@@ -2,12 +2,12 @@ name: studio
 # Студия «Кот Барсик»: сборка серии без телефона. Запуск — строка в request.txt: «<имя сценария из scripts/> [настройки]».
 on:
   push:
-    branches: [studio]
+    branches: [studio-dub]
     paths: [request.txt]
 permissions:
   contents: write
 concurrency:
-  group: studio
+  group: studio-dub
   cancel-in-progress: false
 jobs:
   build:
@@ -76,8 +76,10 @@ jobs:
         run: |
           TAG="studio-${{ steps.req.outputs.name }}"; ls ep-*.mp4 >/dev/null 2>&1 || ls elementy.zip >/dev/null 2>&1 || exit 0
           (cd out/files 2>/dev/null && zip -q -r ../../golosa.zip voices) || true
+          # для дубляжа (dub.py в ветке golos-en): реплики, музыка без голосов, полное сведение
+          (cd out/files 2>/dev/null && [ -d dub ] && { cp ../audio.wav dub/full.wav 2>/dev/null; zip -q -r ../../dub.zip dub; ls dub/lines | wc -l; }) || true
           gh release delete "$TAG" -y --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" --target studio --prerelease --title "Студия: ${{ steps.req.outputs.name }}" --notes "Пробная сборка студии (не опубликовано на YouTube). Движок: $(cat engine.txt)" $(ls ep-*.mp4 golosa.zip elementy.zip 2>/dev/null)
+          gh release create "$TAG" --target studio-dub --prerelease --title "Студия: ${{ steps.req.outputs.name }}" --notes "Пробная сборка студии (не опубликовано на YouTube). Движок: $(cat engine.txt)" $(ls ep-*.mp4 golosa.zip elementy.zip dub.zip 2>/dev/null)
       - name: Итог — в ветку
         if: always()
         run: |
@@ -87,4 +89,4 @@ jobs:
           cp -r out/qa "$D"/ 2>/dev/null || true; cp out/files/speech.json "$D"/ 2>/dev/null || true
           cp out/video/*.txt "$D"/ 2>/dev/null || true; cp -r out/files/video "$D"/covers 2>/dev/null || true
           git config user.name "studio"; git config user.email "actions@users.noreply.github.com"
-          git add runs && git commit -qm "студия: ${{ steps.req.outputs.name }} $(date -u +%F_%H:%M)" && git pull -q --rebase origin studio && git push -q || true
+          git add runs && git commit -qm "студия: ${{ steps.req.outputs.name }} $(date -u +%F_%H:%M)" && git pull -q --rebase origin studio-dub && git push -q origin HEAD:studio-dub || true

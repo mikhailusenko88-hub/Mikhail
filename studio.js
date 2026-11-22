@@ -148,7 +148,7 @@ async function elements(page, start) {
   await page.waitForFunction(() => typeof Lib !== 'undefined' && Lib.data && window.MK3D && MK3D.ready, null, { timeout: 180000 });
   const gl = await page.evaluate(() => { const c = document.createElement('canvas'), g = c.getContext('webgl2') || c.getContext('webgl'); if (!g) return 'нет WebGL'; const e = g.getExtension('WEBGL_debug_renderer_info'); return e ? g.getParameter(e.UNMASKED_RENDERER_WEBGL) : '?'; });
   log('страница готова; видеокарта:', gl);
-  const start = await page.evaluate(async ([txt, q, res, fps, only, gol, fxs]) => {
+  const start = await page.evaluate(async ([txt, q, res, fps, only, gol, fxs, dub]) => {
     const R = MKScript.parse(txt, Lib.data); if (!R.episodes || !R.episodes.length) return { err: 'в сценарии нет серий', errors: R.errors };
     const ep = R.episodes[0], v = await Lib.importText(JSON.stringify(ep), true); if (v && v.errors && v.errors.length) return { err: v.errors };
     // пробы голосов: --golos=Имя:тип[:P=1.1:F=1.2:T=.95:R=1.2][,…] — паспорт нейроголоса из каталога BARSGolos.CATALOG; --fx=Имя:тембр[,…] — тембр голоса iPhone (MK.VOICE_FX)
@@ -168,10 +168,23 @@ async function elements(page, start) {
         for (const { s, b } of top) await Native.call('writeFile', { path: `voices/${names[who] || who}_${k++}.wav`, d: b64(MK.wav(b)), note: s.text }); }
       const J = { dur: tl.dur, names, speech: tl.speech.map(s => ({ t: +s.t.toFixed(3), dur: +s.dur.toFixed(3), who: s.who, name: names[s.who] || s.who, text: s.text, vocal: !!s.vocal })), segs: tl.segs.map(g => ({ t0: +g.t0.toFixed(3), kind: g.kind, loc: g.lkey || '' })) };
       await Native.call('writeFile', { path: 'speech.json', d: btoa(unescape(encodeURIComponent(JSON.stringify(J)))) });
-    } catch (e) { console.log('студия: голоса не сохранены', e && e.message); } return mix0.call(this, tl, bufs); };
+    } catch (e) { console.log('студия: голоса не сохранены', e && e.message); }
+      const out = await mix0.call(this, tl, bufs);
+      // для дубляжа на другие языки (ветка golos-en, dub.py): каждая реплика отдельно (и смех), музыка и шумы без голосов — папка dub/
+      if (dub) { try { const names = {}; for (const id in Lib.data.characters) names[id] = (Lib.data.characters[id].spec || {}).name || id; names['Р'] = 'Рассказчик';
+          const D = []; for (let i = 0; i < tl.speech.length; i++) { const s = tl.speech[i], b = bufs && bufs[s.key]; if (!b) continue;
+            await Native.call('writeFile', { path: `dub/lines/${String(i).padStart(3, '0')}.wav`, d: b64(MK.wav(b)) });
+            D.push({ i, t: +s.t.toFixed(3), dur: +s.dur.toFixed(3), bdur: +b.duration.toFixed(3), sr: b.sampleRate, who: s.who, name: names[s.who] || s.who, text: s.text, vocal: !!s.vocal, soft: !!s.soft }); }
+          await Native.call('writeFile', { path: 'dub/lines.json', d: btoa(unescape(encodeURIComponent(JSON.stringify({ dur: tl.dur, sr: out.sampleRate, lines: D })))) });
+        } catch (e) { console.log('студия: реплики для дубляжа не сохранены', e && e.message); }
+        try { const me = await mix0.call(this, tl, {}), d = me.getChannelData(0), CH = me.sampleRate * 30;
+          for (let k = 0, i = 0; i < d.length; i += CH, k++) { const n = Math.min(CH, d.length - i), c = new AudioBuffer({ length: n, sampleRate: me.sampleRate, numberOfChannels: 1 }); c.copyToChannel(d.subarray(i, i + n), 0);
+            await Native.call('writeFile', { path: `dub/me_${String(k).padStart(2, '0')}.wav`, d: b64(MK.wav(c)) }); }
+        } catch (e) { console.log('студия: музыка без голосов не сохранена', e && e.message); } }
+      return out; };
     if (!only) Build.run(P, E);
     return { ok: true, series: ep.series, episode: ep.episode, title: ep.title, scenes: ep.scenes.length, errors: R.errors, unknownWords: R.unknownWords, unknownObjects: R.unknownObjects, unknownNames: R.unknownNames, probe };
-  }, [fs.readFileSync(SCN, 'utf8'), STD ? 'std' : 'hq', RES, FPS, ONLY, GOLOSA, opt('fx', '')]);
+  }, [fs.readFileSync(SCN, 'utf8'), STD ? 'std' : 'hq', RES, FPS, ONLY, GOLOSA, opt('fx', ''), !flag('nodub')]);
   log('серия принята:', start); if (!start.ok) { fs.writeFileSync(path.join(OUT, 'result.json'), JSON.stringify({ ok: false, start, stat }, null, 1)); await browser.close(); process.exit(3); }
   if (ONLY === 'elements') { const r = await elements(page, start); fs.writeFileSync(path.join(OUT, 'result.json'), JSON.stringify({ ok: !!r.ok, elements: r, start, stat, gl, total_sec: el() }, null, 1)); log('ИТОГ элементы', r); await browser.close(); srv.close(); process.exit(r.ok ? 0 : 1); }
   let last = ''; const tick = setInterval(async () => { try { const t = await page.evaluate(() => Build.txt + ' · ' + document.getElementById('bbS').textContent); if (t !== last) { last = t; log(t.slice(0, 160)); } } catch (e) {} }, 30000);
