@@ -1,97 +1,93 @@
-ВЫЛОЖЕНО #56 2026-11-22 слот 2: https://youtu.be/N2O-k9tb6sU (public) + Shorts https://youtube.com/shorts/3jWK5p1xXxc, за 489 с
+ВЫЛОЖЕНО #57 2026-11-22 слот 3: Shorts https://youtube.com/shorts/2MuAY3ktACg (public, без длинного), за 518 с
 
 {
- "title": "Germany vs Korea vs Pakistan 🔥 SUNDAY MEGA TRACK – Who Loses a Life? | Marble Race #43",
- "description": "🔥 SUNDAY MEGA TRACK — longer stages, the craziest obstacles of the week.\n\nFlagball Arena · Season 2, Race 43 of 67: 24 countries, 3 stages — the last 7 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Albania ❤, Bosnia and Herzegovina ❤, Chad ❤❤, Congo ❤❤, Czechia ❤❤, Dominican Republic ❤❤, Ethiopia ❤❤, Germany ❤❤, Grenada ❤, Guyana ❤, Honduras ❤❤, Italy ❤❤, Madagascar ❤❤❤, Mauritius ❤❤, Monaco ❤, Mongolia ❤❤❤, Nepal ❤❤, Netherlands ❤❤❤, Pakistan ❤❤❤, Papua New Guinea ❤❤, Saudi Arabia ❤, South Korea ❤, Sweden ❤❤, Timor-Leste ❤.\n\nCountries still in the game before this race: 142 of 193.\nNext race: Race 44/67. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
- "race_no": 56,
+ "title": "MEGA TRACK 🔥 UK vs Philippines vs France… 8 of 24 Lose a Life | Country Marble Race #44",
+ "description": "🔥 SUNDAY MEGA TRACK — longer stages, the craziest obstacles of the week.\n\nFlagball Arena · Season 2, Race 44 of 67: 24 countries, 3 stages — the last 8 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Austria ❤❤❤, Belarus ❤, Belize ❤❤, Brunei ❤❤, Burkina Faso ❤, Djibouti ❤❤❤, France ❤, Gabon ❤❤❤, Haiti ❤, Iraq ❤❤, Jamaica ❤❤, Libya ❤❤, North Korea ❤, North Macedonia ❤, Philippines ❤❤, Portugal ❤❤❤, Seychelles ❤❤❤, Singapore ❤, Somalia ❤❤, Sri Lanka ❤❤, Tanzania ❤❤, Trinidad and Tobago ❤, Uganda ❤❤, United Kingdom ❤.\n\nCountries still in the game before this race: 140 of 193.\nNext race: Race 45/67. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "race_no": 57,
  "date": "2026-11-22",
- "slot": 2,
+ "slot": 3,
  "season": 2,
  "round": 1,
- "heat": 43,
+ "heat": 44,
  "heats": 67,
- "survive": 17,
+ "survive": 16,
  "final": false,
  "kind": "heat",
- "label": "RACE 43/67",
+ "label": "RACE 44/67",
  "n": 24,
  "lives_mode": true,
- "losers": 7,
+ "losers": 8,
  "mega": true,
  "codes": [
-  "do",
-  "al",
-  "nl",
-  "td",
-  "mc",
-  "kr",
-  "mu",
-  "et",
-  "pg",
-  "hn",
-  "gd",
-  "sa",
-  "se",
-  "de",
-  "tl",
-  "np",
-  "it",
-  "mn",
-  "gy",
-  "pk",
-  "ba",
-  "cz",
-  "mg",
-  "cg"
+  "ht",
+  "lk",
+  "dj",
+  "tz",
+  "mk",
+  "ph",
+  "ga",
+  "bz",
+  "bf",
+  "so",
+  "fr",
+  "kp",
+  "bn",
+  "sc",
+  "tt",
+  "jm",
+  "at",
+  "by",
+  "ly",
+  "gb",
+  "sg",
+  "iq",
+  "ug",
+  "pt"
  ],
  "spans": [
   [
    7.800000000000001,
-   92.39999999999999,
-   95.99999999999999
+   88.5,
+   92.1
   ],
   [
-   99.59999999999998,
-   182.0333333333333,
-   185.6333333333333
+   95.69999999999999,
+   180.83333333333331,
+   184.4333333333333
   ],
   [
-   189.2333333333333,
-   271.9,
-   275.5
+   188.0333333333333,
+   270.59999999999997,
+   274.2
   ]
  ],
- "duration": 300.5,
+ "duration": 299.2,
  "heats_in_video": 1,
  "races": [
-  56
+  57
  ],
  "featured": [
-  "de",
-  "kr",
-  "pk"
- ],
- "video_id": "N2O-k9tb6sU",
- "privacy": "public"
+  "gb",
+  "ph",
+  "fr"
+ ]
 }
 
 --- журнал ---
-14:31:02 режим publish, гонка #56, 2026-11-22 слот 2, событие workflow_dispatch
-14:31:02 по плану: S2 RACE 43/67
-14:31:03 канал: Flagball Arena
-14:31:03 в этом видео заездов: 1 (раунд 1, осталось в раунде 25)
-гонка #56 2026-11-22 слот 2: S2 RACE 43/67, 24→17, участники: DOM ALB NLD TCD MCO KOR MUS ETH PNG HND GRD SAU SWE DEU TLS NPL ITA MNG GUY PAK BIH CZE MDG COG
-  этап 1: 24→22, блоков 17 ['rotor', 'comb', 'pendulums', 'pushers', 'split', 'tunnels', 'trapdoors', 'ring_gate', 'glass', 'sliders', 'drum', 'sliders', 'ring_gate', 'comb', 'drum', 'tunnels', 'trapdoors'], Q-финиш 82.1 c, кадров 2538
-  этап 2: 22→19, блоков 18 ['rotor', 'split', 'glass', 'trapdoors', 'tunnels', 'pushers', 'pendulums', 'comb', 'drum', 'sliders', 'ring_gate', 'pendulums', 'ring_gate', 'tunnels', 'pushers', 'comb', 'drum', 'split'], Q-финиш 79.9 c, кадров 2473
-  этап 3: 19→17, блоков 18 ['split', 'comb', 'pushers', 'tunnels', 'rotor', 'ring_gate', 'glass', 'pendulums', 'drum', 'sliders', 'trapdoors', 'ring_gate', 'drum', 'sliders', 'comb', 'pendulums', 'trapdoors', 'rotor'], Q-финиш 80.1 c, кадров 2480
+22:30:58 режим publish, гонка #57, 2026-11-22 слот 3, событие workflow_dispatch
+22:30:58 по плану: S2 RACE 44/67
+22:30:58 канал: Flagball Arena
+22:30:58 в этом видео заездов: 1 (раунд 1, осталось в раунде 24)
+гонка #57 2026-11-22 слот 3: S2 RACE 44/67, 24→16, участники: HTI LKA DJI TZA MKD PHL GAB BLZ BFA SOM FRA PRK BRN SYC TTO JAM AUT BLR LBY GBR SGP IRQ UGA PRT
+  этап 1: 24→21, блоков 16 ['pendulums', 'drum', 'glass', 'comb', 'split', 'tunnels', 'rotor', 'pushers', 'trapdoors', 'ring_gate', 'sliders', 'trapdoors', 'tunnels', 'split', 'pushers', 'drum'], Q-финиш 78.2 c, кадров 2421
+  этап 2: 21→19, блоков 18 ['tunnels', 'sliders', 'drum', 'pendulums', 'comb', 'trapdoors', 'pushers', 'rotor', 'ring_gate', 'split', 'glass', 'ring_gate', 'tunnels', 'rotor', 'trapdoors', 'sliders', 'split', 'comb'], Q-финиш 82.6 c, кадров 2554
+  этап 3: 19→16, блоков 20 ['split', 'trapdoors', 'pendulums', 'glass', 'comb', 'rotor', 'tunnels', 'ring_gate', 'pushers', 'drum', 'sliders', 'split', 'ring_gate', 'drum', 'sliders', 'pushers', 'pendulums', 'glass', 'tunnels', 'rotor'], Q-финиш 80.0 c, кадров 2477
 длительность ролика ≈ 5.0 мин
-готово: 9015 кадров за 463 с
-кадров 9015, 5.01 мин, рендер 465 с
-выжили: HND BIH TCD COG ITA DOM MCO GUY GRD KOR MNG TLS NLD PAK DEU ETH MDG
-14:38:48 заезд 1/1 готов: 165 МБ, 466 с
-14:38:49 видео готово: 165 МБ, 5.0 мин, 466 с с начала; название: Germany vs Korea vs Pakistan 🔥 SUNDAY MEGA TRACK – Who Loses a Life? | Marble Race #43
-14:39:02 Shorts готов: 26 с — Korea on its LAST life ❤️ Germany vs Korea vs Pakistan — Who Survives? #shorts
-14:39:02 длинное видео в этом слоте: да
-14:39:08 обложка: 200 
-14:39:09 в плейлисте
-14:39:09 статус на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}
+готово: 8976 кадров за 496 с
+кадров 8976, 4.99 мин, рендер 499 с
+выжили: LKA GAB BLZ TTO TZA BLR HTI SYC AUT SGP LBY MKD FRA PHL BFA GBR
+22:39:17 заезд 1/1 готов: 164 МБ, 500 с
+22:39:18 видео готово: 164 МБ, 5.0 мин, 500 с с начала; название: MEGA TRACK 🔥 UK vs Philippines vs France… 8 of 24 Lose a Life | Country Marble Race #44
+22:39:34 Shorts готов: 26 с — Last chance for UK 😱 UK vs Philippines vs France | Country Marble Race #shorts
+22:39:34 длинное видео в этом слоте: нет (только Shorts)
+22:39:36 Shorts на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}

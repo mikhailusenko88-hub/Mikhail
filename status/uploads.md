@@ -79,3 +79,4 @@
 | shorts | 2026-11-22 | 1 | Brazil vs Indonesia vs Morocco | https://youtube.com/shorts/egKFQhdpuzU | public (только Shorts) |
 | 56 | 2026-11-22 | 2 | S2 RACE 43/67 | https://youtu.be/N2O-k9tb6sU | public |
 | shorts | 2026-11-22 | 2 | Germany vs Korea vs Pakistan | https://youtube.com/shorts/3jWK5p1xXxc | |
+| shorts | 2026-11-22 | 3 | UK vs Philippines vs France | https://youtube.com/shorts/2MuAY3ktACg | public (только Shorts) |
