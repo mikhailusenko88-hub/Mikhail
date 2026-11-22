@@ -1,6 +1,6 @@
 # Проверка сервера с точек check-host.net (в первую очередь Россия): TCP-порты и HTTP.
-import json, sys, time, urllib.request, urllib.parse
-IP = "89.126.192.214"
+import json, os, sys, time, urllib.request, urllib.parse
+IP = os.environ.get("IP", "89.126.192.214")
 H = {"Accept": "application/json", "User-Agent": "srv-check"}
 def get(url):
     with urllib.request.urlopen(urllib.request.Request(url, headers=H), timeout=30) as r:
@@ -25,6 +25,10 @@ def run(kind, target):
         cc, city = info[0], info[2]
         v = res.get(n)
         if v is None: s = "нет данных"
+        elif kind == "ping":
+            pk = v[0] if v and v[0] else []
+            ok = [x for x in pk if isinstance(x, list) and x and x[0] == "OK"]
+            s = f"ОК {len(ok)}/{len(pk)}, {min(x[1] for x in ok)*1000:.0f} мс" if ok else f"НЕТ (0/{len(pk)})"
         elif kind == "tcp":
             x = v[0] if v else {}
             s = f"ОК {x['time']*1000:.0f} мс" if isinstance(x, dict) and "time" in x else f"НЕТ ({(x or {}).get('error','?')})"
@@ -35,8 +39,15 @@ def run(kind, target):
     for _, cc, city, s in sorted(rows):
         print(f"- {cc} {city}: {s}")
     print()
-for kind, t in [("tcp", f"{IP}:22"), ("tcp", f"{IP}:443"), ("tcp", f"{IP}:8443"), ("tcp", f"{IP}:8080"), ("http", f"http://{IP}:8080/mebel/s9kbars/index.html")]:
+if IP == "89.126.192.214":
+    checks = [("tcp", f"{IP}:22"), ("tcp", f"{IP}:443"), ("tcp", f"{IP}:8443"), ("tcp", f"{IP}:8080"), ("http", f"http://{IP}:8080/mebel/s9kbars/index.html")]
+else:   # другой сервер: ping + SSH + открытые TCP-порты, найденные nmap
+    found = open("/tmp/open_ports.txt").read().split() if os.path.exists("/tmp/open_ports.txt") else []
+    ports = ["22"] + [p for p in found if p != "22"][:5]
+    checks = [("ping", IP)] + [("tcp", f"{IP}:{p}") for p in ports]
+for kind, t in checks:
     run(kind, t)
+    time.sleep(3)
 
 # Соседи по сети хостера (для сравнения: блок именно нашего IP или всей сети/маршрута)
 import os
@@ -44,5 +55,5 @@ nb = [l.strip() for l in open("/tmp/neighbors.txt")] if os.path.exists("/tmp/nei
 nb = [x for x in nb if x and not x.startswith(IP + ":")][:4]
 print("=== Соседи по сети хостера:", ", ".join(nb) or "не найдены")
 print()
-for t in nb + ["hoster.kz:443"]:
+for t in nb + (["hoster.kz:443"] if IP.startswith("89.126.") else ["hostup.se:443"]):
     run("tcp", t)

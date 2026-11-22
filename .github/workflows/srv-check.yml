@@ -1,5 +1,5 @@
 name: srv-check
-# Сервер в Казахстане 89.126.192.214 снаружи: ping, порты, SSH, страницы 8080, все открытые TCP-порты (nmap), маршрут.
+# Сервер снаружи (адрес — первая строка ip.txt, по умолчанию 89.126.192.214): ping, порты, SSH, страницы 8080, все открытые TCP-порты (nmap), маршрут.
 # Запуск — изменение run.txt в ветке srv-check. Результат — status/server.txt. На сервер не входит и ничего не меняет.
 on:
   push:
@@ -11,17 +11,19 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 14
+    timeout-minutes: 17
     steps:
       - uses: actions/checkout@v4
       - name: tools
         run: sudo apt-get -qq update >/dev/null 2>&1; sudo apt-get -qq install -y nmap traceroute >/dev/null 2>&1 || true
       - name: check server
         run: |
-          IP=89.126.192.214
+          IP=$(head -1 ip.txt 2>/dev/null | tr -d ' \r\n'); [ -z "$IP" ] && IP=89.126.192.214
+          export IP
+          NET=$(echo $IP | cut -d. -f1-3).0/24
           mkdir -p status
           {
-            echo "Проверка: $(date -u '+%Y-%m-%d %H:%M UTC') ($(TZ=Europe/Moscow date '+%H:%M') МСК) из GitHub ($(curl -s --max-time 5 https://ipinfo.io/country || echo ?))"
+            echo "Сервер: $IP"; echo "Проверка: $(date -u '+%Y-%m-%d %H:%M UTC') ($(TZ=Europe/Moscow date '+%H:%M') МСК) из GitHub ($(curl -s --max-time 5 https://ipinfo.io/country || echo ?))"
             for round in 1 2 3; do
               echo; echo "=== Попытка $round — $(TZ=Europe/Moscow date '+%H:%M:%S') МСК"
               echo "--- ping"; ping -c 3 -W 3 $IP 2>&1 | tail -2 || true
@@ -35,15 +37,16 @@ jobs:
               [ $round -lt 3 ] && sleep 10
             done
             echo; echo "=== Все открытые TCP-порты (nmap)"
-            timeout 240 sudo nmap -Pn -sS -T4 --max-retries 1 -p- --open -n $IP 2>&1 | grep -E 'open|filtered|Host|done' || echo "nmap не сработал"
+            timeout 240 sudo nmap -Pn -sS -T4 --max-retries 1 -p- --open -n $IP -oG /tmp/all.gnmap 2>&1 | grep -E 'open|filtered|Host|done' || echo "nmap не сработал"
+            grep -oE '[0-9]+/open/tcp' /tmp/all.gnmap 2>/dev/null | cut -d/ -f1 | tr '\n' ' ' > /tmp/open_ports.txt || true
             echo; echo "=== UDP (VPN AmneziaWG/WireGuard — open|filtered = норма, closed = порт не слушает)"
             timeout 120 sudo nmap -Pn -sU -T4 --max-retries 1 --top-ports 50 -n $IP 2>&1 | grep -E 'udp|done' | grep -v 'closed' | head -30 || true
             echo; echo "=== Маршрут (последние шаги)"
             timeout 60 sudo traceroute -n -T -p 22 -w 2 -q 1 -m 25 $IP 2>&1 | tail -6 || true
             echo; echo "=== С других точек мира, сначала Россия (check-host.net)"
-            timeout 90 sudo nmap -Pn -n -T4 --max-retries 1 -p 22,443 --open 89.126.192.0/24 -oG - 2>/dev/null | awk '/Ports:/{ip=$2; if($0~/443\/open/)print ip":443"; else if($0~/22\/open/)print ip":22"}' > /tmp/neighbors.txt || true
+            timeout 90 sudo nmap -Pn -n -T4 --max-retries 1 -p 22,443 --open $NET -oG - 2>/dev/null | awk '/Ports:/{ip=$2; if($0~/443\/open/)print ip":443"; else if($0~/22\/open/)print ip":22"}' > /tmp/neighbors.txt || true
             echo "Соседей с открытыми портами: $(wc -l < /tmp/neighbors.txt)"
-            timeout 330 python3 srv/from_ru.py || echo "check-host не сработал"
+            timeout 420 python3 srv/from_ru.py || echo "check-host не сработал"
           } > status/server.txt 2>&1
           cat status/server.txt
       - name: save
