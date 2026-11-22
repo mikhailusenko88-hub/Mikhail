@@ -1,105 +1,429 @@
-URL: https://nashdekor.ru/stati/kak-vybrat-potolochnyj-plintus/
+URL: https://aimanhunt.online/
 КОД: 200
 ЗАГОЛОВКИ:
-Server: nginx
-Date: Sun, 22 Nov 2026 10:45:24 GMT
+Date: Sun, 22 Nov 2026 20:27:50 GMT
 Content-Type: text/html; charset=utf-8
-Content-Length: 21107
-Last-Modified: Sun, 22 Nov 2026 10:44:02 GMT
+Transfer-Encoding: chunked
 Connection: close
+Server: cloudflare
+Nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+X-Frontend-Release: deploy-4715-536bfc60-8953
+Server-Timing: nuxt_ssr;dur=349.93;desc="origin", nuxt_render;dur=317.61, nuxt_data;dur=233.58, nuxt_vue;dur=84.01;desc="components+prefetch", nuxt_serialize;dur=25.76;desc="head+payload", nuxt_template;dur=0.03, api_sum;dur=228.87;desc="calls=5;errors=0", api_wall;dur=192.81, api_configs;dur=15.42;desc="calls=1", api_menus;dur=21.42;desc="calls=1", api_cms;dur=128.58;desc="calls=1", api_services;dur=17.71;desc="calls=1", api_prices;dur=45.73;desc="calls=1", api_php_origin;dur=855.42;desc="origin samples;cached=3", startup_shell;dur=5.48;desc="static", youtube_html;dur=2.18;desc="calls=2;previews=2"
+Server-Timing: cfCacheStatus;desc="HIT"
+Server-Timing: cfEdge;dur=127,cfOrigin;dur=0
+Speculation-Rules: "/cdn-cgi/speculation"
+Cache-Control: public, max-age=0, s-maxage=300
+CDN-Cache-Control: public, max-age=0, s-maxage=300
+X-Grizzly-Public-HTML: 1
 Vary: Accept-Encoding
-ETag: "6b02c772-5273"
-Expires: Thu, 01 Jan 1970 00:00:01 GMT
-Cache-Control: no-cache
-Strict-Transport-Security: max-age=15552000
+X-Frontend-Cache-Epoch: e1f07c27a6b64cd99def7abb2585ca3c
+X-Cache-Status2: HIT
+X-Grizzly-SSR-Cache: HIT
+Report-To: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=r%2BwYSTqxklCv2NKFkddtJTvfTjpTH3oIS8apqDdFwlQ%2F3%2BR9GWBoKwQwPn2exXoDBoj0O9rBAVhP%2BlAwPFq4JL67vMmZEC3k93vALvAzj1r5yBcH8kaWP8hxQC5fQBZp"}]}
+X-No-Cache: 0
+x-b: 0
 X-Content-Type-Options: nosniff
-Content-Security-Policy: frame-ancestors 'self' https://max.ru https://*.max.ru https://*.oneme.ru
-Referrer-Policy: strict-origin-when-cross-origin
-Accept-Ranges: bytes
+Referrer-Policy: strict-origin
+X-Frame-Options: sameorigin
+Content-Security-Policy: default-src 'self' grizzlysms.com *.grizzlysms.com widget.trustpilot.com *.doubleclick.net stat.sms971.com challenges.cloudflare.com *.jivo.ru *.openai.com *.jivosite.com jsdelivr.net *.jsdelivr.net google.com *.google.com youtube.com *.youtube.com crisp.chat *.crisp.chat clarity.ms *.clarity.ms cloudflareinsights *.cloudflareinsights.com google-analytics.com mc.webvisor.org mc.yandex.ru *.yandex.ru mc.yandex.com *.yandex.com *.google-analytics.com googletagmanager.com *.googletagmanager.com googleusercontent.com *.googleusercontent.com ws:; frame-ancestors 'self' docs.google.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' jsdelivr.net *.jsdelivr.net widget.trustpilot.com *.doubleclick.net stat.sms971.com challenges.cloudflare.com *.jivo.ru *.openai.com *.jivosite.com mc.webvisor.org mc.yandex.ru *.yandex.ru mc.yandex.com *.yandex.com google.com *.google.com youtube.com *.youtube.com  crisp.chat *.crisp.chat cloudflareinsights.com *.cloudflareinsights.com clarity.ms *.clarity.ms googletagmanager.com *.googletagmanager.com crisp.chat *.crisp.chat https://appleid.cdn-apple.com; style-src 'self' 'unsafe-inline' jsdelivr.net widget.trustpilot.com *.jsdelivr.net *.doubleclick.net stat.sms971.com challenges.cloudflare.com *.jivo.ru *.openai.com *.jivosite.com google.com *.google.com youtube.com *.youtube.com  mc.webvisor.org mc.yandex.ru *.yandex.ru mc.yandex.com *.yandex.com crisp.chat *.crisp.chat; img-src * data: blob:; font-src * data:; object-src * data:
+Strict-Transport-Security: max-age=31536000;
+cf-cache-status: HIT
+CF-RAY: a5eaad569855eada-ORD
+alt-svc: h3=":443"; ma=86400
 
-Как выбрать потолочный плинтус: размер, натяжной потолок, подсветка | Наш декор Стеновые панели Плинтусы Расчёт стены Статьи Доставка Корзина 0 Заказать 
- Главная Статьи Как выбрать потолочный плинтус: размер, натяжной потолок, подсветка Как выбрать потолочный плинтус: ширина под высоту потолка, натяжной потолок и подсветка
- Потолочный плинтус закрывает стык стены и потолка и задаёт характер комнате: тонкая линия — для современного интерьера, широкий профиль — для высоких потолков и классики. Разбираем, как выбрать размер и цвет, что делать с натяжным потолком и сколько штук брать.
- Наш декор · 22 ноября 2026
- Размер: смотрите на высоту потолка
- Главное — пропорция. Чем ниже потолок и меньше комната, тем уже и проще профиль. В типовой квартире с потолком 2,5–2,7 м обычно хватает узкого или среднего плинтуса, а широкий и фигурный профиль раскрывается в комнатах с потолком от 2,8 м.
- Узкий — A38 , 20×20 мм: аккуратная линия для коридора, кухни, детской и небольших комнат.
- Средний угловой — A172 , 71×71 мм: классический карниз для гостиной и спальни.
- Широкий — A504 , 180 мм: для просторных комнат с высоким потолком, классики и неоклассики.
- С подсветкой — A503 , 100×50 мм: ниша под светодиодную ленту для «парящего» потолка.
- Все четыре — из дюрополимера (ударопрочного полистирола): лёгкие, не боятся влаги, режутся ровно, без крошек.
- Цвет: белый или в цвет стен
- Плинтус шириной до 10 см обычно оставляют белым или красят в цвет потолка — он продолжает потолок и не спорит со стенами. Широкий профиль часто красят в цвет стен: тогда он не «срезает» высоту комнаты и выглядит как часть архитектуры. Наши потолочные плинтусы белые, под покраску — их красят вместе с потолком или стенами, подробнее — в статье «Как покрасить плинтус и стеновые панели из дюрополимера».
- Натяжной потолок: клеим только к стене
- С натяжным потолком плинтус тоже ставят — он закрывает зазор и вставку по периметру. Клей наносят только на полку, которая прилегает к стене. Верхний край прижимают к полотну, но к нему не приклеивают.
- Такой плинтус ставит отделочник, а не монтажник потолка, — договоритесь об этом заранее. Когда красите плинтус, проложите между ним и полотном лист бумаги, чтобы не запачкать потолок.
- Потолочный плинтус A38, 20×20 мм — тонкая линия по периметру 
- Когда нужен плинтус с подсветкой
- A503 делают для «парящего» потолка: светодиодная лента лежит в нише плинтуса и мягко подсвечивает потолок по периметру. Это хороший вечерний свет для гостиной и спальни. Ленту укладывают после покраски. Блок питания и выключатель продумайте до монтажа, чтобы провод ушёл в стену, а не по ней. Другие профили с нишей под ленту, в том числе напольные, — в разделе плинтус с подсветкой .
- Потолочный плинтус с подсветкой A503 — ниша под светодиодную ленту 
- Сколько штук брать
- Длина каждого потолочного плинтуса — 2 м. Посчитайте периметр комнаты, разделите на 2 и округлите вверх, затем добавьте около 10 % на углы и подрезку. Пример: комната 3,5 × 5 м — периметр 17 м, 17 : 2 = 8,5 → 9 штук, с запасом — 10. Проёмы дверей у потолка не вычитают: плинтус идёт по всему периметру.
- Порядок работ
- Стены и потолок выровнены, прогрунтованы, без пыли.
- Плинтус клеят до финишной отделки: сначала плинтус, потом покраска потолка и стен или обои. Так щели закрываются шпаклёвкой, а при смене обоев плинтус не придётся переклеивать.
- Монтаж начинают с углов — как запилить внутренний и внешний угол, мы разобрали в статье «Как отрезать угол потолочного плинтуса».
- Стыки и щели заполняют акриловой шпаклёвкой или белым акриловым герметиком — не силиконовым: по нему не ложится краска. После высыхания шлифуют и красят вместе с плинтусом.
- Все потолочные плинтусы под покраску с ценами — в разделе потолочный плинтус . Чем клеить — в статье «Чем клеить и как установить плинтус из дюрополимера».
- Отправляем в Москву и любой регион транспортной компанией — как устроена доставка . Самовывоз в Санкт-Петербурге бесплатно.
- Ещё по теме
- Как отрезать угол потолочного плинтуса: внутренний и внешний 
- Чем клеить и как установить плинтус из дюрополимера 
- Монтаж стеновых панелей своими руками 
- Как покрасить плинтус и стеновые панели из дюрополимера 
- Дюрополимер — что это за материал 
- Молдинги на стене в интерьере: идеи, размеры, правила 
- Рейки на стену в интерьере: где использовать и как выбрать 
- Заявка
- Ответим с ценой, наличием и сроком в рабочее время. Быстрее всего — написать в чат (кнопка «Чат» внизу справа) или заказать обратный звонок — перезвоним сами.
- Оставьте номер — перезвоним в рабочее время, расскажем про наличие, цену и доставку. Укажите в комментарии, когда удобно принять звонок.
- Менеджер подтвердит наличие и стоимость доставки и пришлёт ссылку на оплату картой или через СБП — оплата до отгрузки, электронный чек придёт на e-mail. Компаниям и ИП — счёт. Самовывоз со склада в СПб — бесплатно. Об оплате и возврате 
- Имя Телефон или мессенджер 
- E-mail — пришлём расчёт письмом (необязательно) Получение Доставка по адресу Самовывоз со склада, СПб 
- Кто вы Делаю ремонт у себя Дизайнер Ремонтная бригада Компания, объект Комментарий Я даю согласие на обработку персональных данных и ознакомлен с Политикой обработки персональных данных и условиями продажи 
- Отправить заявку 
- Наш декор · Санкт-Петербург · Мы на Авито · Канал в MAX · Канал в Telegram ИП Усенко Юлия Валерьевна · ОГРНИП 326784700412203 · ИНН 470331302505 · info@nashdekor.ru Стеновые панели Реечные панели Под дерево и бетон Плинтусы Плинтус с подсветкой Потолочный плинтус Молдинги Уголки Статьи Доставка в Москву и по России Оплата и возврат Оферта Политика конфиденциальности Согласие на обработку данных
+Get virtual phone number for receive SMS and verification 
+ Loading is taking longer than usual. Try refreshing the page. Reload page 
+ Price
+ API
+ FAQ
+ Earn with us
+ Affiliate programs
+ Software
+ eSIM Proxies beta 
+ English 
+ English 
+ 中文 
+ Español 
+ हिन्दी 
+ Русский 
+ Türkçe 
+ العربية 
+ Français 
+ Português 
+ Play sound for code 
+ Play sound for number 
+ My purchases Balance history Settings Referral program 
+ Profile $ 0 
+ Loading is taking longer than usual. Try refreshing the page. Reload page 
+ Activations
+ eSIM
+ Proxies
+ beta 
+ ?
+ Service selection
+ All services
+ facebook 
+ Search (2 497) 
+ facebook
+ Whatsapp
+ TikTok
+ Telegram
+ AnyOther
+ Google, Gmail, Youtube
+ Instagram + Threads
+ Amazon
+ Noon
+ Apple
+ AI Chat
+ PayPal
+ Country selection for facebook 
+ All countries
+ Top countries 
+ Quantity 
+ Price 
+ Austria
+ 1866258 qty
+ $ 0.36
+ USA
+ from $ 0.077 
+ 45124 qty
+ $ 0.95 
+ Quantity
+ Price
+ Available 15539 qty
+ $ 0.95
+ Available 201 qty
+ $ 0.83
+ All prices 10 
+ USA (virtual)
+ from $ 0.026 
+ 407784 qty
+ $ 0.52 
+ Quantity
+ Price
+ Available 20 qty
+ $ 0.52
+ Available 48 qty
+ $ 0.325
+ All prices 8 
+ Hong Kong
+ 2299948 qty
+ $ 0.14
+ Japan
+ 13777 qty
+ $ 0.39
+ Sweden
+ 2070218 qty
+ $ 0.1
+ Indonesia
+ from $ 0.0125 
+ 9203 qty
+ $ 0.05 
+ Quantity
+ Price
+ Available 743 qty
+ $ 0.05
+ Available 2754 qty
+ $ 0.04
+ All prices 5 
+ Thailand
+ from $ 0.076 
+ 11057 qty
+ $ 0.247 
+ Quantity
+ Price
+ Available 149 qty
+ $ 0.247
+ Available 648 qty
+ $ 0.183
+ All prices 6 
+ United Kingdom
+ from $ 0.08 
+ 29644 qty
+ $ 0.63 
+ Quantity
+ Price
+ Available 327 qty
+ $ 0.63
+ Available 20 qty
+ $ 0.35
+ All prices 7 
+ Mexico
+ from $ 0.06 
+ 303 qty
+ $ 0.26 
+ Quantity
+ Price
+ Available 20 qty
+ $ 0.26
+ Available 35 qty
+ $ 0.089
+ All prices 3 
+ Bulgaria
+ 10908 qty
+ $ 0.09
+ Netherlands
+ from $ 0.08 
+ 184 qty
+ $ 0.7 
+ Quantity
+ Price
+ Available 43 qty
+ $ 0.7
+ Available 121 qty
+ $ 0.19
+ All prices 3 
+ Poland
+ from $ 0.094 
+ 1853 qty
+ $ 0.11 
+ Quantity
+ Price
+ Available 646 qty
+ $ 0.11
+ Available 1207 qty
+ $ 0.094
+ Turkey
+ from $ 0.065 
+ 5696 qty
+ $ 0.12 
+ Quantity
+ Price
+ Available 253 qty
+ $ 0.12
+ Available 5443 qty
+ $ 0.065
+ Show more
+ Customer favorites
+ Ticketmaster United Kingdom 
+ $ 0.14
+ Ticketmaster United Kingdom 
+ facebook USA (virtual) 
+ $ 0.026
+ facebook USA (virtual) 
+ Ticketmaster Chile 
+ $ 0.058
+ Ticketmaster Chile 
+ Ticketmaster South Africa 
+ $ 0.168
+ Ticketmaster South Africa 
+ Google, Gmail, Youtube Colombia 
+ $ 0.03
+ Google, Gmail, Youtube Colombia 
+ Shopee Indonesia 
+ $ 0.0028
+ Shopee Indonesia 
+ TikTok Colombia 
+ $ 0.01
+ TikTok Colombia 
+ TikTok USA 
+ $ 0.088
+ TikTok USA 
+ TikTok Indonesia 
+ $ 0.005
+ TikTok Indonesia 
+ Naver USA (virtual) 
+ $ 0.025
+ Naver USA (virtual) 
+ TikTok USA (virtual) 
+ $ 0.015
+ TikTok USA (virtual) 
+ Google, Gmail, Youtube Chile 
+ $ 0.038
+ Google, Gmail, Youtube Chile 
+ Get 5% cashback every month
+ Subscribe in our Android app and earn 5% cashback on your first 50 activations each month — on the web or in the app
+ Telegram Mini App
+ Use all Grizzly SMS features without leaving Telegram — open our convenient mini app →
+ News & special offers
+ Join our Telegram channel for important service updates, special offers and great discounts →
+ YouTube 
+ How it works
+ Receive SMS messages to a virtual number from any available services
+ Register an account in our system
+ Top up the balance in your account
+ Receive SMS from any service
+ Grizzly SMS is an international platform for receiving SMS verification codes. Sign up and get codes for 2,300+ services.
+ About our service
+ Buy temporary phone number for OTP
+ Looking for a fast, reliable way to receive SMS verification codes? Grizzly SMS is exactly what you need. We help you instantly get temporary phone numbers for OTPs and SMS activation — safe, affordable, and ready to use.
+ Why choose Grizzly SMS? 
+ We provide a time-saving and budget-friendly service where you can buy a virtual number in just a couple of clicks. Whether you're a business, a marketer, or just an everyday user, our service helps you register, verify, and manage accounts with ease.
+ Unlike many competitors, we don't resell numbers. That means lower prices and higher quality for you.
+ Get phone numbers for SMS verification
+ The majority of services require a phone number for registration. However, sharing your personal information may be quite uncomfortable. Don't bother yourself and buy a virtual mobile number for SMS verification.
+ Where you can use our numbers:
+ Payment systems & banks: PayPal , PaySafe Card , and more.
+ Social networks: Google , Twitter , TikTok , Instagram .
+ Messengers: WhatsApp , Telegram , Viber .
+ Our catalog covers almost any service worldwide. Just pick what you need through our easy-to-use filters and start right away.
+ After purchase, all SMS codes arrive instantly in your personal panel on our website. You can even enable notifications so you don't miss a thing.
+ Use virtual number to receive SMS anonymously
+ Your privacy is our top priority. Here's the list of our advantages:
+ Privacy protection. Unlike some other companies that may share sensitive client data, we never do. In fact, we don't even request personal information beyond your email address.
+ No exposure to the online community. Using your personal number online can lead to unwanted calls from scammers or marketers if your data is mishandled.
+ Safety of our clients is our primary concern. Protecting our clients is our top priority. We go the extra mile to safeguard your anonymity and shield you from anything that could compromise your privacy, reputation, or finances.
+ Temporary phone number for OTP from 100+ countries
+ Registering on foreign services can sometimes be challenging. In such cases, you may need a temporary phone number for SMS verification from a specific country.
+ The SMS activation service Grizzly SMS is fully focused on meeting our customers' needs. You can buy a temporary OTP number from the USA , India , Turkey and many other countries around the world — over 180 countries in total. What is equally important — our prices are affordable, making it easy to create accounts or profiles on any site that requires phone verification.
+ Our benefits
+ Our mission is to save your time and ensure your safety. Grizzly SMS is designed to solve your problems quickly, efficiently, and without hassle. We strive to provide excellent service for anyone who wants to buy a virtual phone number for SMS.
+ Here are some of the benefits our clients enjoy:
+ Affordability for everyone. Prices go as low as $0.04 per number. You'll be satisfied with our pricing.
+ Instant delivery. Numbers are available immediately after purchase so you can start your operations right away.
+ Automated service. All operations are handled by algorithms to minimize human error.
+ Effortless convenience. Purchasing and using a number takes just a couple of clicks.
+ 24/7 responsive customer support. We value communication and ensure every client feels heard and assisted.
+ More details
+ Blog
+ TikTok Phone Number Already in Use: Separate Personal and Work Accounts
+TikTok Phone Number Already in Use: Separate Personal and Work Accounts
+ A number-already-in-use message calls for checking existing account links, not deleting your personal profile. Identify th...
+ Michael Roberts
+ 4.24 
+ 11-16-2026
+ More details
+ Instagram Login Code Not Arriving? Recovering Access to a Professional Account
+Instagram Login Code Not Arriving? Recovering Access to a Professional Account
+ A missing Instagram code can mean a delivery problem, an unavailable two-factor method, or an account restriction....
+ David Chen
+ 4.25 
+ 11-09-2026
+ More details
+ Facebook Page Admin Access: Protect Your Account and Organize Team Permissions
+Facebook Page Admin Access: Protect Your Account and Organize Team Permissions
+ A working Facebook Page needs clear permissions and secure administrator accounts. Learn how to diagnose access pro...
+ Sarah Johnson
+ 4.22 
+ 11-02-2026
+ More details
+ Google Rejects Your Phone Number: What to Do for Gmail and YouTube
+Google Rejects Your Phone Number: What to Do for Gmail and YouTube
+ A rejected number, a missing SMS, and a YouTube channel limit are different problems. Identify the verification step first, fol...
+ David Chen
+ 4.25 
+ 10-26-2026
+ More details
+ Show more
+ The best service
+for receiving SMS messages online 
+ youtube telegram reddit instagram 
+ Price
+ API
+ FAQ
+ Earn with us
+ Affiliate programs
+ Software
+ eSIM Proxies beta 
+ Grizzly Corp Limited (Business Registration No. 80665761), addressed at Unit 308, 3/F, Chevalier House, 45–51 Chatham Road South, Tsim Sha Tsui, Hong Kong 
+ Personal data and cookie policy
+ Public offer
+ Legal info
 
 ССЫЛКИ:
-../../
-../../apple-touch-icon.png
-../../assets/brand.css?v=202611221342
-../../assets/fonts/inter-400.woff
-../../assets/p.css?v=202611221342
-../../catalog/karnizy/
-../../catalog/moldingi/
-../../catalog/paneli-pod-derevo/
-../../catalog/plintus-s-podsvetkoy/
-../../catalog/plintusy/
-../../catalog/reechnye-paneli/
-../../catalog/stenovye-paneli/
-../../catalog/ugolki/
-../../consent.html
-../../dostavka/
-../../favicon.ico
-../../icon.svg
-../../korzina/
-../../oferta.html
-../../oplata/
-../../p/a172/
-../../p/a38/
-../../p/a503/
-../../p/a504/
-../../privacy.html
-../../stati/
-../../stati/duropolimer-chto-eto/
-../../stati/kak-kleit-plintus-iz-duropolimera/
-../../stati/kak-otrezat-ugol-potolochnogo-plintusa/
-../../stati/kak-pokrasit-plintus-i-paneli/
-../../stati/moldingi-na-stene-v-interere/
-../../stati/montazh-stenovyh-panelej/
-../../stati/rejki-na-stenu-v-interere/
-https://max.ru/id470331302505_biz
-https://nashdekor.ru/stati/kak-vybrat-potolochnyj-plintus/
-https://t.me/nashdekorspb
-https://www.avito.ru/brands/41c3cda03dbcc4779122153b28a75b36
-mailto:info@nashdekor.ru
+/
+/_nuxt/deploy-4715-536bfc60-8953/css/43d6175.css
+/_nuxt/deploy-4715-536bfc60-8953/css/49f06ba.css
+/_nuxt/deploy-4715-536bfc60-8953/css/5b22651.css
+/_nuxt/deploy-4715-536bfc60-8953/css/7b05d3d.css
+/_nuxt/deploy-4715-536bfc60-8953/css/834937b.css
+/_nuxt/deploy-4715-536bfc60-8953/css/939e2ef.css
+/_nuxt/deploy-4715-536bfc60-8953/css/9baf434.css
+/_nuxt/deploy-4715-536bfc60-8953/css/a1a9f72.css
+/_nuxt/deploy-4715-536bfc60-8953/css/a9f96bd.css
+/_nuxt/deploy-4715-536bfc60-8953/css/b127764.css
+/_nuxt/deploy-4715-536bfc60-8953/css/bf22cc0.css
+/_nuxt/deploy-4715-536bfc60-8953/css/ec8dc3c.css
+/_nuxt/deploy-4715-536bfc60-8953/css/fb73286.css
+/_nuxt/deploy-4715-536bfc60-8953/css/fc2f781.css
+/_nuxt/deploy-4715-536bfc60-8953/css/fd4354c.css
+/_nuxt/deploy-4715-536bfc60-8953/icons/icon_512x512.6ad523.png
+/_nuxt/deploy-4715-536bfc60-8953/icons/icon_64x64.6ad523.png
+/_nuxt/deploy-4715-536bfc60-8953/manifest.4a1a9853.json
+/ai-services
+/amazon
+/anyother
+/apple
+/apple-touch-icon.png
+/ar
+/authorization
+/authors/david-chen
+/authors/michael-roberts
+/authors/sarah-johnson
+/blog
+/blog/facebook-page-admin-access
+/blog/google-phone-verification-help
+/blog/instagram-login-code-recovery
+/blog/tiktok-number-already-in-use
+/cn
+/countries
+/docs
+/es
+/esim
+/facebook
+/faq
+/favicon-16x16.png
+/favicon-32x32.png
+/favicon.ico
+/fonts/Manrope-Bold.woff2?v=2118e360b2266c474e70
+/fonts/Manrope-Regular.woff2?v=bfd7875fab6788311cdc
+/fonts/fonts.css?v=d4988dd56c1ecbc68a14
+/fr
+/gmail
+/hi
+/instagram
+/legal
+/logos/logo-light-v1.svg?v=44f9854e03d6f36719c0
+/naver
+/noon
+/offer
+/paypal
+/price
+/privacy
+/profit
+/proxy
+/pt
+/refer
+/registration
+/ru
+/safari-pinned-tab.svg
+/services
+/shopee
+/softs
+/telegram
+/ticketmaster
+/tiktok
+/tr
+/whatsapp
+https://apps.apple.com/us/app/grizzly-sms/id6811858700?l=en
+https://github.com/GrizzlySMS-Git/grizzly-sms-mcp
+https://grizzlysms.com/
+https://grizzlysms.com/api/storage/image/71203_w-782_fit-default.webp
+https://grizzlysms.com/api/storage/image/71204_w-320_fit-crop_q-60.webp
+https://grizzlysms.com/ar
+https://grizzlysms.com/cn
+https://grizzlysms.com/countries/india
+https://grizzlysms.com/countries/turkey
+https://grizzlysms.com/countries/usa
+https://grizzlysms.com/es
+https://grizzlysms.com/fr
+https://grizzlysms.com/gmail
+https://grizzlysms.com/hi
+https://grizzlysms.com/instagram
+https://grizzlysms.com/paypal
+https://grizzlysms.com/paysafecard
+https://grizzlysms.com/pt
+https://grizzlysms.com/ru
+https://grizzlysms.com/telegram
+https://grizzlysms.com/tiktok-douyin
+https://grizzlysms.com/tr
+https://grizzlysms.com/twitter
+https://grizzlysms.com/viber
+https://grizzlysms.com/whatsapp
+https://play.google.com/store/apps/details?id=com.grizzlysms
+https://t.me/GrizzlySMS_EN
+https://t.me/GrizzlySMScom_bot/app
+https://www.instagram.com/grizzlysms_com/
+https://www.reddit.com/r/GrizzlySMS
+https://www.youtube.com/@GrizzlySms
+https://www.youtube.com/watch?v=ADPWmHlvQnQ

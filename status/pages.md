@@ -1,4 +1,4 @@
 # Снятые страницы
 
-- 01 200 https://nashdekor.ru/stati/kak-vybrat-potolochnyj-plintus/ (5607 симв.)
-- 02 200 https://nashdekor.ru/stati/ (3422 симв.)
+- 01 200 https://aimanhunt.online/ (8666 симв.)
+- 02 200 http://aimanhunt.online/ (8666 симв.)
