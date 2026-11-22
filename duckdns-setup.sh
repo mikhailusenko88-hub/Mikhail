@@ -30,7 +30,7 @@ IP=$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<NF;i++) if($i=="src")
 R=$(curl -fsS --max-time 25 "https://www.duckdns.org/update?domains=$NAME&token=$TOKEN&ip=$IP" 2>&1 | head -c 200)
 LOG=/var/log/duckdns.log
 echo "$(date '+%F %T') $NAME $IP $R" >> $LOG
-tail -n 300 $LOG > $LOG.tmp 2>/dev/null && mv $LOG.tmp $LOG
+tail -n 300 $LOG > $LOG.$$ 2>/dev/null && mv -f $LOG.$$ $LOG 2>/dev/null; rm -f $LOG.$$
 echo "$R $IP"
 SCRIPT
 chmod 700 /usr/local/bin/duckdns-update
