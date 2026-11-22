@@ -77,3 +77,5 @@
 | shorts | 2026-11-21 | 2 | Mexico vs Thailand vs Ukraine | https://youtube.com/shorts/2OebbtHeVAY | public (только Shorts) |
 | shorts | 2026-11-21 | 3 | Egypt vs Colombia vs Cambodia | https://youtube.com/shorts/iC7WG5L26Is | public (только Shorts) |
 | shorts | 2026-11-22 | 1 | Brazil vs Indonesia vs Morocco | https://youtube.com/shorts/egKFQhdpuzU | public (только Shorts) |
+| 56 | 2026-11-22 | 2 | S2 RACE 43/67 | https://youtu.be/N2O-k9tb6sU | public |
+| shorts | 2026-11-22 | 2 | Germany vs Korea vs Pakistan | https://youtube.com/shorts/3jWK5p1xXxc | |
