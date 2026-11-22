@@ -1506,6 +1506,16 @@
    "link": "https://youtube.com/shorts/uLEjsasDCLQ",
    "title": "1000 ta shar! Cobalt, Nexia, Jiguli… Qaysi mashina yutadi? Какая машина победит? №2 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-22",
+   "slot": 2,
+   "league": "mass_cities",
+   "no": 1,
+   "final": false,
+   "link": "https://youtube.com/shorts/Zr9iRlRDw5Q",
+   "title": "1000 ta shar! Samarqand, Toshkent, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №1 #shorts",
+   "pl": true
   }
  ],
  "seen_comments": [
@@ -1561,6 +1571,36 @@
      ],
      "in_cup": 401,
      "link": "https://youtube.com/shorts/uLEjsasDCLQ"
+    }
+   ]
+  },
+  "cities": {
+   "no": 1,
+   "cnt": {
+    "Asaka": 1,
+    "Nukus": 1,
+    "Namangan": 1,
+    "Shahrisabz": 1,
+    "Angren": 1,
+    "Qoʻqon": 1,
+    "Xiva": 1,
+    "Fargʻona": 1,
+    "Samarqand": 1,
+    "Toshkent": 1
+   },
+   "results": [
+    {
+     "no": 1,
+     "date": "2026-11-22",
+     "slot": 2,
+     "winner": "Xiva",
+     "top3": [
+      "Xiva",
+      "Qoʻqon",
+      "Nukus"
+     ],
+     "in_cup": 359,
+     "link": "https://youtube.com/shorts/Zr9iRlRDw5Q"
     }
    ]
   }
