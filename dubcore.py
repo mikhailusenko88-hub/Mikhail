@@ -183,6 +183,9 @@ def source(text, spec):
         return kokoro(text, spec["lang"], spec["voice"], spec.get("speed", 1.0))
     if spec["engine"] == "piper":
         return piper(text, spec["model"], spec.get("speed", 1.0))
+    if spec["engine"] == "mtl":
+        # Chatterbox Multilingual с образцом родного голоса (например, сделанным Piper) — родное произношение, звук 24 кГц
+        return mtl(text, spec["lang"], spec_ref(spec), spec.get("speed", 1.0))
     if spec["engine"] == "edge":
         import edge_tts
         mp3 = os.path.join(TMP, "edge.mp3")
@@ -191,6 +194,37 @@ def source(text, spec):
         ff("-i", mp3, "-ac", "1", "-ar", str(SR), w)
         return load(w)
     raise ValueError("нет источника " + spec["engine"])
+
+
+_mtl, _refcache = None, {}
+
+
+def spec_ref(spec):
+    """Образец для Chatterbox Multilingual: готовый файл spec['ref'] или фраза голосом Piper spec['ref_piper']."""
+    if spec.get("ref"):
+        return spec["ref"]
+    key = spec["ref_piper"]
+    if key not in _refcache:
+        text = spec.get("ref_text") or "Heute ist ein schöner Tag. Die Kinder spielen draußen im Schnee und lachen laut."
+        a = piper(text, key, 0.95)
+        p = os.path.join(TMP, "mtlref_" + os.path.basename(key) + ".wav")
+        save(a, p)
+        _refcache[key] = p
+    return _refcache[key]
+
+
+def mtl(text, lang, ref, speed=1.0):
+    global _mtl
+    from chatterbox.mtl_tts import ChatterboxMultilingualTTS as M
+    if _mtl is None:
+        try:
+            _mtl = call_kw(M.from_pretrained, device="cpu", t3_model="v3")
+        except Exception:
+            traceback.print_exc()
+            _mtl = M.from_pretrained(device="cpu")
+    w = call_kw(_mtl.generate, text=text, language_id=lang, audio_prompt_path=ref, exaggeration=0.5, cfg_weight=0.5, temperature=0.8)
+    a = resample(to_np(w), _mtl.sr)
+    return tempo(a, speed) if abs(speed - 1.0) > 0.01 else a
 
 
 # ---------- перекраска ----------

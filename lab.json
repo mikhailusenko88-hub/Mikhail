@@ -1,6 +1,6 @@
 {
- "_": "Проба хинди 22.11.2026 (самая большая аудитория YouTube; Kokoro умеет хинди) — все герои, перекраска.",
- "out": "out_lab2",
+ "_": "Доводка немецкого Пика 22.11.2026: Михаил — «довести… поднятием или чем ещё, или даже чуть-чуть изменить для немецкой». Можно чуть ниже голос (345 Гц вместо 375).",
+ "out": "out_lab3",
  "whisper": "small",
  "names": {
   "barsik": "Барсик",
@@ -11,117 +11,128 @@
  },
  "jobs": [
   {
-   "key": "barsik_hi",
-   "hero": "barsik",
-   "lang": "hi",
-   "note": "хинди, источник Kokoro hf_alpha",
-   "src": {
-    "engine": "kokoro",
-    "lang": "h",
-    "voice": "hf_alpha"
-   },
-   "lines": [
-    "उसे पता है! लाल सिरा हमेशा उत्तर की ओर इशारा करता है।",
-    "चलो कमरे में चलते हैं। किताब समझा देगी।"
-   ]
-  },
-  {
-   "key": "ron_hi",
-   "hero": "ron",
-   "lang": "hi",
-   "note": "хинди, источник Kokoro hf_alpha",
-   "src": {
-    "engine": "kokoro",
-    "lang": "h",
-    "voice": "hf_alpha"
-   },
-   "lines": [
-    "देखो! सुई फिर से उधर ही इशारा कर रही है!",
-    "अरे! मेरा सिर घूम रहा है। लेकिन सुई को कोई फ़र्क नहीं पड़ता!"
-   ]
-  },
-  {
-   "key": "filya_hi",
-   "hero": "filya",
-   "lang": "hi",
-   "note": "хинди, источник Kokoro hf_alpha",
-   "src": {
-    "engine": "kokoro",
-    "lang": "h",
-    "voice": "hf_alpha"
-   },
-   "lines": [
-    "अगर हम बिस्कुट हटा दें तो?",
-    "देखो! सुई बिल्कुल नहीं हिली!"
-   ]
-  },
-  {
-   "key": "topa_hi",
-   "hero": "topa",
-   "lang": "hi",
-   "note": "хинди, источник Kokoro hm_omega (мужской)",
-   "src": {
-    "engine": "kokoro",
-    "lang": "h",
-    "voice": "hm_omega"
-   },
-   "lines": [
-    "जैसे सुई को पता है कि किधर देखना है।",
-    "तो हम सुई को धोखा नहीं दे सकते!"
-   ]
-  },
-  {
-   "key": "topa_hi_f",
-   "hero": "topa",
-   "lang": "hi",
-   "note": "хинди, источник Kokoro hf_alpha",
-   "src": {
-    "engine": "kokoro",
-    "lang": "h",
-    "voice": "hf_alpha"
-   },
-   "lines": [
-    "जैसे सुई को पता है कि किधर देखना है।",
-    "तो हम सुई को धोखा नहीं दे सकते!"
-   ]
-  },
-  {
-   "key": "pik_hi_1",
+   "key": "pik_de_a",
    "hero": "pik",
-   "lang": "hi",
-   "note": "хинди, как было",
+   "lang": "de",
+   "note": "Thorsten (лучше качество), поднят до 340, медленнее 0,85",
    "src": {
-    "engine": "kokoro",
-    "lang": "h",
-    "voice": "hf_alpha"
-   },
-   "lines": [
-    "उत्तर में ठंड होती है। बर्फ़ और ध्रुवीय भालू!",
-    "चुंबक लोहे की चीज़ें खींचता है। कील, क्लिप, छोटी सी चाबी।"
-   ]
-  },
-  {
-   "key": "pik_hi_3",
-   "hero": "pik",
-   "lang": "hi",
-   "note": "хинди, поднят до 340 Гц + медленнее",
-   "src": {
-    "engine": "kokoro",
-    "lang": "h",
-    "voice": "hf_alpha",
-    "speed": 0.88
+    "engine": "piper",
+    "model": "de/de_DE/thorsten/high/de_DE-thorsten-high",
+    "speed": 0.85
    },
    "pre": {
     "f0": 340,
     "F": 1.1
    },
    "lines": [
-    "उत्तर में ठंड होती है। बर्फ़ और ध्रुवीय भालू!",
-    "चुंबक लोहे की चीज़ें खींचता है। कील, क्लिप, छोटी सी चाबी।"
+    "Im Norden ist es kalt. Schnee und Eisbären!",
+    "Ein Magnet zieht Dinge aus Eisen an. Einen Nagel, eine Klammer, einen kleinen Schlüssel."
+   ]
+  },
+  {
+   "key": "pik_de_b",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Thorsten, поднят до 340, медленнее 0,85, Пик чуть ниже (345 Гц)",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/thorsten/high/de_DE-thorsten-high",
+    "speed": 0.85
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "f0": 345,
+   "lines": [
+    "Im Norden ist es kalt. Schnee und Eisbären!",
+    "Ein Magnet zieht Dinge aus Eisen an. Einen Nagel, eine Klammer, einen kleinen Schlüssel."
+   ]
+  },
+  {
+   "key": "pik_de_c",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Thorsten, поднят только до 290, медленнее 0,85, Пик 345 Гц",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/thorsten/high/de_DE-thorsten-high",
+    "speed": 0.85
+   },
+   "pre": {
+    "f0": 290,
+    "F": 1.05
+   },
+   "f0": 345,
+   "lines": [
+    "Im Norden ist es kalt. Schnee und Eisbären!",
+    "Ein Magnet zieht Dinge aus Eisen an. Einen Nagel, eine Klammer, einen kleinen Schlüssel."
+   ]
+  },
+  {
+   "key": "pik_de_d",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Kerstin, медленнее 0,8, поднят до 340, Пик 345 Гц",
+   "src": {
+    "engine": "piper",
+    "model": "de/de_DE/kerstin/low/de_DE-kerstin-low",
+    "speed": 0.8
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "f0": 345,
+   "lines": [
+    "Im Norden ist es kalt. Schnee und Eisbären!",
+    "Ein Magnet zieht Dinge aus Eisen an. Einen Nagel, eine Klammer, einen kleinen Schlüssel."
+   ]
+  },
+  {
+   "key": "pik_de_e",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Chatterbox по-немецки (образец Kerstin) → перекраска, Пик 345 Гц",
+   "src": {
+    "engine": "mtl",
+    "lang": "de",
+    "ref_piper": "de/de_DE/kerstin/low/de_DE-kerstin-low"
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "f0": 345,
+   "lines": [
+    "Im Norden ist es kalt. Schnee und Eisbären!",
+    "Ein Magnet zieht Dinge aus Eisen an. Einen Nagel, eine Klammer, einen kleinen Schlüssel."
+   ]
+  },
+  {
+   "key": "pik_de_f",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Chatterbox по-немецки, медленнее 0,9 → перекраска, Пик 375 Гц",
+   "src": {
+    "engine": "mtl",
+    "lang": "de",
+    "ref_piper": "de/de_DE/kerstin/low/de_DE-kerstin-low",
+    "speed": 0.9
+   },
+   "pre": {
+    "f0": 340,
+    "F": 1.1
+   },
+   "lines": [
+    "Im Norden ist es kalt. Schnee und Eisbären!",
+    "Ein Magnet zieht Dinge aus Eisen an. Einen Nagel, eine Klammer, einen kleinen Schlüssel."
    ]
   }
  ],
  "labels": {
-  "hi": "Хинди."
+  "de": "Немецкий.",
+  "v5": "Вариант пять.",
+  "v6": "Вариант шесть."
  }
 }
