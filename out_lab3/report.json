@@ -1,0 +1,137 @@
+{
+ "ref_f0": {
+  "barsik": 224.4,
+  "pik": 375.2,
+  "ron": 288.7,
+  "filya": 294.9,
+  "topa": 157.5
+ },
+ "rows": [
+  {
+   "key": "pik_de_a",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Thorsten (лучше качество), поднят до 340, медленнее 0,85",
+   "f0": 375.4,
+   "range_st": 8.5,
+   "hnr": 17.9,
+   "shift": [
+    2.1,
+    3.3
+   ],
+   "synth_sec": 48.4,
+   "dur": 8.3,
+   "heard": "Im Norden ist es kalt, Schmier und heiß Bären. Ein Magnet zieht die nach Hushalsen an, ein Nade, eine Klammer, einen kleinen Schlössen.",
+   "clear": 63.6,
+   "extra": 9,
+   "sim": 0.685,
+   "nearest": "pik",
+   "other": 0.458
+  },
+  {
+   "key": "pik_de_b",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Thorsten, поднят до 340, медленнее 0,85, Пик чуть ниже (345 Гц)",
+   "f0": 324.7,
+   "range_st": 7.5,
+   "hnr": 19.3,
+   "shift": [
+    0.0,
+    0.0
+   ],
+   "synth_sec": 29.1,
+   "dur": 8.8,
+   "heard": "Im Norden ist es Kant, Schnee und Weißbären. Ein Magmiert zieht den Hausolzen an, ein Nadel, eine Klammer und ein Klangschlossen.",
+   "clear": 50.0,
+   "extra": 10,
+   "sim": 0.691,
+   "nearest": "pik",
+   "other": 0.465
+  },
+  {
+   "key": "pik_de_c",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Thorsten, поднят только до 290, медленнее 0,85, Пик 345 Гц",
+   "f0": 342.5,
+   "range_st": 7.5,
+   "hnr": 18.3,
+   "shift": [
+    0.0,
+    2.6
+   ],
+   "synth_sec": 29.2,
+   "dur": 8.8,
+   "heard": "Im Norden ist es kalt, schwiebend Eisbären. Ein nacknetziger Ginghaushausen an, ein Nadel, ein Plumber, ein Kleinschlüsseln.",
+   "clear": 36.4,
+   "extra": 9,
+   "sim": 0.739,
+   "nearest": "pik",
+   "other": 0.503
+  },
+  {
+   "key": "pik_de_d",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Kerstin, медленнее 0,8, поднят до 340, Пик 345 Гц",
+   "f0": 345.3,
+   "range_st": 7.4,
+   "hnr": 17.2,
+   "shift": [
+    1.6,
+    1.7
+   ],
+   "synth_sec": 28.9,
+   "dur": 9.7,
+   "heard": "In Noan ist es kalt. Schnee und Asperen. Ein Magnet zieht die aus Eisen an. Ein Nagel, eine Klammer, eine kleine Schlüssel.",
+   "clear": 68.2,
+   "extra": 7,
+   "sim": 0.772,
+   "nearest": "pik",
+   "other": 0.473
+  },
+  {
+   "key": "pik_de_e",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Chatterbox по-немецки (образец Kerstin) → перекраска, Пик 345 Гц",
+   "f0": 322.6,
+   "range_st": 7.6,
+   "hnr": 19.0,
+   "shift": [
+    0.0,
+    0.0
+   ],
+   "synth_sec": 105.7,
+   "dur": 10.0,
+   "heard": "In Norden ist es kalt, Schnee und Eisbären. Ein Magnet zieht Dinge aus Eisen an, eine Nage, eine Klammer, einen kleinen Schlüssel.",
+   "clear": 86.4,
+   "extra": 3,
+   "sim": 0.714,
+   "nearest": "pik",
+   "other": 0.463
+  },
+  {
+   "key": "pik_de_f",
+   "hero": "pik",
+   "lang": "de",
+   "note": "Chatterbox по-немецки, медленнее 0,9 → перекраска, Пик 375 Гц",
+   "f0": 376.7,
+   "range_st": 6.7,
+   "hnr": 17.9,
+   "shift": [
+    2.7,
+    2.0
+   ],
+   "synth_sec": 74.2,
+   "dur": 10.4,
+   "heard": "Im Norden ist es kalt, Schnee und Eisbären. Ein Magnet zieht Dinge aus Eisen an. Eine Nadel, eine Klammer, einen kleinen Trüssel.",
+   "clear": 86.4,
+   "extra": 3,
+   "sim": 0.779,
+   "nearest": "pik",
+   "other": 0.485
+  }
+ ]
+}
