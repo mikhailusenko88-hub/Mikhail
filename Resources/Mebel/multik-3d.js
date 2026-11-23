@@ -1722,6 +1722,14 @@ function propMesh(p) {
       for (let k = 0; k < 4; k++) A(G.box(.11, .02, .36), P(c0, 'wood'), g).position.set(-.22 + k * .13, .12, 0); break; }
     case 'bell': { const c0 = cl || '#ffd23f'; A(lathe([[0, .01], [.085, .01], [.09, .015], [.08, .03], [.055, .08], [.045, .17], [.03, .2], [0, .2]], 32), P(c0, 'metal')).position.y = 0;
       A(G.sph(.018, 12, 10), P('#888888', 'metal'), g, 0).position.y = .015; const rb = A(G.tor(.02, .007, 8, 16), P('#d8213a', 'cloth'), g, 0); rb.position.y = .22; break; }
+    case 'snowflake': {   // 23.11.2026 (серия 39): снежинка — шесть лучиков с веточками, ледяная, светится; в лапе стоит лицом к камере, крупно — спереди, как зеркальце
+      const mt = P('#f4faff', 'gloss').clone(); if (mt.emissive) { mt.emissive.set('#a9d4ff'); mt.emissiveIntensity = .55; }
+      const bar = (L, W) => { const s = new THREE.Shape(); s.moveTo(0, -W / 2); s.lineTo(L - W * .6, -W / 2); s.lineTo(L, 0); s.lineTo(L - W * .6, W / 2); s.lineTo(0, W / 2); s.closePath(); return ext(s, .01, .003, 4); };
+      const sg = new THREE.Group(); sg.position.y = .012; sg.rotation.x = -Math.PI / 2; g.add(sg); const R = .12;
+      for (let k = 0; k < 6; k++) { const ag = new THREE.Group(); ag.rotation.z = k * Math.PI / 3; sg.add(ag); A(bar(R, .017), mt, ag, 0);
+        for (const [t0, l0, w0] of [[.38, .42, .013], [.66, .3, .011], [.86, .14, .009]]) for (const sgn of [-1, 1]) { const b = A(bar(R * l0, w0), mt, ag, 0); b.position.x = R * t0; b.rotation.z = sgn * Math.PI / 3; } }
+      A(ext(starShape(.034, .03, 6), .012, .003, 4), mt, sg, 0);
+      g.userData.heldRot = [Math.PI / 2, 0, 0]; g.userData.heldS = 1; g.userData.sz = .26; break; }
     case 'mirror': { const c0 = cl || '#ff8fb1'; const mg = new THREE.Group(); mg.position.y = .02; mg.rotation.x = -Math.PI / 2 + .2; g.add(mg);
       A(G.tor(.08, .014, 12, 40), P(c0, 'gloss'), mg); const gl = A(G.cyl(.078, .078, .006, 32), P('#e8f2ff', 'metal'), mg, 0); gl.rotation.set(Math.PI / 2, Math.PI / 2, 0);   /* 21.11.2026: отражение стояло на боку (серия 28) — повернул стекло на четверть оборота */ g.userData.glass = gl;
       const h = A(G.cap(.014, .1, 6, 12), P(c0, 'gloss'), mg); h.position.y = -.15; g.userData.heldRot = [Math.PI / 2 - .2, 0, 0]; g.userData.heldS = 1; break; }
@@ -3099,7 +3107,7 @@ function camFor(c, S, seg, lib) {
     const ok = p => p._vis !== false && (!c.prop || p.type === c.prop), hp = (seg.props || []).find(p => c.pid ? p.id === c.pid : ok(p) && p._holder && (!c.on || p._holder === c.on)) || (seg.props || []).find(p => ok(p) && !p._holder && !p.decor) || (seg.props || []).find(p => ok(p) && !p._holder);
     const id = (hp && hp._holder) || c.on, lc = id && lib.characters[id], rg = lc && rigFor(lc);
     if (hp && (rg && rg.headH || !hp._holder)) { const pm = propMesh(hp), v = new THREE.Vector3(); pm.updateMatrixWorld(true); pm.getWorldPosition(v); const ps = pm.scale.x || 1; v.y += (pm.userData.topY || 0) * ps;
-      const ws = (pm.userData.sz || .17) * ps, hr = rg && rg.headH ? rg.headR || .22 * (rg.scale || 1) : ws * .55, d = Math.max(hr * 1.8, Math.min(hr * 4, ws * 2.5)) * (c.vert ? 1.6 : 1) * (c.lens ? .62 : 1), sd = c.vert ? 0 : id && S[id] && S[id].face < 0 ? -1 : 1, front = hp.type === 'mirror' || hp.type === 'frost';
+      const ws = (pm.userData.sz || .17) * ps, hr = rg && rg.headH ? rg.headR || .22 * (rg.scale || 1) : ws * .55, d = Math.max(hr * 1.8, Math.min(hr * 4, ws * 2.5)) * (c.vert ? 1.6 : 1) * (c.lens ? .62 : 1), sd = c.vert ? 0 : id && S[id] && S[id].face < 0 ? -1 : 1, front = hp.type === 'mirror' || hp.type === 'frost' || hp.type === 'snowflake';
       if (!front) { const bb = new THREE.Box3().setFromObject(pm); if (!bb.isEmpty()) { bb.getCenter(v); if (pm.userData.topY) v.y = bb.max.y; } }   // в середину вещи (шишка в лапе торчала из кадра), у плоской — на верх
       const el = front ? .2 : .74; return { pos: new THREE.Vector3(v.x + sd * d * .1, v.y + d * Math.sin(el), v.z + d * Math.cos(el)), look: new THREE.Vector3(v.x, v.y, v.z) }; }
     return camFor(Object.assign({}, c, { mode: id ? 'medium' : 'wide', on: id || null }), S, seg, lib); }
