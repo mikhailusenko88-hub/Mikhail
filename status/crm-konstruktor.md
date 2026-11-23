@@ -1,4 +1,4 @@
-# Конструктор CRM — 2026-11-22 21:29 UTC
+# Конструктор CRM — 2026-11-23 10:13 UTC
 
 ```
 /k=200 /k/integrations=200 /k/templates=200 /k/templates/calc=200 /k/rules=200 /k/excel=200 
