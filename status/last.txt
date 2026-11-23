@@ -1,7 +1,93 @@
-ТЕСТ ОК: анонс гранд-финала 2026-11-28 собран за 52 с (не выложен)
+ВЫЛОЖЕНО #59 2026-11-23 слот 2: Shorts https://youtube.com/shorts/A4AGd2-sRUQ (public, без длинного), за 397 с
 
-
+{
+ "title": "24 Countries, 3 Lives ❤️ Türkiye vs Bangladesh vs Iraq | Country Marble Survival #46",
+ "description": "Flagball Arena · Season 2, Race 46 of 67: 24 countries, 3 stages — the last 8 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Andorra ❤❤, Bahamas ❤, Bangladesh ❤❤, Bosnia and Herzegovina ❤, Burkina Faso ❤, Cameroon ❤❤❤, Croatia ❤❤, Eswatini ❤❤, Gabon ❤❤❤, Georgia ❤❤❤, Guatemala ❤❤, Iraq ❤, Laos ❤❤, Lesotho ❤, Moldova ❤, Monaco ❤, Morocco ❤, Nicaragua ❤, Romania ❤❤❤, Saint Kitts and Nevis ❤❤, Sri Lanka ❤❤, Togo ❤❤❤, Turkmenistan ❤, Türkiye ❤.\n\nCountries still in the game before this race: 136 of 193.\nNext race: Race 47/67. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "race_no": 59,
+ "date": "2026-11-23",
+ "slot": 2,
+ "season": 2,
+ "round": 1,
+ "heat": 46,
+ "heats": 67,
+ "survive": 16,
+ "final": false,
+ "kind": "heat",
+ "label": "RACE 46/67",
+ "n": 24,
+ "lives_mode": true,
+ "losers": 8,
+ "mega": false,
+ "codes": [
+  "tr",
+  "md",
+  "bd",
+  "ge",
+  "ni",
+  "sz",
+  "ro",
+  "ga",
+  "gt",
+  "tg",
+  "tm",
+  "ls",
+  "lk",
+  "cm",
+  "kn",
+  "bs",
+  "mc",
+  "hr",
+  "bf",
+  "ad",
+  "ba",
+  "iq",
+  "ma",
+  "la"
+ ],
+ "spans": [
+  [
+   7.800000000000001,
+   75.23333333333333,
+   78.83333333333333
+  ],
+  [
+   82.43333333333332,
+   146.89999999999998,
+   150.49999999999997
+  ],
+  [
+   154.09999999999997,
+   221.26666666666665,
+   224.86666666666665
+  ]
+ ],
+ "duration": 249.86666666666667,
+ "heats_in_video": 1,
+ "races": [
+  59
+ ],
+ "featured": [
+  "tr",
+  "bd",
+  "iq"
+ ]
+}
 
 --- журнал ---
-12:14:49 режим test, 2026-11-28: анонс гранд-финала (H13), сезон не двигается
-12:15:40 анонс готов: 16.6 с, 12 МБ — Grand Final in 2 days 🏆 Top 32 right now — is your country in? Marble Race #shorts
+14:31:00 режим publish, гонка #59, 2026-11-23 слот 2, событие workflow_dispatch
+14:31:00 по плану: S2 RACE 46/67
+14:31:01 канал: Flagball Arena
+14:31:01 в этом видео заездов: 1 (раунд 1, осталось в раунде 22)
+гонка #59 2026-11-23 слот 2: S2 RACE 46/67, 24→16, участники: TUR MDA BGD GEO NIC SWZ ROU GAB GTM TGO TKM LSO LKA CMR KNA BHS MCO HRV BFA AND BIH IRQ MAR LAO
+  этап 1: 24→21, блоков 11 ['pendulums', 'sliders', 'trapdoors', 'rotor', 'comb', 'ring_gate', 'drum', 'twin_rings', 'pushers', 'zigzag', 'stairs'], Q-финиш 64.9 c, кадров 2023
+  этап 2: 21→19, блоков 12 ['pegs', 'drum', 'bumpers', 'zigzag', 'rotor', 'pendulums', 'split', 'windmills', 'stairs', 'twin_rings', 'sliders', 'pushers'], Q-финиш 61.9 c, кадров 1934
+  этап 3: 19→16, блоков 11 ['pushers', 'split', 'glass', 'comb', 'pendulums', 'zigzag', 'pegs', 'stairs', 'twin_rings', 'ring_gate', 'tunnels'], Q-финиш 64.6 c, кадров 2015
+длительность ролика ≈ 4.2 мин
+готово: 7496 кадров за 377 с
+кадров 7496, 4.16 мин, рендер 378 с
+выжили: MAR BHS LSO GTM CMR AND MCO KNA HRV GEO MDA SWZ LAO IRQ NIC GAB
+14:37:19 заезд 1/1 готов: 135 МБ, 379 с
+14:37:20 видео готово: 135 МБ, 4.2 мин, 380 с с начала; название: 24 Countries, 3 Lives ❤️ Türkiye vs Bangladesh vs Iraq | Country Marble Survival #46
+14:37:36 Shorts готов: 26 с — Türkiye vs Bangladesh vs Iraq 😱 Who Survives? Country Marble Race #shorts
+14:37:36 длинное видео в этом слоте: нет (только Shorts)
+14:37:37 Shorts на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}
