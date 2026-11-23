@@ -51,6 +51,8 @@
   G.liveShape = (R, trem) => c => { let k = 0; for (let i = 0; i < c.N; i++) if (Math.abs(c.pitch[i]) > .001) { let s = p2st(c.pitch[i], c.coef) * R; if (trem && VOW.includes(c.toks[i])) s += (k++ % 2 ? -trem : trem); c.pitch[i] = st2p(s, c.coef); } };
 
   /** Паузы на знаках не длиннее sec секунд (на «?», «!», «…» внутри реплики — в полтора раза длиннее). Нужно голосам, у которых запятая тянется больше секунды. */
+  /** Пауза между фразами внутри реплики не короче sec секунд (после «.», «!», «?», «…»): у голоса ru_zara (Рон) фразы слипались — «Плюх! Ой!» → «плюхой», «Горка! Ура!» → «горько, ура» (анализатор, 23.11). */
+  G.gapShape = (sec, F) => c => { const need = Math.max(2, Math.round(sec * (F || 1) / c.frame)); for (let i = 1; i < c.N - 3; i++) if ('.!?…'.includes(c.toks[i]) && c.d[i] < need) c.d[i] = need; };
   G.pauseShape = (sec, F) => c => { const cap = Math.max(4, Math.round(sec * (F || 1) / c.frame)), cap2 = Math.round(cap * 1.5);
     for (let i = 1; i < c.N - 3; i++) { const t = c.toks[i]; if (',;:—–-'.includes(t)) { if (c.d[i] > cap) c.d[i] = cap; } else if ('.!?…'.includes(t)) { if (c.d[i] > cap2) c.d[i] = cap2; } } };
 
@@ -238,7 +240,7 @@
   async function say(text, o, b) { const act = b.actx || (b.emo && b.act !== false && G.ACT[b.emo]) || null, K = b.k == null ? 1 : b.k, mk = x => 1 + ((x == null ? 1 : x) - 1) * K;   // act — игра эмоции (БАРС-актёр); без неё — прежние G.EMO
     const fx = (act && act.fx) || null, e = act ? {} : ((b.emo && G.EMO[b.emo]) || {}), F = (b.F || 1) * (fx ? mk(fx.F) : 1), P = (b.P || 1) * (e.P || 1), T = (b.T || 1) * (act ? mk(act.T) : (e.T || 1)), R = (b.R || 1) * (e.R || 1);
     const s = G.stretch(text); let marked = o.accent === false ? s.text : await MKVoice.marks(s.text, o.lex); marked = G.applyStretch(marked, s.cues); MKVoice.lastText = marked;
-    const shapes = []; if (R !== 1 || e.trem) shapes.push(G.liveShape(R, e.trem)); if (act) shapes.push(G.actShape(act, K)); if (s.cues.length) shapes.push(G.stretchShape(F)); if (b.pause) shapes.push(G.pauseShape(b.pause, F));
+    const shapes = []; if (R !== 1 || e.trem) shapes.push(G.liveShape(R, e.trem)); if (act) shapes.push(G.actShape(act, K)); if (s.cues.length) shapes.push(G.stretchShape(F)); if (b.pause) shapes.push(G.pauseShape(b.pause, F)); if (b.gap) shapes.push(G.gapShape(b.gap, F));
     const y = await core(marked, o, { rate: T / F * (o.rate || 1), pitch: P / F * (o.pitch || 1), accent: false, post: !s.cues.length, typeFix: !!b.typeFix, shape: shapes.length ? c => shapes.forEach(f => f(c)) : null });
     return fx ? G.fx(G.resample(y, F), fx, K) : G.resample(y, F); }
   async function sound(name, o, b) { const F = b.F || 1, mk = G.SOUNDS[name]; if (!mk) return new Float32Array(0); const sc = G.score(mk());
