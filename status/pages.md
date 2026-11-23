@@ -1,7 +1,3 @@
 # Снятые страницы
 
-- 01 200 https://crm.nashdekor.ru/api/outbox/status/27f81228-2b7d-4509-8b40-5ef70e557b78 (66 симв.)
-- 02 200 https://crm.nashdekor.ru/api/outbox/status/63778607-b83c-45da-b1f8-649431a8f660 (66 симв.)
-- 03 200 https://crm.nashdekor.ru/api/outbox/status/ba70813d-27bf-4aed-a340-ce9ca948f1ed (66 симв.)
-- 04 200 https://crm.nashdekor.ru/api/outbox/status/20f85ba1-7e08-42c4-80f8-7e81c899917e (66 симв.)
-- 05 200 https://crm.nashdekor.ru/api/outbox/status/994883f9-c811-47f7-929a-5e92e1b798c2 (66 симв.)
+- 01 200 https://crm.nashdekor.ru/api/catalog (2537 симв.)
