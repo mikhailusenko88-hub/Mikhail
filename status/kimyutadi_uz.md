@@ -1,38 +1,39 @@
 # Kim yutadi?  (@kimyutadi_uz)
-Проверено: 2026-11-22 19:45 UTC
+Проверено: 2026-11-23 06:54 UTC
 
 - Страница канала: HTTP 200; ID: UC93S31Qkgoz4cFgKBzz-mLA
-- Шапка: 10 подписчиков · 53 видео
+- Шапка: 10 подписчиков · 54 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-22 14:36 · 277 просм. · 1000 ta shar! Nexia, Equinox, Epica… Qaysi mashina yutadi? Какая машина победит? №3 #shorts · 6CCntXS89D4
-- 2026-11-22 10:36 · 507 просм. · 1000 ta shar! Samarqand, Toshkent, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №1 #shorts · Zr9iRlRDw5Q
+- 2026-11-23 06:36 · 2 просм. · 1000 ta shar! Gentra, Labo, Epica… Qaysi mashina yutadi? Какая машина победит? №4 #shorts · sx2-fIMblqU
+- 2026-11-22 14:36 · 436 просм. · 1000 ta shar! Nexia, Equinox, Epica… Qaysi mashina yutadi? Какая машина победит? №3 #shorts · 6CCntXS89D4
+- 2026-11-22 10:36 · 605 просм. · 1000 ta shar! Samarqand, Toshkent, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №1 #shorts · Zr9iRlRDw5Q
 - 2026-11-22 06:36 · 914 просм. · 1000 ta shar! Cobalt, Nexia, Jiguli… Qaysi mashina yutadi? Какая машина победит? №2 #shorts · uLEjsasDCLQ
-- 2026-11-21 14:38 · 443 просм. · 1000 ta shar! Cobalt, Malibu, Kia K5… Qaysi mashina yutadi? Какая машина победит? №1 #shorts · xp3QgXkT4rM
-- 2026-11-21 10:37 · 385 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №23 #shorts · Twv1hyOMYVU
-- 2026-11-21 06:36 · 230 просм. · Qaysi shahar yutadi? Какой город победит? 🏁 №14 #shorts · NiAY6Nz1Wmc
+- 2026-11-21 14:38 · 562 просм. · 1000 ta shar! Cobalt, Malibu, Kia K5… Qaysi mashina yutadi? Какая машина победит? №1 #shorts · xp3QgXkT4rM
+- 2026-11-21 10:37 · 393 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №23 #shorts · Twv1hyOMYVU
+- 2026-11-21 06:36 · 239 просм. · Qaysi shahar yutadi? Какой город победит? 🏁 №14 #shorts · NiAY6Nz1Wmc
 - 2026-11-20 14:39 · 371 просм. · Qaysi shahar yutadi? Какой город победит? 🏁 №13 #shorts · 3kDDQNW1DEk
-- 2026-11-20 10:36 · 218 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №22 #shorts · 3lcJci36uVk
+- 2026-11-20 10:36 · 220 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №22 #shorts · 3lcJci36uVk
 - 2026-11-20 06:37 · 188 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №21 #shorts · Z-I-pSJYtMQ
 - 2026-11-19 14:41 · 257 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №20 #shorts · ZAyx08ROrvc
-- 2026-11-19 10:43 · 496 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №19 #shorts · NdB6r0N5XqQ
+- 2026-11-19 10:43 · 495 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №19 #shorts · NdB6r0N5XqQ
 - 2026-11-19 06:46 · 1 просм. · Qaysi shahar yutadi? Какой город победит? 🏁 №12 #shorts · g2K5gcUFJGg
 - 2026-11-18 14:49 · 119 просм. · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №12 #shorts · yHBl5IdkZV0
 - 2026-11-18 10:46 · 164 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №18 #shorts · TYpJ3QSkl_g
-- 2026-11-18 06:37 · 209 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №17 #shorts · G-Yq6FjzY0Q
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
-- 277 просмотров · 1000 ta shar! Nexia, Equinox, Epica… Qaysi mashina yutadi? Какая машина победит? №3 #shorts · 6CCntXS89D4
-- 507 просмотров · 1000 ta shar! Samarqand, Toshkent, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №1 #shorts · Zr9iRlRDw5Q
-- 908 просмотров · 1000 ta shar! Cobalt, Nexia, Jiguli… Qaysi mashina yutadi? Какая машина победит? №2 #shorts · uLEjsasDCLQ
-- 523 просмотра · 1000 ta shar! Cobalt, Malibu, Kia K5… Qaysi mashina yutadi? Какая машина победит? №1 #shorts · xp3QgXkT4rM
-- 381 просмотр · Qaysi mashina yutadi? Какая машина победит? 🚗 №23 #shorts · Twv1hyOMYVU
-- 230 просмотров · Qaysi shahar yutadi? Какой город победит? 🏁 №14 #shorts · NiAY6Nz1Wmc
+- 2 просмотра · 1000 ta shar! Gentra, Labo, Epica… Qaysi mashina yutadi? Какая машина победит? №4 #shorts · sx2-fIMblqU
+- 439 просмотров · 1000 ta shar! Nexia, Equinox, Epica… Qaysi mashina yutadi? Какая машина победит? №3 #shorts · 6CCntXS89D4
+- 609 просмотров · 1000 ta shar! Samarqand, Toshkent, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №1 #shorts · Zr9iRlRDw5Q
+- 917 просмотров · 1000 ta shar! Cobalt, Nexia, Jiguli… Qaysi mashina yutadi? Какая машина победит? №2 #shorts · uLEjsasDCLQ
+- 572 просмотра · 1000 ta shar! Cobalt, Malibu, Kia K5… Qaysi mashina yutadi? Какая машина победит? №1 #shorts · xp3QgXkT4rM
+- 394 просмотра · Qaysi mashina yutadi? Какая машина победит? 🚗 №23 #shorts · Twv1hyOMYVU
+- 239 просмотров · Qaysi shahar yutadi? Какой город победит? 🏁 №14 #shorts · NiAY6Nz1Wmc
 - 371 просмотр · Qaysi shahar yutadi? Какой город победит? 🏁 №13 #shorts · 3kDDQNW1DEk
-- 218 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №22 #shorts · 3lcJci36uVk
+- 220 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №22 #shorts · 3lcJci36uVk
 - 188 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №21 #shorts · Z-I-pSJYtMQ
 - 257 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №20 #shorts · ZAyx08ROrvc
-- 496 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №19 #shorts · NdB6r0N5XqQ
+- 495 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №19 #shorts · NdB6r0N5XqQ
 - 1 просмотр · Qaysi shahar yutadi? Какой город победит? 🏁 №12 #shorts · g2K5gcUFJGg
 - 119 просмотров · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №12 #shorts · yHBl5IdkZV0
 - 164 просмотра · Qaysi mashina yutadi? Какая машина победит? 🚗 №18 #shorts · TYpJ3QSkl_g
@@ -51,4 +52,3 @@
 - 157 просмотров · Qaysi shahar yutadi? Какой город победит? 🏁 №9 #shorts · TXfltN8hkJ4
 - 101 просмотр · Qaysi jamoa yutadi? Какой клуб победит? ⚽ №7 #shorts · Li1n6czv9gI
 - 177 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №11 #shorts · r5e1gfw-jlY
-- 159 просмотров · Qaysi mashina yutadi? Какая машина победит? 🚗 №10 #shorts · E-q512-ocQ0

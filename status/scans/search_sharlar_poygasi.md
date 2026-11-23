@@ -1,37 +1,36 @@
 # Скан: search:sharlar poygasi
-Проверено: 2026-11-22 06:54 UTC · HTTP 200 · найдено 29
+Проверено: 2026-11-23 06:54 UTC · HTTP 200 · найдено 28
 Ссылка: https://www.youtube.com/results?search_query=sharlar%20poygasi
 
 | # | просм. | возраст | в сутки | канал (подписчики) | длит. | название |
 |---|---|---|---|---|---|---|
-| 1 | 2755138 | ? | ? | Kids Tv Uzbekistan - Bolalar Qo'shiqlari (@KidsTvUzbekistan, 383000) | 12:32 | Balon Qo'shig'i Qiziqarli Maktabgacha She'r + Ko'proq Ommabop Qofiyalar O'zbek tilida |
-| 2 | 208185 | ? | ? | Kids Tv Uzbekistan - Bolalar Qo'shiqlari (@KidsTvUzbekistan, 383000) | 1:29 | Junior Squad Ha Ha Ha Qo'shig'i Bolalar Uchun Maktabgacha O'shiq Toping |
-| 3 | 1100 | ? | ? | Texnochi (@texnochi, 10) | ? | Qaysi viloyat yutadi? 🏁 O'zbekiston viloyatlari sharlar poygasi |
-| 4 | 7000 | ? | ? | ОТЛИЧНОЕ  ШОУ  (@ОТЛИЧНО.1, 2790) | ? | Sharlar yordamida uchamiz #yangi_yil #новыйгод |
-| 5 | 64000000 | ? | ? | Millioner wedding. To'y xizmatlari.  (@MILLIONERWEDDING.Toyxizmatlari, 55400) | ? | Gazli sharlar taxlab beraman Qarshi shahar 903136076 #rekkkkkk #ofarmleniya #balloon |
-| 6 | 3900 | ? | ? | Mosh mung Akmaljon (@akmaljonmuhammadamin8382, 7660) | ? | Sharlar o’yini |
-| 7 | 1331 | 20 дн | 67 | Sharlar Imperiyasi (@SharlarImperiyasi, 54) | ? | FINALDA IKKALA SPORTCHI HAM BIR MAMLAKATDAN EDI! 🇵🇭🏆 |
-| 8 | 12913884 | ? | ? | D Billions Vlog (@dbillions_vlog_russian, 544000) | 2:56 | Синий, Желтый, Красный Шар / D Billions Vlog |
-| 9 | 19103491 | ? | ? | D Billions На Русском (@dbillions_russian, 13900000) | 2:04 | Красный, Синий, Желтый Шар! / D Billions Детские Песни |
-| 10 | 25782003 | ? | ? | CoComelon на русском — Детские песенки (@CoComelonRussian, ?) | 3:29 | Гонка на Воздушных Шарах / CoComelon на русском — Детские песенки / Мультики для детей |
-| 11 | 28 | ? | ? | Yutish Vaqti (@YutishVaqti, ?) | ? | 🎱 Lotereya barabanidagi sharlar aralashmoqda… qaysi biri birinchi chiqadi! 🤯 |
-| 12 | 16000 | ? | ? | 👑Hobby🪽 (@Hobby_05, ?) | ? | 🎈❌ shar yorishga qiziqadigan lar uchun #sharlar #oʻyin |
-| 13 | 317000 | ? | ? | Sharting Bormi (@ShartingBormi, ?) | ? | Poyga boshlanmoqda… 🚀 |
+| 1 | 2762784 | ? | ? | Kids Tv Uzbekistan - Bolalar Qo'shiqlari (@KidsTvUzbekistan, 383000) | 12:32 | Balon Qo'shig'i Qiziqarli Maktabgacha She'r + Ko'proq Ommabop Qofiyalar O'zbek tilida |
+| 2 | 1100 | ? | ? | Texnochi (@texnochi, 10) | ? | Qaysi viloyat yutadi? 🏁 O'zbekiston viloyatlari sharlar poygasi |
+| 3 | 32 | 18 дн | 1 | Yutish Vaqti (@YutishVaqti, 9) | ? | 🎱 Lotereya barabanidagi sharlar aralashmoqda… qaysi biri birinchi chiqadi! 🤯 |
+| 4 | 317000 | ? | ? | Sharting Bormi (@ShartingBormi, 8510) | ? | Poyga boshlanmoqda… 🚀 |
+| 5 | 3900 | ? | ? | Mosh mung Akmaljon (@akmaljonmuhammadamin8382, 7660) | ? | Sharlar o’yini |
+| 6 | 7000 | ? | ? | ОТЛИЧНОЕ  ШОУ  (@ОТЛИЧНО.1, 2790) | ? | Sharlar yordamida uchamiz #yangi_yil #новыйгод |
+| 7 | 12914434 | ? | ? | D Billions Vlog (@dbillions_vlog_russian, 544000) | 2:56 | Синий, Желтый, Красный Шар / D Billions Vlog |
+| 8 | 208427 | ? | ? | Kids Tv Uzbekistan - Bolalar Qo'shiqlari (@KidsTvUzbekistan, 383000) | 1:29 | Junior Squad Ha Ha Ha Qo'shig'i Bolalar Uchun Maktabgacha O'shiq Toping |
+| 9 | 1 | 6 дн | ? | Zerviq (@Zerviq-p5u, ?) | ? | 🎯 Bilyardchi sharlar orasidagi tor yo‘lakdan aniq zarba berdi! 😱 |
+| 10 | 64000000 | ? | ? | Millioner wedding. To'y xizmatlari.  (@MILLIONERWEDDING.Toyxizmatlari, ?) | ? | Gazli sharlar taxlab beraman Qarshi shahar 903136076 #rekkkkkk #ofarmleniya #balloon |
+| 11 | 869 | ? | ? | ANDROID O'YINLAR (@androidoyinlar5569, ?) | ? | Going Balls Android O'yinlar 2022 O'yindagi Barcha Sharlar 🏈🏉🏀🥎 |
+| 12 | 494 | ? | ? | SHERLAR VA IBORALAR (@iboralar, ?) | ? | 12-noyabr, 2024 |
+| 13 | 16000 | ? | ? | 👑Hobby🪽 (@Hobby_05, ?) | ? | 🎈❌ shar yorishga qiziqadigan lar uchun #sharlar #oʻyin |
 | 14 | 35000 | ? | ? | Azim Sultonov  (@asultonov82, ?) | ? | Sharlar olami🤩🤩 |
-| 15 | 494 | ? | ? | SHERLAR VA IBORALAR (@iboralar, ?) | ? | 12-noyabr, 2024 |
-| 16 | 57000 | ? | ? | ? (@?, ?) | ? | 10 Levels of Colorful Balloon Race — Who Will Win? |
-| 17 | 38000 | ? | ? | ? (@?, ?) | ? | Sharlar |
-| 18 | 869 | ? | ? | ? (@?, ?) | ? | Going Balls Android O'yinlar 2022 O'yindagi Barcha Sharlar 🏈🏉🏀🥎 |
-| 19 | 38000 | ? | ? | ? (@?, ?) | ? | Sharlar |
-| 20 | 113000 | ? | ? | ? (@?, ?) | ? | оформление Самарканд 932324949 sharlar bilan bezatish |
+| 15 | 931 | ? | ? | Sharlar Imperiyasi (@SharlarImperiyasi, ?) | ? | Straight Poolda bitta seriya yuzlab shar davom etishi mumkin 🤯🎱 |
+| 16 | 38000 | ? | ? | ? (@?, ?) | ? | Sharlar |
+| 17 | 1300 | ? | ? | ? (@?, ?) | ? | 🎱 Bilyardchi kuchli zarba bilan sharlar to‘plamini tarqatib yubordi! 😱 |
+| 18 | 29 | ? | ? | ? (@?, ?) | ? | 😱 Bilyardchi sharlar orasidagi juda kichik bo‘shliqdan foydalandi! 🎱 |
+| 19 | 77000 | ? | ? | ? (@?, ?) | ? | Android o'yinlar Going Balls Sharlar bilan poyga🏉🏀🥎⚾️ |
+| 20 | 608 | ? | ? | ? (@?, ?) | ? | Qoniqarli marmar yugurish poygasi ASMR 🤹🏻‍♀️ 112 🔴🟡🢢 #marblerace #asmr #shorts |
 | 21 | 1100 | ? | ? | ? (@?, ?) | ? | 🎯 Bilyardchi sharlar orasidagi tor yo‘lakdan aniq zarba berdi! 😱 |
-| 22 | 1300 | ? | ? | ? (@?, ?) | ? | 🎱 Bilyardchi kuchli zarba bilan sharlar to‘plamini tarqatib yubordi! 😱 |
-| 23 | 824 | ? | ? | ? (@?, ?) | ? | COBALT SHARMANDA QILDI.Poyga..Daxshat |
-| 24 | 2300 | ? | ? | ? (@?, ?) | ? | Piskent poyga |
-| 25 | 77000 | ? | ? | ? (@?, ?) | ? | Android o'yinlar Going Balls Sharlar bilan poyga🏉🏀🥎⚾️ |
-| 26 | 22 | 8 дн | 2 | ? (@?, 54) | ? | Nega snuker oxirida rangli sharlarni faqat qat’iy tartibda tushirish mumkin 🌈 |
-| 27 | 6800 | ? | ? | ? (@?, ?) | ? | Gazli sharlar Qarshi 903136076 #ofarmleniya #balloon #wedding |
-| 28 | 2 | 11 дн | ? | ? (@?, 54) | ? | Nega snukerda o‘yin davomida barcha sharlar qaytadan terilishi mumkin 🔄 |
-| 29 | 106000 | ? | ? | ? (@?, ?) | ? | car poyga (1) |
+| 22 | 825 | ? | ? | ? (@?, ?) | ? | COBALT SHARMANDA QILDI.Poyga..Daxshat |
+| 23 | 2300 | ? | ? | ? (@?, ?) | ? | Piskent poyga |
+| 24 | 23 | ? | ? | ? (@?, ?) | ? | Nega snuker oxirida rangli sharlarni faqat qat’iy tartibda tushirish mumkin 🌈 |
+| 25 | 38000 | ? | ? | ? (@?, ?) | ? | Sharlar |
+| 26 | 113000 | ? | ? | ? (@?, ?) | ? | оформление Самарканд 932324949 sharlar bilan bezatish |
+| 27 | 857 | ? | ? | ? (@?, ?) | ? | Oyoqdagi sharlar uchun katta jang 😂💥 |
+| 28 | 1600 | ? | ? | ? (@?, ?) | ? | BILYARDDA TO‘PGA TEGMASDAN HAM JARIMA olish mumkin! 🎱😳 |
 
-Хэштеги у первых 30: #balloon ×2, #ofarmleniya ×2, #yangi_yil ×1, #новыйгод ×1, #rekkkkkk ×1, #oʻyin ×1, #sharlar ×1, #wedding ×1
+Хэштеги у первых 30: #yangi_yil ×1, #новыйгод ×1, #balloon ×1, #ofarmleniya ×1, #rekkkkkk ×1, #oʻyin ×1, #sharlar ×1, #asmr ×1, #marblerace ×1, #shorts ×1
