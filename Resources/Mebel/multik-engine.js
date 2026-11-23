@@ -1208,7 +1208,7 @@ MK.compile = function (ep, lib, audio) {
     if (cold && MAIN) { const mt = MAIN.type, ex = props.filter(p => p.type === mt), visAt = p => p.vis0 ? 0 : (p.ev.find(e => e.vis === true) || { t: 99 }).t;
       const early = ex.filter(p => visAt(p) <= 10).sort((a, b) => visAt(a) - visAt(b))[0];
       if (early) { mainAt = visAt(early); if (mainAt < 1) { coldPx = early.h0 && C[early.h0] ? at0(early.h0) : early.x0; coldSky = mt === 'moon' || mt === 'rainbow' ? mt : false; } }
-      else if (Array.isArray(ep.absent) && (!ep.absent.includes(mt) || ep.mainSet) && skyOk(mt, lspec)) {   // «ГЛАВНОЕ: …» написано явно — показываем, даже если по сюжету его ищут const xs = Object.keys(C).filter(id => evalChar(inits[id], C[id].ev.slice().sort((a, b) => a.t - b.t), 1, {}, 0).vis).map(id => evalChar(inits[id], C[id].ev.slice().sort((a, b) => a.t - b.t), 1, {}, 0).x);
+      else if (Array.isArray(ep.absent) && (!ep.absent.includes(mt) || ep.mainSet) && skyOk(mt, lspec)) {   /* «ГЛАВНОЕ: …» написано явно — показываем, даже если по сюжету его ищут */ const xs = Object.keys(C).filter(id => evalChar(inits[id], C[id].ev.slice().sort((a, b) => a.t - b.t), 1, {}, 0).vis).map(id => evalChar(inits[id], C[id].ev.slice().sort((a, b) => a.t - b.t), 1, {}, 0).x);
         const big0 = ex[0] ? ex[0].big : MAIN.big || 1, need = big0 > 1.2 ? .16 : .1; let x = .5, best = -1;
         for (const cx of [.5, .42, .58, .34, .66, .26, .74, .18, .82]) { const m = xs.length ? Math.min(...xs.map(v => Math.abs(v - cx))) : 1; if (m >= need) { x = cx; best = m; break; } if (m > best) { best = m; x = cx; } }
         const later = ex.length ? Math.min(...ex.map(visAt)) : 99, tOff = Math.max(3.5, Math.min(7.5, later - .4)), T1 = 1;
