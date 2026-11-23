@@ -1722,13 +1722,16 @@ function propMesh(p) {
       for (let k = 0; k < 4; k++) A(G.box(.11, .02, .36), P(c0, 'wood'), g).position.set(-.22 + k * .13, .12, 0); break; }
     case 'bell': { const c0 = cl || '#ffd23f'; A(lathe([[0, .01], [.085, .01], [.09, .015], [.08, .03], [.055, .08], [.045, .17], [.03, .2], [0, .2]], 32), P(c0, 'metal')).position.y = 0;
       A(G.sph(.018, 12, 10), P('#888888', 'metal'), g, 0).position.y = .015; const rb = A(G.tor(.02, .007, 8, 16), P('#d8213a', 'cloth'), g, 0); rb.position.y = .22; break; }
-    case 'snowflake': {   // 23.11.2026 (серия 39): снежинка — шесть лучиков с веточками, ледяная, светится; в лапе стоит лицом к камере, крупно — спереди, как зеркальце
-      const mt = P('#f4faff', 'gloss').clone(); if (mt.emissive) { mt.emissive.set('#a9d4ff'); mt.emissiveIntensity = .55; }
+    case 'snowflake': {   // 23.11.2026 (серия 39): снежинка — шесть лучиков с веточками, ледяная, светится; синяя подложка-контур — видна на белом снегу и белой шерсти (в сборке 39 без неё сливалась); в лапе стоит лицом к камере, «крупно» — спереди, как зеркальце
+      const mt = P('#e6f6ff', 'gloss').clone(); if (mt.emissive) { mt.emissive.set('#8fd0ff'); mt.emissiveIntensity = .6; }
+      const mb = P('#2a6fc0', 'gloss').clone(); if (mb.emissive) { mb.emissive.set('#123a78'); mb.emissiveIntensity = .25; }
       const bar = (L, W) => { const s = new THREE.Shape(); s.moveTo(0, -W / 2); s.lineTo(L - W * .6, -W / 2); s.lineTo(L, 0); s.lineTo(L - W * .6, W / 2); s.lineTo(0, W / 2); s.closePath(); return ext(s, .01, .003, 4); };
-      const sg = new THREE.Group(); sg.position.y = .012; sg.rotation.x = -Math.PI / 2; g.add(sg); const R = .12;
-      for (let k = 0; k < 6; k++) { const ag = new THREE.Group(); ag.rotation.z = k * Math.PI / 3; sg.add(ag); A(bar(R, .017), mt, ag, 0);
-        for (const [t0, l0, w0] of [[.38, .42, .013], [.66, .3, .011], [.86, .14, .009]]) for (const sgn of [-1, 1]) { const b = A(bar(R * l0, w0), mt, ag, 0); b.position.x = R * t0; b.rotation.z = sgn * Math.PI / 3; } }
-      A(ext(starShape(.034, .03, 6), .012, .003, 4), mt, sg, 0);
+      const sg = new THREE.Group(); sg.position.y = .014; sg.rotation.x = -Math.PI / 2; g.add(sg); const R = .12;
+      const layer = (k, m, z, dl) => { const lg = new THREE.Group(); lg.position.z = z; sg.add(lg);
+        for (let i = 0; i < 6; i++) { const ag = new THREE.Group(); ag.rotation.z = i * Math.PI / 3; lg.add(ag); A(bar(R + dl, .017 * k), m, ag, 0);
+          for (const [t0, l0, w0] of [[.38, .42, .013], [.66, .3, .011], [.86, .14, .009]]) for (const sgn of [-1, 1]) { const b = A(bar(R * l0 + dl, w0 * k), m, ag, 0); b.position.x = R * t0; b.rotation.z = sgn * Math.PI / 3; } }
+        A(ext(starShape(.034 + dl, .03 + dl, 6), .012, .003, 4), m, lg, 0); };
+      layer(2.1, mb, -.008, .008); layer(1, mt, 0, 0);
       g.userData.heldRot = [Math.PI / 2, 0, 0]; g.userData.heldS = 1; g.userData.sz = .26; break; }
     case 'mirror': { const c0 = cl || '#ff8fb1'; const mg = new THREE.Group(); mg.position.y = .02; mg.rotation.x = -Math.PI / 2 + .2; g.add(mg);
       A(G.tor(.08, .014, 12, 40), P(c0, 'gloss'), mg); const gl = A(G.cyl(.078, .078, .006, 32), P('#e8f2ff', 'metal'), mg, 0); gl.rotation.set(Math.PI / 2, Math.PI / 2, 0);   /* 21.11.2026: отражение стояло на боку (серия 28) — повернул стекло на четверть оборота */ g.userData.glass = gl;
