@@ -1,5 +1,5 @@
 {
- "_": "Серия 35 «Росток под снегом?!» (сборка 35b; дубляж — сборка 35dub, время реплик совпало): перевод реплик по номеру в dub/lines.json (смех и вздохи не переводятся). Имена не переводятся: Barsik, Ron, Pik, Topa, Filya. 23.11 утро: en, es, pt, hi, de. 23.11 12:10: pt второй проход (88,1 % → переписаны 0, 9, 12, 28, 33, 36, 58, 59, 72, 77, 88, 90, 94, 108).",
+ "_": "Серия 35 «Росток под снегом?!» (сборка 35b; дубляж — сборка 35dub, время реплик совпало): перевод реплик по номеру в dub/lines.json (смех и вздохи не переводятся). Имена не переводятся: Barsik, Ron, Pik, Topa, Filya. 23.11 утро: en, es, pt, hi, de. 23.11 12:10: pt второй проход (88,1 % → переписаны 0, 9, 12, 28, 33, 36, 58, 59, 72, 77, 88, 90, 94, 108). 23.11 12:25: en 46 короче (вылезла за окно).",
  "ru": {
   "0": "Ой! Снег! Где наш росток?",
   "1": "Нашёл! Смотрите! Вот наш росток!",
@@ -227,7 +227,7 @@
   "43": "Fir trees have needles. Thin and strong. Frost can't hurt them.",
   "44": "And here's an oak leaf. It's dry and brown.",
   "45": "In autumn the oak drops its leaves. And sleeps until spring.",
-  "46": "Oak's a bear too?",
+  "46": "Oak's a bear?",
   "52": "No. But it sleeps like a bear.",
   "53": "Look! An acorn! Right under the snow!",
   "54": "It's sleeping too. Like our sprout.",
