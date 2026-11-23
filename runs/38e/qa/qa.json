@@ -1,0 +1,239 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 198.2,
+  "dur": 300.86,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 300.36,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 300,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 177.6
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.2,
+  "lra": 4.5,
+  "peak_db": -1.1,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 95.7,
+  "lines": 88,
+  "by_hero": {
+   "Барсик": 96.3,
+   "Рон": 98.6,
+   "Филя": 96.8,
+   "Топа": 94.6,
+   "Пик": 90.0
+  },
+  "worst": [
+   {
+    "t": 96.005,
+    "name": "Топа",
+    "text": "Как пар над чаем?",
+    "ok": 1,
+    "n": 4,
+    "miss": [
+     "пар",
+     "над",
+     "чаем"
+    ],
+    "heard": "как парнатчаем да"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 228.0,
+   "range_st": 5.3,
+   "hnr": 14.1,
+   "jitter": 2.1,
+   "shimmer": 8.5,
+   "F1": 482.0,
+   "F2": 2002.0,
+   "F3": 3275.0,
+   "bright": -15.8,
+   "air": -15.7,
+   "cog": 592.0,
+   "rate": 4.6,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 96.3
+  },
+  "Пик": {
+   "f0": 366.0,
+   "range_st": 7.8,
+   "hnr": 20.9,
+   "jitter": 0.8,
+   "shimmer": 4.5,
+   "F1": 504.0,
+   "F2": 1716.0,
+   "F3": 3406.0,
+   "bright": -19.6,
+   "air": -23.4,
+   "cog": 552.0,
+   "rate": 6.4,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 90.0
+  },
+  "Рон": {
+   "f0": 299.0,
+   "range_st": 7.4,
+   "hnr": 21.7,
+   "jitter": 1.0,
+   "shimmer": 5.3,
+   "F1": 398.0,
+   "F2": 1855.0,
+   "F3": 3583.0,
+   "bright": -22.9,
+   "air": -26.9,
+   "cog": 409.0,
+   "rate": 5.0,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 98.6
+  },
+  "Топа": {
+   "f0": 159.0,
+   "range_st": 5.1,
+   "hnr": 10.6,
+   "jitter": 3.3,
+   "shimmer": 11.3,
+   "F1": 461.0,
+   "F2": 2087.0,
+   "F3": 3331.0,
+   "bright": -14.4,
+   "air": -23.8,
+   "cog": 621.0,
+   "rate": 3.2,
+   "voiced": 0.4,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 94.6
+  },
+  "Филя": {
+   "f0": 297.0,
+   "range_st": 6.3,
+   "hnr": 14.5,
+   "jitter": 1.6,
+   "shimmer": 7.9,
+   "F1": 504.0,
+   "F2": 2044.0,
+   "F3": 3271.0,
+   "bright": -14.2,
+   "air": -20.2,
+   "cog": 702.0,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 96.8
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 40,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 128,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 1979,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 300.351,
+   "video": "video/Кот Барсик - 38. Кто рисует на окне!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "a757dd2",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 58,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 9,
+    "e": 124,
+    "b": 4,
+    "w": 1,
+    "n": 7500,
+    "at": 7500,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 44,
+   "ttsFail": 0,
+   "voice": 59,
+   "voiceFail": 0,
+   "voiceSec": 28,
+   "ttsSec": 34,
+   "frames": 8114,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -24.2,
+   "lufs_out": -15.2,
+   "gain_db": 9.9
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 38,
+   "title": "Кто рисует на окне?!",
+   "scenes": 7,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}
