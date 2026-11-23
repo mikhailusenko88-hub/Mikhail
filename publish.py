@@ -101,6 +101,7 @@ def short_name(it):
 def short(yt, a, rel, num, it, body_when, last, pe):
     """Shorts серии: как на канале — своё название, ссылка на полную серию, плейлист «Смешные моменты и Shorts»."""
     full = [v for v in last if v["title"].strip() == it["title"].strip()]
+    full.sort(key=lambda v: not (v["privacy"] == "public" or v.get("publishAt")))   # 23.11: при пересборке (38e) старый ролик без таймера — Shorts ведёт на тот, что выйдет
     if not full:
         return finish([f"SHORTS НЕ ЗАГРУЖАЛ: полной серии {num} на канале ещё нет — сначала plan {rel} {num} <время>"])
     body = Y.short_body(short_name(it), num, full[0]["id"], pe["id"] if pe else None, body_when[0])
