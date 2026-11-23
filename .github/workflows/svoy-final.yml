@@ -1,0 +1,42 @@
+name: svoy-final
+# Итог сборного голоса по артефактам уже прошедшего запуска svoy-golos (номер запуска — в svoy-final.txt)
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['svoy-final.txt']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Номер запуска
+        id: rid
+        run: echo "id=$(grep -o '[0-9]\{8,\}' svoy-final.txt | head -1)" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v4
+        with:
+          path: pack/
+          merge-multiple: true
+          run-id: ${{ steps.rid.outputs.id }}
+          github-token: ${{ github.token }}
+      - name: Итог
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          pip install -q numpy
+          ls pack | wc -l
+          python svoy.py final
+          ls -la cast
+      - name: Commit
+        timeout-minutes: 5
+        run: |
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          git add -A cast
+          git commit -m "svoy-golos result" || echo nothing
+          for i in 1 2 3; do git fetch -q origin svoy-golos && git rebase -q FETCH_HEAD && git push origin HEAD:svoy-golos && break; sleep 5; done
