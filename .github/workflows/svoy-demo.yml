@@ -1,0 +1,46 @@
+name: svoy-demo
+# Пробные выпуски «Почему так?» голосом №4
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['svoy-demo-request.txt', 'svoy_demo.py', '.github/workflows/svoy-demo.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: svoy-demo
+  cancel-in-progress: false
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: svoy2-cache-v1
+          restore-keys: svoy-golos-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib edge-tts
+      - run: python svoy_demo.py
+      - name: Commit
+        if: always()
+        timeout-minutes: 5
+        run: |
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          git add -A cast6
+          git commit -m "svoy-demo result" || echo nothing
+          for i in 1 2 3; do git fetch -q origin svoy-golos && git rebase -q FETCH_HEAD && git push origin HEAD:svoy-golos && break; sleep 5; done
