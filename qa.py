@@ -197,6 +197,13 @@ try:
     if bad: note(f"край кадра режет героя: {len(bad)} средних планов из {kr.get('shots')} ({kr.get('badSec'):.0f} с)")
 except Exception as ex: R['kraj'] = None; note('проверка «край кадра» не выполнена: ' + str(ex))
 
+# видеокарта отвалилась посреди сборки (23.11.2026, 38c: «Жду видеокарту…» → отмена → перезапуск без WebGL — вся серия плоская 2D, приёмка этого не видела)
+try:
+    lg = open(os.path.join(OUT, 'log.txt'), encoding='utf-8').read()
+    if 'WebGL context could not be created' in lg or 'Error creating WebGL context' in lg:
+        R['ok'] = False; R['webgl_lost'] = True; note('видеокарта отвалилась: WebGL не создан, кадры плоские (без «как в кино») — серию не выпускать, пересобрать')
+except Exception as ex: note('проверка видеокарты не выполнена: ' + str(ex))
+
 R['build'] = {k: res.get(k) for k in ['ok', 'err', 'total_sec', 'mode', 'gl', 'card', 'stat', 'start']}
 json.dump(R, open(os.path.join(QA, 'qa.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 try: os.remove(WAV)
