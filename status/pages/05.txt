@@ -1,8 +1,8 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/780f6818-5c9a-4572-bce2-8564e6c03c9e
+URL: https://crm.nashdekor.ru/api/outbox/status/989e1181-ded3-4bef-aeb5-53f1ed258370
 КОД: 200
 ЗАГОЛОВКИ:
 Server: nginx
-Date: Mon, 23 Nov 2026 09:59:16 GMT
+Date: Mon, 23 Nov 2026 10:24:26 GMT
 Content-Type: application/json
 Content-Length: 43
 Connection: close
