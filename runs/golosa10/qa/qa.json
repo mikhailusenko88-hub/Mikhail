@@ -1,0 +1,214 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рон и Филя"
+ ],
+ "file": {
+  "mb": 117.5,
+  "dur": 77.57,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 77.07,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 3,
+  "files": [
+   "list_01.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 77,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 126.8
+ },
+ "kadry": 18,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 3.0,
+  "peak_db": -1.4,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 97.3,
+  "lines": 22,
+  "by_hero": {
+   "Рассказчик": 100.0,
+   "Рон": 96.7,
+   "Барсик": 100.0,
+   "Филя": 100.0
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 228.0,
+   "range_st": 5.7,
+   "hnr": 13.6,
+   "jitter": 2.1,
+   "shimmer": 8.8,
+   "F1": 548.5,
+   "F2": 2025.0,
+   "F3": 3223.5,
+   "bright": -12.2,
+   "air": -14.1,
+   "cog": 635.0,
+   "rate": 4.1,
+   "voiced": 0.5,
+   "n": 2,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Рассказчик": {
+   "f0": 165.0,
+   "range_st": 7.4,
+   "hnr": 14.0,
+   "jitter": 2.4,
+   "shimmer": 7.1,
+   "F1": 444.0,
+   "F2": 2049.0,
+   "F3": 3594.0,
+   "bright": -19.0,
+   "air": -17.2,
+   "cog": 546.0,
+   "rate": 4.1,
+   "voiced": 0.6,
+   "n": 1,
+   "age": "взрослый",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 266.0,
+   "range_st": 7.0,
+   "hnr": 14.0,
+   "jitter": 2.2,
+   "shimmer": 8.1,
+   "F1": 577.0,
+   "F2": 1781.0,
+   "F3": 3373.0,
+   "bright": -15.1,
+   "air": -14.1,
+   "cog": 710.0,
+   "rate": 3.1,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 96.7
+  },
+  "Филя": {
+   "f0": 284.0,
+   "range_st": 6.4,
+   "hnr": 15.3,
+   "jitter": 1.9,
+   "shimmer": 8.0,
+   "F1": 481.0,
+   "F2": 1901.0,
+   "F3": 3222.0,
+   "bright": -15.9,
+   "air": -19.0,
+   "cog": 637.0,
+   "rate": 4.6,
+   "voiced": 0.6,
+   "n": 1,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  }
+ },
+ "voices_close": [
+  [
+   "Рон",
+   "Филя",
+   1.1
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 3,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 12,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 330,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 77.07499999999999,
+   "video": "video/Кот Барсик - 99. Новый голос Рона, паузы.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "612fcb7",
+    "intro": "overlay",
+    "open": "new",
+    "q": "hq",
+    "at": null,
+    "text": "заставка: плашкой поверх действия · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 13,
+    "e": 118,
+    "b": 8,
+    "w": 1,
+    "n": 1920,
+    "at": 1920,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 0,
+   "ttsFail": 0,
+   "voice": 24,
+   "voiceFail": 0,
+   "voiceSec": 15,
+   "ttsSec": 0,
+   "frames": 1927,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -21.9,
+   "lufs_out": -15.1,
+   "gain_db": 7.3
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 99,
+   "title": "Новый голос Рона, паузы",
+   "scenes": 1,
+   "errors": [],
+   "unknownWords": [
+    {
+     "word": "паузами",
+     "sentence": "Рон, с паузами между фразами"
+    }
+   ],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Рон: {\"speaker\":\"ru_zara\",\"F\":1.15,\"P\":1.15,\"R\":1.25,\"gap\":0.3,\"laugh\":\"F16\"}",
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: НЕ ПРИМЕНЁН (нет героя)"
+   ]
+  }
+ }
+}

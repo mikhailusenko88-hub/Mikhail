@@ -1,0 +1,77 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 99,
+  "title": "Новый голос Рона, паузы",
+  "scenes": 1,
+  "errors": [],
+  "unknownWords": [
+   {
+    "word": "паузами",
+    "sentence": "Рон, с паузами между фразами"
+   }
+  ],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Рон: {\"speaker\":\"ru_zara\",\"F\":1.15,\"P\":1.15,\"R\":1.25,\"gap\":0.3,\"laugh\":\"F16\"}",
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: НЕ ПРИМЕНЁН (нет героя)"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 99. Новый голос Рона, паузы",
+  "path": "video/Кот Барсик - 99. Новый голос Рона, паузы.mp4",
+  "frames": 1927,
+  "sec": 271,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 77.07499999999999,
+  "video": "video/Кот Барсик - 99. Новый голос Рона, паузы.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "612fcb7",
+   "intro": "overlay",
+   "open": "new",
+   "q": "hq",
+   "at": null,
+   "text": "заставка: плашкой поверх действия · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 13,
+   "e": 118,
+   "b": 8,
+   "w": 1,
+   "n": 1920,
+   "at": 1920,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 0,
+  "ttsFail": 0,
+  "voice": 24,
+  "voiceFail": 0,
+  "voiceSec": 15,
+  "ttsSec": 0,
+  "frames": 1927,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -21.9,
+  "lufs_out": -15.1,
+  "gain_db": 7.3
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 330,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
