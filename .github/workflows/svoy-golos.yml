@@ -119,6 +119,7 @@ jobs:
     needs: [castA, castB]
     if: always()
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -135,9 +136,10 @@ jobs:
           python svoy.py final
       - name: Commit
         if: always()
+        timeout-minutes: 5
         run: |
           git config user.name svoy-golos
           git config user.email svoy-golos@users.noreply.github.com
           git add -A cast
           git commit -m "svoy-golos result" || echo nothing
-          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
+          for i in 1 2 3; do git fetch -q origin svoy-golos && git rebase -q FETCH_HEAD && git push origin HEAD:svoy-golos && break; sleep 5; done
