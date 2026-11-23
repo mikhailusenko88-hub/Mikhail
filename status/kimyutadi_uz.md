@@ -1,5 +1,5 @@
 # Kim yutadi?  (@kimyutadi_uz)
-Проверено: 2026-11-23 06:54 UTC
+Проверено: 2026-11-23 07:47 UTC
 
 - Страница канала: HTTP 200; ID: UC93S31Qkgoz4cFgKBzz-mLA
 - Шапка: 10 подписчиков · 54 видео
@@ -22,7 +22,7 @@
 - 2026-11-18 10:46 · 164 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №18 #shorts · TYpJ3QSkl_g
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
-- 2 просмотра · 1000 ta shar! Gentra, Labo, Epica… Qaysi mashina yutadi? Какая машина победит? №4 #shorts · sx2-fIMblqU
+- 3 просмотра · 1000 ta shar! Gentra, Labo, Epica… Qaysi mashina yutadi? Какая машина победит? №4 #shorts · sx2-fIMblqU
 - 439 просмотров · 1000 ta shar! Nexia, Equinox, Epica… Qaysi mashina yutadi? Какая машина победит? №3 #shorts · 6CCntXS89D4
 - 609 просмотров · 1000 ta shar! Samarqand, Toshkent, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №1 #shorts · Zr9iRlRDw5Q
 - 917 просмотров · 1000 ta shar! Cobalt, Nexia, Jiguli… Qaysi mashina yutadi? Какая машина победит? №2 #shorts · uLEjsasDCLQ

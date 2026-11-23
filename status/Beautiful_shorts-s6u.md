@@ -1,14 +1,14 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-23 06:54 UTC
+Проверено: 2026-11-23 07:47 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
 - Шапка: 236 подписчиков · 148 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-22 17:31 · 1326 просм. · 1,932 GOLD Balls — How Many Land in the Box? ✨ Satisfying 3D Simulation #shorts #asmr · QGUnVac9rbs
+- 2026-11-22 17:31 · 1332 просм. · 1,932 GOLD Balls — How Many Land in the Box? ✨ Satisfying 3D Simulation #shorts #asmr · QGUnVac9rbs
 - 2026-11-21 20:22 · 1200 просм. · 1,932 Balls vs a Smaller Box — Will They Fit? 😳 Satisfying 3D Simulation #shorts #asmr · NQaXjwgZuUk
-- 2026-11-20 18:12 · 2542 просм. · 3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr · d12Mk5yTGGo
-- 2026-11-19 14:11 · 5779 просм. · 1,932 Balls — How Many Land in the Box? 😳 Satisfying 3D Simulation #shorts #asmr · EjiTsX0dWHQ
+- 2026-11-20 18:12 · 2553 просм. · 3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr · d12Mk5yTGGo
+- 2026-11-19 14:11 · 5799 просм. · 1,932 Balls — How Many Land in the Box? 😳 Satisfying 3D Simulation #shorts #asmr · EjiTsX0dWHQ
 - 2026-11-18 19:19 · 2398 просм. · 1,932 Balls Pour Into a Glass Box! 🔊 Satisfying 3D Simulation #shorts #asmr · 7mG_xtPN52w
 - 2026-11-17 22:08 · 1270 просм. · Every bounce = +1 ball 🐻 Can they fill the bear? 🔊 #satisfying #physics #simulation · 5vVhZ-Aus_A
 - 2026-11-16 19:02 · 1676 просм. · Every bounce = +1 ball 🐸 Can they fill the frog? #satisfying #physics #simulation · 7h5ICq0Civ8
