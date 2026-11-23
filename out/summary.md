@@ -412,6 +412,102 @@
 | f_alexandr | silero_cis:ru_alexandr | 3.17 | 0.867 | 0 (+1) | 3/4 |
 | f_ekaterina | silero_cis:ru_ekaterina | 2.94 | 0.933 | 2 (+0) | 4/4 |
 | f_zinaida | silero_cis:ru_zinaida | 2.81 | 0.967 | 0 (+0) | 4/4 |
+| g8_r01 |  | 3.27 | 0.571 | 0 (+0) | 1/1 |
+| g8_r02 |  | 2.38 | 1.0 | 0 (+0) | 1/2 |
+| g8_r03 |  | 3.65 | 1.0 | 0 (+0) | 2/3 |
+| g8_r04 |  | 3.43 | 1.0 | 0 (+0) | 1/2 |
+| g8_r05 |  | 2.87 | 1.0 | 0 (+0) | 1/1 |
+| g8_r06 |  | 2.96 | 1.0 | 0 (+0) | 1/1 |
+| g8_r07 |  | 2.69 | 1.0 | 0 (+0) | 1/1 |
+| g8_r08 |  | 2.4 | 1.0 | 1 (+0) | 1/1 |
+| g8_r09 |  | 3.35 | 0.727 | 0 (+0) | 0/2 |
+| g8_r10 |  | 2.71 | 1.0 | 0 (+0) | 1/1 |
+| g8_r11 |  | 3.58 | 0.889 | 0 (+0) | 1/1 |
+| g8_r12 |  | 2.68 | 1.0 | 0 (+0) | 0/0 |
+| g8_r13 |  | 3.14 | 1.0 | 0 (+0) | 2/2 |
+| g8_r14 |  | 2.89 | 1.0 | 0 (+0) | 1/2 |
+| g8_r15 |  | 3.33 | 1.0 | 0 (+0) | 1/1 |
+| g8_r16 |  | 3.71 | 1.0 | 0 (+0) | 1/1 |
+| g8_r17 |  | 2.56 | 0.769 | 0 (+1) | 1/1 |
+| g8_r18 |  | 3.04 | 1.0 | 0 (+0) | 1/1 |
+| g8_r19 |  | 3.37 | 1.0 | 0 (+0) | 1/1 |
+| g8_r20 |  | 3.73 | 1.0 | 0 (+0) | 1/1 |
+| g8_r21 |  | 1.39 | 0.0 | 1 (+0) | 0/2 |
+| g8_r22 |  | 3.47 | 1.0 | 0 (+0) | 2/2 |
+| g8_r23 |  | 3.29 | 1.0 | 0 (+0) | 3/3 |
+| g8_r24 |  | 3.32 | 1.0 | 0 (+0) | 1/2 |
+| g8_r25 |  | 3.67 | 1.0 | 0 (+0) | 2/2 |
+| g8_r27 |  | 3.05 | 1.0 | 0 (+0) | 0/2 |
+| g8_r28 |  | 3.19 | 1.0 | 0 (+1) | 1/2 |
+| g8_r29 |  | 3.29 | 1.0 | 1 (+1) | 0/1 |
+| g8_r30 |  | 3.22 | 1.0 | 0 (+0) | 2/2 |
+| g8_r31 |  | 2.81 | 1.0 | 0 (+0) | 1/2 |
+| g8_r32 |  | 3.07 | 0.833 | 0 (+1) | 2/2 |
+| g8_r33 |  | 3.79 | 1.0 | 0 (+0) | 2/2 |
+| g8_r34 |  | 2.27 | 1.0 | 0 (+0) | 1/1 |
+| g8_r35 |  | 3.5 | 1.0 | 0 (+0) | 1/1 |
+| g8_r36 |  | 3.52 | 1.0 | 0 (+0) | 2/2 |
+| g8_r37 |  | 2.87 | 1.0 | 0 (+0) | 1/2 |
+| g8_r38 |  | 2.95 | 1.0 | 0 (+0) | 1/1 |
+| g8_r39 |  | 3.38 | 1.0 | 2 (+0) | 2/3 |
+| g8_r40 |  | 3.3 | 1.0 | 0 (+0) | 1/1 |
+| g8_r41 |  | 3.05 | 1.0 | 0 (+0) | 1/1 |
+| g8_r42 |  | 1.85 | 0.8 | 0 (+0) | 2/2 |
+| g8_r43 |  | 2.41 | 1.0 | 0 (+0) | 0/1 |
+| g8_r44 |  | 2.62 | 1.0 | 0 (+0) | 1/2 |
+| g8_r46 |  | 3.4 | 1.0 | 0 (+0) | 1/1 |
+| g8_r47 |  | 1.78 | 0.5 | 0 (+0) | 0/0 |
+| g8_r50 |  | 3.17 | 1.0 | 0 (+0) | 1/1 |
+| g8_r62 |  | 3.51 | 0.737 | 0 (+0) | 2/3 |
+| g8_r73 |  | 2.54 | 1.0 | 0 (+0) | 2/3 |
+| g8e_r01 | edge:ru-RU-SvetlanaNeural | 3.91 | 0.667 | 1 (+0) | 1/1 |
+| g8e_r02 | edge:ru-RU-SvetlanaNeural | 3.9 | 1.0 | 0 (+0) | 1/2 |
+| g8e_r03 | edge:ru-RU-SvetlanaNeural | 3.87 | 1.0 | 1 (+0) | 3/3 |
+| g8e_r04 | edge:ru-RU-SvetlanaNeural | 4.1 | 1.0 | 0 (+0) | 1/2 |
+| g8e_r05 | edge:ru-RU-SvetlanaNeural | 3.7 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r06 | edge:ru-RU-SvetlanaNeural | 3.84 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r07 | edge:ru-RU-SvetlanaNeural | 4.0 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r08 | edge:ru-RU-SvetlanaNeural | 3.81 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r09 | edge:ru-RU-SvetlanaNeural | 4.2 | 0.727 | 1 (+0) | 0/2 |
+| g8e_r10 | edge:ru-RU-SvetlanaNeural | 3.9 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r11 | edge:ru-RU-SvetlanaNeural | 4.12 | 1.0 | 1 (+1) | 1/1 |
+| g8e_r12 | edge:ru-RU-SvetlanaNeural | 3.77 | 1.0 | 0 (+0) | 0/0 |
+| g8e_r13 | edge:ru-RU-SvetlanaNeural | 3.85 | 1.0 | 1 (+0) | 2/2 |
+| g8e_r14 | edge:ru-RU-SvetlanaNeural | 3.9 | 1.0 | 1 (+0) | 1/2 |
+| g8e_r15 | edge:ru-RU-SvetlanaNeural | 4.16 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r16 | edge:ru-RU-SvetlanaNeural | 4.11 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r17 | edge:ru-RU-SvetlanaNeural | 3.89 | 0.857 | 0 (+0) | 2/2 |
+| g8e_r18 | edge:ru-RU-SvetlanaNeural | 3.97 | 1.0 | 0 (+0) | 0/1 |
+| g8e_r19 | edge:ru-RU-SvetlanaNeural | 3.81 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r20 | edge:ru-RU-SvetlanaNeural | 3.96 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r21 | edge:ru-RU-SvetlanaNeural | 3.58 | 0.0 | 0 (+0) | 1/2 |
+| g8e_r22 | edge:ru-RU-SvetlanaNeural | 4.06 | 1.0 | 0 (+0) | 2/2 |
+| g8e_r23 | edge:ru-RU-SvetlanaNeural | 3.94 | 1.0 | 1 (+0) | 3/3 |
+| g8e_r24 | edge:ru-RU-SvetlanaNeural | 4.08 | 1.0 | 0 (+1) | 1/2 |
+| g8e_r25 | edge:ru-RU-SvetlanaNeural | 3.93 | 1.0 | 0 (+0) | 2/2 |
+| g8e_r27 | edge:ru-RU-SvetlanaNeural | 3.76 | 1.0 | 0 (+0) | 1/2 |
+| g8e_r28 | edge:ru-RU-SvetlanaNeural | 4.01 | 1.0 | 1 (+0) | 2/2 |
+| g8e_r29 | edge:ru-RU-SvetlanaNeural | 3.95 | 1.0 | 1 (+1) | 1/1 |
+| g8e_r30 | edge:ru-RU-SvetlanaNeural | 4.21 | 1.0 | 1 (+0) | 2/2 |
+| g8e_r31 | edge:ru-RU-SvetlanaNeural | 3.95 | 1.0 | 1 (+0) | 1/2 |
+| g8e_r32 | edge:ru-RU-SvetlanaNeural | 3.72 | 0.833 | 0 (+0) | 1/2 |
+| g8e_r33 | edge:ru-RU-SvetlanaNeural | 3.78 | 1.0 | 1 (+0) | 2/2 |
+| g8e_r34 | edge:ru-RU-SvetlanaNeural | 3.93 | 0.8 | 0 (+0) | 1/1 |
+| g8e_r35 | edge:ru-RU-SvetlanaNeural | 4.17 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r36 | edge:ru-RU-SvetlanaNeural | 3.94 | 1.0 | 1 (+0) | 2/2 |
+| g8e_r37 | edge:ru-RU-SvetlanaNeural | 4.02 | 0.8 | 0 (+0) | 1/2 |
+| g8e_r38 | edge:ru-RU-SvetlanaNeural | 3.78 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r39 | edge:ru-RU-SvetlanaNeural | 3.93 | 1.0 | 2 (+0) | 2/3 |
+| g8e_r40 | edge:ru-RU-SvetlanaNeural | 3.97 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r41 | edge:ru-RU-SvetlanaNeural | 3.97 | 1.0 | 1 (+0) | 1/1 |
+| g8e_r42 | edge:ru-RU-SvetlanaNeural | 3.65 | 1.0 | 0 (+0) | 1/2 |
+| g8e_r43 | edge:ru-RU-SvetlanaNeural | 3.9 | 0.5 | 0 (+0) | 0/1 |
+| g8e_r44 | edge:ru-RU-SvetlanaNeural | 3.79 | 1.0 | 0 (+0) | 1/2 |
+| g8e_r46 | edge:ru-RU-SvetlanaNeural | 3.92 | 1.0 | 1 (+0) | 1/1 |
+| g8e_r47 | edge:ru-RU-SvetlanaNeural | 3.58 | 1.0 | 0 (+1) | 0/0 |
+| g8e_r50 | edge:ru-RU-SvetlanaNeural | 3.28 | 1.0 | 0 (+0) | 1/1 |
+| g8e_r62 | edge:ru-RU-SvetlanaNeural | 3.79 | 1.0 | 1 (+0) | 2/3 |
+| g8e_r73 | edge:ru-RU-SvetlanaNeural | 3.86 | 1.0 | 0 (+0) | 2/3 |
 | g_albina_slow | silero_cis:ru_albina@slow | 2.99 | 0.935 | 1 (+0) | 4/4 |
 | g_albina_slow_soft | silero_cis:ru_albina@slow,soft | 2.77 | 0.935 | 0 (+0) | 4/4 |
 | g_albina_soft | silero_cis:ru_albina@soft | 3.14 | 0.935 | 0 (+0) | 4/4 |
