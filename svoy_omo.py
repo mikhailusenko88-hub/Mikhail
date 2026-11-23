@@ -59,7 +59,11 @@ _acc = {}
 
 def ruacc():
     if "a" not in _acc:
-        from ruaccent import RUAccent
+        try:
+            import importlib
+            RUAccent = importlib.import_module("ruaccent.ruaccent").RUAccent   # настоящий класс (svoy2.patch_ruaccent подменяет его в пакете)
+        except Exception:
+            from ruaccent import RUAccent
         a = RUAccent()
         for size in ["turbo3.1", "turbo3", "turbo2", "turbo", "tiny2", "tiny"]:
             try:
@@ -69,12 +73,12 @@ def ruacc():
         om = None
         for k, v in vars(a).items():           # словарь омографов: ищем по известным словам
             try:
-                if isinstance(v, (dict, set, list)) and "замок" in v and "атлас" in v:
+                if isinstance(v, (dict, set, list, frozenset)) and "замок" in v and "атлас" in v and "мука" in v:
                     om = set(v) if not isinstance(v, dict) else set(v.keys()); svoy.log("омографы ruaccent:", k, len(om)); break
             except Exception:
                 pass
         if om is None:
-            svoy.log("словарь омографов не найден, атрибуты:", [(k, type(v).__name__) for k, v in vars(a).items()])
+            svoy.log("словарь омографов не найден, атрибуты:", [(k, type(v).__name__, len(v) if hasattr(v, "__len__") else "") for k, v in vars(a).items()])
             om = svoy_bars.HOMO
         _acc["a"], _acc["om"] = a, {w.replace("+", "").lower() for w in om}
     return _acc["a"], _acc["om"]
@@ -126,6 +130,8 @@ def text_check():
 
 
 def gen(v, part, n):
+    if v != "A":
+        ruacc()                 # загрузить настоящий ruaccent до подмены
     svoy2.patch_ruaccent()
     shutil.rmtree("in", ignore_errors=True); shutil.rmtree("out", ignore_errors=True)
     os.makedirs("in"); os.makedirs("out"); os.makedirs("pack", exist_ok=True)
