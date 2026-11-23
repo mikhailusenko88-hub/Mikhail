@@ -3320,6 +3320,14 @@ function drawCard3D(ctx, tl, seg, t, T) { MK3D._T = t + 1000;
     rig.root.position.set(x, -(1 - appear) * 3, 0); rig.yaw.rotation.y = 0;
     const sp = global.MK._cardTalk ? global.MK._cardTalk(tl, seg, id, t) : null, said = seg.say && seg.say.who === id;   // говорит «Понравился мультик?…» — стоит и говорит, потом машет
     applyPose(rig, { x: 0, face: 0, emo: 'happy', act: sp ? null : { n: i % 2 || said ? 'wave' : 'jump', p: ((t * .7 + i * .3) % 1), t: t + i }, walk: {}, talk: sp ? sp.talk : 0, vz: sp ? sp.vz : null, persist: 'none' }, T); });
+  if (title && global.MK.wordless && global.MK.wordless(tl)) { const mo = global.MK.mainOf(tl.ep, tl.lib); if (mo) {   // заставка без слов (23.11.2026): над героями — главная вещь серии, она и говорит, о чём серия
+      const pm = propMesh({ id: 'cardMain', type: mo.type }); ensureIn(pm); pm.visible = true;
+      if (!pm.userData._cardS) { pm.position.set(0, 0, 0); pm.scale.setScalar(1); pm.rotation.set(0, 0, 0); pm.updateMatrixWorld(true); const bb = new THREE.Box3().setFromObject(pm), sz = bb.getSize(new THREE.Vector3()), mx = Math.max(sz.x, sz.y, sz.z) || 1;
+        const flat = sz.y < .3 * Math.max(sz.x, sz.z); pm.userData._cardS = { s: (flat ? 1.7 : 1.2) / mx, flat, cy: (bb.min.y + bb.max.y) / 2, y0: bb.min.y }; }
+      const cs = pm.userData._cardS, q = clamp((t - .2) / .6, 0, 1), s = cs.s * ease(q) * (1 + Math.sin(q * Math.PI) * .12);
+      pm.scale.setScalar(Math.max(s, .001));
+      if (cs.flat) { pm.rotation.set(0, 0, 0); pm.position.set(0, .012 - cs.y0 * s, 1.15); }   // плоская (лужа, лист) — лежит на сцене перед героями
+      else { pm.rotation.set(0, Math.sin(t * .9) * .45, 0); pm.position.set(0, 2.1 - cs.cy * s + Math.sin(t * 2.2) * .05, -1.4); } } }   // объёмная — парит над героями
   cam.fov = 40; cam.position.set(0, 1.25, 6.2); cam.updateProjectionMatrix(); cam.lookAt(0, 1.55, 0); sun.position.set(4, 8, 6); sun.target.position.set(0, 0, 0);
   render(ctx);
 }

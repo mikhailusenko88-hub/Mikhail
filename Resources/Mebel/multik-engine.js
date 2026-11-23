@@ -1392,15 +1392,49 @@ MK.render = function (ctx, tl, T) {
   ctx.restore();
 };
 const SUB_BADGE = 7, SUB_TAP = 3.3, LIKE_TAP = 1.8, SUB_FONT = '-apple-system, "SF Pro Rounded", "Arial Rounded MT Bold", "DejaVu Sans", sans-serif';
+/** Без слов (Михаил 23.11.2026, «на будущее сделай такое правило»): картинка серии одна для всех языков дубляжа, поэтому заставка, «Продолжение следует…»
+ *  и кнопки подписки рисуются без букв — цифра серии, лапка, колокольчик, «▶ следующая». Вернуть надписи: lib.settings.words = true или ep.words = true. */
+MK.wordless = (tl) => { const s = (tl && tl.lib && tl.lib.settings) || {}; return !(s.words === true || (tl && tl.ep && tl.ep.words === true)); };
+let WORDLESS = true;   /* кнопки подписки: ставит drawSub по серии; для Shorts (MK._sub) — без слов */
+/** Колокольчик (центр x,y; s=1 — около 64 пикселей ростом). */
+function bellIcon(ctx, x, y, s, fill) { ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.fillStyle = fill;
+  ctx.beginPath(); ctx.moveTo(-27, 17); ctx.quadraticCurveTo(-19, 10, -19, -4); ctx.bezierCurveTo(-19, -24, -10, -30, 0, -30); ctx.bezierCurveTo(10, -30, 19, -24, 19, -4); ctx.quadraticCurveTo(19, 10, 27, 17); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.arc(0, 23, 7.5, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.arc(0, -32, 5, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+/** Отпечаток лапки (центр x,y; s=1 — около 60 пикселей). */
+function pawPrint(ctx, x, y, s, fill, rot) { ctx.save(); ctx.translate(x, y); ctx.rotate(rot || 0); ctx.scale(s, s); ctx.fillStyle = fill;
+  ctx.beginPath(); ctx.ellipse(0, 10, 19, 15, 0, 0, Math.PI * 2); ctx.fill();
+  for (const [tx, ty, a] of [[-22, -8, -.35], [-8, -20, -.12], [8, -20, .12], [22, -8, .35]]) { ctx.beginPath(); ctx.ellipse(tx, ty, 7.5, 10, a, 0, Math.PI * 2); ctx.fill(); }
+  ctx.restore(); }
+/** Значок серии: круг с номером и лапкой (цифры понятны на любом языке). */
+function numBadge(ctx, cx, cy, r, num) { if (r <= 1) return; ctx.save(); ctx.translate(cx, cy);
+  ctx.shadowColor = 'rgba(0,0,0,.32)'; ctx.shadowBlur = r * .2; ctx.shadowOffsetY = r * .07;
+  const g = ctx.createLinearGradient(0, -r, 0, r); g.addColorStop(0, '#ffb35c'); g.addColorStop(1, '#ff6e46'); ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill(); ctx.shadowColor = 'transparent';
+  ctx.lineWidth = r * .09; ctx.strokeStyle = '#ffd23f'; ctx.stroke(); ctx.lineWidth = r * .035; ctx.strokeStyle = '#3a1d10'; ctx.beginPath(); ctx.arc(0, 0, r * 1.045, 0, Math.PI * 2); ctx.stroke();
+  pawPrint(ctx, -r * .62, -r * .62, r / 150, '#ffe36b', -.5);
+  if (num) { const sz = Math.round(r * (String(num).length > 2 ? .82 : 1.02)); ctx.font = `900 ${sz}px ${SUB_FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+    ctx.lineWidth = sz * .2; ctx.strokeStyle = '#3a1d10'; ctx.strokeText(num, 0, r * .06); ctx.fillStyle = '#fff'; ctx.fillText(num, 0, r * .06); }
+  ctx.restore(); }
+/** «Продолжение следует» без слов: белая плашка с синим «▶» и номером следующей серии. */
+function nextBadge(ctx, cx, cy, sc, num) { if (sc <= .01) return; const w = num ? 380 : 220, h = 170; ctx.save(); ctx.translate(cx, cy); ctx.scale(sc, sc);
+  ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = 26; ctx.shadowOffsetY = 9; subRR(ctx, -w / 2, -h / 2, w, h, h / 2); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.shadowColor = 'transparent'; ctx.lineWidth = 8; ctx.strokeStyle = '#ffd23f'; ctx.stroke();
+  const tx = num ? -w / 2 + 92 : 0; ctx.fillStyle = '#3e6be0'; ctx.beginPath(); ctx.moveTo(tx - 30, -44); ctx.lineTo(tx + 46, 0); ctx.lineTo(tx - 30, 44); ctx.closePath(); ctx.lineJoin = 'round'; ctx.lineWidth = 14; ctx.strokeStyle = '#3e6be0'; ctx.stroke(); ctx.fill();
+  if (num) { ctx.font = `900 112px ${SUB_FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#3a1d10'; ctx.fillText(num, w / 2 - 118, 6); }
+  ctx.restore(); }
+/** Заставка и конец без слов. side — значок серии в углу (в 3D посередине стоит главная вещь серии). */
+function wordlessCard(ctx, tl, t, title, side) { const ep = tl.ep, k = ease(t / .6), b = 1 + Math.sin(clamp(t / .6, 0, 1) * Math.PI) * .08;
+  if (title) { const r = (side ? 118 : 150) * k * b; numBadge(ctx, side ? 40 + 140 : W / 2, side ? 40 + 140 : H * .3, r, ep.episode != null ? String(ep.episode) : ''); }
+  else nextBadge(ctx, W / 2, H * .3, k * b, ep.episode != null && !ep.endText ? String(ep.episode + 1) : ''); }
 function subRR(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 /** Кнопка «ПОДПИСАТЬСЯ» (центр cx,cy): до щелчка красная и чуть дышит, в момент щелчка вдавливается, после — серая «✓ ВЫ ПОДПИСАНЫ» и сердечки. */
 function subButton(ctx, cx, cy, sc, k, tap) {
-  const done = k >= tap, press = k > tap - .1 && k < tap + .12 ? .9 : 1, pulse = done ? 1 : 1 + Math.sin(k * 5.5) * .035, w = 440, h = 106;
+  const done = k >= tap, press = k > tap - .1 && k < tap + .12 ? .9 : 1, pulse = done ? 1 : 1 + Math.sin(k * 5.5) * .035, w = WORDLESS ? 250 : 440, h = 106;
   ctx.save(); ctx.translate(cx, cy); ctx.scale(sc * press * pulse, sc * press * pulse);
   ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = 7; subRR(ctx, -w / 2, -h / 2, w, h, h / 2); ctx.fillStyle = done ? '#ececf1' : '#ff2a2a'; ctx.fill();
   ctx.shadowColor = 'transparent'; ctx.lineWidth = 6; ctx.strokeStyle = done ? '#c3c3cc' : '#b30d0d'; ctx.stroke();
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  if (!done) { ctx.font = `900 48px ${SUB_FONT}`; ctx.fillStyle = '#fff'; ctx.fillText('ПОДПИСАТЬСЯ', 0, 3); }
+  if (WORDLESS) { if (!done) bellIcon(ctx, 0, 1, 1.08, '#fff');   /* без слов: красная кнопка с колокольчиком → серая с галочкой */
+    else { bellIcon(ctx, 34, 1, .92, '#8a8a96'); ctx.lineWidth = 11; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#2fb14a'; ctx.beginPath(); ctx.moveTo(-62, 2); ctx.lineTo(-46, 19); ctx.lineTo(-16, -18); ctx.stroke(); } }
+  else if (!done) { ctx.font = `900 48px ${SUB_FONT}`; ctx.fillStyle = '#fff'; ctx.fillText('ПОДПИСАТЬСЯ', 0, 3); }
   else { ctx.font = `900 40px ${SUB_FONT}`; const tw = ctx.measureText('ВЫ ПОДПИСАНЫ').width, x0 = -(tw + 52) / 2; ctx.fillStyle = '#4a4a58'; ctx.fillText('ВЫ ПОДПИСАНЫ', x0 + 52 + tw / 2, 3);
     ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#2fb14a'; ctx.beginPath(); ctx.moveTo(x0 + 4, 2); ctx.lineTo(x0 + 16, 15); ctx.lineTo(x0 + 38, -14); ctx.stroke(); }
   ctx.restore();
@@ -1438,19 +1472,23 @@ function subPawAt(ctx, bx, by, sc, k, tap, side) {
 }
 MK._sub = { button: subButton, paw: subPaw, like: likeButton };   // та же кнопка и лапка — картинками для Shorts (tools/multik/test/subpng.js)
 function drawSub(ctx, tl, seg, t, T, use3d) {
+  WORDLESS = MK.wordless(tl); const PX = WORDLESS ? 62 : 120;   /* куда жмёт лапка: на узкой кнопке ближе к середине */
   ctx.save();
   if (seg.kind === 'end') { if (seg.tap != null) { const k = t, a = ease((k - .5) / .45), bounce = 1 + Math.sin(clamp((k - .5) / .45, 0, 1) * Math.PI) * .12; if (a > 0) {
-      const cy = H * (use3d ? .875 : .5), sc = 1.12 * a * bounce, cx = W / 2 + (seg.likeTap != null ? 70 : 0), lx = W / 2 - 250;   /* в 3D — на сцене под ногами героев, на плоской заставке — между надписью и героями */ if (seg.likeTap != null) { likeButton(ctx, lx, cy, sc, k, seg.likeTap); subPawAt(ctx, lx + 20, cy + 18, 1.05, k, seg.likeTap); } subButton(ctx, cx, cy, sc, k, seg.tap); subPawAt(ctx, cx + 120, cy + 18, 1.05, k, seg.tap); } }
+      const cy = H * (use3d ? .875 : .5), sc = 1.12 * a * bounce, cx = W / 2 + (seg.likeTap != null ? 70 : 0), lx = W / 2 - 250;   /* в 3D — на сцене под ногами героев, на плоской заставке — между надписью и героями */ if (seg.likeTap != null) { likeButton(ctx, lx, cy, sc, k, seg.likeTap); subPawAt(ctx, lx + 20, cy + 18, 1.05, k, seg.likeTap); } subButton(ctx, cx, cy, sc, k, seg.tap); subPawAt(ctx, cx + PX, cy + 18, 1.05, k, seg.tap); } }
     ctx.restore(); return; }
   if (seg.kind === 'scene') for (const m of tl.sub.marks) { const k = T - m; if (k < 0 || k >= SUB_BADGE) continue;
-    const a = Math.min(ease(k / .45), ease((SUB_BADGE - k) / .45)), Z = .88, pw = 640, ph = 222, x = W - 40 - pw * Z / 2 + (1 - a) * (pw * Z + 80), y = 40 + ph * Z / 2;
+    const a = Math.min(ease(k / .45), ease((SUB_BADGE - k) / .45)), Z = .88, pw = WORDLESS ? 500 : 640, ph = WORDLESS ? 160 : 222, x = W - 40 - pw * Z / 2 + (1 - a) * (pw * Z + 80), y = 40 + ph * Z / 2;
     ctx.save(); ctx.translate(x, y); ctx.scale(Z, Z); ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8; subRR(ctx, -pw / 2, -ph / 2, pw, ph, 40); ctx.fillStyle = 'rgba(255,255,255,.95)'; ctx.fill(); ctx.shadowColor = 'transparent';
-    ctx.lineWidth = 5; ctx.strokeStyle = '#ffd23f'; ctx.stroke(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 44px ${SUB_FONT}`; ctx.fillStyle = '#3a1d10'; ctx.fillText('Нравится мультик?', 0, -ph / 2 + 56);
+    ctx.lineWidth = 5; ctx.strokeStyle = '#ffd23f'; ctx.stroke(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 44px ${SUB_FONT}`; ctx.fillStyle = '#3a1d10';
+    if (WORDLESS) { likeButton(ctx, -150, 0, .95, k, LIKE_TAP); subPawAt(ctx, -130, 6, .85, k, LIKE_TAP, 'right'); subButton(ctx, 80, 0, .86, k, SUB_TAP); subPawAt(ctx, 80 + PX * .86, 6, .85, k, SUB_TAP, 'right'); ctx.restore(); continue; }   /* без слов: только «лайк» и колокольчик */
+    ctx.fillText('Нравится мультик?', 0, -ph / 2 + 56);
     likeButton(ctx, -232, 34, .95, k, LIKE_TAP); subPawAt(ctx, -212, 40, .85, k, LIKE_TAP, 'right'); subButton(ctx, 82, 34, .86, k, SUB_TAP); subPawAt(ctx, 222, 40, .85, k, SUB_TAP, 'right'); ctx.restore(); }
   ctx.restore();
 }
 /** Заставка «плашкой поверх»: въезжает слева сверху на 2-й секунде, уезжает к 6-й; действие не останавливается. */
 function drawIntroBadge(ctx, tl, T) { const [a0, a1] = tl.intro.ov, k = T - a0, D = a1 - a0; if (k < 0 || k >= D) return;
+  if (MK.wordless(tl)) { const a = Math.min(ease(k / .45), ease((D - k) / .45)); numBadge(ctx, 40 + 95 - (1 - a) * 300, 40 + 95, 95, tl.ep.episode != null ? String(tl.ep.episode) : ''); return; }   /* без слов — значок серии в углу */
   const ep = tl.ep, a = Math.min(ease(k / .45), ease((D - k) / .45)), big = ep.series || ep.title || '', sub = ep.episode ? `Серия ${ep.episode}` + (ep.title ? '. ' + ep.title : '') : (ep.series ? ep.title || '' : '');
   ctx.save(); ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
   ctx.font = `900 64px ${SUB_FONT}`; const w1 = ctx.measureText(big).width; ctx.font = `800 40px ${SUB_FONT}`; let s2 = sub; while (s2.length > 8 && ctx.measureText(s2).width > W * .5) s2 = s2.slice(0, -2).trim() + '…'; const w2 = ctx.measureText(s2).width;
@@ -1472,6 +1510,8 @@ function drawCard(ctx, tl, seg, t, T, textOnly) {
   ctx.save(); ctx.translate(W / 2, H / 2); ctx.rotate(T * .1); ctx.fillStyle = 'rgba(255,255,255,.1)'; for (let i = 0; i < 16; i++) { ctx.rotate(Math.PI / 8); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, -120); ctx.lineTo(W, 120); ctx.fill(); } ctx.restore();
   }
   const r = rng(11); for (let i = 0; i < 40; i++) { const x = r() * W, y = ((r() * H + T * (60 + r() * 80)) % H); ctx.fillStyle = ['#fff', '#ffd23f', '#ff6fa8', '#7fe0ff'][i % 4]; ctx.save(); ctx.translate(x, y); ctx.rotate(T * 2 + i); ctx.fillRect(-8, -4, 16, 8); ctx.restore(); }
+  if (MK.wordless(tl)) wordlessCard(ctx, tl, t, title, textOnly && title && !!MK.mainOf(ep, tl.lib));   /* без слов; в 3D посередине — главная вещь серии, значок — в углу */
+  else {
   const k = ease(t / .6), bounce = 1 + Math.sin(clamp(t / .6, 0, 1) * Math.PI) * .08;
   ctx.save(); ctx.translate(W / 2, H * (title ? .27 : .35)); ctx.scale(k * bounce, k * bounce); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   const big = title ? (ep.series || ep.title || '') : (ep.endText || 'Продолжение следует…');
@@ -1491,6 +1531,7 @@ function drawCard(ctx, tl, seg, t, T, textOnly) {
   if (title && ep.title) drawSub((ep.episode ? `Серия ${ep.episode}. ` : '') + ep.title, [62, 56, 50, 44], '#ffe36b', 14);
   if (!title && ep.endSub) drawSub(ep.endSub, [56, 50, 44], '#ffe36b', 12);
   ctx.restore();
+  }
   if (textOnly) return;
   // персонажи серии машут
   const ids = (ep.cardCast || Object.keys(tl.lib.characters).filter(id => (ep.scenes || []).some(s => (s.cast || []).some(c => c.who === id)))).slice(0, 5);
