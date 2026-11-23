@@ -1,0 +1,256 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рон и Ронни"
+ ],
+ "file": {
+  "mb": 203.0,
+  "dur": 140.47,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 139.97,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 5,
+  "files": [
+   "list_01.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 140,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 120.0
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 3.7,
+  "peak_db": -1.4,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 92.7,
+  "lines": 44,
+  "by_hero": {
+   "Рассказчик": 100.0,
+   "Рон": 90.3,
+   "Ронни": 91.9,
+   "Барсик": 100.0,
+   "Филя": 100.0
+  },
+  "worst": [
+   {
+    "t": 34.102,
+    "name": "Рон",
+    "text": "Тихо! Это тайна.",
+    "ok": 1,
+    "n": 3,
+    "miss": [
+     "тихо",
+     "это"
+    ],
+    "heard": "тихая татайна вода"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 232.0,
+   "range_st": 5.3,
+   "hnr": 12.7,
+   "jitter": 2.2,
+   "shimmer": 8.9,
+   "F1": 470.0,
+   "F2": 2166.0,
+   "F3": 3239.0,
+   "bright": -12.5,
+   "air": -13.9,
+   "cog": 734.0,
+   "rate": 4.0,
+   "voiced": 0.5,
+   "n": 3,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Рассказчик": {
+   "f0": 167.0,
+   "range_st": 5.8,
+   "hnr": 10.9,
+   "jitter": 2.9,
+   "shimmer": 10.3,
+   "F1": 404.0,
+   "F2": 1996.0,
+   "F3": 3177.0,
+   "bright": -15.8,
+   "air": -16.7,
+   "cog": 639.0,
+   "rate": 3.0,
+   "voiced": 0.4,
+   "n": 3,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 253.0,
+   "range_st": 8.4,
+   "hnr": 13.7,
+   "jitter": 2.1,
+   "shimmer": 8.4,
+   "F1": 547.0,
+   "F2": 1740.0,
+   "F3": 3344.0,
+   "bright": -15.0,
+   "air": -13.1,
+   "cog": 818.0,
+   "rate": 3.7,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 90.3
+  },
+  "Ронни": {
+   "f0": 268.0,
+   "range_st": 8.7,
+   "hnr": 13.9,
+   "jitter": 2.0,
+   "shimmer": 8.5,
+   "F1": 542.0,
+   "F2": 1766.0,
+   "F3": 3355.0,
+   "bright": -14.8,
+   "air": -13.9,
+   "cog": 718.0,
+   "rate": 3.7,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 91.9
+  },
+  "Филя": {
+   "f0": 287.0,
+   "range_st": 5.5,
+   "hnr": 15.3,
+   "jitter": 1.9,
+   "shimmer": 8.0,
+   "F1": 481.0,
+   "F2": 1965.0,
+   "F3": 3222.0,
+   "bright": -15.9,
+   "air": -19.0,
+   "cog": 637.0,
+   "rate": 4.6,
+   "voiced": 0.6,
+   "n": 3,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  }
+ },
+ "voices_close": [
+  [
+   "Рон",
+   "Ронни",
+   1.0
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 8,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 34,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 489,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 139.97199999999998,
+   "video": "video/Кот Барсик - 98. Новый голос Рона, доработка.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "797a880",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 42.9,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 11,
+    "e": 88,
+    "b": 8,
+    "w": 1,
+    "n": 3500,
+    "at": 3500,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 0,
+   "ttsFail": 0,
+   "voice": 44,
+   "voiceFail": 0,
+   "voiceSec": 23,
+   "ttsSec": 0,
+   "frames": 3500,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -26,
+   "lufs_out": -15.1,
+   "gain_db": 11.4
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 98,
+   "title": "Новый голос Рона, доработка",
+   "scenes": 3,
+   "errors": [],
+   "unknownWords": [
+    {
+     "word": "чуть",
+     "sentence": "Рон чуть выше"
+    },
+    {
+     "word": "рядом",
+     "sentence": "Рядом с Барсиком и Филей"
+    }
+   ],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Рон: {\"speaker\":\"ru_zara\",\"F\":1.15,\"P\":1.15,\"R\":1.25,\"gap\":0.3,\"laugh\":\"F16\"}",
+    "Ронни: {\"speaker\":\"ru_zara\",\"F\":1.15,\"P\":1.2,\"R\":1.25,\"gap\":0.3,\"laugh\":\"F16\"}",
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: НЕ ПРИМЕНЁН (нет героя)"
+   ]
+  }
+ }
+}
