@@ -1536,6 +1536,16 @@
    "link": "https://youtube.com/shorts/sx2-fIMblqU",
    "title": "1000 ta shar! Gentra, Labo, Epica… Qaysi mashina yutadi? Какая машина победит? №4 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-23",
+   "slot": 2,
+   "league": "mass_cities",
+   "no": 2,
+   "final": false,
+   "link": "https://youtube.com/shorts/H4IDj7FhTkE",
+   "title": "1000 ta shar! Toshkent, Buxoro, Olmaliq… Qaysi shahar yutadi? Какой город победит? №2 #shorts",
+   "pl": true
   }
  ],
  "seen_comments": [
@@ -1625,7 +1635,7 @@
    ]
   },
   "cities": {
-   "no": 1,
+   "no": 2,
    "cnt": {
     "Asaka": 1,
     "Nukus": 1,
@@ -1635,8 +1645,16 @@
     "Qoʻqon": 1,
     "Xiva": 1,
     "Fargʻona": 1,
-    "Samarqand": 1,
-    "Toshkent": 1
+    "Samarqand": 2,
+    "Toshkent": 2,
+    "Andijon": 1,
+    "Jizzax": 1,
+    "Buxoro": 1,
+    "Olmaliq": 1,
+    "Guliston": 1,
+    "Chirchiq": 1,
+    "Qarshi": 1,
+    "Termiz": 1
    },
    "results": [
     {
@@ -1651,6 +1669,19 @@
      ],
      "in_cup": 359,
      "link": "https://youtube.com/shorts/Zr9iRlRDw5Q"
+    },
+    {
+     "no": 2,
+     "date": "2026-11-23",
+     "slot": 2,
+     "winner": "Termiz",
+     "top3": [
+      "Termiz",
+      "Qarshi",
+      "Buxoro"
+     ],
+     "in_cup": 399,
+     "link": "https://youtube.com/shorts/H4IDj7FhTkE"
     }
    ]
   }
