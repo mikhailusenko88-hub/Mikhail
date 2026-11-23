@@ -1,0 +1,79 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 97,
+  "title": "Проба нового голоса Рона",
+  "scenes": 3,
+  "errors": [],
+  "unknownWords": [
+   {
+    "word": "новый",
+    "sentence": "Новый голос Рона"
+   }
+  ],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Рон: {\"speaker\":\"ru_zara\",\"F\":1.15,\"P\":1.15,\"R\":1.25,\"laugh\":\"F16\"}",
+   "Ронни: {\"speaker\":\"ru_zara\",\"F\":1.15,\"P\":1.15,\"R\":1.25,\"laugh\":\"F16\",\"vow\":\"е\"}",
+   "Рончик: {\"speaker\":\"ru_zara\",\"F\":1.15,\"P\":1.15,\"R\":1.25,\"laugh\":\"F9\"}",
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 97. Проба нового голоса Рона",
+  "path": "video/Кот Барсик - 97. Проба нового голоса Рона.mp4",
+  "frames": 4776,
+  "sec": 523,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 191.00599999999997,
+  "video": "video/Кот Барсик - 97. Проба нового голоса Рона.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "a757dd2",
+   "intro": "overlay",
+   "open": "new",
+   "q": "hq",
+   "at": null,
+   "text": "заставка: плашкой поверх действия · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 15,
+   "e": 88,
+   "b": 6,
+   "w": 1,
+   "n": 4770,
+   "at": 4770,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 2,
+  "ttsFail": 0,
+  "voice": 69,
+  "voiceFail": 0,
+  "voiceSec": 29,
+  "ttsSec": 2,
+  "frames": 4776,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -25.8,
+  "lufs_out": -15.1,
+  "gain_db": 11.3
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 753,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
