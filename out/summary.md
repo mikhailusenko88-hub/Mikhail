@@ -367,6 +367,40 @@
 | e38_r38_5 | edge:ru-RU-SvetlanaNeural | 3.69 | 1.0 | 0 (+0) | 1/1 |
 | e38_r38_6 | edge:ru-RU-SvetlanaNeural | 3.78 | 1.0 | 0 (+0) | 1/1 |
 | e38_r38_9 | edge:ru-RU-SvetlanaNeural | 4.2 | 0.727 | 1 (+0) | 0/2 |
+| e38c_p57 | edge:ru-RU-SvetlanaNeural | — | 1.0 | 1 (+0) | 2/2 |
+| e38c_r54 | edge:ru-RU-SvetlanaNeural | — | 1.0 | 1 (+0) | 2/2 |
+| e38c_r56 | edge:ru-RU-SvetlanaNeural | — | 1.0 | 1 (+0) | 1/2 |
+| e38c_r64 | edge:ru-RU-SvetlanaNeural | — | 1.0 | 0 (+0) | 1/1 |
+| e38c_r69 | edge:ru-RU-SvetlanaNeural | — | 1.0 | 0 (+0) | 1/1 |
+| e39_p1 | edge:ru-RU-SvetlanaNeural | 3.85 | 0.875 | 0 (+0) | 1/2 |
+| e39_p19 | edge:ru-RU-SvetlanaNeural | 3.84 | 1.0 | 1 (+1) | 2/2 |
+| e39_p32 | edge:ru-RU-SvetlanaNeural | 3.55 | 1.0 | 0 (+1) | 2/2 |
+| e39_p34 | edge:ru-RU-SvetlanaNeural | 4.16 | 1.0 | 0 (+0) | 2/3 |
+| e39_p36 | edge:ru-RU-SvetlanaNeural | 3.81 | 0.857 | 0 (+0) | 2/2 |
+| e39_p44 | edge:ru-RU-SvetlanaNeural | 3.88 | 0.833 | 0 (+0) | 2/2 |
+| e39_p61 | edge:ru-RU-SvetlanaNeural | 3.84 | 0.462 | 0 (+0) | 1/2 |
+| e39_p73 | edge:ru-RU-SvetlanaNeural | 3.91 | 1.0 | 0 (+0) | 0/1 |
+| e39_p78 | edge:ru-RU-SvetlanaNeural | 3.69 | 1.0 | 1 (+0) | 2/2 |
+| e39_p92 | edge:ru-RU-SvetlanaNeural | 3.69 | 0.917 | 0 (+0) | 3/3 |
+| e39_r14 | edge:ru-RU-SvetlanaNeural | 3.95 | 1.0 | 1 (+1) | 1/1 |
+| e39_r17 | edge:ru-RU-SvetlanaNeural | 4.21 | 1.0 | 1 (+0) | 2/2 |
+| e39_r2 | edge:ru-RU-SvetlanaNeural | 3.76 | 1.0 | 0 (+0) | 1/2 |
+| e39_r22 | edge:ru-RU-SvetlanaNeural | 3.92 | 1.0 | 0 (+1) | 1/2 |
+| e39_r38 | edge:ru-RU-SvetlanaNeural | 3.7 | 0.833 | 0 (+0) | 1/2 |
+| e39_r47 | edge:ru-RU-SvetlanaNeural | 4.18 | 1.0 | 0 (+0) | 1/1 |
+| e39_r5 | edge:ru-RU-SvetlanaNeural | 4.02 | 1.0 | 1 (+0) | 2/2 |
+| e39_r51 | edge:ru-RU-SvetlanaNeural | 3.92 | 1.0 | 1 (+0) | 2/2 |
+| e39_r54 | edge:ru-RU-SvetlanaNeural | 4.02 | 0.8 | 0 (+0) | 1/2 |
+| e39_r64 | edge:ru-RU-SvetlanaNeural | 3.51 | 1.0 | 0 (+0) | 0/0 |
+| e39_r72 | edge:ru-RU-SvetlanaNeural | 3.91 | 1.0 | 2 (+0) | 2/3 |
+| e39_r74 | edge:ru-RU-SvetlanaNeural | 4.02 | 1.0 | 0 (+0) | 0/0 |
+| e39_r75 | edge:ru-RU-SvetlanaNeural | 3.95 | 1.0 | 1 (+0) | 1/1 |
+| e39_r76 | edge:ru-RU-SvetlanaNeural | 3.52 | 0.833 | 0 (+0) | 2/2 |
+| e39_r79 | edge:ru-RU-SvetlanaNeural | 3.9 | 0.5 | 0 (+0) | 0/1 |
+| e39_r82 | edge:ru-RU-SvetlanaNeural | 3.82 | 1.0 | 0 (+0) | 1/2 |
+| e39_r91 | edge:ru-RU-SvetlanaNeural | 3.92 | 1.0 | 1 (+0) | 1/1 |
+| e39_r95 | edge:ru-RU-SvetlanaNeural | 3.84 | 1.0 | 0 (+1) | 0/1 |
+| e39_r98 | edge:ru-RU-SvetlanaNeural | 3.88 | 1.0 | 0 (+0) | 2/3 |
 | f2_albina_slow | silero_cis:ru_albina@slow | 3.2 | 0.935 | 0 (+1) | 4/4 |
 | f2_albina_slow_soft | silero_cis:ru_albina@slow,soft | 2.88 | 0.935 | 1 (+1) | 4/4 |
 | f2_albina_soft | silero_cis:ru_albina@soft | 3.33 | 0.935 | 0 (+1) | 4/4 |
@@ -1045,6 +1079,40 @@
 | sv42_sv | edge:ru-RU-SvetlanaNeural | 3.45 | 0.5 | 0 (+0) | 1/1 |
 | v1_kseniya | silero:kseniya | 3.67 | 0.967 | 0 (+0) | 4/4 |
 | v2_xenia | silero:xenia | 3.55 | 0.967 | 0 (+2) | 4/4 |
+| v38c_p57 |  | 1.45 | 1.0 | 0 (+0) | 2/2 |
+| v38c_r54 |  | 2.41 | 0.8 | 0 (+0) | 1/2 |
+| v38c_r56 |  | 2.24 | 1.0 | 0 (+0) | 0/2 |
+| v38c_r64 |  | 2.35 | 1.0 | 0 (+0) | 1/1 |
+| v38c_r69 |  | 2.43 | 1.0 | 0 (+0) | 1/1 |
+| v39_p1 |  | 1.36 | 0.875 | 0 (+0) | 1/2 |
+| v39_p19 |  | 1.42 | 0.875 | 0 (+0) | 2/2 |
+| v39_p32 |  | 1.43 | 0.625 | 0 (+0) | 2/2 |
+| v39_p34 |  | 1.6 | 0.857 | 0 (+0) | 2/3 |
+| v39_p36 |  | 1.72 | 0.818 | 0 (+0) | 2/2 |
+| v39_p44 |  | 1.99 | 0.833 | 0 (+0) | 2/2 |
+| v39_p61 |  | 1.57 | 0.714 | 0 (+0) | 1/2 |
+| v39_p73 |  | 1.72 | 0.75 | 0 (+0) | 1/1 |
+| v39_p78 |  | 1.51 | 1.0 | 0 (+0) | 2/2 |
+| v39_p92 |  | 1.48 | 0.75 | 0 (+0) | 3/3 |
+| v39_r14 |  | 2.78 | 1.0 | 0 (+0) | 1/1 |
+| v39_r17 |  | 2.43 | 1.0 | 0 (+0) | 2/2 |
+| v39_r2 |  | 2.34 | 1.0 | 0 (+0) | 2/2 |
+| v39_r22 |  | 2.24 | 1.0 | 0 (+0) | 1/2 |
+| v39_r38 |  | 2.31 | 0.833 | 0 (+1) | 1/2 |
+| v39_r47 |  | 2.39 | 1.0 | 0 (+0) | 1/1 |
+| v39_r5 |  | 2.5 | 1.0 | 0 (+0) | 1/2 |
+| v39_r51 |  | 2.39 | 1.0 | 0 (+0) | 2/2 |
+| v39_r54 |  | 2.51 | 1.0 | 0 (+0) | 2/2 |
+| v39_r64 |  | 2.31 | 1.0 | 0 (+0) | 0/0 |
+| v39_r72 |  | 2.37 | 1.0 | 1 (+0) | 2/3 |
+| v39_r74 |  | 2.44 | 0.4 | 0 (+0) | 0/0 |
+| v39_r75 |  | 2.41 | 1.0 | 1 (+0) | 0/1 |
+| v39_r76 |  | 2.14 | 0.833 | 1 (+0) | 2/2 |
+| v39_r79 |  | 2.28 | 1.0 | 0 (+0) | 0/1 |
+| v39_r82 |  | 2.01 | 1.0 | 0 (+0) | 1/2 |
+| v39_r91 |  | 2.14 | 0.364 | 0 (+0) | 1/1 |
+| v39_r95 |  | 1.84 | 1.0 | 0 (+0) | 1/1 |
+| v39_r98 |  | 2.26 | 0.882 | 0 (+0) | 2/3 |
 | v3_baya | silero:baya | 3.23 | 0.967 | 0 (+0) | 4/4 |
 | v4_emma | edge:en-US-EmmaMultilingualNeural | 3.8 | 0.967 | 0 (+0) | 3/4 |
 | v5_albina_free | silero_cis:ru_albina | 3.42 | 0.933 | 2 (+0) | 4/4 |
