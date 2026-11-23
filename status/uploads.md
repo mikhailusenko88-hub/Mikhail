@@ -82,3 +82,4 @@
 | shorts | 2026-11-22 | 3 | UK vs Philippines vs France | https://youtube.com/shorts/2MuAY3ktACg | public (только Shorts) |
 | shorts | 2026-11-23 | 1 | India vs Russia vs Vietnam | https://youtube.com/shorts/JtU-dx5R9Go | public (только Shorts) |
 | shorts | 2026-11-23 | 2 | Türkiye vs Bangladesh vs Iraq | https://youtube.com/shorts/A4AGd2-sRUQ | public (только Shorts) |
+| shorts | 2026-11-23 | 3 | Brazil vs UK vs Vietnam | https://youtube.com/shorts/s3iWur-00qU | public (только Shorts) |
