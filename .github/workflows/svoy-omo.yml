@@ -17,8 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        v: [A, E, K]
-        part: [0, 1, 2]
+        v: [E]
+        part: [0, 1, 2, 3]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -39,7 +39,7 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
           pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib edge-tts
-      - run: python svoy_omo.py gen ${{ matrix.v }} ${{ matrix.part }} 3
+      - run: python svoy_omo.py gen ${{ matrix.v }} ${{ matrix.part }} 4
       - run: python voice_check.py
       - if: always()
         run: python svoy2.py pack && (cp out/O__*.png pack/ || true) && (cp in/*.sent pack/ || true)

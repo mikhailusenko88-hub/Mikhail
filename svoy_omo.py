@@ -44,14 +44,36 @@ HOMO_TEST = [
     "Он не сказал ни сл+ова, но слов+а были не нужны.",
     "Он выглянул из окн+а, а все +окна были открыты.",
 ]
-LISTEN = {0, 1, 2, 3, 5, 6, 8, 9, 19, 23, 24, 26, 28}
+NEW_TEST = [   # новые фразы для проверки правил (правила писались по HOMO_TEST)
+    "Туристы долго шли вдоль б+ерега, а берег+а озера заросли камышом.",
+    "Из окн+а дул ветер, и мы закрыли +окна.",
+    "Без вод+ы человек долго не проживёт, а морские в+оды солёные.",
+    "Мы гуляли у л+еса, а дальше начинались густые лес+а.",
+    "У этого сл+ова два значения, и такие слов+а называют омонимами.",
+    "Я м+ою р+уки перед едой.",
+    "Возьми мо+ю книгу.",
+    "Рабочие решили зас+ыпать ров землёй.",
+    "Дети любят засып+ать под сказку.",
+    "Эта улица +уже той, по которой мы шли.",
+    "Мы уж+е пришли.",
+    "Её любимые дух+и пахнут розой, а в легендах злые д+ухи живут в горах.",
+    "Для блинов нужно два стакана мук+и.",
+    "Сладкий ир+ис прилипает к зубам.",
+    "Он забил в доску медные гв+оздики.",
+    "Налей стакан вод+ы.",
+    "Поднимите р+уки!",
+    "Он не нашёл ни одного сл+ова.",
+    "Над водой склонились деревья у б+ерега.",
+    "Все слов+а в этой книге простые.",
+]
+LISTEN = {0, 1, 2, 3, 9, 10, 19, 22, 23, 25, 27, 30, 31, 33}
 NAMES = {"A": "№4 как было", "E": "№4 + все омографы", "K": "контроль: kseniya, текст как у E"}
 VOICE = {"A": svoy_bars.W4, "E": svoy_bars.W4, "K": {r: {"kseniya": 1.0} for r in ("dp", "pp", "spe")}}
 
 
 def phrases():
     std = [t for k, t in enumerate(svoy_bars.phrases()) if k < 12 and "зам+ок" not in t]
-    return HOMO_TEST + std
+    return HOMO_TEST + NEW_TEST + std
 
 
 _acc = {}
@@ -84,6 +106,85 @@ def ruacc():
     return _acc["a"], _acc["om"]
 
 
+
+# ---------------- свои правила для частых омографов (поверх ruaccent) ----------------
+GEN_PREP = set("""из до у от с со без около возле для ни против вдоль кроме после мимо вокруг среди посреди напротив
+внутри вне близ недалеко""".split())
+PLUR = ("ые", "ие")                       # «густые леса», «крутые берега», «подземные воды»
+GEN_ADJ = ("ого", "его", "ой", "ей")      # «из густого леса», «чистой воды»
+
+
+def _r_sg_gen(sg_gen, plural, extra=()):
+    """леса / слова / окна / берега: после предлога родительного или прилагательного в род. п. — ед. ч. (ле́са, сло́ва, окна́,
+    бе́рега); после прилагательного во мн. ч. или без предлога — мн. ч. (леса́, слова́, о́кна, берега́)."""
+    def f(prev, nxt):
+        if prev in GEN_PREP or prev in extra or prev.endswith(GEN_ADJ[:2]):
+            return sg_gen
+        return plural
+    return f
+
+
+def _r_voda(prev, nxt):
+    if prev.endswith(PLUR) or nxt in ("текут", "текли", "омывают", "реки", "океана", "морей"):
+        return 0                             # во́ды
+    return 1                                 # воды́ (стакан воды, без воды, литров воды)
+
+
+def _r_ruki(prev, nxt, left=""):
+    if re.search(r"(попроси|проси)\w*(\s+\S+){0,3}$", left) or prev in GEN_PREP:
+        return 1                             # руки́ (попросил руки, из руки)
+    return 0                                 # ру́ки
+
+
+def _r_uzhe(prev, nxt):
+    if nxt in ("чем", "той", "того", "тех", "тот", "этой", "этого") or prev in ("гораздо", "намного", "чуть", "немного", "вдвое", "втрое", "ещё"):
+        return 0                             # у́же
+    return 1                                 # уже́
+
+
+def _r_moyu(prev, nxt):
+    return 0 if prev == "я" else 1           # я мо́ю / мою́ книгу
+
+
+def _r_zasyp(prev, nxt):
+    return 1 if nxt in ("яму", "ров", "канаву", "яма", "песком", "землёй", "землей", "снегом", "зерно", "крупу", "сахар", "соль") else 2
+
+
+def _r_duhi(prev, nxt):
+    if prev in ("лесные", "злые", "добрые", "горные", "водные", "домашние", "все", "эти", "тёмные", "темные") or nxt in ("предков", "леса", "гор"):
+        return 0                             # ду́хи
+    if prev in ("новые", "любимые", "мои", "её", "ее", "французские", "дорогие", "купила", "купил", "флакон") or nxt in ("пахнут",):
+        return 1                             # духи́
+    return None
+
+
+def _r_muki(prev, nxt):
+    if prev in ("мешок", "мешка", "стакан", "стакана", "стаканов", "килограмм", "килограмма", "много", "немного", "без", "из",
+                "пшеничной", "ржаной", "кукурузной", "горсть", "ложка", "ложки") :
+        return 1                             # муки́
+    if prev in ("адские", "крестные", "творческие", "душевные") or nxt in ("совести", "ада", "творчества"):
+        return 0                             # му́ки
+    return None
+
+
+def _r_iris(prev, nxt):
+    return 1 if prev in ("сладкий", "сладкие", "конфета", "конфеты", "молочный", "жевательный", "твёрдый", "твердый") else None
+
+
+def _r_gvozd(prev, nxt):
+    return 0 if prev in ("маленькие", "мелкие", "железные", "медные", "забил", "забила", "забивать", "тонкие") else None
+
+
+RULES = {
+    "леса": _r_sg_gen(0, 1, ("много", "мало", "немного", "нет", "край", "опушка", "опушке", "краю")),
+    "слова": _r_sg_gen(0, 1, ("значение", "смысл", "смысла", "значения", "одного", "этого", "нового")),
+    "окна": _r_sg_gen(1, 0, ("стекло", "рама", "раму", "подоконник")),
+    "берега": _r_sg_gen(0, 2, ("недалеко",)),
+    "воды": _r_voda, "руки": _r_ruki, "уже": _r_uzhe, "мою": _r_moyu, "засыпать": _r_zasyp,
+    "духи": _r_duhi, "муки": _r_muki, "ирис": _r_iris, "гвоздики": _r_gvozd,
+}
+
+
 def omo_marks(plain):
     """«+» во всех омографах по выбору ruaccent; возвращает текст и список (слово, номер ударной гласной)."""
     import voice_check as vc
@@ -96,14 +197,24 @@ def omo_marks(plain):
     out, i, chosen = [], 0, []
     for tok in toks:
         if re.match(r"[А-Яа-яЁё]", tok):
-            w, r = ws[i], rw[i]; i += 1
-            if w["w"] in om and len(w["vows"]) > 1 and r["exp"] is not None:
-                chosen.append((w["w"], r["exp"]))
+            w, r = ws[i], rw[i]
+            prev = ws[i - 1]["w"] if i > 0 and not re.search(r"[.!?…,;:—–]", ws[i - 1]["punct"]) else ""
+            nxt = ws[i + 1]["w"] if i + 1 < len(ws) and not re.search(r"[.!?…,;:—–]", w["punct"]) else ""
+            i += 1
+            e = r["exp"] if w["w"] in om else None
+            if w["w"] in RULES:
+                f = RULES[w["w"]]
+                left = " ".join(x["w"] for x in ws[max(0, i - 5):i - 1])
+                e2 = f(prev, nxt, left) if f is _r_ruki else f(prev, nxt)
+                if e2 is not None:
+                    e = e2
+            if len(w["vows"]) > 1 and e is not None:
+                chosen.append((w["w"], e))
                 k = -1; t2 = ""
                 for c in tok:
                     if c.lower() in vc.VOW:
                         k += 1
-                        if k == r["exp"]:
+                        if k == e:
                             t2 += "+"
                     t2 += c
                 tok = t2
@@ -115,7 +226,7 @@ def text_check():
     """Без звука: совпал ли выбор ruaccent с ручным эталоном в каждом омографе."""
     import voice_check as vc
     res = []
-    for ref in HOMO_TEST:
+    for ref in HOMO_TEST + NEW_TEST:
         _, chosen = omo_marks(ref.replace("+", ""))
         got = dict()
         for w, e in chosen:
@@ -165,13 +276,14 @@ def final():
     P = phrases()
     tc = json.load(open("pack/textcheck.json", encoding="utf-8")) if os.path.exists("pack/textcheck.json") else []
     L = ["# Голос №4 — все омографы", "",
-         f"Словарь омографов ruaccent, выбор ударения по смыслу фразы: **верно {sum(r['ok'] for r in tc)} из {len(tc)}** "
-         "(сверка текста с ручным эталоном, без звука).", ""]
+         f"Словарь омографов ruaccent + свои правила (RULES): **верно {sum(r['ok'] for r in tc)} из {len(tc)}** "
+         "(сверка текста с ручным эталоном, без звука; 30 фраз, по которым писались правила, + 20 новых).",
+         f"Только новые фразы: верно {sum(r['ok'] for r in tc if r['phrase'] in NEW_TEST)} из {sum(1 for r in tc if r['phrase'] in NEW_TEST)}.", ""]
     if tc:
-        L += ["Где ruaccent выбрал не то:", ""] + [f"- «{r['phrase']}»: нужно {r['need_m']}, выбрал {r['got_m']}" for r in tc if not r["ok"]] + [""]
+        L += ["Где ударение выбрано не то:", ""] + [f"- «{r['phrase']}»: нужно {r['need_m']}, выбрал {r['got_m']}" for r in tc if not r["ok"]] + [""]
     L += ["| | вариант | слова | UTMOS | ошибки удар. (+возм.) | в омографах ✓/всего | интонация | темп |", "|---|---|---|---|---|---|---|---|"]
     hom = {}
-    for v in "AEK":
+    for v in "E":
         reps = R.get(f"O__{v}")
         if not reps:
             L.append(f"| {v} | {NAMES[v]} | нет данных |"); continue
@@ -180,7 +292,7 @@ def final():
         ok = tot = 0
         for r in reps:
             k = int(r["name"].rsplit("__", 1)[1])
-            if k >= len(HOMO_TEST):
+            if k >= len(HOMO_TEST) + len(NEW_TEST):
                 continue
             refw = [w for w in svoy_vc().tokenize(P[k]) if "+" in w["raw"] and len(w["vows"]) > 1]
             names = {w["w"] for w in refw}
@@ -189,17 +301,17 @@ def final():
                     tot += 1; ok += int(w.get("det") == w["exp"])
                     hom.setdefault((k, w["w"]), {})[v] = w.get("det") == w["exp"]
         L.append(f"| {v} | {NAMES[v]} | {a['match']:.3f} | {a['utmos']:.2f} | {se} (+{sm}) | {ok}/{tot} | {a['inton']:.2f} | {a['rate']:.1f} |")
-    L += ["", "## Омографы по словам (анализатор по звуку; ✗ у E и ✓ у K → скорее ошибся анализатор на низком голосе)", "",
-          "| фраза | слово | A | E | K |", "|---|---|---|---|---|"]
+    L += ["", "## Омографы по словам (анализатор по звуку, низкий голос — анализатор ошибается чаще)", "",
+          "| фраза | слово | E |", "|---|---|---|"]
     m = lambda x: "—" if x is None else "✓" if x else "✗"
     for (k, w), d in sorted(hom.items()):
-        L.append(f"| {k:02d} | {w} | {m(d.get('A'))} | {m(d.get('E'))} | {m(d.get('K'))} |")
+        L.append(f"| {k:02d} | {w} | {m(d.get('E'))} |")
     for p in glob.glob("pack/O__E__*.png"):
         shutil.copy(p, "cast5/png/")
     open("cast5/itog.md", "w", encoding="utf-8").write("\n".join(L) + "\n")
     svoy.log("\n".join(L))
     ph = [(t, k in LISTEN) for k, t in enumerate(P)]
-    svoy2.video([(NAMES["E"], "O__E", "омографы с подсказкой ударений")], "cast5/proba5.mp4", ph)
+    svoy2.video([("№4 — омографы: словарь и свои правила", "O__E", "фразы с омографами")], "cast5/proba5.mp4", ph)
 
 
 def svoy_vc():
