@@ -1,10 +1,7 @@
 # Снятые страницы
 
-- 01 200 https://law.2gis.ru/reference-information (13986 симв.)
-- 02 ошибка: The read operation timed out https://help.2gis.ru/question/kak-dobavit-kompaniyu-v-2gis (0 симв.)
-- 03 ошибка: <urlopen error timed out> https://www.yell.ru/spb/top/magaziny-stenovyx-panelej/ (0 симв.)
-- 04 307 https://kontur.ru/articles/26970-besplatnyy_pr_malyy_biznes_otzyvy (5 симв.)
-- 05 200 https://pinbox.ru/analytical_articles/?name=2gis-add-company-2026 (33453 симв.)
-- 06 200 https://reg.ru/blog/10-ploshchadok-dlya-upominaniya-biznesa/amp/ (0 симв.)
-- 07 200 https://yandex.ru/support/sprav/partners/data-providers.html (1996 симв.)
-- 08 ошибка: <urlopen error timed out> https://www.yell.ru/doc/help/ (0 симв.)
+- 01 200 https://crm.nashdekor.ru/api/outbox/status/27f81228-2b7d-4509-8b40-5ef70e557b78 (66 симв.)
+- 02 200 https://crm.nashdekor.ru/api/outbox/status/63778607-b83c-45da-b1f8-649431a8f660 (66 симв.)
+- 03 200 https://crm.nashdekor.ru/api/outbox/status/ba70813d-27bf-4aed-a340-ce9ca948f1ed (66 симв.)
+- 04 200 https://crm.nashdekor.ru/api/outbox/status/20f85ba1-7e08-42c4-80f8-7e81c899917e (66 симв.)
+- 05 200 https://crm.nashdekor.ru/api/outbox/status/994883f9-c811-47f7-929a-5e92e1b798c2 (66 симв.)

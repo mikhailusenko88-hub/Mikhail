@@ -1,7 +1,19 @@
-URL: https://help.2gis.ru/question/kak-dobavit-kompaniyu-v-2gis
-КОД: ошибка: The read operation timed out
+URL: https://crm.nashdekor.ru/api/outbox/status/63778607-b83c-45da-b1f8-649431a8f660
+КОД: 200
 ЗАГОЛОВКИ:
+Server: nginx
+Date: Mon, 23 Nov 2026 06:25:39 GMT
+Content-Type: application/json
+Content-Length: 67
+Connection: close
+Cache-Control: no-store
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: same-origin
+Vary: Cookie
+Strict-Transport-Security: max-age=15552000
+X-Robots-Tag: noindex, nofollow
 
-
+{"error":"","sent_at":"2026-11-23T09:23:05+03:00","status":"sent"}
 
 ССЫЛКИ:

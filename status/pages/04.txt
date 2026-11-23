@@ -1,18 +1,19 @@
-URL: https://kontur.ru/articles/26970-besplatnyy_pr_malyy_biznes_otzyvy
-КОД: 307
+URL: https://crm.nashdekor.ru/api/outbox/status/20f85ba1-7e08-42c4-80f8-7e81c899917e
+КОД: 200
 ЗАГОЛОВКИ:
-Date: Mon, 23 Nov 2026 05:55:00 GMT
-Content-Length: 5
+Server: nginx
+Date: Mon, 23 Nov 2026 06:25:41 GMT
+Content-Type: application/json
+Content-Length: 67
 Connection: close
-X-Request-ID: 0tceUUC28eA1
-location: https://kontur.ru/articles/26970-besplatnyy_pr_malyy_biznes_otzyvy
-access-control-allow-origin: *
-set-cookie: spid=1795413300551_faa0e7f55719827ddba8213be4d1228f_t7muh8nce8ilrbpd; Expires=Tue, 19 Jan 2038 03:14:07 GMT; Domain=kontur.ru; Path=/; Secure; SameSite=None
-set-cookie: spsc=1795413300551_240fe7733e4a5faf55e5deefb23e0a36_Z2rZqC6SGyAfOEXpFuGzYEFyPJf21F4R5Yzw.r.UJ.bFBI.dcm8RumBmIG046brOZ; Expires=Tue, 19 Jan 2038 03:14:07 GMT; Domain=kontur.ru; Path=/; Secure; SameSite=None
-NEL: {"report_to":"nel","max_age":2592000,"include_subdomains":false}
-Report-To: {"group":"nel","max_age":2592000,"endpoints":[{"url":"https://nel.kontur-report.ru/network-error"}]}
-Set-Cookie: ngtoken=LhHOC2sD1TSF1rxoEOnaAg==; expires=Sun, 19-Aug-29 05:55:00 GMT; domain=.kontur.ru; path=/; secure; samesite=none
+Cache-Control: no-store
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: same-origin
+Vary: Cookie
+Strict-Transport-Security: max-age=15552000
+X-Robots-Tag: noindex, nofollow
 
-blank
+{"error":"","sent_at":"2026-11-23T09:23:08+03:00","status":"sent"}
 
 ССЫЛКИ:
