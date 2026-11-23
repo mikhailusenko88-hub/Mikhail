@@ -1,0 +1,113 @@
+name: svoy-cb
+# Свой голос, круг 3: модель Chatterbox Multilingual (MIT) говорит по образцу нашего сборного голоса «Новый 2»
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['svoy-cb-request.txt', 'svoy_cb.py', '.github/workflows/svoy-cb.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: svoy-cb
+  cancel-in-progress: false
+jobs:
+  ref:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: svoy2-cache-v1
+          restore-keys: svoy-golos-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib edge-tts
+      - run: python svoy_cb.py ref
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ref
+          path: pack/
+  cb:
+    needs: ref
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/huggingface
+          key: svoy-cb-hf-v1
+      - uses: actions/download-artifact@v4
+        with:
+          name: ref
+          path: pack/
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          pip install -q chatterbox-tts
+          pip list 2>/dev/null | grep -iE "^(torch|torchaudio|transformers|chatterbox)" || true
+      - run: python svoy_cb.py cb
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cbin
+          path: in/
+  chk:
+    needs: cb
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: svoy2-cache-v1
+          restore-keys: svoy-golos-cache-v1
+      - uses: actions/download-artifact@v4
+        with:
+          name: ref
+          path: pack/
+      - uses: actions/download-artifact@v4
+        with:
+          name: cbin
+          path: in/
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng fonts-dejavu-core
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib edge-tts
+      - run: rm -rf out && python voice_check.py
+      - run: python svoy2.py pack && python svoy_cb.py final && ls -la cast3
+      - name: Commit
+        if: always()
+        timeout-minutes: 5
+        run: |
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          git add -A cast3
+          git commit -m "svoy-cb result" || echo nothing
+          for i in 1 2 3; do git fetch -q origin svoy-golos && git rebase -q FETCH_HEAD && git push origin HEAD:svoy-golos && break; sleep 5; done
