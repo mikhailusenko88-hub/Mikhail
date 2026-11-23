@@ -1,2 +1,2 @@
-# 2026-11-23 23:00 МСК — Михаил (по golosa16): «то же самое… “вот наши лужа”, не “наша”… “наша снежинка”». Движок vend-eng: безударное «а» в конце слова после ш/ж/ч/щ/ц тянуть дольше. Пробы (kseniya, темп 0,88): 1 — как было, 2 — ×1,7, 3 — ×2,2
-golosa17 --eng=vend-eng --golos=Рон:girl:speaker=kseniya:model=xenia:P=1.1:F=1.08:R=1.1:T=0.88:laugh=F16,Ронни:girl:speaker=kseniya:model=xenia:P=1.1:F=1.08:R=1.1:T=0.88:vend=1.7:laugh=F16,Роня:girl:speaker=kseniya:model=xenia:P=1.1:F=1.08:R=1.1:T=0.88:vend=2.2:laugh=F16
+# 2026-11-23 23:40 МСК — серия 38 с окончательным голосом Рона (golosa.json: kseniya модели xenia, темп 0,88, vend 1,7 — выбран Михаилом по пробам golosa13–17; движок mebel-3d 4228a63)
+38g --shorts
