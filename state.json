@@ -1546,6 +1546,16 @@
    "link": "https://youtube.com/shorts/H4IDj7FhTkE",
    "title": "1000 ta shar! Toshkent, Buxoro, Olmaliq… Qaysi shahar yutadi? Какой город победит? №2 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-23",
+   "slot": 3,
+   "league": "mass_cars",
+   "no": 5,
+   "final": false,
+   "link": "https://youtube.com/shorts/aTpbo_zDb3g",
+   "title": "1000 ta shar! Nexia, Captiva, Matiz… Qaysi mashina yutadi? Какая машина победит? №5 #shorts",
+   "pl": true
   }
  ],
  "seen_comments": [
@@ -1556,27 +1566,27 @@
  ],
  "mass": {
   "cars": {
-   "no": 4,
+   "no": 5,
    "cnt": {
     "Malibu": 2,
     "Damas": 2,
     "Onix": 2,
-    "Kia K5": 1,
-    "Gentra": 4,
-    "Nexia": 4,
-    "BYD Song": 1,
-    "Cobalt": 4,
-    "Matiz": 2,
+    "Kia K5": 2,
+    "Gentra": 5,
+    "Nexia": 5,
+    "BYD Song": 2,
+    "Cobalt": 5,
+    "Matiz": 3,
     "Lacetti": 2,
     "Equinox": 2,
     "Labo": 2,
-    "Spark": 1,
+    "Spark": 2,
     "Tahoe": 2,
-    "Jiguli": 1,
-    "Captiva": 1,
+    "Jiguli": 2,
+    "Captiva": 2,
     "Chery Tiggo": 2,
     "Epica": 2,
-    "Tracker": 1,
+    "Tracker": 2,
     "Tico": 2
    },
    "results": [
@@ -1631,6 +1641,19 @@
      ],
      "in_cup": 281,
      "link": "https://youtube.com/shorts/sx2-fIMblqU"
+    },
+    {
+     "no": 5,
+     "date": "2026-11-23",
+     "slot": 3,
+     "winner": "Nexia",
+     "top3": [
+      "Nexia",
+      "Kia K5",
+      "Tracker"
+     ],
+     "in_cup": 335,
+     "link": "https://youtube.com/shorts/aTpbo_zDb3g"
     }
    ]
   },
