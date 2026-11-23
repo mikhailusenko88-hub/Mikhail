@@ -185,6 +185,59 @@ def arena_slot(d, slot, mode, t0):
         write_status(f"ОШИБКА АРЕНЫ {d} слот {slot}: {e}")
 
 
+def announce_done():
+    out = set()
+    if os.path.exists("status/announce_done.txt"):
+        for line in open("status/announce_done.txt", encoding="utf-8"):
+            p = line.split()
+            if len(p) >= 2 and p[1] != "FAILED":
+                out.add(p[0])
+    return out
+
+
+def announce_due(now):
+    """Анонс гранд-финала (H13): 28–30.11.2026, окно 10:00–13:59 МСК, один раз в день."""
+    import announce
+    return (now.date().isoformat() in announce.ANNOUNCE_DATES and 10 <= now.hour < 14
+            and now.date().isoformat() not in announce_done())
+
+
+def announce_run(d, mode, t0, state):
+    """Отдельный Shorts-анонс гранд-финала. Сезон не меняется (season_state.json не трогаем)."""
+    import announce
+    log(f"режим {mode}, {d}: анонс гранд-финала (H13), сезон не двигается")
+    if mode == "publish" and not os.environ.get("FLAGBALL_YT", "").strip():
+        write_status(f"ЖДУ ВХОД: нет секрета FLAGBALL_YT (анонс {d} пропущен)")
+        return
+    os.makedirs(WORK, exist_ok=True)
+    out = f"{WORK}/announce_{d.isoformat()}.mp4"
+    a = announce.make(d, state, out, WORK)
+    log(f"анонс готов: {a['duration']:.1f} с, {os.path.getsize(out) / 1e6:.0f} МБ — {a['title']}")
+    if mode != "publish":
+        for t in (0, 1, 3, 6, 10, 13.5, a["duration"] - 1.0):
+            subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{t:.2f}", "-i", out, "-frames:v", "1",
+                            "-vf", "scale=540:-2", f"status/test_announce_{t:04.1f}.jpg"])
+        with open("status/test_announce.txt", "w", encoding="utf-8") as f:
+            f.write(f"{a['title']}\n{a['duration']:.1f} с\n\n{a['description']}\n")
+        write_status(f"ТЕСТ ОК: анонс гранд-финала {d} собран за {time.time() - t0:.0f} с (не выложен)")
+        return
+    import yt as ytmod
+    yt = ytmod.YT()
+    log("канал:", yt.channel())
+    svid = yt.upload(out, {"title": a["title"], "description": a["description"]})
+    sst = yt.status(svid)
+    log("анонс на YouTube:", sst)
+    with open("status/announce_done.txt", "a", encoding="utf-8") as f:
+        f.write(f"{d.isoformat()} {svid} {a['duration']:.1f}\n")
+    with open("status/uploads.md", "a", encoding="utf-8") as f:
+        f.write(f"| announce | {d} | 11:00 | Grand Final (H13) | https://youtube.com/shorts/{svid} | "
+                f"{sst.get('privacyStatus')} |\n")
+    warn = "" if sst.get("privacyStatus") == "public" else "  ⚠️ НЕ ОТКРЫТ"
+    write_status(f"ВЫЛОЖЕНО АНОНС {d}: Shorts https://youtube.com/shorts/{svid} ({sst.get('privacyStatus')}){warn}, "
+                 f"за {time.time() - t0:.0f} с", json.dumps({"title": a["title"], "codes": a["codes"]},
+                                                           ensure_ascii=False, indent=1))
+
+
 def main():
     t0 = time.time()
     req = read_request()
@@ -196,8 +249,14 @@ def main():
     if req["slot"] != "auto":
         slot = int(req["slot"])
     state = json.load(open("season_state.json"))
+    if (req.get("announce") or "").lower() in ("yes", "да", "1"):     # ручной анонс: mode test|publish, date
+        announce_run(d, mode, t0, state)
+        return
     if mode == "publish" and req["date"] == "auto" and req["slot"] == "auto":
         due = due_slot(now, state["history"])
+        if due is None and announce_due(now):
+            announce_run(now.date(), mode, t0, state)
+            return
         if due is None:
             log("все слоты на это время уже выложены — ничего не делаю")
             os.makedirs("status", exist_ok=True)
