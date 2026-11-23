@@ -124,7 +124,7 @@
   }
  },
  "whisper": "small",
- "builds": {"36dub": "36c", "36c": "36c", "31dub": "31", "33dub": "33g", "34dub": "34d", "35dub": "35b", "37d": "37d"},
+ "builds": {"36dub": "36c", "36c": "36c", "31dub": "31", "33dub": "33g", "34dub": "34d", "35dub": "35b", "37d": "37d", "38d": "38d"},
  "whisper_lang": {
   "hi": "fw:large-v3-turbo",
   "de": "fw:large-v3-turbo"
