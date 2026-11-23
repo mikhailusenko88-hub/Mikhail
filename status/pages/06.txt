@@ -1,0 +1,39 @@
+URL: https://2gis.ru/firm/985690699480777
+КОД: 200
+ЗАГОЛОВКИ:
+Server: ddos-guard
+Connection: close
+Set-Cookie: __ddg8_=zk7nKkLSFeNDyKq6; Domain=.2gis.ru; Path=/; Expires=Mon, 23-Nov-2026 06:11:07 GMT
+Set-Cookie: __ddg10_=1795413067; Domain=.2gis.ru; Path=/; Expires=Mon, 23-Nov-2026 06:11:07 GMT
+Set-Cookie: __ddg9_=20.169.69.135; Domain=.2gis.ru; Path=/; Expires=Mon, 23-Nov-2026 06:11:07 GMT
+Set-Cookie: __ddg1_=9HxuBzakBpTd9fHTe6TZ; Domain=.2gis.ru; HttpOnly; Path=/; Expires=Tue, 23-Nov-2027 05:51:07 GMT
+Date: Mon, 23 Nov 2026 05:51:07 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 13147
+Vary: Accept-Encoding
+Set-Cookie: _2gis_webapi_session=8c0c5026-ac21-43b0-b730-b9b94f5b31de; Domain=.2gis.ru; Path=/
+Vary: User-Agent
+Vary: Accept-Language
+Content-Security-Policy: frame-ancestors 'none'; upgrade-insecure-requests
+Content-Security-Policy-Report-Only: script-src 'nonce-O/otUC8qVz+OSC/hD2JW5Q==' 'strict-dynamic' 'unsafe-eval' 'self' https:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; report-uri /_/csp-report
+Cache-Control: no-transform, no-store, no-cache, must-revalidate, max-age=0
+Pragma: no-cache
+X-Content-Type-Options: nosniff
+ETag: W/"335b-1DDKGLcm33PX2n6VYMRFz8PgWuU"
+Strict-Transport-Security: max-age=15768000
+X-Request-Id: e2521b5a3a2514209f495b5bdfa53455
+X-Webfront: 685c9882-11502
+
+2ГИС 
+ Ваш браузер устарел и в нём могут встречаться неожиданности. Рекомендуем его обновить
+ Яндекс Браузер Google Chrome Opera 
+ Но если не хотите, мы не настаиваем :)
+ Перейти на сайт
+
+ССЫЛКИ:
+//mc.yandex.ru
+https://2gis.ru/firm/985690699480777
+https://browser.yandex.ru/
+https://d-assets.2gis.ru/favicon.png
+https://www.google.com/chrome/
+https://www.opera.com/

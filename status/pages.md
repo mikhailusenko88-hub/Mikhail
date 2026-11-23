@@ -1,3 +1,16 @@
 # Снятые страницы
 
-- 01 200 https://crm.nashdekor.ru/api/site/export (49535 симв.)
+- 01 200 https://yandex.ru/support/sprav/general/displaying.html (8318 симв.)
+- 02 200 https://yandex.ru/support/business-priority/manage/faq.html (5027 симв.)
+- 03 200 https://account.2gis.com/public/assets/faq/2gis-rules-for-adding-products.pdf (4793 симв.)
+- 04 200 https://support.google.com/business/answer/4566606?hl=ru (6423 симв.)
+- 05 200 https://workspace.ru/video/google-karty-v-rossii-besplatnyy-trafik-na-kotoryy-vse-zabili-1593/ (10323 симв.)
+- 06 200 https://2gis.ru/firm/985690699480777 (186 симв.)
+- 07 200 https://incrussia.ru/understand/kak-pokazat-svoi-biznes-na-yandex-kartah-i-2gis/ (9191 симв.)
+- 08 200 https://postium.ru/kak-dobavit-organizaciyu-v-dubl-gis/ (12602 симв.)
+- 09 200 https://reg.ru/blog/10-ploshchadok-dlya-upominaniya-biznesa/ (0 симв.)
+- 10 ошибка: <urlopen error timed out> https://www.yell.ru/doc/help/ (0 симв.)
+- 11 200 https://www.sostav.ru/blogs/283502/82421 (14656 симв.)
+- 12 200 https://t-j.ru/vopros-o-dizaine-kakoi-servis-s-katalogom-rossiiskikh-proizvoditelei-vybrat/ (0 симв.)
+- 13 103 https://zoon.ru/company/ (0 симв.)
+- 14 200 https://www.unisender.com/ru/blog/kak-dobavit-organizaciyu-na-karty/ (18710 симв.)
