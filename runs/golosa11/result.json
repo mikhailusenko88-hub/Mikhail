@@ -1,0 +1,84 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 99,
+  "title": "Голос Рона — чище произношение",
+  "scenes": 5,
+  "errors": [],
+  "unknownWords": [
+   {
+    "word": "сначала",
+    "sentence": "Сначала Филя и Топа, для сравнения"
+   },
+   {
+    "word": "голос",
+    "sentence": "Рон, голос четыре"
+   }
+  ],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Рон: {\"speaker\":\"ru_zara\",\"F\":1.15,\"P\":1.15,\"R\":1.25,\"gap\":0.3,\"laugh\":\"F16\"}",
+   "Ронни: {\"speaker\":\"ru_zara\",\"F\":1.05,\"P\":1.15,\"R\":1.1,\"gap\":0.3,\"laugh\":\"F16\"}",
+   "Роня: {\"speaker\":\"ru_aigul\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"gap\":0.3,\"laugh\":\"F16\"}",
+   "Рончик: {\"speaker\":\"ru_aigul\",\"F\":1.15,\"P\":1.05,\"R\":1.1,\"gap\":0.3,\"laugh\":\"F16\"}",
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 99. Голос Рона — чище произношение",
+  "path": "video/Кот Барсик - 99. Голос Рона — чище произношение.mp4",
+  "frames": 4684,
+  "sec": 429,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 187.34499999999997,
+  "video": "video/Кот Барсик - 99. Голос Рона — чище произношение.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "612fcb7",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 16,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 12,
+   "e": 71,
+   "b": 8,
+   "w": 1,
+   "n": 4680,
+   "at": 4680,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 0,
+  "ttsFail": 0,
+  "voice": 50,
+  "voiceFail": 0,
+  "voiceSec": 24,
+  "ttsSec": 0,
+  "frames": 4684,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -20.2,
+  "lufs_out": -15.1,
+  "gain_db": 5.6
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 594,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
