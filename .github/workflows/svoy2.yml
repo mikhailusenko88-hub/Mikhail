@@ -1,0 +1,201 @@
+name: svoy2
+# Свой голос, круг 2: основа №3, доли дикторов по всей модели CIS (MIT) + манера Барсика (v5_ru) с мужским тембром
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['svoy2-request.txt', 'svoy2.py', '.github/workflows/svoy2.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: svoy2
+  cancel-in-progress: false
+jobs:
+  g1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: svoy2-cache-v1
+          restore-keys: svoy-golos-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib edge-tts
+      - run: python svoy2.py gen1 ${{ matrix.part }} 8
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: G1-${{ matrix.part }}
+          path: pack/
+          retention-days: 7
+  pick:
+    needs: g1
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          path: pack/
+          merge-multiple: true
+          pattern: 'G1-*'
+      - run: pip install -q numpy && python svoy2.py pick
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: r2
+          path: pack/round2.json
+          retention-days: 7
+  g2:
+    needs: pick
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          path: pack/
+          name: r2
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: svoy2-cache-v1
+          restore-keys: svoy-golos-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib edge-tts
+      - run: python svoy2.py gen2 ${{ matrix.part }} 8
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: G2-${{ matrix.part }}
+          path: pack/
+          retention-days: 7
+  finpick:
+    needs: [g1, g2]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          path: pack/
+          merge-multiple: true
+          pattern: 'G*'
+      - run: pip install -q numpy && python svoy2.py finpick
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: finalists
+          path: pack/finalists.json
+          retention-days: 7
+  fin:
+    needs: finpick
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        i: [0, 1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          path: pack/
+          name: finalists
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: svoy2-cache-v1
+          restore-keys: svoy-golos-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib edge-tts
+      - run: python svoy2.py fin ${{ matrix.i }}
+      - run: python voice_check.py
+      - if: always()
+        run: python svoy2.py pack
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: F-${{ matrix.i }}
+          path: pack/
+          retention-days: 7
+  final:
+    needs: [g1, g2, fin]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          path: pack/
+          merge-multiple: true
+      - name: Итог
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          pip install -q numpy
+          python svoy2.py final
+          ls -la cast2
+      - name: Commit
+        if: always()
+        timeout-minutes: 5
+        run: |
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          git add -A cast2
+          git commit -m "svoy2 result" || echo nothing
+          for i in 1 2 3; do git fetch -q origin svoy-golos && git rebase -q FETCH_HEAD && git push origin HEAD:svoy-golos && break; sleep 5; done
