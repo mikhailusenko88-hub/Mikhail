@@ -101,6 +101,10 @@
      "engine": "kokoro",
      "lang": "h",
      "voice": "hf_beta"
+    },
+    "de": {
+     "engine": "piper",
+     "model": "de/de_DE/thorsten/high/de_DE-thorsten-high"
     }
    }
   },
@@ -110,8 +114,13 @@
      "engine": "kokoro",
      "lang": "h",
      "voice": "hf_beta"
+    },
+    "de": {
+     "engine": "piper",
+     "model": "de/de_DE/thorsten/high/de_DE-thorsten-high"
     }
-   }
+   },
+   "_de": "23.11 ночь: немецкий с Kerstin (low) — Рон 72 %, Барсик 85 % понятых в серии 36; Филя и Топа с Thorsten (high) — 92 и 100 %. Рон и Барсик тоже на Thorsten."
   }
  },
  "whisper": "small",
