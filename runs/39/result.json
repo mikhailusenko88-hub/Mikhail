@@ -1,0 +1,71 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 39,
+  "title": "Почему у снежинки лучики?!",
+  "scenes": 7,
+  "errors": [],
+  "unknownWords": [],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 39. Почему у снежинки лучики!",
+  "path": "video/Кот Барсик - 39. Почему у снежинки лучики!.mp4",
+  "frames": 6134,
+  "sec": 868,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 245.32399999999998,
+  "video": "video/Кот Барсик - 39. Почему у снежинки лучики!.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "0a7144c",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 36.5,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 10,
+   "e": 126,
+   "b": 4,
+   "w": 1,
+   "n": 6130,
+   "at": 6130,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 32,
+  "ttsFail": 0,
+  "voice": 44,
+  "voiceFail": 0,
+  "voiceSec": 19,
+  "ttsSec": 18,
+  "frames": 6708,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -24.2,
+  "lufs_out": -15.1,
+  "gain_db": 9.9
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 1524,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}

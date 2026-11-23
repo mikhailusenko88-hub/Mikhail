@@ -1,0 +1,261 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 178.9,
+  "dur": 245.83,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 245.33,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 245,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 168.8
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 5.0,
+  "peak_db": -1.1,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 95.3,
+  "lines": 62,
+  "by_hero": {
+   "Филя": 95.8,
+   "Пик": 87.2,
+   "Рон": 97.4,
+   "Барсик": 97.8,
+   "Топа": 98.1
+  },
+  "worst": [
+   {
+    "t": 102.495,
+    "name": "Пик",
+    "text": "Так устроен лёд. Шесть лучиков — всегда!",
+    "ok": 3,
+    "n": 6,
+    "miss": [
+     "устроен",
+     "лед",
+     "шесть"
+    ],
+    "heard": "так устроим льд 6 лучиков всегда а потом"
+   },
+   {
+    "t": 172.693,
+    "name": "Рон",
+    "text": "Тсс! Тайна.",
+    "ok": 1,
+    "n": 2,
+    "miss": [
+     "тсс"
+    ],
+    "heard": "рсс тайна"
+   },
+   {
+    "t": 227.499,
+    "name": "Рон",
+    "text": "Ура, горка!",
+    "ok": 1,
+    "n": 2,
+    "miss": [
+     "ура"
+    ],
+    "heard": "да горка с горки"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 223.0,
+   "range_st": 6.0,
+   "hnr": 12.2,
+   "jitter": 2.2,
+   "shimmer": 8.6,
+   "F1": 441.0,
+   "F2": 2006.0,
+   "F3": 3198.0,
+   "bright": -8.7,
+   "air": -11.5,
+   "cog": 696.0,
+   "rate": 4.9,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.8
+  },
+  "Пик": {
+   "f0": 368.0,
+   "range_st": 7.0,
+   "hnr": 20.5,
+   "jitter": 0.8,
+   "shimmer": 4.9,
+   "F1": 480.0,
+   "F2": 1736.0,
+   "F3": 3542.0,
+   "bright": -16.8,
+   "air": -21.8,
+   "cog": 635.0,
+   "rate": 6.3,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 87.2
+  },
+  "Рон": {
+   "f0": 308.0,
+   "range_st": 7.1,
+   "hnr": 22.2,
+   "jitter": 0.9,
+   "shimmer": 4.3,
+   "F1": 372.0,
+   "F2": 2002.0,
+   "F3": 3610.0,
+   "bright": -21.2,
+   "air": -27.5,
+   "cog": 400.0,
+   "rate": 4.8,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.4
+  },
+  "Топа": {
+   "f0": 158.0,
+   "range_st": 5.1,
+   "hnr": 11.7,
+   "jitter": 2.6,
+   "shimmer": 10.5,
+   "F1": 420.0,
+   "F2": 2152.0,
+   "F3": 3358.0,
+   "bright": -15.8,
+   "air": -24.4,
+   "cog": 616.0,
+   "rate": 4.1,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 98.1
+  },
+  "Филя": {
+   "f0": 295.0,
+   "range_st": 5.6,
+   "hnr": 14.5,
+   "jitter": 1.8,
+   "shimmer": 8.1,
+   "F1": 480.0,
+   "F2": 2179.0,
+   "F3": 3354.0,
+   "bright": -13.5,
+   "air": -19.0,
+   "cog": 737.0,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 95.8
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 22,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 69,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 1524,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 245.32399999999998,
+   "video": "video/Кот Барсик - 39. Почему у снежинки лучики!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "0a7144c",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 36.5,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 10,
+    "e": 126,
+    "b": 4,
+    "w": 1,
+    "n": 6130,
+    "at": 6130,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 32,
+   "ttsFail": 0,
+   "voice": 44,
+   "voiceFail": 0,
+   "voiceSec": 19,
+   "ttsSec": 18,
+   "frames": 6708,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -24.2,
+   "lufs_out": -15.1,
+   "gain_db": 9.9
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 39,
+   "title": "Почему у снежинки лучики?!",
+   "scenes": 7,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}
