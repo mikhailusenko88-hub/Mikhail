@@ -1,3 +1,18 @@
+# IndexNow — 2026-11-23 10:22 UTC, коммит 1782de0
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: изменённые страницы (5) из 132 изменённых файлов; без изменений по сути (только ?v=): 123
+  https://nashdekor.ru/
+  https://nashdekor.ru/catalog/reechnye-paneli/
+  https://nashdekor.ru/catalog/stenovye-paneli/
+  https://nashdekor.ru/p/a201-2/
+  https://nashdekor.ru/p/a201/
+- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
+- https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
+  "success":true
+}
+
+---
+
 # IndexNow — 2026-11-22 21:11 UTC, коммит f5c200a
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (3) из 10 изменённых файлов; без изменений по сути (только ?v=): 0
@@ -424,10 +439,3 @@
 - https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
   "success":true
 }
-
----
-
-# IndexNow — 2026-11-17 15:38 UTC, коммит 038b111
-- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
-- режим: изменённые страницы (0) из 158 изменённых файлов; без изменений по сути (только ?v=): 0
-- отправлять нечего (изменились не страницы)
