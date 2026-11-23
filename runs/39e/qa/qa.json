@@ -1,0 +1,226 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 211.4,
+  "dur": 297.76,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 297.26,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 297,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 174.0
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.2,
+  "lra": 4.6,
+  "peak_db": -0.9,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 97.0,
+  "lines": 71,
+  "by_hero": {
+   "Филя": 97.7,
+   "Пик": 88.5,
+   "Рон": 100.0,
+   "Барсик": 98.2,
+   "Топа": 100.0
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 220.0,
+   "range_st": 5.5,
+   "hnr": 13.8,
+   "jitter": 2.4,
+   "shimmer": 8.9,
+   "F1": 446.0,
+   "F2": 1971.0,
+   "F3": 3269.0,
+   "bright": -9.3,
+   "air": -12.6,
+   "cog": 696.0,
+   "rate": 5.0,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 98.2
+  },
+  "Пик": {
+   "f0": 382.0,
+   "range_st": 7.1,
+   "hnr": 20.5,
+   "jitter": 0.8,
+   "shimmer": 4.9,
+   "F1": 493.0,
+   "F2": 1736.0,
+   "F3": 3542.0,
+   "bright": -16.8,
+   "air": -21.8,
+   "cog": 635.0,
+   "rate": 6.3,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 88.5
+  },
+  "Рон": {
+   "f0": 248.0,
+   "range_st": 7.8,
+   "hnr": 14.0,
+   "jitter": 1.7,
+   "shimmer": 8.7,
+   "F1": 551.0,
+   "F2": 2010.0,
+   "F3": 3385.0,
+   "bright": -14.4,
+   "air": -14.3,
+   "cog": 744.0,
+   "rate": 4.2,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Топа": {
+   "f0": 158.0,
+   "range_st": 5.4,
+   "hnr": 11.1,
+   "jitter": 2.6,
+   "shimmer": 10.6,
+   "F1": 580.0,
+   "F2": 2134.0,
+   "F3": 3358.0,
+   "bright": -16.2,
+   "air": -25.2,
+   "cog": 616.0,
+   "rate": 4.1,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Филя": {
+   "f0": 296.0,
+   "range_st": 6.6,
+   "hnr": 13.8,
+   "jitter": 2.1,
+   "shimmer": 7.5,
+   "F1": 504.0,
+   "F2": 2179.0,
+   "F3": 3362.0,
+   "bright": -13.5,
+   "air": -19.3,
+   "cog": 798.0,
+   "rate": 3.8,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.7
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 25,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 81,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 1951,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 297.263,
+   "video": "video/Кот Барсик - 39. Почему у снежинки лучики!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "612fcb7",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 37.8,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 10,
+    "e": 127,
+    "b": 4,
+    "w": 1,
+    "n": 7430,
+    "at": 7430,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 14,
+   "ttsFail": 0,
+   "voice": 77,
+   "voiceFail": 0,
+   "voiceSec": 41,
+   "ttsSec": 10,
+   "frames": 8057,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -24.3,
+   "lufs_out": -15.2,
+   "gain_db": 10
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 39,
+   "title": "Почему у снежинки лучики?!",
+   "scenes": 8,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}",
+    "Рон: {\"speaker\":\"ru_zara\",\"F\":1.15,\"P\":1.15,\"R\":1.25,\"gap\":0.3,\"laugh\":\"F16\"}"
+   ]
+  }
+ }
+}
