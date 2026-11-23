@@ -1,0 +1,272 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рон и Ронни; Роня и Филя"
+ ],
+ "file": {
+  "mb": 232.0,
+  "dur": 151.32,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 150.82,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 151,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 115.7
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 3.4,
+  "peak_db": -1.3,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 98.4,
+  "lines": 43,
+  "by_hero": {
+   "Рассказчик": 100.0,
+   "Рон": 98.8,
+   "Ронни": 97.1,
+   "Роня": 98.6,
+   "Барсик": 100.0,
+   "Филя": 100.0
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 232.0,
+   "range_st": 5.3,
+   "hnr": 14.7,
+   "jitter": 1.8,
+   "shimmer": 8.7,
+   "F1": 434.0,
+   "F2": 2166.0,
+   "F3": 3239.0,
+   "bright": -14.8,
+   "air": -13.9,
+   "cog": 536.0,
+   "rate": 3.5,
+   "voiced": 0.4,
+   "n": 1,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Рассказчик": {
+   "f0": 174.0,
+   "range_st": 4.4,
+   "hnr": 14.4,
+   "jitter": 2.1,
+   "shimmer": 10.4,
+   "F1": 426.5,
+   "F2": 1544.0,
+   "F3": 3260.5,
+   "bright": -25.4,
+   "air": -18.5,
+   "cog": 483.0,
+   "rate": 2.8,
+   "voiced": 0.6,
+   "n": 4,
+   "age": "взрослый",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 274.0,
+   "range_st": 11.2,
+   "hnr": 13.5,
+   "jitter": 2.0,
+   "shimmer": 7.5,
+   "F1": 559.0,
+   "F2": 2237.0,
+   "F3": 3669.0,
+   "bright": -15.3,
+   "air": -15.4,
+   "cog": 781.0,
+   "rate": 3.5,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 98.8
+  },
+  "Ронни": {
+   "f0": 263.0,
+   "range_st": 11.3,
+   "hnr": 15.6,
+   "jitter": 1.9,
+   "shimmer": 7.8,
+   "F1": 517.0,
+   "F2": 2154.0,
+   "F3": 3548.0,
+   "bright": -16.3,
+   "air": -15.5,
+   "cog": 614.0,
+   "rate": 3.6,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.1
+  },
+  "Роня": {
+   "f0": 263.0,
+   "range_st": 11.1,
+   "hnr": 15.3,
+   "jitter": 2.2,
+   "shimmer": 7.5,
+   "F1": 503.0,
+   "F2": 1957.0,
+   "F3": 3544.0,
+   "bright": -15.9,
+   "air": -15.8,
+   "cog": 643.0,
+   "rate": 3.6,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 98.6
+  },
+  "Филя": {
+   "f0": 284.0,
+   "range_st": 6.4,
+   "hnr": 15.3,
+   "jitter": 1.9,
+   "shimmer": 8.0,
+   "F1": 481.0,
+   "F2": 1901.0,
+   "F3": 3222.0,
+   "bright": -15.9,
+   "air": -19.0,
+   "cog": 637.0,
+   "rate": 4.6,
+   "voiced": 0.6,
+   "n": 1,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  }
+ },
+ "voices_close": [
+  [
+   "Рон",
+   "Ронни",
+   0.7
+  ],
+  [
+   "Роня",
+   "Филя",
+   1.3
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 7,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 35,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 601,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 150.82600000000002,
+   "video": "video/Кот Барсик - 99. Голос Рона — окончания.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "612fcb7",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 37.4,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 18,
+    "e": 92,
+    "b": 13,
+    "w": 2,
+    "n": 3770,
+    "at": 3770,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 0,
+   "ttsFail": 0,
+   "voice": 45,
+   "voiceFail": 0,
+   "voiceSec": 32,
+   "ttsSec": 0,
+   "frames": 3771,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -24.4,
+   "lufs_out": -15.1,
+   "gain_db": 9.8
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 99,
+   "title": "Голос Рона — окончания",
+   "scenes": 4,
+   "errors": [],
+   "unknownWords": [
+    {
+     "word": "голос",
+     "sentence": "Рон, голос три"
+    },
+    {
+     "word": "рядом",
+     "sentence": "Рядом с Барсиком и Филей"
+    }
+   ],
+   "unknownObjects": [
+    {
+     "word": "горка",
+     "sentence": "Какая большая горка!"
+    }
+   ],
+   "unknownNames": [],
+   "probe": [
+    "Рон: {\"speaker\":\"kseniya\",\"F\":1,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"laugh\":\"F16\"}",
+    "Ронни: {\"speaker\":\"kseniya\",\"F\":1.04,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"laugh\":\"F16\"}",
+    "Роня: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"laugh\":\"F16\"}",
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: НЕ ПРИМЕНЁН (нет героя)"
+   ]
+  }
+ }
+}
