@@ -1,0 +1,226 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рон и Ронни; Рон и Роня; Ронни и Роня"
+ ],
+ "file": {
+  "mb": 136.1,
+  "dur": 89.7,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 89.2,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 3,
+  "files": [
+   "list_01.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 89,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 115.7
+ },
+ "kadry": 10,
+ "audio": {
+  "lufs": -15.2,
+  "lra": 3.7,
+  "peak_db": -1.3,
+  "silences": []
+ },
+ "words_second_pass": 1,
+ "words": {
+  "pct": 99.3,
+  "lines": 25,
+  "by_hero": {
+   "Рассказчик": 88.9,
+   "Рон": 100.0,
+   "Ронни": 100.0,
+   "Роня": 100.0
+  },
+  "worst": []
+ },
+ "voices": {
+  "Рассказчик": {
+   "f0": 176.0,
+   "range_st": 4.3,
+   "hnr": 14.6,
+   "jitter": 1.9,
+   "shimmer": 10.4,
+   "F1": 438.0,
+   "F2": 1478.0,
+   "F3": 3281.0,
+   "bright": -25.9,
+   "air": -20.4,
+   "cog": 462.0,
+   "rate": 2.7,
+   "voiced": 0.7,
+   "n": 3,
+   "age": "взрослый",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 88.9
+  },
+  "Рон": {
+   "f0": 274.0,
+   "range_st": 11.0,
+   "hnr": 13.1,
+   "jitter": 1.9,
+   "shimmer": 6.8,
+   "F1": 540.0,
+   "F2": 1951.0,
+   "F3": 3493.0,
+   "bright": -13.6,
+   "air": -15.7,
+   "cog": 833.0,
+   "rate": 3.8,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Ронни": {
+   "f0": 255.0,
+   "range_st": 11.0,
+   "hnr": 13.4,
+   "jitter": 2.0,
+   "shimmer": 6.7,
+   "F1": 509.0,
+   "F2": 1816.0,
+   "F3": 3493.0,
+   "bright": -13.2,
+   "air": -15.7,
+   "cog": 791.0,
+   "rate": 3.6,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Роня": {
+   "f0": 256.0,
+   "range_st": 11.0,
+   "hnr": 13.3,
+   "jitter": 1.9,
+   "shimmer": 6.7,
+   "F1": 546.0,
+   "F2": 1859.0,
+   "F3": 3493.0,
+   "bright": -13.3,
+   "air": -15.7,
+   "cog": 798.0,
+   "rate": 3.5,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  }
+ },
+ "voices_close": [
+  [
+   "Рон",
+   "Ронни",
+   1.2
+  ],
+  [
+   "Рон",
+   "Роня",
+   1.2
+  ],
+  [
+   "Ронни",
+   "Роня",
+   0.1
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 3,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 10,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 292,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 89.19500000000001,
+   "video": "video/Кот Барсик - 99. Голос Рона — «наша лужа».mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "4228a63",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 24.8,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 16,
+    "e": 75,
+    "b": 10,
+    "w": 1,
+    "n": 2230,
+    "at": 2230,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 0,
+   "ttsFail": 0,
+   "voice": 25,
+   "voiceFail": 0,
+   "voiceSec": 17,
+   "ttsSec": 0,
+   "frames": 2230,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -17.2,
+   "lufs_out": -15.2,
+   "gain_db": 2.2
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 99,
+   "title": "Голос Рона — «наша лужа»",
+   "scenes": 3,
+   "errors": [],
+   "unknownWords": [
+    {
+     "word": "голос",
+     "sentence": "Рон, голос три"
+    }
+   ],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Рон: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"T\":0.88,\"laugh\":\"F16\"}",
+    "Ронни: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"T\":0.88,\"vend\":1.7,\"laugh\":\"F16\"}",
+    "Роня: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"T\":0.88,\"vend\":2.2,\"laugh\":\"F16\"}",
+    "Филя: НЕ ПРИМЕНЁН (нет героя)",
+    "Топа: НЕ ПРИМЕНЁН (нет героя)"
+   ]
+  }
+ }
+}
