@@ -4064,3 +4064,75 @@ class TestDzChannel(TestOutbox):
         d = dz.by_code("Д05")
         self.assertEqual(d["status"], "models")
         self.assertIn("3D FBX", self.c.get(f"/dz/{d['id']}").get_data(as_text=True))
+
+
+class TestAvitoKatalog(Base):
+    """«Ещё → Каталог для Авито»: листы каталога картинками для чата Авито, сверка цен на листе с ценами CRM."""
+
+    JPG = b"\xff\xd8\xff\xe0" + b"sheet" * 20
+
+    def setUp(self) -> None:
+        super().setUp()
+        from pathlib import Path
+        self.docs = self.app.extensions["docs"]
+        self.docs.dir = Path(self.tmp.name) / "docs"
+
+    def sheet(self, name, title, note, data=None):
+        return self.docs.replace(data or (self.JPG + name.encode()), name, folder="Каталог для Авито", title=title, note=note,
+                                 by="Claude", source="Claude", mime="image/jpeg")[0]
+
+    def test_note_parser(self) -> None:
+        from avito_katalog import parse_note
+        self.assertEqual(parse_note("Цены на 23.11.2026: A703 — 475, GS 1 — 1425, A201/2 — 1 125, 3-7 — 1045"),
+                         ("23.11.2026", [("A703", 475), ("GS 1", 1425), ("A201/2", 1125), ("3-7", 1045)]))
+        self.assertEqual(parse_note("просто заметка"), ("", []))
+        self.assertEqual(parse_note(""), ("", []))
+
+    def test_page_sheets_search_and_files(self) -> None:
+        self.assertIn("/login", self.c.get("/avito-katalog").headers["Location"])          # без входа — на вход
+        self.login()
+        page = self.c.get("/avito-katalog").get_data(as_text=True)
+        self.assertIn("Каталог для Авито", page); self.assertIn("Листов пока нет", page)
+        a = self.sheet("avito-01.jpg", "01. Белые панели под покраску — длина 3 м, лист 1 из 2", "Цены на 23.11.2026: A912 — 990")
+        b = self.sheet("avito-02.jpg", "02. Потолочные плинтусы и уголки", "Цены на 23.11.2026: A116 — 350, GS 1 — 1500")
+        pdf, _ = self.docs.add(b"%PDF-1.4 x", "prais.pdf", folder="Каталог для Авито", title="Не картинка")
+        inn, _ = self.docs.add(self.JPG + b"inn", "inn.jpg", folder="ИП", title="Скан ИНН", mime="image/jpeg")
+        page = self.c.get("/avito-katalog").get_data(as_text=True)
+        self.assertIn("Белые панели под покраску — длина 3 м, лист 1 из 2", page); self.assertNotIn("01. Белые", page)
+        self.assertIn("<h2>Белые панели под покраску</h2>", page); self.assertIn("<h2>Потолочные плинтусы и уголки</h2>", page)
+        self.assertIn('<span class="avka">A116</span> · <span class="avka">GS 1</span>', page); self.assertIn("Листов: 2, позиций: 3", page); self.assertIn("на 23.11.2026", page)
+        self.assertNotIn("Не картинка", page); self.assertNotIn("Скан ИНН", page)
+        self.assertNotIn("лист устарел", page); self.assertNotIn("Цены изменились", page)
+        self.assertIn(f'data-share="/avito-katalog/f/{a}?dl=1"', page); self.assertIn('data-mime="image/jpeg"', page)
+        self.assertIn('data-avk="потолочные плинтусы и уголки a116 gs 1 уголок под дерево', page)   # по этой строке ищет поле поиска
+        self.assertIn(">Каталог для Авито</a>", page)                                           # пункт в «Ещё»
+        r = self.c.get(f"/avito-katalog/f/{a}")
+        self.assertEqual(r.status_code, 200); self.assertEqual(r.mimetype, "image/jpeg"); self.assertEqual(r.data, self.JPG + b"avito-01.jpg")
+        self.assertIn("max-age=604800", r.headers["Cache-Control"]); self.assertEqual(r.headers["Content-Security-Policy"], "sandbox")
+        r = self.c.get(f"/avito-katalog/f/{b}?dl=1")
+        self.assertIn("attachment", r.headers["Content-Disposition"]); self.assertIn("avito-02.jpg", r.headers["Content-Disposition"])
+        self.assertEqual(self.c.get(f"/avito-katalog/f/{pdf}").status_code, 404)                # не картинка
+        self.assertEqual(self.c.get(f"/avito-katalog/f/{inn}").status_code, 404)                # чужой раздел отсюда не достать
+        self.assertEqual(self.c.get("/avito-katalog/f/" + "0" * 32).status_code, 404)
+        guest = self.app.test_client()
+        self.assertIn("/login", guest.get(f"/avito-katalog/f/{a}").headers["Location"])        # листы — только после входа
+
+    def test_staff_sees_and_price_change_marks_sheet(self) -> None:
+        a = self.sheet("avito-01.jpg", "01. Белые панели под покраску", "Цены на 23.11.2026: A912 — 990, A116 — 350")
+        self.sheet("avito-02.jpg", "02. Рейки под дерево", "Цены на 23.11.2026: GS 1 — 1500, A999 — 100")
+        self.login("mikhail", "Secret-pass-2")                                                  # сотрудник, не админ
+        page = self.c.get("/avito-katalog").get_data(as_text=True)
+        self.assertIn("Белые панели под покраску", page); self.assertNotIn("«Документах»", page)
+        self.assertEqual(self.c.get(f"/avito-katalog/f/{a}").status_code, 200)
+        self.assertIn("A999: снят с продажи", page)                                             # артикула нет в каталоге
+        self.assertEqual(page.count("лист устарел"), 1)
+        self.store.set_stock("A912", "Юлия", price="1090")                                      # цену поменяли в CRM
+        page = self.c.get("/avito-katalog").get_data(as_text=True)
+        self.assertEqual(page.count("лист устарел"), 2); self.assertIn("устарело листов — 2", page)
+        self.assertIn("A912: на листе 990 ₽, сейчас 1 090 ₽", page.replace("\xa0", " ")); self.assertNotIn("A116: на листе", page)
+        a2 = self.sheet("avito-01.jpg", "", "Цены на 24.11.2026: A912 — 1090, A116 — 350", data=self.JPG + b"new")   # лист пересобран
+        self.assertNotEqual(a, a2)
+        page = self.c.get("/avito-katalog").get_data(as_text=True)
+        self.assertEqual(page.count("лист устарел"), 1); self.assertIn("на 23.11.2026, 24.11.2026", page)
+        self.assertEqual(self.c.get(f"/avito-katalog/f/{a}").status_code, 404)                  # прежний лист убран
+        self.assertEqual(self.c.get(f"/avito-katalog/f/{a2}").data, self.JPG + b"new")

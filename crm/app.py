@@ -41,6 +41,7 @@ from ai_web import AI, register as register_ai
 from outbox import INFO_SITE, Outbox
 from pochta import INLINE_OK, Pochta, fmt_ts, size_h
 from docs import MAX_FILE as DOC_MAX, Docs, clean_folder, fmt_date
+from avito_katalog import register as register_avito_katalog
 from designer_docs import register as register_designer_docs
 from dz_leads import DzLeads
 from dz_web import register as register_dz
@@ -656,6 +657,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     register_designer_docs(app, store, docs, {"admin_required": admin_required, "who": who,
                                               "send_mail": lambda *a, **k: send_mail(*a, **k),
                                               "shop_domain": conf["SHOP_DOMAIN"] or "nashdekor.ru"})
+    register_avito_katalog(app, store, docs, {"login_required": login_required})   # листы каталога картинками для чата Авито
     # ------------------------------------------------------------ база дизайнеров: кому предлагаем (Авито / сайты и Zoon)
     dz = DzLeads(store, conf["SHOP_DOMAIN"] or "nashdekor.ru")
     app.extensions["dz"] = dz

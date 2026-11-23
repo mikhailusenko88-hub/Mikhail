@@ -182,3 +182,22 @@ document.addEventListener("click", async e => {
     if (!(await share(b, f))) b.textContent = "Готово — нажмите ещё раз";   // пока файл качался, телефон «забыл» нажатие
   });
 })();
+
+// «Каталог для Авито»: найти лист по артикулу или слову. Русские «А», «Р», «С» в артикуле считаются латинскими,
+// пробелы не важны («GS1» находит «GS 1»).
+(() => {
+  const q = document.querySelector("[data-avk-q]"); if (!q) return;
+  const map = { "а": "a", "е": "e", "ё": "e", "о": "o", "р": "p", "с": "c", "х": "x" };
+  const norm = s => s.toLowerCase().replace(/[аеёорсх]/g, ch => map[ch]).replace(/\s+/g, " ").trim();
+  const cards = [...document.querySelectorAll("[data-avk]")].map(el => { const h = norm(el.dataset.avk); return { el, h, hs: h.replace(/ /g, "") }; });
+  const none = document.querySelector("[data-avk-none]");
+  const form = document.querySelector("[data-avk-form]"); if (form) form.addEventListener("submit", e => e.preventDefault());
+  const run = () => {
+    const words = norm(q.value).split(" ").filter(Boolean), tight = words.join("");
+    let shown = 0;
+    cards.forEach(c => { const ok = !words.length || words.every(w => c.h.includes(w)) || c.hs.includes(tight); c.el.hidden = !ok; shown += ok; });
+    document.querySelectorAll("[data-avk-sec]").forEach(s => { s.hidden = !s.querySelector("[data-avk]:not([hidden])"); });
+    if (none) none.hidden = shown > 0;
+  };
+  q.addEventListener("input", run);
+})();

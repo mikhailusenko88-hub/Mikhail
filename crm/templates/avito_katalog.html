@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% from "macros.html" import more_nav with context %}
+{% block title %}Каталог для Авито{% endblock %}
+{% block main %}
+{{ more_nav('avito') }}
+<h1>Каталог для Авито</h1>
+<p class="sub">В чат Авито нельзя вставить ссылку или файл — отправляйте лист картинкой. «Поделиться» → «Авито» (или «Сохранить изображение», потом в чате: скрепка → «Фото»). На листах нет названия магазина, контактов и ссылок.</p>
+{% if bad %}<div class="flash err" role="status">Цены изменились: устарело листов — {{ bad|length }}, они помечены красным. Не отправляйте их покупателям. Попросите Claude: «пересобери каталог для Авито».</div>{% endif %}
+{% if n %}
+<form class="addline" role="search" data-avk-form>
+  <input type="search" data-avk-q placeholder="Артикул или слово: A88, плинтус, орех" aria-label="Найти лист по артикулу или слову" autocomplete="off">
+</form>
+<p class="d" data-avk-none hidden>На листах такого нет. Проверьте артикул или сотрите поиск.</p>
+{% for name, rows in sections %}
+<section data-avk-sec>
+<h2>{{ name }}</h2>
+<div class="avkgrid">{% for r in rows %}
+<div class="panel avk{% if r['stale'] or r['gone'] %} avkbad{% endif %}" data-avk="{{ r['find'] }}">
+  <a class="avkimg" href="{{ url_for('avito_katalog_file', did=r['id']) }}" target="_blank" rel="noopener" aria-label="Открыть лист «{{ r['title'] }}»"><img loading="lazy" src="{{ url_for('avito_katalog_file', did=r['id']) }}" alt="{{ r['title'] }}"></a>
+  <div class="avktxt">
+    <div class="t">{{ r['title'] }}</div>
+    <div class="d">{% for a in r['arts'] %}<span class="avka">{{ a }}</span>{% if not loop.last %} · {% endif %}{% endfor %}</div>
+    {% if r['stale'] or r['gone'] %}<div class="avkwarn"><span class="pill crit">лист устарел — не отправлять</span>
+    {% for a, was, now in r['stale'] %}<div class="d">{{ a }}: на листе {{ rub(was) }}, сейчас {{ rub(now) }}</div>{% endfor %}
+    {% for a in r['gone'] %}<div class="d">{{ a }}: снят с продажи</div>{% endfor %}</div>{% endif %}
+    <div class="avkbtns">
+      <button class="btn-p sm" type="button" hidden data-share="{{ url_for('avito_katalog_file', did=r['id'], dl=1) }}" data-name="{{ r['filename'] }}" data-mime="{{ r['mime'] }}" data-title="{{ r['title'] }}">Поделиться</button>
+      <a class="btn-s sm" href="{{ url_for('avito_katalog_file', did=r['id'], dl=1) }}" download="{{ r['filename'] }}">Скачать</a>
+    </div>
+  </div>
+</div>{% endfor %}</div>
+</section>
+{% endfor %}
+<p class="note">Листов: {{ n }}, позиций: {{ n_items }}{% if days %}. Цены на листах — на {{ days|join(', ') }}{% endif %}. Когда меняются цены, фото или состав каталога, листы пересобирает Claude — напишите ему «пересобери каталог для Авито».{% if me and me['role']=='admin' %} Сами файлы лежат в <a href="{{ url_for('docs_view', f=FOLDER) }}">«Документах»</a>.{% endif %}</p>
+{% else %}
+<div class="panel pad"><p class="d">Листов пока нет. Их кладёт Claude — напишите ему «собери каталог для Авито».</p></div>
+{% endif %}
+{% endblock %}
