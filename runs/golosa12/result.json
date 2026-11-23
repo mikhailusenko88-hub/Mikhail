@@ -1,0 +1,78 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 99,
+  "title": "Голос Рона — чистый голос, выше",
+  "scenes": 3,
+  "errors": [],
+  "unknownWords": [
+   {
+    "word": "голос",
+    "sentence": "Рон, голос два"
+   }
+  ],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Рон: {\"speaker\":\"ru_aigul\",\"F\":1.08,\"P\":1.22,\"R\":1.1,\"gap\":0.3,\"laugh\":\"F16\"}",
+   "Ронни: {\"speaker\":\"ru_aigul\",\"F\":1,\"P\":1.22,\"R\":1.1,\"gap\":0.3,\"laugh\":\"F16\"}",
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 99. Голос Рона — чистый голос, выше",
+  "path": "video/Кот Барсик - 99. Голос Рона — чистый голос, выше.mp4",
+  "frames": 3683,
+  "sec": 479,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 147.28199999999998,
+  "video": "video/Кот Барсик - 99. Голос Рона — чистый голос, выше.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "612fcb7",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 40.4,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 13,
+   "e": 106,
+   "b": 9,
+   "w": 1,
+   "n": 3680,
+   "at": 3680,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 0,
+  "ttsFail": 0,
+  "voice": 35,
+  "voiceFail": 0,
+  "voiceSec": 21,
+  "ttsSec": 0,
+  "frames": 3683,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -24.7,
+  "lufs_out": -15.1,
+  "gain_db": 10.2
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 601,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}

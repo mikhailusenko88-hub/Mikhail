@@ -1,0 +1,276 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рон и Филя"
+ ],
+ "file": {
+  "mb": 219.2,
+  "dur": 147.78,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 147.28,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 5,
+  "files": [
+   "list_01.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 147,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 117.5
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 3.3,
+  "peak_db": -0.3,
+  "silences": []
+ },
+ "words_second_pass": 1,
+ "words": {
+  "pct": 93.6,
+  "lines": 36,
+  "by_hero": {
+   "Рассказчик": 100.0,
+   "Рон": 94.8,
+   "Ронни": 88.8,
+   "Барсик": 100.0,
+   "Филя": 100.0,
+   "Топа": 100.0
+  },
+  "worst": [
+   {
+    "t": 126.889,
+    "name": "Ронни",
+    "text": "Там, наверное, кто-то их вырезает. Ножницами.",
+    "ok": 1,
+    "n": 7,
+    "miss": [
+     "наверное",
+     "кто",
+     "то",
+     "их",
+     "вырезает",
+     "ножницами"
+    ],
+    "heard": "там"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 232.0,
+   "range_st": 5.3,
+   "hnr": 12.7,
+   "jitter": 2.2,
+   "shimmer": 8.9,
+   "F1": 470.0,
+   "F2": 2166.0,
+   "F3": 3239.0,
+   "bright": -12.5,
+   "air": -13.9,
+   "cog": 734.0,
+   "rate": 4.0,
+   "voiced": 0.5,
+   "n": 3,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Рассказчик": {
+   "f0": 174.0,
+   "range_st": 4.4,
+   "hnr": 14.6,
+   "jitter": 2.1,
+   "shimmer": 11.7,
+   "F1": 436.0,
+   "F2": 1503.5,
+   "F3": 3305.5,
+   "bright": -27.4,
+   "air": -21.0,
+   "cog": 456.5,
+   "rate": 2.8,
+   "voiced": 0.7,
+   "n": 2,
+   "age": "взрослый",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 267.0,
+   "range_st": 5.9,
+   "hnr": 13.7,
+   "jitter": 1.6,
+   "shimmer": 8.1,
+   "F1": 497.0,
+   "F2": 1928.0,
+   "F3": 3485.0,
+   "bright": -12.1,
+   "air": -6.1,
+   "cog": 1399.0,
+   "rate": 3.9,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 94.8
+  },
+  "Ронни": {
+   "f0": 255.0,
+   "range_st": 5.8,
+   "hnr": 14.6,
+   "jitter": 1.6,
+   "shimmer": 7.7,
+   "F1": 482.0,
+   "F2": 1640.0,
+   "F3": 3248.0,
+   "bright": -12.4,
+   "air": -8.0,
+   "cog": 1215.0,
+   "rate": 3.7,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 88.8
+  },
+  "Топа": {
+   "f0": 159.0,
+   "range_st": 5.4,
+   "hnr": 11.6,
+   "jitter": 2.4,
+   "shimmer": 10.2,
+   "F1": 426.0,
+   "F2": 2041.0,
+   "F3": 3390.0,
+   "bright": -16.1,
+   "air": -22.9,
+   "cog": 550.0,
+   "rate": 4.5,
+   "voiced": 0.6,
+   "n": 1,
+   "age": "взрослый",
+   "pleasant": 4.5,
+   "why": [
+    "немного шумный тембр"
+   ],
+   "clear_pct": 100.0
+  },
+  "Филя": {
+   "f0": 289.5,
+   "range_st": 5.6,
+   "hnr": 15.5,
+   "jitter": 1.8,
+   "shimmer": 7.6,
+   "F1": 493.5,
+   "F2": 2054.0,
+   "F3": 3369.5,
+   "bright": -14.4,
+   "air": -18.5,
+   "cog": 673.0,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 2,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  }
+ },
+ "voices_close": [
+  [
+   "Рон",
+   "Филя",
+   1.4
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 7,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 29,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 601,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 147.28199999999998,
+   "video": "video/Кот Барсик - 99. Голос Рона — чистый голос, выше.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "612fcb7",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 40.4,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 13,
+    "e": 106,
+    "b": 9,
+    "w": 1,
+    "n": 3680,
+    "at": 3680,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 0,
+   "ttsFail": 0,
+   "voice": 35,
+   "voiceFail": 0,
+   "voiceSec": 21,
+   "ttsSec": 0,
+   "frames": 3683,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -24.7,
+   "lufs_out": -15.1,
+   "gain_db": 10.2
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 99,
+   "title": "Голос Рона — чистый голос, выше",
+   "scenes": 3,
+   "errors": [],
+   "unknownWords": [
+    {
+     "word": "голос",
+     "sentence": "Рон, голос два"
+    }
+   ],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Рон: {\"speaker\":\"ru_aigul\",\"F\":1.08,\"P\":1.22,\"R\":1.1,\"gap\":0.3,\"laugh\":\"F16\"}",
+    "Ронни: {\"speaker\":\"ru_aigul\",\"F\":1,\"P\":1.22,\"R\":1.1,\"gap\":0.3,\"laugh\":\"F16\"}",
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}
