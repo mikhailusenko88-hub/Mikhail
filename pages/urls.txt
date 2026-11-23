@@ -1,5 +1,1 @@
-https://crm.nashdekor.ru/api/catalog
-https://nashdekor.ru/p/a201/
-https://nashdekor.ru/p/a201-2/
-https://nashdekor.ru/catalog/reechnye-paneli/
-https://crm.nashdekor.ru/api/outbox/status/989e1181-ded3-4bef-aeb5-53f1ed258370
+https://crm.nashdekor.ru/api/outbox/status/42850747-9591-4552-b000-5aa8f4a21a0c
