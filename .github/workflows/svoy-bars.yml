@@ -1,0 +1,79 @@
+name: svoy-bars
+# Голос №4 (манера Барсика, мужской, модель v5_ru) — доработка: омографы, темп
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['svoy-bars-request.txt', 'svoy_bars.py', '.github/workflows/svoy-bars.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: svoy-bars
+  cancel-in-progress: false
+jobs:
+  v:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        v: [A, B, C, D]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: svoy2-cache-v1
+          restore-keys: svoy-golos-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib edge-tts
+      - run: python svoy_bars.py gen ${{ matrix.v }}
+      - run: python voice_check.py
+      - if: always()
+        run: python svoy2.py pack && (cp out/V__*.png pack/ || true)
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: V-${{ matrix.v }}
+          path: pack/
+  final:
+    needs: v
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: 'V-*'
+          merge-multiple: true
+          path: pack/
+      - name: Итог
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          pip install -q numpy
+          python svoy_bars.py final
+          ls -la cast4
+      - name: Commit
+        if: always()
+        timeout-minutes: 5
+        run: |
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          git add -A cast4
+          git commit -m "svoy-bars result" || echo nothing
+          for i in 1 2 3; do git fetch -q origin svoy-golos && git rebase -q FETCH_HEAD && git push origin HEAD:svoy-golos && break; sleep 5; done
