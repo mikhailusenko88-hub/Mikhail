@@ -1,0 +1,143 @@
+name: svoy-golos
+# Свой сборный голос: ритм, мелодия и тембр — от разных дикторов Silero v5 CIS (MIT). Запуск — push в svoy-request.txt или svoy.py.
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['svoy-request.txt', 'svoy.py', '.github/workflows/svoy-golos.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: svoy-golos
+  cancel-in-progress: false
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: '1'
+jobs:
+  castA:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: svoy-golos-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib edge-tts
+      - name: Кастинг — озвучка
+        run: python svoy.py genA ${{ matrix.part }} 8
+      - name: Кастинг — слух
+        run: python voice_check.py
+      - name: Сложить
+        if: always()
+        run: python svoy.py pack
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: A${{ matrix.part }}
+          path: pack/
+          retention-days: 7
+  rank:
+    needs: castA
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: A*
+          merge-multiple: true
+          path: pack/
+      - run: pip install -q numpy && python svoy.py rank
+      - uses: actions/upload-artifact@v4
+        with:
+          name: combos
+          path: pack/combos.json
+  castB:
+    needs: rank
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: svoy-golos-cache-v1
+      - uses: actions/download-artifact@v4
+        with:
+          name: combos
+          path: pack/
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib edge-tts
+      - name: Сборные голоса — озвучка
+        run: python svoy.py genB ${{ matrix.part }} 8
+      - name: Сборные голоса — слух
+        run: python voice_check.py
+      - name: Сложить
+        if: always()
+        run: python svoy.py pack
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: B${{ matrix.part }}
+          path: pack/
+          retention-days: 7
+  final:
+    needs: [castA, castB]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          path: pack/
+          merge-multiple: true
+      - name: Итог
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          pip install -q numpy
+          python svoy.py final
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          git add -A cast
+          git commit -m "svoy-golos result" || echo nothing
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
