@@ -1,0 +1,78 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 99,
+  "title": "Голос Рона — kseniya, доработка",
+  "scenes": 3,
+  "errors": [],
+  "unknownWords": [
+   {
+    "word": "голос",
+    "sentence": "Рон, голос два"
+   }
+  ],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Рон: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"laugh\":\"F16\"}",
+   "Ронни: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1,\"model\":\"xenia\",\"laugh\":\"F16\"}",
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 99. Голос Рона — kseniya, доработка",
+  "path": "video/Кот Барсик - 99. Голос Рона — kseniya, доработка.mp4",
+  "frames": 3310,
+  "sec": 448,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 132.393,
+  "video": "video/Кот Барсик - 99. Голос Рона — kseniya, доработка.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "612fcb7",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 36.9,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 16,
+   "e": 108,
+   "b": 10,
+   "w": 1,
+   "n": 3310,
+   "at": 3310,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 0,
+  "ttsFail": 0,
+  "voice": 35,
+  "voiceFail": 0,
+  "voiceSec": 24,
+  "ttsSec": 0,
+  "frames": 3310,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -26.6,
+  "lufs_out": -15.1,
+  "gain_db": 12.1
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 588,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}

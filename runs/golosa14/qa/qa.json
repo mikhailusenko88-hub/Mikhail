@@ -1,0 +1,292 @@
+{
+ "ok": true,
+ "notes": [
+  "голоса почти не различаются: Рон и Филя"
+ ],
+ "file": {
+  "mb": 196.0,
+  "dur": 132.89,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 132.39,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 4,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 132,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 118.9
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 3.4,
+  "peak_db": -1.3,
+  "silences": []
+ },
+ "words_second_pass": 2,
+ "words": {
+  "pct": 91.8,
+  "lines": 36,
+  "by_hero": {
+   "Рассказчик": 100.0,
+   "Рон": 94.8,
+   "Ронни": 83.8,
+   "Барсик": 100.0,
+   "Филя": 100.0,
+   "Топа": 100.0
+  },
+  "worst": [
+   {
+    "t": 87.48,
+    "name": "Ронни",
+    "text": "Смотрите, вот наша лужа. Сейчас — плюх! Ой! Тут только мокро!",
+    "ok": 1,
+    "n": 10,
+    "miss": [
+     "вот",
+     "наша",
+     "лужа",
+     "сейчас",
+     "плюх",
+     "ой",
+     "тут",
+     "только",
+     "мокро"
+    ],
+    "heard": "смотрите"
+   },
+   {
+    "t": 44.813,
+    "name": "Ронни",
+    "text": "Са́харом не пахнет. Жаль.",
+    "ok": 2,
+    "n": 4,
+    "miss": [
+     "сахаром",
+     "не"
+    ],
+    "heard": "ой тут пахнет жаль а я"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 232.0,
+   "range_st": 5.3,
+   "hnr": 12.7,
+   "jitter": 2.2,
+   "shimmer": 8.9,
+   "F1": 470.0,
+   "F2": 2166.0,
+   "F3": 3239.0,
+   "bright": -12.5,
+   "air": -13.9,
+   "cog": 734.0,
+   "rate": 4.0,
+   "voiced": 0.5,
+   "n": 3,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Рассказчик": {
+   "f0": 174.0,
+   "range_st": 4.4,
+   "hnr": 14.6,
+   "jitter": 2.1,
+   "shimmer": 11.7,
+   "F1": 436.0,
+   "F2": 1503.5,
+   "F3": 3305.5,
+   "bright": -27.4,
+   "air": -21.0,
+   "cog": 456.5,
+   "rate": 2.8,
+   "voiced": 0.7,
+   "n": 2,
+   "age": "взрослый",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 274.0,
+   "range_st": 11.1,
+   "hnr": 13.3,
+   "jitter": 2.2,
+   "shimmer": 7.5,
+   "F1": 503.0,
+   "F2": 1957.0,
+   "F3": 3556.0,
+   "bright": -15.7,
+   "air": -15.5,
+   "cog": 784.0,
+   "rate": 3.6,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 94.8
+  },
+  "Ронни": {
+   "f0": 263.0,
+   "range_st": 10.3,
+   "hnr": 15.5,
+   "jitter": 2.1,
+   "shimmer": 7.4,
+   "F1": 524.0,
+   "F2": 1706.0,
+   "F3": 3493.0,
+   "bright": -19.6,
+   "air": -18.1,
+   "cog": 674.0,
+   "rate": 3.6,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 83.8
+  },
+  "Топа": {
+   "f0": 159.0,
+   "range_st": 5.4,
+   "hnr": 11.6,
+   "jitter": 2.4,
+   "shimmer": 10.2,
+   "F1": 426.0,
+   "F2": 2041.0,
+   "F3": 3390.0,
+   "bright": -16.1,
+   "air": -22.9,
+   "cog": 550.0,
+   "rate": 4.5,
+   "voiced": 0.6,
+   "n": 1,
+   "age": "взрослый",
+   "pleasant": 4.5,
+   "why": [
+    "немного шумный тембр"
+   ],
+   "clear_pct": 100.0
+  },
+  "Филя": {
+   "f0": 289.5,
+   "range_st": 5.6,
+   "hnr": 15.5,
+   "jitter": 1.8,
+   "shimmer": 7.6,
+   "F1": 493.5,
+   "F2": 2054.0,
+   "F3": 3369.5,
+   "bright": -14.4,
+   "air": -18.5,
+   "cog": 673.0,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 2,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  }
+ },
+ "voices_close": [
+  [
+   "Рон",
+   "Филя",
+   1.0
+  ]
+ ],
+ "vnutri": [],
+ "kraj": {
+  "shots": 7,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 29,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 588,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 132.393,
+   "video": "video/Кот Барсик - 99. Голос Рона — kseniya, доработка.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "612fcb7",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 36.9,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 16,
+    "e": 108,
+    "b": 10,
+    "w": 1,
+    "n": 3310,
+    "at": 3310,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 0,
+   "ttsFail": 0,
+   "voice": 35,
+   "voiceFail": 0,
+   "voiceSec": 24,
+   "ttsSec": 0,
+   "frames": 3310,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -26.6,
+   "lufs_out": -15.1,
+   "gain_db": 12.1
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 99,
+   "title": "Голос Рона — kseniya, доработка",
+   "scenes": 3,
+   "errors": [],
+   "unknownWords": [
+    {
+     "word": "голос",
+     "sentence": "Рон, голос два"
+    }
+   ],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Рон: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"laugh\":\"F16\"}",
+    "Ронни: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1,\"model\":\"xenia\",\"laugh\":\"F16\"}",
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}"
+   ]
+  }
+ }
+}
