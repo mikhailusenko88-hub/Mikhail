@@ -8,7 +8,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import afisha as A
 import compose as C
 S = C.S
-LOGO = {"en": ("Barsik", "the Cat"), "es": ("Barsik", "el Gato"), "pt": ("Barsik", "o Gato"), "de": ("Barsik", "der Kater")}
+LOGO = {"hi": ("बारसिक", "बिल्ला"), "en": ("Barsik", "the Cat"), "es": ("Barsik", "el Gato"), "pt": ("Barsik", "o Gato"), "de": ("Barsik", "der Kater")}
 
 
 def make_logo(big, small):
@@ -38,10 +38,15 @@ def make_logo(big, small):
 
 src, out, series, text = sys.argv[1:5]
 lang = sys.argv[5] if len(sys.argv) > 5 else 'en'
+if lang == 'hi':   # у Inter нет деванагари: FreeSans Bold (свободный шрифт GNU), буквы собирает raqm
+    from PIL import ImageFont
+    HI = '/usr/share/fonts/truetype/freefont/FreeSansBold.ttf'
+    C.font = lambda px: ImageFont.truetype(HI, int(px), layout_engine=ImageFont.Layout.RAQM)
 C.logo = make_logo(*LOGO[lang])
 _pill, _banner = C.pill, C.banner
 C.pill = lambda img, t: _pill(img, series)
-C.banner = lambda img, lines, where, maxw=.52, base=None: _banner(img, text.split('|'), where, maxw, base)
+K = 1.3 if lang == 'hi' else 1.0   # буквы деванагари ниже латиницы — свиток крупнее
+C.banner = lambda img, lines, where, maxw=.52, base=None: _banner(img, text.split('|'), where, maxw, base and base * K)
 if src.endswith('.json'):
     A.make(json.load(open(src, encoding='utf-8')), out)
 else:   # скрипт обложки серии (covers/<N>/vN.py): ему — свои аргументы
