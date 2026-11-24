@@ -15,6 +15,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import urllib.parse
 import os
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -36,6 +37,8 @@ T0 = time.time()
 
 
 def get(url):
+    # кириллица в @handle (например @КассетаАнекдотов) — в %-коды, иначе ошибка ascii
+    url = urllib.parse.quote(url, safe=":/?&=%@#+,;~-_.!*'()")
     req = urllib.request.Request(url, headers=H)
     try:
         with urllib.request.urlopen(req, timeout=25) as r:
