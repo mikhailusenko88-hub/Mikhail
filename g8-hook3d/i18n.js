@@ -15,7 +15,7 @@
         hook: 'GANCHO', pull: 'TIRAR', fell: '¡Te caíste!', crash: '¡Choque!', cp: '¡Punto de control!', star: '¡Estrella!',
         win: '¡Nivel superado!', time: 'Tiempo', sec: 's', tries: 'Intentos', pump: '¡Mantén GAS para balancearte!', levels: 'Niveles', next: 'Siguiente', lvl: 'Nivel', fin: 'Meta', starW: 'Estrella', play: 'Jugar', snap: '¡Crac!',
         garage: 'Garaje', tabs: ['Camión', 'Ruedas', 'Color', 'Mejoras'], buy: 'Comprar', take: 'Desbloquear', chosen: 'Elegido', need: 'Faltan', needStars: 'Necesitas', have: 'tienes',
-        eng: 'Motor', engD: 'Acelera más rápido', winch: 'Cabrestante', winchD: 'Tira más rápido', max: 'MÁX', total: 'total',
+        eng: 'Motor', engD: 'Acelera más rápido', winch: 'Cabrestante', winchD: 'Tira más rápido', max: 'MÁX', total: 'total', rot: 'Gira el teléfono para ver más lejos',
       },
       X: {
         'First Swing': 'Primer balanceo', 'Up the Wall': 'Sube el muro', 'At the wall: hold — the winch pulls you up': 'En el muro: mantén — el cabrestante te sube',
@@ -41,7 +41,7 @@
         hook: 'GANCHO', pull: 'PUXAR', fell: 'Caiu!', crash: 'Bateu!', cp: 'Checkpoint!', star: 'Estrela!',
         win: 'Fase concluída!', time: 'Tempo', sec: 's', tries: 'Tentativas', pump: 'Segure o GÁS para balançar!', levels: 'Fases', next: 'Próxima', lvl: 'Fase', fin: 'Chegada', starW: 'Estrela', play: 'Jogar', snap: 'Crac!',
         garage: 'Garagem', tabs: ['Caminhão', 'Rodas', 'Cor', 'Melhorias'], buy: 'Comprar', take: 'Desbloquear', chosen: 'Selecionado', need: 'Faltam', needStars: 'Precisa de', have: 'você tem',
-        eng: 'Motor', engD: 'Arranca mais rápido', winch: 'Guincho', winchD: 'Puxa mais rápido', max: 'MÁX', total: 'total',
+        eng: 'Motor', engD: 'Arranca mais rápido', winch: 'Guincho', winchD: 'Puxa mais rápido', max: 'MÁX', total: 'total', rot: 'Gire o celular para ver mais longe',
       },
       X: {
         'First Swing': 'Primeiro balanço', 'Up the Wall': 'Subindo o muro', 'At the wall: hold — the winch pulls you up': 'No muro: segure — o guincho puxa você para cima',
@@ -67,7 +67,7 @@
         hook: 'KANCA', pull: 'ÇEK', fell: 'Düştün!', crash: 'Kaza!', cp: 'Kontrol noktası!', star: 'Yıldız!',
         win: 'Bölüm tamamlandı!', time: 'Süre', sec: 'sn', tries: 'Deneme', pump: 'Sallanmak için GAZA bas!', levels: 'Bölümler', next: 'Sonraki', lvl: 'Bölüm', fin: 'Bitiş', starW: 'Yıldız', play: 'Oyna', snap: 'Çat!',
         garage: 'Garaj', tabs: ['Kamyon', 'Tekerlek', 'Renk', 'Güçlendir'], buy: 'Satın al', take: 'Aç', chosen: 'Seçildi', need: 'Yetersiz', needStars: 'Gerekli', have: 'sende',
-        eng: 'Motor', engD: 'Daha hızlı kalkış', winch: 'Vinç', winchD: 'Daha hızlı çeker', max: 'MAKS', total: 'toplam',
+        eng: 'Motor', engD: 'Daha hızlı kalkış', winch: 'Vinç', winchD: 'Daha hızlı çeker', max: 'MAKS', total: 'toplam', rot: 'Daha uzağı görmek için telefonu çevir',
       },
       X: {
         'First Swing': 'İlk sallanış', 'Up the Wall': 'Duvara tırman', 'At the wall: hold — the winch pulls you up': 'Duvarda basılı tut — vinç seni yukarı çeker',
@@ -93,7 +93,7 @@
         hook: 'HAKEN', pull: 'ZIEHEN', fell: 'Abgestürzt!', crash: 'Crash!', cp: 'Checkpoint!', star: 'Stern!',
         win: 'Level geschafft!', time: 'Zeit', sec: 's', tries: 'Versuche', pump: 'GAS halten zum Schwingen!', levels: 'Level', next: 'Weiter', lvl: 'Level', fin: 'Ziel', starW: 'Stern', play: 'Spielen', snap: 'Knack!',
         garage: 'Garage', tabs: ['Truck', 'Räder', 'Farbe', 'Tuning'], buy: 'Kaufen', take: 'Freischalten', chosen: 'Ausgewählt', need: 'Zu wenig', needStars: 'Benötigt', have: 'du hast',
-        eng: 'Motor', engD: 'Schneller Start', winch: 'Winde', winchD: 'Zieht schneller', max: 'MAX', total: 'gesamt',
+        eng: 'Motor', engD: 'Schneller Start', winch: 'Winde', winchD: 'Zieht schneller', max: 'MAX', total: 'gesamt', rot: 'Dreh das Handy – du siehst weiter',
       },
       X: {
         'First Swing': 'Erster Schwung', 'Up the Wall': 'Die Wand hoch', 'At the wall: hold — the winch pulls you up': 'An der Wand halten — die Winde zieht dich hoch',
@@ -119,7 +119,7 @@
         hook: 'CROCHET', pull: 'TIRER', fell: 'Tombé !', crash: 'Accident !', cp: 'Checkpoint !', star: 'Étoile !',
         win: 'Niveau terminé !', time: 'Temps', sec: 's', tries: 'Essais', pump: 'Maintiens GAZ pour te balancer !', levels: 'Niveaux', next: 'Suivant', lvl: 'Niveau', fin: 'Arrivée', starW: 'Étoile', play: 'Jouer', snap: 'Crac !',
         garage: 'Garage', tabs: ['Camion', 'Roues', 'Couleur', 'Tuning'], buy: 'Acheter', take: 'Débloquer', chosen: 'Sélectionné', need: 'Il manque', needStars: 'Il faut', have: 'tu as',
-        eng: 'Moteur', engD: 'Démarre plus vite', winch: 'Treuil', winchD: 'Tire plus vite', max: 'MAX', total: 'total',
+        eng: 'Moteur', engD: 'Démarre plus vite', winch: 'Treuil', winchD: 'Tire plus vite', max: 'MAX', total: 'total', rot: 'Tourne le téléphone pour voir plus loin',
       },
       X: {
         'First Swing': 'Premier élan', 'Up the Wall': 'En haut du mur', 'At the wall: hold — the winch pulls you up': 'Au mur : maintiens — le treuil te hisse',
@@ -145,7 +145,7 @@
         hook: 'GANCIO', pull: 'TIRA', fell: 'Caduto!', crash: 'Incidente!', cp: 'Checkpoint!', star: 'Stella!',
         win: 'Livello completato!', time: 'Tempo', sec: 's', tries: 'Tentativi', pump: 'Tieni premuto GAS per dondolare!', levels: 'Livelli', next: 'Avanti', lvl: 'Livello', fin: 'Traguardo', starW: 'Stella', play: 'Gioca', snap: 'Crac!',
         garage: 'Garage', tabs: ['Camion', 'Ruote', 'Colore', 'Potenzia'], buy: 'Compra', take: 'Sblocca', chosen: 'Selezionato', need: 'Mancano', needStars: 'Servono', have: 'ne hai',
-        eng: 'Motore', engD: 'Parte più veloce', winch: 'Verricello', winchD: 'Tira più veloce', max: 'MAX', total: 'totale',
+        eng: 'Motore', engD: 'Parte più veloce', winch: 'Verricello', winchD: 'Tira più veloce', max: 'MAX', total: 'totale', rot: 'Ruota il telefono per vedere più lontano',
       },
       X: {
         'First Swing': 'Primo slancio', 'Up the Wall': 'Su per il muro', 'At the wall: hold — the winch pulls you up': 'Al muro: tieni premuto — il verricello ti tira su',
@@ -171,7 +171,7 @@
         hook: 'HAK', pull: 'CIĄGNIJ', fell: 'Upadek!', crash: 'Kraksa!', cp: 'Punkt kontrolny!', star: 'Gwiazdka!',
         win: 'Poziom ukończony!', time: 'Czas', sec: 's', tries: 'Próby', pump: 'Trzymaj GAZ, żeby się rozbujać!', levels: 'Poziomy', next: 'Dalej', lvl: 'Poziom', fin: 'Meta', starW: 'Gwiazdka', play: 'Graj', snap: 'Trach!',
         garage: 'Garaż', tabs: ['Auto', 'Koła', 'Kolor', 'Ulepszenia'], buy: 'Kup', take: 'Odblokuj', chosen: 'Wybrano', need: 'Brakuje', needStars: 'Potrzeba', have: 'masz',
-        eng: 'Silnik', engD: 'Szybszy start', winch: 'Wciągarka', winchD: 'Ciągnie szybciej', max: 'MAKS', total: 'razem',
+        eng: 'Silnik', engD: 'Szybszy start', winch: 'Wciągarka', winchD: 'Ciągnie szybciej', max: 'MAKS', total: 'razem', rot: 'Obróć telefon — zobaczysz dalej',
       },
       X: {
         'First Swing': 'Pierwszy zamach', 'Up the Wall': 'Na ścianę', 'At the wall: hold — the winch pulls you up': 'Przy ścianie trzymaj — wciągarka wciągnie cię na górę',
@@ -197,7 +197,7 @@
         hook: 'KAIT', pull: 'TARIK', fell: 'Jatuh!', crash: 'Tabrakan!', cp: 'Checkpoint!', star: 'Bintang!',
         win: 'Level selesai!', time: 'Waktu', sec: 'dtk', tries: 'Percobaan', pump: 'Tahan GAS untuk berayun!', levels: 'Level', next: 'Lanjut', lvl: 'Level', fin: 'Finis', starW: 'Bintang', play: 'Main', snap: 'Krak!',
         garage: 'Garasi', tabs: ['Truk', 'Roda', 'Warna', 'Upgrade'], buy: 'Beli', take: 'Buka', chosen: 'Dipilih', need: 'Kurang', needStars: 'Butuh', have: 'kamu punya',
-        eng: 'Mesin', engD: 'Start lebih cepat', winch: 'Derek', winchD: 'Menarik lebih cepat', max: 'MAKS', total: 'total',
+        eng: 'Mesin', engD: 'Start lebih cepat', winch: 'Derek', winchD: 'Menarik lebih cepat', max: 'MAKS', total: 'total', rot: 'Putar ponsel untuk melihat lebih jauh',
       },
       X: {
         'First Swing': 'Ayunan pertama', 'Up the Wall': 'Naik tembok', 'At the wall: hold — the winch pulls you up': 'Di tembok: tahan — derek menarikmu ke atas',

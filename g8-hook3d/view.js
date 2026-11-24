@@ -16,7 +16,7 @@
     win: 'Уровень пройден!', time: 'Время', sec: 'с', tries: 'Попыток', again: 'Ещё раз', menu: 'Меню', got: 'Звезда собрана', nostar: 'Звезда — выше между кольцами',
     pump: 'Жми ГАЗ — раскачайся!', levels: 'Уровни', next: 'Дальше', retry: 'Ещё раз', lvl: 'Уровень', fin: 'Финиш', starW: 'Звезда', play: 'Играть', mode: 'Режим', snap: 'Хрусь!',
     garage: 'Гараж', tabs: ['Грузовик', 'Колёса', 'Цвет', 'Прокачка'], buy: 'Купить', take: 'Забрать', chosen: 'Выбрано', need: 'Не хватает', needStars: 'Нужно', have: 'у тебя',
-    eng: 'Мотор', engD: 'Быстрее разгон', winch: 'Лебёдка', winchD: 'Тянет быстрее', max: 'МАКС', total: 'всего', test: 'проба: +500',
+    eng: 'Мотор', engD: 'Быстрее разгон', winch: 'Лебёдка', winchD: 'Тянет быстрее', max: 'МАКС', total: 'всего', test: 'проба: +500', rot: 'Поверни телефон — видно дальше',
   }, TEN = {
     title: 'HOOK TRUCK', sub: 'A truck, a rope and a cat', solo: '1 player', duo: '2 players',
     touchSolo: 'Right thumb: gas & brake · Left thumb: hold HOOK', touchDuo: 'Player 1: gas on the right · Player 2: hook and pull on the left',
@@ -30,7 +30,7 @@
     win: 'Level complete!', time: 'Time', sec: 's', tries: 'Tries', again: 'Play again', menu: 'Menu', got: 'Star collected', nostar: 'The star is high between the rings',
     pump: 'Hold GAS to swing!', levels: 'Levels', next: 'Next', retry: 'Retry', lvl: 'Level', fin: 'Finish', starW: 'Star', play: 'Play', mode: 'Mode', snap: 'Snap!',
     garage: 'Garage', tabs: ['Truck', 'Wheels', 'Color', 'Upgrades'], buy: 'Buy', take: 'Unlock', chosen: 'Selected', need: 'Need', needStars: 'Need', have: 'you have',
-    eng: 'Engine', engD: 'Faster start', winch: 'Winch', winchD: 'Pulls faster', max: 'MAX', total: 'total', test: 'test: +500',
+    eng: 'Engine', engD: 'Faster start', winch: 'Winch', winchD: 'Pulls faster', max: 'MAX', total: 'total', test: 'test: +500', rot: 'Rotate your phone to see further',
   };
   let T = RU ? TRU : TEN;
 
@@ -819,6 +819,8 @@
     ctx.font = '700 14px system-ui, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.92)';
     const coarse = matchMedia('(pointer: coarse)').matches, help = isAuto() ? (coarse ? T.touchAuto : T.keyAuto) : coarse ? (duo ? T.touchDuo : T.touchSolo) : (duo ? T.duoTxt : T.soloTxt).slice(0, 2).join('   ·   ');
     const cl = tight ? [] : lines(help, W - 40); cl.forEach((q, i) => ctx.fillText(q, W / 2, my + mh + 18 + i * 18)); // в низком окне подсказку не пишем — место нужно плиткам уровней
+    if (coarse && !save.rot && W > H2 * 1.15) { save.rot = 1; store(); } // повернул телефон — подсказка больше не нужна
+    if (coarse && port && !save.rot && !tight) { ctx.fillStyle = '#ffe082'; ctx.font = '800 14px system-ui, sans-serif'; ctx.fillText('⟳ ' + T.rot, W / 2, my + mh + 18 + cl.length * 18, W - 24); cl.push(''); ctx.fillStyle = 'rgba(255,255,255,0.92)'; } // Михаил: лёжа играть удобнее, но догадаться повернуть телефон негде
     // серия: стрелки и название; вторая открывается за звёзды
     const sy0 = my + mh + (cl.length ? 24 + cl.length * 18 : 10), open = serOpen(ser), sw2 = Math.min(W - 40, 360), sx0 = W / 2 - sw2 / 2;
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; rr(sx0, sy0, sw2, 36, 18); ctx.fill();
@@ -886,6 +888,7 @@
     if (master) master.gain.value = hold || PG.mutedP ? 0 : 0.7;
     const raw = (now - last) / 1000, dt = Math.min(0.05, raw); last = now; realT += dt;
     perfTick(raw, mode === 'play' && !hold && (!navigator.webdriver || dbg.adapt));
+    if (!save.rot && mode === 'play' && W > H2 * 1.15 && matchMedia('(pointer: coarse)').matches) { save.rot = 1; store(); } // играл лёжа — подсказку «поверни телефон» больше не показываем
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     if (!S) { S = H.create(0); camX = S.truck.x + 300; camY = S.truck.y; }
     let inp = { gas: false, brake: false, hook: false, pull: false };
