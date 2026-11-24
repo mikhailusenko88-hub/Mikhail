@@ -1,0 +1,27 @@
+# Полные тесты бота «Наш декор» (нужен aiogram — в облаке Claude его нет). Запуск: изменить pages/bot-tests.txt.
+# Последняя строка файла — ветка или коммит, который проверить (по умолчанию server). Итог — в логе задания.
+name: bot-tests
+on:
+  push:
+    branches: [domain-check]
+    paths: ['pages/bot-tests.txt']
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: domain-check, sparse-checkout: pages}
+      - id: ref
+        run: echo "ref=$(grep -v '^#' pages/bot-tests.txt | tail -n 1 | tr -d '[:space:]' || echo server)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with: {ref: "${{ steps.ref.outputs.ref || 'server' }}", path: code}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Тесты бота
+        working-directory: code/bot
+        run: |
+          pip install -q -r requirements.txt pytest pytest-asyncio
+          python -m pytest -q tests 2>&1 | tail -n 40
+          python -m pytest -q tests > /dev/null 2>&1
