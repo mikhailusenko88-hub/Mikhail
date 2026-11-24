@@ -1,2 +1,2 @@
-# 24.11 21:55 — 36: ролик 36e снять с таймера — на слоте теперь W2Aaf9OEKEQ (36f)
-cancel 0j60E5FEG-M
+# 24.11 21:58 — Shorts 36 заново из 36f; потом cancel phoh1BvtfMQ
+short 36f 36 2026-11-26T16:30 --again
