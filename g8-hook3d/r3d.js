@@ -1,0 +1,315 @@
+// Hook Truck — объёмный вид (three.js r128). Физика и интерфейс прежние: этот файл рисует только мир.
+// Мир физики плоский (x вправо, y вниз); здесь x тот же, высота = -y, глубина z — к камере.
+(function (root) {
+  'use strict';
+  const R = { ok: false };
+  let T = null, renderer, scene, cam, sun, lvlG = null, builtKey = null, vw = 0, vh = 0, vdpr = 0, lastT = 0, mob = false;
+  let truckG, catG, cat2G, drumM, idleHook, starM, hookM, tgtM, dustI = 0, dustAcc = 0;
+  const wheelG = [], ropeSeg = [], aimDots = [], dust = [];
+  let rings = [], cps = [], boostM = [], clouds = [];
+  const ZF = 130, ZB = -2600, ROAD = 78, DEEP = 1700, NROPE = 7;
+  const _c = {}, C = (h) => _c[h] || (_c[h] = new T.Color(h).convertSRGBToLinear());
+  const lam = (h, o) => new T.MeshLambertMaterial(Object.assign({ color: C(h) }, o || {}));
+  const bas = (h, o) => new T.MeshBasicMaterial(Object.assign({ color: C(h) }, o || {}));
+
+  // ---------- сборка геометрии из треугольников с цветом в вершинах ----------
+  const Acc = () => ({ p: [], c: [] });
+  function tri(A, a, b, c, ca, cb, cc) { A.p.push(a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]); A.c.push(ca.r, ca.g, ca.b, cb.r, cb.g, cb.b, cc.r, cc.g, cc.b); }
+  function quad(A, a, b, c, d, ca, cb, cc, cd) { cb = cb || ca; cc = cc || ca; cd = cd || ca; tri(A, a, b, c, ca, cb, cc); tri(A, a, c, d, ca, cc, cd); }
+  function mesh(A, mat) { const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(A.p, 3)); g.setAttribute('color', new T.Float32BufferAttribute(A.c, 3)); g.computeVertexNormals(); return new T.Mesh(g, mat); }
+  const geoC = {};
+  function GEO(k, f) { if (!geoC[k]) { const g = f(); geoC[k] = g.index ? g.toNonIndexed() : g; } return geoC[k]; }
+  function addGeo(A, geo, x, y, z, sx, sy, sz, col) { const p = geo.attributes.position; for (let i = 0; i < p.count; i++) { A.p.push(x + p.getX(i) * sx, y + p.getY(i) * sy, z + p.getZ(i) * sz); A.c.push(col.r, col.g, col.b); } }
+  function box(w, h, d, mat, x, y, z, par) { const m = new T.Mesh(new T.BoxGeometry(w, h, d), mat); m.position.set(x, y, z || 0); m.castShadow = true; par.add(m); return m; }
+  function prof(pts, depth, mat, par) { const s = new T.Shape(); pts.forEach((p, i) => (i ? s.lineTo(p[0], p[1]) : s.moveTo(p[0], p[1]))); const g = new T.ExtrudeGeometry(s, { depth, bevelEnabled: false }); g.translate(0, 0, -depth / 2); const m = new T.Mesh(g, mat); m.castShadow = true; par.add(m); return m; }
+  function cyl(r, h, seg, mat, x, y, z, par, alongZ) { const m = new T.Mesh(new T.CylinderGeometry(r, r, h, seg), mat); if (alongZ) m.rotation.x = Math.PI / 2; m.position.set(x, y, z || 0); m.castShadow = true; par.add(m); return m; }
+
+  R.init = function (canvas) {
+    try {
+      T = root.THREE; if (!T || !canvas) return false;
+      renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+      renderer.outputEncoding = T.sRGBEncoding;
+      mob = !!(root.matchMedia && matchMedia('(pointer: coarse)').matches);
+      renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
+      scene = new T.Scene();
+      const sk = document.createElement('canvas'); sk.width = 4; sk.height = 256;
+      const g = sk.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256);
+      gr.addColorStop(0, '#3ea6f4'); gr.addColorStop(0.55, '#9fdafc'); gr.addColorStop(1, '#e9f8ff'); g.fillStyle = gr; g.fillRect(0, 0, 4, 256);
+      const skT = new T.CanvasTexture(sk); skT.encoding = T.sRGBEncoding; scene.background = skT;
+      scene.fog = new T.Fog(C('#d3ecfb'), 3000, 12000);
+      cam = new T.PerspectiveCamera(20, 1, 60, 40000);
+      scene.add(new T.HemisphereLight(C('#ffffff'), C('#9dbb78'), 0.78));
+      sun = new T.DirectionalLight(C('#fff1d2'), 0.92); sun.castShadow = true;
+      const sm = mob ? 1024 : 2048; sun.shadow.mapSize.set(sm, sm);
+      const sc = sun.shadow.camera; sc.left = -950; sc.right = 950; sc.top = 800; sc.bottom = -800; sc.near = 100; sc.far = 3400;
+      sun.shadow.bias = -0.0008; sun.shadow.normalBias = 2.5;
+      scene.add(sun); scene.add(sun.target);
+      buildTruck(); buildDyn();
+      R.ok = true;
+    } catch (e) { R.ok = false; }
+    return R.ok;
+  };
+
+  // ---------- Барсик и его помощник ----------
+  function makeCat(fur, scarf) {
+    const g = new T.Group(), f = lam(fur), wh = lam('#ffffff'), head = new T.Group(); g.add(head);
+    const s = (r, mat, x, y, z, sx, sy, sz) => { const m = new T.Mesh(new T.SphereGeometry(r, 14, 10), mat); m.position.set(x, y, z); if (sx) m.scale.set(sx, sy, sz); m.castShadow = true; head.add(m); return m; };
+    s(16, f, 0, 0, 0, 1, 0.92, 1);
+    for (const z of [-9, 9]) { const e = new T.Mesh(new T.ConeGeometry(6.5, 14, 4), f); e.position.set(-1, 16.5, z); e.castShadow = true; head.add(e); }
+    s(7, wh, 11, -4.5, 0, 0.8, 0.7, 1.15); s(2.1, lam('#f48fb1'), 16.6, -2.4, 0);
+    const eyes = [];
+    for (const z of [-6.2, 6.2]) {
+      const eg = new T.Group(); eg.position.set(12.2, 3.8, z); head.add(eg); eyes.push(eg);
+      eg.add(new T.Mesh(new T.SphereGeometry(4.5, 10, 8), wh));
+      const ir = new T.Mesh(new T.SphereGeometry(3.1, 10, 8), bas('#2e9d43')); ir.position.x = 2.2; eg.add(ir);
+      const pu = new T.Mesh(new T.SphereGeometry(1.8, 8, 6), bas('#111111')); pu.position.x = 3.8; eg.add(pu);
+    }
+    head.rotation.y = -0.62;
+    const sc = new T.Mesh(new T.TorusGeometry(11, 4.3, 8, 16), lam(scarf)); sc.rotation.x = Math.PI / 2; sc.position.y = -14.5; g.add(sc);
+    const body = new T.Mesh(new T.SphereGeometry(13, 10, 8), f); body.position.y = -27; g.add(body);
+    g.userData = { head, eyes };
+    return g;
+  }
+
+  // ---------- грузовик (размеры — как у плоского: рама, кузов, кабина, лебёдка на крыше) ----------
+  function buildTruck() {
+    truckG = new T.Group(); scene.add(truckG);
+    const main = lam('#ff5a36'), dark = lam('#c63b1f'), frame = lam('#37474f'), blk = lam('#20262a'), grey = lam('#90a4ae');
+    box(230, 26, 84, frame, 1, -5, 0, truckG);
+    box(132, 28, 100, main, -48, 16, 0, truckG);
+    box(124, 14, 100, dark, -49, 37, 0, truckG);
+    box(110, 3, 86, blk, -49, 44.5, 0, truckG);
+    for (const z of [-50.5, 50.5]) { const st = box(118, 5, 1, bas('#ffd9cf'), -48, 22, z, truckG); st.castShadow = false; }
+    prof([[14, 2], [14, 40], [88, 40], [91, 37], [113, 33], [119, 20], [119, 2]], 96, main, truckG);
+    box(8, 36, 96, main, 18, 57, 0, truckG);
+    box(54, 7, 96, main, 41, 77, 0, truckG);
+    for (const z of [-45.5, 45.5]) { const p = box(5, 44, 5, main, 77.5, 57.5, z, truckG); p.rotation.z = 0.58; }
+    const ws = box(2, 42, 84, new T.MeshLambertMaterial({ color: C('#b3e5fc'), transparent: true, opacity: 0.36 }), 77.5, 57.5, 0, truckG); ws.rotation.z = 0.58; ws.castShadow = false;
+    box(20, 18, 104, blk, 114, -4, 0, truckG);
+    for (const z of [-34, 34]) { const l = box(4, 10, 16, bas('#fff59d'), 120.5, 24, z, truckG); l.castShadow = false; }
+    cyl(4, 56, 8, grey, 6, 62, -40, truckG);
+    box(32, 6, 40, frame, 30, 83.5, 0, truckG); box(8, 20, 8, grey, 30, 94, 0, truckG);
+    drumM = new T.Group(); drumM.position.set(30, 104, 0); truckG.add(drumM);
+    cyl(12, 26, 14, lam('#ffb300'), 0, 0, 0, drumM, true); box(26, 5, 28, lam('#5d4037'), 0, 0, 0, drumM);
+    idleHook = new T.Mesh(new T.TorusGeometry(7, 2.2, 6, 14, 4.4), grey); idleHook.position.set(43, 92, 0); truckG.add(idleHook);
+    catG = makeCat('#e8892f', '#1e5fd6'); catG.position.set(47, 55, 0); truckG.add(catG);
+    cat2G = makeCat('#a7adb3', '#e53935'); cat2G.position.set(-52, 60, 0); truckG.add(cat2G);
+    const tire = lam('#1d1d1d'), hub = lam('#d5dde2'), nut = lam('#607d8b');
+    for (let i = 0; i < 2; i++) {
+      const g = new T.Group(); scene.add(g); wheelG.push(g);
+      cyl(5, 104, 8, frame, 0, 0, 0, g, true);
+      for (const z of [-56, 56]) {
+        cyl(27, 26, 20, tire, 0, 0, z, g, true);
+        for (let k = 0; k < 10; k++) { const a = (k / 10) * Math.PI * 2, b = box(6, 9, 27, tire, Math.cos(a) * 27.5, Math.sin(a) * 27.5, z, g); b.rotation.z = a; }
+        cyl(14, 28, 14, hub, 0, 0, z, g, true);
+        for (let k = 0; k < 5; k++) { const a = (k / 5) * Math.PI * 2; cyl(2.5, 30, 6, nut, Math.cos(a) * 8, Math.sin(a) * 8, z, g, true); }
+      }
+    }
+  }
+
+  // ---------- то, что двигается: трос, прицел, пыль, звезда ----------
+  function buildDyn() {
+    const rm = lam('#8d6e63');
+    for (let i = 0; i < NROPE; i++) { const m = new T.Mesh(new T.CylinderGeometry(3.4, 3.4, 1, 6), rm); m.castShadow = true; m.visible = false; scene.add(m); ropeSeg.push(m); }
+    hookM = new T.Mesh(new T.SphereGeometry(9, 10, 8), lam('#90a4ae')); hookM.visible = false; scene.add(hookM);
+    const dm = bas('#ffffff', { transparent: true, opacity: 0.85 });
+    for (let i = 0; i < 9; i++) { const m = new T.Mesh(new T.SphereGeometry(4, 8, 6), dm); m.visible = false; scene.add(m); aimDots.push(m); }
+    tgtM = new T.Mesh(new T.TorusGeometry(54, 3.4, 6, 36), bas('#ffeb3b')); tgtM.visible = false; scene.add(tgtM);
+    for (let i = 0; i < 40; i++) { const m = new T.Mesh(new T.IcosahedronGeometry(1, 0), new T.MeshBasicMaterial({ color: C('#ecdcbd'), transparent: true, opacity: 0.8, depthWrite: false })); m.visible = false; scene.add(m); dust.push({ m, life: 0, vx: 0, vy: 0, vz: 0, r: 1 }); }
+    const sh = new T.Shape();
+    for (let i = 0; i < 10; i++) { const r = i % 2 ? 20 : 46, a = (i / 10) * Math.PI * 2 + Math.PI / 2, x = Math.cos(a) * r, y = Math.sin(a) * r; if (i) sh.lineTo(x, y); else sh.moveTo(x, y); }
+    const sg = new T.ExtrudeGeometry(sh, { depth: 14, bevelEnabled: true, bevelSize: 3, bevelThickness: 3, bevelSegments: 1 }); sg.translate(0, 0, -7);
+    starM = new T.Mesh(sg, new T.MeshPhongMaterial({ color: C('#ffd54f'), emissive: C('#6b4a00'), shininess: 60 })); starM.castShadow = true; starM.visible = false; scene.add(starM);
+  }
+
+  function cloud(par, x, y, z, s, mat) {
+    const g = new T.Group(); g.position.set(x, y, z); g.scale.set(s, s * 0.78, s);
+    for (const [dx, dy, r] of [[-40, 0, 34], [0, 16, 46], [42, 0, 34], [10, -8, 36]]) { const m = new T.Mesh(GEO('puff', () => new T.IcosahedronGeometry(1, 1)), mat); m.position.set(dx, dy, 0); m.scale.setScalar(r); g.add(m); }
+    par.add(g); return g;
+  }
+  function tree(A, x, y, z, s, rnd) {
+    const round = rnd() < 0.42, g1 = C(round ? '#4caf50' : '#2f8f57'), g2 = C(round ? '#69c06d' : '#3da56a');
+    addGeo(A, GEO('trunk', () => new T.CylinderGeometry(7, 9, 50, 6)), x, y + 25 * s, z, s, s, s, C('#8d5a2b'));
+    if (round) { const ico = GEO('ico', () => new T.IcosahedronGeometry(40, 0)); addGeo(A, ico, x, y + 82 * s, z, s, s, s, g1); addGeo(A, ico, x + 24 * s, y + 62 * s, z + 14 * s, s * 0.6, s * 0.6, s * 0.6, g2); }
+    else { const cone = GEO('cone', () => new T.ConeGeometry(44, 84, 7)); addGeo(A, cone, x, y + 80 * s, z, s, s, s, g1); addGeo(A, cone, x, y + 124 * s, z, s * 0.72, s * 0.72, s * 0.72, g2); }
+  }
+
+  // ---------- уровень: земля, пропасти, пещеры, кольца, флаги, фон ----------
+  function build(S, key) {
+    for (const k in geoC) geoC[k].userData.keep = true;
+    if (lvlG) { scene.remove(lvlG); lvlG.traverse((o) => { if (o.geometry && !o.geometry.userData.keep) o.geometry.dispose(); }); }
+    lvlG = new T.Group(); scene.add(lvlG); builtKey = key; rings = []; cps = []; boostM = []; clouds = [];
+    const L = S.L; let seed = 4321 + key * 977; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const G = Acc(), D = Acc();
+    const gA = C('#86cf52'), gB = C('#7ac448'), rA = C('#e8c896'), rB = C('#dfbc87'), rock = C('#a8794a'), rock2 = C('#96693d'), lip = C('#58a332'), e1 = C('#b8824c'), e2 = C('#7a4e2a'), e3 = C('#3d2817');
+    let lowY = 1e9, hiY = -1e9, n = 0;
+    for (const p of L.polys) for (const q of p) { lowY = Math.min(lowY, -q[1]); hiY = Math.max(hiY, -q[1]); }
+    const yb = lowY - DEEP, x0L = L.polys[0][0][0], lastP = L.polys[L.polys.length - 1], x1L = lastP[lastP.length - 1][0];
+    const inCave = (x) => L.ceils.some((c) => x > c.x0 - 60 && x < c.x1 + 60);
+    function piece(xa, ya, xb, yb1, steep, deco) {
+      const alt = n++ & 1;
+      if (steep) quad(G, [xa, ya, ZF], [xb, yb1, ZF], [xb, yb1, ZB], [xa, ya, ZB], alt ? rock : rock2);
+      else {
+        quad(G, [xa, ya, ZF], [xb, yb1, ZF], [xb, yb1, ROAD], [xa, ya, ROAD], alt ? gA : gB);
+        quad(G, [xa, ya, ROAD], [xb, yb1, ROAD], [xb, yb1, -ROAD], [xa, ya, -ROAD], alt ? rA : rB);
+        quad(G, [xa, ya, -ROAD], [xb, yb1, -ROAD], [xb, yb1, ZB], [xa, ya, ZB], alt ? gB : gA);
+      }
+      const l = steep ? 0 : 18;
+      if (l) quad(G, [xa, ya, ZF], [xb, yb1, ZF], [xb, yb1 - l, ZF], [xa, ya - l, ZF], lip);
+      quad(G, [xa, ya - l, ZF], [xb, yb1 - l, ZF], [xb, yb1 - 520, ZF], [xa, ya - 520, ZF], e1, e1, e2, e2);
+      quad(G, [xa, ya - 520, ZF], [xb, yb1 - 520, ZF], [xb, yb, ZF], [xa, yb, ZF], e2, e2, e3, e3);
+      if (deco && !steep && !inCave((xa + xb) / 2)) {
+        const cnt = rnd() < 0.6 ? 1 + (rnd() < 0.35 ? 1 : 0) : 0;
+        for (let q = 0; q < cnt; q++) {
+          const t = rnd(), x = xa + (xb - xa) * t, y = ya + (yb1 - ya) * t, z = -170 - rnd() * rnd() * 2000, s = 0.85 + rnd() * 0.8 + (-z / 2600) * 0.9;
+          if (rnd() < 0.72) tree(D, x, y, z, s, rnd); else addGeo(D, GEO('rock', () => new T.DodecahedronGeometry(22, 0)), x, y + 8 * s, z, s * 1.3, s * 0.8, s, C(rnd() < 0.5 ? '#9aa0a6' : '#84898f'));
+        }
+        if (rnd() < 0.55) { const t = rnd(), x = xa + (xb - xa) * t, y = ya + (yb1 - ya) * t, z = ROAD + 14 + rnd() * (ZF - ROAD - 22); addGeo(D, GEO('tuft', () => new T.ConeGeometry(7, 16, 5)), x, y + 8, z, 1, 1, 1, C('#4f9a2e')); if (rnd() < 0.6) addGeo(D, GEO('flw', () => new T.IcosahedronGeometry(4, 0)), x + 5, y + 15, z + 3, 1, 1, 1, C(['#ffffff', '#ffeb3b', '#ff80ab'][Math.floor(rnd() * 3)])); }
+      }
+    }
+    const dk = C('#0e0906');
+    function wall(x, y) {
+      quad(G, [x, y, ZF], [x, y, ZB], [x, y - 90, ZB], [x, y - 90, ZF], e1, e1, e2, e2);
+      quad(G, [x, y - 90, ZF], [x, y - 90, ZB], [x, y - 320, ZB], [x, y - 320, ZF], e2, e2, dk, dk);
+      quad(G, [x, y - 320, ZF], [x, y - 320, ZB], [x, yb, ZB], [x, yb, ZF], dk);
+    }
+    // видимая земля до начала и после конца трассы (в физике там невидимые стены)
+    for (let x = x0L - 3300; x < x0L - 1; x += 150) piece(x, -L.polys[0][0][1], x + 150, -L.polys[0][0][1], false, true);
+    for (const poly of L.polys) {
+      for (let i = 1; i < poly.length; i++) {
+        const ax = poly[i - 1][0], ay = -poly[i - 1][1], bx = poly[i][0], by = -poly[i][1], steep = Math.abs(by - ay) > Math.abs(bx - ax) * 1.5, k = Math.max(1, Math.round(Math.hypot(bx - ax, by - ay) / 150));
+        for (let j = 0; j < k; j++) piece(ax + ((bx - ax) * j) / k, ay + ((by - ay) * j) / k, ax + ((bx - ax) * (j + 1)) / k, ay + ((by - ay) * (j + 1)) / k, steep, true);
+      }
+      wall(poly[0][0], -poly[0][1]); wall(poly[poly.length - 1][0], -poly[poly.length - 1][1]);
+    }
+    for (let x = x1L; x < x1L + 3300; x += 150) piece(x, -lastP[lastP.length - 1][1], x + 150, -lastP[lastP.length - 1][1], false, true);
+    // пещеры: каменный потолок с сосульками
+    for (const c of L.ceils) {
+      const y = -c.y, cA = C('#8a6a55'), cB = C('#5e4334'), cC = C('#3d2a20');
+      quad(G, [c.x0, y, ZF], [c.x1, y, ZF], [c.x1, y, ZB], [c.x0, y, ZB], cB);
+      quad(G, [c.x0, y, ZF], [c.x1, y, ZF], [c.x1, y + 900, ZF], [c.x0, y + 900, ZF], cA, cA, cC, cC);
+      for (const x of [c.x0, c.x1]) quad(G, [x, y, ZF], [x, y, ZB], [x, y + 900, ZB], [x, y + 900, ZF], cA, cA, cC, cC);
+      for (let x = c.x0 + 40; x < c.x1 - 40; x += 70 + rnd() * 80) { const h = 40 + rnd() * 70, z = rnd() < 0.5 ? -110 - rnd() * 500 : 96 + rnd() * 30; addGeo(D, GEO('stal', () => new T.ConeGeometry(18, 1, 6)), x, y - h / 2, z, 1, -h, 1, cB); }
+    }
+    // ускорители: оранжевая дорога и бегущие стрелки
+    const chev = GEO('chev', () => { const s = new T.Shape(); [[0, -20], [18, -20], [40, 0], [18, 20], [0, 20], [22, 0]].forEach((p, i) => (i ? s.lineTo(p[0], p[1]) : s.moveTo(p[0], p[1]))); return new T.ShapeGeometry(s); });
+    for (const z of L.boosts) {
+      for (let x = z.x0; x < z.x1 - 30; x += 60) {
+        const ya = -S.groundAt(x) + 1.5, yb1 = -S.groundAt(Math.min(z.x1, x + 60)) + 1.5, i = Math.round((x - z.x0) / 60);
+        quad(G, [x, ya, ROAD], [x + 60, yb1, ROAD], [x + 60, yb1, -ROAD], [x, ya, -ROAD], C(i & 1 ? '#ff9800' : '#ffb74d'));
+        const m = new T.Mesh(chev, new T.MeshBasicMaterial({ color: C('#ff6d00'), transparent: true, side: T.DoubleSide })); m.position.set(x + 8, (ya + yb1) / 2 + 40, -ROAD - 26); lvlG.add(m); boostM.push({ m, i });
+      }
+    }
+    const gm = mesh(G, new T.MeshLambertMaterial({ vertexColors: true, side: T.DoubleSide })); gm.receiveShadow = true; lvlG.add(gm);
+    if (D.p.length) { const dm = mesh(D, new T.MeshLambertMaterial({ vertexColors: true })); dm.castShadow = true; lvlG.add(dm); }
+    // пропасти: книзу темнеют до черноты (упавший грузовик уходит в темноту)
+    const pc = document.createElement('canvas'); pc.width = 4; pc.height = 128;
+    const pg = pc.getContext('2d'), pgr = pg.createLinearGradient(0, 0, 0, 128);
+    pgr.addColorStop(0, 'rgba(14,9,6,0)'); pgr.addColorStop(0.6, 'rgba(14,9,6,0.85)'); pgr.addColorStop(1, 'rgba(14,9,6,1)'); pg.fillStyle = pgr; pg.fillRect(0, 0, 4, 128);
+    const pt = new T.CanvasTexture(pc); pt.encoding = T.sRGBEncoding;
+    const pm = new T.MeshBasicMaterial({ map: pt, transparent: true, depthWrite: false, fog: false }), pm2 = new T.MeshBasicMaterial({ color: C('#0e0906'), fog: false });
+    for (const z of L.pits) {
+      const w = z.x1 - z.x0, y = -z.y, xm = (z.x0 + z.x1) / 2;
+      const a = new T.Mesh(new T.PlaneGeometry(w, 270), pm); a.position.set(xm, y - 165, ZF + 3); a.renderOrder = 5; lvlG.add(a);
+      const f = new T.Mesh(new T.PlaneGeometry(w, ZF - ZB), pm2); f.rotation.x = -Math.PI / 2; f.position.set(xm, y - 300, (ZF + ZB) / 2); lvlG.add(f);
+      const b = new T.Mesh(new T.PlaneGeometry(w, DEEP + 2000), pm2); b.position.set(xm, y - 300 - (DEEP + 2000) / 2, ZF + 3); lvlG.add(b);
+    }
+    // кольца: в поле висят под облачком, в пещере — на цепи; у ездящих виден путь
+    const white = lam('#ffffff'), dotG = GEO('dot', () => new T.IcosahedronGeometry(4.5, 0)), dotM = bas('#ffffff', { transparent: true, opacity: 0.7 });
+    L.anchors.forEach((a) => {
+      const g = new T.Group(); g.position.set(a.x, -a.y, 0);
+      const mat = new T.MeshPhongMaterial({ color: C(a.snap ? '#ff8a65' : '#ffc107'), shininess: 90, specular: C('#666666') });
+      const t = new T.Mesh(new T.TorusGeometry(30, 7, 10, 28), mat); t.castShadow = true; g.add(t);
+      if (a.snap) for (const [x, y, r] of [[26, 16, 0.55], [-25, -18, -0.45], [-8, 28.5, 1.3]]) { const b = new T.Mesh(new T.BoxGeometry(4, 16, 16), bas('#3e2723')); b.position.set(x, y, 0); b.rotation.z = r; g.add(b); }
+      const cave = L.ceils.find((c) => a.x > c.x0 && a.x < c.x1 && c.y < a.y);
+      if (cave) { const h = a.y - cave.y - 30; cyl(3, h, 6, lam('#90a4ae'), 0, 30 + h / 2, 0, g).castShadow = false; }
+      else { cyl(1.6, 270, 5, lam('#546e7a'), 0, 165, 0, g).castShadow = false; cloud(g, 0, 318, 0, 1, white); }
+      lvlG.add(g); rings.push({ g, mat, col: '' });
+      if (a.mv) for (let k = -1; k <= 1.001; k += 0.2) { const d = new T.Mesh(dotG, dotM); d.position.set(a.x0 + (a.mv.dx || 0) * k, -(a.y0 + (a.mv.dy || 0) * k), 0); lvlG.add(d); }
+    });
+    // чекпоинты и финиш (стоят за дорогой, грузовик проезжает перед ними)
+    const pole = lam('#eceff1');
+    for (const c of L.cps) { const gy = -S.groundAt(c.x), m = lam('#b0bec5'); cyl(4, 160, 6, pole, c.x, gy + 80, -ROAD - 20, lvlG); box(52, 32, 3, m, c.x + 28, gy + 142, -ROAD - 20, lvlG); cps.push({ x: c.x, mat: m, on: null }); }
+    const fy = -S.groundAt(L.fin), fy2 = -S.groundAt(L.fin + 260), ck = document.createElement('canvas'); ck.width = 150; ck.height = 20;
+    const cg = ck.getContext('2d'); for (let i = 0; i < 15; i++) for (let j = 0; j < 2; j++) { cg.fillStyle = (i + j) % 2 ? '#212121' : '#fafafa'; cg.fillRect(i * 10, j * 10, 10, 10); }
+    const ct = new T.CanvasTexture(ck); ct.magFilter = T.NearestFilter; ct.encoding = T.sRGBEncoding;
+    cyl(5, 240, 6, pole, L.fin - 40, fy + 120, -ROAD - 24, lvlG); cyl(5, 240 + Math.max(0, fy - fy2), 6, pole, L.fin + 260, fy + 120 - Math.max(0, fy - fy2) / 2, -ROAD - 24, lvlG);
+    const bn = new T.Mesh(new T.PlaneGeometry(300, 40), new T.MeshBasicMaterial({ map: ct, side: T.DoubleSide })); bn.position.set(L.fin + 110, fy + 212, -ROAD - 24); lvlG.add(bn);
+    const fl = new T.Mesh(new T.PlaneGeometry(40, ROAD * 2), new T.MeshBasicMaterial({ map: ct })); fl.rotation.x = -Math.PI / 2; fl.position.set(L.fin, fy + 2, 0); lvlG.add(fl);
+    // фон: три гряды холмов и облака
+    const ridge = (z, base, h0, h1, col, col2, step) => {
+      const A = Acc(); let px = x0L - 10000, py = base + h0 + rnd() * (h1 - h0);
+      for (let x = px + step; x < x1L + 10000; x += step * (0.6 + rnd() * 0.8)) { const y = base + h0 + rnd() * (h1 - h0); quad(A, [px, py, z], [x, y, z], [x, base - 4000, z], [px, base - 4000, z], col, col, col2, col2); px = x; py = y; }
+      lvlG.add(mesh(A, new T.MeshBasicMaterial({ vertexColors: true, side: T.DoubleSide })));
+    };
+    const gb = (lowY + hiY) / 2;
+    ridge(-8200, gb - 200, 900, 2300, C('#9cc0dc'), C('#bcd8ea'), 950);
+    ridge(-5600, gb - 300, 500, 1400, C('#86b99a'), C('#acd3b8'), 720);
+    ridge(ZB - 500, gb - 500, 150, 640, C('#69ab63'), C('#86c079'), 520);
+    for (let i = 0; i < 16; i++) { const c = cloud(lvlG, x0L - 2500 + rnd() * (x1L - x0L + 5000), hiY + 500 + rnd() * 1000, -1300 - rnd() * 3800, 2 + rnd() * 2.6, white); c.userData.v = 6 + rnd() * 10; clouds.push(c); }
+  }
+
+  function seg(m, x0, y0, x1, y1) { m.visible = true; m.position.set((x0 + x1) / 2, (y0 + y1) / 2, 0); m.scale.set(1, Math.hypot(x1 - x0, y1 - y0) || 0.001, 1); m.rotation.z = Math.atan2(y1 - y0, x1 - x0) - Math.PI / 2; }
+
+  // ---------- кадр ----------
+  R.draw = function (S, v) {
+    if (!R.ok) return;
+    if (v.W !== vw || v.H !== vh || v.DPR !== vdpr) { vw = v.W; vh = v.H; vdpr = v.DPR; renderer.setPixelRatio(v.DPR); renderer.setSize(vw, vh, false); cam.aspect = vw / vh; }
+    if (builtKey !== v.lvl || !lvlG) build(S, v.lvl);
+    const L = S.L, t = v.t, dt = Math.min(0.05, Math.max(0, t - lastT)); lastT = t;
+    // камера: тот же кадр, что у плоского вида (точка взгляда и масштаб), но с глубиной и небольшим наклоном сверху
+    const d = v.H / v.Z / (2 * Math.tan((cam.fov * Math.PI) / 360)), tilt = 0.15, sh = v.shake > 0 ? v.shake * 40 : 0;
+    const cx = v.camX + (0.08 * v.W) / v.Z + (Math.random() - 0.5) * sh, cy = -(v.camY - (0.05 * v.H) / v.Z) + (Math.random() - 0.5) * sh;
+    cam.position.set(cx, cy + d * Math.sin(tilt), d * Math.cos(tilt)); cam.lookAt(cx, cy, 0);
+    cam.near = Math.max(40, d - 1000); cam.far = d + 16000; cam.updateProjectionMatrix();
+    scene.fog.near = d + 1500; scene.fog.far = d + 11500;
+    // грузовик и колёса
+    const tr = S.truck; truckG.position.set(tr.x, -tr.y, 0); truckG.rotation.z = -tr.a;
+    S.wheels.forEach((w, i) => { wheelG[i].position.set(w.x, -w.y, 0); wheelG[i].rotation.z = -w.a; });
+    sun.target.position.set(tr.x, -tr.y, 0); sun.position.set(tr.x - 430, -tr.y + 1050, 640); sun.target.updateMatrixWorld();
+    const scared = S.state === 'dead' || (!S.grounded && Math.abs(tr.vy) > 500), happy = S.state === 'win';
+    for (const cg of [catG, cat2G]) { const es = scared ? 1.4 : 1; cg.userData.eyes.forEach((e) => e.scale.set(1, happy ? 0.35 : es, es)); cg.userData.head.rotation.z = scared ? 0.16 : Math.sin(t * 2) * 0.05; }
+    cat2G.visible = !!v.duo; drumM.rotation.z = S.pullOn ? -t * 18 : 0; idleHook.visible = !S.rope;
+    // трос (провисает, пока не натянут) и крюк на кольце
+    if (S.rope) {
+      const m = S.mast(), ax = S.rope.px, ay = S.rope.py, sag = Math.max(0, S.rope.len - Math.hypot(ax - m[0], ay - m[1])) * 0.6, qx = (m[0] + ax) / 2, qy = (m[1] + ay) / 2 + sag;
+      let px = m[0], py = m[1];
+      for (let i = 1; i <= NROPE; i++) { const k = i / NROPE, a = (1 - k) * (1 - k), b = 2 * k * (1 - k), c = k * k, x = a * m[0] + b * qx + c * ax, y = a * m[1] + b * qy + c * ay; seg(ropeSeg[i - 1], px, -py, x, -y); px = x; py = y; }
+      hookM.visible = true; hookM.position.set(ax, -ay - 18, 0);
+    } else { for (const m of ropeSeg) m.visible = false; hookM.visible = false; }
+    // прицел: к какому кольцу уйдёт крюк
+    const tg = S.target && !S.rope && S.state === 'play' ? S.target : null;
+    tgtM.visible = !!tg;
+    if (tg) { const p = 1 + 0.16 * Math.sin(t * 10), m = S.mast(); tgtM.position.set(tg.x, -tg.y, 0); tgtM.scale.set(p, p, 1); aimDots.forEach((dm, i) => { const k = (i + ((t * 2) % 1)) / aimDots.length; dm.visible = true; dm.position.set(m[0] + (tg.x - m[0]) * k, -(m[1] + (tg.y - m[1]) * k), 0); }); }
+    else for (const dm of aimDots) dm.visible = false;
+    // кольца
+    L.anchors.forEach((a, i) => {
+      const r = rings[i]; if (!r) return;
+      r.g.visible = !a.broken; const on = S.ropeA === a;
+      const ox = on && a.snap ? Math.sin(t * 60) * 3 * Math.min(1, (a.hang || 0) / a.snap) : 0;
+      r.g.position.set(a.x + ox, -a.y, 0);
+      const col = a.snap ? (on ? '#ff5252' : '#ff8a65') : on ? '#ff7043' : tg === a ? '#ffeb3b' : '#ffc107';
+      if (r.col !== col) { r.col = col; r.mat.color.copy(C(col)); }
+    });
+    const st = L.star; starM.visible = !!(st && !st.got);
+    if (starM.visible) { starM.position.set(st.x, -(st.y + Math.sin(t * 3) * 8), 0); starM.rotation.y = Math.sin(t * 2.2) * 0.9; starM.rotation.z = Math.sin(t * 2) * 0.12; }
+    for (const c of cps) { const on = !!(S.cp && S.cp.x >= c.x); if (c.on !== on) { c.on = on; c.mat.color.copy(C(on ? '#00e676' : '#b0bec5')); } }
+    for (const b of boostM) b.m.material.opacity = ((((t * 5 - b.i) % 3) + 3) % 3) < 1 ? 1 : 0.4;
+    for (const c of clouds) c.position.x += dt * c.userData.v;
+    // пыль из-под задних колёс
+    dustAcc += dt;
+    if (v.gas && S.grounded && S.state === 'play' && dustAcc > 0.045) {
+      dustAcc = 0; const w = S.wheels[0], p = dust[dustI++ % dust.length];
+      p.life = 0.55; p.r = 7 + Math.random() * 9; p.vx = -60 - Math.random() * 90; p.vy = 40 + Math.random() * 60; p.vz = (Math.random() - 0.5) * 120;
+      p.m.position.set(w.x - 14, -w.y - 22, (Math.random() - 0.5) * 80); p.m.visible = true;
+    }
+    for (const p of dust) if (p.life > 0) {
+      p.life -= dt; if (p.life <= 0) { p.m.visible = false; continue; }
+      p.m.position.x += p.vx * dt; p.m.position.y += p.vy * dt; p.m.position.z += p.vz * dt;
+      const k = p.life / 0.55, s = p.r * (1.6 - k * 0.6); p.m.scale.set(s, s, s); p.m.material.opacity = 0.75 * k;
+    }
+    renderer.render(scene, cam);
+  };
+
+  root.Hook3D = R;
+})(window);
