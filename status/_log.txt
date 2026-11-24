@@ -1,87 +1,41 @@
-2026-11-24 18:54 UTC
-200 https://www.youtube.com/results?search_query=satisfying%203d%20simulation%20asmr&sp=EgIIBA%3D%3D&gl=SE
-200 https://www.youtube.com/@Kawaken_3DCG
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCTj4XriyD11OaRgDr7w-cJg
-200 https://www.youtube.com/@2D3Dasmr
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCl3qErPRItVpfXGzobuEEWg
-200 https://www.youtube.com/@satisfix3d
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCWzvZpILLpX_cGgJEgilXnA
-200 https://www.youtube.com/@Physics3DSim
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCkIsogNbVsD09cjvhuyP7vg
-200 https://www.youtube.com/@AsmrLabs3D
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCx_TY8qP-8vwGotkhkzfS9g
-200 https://www.youtube.com/@MikaJulieASMR
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCWxIAnZaxhS72Y1Ip5hzOpA
-200 https://www.youtube.com/@PhysicsCandy3D
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCr5aXko8DxUhIUm7wJ8F0yw
-200 https://www.youtube.com/@DS_SIMULATIONS
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCZ1USswqKaFui1h32mBMC5A
-200 https://www.youtube.com/results?search_query=satisfying%20asmr%20shorts&sp=EgIIBA%3D%3D&gl=SE
-200 https://www.youtube.com/results?search_query=tillfredsst%C3%A4llande&sp=EgIIBA%3D%3D&gl=SE
-200 https://www.youtube.com/@SatisfactoryNews
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCIRxLf-kVbDmkTG-JR9IPCA
-200 https://www.youtube.com/@theproginge
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UChNXOoTBhpBlZjs_eK9yVOQ
-200 https://www.youtube.com/@ImKibitz
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCz9qw5nupdzCGwHwQiqs7qA
-200 https://www.youtube.com/@JagTegF%C3%B6rL%C3%A4nge
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCHbfqUu5hZWHSK9iz1HNWpw
-200 https://www.youtube.com/results?search_query=kulor%20asmr&sp=EgIIBA%3D%3D&gl=SE
-200 https://www.youtube.com/@Kalourbooks
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCqntPnUnvTuYGnl3iorEyHw
-200 https://www.youtube.com/@ColorellaAsmr
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCKdIoS0jylHdc65R9xhygDg
-200 https://www.youtube.com/@FruityMixASMR
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCfhKtvJk6mRqXrWofl7usEA
-200 https://www.youtube.com/@KeeruhhASMR
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCO26VbfoBDcjakEvmrkjIjw
-200 https://www.youtube.com/@KoolKatASMR
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC4EgtvHyWzDpmpAhY6Di0cQ
-200 https://www.youtube.com/@MarbleCocoASMR
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCgQwbRJ5Au63zrJ0cegAJvQ
-200 https://www.youtube.com/@marbleruns420
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCejQdlnenyzTfTW_NNB2S2g
-200 https://www.youtube.com/@QuillaASMR
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCKB4n-z21Y54HYIshlzbm8A
-200 https://www.youtube.com/hashtag/satisfying/shorts?gl=SE
-200 https://www.youtube.com/@foot_relax
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCrqKMUQOfmZQacHTSRkEKZg
-200 https://www.youtube.com/@PowerLab-v6g
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCOYgjvCjgKXQNhxPzDGOiOA
-200 https://www.youtube.com/@NatashaSonya
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCRxwN2xyzmFXB9ZLVOYawMw
-200 https://www.youtube.com/@urbanrestores
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC7SF2XwMftgLaUM-zpahmdg
-200 https://www.youtube.com/@VkCricketworld
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC03GOnkNKM5A9cbwtgTHOog
-200 https://www.youtube.com/@Uad-i7r
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC8ZH-A5NYWWHVE7e37Q4_BQ
-200 https://www.youtube.com/@ladymarble.art.shorts
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCW0Fsf2nznbVd6gKP7NbJGQ
-200 https://www.youtube.com/@PowerHotBall
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCjvtK2ukcDS5tYaurNW4jwA
-200 https://www.youtube.com/hashtag/tillfredsst%C3%A4llande/shorts
-ERR oembed gA5BTwrydnc HTTP Error 401: Unauthorized
-ERR oembed RUaHLMcYfqA HTTP Error 401: Unauthorized
-ERR oembed ec7W_6wNTZc HTTP Error 401: Unauthorized
-ERR oembed 4vsUPj9js6Y HTTP Error 401: Unauthorized
-ERR oembed hzAKqmxvcis HTTP Error 401: Unauthorized
-ERR oembed IW23CMGuQ9Y HTTP Error 401: Unauthorized
-ERR oembed o4GhIL9M46o HTTP Error 401: Unauthorized
-200 https://www.youtube.com/@pineapplepeaasmr
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCYqWYHuezPK6m3nHQ3QAcQQ
-200 https://www.youtube.com/@doeljatengchannel
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCw-vv4rTYxioDEEzf1MGJaQ
-200 https://www.youtube.com/@GenialaHacks
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC4SM5xbR-_ACf0kKBcnLGpQ
-200 https://www.youtube.com/@DoktechHD
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UConp5I3L0_FrgsOF5OQ145w
-200 https://www.youtube.com/@cotton-candy-wataame
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCd3lrH1uNxkCSrIZhk6taOg
-200 https://www.youtube.com/results?search_query=satisfying%203d%20simulation%20asmr&sp=EgIIBA%3D%3D&gl=US
-200 https://www.youtube.com/@TheBlender3D
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCPEVjx8nnSFEe71lk_tEMhg
-200 https://www.youtube.com/@Satisfy-hub-studio
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UC8ZBbXEek3eQijpgiOvaawg
-200 https://www.youtube.com/@3DMADNESS-b5k
-200 https://www.youtube.com/feeds/videos.xml?channel_id=UCgsGwPB6UL5jzSUWIIiUcRQ
+2026-11-24 22:31 UTC
+200 https://www.youtube.com/@TheHandwriting_of_Silence
+200 avatar TheHandwriting_of_Silence
+200 banner TheHandwriting_of_Silence
+200 https://www.youtube.com/@TheHandwriting_of_Silence/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
+200 https://www.youtube.com/@LivingLinesTV
+200 avatar LivingLinesTV
+200 banner LivingLinesTV
+200 https://www.youtube.com/@LivingLinesTV/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCuufuU5RCswqp9N1HE0NZlw
+200 https://www.youtube.com/@bilesin_be_kz
+200 avatar bilesin_be_kz
+200 banner bilesin_be_kz
+200 https://www.youtube.com/@bilesin_be_kz/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
+200 https://www.youtube.com/@pochemu_tak_fakty
+200 avatar pochemu_tak_fakty
+200 banner pochemu_tak_fakty
+200 https://www.youtube.com/@pochemu_tak_fakty/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
+200 https://www.youtube.com/@Beautiful_shorts-s6u
+200 avatar Beautiful_shorts-s6u
+200 banner Beautiful_shorts-s6u
+200 https://www.youtube.com/@Beautiful_shorts-s6u/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
+200 https://www.youtube.com/@FlagballArenaTV
+200 avatar FlagballArenaTV
+200 banner FlagballArenaTV
+200 https://www.youtube.com/@FlagballArenaTV/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCUKgRxWtL1kPWr9hdfL8qQw
+200 https://www.youtube.com/@kimyutadi_uz
+200 avatar kimyutadi_uz
+200 banner kimyutadi_uz
+200 https://www.youtube.com/@kimyutadi_uz/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC93S31Qkgoz4cFgKBzz-mLA
+200 https://www.youtube.com/@cartoon_friend3
+200 avatar cartoon_friend3
+200 banner cartoon_friend3
+200 https://www.youtube.com/@cartoon_friend3/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
