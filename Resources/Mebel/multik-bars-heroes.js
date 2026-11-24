@@ -551,12 +551,12 @@ function instance(T, U, baked) {
 }
 function partMats(I) { const G = I.G, pm = I.fu.uPartM.value; pm[0].copy(G.body.matrixWorld); pm[1].copy(G.head.matrixWorld); pm[2].copy(G.armL.matrixWorld); pm[3].copy(G.armR.matrixWorld); pm[4].copy(G.tail.matrixWorld); pm[5].copy(G.head.matrixWorld);
   I.U.uLegM.value[0].copy(G.legs[0].matrixWorld); I.U.uLegM.value[1].copy(G.legs[1].matrixWorld); }
-const FACE = { smile: ['sm', 'neutral'], happy: ['sm', 'neutral'], love: ['sm', 'neutral'], laugh: ['sm', 'up'], shy: ['sm', 'shy'], sad: ['sd', 'sad'], cry: ['sd', 'sad'], frown: ['b', 'frown'], angry: ['b', 'frown'], surprised: ['b', 'up'], scared: ['sd', 'sad'], sleepy: ['b', 'neutral'] };   // рот (улыбка/грусть) и брови по эмоции — мягко, для детей
+const FACE = { joy: ['sm', 'neutral'], smile: ['sm', 'neutral'], happy: ['sm', 'neutral'], love: ['sm', 'neutral'], laugh: ['sm', 'up'], shy: ['sm', 'shy'], sad: ['sd', 'sad'], cry: ['sd', 'sad'], frown: ['b', 'frown'], angry: ['b', 'frown'], surprised: ['b', 'up'], scared: ['sd', 'sad'], sleepy: ['b', 'neutral'] };   // рот (улыбка/грусть) и брови по эмоции — мягко, для детей
 function setFace(I, m, closed, emo, ek) { for (const k in I.heads) I.heads[k].visible = k === (closed ? 'blink' : m); for (const e of I.eyes) { e.e.visible = !closed; e.co.visible = !closed; }
-  const fc = FACE[(ek == null || ek > .4) ? emo : 'neutral'] || ['b', 'neutral'], mv = m === 'base' && !closed ? fc[0] : '';
+  const fc = FACE[(ek == null || ek > .4) ? emo : 'neutral'] || ['b', 'neutral'], mv = m === 'base' && (!closed || emo === 'joy') ? fc[0] : '';   // joy — глаза «^^» и улыбка «ω» вместе (для обложек)
   for (const o of I.mouthSm || []) o.visible = mv === 'sm'; for (const o of I.mouthSd || []) o.visible = mv === 'sd'; for (const k in I.brows || {}) for (const o of I.brows[k]) o.visible = k === fc[1];
   for (const o of I.mouthB) o.visible = !closed && m === 'base' && mv === 'b'; for (const o of I.mouthO) o.visible = !closed && m !== 'base'; for (const o of I.creases) o.visible = closed && !I.lash.calm; for (const o of I.lidL || []) o.visible = !closed; I.fu.uBlink.value = closed ? 1 : 0;
-  { const lk = closed ? (/^(laugh|happy|smile|love)$/.test((ek == null || ek > .4) ? emo : '') ? 'up' : 'calm') : ''; for (const k in I.lash || {}) for (const o of I.lash[k]) o.visible = k === lk; }
+  { const lk = closed ? (/^(laugh|happy|smile|love|joy)$/.test((ek == null || ek > .4) ? emo : '') ? 'up' : 'calm') : ''; for (const k in I.lash || {}) for (const o of I.lash[k]) o.visible = k === lk; }
   const mz = I.T.mouthZ && !closed && I.T.mouthZ[m]; I.fu.uMouthC.value.set(mz ? mz.c[0] : 0, mz ? mz.c[1] : 0, mz ? mz.c[2] : 0, mz ? 1 : 0); if (mz) I.fu.uMouthR.value.set(mz.r[0], mz.r[1], mz.r[2]); }
 const _toB = () => new THREE.Matrix4().set(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
 function eyeMats(I) { const r = I.T.info.re, toB = _toB(); for (const e of I.eyes) { const sc = new THREE.Matrix4().makeScale(1 / r, 1 / r, 1 / r); const M = e.e.material.uniforms.uEyeM.value.multiplyMatrices(sc, e.e.matrixWorld.clone().invert()); if (e.irisInv) M.premultiply(e.irisInv); M.premultiply(toB); } }
@@ -686,7 +686,7 @@ H6.frame = function (rig, st, T, L) {
   let open = 0; if (rig.mouthPatch && rig.mouthPatch.material.userData.U) open = rig.mouthPatch.material.userData.U.uOpen.value; else if (rig.open) open = rig.open.visible ? Math.min(1, (rig.open.scale.y - 0.25) / 1.1) : 0;
   const vz = st.vz || {}; let m = 'base'; if (open > .22) m = (vz.o || 0) > (vz.w || 0) * 1.1 ? 'o' : 'a';
   const e0 = rig.eyes && rig.eyes[0]; let lid = 1; if (e0 && e0.g) { const sx = e0.g.scale.x || 1, sy = e0.g.scale.y; lid = 1 - Math.min(1, Math.max(0, (1 - sy / sx) / 0.92)); }
-  const emo = st.emo || 'neutral'; if (emo === 'sleepy') lid *= .45;
+  const emo = st.emo || 'neutral'; if (emo === 'sleepy') lid *= .45; if (emo === 'joy') lid = 0;   // joy: смеётся глазами — «^^»
   const ek = st.emoK != null ? st.emoK : 1, et = st.et || 0; setFace(I, m, lid < .25, emo, ek);   /* закрыты только при моргании и сне; прищур от улыбки — глаза открыты */
   { let gz = 0; if (emo === 'shy') gz = .3 * ek * Math.min(1, et / .3) * (et < 1.8 ? 1 : Math.max(0, 1 - (et - 1.8) / .5)); else if (emo === 'sad' || emo === 'cry') gz = .13 * ek;   // смущается — взгляд ненадолго вниз; грустит — чуть вниз
     const ax = H6._ax || (H6._ax = new THREE.Vector3(1, 0, 0)); for (const e of I.eyes) e.e.quaternion.setFromAxisAngle(ax, gz); }
